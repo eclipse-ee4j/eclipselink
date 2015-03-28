@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -22,7 +22,7 @@ public class MyOtherObject implements MyInterface {
      */
     private byte test = 0x03;
     private Byte test2 = 0x03;
-  
+
     private Properties props = new Properties();
     private Properties anothernameproperties = new Properties();
 
@@ -33,12 +33,12 @@ public class MyOtherObject implements MyInterface {
     public void setProperties(Properties properties) {
         this.props = properties;
     }
-  
+
     @Override
     public byte getTest() {
         return test;
     }
-  
+
     @Override
     public void setTest(byte test) {
         this.test = test;
@@ -55,19 +55,19 @@ public class MyOtherObject implements MyInterface {
     public Properties getAnothernameproperties() {
         return anothernameproperties;
     }
-  
+
     public void setAnothernameproperties(Properties anothernameproperties) {
         this.anothernameproperties = anothernameproperties;
     }
-    
+
     public boolean equals(Object obj){
-		if(obj instanceof MyOtherObject){
-			MyOtherObject compare = (MyOtherObject)obj;
-			if(test != compare.test || !test2.equals(compare.test2)){
-				return false;
-			}
-			return this.props.equals(compare.props) && anothernameproperties.equals(compare.anothernameproperties);
-		}
-	    return false;
-	}
+        if(obj instanceof MyOtherObject){
+            MyOtherObject compare = (MyOtherObject)obj;
+            if(test != compare.test || !test2.equals(compare.test2)){
+                return false;
+            }
+            return this.props.equals(compare.props) && anothernameproperties.equals(compare.anothernameproperties);
+        }
+        return false;
+    }
 }

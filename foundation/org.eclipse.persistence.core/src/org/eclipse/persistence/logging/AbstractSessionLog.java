@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.logging;
 
 import java.util.Date;
@@ -113,28 +113,28 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Format use to print the current date/time.
      */
     protected DateFormat dateFormat;
-    
+
     /**
      * Allows the printing of the stack to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
      */
     protected Boolean shouldLogExceptionStackTrace;
-    
+
     /**
      * Allows the printing of the date to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
      */
     protected Boolean shouldPrintDate;
-    
+
     /**
      * Allows the printing of the thread to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
      */
     protected Boolean shouldPrintThread;
-        
+
     /**
      * Allows the printing of the session to be explicitly disabled/enabled.
      * CR #3870467.
@@ -148,7 +148,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * null value is default behavior of determining from log level.
      */
     protected Boolean shouldPrintConnection;
-    
+
     /** Used to determine if bingdparameters should be logged or hidden. */
     protected Boolean shouldDisplayData;
 
@@ -161,7 +161,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         String logLevel = System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL);
         return translateStringToLoggingLevel(logLevel);
     }
-    
+
     /**
      * PUBLIC:
      * Create a new AbstractSessionLog
@@ -188,7 +188,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Return the log level as a string value.
      */
     public String getLevelString() {
-        int level = getLevel();        
+        int level = getLevel();
         switch (level) {
             case OFF:
                 return "OFF";
@@ -212,7 +212,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
                 return "INFO";
             }
     }
-    
+
     /**
      * PUBLIC:
      * <p>
@@ -250,8 +250,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
 
     /**
      * PUBLIC:
-     * Return true if SQL logging should log visible bind parameters. If the 
-     * shouldDisplayData is not set, check the session log level and return 
+     * Return true if SQL logging should log visible bind parameters. If the
+     * shouldDisplayData is not set, check the session log level and return
      * true for a level greater than CONFIG.
      */
     public boolean shouldDisplayData() {
@@ -261,7 +261,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             return this.level < SessionLog.CONFIG;
         }
     }
-    
+
     /**
      * PUBLIC:
      * <p>
@@ -345,14 +345,14 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * PUBLIC:
      * <p>
-     * Log a message that does not need to be translated.  This method is intended for 
+     * Log a message that does not need to be translated.  This method is intended for
      * external use when logging messages are required within the EclipseLink output.
      *
      * @param level the log request level value
      * @param message the string message - this should not be a bundle key
      */
     public void log(int level, String message) {
-    	// Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
+        // Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
         if (!shouldLog(level)) {
             return;
         }
@@ -499,7 +499,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         }
         log(level, category, message, new Object[] { param1, param2, param3, param4 }, true);
     }
-    
+
     /**
      * PUBLIC:
      * <p>
@@ -512,7 +512,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public void log(int level, String message, Object[] params) {
         log(level, message, params, true);
     }
-    
+
     /**
      * PUBLIC:
      * <p>
@@ -542,7 +542,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         }
         log(new SessionLogEntry(level, null, message, params, null, shouldTranslate));
     }
-    
+
     /**
      * PUBLIC:
      * <p>
@@ -569,7 +569,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param sessionLogEntry SessionLogEntry that holds all the information for an EclipseLink logging event
      */
     public abstract void log(SessionLogEntry sessionLogEntry);
-    
+
     /**
      * By default the session (and its connection is available) are printed,
      * this can be turned off.
@@ -586,7 +586,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (shouldPrintSession) {
             this.shouldPrintSession = Boolean.TRUE;
         } else {
-            this.shouldPrintSession = Boolean.FALSE;            
+            this.shouldPrintSession = Boolean.FALSE;
         }
     }
 
@@ -604,7 +604,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (shouldPrintConnection) {
             this.shouldPrintConnection = Boolean.TRUE;
         } else {
-            this.shouldPrintConnection = Boolean.FALSE;            
+            this.shouldPrintConnection = Boolean.FALSE;
         }
     }
 
@@ -627,7 +627,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public void setShouldDisplayData(Boolean shouldDisplayData) {
         this.shouldDisplayData = shouldDisplayData;
     }
-    
+
     /**
      * By default the stack is logged for FINER or less (finest).
      * The logging of the stack can also be explicitly turned on or off.
@@ -636,7 +636,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (shouldLogExceptionStackTrace) {
             this.shouldLogExceptionStackTrace = Boolean.TRUE;
         } else {
-            this.shouldLogExceptionStackTrace = Boolean.FALSE;            
+            this.shouldLogExceptionStackTrace = Boolean.FALSE;
         }
     }
 
@@ -654,7 +654,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (shouldPrintDate) {
             this.shouldPrintDate = Boolean.TRUE;
         } else {
-            this.shouldPrintDate = Boolean.FALSE;            
+            this.shouldPrintDate = Boolean.FALSE;
         }
     }
 
@@ -678,7 +678,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (shouldPrintThread) {
             this.shouldPrintThread = Boolean.TRUE;
         } else {
-            this.shouldPrintThread = Boolean.FALSE;            
+            this.shouldPrintThread = Boolean.FALSE;
         }
     }
 
@@ -704,7 +704,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         this.writer = writer;
     }
 
-    
+
     /**
      * PUBLIC:
      * <p>
@@ -715,7 +715,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public void setWriter(OutputStream outputstream) {
         this.writer = new OutputStreamWriter(outputstream);
     }
-    
+
     /**
      * PUBLIC:
      * Return the date format to be used when printing a log entry date.
@@ -734,16 +734,16 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             return getDateFormat().format(date);
 
         }
-        
+
         if (date == null) {
             return null;
         }
-        
+
         // Since we currently do not have a thread-safe way to format dates,
         // we will use ConversionManager to build the string.
         return ConversionManager.getDefaultManager().convertObject(date, String.class).toString();
     }
-    
+
     /**
      * Return the supplement detail information including date, session, thread and connection.
      */
@@ -791,7 +791,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (connection.getDatasourceConnection() == null){
             return CONNECTION_STRING + "(" + String.valueOf(System.identityHashCode(connection)) + ")";
         } else {
-             return CONNECTION_STRING + "(" + String.valueOf(System.identityHashCode(connection.getDatasourceConnection())) + ")";   
+             return CONNECTION_STRING + "(" + String.valueOf(System.identityHashCode(connection.getDatasourceConnection())) + ")";
         }
     }
 

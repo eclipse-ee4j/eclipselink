@@ -68,7 +68,7 @@ GRANT drop any directory TO ${DB_USER};
             </classpath>
 DROP USER ${PROXY_USER} CASCADE;
 DROP USER ${PROXY_USER2} CASCADE;
-  
+
 CREATE USER ${PROXY_USER} IDENTIFIED BY ${PROXY_PWD} ACCOUNT UNLOCK;
 CREATE USER ${PROXY_USER2} IDENTIFIED BY ${PROXY_PWD2} ACCOUNT UNLOCK;
 REM "The following 2 lines are required for Oracle DB version 12.1"

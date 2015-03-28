@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,7 +40,7 @@ import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests parser handling of types, etc. that have the package name
- * prepended to the name, i.e. 'MYPKG.MY_CURSOR_TYPE'. 
+ * prepended to the name, i.e. 'MYPKG.MY_CURSOR_TYPE'.
  *
  */
 public class PrependedPackageTestSuite extends DBWSTestSuite {
@@ -48,7 +48,7 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
     static {
         username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
     }
-    
+
     static final String CREATE_REF_CURSOR_PKG3 =
         "CREATE OR REPLACE PACKAGE REF_CURSOR_PKG3 AS" +
             "\nTYPE QTAB IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
@@ -57,7 +57,7 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
                 "\nQ2 QTAB" +
             "\n);" +
         "\nEND REF_CURSOR_PKG3;";
-    
+
     static final String CREATE_REF_CURSOR_PKG2 =
         "CREATE OR REPLACE PACKAGE REF_CURSOR_PKG2 AS" +
           "\nTYPE typecursor IS REF CURSOR;" +
@@ -67,7 +67,7 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
     static final String CREATE_REF_CURSOR_PKG2_BODY =
         "CREATE OR REPLACE PACKAGE BODY REF_CURSOR_PKG2 AS" +
             "\nPROCEDURE getSomething(PARAM1 IN REF_CURSOR_PKG3.QTAB, PARAM2 OUT REF_CURSOR_PKG3.QTAB) AS" +
-            "\nBEGIN" + 
+            "\nBEGIN" +
               "\nPARAM2 := PARAM1;" +
             "\nEND getSomething;" +
         "\nEND REF_CURSOR_PKG2;";
@@ -84,7 +84,7 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
     static final String CREATE_REF_CURSOR_BODY =
         "create or replace PACKAGE BODY REF_CURSOR_PKG AS" +
           "\nPROCEDURE getEmpDataProc(PARAM1 OUT REF_CURSOR_PKG.typecursor) AS" +
-          "\nBEGIN" + 
+          "\nBEGIN" +
             "\nOPEN PARAM1 FOR" +
             "\nSELECT  empno, ename, job, deptno FROM ref_cursor_emp  ;" +
           "\nEND getEmpDataProc;" +
@@ -110,7 +110,7 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
             "\nRETURN c_temp;" +
           "\nEND getEmpData3;" +
         "\nEND REF_CURSOR_PKG;";
-    
+
     static final String CREATE_EMP_TABLE =
         "create table ref_cursor_emp (" +
           "\nempno NUMERIC(4) NOT NULL," +
@@ -125,7 +125,7 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
         "INSERT INTO ref_cursor_emp (empno, ename, job, deptno) VALUES (101, 'jack', 'delivery', 4)",
         "INSERT INTO ref_cursor_emp (empno, ename, job, deptno) VALUES (999, 'john', 'sales', 24)"
     };
-    
+
     static final String DROP_REF_CURSOR_BODY =
         "DROP PACKAGE BODY REF_CURSOR_PKG";
     static final String DROP_REF_CURSOR_PKG =
@@ -236,7 +236,7 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
           builder = null;
           DBWSTestSuite.setUp(".");
 
-          // execute shadow type ddl to generate JDBC equivalents of PL/SQL types 
+          // execute shadow type ddl to generate JDBC equivalents of PL/SQL types
           for (String ddl : builder.getTypeDDL()) {
               //System.out.println("create: " + ddl);
               runDdl(conn, ddl, ddlDebug);
@@ -245,7 +245,7 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        // drop shadow type ddl 
+        // drop shadow type ddl
         for (String ddl : builder.getTypeDropDDL()) {
             // may need to strip off trailing ';'
             try {
@@ -263,10 +263,10 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_REF_CURSOR_PKG2_BODY, ddlDebug);
             runDdl(conn, DROP_REF_CURSOR_PKG2, ddlDebug);
             runDdl(conn, DROP_REF_CURSOR_PKG3, ddlDebug);
-        	runDdl(conn, DROP_EMP_TABLE, ddlDebug);
+            runDdl(conn, DROP_EMP_TABLE, ddlDebug);
         }
     }
-    
+
     @Test
     public void testCursorProc() {
         Invocation invocation = new Invocation("TestGetEmpDataProc");
@@ -279,7 +279,7 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(EMP_TABLE_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void testCursorFunc() {
         Invocation invocation = new Invocation("TestGetEmpData");

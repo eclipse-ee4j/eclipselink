@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,7 +53,7 @@ public class EJBTransactionRequiredException extends EJBException {
 
     /**
      * Constructs an EJBTransactionRequiredException with no detail message.
-     */  
+     */
 
     public EJBTransactionRequiredException() {
     }
@@ -61,10 +61,10 @@ public class EJBTransactionRequiredException extends EJBException {
     /**
      * Constructs an EJBTransactionRequiredException with the specified
      * detailed message.
-     */  
+     */
     public EJBTransactionRequiredException(String message) {
         super(message);
     }
 
-  
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,7 +69,7 @@ public abstract class Context<
             this.context = context;
             preLogin(project, classLoader);
             session = (SESSION) project.createDatabaseSession();
-        
+
             // if an event listener was passed in as a parameter, register it with the event manager
             if (sessionEventListeners != null) {
                 for(SESSION_EVENT_LISTENER sessionEventListener : sessionEventListeners) {
@@ -109,7 +109,7 @@ public abstract class Context<
         private DESCRIPTOR getDescriptor(XPathQName qName) {
             return descriptorsByQName.get(qName);
         }
-    
+
         /**
          * INTERNAL: Return the Descriptor mapped to the global type matching the
          * XPathFragment parameter.
@@ -117,7 +117,7 @@ public abstract class Context<
         private DESCRIPTOR getDescriptorByGlobalType(XPathFragment xPathFragment) {
             return this.descriptorsByGlobalType.get(xPathFragment);
         }
-    
+
         protected SESSION getSession() {
             return session;
         }
@@ -136,7 +136,7 @@ public abstract class Context<
             }
             throw XMLMarshalException.descriptorNotFoundInProject(clazz.getName());
         }
-    
+
         /**
          * INTERNAL: Return the session corresponding to this Descriptor. Since
          * the class may be mapped by more that one of the projects used to create
@@ -166,7 +166,7 @@ public abstract class Context<
             }
             throw XMLMarshalException.descriptorNotFoundInProject(object.getClass().getName());
         }
-    
+
         protected void setupSession(SESSION session) {
         }
 
@@ -176,11 +176,11 @@ public abstract class Context<
         public void storeDescriptorByQName(DESCRIPTOR descriptor, CorePlatform platform, Set<DESCRIPTOR> processedDescriptors) {
             XPathQName descriptorQName;
             String defaultRootName;
-    
+
             if (processedDescriptors == null) {
                 processedDescriptors = new HashSet<DESCRIPTOR>();
             }
- 
+
             if (processedDescriptors.contains(descriptor)) {
                 return;
             } else {
@@ -190,11 +190,11 @@ public abstract class Context<
                     storeDescriptorByQName((DESCRIPTOR) descriptor.getInheritancePolicy().getParentDescriptor(), platform, processedDescriptors);
                 }
             }
-            
+
             List tableNames = descriptor.getTableNames();
             for (int i = 0; i < tableNames.size(); i++) {
                 defaultRootName = (String) tableNames.get(i);
-    
+
                 if (null != defaultRootName) {
                     int index = defaultRootName.indexOf(':');
                     String defaultRootLocalName = defaultRootName.substring(index + 1);
@@ -221,7 +221,7 @@ public abstract class Context<
                     }
                 }
             }
-    
+
             XMLSchemaReference xmlSchemaReference = descriptor.getSchemaReference();
             if (null != xmlSchemaReference) {
                 String schemaContext = xmlSchemaReference.getSchemaContext();
@@ -252,7 +252,7 @@ public abstract class Context<
                 }
             }
         }
-    
+
         public void storeDescriptorsByQName(CoreSession session) {
             Iterator iterator = session.getProject().getOrderedDescriptors().iterator();
             Set<DESCRIPTOR> processedDescriptors = new HashSet<DESCRIPTOR>();
@@ -261,7 +261,7 @@ public abstract class Context<
                 storeDescriptorByQName(descriptor, session.getDatasourcePlatform(), processedDescriptors);
             }
         }
-    
+
     }
 
     private class XPathQueryResult {
@@ -327,8 +327,8 @@ public abstract class Context<
     public abstract Unmarshaller createUnmarshaller();
 
     /**
-     * INTERNAL: 
-     * Return the Descriptor with the default root mapping matching the QName 
+     * INTERNAL:
+     * Return the Descriptor with the default root mapping matching the QName
      * parameter.
      */
     public DESCRIPTOR getDescriptor(QName qName) {
@@ -337,7 +337,7 @@ public abstract class Context<
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Return the Descriptor with the default root mapping matching the
      * XPathQName parameter.
      */
@@ -449,7 +449,7 @@ public abstract class Context<
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Return the session corresponding to this class. Since the class
      * may be mapped by more that one of the projects used to create the
      * Context, this method will return the first match.
@@ -459,7 +459,7 @@ public abstract class Context<
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      */
     public SESSION getSession() {
         return contextState.getSession();
@@ -470,7 +470,7 @@ public abstract class Context<
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Return the session corresponding to this object. Since the
      * object may be mapped by more that one of the projects used to create the
      * Context, this method will return the first match.
@@ -480,33 +480,33 @@ public abstract class Context<
     }
 
     /**
-     * <p>Query the object model based on the corresponding document.  The following pairings are equivalent:</p> 
-     * 
+     * <p>Query the object model based on the corresponding document.  The following pairings are equivalent:</p>
+     *
      * <i>Return the Customer's ID</i>
      * <pre> Integer id = context.getValueByXPath(customer, "@id", null, Integer.class);
      * Integer id = customer.getId();</pre>
-     * 
+     *
      * <i>Return the Customer's Name</i>
      * <pre> String name = context.getValueByXPath(customer, "ns:personal-info/ns:name/text()", null, String.class);
      * String name = customer.getName();</pre>
-     * 
+     *
      * <i>Return the Customer's Address</i>
      * <pre> Address address = context.getValueByXPath(customer, "ns:contact-info/ns:address", aNamespaceResolver, Address.class);
      * Address address = customer.getAddress();</pre>
-     * 
-     * <i>Return all the Customer's PhoneNumbers</i> 
+     *
+     * <i>Return all the Customer's PhoneNumbers</i>
      * <pre> List phoneNumbers = context.getValueByXPath(customer, "ns:contact-info/ns:phone-number", aNamespaceResolver, List.class);
      * List phoneNumbers = customer.getPhoneNumbers();</pre>
-     * 
+     *
      * <i>Return the Customer's second PhoneNumber</i>
      * <pre> PhoneNumber phoneNumber = context.getValueByXPath(customer, "ns:contact-info/ns:phone-number[2]", aNamespaceResolver, PhoneNumber.class);
      * PhoneNumber phoneNumber = customer.getPhoneNumbers().get(1);</pre>
-     * 
+     *
      * <i>Return the base object</i>
      * <pre> Customer customer = context.getValueByXPath(customer, ".", aNamespaceResolver, Customer.class);
      * Customer customer = customer;
      * </pre>
-     * 
+     *
      * @param <T> The return type of this method corresponds to the returnType parameter.
      * @param object  The XPath will be executed relative to this object.
      * @param xPath The XPath statement
@@ -527,7 +527,7 @@ public abstract class Context<
         T value = getValueByXPath(object, descriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, returnType);
         if (null == value) {
             CoreMapping selfMapping = descriptor.getObjectBuilder().getMappingForField(createField(String.valueOf(Constants.DOT)));
-            if (null != selfMapping && selfMapping.getReferenceDescriptor() != null) {            
+            if (null != selfMapping && selfMapping.getReferenceDescriptor() != null) {
                 return getValueByXPath(selfMapping.getAttributeValueFromObject(object), selfMapping.getReferenceDescriptor().getObjectBuilder(),
                         new StringTokenizer(xPath, Constants.XPATH_SEPARATOR),  ((DESCRIPTOR) selfMapping.getReferenceDescriptor()).getNamespaceResolver(), returnType);
             }
@@ -537,12 +537,12 @@ public abstract class Context<
 
     private <T> T getValueByXPath(Object object, CoreObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NAMESPACE_RESOLVER namespaceResolver, Class<T> returnType) {
         XPathQueryResult queryResult = getMappingForXPath(object, objectBuilder, stringTokenizer, namespaceResolver);
-        
+
         if (null != queryResult) {
             CoreMapping mapping = queryResult.mapping;
             Object owner = queryResult.owner;
             Integer index = queryResult.index;
-            
+
             if (null != owner) {
                 Object childObject = null;
                 if (mapping.isCollectionMapping()) {
@@ -585,7 +585,7 @@ public abstract class Context<
 
     private void setValueByXPath(Object object, CoreObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NAMESPACE_RESOLVER namespaceResolver, Object value) {
         XPathQueryResult queryResult = getMappingForXPath(object, objectBuilder, stringTokenizer, namespaceResolver);
-        
+
         if (null != queryResult) {
             CoreMapping mapping = queryResult.mapping;
             Object owner = queryResult.owner;
@@ -626,38 +626,38 @@ public abstract class Context<
     }
 
     /**
-     * <p>Set values in the object model based on the corresponding document.  The following pairings are equivalent:</p> 
-     * 
+     * <p>Set values in the object model based on the corresponding document.  The following pairings are equivalent:</p>
+     *
      * <i>Set the Customer's ID</i>
      * <pre> context.setValueByXPath(customer, "@id", null, new Integer(123));
      * customer.setId(new Integer(123));</pre>
-     * 
+     *
      * <i>Set the Customer's Name</i>
      * <pre> context.setValueByXPath(customer, "ns:personal-info/ns:name/text()", aNamespaceResolver, "Jane Doe");
      * customer.setName("Jane Doe");</pre>
-     * 
+     *
      * <i>Set the Customer's Address</i>
      * <pre> context.setValueByXPath(customer, "ns:contact-info/ns:address", aNamespaceResolver, anAddress);
      * customer.setAddress(anAddress);</pre>
-     * 
-     * <i>Set the Customer's PhoneNumbers</i> 
+     *
+     * <i>Set the Customer's PhoneNumbers</i>
      * <pre> context.setValueByXPath(customer, "ns:contact-info/ns:phone-number", aNamespaceResolver, phoneNumbers);
      * customer.setPhoneNumbers(phoneNumbers);</pre>
-     * 
+     *
      * <i>Set the Customer's second PhoneNumber</i>
      * <pre> context.setValueByXPath(customer, "ns:contact-info/ns:phone-number[2]", aNamespaceResolver, aPhoneNumber);
      * customer.getPhoneNumbers().get(1);</pre>
-     * 
+     *
      * @param object  The XPath will be executed relative to this object.
      * @param xPath The XPath statement
      * @param namespaceResolver A NamespaceResolver containing the prefix/URI pairings from the XPath statement.
      * @param value The value to be set.
      */
-    public void setValueByXPath(Object object, String xPath, NAMESPACE_RESOLVER namespaceResolver, Object value) { 
-        ABSTRACT_SESSION session = this.getSession(object); 
-        DESCRIPTOR descriptor = (DESCRIPTOR) session.getDescriptor(object); 
-        StringTokenizer stringTokenizer = new StringTokenizer(xPath, "/"); 
-        setValueByXPath(object, descriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, value); 
-    } 
+    public void setValueByXPath(Object object, String xPath, NAMESPACE_RESOLVER namespaceResolver, Object value) {
+        ABSTRACT_SESSION session = this.getSession(object);
+        DESCRIPTOR descriptor = (DESCRIPTOR) session.getDescriptor(object);
+        StringTokenizer stringTokenizer = new StringTokenizer(xPath, "/");
+        setValueByXPath(object, descriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, value);
+    }
 
 }

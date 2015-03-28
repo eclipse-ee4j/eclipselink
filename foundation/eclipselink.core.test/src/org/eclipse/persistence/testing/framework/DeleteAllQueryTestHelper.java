@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.framework;
@@ -23,9 +23,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
- 
+
 public class DeleteAllQueryTestHelper {
-            
+
     public static String execute(Session mainSession, Class referenceClass, Expression selectionExpression) {
         return execute(mainSession, referenceClass, selectionExpression, true);
     }
@@ -69,54 +69,54 @@ public class DeleteAllQueryTestHelper {
             return errorMsg;
         }
     }
-    
+
     protected static String execute(Session mainSession, Class referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren,
                                     Class rootClass) {
-        String errorMsg = "";        
+        String errorMsg = "";
         clearCache(mainSession);
-        
+
         // first delete using the original TopLink approach - one by one.
         UnitOfWork uow = mainSession.acquireUnitOfWork();
         // mainSession could be a ServerSession
         Session session = uow.getParent();
-        
+
         // Will need to bring the db back to its original state
         // so that comparison of the deletion result would be possible.
         ((AbstractSession)session).beginTransaction();
-        
+
         Vector objectsToDelete = uow.readAllObjects(referenceClass, selectionExpression);
-        
+
         ClassDescriptor descriptor = mainSession.getClassDescriptor(referenceClass);
-        
+
         uow.deleteAllObjects(objectsToDelete);
         mainSession.logMessage("***delete one by one");
         uow.commit();
-        
+
         Vector objectsLeftAfterOriginalDeletion = session.readAllObjects(rootClass);
 
         ((AbstractSession)session).rollbackTransaction();
 
         // now delete using DeleteAllQuery.
         clearCache(mainSession);
-        
+
         // bring all objects into cache
         session.readAllObjects(rootClass);
-        
+
         uow = mainSession.acquireUnitOfWork();
         // mainSession could be a ServerSession
         session = uow.getParent();
-        
+
         // Will need to bring the db back to its original state
         // so that the in case thre are children descriptors
         // they would still have objects to work with.
         ((AbstractSession)session).beginTransaction();
-        
+
         DeleteAllQuery query = new DeleteAllQuery(referenceClass, selectionExpression);
         query.setShouldDeferExecutionInUOW(shouldDeferExecutionInUOW);
         uow.executeQuery(query);
         mainSession.logMessage("***DeleteAllQuery for class " + referenceClass.getName());
         uow.commit();
-        
+
         // verify that cache invalidation worked correctly:
         // deleted objects should've disappeared, others remain
         String classErrorMsg = "";
@@ -135,7 +135,7 @@ public class DeleteAllQueryTestHelper {
                 break;
             }
         }
-        
+
         // now let's verify that the objects were correctly deleted from the db
         clearCache(mainSession);
         // deleted objects should've disappeared, others remain
@@ -156,7 +156,7 @@ public class DeleteAllQueryTestHelper {
         }
 
         ((AbstractSession)session).rollbackTransaction();
-        
+
         if(classErrorMsg.length() > 0) {
             String className = referenceClass.getName();
             String shortClassName = className.substring(className.lastIndexOf('.') + 1);
@@ -175,7 +175,7 @@ public class DeleteAllQueryTestHelper {
         }
         return errorMsg;
     }
-    
+
     protected static void clearCache(Session mainSession) {
         mainSession.getIdentityMapAccessor().initializeAllIdentityMaps();
     }

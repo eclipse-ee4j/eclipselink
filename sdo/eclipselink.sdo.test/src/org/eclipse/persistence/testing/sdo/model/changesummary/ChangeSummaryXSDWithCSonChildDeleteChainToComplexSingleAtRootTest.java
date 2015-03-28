@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import org.eclipse.persistence.sdo.SDOChangeSummary;
@@ -49,7 +49,7 @@ public class ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest e
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/CorporationWithCSonChildDeleteChainToComplexSingleAtRoot.xml");
     }
-    
+
     protected String getNoSchemaControlFileName(){
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/CorporationWithCSonChildDeleteChainToComplexSingleAtRoot.xml");
     }
@@ -66,12 +66,12 @@ public class ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest e
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.changesummary.ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest" };
         TestRunner.main(arguments);
     }
-        
+
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
         // replace global object with one from xml file (with cs pre-populated)
         rootObject = document.getRootObject();
-        DataObject po1DO = rootObject.getDataObject("sales/purchaseOrder[1]");    	
+        DataObject po1DO = rootObject.getDataObject("sales/purchaseOrder[1]");
         DataObject itemsDO = null;//po1DO.getDataObject("items");
         salesPO1CS = po1DO.getChangeSummary();
         salesPO2CS = rootObject.getDataObject("sales/purchaseOrder[2]").getChangeSummary();
@@ -85,7 +85,7 @@ public class ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest e
         DataObject item1ProductDO = null;//item1DO.getDataObject("product");
         DataObject item1ProductPrice1DO = null;//item1ProductDO.getDataObject("price[1]");
         DataObject item1ProductPrice2DO = null;//item1ProductDO.getDataObject("price[2]");
-        
+
 
         assertDeleteDetachUnsetComplexSingleAtRoot(true,//
                                                       true,//
@@ -105,10 +105,10 @@ public class ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest e
         // 3. get references to the original object tree - before operation is performed
         // 4. [perform operation]
         // 5. compare new modified model with original objects - in memory
-        DataObject po1DO = rootObject.getDataObject("sales/purchaseOrder[1]");    	
+        DataObject po1DO = rootObject.getDataObject("sales/purchaseOrder[1]");
         DataObject itemsDO = po1DO.getDataObject("items");
-        DataObject item1DO = itemsDO.getDataObject("item[1]");        
-        DataObject item2DO = itemsDO.getDataObject("item[2]");        
+        DataObject item1DO = itemsDO.getDataObject("item[1]");
+        DataObject item2DO = itemsDO.getDataObject("item[2]");
         DataObject item1ProductDO = item1DO.getDataObject("product");
         DataObject item1ProductPrice1DO = item1ProductDO.getDataObject("price[1]");
         DataObject item1ProductPrice2DO = item1ProductDO.getDataObject("price[2]");
@@ -119,15 +119,15 @@ public class ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest e
         stock1CS = rootObject.getDataObject("stock[1]").getChangeSummary();
         stock2CS = rootObject.getDataObject("stock[2]").getChangeSummary();
         stock3CS = rootObject.getDataObject("stock[3]").getChangeSummary();
-        
+
         // turn on cs
         salesPO1CS.beginLogging();
-        salesPO2CS.beginLogging();            
+        salesPO2CS.beginLogging();
         developmentPO1CS.beginLogging();
         //developmentPO2CS.beginLogging();
         stock1CS.beginLogging();
         stock2CS.beginLogging();
-        stock3CS.beginLogging();            
+        stock3CS.beginLogging();
         // start deleting at the bottom of the tree and move up
         item1ProductPrice2DO.delete();
         item1ProductDO.delete(); // ListWrapper.clear() will call copyElements() twice for this parent of many
@@ -136,8 +136,8 @@ public class ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest e
         boolean wasDeleted = true;
         //writeXML(rootObject, URINAME, TYPENAME, System.out);
         assertDeleteDetachUnsetComplexSingleAtRoot(false,//
-        											 wasDeleted,//
-        											  po1DO,//
+                                                     wasDeleted,//
+                                                      po1DO,//
                                                       itemsDO,//
                                                       item1DO,//
                                                       item2DO,//
@@ -145,7 +145,7 @@ public class ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest e
                                                       item1ProductPrice1DO,//
                                                       item1ProductPrice2DO);
     }
-/*    
+/*
     public void testDeleteChainBottomToRoot_ItemsItem2ProductPrice2_MultiOperation_DeleteComplexManyOfComplexSingleOfComplexManyOfComplexSingleInSequence() {
         // save original root for later comparison after undo
         DataObject originalRootDO = copyHelper.copy(rootObject);
@@ -169,7 +169,7 @@ public class ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest e
         // save a copy of current VS for object identity testing after undo
         ValueStore aCurrentValueStoreAfterLoggingFirstOn = ((SDODataObject)rootObject).getCurrentValueStore();
 
-        assertNotNull(itemsDO.getChangeSummary());        
+        assertNotNull(itemsDO.getChangeSummary());
 
         // start deleting at the bottom of the tree and move up
         item2ProductPrice2DO.delete();
@@ -180,9 +180,9 @@ public class ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest e
 
         // verify salesPO1CS is null on removed trees
         assertChangeSummaryStatusIfClearedIfCSIsAncestor(itemsDO, true);
-        
+
         // check valueStores
-        assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);        
+        assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
 
         assertNotNull(item1DO);
         assertNotNull(item2DO);
@@ -203,7 +203,7 @@ public class ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest e
 
         // set the items back  (in effect doing an undo)
         //rootObject.set("items", itemsDO);
-        
+
         assertUndoChangesEqualToOriginal(salesPO1CS, rootObject, originalRootDO);
 
         // verify that property is reset
@@ -214,7 +214,7 @@ public class ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest e
         assertTrue(equalityHelper.equal(itemsDOundone, itemsDO));
 
         assertValueStoresReturnedToStartStateAfterUndoChanges(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
-    	
+
     }
-*/     
+*/
 }

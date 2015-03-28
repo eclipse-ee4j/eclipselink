@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlRootElement
-     public class USPrice { 
+     public class USPrice {
 
          @XmlAttribute double price;
 
@@ -26,8 +26,8 @@ import javax.xml.bind.annotation.XmlAttribute;
          public void setPrice(double price) {
               this.price = price;
          }
-     	public boolean equals(Object object) {
-    		USPrice p = ((USPrice)object);
-    		return p.price == this.price;
-    	}
+         public boolean equals(Object object) {
+            USPrice p = ((USPrice)object);
+            return p.price == this.price;
+        }
      }

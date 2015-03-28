@@ -8,9 +8,9 @@
        "cityName":"Ottawa"
      },
    "responsibilities":{
-	   "responsibility":[{"xsi.type":"string","value":"Fix Bugs"},
-	                     {"xsi.type":"string","value":"Write JAXB2.0 Prototype"},
-			     {"xsi.type":"string","value":"Write Design Spec"}]
+       "responsibility":[{"xsi.type":"string","value":"Fix Bugs"},
+                         {"xsi.type":"string","value":"Write JAXB2.0 Prototype"},
+                 {"xsi.type":"string","value":"Write Design Spec"}]
       }
    }
 }

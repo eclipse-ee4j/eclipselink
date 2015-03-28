@@ -2,17 +2,17 @@
 <entity-mappings version="2.3"
     xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
- 
+
     <package>org.eclipse.persistence.jpars.test.model.dynamic.phonebook</package>
-  
+
     <named-query name="Person.all">
         <query>SELECT p FROM Person p</query>
     </named-query>
-    
+
     <named-query name="Person.likeName">
         <query>SELECT p FROM Person p WHERE p.lastName LIKE :lastName</query>
     </named-query>
- 
+
     <entity class="Person" access="VIRTUAL">
         <table name="JPARS_PHONEBOOK_PERSON" />
         <attributes>
@@ -25,5 +25,5 @@
             <basic name="phoneNumber" attribute-type="String" />
         </attributes>
     </entity>
-        
+
 </entity-mappings>

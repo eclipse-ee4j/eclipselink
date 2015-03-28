@@ -16,7 +16,7 @@
                 <default-sequence xsi:type="table-sequence">
                     <name>Default</name>
                 </default-sequence>
-            </sequencing> 
+            </sequencing>
             <datasource lookup="string">%%session-data-source-name%%</datasource>
         </login>
     </session>

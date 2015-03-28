@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Denise Smith - May 2013
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlanyelement;
 
 import java.io.InputStream;
@@ -33,7 +33,7 @@ public class XmlAnyJAXBElementTestCases extends JAXBWithJSONTestCases{
     private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employeeLaxMixedWrite.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/anyJAXBElement.json";
     private final static String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employeeLaxMixedWrite.json";
- 
+
     public XmlAnyJAXBElementTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
@@ -42,7 +42,7 @@ public class XmlAnyJAXBElementTestCases extends JAXBWithJSONTestCases{
         classes[0] = Root.class;
         classes[1] = Thing.class;
         classes[2] = Address.class;
-        setClasses(classes);      
+        setClasses(classes);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, true);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
@@ -54,45 +54,45 @@ public class XmlAnyJAXBElementTestCases extends JAXBWithJSONTestCases{
         r.things = new ArrayList<JAXBElement>();
         Thing thing1 = new Thing();
         thing1.name = "thing1name";
-        
+
         Thing thing2 = new Thing();
         thing2.name = "thing2name";
-        
+
         Thing thing3 = new Thing();
         thing3.name = "thing3name";
-        
+
         JAXBElement jb1 = new JAXBElement<Thing>(new QName("something"), Thing.class, thing1);
         JAXBElement jb2 = new JAXBElement<Thing>(new QName("address"), Thing.class, thing2);
         JAXBElement jb3 = new JAXBElement<Thing>(new QName("thing"), Thing.class, thing3);
-        
+
         r.things.add(jb1);
         r.things.add(jb2);
         r.things.add(jb3);
         return r;
     }
 
-    
+
     @Override
     public Object getReadControlObject() {
         Root r = new Root();
         r.things = new ArrayList();
-      
+
         Thing thing3 = new Thing();
         thing3.name = "thing3name";
-                       
+
         Document doc = parser.newDocument();
         Element rootElem = doc.createElementNS("", "something");
         Element child = doc.createElementNS("","name");
         child.setTextContent("thing1name");
         rootElem.appendChild(child);
         doc.appendChild(rootElem);
-        
+
         r.things.add(rootElem);
         r.things.add(new Address());
         r.things.add(thing3);
         return r;
-    }   
-    
-    public void testRoundTrip(){    	
+    }
+
+    public void testRoundTrip(){
     }
 }

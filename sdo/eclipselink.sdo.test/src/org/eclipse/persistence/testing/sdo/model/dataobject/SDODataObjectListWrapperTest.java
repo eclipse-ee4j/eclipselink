@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 /*
    DESCRIPTION
     JUnit testing of the SDO ListWrapper class
@@ -140,10 +140,10 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // BASE test case scenarios
     // boolean add(Object item)
     public void testListWrapperAdd() {
-        // Setup step:        
+        // Setup step:
         //log("SDODataObjectListWrapperTest.testListWrapperAdd()");
         // create item from existing
-        SDODataObject anItem = (SDODataObject)copyHelper.copy(((SDODataObject)aRoot.get("items/item[2]")));///levels2/level2[2]");    	
+        SDODataObject anItem = (SDODataObject)copyHelper.copy(((SDODataObject)aRoot.get("items/item[2]")));///levels2/level2[2]");
 
         // modify object
         anItem.set(anItem.getInstanceProperty("partNum"), "926-AB");
@@ -166,7 +166,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // Setup step:
         //log("SDODataObjectListWrapperTest.testListWrapperAddWithNullProperty()");
         // create item from existing
-        SDODataObject anItem = (SDODataObject)copyHelper.copy(((SDODataObject)aRoot.get("items/item[2]")));///levels2/level2[2]");    	
+        SDODataObject anItem = (SDODataObject)copyHelper.copy(((SDODataObject)aRoot.get("items/item[2]")));///levels2/level2[2]");
 
         // modify object
         anItem.set(anItem.getInstanceProperty("partNum"), "926-AB");
@@ -189,7 +189,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // Setup step:
         //log("SDODataObjectListWrapperTest.testListWrapperAddWithNoContainment()");
         // create item from existing
-        SDODataObject anItem = (SDODataObject)copyHelper.copy(((SDODataObject)aRoot.get("items/item[2]")));///levels2/level2[2]");    	
+        SDODataObject anItem = (SDODataObject)copyHelper.copy(((SDODataObject)aRoot.get("items/item[2]")));///levels2/level2[2]");
 
         // modify object
         anItem.set(anItem.getInstanceProperty("partNum"), "926-AB");
@@ -300,7 +300,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         aNewList.add(anItem2);
         aNewList.add(anItem3);
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step:
@@ -321,7 +321,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // create a List of new items
         List aNewList = new ArrayList();
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step:
@@ -357,7 +357,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         aNewList.add(anItem2);
         aNewList.add(anItem3);
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step: (add at the start of the current list)
@@ -397,7 +397,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         aNewList.add(anItem2);
         aNewList.add(anItem3);
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step: (add in the middle of the current list)
@@ -438,7 +438,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         aNewList.add(anItem2);
         aNewList.add(anItem3);
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step: (add at the end of the current list)
@@ -479,7 +479,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         aNewList.add(anItem2);
         aNewList.add(anItem3);
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step:
@@ -498,7 +498,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // create a List of new items
         List aNewList = new ArrayList();
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step:
@@ -517,7 +517,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // create a List of new items
         List aNewList = new ArrayList();
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step:
@@ -544,7 +544,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // boolean equals(Object aList)
     public void testListWrapperEquals() {
         //log("SDODataObjectListWrapperTest.testListWrapperAddAllIndex()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // get an item and its type
@@ -592,7 +592,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         SDODataObject anItem = (SDODataObject)aRoot5.get("items/item[1]");
 
         //String anID = anItem.getProperty("partNum").toString();//,"926-ZC"
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // Test step: (remove at start)
@@ -607,7 +607,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         SDODataObject anItem = (SDODataObject)aRoot5.get("items/item[5]");
 
         //String anID = anItem.getProperty("partNum").toString();//,"926-ZC"
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // Test step: (remove at start)
@@ -619,7 +619,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // Object get(int position)
     public void testListWrapperGetIndexOutOfBoundsFailure() {
         //log("SDODataObjectListWrapperTest.testListWrapperGetIndexOutOfBoundsFailure()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // Test step:
@@ -636,7 +636,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // Object get(int position)
     public void testListWrapperGetFromEmptyList() {
         //log("SDODataObjectListWrapperTest.testListWrapperGetFromEmptyList()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)anEmptyListRoot.getList("items/item");
 
         // Test step:
@@ -649,7 +649,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
             assertNull(anObject);
         }
     }
-   
+
     // Iterator iterator()
     // TODO: 20060906 bidirectional
     public void testListWrapperIterator() {
@@ -680,7 +680,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         try {
             SDODataObject anItem = (SDODataObject)aRoot.get("items/item[4]");
         } catch (IndexOutOfBoundsException e) {
-        	// get() should not throw exception (SDO 2.1 Spec)
+            // get() should not throw exception (SDO 2.1 Spec)
             fail("An IndexOutOfBoundsException occured but was expected.");
         }
 
@@ -734,7 +734,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // get original object before removal
         SDODataObject anItem = (SDODataObject)aRoot.get("items/item[1]");
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step: (remove at start)
@@ -752,7 +752,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // get original object before removal
         SDODataObject anItem = (SDODataObject)aRoot.get("items/item[2]");
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step: (remove at start)
@@ -767,7 +767,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     public void testListWrapperRemoveIndexPastEnd() {
         //log("SDODataObjectListWrapperTest.testListWrapperRemoveIndexPastEnd()");
         // Setup step:
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step: (remove at start)
@@ -782,7 +782,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         //log("SDODataObjectListWrapperTest.testListWrapperRemoveIndexFromEmptyList()");
         // Setup step:
         // remove all list items
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
         aList.remove(0);
         aList.remove(0);
@@ -821,7 +821,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         ArrayList anArrayList = new ArrayList();
         anArrayList.add(anItemDO1);
         anArrayList.add(anItemDO2);
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // keep an item that should be removed and check for it later
@@ -853,7 +853,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         ArrayList anArrayList = new ArrayList();
         anArrayList.add(anItemDO1);
         anArrayList.add(anItemDO2);
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // keep an item that should be removed and check for it later
@@ -886,7 +886,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         ArrayList anArrayList = new ArrayList();
         anArrayList.add(anItemDO1);
         anArrayList.add(anItemDO2);
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)anEmptyListRoot.getList("items/item");
         ;
 
@@ -908,7 +908,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // Setup a list of items to keep
         ArrayList anArrayList = new ArrayList();
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)anEmptyListRoot.getList("items/item");
 
         // Test: remove all the objects in the list from the ListWrapper
@@ -923,7 +923,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     public void testListWrapperRetainAllUsingNull() {
         //log("SDODataObjectListWrapperTest.testListWrapperRetainAllUsingNull()");
         // Setup step:
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)anEmptyListRoot.getList("items/item");
 
         // Test: remove all the objects in the list from the ListWrapper
@@ -947,7 +947,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // modify object
         anItem.set(anItem.getInstanceProperty("partNum"), "926-ZA");
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step: (replace at the start of the current list)
@@ -969,7 +969,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // modify object
         anItem.set(anItem.getInstanceProperty("partNum"), "926-ZA");
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step: (replace at the start of the current list)
@@ -991,7 +991,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // modify object
         anItem.set(anItem.getInstanceProperty("partNum"), "926-ZA");
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step: (replace at the start of the current list)
@@ -1017,7 +1017,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // modify object
         anItem.set(anItem.getInstanceProperty("partNum"), "926-ZA");
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step: (replace at end of the current list)
@@ -1043,19 +1043,19 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         // modify object
         anItem.set(anItem.getInstanceProperty("partNum"), "926-ZA");
 
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step: (reset past the end of the current list)
         int originalSize = aList.size();
 
         try {
-        	SDODataObject aPreviousObject = (SDODataObject)aList.set(originalSize + 2, anItem);
+            SDODataObject aPreviousObject = (SDODataObject)aList.set(originalSize + 2, anItem);
         } catch (IndexOutOfBoundsException ioobe) {
-        	// Expected, continue
+            // Expected, continue
         } catch (Exception e) {
-        	// Unexpected, fail
-        	fail("An unexpected exception occurred.");
+            // Unexpected, fail
+            fail("An unexpected exception occurred.");
         }
 
         // size is unchanged
@@ -1065,7 +1065,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // int size()
     public void testListWrapperSize5() {
         //log("SDODataObjectListWrapperTest.testListWrapperSize5()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
         assertTrue(aList.size() == 5);
     }
@@ -1073,7 +1073,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // int size()
     public void testListWrapperSize0() {
         //log("SDODataObjectListWrapperTest.testListWrapperSize0()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)anEmptyListRoot.getList("items/item");
         assertTrue(aList.size() == 0);
     }
@@ -1086,7 +1086,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // Object subList(start, end)
     public void testListWrapperSubListIndexOutOfBoundsAfterFailure() {
         //log("SDODataObjectListWrapperTest.testListWrapperSubListIndexOutOfBoundsAfterFailure()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // Test step:
@@ -1103,7 +1103,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // Object subList(start, end)
     public void testListWrapperSubListIndexOutOfBoundsBeforeFailure() {
         //log("SDODataObjectListWrapperTest.testListWrapperSubListIndexOutOfBoundsBeforeFailure()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // Test step:
@@ -1120,7 +1120,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // Object subList(start, end)
     public void testListWrapperSubListReversedIndexes() {
         //log("SDODataObjectListWrapperTest.testListWrapperSubListReversedIndexes()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // Test step:
@@ -1137,7 +1137,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // Object subList(start, end)
     public void testListWrapperSubListInternal() {
         //log("SDODataObjectListWrapperTest.testListWrapperSubListInternal()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // Test step:
@@ -1152,7 +1152,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // Object[] toArray()
     public void testListWrapperToArray() {
         //log("SDODataObjectListWrapperTest.testListWrapperToArray()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // get an item and its type
@@ -1172,7 +1172,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // Object[] toArray(Object[] items)
     public void testListWrapperToArrayObjectSizeTooSmall() {
         //log("SDODataObjectListWrapperTest.testListWrapperToArrayObjectSizeTooSmall()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // get an item and its type
@@ -1194,7 +1194,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // Object[] toArray(Object[] items)
     public void testListWrapperToArrayObjectSameSize() {
         //log("SDODataObjectListWrapperTest.testListWrapperToArrayObjectSameSize()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // get an item and its type
@@ -1216,7 +1216,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // Object[] toArray(Object[] items)
     public void testListWrapperToArrayObjectLargerSize() {
         //log("SDODataObjectListWrapperTest.testListWrapperToArrayObjectLargerSize()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // get an item and its type
@@ -1237,7 +1237,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
     // Object[] toArray(Object[] items)
     public void testListWrapperToArrayObjectNullFailure() {
         //log("SDODataObjectListWrapperTest.testListWrapperToArrayObjectNullFailure()");
-        // get containment node    	
+        // get containment node
         ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
 
         // get items
@@ -1248,12 +1248,12 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
             assertNull(anArray);
         }
     }
-    
+
     public void testGetListNullProperty()
     {
       Property p = null;
       try{
-        ListWrapper aList = (ListWrapper)aRoot.getList(p);      
+        ListWrapper aList = (ListWrapper)aRoot.getList(p);
       }catch(SDOException e)
       {
         assertEquals(SDOException.CANNOT_PERFORM_OPERATION_ON_NULL_ARGUMENT, e.getErrorCode());
@@ -1261,11 +1261,11 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
       }
       fail("A CANNOT_PERFORM_OPERATION_ON_NULL_ARGUMENT exception should have occurred");
     }
-    
+
     public void testMoveItemBetweenLists(){
      ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
      DataObject newItemsDO = dataFactory.create("http://www.example.org", "Items");
-     
+
      newItemsDO.set("item", aList);
     }
 

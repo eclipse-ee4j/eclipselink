@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://www.example.org" 
-            xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+<xsd:schema targetNamespace="http://www.example.org"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:lpt="http://www.example.org">
     <xsd:element name="ListPropertyTest" type="lpt:ListPropertyTestType"/>
     <xsd:complexType name="ListPropertyTestType">

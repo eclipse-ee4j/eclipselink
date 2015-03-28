@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
  * INTERNAL
- * A abstraction of descriptor capturing behavior common to all persistence 
+ * A abstraction of descriptor capturing behavior common to all persistence
  * types.
  */
 public abstract class CoreDescriptor<
@@ -42,12 +42,12 @@ public abstract class CoreDescriptor<
     protected INSTANTIATION_POLICY instantiationPolicy;
     protected INHERITANCE_POLICY inheritancePolicy;
     protected OBJECT_BUILDER objectBuilder;
-    
+
     protected Map<String, ATTRIBUTE_GROUP> attributeGroups;
 
-    
+
     /**
-     * Adds the attribute group to this descriptor. 
+     * Adds the attribute group to this descriptor.
      * @param group
      */
     public void addAttributeGroup(ATTRIBUTE_GROUP group) {
@@ -56,7 +56,7 @@ public abstract class CoreDescriptor<
         }
         this.attributeGroups.put(group.getName(), group);
     }
-    
+
 
     /**
      * PUBLIC:
@@ -72,15 +72,15 @@ public abstract class CoreDescriptor<
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_argument_get_attributegroup"));
         }
     }
-    
+
     /**
      * ADVANCED:
      * Returns the attribute groups for this Descriptor.
      */
     public Map<String, ATTRIBUTE_GROUP> getAttributeGroups(){
         return this.attributeGroups;
-    }    
-       
+    }
+
     /**
      * PUBLIC:
      * Get the event manager for the descriptor.  The event manager is responsible
@@ -136,14 +136,14 @@ public abstract class CoreDescriptor<
     /**
      * INTERNAL:
      * returns true if a DescriptorEventManager has been set.
-     */ 
+     */
     public abstract boolean hasEventManager();
 
     /**
      * INTERNAL:
      * Return if this descriptor is involved in inheritance, (is child or parent).
      * Note: If this class is part of table per class inheritance strategy this
-     * method will return false. 
+     * method will return false.
      * @see org.eclipse.persistence.descriptors.ClassDescriptor#hasTablePerClassPolicy
      */
     public abstract boolean hasInheritance();
@@ -194,5 +194,5 @@ public abstract class CoreDescriptor<
      *
      * @see org.eclipse.persistence.descriptors.ClassDescriptor#addPrimaryKeyFieldName(String)
      */
-    public abstract void setPrimaryKeyFields(List<FIELD> primaryKeyFields); 
+    public abstract void setPrimaryKeyFields(List<FIELD> primaryKeyFields);
 }

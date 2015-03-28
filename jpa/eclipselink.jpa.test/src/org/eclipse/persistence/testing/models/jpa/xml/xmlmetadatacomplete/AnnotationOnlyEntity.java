@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corporation and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2014, 2015  IBM Corporation and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -20,7 +20,7 @@ import javax.persistence.Table;
 
 /**
  * Entity defined only by annotation.  Should be completely ignored in xml-mapping-metadata-complete PU's.
- * 
+ *
  * @author jgrassel
  *
  */
@@ -29,11 +29,11 @@ import javax.persistence.Table;
 public class AnnotationOnlyEntity {
     @Id
     private int id;
-    
+
     private String strData;
-    
+
     public AnnotationOnlyEntity() {
-        
+
     }
 
     public int getId() {

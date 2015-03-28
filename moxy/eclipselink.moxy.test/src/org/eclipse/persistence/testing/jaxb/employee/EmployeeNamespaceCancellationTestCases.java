@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -24,28 +24,28 @@ import org.xml.sax.InputSource;
 
 public class EmployeeNamespaceCancellationTestCases extends JAXBTestCases {
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee_namespacecancellation.xml";
-	private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee_namespacecancellation_write.xml";
-	private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
-	private final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
-	private final static String CONTROL_RESPONSIBILITY3 = "Write Design Spec";
-	private final static String CONTROL_FIRST_NAME = "Bob";
-	private final static String CONTROL_LAST_NAME = "Smith";
-	private final static int CONTROL_ID = 10;
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee_namespacecancellation.xml";
+    private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee_namespacecancellation_write.xml";
+    private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
+    private final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
+    private final static String CONTROL_RESPONSIBILITY3 = "Write Design Spec";
+    private final static String CONTROL_FIRST_NAME = "Bob";
+    private final static String CONTROL_LAST_NAME = "Smith";
+    private final static int CONTROL_ID = 10;
 
     public EmployeeNamespaceCancellationTestCases(String name) throws Exception {
         super(name);
-        
-        setControlDocument(XML_RESOURCE);  
-        setWriteControlDocument(XML_WRITE_RESOURCE);       
-        
+
+        setControlDocument(XML_RESOURCE);
+        setWriteControlDocument(XML_WRITE_RESOURCE);
+
         Class[] classes = new Class[1];
         classes[0] = Employee.class;
         setClasses(classes);
     }
-    
+
     public void testRoundTrip(){
-    	
+
     }
 
     protected Object getControlObject() {
@@ -55,20 +55,20 @@ public class EmployeeNamespaceCancellationTestCases extends JAXBTestCases {
         responsibilities.add(CONTROL_RESPONSIBILITY3);
 
         Employee employee = new Employee();
-		employee.firstName = CONTROL_FIRST_NAME;
-		employee.lastName = CONTROL_LAST_NAME;
-		Calendar cal = Calendar.getInstance();
-		cal.clear();
-		cal.set(2005,04,24,16,06,53);
-      
-		employee.birthday = cal;
-				
-		employee.id = CONTROL_ID;
-		
-		employee.responsibilities = responsibilities;
-		
-		employee.setBlah("Some String");
-              
+        employee.firstName = CONTROL_FIRST_NAME;
+        employee.lastName = CONTROL_LAST_NAME;
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(2005,04,24,16,06,53);
+
+        employee.birthday = cal;
+
+        employee.id = CONTROL_ID;
+
+        employee.responsibilities = responsibilities;
+
+        employee.setBlah("Some String");
+
         return employee;
     }
 

@@ -20,13 +20,13 @@ import org.eclipse.persistence.sessions.Project;
 
 /**
  * EclipseLink mapping project for PLSQL data structures.
- * 
+ *
  * @author James
  */
 public class PLSQLProject extends Project {
     public PLSQLProject() {
         setName("PLSQLProject");
-        
+
         buildAddressDescriptor();
         buildPhoneDescriptor();
         buildEmployeeDescriptor();
@@ -72,7 +72,7 @@ public class PLSQLProject extends Project {
         record.setJavaType(Phone.class);
         return record;
     }
-    
+
     protected DatabaseQuery buildSimpleInQuery() {
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_SIMPLE_IN");
@@ -102,10 +102,10 @@ public class PLSQLProject extends Project {
         query.addArgument("P_SIGNTYPE", BigDecimal.class);
         query.addArgument("P_NUMBER", BigDecimal.class);
         query.setCall(call);
-        
+
         return query;
     }
-    
+
     protected DatabaseQuery buildSimpleInDefaults2Query() {
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_SIMPLE_IN_DEFAULTS");
@@ -121,7 +121,7 @@ public class PLSQLProject extends Project {
         call.addNamedArgument("P_POSITIVEN", OraclePLSQLTypes.PositiveN);
         call.addNamedArgument("P_SIGNTYPE", OraclePLSQLTypes.SignType);
         call.addNamedArgument("P_NUMBER", JDBCTypes.NUMERIC_TYPE, 10, 2);
-        
+
         call.addOptionalArgument("P_VARCHAR");
         call.addOptionalArgument("P_BOOLEAN");
         call.addOptionalArgument("P_BINARY_INTEGER");
@@ -134,7 +134,7 @@ public class PLSQLProject extends Project {
         call.addOptionalArgument("P_POSITIVEN");
         call.addOptionalArgument("P_SIGNTYPE");
         call.addOptionalArgument("P_NUMBER");
-        
+
         DataModifyQuery query = new DataModifyQuery();
         query.addArgument("P_VARCHAR", String.class, true);
         query.addArgument("P_BOOLEAN", Integer.class, true);
@@ -149,10 +149,10 @@ public class PLSQLProject extends Project {
         query.addArgument("P_SIGNTYPE", BigDecimal.class, true);
         query.addArgument("P_NUMBER", BigDecimal.class, true);
         query.setCall(call);
-        
+
         return query;
     }
-    
+
     protected DatabaseQuery buildSimpleInFuncQuery() {
         PLSQLStoredFunctionCall call = new PLSQLStoredFunctionCall(OraclePLSQLTypes.PLSQLBoolean);
         call.setProcedureName("PLSQL_SIMPLE_IN_Func");
@@ -182,10 +182,10 @@ public class PLSQLProject extends Project {
         query.addArgument("P_SIGNTYPE", BigDecimal.class);
         query.addArgument("P_NUMBER", BigDecimal.class);
         query.setCall(call);
-        
+
         return query;
     }
-    
+
     protected DatabaseQuery buildSimpleInDefaultsQuery() {
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_SIMPLE_IN");
@@ -213,10 +213,10 @@ public class PLSQLProject extends Project {
         query.addArgument("P_SIGNTYPE", BigDecimal.class);
         query.addArgument("P_NUMBER", BigDecimal.class);
         query.setCall(call);
-        
+
         return query;
     }
-    
+
     protected DatabaseQuery buildSimpleInOutQuery() {
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_SIMPLE_INOUT");
@@ -246,10 +246,10 @@ public class PLSQLProject extends Project {
         query.addArgument("P_SIGNTYPE", BigDecimal.class);
         query.addArgument("P_NUMBER", BigDecimal.class);
         query.setCall(call);
-        
+
         return query;
     }
-    
+
     protected DatabaseQuery buildSimpleOutQuery() {
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_SIMPLE_OUT");
@@ -268,10 +268,10 @@ public class PLSQLProject extends Project {
         call.addNamedOutputArgument("P_NUMBER", JDBCTypes.NUMERIC_TYPE, 10, 2);
         DataModifyQuery query = new DataModifyQuery();
         query.setCall(call);
-        
+
         return query;
     }
-    
+
     protected DatabaseQuery buildAddressInOutObjectQuery() {
         PLSQLrecord record = buildAddressRowTypeRecord();
 
@@ -282,9 +282,9 @@ public class PLSQLProject extends Project {
         query.addArgument("P_ADDRESS", Address.class);
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-    
+
     protected DatabaseQuery buildAddressInOutDataQuery() {
         PLSQLrecord record = buildAddressRowTypeDataRecord();
 
@@ -301,9 +301,9 @@ public class PLSQLProject extends Project {
         query.addArgument("P_LOCAL", String.class);
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-    
+
     protected DatabaseQuery buildAddressInObjectQuery() {
         PLSQLrecord record = buildAddressRowTypeRecord();
 
@@ -314,9 +314,9 @@ public class PLSQLProject extends Project {
         query.addArgument("P_ADDRESS", Address.class);
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-    
+
     protected DatabaseQuery buildAddressInDataQuery() {
         PLSQLrecord record = buildAddressRowTypeDataRecord();
 
@@ -333,9 +333,9 @@ public class PLSQLProject extends Project {
         query.addArgument("P_LOCAL", String.class);
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-    
+
     protected DatabaseQuery buildAddressOutObjectQuery() {
         PLSQLrecord record = buildAddressRowTypeRecord();
 
@@ -345,9 +345,9 @@ public class PLSQLProject extends Project {
         DataReadQuery query = new DataReadQuery();
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-    
+
     protected DatabaseQuery buildAddressOutObjectFuncQuery() {
         PLSQLrecord record = buildAddressRowTypeRecord();
 
@@ -356,9 +356,9 @@ public class PLSQLProject extends Project {
         DataReadQuery query = new DataReadQuery();
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-    
+
     protected DatabaseQuery buildBadAddressOutObjectQuery() {
         PLSQLrecord record = buildAddressRowTypeRecord();
         record.setTypeName(null);
@@ -371,7 +371,7 @@ public class PLSQLProject extends Project {
 
         return query;
     }
-    
+
     protected DatabaseQuery buildAddressOutDataQuery() {
         PLSQLrecord record = buildAddressRowTypeDataRecord();
 
@@ -383,15 +383,15 @@ public class PLSQLProject extends Project {
         query.dontMaintainCache();
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-    
+
     protected DatabaseQuery buildCityListInQuery() {
-    	PLSQLCollection collection = new PLSQLCollection();
-    	collection.setTypeName("PLSQL_P.PLSQL_CITY_LIST");
-    	collection.setCompatibleType("PLSQL_P_PLSQL_CITY_LIST");
-    	collection.setNestedType(JDBCTypes.VARCHAR_TYPE);
-    	
+        PLSQLCollection collection = new PLSQLCollection();
+        collection.setTypeName("PLSQL_P.PLSQL_CITY_LIST");
+        collection.setCompatibleType("PLSQL_P_PLSQL_CITY_LIST");
+        collection.setNestedType(JDBCTypes.VARCHAR_TYPE);
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_CITY_LIST_IN");
         call.addNamedArgument("P_CITY_LIST", collection);
@@ -401,15 +401,15 @@ public class PLSQLProject extends Project {
         query.addArgument("P_CITY", String.class);
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-    
+
     protected DatabaseQuery buildCityListOutQuery() {
-    	PLSQLCollection collection = new PLSQLCollection();
-    	collection.setTypeName("PLSQL_P.PLSQL_CITY_LIST");
-    	collection.setCompatibleType("PLSQL_P_PLSQL_CITY_LIST");
-    	collection.setNestedType(JDBCTypes.VARCHAR_TYPE);
-    	
+        PLSQLCollection collection = new PLSQLCollection();
+        collection.setTypeName("PLSQL_P.PLSQL_CITY_LIST");
+        collection.setCompatibleType("PLSQL_P_PLSQL_CITY_LIST");
+        collection.setNestedType(JDBCTypes.VARCHAR_TYPE);
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_CITY_LIST_OUT");
         call.addNamedOutputArgument("P_CITY_LIST", collection);
@@ -417,15 +417,15 @@ public class PLSQLProject extends Project {
         DataReadQuery query = new DataReadQuery();
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-    
+
     protected DatabaseQuery buildCityListInOutQuery() {
-    	PLSQLCollection collection = new PLSQLCollection();
-    	collection.setTypeName("PLSQL_P.PLSQL_CITY_LIST");
-    	collection.setCompatibleType("PLSQL_P_PLSQL_CITY_LIST");
-    	collection.setNestedType(JDBCTypes.VARCHAR_TYPE);
-    	
+        PLSQLCollection collection = new PLSQLCollection();
+        collection.setTypeName("PLSQL_P.PLSQL_CITY_LIST");
+        collection.setCompatibleType("PLSQL_P_PLSQL_CITY_LIST");
+        collection.setNestedType(JDBCTypes.VARCHAR_TYPE);
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_CITY_LIST_INOUT");
         call.addNamedInOutputArgument("P_CITY_LIST", collection);
@@ -435,17 +435,17 @@ public class PLSQLProject extends Project {
         query.addArgument("P_CITY", String.class);
         query.setCall(call);
 
-        return query;        
+        return query;
     }
 
     protected DatabaseQuery buildAddressListInQuery() {
         PLSQLrecord record = buildAddressRecord();
-        
-    	PLSQLCollection collection = new PLSQLCollection();
-    	collection.setTypeName("PLSQL_P.PLSQL_ADDRESS_LIST");
-    	collection.setCompatibleType("PLSQL_P_PLSQL_ADDRESS_LIST");
-    	collection.setNestedType(record);
-    	
+
+        PLSQLCollection collection = new PLSQLCollection();
+        collection.setTypeName("PLSQL_P.PLSQL_ADDRESS_LIST");
+        collection.setCompatibleType("PLSQL_P_PLSQL_ADDRESS_LIST");
+        collection.setNestedType(record);
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_ADDRESS_LIST_IN");
         call.addNamedArgument("P_ADDRESS_LIST", collection);
@@ -455,16 +455,16 @@ public class PLSQLProject extends Project {
         query.addArgument("P_CITY", String.class);
         query.setCall(call);
 
-        return query;        
+        return query;
     }
 
     protected DatabaseQuery buildMissingTypeAddressListOutQuery() {
         PLSQLrecord record = buildAddressRecord();
-        
-    	PLSQLCollection collection = new PLSQLCollection();
-    	collection.setTypeName("PLSQL_P.PLSQL_ADDRESS_LIST");
-    	collection.setNestedType(record);
-    	
+
+        PLSQLCollection collection = new PLSQLCollection();
+        collection.setTypeName("PLSQL_P.PLSQL_ADDRESS_LIST");
+        collection.setNestedType(record);
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_ADDRESS_LIST_OUT");
         call.addNamedOutputArgument("P_ADDRESS_LIST", collection);
@@ -474,15 +474,15 @@ public class PLSQLProject extends Project {
 
         return query;
     }
-    
+
     protected DatabaseQuery buildAddressListOutQuery() {
         PLSQLrecord record = buildAddressRecord();
-        
-    	PLSQLCollection collection = new PLSQLCollection();
-    	collection.setTypeName("PLSQL_P.PLSQL_ADDRESS_LIST");
-    	collection.setCompatibleType("PLSQL_P_PLSQL_ADDRESS_LIST");
-    	collection.setNestedType(record);
-    	
+
+        PLSQLCollection collection = new PLSQLCollection();
+        collection.setTypeName("PLSQL_P.PLSQL_ADDRESS_LIST");
+        collection.setCompatibleType("PLSQL_P_PLSQL_ADDRESS_LIST");
+        collection.setNestedType(record);
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_ADDRESS_LIST_OUT");
         call.addNamedOutputArgument("P_ADDRESS_LIST", collection);
@@ -492,9 +492,9 @@ public class PLSQLProject extends Project {
 
         return query;
     }
-    
+
     protected DatabaseQuery buildAddressOutCursorQuery() {
-        
+
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_ADDRESS_CUR_OUT");
         call.useNamedCursorOutputAsResultSet("P_ADDRESS");
@@ -503,9 +503,9 @@ public class PLSQLProject extends Project {
 
         return query;
     }
-    
+
     protected DatabaseQuery buildAddressRecOutCursorQuery() {
-        
+
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_ADDRESS_REC_CUR_OUT");
         call.useNamedCursorOutputAsResultSet("P_ADDRESS");
@@ -517,12 +517,12 @@ public class PLSQLProject extends Project {
 
     protected DatabaseQuery buildAddressListInOutQuery() {
         PLSQLrecord record = buildAddressRecord();
-        
-    	PLSQLCollection collection = new PLSQLCollection();
-    	collection.setTypeName("PLSQL_P.PLSQL_ADDRESS_LIST");
-    	collection.setCompatibleType("PLSQL_P_PLSQL_ADDRESS_LIST");
-    	collection.setNestedType(record);
-    	
+
+        PLSQLCollection collection = new PLSQLCollection();
+        collection.setTypeName("PLSQL_P.PLSQL_ADDRESS_LIST");
+        collection.setCompatibleType("PLSQL_P_PLSQL_ADDRESS_LIST");
+        collection.setNestedType(record);
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_ADDRESS_LIST_INOUT");
         call.addNamedInOutputArgument("P_ADDRESS_LIST", collection);
@@ -532,10 +532,10 @@ public class PLSQLProject extends Project {
         query.addArgument("P_CITY", String.class);
         query.setCall(call);
 
-        return query;        
+        return query;
     }
 
-    protected PLSQLrecord buildEmployeeRecord() {        
+    protected PLSQLrecord buildEmployeeRecord() {
         PLSQLrecord record = new PLSQLrecord();
         record.setTypeName("PLSQL_P.PLSQL_EMP_REC");
         record.setCompatibleType("PLSQL_P_PLSQL_EMP_REC");
@@ -545,24 +545,24 @@ public class PLSQLProject extends Project {
         record.addField("ADDRESS", buildAddressRecord());
         record.setJavaType(Employee.class);
 
-    	PLSQLCollection collection = new PLSQLCollection();
-    	collection.setTypeName("PLSQL_P.PLSQL_PHONE_LIST");
-    	collection.setCompatibleType("PLSQL_P_PLSQL_PHONE_LIST");
-    	collection.setNestedType(buildPhoneRecord());
-    	
+        PLSQLCollection collection = new PLSQLCollection();
+        collection.setTypeName("PLSQL_P.PLSQL_PHONE_LIST");
+        collection.setCompatibleType("PLSQL_P_PLSQL_PHONE_LIST");
+        collection.setNestedType(buildPhoneRecord());
+
         record.addField("PHONES", collection);
-        
+
         return record;
     }
-        
+
     protected DatabaseQuery buildEmployeeListInQuery() {
         PLSQLrecord record = buildEmployeeRecord();
-        
-    	PLSQLCollection collection = new PLSQLCollection();
-    	collection.setTypeName("PLSQL_P.PLSQL_EMP_LIST");
-    	collection.setCompatibleType("PLSQL_P_PLSQL_EMP_LIST");
-    	collection.setNestedType(record);
-    	
+
+        PLSQLCollection collection = new PLSQLCollection();
+        collection.setTypeName("PLSQL_P.PLSQL_EMP_LIST");
+        collection.setCompatibleType("PLSQL_P_PLSQL_EMP_LIST");
+        collection.setNestedType(record);
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_EMP_LIST_IN");
         call.addNamedArgument("P_EMP_LIST", collection);
@@ -572,17 +572,17 @@ public class PLSQLProject extends Project {
         query.addArgument("P_CITY", String.class);
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-        
+
     protected DatabaseQuery buildEmployeeListOutQuery() {
         PLSQLrecord record = buildEmployeeRecord();
-        
-    	PLSQLCollection collection = new PLSQLCollection();
-    	collection.setTypeName("PLSQL_P.PLSQL_EMP_LIST");
-    	collection.setCompatibleType("PLSQL_P_PLSQL_EMP_LIST");
-    	collection.setNestedType(record);
-    	
+
+        PLSQLCollection collection = new PLSQLCollection();
+        collection.setTypeName("PLSQL_P.PLSQL_EMP_LIST");
+        collection.setCompatibleType("PLSQL_P_PLSQL_EMP_LIST");
+        collection.setNestedType(record);
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_EMP_LIST_OUT");
         call.addNamedOutputArgument("P_EMP_LIST", collection);
@@ -590,17 +590,17 @@ public class PLSQLProject extends Project {
         DataReadQuery query = new DataReadQuery();
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-        
+
     protected DatabaseQuery buildEmployeeListInOutQuery() {
         PLSQLrecord record = buildEmployeeRecord();
-        
-    	PLSQLCollection collection = new PLSQLCollection();
-    	collection.setTypeName("PLSQL_P.PLSQL_EMP_LIST");
-    	collection.setCompatibleType("PLSQL_P_PLSQL_EMP_LIST");
-    	collection.setNestedType(record);
-    	
+
+        PLSQLCollection collection = new PLSQLCollection();
+        collection.setTypeName("PLSQL_P.PLSQL_EMP_LIST");
+        collection.setCompatibleType("PLSQL_P_PLSQL_EMP_LIST");
+        collection.setNestedType(record);
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_EMP_LIST_INOUT");
         call.addNamedInOutputArgument("P_EMP_LIST", collection);
@@ -610,12 +610,12 @@ public class PLSQLProject extends Project {
         query.addArgument("P_CITY", String.class);
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-        
+
     protected DatabaseQuery buildEmployeeInQuery() {
         PLSQLrecord record = buildEmployeeRecord();
-    	
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_EMP_IN");
         call.addNamedArgument("P_EMP", record);
@@ -625,12 +625,12 @@ public class PLSQLProject extends Project {
         query.addArgument("P_CITY", String.class);
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-        
+
     protected DatabaseQuery buildEmployeeOutQuery() {
         PLSQLrecord record = buildEmployeeRecord();
-            	
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_EMP_OUT");
         call.addNamedOutputArgument("P_EMP", record);
@@ -638,12 +638,12 @@ public class PLSQLProject extends Project {
         DataReadQuery query = new DataReadQuery();
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-        
+
     protected DatabaseQuery buildEmployeeInOutQuery() {
         PLSQLrecord record = buildEmployeeRecord();
-    	
+
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         call.setProcedureName("PLSQL_P.PLSQL_EMP_INOUT");
         call.addNamedInOutputArgument("P_EMP", record);
@@ -653,9 +653,9 @@ public class PLSQLProject extends Project {
         query.addArgument("P_CITY", String.class);
         query.setCall(call);
 
-        return query;        
+        return query;
     }
-    
+
     protected void buildAddressDescriptor() {
         ObjectRelationalDataTypeDescriptor descriptor = new ObjectRelationalDataTypeDescriptor();
         descriptor.setJavaClass(Address.class);
@@ -686,7 +686,7 @@ public class PLSQLProject extends Project {
         descriptor.getQueryManager().addQuery("MissingTypeAddressListOut", buildMissingTypeAddressListOutQuery());
         descriptor.getQueryManager().addQuery("AddressOutCursor", buildAddressOutCursorQuery());
         descriptor.getQueryManager().addQuery("AddressRecOutCursor", buildAddressRecOutCursorQuery());
-        
+
         descriptor.addFieldOrdering("ADDRESS_ID");
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
         idMapping.setAttributeName("id");
@@ -716,17 +716,17 @@ public class PLSQLProject extends Project {
         stateMapping.setAttributeName("state");
         stateMapping.setFieldName("STATE");
         descriptor.addMapping(stateMapping);
-        
+
         addDescriptor(descriptor);
     }
 
-    
+
     protected void buildPhoneDescriptor() {
         ObjectRelationalDataTypeDescriptor descriptor = new ObjectRelationalDataTypeDescriptor();
         descriptor.setJavaClass(Phone.class);
         descriptor.setStructureName("PLSQL_P_PLSQL_PHONE_REC");
         descriptor.descriptorIsAggregate();
-        
+
         descriptor.addFieldOrdering("AREA_CODE");
         DirectToFieldMapping areaCodeMapping = new DirectToFieldMapping();
         areaCodeMapping.setAttributeName("areaCode");
@@ -738,24 +738,24 @@ public class PLSQLProject extends Project {
         numberMapping.setAttributeName("number");
         numberMapping.setFieldName("P_NUM");
         descriptor.addMapping(numberMapping);
-        
+
         addDescriptor(descriptor);
     }
-    
+
     protected void buildEmployeeDescriptor() {
         ObjectRelationalDataTypeDescriptor descriptor = new ObjectRelationalDataTypeDescriptor();
         descriptor.setJavaClass(Employee.class);
         descriptor.setTableName("PLSQL_EMP");
         descriptor.setStructureName("PLSQL_P_PLSQL_EMP_REC");
         descriptor.descriptorIsAggregate();
-        
+
         descriptor.getQueryManager().addQuery("EmployeeListIn", buildEmployeeListInQuery());
         descriptor.getQueryManager().addQuery("EmployeeListOut", buildEmployeeListOutQuery());
         descriptor.getQueryManager().addQuery("EmployeeListInOut", buildEmployeeListInOutQuery());
         descriptor.getQueryManager().addQuery("EmployeeInObject", buildEmployeeInQuery());
         descriptor.getQueryManager().addQuery("EmployeeOutObject", buildEmployeeOutQuery());
         descriptor.getQueryManager().addQuery("EmployeeInOutObject", buildEmployeeInOutQuery());
-        
+
         descriptor.addFieldOrdering("EMP_ID");
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
         idMapping.setAttributeName("id");
@@ -788,7 +788,7 @@ public class PLSQLProject extends Project {
         phonesMapping.setFieldName("PHONES");
         phonesMapping.setReferenceClass(Phone.class);
         descriptor.addMapping(phonesMapping);
-        
+
         addDescriptor(descriptor);
     }
 }

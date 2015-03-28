@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -25,19 +25,19 @@ public class PostBuildEventTestCases extends XMLMappingTestCases {
     static Integer EMPLOYEE_POST_BUILD = new Integer(0);
     static Integer ADDRESS_POST_BUILD  = new Integer(1);
     EmployeeProject project;
-    
-	public PostBuildEventTestCases(String name) throws Exception {
-		super(name);
-		project = new EmployeeProject();
-	    setProject(project);
-	    setControlDocument("org/eclipse/persistence/testing/oxm/events/composite_object.xml");
-	}
-	
+
+    public PostBuildEventTestCases(String name) throws Exception {
+        super(name);
+        project = new EmployeeProject();
+        setProject(project);
+        setControlDocument("org/eclipse/persistence/testing/oxm/events/composite_object.xml");
+    }
+
     public void setUp() throws Exception {
         super.setUp();
         project.setup();
     }
-    
+
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
         assertTrue("Employee post build event did not occur as expected", project.events.contains(EMPLOYEE_POST_BUILD));
@@ -54,7 +54,7 @@ public class PostBuildEventTestCases extends XMLMappingTestCases {
         }
         return employee;
     }
-    
+
     public static void main(String[] args) {
         junit.textui.TestRunner.main(new String[] { "-c", "org.eclipse.persistence.testing.oxm.events.descriptor.PostBuildEventTestCases" });
     }

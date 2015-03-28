@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries;
 
 import java.math.BigDecimal;
@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 /**
  * Tests that a QueryByExample query in an UOW can pick up a new object created.
  * BUG# 3136413
- * 
+ *
  * @author Guy Pelletier
  * @version 1.0 September 12/03
  */
@@ -63,7 +63,7 @@ QueryByExampleInUOWTest extends TestCase {
     }
 
     protected void verify() {
-        if (m_empToCheck != null && m_empToCheck.getId().doubleValue() == 75 && 
+        if (m_empToCheck != null && m_empToCheck.getId().doubleValue() == 75 &&
             m_empToCheck.getFirstName().equals("Guy") && m_empToCheck.getLastName().equals("Pelletier")) {
             // test passed
         } else {

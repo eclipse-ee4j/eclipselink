@@ -1,6 +1,6 @@
 /***
  * ASM XML Adapter
- * Copyright (c) 2004-2011, Eugene Kuleshov
+ * Copyright (c) 2004, 2015 Eugene Kuleshov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,10 +45,10 @@ import org.xml.sax.helpers.AttributesImpl;
 /**
  * A {@link MethodVisitor} that generates SAX 2.0 events from the visited
  * method.
- * 
+ *
  * @see org.eclipse.persistence.internal.libraries.asm.xml.SAXClassAdapter
  * @see org.eclipse.persistence.internal.libraries.asm.xml.Processor
- * 
+ *
  * @author Eugene Kuleshov
  */
 public final class SAXCodeAdapter extends MethodVisitor {
@@ -64,7 +64,7 @@ public final class SAXCodeAdapter extends MethodVisitor {
 
     /**
      * Constructs a new {@link SAXCodeAdapter SAXCodeAdapter} object.
-     * 
+     *
      * @param sa
      *            content handler that will be used to send SAX 2.0 events.
      */

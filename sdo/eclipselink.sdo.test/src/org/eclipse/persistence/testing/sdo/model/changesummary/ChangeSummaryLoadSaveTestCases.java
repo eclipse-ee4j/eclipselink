@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 /**
  *  @version $Header: ChangeSummaryLoadSaveTestCases.java 16-may-2007.13:47:16 mfobrien Exp $
  *  @author  mfobrien
@@ -32,10 +32,10 @@ import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 
 public class ChangeSummaryLoadSaveTestCases extends ChangeSummaryTestCases {
-    //protected Property changeSummaryProperty;    
-    protected static final String ROOT_TYPE_NAME// 		
+    //protected Property changeSummaryProperty;
+    protected static final String ROOT_TYPE_NAME//
      = "dataObject";
-    protected static final String ROOT_TYPE_URI//	 		
+    protected static final String ROOT_TYPE_URI//
      = "commonj.sdo";
     protected SDODataObject root;
     protected SDODataObject rootCSOnChild;
@@ -74,17 +74,17 @@ public class ChangeSummaryLoadSaveTestCases extends ChangeSummaryTestCases {
             // serialize
             fo = new FileOutputStream(filename);
             //so = new ObjectOutputStream(fo);
-            xmlHelper.save(anObject,//                                                      
+            xmlHelper.save(anObject,//
                            null,//rootTypeUri,//
-                           "root",//rootTypeName,//                                                      
+                           "root",//rootTypeName,//
                            fo);
             // display object representation to the stream
             log("Serialized Object: " + dataObjectToString(anObject));
             // display XML representation to the stream
             if (anObject != null) {
-                xmlHelper.save(anObject,//                                                      
+                xmlHelper.save(anObject,//
                                null,//rootTypeUri,//
-                               "root",//rootTypeName,//                                                      
+                               "root",//rootTypeName,//
                                System.out);
             }
 

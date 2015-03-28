@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation;
 
 import java.util.*;
@@ -44,8 +44,8 @@ DailyCacheExpiryTest extends CacheExpiryTest {
         super.setup();
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(new Date(System.currentTimeMillis() + millisUntilExpiry));
-        DailyCacheInvalidationPolicy policy = 
-            new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), 
+        DailyCacheInvalidationPolicy policy =
+            new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),
                                              calendar.get(Calendar.SECOND), calendar.get(Calendar.MILLISECOND));
         getSession().getDescriptor(Employee.class).setCacheInvalidationPolicy(policy);
     }
@@ -61,9 +61,9 @@ DailyCacheExpiryTest extends CacheExpiryTest {
     }
 
     public void verify() {
-        if (shouldExpire && (!employee.getFirstName().equals(initialFirstName)) || 
+        if (shouldExpire && (!employee.getFirstName().equals(initialFirstName)) ||
             (!shouldExpire && (employee.getFirstName().equals(initialFirstName)))) {
-            throw new TestErrorException("Daily Cache Expiry failed with expiry time different from " + "current time by " + 
+            throw new TestErrorException("Daily Cache Expiry failed with expiry time different from " + "current time by " +
                                          millisUntilExpiry + " millis.");
         }
     }

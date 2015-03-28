@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -32,14 +32,14 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         addTableDefinition(buildCUSTOMER_CUSTOMERTable());
         addTableDefinition(buildCMP3_CUSTOMER2Table());
     }
-        
+
     public static TableCreator getCreator(){
         if (RelationshipsTableManager.tableCreator == null){
             RelationshipsTableManager.tableCreator = new RelationshipsTableManager();
         }
         return RelationshipsTableManager.tableCreator;
     }
-    
+
     public static TableDefinition buildCMP3_CUSTOMERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FIELDACCESS_CUSTOMER");
@@ -77,15 +77,15 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
 
-		FieldDefinition field10 = new FieldDefinition();
-		field10.setName("CUST_VERSION");
-		field10.setTypeName("NUMERIC");
-		field10.setSize(15);
-		field10.setShouldAllowNull(true );
-		field10.setIsPrimaryKey(false );
-		field10.setUnique(false );
-		field10.setIsIdentity(false );
-		table.addField(field10);
+        FieldDefinition field10 = new FieldDefinition();
+        field10.setName("CUST_VERSION");
+        field10.setTypeName("NUMERIC");
+        field10.setSize(15);
+        field10.setShouldAllowNull(true );
+        field10.setIsPrimaryKey(false );
+        field10.setUnique(false );
+        field10.setIsIdentity(false );
+        table.addField(field10);
 
         return table;
     }
@@ -167,15 +167,15 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
 
-		FieldDefinition field10 = new FieldDefinition();
-		field10.setName("ITEM_VERSION");
-		field10.setTypeName("NUMERIC");
-		field10.setSize(15);
-		field10.setShouldAllowNull(true );
-		field10.setIsPrimaryKey(false );
-		field10.setUnique(false );
-		field10.setIsIdentity(false );
-		table.addField(field10);
+        FieldDefinition field10 = new FieldDefinition();
+        field10.setName("ITEM_VERSION");
+        field10.setTypeName("NUMERIC");
+        field10.setSize(15);
+        field10.setShouldAllowNull(true );
+        field10.setIsPrimaryKey(false );
+        field10.setUnique(false );
+        field10.setIsIdentity(false );
+        table.addField(field10);
 
         return table;
     }
@@ -195,7 +195,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldCUST_ID.setShouldAllowNull(true);
         fieldCUST_ID.setForeignKeyFieldName("CMP3_FIELDACCESS_CUSTOMER.CUST_ID");
         table.addField(fieldCUST_ID);
-        
+
         FieldDefinition fieldBILLED_CUST_ID = new FieldDefinition();
         fieldBILLED_CUST_ID.setName("BILLEDCUSTOMER_CUST_ID");
         fieldBILLED_CUST_ID.setTypeName("NUMBER");
@@ -207,7 +207,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldBILLED_CUST_ID.setShouldAllowNull(true);
         fieldBILLED_CUST_ID.setForeignKeyFieldName("CMP3_FIELDACCESS_CUSTOMER.CUST_ID");
         table.addField(fieldBILLED_CUST_ID);
-        
+
         FieldDefinition fieldSALESPERSON_ID = new FieldDefinition();
         fieldSALESPERSON_ID.setName("SALESPERSON_ID");
         fieldSALESPERSON_ID.setTypeName("NUMBER");
@@ -218,7 +218,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldSALESPERSON_ID.setUnique(false);
         fieldSALESPERSON_ID.setShouldAllowNull(true);
         table.addField(fieldSALESPERSON_ID);
-        
+
         FieldDefinition fieldITEM_ID = new FieldDefinition();
         fieldITEM_ID.setName("ITEM_ID");
         fieldITEM_ID.setTypeName("NUMBER");
@@ -264,15 +264,15 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldSHIP_ADDR.setShouldAllowNull(true);
         table.addField(fieldSHIP_ADDR);
 
- 		FieldDefinition field10 = new FieldDefinition();
-		field10.setName("ORDER_VERSION");
-		field10.setTypeName("NUMERIC");
-		field10.setSize(15);
-		field10.setShouldAllowNull(true );
-		field10.setIsPrimaryKey(false );
-		field10.setUnique(false );
-		field10.setIsIdentity(false );
-		table.addField(field10);
+         FieldDefinition field10 = new FieldDefinition();
+        field10.setName("ORDER_VERSION");
+        field10.setTypeName("NUMERIC");
+        field10.setSize(15);
+        field10.setShouldAllowNull(true );
+        field10.setIsPrimaryKey(false );
+        field10.setUnique(false );
+        field10.setIsIdentity(false );
+        table.addField(field10);
 
        return table;
     }
@@ -305,10 +305,10 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCMP3_SALESPERSONTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_FIELDACCESS_SALESPERSON");        
+        table.setName("CMP3_FIELDACCESS_SALESPERSON");
 
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -334,7 +334,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCUSTOMER_CUSTOMERTable() {
         TableDefinition table = new TableDefinition();
 
@@ -351,7 +351,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("CMP3_FIELDACCESS_CUSTOMER.CUST_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("controlledCustomers_CUST_ID");

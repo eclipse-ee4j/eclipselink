@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.security;
 
 import java.security.AccessController;
@@ -49,7 +49,7 @@ public class SecurableObjectHolder {
     public String getEncryptionClassName() {
         return m_securableClassName;
     }
-    
+
     public void setEncryptionClassName(String securableClassName) {
         m_securableClassName = securableClassName;
     }
@@ -77,8 +77,8 @@ public class SecurableObjectHolder {
         if (m_securableClassName == null) {
             // Since we are defaulting, hence, assuming they can initialize the JCE
             // libraries, if the init fails, this flag tells us to assume no encryption.
-            // However, if the JCE init does work, the JCEEncryptor will need to 
-            // determine that a password was not encrypted by it, therefore, assume 
+            // However, if the JCE init does work, the JCEEncryptor will need to
+            // determine that a password was not encrypted by it, therefore, assume
             // clear text. See JCEEncryptor.
             initPassThroughEncryptor = true;
             m_securableClassName = JCE_ENCRYPTION_CLASS_NAME;

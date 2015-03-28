@@ -1,25 +1,25 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     03/19/2009-2.0 Michael O'Brien - 266912: JPA 2.0 Metamodel API (part
  *                      of the JSR-317 EJB 3.1 Criteria API)
- *     08/17/2010-2.2 Michael O'Brien 
+ *     08/17/2010-2.2 Michael O'Brien
  *        - 322585: Login the session on the first call to getMetamodel() or getCriteriaBuilder()
  *                       after EMF predeploy() completes.  This will do a DB login that calls
  *                       initializeDescriptors() so we have real Classes and not just class names for
  *                       MappedSuperclass metamodel descriptors.  This is provided for
  *                       implementations that use the metamodel before the 1st EntityManager creation.
- *                       Login will continue to only be called in EM deploy for users 
+ *                       Login will continue to only be called in EM deploy for users
  *                       that do not request the Metamodel
- *     11/17/2010-2.2 Guy Pelletier 
+ *     11/17/2010-2.2 Guy Pelletier
  *       - 329008: Support dynamic context creation without persistence.xml
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
@@ -65,14 +65,14 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * EntityManager is created with the ServerSession and returned. The primary
  * consumer of these EntityManager is assumed to be either the Container. There
  * is one EntityManagerFactory per deployment.
- * 
+ *
  * @see javax.persistence.EntityManager
  * @see org.eclipse.persistence.jpa.JpaEntityManager
  * @see org.eclipse.persistence.jpa.EntityManagerFactory
- * 
+ *
  * @author gyorke
  * @since TopLink Essentials - JPA 1.0
- * 
+ *
  */
 public class EntityManagerFactoryDelegate implements EntityManagerFactory, PersistenceUnitUtil, JpaEntityManagerFactory {
     /** Reference to Cache Interface. */
@@ -120,17 +120,17 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /**
      * Default FlashClearCache mode to be used. Relevant only in case call to
      * flush method followed by call to clear method.
-     * 
+     *
      * @see org.eclipse.persistence.config.FlushClearCache
      */
     protected String flushClearCache = FlushClearCache.DEFAULT;
 
     /** Default to determine if does-exist should be performed on persist. */
-    protected boolean shouldValidateExistence;    
+    protected boolean shouldValidateExistence;
 
     /** Order updates by id to avoid potential deadlocks. Default is true. */
     protected CommitOrderType commitOrder = CommitOrderType.ID;
-    
+
     protected boolean commitWithoutPersistRules;
 
     /** Pointer to the EntityManagerFactoryImpl that created me */
@@ -139,7 +139,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /**
      * Will return an instance of the Factory. Should only be called by
      * EclipseLink.
-     * 
+     *
      * @param serverSession
      */
     public EntityManagerFactoryDelegate(AbstractSession databaseSession, JpaEntityManagerFactory owner) {
@@ -153,7 +153,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         this.owner = owner;
         this.properties = properties;
     }
-    
+
     /**
      * Create a dynamic persistence unit which does not use the persistence.xml.
      * Instead all configuration is driven from the provided persistence unit
@@ -162,7 +162,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     public EntityManagerFactoryDelegate(String persistenceUnitName, Map<String, Object> properties, List<ClassDescriptor> descriptors, JpaEntityManagerFactory owner) {
         this.properties = properties;
         this.owner = owner;
-        
+
         SEPersistenceUnitInfo info = new SEPersistenceUnitInfo();
         info.setClassLoader((ClassLoader) properties.get(PersistenceUnitProperties.CLASSLOADER));
         info.setPersistenceUnitName(persistenceUnitName);
@@ -227,7 +227,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     public EntityManagerSetupImpl getSetupImpl(){
         return setupImpl;
     }
-    
+
     /**
      * INTERNAL: Returns the ServerSession that the Factory will be using and
      * initializes it if it is not available. This method makes use of the
@@ -333,7 +333,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     public EntityManagerFactoryDelegate unwrap(){
         return this;
     }
-    
+
     protected void verifyOpen() {
         if (!this.isOpen) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
@@ -428,16 +428,16 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /**
      * ADVANCED:
      * Re-bootstrap this factory.  This method will rebuild the EntityManagerFactory.  It should be used
-     * in conjunction with a MetadataSource to allow mappings to be changed in a running system.  All existing 
+     * in conjunction with a MetadataSource to allow mappings to be changed in a running system.  All existing
      * EntityMangers will continue to function with the old metadata, but new factories will use the new metadata.
-     * 
+     *
      * This call will throw an exception when called on EntityManagerFactoryImplDelegate
      * @param properties
      */
     public void refreshMetadata(Map properties){
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * Return default join existing transaction property, allows reading through
      * write connection.
@@ -509,7 +509,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /**
      * Return interface providing access to utility methods for the persistence
      * unit.
-     * 
+     *
      * @return PersistenceUnitUtil interface
      * @throws IllegalStateException
      *             if the entity manager factory has been closed.
@@ -548,7 +548,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /**
      * Return the default FlashClearCache mode to be used. Relevant only in case
      * call to flush method followed by call to clear method.
-     * 
+     *
      * @see org.eclipse.persistence.config.FlushClearCache
      */
     public String getFlushClearCache() {
@@ -558,7 +558,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /**
      * Set the default FlashClearCache mode to be used. Relevant only in case
      * call to flush method followed by call to clear method.
-     * 
+     *
      * @see org.eclipse.persistence.config.FlushClearCache
      */
     public void setFlushClearCache(String flushClearCache) {
@@ -582,7 +582,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     /**
-     * Access the cache that is associated with the entity manager 
+     * Access the cache that is associated with the entity manager
      * factory (the "second level cache").
      * @return instance of the <code>Cache</code> interface
      * @throws IllegalStateException if the entity manager factory has been closed
@@ -624,7 +624,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /**
      * Return an instance of Metamodel interface for access to the metamodel of
      * the persistence unit.
-     * 
+     *
      * @return Metamodel instance
      * @throws IllegalStateException
      *             if the entity manager factory has been closed.
@@ -642,7 +642,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
          * initializeDescriptors() so we have real Classes and not just class names for
          * MappedSuperclass metamodel descriptors.  This is provided for
          * implementations that use the metamodel before the 1st EntityManager creation.
-         */        
+         */
         getAbstractSession();
         return this.setupImpl.getMetamodel(session.getLoader());
     }
@@ -655,12 +655,12 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     public JpaEntityManagerFactory getOwner() {
         return owner;
     }
-    
+
     /**
      * INTERNAL: Convenience function to allow us to reset the Metamodel in the
      * possible case that we want to regenerate it. This function is outside of
      * the JPA 2.0 specification.
-     * 
+     *
      * @param aMetamodel
      * @since Java Persistence 2.0
      */
@@ -674,7 +674,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /**
      * Determine the load state of a given persistent attribute of an entity
      * belonging to the persistence unit.
-     * 
+     *
      * @param entity
      *            containing the attribute
      * @param attributeName
@@ -697,7 +697,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * isLoaded(Object, String) method should be used to determine the load
      * state of an attribute. Not doing so might lead to unintended loading of
      * state.
-     * 
+     *
      * @param entity
      *            whose load state is to be determined
      * @return false if the entity has not been loaded, else true.
@@ -713,7 +713,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * Returns the id of the entity. A generated id is not guaranteed to be
      * available until after the database insert has occurred. Returns null if
      * the entity does not yet have an id
-     * 
+     *
      * @param entity
      * @return id of the entity
      * @throws IllegalArgumentException
@@ -742,7 +742,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     public void setCommitOrder(CommitOrderType commitOrder) {
         this.commitOrder = commitOrder;
     }
-    
+
     public void addNamedQuery(String name, Query query) {
         DatabaseQuery unwrapped = (DatabaseQuery) query.unwrap(DatabaseQuery.class).clone();
         if (((QueryImpl)query).lockMode != null){
@@ -762,13 +762,13 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
             return (T) this;
         }else if (cls.equals(EntityManagerFactoryDelegate.class)) {
             return (T) this;
-        }else if (cls.equals(Session.class) || cls.equals(AbstractSession.class)) {            
+        }else if (cls.equals(Session.class) || cls.equals(AbstractSession.class)) {
             return (T) this.getAbstractSession();
-        } else if (cls.equals(DatabaseSession.class) || cls.equals(DatabaseSessionImpl.class)) {            
+        } else if (cls.equals(DatabaseSession.class) || cls.equals(DatabaseSessionImpl.class)) {
             return (T) this.getDatabaseSession();
-        } else if (cls.equals(Server.class) || cls.equals(ServerSession.class)) {            
+        } else if (cls.equals(Server.class) || cls.equals(ServerSession.class)) {
             return (T) this.getServerSession();
-        } else if (cls.equals(SessionBroker.class)) {            
+        } else if (cls.equals(SessionBroker.class)) {
             return (T) this.getSessionBroker();
         }
         throw new PersistenceException(ExceptionLocalization.buildMessage("unable_to_unwrap_jpa", new String[]{EntityManagerFactory.class.getName(),cls.getName()}));

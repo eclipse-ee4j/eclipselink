@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,7 +34,7 @@ public class Node {
     private Object type;
     public boolean shouldGenerateExpression;
     protected String alias = null;
-    
+
     /**
      * Return a new Node.
      */
@@ -67,8 +67,8 @@ public class Node {
         return toString();
     }
 
-    /** 
-     * INTERNAL 
+    /**
+     * INTERNAL
      * Check the child node for an unqualified field access and if so,
      * replace it by a qualified field access.
      */
@@ -97,7 +97,7 @@ public class Node {
     }
 
     /**
-     * INTERNAL 
+     * INTERNAL
      */
     public void validateParameter(ParseTreeContext context, Object contextType) {
         // nothing to be done
@@ -151,7 +151,7 @@ public class Node {
     public boolean isAggregateNode() {
         return false;
     }
-    
+
     /**
      * INTERNAL
      * Is this node a Dot node
@@ -215,7 +215,7 @@ public class Node {
     public boolean isMapKeyNode() {
         return false;
     }
-    
+
     /**
      * INTERNAL
      * Is this node a Minus node
@@ -287,7 +287,7 @@ public class Node {
     public Class resolveClass(GenerationContext context) {
         return null;
     }
-    
+
     /**
      * resolveClass: Answer the class associated with the content of this node. Default is to return null.
      * Subclasses should override this.
@@ -332,7 +332,7 @@ public class Node {
     public int getLine() {
         return line;
     }
-    
+
     public void setLine(int line) {
         this.line = line;
     }
@@ -340,7 +340,7 @@ public class Node {
     public int getColumn() {
         return column;
     }
-    
+
     public void setColumn(int column) {
         this.column = column;
     }

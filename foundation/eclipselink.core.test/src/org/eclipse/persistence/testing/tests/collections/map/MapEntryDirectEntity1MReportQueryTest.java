@@ -33,7 +33,7 @@ public class MapEntryDirectEntity1MReportQueryTest extends ReportQueryTestCase{
         for (Enumeration e = expected.elements(); e.hasMoreElements();) {
             ReportQueryResult expectedResult = (ReportQueryResult)e.nextElement();
             Association expectedAssocication = (Association)expectedResult.getByIndex(0);
-            Association resultAssocication = (Association)result.getByIndex(0); 
+            Association resultAssocication = (Association)result.getByIndex(0);
             if (expectedAssocication.getKey().equals(resultAssocication.getKey()) && expectedAssocication.getValue().equals(resultAssocication.getValue())) {
                 expected.removeElement(expectedResult);
                 return;
@@ -41,7 +41,7 @@ public class MapEntryDirectEntity1MReportQueryTest extends ReportQueryTestCase{
         }
         getSession().logMessage("missing element: " + result);
     }
-    
+
     protected void setup() throws Exception {
         super.setup();
         reportQuery = new ReportQuery(new ExpressionBuilder());

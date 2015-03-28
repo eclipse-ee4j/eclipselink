@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Denise Smith - December 15, 2009
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttac
 public class EmployeeWithByteObjectArray {
     public static final int DEFAULT_ID = 123;
     private int id;
-    private Byte[] photo;    
+    private Byte[] photo;
     private DataHandler data;
 
     public EmployeeWithByteObjectArray() {
@@ -42,7 +42,7 @@ public class EmployeeWithByteObjectArray {
     }
 
     public static EmployeeWithByteObjectArray example1() {
-    	byte[] bytes = MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes();
+        byte[] bytes = MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes();
         Byte[] objectBytes = new Byte[bytes.length];
         for (int index = 0; index < bytes.length; index++) {
             objectBytes[index] = new Byte(bytes[index]);
@@ -65,11 +65,11 @@ public class EmployeeWithByteObjectArray {
     public void setPhoto(Byte[] photo) {
         this.photo = photo;
     }
-   
+
     public DataHandler getData() {
         return data;
     }
-    
+
     public void setData(DataHandler theData) {
         this.data = theData;
     }
@@ -79,7 +79,7 @@ public class EmployeeWithByteObjectArray {
         if (getPhoto() != null) {
             returnString += ("Photo: " + photo + " ");
         }
-     
+
         return returnString;
     }
 
@@ -105,47 +105,47 @@ public class EmployeeWithByteObjectArray {
 
         // hash equality changes
         equal = equal && equalByteArrays(getPhoto(), employeeObject.getPhoto());
-        
-        if(data == null && employeeObject.getData() != null){
-        	return false;
-        }
-        
-        if(data != null && employeeObject.getData() == null){
-        	return false;
-        }
-        
-        if(data != null){
-        	if(!data.getContentType().equals(employeeObject.getData().getContentType())){
-        	    return false;
-        	}
-    	    try {
-    	    	Object obj1 =  data.getContent();
-    	    	Object obj2 =  employeeObject.getData().getContent();
-    	    	if(data.getContent() instanceof ByteArrayInputStream && employeeObject.getData().getContent() instanceof ByteArrayInputStream){
-    	    		ByteArrayInputStream controlStream = ((ByteArrayInputStream)data.getContent());
-    	    		ByteArrayInputStream testStream = ((ByteArrayInputStream)employeeObject.getData().getContent());
-    	    		if(controlStream.available() != testStream.available()){
-    	    			return false;
-    	    		}
-    	    		
-    	    		Byte[] controlBytes = new Byte[controlStream.available()];
-    	    		Byte[] testBytes = new Byte[testStream.available()];
-    	    		
-    	    		if(!equalByteArrays(controlBytes, testBytes)){
-    	    			return false;
-    	    		}    	    		
 
-    	    	}else{
-					if(!data.getContent().equals(employeeObject.getData().getContent())){
-					   return false;
-					}
-    	    	}
-			} catch (IOException e) {
-				e.printStackTrace();
-				return false;
-			}        
+        if(data == null && employeeObject.getData() != null){
+            return false;
         }
-        
+
+        if(data != null && employeeObject.getData() == null){
+            return false;
+        }
+
+        if(data != null){
+            if(!data.getContentType().equals(employeeObject.getData().getContentType())){
+                return false;
+            }
+            try {
+                Object obj1 =  data.getContent();
+                Object obj2 =  employeeObject.getData().getContent();
+                if(data.getContent() instanceof ByteArrayInputStream && employeeObject.getData().getContent() instanceof ByteArrayInputStream){
+                    ByteArrayInputStream controlStream = ((ByteArrayInputStream)data.getContent());
+                    ByteArrayInputStream testStream = ((ByteArrayInputStream)employeeObject.getData().getContent());
+                    if(controlStream.available() != testStream.available()){
+                        return false;
+                    }
+
+                    Byte[] controlBytes = new Byte[controlStream.available()];
+                    Byte[] testBytes = new Byte[testStream.available()];
+
+                    if(!equalByteArrays(controlBytes, testBytes)){
+                        return false;
+                    }
+
+                }else{
+                    if(!data.getContent().equals(employeeObject.getData().getContent())){
+                       return false;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
         return equal;
     }
 

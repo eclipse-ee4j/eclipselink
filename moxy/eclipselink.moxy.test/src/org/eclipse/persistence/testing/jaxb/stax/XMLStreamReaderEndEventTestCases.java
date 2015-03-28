@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 public class XMLStreamReaderEndEventTestCases extends TestCase {
 
     private static final String XML = "<root><foo><bar>Hello World</bar></foo></root>";
-    
+
     private Unmarshaller unmarshaller;
     private XMLStreamReader xsr;
 
@@ -35,7 +35,7 @@ public class XMLStreamReaderEndEventTestCases extends TestCase {
     protected void setUp() throws Exception {
         JAXBContext jc = JAXBContextFactory.createContext(new Class[] {EndEventRoot.class}, null);
         unmarshaller = jc.createUnmarshaller();
-        
+
         XMLInputFactory xif = XMLInputFactory.newFactory();
         xsr = xif.createXMLStreamReader(new StringReader(XML));
     }
@@ -45,7 +45,7 @@ public class XMLStreamReaderEndEventTestCases extends TestCase {
         unmarshaller.unmarshal(xsr);
         assertEquals(XMLStreamReader.END_DOCUMENT, xsr.getEventType());
     }
-    
+
     public void testUnmarshalFromXMLStreamReaderStartElementEvent() throws Exception {
         xsr.next();
         assertEquals(XMLStreamReader.START_ELEMENT, xsr.getEventType());
@@ -90,7 +90,7 @@ public class XMLStreamReaderEndEventTestCases extends TestCase {
         unmarshaller.unmarshal(staxSource);
         assertEquals(XMLStreamReader.END_DOCUMENT, xsr.getEventType());
     }
-    
+
     public void testUnmarshalFromStAXSourceStartElementEvent() throws Exception {
         xsr.next();
         assertEquals(XMLStreamReader.START_ELEMENT, xsr.getEventType());

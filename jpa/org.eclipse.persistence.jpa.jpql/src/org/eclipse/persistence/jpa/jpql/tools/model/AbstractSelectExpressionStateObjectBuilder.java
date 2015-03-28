@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,107 +29,107 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject;
 public abstract class AbstractSelectExpressionStateObjectBuilder extends AbstractScalarExpressionStateObjectBuilder<ISelectExpressionStateObjectBuilder>
                                                                  implements ISelectExpressionStateObjectBuilder {
 
-	/**
-	 * The list of select items, which were added by invoking {@link #append()}.
-	 */
-	protected List<StateObject> stateObjectList;
+    /**
+     * The list of select items, which were added by invoking {@link #append()}.
+     */
+    protected List<StateObject> stateObjectList;
 
-	/**
-	 * Creates a new <code>AbstractSelectExpressionStateObjectBuilder</code>.
-	 *
-	 * @param parent The select clause for which this builder can create a select expression
-	 */
-	protected AbstractSelectExpressionStateObjectBuilder(SelectClauseStateObject parent) {
-		super(parent);
-		stateObjectList = new ArrayList<StateObject>();
-	}
+    /**
+     * Creates a new <code>AbstractSelectExpressionStateObjectBuilder</code>.
+     *
+     * @param parent The select clause for which this builder can create a select expression
+     */
+    protected AbstractSelectExpressionStateObjectBuilder(SelectClauseStateObject parent) {
+        super(parent);
+        stateObjectList = new ArrayList<StateObject>();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ISelectExpressionStateObjectBuilder append() {
-		stateObjectList.add(pop());
-		return this;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ISelectExpressionStateObjectBuilder append() {
+        stateObjectList.add(pop());
+        return this;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void commit() {
-		if (hasStateObjects()) {
-			append();
-		}
-		getParent().addItems(stateObjectList);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void commit() {
+        if (hasStateObjects()) {
+            append();
+        }
+        getParent().addItems(stateObjectList);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected SelectClauseStateObject getParent() {
-		return (SelectClauseStateObject) super.getParent();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected SelectClauseStateObject getParent() {
+        return (SelectClauseStateObject) super.getParent();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ISelectExpressionStateObjectBuilder new_(String className,
-	                                                ISelectExpressionStateObjectBuilder... parameters) {
+    /**
+     * {@inheritDoc}
+     */
+    public ISelectExpressionStateObjectBuilder new_(String className,
+                                                    ISelectExpressionStateObjectBuilder... parameters) {
 
-		checkBuilders(parameters);
+        checkBuilders(parameters);
 
-		StateObject stateObject = new ConstructorExpressionStateObject(
-			getParent(),
-			className,
-			stateObjects(parameters)
-		);
-		add(stateObject);
-		return this;
-	}
+        StateObject stateObject = new ConstructorExpressionStateObject(
+            getParent(),
+            className,
+            stateObjects(parameters)
+        );
+        add(stateObject);
+        return this;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ISelectExpressionStateObjectBuilder object(String identificationVariable) {
-		StateObject stateObject = new ObjectExpressionStateObject(getParent(), identificationVariable);
-		add(stateObject);
-		return this;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ISelectExpressionStateObjectBuilder object(String identificationVariable) {
+        StateObject stateObject = new ObjectExpressionStateObject(getParent(), identificationVariable);
+        add(stateObject);
+        return this;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ISelectExpressionStateObjectBuilder resultVariable(String resultVariable) {
-		resultVariable(resultVariable, false);
-		return this;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ISelectExpressionStateObjectBuilder resultVariable(String resultVariable) {
+        resultVariable(resultVariable, false);
+        return this;
+    }
 
-	protected void resultVariable(String resultVariable, boolean as) {
+    protected void resultVariable(String resultVariable, boolean as) {
 
-		StateObject stateObject = new ResultVariableStateObject(
-			getParent(),
-			pop(),
-			as,
-			resultVariable
-		);
+        StateObject stateObject = new ResultVariableStateObject(
+            getParent(),
+            pop(),
+            as,
+            resultVariable
+        );
 
-		add(stateObject);
-	}
+        add(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ISelectExpressionStateObjectBuilder resultVariableAs(String resultVariable) {
-		resultVariable(resultVariable, true);
-		return this;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ISelectExpressionStateObjectBuilder resultVariableAs(String resultVariable) {
+        resultVariable(resultVariable, true);
+        return this;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ISelectExpressionStateObjectBuilder variable(String variable) {
-		StateObject stateObject = buildIdentificationVariable(variable);
-		add(stateObject);
-		return this;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ISelectExpressionStateObjectBuilder variable(String variable) {
+        StateObject stateObject = buildIdentificationVariable(variable);
+        add(stateObject);
+        return this;
+    }
 }

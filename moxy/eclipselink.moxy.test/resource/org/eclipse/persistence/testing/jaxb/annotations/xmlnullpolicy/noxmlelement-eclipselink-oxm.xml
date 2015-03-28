@@ -3,8 +3,8 @@
     <xml-schema namespace="http://www.example.com/employees">
         <xml-ns namespace-uri="http://www.example.com/projects" prefix="prj"/>
     </xml-schema>
-	<java-types>
-		<java-type name="org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.EmployeeNoXmlElement">
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.EmployeeNoXmlElement">
             <xml-root-element name="employee" />
             <java-attributes>
                 <xml-attribute java-attribute="empId" name="id" />
@@ -21,6 +21,6 @@
                 <xml-element java-attribute="characterData" name="character-data" cdata="true" />
                 <xml-element java-attribute="projectId" name="project-id" default-value="999" />
             </java-attributes>
-		</java-type>
-	</java-types>
+        </java-type>
+    </java-types>
 </xml-bindings>

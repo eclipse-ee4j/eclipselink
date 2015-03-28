@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -40,15 +40,15 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModel;
  * <p><b>Responsibilities:</b>
  * <ul>
  * <li>Make available a map of JOT - XML type pairs</li>
- * <li>Redirect method calls to the current JavaModel implementation as 
+ * <li>Redirect method calls to the current JavaModel implementation as
  * required</li>
  * <li>Provide methods for accessing generics, annotations, etc. on a
  * given implementaiton's classes</li>
- * <li>Provide a dynamic proxy instance for a given JavaAnnotation in 
- * the JOT implementation (for reflection a Java SDK annotation is 
+ * <li>Provide a dynamic proxy instance for a given JavaAnnotation in
+ * the JOT implementation (for reflection a Java SDK annotation is
  * returned)</li>
  * </ul>
- *  
+ *
  * @since Oracle TopLink 11.1.1.0.0
  * @see JavaModel
  * @see AnnotationProxy
@@ -100,9 +100,9 @@ public class Helper {
     protected final static String JAVAX_WS_PKG = "javax.xml.ws.";
 
     private static JavaClass COLLECTION_CLASS;
-    private static JavaClass SET_CLASS; 
+    private static JavaClass SET_CLASS;
     private static JavaClass LIST_CLASS;
-    private static JavaClass MAP_CLASS; 
+    private static JavaClass MAP_CLASS;
     public static JavaClass JAXBELEMENT_CLASS;
     public static JavaClass OBJECT_CLASS;
 
@@ -129,12 +129,12 @@ public class Helper {
 
     /**
      * Builds a map of Java types to XML types.
-     * 
+     *
      * @return
      */
     private HashMap buildXMLToJavaTypeMap() {
         HashMap javaTypes = new HashMap();
-        // jaxb 2.0 spec pairs        
+        // jaxb 2.0 spec pairs
         javaTypes.put(APBYTE, Constants.BASE_64_BINARY_QNAME);
         javaTypes.put(BIGDECIMAL, Constants.DECIMAL_QNAME);
         javaTypes.put(BIGINTEGER, Constants.INTEGER_QNAME);
@@ -149,7 +149,7 @@ public class Helper {
         javaTypes.put(QNAME_CLASS, Constants.QNAME_QNAME);
         javaTypes.put(STRING, Constants.STRING_QNAME);
         javaTypes.put(CHAR, Constants.STRING_QNAME);
-        javaTypes.put(CHARACTER, Constants.STRING_QNAME);        
+        javaTypes.put(CHARACTER, Constants.STRING_QNAME);
         // other pairs
         javaTypes.put(ABYTE, Constants.BYTE_QNAME);
         javaTypes.put(BOOLEAN, Constants.BOOLEAN_QNAME);
@@ -172,10 +172,10 @@ public class Helper {
         javaTypes.put(URL, Constants.ANY_URI_QNAME);
         return javaTypes;
     }
-    
+
     /**
      * Return a given method's generic return type as a JavaClass.
-     * 
+     *
      * @param meth
      * @return
      */
@@ -183,9 +183,9 @@ public class Helper {
         JavaClass result = meth.getReturnType();
         JavaClass jClass = null;
         if (result == null) { return null; }
-        
+
         Collection args = result.getActualTypeArguments();
-        if (args.size() >0) {            
+        if (args.size() >0) {
             jClass = (JavaClass) args.iterator().next();
         }
         return jClass;
@@ -193,16 +193,16 @@ public class Helper {
 
     /**
      * Return a JavaClass instance created based the provided class.
-     * This assumes that the provided class exists on the classpath 
+     * This assumes that the provided class exists on the classpath
      * - null is returned otherwise.
-     * 
+     *
      * @param javaClass
      * @return
      */
     public JavaClass getJavaClass(Class javaClass) {
         return jModel.getClass(javaClass);
     }
-    
+
     /**
      * Return array of JavaClass instances created based on the provided classes.
      * This assumes provided classes exist on the classpath.
@@ -226,7 +226,7 @@ public class Helper {
      * Return a JavaClass instance created based on fully qualified
      * class name.  This assumes that a class with the provided name
      * exists on the classpath - null is returned otherwise.
-     * 
+     *
      * @param javaClassName
      * @return
      */
@@ -265,7 +265,7 @@ public class Helper {
     /**
      * Returns a JavaClass instance wrapping the provided field's resolved
      * type.
-     * 
+     *
      * @param field
      * @return
      */
@@ -279,7 +279,7 @@ public class Helper {
 
     /**
      * Indicates if element contains a given annotation.
-     * 
+     *
      * @param element
      * @param annotationClass
      * @return
@@ -292,15 +292,15 @@ public class Helper {
     }
 
     /**
-     * Indicates if a given JavaClass is a built-in Java type. 
-     * 
+     * Indicates if a given JavaClass is a built-in Java type.
+     *
      * A JavaClass is considered to be a built-in type if:
-     * 1 - the XMLToJavaTypeMap map contains a key equal to the provided 
+     * 1 - the XMLToJavaTypeMap map contains a key equal to the provided
      *     JavaClass' raw name
      * 2 - the provided JavaClass' raw name starts with "java."
      * 3 - the provided JavaClass' raw name starts with "javax.", with
-     *     the exception of "javax.xml.ws." 
-     * 
+     *     the exception of "javax.xml.ws."
+     *
      * @param jClass
      * @return
      */
@@ -309,18 +309,18 @@ public class Helper {
         if(null == rawName) {
             return true;
         }
-    	return (getXMLToJavaTypeMap().containsKey(rawName) || rawName.startsWith(JAVA_PKG) || (rawName.startsWith(JAVAX_PKG) && !rawName.startsWith(JAVAX_WS_PKG))) ;
+        return (getXMLToJavaTypeMap().containsKey(rawName) || rawName.startsWith(JAVA_PKG) || (rawName.startsWith(JAVAX_PKG) && !rawName.startsWith(JAVAX_WS_PKG))) ;
     }
 
     public void setClassLoader(ClassLoader loader) {
         this.loader = loader;
     }
-    
+
     public void setJavaModel(JavaModel model) {
         jModel = model;
     }
     public ClassLoader getClassLoader() {
-    	return loader;
+        return loader;
     }
 
     public Class getClassForJavaClass(JavaClass javaClass){
@@ -384,7 +384,7 @@ public class Helper {
         if (!(classA.getQualifiedName().equals(classB.getQualifiedName()))) {
             return false;
         }
-        
+
         Collection classAargs = classA.getActualTypeArguments();
         Collection classBargs = classB.getActualTypeArguments();
         if (classAargs != null) {
@@ -397,7 +397,7 @@ public class Helper {
 
             Iterator classAargsIter = classAargs.iterator();
             Iterator classBargsIter = classBargs.iterator();
-            
+
             while(classAargsIter.hasNext()){
                 JavaClass nestedClassA = (JavaClass) classAargsIter.next();
                 JavaClass nestedClassB = (JavaClass) classBargsIter.next();
@@ -416,7 +416,7 @@ public class Helper {
 
     /**
      * Prepends a package name to a given java type name, if it is not already present.
-     * 
+     *
      * @param javaTypeName Java type name that may/may not contain 'packageName'
      * @param packageName package name to prepend to javaTypeName if not already
      * @return fully qualified java type name
@@ -430,9 +430,9 @@ public class Helper {
     }
 
     public boolean isCollectionType(JavaClass type) {
-	 if (COLLECTION_CLASS.isAssignableFrom(type)
-			 || LIST_CLASS.isAssignableFrom(type)
-			 || SET_CLASS.isAssignableFrom(type)) {
+     if (COLLECTION_CLASS.isAssignableFrom(type)
+             || LIST_CLASS.isAssignableFrom(type)
+             || SET_CLASS.isAssignableFrom(type)) {
              return true;
          }
          return false;

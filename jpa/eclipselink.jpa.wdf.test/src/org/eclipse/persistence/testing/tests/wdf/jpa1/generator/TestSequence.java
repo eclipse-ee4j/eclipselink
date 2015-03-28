@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -83,17 +83,17 @@ public class TestSequence extends JPA1Base {
             // skip the test
             return;
         }
-        
+
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
-        
+
         EntityManagerFactory emf2 = Persistence.createEntityManagerFactory("jpa1testmodel-2", EMF_PROPERTIES);
         EntityManager em2 = emf2.createEntityManager();
-                
+
         try {
             em.getTransaction().begin();
             em2.getTransaction().begin();
-            
+
             final Plant tree = new Plant("tree");
             final Element water = new Element("water");
             em.persist(tree); // id 1
@@ -120,5 +120,5 @@ public class TestSequence extends JPA1Base {
             emf2.close();
         }
     }
-    
+
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Markus KARG - SQL Anywhere now using WATCOM-SQL instead of Transact-SQL.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -147,17 +147,17 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         proc.addStatement("P_OUT := TEST_STRING_ARRAY(10)");
         return proc;
     }
-    
+
     public static VarrayDefinition buildVARRAYTypeDefinition() {
-		VarrayDefinition definition = new VarrayDefinition();
+        VarrayDefinition definition = new VarrayDefinition();
 
-		definition.setName("TEST_STRING_ARRAY");
-		definition.setSize(20);
-		definition.setType(String.class);
-		definition.setTypeSize(30);
+        definition.setName("TEST_STRING_ARRAY");
+        definition.setSize(20);
+        definition.setType(String.class);
+        definition.setTypeSize(30);
 
-		return definition;
-	}
+        return definition;
+    }
 
     public StoredFunctionDefinition buildOracleStoredFunctionInOutOutIn() {
         StoredFunctionDefinition func = new StoredFunctionDefinition();
@@ -171,39 +171,39 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         func.addStatement("RETURN P_OUT");
         return func;
     }
-    
+
     public NestedTableDefinition buildOracleLOOKUPTABLETYPE() {
         NestedTableDefinition ntd = new NestedTableDefinition();
         ntd.setName("SF_LOOKUP_TBL");
         ntd.setTypeName("SF_LOOKUP_RECORD");
         return ntd;
     }
-    
+
     public TypeDefinition buildOracleLOOKUPRECORDTYPE() {
         TypeDefinition td = new TypeDefinition();
         td.setName("SF_LOOKUP_RECORD");
-        
+
         FieldDefinition fd1 = new FieldDefinition();
         fd1.setName("ATTR_1");
         fd1.setTypeName("VARCHAR2");
         fd1.setSize(200);
         td.addField(fd1);
-        
+
         FieldDefinition fd2 = new FieldDefinition();
         fd2.setName("ATTR_2");
         fd2.setTypeName("VARCHAR2");
         fd2.setSize(200);
         td.addField(fd2);
-        
+
         return td;
     }
-    
+
     public PackageDefinition buildOraclePackageStoredFunctionResultCursor() {
         PackageDefinition pkgd = new PackageDefinition();
         pkgd.setName("PackageFunction_ResultCursor");
         pkgd.addStatement("TYPE REF_CURSOR IS REF CURSOR");
         pkgd.addStatement("FUNCTION BUSINESS_DATE (P_CODE IN VARCHAR2, P_LOOKUP_TBL IN SF_LOOKUP_TBL) RETURN REF_CURSOR");
-        return pkgd; 
+        return pkgd;
     }
 
     public StoredProcedureDefinition buildOracleUpdateProcedure() {
@@ -408,7 +408,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         proc.addStatement("Update EMPLOYEE set END_DATE = @END_DATE, MANAGER_ID = @MANAGER_ID, " + "START_DATE = @START_DATE, F_NAME = @F_NAME, L_NAME = @L_NAME, GENDER = @GENDER, ADDR_ID = @ADDR_ID, " + "VERSION = @VERSION + 1 WHERE ((EMP_ID = @EMP_ID) AND (VERSION = @VERSION))");
         return proc;
     }
-    
+
     private static StoredProcedureDefinition buildSQLAnywhereDeleteProcedure() {
         final StoredProcedureDefinition procedure = new StoredProcedureDefinition();
         procedure.setName("Delete_Employee");
@@ -492,7 +492,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         procedure.addStatement("UPDATE EMPLOYEE SET END_DATE = _END_DATE, MANAGER_ID = _MANAGER_ID, START_DATE = _START_DATE, F_NAME = _F_NAME, L_NAME = _L_NAME, GENDER = _GENDER, ADDR_ID = _ADDR_ID, VERSION = _VERSION + 1 WHERE EMP_ID = _EMP_ID AND VERSION = _VERSION");
         return procedure;
     }
-    
+
     public StoredProcedureDefinition buildDB2SelectWithOutputAndResultSetProcedure() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("OUT_RES_TEST");
@@ -507,7 +507,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         proc.addStatement("OPEN C2");
         return proc;
     }
- 
+
     class PervasiveStoredProcedureDefinition extends StoredProcedureDefinition {
         protected String returnString;
 
@@ -517,7 +517,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
 
         public void setReturnString (String theString) {
             this.returnString = theString;
-        } 
+        }
 
         protected void printReturn(Writer writer, AbstractSession session) throws ValidationException {
             try {
@@ -526,8 +526,8 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
                 throw ValidationException.fileError(ioException);
             }
         }
-    }    
-       
+    }
+
     public StoredProcedureDefinition buildPervasiveDeleteProcedure() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Delete_Employee");
@@ -560,7 +560,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
     public StoredProcedureDefinition buildPervasiveReadAllProcedure() {
         PervasiveStoredProcedureDefinition proc = new PervasiveStoredProcedureDefinition();
         proc.setReturnString (
-        " RETURNS (" + 
+        " RETURNS (" +
         "EMP_ID BIGINT, " +
         "F_NAME CHAR(40), " +
         "L_NAME CHAR(40), " +
@@ -572,9 +572,9 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         "ADDR_ID BIGINT, " +
         "MANAGER_ID BIGINT, " +
         "VERSION BIGINT, " +
-        "EMP_ID BIGINT, " + 
+        "EMP_ID BIGINT, " +
         "SALARY INTEGER " +
-        ")" 
+        ")"
         );
         proc.setName("Read_All_Employees");
         proc.addStatement("Select E.*, S.* from EMPLOYEE E, SALARY S WHERE E.EMP_ID = S.EMP_ID");
@@ -584,7 +584,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
     public StoredProcedureDefinition buildPervasiveReadObjectProcedure() {
         PervasiveStoredProcedureDefinition proc = new PervasiveStoredProcedureDefinition();
         proc.setReturnString (
-        " RETURNS (" + 
+        " RETURNS (" +
         "EMP_ID BIGINT, " +
         "F_NAME CHAR(40), " +
         "L_NAME CHAR(40), " +
@@ -596,9 +596,9 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         "ADDR_ID BIGINT, " +
         "MANAGER_ID BIGINT, " +
         "VERSION BIGINT, " +
-        "EMP_ID BIGINT, " + 
+        "EMP_ID BIGINT, " +
         "SALARY INTEGER " +
-        ")" 
+        ")"
         );
         proc.setName("Read_Employee");
         proc.addArgument("EMP_ID", Long.class);
@@ -619,7 +619,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
     public StoredProcedureDefinition buildPervasiveSelectWithOutputAndResultSetProcedure() {
         PervasiveStoredProcedureDefinition proc = new PervasiveStoredProcedureDefinition();
         proc.setReturnString (
-        " RETURNS (" + 
+        " RETURNS (" +
         "EMP_ID BIGINT, " +
         "F_NAME CHAR(40), " +
         "L_NAME CHAR(40), " +
@@ -631,9 +631,9 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         "ADDR_ID BIGINT, " +
         "MANAGER_ID BIGINT, " +
         "VERSION BIGINT, " +
-        "EMP_ID BIGINT, " + 
+        "EMP_ID BIGINT, " +
         "SALARY INTEGER " +
-        ")" 
+        ")"
         );
         proc.setName("Select_Output_and_ResultSet");
         proc.addArgument("ARG1", Long.class);
@@ -738,7 +738,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
             schema.replaceObject(buildOracleLOOKUPRECORDTYPE());
             schema.replaceObject(buildOracleLOOKUPTABLETYPE());
             schema.replaceObject(buildOraclePackageStoredFunctionResultCursor());
-            
+
             try {
                 session.executeNonSelectingCall(new SQLCall("CREATE OR REPLACE PACKAGE BODY PackageFunction_ResultCursor IS " +
                         "FUNCTION BUSINESS_DATE (P_CODE IN VARCHAR2, P_LOOKUP_TBL IN SF_LOOKUP_TBL) RETURN REF_CURSOR IS " +

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,258 +36,258 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class DeleteClause extends AbstractExpression {
 
-	/**
-	 * The actual <b>DELETE</b> identifier found in the string representation of the JPQL query.
-	 */
-	private String deleteIdentifier;
+    /**
+     * The actual <b>DELETE</b> identifier found in the string representation of the JPQL query.
+     */
+    private String deleteIdentifier;
 
-	/**
-	 * The actual <b>FROM</b> identifier found in the string representation of the JPQL query.
-	 */
-	private String fromIdentifier;
+    /**
+     * The actual <b>FROM</b> identifier found in the string representation of the JPQL query.
+     */
+    private String fromIdentifier;
 
-	/**
-	 * Determines whether a whitespace was parsed after <b>DELETE</b>.
-	 */
-	private boolean hasSpaceAfterDelete;
+    /**
+     * Determines whether a whitespace was parsed after <b>DELETE</b>.
+     */
+    private boolean hasSpaceAfterDelete;
 
-	/**
-	 * Determines whether a whitespace was parsed after <b>FROM</b>.
-	 */
-	private boolean hasSpaceAfterFrom;
+    /**
+     * Determines whether a whitespace was parsed after <b>FROM</b>.
+     */
+    private boolean hasSpaceAfterFrom;
 
-	/**
-	 * The {@link Expression} representing the range variable declaration.
-	 */
-	private AbstractExpression rangeVariableDeclaration;
+    /**
+     * The {@link Expression} representing the range variable declaration.
+     */
+    private AbstractExpression rangeVariableDeclaration;
 
-	/**
-	 * Creates a new <code>DeleteClause</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public DeleteClause(AbstractExpression parent) {
-		super(parent, DELETE);
-	}
+    /**
+     * Creates a new <code>DeleteClause</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public DeleteClause(AbstractExpression parent) {
+        super(parent, DELETE);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void acceptChildren(ExpressionVisitor visitor) {
-		getRangeVariableDeclaration().accept(visitor);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void acceptChildren(ExpressionVisitor visitor) {
+        getRangeVariableDeclaration().accept(visitor);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addChildrenTo(Collection<Expression> children) {
-		children.add(getRangeVariableDeclaration());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addChildrenTo(Collection<Expression> children) {
+        children.add(getRangeVariableDeclaration());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addOrderedChildrenTo(List<Expression> children) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addOrderedChildrenTo(List<Expression> children) {
 
-		// 'DELETE'
-		children.add(buildStringExpression(DELETE));
+        // 'DELETE'
+        children.add(buildStringExpression(DELETE));
 
-		if (hasSpaceAfterDelete) {
-			children.add(buildStringExpression(SPACE));
-		}
+        if (hasSpaceAfterDelete) {
+            children.add(buildStringExpression(SPACE));
+        }
 
-		// 'FROM'
-		if (fromIdentifier != null) {
-			children.add(buildStringExpression(FROM));
-		}
+        // 'FROM'
+        if (fromIdentifier != null) {
+            children.add(buildStringExpression(FROM));
+        }
 
-		if (hasSpaceAfterFrom) {
-			children.add(buildStringExpression(SPACE));
-		}
+        if (hasSpaceAfterFrom) {
+            children.add(buildStringExpression(SPACE));
+        }
 
-		// Range declaration variable
-		if (rangeVariableDeclaration != null) {
-			children.add(rangeVariableDeclaration);
-		}
-	}
+        // Range declaration variable
+        if (rangeVariableDeclaration != null) {
+            children.add(rangeVariableDeclaration);
+        }
+    }
 
-	/**
-	 * Creates a new {@link CollectionExpression} that will wrap the single range variable declaration.
-	 *
-	 * @return The single range variable declaration represented by a temporary collection
-	 */
-	public CollectionExpression buildCollectionExpression() {
+    /**
+     * Creates a new {@link CollectionExpression} that will wrap the single range variable declaration.
+     *
+     * @return The single range variable declaration represented by a temporary collection
+     */
+    public CollectionExpression buildCollectionExpression() {
 
-		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
-		children.add((AbstractExpression) getRangeVariableDeclaration());
+        List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+        children.add((AbstractExpression) getRangeVariableDeclaration());
 
-		List<Boolean> commas = new ArrayList<Boolean>(1);
-		commas.add(Boolean.FALSE);
+        List<Boolean> commas = new ArrayList<Boolean>(1);
+        commas.add(Boolean.FALSE);
 
-		List<Boolean> spaces = new ArrayList<Boolean>(1);
-		spaces.add(Boolean.FALSE);
+        List<Boolean> spaces = new ArrayList<Boolean>(1);
+        spaces.add(Boolean.FALSE);
 
-		return new CollectionExpression(this, children, commas, spaces, true);
-	}
+        return new CollectionExpression(this, children, commas, spaces, true);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPQLQueryBNF findQueryBNF(Expression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JPQLQueryBNF findQueryBNF(Expression expression) {
 
-		if ((rangeVariableDeclaration != null) && rangeVariableDeclaration.isAncestor(expression)) {
-			return getQueryBNF(DeleteClauseRangeVariableDeclarationBNF.ID);
-		}
+        if ((rangeVariableDeclaration != null) && rangeVariableDeclaration.isAncestor(expression)) {
+            return getQueryBNF(DeleteClauseRangeVariableDeclarationBNF.ID);
+        }
 
-		return super.findQueryBNF(expression);
-	}
+        return super.findQueryBNF(expression);
+    }
 
-	/**
-	 * Returns the actual <b>DELETE</b> found in the string representation of the JPQL query, which
-	 * has the actual case that was used.
-	 *
-	 * @return The <b>DELETE</b> identifier that was actually parsed, or an empty string if it was
-	 * not parsed
-	 */
-	public String getActualDeleteIdentifier() {
-		return (deleteIdentifier != null) ? deleteIdentifier : ExpressionTools.EMPTY_STRING;
-	}
+    /**
+     * Returns the actual <b>DELETE</b> found in the string representation of the JPQL query, which
+     * has the actual case that was used.
+     *
+     * @return The <b>DELETE</b> identifier that was actually parsed, or an empty string if it was
+     * not parsed
+     */
+    public String getActualDeleteIdentifier() {
+        return (deleteIdentifier != null) ? deleteIdentifier : ExpressionTools.EMPTY_STRING;
+    }
 
-	/**
-	 * Returns the actual <b>FROM</b> identifier found in the string representation of the JPQL
-	 * query, which has the actual case that was used.
-	 *
-	 * @return The <b>FROM</b> identifier that was actually parsed, or an empty string if it was
-	 * not parsed
-	 */
-	public String getActualFromIdentifier() {
-		return (fromIdentifier != null) ? fromIdentifier : ExpressionTools.EMPTY_STRING;
-	}
+    /**
+     * Returns the actual <b>FROM</b> identifier found in the string representation of the JPQL
+     * query, which has the actual case that was used.
+     *
+     * @return The <b>FROM</b> identifier that was actually parsed, or an empty string if it was
+     * not parsed
+     */
+    public String getActualFromIdentifier() {
+        return (fromIdentifier != null) ? fromIdentifier : ExpressionTools.EMPTY_STRING;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(DeleteClauseBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(DeleteClauseBNF.ID);
+    }
 
-	/**
-	 * Returns the {@link Expression} representing the range variable declaration.
-	 *
-	 * @return The expression representing the range variable declaration
-	 */
-	public Expression getRangeVariableDeclaration() {
-		if (rangeVariableDeclaration == null) {
-			rangeVariableDeclaration = buildNullExpression();
-		}
-		return rangeVariableDeclaration;
-	}
+    /**
+     * Returns the {@link Expression} representing the range variable declaration.
+     *
+     * @return The expression representing the range variable declaration
+     */
+    public Expression getRangeVariableDeclaration() {
+        if (rangeVariableDeclaration == null) {
+            rangeVariableDeclaration = buildNullExpression();
+        }
+        return rangeVariableDeclaration;
+    }
 
-	/**
-	 * Determines whether the identifier <b>FROM</b> was parsed.
-	 *
-	 * @return <code>true</code> if <b>FROM</b> was parsed; <code>false</code> otherwise
-	 */
-	public boolean hasFrom() {
-		return fromIdentifier != null;
-	}
+    /**
+     * Determines whether the identifier <b>FROM</b> was parsed.
+     *
+     * @return <code>true</code> if <b>FROM</b> was parsed; <code>false</code> otherwise
+     */
+    public boolean hasFrom() {
+        return fromIdentifier != null;
+    }
 
-	/**
-	 * Determines whether the range variable declaration was parsed.
-	 *
-	 * @return <code>true</code> if the range variable declaration was parsed; <code>false</code> otherwise
-	 */
-	public boolean hasRangeVariableDeclaration() {
-		return rangeVariableDeclaration != null &&
-		      !rangeVariableDeclaration.isNull();
-	}
+    /**
+     * Determines whether the range variable declaration was parsed.
+     *
+     * @return <code>true</code> if the range variable declaration was parsed; <code>false</code> otherwise
+     */
+    public boolean hasRangeVariableDeclaration() {
+        return rangeVariableDeclaration != null &&
+              !rangeVariableDeclaration.isNull();
+    }
 
-	/**
-	 * Determines whether a whitespace was found after the identifier <b>DELETE</b>.
-	 *
-	 * @return <code>true</code> if there was a whitespace after the identifier <b>DELETE</b>;
-	 * <code>false</code> otherwise
-	 */
-	public boolean hasSpaceAfterDelete() {
-		return hasSpaceAfterDelete;
-	}
+    /**
+     * Determines whether a whitespace was found after the identifier <b>DELETE</b>.
+     *
+     * @return <code>true</code> if there was a whitespace after the identifier <b>DELETE</b>;
+     * <code>false</code> otherwise
+     */
+    public boolean hasSpaceAfterDelete() {
+        return hasSpaceAfterDelete;
+    }
 
-	/**
-	 * Determines whether a whitespace was found after the identifier <b>FROM</b>.
-	 *
-	 * @return <code>true</code> if there was a whitespace after the identifier <b>FROM</b>;
-	 * <code>false</code> otherwise
-	 */
-	public boolean hasSpaceAfterFrom() {
-		return hasSpaceAfterFrom;
-	}
+    /**
+     * Determines whether a whitespace was found after the identifier <b>FROM</b>.
+     *
+     * @return <code>true</code> if there was a whitespace after the identifier <b>FROM</b>;
+     * <code>false</code> otherwise
+     */
+    public boolean hasSpaceAfterFrom() {
+        return hasSpaceAfterFrom;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void parse(WordParser wordParser, boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse(WordParser wordParser, boolean tolerant) {
 
-		// Parse 'DELETE'
-		deleteIdentifier = wordParser.moveForward(DELETE);
+        // Parse 'DELETE'
+        deleteIdentifier = wordParser.moveForward(DELETE);
 
-		hasSpaceAfterDelete = wordParser.skipLeadingWhitespace() > 0;
+        hasSpaceAfterDelete = wordParser.skipLeadingWhitespace() > 0;
 
-		// Parse 'FROM'
-		if (!tolerant || wordParser.startsWithIdentifier(FROM)) {
-			fromIdentifier = wordParser.moveForward(FROM);
-			hasSpaceAfterFrom = wordParser.skipLeadingWhitespace() > 0;
-		}
+        // Parse 'FROM'
+        if (!tolerant || wordParser.startsWithIdentifier(FROM)) {
+            fromIdentifier = wordParser.moveForward(FROM);
+            hasSpaceAfterFrom = wordParser.skipLeadingWhitespace() > 0;
+        }
 
-		// Parse the range variable declaration
-		if (tolerant) {
-			rangeVariableDeclaration = parse(
-				wordParser,
-				DeleteClauseRangeVariableDeclarationBNF.ID,
-				tolerant
-			);
-		}
-		else {
-			rangeVariableDeclaration = new RangeVariableDeclaration(this);
-			rangeVariableDeclaration.parse(wordParser, tolerant);
-		}
-	}
+        // Parse the range variable declaration
+        if (tolerant) {
+            rangeVariableDeclaration = parse(
+                wordParser,
+                DeleteClauseRangeVariableDeclarationBNF.ID,
+                tolerant
+            );
+        }
+        else {
+            rangeVariableDeclaration = new RangeVariableDeclaration(this);
+            rangeVariableDeclaration.parse(wordParser, tolerant);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toParsedText(StringBuilder writer, boolean actual) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toParsedText(StringBuilder writer, boolean actual) {
 
-		// 'DELETE'
-		writer.append(actual ? deleteIdentifier : DELETE);
+        // 'DELETE'
+        writer.append(actual ? deleteIdentifier : DELETE);
 
-		if (hasSpaceAfterDelete) {
-			writer.append(SPACE);
-		}
+        if (hasSpaceAfterDelete) {
+            writer.append(SPACE);
+        }
 
-		// 'FROM'
-		if (fromIdentifier != null) {
-			writer.append(actual ? fromIdentifier : FROM);
-		}
+        // 'FROM'
+        if (fromIdentifier != null) {
+            writer.append(actual ? fromIdentifier : FROM);
+        }
 
-		if (hasSpaceAfterFrom) {
-			writer.append(SPACE);
-		}
+        if (hasSpaceAfterFrom) {
+            writer.append(SPACE);
+        }
 
-		// Range variable declaration
-		if (rangeVariableDeclaration != null) {
-			rangeVariableDeclaration.toParsedText(writer, actual);
-		}
-	}
+        // Range variable declaration
+        if (rangeVariableDeclaration != null) {
+            rangeVariableDeclaration.toParsedText(writer, actual);
+        }
+    }
 }

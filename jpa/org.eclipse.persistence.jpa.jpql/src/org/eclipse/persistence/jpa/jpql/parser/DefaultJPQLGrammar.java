@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,60 +37,60 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
 @SuppressWarnings("nls")
 public final class DefaultJPQLGrammar implements JPQLGrammar {
 
-	/**
-	 * The generic persistence provider name: JPA.
-	 */
-	public static final String PROVIDER_NAME = "JPA";
+    /**
+     * The generic persistence provider name: JPA.
+     */
+    public static final String PROVIDER_NAME = "JPA";
 
-	/**
-	 * Creates a new <code>DefaultJPQLGrammar</code>.
-	 */
-	private DefaultJPQLGrammar() {
-		super();
-	}
+    /**
+     * Creates a new <code>DefaultJPQLGrammar</code>.
+     */
+    private DefaultJPQLGrammar() {
+        super();
+    }
 
-	/**
-	 * Returns the singleton instance of this class.
-	 *
-	 * @return The singleton instance of this {@link DefaultJPQLGrammar}
-	 */
-	public static JPQLGrammar instance() {
-		return JPQLGrammar2_1.instance();
-	}
+    /**
+     * Returns the singleton instance of this class.
+     *
+     * @return The singleton instance of this {@link DefaultJPQLGrammar}
+     */
+    public static JPQLGrammar instance() {
+        return JPQLGrammar2_1.instance();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ExpressionRegistry getExpressionRegistry() {
-		return instance().getExpressionRegistry();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ExpressionRegistry getExpressionRegistry() {
+        return instance().getExpressionRegistry();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPAVersion getJPAVersion() {
-		return instance().getJPAVersion();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPAVersion getJPAVersion() {
+        return instance().getJPAVersion();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getProvider() {
-		return instance().getProvider();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getProvider() {
+        return instance().getProvider();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getProviderVersion() {
-		return ExpressionTools.EMPTY_STRING;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getProviderVersion() {
+        return ExpressionTools.EMPTY_STRING;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return instance().toString();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return instance().toString();
+    }
 }

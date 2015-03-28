@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - testing for bug 294811 - https://bugs.eclipse.org/bugs/show_bug.cgi?id=294811
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
 import static javax.persistence.CascadeType.ALL;
@@ -30,7 +30,7 @@ public class AdminPool {
 
     @Id
     private int id;
-    
+
     private String description;
 
     @OneToMany(mappedBy="pool", cascade=ALL, fetch=EAGER)
@@ -52,7 +52,7 @@ public class AdminPool {
     public void setAdmins(Map<DepartmentAdminRolePK, DepartmentAdminRole> admins) {
         this.admins = admins;
     }
-    
+
     public String getDescription() {
         return description;
     }
@@ -60,11 +60,11 @@ public class AdminPool {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public void addAdmin(DepartmentAdminRole admin){
         admins.put(admin.buildDepartmentAdminRolePK(), admin);
     }
-    
+
     public void removeAdmin(DepartmentAdminRolePK key){
         admins.remove(key);
     }

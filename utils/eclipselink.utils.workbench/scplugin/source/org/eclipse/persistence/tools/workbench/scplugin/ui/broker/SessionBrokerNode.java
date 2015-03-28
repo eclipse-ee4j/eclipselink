@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -36,78 +36,78 @@ import org.eclipse.persistence.tools.workbench.uitools.app.TreeNodeValueModel;
 
 
 /**
- * SessionBrokerNode share the same behavior then a ProjectNode. 
+ * SessionBrokerNode share the same behavior then a ProjectNode.
  * It has to display DatabaseSession and ServerSession with their children nodes.
  */
 public class SessionBrokerNode extends SessionsNode {
-	
-	// ********** constructors/initialization **********
 
-	public SessionBrokerNode( SessionBrokerAdapter broker, TreeNodeValueModel parent, SCPlugin plugin, ApplicationContext context) {
+    // ********** constructors/initialization **********
 
-		super( broker, parent, plugin, context);
-	}
+    public SessionBrokerNode( SessionBrokerAdapter broker, TreeNodeValueModel parent, SCPlugin plugin, ApplicationContext context) {
 
-	// **************** factory methods ****************************************
+        super( broker, parent, plugin, context);
+    }
+
+    // **************** factory methods ****************************************
 
 
-	protected CollectionValueModel buildSessionsAspectAdapter() {
-		
-		return new ListCollectionValueModelAdapter(
-			new ItemPropertyListValueModelAdapter(this.buildChildrenDirtyAdapter(), DIRTY_PROPERTY)
-		);
-	}
+    protected CollectionValueModel buildSessionsAspectAdapter() {
 
-	private ListValueModel buildChildrenDirtyAdapter() {
-		return new CollectionListValueModelAdapter(
-			new CollectionAspectAdapter( this, SessionBrokerAdapter.SESSIONS_COLLECTION) {
-				protected Iterator getValueFromSubject() {
-					return (( SessionBrokerAdapter)subject).sessions();
-				}
-				protected int sizeFromSubject() {
-					return (( SessionBrokerAdapter)subject).sessionsSize();
-				}
-			}
-		);
-	}
+        return new ListCollectionValueModelAdapter(
+            new ItemPropertyListValueModelAdapter(this.buildChildrenDirtyAdapter(), DIRTY_PROPERTY)
+        );
+    }
 
-	protected AbstractPropertiesPage buildPropertiesPage(WorkbenchContext context) {
+    private ListValueModel buildChildrenDirtyAdapter() {
+        return new CollectionListValueModelAdapter(
+            new CollectionAspectAdapter( this, SessionBrokerAdapter.SESSIONS_COLLECTION) {
+                protected Iterator getValueFromSubject() {
+                    return (( SessionBrokerAdapter)subject).sessions();
+                }
+                protected int sizeFromSubject() {
+                    return (( SessionBrokerAdapter)subject).sessionsSize();
+                }
+            }
+        );
+    }
 
-		return new SessionBrokerTabbedPropertiesPage(context);
-	}
+    protected AbstractPropertiesPage buildPropertiesPage(WorkbenchContext context) {
 
-	protected Object propertiesPageKey() {
+        return new SessionBrokerTabbedPropertiesPage(context);
+    }
 
-		return SessionBrokerTabbedPropertiesPage.class;
-	}
+    protected Object propertiesPageKey() {
 
-	protected List buildDisplayStringPropertyNamesList() {
-		
-		List displayStrings = super.buildDisplayStringPropertyNamesList();
-		displayStrings.add( SessionAdapter.NAME_PROPERTY);
-		return displayStrings;
-	}
-	
-	protected String buildIconKey() {
-		return SessionCellRendererAdapter.iconKey(broker());
-	}
+        return SessionBrokerTabbedPropertiesPage.class;
+    }
 
-	protected FrameworkAction buildDeleteNodeAction(WorkbenchContext workbenchContext) {
+    protected List buildDisplayStringPropertyNamesList() {
 
-		return new DeleteBrokerAction(workbenchContext);
-	}
+        List displayStrings = super.buildDisplayStringPropertyNamesList();
+        displayStrings.add( SessionAdapter.NAME_PROPERTY);
+        return displayStrings;
+    }
 
-	protected FrameworkAction buildRenameNodeAction(WorkbenchContext workbenchContext) {
+    protected String buildIconKey() {
+        return SessionCellRendererAdapter.iconKey(broker());
+    }
 
-		return new RenameSessionAction(workbenchContext);
-	}
-	
-	SessionBrokerAdapter broker() {
-		
-		return ( SessionBrokerAdapter)this.getValue();
-	}
-	
-	public String helpTopicID() {
-		return "navigator.session.broker";
-	}
+    protected FrameworkAction buildDeleteNodeAction(WorkbenchContext workbenchContext) {
+
+        return new DeleteBrokerAction(workbenchContext);
+    }
+
+    protected FrameworkAction buildRenameNodeAction(WorkbenchContext workbenchContext) {
+
+        return new RenameSessionAction(workbenchContext);
+    }
+
+    SessionBrokerAdapter broker() {
+
+        return ( SessionBrokerAdapter)this.getValue();
+    }
+
+    public String helpTopicID() {
+        return "navigator.session.broker";
+    }
 }

@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011 Kristian Rye Vennesland. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015  Kristian Rye Vennesland. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     01/11/2011-2.3 Guy Pelletier submitted for Kristian Rye Vennesland  
+ *     01/11/2011-2.3 Guy Pelletier submitted for Kristian Rye Vennesland
  *       - 277079: EmbeddedId's fields are null when using LOB with fetchtype LAZY
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
@@ -32,20 +32,20 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "LOBTEST")
 @NamedQueries({
-    @NamedQuery(name = "Lobtest.findAll", query = "SELECT l FROM Lobtest l"), 
-    @NamedQuery(name = "Lobtest.findByVersionid", query = "SELECT l FROM Lobtest l WHERE l.lobtestPK.versionid = :versionid"), 
-    @NamedQuery(name = "Lobtest.findByUuid", query = "SELECT l FROM Lobtest l WHERE l.uuid = :uuid"), 
+    @NamedQuery(name = "Lobtest.findAll", query = "SELECT l FROM Lobtest l"),
+    @NamedQuery(name = "Lobtest.findByVersionid", query = "SELECT l FROM Lobtest l WHERE l.lobtestPK.versionid = :versionid"),
+    @NamedQuery(name = "Lobtest.findByUuid", query = "SELECT l FROM Lobtest l WHERE l.uuid = :uuid"),
     @NamedQuery(name = "Lobtest.findByDocid", query = "SELECT l FROM Lobtest l WHERE l.lobtestPK.docid = :docid")})
 public class Lobtest implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @EmbeddedId
     protected LobtestPK lobtestPK;
-    
+
     @Basic(optional = false)
     @Column(name = "UUID")
     private String uuid;
-    
+
     @Lob
     @Basic(fetch=FetchType.LAZY)
     @Column(name = "CONTENTDATA")

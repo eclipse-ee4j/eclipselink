@@ -1,22 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Dies Koper - add support for creating indices on tables
- *     01/11/2013-2.5 Guy Pelletier 
+ *     01/11/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     02/04/2013-2.5 Guy Pelletier 
+ *     02/04/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     04/12/2013-2.5 Guy Pelletier 
+ *     04/12/2013-2.5 Guy Pelletier
  *       - 405640: JPA 2.1 schema generation drop operation fails to include dropping defaulted fk constraints.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.Writer;
@@ -62,16 +62,16 @@ public class SchemaManager {
 
     /** Allow table creator to occur "fast" by just deleting all the rows. */
     public static boolean FAST_TABLE_CREATOR = false;
-    
+
     /** Allow replacing of table to force the drop, this may require several passes. */
     public static boolean FORCE_DROP = true;
-    
+
     /** Flag to determine if database schemas should be created during DDL generation */
     protected boolean createDatabaseSchemas = false;
     protected HashSet<String> createdDatabaseSchemas = new HashSet<String>();
     protected HashSet<String> createdDatabaseSchemasOnDatabase = new HashSet<String>();
     protected HashMap<String, DatabaseObjectDefinition> dropDatabaseSchemas = new HashMap<String, DatabaseObjectDefinition>();
-    
+
     public SchemaManager(DatabaseSessionImpl session) {
         this.session = session;
     }
@@ -79,7 +79,7 @@ public class SchemaManager {
     public SchemaManager(org.eclipse.persistence.sessions.DatabaseSession session) {
         this.session = ((DatabaseSessionImpl)session);
     }
-    
+
     protected Writer getDropSchemaWriter() {
         return (dropSchemaWriter == null) ? createSchemaWriter : dropSchemaWriter;
     }
@@ -90,8 +90,8 @@ public class SchemaManager {
      */
     public void appendToDDLWriter(String stringToWrite) {
         // If this method is called, we know that it is the old case and
-        // it would not matter which schemaWriter we use as both the 
-        // create and drop schemaWriters are essentially the same. 
+        // it would not matter which schemaWriter we use as both the
+        // create and drop schemaWriters are essentially the same.
         // So just pick one.
         appendToDDLWriter(createSchemaWriter, stringToWrite);
     }
@@ -140,10 +140,10 @@ public class SchemaManager {
             throw ValidationException.fileError(ioException);
         }
     }
-    
+
     /**
      * INTERNAL:
-     * Called when dropping tables. Will build a map of those schemas (and a 
+     * Called when dropping tables. Will build a map of those schemas (and a
      * table that references it) that should be dropped.
      */
     protected void collectDatabaseSchemasForDrop(DatabaseObjectDefinition databaseObjectDefinition) {
@@ -179,7 +179,7 @@ public class SchemaManager {
             }
         }
     }
-    
+
     void createUniqueConstraints(TableDefinition tableDefinition) throws EclipseLinkException {
         if (shouldWriteToDatabase()) {
             tableDefinition.createUniqueConstraintsOnDatabase(getSession());
@@ -188,7 +188,7 @@ public class SchemaManager {
             tableDefinition.createUniqueConstraints(getSession(), createSchemaWriter);
         }
     }
-    
+
     void createForeignConstraints(TableDefinition tableDefinition) throws EclipseLinkException {
         if (shouldWriteToDatabase()) {
             tableDefinition.createForeignConstraintsOnDatabase(getSession());
@@ -212,25 +212,25 @@ public class SchemaManager {
 
         try {
             if (shouldWriteToDatabase()) {
-                // Check if we should create a database schema for this 
-                // database object definition on the database. It is only 
+                // Check if we should create a database schema for this
+                // database object definition on the database. It is only
                 // create once and for the first database object definition
                 // that references it.
                 if (shouldCreateDatabaseSchema(databaseObjectDefinition, createdDatabaseSchemasOnDatabase)) {
                     databaseObjectDefinition.createDatabaseSchemaOnDatabase(getSession(), createdDatabaseSchemasOnDatabase);
                 }
-                
+
                 databaseObjectDefinition.createOnDatabase(getSession());
             } else {
-                // Check if we should create a database schema for this 
-                // database object definition on the database. It is only 
+                // Check if we should create a database schema for this
+                // database object definition on the database. It is only
                 // create once and for the first database object definition
                 // that references it.
                 if (shouldCreateDatabaseSchema(databaseObjectDefinition, createdDatabaseSchemas)) {
                     databaseObjectDefinition.createDatabaseSchema(getSession(), createSchemaWriter, createdDatabaseSchemas);
                     appendToDDLWriter(createSchemaWriter, "\n");
                 }
-                
+
                 databaseObjectDefinition.createObject(getSession(), createSchemaWriter);
                 if (createSQLFiles){
                     this.appendToDDLWriter(createSchemaWriter, getSession().getPlatform().getStoredProcedureTerminationToken());
@@ -259,7 +259,7 @@ public class SchemaManager {
     public void setCreateDatabaseSchemas(boolean createDatabaseSchemas) {
         this.createDatabaseSchemas = createDatabaseSchemas;
     }
-    
+
     public void setCreateSQLFiles(boolean genFlag) {
         this.createSQLFiles = genFlag;
     }
@@ -275,10 +275,10 @@ public class SchemaManager {
      * Common implementor for createSequence and replaceSequence
      * @param create - true to create the sequences, false to replace them (dropped then create)
      */
-    protected void createOrReplaceSequences(boolean create) throws EclipseLinkException {              
+    protected void createOrReplaceSequences(boolean create) throws EclipseLinkException {
         createOrReplaceSequences(create, create);
     }
-    
+
     /**
      * Common implementor for createSequence and replaceSequence, distinguishes between sequence tables and sequence objects
      * @param createSequenceTables - true to create the sequences tables, false to replace them (dropped then create)
@@ -291,26 +291,26 @@ public class SchemaManager {
             // Assume sequences already created.
             return;
         }
-        
+
         processSequenceDefinitions(createSequenceTables, createSequences, true);
-    } 
-    
+    }
+
     /**
      * This will drop the database schemas if managing the database schemas.
      */
     protected void dropSequences() {
         processSequenceDefinitions(false, false, false);
     }
-    
+
     /**
-     * Method creates database tables/objects. If create is true, it will 
-     * attempt to create the object and silently ignore exceptions. If create 
-     * is false, it will drop the object ignoring any exceptions, then create 
+     * Method creates database tables/objects. If create is true, it will
+     * attempt to create the object and silently ignore exceptions. If create
+     * is false, it will drop the object ignoring any exceptions, then create
      * it if the replace flag is true (otherwise a drop only).
-     *   
+     *
      * @param definition - the sequence definition
      * @param createTables - true if table sequence table definitions should be created.
-     * @param createSequences - true if the sequence definition should be created, 
+     * @param createSequences - true if the sequence definition should be created,
      *        false if it should be dropped.
      * @param replace - true if table definitions and sequence definitions should be replaced.
      * @throws EclipseLinkException
@@ -323,12 +323,12 @@ public class SchemaManager {
                 // Check that we haven't already created the table.
                 if (! createdTableNames.contains(tableDefinition.getFullName())) {
                     createdTableNames.add(tableDefinition.getFullName());
-                
-                    // Check if it exists on the database. NOTE: when writing to scripts only with 
+
+                    // Check if it exists on the database. NOTE: when writing to scripts only with
                     // no connection, this of course will always return false hence the need for
                     // the createdSequenceTableNames collection above.
                     boolean exists = checkTableExists(tableDefinition);
-                    
+
                     if (createTables) {
                         // Don't create it if it already exists on the database.
                         // In all all other cases, write it out.
@@ -336,10 +336,10 @@ public class SchemaManager {
                             createObject(tableDefinition);
                         }
                     } else {
-                        // Don't check exists since if writing to scripts only with no connection, 
-                        // we'll never write the sql out. When executing to the database, the drop 
-                        // will fail and we'll ignore it. Note: TableSequenceDefinition's will drop 
-                        // their table definitions as needed (i.e.) when the jpa create database 
+                        // Don't check exists since if writing to scripts only with no connection,
+                        // we'll never write the sql out. When executing to the database, the drop
+                        // will fail and we'll ignore it. Note: TableSequenceDefinition's will drop
+                        // their table definitions as needed (i.e.) when the jpa create database
                         // schemas flag is set and the table definition has a schema. Otherwise,
                         // we should not drop sequence tables since they may be re-used across
                         // persistence units (default behavior right now).
@@ -354,20 +354,20 @@ public class SchemaManager {
         } catch (DatabaseException exception) {
             // ignore any database exceptions here and keep going.
         }
-        
+
         // Handle the sequence objects second.
         try {
             if (createSequences) {
                 createObject(definition);
             } else {
                 try {
-                    // If the sequence definition has and will drop a table definition, then check 
-                    // if we have already dropped it. Table definitions are dropped as a whole if 
+                    // If the sequence definition has and will drop a table definition, then check
+                    // if we have already dropped it. Table definitions are dropped as a whole if
                     // they have a schema name and the jpa create database schemas flag is set to true.
                     if (definition.isTableSequenceDefinition()) {
                         if (((TableSequenceDefinition) definition).shouldDropTableDefinition()) {
                             String tableDefinitionTableName = ((TableSequenceDefinition) definition).getSequenceTableName();
-                            
+
                             // If we have already dropped it, move on, otherwise drop it!
                             if (droppedTableNames.contains(tableDefinitionTableName)) {
                                 return; // cut out early, we've already seen this table.
@@ -376,12 +376,12 @@ public class SchemaManager {
                             }
                         }
                     }
-                    
+
                     dropObject(definition);
                 } catch (DatabaseException exception) {
                     // Ignore table not found for first creation
-                } 
-            
+                }
+
                 // Drop only scripts we don't want to replace.
                 if (replace) {
                     createObject(definition);
@@ -391,7 +391,7 @@ public class SchemaManager {
             // ignore any database exceptions here and keep chugging
         }
     }
-    
+
     /**
      * Common implementor for createSequence and replaceSequence, distinguishes between sequence tables and sequence objects
      * @param createSequenceTables - true to create the sequences tables, false to replace them (dropped then create)
@@ -405,23 +405,23 @@ public class SchemaManager {
         if (sequencing != null && sequencing.whenShouldAcquireValueForAll() != Sequencing.AFTER_INSERT) {
             // Build the sequence definitions.
             HashSet<SequenceDefinition> sequenceDefinitions = buildSequenceDefinitions();
-        
+
             // Now process the sequence definitions.
             // CR 3870467, do not log stack
             boolean shouldLogExceptionStackTrace = session.getSessionLog().shouldLogExceptionStackTrace();
             session.getSessionLog().setShouldLogExceptionStackTrace(false);
             HashSet<String> createdSequenceTableNames = new HashSet();
             HashSet<String> droppedSequenceTableNames = new HashSet();
-        
+
             for (SequenceDefinition sequenceDefinition : sequenceDefinitions) {
                 processSequenceDefinition(sequenceDefinition, createSequenceTables, createSequences, replaceSequences, createdSequenceTableNames, droppedSequenceTableNames);
             }
-        
+
             // Set the log stack trace flag back.
             session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
-    } 
-    
+    }
+
     /**
      * INTERNAL:
      * Build the sequence definitions.
@@ -430,7 +430,7 @@ public class SchemaManager {
         // Remember the processed - to handle each sequence just once.
         HashSet processedSequenceNames = new HashSet();
         HashSet<SequenceDefinition> sequenceDefinitions = new HashSet<SequenceDefinition>();
-        
+
         for (ClassDescriptor descriptor : getSession().getDescriptors().values()) {
             if (descriptor.usesSequenceNumbers()) {
                 String seqName = descriptor.getSequenceNumberName();
@@ -451,10 +451,10 @@ public class SchemaManager {
                 }
             }
         }
-        
+
         return sequenceDefinitions;
     }
-    
+
     /**
      * Check if the table exists by issuing a select.
      */
@@ -466,7 +466,7 @@ public class SchemaManager {
             } else if (field.isPrimaryKey()) {
                 column = field.getName();
                 break;
-            }                        
+            }
         }
         String sql = "SELECT " + column + " FROM " + table.getFullName() + " WHERE " + column + " <> " + column;
         DataReadQuery query = new DataReadQuery(sql);
@@ -493,7 +493,7 @@ public class SchemaManager {
         } else if (sequence instanceof UnaryTableSequence ||
                    (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof UnaryTableSequence)) {
             return new UnaryTableSequenceDefinition(sequence, createDatabaseSchemas);
-        } else if (sequence instanceof NativeSequence || 
+        } else if (sequence instanceof NativeSequence ||
                    (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof NativeSequence)) {
             NativeSequence nativeSequence = null;
             if (sequence instanceof NativeSequence) {
@@ -551,14 +551,14 @@ public class SchemaManager {
         try {
             // If the object definition has a database schema collect it.
             collectDatabaseSchemasForDrop(databaseObjectDefinition);
-            
+
             databaseObjectDefinition.preDropObject(getSession(), getDropSchemaWriter(), this.createSQLFiles);
             if (shouldWriteToDatabase()) {
                 // drop actual object
                 databaseObjectDefinition.dropFromDatabase(getSession());
             } else {
                 Writer dropSchemaWriter = getDropSchemaWriter();
-                
+
                 // drop actual object
                 databaseObjectDefinition.dropObject(getSession(), dropSchemaWriter, createSQLFiles);
                 if (this.createSQLFiles){
@@ -572,7 +572,7 @@ public class SchemaManager {
             }
         }
     }
-    
+
     /**
      * Drop (delete) the table named tableName from the database.
      */
@@ -642,8 +642,8 @@ public class SchemaManager {
      * or to a file.
      */
     public void generateStoredProceduresAndAmendmentClass(String path, String fullyQualifiedClassName) throws EclipseLinkException {
-    	java.io.FileWriter fileWriter = null;
-    	try {
+        java.io.FileWriter fileWriter = null;
+        try {
             StoredProcedureGenerator storedProcedureGenerator = new StoredProcedureGenerator(this);
 
             if (!(path.endsWith("\\") || path.endsWith("/"))) {
@@ -660,7 +660,7 @@ public class SchemaManager {
         } catch (java.io.IOException ioException) {
             throw ValidationException.fileError(ioException);
         } finally {
-        	Helper.close(fileWriter);
+            Helper.close(fileWriter);
         }
     }
 
@@ -924,7 +924,7 @@ public class SchemaManager {
         this.createSchemaWriter = null;
         this.dropSchemaWriter = null;
     }
-    
+
     /**
      * PUBLIC:
      * Output all DDL statements to a file writer specified by the name in the parameter.
@@ -940,7 +940,7 @@ public class SchemaManager {
     public void outputDropDDLToFile(String fileName) {
         this.dropSchemaWriter = getWriter(fileName);
     }
-    
+
     protected Writer getWriter(String fileName) {
         try {
             return new java.io.FileWriter(fileName);
@@ -977,17 +977,17 @@ public class SchemaManager {
      * This is used for dropping tables, views, procedures ... etc ...
      * This handles and ignore any database error while dropping in case the object did not previously exist.
      */
-    public void replaceObject(DatabaseObjectDefinition databaseDefinition) throws EclipseLinkException {                
+    public void replaceObject(DatabaseObjectDefinition databaseDefinition) throws EclipseLinkException {
         // PERF: Allow a special "fast" flag to be set on the session causes a delete from the table instead of a replace.
         boolean fast = FAST_TABLE_CREATOR;
         if (fast && (databaseDefinition instanceof TableDefinition)) {
-            session.executeNonSelectingSQL("DELETE FROM " + databaseDefinition.getName()); 
+            session.executeNonSelectingSQL("DELETE FROM " + databaseDefinition.getName());
         } else if (fast && (databaseDefinition instanceof StoredProcedureDefinition)) {
             // do nothing
         } else {
             // CR 3870467, do not log stack
             boolean shouldLogExceptionStackTrace = getSession().getSessionLog().shouldLogExceptionStackTrace();
-    
+
             if (shouldLogExceptionStackTrace) {
                 getSession().getSessionLog().setShouldLogExceptionStackTrace(false);
             }
@@ -1007,7 +1007,7 @@ public class SchemaManager {
 
     /**
      * Construct the default TableCreator.
-     * If the default TableCreator is already created, just returns it. 
+     * If the default TableCreator is already created, just returns it.
      */
     protected TableCreator getDefaultTableCreator(boolean generateFKConstraints) {
         if(defaultTableCreator == null) {
@@ -1016,12 +1016,12 @@ public class SchemaManager {
         }
         return defaultTableCreator;
     }
-    
+
     /**
      * Create the default table schema for the project this session associated with.
      */
     public void createDefaultTables(boolean generateFKConstraints) {
-        //Create each table w/o throwing exception and/or exit if some of them are already existed in the db. 
+        //Create each table w/o throwing exception and/or exit if some of them are already existed in the db.
         //If a table is already existed, skip the creation.
 
         boolean shouldLogExceptionStackTrace = getSession().getSessionLog().shouldLogExceptionStackTrace();
@@ -1041,7 +1041,7 @@ public class SchemaManager {
             this.session.getDatabaseEventListener().register(this.session);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Iterate over the schemas that need to be dropped.
@@ -1056,7 +1056,7 @@ public class SchemaManager {
             }
         }
     }
-    
+
     /**
      * Create the default table schema for the project this session associated with.
      */
@@ -1069,11 +1069,11 @@ public class SchemaManager {
             // Drop the tables.
             TableCreator tableCreator = getDefaultTableCreator(true);
             tableCreator.dropTables(this.session, this);
-            
+
             // Drop the sequences.
             dropSequences();
-            
-            // Drop all the database schemas now if set to do so. This must be 
+
+            // Drop all the database schemas now if set to do so. This must be
             // called after all the constraints, tables etc. are dropped.
             dropDatabaseSchemas();
         } catch (DatabaseException ex) {
@@ -1101,7 +1101,7 @@ public class SchemaManager {
     public void replaceDefaultTables(boolean createSequenceTables, boolean generateFKConstraints) throws EclipseLinkException {
         replaceDefaultTables(createSequenceTables, false, generateFKConstraints);
     }
-    
+
     /**
      * Drop and recreate the default table schema for the project this session associated with.
      */
@@ -1112,8 +1112,8 @@ public class SchemaManager {
         try {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
             tableCreator.replaceTables(this.session, this, createSequenceTables, createSequences);
-            
-            // Drop all the database schemas now if set to do so. This must be 
+
+            // Drop all the database schemas now if set to do so. This must be
             // called after all the constraints, tables etc. are dropped.
             dropDatabaseSchemas();
         } catch (DatabaseException exception) {
@@ -1140,7 +1140,7 @@ public class SchemaManager {
     protected boolean shouldCreateDatabaseSchema(DatabaseObjectDefinition databaseObjectDefinition, Set<String> createdDatabaseSchemas) {
         return (createDatabaseSchemas && databaseObjectDefinition.shouldCreateDatabaseSchema(createdDatabaseSchemas));
     }
-    
+
     /**
      * PUBLIC:
      * Return true if this SchemaManager should write to the database directly
@@ -1148,7 +1148,7 @@ public class SchemaManager {
     public boolean shouldWriteToDatabase() {
         return ((this.createSchemaWriter == null) && (this.dropSchemaWriter == null));
     }
-    
+
     /**
      * Use the definition to alter sequence.
      */

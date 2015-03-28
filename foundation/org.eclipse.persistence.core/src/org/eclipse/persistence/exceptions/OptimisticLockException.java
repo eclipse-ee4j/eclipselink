@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions;
 
 import org.eclipse.persistence.queries.*;
@@ -42,9 +42,9 @@ public class OptimisticLockException extends EclipseLinkException {
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
      */
-    protected OptimisticLockException() {        
+    protected OptimisticLockException() {
     }
-    
+
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -79,14 +79,14 @@ public class OptimisticLockException extends EclipseLinkException {
     public ObjectLevelModifyQuery getQuery() {
         return query;
     }
-    
+
     public static OptimisticLockException batchStatementExecutionFailure(){
         Object[] args = { };
 
         OptimisticLockException optimisticLockException = new OptimisticLockException(ExceptionMessageGenerator.buildMessage(OptimisticLockException.class, STATEMENT_NOT_EXECUTED_IN_BATCH, args));
         optimisticLockException.setErrorCode(STATEMENT_NOT_EXECUTED_IN_BATCH);
         return optimisticLockException;
-    
+
     }
 
     public static OptimisticLockException mustHaveMappingWhenStoredInObject(Class aClass) {
@@ -145,8 +145,8 @@ public class OptimisticLockException extends EclipseLinkException {
         optimisticLockException.setErrorCode(OBJECT_CHANGED_SINCE_LAST_READ_WHEN_UPDATING);
         return optimisticLockException;
     }
-    
-    public static OptimisticLockException objectChangedSinceLastMerge(Object object) {        
+
+    public static OptimisticLockException objectChangedSinceLastMerge(Object object) {
         Object[] args = { object, object.getClass().getName(), CR };
 
         OptimisticLockException optimisticLockException = new OptimisticLockException(ExceptionMessageGenerator.buildMessage(OptimisticLockException.class, OBJECT_CHANGED_SINCE_LAST_MERGE, args));

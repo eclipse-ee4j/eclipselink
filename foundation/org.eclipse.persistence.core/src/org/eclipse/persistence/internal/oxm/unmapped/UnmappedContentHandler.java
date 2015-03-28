@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,7 +19,7 @@ import org.xml.sax.ContentHandler;
  * <p><b>Purpose:</b>Provide an interface that can be implemented for handling
  * unmapped content during unmarshal operations with SAXPlatform.
  */
-public interface UnmappedContentHandler 
+public interface UnmappedContentHandler
  <UNMARSHAL_RECORD extends UnmarshalRecord>
 extends ContentHandler {
 

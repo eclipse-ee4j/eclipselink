@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,71 +29,71 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeRepository;
  */
 public class JavaConstructor implements IConstructor {
 
-	/**
-	 * The actual Java constructor.
-	 */
-	private Constructor<?> constructor;
+    /**
+     * The actual Java constructor.
+     */
+    private Constructor<?> constructor;
 
-	/**
-	 * The cached {@link ITypeDeclaration parameter types}.
-	 */
-	private ITypeDeclaration[] parameterTypes;
+    /**
+     * The cached {@link ITypeDeclaration parameter types}.
+     */
+    private ITypeDeclaration[] parameterTypes;
 
-	/**
-	 * The declaring type of this constructor.
-	 */
-	private JavaType type;
+    /**
+     * The declaring type of this constructor.
+     */
+    private JavaType type;
 
-	/**
-	 * Creates a new <code>JavaConstructor</code>.
-	 *
-	 * @param type The declaring type of this constructor
-	 * @param constructor The actual Java constructor
-	 */
-	public JavaConstructor(JavaType type, Constructor<?> constructor) {
-		super();
-		this.type = type;
-		this.constructor = constructor;
-	}
+    /**
+     * Creates a new <code>JavaConstructor</code>.
+     *
+     * @param type The declaring type of this constructor
+     * @param constructor The actual Java constructor
+     */
+    public JavaConstructor(JavaType type, Constructor<?> constructor) {
+        super();
+        this.type = type;
+        this.constructor = constructor;
+    }
 
-	protected ITypeDeclaration[] buildParameterTypes() {
+    protected ITypeDeclaration[] buildParameterTypes() {
 
-		Class<?>[] types = constructor.getParameterTypes();
-		Type[] genericTypes = constructor.getGenericParameterTypes();
-		ITypeDeclaration[] typeDeclarations = new ITypeDeclaration[types.length];
+        Class<?>[] types = constructor.getParameterTypes();
+        Type[] genericTypes = constructor.getGenericParameterTypes();
+        ITypeDeclaration[] typeDeclarations = new ITypeDeclaration[types.length];
 
-		for (int index = 0, count = types.length; index < count; index++) {
-			typeDeclarations[index] = buildTypeDeclaration(types[index], genericTypes[index]);
-		}
+        for (int index = 0, count = types.length; index < count; index++) {
+            typeDeclarations[index] = buildTypeDeclaration(types[index], genericTypes[index]);
+        }
 
-		return typeDeclarations;
-	}
+        return typeDeclarations;
+    }
 
-	protected ITypeDeclaration buildTypeDeclaration(Class<?> javaType, Type genericType) {
-		ITypeRepository typeRepository = getTypeRepository();
-		IType type = typeRepository.getType(javaType);
-		return new JavaTypeDeclaration(typeRepository, type, genericType, javaType.isArray());
-	}
+    protected ITypeDeclaration buildTypeDeclaration(Class<?> javaType, Type genericType) {
+        ITypeRepository typeRepository = getTypeRepository();
+        IType type = typeRepository.getType(javaType);
+        return new JavaTypeDeclaration(typeRepository, type, genericType, javaType.isArray());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ITypeDeclaration[] getParameterTypes() {
-		if (parameterTypes == null) {
-			parameterTypes = buildParameterTypes();
-		}
-		return parameterTypes;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ITypeDeclaration[] getParameterTypes() {
+        if (parameterTypes == null) {
+            parameterTypes = buildParameterTypes();
+        }
+        return parameterTypes;
+    }
 
-	protected ITypeRepository getTypeRepository() {
-		return type.getTypeRepository();
-	}
+    protected ITypeRepository getTypeRepository() {
+        return type.getTypeRepository();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return constructor.toGenericString();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return constructor.toGenericString();
+    }
 }

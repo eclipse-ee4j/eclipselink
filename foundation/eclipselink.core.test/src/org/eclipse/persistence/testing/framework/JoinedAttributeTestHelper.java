@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import java.util.Collection;
@@ -34,9 +34,9 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.mappings.DatabaseMapping;
- 
+
 public class JoinedAttributeTestHelper {
-            
+
     /**
      * Pass to this method controlQuery and query with joined attributes to be tested.
      * The method executes both controlQuery and query with joined attributes and compares results.
@@ -47,7 +47,7 @@ public class JoinedAttributeTestHelper {
      *   error is reported in case on query has indirection instantiated and the other doesn't.
      *   joinedAttributes expressions set on the second query used to read the relevant values into
      *   the result of controlQuery.
-     * 
+     *
      * A simple way to create control query the will be in sync with queryWithJoins to be tested:
      *   instantiate queryWithJoins - the one to be tested,
      *   set it's referenceClass, selectionCriteria,..., everything but joinedAttributes;
@@ -69,12 +69,12 @@ public class JoinedAttributeTestHelper {
         }
         return errorMsg;
     }
-    
+
     /**
      * Pass to this method controlQuery and query with joined attributes to be tested.
      * The method executes controlQuery and returns the results after triggering the relations
      * that need to be joined (using the queryWithJoins).
-     * 
+     *
      * @see executeQueriesAndCompareResults
      */
     public static Object getControlResultsFromControlQuery (ObjectLevelReadQuery controlQuery, ObjectLevelReadQuery queryWithJoins, AbstractSession session){
@@ -136,7 +136,7 @@ public class JoinedAttributeTestHelper {
             }
         }
         session.getIdentityMapAccessor().initializeAllIdentityMaps();
-        
+
         // Now execute and only instantiate indirection in non-excluded objects.
         controlResult = session.executeQuery(controlQuery);
         isCollection = false;
@@ -157,7 +157,7 @@ public class JoinedAttributeTestHelper {
                 for (Iterator joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
                     Expression joinExpression = (Expression)joinsIterator.next();
                     // Instantiate value holders that should be instantiated.
-                    joinExpression.valueFromObject(object, session, null, valueHolderPolicy, false);                
+                    joinExpression.valueFromObject(object, session, null, valueHolderPolicy, false);
                 }
             }
         }
@@ -177,7 +177,7 @@ public class JoinedAttributeTestHelper {
         Map processed = new IdentityHashMap();
         return compareCollections(col1, col2, desc, session, processed);
     }
-    
+
     // The errorMessage is returned - empty return means the objects are equal.
     // Note that comparison:
     //   takes into account all objects referenced by the objects compared;
@@ -222,7 +222,7 @@ public class JoinedAttributeTestHelper {
             // objects keyed by pks
             HashMap map1 = new HashMap(col1.size());
             HashMap map2 = new HashMap(col2.size());
-            
+
             ObjectBuilder builder = desc.getObjectBuilder();
             Iterator it1 = col1.iterator();
             Iterator it2 = col2.iterator();
@@ -234,7 +234,7 @@ public class JoinedAttributeTestHelper {
                 map1.put(pk1, obj1);
                 map2.put(pk2, obj2);
             }
-    
+
             Iterator itEntries1 = map1.entrySet().iterator();
             while(itEntries1.hasNext()) {
                 Map.Entry entry = (Map.Entry)itEntries1.next();
@@ -245,7 +245,7 @@ public class JoinedAttributeTestHelper {
                 if(objErrorMsg.length() > 0) {
                     errorMsg += "PK = " + pk.toString() + ": " + Helper.getShortClassName(obj1.getClass()) + objErrorMsg + "  ";
                 }
-                
+
             }
         } else {
             // there's no target descriptor - compare collections directly
@@ -256,7 +256,7 @@ public class JoinedAttributeTestHelper {
 
         return errorMsg;
     }
-    
+
     protected static String compareMaps(Map map1, Map map2, AbstractSession session, Map processed) {
         if(map1==null && map2==null) {
             return "";
@@ -297,12 +297,12 @@ public class JoinedAttributeTestHelper {
             if(objErrorMsg.length() > 0) {
                 errorMsg += "Key = " + key.toString() + ": " + Helper.getShortClassName(obj1.getClass()) + objErrorMsg + "  ";
             }
-            
+
         }
 
         return errorMsg;
     }
-    
+
     protected static String compareObjects(Object obj1, Object obj2, AbstractSession session, Map processed) {
         if(obj1==null && obj2==null) {
             return "";
@@ -333,7 +333,7 @@ public class JoinedAttributeTestHelper {
             errorMsg = ": " + obj1.getClass().getName() + "!=" + obj2.getClass().getName() + "; ";
             return errorMsg;
         }
-        
+
         ClassDescriptor desc = session.getDescriptor(obj1);
         if(desc == null ) {
             if (!obj1.equals(obj2)) {
@@ -341,7 +341,7 @@ public class JoinedAttributeTestHelper {
             }
             return errorMsg;
         }
-        
+
         Vector mappings = desc.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
@@ -364,13 +364,13 @@ public class JoinedAttributeTestHelper {
                 return "";
             } else if(isInstantiated1 && !isInstantiated2) {
                 if(frm.isOneToOneMapping() && value1 instanceof ValueHolder && ((ValueHolder)(value1)).getValue() == null) {
-                    // In OneToOne case if the foreign key of the read object is null then ValueHolder (which is always instantiated) with value null is created 
+                    // In OneToOne case if the foreign key of the read object is null then ValueHolder (which is always instantiated) with value null is created
                 } else {
                     errorMsg = ":  indirection instantiated != indirection NOT instantiated; ";
                 }
             } else if(!isInstantiated1 && isInstantiated2) {
                 if(frm.isOneToOneMapping() && value2 instanceof ValueHolder && ((ValueHolder)(value2)).getValue() == null) {
-                    // In OneToOne case if the foreign key of the read object is null then ValueHolder (which is always instantiated) with value null is created 
+                    // In OneToOne case if the foreign key of the read object is null then ValueHolder (which is always instantiated) with value null is created
                 } else {
                     errorMsg = ": indirection NOT instantiated != indirection instantiated; ";
                 }
@@ -384,7 +384,7 @@ public class JoinedAttributeTestHelper {
                     } else if(Map.class.isAssignableFrom(containerClass)) {
                         errorMsg += compareMaps((Map)value1, (Map)value2, session, processed);
                     } else {
-                        errorMsg += mapping.toString() + " container class implements neither Collection nor Map - can't processl; "; 
+                        errorMsg += mapping.toString() + " container class implements neither Collection nor Map - can't processl; ";
                     }
                 } else {
                     errorMsg += compareObjects(value1, value2, session, processed);

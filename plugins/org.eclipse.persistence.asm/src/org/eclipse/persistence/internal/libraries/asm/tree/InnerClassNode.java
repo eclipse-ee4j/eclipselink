@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 
 /**
  * A node that represents an inner class.
- * 
+ *
  * @author Eric Bruneton
  */
 public class InnerClassNode {
@@ -65,7 +65,7 @@ public class InnerClassNode {
 
     /**
      * Constructs a new {@link InnerClassNode}.
-     * 
+     *
      * @param name
      *            the internal name of an inner class (see
      *            {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()
@@ -91,7 +91,7 @@ public class InnerClassNode {
 
     /**
      * Makes the given class visitor visit this inner class.
-     * 
+     *
      * @param cv
      *            a class visitor.
      */

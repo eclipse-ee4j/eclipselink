@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,31 +37,31 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <p>
  * <b>Description</b>: This class represents an In predicate.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria Join
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
 
 public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
-    
+
     protected org.eclipse.persistence.expressions.Expression parentNode;
-    
+
     public InImpl(Metamodel metamodel, ExpressionImpl leftExpression, Collection values, List expressions) {
         super(metamodel, ((InternalSelection)leftExpression).getCurrentNode().in(values), expressions, "in");
         this.leftExpression = leftExpression;
-        
+
     }
 
     public InImpl(Metamodel metamodel, ExpressionImpl leftExpression, ExpressionImpl rightExp, List expressions) {
-        super(metamodel, 
+        super(metamodel,
             (rightExp.isParameter()?
                 leftExpression.getCurrentNode().in(rightExp.getCurrentNode()):
-                leftExpression.getCurrentNode().equal(rightExp.getCurrentNode())), 
+                leftExpression.getCurrentNode().equal(rightExp.getCurrentNode())),
             expressions, "in");
         this.leftExpression = leftExpression;
-        
+
     }
 
     protected ExpressionImpl leftExpression;
@@ -126,7 +126,7 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
         }
         return this;
     }
-    
+
     /**
      * This method is used to store what will be the parent EclipseLink expression in the case the tree needs to be altered.
      * Currently used for In.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -107,7 +107,7 @@ import static org.eclipse.persistence.tools.dbws.Util.isArgPLSQLScalar;
 /**
  * This class is responsible for generating an XMLEntityMappings instance based
  * on a given OR Project's Queries and Descriptors.
- * 
+ *
  */
 public class XmlEntityMappingsGenerator {
     static final String IN_STR = "IN";
@@ -117,10 +117,10 @@ public class XmlEntityMappingsGenerator {
 
     static final String ARRAYLIST_STR = "java.util.ArrayList";
     static final String STRING_STR = "java.lang.String";
-    
+
     /**
      * Generate an XMLEntityMappings instance based on a given OR Project's Queries and Descriptors.
-     * 
+     *
      * @param orProject the ORM Project instance containing Queries and Descriptors to be used to generate an XMLEntityMappings
      * @param complexTypes list of composite database types used to generate metadata for advanced Oracle and PL/SQL types
      * @param crudOperations map of maps keyed on table name - the second map are operation name to SQL string entries
@@ -129,7 +129,7 @@ public class XmlEntityMappingsGenerator {
     public static XMLEntityMappings generateXmlEntityMappings(Project orProject, List<CompositeDatabaseType> complexTypes, Map<String, Map<String, String>> crudOperations) {
         List<ClassDescriptor> descriptors = orProject.getOrderedDescriptors();
         List<DatabaseQuery> queries = orProject.getQueries();
-        
+
         XMLEntityMappings xmlEntityMappings = new XMLEntityMappings();
         xmlEntityMappings.setEmbeddables(new ArrayList<EmbeddableAccessor>());
         xmlEntityMappings.setEntities(new ArrayList<EntityAccessor>());
@@ -144,7 +144,7 @@ public class XmlEntityMappingsGenerator {
         List<PLSQLTableMetadata>  plsqlTables  = null;
         List<OracleObjectTypeMetadata> objectTypes = null;
         List<OracleArrayTypeMetadata> arrayTypes = null;
-        
+
         // generate metadata for each of the composite types
         List<ComplexTypeMetadata> complexTypeMetadata = processCompositeTypes(complexTypes, orProject);
         for (ComplexTypeMetadata cTypeMetadata : complexTypeMetadata) {
@@ -161,7 +161,7 @@ public class XmlEntityMappingsGenerator {
                         objectTypes = new ArrayList<OracleObjectTypeMetadata>();
                     }
                     objectTypes.add((OracleObjectTypeMetadata) octMetadata);
-                }                
+                }
             } else {
                 // assumes PL/SQL complex type metadata
                 PLSQLComplexTypeMetadata plsqlctMetadata = (PLSQLComplexTypeMetadata) cTypeMetadata;
@@ -184,7 +184,7 @@ public class XmlEntityMappingsGenerator {
         xmlEntityMappings.setPLSQLTables(plsqlTables);
         xmlEntityMappings.setOracleObjectTypes(objectTypes);
         xmlEntityMappings.setOracleArrayTypes(arrayTypes);
-        
+
         // process stored procedures/functions
         List<NamedPLSQLStoredProcedureQueryMetadata> plsqlStoredProcs = null;
         List<NamedPLSQLStoredFunctionQueryMetadata> plsqlStoredFuncs = null;
@@ -198,10 +198,10 @@ public class XmlEntityMappingsGenerator {
                 if (query.getCall() instanceof PLSQLStoredFunctionCall) {
                     PLSQLStoredFunctionCall call = (PLSQLStoredFunctionCall)query.getCall();
                     NamedPLSQLStoredFunctionQueryMetadata metadata = new NamedPLSQLStoredFunctionQueryMetadata();
-                    
+
                     metadata.setName(query.getName());
                     metadata.setProcedureName(call.getProcedureName());
-                    
+
                     List<PLSQLParameterMetadata> params = new ArrayList<PLSQLParameterMetadata>();
                     if (plsqlStoredFuncs == null) {
                         plsqlStoredFuncs = new ArrayList<NamedPLSQLStoredFunctionQueryMetadata>();
@@ -219,7 +219,7 @@ public class XmlEntityMappingsGenerator {
                         if (arg.databaseType == XMLType) {
                             dbType = XMLType.name();
                         } else if (arg.databaseType == PLSQLBoolean) {
-                        	dbType = PLSQLBoolean.name();
+                            dbType = PLSQLBoolean.name();
                         } else {
                             if (!(getJDBCTypeFromTypeName(dbType) == Types.OTHER)) {
                                 dbType = dbType.concat(_TYPE_STR);
@@ -247,12 +247,12 @@ public class XmlEntityMappingsGenerator {
 
                     metadata.setName(query.getName());
                     metadata.setProcedureName(call.getProcedureName());
-                    
+
                     List<StoredProcedureParameterMetadata> params = new ArrayList<StoredProcedureParameterMetadata>();
                     if (storedFuncs == null) {
                         storedFuncs = new ArrayList<NamedStoredFunctionQueryMetadata>();
                     }
-                    
+
                     DatabaseField arg;
                     StoredProcedureParameterMetadata param;
                     List<DatabaseField> paramFields = call.getParameters();
@@ -265,11 +265,11 @@ public class XmlEntityMappingsGenerator {
                         if (arg.getSqlType() != DatabaseField.NULL_SQL_TYPE) {
                             param.setJdbcType(arg.getSqlType());
                         }
-                        
+
                         if (arg.isObjectRelationalDatabaseField()) {
                             param.setJdbcTypeName(((ObjectRelationalDatabaseField)arg).getSqlTypeName());
                         }
-                        
+
                         if (i == 0) {
                             // first arg is the return arg
                             metadata.setReturnParameter(param);
@@ -287,7 +287,7 @@ public class XmlEntityMappingsGenerator {
                         metadata.setParameters(params);
                     }
                     storedFuncs.add(metadata);
-                }                    
+                }
             } else if (query.getCall().isStoredProcedureCall()) {
                 if (query.getCall() instanceof PLSQLStoredProcedureCall) {
                     PLSQLStoredProcedureCall call = (PLSQLStoredProcedureCall)query.getCall();
@@ -301,23 +301,23 @@ public class XmlEntityMappingsGenerator {
 
                     PLSQLParameterMetadata param;
                     List<PLSQLParameterMetadata> params = new ArrayList<PLSQLParameterMetadata>();
-                    
+
                     List<PLSQLargument> types = call.getArguments();
                     for (PLSQLargument arg : types) {
                         param = new PLSQLParameterMetadata();
                         param.setName(arg.name);
                         String dbType = processTypeName(arg.databaseType.getTypeName());
-                        
+
                         if (arg.cursorOutput) {
                             param.setDirection(CURSOR_STR);
                         } else {
                             param.setDirection(getDirectionAsString(arg.direction));
                         }
-                        
+
                         if (arg.databaseType == XMLType) {
                             param.setDatabaseType(XMLType.name());
                         } else if (arg.databaseType == PLSQLBoolean) {
-                        	param.setDatabaseType(PLSQLBoolean.name());
+                            param.setDatabaseType(PLSQLBoolean.name());
                         } else {
                             param.setDatabaseType(dbType);
                         }
@@ -333,7 +333,7 @@ public class XmlEntityMappingsGenerator {
                     metadata.setName(query.getName());
                     metadata.setProcedureName(call.getProcedureName());
                     metadata.setReturnsResultSet(false);
-                    
+
                     List<StoredProcedureParameterMetadata> params = new ArrayList<StoredProcedureParameterMetadata>();
                     DatabaseField arg;
                     StoredProcedureParameterMetadata param;
@@ -356,14 +356,14 @@ public class XmlEntityMappingsGenerator {
                         if (arg.isObjectRelationalDatabaseField()) {
                             param.setJdbcTypeName(((ObjectRelationalDatabaseField) arg).getSqlTypeName());
                         }
-                        
+
                         param.setMode(getParameterModeAsString((Integer) types.get(i)));
-                        
+
                         // handle CURSOR types - want name/value pairs returned
                         if ((Integer) types.get(i) == 8) {
                             addQueryHint(metadata);
                         }
-                        
+
                         params.add(param);
                     }
                     if (params.size() > 0) {
@@ -418,7 +418,7 @@ public class XmlEntityMappingsGenerator {
             }
             classAccessor.setClassName(cdesc.getJavaClassName());
             classAccessor.setAccess(EL_ACCESS_VIRTUAL);
-            
+
             // may need add STRUCT metadata to the classAccessor to ensure correct field ordering
             if (cdesc.isObjectRelationalDataTypeDescriptor()) {
                 ObjectRelationalDataTypeDescriptor odesc = (ObjectRelationalDataTypeDescriptor) cdesc;
@@ -429,13 +429,13 @@ public class XmlEntityMappingsGenerator {
                     classAccessor.setStruct(struct);
                 }
             }
-            
+
             if (!embeddable && cdesc.getTableName() != null) {
                 TableMetadata table = new TableMetadata();
                 table.setName(cdesc.getTableName());
                 ((EntityAccessor)classAccessor).setTable(table);
             }
-            
+
             if (!embeddable) {
                 List<NamedNativeQueryMetadata> namedNatQueries = new ArrayList<NamedNativeQueryMetadata>();
                 NamedNativeQueryMetadata namedQuery;
@@ -467,14 +467,14 @@ public class XmlEntityMappingsGenerator {
                     ((EntityAccessor)classAccessor).setNamedNativeQueries(namedNatQueries);
                 }
             }
-                        
+
             classAccessor.setAttributes(new XMLAttributes());
             classAccessor.getAttributes().setIds(new ArrayList<IdAccessor>());
             classAccessor.getAttributes().setBasics(new ArrayList<BasicAccessor>());
             classAccessor.getAttributes().setArrays(new ArrayList<ArrayAccessor>());
             classAccessor.getAttributes().setStructures(new ArrayList<StructureAccessor>());
             classAccessor.getAttributes().setEmbeddeds(new ArrayList<EmbeddedAccessor>());
-            
+
             if (embeddable) {
                 xmlEntityMappings.getEmbeddables().add((EmbeddableAccessor) classAccessor);
             } else {
@@ -482,16 +482,16 @@ public class XmlEntityMappingsGenerator {
             }
             accessors.put(cdesc.getJavaClassName(), classAccessor);
         }
-        // now the we know what the embeddables are, we can process mappings 
+        // now the we know what the embeddables are, we can process mappings
         for (ClassDescriptor cdesc : descriptors) {
             ClassAccessor classAccessor = accessors.get(cdesc.getJavaClassName());
-            
+
             MappingAccessor mapAccessor;
-            // generate a MappingAccessor for each mapping 
+            // generate a MappingAccessor for each mapping
             for (DatabaseMapping dbMapping : cdesc.getMappings()) {
                 mapAccessor = generateMappingAccessor(dbMapping, embeddables);
-                if (mapAccessor == null) { 
-                    continue; 
+                if (mapAccessor == null) {
+                    continue;
                 }
                 if (mapAccessor.isId()) {
                     classAccessor.getAttributes().getIds().add((IdAccessor) mapAccessor);
@@ -508,10 +508,10 @@ public class XmlEntityMappingsGenerator {
         }
         return xmlEntityMappings;
     }
-    
+
     /**
      * Process a given DatabaseMapping and return a MappingAccessor.
-     * 
+     *
      * Expected mappings are:
      * <ul>
      * <li>org.eclipse.persistence.mappings.DirectToFieldMapping
@@ -539,7 +539,7 @@ public class XmlEntityMappingsGenerator {
 
     /**
      * Generate a MappingAccessor for a given DirectToFieldMapping.
-     * 
+     *
      */
     protected static BasicAccessor processDirectMapping(DirectToFieldMapping mapping) {
         BasicAccessor directMapping;
@@ -550,17 +550,17 @@ public class XmlEntityMappingsGenerator {
         }
         directMapping.setName(mapping.getAttributeName());
         directMapping.setAttributeType(mapping.getAttributeClassificationName());
-        
+
         ColumnMetadata column = new ColumnMetadata();
         column.setName(mapping.getField().getName());
         directMapping.setColumn(column);
-        
+
         return directMapping;
     }
-    
+
     /**
      * Generate a MappingAccessor for a given ArrayMapping.
-     * 
+     *
      */
     protected static ArrayAccessor processArrayMapping(ArrayMapping mapping) {
         ArrayAccessor arrayAccessor = new ArrayAccessor();
@@ -568,17 +568,17 @@ public class XmlEntityMappingsGenerator {
         arrayAccessor.setDatabaseType(mapping.getStructureName());
         arrayAccessor.setAttributeType(ARRAYLIST_STR);
         arrayAccessor.setTargetClassName(mapping.getStructureName());
-        
+
         ColumnMetadata column = new ColumnMetadata();
         column.setName(mapping.getField().getName());
         arrayAccessor.setColumn(column);
-        
+
         return arrayAccessor;
     }
-    
+
     /**
      * Generate a MappingAccessor for a given ObjectArrayMapping.
-     * 
+     *
      */
     protected static ArrayAccessor processObjectArrayMapping(ObjectArrayMapping mapping) {
         ArrayAccessor arrayAccessor = new ArrayAccessor();
@@ -590,49 +590,49 @@ public class XmlEntityMappingsGenerator {
         ColumnMetadata column = new ColumnMetadata();
         column.setName(mapping.getField().getName());
         arrayAccessor.setColumn(column);
-        
+
         return arrayAccessor;
     }
 
     /**
      * Generate a MappingAccessor for a given StructureMapping.
-     * 
+     *
      */
     protected static StructureAccessor processStructureMapping(StructureMapping mapping) {
         StructureAccessor structAccessor = new StructureAccessor();
         structAccessor.setName(mapping.getAttributeName());
         structAccessor.setTargetClassName(mapping.getReferenceClassName());
         structAccessor.setAttributeType(mapping.getReferenceClassName());
-        
+
         ColumnMetadata column = new ColumnMetadata();
         column.setName(mapping.getField().getName());
         structAccessor.setColumn(column);
-        
+
         return structAccessor;
     }
-    
+
     /**
      * Generate an EmbeddedAccessor for a given AggregateMapping.
-     * 
+     *
      */
     protected static EmbeddedAccessor processEmbeddedMapping(AggregateMapping mapping) {
         EmbeddedAccessor embeddedAccessor = new EmbeddedAccessor();
         embeddedAccessor.setName(mapping.getAttributeName());
         embeddedAccessor.setAttributeType(mapping.getReferenceClassName());
-        
+
         return embeddedAccessor;
     }
-    
+
     /**
      * Return a parameter direction as a String based on a given in value.
-     * 
+     *
      * Expected 'direction' value is one of:
      * <ul>
      * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN
      * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT
      * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT
      * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT_CURSOR
-     * 
+     *
      */
     public static String getDirectionAsString(int direction) {
         if (direction == IN) {
@@ -646,10 +646,10 @@ public class XmlEntityMappingsGenerator {
         }
         return CURSOR_STR;
     }
-    
+
     /**
      * Return a parameter mode as a String based on a given in value.
-     * 
+     *
      * Expected 'direction' value is one of:
      * <ul>
      * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN
@@ -657,7 +657,7 @@ public class XmlEntityMappingsGenerator {
      * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT
      * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT_CURSOR
      * </ul>
-     * 
+     *
      * Will return one of:
      * <ul>
      * <li>org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_IN
@@ -678,13 +678,13 @@ public class XmlEntityMappingsGenerator {
         }
         return JPA_PARAMETER_REF_CURSOR;
     }
-    
+
     /**
      * Alter the given type name if required.
      */
     protected static String processTypeName(String typeName) {
         if (!(getJDBCTypeFromTypeName(typeName) == Types.OTHER)) {
-            // OR Metadata doesn't handle VARCHAR2 
+            // OR Metadata doesn't handle VARCHAR2
             if (typeName.equals(VARCHAR2_STR)) {
                 typeName = VARCHAR_STR;
             }
@@ -693,7 +693,7 @@ public class XmlEntityMappingsGenerator {
             if (!typeName.equals(BOOLEAN_STR) && !typeName.equals(XMLTYPE_STR)) {
                 typeName = typeName.concat(_TYPE_STR);
             }
-        } else { 
+        } else {
             String oPLSQLTypeName = getOraclePLSQLTypeForName(typeName);
             if (oPLSQLTypeName != null) {
                 typeName = oPLSQLTypeName;
@@ -701,9 +701,9 @@ public class XmlEntityMappingsGenerator {
         }
         return typeName;
     }
-    
+
     /**
-     * Returns a list of ComplexTypeMetadata instances generated based on a list of 
+     * Returns a list of ComplexTypeMetadata instances generated based on a list of
      * CompositeDatabaseTypes.  The given non-empty list should contain one or
      * more of the following types:
      * <ul>
@@ -733,8 +733,8 @@ public class XmlEntityMappingsGenerator {
                 if (complexTypeMetadata != null) {
                     processedTypeNames.add(complexTypeMetadata.getName());
                     processedTypes.add(complexTypeMetadata);
-                    
-                    if (enclosedType.isObjectType()) {                        
+
+                    if (enclosedType.isObjectType()) {
                         for (FieldType ft : ((ObjectType) enclosedType).getFields()) {
                             if (ft.isComposite()) {
                                 complexTypeMetadata = processDatabaseType(ft, orProject, processedTypeNames);
@@ -756,11 +756,11 @@ public class XmlEntityMappingsGenerator {
                     }
                 }
             }
-            
-        }        
+
+        }
         return processedTypes;
     }
-    
+
     /**
      * Process the given CompositeDatabaseType and return a ComplexTypeMetadata
      * instance. The given type is expected to be one of:
@@ -776,7 +776,7 @@ public class XmlEntityMappingsGenerator {
     protected static ComplexTypeMetadata processDatabaseType(CompositeDatabaseType cdbType, Project orProject) {
         return processDatabaseType(cdbType, orProject, new ArrayList<String>());
     }
-    
+
     /**
      * Process the given CompositeDatabaseType and return a ComplexTypeMetadata
      * instance. The given type is expected to be one of:
@@ -813,24 +813,24 @@ public class XmlEntityMappingsGenerator {
 
     /**
      * Process the given PLSQLCollectionType and return a PLSQLTableMetadata instance.
-     * 
+     *
      */
     protected static ComplexTypeMetadata processPLSQLCollectionType(PLSQLCollectionType plsqlCollectionType) {
         String typeName = plsqlCollectionType.getParentType().getPackageName() + DOT + plsqlCollectionType.getTypeName();
         String compatiableName = plsqlCollectionType.getParentType().getPackageName() + UNDERSCORE + plsqlCollectionType.getTypeName();
-        
+
         PLSQLTableMetadata plsqlTable = new PLSQLTableMetadata();
         plsqlTable.setName(typeName);
         plsqlTable.setCompatibleType(compatiableName);
         // handle Nested Table (i.e. non-Varray)
         plsqlTable.setNestedTable(!plsqlCollectionType.isIndexed());
         String dbType = plsqlCollectionType.getEnclosedType().getTypeName();
-        if (!(getJDBCTypeFromTypeName(dbType) == Types.OTHER)) {          
+        if (!(getJDBCTypeFromTypeName(dbType) == Types.OTHER)) {
             // need special handling for nested PL/SQL scalar types
             if (isArgPLSQLScalar(dbType)) {
                 plsqlTable.setNestedType(getOraclePLSQLTypeForName(dbType));
             } else {
-                // OR Metadata doesn't handle VARCHAR2 
+                // OR Metadata doesn't handle VARCHAR2
                 if (dbType.equals(VARCHAR2_STR)) {
                     dbType = VARCHAR_STR;
                 }
@@ -845,14 +845,14 @@ public class XmlEntityMappingsGenerator {
             }
             plsqlTable.setNestedType(pkg == null ? dbType : pkg + DOT + dbType);
         }
-        
+
         plsqlTable.setJavaType(typeName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
         return plsqlTable;
     }
 
     /**
      * Process the given PLSQLRecordType and return a PLSQLRecordMetadata instance.
-     * 
+     *
      */
     protected static ComplexTypeMetadata processPLSQLRecordType(PLSQLRecordType plsqlRecordType) {
         // for %ROWTYPE we create a 'place holder' PL/SQL Record - in this case there is no package name
@@ -862,7 +862,7 @@ public class XmlEntityMappingsGenerator {
         if (compatiableName.contains(PERCENT)) {
             compatiableName = compatiableName.replace(PERCENT, UNDERSCORE);
         }
-        
+
         PLSQLRecordMetadata plsqlRecordMetadata = new PLSQLRecordMetadata();
         plsqlRecordMetadata.setName(typeName);
         plsqlRecordMetadata.setCompatibleType(compatiableName);
@@ -884,7 +884,7 @@ public class XmlEntityMappingsGenerator {
             }
             String dbType = fld.getTypeName();
             if (!(getJDBCTypeFromTypeName(dbType) == Types.OTHER)) {
-                // OR Metadata doesn't handle VARCHAR2 
+                // OR Metadata doesn't handle VARCHAR2
                 if (dbType.equals(VARCHAR2_STR)) {
                     dbType = VARCHAR_STR;
                 }
@@ -902,31 +902,31 @@ public class XmlEntityMappingsGenerator {
 
     /**
      * Process the given ObjectTableType and return an OracleArrayTypeMetadata instance.
-     * 
+     *
      */
     protected static ComplexTypeMetadata processObjectTableType(ObjectTableType oTableType, Project orProject) {
         ClassDescriptor cDesc = orProject.getDescriptorForAlias(getGeneratedAlias(oTableType.getTypeName()));
-        
+
         OracleArrayTypeMetadata oatMetadata = new OracleArrayTypeMetadata();
         oatMetadata.setName(oTableType.getTypeName());
         oatMetadata.setJavaType(cDesc.getJavaClassName());
-        
+
         oatMetadata.setNestedType(oTableType.getEnclosedType().getTypeName());
-        
+
         return oatMetadata;
     }
 
     /**
      * Process the given ObjectType and return an OracleObjectTypeMetadata instance.
-     * 
+     *
      */
     protected static ComplexTypeMetadata processObjectType(ObjectType oType, Project orProject) {
         ClassDescriptor cDesc = orProject.getDescriptorForAlias(getGeneratedAlias(oType.getTypeName()));
-        
+
         OracleObjectTypeMetadata ootMetadata = new OracleObjectTypeMetadata();
         ootMetadata.setName(oType.getTypeName());
         ootMetadata.setJavaType(cDesc.getJavaClassName());
-    
+
         List<PLSQLParameterMetadata> fields = new ArrayList<PLSQLParameterMetadata>();
         for (FieldType ft : oType.getFields()) {
             PLSQLParameterMetadata fieldMetadata = new PLSQLParameterMetadata();
@@ -936,15 +936,15 @@ public class XmlEntityMappingsGenerator {
         }
         ootMetadata.setFields(fields);
         return ootMetadata;
-    }    
-    
+    }
+
     /**
      * Process the given VArrayType and return an OracleArrayTypeMetadata instance.
-     * 
+     *
      */
     protected static ComplexTypeMetadata processVArrayType(VArrayType vType, Project orProject) {
         ClassDescriptor cDesc = orProject.getDescriptorForAlias(getGeneratedAlias(vType.getTypeName()));
-        
+
         OracleArrayTypeMetadata oatMetadata = new OracleArrayTypeMetadata();
         oatMetadata.setName(vType.getTypeName());
         oatMetadata.setJavaType(cDesc.getJavaClassName());
@@ -952,7 +952,7 @@ public class XmlEntityMappingsGenerator {
 
         return oatMetadata;
     }
-    
+
     /**
      * Adds a ReturnNameValuePairsHint to the given query metadata instance.
      */

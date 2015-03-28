@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.interfaces;
 
 import org.eclipse.persistence.testing.framework.*;
@@ -53,7 +53,7 @@ public class QueryAccrossV11ProxyIndirectionTest extends AutoVerifyTestCase {
         // in InterfaceWithoutTablesProject.java, did not set it;
         ClassDescriptor descriptorToReturn = null;
         descriptorToReturn = getSession().getClassDescriptor(cls);
-        ObjectReferenceMapping mappingForAttribute = 
+        ObjectReferenceMapping mappingForAttribute =
             (ObjectReferenceMapping)descriptorToReturn.getMappingForAttributeName(attributeName);
         indirectionPolicy = mappingForAttribute.getIndirectionPolicy();
         mappingForAttribute.useProxyIndirection(proxyIndirectClass);
@@ -61,7 +61,7 @@ public class QueryAccrossV11ProxyIndirectionTest extends AutoVerifyTestCase {
     } // end of setDescriptorNamedQuery
 
     public void resetDescriptorV11ProxyIndirection(String attributeName) {
-        ObjectReferenceMapping mappingForAttribute = 
+        ObjectReferenceMapping mappingForAttribute =
             (ObjectReferenceMapping)descriptor.getMappingForAttributeName(attributeName);
         mappingForAttribute.setIndirectionPolicy(indirectionPolicy);
     }
@@ -85,7 +85,7 @@ public class QueryAccrossV11ProxyIndirectionTest extends AutoVerifyTestCase {
     } // end of test()
 
     public void reset() {
-        // do not want to keep proxy indirection on maping for 
+        // do not want to keep proxy indirection on maping for
         // attribute "program" - VariableOneToOneMapping
         resetDescriptorV11ProxyIndirection("program");
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -93,10 +93,10 @@ public class QueryAccrossV11ProxyIndirectionTest extends AutoVerifyTestCase {
 
     public void verify() {
         if (caughtException != null) {
-            throw new org.eclipse.persistence.testing.framework.TestErrorException("Test that VariableOneToOneMapping mapping with" + 
-                                                                              " ProxyIndirection works correctly.\n" + 
-                                                                              "This exception thrown while testing test case.\n" + 
-                                                                              "----- QueryAccrossV11ProxyIndirectionTest() -----\n" + 
+            throw new org.eclipse.persistence.testing.framework.TestErrorException("Test that VariableOneToOneMapping mapping with" +
+                                                                              " ProxyIndirection works correctly.\n" +
+                                                                              "This exception thrown while testing test case.\n" +
+                                                                              "----- QueryAccrossV11ProxyIndirectionTest() -----\n" +
                                                                               caughtException.getMessage());
         }
 

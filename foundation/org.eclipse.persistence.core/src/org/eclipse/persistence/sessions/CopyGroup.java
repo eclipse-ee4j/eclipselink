@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     ailitchev - Bug 244124 - Added to handle copying using AttributeGroup
- *                              Functionality copied from ObjectCopyPolicy 
+ *                              Functionality copied from ObjectCopyPolicy
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
@@ -58,7 +58,7 @@ public class CopyGroup extends AttributeGroup {
 
     /** Depth level indicating that only the attributes found in the attribute group should be copied */
     public static final int CASCADE_TREE = 4;
-    
+
     /**
      * PUBLIC:
      * By default only copy the attributes found in the attribute group and don't null primary keys.
@@ -261,7 +261,7 @@ public class CopyGroup extends AttributeGroup {
     public boolean isCopyGroup() {
         return true;
     }
-    
+
     @Override
     public CopyGroup clone() {
         CopyGroup clone = (CopyGroup)super.clone();

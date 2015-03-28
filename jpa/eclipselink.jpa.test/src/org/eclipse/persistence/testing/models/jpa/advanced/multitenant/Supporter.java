@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     14/05/2012-2.4 Guy Pelletier  
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- *     08/11/2012-2.5 Guy Pelletier  
+ *     08/11/2012-2.5 Guy Pelletier
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
- *     20/11/2012-2.5 Guy Pelletier  
+ *     20/11/2012-2.5 Guy Pelletier
  *       - 394524: Invalid query key [...] in expression
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
@@ -52,17 +52,17 @@ import org.eclipse.persistence.annotations.TenantTableDiscriminator;
         query = "SELECT a FROM Supporter a WHERE a.info.description = :desc"),
     @NamedQuery(
         name = "Supporter.findBySupporterInfoSub",
-        query = "SELECT a FROM Supporter a WHERE a.info.subInfo.subDescription = :subDesc")    
+        query = "SELECT a FROM Supporter a WHERE a.info.subInfo.subDescription = :subDesc")
 })
 public class Supporter {
     @Id
     @GeneratedValue
     public long id;
     public String name;
-    
+
     @ManyToMany(mappedBy="supporters")
     public List<Candidate> supportedCandidates;
-    
+
     @OneToOne(cascade=PERSIST)
     @JoinColumn(name="SUPPORTER_INFO_ID")
     public SupporterInfo info;
@@ -74,7 +74,7 @@ public class Supporter {
     protected void addSupportedCandidate(Candidate candidate) {
         supportedCandidates.add(candidate);
     }
-    
+
     public long getId() {
         return id;
     }
@@ -86,7 +86,7 @@ public class Supporter {
     public String getName() {
         return name;
     }
-    
+
     public List<Candidate> getSupportedCandidates() {
         return supportedCandidates;
     }
@@ -98,15 +98,15 @@ public class Supporter {
     public void setInfo(SupporterInfo info) {
         this.info = info;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public void setSupportedCandidates(List<Candidate> supportedCandidates) {
         this.supportedCandidates = supportedCandidates;
     }
-    
+
     public String toString() {
         return "Supporter (" + getName() + ") [" + getId() + "]";
     }

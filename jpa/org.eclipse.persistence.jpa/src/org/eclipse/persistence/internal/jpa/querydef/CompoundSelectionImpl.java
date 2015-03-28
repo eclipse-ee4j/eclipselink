@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,16 +28,16 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <p>
  * <b>Description</b>: The Selection is the expression describing what should be returned by the query.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria Join
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
- * 
+ *
  */
 
 public class CompoundSelectionImpl extends SelectionImpl implements CompoundSelection{
-    
+
     protected ArrayList<Selection<?>> subSelections;
     //bug 366386 - track items using duplicate alias names
     protected ArrayList<String> duplicateAliasNames;
@@ -74,7 +74,7 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
 
     /**
      * Whether the selection item is a compound selection
-     * @return boolean 
+     * @return boolean
      */
     public boolean isCompoundSelection(){
         return true;
@@ -92,7 +92,7 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
 
     /**
      * Returns the collection used to store any duplicate alias names found within this CompoundSelection Item
-     * @return list of alias Strings.  
+     * @return list of alias Strings.
      */
     protected List<String> getDuplicateAliasNames() {
         return this.duplicateAliasNames;

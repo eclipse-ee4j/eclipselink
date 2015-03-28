@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm;
 
 import java.io.BufferedReader;
@@ -87,7 +87,7 @@ public abstract class OXTestCase extends XMLTestCase {
         } catch(Exception ex) {
             staxResultClass = null;
         }
-	    	    
+
         try {
             staxSourceClass = PrivilegedAccessHelper.getClassForName(staxSourceClassName);
             staxSourceStreamReaderConstructor = PrivilegedAccessHelper.getConstructorFor(staxSourceClass, new Class[]{XMLStreamReader.class}, true);
@@ -96,8 +96,8 @@ public abstract class OXTestCase extends XMLTestCase {
             staxSourceClass = null;
         }
     }
-	
-    public boolean useLogging = false;    
+
+    public boolean useLogging = false;
     public static enum Platform { DOM, SAX, DOC_PRES };
     public static enum Metadata { JAVA, XML_TOPLINK, XML_ECLIPSELINK };
     public static Platform platform;;
@@ -111,14 +111,14 @@ public abstract class OXTestCase extends XMLTestCase {
     public static final String METADATA_JAVA = "JAVA";
     public static final String METADATA_TOPLINK = "XML_TOPLINK";
     public static final String METADATA_XML_ECLIPSELINK = "XML_ECLIPSELINK";
-    
+
     public OXTestCase(String name) {
         super(name);
         useLogging = Boolean.getBoolean("useLogging");
         platform = getPlatform();
         metadata = getMetadata();
     }
-    
+
     public XMLContext getXMLContext(String name) {
         Session session = SessionManager.getManager().getSession(name, false);
         Project project = session.getProject();
@@ -154,11 +154,11 @@ public abstract class OXTestCase extends XMLTestCase {
 
     public Project getNewProject(Project originalProject, ClassLoader classLoader) {
         Project newProject = originalProject;
-        
+
         switch (metadata) {
-		case JAVA:
-			break;
-		default:
+        case JAVA:
+            break;
+        default:
             try {
                 // Write the deployment XML file to deploymentXML-file.xml
                 String fileName = "deploymentXML-file.xml";
@@ -171,7 +171,7 @@ public abstract class OXTestCase extends XMLTestCase {
                     write(originalProject, stringWriter);
                     log("DEPLOYMENT XML " + stringWriter.toString());
                 }
-                // Read the deploymentXML-file.xml back in with XMLProjectReader							
+                // Read the deploymentXML-file.xml back in with XMLProjectReader
                 FileInputStream inStream = new FileInputStream(fileName);
                 FileReader fileReader = new FileReader(fileName);
                 newProject = XMLProjectReader.read(fileReader, classLoader);
@@ -187,18 +187,18 @@ public abstract class OXTestCase extends XMLTestCase {
                 log("DEPLOYMENT XML" + stringWriter.toString());
                 newProject = XMLProjectReader.read(reader, classLoader);
             }
-		}
+        }
 
         if ((newProject.getDatasourceLogin() == null) || (!(newProject.getDatasourceLogin() instanceof XMLLogin))) {
-        	newProject.setDatasourceLogin(new XMLLogin());
+            newProject.setDatasourceLogin(new XMLLogin());
         }
-        
+
         switch (platform) {
-        case SAX: 
-        	newProject.getDatasourceLogin().setPlatform(new SAXPlatform());
-        	break;
-        default: 
-        	newProject.getDatasourceLogin().setPlatform(new DOMPlatform());
+        case SAX:
+            newProject.getDatasourceLogin().setPlatform(new SAXPlatform());
+            break;
+        default:
+            newProject.getDatasourceLogin().setPlatform(new DOMPlatform());
         }
         return newProject;
     }
@@ -237,27 +237,27 @@ public abstract class OXTestCase extends XMLTestCase {
         String longClassName = this.getClass().getName();
         String shortClassName = longClassName.substring(longClassName.lastIndexOf(".") + 1, longClassName.length() - 1);
         String description = "";
-        
+
         switch (metadata) {
-		case XML_ECLIPSELINK:
-        	description = "Deployment XML w/";
-			break;
-		case XML_TOPLINK:
-        	description = "TL Deployment XML w/";
-			break;
-		default:
-        	description = "Java Project Source w/";
-		}
+        case XML_ECLIPSELINK:
+            description = "Deployment XML w/";
+            break;
+        case XML_TOPLINK:
+            description = "TL Deployment XML w/";
+            break;
+        default:
+            description = "Java Project Source w/";
+        }
 
         switch (platform) {
         case DOC_PRES:
-        	description += "Doc Pres: ";
-        	break;
+            description += "Doc Pres: ";
+            break;
         case DOM:
-        	description += "DOM Parsing: ";
-        	break;
+            description += "DOM Parsing: ";
+            break;
         default:
-        	description += "SAX Parsing: ";
+            description += "SAX Parsing: ";
         }
 
         return description + shortClassName + ": " + super.getName();
@@ -286,49 +286,49 @@ public abstract class OXTestCase extends XMLTestCase {
 
         return returnString;
     }
-    
+
     /**
-     * Return the Platform to be used based on the "platformType" 
+     * Return the Platform to be used based on the "platformType"
      * System property
-     * 
+     *
      * @see Platform
      */
     public Platform getPlatform() {
         String platformStr = System.getProperty(PLATFORM_KEY, PLATFORM_SAX);
         if (platformStr.equals(PLATFORM_SAX)) {
-        	return Platform.SAX;
+            return Platform.SAX;
         }
         if (platformStr.equals(PLATFORM_DOM)) {
-        	return Platform.DOM;
+            return Platform.DOM;
         }
-        return Platform.DOC_PRES; 
+        return Platform.DOC_PRES;
     }
 
     /**
-     * Return the Metadata type based on the "metadataType" 
+     * Return the Metadata type based on the "metadataType"
      * System property
-     * 
+     *
      * @see Metadata
      */
     public Metadata getMetadata() {
         String metadataStr = System.getProperty(METADATA_KEY, METADATA_JAVA);
         if (metadataStr.equals(METADATA_JAVA)) {
-        	return Metadata.JAVA;
+            return Metadata.JAVA;
         }
         if (metadataStr.equals(METADATA_XML_ECLIPSELINK)) {
-        	return Metadata.XML_ECLIPSELINK;
+            return Metadata.XML_ECLIPSELINK;
         }
         return Metadata.XML_TOPLINK;
     }
-    
+
     // Write out deployment XML
     public void write(Project project, Writer writer) {
-    	// Write out EclipseLink deployment XML
-    	if (metadata == Metadata.XML_ECLIPSELINK) {
-    		XMLProjectWriter.write(project, writer);
-    		return;
-    	}
-    	// Write out TL deployment XML 
+        // Write out EclipseLink deployment XML
+        if (metadata == Metadata.XML_ECLIPSELINK) {
+            XMLProjectWriter.write(project, writer);
+            return;
+        }
+        // Write out TL deployment XML
         XMLContext context = new XMLContext(new ObjectPersistenceRuntimeXMLProject_11_1_1());
         context.getSession(project).getEventManager().addListener(new MissingDescriptorListener());
         XMLMarshaller marshaller = context.createMarshaller();
@@ -339,9 +339,9 @@ public abstract class OXTestCase extends XMLTestCase {
             throw ValidationException.fileError(exception);
         }
     }
-    
+
     public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
-    	compareJAXBElementObjects(controlObj, testObj, true);
+        compareJAXBElementObjects(controlObj, testObj, true);
     }
     public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj, boolean namespaceAware) {
         assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
@@ -382,32 +382,32 @@ public abstract class OXTestCase extends XMLTestCase {
             compareValues(controlValue, testValue);
         }
     }
-  
+
     protected void compareValues(Object controlValue, Object testValue){
-    	if(controlValue instanceof JAXBElement && testValue instanceof JAXBElement){
-    		compareJAXBElementObjects((JAXBElement)controlValue, (JAXBElement)testValue);
-    	}else{
-    		super.compareValues(controlValue, testValue);
-    	}
+        if(controlValue instanceof JAXBElement && testValue instanceof JAXBElement){
+            compareJAXBElementObjects((JAXBElement)controlValue, (JAXBElement)testValue);
+        }else{
+            super.compareValues(controlValue, testValue);
+        }
     }
 
     protected String loadFileToString(String fileName){
         StringBuffer sb = new StringBuffer();
         String lineSep = System.getProperty("line.separator");
 
-        try {            
+        try {
             InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String str;
             //Don't add teh lineSep the first time
             if(bufferedReader.ready()){
-            	sb.append(bufferedReader.readLine());
+                sb.append(bufferedReader.readLine());
             }
-            while (bufferedReader.ready()) {         
-            	sb.append(lineSep);
-                sb.append(bufferedReader.readLine());                
-            }          
+            while (bufferedReader.ready()) {
+                sb.append(lineSep);
+                sb.append(bufferedReader.readLine());
+            }
             bufferedReader.close();
             inputStreamReader.close();
             inputStream.close();

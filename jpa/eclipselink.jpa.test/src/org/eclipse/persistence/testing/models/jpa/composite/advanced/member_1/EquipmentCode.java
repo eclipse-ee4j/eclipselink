@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -29,15 +29,15 @@ import org.eclipse.persistence.annotations.ReadOnly;
 @ReadOnly
 @NamedNativeQueries({
     @NamedNativeQuery(
-        name="findSQLEquipmentCodeA", 
+        name="findSQLEquipmentCodeA",
         query="select * from MBR1_ADV_EQUIP_CODE where CODE='A'",
         resultClass=org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.EquipmentCode.class),
     @NamedNativeQuery(
-        name="findSQLEquipmentCodeB", 
+        name="findSQLEquipmentCodeB",
         query="select * from MBR1_ADV_EQUIP_CODE where CODE='B'",
         resultClass=org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.EquipmentCode.class),
     @NamedNativeQuery(
-        name="findSQLEquipmentCodeC", 
+        name="findSQLEquipmentCodeC",
         query="select * from MBR1_ADV_EQUIP_CODE where CODE='C'",
         resultClass=org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.EquipmentCode.class)
 })
@@ -47,28 +47,28 @@ public class EquipmentCode  {
 
     public EquipmentCode() {}
 
-	public String getCode() { 
-        return code; 
+    public String getCode() {
+        return code;
     }
-    
+
     @Id
     @GeneratedValue(strategy=TABLE, generator="EQUIPMENT_CODE_TABLE_GENERATOR")
-	@TableGenerator(
-        name="EQUIPMENT_CODE_TABLE_GENERATOR", 
-        table="MBR1_SEQ", 
-        pkColumnName="SEQ_NAME", 
+    @TableGenerator(
+        name="EQUIPMENT_CODE_TABLE_GENERATOR",
+        table="MBR1_SEQ",
+        pkColumnName="SEQ_NAME",
         valueColumnName="SEQ_COUNT",
         pkColumnValue="CODE_SEQ"
     )
-	public Integer getId() { 
-        return id; 
+    public Integer getId() {
+        return id;
     }
-    
-    public void setCode(String code) { 
-        this.code = code; 
+
+    public void setCode(String code) {
+        this.code = code;
     }
-    
-    public void setId(Integer id) { 
-        this.id = id; 
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

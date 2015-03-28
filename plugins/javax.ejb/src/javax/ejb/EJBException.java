@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,34 +49,34 @@ package javax.ejb;
  * @since EJB 1.1
  */
 public class EJBException extends java.lang.RuntimeException {
-    
+
     private static final long serialVersionUID = 796770993296843510L;
 
     /**
      * Constructs an EJBException with no detail message.
-     */  
+     */
     public EJBException() {
     }
 
     /**
      * Constructs an EJBException with the specified
      * detailed message.
-     */  
+     */
     public EJBException(String message) {
         super(message);
     }
 
     /**
      * Constructs an EJBException that embeds the originally thrown exception.
-     */  
+     */
     public EJBException(Exception  ex) {
         super(ex);
     }
 
     /**
      * Constructs an EJBException that embeds the originally thrown exception
-     * with the specified detail message. 
-     */  
+     * with the specified detail message.
+     */
     public EJBException(String message, Exception  ex) {
         super(message, ex);
     }
@@ -85,10 +85,10 @@ public class EJBException extends java.lang.RuntimeException {
     /**
      * Obtain the exception that caused the EJBException to be thrown.
      * It is recommended that the inherited Throwable.getCause() method
-     * be used to retrieve the cause instead of this method. 
+     * be used to retrieve the cause instead of this method.
      */
     public Exception getCausedByException() {
-	    return (Exception) getCause();
+        return (Exception) getCause();
     }
 
 }

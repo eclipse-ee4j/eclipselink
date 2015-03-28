@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -42,14 +42,14 @@ public class BinaryDataCompositeSelfProject extends Project {
         imageMapping.setXPath("my-image");
         imageMapping.setReferenceClass(MyImage.class);
         descriptor.addMapping(imageMapping);
-        
+
         return descriptor;
     }
-    
+
     private XMLDescriptor getMyImageDescriptor() {
-    	XMLDescriptor descriptor = new XMLDescriptor();
-    	descriptor.setJavaClass(MyImage.class);
-    	
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MyImage.class);
+
         XMLBinaryDataMapping dataMapping = new XMLBinaryDataMapping();
         dataMapping.setAttributeName("myBytes");
         dataMapping.setXPath(".");

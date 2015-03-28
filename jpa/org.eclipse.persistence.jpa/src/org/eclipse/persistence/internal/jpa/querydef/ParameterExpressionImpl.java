@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,11 +20,11 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 
 public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements ParameterExpression<T> {
-    
+
     protected String name;
     protected String internalName;
     protected Integer position;
-    
+
     public ParameterExpressionImpl(Metamodel metamodel, Class<T> javaType, String name){
         super(metamodel, javaType, new ExpressionBuilder().getParameter(name, javaType));
         this.name = name;
@@ -49,13 +49,13 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
     /**
      * Return the parameter name, or null if the parameter is not a named
      * parameter.
-     * 
+     *
      * @return parameter name
      */
     public String getName(){
         return this.name;
     }
-    
+
     /**
      * Returns the name used by EclipseLink when a name has not been assigned by the user.
      * @return
@@ -67,13 +67,13 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
     /**
      * Return the parameter position, or null if the parameter is not a
      * positional parameter.
-     * 
+     *
      * @return position of parameter
      */
     public Integer getPosition(){
         return this.position;
     }
-    
+
     /**
      * Return the Java type of the parameter. Values bound to the
      * parameter must be assignable to this type.
@@ -105,7 +105,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -132,7 +132,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
             }
         } else if (!internalName.equals(other.internalName)){
             return false;
-        } 
+        }
         return true;
     }
 
@@ -148,5 +148,5 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
         }
     }
 
-    
+
 }

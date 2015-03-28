@@ -2,23 +2,23 @@
      "baseTypeList":[
        {
           "type":"subType",
- 	  "subTypeProp":10
+       "subTypeProp":10
        },
        {
           "type":"anotherSubType"
        },
        {
           "type":"subTypeLevel2",
- 	  "baseProp":"boo",
- 	  "subTypeProp":0
+       "baseProp":"boo",
+       "subTypeProp":0
        },
        {
           "type":"subType",
- 	  "subTypeProp":10
+       "subTypeProp":10
        },
        {
           "type":"anotherPackageSubType",
- 	  "subTypeProp":0
+       "subTypeProp":0
        }
 
      ]

@@ -1,17 +1,17 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     02/19/2015 - Rick Curtis  
+ *     02/19/2015 - Rick Curtis
  *       - 458877 : Add national character support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions;
 
 import java.util.*;
@@ -35,7 +35,7 @@ public class ConversionException extends EclipseLinkException {
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink. 
+     * TopLink exceptions should only be thrown by TopLink.
      * This constructor is only for error message scripting.
      */
     protected ConversionException() {
@@ -52,7 +52,7 @@ public class ConversionException extends EclipseLinkException {
         setClassToConvertTo(classToConvertTo);
     }
 
-    // Couldn't find a way of simply changing the message on an existing exception. 
+    // Couldn't find a way of simply changing the message on an existing exception.
     // therefore, create a new exception with appropriate message and port existing
     // info (stack trace and internal exception over)
     public static ConversionException couldNotBeConverted(Object mapping, Object descriptor, ConversionException exception) {
@@ -99,7 +99,7 @@ public class ConversionException extends EclipseLinkException {
         conversionException.setErrorCode(COULD_NOT_BE_CONVERTED_TO_CLASS);
         return conversionException;
     }
-    
+
     public static ConversionException couldNotTranslatePropertiesIntoObject(Object object, String propertyName, String propertyValue, Exception cause) {
         // Unable to set {0} properties [{1}] into [{2}]
         Object[] args = { propertyName, propertyValue, object};

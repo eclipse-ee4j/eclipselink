@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -58,7 +58,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
 
     /**
      * The default constructor.  This constructor should be used
-     * in conjunction with the setXmlAdapterClass method or 
+     * in conjunction with the setXmlAdapterClass method or
      * setXmlAdapterClassName method.
      */
     public XMLJavaTypeConverter() {
@@ -77,7 +77,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     /**
      * This constructor takes an adapter class name.  The adapter
      * class will be loaded during initialization.
-     * 
+     *
      * @param xmlAdapterClassName
      */
     public XMLJavaTypeConverter(String xmlAdapterClassName) {
@@ -101,9 +101,9 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
 
     /**
      * This constructor takes the XmlAdapter class name to be used with this
-     * converter (loaded during initialization), as well as a schema type to 
+     * converter (loaded during initialization), as well as a schema type to
      * be used during the conversion operation.  During unmarshal, the value
-     * type will be converted to the schema type, then from that type to the 
+     * type will be converted to the schema type, then from that type to the
      * bound type.  The opposite will occur during marshal.
      *
      * @param xmlAdapterClassName
@@ -147,16 +147,16 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
                 }
             }
             return adapter.unmarshal(toConvert);
-        } catch (Exception ex) {            
+        } catch (Exception ex) {
             if(unmarshaller.getErrorHandler() == null){
-            	throw ConversionException.couldNotBeConverted(dataValue, boundType, ex);
+                throw ConversionException.couldNotBeConverted(dataValue, boundType, ex);
             }
             try {
-            	unmarshaller.getErrorHandler().warning(new SAXParseException(null, null, ex));
+                unmarshaller.getErrorHandler().warning(new SAXParseException(null, null, ex));
                 return null;
             } catch (SAXException e) {
-            	throw ConversionException.couldNotBeConverted(dataValue, boundType, ex);
-            }	            
+                throw ConversionException.couldNotBeConverted(dataValue, boundType, ex);
+            }
         }
     }
 
@@ -189,7 +189,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
                 return null;
             } catch (SAXException e) {
                 throw ConversionException.couldNotBeConverted(objectValue, valueType, ex);
-            }			
+            }
         }
     }
 
@@ -253,21 +253,21 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         setBoundTypeAndValueTypeInCaseOfGenericXmlAdapter();
 
         try {
-		try {
-	            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-	                xmlAdapter = (XmlAdapter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXmlAdapterClass()));
-	            } else {
-	                xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.newInstanceFromClass(getXmlAdapterClass());
-	            }
-        	} catch (IllegalAccessException e) {
-	            Constructor ctor = null;
-	            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+        try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    xmlAdapter = (XmlAdapter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXmlAdapterClass()));
+                } else {
+                    xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.newInstanceFromClass(getXmlAdapterClass());
+                }
+            } catch (IllegalAccessException e) {
+                Constructor ctor = null;
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         ctor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlAdapterClass, new Class[0], true));
-	            } else {
-	            	ctor = PrivilegedAccessHelper.getDeclaredConstructorFor(xmlAdapterClass, new Class[0], true);
-	            }
-	            xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.invokeConstructor(ctor, new Object[0]);
-	        }
+                } else {
+                    ctor = PrivilegedAccessHelper.getDeclaredConstructorFor(xmlAdapterClass, new Class[0], true);
+                }
+                xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.invokeConstructor(ctor, new Object[0]);
+            }
         } catch (Exception ex) {
             throw JAXBException.adapterClassCouldNotBeInstantiated(getXmlAdapterClassName(), ex);
         }
@@ -330,7 +330,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     public void setXmlAdapterClassName(String xmlAdapterClassName) {
         this.xmlAdapterClassName = xmlAdapterClassName;
     }
-    
+
     /**
      * Get the nested converter to that is used in conjunction with the adapter.
      */
@@ -339,11 +339,11 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     }
 
     /**
-     * Set a nested converter to be used in conjunction with the adapter. On marshal, 
+     * Set a nested converter to be used in conjunction with the adapter. On marshal,
      * the nested converter is invoked after the adapter. On umarshal it is invoked before.
-     * Primarily used to support enumerations with adapters. 
+     * Primarily used to support enumerations with adapters.
      */
     public void setNestedConverter(CoreConverter nestedConverter) {
         this.nestedConverter = nestedConverter;
-    }    
+    }
 }

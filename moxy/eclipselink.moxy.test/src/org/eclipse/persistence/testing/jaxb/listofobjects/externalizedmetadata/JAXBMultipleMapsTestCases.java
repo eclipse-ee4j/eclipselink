@@ -8,7 +8,7 @@
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 * Contributors:
-* Denise Smith - Sept 28/2009 - 2.0 
+* Denise Smith - Sept 28/2009 - 2.0
 ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata;
 
@@ -29,114 +29,114 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
 
 public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
-	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps.xml";
-	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps.json";
-	
-	public Map<String, Integer> mapField1;	
-	
-	private Type[] types;
-	
-	public JAXBMultipleMapsTestCases(String name) throws Exception {
-		super(name);
-		init();
-	}
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps.json";
 
-	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-		types = new Type[5];
-		types[0] = getTypeToUnmarshalTo();
-				  
-		Type mapType2 = new ParameterizedType() {
-		Type[] typeArgs = { Calendar.class, Float.class };
-		 public Type[] getActualTypeArguments() { return typeArgs;}
-		 public Type getOwnerType() { return null; }
-		 public Type getRawType() { return Map.class; }      
-		};
-		types[1] = mapType2;		
-	
-		Type mapType3 = new ParameterizedType() {
-			Type[] typeArgs = { Person.class, Job.class };
-			 public Type[] getActualTypeArguments() { return typeArgs;}
-			 public Type getOwnerType() { return null; }
-			 public Type getRawType() { return Map.class; }      
-			};
-			types[2] = mapType3;
+    public Map<String, Integer> mapField1;
 
-			Type listType = new ParameterizedType() {
-				Type[] typeArgs = { Person.class};
-				 public Type[] getActualTypeArguments() { return typeArgs;}
-				 public Type getOwnerType() { return null; }
-				 public Type getRawType() { return List.class; }      
-				};
-				types[3] = listType;
-				
-			Type listType2 = new ParameterizedType() {
-				Type[] typeArgs = { String.class};
-				 public Type[] getActualTypeArguments() { return typeArgs;}
-				 public Type getOwnerType() { return null; }
-				 public Type getRawType() { return List.class; }      
-				};
-			types[4] = listType2;
+    private Type[] types;
 
-		setTypes(types);
-		initXsiType();
-	}
+    public JAXBMultipleMapsTestCases(String name) throws Exception {
+        super(name);
+        init();
+    }
 
-	public void setUp() throws Exception{
-		super.setUp();
-		getXMLComparer().setIgnoreOrder(true);
-	}
-	
-	public void tearDown(){
-		super.tearDown();
-		getXMLComparer().setIgnoreOrder(false);
-	}
-	
-	public List<InputStream> getControlSchemaFiles() {
-		InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps.xsd");
-		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps2.xsd");
+    public void init() throws Exception {
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        types = new Type[5];
+        types[0] = getTypeToUnmarshalTo();
 
-		List<InputStream> controlSchema= new ArrayList<InputStream>();
+        Type mapType2 = new ParameterizedType() {
+        Type[] typeArgs = { Calendar.class, Float.class };
+         public Type[] getActualTypeArguments() { return typeArgs;}
+         public Type getOwnerType() { return null; }
+         public Type getRawType() { return Map.class; }
+        };
+        types[1] = mapType2;
+
+        Type mapType3 = new ParameterizedType() {
+            Type[] typeArgs = { Person.class, Job.class };
+             public Type[] getActualTypeArguments() { return typeArgs;}
+             public Type getOwnerType() { return null; }
+             public Type getRawType() { return Map.class; }
+            };
+            types[2] = mapType3;
+
+            Type listType = new ParameterizedType() {
+                Type[] typeArgs = { Person.class};
+                 public Type[] getActualTypeArguments() { return typeArgs;}
+                 public Type getOwnerType() { return null; }
+                 public Type getRawType() { return List.class; }
+                };
+                types[3] = listType;
+
+            Type listType2 = new ParameterizedType() {
+                Type[] typeArgs = { String.class};
+                 public Type[] getActualTypeArguments() { return typeArgs;}
+                 public Type getOwnerType() { return null; }
+                 public Type getRawType() { return List.class; }
+                };
+            types[4] = listType2;
+
+        setTypes(types);
+        initXsiType();
+    }
+
+    public void setUp() throws Exception{
+        super.setUp();
+        getXMLComparer().setIgnoreOrder(true);
+    }
+
+    public void tearDown(){
+        super.tearDown();
+        getXMLComparer().setIgnoreOrder(false);
+    }
+
+    public List<InputStream> getControlSchemaFiles() {
+        InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps.xsd");
+        InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps2.xsd");
+
+        List<InputStream> controlSchema= new ArrayList<InputStream>();
         controlSchema.add(instream2);
         controlSchema.add(instream1);
-		return controlSchema;
-		
-	}
-   
+        return controlSchema;
+
+    }
+
 
     protected Object getControlObject() {
-    	    	
-    	Map<String, Integer> theMap = new HashMap<String, Integer>();
-    	theMap.put("aaa", new Integer(1));
-    	theMap.put("bbb", new Integer(2));
 
-    	QName qname = new QName("root");
-    	JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
-    	jaxbElement.setValue(theMap);
-    	return jaxbElement;	 
+        Map<String, Integer> theMap = new HashMap<String, Integer>();
+        theMap.put("aaa", new Integer(1));
+        theMap.put("bbb", new Integer(2));
+
+        QName qname = new QName("root");
+        JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
+        jaxbElement.setValue(theMap);
+        return jaxbElement;
     }
 
     protected Type getTypeToUnmarshalTo() throws Exception {
-	    Field fld = getClass().getField("mapField1");
-	    Type fieldType =  fld.getGenericType();
-	    return fieldType;
+        Field fld = getClass().getField("mapField1");
+        Type fieldType =  fld.getGenericType();
+        return fieldType;
     }
 
-    protected String getNoXsiTypeControlResourceName() {    	
-	    return XML_RESOURCE;
-	}
+    protected String getNoXsiTypeControlResourceName() {
+        return XML_RESOURCE;
+    }
 
-	public void testTypeToSchemaTypeMap(){
-		Map<Type, javax.xml.namespace.QName> typesMap = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeToSchemaType();
-		int mapSize = typesMap.size();
-		assertEquals(7, mapSize);
+    public void testTypeToSchemaTypeMap(){
+        Map<Type, javax.xml.namespace.QName> typesMap = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeToSchemaType();
+        int mapSize = typesMap.size();
+        assertEquals(7, mapSize);
 
-		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[0]));
-		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[1]));
-		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[2]));
-		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[3]));
-		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[4]));		
-	}
+        assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[0]));
+        assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[1]));
+        assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[2]));
+        assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[3]));
+        assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[4]));
+    }
 
 }

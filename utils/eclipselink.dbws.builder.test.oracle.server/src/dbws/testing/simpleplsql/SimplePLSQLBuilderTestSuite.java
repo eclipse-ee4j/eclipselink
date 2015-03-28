@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,7 +21,7 @@ import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests a simple PL/SQL stored procedure.
- * 
+ *
  */
 public class SimplePLSQLBuilderTestSuite extends DBWSTestSuite {
     static final String PROJECT_NAME = "simpleplsql";
@@ -33,26 +33,26 @@ public class SimplePLSQLBuilderTestSuite extends DBWSTestSuite {
             "PROCEDURE SOMEPROC(ARG1 IN VARCHAR2, ARG2 OUT VARCHAR2); \n" +
         "END SOMEPACKAGE;";
     public static final String CREATE_PACKAGE_BODY =
-        "CREATE OR REPLACE PACKAGE BODY SOMEPACKAGE AS \n" + 
+        "CREATE OR REPLACE PACKAGE BODY SOMEPACKAGE AS \n" +
             "PROCEDURE SOMEPROC(ARG1 IN VARCHAR2, ARG2 OUT VARCHAR2) AS \n" +
             "BEGIN\n" +
-                "ARG2 := ARG1;\n" + 
-            "END SOMEPROC;\n" +	  
+                "ARG2 := ARG1;\n" +
+            "END SOMEPROC;\n" +
         "END SOMEPACKAGE;";
 
     public static final String DROP_PACKAGE_BODY =
         "DROP PACKAGE BODY SOMEPACKAGE";
     public static final String DROP_PACKAGE =
         "DROP PACKAGE SOMEPACKAGE";
-    
+
     @BeforeClass
     public static void setUp() {
         DBWSTestSuite.setupTest(BUILDER_FILE, BUILDER_XML);
         if (ddlCreate) {
-        	runDdl(conn, CREATE_PACKAGE, ddlDebug);
+            runDdl(conn, CREATE_PACKAGE, ddlDebug);
         }
     }
-    
+
     @AfterClass
     public static void tearDown() {
         if (ddlDrop) {
@@ -64,7 +64,7 @@ public class SimplePLSQLBuilderTestSuite extends DBWSTestSuite {
     public void testBuild() {
         DBWSTestSuite.testBuild(PROJECT_NAME, BUILDER_FILE);
     }
-    
+
     static final String BUILDER_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +

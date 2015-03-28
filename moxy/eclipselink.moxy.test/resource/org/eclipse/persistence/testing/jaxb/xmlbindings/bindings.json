@@ -5,10 +5,10 @@
             "name":"myType",
             "java-attributes":{
                   "xml-element":[{
-		      "java-attribute":"theJavaAttributeValue",
-		      "name":"elementName"
+              "java-attribute":"theJavaAttributeValue",
+              "name":"elementName"
                    }]
-	     }
+         }
          }]
     }
 }}

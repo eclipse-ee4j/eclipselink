@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -68,35 +68,35 @@ public interface SessionBean extends EnterpriseBean {
      *
      * @exception RemoteException This exception is defined in the method
      *    signature to provide backward compatibility for applications written
-     *    for the EJB 1.0 specification. Enterprise beans written for the 
+     *    for the EJB 1.0 specification. Enterprise beans written for the
      *    EJB 1.1 specification should throw the
      *    javax.ejb.EJBException instead of this exception.
      *    Enterprise beans written for the EJB2.0 and higher specifications
      *    must throw the javax.ejb.EJBException instead of this exception.
      */
     void setSessionContext(SessionContext ctx) throws EJBException,
-	    RemoteException;
+        RemoteException;
 
     /**
      * A container invokes this method before it ends the life of the session
      * object. This happens as a result of a client's invoking a remove
      * operation, or when a container decides to terminate the session object
      * after a timeout.
-     * 
+     *
      * <p> This method is called with no transaction context.
      *
      * @exception EJBException Thrown by the method to indicate a failure
      *    caused by a system-level error.
      *
      * @exception RemoteException This exception is defined in the method
-     *    signature to provide backward compatibility for enterprise beans 
-     *    written for the EJB 1.0 specification. Enterprise beans written 
+     *    signature to provide backward compatibility for enterprise beans
+     *    written for the EJB 1.0 specification. Enterprise beans written
      *    for the EJB 1.1 specification should throw the
      *    javax.ejb.EJBException instead of this exception.
      *    Enterprise beans written for the EJB2.0 and higher specifications
      *    must throw the javax.ejb.EJBException instead of this exception.
      */
-     void ejbRemove() throws EJBException, RemoteException;    
+     void ejbRemove() throws EJBException, RemoteException;
 
     /**
      * The activate method is called when a stateful session bean instance is activated
@@ -109,8 +109,8 @@ public interface SessionBean extends EnterpriseBean {
      *    caused by a system-level error.
      *
      * @exception RemoteException This exception is defined in the method
-     *    signature to provide backward compatibility for enterprise beans 
-     *    written for the EJB 1.0 specification. Enterprise beans written 
+     *    signature to provide backward compatibility for enterprise beans
+     *    written for the EJB 1.0 specification. Enterprise beans written
      *    for the EJB 1.1 specification should throw the
      *    javax.ejb.EJBException instead of this exception.
      *    Enterprise beans written for the EJB2.0 and higher specifications
@@ -133,8 +133,8 @@ public interface SessionBean extends EnterpriseBean {
      *    caused by a system-level error.
      *
      * @exception RemoteException This exception is defined in the method
-     *    signature to provide backward compatibility for enterprise beans 
-     *    written for the EJB 1.0 specification. Enterprise beans written 
+     *    signature to provide backward compatibility for enterprise beans
+     *    written for the EJB 1.0 specification. Enterprise beans written
      *    for the EJB 1.1 specification should throw the
      *    javax.ejb.EJBException instead of this exception.
      *    Enterprise beans written for the EJB2.0 and higher specifications

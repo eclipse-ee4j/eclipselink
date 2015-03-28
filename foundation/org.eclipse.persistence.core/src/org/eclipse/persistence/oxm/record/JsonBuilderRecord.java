@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,50 +24,50 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
 
 public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
- 
+
     private JsonObjectBuilder rootJsonObjectBuilder;
     private JsonArrayBuilder rootJsonArrayBuilder;
- 
+
     public JsonBuilderRecord(){
         super();
         isLastEventStart = false;
     }
-    
+
     public JsonBuilderRecord(JsonObjectBuilder jsonObjectBuilder){
         this();
         rootJsonObjectBuilder = jsonObjectBuilder;
     }
-    
+
     public JsonBuilderRecord(JsonArrayBuilder jsonArrayBuilder){
         this();
         rootJsonArrayBuilder = jsonArrayBuilder;
         isRootArray = true;
     }
-     
+
     protected Level createNewLevel(boolean collection, Level parentLevel){
-      return new Level(collection, position);       
+      return new Level(collection, position);
     }
-  
+
     protected void startRootObject(){
-        super.startRootObject();                
+        super.startRootObject();
         position.setJsonObjectBuilder(rootJsonObjectBuilder);
         setComplex(position, true);
     }
-       
+
     protected void finishLevel(){
         if(!(position.isCollection && position.isEmptyCollection() && position.getKeyName() == null)){
-            
+
             Level parentLevel = (Level) position.parentLevel;
-    
-            if(parentLevel != null){                  
+
+            if(parentLevel != null){
                 if(parentLevel.isCollection){
                     if(position.isCollection){
                         parentLevel.getJsonArrayBuilder().add(position.getJsonArrayBuilder());
-                    }else{                   
+                    }else{
                         parentLevel.getJsonArrayBuilder().add(position.getJsonObjectBuilder());
                     }
                 }else{
-                    if(position.isCollection){                    
+                    if(position.isCollection){
                         parentLevel.getJsonObjectBuilder().add(position.getKeyName(), position.getJsonArrayBuilder());
                     }else{
                         parentLevel.getJsonObjectBuilder().add(position.getKeyName(), position.getJsonObjectBuilder());
@@ -75,22 +75,22 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
                 }
             }
         }
-        super.finishLevel();      
-    }    
-    
+        super.finishLevel();
+    }
+
     protected void startRootLevelCollection(){
         if(rootJsonArrayBuilder == null){
             rootJsonArrayBuilder = Json.createArrayBuilder();
        }
-       position.setJsonArrayBuilder(rootJsonArrayBuilder); 
+       position.setJsonArrayBuilder(rootJsonArrayBuilder);
     }
 
     @Override
     public void endCollection() {
-        finishLevel();    
+        finishLevel();
     }
-    
-    protected void setComplex(Level level, boolean complex){       
+
+    protected void setComplex(Level level, boolean complex){
         boolean isAlreadyComplex = level.isComplex;
         super.setComplex(level, complex);
         if(complex && !isAlreadyComplex){
@@ -99,25 +99,25 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
             }
         }
     }
-    
+
     protected void writeEmptyCollection(Level level, String keyName){
         level.getJsonObjectBuilder().add(keyName, Json.createArrayBuilder());
     }
-      
+
     protected void addValueToObject(Level level, String keyName, Object value, QName schemaType){
         JsonObjectBuilder jsonObjectBuilder = level.getJsonObjectBuilder();
         if(value == NULL){
             jsonObjectBuilder.addNull(keyName);
         }else if(value instanceof Integer){
-            jsonObjectBuilder.add(keyName, (Integer)value);  
+            jsonObjectBuilder.add(keyName, (Integer)value);
         }else if(value instanceof BigDecimal){
-            jsonObjectBuilder.add(keyName, (BigDecimal)value);   
+            jsonObjectBuilder.add(keyName, (BigDecimal)value);
         }else if(value instanceof BigInteger){
-            jsonObjectBuilder.add(keyName, (BigInteger)value);               
+            jsonObjectBuilder.add(keyName, (BigInteger)value);
         }else if(value instanceof Boolean){
             jsonObjectBuilder.add(keyName, (Boolean)value);
         }else if(value instanceof Character){
-            jsonObjectBuilder.add(keyName, (Character)value);  
+            jsonObjectBuilder.add(keyName, (Character)value);
         }else if(value instanceof Double){
             jsonObjectBuilder.add(keyName, (Double)value);
         }else if(value instanceof Float){
@@ -125,7 +125,7 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
         }else if(value instanceof Long){
             jsonObjectBuilder.add(keyName, (Long)value);
         }else if(value instanceof String){
-            jsonObjectBuilder.add(keyName, (String)value);                
+            jsonObjectBuilder.add(keyName, (String)value);
         }else{
             ConversionManager conversionManager = getConversionManager();
             String convertedValue = (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
@@ -137,24 +137,24 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
             }else{
                 jsonObjectBuilder.add(keyName, convertedValue);
             }
-                
+
         }
     }
-    
+
     protected void addValueToArray(Level level, Object value, QName schemaType){
         JsonArrayBuilder jsonArrayBuilder = level.getJsonArrayBuilder();
         if(value == NULL){
             jsonArrayBuilder.addNull();
         }else if(value instanceof Integer){
-            jsonArrayBuilder.add((Integer)value);  
+            jsonArrayBuilder.add((Integer)value);
         }else if(value instanceof BigDecimal){
-            jsonArrayBuilder.add((BigDecimal)value);   
+            jsonArrayBuilder.add((BigDecimal)value);
         }else if(value instanceof BigInteger){
-            jsonArrayBuilder.add((BigInteger)value);               
-        }else if(value instanceof Boolean){                
+            jsonArrayBuilder.add((BigInteger)value);
+        }else if(value instanceof Boolean){
             jsonArrayBuilder.add((Boolean)value);
         }else if(value instanceof Character){
-            jsonArrayBuilder.add((Character)value);  
+            jsonArrayBuilder.add((Character)value);
         }else if(value instanceof Double){
             jsonArrayBuilder.add((Double)value);
         }else if(value instanceof Float){
@@ -176,21 +176,21 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
             }
         }
     }
-    
-          
+
+
      /**
      * Instances of this class are used to maintain state about the current
      * level of the JSON message being marshalled.
      */
     protected static class Level extends JsonRecord.Level{
-        
+
         private JsonObjectBuilder jsonObjectBuilder;
         private JsonArrayBuilder jsonArrayBuilder;
-        
+
         public Level(boolean isCollection, Level position) {
             super(isCollection, position);
         }
-     
+
         public void setCollection(boolean isCollection) {
             super.setCollection(isCollection);
             if(isCollection && jsonArrayBuilder == null){
@@ -212,7 +212,7 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
 
         public void setJsonArrayBuilder(JsonArrayBuilder jsonArrayBuilder) {
             this.jsonArrayBuilder = jsonArrayBuilder;
-        }       
+        }
 
     }
 

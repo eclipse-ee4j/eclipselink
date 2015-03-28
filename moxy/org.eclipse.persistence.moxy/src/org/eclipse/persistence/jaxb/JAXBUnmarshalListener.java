@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +34,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshalListener;
  * <li>Delegate event callbacks to the wrapped Listener instance</li>
  * <li>Perform JAXB 2.0 Class-Based unmarshal event callbacks</li>
  * </ul>
- * 
+ *
  * @since Oracle TopLink 11.1.1.0.0
  * @author mmacivor
  * @see javax.xml.bind.Marshaller.Listener
@@ -45,19 +45,19 @@ public class JAXBUnmarshalListener implements XMLUnmarshalListener {
     private Unmarshaller.Listener listener;
     private Map classBasedUnmarshalEvents;
     private Unmarshaller unmarshaller;
-    
+
     public JAXBUnmarshalListener(Unmarshaller unmarshaller) {
         this.unmarshaller = unmarshaller;
     }
-    
+
     public void setListener(Unmarshaller.Listener jaxbListener) {
         this.listener = jaxbListener;
     }
-    
+
     public Unmarshaller.Listener getListener() {
         return listener;
     }
-    
+
     public void beforeUnmarshal(Object target, Object parent) {
         if(classBasedUnmarshalEvents != null) {
             UnmarshalCallback callback = (UnmarshalCallback)classBasedUnmarshalEvents.get(target.getClass().getName());
@@ -115,8 +115,8 @@ public class JAXBUnmarshalListener implements XMLUnmarshalListener {
         if(listener != null) {
             listener.afterUnmarshal(target, parent);
         }
-    }  
-    
+    }
+
     public void setClassBasedUnmarshalEvents(Map events) {
         this.classBasedUnmarshalEvents = events;
     }

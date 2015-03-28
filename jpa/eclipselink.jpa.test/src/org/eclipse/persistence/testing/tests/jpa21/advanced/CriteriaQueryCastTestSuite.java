@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -70,16 +70,16 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
     public CriteriaQueryCastTestSuite() {
         super();
     }
-    
+
     public CriteriaQueryCastTestSuite(String name) {
         super(name);
         setPuName("MulitPU-1");
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("QueryCastTestSuite");
-        
+
         suite.addTest(new CriteriaQueryCastTestSuite("testSetup"));
         suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyLeafQueryKey"));
         suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyMidHierarchyQueryKey"));
@@ -107,7 +107,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
         suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingJoinOverDowncastRelationship"));
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -138,7 +138,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             boat.setOwner(company);
             company.getVehicles().add(car);
             car.setOwner(company);
-            
+
             company = new Company();
             company.setName("WidgetCo");
             em.persist(company);
@@ -148,10 +148,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             company.getVehicles().add(boat);
             boat.setOwner(company);
             em.flush();
-    
+
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select c from Company c join treat(c.vehicles as Boat) b where b.model = 'speed'");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
@@ -159,9 +159,9 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Join vehicleJoin = root.join("vehicles");
             Join boatJoin = qb.treat(vehicleJoin, Boat.class);
             cq.where(qb.equal(boatJoin.get("model"), "speed"));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned, expected 1 but returned "+resultList.size(), resultList.size() == 1);
         } finally {
             if (this.isTransactionActive(em)){
@@ -170,7 +170,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testDowncastOneToManyMidHierarchyQueryKey(){
         EntityManager em = createEntityManager();
 
@@ -194,7 +194,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             boat.setOwner(company);
             company.getVehicles().add(car);
             car.setOwner(company);
-            
+
             company = new Company();
             company.setName("WidgetCo");
             em.persist(company);
@@ -204,10 +204,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             company.getVehicles().add(nfv);
             nfv.setOwner(company);
             em.flush();
-            
+
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select c from Company c join treat(c.vehicles as NonFueledVehicle) v where v.color = 'Blue'");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
@@ -215,9 +215,9 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Join vehicleJoin = root.join("vehicles");
             Join nonFueledJoin = qb.treat(vehicleJoin, NonFueledVehicle.class);
             cq.where(qb.equal(nonFueledJoin.get("color"), "Blue"));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
             if (this.isTransactionActive(em)){
@@ -226,21 +226,21 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testDowncastManyToManyQueryKey(){
         EntityManager em = createEntityManager();
-        
+
         beginTransaction(em);
         try {
             LargeProject proj = new LargeProject();
             proj.setBudget(1000);
             proj.setName("test1");
             em.persist(proj);
-            
+
             SmallProject sp = new SmallProject();
             sp.setName("sp1");
             em.persist(sp);
-            
+
             Employee emp = new Employee();
             emp.setFirstName("Reggie");
             emp.setLastName("Josephson");
@@ -249,19 +249,19 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             emp.addProject(sp);
             sp.addTeamMember(emp);
             em.persist(emp);
-            
+
             emp = new Employee();
             emp.setFirstName("Ron");
             emp.setLastName("Josephson");
             emp.addProject(sp);
             sp.addTeamMember(emp);
             em.persist(emp);
-            
+
             em.flush();
-            
+
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select e from Employee e join treat(e.projects as LargeProject) p where p.budget > 100");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
@@ -269,9 +269,9 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Join projectsJoin = root.join("projects");
             Join largeProjectJoin = qb.treat(projectsJoin, LargeProject.class);
             cq.where(qb.gt(largeProjectJoin.get("budget"), 100));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
             if (this.isTransactionActive(em)){
@@ -280,7 +280,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testDowncastOneToManyLeafExpressionBuilder(){
         EntityManager em = createEntityManager();
 
@@ -299,7 +299,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             boat.setOwner(company);
             company.getVehicles().add(car);
             car.setOwner(company);
-            
+
             company = new Company();
             company.setName("WidgetCo");
             em.persist(company);
@@ -309,20 +309,20 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             company.getVehicles().add(boat);
             boat.setOwner(company);
             em.flush();
-            
-    
+
+
             clearCache();
             em.clear();
-            
+
             //JpaQuery query = (JpaQuery)em.createQuery("Select v from Vehicle v where treat(v as Boat).model = 'speed'");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Vehicle> cq = qb.createQuery(Vehicle.class);
             Root<Vehicle> root = cq.from(Vehicle.class);
             Root boatRoot = qb.treat(root, Boat.class);
             cq.where(qb.equal(boatRoot.get("model"), "speed"));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
             if (this.isTransactionActive(em)){
@@ -331,7 +331,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testDowncastOneToManyMidHierarchyExpressionBuilder(){
         EntityManager em = createEntityManager();
 
@@ -356,7 +356,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             boat.setOwner(company);
             company.getVehicles().add(car);
             car.setOwner(company);
-            
+
             company = new Company();
             company.setName("WidgetCo");
             em.persist(company);
@@ -366,19 +366,19 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             company.getVehicles().add(nfv);
             nfv.setOwner(company);
             em.flush();
-            
+
             clearCache();
             em.clear();
-            
+
             //JpaQuery query = (JpaQuery)em.createQuery("Select v from Vehicle v where treat(v as NonFueledVehicle).color = 'Blue'");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Vehicle> cq = qb.createQuery(Vehicle.class);
             Root<Vehicle> root = cq.from(Vehicle.class);
             Root<NonFueledVehicle> nonFueledVehicleRoot = qb.treat(root, NonFueledVehicle.class);
             cq.where(qb.equal(nonFueledVehicleRoot.get("color"), "Blue"));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
             if (this.isTransactionActive(em)){
@@ -387,21 +387,21 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testDowncastManyToManyExpressionBuilder(){
         EntityManager em = createEntityManager();
-        
+
         beginTransaction(em);
         try {
             LargeProject proj = new LargeProject();
             proj.setBudget(1000);
             proj.setName("test1");
             em.persist(proj);
-            
+
             SmallProject sp = new SmallProject();
             sp.setName("sp1");
             em.persist(sp);
-            
+
             Employee emp = new Employee();
             emp.setFirstName("Reggie");
             emp.setLastName("Josephson");
@@ -410,28 +410,28 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             emp.addProject(sp);
             sp.addTeamMember(emp);
             em.persist(emp);
-            
+
             emp = new Employee();
             emp.setFirstName("Ron");
             emp.setLastName("Josephson");
             emp.addProject(sp);
             sp.addTeamMember(emp);
             em.persist(emp);
-            
+
             em.flush();
-            
+
             clearCache();
             em.clear();
-            
+
             //JpaQuery query = (JpaQuery)em.createQuery("Select p from Project p where treat (p as LargeProject).budget > 100");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Project> cq = qb.createQuery(Project.class);
             Root<Project> root = cq.from(Project.class);
             Root largeProjectRoot = qb.treat(root, LargeProject.class);
             cq.where(qb.gt(largeProjectRoot.get("budget"), 100));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
             if (this.isTransactionActive(em)){
@@ -440,7 +440,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testDowncastInSelect(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -449,15 +449,15 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             proj.setBudget(1000);
             proj.setName("test1");
             em.persist(proj);
-            
+
             SmallProject sp = new SmallProject();
             sp.setName("sp1");
             em.persist(sp);
             em.flush();
-            
+
             clearCache();
             em.clear();
-            
+
             //this would work in the past if TYPE was added to the where clause
             //Query query = em.createQuery("Select treat(c as LargeProject).budget from Project c");
             CriteriaBuilder qb = em.getCriteriaBuilder();
@@ -465,9 +465,9 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Root<Project> root = cq.from(Project.class);
             Root largeProjectRoot = qb.treat(root, LargeProject.class);
             cq.select(largeProjectRoot.get("budget"));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
             if (this.isTransactionActive(em)){
@@ -476,10 +476,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testDowncastSingleTableQueryKey(){
         EntityManager em = createEntityManager();
-        
+
         beginTransaction(em);
         try {
             BeerConsumer consumer = new BeerConsumer();
@@ -489,44 +489,44 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             blue.setAlcoholContent(5f);
             blue.setUniqueKey(new BigInteger("4531"));
             em.persist(blue);
-            
+
             BlueLight blueLight = new BlueLight();
             blueLight.setDiscount(10);
             blueLight.setUniqueKey(new BigInteger("4533"));
             em.persist(blueLight);
-            
+
             consumer.addBlueBeerToConsume(blueLight);
             blueLight.setBeerConsumer(consumer);
-            
+
             consumer.addBlueBeerToConsume(blue);
             consumer.addBlueBeerToConsume(blueLight);
-            
+
             consumer = new BeerConsumer();
             consumer.setName("Frank");
             em.persist(consumer);
-            
+
             blueLight = new BlueLight();
             blueLight.setDiscount(5);
             blueLight.setUniqueKey(new BigInteger("4532"));
             em.persist(blueLight);
-            
+
             consumer.addBlueBeerToConsume(blueLight);
             blueLight.setBeerConsumer(consumer);
-    
+
             em.flush();
-            
+
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select b from BeerConsumer b join treat(b.blueBeersToConsume as BlueLight) bl where bl.discount = 10");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<BeerConsumer> cq = qb.createQuery(BeerConsumer.class);
             Root<BeerConsumer> root = cq.from(BeerConsumer.class);
             Join blueLightJoin = qb.treat(root.join("blueBeersToConsume"), BlueLight.class);
             cq.where(qb.equal(blueLightJoin.get("discount"), 10));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
             if (this.isTransactionActive(em)){
@@ -555,7 +555,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             boat.setOwner(company);
             company.getVehicles().add(car);
             car.setOwner(company);
-            
+
             company = new Company();
             company.setName("WidgetCo");
             em.persist(company);
@@ -565,19 +565,19 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             company.getVehicles().add(boat);
             boat.setOwner(company);
             em.flush();
-            
+
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select c from Company c join treat(c.vehicles as Boat) b where b.model = 'speed' or b.model = 'fishing'");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
             Root<Company> root = cq.from(Company.class);
             Join boatJoin = qb.treat(root.join("vehicles"), Boat.class);
             cq.where(qb.or(qb.equal(boatJoin.get("model"), "speed"), qb.equal(boatJoin.get("model"), "fishing")));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
             if (this.isTransactionActive(em)){
@@ -586,7 +586,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testDoubleDowncastSeparateClass(){
         EntityManager em = createEntityManager();
 
@@ -606,7 +606,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             boat.setOwner(company);
             company.getVehicles().add(car);
             car.setOwner(company);
-            
+
             company = new Company();
             company.setName("WidgetCo");
             em.persist(company);
@@ -616,10 +616,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             company.getVehicles().add(boat);
             boat.setOwner(company);
             em.flush();
-    
+
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select distinct c from Company c left join treat(c.vehicles as Boat) b left join treat(c.vehicles as FueledVehicle) f where b.model = 'fishing' or f.fuelType = 'unleaded'");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
@@ -627,9 +627,9 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Join b = qb.treat(root.join("vehicles", JoinType.LEFT), Boat.class);
             Join f = qb.treat(root.join("vehicles", JoinType.LEFT), FueledVehicle.class);
             cq.where(qb.or(qb.equal(b.get("model"), "fishing"), qb.equal(f.get("fuelType"), "unleaded")));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
             if (this.isTransactionActive(em)){
@@ -638,7 +638,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testDowncastRelationshipTraversal(){
         EntityManager em = createEntityManager();
 
@@ -658,12 +658,12 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             person.setName("Driver");
             bus.setBusDriver(person);
             em.persist(person);
-            
+
             company.getVehicles().add(boat);
             boat.setOwner(company);
             company.getVehicles().add(bus);
             bus.setOwner(company);
-            
+
             company = new Company();
             company.setName("WidgetCo");
             em.persist(company);
@@ -678,11 +678,11 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             company.getVehicles().add(boat);
             boat.setOwner(company);
             em.flush();
-            
-    
+
+
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select distinct c from Company c left join treat(c.vehicles as Bus) b where b.busDriver.name = 'Driver'");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
@@ -690,9 +690,9 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Root<Company> root = cq.from(Company.class);
             Join b = qb.treat(root.join("vehicles", JoinType.LEFT), Bus.class);
             cq.where(qb.equal(b.get("busDriver").get("name"), "Driver"));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
             if (this.isTransactionActive(em)){
@@ -714,7 +714,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             sportsCar.setMaxSpeed(200);
             em.persist(sportsCar);
             rudy.setCar(sportsCar);
-            
+
             Person theo = new Person();
             theo.setName("Theo");
             em.persist(theo);
@@ -723,12 +723,12 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             car.setPercentRust(20);
             em.persist(car);
             theo.setCar(car);
-    
+
             em.flush();
-    
+
             clearCache();
             em.clear();
-        
+
             // The following query casts across a 1-1
             // as a result of our 1-1 optimization, the same expression is used twice
             // causing an exception
@@ -740,7 +740,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Join s = qb.treat(root.join("car", JoinType.LEFT), SportsCar.class);
             Join j = qb.treat(root.join("car", JoinType.LEFT), Jalopy.class);
             cq.where(qb.or(qb.equal(s.get("maxSpeed"), 200), qb.equal(j.get("percentRust"), 20)));
-            
+
             List resultList = em.createQuery(cq).getResultList();
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
@@ -750,7 +750,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testSelectCast(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -759,12 +759,12 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             proj.setBudget(1000);
             proj.setName("test1");
             em.persist(proj);
-            
+
             LargeProject lp = new LargeProject();
             lp.setBudget(100);
             lp.setName("sp1");
             em.persist(lp);
-            
+
             Employee emp = new Employee();
             emp.setFirstName("Reggie");
             emp.setLastName("Josephson");
@@ -773,7 +773,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             emp.addProject(lp);
             lp.addTeamMember(emp);
             em.persist(emp);
-            
+
             emp = new Employee();
             emp.setFirstName("Ron");
             emp.setLastName("Josephson");
@@ -781,19 +781,19 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             lp.addTeamMember(emp);
             em.persist(emp);
             em.flush();
-    
+
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select max(l.budget) from Employee e join treat(e.projects as LargeProject) l");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Number> cq = qb.createQuery(Number.class);
             Root<Employee> root = cq.from(Employee.class);
             Join l = qb.treat(root.join("projects"), LargeProject.class);
             cq.select(qb.max(l.get("budget")));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect result size returned", resultList.size() == 1);
             assertTrue("Incorrect results returned", (Double)resultList.get(0) == 1000);
         } finally {
@@ -803,7 +803,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testCastInSubselect(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -812,12 +812,12 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             proj.setBudget(1000);
             proj.setName("test1");
             em.persist(proj);
-            
+
             LargeProject lp = new LargeProject();
             lp.setBudget(100);
             lp.setName("sp1");
             em.persist(lp);
-            
+
             Employee emp = new Employee();
             emp.setFirstName("Reggie");
             emp.setLastName("Josephson");
@@ -827,7 +827,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             lp.addTeamMember(emp);
             emp.setSalary(10000);
             em.persist(emp);
-            
+
             emp = new Employee();
             emp.setFirstName("Ron");
             emp.setLastName("Josephson");
@@ -836,10 +836,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             em.persist(emp);
             emp.setSalary(100);
             em.flush();
-    
+
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("select e from Employee e where e.salary > (Select max(l.budget) from Employee emp join treat(emp.projects as LargeProject) l)");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
@@ -851,7 +851,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             cq.where(qb.gt(root.<Number>get("salary"), sq));
 
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect result size returned", resultList.size() == 1);
         } finally {
             if (this.isTransactionActive(em)){
@@ -860,7 +860,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testDowncastWithFetchJoin(){
         EntityManager em = createEntityManager();
 
@@ -873,7 +873,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             sportsCar.setMaxSpeed(200);
             em.persist(sportsCar);
             rudy.setCar(sportsCar);
-            
+
             Person theo = new Person();
             theo.setName("Theo");
             em.persist(theo);
@@ -882,12 +882,12 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             car.setPercentRust(20);
             em.persist(car);
             theo.setCar(car);
-    
+
             em.flush();
-    
+
             clearCache();
             em.clear();
-        
+
             //Query query = em.createQuery("Select p from Person p join fetch p.car join treat(p.car as SportsCar) s where s.maxSpeed = 200");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Person> cq = qb.createQuery(Person.class);
@@ -921,7 +921,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             sportsCar.setMaxSpeed(200);
             em.persist(sportsCar);
             rudy.setCar(sportsCar);
-            
+
             Person theo = new Person();
             theo.setName("Theo");
             em.persist(theo);
@@ -930,9 +930,9 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             car.setPercentRust(20);
             em.persist(car);
             theo.setCar(car);
-    
+
             em.flush();
-    
+
             clearCache();
             em.clear();
 
@@ -942,7 +942,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaQuery<Car> cq = qb.createQuery(Car.class);
             Root<Car> root = cq.from(Car.class);
             cq.where(qb.or(qb.equal( qb.treat(root, SportsCar.class).get("maxSpeed"), 200), qb.equal( qb.treat(root, Jalopy.class).get("percentRust"), 20)));
-            
+
             List resultList = em.createQuery(cq).getResultList();
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
@@ -952,7 +952,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
   //last spec example
     public void testDoubleTreatOnRootSTI(){
         EntityManager em = createEntityManager();
@@ -962,27 +962,27 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             PerformanceTireInfo pti110 = new PerformanceTireInfo();
             pti110.setSpeedRating(110);
             em.persist(pti110);
-            
+
             PerformanceTireInfo pti120 = new PerformanceTireInfo();
             pti120.setSpeedRating(120);
             em.persist(pti120);
-            
+
             PassengerPerformanceTireInfo ppti = new PassengerPerformanceTireInfo();
             ppti.setSpeedRating(120);
             em.persist(ppti);
-    
+
             em.flush();
-    
+
             clearCache();
             em.clear();
-        
+
             // The following query casts the base expression twice
             //Query query = em.createQuery("Select t from TireInfo t where treat(t as PerformanceTireInfo).speedRating = 110 or treat(t as PassengerPerformanceTireInfo).speedRating = 120");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<TireInfo> cq = qb.createQuery(TireInfo.class);
             Root<TireInfo> root = cq.from(TireInfo.class);
             cq.where(qb.or(qb.equal( qb.treat(root, PerformanceTireInfo.class).get("speedRating"), 110), qb.equal( qb.treat(root, PassengerPerformanceTireInfo.class).get("speedRating"), 120)));
-            
+
             List resultList = em.createQuery(cq).getResultList();
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
@@ -998,7 +998,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-        
+
             Person rudy = new Person();
             rudy.setName("Rudy");
             em.persist(rudy);
@@ -1012,7 +1012,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             em.persist(c);
             sportsCar.setOwner(c);
             c.getVehicles().add(sportsCar);
-            
+
             Person theo = new Person();
             theo.setName("Theo");
             em.persist(theo);
@@ -1021,20 +1021,20 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             car.setPercentRust(20);
             em.persist(car);
             theo.setCar(car);
-            
+
             em.flush();
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select s.maxSpeed from Person o join treat(o.car as SportsCar) s");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Person> cq = qb.createQuery(Person.class);
             Root<Person> root = cq.from(Person.class);
             Join s = qb.treat(root.join("car"), SportsCar.class);
             cq.select(s.get("maxSpeed"));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
             if (this.isTransactionActive(em)){
@@ -1043,7 +1043,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testTreatInFromSTI(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -1055,7 +1055,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             pTire.setPressure(32);
             em.persist(pTire);
             bus1.getTires().add(pTire);
-            
+
             Bus bus2 = new Bus();
             em.persist(bus2);
             TireInfo tire = new TireInfo();
@@ -1067,20 +1067,20 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             otherTire.setPressure(31);
             em.persist(otherTire);
             bus2.getTires().add(otherTire);
-            
-            
+
+
             em.flush();
-            
+
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select b.speedRating from Bus o join treat(o.tires as PerformanceTireInfo) b");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Bus> cq = qb.createQuery(Bus.class);
             Root<Bus> root = cq.from(Bus.class);
             Join b = qb.treat(root.join("tires"), PerformanceTireInfo.class);
             cq.select(b.get("speedRating"));
-            
+
             List resultList = em.createQuery(cq).getResultList();
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
@@ -1090,13 +1090,13 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
   //second Spec example,
     public void testTreatInWhere(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-        
+
             Person rudy = new Person();
             rudy.setName("Rudy");
             em.persist(rudy);
@@ -1110,7 +1110,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             em.persist(c);
             sportsCar.setOwner(c);
             c.getVehicles().add(sportsCar);
-            
+
             Person theo = new Person();
             theo.setName("Theo");
             em.persist(theo);
@@ -1119,19 +1119,19 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             car.setPercentRust(20);
             em.persist(car);
             theo.setCar(car);
-            
+
             em.flush();
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select o from Person o where treat(o.car as SportsCar).maxSpeed = 200");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Person> cq = qb.createQuery(Person.class);
             Root<Person> root = cq.from(Person.class);
             cq.where(qb.equal(qb.treat(root.get("car"), SportsCar.class).get("maxSpeed"), 200));
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
             if (this.isTransactionActive(em)){
@@ -1140,7 +1140,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testTreatInWhereSTI(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -1152,7 +1152,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             pTire.setPressure(32);
             em.persist(pTire);
             bus1.getTires().add(pTire);
-            
+
             Bus bus2 = new Bus();
             em.persist(bus2);
             TireInfo tire = new TireInfo();
@@ -1164,20 +1164,20 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             otherTire.setPressure(31);
             em.persist(otherTire);
             bus2.getTires().add(otherTire);
-            
-            
+
+
             em.flush();
-            
+
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select b from Bus b where treat(b.tires as PerformanceTireInfo).speedRating >100");
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Bus> cq = qb.createQuery(Bus.class);
             Root<Bus> root = cq.from(Bus.class);
             Join b = qb.treat(root.join("tires"), PerformanceTireInfo.class);
             cq.where(qb.greaterThan(qb.treat(root.get("tires"), PerformanceTireInfo.class).<Integer>get("speedRating"), 100));
-            
+
             List resultList = em.createQuery(cq).getResultList();
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
@@ -1187,8 +1187,8 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
-    //more complex example 
+
+    //more complex example
     public void testTreatUsingAndOr(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -1207,7 +1207,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             em.persist(company);
             sportsCar.setOwner(company);
             company.getVehicles().add(sportsCar);
-            
+
             Person theo = new Person();
             theo.setName("Theo");
             em.persist(theo);
@@ -1216,7 +1216,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             jalopy.setPercentRust(20);
             em.persist(jalopy);
             theo.setCar(jalopy);
-            
+
             Person daisy = new Person();
             daisy.setName("Daisy");
             em.persist(daisy);
@@ -1224,11 +1224,11 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             car.setColor("Red");
             em.persist(car);
             daisy.setCar(car);
-            
+
             em.flush();
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select p from Person p join p.car c where (c.color = 'Red') AND " +
             //        "(treat(c as SportsCar).maxSpeed = 200 OR treat(c as Jalopy).percentRust = 20)");
             CriteriaBuilder qb = em.getCriteriaBuilder();
@@ -1250,7 +1250,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testTreatUsingAndOrSTI(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -1262,7 +1262,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             pTire.setPressure(32);
             em.persist(pTire);
             bus1.getTires().add(pTire);
-            
+
             Bus bus2 = new Bus();
             em.persist(bus2);
             TireInfo tire = new TireInfo();
@@ -1278,7 +1278,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             em.flush();
             clearCache();
             em.clear();
-            
+
             //Query query = em.createQuery("Select b from Bus b join b.tires t where (t.pressure > 0) AND " +
             //        "(treat(t as PassengerPerformanceTireInfo).speedRating > 100 OR treat(t as OffRoadTireInfo).name = 'doesNotExist')");
             CriteriaBuilder qb = em.getCriteriaBuilder();
@@ -1300,7 +1300,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
   //385350 - JPQL TREAT followed by JOIN problem.
     public void testTreatUsingJoinOverDowncastRelationship(){
         EntityManager em = createEntityManager();
@@ -1319,7 +1319,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             em.persist(c);
             sportsCar.setOwner(c);
             c.getVehicles().add(sportsCar);
-            
+
             Person theo = new Person();
             theo.setName("Theo");
             em.persist(theo);
@@ -1328,12 +1328,12 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             car.setPercentRust(20);
             em.persist(car);
             theo.setCar(car);
-            
+
             em.flush();
             clearCache();
             em.clear();
-            
-            
+
+
             //this returns user.id instead of Person objects
             //query = em.createQuery("Select u from Person o join treat(o.car as SportsCar) b join b.user u");
             CriteriaBuilder qb = em.getCriteriaBuilder();
@@ -1342,9 +1342,9 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Join b = qb.treat(root.join("car"), SportsCar.class);
             Join u = b.join("user");
             cq.select(u);
-            
+
             List resultList = em.createQuery(cq).getResultList();
-            
+
             for (Object result: resultList) {
                 assertTrue("query did not return intances of Company, instead it returned :"+result, (result instanceof Person));
             }

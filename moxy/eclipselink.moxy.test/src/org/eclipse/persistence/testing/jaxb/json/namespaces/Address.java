@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder={"id", "street", "city"})
 public class Address {
-	@XmlSchemaType(name="integer")
+    @XmlSchemaType(name="integer")
     private String id;
     private String street;
     private String city;
@@ -29,7 +29,7 @@ public class Address {
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public String getStreet() {
         return street;
     }
@@ -61,7 +61,7 @@ public class Address {
         if((city == null && add.city != null) || (city != null && !city.equals(add.city))){
             return false;
         }
-        
+
         if((street == null && add.street != null) || (street != null && !street.equals(add.street))){
             return false;
         }

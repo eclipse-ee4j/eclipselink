@@ -10,7 +10,7 @@
 
         <properties>
             <property name="eclipselink.composite-unit" value="true"/>
-			<property name="eclipselink.logging.parameters" value="true"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -37,7 +37,7 @@ import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
  * primary keys.
  * <p>
  * NOTE: This policy can only be used inside a unit of work.
- * 
+ *
  * @since TopLink 2.5
  */
 public class SelectedFieldsLockingPolicy extends FieldsLockingPolicy {
@@ -60,7 +60,7 @@ public class SelectedFieldsLockingPolicy extends FieldsLockingPolicy {
      * PUBLIC: Add a field name to lock on. All fields in this list will be
      * compared when updating if the value of any of the fields does not match
      * the value in memory, an OptimisticLockException will be thrown.
-     * 
+     *
      * Note: An Automatic update will not be done on this field, only a
      * comparison occurs.
      */
@@ -161,7 +161,7 @@ public class SelectedFieldsLockingPolicy extends FieldsLockingPolicy {
      * PUBLIC: Set the field names to lock on. All fields in this list will be
      * compared when Updating. If the value of any of the fields does not match
      * the value in memory, an OptimisticLockException will be thrown.
-     * 
+     *
      * Note: An Automatic update will not be done on this field, only a
      * comparison occurs.
      */

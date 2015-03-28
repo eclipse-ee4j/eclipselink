@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,227 +32,227 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 @SuppressWarnings("nls")
 public abstract class CompoundExpressionStateObject extends AbstractStateObject {
 
-	/**
-	 * The {@link StateObject} representing the left expression.
-	 */
-	private StateObject leftStateObject;
+    /**
+     * The {@link StateObject} representing the left expression.
+     */
+    private StateObject leftStateObject;
 
-	/**
-	 * The {@link StateObject} representing the right expression.
-	 */
-	private StateObject rightStateObject;
+    /**
+     * The {@link StateObject} representing the right expression.
+     */
+    private StateObject rightStateObject;
 
-	/**
-	 * Notifies the left state object property has changed.
-	 */
-	public static final String LEFT_STATE_OBJECT_PROPERTY = "leftStateObject";
+    /**
+     * Notifies the left state object property has changed.
+     */
+    public static final String LEFT_STATE_OBJECT_PROPERTY = "leftStateObject";
 
-	/**
-	 * Notifies the right state object property has changed.
-	 */
-	public static final String RIGHT_STATE_OBJECT_PROPERTY = "rightStateObject";
+    /**
+     * Notifies the right state object property has changed.
+     */
+    public static final String RIGHT_STATE_OBJECT_PROPERTY = "rightStateObject";
 
-	/**
-	 * Creates a new <code>CompoundExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	protected CompoundExpressionStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>CompoundExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    protected CompoundExpressionStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>ArithmeticExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param leftStateObject The {@link StateObject} representing the left expression
-	 * @param rightStateObject The {@link StateObject} representing the right expression
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	protected CompoundExpressionStateObject(StateObject parent,
-	                                        StateObject leftStateObject,
-	                                        StateObject rightStateObject) {
-		super(parent);
-		this.leftStateObject  = parent(leftStateObject);
-		this.rightStateObject = parent(rightStateObject);
-	}
+    /**
+     * Creates a new <code>ArithmeticExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param leftStateObject The {@link StateObject} representing the left expression
+     * @param rightStateObject The {@link StateObject} representing the right expression
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    protected CompoundExpressionStateObject(StateObject parent,
+                                            StateObject leftStateObject,
+                                            StateObject rightStateObject) {
+        super(parent);
+        this.leftStateObject  = parent(leftStateObject);
+        this.rightStateObject = parent(rightStateObject);
+    }
 
-	/**
-	 * Creates a new <code>ArithmeticExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param leftJpqlFragment The string representation of the left expression to parse and to
-	 * convert into a {@link StateObject}
-	 * @param rightJpqlFragment The string representation of the right expression to parse and to
-	 * convert into a {@link StateObject}
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	protected CompoundExpressionStateObject(StateObject parent,
-	                                        String leftJpqlFragment,
-	                                        String rightJpqlFragment) {
+    /**
+     * Creates a new <code>ArithmeticExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param leftJpqlFragment The string representation of the left expression to parse and to
+     * convert into a {@link StateObject}
+     * @param rightJpqlFragment The string representation of the right expression to parse and to
+     * convert into a {@link StateObject}
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    protected CompoundExpressionStateObject(StateObject parent,
+                                            String leftJpqlFragment,
+                                            String rightJpqlFragment) {
 
-		super(parent);
-		parseLeft (leftJpqlFragment);
-		parseRight(rightJpqlFragment);
-	}
+        super(parent);
+        parseLeft (leftJpqlFragment);
+        parseRight(rightJpqlFragment);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addChildren(List<StateObject> children) {
-		super.addChildren(children);
-		if (leftStateObject != null) {
-			children.add(leftStateObject);
-		}
-		if (rightStateObject != null) {
-			children.add(rightStateObject);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addChildren(List<StateObject> children) {
+        super.addChildren(children);
+        if (leftStateObject != null) {
+            children.add(leftStateObject);
+        }
+        if (rightStateObject != null) {
+            children.add(rightStateObject);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public CompoundExpression getExpression() {
-		return (CompoundExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompoundExpression getExpression() {
+        return (CompoundExpression) super.getExpression();
+    }
 
-	/**
-	 * Returns the identifier joining the two {@link StateObject StateObjects}.
-	 *
-	 * @return The JPQL identifier join two expressions
-	 */
-	public abstract String getIdentifier();
+    /**
+     * Returns the identifier joining the two {@link StateObject StateObjects}.
+     *
+     * @return The JPQL identifier join two expressions
+     */
+    public abstract String getIdentifier();
 
-	/**
-	 * Returns the {@link StateObject} that represents the left expression.
-	 *
-	 * @return The {@link StateObject} representing the left expression
-	 */
-	public StateObject getLeft() {
-		return leftStateObject;
-	}
+    /**
+     * Returns the {@link StateObject} that represents the left expression.
+     *
+     * @return The {@link StateObject} representing the left expression
+     */
+    public StateObject getLeft() {
+        return leftStateObject;
+    }
 
-	/**
-	 * Returns the unique identifier of the BNF that will be used to parse a JPQL fragment as the
-	 * left side of the expression.
-	 *
-	 * @return The query BNF ID for the left side of the expression
-	 */
-	protected abstract String getLeftQueryBNFId();
+    /**
+     * Returns the unique identifier of the BNF that will be used to parse a JPQL fragment as the
+     * left side of the expression.
+     *
+     * @return The query BNF ID for the left side of the expression
+     */
+    protected abstract String getLeftQueryBNFId();
 
-	/**
-	 * Returns the {@link StateObject} that represents the right expression.
-	 *
-	 * @return The {@link StateObject} representing the right expression
-	 */
-	public StateObject getRight() {
-		return rightStateObject;
-	}
+    /**
+     * Returns the {@link StateObject} that represents the right expression.
+     *
+     * @return The {@link StateObject} representing the right expression
+     */
+    public StateObject getRight() {
+        return rightStateObject;
+    }
 
-	/**
-	 * Returns the unique identifier of the BNF that will be used to parse a JPQL fragment as the
-	 * right side of the expression.
-	 *
-	 * @return The query BNF ID for the right side of the expression
-	 */
-	protected abstract String getRightQueryBNFId();
+    /**
+     * Returns the unique identifier of the BNF that will be used to parse a JPQL fragment as the
+     * right side of the expression.
+     *
+     * @return The query BNF ID for the right side of the expression
+     */
+    protected abstract String getRightQueryBNFId();
 
-	/**
-	 * Determines whether there is a {@link StateObject} that represents the left expression.
-	 *
-	 * @return <code>true</code> if there is a left {@link StateObject}; <code>false</code> if it is
-	 * <code>null</code>
-	 */
-	public boolean hasLeft() {
-		return leftStateObject != null;
-	}
+    /**
+     * Determines whether there is a {@link StateObject} that represents the left expression.
+     *
+     * @return <code>true</code> if there is a left {@link StateObject}; <code>false</code> if it is
+     * <code>null</code>
+     */
+    public boolean hasLeft() {
+        return leftStateObject != null;
+    }
 
-	/**
-	 * Determines whether there is a {@link StateObject} that represents the right expression.
-	 *
-	 * @return <code>true</code> if there is a right {@link StateObject}; <code>false</code> if it
-	 * is <code>null</code>
-	 */
-	public boolean hasRight() {
-		return rightStateObject != null;
-	}
+    /**
+     * Determines whether there is a {@link StateObject} that represents the right expression.
+     *
+     * @return <code>true</code> if there is a right {@link StateObject}; <code>false</code> if it
+     * is <code>null</code>
+     */
+    public boolean hasRight() {
+        return rightStateObject != null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isEquivalent(StateObject stateObject) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEquivalent(StateObject stateObject) {
 
-		if (super.isEquivalent(stateObject)) {
-			CompoundExpressionStateObject compound = (CompoundExpressionStateObject) stateObject;
-			return areEquivalent(leftStateObject,  compound.leftStateObject) &&
-			       areEquivalent(rightStateObject, compound.rightStateObject);
-		}
+        if (super.isEquivalent(stateObject)) {
+            CompoundExpressionStateObject compound = (CompoundExpressionStateObject) stateObject;
+            return areEquivalent(leftStateObject,  compound.leftStateObject) &&
+                   areEquivalent(rightStateObject, compound.rightStateObject);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Parses the given JPQL fragment and update the left side of the compound expression.
-	 *
-	 * @param jpqlFragment The portion of the query to become the left side of the compound expression
-	 */
-	public void parseLeft(String jpqlFragment) {
-		StateObject stateObject = buildStateObject(jpqlFragment, getLeftQueryBNFId());
-		setLeft(stateObject);
-	}
+    /**
+     * Parses the given JPQL fragment and update the left side of the compound expression.
+     *
+     * @param jpqlFragment The portion of the query to become the left side of the compound expression
+     */
+    public void parseLeft(String jpqlFragment) {
+        StateObject stateObject = buildStateObject(jpqlFragment, getLeftQueryBNFId());
+        setLeft(stateObject);
+    }
 
-	/**
-	 * Parses the given JPQL fragment and update the right side of the compound expression.
-	 *
-	 * @param jpqlFragment The portion of the query to become the right side of the compound expression
-	 */
-	public void parseRight(String jpqlFragment) {
-		StateObject stateObject = buildStateObject(jpqlFragment, getRightQueryBNFId());
-		setLeft(stateObject);
-	}
+    /**
+     * Parses the given JPQL fragment and update the right side of the compound expression.
+     *
+     * @param jpqlFragment The portion of the query to become the right side of the compound expression
+     */
+    public void parseRight(String jpqlFragment) {
+        StateObject stateObject = buildStateObject(jpqlFragment, getRightQueryBNFId());
+        setLeft(stateObject);
+    }
 
-	/**
-	 * Sets the left {@link StateObject} to become the given object.
-	 *
-	 * @param leftStateObject The {@link StateObject} representing the left expression
-	 */
-	public void setLeft(StateObject leftStateObject) {
-		StateObject oldLeftStateObject = this.leftStateObject;
-		this.leftStateObject = parent(leftStateObject);
-		firePropertyChanged(LEFT_STATE_OBJECT_PROPERTY, oldLeftStateObject, leftStateObject);
-	}
+    /**
+     * Sets the left {@link StateObject} to become the given object.
+     *
+     * @param leftStateObject The {@link StateObject} representing the left expression
+     */
+    public void setLeft(StateObject leftStateObject) {
+        StateObject oldLeftStateObject = this.leftStateObject;
+        this.leftStateObject = parent(leftStateObject);
+        firePropertyChanged(LEFT_STATE_OBJECT_PROPERTY, oldLeftStateObject, leftStateObject);
+    }
 
-	/**
-	 * Sets the right {@link StateObject} to become the given object.
-	 *
-	 * @param rightStateObject The {@link StateObject} representing the right expression
-	 */
-	public void setRight(StateObject rightStateObject) {
-		StateObject oldRightStateObject = this.rightStateObject;
-		this.rightStateObject = parent(rightStateObject);
-		firePropertyChanged(RIGHT_STATE_OBJECT_PROPERTY, oldRightStateObject, rightStateObject);
-	}
+    /**
+     * Sets the right {@link StateObject} to become the given object.
+     *
+     * @param rightStateObject The {@link StateObject} representing the right expression
+     */
+    public void setRight(StateObject rightStateObject) {
+        StateObject oldRightStateObject = this.rightStateObject;
+        this.rightStateObject = parent(rightStateObject);
+        firePropertyChanged(RIGHT_STATE_OBJECT_PROPERTY, oldRightStateObject, rightStateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toTextInternal(Appendable writer) throws IOException {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toTextInternal(Appendable writer) throws IOException {
 
-		if (leftStateObject != null) {
-			leftStateObject.toString(writer);
-		}
+        if (leftStateObject != null) {
+            leftStateObject.toString(writer);
+        }
 
-		writer.append(SPACE);
-		writer.append(getIdentifier());
-		writer.append(SPACE);
+        writer.append(SPACE);
+        writer.append(getIdentifier());
+        writer.append(SPACE);
 
-		if (rightStateObject != null) {
-			rightStateObject.toString(writer);
-		}
-	}
+        if (rightStateObject != null) {
+            rightStateObject.toString(writer);
+        }
+    }
 }

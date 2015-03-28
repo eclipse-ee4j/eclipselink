@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 - 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 - 2014, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -208,18 +208,18 @@ public class XJCJavaMethodImpl implements JavaMethod {
         }
 
         if (((XJCJavaClassImpl) getOwningClass()).getJavaModel() != null) {
-        	returnClass =((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(type.fullName()); 
+            returnClass =((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(type.fullName());
         }
         else {
             try {
-        	returnClass = new XJCJavaClassImpl(jCodeModel._class(type.fullName()), jCodeModel, dynamicClassLoader);
+            returnClass = new XJCJavaClassImpl(jCodeModel._class(type.fullName()), jCodeModel, dynamicClassLoader);
             } catch (JClassAlreadyExistsException ex) {
-        	returnClass = new XJCJavaClassImpl(jCodeModel._getClass(type.fullName()), jCodeModel, dynamicClassLoader);
+            returnClass = new XJCJavaClassImpl(jCodeModel._getClass(type.fullName()), jCodeModel, dynamicClassLoader);
             }
         }
         if(arg != null){
-        	JavaClass argClass = ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(arg.fullName()); 
-        	((XJCJavaClassImpl)returnClass).setActualTypeArgument(argClass);
+            JavaClass argClass = ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(arg.fullName());
+            ((XJCJavaClassImpl)returnClass).setActualTypeArgument(argClass);
         }
         return returnClass;
     }

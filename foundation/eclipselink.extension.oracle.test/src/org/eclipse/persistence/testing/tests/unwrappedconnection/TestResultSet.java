@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - Adding wrapped ResultSet
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unwrappedconnection;
 
 import java.io.InputStream;
@@ -40,11 +40,11 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class TestResultSet implements ResultSet {
 
     private ResultSet resultSet;
-    
+
     public TestResultSet(ResultSet resultSet){
         this.resultSet = resultSet;
     }
-    
+
     public boolean absolute(int row) throws SQLException {
         return resultSet.absolute(row);
     }
@@ -255,7 +255,7 @@ public class TestResultSet implements ResultSet {
         }
         return object;
     }
-    
+
     public Object getObject(int columnIndex) throws SQLException {
         return wrapObject(resultSet.getObject(columnIndex));
     }
@@ -430,16 +430,16 @@ public class TestResultSet implements ResultSet {
 
     public void updateArray(String columnName, Array x) throws SQLException {
         resultSet.updateArray(columnName,x);
-        
+
     }
 
     public void updateAsciiStream(int columnIndex, InputStream x, int length) throws SQLException {
         resultSet.updateAsciiStream(columnIndex,x,length);
-        
+
     }
 
     public void updateAsciiStream(String columnName, InputStream x, int length) throws SQLException {
-        resultSet.updateAsciiStream(columnName,x,length);        
+        resultSet.updateAsciiStream(columnName,x,length);
     }
 
     public void updateBigDecimal(int columnIndex, BigDecimal x) throws SQLException {
@@ -540,7 +540,7 @@ public class TestResultSet implements ResultSet {
 
     public void updateLong(int columnIndex, long x) throws SQLException {
         resultSet.updateFloat(columnIndex,x);
-        
+
     }
 
     public void updateLong(String columnName, long x) throws SQLException {
@@ -568,7 +568,7 @@ public class TestResultSet implements ResultSet {
     }
 
     public void updateObject(String columnName, Object x) throws SQLException {
-        resultSet.updateObject(columnName,x);        
+        resultSet.updateObject(columnName,x);
     }
 
     public void updateRef(int columnIndex, Ref x) throws SQLException {
@@ -672,7 +672,7 @@ public class TestResultSet implements ResultSet {
     }
 
     public void updateAsciiStream(int columnIndex, InputStream x) throws SQLException {
-        //resultSet.updateAsciiStream(columnIndex, x);        
+        //resultSet.updateAsciiStream(columnIndex, x);
     }
 
     public void updateAsciiStream(String columnLabel, InputStream x, long length) throws SQLException {
@@ -818,8 +818,8 @@ public class TestResultSet implements ResultSet {
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return null; //resultSet.unwrap(iface);
     }
-    
+
    public <T> T getObject(String columnLabel, Class<T> type){return null;}
-   
+
    public <T> T getObject(int columnIndex, Class<T> type){return null;}
 }

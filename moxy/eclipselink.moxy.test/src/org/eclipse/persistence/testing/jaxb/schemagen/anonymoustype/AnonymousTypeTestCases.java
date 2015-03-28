@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,19 +29,19 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMet
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases.MySchemaOutputResolver;
 
 public class AnonymousTypeTestCases extends TestCase {
-    
+
     public void testAnonymousComplexType() throws Exception {
         String TNS = "http://xmlns.oracle.com/Test";
         String TYPES_TNS = "http://xmlns.oracle.com/Test/types";
         String TNS_XSD = "org/eclipse/persistence/testing/jaxb/schemagen/anonymoustype/test_ns.xsd";
         String TYPES_XSD = "org/eclipse/persistence/testing/jaxb/schemagen/anonymoustype/target_ns.xsd";
-    
+
         TypeMappingInfo t1 = new TypeMappingInfo();
         t1.setAnnotations(new Annotation[0]);
         t1.setType(Process.class);
         t1.setElementScope(TypeMappingInfo.ElementScope.Global);
         t1.setXmlTagName(new QName(TNS, "process"));
-    
+
         TypeMappingInfo[] types = { t1 };
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, TYPES_TNS);

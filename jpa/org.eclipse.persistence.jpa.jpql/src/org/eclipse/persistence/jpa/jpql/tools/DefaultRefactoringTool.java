@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,53 +43,53 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedTypeProvider;
  */
 public class DefaultRefactoringTool extends RefactoringTool {
 
-	/**
-	 * Creates a new <code>RefactoringTool</code>.
-	 *
-	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBuilder The builder that creates the {@link
+    /**
+     * Creates a new <code>RefactoringTool</code>.
+     *
+     * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
+     * @param jpqlQueryBuilder The builder that creates the {@link
      * org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject} representation of the JPQL query
-	 * @param jpqlQuery The JPQL query to manipulate
-	 */
-	public DefaultRefactoringTool(IManagedTypeProvider managedTypeProvider,
-	                              IJPQLQueryBuilder jpqlQueryBuilder,
-	                              CharSequence jpqlQuery) {
+     * @param jpqlQuery The JPQL query to manipulate
+     */
+    public DefaultRefactoringTool(IManagedTypeProvider managedTypeProvider,
+                                  IJPQLQueryBuilder jpqlQueryBuilder,
+                                  CharSequence jpqlQuery) {
 
-		super(managedTypeProvider, jpqlQueryBuilder, jpqlQuery);
-	}
+        super(managedTypeProvider, jpqlQueryBuilder, jpqlQuery);
+    }
 
-	/**
-	 * Creates a new <code>RefactoringTool</code>.
-	 *
-	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBuilder The builder that creates the {@link
+    /**
+     * Creates a new <code>RefactoringTool</code>.
+     *
+     * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
+     * @param jpqlQueryBuilder The builder that creates the {@link
      * org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject} representation of the JPQL query
-	 * @param jpqlFragment The JPQL query to manipulate or a single JPQL fragment, which is parsed
-	 * using the JPQL query BNF identifier by the given ID
-	 * @param jpqlQueryBNFId The unique identifier of the {@link
+     * @param jpqlFragment The JPQL query to manipulate or a single JPQL fragment, which is parsed
+     * using the JPQL query BNF identifier by the given ID
+     * @param jpqlQueryBNFId The unique identifier of the {@link
      * org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
-	 */
-	public DefaultRefactoringTool(IManagedTypeProvider managedTypeProvider,
-	                              IJPQLQueryBuilder jpqlQueryBuilder,
-	                              CharSequence jpqlFragment,
-	                              String jpqlQueryBNFId) {
+     */
+    public DefaultRefactoringTool(IManagedTypeProvider managedTypeProvider,
+                                  IJPQLQueryBuilder jpqlQueryBuilder,
+                                  CharSequence jpqlFragment,
+                                  String jpqlQueryBNFId) {
 
-		super(managedTypeProvider, jpqlQueryBuilder, jpqlFragment, jpqlQueryBNFId);
-	}
+        super(managedTypeProvider, jpqlQueryBuilder, jpqlFragment, jpqlQueryBNFId);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected IJPQLQueryFormatter buildFormatter() {
-		return new DefaultActualJPQLQueryFormatter(true);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected IJPQLQueryFormatter buildFormatter() {
+        return new DefaultActualJPQLQueryFormatter(true);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLQueryContext buildJPQLQueryContext() {
-		return new DefaultJPQLQueryContext(getGrammar());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLQueryContext buildJPQLQueryContext() {
+        return new DefaultJPQLQueryContext(getGrammar());
+    }
 }

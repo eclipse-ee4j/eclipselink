@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
 import java.sql.*;
@@ -57,7 +57,7 @@ public class LOBValueWriter {
     public LOBValueWriter(Accessor accessor) {
         this.accessor = accessor;
         DatabasePlatform platform = ((DatabaseAccessor)accessor).getPlatform();
-        this.isNativeConnectionRequired = platform.isOracle() && ((OraclePlatform)platform).isNativeConnectionRequiredForLobLocator(); 
+        this.isNativeConnectionRequired = platform.isOracle() && ((OraclePlatform)platform).isNativeConnectionRequiredForLobLocator();
     }
 
     protected void buildAndExecuteCall(DatabaseCall dbCall, AbstractSession session) {
@@ -133,7 +133,7 @@ public class LOBValueWriter {
         DatabaseCall call = selectStatement.buildCall(session);
         // Locator LOB must not be wrapped (WLS wraps LOBs).
         call.setIsNativeConnectionRequired(this.isNativeConnectionRequired);
-        
+
         //the LOB context must be passed into the new call object
         call.setContexts(dbCall.getContexts());
         //need to explicitly define one row return, otherwise, EL assumes multiple rows return and confuses the accessor
@@ -149,7 +149,7 @@ public class LOBValueWriter {
 
     // Building of SELECT statements is no longer done in DatabaseAccessor.basicExecuteCall
     // for updates because DatabaseCall.isUpdateCall() can't recognize update in case
-    // StoredProcedureCall is used. Therefore in all cases: insert(single or multiple tables) 
+    // StoredProcedureCall is used. Therefore in all cases: insert(single or multiple tables)
     // and update the original (insert and update) calls are saved
     // and both building and executing of SELECT statements postponed until
     // buildAndExecuteSelectCalls method is called.

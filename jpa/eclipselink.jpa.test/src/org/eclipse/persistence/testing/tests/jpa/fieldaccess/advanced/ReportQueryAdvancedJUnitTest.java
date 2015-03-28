@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
@@ -37,17 +37,17 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
 
     static protected Class[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
     static protected Vector[] objectVectors = {null, null, null, null};
-    
+
     static protected EmployeePopulator populator = new EmployeePopulator();
 
     public ReportQueryAdvancedJUnitTest() {
         super();
     }
-    
+
     public ReportQueryAdvancedJUnitTest(String name) {
         super(name);
     }
-    
+
     public void setUp() {
         super.setUp();
         clearCache("fieldaccess");
@@ -56,15 +56,15 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
             populate();
         }
     }
-    
+
     protected static DatabaseSession getDbSession() {
-        return getServerSession("fieldaccess");   
+        return getServerSession("fieldaccess");
     }
-    
+
     protected static UnitOfWork acquireUnitOfWork() {
-        return getDbSession().acquireUnitOfWork();   
+        return getDbSession().acquireUnitOfWork();
     }
-    
+
     protected static void clear() {
         UnitOfWork uow = acquireUnitOfWork();
 
@@ -74,7 +74,7 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
             updateEmployees.addUpdate("manager", null);
             updateEmployees.addUpdate("address", null);
             uow.executeQuery(updateEmployees);
-        
+
             uow.executeQuery(new DeleteAllQuery(Employee.class));
         } else {
             Iterator<Employee> emps = uow.readAllObjects(Employee.class).iterator();
@@ -83,7 +83,7 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
               emp.setManager(null);
               emp.setAddress(null);
               uow.deleteObject(emp);
-            }; 
+            };
         }
 
         UpdateAllQuery updateProjects = new UpdateAllQuery(Project.class);
@@ -97,7 +97,7 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
         uow.commit();
         clearCache("fieldaccess");
     }
-    
+
     protected static void populate() {
         populator.buildExamples();
         populator.persistExample(getDbSession());
@@ -107,21 +107,21 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
         }
         clearCache("fieldaccess");
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("ReportQueryAdvancedJUnitTest (fieldaccess)");
-        
+
         suite.addTest(new ReportQueryAdvancedJUnitTest("testSetup"));
         suite.addTest(new ReportQueryAdvancedJUnitTest("testPhoneCountGroupByOwner"));
         suite.addTest(new ReportQueryAdvancedJUnitTest("testPhoneCountGroupByOwnersAddress"));
         suite.addTest(new ReportQueryAdvancedJUnitTest("testProjectCountGroupByTeamMembers"));
         suite.addTest(new ReportQueryAdvancedJUnitTest("testProjectCountGroupByTeamMemberAddress"));
         suite.addTest(new ReportQueryAdvancedJUnitTest("testProjectCountGroupByTeamMemberPhone"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -129,7 +129,7 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
         clearCache("fieldaccess");
     }
-    
+
     public void testPhoneCountGroupByOwner() {
         ExpressionBuilder builder = new ExpressionBuilder();
         ReportQuery reportQuery = new ReportQuery(PhoneNumber.class, builder);
@@ -139,7 +139,7 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
         reportQuery.addGrouping(groupingExp);
 
         Vector results = (Vector)getDbSession().executeQuery(reportQuery);
-        
+
         for(int i=0; i<results.size(); i++) {
             ReportQueryResult reportResult = (ReportQueryResult)(results.elementAt(i));
             Employee employee = (Employee)reportResult.get("owner");

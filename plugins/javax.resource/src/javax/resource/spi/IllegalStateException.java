@@ -1,12 +1,12 @@
 /*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
+ * Copyright 2004, 2015 -2005 Sun Microsystems, Inc.  All rights reserved.
  * Use is subject to license terms.
  */
 
 package javax.resource.spi;
 
 /**
- * An <code>IllegalStateException</code> 
+ * An <code>IllegalStateException</code>
  * is thrown from a method if the callee (resource
  * adapter or application server for system contracts) is in an illegal or
  * inappropriate state for the method invocation.
@@ -29,7 +29,7 @@ public class IllegalStateException extends javax.resource.ResourceException {
      * @param message the detail message.
      */
     public IllegalStateException(String message) {
-	super(message);
+    super(message);
     }
 
     /**
@@ -38,7 +38,7 @@ public class IllegalStateException extends javax.resource.ResourceException {
      * @param cause a chained exception of type <code>Throwable</code>.
      */
     public IllegalStateException(Throwable cause) {
-	super(cause);
+    super(cause);
     }
 
     /**
@@ -49,7 +49,7 @@ public class IllegalStateException extends javax.resource.ResourceException {
      * @param cause a chained exception of type <code>Throwable</code>.
      */
     public IllegalStateException(String message, Throwable cause) {
-	super(message, cause);
+    super(message, cause);
     }
 
     /**
@@ -60,6 +60,6 @@ public class IllegalStateException extends javax.resource.ResourceException {
      * @param errorCode a string specifying the vendor specific error code.
      */
     public IllegalStateException(String message, String errorCode) {
-	super(message, errorCode);
+    super(message, errorCode);
     }
 }

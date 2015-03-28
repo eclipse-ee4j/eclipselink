@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -25,11 +25,11 @@ import org.xml.sax.Attributes;
  * on a SAX ContextHandler.</p>
  * <p><b>Responsibilities</b>:<ul>
  * <li>Maintain a reference to the owning XPathNode.</li>
- * <li>Given a XPathFragment recognize the node to which the mapping should be 
+ * <li>Given a XPathFragment recognize the node to which the mapping should be
  * applied.</li>
- * <li>Perform the unmarshal and marshal operation for the given mapping or 
+ * <li>Perform the unmarshal and marshal operation for the given mapping or
  * policy.</li>
- * </ul> 
+ * </ul>
  */
 
 public abstract class NodeValue {
@@ -49,9 +49,9 @@ public abstract class NodeValue {
      * @return
      */
     public boolean isMarshalOnlyNodeValue() {
-    	return false;
+        return false;
     }
-    
+
     /**
      * INTERNAL:
      * @param xPathFragment
@@ -74,7 +74,7 @@ public abstract class NodeValue {
 
     /**
      * INTERNAL:
-     * This method is no longer required as now MarshalRecord maintains a 
+     * This method is no longer required as now MarshalRecord maintains a
      * reference to the XMLMarshaller.
      * @param xPathFragment
      * @param marshalRecord
@@ -85,10 +85,10 @@ public abstract class NodeValue {
      * @return
      */
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, Marshaller marshaller) {
-    	marshalRecord.setMarshaller(marshaller);
+        marshalRecord.setMarshaller(marshaller);
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
     }
-    
+
     /**
      * INTERNAL:
      * @param xPathFragment
@@ -148,7 +148,7 @@ public abstract class NodeValue {
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
     }
-    
+
     /**
      * INTERNAL:
      * @param xPathFragment
@@ -157,7 +157,7 @@ public abstract class NodeValue {
      * @return
      */
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
-    	return true;
+        return true;
     }
 
     /**
@@ -188,8 +188,8 @@ public abstract class NodeValue {
     public UnmarshalRecord buildSelfRecord(UnmarshalRecord unmarshalRecord, Attributes atts) {
         return null;
     }
-    
-    public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes atts) {        
+
+    public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes atts) {
     }
 
     /**
@@ -209,24 +209,24 @@ public abstract class NodeValue {
     public boolean isNullCapableValue() {
         return false;
     }
-    
+
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
     }
-    
+
 
     public boolean isUnmarshalNodeValue() {
         return true;
     }
-    
+
     public boolean isMarshalNodeValue() {
         return true;
     }
-    
+
 
     /**
      * INTERNAL:
      * Marshal any 'self' mapped attributes.
-     * 
+     *
      * @param xPathFragment
      * @param marshalRecord
      * @param object
@@ -242,15 +242,15 @@ public abstract class NodeValue {
     public boolean isMappingNodeValue() {
         return false;
     }
-    
+
     public boolean isWhitespaceAware() {
         return false;
     }
-    
+
     public boolean isAnyMappingNodeValue() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this is the node value representing mixed content.

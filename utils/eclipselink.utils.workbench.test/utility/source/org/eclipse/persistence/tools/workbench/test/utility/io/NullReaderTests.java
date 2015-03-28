@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -25,82 +25,82 @@ import org.eclipse.persistence.tools.workbench.utility.io.NullReader;
 
 
 public class NullReaderTests extends TestCase {
-	private Reader nullReader;
+    private Reader nullReader;
 
-	public static Test suite() {
-		return new TestSuite(NullReaderTests.class);
-	}
-	
-	public NullReaderTests(String name) {
-		super(name);
-	}
+    public static Test suite() {
+        return new TestSuite(NullReaderTests.class);
+    }
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.nullReader = NullReader.instance();
-	}
+    public NullReaderTests(String name) {
+        super(name);
+    }
 
-	protected void tearDown() throws Exception {
-		TestTools.clear(this);
-		super.tearDown();
-	}
+    protected void setUp() throws Exception {
+        super.setUp();
+        this.nullReader = NullReader.instance();
+    }
 
-	public void testClose() throws IOException {
-		this.nullReader.close();
-	}
+    protected void tearDown() throws Exception {
+        TestTools.clear(this);
+        super.tearDown();
+    }
 
-	public void testRead() throws IOException {
-		assertEquals(-1, this.nullReader.read());
-	}
+    public void testClose() throws IOException {
+        this.nullReader.close();
+    }
 
-	public void testReadCharArray() throws IOException {
-		char[] expected = new char[10];
-		Arrays.fill(expected, 'a');
-		char[] actual = new char[10];
-		Arrays.fill(actual, 'a');
-		assertEquals(-1, this.nullReader.read(actual));
-		assertTrue(Arrays.equals(actual, expected));
-	}
+    public void testRead() throws IOException {
+        assertEquals(-1, this.nullReader.read());
+    }
 
-	public void testReadCharArrayIntInt() throws IOException {
-		char[] expected = new char[10];
-		Arrays.fill(expected, 'a');
-		char[] actual = new char[10];
-		Arrays.fill(actual, 'a');
-		assertEquals(-1, this.nullReader.read(actual, 2, 5));
-		assertTrue(Arrays.equals(actual, expected));
-	}
+    public void testReadCharArray() throws IOException {
+        char[] expected = new char[10];
+        Arrays.fill(expected, 'a');
+        char[] actual = new char[10];
+        Arrays.fill(actual, 'a');
+        assertEquals(-1, this.nullReader.read(actual));
+        assertTrue(Arrays.equals(actual, expected));
+    }
 
-	public void testSkip() throws IOException {
-		assertEquals(0, this.nullReader.skip(5));
-	}
+    public void testReadCharArrayIntInt() throws IOException {
+        char[] expected = new char[10];
+        Arrays.fill(expected, 'a');
+        char[] actual = new char[10];
+        Arrays.fill(actual, 'a');
+        assertEquals(-1, this.nullReader.read(actual, 2, 5));
+        assertTrue(Arrays.equals(actual, expected));
+    }
 
-	public void testMark() {
-		boolean exCaught = false;
-		try {
-			this.nullReader.mark(5);
-		} catch (IOException ex) {
-			exCaught = true;
-		}
-		assertTrue(exCaught);
-	}
+    public void testSkip() throws IOException {
+        assertEquals(0, this.nullReader.skip(5));
+    }
 
-	public void testMarkSupported() {
-		assertFalse(this.nullReader.markSupported());
-	}
+    public void testMark() {
+        boolean exCaught = false;
+        try {
+            this.nullReader.mark(5);
+        } catch (IOException ex) {
+            exCaught = true;
+        }
+        assertTrue(exCaught);
+    }
 
-	public void testReady() {
-		assertFalse(this.nullReader.markSupported());
-	}
+    public void testMarkSupported() {
+        assertFalse(this.nullReader.markSupported());
+    }
 
-	public void testReset() {
-		boolean exCaught = false;
-		try {
-			this.nullReader.reset();
-		} catch (IOException ex) {
-			exCaught = true;
-		}
-		assertTrue(exCaught);
-	}
+    public void testReady() {
+        assertFalse(this.nullReader.markSupported());
+    }
+
+    public void testReset() {
+        boolean exCaught = false;
+        try {
+            this.nullReader.reset();
+        } catch (IOException ex) {
+            exCaught = true;
+        }
+        assertTrue(exCaught);
+    }
 
 }

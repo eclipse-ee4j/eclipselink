@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -22,51 +22,51 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.clas
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Employee {
 
-	public static final int uid = 1234567;
-	
-	public BigDecimal id;
+    public static final int uid = 1234567;
 
-	public String firstName;
+    public BigDecimal id;
 
-	@XmlElement(name = "lastname")
-	public String lastName;
+    public String firstName;
 
-	public MyCalendar birthday;
+    @XmlElement(name = "lastname")
+    public String lastName;
 
-	@XmlTransient
-	public int age;
-	
-	public Address address;
+    public MyCalendar birthday;
+
+    @XmlTransient
+    public int age;
+
+    public Address address;
 
 
-	public String toString() {
-		return "EMPLOYEE: " + id + " " + firstName + " " + lastName + " "
-				+ birthday;
-	}
+    public String toString() {
+        return "EMPLOYEE: " + id + " " + firstName + " " + lastName + " "
+                + birthday;
+    }
 
-	public boolean equals(Object object) {
+    public boolean equals(Object object) {
         Employee emp = ((Employee)object);
         if(!id.equals(emp.id)){
-        	return false;
+            return false;
         }
-		if((!(emp.firstName.equals(this.firstName))) || (!(emp.lastName.equals(this.lastName))) ||(emp.age != this.age)){
-			return false;
-		}
-				
-		if(!(emp.birthday.equals(this.birthday))){
-  		    return false;
-  	    }
-		
-	    if((this.address == null) && (emp.address != null)){
-		    return false;
-    	}
-	    if((emp.address == null) && (this.address != null)){
-		    return false;
-	    }
-	    if(!address.equals(emp.address)){
-	    	return false;
-	    }
-	    return true;
-	}
+        if((!(emp.firstName.equals(this.firstName))) || (!(emp.lastName.equals(this.lastName))) ||(emp.age != this.age)){
+            return false;
+        }
+
+        if(!(emp.birthday.equals(this.birthday))){
+              return false;
+          }
+
+        if((this.address == null) && (emp.address != null)){
+            return false;
+        }
+        if((emp.address == null) && (this.address != null)){
+            return false;
+        }
+        if(!address.equals(emp.address)){
+            return false;
+        }
+        return true;
+    }
 
 }

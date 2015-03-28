@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -30,123 +30,123 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.DateSpinnerMode
 
 
 public class DateSpinnerModelAdapterTests extends TestCase {
-	private PropertyValueModel valueHolder;
-	private SpinnerModel spinnerModelAdapter;
-	boolean eventFired;
+    private PropertyValueModel valueHolder;
+    private SpinnerModel spinnerModelAdapter;
+    boolean eventFired;
 
-	public static Test suite() {
-		return new TestSuite(DateSpinnerModelAdapterTests.class);
-	}
-	
-	public DateSpinnerModelAdapterTests(String name) {
-		super(name);
-	}
+    public static Test suite() {
+        return new TestSuite(DateSpinnerModelAdapterTests.class);
+    }
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.valueHolder = new SimplePropertyValueModel(new Date());
-		this.spinnerModelAdapter = new DateSpinnerModelAdapter(this.valueHolder);
-	}
+    public DateSpinnerModelAdapterTests(String name) {
+        super(name);
+    }
 
-	protected void tearDown() throws Exception {
-		TestTools.clear(this);
-		super.tearDown();
-	}
+    protected void setUp() throws Exception {
+        super.setUp();
+        this.valueHolder = new SimplePropertyValueModel(new Date());
+        this.spinnerModelAdapter = new DateSpinnerModelAdapter(this.valueHolder);
+    }
 
-	public void testSetValueSpinnerModel() throws Exception {
-		this.eventFired = false;
-		this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				DateSpinnerModelAdapterTests.this.eventFired = true;
-			}
-		});
-		Date newDate = new Date();
-		newDate.setTime(777777);
-		this.spinnerModelAdapter.setValue(newDate);
-		assertTrue(this.eventFired);
-		assertEquals(777777, ((Date) this.valueHolder.getValue()).getTime());
-	}
+    protected void tearDown() throws Exception {
+        TestTools.clear(this);
+        super.tearDown();
+    }
 
-	public void testSetValueValueHolder() throws Exception {
-		this.eventFired = false;
-		this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				DateSpinnerModelAdapterTests.this.eventFired = true;
-			}
-		});
-		Date newDate = new Date();
-		newDate.setTime(777777);
-		this.valueHolder.setValue(newDate);
-		assertTrue(this.eventFired);
-		assertEquals(777777, ((Date) this.spinnerModelAdapter.getValue()).getTime());
-	}
+    public void testSetValueSpinnerModel() throws Exception {
+        this.eventFired = false;
+        this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                DateSpinnerModelAdapterTests.this.eventFired = true;
+            }
+        });
+        Date newDate = new Date();
+        newDate.setTime(777777);
+        this.spinnerModelAdapter.setValue(newDate);
+        assertTrue(this.eventFired);
+        assertEquals(777777, ((Date) this.valueHolder.getValue()).getTime());
+    }
 
-	public void testDefaultValue() throws Exception {
-		Date newDate = new Date();
-		newDate.setTime(777777);
-		this.valueHolder.setValue(newDate);
-		this.eventFired = false;
-		this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				DateSpinnerModelAdapterTests.this.eventFired = true;
-			}
-		});
-		assertEquals(777777, ((Date) this.spinnerModelAdapter.getValue()).getTime());
-		this.valueHolder.setValue(null);
-		assertTrue(this.eventFired);
-		assertFalse(((Date) this.spinnerModelAdapter.getValue()).getTime() == 777777);
-	}
+    public void testSetValueValueHolder() throws Exception {
+        this.eventFired = false;
+        this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                DateSpinnerModelAdapterTests.this.eventFired = true;
+            }
+        });
+        Date newDate = new Date();
+        newDate.setTime(777777);
+        this.valueHolder.setValue(newDate);
+        assertTrue(this.eventFired);
+        assertEquals(777777, ((Date) this.spinnerModelAdapter.getValue()).getTime());
+    }
 
-	public void testHasListeners() throws Exception {
-		SimplePropertyValueModel localValueHolder = (SimplePropertyValueModel) this.valueHolder;
-		assertFalse(localValueHolder.hasAnyPropertyChangeListeners(ValueModel.VALUE));
-		this.verifyHasNoListeners(this.spinnerModelAdapter);
+    public void testDefaultValue() throws Exception {
+        Date newDate = new Date();
+        newDate.setTime(777777);
+        this.valueHolder.setValue(newDate);
+        this.eventFired = false;
+        this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                DateSpinnerModelAdapterTests.this.eventFired = true;
+            }
+        });
+        assertEquals(777777, ((Date) this.spinnerModelAdapter.getValue()).getTime());
+        this.valueHolder.setValue(null);
+        assertTrue(this.eventFired);
+        assertFalse(((Date) this.spinnerModelAdapter.getValue()).getTime() == 777777);
+    }
 
-		ChangeListener listener = new TestChangeListener();
-		this.spinnerModelAdapter.addChangeListener(listener);
-		assertTrue(localValueHolder.hasAnyPropertyChangeListeners(ValueModel.VALUE));
-		this.verifyHasListeners(this.spinnerModelAdapter);
+    public void testHasListeners() throws Exception {
+        SimplePropertyValueModel localValueHolder = (SimplePropertyValueModel) this.valueHolder;
+        assertFalse(localValueHolder.hasAnyPropertyChangeListeners(ValueModel.VALUE));
+        this.verifyHasNoListeners(this.spinnerModelAdapter);
 
-		this.spinnerModelAdapter.removeChangeListener(listener);
-		assertFalse(localValueHolder.hasAnyPropertyChangeListeners(ValueModel.VALUE));
-		this.verifyHasNoListeners(this.spinnerModelAdapter);
-	}
+        ChangeListener listener = new TestChangeListener();
+        this.spinnerModelAdapter.addChangeListener(listener);
+        assertTrue(localValueHolder.hasAnyPropertyChangeListeners(ValueModel.VALUE));
+        this.verifyHasListeners(this.spinnerModelAdapter);
 
-	private void verifyHasNoListeners(SpinnerModel adapter) throws Exception {
-		assertEquals(0, ((DateSpinnerModelAdapter) adapter).getChangeListeners().length);
-	}
+        this.spinnerModelAdapter.removeChangeListener(listener);
+        assertFalse(localValueHolder.hasAnyPropertyChangeListeners(ValueModel.VALUE));
+        this.verifyHasNoListeners(this.spinnerModelAdapter);
+    }
 
-	private void verifyHasListeners(Object adapter) throws Exception {
-		assertFalse(((DateSpinnerModelAdapter) adapter).getChangeListeners().length == 0);
-	}
+    private void verifyHasNoListeners(SpinnerModel adapter) throws Exception {
+        assertEquals(0, ((DateSpinnerModelAdapter) adapter).getChangeListeners().length);
+    }
 
-	public void testNullInitialValue() {
-		Date today = new Date();
-		this.valueHolder = new SimplePropertyValueModel();
-		this.spinnerModelAdapter = new DateSpinnerModelAdapter(this.valueHolder, today);
+    private void verifyHasListeners(Object adapter) throws Exception {
+        assertFalse(((DateSpinnerModelAdapter) adapter).getChangeListeners().length == 0);
+    }
 
-		this.eventFired = false;
-		this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				DateSpinnerModelAdapterTests.this.eventFired = true;
-			}
-		});
-		assertEquals(today, this.spinnerModelAdapter.getValue());
+    public void testNullInitialValue() {
+        Date today = new Date();
+        this.valueHolder = new SimplePropertyValueModel();
+        this.spinnerModelAdapter = new DateSpinnerModelAdapter(this.valueHolder, today);
 
-		Date newDate = new Date();
-		newDate.setTime(777777);
-		this.valueHolder.setValue(newDate);
+        this.eventFired = false;
+        this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                DateSpinnerModelAdapterTests.this.eventFired = true;
+            }
+        });
+        assertEquals(today, this.spinnerModelAdapter.getValue());
 
-		assertTrue(this.eventFired);
-		assertEquals(777777, ((Date) this.spinnerModelAdapter.getValue()).getTime());
-	}
+        Date newDate = new Date();
+        newDate.setTime(777777);
+        this.valueHolder.setValue(newDate);
+
+        assertTrue(this.eventFired);
+        assertEquals(777777, ((Date) this.spinnerModelAdapter.getValue()).getTime());
+    }
 
 
-	// ********** inner class **********
-	private class TestChangeListener implements ChangeListener {
-		public void stateChanged(ChangeEvent e) {
-			fail("unexpected event");
-		}
-	}
+    // ********** inner class **********
+    private class TestChangeListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            fail("unexpected event");
+        }
+    }
 
 }

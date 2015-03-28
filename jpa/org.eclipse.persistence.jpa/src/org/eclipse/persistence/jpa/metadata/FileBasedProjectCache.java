@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     08/01/2012-2.5 Chris Delahunt - Bug 371950 - Metadata caching 
+ *     08/01/2012-2.5 Chris Delahunt - Bug 371950 - Metadata caching
  ******************************************************************************/
 package org.eclipse.persistence.jpa.metadata;
 
@@ -23,8 +23,8 @@ import org.eclipse.persistence.sessions.Project;
 
 /**
  * <p><b>Purpose</b>: Support serializing/deserializing a project representing application metadata
- * to/from a file.  
- * 
+ * to/from a file.
+ *
  */
 public class FileBasedProjectCache implements ProjectCache {
 
@@ -81,7 +81,7 @@ public class FileBasedProjectCache implements ProjectCache {
                     if (out != null) {
                         out.close();
                         fos = null;
-                    } 
+                    }
                     if (fos != null) {
                         fos.close();
                     }
@@ -93,7 +93,7 @@ public class FileBasedProjectCache implements ProjectCache {
     /**
      * Check the provided map for an object with the given name.  If that object is not available, check the
      * System properties.  Log the value returned if logging is enabled at the FINEST level
-     * @param propertyName 
+     * @param propertyName
      * @param properties
      * @param log
      * @return

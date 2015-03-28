@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery;
 
 import commonj.sdo.DataObject;
@@ -150,7 +150,7 @@ public class SDODataObjectGetByXPathQueryTestCases extends SDOTestCase {
         type_c.addDeclaredProperty(property_c);
 
         dataObject_c = (SDODataObject)dataFactory.create(type_c);
-        //c0        
+        //c0
         property_c0 = new SDOProperty(aHelperContext);
         property_c0.setName(PROPERTY_NAME_C0);
         property_c0.setContainment(true);
@@ -179,7 +179,7 @@ public class SDODataObjectGetByXPathQueryTestCases extends SDOTestCase {
         type_c0.addDeclaredProperty(property_c1_object);
 
         dataObject_c0 = (SDODataObject)dataFactory.create(type_c0);
-        //c1                
+        //c1
         dataObject_c1 = (SDODataObject)dataFactory.create(type_c0);
         // d
         type_d = new SDOType(URINAME, TYPENAME_D);
@@ -248,7 +248,7 @@ public class SDODataObjectGetByXPathQueryTestCases extends SDOTestCase {
         DataObject dataObject2 = dataFactory.create(type_d);
         dataObject2.set(PROPERTY_NAME_D_NUMBER,"two");
         str.add(dataObject1);
-        str.add(dataObject2);              
+        str.add(dataObject2);
 
         dataObject_c0.set(property_c0, str);// set c0.0
 

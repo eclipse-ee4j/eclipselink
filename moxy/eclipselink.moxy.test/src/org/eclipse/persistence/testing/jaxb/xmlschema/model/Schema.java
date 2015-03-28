@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,9 +29,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -60,8 +60,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -116,28 +116,28 @@ public class Schema
 
     /**
      * Gets the value of the includeOrImportOrRedefine property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the includeOrImportOrRedefine property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getIncludeOrImportOrRedefine().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Import }
      * {@link Redefine }
      * {@link Annotation }
      * {@link Include }
-     * 
-     * 
+     *
+     *
      */
     public List<OpenAttrs> getIncludeOrImportOrRedefine() {
         if (includeOrImportOrRedefine == null) {
@@ -148,20 +148,20 @@ public class Schema
 
     /**
      * Gets the value of the simpleTypeOrComplexTypeOrGroup property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the simpleTypeOrComplexTypeOrGroup property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getSimpleTypeOrComplexTypeOrGroup().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link TopLevelElement }
@@ -172,8 +172,8 @@ public class Schema
      * {@link Notation }
      * {@link TopLevelAttribute }
      * {@link TopLevelSimpleType }
-     * 
-     * 
+     *
+     *
      */
     public List<OpenAttrs> getSimpleTypeOrComplexTypeOrGroup() {
         if (simpleTypeOrComplexTypeOrGroup == null) {
@@ -184,11 +184,11 @@ public class Schema
 
     /**
      * Gets the value of the targetNamespace property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getTargetNamespace() {
         return targetNamespace;
@@ -196,11 +196,11 @@ public class Schema
 
     /**
      * Sets the value of the targetNamespace property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setTargetNamespace(String value) {
         this.targetNamespace = value;
@@ -208,11 +208,11 @@ public class Schema
 
     /**
      * Gets the value of the version property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getVersion() {
         return version;
@@ -220,11 +220,11 @@ public class Schema
 
     /**
      * Sets the value of the version property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setVersion(String value) {
         this.version = value;
@@ -232,25 +232,25 @@ public class Schema
 
     /**
      * Gets the value of the finalDefault property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the finalDefault property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getFinalDefault().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
+     *
+     *
      */
     public List<String> getFinalDefault() {
         if (finalDefault == null) {
@@ -261,25 +261,25 @@ public class Schema
 
     /**
      * Gets the value of the blockDefault property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the blockDefault property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getBlockDefault().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
+     *
+     *
      */
     public List<String> getBlockDefault() {
         if (blockDefault == null) {
@@ -290,11 +290,11 @@ public class Schema
 
     /**
      * Gets the value of the attributeFormDefault property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link FormChoice }
-     *     
+     *
      */
     public FormChoice getAttributeFormDefault() {
         if (attributeFormDefault == null) {
@@ -306,11 +306,11 @@ public class Schema
 
     /**
      * Sets the value of the attributeFormDefault property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link FormChoice }
-     *     
+     *
      */
     public void setAttributeFormDefault(FormChoice value) {
         this.attributeFormDefault = value;
@@ -318,11 +318,11 @@ public class Schema
 
     /**
      * Gets the value of the elementFormDefault property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link FormChoice }
-     *     
+     *
      */
     public FormChoice getElementFormDefault() {
         if (elementFormDefault == null) {
@@ -334,11 +334,11 @@ public class Schema
 
     /**
      * Sets the value of the elementFormDefault property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link FormChoice }
-     *     
+     *
      */
     public void setElementFormDefault(FormChoice value) {
         this.elementFormDefault = value;
@@ -346,11 +346,11 @@ public class Schema
 
     /**
      * Gets the value of the id property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getId() {
         return id;
@@ -358,11 +358,11 @@ public class Schema
 
     /**
      * Sets the value of the id property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setId(String value) {
         this.id = value;

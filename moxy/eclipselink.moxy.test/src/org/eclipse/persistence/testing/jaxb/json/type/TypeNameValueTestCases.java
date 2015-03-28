@@ -35,15 +35,15 @@ import org.eclipse.persistence.testing.jaxb.json.type.model.Properties;
  *
  */
 public class TypeNameValueTestCases extends JSONTestCases {
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/type/type_name_value.json";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/type/type_name_value.json";
 
-	public TypeNameValueTestCases(String name) throws Exception {
-		super(name);
-		setClasses(new Class[]{Properties.class});
-		setControlJSON(JSON_RESOURCE);
-	}
+    public TypeNameValueTestCases(String name) throws Exception {
+        super(name);
+        setClasses(new Class[]{Properties.class});
+        setControlJSON(JSON_RESOURCE);
+    }
 
-	public void setUp() throws Exception{
+    public void setUp() throws Exception{
         super.setUp();
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
         jsonUnmarshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
@@ -52,17 +52,17 @@ public class TypeNameValueTestCases extends JSONTestCases {
         jsonMarshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
     }
 
-	public void testUnmarshalFronStreamSource() throws Exception {
+    public void testUnmarshalFronStreamSource() throws Exception {
 
-	    try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(JSON_RESOURCE)) {
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(JSON_RESOURCE)) {
 
-	        Properties  properties = (Properties) jsonUnmarshaller.unmarshal(new StreamSource(is), Properties.class).getValue();
+            Properties  properties = (Properties) jsonUnmarshaller.unmarshal(new StreamSource(is), Properties.class).getValue();
 
-	        assertEquals(buildProperties(), properties);
-	    }
+            assertEquals(buildProperties(), properties);
+        }
     }
 
-	protected Object getJSONReadControlObject() {
+    protected Object getJSONReadControlObject() {
 
         QName name = new QName("");
 
@@ -70,12 +70,12 @@ public class TypeNameValueTestCases extends JSONTestCases {
         return jbe;
     }
 
-	protected Object getControlObject() {
-	    return buildProperties();
-	}
+    protected Object getControlObject() {
+        return buildProperties();
+    }
 
-	private Properties buildProperties() {
-	    Properties props = new Properties();
+    private Properties buildProperties() {
+        Properties props = new Properties();
 
         NameValue pair1 = new NameValue();
         pair1.name = "name1";
@@ -94,6 +94,6 @@ public class TypeNameValueTestCases extends JSONTestCases {
         props.properties.add(pair3);
 
         return props;
-	}
+    }
 
 }

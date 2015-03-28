@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.util.ArrayList;
@@ -33,19 +33,19 @@ import org.xml.sax.SAXException;
 
 /**
  *  Internal:
- *  <p><b>Purpose:</b> An implementation of XMLReader for parsing XMLFragment Nodes 
+ *  <p><b>Purpose:</b> An implementation of XMLReader for parsing XMLFragment Nodes
  *  into SAX events.
  *  <p><b>Responsibilities:</b><ul>
- *  <li>Walk the XMLFragment node's DOM tree and report sax events to the provided 
+ *  <li>Walk the XMLFragment node's DOM tree and report sax events to the provided
  *  content handler</li>
  *  <li>Report lexical events to the lexical handler if it's provided</li>
- *  
+ *
  */
 public class XMLFragmentReader extends DOMReader {
     protected NamespaceResolver nsresolver;
     protected List<NamespaceResolver> nsresolverList;
     protected Map<Element, NamespaceResolver> tmpresolverMap;
-    
+
     public XMLFragmentReader(NamespaceResolver namespaceResolver) {
         nsresolverList = new ArrayList();
         if(null != namespaceResolver) {
@@ -53,12 +53,12 @@ public class XMLFragmentReader extends DOMReader {
         }
         tmpresolverMap = new HashMap<Element, NamespaceResolver>();
     }
-    
+
     public void parse (Node node, String uri, String name) throws SAXException {
         if (node.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE) {
-        	handleChildNodes(node.getChildNodes());
+            handleChildNodes(node.getChildNodes());
         } else {
-        	super.parse(node, uri, name);
+            super.parse(node, uri, name);
         }
     }
     protected void reportElementEvents(Element elem) throws SAXException {
@@ -80,7 +80,7 @@ public class XMLFragmentReader extends DOMReader {
     protected void startDocument() throws SAXException {
         // NOT APPLICABLE FOR FRAGMENTS - DO NOTHING
     }
-    
+
     @Override
     protected void handleNewNamespaceDeclaration(Element elem, String prefix, String namespaceURI) {
         String uri = resolveNamespacePrefix(prefix);
@@ -92,15 +92,15 @@ public class XMLFragmentReader extends DOMReader {
             }
         }
     }
-    
+
     /**
-     * Handle prefixed attribute - may need to declare the namespace 
+     * Handle prefixed attribute - may need to declare the namespace
      * URI locally.
-     * 
+     *
      */
     @Override
     protected void handlePrefixedAttribute(Element elem) throws SAXException {
-        // Need to determine if the URI for the prefix needs to be 
+        // Need to determine if the URI for the prefix needs to be
         // declared locally:
         // If the prefix or URI are not in the resolver, or the URI
         // associated with the prefix (in the resolver) is different
@@ -146,7 +146,7 @@ public class XMLFragmentReader extends DOMReader {
             }
         }
     }
-    
+
     /**
      * If there is a temporary namespace resolver for a given element,
      * each entry contains a prefix that requires an endPrefixMapping
@@ -171,9 +171,9 @@ public class XMLFragmentReader extends DOMReader {
     /**
      * Returns the namespace resolver in the map of temporary namespace
      * resolvers for a given element
-     * 
+     *
      * @param elem
-     * @return the namespace resolver in the map for elem, or a new 
+     * @return the namespace resolver in the map for elem, or a new
      * resolver if none exists
      */
     protected NamespaceResolver getTempResolver(Element elem) {
@@ -184,11 +184,11 @@ public class XMLFragmentReader extends DOMReader {
         }
         return tmpresolver;
     }
-    
+
     /**
      * Remove any temporary namespace resolvers created while processing
      * a given element.
-     * 
+     *
      * @param elem
      */
     protected void cleanupNamespaceResolvers(Element elem) {
@@ -200,11 +200,11 @@ public class XMLFragmentReader extends DOMReader {
     }
 
     /**
-     * Convenience method that iterates over each namespace resolver 
+     * Convenience method that iterates over each namespace resolver
      * in the resolver list until it locates a uri for 'prefix' or
      * the final resolver is reached w/o success.
      * @param prefix
-     * @return true if a URI exists in one of the resolvers in the 
+     * @return true if a URI exists in one of the resolvers in the
      * list, false otherwise
      */
     protected String resolveNamespacePrefix(String prefix) {
@@ -227,20 +227,20 @@ public class XMLFragmentReader extends DOMReader {
             }
         }
         return uri;
-    }  
+    }
     /**
      * Process namespace declarations on parent elements if not the root.
-     * For each parent node from current to root place puch each onto a 
-     * stack, then pop each off, calling startPrefixMapping for each 
+     * For each parent node from current to root place puch each onto a
+     * stack, then pop each off, calling startPrefixMapping for each
      * XMLNS attribute.  Using a stack ensures that the parent nodes are
      * processed top down.
-     * 
+     *
      * @param element
      */
     protected void processParentNamespaces(Element element) throws SAXException {
         // DO NOTHING FOR FRAGMENTS
     }
-    
+
     protected void handleXsiTypeAttribute(Attr attr) throws SAXException {
         String value = attr.getValue();
         int colon = value.indexOf(':');
@@ -252,7 +252,7 @@ public class XMLFragmentReader extends DOMReader {
                 if(uri != null) {
                     this.contentHandler.startPrefixMapping(prefix, uri);
                 }
-                
+
             }
         }
     }

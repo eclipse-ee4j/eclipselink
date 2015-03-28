@@ -125,7 +125,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
         xmlUnmarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
-        // Disable any warning exceptions when an unmapped element is found, if the 
+        // Disable any warning exceptions when an unmapped element is found, if the
         // validationEventHandler and errorHandler are set to default values
         xmlUnmarshaller.setWarnOnUnmappedElement(false);
     }
@@ -770,7 +770,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             validationEventHandler = newValidationEventHandler;
         }
         xmlUnmarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
-        // Disable any warning exceptions when an unmapped element is found, if the 
+        // Disable any warning exceptions when an unmapped element is found, if the
         // validationEventHandler and errorHandler are set to default values
         xmlUnmarshaller.setWarnOnUnmappedElement(validationEventHandler != JAXBContext
                 .DEFAULT_VALIDATION_EVENT_HANDLER);
@@ -888,8 +888,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     /**
      * Get a property from the JAXBMarshaller. Attempting to get any unsupported
-     * property will result in a javax.xml.bind.PropertyException 
-     * See <a href="#supportedProps">Supported Properties</a>.  
+     * property will result in a javax.xml.bind.PropertyException
+     * See <a href="#supportedProps">Supported Properties</a>.
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties
      */
     public Object getProperty(String key) throws PropertyException {

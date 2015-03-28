@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,14 +28,14 @@ public class EmployeeWithElements {
     @XmlID
     @XmlAttribute(name="id")
     public String id;
-    
+
     @XmlElement(name="name")
     public String name;
-    
+
     @XmlIDREF
     @XmlElements({@XmlElement(name="address-id", type=Address.class), @XmlElement(name="phone-id", type=PhoneNumber.class)})
     public List<Object> addressOrPhone;
-    
+
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof EmployeeWithElements)) {
             return false;
@@ -44,17 +44,17 @@ public class EmployeeWithElements {
         if(addressOrPhone.size() != emp.addressOrPhone.size()) {
             return false;
         }
-        
+
         boolean equal = true;
-        
+
         Iterator<Object> choice1 = this.addressOrPhone.iterator();
         Iterator<Object> choice2 = emp.addressOrPhone.iterator();
-        
-        
+
+
         while(choice1.hasNext() && choice2.hasNext()) {
             equal = choice1.next().equals(choice2.next()) && equal;
         }
-        
+
         return equal;
     }
 }

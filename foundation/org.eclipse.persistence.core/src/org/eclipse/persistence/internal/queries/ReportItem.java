@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
 import org.eclipse.persistence.exceptions.*;
@@ -36,18 +36,18 @@ public class ReportItem implements Cloneable, java.io.Serializable {
 
     /** Mapping which relates field to attribute, used to convert value and determine reference descriptor */
     protected DatabaseMapping mapping;
-    
+
     /** Descriptor for object result that is not based on an expression */
     protected ClassDescriptor descriptor;
-    
+
     /** Result type for this report item. */
     protected Class resultType;
     /** Stores the Join information for this item */
     protected JoinedAttributeManager joinedAttributeManager;
-    
+
     /** Stores the row index for this item, given multiple results and joins */
     protected int resultIndex;
-    
+
     public ReportItem() {
         super();
     }
@@ -57,7 +57,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
         this.name = name;
         this.attributeExpression = attributeExpression;
     }
-    
+
     public Object clone(){
         try{
             return super.clone();
@@ -65,11 +65,11 @@ public class ReportItem implements Cloneable, java.io.Serializable {
             return null;
         }
     }
-    
+
     public Expression getAttributeExpression() {
         return attributeExpression;
     }
-    
+
     public void setAttributeExpression(Expression attributeExpression) {
         this.attributeExpression = attributeExpression;
     }
@@ -77,7 +77,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
     public ClassDescriptor getDescriptor(){
         return this.descriptor;
     }
-    
+
     /**
      * INTERNAL:
      * Set the list of expressions that represent elements that are joined because of their
@@ -89,11 +89,11 @@ public class ReportItem implements Cloneable, java.io.Serializable {
         }
         return this.joinedAttributeManager;
     }
-    
+
     public JoinedAttributeManager getJoinedAttributeManagerInternal(){
         return joinedAttributeManager;
     }
-    
+
     /**
      * INTERNAL:
      * Return if any attributes are joined.
@@ -102,7 +102,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
     public boolean hasJoining() {
         return this.joinedAttributeManager != null;
     }
-    
+
     public DatabaseMapping getMapping() {
         return mapping;
     }
@@ -110,7 +110,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
     public String getName() {
         return name;
     }
-    
+
     public int getResultIndex() {
         return resultIndex;
     }
@@ -199,16 +199,16 @@ public class ReportItem implements Cloneable, java.io.Serializable {
     public void setDescriptor(ClassDescriptor descriptor){
         this.descriptor = descriptor;
     }
-    
+
 
     public void setJoinedAttributeManager(JoinedAttributeManager joinManager){
         this.joinedAttributeManager = joinManager;
     }
-    
+
     public void setMapping(DatabaseMapping mapping) {
         this.mapping = mapping;
     }
-    
+
     public void setResultIndex(int resultIndex) {
         this.resultIndex = resultIndex;
         if (hasJoining()) {
@@ -218,7 +218,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
 
     public void setResultType(Class resultType) {
         this.resultType = resultType;
-    
+
         // Set it on the attribute expression as well if it is a function.
         if (getAttributeExpression()!=null && getAttributeExpression().isFunctionExpression()) {
             ((FunctionExpression) getAttributeExpression()).setResultType(resultType);

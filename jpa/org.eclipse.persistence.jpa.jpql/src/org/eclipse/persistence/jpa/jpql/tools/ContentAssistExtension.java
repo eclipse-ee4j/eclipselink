@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,45 +34,45 @@ import org.eclipse.persistence.jpa.jpql.tools.utility.iterable.EmptyIterable;
  */
 public interface ContentAssistExtension {
 
-	/**
-	 * The <code>null</code> instance of <code>ContentAssistExtension</code>.
-	 */
-	ContentAssistExtension NULL_HELPER = new ContentAssistExtension() {
-		public Iterable<String> classNames(String prefix, ClassType type) {
-			return EmptyIterable.instance();
-		}
-		public Iterable<String> columnNames(String tableName, String prefix) {
-			return EmptyIterable.instance();
-		}
-		public Iterable<String> tableNames(String tableNamePrefix) {
-			return EmptyIterable.instance();
-		}
-	};
+    /**
+     * The <code>null</code> instance of <code>ContentAssistExtension</code>.
+     */
+    ContentAssistExtension NULL_HELPER = new ContentAssistExtension() {
+        public Iterable<String> classNames(String prefix, ClassType type) {
+            return EmptyIterable.instance();
+        }
+        public Iterable<String> columnNames(String tableName, String prefix) {
+            return EmptyIterable.instance();
+        }
+        public Iterable<String> tableNames(String tableNamePrefix) {
+            return EmptyIterable.instance();
+        }
+    };
 
-	/**
-	 * Returns the fully qualified class names filtered by the given prefix and type.
-	 *
-	 * @param prefix The prefix is used to filter, it can be an empty string but never <code>null</code>
-	 * @param type Determines how to filter the various types of classes
-	 * @return The filtered fully qualified class names
-	 */
-	Iterable<String> classNames(String prefix, ClassType type);
+    /**
+     * Returns the fully qualified class names filtered by the given prefix and type.
+     *
+     * @param prefix The prefix is used to filter, it can be an empty string but never <code>null</code>
+     * @param type Determines how to filter the various types of classes
+     * @return The filtered fully qualified class names
+     */
+    Iterable<String> classNames(String prefix, ClassType type);
 
-	/**
-	 * Returns the names of the given table's columns.
-	 *
-	 * @param tableName The name of the table to retrieve the name of its columns, which is never
-	 * <code>null</code>
-	 * @param prefix
-	 * @return The column names
-	 */
-	Iterable<String> columnNames(String tableName, String prefix);
+    /**
+     * Returns the names of the given table's columns.
+     *
+     * @param tableName The name of the table to retrieve the name of its columns, which is never
+     * <code>null</code>
+     * @param prefix
+     * @return The column names
+     */
+    Iterable<String> columnNames(String tableName, String prefix);
 
-	/**
-	 * Returns the names of the database tables filtered by the given prefix.
-	 *
-	 * @param prefix The prefix is used to filter, it can be an empty string but never <code>null</code>
-	 * @return The filtered table names
-	 */
-	Iterable<String> tableNames(String prefix);
+    /**
+     * Returns the names of the database tables filtered by the given prefix.
+     *
+     * @param prefix The prefix is used to filter, it can be an empty string but never <code>null</code>
+     * @return The filtered table names
+     */
+    Iterable<String> tableNames(String prefix);
 }

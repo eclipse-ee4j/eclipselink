@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import junit.textui.TestRunner;
@@ -34,7 +34,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectSetGetWithPropertyTest" };
         TestRunner.main(arguments);
     }
-    
+
     //purpose:  Confirm that property is in instance property.
     public void testInstancePropertiesWithDefinedProperty() {
         Property definedProperty = dataObject.getInstanceProperty(DEFINED_PROPERTY_NAME);
@@ -91,7 +91,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         // 6159746: no null Type allowed on Property Object
         undefinedProperty.setType(SDOConstants.SDO_STRING);
 
-        dataObject.set(undefinedProperty, CONTROL_STRING_1);// set undefined Property value       
+        dataObject.set(undefinedProperty, CONTROL_STRING_1);// set undefined Property value
 
         Object testValue = dataObject.get(undefinedProperty);// check it is in
         this.assertEquals(CONTROL_STRING_1, testValue);// also verify its value
@@ -105,7 +105,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         // 6159746: no null Type allowed on Property Object
         undefinedProperty.setType(SDOConstants.SDO_STRING);
 
-        dataObject.set(undefinedProperty, CONTROL_STRING_1);// set undefined Property value       
+        dataObject.set(undefinedProperty, CONTROL_STRING_1);// set undefined Property value
 
         // check it is in the list
         this.assertTrue(dataObject.getInstanceProperties().contains(undefinedProperty));
@@ -123,7 +123,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         this.assertFalse(dataObject_Not_Open.getInstanceProperties().contains(undefinedProperty));
 
         try {
-            dataObject_Not_Open.set(undefinedProperty, CONTROL_STRING_1);// set undefined Property value   
+            dataObject_Not_Open.set(undefinedProperty, CONTROL_STRING_1);// set undefined Property value
             fail("An IllegalArgumentException should have been thrown.");
         } catch (IllegalArgumentException e) {
         }
@@ -141,7 +141,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         this.assertFalse(dataObject_Not_Open.getInstanceProperties().contains(undefinedProperty));
 
         try {
-            dataObject_Not_Open.get(undefinedProperty);// get undefined Property value       
+            dataObject_Not_Open.get(undefinedProperty);// get undefined Property value
             fail("An IllegalArgumentException should have been thrown.");
         } catch (IllegalArgumentException e) {
         }
@@ -172,7 +172,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
         this.assertTrue(dataObject_WithReadOnlyProperty.getInstanceProperties().contains(ReadOnlyProperty));
 
         try {
-            dataObject_WithReadOnlyProperty.set(ReadOnlyProperty, CONTROL_STRING_1);// set undefined Property value  
+            dataObject_WithReadOnlyProperty.set(ReadOnlyProperty, CONTROL_STRING_1);// set undefined Property value
             fail("An UnsupportedOperationException should have been thrown.");
         } catch (UnsupportedOperationException e) {
         }
@@ -193,7 +193,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
     public void testGetWithNullProperty() {
         try {
             SDOProperty NUll = null;
-            dataObject_Not_Open.get(NUll);// get undefined Property value       
+            dataObject_Not_Open.get(NUll);// get undefined Property value
             fail("An IllegalArgumentException should have been thrown.");
         } catch (IllegalArgumentException e) {
         }
@@ -204,7 +204,7 @@ public class SDODataObjectSetGetWithPropertyTest extends SDODataObjectTestCases 
     public void testSetWithNullProperty() {
         try {
             SDOProperty NUll = null;
-            dataObject_Not_Open.set(NUll, CONTROL_STRING_1);// set undefined Property value  
+            dataObject_Not_Open.set(NUll, CONTROL_STRING_1);// set undefined Property value
             fail("An IllegalArgumentException should have been thrown.");
         } catch (IllegalArgumentException e) {
         }

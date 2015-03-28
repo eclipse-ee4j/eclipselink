@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,12 +17,12 @@ import java.util.Arrays;
 public class InternationalPricesNoAnnotation {
     public java.math.BigDecimal[] prices;
     public String currency;
-    
+
     public boolean equals(Object obj){
-    	if(obj instanceof InternationalPricesNoAnnotation){
-    		InternationalPricesNoAnnotation priceObj = (InternationalPricesNoAnnotation)obj;
-    		return currency.equals(priceObj.currency) && Arrays.equals(prices, priceObj.prices);
-    	}
-    	return false;
+        if(obj instanceof InternationalPricesNoAnnotation){
+            InternationalPricesNoAnnotation priceObj = (InternationalPricesNoAnnotation)obj;
+            return currency.equals(priceObj.currency) && Arrays.equals(prices, priceObj.prices);
+        }
+        return false;
     }
 }

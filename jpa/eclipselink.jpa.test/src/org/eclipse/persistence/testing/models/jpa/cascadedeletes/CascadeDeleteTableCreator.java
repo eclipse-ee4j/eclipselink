@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.cascadedeletes;
 
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -18,7 +18,7 @@ public class CascadeDeleteTableCreator extends org.eclipse.persistence.tools.sch
 
 public CascadeDeleteTableCreator() {
     setName("CascadeDelete");
-    
+
     addTableDefinition(buildBRANCHA_CDTable());
     addTableDefinition(buildBRANCHB_CDTable());
     addTableDefinition(buildLEAFA_CDTable());
@@ -36,7 +36,7 @@ public CascadeDeleteTableCreator() {
 public TableDefinition buildMACHINESTATE_THREADINFOTable() {
     TableDefinition table = new TableDefinition();
     table.setName("MACHINESTATE_THREADINFO");
-    
+
     FieldDefinition fieldBRANCHB_ID = new FieldDefinition();
     fieldBRANCHB_ID.setName("MachineState_ID");
     fieldBRANCHB_ID.setTypeName("NUMBER");
@@ -47,7 +47,7 @@ public TableDefinition buildMACHINESTATE_THREADINFOTable() {
     fieldBRANCHB_ID.setUnique(false);
     fieldBRANCHB_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHB_ID);
-    
+
     FieldDefinition fieldBRANCHBS_ID = new FieldDefinition();
     fieldBRANCHBS_ID.setName("threads_ID");
     fieldBRANCHBS_ID.setTypeName("NUMBER");
@@ -58,14 +58,14 @@ public TableDefinition buildMACHINESTATE_THREADINFOTable() {
     fieldBRANCHBS_ID.setUnique(false);
     fieldBRANCHBS_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHBS_ID);
-    
+
     ForeignKeyConstraint foreignKeyM_THREADINFO_THREADINFO = new ForeignKeyConstraint();
     foreignKeyM_THREADINFO_THREADINFO.setName("M_THREADINFO_THREADINFO");
     foreignKeyM_THREADINFO_THREADINFO.setTargetTable("THREADINFO");
     foreignKeyM_THREADINFO_THREADINFO.addSourceField("threads_ID");
     foreignKeyM_THREADINFO_THREADINFO.addTargetField("ID");
     table.addForeignKeyConstraint(foreignKeyM_THREADINFO_THREADINFO);
-    
+
     ForeignKeyConstraint foreignKeyM_THREADINFO_MACHINESTATE = new ForeignKeyConstraint();
     foreignKeyM_THREADINFO_MACHINESTATE.setName("M_THREADINFO_MACHINESTATE");
     foreignKeyM_THREADINFO_MACHINESTATE.setTargetTable("MACHINESTATE");
@@ -78,7 +78,7 @@ public TableDefinition buildMACHINESTATE_THREADINFOTable() {
 public TableDefinition buildTHREADINFOTable() {
     TableDefinition table = new TableDefinition();
     table.setName("THREADINFO");
-    
+
     FieldDefinition fieldID = new FieldDefinition();
     fieldID.setName("ID");
     fieldID.setTypeName("NUMBER");
@@ -107,7 +107,7 @@ public TableDefinition buildTHREADINFOTable() {
 public TableDefinition buildMACHINESTATETable() {
     TableDefinition table = new TableDefinition();
     table.setName("MACHINESTATE");
-    
+
     FieldDefinition fieldID = new FieldDefinition();
     fieldID.setName("ID");
     fieldID.setTypeName("NUMBER");
@@ -118,13 +118,13 @@ public TableDefinition buildMACHINESTATETable() {
     fieldID.setUnique(false);
     fieldID.setShouldAllowNull(false);
     table.addField(fieldID);
-    
+
     return table;
 }
 public TableDefinition buildBRANCHA_CDTable() {
     TableDefinition table = new TableDefinition();
     table.setName("BRANCHA");
-    
+
     FieldDefinition fieldID = new FieldDefinition();
     fieldID.setName("ID");
     fieldID.setTypeName("NUMBER");
@@ -135,7 +135,7 @@ public TableDefinition buildBRANCHA_CDTable() {
     fieldID.setUnique(false);
     fieldID.setShouldAllowNull(false);
     table.addField(fieldID);
-    
+
     FieldDefinition fieldBRANCHA = new FieldDefinition();
     fieldBRANCHA.setName("BRANCHA_ID");
     fieldBRANCHA.setTypeName("NUMBER");
@@ -146,14 +146,14 @@ public TableDefinition buildBRANCHA_CDTable() {
     fieldBRANCHA.setUnique(false);
     fieldBRANCHA.setShouldAllowNull(true);
     table.addField(fieldBRANCHA);
-    
+
     return table;
 }
 
 public TableDefinition buildBRANCHB_BRANCHBTable() {
     TableDefinition table = new TableDefinition();
     table.setName("BRANCHB_BRANCHB");
-    
+
     FieldDefinition fieldBRANCHB_ID = new FieldDefinition();
     fieldBRANCHB_ID.setName("BranchB_ID");
     fieldBRANCHB_ID.setTypeName("NUMBER");
@@ -164,7 +164,7 @@ public TableDefinition buildBRANCHB_BRANCHBTable() {
     fieldBRANCHB_ID.setUnique(false);
     fieldBRANCHB_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHB_ID);
-    
+
     FieldDefinition fieldBRANCHBS_ID = new FieldDefinition();
     fieldBRANCHBS_ID.setName("branchBs_ID");
     fieldBRANCHBS_ID.setTypeName("NUMBER");
@@ -175,14 +175,14 @@ public TableDefinition buildBRANCHB_BRANCHBTable() {
     fieldBRANCHBS_ID.setUnique(false);
     fieldBRANCHBS_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHBS_ID);
-    
+
     ForeignKeyConstraint foreignKeyBRANCHB_BRANCHB_BRANCHB = new ForeignKeyConstraint();
     foreignKeyBRANCHB_BRANCHB_BRANCHB.setName("BRANCHB_BRANCHB_BRANCHB");
     foreignKeyBRANCHB_BRANCHB_BRANCHB.setTargetTable("BRANCHB");
     foreignKeyBRANCHB_BRANCHB_BRANCHB.addSourceField("branchBs_ID");
     foreignKeyBRANCHB_BRANCHB_BRANCHB.addTargetField("ID");
     table.addForeignKeyConstraint(foreignKeyBRANCHB_BRANCHB_BRANCHB);
-    
+
     ForeignKeyConstraint foreignKeyBRANCHB_BRANCHB_BRANCHB2 = new ForeignKeyConstraint();
     foreignKeyBRANCHB_BRANCHB_BRANCHB2.setName("BRANCHB_BRANCHB_BRANCHB2");
     foreignKeyBRANCHB_BRANCHB_BRANCHB2.setTargetTable("BRANCHB");
@@ -196,7 +196,7 @@ public TableDefinition buildBRANCHB_BRANCHBTable() {
 public TableDefinition buildBRANCHB_CDTable() {
     TableDefinition table = new TableDefinition();
     table.setName("BRANCHB");
-    
+
     FieldDefinition fieldID = new FieldDefinition();
     fieldID.setName("ID");
     fieldID.setTypeName("NUMBER");
@@ -207,14 +207,14 @@ public TableDefinition buildBRANCHB_CDTable() {
     fieldID.setUnique(false);
     fieldID.setShouldAllowNull(false);
     table.addField(fieldID);
-    
+
     return table;
 }
 
 public TableDefinition buildBRANCHB_LEAFBTable() {
     TableDefinition table = new TableDefinition();
     table.setName("BRANCHB_LEAFB");
-    
+
     FieldDefinition fieldLEAFB_ID = new FieldDefinition();
     fieldLEAFB_ID.setName("leafBs_ID");
     fieldLEAFB_ID.setTypeName("NUMBER");
@@ -225,7 +225,7 @@ public TableDefinition buildBRANCHB_LEAFBTable() {
     fieldLEAFB_ID.setUnique(false);
     fieldLEAFB_ID.setShouldAllowNull(false);
     table.addField(fieldLEAFB_ID);
-    
+
     FieldDefinition fieldBRANCHB_ID = new FieldDefinition();
     fieldBRANCHB_ID.setName("BranchB_ID");
     fieldBRANCHB_ID.setTypeName("NUMBER");
@@ -236,14 +236,14 @@ public TableDefinition buildBRANCHB_LEAFBTable() {
     fieldBRANCHB_ID.setUnique(false);
     fieldBRANCHB_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHB_ID);
-    
+
     ForeignKeyConstraint foreignKeyBRANCHB_LEAFB_LEAFB = new ForeignKeyConstraint();
     foreignKeyBRANCHB_LEAFB_LEAFB.setName("BRANCHB_LEAFB_LEAFB");
     foreignKeyBRANCHB_LEAFB_LEAFB.setTargetTable("LEAFB");
     foreignKeyBRANCHB_LEAFB_LEAFB.addSourceField("leafBs_ID");
     foreignKeyBRANCHB_LEAFB_LEAFB.addTargetField("ID");
     table.addForeignKeyConstraint(foreignKeyBRANCHB_LEAFB_LEAFB);
-    
+
     ForeignKeyConstraint foreignKeyBRANCHB_LEAFB_BRANCHB2 = new ForeignKeyConstraint();
     foreignKeyBRANCHB_LEAFB_BRANCHB2.setName("BRANCHB_LEAFB_BRANCHB2");
     foreignKeyBRANCHB_LEAFB_BRANCHB2.setTargetTable("BRANCHB");
@@ -257,7 +257,7 @@ public TableDefinition buildBRANCHB_LEAFBTable() {
 public TableDefinition buildBRANCHA_LEAFATable() {
     TableDefinition table = new TableDefinition();
     table.setName("BRANCHA_LEAFA");
-    
+
     FieldDefinition fieldLEAFB_ID = new FieldDefinition();
     fieldLEAFB_ID.setName("secondSet_ID");
     fieldLEAFB_ID.setTypeName("NUMBER");
@@ -268,7 +268,7 @@ public TableDefinition buildBRANCHA_LEAFATable() {
     fieldLEAFB_ID.setUnique(false);
     fieldLEAFB_ID.setShouldAllowNull(false);
     table.addField(fieldLEAFB_ID);
-    
+
     FieldDefinition fieldBRANCHB_ID = new FieldDefinition();
     fieldBRANCHB_ID.setName("BranchA_ID");
     fieldBRANCHB_ID.setTypeName("NUMBER");
@@ -279,14 +279,14 @@ public TableDefinition buildBRANCHA_LEAFATable() {
     fieldBRANCHB_ID.setUnique(false);
     fieldBRANCHB_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHB_ID);
-    
+
     ForeignKeyConstraint foreignKeyBRANCHA_LEAFA_LEAFA = new ForeignKeyConstraint();
     foreignKeyBRANCHA_LEAFA_LEAFA.setName("BRANCHA_LEAFA_LEAFA");
     foreignKeyBRANCHA_LEAFA_LEAFA.setTargetTable("LEAFA");
     foreignKeyBRANCHA_LEAFA_LEAFA.addSourceField("secondSet_ID");
     foreignKeyBRANCHA_LEAFA_LEAFA.addTargetField("ID");
     table.addForeignKeyConstraint(foreignKeyBRANCHA_LEAFA_LEAFA);
-    
+
     ForeignKeyConstraint foreignKeyBRANCHA_LEAFA_BRANCHA2 = new ForeignKeyConstraint();
     foreignKeyBRANCHA_LEAFA_BRANCHA2.setName("BRANCHA_LEAFA_BRANCHA2");
     foreignKeyBRANCHA_LEAFA_BRANCHA2.setTargetTable("BRANCHA");
@@ -300,7 +300,7 @@ public TableDefinition buildBRANCHA_LEAFATable() {
 public TableDefinition buildLEAFA_CDTable() {
     TableDefinition table = new TableDefinition();
     table.setName("LEAFA");
-    
+
     FieldDefinition fieldID = new FieldDefinition();
     fieldID.setName("ID");
     fieldID.setTypeName("NUMBER");
@@ -311,7 +311,7 @@ public TableDefinition buildLEAFA_CDTable() {
     fieldID.setUnique(false);
     fieldID.setShouldAllowNull(false);
     table.addField(fieldID);
-    
+
     FieldDefinition fieldBRANCHA = new FieldDefinition();
     fieldBRANCHA.setName("BRANCHA_ID");
     fieldBRANCHA.setTypeName("NUMBER");
@@ -322,14 +322,14 @@ public TableDefinition buildLEAFA_CDTable() {
     fieldBRANCHA.setUnique(false);
     fieldBRANCHA.setShouldAllowNull(true);
     table.addField(fieldBRANCHA);
-    
+
     return table;
 }
 
 public TableDefinition buildLEAFB_CDTable() {
     TableDefinition table = new TableDefinition();
     table.setName("LEAFB");
-    
+
     FieldDefinition fieldID = new FieldDefinition();
     fieldID.setName("ID");
     fieldID.setTypeName("NUMBER");
@@ -340,14 +340,14 @@ public TableDefinition buildLEAFB_CDTable() {
     fieldID.setUnique(false);
     fieldID.setShouldAllowNull(false);
     table.addField(fieldID);
-    
+
     return table;
 }
 
 public TableDefinition buildROOTA_BRANCHATable() {
     TableDefinition table = new TableDefinition();
     table.setName("ROOTA_BRANCHA");
-    
+
     FieldDefinition fieldBRANCHA_ID = new FieldDefinition();
     fieldBRANCHA_ID.setName("branchAs_ID");
     fieldBRANCHA_ID.setTypeName("NUMBER");
@@ -358,7 +358,7 @@ public TableDefinition buildROOTA_BRANCHATable() {
     fieldBRANCHA_ID.setUnique(false);
     fieldBRANCHA_ID.setShouldAllowNull(false);
     table.addField(fieldBRANCHA_ID);
-    
+
     FieldDefinition fieldROOTA_ID = new FieldDefinition();
     fieldROOTA_ID.setName("RootA_ID");
     fieldROOTA_ID.setTypeName("NUMBER");
@@ -369,14 +369,14 @@ public TableDefinition buildROOTA_BRANCHATable() {
     fieldROOTA_ID.setUnique(false);
     fieldROOTA_ID.setShouldAllowNull(false);
     table.addField(fieldROOTA_ID);
-    
+
     ForeignKeyConstraint foreignKeyROOTA_BRANCHA_BRANCHA = new ForeignKeyConstraint();
     foreignKeyROOTA_BRANCHA_BRANCHA.setName("ROOTA_BRANCHA_BRANCHA");
     foreignKeyROOTA_BRANCHA_BRANCHA.setTargetTable("BRANCHA");
     foreignKeyROOTA_BRANCHA_BRANCHA.addSourceField("branchAs_ID");
     foreignKeyROOTA_BRANCHA_BRANCHA.addTargetField("ID");
     table.addForeignKeyConstraint(foreignKeyROOTA_BRANCHA_BRANCHA);
-    
+
     ForeignKeyConstraint foreignKeyROOTA_BRANCHA_ROOTA = new ForeignKeyConstraint();
     foreignKeyROOTA_BRANCHA_ROOTA.setName("ROOTA_BRANCHA_ROOTA");
     foreignKeyROOTA_BRANCHA_ROOTA.setTargetTable("ROOTA");
@@ -390,7 +390,7 @@ public TableDefinition buildROOTA_BRANCHATable() {
 public TableDefinition buildROOTA_CDTable() {
     TableDefinition table = new TableDefinition();
     table.setName("ROOTA");
-    
+
     FieldDefinition fieldID = new FieldDefinition();
     fieldID.setName("ID");
     fieldID.setTypeName("NUMBER");
@@ -401,7 +401,7 @@ public TableDefinition buildROOTA_CDTable() {
     fieldID.setUnique(false);
     fieldID.setShouldAllowNull(false);
     table.addField(fieldID);
-    
+
     FieldDefinition fieldBRANCHB = new FieldDefinition();
     fieldBRANCHB.setName("BRANCHB_ID");
     fieldBRANCHB.setTypeName("NUMBER");
@@ -412,7 +412,7 @@ public TableDefinition buildROOTA_CDTable() {
     fieldBRANCHB.setUnique(false);
     fieldBRANCHB.setShouldAllowNull(true);
     table.addField(fieldBRANCHB);
-    
+
     return table;
 }
 

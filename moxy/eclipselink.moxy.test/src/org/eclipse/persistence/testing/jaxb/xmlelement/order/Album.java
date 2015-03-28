@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,7 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.xmlelement.order;
 
 public class Album {
-    
+
     private String wrapperType;
 
     public String getWrapperType() {
@@ -25,10 +25,10 @@ public class Album {
     }
 
     public boolean equals(Object obj){
-    	if(obj instanceof Album){
-    		return wrapperType.equals(((Album)obj).wrapperType);
-    	}
-    	return false;
-    	
+        if(obj instanceof Album){
+            return wrapperType.equals(((Album)obj).wrapperType);
+        }
+        return false;
+
     }
 }

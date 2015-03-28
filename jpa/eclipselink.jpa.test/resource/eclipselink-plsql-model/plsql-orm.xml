@@ -24,15 +24,15 @@
     <named-plsql-stored-procedure-query name="PLSQL_ADDRESS_LIST_OUT" procedure-name="PLSQL_P.PLSQL_ADDRESS_LIST_OUT">
             <parameter name="P_ADDRESS_LIST" direction="OUT" database-type="PLSQL_P.PLSQL_ADDRESS_LIST"/>
             <parameter name="P_CITY" direction="OUT" database-type="VARCHAR_TYPE"/>
-    </named-plsql-stored-procedure-query>      
+    </named-plsql-stored-procedure-query>
     <named-plsql-stored-procedure-query name="PLSQL_EMP_INOUT" procedure-name="PLSQL_P.PLSQL_EMP_INOUT">
             <parameter name="P_EMP" direction="IN_OUT" database-type="PLSQL_P.PLSQL_EMP_REC"/>
             <parameter name="P_CITY" direction="OUT" database-type="VARCHAR_TYPE"/>
-    </named-plsql-stored-procedure-query>       
+    </named-plsql-stored-procedure-query>
     <named-plsql-stored-procedure-query name="TEST_ORACLE_TYPES" procedure-name="FAKE_PACK.OBJECT_TEST">
             <parameter name="P_IN"  direction="IN" database-type="VARRAY_NUMERO_UNO"/>
             <parameter name="P_OUT" direction="OUT" database-type="OBJECT_NUMERO_DOS"/>
-    </named-plsql-stored-procedure-query>       
+    </named-plsql-stored-procedure-query>
     <named-plsql-stored-function-query name="PLSQL_SIMPLE_IN_FUNC" function-name="PLSQL_SIMPLE_IN_FUNC">
             <parameter name="P_VARCHAR" database-type="VARCHAR_TYPE"/>
             <parameter name="P_BOOLEAN" database-type="PLSQLBoolean"/>

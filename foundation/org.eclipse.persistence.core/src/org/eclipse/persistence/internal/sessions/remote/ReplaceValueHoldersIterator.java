@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.remote;
 
 import java.util.*;
@@ -104,7 +104,7 @@ public class ReplaceValueHoldersIterator extends DescriptorIterator {
     protected void internalIterateValueHolder(ValueHolderInterface originalValueHolder) {
         ValueHolderInterface rootValueHolder = originalValueHolder;
 
-        // Ensure we have the base server side value holder. There will only be one of these per server.	
+        // Ensure we have the base server side value holder. There will only be one of these per server.
         if (rootValueHolder instanceof RemoteValueHolder) {
             rootValueHolder = ((RemoteValueHolder)rootValueHolder).getWrappedServerValueHolder();
         }
@@ -141,7 +141,7 @@ public class ReplaceValueHoldersIterator extends DescriptorIterator {
      * before going to the database.
      */
     protected void setOneToOneMappingSettingsIn(RemoteValueHolder remoteValueHolder) {
-        ObjectReferenceMapping oneToOneMapping = (ObjectReferenceMapping)this.getCurrentMapping();// cast it	
+        ObjectReferenceMapping oneToOneMapping = (ObjectReferenceMapping)this.getCurrentMapping();// cast it
         if (oneToOneMapping.getDescriptor().getObjectBuilder().isPrimaryKeyMapping(oneToOneMapping)) {
             remoteValueHolder.setRow(oneToOneMapping.extractPrimaryKeyRowForSourceObject(this.getVisitedParent(), this.getSession()));
         }

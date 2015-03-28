@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -19,59 +19,59 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.descriptor.Desc
 
 
 public final class TableDescriptorNode extends RelationalClassDescriptorNode {
-	
-	// ********** constructors/initialization **********
-	
-	public TableDescriptorNode(MWTableDescriptor descriptor, DescriptorPackageNode parentNode) {
-		super(descriptor, parentNode);
-	}
-		
 
-	
-	// ********** ApplicationNode implementation **********
+    // ********** constructors/initialization **********
 
-	public String helpTopicID() {
-		return "descriptor.class";
-	}
-		
-	public String buildIconKey() {
-		return	"descriptor.class";
-	}
-	
-	MWTableDescriptor getTableDescriptor() {
-		return (MWTableDescriptor) getMappingDescriptor();
-	}
+    public TableDescriptorNode(MWTableDescriptor descriptor, DescriptorPackageNode parentNode) {
+        super(descriptor, parentNode);
+    }
 
-	// ********** DescriptorNode implementation **********
 
-	protected String accessibleNameKey() {
-		return "ACCESSIBLE_TABLE_DESCRIPTOR_NODE";
-	}
-	
-	// ********** DescriptorNode overrides *************
 
-	public boolean supportsInterfaceAliasPolicy() {
-		return true;	
-	}
+    // ********** ApplicationNode implementation **********
 
-	// ********** MWApplicationNode overrides **********
+    public String helpTopicID() {
+        return "descriptor.class";
+    }
 
-	protected Class propertiesPageClass() {
-		return TableDescriptorTabbedPropertiesPage.class;
-	}
+    public String buildIconKey() {
+        return    "descriptor.class";
+    }
 
-	
-	// ********** MWRelationalClassDescriptorNode overrides **********
-	
-	public boolean isTableDescriptor() {
-		return true;
-	}
-	
-	public boolean supportsTransactionalDescriptorProperties() {
-		return true;
-	}
-    
+    MWTableDescriptor getTableDescriptor() {
+        return (MWTableDescriptor) getMappingDescriptor();
+    }
+
+    // ********** DescriptorNode implementation **********
+
+    protected String accessibleNameKey() {
+        return "ACCESSIBLE_TABLE_DESCRIPTOR_NODE";
+    }
+
+    // ********** DescriptorNode overrides *************
+
+    public boolean supportsInterfaceAliasPolicy() {
+        return true;
+    }
+
+    // ********** MWApplicationNode overrides **********
+
+    protected Class propertiesPageClass() {
+        return TableDescriptorTabbedPropertiesPage.class;
+    }
+
+
+    // ********** MWRelationalClassDescriptorNode overrides **********
+
+    public boolean isTableDescriptor() {
+        return true;
+    }
+
+    public boolean supportsTransactionalDescriptorProperties() {
+        return true;
+    }
+
     public void selectQueryKey(MWQueryKey queryKey, WorkbenchContext context) {
-        ((TableDescriptorTabbedPropertiesPage) context.getPropertiesPage()).selectQueryKey(queryKey);   
+        ((TableDescriptorTabbedPropertiesPage) context.getPropertiesPage()).selectQueryKey(queryKey);
 }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3;
 
 import java.util.*;
@@ -39,8 +39,8 @@ import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.Em
 @DiscriminatorColumn(name="PROJ_TYPE")
 @DiscriminatorValue("P")
 @NamedQuery(
-	name="findProjectByName",
-	query="SELECT OBJECT(project) FROM Project project WHERE project.name = :name"
+    name="findProjectByName",
+    query="SELECT OBJECT(project) FROM Project project WHERE project.name = :name"
 )
 @ExistenceChecking(CHECK_CACHE)
 public class Project implements Serializable {
@@ -51,7 +51,7 @@ public class Project implements Serializable {
     public int pre_persist_count = 0;
     public int post_persist_count = 0;
     public int post_load_count = 0;
-    
+
     private Integer m_id;
     private int m_version;
     private String m_name;
@@ -69,40 +69,40 @@ public class Project implements Serializable {
     @GeneratedValue(strategy=SEQUENCE, generator="BR3_PROJECT_SEQUENCE_GENERATOR")
     @SequenceGenerator(name="BR3_PROJECT_SEQUENCE_GENERATOR", sequenceName="PROJECT_SEQ", allocationSize=10)
     @Column(name="PROJ_ID", length=37)
-    public Integer getId() { 
-        return m_id; 
+    public Integer getId() {
+        return m_id;
     }
-    
-    public void setId(Integer id) { 
-        this.m_id = id; 
+
+    public void setId(Integer id) {
+        this.m_id = id;
     }
 
     @Version
     @Column(name="VERSION")
-    public int getVersion() { 
-        return m_version; 
+    public int getVersion() {
+        return m_version;
     }
-    
-    protected void setVersion(int version) { 
-        this.m_version = version; 
+
+    protected void setVersion(int version) {
+        this.m_version = version;
     }
 
     @Column(name="PROJ_NAME")
-    public String getName() { 
-        return m_name; 
+    public String getName() {
+        return m_name;
     }
-    
-    public void setName(String name) { 
-        this.m_name = name; 
+
+    public void setName(String name) {
+        this.m_name = name;
     }
 
     @Column(name="DESCRIP")
-    public String getDescription() { 
-        return m_description; 
+    public String getDescription() {
+        return m_description;
     }
-    
-    public void setDescription(String description) { 
-        this.m_description = description; 
+
+    public void setDescription(String description) {
+        this.m_description = description;
     }
 
 
@@ -110,22 +110,22 @@ public class Project implements Serializable {
     @CollectionTable(name="MBR1_PROJ_PROPS", joinColumns=@JoinColumn(name="PROJ_ID"))
     @CompositeMember("composite-advanced-member_1")
     @Column(name="PROPS")
-    public List<String> getProperties() { 
-        return m_properties; 
+    public List<String> getProperties() {
+        return m_properties;
     }
-    
-    public void setProperties(List<String> properties) { 
-        this.m_properties = properties; 
+
+    public void setProperties(List<String> properties) {
+        this.m_properties = properties;
     }
-    
+
     @OneToOne(cascade = {CascadeType.MERGE})
     @JoinColumn(name="LEADER_ID")
     public Employee getTeamLeader() {
-        return m_teamLeader; 
+        return m_teamLeader;
     }
-    
-    public void setTeamLeader(Employee teamLeader) { 
-        this.m_teamLeader = teamLeader; 
+
+    public void setTeamLeader(Employee teamLeader) {
+        this.m_teamLeader = teamLeader;
     }
 
     // @ManyToMany(targetEntity=Employee.class, mappedBy="projects")
@@ -133,22 +133,22 @@ public class Project implements Serializable {
      * then the relationship must be unidirectional - the "invert" mapping cannot use "mappedBy".
      * That's because JoinTable must be defined in the same composite member with target entity:
      * master mapping requires it to be in slave's member, slave mapping - in master's.
-     * 
+     *
      * Workaround is to define independent invert mapping with its own JoinTable.
      * If user maintains both sides of the relationship then the two join tables will be in sync.
-     * 
+     *
      * JoinTable MBR3_EMP_PROJ specified by Employee.projects defined in the same composite member with Project.
      * This invert mapping specifies its own join table MBR2_PROJ_EMP defined in the same composite member with Employee.
-     */ 
+     */
     @ManyToMany()
     @JoinTable(
         name="MBR2_PROJ_EMP",
         joinColumns=@JoinColumn(name="PROJECTS_PROJ_ID", referencedColumnName="PROJ_ID")
     )
-    public Collection<Employee> getTeamMembers() { 
-        return m_teamMembers; 
+    public Collection<Employee> getTeamMembers() {
+        return m_teamMembers;
     }
-    
+
     public void setTeamMembers(Collection<Employee> employees) {
         this.m_teamMembers = employees;
     }
@@ -167,7 +167,7 @@ public class Project implements Serializable {
 
         return sbuff.toString();
     }
-    
+
     @PrePersist
     public void prePersist() {
         ++pre_persist_count;

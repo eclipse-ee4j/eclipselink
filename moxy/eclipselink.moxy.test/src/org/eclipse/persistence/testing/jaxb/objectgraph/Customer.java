@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,12 +28,12 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
             @XmlNamedAttributeNode("firstName"),
             @XmlNamedAttributeNode("lastName"),
             @XmlNamedAttributeNode(value="address", subgraph="simple-address")
-    }, 
+    },
     subgraphs={
             @XmlNamedSubgraph(name="simple-address", attributeNodes={
                     @XmlNamedAttributeNode("city"),
                     @XmlNamedAttributeNode("country")
-            })        
+            })
     }),
     @XmlNamedObjectGraph(name="complex", attributeNodes={
             @XmlNamedAttributeNode("firstName"),
@@ -52,19 +52,19 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
 public class Customer {
 
     public String firstName;
-    
+
     public String lastName;
-    
+
     public String age;
-    
+
     public String gender;
-    
+
     public Address address;
-    
+
     @XmlPath("phone-numbers/phone-number")
     public List<PhoneNumber> phoneNumbers;
-    
-    
+
+
     public boolean equals(Object obj) {
         Customer cust = (Customer) obj;
         if(!cust.address.equals(address)) {
@@ -80,7 +80,7 @@ public class Customer {
                 }
             }
         }
-        
+
         return (firstName == cust.firstName || firstName.equals(cust.firstName))
                 && (lastName == cust.lastName || lastName.equals(cust.lastName))
                 && (age == cust.age || age.equals(cust.age))

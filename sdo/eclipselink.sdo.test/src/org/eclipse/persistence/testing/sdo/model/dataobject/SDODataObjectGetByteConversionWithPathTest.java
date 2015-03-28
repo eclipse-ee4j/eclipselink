@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.DataObject;
@@ -25,7 +25,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
     public SDODataObjectGetByteConversionWithPathTest(String name) {
         super(name);
     }
-    
+
      public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetByteConversionWithPathTest" };
         TestRunner.main(arguments);
@@ -42,7 +42,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -71,7 +71,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -87,7 +87,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -115,7 +115,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -143,7 +143,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -172,7 +172,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -201,7 +201,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -230,7 +230,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -260,7 +260,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -276,7 +276,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -289,7 +289,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         dataObject_c._setType(type_c);
         BigDecimal theValue = new BigDecimal(10);
         dataObject_c.set(property_c, theValue);
-        try {            
+        try {
             byte value = dataObject_a.getByte(propertyPath_a_b_c);
             byte controlValue = theValue.byteValue();
             assertEquals(controlValue, value);
@@ -328,7 +328,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -338,10 +338,10 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
             String p = null;
             dataObject_a.getByte(p);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
-    
+
           //22. purpose: getDouble from null
     public void testGetByteFromNull() {
         property_c = new SDOProperty(aHelperContext);
@@ -350,14 +350,14 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
         dataObject_c.set(property_c, null);
-        
+
         byte value = dataObject_a.getByte(propertyPath_a_b_c);
         byte byteValue = 0;
-        assertEquals(byteValue, value);            
+        assertEquals(byteValue, value);
         DataObject doNext = dataObject_a.getDataObject("PName-a");
-        doNext = doNext.getDataObject("PName-b");        
+        doNext = doNext.getDataObject("PName-b");
         Property prop  = doNext.getInstanceProperty("PName-c");
-        byte value2 =  doNext.getByte(prop);        
-        assertEquals(byteValue, value2);       
+        byte value2 =  doNext.getByte(prop);
+        assertEquals(byteValue, value2);
     }
 }

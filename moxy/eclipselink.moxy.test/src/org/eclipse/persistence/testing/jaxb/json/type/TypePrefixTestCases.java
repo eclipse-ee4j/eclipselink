@@ -31,15 +31,15 @@ import org.eclipse.persistence.testing.jaxb.json.type.model.Person;
  *
  */
 public class TypePrefixTestCases extends JSONTestCases {
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/type/type_prefix.json";
-	
-	public TypePrefixTestCases(String name) throws Exception {
-		super(name);	
-		setClasses(new Class[]{Person.class});
-		setControlJSON(JSON_RESOURCE);
-	}
-	
-	public void setUp() throws Exception{
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/type/type_prefix.json";
+
+    public TypePrefixTestCases(String name) throws Exception {
+        super(name);
+        setClasses(new Class[]{Person.class});
+        setControlJSON(JSON_RESOURCE);
+    }
+
+    public void setUp() throws Exception{
         super.setUp();
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         jsonMarshaller.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, ':');
@@ -52,22 +52,22 @@ public class TypePrefixTestCases extends JSONTestCases {
         jsonUnmarshaller.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, ':');
         jsonUnmarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
     }
-	
-	protected Object getJSONReadControlObject() {
-	    
+
+    protected Object getJSONReadControlObject() {
+
         Customer c = new Customer();
         c.name = "theName";
-        
+
         QName name = new QName("");
-        
+
         JAXBElement<Object> jbe = new JAXBElement<Object>(name, Object.class, c );
         return jbe;
     }
-		
-	protected Object getControlObject() {
-	    Customer c = new Customer();
-	    c.name = "theName";
-	    return c;
-	}
+
+    protected Object getControlObject() {
+        Customer c = new Customer();
+        c.name = "theName";
+        return c;
+    }
 
 }

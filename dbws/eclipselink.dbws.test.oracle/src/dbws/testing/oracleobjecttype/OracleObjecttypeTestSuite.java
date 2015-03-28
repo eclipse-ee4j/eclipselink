@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -115,12 +115,12 @@ public class OracleObjecttypeTestSuite {
         "INSERT INTO XR_EMP_ADDR (EMPNO, FNAME, LNAME, ADDRESS) VALUES (1, 'Mike', 'Norman', XR_ADDRESS_TYPE('Pinetrail','Nepean','Ont'))|" +
         "INSERT INTO XR_EMP_ADDR (EMPNO, FNAME, LNAME, ADDRESS) VALUES (2, 'Rick', 'Barkhouse', XR_ADDRESS_TYPE('Davis Side Rd','Carleton Place','Ont'))|" +
         "INSERT INTO XR_EMP_ADDR (EMPNO, FNAME, LNAME, ADDRESS) VALUES (3, 'Merrick', 'Schincariol', XR_ADDRESS_TYPE('do','not','know'))|";
-    
+
     static final String DROP_DDL =
         "DROP TABLE XR_EMP_ADDR|" +
         "DROP TYPE XR_ADDRESS_TYPE|" +
         "DROP PROCEDURE GET_EMPLOYEES_BY_PROV|";
-    
+
     static final String DATABASE_USERNAME_KEY = "db.user";
     static final String DATABASE_PASSWORD_KEY = "db.pwd";
     static final String DATABASE_URL_KEY = "db.url";
@@ -614,7 +614,7 @@ public class OracleObjecttypeTestSuite {
         marshaller.marshal(oxProject, oxProjectDoc);
         Document oxProjectXMLDoc = xmlParser.parse(new StringReader(OBJECTTYPE_OX_PROJECT));
 
-		assertTrue("OracleObjecttype java-built OX project not same as XML-built OX project.  Expected:\n" + documentToString(oxProjectXMLDoc) + "\nActual:\n" + documentToString(oxProjectDoc), comparer.isNodeEqual(oxProjectXMLDoc, oxProjectDoc));
+        assertTrue("OracleObjecttype java-built OX project not same as XML-built OX project.  Expected:\n" + documentToString(oxProjectXMLDoc) + "\nActual:\n" + documentToString(oxProjectDoc), comparer.isNodeEqual(oxProjectXMLDoc, oxProjectDoc));
 
         XRServiceFactory factory = new XRServiceFactory() {
             XRServiceFactory init() {
@@ -647,7 +647,7 @@ public class OracleObjecttypeTestSuite {
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSModel model = (DBWSModel)unmarshaller.unmarshal(new StringReader(OBJECTTYPE_XRMODEL));
         xrService = factory.buildService(model);
-        
+
         if (ddlCreate) {
             try {
                 AllTests.runDdl(CREATE_DDL, ddlDebug);

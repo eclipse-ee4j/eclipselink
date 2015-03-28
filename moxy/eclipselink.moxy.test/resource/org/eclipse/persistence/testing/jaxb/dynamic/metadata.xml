@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" 
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
     package-name="org.eclipse.persistence.testing.jaxb.dynamic">
 
     <java-types>

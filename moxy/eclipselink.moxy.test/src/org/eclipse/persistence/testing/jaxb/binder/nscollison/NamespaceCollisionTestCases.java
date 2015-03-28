@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,7 +36,7 @@ public class NamespaceCollisionTestCases extends TestCase {
         XMLPlatform platform = XMLPlatformFactory.getInstance().getXMLPlatform();
         parser = platform.newXMLParser();
     }
-    
+
     public void testNamespaceCollision() throws Exception {
         String xml = "<ns0:employee xmlns:ns1=\"mynamespace3\" xmlns:ns2=\"mynamespace2\" xmlns:ns0=\"mynamespace1\"><ns2:address><street>123 Fake Street</street></ns2:address><firstName>Matt</firstName><id>123</id></ns0:employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nscollision/employee.xml";
@@ -45,13 +45,13 @@ public class NamespaceCollisionTestCases extends TestCase {
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{Employee.class}, null);
 
         Binder binder = ctx.createBinder();
-        
+
         JAXBElement elem = binder.unmarshal(parser.parse(new StringReader(xml)), Employee.class);
         Employee emp = (Employee)elem.getValue();
         emp.address.city = "Toronto";
-        
+
         binder.updateXML(emp.address);
-        
+
         JAXBXMLComparer comparer = new JAXBXMLComparer();
         assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, ((Node)binder.getXMLNode(emp)).getOwnerDocument()));
     }

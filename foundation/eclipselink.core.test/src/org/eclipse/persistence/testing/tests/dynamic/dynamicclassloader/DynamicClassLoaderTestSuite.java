@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
@@ -42,12 +42,12 @@ import org.junit.Test;
 
 public class DynamicClassLoaderTestSuite {
 
-    public static final String PACKAGE_PREFIX = 
+    public static final String PACKAGE_PREFIX =
         DynamicClassLoaderTestSuite.class.getPackage().getName();
     static final String INCOMPATIBLE_CLASSNAME = Incompatible.class.getSimpleName();
     static final String COMPATIBLE_CLASSNAME = Compatible.class.getSimpleName();
     static final String MY_CLASSNAME = PACKAGE_PREFIX + ".MyClass";
-    
+
     @Test
     public void noParentLoader() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(null);
@@ -60,13 +60,13 @@ public class DynamicClassLoaderTestSuite {
         Class<?> stringClass = dcl.loadClass("java.lang.String");
         assertTrue("core class java.lang.String not found", String.class == stringClass);
     }
-    
+
     @Test(expected=NoClassDefFoundError.class)
     public void createDynamicClassWithNoParentLoader() {
         DynamicClassLoader dcl = new DynamicClassLoader(null);
         dcl.createDynamicClass(MY_CLASSNAME);
     }
-    
+
     @Test(expected=IllegalArgumentException.class)
     public void createIncompatibleClass() {
         DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
@@ -90,8 +90,8 @@ public class DynamicClassLoaderTestSuite {
         checkMyClass(dcl, myDynamicClass);
     }
 
-    protected void checkMyClass(DynamicClassLoader dcl, Class<?> myDynamicClass) 
-        throws ClassNotFoundException, InstantiationException, IllegalAccessException {    
+    protected void checkMyClass(DynamicClassLoader dcl, Class<?> myDynamicClass)
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         assertNotNull(myDynamicClass);
         assertEquals(MY_CLASSNAME, myDynamicClass.getName());
         assertSame(DynamicEntityImpl.class, myDynamicClass.getSuperclass());
@@ -104,7 +104,7 @@ public class DynamicClassLoaderTestSuite {
         assertSame(myDynamicClass, ConversionManager.loadClass(MY_CLASSNAME));
         Object newInstance = myDynamicClass.newInstance();
         assertNotNull("newInstance is null", newInstance);
-        Constructor<DynamicEntity>[] constructors = 
+        Constructor<DynamicEntity>[] constructors =
             (Constructor<DynamicEntity>[])myDynamicClass.getConstructors();
         assertEquals(1, constructors.length);
         assertEquals(0, constructors[0].getParameterTypes().length);
@@ -242,7 +242,7 @@ public class DynamicClassLoaderTestSuite {
 
         dcl.addClass(MY_CLASSNAME, DefaultConstructor.class);
         EclipseLinkClassWriter secondWriter = dcl.getClassWriter(MY_CLASSNAME);
-        
+
         assertSame(firstWriter, secondWriter);
     }
 

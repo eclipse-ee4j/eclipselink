@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -86,11 +86,11 @@ public class PLSQLCollectionTypeTestSuite {
         "CREATE OR REPLACE TYPE PACKAGE2_TAB1 AS TABLE OF VARCHAR2(111)";
     static final String CREATE_A_PHONE_COLLECTION_TYPE =
         "CREATE OR REPLACE TYPE PACKAGE2_A_PHONE_TYPE_COL AS TABLE OF A_PHONE_TYPE";
-    
+
     static final String DROP_PACKAGE2_PACKAGE = "DROP PACKAGE PACKAGE2";
     static final String DROP_PACKAGE2_TAB1_TYPE = "DROP TYPE PACKAGE2_TAB1";
     static final String PACKAGE2_A_PHONE_TYPE_COLLECTION_TYPE = "DROP TYPE PACKAGE2_A_PHONE_TYPE_COL";
-    
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -98,7 +98,7 @@ public class PLSQLCollectionTypeTestSuite {
     @SuppressWarnings("rawtypes")
     static List dbProcedures;
     static DatabaseTypeBuilder dbTypeBuilder;
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @BeforeClass
     public static void setUp() throws ClassNotFoundException, SQLException {
@@ -122,7 +122,7 @@ public class PLSQLCollectionTypeTestSuite {
             runDdl(conn, CREATE_PACKAGE2_TAB1_TYPE, ddlDebug);
             runDdl(conn, CREATE_A_PHONE_COLLECTION_TYPE, ddlDebug);
         }
-        
+
         String schema = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
 
         List<String> procedurePatterns = new ArrayList<String>();
@@ -131,7 +131,7 @@ public class PLSQLCollectionTypeTestSuite {
         procedurePatterns.add("COPYPHONECOLLECTION");
         procedurePatterns.add("SETRECORD");
         procedurePatterns.add("COPYBOOLEANTABLE");
-        
+
 
         // use DatabaseTypeBuilder to generate a list of PackageTypes
         dbTypeBuilder = new DatabaseTypeBuilder();
@@ -160,7 +160,7 @@ public class PLSQLCollectionTypeTestSuite {
             runDdl(conn, PACKAGE2_A_PHONE_TYPE_COLLECTION_TYPE, ddlDebug);
         }
     }
-    
+
     @Test
     @SuppressWarnings({ "unchecked" })
     public void testJPAPLSQLCollectionMetadata() {
@@ -190,7 +190,7 @@ public class PLSQLCollectionTypeTestSuite {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
         "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
         "   <orm:named-plsql-stored-procedure-query name=\"COPYTABLE\" procedure-name=\"PACKAGE2.COPYTABLE\">\n" +
         "      <orm:parameter direction=\"IN\" name=\"OLDTAB\" database-type=\"PACKAGE2.TAB1\"/>\n" +
         "      <orm:parameter direction=\"OUT\" name=\"NEWTAB\" database-type=\"PACKAGE2.TAB1\"/>\n" +

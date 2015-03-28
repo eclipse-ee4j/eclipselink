@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Created July 9, 2008 - ailitchev 
+ *     Created July 9, 2008 - ailitchev
  *        bug 240210: Tests: Several LRG tests hang on Sybase
  *     Changed Dec 17, 2008 - etang
- *        Move the class from org.eclipse.persistence.testing.tests.unitofwork 
+ *        Move the class from org.eclipse.persistence.testing.tests.unitofwork
  *        to org.eclipse.persistence.testing.framework
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import java.sql.Connection;
@@ -30,36 +30,36 @@ import org.eclipse.persistence.testing.framework.TestProblemException;
 
 /*
  * According to http://manuals.sybase.com/onlinebooks/group-as/asg1250e/sqlug/@Generic__BookTextView/53713;pt=52735/*
- * The SQL92 standard defines four levels of isolation for transactions. 
- * Each isolation level specifies the kinds of actions that are not permitted while concurrent transactions are executing. 
+ * The SQL92 standard defines four levels of isolation for transactions.
+ * Each isolation level specifies the kinds of actions that are not permitted while concurrent transactions are executing.
  * Higher levels include the restrictions imposed by the lower levels:
- * 
- * Level 0 - ensures that data written by one transaction represents the actual data. 
- * It prevents other transactions from changing data that has already been modified 
- * (through an insert, delete, update, and so on) by an uncommitted transaction. 
- * The other transactions are blocked from modifying that data until the transaction commits. 
+ *
+ * Level 0 - ensures that data written by one transaction represents the actual data.
+ * It prevents other transactions from changing data that has already been modified
+ * (through an insert, delete, update, and so on) by an uncommitted transaction.
+ * The other transactions are blocked from modifying that data until the transaction commits.
  * However, other transactions can still read the uncommitted data, which results in dirty reads.
- * 
- * Level 1 - prevents dirty reads. 
- * Such reads occur when one transaction modifies a row, and a second transaction reads that row before the first transaction commits the change. 
- * If the first transaction rolls back the change, the information read by the second transaction becomes invalid. 
+ *
+ * Level 1 - prevents dirty reads.
+ * Such reads occur when one transaction modifies a row, and a second transaction reads that row before the first transaction commits the change.
+ * If the first transaction rolls back the change, the information read by the second transaction becomes invalid.
  * This is the default isolation level supported by Adaptive Server.
  * ....
- * 
+ *
  * Apparently Sybase versions 12.5 and 15 has Level 1 set as default.
  * That causes several tests to hang: these tests begin transaction, update a row,
  * then (before the transaction has been committed) attempt to read the row through another connection.
- * 
+ *
  * To allow these reads to go through (and read the uncommitted data) connection isolation level
  * should be temporary switched to Level 0.
- * 
+ *
  * This class switches the acquired connection to Level 0 and then sets back the original isolation level before connection is released.
- * 
+ *
  * Note that for the above scenario only read connection require Level 0.
- * 
+ *
  * This solution works only on Sybase 15 but fails on Sybase 12.5 with:
  * com.sybase.jdbc3.jdbc.SybSQLException: The optimizer could not find a unique index which it could use to perform an isolation level 0 scan on table 'RESPONS'.
- * 
+ *
  */
 public class SybaseTransactionIsolationListener extends SessionEventAdapter {
     HashMap<Connection, Integer> connections = new HashMap<Connection, Integer>();

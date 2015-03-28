@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
 import commonj.sdo.DataObject;
@@ -66,11 +66,11 @@ public class LoadAndSavePurchaseOrderComplexTestCases extends LoadAndSaveTestCas
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
     protected List<String> getPackages() {
-        List<String> packages = new ArrayList<String>();       
+        List<String> packages = new ArrayList<String>();
         packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
         return packages;
     }
-    
+
     protected void registerTypes() {
         SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
@@ -298,9 +298,9 @@ public class LoadAndSavePurchaseOrderComplexTestCases extends LoadAndSaveTestCas
         DataObject itemProp = addProperty(itemsType, "item", itemType, true, true, true);
         return typeHelper.define(itemsType);
     }
-    
+
     protected void compareXML(String controlFileName, String testString, boolean compareNodes) throws Exception {
-           super.compareXML(controlFileName, testString, compareNodes);           
+           super.compareXML(controlFileName, testString, compareNodes);
            XMLMarshaller marshaller = ((SDOXMLHelper)xmlHelper).getXmlMarshaller();
            XMLMarshalListener listener = marshaller.getMarshalListener();
            assertNull(((SDOMarshalListener)listener).getMarshalledObject());

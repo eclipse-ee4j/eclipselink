@@ -1,18 +1,18 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     06/03/2013-2.5.1 Guy Pelletier    
- *       - 402380: 3 jpa21/advanced tests failed on server with 
- *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"  
- ******************************************************************************/  
+ *     06/03/2013-2.5.1 Guy Pelletier
+ *       - 402380: 3 jpa21/advanced tests failed on server with
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.converters;
 
 import java.security.AccessController;
@@ -67,7 +67,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
      * This method is implemented by subclasses as necessary.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Class dataClass = null;
@@ -225,7 +225,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
             if (directMapping.getFieldClassification() == null) {
                 directMapping.setFieldClassification(getDataClass());
             }
-            
+
             // Set the object class from the attribute, if null.
             if (getObjectClass() == null) {
                 setObjectClass(directMapping.getAttributeClassification());

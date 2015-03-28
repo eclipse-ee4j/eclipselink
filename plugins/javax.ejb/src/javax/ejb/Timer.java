@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,54 +58,54 @@ public interface Timer {
      *
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.NoSuchObjectLocalException If invoked on a timer
      * that has expired or has been cancelled.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete due
      * to a system-level failure.
      */
     public void cancel() throws java.lang.IllegalStateException, javax.ejb.NoSuchObjectLocalException, javax.ejb.EJBException;
-    
+
     /**
      * Get the number of milliseconds that will elapse before the next
-     * scheduled timer expiration. 
+     * scheduled timer expiration.
      *
      * @return the number of milliseconds that will elapse before the next
      * scheduled timer expiration.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.NoSuchObjectLocalException If invoked on a timer
      * that has expired or has been cancelled.
      *
-     * @exception javax.ejb.NoMoreTimeoutsExceptions Indicates that the 
+     * @exception javax.ejb.NoMoreTimeoutsExceptions Indicates that the
      * timer has no future timeouts
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete due
      * to a system-level failure.
      */
     public long getTimeRemaining() throws java.lang.IllegalStateException, javax.ejb.NoSuchObjectLocalException, javax.ejb.NoMoreTimeoutsException, javax.ejb.EJBException;
 
     /**
-     * Get the point in time at which the next timer expiration is scheduled 
+     * Get the point in time at which the next timer expiration is scheduled
      * to occur.
      *
-     * @return the point in time at which the next timer expiration is 
+     * @return the point in time at which the next timer expiration is
      * scheduled to occur.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.NoSuchObjectLocalException If invoked on a timer
      * that has expired or has been cancelled.
-     * 
-     * @exception javax.ejb.NoMoreTimeoutsExceptions Indicates that the 
+     *
+     * @exception javax.ejb.NoMoreTimeoutsExceptions Indicates that the
      * timer has no future timeouts
      *
      * @exception javax.ejb.EJBException If this method could not complete due
@@ -121,13 +121,13 @@ public interface Timer {
      * @return schedule expression for the timer.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.  Also thrown if invoked on a timer that is not a
      * calendar-based timer.
-     * 
+     *
      * @exception javax.ejb.NoSuchObjectLocalException If invoked on a timer
      * that has expired or has been cancelled.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete due
      * to a system-level failure.
      *
@@ -141,37 +141,37 @@ public interface Timer {
      * @return boolean indicating whether the timer is persistent.
 
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
-     * to this method. 
-     * 
+     * invoked while the instance is in a state that does not allow access
+     * to this method.
+     *
      * @exception javax.ejb.NoSuchObjectLocalException If invoked on a timer
      * that has expired or has been cancelled.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete due
      * to a system-level failure.
      *
      * @since EJB 3.1
      */
-    public boolean isPersistent() throws java.lang.IllegalStateException, javax.ejb.NoSuchObjectLocalException, javax.ejb.EJBException;    
+    public boolean isPersistent() throws java.lang.IllegalStateException, javax.ejb.NoSuchObjectLocalException, javax.ejb.EJBException;
 
     /**
-     * Return whether this timer is a calendar-based timer.  
+     * Return whether this timer is a calendar-based timer.
      *
      * @return boolean indicating whether the timer is calendar-based.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
-     * to this method. 
+     * invoked while the instance is in a state that does not allow access
+     * to this method.
      *
      * @exception javax.ejb.NoSuchObjectLocalException If invoked on a timer
      * that has expired or has been cancelled.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete due
      * to a system-level failure.
      *
      * @since EJB 3.1
      */
-    public boolean isCalendarTimer() throws java.lang.IllegalStateException, javax.ejb.NoSuchObjectLocalException, javax.ejb.EJBException;    
+    public boolean isCalendarTimer() throws java.lang.IllegalStateException, javax.ejb.NoSuchObjectLocalException, javax.ejb.EJBException;
 
 
     /**
@@ -184,12 +184,12 @@ public interface Timer {
      * null if the info argument passed in at timer creation was null.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.NoSuchObjectLocalException If invoked on a timer
      * that has expired or has been cancelled.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete due
      * to a system-level failure.
      */
@@ -201,14 +201,14 @@ public interface Timer {
      * be used at a later time to re-obtain the timer reference.
      *
      * @return a serializable handle to the timer.
-     * 
+     *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.  Also thrown if invoked on a non-persistent timer.
-     * 
+     *
      * @exception javax.ejb.NoSuchObjectLocalException If invoked on a timer
      * that has expired or has been cancelled.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete due
      * to a system-level failure.
      */
@@ -216,4 +216,4 @@ public interface Timer {
 
 
 
-} 
+}

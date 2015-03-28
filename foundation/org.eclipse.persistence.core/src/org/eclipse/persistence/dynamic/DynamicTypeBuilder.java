@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke, mnorman - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.dynamic;
@@ -60,7 +60,7 @@ import javax.persistence.Embeddable;
  * The EntityTypeBuilder is a factory class for creating and extending dynamic
  * entity types. After being constructed in either usage the application can
  * then use the provided API to customize mapping information of the type.
- * 
+ *
  * @author dclarke, mnorman
  * @since EclipseLink 1.2
  */
@@ -94,7 +94,7 @@ public class DynamicTypeBuilder {
      *  <br>
      *  helper.addTypes(true, true, typeBuilder.getType());<br>
      * </code>
-     * 
+     *
      * @param dynamicClass
      * @param parentType
      * @param tableNames
@@ -122,7 +122,7 @@ public class DynamicTypeBuilder {
 
     /**
      * Create an EntityTypeBuilder for an existing descriptor. This is used
-     * 
+     *
      * @param dcl
      * @param descriptor
      * @param parentType
@@ -139,7 +139,7 @@ public class DynamicTypeBuilder {
             // JAXB generates some classes that do not conform to DynamicEntity interface - ignore
             if (DynamicEntity.class.isAssignableFrom(dynamicClass)) {
                 try {
-                    Field dpmField = 
+                    Field dpmField =
                         descriptor.getJavaClass().getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
                     DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
                     dpm.setType(entityType);
@@ -210,7 +210,7 @@ public class DynamicTypeBuilder {
      * <li>collection mappings
      * <li>basic indirection references
      * </ul>
-     * 
+     *
      * @see DynamicHelper#newDynamicEntity for creation and initialization
      */
     private boolean requiresInitialization(DatabaseMapping mapping) {
@@ -230,7 +230,7 @@ public class DynamicTypeBuilder {
     /**
      * Set the PK field names on the underlying descriptor ensuring no duplicate
      * names are added.
-     * 
+     *
      * @param pkFieldNames
      *            qualified or unqualified field names
      */
@@ -258,7 +258,7 @@ public class DynamicTypeBuilder {
      * expected must be added without the help of EclipseLink or use the
      * {@link SchemaManager#replaceObject(org.eclipse.persistence.tools.schemaframework.DatabaseObjectDefinition)}
      * to DROP and CREATE the table. WARNING: This will cause data loss.
-     * 
+     *
      * @param javaType
      *            is the type of the attribute. If the type is a primitive it
      *            will be converted to the comparable non-primitive type.
@@ -307,7 +307,7 @@ public class DynamicTypeBuilder {
      * extended. This mapping is created using standard foreign keys from the
      * source table(s) to the target table(s) and transparent indirection (
      * {@link IndirectList}).
-     * 
+     *
      * @param name
      *            attribute name to use in the dynamic entity. Also the property
      *            name used to access the state of the entity
@@ -315,7 +315,7 @@ public class DynamicTypeBuilder {
      * @param fkFieldNames
      *            the FK field names specified in the same order to match the PK
      *            field names of the target class
-     * 
+     *
      * @return the newly created, configured mappin. It will be initialized if
      *         the descriptor is already initialized.
      */
@@ -343,7 +343,7 @@ public class DynamicTypeBuilder {
      * built or extended. This mapping is created using standard foreign keys
      * from the target table(s) to the source table(s) and transparent
      * indirection ( {@link IndirectList}).
-     * 
+     *
      * @param name
      *            attribute name to use in the dynamic entity. Also the property
      *            name used to access the state of the entity
@@ -385,7 +385,7 @@ public class DynamicTypeBuilder {
     /**
      * Add a {@link AggregateObjectMapping} ({@link Embeddable} in JPA) to the
      * {@link #entityType} being built or extended.
-     * 
+     *
      * @param name
      *            attribute name to use in the dynamic entity. Also the property
      *            name used to access the state of the entity
@@ -412,7 +412,7 @@ public class DynamicTypeBuilder {
      * table match the PK columns names they relate to. In the case of the
      * target keys from the relationship table a '_' will be appended to the
      * column names if they collide with the names from the source table.
-     * 
+     *
      * @param name
      *            attribute name to use in the dynamic entity. Also the property
      *            name used to access the state of the entity
@@ -505,7 +505,7 @@ public class DynamicTypeBuilder {
         configureSequencing(numberName, numberFieldName);
         getType().getDescriptor().setSequence(sequence);
     }
-    
+
     public DynamicEnumBuilder addEnum(String fieldName, String className, String columnName,
         DynamicClassLoader dcl) {
         dcl.addEnum(className, (Object)null);
@@ -525,7 +525,7 @@ public class DynamicTypeBuilder {
     /**
      * Load a dynamic project from deployment XML creating dynamic types for all
      * descriptors where the provided class name does not exist.
-     * 
+     *
      * @param resourcePath
      * @param login
      * @param dynamicClassLoader
@@ -549,12 +549,12 @@ public class DynamicTypeBuilder {
         return loadDynamicProject(dynamicClassLoader.getResourceAsStream(resourcePath), login, dynamicClassLoader);
     }
 
-    
-    
+
+
     /**
      * Load a dynamic project from deployment XML creating dynamic types for all
      * descriptors where the provided class name does not exist.
-     * 
+     *
      * @param resourceStream
      * @param login
      * @param dynamicClassLoader
@@ -613,7 +613,7 @@ public class DynamicTypeBuilder {
                 if (dynamicClass != null && DynamicEntity.class.isAssignableFrom(dynamicClass)) {
                     DynamicType type = DynamicHelper.getType(descriptor);
                     try {
-                        Field dpmField = 
+                        Field dpmField =
                             descriptor.getJavaClass().getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
                         DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
                         dpm.setType(type);
@@ -687,7 +687,7 @@ public class DynamicTypeBuilder {
                 return null;
             }
         }
-        
+
         return type;
     }
 }

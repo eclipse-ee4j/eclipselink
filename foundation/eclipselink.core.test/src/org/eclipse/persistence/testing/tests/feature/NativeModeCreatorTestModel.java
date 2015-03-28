@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.internal.databaseaccess.*;
@@ -46,9 +46,9 @@ public class NativeModeCreatorTestModel extends TestModel {
         defaultSequence = getSession().getLogin().getDefaultSequence();
         shouldBindAllParameters = Boolean.valueOf(platform.shouldBindAllParameters());
 
-        if (platform.isSybase() || platform.isSQLAnywhere() || platform.isOracle() || platform.isSQLServer() || platform.isInformix() || 
+        if (platform.isSybase() || platform.isSQLAnywhere() || platform.isOracle() || platform.isSQLServer() || platform.isInformix() ||
             platform.isMySQL() || platform.isDB2() || platform.isTimesTen() || platform.isSymfoware()) {
-            
+
             platform.setUsesNativeSQL(true);
             getSession().getLogin().useNativeSequencing();
             getDatabaseSession().getSequencingControl().resetSequencing();
@@ -59,7 +59,7 @@ public class NativeModeCreatorTestModel extends TestModel {
         getExecutor().removeConfigureSystem(new EmployeeSystem());
         // Force the database to be recreated to ensure the sequences are defined.
         addForcedRequiredSystem(new EmployeeNativeModeSystem());
-        
+
         getExecutor().removeConfigureSystem(new InheritanceSystem());
         addForcedRequiredSystem(new InheritanceSystem());
     }
@@ -80,7 +80,7 @@ public class NativeModeCreatorTestModel extends TestModel {
         addTest(EmployeeBasicTestModel.getDeleteObjectTestSuite());
         addTest(EmployeeBasicTestModel.getReadAllTestSuite());
         addTest(new ExpressionTestSuite());
-        
+
         addTest(InheritanceTestModel.getDeleteObjectTestSuite());
 
         TestSuite seqSuite = new TestSuite();
@@ -122,9 +122,9 @@ public class NativeModeCreatorTestModel extends TestModel {
             new CollectionsSystem().addDescriptors(newDBSession);
             new MappingSystem().addDescriptors(newDBSession);
             new AggregateSystem().addDescriptors(newDBSession);
-            
+
             getDatabaseSession().login();
-            
+
             new EmployeeNativeModeSystem().dropTableConstraints(getSession());
             new InheritanceSystem().dropTableConstraints(getSession());
         }
@@ -138,9 +138,9 @@ public class NativeModeCreatorTestModel extends TestModel {
 
         DatabasePlatform platform = getSession().getPlatform();
 
-        if (platform.isSybase() || platform.isSQLAnywhere() || platform.isOracle() || platform.isSQLServer() || platform.isInformix() || 
+        if (platform.isSybase() || platform.isSQLAnywhere() || platform.isOracle() || platform.isSQLServer() || platform.isInformix() ||
             platform.isMySQL() || platform.isDB2() || platform.isTimesTen() || platform.isSymfoware()) {
-            
+
             if (usesNativeSQL != null) {
                 platform.setUsesNativeSQL(usesNativeSQL.booleanValue());
             }
@@ -155,7 +155,7 @@ public class NativeModeCreatorTestModel extends TestModel {
         if (qualifier != null) {
             getSession().getLogin().setTableQualifier(qualifier);
         }
-        
+
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         getExecutor().removeConfigureSystem(new EmployeeSystem());
         getExecutor().removeConfigureSystem(new InheritanceSystem());

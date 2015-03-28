@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 /*
  * See document XSDHelperGenerateV2.doc for use case descriptions
  */
@@ -93,15 +93,15 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
         //assertEquals(1, sizeAfter);
         String controlSchema = getSchema(getControlFileNameSchemaExample3());
 
-        //String controlSchema = getSchema(getControlFileNameSchema());        
+        //String controlSchema = getSchema(getControlFileNameSchema());
         log("EXPECTED: \n" + controlSchema);
         log("ACTUAL: \n" + generatedSchema);
         // TODO: below type address is still appearing
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
+
         assertSchemaIdentical(getDocument(getControlFileNameSchemaExample3()), generatedSchemaDoc);
     }
 
@@ -122,16 +122,16 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
 
         String controlSchema = getSchema(getControlFileNameSchemaExample4());
 
-        //String controlSchema = getSchema(getControlFileNameSchema());        
+        //String controlSchema = getSchema(getControlFileNameSchema());
         log("EXPECTED: \n" + controlSchema);
         log("ACTUAL: \n" + generatedSchema);
         // TODO: below type address is still appearing
-        
+
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
+
         assertSchemaIdentical(getDocument(getControlFileNameSchemaExample4()), generatedSchemaDoc);
 
     }
@@ -157,16 +157,16 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
 
                 StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
+
         assertSchemaIdentical(getDocument(getControlFileNameSchema()), generatedSchemaDoc);
     }
 
     public List defineTypesFromSchema() {
         InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/schemas/customerPart2.xsd");
 
-        //InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/customer.xsd");        
+        //InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/customer.xsd");
         return xsdHelper.define(is, FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/schemas/");
     }
 

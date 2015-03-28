@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.localization;
 
 import java.text.MessageFormat;
@@ -31,7 +31,7 @@ public abstract class EclipseLinkLocalization {
      * Return the message for the given exception class and error number.
      */
     public static String buildMessage(String localizationClassName, String key, Object[] arguments) {
-    	return buildMessage(localizationClassName, key, arguments, true);
+        return buildMessage(localizationClassName, key, arguments, true);
     }
 
     /**
@@ -56,7 +56,7 @@ public abstract class EclipseLinkLocalization {
                 }
             }
         }
-        
+
         try {
             bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n." + localizationClassName + "Resource", Locale.getDefault());
             message = bundle.getString(key);
@@ -66,10 +66,10 @@ public abstract class EclipseLinkLocalization {
                 // Get the current language's NoTranslationForThisLocale message.
                 bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n.EclipseLinkLocalizationResource", Locale.getDefault());
                 String noTranslationMessage = bundle.getString("NoTranslationForThisLocale");
-               	return MessageFormat.format(message, arguments) + noTranslationMessage;
+                   return MessageFormat.format(message, arguments) + noTranslationMessage;
             }
         }
         return MessageFormat.format(message, arguments);
     }
-    
+
 }

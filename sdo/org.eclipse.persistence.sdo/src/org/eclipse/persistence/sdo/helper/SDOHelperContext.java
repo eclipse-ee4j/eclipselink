@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -55,7 +55,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * <b>Purpose:</b>
  * <ul>
- * <li>This class represents a local HelperContext.  The global 
+ * <li>This class represents a local HelperContext.  The global
  * HelperContext can be accessed as HelperProvider.getDefaultContext().</li>
  * </ul>
  * <b>Responsibilities:</b>
@@ -78,7 +78,7 @@ public class SDOHelperContext implements HelperContext {
     private String identifier;
     private Map<String, Object> properties;
 
-    // Each application will have its own helper context - it is assumed that application 
+    // Each application will have its own helper context - it is assumed that application
     // names/loaders are unique within each active server instance
     private static ConcurrentHashMap<Object, ConcurrentHashMap<String, HelperContext>> helperContexts = new ConcurrentHashMap<Object, ConcurrentHashMap<String, HelperContext>>();
     // Each application will have a Map of alias' to identifiers
@@ -141,22 +141,22 @@ public class SDOHelperContext implements HelperContext {
     private static final int JBOSS_EAR_OFFSET = JBOSS_EAR.length();
     private static final int JBOSS_TRIM_COUNT = 2;  // for stripping off the remaining '/}' chars
 
-    // allow users to provide application info 
+    // allow users to provide application info
     private static ApplicationResolver appResolver;
     private static boolean isAppResolverSet = false;
 
     /**
      * ADVANCED:
      * Used to set an ApplicationResolver instance that will be used to retrieve
-     * info pertaining to a given application, such as the application name, in 
+     * info pertaining to a given application, such as the application name, in
      * the case where our logic fails.
      *
      * This method can be called once and only once per active server instance.
      *
      * @param aResolver the ApplicationResolver instance that will be used to retrieve
-     *                  info pertaining to a given application.  Note that null is 
-     *                  considered a valid set operation. 
-     * @throws SDOException if more than one call is made to this method 
+     *                  info pertaining to a given application.  Note that null is
+     *                  considered a valid set operation.
+     * @throws SDOException if more than one call is made to this method
      *         in an active server instance.
      */
     public static void setApplicationResolver(ApplicationResolver aResolver) {
@@ -171,7 +171,7 @@ public class SDOHelperContext implements HelperContext {
     /**
      * Indicates if a call to setApplicationResolver has been made.
      *
-     * @return true if a prior call to setApplicationResolver has 
+     * @return true if a prior call to setApplicationResolver has
      *         been made, false otherwise
      */
     public static boolean isApplicationResolverSet() {
@@ -180,7 +180,7 @@ public class SDOHelperContext implements HelperContext {
 
     /**
      * Create a local HelperContext.  The current thread's context ClassLoader
-     * will be used to find static instance classes.  In OSGi environments the 
+     * will be used to find static instance classes.  In OSGi environments the
      * construct that takes a ClassLoader parameter should be used instead.
      */
     public SDOHelperContext() {
@@ -188,9 +188,9 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * Create a local HelperContext with the given identifier.  The current 
-     * thread's context ClassLoader will be used to find static instance 
-     * classes.  In OSGi environments the construct that takes a ClassLoader 
+     * Create a local HelperContext with the given identifier.  The current
+     * thread's context ClassLoader will be used to find static instance
+     * classes.  In OSGi environments the construct that takes a ClassLoader
      * parameter should be used instead.
      *
      * @param identifier The unique label for this HelperContext.
@@ -200,10 +200,10 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * Create a local HelperContext.  This constructor should be used in OSGi 
+     * Create a local HelperContext.  This constructor should be used in OSGi
      * environments.
      *
-     * @param aClassLoader This class loader will be used to find static 
+     * @param aClassLoader This class loader will be used to find static
      * instance classes.
      */
     public SDOHelperContext(ClassLoader aClassLoader) {
@@ -217,7 +217,7 @@ public class SDOHelperContext implements HelperContext {
      * should be used in OSGi environments.
      *
      * @param identifier The unique label for this HelperContext.
-     * @param aClassLoader This class loader will be used to find static 
+     * @param aClassLoader This class loader will be used to find static
      * instance classes.
      */
     public SDOHelperContext(String identifier, ClassLoader aClassLoader) {
@@ -227,7 +227,7 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * The underlying helpers for this instance will be instantiated 
+     * The underlying helpers for this instance will be instantiated
      * in this method.
      *
      * @param aClassLoader
@@ -323,8 +323,8 @@ public class SDOHelperContext implements HelperContext {
 
     /**
      * INTERNAL:
-     * Put a ClassLoader/HelperContext key/value pair in the Thread HelperContext 
-     * map.  If Thread.currentThread().getContextClassLoader() == key during 
+     * Put a ClassLoader/HelperContext key/value pair in the Thread HelperContext
+     * map.  If Thread.currentThread().getContextClassLoader() == key during
      * getHelperContext() call then the HelperContext (value) will be returned.
      * This method will overwrite an existing entry in the map with the same
      * ClassLoader key.
@@ -346,7 +346,7 @@ public class SDOHelperContext implements HelperContext {
 
     /**
      * INTERNAL:
-     * Retrieve the HelperContext for a given ClassLoader from the Thread 
+     * Retrieve the HelperContext for a given ClassLoader from the Thread
      * HelperContext map.
      *
      * @param key class loader
@@ -369,7 +369,7 @@ public class SDOHelperContext implements HelperContext {
 
     /**
      * INTERNAL:
-     * Remove a ClassLoader/HelperContext key/value pair from the Thread 
+     * Remove a ClassLoader/HelperContext key/value pair from the Thread
      * HelperContext map. If there are multiple local helper contexts associated
      * with this ClassLoader, they will all be removed from the map.
      *
@@ -398,17 +398,17 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Return the helper context for a given key.  The key will either
      * be a ClassLoader or a String (representing an application name).
-     * A new context will be created and put in the map if none exists 
+     * A new context will be created and put in the map if none exists
      * for the given key.
      *
      * The key is assumed to be non-null -  getDelegateKey should always
-     * return either a string representing the application name (for WLS, 
-     * WAS and JBoss if available) or a class loader.  This is relevant 
-     * since 'putIfAbsent' will throw a null pointer exception if the 
-     * key is null.   
+     * return either a string representing the application name (for WLS,
+     * WAS and JBoss if available) or a class loader.  This is relevant
+     * since 'putIfAbsent' will throw a null pointer exception if the
+     * key is null.
      */
     public static HelperContext getHelperContext() {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -422,12 +422,12 @@ public class SDOHelperContext implements HelperContext {
 
     /**
      * Return the local helper context associated with the given identifier, or
-     * create one if it does not already exist.  If identifier is an alias, the 
-     * value associated with it in the alias Map will be used as the identifier 
+     * create one if it does not already exist.  If identifier is an alias, the
+     * value associated with it in the alias Map will be used as the identifier
      * value.
      *
-     * @param identifier the identifier or alias to use for lookup/creation 
-     * @return HelperContext associated with identifier, or a new HelperContext 
+     * @param identifier the identifier or alias to use for lookup/creation
+     * @return HelperContext associated with identifier, or a new HelperContext
      * keyed on identifier if none eixsts
      */
     public static HelperContext getHelperContext(String identifier) {
@@ -480,8 +480,8 @@ public class SDOHelperContext implements HelperContext {
         // handle possible redeploy
         // the following block only applies to WAS - hence the loader name check
         if (contextMap != null && appName != null && classLoaderName.contains(WAS_CLASSLOADER_NAME)) {
-            // at this point there is an existing entry in the map - if the context is keyed 
-            // on application name we need to check to see if a redeployment occurred; in 
+            // at this point there is an existing entry in the map - if the context is keyed
+            // on application name we need to check to see if a redeployment occurred; in
             // that case the app names will match, but the class loaders will not
             ClassLoader currentAppLoader = appNameToClassLoaderMap.get(appName);
             if (currentAppLoader != null && currentAppLoader != appLoader) {
@@ -506,7 +506,7 @@ public class SDOHelperContext implements HelperContext {
 
                 if (classLoaderName.contains(WLS_CLASSLOADER_NAME)) {
                     // add a loader/context pair to the helperContexts map to handle case where appName
-                    // is no longer available, but the loader from a previous lookup is being used 
+                    // is no longer available, but the loader from a previous lookup is being used
                     helperContexts.put(appLoader, contextMap);
                     // add a notification listener to handle redeploy
                     addWLSNotificationListener(appName);
@@ -520,10 +520,10 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * Replaces the provided  helper context in the map of identifiers to 
-     * helper contexts for this application. ctx.getIdentifier()  will be 
-     * used to obtain the identifier value. If identifier is a key in the 
-     * the alias Map, i.e. was previously set as alias, the corresponding 
+     * Replaces the provided  helper context in the map of identifiers to
+     * helper contexts for this application. ctx.getIdentifier()  will be
+     * used to obtain the identifier value. If identifier is a key in the
+     * the alias Map, i.e. was previously set as alias, the corresponding
      * entry will be removed from the alias Map.
      *
      * @param ctx the HelperContext to be added to the context Map for
@@ -580,10 +580,10 @@ public class SDOHelperContext implements HelperContext {
 
     /**
      * INTERNAL:
-     * This method will return the MapKeyLookupResult instance to be used to 
+     * This method will return the MapKeyLookupResult instance to be used to
      * store/retrieve the global helper context for a given application.
      *
-     * OC4J classLoader levels: 
+     * OC4J classLoader levels:
      *      0 - APP.web (servlet/jsp) or APP.wrapper (ejb)
      *      1 - APP.root (parent for helperContext)
      *      2 - default.root
@@ -594,8 +594,8 @@ public class SDOHelperContext implements HelperContext {
      *      7 - jre.bootstrap:1.5.0_07 (with various J2SE versions)
      *
      * @return MapKeyLookupResult wrapping the application classloader for OC4J,
-     *         the application name for WebLogic and WebSphere, the archive file 
-     *         name for JBoss - if available; otherwise a MapKeyLookupResult 
+     *         the application name for WebLogic and WebSphere, the archive file
+     *         name for JBoss - if available; otherwise a MapKeyLookupResult
      *         wrapping Thread.currentThread().getContextClassLoader()
      */
     private static MapKeyLookupResult getContextMapKey(ClassLoader classLoader, String classLoaderName) {
@@ -632,7 +632,7 @@ public class SDOHelperContext implements HelperContext {
                     throw SDOException.errorInvokingWLSMethodReflectively(WLS_APPLICATION_NAME_GET_METHOD_NAME, WLS_EXECUTE_THREAD, e);
                 }
             }
-            // if ExecuteThread is null or doesn't return the app name, attempt 
+            // if ExecuteThread is null or doesn't return the app name, attempt
             // to use the user-set ApplicationResolver (if set)
             if (appName == null && appResolver != null) {
                 appName = appResolver.getApplicationName();
@@ -667,7 +667,7 @@ public class SDOHelperContext implements HelperContext {
             try {
                 weblogicContext = new InitialContext();
                 try {
-                    // The lookup string used depends on the context from which this class is being 
+                    // The lookup string used depends on the context from which this class is being
                     // accessed, i.e. servlet, EJB, etc.  Try java:comp/env lookup
                     wlsMBeanServer = (MBeanServer) weblogicContext.lookup(WLS_ENV_CONTEXT_LOOKUP);
                 } catch (NamingException e) {
@@ -687,8 +687,8 @@ public class SDOHelperContext implements HelperContext {
 
     /**
      * INTERNAL:
-     * This convenience method will look up a WebLogic execute thread from the runtime 
-     * MBean tree.  The execute thread contains application information.  This code 
+     * This convenience method will look up a WebLogic execute thread from the runtime
+     * MBean tree.  The execute thread contains application information.  This code
      * will use the name of the current thread to lookup the corresponding ExecuteThread.
      * The ExecuteThread will allow us to obtain the application name (and version, etc).
      *
@@ -727,8 +727,8 @@ public class SDOHelperContext implements HelperContext {
 
     /**
      * INTERNAL:
-     * Adds a notification listener to the ApplicationRuntimeMBean instance with "ApplicationName" 
-     * attribute equals to 'mapKey.applicationName'.  The listener will handle application 
+     * Adds a notification listener to the ApplicationRuntimeMBean instance with "ApplicationName"
+     * attribute equals to 'mapKey.applicationName'.  The listener will handle application
      * re-deployment.
      *
      * If any errors occur, we will fail silently, i.e. the listener will not be added.
@@ -768,7 +768,7 @@ public class SDOHelperContext implements HelperContext {
 
     /**
      * INTERNAL:
-     * The listener will handle application re-deployment.  If any errors occur, we will 
+     * The listener will handle application re-deployment.  If any errors occur, we will
      * fail silently, i.e. the listener will not be added.  Since we cannot register for
      * notifications for a particular application, and hence recieve notifications for
      * all apps that are redeployed, we only add the listener once - each time we receive
@@ -796,7 +796,7 @@ public class SDOHelperContext implements HelperContext {
      * INTERNAL:
      * This class will be handed in as a parameter when adding a JBoss notification listener.
      * The purpose of this class is to restrict notifications to "stop", i.e. we don't
-     * care about "destroy", "start" etc. 
+     * care about "destroy", "start" etc.
      *
      */
     public static class MyNotificationFilter extends NotificationFilterSupport {
@@ -837,7 +837,7 @@ public class SDOHelperContext implements HelperContext {
 
         /**
          * This constructor will set 'appName' - typically used when running in
-         * an active WebLogic instance. 
+         * an active WebLogic instance.
          *
          * @param appName
          * @param server
@@ -877,7 +877,7 @@ public class SDOHelperContext implements HelperContext {
      * ADVANCED
      * Promote this helper context to be the default or global one.
      * This will completely replace the existing default context including
-     * all types and properties defined. 
+     * all types and properties defined.
      */
     public void makeDefaultContext() {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -933,17 +933,17 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * Attempt to return a MapKeyLookupResult instance wrapping the application name and 
+     * Attempt to return a MapKeyLookupResult instance wrapping the application name and
      * application loader based on a given WAS classloader.  Here we will traverse up the
-     * loader hierarchy looking for the top-most application loader.  
+     * loader hierarchy looking for the top-most application loader.
      *
-     * For WAS, the application loader's toString (and those of it's children) will 
+     * For WAS, the application loader's toString (and those of it's children) will
      * contain "[app:".
      *
      * @param loader
-     * @return a MapKeyLookupResult instance wrapping application name/loader if 
-     *         successfully retrieved (i.e. at least one loader exists in the 
-     *         hierarchy with toString containing "[app:"), or a MapKeyLookupResult 
+     * @return a MapKeyLookupResult instance wrapping application name/loader if
+     *         successfully retrieved (i.e. at least one loader exists in the
+     *         hierarchy with toString containing "[app:"), or a MapKeyLookupResult
      *         instance wrapping the given loader if not found
      */
     private static MapKeyLookupResult getContextMapKeyForWAS(ClassLoader loader) {
@@ -1005,7 +1005,7 @@ public class SDOHelperContext implements HelperContext {
     /**
      * Attempt to get the application name (archive file name) based on a given JBoss classloader.
      *
-     * Here is an example toString result of the classloader which loaded the application in JBoss:   
+     * Here is an example toString result of the classloader which loaded the application in JBoss:
      * BaseClassLoader@1316dd{vfszip:/ade/xidu_j2eev5/oracle/work/utp/resultout/functional/jrf/
      *       jboss-jrfServer/deploy/jrftestapp.jar/}
      * or {vfsfile:/net/stott18.ca.oracle.com/scratch/xidu/view_storage/xidu_j2eev5/work/jboss/
@@ -1015,14 +1015,14 @@ public class SDOHelperContext implements HelperContext {
      *
      * Assumptions:
      * 1 - A given toString may contain both .ear and .jar, or .ear and .war, i.e.
-     *     "{vfszip:/.../xxx.ear/.../xxx.war/}".  In this case we want to return 
+     *     "{vfszip:/.../xxx.ear/.../xxx.war/}".  In this case we want to return
      *     xxx.ear as the application name.
      * 2 - A given toString will end in '/}'.
      * 3 - A toString containing the application name will have one of "vfszip:" or "vfsfile:".
      *
      * @param loaderToString the toString of the loader being processed
-     * @return application name (archive file name) if successfully retrieved (i.e. loader 
-     *         exists in the hierarchy with toString containing "vfszip:" or "vfsfile:") 
+     * @return application name (archive file name) if successfully retrieved (i.e. loader
+     *         exists in the hierarchy with toString containing "vfszip:" or "vfsfile:")
      *         or null
      */
     private static String getApplicationNameFromJBossClassLoader(String loaderToString) {
@@ -1048,14 +1048,14 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * Attempt to return a MapKeyLookupResult instance wrapping the archive file name and 
+     * Attempt to return a MapKeyLookupResult instance wrapping the archive file name and
      * application loader based on a given JBoss classloader.  Here we will traverse up the
-     * loader hierarchy looking for the top-most application loader.  
+     * loader hierarchy looking for the top-most application loader.
      *
      * @param loader
-     * @return a MapKeyLookupResult instance wrapping archive file name/loader if 
-     *         successfully retrieved (i.e. at least one loader exists in the 
-     *         hierarchy with toString containing containing "vfszip:" or "vfsfile:"), 
+     * @return a MapKeyLookupResult instance wrapping archive file name/loader if
+     *         successfully retrieved (i.e. at least one loader exists in the
+     *         hierarchy with toString containing containing "vfszip:" or "vfsfile:"),
      *         or a MapKeyLookupResult instance wrapping the given loader if not found
      */
     private static MapKeyLookupResult getContextMapKeyForJBoss(ClassLoader loader) {
@@ -1092,7 +1092,7 @@ public class SDOHelperContext implements HelperContext {
      * Indicates if a given JBoss class loader contains an archive file name; i.e. is an application
      * loader.
      *
-     * Here is an example toString result of the classloader which loaded the application in JBoss:   
+     * Here is an example toString result of the classloader which loaded the application in JBoss:
      * BaseClassLoader@1316dd{vfszip:/ade/xidu_j2eev5/oracle/work/utp/resultout/functional/jrf/
      *       jboss-jrfServer/deploy/jrftestapp.jar/}
      * or {vfsfile:/net/stott18.ca.oracle.com/scratch/xidu/view_storage/xidu_j2eev5/work/jboss/
@@ -1123,12 +1123,12 @@ public class SDOHelperContext implements HelperContext {
 
     /**
      * Return true if a HelperContext corresponding to this identifier or alias
-     * already exists, else false.  If identifer is an alias, the corresponding 
+     * already exists, else false.  If identifer is an alias, the corresponding
      * value in the alias Map will be used as the identifier for the lookup.
      *
      * @param identifier the alias or identifier used to lookup a helper context
-     * @return true if an entry exists in the helper context map for identifier (or 
-     * the associated identifier value if identifier is an alias), false otherwise. 
+     * @return true if an entry exists in the helper context map for identifier (or
+     * the associated identifier value if identifier is an alias), false otherwise.
      */
     public static boolean hasHelperContext(String identifier) {
         String id = identifier;
@@ -1150,18 +1150,18 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * Add an alias to identifier pair to the alias Map for the current 
-     * application.  
+     * Add an alias to identifier pair to the alias Map for the current
+     * application.
      *
-     * @param identifier assumed to be a key in the helper context Map 
-     * @param alias the alias to be associated with identifier 
+     * @param identifier assumed to be a key in the helper context Map
+     * @param alias the alias to be associated with identifier
      */
     public static void addAlias(String identifier, String alias) {
         getAliasMap().put(alias, identifier);
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Returns the map of alias' to identifiers for the current application.
      *
      * @return Map of alias' to identifiers for the current application
@@ -1171,7 +1171,7 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Returns the map of alias' to identifiers for the current application.
      *
      * @param mapKey application name or classloader used to lookup the alias map
@@ -1226,11 +1226,11 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * Return the value stored in the properties Map for a given 
+     * Return the value stored in the properties Map for a given
      * name, or null if an entry for name does not exist.
      *
      * @param name the name of the property to be returned
-     * @return the value associated with name, or null 
+     * @return the value associated with name, or null
      */
     public Object getProperty(String name) {
         return getProperties().get(name);

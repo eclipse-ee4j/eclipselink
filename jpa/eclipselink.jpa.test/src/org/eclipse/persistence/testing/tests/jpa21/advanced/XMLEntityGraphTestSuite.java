@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/13/2013-2.5 Guy Pelletier 
+ *     02/13/2013-2.5 Guy Pelletier
  *       - 397772: JPA 2.1 Entity Graph Support (XML support)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.HashMap;
@@ -31,12 +31,12 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.xml.Project;
 
 public class XMLEntityGraphTestSuite extends JUnitTestCase {
     public XMLEntityGraphTestSuite() {}
-    
+
     public XMLEntityGraphTestSuite(String name) {
         super(name);
         setPuName("MulitPU-4");
     }
-    
+
     /**
      * Return the the persistence unit name for this test suite.
      */
@@ -44,23 +44,23 @@ public class XMLEntityGraphTestSuite extends JUnitTestCase {
     public String getPersistenceUnitName() {
         return "MulitPU-4";
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("XMLEntityGraphTestSuite");
-        
-        // These tests call stored procedures that return a result set. 
+
+        // These tests call stored procedures that return a result set.
         suite.addTest(new XMLEntityGraphTestSuite("testSimpleGraph"));
         return suite;
     }
-    
+
     /**
-     * Tests a NamedStoredProcedureQuery using a positional parameter returning 
-     * a single result set. 
+     * Tests a NamedStoredProcedureQuery using a positional parameter returning
+     * a single result set.
      */
     public void testSimpleGraph() {
         EntityManager em = createEntityManager();
-        
+
         Employee result = (Employee) em.createQuery("Select e from XMLEmployee e join treat(e.projects as XMLLargeProject) p where p.executive is Not Null and e != p.executive").setHint(QueryHints.JPA_FETCH_GRAPH, em.getEntityGraph("XMLEmployee")).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
         assertFalse("fetchgroup failed to be applied: department is loaded", util.isLoaded(result, "department"));

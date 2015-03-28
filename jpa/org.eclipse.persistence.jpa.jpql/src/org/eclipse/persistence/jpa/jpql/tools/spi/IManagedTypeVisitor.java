@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,24 +27,24 @@ package org.eclipse.persistence.jpa.jpql.tools.spi;
  */
 public interface IManagedTypeVisitor extends IExternalForm {
 
-	/**
-	 * Visits the given {@link IEmbeddable} object.
-	 *
-	 * @param embeddable The embeddable object to visit
-	 */
-	void visit(IEmbeddable embeddable);
+    /**
+     * Visits the given {@link IEmbeddable} object.
+     *
+     * @param embeddable The embeddable object to visit
+     */
+    void visit(IEmbeddable embeddable);
 
-	/**
-	 * Visits the given {@link IEntity} object.
-	 *
-	 * @param entity The entity object to visit
-	 */
-	void visit(IEntity entity);
+    /**
+     * Visits the given {@link IEntity} object.
+     *
+     * @param entity The entity object to visit
+     */
+    void visit(IEntity entity);
 
-	/**
-	 * Visits the given {@link IMappedSuperclass} object.
-	 *
-	 * @param mappedSuperclass The mapped superclass object to visit
-	 */
-	void visit(IMappedSuperclass mappedSuperclass);
+    /**
+     * Visits the given {@link IMappedSuperclass} object.
+     *
+     * @param mappedSuperclass The mapped superclass object to visit
+     */
+    void visit(IMappedSuperclass mappedSuperclass);
 }

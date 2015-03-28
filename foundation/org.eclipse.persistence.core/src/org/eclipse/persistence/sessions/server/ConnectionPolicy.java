@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     ailitchev - bug  235433: Can't customize ConnectionPolicy through JPA + some comments.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.server;
 
 import java.util.*;
@@ -29,7 +29,7 @@ import org.eclipse.persistence.internal.localization.*;
  * session will interact with the internal or external JDBC connection pool/data
  * source. The default ConnectionPolicy is held on the ServerSession but this
  * can be overridden for any specific client session when it is acquired.
- * 
+ *
  * @see ServerSession#getDefaultConnectionPolicy()
  * @see ServerSession#acquireClientSession(ConnectionPolicy)
  * @see ServerSession#acquireClientSession(ConnectionPolicy, Map)
@@ -43,7 +43,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      * connections for each client session.
      */
     protected Login login;
-    
+
     /**
      * Name of the pool to be used.
      * If neither pool name nor login provided then default pool will be used.
@@ -51,7 +51,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      * create connection which the ClientSession will use.
      */
     protected String poolName;
-    
+
     /**
      * Determines if the write/exclusive connection is acquired only when first
      * requested (lazy, this is the default) or immediately when the client
@@ -325,7 +325,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      * If set to true the acquired client session should acquire an exclusive connection
      * for all database interaction.  Currently this is only supported with Isolated
      * data, but required for Oracle VPD support.
-     * 
+     *
      * This method has been replaced with setExclusiveMode method:
      * true corresponds to ExclusiveMode.Isolated,
      * false - to ExclusiveMode.Transactional.
@@ -344,7 +344,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      * Returns true if the acquired client session should acquire an exclusive connection
      * for all database interaction.  Currently this is only supported with Isolated
      * data, but required for Oracle VPD support.
-     * 
+     *
      * This method has been replaced with isExclusiveIsolated method.
      * @deprecated
      */

@@ -21,7 +21,7 @@
  *       - 296078: JPA 2.0 with @MapsId, em.persist generates Internal Exception IllegalArgumentException
  *     02/02/2011-2.3 Chris Delahunt
  *       - 336122: ValidationException thrown for JoinColumns on OneToMany with composite primary key
- *     01/06/2015-2.6 Dalia Abo Sheasha 
+ *     01/06/2015-2.6 Dalia Abo Sheasha
  *       - 454917: Informix tables need to use INT fields when referencing SERIAL types.
  ******************************************************************************/
 
@@ -66,7 +66,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildGOLFCLUBSHAFTTable());
         addTableDefinition(buildGOLFCLUBTable());
         addTableDefinition(buildGOLFCLUBORDERTable());
-	}
+    }
 
     public static TableDefinition buildBOOKIETable() {
         TableDefinition table = new TableDefinition();

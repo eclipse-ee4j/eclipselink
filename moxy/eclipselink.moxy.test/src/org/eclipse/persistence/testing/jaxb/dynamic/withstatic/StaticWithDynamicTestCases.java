@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -51,7 +51,7 @@ public class StaticWithDynamicTestCases extends JAXBWithJSONTestCases {
 
     @Override
     protected Object getControlObject() {
-        DynamicEntity customer = ((DynamicJAXBContext)jaxbContext).newDynamicEntity(PACKAGE + "." + "Customer");    
+        DynamicEntity customer = ((DynamicJAXBContext)jaxbContext).newDynamicEntity(PACKAGE + "." + "Customer");
         DynamicEntity phone1 = ((DynamicJAXBContext)jaxbContext).newDynamicEntity(PACKAGE + "." + "PhoneNumber");
         DynamicEntity phone2 = ((DynamicJAXBContext)jaxbContext).newDynamicEntity(PACKAGE + "." + "PhoneNumber");
         DynamicEntity phone3 = ((DynamicJAXBContext)jaxbContext).newDynamicEntity(PACKAGE + "." + "PhoneNumber");
@@ -61,25 +61,25 @@ public class StaticWithDynamicTestCases extends JAXBWithJSONTestCases {
         phone2.set("type", "home");
         phone3.set("value", "555-CELL");
         phone3.set("type", "cell");
-        
+
         ArrayList phones = new ArrayList();
         phones.add(phone1);
         phones.add(phone2);
         customer.set("phoneNumber", phones);
-        
+
         AddressWithPhone address = new AddressWithPhone();
         address.city = "Any Town";
         address.street = "123 Some Street";
         address.phone = phone3;
-        
+
         customer.set("address", address);
         customer.set("name", "Jane Doe");
-        
+
         return customer;
     }
-    
-    
-    
+
+
+
     void setupContext() throws Exception {
         classLoader = Thread.currentThread().getContextClassLoader();
         InputStream iStream = classLoader.getResourceAsStream(NO_ADDRESS);
@@ -95,21 +95,21 @@ public class StaticWithDynamicTestCases extends JAXBWithJSONTestCases {
         setProject(xmlContext.getSession(0).getProject());
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        
+
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "value");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "value");
     }
-    
+
     public void xmlToObjectTest(Object testObject, Object controlObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");
         log(controlObject.toString());
         log("Actual:");
         log(testObject.toString());
-        
+
         compareDynamicEntities(testObject, controlObject);
     }
-    
+
     public void jsonToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");
@@ -146,6 +146,6 @@ public class StaticWithDynamicTestCases extends JAXBWithJSONTestCases {
         } else {
             assertEquals(testObject, controlObject);
         }
-        
-    }    
+
+    }
 }

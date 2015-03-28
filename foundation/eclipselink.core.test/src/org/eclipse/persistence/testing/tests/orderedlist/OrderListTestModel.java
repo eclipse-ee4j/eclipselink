@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/05/2009 Andrei Ilitchev 
+ *     05/05/2009 Andrei Ilitchev
  *       - JPA 2.0 - OrderedList support.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.orderedlist;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class OrderListTestModel extends TestModel {
      * Indicates whether to run configuration that don't use listOrderField (useListOrderField==false).
      * By default is set to false.
      * Set it to true for debugging:
-     * if something fails with listOrderField (useListOrderField==true) see if it also fails without it. 
+     * if something fails with listOrderField (useListOrderField==true) see if it also fails without it.
      */
     static boolean shouldRunWithoutListOrderField = false;
 
@@ -61,28 +61,28 @@ public class OrderListTestModel extends TestModel {
      * There is a single top level model (contained in TestRunModel) that contains multiple models.
      */
     boolean isTopLevel;
-    
+
     /*
      * Top level model loops through all possible combinations of the attributes below and decides whether the combination should run.
-     * Foe each combination of values that should run a model is created and added to the top level model. 
+     * Foe each combination of values that should run a model is created and added to the top level model.
      */
     boolean useListOrderField;
     boolean isPrivatelyOwned;
-    boolean useIndirection; 
+    boolean useIndirection;
     boolean useSecondaryTable;
     boolean useVarcharOrder;
     ChangeTracking changeTracking;
     OrderCorrectionType orderCorrectionType;
     boolean shouldOverrideContainerPolicy;
     JoinFetchOrBatchRead joinFetchOrBatchRead;
-    
+
     /*
      * Variables below used by setup / reset:
      * setup saves there the original state of something, sets a new state required for testing,
      * then reset brings back the saved original state.
      */
     Map<Class, ObjectChangeTrackingPolicy> originalChangeTrackingPolicies;
-        
+
     /*
      * Constants used by WhereToAdd tests.
      */
@@ -105,11 +105,11 @@ public class OrderListTestModel extends TestModel {
     }
 
     void addTestModel(DatabasePlatform platform) {
-        if (shouldAddModel(platform)) {            
+        if (shouldAddModel(platform)) {
             addTest(new OrderListTestModel(useListOrderField, useIndirection, isPrivatelyOwned, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead));
         }
     }
-    
+
     /*
      * Loops through all possible model configurations and adds those for which shouldAddModel returns true.
      */
@@ -176,7 +176,7 @@ public class OrderListTestModel extends TestModel {
                                 changeTracking = ChangeTracking.values()[i];
                                 for(int j=0; j < OrderCorrectionType.values().length; j++) {
                                     orderCorrectionType = OrderCorrectionType.values()[j];
-                                    do{ 
+                                    do{
                                         for(int k=0; k < JoinFetchOrBatchRead.values().length; k++) {
                                             joinFetchOrBatchRead = JoinFetchOrBatchRead.values()[k];
                                             addTestModel(platform);
@@ -202,7 +202,7 @@ public class OrderListTestModel extends TestModel {
      * Cuts the models with invalid configurations, configurations that don't make any difference.
      */
     boolean shouldAddModel(DatabasePlatform platform) {
-        // listOrderField is not used 
+        // listOrderField is not used
         if(!useListOrderField) {
             // explicitly asked not to run the model that don't use listOrderField.
             if(!shouldRunWithoutListOrderField) {
@@ -223,7 +223,7 @@ public class OrderListTestModel extends TestModel {
         // There is an Eclipselink bug: when using old Oracle-style (+) outer joins the inner joins between
         // primary and secondary tables substituted by outer joins (employee outer join manager causes manager's salary to outer join to manager).
         // If there happens to be another outer join to the secondary table (in useSecondaryTable case manager_id is in salary table)
-        // then suddenly the secondary table auto joined to two tables - that causes exception: 
+        // then suddenly the secondary table auto joined to two tables - that causes exception:
         // ORA-01417: a table may be outer joined to at most one other table.
         // Now by default Oracle joins in FROM clause, TimesTen can't, therefore TimesTen can't run this model.
         //
@@ -235,10 +235,10 @@ public class OrderListTestModel extends TestModel {
         if (useVarcharOrder && !platform.supportsAutoConversionToNumericForArithmeticOperations()) {
             return false;
         }
-        
+
         return true;
     }
-    
+
     public OrderListTestModel(boolean useListOrderField, boolean useIndirection, boolean isPrivatelyOwned, boolean useSecondaryTable, boolean useVarcharOrder, ChangeTracking changeTracking, OrderCorrectionType orderCorrectionType, boolean shouldOverrideContainerPolicy, JoinFetchOrBatchRead joinFetchOrBatchRead) {
         this.useListOrderField = useListOrderField;
         this.useIndirection = useIndirection;
@@ -249,9 +249,9 @@ public class OrderListTestModel extends TestModel {
         this.orderCorrectionType = orderCorrectionType;
         this.shouldOverrideContainerPolicy = shouldOverrideContainerPolicy;
         this.joinFetchOrBatchRead = joinFetchOrBatchRead;
-        
+
         setDescription("This model tests ordered list");
-        
+
         setName("");
         addToName(useListOrderField ? "" : "NO_ORDER_LIST");
         addToName(useIndirection ? "" : "NO_INDIRECTION");
@@ -269,7 +269,7 @@ public class OrderListTestModel extends TestModel {
             setName(getName() + " " + strToAdd);
         }
     }
-    
+
     public void addRequiredSystems() {
         if(!isTopLevel) {
             addRequiredSystem(new EmployeeSystem(useListOrderField, useIndirection, isPrivatelyOwned, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead));
@@ -300,7 +300,7 @@ public class OrderListTestModel extends TestModel {
             addTest(new TranspositionTest(new int[]{1, 3, 5}, new int[]{5, 1, 3}, false));
             addTest(new TranspositionTest(new int[]{1, 3, 5}, new int[]{5, 1, 3}, true));
             addTest(new TranspositionMergeTest(new int[]{1, 3, 5}, new int[]{5, 1, 3}));
-            // currently only DirectCollectionMapping supports nulls. 
+            // currently only DirectCollectionMapping supports nulls.
             // bug 278126: Aggregate and Direct collections containing nulls read incorrectly if join is used.
             // When the bug is fixed the tests should work and condition should be removed.
             // The bug is partially fixed - the only case result is wrong for DirectCollectionMapping
@@ -342,13 +342,13 @@ public class OrderListTestModel extends TestModel {
                     addTest(new BreakOrderCorrectionTest(true));
                 }
             }
-            
+
             addTest(new CreateManagersTest());
         } else {
             addModels();
         }
     }
-    
+
     public void setup() {
         if(!isTopLevel) {
             if(changeTracking == ChangeTracking.ATTRIBUTE) {
@@ -357,16 +357,16 @@ public class OrderListTestModel extends TestModel {
 
                 originalChangeTrackingPolicies.put(Employee.class, getSession().getDescriptor(Employee.class).getObjectChangePolicy());
                 getSession().getDescriptor(Employee.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
-        
+
                 originalChangeTrackingPolicies.put(Project.class, getSession().getDescriptor(Project.class).getObjectChangePolicy());
                 getSession().getDescriptor(Project.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
-        
+
                 originalChangeTrackingPolicies.put(SmallProject.class, getSession().getDescriptor(SmallProject.class).getObjectChangePolicy());
                 getSession().getDescriptor(SmallProject.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
-        
+
                 originalChangeTrackingPolicies.put(LargeProject.class, getSession().getDescriptor(LargeProject.class).getObjectChangePolicy());
                 getSession().getDescriptor(LargeProject.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
-        
+
                 // currently attribute change tracking is incompatible with AggregateCollectionMapping
                 if(this.changeTracking != ChangeTracking.ATTRIBUTE) {
                     originalChangeTrackingPolicies.put(PhoneNumber.class, getSession().getDescriptor(PhoneNumber.class).getObjectChangePolicy());
@@ -399,7 +399,7 @@ public class OrderListTestModel extends TestModel {
      *   PhoneNumbers (for empManager.phoneNumbers).
      * That allows to easily create tests that test all mappings using list order field:
      *   OneToMany, UnidirectionalOneToMany, ManyToMany, DirectCollection, AggregateCollection.
-     *   
+     *
      * Note that (for debugging purposes) some of these mappings could be "switched off" by setting the corresponding "use..." flag to false.
      * Don't do that in INNER_JOIN case - or no objects will be ever read back from db.
      */
@@ -409,9 +409,9 @@ public class OrderListTestModel extends TestModel {
         boolean useProjects;
         boolean useResponsibilities;
         boolean usePhones;
-        
+
         String errorMsg;
-        
+
         BaseTest() {
             this.useManagedEmployees = true;
             this.useChildren = true;
@@ -419,16 +419,16 @@ public class OrderListTestModel extends TestModel {
             this.useResponsibilities = true;
             this.usePhones = true;
             setValidFlags();
-            
+
             errorMsg = "";
-            
+
             setName(getShortClassName());
         }
 
         /*
          * Sets some of useManagedEmployees, useChildren, useProjects, useResponsibilities, usePhones to false
          * as required by the flags copied from OrderListTestModel.this.
-         * If changing this method change validateFlags method accordingly. 
+         * If changing this method change validateFlags method accordingly.
          */
         protected void setValidFlags() {
             // currently attribute change tracking is incompatible with AggregateCollectionMapping
@@ -444,7 +444,7 @@ public class OrderListTestModel extends TestModel {
         /*
          * Validate useManagedEmployees, useChildren, useProjects, useResponsibilities, usePhones flags
          * so their value don't contradict the flags copied from OrderListTestModel.this.
-         * If changing this method change setValidFlags method accordingly. 
+         * If changing this method change setValidFlags method accordingly.
          */
         protected void validateFlags() {
             // currently attribute change tracking is incompatible with AggregateCollectionMapping
@@ -464,9 +464,9 @@ public class OrderListTestModel extends TestModel {
                 throw new TestProblemException(errorMsg);
             }
         }
-        
+
         /*
-         * Debugging: putting a breakpoint at the first line of this method is a good place to set some of 
+         * Debugging: putting a breakpoint at the first line of this method is a good place to set some of
          * useManagedEmployees, useChildren, useProjects, useResponsibilities, usePhones to false if desired.
          */
         public void setup() {
@@ -475,7 +475,7 @@ public class OrderListTestModel extends TestModel {
             }
             validateFlags();
         }
-        
+
         public void reset() {
             if(useManagedEmployees) {
                 if(useSecondaryTable) {
@@ -502,9 +502,9 @@ public class OrderListTestModel extends TestModel {
 
             getSession().executeNonSelectingSQL("DELETE FROM OL_SALARY");
             getSession().executeNonSelectingSQL("DELETE FROM OL_EMPLOYEE");
-            
+
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-            
+
             errorMsg = "";
         }
 
@@ -536,11 +536,11 @@ public class OrderListTestModel extends TestModel {
                 if(prefix.length() > 3) {
                     prefix = prefix.substring(0, 3);
                 }
-                list.add(new PhoneNumber(prefix, iString));                
+                list.add(new PhoneNumber(prefix, iString));
             }
             return list;
         }
-        
+
         /*
          * Creates a list of nulls that could be added to manager: Employee, Child, Project, Responsibility (String), PhoneNumber.
          */
@@ -559,11 +559,11 @@ public class OrderListTestModel extends TestModel {
                 list.add(null);
             }
             if(usePhones) {
-                list.add(null);                
+                list.add(null);
             }
             return list;
         }
-        
+
         /*
          * Adds a list of objects to empManager: Employee, Child, Project, Responsibility (String), PhoneNumber.
          * The list should be obtained from getFrom, create, removeFrom or setInto methods.
@@ -586,7 +586,7 @@ public class OrderListTestModel extends TestModel {
                 empManager.addPhoneNumber((PhoneNumber)list.get(i++));
             }
         }
-        
+
         /*
          * Adds a list of objects to empManager at index: Employee, Child, Project, Responsibility (String), PhoneNumber.
          * The list should be obtained from getFrom, create, removeFrom or setInto methods.
@@ -609,7 +609,7 @@ public class OrderListTestModel extends TestModel {
                 empManager.addPhoneNumber(index, (PhoneNumber)list.get(i++));
             }
         }
-        
+
         /*
          * Adds a list of objects to empManager at index: Employee, Child, Project, Responsibility (String), PhoneNumber.
          * The list should be obtained from getFrom, create, removeFrom or setInto methods.
@@ -632,7 +632,7 @@ public class OrderListTestModel extends TestModel {
                 empManager.addPhoneNumber(index, (PhoneNumber)list.get(i++));
             }
         }
-        
+
         /*
          * Removes a list of objects from empManager at index.
          * Returns list of removed objects: Employee, Child, Project, Responsibility (String), PhoneNumber.
@@ -656,7 +656,7 @@ public class OrderListTestModel extends TestModel {
             }
             return list;
         }
-        
+
         /*
          * Removes a list of objects from empManager at index.
          * Returns list of removed objects: Employee, Child, Project, Responsibility (String), PhoneNumber.
@@ -680,7 +680,7 @@ public class OrderListTestModel extends TestModel {
             }
             return list;
         }
-        
+
         /*
          * Gets a list of objects from empManager at index: Employee, Child, Project, Responsibility (String), PhoneNumber.
          */
@@ -703,7 +703,7 @@ public class OrderListTestModel extends TestModel {
             }
             return list;
         }
-        
+
         /*
          * Sets a list of objects into empManager at index.
          * Returns list of removed objects: Employee, Child, Project, Responsibility (String), PhoneNumber.
@@ -728,7 +728,7 @@ public class OrderListTestModel extends TestModel {
             }
             return listOut;
         }
-        
+
         /*
          * Sets a list of objects into empManager at index.
          * Returns list of removed objects: Employee, Child, Project, Responsibility (String), PhoneNumber.
@@ -753,7 +753,7 @@ public class OrderListTestModel extends TestModel {
             }
             return listOut;
         }
-        
+
         /*
          * Sets lists of objects into empManager using setManagedEmployees, setChildren, setProjects, setResponsibilityList, setPhoneNumbers methods.
          * The list should be created with createList method.
@@ -800,7 +800,7 @@ public class OrderListTestModel extends TestModel {
                 empManager.setPhoneNumbers(listOfLists.get(i++));
             }
         }
-        
+
         /*
          * Updates a list of objects that could be added to manager: Employee, Child, Project, Responsibility (String), PhoneNumber.
          * Note that indexForName here is used as part of a state of the object being updated - not as its position in any list.
@@ -834,7 +834,7 @@ public class OrderListTestModel extends TestModel {
                 phone.setNumber(iString);
             }
         }
-        
+
         /*
          * Registers in uow a list of mapped non-aggregated objects that could be added to manager: Employee, Child, Project.
          * Returns a list that contains clones that could be updated.
@@ -859,7 +859,7 @@ public class OrderListTestModel extends TestModel {
             }
             return listClone;
         }
-        
+
         /*
          * Creates a list of Lists  that could be set to manager: List<Employee>, Vector, List<Project>, List<String>, List<PhoneNumber>.
          */
@@ -882,7 +882,7 @@ public class OrderListTestModel extends TestModel {
             }
             return listOfLists;
         }
-        
+
         /*
          * Adds a list of objects to listOfLists: Employee, Child, Project, Responsibility (String), PhoneNumber.
          * listOfLists should be created with createList method.
@@ -905,10 +905,10 @@ public class OrderListTestModel extends TestModel {
             if(usePhones) {
                 listOfLists.get(i).add(list.get(i++));
             }
-        }        
+        }
 
         /*
-         * Breaks order in the db by assigning wrong values to order fields 
+         * Breaks order in the db by assigning wrong values to order fields
          */
         String getManagegedEmployeesOrderTable() {
             return useSecondaryTable ? "OL_SALARY" : "OL_EMPLOYEE";
@@ -978,10 +978,10 @@ public class OrderListTestModel extends TestModel {
                 breakPhonesOrder();
             }
         }
-        
+
         /*
          * Set the new OrderCorrectionType, return the old one.
-         * Verify that the old modes are the same for all mappings. 
+         * Verify that the old modes are the same for all mappings.
          */
         OrderCorrectionType changeOrderCorrectionType(OrderCorrectionType mode) {
             OrderCorrectionType oldMode = null;
@@ -1014,10 +1014,10 @@ public class OrderListTestModel extends TestModel {
             return currOldMode;
         }
         OrderCorrectionType changeOrderCorrectionType(CollectionMapping mapping, OrderCorrectionType mode) {
-            OrderedListContainerPolicy policy = (OrderedListContainerPolicy)mapping.getContainerPolicy(); 
+            OrderedListContainerPolicy policy = (OrderedListContainerPolicy)mapping.getContainerPolicy();
             OrderCorrectionType oldMode = policy.getOrderCorrectionType();
             policy.setOrderCorrectionType(mode);
-            
+
             OrderedListContainerPolicy queryPolicy = null;
             if(mapping.getSelectionQuery().isReadAllQuery()) {
                 queryPolicy = (OrderedListContainerPolicy)((ReadAllQuery)mapping.getSelectionQuery()).getContainerPolicy();
@@ -1033,7 +1033,7 @@ public class OrderListTestModel extends TestModel {
             }
             return oldMode;
         }
-        
+
         /*
          * Verify IndirectList.isListOrderBrokenInDb flag value.
          * Throw exception if it's not expected one.
@@ -1064,13 +1064,13 @@ public class OrderListTestModel extends TestModel {
             String localErrorMsg = "";
             ClassDescriptor desc = getSession().getDescriptor(Employee.class);
             CollectionMapping mapping = (CollectionMapping)desc.getMappingForAttributeName(attribute);
-            Object attributeValue = mapping.getRealAttributeValueFromObject(empManager, getAbstractSession()); 
+            Object attributeValue = mapping.getRealAttributeValueFromObject(empManager, getAbstractSession());
             if(((IndirectList)attributeValue).isListOrderBrokenInDb() != expected) {
                 localErrorMsg = attribute + "; ";
             }
             return localErrorMsg;
         }
-        
+
         /*
          * Indicates whether all lists were read in
          */
@@ -1084,31 +1084,31 @@ public class OrderListTestModel extends TestModel {
                 list = empManager.getManagedEmployees();
                 isInstantiated = isInstantiated(list);
                 str = (isInstantiated ? instantiatedStr : notInstantiatedStr);
-                str += "managedEmployees; "; 
+                str += "managedEmployees; ";
             }
             if(useChildren) {
                 list = empManager.getChildren();
                 isInstantiated = isInstantiated(list);
                 str = (isInstantiated ? instantiatedStr : notInstantiatedStr);
-                str += "children; "; 
+                str += "children; ";
             }
             if(useProjects) {
                 list = empManager.getProjects();
                 isInstantiated = isInstantiated(list);
                 str = (isInstantiated ? instantiatedStr : notInstantiatedStr);
-                str += "projects; "; 
+                str += "projects; ";
             }
             if(useResponsibilities) {
                 list = empManager.getResponsibilitiesList();
                 isInstantiated = isInstantiated(list);
                 str = (isInstantiated ? instantiatedStr : notInstantiatedStr);
-                str += "responsibilities; "; 
+                str += "responsibilities; ";
             }
             if(usePhones) {
                 list = empManager.getPhoneNumbers();
                 isInstantiated = isInstantiated(list);
                 str = (isInstantiated ? instantiatedStr : notInstantiatedStr);
-                str += "phoneNumbers; "; 
+                str += "phoneNumbers; ";
             }
             if(instantiatedStr.length() > 0 && notInstantiatedStr.length() > 0) {
                 throw new TestProblemException("Some attributes are instantiated: " + instantiatedStr + " and some are not: " + notInstantiatedStr);
@@ -1119,15 +1119,15 @@ public class OrderListTestModel extends TestModel {
         boolean isInstantiated(List list) {
             return !(list instanceof IndirectList && !((IndirectList)list).isInstantiated());
         }
-        
+
         String getShortClassName() {
             String name = this.getClass().getName();
             int begin = name.indexOf('$') + 1;
             int end = name.length();
             return name.substring(begin, end);
         }
-    }    
-                
+    }
+
     /*
      * Base class for tests using Employee manager object.
      * createManager method creates a manager with nSize of managedEmployees, children, projects, responsibilities, phones.
@@ -1138,20 +1138,20 @@ public class OrderListTestModel extends TestModel {
          * created by createManager method.
          */
         int nSize;
-        
+
         Employee manager;
         /*
          * manager's clone in uow.
          */
         Employee managerClone;
-        
+
         BaseManagerTest() {
             super();
-            this.nSize = 2;            
+            this.nSize = 2;
         }
-        
+
         /*
-         * Creates manager with nSize members 
+         * Creates manager with nSize members
          */
         void createManager() {
             manager = new Employee("Manager");
@@ -1161,13 +1161,13 @@ public class OrderListTestModel extends TestModel {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
             uow.commit();
-        }        
-        
+        }
+
         protected void verify() {
             if(manager == null) {
                 throw new TestErrorException("manager == null. Nothing to verify");
             }
-            
+
             String textNameExt;
             for(int k=0; k<2; k++) {
                 if(k == 0) {
@@ -1262,11 +1262,11 @@ public class OrderListTestModel extends TestModel {
             return getShortClassName() + ": "+nSize+":";
         }
     }
-    
+
     /*
-     * Create manager, save to the db, verify that it was correctly merged into shared cache and written into the db. 
+     * Create manager, save to the db, verify that it was correctly merged into shared cache and written into the db.
      */
-    class CreateTest extends BaseManagerTest {        
+    class CreateTest extends BaseManagerTest {
         CreateTest() {
             super();
         }
@@ -1274,20 +1274,20 @@ public class OrderListTestModel extends TestModel {
             createManager();
         }
     }
-    
+
     /*
-     * Create empty manager, save to the db, verify that it was correctly merged into shared cache and written into the db. 
+     * Create empty manager, save to the db, verify that it was correctly merged into shared cache and written into the db.
      * For OUTER_JOIN case to verify that read back lists are empty (as opposed to having null members).
      */
-    class CreateEmptyTest extends CreateTest {        
+    class CreateEmptyTest extends CreateTest {
         CreateEmptyTest() {
             super();
             nSize = 0;
         }
     }
-    
+
     /*
-     * Create manager, save to the db. Meant as a base to the tests that change manager. 
+     * Create manager, save to the db. Meant as a base to the tests that change manager.
      */
     class ChangeTest extends BaseManagerTest {
         ChangeTest() {
@@ -1298,9 +1298,9 @@ public class OrderListTestModel extends TestModel {
             createManager();
         }
     }
-    
+
     /*
-     * Switch positions of list members. 
+     * Switch positions of list members.
      * [0, 2], [7, 5] means that old[0] = new[7], old[2] = new[5];
      * [0, 2, 5], [7, 5, 4] means that old[0] = new[7], old[2] = new[5], old[5] = new[4].
      * useSet indicates whether to use set(index, obj) method or remove(index)/add(index, obj).
@@ -1341,10 +1341,10 @@ public class OrderListTestModel extends TestModel {
             nSize = 0;
             for(int i=0; i<oldIndexes.length; i++) {
                 if(oldIndexes[i] > nSize) {
-                    nSize = oldIndexes[i]; 
+                    nSize = oldIndexes[i];
                 }
                 if(newIndexes[i] > nSize) {
-                    nSize = newIndexes[i]; 
+                    nSize = newIndexes[i];
                 }
             }
             nSize++;
@@ -1385,7 +1385,7 @@ public class OrderListTestModel extends TestModel {
         }
         public void transpose(UnitOfWork uow) {
             managerClone = (Employee)uow.registerObject(manager);
-            
+
             int n = oldIndexes.length;
             List[] lists = new ArrayList[n];
             for(int i=0; i<n; i++) {
@@ -1407,17 +1407,17 @@ public class OrderListTestModel extends TestModel {
             uow.commit();
         }
     }
-    
+
     /*
      * Same as TranspositionTest, but the owner of transposed lists is detached, then merged.
      */
     class TranspositionMergeTest extends TranspositionTest {
-        // This test transposes objects in detached collection, doesn't care whether set or remove/add 
+        // This test transposes objects in detached collection, doesn't care whether set or remove/add
         TranspositionMergeTest(int nSize, int[] oldIndexes, int[] newIndexes) {
             super(nSize, oldIndexes, newIndexes, true);
         }
         TranspositionMergeTest(int[] oldIndexes, int[] newIndexes) {
-            // This test transposes objects in detached collection, doesn't care whether set or remove/add 
+            // This test transposes objects in detached collection, doesn't care whether set or remove/add
             super(oldIndexes, newIndexes, true);
         }
         void setName() {
@@ -1428,13 +1428,13 @@ public class OrderListTestModel extends TestModel {
             transpose(uow);
             uow.unregisterObject(this.managerClone);
             uow.release();
-            
+
             uow = getSession().acquireUnitOfWork();
             this.managerClone = (Employee)uow.mergeCloneWithReferences(this.managerClone);
             uow.commit();
         }
     }
-    
+
     /*
      * For each mapping: add one new object, remove one existing object
      */
@@ -1446,14 +1446,14 @@ public class OrderListTestModel extends TestModel {
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
-            
+
             addTo(managerClone, create("new", 1));
             removeFrom(managerClone, 0);
-            
+
             uow.commit();
         }
     }
-    
+
     /*
      * For each mapping: add one new object, remove one existing object
      */
@@ -1463,7 +1463,7 @@ public class OrderListTestModel extends TestModel {
         AddRemoveUpdateTest() {
             super();
         }
-        
+
         public void setup() {
             // Strings are immutable - can't update.
             useResponsibilities = false;
@@ -1478,10 +1478,10 @@ public class OrderListTestModel extends TestModel {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             List newListClone = this.register(newList, uow);
             uow.commit();
-            
+
             // save list to be removed
             removedList = this.getFrom(manager, 0);
-            
+
             uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
             // update new list clone
@@ -1489,15 +1489,15 @@ public class OrderListTestModel extends TestModel {
             update(newListClone, "updated", 0);
             // add updated objects to managerClone
             addTo(managerClone, newListClone);
-            
+
             // remove from managerClone
             removedListClone = removeFrom(managerClone, 0);
             // update removed objects
             update(removedListClone, "updated", 0);
-            
+
             uow.commit();
         }
-        
+
         public void verify() {
             super.verify();
             if(isPrivatelyOwned) {
@@ -1510,7 +1510,7 @@ public class OrderListTestModel extends TestModel {
             }
         }
     }
-    
+
     /*
      * For each mapping: add one new object, remove one existing object
      */
@@ -1523,15 +1523,15 @@ public class OrderListTestModel extends TestModel {
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
-            
+
             addTo(managerClone, 0, create("new", 0));
             addTo(managerClone, 4, create("new", 4));
             removeFrom(managerClone, 8);
-            
+
             uow.commit();
         }
     }
-    
+
     /*
      * For each mapping: set a new object
      */
@@ -1543,13 +1543,13 @@ public class OrderListTestModel extends TestModel {
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
-            
+
             setInto(managerClone, 1, create("new", 1));
-            
+
             uow.commit();
         }
     }
-    
+
     /*
      * For each mapping: create a new List of two objects, set the new List into managerClone;
      * if useSet is not null, before setting a new list either add or set a new object into the old list.
@@ -1568,7 +1568,7 @@ public class OrderListTestModel extends TestModel {
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
-            
+
             if(useSet != null) {
                 if(useSet) {
                     setInto(managerClone, 1, create("temp", 1));
@@ -1580,11 +1580,11 @@ public class OrderListTestModel extends TestModel {
             addTo(list, create("new", 0));
             addTo(list, create("new", 1));
             setListInto(managerClone, list);
-            
+
             uow.commit();
         }
     }
-    
+
     class SimpleIndexTest extends ChangeTest {
         int min;
         int max;
@@ -1597,7 +1597,7 @@ public class OrderListTestModel extends TestModel {
             min = 1;
             max = 4;
             nExpected = max - min + 1;
-            
+
             this.useIndex = useIndex;
             setName(getName() + (useIndex ? " use index()" : " use getField()"));
         }
@@ -1639,7 +1639,7 @@ public class OrderListTestModel extends TestModel {
             }
             query.setSelectionCriteria(exp);
             query.addAttribute(attributeName, anyOfAttribute);
-            
+
             ArrayList indexesRead = new ArrayList(nExpected);
             boolean error = false;
             List<ReportQueryResult> results = (List)getSession().executeQuery(query);
@@ -1653,13 +1653,13 @@ public class OrderListTestModel extends TestModel {
             if(error) {
                 localErrorMsg += "Wrong index values read: " + indexesRead +"; expected all numbers between (inclusive) " + min + " and " + max;
             }
-            // query with joins return Cartesian product of all rows - the same values returned more than once. 
+            // query with joins return Cartesian product of all rows - the same values returned more than once.
             if(OrderListTestModel.this.joinFetchOrBatchRead != JoinFetchOrBatchRead.OUTER_JOIN && OrderListTestModel.this.joinFetchOrBatchRead != JoinFetchOrBatchRead.INNER_JOIN) {
                 if(indexesRead.size() != nExpected) {
                     localErrorMsg += attributeName + " Wrong number of objects read: " + indexesRead.size() +"; expected " + nExpected;
                 }
             }
-            
+
             if(localErrorMsg.length() > 0) {
                 localErrorMsg = attributeName + ": " + localErrorMsg + "\n";
                 errorMsg += localErrorMsg;
@@ -1702,13 +1702,13 @@ public class OrderListTestModel extends TestModel {
                 throw new TestErrorException(errorMsg);
             }
         }
-        
+
         /*
          * ManyToMany and DirectCollection mapping require table name expression.
          * Used to test getField() expression (or getTable().getField() expression) equivalent to index().
          */
         boolean isTableExpressionRequired(String attributeName) {
-            return attributeName.equals("projects") || attributeName.equals("responsibilitiesList"); 
+            return attributeName.equals("projects") || attributeName.equals("responsibilitiesList");
         }
         /*
          * ManyToMany and DirectCollection mapping require table name expression.
@@ -1729,7 +1729,7 @@ public class OrderListTestModel extends TestModel {
         String getFieldName(String attributeName) {
             String fieldName = null;
             if(attributeName.equals("managedEmployees")) {
-                fieldName = "MANAGED_ORDER"; 
+                fieldName = "MANAGED_ORDER";
             } else if(attributeName.equals("children")) {
                 fieldName = "CHILDREN_ORDER";
             } else if(attributeName.equals("projects")) {
@@ -1742,7 +1742,7 @@ public class OrderListTestModel extends TestModel {
             return fieldName;
         }
     }
-    
+
     /*
      * For each mapping: add object in front, or in the middle, or to the end of the list.
      * Currently only DirectCollectionMapping supports duplicates and nulls.
@@ -1758,11 +1758,11 @@ public class OrderListTestModel extends TestModel {
             }
             setName(getName() + " " + whereToAdd);
         }
-        
+
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
-            
+
             if(front.equals(whereToAdd)) {
                 addTo(managerClone, 0, objectToAdd());
             } else if(middle.equals(whereToAdd)) {
@@ -1770,13 +1770,13 @@ public class OrderListTestModel extends TestModel {
             } else if(end.equals(whereToAdd)) {
                 addTo(managerClone, objectToAdd());
             }
-            
+
             uow.commit();
         }
 
-        abstract List objectToAdd(); 
+        abstract List objectToAdd();
     }
-    
+
     /*
      * For each mapping: add null.
      * Currently only DirectCollectionMapping supports nulls.
@@ -1797,7 +1797,7 @@ public class OrderListTestModel extends TestModel {
             return list;
         }
     }
-    
+
     /*
      * For each mapping: add duplicate.
      * Currently only DirectCollectionMapping supports duplicates.
@@ -1820,10 +1820,10 @@ public class OrderListTestModel extends TestModel {
             return newList;
         }
     }
-    
+
     /*
      * Break the order in the db, read the lists (with broken order) back, get the expected exception.
-     * Note that a separate test required for each mapping to make sure they all throw correct exception. 
+     * Note that a separate test required for each mapping to make sure they all throw correct exception.
      */
     abstract class BreakOrderExceptionTest extends ChangeTest {
         BreakOrderExceptionTest() {
@@ -1833,7 +1833,7 @@ public class OrderListTestModel extends TestModel {
             }
         }
         abstract public void test();
-        
+
         protected void verify() {
             try {
                 super.verify();
@@ -1847,7 +1847,7 @@ public class OrderListTestModel extends TestModel {
                 }
             }
         }
-    }    
+    }
     class BreakOrderExceptionTest_OneToMany extends BreakOrderExceptionTest {
         BreakOrderExceptionTest_OneToMany() {
             super();
@@ -1890,7 +1890,7 @@ public class OrderListTestModel extends TestModel {
     }
 
     /*
-     * bug 331144: Removing from a collection that is broken results in an 
+     * bug 331144: Removing from a collection that is broken results in an
      * ArrayIndexOutOfBoundsException when the collection is fixed.
      */
     class BreakOrderCorrectionAndRemoveTest extends BreakOrderCorrectionTest {
@@ -1917,13 +1917,13 @@ public class OrderListTestModel extends TestModel {
 
             UnitOfWork uow = getSession().acquireUnitOfWork();
             if(shoulReadManagerThroughUow) {
-                managerClone = (Employee)uow.readObject(manager);            
+                managerClone = (Employee)uow.readObject(manager);
             } else {
                 managerClone = (Employee)uow.registerObject(manager);
             }
             // remove element 1
             List list1 = removeFrom(managerClone, 1);
-            
+
             // verify that all attribute values are marked as having broken order,
             // at this point they should be instantiated
             errorMsg = this.verifyIsListOrderBrokenInDb(managerClone, true);
@@ -1944,7 +1944,7 @@ public class OrderListTestModel extends TestModel {
     /*
      * Break the order in the db, read the lists (with broken order) back, update lists, write out updated lists.
      * For verification temporary switch container policy into EXCEPTION mode, read back the list -
-     * exception thrown if the order is still broken. 
+     * exception thrown if the order is still broken.
      */
     class BreakOrderCorrectionTest extends ChangeTest {
         boolean shoulReadManagerThroughUow;
@@ -1952,7 +1952,7 @@ public class OrderListTestModel extends TestModel {
             super();
             this.nSize = 4;
             this.shoulReadManagerThroughUow = shoulReadManagerThroughUow;
-                        
+
             if(orderCorrectionType != OrderCorrectionType.READ_WRITE) {
                 throw new TestProblemException("Requires OrderCorrectionType.CORRECTION");
             }
@@ -1975,16 +1975,16 @@ public class OrderListTestModel extends TestModel {
                     }
                 }
             }
-            
+
             // change the order of elements 0 <-> 1
             UnitOfWork uow = getSession().acquireUnitOfWork();
             if(shoulReadManagerThroughUow) {
-                managerClone = (Employee)uow.readObject(manager);            
+                managerClone = (Employee)uow.readObject(manager);
             } else {
                 managerClone = (Employee)uow.registerObject(manager);
             }
             List list1 = removeFrom(managerClone, 1);
-            
+
             // verify that all attribute values are marked as having broken order,
             // at this point they should be instantiated
             errorMsg = this.verifyIsListOrderBrokenInDb(managerClone, true);
@@ -1993,17 +1993,17 @@ public class OrderListTestModel extends TestModel {
                 uow.release();
                 throw new TestErrorException(errorMsg);
             }
-            
+
             List list0 = removeFrom(managerClone, 0);
             addTo(managerClone, list1);
             addTo(managerClone, list0);
 
             uow.commit();
         }
-        
+
         protected void verify() {
-            OrderCorrectionType originalMode = this.changeOrderCorrectionType(OrderCorrectionType.EXCEPTION); 
-            try {                
+            OrderCorrectionType originalMode = this.changeOrderCorrectionType(OrderCorrectionType.EXCEPTION);
+            try {
                 if(shoulReadManagerThroughUow) {
                     // manager is not in shared cache - bring the one from the shared cache.
                     ReadObjectQuery query = new ReadObjectQuery();
@@ -2023,10 +2023,10 @@ public class OrderListTestModel extends TestModel {
                 }
                 super.verify();
             } finally {
-                this.changeOrderCorrectionType(originalMode); 
+                this.changeOrderCorrectionType(originalMode);
             }
         }
-    }    
+    }
 
     class BaseMultipleManagersTest extends BaseTest {
         /* number of managers created by createManagers method.*/
@@ -2036,20 +2036,20 @@ public class OrderListTestModel extends TestModel {
          * created by createManager method.
          */
         int nSize;
-        
+
         /* managers */
         List<Employee> managers = new ArrayList(nManagers);
         /* their uow clones */
         List<Employee> managerClones = new ArrayList(nManagers);
-        
+
         BaseMultipleManagersTest() {
             super();
             nManagers = 2;
             nSize = 2;
         }
-        
+
         /*
-         * Creates manager with nSize members 
+         * Creates manager with nSize members
          */
         void createManagers() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -2067,8 +2067,8 @@ public class OrderListTestModel extends TestModel {
             }
 
             uow.commit();
-        }        
-        
+        }
+
         public void reset() {
             super.reset();
             managers.clear();
@@ -2079,7 +2079,7 @@ public class OrderListTestModel extends TestModel {
             if(managers == null || managers.isEmpty()) {
                 throw new TestErrorException("managers is null or empty. Nothing to verify");
             }
-            
+
             String textNameExt;
             for(int k=0; k<2; k++) {
                 if(k == 0) {
@@ -2094,12 +2094,12 @@ public class OrderListTestModel extends TestModel {
                     Expression exp = query.getExpressionBuilder().get("firstName").equal("Manager");
                     query.setSelectionCriteria(exp);
                     query.addOrdering(query.getExpressionBuilder().get("lastName"));
-                    
+
                     managers.clear();
                     managers.addAll((List<Employee>)getSession().executeQuery(query));
                 }
                 if(managers.size() != managerClones.size()) {
-                    errorMsg = "wrong managers size " + managers.size() + "; expected size is " + managerClones.size();  
+                    errorMsg = "wrong managers size " + managers.size() + "; expected size is " + managerClones.size();
                 } else {
                     for(int i=0; i<managers.size(); i++) {
                         if(!getAbstractSession().compareObjects(managerClones.get(i), managers.get(i))) {
@@ -2114,7 +2114,7 @@ public class OrderListTestModel extends TestModel {
             }
         }
     }
-    
+
     /*
      * Creates managers, verifies that they were correctly merged into cache and written to the db.
      */
@@ -2122,7 +2122,7 @@ public class OrderListTestModel extends TestModel {
         CreateManagersTest() {
             super();
         }
-        
+
         public void setup() {
             createManagers();
         }
@@ -2138,7 +2138,7 @@ public class OrderListTestModel extends TestModel {
             nSize = 0;
         }
     }
-    
+
     /*
      * Verify that for each mapping both its container policy and its select query's container policy
      * are of the expected type.
@@ -2157,11 +2157,11 @@ public class OrderListTestModel extends TestModel {
             String errorMsg = "";
             List<CollectionMapping> listOrderMappings = EmployeeSystem.getListOrderMappings(getDatabaseSession());
             for(int i=0; i < listOrderMappings.size(); i++) {
-                CollectionMapping mapping = listOrderMappings.get(i); 
+                CollectionMapping mapping = listOrderMappings.get(i);
                 if(!mapping.getContainerPolicy().getClass().equals(expectedClass)) {
                     errorMsg += mapping.getAttributeName() + ".containerPolicy type is wrong; ";
                 }
-                ReadQuery selectQuery = mapping.getSelectionQuery(); 
+                ReadQuery selectQuery = mapping.getSelectionQuery();
                 if(selectQuery.isReadAllQuery()) {
                     if(!((ReadAllQuery)selectQuery).getContainerPolicy().getClass().equals(expectedClass)) {
                         errorMsg += mapping.getAttributeName() + ".queryContainerPolicy type is wrong; ";
@@ -2177,7 +2177,7 @@ public class OrderListTestModel extends TestModel {
             }
         }
     }
-    
+
     /*
      * Test for OneToMany and UnideirectionalOneToMany mappings only:
      * verify that the row in the db corresponding to the removed object

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,7 +26,7 @@ public class Address {
     @XmlPath("@aid")
     @XmlID
     public String id;
-    
+
     @XmlElement
     @XmlPath("text()")
     public String address;
@@ -35,7 +35,7 @@ public class Address {
     @XmlPath("@type")
     @XmlKey
     public String type;
-    
+
     public Address() {}
     public Address(String id, String address, String type) {
         this.id = id;

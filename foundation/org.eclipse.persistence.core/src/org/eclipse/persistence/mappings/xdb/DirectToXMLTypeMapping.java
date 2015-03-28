@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.xdb;
 
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -50,12 +50,12 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
      * Used to determine if the XML document has been modified.
      */
     private XMLComparer xmlComparer;
-    
+
     /**
      * Used to convert the String to a DOM
      */
     private  XMLParser xmlParser;
-    
+
     /**
      * INTERNAL:
      * Default to mutable if mapped as a DOM.
@@ -65,11 +65,11 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
             this.attributeClassification = getAttributeAccessor().getAttributeClass();
         }
         if ((this.isMutable == null) && (this.attributeClassification != ClassConstants.STRING)) {
-            setIsMutable(true);            
+            setIsMutable(true);
         }
         super.preInitialize(session);
     }
-    
+
     /**
      * INTERNAL:
      * The mapping is initialized with the given session. This mapping is fully initialized
@@ -185,6 +185,6 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
                 return this.xmlComparer.isNodeEqual((Node)one, (Node)two);
             }
             return one.equals(two);
-        }        
+        }
     }
 }

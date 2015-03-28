@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.xml.merge.advanced;
 
 import java.util.Map;
@@ -34,26 +34,26 @@ import org.eclipse.persistence.testing.models.jpa.xml.merge.advanced.*;
  * Currently no tables are created, so the testing is limited to examining descriptors.
  */
 public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
-    
+
     static String packageName = "org.eclipse.persistence.testing.models.jpa.xml.merge.advanced.";
     static String packageToCompareName = "org.eclipse.persistence.testing.models.jpa.advanced.";
     static String[] classNames = {"Address", "Employee", "EmploymentPeriod", "LargeProject", "PhoneNumber", "Project", "SmallProject"};
-    
+
     public EntityMappingsMergeAdvancedJUnitTestCase() {
         super();
     }
-    
+
     public EntityMappingsMergeAdvancedJUnitTestCase(String name) {
         super(name);
     }
-    
+
     public static Test suite() {
         return new TestSuite(EntityMappingsMergeAdvancedJUnitTestCase.class, "Advanced Model");
     }
-    
+
     public void testInheritanceDiscriminatorFieldValue() {
         InheritancePolicy projectInheritancePolicy = getServerSession().getDescriptor(Project.class).getInheritancePolicy();
-        
+
         // defined in xml
         DatabaseField classIndicatorField = projectInheritancePolicy.getClassIndicatorField();
         String classIndicatorFieldName = classIndicatorField.getName();
@@ -69,7 +69,7 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
         if(!classIndicatorFieldTableName.equals("CMP3_XML_MERGE_PROJECT")) {
             fail("Wrong classIndicatorField table '"+classIndicatorFieldTableName+"'");
         }
-                
+
         Map classNameIndicators = projectInheritancePolicy.getClassNameIndicatorMapping();
         // defined in xml
         String projectIndicator = (String)classNameIndicators.get(packageName + "Project");
@@ -136,7 +136,7 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
         assertTrue("ANN_MERGE_ADDRESS_SEQ sequence incorrect.", sequence instanceof NativeSequence);
         assertTrue("ANN_MERGE_ADDRESS_SEQ incorrect allocation size.", sequence.getPreallocationSize() == 1);
     }
-    
+
     public static void main(String[] args) {
          junit.textui.TestRunner.run(EntityMappingsMergeAdvancedJUnitTestCase.suite());
     }

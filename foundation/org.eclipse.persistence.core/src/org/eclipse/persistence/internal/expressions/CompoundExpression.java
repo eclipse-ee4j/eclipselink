@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -33,7 +33,7 @@ public abstract class CompoundExpression extends Expression {
     public CompoundExpression() {
         super();
     }
-    
+
     /**
      * INTERNAL:
      * Return if the expression is equal to the other.
@@ -51,7 +51,7 @@ public abstract class CompoundExpression extends Expression {
             && ((this.firstChild == expression.firstChild) || ((this.firstChild != null) && this.firstChild.equals(expression.firstChild)))
             && ((this.secondChild == expression.secondChild) || ((this.secondChild != null) && this.secondChild.equals(expression.secondChild)));
     }
-        
+
     /**
      * INTERNAL:
      * Compute a consistent hash-code for the expression.
@@ -213,7 +213,7 @@ public abstract class CompoundExpression extends Expression {
         boolean previous = normalizer.isAddAdditionalExpressionsWithinCurrrentExpressionContext();
         boolean isOrExpression = (isLogicalExpression() && this.operator.getSelector() == ExpressionOperator.Or);
         normalizer.setAddAdditionalExpressionsWithinCurrrentExpressionContext(previous|| isOrExpression);
-        
+
         try {
             if (this.firstChild != null) {
                 //let's make sure a session is available in the case of a parallel expression
@@ -244,7 +244,7 @@ public abstract class CompoundExpression extends Expression {
         }
         return this;
     }
-    
+
     /**
      * Do any required validation for this node. Throw an exception if it's incorrect.
      * Ensure that both sides are not data expressions.
@@ -381,7 +381,7 @@ public abstract class CompoundExpression extends Expression {
             this.secondChild.toString(writer, indent);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Clear the builder when cloning.

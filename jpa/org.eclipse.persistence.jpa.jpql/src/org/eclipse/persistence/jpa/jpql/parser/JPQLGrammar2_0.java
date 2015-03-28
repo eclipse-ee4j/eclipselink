@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -338,187 +338,187 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 @SuppressWarnings("nls")
 public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 
-	/**
-	 * The singleton instance of this {@link JPQLGrammar2_0}.
-	 */
-	private static final JPQLGrammar INSTANCE = new JPQLGrammar2_0();
+    /**
+     * The singleton instance of this {@link JPQLGrammar2_0}.
+     */
+    private static final JPQLGrammar INSTANCE = new JPQLGrammar2_0();
 
-	/**
-	 * Creates a new <code>JPQLExtension2_0</code>.
-	 */
-	public JPQLGrammar2_0() {
-		super();
-	}
+    /**
+     * Creates a new <code>JPQLExtension2_0</code>.
+     */
+    public JPQLGrammar2_0() {
+        super();
+    }
 
-	/**
-	 * Creates a new <code>JPQLGrammar2_0</code>.
-	 *
-	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
-	 * instantiating the base {@link JPQLGrammar}
-	 */
-	private JPQLGrammar2_0(AbstractJPQLGrammar jpqlGrammar) {
-		super(jpqlGrammar);
-	}
+    /**
+     * Creates a new <code>JPQLGrammar2_0</code>.
+     *
+     * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+     * instantiating the base {@link JPQLGrammar}
+     */
+    private JPQLGrammar2_0(AbstractJPQLGrammar jpqlGrammar) {
+        super(jpqlGrammar);
+    }
 
-	/**
-	 * Extends the given {@link JPQLGrammar} with the information of this one without instantiating
-	 * the base {@link JPQLGrammar}.
-	 *
-	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
-	 * instantiating the base {@link JPQLGrammar}
-	 */
-	public static void extend(AbstractJPQLGrammar jpqlGrammar) {
-		new JPQLGrammar2_0(jpqlGrammar);
-	}
+    /**
+     * Extends the given {@link JPQLGrammar} with the information of this one without instantiating
+     * the base {@link JPQLGrammar}.
+     *
+     * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+     * instantiating the base {@link JPQLGrammar}
+     */
+    public static void extend(AbstractJPQLGrammar jpqlGrammar) {
+        new JPQLGrammar2_0(jpqlGrammar);
+    }
 
-	/**
-	 * Returns the singleton instance of the default implementation of {@link JPQLGrammar} which
-	 * provides support for the JPQL grammar defined in the JPA 2.0 functional specification.
-	 *
-	 * @return The {@link JPQLGrammar} that only has support for JPA 2.0
-	 */
-	public static JPQLGrammar instance() {
-		return INSTANCE;
-	}
+    /**
+     * Returns the singleton instance of the default implementation of {@link JPQLGrammar} which
+     * provides support for the JPQL grammar defined in the JPA 2.0 functional specification.
+     *
+     * @return The {@link JPQLGrammar} that only has support for JPA 2.0
+     */
+    public static JPQLGrammar instance() {
+        return INSTANCE;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLGrammar buildBaseGrammar() {
-		return new JPQLGrammar1_0();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLGrammar buildBaseGrammar() {
+        return new JPQLGrammar1_0();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPAVersion getJPAVersion() {
-		return JPAVersion.VERSION_2_0;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPAVersion getJPAVersion() {
+        return JPAVersion.VERSION_2_0;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getProvider() {
-		return DefaultJPQLGrammar.PROVIDER_NAME;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getProvider() {
+        return DefaultJPQLGrammar.PROVIDER_NAME;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getProviderVersion() {
-		return ExpressionTools.EMPTY_STRING;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getProviderVersion() {
+        return ExpressionTools.EMPTY_STRING;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initializeBNFs() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initializeBNFs() {
 
-		registerBNF(new CaseExpressionBNF());
-		registerBNF(new CaseOperandBNF());
-		registerBNF(new CoalesceExpressionBNF());
-		registerBNF(new ElseExpressionBNF());
-		registerBNF(new EntityTypeExpressionBNF());
-		registerBNF(new EntityTypeLiteralBNF());
-		registerBNF(new GeneralCaseExpressionBNF());
-		registerBNF(new InternalCoalesceExpressionBNF());
-		registerBNF(new InternalEntityTypeExpressionBNF());
-		registerBNF(new InternalWhenClauseBNF());
-		registerBNF(new NullIfExpressionBNF());
-		registerBNF(new QualifiedIdentificationVariableBNF());
-		registerBNF(new ResultVariableBNF());
-		registerBNF(new SingleValuedObjectPathExpressionBNF());
-		registerBNF(new TypeExpressionBNF());
-		registerBNF(new WhenClauseBNF());
+        registerBNF(new CaseExpressionBNF());
+        registerBNF(new CaseOperandBNF());
+        registerBNF(new CoalesceExpressionBNF());
+        registerBNF(new ElseExpressionBNF());
+        registerBNF(new EntityTypeExpressionBNF());
+        registerBNF(new EntityTypeLiteralBNF());
+        registerBNF(new GeneralCaseExpressionBNF());
+        registerBNF(new InternalCoalesceExpressionBNF());
+        registerBNF(new InternalEntityTypeExpressionBNF());
+        registerBNF(new InternalWhenClauseBNF());
+        registerBNF(new NullIfExpressionBNF());
+        registerBNF(new QualifiedIdentificationVariableBNF());
+        registerBNF(new ResultVariableBNF());
+        registerBNF(new SingleValuedObjectPathExpressionBNF());
+        registerBNF(new TypeExpressionBNF());
+        registerBNF(new WhenClauseBNF());
 
-		// Extend some query BNFs
-		addChildBNF(ArithmeticPrimaryBNF.ID,              CaseExpressionBNF.ID);
-		addChildBNF(BooleanPrimaryBNF.ID,                 CaseExpressionBNF.ID);
-		addChildBNF(CollectionValuedPathExpressionBNF.ID, GeneralIdentificationVariableBNF.ID);
-		addChildBNF(ComparisonExpressionBNF.ID,           EntityTypeExpressionBNF.ID);
-		addChildBNF(DateTimePrimaryBNF.ID,                CaseExpressionBNF.ID);
-		addChildBNF(DateTimePrimaryBNF.ID,                DateTimeTimestampLiteralBNF.ID);
-		addChildBNF(EntityExpressionBNF.ID,               SingleValuedObjectPathExpressionBNF.ID);
-		addChildBNF(EnumPrimaryBNF.ID,                    CaseExpressionBNF.ID);
-		addChildBNF(InExpressionExpressionBNF.ID,         TypeExpressionBNF.ID);
-		addChildBNF(InternalCountBNF.ID,                  SingleValuedObjectPathExpressionBNF.ID);
-		addChildBNF(LiteralBNF.ID,                        EntityTypeLiteralBNF.ID);
-		addChildBNF(ScalarExpressionBNF.ID,               CaseExpressionBNF.ID);
-		addChildBNF(ScalarExpressionBNF.ID,               EntityTypeExpressionBNF.ID);
-		addChildBNF(SelectExpressionBNF.ID,               ScalarExpressionBNF.ID);
-		addChildBNF(SingleValuedPathExpressionBNF.ID,     QualifiedIdentificationVariableBNF.ID);
-		addChildBNF(SingleValuedPathExpressionBNF.ID,     SingleValuedObjectPathExpressionBNF.ID);
-		addChildBNF(StateFieldPathExpressionBNF.ID,       GeneralIdentificationVariableBNF.ID);
-		addChildBNF(StringPrimaryBNF.ID,                  CaseExpressionBNF.ID);
-	}
+        // Extend some query BNFs
+        addChildBNF(ArithmeticPrimaryBNF.ID,              CaseExpressionBNF.ID);
+        addChildBNF(BooleanPrimaryBNF.ID,                 CaseExpressionBNF.ID);
+        addChildBNF(CollectionValuedPathExpressionBNF.ID, GeneralIdentificationVariableBNF.ID);
+        addChildBNF(ComparisonExpressionBNF.ID,           EntityTypeExpressionBNF.ID);
+        addChildBNF(DateTimePrimaryBNF.ID,                CaseExpressionBNF.ID);
+        addChildBNF(DateTimePrimaryBNF.ID,                DateTimeTimestampLiteralBNF.ID);
+        addChildBNF(EntityExpressionBNF.ID,               SingleValuedObjectPathExpressionBNF.ID);
+        addChildBNF(EnumPrimaryBNF.ID,                    CaseExpressionBNF.ID);
+        addChildBNF(InExpressionExpressionBNF.ID,         TypeExpressionBNF.ID);
+        addChildBNF(InternalCountBNF.ID,                  SingleValuedObjectPathExpressionBNF.ID);
+        addChildBNF(LiteralBNF.ID,                        EntityTypeLiteralBNF.ID);
+        addChildBNF(ScalarExpressionBNF.ID,               CaseExpressionBNF.ID);
+        addChildBNF(ScalarExpressionBNF.ID,               EntityTypeExpressionBNF.ID);
+        addChildBNF(SelectExpressionBNF.ID,               ScalarExpressionBNF.ID);
+        addChildBNF(SingleValuedPathExpressionBNF.ID,     QualifiedIdentificationVariableBNF.ID);
+        addChildBNF(SingleValuedPathExpressionBNF.ID,     SingleValuedObjectPathExpressionBNF.ID);
+        addChildBNF(StateFieldPathExpressionBNF.ID,       GeneralIdentificationVariableBNF.ID);
+        addChildBNF(StringPrimaryBNF.ID,                  CaseExpressionBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initializeExpressionFactories() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initializeExpressionFactories() {
 
-		registerFactory(new CaseExpressionFactory());
-		registerFactory(new CoalesceExpressionFactory());
-		registerFactory(new EntityTypeLiteralFactory());
-		registerFactory(new EntryExpressionFactory());
-		registerFactory(new KeyExpressionFactory());
-		registerFactory(new IndexExpressionFactory());
-		registerFactory(new NullIfExpressionFactory());
-		registerFactory(new ResultVariableFactory());
-		registerFactory(new TypeExpressionFactory());
-		registerFactory(new ValueExpressionFactory());
-		registerFactory(new WhenClauseFactory());
-		registerFactory(new EntityTypeLiteralFactory());
+        registerFactory(new CaseExpressionFactory());
+        registerFactory(new CoalesceExpressionFactory());
+        registerFactory(new EntityTypeLiteralFactory());
+        registerFactory(new EntryExpressionFactory());
+        registerFactory(new KeyExpressionFactory());
+        registerFactory(new IndexExpressionFactory());
+        registerFactory(new NullIfExpressionFactory());
+        registerFactory(new ResultVariableFactory());
+        registerFactory(new TypeExpressionFactory());
+        registerFactory(new ValueExpressionFactory());
+        registerFactory(new WhenClauseFactory());
+        registerFactory(new EntityTypeLiteralFactory());
 
-		// Extend INDEX expression
-		addChildFactory(FunctionsReturningNumericsBNF.ID, IndexExpressionFactory.ID);
+        // Extend INDEX expression
+        addChildFactory(FunctionsReturningNumericsBNF.ID, IndexExpressionFactory.ID);
 
-		// Add support for entity type literal
-		addChildBNF(InExpressionItemBNF.ID, EntityTypeLiteralBNF.ID);
-		setFallbackExpressionFactoryId(InExpressionItemBNF.ID, EntityTypeLiteralFactory.ID);
-	}
+        // Add support for entity type literal
+        addChildBNF(InExpressionItemBNF.ID, EntityTypeLiteralBNF.ID);
+        setFallbackExpressionFactoryId(InExpressionItemBNF.ID, EntityTypeLiteralFactory.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initializeIdentifiers() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initializeIdentifiers() {
 
-		registerIdentifierRole(CASE,        IdentifierRole.FUNCTION);           // CASE {o} {WHEN x THEN y}* ELSE z END
-		registerIdentifierRole(COALESCE,    IdentifierRole.FUNCTION);           // COALLESCE(x {, y}+)
-		registerIdentifierRole(ELSE,        IdentifierRole.COMPOUND_FUNCTION);  // Part of CASE WHEN ELSE END
-		registerIdentifierRole(END,         IdentifierRole.COMPLEMENT);       // Part of CASE WHEN ELSE END
-		registerIdentifierRole(ENTRY,       IdentifierRole.FUNCTION);           // ENTRY(x)
-		registerIdentifierRole(INDEX,       IdentifierRole.FUNCTION);           // INDEX(x)
-		registerIdentifierRole(KEY,         IdentifierRole.FUNCTION);           // KEY(x)
-		registerIdentifierRole(NULLIF,      IdentifierRole.FUNCTION);           // NULLIF(x, y)
-		registerIdentifierRole(THEN,        IdentifierRole.COMPOUND_FUNCTION);  // Part of CASE WHEN ELSE END
-		registerIdentifierRole(TYPE,        IdentifierRole.FUNCTION);           // TYPE(x)
-		registerIdentifierRole(VALUE,       IdentifierRole.FUNCTION);           // VALUE(x)
-		registerIdentifierRole(WHEN,        IdentifierRole.COMPOUND_FUNCTION);  // Part of CASE WHEN ELSE END
+        registerIdentifierRole(CASE,        IdentifierRole.FUNCTION);           // CASE {o} {WHEN x THEN y}* ELSE z END
+        registerIdentifierRole(COALESCE,    IdentifierRole.FUNCTION);           // COALLESCE(x {, y}+)
+        registerIdentifierRole(ELSE,        IdentifierRole.COMPOUND_FUNCTION);  // Part of CASE WHEN ELSE END
+        registerIdentifierRole(END,         IdentifierRole.COMPLEMENT);       // Part of CASE WHEN ELSE END
+        registerIdentifierRole(ENTRY,       IdentifierRole.FUNCTION);           // ENTRY(x)
+        registerIdentifierRole(INDEX,       IdentifierRole.FUNCTION);           // INDEX(x)
+        registerIdentifierRole(KEY,         IdentifierRole.FUNCTION);           // KEY(x)
+        registerIdentifierRole(NULLIF,      IdentifierRole.FUNCTION);           // NULLIF(x, y)
+        registerIdentifierRole(THEN,        IdentifierRole.COMPOUND_FUNCTION);  // Part of CASE WHEN ELSE END
+        registerIdentifierRole(TYPE,        IdentifierRole.FUNCTION);           // TYPE(x)
+        registerIdentifierRole(VALUE,       IdentifierRole.FUNCTION);           // VALUE(x)
+        registerIdentifierRole(WHEN,        IdentifierRole.COMPOUND_FUNCTION);  // Part of CASE WHEN ELSE END
 
-		registerIdentifierVersion(CASE,     JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(COALESCE, JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(ELSE,     JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(END,      JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(ENTRY,    JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(INDEX,    JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(KEY,      JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(NULLIF,   JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(THEN,     JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(TYPE,     JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(VALUE,    JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(WHEN,     JPAVersion.VERSION_2_0);
-	}
+        registerIdentifierVersion(CASE,     JPAVersion.VERSION_2_0);
+        registerIdentifierVersion(COALESCE, JPAVersion.VERSION_2_0);
+        registerIdentifierVersion(ELSE,     JPAVersion.VERSION_2_0);
+        registerIdentifierVersion(END,      JPAVersion.VERSION_2_0);
+        registerIdentifierVersion(ENTRY,    JPAVersion.VERSION_2_0);
+        registerIdentifierVersion(INDEX,    JPAVersion.VERSION_2_0);
+        registerIdentifierVersion(KEY,      JPAVersion.VERSION_2_0);
+        registerIdentifierVersion(NULLIF,   JPAVersion.VERSION_2_0);
+        registerIdentifierVersion(THEN,     JPAVersion.VERSION_2_0);
+        registerIdentifierVersion(TYPE,     JPAVersion.VERSION_2_0);
+        registerIdentifierVersion(VALUE,    JPAVersion.VERSION_2_0);
+        registerIdentifierVersion(WHEN,     JPAVersion.VERSION_2_0);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return "JPQLGrammar 2.0";
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "JPQLGrammar 2.0";
+    }
 }

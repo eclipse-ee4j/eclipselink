@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,7 @@ package javax.ejb;
  * The FinderException exception must be included in the throws clause
  * of every finder method of an entity bean's home or local home interface.
  *
- * <p> The exception is used as a standard application-level exception to 
+ * <p> The exception is used as a standard application-level exception to
  * report a failure to find the requested EJB object(s).
  *
  * @since EJB 1.0
@@ -55,14 +55,14 @@ public class FinderException extends java.lang.Exception {
 
     /**
      * Constructs an FinderException with no detail message.
-     */  
+     */
     public FinderException() {
     }
 
     /**
      * Constructs an FinderException with the specified
      * detail message.
-     */  
+     */
     public FinderException(String message) {
         super(message);
     }

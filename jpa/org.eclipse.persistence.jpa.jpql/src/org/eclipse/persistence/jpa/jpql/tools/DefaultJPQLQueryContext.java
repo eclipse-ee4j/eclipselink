@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,62 +39,62 @@ import org.eclipse.persistence.jpa.jpql.tools.resolver.DefaultResolverBuilder;
  */
 public class DefaultJPQLQueryContext extends JPQLQueryContext {
 
-	/**
-	 * Creates a new <code>DefaultJPQLQueryContext</code>.
-	 */
-	public DefaultJPQLQueryContext(JPQLGrammar jpqlGrammar) {
-		super(jpqlGrammar);
-	}
+    /**
+     * Creates a new <code>DefaultJPQLQueryContext</code>.
+     */
+    public DefaultJPQLQueryContext(JPQLGrammar jpqlGrammar) {
+        super(jpqlGrammar);
+    }
 
-	/**
-	 * Creates a new sub-<code>DefaultJPQLQueryContext</code>.
-	 *
-	 * @param parent The parent context
-	 * @param currentQuery The parsed tree representation of the subquery
-	 */
-	protected DefaultJPQLQueryContext(JPQLQueryContext parent, Expression currentQuery) {
-		super(parent, currentQuery);
-	}
+    /**
+     * Creates a new sub-<code>DefaultJPQLQueryContext</code>.
+     *
+     * @param parent The parent context
+     * @param currentQuery The parsed tree representation of the subquery
+     */
+    protected DefaultJPQLQueryContext(JPQLQueryContext parent, Expression currentQuery) {
+        super(parent, currentQuery);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLQueryContext buildJPQLQueryContext(JPQLQueryContext currentContext,
-	                                                 Expression currentQuery) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLQueryContext buildJPQLQueryContext(JPQLQueryContext currentContext,
+                                                     Expression currentQuery) {
 
-		return new DefaultJPQLQueryContext(currentContext, currentQuery);
-	}
+        return new DefaultJPQLQueryContext(currentContext, currentQuery);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DefaultLiteralVisitor buildLiteralVisitor() {
-		return new DefaultLiteralVisitor();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected DefaultLiteralVisitor buildLiteralVisitor() {
+        return new DefaultLiteralVisitor();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DefaultParameterTypeVisitor buildParameterTypeVisitor() {
-		return new DefaultParameterTypeVisitor(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected DefaultParameterTypeVisitor buildParameterTypeVisitor() {
+        return new DefaultParameterTypeVisitor(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DefaultResolverBuilder buildResolverBuilder() {
-		return new DefaultResolverBuilder(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected DefaultResolverBuilder buildResolverBuilder() {
+        return new DefaultResolverBuilder(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public DefaultJPQLQueryContext getParent() {
-		return (DefaultJPQLQueryContext) super.getParent();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DefaultJPQLQueryContext getParent() {
+        return (DefaultJPQLQueryContext) super.getParent();
+    }
 }

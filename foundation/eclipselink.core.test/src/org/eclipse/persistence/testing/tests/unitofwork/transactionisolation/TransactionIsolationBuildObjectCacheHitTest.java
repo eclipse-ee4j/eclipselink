@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork.transactionisolation;
 
 import java.util.*;
@@ -41,7 +41,7 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
         super();
         setDescription("Test looking up objects in the UnitOfWork IdentityMap when an early transaction has been started");
     }
-    
+
     public void setup() {
         // use 'simple' SQL statements instead of binding
         oldBindingValue = getSession().getLogin().shouldBindAllParameters();
@@ -49,11 +49,11 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
 
         // initialize identity maps
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        
+
         // query for relevant insurance data
         PolicyHolder holder = (PolicyHolder) getSession().readObject(PolicyHolder.example2());
         assertNotNull(holder);
-        
+
         // initialize identity maps and setup UnitOfWork
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         uow = getSession().acquireUnitOfWork();
@@ -62,14 +62,14 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
         // create tracker object for query SQL
         sqlTracker = new QuerySQLTracker(getSession());
     }
-    
+
     public void test() {
         // read object
         PolicyHolder policyHolder = (PolicyHolder) uow.readObject(PolicyHolder.example2());
         // object read should not be null
         assertNotNull(policyHolder);
     }
-    
+
     public void verify() {
         // check for duplicates
         List statements = sqlTracker.getSqlStatements();
@@ -79,7 +79,7 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
             // the statements collection should not contain any duplicates
             int occurrences = Helper.countOccurrencesOf(statement, statements);
             if (occurrences > 1) {
-                String errorText = "SQL statement executed " + occurrences + " times: [" + statement + "] (Expected 1)"; 
+                String errorText = "SQL statement executed " + occurrences + " times: [" + statement + "] (Expected 1)";
                 if (!errors.contains(errorText)) {
                     errors.add(errorText);
                 }
@@ -97,7 +97,7 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
             throw new TestErrorException(buffer.toString());
         }
     }
-    
+
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         // reset parameter binding
@@ -108,5 +108,5 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
         sqlTracker.remove();
         sqlTracker = null;
     }
-    
+
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Jenzabar, Inc, Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Jenzabar, Inc, Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Jenzabar - Initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.platform.database;
 
@@ -51,7 +51,7 @@ import org.eclipse.persistence.queries.UpdateAllQuery; // for javadoc only
  *
  * @see <a
  * href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=401746">EclipseLink
- * bug 401746</a> 
+ * bug 401746</a>
  *
  * @see <a
  * href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=402037">EclipseLink
@@ -342,7 +342,7 @@ public class Informix11Platform extends InformixPlatform {
     }
     return new DatabaseTable("TL_" + table.getName(), "" /* no table qualifier */, table.shouldUseDelimiters(), this.getStartDelimiter(), this.getEndDelimiter());
   }
-  
+
   /**
    * Returns {@code WITH NO LOG} when invoked, per the <a
    * href="http://publib.boulder.ibm.com/infocenter/idshelp/v117/topic/com.ibm.sqls.doc/ids_sqs_0571.htm">Informix
@@ -399,18 +399,18 @@ public class Informix11Platform extends InformixPlatform {
   @Override
   public void writeUpdateOriginalFromTempTableSql(final Writer writer, final DatabaseTable table, final Collection pkFields, final Collection assignedFields) throws IOException {
     writer.write("UPDATE ");
-    final String tableName = table.getQualifiedNameDelimited(this);    
+    final String tableName = table.getQualifiedNameDelimited(this);
     writer.write(tableName);
     writer.write(" SET ");
     final int size = assignedFields.size();
     if (size > 1) {
-      writer.write("(");            
+      writer.write("(");
     }
     writeFieldsList(writer, assignedFields, this);
     if (size > 1) {
-      writer.write(")");            
+      writer.write(")");
     }
-    writer.write(" = (SELECT ");        
+    writer.write(" = (SELECT ");
     writeFieldsList(writer, assignedFields, this);
     writer.write(" FROM ");
     final String tempTableName = this.getTempTableForTable(table).getQualifiedNameDelimited(this);

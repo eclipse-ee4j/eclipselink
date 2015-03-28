@@ -6,10 +6,10 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlType
 public class EmploymentPeriod {
-	
-	@XmlElement
-	public MyDate startDate;
-	
-	@XmlElement
-	public MyDate endDate;
+
+    @XmlElement
+    public MyDate startDate;
+
+    @XmlElement
+    public MyDate endDate;
 }

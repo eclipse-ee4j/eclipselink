@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,77 +36,77 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public final class EclipseLinkSemanticValidatorTest extends AbstractSemanticValidatorTest {
 
-	private JPQLQueryStringFormatter buildFormatter_01(final String jpqlQuery) {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return jpqlQuery;
-			}
-		};
-	}
+    private JPQLQueryStringFormatter buildFormatter_01(final String jpqlQuery) {
+        return new JPQLQueryStringFormatter() {
+            public String format(String query) {
+                return jpqlQuery;
+            }
+        };
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLQueryContext buildQueryContext() {
-		return new EclipseLinkJPQLQueryContext(jpqlGrammar);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLQueryContext buildQueryContext() {
+        return new EclipseLinkJPQLQueryContext(jpqlGrammar);
+    }
 
-	protected EclipseLinkSemanticValidatorExtension buildSemanticExtension() {
-		return EclipseLinkSemanticValidatorExtension.NULL_EXTENSION;
-	}
+    protected EclipseLinkSemanticValidatorExtension buildSemanticExtension() {
+        return EclipseLinkSemanticValidatorExtension.NULL_EXTENSION;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractSemanticValidator buildValidator() {
-		return new EclipseLinkSemanticValidator(
-			buildSemanticValidatorHelper(),
-			buildSemanticExtension()
-		);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractSemanticValidator buildValidator() {
+        return new EclipseLinkSemanticValidator(
+            buildSemanticValidatorHelper(),
+            buildSemanticExtension()
+        );
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isComparisonTypeChecked() {
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isComparisonTypeChecked() {
+        return false;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isPathExpressionToCollectionMappingAllowed() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isPathExpressionToCollectionMappingAllowed() {
+        return true;
+    }
 
-	@Test
-	public final void test_IdentificationVariable_Valid_2() throws Exception {
+    @Test
+    public final void test_IdentificationVariable_Valid_2() throws Exception {
 
-		if (EclipseLinkVersionTools.isOlderThan2_1(getQueryContext().getGrammar())) {
-			return;
-		}
+        if (EclipseLinkVersionTools.isOlderThan2_1(getQueryContext().getGrammar())) {
+            return;
+        }
 
-		String jpqlQuery = "SELECT FUNC('MONTH', e.salary) mois, " +
-		                   "       FUNC('YEAR', e.working) annee, " +
-		                   "       e.address.city categ, " +
-		                   "       SUM(e.salary) " +
-		                   "FROM Employee e " +
-		                   "GROUP BY annee, mois, categ " +
-		                   "ORDER BY annee ASC, mois ASC, categ ASC";
+        String jpqlQuery = "SELECT FUNC('MONTH', e.salary) mois, " +
+                           "       FUNC('YEAR', e.working) annee, " +
+                           "       e.address.city categ, " +
+                           "       SUM(e.salary) " +
+                           "FROM Employee e " +
+                           "GROUP BY annee, mois, categ " +
+                           "ORDER BY annee ASC, mois ASC, categ ASC";
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public void test_OrderByItem_Valid_1() throws Exception {
+    @Test
+    public void test_OrderByItem_Valid_1() throws Exception {
 
-		String jpqlQuery = "SELECT order2 AS order FROM Order order2 ORDER BY order";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery, buildFormatter_01(jpqlQuery));
-		testHasNoProblems(problems);
-	}
+        String jpqlQuery = "SELECT order2 AS order FROM Order order2 ORDER BY order";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery, buildFormatter_01(jpqlQuery));
+        testHasNoProblems(problems);
+    }
 }

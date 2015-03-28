@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import org.eclipse.persistence.testing.framework.TestSuite;
@@ -29,22 +29,22 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
 
     public void setup(){
         super.setup();
-   		new AdvancedTableCreator().replaceTables(getServerSession());
-         
+           new AdvancedTableCreator().replaceTables(getServerSession());
+
         EmployeePopulator employeePopulator = new EmployeePopulator();
-        employeePopulator.buildExamples();   
+        employeePopulator.buildExamples();
         //Persist the examples in the database
-        employeePopulator.persistExample(((EntityManagerImpl)getEntityManager()).getServerSession());  
+        employeePopulator.persistExample(((EntityManagerImpl)getEntityManager()).getServerSession());
     }
 
     public void addTests(){
         addTest(getEntityManagerTestSuite());
         addTest(getAnnotationTestSuite());
-	
+
         TestSuite tests = new TestSuite();
         tests.setName("UpdateAllQueryAdvancedJunitTest");
         tests.addTests(JUnitTestCase.suite(UpdateAllQueryAdvancedJunitTest.class));
-        addTest(tests);        
+        addTest(tests);
         tests = new TestSuite();
         tests.setName("JoinedAttributeAdvancedJunitTest");
         tests.addTests(JUnitTestCase.suite(JoinedAttributeAdvancedJunitTest.class));
@@ -55,7 +55,7 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
         addTest(tests);
         addTest(CascadePersistJUnitTestSuite.suite());
     }
-    
+
     public static TestSuite getEntityManagerTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("EntityManager Tests");
@@ -82,7 +82,7 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
 
         return suite;
     }
-    
+
     public static TestSuite getAnnotationTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("Annotation Tests");
@@ -90,12 +90,12 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
 
         suite.addTest(getCallbackEventTestSuite());
         suite.addTest(getPrimaryKeyTestSuite());
-        
+
         suite.addTest(new XMLAnnotationMergingTest());
-  
+
         return suite;
     }
-    
+
     public static TestSuite getCallbackEventTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("Callback Event Tests");
@@ -110,7 +110,7 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
         suite.addTest(new EntityListenerPostLoadTest());
         suite.addTest(new EntityListenerPostLoadTransactionTest());
         suite.addTest(new EntityListenerPostLoadRefreshTest());
-        
+
         suite.addTest(new EntityMethodPrePersistTest());
         suite.addTest(new EntityMethodPostPersistTest());
         suite.addTest(new EntityMethodPreUpdateTest());
@@ -120,19 +120,19 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
         suite.addTest(new EntityMethodPostLoadTest());
         suite.addTest(new EntityMethodPostLoadTransactionTest());
         suite.addTest(new EntityMethodPostLoadRefreshTest());
-  
+
         suite.addTest(new NonDBChangePreUpdateTest());
-        
+
         return suite;
     }
-    
+
     public static TestSuite getPrimaryKeyTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("Primary key Tests");
         suite.setDescription("This suite provides testing for the O/R metadata primary key tests");
 
         suite.addTest(new PrimaryKeyClassTest());
-  
+
         return suite;
     }
 }

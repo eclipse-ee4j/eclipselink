@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.interfaces;
 
 import java.util.*;
@@ -88,7 +88,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("fname");
         directtofieldmapping.setIsReadOnly(false);
@@ -96,7 +96,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("id");
         directtofieldmapping1.setIsReadOnly(false);
@@ -104,7 +104,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping1);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping2.setAttributeName("lname");
         directtofieldmapping2.setIsReadOnly(false);
@@ -112,7 +112,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping2);
 
         // SECTION: VARIABLEONETOONEMAPPING
-        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping = 
+        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping =
             new org.eclipse.persistence.mappings.VariableOneToOneMapping();
         variableonetoonemapping.setAttributeName("program");
         variableonetoonemapping.setIsReadOnly(false);
@@ -148,9 +148,9 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.getInheritancePolicy().setShouldReadSubclasses(true);
         descriptor.getInheritancePolicy().setClassIndicatorFieldName("TYPE");
         descriptor.getInheritancePolicy().setShouldUseClassNameAsIndicator(false);
-        descriptor.getInheritancePolicy().addClassIndicator(Receptionist.class, 
+        descriptor.getInheritancePolicy().addClassIndicator(Receptionist.class,
                                                             "R");
-        descriptor.getInheritancePolicy().addClassIndicator(Secretary.class, 
+        descriptor.getInheritancePolicy().addClassIndicator(Secretary.class,
                                                             "S");
         descriptor.getInterfacePolicy().addParentInterface(Unionized.class);
         descriptor.getInterfacePolicy().addParentInterface(Job.class);
@@ -162,7 +162,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("jobCode");
         directtofieldmapping.setIsReadOnly(false);
@@ -170,7 +170,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("minimumSalary");
         directtofieldmapping1.setIsReadOnly(false);
@@ -204,7 +204,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: VARIABLEONETOONEMAPPING
-        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping = 
+        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping =
             new org.eclipse.persistence.mappings.VariableOneToOneMapping();
         variableonetoonemapping.setAttributeName("asset");
         variableonetoonemapping.setIsReadOnly(false);
@@ -259,7 +259,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("id");
         directtofieldmapping.setIsReadOnly(false);
@@ -267,7 +267,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("name");
         directtofieldmapping1.setIsReadOnly(false);
@@ -275,7 +275,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping1);
 
         // SECTION: VARIABLEONETOONEMAPPING
-        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping = 
+        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping =
             new org.eclipse.persistence.mappings.VariableOneToOneMapping();
         variableonetoonemapping.setWeight(new Integer(3));
         variableonetoonemapping.setAttributeName("contact");
@@ -329,7 +329,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("description");
         directtofieldmapping.setIsReadOnly(false);
@@ -337,7 +337,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("serNum");
         directtofieldmapping1.setIsReadOnly(false);
@@ -402,7 +402,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("course");
         directtofieldmapping.setIsReadOnly(false);
@@ -432,9 +432,9 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.getInheritancePolicy().setShouldReadSubclasses(true);
         descriptor.getInheritancePolicy().setClassIndicatorFieldName("TYPE");
         descriptor.getInheritancePolicy().setShouldUseClassNameAsIndicator(false);
-        descriptor.getInheritancePolicy().addClassIndicator(CourseDeveloper.class, 
+        descriptor.getInheritancePolicy().addClassIndicator(CourseDeveloper.class,
                                                             "C");
-        descriptor.getInheritancePolicy().addClassIndicator(ProductDeveloper.class, 
+        descriptor.getInheritancePolicy().addClassIndicator(ProductDeveloper.class,
                                                             "P");
         descriptor.getInterfacePolicy().addParentInterface(Job.class);
 
@@ -445,7 +445,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("jobCode");
         directtofieldmapping.setIsReadOnly(false);
@@ -453,7 +453,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("salary");
         directtofieldmapping1.setIsReadOnly(false);
@@ -488,7 +488,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("description");
         directtofieldmapping.setIsReadOnly(false);
@@ -496,7 +496,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("duration");
         directtofieldmapping1.setIsReadOnly(false);
@@ -504,7 +504,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping1);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping2.setAttributeName("id");
         directtofieldmapping2.setIsReadOnly(false);
@@ -512,7 +512,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping2);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping3 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping3 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping3.setAttributeName("name");
         directtofieldmapping3.setIsReadOnly(false);
@@ -557,7 +557,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("address");
         directtofieldmapping.setIsReadOnly(false);
@@ -565,7 +565,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("id");
         directtofieldmapping1.setIsReadOnly(false);
@@ -573,7 +573,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping1);
 
         // SECTION: VARIABLEONETOONEMAPPING
-        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping = 
+        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping =
             new org.eclipse.persistence.mappings.VariableOneToOneMapping();
         variableonetoonemapping.setAttributeName("employee");
         variableonetoonemapping.setIsReadOnly(false);
@@ -615,7 +615,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: AGGREGATEOBJECTMAPPING
-        org.eclipse.persistence.mappings.AggregateObjectMapping aggregateobjectmapping = 
+        org.eclipse.persistence.mappings.AggregateObjectMapping aggregateobjectmapping =
             new org.eclipse.persistence.mappings.AggregateObjectMapping();
         aggregateobjectmapping.setAttributeName("asset1");
         aggregateobjectmapping.setIsReadOnly(false);
@@ -624,7 +624,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(aggregateobjectmapping);
 
         // SECTION: AGGREGATEOBJECTMAPPING
-        org.eclipse.persistence.mappings.AggregateObjectMapping aggregateobjectmapping1 = 
+        org.eclipse.persistence.mappings.AggregateObjectMapping aggregateobjectmapping1 =
             new org.eclipse.persistence.mappings.AggregateObjectMapping();
         aggregateobjectmapping1.setAttributeName("asset2");
         aggregateobjectmapping1.setIsReadOnly(false);
@@ -634,7 +634,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(aggregateobjectmapping1);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("id");
         directtofieldmapping.setIsReadOnly(false);
@@ -642,7 +642,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("name");
         directtofieldmapping1.setIsReadOnly(false);
@@ -650,7 +650,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping1);
 
         // SECTION: VARIABLEONETOONEMAPPING
-        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping = 
+        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping =
             new org.eclipse.persistence.mappings.VariableOneToOneMapping();
         variableonetoonemapping.setAttributeName("contact");
         variableonetoonemapping.setIsReadOnly(false);
@@ -661,13 +661,13 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         variableonetoonemapping.setTypeFieldName("INT_EMP.CONTACT_TYPE");
         //variableonetoonemapping.addClassIndicator(Email.class, "E");
         //variableonetoonemapping.addClassIndicator(Phone.class, "P");
-        variableonetoonemapping.addClassIndicator(Email.class, 
+        variableonetoonemapping.addClassIndicator(Email.class,
                                                   new Float(1)); // TO TEST NUMERIC TYPE INDICATOR
         variableonetoonemapping.addClassIndicator(Phone.class, new Float(2));
         descriptor.addMapping(variableonetoonemapping);
 
         // SECTION: VARIABLEONETOONEMAPPING
-        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping2 = 
+        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping2 =
             new org.eclipse.persistence.mappings.VariableOneToOneMapping();
         variableonetoonemapping2.setAttributeName("secondaryContact");
         variableonetoonemapping2.setIsReadOnly(false);
@@ -678,7 +678,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         variableonetoonemapping2.setTypeFieldName("INT_EMP.SEC_CONTACT_TYPE");
         //variableonetoonemapping2.addClassIndicator(Email.class, "E");
         //variableonetoonemapping2.addClassIndicator(Phone.class, "P");
-        variableonetoonemapping2.addClassIndicator(Email.class, 
+        variableonetoonemapping2.addClassIndicator(Email.class,
                                                    new Float(1)); // TO TEST NUMERIC TYPE INDICATOR
         variableonetoonemapping2.addClassIndicator(Phone.class, new Float(2));
         descriptor.addMapping(variableonetoonemapping2);
@@ -713,7 +713,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("description");
         directtofieldmapping.setIsReadOnly(false);
@@ -721,7 +721,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("duration");
         directtofieldmapping1.setIsReadOnly(false);
@@ -729,7 +729,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping1);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping2.setAttributeName("id");
         directtofieldmapping2.setIsReadOnly(false);
@@ -737,7 +737,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping2);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping3 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping3 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping3.setAttributeName("name");
         directtofieldmapping3.setIsReadOnly(false);
@@ -808,7 +808,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("department");
         directtofieldmapping.setIsReadOnly(false);
@@ -816,7 +816,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("jobCode");
         directtofieldmapping1.setIsReadOnly(false);
@@ -824,7 +824,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping1);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping2.setAttributeName("salary");
         directtofieldmapping2.setIsReadOnly(false);
@@ -859,7 +859,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("id");
         directtofieldmapping.setIsReadOnly(false);
@@ -867,7 +867,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("number");
         directtofieldmapping1.setIsReadOnly(false);
@@ -875,7 +875,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping1);
 
         // SECTION: VARIABLEONETOONEMAPPING
-        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping = 
+        org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping =
             new org.eclipse.persistence.mappings.VariableOneToOneMapping();
         variableonetoonemapping.setAttributeName("employee");
         variableonetoonemapping.setIsReadOnly(false);
@@ -915,7 +915,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("product");
         directtofieldmapping.setIsReadOnly(false);
@@ -952,7 +952,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("goldCardNumber");
         directtofieldmapping.setIsReadOnly(false);
@@ -960,7 +960,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("jobCode");
         directtofieldmapping1.setIsReadOnly(false);
@@ -968,7 +968,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping1);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping2.setAttributeName("product");
         directtofieldmapping2.setIsReadOnly(false);
@@ -976,7 +976,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping2);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping3 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping3 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping3.setAttributeName("salary");
         directtofieldmapping3.setIsReadOnly(false);
@@ -1023,7 +1023,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("jobCode");
         directtofieldmapping.setIsReadOnly(false);
@@ -1031,7 +1031,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("salary");
         directtofieldmapping1.setIsReadOnly(false);
@@ -1039,7 +1039,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping1);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping2.setAttributeName("wordsPerMinute");
         directtofieldmapping2.setIsReadOnly(false);
@@ -1073,7 +1073,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("department");
         directtofieldmapping.setIsReadOnly(false);
@@ -1081,7 +1081,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("jobCode");
         directtofieldmapping1.setIsReadOnly(false);
@@ -1089,7 +1089,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping1);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping2.setAttributeName("salary");
         directtofieldmapping2.setIsReadOnly(false);
@@ -1138,7 +1138,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.createInstantiationPolicy("constructor");
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("colour");
         directtofieldmapping.setIsReadOnly(false);
@@ -1146,7 +1146,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("make");
         directtofieldmapping1.setIsReadOnly(false);
@@ -1154,7 +1154,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping1);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping2.setAttributeName("model");
         directtofieldmapping2.setIsReadOnly(false);
@@ -1162,7 +1162,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         descriptor.addMapping(directtofieldmapping2);
 
         // SECTION: DIRECTTOFIELDMAPPING
-        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping3 = 
+        org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping3 =
             new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping3.setAttributeName("serNum");
         directtofieldmapping3.setIsReadOnly(false);

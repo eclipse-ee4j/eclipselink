@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -22,7 +22,7 @@ import javax.xml.namespace.QName;
  * unwrapping of the values after the unmarshal.
  * <p><b>Responsibilities:</b><ul>
  * <li>Provide an API to allow the unwrapping of the wrapped value</li>
- * </ul> 
+ * </ul>
  * @author mmacivor
  *
  */

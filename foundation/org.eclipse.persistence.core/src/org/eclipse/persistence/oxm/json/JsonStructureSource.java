@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.oxm.record.json.JsonStructureReader;
  *   Usage:
  *      JsonStructureSource source = new JsonStructureSource(jsonObject);
  *      Object unmarshalled = jaxbUnmarshaller.unmarshal(source);
- *    
+ *
  */
 public class JsonStructureSource extends ExtendedSource {
 
@@ -42,14 +42,14 @@ public class JsonStructureSource extends ExtendedSource {
 
     @Override
     public XMLReader createReader(Unmarshaller unmarshaller) {
-        JsonStructureReader reader = new JsonStructureReader(unmarshaller);            
+        JsonStructureReader reader = new JsonStructureReader(unmarshaller);
         reader.setJsonStructure(getJsonStructure());
         return reader;
     }
 
     @Override
     public XMLReader createReader(Unmarshaller unmarshaller, Class unmarshalClass) {
-        JsonStructureReader reader = new JsonStructureReader(unmarshaller, unmarshalClass);            
+        JsonStructureReader reader = new JsonStructureReader(unmarshaller, unmarshalClass);
         reader.setJsonStructure(getJsonStructure());
         return reader;
     }

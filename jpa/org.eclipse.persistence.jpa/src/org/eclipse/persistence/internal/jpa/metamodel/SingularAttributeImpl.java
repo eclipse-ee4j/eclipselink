@@ -1,20 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors: 
+ * Contributors:
  *     05/26/2009-2.0  mobrien - API update
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation       
- *     11/10/2011-2.4 Guy Pelletier 
+ *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
@@ -37,11 +37,11 @@ import org.eclipse.persistence.mappings.structures.ReferenceMapping;
 
 /**
  * <p>
- * <b>Purpose</b>: Provides the implementation for the SingularAttribute interface 
+ * <b>Purpose</b>: Provides the implementation for the SingularAttribute interface
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
- * <b>Description</b>: 
- * Instances of the type SingularAttribute represents persistent 
+ * <b>Description</b>:
+ * Instances of the type SingularAttribute represents persistent
  * single-valued properties or fields.
  *
  * @author Michael O'Brien
@@ -50,16 +50,16 @@ import org.eclipse.persistence.mappings.structures.ReferenceMapping;
  *
  * @param <X> The type containing the represented attribute
  * @param <T> The type of the represented attribute
- * 
+ *
  */
 public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements SingularAttribute<X, T> {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
     private static final long serialVersionUID = 3928292425281232234L;
-    
+
     /** The Type representing this Entity or Basic type **/
     private Type<T> elementType;
-    
+
     /**
      * Create an instance of the Attribute
      * @param managedType
@@ -67,7 +67,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      */
     protected SingularAttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping) {
         this(managedType, mapping, false);
-    }    
+    }
     /**
      * INTERNAL:
      * Create an Attribute instance with a passed in validation flag (usually set to true only during Metamodel initialization)
@@ -87,7 +87,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
          * The attribute classification is null for non-collection mappings such as embeddable keys.
          */
         if (null == attributeClass) {
-            
+
             // We support @OneToOne but not EIS, Reference or VariableOneToOne
             // Note: OneToMany, ManyToMany are handled by PluralAttributeImpl
             if(mapping instanceof ForeignReferenceMapping) {// handles @ManyToOne
@@ -102,7 +102,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
                 attributeClass = ((AggregateMapping)mapping).getReferenceClass();
             } else if (mapping.isVariableOneToOneMapping()) { // interfaces are unsupported in the JPA 2.0 spec for the Metamodel API
                 if(validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_mapping_type_is_unsupported", mapping, this);                    
+                    AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_mapping_type_is_unsupported", mapping, this);
                 }
                 // see JUnitCriteriaUnitTestSuite.testSelectPhoneNumberAreaCode() line: 246
                 // VariableOneToOne mappings are unsupported - default to referenceClass (Interface) anyway
@@ -110,11 +110,11 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
                 attributeClass = ((VariableOneToOneMapping)mapping).getReferenceClass();
             } else if (mapping.isEISMapping() || mapping.isTransformationMapping()) { // unsupported in the JPA 2.0 spec for the Metamodel API
                 if(validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_mapping_type_is_unsupported", mapping, this);                    
+                    AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_mapping_type_is_unsupported", mapping, this);
                 }
             } else if ( mapping.isReferenceMapping()) { // unsupported in the JPA 2.0 spec for the Metamodel API
                 if(validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_mapping_type_is_unsupported", mapping, this);                    
+                    AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_mapping_type_is_unsupported", mapping, this);
                 }
                 // Reference mappings are unsupported - default to referenceClass anyway
                 attributeClass = ((ReferenceMapping)mapping).getReferenceClass();
@@ -124,8 +124,8 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         if(null == attributeClass && validationEnabled) {
             // TODO: refactor
             attributeClass = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
-            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);                    
-        }        
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);
+        }
         elementType = getMetamodel().getType(attributeClass);
     }
 
@@ -133,7 +133,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      * Return the Java type of the represented object.
      * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
      * the Java element type is returned. If the bindable type is
-     * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>, 
+     * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>,
      * the Java type of the
      * represented entity or attribute is returned.
      * @return Java type
@@ -142,7 +142,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         // In SingularAttribute our BindableType is SINGLE_ATTRIBUTE - return the java type of the represented entity
         return this.elementType.getJavaType();
     }
-    
+
     /**
      *  Is the attribute an id attribute.
      *  @return boolean indicating whether or not attribute is an id
@@ -150,7 +150,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
     public boolean isId() {
         if(this.getManagedTypeImpl().isMappedSuperclass()) {
             // The field on the mapping is the same field in the pkFields list on the descriptor
-            // 288792: We can use the new isJPAId field here 
+            // 288792: We can use the new isJPAId field here
             return (this.getDescriptor().getPrimaryKeyFields().contains(this.getMapping().getField()));
         } else {
             // 288792: Some id mappings will return false for isPrimaryKeyMapping but true for isJPAId
@@ -158,7 +158,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         }
     }
 
-    /** 
+    /**
      *  Can the attribute be null.
      *  @return boolean indicating whether or not the attribute can
      *          be null
@@ -167,7 +167,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         return getMapping().isOptional();
     }
 
-    
+
     /**
      * INTERNAL:
      * Return whether the attribute is plural or singular
@@ -177,25 +177,25 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
     public boolean isPlural() {
         return false;
     }
-    
+
     /**
      *  Is the attribute a version attribute.
-     *  @return boolean indicating whether or not attribute is 
+     *  @return boolean indicating whether or not attribute is
      *          a version attribute
      */
     public boolean isVersion() {
         if (getDescriptor().usesOptimisticLocking() && getMapping().isDirectToFieldMapping()) {
             OptimisticLockingPolicy policy = getDescriptor().getOptimisticLockingPolicy();
-            
+
             return policy.getWriteLockField().equals(((AbstractDirectMapping) getMapping()).getField());
         }
         return false;
     }
 
     public Bindable.BindableType getBindableType() {
-    	return Bindable.BindableType.SINGULAR_ATTRIBUTE;
+        return Bindable.BindableType.SINGULAR_ATTRIBUTE;
     }
-    
+
     /**
      *  Return the Java type of the represented attribute.
      *  @return Java type
@@ -207,7 +207,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
             if(null == aJavaType) {
                 aJavaType = getMapping().getField().getType();
                 if(null == aJavaType) {
-                    // lookup the attribute on the containing class                    
+                    // lookup the attribute on the containing class
                     Class containingClass = getMapping().getDescriptor().getJavaClass();
                     Field aField = null;
                     try {
@@ -220,7 +220,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
                             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);
                             return MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
                         }
-                    }                    
+                    }
                 }
             }
             return aJavaType;
@@ -228,7 +228,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
             return this.elementType.getJavaType();
         }
     }
-    
+
     /**
      * Return the type that represents the type of the attribute.
      * @return type of attribute
@@ -236,7 +236,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
     public Type<T> getType() {
         return elementType;
     }
-    
+
     /**
      * Return the String representation of the receiver.
      */

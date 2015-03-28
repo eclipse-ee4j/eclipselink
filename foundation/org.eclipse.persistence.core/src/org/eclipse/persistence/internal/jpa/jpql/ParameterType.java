@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,46 +24,46 @@ import org.eclipse.persistence.jpa.jpql.AbstractEclipseLinkParameterTypeVisitor;
  */
 final class ParameterTypeVisitor extends AbstractEclipseLinkParameterTypeVisitor {
 
-	/**
-	 * The context used to query information about the query.
-	 */
-	private final JPQLQueryContext queryContext;
+    /**
+     * The context used to query information about the query.
+     */
+    private final JPQLQueryContext queryContext;
 
-	/**
-	 * Creates a new <code>ParameterTypeVisitor</code>.
-	 *
-	 * @param queryContext The context used to query information about the application metadata and
-	 * cached information
-	 */
-	ParameterTypeVisitor(JPQLQueryContext queryContext) {
-		super();
-		this.queryContext = queryContext;
-	}
+    /**
+     * Creates a new <code>ParameterTypeVisitor</code>.
+     *
+     * @param queryContext The context used to query information about the application metadata and
+     * cached information
+     */
+    ParameterTypeVisitor(JPQLQueryContext queryContext) {
+        super();
+        this.queryContext = queryContext;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Class<?> getType() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Class<?> getType() {
 
-		// The type should be ignored, use the special constant
-		if (ignoreType) {
-			return Object.class;
-		}
+        // The type should be ignored, use the special constant
+        if (ignoreType) {
+            return Object.class;
+        }
 
-		// The type name was set
-		if (typeName != null) {
-			return queryContext.getType(typeName);
-		}
+        // The type name was set
+        if (typeName != null) {
+            return queryContext.getType(typeName);
+        }
 
-		// The calculation couldn't find an expression with a type
-		if (expression == null) {
-			if (type == null) {
-				type = Object.class;
-			}
-			return type;
-		}
+        // The calculation couldn't find an expression with a type
+        if (expression == null) {
+            if (type == null) {
+                type = Object.class;
+            }
+            return type;
+        }
 
-		return queryContext.getType(expression);
-	}
+        return queryContext.getType(expression);
+    }
 }

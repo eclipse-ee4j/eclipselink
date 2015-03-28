@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,9 +55,9 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <b>Description</b>: This class represents a from clause element which could
  * be the root of the query of the end node of a join statement.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria From
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
@@ -81,11 +81,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     public <T> FromImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact, FromImpl correlatedParent) {
         this(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact);
         this.correlatedParent = correlatedParent;
-        
+
     }
     /**
      * Return the fetch joins that have been made from this type.
-     * 
+     *
      * @return fetch joins made from this type
      */
     public java.util.Set<Fetch<X, ?>> getFetches(){
@@ -93,7 +93,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     }
     /**
      *  Whether the <code>From</code> object has been obtained as a result of
-     *  correlation (use of a <code>Subquery</code> <code>correlate</code> 
+     *  correlation (use of a <code>Subquery</code> <code>correlate</code>
      *  method).
      *  @return boolean indicating whether the object has been
      *          obtained through correlation
@@ -108,7 +108,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *  of a <code>Subquery</code> <code>correlate</code> method).
      *  @return  the parent of the correlated From object
      *  @throws IllegalStateException if the From object has
-     *          not been obtained through correlation 
+     *          not been obtained through correlation
      */
     public From<Z, X> getCorrelationParent() {
         if (this.correlatedParent == null){
@@ -120,7 +120,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
 
     /**
      * Fetch join to the specified attribute using an inner join.
-     * 
+     *
      * @param assoc
      *            target of the join
      * @return the resulting fetch join
@@ -131,7 +131,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
 
     /**
      * Fetch join to the specified attribute using the given join type.
-     * 
+     *
      * @param assoc
      *            target of the join
      * @param jt
@@ -159,7 +159,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     }
     /**
      * Fetch join to the specified collection using an inner join.
-     * 
+     *
      * @param assoc
      *            target of the join
      * @return the resulting join
@@ -170,7 +170,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
 
     /**
      * Fetch join to the specified collection using the given join type.
-     * 
+     *
      * @param assoc
      *            target of the join
      * @param jt
@@ -216,7 +216,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     // String-based:
     /**
      * Fetch join to the specified attribute or association using an inner join.
-     * 
+     *
      * @param assocName
      *            name of the attribute or association for the target of the
      *            join
@@ -229,7 +229,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     /**
      * Fetch join to the specified attribute or association using the given join
      * type.
-     * 
+     *
      * @param name
      *            assocName of the attribute or association for the target of
      *            the join
@@ -245,8 +245,8 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
             return fetch(((SingularAttribute)attribute), jt);
         }
     }
-    
-    
+
+
     public Set<Join<X, ?>> getJoins() {
         return joins;
     }
@@ -254,7 +254,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     /**
      * Return the path corresponding to the referenced non-collection valued
      * attribute.
-     * 
+     *
      * @param model
      *            attribute
      * @return path corresponding to the referenced attribute
@@ -273,21 +273,21 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     /**
      * Return the path corresponding to the referenced collection-valued
      * attribute.
-     * 
+     *
      * @param model
      *            collection-valued attribute
      * @return expression corresponding to the referenced attribute
      */
     @Override
     public <E, C extends java.util.Collection<E>> Expression<C> get(PluralAttribute<X, C, E> collection){
-        
+
         // This is a special Expression that represents just the collection for member of etc...
         return new ExpressionImpl<C>(this.metamodel, ClassConstants.Collection_Class ,this.currentNode.anyOf(collection.getName()));
     }
 
     /**
      * Return the path corresponding to the referenced map-valued attribute.
-     * 
+     *
      * @param model
      *            map-valued attribute
      * @return expression corresponding to the referenced attribute
@@ -296,17 +296,17 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map){
         return new ExpressionImpl<M>(this.metamodel, ClassConstants.Map_Class ,this.currentNode.anyOf(map.getName()));
     }
-    
+
     /**
      * Return an expression corresponding to the type of the path.
-     * 
+     *
      * @return expression corresponding to the type of the path
      */
     @Override
     public Expression<Class<? extends X>> type(){
         return new ExpressionImpl(this.metamodel, ClassConstants.CLASS,this.currentNode.type());
     }
-    
+
     @Override
     public <Y> Path<Y> get(String attName) {
         Attribute attribute = this.managedType.getAttribute(attName);
@@ -561,7 +561,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_attribute_not_set", new Object[] { attributeName, this.managedType.getJavaType().getName() }), ex);
         }
     }
-    
+
     public void findJoins(AbstractQueryImpl query){
         Stack stack = new Stack();
         stack.push(this);
@@ -587,7 +587,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
         return fetches;
     }
-    
+
     public boolean isFrom(){
         return true;
     }

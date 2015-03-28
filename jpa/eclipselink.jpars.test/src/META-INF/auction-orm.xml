@@ -2,49 +2,49 @@
 <entity-mappings version="2.3"
     xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
- 
+
     <package>org.eclipse.persistence.jpars.test.model.dynamic.auction</package>
-  
+
     <named-query name="Auction.all">
         <query>SELECT a FROM Auction a</query>
     </named-query>
-    
+
     <named-query name="Auction.forName">
         <query>SELECT a FROM Auction a WHERE a.name = :name</query>
     </named-query>
-    
+
     <named-query name="Auction.open">
         <query>SELECT a FROM Auction a where a.sold = false</query>
     </named-query>
-    
+
     <named-query name="Auction.photo">
         <query>SELECT a.image FROM Auction a where a.id = :auctionId</query>
     </named-query>
-    
+
     <named-query name="Bid.All">
         <query>SELECT b FROM Bid b ORDER BY b.time</query>
     </named-query>
-    
+
     <named-query name="Bid.forAuctionId">
         <query>SELECT b FROM Bid b WHERE b.auction.id =:auctionId ORDER BY b.time</query>
     </named-query>
-    
+
     <named-query name="Bid.maxForAuctionId">
         <query>SELECT MAX(b.amount) FROM Bid b WHERE b.auction.id =:auctionId</query>
     </named-query>
-    
+
     <named-query name="Bid.forUserId">
         <query>SELECT b FROM Bid b WHERE b.user.id =:userId  ORDER BY b.time</query>
     </named-query>
-    
+
     <named-query name="User.all">
         <query>SELECT u from User u</query>
     </named-query>
-      
+
     <named-query name="User.updateName">
         <query>UPDATE User u SET u.name = :name WHERE u.id = :id</query>
     </named-query>
- 
+
     <entity class="User" access="VIRTUAL">
         <table name="JPARS_AUCTION_USER" />
         <attributes>
@@ -62,7 +62,7 @@
             </one-to-one>
         </attributes>
     </entity>
-    
+
     <entity class="Auction" access="VIRTUAL">
         <table name="JPARS_AUCTION_AUCTION" />
         <attributes>
@@ -87,7 +87,7 @@
                 <generated-value/>
             </id>
             <basic name="amount" attribute-type="Double" />
-            <basic name="time" attribute-type="Long"/>        
+            <basic name="time" attribute-type="Long"/>
             <one-to-one name="user" fetch="EAGER" target-entity="User">
                 <join-column name="USER_ID" />
             </one-to-one>
@@ -100,7 +100,7 @@
             </one-to-one>
         </attributes>
     </entity>
-    
+
     <entity class="Address" access="VIRTUAL">
         <table name="JPARS_AUCTION_ADDRESS" />
         <id-class class="org.eclipse.persistence.jpars.test.model.dynamic.AddressPK"/>
@@ -110,11 +110,11 @@
                 <generated-value/>
             </id>
             <id name="type" attribute-type="java.lang.String" />
-            <basic name="city" attribute-type="java.lang.String"/>   
-            <basic name="street" attribute-type="java.lang.String"/>     
-            <basic name="postalCode" attribute-type="java.lang.String"/>          
+            <basic name="city" attribute-type="java.lang.String"/>
+            <basic name="street" attribute-type="java.lang.String"/>
+            <basic name="postalCode" attribute-type="java.lang.String"/>
             <one-to-one name="user" fetch="EAGER" target-entity="User" mapped-by="address"/>
         </attributes>
     </entity>
-        
+
 </entity-mappings>

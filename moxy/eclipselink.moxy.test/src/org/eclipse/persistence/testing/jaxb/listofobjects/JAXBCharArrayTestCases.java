@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -23,25 +23,25 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 public class JAXBCharArrayTestCases extends JAXBListOfObjectsTestCases {
-	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/charArray.xml";
-	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/charArray.json";
-	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/charArrayNoXsiType.xml";
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/charArray.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/charArray.json";
+    private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/charArrayNoXsiType.xml";
 
-	public JAXBCharArrayTestCases(String name) throws Exception {
-		super(name);
-		init();
-	}
+    public JAXBCharArrayTestCases(String name) throws Exception {
+        super(name);
+        init();
+    }
 
-	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-		Class[] classes = new Class[1];
-		classes[0] = char[].class;
-		setClasses(classes);
-		initXsiType();
-	}
+    public void init() throws Exception {
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        Class[] classes = new Class[1];
+        classes[0] = char[].class;
+        setClasses(classes);
+        initXsiType();
+    }
 
-	@Override
+    @Override
     protected Map<String, String> getAdditationalNamespaces() {
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("examplenamespace", "ns0");
@@ -50,42 +50,42 @@ public class JAXBCharArrayTestCases extends JAXBListOfObjectsTestCases {
     }
 
     public List<InputStream> getControlSchemaFiles(){
-	    InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/charArray.xsd");
-		
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-		return controlSchema;
-	}
-    
-	protected Type getTypeToUnmarshalTo() {
-		return char[].class;
-	}
+        InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/charArray.xsd");
 
-	protected Object getControlObject() {
-		char[] chars = new char[4];
-		chars[0] = 'a';
-		chars[1] = 'b';
-		chars[2] = 'c';
-		chars[3] = 'd';
+        List<InputStream> controlSchema = new ArrayList<InputStream>();
+        controlSchema.add(instream);
+        return controlSchema;
+    }
 
-		QName qname = new QName("examplenamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
-		jaxbElement.setValue(chars);
+    protected Type getTypeToUnmarshalTo() {
+        return char[].class;
+    }
 
-		return jaxbElement;
-	}
+    protected Object getControlObject() {
+        char[] chars = new char[4];
+        chars[0] = 'a';
+        chars[1] = 'b';
+        chars[2] = 'c';
+        chars[3] = 'd';
 
-	protected void comparePrimitiveArrays(Object controlValue, Object testValue) {
-		char[] controlArray = (char[]) controlValue;
-		char[] testArray = (char[]) testValue;
+        QName qname = new QName("examplenamespace", "root");
+        JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
+        jaxbElement.setValue(chars);
 
-		assertEquals(controlArray.length, testArray.length);
-		for (int i = 0; i < controlArray.length; i++) {
-			assertEquals(controlArray[i], testArray[i]);
-		}
-	}
+        return jaxbElement;
+    }
 
-	protected String getNoXsiTypeControlResourceName() {
-		return XML_RESOURCE_NO_XSI_TYPE;
-	}
+    protected void comparePrimitiveArrays(Object controlValue, Object testValue) {
+        char[] controlArray = (char[]) controlValue;
+        char[] testArray = (char[]) testValue;
+
+        assertEquals(controlArray.length, testArray.length);
+        for (int i = 0; i < controlArray.length; i++) {
+            assertEquals(controlArray[i], testArray[i]);
+        }
+    }
+
+    protected String getNoXsiTypeControlResourceName() {
+        return XML_RESOURCE_NO_XSI_TYPE;
+    }
 }

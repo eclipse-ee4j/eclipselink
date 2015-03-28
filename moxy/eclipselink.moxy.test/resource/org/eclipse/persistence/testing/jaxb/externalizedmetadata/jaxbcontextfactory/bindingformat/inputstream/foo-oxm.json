@@ -3,25 +3,25 @@
     "xml-schema":{
         "namespace":"input-stream",
         "xml-ns":{
-	   "prefix":"ns0",
-	   "namespace-uri":"input-stream"
-	   }
+       "prefix":"ns0",
+       "namespace-uri":"input-stream"
+       }
       },
     "java-types":{
         "java-type":[
-	    {
-	     "name":"Foo",
+        {
+         "name":"Foo",
              "xml-root-element":{
-	        "name":"my-foo"
-	      },
+            "name":"my-foo"
+          },
             "java-attributes":{
                 "xml-attribute":[
-   		   {
-   	               "java-attribute":"id"
-		   }
-		 ]
+              {
+                      "java-attribute":"id"
+           }
+         ]
               }
-	      }
+          }
             ]
      }
 }

@@ -1,5 +1,5 @@
  /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,28 +12,28 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.converter;
 
-public class Employee 
+public class Employee
 {
   public String firstName;
   public String lastName;
-  public String gender; 
-  
+  public String gender;
+
   public boolean equals(Object obj){
-	  Employee empObj = (Employee)obj;
-	  if(!firstName.equals(empObj.firstName)){
-		  return false;
-	  }
-	  if(!lastName.equals(empObj.lastName)){
-		  return false;
-	  }
-	  
-	  if(gender == null){
-		  if(empObj.gender != null){
-			  return false;
-		  }
-	  } else if(!gender.equals(empObj.gender)){
-		  return false;
-	  }
-	  return true;
+      Employee empObj = (Employee)obj;
+      if(!firstName.equals(empObj.firstName)){
+          return false;
+      }
+      if(!lastName.equals(empObj.lastName)){
+          return false;
+      }
+
+      if(gender == null){
+          if(empObj.gender != null){
+              return false;
+          }
+      } else if(!gender.equals(empObj.gender)){
+          return false;
+      }
+      return true;
   }
 }

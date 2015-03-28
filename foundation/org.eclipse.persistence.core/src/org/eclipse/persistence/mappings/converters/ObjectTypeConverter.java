@@ -1,17 +1,17 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *      *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.converters;
 
 import java.lang.reflect.Constructor;
@@ -50,7 +50,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     protected String objectTypeName;
     protected Map<String, String> conversionValueStrings;
     protected Map<String, String> addToAttributeOnlyConversionValueStrings;
-    
+
     protected DatabaseMapping mapping;
     protected transient Map fieldToAttributeValues;
     protected Map attributeToFieldValues;
@@ -58,7 +58,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     protected String defaultAttributeValueString;
     protected transient Class fieldClassification;
     protected transient String fieldClassificationName;
-    
+
     /**
      * PUBLIC:
      * Default constructor.
@@ -98,7 +98,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
         getFieldToAttributeValues().put(fieldValue, attributeValue);
         getAttributeToFieldValues().put(attributeValue, fieldValue);
     }
-    
+
     /**
      * INTERNAL:
      * Set from JPA processing where we deal with strings only to avoid
@@ -134,7 +134,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     public void addToAttributeOnlyConversionValueStrings(String dataValue, String objectValue) {
         this.addToAttributeOnlyConversionValueStrings.put(dataValue, objectValue);
     }
-    
+
     /**
      * INTERNAL:
      * Get the attribute to field mapping.
@@ -145,46 +145,46 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
 
     /**
      * INTERNAL:
-     * Convert all the class-name-based settings in this converter to actual 
-     * class-based settings. This method is used when converting a project 
+     * Convert all the class-name-based settings in this converter to actual
+     * class-based settings. This method is used when converting a project
      * that has been built with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         if (dataTypeName != null) {
             dataType = loadClass(dataTypeName, classLoader);
         }
-        
+
         if (objectTypeName != null) {
             objectType = loadClass(objectTypeName, classLoader);
         }
-        
+
         if (objectType != null && dataType != null) {
             // Process the data to object mappings. The object and data values
-            // should be primitive wrapper types so we can initialize the 
+            // should be primitive wrapper types so we can initialize the
             // conversion values now.
             for (String dataValue : conversionValueStrings.keySet()) {
                 String objectValue = conversionValueStrings.get(dataValue);
-                
+
                 addConversionValue(initObject(dataType, dataValue, true), initObject(objectType, objectValue, false));
             }
 
             for (String dataValue : addToAttributeOnlyConversionValueStrings.keySet()) {
                 String objectValue = addToAttributeOnlyConversionValueStrings.get(dataValue);
-                
+
                 addToAttributeOnlyConversionValue(initObject(dataType, dataValue, true), initObject(objectType, objectValue, false));
             }
-            
+
             if (defaultAttributeValueString != null) {
                 setDefaultAttributeValue(initObject(objectType, defaultAttributeValueString, false));
             }
         }
     }
-    
+
     /**
      * Load the given class name with the given loader.
      */
-    protected Class loadClass(String className, ClassLoader classLoader) { 
+    protected Class loadClass(String className, ClassLoader classLoader) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -199,8 +199,8 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
             throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception);
         }
     }
-    
-    
+
+
     /**
      * INTERNAL:
      * Returns the corresponding attribute value for the specified field value.
@@ -254,7 +254,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     protected void setMapping(DatabaseMapping mapping) {
         this.mapping = mapping;
     }
-    
+
     /**
      * INTERNAL:
      * Set from JPA processing where we deal with strings only to avoid
@@ -399,11 +399,11 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used to initialize string based conversion values set from JPA processing.
-     */    
+     */
     private Object initObject(Class type, String value, boolean isData) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
@@ -420,7 +420,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
                 throwInitObjectException(exception, type, value, isData);
             }
         }
-        
+
         return null; // keep compiler happy, will never hit.
     }
 
@@ -449,7 +449,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     public void setConverterName(String converterName) {
         this.converterName = converterName;
     }
-    
+
     /**
      * INTERNAL:
      * Set from JPA processing where we deal with strings only to avoid
@@ -458,7 +458,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     public void setDataTypeName(String dataTypeName) {
         this.dataTypeName = dataTypeName;
     }
-    
+
     /**
      * PUBLIC:
      * The default value can be used if the database can possibly store additional values then those that
@@ -467,7 +467,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     public void setDefaultAttributeValue(Object defaultAttributeValue) {
         this.defaultAttributeValue = defaultAttributeValue;
     }
-    
+
     /**
      * INTERNAL:
      * Set from JPA processing where we deal with strings only to avoid
@@ -520,10 +520,10 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     public boolean isMutable() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
-     */    
+     */
     protected void throwInitObjectException(Exception exception, Class type, String value, boolean isData) {
         if (isData) {
             throw ValidationException.errorInstantiatingConversionValueData(converterName, value, type, exception);

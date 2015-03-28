@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -88,7 +88,7 @@ public class WrapperNamespaceTestCases extends JSONMarshalUnmarshalTestCases {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
+
         Map<String, String> namespaceMapper = new HashMap<String, String>(2);
         namespaceMapper.put("urn:FOO", "foo");
         namespaceMapper.put("urn:BAR", "bar");

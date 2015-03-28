@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.models.jpa.inheritance;
@@ -42,12 +42,12 @@ public abstract class Vehicle implements Serializable {
 
     public abstract String getColor();
 
-	@Id
+    @Id
     @GeneratedValue(strategy=TABLE, generator="VEHICLE_TABLE_GENERATOR")
-	@TableGenerator(
-        name="VEHICLE_TABLE_GENERATOR", 
-        table="CMP3_INHERITANCE_SEQ", 
-        pkColumnName="SEQ_NAME", 
+    @TableGenerator(
+        name="VEHICLE_TABLE_GENERATOR",
+        table="CMP3_INHERITANCE_SEQ",
+        pkColumnName="SEQ_NAME",
         valueColumnName="SEQ_COUNT",
         pkColumnValue="VEHICLE_SEQ")
     @Column(name="ID")
@@ -55,13 +55,13 @@ public abstract class Vehicle implements Serializable {
         return id;
     }
 
-	@ManyToOne(cascade=PERSIST, fetch=LAZY)
-	@JoinColumn(name="OWNER_ID", referencedColumnName="ID")
+    @ManyToOne(cascade=PERSIST, fetch=LAZY)
+    @JoinColumn(name="OWNER_ID", referencedColumnName="ID")
     public Company getOwner() {
         return owner;
     }
 
-	@Column(name="CAPACITY")
+    @Column(name="CAPACITY")
     public Integer getPassengerCapacity() {
         return passengerCapacity;
     }
@@ -77,17 +77,17 @@ public abstract class Vehicle implements Serializable {
 
         return definition;
     }
-    
+
     public abstract void setColor(String color);
 
-    public void setId(Number id) { 
-        this.id = id; 
+    public void setId(Number id) {
+        this.id = id;
     }
-    
+
     public void setOwner(Company ownerCompany) {
         owner = ownerCompany;
     }
-    
+
     public void setPassengerCapacity(Integer capacity) {
         passengerCapacity = capacity;
     }
@@ -101,7 +101,7 @@ public abstract class Vehicle implements Serializable {
     public void setDirectory(VehicleDirectory directory) {
         this.directory = directory;
     }
-    
+
     /**
      * Return the view for Sybase.
      */
@@ -113,7 +113,7 @@ public abstract class Vehicle implements Serializable {
 
         return definition;
     }
-    
+
     public String toString() {
         return org.eclipse.persistence.internal.helper.Helper.getShortClassName(getClass()) + "(" + id + ")";
     }

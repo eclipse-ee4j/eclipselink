@@ -7,11 +7,11 @@ public class AttributeNodeImpl<X> implements AttributeNode {
 
     public AttributeNodeImpl() {
     }
-    
+
     public AttributeNodeImpl(String attributeName) {
         this.currentAttribute = attributeName;
     }
-    
+
     public String getAttributeName() {
         return currentAttribute;
     }

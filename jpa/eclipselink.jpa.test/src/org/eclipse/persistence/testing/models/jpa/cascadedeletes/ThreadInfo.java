@@ -11,7 +11,7 @@ public class ThreadInfo {
     private String name;
 
     public ThreadInfo() {}
-    
+
     public ThreadInfo(long id, String name){
         this.id = id;
         this.name = name;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,13 +41,13 @@
 package javax.ejb;
 
 /**
- * The NoSuchEntityException exception is thrown by an entity bean 
- * instance to its container to report that the invoked business method 
+ * The NoSuchEntityException exception is thrown by an entity bean
+ * instance to its container to report that the invoked business method
  * or callback method could not be completed because of the underlying
- * entity was removed from the database. 
+ * entity was removed from the database.
  *
  * <p>This exception may be thrown by the bean class methods that implement
- * the business methods defined in the bean's component interface and by 
+ * the business methods defined in the bean's component interface and by
  * the <code>ejbLoad</code> and <code>ejbStore</code> methods.
  *
  * @since EJB 1.1
@@ -62,22 +62,22 @@ public class NoSuchEntityException extends EJBException {
 
     /**
      * Constructs a NoSuchEntityException with no detail message.
-     */  
+     */
     public NoSuchEntityException() {
     }
 
     /**
      * Constructs a NoSuchEntityException with the specified
      * detailed message.
-     */  
+     */
     public NoSuchEntityException(String message) {
         super(message);
     }
 
     /**
-     * Constructs a NoSuchEntityException that embeds the originally 
+     * Constructs a NoSuchEntityException that embeds the originally
      * thrown exception.
-     */  
+     */
     public NoSuchEntityException(Exception  ex) {
         super(ex);
     }

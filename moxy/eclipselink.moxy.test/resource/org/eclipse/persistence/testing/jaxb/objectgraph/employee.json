@@ -1,6 +1,6 @@
 {"employee":{"contactInfo":[
    {"type":"addressInh",
-    "id":"1", 
+    "id":"1",
     "contactType":"billingAddress",
     "street":"1 A St",
     "city":"Any Town"

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,7 +42,7 @@ package javax.ejb;
 
 
 /**
- * A ConcurrentAccessException indicates that the client 
+ * A ConcurrentAccessException indicates that the client
  * has attempted an invocation on a stateful session bean or singleton bean
  * while another invocation is in progress and such concurrent access
  * is not allowed.
@@ -57,22 +57,22 @@ public class ConcurrentAccessException extends EJBException {
 
     /**
      * Constructs an ConcurrentAccessException with no detail message.
-     */  
+     */
     public ConcurrentAccessException() {
     }
 
     /**
      * Constructs an ConcurrentAccessException with the specified
      * detailed message.
-     */  
+     */
     public ConcurrentAccessException(String message) {
         super(message);
     }
 
     /**
      * Constructs an ConcurrentAccessException with the specified
-     * detail message and a nested exception. 
-     */  
+     * detail message and a nested exception.
+     */
     public ConcurrentAccessException(String message, Exception ex) {
         super(message, ex);
     }

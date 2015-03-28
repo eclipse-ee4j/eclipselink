@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -42,7 +42,7 @@ public class Employee {
         } catch (ClassCastException e) {
             return false;
         }
-        
+
         if (stuff == null) {
             if (empObj.stuff != null) {
                 return false;
@@ -56,7 +56,7 @@ public class Employee {
                 if (!(empObj.stuff instanceof Node)) {
                     return false;
                 }
-                // just make sure each has the same number of child nodes 
+                // just make sure each has the same number of child nodes
                 try {
                     Element elt = (Element) this.stuff;
                     Element empelt = (Element) empObj.stuff;

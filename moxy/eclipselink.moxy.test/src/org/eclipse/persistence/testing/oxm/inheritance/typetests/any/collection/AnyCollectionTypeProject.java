@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.inheritance.typetests.any.collection;
 
 import javax.xml.namespace.QName;
@@ -38,19 +38,19 @@ public class AnyCollectionTypeProject extends Project {
         addDescriptor(getContactMethodDescriptor());
         addDescriptor(getCustomerDescriptor());
     }
-    
+
     public XMLDescriptor getContactMethodDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(ContactMethod.class);
         descriptor.setDefaultRootElement("contact-method");
         descriptor.setDefaultRootElementType(new QName("contact-method-type"));
         descriptor.setNamespaceResolver(namespaceResolver);
-        
+
         XMLSchemaClassPathReference ref = new XMLSchemaClassPathReference();
         ref.setSchemaContext("/contact-method-type");
         ref.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
         descriptor.setSchemaReference(ref);
-        
+
         XMLField classIndicatorField = new XMLField("@xsi:type");
         descriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
         descriptor.getInheritancePolicy().addClassIndicator(ContactMethod.class, "contact-method-type");
@@ -65,56 +65,56 @@ public class AnyCollectionTypeProject extends Project {
 
         return descriptor;
     }
-    
+
     public XMLDescriptor getAddressDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.setJavaClass(Address.class);
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(Address.class);
         descriptor.setDefaultRootElement("contact-method");
         descriptor.setDefaultRootElementType(new QName("contact-method-type"));
-		descriptor.setNamespaceResolver(namespaceResolver);
+        descriptor.setNamespaceResolver(namespaceResolver);
         descriptor.getInheritancePolicy().setParentClass(ContactMethod.class);
 
         XMLSchemaClassPathReference ref = new XMLSchemaClassPathReference();
         ref.setSchemaContext("/address-type");
         ref.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
         descriptor.setSchemaReference(ref);
-        
-		XMLDirectMapping streetMapping = new XMLDirectMapping();
-		streetMapping.setAttributeName("street");
-		streetMapping.setXPath("street/text()");
-		descriptor.addMapping(streetMapping);
-		return descriptor;
+
+        XMLDirectMapping streetMapping = new XMLDirectMapping();
+        streetMapping.setAttributeName("street");
+        streetMapping.setXPath("street/text()");
+        descriptor.addMapping(streetMapping);
+        return descriptor;
     }
 
     public XMLDescriptor getCdnAddressDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.setJavaClass(CanadianAddress.class);
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(CanadianAddress.class);
         descriptor.setDefaultRootElement("contact-method");
         descriptor.setDefaultRootElementType(new QName("contact-method-type"));
-		descriptor.setNamespaceResolver(namespaceResolver);
-		descriptor.getInheritancePolicy().setParentClass(Address.class);
+        descriptor.setNamespaceResolver(namespaceResolver);
+        descriptor.getInheritancePolicy().setParentClass(Address.class);
 
         XMLSchemaClassPathReference ref = new XMLSchemaClassPathReference();
         ref.setSchemaContext("/canadian-address-type");
         ref.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
         descriptor.setSchemaReference(ref);
-        
-		XMLDirectMapping postalCodeMapping = new XMLDirectMapping();
-		postalCodeMapping.setAttributeName("postalCode");
-		postalCodeMapping.setXPath("postal-code/text()");
-		descriptor.addMapping(postalCodeMapping);
 
-		return descriptor;
+        XMLDirectMapping postalCodeMapping = new XMLDirectMapping();
+        postalCodeMapping.setAttributeName("postalCode");
+        postalCodeMapping.setXPath("postal-code/text()");
+        descriptor.addMapping(postalCodeMapping);
+
+        return descriptor;
     }
 
     public XMLDescriptor getCustomerDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.setJavaClass(Customer.class);
-		descriptor.setDefaultRootElement("customer");
-		descriptor.setNamespaceResolver(namespaceResolver);
-		
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(Customer.class);
+        descriptor.setDefaultRootElement("customer");
+        descriptor.setNamespaceResolver(namespaceResolver);
+
         XMLAnyCollectionMapping contactMapping = new XMLAnyCollectionMapping();
-		contactMapping.setAttributeName("contacts");
+        contactMapping.setAttributeName("contacts");
         descriptor.addMapping(contactMapping);
         return descriptor;
     }

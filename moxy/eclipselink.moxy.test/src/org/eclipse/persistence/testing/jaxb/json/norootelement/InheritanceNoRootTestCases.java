@@ -27,38 +27,38 @@ import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 
 public class InheritanceNoRootTestCases extends JAXBWithJSONTestCases {
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/inheritance.json";
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/inheritance.xml";
-	
-	public InheritanceNoRootTestCases(String name) throws Exception {
-		super(name);	
-		setClasses(new Class[]{Person.class});
-		setControlJSON(JSON_RESOURCE);
-		setControlDocument(XML_RESOURCE);
-	}
-	
-	public void setUp() throws Exception{
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/inheritance.json";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/inheritance.xml";
+
+    public InheritanceNoRootTestCases(String name) throws Exception {
+        super(name);
+        setClasses(new Class[]{Person.class});
+        setControlJSON(JSON_RESOURCE);
+        setControlDocument(XML_RESOURCE);
+    }
+
+    public void setUp() throws Exception{
         super.setUp();
-        jaxbMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);              
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
         initXsiType();
     }
-	
-	protected Object getJSONReadControlObject() {
-	    
+
+    protected Object getJSONReadControlObject() {
+
         Customer c = new Customer();
         c.name = "theName";
-        
+
         QName name = new QName("");
-        
+
         JAXBElement<Object> jbe = new JAXBElement<Object>(name, Object.class, c );
         return jbe;
     }
-		
-	protected Object getControlObject() {
-	    Customer c = new Customer();
-	    c.name = "theName";
-	    return c;
-	}
+
+    protected Object getControlObject() {
+        Customer c = new Customer();
+        c.name = "theName";
+        return c;
+    }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,7 +21,7 @@ public class XMLChoiceWithReferenceOrderTestCases extends XMLWithJSONMappingTest
     private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ref/write_doc.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ref/read_doc.json";
     private final static String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ref/write_doc.json";
-    
+
     public XMLChoiceWithReferenceOrderTestCases(String name) throws Exception {
       super(name);
       setControlDocument(XML_RESOURCE);
@@ -40,33 +40,33 @@ public class XMLChoiceWithReferenceOrderTestCases extends XMLWithJSONMappingTest
         Employee employee = new Employee();
         employee.name = "Jane Doe";
         employee.contact = new ArrayList();
-        
+
         Address addr = new Address();
         addr.id = "1";
         addr.street = "123 Abc Street";
         addr.zip = "123456";
-        
+
         root.addresses.add(addr);
         employee.contact.add(addr);
-        
+
         addr = new Address();
         addr.id = "2";
         addr.street = "321 Cba Street";
         addr.zip = "654321";
-        
+
         root.addresses.add(addr);
         employee.contact.add(addr);
-        
+
         root.employees.add(employee);
-        
+
         PhoneNumber phone = new PhoneNumber();
         phone.id = "1";
         phone.number = "123-3456";
         employee.contact.add(phone);
         root.phones.add(phone);
-        
+
         return root;
-    
+
     }
 
 }

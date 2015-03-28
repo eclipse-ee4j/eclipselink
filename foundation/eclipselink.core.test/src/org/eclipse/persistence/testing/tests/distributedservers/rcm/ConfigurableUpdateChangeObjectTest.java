@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.distributedservers.rcm;
 
 import java.util.Enumeration;
@@ -26,7 +26,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
  * You can provide a hashtable containing classes for descriptors and their CacheSynchronizationType
  * value.  This test will execute an UpdateObjectTest that assumes that after cache synchronization
  * the objects will be valid in the distributed cache.
- * 
+ *
  * @see UpdateChangeObjectTest to see what changes about the object so you can ensure the value will still
  * be valid
  */
@@ -38,7 +38,7 @@ public class ConfigurableUpdateChangeObjectTest extends UpdateChangeObjectTest {
     /**
      * Construtor
      * @param employee the employee to use for this update
-     * @param cacheSyncConfigValues a Class-Integer hashtable where the Class represents the 
+     * @param cacheSyncConfigValues a Class-Integer hashtable where the Class represents the
      * class of the object to change the cache synchronization type for and the Integer represents
      * the new cache synchronization type.
      */

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.Property;
@@ -80,8 +80,8 @@ public class SDOSchemaGenerator {
 
         allTypes = types;
         generateSchema(uri, types);
-        
-        //Now we have a built schema model        
+
+        //Now we have a built schema model
         Project p = new SchemaModelProject();
         Vector generatedNamespaces = generatedSchema.getNamespaceResolver().getNamespaces();
         XMLDescriptor desc = ((XMLDescriptor)p.getDescriptor(Schema.class));
@@ -161,7 +161,7 @@ public class SDOSchemaGenerator {
 
         String uri = null;
         namespaceToSchemaLocation = aNamespaceToSchemaLocation;
- 
+
         Type firstType = (Type)types.get(0);
         if (firstType == null) {
             throw new IllegalArgumentException("No Schema was generated from a list of types containing null elements");
@@ -171,7 +171,7 @@ public class SDOSchemaGenerator {
         allTypes = types;
         generateSchema(uri, types);
 
-        //Now we have a built schema model						      
+        //Now we have a built schema model
         Project p = new SchemaModelProject();
         Vector namespaces = generatedSchema.getNamespaceResolver().getNamespaces();
         for (int i = 0; i < namespaces.size(); i++) {
@@ -190,7 +190,7 @@ public class SDOSchemaGenerator {
         return generatedSchemaWriter.toString();
     }
 
-    private void generateSchema(String uri, List typesWithSameUri) { 
+    private void generateSchema(String uri, List typesWithSameUri) {
         generatedSchema = new Schema();
         generatedSchema.setTargetNamespace(uri);
         generatedSchema.setDefaultNamespace(uri);
@@ -219,7 +219,7 @@ public class SDOSchemaGenerator {
                         javaPackage = nextPackage;
                     }
                 }
-            }            
+            }
 
             if (nextType.isDataType()) {
                 //generate simple type
@@ -260,7 +260,7 @@ public class SDOSchemaGenerator {
             annotation.setAppInfo(sdoType.getAppInfoElements());
             simpleType.setAnnotation(annotation);
         }
-        
+
         if ((xsdLocalName != null) && !(xsdLocalName.equals(sdoType.getName()))) {
             String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
             QName qname = new QName(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_NAME, sdoXmlPrefix);
@@ -284,7 +284,7 @@ public class SDOSchemaGenerator {
         SDOType baseType = null;
         if (sdoType.isSubType()) {
             baseType = (SDOType) sdoType.getBaseTypes().get(0);
-        } 
+        }
 
         if (baseType != null) {
             Restriction restriction = new Restriction();
@@ -477,7 +477,7 @@ public class SDOSchemaGenerator {
         if (dataType == null) {
             dataType = getAutomaticDataTypeForType(sdoProperty.getType());
         }
-        if (dataType != null && !shouldSuppressDataType(sdoProperty, dataType)) {        	
+        if (dataType != null && !shouldSuppressDataType(sdoProperty, dataType)) {
             String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
             QName qname = new QName(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_DATATYPE, sdoXmlPrefix);
             String dataTypeString = dataType.getName();
@@ -508,34 +508,34 @@ public class SDOSchemaGenerator {
     }
 
     private boolean shouldSuppressDataType(SDOProperty prop, Type dataType){
-    	if(prop.isNullable()){
-    		SDOType type = prop.getType();    		
-    		if(dataType == SDOConstants.SDO_BOOLEANOBJECT && (type == SDOConstants.SDO_BOOLEAN || type == SDOConstants.SDO_BOOLEANOBJECT )){
-    			return true;
-    		}
-    		if(dataType == SDOConstants.SDO_BYTEOBJECT && (type == SDOConstants.SDO_BYTE || type == SDOConstants.SDO_BYTEOBJECT )){
-    			return true;
-    		}
-    		if(dataType == SDOConstants.SDO_CHARACTEROBJECT && (type == SDOConstants.SDO_CHARACTER || type == SDOConstants.SDO_CHARACTEROBJECT )){
-    			return true;
-    		}
-    		if(dataType == SDOConstants.SDO_DOUBLEOBJECT && (type == SDOConstants.SDO_DOUBLE || type == SDOConstants.SDO_DOUBLEOBJECT )){
-    			return true;
-    		}
-    		if(dataType == SDOConstants.SDO_FLOATOBJECT && (type == SDOConstants.SDO_FLOAT || type == SDOConstants.SDO_FLOATOBJECT )){
-    			return true;
-    		}
-    		if(dataType == SDOConstants.SDO_INTOBJECT && (type == SDOConstants.SDO_INT || type == SDOConstants.SDO_INTOBJECT )){
-    			return true;
-    		}    		
-    		if(dataType == SDOConstants.SDO_LONGOBJECT && (type == SDOConstants.SDO_LONG || type == SDOConstants.SDO_LONGOBJECT )){
-    			return true;
-    		}
-    		if(dataType == SDOConstants.SDO_SHORTOBJECT && (type == SDOConstants.SDO_SHORT || type == SDOConstants.SDO_SHORTOBJECT )){
-    			return true;
-    		}
+        if(prop.isNullable()){
+            SDOType type = prop.getType();
+            if(dataType == SDOConstants.SDO_BOOLEANOBJECT && (type == SDOConstants.SDO_BOOLEAN || type == SDOConstants.SDO_BOOLEANOBJECT )){
+                return true;
+            }
+            if(dataType == SDOConstants.SDO_BYTEOBJECT && (type == SDOConstants.SDO_BYTE || type == SDOConstants.SDO_BYTEOBJECT )){
+                return true;
+            }
+            if(dataType == SDOConstants.SDO_CHARACTEROBJECT && (type == SDOConstants.SDO_CHARACTER || type == SDOConstants.SDO_CHARACTEROBJECT )){
+                return true;
+            }
+            if(dataType == SDOConstants.SDO_DOUBLEOBJECT && (type == SDOConstants.SDO_DOUBLE || type == SDOConstants.SDO_DOUBLEOBJECT )){
+                return true;
+            }
+            if(dataType == SDOConstants.SDO_FLOATOBJECT && (type == SDOConstants.SDO_FLOAT || type == SDOConstants.SDO_FLOATOBJECT )){
+                return true;
+            }
+            if(dataType == SDOConstants.SDO_INTOBJECT && (type == SDOConstants.SDO_INT || type == SDOConstants.SDO_INTOBJECT )){
+                return true;
+            }
+            if(dataType == SDOConstants.SDO_LONGOBJECT && (type == SDOConstants.SDO_LONG || type == SDOConstants.SDO_LONGOBJECT )){
+                return true;
+            }
+            if(dataType == SDOConstants.SDO_SHORTOBJECT && (type == SDOConstants.SDO_SHORT || type == SDOConstants.SDO_SHORTOBJECT )){
+                return true;
+            }
         }
-    	return false;
+        return false;
     }
 
     private String buildAliasNameString(List<String> aliasNames) {
@@ -639,7 +639,7 @@ public class SDOSchemaGenerator {
                 } else {
                     nameString = propertyType.getName();
                 }
-                
+
                 elem.setType(getPrefixStringForURI(propertyType.getURI()) + nameString);
             }
         } else {
@@ -677,7 +677,7 @@ public class SDOSchemaGenerator {
             if (!property.isMany() && ((SDOType)property.getType()).isDataType()) {
                 XMLConversionManager xmlConversionManager = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlConversionManager();
                 attr.setDefaultValue((String)xmlConversionManager.convertObject(property.getDefault(), ClassConstants.STRING, ((SDOProperty)property).getXsdType()));
-            }            
+            }
         }
         addSimpleComponentAnnotations(attr, property, false);
 
@@ -723,7 +723,7 @@ public class SDOSchemaGenerator {
                 } else {
                     nameString = propertyType.getName();
                 }
-             
+
                 attr.setType(getPrefixStringForURI(propertyType.getURI()) + nameString);
             }
 
@@ -752,30 +752,30 @@ public class SDOSchemaGenerator {
                         allTypes.add(targetType);
                     }
                 } else {
-                    if(!importExists(generatedSchema.getImports(), schemaLocation)){                    
+                    if(!importExists(generatedSchema.getImports(), schemaLocation)){
                         Import theImport = new Import();
                         theImport.setSchemaLocation(schemaLocation);
-                        theImport.setNamespace(targetType.getURI());                        
+                        theImport.setNamespace(targetType.getURI());
                         generatedSchema.getImports().add(theImport);
                     }
                 }
             } else if (schemaLocationResolver != null) {
                 schemaLocation = schemaLocationResolver.resolveSchemaLocation(sourceType, targetType);
                 if (schemaLocation != null) {
-                    if (targetType.getURI().equals(generatedSchema.getTargetNamespace())) {                        
-                        if(!importExists(generatedSchema.getIncludes(), schemaLocation)){                        
+                    if (targetType.getURI().equals(generatedSchema.getTargetNamespace())) {
+                        if(!importExists(generatedSchema.getIncludes(), schemaLocation)){
                             Include include = new Include();
                             include.setSchemaLocation(schemaLocation);
-                            generatedSchema.getIncludes().add(include);                            
+                            generatedSchema.getIncludes().add(include);
                             // 20060713 remove type from List of types when adding an include
                             allTypes.remove(targetType);
                         }
-                    } else {                        
+                    } else {
                         if(!importExists(generatedSchema.getImports(), schemaLocation)){
                             Import theImport = new Import();
                             theImport.setSchemaLocation(schemaLocation);
                             theImport.setNamespace(targetType.getURI());
-                            generatedSchema.getImports().add(theImport);                            
+                            generatedSchema.getImports().add(theImport);
                         }
                     }
                 } else {
@@ -867,7 +867,7 @@ public class SDOSchemaGenerator {
     }
 
     private Type getAutomaticDataTypeForType(Type theType) {
-        // Section 10.1 of the spec 
+        // Section 10.1 of the spec
         //For the SDO Java Types, the corresponding base SDO Type is used. For the SDO Java
         // Types, and for SDO Date, an sdo:dataType annotation is generated on the XML attribute
         // or element referring to the SDO Type.
@@ -894,8 +894,8 @@ public class SDOSchemaGenerator {
         }
         return null;
     }
-    
-     private boolean importExists(java.util.List imports, String schemaName){                
+
+     private boolean importExists(java.util.List imports, String schemaName){
         for(int i=0;i < imports.size();i++){
             //Cast to the parent class, since this could be an Include or an Import
             Include nextImport = (Include)imports.get(i);
@@ -903,6 +903,6 @@ public class SDOSchemaGenerator {
                 return true;
             }
         }
-        return false;                
+        return false;
     }
 }

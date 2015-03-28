@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.readonly;
 
 import java.util.*;
@@ -26,19 +26,19 @@ import org.eclipse.persistence.testing.framework.TransactionalTestCase;
  * Test added for bug 3013948.  Since one can modify oneToOne or manyToMany
  * references to read only objects without changing those objects, this is
  * something we should fully support.
- * 
+ *
  * Bug 3013948 fixes the read only case of CR 1360.  The original description
  * is:
- * 
- * Description:  There was an issue that loss of identity could cause a problem with deletes from collection mappings. 
- * Consider an object model where an Employee contains a privately owned vector of PhoneNumbers.  Also, assume that the IdentityMap for PhoneNumber is a CacheIdentityMap of size 10.  Now, imagine that 10 Employees, each with 3 PhoneNumbers are read in.  Because the identityMap is of a fixed size, only 10 of the phone number will be in the cache.  Since PhoneNumbers are privately owned, deleting them out of the vector of the Employee will delete them from the database.  However, in the above scenario, if the PhoneNumber is not longer in the identityMap, the delete would occur on the database, but not in the original. 
  *
- * Also, if this collection were not a Vector but a Hashtable, there would be a NullPointer exception when the merge to the original object was attempted.. 
- * 
- * Note: The above scenario is generally one that you should avoid if possible.  Loss of identity may also cause other unexpected behavior.  In general it is better to use an identity map that will maintain identity for the life of you domain objects. 
- * 
+ * Description:  There was an issue that loss of identity could cause a problem with deletes from collection mappings.
+ * Consider an object model where an Employee contains a privately owned vector of PhoneNumbers.  Also, assume that the IdentityMap for PhoneNumber is a CacheIdentityMap of size 10.  Now, imagine that 10 Employees, each with 3 PhoneNumbers are read in.  Because the identityMap is of a fixed size, only 10 of the phone number will be in the cache.  Since PhoneNumbers are privately owned, deleting them out of the vector of the Employee will delete them from the database.  However, in the above scenario, if the PhoneNumber is not longer in the identityMap, the delete would occur on the database, but not in the original.
+ *
+ * Also, if this collection were not a Vector but a Hashtable, there would be a NullPointer exception when the merge to the original object was attempted..
+ *
+ * Note: The above scenario is generally one that you should avoid if possible.  Loss of identity may also cause other unexpected behavior.  In general it is better to use an identity map that will maintain identity for the life of you domain objects.
+ *
  * Symptom:Either a nullpointer exeption on merge, or an incorrect merge due to loss of identity.
- * 
+ *
  */
 public class WriteableMappingReadOnlyClassTest extends TransactionalTestCase {
     protected UnitOfWork uow;

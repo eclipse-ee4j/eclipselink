@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -185,7 +185,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         if(null == referenceResolver) {
             referenceResolver = new ReferenceResolver();
         }
-    	return referenceResolver;
+        return referenceResolver;
     }
 
     /**
@@ -194,7 +194,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * @since EclipseLink 2.5.0
      */
     public void setReferenceResolver(ReferenceResolver referenceResolver) {
-    	this.referenceResolver = referenceResolver;
+        this.referenceResolver = referenceResolver;
     }
 
     /**
@@ -498,10 +498,10 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
     }
 
     private Object getValueFromAttribute(Attr node, XMLField key) {
-    	currentNode = node.getOwnerElement();
-    	Object convertedValue = key.convertValueBasedOnSchemaType(node.getNodeValue(), (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), this);
-    	currentNode = getDOM();
-    	return convertedValue;
+        currentNode = node.getOwnerElement();
+        Object convertedValue = key.convertValueBasedOnSchemaType(node.getNodeValue(), (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), this);
+        currentNode = getDOM();
+        return convertedValue;
 
     }
 
@@ -806,7 +806,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
             this.equalNamespaceResolvers = ((XMLLogin) session.getDatasourceLogin()).hasEqualNamespaceResolvers();
         }
     }
-    
+
     /**
      * Set the XML from an XML reader.
      */

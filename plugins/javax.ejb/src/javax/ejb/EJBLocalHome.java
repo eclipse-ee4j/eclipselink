@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,7 @@ package javax.ejb;
 /**
  * The EJBLocalHome interface must be extended by all enterprise
  * beans' local home interfaces. An enterprise bean's local home
- * interface defines the methods that allow local clients to create, 
+ * interface defines the methods that allow local clients to create,
  * find, and remove EJB objects.
  *
  * <p> The local home interface is defined by the enterprise bean provider

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,78 +33,78 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public class KeyExpressionStateObject extends EncapsulatedIdentificationVariableExpressionStateObject {
 
-	/**
-	 * Creates a new <code>KeyExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public KeyExpressionStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>KeyExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public KeyExpressionStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>KeyExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param identificationVariable The identification variable
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public KeyExpressionStateObject(StateObject parent, String identificationVariable) {
-		super(parent, identificationVariable);
-	}
+    /**
+     * Creates a new <code>KeyExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param identificationVariable The identification variable
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public KeyExpressionStateObject(StateObject parent, String identificationVariable) {
+        super(parent, identificationVariable);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public KeyExpression getExpression() {
-		return (KeyExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public KeyExpression getExpression() {
+        return (KeyExpression) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getIdentifier() {
-		return KEY;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdentifier() {
+        return KEY;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected IType resolveType() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected IType resolveType() {
 
-		ITypeDeclaration typeDeclaration = getTypeDeclaration();
+        ITypeDeclaration typeDeclaration = getTypeDeclaration();
 
-		if (getTypeHelper().isMapType(typeDeclaration.getType())) {
-			ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
+        if (getTypeHelper().isMapType(typeDeclaration.getType())) {
+            ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
 
-			if (typeParameters.length > 0) {
-				return typeParameters[0].getType();
-			}
-		}
+            if (typeParameters.length > 0) {
+                return typeParameters[0].getType();
+            }
+        }
 
-		return getTypeHelper().objectType();
-	}
+        return getTypeHelper().objectType();
+    }
 
-	/**
-	 * Keeps a reference of the {@link KeyExpression parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link KeyExpression parsed object} representing a <code><b>KEY</b></code>
-	 * expression
-	 */
-	public void setExpression(KeyExpression expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link KeyExpression parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link KeyExpression parsed object} representing a <code><b>KEY</b></code>
+     * expression
+     */
+    public void setExpression(KeyExpression expression) {
+        super.setExpression(expression);
+    }
 }

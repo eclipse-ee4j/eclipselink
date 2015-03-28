@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ns1:root xmlns:ns1="rootNamespace" xmlns:ns0="someNamespace" xmlns:ns2="anotherNamespace" xmlns:ns3="someNamespaceLevel2" xmlns:ns5="uri1" xmlns:ns6="uri3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <objectList xsi:type="ns0:subType">
-		<ns5:subTypeProp>10</ns5:subTypeProp>
-	</objectList>
-	<objectList xsi:type="ns2:anotherSubType">
-	</objectList>
-	<objectList xsi:type="ns3:subTypeLevel2">
-	    <ns5:baseProp>boo</ns5:baseProp>
-	<ns5:subTypeProp>0</ns5:subTypeProp>
-	</objectList>
-	<objectList xsi:type="ns0:subType">
-	<ns5:subTypeProp>10</ns5:subTypeProp>
-	</objectList>
-	<objectList xsi:type="ns6:anotherPackageSubType">
-		<ns5:subTypeProp>0</ns5:subTypeProp>
-	</objectList>
-	<objectList xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:string">string test</objectList>
-	<objectList xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:int">500</objectList>
+        <ns5:subTypeProp>10</ns5:subTypeProp>
+    </objectList>
+    <objectList xsi:type="ns2:anotherSubType">
+    </objectList>
+    <objectList xsi:type="ns3:subTypeLevel2">
+        <ns5:baseProp>boo</ns5:baseProp>
+    <ns5:subTypeProp>0</ns5:subTypeProp>
+    </objectList>
+    <objectList xsi:type="ns0:subType">
+    <ns5:subTypeProp>10</ns5:subTypeProp>
+    </objectList>
+    <objectList xsi:type="ns6:anotherPackageSubType">
+        <ns5:subTypeProp>0</ns5:subTypeProp>
+    </objectList>
+    <objectList xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:string">string test</objectList>
+    <objectList xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:int">500</objectList>
 </ns1:root>

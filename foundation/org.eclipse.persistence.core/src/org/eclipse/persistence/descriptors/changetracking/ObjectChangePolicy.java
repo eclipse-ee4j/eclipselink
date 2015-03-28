@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors.changetracking;
 
 import java.beans.PropertyChangeListener;
@@ -80,10 +80,10 @@ public interface ObjectChangePolicy extends Serializable {
      * Create ObjectChangeSet through comparison.  Used in cases where we need to force change calculation (ie aggregates)
      */
     ObjectChangeSet createObjectChangeSetThroughComparison(Object clone, Object backUp, org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet changeSet, boolean isNew, AbstractSession session, ClassDescriptor descriptor);
-    
+
     /**
      * INTERNAL:
-     * In cases where a relationship with detached or new entities is merged into itself previous changes may have been recorded for 
+     * In cases where a relationship with detached or new entities is merged into itself previous changes may have been recorded for
      * the detached/new entity that need to be updated.
      */
     void updateListenerForSelfMerge(ObjectChangeListener listener, ForeignReferenceMapping mapping, Object source, Object target, UnitOfWorkImpl unitOfWork);
@@ -99,14 +99,14 @@ public interface ObjectChangePolicy extends Serializable {
      * This method is used to enable changetracking temporarily
      */
     void enableEventProcessing(Object changeTracker);
-    
+
     /**
      * INTERNAL:
      * This may cause a property change event to be raised to a listener in the case that a listener exists.
      * If there is no listener then this call is a no-op
      */
     void raiseInternalPropertyChangeEvent(Object source, String propertyName, Object oldValue, Object newValue);
-    
+
     /**
      * INTERNAL:
      * This method is used to revert an object within the unit of work
@@ -118,7 +118,7 @@ public interface ObjectChangePolicy extends Serializable {
      * This is a place holder for reseting the listener on one of the subclasses
      */
     void clearChanges(Object object, UnitOfWorkImpl uow, ClassDescriptor descriptor, boolean forRefresh);
-    
+
     /**
      * INTERNAL:
      * This method is used internally to rest the policies back to original state
@@ -154,7 +154,7 @@ public interface ObjectChangePolicy extends Serializable {
      * Set the ObjectChangeSet on the Listener, initially used for aggregate support
      */
     void setChangeSetOnListener(ObjectChangeSet objectChangeSet, Object clone);
-    
+
     /**
      * INTERNAL:
      * Build back up clone.

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -23,54 +23,54 @@ import org.eclipse.persistence.tools.workbench.utility.Model;
  */
 public interface RecentFilesManager extends Model {
 
-	/**
-	 * This is the suggested default maximum number
-	 * of recently-opened files that should be maintained
-	 * by a manager.
-	 */
-	int DEFAULT_MAX_SIZE = 4;
-	
-	/**
-	 * This is the maximimum maximum number of 
-	 * recently-opened files that should be maintained
-	 * by a manager.
-	 * In other words, the max size should never 
-	 * be larger than this.
-	 */
-	int MAX_MAX_SIZE = 9;
+    /**
+     * This is the suggested default maximum number
+     * of recently-opened files that should be maintained
+     * by a manager.
+     */
+    int DEFAULT_MAX_SIZE = 4;
 
-	/**
-	 * Return the maximum number of recently-opened files
-	 * the manager will maintain.
-	 */
-	int getMaxSize();
+    /**
+     * This is the maximimum maximum number of
+     * recently-opened files that should be maintained
+     * by a manager.
+     * In other words, the max size should never
+     * be larger than this.
+     */
+    int MAX_MAX_SIZE = 9;
 
-	/**
-	 * Set the maximum number of recently-opened files
-	 * the manager will maintain. If this causes the list to
-	 * change (specifically, if the new maximum is less than
-	 * the current size of the list), a StateChange event
-	 * will be fired. The maximum must be greater than zero.
-	 */
-	void setMaxSize(int maxSize);
+    /**
+     * Return the maximum number of recently-opened files
+     * the manager will maintain.
+     */
+    int getMaxSize();
 
-	/**
-	 * Add the specified file to the top of the list of
-	 * recently-opened files. If the file is already in the
-	 * list, it is moved to the top of the list. If this
-	 * causes the list to change, a StateChange event
-	 * will be fired.
-	 */
-	void setMostRecentFile(File file);
+    /**
+     * Set the maximum number of recently-opened files
+     * the manager will maintain. If this causes the list to
+     * change (specifically, if the new maximum is less than
+     * the current size of the list), a StateChange event
+     * will be fired. The maximum must be greater than zero.
+     */
+    void setMaxSize(int maxSize);
 
-	/**
-	 * Return the list of recently-opened files, most-recent
-	 * files first. If there are no recent files, return an empty array.
-	 */
-	File[] getRecentFiles();
-	
-	/**
-	 * Remove the given file from the recents
-	 */
-	void removeRecentFile(File file);
+    /**
+     * Add the specified file to the top of the list of
+     * recently-opened files. If the file is already in the
+     * list, it is moved to the top of the list. If this
+     * causes the list to change, a StateChange event
+     * will be fired.
+     */
+    void setMostRecentFile(File file);
+
+    /**
+     * Return the list of recently-opened files, most-recent
+     * files first. If there are no recent files, return an empty array.
+     */
+    File[] getRecentFiles();
+
+    /**
+     * Remove the given file from the recents
+     */
+    void removeRecentFile(File file);
 }

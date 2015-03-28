@@ -1,4 +1,4 @@
-<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"> 
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
    <xml-schema attribute-form-default="UNQUALIFIED" element-form-default="UNQUALIFIED" namespace=""/>
    <java-types>
     <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Employee">

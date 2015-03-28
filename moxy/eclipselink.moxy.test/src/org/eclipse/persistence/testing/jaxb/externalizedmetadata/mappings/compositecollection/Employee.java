@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,7 +19,7 @@ public class Employee {
     public List<Address> addresses;
     public List<Address> readOnlyAddressList;
     public List<Address> writeOnlyAddressList;
-    
+
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
     @javax.xml.bind.annotation.XmlTransient
@@ -91,7 +91,7 @@ public class Employee {
         }
         return true;
     }
-    
+
     private boolean addressExistsInList(Address address, List<Address> addList) {
         for (Address listAddress : addList) {
             if (listAddress.equals(address)) {

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.coordination.broadcast;
 
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
@@ -23,7 +23,7 @@ import org.eclipse.persistence.sessions.coordination.TransportManager;
  * <p>
  * <b>Purpose</b>: Base class transport manager for broadcasting RCM protocols: JMS and Oc4jJGroups.
  * <p>
- * <b>Description</b>: The class doesn't use DiscoveryManager - instead 
+ * <b>Description</b>: The class doesn't use DiscoveryManager - instead
  * the class (and it's ancestors) implement createConnections method
  * that creates all the necessary connections. This method is called
  * by RemoteCommendManager during initialization.
@@ -32,14 +32,14 @@ import org.eclipse.persistence.sessions.coordination.TransportManager;
  * @since OracleAS TopLink 11<i>g</i> (11.1.1)
  */
 public abstract class BroadcastTransportManager extends TransportManager {
-    
+
     // JNDI topic name
     protected String topicName;
 
     public BroadcastTransportManager() {
         initialize();
     }
-    
+
     public BroadcastTransportManager(RemoteCommandManager rcm) {
         this.rcm = rcm;
         rcm.setTransportManager(this);
@@ -91,7 +91,7 @@ public abstract class BroadcastTransportManager extends TransportManager {
     public void connectBackToRemote(RemoteConnection connection) throws Exception {
         // nothing to do
     }
-    
+
     /**
      * PUBLIC:
      * Return the topic name that this TransportManager will be connecting to.
@@ -99,7 +99,7 @@ public abstract class BroadcastTransportManager extends TransportManager {
     public String getTopicName() {
         return topicName;
     }
-    
+
     /**
      * PUBLIC:
      * Configure the Topic name for the Topic that this TransportManager will be connecting to.

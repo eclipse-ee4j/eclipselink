@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,119 +27,119 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 
 public final class MWEisReturningPolicyInsertFieldReturnOnlyFlag
-	extends MWReturningPolicyInsertFieldReturnOnlyFlag
-	implements MWXpathContext
+    extends MWReturningPolicyInsertFieldReturnOnlyFlag
+    implements MWXpathContext
 {
-	private MWXmlField field;
+    private MWXmlField field;
 
 
-	// ********** constructors/initialization **********
+    // ********** constructors/initialization **********
 
-	/** Default constructor - for TopLink use only */
-	private MWEisReturningPolicyInsertFieldReturnOnlyFlag() {
-		super();
-	}
-	
-	MWEisReturningPolicyInsertFieldReturnOnlyFlag(MWEisReturningPolicy parent) {
-		super(parent);
-	}
+    /** Default constructor - for TopLink use only */
+    private MWEisReturningPolicyInsertFieldReturnOnlyFlag() {
+        super();
+    }
 
-	protected void initialize(Node parent) {
-		super.initialize(parent);
-		this.field = new MWXmlField(this);
-	}
+    MWEisReturningPolicyInsertFieldReturnOnlyFlag(MWEisReturningPolicy parent) {
+        super(parent);
+    }
 
-	protected void addChildrenTo(List list) {
-		super.addChildrenTo(list);
-		list.add(this.field);
-	}
+    protected void initialize(Node parent) {
+        super.initialize(parent);
+        this.field = new MWXmlField(this);
+    }
 
-
-	// ********** MWReturningPolicyInsertFieldReturnOnlyFlag implementation **********
-
-	public MWDataField getField() {
-		return this.field;
-	}
+    protected void addChildrenTo(List list) {
+        super.addChildrenTo(list);
+        list.add(this.field);
+    }
 
 
-	// ********** XML field **********
+    // ********** MWReturningPolicyInsertFieldReturnOnlyFlag implementation **********
 
-	public MWXmlField getXmlField() {
-		return this.field;
-	}
-	
-	
-	// ********** MWXpathContext implementation **********
-	
-	public MWSchemaContextComponent schemaContext(MWXmlField xmlField) {
-		return this.eisDescriptor().getSchemaContext();
-	}
-	
-	public MWXpathSpec xpathSpec(MWXmlField xmlField) {
-		return this.buildXpathSpec();
-	}
-	
-	private MWXpathSpec buildXpathSpec() {
-		return new MWXpathSpec() {
-			public boolean mayUseCollectionData() {
-				return false;
-			}
-			
-			public boolean mayUseComplexData() {
-				return false;
-			}
-			
-			public boolean mayUseSimpleData() {
-				return true;
-			}
-		};
-	}
-	
-	
-	// ********** problems **********
+    public MWDataField getField() {
+        return this.field;
+    }
 
-	protected void addProblemsTo(List currentProblems) {
-		super.addProblemsTo(currentProblems);
-		// TODO ????
-	}
-	
-	
-	// ********** Convenience **********
-	
-	public MWEisReturningPolicy eisReturningPolicy() {
-		return (MWEisReturningPolicy) this.getParent();
-	}
-	
-	private MWEisDescriptor eisDescriptor() {
-		return this.eisReturningPolicy().eisDescriptor();
-	}
-	
-	
-	// ********** TopLink methods **********
 
-	public static XMLDescriptor buildDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.setJavaClass(MWEisReturningPolicyInsertFieldReturnOnlyFlag.class);
+    // ********** XML field **********
 
-		XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
-		fieldMapping.setReferenceClass(MWXmlField.class);
-		fieldMapping.setAttributeName("field");
-		fieldMapping.setGetMethodName("getFieldForTopLink");
-		fieldMapping.setSetMethodName("setFieldForTopLink");
-		fieldMapping.setXPath("field");
-		descriptor.addMapping(fieldMapping);
+    public MWXmlField getXmlField() {
+        return this.field;
+    }
 
-		((XMLDirectMapping) descriptor.addDirectMapping("returnOnly", "return-only/text()")).setNullValue(Boolean.FALSE);
-		
-		return descriptor;
-	}
-	
-	private MWXmlField getFieldForTopLink() {
-		return (this.field.isSpecified()) ? this.field : null;
-	}	
-	
-	private void setFieldForTopLink(MWXmlField field) {
-		this.field = ((field == null) ? new MWXmlField(this) : field);
-	}
+
+    // ********** MWXpathContext implementation **********
+
+    public MWSchemaContextComponent schemaContext(MWXmlField xmlField) {
+        return this.eisDescriptor().getSchemaContext();
+    }
+
+    public MWXpathSpec xpathSpec(MWXmlField xmlField) {
+        return this.buildXpathSpec();
+    }
+
+    private MWXpathSpec buildXpathSpec() {
+        return new MWXpathSpec() {
+            public boolean mayUseCollectionData() {
+                return false;
+            }
+
+            public boolean mayUseComplexData() {
+                return false;
+            }
+
+            public boolean mayUseSimpleData() {
+                return true;
+            }
+        };
+    }
+
+
+    // ********** problems **********
+
+    protected void addProblemsTo(List currentProblems) {
+        super.addProblemsTo(currentProblems);
+        // TODO ????
+    }
+
+
+    // ********** Convenience **********
+
+    public MWEisReturningPolicy eisReturningPolicy() {
+        return (MWEisReturningPolicy) this.getParent();
+    }
+
+    private MWEisDescriptor eisDescriptor() {
+        return this.eisReturningPolicy().eisDescriptor();
+    }
+
+
+    // ********** TopLink methods **********
+
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MWEisReturningPolicyInsertFieldReturnOnlyFlag.class);
+
+        XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
+        fieldMapping.setReferenceClass(MWXmlField.class);
+        fieldMapping.setAttributeName("field");
+        fieldMapping.setGetMethodName("getFieldForTopLink");
+        fieldMapping.setSetMethodName("setFieldForTopLink");
+        fieldMapping.setXPath("field");
+        descriptor.addMapping(fieldMapping);
+
+        ((XMLDirectMapping) descriptor.addDirectMapping("returnOnly", "return-only/text()")).setNullValue(Boolean.FALSE);
+
+        return descriptor;
+    }
+
+    private MWXmlField getFieldForTopLink() {
+        return (this.field.isSpecified()) ? this.field : null;
+    }
+
+    private void setFieldForTopLink(MWXmlField field) {
+        this.field = ((field == null) ? new MWXmlField(this) : field);
+    }
 
 }

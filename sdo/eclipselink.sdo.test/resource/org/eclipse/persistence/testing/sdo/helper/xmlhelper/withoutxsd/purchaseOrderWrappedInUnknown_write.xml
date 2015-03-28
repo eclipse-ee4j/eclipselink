@@ -50,6 +50,6 @@
          </addr>
          <number>12345678</number>
          <ext>123</ext>
-      </phone>    
+      </phone>
    </ns0:purchaseOrder>
 </ns0:someUnknownRoot>

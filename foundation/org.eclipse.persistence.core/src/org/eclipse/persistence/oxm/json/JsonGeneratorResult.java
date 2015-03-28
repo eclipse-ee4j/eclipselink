@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,12 +21,12 @@ public class JsonGeneratorResult extends ExtendedResult{
 
     private JsonGenerator generator;
     private String rootKeyName;
-    
+
     public JsonGeneratorResult(JsonGenerator generator){
         this.generator = generator;
         rootKeyName = null;
     }
-    
+
     public JsonGeneratorResult(JsonGenerator generator, String rootKeyName){
         this.generator = generator;
         this.rootKeyName = rootKeyName;
@@ -36,6 +36,6 @@ public class JsonGeneratorResult extends ExtendedResult{
     public org.eclipse.persistence.oxm.record.MarshalRecord createRecord() {
         JsonGeneratorRecord record = new JsonGeneratorRecord(generator, rootKeyName);
         return record;
-    }    
+    }
 
 }

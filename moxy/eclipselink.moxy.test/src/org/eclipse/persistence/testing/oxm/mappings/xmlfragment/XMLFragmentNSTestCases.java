@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.xmlfragment;
 
 import java.io.InputStream;
@@ -191,7 +191,7 @@ public class XMLFragmentNSTestCases extends OXTestCase {
         Document testDocument = xmlMarshaller.objectToXML(getWriteControlObject(XML_SUB_ELEMENT));
         objectToXMLDocumentTest(testDocument, XML_RESOURCE_DIFF_URI, "testObjectToXMLDocumentDifferentURI");
     }
-    
+
     /**
      * Test NodeRecord - prefixed child nodes
      */
@@ -207,7 +207,7 @@ public class XMLFragmentNSTestCases extends OXTestCase {
         Document testDocument = xmlMarshaller.objectToXML(getWriteControlObjectNS(XML_SUB_ELEMENT_PFX_CHILD, "http://www.example.com/test-uri"));
         objectToXMLDocumentTest(testDocument, XML_RESOURCE_PFX_CHILD, "testObjectToXMLDocumentPrefixedChild");
     }
-    
+
     /**
      * Test NodeRecord - prefixed child nodes (complex)
      */
@@ -307,12 +307,12 @@ public class XMLFragmentNSTestCases extends OXTestCase {
         setControlDocument(XML_RESOURCE_PFX_CHILD);
         NamespaceResolver nsresolver = new NamespaceResolver();
         nsresolver.put("ns1", "http://www.example.com/test-uri");
-  
+
         XMLFragmentMapping mapping = new XMLFragmentMapping();
         mapping.setAttributeName("xmlNode");
         mapping.setXPath("ns1:xml-node");
         setProject(new XMLFragmentNSProject(nsresolver, mapping));
-        
+
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         xmlMarshaller.marshal(getWriteControlObjectNS(XML_SUB_ELEMENT_PFX_CHILD, "http://www.example.com/test-uri"), builder);
 
@@ -328,7 +328,7 @@ public class XMLFragmentNSTestCases extends OXTestCase {
 
         assertXMLIdentical(controlDocument, importNodeFix(testDocument));
     }
-    
+
     /**
      * Test WriterRecord - prefixes and uris match
      */
@@ -400,7 +400,7 @@ public class XMLFragmentNSTestCases extends OXTestCase {
 
         StringWriter writer = new StringWriter();
         xmlMarshaller.marshal(getWriteControlObjectNS(XML_SUB_ELEMENT_PFX_CHILD, "http://www.example.com/test-uri"), writer);
-        
+
         StringReader reader = new StringReader(writer.toString());
         InputSource inputSource = new InputSource(reader);
         Document testDocument = parser.parse(inputSource);
@@ -409,7 +409,7 @@ public class XMLFragmentNSTestCases extends OXTestCase {
 
         objectToXMLDocumentTest(testDocument, XML_RESOURCE_PFX_CHILD, "testObjectToXMLStringWriterPrefixedChild");
     }
-    
+
     /**
      * Test WriterRecord - prefixed child nodes (complex)
      */
@@ -425,7 +425,7 @@ public class XMLFragmentNSTestCases extends OXTestCase {
 
         StringWriter writer = new StringWriter();
         xmlMarshaller.marshal(getWriteControlObjectNS(XML_SUB_ELEMENT_PFX_CHILD_COMPLEX, "http://www.example.com/x-test-uri"), writer);
-        
+
         StringReader reader = new StringReader(writer.toString());
         InputSource inputSource = new InputSource(reader);
         Document testDocument = parser.parse(inputSource);
@@ -434,7 +434,7 @@ public class XMLFragmentNSTestCases extends OXTestCase {
 
         objectToXMLDocumentTest(testDocument, XML_RESOURCE_PFX_CHILD_COMPLEX, "testObjectToXMLStringWriterComplexPrefixedChild");
     }
-    
+
     /**
      * Test FormattedWriterRecord - prefixes and uris match
      */
@@ -456,14 +456,14 @@ public class XMLFragmentNSTestCases extends OXTestCase {
         Document xdoc = parser.parse(inputStream);
         inputStream.close();
 
-        
+
         log("\n**testObjectToFormattedXMLStringWriter**");
         log("Expected:");
         log(xdoc);
         log("\nActual:");
         log(testDocument);
         log("\n");
-        
+
         assertXMLIdentical(xdoc, importNodeFix(testDocument));
     }
 
@@ -481,7 +481,7 @@ public class XMLFragmentNSTestCases extends OXTestCase {
         StringReader reader = new StringReader(writer.toString());
         InputSource inputSource = new InputSource(reader);
         Document testDocument = parser.parse(inputSource);
-        
+
         writer.close();
         reader.close();
 
@@ -489,17 +489,17 @@ public class XMLFragmentNSTestCases extends OXTestCase {
         Document xdoc = parser.parse(inputStream);
         inputStream.close();
 
-        
+
         log("\n**testObjectToFormattedXMLStringWriterDifferentPrefix**");
         log("Expected:");
         log(xdoc);
         log("\nActual:");
         log(testDocument);
         log("\n");
-        
+
         assertXMLIdentical(xdoc, importNodeFix(testDocument));
     }
-    
+
     /**
      * Test FormattedWriterRecord - uris don't match
      */
@@ -521,14 +521,14 @@ public class XMLFragmentNSTestCases extends OXTestCase {
         Document xdoc = parser.parse(inputStream);
         inputStream.close();
 
-        
+
         log("\n**testObjectToFormattedXMLStringWriterDifferentURI**");
         log("Expected:");
         log(xdoc);
         log("\nActual:");
         log(testDocument);
         log("\n");
-        
+
         assertXMLIdentical(xdoc, importNodeFix(testDocument));
     }
 
@@ -538,12 +538,12 @@ public class XMLFragmentNSTestCases extends OXTestCase {
     public void testObjectToFormattedXMLStringWriterPrefixedChild() throws Exception {
         NamespaceResolver nsresolver = new NamespaceResolver();
         nsresolver.put("ns1", "http://www.example.com/test-uri");
-        
+
         XMLFragmentMapping mapping = new XMLFragmentMapping();
         mapping.setAttributeName("xmlNode");
         mapping.setXPath("ns1:xml-node");
         setProject(new XMLFragmentNSProject(nsresolver, mapping));
-        
+
         StringWriter writer = new StringWriter();
         xmlMarshaller.setFormattedOutput(true);
         xmlMarshaller.marshal(getWriteControlObjectNS(XML_SUB_ELEMENT_PFX_CHILD, "http://www.example.com/test-uri"), writer);
@@ -558,19 +558,19 @@ public class XMLFragmentNSTestCases extends OXTestCase {
         Document xdoc = parser.parse(inputStream);
         inputStream.close();
 
-        
+
         log("\n**testObjectToFormattedXMLStringWriterPrefixedChild**");
         log("Expected:");
         log(xdoc);
         log("\nActual:");
         log(testDocument);
         log("\n");
-        
+
         assertXMLIdentical(xdoc, importNodeFix(testDocument));
     }
 
     /**
-     * 
+     *
      */
     public void testXMLToObjectFromInputStream() throws Exception {
         NamespaceResolver nsresolver = new NamespaceResolver();
@@ -581,7 +581,7 @@ public class XMLFragmentNSTestCases extends OXTestCase {
         instream.close();
         xmlToObjectTest(testObject, XML_SUB_ELEMENT, "testXMLToObjectFromInputStream");
     }
-   
+
     /**
      *
      */
@@ -595,7 +595,7 @@ public class XMLFragmentNSTestCases extends OXTestCase {
     }
 
     /**
-     * 
+     *
      */
     public void testUnmarshallerHandler() throws Exception {
         NamespaceResolver nsresolver = new NamespaceResolver();
@@ -625,10 +625,10 @@ public class XMLFragmentNSTestCases extends OXTestCase {
         log("\nActual:");
         log(testDocument);
         log("\n");
-        
+
         assertXMLIdentical(getWriteControlDocument(), importNodeFix(testDocument));
     }
-    
+
     protected void xmlToObjectTest(Object testObject, String resource, String testCase) throws Exception {
         log("\n**"+testCase+"**");
         log("Expected:");
@@ -636,16 +636,16 @@ public class XMLFragmentNSTestCases extends OXTestCase {
         log("\nActual:");
         log(testObject.toString());
         log("\n");
-        
+
         Employee testEmp = (Employee) testObject;
         removeEmptyTextNodes(testEmp.xmlNode);
-        
+
         Employee controlEmp = (Employee) getReadControlObject(resource);
         removeEmptyTextNodes(controlEmp.xmlNode);
-        
+
         assertEquals(controlEmp, testEmp);
-    }    
-    
+    }
+
     protected Document importNodeFix(Document testDocument) {
         try {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -656,7 +656,7 @@ public class XMLFragmentNSTestCases extends OXTestCase {
             writer.close();
             reader.close();
         } catch (Exception x) {}
-        
+
         return testDocument;
     }
 }

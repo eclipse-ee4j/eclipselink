@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
  package org.eclipse.persistence.testing.framework.server;
 
 import java.lang.reflect.Constructor;
@@ -32,14 +32,14 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 /**
  * Server side JUnit test invocation implemented as a stateless session bean.
- * 
+ *
  * @author mschinca
  */
 @Stateless(name="TestRunner4", mappedName="TestRunner4")
 @Remote(TestRunner4.class)
 @TransactionManagement(TransactionManagementType.BEAN)
 public class TestRunner4Bean implements TestRunner4 {
-    
+
     /** The entity manager for the test is injected and passed to the test server platform. */
     @PersistenceContext(unitName="MulitPU-4")
     private EntityManager entityManager;
@@ -47,7 +47,7 @@ public class TestRunner4Bean implements TestRunner4 {
     /** The entity manager factory for the test is injected and passed to the test server platform. */
     @PersistenceUnit(unitName="MulitPU-4")
     private EntityManagerFactory entityManagerFactory;
-    
+
     /**
      * Execute a test case method. The test class is loaded dynamically and
      * must therefore be visible to the TestRunnerBean classloader.
@@ -70,13 +70,13 @@ public class TestRunner4Bean implements TestRunner4 {
         } catch (InvocationTargetException e) {
             throw new EJBException(e);
         }
-        
-        // if any properties were passed in, set them into 
+
+        // if any properties were passed in, set them into
         // the server's VM
         if (props != null) {
             System.getProperties().putAll(props);
         }
-        
+
         // execute the bare test case
         Throwable result = null;
         try {

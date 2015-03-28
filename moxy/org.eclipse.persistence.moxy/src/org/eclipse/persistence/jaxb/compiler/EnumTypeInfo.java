@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
 import java.util.ArrayList;
@@ -21,8 +21,8 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
 /**
  * INTERNAL:
- * <p><b>Purpose:</b>A specialized TypeInfo that stores additional information for a 
- * Java 5 Enumeration type. 
+ * <p><b>Purpose:</b>A specialized TypeInfo that stores additional information for a
+ * Java 5 Enumeration type.
  * <p><b>Responsibilities:</b><ul>
  * <li>Hold onto the restriction base type for schema generation</li>
  * <li>Hold onto a map of Object Enum values to String values for Mapping generation</li>
@@ -38,13 +38,13 @@ public class EnumTypeInfo extends TypeInfo {
     private QName m_restrictionBase;
     private List<String> m_fieldNames;
     private List<Object> m_xmlEnumValues;
-    
+
     public EnumTypeInfo(Helper helper, JavaClass javaClass) {
         super(helper, javaClass);
         m_fieldNames = new ArrayList<String>();
         m_xmlEnumValues = new ArrayList<Object>();
     }
-    
+
     public boolean isEnumerationType() {
         return true;
     }
@@ -52,36 +52,36 @@ public class EnumTypeInfo extends TypeInfo {
     public String getClassName() {
         return m_className;
     }
-    
+
     public void setClassName(String className) {
         m_className = className;
     }
-    
+
     public QName getRestrictionBase() {
         return m_restrictionBase;
     }
-    
+
     public void setRestrictionBase(QName restrictionBase) {
         m_restrictionBase = restrictionBase;
     }
 
     /**
      * Add a Java field name to XmlEnumValue pair.
-     * 
+     *
      * @param fieldName
      * @param xmlEnumValue
      */
     public void addJavaFieldToXmlEnumValuePair(String fieldName, Object xmlEnumValue) {
-    	m_fieldNames.add(fieldName);
-    	m_xmlEnumValues.add(xmlEnumValue);
+        m_fieldNames.add(fieldName);
+        m_xmlEnumValues.add(xmlEnumValue);
     }
 
     /**
-     * Add a Java field name to XmlEnumValue pair.  If an entry exists at the specified 
-     * with the same fieldName, its value will be overridden.  A value of true for 
-     * 'override' will typically be used when performing overrides via XML metadata 
+     * Add a Java field name to XmlEnumValue pair.  If an entry exists at the specified
+     * with the same fieldName, its value will be overridden.  A value of true for
+     * 'override' will typically be used when performing overrides via XML metadata
      * in XmlProcessor.
-     * 
+     *
      * @param override
      * @param fieldName
      * @param xmlEnumValue
@@ -107,13 +107,13 @@ public class EnumTypeInfo extends TypeInfo {
     }
 
     public List<Object> getXmlEnumValues() {
-		return m_xmlEnumValues;
-	}
-    
+        return m_xmlEnumValues;
+    }
+
     /**
-     * Return the index in the fieldNames List for a given Java field 
+     * Return the index in the fieldNames List for a given Java field
      * name, or -1 if it doesn't exist.
-     * 
+     *
      * @param fieldName
      * @return
      */

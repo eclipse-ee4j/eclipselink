@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import commonj.sdo.ChangeSummary;
@@ -27,7 +27,7 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
     public ChangeSummaryGetOldValueTest(String name) {
         super(name);
     }
-    
+
     //Bug 5918326
     public void testGetOldValueNullProperty() {
       changeSummary.beginLogging();
@@ -36,7 +36,7 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
       ChangeSummary.Setting s = changeSummary.getOldValue(root, null);
       assertNull(s);
     }
-      
+
 
     // purpose: modified DataObject and nonmodified property, get(DataObject, Property)
     public void testGetOldValueReturnSettingWithUnmodifiedProperty() {
@@ -55,9 +55,9 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
         // this should be flagged as a modification
         root.set(rootProperty1, "test");
         root.set(rootProperty1, "test2");
-        // no old value for this unmodified property        
+        // no old value for this unmodified property
         assertNull(changeSummary.getOldValue(root, rootProperty));
-        // old value has value null for this modified property        
+        // old value has value null for this modified property
         assertNull(changeSummary.getOldValue(root, rootProperty1).getValue());
         assertFalse(changeSummary.getOldValue(root, rootProperty1).isSet());
     }
@@ -153,7 +153,7 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
         root.set(rootProperty1, "test");
         changeSummary.beginLogging();
         root.set(rootProperty1, null);
-        // no old value for this unmodified property        
+        // no old value for this unmodified property
         assertEquals("test", changeSummary.getOldValue(root, rootProperty1).getValue());
     }
 
@@ -218,10 +218,10 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
         SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         rootType.setOpen(true);
-        
+
         DataObject openContentDO = dataFactory.create(propertyType);
         openContentDO.set("name", "openContent");
-        openContentDO.set("type", SDOConstants.SDO_STRING);        
+        openContentDO.set("type", SDOConstants.SDO_STRING);
 
         Property openRootProperty = typeHelper.defineOpenContentProperty("someURI", openContentDO);
 

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -19,31 +19,31 @@ import javax.persistence.*;
 @Entity
 @Table(name="CMP3_PRODUCT")
 public class Product {
-   
+
     @Id
     @GeneratedValue(strategy=TABLE)
     protected int id;
-    
+
     @Column(name="NAME", nullable=false)
     protected String name;
-    
+
     @Column(name="COUNTRY_CODE", insertable=true, updatable=true, nullable=false, length=3)
     protected String countryCode;
-    
+
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name="codeNumber", column=@Column(name="BARCODE1")),
         @AttributeOverride(name="countryCode", column=@Column(name="COUNTRY_CODE", insertable=false, updatable=false))
     })
     protected BarCode barCode1;
-    
+
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name="codeNumber", column=@Column(name="BARCODE2")),
         @AttributeOverride(name="countryCode", column=@Column(name="COUNTRY_CODE", insertable=false, updatable=false))
     })
     protected BarCode barCode2;
-    
+
     public Product() {
         super();
         setName("INVALIDNAME");
@@ -89,5 +89,5 @@ public class Product {
     public void setBarCode2(BarCode barCode2) {
         this.barCode2 = barCode2;
     }
-    
+
 }

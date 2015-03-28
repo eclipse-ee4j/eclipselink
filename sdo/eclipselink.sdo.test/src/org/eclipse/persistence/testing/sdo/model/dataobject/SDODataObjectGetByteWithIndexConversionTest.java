@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -25,7 +25,7 @@ public class SDODataObjectGetByteWithIndexConversionTest extends SDODataObjectCo
     public SDODataObjectGetByteWithIndexConversionTest(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetByteWithIndexConversionTest" };
         TestRunner.main(arguments);
@@ -58,14 +58,14 @@ public class SDODataObjectGetByteWithIndexConversionTest extends SDODataObjectCo
 
     //3. purpose: getByte with Undefined  Property
     public void testGetByteConversionFromUnDefinedProperty() {
-        
+
         try {
             dataObject.getByte(1);
         } catch (SDOException e) {
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
             return;
         }
-        fail("an SDOException should have occurred.");    
+        fail("an SDOException should have occurred.");
     }
 
     //4. purpose: getByte with character property
@@ -159,7 +159,7 @@ public class SDODataObjectGetByteWithIndexConversionTest extends SDODataObjectCo
         this.assertEquals(s_d.byteValue(), dataObject.getByte(PROPERTY_INDEX));
     }
 
- 
+
 
     //17. purpose: getByte with bytes property
     public void testGetByteFromBytes() {
@@ -178,10 +178,10 @@ public class SDODataObjectGetByteWithIndexConversionTest extends SDODataObjectCo
     public void testGetByteFromDecimal() {
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_DECIMAL);
-        
+
         BigDecimal theValue = new BigDecimal("12");
         dataObject.set(property, theValue);
-        try {            
+        try {
             byte value = dataObject.getByte(PROPERTY_INDEX);
             byte controlValue = theValue.byteValue();
             assertEquals(controlValue, value);
@@ -226,6 +226,6 @@ public class SDODataObjectGetByteWithIndexConversionTest extends SDODataObjectCo
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
             return;
         }
-        fail("an SDOException should have occurred.");    
+        fail("an SDOException should have occurred.");
       }
 }

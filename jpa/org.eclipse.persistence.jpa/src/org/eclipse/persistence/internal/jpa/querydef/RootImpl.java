@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,9 +28,9 @@ import javax.persistence.metamodel.Metamodel;
  * <b>Description</b>: This class represents root of a path. All paths are
  * created from roots and they correspond to ExpressionBuilders.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria Path
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
@@ -46,7 +46,7 @@ public class RootImpl<X> extends FromImpl<X, X> implements Root<X> {
 
     /**
      * Return the metamodel entity corresponding to the root.
-     * 
+     *
      * @return metamodel entity corresponding to the root
      */
     public EntityType<X> getModel() {

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     08/10/2009-2.0 Guy Pelletier 
- *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes 
+ *     08/10/2009-2.0 Guy Pelletier
+ *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen.visitors;
 
@@ -27,8 +27,8 @@ import javax.lang.model.util.AbstractAnnotationValueVisitor6;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
- * An annotation element visitor. 
- * 
+ * An annotation element visitor.
+ *
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
@@ -37,10 +37,10 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      * INTERNAL:
      */
     public AnnotationValueVisitor() {}
-    
+
     /**
      * INTERNAL:
-     * Visits an annotation mirror. Kicks off the building of the metadata 
+     * Visits an annotation mirror. Kicks off the building of the metadata
      * annotation.
      */
     @Override
@@ -51,7 +51,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
 
         // Process the values.
         Set<? extends ExecutableElement> keys = annotationMirror.getElementValues().keySet();
-        
+
         for (ExecutableElement annotationElement : keys) {
             AnnotationValue annotationValue = annotationMirror.getElementValues().get(annotationElement);
             String attribute = annotationElement.getSimpleName().toString();
@@ -64,10 +64,10 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
 
     /**
      * INTERNAL:
-     *  e.g. 
+     *  e.g.
      *  joinColumns={
      *    @JoinColumn(name="ID1", referencedColumnName="ID"),
-     *    @JoinColumn(name="ID2", referencedColumnName="ID")} 
+     *    @JoinColumn(name="ID2", referencedColumnName="ID")}
      */
     @Override
     public Object visitArray(List<? extends AnnotationValue> annotationValues, Object arg1) {
@@ -76,7 +76,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
         for (AnnotationValue annotationValue : annotationValues) {
             values.add(annotationValue.accept(this, arg1));
         }
-        
+
         return values.toArray();
     }
 

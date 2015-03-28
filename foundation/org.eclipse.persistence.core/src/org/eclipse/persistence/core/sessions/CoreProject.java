@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,7 +26,7 @@ public abstract class CoreProject <
    SESSION extends CoreSession
    > implements Serializable {
 
-	public abstract void addDescriptor(DESCRIPTOR descriptor);
+    public abstract void addDescriptor(DESCRIPTOR descriptor);
 
     /**
      * INTERNAL:
@@ -49,21 +49,21 @@ public abstract class CoreProject <
      * Return the login, the login holds any database connection information given.
      * This return the Login interface and may need to be cast to the datasource specific implementation.
      */
-	public abstract LOGIN getDatasourceLogin();
+    public abstract LOGIN getDatasourceLogin();
 
     /**
      * PUBLIC:
      * Return the descriptor specified for the class.
      */
     public abstract DESCRIPTOR getDescriptor(Class theClass);
-    
+
     /**
      * INTERNAL:
      * Return the descriptors in the order added.
      * Used to maintain consistent order in XML.
      */
     public abstract List<DESCRIPTOR> getOrderedDescriptors();
-    
+
 
     /**
      * PUBLIC:

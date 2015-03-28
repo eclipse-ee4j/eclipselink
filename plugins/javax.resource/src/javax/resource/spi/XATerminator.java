@@ -1,23 +1,23 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
@@ -26,8 +26,8 @@ package javax.resource.spi;
 import javax.transaction.xa.Xid;
 import javax.transaction.xa.XAException;
 
-/** 
- * <p>The XATerminator interface is used for transaction completion and 
+/**
+ * <p>The XATerminator interface is used for transaction completion and
  * crash recovery flows.
  *
  * @version 1.0
@@ -36,7 +36,7 @@ import javax.transaction.xa.XAException;
  */
 public interface XATerminator {
 
-    /**	
+    /**
      * Commits the global transaction specified by xid.
      *
      * @param xid A global transaction identifier
@@ -55,7 +55,7 @@ public interface XATerminator {
      */
     void commit(Xid xid, boolean onePhase) throws XAException;
 
-    /** 
+    /**
      * Tells the resource manager to forget about a heuristically
      * completed transaction branch.
      *
@@ -67,7 +67,7 @@ public interface XATerminator {
      */
     void forget(Xid xid) throws XAException;
 
-    /** 
+    /**
      * Ask the resource manager to prepare for a transaction commit
      * of the transaction specified in xid.
      *
@@ -79,15 +79,15 @@ public interface XATerminator {
      *
      * @return A value indicating the resource manager's vote on the
      * outcome of the transaction. The possible values are: XA_RDONLY
-     * or XA_OK. These constants are defined in 
-     * <code> javax.transaction.xa.XAResource</code> interface. 
+     * or XA_OK. These constants are defined in
+     * <code> javax.transaction.xa.XAResource</code> interface.
      * If the resource manager wants to roll back the
      * transaction, it should do so by raising an appropriate XAException
      * in the prepare method.
      */
     int prepare(Xid xid) throws XAException;
 
-    /** 
+    /**
      * Obtains a list of prepared transaction branches from a resource
      * manager. The transaction manager calls this method during recovery
      * to obtain the list of transaction branches that are currently in
@@ -95,7 +95,7 @@ public interface XATerminator {
      *
      * @param flag One of TMSTARTRSCAN, TMENDRSCAN, TMNOFLAGS. TMNOFLAGS
      * must be used when no other flags are set in the parameter. These
-     * constants are defined in <code>javax.transaction.xa.XAResource</code> 
+     * constants are defined in <code>javax.transaction.xa.XAResource</code>
      * interface.
      *
      * @exception XAException An error has occurred. Possible values are
@@ -109,7 +109,7 @@ public interface XATerminator {
      */
     Xid[] recover(int flag) throws XAException;
 
-    /** 
+    /**
      * Informs the resource manager to roll back work done on behalf
      * of a transaction branch.
      *

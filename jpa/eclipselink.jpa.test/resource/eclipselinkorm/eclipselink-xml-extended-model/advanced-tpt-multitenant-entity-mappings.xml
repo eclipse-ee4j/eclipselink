@@ -2,7 +2,7 @@
 <entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <description>Advanced Multitenant Test Model Instance Document</description>
     <package>org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant</package>
-    
+
     <entity name="XMLMason" class="Mason">
         <multitenant type="TABLE_PER_TENANT"/>
         <table name="XML_MASON"/>
@@ -24,7 +24,7 @@
             </element-collection>
         </attributes>
     </entity>
-    
+
     <entity name="XMLTrowel" class="Trowel">
         <multitenant type="TABLE_PER_TENANT"/>
         <table name="XML_TROWEL"/>
@@ -38,7 +38,7 @@
             <one-to-one name="mason" mapped-by="trowel"/>
         </attributes>
     </entity>
-    
+
     <entity name="XMLParty" class="Party">
         <table name="XML_PARTY"/>
         <attributes>
@@ -48,7 +48,7 @@
             <basic name="name"/>
         </attributes>
     </entity>
-    
+
     <entity name="XMLRiding" class="Riding">
         <table name="XML_RIDING"/>
         <attributes>
@@ -58,7 +58,7 @@
             <basic name="name"/>
         </attributes>
     </entity>
-    
+
     <entity name="XMLSupporter" class="Supporter">
         <multitenant type="TABLE_PER_TENANT">
             <tenant-table-discriminator type="PREFIX"/>
@@ -72,7 +72,7 @@
             <many-to-many name="supportedCandidates" mapped-by="supporters"/>
         </attributes>
     </entity>
-    
+
     <entity name="XMLCandidate" class="Candidate">
         <multitenant type="TABLE_PER_TENANT">
             <tenant-table-discriminator type="SUFFIX"/>
@@ -84,7 +84,7 @@
                 <generated-value/>
             </id>
             <basic name="salary">
-                <column table="XML_CANDY_SALARY"/> 
+                <column table="XML_CANDY_SALARY"/>
             </basic>
             <basic name="name"/>
             <many-to-one name="riding"/>
@@ -101,5 +101,5 @@
             </element-collection>
         </attributes>
     </entity>
-    
+
 </entity-mappings>

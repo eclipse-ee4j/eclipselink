@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -73,7 +73,7 @@ import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DEBUG;
 
 public class KeyMappingsTestSuite {
 
-    static final String CREATE_DDL = 
+    static final String CREATE_DDL =
         "CREATE TABLE IF NOT EXISTS XR_KEYMAP_ADDRESS (" +
         "    ADDRESS_ID NUMERIC(15) NOT NULL," +
         "    STREET VARCHAR(80)," +
@@ -106,12 +106,12 @@ public class KeyMappingsTestSuite {
         "INSERT INTO XR_KEYMAP_PHONE (PHONE_ID, OWNER_ID, AREA_CODE, P_NUMBER, TYPE) VALUES (2, 1, '613', '2884638', 'Work')|" +
         "INSERT INTO XR_KEYMAP_PHONE (PHONE_ID, OWNER_ID, AREA_CODE, P_NUMBER, TYPE) VALUES (3, 2, '613', '2832684', 'Home')|" +
         "INSERT INTO XR_KEYMAP_PHONE (PHONE_ID, OWNER_ID, AREA_CODE, P_NUMBER, TYPE) VALUES (4, 2, '613', '2884613', 'Work')|" ;
-    
+
     static final String DROP_DDL =
         "DROP TABLE XR_KEYMAP_PHONE|"    +
         "DROP TABLE XR_KEYMAP_EMPLOYEE|" +
         "DROP TABLE XR_KEYMAP_ADDRESS|"  ;
-            
+
     static final String KEYMAPPINGS_SCHEMA =
         "<?xml version='1.0' encoding='UTF-8'?>" +
         "<xsd:schema targetNamespace=\"urn:keymappings\" xmlns=\"urn:keymappings\" elementFormDefault=\"qualified\"\n" +
@@ -682,7 +682,7 @@ public class KeyMappingsTestSuite {
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSModel model = (DBWSModel)unmarshaller.unmarshal(new StringReader(KEYMAPPINGS_DBWS));
         xrService = factory.buildService(model);
-        
+
         if (ddlCreate) {
             try {
                 AllTests.runDdl(CREATE_DDL, ddlDebug);

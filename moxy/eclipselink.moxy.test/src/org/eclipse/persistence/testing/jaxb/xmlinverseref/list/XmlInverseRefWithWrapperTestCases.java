@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 /**
  * Written as regression test for bug 426131. It uses the same control docs as XmlInverseRefBidirectionalList2TestCases.
  * The difference is that the inverse reference on collection side is wrapped using @XmlElementWrapper.
- * 
+ *
  * @author Peter Benedikovic
  *
  */
@@ -33,7 +33,7 @@ public class XmlInverseRefWithWrapperTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlinverseref/bidirectionalList2.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlinverseref/bidirectionalList2.json";
-    
+
     public XmlInverseRefWithWrapperTestCases(String name) throws Exception {
         super(name);
         setControlJSON(JSON_RESOURCE);
@@ -48,7 +48,7 @@ public class XmlInverseRefWithWrapperTestCases extends JAXBWithJSONTestCases {
         Address addr = new Address();
         addr.street = "theStreet";
         addr.owner = p;
-        
+
         Address addr2 = new Address();
         addr2.street = "theStreet2";
         addr2.owner = p;
@@ -57,7 +57,7 @@ public class XmlInverseRefWithWrapperTestCases extends JAXBWithJSONTestCases {
         p.addrs.add(addr2);
         return addr;
     }
-    
+
     @XmlRootElement(name = "person")
     private static class PersonWithWrapper {
 
@@ -107,27 +107,27 @@ public class XmlInverseRefWithWrapperTestCases extends JAXBWithJSONTestCases {
             return false;
         }
     }
-    
+
     @XmlRootElement
     private static class Address {
        public String street;
        @XmlInverseReference(mappedBy ="addrs")
        @XmlElement
        public PersonWithWrapper owner;
-       
+
        public boolean equals(Object obj){
            if(obj instanceof Address){
                Address compareAddr = (Address)obj;
                if(! street.equals(compareAddr.street)){
                    return false;
                }
-               return listContains(owner.addrs, this) && listContains(compareAddr.owner.addrs, compareAddr);    
+               return listContains(owner.addrs, this) && listContains(compareAddr.owner.addrs, compareAddr);
                 //calling person.equals will be an infinite loop
            }
            return false;
        }
-       
-       private boolean listContains(List theList, Address addr){       
+
+       private boolean listContains(List theList, Address addr){
            for(int i=0;i<theList.size(); i++){
                if(theList.get(i) == addr){
                    return true;

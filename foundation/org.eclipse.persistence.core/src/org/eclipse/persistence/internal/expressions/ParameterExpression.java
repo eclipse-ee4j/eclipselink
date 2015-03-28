@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/24/2011-2.3 Guy Pelletier 
+ *     05/24/2011-2.3 Guy Pelletier
  *       - 345962: Join fetch query when using tenant discriminator column fails.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.util.*;
@@ -36,7 +36,7 @@ public class ParameterExpression extends BaseExpression {
 
     /** The opposite side of the relation, this is used for conversion of the parameter using the others mapping. */
     protected Expression localBase;
-    
+
     protected boolean isProperty = false;
 
     /** The inferred type of the parameter.
@@ -48,7 +48,7 @@ public class ParameterExpression extends BaseExpression {
     public ParameterExpression() {
         super();
     }
-    
+
     public ParameterExpression(String fieldName) {
         this(new DatabaseField(fieldName));
     }
@@ -70,7 +70,7 @@ public class ParameterExpression extends BaseExpression {
         this.field = field;
         localBase = localbaseExpression;
     }
-    
+
     /**
      * INTERNAL:
      * Return if the expression is equal to the other.
@@ -86,7 +86,7 @@ public class ParameterExpression extends BaseExpression {
         ParameterExpression expression = (ParameterExpression) object;
         return ((getField() == expression.getField()) || ((getField() != null) && getField().equals(expression.getField())));
     }
-        
+
     /**
      * INTERNAL:
      * Compute a consistent hash-code for the expression.
@@ -146,7 +146,7 @@ public class ParameterExpression extends BaseExpression {
     public DatabaseField getField() {
         return field;
     }
-    
+
     /**
      * INTERNAL:
      * Used to set the internal field value.
@@ -185,8 +185,8 @@ public class ParameterExpression extends BaseExpression {
      * Please note that the type might not be always initialized to correct value.
      * It might be null if not initialized correctly
      */
-    public void setType(Object type) { 
-        this.type = type; 
+    public void setType(Object type) {
+        this.type = type;
     }
 
     /**
@@ -196,7 +196,7 @@ public class ParameterExpression extends BaseExpression {
     public Object getValue(AbstractRecord translationRow, AbstractSession session) {
         return getValue(translationRow, null, session);
     }
-    
+
     /**
      * Extract the value from the row.
      * This may require recursion if it is a nested parameter.
@@ -230,10 +230,10 @@ public class ParameterExpression extends BaseExpression {
                 //incase it is needed again, say in conforming.
                 //bug 3750793
                 value = descriptor.getObjectBuilder().unwrapObject(value, session);
-                
+
                 // Bug 245268 must unwrap before validating parameter type
                 validateParameterValueAgainstMapping(value, true);
-                
+
                 translationRow.put(((ParameterExpression)this.baseExpression).getField(), value);
 
                 // The local parameter is either a field or attribute of the object.
@@ -254,7 +254,7 @@ public class ParameterExpression extends BaseExpression {
                         }
                     }
                 }
-            } 
+            }
         } else {
             // Check for null translation row.
             if (translationRow == null) {
@@ -262,8 +262,8 @@ public class ParameterExpression extends BaseExpression {
             } else {
                 value = translationRow.getIndicatingNoEntry(this.field);
             }
-            
-            // Throw an exception if the field is not mapped. Null may be 
+
+            // Throw an exception if the field is not mapped. Null may be
             // returned if it is a property so check for null and isProperty
             if ((value == AbstractRecord.noEntry) || ((value == null) && this.isProperty)) {
                 if (this.isProperty) {
@@ -272,11 +272,11 @@ public class ParameterExpression extends BaseExpression {
                     } else {
                         value = session.getProperty(this.field.getName());
                     }
-                        
+
                     if (value == null) {
                         throw QueryException.missingContextPropertyForPropertyParameterExpression(query, this.field.getName());
                     }
-                    
+
                     return value;
                 }
                 // Also check the same field, but a different table for table per class inheritance.
@@ -288,7 +288,7 @@ public class ParameterExpression extends BaseExpression {
                     throw QueryException.parameterNameMismatch(this.field.getName());
                 }
             }
-            
+
             // validate parameter type against mapping
             // validate against the localbase (false), since there are no nested params
             validateParameterValueAgainstMapping(value, false);
@@ -312,7 +312,7 @@ public class ParameterExpression extends BaseExpression {
     public boolean isValueExpression() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this parameter expression maps to a property.
@@ -361,7 +361,7 @@ public class ParameterExpression extends BaseExpression {
      */
     public void printJava(ExpressionJavaPrinter printer) {
         ((DataExpression)getLocalBase()).getBaseExpression().printJava(printer);
-        printer.printString(".getParameter(\"" + getField().getQualifiedName() + "\")");        
+        printer.printString(".getParameter(\"" + getField().getQualifiedName() + "\")");
     }
 
     /**
@@ -384,7 +384,7 @@ public class ParameterExpression extends BaseExpression {
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
         return;
     }
-    
+
     /**
      * INTERNAL:
      * Set to true if this parameter expression maps to a property value.
@@ -392,7 +392,7 @@ public class ParameterExpression extends BaseExpression {
     public void setIsProperty(boolean isProperty) {
         this.isProperty = isProperty;
     }
-    
+
     /**
      * The opposite side of the relation, this is used for conversion of the parameter using the others mapping.
      */
@@ -417,7 +417,7 @@ public class ParameterExpression extends BaseExpression {
             return context.getField(getField());
         }
     }
-    
+
     /**
      * INTERNAL
      * Validate the passed parameter against the local base mapping.
@@ -434,7 +434,7 @@ public class ParameterExpression extends BaseExpression {
             // used where we need to simply validate against the local base expression
             queryKey = this.getLocalBase();
         }
-        
+
         if ((value != null) && !(value instanceof Collection) && (queryKey != null) && queryKey.isObjectExpression()) {
             DatabaseMapping mapping = ((ObjectExpression) queryKey).getMapping();
             if (mapping != null) {
@@ -483,7 +483,7 @@ public class ParameterExpression extends BaseExpression {
      * "Normal" ReadQuery never has ParameterExpression in it's select clause hence for a "normal" ReadQuery this method is never called.
      * The reason this method was added is that UpdateAllQuery (in case temporary storage is required)
      * creates a "helper" ReportQuery with ReportItem corresponding to each update expression - and update expression
-     * may be a ParameterExpression. The call created by "helper" ReportQuery is never executed - 
+     * may be a ParameterExpression. The call created by "helper" ReportQuery is never executed -
      * it's used during construction of insert call into temporary storage.
      */
     @Override

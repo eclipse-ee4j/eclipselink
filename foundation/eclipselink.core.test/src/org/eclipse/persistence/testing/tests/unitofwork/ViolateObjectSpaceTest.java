@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import org.eclipse.persistence.exceptions.QueryException;
@@ -41,14 +41,14 @@ public class ViolateObjectSpaceTest extends TransactionalTestCase {
             listener = null;
         }
     }
-    
+
     protected void setup() {
         if (getSession().isClientSession()) {
             listener = checkTransactionIsolation();
         }
         super.setup();
     }
-    
+
     public void test() {
         testPartial();
         testFull();
@@ -94,7 +94,7 @@ public class ViolateObjectSpaceTest extends TransactionalTestCase {
         } catch (QueryException caught) {
             exception = caught;
         }
-        if ((exception == null) || 
+        if ((exception == null) ||
             (exception.getErrorCode() != QueryException.BACKUP_CLONE_IS_ORIGINAL_FROM_PARENT)) {
             throw new TestErrorException("incorrect exception thrown.");
         }
@@ -106,7 +106,7 @@ public class ViolateObjectSpaceTest extends TransactionalTestCase {
         Object objectFromDatabase = getSession().readObject(objectToBeWritten);
 
         if (!(compareObjects(this.objectToBeWritten, objectFromDatabase))) {
-            throw new TestErrorException("The object inserted into the database, '" + objectFromDatabase + 
+            throw new TestErrorException("The object inserted into the database, '" + objectFromDatabase +
                                          "' does not match the original, '" + this.objectToBeWritten + ".");
         }
     }

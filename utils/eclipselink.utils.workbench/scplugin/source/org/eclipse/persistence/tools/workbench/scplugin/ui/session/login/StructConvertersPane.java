@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -70,149 +70,149 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  */
 final class StructConvertersPane extends AbstractSubjectPanel
 {
-	/**
-	 * Creates a new <code>StructConvertersPane</code>.
-	 *
-	 * @param loginAdapterHolder The holder of {@link LoginAdapter}
-	 * @param context The context used to retrieve the localized strings
-	 * @param group The parent <code>ComponentAligner</code> of the
-	 * <code>ComponentAligner</code> used by this pane
-	 */
-	public StructConvertersPane(PropertyValueModel loginAdapterHolder,
-									  WorkbenchContextHolder contextHolder)
-	{
-		super(new BorderLayout(), loginAdapterHolder, contextHolder);
-		addHelpTopicId(this, "rdbms.options.structConverters");
-	}
+    /**
+     * Creates a new <code>StructConvertersPane</code>.
+     *
+     * @param loginAdapterHolder The holder of {@link LoginAdapter}
+     * @param context The context used to retrieve the localized strings
+     * @param group The parent <code>ComponentAligner</code> of the
+     * <code>ComponentAligner</code> used by this pane
+     */
+    public StructConvertersPane(PropertyValueModel loginAdapterHolder,
+                                      WorkbenchContextHolder contextHolder)
+    {
+        super(new BorderLayout(), loginAdapterHolder, contextHolder);
+        addHelpTopicId(this, "rdbms.options.structConverters");
+    }
 
-	/**
-	 * Creates the <code>AddRemoveListPanel.Adapter</code> that will takes care
-	 * of updating the model when items are either added or removed from the
-	 * list.
-	 *
-	 * @return A new <code>AddRemoveListPanel.Adapter</code>
-	 */
-	private AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter()
-	{
-		return new AddRemoveListAdapter();
-	}
+    /**
+     * Creates the <code>AddRemoveListPanel.Adapter</code> that will takes care
+     * of updating the model when items are either added or removed from the
+     * list.
+     *
+     * @return A new <code>AddRemoveListPanel.Adapter</code>
+     */
+    private AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter()
+    {
+        return new AddRemoveListAdapter();
+    }
 
-	/**
-	 * Creates the <code>ListValueModel</code> containing all the items to
-	 * be shown in the Struct Converter Classes list pane.
-	 *
-	 * @return A new <code>CollectionValueModel</code>
-	 */
-	private ListValueModel buildStructConverterListHolder()
-	{
-		return new ListAspectAdapter(getSubjectHolder(), DatabaseLoginAdapter.STRUCT_CONVERTER_COLLECTION_PROPERTY)
-		{
-			protected ListIterator getValueFromSubject()
-			{
-				DatabaseLoginAdapter adapter = (DatabaseLoginAdapter) this.subject;
-				return adapter.structConvertersClasses();
-			}
-		};
-	}
+    /**
+     * Creates the <code>ListValueModel</code> containing all the items to
+     * be shown in the Struct Converter Classes list pane.
+     *
+     * @return A new <code>CollectionValueModel</code>
+     */
+    private ListValueModel buildStructConverterListHolder()
+    {
+        return new ListAspectAdapter(getSubjectHolder(), DatabaseLoginAdapter.STRUCT_CONVERTER_COLLECTION_PROPERTY)
+        {
+            protected ListIterator getValueFromSubject()
+            {
+                DatabaseLoginAdapter adapter = (DatabaseLoginAdapter) this.subject;
+                return adapter.structConvertersClasses();
+            }
+        };
+    }
 
-	/**
-	 * Creates a new <code>AddRemoveListPanel</code> that will shows the struct converters
-	 * contained in the login.
-	 *
-	 * @return A new <code>AddRemoveListPanel</code>
-	 */
-	private AddRemoveListPanel buildStructConverterListPane()
-	{
-		return new CustomizedAddRemoveListPanel();
-	}
+    /**
+     * Creates a new <code>AddRemoveListPanel</code> that will shows the struct converters
+     * contained in the login.
+     *
+     * @return A new <code>AddRemoveListPanel</code>
+     */
+    private AddRemoveListPanel buildStructConverterListPane()
+    {
+        return new CustomizedAddRemoveListPanel();
+    }
 
-	/**
-	 * Initializes the layout of this pane.
-	 */
-	protected void initializeLayout()
-	{
-		AddRemoveListPanel structConverterListPanel = buildStructConverterListPane();
-		structConverterListPanel.setCellRenderer(new SimpleListCellRenderer());
-		structConverterListPanel.setBorder(BorderFactory.createCompoundBorder
-		(
-			buildTitledBorder("OPTIONS_STRUCT_CONVERTER_LIST"),
-			BorderFactory.createEmptyBorder(0, 5, 5, 5)
-		));
+    /**
+     * Initializes the layout of this pane.
+     */
+    protected void initializeLayout()
+    {
+        AddRemoveListPanel structConverterListPanel = buildStructConverterListPane();
+        structConverterListPanel.setCellRenderer(new SimpleListCellRenderer());
+        structConverterListPanel.setBorder(BorderFactory.createCompoundBorder
+        (
+            buildTitledBorder("OPTIONS_STRUCT_CONVERTER_LIST"),
+            BorderFactory.createEmptyBorder(0, 5, 5, 5)
+        ));
 
-		add(structConverterListPanel, BorderLayout.CENTER);
-		addPaneForAlignment(structConverterListPanel);
-	}
+        add(structConverterListPanel, BorderLayout.CENTER);
+        addPaneForAlignment(structConverterListPanel);
+    }
 
-	/**
-	 * This <code>Adapter</code> is responsible to perform the action upon a
-	 * click on either the Add or Remove buttons.
-	 */
-	private class AddRemoveListAdapter implements AddRemoveListPanel.Adapter
-	{
-		public void addNewItem(ObjectListSelectionModel listSelectionModel)
-		{
-			DatabaseLoginAdapter login = (DatabaseLoginAdapter) subject();
-			SimplePropertyValueModel selectionHolder = new SimplePropertyValueModel();
+    /**
+     * This <code>Adapter</code> is responsible to perform the action upon a
+     * click on either the Add or Remove buttons.
+     */
+    private class AddRemoveListAdapter implements AddRemoveListPanel.Adapter
+    {
+        public void addNewItem(ObjectListSelectionModel listSelectionModel)
+        {
+            DatabaseLoginAdapter login = (DatabaseLoginAdapter) subject();
+            SimplePropertyValueModel selectionHolder = new SimplePropertyValueModel();
 
-			ClassChooserTools.promptForType
-			(
-				getWorkbenchContext(),
-				login.getClassRepository(),
-				selectionHolder
-			);
+            ClassChooserTools.promptForType
+            (
+                getWorkbenchContext(),
+                login.getClassRepository(),
+                selectionHolder
+            );
 
-			String structConverterClassName = (String) selectionHolder.getValue();
+            String structConverterClassName = (String) selectionHolder.getValue();
 
-			if ((structConverterClassName != null) &&
-				 ! CollectionTools.contains(login.structConvertersClasses(), structConverterClassName))
-			{
-				login.addStructConverterClass(structConverterClassName);
-			}
-		}
+            if ((structConverterClassName != null) &&
+                 ! CollectionTools.contains(login.structConvertersClasses(), structConverterClassName))
+            {
+                login.addStructConverterClass(structConverterClassName);
+            }
+        }
 
-		public void removeSelectedItems(ObjectListSelectionModel listSelectionModel)
-		{
-			DatabaseLoginAdapter adapter = (DatabaseLoginAdapter) subject();
-			Object[] selectedValues = listSelectionModel.getSelectedValues();
+        public void removeSelectedItems(ObjectListSelectionModel listSelectionModel)
+        {
+            DatabaseLoginAdapter adapter = (DatabaseLoginAdapter) subject();
+            Object[] selectedValues = listSelectionModel.getSelectedValues();
 
-			for (int index = selectedValues.length; --index >= 0;)
-			{
-				adapter.removeStructConverterClass((String) selectedValues[index]);
-			}
-		}
-	}
+            for (int index = selectedValues.length; --index >= 0;)
+            {
+                adapter.removeStructConverterClass((String) selectedValues[index]);
+            }
+        }
+    }
 
-	/**
-	 * This customized <code>AddRemoveListPanel</code> simply renames the Add and
-	 * Remove buttons.
-	 */
-	private class CustomizedAddRemoveListPanel extends AddRemoveListPanel
-	{
-		private CustomizedAddRemoveListPanel()
-		{
-			super(StructConvertersPane.this.getApplicationContext(),
-					buildAddRemoveListPanelAdapter(),
-					buildStructConverterListHolder(),
-					AddRemoveListPanel.RIGHT);
-		}
+    /**
+     * This customized <code>AddRemoveListPanel</code> simply renames the Add and
+     * Remove buttons.
+     */
+    private class CustomizedAddRemoveListPanel extends AddRemoveListPanel
+    {
+        private CustomizedAddRemoveListPanel()
+        {
+            super(StructConvertersPane.this.getApplicationContext(),
+                    buildAddRemoveListPanelAdapter(),
+                    buildStructConverterListHolder(),
+                    AddRemoveListPanel.RIGHT);
+        }
 
-		protected String addButtonKey()
-		{
-			return "OPTIONS_STRUCT_CONVERTERS_ADD_BUTTON";
-		}
+        protected String addButtonKey()
+        {
+            return "OPTIONS_STRUCT_CONVERTERS_ADD_BUTTON";
+        }
 
-		protected void buildButtonPanel(JComponent buttonPanel,
-												  JButton addButton,
-												  JButton removeButton,
-												  JButton optionalButton)
-		{
-			buttonPanel.add(addButton);
-			buttonPanel.add(removeButton);
-		}
+        protected void buildButtonPanel(JComponent buttonPanel,
+                                                  JButton addButton,
+                                                  JButton removeButton,
+                                                  JButton optionalButton)
+        {
+            buttonPanel.add(addButton);
+            buttonPanel.add(removeButton);
+        }
 
-		protected String removeButtonKey()
-		{
-			return "OPTIONS_STRUCT_CONVERTERS_REMOVE_BUTTON";
-		}
-	}
+        protected String removeButtonKey()
+        {
+            return "OPTIONS_STRUCT_CONVERTERS_REMOVE_BUTTON";
+        }
+    }
 }

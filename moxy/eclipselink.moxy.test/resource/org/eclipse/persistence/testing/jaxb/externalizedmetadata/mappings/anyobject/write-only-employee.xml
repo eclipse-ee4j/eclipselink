@@ -6,5 +6,5 @@
         <ns0:other xmlns:ns0="http://www.example.com/other">Some Stuff</ns0:other>
       </stuff>
     </write-only>
-  </things> 
+  </things>
 </employee>

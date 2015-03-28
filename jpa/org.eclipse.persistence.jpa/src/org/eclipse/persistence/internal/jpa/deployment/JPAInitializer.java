@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware, ssmith = 1.0 - Generic JPA deployment (OSGI, EE, SE)
- *     11/04/2014 - Rick Curtis  
+ *     11/04/2014 - Rick Curtis
  *       - 450010 : Add java se test bucket
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
 import java.io.FileWriter;
@@ -41,7 +41,7 @@ import org.eclipse.persistence.logging.SessionLog;
  * Base class for all JPA initialization classes.  This is an abstract class that provides the framework
  * for JPA initialization (finding and initializing persistence units).  Subclasses implement the abstract methods
  * to provide customized functionality
- * 
+ *
  * @see JavaSESMPInitializer
  * @see OSGiInitializer
  * @See EquinoxInitializer
@@ -49,25 +49,25 @@ import org.eclipse.persistence.logging.SessionLog;
  *
  */
 public abstract class JPAInitializer {
-   
+
     // The internal loader is used by applications that do weaving to pre load classes
     // When this flag is set to false, we will not be able to weave.
     protected boolean shouldCreateInternalLoader = true;
-    
+
     protected ClassLoader initializationClassloader = null;
-        
+
     // Cache the initial puInfos - those used by  initialEmSetupImpls
     protected Map<String, SEPersistenceUnitInfo> initialPuInfos;
-    // Cache the initial emSetupImpls - those created and predeployed by JavaSECMPInitializer.initialize method. 
+    // Cache the initial emSetupImpls - those created and predeployed by JavaSECMPInitializer.initialize method.
     protected Map<String, EntityManagerSetupImpl> initialEmSetupImpls;
 
-    // Initializers keyed by their initializationClassloaders 
+    // Initializers keyed by their initializationClassloaders
     protected static Map<ClassLoader, JPAInitializer> initializers = new Hashtable();
-    
+
     /**
      * Initialize the logging file if it is specified by the system property.
      */
-    public static void initializeTopLinkLoggingFile() {        
+    public static void initializeTopLinkLoggingFile() {
         String loggingFile = System.getProperty(PersistenceUnitProperties.LOGGING_FILE);
         try {
             if (loggingFile != null) {
@@ -77,7 +77,7 @@ public abstract class JPAInitializer {
             AbstractSessionLog.getLog().log(SessionLog.WARNING, "cmp_init_default_logging_file_is_invalid",loggingFile,e);
         }
     }
-    
+
     /**
      * predeploy (with deploy) is one of the two steps required in deployment of entities
      * This method will prepare to call predeploy, call it and finally register the
@@ -88,7 +88,7 @@ public abstract class JPAInitializer {
         Map mergedProperties = EntityManagerFactoryProvider.mergeMaps(m, persistenceUnitInfo.getProperties());
         // Bug#4452468  When globalInstrumentation is null, there is no weaving
         checkWeaving(mergedProperties);
-        
+
         Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, m);
         // Create the temp loader that will not cache classes for entities in our persistence unit
         ClassLoader tempLoader = createTempLoader(tempLoaderSet);
@@ -102,11 +102,11 @@ public abstract class JPAInitializer {
         // After preDeploy it's impossible to weave again - so may substitute the temporary classloader with the real one.
         // The temporary classloader could be garbage collected even if the puInfo is cached for the future use by other emSetupImpls.
         persistenceUnitInfo.setNewTempClassLoader(persistenceUnitInfo.getClassLoader());
-        
+
         registerTransformer(transformer, persistenceUnitInfo, m);
         return emSetupImpl;
     }
-    
+
     /**
      * Check whether weaving is possible and update the properties and variable as appropriate
      * @param properties The list of properties to check for weaving and update if weaving is not needed
@@ -121,7 +121,7 @@ public abstract class JPAInitializer {
     protected abstract ClassLoader createTempLoader(Collection col);
 
     protected abstract ClassLoader createTempLoader(Collection col, boolean shouldOverrideLoadClassForCollectionMembers);
-    
+
     /**
      * Find PersistenceUnitInfo corresponding to the persistence unit name.
      * Returns null if either persistence unit either not found or provider is not supported.
@@ -140,7 +140,7 @@ public abstract class JPAInitializer {
         }
         return findPersistenceUnitInfoInArchives(puName, m);
     }
-    
+
     /**
      * Find PersistenceUnitInfo corresponding to the persistence unit name.
      * Returns null if either persistence unit either not found or provider is not supported.
@@ -169,7 +169,7 @@ public abstract class JPAInitializer {
         }
         return persistenceUnitInfo;
     }
-    
+
     /**
      * Find PersistenceUnitInfo corresponding to the persistence unit name in the archive.
      * Returns null if either persistence unit either not found or provider is not supported.
@@ -184,7 +184,7 @@ public abstract class JPAInitializer {
         }
         return null;
     }
-    
+
     /**
      * Returns whether the given persistence provider class is supported by this implementation
      * @param providerClassName
@@ -193,7 +193,7 @@ public abstract class JPAInitializer {
     public boolean isPersistenceProviderSupported(String providerClassName){
         return (providerClassName == null) || providerClassName.equals("") || providerClassName.equals(EntityManagerFactoryProvider.class.getName()) || providerClassName.equals(PersistenceProvider.class.getName());
     }
-    
+
     /**
      * Create a list of java.lang.Class that contains the classes of all the entities
      * that we will be deploying.
@@ -213,7 +213,7 @@ public abstract class JPAInitializer {
         }
         return entityClasses;
     }
-    
+
     /**
      * Register a transformer.  This method should be overridden to provide the appropriate transformer
      * registration for the environment
@@ -228,7 +228,7 @@ public abstract class JPAInitializer {
     public boolean isPersistenceUnitUniquelyDefinedByName() {
         return true;
     }
-    
+
     /**
      * In case persistence unit is not uniquely defined by name
      * this method is called to generate a unique name.
@@ -244,14 +244,14 @@ public abstract class JPAInitializer {
             return null;
         }
     }
-    
+
     /**
      * This method initializes the container.  Essentially, it will try to load the
      * class that contains the list of entities and reflectively call the method that
      * contains that list.  It will then initialize the container with that list.
      */
     public void initialize(Map m) {
-        boolean keepInitialMaps = keepAllPredeployedPersistenceUnits(); 
+        boolean keepInitialMaps = keepAllPredeployedPersistenceUnits();
         if(keepInitialMaps) {
             this.initialPuInfos = new HashMap();
         }
@@ -276,7 +276,7 @@ public abstract class JPAInitializer {
             }
             this.initialEmSetupImpls = null;
         }
-    }    
+    }
 
     /**
      * Initialize all persistence units found on initializationClassLoader.
@@ -291,12 +291,12 @@ public abstract class JPAInitializer {
             if(isPersistenceProviderSupported(persistenceUnitInfo.getPersistenceProviderClassName())) {
                 // puName uniquely defines the pu on a class loader
                 String puName = persistenceUnitInfo.getPersistenceUnitName();
-                
+
                 // don't add puInfo that could not be used standalone (only as composite member).
                 if (EntityManagerSetupImpl.mustBeCompositeMember(persistenceUnitInfo)) {
                     continue;
                 }
-                
+
                 // If puName is already in the map then there are two jars containing persistence units with the same name.
                 // Because both are loaded from the same classloader there is no way to distinguish between them - throw exception.
                 EntityManagerSetupImpl anotherEmSetupImpl = null;
@@ -306,7 +306,7 @@ public abstract class JPAInitializer {
                 if(anotherEmSetupImpl != null) {
                     EntityManagerSetupImpl.throwPersistenceUnitNameAlreadyInUseException(puName, persistenceUnitInfo, anotherEmSetupImpl.getPersistenceUnitInfo());
                 }
-                
+
                 // Note that session name is extracted only from puInfo, the passed properties ignored.
                 String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(Collections.emptyMap(), persistenceUnitInfo, puName);
                 EntityManagerSetupImpl emSetupImpl = callPredeploy(persistenceUnitInfo, m, puName, sessionName);
@@ -319,14 +319,14 @@ public abstract class JPAInitializer {
             }
         }
     }
-    
+
     /**
      * Indicates whether initialPuInfos and initialEmSetupImpls are used.
      */
     protected boolean keepAllPredeployedPersistenceUnits() {
         return false;
     }
-    
+
     public ClassLoader getInitializationClassLoader() {
         return this.initializationClassloader;
     }

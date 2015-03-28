@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
@@ -52,14 +52,14 @@ public class SimpleTypes_MultiTable {
     //test fixtures
     static EntityManagerFactory emf = null;
     static JPADynamicHelper helper = null;
-    
+
     @BeforeClass
     public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
         helper = new JPADynamicHelper(emf);
         DynamicClassLoader dcl = helper.getDynamicClassLoader();
         Class<?> simpleTypeA = dcl.createDynamicClass("model.SimpleA");
-        JPADynamicTypeBuilder typeBuilder = new JPADynamicTypeBuilder(simpleTypeA, null, 
+        JPADynamicTypeBuilder typeBuilder = new JPADynamicTypeBuilder(simpleTypeA, null,
             "SIMPLE_TYPE_A", "SIMPLE_TYPE_B", "SIMPLE_TYPE_C");
         typeBuilder.setPrimaryKeyFields("SIMPLE_TYPE_A.SID");
         typeBuilder.addDirectMapping("id", int.class, "SIMPLE_TYPE_A.SID");
@@ -69,7 +69,7 @@ public class SimpleTypes_MultiTable {
         typeBuilder.addDirectMapping("value4", double.class, "SIMPLE_TYPE_C.VAL_4");
         typeBuilder.addDirectMapping("value5", String.class, "SIMPLE_TYPE_C.VAL_5");
         helper.addTypes(true, true, typeBuilder.getType());
-        
+
     }
 
     @AfterClass
@@ -83,7 +83,7 @@ public class SimpleTypes_MultiTable {
         em.close();
         emf.close();
     }
-    
+
     @After
     public void clearDynamicTables() {
         EntityManager em = emf.createEntityManager();
@@ -92,7 +92,7 @@ public class SimpleTypes_MultiTable {
         em.getTransaction().commit();
         em.close();
     }
-    
+
     @Test
     public void verifyConfig() throws Exception {
         ClassDescriptor descriptorA = helper.getSession().getClassDescriptorForAlias("SimpleA");

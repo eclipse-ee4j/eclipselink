@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public final class MyCalendarAdapter extends XmlAdapter<Calendar, MyCalendar> {
     public MyCalendarAdapter() {}
-    
+
     public MyCalendar unmarshal(Calendar arg0) throws Exception {
         MyCalendar cType = new MyCalendar();
         cType.day = arg0.get(Calendar.DATE);
@@ -26,7 +26,7 @@ public final class MyCalendarAdapter extends XmlAdapter<Calendar, MyCalendar> {
         cType.year = arg0.get(Calendar.YEAR);
         return cType;
     }
-    
+
     public Calendar marshal(MyCalendar arg0) throws Exception {
         return new GregorianCalendar(arg0.year, arg0.month, arg0.day);
     }

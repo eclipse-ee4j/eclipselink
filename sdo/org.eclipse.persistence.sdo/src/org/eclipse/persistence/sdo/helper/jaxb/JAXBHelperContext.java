@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -42,10 +42,10 @@ import commonj.sdo.Type;
  * <p>The JAXBHelperContext is a bridge between POJOs and SDO DataObjects.  The bridge
  * is based on their corresponding XML representations.  For the POJOs the XML
  * representation is specified using JAXB annotations or object-to-XML mappings.</p>
- * 
+ *
  * <p>The following steps are required to create the JAXBHelperContext.  The XML schema
- * used in step #3 is the same one that the POJOs are mapped to.  This step has been 
- * separated so that SDO annotations could be added to the XML schema.  
+ * used in step #3 is the same one that the POJOs are mapped to.  This step has been
+ * separated so that SDO annotations could be added to the XML schema.
  * <p>Step #1 - Create the JAXBContext</p>
  * <pre>
  * JAXBContext jaxbContext = JAXBContext.newInstance("com.example.customer");
@@ -58,7 +58,7 @@ import commonj.sdo.Type;
  * <pre>
  * jaxbHelperContext.getXSDHelper().define(xmlSchema);
  * </pre>
- * 
+ *
  * <p>
  * The JAXBHelperContext allows you to convert between POJOs and DataObjects using
  * a wrap operation.
@@ -67,11 +67,11 @@ import commonj.sdo.Type;
  * Address address new Address();
  * address.setStreet("123 Any Street");
  * customer.set(address);
- * 
+ *
  * DataObject customerDO = jaxbHelperContext.wrap(customer);
  * customerDO.getString("address/street");  // returns "123 Any Street"
  * </pre>
- * 
+ *
  * <p>
  * The JAXBHelperContext allows you to convert between DataObjects and POJOs using
  * an unwrap operation.
@@ -79,16 +79,16 @@ import commonj.sdo.Type;
  * Type customerType = jaxbHelperContext.getType(Customer.class);
  * DataObject customerDO = jaxbHelperContext.getDataFactory().create(customerType);
  * customerDO.set("first-name", "Jane");
- * 
+ *
  * Customer customer = jaxbHelperContext.unwrap(customerDO);
  * customer.getFirstName();  // returns "Jane"
  * </pre>
- * 
+ *
  * <p>
- * Of course the POJOs may be JPA entities.  Below is an example of wrapping the 
+ * Of course the POJOs may be JPA entities.  Below is an example of wrapping the
  * results of a JPA query.
  * <pre>
- * EntityManagerFactory emf = Persistence.createEntityManagerFactory("CustomerExample");      
+ * EntityManagerFactory emf = Persistence.createEntityManagerFactory("CustomerExample");
  * EntityManager em = emf.createEntityManager();
  * {@literal List<MyEntity>} entities = em.createQuery("SELECT e FROM MyEntity e WHERE ...").getResultList();
  * {@literal List<DataObject>} dataObjects = hc.wrap(entities);
@@ -100,7 +100,7 @@ public class JAXBHelperContext extends SDOHelperContext {
     private Map<Object, SDODataObject> wrapperDataObjects;
 
     /**
-     * Create a new instance of JAXBHelperContext  
+     * Create a new instance of JAXBHelperContext
      * @param aJAXBContext - The JAXBContext representing the class to XML schema mapping.
      */
     public JAXBHelperContext(JAXBContext aJAXBContext) {
@@ -108,7 +108,7 @@ public class JAXBHelperContext extends SDOHelperContext {
     }
 
     /**
-     * Create a new instance of JAXBHelperContext  
+     * Create a new instance of JAXBHelperContext
      * @param aJAXBContext - The JAXBContext representing the class to XML schema mapping.
      * @param aClassLoader - The ClassLoader containing the generated SDO classes/interfaces (if any).
      */
@@ -134,15 +134,15 @@ public class JAXBHelperContext extends SDOHelperContext {
     }
 
     /**
-     * Return the JAXBContext.  The JAXBContext represents the Java 
-     * class to XML schema information for the POJOs. 
+     * Return the JAXBContext.  The JAXBContext represents the Java
+     * class to XML schema information for the POJOs.
      */
     public JAXBContext getJAXBContext() {
         return jaxbContext;
     }
 
     /**
-     * Return the SDO type corresponding to the wrapped class. 
+     * Return the SDO type corresponding to the wrapped class.
      * <pre>
      * Type customerType = jaxbHelperContext.getType(Customer.class);
      * DataObject customerDO = jaxbHelperContext.getDataFactory().create(customerType);
@@ -172,7 +172,7 @@ public class JAXBHelperContext extends SDOHelperContext {
 
         Type wrapperType;
         if(entityDescriptor.getSchemaReference().getType() == XMLSchemaReference.COMPLEX_TYPE) {
-            wrapperType = getTypeHelper().getType(qName.getNamespaceURI(), qName.getLocalPart());            
+            wrapperType = getTypeHelper().getType(qName.getNamespaceURI(), qName.getLocalPart());
         } else {
             Property property = getXSDHelper().getGlobalProperty(qName.getNamespaceURI(), qName.getLocalPart(), true);
             wrapperType = property.getType();
@@ -184,7 +184,7 @@ public class JAXBHelperContext extends SDOHelperContext {
     }
 
     /**
-     * Return the wrapped class corresponding to the SDO type. 
+     * Return the wrapped class corresponding to the SDO type.
      * <pre>
      * Type customerType = jaxbHelperContext.getTypeHelper().getType("urn:customer", "customer");
      * Class customerClass = jaxbHelperContext.getClass(customerType);
@@ -198,19 +198,19 @@ public class JAXBHelperContext extends SDOHelperContext {
     }
 
     /**
-     * Return a DataObject that wraps a POJO.  This call should be 
+     * Return a DataObject that wraps a POJO.  This call should be
      * made on the root POJO.
      * <pre>
      * Customer customer = new Customer();
      * Address address new Address();
      * address.setStreet("123 Any Street");
      * customer.set(address);
-     * 
+     *
      * DataObject customerDO = jaxbHelperContext.wrap(customer);
      * customerDO.getString("address/street");  // returns "123 Any Street"
-     * </pre> 
-     * Multiple calls to wrap for the same instance POJO return the 
-     * same instance of DataObject, in other words the following is 
+     * </pre>
+     * Multiple calls to wrap for the same instance POJO return the
+     * same instance of DataObject, in other words the following is
      * always true:
      * <pre>
      * jaxbHelperContext.wrap(customer123) == jaxbHelperContext.wrap(customer123)
@@ -232,7 +232,7 @@ public class JAXBHelperContext extends SDOHelperContext {
         }
         wrapperDO = (SDODataObject) getDataFactory().create(wrapperType);
 
-        JAXBValueStore jaxbValueStore = new JAXBValueStore(this, entity); 
+        JAXBValueStore jaxbValueStore = new JAXBValueStore(this, entity);
         wrapperDO._setCurrentValueStore(jaxbValueStore);
         jaxbValueStore.initialize(wrapperDO);
 
@@ -241,14 +241,14 @@ public class JAXBHelperContext extends SDOHelperContext {
     }
 
     /**
-     * Helper method that configures container information. 
+     * Helper method that configures container information.
      */
     DataObject wrap(Object entity, Property containmentProperty, DataObject container) {
         SDODataObject sdoDataObject = (SDODataObject) wrap(entity);
         if(null == container) {
-            sdoDataObject._setContainmentPropertyName(null);            
+            sdoDataObject._setContainmentPropertyName(null);
         } else {
-            sdoDataObject._setContainmentPropertyName(containmentProperty.getName());            
+            sdoDataObject._setContainmentPropertyName(containmentProperty.getName());
         }
         sdoDataObject._setContainer(container);
         return sdoDataObject;
@@ -263,7 +263,7 @@ public class JAXBHelperContext extends SDOHelperContext {
     }
 
     /**
-     * Helper method that configures container information. 
+     * Helper method that configures container information.
      */
     List<DataObject> wrap(Collection<Object> entities, Property containmentProperty, DataObject container) {
         if(null == entities) {
@@ -283,11 +283,11 @@ public class JAXBHelperContext extends SDOHelperContext {
      * DataObject customerDO = jaxbHelperContext.getDataFactory().create(customerType);
      * DataObject addressDO = customerDO.create("address");
      * addressDO.set("street", "123 Any Street");
-     * 
+     *
      * Customer customer = (Customer) jaxbHelperContext.unwrap(customerDO);
      * customer.getAddress().getStreet();  // returns "123 Any Street"
      * </pre>
-     * Multiple calls to unwrap for the same DataObject must return the 
+     * Multiple calls to unwrap for the same DataObject must return the
      * same instance of Object, in other words the following is always true:
      * <pre>
      * jaxbHelperContext.unwrap(customerDO123) == jaxbHelperContext.unwrap(customerDO123)
@@ -324,12 +324,12 @@ public class JAXBHelperContext extends SDOHelperContext {
     }
 
     /**
-     * Maintain an association between this POJO and DataObject. 
+     * Maintain an association between this POJO and DataObject.
      */
     void putWrapperDataObject(Object anObject, SDODataObject aDataObject) {
         wrapperDataObjects.put(anObject, aDataObject);
     }
-    
+
     /**
      * Get the XML descriptor for the entity class corresponding to the SDO type.
      */

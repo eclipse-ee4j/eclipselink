@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -43,230 +43,230 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.TableCellEditorAdapt
 
 
 final class ReportQueryAttributesPanel
-	extends AbstractAttributeItemsPanel
+    extends AbstractAttributeItemsPanel
 {
 
-	public ReportQueryAttributesPanel(PropertyValueModel queryHolder,
-	                                  WorkbenchContextHolder contextHolder) {
-		super(queryHolder, contextHolder);
-	}
+    public ReportQueryAttributesPanel(PropertyValueModel queryHolder,
+                                      WorkbenchContextHolder contextHolder) {
+        super(queryHolder, contextHolder);
+    }
 
     protected ListValueModel buildAttributesHolder() {
-		return new ListAspectAdapter(getQueryHolder(), MWReportQuery.ATTRIBUTE_ITEMS_LIST) {
-			protected ListIterator getValueFromSubject() {
-				return ((MWReportQuery) this.subject).attributeItems();
-			}
-			protected int sizeFromSubject() {
-				return ((MWReportQuery) this.subject).attributeItemsSize();
-			}
-		};
-	}
+        return new ListAspectAdapter(getQueryHolder(), MWReportQuery.ATTRIBUTE_ITEMS_LIST) {
+            protected ListIterator getValueFromSubject() {
+                return ((MWReportQuery) this.subject).attributeItems();
+            }
+            protected int sizeFromSubject() {
+                return ((MWReportQuery) this.subject).attributeItemsSize();
+            }
+        };
+    }
 
 
-	protected AddRemovePanel.UpDownOptionAdapter buildAttributesPanelAdapter() {
-		return new AddRemovePanel.UpDownOptionAdapter() {
+    protected AddRemovePanel.UpDownOptionAdapter buildAttributesPanelAdapter() {
+        return new AddRemovePanel.UpDownOptionAdapter() {
 
-			public void addNewItem(ObjectListSelectionModel listSelectionModel) {
-			    addAttribute();			
-			}
-
-			public String optionalButtonKey() {
-				return "REPORT_QUERY_ATTRIBUTES_LIST_EDIT_BUTTON";
-			}
-
-			public void optionOnSelection(ObjectListSelectionModel listSelectionModel) {
-				editSelectedAttribute((MWReportAttributeItem) listSelectionModel.getSelectedValue());
-			}
-			
-			public boolean enableOptionOnSelectionChange(ObjectListSelectionModel listSelectionModel) {
-				return listSelectionModel.getSelectedValuesSize() == 1;
+            public void addNewItem(ObjectListSelectionModel listSelectionModel) {
+                addAttribute();
             }
 
-			public void removeSelectedItems(ObjectListSelectionModel listSelectionModel) {
-				Object[] selectedValues = listSelectionModel.getSelectedValues();
-				for (int i = 0; i < selectedValues.length; i++) {
-					((MWReportQuery) getQuery()).removeAttributeItem((MWReportAttributeItem) selectedValues[i]);
-				}
-			}
-			
+            public String optionalButtonKey() {
+                return "REPORT_QUERY_ATTRIBUTES_LIST_EDIT_BUTTON";
+            }
+
+            public void optionOnSelection(ObjectListSelectionModel listSelectionModel) {
+                editSelectedAttribute((MWReportAttributeItem) listSelectionModel.getSelectedValue());
+            }
+
+            public boolean enableOptionOnSelectionChange(ObjectListSelectionModel listSelectionModel) {
+                return listSelectionModel.getSelectedValuesSize() == 1;
+            }
+
+            public void removeSelectedItems(ObjectListSelectionModel listSelectionModel) {
+                Object[] selectedValues = listSelectionModel.getSelectedValues();
+                for (int i = 0; i < selectedValues.length; i++) {
+                    ((MWReportQuery) getQuery()).removeAttributeItem((MWReportAttributeItem) selectedValues[i]);
+                }
+            }
+
             public void moveItemsDown(Object[] items) {
                 for (int i = 0; i < items.length; i++) {
                    ((MWReportQuery) getQuery()).moveAttributeItemDown((MWReportAttributeItem) items[i]);
                 }
             }
-            
+
             public void moveItemsUp(Object[] items) {
                 for (int i = 0; i < items.length; i++) {
                     ((MWReportQuery) getQuery()).moveAttributeItemUp((MWReportAttributeItem) items[i]);
-                 }           
-            }			
-		};
-	}
+                 }
+            }
+        };
+    }
 
-	private void addAttribute() {
-	    editSelectedAttribute(null);
-	}
-	
-	AttributeItemDialog buildAttributeItemDialog(MWAttributeItem item) {
+    private void addAttribute() {
+        editSelectedAttribute(null);
+    }
+
+    AttributeItemDialog buildAttributeItemDialog(MWAttributeItem item) {
         return new ReportQueryAttributeDialog((MWReportQuery) getQuery(), (MWReportAttributeItem) item, getWorkbenchContext());
     }
-	
-	private ComboBoxModel buildFunctionComboBoxModel() {
-		return new DefaultComboBoxModel(MWReportAttributeItem.FUNCTIONS);	
-	}
-	
-	private ComboBoxTableCellRenderer buildFunctionComboBoxRenderer() {
-		return new ComboBoxTableCellRenderer(this.buildFunctionComboBoxModel());
-	}
-	
-	protected PropertyValueModel buildQueryHolder(PropertyValueModel queryHolder) {
-		return new FilteringPropertyValueModel(queryHolder) {
-			protected boolean accept(Object value) {
-				return value instanceof MWReportQuery;
-			}
-		};
-	}
 
-	protected String helpTopicId() {
-		return "query.report.attributes";	
-	}
+    private ComboBoxModel buildFunctionComboBoxModel() {
+        return new DefaultComboBoxModel(MWReportAttributeItem.FUNCTIONS);
+    }
+
+    private ComboBoxTableCellRenderer buildFunctionComboBoxRenderer() {
+        return new ComboBoxTableCellRenderer(this.buildFunctionComboBoxModel());
+    }
+
+    protected PropertyValueModel buildQueryHolder(PropertyValueModel queryHolder) {
+        return new FilteringPropertyValueModel(queryHolder) {
+            protected boolean accept(Object value) {
+                return value instanceof MWReportQuery;
+            }
+        };
+    }
+
+    protected String helpTopicId() {
+        return "query.report.attributes";
+    }
 
     String listTitleKey() {
          return "REPORT_QUERY_ATTRIBUTES_LIST";
     }
-    
+
     protected boolean panelEnabled(MWQueryFormat queryFormat) {
         return queryFormat.reportAttributesAllowed();
     }
-    
+
     protected AddRemovePanel buildAddRemovePanel() {
         final AddRemoveTablePanel tablePanel =  new AddRemoveTablePanel(
-				getApplicationContext(), 
-				buildAttributesPanelAdapter(), 
-				buildAttributesHolder(),
-				new AttributeItemsColumnAdapter(resourceRepository()),
-				AddRemovePanel.RIGHT);
-        
+                getApplicationContext(),
+                buildAttributesPanelAdapter(),
+                buildAttributesHolder(),
+                new AttributeItemsColumnAdapter(resourceRepository()),
+                AddRemovePanel.RIGHT);
+
         tablePanel.setBorder(buildTitledBorder(listTitleKey()));
         SwingComponentFactory.addDoubleClickMouseListener(tablePanel.getComponent(),
-		        new DoubleClickMouseListener() {
+                new DoubleClickMouseListener() {
                     public void mouseDoubleClicked(MouseEvent e) {
                         editSelectedAttribute((MWAttributeItem) tablePanel.getSelectionModel().getSelectedValue());
                     }
                 });
-		addHelpTopicId(tablePanel, helpTopicId());
-		
-		updateTableColumns((JTable) tablePanel.getComponent());
+        addHelpTopicId(tablePanel, helpTopicId());
+
+        updateTableColumns((JTable) tablePanel.getComponent());
         return tablePanel;
     }
-	private void updateTableColumns(JTable table) {
-		int rowHeight = 0;
+    private void updateTableColumns(JTable table) {
+        int rowHeight = 0;
 
-		// function column (combo-box)
-		TableColumn column = table.getColumnModel().getColumn(AttributeItemsColumnAdapter.FUNCTION_COLUMN);
-		ComboBoxTableCellRenderer functionRenderer = this.buildFunctionComboBoxRenderer();
-		column.setCellRenderer(this.buildFunctionComboBoxRenderer());
-		column.setCellEditor(new TableCellEditorAdapter(this.buildFunctionComboBoxRenderer()));
-		rowHeight = Math.max(rowHeight, functionRenderer.getPreferredHeight());
-		
-		column = table.getColumnModel().getColumn(AttributeItemsColumnAdapter.ATTRIBUTE_COLUMN);
-		column.setCellRenderer(new SimpleTableCellRenderer() {
-			protected String buildText(Object value) {
-				if (value != null) {
-					return ((MWQueryableArgument) value).displayString();
-				}
-				return "";
-			}
-		});
+        // function column (combo-box)
+        TableColumn column = table.getColumnModel().getColumn(AttributeItemsColumnAdapter.FUNCTION_COLUMN);
+        ComboBoxTableCellRenderer functionRenderer = this.buildFunctionComboBoxRenderer();
+        column.setCellRenderer(this.buildFunctionComboBoxRenderer());
+        column.setCellEditor(new TableCellEditorAdapter(this.buildFunctionComboBoxRenderer()));
+        rowHeight = Math.max(rowHeight, functionRenderer.getPreferredHeight());
 
-		table.setRowHeight(rowHeight);
-	}
-	
-	// ********** classes **********
+        column = table.getColumnModel().getColumn(AttributeItemsColumnAdapter.ATTRIBUTE_COLUMN);
+        column.setCellRenderer(new SimpleTableCellRenderer() {
+            protected String buildText(Object value) {
+                if (value != null) {
+                    return ((MWQueryableArgument) value).displayString();
+                }
+                return "";
+            }
+        });
 
-	private static class AttributeItemsColumnAdapter implements ColumnAdapter {
-		
-		private ResourceRepository resourceRepository;
-		public static final int ITEM_NAME_COLUMN = 0;
-		public static final int ATTRIBUTE_COLUMN = 1;
-		public static final int FUNCTION_COLUMN = 2;
-		
-		public static final int COLUMN_COUNT = 3;
+        table.setRowHeight(rowHeight);
+    }
 
-		private static final String[] EMPTY_STRING_ARRAY = new String[0];
+    // ********** classes **********
 
-		private static final String[] COLUMN_NAME_KEYS = new String[] {
-			"ITEM_NAME_COLUMN_HEADER",
-			"ATTRIBUTE_COLUMN_HEADER",
-			"FUNCTION_COLUMN_HEADER",
-		};
+    private static class AttributeItemsColumnAdapter implements ColumnAdapter {
 
-		private AttributeItemsColumnAdapter(ResourceRepository repository) {
-			super();
-			this.resourceRepository = repository;
-		}
-		
-		private PropertyValueModel buildAttributeAdapter(MWReportAttributeItem item) {
-			// TODO we need some change notifications from MWQueryableArgument and MWQueryableArgumentElement
-			return new PropertyAspectAdapter(EMPTY_STRING_ARRAY, item) {	// the queryableArgument never changes
-				protected Object getValueFromSubject() {
-					return ((MWReportAttributeItem) this.subject).getQueryableArgument();
-				}
-			};
-		}
-		
-		private PropertyValueModel buildFunctionAdapter(MWReportAttributeItem item) {
-			return new PropertyAspectAdapter(MWReportAttributeItem.FUNCTION_PROPERTY, item) {
-				protected Object getValueFromSubject() {
-					return ((MWReportAttributeItem) this.subject).getFunction();
-				}
-				protected void setValueOnSubject(Object value) {
-					((MWReportAttributeItem) this.subject).setFunction((String) value);
-				}
-			};
-		}
+        private ResourceRepository resourceRepository;
+        public static final int ITEM_NAME_COLUMN = 0;
+        public static final int ATTRIBUTE_COLUMN = 1;
+        public static final int FUNCTION_COLUMN = 2;
 
-		private PropertyValueModel buildItemNameAdapter(MWReportAttributeItem item) {
-			return new PropertyAspectAdapter(MWReportAttributeItem.NAME_PROPERTY, item) {
-				protected Object getValueFromSubject() {
-					return ((MWReportAttributeItem) this.subject).getName();
-				}
-				protected void setValueOnSubject(Object value) {
-					((MWReportAttributeItem) this.subject).setName((String) value);
-				}
-			};
-		}
+        public static final int COLUMN_COUNT = 3;
 
-		public PropertyValueModel[] cellModels(Object subject) {
-			MWReportAttributeItem attributeItem = (MWReportAttributeItem) subject;
-			PropertyValueModel[] result = new PropertyValueModel[COLUMN_COUNT];
+        private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-			result[ITEM_NAME_COLUMN]			= this.buildItemNameAdapter(attributeItem);
-			result[ATTRIBUTE_COLUMN]			= this.buildAttributeAdapter(attributeItem);
-			result[FUNCTION_COLUMN]			= this.buildFunctionAdapter(attributeItem);
+        private static final String[] COLUMN_NAME_KEYS = new String[] {
+            "ITEM_NAME_COLUMN_HEADER",
+            "ATTRIBUTE_COLUMN_HEADER",
+            "FUNCTION_COLUMN_HEADER",
+        };
 
-			return result;
-		}
+        private AttributeItemsColumnAdapter(ResourceRepository repository) {
+            super();
+            this.resourceRepository = repository;
+        }
 
-		public Class getColumnClass(int index) {
-			switch (index) {
-				case ITEM_NAME_COLUMN:			return Object.class;
-				case ATTRIBUTE_COLUMN:			return Object.class;
-				case FUNCTION_COLUMN:			return Object.class;
-				default: 					return Object.class;
-			}
-		}
-		
-		public int getColumnCount() {
-			return COLUMN_COUNT;
-		}
+        private PropertyValueModel buildAttributeAdapter(MWReportAttributeItem item) {
+            // TODO we need some change notifications from MWQueryableArgument and MWQueryableArgumentElement
+            return new PropertyAspectAdapter(EMPTY_STRING_ARRAY, item) {    // the queryableArgument never changes
+                protected Object getValueFromSubject() {
+                    return ((MWReportAttributeItem) this.subject).getQueryableArgument();
+                }
+            };
+        }
 
-		public String getColumnName(int index) {
-			return this.resourceRepository.getString(COLUMN_NAME_KEYS[index]);
-		}
+        private PropertyValueModel buildFunctionAdapter(MWReportAttributeItem item) {
+            return new PropertyAspectAdapter(MWReportAttributeItem.FUNCTION_PROPERTY, item) {
+                protected Object getValueFromSubject() {
+                    return ((MWReportAttributeItem) this.subject).getFunction();
+                }
+                protected void setValueOnSubject(Object value) {
+                    ((MWReportAttributeItem) this.subject).setFunction((String) value);
+                }
+            };
+        }
 
-		public boolean isColumnEditable(int index) {
-			return index == FUNCTION_COLUMN;
-		}
-	}
+        private PropertyValueModel buildItemNameAdapter(MWReportAttributeItem item) {
+            return new PropertyAspectAdapter(MWReportAttributeItem.NAME_PROPERTY, item) {
+                protected Object getValueFromSubject() {
+                    return ((MWReportAttributeItem) this.subject).getName();
+                }
+                protected void setValueOnSubject(Object value) {
+                    ((MWReportAttributeItem) this.subject).setName((String) value);
+                }
+            };
+        }
+
+        public PropertyValueModel[] cellModels(Object subject) {
+            MWReportAttributeItem attributeItem = (MWReportAttributeItem) subject;
+            PropertyValueModel[] result = new PropertyValueModel[COLUMN_COUNT];
+
+            result[ITEM_NAME_COLUMN]            = this.buildItemNameAdapter(attributeItem);
+            result[ATTRIBUTE_COLUMN]            = this.buildAttributeAdapter(attributeItem);
+            result[FUNCTION_COLUMN]            = this.buildFunctionAdapter(attributeItem);
+
+            return result;
+        }
+
+        public Class getColumnClass(int index) {
+            switch (index) {
+                case ITEM_NAME_COLUMN:            return Object.class;
+                case ATTRIBUTE_COLUMN:            return Object.class;
+                case FUNCTION_COLUMN:            return Object.class;
+                default:                     return Object.class;
+            }
+        }
+
+        public int getColumnCount() {
+            return COLUMN_COUNT;
+        }
+
+        public String getColumnName(int index) {
+            return this.resourceRepository.getString(COLUMN_NAME_KEYS[index]);
+        }
+
+        public boolean isColumnEditable(int index) {
+            return index == FUNCTION_COLUMN;
+        }
+    }
 }

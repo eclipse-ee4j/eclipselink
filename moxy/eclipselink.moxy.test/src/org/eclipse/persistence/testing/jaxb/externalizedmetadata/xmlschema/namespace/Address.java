@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,40 +20,40 @@ public class Address {
     public String street;
     public String city;
     public String zip;
-    
+
     public boolean equals(Object theObject){
-    	if(!(theObject instanceof Address)){
-    		return false;
-    	}
-    	if(!compareString(state, ((Address)theObject).state)){
-    		return false;
-    	}
-    	if(!compareString(city, ((Address)theObject).city)){
-    		return false;
-    	}
-    	if(!compareString(zip, ((Address)theObject).zip)){
-    		return false;
-    	}
-    	if(!compareString(street, ((Address)theObject).street)){
-    		return false;
-    	}
-    	return true;
+        if(!(theObject instanceof Address)){
+            return false;
+        }
+        if(!compareString(state, ((Address)theObject).state)){
+            return false;
+        }
+        if(!compareString(city, ((Address)theObject).city)){
+            return false;
+        }
+        if(!compareString(zip, ((Address)theObject).zip)){
+            return false;
+        }
+        if(!compareString(street, ((Address)theObject).street)){
+            return false;
+        }
+        return true;
     }
-    
+
     private boolean compareString(String control, String test){
-    	if(control == null){
-    		if(test != null){
-    			return false;
-    		}
-    	}else{
-    		if(test == null){
-    			return false;
-    		}else{
-    			if(!control.equals(test)){
-    				return false;
-    			}
-    		}
-    	}
-    	return true;
+        if(control == null){
+            if(test != null){
+                return false;
+            }
+        }else{
+            if(test == null){
+                return false;
+            }else{
+                if(!control.equals(test)){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,36 +29,36 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration;
  */
 public class AbsFunctionResolver extends Resolver {
 
-	/**
-	 * Creates a new <code>AbsFunctionResolver</code>.
-	 *
-	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
-	 */
-	public AbsFunctionResolver(Resolver parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>AbsFunctionResolver</code>.
+     *
+     * @param parent The parent {@link Resolver}, which is never <code>null</code>
+     */
+    public AbsFunctionResolver(Resolver parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected IType buildType() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected IType buildType() {
 
-		IType type = getParentType();
+        IType type = getParentType();
 
-		// Anything else is an invalid type
-		if (!getTypeHelper().isNumericType(type)) {
-			type = getTypeHelper().objectType();
-		}
+        // Anything else is an invalid type
+        if (!getTypeHelper().isNumericType(type)) {
+            type = getTypeHelper().objectType();
+        }
 
-		return type;
-	}
+        return type;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ITypeDeclaration buildTypeDeclaration() {
-		return getParentTypeDeclaration();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ITypeDeclaration buildTypeDeclaration() {
+        return getParentTypeDeclaration();
+    }
 }

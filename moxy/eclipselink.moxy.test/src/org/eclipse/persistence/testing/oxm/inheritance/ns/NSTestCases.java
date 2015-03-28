@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,20 +29,20 @@ public class NSTestCases extends XMLWithJSONMappingTestCases {
         setControlDocument("org/eclipse/persistence/testing/oxm/inheritance/ns.xml");
         setControlJSON("org/eclipse/persistence/testing/oxm/inheritance/ns.json");
     }
-    
+
     protected boolean getNamespaceAware(){
-    	return true;
+        return true;
     }
-    
+
     protected Map<String, String> getNamespaces(){
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("urn:parent", "parent");
         namespaces.put("urn:child", "child");
         namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
-    	return namespaces;
+        return namespaces;
     }
 
-    
+
     @Override
     protected NSChild getControlObject() {
         NSChild child = new NSChild();

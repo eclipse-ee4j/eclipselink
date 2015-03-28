@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland (Oracle) - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors.partitioning;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -34,7 +34,7 @@ public abstract class FieldPartitioningPolicy extends PartitioningPolicy {
 
     /** If query does not have the partition field in it, should the query be sent to all databases. */
     protected boolean unionUnpartitionableQueries = false;
-    
+
     public FieldPartitioningPolicy() {
         super();
     }
@@ -43,12 +43,12 @@ public abstract class FieldPartitioningPolicy extends PartitioningPolicy {
         super();
         this.partitionField = new DatabaseField(partitionField);
     }
-    
+
     public FieldPartitioningPolicy(String partitionField, boolean unionUnpartitionableQueries) {
         this(partitionField);
         this.unionUnpartitionableQueries = unionUnpartitionableQueries;
     }
-    
+
     /**
      * PUBLIC:
      * Return the database column or query parameter to partition queries by.
@@ -60,7 +60,7 @@ public abstract class FieldPartitioningPolicy extends PartitioningPolicy {
     public DatabaseField getPartitionField() {
         return partitionField;
     }
-    
+
     /**
      * PUBLIC:
      * Set the database column or query parameter to partition queries by.
@@ -72,7 +72,7 @@ public abstract class FieldPartitioningPolicy extends PartitioningPolicy {
     public void setPartitionField(DatabaseField partitionField) {
         this.partitionField = partitionField;
     }
-    
+
     /**
      * PUBLIC:
      * Return the database column or query parameter to partition queries by.
@@ -84,7 +84,7 @@ public abstract class FieldPartitioningPolicy extends PartitioningPolicy {
     public String getPartitionFieldName() {
         return getPartitionField().getName();
     }
-    
+
     /**
      * PUBLIC:
      * Set the database column or query parameter to partition queries by.
@@ -96,7 +96,7 @@ public abstract class FieldPartitioningPolicy extends PartitioningPolicy {
     public void setPartitionField(String partitionField) {
         this.partitionField = new DatabaseField(partitionField);
     }
-        
+
     /**
      * PUBLIC:
      * Return if queries that do not contain the partition field should be sent
@@ -105,7 +105,7 @@ public abstract class FieldPartitioningPolicy extends PartitioningPolicy {
     public boolean getUnionUnpartitionableQueries() {
         return unionUnpartitionableQueries;
     }
-    
+
     /**
      * PUBLIC:
      * Set if queries that do not contain the partition field should be sent
@@ -114,7 +114,7 @@ public abstract class FieldPartitioningPolicy extends PartitioningPolicy {
     public void setUnionUnpartitionableQueries(boolean unionUnpartitionableQueries) {
         this.unionUnpartitionableQueries = unionUnpartitionableQueries;
     }
-    
+
     /**
      * INTERNAL:
      * If persist should be partitioned, extra value from object.

@@ -1,29 +1,29 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     01/28/2009-2.0 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier
  *       - 248293: JPA 2.0 Element Collections (part 1)
- *     03/27/2009-2.0 Guy Pelletier 
+ *     03/27/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/03/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     06/02/2009-2.0 Guy Pelletier 
+ *     06/02/2009-2.0 Guy Pelletier
  *       - 278768: JPA 2.0 Association Override Join Table
- *     06/09/2009-2.0 Guy Pelletier 
+ *     06/09/2009-2.0 Guy Pelletier
  *       - 249037: JPA 2.0 persisting list item index
- *     02/18/2010-2.0.2 Guy Pelletier 
+ *     02/18/2010-2.0.2 Guy Pelletier
  *       - 294803: @Column(updatable=false) has no effect on @Basic mappings
- *     06/03/2011-2.3.1 Guy Pelletier 
- *       - 347563: transient field/property in embeddable entity 
- ******************************************************************************/  
+ *     06/03/2011-2.3.1 Guy Pelletier
+ *       - 347563: transient field/property in embeddable entity
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
 import org.eclipse.persistence.sessions.Session;
@@ -40,7 +40,7 @@ public class InheritedTableManager extends TableCreator {
 
         addTableDefinition(build_BEER_CONSUMER_Table());
         addTableDefinition(build_BEER_CONSUMER_REDSTRIPES_Table());
-        
+
         addTableDefinition(build_EXPERT_BEER_CONSUMER_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_AWARDS_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_ACCLAIMS_Table());
@@ -51,7 +51,7 @@ public class InheritedTableManager extends TableCreator {
         addTableDefinition(build_EXPERT_BEER_CONSUMER_QUOTES_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_RECORDS_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_ACCREDIDATION_WITNESS_Table());
-        
+
         addTableDefinition(build_NOVICE_BEER_CONSUMER_Table());
         addTableDefinition(build_NOVICE_BEER_CONSUMER_AWARDS_Table());
         addTableDefinition(build_NOVICE_BEER_CONSUMER_ACCLAIMS_Table());
@@ -59,14 +59,14 @@ public class InheritedTableManager extends TableCreator {
         addTableDefinition(build_NOVICE_BEER_CONSUMER_DESIGNATIONS_Table());
         addTableDefinition(build_NOVICE_BEER_CONSUMER_RECORDS_Table());
         addTableDefinition(build_NOVICE_BEER_CONSUMER_ACCREDIDATION_WITNESS_Table());
-        
+
         addTableDefinition(build_ALPINE_Table());
         addTableDefinition(build_BECKS_Table());
         addTableDefinition(build_BECKS_TAG_Table());
         addTableDefinition(build_CANADIAN_Table());
         addTableDefinition(build_CORONA_Table());
         addTableDefinition(build_HEINEKEN_Table());
-        
+
         addTableDefinition(build_OFFICIAL_Table());
         addTableDefinition(build_OFFICIAL_COMPENSATIONTable());
         addTableDefinition(build_WITNESS_Table());
@@ -75,11 +75,11 @@ public class InheritedTableManager extends TableCreator {
         addTableDefinition(build_TELEPHONE_NUMBER_Table());
         addTableDefinition(build_LOCATION_Table());
     }
-    
+
     public static TableDefinition build_ALPINE_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_ALPINE");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ALPINE_ID");
         ID_field.setTypeName("NUMERIC");
@@ -89,7 +89,7 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setIsIdentity(false);
         ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -99,7 +99,7 @@ public class InheritedTableManager extends TableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition BEST_BEFORE_DATE_field = new FieldDefinition();
         BEST_BEFORE_DATE_field.setName("BB_DATE");
         BEST_BEFORE_DATE_field.setTypeName("DATETIME");
@@ -109,7 +109,7 @@ public class InheritedTableManager extends TableCreator {
         BEST_BEFORE_DATE_field.setIsIdentity(false);
         BEST_BEFORE_DATE_field.setShouldAllowNull(true);
         table.addField(BEST_BEFORE_DATE_field);
-        
+
         FieldDefinition CLASSIFICATION_field = new FieldDefinition();
         CLASSIFICATION_field.setName("CLASSIFICATION");
         CLASSIFICATION_field.setTypeName("NUMERIC");
@@ -119,7 +119,7 @@ public class InheritedTableManager extends TableCreator {
         CLASSIFICATION_field.setIsIdentity(false);
         CLASSIFICATION_field.setShouldAllowNull(true);
         table.addField(CLASSIFICATION_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -133,11 +133,11 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_BECKS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_BECKS");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -145,9 +145,9 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setIsPrimaryKey(true);
         ID_field.setUnique(false);
         ID_field.setIsIdentity(false);
-        ID_field.setShouldAllowNull(false); 
+        ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -168,7 +168,7 @@ public class InheritedTableManager extends TableCreator {
         BECKS_TAG_field.setShouldAllowNull(true);
         BECKS_TAG_field.setForeignKeyFieldName("CMP3_XML_BECKS_TAG.ID");
         table.addField(BECKS_TAG_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -179,7 +179,7 @@ public class InheritedTableManager extends TableCreator {
         BEER_CONSUMER_ID_field.setShouldAllowNull(true);
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_XML_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
-        
+
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
@@ -192,11 +192,11 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_BECKS_TAG_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_BECKS_TAG");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -204,7 +204,7 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setIsPrimaryKey(true);
         ID_field.setUnique(false);
         ID_field.setIsIdentity(false);
-        ID_field.setShouldAllowNull(false); 
+        ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
 
         FieldDefinition CALL_NUMBER_field = new FieldDefinition();
@@ -216,14 +216,14 @@ public class InheritedTableManager extends TableCreator {
         CALL_NUMBER_field.setUnique(false);
         CALL_NUMBER_field.setIsIdentity(false);
         table.addField(CALL_NUMBER_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_BEER_CONSUMER_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_CONSUMER");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -243,7 +243,7 @@ public class InheritedTableManager extends TableCreator {
         NAME_field.setUnique(false);
         NAME_field.setIsIdentity(false);
         table.addField(NAME_field);
-        
+
         FieldDefinition DTYPE_field = new FieldDefinition();
         DTYPE_field.setName("DTYPE");
         DTYPE_field.setTypeName("VARCHAR2");
@@ -257,11 +257,11 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_BEER_CONSUMER_REDSTRIPES_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CONSUMER_REDSTRIPES");
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOLCONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -271,7 +271,7 @@ public class InheritedTableManager extends TableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition RS_KEY_field = new FieldDefinition();
         RS_KEY_field.setName("RS_KEY");
         RS_KEY_field.setTypeName("VARCHAR");
@@ -281,7 +281,7 @@ public class InheritedTableManager extends TableCreator {
         RS_KEY_field.setUnique(true);
         RS_KEY_field.setIsIdentity(false);
         table.addField(RS_KEY_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -295,11 +295,11 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_CANADIAN_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_CANADIAN");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("CANADIAN_ID");
         ID_field.setTypeName("NUMERIC");
@@ -309,7 +309,7 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setIsIdentity(false);
         ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -319,7 +319,7 @@ public class InheritedTableManager extends TableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition BORN_ON_DATE_field = new FieldDefinition();
         BORN_ON_DATE_field.setName("BORN");
         BORN_ON_DATE_field.setTypeName("DATETIME");
@@ -329,7 +329,7 @@ public class InheritedTableManager extends TableCreator {
         BORN_ON_DATE_field.setIsIdentity(false);
         BORN_ON_DATE_field.setShouldAllowNull(true);
         table.addField(BORN_ON_DATE_field);
-        
+
         FieldDefinition FLAVOR_field = new FieldDefinition();
         FLAVOR_field.setName("FLAVOR");
         FLAVOR_field.setTypeName("VARCHAR");
@@ -353,11 +353,11 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_CORONA_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_CORONA");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -365,9 +365,9 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setIsPrimaryKey(true);
         ID_field.setUnique(false);
         ID_field.setIsIdentity(false);
-        ID_field.setShouldAllowNull(false); 
+        ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -377,7 +377,7 @@ public class InheritedTableManager extends TableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition TAG_NUMBER_field = new FieldDefinition();
         TAG_NUMBER_field.setName("TAG_NUMBER");
         TAG_NUMBER_field.setTypeName("NUMERIC");
@@ -385,7 +385,7 @@ public class InheritedTableManager extends TableCreator {
         TAG_NUMBER_field.setIsPrimaryKey(false);
         TAG_NUMBER_field.setUnique(false);
         TAG_NUMBER_field.setIsIdentity(false);
-        TAG_NUMBER_field.setShouldAllowNull(true); 
+        TAG_NUMBER_field.setShouldAllowNull(true);
         table.addField(TAG_NUMBER_field);
 
         FieldDefinition TAG_CODE_field = new FieldDefinition();
@@ -397,7 +397,7 @@ public class InheritedTableManager extends TableCreator {
         TAG_CODE_field.setUnique(false);
         TAG_CODE_field.setIsIdentity(false);
         table.addField(TAG_CODE_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -408,7 +408,7 @@ public class InheritedTableManager extends TableCreator {
         BEER_CONSUMER_ID_field.setShouldAllowNull(true);
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_XML_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
-        
+
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
@@ -421,11 +421,11 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_CERTIFICATION_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_CERTIFICATION");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -445,7 +445,7 @@ public class InheritedTableManager extends TableCreator {
         MAP_KEY_field.setIsIdentity(false);
         MAP_KEY_field.setShouldAllowNull(false);
         table.addField(MAP_KEY_field);
-        
+
         FieldDefinition DESCRIPTION_field = new FieldDefinition();
         DESCRIPTION_field.setName("DESCRIPTION");
         DESCRIPTION_field.setTypeName("VARCHAR");
@@ -455,7 +455,7 @@ public class InheritedTableManager extends TableCreator {
         DESCRIPTION_field.setUnique(false);
         DESCRIPTION_field.setIsIdentity(false);
         table.addField(DESCRIPTION_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("CONSUMER_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -469,11 +469,11 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_COMMITTEE_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_COMMITTEE");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -500,7 +500,7 @@ public class InheritedTableManager extends TableCreator {
     public static TableDefinition build_EXPERT_BEER_CONSUMER_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_EXPERT_CONSUMER");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -511,7 +511,7 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setShouldAllowNull(false);
         ID_field.setForeignKeyFieldName("CMP3_XML_CONSUMER.ID");
         table.addField(ID_field);
-        
+
         FieldDefinition IQ_field = new FieldDefinition();
         IQ_field.setName("CONSUMER_IQ");
         IQ_field.setTypeName("NUMERIC");
@@ -521,7 +521,7 @@ public class InheritedTableManager extends TableCreator {
         IQ_field.setUnique(false);
         IQ_field.setIsIdentity(false);
         table.addField(IQ_field);
-        
+
         FieldDefinition ACCREDIDATION_field = new FieldDefinition();
         ACCREDIDATION_field.setName("ACCREDIDATION");
         ACCREDIDATION_field.setTypeName("VARCHAR");
@@ -531,14 +531,14 @@ public class InheritedTableManager extends TableCreator {
         ACCREDIDATION_field.setUnique(false);
         ACCREDIDATION_field.setIsIdentity(false);
         table.addField(ACCREDIDATION_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_HEINEKEN_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_HEINEKEN");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -546,9 +546,9 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setIsPrimaryKey(true);
         ID_field.setUnique(false);
         ID_field.setIsIdentity(false);
-        ID_field.setShouldAllowNull(false); 
+        ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -558,7 +558,7 @@ public class InheritedTableManager extends TableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition BOTTLED_DATE_field = new FieldDefinition();
         BOTTLED_DATE_field.setName("BOTTLED_DATE");
         BOTTLED_DATE_field.setTypeName("DATETIME");
@@ -568,7 +568,7 @@ public class InheritedTableManager extends TableCreator {
         BOTTLED_DATE_field.setIsIdentity(false);
         BOTTLED_DATE_field.setShouldAllowNull(true);
         table.addField(BOTTLED_DATE_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -579,7 +579,7 @@ public class InheritedTableManager extends TableCreator {
         BEER_CONSUMER_ID_field.setShouldAllowNull(true);
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_XML_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
-        
+
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
@@ -592,11 +592,11 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_LOCATION_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA2_XML_LOCATION");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("VARCHAR");
@@ -606,7 +606,7 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setIsIdentity(false);
         ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-        
+
         FieldDefinition CITY_field = new FieldDefinition();
         CITY_field.setName("CITY");
         CITY_field.setTypeName("VARCHAR");
@@ -616,7 +616,7 @@ public class InheritedTableManager extends TableCreator {
         CITY_field.setUnique(false);
         CITY_field.setIsIdentity(false);
         table.addField(CITY_field);
-        
+
         FieldDefinition COUNTRY_field = new FieldDefinition();
         COUNTRY_field.setName("COUNTRY");
         COUNTRY_field.setTypeName("VARCHAR");
@@ -626,14 +626,14 @@ public class InheritedTableManager extends TableCreator {
         COUNTRY_field.setUnique(false);
         COUNTRY_field.setIsIdentity(false);
         table.addField(COUNTRY_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_ACCLAIMS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_EBC_ACCLAIMS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XML_EBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -644,7 +644,7 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("ACCLAIM");
         field1.setTypeName("VARCHAR");
@@ -654,10 +654,10 @@ public class InheritedTableManager extends TableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_ACCREDIDATION_WITNESS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_EBC_ACCREDIDATION_WITNESS");
@@ -672,7 +672,7 @@ public class InheritedTableManager extends TableCreator {
         fieldCONSUMERID.setIsIdentity(false);
         fieldCONSUMERID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
         table.addField(fieldCONSUMERID);
-        
+
         FieldDefinition fieldWITNESSID = new FieldDefinition();
         fieldWITNESSID.setName("XML_WITNESS_ID");
         fieldWITNESSID.setTypeName("NUMERIC");
@@ -686,11 +686,11 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_AUDIO_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_EBC_AUDIO");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XML_EBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -701,7 +701,7 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAUDIO = new FieldDefinition();
         fieldAUDIO.setName("AUDIO");
         fieldAUDIO.setTypeName("BLOB");
@@ -712,14 +712,14 @@ public class InheritedTableManager extends TableCreator {
         fieldAUDIO.setUnique(false);
         fieldAUDIO.setShouldAllowNull(true);
         table.addField(fieldAUDIO);
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_AWARDS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_EBC_AWARDS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XML_EBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -730,7 +730,7 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAWARDS_KEY = new FieldDefinition();
         fieldAWARDS_KEY.setName("AWARDS_KEY");
         fieldAWARDS_KEY.setTypeName("VARCHAR");
@@ -740,7 +740,7 @@ public class InheritedTableManager extends TableCreator {
         fieldAWARDS_KEY.setUnique(true);
         fieldAWARDS_KEY.setIsIdentity(false);
         table.addField(fieldAWARDS_KEY);
-        
+
         FieldDefinition fieldAWARD_CODE = new FieldDefinition();
         fieldAWARD_CODE.setName("AWARD_CODE");
         fieldAWARD_CODE.setTypeName("VARCHAR");
@@ -750,14 +750,14 @@ public class InheritedTableManager extends TableCreator {
         fieldAWARD_CODE.setUnique(false);
         fieldAWARD_CODE.setIsIdentity(false);
         table.addField(fieldAWARD_CODE);
-    
+
         return table;
     }
-    
-	 public static TableDefinition build_EXPERT_BEER_CONSUMER_CELEBRATIONS_Table() {
+
+     public static TableDefinition build_EXPERT_BEER_CONSUMER_CELEBRATIONS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_EBC_CELEBRATIONS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XML_EBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -768,7 +768,7 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition DETAILS_field = new FieldDefinition();
         DETAILS_field.setName("DETAILS");
         DETAILS_field.setTypeName("VARCHAR");
@@ -778,7 +778,7 @@ public class InheritedTableManager extends TableCreator {
         DETAILS_field.setUnique(false);
         DETAILS_field.setIsIdentity(false);
         table.addField(DETAILS_field);
-        
+
         FieldDefinition BIRTH_DAY_field = new FieldDefinition();
         BIRTH_DAY_field.setName("BIRTH_DAY");
         BIRTH_DAY_field.setTypeName("NUMERIC");
@@ -788,7 +788,7 @@ public class InheritedTableManager extends TableCreator {
         BIRTH_DAY_field.setUnique(false);
         BIRTH_DAY_field.setIsIdentity(false);
         table.addField(BIRTH_DAY_field);
-        
+
         FieldDefinition BIRTH_MONTH_field = new FieldDefinition();
         BIRTH_MONTH_field.setName("BIRTH_MONTH");
         BIRTH_MONTH_field.setTypeName("NUMERIC");
@@ -798,7 +798,7 @@ public class InheritedTableManager extends TableCreator {
         BIRTH_MONTH_field.setUnique(false);
         BIRTH_MONTH_field.setIsIdentity(false);
         table.addField(BIRTH_MONTH_field);
-        
+
         FieldDefinition BIRTH_YEAR_field = new FieldDefinition();
         BIRTH_YEAR_field.setName("BIRTH_YEAR");
         BIRTH_YEAR_field.setTypeName("NUMERIC");
@@ -808,7 +808,7 @@ public class InheritedTableManager extends TableCreator {
         BIRTH_YEAR_field.setUnique(false);
         BIRTH_YEAR_field.setIsIdentity(false);
         table.addField(BIRTH_YEAR_field);
-    
+
         return table;
     }
 
@@ -827,7 +827,7 @@ public class InheritedTableManager extends TableCreator {
         fieldCONSUMERID.setIsIdentity(false);
         fieldCONSUMERID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
         table.addField(fieldCONSUMERID);
-        
+
         FieldDefinition fieldCOMMITTEEID = new FieldDefinition();
         fieldCOMMITTEEID.setName("XML_COMMITTEE_ID");
         fieldCOMMITTEEID.setTypeName("NUMERIC");
@@ -845,7 +845,7 @@ public class InheritedTableManager extends TableCreator {
     public static TableDefinition build_EXPERT_BEER_CONSUMER_DESIGNATIONS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_EBC_DESIGNATIONS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XML_EBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -856,7 +856,7 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldDESIGNATION = new FieldDefinition();
         fieldDESIGNATION.setName("DESIGNATION");
         fieldDESIGNATION.setTypeName("VARCHAR");
@@ -866,7 +866,7 @@ public class InheritedTableManager extends TableCreator {
         fieldDESIGNATION.setUnique(false);
         fieldDESIGNATION.setIsIdentity(false);
         table.addField(fieldDESIGNATION);
-    
+
         FieldDefinition fieldDESIGNATIONS_ORDER = new FieldDefinition();
         fieldDESIGNATIONS_ORDER.setName("designations_ORDER");
         fieldDESIGNATIONS_ORDER.setTypeName("NUMERIC");
@@ -876,14 +876,14 @@ public class InheritedTableManager extends TableCreator {
         fieldDESIGNATIONS_ORDER.setUnique(false);
         fieldDESIGNATIONS_ORDER.setIsIdentity(false);
         table.addField(fieldDESIGNATIONS_ORDER);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_QUOTES_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("EBC_QUOTES");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -894,7 +894,7 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldQ_DATE = new FieldDefinition();
         fieldQ_DATE.setName("Q_DATE");
         fieldQ_DATE.setTypeName("DATE");
@@ -914,14 +914,14 @@ public class InheritedTableManager extends TableCreator {
         fieldQUOTE.setUnique(false);
         fieldQUOTE.setIsIdentity(false);
         table.addField(fieldQUOTE);
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_RECORDS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_EBC_RECORDS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XML_EBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -932,7 +932,7 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldQ_DATE = new FieldDefinition();
         fieldQ_DATE.setName("RECORD_DATE");
         fieldQ_DATE.setTypeName("DATE");
@@ -942,7 +942,7 @@ public class InheritedTableManager extends TableCreator {
         fieldQ_DATE.setUnique(false);
         fieldQ_DATE.setIsIdentity(false);
         table.addField(fieldQ_DATE);
-        
+
         FieldDefinition DESCRIP_field = new FieldDefinition();
         DESCRIP_field.setName("DESCRIPTION");
         DESCRIP_field.setTypeName("VARCHAR");
@@ -952,7 +952,7 @@ public class InheritedTableManager extends TableCreator {
         DESCRIP_field.setUnique(false);
         DESCRIP_field.setIsIdentity(false);
         table.addField(DESCRIP_field);
-        
+
         FieldDefinition LOCATION_ID_field = new FieldDefinition();
         LOCATION_ID_field.setName("LOCATION_ID");
         LOCATION_ID_field.setTypeName("VARCHAR");
@@ -963,14 +963,14 @@ public class InheritedTableManager extends TableCreator {
         LOCATION_ID_field.setShouldAllowNull(false);
         LOCATION_ID_field.setForeignKeyFieldName("JPA2_XML_LOCATION.ID");
         table.addField(LOCATION_ID_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_NOVICE_CONSUMER");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -981,7 +981,7 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setShouldAllowNull(false);
         ID_field.setForeignKeyFieldName("CMP3_XML_CONSUMER.ID");
         table.addField(ID_field);
-        
+
         FieldDefinition IQ_field = new FieldDefinition();
         IQ_field.setName("CONSUMER_IQ");
         IQ_field.setTypeName("NUMERIC");
@@ -991,7 +991,7 @@ public class InheritedTableManager extends TableCreator {
         IQ_field.setUnique(false);
         IQ_field.setIsIdentity(false);
         table.addField(IQ_field);
-        
+
         FieldDefinition ACCREDIDATION_field = new FieldDefinition();
         ACCREDIDATION_field.setName("ACCR_DETAILS");
         ACCREDIDATION_field.setTypeName("VARCHAR");
@@ -1001,14 +1001,14 @@ public class InheritedTableManager extends TableCreator {
         ACCREDIDATION_field.setUnique(false);
         ACCREDIDATION_field.setIsIdentity(false);
         table.addField(ACCREDIDATION_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_ACCLAIMS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_NBC_ACCLAIMS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XML_NBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1019,7 +1019,7 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_NOVICE_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("ACCLAIM");
         field1.setTypeName("NUMERIC");
@@ -1029,10 +1029,10 @@ public class InheritedTableManager extends TableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_ACCREDIDATION_WITNESS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_NBC_ACCREDITATION_WITNESS");
@@ -1061,11 +1061,11 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_AWARDS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_NBC_AWARDS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XML_NBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1076,7 +1076,7 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_NOVICE_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAWARDS_KEY = new FieldDefinition();
         fieldAWARDS_KEY.setName("AWARDS_KEY");
         fieldAWARDS_KEY.setTypeName("NUMERIC");
@@ -1086,7 +1086,7 @@ public class InheritedTableManager extends TableCreator {
         fieldAWARDS_KEY.setUnique(true);
         fieldAWARDS_KEY.setIsIdentity(false);
         table.addField(fieldAWARDS_KEY);
-        
+
         FieldDefinition fieldAWARD_CODE = new FieldDefinition();
         fieldAWARD_CODE.setName("AWARD_CODE");
         fieldAWARD_CODE.setTypeName("NUMERIC");
@@ -1096,10 +1096,10 @@ public class InheritedTableManager extends TableCreator {
         fieldAWARD_CODE.setUnique(false);
         fieldAWARD_CODE.setIsIdentity(false);
         table.addField(fieldAWARD_CODE);
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_COMMITTEE_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_NBC_COMMITTEE");
@@ -1114,7 +1114,7 @@ public class InheritedTableManager extends TableCreator {
         fieldCONSUMERID.setIsIdentity(false);
         fieldCONSUMERID.setForeignKeyFieldName("XML_NOVICE_CONSUMER.ID");
         table.addField(fieldCONSUMERID);
-        
+
         FieldDefinition fieldCOMMITTEEID = new FieldDefinition();
         fieldCOMMITTEEID.setName("XML_COM_ID");
         fieldCOMMITTEEID.setTypeName("NUMERIC");
@@ -1128,11 +1128,11 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_DESIGNATIONS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_NBC_DESIGNATIONS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XML_NBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1143,7 +1143,7 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_NOVICE_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldDESIGNATION = new FieldDefinition();
         fieldDESIGNATION.setName("DESIGNATION");
         fieldDESIGNATION.setTypeName("VARCHAR");
@@ -1153,7 +1153,7 @@ public class InheritedTableManager extends TableCreator {
         fieldDESIGNATION.setUnique(false);
         fieldDESIGNATION.setIsIdentity(false);
         table.addField(fieldDESIGNATION);
-        
+
         FieldDefinition fieldDESIGNATIONS_ORDER = new FieldDefinition();
         fieldDESIGNATIONS_ORDER.setName("designations_ORDER");
         fieldDESIGNATIONS_ORDER.setTypeName("NUMERIC");
@@ -1163,14 +1163,14 @@ public class InheritedTableManager extends TableCreator {
         fieldDESIGNATIONS_ORDER.setUnique(false);
         fieldDESIGNATIONS_ORDER.setIsIdentity(false);
         table.addField(fieldDESIGNATIONS_ORDER);
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_RECORDS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_NBC_RECORDS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XML_NBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1181,7 +1181,7 @@ public class InheritedTableManager extends TableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_NOVICE_CONSUMER.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldQ_DATE = new FieldDefinition();
         fieldQ_DATE.setName("REC_DATE");
         fieldQ_DATE.setTypeName("DATE");
@@ -1191,7 +1191,7 @@ public class InheritedTableManager extends TableCreator {
         fieldQ_DATE.setUnique(false);
         fieldQ_DATE.setIsIdentity(false);
         table.addField(fieldQ_DATE);
-        
+
         FieldDefinition DESCRIP_field = new FieldDefinition();
         DESCRIP_field.setName("DESCRIP");
         DESCRIP_field.setTypeName("VARCHAR");
@@ -1201,7 +1201,7 @@ public class InheritedTableManager extends TableCreator {
         DESCRIP_field.setUnique(false);
         DESCRIP_field.setIsIdentity(false);
         table.addField(DESCRIP_field);
-        
+
         FieldDefinition LOCATION_ID_field = new FieldDefinition();
         LOCATION_ID_field.setName("LOC_ID");
         LOCATION_ID_field.setTypeName("VARCHAR");
@@ -1212,14 +1212,14 @@ public class InheritedTableManager extends TableCreator {
         LOCATION_ID_field.setShouldAllowNull(false);
         LOCATION_ID_field.setForeignKeyFieldName("JPA2_XML_LOCATION.ID");
         table.addField(LOCATION_ID_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_OFFICIAL_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_OFFICIAL");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -1239,7 +1239,7 @@ public class InheritedTableManager extends TableCreator {
         DESCRIPTION_field.setUnique(false);
         DESCRIPTION_field.setIsIdentity(false);
         table.addField(DESCRIPTION_field);
-        
+
         FieldDefinition AGE_field = new FieldDefinition();
         AGE_field.setName("AGE");
         AGE_field.setTypeName("NUMERIC");
@@ -1249,7 +1249,7 @@ public class InheritedTableManager extends TableCreator {
         AGE_field.setIsIdentity(false);
         AGE_field.setShouldAllowNull(true);
         table.addField(AGE_field);
-        
+
         FieldDefinition fieldSTARTDATE = new FieldDefinition();
         fieldSTARTDATE.setName("START_DATE");
         fieldSTARTDATE.setTypeName("VARCHAR");
@@ -1259,7 +1259,7 @@ public class InheritedTableManager extends TableCreator {
         fieldSTARTDATE.setUnique(false);
         fieldSTARTDATE.setIsIdentity(false);
         table.addField(fieldSTARTDATE);
-    
+
         FieldDefinition fieldENDDATE = new FieldDefinition();
         fieldENDDATE.setName("END_DATE");
         fieldENDDATE.setTypeName("VARCHAR");
@@ -1269,7 +1269,7 @@ public class InheritedTableManager extends TableCreator {
         fieldENDDATE.setUnique(false);
         fieldENDDATE.setIsIdentity(false);
         table.addField(fieldENDDATE);
-        
+
         FieldDefinition EBC_ID_field = new FieldDefinition();
         EBC_ID_field.setName("FK_EBC_ID");
         EBC_ID_field.setTypeName("NUMERIC");
@@ -1280,7 +1280,7 @@ public class InheritedTableManager extends TableCreator {
         EBC_ID_field.setIsIdentity(false);
         EBC_ID_field.setForeignKeyFieldName("XML_EXPERT_CONSUMER.ID");
         table.addField(EBC_ID_field);
-        
+
         FieldDefinition NBC_ID_field = new FieldDefinition();
         NBC_ID_field.setName("FK_NBC_ID");
         NBC_ID_field.setTypeName("NUMERIC");
@@ -1291,14 +1291,14 @@ public class InheritedTableManager extends TableCreator {
         NBC_ID_field.setIsIdentity(false);
         NBC_ID_field.setForeignKeyFieldName("XML_NOVICE_CONSUMER.ID");
         table.addField(NBC_ID_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_OFFICIAL_COMPENSATIONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_OFFICIAL_COMPENSATION");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -1319,7 +1319,7 @@ public class InheritedTableManager extends TableCreator {
         SALARY_field.setIsIdentity(false);
         SALARY_field.setShouldAllowNull(true);
         table.addField(SALARY_field);
-        
+
         FieldDefinition BONUS_field = new FieldDefinition();
         BONUS_field.setName("BONUS");
         BONUS_field.setTypeName("NUMERIC");
@@ -1329,10 +1329,10 @@ public class InheritedTableManager extends TableCreator {
         BONUS_field.setIsIdentity(false);
         BONUS_field.setShouldAllowNull(true);
         table.addField(BONUS_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_TELEPHONE_NUMBER_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_TELEPHONE");
@@ -1347,7 +1347,7 @@ public class InheritedTableManager extends TableCreator {
         ID_field.setShouldAllowNull(true);
         ID_field.setForeignKeyFieldName("CMP3_XML_CONSUMER.ID");
         table.addField(ID_field);
-    
+
         FieldDefinition TYPE_field = new FieldDefinition();
         TYPE_field.setName("TYPE");
         TYPE_field.setTypeName("VARCHAR");
@@ -1357,7 +1357,7 @@ public class InheritedTableManager extends TableCreator {
         TYPE_field.setIsIdentity(false);
         TYPE_field.setShouldAllowNull(false);
         table.addField(TYPE_field);
-    
+
         FieldDefinition AREA_CODE_field = new FieldDefinition();
         AREA_CODE_field.setName("AREA_CODE");
         AREA_CODE_field.setTypeName("VARCHAR");
@@ -1367,7 +1367,7 @@ public class InheritedTableManager extends TableCreator {
         AREA_CODE_field.setIsIdentity(false);
         AREA_CODE_field.setShouldAllowNull(false);
         table.addField(AREA_CODE_field);
-    
+
         FieldDefinition NUMBER_field = new FieldDefinition();
         NUMBER_field.setName("TNUMBER");
         NUMBER_field.setTypeName("VARCHAR");
@@ -1380,11 +1380,11 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_WITNESS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_WITNESS");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -1407,20 +1407,20 @@ public class InheritedTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static void createTables(Session session) {
         InheritedTableManager.getCreator().createTables((DatabaseSession) session);
     }
-        
+
     public static void dropTables(Session session) {
         InheritedTableManager.getCreator().dropTables((DatabaseSession) session);
     }
-        
+
     public static TableCreator getCreator(){
         if (InheritedTableManager.tableCreator == null) {
             InheritedTableManager.tableCreator = new InheritedTableManager();
         }
-        
+
         return InheritedTableManager.tableCreator;
     }
 }

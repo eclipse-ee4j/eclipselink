@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.util.*;
@@ -55,7 +55,7 @@ public class FieldExpression extends DataExpression {
         field = newField;
         baseExpression = myBase;
     }
-    
+
     /**
      * INTERNAL:
      * Return if the expression is equal to the other.
@@ -72,7 +72,7 @@ public class FieldExpression extends DataExpression {
         FieldExpression expression = (FieldExpression)object;
         return ((getField() == expression.getField()) || ((getField() != null) && getField().equals(expression.getField())));
     }
-        
+
     /**
      * INTERNAL:
      * Compute a consistent hash-code for the expression.
@@ -183,7 +183,7 @@ public class FieldExpression extends DataExpression {
         }
         return super.getFieldValue(value, session);
     }
-    
+
     /**
      * INTERNAL:
      * Alias the database field for our current environment
@@ -195,12 +195,12 @@ public class FieldExpression extends DataExpression {
         //  Put in a special check here so that if the aliasing does nothing we don't cache the
         // result because it's invalid. This saves us from caching premature data if e.g. debugging
         // causes us to print too early"
-        //	if (aliasedTable.equals(getField().getTable())) {
-        //		return;
-        //	} else {
+        //    if (aliasedTable.equals(getField().getTable())) {
+        //        return;
+        //    } else {
         aliasedField = tempField;
         aliasedField.setTable(aliasedTable);
-        //	}
+        //    }
     }
 
     /**
@@ -230,7 +230,7 @@ public class FieldExpression extends DataExpression {
         }
         return expression;
     }
-    
+
     /**
      * INTERNAL:
      * Print SQL onto the stream, using the ExpressionPrinter for context
@@ -338,8 +338,8 @@ public class FieldExpression extends DataExpression {
             throw QueryException.cannotConformExpression();
         }
 
-        // For bug 2780817 get the mapping directly from the object.  In EJB 2.0 
-        // inheritance, each child must override mappings defined in an abstract 
+        // For bug 2780817 get the mapping directly from the object.  In EJB 2.0
+        // inheritance, each child must override mappings defined in an abstract
         // class with its own.
         DatabaseMapping mapping = session.getDescriptor(object.getClass()).getObjectBuilder().getMappingForField(getField());
         if (mapping == null) {
@@ -369,7 +369,7 @@ public class FieldExpression extends DataExpression {
             writeField(printer, field, statement);
         }
     }
-    
+
     protected void writeField(ExpressionSQLPrinter printer, DatabaseField field, SQLSelectStatement statement) {
         if (this.field == field){
             //print ", " before each selected field except the first one
@@ -384,7 +384,7 @@ public class FieldExpression extends DataExpression {
         }
 
     }
-    
+
     /**
      * INTERNAL:
      * writes the field for fine-grained pessimistic locking.
@@ -393,7 +393,7 @@ public class FieldExpression extends DataExpression {
         if (printer.getPlatform().shouldPrintAliasForUpdate()) {
             writeAlias(printer, field, statement);
         } else {
-            writeField(printer, field, statement);                
+            writeField(printer, field, statement);
         }
     }
 }

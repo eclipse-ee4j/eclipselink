@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -73,7 +73,7 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     final static String stageDir = "./";
 
     static String SESSIONS_XML;
-    
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -169,7 +169,7 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
         });
 
         DBWSTestSuite.setUp(stageDir);
-        
+
         // need to get the encrypted version of the DB password
         DatabaseLoginConfig dlc = new DatabaseLoginConfig();
         dlc.setEncryptedPassword(builder.getPassword());
@@ -186,29 +186,29 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
 
     static String buildSessionsXML() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-    	"<sessions xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\""+VERSION+"\">" +
-    		"<session xsi:type=\"database-session\">" +
-    			"<name>logLevelValidation-dbws-or-session</name>" +
-    			"<logging xsi:type=\"eclipselink-log\" />" +
-    			"<login xsi:type=\"database-login\">" +
-    				"<platform-class>org.eclipse.persistence.platform.database.MySQLPlatform</platform-class>" +
-    				"<user-name>"+username+"</user-name>" +
-    				"<password>"+encryptedPassword+"</password>" +
-    				"<driver-class>"+DATABASE_DRIVER+"</driver-class>" +
-    				"<connection-url>"+url+"</connection-url>" +
-    				"<byte-array-binding>false</byte-array-binding>" +
-    				"<streams-for-binding>true</streams-for-binding>" +
-    				"<optimize-data-conversion>false</optimize-data-conversion>" +
-    				"<trim-strings>false</trim-strings>" +
-    			"</login>" +
-    		"</session>" +
+        "<sessions xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\""+VERSION+"\">" +
+            "<session xsi:type=\"database-session\">" +
+                "<name>logLevelValidation-dbws-or-session</name>" +
+                "<logging xsi:type=\"eclipselink-log\" />" +
+                "<login xsi:type=\"database-login\">" +
+                    "<platform-class>org.eclipse.persistence.platform.database.MySQLPlatform</platform-class>" +
+                    "<user-name>"+username+"</user-name>" +
+                    "<password>"+encryptedPassword+"</password>" +
+                    "<driver-class>"+DATABASE_DRIVER+"</driver-class>" +
+                    "<connection-url>"+url+"</connection-url>" +
+                    "<byte-array-binding>false</byte-array-binding>" +
+                    "<streams-for-binding>true</streams-for-binding>" +
+                    "<optimize-data-conversion>false</optimize-data-conversion>" +
+                    "<trim-strings>false</trim-strings>" +
+                "</login>" +
+            "</session>" +
             "<session xsi:type=\"database-session\">" +
                 "<name>logLevelValidation-dbws-ox-session</name>" +
                 "<logging xsi:type=\"eclipselink-log\">" +
                     "<log-level>off</log-level>" +
                  "</logging>" +
              "</session>" +
-    	"</sessions>";
+        "</sessions>";
     }
 
     @Test

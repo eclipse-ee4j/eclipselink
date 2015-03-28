@@ -50,7 +50,7 @@ import dbws.testing.DBWSTestSuite;
 public class TypesTestSuite extends DBWSTestSuite {
 
     static final String CREATE_PACKAGE_TEST_TYPES =
-    	"CREATE OR REPLACE PACKAGE TEST_TYPES AS" +
+        "CREATE OR REPLACE PACKAGE TEST_TYPES AS" +
           "\nFUNCTION ECHO_INTEGER (PINTEGER IN INTEGER) RETURN INTEGER;" +
           "\nFUNCTION ECHO_SMALLINT(PSMALLINT IN SMALLINT) RETURN SMALLINT;" +
           "\nFUNCTION ECHO_NUMERIC (PNUMERIC IN NUMERIC) RETURN NUMERIC;" +
@@ -173,10 +173,10 @@ public class TypesTestSuite extends DBWSTestSuite {
           "\nBEGIN" +
               "\nP2 := P1;" +
           "\nEND ECHO_BOOLEAN2;" +
-		  "\nPROCEDURE pEchoNchar(p_nchar in nchar) AS" +
-		  "\nBEGIN" +
-		      "\nNULL;" +
-		  "\nEND pEchoNchar;" +
+          "\nPROCEDURE pEchoNchar(p_nchar in nchar) AS" +
+          "\nBEGIN" +
+              "\nNULL;" +
+          "\nEND pEchoNchar;" +
           "\nFUNCTION fEchoNchar(p_nchar in nchar) return nchar AS" +
           "\nBEGIN" +
               "\nreturn p_nchar;" +
@@ -193,15 +193,15 @@ public class TypesTestSuite extends DBWSTestSuite {
             "XMLDATA XMLType," +
             "PRIMARY KEY (ID)" +
         ")";
-    
+
     static final String[] POPULATE_XMLTYPEDATA_TABLE = new String[] {
         "INSERT INTO XMLTYPEDATA (ID, XMLDATA) VALUES (666, XMLTYPE('<blah>some blah text</blah>'))",
         "INSERT INTO XMLTYPEDATA (ID, XMLDATA) VALUES (667, XMLTYPE('<foo>yo fool!</foo>'))",
     };
-    
+
     static final String DROP_XMLTYPEDATA_TABLE =
         "DROP TABLE XMLTYPEDATA";
-    
+
     static final String DROP_PACKAGE_TEST_TYPES =
         "DROP PACKAGE TEST_TYPES";
 
@@ -237,7 +237,7 @@ public class TypesTestSuite extends DBWSTestSuite {
         if (ddlCreate) {
             runDdl(conn, CREATE_PACKAGE_TEST_TYPES, ddlDebug);
             runDdl(conn, CREATE_PACKAGE_BODY_TEST_TYPES, ddlDebug);
-            
+
             runDdl(conn, CREATE_XMLTYPEDATA_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
@@ -286,36 +286,36 @@ public class TypesTestSuite extends DBWSTestSuite {
                   "procedurePattern=\"ECHO_NUMERIC\" " +
                   "isSimpleXMLFormat=\"true\" " +
                "/>" +
-	           "<procedure " +
-	              "name=\"echoDec\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_DEC\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoDecimal\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_DECIMAL\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoNumber\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_NUMBER\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoVarchar\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_VARCHAR\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoVarchar2\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_VARCHAR2\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
+               "<procedure " +
+                  "name=\"echoDec\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_DEC\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoDecimal\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_DECIMAL\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoNumber\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_NUMBER\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoVarchar\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_VARCHAR\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoVarchar2\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_VARCHAR2\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
                "<procedure " +
                    "name=\"echoNVarchar2\" " +
                    "catalogPattern=\"TEST_TYPES\" " +
@@ -340,72 +340,72 @@ public class TypesTestSuite extends DBWSTestSuite {
                       "procedurePattern=\"pEchoNvarchar2\" " +
                       "isSimpleXMLFormat=\"true\" " +
                    "/>" +
-	           "<procedure " +
-	              "name=\"echoChar\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_CHAR\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoReal\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_REAL\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoFloat\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_FLOAT\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoDouble\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_DOUBLE\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoDate\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_DATE\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoTimestamp\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_TIMESTAMP\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoClob\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_CLOB\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoBlob\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_BLOB\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoLong\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_LONG\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoLongRaw\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_LONG_RAW\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
-	           "<procedure " +
-	              "name=\"echoRaw\" " +
-	              "catalogPattern=\"TEST_TYPES\" " +
-	              "procedurePattern=\"ECHO_RAW\" " +
-	              "isSimpleXMLFormat=\"true\" " +
-	           "/>" +
+               "<procedure " +
+                  "name=\"echoChar\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_CHAR\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoReal\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_REAL\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoFloat\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_FLOAT\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoDouble\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_DOUBLE\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoDate\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_DATE\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoTimestamp\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_TIMESTAMP\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoClob\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_CLOB\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoBlob\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_BLOB\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoLong\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_LONG\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoLongRaw\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_LONG_RAW\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
+               "<procedure " +
+                  "name=\"echoRaw\" " +
+                  "catalogPattern=\"TEST_TYPES\" " +
+                  "procedurePattern=\"ECHO_RAW\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+               "/>" +
                "<procedure " +
                    "name=\"echoRowId\" " +
                    "catalogPattern=\"TEST_TYPES\" " +
@@ -413,18 +413,18 @@ public class TypesTestSuite extends DBWSTestSuite {
                    "isSimpleXMLFormat=\"true\" " +
                 "/>" +
                 "<procedure " +
-	                "name=\"echoBoolean\" " +
-	                "catalogPattern=\"TEST_TYPES\" " +
-	                "procedurePattern=\"ECHO_BOOLEAN\" " +
-	                "isSimpleXMLFormat=\"true\" " +
-	             "/>" +
+                    "name=\"echoBoolean\" " +
+                    "catalogPattern=\"TEST_TYPES\" " +
+                    "procedurePattern=\"ECHO_BOOLEAN\" " +
+                    "isSimpleXMLFormat=\"true\" " +
+                 "/>" +
                 "<procedure " +
-	                "name=\"echoBoolean2\" " +
-	                "catalogPattern=\"TEST_TYPES\" " +
-	                "procedurePattern=\"ECHO_BOOLEAN2\" " +
-	                "isSimpleXMLFormat=\"true\" " +
-	             "/>" +
-	             "<sql " +
+                    "name=\"echoBoolean2\" " +
+                    "catalogPattern=\"TEST_TYPES\" " +
+                    "procedurePattern=\"ECHO_BOOLEAN2\" " +
+                    "isSimpleXMLFormat=\"true\" " +
+                 "/>" +
+                 "<sql " +
                     "name=\"selectXMLData\" " +
                     "isSimpleXMLFormat=\"true\" " +
                     ">" +
@@ -636,7 +636,7 @@ public class TypesTestSuite extends DBWSTestSuite {
               "<result>N'qwerty'</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
-    
+
     @Test
     public void pEchoNvarchar2() {
         Invocation invocation = new Invocation("pEchoNvarchar2");
@@ -658,7 +658,7 @@ public class TypesTestSuite extends DBWSTestSuite {
               "<result>N'qwerty'</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
-    
+
     @Test
     public void pEchoNchar() {
         Invocation invocation = new Invocation("pEchoNchar");
@@ -702,7 +702,7 @@ public class TypesTestSuite extends DBWSTestSuite {
               "<result>N'q'</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
-    
+
     @Test
     public void echoChar() {
         Invocation invocation = new Invocation("echoChar");
@@ -965,7 +965,7 @@ public class TypesTestSuite extends DBWSTestSuite {
               "</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
-    
+
     @Test
     public void echoRowId() throws ParseException {
         Invocation invocation = new Invocation("echoRowId");
@@ -1061,7 +1061,7 @@ public class TypesTestSuite extends DBWSTestSuite {
            "<simple-xml>" +
               "<P2>1</P2>" +
            "</simple-xml>" +
-        "</simple-xml-format>";    
+        "</simple-xml-format>";
     @Test
     public void echoBooleanFalse() {
         Invocation invocation = new Invocation("echoBoolean");

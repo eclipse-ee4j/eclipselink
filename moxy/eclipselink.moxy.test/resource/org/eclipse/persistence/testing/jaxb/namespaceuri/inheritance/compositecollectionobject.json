@@ -1,26 +1,26 @@
 {"ns1.root":{
     "objectList":[
           {
-		"xsi.type":"ns0.subType",
-		"ns5.subTypeProp":10
+        "xsi.type":"ns0.subType",
+        "ns5.subTypeProp":10
           },{
-		"xsi.type":"ns2.anotherSubType"
+        "xsi.type":"ns2.anotherSubType"
           },{
                 "xsi.type":"ns3.subTypeLevel2",
-		"ns5.baseProp":"boo",
-		"ns5.subTypeProp":0
-	  },{
-		"xsi.type":"ns0.subType",
-		"ns5.subTypeProp":10
-	  },{
-		"xsi.type":"ns6.anotherPackageSubType",
-		"ns5.subTypeProp":0
-	  },{
-		"xsi.type":"string",
-		"value":"string test"
-	  },{
-		"xsi.type":"int",
-		"value":500
-	  }
+        "ns5.baseProp":"boo",
+        "ns5.subTypeProp":0
+      },{
+        "xsi.type":"ns0.subType",
+        "ns5.subTypeProp":10
+      },{
+        "xsi.type":"ns6.anotherPackageSubType",
+        "ns5.subTypeProp":0
+      },{
+        "xsi.type":"string",
+        "value":"string test"
+      },{
+        "xsi.type":"int",
+        "value":500
+      }
     ]
 }}

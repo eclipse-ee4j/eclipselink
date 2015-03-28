@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -18,24 +18,24 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 
 public class Address {
-	public String street;
-	public String city;
-	
-	@XmlInverseReference(mappedBy="address")
-	public Employee owningEmployee;
-	
-	public boolean equals(Object o) {
-		if(!(o instanceof Address)) {
-			return false;
-		}
-		Address obj = (Address)o;
-		boolean equal = true;
-		
-		equal = equal && street.equals(obj.street);
-		equal = equal && city.equals(obj.city);
-		
-		equal = equal && owningEmployee.id == obj.owningEmployee.id;
-		
-		return equal;
-	}	
+    public String street;
+    public String city;
+
+    @XmlInverseReference(mappedBy="address")
+    public Employee owningEmployee;
+
+    public boolean equals(Object o) {
+        if(!(o instanceof Address)) {
+            return false;
+        }
+        Address obj = (Address)o;
+        boolean equal = true;
+
+        equal = equal && street.equals(obj.street);
+        equal = equal && city.equals(obj.city);
+
+        equal = equal && owningEmployee.id == obj.owningEmployee.id;
+
+        return equal;
+    }
 }

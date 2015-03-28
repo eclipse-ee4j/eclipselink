@@ -1,17 +1,17 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     01/15/2015-2.6 Mythily Parthasarathy 
- *       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject 
- ******************************************************************************/  
+ *     01/15/2015-2.6 Mythily Parthasarathy
+ *       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject
+ ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
 import java.util.*;
@@ -81,7 +81,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             return cloningSession.createProtectedInstanceFromCachedData(attributeValue, refreshCascade, descriptor);
         }
         return attributeValue;
-        
+
     }
 
     /**
@@ -95,7 +95,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         }
         if (refreshCascade != null ){
             switch(refreshCascade){
-            case ObjectBuildingQuery.CascadeAllParts : 
+            case ObjectBuildingQuery.CascadeAllParts :
                 return unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_ALL_PARTS, true);
             case ObjectBuildingQuery.CascadePrivateParts :
                 return unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_PRIVATE_PARTS, true);
@@ -320,7 +320,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     public ClassDescriptor getDescriptorForTarget(Object object, AbstractSession session) {
         return session.getDescriptor(object);
     }
-    
+
     /**
      * INTERNAL:
      * Object reference must unwrap the reference object if required.
@@ -364,7 +364,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             getReferenceDescriptor().getObjectBuilder().loadAll(value, session, loaded);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Merge changes from the source to the target object. Which is the original from the parent UnitOfWork
@@ -476,7 +476,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                     if (selectionQuery != null && selectionQuery.isObjectBuildingQuery() && ((ObjectBuildingQuery)selectionQuery).shouldRefreshIdentityMapResult()){
                         refreshCascade = selectionQuery.getCascadePolicy();
                     }
-                  Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, null, target, refreshCascade, mergeManager.getSession(), false); // building clone from an original not a row. 
+                  Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, null, target, refreshCascade, mergeManager.getSession(), false); // building clone from an original not a row.
                     setAttributeValueInObject(target, clonedAttributeValue);
                 }
                 return;
@@ -514,7 +514,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             // Need to do this after merge so that an object exists in the database
             targetValueOfSource = mergeManager.getTargetVersionOfSourceObject(valueOfSource, referenceDescriptor, targetSession);
         }
-        
+
         // If merge into the unit of work, must only merge and raise the event is the value changed.
         if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy()) && !mergeManager.isForRefresh()
                 && this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
@@ -527,11 +527,11 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                 return;
             }
         }
- 
+
         targetValueOfSource = this.referenceDescriptor.getObjectBuilder().wrapObject(targetValueOfSource, mergeManager.getSession());
         setRealAttributeValueInObject(target, targetValueOfSource);
     }
-    
+
     /**
      * INTERNAL:
      * Return all the fields populated by this mapping, these are foreign keys only.
@@ -603,12 +603,12 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                 ObjectReferenceChangeRecord record = (ObjectReferenceChangeRecord) modifyQuery.getObjectChangeSet().getChangesForAttributeNamed(getAttributeName());
                 if (record != null) {
                     return record.getOldValue();
-                } 
+                }
             } else { // Old commit.
                 return getRealAttributeValueFromObject(modifyQuery.getBackupClone(), modifyQuery.getSession());
             }
         }
-        
+
         return null;
     }
 
@@ -679,11 +679,11 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             if (object != null) {
                 query.removeProperty(this);
                 AbstractSession session = query.getSession();
-                //if the query is being passed from an aggregate collection descriptor then 
+                //if the query is being passed from an aggregate collection descriptor then
                 // The delete will have been cascaded at update time.  This will cause sub objects
                 // to be ignored, and real only classes to throw exceptions.
                 // If it is an aggregate Collection then delay deletes until they should be deleted
-                //CR 2811	
+                //CR 2811
                 if (query.isCascadeOfAggregateDelete()) {
                     session.getCommitManager().addObjectToDelete(object);
                 } else {
@@ -740,24 +740,24 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         // If there is no change (old commit), it must be determined if the value changed.
         if (query.getObjectChangeSet() == null) {
             Object objectInMemory = getRealAttributeValueFromObject(query.getObject(), query.getSession());
-    
-            // delete the object in the database if it is no more a referenced object.						
+
+            // delete the object in the database if it is no more a referenced object.
             if (objectInDatabase != objectInMemory) {
-    
+
                 Object keyForObjectInDatabase = getPrimaryKeyForObject(objectInDatabase, query.getSession());
                 Object keyForObjectInMemory = null;
                 if (objectInMemory != null) {
                     keyForObjectInMemory = getPrimaryKeyForObject(objectInMemory, query.getSession());
                 }
-    
+
                 if ((keyForObjectInMemory != null) && keyForObjectInDatabase.equals(keyForObjectInMemory)) {
                     return;
                 }
             } else {
                 return;
             }
-        }            
-            
+        }
+
         if (!query.shouldCascadeOnlyDependentParts()) {
             query.getSession().deleteObject(objectInDatabase);
         }
@@ -784,7 +784,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
 
         // If the value was changed, both values must be deleted (uow will have inserted the new one).
         if ((objectFromDatabase != null) && (objectFromDatabase != objectInMemory)) {
-            // Also check pk as may not be maintaining identity.	
+            // Also check pk as may not be maintaining identity.
             Object keyForObjectInMemory = null;
             Object keyForObjectInDatabase = getPrimaryKeyForObject(objectFromDatabase, session);
 
@@ -851,7 +851,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             unitOfWork.addDeletionDependency(targetObject, object);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
@@ -860,7 +860,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         cascadePerformRemoveIfRequired(object, uow, visitedObjects, true);
     }
-    
+
     /**
      * INTERNAL:
      * Cascade remove through mappings that require the cascade.
@@ -889,7 +889,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade removal of orphaned private owned objects from the UnitOfWorkChangeSet
@@ -907,9 +907,9 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
         }
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
      * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
@@ -928,7 +928,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow, true, cascadeErrors);
     }
-    
+
     /**
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
@@ -951,7 +951,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             uow.discoverAndPersistUnregisteredNewObjects(attributeValue, isCascadePersist(), newObjects, unregisteredExistingObjects, visitedObjects, cascadeErrors);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
@@ -960,7 +960,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         cascadeRegisterNewIfRequired(object, uow, visitedObjects, true);
     }
-    
+
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
@@ -989,7 +989,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -1025,7 +1025,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             valueHolder = cloningSession.createCloneQueryValueHolder(attributeValue, clone, row, this);
         }
 
-        // In case of joined attributes it so happens that the attributeValue 
+        // In case of joined attributes it so happens that the attributeValue
         // contains a registered clone, as valueFromRow was called with a
         // UnitOfWork.  So switch the values.
         // Note that this UOW valueholder starts off as instantiated but that
@@ -1088,8 +1088,8 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         super.preInitialize(session);
-		//Bug#4251902 Make Proxy Indirection writable and readable to deployment xml.  If ProxyIndirectionPolicy does not
-		//have any targetInterfaces, build a new set.
+        //Bug#4251902 Make Proxy Indirection writable and readable to deployment xml.  If ProxyIndirectionPolicy does not
+        //have any targetInterfaces, build a new set.
         if ((this.indirectionPolicy instanceof ProxyIndirectionPolicy) && !((ProxyIndirectionPolicy)this.indirectionPolicy).hasTargetInterfaces()) {
             useProxyIndirection();
         }
@@ -1126,7 +1126,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                 return;
             }
         }
-        
+
         WriteObjectQuery writeQuery = null;
         // If private owned, the dependent objects should also be new.
         // However a bug was logged was put in to allow dependent objects to be existing in a unit of work,
@@ -1237,13 +1237,13 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if (!getReferenceClass().isInterface() && getReferenceClass().getSuperclass() == null) {
             setIndirectionPolicy(new ProxyIndirectionPolicy(targetInterfaces));
         } else {
-            HashSet targetInterfacesCol = new HashSet();        
+            HashSet targetInterfacesCol = new HashSet();
             //Bug#4432781 Include all the interfaces and the super interfaces of the target class
             if (getReferenceClass().getSuperclass() != null) {
                 buildTargetInterfaces(getReferenceClass(), targetInterfacesCol);
             }
-			//Bug#4251902 Make Proxy Indirection writable and readable to deployment xml.  If
-			//ReferenceClass is an interface, it needs to be included in the array.
+            //Bug#4251902 Make Proxy Indirection writable and readable to deployment xml.  If
+            //ReferenceClass is an interface, it needs to be included in the array.
             if (getReferenceClass().isInterface()) {
                 targetInterfacesCol.add(getReferenceClass());
             }
@@ -1287,7 +1287,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             return buildTargetInterfaces(aClass.getSuperclass(), targetInterfacesCol);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Set this mapping to use Proxy Indirection.
@@ -1338,7 +1338,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * This method is used to load a relationship from a list of PKs.
      * This list may be available if the relationship has been cached.
      */
@@ -1354,7 +1354,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * To verify if the specified object is deleted or not.
      */
     @Override
@@ -1406,7 +1406,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if (query.isDeleteObjectQuery()) {
             writeFromObjectIntoRow(query.getObject(), databaseRow, query.getSession(), WriteType.UNDEFINED);
         } else {
-            // If the original was never instantiated the backup clone has a ValueHolder of null 
+            // If the original was never instantiated the backup clone has a ValueHolder of null
             // so for this case we must extract from the original object.
             if (isAttributeValueInstantiated(query.getObject())) {
                 writeFromObjectIntoRow(query.getBackupClone(), databaseRow, query.getSession(), WriteType.UNDEFINED);
@@ -1415,7 +1415,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return if this mapping supports change tracking.
@@ -1424,7 +1424,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     public boolean isChangeTrackingSupported(Project project) {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Either create a new change record or update the change record with the new value.
@@ -1446,7 +1446,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             changeRecord = internalBuildChangeRecord(unwrappedNewValue, objectChangeSet, uow);
             changeRecord.setOldValue(unwrappedOldValue);
             objectChangeSet.addChange(changeRecord);
-            
+
         } else {
             setNewValueInChangeRecord(unwrappedNewValue, changeRecord, objectChangeSet, uow);
         }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname;
 
 import junit.framework.Test;
@@ -46,13 +46,13 @@ public class IdentifiedByNameTestCases extends TestCase {
     suite.addTestSuite(DirectToXMLElementIdentifiedByNameNullTestCases.class);
     suite.addTestSuite(DirectToXMLElementIdentifiedByNameEmptyTestCases.class);
     suite.addTestSuite(DirectToXMLElementIdentifiedByNameMissingTextXPathTestCases.class);
-		suite.addTestSuite(DirectToXMLElementIdentifiedByNameWithCommentTestCases.class);
+        suite.addTestSuite(DirectToXMLElementIdentifiedByNameWithCommentTestCases.class);
     suite.addTestSuite(DirectToXMLElementIdentifiedByNameSpecialCharactersTestCases.class);
     suite.addTestSuite(DirectToXMLElementIdentifiedByNameNegativeTestCases.class);
 
     suite.addTestSuite(CalendarDateTestIdentifiedByNameTestCases.class);
-		suite.addTestSuite(CalendarTimeTestIdentifiedByNameTestCases.class);
-		suite.addTestSuite(CalendarTestIdentifiedByNameTestCases.class);
+        suite.addTestSuite(CalendarTimeTestIdentifiedByNameTestCases.class);
+        suite.addTestSuite(CalendarTestIdentifiedByNameTestCases.class);
     return suite;
   }
 

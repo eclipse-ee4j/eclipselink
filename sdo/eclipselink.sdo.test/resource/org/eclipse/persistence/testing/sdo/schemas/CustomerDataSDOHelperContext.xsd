@@ -8,7 +8,7 @@
          <xsd:element name="Email" type="xsd:string" minOccurs="0" sdo:propertyType="sdo:String"/>
          <xsd:element name="MobilePhoneNumber" type="xsd:string" minOccurs="0" sdo:propertyType="sdo:String"/>
          <xsd:element name="MembershipTypeCode" type="xsd:string" minOccurs="0" sdo:propertyType="sdo:String"/>
-	 <xsd:any/>
+     <xsd:any/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="customerDataSDO" type="CustomerDataSDO"/>

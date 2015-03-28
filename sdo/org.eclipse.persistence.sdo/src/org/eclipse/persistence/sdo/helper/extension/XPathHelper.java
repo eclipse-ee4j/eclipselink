@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper.extension;
 
 import java.util.ArrayList;
@@ -60,18 +60,18 @@ public class XPathHelper {
     /**
      * Create and return an XPathExpression, using the provided
      * string to create the expression.
-     * 
+     *
      * @param expression
      * @return
      */
     public XPathExpression prepareExpression(String expression) {
         return new XPathExpression(expression);
     }
-    
+
     /**
-     * Evaluate an XPath expression in the specified context and return a List 
+     * Evaluate an XPath expression in the specified context and return a List
      * containing any types or DataObjects that match the search criteria.
-     * 
+     *
      * @param expression
      * @param dataObject
      * @return List containing zero or more entries
@@ -82,15 +82,15 @@ public class XPathHelper {
         if (shouldCallXPathEngine(expression)) {
             return addResultsToList(XPathEngine.getInstance().get(expression, dataObject), results);
         }
-        
+
         return evaluate(expression, dataObject, results);
     }
 
     /**
-     * Evaluate an XPath expression in the specified context and populate 
-     * the provided List with any types or DataObjects that match the 
+     * Evaluate an XPath expression in the specified context and populate
+     * the provided List with any types or DataObjects that match the
      * search criteria.
-     * 
+     *
      * @param expression
      * @param dataObject
      * @param results
@@ -119,9 +119,9 @@ public class XPathHelper {
         }
         return addResultsToList(processFragment(expression, dataObject), results);
     }
-    
-    /** 
-     * Process an XPath expression fragment.  
+
+    /**
+     * Process an XPath expression fragment.
      *
      * @param xpFrag
      * @param dataObject
@@ -135,17 +135,17 @@ public class XPathHelper {
         // handle containing DataObject expression
         if (xpFrag.equals("..")) {
             return dataObject.getContainer();
-        }        
-        
+        }
+
         // ignore '@'
         xpFrag = getPathWithAtRemoved(xpFrag);
-        
+
         // handle positional '[]' expression
         int idx = xpFrag.indexOf('[');
         if (idx > -1) {
             return processBracket(xpFrag, dataObject, idx);
         }
-        
+
         // handle non-positional expression
         Property prop = dataObject.getInstanceProperty(xpFrag);
         try {
@@ -154,12 +154,12 @@ public class XPathHelper {
             return null;
         }
     }
-    
+
     /**
      * Process a positional or query XPath expression fragment.  This method
-     * determines if the brackets represent a query or a positional path, 
+     * determines if the brackets represent a query or a positional path,
      * and calls into the appropriate methods accordingly.
-     * 
+     *
      * @param xpFrag
      * @param dataObject
      * @param idx
@@ -174,13 +174,13 @@ public class XPathHelper {
         String contents = xpFrag.substring(idx + 1, closeIdx);
         // check for integer index
         if (contents.matches("[1-9][0-9]*")) {
-            return processIndex(xpFrag, dataObject, idx, Integer.parseInt(contents) - 1); 
+            return processIndex(xpFrag, dataObject, idx, Integer.parseInt(contents) - 1);
         }
 
         // check for float index
         if (contents.matches("[1-9].[0-9]*")) {
             Float num = Float.valueOf(contents);
-            return processIndex(xpFrag, dataObject, idx, num.intValue() - 1); 
+            return processIndex(xpFrag, dataObject, idx, num.intValue() - 1);
         }
 
         // check for simple/complex queries
@@ -190,10 +190,10 @@ public class XPathHelper {
         }
         return processSimpleQuery(dataObject, reference, contents);
     }
-    
+
     /**
      * Process a positional XPath expression fragment.
-     * 
+     *
      * @param xpFrag
      * @param dataObject
      * @param idx
@@ -207,18 +207,18 @@ public class XPathHelper {
             if (idxValue < dataObjects.size()) {
                 return dataObjects.get(idxValue);
             } else {
-                // out of bounds                    
+                // out of bounds
                 throw new IndexOutOfBoundsException();
             }
         } catch (IllegalArgumentException e) {
             return null;
         }
     }
-   
+
     /**
      * Evaluate the query represented by the XPath Expression fragment against
      * the DataObject. A complex query contains logical operators.
-     * 
+     *
      * @param dataObject
      * @param reference
      * @param bracketContents
@@ -252,7 +252,7 @@ public class XPathHelper {
             objects = dataObject.getList(prop);
         } else {
             objects = new ArrayList();
-            DataObject obj = dataObject.getDataObject(prop); 
+            DataObject obj = dataObject.getDataObject(prop);
             if (obj != null) {
                 objects.add(obj);
             }
@@ -263,12 +263,12 @@ public class XPathHelper {
         Iterator iterObjects = objects.iterator();
         while (iterObjects.hasNext()) {
             SDODataObject cur = (SDODataObject)iterObjects.next();
-            
+
             // this iteration, evaluate each QueryPart against the current DataObject
-            ArrayList booleanValues = new ArrayList(); 
+            ArrayList booleanValues = new ArrayList();
             for (int j=0; j<queryParts.size(); j++) {
                 if (queryParts.get(j).equals(AND_STR) || queryParts.get(j).equals(OR_STR)) {
-                    // add 'and'/'or' keeping in correct order 
+                    // add 'and'/'or' keeping in correct order
                     booleanValues.add(queryParts.get(j));
                 } else {
                     // assume QueryPart - evaluate and add the result
@@ -276,13 +276,13 @@ public class XPathHelper {
                     booleanValues.add(qp.evaluate(cur));
                 }
             }
-            
-            // at this point we have a list of boolean values with 
+
+            // at this point we have a list of boolean values with
             // a mix of 'and'/'or' that need to be applied to get
             // the final result for this DataObject
-            
+
             // iterate L-R, looking for 'and' / 'or' - when one is encountered,
-            // apply it to the previous two booleans, repeating this until a 
+            // apply it to the previous two booleans, repeating this until a
             // single result is achieved
             for (int k=0; k<booleanValues.size(); k++) {
                 if (booleanValues.get(k).equals(AND_STR) || booleanValues.get(k).equals(OR_STR)) {
@@ -300,13 +300,13 @@ public class XPathHelper {
             // if there isn't a single result something went wrong...
             if (booleanValues.size() == 1) {
                 if ((Boolean)booleanValues.get(0)) {
-                    valuesToReturn.add(cur); 
+                    valuesToReturn.add(cur);
                 }
             }
         }
         return valuesToReturn;
     }
-    
+
     private boolean evaluate(boolean b1, boolean b2, int op) {
         switch (op) {
         case AND:
@@ -320,7 +320,7 @@ public class XPathHelper {
     /**
      * Evaluate the query represented by the XPath Expression fragment against
      * the DataObject. A 'simple' query has not logical operators.
-     * 
+     *
      * @param dataObject
      * @param reference
      * @param query
@@ -328,13 +328,13 @@ public class XPathHelper {
      */
     private Object processSimpleQuery(DataObject dataObject, String reference, String query) {
         Property prop = dataObject.getInstanceProperty(reference);
-        
+
         List objects;
         if (prop.isMany()) {
             objects = dataObject.getList(prop);
         } else {
             objects = new ArrayList();
-            DataObject obj = dataObject.getDataObject(prop); 
+            DataObject obj = dataObject.getDataObject(prop);
             if (obj != null) {
                 objects.add(obj);
             }
@@ -351,16 +351,16 @@ public class XPathHelper {
                 valuesToReturn.add(cur);
             }
         }
-        return valuesToReturn;    
+        return valuesToReturn;
     }
-    
+
     // ----------------------------- Convenience Methods ----------------------------- //
-    
+
     /**
-     * Convenience method that will add the provided object to the 'results' list 
+     * Convenience method that will add the provided object to the 'results' list
      * if the object is non-null.  If the object represents a list, each non-null
      * entry will be added to the results list.
-     * 
+     *
      * @param obj
      * @param results
      * @return
@@ -380,11 +380,11 @@ public class XPathHelper {
         }
         return results;
     }
-    
+
     /**
      * Convenience method that strips off '@' portion, if
      * one exists.
-     * 
+     *
      * @param expression
      * @return
      */
@@ -395,16 +395,16 @@ public class XPathHelper {
                 StringBuffer sbuf = new StringBuffer(expression.substring(0, index));
                 sbuf.append(expression.substring(index + 1, expression.length()));
                 return sbuf.toString();
-            } 
+            }
             return expression.substring(index + 1, expression.length());
         }
         return expression;
     }
-    
+
     /**
      * Convenience method that strips off 'ns0:' portion, if
      * one exists.
-     * 
+     *
      * @param expression
      * @return
      */
@@ -415,7 +415,7 @@ public class XPathHelper {
         }
         return expression;
     }
-    
+
     private int getOperandFromString(String op) {
         if (op.equals(EQ_STR)) {
             return EQ;
@@ -443,7 +443,7 @@ public class XPathHelper {
         }
         return -1;
     }
-    
+
     private String getStringFromOperand(int op) {
         switch(op) {
         case EQ:
@@ -465,34 +465,34 @@ public class XPathHelper {
         }
         return "";
     }
-    
+
     /**
-     * Convenience method for determining if XPathEngine should be 
+     * Convenience method for determining if XPathEngine should be
      * called, i.e. the XPath expression contains functionality
-     * not yet supported. 
-     *  
+     * not yet supported.
+     *
      * @param expression
      * @return
      */
     protected boolean shouldCallXPathEngine(String expression) {
         return false;
     }
-    
+
     // ----------------------------- Inner Classes ----------------------------- //
 
     /**
-     * A QueryPart knows the name of the property to be queried against on a 
+     * A QueryPart knows the name of the property to be queried against on a
      * given DataObject, as well as the value to be used in the comparison.
      */
     public class QueryPart {
         String propertyName, queryValue;
         int relOperand;
         int logOperand;
-        
+
         /**
-         * This constructor breaks the provided query into 
+         * This constructor breaks the provided query into
          * property name and query value parts.
-         *  
+         *
          * @param query
          */
         public QueryPart(String query) {
@@ -500,8 +500,8 @@ public class XPathHelper {
         }
 
         /**
-         * This constructor sets a logical operator and breaks 
-         * the provided query into property name and query 
+         * This constructor sets a logical operator and breaks
+         * the provided query into property name and query
          * value parts.
          */
         public QueryPart(String property, String value, int op) {
@@ -511,13 +511,13 @@ public class XPathHelper {
         }
 
         /**
-         * Breaks the provided query into property name and 
+         * Breaks the provided query into property name and
          * query value parts
          */
         private void processQueryContents(String query) {
             int idx = -1, operandLen = 1;
             relOperand = 1;
-            
+
             if ((idx = query.indexOf(GTE_STR)) != -1) {
                 relOperand = GTE;
                 operandLen = 2;
@@ -534,11 +534,11 @@ public class XPathHelper {
             } else if ((idx = query.indexOf(EQ_STR)) != -1) {
                 relOperand = EQ;
             }
-            
+
             propertyName = query.substring(0, idx).trim();
             queryValue = formatValue(query.substring(idx + operandLen));
         }
-        
+
         private String formatValue(String value) {
             int openQIdx = value.indexOf('\'');
             int closeQIdx = value.lastIndexOf('\'');
@@ -554,11 +554,11 @@ public class XPathHelper {
             }
             return value;
         }
-        
+
         /**
-         * Indicate if the query represented by this QueryPart evaluates to 
+         * Indicate if the query represented by this QueryPart evaluates to
          * true or false when executed on a given DataObject.
-         * 
+         *
          * @param dao
          * @return
          */
@@ -581,21 +581,21 @@ public class XPathHelper {
             } else {
                 values = dao.getList(prop);
             }
-            
+
             Iterator iterValues = values.iterator();
             while (iterValues.hasNext()) {
                 actualVal = iterValues.next();
-                if (actualVal == null) { 
+                if (actualVal == null) {
                     continue;
                 }
-                
+
                 int resultOfComparison;
                 try {
                     resultOfComparison = ((Comparable)actualVal).compareTo(queryVal) ;
                 } catch (Exception x) {
                     continue;
                 }
-                
+
                 // check the result against the logical operand
                 switch (relOperand) {
                 case EQ:

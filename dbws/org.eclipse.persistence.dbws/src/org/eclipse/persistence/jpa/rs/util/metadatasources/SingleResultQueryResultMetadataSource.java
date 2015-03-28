@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle. All rights reserved.
+ * Copyright (c) 2014, 2015  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * Makes the SingleResultQueryResult class available to JPA-RS JAXB context.
- * 
+ *
  * @see org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryResult
  *
  * @author Dmitry Kornilov

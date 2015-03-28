@@ -13,7 +13,7 @@
 package org.eclipse.persistence.exceptions;
 
 public class JPARSErrorCodes {
-    // Next range should start from LAST_ERROR_CODE (62000). 
+    // Next range should start from LAST_ERROR_CODE (62000).
     // The JPA-RS uses error codes between 61000-61999 (both inclusive).
     public static final int ENTITY_NOT_FOUND = 61000;
     public static final int OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST = 61001;
@@ -37,6 +37,6 @@ public class JPARSErrorCodes {
 
     //
     public static final int AN_EXCEPTION_OCCURRED = 61999;
-    // end marker for JPA-RS error codes    
+    // end marker for JPA-RS error codes
     public static final int LAST_ERROR_CODE = 62000;
 }

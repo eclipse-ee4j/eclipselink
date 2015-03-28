@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     @author  mobrien
  *     @since   EclipseLink 1.0 enh# 235168
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.services.mbean;
 
 import java.util.List;
@@ -149,7 +149,7 @@ public interface MBeanRuntimeServicesMBean {
      * If ClassNotFoundException is thrown then the IdenityMap for that class name could not be found
      */
     public Integer getNumberOfObjectsInIdentityMapSubCache(String className) throws ClassNotFoundException;
-    
+
     /**
      * Return the DMS sensor weight
      * @return
@@ -187,17 +187,17 @@ public interface MBeanRuntimeServicesMBean {
      *  Answer the name of the EclipseLink session this MBean represents.
      */
     public String getSessionName();
-    
+
     /**
      * Return whether this session is an EclipseLink JPA session.
      * The absence of this function or a value of false will signify that the session
-     * belongs to a provider other than EclipseLink.  
+     * belongs to a provider other than EclipseLink.
      * @return
      */
     public boolean isJPASession();
-    
+
     // 316513: refactored up as generic from WebLogic
-    
+
     /**
      *  Answer the type of the EclipseLink session this MBean represents.
      * Types include: "ServerSession", "DatabaseSession", "SessionBroker"
@@ -208,24 +208,24 @@ public interface MBeanRuntimeServicesMBean {
      *  Provide an instance of 2 Dimensional Array simulating tabular format information about all
      * classes in the session whose class names match the provided filter.
      *
-     * The 2 Dimensional array contains each item with values being row object array. Each row object array 
-     * represents EclipseLink class details info with respect to below attributes:  
+     * The 2 Dimensional array contains each item with values being row object array. Each row object array
+     * represents EclipseLink class details info with respect to below attributes:
      * ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
      *
      */
     public Object[][] getClassSummaryDetailsUsingFilter(String filter);
-    
+
     /**
      *  Provide an instance of 2 Dimensional Array simulating tabular format information about all
      * classes in the session.
      *
-     * The 2 Dimensional array contains each item with values being row object array. Each row object array 
-     * represents EclipseLink class details info with respect to below attributes:  
+     * The 2 Dimensional array contains each item with values being row object array. Each row object array
+     * represents EclipseLink class details info with respect to below attributes:
      * ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
      *
      */
     public Object[][] getClassSummaryDetails();
-    
+
     /**
      *  Provide a list of instance of ClassSummaryDetail containing information about the
      * classes in the session whose class names match the provided filter.
@@ -233,13 +233,13 @@ public interface MBeanRuntimeServicesMBean {
      * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
      * convert class attribute to JMX required open type, it has:-
      *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
-     *    2. convert methods.  
+     *    2. convert methods.
      *
      * @param filter A comma separated list of strings to match against.
      * @return A ArrayList of instance of ClassSummaryDetail containing class information for the class names that match the filter.
      */
     public List <ClassSummaryDetailBase>  getClassSummaryDetailsUsingFilterArray(String filter);
-    
+
     /**
      *  Provide a list of instance of ClassSummaryDetail containing information about all
      * classes in the session.
@@ -247,7 +247,7 @@ public interface MBeanRuntimeServicesMBean {
      * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
      * convert class attribute to JMX required open type, it has:-
      *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
-     *    2. convert methods.  
+     *    2. convert methods.
      *
      * @return A ArrayList of instance of ClassSummaryDetail containing class information for the class names that match the filter.
      */
@@ -270,7 +270,7 @@ public interface MBeanRuntimeServicesMBean {
      * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
      */
     public String getModuleName();
-    
+
     /**
      * getApplicationName(): Answer the name of the module (EAR name) that this session is associated with.
      * Answer "unknown" if there is no application name available.
@@ -435,7 +435,7 @@ public interface MBeanRuntimeServicesMBean {
     public void printProfileSummaryByQuery();
 
     /**
-    * Return the log type, either "EclipseLink",  "Java" or the simple name of the logging class used.  
+    * Return the log type, either "EclipseLink",  "Java" or the simple name of the logging class used.
     * @return the log type
     */
     public String getLogType();
@@ -500,6 +500,6 @@ public interface MBeanRuntimeServicesMBean {
     * @param className the fully qualified classname identifying the identity map to invalidate
     * @param recurse    Boolean indicating if we want to invalidate the children identity maps too
     */
-    public void invalidateIdentityMap(String className, Boolean recurse) throws ClassNotFoundException;    
-    
+    public void invalidateIdentityMap(String className, Boolean recurse) throws ClassNotFoundException;
+
 }

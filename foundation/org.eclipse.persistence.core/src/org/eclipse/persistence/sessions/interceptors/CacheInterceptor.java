@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -53,7 +53,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     protected IdentityMap targetIdentityMap;
 
     protected AbstractSession interceptedSession;
-    
+
     public CacheInterceptor(IdentityMap targetIdentityMap, AbstractSession interceptedSession){
         this.targetIdentityMap = targetIdentityMap;
         this.interceptedSession = interceptedSession;
@@ -87,7 +87,7 @@ public abstract class CacheInterceptor implements IdentityMap {
         }
         return null;
     }
-    
+
     /**
      * Acquire an active lock on the object, if not already locked.
      * This is used by merge for missing existing objects.
@@ -108,7 +108,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     public CacheKey acquireReadLockOnCacheKey(Object primaryKey) {
         return createCacheKeyInterceptor(this.targetIdentityMap.acquireReadLockOnCacheKey(primaryKey));
     }
-    
+
     /**
      * Acquire a read lock on the object, if not already locked.
      * This is used by UnitOfWork cloning.
@@ -121,7 +121,7 @@ public abstract class CacheInterceptor implements IdentityMap {
         }
         return null;
     }
-    
+
     /**
      * Add all locked CacheKeys to the map grouped by thread.
      * Used to print all the locks in the identity map.
@@ -144,10 +144,10 @@ public abstract class CacheInterceptor implements IdentityMap {
     public boolean containsKey(Object primaryKey) {
         return this.targetIdentityMap.containsKey(primaryKey);
     }
-    
+
 
     protected abstract CacheKeyInterceptor createCacheKeyInterceptor(CacheKey wrappedCacheKey);
-    
+
     /**
      * Allow for the cache to be iterated on.  This method is only used during debugging when
      * validateCache() has been called to print out the contents of the cache.
@@ -163,7 +163,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     public Object get(Object primaryKey){
         return this.targetIdentityMap.get(primaryKey);
     }
-    
+
     /**
      * ADVANCED:
      * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
@@ -213,7 +213,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     public Class getDescriptorClass() {
         return this.targetIdentityMap.getDescriptorClass();
     }
-    
+
     /**
      * @return The maxSize for the IdentityMap (NOTE: some subclasses may use this differently).
      */
@@ -244,7 +244,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     public IdentityMap getTargetIdenttyMap() {
         return this.targetIdentityMap;
     }
-    
+
     /**
      * Get the wrapper object from the cache key associated with the given primary key,
      * this is used for EJB2.
@@ -252,7 +252,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     public Object getWrapper(Object primaryKey) {
         return this.targetIdentityMap.getWrapper(primaryKey);
     }
-    
+
     /**
      * Get the write lock value from the cache key associated to the primarykey.
      * User API.
@@ -260,7 +260,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     public Object getWriteLockValue(Object primaryKey) {
         return this.targetIdentityMap.getWriteLockValue(primaryKey);
     }
-    
+
     /**
      * Allow for the CacheKeys to be iterated on.
      */
@@ -324,7 +324,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     public void updateMaxSize(int maxSize){
         this.targetIdentityMap.updateMaxSize(maxSize);
     }
-    
+
     /**
      * Set the descriptor that this is the map for.
      */

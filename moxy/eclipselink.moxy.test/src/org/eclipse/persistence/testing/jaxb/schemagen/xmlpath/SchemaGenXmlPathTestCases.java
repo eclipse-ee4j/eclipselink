@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,8 +31,8 @@ public class SchemaGenXmlPathTestCases extends JAXBTestCases {
         setClasses(new Class[] { MyClass.class, Phone.class, Address.class, CanadianAddress.class });
     }
 
-    public  List<InputStream> getControlSchemaFiles(){      
-        InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/xmlpath/xmlpath.xsd");     
+    public  List<InputStream> getControlSchemaFiles(){
+        InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/xmlpath/xmlpath.xsd");
         List<InputStream> controlSchema = new ArrayList<InputStream>();
         controlSchema.add(instream);
         return controlSchema;
@@ -41,7 +41,7 @@ public class SchemaGenXmlPathTestCases extends JAXBTestCases {
     public void testSchemaGen() throws Exception {
         testSchemaGen(getControlSchemaFiles());
     }
-    
+
     protected Object getControlObject() {
         MyClass obj = new MyClass();
         obj.name = "Bob Jones";

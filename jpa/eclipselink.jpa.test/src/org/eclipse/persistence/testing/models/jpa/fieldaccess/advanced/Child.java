@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     07/31/2008-1.1 Guy Pelletier 
+ *     07/31/2008-1.1 Guy Pelletier
  *       - 241388: JPA cache is not valid after a series of EntityManager operations
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import java.io.Serializable;
@@ -40,14 +40,14 @@ public class Child implements Serializable {
     @Version
     @Column
     private Integer version;
-    
+
     @ManyToOne(cascade = {CascadeType.ALL}, targetEntity = Parent.class, fetch=FetchType.LAZY)
     private ParentInterface parent;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column
     private Date createdOn = new Date();
-    
+
     public Child() {}
 
     public Integer getId() {
@@ -57,23 +57,23 @@ public class Child implements Serializable {
     public Date getCreatedOn() {
         return this.createdOn;
     }
-    
+
     public ParentInterface getParent() {
         return parent;
     }
-    
+
     public int getVersion() {
         return version;
     }
-    
+
     protected void setCreatedOn(Date createdOn) {
         this.createdOn = createdOn;
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
-    
+
     public void setParent(ParentInterface parent) {
         this.parent = parent;
     }

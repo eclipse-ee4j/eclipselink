@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.nosql;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -22,24 +22,24 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 
 /**
  * Defines the metadata for the @EIS annotation for mapping an EISDescriptor.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
  * - any metadata mapped from XML to this class must be initialized in the
  *   initXMLObject method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author James Sutherland
  * @since EclipseLink 2.4
  */
 public class NoSqlMetadata extends ORMetadata {
     private String dataType;
     private String dataFormat;
-    
+
     /**
      * INTERNAL:
      * Used for XML loading.
@@ -47,7 +47,7 @@ public class NoSqlMetadata extends ORMetadata {
     public NoSqlMetadata() {
         super("<eis>");
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.
@@ -66,7 +66,7 @@ public class NoSqlMetadata extends ORMetadata {
     public String getDataFormat() {
         return dataFormat;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -88,13 +88,13 @@ public class NoSqlMetadata extends ORMetadata {
             }
             return valuesMatch(this.dataFormat, eis.getDataFormat());
         }
-        
+
         return false;
     }
-    
+
     /**
      * INTERNAL:
-     * Switch the descriptor to the correct type and set the data-type name and 
+     * Switch the descriptor to the correct type and set the data-type name and
      * format.
      */
     public void process(MetadataDescriptor descriptor) {
@@ -105,7 +105,7 @@ public class NoSqlMetadata extends ORMetadata {
             newDescriptor.setDataTypeName(getDataType());
         } else {
             String defaultName = Helper.getShortClassName(descriptor.getJavaClassName());
-            defaultName = getProject().useDelimitedIdentifier() ? defaultName : defaultName.toUpperCase();                
+            defaultName = getProject().useDelimitedIdentifier() ? defaultName : defaultName.toUpperCase();
             newDescriptor.setDataTypeName(defaultName);
         }
         if (this.dataFormat != null) {
@@ -117,7 +117,7 @@ public class NoSqlMetadata extends ORMetadata {
                 newDescriptor.setDataFormat(EISDescriptor.INDEXED);
             }
         }
-        newDescriptor.setAlias("");        
+        newDescriptor.setAlias("");
         // This is the default, set it in case no existence-checking is set.
         newDescriptor.getQueryManager().checkDatabaseForDoesExist();
         if (oldDesriptor.isAggregateDescriptor()) {
@@ -128,7 +128,7 @@ public class NoSqlMetadata extends ORMetadata {
         descriptor.getProject().getProject().getOrderedDescriptors().remove(oldDesriptor);
         descriptor.getProject().getProject().getOrderedDescriptors().add(newDescriptor);
     }
-   
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -136,7 +136,7 @@ public class NoSqlMetadata extends ORMetadata {
     public void setDataFormat(String dataFormat) {
         this.dataFormat = dataFormat;
     }
-   
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -145,4 +145,4 @@ public class NoSqlMetadata extends ORMetadata {
         this.dataType = dataType;
     }
 }
-    
+

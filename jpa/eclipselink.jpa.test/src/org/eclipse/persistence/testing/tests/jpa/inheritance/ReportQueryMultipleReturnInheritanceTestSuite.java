@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
@@ -29,19 +29,19 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.TireInfo;
 public class ReportQueryMultipleReturnInheritanceTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;    // reset gets called twice on error
     protected PerformanceTireInfo tireInfo;
-        
+
     public ReportQueryMultipleReturnInheritanceTestSuite() {
     }
-    
+
     public ReportQueryMultipleReturnInheritanceTestSuite(String name) {
         super(name);
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite(ReportQueryMultipleReturnInheritanceTestSuite.class);        
+        TestSuite suite = new TestSuite(ReportQueryMultipleReturnInheritanceTestSuite.class);
         return suite;
     }
-    
+
     public void setUp () {
         super.setUp();
         m_reset = true;
@@ -61,7 +61,7 @@ public class ReportQueryMultipleReturnInheritanceTestSuite extends JUnitTestCase
             throw ex;
         }
     }
-    
+
     public void tearDown () {
         if (m_reset) {
             EntityManager em = createEntityManager();
@@ -81,7 +81,7 @@ public class ReportQueryMultipleReturnInheritanceTestSuite extends JUnitTestCase
             super.tearDown();
         }
     }
-    
+
     public void testInheritanceMultiTableException(){
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.returnWithoutReportQueryResult();
@@ -92,6 +92,6 @@ public class ReportQueryMultipleReturnInheritanceTestSuite extends JUnitTestCase
         assertTrue("Failed to return Employees correctly, Not A PerformanceTireInfo", PerformanceTireInfo.class.isAssignableFrom(resultItem.getClass()));
         assertTrue("Did not populate all fields.  Missing 'pressure'", ((PerformanceTireInfo)resultItem).getPressure() != null);
         assertTrue("Did not populate all fields.  Missing 'speedrating'", ((PerformanceTireInfo)resultItem).getSpeedRating() != null);
-    }    
+    }
 
 }

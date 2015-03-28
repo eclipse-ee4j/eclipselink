@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,13 +23,13 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "")
 @XmlRootElement(name = "root")
 public class Root {
-    
-    @XmlElements({        
+
+    @XmlElements({
         @XmlElement(name = "string", type = String.class),
         @XmlElement(name = "root", type = Root.class)
     })
     protected List<Object> children;
-    
+
     @XmlAttribute(name = "theName")
     protected String name;
 

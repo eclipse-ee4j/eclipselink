@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -24,55 +24,55 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
  * Performance should be pretty good....
  */
 public final class NullOutputStream
-	extends OutputStream
+    extends OutputStream
 {
 
-	// singleton
-	private static OutputStream INSTANCE;
+    // singleton
+    private static OutputStream INSTANCE;
 
-	/**
-	 * Return the singleton.
-	 */
-	public static synchronized OutputStream instance() {
-		if (INSTANCE == null) {
-			INSTANCE = new NullOutputStream();
-		}
-		return INSTANCE;
-	}
+    /**
+     * Return the singleton.
+     */
+    public static synchronized OutputStream instance() {
+        if (INSTANCE == null) {
+            INSTANCE = new NullOutputStream();
+        }
+        return INSTANCE;
+    }
 
-	/**
-	 * Ensure non-instantiability.
-	 */
-	private NullOutputStream() {
-		super();
-	}
+    /**
+     * Ensure non-instantiability.
+     */
+    private NullOutputStream() {
+        super();
+    }
 
-	/**
-	 * @see java.io.OutputStream#write(int)
-	 */
-	public void write(int b) throws IOException {
-		// do nothing
-	}
+    /**
+     * @see java.io.OutputStream#write(int)
+     */
+    public void write(int b) throws IOException {
+        // do nothing
+    }
 
-	/**
-	 * @see java.io.OutputStream#write(byte[])
-	 */
-	public void write(byte[] b) throws IOException {
-		// do nothing
-	}
+    /**
+     * @see java.io.OutputStream#write(byte[])
+     */
+    public void write(byte[] b) throws IOException {
+        // do nothing
+    }
 
-	/**
-	 * @see java.io.OutputStream#write(byte[], int, int)
-	 */
-	public void write(byte[] b, int off, int len) throws IOException {
-		// do nothing
-	}
+    /**
+     * @see java.io.OutputStream#write(byte[], int, int)
+     */
+    public void write(byte[] b, int off, int len) throws IOException {
+        // do nothing
+    }
 
-	/**
-	 * @see Object#toString()
-	 */
-	public String toString() {
-		return ClassTools.shortClassNameForObject(this);
-	}
+    /**
+     * @see Object#toString()
+     */
+    public String toString() {
+        return ClassTools.shortClassNameForObject(this);
+    }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -83,11 +83,11 @@ public class ObjectTypeTestSuite {
         "DROP TYPE DBWS_PHONE_TYPE FORCE";
     static final String DROP_CONTACT_TYPE =
         "DROP TYPE A_CONTACT_TYPE FORCE";
-    
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
-    
+
     @SuppressWarnings("rawtypes")
     static List dbProcedures;
     static DatabaseTypeBuilder dbTypeBuilder;
@@ -95,7 +95,7 @@ public class ObjectTypeTestSuite {
     @BeforeClass
     public static void setUp() throws ClassNotFoundException, SQLException {
         AllTests.setUp();
-        
+
         String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
         if ("true".equalsIgnoreCase(ddlCreateProp)) {
             ddlCreate = true;
@@ -114,15 +114,15 @@ public class ObjectTypeTestSuite {
             runDdl(conn, CREATE_PHONE_TYPE_PROC, ddlDebug);
             runDdl(conn, CREATE_CONTACT_TYPE_PROC, ddlDebug);
         }
-        
+
         ArrayList<String> schemas    = new ArrayList<String>();
         ArrayList<String> procedures = new ArrayList<String>();
-        
+
         schemas.add("TOPLEVEL");
         procedures.add("CREATE_PHONE_TYPE");
         schemas.add("TOPLEVEL");
         procedures.add("CREATE_CONTACT_TYPE");
-        
+
         // use DatabaseTypeBuilder to generate a list of ProcedureTypes
         dbTypeBuilder = new DatabaseTypeBuilder();
         try {
@@ -141,7 +141,7 @@ public class ObjectTypeTestSuite {
             runDdl(conn, DROP_PHONE_TYPE, ddlDebug);
         }
     }
-    
+
     @Test
     @SuppressWarnings({ "unchecked" })
     public void testJPAObjectMetadata() {
@@ -171,7 +171,7 @@ public class ObjectTypeTestSuite {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
         "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
         "   <orm:named-stored-procedure-query name=\"CREATE_CONTACT_TYPE\" procedure-name=\"CREATE_CONTACT_TYPE\" returns-result-set=\"false\">\n" +
         "      <orm:parameter mode=\"IN\" name=\"ADDRESS\" type=\"java.lang.String\" class=\"java.lang.String\" jdbc-type=\"12\" jdbc-type-name=\"VARCHAR\"/>\n" +
         "      <orm:parameter mode=\"IN\" name=\"PHONE\" type=\"metadatagen.Dbws_phone_type\" class=\"metadatagen.Dbws_phone_type\" jdbc-type=\"2002\" jdbc-type-name=\"DBWS_PHONE_TYPE\"/>\n" +

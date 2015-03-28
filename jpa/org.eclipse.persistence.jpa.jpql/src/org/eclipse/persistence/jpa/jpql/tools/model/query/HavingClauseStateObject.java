@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,56 +30,56 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public class HavingClauseStateObject extends AbstractConditionalClauseStateObject {
 
-	/**
-	 * Creates a new <code>HavingClauseStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public HavingClauseStateObject(AbstractSelectStatementStateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>HavingClauseStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public HavingClauseStateObject(AbstractSelectStatementStateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public HavingClause getExpression() {
-		return (HavingClause) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public HavingClause getExpression() {
+        return (HavingClause) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getIdentifier() {
-		return HAVING;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdentifier() {
+        return HAVING;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public AbstractSelectStatementStateObject getParent() {
-		return (AbstractSelectStatementStateObject) super.getParent();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AbstractSelectStatementStateObject getParent() {
+        return (AbstractSelectStatementStateObject) super.getParent();
+    }
 
-	/**
-	 * Keeps a reference of the {@link HavingClause parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link HavingClause parsed object} representing a <code><b>HAVING</b></code>
-	 * expression
-	 */
-	public void setExpression(HavingClause expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link HavingClause parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link HavingClause parsed object} representing a <code><b>HAVING</b></code>
+     * expression
+     */
+    public void setExpression(HavingClause expression) {
+        super.setExpression(expression);
+    }
 }

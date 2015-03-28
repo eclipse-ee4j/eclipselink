@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.forceupdate;
 
 import org.eclipse.persistence.sessions.*;
@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.models.forceupdate.*;
     the first commits. No exception would be thrown, but the entire calculation would be invalid.
     If the user forces optimistic locking check of the Address in the first thread, an optimistic
     lock exception is thrown.(here we use two UOWs to simulate two threads)
-    
+
     (Version locking stores in the Cache)
     Test 1:(Correctly use method forceUpdateToVersionField() with NOP)
     UOW1 calculates employee's salary based on the emplyee's office address,
@@ -33,14 +33,14 @@ import org.eclipse.persistence.testing.models.forceupdate.*;
     UOW2 updates the employee's address and commits.
     UOW1 commits.
     The test verified an optimistic lock exception is thrown in UOW1.
-    
+
     Test 2: (forceUpdateToVersionField() with NOP effects read-only UOW)
     UOW1 has only read-operation,
     calls forceUpdateToVersionField(Object addressCloneFromUOW1,false) and commits.
     UOW2 updates the emplyee's address and commits.
     UOW1 commits.
     The test verified an optimistic lock exception is thrown in UOW1.
-    
+
     Test 3: (Test method removeForceUpdateToVersionField())
     UOW1 calculates employee's salary based on the emplyee's office address,
     calls forceUpdateToVersionField(Object addressCloneFromUOW1,false),
@@ -48,7 +48,7 @@ import org.eclipse.persistence.testing.models.forceupdate.*;
     UOW2 updates the employee's address and commits.
     UOW1 commits.
     The test verified no optimistic lock exception is thrown in UOW1.
-    
+
     Test 4: (Demonstrate the result when no using forceUpdateToVersionField() with NOP )
     UOW1 calculates employee's salary based on the emplyee's office address,
     UOW2 updates the employee's address and commits.

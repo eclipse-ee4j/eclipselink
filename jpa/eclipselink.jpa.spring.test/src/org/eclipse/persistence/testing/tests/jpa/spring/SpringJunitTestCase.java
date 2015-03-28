@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -34,9 +34,9 @@ public abstract class SpringJunitTestCase extends TestCase {
     private EntityManagerWrapper em;
 
     protected void setEntityManager(EntityManagerWrapper em) {
-        this.em = em;  
+        this.em = em;
     }
-    
+
     public void testPersist(){
         Truck truck = new Truck("persist");
         try {
@@ -46,7 +46,7 @@ public abstract class SpringJunitTestCase extends TestCase {
             em.remove(truck);
         }
     }
-    
+
     //With this entity model, removing the truck should not delete the route nor address
     public void testCascadePersistwithRemove(){
         Truck truck = new Truck("cascade");
@@ -70,7 +70,7 @@ public abstract class SpringJunitTestCase extends TestCase {
             em.remove(route);
         }
     }
-    
+
     public void testRemove(){
         Truck truck = new Truck("remove");
         em.persist(truck);
@@ -78,18 +78,18 @@ public abstract class SpringJunitTestCase extends TestCase {
         em.remove(truck);
         assertTrue(em.find(truck) == null);
     }
-    
+
     public void testContains(){
         Truck truck = new Truck("contains");
         try {
-            em.persist(truck); 
+            em.persist(truck);
             assertTrue(em.contains(truck));
             assertFalse(em.contains(new Truck("doesNotContain")));
         } finally {
             em.remove(truck);
         }
     }
-    
+
     public void testMerge(){
         Truck truck = new Truck("merge");
         try {
@@ -99,7 +99,7 @@ public abstract class SpringJunitTestCase extends TestCase {
             em.remove(truck);
         }
     }
-    
+
     public void testRefresh(){
         Truck truck = new Truck("refresh");
         try {
@@ -113,7 +113,7 @@ public abstract class SpringJunitTestCase extends TestCase {
             em.remove(truck);
         }
     }
-    
+
     public void testFlush(){
         Truck truck = new Truck("flush");
         try {
@@ -135,7 +135,7 @@ public abstract class SpringJunitTestCase extends TestCase {
                 "SELECT id as ID, averageTimeMins as AVERAGETIMEMINS FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")", Route.class)
                 .getSingleResult();
         assertTrue(r.getAverageTimeMins() == 150);
-        
+
         em.executeNativeQuery("DELETE FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")");
         List l = em.createNativeQuery(
                 "SELECT id as ID, averageTimeMins as AVERAGETIMEMINS FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")", Route.class)
@@ -157,11 +157,11 @@ public abstract class SpringJunitTestCase extends TestCase {
             em.remove(route);
         }
     }
-    
+
     public void testCreateQuery(){
         Truck truck = new Truck("createQuery");
         try {
-            em.persist(truck);  
+            em.persist(truck);
             em.flush();
             Query q = em.createQuery("SELECT t FROM Truck t WHERE t.driverName LIKE ?1");
             q.setParameter(1, "createQuery");
@@ -171,14 +171,14 @@ public abstract class SpringJunitTestCase extends TestCase {
         }
     }
 
-    //COMMENT OUT if weaving is disabled 
-    public void testAddressVH() { 
+    //COMMENT OUT if weaving is disabled
+    public void testAddressVH() {
         Field f = null;
         try {
             f = Address.class.getDeclaredField("_persistence_route_vh");
         } catch (Exception e) {
             assertFalse("Exception when Address value holder retrieved", true);
-        }      
+        }
         assertNotNull("Address class does not have '_persistence_route_vh' field", f);
     }
 
@@ -192,5 +192,5 @@ public abstract class SpringJunitTestCase extends TestCase {
             assertFalse("Wrong exception thrown with bad refresh: " + e, true);
         }
     }
-   
+
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -35,8 +35,8 @@ import org.xml.sax.Attributes;
 
 /**
  * INTERNAL:
- * <p><b>Purpose</b>: This is how the XML Choice Collection Mapping is 
- * handled when used with the TreeObjectBuilder.</p> 
+ * <p><b>Purpose</b>: This is how the XML Choice Collection Mapping is
+ * handled when used with the TreeObjectBuilder.</p>
  * @author mmacivor
  */
 public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeValue implements ContainerValue {
@@ -55,20 +55,20 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
         if(xmlField == null && mapping.isAny()){
-        	isAny = true;
+            isAny = true;
         }else{
           this.nestedMapping = (Mapping)mapping.getChoiceElementMappings().get(xmlField);
         }
         initializeNodeValue();
     }
-    
+
     public XMLChoiceCollectionMappingUnmarshalNodeValue(ChoiceCollectionMapping mapping, Field xmlField, Mapping nestedMapping) {
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
         this.nestedMapping = nestedMapping;
         initializeNodeValue();
     }
-    
+
     public boolean isOwningNode(XPathFragment xPathFragment) {
         if(isMixedNodeValue) {
             if(xPathFragment.nameIsText()) {
@@ -79,10 +79,10 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
         }
         return choiceElementNodeValue.isOwningNode(xPathFragment);
     }
-    
+
     private void initializeNodeValue() {
         if(nestedMapping == null && isAny){
-            nestedMapping = xmlChoiceCollectionMapping.getAnyMapping();	
+            nestedMapping = xmlChoiceCollectionMapping.getAnyMapping();
         }
         Mapping xmlMapping = this.nestedMapping;
         if(xmlMapping instanceof BinaryDataCollectionMapping) {
@@ -99,20 +99,20 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
             choiceElementMarshalNodeValue = choiceElementNodeValue;
         } else {
             choiceElementNodeValue = new XMLCollectionReferenceMappingNodeValue((CollectionReferenceMapping)xmlMapping, xmlField);
-        	 CollectionReferenceMapping refMapping = ((CollectionReferenceMapping)xmlMapping);
+             CollectionReferenceMapping refMapping = ((CollectionReferenceMapping)xmlMapping);
              if(refMapping.usesSingleNode() || refMapping.getFields().size() == 1) {
-            	 choiceElementMarshalNodeValue = new XMLCollectionReferenceMappingNodeValue(refMapping, xmlField);
+                 choiceElementMarshalNodeValue = new XMLCollectionReferenceMappingNodeValue(refMapping, xmlField);
 
              } else {
-            	 choiceElementMarshalNodeValue = new XMLCollectionReferenceMappingMarshalNodeValue((CollectionReferenceMapping)xmlMapping);
+                 choiceElementMarshalNodeValue = new XMLCollectionReferenceMappingMarshalNodeValue((CollectionReferenceMapping)xmlMapping);
              }
         }
     }
-    
+
     public void setContainerNodeValue(XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue) {
         this.containerNodeValue = nodeValue;
     }
-    
+
     public void setNullValue(Object object, CoreSession session) {
         xmlChoiceCollectionMapping.setAttributeValueInObject(object, null);
     }
@@ -124,21 +124,21 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
             UnmarshalContext unmarshalContext = unmarshalRecord.getUnmarshalContext();
             unmarshalRecord.setUnmarshalContext(new ChoiceUnmarshalContext(unmarshalContext, xmlChoiceCollectionMapping));
             this.choiceElementNodeValue.endElement(xPathFragment, unmarshalRecord, collection);
-            unmarshalRecord.setUnmarshalContext(unmarshalContext);            
+            unmarshalRecord.setUnmarshalContext(unmarshalContext);
         } else {
             this.choiceElementNodeValue.endElement(xPathFragment, unmarshalRecord, collection);
         }
     }
-    
+
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         return this.choiceElementNodeValue.startElement(xPathFragment, unmarshalRecord, atts);
     }
-    
+
     public void setXPathNode(XPathNode xPathNode) {
         super.setXPathNode(xPathNode);
         this.choiceElementNodeValue.setXPathNode(xPathNode);
     }
-    
+
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }
@@ -153,26 +153,26 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
 
     public boolean isContainerValue() {
         return true;
-    }  
-    
+    }
+
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         //empty impl in the unmarshal node value
         return false;
     }
-    
+
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         //dummy impl in the unmarshal node value
         return false;
     }
-    
+
     public NodeValue getChoiceElementNodeValue() {
         return this.choiceElementNodeValue;
     }
-    
+
     public NodeValue getChoiceElementMarshalNodeValue() {
         return this.choiceElementMarshalNodeValue;
     }
-    
+
     public boolean isUnmarshalNodeValue() {
         return true;
     }
@@ -184,10 +184,10 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
     public boolean isMarshalNodeValue() {
         return false;
     }
-    
+
     public ChoiceCollectionMapping getMapping() {
         return xmlChoiceCollectionMapping;
-    }    
+    }
 
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
@@ -195,20 +195,20 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
 
     public void setFieldToNodeValues(Map<Field, NodeValue> fieldToNodeValues) {
         this.fieldToNodeValues = fieldToNodeValues;
-    }    
-    
+    }
+
     public Collection<NodeValue> getAllNodeValues() {
         return this.fieldToNodeValues.values();
     }
-    
+
     /**
      * The underlying choice element node value will handle attributes.
-     * 
+     *
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
         this.choiceElementNodeValue.attribute(unmarshalRecord, URI, localName, value);
     }
-    
+
     /**
      * INTERNAL:
      * Indicates that this is the choice mapping node value that represents the mixed content.
@@ -224,22 +224,22 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
     public boolean isMixedContentNodeValue() {
         return this.isMixedNodeValue;
     }
-    
+
     /**
      *  INTERNAL:
-     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
-     */  
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     */
     public void setIndex(int index){
-    	this.index = index;
+        this.index = index;
     }
-    
+
     /**
      * INTERNAL:
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
-     * Set during TreeObjectBuilder initialization 
+     * Set during TreeObjectBuilder initialization
      */
     public int getIndex(){
-    	return index;
+        return index;
     }
 
     /**

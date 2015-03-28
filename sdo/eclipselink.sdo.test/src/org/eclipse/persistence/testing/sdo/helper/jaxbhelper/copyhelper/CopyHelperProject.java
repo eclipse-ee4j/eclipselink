@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -35,7 +35,7 @@ public class CopyHelperProject extends Project {
         XMLDescriptor xmlDescriptor = new XMLDescriptor();
         xmlDescriptor.setJavaClass(Child1.class);
         xmlDescriptor.addPrimaryKeyFieldName("@id");
-        
+
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         namespaceResolver.put("tns", "urn:copy");
         xmlDescriptor.setNamespaceResolver(namespaceResolver);
@@ -55,13 +55,13 @@ public class CopyHelperProject extends Project {
         child2Mapping.setAttributeName("child2");
         child2Mapping.addSourceToTargetKeyFieldAssociation("tns:child2/text()", "@id");
         xmlDescriptor.addMapping(child2Mapping);
-        
+
         XMLCollectionReferenceMapping child2CollectionMapping = new XMLCollectionReferenceMapping();
         child2CollectionMapping.setReferenceClass(Child2.class);
         child2CollectionMapping.setAttributeName("child2Collection");
         child2CollectionMapping.addSourceToTargetKeyFieldAssociation("tns:child2collection/text()", "@id");
         xmlDescriptor.addMapping(child2CollectionMapping);
-        
+
         return xmlDescriptor;
     }
 
@@ -70,7 +70,7 @@ public class CopyHelperProject extends Project {
         xmlDescriptor.setJavaClass(Child2.class);
         xmlDescriptor.setDefaultRootElement("tns:child2");
         xmlDescriptor.addPrimaryKeyFieldName("@id");
-        
+
         XMLSchemaClassPathReference schemaReference = new XMLSchemaClassPathReference();
         schemaReference.setSchemaContext("/tns:child2");
         schemaReference.setType(XMLSchemaReference.ELEMENT);
@@ -79,7 +79,7 @@ public class CopyHelperProject extends Project {
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         namespaceResolver.put("tns", "urn:copy");
         xmlDescriptor.setNamespaceResolver(namespaceResolver);
-        
+
         XMLDirectMapping idMapping = new XMLDirectMapping();
         idMapping.setAttributeName("id");
         idMapping.setXPath("@id");
@@ -90,7 +90,7 @@ public class CopyHelperProject extends Project {
         child1Mapping.setAttributeName("child1");
         child1Mapping.addSourceToTargetKeyFieldAssociation("tns:child1/text()", "@id");
         xmlDescriptor.addMapping(child1Mapping);
-        
+
         return xmlDescriptor;
     }
 

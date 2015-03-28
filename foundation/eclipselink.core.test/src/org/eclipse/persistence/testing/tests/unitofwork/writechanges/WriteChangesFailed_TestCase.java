@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork.writechanges;
 
 import java.math.BigDecimal;
@@ -67,7 +67,7 @@ public class WriteChangesFailed_TestCase extends AutoVerifyTestCase {
             // possible place in TopLink where we check the lifecycle.  Already
             // added this kind of testing for the CommitTransactionPending state.
             if (((UnitOfWorkImpl)uow).getLifecycle() != UnitOfWorkImpl.WriteChangesFailed) {
-                throw new TestErrorException("Lifecycle state not set to WriteChangesFailed.  Instead it was: " + 
+                throw new TestErrorException("Lifecycle state not set to WriteChangesFailed.  Instead it was: " +
                                              ((UnitOfWorkImpl)uow).getLifecycle());
             }
 
@@ -76,10 +76,10 @@ public class WriteChangesFailed_TestCase extends AutoVerifyTestCase {
                 uow.revertAndResume();
                 throw new TestErrorException("Exception not thrown calling revertAndResume after writeChanges failed.");
             } catch (Exception expected) {
-                if (!((expected instanceof ValidationException) && 
-                      (((ValidationException)expected).getErrorCode() == 
+                if (!((expected instanceof ValidationException) &&
+                      (((ValidationException)expected).getErrorCode() ==
                        ValidationException.UNIT_OF_WORK_AFTER_WRITE_CHANGES_FAILED))) {
-                    throw new TestErrorException("Exception not thrown calling revertAndResume after writeChanges.  Instead triggered other exception.", 
+                    throw new TestErrorException("Exception not thrown calling revertAndResume after writeChanges.  Instead triggered other exception.",
                                                  expected);
                 }
             }

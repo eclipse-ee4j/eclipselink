@@ -1,20 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
  *
- *     01/08/2012-2.5 Guy Pelletier 
+ *     01/08/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.dynamic;
@@ -59,14 +59,14 @@ public class DynamicTestHelper {
             "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
             "xsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence " +
             "http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd\">" +
-            "<persistence-unit name=\"" + DYNAMIC_PERSISTENCE_NAME + 
+            "<persistence-unit name=\"" + DYNAMIC_PERSISTENCE_NAME +
                 "\" transaction-type=\"RESOURCE_LOCAL\">" +
                 "<exclude-unlisted-classes>true</exclude-unlisted-classes>" +
             "</persistence-unit>" +
         "</persistence>";
 
     // custom 'in-memory' URL that doesn't "go" anywhere, doesn't resolve to anything
-    static URL dynamicTestUrl = null; 
+    static URL dynamicTestUrl = null;
     static {
         try {
             dynamicTestUrl = new URL(null, "inmemory:", new URLStreamHandler() {
@@ -115,7 +115,7 @@ public class DynamicTestHelper {
             }
             public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
                 if (emName.equals(puInfo.getPersistenceUnitName())) {
-                    EntityManagerSetupImpl entityManagerSetupImpl = 
+                    EntityManagerSetupImpl entityManagerSetupImpl =
                         new EntityManagerSetupImpl(DYNAMIC_PERSISTENCE_NAME,DYNAMIC_PERSISTENCE_NAME);
                     map.put(PersistenceUnitProperties.WEAVING, "static");
                     puInfo.getProperties().put(
@@ -130,7 +130,7 @@ public class DynamicTestHelper {
             public ProviderUtil getProviderUtil() {
                 return null;
             }
-            
+
             public void generateSchema(PersistenceUnitInfo info, Map map) {
             }
 

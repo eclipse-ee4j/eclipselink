@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
@@ -35,7 +35,7 @@ public class CommitManager {
      * The key is the object and the value is the state.
      */
     protected Map<Object, Integer> commitState;
-    
+
     /** The commit is in progress, but the row has not been written. */
     protected static final Integer PRE = Integer.valueOf(1);
     /** The commit is in progress, and the row has been written. */
@@ -44,27 +44,27 @@ public class CommitManager {
     protected static final Integer COMPLETE = Integer.valueOf(3);
     /** This object should be ignored. */
     protected static final Integer IGNORE = Integer.valueOf(4);
-    
+
     /** Set of objects that had partial row written to resolve constraints. */
     protected Map shallowCommits;
-    
+
     protected AbstractSession session;
-    
+
     /** The commit manager is active while writing a set of objects (UOW), it is not active when writing a single object (DB session). */
     protected boolean isActive;
-    
+
     /** Map of modification events used to defer insertion into m-m, dc, join tables. */
     protected Map<DatabaseMapping, List<Object[]>> dataModifications;
-    
+
     /**
      * Map of deferred calls groups by their table.
      * This is used to defer multiple table writes for batching and deadlock avoidance.
      */
     protected Map<DatabaseTable, List<Object[]>> deferredCalls;
-    
+
     /** List of orphaned objects pending deletion. */
-    protected List objectsToDelete;  
-    
+    protected List objectsToDelete;
+
     /** Counter used to keep track of commit depth for non-UOW writes. */
     protected int commitDepth;
 
@@ -97,7 +97,7 @@ public class CommitManager {
         }
         Object[] arguments = new Object[2];
         arguments[0] = call;
-        arguments[1] = mechanism;        
+        arguments[1] = mechanism;
         this.deferredCalls.get(table).add(arguments);
     }
 
@@ -143,7 +143,7 @@ public class CommitManager {
             if (hasDeferredCalls()) {
                 // Perform all batched up calls, done to avoid dependencies.
                 for (List<Object[]> calls: this.deferredCalls.values()) {
-                    for (Object[] argument : calls) {                        
+                    for (Object[] argument : calls) {
                         ((DatabaseQueryMechanism)argument[1]).executeDeferredCall((DatasourceCall)argument[0]);
                     }
                 }
@@ -172,7 +172,7 @@ public class CommitManager {
                     this.session.deleteObject(objects.get(index));
                 }
             }
-            
+
             this.session.commitTransaction();
         } catch (RuntimeException exception) {
             this.session.rollbackTransaction();
@@ -187,7 +187,7 @@ public class CommitManager {
      * Commit all of the objects of the class type in the change set.
      * This allows for the order of the classes to be processed optimally.
      */
-    protected void commitAllObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {    
+    protected void commitAllObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {
         // Although new objects should be first, there is an issue that new objects get added to non-new after the insert,
         // so the object would be written twice.
         commitChangedObjectsForClassWithChangeSet(uowChangeSet, theClass);
@@ -237,7 +237,7 @@ public class CommitManager {
      */
     protected void commitChangedObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {
         Map<ObjectChangeSet, ObjectChangeSet> objectChangesList = uowChangeSet.getObjectChanges().get(theClass);
-        if (objectChangesList != null) {// may be no changes for that class type.				
+        if (objectChangesList != null) {// may be no changes for that class type.
             ClassDescriptor descriptor = null;
             AbstractSession session = getSession();
             Collection<ObjectChangeSet> changes = objectChangesList.values();
@@ -287,8 +287,8 @@ public class CommitManager {
 
         try {
             // PERF: Optimize single object case.
-            if (objects.size() == 1) {                
-                deleteAllObjects(objects.get(0).getClass(), objects, session);                
+            if (objects.size() == 1) {
+                deleteAllObjects(objects.get(0).getClass(), objects, session);
             } else {
                 List commitOrder = getCommitOrder();
                 for (int orderIndex = commitOrder.size() - 1; orderIndex >= 0; orderIndex--) {
@@ -315,11 +315,11 @@ public class CommitManager {
      */
     public void deleteAllObjects(Class theClass, List objects, AbstractSession session) {
         ClassDescriptor descriptor = null;
-        
+
         if (((UnitOfWorkImpl)session).shouldOrderUpdates()) {// bug 331064 - Sort the delete order
             objects = sort(theClass, objects);
         }
-        
+
         int size = objects.size();
         for (int index = 0; index < size; index++) {
             Object objectToDelete = objects.get(index);
@@ -343,9 +343,9 @@ public class CommitManager {
             }
         }
     }
-    
+
     /**
-     * Sort the objects based on PK. 
+     * Sort the objects based on PK.
      */
     // bug 331064 - Sort the delete order based on PKs.
     private List sort (Class theClass, List objects) {
@@ -361,7 +361,7 @@ public class CommitManager {
         }
         return new ArrayList(sortedObjects.values());
     }
-    
+
     /**
      * Return the order in which objects should be committed to the database.
      * This order is based on ownership in the descriptors and is require for referential integrity.
@@ -562,7 +562,7 @@ public class CommitManager {
             return;
         }
     }
-    
+
     public void markIgnoreCommit(Object object){
         getCommitState().put(object, IGNORE);
     }

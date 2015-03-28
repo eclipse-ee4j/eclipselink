@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,7 @@ public class XmlElementsAdapterTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/choiceadapter.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/choiceadapter.json";
     private final static String BINDINGS_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/bindings.xml";
-    
+
     private final static int CONTROL_ID = 10;
 
     public XmlElementsAdapterTestCases(String name) throws Exception {
@@ -49,12 +49,12 @@ public class XmlElementsAdapterTestCases extends JAXBWithJSONTestCases {
         employee.choice = address;
         return employee;
     }
-    
+
     @Override
     public boolean isUnmarshalTest() {
         return false;
     }
-    
+
     @Override
     protected Map getProperties() throws JAXBException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -62,7 +62,7 @@ public class XmlElementsAdapterTestCases extends JAXBWithJSONTestCases {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
-        
+
         return properties;
     }
 

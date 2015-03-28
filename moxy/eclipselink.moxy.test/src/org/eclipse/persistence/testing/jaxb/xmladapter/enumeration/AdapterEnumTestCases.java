@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 - 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 - 2014, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,7 +23,7 @@ public class AdapterEnumTestCases extends JAXBWithJSONTestCases{
 
     public AdapterEnumTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);   
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         Class[] classes = {EnumRoot.class};
         setClasses(classes);
@@ -35,7 +35,7 @@ public class AdapterEnumTestCases extends JAXBWithJSONTestCases{
         emp.multi.add((byte)1);
         emp.multi.add((byte)3);
         emp.multi.add((byte)1);
-        
+
         emp.single = (byte)2;
 
         emp.cardSuit = CardSuit.DIAMOND;

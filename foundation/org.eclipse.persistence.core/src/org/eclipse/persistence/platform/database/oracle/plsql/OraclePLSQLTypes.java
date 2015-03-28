@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -63,7 +63,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
         @Override
         public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
             databaseTypeHelper.declareTarget(sb, inArg, this);
-            sb.append(" := "); 
+            sb.append(" := ");
             sb.append(PLSQLBoolean_IN_CONV);
             sb.append("(:");
             sb.append(inArg.inIndex);
@@ -75,7 +75,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
         public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call) {
             sb.append("  :");
             sb.append(outArg.outIndex);
-            sb.append(" := "); 
+            sb.append(" := ");
             sb.append(PLSQLBoolean_OUT_CONV);
             sb.append("(");
             sb.append(databaseTypeHelper.buildTarget(outArg));
@@ -111,7 +111,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
             buildInitialDeclare(sb, outArg);
             sb.append(";");
             sb.append(NL);
-        }        
+        }
         protected void buildInitialDeclare(StringBuilder sb, PLSQLargument arg) {
             sb.append("  ");
             sb.append(arg.name);
@@ -142,8 +142,8 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
     }
 
     public int getConversionCode() {
-        // widest compatible type java.sql.Types.NUMERIC <-> BigDecimal 
-        return NUMERIC_TYPE.getConversionCode(); 
+        // widest compatible type java.sql.Types.NUMERIC <-> BigDecimal
+        return NUMERIC_TYPE.getConversionCode();
     }
 
     public String getTypeName() {
@@ -162,7 +162,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
         ListIterator<PLSQLargument> i) {
         return databaseTypeHelper.computeInIndex(inArg, newIndex);
     }
-    
+
     /**
      * INTERNAL:
      * Return the parameter index for the OUT parameter.
@@ -171,7 +171,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
         ListIterator<PLSQLargument> i) {
         return databaseTypeHelper.computeOutIndex(outArg, newIndex);
     }
-    
+
     /**
      * INTERNAL:
      * Append the variable declaration for the type.
@@ -193,7 +193,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
         sb.append(";");
         sb.append(NL);
     }
-    
+
     /**
      * INTERNAL:
      * Append any code or translation required for the type.
@@ -273,7 +273,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
         else if (SignType.typeName.equalsIgnoreCase(typeName)) {
             databaseType = SignType;
         } else if (XMLType.typeName.equalsIgnoreCase(typeName)) {
-        	databaseType = XMLType;
+            databaseType = XMLType;
         }
         return databaseType;
     }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
 import java.math.BigDecimal;
@@ -55,7 +55,7 @@ public class BasicTypeHelperImpl {
         integralTypes.add(Integer.class);
         integralTypes.add(long.class);
         integralTypes.add(Long.class);
-        
+
         // Initialize set of floating point types plus their wrapper classes
         floatingPointTypes.add(float.class);
         floatingPointTypes.add(Float.class);
@@ -68,7 +68,7 @@ public class BasicTypeHelperImpl {
         dateClasses.add(java.sql.Date.class);
         dateClasses.add(java.sql.Time.class);
         dateClasses.add(java.sql.Timestamp.class);
-        
+
         numericTypes.addAll(integralTypes);
         numericTypes.addAll(floatingPointTypes);
         numericTypes.add(java.math.BigDecimal.class);
@@ -139,17 +139,17 @@ public class BasicTypeHelperImpl {
     public Object getCharType() {
         return char.class;
     }
-    
+
     /** Returns the Date type representation.*/
     public Object getSQLDateType() {
         return java.sql.Date.class;
     }
-    
+
     /** Returns the Time type representation.*/
     public Object getTimeType() {
         return java.sql.Time.class;
     }
-    
+
     /** Returns the timestamp type representation.*/
     public Object getTimestampType() {
         return java.sql.Timestamp.class;
@@ -199,7 +199,7 @@ public class BasicTypeHelperImpl {
     public Object getLongClassType()  {
         return Long.class;
     }
-    
+
     /** Returns the type representation of class Map.Entry.*/
     public Object getMapEntryType(){
         return Map.Entry.class;
@@ -260,15 +260,15 @@ public class BasicTypeHelperImpl {
 
     /**
      * Returns true if the specified type represents an
-     * integral type or a wrapper class of an integral type. 
+     * integral type or a wrapper class of an integral type.
      */
     public boolean isIntegralType(Object type) {
         return integralTypes.contains(type);
     }
-    
+
     /**
      * Returns true if the specified type represents an
-     * floating point type or a wrapper class of an floating point type. 
+     * floating point type or a wrapper class of an floating point type.
      */
     public boolean isFloatingPointType(Object type) {
         return floatingPointTypes.contains(type);
@@ -320,7 +320,7 @@ public class BasicTypeHelperImpl {
     public boolean isIntegerType(Object type) {
         return isIntType(type);
     }
-    
+
     /**
      * Returns true if type is the long primitive type or the Long wrapper class
      */
@@ -367,9 +367,9 @@ public class BasicTypeHelperImpl {
         return true;
     }
 
-    /** 
-     * convenience method for java's isAssignableFrom that allows auto-boxing, taking java class or a descriptor as arguments. 
-     *  It will return true if both sides are in the same category (Numberic, Date or Boolean) otherwise it will use java's 
+    /**
+     * convenience method for java's isAssignableFrom that allows auto-boxing, taking java class or a descriptor as arguments.
+     *  It will return true if both sides are in the same category (Numberic, Date or Boolean) otherwise it will use java's
      *  isAssignableFrom on the argument classes.    Returns true if either arguments is null.
      */
     public boolean isAssignableFrom(Object left, Object right) {
@@ -381,7 +381,7 @@ public class BasicTypeHelperImpl {
             return true;
         }
         if ((left == ClassConstants.OBJECT) || (right == ClassConstants.OBJECT)) {
-            return true;            
+            return true;
         }
         // numeric types are compatible
         else if (isNumericType(left) && isNumericType(right))  {
@@ -398,9 +398,9 @@ public class BasicTypeHelperImpl {
         // check for inheritance and implements
         return getJavaClass(left).isAssignableFrom(getJavaClass(right));
     }
-    
-    /** 
-     * convenience method for java's isAssignableFrom that allows auto-boxing but follows more closely Java's 
+
+    /**
+     * convenience method for java's isAssignableFrom that allows auto-boxing but follows more closely Java's
      * Class.isAssignableFrom method results, and returns true if either arguments is null.
      */
     public boolean isStrictlyAssignableFrom(Object left, Object right) {
@@ -412,9 +412,9 @@ public class BasicTypeHelperImpl {
             return true;
         }
         if (left == ClassConstants.OBJECT) {
-            return true;            
+            return true;
         }
-        
+
         Class leftClass = getJavaClass(left);
         Class rightClass = getJavaClass(right);
         if ( leftClass.isPrimitive() ){
@@ -423,7 +423,7 @@ public class BasicTypeHelperImpl {
         if ( rightClass.isPrimitive() ){
             rightClass = this.getWrapperClass(rightClass);
         }
-        
+
         // check for inheritance and implements
         return leftClass.isAssignableFrom(rightClass);
     }
@@ -431,7 +431,7 @@ public class BasicTypeHelperImpl {
     /** Implements binary numeric promotion as defined in JLS extended by
      * wrapper classes, BigDecimal and BigInteger.  */
     public Object extendedBinaryNumericPromotion(Object left, Object right) {
-        if ((left == null) || (right == null) || 
+        if ((left == null) || (right == null) ||
             !isNumericType(left) || !isNumericType(right)) {
             return null;
         }
@@ -440,7 +440,7 @@ public class BasicTypeHelperImpl {
         if (isBigDecimalType(left) || isBigDecimalType(right)) {
             return getBigDecimalType();
         }
-        
+
         // handle BigInteger
         if (isBigIntegerType(left)) {
             return isFloatingPointType(right) ? right : getBigIntegerType();
@@ -459,21 +459,21 @@ public class BasicTypeHelperImpl {
             wrapper = true;
             right = getPrimitiveType(right);
         }
-        
+
         Object promoted = binaryNumericPromotion(left, right);
         if (wrapper && promoted != null) {
             promoted = getWrapperClass(promoted);
         }
         return promoted;
     }
-    
+
     // Helper methods
 
     /** Returns the primitive for the specified wrapper class. */
     protected Class getPrimitiveType(Object wrapper) {
         return wrapperToPrimitive.get(wrapper);
     }
-    
+
     /** Returns the wrapper class for the specified primitive. */
     protected Class getWrapperClass(Object primitive) {
         return primitiveToWrapper.get(primitive);
@@ -485,7 +485,7 @@ public class BasicTypeHelperImpl {
             return null;
         }
         Object type = null;
-        
+
         if (left == getDoubleType() || right == getDoubleType()) {
             type = getDoubleType();
         } else if (left == getFloatType() || right == getFloatType()) {

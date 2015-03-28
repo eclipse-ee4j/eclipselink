@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,58 +27,58 @@ import org.eclipse.persistence.tools.workbench.utility.classfile.tools.ClassDepe
 
 /**
  * Simple class for playing around with the ClassDependencyGraphPanel.
- * 
+ *
  * Optional command line parm:
- * 	the name of a jar (or class folder) to use to populate the middle tree
+ *     the name of a jar (or class folder) to use to populate the middle tree
  */
 public class ClassDependencyGraphBrowser {
-	private PropertyValueModel graphHolder = new SimplePropertyValueModel(null);
+    private PropertyValueModel graphHolder = new SimplePropertyValueModel(null);
 
-	public static void main(String[] args) {
-		new ClassDependencyGraphBrowser().exec(args);
-	}
+    public static void main(String[] args) {
+        new ClassDependencyGraphBrowser().exec(args);
+    }
 
-	/**
-	 * Default constructor.
-	 */
-	private ClassDependencyGraphBrowser() {
-		super();
-	}
+    /**
+     * Default constructor.
+     */
+    private ClassDependencyGraphBrowser() {
+        super();
+    }
 
-	private void exec(String[] args) {
-		this.graphHolder.setValue(this.buildGraph(args));
-		JFrame frame = new JFrame(ClassTools.shortClassNameForObject(this) + ": " + this.buildClasspathEntry(args));
-		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		frame.addWindowListener(this.buildWindowListener());
-		frame.getContentPane().add(this.buildClassDependencyGraphPanel(), "Center");
-		frame.setLocation(300, 300);
-		frame.setSize(800, 400);
-		frame.setVisible(true);
-	}
+    private void exec(String[] args) {
+        this.graphHolder.setValue(this.buildGraph(args));
+        JFrame frame = new JFrame(ClassTools.shortClassNameForObject(this) + ": " + this.buildClasspathEntry(args));
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(this.buildWindowListener());
+        frame.getContentPane().add(this.buildClassDependencyGraphPanel(), "Center");
+        frame.setLocation(300, 300);
+        frame.setSize(800, 400);
+        frame.setVisible(true);
+    }
 
-	private WindowListener buildWindowListener() {
-		return new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				e.getWindow().setVisible(false);
-				System.exit(0);
-			}
-		};
-	}
+    private WindowListener buildWindowListener() {
+        return new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                e.getWindow().setVisible(false);
+                System.exit(0);
+            }
+        };
+    }
 
-	private ClassDependencyGraphPanel buildClassDependencyGraphPanel() {
-		return new ClassDependencyGraphPanel(this.graphHolder);
-	}
+    private ClassDependencyGraphPanel buildClassDependencyGraphPanel() {
+        return new ClassDependencyGraphPanel(this.graphHolder);
+    }
 
-	private ClassDependencyGraph buildGraph(String[] args) {
-		return new ClassDependencyGraph(this.buildClasspathEntry(args));
-	}
+    private ClassDependencyGraph buildGraph(String[] args) {
+        return new ClassDependencyGraph(this.buildClasspathEntry(args));
+    }
 
-	private String buildClasspathEntry(String[] args) {
-		if ((args == null) || (args.length == 0)) {
-			return Classpath.locationFor(ClassTools.class);
-//			return ClasspathTools.javaClasspathEntryFor(ValueHolderInterface.class);
-		}
-		return args[0];
-	}
+    private String buildClasspathEntry(String[] args) {
+        if ((args == null) || (args.length == 0)) {
+            return Classpath.locationFor(ClassTools.class);
+//            return ClasspathTools.javaClasspathEntryFor(ValueHolderInterface.class);
+        }
+        return args[0];
+    }
 
 }

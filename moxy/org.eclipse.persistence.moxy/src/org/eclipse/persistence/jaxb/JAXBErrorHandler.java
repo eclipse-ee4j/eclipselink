@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
 import javax.xml.bind.ValidationEvent;
@@ -43,7 +43,7 @@ public class JAXBErrorHandler implements ErrorHandler {
     }
 
     /**
-     * Handle warnings  
+     * Handle warnings
      * The exception will be given to the ValidationEventHandler at to attempt to handle.
      * @param exception the SAXParseException that occurred
      */
@@ -52,7 +52,7 @@ public class JAXBErrorHandler implements ErrorHandler {
     }
 
     /**
-     * Handle errors.  
+     * Handle errors.
      * The exception will be given to the ValidationEventHandler at to attempt to handle.
      * @param exception the SAXParseException that occurred
      */
@@ -61,7 +61,7 @@ public class JAXBErrorHandler implements ErrorHandler {
     }
 
     /**
-     * Handle fatal errors.  
+     * Handle fatal errors.
      * The exception will be given to the ValidationEventHandler at to attempt to handle.
      * @param exception the SAXParseException that occurred
      */
@@ -69,7 +69,7 @@ public class JAXBErrorHandler implements ErrorHandler {
         handleException(exception, ValidationEvent.FATAL_ERROR);
     }
 
-    
+
     private void handleException(SAXParseException exception, int severity) throws SAXException {
         ValidationEventLocatorImpl eventLocator = new ValidationEventLocatorImpl(exception);
         if(exception instanceof MarshalSAXParseException) {

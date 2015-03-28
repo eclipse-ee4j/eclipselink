@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.proxyindirection;
 
 import java.util.Vector;
@@ -105,13 +105,13 @@ public class ProxyIndirectionSystem extends TestSystem {
         phone1.setIsPublic(false);
         phone1.setNumber("613-123-4567");
         phone1.setType(PhoneImpl.CELL);
-        
-        DesktopComputer comp1 = new DesktopComputerImpl();        
+
+        DesktopComputer comp1 = new DesktopComputerImpl();
         comp1.setDescription("Compaq Pentium 200");
         comp1.setSerialNumber("CP18176-187262");
         comp1.setMoniterSize(21);
-        
-        DesktopComputer comp2 = new DesktopComputerImpl();        
+
+        DesktopComputer comp2 = new DesktopComputerImpl();
         comp2.setDescription("Acer PentiumII 300");
         comp2.setSerialNumber("2876-298769232736");
         comp2.setMoniterSize(19);

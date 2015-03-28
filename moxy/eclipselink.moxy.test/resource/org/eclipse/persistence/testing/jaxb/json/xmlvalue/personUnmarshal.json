@@ -6,7 +6,7 @@
    "lastName":"Smith",
     "phoneNumber":{
       "areaCode":"613",
-      "unmarshalWrapper":"1234567"  
+      "unmarshalWrapper":"1234567"
       }
  }
 }

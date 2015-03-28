@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.attributes;
 
 import commonj.sdo.DataObject;
@@ -30,7 +30,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has one type   
+        // check list has one type
         assertEquals(types.size(), 1);
 
         Type aType = (Type)types.get(0);
@@ -44,16 +44,16 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         // check if Property name is as schema
         assertEquals(p.getName(), "myTestAttribute");
 
-        // check if Property's Type is as schema        
+        // check if Property's Type is as schema
         assertEquals(p.getType(), SDOConstants.SDO_STRING);
 
         // check alias name
         //  assertNull(p.getAliasNames());
-        // check containing type        
+        // check containing type
         Type myTestType = typeHelper.getType("http://www.example.org", "myTestType");
         assertEquals(p.getContainingType(), myTestType);
 
-        //TODO: assert containing type 
+        //TODO: assert containing type
         // check default value
         assertNull(p.getDefault());
 
@@ -72,7 +72,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has one type   
+        // check list has one type
         assertEquals(types.size(), 1);
 
         Type aType = (Type)types.get(0);
@@ -92,7 +92,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         // check alias name
         //assertNull(p.getAliasNames());
         // check containing type
-        //assertNull(p.getContainingType());				
+        //assertNull(p.getContainingType());
         Type myTestType = typeHelper.getType("http://www.example.org", "myTestType");
         assertEquals(p.getContainingType(), myTestType);
 
@@ -114,7 +114,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has one type   
+        // check list has one type
         assertEquals(types.size(), 1);
 
         Type aType = (Type)types.get(0);
@@ -133,7 +133,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
 
         // check alias name
         //assertNull(p.getAliasNames());
-        // check containing type        
+        // check containing type
         Type myTestType = typeHelper.getType("http://www.example.org", "myTestType");
         assertEquals(p.getContainingType(), myTestType);
         //assertNull(p.getContainingType());
@@ -155,7 +155,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 1 types 
+        // check list has 1 types
         assertEquals(types.size(), 1);
 
         Type aType = (Type)types.get(0);
@@ -174,7 +174,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
 
         // check alias name
         //assertNull(p.getAliasNames());
-        // check containing type        
+        // check containing type
         Type myTestType = typeHelper.getType("http://www.example.org", "myTestType");
         assertEquals(p.getContainingType(), myTestType);
         //assertNull(p.getContainingType());
@@ -196,7 +196,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has one type   
+        // check list has one type
         assertEquals(2, types.size());
 
         Type aType = null;
@@ -225,7 +225,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         // check alias name
         //assertNull(p.getAliasNames());
         // check containing type
-        // check containing type        
+        // check containing type
         Type myTestType = typeHelper.getType("http://www.example.org", "myTestType");
         assertEquals(myTestType, p.getContainingType());
         // check default value !! it is propbably good to also test string !!
@@ -247,7 +247,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has one type   
+        // check list has one type
         assertEquals(types.size(), 1);
 
         Type aType = (Type)types.get(0);
@@ -267,11 +267,11 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         // check alias name
         //assertNull(p.getAliasNames());
         // check containing type
-        // check containing type        
+        // check containing type
         Type myTestType = typeHelper.getType("http://www.example.org", "myTestType");
         assertEquals(p.getContainingType(), myTestType);
         //assertNull(p.getContainingType());
-        // check default value 
+        // check default value
         assertNull(p.getDefault());
 
         // check opposite Property
@@ -289,9 +289,9 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         try {
             xsdHelper.define(xsdSchema);
             fail("An SDOException " + SDOException.CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE //
-            		+ " should have occurred but did not.");
-        } catch (SDOException e) {            
-            assertEquals(SDOException.CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE ,e.getErrorCode());            
+                    + " should have occurred but did not.");
+        } catch (SDOException e) {
+            assertEquals(SDOException.CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE ,e.getErrorCode());
         }
     }
 
@@ -300,7 +300,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 2 types   
+        // check list has 2 types
         assertEquals(2, types.size());
 
         //Type aType = (Type)types.get(0);
@@ -328,11 +328,11 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         // check alias name
         //assertNull(p.getAliasNames());
         // check containing type
-        // check containing type        
+        // check containing type
         Type myTestType = typeHelper.getType("http://www.example.org", "myTestType");
         assertEquals(p.getContainingType(), myTestType);
         //assertNull(p.getContainingType());
-        // check default value 
+        // check default value
         //TODO:should defaultValue be null - 20070703: since propertyType is now complex - we expect a null Object reference for default
         assertNull(p.getDefault());
         //assertEquals(new Integer(0), p.getDefault());
@@ -346,15 +346,15 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         assertFalse(p.isMany());
 
     }
-    
+
     public void testAttributeWithSDO_OppositePropertyWithDefineFailureOnRef() {
         String xsdSchema = getSchema("org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/attributes/AttributeWithSDO_OppositePropertyWithInvalidRef.xsd");
         try {
             xsdHelper.define(xsdSchema);
             fail("An SDOException " + SDOException.CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE //
-            		+ " should have occurred but did not.");
-        } catch (SDOException e) {            
-            assertEquals(SDOException.CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE ,e.getErrorCode());            
+                    + " should have occurred but did not.");
+        } catch (SDOException e) {
+            assertEquals(SDOException.CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE ,e.getErrorCode());
         }
     }
 
@@ -363,7 +363,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has one type   
+        // check list has one type
         assertEquals(2, types.size());
 
         //Type aType = (Type)types.get(0);
@@ -390,11 +390,11 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
 
         // check alias name
         //assertNull(p.getAliasNames());
-        // check containing type				
+        // check containing type
         Type myTestType = typeHelper.getType("http://www.example.org", "myTestType");
         assertEquals(p.getContainingType(), myTestType);
         //assertNull(p.getContainingType());
-        // check default value         
+        // check default value
         //TODO:should defaultValue be null - 20070703: since propertyType is now complex - we expect a null Object reference for default
         assertNull(p.getDefault());
         //assertEquals(new Integer(0), p.getDefault());
@@ -411,13 +411,13 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         assertFalse(p.isMany());
 
     }
-    
+
     public void testAttributeWithSDO_DataType() {
         String xsdSchema = getSchema("org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/attributes/AttributeWithSDO_DataType.xsd");
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has one type   
+        // check list has one type
         assertEquals(types.size(), 1);
 
         Type aType = (Type)types.get(0);
@@ -436,11 +436,11 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
 
         // check alias name
         //assertNull(p.getAliasNames());
-        // check containing type				
+        // check containing type
         Type myTestType = typeHelper.getType("http://www.example.org", "myTestType");
         assertEquals(p.getContainingType(), myTestType);
         //assertNull(p.getContainingType());
-        // check default value 
+        // check default value
         assertNull(p.getDefault());
 
         // check opposite Property

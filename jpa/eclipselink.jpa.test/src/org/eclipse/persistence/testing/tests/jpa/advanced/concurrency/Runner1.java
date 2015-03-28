@@ -25,7 +25,7 @@ public class Runner1 implements Runnable {
     public void run() {
         try {
 
-            
+
             EntityManager em =emf.createEntityManager();
             Department dept = em.find(Department.class, deptPK);
             Equipment equip = em.find(Equipment.class, equipPK);

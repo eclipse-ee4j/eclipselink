@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,17 +28,17 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <p>
  * <b>Description</b>: The Selection is the expression describing what should be returned by the query.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria Join
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
 public abstract class SelectionImpl<X> implements Selection<X>, InternalSelection, Serializable{
-    
+
     protected Class<X> javaType;
     protected Expression currentNode;
-    
+
     /**
      * Returns the current EclipseLink expression at this node in the criteria expression tree
      * @return the currentNode
@@ -48,7 +48,7 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
     }
 
     protected String alias;
-    
+
     public <T> SelectionImpl(Class<X> javaType, Expression expressionNode){
         this.javaType = javaType;
         this.currentNode = expressionNode;
@@ -57,7 +57,7 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
     //SELECTION
     /**
      * Assign an alias to the selection.
-     * 
+     *
      * @param name
      *            alias
      */
@@ -66,7 +66,7 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
         return this;
     }
 
-    
+
     public String getAlias() {
         return this.alias;
     }
@@ -83,15 +83,15 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
     public List<Selection<?>> getCompoundSelectionItems(){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("CRITERIA_NOT_A_COMPOUND_SELECTION"));
     }
-    
+
     /**
      * Whether the selection item is a compound selection
-     * @return boolean 
+     * @return boolean
      */
     public boolean isCompoundSelection(){
         return false;
     }
-    
+
     public boolean isFrom(){
         return false;
     }

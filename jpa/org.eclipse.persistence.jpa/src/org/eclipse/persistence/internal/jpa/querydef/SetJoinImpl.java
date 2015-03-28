@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,15 +30,15 @@ import javax.persistence.metamodel.Metamodel;
  * <p>
  * <b>Description</b>: This class represents a join of an attribute from a "From"element.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria ListJoin
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
 
 public class SetJoinImpl<Z, X>  extends JoinImpl<Z, X> implements SetJoin<Z, X>{
-    
+
     public <T> SetJoinImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact){
         this(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact,JoinType.INNER);
     }
@@ -59,7 +59,7 @@ public class SetJoinImpl<Z, X>  extends JoinImpl<Z, X> implements SetJoin<Z, X>{
     public javax.persistence.metamodel.SetAttribute<? super Z, X> getModel(){
         return (javax.persistence.metamodel.SetAttribute<? super Z, X>)this.modelArtifact;
     }
-    
+
     public SetJoinImpl<Z, X> on(Expression<Boolean> restriction) {
         return (SetJoinImpl<Z, X>)super.on(restriction);
     }

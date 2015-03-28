@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
 import java.util.ArrayList;
@@ -304,7 +304,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     * Default is false */
     private boolean usesSingleNode;
 
-    // Hashtables for the non-default conversions, these Hashtables are 
+    // Hashtables for the non-default conversions, these Hashtables are
     // used if the user has made any modifications to the pairs
     protected HashMap userXMLTypes;
     protected HashMap userJavaTypes;
@@ -336,30 +336,30 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     }
 
     private void initializeXPathFragment(XPathFragment xPathFragment) {
-        XPathPredicate predicate = xPathFragment.getPredicate(); 
+        XPathPredicate predicate = xPathFragment.getPredicate();
         if(null != predicate) {
             initializeXPathFragment(predicate.getXPathFragment());
         }
 
-    	String localName = xPathFragment.getLocalName();
-    	if(localName !=null && !localName.equals(XMLConstants.EMPTY_STRING)){
-	        if(null == xPathFragment.getNamespaceURI()) {
-	            if(xPathFragment.hasNamespace()) {
-	                if(null == namespaceResolver) {
-	                    throw XMLMarshalException.namespaceNotFound(xPathFragment.getShortName());
-	                } else {
-	                    String uri = namespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
-	                    if(null == uri && null != xPathFragment.getPrefix()) {
-	                        throw XMLMarshalException.namespaceNotFound(xPathFragment.getShortName());
-	                    }
-	                    xPathFragment.setNamespaceURI(uri);
-	                }
-	            }
-	            else if(!xPathFragment.isAttribute() && null != namespaceResolver) {
-	                xPathFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
-	            }
-	        }
-    	}
+        String localName = xPathFragment.getLocalName();
+        if(localName !=null && !localName.equals(XMLConstants.EMPTY_STRING)){
+            if(null == xPathFragment.getNamespaceURI()) {
+                if(xPathFragment.hasNamespace()) {
+                    if(null == namespaceResolver) {
+                        throw XMLMarshalException.namespaceNotFound(xPathFragment.getShortName());
+                    } else {
+                        String uri = namespaceResolver.resolveNamespacePrefix(xPathFragment.getPrefix());
+                        if(null == uri && null != xPathFragment.getPrefix()) {
+                            throw XMLMarshalException.namespaceNotFound(xPathFragment.getShortName());
+                        }
+                        xPathFragment.setNamespaceURI(uri);
+                    }
+                }
+                else if(!xPathFragment.isAttribute() && null != namespaceResolver) {
+                    xPathFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
+                }
+            }
+        }
         XPathFragment nextXPathFragment = xPathFragment.getNextFragment();
         if(null != nextXPathFragment) {
             initializeXPathFragment(nextXPathFragment);
@@ -492,7 +492,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
             setLastXPathFragment(xPathFragment);
         }
     }
-    
+
     /**
      * This has the same effect as calling the setXPath method
      *
@@ -507,7 +507,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     }
 
     private void buildFragments(String xpathString) {
-        StringTokenizer st = new StringTokenizer(xpathString, "/", true);        
+        StringTokenizer st = new StringTokenizer(xpathString, "/", true);
         String next;
         int i = 0;
         XPathFragment currentXPathFragment = null;
@@ -519,10 +519,10 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
                 if ("/".equals(next)) {
                     if (0 == i) {
                         next = "/" + st.nextToken();
-                    } else { 
+                    } else {
                         continue;
                     }
-                }                   
+                }
                 if (next.contains("[") && !next.contains("]")) {
                     StringBuilder sb = new StringBuilder(next);
                     String more;
@@ -531,7 +531,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
                         sb.append(more);
                         if (more.contains("]"))
                             break;
-                    }   
+                    }
                     next = sb.toString().intern();
                 } else {
                     next = next.intern();
@@ -550,7 +550,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
                 i++;
             }
             setLastXPathFragment(currentXPathFragment);
-        } 
+        }
     }
 
     /**
@@ -605,10 +605,10 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     @Override
     public Class getJavaClass(QName qname, ConversionManager conversionManager) {
         if (userXMLTypes != null) {
-        	Class theClass = (Class)userXMLTypes.get(qname);
-        	if(theClass != null){
-        		return theClass;
-        	}            
+            Class theClass = (Class)userXMLTypes.get(qname);
+            if(theClass != null){
+                return theClass;
+            }
         }
         return conversionManager.javaType(qname);
     }
@@ -670,7 +670,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
             ArrayList types = new ArrayList(userXMLTypes.size());
             Iterator iter = userXMLTypes.entrySet().iterator();
             while (iter.hasNext()) {
-            	Map.Entry entry = (Map.Entry)iter.next();                
+                Map.Entry entry = (Map.Entry)iter.next();
                 XMLConversionPair pair = new XMLConversionPair((QName)entry.getKey(),((Class)entry.getValue()).getName());
                 types.add(pair);
             }
@@ -703,7 +703,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
             ArrayList types = new ArrayList(userJavaTypes.size());
             Iterator iter = userJavaTypes.entrySet().iterator();
             while (iter.hasNext()) {
-            	Map.Entry entry = (Map.Entry)iter.next();                
+                Map.Entry entry = (Map.Entry)iter.next();
                 XMLConversionPair pair = new XMLConversionPair((QName)entry.getValue(), ((Class)entry.getKey()).getName());
                 types.add(pair);
             }
@@ -733,21 +733,21 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     * Called from DOMRecord and XMLReader.  MappingNodeValues call XMLReader which calls this method so that other XMLReader subclasses can override.
     */
     public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, AbstractUnmarshalRecord record) {
-        if (schemaType != null) { 
-        	if(XMLConstants.QNAME_QNAME.equals(schemaType)){
-        		return xmlConversionManager.buildQNameFromString((String)value, record);        		
-        	}else{
-	            Class fieldType = getType();
-	            if (fieldType == null) {
-	                fieldType = getJavaClass(schemaType, xmlConversionManager);
-	            }            
-	            return xmlConversionManager.convertObject(value, fieldType, schemaType);
-        	}
+        if (schemaType != null) {
+            if(XMLConstants.QNAME_QNAME.equals(schemaType)){
+                return xmlConversionManager.buildQNameFromString((String)value, record);
+            }else{
+                Class fieldType = getType();
+                if (fieldType == null) {
+                    fieldType = getJavaClass(schemaType, xmlConversionManager);
+                }
+                return xmlConversionManager.convertObject(value, fieldType, schemaType);
+            }
         }
         return value;
     }
 
-    
+
     /**
     * Add an XML to Java Conversion pair entry
     * @param qname The qualified name of the XML schema type
@@ -803,10 +803,10 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
         removeJavaConversion(javaClass);
         removeXMLConversion(qname);
     }
-	
-	/**
+
+    /**
      * Assumes type is in the format prefix:localPart, or localPart.
-     * 
+     *
      * @param type
      */
     public void setLeafElementType(QName type) {
@@ -815,15 +815,15 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
             getLastXPathFragment().setLeafElementType(type);
         }
     }
-    
-	public QName getLeafElementType() {
+
+    public QName getLeafElementType() {
         if (lastXPathFragment != null) {
             return lastXPathFragment.getLeafElementType();
         }
-        return leafElementType; 
+        return leafElementType;
     }
 
-	/**
+    /**
      * INTERNAL:
      * @return
      */
@@ -838,19 +838,19 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
         if(leafElementType != null){
             return leafElementType;
         }else if (isTypedTextField) {
-        	if (CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(value.getClass())){        	
-        		return ((XMLGregorianCalendar) value).getXMLSchemaType();
-        	}else if (CoreClassConstants.DURATION.isAssignableFrom(value.getClass())){
+            if (CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(value.getClass())){
+                return ((XMLGregorianCalendar) value).getXMLSchemaType();
+            }else if (CoreClassConstants.DURATION.isAssignableFrom(value.getClass())){
                 ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
-        		return getXMLType(CoreClassConstants.DURATION, conversionManager);
-        	}
-        	ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+                return getXMLType(CoreClassConstants.DURATION, conversionManager);
+            }
+            ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
             return getXMLType(value.getClass(), conversionManager);
-        } 
-        return schemaType;        
+        }
+        return schemaType;
     }
 
-    
+
     /**
      * INTERNAL:
      * @param CDATA
@@ -858,14 +858,14 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     public void setIsCDATA(boolean CDATA) {
         this.isCDATA = CDATA;
     }
-    
+
     /**
      * INTERNAL:
      * @return
      */
     public boolean isCDATA() {
         return isCDATA;
-    }    
+    }
     /**
      * INTERNAL
      */
@@ -873,14 +873,14 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
         if(getSchemaType() == null){
             return false;
         }
-        return getSchemaType().equals(schemaType);    	
+        return getSchemaType().equals(schemaType);
     }
 
     /**
      * Indicates if this XMLField represents a "required" XML element or attribute
      * ([minOccurs="1"] for elements, [use="required"] for attributes).  NOTE: This
      * API is used only for Schema Generation.
-     * 
+     *
      * @see org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator
      */
     public boolean isRequired() {
@@ -891,7 +891,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * Set whether this XMLField represents a "required" XML element or attribute
      * ([minOccurs="1"] for elements, [use="required"] for attributes).  NOTE: This
      * API is used only for Schema Generation.
-     * 
+     *
      * @see org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator
      */
     public void setRequired(boolean isRequired) {

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -19,10 +19,10 @@ import java.lang.annotation.Target;
 
 /**
  *<p><b>Purpose</b>: This annotation is used in conjunction with an XmlElements annotation to
- * specify an XmlPath for each of the XmlElement annotations in the XmlElements. 
+ * specify an XmlPath for each of the XmlElement annotations in the XmlElements.
  * The number of XmlPath annotations must be the same as the number of XmlElement annotations
  * and the order must be the same.
- * 
+ *
  * <p><b>Example:</b><br>
  * <code>
  * &nbsp;@XmlRootElement(name="customer")<br>
@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
  * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
  * &nbsp;}</code><br><br>
  * Will create the following Schema:<br>
- * 
+ *
  * <pre>
  *    ...
  *    &lt;xsd:choice&gt;
@@ -48,7 +48,7 @@ import java.lang.annotation.Target;
  *       &lt;/xsd:element&gt;
  *    &lt;/xsd:choice&gt;
  *    ...
- * </pre> 
+ * </pre>
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

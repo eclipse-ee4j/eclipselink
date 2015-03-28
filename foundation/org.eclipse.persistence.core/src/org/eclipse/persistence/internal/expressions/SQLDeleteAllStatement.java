@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -39,13 +39,13 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
 
     protected SQLCall selectCallForNotExist;
     protected String tableAliasInSelectCallForNotExist;
-    
+
     // A pair of Vectors for join expression
     protected Vector aliasedFields;
     protected Vector originalFields;
-    
+
     protected boolean shouldExtractWhereClauseFromSelectCallForExist;
-    
+
     public void setSelectCallForExist(SQLCall selectCallForExist) {
         this.selectCallForExist = selectCallForExist;
     }
@@ -101,7 +101,7 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
     public Expression getInheritanceExpression() {
         return inheritanceExpression;
     }
-    
+
     public void setShouldExtractWhereClauseFromSelectCallForExist(boolean shouldExtractWhereClauseFromSelectCallForExist) {
         this.shouldExtractWhereClauseFromSelectCallForExist = shouldExtractWhereClauseFromSelectCallForExist;
     }
@@ -117,14 +117,14 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
 
         Writer writer = new CharArrayWriter(100);
         try {
-            // because where clause is null, 
+            // because where clause is null,
             // call.sqlString == "DELETE FROM getTable().getQualifiedName()"
             writer.write(call.getSQLString());
 
             boolean whereWasPrinted = true;
             if(selectCallForExist != null) {
                 if(shouldExtractWhereClauseFromSelectCallForExist) {
-                    // Should get here only in case selectCallForExist doesn't have aliases and 
+                    // Should get here only in case selectCallForExist doesn't have aliases and
                     // targets the same table as the statement.
                     // Instead of making selectCallForExist part of " WHERE EXIST("
                     // just extract its where clause.
@@ -144,7 +144,7 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
                     // "WHERE EXISTS(SELECT t0.EMP_ID FROM EMPLOYEE t0, SALARY t1 WHERE (((t0.F_NAME LIKE 'a') AND (t1.SALARY = 0)) AND (t1.EMP_ID = t0.EMP_ID)) AND t1.EMP_ID = SALARY.EMP_ID)"
                 }
                 // Bug 301888 - DB2: UpdateAll/DeleteAll using WHERE EXIST fail.
-                // If selectCallForExist has been explicitly set to not use binding then call should be set the same way. 
+                // If selectCallForExist has been explicitly set to not use binding then call should be set the same way.
                 if(selectCallForExist.isUsesBindingSet() && !selectCallForExist.usesBinding(session)) {
                     call.setUsesBinding(false);
                 }
@@ -174,24 +174,24 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
                 writer.write(")");
                 // The result is (target table is EMPLOYEE):
                 // "WHERE NOT EXISTS(SELECT t0.EMP_ID FROM EMPLOYEE t0, SALARY t1 WHERE ((t1.EMP_ID = t0.EMP_ID)) AND t0.EMP_ID = EMPLOYEE.EMP_ID)"
-            }            
+            }
 
             call.setSQLString(writer.toString());
-            
+
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-                
+
         return call;
     }
-    
+
     protected void writeSelect(Writer writer, SQLCall selectCall, String tableAliasInSelectCall, SQLCall call, DatasourcePlatform platform) throws IOException {
         String str = selectCall.getSQLString();
         writer.write(str);
-        
+
         boolean hasWhereClause = str.toUpperCase().indexOf(" WHERE ") >= 0;
 
-        // join aliased fields to original fields                                               
+        // join aliased fields to original fields
         // Examples:
         //   table aliase provided: AND t0.EMP_ID = EMPLOYEE.EMP_ID
         //   table aliase not provided: AND EMP_ID = EMPLOYEE.EMP_ID
@@ -215,7 +215,7 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
 
         // add parameters
         call.getParameters().addAll(selectCall.getParameters());
-        call.getParameterTypes().addAll(selectCall.getParameterTypes());            
+        call.getParameterTypes().addAll(selectCall.getParameterTypes());
     }
 
     protected boolean writeWhere(Writer writer, SQLCall selectCall, SQLCall call) throws IOException {
@@ -233,7 +233,7 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
 
         // add parameters
         call.getParameters().addAll(selectCall.getParameters());
-        call.getParameterTypes().addAll(selectCall.getParameterTypes());            
+        call.getParameterTypes().addAll(selectCall.getParameterTypes());
 
         return true;
     }

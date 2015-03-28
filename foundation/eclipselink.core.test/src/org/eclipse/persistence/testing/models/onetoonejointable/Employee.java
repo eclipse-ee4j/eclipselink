@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     07/16/2009 Andrei Ilitchev 
+ *     07/16/2009 Andrei Ilitchev
  *       - Bug 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.onetoonejointable;
 
 import java.util.*;
@@ -60,14 +60,14 @@ public class Employee implements Serializable, ChangeTracker {
 
     /** Direct-to-field mapping, int -> NUMBER, salary of the employee in dollars. */
     public int salary;
-    
+
     /** One-to-many mapping, employee references its collection of children arranged by age.
      * This relationship uses transparent indirection */
     public List<Child> children;
 
     /** One-to-one mapping , inverse relationship to Project.teamLeader */
     public ValueHolderInterface projectLed;
-    
+
     /** For performance testing, how many times primary key extracted. */
     public static int getIdCallCount = 0;
     public PropertyChangeListener listener;
@@ -220,7 +220,7 @@ public class Employee implements Serializable, ChangeTracker {
         propertyChange("address", this.address.getValue(), address);
         this.address.setValue(address);
     }
-    
+
     public void setChildren(Vector children){
         this.children = children;
     }
@@ -291,7 +291,7 @@ public class Employee implements Serializable, ChangeTracker {
         propertyChange("projectLed", this.projectLed.getValue(), projectLed);
         this.projectLed.setValue(projectLed);
     }
-    
+
     public void setProjects(List<Project> projects) {
         propertyChange("projects", this.projects, projects);
         this.projects = projects;

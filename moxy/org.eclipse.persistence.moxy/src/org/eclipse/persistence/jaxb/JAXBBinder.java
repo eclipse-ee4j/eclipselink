@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,7 +60,7 @@ public class JAXBBinder extends Binder {
         if (null == obj || null == xmlNode) {
             throw new IllegalArgumentException();
         }
-        
+
         try {
             if (obj instanceof JAXBElement) {
                 JAXBElement jaxbElem = (JAXBElement) obj;
@@ -85,7 +85,7 @@ public class JAXBBinder extends Binder {
         try {
             Object returnValue = xmlBinder.unmarshal((Node) obj);
             if (returnValue instanceof Root) {
-            	Root xmlRoot = (Root) returnValue;
+                Root xmlRoot = (Root) returnValue;
                 if(xmlRoot.getObject() instanceof JAXBElement) {
                     return xmlRoot.getObject();
                 }
@@ -104,7 +104,7 @@ public class JAXBBinder extends Binder {
         }
 
         try {
-        	Root xmlRoot = (Root) xmlBinder.unmarshal((Node) obj, javaClass);
+            Root xmlRoot = (Root) xmlBinder.unmarshal((Node) obj, javaClass);
             return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), javaClass, xmlRoot.getObject());
         } catch (Exception e) {
             throw new UnmarshalException(e);
@@ -118,7 +118,7 @@ public class JAXBBinder extends Binder {
         if(obj instanceof JAXBElement && !(obj instanceof WrappedValue)) {
             return xmlBinder.getXMLNode(((JAXBElement)obj).getValue());
         }
-        
+
         return xmlBinder.getXMLNode(obj);
     }
 
@@ -154,25 +154,25 @@ public class JAXBBinder extends Binder {
         try {
             xmlBinder.updateObject((Node) obj);
             Object updatedObj = xmlBinder.getObject((Node) obj);
-            
+
             boolean shouldWrapInJAXBElement = true;
-            
+
             Descriptor desc = (Descriptor) xmlBinder.getMarshaller().getXMLContext().getSession().getClassDescriptor(updatedObj);
-            
+
             if (desc == null) {
                 return updatedObj;
             }
-            
+
             if(desc.getDefaultRootElementField() != null){
                     String objRootElem = desc.getDefaultRootElement();
 
                     String rootElemNS = objRootElem.substring(0, objRootElem.lastIndexOf(":"));
                     String rootElemName = objRootElem.substring(objRootElem.lastIndexOf(":") + 1);
                     String resolvedNS = desc.getNamespaceResolver().resolveNamespacePrefix(rootElemNS);
-                    
+
                     String nodeName = ((Node) obj).getLocalName();
                     String nodeNS = ((Node) obj).getNamespaceURI();
-                    
+
                     if (rootElemName.equals(nodeName) && resolvedNS.equals(nodeNS)) {
                         shouldWrapInJAXBElement = false;
                     }
@@ -190,23 +190,23 @@ public class JAXBBinder extends Binder {
     }
 
     // ============
-    
+
     public void setSchema(Schema schema) {
         this.xmlBinder.setSchema(schema);
     }
-    
+
     public Schema getSchema() {
         return this.xmlBinder.getSchema();
     }
 
     public void setEventHandler(ValidationEventHandler newValidationEventHandler) throws JAXBException {
-        if (null == newValidationEventHandler) {            
+        if (null == newValidationEventHandler) {
             xmlBinder.setErrorHandler(new JAXBErrorHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDLER));
-        } else {            
+        } else {
             xmlBinder.setErrorHandler(new JAXBErrorHandler(newValidationEventHandler));
         }
     }
-    
+
     public ValidationEventHandler getEventHandler() {
         JAXBErrorHandler jaxbErrorHandler = (JAXBErrorHandler) xmlBinder.getErrorHandler();
         return jaxbErrorHandler.getValidationEventHandler();
@@ -235,7 +235,7 @@ public class JAXBBinder extends Binder {
 
         throw new PropertyException(propName);
     }
-    
+
     public void setProperty(String propName, Object value) throws PropertyException {
         if (null == propName) {
             throw new IllegalArgumentException(propName);
@@ -266,7 +266,7 @@ public class JAXBBinder extends Binder {
 
         throw new PropertyException(propName);
     }
-    
+
     public XMLBinder getXMLBinder() {
         return xmlBinder;
     }

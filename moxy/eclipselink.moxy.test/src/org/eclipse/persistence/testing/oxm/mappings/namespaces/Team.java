@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.namespaces;
 
 import java.util.ArrayList;
@@ -42,12 +42,12 @@ public class Team {
     }
 
     public boolean equals(Object o) {
-        try {           
+        try {
             Team team = (Team)o;
             if (!this.getTeamName().equals(team.getTeamName())) {
                 return false;
             }
-            
+
             if((getTeamLeader()== null && team.getTeamLeader()!=null)|| (team.getTeamLeader()==null && getTeamLeader()!= null))
             {
               return false;
@@ -56,10 +56,10 @@ public class Team {
             {
               return false;
             }
-            
+
             if (team.getEmployees().size() != getEmployees().size()) {
                 return false;
-            }            
+            }
             if ((!team.getEmployees().containsAll(getEmployees())) || (!getEmployees().containsAll(team.getEmployees()))) {
                 return false;
             }
@@ -72,12 +72,12 @@ public class Team {
     public String toString() {
         String string = "Team- name:";
         string += this.getTeamName();
-        
+
         if(getTeamLeader()!= null)
         {
           string += "Leader:" +getTeamLeader().toString();
         }
-        
+
         for (int i = 0; i < getEmployees().size(); i++) {
             string = " " + getEmployees().get(i).toString();
         }

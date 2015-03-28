@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.libraries.asm.tree.AbstractInsnNode;
 
 /**
  * Thrown if a problem occurs during the analysis of a method.
- * 
+ *
  * @author Bing Ran
  * @author Eric Bruneton
  */

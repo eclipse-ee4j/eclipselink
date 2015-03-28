@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     David McCann - Jan.10, 2013 - 2.5.0 - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
@@ -21,23 +21,23 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * INTERNAL:
  * Object to hold onto complex type meta-data, including PL/SQL records
  * and collections, as well as advanced Oracle JDBC types.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
- * - all metadata mapped from XML should be initialized in the initXMLObject 
+ * - all metadata mapped from XML should be initialized in the initXMLObject
  *   method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author David McCann
  * @since EclipseLink 2.5
  */
 public abstract class ComplexTypeMetadata extends ORMetadata {
     protected String name;
-    
+
     /**
      * INTERNAL:
      * Used for XML loading.
@@ -45,7 +45,7 @@ public abstract class ComplexTypeMetadata extends ORMetadata {
     public ComplexTypeMetadata(String element) {
         super(element);
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.
@@ -54,7 +54,7 @@ public abstract class ComplexTypeMetadata extends ORMetadata {
         super(record, accessor);
         this.name = record.getAttributeString("name");
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -80,19 +80,19 @@ public abstract class ComplexTypeMetadata extends ORMetadata {
     public String getName() {
         return name;
     }
-    
+
     /**
      * Build a runtime type from the meta-data.
      */
     public abstract ComplexDatabaseType process();
-    
+
     /**
      * Build a runtime record type from the meta-data.
      */
     protected void process(ComplexDatabaseType type) {
         type.setTypeName(this.name);
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.

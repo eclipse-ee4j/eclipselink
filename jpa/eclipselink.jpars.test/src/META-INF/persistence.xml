@@ -150,7 +150,7 @@
             <property name="javax.persistence.jdbc.password" value="test"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="jpars_person" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.Person</class>

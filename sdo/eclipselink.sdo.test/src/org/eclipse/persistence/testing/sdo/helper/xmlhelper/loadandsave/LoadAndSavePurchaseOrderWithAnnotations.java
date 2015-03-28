@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
 import commonj.sdo.DataObject;
@@ -29,14 +29,14 @@ import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 
 public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCases {
-	/** 
-	 * Since there is no targetNamespace defined in the schema and we use the sdoJava:package annotations on the XSD, 
-	 * We must also set the URI on any programmatically defined types in registerTypes() for no-schema-load test cases 
-	 */
-	private static final String CUSTOM_JAVA_PACKAGE_DIR = "com/example/myPackage";
-	/** This URI must match what is set for sdoJava:package in the XSD */
-	private static final String CUSTOM_JAVA_PACKAGE_URI = "com.example.myPackage"; 
-	
+    /**
+     * Since there is no targetNamespace defined in the schema and we use the sdoJava:package annotations on the XSD,
+     * We must also set the URI on any programmatically defined types in registerTypes() for no-schema-load test cases
+     */
+    private static final String CUSTOM_JAVA_PACKAGE_DIR = "com/example/myPackage";
+    /** This URI must match what is set for sdoJava:package in the XSD */
+    private static final String CUSTOM_JAVA_PACKAGE_URI = "com.example.myPackage";
+
     public LoadAndSavePurchaseOrderWithAnnotations(String name) {
         super(name);
     }
@@ -57,10 +57,10 @@ public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCase
     protected String getControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/schemas/purchaseOrderWithInstanceClass.xml";
     }
-    
+
     protected String getControlWriteFileName() {
         return "./org/eclipse/persistence/testing/sdo/schemas/purchaseOrderWithInstanceClassWrite.xml";
-    }        
+    }
 
     protected String getSchemaName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithInstanceClass.xsd";
@@ -83,7 +83,7 @@ public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCase
         packages.add(CUSTOM_JAVA_PACKAGE_DIR);
         return packages;
     }
-    
+
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
         registerTypes();
         FileInputStream inputStream = new FileInputStream(getNoSchemaControlFileName());
@@ -103,7 +103,7 @@ public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCase
         assertNotNull(value);
         assertTrue(value instanceof Timestamp);
     }
-    
+
      protected void verifyAfterLoadNoSchema(XMLDocument doc) {
         super.verifyAfterLoad(doc);
         DataObject rootObject = doc.getRootObject();

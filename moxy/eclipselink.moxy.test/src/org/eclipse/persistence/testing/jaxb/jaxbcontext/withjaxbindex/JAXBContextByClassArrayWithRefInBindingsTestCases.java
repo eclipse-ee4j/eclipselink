@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,69 +30,69 @@ import org.w3c.dom.Document;
 /*
  * For a context created by class[] with a jaxb.index in the package we should process all classes in the array
  * However we should not automatically process the ObjectFactory unless they are necessary
- * In this case since there is an XmlElementRef in the bindings file we SHOULD process the 
+ * In this case since there is an XmlElementRef in the bindings file we SHOULD process the
  * ObjectFactory class and include ClassB (which is only referenced in ObjectFactory)
  * We should also NOT process those listed in the jaxb.index (in this case ClassC)
  */
 public class JAXBContextByClassArrayWithRefInBindingsTestCases  extends JAXBWithJSONTestCases{
-	 protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithrefbindings.xml";
-	 protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithrefbindings.json";
+     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithrefbindings.xml";
+     protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithrefbindings.json";
 
-		public JAXBContextByClassArrayWithRefInBindingsTestCases(String name) throws Exception {
-			super(name);
-		}
-		
-		public void setUp() throws Exception {
-	        setControlDocument(XML_RESOURCE);
-	        setControlJSON(JSON_RESOURCE);
-		    super.setUp();
-		    Class[] classes = new Class[]{ClassA.class};
-		    setTypes(classes);
-		}
+        public JAXBContextByClassArrayWithRefInBindingsTestCases(String name) throws Exception {
+            super(name);
+        }
 
-		protected Object getControlObject() {
-			ClassA classA = new ClassA();
-			
-			JAXBElement<String> jbe = new JAXBElement<String>(new QName("a") ,String.class ,"someValue"); 
-			classA.setTheValue(jbe);
-			return classA;
-		}
+        public void setUp() throws Exception {
+            setControlDocument(XML_RESOURCE);
+            setControlJSON(JSON_RESOURCE);
+            super.setUp();
+            Class[] classes = new Class[]{ClassA.class};
+            setTypes(classes);
+        }
 
-		public void testSchemaGen() throws Exception{
-			InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithrefinbindings.xsd");		
-	    	List<InputStream> controlSchemas = new ArrayList<InputStream>();    	
-	    	controlSchemas.add(controlInputStream);		
-			this.testSchemaGen(controlSchemas);
-		}
-		
-		protected Map getProperties() {				
-		     Map overrides = new HashMap();				
-		        String overridesString =
-		        	 "<?xml version='1.0' encoding='UTF-8'?>" +
-		 	        "<xml-bindings xmlns='http://www.eclipse.org/eclipselink/xsds/persistence/oxm'>" +
-		 	       "<java-types>" +
-			        "<java-type name='org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.ClassA'>" + 
-			        "<java-attributes>" +
-			        "<xml-element-ref java-attribute='theValue' name='a'/>" + 
-		                "</java-attributes> " +
-		    	     "</java-type>" +        		    	  
-		    	    "</java-types>" +
-		    	 "</xml-bindings>";
-		
-		   DOMSource src = null;
-	        try {		      
-	            Document doc = parser.parse(new ByteArrayInputStream(overridesString.getBytes()));
-	            src = new DOMSource(doc.getDocumentElement());
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		        fail("An error occurred during setup");
-	        }
-			    
-	        overrides.put("org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex", src);
+        protected Object getControlObject() {
+            ClassA classA = new ClassA();
 
-	        Map props = new HashMap();
-	        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
-	        return props;
-	    }	
-		
+            JAXBElement<String> jbe = new JAXBElement<String>(new QName("a") ,String.class ,"someValue");
+            classA.setTheValue(jbe);
+            return classA;
+        }
+
+        public void testSchemaGen() throws Exception{
+            InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithrefinbindings.xsd");
+            List<InputStream> controlSchemas = new ArrayList<InputStream>();
+            controlSchemas.add(controlInputStream);
+            this.testSchemaGen(controlSchemas);
+        }
+
+        protected Map getProperties() {
+             Map overrides = new HashMap();
+                String overridesString =
+                     "<?xml version='1.0' encoding='UTF-8'?>" +
+                     "<xml-bindings xmlns='http://www.eclipse.org/eclipselink/xsds/persistence/oxm'>" +
+                    "<java-types>" +
+                    "<java-type name='org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.ClassA'>" +
+                    "<java-attributes>" +
+                    "<xml-element-ref java-attribute='theValue' name='a'/>" +
+                        "</java-attributes> " +
+                     "</java-type>" +
+                    "</java-types>" +
+                 "</xml-bindings>";
+
+           DOMSource src = null;
+            try {
+                Document doc = parser.parse(new ByteArrayInputStream(overridesString.getBytes()));
+                src = new DOMSource(doc.getDocumentElement());
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail("An error occurred during setup");
+            }
+
+            overrides.put("org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex", src);
+
+            Map props = new HashMap();
+            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+            return props;
+        }
+
 }

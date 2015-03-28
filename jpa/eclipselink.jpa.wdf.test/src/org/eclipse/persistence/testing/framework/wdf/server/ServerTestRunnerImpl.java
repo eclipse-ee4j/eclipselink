@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -24,17 +24,17 @@ import org.eclipse.persistence.testing.framework.wdf.ServerInfoHolder;
 import org.junit.runner.JUnitCore;
 
 /**
- * Implementation  of the server test runner. 
+ * Implementation  of the server test runner.
  */
 
 @Stateless(name="ServerTestRunner", mappedName="ServerTestRunner")
 @TransactionManagement(TransactionManagementType.BEAN)
 @Remote(ServerTestRunner.class)
 public class ServerTestRunnerImpl implements ServerTestRunner {
-    
+
     @Override
     public List<Notification> runTestClass(String className, String dsName, Map<String, String> testProperties) {
-        
+
         Class<?> clazz;
         try {
             ServerInfoHolder.setServerInfo(dsName, testProperties);
@@ -47,7 +47,7 @@ public class ServerTestRunnerImpl implements ServerTestRunner {
         CollectNotificationsListener listener = new CollectNotificationsListener();
         core.addListener(listener);
         core.run(clazz);
-        
+
         return listener.getNotifications();
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -85,8 +85,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -126,11 +126,11 @@ public class XmlBindings {
 
     /**
      * Gets the value of the xmlSchema property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlSchema }
-     *     
+     *
      */
     public XmlSchema getXmlSchema() {
         return xmlSchema;
@@ -138,11 +138,11 @@ public class XmlBindings {
 
     /**
      * Sets the value of the xmlSchema property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlSchema }
-     *     
+     *
      */
     public void setXmlSchema(XmlSchema value) {
         this.xmlSchema = value;
@@ -150,11 +150,11 @@ public class XmlBindings {
 
     /**
      * Gets the value of the xmlSchemaType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlSchemaType }
-     *     
+     *
      */
     public XmlSchemaType getXmlSchemaType() {
         return xmlSchemaType;
@@ -162,11 +162,11 @@ public class XmlBindings {
 
     /**
      * Sets the value of the xmlSchemaType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlSchemaType }
-     *     
+     *
      */
     public void setXmlSchemaType(XmlSchemaType value) {
         this.xmlSchemaType = value;
@@ -174,11 +174,11 @@ public class XmlBindings {
 
     /**
      * Gets the value of the xmlSchemaTypes property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlSchemaTypes }
-     *     
+     *
      */
     public XmlSchemaTypes getXmlSchemaTypes() {
         return xmlSchemaTypes;
@@ -186,11 +186,11 @@ public class XmlBindings {
 
     /**
      * Sets the value of the xmlSchemaTypes property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlSchemaTypes }
-     *     
+     *
      */
     public void setXmlSchemaTypes(XmlSchemaTypes value) {
         this.xmlSchemaTypes = value;
@@ -198,11 +198,11 @@ public class XmlBindings {
 
     /**
      * Gets the value of the xmlJavaTypeAdapters property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlJavaTypeAdapters }
-     *     
+     *
      */
     public XmlJavaTypeAdapters getXmlJavaTypeAdapters() {
         return xmlJavaTypeAdapters;
@@ -210,11 +210,11 @@ public class XmlBindings {
 
     /**
      * Sets the value of the xmlJavaTypeAdapters property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlJavaTypeAdapters }
-     *     
+     *
      */
     public void setXmlJavaTypeAdapters(XmlJavaTypeAdapters value) {
         this.xmlJavaTypeAdapters = value;
@@ -222,11 +222,11 @@ public class XmlBindings {
 
     /**
      * Gets the value of the xmlRegistries property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlBindings.XmlRegistries }
-     *     
+     *
      */
     public XmlBindings.XmlRegistries getXmlRegistries() {
         return xmlRegistries;
@@ -234,11 +234,11 @@ public class XmlBindings {
 
     /**
      * Sets the value of the xmlRegistries property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlBindings.XmlRegistries }
-     *     
+     *
      */
     public void setXmlRegistries(XmlBindings.XmlRegistries value) {
         this.xmlRegistries = value;
@@ -246,11 +246,11 @@ public class XmlBindings {
 
     /**
      * Gets the value of the xmlEnums property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlBindings.XmlEnums }
-     *     
+     *
      */
     public XmlBindings.XmlEnums getXmlEnums() {
         return xmlEnums;
@@ -258,11 +258,11 @@ public class XmlBindings {
 
     /**
      * Sets the value of the xmlEnums property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlBindings.XmlEnums }
-     *     
+     *
      */
     public void setXmlEnums(XmlBindings.XmlEnums value) {
         this.xmlEnums = value;
@@ -270,11 +270,11 @@ public class XmlBindings {
 
     /**
      * Gets the value of the javaTypes property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlBindings.JavaTypes }
-     *     
+     *
      */
     public XmlBindings.JavaTypes getJavaTypes() {
         return javaTypes;
@@ -282,11 +282,11 @@ public class XmlBindings {
 
     /**
      * Sets the value of the javaTypes property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlBindings.JavaTypes }
-     *     
+     *
      */
     public void setJavaTypes(XmlBindings.JavaTypes value) {
         this.javaTypes = value;
@@ -340,7 +340,7 @@ public class XmlBindings {
      * @return
      *     possible object is
      *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType }
-     *     
+     *
      */
     public org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType getXmlAccessorType() {
         if (xmlAccessorType == null) {
@@ -352,11 +352,11 @@ public class XmlBindings {
 
     /**
      * Sets the value of the xmlAccessorType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType }
-     *     
+     *
      */
     public void setXmlAccessorType(org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType value) {
         this.xmlAccessorType = value;
@@ -364,7 +364,7 @@ public class XmlBindings {
 
     /**
      * Indicates if XmlAccessorType is set, i.e. non-null.
-     * 
+     *
      * @return true if xmlAccessorType is not null, false otherwise
      */
     public boolean isSetXmlAccessorType() {
@@ -373,11 +373,11 @@ public class XmlBindings {
 
     /**
      * Gets the value of the xmlAccessorOrder property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlAccessOrder }
-     *     
+     *
      */
     public XmlAccessOrder getXmlAccessorOrder() {
         if (xmlAccessorOrder == null) {
@@ -389,11 +389,11 @@ public class XmlBindings {
 
     /**
      * Sets the value of the xmlAccessorOrder property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlAccessOrder }
-     *     
+     *
      */
     public void setXmlAccessorOrder(XmlAccessOrder value) {
         this.xmlAccessorOrder = value;
@@ -401,7 +401,7 @@ public class XmlBindings {
 
     /**
      * Indicates if XmlAccessorOrder is set, i.e. non-null.
-     * 
+     *
      * @return true if xmlAccessorOrder is not null, false otherwise
      */
     public boolean isSetXmlAccessorOrder() {
@@ -410,11 +410,11 @@ public class XmlBindings {
 
     /**
      * Gets the value of the xmlMappingMetadataComplete property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isXmlMappingMetadataComplete() {
         if (xmlMappingMetadataComplete == null) {
@@ -426,11 +426,11 @@ public class XmlBindings {
 
     /**
      * Sets the value of the xmlMappingMetadataComplete property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setXmlMappingMetadataComplete(Boolean value) {
         this.xmlMappingMetadataComplete = value;
@@ -438,11 +438,11 @@ public class XmlBindings {
 
     /**
      * Gets the value of the packageName property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getPackageName() {
         if (packageName == null) {
@@ -454,11 +454,11 @@ public class XmlBindings {
 
     /**
      * Sets the value of the packageName property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setPackageName(String value) {
         this.packageName = value;
@@ -466,11 +466,11 @@ public class XmlBindings {
 
     /**
      * Gets the value of the xmlNameTransformer property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getXmlNameTransformer() {
         return xmlNameTransformer;
@@ -478,11 +478,11 @@ public class XmlBindings {
 
     /**
      * Sets the value of the xmlNameTransformer property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setXmlNameTransformer(String value) {
         this.xmlNameTransformer = value;
@@ -491,9 +491,9 @@ public class XmlBindings {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -505,8 +505,8 @@ public class XmlBindings {
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
@@ -519,25 +519,25 @@ public class XmlBindings {
 
         /**
          * Gets the value of the javaType property.
-         * 
+         *
          * <p>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the javaType property.
-         * 
+         *
          * <p>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getJavaType().add(newItem);
          * </pre>
-         * 
-         * 
+         *
+         *
          * <p>
          * Objects of the following type(s) are allowed in the list
          * {@link JavaType }
-         * 
-         * 
+         *
+         *
          */
         public List<JavaType> getJavaType() {
             if (javaType == null) {
@@ -551,9 +551,9 @@ public class XmlBindings {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -565,8 +565,8 @@ public class XmlBindings {
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
@@ -579,25 +579,25 @@ public class XmlBindings {
 
         /**
          * Gets the value of the xmlEnum property.
-         * 
+         *
          * <p>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the xmlEnum property.
-         * 
+         *
          * <p>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getXmlEnum().add(newItem);
          * </pre>
-         * 
-         * 
+         *
+         *
          * <p>
          * Objects of the following type(s) are allowed in the list
          * {@link XmlEnum }
-         * 
-         * 
+         *
+         *
          */
         public List<XmlEnum> getXmlEnum() {
             if (xmlEnum == null) {
@@ -611,9 +611,9 @@ public class XmlBindings {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -625,8 +625,8 @@ public class XmlBindings {
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
@@ -639,25 +639,25 @@ public class XmlBindings {
 
         /**
          * Gets the value of the xmlRegistry property.
-         * 
+         *
          * <p>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the xmlRegistry property.
-         * 
+         *
          * <p>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getXmlRegistry().add(newItem);
          * </pre>
-         * 
-         * 
+         *
+         *
          * <p>
          * Objects of the following type(s) are allowed in the list
          * {@link XmlRegistry }
-         * 
-         * 
+         *
+         *
          */
         public List<XmlRegistry> getXmlRegistry() {
             if (xmlRegistry == null) {
@@ -667,7 +667,7 @@ public class XmlBindings {
         }
 
     }
-    
+
     public boolean isSetXmlMappingMetadataComplete() {
         return this.xmlMappingMetadataComplete != null;
     }

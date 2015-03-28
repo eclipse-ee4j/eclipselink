@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -15,14 +15,14 @@ package org.eclipse.persistence.tools.workbench.test.models.phone;
 import java.util.Date;
 
 public class ServiceCall {
-	private int id;
-	private Date time;
-	private Serviceable serviceUser;
+    private int id;
+    private Date time;
+    private Serviceable serviceUser;
 /**
  * ServiceCall constructor comment.
  */
 public ServiceCall() {
-	super();
+    super();
 }
 /**
  * Insert the method's description here.
@@ -30,7 +30,7 @@ public ServiceCall() {
  * @return int
  */
 public int getId() {
-	return this.id;
+    return this.id;
 }
 /**
  * Insert the method's description here.
@@ -38,14 +38,14 @@ public int getId() {
  * @return org.eclipse.persistence.tools.workbench.test.models.phone.Serviceable
  */
 public Serviceable getServiceUser() {
-	return this.serviceUser;
+    return this.serviceUser;
 }
 /**
- * 
+ *
  * @return java.util.Date
  */
 public java.util.Date getTime() {
-	return this.time;
+    return this.time;
 }
 /**
  * Insert the method's description here.
@@ -53,7 +53,7 @@ public java.util.Date getTime() {
  * @param newId int
  */
 public void setId(int newId) {
-	this.id = newId;
+    this.id = newId;
 }
 /**
  * Insert the method's description here.
@@ -61,13 +61,13 @@ public void setId(int newId) {
  * @param newServiceUser org.eclipse.persistence.tools.workbench.test.models.phone.Serviceable
  */
 public void setServiceUser(Serviceable newServiceUser) {
-	serviceUser = newServiceUser;
+    serviceUser = newServiceUser;
 }
 /**
- * 
+ *
  * @param newTime java.util.Date
  */
 public void setTime(java.util.Date newTime) {
-	this.time = newTime;
+    this.time = newTime;
 }
 }

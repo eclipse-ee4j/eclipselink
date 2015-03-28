@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -26,7 +26,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
     public SDODataObjectGetByteByPositionalPathTest(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetByteByPositionalPathTest" };
         TestRunner.main(arguments);
@@ -41,7 +41,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -122,12 +122,12 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         try {
             dataObject_a.getByte(UNDEFINED_PATH);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
     //4. purpose: getByte with character property
-    public void testGetByteFromCharacter() {        
+    public void testGetByteFromCharacter() {
         SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
         property.setType(SDOConstants.SDO_CHARACTER);
         char theValue = 'e';
@@ -135,7 +135,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -149,7 +149,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         this.assertEquals((byte)db, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
-  
+
     //7. purpose: getByte with Defined float Property
     public void testGetByteConversionFromDefinedFloatProperty() {
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_FLOAT);
@@ -160,7 +160,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         this.assertEquals((byte)fl, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
-   
+
     //9. purpose: getByte with Defined int Property
     public void testGetByteConversionFromDefinedIntProperty() {
         // dataObject's type add int property
@@ -197,7 +197,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         this.assertEquals((byte)shr, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
-   
+
     //15. purpose: getByte with Defined String Property
     public void testGetByteConversionFromDefinedStringProperty() {
         // dataObject's type add int property
@@ -211,20 +211,20 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
     }
 
     //17. purpose: getByte with bytes property
-    public void testGetByteFromBytes() {        
+    public void testGetByteFromBytes() {
         SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
         property.setType(SDOConstants.SDO_BYTES);
-        
+
         dataObject_c.set(property, new byte[]{10, 100});
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
     //18. purpose: getByte with decimal property
-    public void testGetByteFromDecimal() {              
+    public void testGetByteFromDecimal() {
         SDOProperty property = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
         property.setType(SDOConstants.SDO_DECIMAL);
         BigDecimal theValue =new BigDecimal(10);
@@ -245,7 +245,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         BigInteger theValue =new BigInteger("10");
         dataObject_c.set(property, theValue);
 
-        try {            
+        try {
             byte value = dataObject_a.getByte(propertyPath_a_b_c);
             byte controlValue = theValue.byteValue();
             assertEquals(controlValue, value);
@@ -262,7 +262,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
         try {
             dataObject_a.getByte(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -272,7 +272,7 @@ public class SDODataObjectGetByteByPositionalPathTest extends SDODataObjectGetBy
             String p = null;
             dataObject_a.getByte(p);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 }

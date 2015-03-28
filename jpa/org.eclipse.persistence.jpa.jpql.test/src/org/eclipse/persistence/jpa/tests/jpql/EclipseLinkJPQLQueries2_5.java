@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,41 +23,41 @@ package org.eclipse.persistence.jpa.tests.jpql;
 @SuppressWarnings("nls")
 public final class EclipseLinkJPQLQueries2_5 {
 
-	private EclipseLinkJPQLQueries2_5() {
-		super();
-	}
+    private EclipseLinkJPQLQueries2_5() {
+        super();
+    }
 
-	public static String query_001() {
-		return "SELECT e FROM Employee e CONNECT BY e.managers";
-	}
+    public static String query_001() {
+        return "SELECT e FROM Employee e CONNECT BY e.managers";
+    }
 
-	public static String query_002() {
-		return "SELECT employee " +
-		       "FROM Employee employee " +
-		       "START WITH employee.id = 100 " +
-		       "CONNECT BY employee.employees " +
-		       "ORDER BY employee.last_name";
-	}
+    public static String query_002() {
+        return "SELECT employee " +
+               "FROM Employee employee " +
+               "START WITH employee.id = 100 " +
+               "CONNECT BY employee.employees " +
+               "ORDER BY employee.last_name";
+    }
 
-	public static String query_004() {
-		return "SELECT e " +
-		       "FROM Employee e " +
-		       "AS OF TIMESTAMP FUNC('TO_TIMESTAMP', '2003-04-04 09:30:00', 'YYYY-MM-DD HH:MI:SS') " +
-		       "WHERE e.name = 'JPQL'";
-	}
+    public static String query_004() {
+        return "SELECT e " +
+               "FROM Employee e " +
+               "AS OF TIMESTAMP FUNC('TO_TIMESTAMP', '2003-04-04 09:30:00', 'YYYY-MM-DD HH:MI:SS') " +
+               "WHERE e.name = 'JPQL'";
+    }
 
-	public static String query_005() {
-		return "select e " +
-		       "from Employee e " +
-		       "as of scn 7920 " +
-		       "where e.id = 222";
-	}
+    public static String query_005() {
+        return "select e " +
+               "from Employee e " +
+               "as of scn 7920 " +
+               "where e.id = 222";
+    }
 
-	public static String query_006() {
-		return "UPDATE DateTime SET timestamp = CURRENT_TIMESTAMP";
-	}
+    public static String query_006() {
+        return "UPDATE DateTime SET timestamp = CURRENT_TIMESTAMP";
+    }
 
-	public static String query_007() {
-		return "UPDATE DateTime SET scn = CURRENT_TIMESTAMP";
-	}
+    public static String query_007() {
+        return "UPDATE DateTime SET scn = CURRENT_TIMESTAMP";
+    }
 }

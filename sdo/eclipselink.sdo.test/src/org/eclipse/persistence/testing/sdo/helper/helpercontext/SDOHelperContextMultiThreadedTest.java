@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 /*
    DESCRIPTION
     Test multi HelperContext scenarios in a single JVM, single classloader, multi-threaded client
@@ -45,21 +45,21 @@ public class SDOHelperContextMultiThreadedTest extends SDOHelperContextTestCases
     public static final int ITERATIONS = 50;
     public static final int THREADS = 20;
     public static final int TIMEOUT = 4000;
-    
-	
-	private static HelperContext aStaticHelperContext2 = new SDOHelperContext();
-	//private static HelperContext aStaticHelperContext2 = HelperProvider.getDefaultContext();	
-	private static List<Type> types = null;
-	private static boolean errors = false;
 
-	static {
-		try {
-			types = aStaticHelperContext2.getXSDHelper().define(getXSDString2(XSD_PATH));
-		} catch (Exception e) {
-			
-		}
-	}
- 	
+
+    private static HelperContext aStaticHelperContext2 = new SDOHelperContext();
+    //private static HelperContext aStaticHelperContext2 = HelperProvider.getDefaultContext();
+    private static List<Type> types = null;
+    private static boolean errors = false;
+
+    static {
+        try {
+            types = aStaticHelperContext2.getXSDHelper().define(getXSDString2(XSD_PATH));
+        } catch (Exception e) {
+
+        }
+    }
+
     static int count = 0;
 
     static String testDoc = "<customerDataSDO xmlns=\"http://www.example.com/\">\n" +
@@ -69,18 +69,18 @@ public class SDOHelperContextMultiThreadedTest extends SDOHelperContextTestCases
     "    <MobilePhoneNumber>123-456-7890</MobilePhoneNumber>\n" +
     "    <MembershipTypeCode>Gold</MembershipTypeCode>\n" +
     "</customerDataSDO>";
-    
+
     public SDOHelperContextMultiThreadedTest(String name) {
         super(name);//, (HelperContext)SDOHelperContext.getInstance());
     }
 
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.helpercontext.SDOHelperContextMultiThreadedTest" };
-        //TestRunner.main(arguments);        
+        //TestRunner.main(arguments);
     }
 
    public void testMulitThreadedLoad() {
-    	try {
+        try {
             int numThreads = THREADS;
             CountDownLatch cdl = new CountDownLatch(numThreads);
             for (int i=0; i<numThreads; i++) {
@@ -90,18 +90,18 @@ public class SDOHelperContextMultiThreadedTest extends SDOHelperContextTestCases
             cdl.await(TIMEOUT, TimeUnit.SECONDS);
 
             log("SDOHelperContextMultiThreaded Expected: " + (numThreads * ITERATIONS) + " threads, got: " + count + " (less " + ((numThreads * ITERATIONS) - count) + ")");
-        	} catch (Exception e) {
-        		assertFalse(true);
-        		e.printStackTrace();
-        	}
+            } catch (Exception e) {
+                assertFalse(true);
+                e.printStackTrace();
+            }
         assertFalse(errors);
     }
-    
+
     public void setUp()  {
         super.setUp();
-    	count = 0;
+        count = 0;
     }
- 
+
     public static String getXSDString2(String filename) {
         try {
             FileInputStream inStream = new FileInputStream(filename);
@@ -113,7 +113,7 @@ public class SDOHelperContextMultiThreadedTest extends SDOHelperContextTestCases
             return null;
         }
     }
-    
+
 static class TestRunner implements Runnable {
     CountDownLatch cdl;
 
@@ -132,7 +132,7 @@ static class TestRunner implements Runnable {
                 // we used to collide on a shared XMLUnMarshaller instance
                 count++;
             } catch (Exception e) {
-            	errors = true;
+                errors = true;
                 e.printStackTrace();
             }
         }

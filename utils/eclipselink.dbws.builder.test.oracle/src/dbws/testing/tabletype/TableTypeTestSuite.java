@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -107,7 +107,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
     };
     static final String DROP_TABLETYPE2_TABLE =
         "DROP TABLE TABLETYPE2";
-    
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -177,9 +177,9 @@ public class TableTypeTestSuite extends DBWSTestSuite {
               "tableNamePattern=\"TABLETYPE\" " +
             "/>" +
             "<table " +
-		      "schemaPattern=\"%\" " +
-		       "tableNamePattern=\"TABLETYPE2\" " +
-		    "/>" +
+              "schemaPattern=\"%\" " +
+               "tableNamePattern=\"TABLETYPE2\" " +
+            "/>" +
           "</dbws-builder>";
         builder = new DBWSBuilder();
         OracleHelper builderHelper = new OracleHelper(builder);
@@ -358,7 +358,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         String originalC = firstPerson.get("c");
         firstPerson.set("sal", 112000.99);
         firstPerson.set("c", "ababababababababababababababab");
-        
+
         DatabaseQuery updateQuery = xrService.getORSession().getQuery("update_TabletypeType");
 
         // map property names to parameter binding values
@@ -375,34 +375,34 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         propOrder.put("b", 10);
         propOrder.put("c", 11);
         propOrder.put("r", 12);
-        
+
         List<String> args = new ArrayList<String>();
         Vector<DatabaseField> fieldVector = new Vector<DatabaseField>(12);
         List<Object> argVals = new ArrayList<Object>();
-        
+
         for (String prop : firstPerson.getPropertiesMap().keySet()) {
             args.add(propOrder.get(prop).toString());
             argVals.add(firstPerson.get(prop));
             fieldVector.add(new DatabaseField(prop.toUpperCase(), "TABLETYPE"));
         }
-        
+
         // by default, JPA will create a DataReadQuery, but we want a DataModifyQuery
         DataModifyQuery query = new DataModifyQuery();
         query.setIsUserDefined(updateQuery.isUserDefined());
         query.copyFromQuery(updateQuery);
         // Need to clone call, in case was executed as read.
         query.setDatasourceCall((Call) updateQuery.getDatasourceCall().clone());
-        
+
         query.setArguments(args);
         query.setArgumentValues(argVals);
         ((SQLCall) query.getDatasourceCall()).setFields(fieldVector);
-        
+
         // need to create/set a translation row
         AbstractRecord row = query.rowFromArguments(argVals, (AbstractSession) xrService.getORSession());
         query.setTranslationRow(row);
         query.prepareCall(xrService.getORSession().getActiveSession(), row);
         query.setSession((AbstractSession) xrService.getORSession().getActiveSession());
-        
+
         // execute the update
         query.executeDatabaseQuery();
 
@@ -412,22 +412,22 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         args = new ArrayList<String>();
         fieldVector = new Vector<DatabaseField>(12);
         argVals = new ArrayList<Object>();
-        
+
         argVals.add(1);
         args.add("1");
         fieldVector.add(new DatabaseField("ID", "TABLETYPE"));
-        
+
         findQuery.setArguments(args);
         findQuery.setArgumentValues(argVals);
         ((SQLCall) findQuery.getDatasourceCall()).setFields(fieldVector);
-        
+
         // need to create/set a translation row
         row = findQuery.rowFromArguments(argVals, (AbstractSession) xrService.getORSession().getActiveSession());
         findQuery.setTranslationRow(row);
         findQuery.prepareCall(xrService.getORSession().getActiveSession(), row);
         findQuery.setSession((AbstractSession) xrService.getORSession().getActiveSession());
         xrService.getORSession().getActiveSession().getIdentityMapAccessor().initializeIdentityMaps();
-        
+
         // execute the FindByPk
         Object result = findQuery.executeDatabaseQuery();
 
@@ -436,11 +436,11 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         assertTrue("Expected vector of size 1, but was " + resultVector.size(), resultVector.size() == 1);
         result = resultVector.get(0);
         assertTrue("Expected TableType (XRDynamicEntity) but was " + result.getClass().getName(), result instanceof XRDynamicEntity);
-        
+
         // verify that 'sal' and 'c' fields were updated successfully
         XRDynamicEntity tableTypeEntity = (XRDynamicEntity) result;
         assertTrue("Expected [sal] '112000.99' but was '" + tableTypeEntity.get("sal") + "'", Float.compare(((Float) tableTypeEntity.get("sal")), new Float(112000.99)) == 0);
-        
+
         Character[] chars = tableTypeEntity.get("c");
         StringBuilder sb = new StringBuilder(chars.length);
         for (Character c : chars) {
@@ -455,25 +455,25 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         Invocation invocation = new Invocation("update_TabletypeType");
         invocation.setParameter("theInstance", firstPerson);
         Operation op = xrService.getOperation(invocation.getName());
-        op.invoke(xrService, invocation);        
+        op.invoke(xrService, invocation);
     }
-        
+
     @Test
     public void testCreateAndDeleteSQL() {
         xrService.getORSession().getActiveSession().getIdentityMapAccessor().initializeIdentityMaps();
         DatabaseQuery createQuery = xrService.getORSession().getQuery("create_TabletypeType");
-        
+
         // by default, JPA will create a DataReadQuery, but we want a DataModifyQuery
         DataModifyQuery query = new DataModifyQuery();
         query.setIsUserDefined(createQuery.isUserDefined());
         query.copyFromQuery(createQuery);
         // Need to clone call, in case was executed as read.
         query.setDatasourceCall((Call) createQuery.getDatasourceCall().clone());
-        
+
         List<String> args = new ArrayList<String>();
         Vector<DatabaseField> fieldVector = new Vector<DatabaseField>(12);
         List<Object> argVals = new ArrayList<Object>();
-        
+
         argVals.add(99);
         argVals.add("Joe Black");
         argVals.add("22");
@@ -486,7 +486,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         argVals.add("040404040404040404040404040404");
         argVals.add("dddddddddddddddddddddddddddddd");
         argVals.add("040404");
-        
+
         fieldVector.add(new DatabaseField("ID", "TABLETYPE"));
         fieldVector.add(new DatabaseField("NAME", "TABLETYPE"));
         fieldVector.add(new DatabaseField("DEPTNO", "TABLETYPE"));
@@ -499,22 +499,22 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         fieldVector.add(new DatabaseField("B", "TABLETYPE"));
         fieldVector.add(new DatabaseField("C", "TABLETYPE"));
         fieldVector.add(new DatabaseField("R", "TABLETYPE"));
-        
+
         for (int i=1; i<=argVals.size(); i++) {
             args.add(String.valueOf(i));
         }
-        
+
         query.setArguments(args);
         query.setArgumentValues(argVals);
         ((SQLCall) query.getDatasourceCall()).setFields(fieldVector);
-        
+
         // need to create/set a translation row
         AbstractRecord row = query.rowFromArguments(argVals, (AbstractSession) xrService.getORSession());
         query.setTranslationRow(row);
         query.prepareCall(xrService.getORSession(), query.getTranslationRow());
         query.setSession((AbstractSession) xrService.getORSession());
         query.executeDatabaseQuery();
-        
+
         // verify create call succeeded
         Invocation invocation = new Invocation("findByPrimaryKey_TabletypeType");
         invocation.setParameter("id", 99);
@@ -526,10 +526,10 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(NEW_PERSON2_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "but was:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
-        
+
         // delete
         DatabaseQuery deleteQuery = xrService.getORSession().getQuery("delete_TabletypeType");
-        
+
         // by default, JPA will create a DataReadQuery, but we want a DataModifyQuery
         query = new DataModifyQuery();
         query.setIsUserDefined(deleteQuery.isUserDefined());
@@ -540,27 +540,27 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         args = new ArrayList<String>();
         fieldVector = new Vector<DatabaseField>(12);
         argVals = new ArrayList<Object>();
-        
+
         argVals.add(99);
         args.add("1");
         fieldVector.add(new DatabaseField("ID", "TABLETYPE"));
-        
+
         query.setArguments(args);
         query.setArgumentValues(argVals);
         ((SQLCall) query.getDatasourceCall()).setFields(fieldVector);
-        
+
         // need to create/set a translation row
         row = query.rowFromArguments(argVals, (AbstractSession) xrService.getORSession());
         query.setTranslationRow(row);
         query.prepareCall(xrService.getORSession(), query.getTranslationRow());
         query.setSession((AbstractSession) xrService.getORSession());
         query.executeDatabaseQuery();
-        
+
         // verify delete call succeeded
         result = op.invoke(xrService, invocation);
         assertNull("Result not null after delete call", result);
     }
-    
+
     @Test
     public void validateSchema() {
         Document testDoc = xmlParser.parse(new StringReader(DBWS_SCHEMA_STREAM.toString()));
@@ -1078,7 +1078,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "\n    </orm:attributes>" +
         "\n  </orm:entity>" +
         "\n</orm:entity-mappings>";
-            
+
     protected static final String OX_PROJECT =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
         "<xml-bindings-list xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\">" +
@@ -1227,7 +1227,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
             "<c>adadadadadadadadadadadadadadad</c>" +
             "<r xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
         "</tabletypeType>";
-    
+
     protected static final String NEW_PERSON2_XML =
         REGULAR_XML_HEADER +
         "<tabletypeType xmlns=\"urn:tabletype\">" +
@@ -1294,18 +1294,18 @@ public class TableTypeTestSuite extends DBWSTestSuite {
 
     protected static final String LONG_RAW_XML =
         REGULAR_XML_HEADER +
-    	"<tabletype2-collection>" +
-    	   "<tabletype2Type xmlns=\"urn:tabletype\">" +
-    	      "<id>66</id>" +
-    	      "<lr>AQEBAQEBAQEB</lr>" +
-    	   "</tabletype2Type>" +
-    	   "<tabletype2Type xmlns=\"urn:tabletype\">" +
-    	      "<id>67</id>" +
-    	      "<lr>AgICAgICAgIC</lr>" +
-    	   "</tabletype2Type>" +
-    	   "<tabletype2Type xmlns=\"urn:tabletype\">" +
-    	      "<id>68</id>" +
-    	      "<lr>AwMDAwMDAwMD</lr>" +
-    	   "</tabletype2Type>" +
-    	"</tabletype2-collection>";
+        "<tabletype2-collection>" +
+           "<tabletype2Type xmlns=\"urn:tabletype\">" +
+              "<id>66</id>" +
+              "<lr>AQEBAQEBAQEB</lr>" +
+           "</tabletype2Type>" +
+           "<tabletype2Type xmlns=\"urn:tabletype\">" +
+              "<id>67</id>" +
+              "<lr>AgICAgICAgIC</lr>" +
+           "</tabletype2Type>" +
+           "<tabletype2Type xmlns=\"urn:tabletype\">" +
+              "<id>68</id>" +
+              "<lr>AwMDAwMDAwMD</lr>" +
+           "</tabletype2Type>" +
+        "</tabletype2-collection>";
 }

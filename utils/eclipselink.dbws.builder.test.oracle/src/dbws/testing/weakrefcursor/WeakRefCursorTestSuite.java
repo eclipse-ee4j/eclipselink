@@ -51,15 +51,15 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
     static final String ELEMENT = "element";
     static final String ELEMENT_NAME = "EMP_DEPTNO";
     static final String ELEMENT_TYPE = "xsd:decimal";
-    
+
     static {
         username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
     }
-    
+
     static final String WEAKLY_TYPED_REF_CURSOR_TABLE = "WTRC_TABLE";
-    
+
     static final String CREATE_WEAKLY_TYPED_REF_CURSOR_EMP_TABLE =
-        "CREATE TABLE " + username + ".EMP_" + WEAKLY_TYPED_REF_CURSOR_TABLE + " (" + 
+        "CREATE TABLE " + username + ".EMP_" + WEAKLY_TYPED_REF_CURSOR_TABLE + " (" +
             "\nEMPNO NUMBER(4,0) NOT NULL ENABLE," +
             "\nENAME VARCHAR2(10 BYTE)," +
             "\nJOB   VARCHAR2(9 BYTE)," +
@@ -71,9 +71,9 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
             "\nCONSTRAINT PK_EMP PRIMARY KEY (EMPNO) USING INDEX," +
             "\nCONSTRAINT FK_DEPTNO FOREIGN KEY (DEPTNO) REFERENCES " + username + ".DEPT_" + WEAKLY_TYPED_REF_CURSOR_TABLE + " (DEPTNO) ENABLE" +
         "\n)";
-        
+
     static final String CREATE_WEAKLY_TYPED_REF_CURSOR_DEPT_TABLE =
-        "CREATE TABLE " + username + ".DEPT_" + WEAKLY_TYPED_REF_CURSOR_TABLE + " (" + 
+        "CREATE TABLE " + username + ".DEPT_" + WEAKLY_TYPED_REF_CURSOR_TABLE + " (" +
             "\nDEPTNO NUMBER(2,0) NOT NULL ENABLE," +
             "\nDNAME  VARCHAR2(14 BYTE)," +
             "\nLOC    VARCHAR2(13 BYTE)," +
@@ -104,7 +104,7 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
             "\nTYPE " + WEAKLY_TYPED_REF_CURSOR + " IS REF CURSOR;" +
             "\nPROCEDURE GET_EMS(P_EMS " + WEAKLY_TYPED_REF_CURSOR_TABLE+".NAME%TYPE, P_EMS_SET OUT " + WEAKLY_TYPED_REF_CURSOR + ");" +
             "\nPROCEDURE GET_EMP(EMP_DEPTNO " + username + ".EMP_" + WEAKLY_TYPED_REF_CURSOR_TABLE +".deptno%TYPE, P_EMP_SET OUT " + WEAKLY_TYPED_REF_CURSOR + ");" +
-            "\nFUNCTION GET_EMS_FUNC(P_EMS VARCHAR) RETURN " + WEAKLY_TYPED_REF_CURSOR + ";" + 
+            "\nFUNCTION GET_EMS_FUNC(P_EMS VARCHAR) RETURN " + WEAKLY_TYPED_REF_CURSOR + ";" +
         "\nEND " + WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE + ";";
     static final String CREATE_WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE_BODY =
         "CREATE OR REPLACE PACKAGE BODY " + WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE + " AS" +
@@ -131,7 +131,7 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
         "DROP PACKAGE " + WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE;
     static final String DROP_WEAKLY_TYPED_REF_CURSOR_TABLE =
         "DROP TABLE " + WEAKLY_TYPED_REF_CURSOR_TABLE;
-    static final String DROP_WEAKLY_TYPED_REF_CURSOR_DEPT_TABLE = 
+    static final String DROP_WEAKLY_TYPED_REF_CURSOR_DEPT_TABLE =
         "DROP TABLE " + username + ".DEPT_" + WEAKLY_TYPED_REF_CURSOR_TABLE;
     static final String DROP_WEAKLY_TYPED_REF_CURSOR_EMP_TABLE =
         "DROP TABLE " + username + ".EMP_" + WEAKLY_TYPED_REF_CURSOR_TABLE;
@@ -276,26 +276,26 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
         "</simple-xml-format>";
 
     /**
-     * Test %TYPE preceeded by schemaname.tablename.columnname, 
+     * Test %TYPE preceeded by schemaname.tablename.columnname,
      * i.e. SCHEMA1.EMP_TABLE.ID%TYPE
-     * 
+     *
      * Validation is done by testing the type set in the WSDL. We expect
      * xsd:decimal (xsd:base64Binary will be present if the %TYPE is not
      * processed properly.
-     * 
+     *
      */
     @Test
     public void testPercentTypeWSDLGen() {
         XMLInputFactory xif = XMLInputFactory.newFactory();
         StringReader xml = new StringReader(DBWS_WSDL_STREAM.toString());
         XMLStreamReader xsr = null;
-        
+
         try {
             xsr = xif.createXMLStreamReader(xml);
         } catch (Exception x) {
             fail("Could not create a StringReader instance based on the DBWS_WSDL_STREAM: \n" + x.getMessage());
         }
-        
+
         /*
          *    <xsd:complexType name="fkpkTestRequestType">
          *      <xsd:sequence>
@@ -303,8 +303,8 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
          *      </xsd:sequence>
          *    </xsd:complexType>"
          */
-        
-        // this assumes that the target element  [EMP_DEPTNO] has 2 attributes 'name' 
+
+        // this assumes that the target element  [EMP_DEPTNO] has 2 attributes 'name'
         // and 'type', and that 'name' is at index 0 and 'type' is at index 1
         try {
             int idx = 0;

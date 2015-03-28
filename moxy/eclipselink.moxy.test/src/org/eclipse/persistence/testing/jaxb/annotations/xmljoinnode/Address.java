@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,15 +30,15 @@ public class Address {
 
     public String street;
     public String suite;
-    
+
     @XmlKey
     @XmlPath("city/text()")
     public String cityName;
-    
+
     public String postal;
-    
+
     public Address() {}
-    
+
     public Address(int id, String street, String suite, String cityName, String postal) {
         this.id = id;
         this.street = street;
@@ -46,7 +46,7 @@ public class Address {
         this.cityName = cityName;
         this.postal = postal;
     }
-    
+
     public boolean equals(Object obj) {
         Address add;
         try {

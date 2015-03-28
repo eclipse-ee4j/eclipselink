@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
+ *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
@@ -47,12 +47,12 @@ import org.junit.Test;
 /**
  * Simple set of tests that verify the {@link FetchGroup} API. Need to verify
  * that the nesting and default behaves as expected.
- * 
+ *
  * @author dclarke
  * @since EclipseLink 2.1
  */
 public abstract class BaseFetchGroupTests extends JUnitTestCase {
-    
+
     ClassDescriptor employeeDescriptor;
     boolean employeeDescriptorIsIsolatedOriginal;
     ClassDescriptor phoneDescriptor;
@@ -86,18 +86,18 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
     /**
      * Any FetchGroups setup in test cases are removed.
      * Descriptors should not be isolated.
-     * Clear cache, install QuerySQLTracker. 
+     * Clear cache, install QuerySQLTracker.
      */
     public void setUp() {
-        Session session = getServerSession("fieldaccess"); 
-        
+        Session session = getServerSession("fieldaccess");
+
         employeeDescriptor = getDescriptor("Employee");
         phoneDescriptor = getDescriptor("PhoneNumber");
         addressDescriptor = getDescriptor("Address");
 
         // this causes recreation of the cache removing the previously cached queries
         session.getProject().setJPQLParseCacheMaxSize(session.getProject().getJPQLParseCacheMaxSize());
-        
+
         clearFetchGroups(employeeDescriptor);
         clearFetchGroups(phoneDescriptor);
         clearFetchGroups(addressDescriptor);
@@ -114,24 +114,24 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
         if(employeeDescriptorIsIsolatedOriginal) {
             employeeDescriptor.setIsIsolated(false);
         }
-        
+
         clearCache("fieldaccess");
         sessionLogLevelOriginal = session.getLogLevel();
         QuerySQLTracker.install(session);
         session.setLogLevel(SessionLog.FINE);
     }
-    
+
     /**
      * Any FetchGroups setup in test cases are removed.
      * Reset isolated flag on Employee descriptor.
-     * Clear cache, uninstall QuerySQLTracker.  
+     * Clear cache, uninstall QuerySQLTracker.
      */
     public void tearDown() {
-        Session session = getServerSession("fieldaccess"); 
-        
+        Session session = getServerSession("fieldaccess");
+
         // this causes recreation of the cache removing the previously cached queries
         session.getProject().setJPQLParseCacheMaxSize(session.getProject().getJPQLParseCacheMaxSize());
-        
+
         clearFetchGroups(employeeDescriptor);
         clearFetchGroups(phoneDescriptor);
         clearFetchGroups(addressDescriptor);
@@ -142,14 +142,14 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
         if(employeeDescriptorIsIsolatedOriginal) {
             employeeDescriptor.setIsIsolated(true);
         }
-        
+
         clearCache("fieldaccess");
         QuerySQLTracker.uninstall(session);
         if(sessionLogLevelOriginal != session.getLogLevel()) {
             session.setLogLevel(sessionLogLevelOriginal);
         }
     }
-    
+
     void clearFetchGroups(ClassDescriptor descriptor) {
         FetchGroupManager manager = descriptor.getFetchGroupManager();
         if(manager != null) {
@@ -161,7 +161,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
             }
         }
     }
-    
+
     void reprepareReadQueries(ClassDescriptor descriptor) {
         reprepareReadQueriesInternal(descriptor, false);
     }
@@ -184,7 +184,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
         }
         if(descriptor.getQueryManager().hasReadAllQuery()) {
             // this un-prePrepares the query, causes executionFetchGroup to be rebuilt
-            olrQuery = descriptor.getQueryManager().getReadAllQuery(); 
+            olrQuery = descriptor.getQueryManager().getReadAllQuery();
             if(shouldClear) {
                 olrQuery.setFetchGroupName(null);
                 olrQuery.setShouldUseDefaultFetchGroup(true);
@@ -197,9 +197,9 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
         descriptor.getQueryManager().setExpressionQueryCacheMaxSize(descriptor.getQueryManager().getExpressionQueryCacheMaxSize());
         for(DatabaseMapping mapping : descriptor.getMappings()) {
             if(mapping.isForeignReferenceMapping()) {
-                if(((ForeignReferenceMapping)mapping).getSelectionQuery().isObjectLevelReadQuery()) {                    
+                if(((ForeignReferenceMapping)mapping).getSelectionQuery().isObjectLevelReadQuery()) {
                     olrQuery = (ObjectLevelReadQuery)((ForeignReferenceMapping)mapping).getSelectionQuery();
-                    // this un-prePrepares the query, causes executionFetchGroup to be rebuilt 
+                    // this un-prePrepares the query, causes executionFetchGroup to be rebuilt
                     if(shouldClear) {
                         olrQuery.setFetchGroupName(null);
                         olrQuery.setShouldUseDefaultFetchGroup(true);
@@ -211,7 +211,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
             }
         }
     }
-    
+
     @Test
     public void testSetup() {
         ServerSession session = getServerSession("fieldaccess");
@@ -222,26 +222,26 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
             session.getLogin().setShouldForceFieldNamesToUpperCase(true);
         }
 
-        // The EquipmentCode class 'should' be set to read only. We want 
-        // to be able to create a couple in the Employee populator, so 
-         // force the read only to false. If EquipmentCode is not 
+        // The EquipmentCode class 'should' be set to read only. We want
+        // to be able to create a couple in the Employee populator, so
+         // force the read only to false. If EquipmentCode is not
         // actually read only, don't worry, we set the original read
-        // only value back on the descriptor and the error will be 
+        // only value back on the descriptor and the error will be
         // caught in a later test in this suite.
         ClassDescriptor descriptor = session.getDescriptor(EquipmentCode.class);
         boolean shouldBeReadOnly = descriptor.shouldBeReadOnly();
         descriptor.setShouldBeReadOnly(false);
-        
+
         // Populate the database with our examples.
-        EmployeePopulator employeePopulator = new EmployeePopulator();         
+        EmployeePopulator employeePopulator = new EmployeePopulator();
         employeePopulator.buildExamples();
         employeePopulator.persistExample(session);
-        
+
         descriptor.setShouldBeReadOnly(shouldBeReadOnly);
 
         clearCache("fieldaccess");
     }
-       
+
     public void managerFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
 
@@ -420,35 +420,35 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
     public static void assertFetched(Object entity, FetchGroup fetchGroup) {
         FetchGroupAssert.assertFetched(getEntityManagerFactory("fieldaccess"), entity, fetchGroup);
     }
-    
+
     public static void assertDefaultFetched(Object entity) {
         FetchGroupAssert.assertDefaultFetched(getEntityManagerFactory("fieldaccess"), entity);
     }
-    
+
     public static void assertFetched(Object entity, String fetchGroupName) {
-        FetchGroupAssert.assertFetched(getEntityManagerFactory("fieldaccess"), entity, fetchGroupName);    
+        FetchGroupAssert.assertFetched(getEntityManagerFactory("fieldaccess"), entity, fetchGroupName);
     }
-    
+
     public static void assertNoFetchGroup(Object entity) {
         FetchGroupAssert.assertNoFetchGroup(getEntityManagerFactory("fieldaccess"), entity);
     }
-    
+
     public static void assertConfig(String entityName, FetchGroup defaultFetchGroup) {
         FetchGroupAssert.assertConfig(getEntityManagerFactory("fieldaccess"), entityName, defaultFetchGroup);
     }
-    
+
     public static void assertConfig(String entityName, FetchGroup defaultFetchGroup, int numNamedFetchGroups) {
         FetchGroupAssert.assertConfig(getEntityManagerFactory("fieldaccess"), entityName, defaultFetchGroup, numNamedFetchGroups);
     }
-    
+
     public static void assertConfig(ClassDescriptor descriptor, FetchGroup defaultFetchGroup) {
         FetchGroupAssert.assertConfig(descriptor, defaultFetchGroup);
     }
-    
+
     public static void assertConfig(ClassDescriptor descriptor, FetchGroup defaultFetchGroup, int numNamedFetchGroups) {
         FetchGroupAssert.assertConfig(descriptor, defaultFetchGroup, numNamedFetchGroups);
     }
-    
+
     protected QuerySQLTracker getQuerySQLTracker(EntityManager em) {
         return QuerySQLTracker.getTracker(getServerSession("fieldaccess"));
     }
@@ -467,7 +467,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
 
     public static Employee minimumEmployee(EntityManager em) {
         Query q = em.createQuery("SELECT e FROM Employee e WHERE e.id in (SELECT MIN(ee.id) FROM Employee ee)");
-        
+
         return (Employee) q.getSingleResult();
     }
 
@@ -478,7 +478,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
             Map.Entry<String, Object> entry = it.next();
             q.setHint(entry.getKey(), entry.getValue());
         }
-        
+
         return (Employee) q.getSingleResult();
     }
 
@@ -502,5 +502,5 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
             defaultPhoneFG.addAttribute("number");
             descriptor.getFetchGroupManager().setDefaultFetchGroup(defaultPhoneFG);
         }
-    }    
+    }
 }

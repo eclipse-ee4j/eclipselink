@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,55 +27,55 @@ import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class NamespacesOnContextTestCases extends JSONMarshalUnmarshalTestCases{
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/namespaces/person.json";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/namespaces/person.json";
     private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/namespaces/personSchema.json";
 
-	public NamespacesOnContextTestCases(String name) throws Exception {
-		super(name);
-		setControlJSON(JSON_RESOURCE);
-		setClasses(new Class[]{Person.class});
-	}
+    public NamespacesOnContextTestCases(String name) throws Exception {
+        super(name);
+        setControlJSON(JSON_RESOURCE);
+        setClasses(new Class[]{Person.class});
+    }
 
-	protected Object getControlObject() {
-		Person p = new Person();
-		p.setId(10);
-		p.setFirstName("Jill");
-		p.setLastName("MacDonald");
-		
-		List<String> middleNames = new ArrayList<String>();
-		middleNames.add("Jane");
-		middleNames.add("Janice");
-		p.setMiddleNames(middleNames);
-		
-		Address addr = new Address();
-		addr.setStreet("The Street");
-		addr.setCity("Ottawa");
-		p.setAddress(addr);
-		
-		return p;
-	}
-	
+    protected Object getControlObject() {
+        Person p = new Person();
+        p.setId(10);
+        p.setFirstName("Jill");
+        p.setLastName("MacDonald");
 
-	public Map getProperties(){
-		Map props = new HashMap();
-		props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "@");
-		
-		Map<String, String> namespaceMap = new HashMap<String, String>();
-		
-		namespaceMap.put("namespace0", "ns0");
-		namespaceMap.put("namespace1", "ns1");
-		namespaceMap.put("namespace2", "ns2");
-		namespaceMap.put("namespace3", "ns3");
-		
-		
-		props.put(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, namespaceMap);
-		return props;
-	}
-	
-	 public void testJSONSchemaGen() throws Exception{
-	     InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
-	     super.generateJSONSchema(controlSchema);
-	 }
+        List<String> middleNames = new ArrayList<String>();
+        middleNames.add("Jane");
+        middleNames.add("Janice");
+        p.setMiddleNames(middleNames);
+
+        Address addr = new Address();
+        addr.setStreet("The Street");
+        addr.setCity("Ottawa");
+        p.setAddress(addr);
+
+        return p;
+    }
+
+
+    public Map getProperties(){
+        Map props = new HashMap();
+        props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "@");
+
+        Map<String, String> namespaceMap = new HashMap<String, String>();
+
+        namespaceMap.put("namespace0", "ns0");
+        namespaceMap.put("namespace1", "ns1");
+        namespaceMap.put("namespace2", "ns2");
+        namespaceMap.put("namespace3", "ns3");
+
+
+        props.put(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, namespaceMap);
+        return props;
+    }
+
+     public void testJSONSchemaGen() throws Exception{
+         InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+         super.generateJSONSchema(controlSchema);
+     }
 
 
 

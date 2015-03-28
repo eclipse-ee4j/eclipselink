@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,9 +18,9 @@ import org.eclipse.persistence.testing.jaxb.xmlelement.EmployeeNamespace;
 
 public class MultiplePackageTestCases extends JAXBWithJSONTestCases {
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/multiplepackage/dept.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/multiplepackage/dept.json";
-	private final static int CONTROL_ID = 10;
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/multiplepackage/dept.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/multiplepackage/dept.json";
+    private final static int CONTROL_ID = 10;
 
     public MultiplePackageTestCases(String name) throws Exception {
         super(name);
@@ -29,18 +29,18 @@ public class MultiplePackageTestCases extends JAXBWithJSONTestCases {
         Class[] classes = new Class[2];
         classes[0] = EmployeeNamespace.class;
         classes[1] = Department.class;
-        
+
         jaxbContext = JAXBContextFactory.createContext(classes, null);
-        xmlContext =((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext(); 
+        xmlContext =((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
         setProject(xmlContext.getSession(0).getProject());
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     }
 
     protected Object getControlObject() {
-    	Department dept = new Department();
+        Department dept = new Department();
         EmployeeNamespace employee = new EmployeeNamespace();
-		employee.id = CONTROL_ID;
+        employee.id = CONTROL_ID;
         dept.emp = employee;
         dept.id = 1;
         return dept;

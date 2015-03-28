@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -47,185 +47,185 @@ import org.eclipse.persistence.tools.workbench.utility.events.DefaultChangeNotif
  */
 final class SCPreferencesPage extends AbstractPanel
 {
-	/**
-	 * The model object that contains the classpath entries retrieved from the
-	 * preferences.
-	 */
-	private CustomizedClassRepository repository;
+    /**
+     * The model object that contains the classpath entries retrieved from the
+     * preferences.
+     */
+    private CustomizedClassRepository repository;
 
-	/**
-	 * Creates a new <code>SCPreferencesPage</code>.
-	 *
-	 * @param context
-	 */
-	SCPreferencesPage(PreferencesContext context)
-	{
-		super(new BorderLayout(), context);
-		intializeLayout();
-		addHelpTopicId(this, "preferences.sessions.general");
-	}
+    /**
+     * Creates a new <code>SCPreferencesPage</code>.
+     *
+     * @param context
+     */
+    SCPreferencesPage(PreferencesContext context)
+    {
+        super(new BorderLayout(), context);
+        intializeLayout();
+        addHelpTopicId(this, "preferences.sessions.general");
+    }
 
-	private PropertyValueModel buildClasspathHolder()
-	{
-		PropertyValueModel valueModel = new BufferedPropertyValueModel
-		(
-			buildClasspathHolderImp(),
-			getPreferencesContext().getBufferTrigger()
-		);
+    private PropertyValueModel buildClasspathHolder()
+    {
+        PropertyValueModel valueModel = new BufferedPropertyValueModel
+        (
+            buildClasspathHolderImp(),
+            getPreferencesContext().getBufferTrigger()
+        );
 
-		// Add a fake listener so that all the other listeners can be engaged
-		valueModel.addPropertyChangeListener(PropertyValueModel.VALUE, new PropertyChangeListener() { public void propertyChange(PropertyChangeEvent e) {} });
+        // Add a fake listener so that all the other listeners can be engaged
+        valueModel.addPropertyChangeListener(PropertyValueModel.VALUE, new PropertyChangeListener() { public void propertyChange(PropertyChangeEvent e) {} });
 
-		return valueModel;
-	}
+        return valueModel;
+    }
 
-	private PropertyValueModel buildClasspathHolderImp()
-	{
-		return new PreferencePropertyValueModel(preferences(), SCPlugin.DEFAULT_CLASSPATH_PREFERENCE) {
-			protected Object getValueFromSubject() {
-				String classpath = (String)super.getValueFromSubject();
-				if ("".equals(classpath)) {
-					return null;
-				} else {
-					return classpath;
-				}
-				
-			}
-		};
-	}
+    private PropertyValueModel buildClasspathHolderImp()
+    {
+        return new PreferencePropertyValueModel(preferences(), SCPlugin.DEFAULT_CLASSPATH_PREFERENCE) {
+            protected Object getValueFromSubject() {
+                String classpath = (String)super.getValueFromSubject();
+                if ("".equals(classpath)) {
+                    return null;
+                } else {
+                    return classpath;
+                }
 
-	/**
-	 * Initializes the layout of this pane.
-	 */
-	private void intializeLayout()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
+            }
+        };
+    }
 
-		JPanel container = new JPanel(new GridBagLayout());
-		JScrollPane scrollPane = new JScrollPane(container);
-		scrollPane.getVerticalScrollBar().setBlockIncrement(20);
-		scrollPane.setBorder(null);
-		scrollPane.setViewportBorder(null);
-		add(scrollPane, BorderLayout.CENTER);
+    /**
+     * Initializes the layout of this pane.
+     */
+    private void intializeLayout()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		this.repository = new CustomizedClassRepository();
-		PropertyValueModel classpathHolder = buildClasspathHolder();
-		this.repository.update(classpathHolder);
+        JPanel container = new JPanel(new GridBagLayout());
+        JScrollPane scrollPane = new JScrollPane(container);
+        scrollPane.getVerticalScrollBar().setBlockIncrement(20);
+        scrollPane.setBorder(null);
+        scrollPane.setViewportBorder(null);
+        add(scrollPane, BorderLayout.CENTER);
 
-		// Classpath
-		ClasspathPanel classpathPanel = new ClasspathPanel
-		(
-			getApplicationContext(),
-			new ClasspathListModel(this.repository, classpathHolder),
-			true,
-			"PREFERENCES_DEFAULT_CLASSPATH_GROUP_BOX"
-		);
+        this.repository = new CustomizedClassRepository();
+        PropertyValueModel classpathHolder = buildClasspathHolder();
+        this.repository.update(classpathHolder);
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 2;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 1;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.PAGE_START;
-		constraints.insets     = new Insets(5, 5, 5, 5);
+        // Classpath
+        ClasspathPanel classpathPanel = new ClasspathPanel
+        (
+            getApplicationContext(),
+            new ClasspathListModel(this.repository, classpathHolder),
+            true,
+            "PREFERENCES_DEFAULT_CLASSPATH_GROUP_BOX"
+        );
 
-		container.add(classpathPanel, constraints);
-	}
+        constraints.gridx      = 0;
+        constraints.gridy      = 2;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 1;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.PAGE_START;
+        constraints.insets     = new Insets(5, 5, 5, 5);
 
-	/**
-	 * The model given to the classpath panel, this model keeps the preference
-	 * holder up to date with any changes made to the classpath panel.
-	 */
-	private class ClasspathListModel extends ListAspectAdapter
-	{
-		private final PropertyValueModel preferenceHolder;
+        container.add(classpathPanel, constraints);
+    }
 
-		private ClasspathListModel(SCClassRepository repository,
-											PropertyValueModel preferenceHolder)
-		{
-			super(SCClassRepository.CLASSPATH_ENTRIES_LIST,
-					repository);
+    /**
+     * The model given to the classpath panel, this model keeps the preference
+     * holder up to date with any changes made to the classpath panel.
+     */
+    private class ClasspathListModel extends ListAspectAdapter
+    {
+        private final PropertyValueModel preferenceHolder;
 
-			this.preferenceHolder = preferenceHolder;
-		}
+        private ClasspathListModel(SCClassRepository repository,
+                                            PropertyValueModel preferenceHolder)
+        {
+            super(SCClassRepository.CLASSPATH_ENTRIES_LIST,
+                    repository);
 
-		public void addItem(int index, Object item)
-		{
-			SCClassRepository classpath = (SCClassRepository) subject;
-			classpath.addClasspathEntry(index, (String) item);
-			this.preferenceHolder.setValue(classpath.entries());
-		}
+            this.preferenceHolder = preferenceHolder;
+        }
 
-		public Object getItem(int index)
-		{
-			SCClassRepository classpath = (SCClassRepository) subject;
-			return classpath.getClasspathEntry(index);
-		}
+        public void addItem(int index, Object item)
+        {
+            SCClassRepository classpath = (SCClassRepository) subject;
+            classpath.addClasspathEntry(index, (String) item);
+            this.preferenceHolder.setValue(classpath.entries());
+        }
 
-		protected ListIterator getValueFromSubject()
-		{
-			SCClassRepository classpath = (SCClassRepository) subject;
-			return classpath.classpathEntries();
-		}
+        public Object getItem(int index)
+        {
+            SCClassRepository classpath = (SCClassRepository) subject;
+            return classpath.getClasspathEntry(index);
+        }
 
-		public Object removeItem(int index)
-		{
-			SCClassRepository classpath = (SCClassRepository) subject;
-			Object entry = classpath.removeClasspathEntry(index);
-			this.preferenceHolder.setValue(classpath.entries());
-			return entry;
-		}
+        protected ListIterator getValueFromSubject()
+        {
+            SCClassRepository classpath = (SCClassRepository) subject;
+            return classpath.classpathEntries();
+        }
 
-		public Object replaceItem(int index, Object item)
-		{
-			SCClassRepository classpath = (SCClassRepository) subject;
-			Object entry = classpath.replaceClasspathEntry(index, (String) item);
-			this.preferenceHolder.setValue(classpath.entries());
-			return entry;
-		}
-	}
+        public Object removeItem(int index)
+        {
+            SCClassRepository classpath = (SCClassRepository) subject;
+            Object entry = classpath.removeClasspathEntry(index);
+            this.preferenceHolder.setValue(classpath.entries());
+            return entry;
+        }
 
-	/**
-	 * This <code>ClassRepository</code> serves as the gate between the
-	 * Classpath panel and the preferences value model.
-	 */
-	private class CustomizedClassRepository extends SCClassRepository
-	{
-		private CustomizedClassRepository()
-		{
-			super(new String[0]);
-		}
+        public Object replaceItem(int index, Object item)
+        {
+            SCClassRepository classpath = (SCClassRepository) subject;
+            Object entry = classpath.replaceClasspathEntry(index, (String) item);
+            this.preferenceHolder.setValue(classpath.entries());
+            return entry;
+        }
+    }
 
-		public Validator getValidator()
-		{
-			return NULL_VALIDATOR;
-		}
+    /**
+     * This <code>ClassRepository</code> serves as the gate between the
+     * Classpath panel and the preferences value model.
+     */
+    private class CustomizedClassRepository extends SCClassRepository
+    {
+        private CustomizedClassRepository()
+        {
+            super(new String[0]);
+        }
 
-		//Not sure if this should even descend from SCClassRepository since that is a regular
-		//model object and making this descend from it tries to tie it into the change notification system.
-		//But overriding this method at least stops the exceptions this caused before noted in bug 4649391.
-		public ChangeNotifier getChangeNotifier() {
-			return DefaultChangeNotifier.instance();
-		}
+        public Validator getValidator()
+        {
+            return NULL_VALIDATOR;
+        }
 
-		public void update(PropertyValueModel classpathHolder)
-		{
-			String value = (String) classpathHolder.getValue();
-			if (value == null) {
-				return;
-			}
-			String entries[] = value.split(System.getProperty("path.separator"));
+        //Not sure if this should even descend from SCClassRepository since that is a regular
+        //model object and making this descend from it tries to tie it into the change notification system.
+        //But overriding this method at least stops the exceptions this caused before noted in bug 4649391.
+        public ChangeNotifier getChangeNotifier() {
+            return DefaultChangeNotifier.instance();
+        }
 
-			if (entries.length == 0)
-				return;
+        public void update(PropertyValueModel classpathHolder)
+        {
+            String value = (String) classpathHolder.getValue();
+            if (value == null) {
+                return;
+            }
+            String entries[] = value.split(System.getProperty("path.separator"));
 
-			List classpathEntries = CollectionTools.list(entries);
-			CollectionTools.removeAll(classpathEntries, classpathEntries());
+            if (entries.length == 0)
+                return;
 
-			if (!classpathEntries.isEmpty())
-				addClasspathEntries(classpathEntriesSize(), classpathEntries);
-		}
-	}
+            List classpathEntries = CollectionTools.list(entries);
+            CollectionTools.removeAll(classpathEntries, classpathEntries());
+
+            if (!classpathEntries.isEmpty())
+                addClasspathEntries(classpathEntriesSize(), classpathEntries);
+        }
+    }
 }

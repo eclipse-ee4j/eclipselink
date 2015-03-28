@@ -1,22 +1,22 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- *     30/05/2012-2.4 Guy Pelletier    
+ *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
- *     06/03/2013-2.5.1 Guy Pelletier    
- *       - 402380: 3 jpa21/advanced tests failed on server with 
- *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
- ******************************************************************************/  
+ *     06/03/2013-2.5.1 Guy Pelletier
+ *       - 402380: 3 jpa21/advanced tests failed on server with
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
+ ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
 import java.beans.PropertyChangeListener;
@@ -71,8 +71,8 @@ import org.eclipse.persistence.sessions.Project;
  * @since TOPLink/Java 1.0
  */
 public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, AbstractSession, ContainerPolicy, ClassDescriptor, DatabaseField> implements Cloneable, Serializable {
-    public enum WriteType { INSERT, UPDATE, UNDEFINED } 
-    
+    public enum WriteType { INSERT, UPDATE, UNDEFINED }
+
     /** Used to reduce memory for mappings with no fields. */
     protected static final Vector NO_FIELDS = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0);
 
@@ -91,10 +91,10 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
     /** Makes this mapping read only. No write are performed on it. Default is false */
     protected boolean isReadOnly;
-    
+
     /** Specifies whether this mapping is optional (i.e. field may be null). Used for DDL generation. */
     protected boolean isOptional;
-    
+
     /** Specifies whether this mapping is lazy, this means not included in the default fetch group. */
     protected Boolean isLazy;
 
@@ -111,25 +111,25 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     protected Map properties;
     /** Allow the user to defined un-converted properties which will be initialized at runtime. */
     protected Map<String, List<String>> unconvertedProperties;
-    
+
     /**
-     * Used by the CMP3Policy to see if this mapping should be used in 
+     * Used by the CMP3Policy to see if this mapping should be used in
      * processing pk classes for find methods
      */
     protected boolean derivesId;
-    
+
     /**
-     * 
+     *
      */
     protected boolean isJPAId = false;
-    
+
     /**
      * A mapsId value.
      */
     protected String mapsIdValue;
-    
+
     /**
-     * The id mapping this mapping derives. Used by the CMP3Policy to see if 
+     * The id mapping this mapping derives. Used by the CMP3Policy to see if
      * this mapping should be used in processing pk classes for find methods.
      */
     protected DatabaseMapping derivedIdMapping;
@@ -139,22 +139,22 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * set by the object builder during initialization.
      */
     protected boolean isPrimaryKeyMapping = false;
-    
+
     /**
      * PERF: Cache the mappings attribute name.
      */
     protected String attributeName;
-    
+
     /**
      * Records if this mapping is being used as a MapKeyMapping.  This is important for recording main mappings
      */
     protected boolean isMapKeyMapping = false;
-    
-    //used by the object build/merge code to control building/merging into the 
+
+    //used by the object build/merge code to control building/merging into the
     //shared cache.
     protected boolean isCacheable = true;
 
-    /** 
+    /**
      * Irrelevant (and not set) unless descriptor has SerializedObjectPolicy (SOP).
      * If descriptor has SOP, then ObjectLevelReadQuery (with shouldUseSerializedObjectPolicy flag set to true)
      * reads in row that contain both field/value pairs and sopObject.
@@ -163,7 +163,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      *   Boolean.FALSE - fields/values (out sopObject);
      *   null -  both sopObject and fields/values (both in and out sopObject).
      * While writing to the data base the mapping will be used for writing into sopObject unless this flag is set to Boolean.FALSE;
-     */ 
+     */
     protected Boolean isInSopObject;
 
     /**
@@ -175,7 +175,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
         this.isReadOnly = false;
         this.attributeAccessor = new InstanceVariableAttributeAccessor();
     }
-    
+
     /**
      * PUBLIC:
      * Add an unconverted property (to be initialiazed at runtime)
@@ -252,7 +252,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public Object buildContainerClone(Object attributeValue, AbstractSession cloningSession){
         return attributeValue;
     }
-    
+
     /**
      * INTERNAL:
      * Copy of the attribute of the object.
@@ -302,7 +302,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // no-op by default
     }
-    
+
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
@@ -316,7 +316,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         // Do nothing by default, (direct and xml mappings do not require anything).
     }
-    
+
     /**
      * INTERNAL:
      * Used by AttributeLevelChangeTracking to update a changeRecord with calculated changes
@@ -366,18 +366,18 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
      * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
     public void collectQueryParameters(Set<DatabaseField> record){
         //no-op for mappings that do not support PROTECTED cache isolation
     }
-    
+
     /**
      * INTERNAL:
      * Mapping callback for post-initialization of source and target expression fields
-     * created when a mapping's selectionCriteria is created early with uninitialized fields. 
+     * created when a mapping's selectionCriteria is created early with uninitialized fields.
      * @see OneToOneMapping#postInitializeSourceAndTargetExpressions()
      * @see OneToManyMapping#postInitializeSourceAndTargetExpressions()
      */
@@ -404,7 +404,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings
      * This method is implemented by subclasses as necessary.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         if (hasUnconvertedProperties()) {
@@ -413,7 +413,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
                 String value = valuePair.get(0);
                 String valueTypeName = valuePair.get(1);
                 Class valueType = String.class;
-                
+
                 // Have to initialize the valueType now
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
@@ -428,14 +428,14 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
                 } catch (Exception exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exception);
                 }
-                
+
                 // Add the converted property. If the value type is the same
                 // as the source (value) type, no conversion is made.
                 getProperties().put(propertyName, ConversionManager.getDefaultManager().convertObject(value, valueType));
             }
         }
     }
-    
+
     /**
      * Convenience method to ensure converters have an opportunity to convert
      * any class names to classes during project setup.
@@ -443,7 +443,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     protected void convertConverterClassNamesToClasses(Converter converter, ClassLoader classLoader) {
         if (converter != null && converter instanceof ClassNameConversionRequired) {
             ((ClassNameConversionRequired)converter).convertClassNamesToClasses(classLoader);
-        } 
+        }
     }
 
     /**
@@ -459,12 +459,12 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
     /**
      * ADVANCED:
-     * Returns true if the mapping references a JPA ID attribute for the CMP3Policy and JPA ID classes.  
+     * Returns true if the mapping references a JPA ID attribute for the CMP3Policy and JPA ID classes.
      */
     public boolean derivesId() {
         return derivesId;
     }
-    
+
     /**
      * INTERNAL:
      * This method is called to update collection tables prior to commit.
@@ -482,7 +482,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
         /*
          * If the expression closest to to the Builder is for this mapping, that expression is rebuilt using
-         * newRoot and added to the nestedExpressions list.  
+         * newRoot and added to the nestedExpressions list.
          */
         for (Expression next : expressions) {
             // The expressionBuilder can be one of the locked expressions in
@@ -493,7 +493,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
             QueryKeyExpression expression = (QueryKeyExpression)next;
             ObjectExpression base = expression;
             boolean afterBase = false;
-            
+
             while (!base.getBaseExpression().isExpressionBuilder()) {
                 base = (ObjectExpression)base.getBaseExpression();
                 afterBase = true;
@@ -521,10 +521,10 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
         List<Expression> nestedExpressions = new ArrayList(expressions.size());
 
         /*
-         * need to work on all expressions with at least 2 nestings off the base expression builder, excluding 
-         * aggregateObjectMapping expressions from the count (only ForeignReferenceMapping expressions count).  For those 
+         * need to work on all expressions with at least 2 nestings off the base expression builder, excluding
+         * aggregateObjectMapping expressions from the count (only ForeignReferenceMapping expressions count).  For those
          * expressions, If the expression closest to to the Builder is for this mapping, that expression is rebuilt using
-         * newRoot and added to the nestedExpressions list.  
+         * newRoot and added to the nestedExpressions list.
          */
         for (Expression next : expressions) {
             // The expressionBuilder can be one of the locked expressions in
@@ -536,7 +536,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
             ObjectExpression base = expression;
             boolean afterBase = false;
             boolean done = false;
-            
+
             ObjectExpression prevExpression = base;
             while (!base.getBaseExpression().isExpressionBuilder()&& !done) {
                 base = (ObjectExpression)base.getBaseExpression();
@@ -583,7 +583,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
         }
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Used to store un-converted properties, which are subsequenctly converted
@@ -634,12 +634,12 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
     /**
      * PUBLIC:
-     * Return the name of the attribute set in the mapping. 
+     * Return the name of the attribute set in the mapping.
      */
     @Override
     public String getAttributeName() {
-    	// The attribute name on the attributeAccessor will always override any attribute already set
-    	// Use the attributeAccessor attribute over the current attribute name
+        // The attribute name on the attributeAccessor will always override any attribute already set
+        // Use the attributeAccessor attribute over the current attribute name
         if (attributeName == null) {
             attributeName = getAttributeAccessor().getAttributeName();
         }
@@ -672,12 +672,12 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
     /**
      * ADVANCED:
-     * Set the maps id value  
+     * Set the maps id value
      */
     public DatabaseMapping getDerivedIdMapping() {
         return derivedIdMapping;
     }
-    
+
     /**
      * INTERNAL:
      * Return the descriptor to which this mapping belongs
@@ -716,7 +716,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public Vector getSelectFields() {
         return getFields();
     }
-    
+
     /**
      * INTERNAL:
      * Returns the table(s) that should be selected to build this mapping's value(s).
@@ -725,7 +725,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public Vector getSelectTables() {
         return new NonSynchronizedVector(0);
     }
-    
+
     /**
      * INTERNAL:
      * Returns a vector of all the fields this mapping represents.
@@ -734,11 +734,11 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public Vector<DatabaseField> getFields() {
         return this.fields;
     }
-    
+
     /**
      * INTERNAL:
      * Return the list of fields that should be used if this mapping is used in an order by.
-     * null means this mapping does not need to normalize it fields (it is a field). 
+     * null means this mapping does not need to normalize it fields (it is a field).
      */
     public List<Expression> getOrderByNormalizedExpressions(Expression base) {
         return null;
@@ -758,20 +758,20 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
     /**
      * ADVANCED:
-     * Set the mapped by id value  
+     * Set the mapped by id value
      */
     public boolean hasMapsIdValue() {
         return mapsIdValue != null;
     }
-    
+
     /**
      * ADVANCED:
-     * Set the mapped by id value  
+     * Set the mapped by id value
      */
     public String getMapsIdValue() {
         return mapsIdValue;
     }
-    
+
     /**
      * INTERNAL:
      * return the object on the client corresponding to the specified object.
@@ -804,7 +804,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
         return getProperties().get(property);
     }
-    
+
     /**
      * INTERNAL:
      * Return the value of an attribute unwrapping value holders if required.
@@ -820,7 +820,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public Object getRealAttributeValueFromAttribute(Object attributeValue, Object object, AbstractSession session) throws DescriptorException {
         return attributeValue;
     }
-    
+
     /**
      * INTERNAL:
      * Trigger the instantiation of the attribute if lazy.
@@ -836,7 +836,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public boolean isAttributeValueFromObjectInstantiated(Object object) {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Return the value of an attribute, unwrapping value holders if necessary.
@@ -876,7 +876,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
         }
         return ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodName();
     }
-    
+
     /**
      * INTERNAL:
      * Used to store un-converted properties, which are subsequenctly converted
@@ -886,7 +886,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
         if (unconvertedProperties == null) {
             unconvertedProperties = new HashMap<String, List<String>>(5);
         }
-        
+
         return unconvertedProperties;
     }
 
@@ -986,7 +986,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public boolean isDatabaseMapping() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Related mapping should implement this method to return true.
@@ -1035,7 +1035,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public boolean isLockableMapping(){
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Related mapping should implement this method to return true.
@@ -1057,7 +1057,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public boolean isMultitenantPrimaryKeyMapping() {
         return false;
     }
-    
+
     /**
      * @param isMapKeyMapping the isMapKeyMapping to set
      */
@@ -1106,13 +1106,13 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     }
 
     /**
-     * Return whether the value of this mapping is optional (that is, can be 
+     * Return whether the value of this mapping is optional (that is, can be
      * null). This is a hint and is used when generating DDL.
      */
     public boolean isOptional() {
         return isOptional;
     }
-    
+
     /**
      * Returns true if this mapping is owned by the parent descriptor.  This is generally based on mapping type
      */
@@ -1123,15 +1123,15 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Flags that this mapping is part of a JPA id mapping. It should be
-     * temporary though, as the CMP3Policy should be able to figure things 
+     * temporary though, as the CMP3Policy should be able to figure things
      * out on its own. The problem being that the JPA mapped superclass
      * descriptors are not initialized and do not have a CMP3Policy set by
-     * default. 
+     * default.
      */
     public boolean isJPAId() {
         return isJPAId;
     }
-    
+
     /**
      * Return if this mapping is lazy.
      * Lazy has different meaning for different mappings.
@@ -1152,19 +1152,19 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
         }
         return isLazy;
     }
-    
+
     /**
      * INTERNAL:
      * Flags that this mapping is part of a JPA id mapping. It should be
-     * temporary though, as the CMP3Policy should be able to figure things 
+     * temporary though, as the CMP3Policy should be able to figure things
      * out on its own. The problem being that the JPA mapped superclass
      * descriptors are not initialized and do not have a CMP3Policy set by
-     * default. 
+     * default.
      */
     public void setIsJPAId() {
         this.isJPAId = true;
     }
-    
+
     /**
      * Set if this mapping is lazy.
      * This can be used for any mapping type to exclude it from the descriptor's
@@ -1178,7 +1178,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void setIsLazy(boolean isLazy) {
         this.isLazy = isLazy;
     }
-    
+
     /**
      * INTERNAL:
      * All EIS mappings should implement this method to return true.
@@ -1211,7 +1211,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public boolean isAbstractDirectMapping() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -1252,7 +1252,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public boolean isJoiningSupported() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Return if this mapping requires its attribute value to be cloned.
@@ -1269,7 +1269,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public boolean isPrimaryKeyMapping() {
         return this.isPrimaryKeyMapping;
     }
-    
+
     /**
      * INTERNAL:
      * Returns true if the mapping should be added to the UnitOfWork's list of private owned
@@ -1278,7 +1278,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public boolean isCandidateForPrivateOwnedRemoval() {
         return isPrivateOwned();
     }
-    
+
     /**
      * INTERNAL:
      * Used when determining if a mapping supports cascaded version optimistic
@@ -1287,7 +1287,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public boolean isCascadedLockingSupported() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Return if this mapping supports change tracking.
@@ -1295,7 +1295,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public boolean isChangeTrackingSupported(Project project) {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Return if the mapping has ownership over its target object(s).
@@ -1307,7 +1307,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * Used to signal that this mapping references a protected/isolated entity and requires
      * special merge/object building behaviour.
-     * 
+     *
      */
     public boolean isCacheable() {
         return this.isCacheable;
@@ -1367,7 +1367,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public boolean isUnidirectionalOneToManyMapping() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Related mapping should implement this method to return true.
@@ -1414,14 +1414,14 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void load(final Object object, AttributeItem item, final AbstractSession session, final boolean fromFetchGroup) {
         // Do nothing by default.
     }
-    
+
     /**
      * Force instantiation of all indirections.
      */
     public void loadAll(Object object, AbstractSession session, IdentityHashSet loaded) {
         // Do nothing by default.
     }
-    
+
     /**
      * INTERNAL:
      * Merge changes from the source to the target object.
@@ -1509,11 +1509,11 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void preInsert(WriteObjectQuery query) throws DatabaseException {
         return;
     }
-    
+
     /**
      * INTERNAL:
-     * A subclass that supports cascade version optimistic locking should 
-     * implement this method to properly prepare the locking policy for their 
+     * A subclass that supports cascade version optimistic locking should
+     * implement this method to properly prepare the locking policy for their
      * mapping type.
      */
     public void prepareCascadeLockingPolicy() {
@@ -1539,7 +1539,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
         Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, parentCacheKey, executionSession, isTargetProtected, null);
         setAttributeValueInObject(targetObject, attributeValue);
         return attributeValue;
-    }    
+    }
 
     /**
      * INTERNAL:
@@ -1551,7 +1551,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
         setAttributeValueInObject(targetObject, attributeValue);
         return attributeValue;
     }
-    
+
     /**
      * PUBLIC:
      * To make mapping read only.
@@ -1637,7 +1637,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     @Override
     public void setAttributeName(String attributeName) {
         getAttributeAccessor().setAttributeName(attributeName);
-        // Clear the mapping attribute name until a getAttributeName() call copies the accessor attributeName        
+        // Clear the mapping attribute name until a getAttributeName() call copies the accessor attributeName
         this.attributeName = null;
     }
 
@@ -1698,7 +1698,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
             return;
         }
 
-        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor	
+        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
             String attributeName = this.attributeAccessor.getAttributeName();
             setAttributeAccessor(new MethodAttributeAccessor());
@@ -1715,7 +1715,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void setIsOptional(boolean isOptional) {
         this.isOptional = isOptional;
     }
-    
+
     /**
      * INTERNAL:
      * Set by the Object builder during initialization returns true if this mapping
@@ -1734,15 +1734,15 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void setIsReadOnly(boolean aBoolean) {
         isReadOnly = aBoolean;
     }
-    
+
     /**
      * ADVANCED:
-     * Set the maps id value  
+     * Set the maps id value
      */
     public void setMapsIdValue(String mapsIdValue) {
         this.mapsIdValue = mapsIdValue;
     }
-    
+
     /**
      * INTERNAL:
      * Allow user defined properties.
@@ -1768,7 +1768,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
             return;
         }
 
-        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor		
+        // This is done because setting attribute name by defaults create InstanceVariableAttributeAccessor
         if (!getAttributeAccessor().isMethodAttributeAccessor()) {
             String attributeName = this.attributeAccessor.getAttributeName();
             setAttributeAccessor(new MethodAttributeAccessor());
@@ -1862,13 +1862,13 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession session, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether the mapping is in SerializedObjectPolicy's sopObject.
      */
     public boolean isInSopObject() {
-        return this.isInSopObject == null || this.isInSopObject; 
+        return this.isInSopObject == null || this.isInSopObject;
     }
 
     /**
@@ -1876,7 +1876,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * Indicates whether the mapping is in SerializedObjectPolicy's sopObject and not out of it.
      */
     public boolean isInOnlySopObject() {
-        return this.isInSopObject != null && this.isInSopObject; 
+        return this.isInSopObject != null && this.isInSopObject;
     }
 
     /**
@@ -1884,25 +1884,25 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * Indicates whether the mapping is out of SerializedObjectPolicy's sopObject.
      */
     public boolean isOutSopObject() {
-        return this.isInSopObject == null || !this.isInSopObject; 
+        return this.isInSopObject == null || !this.isInSopObject;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether the mapping is out of SerializedObjectPolicy's sopObject and not in it.
      */
     public boolean isOutOnlySopObject() {
-        return this.isInSopObject != null && !this.isInSopObject; 
+        return this.isInSopObject != null && !this.isInSopObject;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether the mapping is both in and out of SerializedObjectPolicy's sopObject.
      */
     public boolean isInAndOutSopObject() {
-        return this.isInSopObject == null; 
+        return this.isInSopObject == null;
     }
-    
+
     /**
      * INTERNAL:
      * Set the mapping is in SerializedObjectPolicy's sopObject.
@@ -1929,14 +1929,14 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
     /**
      * INTERNAL:
-     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth)
      * references an entity.
-     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.  
+     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.
      */
     public boolean hasNestedIdentityReference() {
-        return false; 
+        return false;
     }
-    
+
     /**
      * INTERNAL:
      * Returns the value for the mapping directly from the result-set.
@@ -1959,12 +1959,12 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * A subclass should implement this method if it wants different behavior.
      * Write the foreign key values from the attribute to the row.
      */
-     
-    public void writeFromAttributeIntoRow(Object attribute, AbstractRecord row, AbstractSession session) 
+
+    public void writeFromAttributeIntoRow(Object attribute, AbstractRecord row, AbstractSession session)
     {
         // Do nothing by default.
     }
-    
+
     /**
      * INTERNAL:
      * A subclass should implement this method if it wants different behavior.
@@ -1982,7 +1982,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void writeFromObjectIntoRowForShallowInsert(Object object, AbstractRecord row, AbstractSession session) {
         writeFromObjectIntoRow(object, row, session, WriteType.INSERT);
     }
-    
+
     /**
      * INTERNAL:
      * This row is built for update after shallow insert which happens in case of bidirectional inserts.
@@ -1992,7 +1992,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void writeFromObjectIntoRowForUpdateAfterShallowInsert(Object object, AbstractRecord databaseRow, AbstractSession session, DatabaseTable table) {
         // Do nothing by default.
     }
-    
+
     /**
      * INTERNAL:
      * This row is built for update before shallow delete which happens in case of bidirectional inserts.
@@ -2001,7 +2001,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void writeFromObjectIntoRowForUpdateBeforeShallowDelete(Object object, AbstractRecord databaseRow, AbstractSession session, DatabaseTable table) {
         // Do nothing by default.
     }
-    
+
     /**
      * INTERNAL:
      * A subclass should implement this method if it wants different behavior.
@@ -2018,7 +2018,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void writeFromObjectIntoRowForShallowInsertWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) {
         writeFromObjectIntoRowWithChangeRecord(changeRecord, row, session, WriteType.INSERT);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -2066,7 +2066,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void updateChangeRecord(Object clone, Object newValue, Object oldValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
         throw DescriptorException.invalidMappingOperation(this, "updateChangeRecord");
     }
-    
+
     /**
      * INTERNAL:
      * Add or removes a new value and its change set to the collection change record based on the event passed in.  This is used by
@@ -2075,7 +2075,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public void updateCollectionChangeRecord(org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent event, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
         throw DescriptorException.invalidMappingOperation(this, "updateCollectionChangeRecord");
     }
-    
+
     /**
      * INTERNAL:
      * Set the change listener if required.
@@ -2088,28 +2088,28 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
     /**
      * ADVANCED:
-     * Used to indicate the mapping references a JPA ID or MapsId attribute 
-     * for the CMP3Policy and JPA Id classes (as well as Embeddable Id classes). 
-     * This is different from isPrimaryKeyMapping, as an ID mapping is user 
-     * specified and can be read only, as long as another writable mapping for 
-     * the field exists.  
+     * Used to indicate the mapping references a JPA ID or MapsId attribute
+     * for the CMP3Policy and JPA Id classes (as well as Embeddable Id classes).
+     * This is different from isPrimaryKeyMapping, as an ID mapping is user
+     * specified and can be read only, as long as another writable mapping for
+     * the field exists.
      */
     public void setDerivesId(boolean derivesId) {
         this.derivesId = derivesId;
     }
-    
+
     /**
      * ADVANCED:
-     * Used to indicate the mapping references a JPA ID or MapsId attribute 
-     * for the CMP3Policy and JPA Id classes (as well as Embeddable Id classes). 
-     * This is different from isPrimaryKeyMapping, as an ID mapping is user 
-     * specified and can be read only, as long as another writable mapping for 
-     * the field exists.  
+     * Used to indicate the mapping references a JPA ID or MapsId attribute
+     * for the CMP3Policy and JPA Id classes (as well as Embeddable Id classes).
+     * This is different from isPrimaryKeyMapping, as an ID mapping is user
+     * specified and can be read only, as long as another writable mapping for
+     * the field exists.
      */
     public void setDerivedIdMapping(DatabaseMapping derivedIdMapping) {
         this.derivedIdMapping = derivedIdMapping;
     }
-    
+
     /**
      * INTERNAL:
      * Directly build a change record without comparison

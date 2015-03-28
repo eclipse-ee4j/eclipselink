@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions;
 
 import java.io.StringWriter;
@@ -57,7 +57,7 @@ public class DatabaseException extends EclipseLinkException {
      */
     protected DatabaseException() {
     }
-    
+
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by the EclipseLink code.
@@ -133,7 +133,7 @@ public class DatabaseException extends EclipseLinkException {
         databaseException.setAccessor(databaseAccessor);
         return databaseException;
     }
-    
+
     public static DatabaseException databaseAccessorConnectionIsNull(DatabaseAccessor databaseAccessor, AbstractSession session) {
         Object[] args = {  };
 
@@ -159,7 +159,7 @@ public class DatabaseException extends EclipseLinkException {
         databaseException.setErrorCode(ERROR_READING_BLOB_DATA);
         return databaseException;
     }
-    
+
     public static DatabaseException specifiedLockingFieldsNotFoundInDatabase(String lockingFieldName) {
         Object[] args = { lockingFieldName };
 
@@ -309,7 +309,7 @@ public class DatabaseException extends EclipseLinkException {
     }
 
     public static DatabaseException sqlException(SQLException exception) {
-    	return sqlException(exception, false);
+        return sqlException(exception, false);
     }
 
     public static DatabaseException sqlException(SQLException exception, boolean commError) {
@@ -326,7 +326,7 @@ public class DatabaseException extends EclipseLinkException {
             return sqlException(exception, session.getAccessor(), session, commError);
         }
     }
-    
+
     public static DatabaseException sqlException(SQLException exception, Accessor accessor, AbstractSession session, boolean isCommunicationFailure) {
         DatabaseException databaseException = new DatabaseException(exception);
         databaseException.setErrorCode(SQL_EXCEPTION);
@@ -361,7 +361,7 @@ public class DatabaseException extends EclipseLinkException {
         databaseException.setErrorCode(TRANSACTION_MANAGER_NOT_SET_FOR_JTS_DRIVER);
         return databaseException;
     }
-    
+
     public static DatabaseException errorRetrieveDbMetadataThroughJDBCConnection() {
         Object[] args = {  };
 
@@ -371,43 +371,43 @@ public class DatabaseException extends EclipseLinkException {
     }
 
     /**
-	 * The connection returned from this driver was null, the driver may be
-	 * missing(using the default) or the wrong one for the database.
-	 * 
-	 * @param driver
-	 * @return
-	 */
-	public static DatabaseException unableToAcquireConnectionFromDriverException(
-			String driver, String user, String url) {
-		Object[] args = { driver, user, url };
-		DatabaseException databaseException = new DatabaseException(
-				ExceptionMessageGenerator.buildMessage(DatabaseException.class,
-						UNABLE_TO_ACQUIRE_CONNECTION_FROM_DRIVER, args));
-		databaseException.setErrorCode(UNABLE_TO_ACQUIRE_CONNECTION_FROM_DRIVER);
-		return databaseException;
-	}
+     * The connection returned from this driver was null, the driver may be
+     * missing(using the default) or the wrong one for the database.
+     *
+     * @param driver
+     * @return
+     */
+    public static DatabaseException unableToAcquireConnectionFromDriverException(
+            String driver, String user, String url) {
+        Object[] args = { driver, user, url };
+        DatabaseException databaseException = new DatabaseException(
+                ExceptionMessageGenerator.buildMessage(DatabaseException.class,
+                        UNABLE_TO_ACQUIRE_CONNECTION_FROM_DRIVER, args));
+        databaseException.setErrorCode(UNABLE_TO_ACQUIRE_CONNECTION_FROM_DRIVER);
+        return databaseException;
+    }
 
-	/**
-	 * The connection returned from this driver was null, the driver may be
-	 * missing(using the default) or the wrong one for the database.
-	 * 
-	 * @param exception
-	 * @param driver
-	 * @return
-	 */
-	public static DatabaseException unableToAcquireConnectionFromDriverException(SQLException exception, 
-			String driver, String user, String url) {
-		DatabaseException databaseException = unableToAcquireConnectionFromDriverException(driver, user, url);
-		databaseException.setInternalException(exception);
-		return databaseException;
-	}
-    
-	public boolean isCommunicationFailure() {
-		return isCommunicationFailure;
-	}
+    /**
+     * The connection returned from this driver was null, the driver may be
+     * missing(using the default) or the wrong one for the database.
+     *
+     * @param exception
+     * @param driver
+     * @return
+     */
+    public static DatabaseException unableToAcquireConnectionFromDriverException(SQLException exception,
+            String driver, String user, String url) {
+        DatabaseException databaseException = unableToAcquireConnectionFromDriverException(driver, user, url);
+        databaseException.setInternalException(exception);
+        return databaseException;
+    }
 
-	public void setCommunicationFailure(boolean isCommunicationFailure) {
-		this.isCommunicationFailure = isCommunicationFailure;
-	}
+    public boolean isCommunicationFailure() {
+        return isCommunicationFailure;
+    }
+
+    public void setCommunicationFailure(boolean isCommunicationFailure) {
+        this.isCommunicationFailure = isCommunicationFailure;
+    }
 
 }

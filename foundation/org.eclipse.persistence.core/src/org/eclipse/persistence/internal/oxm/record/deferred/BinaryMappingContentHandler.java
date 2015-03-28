@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -36,8 +36,8 @@ public class BinaryMappingContentHandler extends DeferredContentHandler {
     private XMLConverterMapping converter;
     private boolean isCollection;
     private UnmarshalRecord workingUnmarshalRecord;
-    private boolean finished;          
-     
+    private boolean finished;
+
     public BinaryMappingContentHandler(UnmarshalRecord parentRecord, NodeValue nodeValue, BinaryDataMapping mapping) {
         super(parentRecord);
         this.mapping = mapping;
@@ -46,7 +46,7 @@ public class BinaryMappingContentHandler extends DeferredContentHandler {
         this.isCollection = false;
         this.finished = false;
     }
-    
+
     public BinaryMappingContentHandler(UnmarshalRecord parentRecord, NodeValue nodeValue, BinaryDataCollectionMapping mapping) {
         super(parentRecord);
         this.mapping = mapping;
@@ -60,30 +60,30 @@ public class BinaryMappingContentHandler extends DeferredContentHandler {
         workingUnmarshalRecord = new XMLBinaryAttachmentHandler(this.getParent(), nodeValue, mapping, converter, isCollection);
         executeEvents(workingUnmarshalRecord);
     }
-    
+
     public void processSimpleElement() throws SAXException {
         getEvents().remove(0);
         workingUnmarshalRecord = new XMLInlineBinaryHandler(this.getParent(), nodeValue, mapping, converter, isCollection);
         executeEvents(workingUnmarshalRecord);
     }
-    
+
     public void processEmptyElement() throws SAXException {
         processSimpleElement();
     }
-    
+
     protected void executeEvents(UnmarshalRecord unmarshalRecord) throws SAXException {
-    	super.executeEvents(unmarshalRecord);    	
-    	finished = true;  
+        super.executeEvents(unmarshalRecord);
+        finished = true;
     }
 
     public UnmarshalRecord getWorkingUnmarshalRecord() {
         return workingUnmarshalRecord;
     }
-	
+
     public boolean isFinished() {
         return finished;
     }
 
- 
-    
+
+
 }

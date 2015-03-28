@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -161,19 +161,19 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(EmployeeFactoryClassTestCases.class);
         suite.addTestSuite(XmlAccessorTypeTestCases.class);
         suite.addTestSuite(XmlAccessorTypeFieldTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypeNoneTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypeNoneWithPropOrderTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypeInheritanceTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypePackageTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypePackageClassOverrideTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypePackageJavaClassOverrideTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypePackageNoOverrideTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypePropertyTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypePublicMemberTestCases.class);
+         suite.addTestSuite(XmlAccessorTypeNoneTestCases.class);
+         suite.addTestSuite(XmlAccessorTypeNoneWithPropOrderTestCases.class);
+         suite.addTestSuite(XmlAccessorTypeInheritanceTestCases.class);
+         suite.addTestSuite(XmlAccessorTypePackageTestCases.class);
+         suite.addTestSuite(XmlAccessorTypePackageClassOverrideTestCases.class);
+         suite.addTestSuite(XmlAccessorTypePackageJavaClassOverrideTestCases.class);
+         suite.addTestSuite(XmlAccessorTypePackageNoOverrideTestCases.class);
+         suite.addTestSuite(XmlAccessorTypePropertyTestCases.class);
+         suite.addTestSuite(XmlAccessorTypePublicMemberTestCases.class);
         suite.addTestSuite(XmlAccessorOrderTestCases.class);
         suite.addTestSuite(XMLAccessorOrderPackageInfoTestCases.class);
         suite.addTestSuite(XMLAccessorOrderClassOverrideTestCases.class);
-        suite.addTestSuite(XMLAccessorOrderJavaClassOverrideTestCases.class);       
+        suite.addTestSuite(XMLAccessorOrderJavaClassOverrideTestCases.class);
         suite.addTestSuite(JAXBContextFactoryTestCases.class);
         suite.addTestSuite(XmlElementTestCases.class);
         suite.addTestSuite(AdapterOnClassTestCases.class);
@@ -219,7 +219,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlAnyAttributeTestCases.class);
         suite.addTestSuite(XmlMimeTypeCases.class);
         suite.addTestSuite(XmlAttachmentRefCases.class);
-        suite.addTestSuite(XmlElementsTestCases.class);        
+        suite.addTestSuite(XmlElementsTestCases.class);
         suite.addTestSuite(XmlElementRefTestCases.class);
         suite.addTestSuite(XmlElementRefWithWrapperTestCases.class);
         suite.addTestSuite(XmlElementRefsTestCases.class);

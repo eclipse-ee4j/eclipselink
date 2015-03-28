@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -20,47 +20,47 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.mapping.Mapping
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 
-public final class DirectToFieldMappingNode 
-	extends MappingNode 
+public final class DirectToFieldMappingNode
+    extends MappingNode
 {
-	protected static final String[] DIRECT_MAPPING_ICON_PROPERTY_NAMES = {
-			Node.HAS_BRANCH_PROBLEMS_PROPERTY,
-			MWConverterMapping.CONVERTER_PROPERTY
-	};
+    protected static final String[] DIRECT_MAPPING_ICON_PROPERTY_NAMES = {
+            Node.HAS_BRANCH_PROBLEMS_PROPERTY,
+            MWConverterMapping.CONVERTER_PROPERTY
+    };
 
-	// **************** Constructors ******************************************
-	
-	public DirectToFieldMappingNode(MWDirectToFieldMapping value, SelectionActionsPolicy mappingNodeTypePolicy, MappingDescriptorNode parent) {
-		super(value, mappingNodeTypePolicy, parent);
-	}
+    // **************** Constructors ******************************************
 
-	
-	// ************** ApplicationNode implementation *************
-	
-	protected String[] iconPropertyNames() {
-		return DIRECT_MAPPING_ICON_PROPERTY_NAMES;
-	}
+    public DirectToFieldMappingNode(MWDirectToFieldMapping value, SelectionActionsPolicy mappingNodeTypePolicy, MappingDescriptorNode parent) {
+        super(value, mappingNodeTypePolicy, parent);
+    }
 
-	public String helpTopicID() {
-		return this.getDescriptorNode().mappingHelpTopicPrefix() + ".directToField";
-	}
 
-	protected String buildIconKey() {
-		return ((MWDirectToFieldMapping) getMapping()).iconKey();		
-	}
+    // ************** ApplicationNode implementation *************
 
-	
-	// ************** AbstractApplicationNode overrides *************
+    protected String[] iconPropertyNames() {
+        return DIRECT_MAPPING_ICON_PROPERTY_NAMES;
+    }
 
-	protected String accessibleNameKey() {
-		return ((MWDirectToFieldMapping) getMapping()).accessibleNameKey();
-	}
+    public String helpTopicID() {
+        return this.getDescriptorNode().mappingHelpTopicPrefix() + ".directToField";
+    }
 
-	
-	// ********** MWApplicationNode overrides **********
+    protected String buildIconKey() {
+        return ((MWDirectToFieldMapping) getMapping()).iconKey();
+    }
 
-	protected Class propertiesPageClass() {
-		return DirectToFieldMappingPropertiesPage.class;
-	}
+
+    // ************** AbstractApplicationNode overrides *************
+
+    protected String accessibleNameKey() {
+        return ((MWDirectToFieldMapping) getMapping()).accessibleNameKey();
+    }
+
+
+    // ********** MWApplicationNode overrides **********
+
+    protected Class propertiesPageClass() {
+        return DirectToFieldMappingPropertiesPage.class;
+    }
 
 }

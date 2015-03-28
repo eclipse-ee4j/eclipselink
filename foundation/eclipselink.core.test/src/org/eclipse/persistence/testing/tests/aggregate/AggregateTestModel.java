@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.aggregate;
 
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
@@ -92,18 +92,18 @@ public class AggregateTestModel extends TestModel {
         // Add new tests here...
         return suite;
     }
-    
+
     public static TestSuite getAggregateRelationshipsTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("AggregateRelationshipsTestSuite");
         suite.setDescription("This suite tests that aggregate relationships are handled correctly");
-        
+
         suite.addTest(new AggregateRelationshipsOneToOneTestCase());
         suite.addTest(new AggregateRelationshipsTargetOneToOneTestCase());
         suite.addTest(new AggregateRelationshipsOneToManyTestCase());
         suite.addTest(new AggregateRelationshipsManyToManyTestCase());
         suite.addTest(new AggregateRelationshipsDirectCollectionTestCase());
-        
+
         return suite;
     }
 
@@ -302,7 +302,7 @@ public class AggregateTestModel extends TestModel {
 
         // CR#2896
         suite.addTest(new NestedAggregateCollectionAbstractTestCase(Agent.class));
-        
+
         if(useNewAggregateCollection) {
             suite.addTest(new NestedAggregateCollectionTest(Builder.class));
             suite.addTest(new NestedAggregateCollectionAbstractTestCase(Builder.class));
@@ -337,7 +337,7 @@ public class AggregateTestModel extends TestModel {
         suite.addTest(new ReadAllTest(Transport.class, 4));
         // Bug 2847621
         suite.addTest(new AggregateCollectionOuterJoinTest(Agent.class));
-        
+
         if(useNewAggregateCollection) {
             suite.addTest(new ReadAllTest(Builder.class, 1));
             suite.addTest(new AggregateCollectionOuterJoinTest(Builder.class));
@@ -362,7 +362,7 @@ public class AggregateTestModel extends TestModel {
         suite.addTest(new QueryKeyInAggregateTest(true));
         suite.addTest(new QueryKeyInAggregateTest(false));
         suite.addTest(new QueryKeyInAggregateInheritanceTest());
-        
+
         return suite;
     }
 
@@ -423,7 +423,7 @@ public class AggregateTestModel extends TestModel {
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new BatchReadingWithAggregateCollectionMapping(Agent.class));
-        if(useNewAggregateCollection) { 
+        if(useNewAggregateCollection) {
             suite.addTest(new BatchReadingWithAggregateCollectionMapping(Builder.class));
         }
         suite.addTest(new UnitOfWorkCommitResumeTest(manager.getObject(employeeClass, "example1")));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -78,13 +78,13 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
     static final String CREATE_SIGNTYPE_PROC =
         "CREATE OR REPLACE PROCEDURE TOPLEVEL_SIGNTYPE_TEST(X IN SIGNTYPE, Y OUT VARCHAR2) AS" +
         "\nBEGIN" +
-	        "\nIF X = -1 THEN" +
-		        "\nY := 'negative';" +
-		    "\nELSIF X = 1 THEN" +
-		        "\nY := 'positive';" +
-		    "\nELSE" +
-		        "\nY := 'zero';" +
-		    "\nEND IF;"+
+            "\nIF X = -1 THEN" +
+                "\nY := 'negative';" +
+            "\nELSIF X = 1 THEN" +
+                "\nY := 'positive';" +
+            "\nELSE" +
+                "\nY := 'zero';" +
+            "\nEND IF;"+
         "\nEND TOPLEVEL_SIGNTYPE_TEST;";
     static final String CREATE_ECHOTEST_PROC =
         "CREATE OR REPLACE PROCEDURE TOPLEVEL_ECHO_TEST(T IN VARCHAR2, U OUT VARCHAR2) AS" +
@@ -179,31 +179,31 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
                    "catalogPattern=\"TOPLEVEL\" " +
                    "procedurePattern=\"TOPLEVEL_BINARY_INT_TEST\" " +
                    "isSimpleXMLFormat=\"true\" " +
-		       "/>" +
+               "/>" +
                "<plsql-procedure " +
                    "name=\"testPLSInt\" " +
                    "catalogPattern=\"TOPLEVEL\" " +
                    "procedurePattern=\"TOPLEVEL_PLS_INT_TEST\" " +
                    "isSimpleXMLFormat=\"true\" " +
-		       "/>" +
+               "/>" +
                "<plsql-procedure " +
                    "name=\"testNatural\" " +
                    "catalogPattern=\"TOPLEVEL\" " +
                    "procedurePattern=\"TOPLEVEL_NATURAL_TEST\" " +
                    "isSimpleXMLFormat=\"true\" " +
-		       "/>" +
+               "/>" +
                "<plsql-procedure " +
                    "name=\"testPositive\" " +
                    "catalogPattern=\"TOPLEVEL\" " +
                    "procedurePattern=\"TOPLEVEL_POSITIVE_TEST\" " +
                    "isSimpleXMLFormat=\"true\" " +
-		       "/>" +
-			   "<plsql-procedure " +
+               "/>" +
+               "<plsql-procedure " +
                    "name=\"testSignType\" " +
                    "catalogPattern=\"TOPLEVEL\" " +
                    "procedurePattern=\"TOPLEVEL_SIGNTYPE_TEST\" " +
                    "isSimpleXMLFormat=\"true\" " +
-				"/>" +
+                "/>" +
                "<procedure " +
                    "name=\"echoTest\" " +
                    "catalogPattern=\"TOPLEVEL\" " +

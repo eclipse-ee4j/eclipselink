@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.dbchangenotification;
 
 import java.util.Vector;
@@ -87,7 +87,7 @@ public class DbChangeNotificationTest extends TestCase {
             largeProjects[i] = session[i].readAllObjects(LargeProject.class);
             phoneNumbers[i] = session[i].readAllObjects(PhoneNumber.class);
             session[i].executeNonSelectingCall(new SQLCall("BEGIN NOTIFY_SET_APPID('" + session[i].getName() + "'); END;"));
-            //		String selector = "(JMSXUserID IS NULL) OR (JMSXUserID <> " + "'" + session[i].getName() + "')";
+            //        String selector = "(JMSXUserID IS NULL) OR (JMSXUserID <> " + "'" + session[i].getName() + "')";
             String selector = "(APP IS NULL) OR (APP <> " + "'" + session[i].getName() + "')";
 
             javax.jms.Connection jmsConnection;
@@ -120,7 +120,7 @@ public class DbChangeNotificationTest extends TestCase {
         }
         // enable sending notification messages - set appId to non-null
         getSession().executeNonSelectingCall(new SQLCall("BEGIN NOTIFY_SET_APPID('original session'); END;"));
-        //	enableTriggers(true);
+        //    enableTriggers(true);
         Thread.sleep(1000);
     }
 
@@ -256,7 +256,7 @@ public class DbChangeNotificationTest extends TestCase {
     public void reset() throws Exception {
         // disable sending notification messages - set appId to null
         getSession().executeNonSelectingCall(new SQLCall("BEGIN NOTIFY_SET_APPID; END;"));
-        //	enableTriggers(false);
+        //    enableTriggers(false);
         Thread.sleep(1000);
 
         for (int i = 0; i < n; i++) {
@@ -282,18 +282,18 @@ public class DbChangeNotificationTest extends TestCase {
     }
 
     /*protected void enableTriggers(boolean enable) {
-	String[] tableNames = {"PROJECT", "LPROJECT", "SALARY", "PHONE"};
-	String action;
-	if(enable) {
-		action = "ENABLE";
-	} else {
-		action = "DISABLE";
-	}
-	getAbstractSession().beginTransaction();
-	for(int i=0; i<tableNames.length; i++) {
-		String triggerName = "NOTIFY_" + tableNames[i];
-		getSession().executeNonSelectingCall(new SQLCall("ALTER TRIGGER "+triggerName+" "+action));
-	}
-	getAbstractSession().commitTransaction();
+    String[] tableNames = {"PROJECT", "LPROJECT", "SALARY", "PHONE"};
+    String action;
+    if(enable) {
+        action = "ENABLE";
+    } else {
+        action = "DISABLE";
+    }
+    getAbstractSession().beginTransaction();
+    for(int i=0; i<tableNames.length; i++) {
+        String triggerName = "NOTIFY_" + tableNames[i];
+        getSession().executeNonSelectingCall(new SQLCall("ALTER TRIGGER "+triggerName+" "+action));
+    }
+    getAbstractSession().commitTransaction();
 }*/
 }

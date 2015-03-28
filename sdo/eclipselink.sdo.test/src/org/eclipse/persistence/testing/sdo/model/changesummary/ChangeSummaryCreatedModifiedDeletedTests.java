@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import java.util.ArrayList;
@@ -26,8 +26,8 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
     public ChangeSummaryCreatedModifiedDeletedTests(String name) {
         super(name);
     }
-    
-    
+
+
 
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.changesummary.ChangeSummaryCreatedModifiedDeletedTests" };
@@ -52,7 +52,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         assertNull(changeSummaryB.getOldValue(null, null));
         assertNull(changeSummaryB.getOldContainer(null));
         assertNull(changeSummaryB.getOldContainmentProperty(null));
-        //assertNull(changeSummaryB.getOldSequence(null));        
+        //assertNull(changeSummaryB.getOldSequence(null));
     }
 
     public void testSetFunctionsWithNullParameters() {
@@ -74,7 +74,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
          */
     }
 
-    
+
     //
     public void testIsCreatedAfterMoveDataObjectFromOneOwnerToAnotherSameChangeSummary() {
         rootType.addDeclaredProperty(rootChangeSummaryProperty);
@@ -92,11 +92,11 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
 
         assertEquals(0, changeSummaryA.getChangedDataObjects().size());
 
-        assertNotNull(dataObjectD.getChangeSummary());        
+        assertNotNull(dataObjectD.getChangeSummary());
         dataObjectD.detach();
         // verify CS is null on removed trees
         assertChangeSummaryStatusIfClearedIfCSIsAncestor(dataObjectD, true);
-        
+
 
         assertEquals(2, changeSummaryA.getChangedDataObjects().size());
 
@@ -108,7 +108,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // move D as child of C
         dataObjectC.set(propertyC, dataObjectD);
 
-        // the 3 normally modified-c, modifed-b, deleted-d/created-d flags are reduced to 
+        // the 3 normally modified-c, modifed-b, deleted-d/created-d flags are reduced to
         // 2 modified flags on c and b because created-d cancels deleted-d
         assertEquals(2, changeSummaryA.getChangedDataObjects().size());
 
@@ -123,7 +123,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // A: 20070106: Yes we keep oldSettings in the old cs - currently we do not cancel out operations
         // unset + (re)set != no changes
         //assertUnchanged(dataObjectD, changeSummaryA);
-        
+
         assertFalse(changeSummaryA.isCreated(dataObjectD));
         assertFalse(changeSummaryA.isModified(dataObjectD));
         assertFalse(changeSummaryA.isDeleted(dataObjectD));
@@ -131,7 +131,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // current value (wrong)
         //assertDeleted(dataObjectD, changeSummaryA);
         // with oldContainer change in the change scope
-        //assertModified(dataObjectD, changeSummaryA);        
+        //assertModified(dataObjectD, changeSummaryA);
     }
 
     public void testIsCreatedAfterMoveDataObjectFromOneOwnerToAnotherDiffChangeSummary() {
@@ -153,7 +153,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         assertUnchanged(dataObjectC, changeSummaryC);
         assertUnchanged(dataObjectD, changeSummaryC);
 
-        assertNotNull(dataObjectD.getChangeSummary());        
+        assertNotNull(dataObjectD.getChangeSummary());
         dataObjectD.detach();
         // verify CS is null on removed trees
         assertChangeSummaryStatusIfClearedIfCSIsAncestor(dataObjectD, true);
@@ -190,12 +190,12 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         buildTreeWith4LevelsOfProperties();
         changeSummaryB = (SDOChangeSummary)dataObjectB.getChangeSummary();
         changeSummaryB.beginLogging();
-        
-        assertNotNull(dataObjectD.getChangeSummary());        
+
+        assertNotNull(dataObjectD.getChangeSummary());
         dataObjectD.delete();
         // verify CS is null on removed trees
         assertChangeSummaryStatusIfClearedIfCSIsAncestor(dataObjectD, true);
-        
+
         assertUnchanged(root, changeSummaryB);
         assertModified(dataObjectB, changeSummaryB);
         assertUnchanged(dataObjectC, changeSummaryB);
@@ -203,14 +203,14 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         assertDeleted(dataObjectD, changeSummaryB);
         assertDeleted(dataObjectE, changeSummaryB);
         assertEquals(1, changeSummaryB.getOldValues(dataObjectB).size());
-        assertTrue(changeSummaryB.getOldValue(dataObjectB, propertyB).isSet());        
+        assertTrue(changeSummaryB.getOldValue(dataObjectB, propertyB).isSet());
         DataObject deepCopyD = (DataObject)changeSummaryB.getDeepCopies().get(dataObjectD);
         assertTrue(changeSummaryB.getOldValue(dataObjectB, propertyB).getValue().equals(deepCopyD));
         assertTrue(changeSummaryB.getOldContainer(dataObjectD).equals(dataObjectB));
         assertTrue(changeSummaryB.getOldContainmentProperty(dataObjectD).equals(propertyB));
 
         //assertEquals(1, dataObjectD.getOldSettings().size());
-        //assertEquals(1, changeSummaryB.dataObjectD.getOldSettings().size());        
+        //assertEquals(1, changeSummaryB.dataObjectD.getOldSettings().size());
         SDOSetting aSetting = (SDOSetting)changeSummaryB.getOldValue(dataObjectD, propertyD);
         assertTrue(aSetting.isSet());
         DataObject deepCopyE = (DataObject)changeSummaryB.getDeepCopies().get(dataObjectE);
@@ -218,7 +218,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
     }
 
     // perform a move of a cs root (delete CCB) to another cs as child  and observe the old* instance variables
-    // TODO: THIS NEEDS TO BE VERIFIED WITH SPEC    
+    // TODO: THIS NEEDS TO BE VERIFIED WITH SPEC
     //public void testOldSettingsAfterMoveCSDataObjectFromOneOwnerToAnotherDiffChangeSummary() {
     public void testDetachCSRoot() {
         buildTree();
@@ -253,7 +253,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
@@ -265,11 +265,11 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         assertNotNull(dataObjectB.getChangeSummary());
         dataObjectB.detach();
         assertChangeSummaryStatusIfClearedIfCSIsAncestor(dataObjectB, false);
-        
+
         assertNotNull(dataObjectB.getChangeSummary());
         assertNotNull(dataObjectD.getChangeSummary());
         assertEquals(dataObjectB.getChangeSummary(),dataObjectD.getChangeSummary());
-                
+
         assertEquals(0, changeSummaryB.getChangedDataObjects().size());// was 0
         assertEquals(0, changeSummaryC.getChangedDataObjects().size());
 
@@ -283,7 +283,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         assertUnchanged(dataObjectC, changeSummaryC);
         assertUnchanged(dataObjectD, changeSummaryC);
 
-        // oldSettings 
+        // oldSettings
         checkOldSettingsSizeTree("0000", changeSummaryB, root, dataObjectB, dataObjectC, dataObjectD);// 0000
         checkOldSettingsSizeTree("0000", changeSummaryC, root, dataObjectB, dataObjectC, dataObjectD);
 
@@ -296,14 +296,14 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
                           root, null,// root is above csB and csC
                           dataObjectB, null,// B is not in csC scope
                           dataObjectC, root,// C is in csC scope
-                          dataObjectD, null);// D is inside csB scope      
+                          dataObjectD, null);// D is inside csB scope
     }
 
      public void testDeleteCSRoot() {
@@ -339,7 +339,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
@@ -350,8 +350,8 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
 
         assertNotNull(dataObjectB.getChangeSummary());
         dataObjectB.delete();
-        assertChangeSummaryStatusIfClearedIfCSIsAncestor(dataObjectB, false); 
-        
+        assertChangeSummaryStatusIfClearedIfCSIsAncestor(dataObjectB, false);
+
         assertEquals(2, changeSummaryB.getChangedDataObjects().size());// 1
         assertEquals(0, changeSummaryC.getChangedDataObjects().size());
 
@@ -365,7 +365,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         assertUnchanged(dataObjectC, changeSummaryC);
         assertUnchanged(dataObjectD, changeSummaryC);
 
-        // oldSettings 
+        // oldSettings
         checkOldSettingsSizeTree("0101", changeSummaryB, root, dataObjectB, dataObjectC, dataObjectD);// 0000
         checkOldSettingsSizeTree("0000", changeSummaryC, root, dataObjectB, dataObjectC, dataObjectD);
 
@@ -378,14 +378,14 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
                           root, null,// root is above csB and csC
                           dataObjectB, null,// B is not in csC scope
                           dataObjectC, root,// C is in csC scope
-                          dataObjectD, null);// D is inside csB scope      
+                          dataObjectD, null);// D is inside csB scope
     }
 
     // perform a move of a cs root (delete CCB) to another cs as child  and observe the old* instance variables
@@ -422,7 +422,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
@@ -451,7 +451,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         assertUnchanged(dataObjectC, changeSummaryC);
         assertUnchanged(dataObjectD, changeSummaryC);
 
-        // oldSettings 
+        // oldSettings
         checkOldSettingsSizeTree("0101", changeSummaryB, root, dataObjectB, dataObjectC, dataObjectD);
         checkOldSettingsSizeTree("0000", changeSummaryC, root, dataObjectB, dataObjectC, dataObjectD);
 
@@ -464,7 +464,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
@@ -502,7 +502,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
@@ -545,7 +545,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
@@ -572,8 +572,8 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         assertUnchanged(dataObjectC, changeSummaryC);
         assertUnchanged(dataObjectD, changeSummaryC);
 
-        // oldSettings 
-        // not in changeSummary        
+        // oldSettings
+        // not in changeSummary
         checkOldSettingsSizeTree("0101", changeSummaryB, root, dataObjectB, dataObjectC, dataObjectD);// 0100
         checkOldSettingsSizeTree("0000", changeSummaryC, root, dataObjectB, dataObjectC, dataObjectD);
 
@@ -586,7 +586,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
@@ -624,7 +624,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
@@ -661,7 +661,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
 
     }
 
-    // purpose: verify that the CS is cleared 
+    // purpose: verify that the CS is cleared
     public void testUnsetChildOfCS() {
         rootType.addDeclaredProperty(rootChangeSummaryProperty);
         root = (SDODataObject)dataFactory.create(rootType);
@@ -674,17 +674,17 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         assertUnchanged(dataObjectC, changeSummaryA);
         assertUnchanged(dataObjectD, changeSummaryA);
 
-        assertNotNull(dataObjectD.getChangeSummary());        
+        assertNotNull(dataObjectD.getChangeSummary());
         dataObjectB.unset(propertyB); // unset D
         // verify CS is null on removed trees
-        assertChangeSummaryStatusIfClearedIfCSIsAncestor(dataObjectD, true);       
+        assertChangeSummaryStatusIfClearedIfCSIsAncestor(dataObjectD, true);
 
         assertUnchanged(root, changeSummaryA);
         assertModified(dataObjectB, changeSummaryA);
         assertUnchanged(dataObjectC, changeSummaryA);
         assertDetached(dataObjectD, changeSummaryA);
     }
-    
+
     public void testIsCreatedAfterUseUnset() {
         rootType.addDeclaredProperty(rootChangeSummaryProperty);
         root = (SDODataObject)dataFactory.create(rootType);
@@ -700,7 +700,7 @@ public class ChangeSummaryCreatedModifiedDeletedTests extends ChangeSummaryCreat
         assertNotNull(dataObjectD.getChangeSummary());
         dataObjectB.unset(propertyB);
         // verify CS is null on removed trees
-        assertChangeSummaryStatusIfClearedIfCSIsAncestor(dataObjectB, false);       
+        assertChangeSummaryStatusIfClearedIfCSIsAncestor(dataObjectB, false);
 
         assertUnchanged(root, changeSummaryA);
         assertModified(dataObjectB, changeSummaryA);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,7 +38,7 @@ public class ExpressionBuilderTestSuite extends TestCase {
         testUnitOfWorkInExpressionBuilder();
     }
 
-	// Bug# 429232 - Instance of UnitOfWork is stored in ExpressionBuilder inside ConcurrentFixedCache
+    // Bug# 429232 - Instance of UnitOfWork is stored in ExpressionBuilder inside ConcurrentFixedCache
     // Make sure that [ExpressionBuilder].setSession() will not store UnitOfWork inside builder even
     // when UnitOfWork is passed as an argument.
     public void testUnitOfWorkInExpressionBuilder() {

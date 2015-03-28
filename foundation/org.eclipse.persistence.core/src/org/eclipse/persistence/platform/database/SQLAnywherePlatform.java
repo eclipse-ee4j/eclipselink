@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates, Markus KARG(markus-karg@users.sourceforge.net),
  * IBM Corporation. All rights reserved. This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * under the terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -13,7 +13,7 @@
  *       - 237843: CONCAT must be translated into || instead of +
  *     02/23/2015-2.6 Dalia Abo Sheasha
  *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  * Provides SQL Anywhere specific behaviour.
- * 
+ *
  * @author Markus KARG (markus-karg@users.sourceforge.net)
  */
 public class SQLAnywherePlatform extends SybasePlatform {
@@ -38,7 +38,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
         super();
         this.storedProcedureTerminationToken = ";";
     }
-    
+
 // TODO: can't use these field types: none of them has sizes.
 // That results is using defaults, that seem to be 9 for VARCHAR
 // and neither FeatureTestModel nor AggregateTestModel would setup because of that.
@@ -114,8 +114,8 @@ public class SQLAnywherePlatform extends SybasePlatform {
     }
 
     /**
-     * Used for stored procedure creation: Prefix for INPUT parameters. 
-     * Not required on most platforms. 
+     * Used for stored procedure creation: Prefix for INPUT parameters.
+     * Not required on most platforms.
      */
     @Override
     public String getInputProcedureToken() {
@@ -134,7 +134,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
     public String getCreationOutputProcedureToken() {
         return "OUT";
     }
-    
+
     /* This method is used to print the output parameter token when stored
      * procedures are called
      */
@@ -160,7 +160,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
     public String getStoredProcedureParameterPrefix() {
         return "";
     }
-    
+
     @Override
     public String getProcedureAsString() {
         return "";

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,79 +28,79 @@ import org.eclipse.persistence.tools.workbench.utility.filters.Filter;
 
 /**
  * Simple test class for playing around with the MultipleClassChooserDialog.
- * 
+ *
  * Optional command line parm:
- * 	the classpath used to populate the "available" classes list;
+ *     the classpath used to populate the "available" classes list;
  * if this is not specified, all the classes on the current classpath will be used
  */
 public class MultipleClassChooserDialogUITest {
-	private String classpath;
+    private String classpath;
 
-	public static void main(String[] args) {
-		new MultipleClassChooserDialogUITest().exec(args);
-	}
-	
-	private MultipleClassChooserDialogUITest() {
-		super();
-	}
+    public static void main(String[] args) {
+        new MultipleClassChooserDialogUITest().exec(args);
+    }
 
-	private void exec(String[] args) {
-		if ((args == null) || (args.length == 0)) {
-			this.classpath = Classpath.completeClasspath().path();
-		}  else {
-			this.classpath = args[0];
-		}
-		MultipleClassChooserDialog dialog = null;
-		for (boolean cancel = true; cancel; ) {
-			dialog = this.buildDialog();
-			dialog.show();
-			cancel = dialog.wasCanceled();
-		}
-		System.out.println("selected classes:");
-		for (Iterator stream = dialog.selectedClassDescriptions(); stream.hasNext(); ) {
-			System.out.print("\t");
-			System.out.print(stream.next());
-			System.out.println();
-		}
-		System.out.println("*****");
-		System.exit(0);
-	}
+    private MultipleClassChooserDialogUITest() {
+        super();
+    }
 
-	private MultipleClassChooserDialog buildDialog() {
-		return new MultipleClassChooserDialog(
-						this.buildWorkbenchContext(),
-						this.buildClassDescriptionRepository(),
-						new ClasspathClassDescription.Adapter()
-				);
-	}
+    private void exec(String[] args) {
+        if ((args == null) || (args.length == 0)) {
+            this.classpath = Classpath.completeClasspath().path();
+        }  else {
+            this.classpath = args[0];
+        }
+        MultipleClassChooserDialog dialog = null;
+        for (boolean cancel = true; cancel; ) {
+            dialog = this.buildDialog();
+            dialog.show();
+            cancel = dialog.wasCanceled();
+        }
+        System.out.println("selected classes:");
+        for (Iterator stream = dialog.selectedClassDescriptions(); stream.hasNext(); ) {
+            System.out.print("\t");
+            System.out.print(stream.next());
+            System.out.println();
+        }
+        System.out.println("*****");
+        System.exit(0);
+    }
 
-	/**
-	 * 
-	 */
-	private ClassDescriptionRepository buildClassDescriptionRepository() {
-		return new LocalClasspathClassDescriptionRepository(this.classpath);
-	}
+    private MultipleClassChooserDialog buildDialog() {
+        return new MultipleClassChooserDialog(
+                        this.buildWorkbenchContext(),
+                        this.buildClassDescriptionRepository(),
+                        new ClasspathClassDescription.Adapter()
+                );
+    }
 
-	private WorkbenchContext buildWorkbenchContext() {
-		return new TestWorkbenchContext(null, "org.eclipse.persistence.tools.workbench.mappingsplugin.MappingsPluginIconResourceFileNameMap");
-	}
-	
-	private static class LocalClasspathClassDescriptionRepository extends ClasspathClassDescriptionRepository {
-		LocalClasspathClassDescriptionRepository(String classpath) {
-			super(classpath);
-		}
+    /**
+     *
+     */
+    private ClassDescriptionRepository buildClassDescriptionRepository() {
+        return new LocalClasspathClassDescriptionRepository(this.classpath);
+    }
 
-		/**
-		 * filter out all the "local" and "anonymous" classes
-		 */
-		protected Filter classNameFilter() {
-			return new Filter() {
-				public boolean accept(Object o) {
-					return ClassTools.classNamedIsDeclarable((String) o);
-				}
-			};
-		}
+    private WorkbenchContext buildWorkbenchContext() {
+        return new TestWorkbenchContext(null, "org.eclipse.persistence.tools.workbench.mappingsplugin.MappingsPluginIconResourceFileNameMap");
+    }
 
-	}
+    private static class LocalClasspathClassDescriptionRepository extends ClasspathClassDescriptionRepository {
+        LocalClasspathClassDescriptionRepository(String classpath) {
+            super(classpath);
+        }
+
+        /**
+         * filter out all the "local" and "anonymous" classes
+         */
+        protected Filter classNameFilter() {
+            return new Filter() {
+                public boolean accept(Object o) {
+                    return ClassTools.classNamedIsDeclarable((String) o);
+                }
+            };
+        }
+
+    }
 
 }

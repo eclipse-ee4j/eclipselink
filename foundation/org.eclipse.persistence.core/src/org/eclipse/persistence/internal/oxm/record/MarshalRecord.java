@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -90,7 +90,7 @@ public interface MarshalRecord<
     public void endPrefixMapping(String prefix);
 
     public void flush();
-    
+
     public void forceValueWrapper();
 
     public CoreAttributeGroup getCurrentAttributeGroup();
@@ -141,9 +141,9 @@ public interface MarshalRecord<
     public void setLeafElementType(QName leafElementType);
 
     public void setMarshaller(MARSHALLER marshaller);
-    
+
     public void startCollection();
-    
+
     public void startPrefixMapping(String prefix, String uri);
 
     /**
@@ -152,7 +152,7 @@ public interface MarshalRecord<
     public static class CycleDetectionStack<E> extends AbstractList<Object> {
 
         private Object[] data = new Object[8];
-        
+
         int currentIndex = 0;
 
         public void push(E item) {
@@ -168,7 +168,7 @@ public interface MarshalRecord<
             System.arraycopy(data, 0, newArray, 0, data.length);
             data = newArray;
         }
-        
+
         public Object pop() {
             Object o = data[currentIndex - 1];
             data[currentIndex - 1] = null;

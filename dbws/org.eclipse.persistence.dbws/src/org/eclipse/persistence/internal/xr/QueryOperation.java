@@ -114,7 +114,7 @@ public class QueryOperation extends Operation {
     protected static final String RESULTS_STR = "results";
     protected static final String VALUEOBJECT_STR = "ValueObject";
     protected static final String VALUE_STR = "value";
-    protected static final String SIMPLEXML_FORMAT_STR = "/simple-xml-format";    
+    protected static final String SIMPLEXML_FORMAT_STR = "/simple-xml-format";
     protected static final String SIMPLEXML_STR = "simpleXML";
     protected static final String DATABASEQUERY_STR = "databasequery";
     protected static final String ITEMS_STR = "ITEMS";
@@ -122,7 +122,7 @@ public class QueryOperation extends Operation {
     protected static final String XSI_STR = "xmlns:xsi";
     protected static final String XSITYPE_STR = "xsi:type";
     protected static final String BASE64_BINARY_STR = "xsd:base64Binary";
-    
+
     protected Result result;
     protected QueryHandler queryHandler;
     protected boolean userDefined = true;
@@ -367,7 +367,7 @@ public class QueryOperation extends Operation {
     @Override
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
         DatabaseQuery query = queryHandler.getDatabaseQuery();
-        
+
         if (query.getProperty(DATABASEQUERY_STR) != null) {
             query = (DatabaseQuery) query.getProperty(DATABASEQUERY_STR);
         }
@@ -394,13 +394,13 @@ public class QueryOperation extends Operation {
         if (isSimpleXMLFormat() && query.isDataReadQuery()) {
             ((DataReadQuery) query).setResultType(DataReadQuery.MAP);
         }
-        
+
         // now execute the query
         Object value = xrService.getORSession().getActiveSession().executeQuery(query);
 
         if (value != null) {
-        	// a recent change in core results in an empty vector being returned in cases
-        	// where before we'd expect an int value (typically 1) - need to handle this
+            // a recent change in core results in an empty vector being returned in cases
+            // where before we'd expect an int value (typically 1) - need to handle this
             if (result != null && (result.getType() == INT_QNAME || result.getType().equals(SXF_QNAME))) {
                 if (value instanceof ArrayList && ((ArrayList) value).isEmpty()) {
                     ((ArrayList) value).add(1);
@@ -408,7 +408,7 @@ public class QueryOperation extends Operation {
                     ((Vector) value).add(1);
                 }
             }
-        	
+
             // JPA spec returns an ArrayList<Object[]> for stored procedure queries - will need to unwrap.
             // Note that for legacy deployment XML projects this is not the case.
             if (value instanceof ArrayList) {
@@ -425,7 +425,7 @@ public class QueryOperation extends Operation {
                     }
                 }
             }
-         
+
             // handle SimpleXML
             if (isSimpleXMLFormat()) {
                 value = createSimpleXMLFormat(xrService, value);
@@ -436,8 +436,8 @@ public class QueryOperation extends Operation {
                         return null;
                     }
                     value = ((Vector) value).firstElement();
-                }            
-                
+                }
+
                 QName resultType = getResultType();
                 if (resultType != null) {
                     // handle binary content
@@ -490,7 +490,7 @@ public class QueryOperation extends Operation {
                                     populateTargetObjectFromRecord(desc.getMappings(), results.get(i), o, (AbstractSession)xrService.getORSession());
                                     xrCollWrapper.add(o);
                                 }
-                                targetObject = xrCollWrapper;                                
+                                targetObject = xrCollWrapper;
                             } else if (value instanceof AbstractRecord) {
                                 targetObject = desc.getObjectBuilder().buildNewInstance();
                                 populateTargetObjectFromRecord(desc.getMappings(), (AbstractRecord) value, targetObject, (AbstractSession)xrService.getORSession());
@@ -505,7 +505,7 @@ public class QueryOperation extends Operation {
                             DatabaseRecord dr = new DatabaseRecord();
                             dr.add(new DatabaseField(ITEMS_STR), objs);
                             populateTargetObjectFromRecord(desc.getMappings(), (AbstractRecord) dr, targetObject, (AbstractSession)xrService.getORSession());
-                        }                        
+                        }
                         value = targetObject;
                     }
                 }
@@ -599,7 +599,7 @@ public class QueryOperation extends Operation {
                     if (xrService.getOXSession().getDescriptor(ordtField.getType()) != null) {
                         xrService.getXMLContext().createMarshaller().marshal(dr.get(field), rowElement);
                         continue;
-                    }	  
+                    }
                 }
                 Object fieldValue = dr.get(field);
                 if (fieldValue != null) {
@@ -661,7 +661,7 @@ public class QueryOperation extends Operation {
                         } catch (Exception x) {
                             // if the required resources are not available there's nothing we can do...
                         }
-                    } 
+                    }
 
                     String elementName;
                     if (field.getName() == null || (elementName = sqlToXmlName(field.getName())).equals(EMPTY_STR)) {

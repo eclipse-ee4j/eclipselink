@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -71,27 +71,27 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
     public static final String ARECORD_DESCRIPTOR_JAVACLASSNAME = ARECORD_DATABASETYPE.toLowerCase();
 
     static final String CREATE_PACKAGE_OXPACKAGE =
-    	"CREATE OR REPLACE PACKAGE OXPACKAGE AS" +
+        "CREATE OR REPLACE PACKAGE OXPACKAGE AS" +
             "\nTYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
-    	    "\nTYPE TBL2 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
+            "\nTYPE TBL2 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
             "\nTYPE ARECORD IS RECORD (" +
-    	        "\nT1 TBL1," +
+                "\nT1 TBL1," +
                 "\nT2 TBL2," +
-    	        "\nT3 BOOLEAN" +
+                "\nT3 BOOLEAN" +
             "\n);" +
-    	    "\nTYPE TBL3 IS TABLE OF ARECORD INDEX BY PLS_INTEGER;" +
+            "\nTYPE TBL3 IS TABLE OF ARECORD INDEX BY PLS_INTEGER;" +
             "\nTYPE TBL4 IS TABLE OF TBL2 INDEX BY PLS_INTEGER;" +
-    	    "\nPROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
-    	    "\nPROCEDURE P2(OLD IN TBL2, NEW IN TBL2);" +
-    	    "\nPROCEDURE P4(REC IN ARECORD);" +
-    	    "\nPROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD);" +
-    	    "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
-    	    "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2);" +
-    	    "\nPROCEDURE P8(FOO IN VARCHAR2);" +
-    	    "\nPROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2);" +
-    	    "\nFUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2;" +
-    	    "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3;" +
-    	"\nEND OXPACKAGE;";
+            "\nPROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
+            "\nPROCEDURE P2(OLD IN TBL2, NEW IN TBL2);" +
+            "\nPROCEDURE P4(REC IN ARECORD);" +
+            "\nPROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD);" +
+            "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
+            "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2);" +
+            "\nPROCEDURE P8(FOO IN VARCHAR2);" +
+            "\nPROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2);" +
+            "\nFUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2;" +
+            "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3;" +
+        "\nEND OXPACKAGE;";
 
     static final String CREATE_PACKAGE_BODY_OXPACKAGE =
         "\nCREATE OR REPLACE PACKAGE BODY OXPACKAGE AS" +
@@ -140,32 +140,32 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
          "\nEND OXPACKAGE;";
 
     static final String CREATE_TYPE_OXPACKAGE_TBL1 =
-    	"CREATE OR REPLACE TYPE OXPACKAGE_TBL1 AS TABLE OF VARCHAR2(111)";
+        "CREATE OR REPLACE TYPE OXPACKAGE_TBL1 AS TABLE OF VARCHAR2(111)";
     static final String CREATE_TYPE_OXPACKAGE_TBL2 =
-    	"CREATE OR REPLACE TYPE OXPACKAGE_TBL2 AS TABLE OF NUMBER";
+        "CREATE OR REPLACE TYPE OXPACKAGE_TBL2 AS TABLE OF NUMBER";
     static final String CREATE_TYPE_OXPACKAGE_ARECORD =
         "CREATE OR REPLACE TYPE OXPACKAGE_ARECORD AS OBJECT (" +
-    	      "\nT1 OXPACKAGE_TBL1," +
-    	      "\nT2 OXPACKAGE_TBL2," +
-    	      "\nT3 INTEGER" +
-    	 "\n)";
+              "\nT1 OXPACKAGE_TBL1," +
+              "\nT2 OXPACKAGE_TBL2," +
+              "\nT3 INTEGER" +
+         "\n)";
     static final String CREATE_TYPE_OXPACKAGE_TBL3 =
-    	"CREATE OR REPLACE TYPE OXPACKAGE_TBL3 AS TABLE OF OXPACKAGE_ARECORD";
+        "CREATE OR REPLACE TYPE OXPACKAGE_TBL3 AS TABLE OF OXPACKAGE_ARECORD";
     static final String CREATE_TYPE_OXPACKAGE_TBL4 =
-    	"CREATE OR REPLACE TYPE OXPACKAGE_TBL4 AS TABLE OF OXPACKAGE_TBL2";
+        "CREATE OR REPLACE TYPE OXPACKAGE_TBL4 AS TABLE OF OXPACKAGE_TBL2";
 
     static final String DROP_PACKAGE_OXPACKAGE =
         "DROP PACKAGE OXPACKAGE";
     static final String DROP_TYPE_OXPACKAGE_TBL1=
-    	"DROP TYPE OXPACKAGE_TBL1 FORCE";
+        "DROP TYPE OXPACKAGE_TBL1 FORCE";
     static final String DROP_TYPE_OXPACKAGE_TBL2=
-       	"DROP TYPE OXPACKAGE_TBL2 FORCE";
+           "DROP TYPE OXPACKAGE_TBL2 FORCE";
     static final String DROP_TYPE_OXPACKAGE_ARECORD=
-       	"DROP TYPE OXPACKAGE_ARECORD FORCE";
+           "DROP TYPE OXPACKAGE_ARECORD FORCE";
     static final String DROP_TYPE_OXPACKAGE_TBL3=
         "DROP TYPE OXPACKAGE_TBL3 FORCE";
     static final String DROP_TYPE_OXPACKAGE_TBL4=
-       	"DROP TYPE OXPACKAGE_TBL4 FORCE";
+           "DROP TYPE OXPACKAGE_TBL4 FORCE";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -251,12 +251,12 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
     // TEST METHODS
     @Test
     public void p1Test() {
-    	XMLDescriptor tbl1Desc = null;
+        XMLDescriptor tbl1Desc = null;
         for (ClassDescriptor cDesc : builder.getOxProject().getOrderedDescriptors()) {
-        	if (cDesc.getAlias().equals(TBL1_DESCRIPTOR_ALIAS)) {
-        		tbl1Desc = (XMLDescriptor) cDesc;
-        		break;
-        	}
+            if (cDesc.getAlias().equals(TBL1_DESCRIPTOR_ALIAS)) {
+                tbl1Desc = (XMLDescriptor) cDesc;
+                break;
+            }
         }
         assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         tbl1Asserts(tbl1Desc);
@@ -264,12 +264,12 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
 
     @Test
     public void p2test() {
-    	XMLDescriptor tbl2Desc = null;
+        XMLDescriptor tbl2Desc = null;
         for (ClassDescriptor cDesc : builder.getOxProject().getOrderedDescriptors()) {
-        	if (cDesc.getAlias().equals(TBL2_DESCRIPTOR_ALIAS)) {
-        		tbl2Desc = (XMLDescriptor) cDesc;
-        		break;
-        	}
+            if (cDesc.getAlias().equals(TBL2_DESCRIPTOR_ALIAS)) {
+                tbl2Desc = (XMLDescriptor) cDesc;
+                break;
+            }
         }
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
         tbl2Asserts(tbl2Desc);
@@ -277,18 +277,18 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
 
     @Test
     public void p4test() {
-    	XMLDescriptor tbl1Desc = null;
-    	XMLDescriptor tbl2Desc = null;
-    	XMLDescriptor aRecDesc = null;
+        XMLDescriptor tbl1Desc = null;
+        XMLDescriptor tbl2Desc = null;
+        XMLDescriptor aRecDesc = null;
         for (ClassDescriptor cDesc : builder.getOxProject().getOrderedDescriptors()) {
-        	String alias = cDesc.getAlias();
-        	if (alias.equals(TBL1_DESCRIPTOR_ALIAS)) {
-        		tbl1Desc = (XMLDescriptor) cDesc;
-        	} else if (alias.equals(TBL2_DESCRIPTOR_ALIAS)) {
-        		tbl2Desc = (XMLDescriptor) cDesc;
-        	} else if (alias.equals(ARECORD_DESCRIPTOR_ALIAS)) {
-        		aRecDesc = (XMLDescriptor) cDesc;
-        	}
+            String alias = cDesc.getAlias();
+            if (alias.equals(TBL1_DESCRIPTOR_ALIAS)) {
+                tbl1Desc = (XMLDescriptor) cDesc;
+            } else if (alias.equals(TBL2_DESCRIPTOR_ALIAS)) {
+                tbl2Desc = (XMLDescriptor) cDesc;
+            } else if (alias.equals(ARECORD_DESCRIPTOR_ALIAS)) {
+                aRecDesc = (XMLDescriptor) cDesc;
+            }
         }
         assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
@@ -301,18 +301,18 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
 
     @Test
     public void p5test() {
-    	XMLDescriptor tbl1Desc = null;
-    	XMLDescriptor tbl2Desc = null;
-    	XMLDescriptor aRecDesc = null;
+        XMLDescriptor tbl1Desc = null;
+        XMLDescriptor tbl2Desc = null;
+        XMLDescriptor aRecDesc = null;
         for (ClassDescriptor cDesc : builder.getOxProject().getOrderedDescriptors()) {
-        	String alias = cDesc.getAlias();
-        	if (alias.equals(TBL1_DESCRIPTOR_ALIAS)) {
-        		tbl1Desc = (XMLDescriptor) cDesc;
-        	} else if (alias.equals(TBL2_DESCRIPTOR_ALIAS)) {
-        		tbl2Desc = (XMLDescriptor) cDesc;
-        	} else if (alias.equals(ARECORD_DESCRIPTOR_ALIAS)) {
-        		aRecDesc = (XMLDescriptor) cDesc;
-        	}
+            String alias = cDesc.getAlias();
+            if (alias.equals(TBL1_DESCRIPTOR_ALIAS)) {
+                tbl1Desc = (XMLDescriptor) cDesc;
+            } else if (alias.equals(TBL2_DESCRIPTOR_ALIAS)) {
+                tbl2Desc = (XMLDescriptor) cDesc;
+            } else if (alias.equals(ARECORD_DESCRIPTOR_ALIAS)) {
+                aRecDesc = (XMLDescriptor) cDesc;
+            }
         }
         assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
@@ -325,13 +325,13 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
 
     @Test
     public void p7test() {
-    	XMLDescriptor tbl1Desc = null;
+        XMLDescriptor tbl1Desc = null;
         for (ClassDescriptor cDesc : builder.getOxProject().getOrderedDescriptors()) {
-        	String alias = cDesc.getAlias();
-        	if (alias.equals(TBL1_DESCRIPTOR_ALIAS)) {
-        		tbl1Desc = (XMLDescriptor) cDesc;
-        		break;
-        	}
+            String alias = cDesc.getAlias();
+            if (alias.equals(TBL1_DESCRIPTOR_ALIAS)) {
+                tbl1Desc = (XMLDescriptor) cDesc;
+                break;
+            }
         }
         assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         tbl1Asserts(tbl1Desc);
@@ -339,15 +339,15 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
 
     @Test
     public void f2test() {
-    	XMLDescriptor tbl1Desc = null;
-    	XMLDescriptor tbl2Desc = null;
+        XMLDescriptor tbl1Desc = null;
+        XMLDescriptor tbl2Desc = null;
         for (ClassDescriptor cDesc : builder.getOxProject().getOrderedDescriptors()) {
-        	String alias = cDesc.getAlias();
-        	if (alias.equals(TBL1_DESCRIPTOR_ALIAS)) {
-        		tbl1Desc = (XMLDescriptor) cDesc;
-        	} else if (alias.equals(TBL2_DESCRIPTOR_ALIAS)) {
-        		tbl2Desc = (XMLDescriptor) cDesc;
-        	}
+            String alias = cDesc.getAlias();
+            if (alias.equals(TBL1_DESCRIPTOR_ALIAS)) {
+                tbl1Desc = (XMLDescriptor) cDesc;
+            } else if (alias.equals(TBL2_DESCRIPTOR_ALIAS)) {
+                tbl2Desc = (XMLDescriptor) cDesc;
+            }
         }
         assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
@@ -357,21 +357,21 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
 
     @Test
     public void f4Test() {
-    	XMLDescriptor tbl1Desc = null;
-    	XMLDescriptor tbl2Desc = null;
-    	XMLDescriptor tbl3Desc = null;
-    	XMLDescriptor aRecDesc = null;
+        XMLDescriptor tbl1Desc = null;
+        XMLDescriptor tbl2Desc = null;
+        XMLDescriptor tbl3Desc = null;
+        XMLDescriptor aRecDesc = null;
         for (ClassDescriptor cDesc : builder.getOxProject().getOrderedDescriptors()) {
-        	String alias = cDesc.getAlias();
-        	if (alias.equals(TBL1_DESCRIPTOR_ALIAS)) {
-        		tbl1Desc = (XMLDescriptor) cDesc;
-        	} else if (alias.equals(TBL2_DESCRIPTOR_ALIAS)) {
-        		tbl2Desc = (XMLDescriptor) cDesc;
-        	} else if (alias.equals(TBL3_DESCRIPTOR_ALIAS)) {
-        		tbl3Desc = (XMLDescriptor) cDesc;
-        	} else if (alias.equals(ARECORD_DESCRIPTOR_ALIAS)) {
-        		aRecDesc = (XMLDescriptor) cDesc;
-        	}
+            String alias = cDesc.getAlias();
+            if (alias.equals(TBL1_DESCRIPTOR_ALIAS)) {
+                tbl1Desc = (XMLDescriptor) cDesc;
+            } else if (alias.equals(TBL2_DESCRIPTOR_ALIAS)) {
+                tbl2Desc = (XMLDescriptor) cDesc;
+            } else if (alias.equals(TBL3_DESCRIPTOR_ALIAS)) {
+                tbl3Desc = (XMLDescriptor) cDesc;
+            } else if (alias.equals(ARECORD_DESCRIPTOR_ALIAS)) {
+                aRecDesc = (XMLDescriptor) cDesc;
+            }
         }
         assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);

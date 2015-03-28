@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,15 +65,15 @@ public class RootObject {
             XMLPlatform platform = XMLPlatformFactory.getInstance().getXMLPlatform();
             Document doc = platform.createDocument();
             Element elem = doc.createElement("data");
-            
+
             Element foo = doc.createElement("foo");
             Text txt = doc.createTextNode("bar");
             foo.appendChild(txt);
             elem.appendChild(foo);
             doc.appendChild(elem);
-            
+
             return elem;
-            
+
         }
 
         @Override
@@ -88,10 +88,10 @@ public class RootObject {
         }
 
     }
-    
+
     public boolean equals(Object obj) {
         RootObject ro = (RootObject)obj;
-        
+
         return this.title.equals(ro.title) && this.data.equals(ro.data);
     }
 

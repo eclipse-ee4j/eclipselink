@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbynamespace.withgroupingelement;
 
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
@@ -33,8 +33,8 @@ public class CompositeCollectionWithGroupingElementIdentifiedByNamespaceProject 
 
   public CompositeCollectionWithGroupingElementIdentifiedByNamespaceProject() {
     namespaceResolver = new NamespaceResolver();
-		namespaceResolver.put(EMAIL_PREFIX, EMAIL_NAMESPACE);
-		namespaceResolver.put(MAILING_PREFIX, MAILING_NAMESPACE);
+        namespaceResolver.put(EMAIL_PREFIX, EMAIL_NAMESPACE);
+        namespaceResolver.put(MAILING_PREFIX, MAILING_NAMESPACE);
 
     addDescriptor(getEmployeeDescriptor());
     addDescriptor(getEmailAddressDescriptor());
@@ -45,7 +45,7 @@ public class CompositeCollectionWithGroupingElementIdentifiedByNamespaceProject 
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(Employee.class);
     descriptor.setDefaultRootElement("employee");
-		descriptor.setNamespaceResolver(namespaceResolver);
+        descriptor.setNamespaceResolver(namespaceResolver);
 
     XMLCompositeCollectionMapping emailMapping = new XMLCompositeCollectionMapping();
     emailMapping.setAttributeName("emailAddresses");
@@ -53,73 +53,73 @@ public class CompositeCollectionWithGroupingElementIdentifiedByNamespaceProject 
     emailMapping.setReferenceClass(EmailAddress.class);
     emailMapping.setXPath(EMAIL_PREFIX + ":addresses/" + EMAIL_PREFIX + ":address");
     descriptor.addMapping(emailMapping);
-    
+
     XMLCompositeCollectionMapping mailingMapping = new XMLCompositeCollectionMapping();
     mailingMapping.setAttributeName("mailingAddresses");
     mailingMapping.useCollectionClass(java.util.Vector.class);
     mailingMapping.setReferenceClass(MailingAddress.class);
     mailingMapping.setXPath(MAILING_PREFIX + ":addresses/" + MAILING_PREFIX + ":address");
     descriptor.addMapping(mailingMapping);
-    
+
     return descriptor;
   }
 
   private XMLDescriptor getEmailAddressDescriptor() {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(EmailAddress.class);
-		descriptor.setNamespaceResolver(namespaceResolver);
-    
+        descriptor.setNamespaceResolver(namespaceResolver);
+
     XMLDirectMapping userIDMapping = new XMLDirectMapping();
     userIDMapping.setAttributeName("userID");
     userIDMapping.setXPath(EMAIL_PREFIX + ":user-id/text()");
-    descriptor.addMapping(userIDMapping);   
+    descriptor.addMapping(userIDMapping);
 
     XMLDirectMapping domainMapping = new XMLDirectMapping();
     domainMapping.setAttributeName("domain");
     domainMapping.setXPath(EMAIL_PREFIX + ":domain/text()");
-    descriptor.addMapping(domainMapping);   
-    
+    descriptor.addMapping(domainMapping);
+
     XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
     schemaRef.setSchemaContext("/email:addressType");
     schemaRef.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
-    descriptor.setSchemaReference(schemaRef);    
+    descriptor.setSchemaReference(schemaRef);
 
 
     return descriptor;
-  }  
+  }
 
   private XMLDescriptor getMailingAddressDescriptor() {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(MailingAddress.class);
-		descriptor.setNamespaceResolver(namespaceResolver);
-    
+        descriptor.setNamespaceResolver(namespaceResolver);
+
     XMLDirectMapping streetMapping = new XMLDirectMapping();
     streetMapping.setAttributeName("street");
     streetMapping.setXPath(MAILING_PREFIX + ":street/text()");
-    descriptor.addMapping(streetMapping);   
+    descriptor.addMapping(streetMapping);
 
     XMLDirectMapping cityMapping = new XMLDirectMapping();
     cityMapping.setAttributeName("city");
     cityMapping.setXPath(MAILING_PREFIX + ":city/text()");
-    descriptor.addMapping(cityMapping);   
+    descriptor.addMapping(cityMapping);
 
     XMLDirectMapping provinceMapping = new XMLDirectMapping();
     provinceMapping.setAttributeName("province");
     provinceMapping.setXPath(MAILING_PREFIX + ":province/text()");
-    descriptor.addMapping(provinceMapping);   
+    descriptor.addMapping(provinceMapping);
 
     XMLDirectMapping postalCodeMapping = new XMLDirectMapping();
     postalCodeMapping.setAttributeName("postalCode");
     postalCodeMapping.setXPath(MAILING_PREFIX + ":postal-code/text()");
-    descriptor.addMapping(postalCodeMapping);   
-    
+    descriptor.addMapping(postalCodeMapping);
+
        XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
     schemaRef.setSchemaContext("/mailing:addressType");
     schemaRef.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
-    descriptor.setSchemaReference(schemaRef);    
+    descriptor.setSchemaReference(schemaRef);
 
 
     return descriptor;
-  }    
-  
+  }
+
 }

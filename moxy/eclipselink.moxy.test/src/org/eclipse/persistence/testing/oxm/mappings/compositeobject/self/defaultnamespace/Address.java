@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -20,7 +20,7 @@ public class Address {
     public String state;
     public String postalCode;
     public String countryCode;
-    
+
     public boolean equals(Object obj) {
         Address objAdd;
         try {
@@ -28,7 +28,7 @@ public class Address {
         } catch (ClassCastException cce) {
             return false;
         }
-        
+
         if ((!attentionOfName.equals(objAdd.attentionOfName)) ||
                 (!careOfName.equals(objAdd.careOfName)) ||
                 (!city.equals(objAdd.city)) ||
@@ -40,7 +40,7 @@ public class Address {
         }
         return true;
     }
-    
+
     public String toString() {
         return "Address: " + attentionOfName + ", " + careOfName + ", addressLines[" + addressLines + "], " + city + ", " + state + ", " + postalCode + ", " +countryCode;
     }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Denise Smith - December 15, 2009
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection;
 
 import java.io.ByteArrayInputStream;
@@ -114,51 +114,51 @@ public class EmployeeWithByteArrayObject {
 
         boolean equal = true;
 
-        
+
         // hash equality changes
         for (int i = 0; i < getPhotos().size(); i++) {
-        	try{
+            try{
                 equal = equal && equalByteArrays((Byte[])getPhotos().get(i), (Byte[])employeeObject.getPhotos().get(i));
-        	}catch(ClassCastException e){
-        		equal = equal && equalDataHandlers((DataHandler)getPhotos().get(i), (DataHandler)employeeObject.getPhotos().get(i));
-        	}
+            }catch(ClassCastException e){
+                equal = equal && equalDataHandlers((DataHandler)getPhotos().get(i), (DataHandler)employeeObject.getPhotos().get(i));
+            }
         }
         return equal;
     }
 
     private boolean equalDataHandlers(DataHandler data, DataHandler data2){
-    	if(!data.getContentType().equals(data2.getContentType())){
-    	    return false;
-    	}
-	    try {
-	    	Object obj1 =  data.getContent();
-	    	Object obj2 =  data2.getContent();
-	    	if(data.getContent() instanceof ByteArrayInputStream && data2.getContent() instanceof ByteArrayInputStream){
-	    		ByteArrayInputStream controlStream = ((ByteArrayInputStream)data.getContent());
-	    		ByteArrayInputStream testStream = ((ByteArrayInputStream)data2.getContent());
-	    		if(controlStream.available() != testStream.available()){
-	    			return false;
-	    		}
-	    		
-	    		Byte[] controlBytes = new Byte[controlStream.available()];
-	    		Byte[] testBytes = new Byte[testStream.available()];
-	    		
-	    		if(!equalByteArrays(controlBytes, testBytes)){
-	    			return false;
-	    		}    	    		
+        if(!data.getContentType().equals(data2.getContentType())){
+            return false;
+        }
+        try {
+            Object obj1 =  data.getContent();
+            Object obj2 =  data2.getContent();
+            if(data.getContent() instanceof ByteArrayInputStream && data2.getContent() instanceof ByteArrayInputStream){
+                ByteArrayInputStream controlStream = ((ByteArrayInputStream)data.getContent());
+                ByteArrayInputStream testStream = ((ByteArrayInputStream)data2.getContent());
+                if(controlStream.available() != testStream.available()){
+                    return false;
+                }
 
-	    	}else{
-				if(!data.getContent().equals(data2.getContent())){
-				   return false;
-				}
-	    	}
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}        
-		return true;
+                Byte[] controlBytes = new Byte[controlStream.available()];
+                Byte[] testBytes = new Byte[testStream.available()];
+
+                if(!equalByteArrays(controlBytes, testBytes)){
+                    return false;
+                }
+
+            }else{
+                if(!data.getContent().equals(data2.getContent())){
+                   return false;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
-    
+
     // override the contains check on a Vector of byte[] arrays - see TypeDirectMappingTestSuite
     private boolean equalByteArrays(Byte[] array1, Byte[] array2) {
         if (array1.length != array2.length) {

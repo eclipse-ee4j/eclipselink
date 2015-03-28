@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
- 
+ ******************************************************************************/
+
 package org.eclipse.persistence.testing.oxm.mappings.xmlfragmentcollection;
 
 import java.io.InputStream;
@@ -25,15 +25,15 @@ public class XMLFragmentCollectionElementDiffPrefixTestCases extends XMLFragment
 
     private final static String XML_RESOURCE_DIFF_PFX = "org/eclipse/persistence/testing/oxm/mappings/xmlfragmentcollection/employee_element_ns_different_prefix.xml";
     private final static String XML_SUB_ELEMENT_DIFF_PFX = "org/eclipse/persistence/testing/oxm/mappings/xmlfragmentcollection/sub_element_ns_different_prefix.xml";
-	
-	public XMLFragmentCollectionElementDiffPrefixTestCases(String name) throws Exception {
-		super(name);
+
+    public XMLFragmentCollectionElementDiffPrefixTestCases(String name) throws Exception {
+        super(name);
         NamespaceResolver nsresolver = new NamespaceResolver();
         nsresolver.put("ns1", "http://www.example.com/test-uri");
         setProject(new XMLFragmentCollectionElementProject(nsresolver));
         setControlDocument(XML_RESOURCE_DIFF_PFX);
-	}
-	
+    }
+
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.firstName = "Jane";
@@ -47,12 +47,12 @@ public class XMLFragmentCollectionElementDiffPrefixTestCases extends XMLFragment
             employee.xmlnodes = new ArrayList<Node>();
             NodeList xmlnodes = xdoc.getElementsByTagName("xml-node");
             for (int i = 0; i < xmlnodes.getLength(); i++) {
-            	employee.xmlnodes.add(xmlnodes.item(i));
+                employee.xmlnodes.add(xmlnodes.item(i));
             }
         } catch (Exception ex) {
-        	ex.printStackTrace();
+            ex.printStackTrace();
         }
-        
+
         return employee;
     }
 }

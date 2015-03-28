@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,36 +21,36 @@ public class NoRootElementTestCases extends JSONMarshalUnmarshalTestCases{
     protected final static String JSON_RESOURCE_WITH_ROOT = "org/eclipse/persistence/testing/jaxb/json/norootelement/addressWithRoot.json";
     protected final static String JSON_RESOURCE_NO_ROOT = "org/eclipse/persistence/testing/jaxb/json/norootelement/address.json";
     protected final static String JSON_SCHEMA = "org/eclipse/persistence/testing/jaxb/json/norootelement/addressSchema.json";
-    
-	public NoRootElementTestCases(String name) throws Exception {
-	    super(name);
-	    setControlJSON(JSON_RESOURCE_WITH_ROOT);
-	    setWriteControlJSON(JSON_RESOURCE_NO_ROOT);
-	    setClasses(new Class[]{Address.class});
-	}
-	
-	public Object getControlObject() {
-		Address addr = new Address();
-		addr.setId(10);
-		addr.setCity("Ottawa");
-		addr.setStreet("Main street");
-		
-		return addr;
-	}
-	
-	@Override
-	public Class getUnmarshalClass(){
-	    return Address.class;	
-	}
-	
-	public Object getReadControlObject(){
-		QName name = new QName("addressWithRootElement");
-		JAXBElement jbe = new JAXBElement<Address>(name, Address.class, (Address)getControlObject());
-		return jbe;
-	}
-	
-	public void testJSONSchemaGeneration() throws Exception{
-		generateJSONSchema(getClass().getClassLoader().getResourceAsStream(JSON_SCHEMA));
-	}
+
+    public NoRootElementTestCases(String name) throws Exception {
+        super(name);
+        setControlJSON(JSON_RESOURCE_WITH_ROOT);
+        setWriteControlJSON(JSON_RESOURCE_NO_ROOT);
+        setClasses(new Class[]{Address.class});
+    }
+
+    public Object getControlObject() {
+        Address addr = new Address();
+        addr.setId(10);
+        addr.setCity("Ottawa");
+        addr.setStreet("Main street");
+
+        return addr;
+    }
+
+    @Override
+    public Class getUnmarshalClass(){
+        return Address.class;
+    }
+
+    public Object getReadControlObject(){
+        QName name = new QName("addressWithRootElement");
+        JAXBElement jbe = new JAXBElement<Address>(name, Address.class, (Address)getControlObject());
+        return jbe;
+    }
+
+    public void testJSONSchemaGeneration() throws Exception{
+        generateJSONSchema(getClass().getClassLoader().getResourceAsStream(JSON_SCHEMA));
+    }
 }
 

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     07/15/2010-2.2 Guy Pelletier 
+ *     07/15/2010-2.2 Guy Pelletier
  *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.merge.advanced;
@@ -25,7 +25,7 @@ import static javax.persistence.DiscriminatorType.*;
  * This class is used to test XML and annotation merging. This class is mapped
  * in:
  * eclipselink-xml-merge-model/orm-annotation-merge-advanced-entity-mappings.xml
- * 
+ *
  * Also there are no automated tests that go along with these models, see the
  * test suite: EntityMappingsMergeAdvancedJUnitTestCase. It tests through
  * inspecting descriptor settings only and by no means does extensive validation

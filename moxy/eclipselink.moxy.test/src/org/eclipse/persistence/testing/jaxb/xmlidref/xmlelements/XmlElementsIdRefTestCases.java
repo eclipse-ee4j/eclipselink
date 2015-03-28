@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,8 +50,8 @@ public class XmlElementsIdRefTestCases extends JAXBWithJSONTestCases {
     }
 
     protected Object getJSONReadControlObject() {
-    
-    	 EmployeeWithElements employee = new EmployeeWithElements();
+
+         EmployeeWithElements employee = new EmployeeWithElements();
          employee.id = CONTROL_ID;
          employee.name = CONTROL_NAME;
 
@@ -59,7 +59,7 @@ public class XmlElementsIdRefTestCases extends JAXBWithJSONTestCases {
          root.employee = employee;
          root.addresses = new ArrayList<Address>();
          root.phoneNumbers = new ArrayList<PhoneNumber>();
-         
+
          Address address = new Address();
          address.id = CONTROL_ADD_ID_1;
          address.street = CONTROL_ADD_STREET_1;
@@ -69,33 +69,33 @@ public class XmlElementsIdRefTestCases extends JAXBWithJSONTestCases {
          address.emp = new Vector<EmployeeWithElements>();
          address.emp.add(employee);
          root.addresses.add(address);
-         
+
          employee.addressOrPhone = new ArrayList<Object>();
          //employee.address = address;
-         
+
          //employee.phones = new ArrayList();
-         
+
          PhoneNumber num = new PhoneNumber();
          num.id = CONTROL_PHONE_ID_1;
          num.number = CONTROL_PHONE_NUM_1;
          num.emp = employee;
          employee.addressOrPhone.add(num);
          root.phoneNumbers.add(num);
-         
+
          num = new PhoneNumber();
          num.id = CONTROL_PHONE_ID_2;
          num.number = CONTROL_PHONE_NUM_2;
          num.emp = employee;
          employee.addressOrPhone.add(num);
-         
+
          employee.addressOrPhone.add(address);
-         
-        
+
+
          root.phoneNumbers.add(num);
-         
+
          return root;
     }
-    
+
     protected Object getControlObject() {
         EmployeeWithElements employee = new EmployeeWithElements();
         employee.id = CONTROL_ID;
@@ -105,7 +105,7 @@ public class XmlElementsIdRefTestCases extends JAXBWithJSONTestCases {
         root.employee = employee;
         root.addresses = new ArrayList<Address>();
         root.phoneNumbers = new ArrayList<PhoneNumber>();
-        
+
         Address address = new Address();
         address.id = CONTROL_ADD_ID_1;
         address.street = CONTROL_ADD_STREET_1;
@@ -115,40 +115,40 @@ public class XmlElementsIdRefTestCases extends JAXBWithJSONTestCases {
         address.emp = new Vector<EmployeeWithElements>();
         address.emp.add(employee);
         root.addresses.add(address);
-        
+
         employee.addressOrPhone = new ArrayList<Object>();
         //employee.address = address;
-        
+
         //employee.phones = new ArrayList();
-        
+
         PhoneNumber num = new PhoneNumber();
         num.id = CONTROL_PHONE_ID_1;
         num.number = CONTROL_PHONE_NUM_1;
         num.emp = employee;
         employee.addressOrPhone.add(num);
         root.phoneNumbers.add(num);
-        
+
         employee.addressOrPhone.add(address);
-        
+
         num = new PhoneNumber();
         num.id = CONTROL_PHONE_ID_2;
         num.number = CONTROL_PHONE_NUM_2;
         num.emp = employee;
         employee.addressOrPhone.add(num);
         root.phoneNumbers.add(num);
-        
+
         return root;
     }
 
-    
+
     public void testSchemaGen() throws Exception {
         List<InputStream> controlSchemas = new ArrayList<InputStream>();
         controlSchemas.add(ClassLoader.getSystemResourceAsStream(XSD_RESOURCE));
-        
+
         this.testSchemaGen(controlSchemas);
-        
+
     }
-    
+
     public void testJSONSchemaGen() throws Exception{
         InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
         super.generateJSONSchema(controlSchema);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,7 +21,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class CompositeObjectSelfSimpleXsiTypeTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/norefclass/SelfNoRefSimpleXsiType.xml";
-    
+
     public CompositeObjectSelfSimpleXsiTypeTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
@@ -31,13 +31,13 @@ public class CompositeObjectSelfSimpleXsiTypeTestCases extends XMLMappingTestCas
         ((XMLField)mapping.getField()).setIsTypedTextField(true);
         setProject(p);
     }
-    
+
     protected Object getControlObject() {
-    	Root theRoot = new Root();
-    	theRoot.setTheObject(true);
-    	return theRoot;
+        Root theRoot = new Root();
+        theRoot.setTheObject(true);
+        return theRoot;
     }
-    
+
     public static void main(String[] args) {
         junit.textui.TestRunner.main(new String[] { "-c", "org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.CompositeObjectSelfSimpleXsiTypeTestCases" });
     }

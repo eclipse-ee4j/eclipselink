@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,166 +30,166 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class ConnectByClause extends AbstractExpression {
 
-	/**
-	 * The actual identifier found in the string representation of the JPQL query.
-	 */
-	private String actualIdentifier;
+    /**
+     * The actual identifier found in the string representation of the JPQL query.
+     */
+    private String actualIdentifier;
 
-	/**
-	 * The conditional expression.
-	 */
-	private AbstractExpression expression;
+    /**
+     * The conditional expression.
+     */
+    private AbstractExpression expression;
 
-	/**
-	 * Determines whether a whitespace was parsed after <b>CONNECT BY</b>.
-	 */
-	private boolean hasSpaceAfterConnectBy;
+    /**
+     * Determines whether a whitespace was parsed after <b>CONNECT BY</b>.
+     */
+    private boolean hasSpaceAfterConnectBy;
 
-	/**
-	 * Creates a new <code>ConnectByClause</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public ConnectByClause(AbstractExpression parent) {
-		super(parent, CONNECT_BY);
-	}
+    /**
+     * Creates a new <code>ConnectByClause</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public ConnectByClause(AbstractExpression parent) {
+        super(parent, CONNECT_BY);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		acceptUnknownVisitor(visitor);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        acceptUnknownVisitor(visitor);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void acceptChildren(ExpressionVisitor visitor) {
-		getExpression().accept(visitor);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void acceptChildren(ExpressionVisitor visitor) {
+        getExpression().accept(visitor);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addChildrenTo(Collection<Expression> children) {
-		children.add(getExpression());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addChildrenTo(Collection<Expression> children) {
+        children.add(getExpression());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addOrderedChildrenTo(List<Expression> children) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addOrderedChildrenTo(List<Expression> children) {
 
-		// 'CONNECT BY'
-		children.add(buildStringExpression(CONNECT_BY));
+        // 'CONNECT BY'
+        children.add(buildStringExpression(CONNECT_BY));
 
-		if (hasSpaceAfterConnectBy) {
-			children.add(buildStringExpression(SPACE));
-		}
+        if (hasSpaceAfterConnectBy) {
+            children.add(buildStringExpression(SPACE));
+        }
 
-		// Relationship expression
-		if (expression != null) {
-			children.add(expression);
-		}
-	}
+        // Relationship expression
+        if (expression != null) {
+            children.add(expression);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPQLQueryBNF findQueryBNF(Expression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JPQLQueryBNF findQueryBNF(Expression expression) {
 
-		if ((this.expression != null) && this.expression.isAncestor(expression)) {
-			return getQueryBNF(CollectionValuedPathExpressionBNF.ID);
-		}
+        if ((this.expression != null) && this.expression.isAncestor(expression)) {
+            return getQueryBNF(CollectionValuedPathExpressionBNF.ID);
+        }
 
-		return super.findQueryBNF(expression);
-	}
+        return super.findQueryBNF(expression);
+    }
 
-	/**
-	 * Returns the actual <b>CONNECT BY</b> identifier found in the string representation of the JPQL
-	 * query, which has the actual case that was used.
-	 *
-	 * @return The <b>CONNECT BY</b> identifier that was actually parsed, or an empty string if it
-	 * was not parsed
-	 */
-	public String getActualIdentifier() {
-		return actualIdentifier;
-	}
+    /**
+     * Returns the actual <b>CONNECT BY</b> identifier found in the string representation of the JPQL
+     * query, which has the actual case that was used.
+     *
+     * @return The <b>CONNECT BY</b> identifier that was actually parsed, or an empty string if it
+     * was not parsed
+     */
+    public String getActualIdentifier() {
+        return actualIdentifier;
+    }
 
-	/**
-	 * Returns the {@link Expression} representing the relationship expression.
-	 *
-	 * @return The expression representing the relationship expression
-	 */
-	public Expression getExpression() {
-		if (expression == null) {
-			expression = buildNullExpression();
-		}
-		return expression;
-	}
+    /**
+     * Returns the {@link Expression} representing the relationship expression.
+     *
+     * @return The expression representing the relationship expression
+     */
+    public Expression getExpression() {
+        if (expression == null) {
+            expression = buildNullExpression();
+        }
+        return expression;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(ConnectByClauseBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(ConnectByClauseBNF.ID);
+    }
 
-	/**
-	 * Determines whether the relationship expression was parsed.
-	 *
-	 * @return <code>true</code> if the relationship expression was parsed; <code>false</code> if it
-	 * was not parsed
-	 */
-	public boolean hasExpression() {
-		return expression != null &&
-		      !expression.isNull();
-	}
+    /**
+     * Determines whether the relationship expression was parsed.
+     *
+     * @return <code>true</code> if the relationship expression was parsed; <code>false</code> if it
+     * was not parsed
+     */
+    public boolean hasExpression() {
+        return expression != null &&
+              !expression.isNull();
+    }
 
-	/**
-	 * Determines whether a whitespace was found after <b>CONNECT BY</b>.
-	 *
-	 * @return <code>true</code> if there was a whitespace after <b>CONNECT BY</b>;
-	 * <code>false</code> otherwise
-	 */
-	public boolean hasSpaceAfterConnectBy() {
-		return hasSpaceAfterConnectBy;
-	}
+    /**
+     * Determines whether a whitespace was found after <b>CONNECT BY</b>.
+     *
+     * @return <code>true</code> if there was a whitespace after <b>CONNECT BY</b>;
+     * <code>false</code> otherwise
+     */
+    public boolean hasSpaceAfterConnectBy() {
+        return hasSpaceAfterConnectBy;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void parse(WordParser wordParser, boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse(WordParser wordParser, boolean tolerant) {
 
-		// 'CONNECT BY'
-		actualIdentifier = wordParser.moveForward(CONNECT_BY);
+        // 'CONNECT BY'
+        actualIdentifier = wordParser.moveForward(CONNECT_BY);
 
-		hasSpaceAfterConnectBy = wordParser.skipLeadingWhitespace() > 0;
+        hasSpaceAfterConnectBy = wordParser.skipLeadingWhitespace() > 0;
 
-		// Relationship expression
-		expression = parse(wordParser, InternalConnectByClauseBNF.ID, tolerant);
-	}
+        // Relationship expression
+        expression = parse(wordParser, InternalConnectByClauseBNF.ID, tolerant);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toParsedText(StringBuilder writer, boolean actual) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toParsedText(StringBuilder writer, boolean actual) {
 
-		// 'CONNECT BY'
-		writer.append(actual ? getActualIdentifier() : getText());
+        // 'CONNECT BY'
+        writer.append(actual ? getActualIdentifier() : getText());
 
-		if (hasSpaceAfterConnectBy) {
-			writer.append(SPACE);
-		}
+        if (hasSpaceAfterConnectBy) {
+            writer.append(SPACE);
+        }
 
-		// Relationship expression
-		if (expression != null) {
-			expression.toParsedText(writer, actual);
-		}
-	}
+        // Relationship expression
+        if (expression != null) {
+            expression.toParsedText(writer, actual);
+        }
+    }
 }

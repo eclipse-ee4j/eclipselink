@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.spatial.jgeometry;
 
 import java.util.*;
@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.WrappedS
 /**
  * Helper class to read and compare SimpleSpatial results read using SQL versus
  * those read using TopLink.
- * 
+ *
  * @author Doug Clarke
  * @since Oracle TopLink 10.1.3.1 Preview (build 060803)
  */
@@ -65,10 +65,10 @@ public class SQLReader {
             this.results.add(createSpatial(rawResult));
         }
     }
-    
+
     protected Spatial createSpatial(Map rawResult) {
         long gid = ((Number)rawResult.get("GID")).longValue();
-        Object geom = rawResult.get("GEOMETRY");            
+        Object geom = rawResult.get("GEOMETRY");
         if (geom instanceof MyGeometry) {
             return new WrappedSpatial(gid, (MyGeometry)geom);
         } else {
@@ -95,7 +95,7 @@ public class SQLReader {
             return "SQL = " + getResults() + " - TopLink = " + values;
         }
         if (getResults().size() != values.size()) {
-            return "SQL size = " + getResults().size() + " - TopLink size = " + 
+            return "SQL size = " + getResults().size() + " - TopLink size = " +
                 values.size();
         }
 
@@ -119,7 +119,7 @@ public class SQLReader {
             return false;
         }
         if (ss1.getJGeometry() == null || ss1.getJGeometry().getType() == 0) {
-            return ss2.getJGeometry() == null || 
+            return ss2.getJGeometry() == null ||
                 ss2.getJGeometry().getType() == 0;
         }
 
@@ -132,25 +132,25 @@ public class SQLReader {
         if (ss1.getJGeometry().getElemInfo() == null) {
             return ss2.getJGeometry().getElemInfo() == null;
         }
-        if (ss1.getJGeometry().getElemInfo().length != 
+        if (ss1.getJGeometry().getElemInfo().length !=
             ss2.getJGeometry().getElemInfo().length) {
             return false;
         }
-        for (int index = 0; index < ss1.getJGeometry().getElemInfo().length; 
+        for (int index = 0; index < ss1.getJGeometry().getElemInfo().length;
              index++) {
-            if (ss1.getJGeometry().getElemInfo()[index] != 
+            if (ss1.getJGeometry().getElemInfo()[index] !=
                 ss2.getJGeometry().getElemInfo()[index]) {
                 return false;
             }
         }
 
-        if (ss1.getJGeometry().getOrdinatesArray().length != 
+        if (ss1.getJGeometry().getOrdinatesArray().length !=
             ss2.getJGeometry().getOrdinatesArray().length) {
             return false;
         }
-        for (int index = 0; 
+        for (int index = 0;
              index < ss1.getJGeometry().getOrdinatesArray().length; index++) {
-            if (ss1.getJGeometry().getOrdinatesArray()[index] != 
+            if (ss1.getJGeometry().getOrdinatesArray()[index] !=
                 ss2.getJGeometry().getOrdinatesArray()[index]) {
                 return false;
             }

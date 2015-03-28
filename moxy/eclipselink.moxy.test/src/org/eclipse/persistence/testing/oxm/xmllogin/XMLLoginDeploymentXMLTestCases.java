@@ -20,14 +20,14 @@ import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 
 public class XMLLoginDeploymentXMLTestCases extends TestCase {
-    
+
     private Project m_project;
     private XMLLogin m_login;
-    
+
     public XMLLoginDeploymentXMLTestCases(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.xmllogin.XMLLoginDeploymentXMLTestCases" };
         junit.textui.TestRunner.main(arguments);
@@ -38,73 +38,73 @@ public class XMLLoginDeploymentXMLTestCases extends TestCase {
         m_login = new XMLLogin();
         m_project.setLogin(m_login);
     }
-    
+
     // Bug 242452 - test 'DatasourcePlatform' in project.xml
     public void testDataSourcePlatform() {
         Project roundTrippedProject;
         XMLLogin roundTrippedLogin;
 
         // DatasourcePlatform = SAXPlatform
-        // ================================        
+        // ================================
         m_login.setDatasourcePlatform(new SAXPlatform());
-        
+
         roundTrippedProject = writeAndReadProject();
-        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin(); 
-        
+        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin();
+
         assertEquals(m_login.getDatasourcePlatform().getClass(), roundTrippedLogin.getDatasourcePlatform().getClass());
 
         // DatasourcePlatform = DOMPlatform
         // ================================
         m_login.setDatasourcePlatform(new DOMPlatform());
-        
+
         roundTrippedProject = writeAndReadProject();
-        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin(); 
-        
+        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin();
+
         assertEquals(m_login.getDatasourcePlatform().getClass(), roundTrippedLogin.getDatasourcePlatform().getClass());
     }
 
     // Bug - test 'EqualNamespaceResolvers' in project.xml
     public void testEqualNamespaceResolvers() {
-        Project roundTrippedProject; 
-        XMLLogin roundTrippedLogin; 
-        
+        Project roundTrippedProject;
+        XMLLogin roundTrippedLogin;
+
         // EqualNamespaceResolvers = true
         // ==============================
         m_login.setEqualNamespaceResolvers(true);
 
         roundTrippedProject = writeAndReadProject();
-        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin(); 
-        
+        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin();
+
         assertEquals(m_login.hasEqualNamespaceResolvers(), roundTrippedLogin.hasEqualNamespaceResolvers());
-        
+
         // EqualNamespaceResolvers = false
         // ===============================
         m_login.setEqualNamespaceResolvers(false);
 
         roundTrippedProject = writeAndReadProject();
-        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin(); 
-        
+        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin();
+
         assertEquals(m_login.hasEqualNamespaceResolvers(), roundTrippedLogin.hasEqualNamespaceResolvers());
     }
 
     // Bug - test 'DocumentPreservationPolicy' in project.xml
     public void testDocumentPreservationPolicy() {
-        Project roundTrippedProject; 
-        XMLLogin roundTrippedLogin; 
-        
+        Project roundTrippedProject;
+        XMLLogin roundTrippedLogin;
+
         // DocumentPreservationPolicy = DescriptorLevelDocumentPreservationPolicy
-        // NodeOrderingPolicy = AppendNewElementsOrderingPolicy        
+        // NodeOrderingPolicy = AppendNewElementsOrderingPolicy
         // ======================================================================
         m_login.setDocumentPreservationPolicy(new DescriptorLevelDocumentPreservationPolicy());
         m_login.getDocumentPreservationPolicy().setNodeOrderingPolicy(new AppendNewElementsOrderingPolicy());
 
         roundTrippedProject = writeAndReadProject();
-        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin(); 
-        
+        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin();
+
         assertEquals(m_login.getDocumentPreservationPolicy().getClass(), roundTrippedLogin.getDocumentPreservationPolicy().getClass());
-        assertEquals(m_login.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass(), 
+        assertEquals(m_login.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass(),
                 roundTrippedLogin.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass());
-        
+
 
         // NodeOrderingPolicy = IgnoreNewElementsOrderingPolicy
         // DocumentPreservationPolicy = NoDocumentPreservationPolicy
@@ -113,23 +113,23 @@ public class XMLLoginDeploymentXMLTestCases extends TestCase {
         m_login.getDocumentPreservationPolicy().setNodeOrderingPolicy(new IgnoreNewElementsOrderingPolicy());
 
         roundTrippedProject = writeAndReadProject();
-        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin(); 
-        
+        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin();
+
         assertEquals(m_login.getDocumentPreservationPolicy().getClass(), roundTrippedLogin.getDocumentPreservationPolicy().getClass());
-        assertEquals(m_login.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass(), 
+        assertEquals(m_login.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass(),
                 roundTrippedLogin.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass());
-        
+
         // DocumentPreservationPolicy = XMLBinderPolicy
-        // NodeOrderingPolicy = RelativePositionOrderingPolicy        
+        // NodeOrderingPolicy = RelativePositionOrderingPolicy
         // ===================================================
         m_login.setDocumentPreservationPolicy(new XMLBinderPolicy());
         m_login.getDocumentPreservationPolicy().setNodeOrderingPolicy(new RelativePositionOrderingPolicy());
-        
+
         roundTrippedProject = writeAndReadProject();
-        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin(); 
-        
+        roundTrippedLogin = (XMLLogin) roundTrippedProject.getDatasourceLogin();
+
         assertEquals(m_login.getDocumentPreservationPolicy().getClass(), roundTrippedLogin.getDocumentPreservationPolicy().getClass());
-        assertEquals(m_login.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass(), 
+        assertEquals(m_login.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass(),
                 roundTrippedLogin.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass());
     }
 
@@ -139,12 +139,12 @@ public class XMLLoginDeploymentXMLTestCases extends TestCase {
         StringWriter buffer = new StringWriter();
 
         XMLProjectWriter.write(m_project, buffer);
-        
+
         StringReader in = new StringReader(buffer.getBuffer().toString());
-        
+
         XMLProjectReader.setShouldUseSchemaValidation(true);
-        
+
         return XMLProjectReader.read(in);
     }
-    
+
 }

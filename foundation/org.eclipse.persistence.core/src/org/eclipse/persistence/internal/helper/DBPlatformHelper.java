@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
 
@@ -144,8 +144,8 @@ public class DBPlatformHelper {
     /**
      * Loads properties list from the specified resource
      * into specified Properties object.
-     * @param properties	Properties object to load
-     * @param resourceName	Name of resource.
+     * @param properties    Properties object to load
+     * @param resourceName    Name of resource.
      *                      If loadFromFile  is true, this is fully qualified path name to a file.
      *                      param classLoader is ignored.
      *                      If loadFromFile  is false,this is resource name.
@@ -190,20 +190,20 @@ public class DBPlatformHelper {
             }
         );
     }
-    
+
     private static String[] validateLineForReturnAsKeyValueArray(String line) {
         if (line == null || line.length() == 0) {
             return null;
         }
         // trim leading AND trailing space
         line = line.trim();
-        
+
         // check for comment and empty line
         if (line.length() == 0 || line.startsWith("#")) {
             return null;
         }
-        
-        // check line contains valid properties '=' separator        
+
+        // check line contains valid properties '=' separator
         int indexOfEquals = line.indexOf('=');
         if (indexOfEquals == -1) {
             return null;

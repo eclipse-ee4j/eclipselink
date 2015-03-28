@@ -4,12 +4,12 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.lang.reflect.Modifier;
@@ -93,7 +93,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     private SAXDocumentBuilder documentBuilder;
     private Locator2 locator;
     private boolean isNil;
-    
+
     public SAXUnmarshallerHandler(Context xmlContext) {
         super();
         this.xmlContext = xmlContext;
@@ -111,12 +111,12 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
 
     public Object getObject() {
         if(object == null) {
-            if(this.descriptor != null) {            	
+            if(this.descriptor != null) {
                 if(this.unmarshaller.isResultAlwaysXMLRoot() || descriptor.isResultAlwaysXMLRoot() || shouldWrap){
                     object = this.descriptor.wrapObjectInXMLRoot(this.rootRecord, (this.unmarshaller.isResultAlwaysXMLRoot() || descriptor.isResultAlwaysXMLRoot()));
-            	}else {
-            		object = this.rootRecord.getCurrentObject();
-            	}
+                }else {
+                    object = this.rootRecord.getCurrentObject();
+                }
             } else if(documentBuilder != null) {
                 Node node = documentBuilder.getDocument().getDocumentElement();
                 Root root = unmarshaller.createRoot();
@@ -141,9 +141,9 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
         if (locator instanceof Locator2) {
             this.locator = (Locator2)locator;
             if(xmlReader != null){
-        	    xmlReader.setLocator(locator);
+                xmlReader.setLocator(locator);
             }
-        }        
+        }
     }
 
     public UnmarshalNamespaceResolver getUnmarshalNamespaceResolver() {
@@ -178,10 +178,10 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             rootRecord.resolveReferences(session, unmarshaller.getIDResolver());
         }
     }
-    
+
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        try {                   	
-        	String name;
+        try {
+            String name;
             if (localName == null || localName.length() == 0) {
                 name = qName;
             } else {
@@ -194,13 +194,13 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             } else {
                 rootQName = new XPathQName(namespaceURI, name, xmlReader.isNamespaceAware() );
             }
-            
+
             Class primitiveWrapperClass = null;
             Descriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
-                             
+
             //if no match on root element look for xsi:type
-            if(xmlDescriptor == null){  
-            	boolean isPrimitiveType = false;
+            if(xmlDescriptor == null){
+                boolean isPrimitiveType = false;
                 String type = null;
                 if(xmlReader.isNamespaceAware()){
                     type = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE);
@@ -215,45 +215,45 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     }
                     Descriptor lookupDescriptor = xmlContext.getDescriptorByGlobalType(typeFragment);
                     if(lookupDescriptor == null) {
-                    	QName lookupQName = null;
-                    	if(typeFragment.getNamespaceURI() == null){
-                    		lookupQName= new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, typeFragment.getLocalName());
-                    	}else{
-                    		lookupQName= new QName(typeFragment.getNamespaceURI(), typeFragment.getLocalName());
-                    	}
+                        QName lookupQName = null;
+                        if(typeFragment.getNamespaceURI() == null){
+                            lookupQName= new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, typeFragment.getLocalName());
+                        }else{
+                            lookupQName= new QName(typeFragment.getNamespaceURI(), typeFragment.getLocalName());
+                        }
                         //check to see if type attribute represents simple type
-                	    if(null == session) {
-                	       session = (CoreAbstractSession) xmlContext.getSession();
-                	    }
-                	    ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
-                        primitiveWrapperClass = conversionManager.javaType(lookupQName);                       
-                    }else{          
-                    	//found descriptor based on type attribute
-                    	xmlDescriptor = lookupDescriptor;
-                    	session = xmlContext.getSession(xmlDescriptor);   
+                        if(null == session) {
+                           session = (CoreAbstractSession) xmlContext.getSession();
+                        }
+                        ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+                        primitiveWrapperClass = conversionManager.javaType(lookupQName);
+                    }else{
+                        //found descriptor based on type attribute
+                        xmlDescriptor = lookupDescriptor;
+                        session = xmlContext.getSession(xmlDescriptor);
                     }
                 }
             } else {
-            	if(null != xmlDescriptor.getDefaultRootElementField() && !unmarshaller.isResultAlwaysXMLRoot()){
-            	    String descLocalName = xmlDescriptor.getDefaultRootElementField().getXPathFragment().getLocalName();
-                	if( descLocalName != null && descLocalName.equals(localName) ){
-                	    String descUri = xmlDescriptor.getDefaultRootElementField().getXPathFragment().getNamespaceURI();
-                    	if(!xmlReader.isNamespaceAware() || (xmlReader.isNamespaceAware() && ((namespaceURI == null && descUri == null ) || (namespaceURI !=null &&namespaceURI.length() == 0 && descUri == null ) || (namespaceURI != null && namespaceURI.equals(descUri))))){
-                 	       //found a descriptor based on root element then know we won't need to wrap in an XMLRoot
-                	       shouldWrap = false;
-                	    }
+                if(null != xmlDescriptor.getDefaultRootElementField() && !unmarshaller.isResultAlwaysXMLRoot()){
+                    String descLocalName = xmlDescriptor.getDefaultRootElementField().getXPathFragment().getLocalName();
+                    if( descLocalName != null && descLocalName.equals(localName) ){
+                        String descUri = xmlDescriptor.getDefaultRootElementField().getXPathFragment().getNamespaceURI();
+                        if(!xmlReader.isNamespaceAware() || (xmlReader.isNamespaceAware() && ((namespaceURI == null && descUri == null ) || (namespaceURI !=null &&namespaceURI.length() == 0 && descUri == null ) || (namespaceURI != null && namespaceURI.equals(descUri))))){
+                            //found a descriptor based on root element then know we won't need to wrap in an XMLRoot
+                           shouldWrap = false;
+                        }
                     }
-            	}
-            	
+                }
+
                 if(xmlDescriptor.hasInheritance()){
-            	    //if descriptor has inheritance check class indicator
-            	    session = xmlContext.getSession(xmlDescriptor);            	
-            	    UnmarshalRecord tmpUnmarshalRecord = new UnmarshalRecordImpl(null);
-            	    tmpUnmarshalRecord.setUnmarshaller(unmarshaller);
-            	    tmpUnmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
-            	    tmpUnmarshalRecord.setXMLReader(this.getXMLReader());
-            	    tmpUnmarshalRecord.setAttributes(atts);
-                 
+                    //if descriptor has inheritance check class indicator
+                    session = xmlContext.getSession(xmlDescriptor);
+                    UnmarshalRecord tmpUnmarshalRecord = new UnmarshalRecordImpl(null);
+                    tmpUnmarshalRecord.setUnmarshaller(unmarshaller);
+                    tmpUnmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
+                    tmpUnmarshalRecord.setXMLReader(this.getXMLReader());
+                    tmpUnmarshalRecord.setAttributes(atts);
+
                     Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(tmpUnmarshalRecord), (CoreAbstractSession) session);
                     if (classValue == null) {
                        // no xsi:type attribute - look for type indicator on the default root element
@@ -266,11 +266,11 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                            }
                        }
                     }
-                    if (classValue != null) {                	 
+                    if (classValue != null) {
                        xmlDescriptor = (Descriptor)session.getDescriptor(classValue);
                     } else {
                        // since there is no xsi:type attribute, we'll use the descriptor
-                       // that was retrieved based on the rootQName -  we need to make 
+                       // that was retrieved based on the rootQName -  we need to make
                        // sure it is non-abstract
                        if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
                            // need to throw an exception here
@@ -279,15 +279,15 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                    }
                 }
             }
-            
+
             if (null == xmlDescriptor) {
                 //check for a cached object and look for descriptor by class
                 Object obj = this.xmlReader.getCurrentObject(session, null);
                 if (obj != null) {
                     xmlDescriptor = (Descriptor)xmlContext.getSession(obj.getClass()).getDescriptor(obj.getClass());
-                }              
-            }        	
-        	
+                }
+            }
+
             if (null == xmlDescriptor && primitiveWrapperClass == null){
                 if(!this.keepAsElementPolicy.isKeepNoneAsElement()) {
                     this.documentBuilder = new SAXDocumentBuilder();
@@ -315,7 +315,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     } catch (InstantiationException e) {
                         throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
                     }
-	                    
+
                     UnmappedContentHandlerWrapper unmappedContentHandlerWrapper = new UnmappedContentHandlerWrapper(unmappedContentHandler, this);
                     unmappedContentHandler.startElement(namespaceURI, localName, qName, atts);
                     xmlReader.setContentHandler(unmappedContentHandler);
@@ -323,48 +323,48 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     return;
                 }
             }
-                   
+
             if (xmlDescriptor == null && primitiveWrapperClass != null) {
-            	session = xmlContext.getSession(xmlDescriptor);
-            	rootRecord = unmarshaller.createRootUnmarshalRecord(primitiveWrapperClass);
-            	rootRecord.setSession((CoreAbstractSession) unmarshaller.getContext().getSession());       
+                session = xmlContext.getSession(xmlDescriptor);
+                rootRecord = unmarshaller.createRootUnmarshalRecord(primitiveWrapperClass);
+                rootRecord.setSession((CoreAbstractSession) unmarshaller.getContext().getSession());
             } else{
-            	if(session == null){
-                	session = xmlContext.getSession(xmlDescriptor);
+                if(session == null){
+                    session = xmlContext.getSession(xmlDescriptor);
                 }
-            	rootRecord = unmarshaller.createUnmarshalRecord(xmlDescriptor, session);                
+                rootRecord = unmarshaller.createUnmarshalRecord(xmlDescriptor, session);
             }
             this.descriptor = xmlDescriptor;
-            
+
             rootRecord.setUnmarshaller(this.unmarshaller);
             rootRecord.setXMLReader(this.getXMLReader());
 
             if (locator != null) {
-            	rootRecord.setDocumentLocator(xmlReader.getLocator());
+                rootRecord.setDocumentLocator(xmlReader.getLocator());
             }
             rootRecord.setAttributes(atts);
 
-            boolean hasNilAttribute = (atts != null && null != atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE));                       
+            boolean hasNilAttribute = (atts != null && null != atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE));
             rootRecord.setNil(isNil || hasNilAttribute);
-          
+
             rootRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
-            
+
             rootRecord.startDocument();
             rootRecord.initializeRecord((Mapping) null);
             xmlReader.setContentHandler(rootRecord);
             xmlReader.setLexicalHandler(rootRecord);
-            
+
             Object attributeGroup = this.unmarshaller.getUnmarshalAttributeGroup();
             if(attributeGroup != null) {
                 if(attributeGroup.getClass() == CoreClassConstants.STRING) {
                     CoreAttributeGroup group = descriptor.getAttributeGroup((String)attributeGroup);
                     if(group != null) {
-                    	rootRecord.setUnmarshalAttributeGroup(group);
+                        rootRecord.setUnmarshalAttributeGroup(group);
                     } else {
                         //Error
                     }
                 } else if(attributeGroup instanceof CoreAttributeGroup) {
-                	rootRecord.setUnmarshalAttributeGroup((CoreAttributeGroup)attributeGroup);
+                    rootRecord.setUnmarshalAttributeGroup((CoreAttributeGroup)attributeGroup);
                 } else {
                     //Error case
                 }
@@ -372,8 +372,8 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
 
             rootRecord.startElement(namespaceURI, localName, qName, atts);
 
-            // if we located the descriptor via xsi:type attribute, create and 
-            // return an XMLRoot object 
+            // if we located the descriptor via xsi:type attribute, create and
+            // return an XMLRoot object
         } catch (EclipseLinkException e) {
             if (null == xmlReader.getErrorHandler()) {
                 throw e;
@@ -383,7 +383,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             }
         }
     }
-    
+
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
     }
 
@@ -409,19 +409,19 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     public Unmarshaller getUnmarshaller() {
         return this.unmarshaller;
     }
-    
+
     public void setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy policy) {
         this.keepAsElementPolicy = policy;
     }
-    
+
     public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
         return this.keepAsElementPolicy;
     }
 
-	@Override
-	public void setNil(boolean isNil) {
-		this.isNil = isNil;
-		
-	}
+    @Override
+    public void setNil(boolean isNil) {
+        this.isNil = isNil;
+
+    }
 
 }

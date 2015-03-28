@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,30 +26,30 @@ import org.eclipse.persistence.internal.sessions.factories.model.log.LogConfig;
  */
 public final class NoLogAdapter extends LogAdapter {
 
-	public static final String OFF_LOG_LEVEL = "off";
+    public static final String OFF_LOG_LEVEL = "off";
 
-	protected NoLogAdapter(SCAdapter parent) {
-		super(parent);
-	}
+    protected NoLogAdapter(SCAdapter parent) {
+        super(parent);
+    }
 
-	protected Object buildModel() {
-		DefaultSessionLogConfig config = new DefaultSessionLogConfig();
-		config.setLogLevel(OFF_LOG_LEVEL);
-		return config;
-	}
+    protected Object buildModel() {
+        DefaultSessionLogConfig config = new DefaultSessionLogConfig();
+        config.setLogLevel(OFF_LOG_LEVEL);
+        return config;
+    }
 
-	/**
-	 * Returns true if options are used.
-	 */
-	public boolean optionsIsEnable() {
-		return false;
-	}
-	
-	public void enableOptions() {
-		// do nothing
-	}
-	
-	public void disableOptions() {
-		// do nothing
-	}	
+    /**
+     * Returns true if options are used.
+     */
+    public boolean optionsIsEnable() {
+        return false;
+    }
+
+    public void enableOptions() {
+        // do nothing
+    }
+
+    public void disableOptions() {
+        // do nothing
+    }
 }

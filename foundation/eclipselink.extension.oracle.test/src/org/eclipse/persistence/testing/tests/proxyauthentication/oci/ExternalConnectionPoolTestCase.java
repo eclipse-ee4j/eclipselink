@@ -1,20 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  * Andrei Ilitchev May 28, 2008. Bug 224964: Provide support for Proxy Authentication through JPA.
- *	   Changed the was Proxy Authentication supported in case of thin driver, but support for oci case remains the same.
+ *       Changed the was Proxy Authentication supported in case of thin driver, but support for oci case remains the same.
  *     That caused re-arranging of the tests: before the fix all the tests were directly in proxiauthentication package;
  *     now the old tests (minus thin-specific setup) were moved into the new proxyauthentication.oci package,
  *     and the new tests defined in the new proxyauthentication.thin package.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.proxyauthentication.oci;
 
 import java.util.Properties;
@@ -23,7 +23,7 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
 
 /**
- * ProxyAuthentication_FS: 4.3.1.1.	Realizations of Main use case:
+ * ProxyAuthentication_FS: 4.3.1.1.    Realizations of Main use case:
  * "ServerSession uses main connection; each ClientSession uses its own proxy connection". (see 3.1.2.1)
  * All we have to do is to make sure that proxy properties are found in the login,
  * which is used to connect ClientSession's write connection.
@@ -82,7 +82,7 @@ public class ExternalConnectionPoolTestCase extends ProxyAuthenticationConnectio
             Login login = ss.getLogin().clone();
             // set proxy properties in the login
             addProxyPropertiesToLogin(login);
-            // create the new pool    
+            // create the new pool
             pool = new ExternalConnectionPool(proxyUser, login, ss);
             ss.getConnectionPools().put(proxyUser, pool);
             // start it up

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,7 +29,7 @@ public class Company {
     @XmlElementWrapper(namespace="urn:BAR")
     @XmlElement(name="employee")
     public List<Employee> employees = new ArrayList<Employee>();
-    
+
     @XmlElementWrapper(name="phone-numbers", namespace="urn:BAR")
     @XmlElement(name="phone-number")
     public List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
@@ -39,7 +39,7 @@ public class Company {
         if(null == obj || obj.getClass() != this.getClass()) {
             return false;
         }
-        
+
         Company test = (Company) obj;
         if(!equals(strings, test.strings)) {
             return false;
@@ -56,7 +56,7 @@ public class Company {
     private boolean equals(List<?> control, List<?> test) {
         if(control == test) {
             return true;
-        } 
+        }
         if(null == control || null == test) {
             return false;
         }

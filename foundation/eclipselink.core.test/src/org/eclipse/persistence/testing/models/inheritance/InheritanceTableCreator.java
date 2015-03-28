@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.inheritance;
 
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -48,7 +48,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         addTableDefinition(buildKING_PERSONTable());
         addTableDefinition(buildINSECTTable());
         addTableDefinition(buildGRASSHOPPERTable());
-		addTableDefinition(buildENTOMOLOGISTTable());
+        addTableDefinition(buildENTOMOLOGISTTable());
         addTableDefinition(buildLADYBUGTable());
         addTableDefinition(buildWORKERTable());
         addTableDefinition(buildTEACHERTable());
@@ -280,7 +280,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldTITLE.setUnique(false);
         fieldTITLE.setShouldAllowNull(true);
         table.addField(fieldTITLE);
-        
+
         ForeignKeyConstraint foreignKeyBUDGET_PROJECT_ID = new ForeignKeyConstraint();
         foreignKeyBUDGET_PROJECT_ID.setName("BUDGET_PROJECT_ID");
         foreignKeyBUDGET_PROJECT_ID.setTargetTable("PROJECT_BATCH");
@@ -334,7 +334,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         foreignKeyBUS_PERSON2.addSourceField("DRIVER_ID");
         foreignKeyBUS_PERSON2.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyBUS_PERSON2);
-        
+
         ForeignKeyConstraint foreignKeyFK_BUS_FUEL_VEH_ID = new ForeignKeyConstraint();
         foreignKeyFK_BUS_FUEL_VEH_ID.setName("FK_BUS_FUEL_VEH_ID");
         foreignKeyFK_BUS_FUEL_VEH_ID.setTargetTable("FUEL_VEH");
@@ -381,7 +381,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldFUEL_CAP.setUnique(false);
         fieldFUEL_CAP.setShouldAllowNull(true);
         table.addField(fieldFUEL_CAP);
-        
+
         ForeignKeyConstraint foreignKeyFK_CAR_FUEL_VEH_ID = new ForeignKeyConstraint();
         foreignKeyFK_CAR_FUEL_VEH_ID.setName("FK_CAR_FUEL_VEH_ID");
         foreignKeyFK_CAR_FUEL_VEH_ID.setTargetTable("FUEL_VEH");
@@ -421,36 +421,36 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         return table;
     }
 
-	public TableDefinition buildENTOMOLOGISTTable() {
-		TableDefinition table = new TableDefinition();
-		table.setName("ENTOMOLOGIST");
-		
-		FieldDefinition fieldID = new FieldDefinition();
-		fieldID.setName("ID");
-		fieldID.setTypeName("NUMBER");
-		fieldID.setSize(0);
-		fieldID.setSubSize(0);
-		fieldID.setIsPrimaryKey(true);
-		fieldID.setIsIdentity(false);
-		fieldID.setUnique(false);
-		fieldID.setShouldAllowNull(false);
-		table.addField(fieldID);
-		
-		FieldDefinition fieldNAME = new FieldDefinition();
-		fieldNAME.setName("NAME");
-		fieldNAME.setTypeName("VARCHAR2");
-		fieldNAME.setSize(20);
-		fieldNAME.setSubSize(0);
-		fieldNAME.setIsPrimaryKey(false);
-		fieldNAME.setIsIdentity(false);
-		fieldNAME.setUnique(false);
-		fieldNAME.setShouldAllowNull(true);
-		table.addField(fieldNAME);
-		
-		return table;
-	}
+    public TableDefinition buildENTOMOLOGISTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("ENTOMOLOGIST");
 
-	public TableDefinition buildFUEL_VEHTable() {
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(0);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(20);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+
+    public TableDefinition buildFUEL_VEHTable() {
         TableDefinition table = new TableDefinition();
         table.setName("FUEL_VEH");
 
@@ -486,7 +486,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldFUEL_TYP.setUnique(false);
         fieldFUEL_TYP.setShouldAllowNull(true);
         table.addField(fieldFUEL_TYP);
-        
+
         ForeignKeyConstraint foreignKeyFUEL_VEH_VEHICLE = new ForeignKeyConstraint();
         foreignKeyFUEL_VEH_VEHICLE.setName("FUEL_VEH_VEHICLE");
         foreignKeyFUEL_VEH_VEHICLE.setTargetTable("VEHICLE");
@@ -558,7 +558,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldTHE_NAME.setUnique(false);
         fieldTHE_NAME.setShouldAllowNull(true);
         table.addField(fieldTHE_NAME);
-        
+
         ForeignKeyConstraint foreignKeyHUMAN_M_PRIMATE = new ForeignKeyConstraint();
         foreignKeyHUMAN_M_PRIMATE.setName("HUMAN_M_PRIMATE");
         foreignKeyHUMAN_M_PRIMATE.setTargetTable("PRIMATE");
@@ -775,7 +775,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldNUMBER_OF_SUPPORT.setUnique(false);
         fieldNUMBER_OF_SUPPORT.setShouldAllowNull(false);
         table.addField(fieldNUMBER_OF_SUPPORT);
-        
+
         ForeignKeyConstraint foreignKeyJAVAPROGRAMMER_PROGRAMMER = new ForeignKeyConstraint();
         foreignKeyJAVAPROGRAMMER_PROGRAMMER.setName("JAVAP_P");
         foreignKeyJAVAPROGRAMMER_PROGRAMMER.setTargetTable("PROGRAMMER");
@@ -840,7 +840,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         foreignKeyDEVELOPER_KING_PERSON_KING.addSourceField("ID");
         foreignKeyDEVELOPER_KING_PERSON_KING.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyDEVELOPER_KING_PERSON_KING);
-        
+
         return table;
     }
 
@@ -1350,7 +1350,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
 
         return table;
     }
-    
+
     public TableDefinition buildWORKERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("WORKER2");
@@ -1376,7 +1376,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldW_TYPE = new FieldDefinition();
         fieldW_TYPE.setName("W_TYPE");
         fieldW_TYPE.setTypeName("VARCHAR2");
@@ -1387,7 +1387,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldW_TYPE.setUnique(false);
         fieldW_TYPE.setShouldAllowNull(true);
         table.addField(fieldW_TYPE);
-        
+
         FieldDefinition fieldCOMPANY_ID = new FieldDefinition();
         fieldCOMPANY_ID.setName("COMPANY_ID");
         fieldCOMPANY_ID.setTypeName("NUMBER");
@@ -1398,7 +1398,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldCOMPANY_ID.setUnique(false);
         fieldCOMPANY_ID.setShouldAllowNull(true);
         table.addField(fieldCOMPANY_ID);
-        
+
         ForeignKeyConstraint foreignKeyWORKER_COMPANY = new ForeignKeyConstraint();
         foreignKeyWORKER_COMPANY.setName("WORKER_COMPANY");
         foreignKeyWORKER_COMPANY.setTargetTable("COMPANY");
@@ -1408,11 +1408,11 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
 
         return table;
     }
-    
+
     public TableDefinition buildFRUITTable() {
         TableDefinition table = new TableDefinition();
         table.setName("FRUIT");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -1423,7 +1423,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldTYPE = new FieldDefinition();
         fieldTYPE.setName("TYPE");
         fieldTYPE.setTypeName("VARCHAR2");
@@ -1434,7 +1434,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldTYPE.setUnique(false);
         fieldTYPE.setShouldAllowNull(false);
         table.addField(fieldTYPE);
-        
+
         FieldDefinition fieldQUALITY = new FieldDefinition();
         fieldQUALITY.setName("QUALITY");
         fieldQUALITY.setTypeName("VARCHAR2");
@@ -1445,7 +1445,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldQUALITY.setUnique(false);
         fieldQUALITY.setShouldAllowNull(true);
         table.addField(fieldQUALITY);
-        
+
         FieldDefinition fieldTEACHER_ID = new FieldDefinition();
         fieldTEACHER_ID.setName("TEACHER_ID");
         fieldTEACHER_ID.setTypeName("NUMBER");
@@ -1456,21 +1456,21 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldTEACHER_ID.setUnique(false);
         fieldTEACHER_ID.setShouldAllowNull(true);
         table.addField(fieldTEACHER_ID);
-        
+
         ForeignKeyConstraint foreignKeyFRUIT_TEACHER = new ForeignKeyConstraint();
         foreignKeyFRUIT_TEACHER.setName("FRUIT_TEACHER");
         foreignKeyFRUIT_TEACHER.setTargetTable("TEACHER");
         foreignKeyFRUIT_TEACHER.addSourceField("TEACHER_ID");
         foreignKeyFRUIT_TEACHER.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyFRUIT_TEACHER);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildTEACHERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TEACHER");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -1481,7 +1481,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR2");
@@ -1492,8 +1492,8 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(false);
         table.addField(fieldNAME);
-        
+
         return table;
     }
-    
+
 }

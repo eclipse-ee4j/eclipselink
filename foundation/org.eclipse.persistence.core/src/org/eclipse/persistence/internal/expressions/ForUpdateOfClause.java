@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.util.*;
@@ -54,8 +54,8 @@ public class ForUpdateOfClause extends ForUpdateClause {
             return false;
         }
 
-        // Normally the expressionBuilder is stored first but not necessarily 
-        // when a child ForUpdateOfClause is built for a nested query, or if a 
+        // Normally the expressionBuilder is stored first but not necessarily
+        // when a child ForUpdateOfClause is built for a nested query, or if a
         //user made this clause.
         int size = this.lockedExpressions.size();
         for (int i = 0; i < size; i++) {
@@ -80,19 +80,19 @@ public class ForUpdateOfClause extends ForUpdateClause {
      */
     public void printSQL(ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         // assert(lockedExpressions != null && lockedExpressions.size() > 0);
-        // assert(	getLockMode() == ObjectBuildingQuery.LOCK || 
-        //			getLockMode() == ObjectBuildingQuery.LOCK_NOWAIT);
+        // assert(    getLockMode() == ObjectBuildingQuery.LOCK ||
+        //            getLockMode() == ObjectBuildingQuery.LOCK_NOWAIT);
         if(printer.getSession().getPlatform().shouldPrintLockingClauseAfterWhereClause()) {
             ExpressionBuilder clonedBuilder = statement.getBuilder();
-    
+
             printer.printString(printer.getSession().getPlatform().getSelectForUpdateOfString());
-    
+
             printer.setIsFirstElementPrinted(false);
             for (Expression next : getLockedExpressions()) {
                 // Necessary as this was determined in query framework.
                 next = next.rebuildOn(clonedBuilder);
                 if(next.isObjectExpression()) {
-                    ObjectExpression objectExp = (ObjectExpression)next;        
+                    ObjectExpression objectExp = (ObjectExpression)next;
                     objectExp.writeForUpdateOfFields(printer, statement);
                 } else {
                     // must be FieldExpression
@@ -107,7 +107,7 @@ public class ForUpdateOfClause extends ForUpdateClause {
             super.printSQL(printer, statement);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Returns collection of aliases of the tables to be locked.

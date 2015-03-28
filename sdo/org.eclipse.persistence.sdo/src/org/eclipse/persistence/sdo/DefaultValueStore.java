@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.sdo;
 
 import commonj.sdo.DataObject;
@@ -26,9 +26,9 @@ import java.util.Map;
  * </ul>
  */
 public class DefaultValueStore implements ValueStore {
-    private Map openContentValues;//open content values keyed on real prop name   
+    private Map openContentValues;//open content values keyed on real prop name
     private Object[] typePropertyValues;
-	/** Visibility reduced from [public] in 2.1.0. May 15 2007 */
+    /** Visibility reduced from [public] in 2.1.0. May 15 2007 */
     private boolean[] typePropertiesIsSetStatus;
     private DataObject dataObject;
 
@@ -51,7 +51,7 @@ public class DefaultValueStore implements ValueStore {
         getTypePropertiesIsSetStatus()[propertyIndex] = true;
     }
 
-    public void setOpenContentProperty(Property property, Object value) {    
+    public void setOpenContentProperty(Property property, Object value) {
         getOpenContentValues().put(property, value);
     }
 
@@ -78,7 +78,7 @@ public class DefaultValueStore implements ValueStore {
         getTypePropertiesIsSetStatus()[propertyIndex] = false;
     }
 
-    public void unsetOpenContentProperty(Property property) {    
+    public void unsetOpenContentProperty(Property property) {
         getOpenContentValues().remove(property);
     }
 
@@ -188,14 +188,14 @@ public class DefaultValueStore implements ValueStore {
          * the public get function is used
          */
         clonedMap.putAll(getOpenContentValues());
-        // shallow copy oc values 
+        // shallow copy oc values
         anOriginalValueStore.setOpenContentValues(clonedMap);
 
         return anOriginalValueStore;
     }
-    
+
     /**
-     *  Indicates if a given ValueStore is equal to this.  The following 
+     *  Indicates if a given ValueStore is equal to this.  The following
      *  attributes are tested for equality:
      *      - data object
      *      - type property values
@@ -215,7 +215,7 @@ public class DefaultValueStore implements ValueStore {
         }
         // Compare declared properties and isSet status
         // All lists must be the same length
-        if (dvs.getTypePropertyValues().length != this.getTypePropertyValues().length || 
+        if (dvs.getTypePropertyValues().length != this.getTypePropertyValues().length ||
                 dvs.getTypePropertiesIsSetStatus().length != this.getTypePropertiesIsSetStatus().length) {
             return false;
         }
@@ -226,7 +226,7 @@ public class DefaultValueStore implements ValueStore {
             }
             Object dvsPropVal  = dvs.getDeclaredProperty(i);
             Object thisPropVal = this.getDeclaredProperty(i);
-            // Both values need to be null or non-null            
+            // Both values need to be null or non-null
             if (dvsPropVal == null) {
                 if (thisPropVal != null) {
                     return false;
@@ -247,7 +247,7 @@ public class DefaultValueStore implements ValueStore {
             Property key = keyIt.next();
             Object dvsOCVal  = dvs.getOpenContentProperty(key);
             Object thisOCVal = this.getOpenContentProperty(key);
-            // Both values need to be null or non-null            
+            // Both values need to be null or non-null
             if (dvsOCVal == null) {
                 if (thisOCVal != null) {
                     return false;

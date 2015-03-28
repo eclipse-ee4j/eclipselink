@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,12 +36,12 @@ import commonj.sdo.impl.HelperProvider;
 public class LoadSchemasWithImportAndInheritance extends TestCase {
     static String PATH = "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/load/";
     SDOXSDHelper xsdHelper = (SDOXSDHelper) XSDHelper.INSTANCE;
-    
+
     public void testLoadSchemasWithImportAndInheritance() {
         loadXSD(PATH + "SchemaA.xsd");
         loadXSD(PATH + "SchemaB.xsd");
     }
-    
+
     public void loadXSD(String xsdFileName) {
         FileInputStream fInstream = null;
         try {
@@ -51,8 +51,8 @@ public class LoadSchemasWithImportAndInheritance extends TestCase {
             fail();
         }
         xsdHelper.define(new StreamSource(fInstream), new MySchemaResolver());
-    } 
-    
+    }
+
     private class MySchemaResolver implements SchemaResolver {
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
             try {
@@ -65,7 +65,7 @@ public class LoadSchemasWithImportAndInheritance extends TestCase {
 
             return null;
         }
-     
+
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
             return null;
         }

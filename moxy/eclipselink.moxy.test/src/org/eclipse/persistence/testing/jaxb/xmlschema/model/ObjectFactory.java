@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,18 +19,18 @@ import javax.xml.namespace.QName;
 
 
 /**
- * This object contains factory methods for each 
- * Java content interface and Java element interface 
- * generated in the org.w3._2001.xmlschema package. 
- * <p>An ObjectFactory allows you to programatically 
- * construct new instances of the Java representation 
- * for XML content. The Java representation of XML 
- * content can consist of schema derived interfaces 
- * and classes representing the binding of schema 
- * type definitions, element declarations and model 
- * groups.  Factory methods for each of these are 
+ * This object contains factory methods for each
+ * Java content interface and Java element interface
+ * generated in the org.w3._2001.xmlschema package.
+ * <p>An ObjectFactory allows you to programatically
+ * construct new instances of the Java representation
+ * for XML content. The Java representation of XML
+ * content can consist of schema derived interfaces
+ * and classes representing the binding of schema
+ * type definitions, element declarations and model
+ * groups.  Factory methods for each of these are
  * provided in this class.
- * 
+ *
  */
 @XmlRegistry
 public class ObjectFactory {
@@ -59,14 +59,14 @@ public class ObjectFactory {
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.w3._2001.xmlschema
-     * 
+     *
      */
     public ObjectFactory() {
     }
 
     /**
      * Create an instance of {@link ExplicitGroup }
-     * 
+     *
      */
     public ExplicitGroup createExplicitGroup() {
         return new ExplicitGroup();
@@ -74,7 +74,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link LocalComplexType }
-     * 
+     *
      */
     public LocalComplexType createLocalComplexType() {
         return new LocalComplexType();
@@ -82,7 +82,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SimpleRestrictionType }
-     * 
+     *
      */
     public SimpleRestrictionType createSimpleRestrictionType() {
         return new SimpleRestrictionType();
@@ -90,7 +90,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link LocalElement }
-     * 
+     *
      */
     public LocalElement createLocalElement() {
         return new LocalElement();
@@ -98,7 +98,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link TopLevelSimpleType }
-     * 
+     *
      */
     public TopLevelSimpleType createTopLevelSimpleType() {
         return new TopLevelSimpleType();
@@ -106,7 +106,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Union }
-     * 
+     *
      */
     public Union createUnion() {
         return new Union();
@@ -114,7 +114,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Keyref }
-     * 
+     *
      */
     public Keyref createKeyref() {
         return new Keyref();
@@ -122,7 +122,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link NoFixedFacet }
-     * 
+     *
      */
     public NoFixedFacet createNoFixedFacet() {
         return new NoFixedFacet();
@@ -130,7 +130,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Annotated }
-     * 
+     *
      */
     public Annotated createAnnotated() {
         return new Annotated();
@@ -138,7 +138,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Restriction }
-     * 
+     *
      */
     public Restriction createRestriction() {
         return new Restriction();
@@ -146,7 +146,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Wildcard }
-     * 
+     *
      */
     public Wildcard createWildcard() {
         return new Wildcard();
@@ -154,7 +154,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Selector }
-     * 
+     *
      */
     public Selector createSelector() {
         return new Selector();
@@ -162,7 +162,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link OpenAttrs }
-     * 
+     *
      */
     public OpenAttrs createOpenAttrs() {
         return new OpenAttrs();
@@ -170,7 +170,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link NarrowMaxMin }
-     * 
+     *
      */
     public NarrowMaxMin createNarrowMaxMin() {
         return new NarrowMaxMin();
@@ -178,7 +178,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SimpleExtensionType }
-     * 
+     *
      */
     public SimpleExtensionType createSimpleExtensionType() {
         return new SimpleExtensionType();
@@ -186,7 +186,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Pattern }
-     * 
+     *
      */
     public Pattern createPattern() {
         return new Pattern();
@@ -194,7 +194,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link TopLevelAttribute }
-     * 
+     *
      */
     public TopLevelAttribute createTopLevelAttribute() {
         return new TopLevelAttribute();
@@ -202,7 +202,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link All }
-     * 
+     *
      */
     public All createAll() {
         return new All();
@@ -210,7 +210,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ComplexContent }
-     * 
+     *
      */
     public ComplexContent createComplexContent() {
         return new ComplexContent();
@@ -218,7 +218,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link WhiteSpace }
-     * 
+     *
      */
     public WhiteSpace createWhiteSpace() {
         return new WhiteSpace();
@@ -226,7 +226,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link RealGroup }
-     * 
+     *
      */
     public RealGroup createRealGroup() {
         return new RealGroup();
@@ -234,7 +234,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ComplexRestrictionType }
-     * 
+     *
      */
     public ComplexRestrictionType createComplexRestrictionType() {
         return new ComplexRestrictionType();
@@ -242,7 +242,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Annotation }
-     * 
+     *
      */
     public Annotation createAnnotation() {
         return new Annotation();
@@ -250,7 +250,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link NamedGroup }
-     * 
+     *
      */
     public NamedGroup createNamedGroup() {
         return new NamedGroup();
@@ -258,7 +258,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Include }
-     * 
+     *
      */
     public Include createInclude() {
         return new Include();
@@ -266,7 +266,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GroupRef }
-     * 
+     *
      */
     public GroupRef createGroupRef() {
         return new GroupRef();
@@ -274,7 +274,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Documentation }
-     * 
+     *
      */
     public Documentation createDocumentation() {
         return new Documentation();
@@ -282,7 +282,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Attribute }
-     * 
+     *
      */
     public Attribute createAttribute() {
         return new Attribute();
@@ -290,7 +290,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SimpleExplicitGroup }
-     * 
+     *
      */
     public SimpleExplicitGroup createSimpleExplicitGroup() {
         return new SimpleExplicitGroup();
@@ -298,7 +298,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Notation }
-     * 
+     *
      */
     public Notation createNotation() {
         return new Notation();
@@ -306,7 +306,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link AttributeGroupRef }
-     * 
+     *
      */
     public AttributeGroupRef createAttributeGroupRef() {
         return new AttributeGroupRef();
@@ -314,7 +314,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Redefine }
-     * 
+     *
      */
     public Redefine createRedefine() {
         return new Redefine();
@@ -322,7 +322,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Any }
-     * 
+     *
      */
     public Any createAny() {
         return new Any();
@@ -330,7 +330,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link RestrictionType }
-     * 
+     *
      */
     public RestrictionType createRestrictionType() {
         return new RestrictionType();
@@ -338,7 +338,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Field }
-     * 
+     *
      */
     public Field createField() {
         return new Field();
@@ -346,7 +346,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link TopLevelComplexType }
-     * 
+     *
      */
     public TopLevelComplexType createTopLevelComplexType() {
         return new TopLevelComplexType();
@@ -354,7 +354,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link LocalSimpleType }
-     * 
+     *
      */
     public LocalSimpleType createLocalSimpleType() {
         return new LocalSimpleType();
@@ -362,7 +362,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Import }
-     * 
+     *
      */
     public Import createImport() {
         return new Import();
@@ -370,7 +370,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link NamedAttributeGroup }
-     * 
+     *
      */
     public NamedAttributeGroup createNamedAttributeGroup() {
         return new NamedAttributeGroup();
@@ -378,7 +378,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link TotalDigits }
-     * 
+     *
      */
     public TotalDigits createTotalDigits() {
         return new TotalDigits();
@@ -386,7 +386,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link TopLevelElement }
-     * 
+     *
      */
     public TopLevelElement createTopLevelElement() {
         return new TopLevelElement();
@@ -394,7 +394,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Facet }
-     * 
+     *
      */
     public Facet createFacet() {
         return new Facet();
@@ -402,7 +402,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ExtensionType }
-     * 
+     *
      */
     public ExtensionType createExtensionType() {
         return new ExtensionType();
@@ -410,7 +410,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link List }
-     * 
+     *
      */
     public List createList() {
         return new List();
@@ -418,7 +418,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Schema }
-     * 
+     *
      */
     public Schema createSchema() {
         return new Schema();
@@ -426,7 +426,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Appinfo }
-     * 
+     *
      */
     public Appinfo createAppinfo() {
         return new Appinfo();
@@ -434,7 +434,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link NumFacet }
-     * 
+     *
      */
     public NumFacet createNumFacet() {
         return new NumFacet();
@@ -442,7 +442,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Keybase }
-     * 
+     *
      */
     public Keybase createKeybase() {
         return new Keybase();
@@ -450,7 +450,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SimpleContent }
-     * 
+     *
      */
     public SimpleContent createSimpleContent() {
         return new SimpleContent();
@@ -458,7 +458,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Facet }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "minInclusive")
     public JAXBElement<Facet> createMinInclusive(Facet value) {
@@ -467,7 +467,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NumFacet }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "maxLength")
     public JAXBElement<NumFacet> createMaxLength(NumFacet value) {
@@ -476,7 +476,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ExplicitGroup }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "sequence")
     public JAXBElement<ExplicitGroup> createSequence(ExplicitGroup value) {
@@ -485,7 +485,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NumFacet }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "minLength")
     public JAXBElement<NumFacet> createMinLength(NumFacet value) {
@@ -494,7 +494,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NamedGroup }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "group")
     public JAXBElement<NamedGroup> createGroup(NamedGroup value) {
@@ -503,7 +503,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NamedAttributeGroup }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "attributeGroup")
     public JAXBElement<NamedAttributeGroup> createAttributeGroup(NamedAttributeGroup value) {
@@ -512,7 +512,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Keybase }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "key")
     public JAXBElement<Keybase> createKey(Keybase value) {
@@ -521,7 +521,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link All }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "all")
     public JAXBElement<All> createAll(All value) {
@@ -530,7 +530,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NumFacet }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "length")
     public JAXBElement<NumFacet> createLength(NumFacet value) {
@@ -539,7 +539,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TopLevelSimpleType }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "simpleType")
     public JAXBElement<TopLevelSimpleType> createSimpleType(TopLevelSimpleType value) {
@@ -548,7 +548,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NoFixedFacet }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "enumeration")
     public JAXBElement<NoFixedFacet> createEnumeration(NoFixedFacet value) {
@@ -557,7 +557,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ExplicitGroup }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "choice")
     public JAXBElement<ExplicitGroup> createChoice(ExplicitGroup value) {
@@ -566,7 +566,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NumFacet }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "fractionDigits")
     public JAXBElement<NumFacet> createFractionDigits(NumFacet value) {
@@ -575,7 +575,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Facet }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "minExclusive")
     public JAXBElement<Facet> createMinExclusive(Facet value) {
@@ -584,7 +584,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Facet }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "maxExclusive")
     public JAXBElement<Facet> createMaxExclusive(Facet value) {
@@ -593,7 +593,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TopLevelElement }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "element")
     public JAXBElement<TopLevelElement> createElement(TopLevelElement value) {
@@ -602,7 +602,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Keybase }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "unique")
     public JAXBElement<Keybase> createUnique(Keybase value) {
@@ -611,7 +611,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TopLevelComplexType }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "complexType")
     public JAXBElement<TopLevelComplexType> createComplexType(TopLevelComplexType value) {
@@ -620,7 +620,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Facet }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "maxInclusive")
     public JAXBElement<Facet> createMaxInclusive(Facet value) {
@@ -629,7 +629,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TopLevelAttribute }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "attribute")
     public JAXBElement<TopLevelAttribute> createAttribute(TopLevelAttribute value) {
@@ -638,7 +638,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Wildcard }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "anyAttribute")
     public JAXBElement<Wildcard> createAnyAttribute(Wildcard value) {
@@ -647,7 +647,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link LocalElement }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "element", scope = Group.class)
     public JAXBElement<LocalElement> createGroupElement(LocalElement value) {
@@ -656,7 +656,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GroupRef }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "http://www.w3.org/2001/XMLSchema", name = "group", scope = Group.class)
     public JAXBElement<GroupRef> createGroupGroup(GroupRef value) {

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -366,7 +366,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * connEtoC14:
      * (LogProfileCheckbox.item.itemStateChanged(java.awt.event.ItemEvent) -->
      * SessionInspectorPanel.logProfileChanged()V)
-     * 
+     *
      * @param arg1
      *                java.awt.event.ItemEvent
      */
@@ -382,7 +382,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * connEtoC15:
      * (ProfileCheckbox.item.itemStateChanged(java.awt.event.ItemEvent) -->
      * SessionInspectorPanel.profileChanged()V)
-     * 
+     *
      * @param arg1
      *                java.awt.event.ItemEvent
      */
@@ -403,7 +403,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     /**
      * connEtoC16: (LogCheckbox.item.itemStateChanged(java.awt.event.ItemEvent)
      * --> SessionInspectorPanel.loggingChanged()V)
-     * 
+     *
      * @param arg1
      *                java.awt.event.ItemEvent
      */
@@ -424,7 +424,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     /**
      * connEtoC18: (SQLText.mouse.mouseReleased(java.awt.event.MouseEvent) -->
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
-     * 
+     *
      * @param arg1
      *                java.awt.event.MouseEvent
      */
@@ -446,7 +446,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * connEtoC19: (CacheTable.mouse.mouseReleased(java.awt.event.MouseEvent)
      * -->
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
-     * 
+     *
      * @param arg1
      *                java.awt.event.MouseEvent
      */
@@ -462,7 +462,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * connEtoC20:
      * (ResultsScrollPane.mouse.mouseReleased(java.awt.event.MouseEvent) -->
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
-     * 
+     *
      * @param arg1
      *                java.awt.event.MouseEvent
      */
@@ -483,7 +483,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     /**
      * connEtoC21: (ClassList.mouse.mouseReleased(java.awt.event.MouseEvent) -->
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
-     * 
+     *
      * @param arg1
      *                java.awt.event.MouseEvent
      */
@@ -506,7 +506,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * connEtoC3:
      * (ClassList.listSelection.valueChanged(event.ListSelectionEvent) -->
      * SessionInspectorPanel.resetCache()V)
-     * 
+     *
      * @param arg1
      *                event.ListSelectionEvent
      */
@@ -521,7 +521,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     /**
      * connEtoC40: (QueryPage.mouse.mouseReleased(java.awt.event.MouseEvent) -->
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
-     * 
+     *
      * @param arg1
      *                java.awt.event.MouseEvent
      */
@@ -543,7 +543,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     /**
      * connEtoC41: (LogText.mouse.mouseReleased(java.awt.event.MouseEvent) -->
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
-     * 
+     *
      * @param arg1
      *                java.awt.event.MouseEvent
      */
@@ -565,7 +565,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     /**
      * connEtoC42: (LoginPage.mouse.mouseReleased(java.awt.event.MouseEvent) -->
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
-     * 
+     *
      * @param arg1
      *                java.awt.event.MouseEvent
      */
@@ -706,12 +706,12 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             showNormalCursor();
         }
     }
-    
+
     public void executeJPQL() {
         showBusyCursor();
         try {
             getSession().getProject().getJPQLParseCache().getCache().clear();
-            
+
             String jpql = getJPQLText().getSelectedText();
             if ((jpql == null) || (jpql.length() == 0)) {
                 return;
@@ -809,7 +809,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the BrowseProfileButton property value.
-     * 
+     *
      * @return JButton
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -834,7 +834,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the BrowseProfileMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -963,7 +963,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the SQLPage property value.
-     * 
+     *
      * @return JPanel
      */
     private JPanel getCachePage() {
@@ -1007,7 +1007,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the CachePopupMenu property value.
-     * 
+     *
      * @return JPopupMenu
      */
     private JPopupMenu getCachePopupMenu() {
@@ -1030,7 +1030,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the CacheScrollPane property value.
-     * 
+     *
      * @return JScrollPane
      */
     private JScrollPane getCacheScrollPane() {
@@ -1048,7 +1048,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the CacheTable property value.
-     * 
+     *
      * @return JTable
      */
     private JTable getCacheTable() {
@@ -1072,7 +1072,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ClassList property value.
-     * 
+     *
      * @return JList
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1098,7 +1098,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ClassScrollPane property value.
-     * 
+     *
      * @return JScrollPane
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1124,7 +1124,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ClearButton property value.
-     * 
+     *
      * @return JButton
      */
     private JButton getClearButton() {
@@ -1161,7 +1161,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ClearCacheButton property value.
-     * 
+     *
      * @return JButton
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1185,7 +1185,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ClearCacheMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1209,7 +1209,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ClearDescriptorsMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1233,7 +1233,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ClearLogButton property value.
-     * 
+     *
      * @return JButton
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1257,7 +1257,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ClearLogMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1323,7 +1323,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ClearResultsMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1347,7 +1347,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ClearSQLMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1371,7 +1371,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the CopySQLMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1395,7 +1395,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the CutSQLMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1419,7 +1419,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the DeleteSQLMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1443,7 +1443,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the DescriptorMenu property value.
-     * 
+     *
      * @return JPopupMenu
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1469,7 +1469,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ExecuteQueryMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1493,7 +1493,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ExpressionPanel property value.
-     * 
+     *
      * @return ExpressionPanel
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1515,7 +1515,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the FullNamesMenuItem property value.
-     * 
+     *
      * @return JCheckBoxMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1539,7 +1539,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the InsertSQLMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1563,7 +1563,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the InspectCacheButton property value.
-     * 
+     *
      * @return JButton
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1587,7 +1587,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the InspectCacheMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1611,7 +1611,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the InspectDescriptorMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1635,7 +1635,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the InspectResultMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1659,7 +1659,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the InspectSessionMenuItem1 property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1683,7 +1683,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the JPopupMenu1 property value.
-     * 
+     *
      * @return JPopupMenu
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1707,7 +1707,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the JSeparator4 property value.
-     * 
+     *
      * @return JSeparator
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1729,7 +1729,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the JSeparator5 property value.
-     * 
+     *
      * @return JSeparator
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1751,7 +1751,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the JSeparator6 property value.
-     * 
+     *
      * @return JSeparator
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1773,7 +1773,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the JSeparator7 property value.
-     * 
+     *
      * @return JSeparator
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1795,7 +1795,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LoadProjectButton property value.
-     * 
+     *
      * @return JButton
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1819,7 +1819,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LogBook property value.
-     * 
+     *
      * @return JTabbedPane
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1868,7 +1868,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LoginButton property value.
-     * 
+     *
      * @return JButton
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1896,7 +1896,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LoginEditorPanel property value.
-     * 
+     *
      * @return LoginEditorPanel
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1918,7 +1918,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LoginMenu property value.
-     * 
+     *
      * @return JPopupMenu
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1943,7 +1943,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LoginMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -1967,7 +1967,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LoginPage property value.
-     * 
+     *
      * @return JPanel
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2022,7 +2022,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LogMenu property value.
-     * 
+     *
      * @return JPopupMenu
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2053,7 +2053,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LogoutButton property value.
-     * 
+     *
      * @return JButton
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2077,7 +2077,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LogoutMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2101,7 +2101,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LogPage property value.
-     * 
+     *
      * @return JPanel
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2193,7 +2193,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LogProfileMenuItem property value.
-     * 
+     *
      * @return JCheckBoxMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2218,7 +2218,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LogProfileMenuItem1 property value.
-     * 
+     *
      * @return JCheckBoxMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2243,7 +2243,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LogScrollPane property value.
-     * 
+     *
      * @return JScrollPane
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2267,7 +2267,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LogSplitter property value.
-     * 
+     *
      * @return JSplitPane
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2297,7 +2297,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the LogText property value.
-     * 
+     *
      * @return JTextArea
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2322,7 +2322,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the PasteSQLMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2374,7 +2374,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the QueryMenu property value.
-     * 
+     *
      * @return JPopupMenu
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2397,7 +2397,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the QueryPanel property value.
-     * 
+     *
      * @return JPanel
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2437,7 +2437,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ResetDescriptorsMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2462,7 +2462,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ResultPage property value.
-     * 
+     *
      * @return JPanel
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2500,7 +2500,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ResultsScrollPane property value.
-     * 
+     *
      * @return JScrollPane
      */
     private JScrollPane getResultsScrollPane() {
@@ -2525,7 +2525,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the ResultsTable property value.
-     * 
+     *
      * @return JTable
      */
     private JTable getResultsTable() {
@@ -2549,7 +2549,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the SelectButton property value.
-     * 
+     *
      * @return JButton
      */
     private JButton getSelectButton() {
@@ -2568,7 +2568,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the SelectSQLMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2593,7 +2593,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     /**
      * Gets the session property (org.eclipse.persistence.sessions.Session)
      * value.
-     * 
+     *
      * @return The session property value.
      * @see #setSession
      */
@@ -2603,7 +2603,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the SQLExecuteButton property value.
-     * 
+     *
      * @return JButton
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2655,7 +2655,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the SQLMenu property value.
-     * 
+     *
      * @return JPopupMenu
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2687,7 +2687,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the SQLScrollPane property value.
-     * 
+     *
      * @return JScrollPane
      */
     private JScrollPane getSQLScrollPane() {
@@ -2725,7 +2725,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the SQLSelectMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2749,7 +2749,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the SQLTemplateMenu property value.
-     * 
+     *
      * @return JMenu
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2777,7 +2777,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the SQLText property value.
-     * 
+     *
      * @return JTextPane
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2833,7 +2833,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the SQLUpdateMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2857,7 +2857,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the TopPanel property value.
-     * 
+     *
      * @return JPanel
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -2890,7 +2890,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the TopSplitPane property value.
-     * 
+     *
      * @return JSplitPane
      */
     private JSplitPane getTopSplitPane() {
@@ -2912,7 +2912,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the UpdateSQLMenuItem property value.
-     * 
+     *
      * @return JMenuItem
      */
     private JMenuItem getUpdateSQLMenuItem() {
@@ -2935,7 +2935,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Return the WorkspaceBook property value.
-     * 
+     *
      * @return JTabbedPane
      */
     public JTabbedPane getWorkspaceBook() {
@@ -3109,7 +3109,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Method to handle events for the ItemListener interface.
-     * 
+     *
      * @param e
      *                event.ItemEvent
      */
@@ -3278,7 +3278,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Method to handle events for the MouseListener interface.
-     * 
+     *
      * @param e
      *                event.MouseEvent
      */
@@ -3287,7 +3287,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Method to handle events for the MouseListener interface.
-     * 
+     *
      * @param e
      *                event.MouseEvent
      */
@@ -3296,7 +3296,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Method to handle events for the MouseListener interface.
-     * 
+     *
      * @param e
      *                event.MouseEvent
      */
@@ -3305,7 +3305,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Method to handle events for the MouseListener interface.
-     * 
+     *
      * @param e
      *                event.MouseEvent
      */
@@ -3314,7 +3314,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Method to handle events for the MouseListener interface.
-     * 
+     *
      * @param e
      *                event.MouseEvent
      */
@@ -3362,7 +3362,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Method to handle events for the PropertyChangeListener interface.
-     * 
+     *
      * @param evt
      *                java.beans.PropertyChangeEvent
      */
@@ -3551,7 +3551,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         getResultsTable().setModel(model);
         getResultsTable().repaint();
     }
-    
+
     public void setResultReports(Vector results) {
         setResults(results);
         DefaultTableModel model = new DefaultTableModel();
@@ -3614,7 +3614,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     /**
      * Sets the session property (org.eclipse.persistence.sessions.Session)
      * value.
-     * 
+     *
      * @param session
      *                The new value for the property.
      * @see #getSession
@@ -3728,7 +3728,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * Method to handle events for the ListSelectionListener interface.
-     * 
+     *
      * @param e
      *                event.ListSelectionEvent
      */

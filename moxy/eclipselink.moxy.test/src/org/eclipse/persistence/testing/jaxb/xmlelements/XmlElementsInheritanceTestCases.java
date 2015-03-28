@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Matt MacIvor - 2.4 - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelements;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class XmlElementsInheritanceTestCases extends JAXBWithJSONTestCases {
 
     public XmlElementsInheritanceTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);   
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[3];
         classes[0] = EmployeeCollection.class;
@@ -54,7 +54,7 @@ public class XmlElementsInheritanceTestCases extends JAXBWithJSONTestCases {
         employee.choice = choices;
         return employee;
     }
-    
+
     protected Object getJSONReadControlObject() {
           EmployeeCollection employee = new EmployeeCollection();
           employee.id = CONTROL_ID;
@@ -66,11 +66,11 @@ public class XmlElementsInheritanceTestCases extends JAXBWithJSONTestCases {
           addr.city = "Ottawa";
           addr.street = "123 Fake Street";
           addr.postalCode = "A1A 1A1";
-          choices.add(addr);          
+          choices.add(addr);
           employee.choice = choices;
           return employee;
     }
-    
+
     public void testJSONSchemaGen() throws Exception{
         InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
         super.generateJSONSchema(controlSchema);

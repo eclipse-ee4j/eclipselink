@@ -4,7 +4,7 @@
    <lastname>Smith</lastname>
    <ADDRESSELEM>
       <idid>1</idid>
-	  <cityNamecityName>Dartmouth</cityNamecityName>
+      <cityNamecityName>Dartmouth</cityNamecityName>
    </ADDRESSELEM>
    <PHONEELEM>1234567</PHONEELEM>
    <responsibilities>

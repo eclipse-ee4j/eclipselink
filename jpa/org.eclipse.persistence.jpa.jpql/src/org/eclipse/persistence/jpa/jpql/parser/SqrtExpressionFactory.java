@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,31 +27,31 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class SqrtExpressionFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link SqrtExpressionFactory}.
-	 */
-	public static final String ID = Expression.SQRT;
+    /**
+     * The unique identifier of this {@link SqrtExpressionFactory}.
+     */
+    public static final String ID = Expression.SQRT;
 
-	/**
-	 * Creates a new <code>SqrtExpressionFactory</code>.
-	 */
-	public SqrtExpressionFactory() {
-		super(ID, Expression.SQRT);
-	}
+    /**
+     * Creates a new <code>SqrtExpressionFactory</code>.
+     */
+    public SqrtExpressionFactory() {
+        super(ID, Expression.SQRT);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		expression = new SqrtExpression(parent);
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        expression = new SqrtExpression(parent);
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

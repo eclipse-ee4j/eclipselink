@@ -8,7 +8,7 @@
         </xml-enum>
    </xml-enums>
    <java-types>
-	  <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Employee">
+      <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Employee">
          <xml-root-element name="empRoot3"/>
          <xml-properties>
                 <xml-property name="5" value="E" />
@@ -16,10 +16,10 @@
                 <xml-property name="2" value="F"/>
           </xml-properties>
        </java-type>
-	   <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Person">
-	      <xml-type name="person-type"/>
-	   </java-type>
+       <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Person">
+          <xml-type name="person-type"/>
+       </java-type>
       <!--java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Phone">
-      </java-type-->    	
-	</java-types>
+      </java-type-->
+    </java-types>
 </xml-bindings>

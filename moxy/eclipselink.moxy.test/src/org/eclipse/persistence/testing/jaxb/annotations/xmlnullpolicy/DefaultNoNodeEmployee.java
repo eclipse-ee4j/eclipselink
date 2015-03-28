@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,7 +34,7 @@ public class DefaultNoNodeEmployee {
     List choiceList;
     DefaultNoNodeEmployee reference;
     DefaultNoNodeEmployee choice;
-    
+
     boolean wasSetElementString;
     boolean wasSetElementStringNillable;
     boolean wasSetElementPOJO;
@@ -47,12 +47,12 @@ public class DefaultNoNodeEmployee {
 
     public DefaultNoNodeEmployee(){
     }
-    
+
     @XmlAnyElement
     public Object getAny() {
         return any;
     }
-    
+
     @XmlAttribute
     @XmlID
     public String getAttribute() {
@@ -67,7 +67,7 @@ public class DefaultNoNodeEmployee {
         return choice;
     }
 
-    
+
 
     @XmlElements({
         @XmlElement(name="foo", type=DefaultNoNodeEmployee.class),
@@ -76,7 +76,7 @@ public class DefaultNoNodeEmployee {
     public List getChoiceList() {
         return choiceList;
     }
-    
+
     public DefaultNoNodeEmployee getElementPOJO() {
         return elementPOJO;
     }
@@ -102,7 +102,7 @@ public class DefaultNoNodeEmployee {
         this.any = any;
         wasSetAny = true;
     }
-   
+
     public void setAttribute(String attribute) {
         this.attribute = attribute;
         wasSetAttribute = true;
@@ -112,7 +112,7 @@ public class DefaultNoNodeEmployee {
         this.choice = choice;
         wasSetChoice = true;
     }
-    
+
     public void setChoiceList(List choiceList) {
         this.choiceList = choiceList;
         wasSetChoiceList = true;
@@ -150,23 +150,23 @@ public class DefaultNoNodeEmployee {
         }
         try {
             DefaultNoNodeEmployee test = (DefaultNoNodeEmployee) obj;
-            
+
             if(any != test.any || wasSetAny != test.wasSetAny) {
                 return false;
-            }                    
-            
+            }
+
             if(attribute != test.attribute || wasSetAttribute != test.wasSetAttribute) {
                 return false;
             }
-            
+
             if(choice != test.choice || wasSetChoice != test.wasSetChoice) {
                 return false;
             }
-            
+
             if(choiceList != test.choiceList || wasSetChoiceList != test.wasSetChoiceList) {
                 return false;
             }
-            
+
             if(elementString != test.elementString || wasSetElementString != test.wasSetElementString) {
                 return false;
             }

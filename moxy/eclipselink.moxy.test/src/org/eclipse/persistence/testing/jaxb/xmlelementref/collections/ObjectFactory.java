@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,14 +27,14 @@ public class ObjectFactory {
     private final static QName _WrapperReturn_QNAME = new QName("", "return");
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: mtom.service.types
-     * 
+     *
      */
     public ObjectFactory() {
     }
 
     /**
      * Create an instance of {@link Wrapper }
-     * 
+     *
      */
     public Wrapper createWrapper() {
         return new Wrapper();
@@ -42,7 +42,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DataHandler }{@code >}}
-     * 
+     *
      */
     @XmlElementDecl(namespace = "", name = "return", scope = Wrapper.class)
     @XmlMimeType("application/octet-stream")

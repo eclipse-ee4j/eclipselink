@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,7 +59,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * void &#060;METHOD&#062;(Timer timer)
  * </pre>
  *
- * A timeout callback method can have public, private, protected, or package level 
+ * A timeout callback method can have public, private, protected, or package level
  * access.  A timeout callback method must not be declared as final or static.
  * Timeout callback methods must not throw application exceptions.
  * <p>
@@ -70,6 +70,6 @@ import static java.lang.annotation.RetentionPolicy.*;
  * @since EJB 3.0
  */
 
-@Target(METHOD) 
+@Target(METHOD)
 @Retention(RUNTIME)
 public @interface Timeout {}

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.transaction;
 
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public abstract class AbstractSynchronizationListener {
 
     /**
      * The unit of work associated with the global txn that this listener is
-     * bound to. 
+     * bound to.
      * Note that unitOfWork is null in case it's a purely sequencing listener.
      */
     protected UnitOfWorkImpl unitOfWork;
@@ -116,14 +116,14 @@ public abstract class AbstractSynchronizationListener {
         try {
             Object status = getTransactionController().getTransactionStatus();
             getTransactionController().logTxStateTrace(uow, "TX_beforeCompletion", status);
-            //CR# 3452053 
+            //CR# 3452053
             session.startOperationProfile(SessionProfiler.JtsBeforeCompletion);
 
             // In case jts transaction was internally started but completed
             // directly by TransactionManager this flag is still set to true.
             getSession().setWasJTSTransactionInternallyStarted(false);
-            
-            // If the uow is not active then somebody somewhere messed up 
+
+            // If the uow is not active then somebody somewhere messed up
             if (!uow.isActive()) {
                 throw TransactionException.inactiveUnitOfWork(uow);
             }
@@ -153,7 +153,7 @@ public abstract class AbstractSynchronizationListener {
             if(getTransactionController().isSequencingCallbackRequired()) {
                 getTransactionController().currentlyProcessedListeners.put(getTransactionKey(), this);
             }
-            
+
             // Send the SQL to the DB
             uow.issueSQLbeforeCompletion();
 
@@ -165,7 +165,7 @@ public abstract class AbstractSynchronizationListener {
             if (!(exception instanceof EclipseLinkException && ((EclipseLinkException)exception).hasBeenLogged())) {
                 uow.logThrowable(SessionLog.WARNING, SessionLog.TRANSACTION, exception);
             }
-            
+
             // Handle the exception according to transaction manager requirements
             handleException(exception);
         } finally {
@@ -206,7 +206,7 @@ public abstract class AbstractSynchronizationListener {
                 if (!uow.isActive()) {
                     throw TransactionException.inactiveUnitOfWork(uow);
                 }
-    
+
                 // Only do merge if txn was committed
                 if (getTransactionController().canMergeUnitOfWork_impl(status)) {
                     if(getTransactionController().isSequencingCallbackRequired()) {
@@ -222,7 +222,7 @@ public abstract class AbstractSynchronizationListener {
                     getSession().releaseJTSConnection();
                     uow.afterExternalTransactionRollback();
                 }
-                
+
                 // Clean up by releasing the uow and client session
                 if (uow.shouldResumeUnitOfWorkOnTransactionCompletion() && getTransactionController().canMergeUnitOfWork_impl(status)){
                     uow.synchronizeAndResume();
@@ -270,7 +270,7 @@ public abstract class AbstractSynchronizationListener {
      */
     public void handleException(RuntimeException exception) {
         // Don't do this just yet, since some may not be able to handle it
-        //	getTransactionController().markTransactionForRollback();
+        //    getTransactionController().markTransactionForRollback();
         if (this.controller.getExceptionHandler() != null) {
             this.controller.getExceptionHandler().handleException(exception);
             return;
@@ -317,7 +317,7 @@ public abstract class AbstractSynchronizationListener {
     protected void setUnitOfWork(UnitOfWorkImpl unitOfWork) {
         this.unitOfWork = unitOfWork;
     }
-    
+
     protected void callSequencingCallback() {
         if(sequencingCallback != null) {
             sequencingCallback.afterCommit(null);

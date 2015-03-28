@@ -136,7 +136,7 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
                 if (reportItemValue != null) {
                     reportItemValueType = reportItemValue.getClass();
                     if (reportItemValueType == null) {
-                        // try other paths to determine the type of the report item 
+                        // try other paths to determine the type of the report item
                         DatabaseMapping dbMapping = reportItem.getMapping();
                         if (dbMapping != null) {
                             reportItemValueType = dbMapping.getAttributeClassification();

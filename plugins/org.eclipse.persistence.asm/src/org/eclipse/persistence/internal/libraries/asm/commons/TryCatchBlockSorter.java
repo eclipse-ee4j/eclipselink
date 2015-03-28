@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,13 +43,13 @@ import org.eclipse.persistence.internal.libraries.asm.tree.TryCatchBlockNode;
  * are sorted in a method innermost-to-outermost. This allows the programmer to
  * add handlers without worrying about ordering them correctly with respect to
  * existing, in-code handlers.
- * 
+ *
  * Behavior is only defined for properly-nested handlers. If any "try" blocks
  * overlap (something that isn't possible in Java code) then this may not do
  * what you want. In fact, this adapter just sorts by the length of the "try"
  * block, taking advantage of the fact that a given try block must be larger
  * than any block it contains).
- * 
+ *
  * @author Adrian Sampson
  */
 public class TryCatchBlockSorter extends MethodNode {

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -18,20 +18,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>XPath based mapping is what allows an existing object model to be mapped 
- * to an existing XML schema.  The {@code @XmlPath} annotation is the means by 
+ * <p>XPath based mapping is what allows an existing object model to be mapped
+ * to an existing XML schema.  The {@code @XmlPath} annotation is the means by
  * which XPath based mapping is achieved.</p>
  * <b>Example 1 - Using {@code @XmlPath} to Add a Grouping Element</b>
  * <p>Sometimes grouping elements are added to your document to organise data.
- * JAXB has this concept for collection properties in the form of 
- * {@code @XmlElementWrapper}.  Here we'll use {@code @XmlPath} for 
- * non-collection properties. In this case we'll nest the billing/shipping 
+ * JAXB has this concept for collection properties in the form of
+ * {@code @XmlElementWrapper}.  Here we'll use {@code @XmlPath} for
+ * non-collection properties. In this case we'll nest the billing/shipping
  * address data within the "contact-info" element.</p>
  * <pre>
  * import javax.xml.bind.annotation.*;
  * import org.eclipse.persistence.oxm.annotations.XmlPath;
- * 
- * &#64;XmlRootElement 
+ *
+ * &#64;XmlRootElement
  * &#64;XmlAccessorType(XmlAccessType.FIELD)
  * public class Customer {
  *     &#64;XmlPath("contact-info/billing-address")
@@ -57,14 +57,14 @@ import java.lang.annotation.Target;
  * </xmp>}
  * </pre>
  * <b>Example 2 - Using {@code @XmlPath} to Map by Position</b>
- * <p>Normally in JAXB elements with the same name must be mapped to a 
+ * <p>Normally in JAXB elements with the same name must be mapped to a
  * collection property.  Using the &#64;XmlPath extension you map non-collection
  * properties to a repeated element by index.</p>
  * <pre>
  * import javax.xml.bind.annotation.*;
  * import org.eclipse.persistence.oxm.annotations.XmlPath;
- * 
- * &#64;XmlRootElement 
+ *
+ * &#64;XmlRootElement
  * &#64;XmlAccessorType(XmlAccessType.FIELD)
  * public class Customer {
  *     &#64;XmlPath("address[1]")
@@ -83,25 +83,25 @@ import java.lang.annotation.Target;
  *     </address>
  *     <address>
  *         <street>2 Shipping Road</street>
- *     </address> 
+ *     </address>
  * </customer>
  * </xmp>}
  * </pre>
  * <b>Example 3 - Using {@code @XmlPath} to Map Two Objects to the Same Node</b>
- * <p>We have seen how {@code @XmlPath} can be used to expand the structure by 
- * adding a grouping element. {@code @XmlPath} can also be used to collapse the 
+ * <p>We have seen how {@code @XmlPath} can be used to expand the structure by
+ * adding a grouping element. {@code @XmlPath} can also be used to collapse the
  * structure by mapping two objects to the same node.</p>
  * <pre>
  * import javax.xml.bind.annotation.*;
  * import org.eclipse.persistence.oxm.annotations.XmlPath;
- * 
+ *
  * &#64;XmlRootElement @XmlAccessorType(XmlAccessType.FIELD)
  * public class Customer {
  *     &#64;XmlPath(".")
  *     private Address billingAddress;
  *
  *     private Address shippingAddress;
- * } 
+ * }
  * </pre>
  * This will produce XML like:
  * <pre>{@code
@@ -120,7 +120,7 @@ import java.lang.annotation.Target;
 public @interface XmlPath {
 
     /**
-     * <p>The XPath for this property.  A subset of the XPath specification may be 
+     * <p>The XPath for this property.  A subset of the XPath specification may be
      * used to specify mappings.  The following concepts are supported:</p>
      * <ul>
      * <li>Attribute - "&#64;id"</li>
@@ -133,18 +133,18 @@ public @interface XmlPath {
      * <li>Combination - "personal-info/name[2]/text()"</li>
      * </ul>
      * <p>For namespace qualified nodes, the prefixes defined in the XmlNs
-     * annotations can be used to qualify the XPath fragments.  Unqualified 
+     * annotations can be used to qualify the XPath fragments.  Unqualified
      * fragments will assumed to be in the namespace specified using
      * &#64;XmlSchema.</p>
      * <b>Example</b>
      * <p>Assuming the following namespace information has been set up using the
      * &#64;XmlSchema annotation:</p>
      * <pre>
-     * &#64;XmlSchema(namespace = "http://www.example.org/FOO", 
+     * &#64;XmlSchema(namespace = "http://www.example.org/FOO",
      *            xmlns = {&#64;XmlNs(prefix="ns", namespaceURI="http://www.example.com/BAR")},
-     *            elementFormDefault = XmlNsForm.QUALIFIED) 
+     *            elementFormDefault = XmlNsForm.QUALIFIED)
      * package org.example;
-     * 
+     *
      * import javax.xml.bind.annotation.*;
      * </pre>
      * <p>Then the following XPath:</p>

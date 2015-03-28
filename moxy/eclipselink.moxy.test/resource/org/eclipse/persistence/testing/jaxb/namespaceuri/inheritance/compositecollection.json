@@ -2,23 +2,23 @@
      "baseTypeList":[
        {
           "xsi.type":"ns1.subType",
- 	  "ns5.subTypeProp":10
+       "ns5.subTypeProp":10
        },
        {
           "xsi.type":"ns2.anotherSubType"
        },
        {
           "xsi.type":"ns3.subTypeLevel2",
- 	  "ns5.baseProp":"boo",
- 	  "ns5.subTypeProp":0
+       "ns5.baseProp":"boo",
+       "ns5.subTypeProp":0
        },
        {
           "xsi.type":"ns1.subType",
- 	  "ns5.subTypeProp":10
+       "ns5.subTypeProp":10
        },
        {
           "xsi.type":"ns4.anotherPackageSubType",
- 	  "ns5.subTypeProp":0
+       "ns5.subTypeProp":0
        }
 
      ]

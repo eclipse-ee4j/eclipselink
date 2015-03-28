@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -208,15 +208,15 @@ public enum JDBCTypes implements JDBCType {
                 sb.append(NL);
             }
         };
-        
+
         private final int typeCode;
         private final String typeName;
-        
+
         JDBCTypes(int typeCode, String typeName) {
             this.typeCode = typeCode;
             this.typeName = typeName;
         }
-        
+
         public boolean isComplexDatabaseType() {
             return false;
         }
@@ -228,7 +228,7 @@ public enum JDBCTypes implements JDBCType {
         public int getSqlCode() {
             return typeCode;
         }
-        
+
         public int getConversionCode() {
             return getSqlCode();
         }
@@ -236,7 +236,7 @@ public enum JDBCTypes implements JDBCType {
         public String getTypeName() {
             return typeName;
         }
-        
+
         public int computeInIndex(PLSQLargument inArg, int newIndex,
             ListIterator<PLSQLargument> i) {
             return databaseTypeHelper.computeInIndex(inArg, newIndex);

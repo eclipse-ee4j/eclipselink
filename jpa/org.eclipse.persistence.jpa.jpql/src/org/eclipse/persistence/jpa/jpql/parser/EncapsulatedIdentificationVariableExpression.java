@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,43 +29,43 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public abstract class EncapsulatedIdentificationVariableExpression extends AbstractSingleEncapsulatedExpression {
 
-	/**
-	 * Creates a new <code>MapEntryIdentificationVariableExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param identifier The JPQL identifier that starts this expression
-	 */
-	protected EncapsulatedIdentificationVariableExpression(AbstractExpression parent, String identifier) {
-		super(parent, identifier);
-	}
+    /**
+     * Creates a new <code>MapEntryIdentificationVariableExpression</code>.
+     *
+     * @param parent The parent of this expression
+     * @param identifier The JPQL identifier that starts this expression
+     */
+    protected EncapsulatedIdentificationVariableExpression(AbstractExpression parent, String identifier) {
+        super(parent, identifier);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final String getEncapsulatedExpressionQueryBNFId() {
-		return IdentificationVariableBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final String getEncapsulatedExpressionQueryBNFId() {
+        return IdentificationVariableBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(GeneralIdentificationVariableBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(GeneralIdentificationVariableBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 
-		if (tolerant) {
-			return super.parse(wordParser, LiteralBNF.ID, tolerant);
-		}
+        if (tolerant) {
+            return super.parse(wordParser, LiteralBNF.ID, tolerant);
+        }
 
-		IdentificationVariable expression = new IdentificationVariable(this, wordParser.word());
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        IdentificationVariable expression = new IdentificationVariable(this, wordParser.word());
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

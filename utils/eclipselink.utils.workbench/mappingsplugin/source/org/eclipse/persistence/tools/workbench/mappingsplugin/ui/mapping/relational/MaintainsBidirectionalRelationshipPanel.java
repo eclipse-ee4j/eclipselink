@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -41,136 +41,136 @@ import org.eclipse.persistence.tools.workbench.uitools.chooser.NodeSelector;
 
 final class MaintainsBidirectionalRelationshipPanel extends AbstractSubjectPanel
 {
-	MaintainsBidirectionalRelationshipPanel(ValueModel subjectHolder,
-														 WorkbenchContextHolder contextHolder)
-	{
-		super(new BorderLayout(), subjectHolder, contextHolder);
-	}
+    MaintainsBidirectionalRelationshipPanel(ValueModel subjectHolder,
+                                                         WorkbenchContextHolder contextHolder)
+    {
+        super(new BorderLayout(), subjectHolder, contextHolder);
+    }
 
-	private ButtonModel buildMaintainsBidirectionalityRelationshipCheckBoxAdapter()
-	{
-		return new CheckBoxModelAdapter(buildMaintainsBidirectionalityRelationshipHolder());
-	}
+    private ButtonModel buildMaintainsBidirectionalityRelationshipCheckBoxAdapter()
+    {
+        return new CheckBoxModelAdapter(buildMaintainsBidirectionalityRelationshipHolder());
+    }
 
-	private PropertyValueModel buildMaintainsBidirectionalityRelationshipHolder()
-	{
-		return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractTableReferenceMapping.MAINTAINS_BIDIRECTIONAL_RELATIONSHIP_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				MWAbstractTableReferenceMapping mapping = (MWAbstractTableReferenceMapping) subject;
-				return Boolean.valueOf(mapping.maintainsBidirectionalRelationship());
-			}
+    private PropertyValueModel buildMaintainsBidirectionalityRelationshipHolder()
+    {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractTableReferenceMapping.MAINTAINS_BIDIRECTIONAL_RELATIONSHIP_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                MWAbstractTableReferenceMapping mapping = (MWAbstractTableReferenceMapping) subject;
+                return Boolean.valueOf(mapping.maintainsBidirectionalRelationship());
+            }
 
-			protected void setValueOnSubject(Object value)
-			{
-				MWAbstractTableReferenceMapping mapping = (MWAbstractTableReferenceMapping) subject;
-				mapping.setMaintainsBidirectionalRelationship(Boolean.TRUE.equals(value));
-			}
-		};
-	}
+            protected void setValueOnSubject(Object value)
+            {
+                MWAbstractTableReferenceMapping mapping = (MWAbstractTableReferenceMapping) subject;
+                mapping.setMaintainsBidirectionalRelationship(Boolean.TRUE.equals(value));
+            }
+        };
+    }
 
-	private ListChooser buildRelationshipPartnerChooser() {
-		ListChooser chooser =
-			new DefaultListChooser(buildRelationshipPartnerComboAdapter(), getWorkbenchContextHolder(), buildMappingNodeSelector());
-		chooser.setRenderer(new AdaptableListCellRenderer(new MappingCellRendererAdapter(this.resourceRepository())));
-		return chooser;
-	}
+    private ListChooser buildRelationshipPartnerChooser() {
+        ListChooser chooser =
+            new DefaultListChooser(buildRelationshipPartnerComboAdapter(), getWorkbenchContextHolder(), buildMappingNodeSelector());
+        chooser.setRenderer(new AdaptableListCellRenderer(new MappingCellRendererAdapter(this.resourceRepository())));
+        return chooser;
+    }
 
-	private CollectionValueModel buildRelationshipPartnerCollectionHolder()
-	{
-		PropertyAspectAdapter referenceDescriptorHolder = new PropertyAspectAdapter(getSubjectHolder(), MWReferenceObjectMapping.REFERENCE_DESCRIPTOR_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				MWAbstractTableReferenceMapping mapping = (MWAbstractTableReferenceMapping) subject;
-				return mapping.getReferenceDescriptor();
-			}
-		};
+    private CollectionValueModel buildRelationshipPartnerCollectionHolder()
+    {
+        PropertyAspectAdapter referenceDescriptorHolder = new PropertyAspectAdapter(getSubjectHolder(), MWReferenceObjectMapping.REFERENCE_DESCRIPTOR_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                MWAbstractTableReferenceMapping mapping = (MWAbstractTableReferenceMapping) subject;
+                return mapping.getReferenceDescriptor();
+            }
+        };
 
-		CollectionAspectAdapter mappingsHolder = new CollectionAspectAdapter(referenceDescriptorHolder, MWMappingDescriptor.MAPPINGS_COLLECTION)
-		{
-			protected Iterator getValueFromSubject()
-			{
-				return ((MWDescriptor) subject).mappings();
-			}
+        CollectionAspectAdapter mappingsHolder = new CollectionAspectAdapter(referenceDescriptorHolder, MWMappingDescriptor.MAPPINGS_COLLECTION)
+        {
+            protected Iterator getValueFromSubject()
+            {
+                return ((MWDescriptor) subject).mappings();
+            }
 
-			protected int sizeFromSubject()
-			{
-				return ((MWDescriptor) subject).mappingsSize();
-			}
-		};
-		
-		return new ListCollectionValueModelAdapter(new ItemPropertyListValueModelAdapter(mappingsHolder, MWMapping.NAME_PROPERTY));
-	}
+            protected int sizeFromSubject()
+            {
+                return ((MWDescriptor) subject).mappingsSize();
+            }
+        };
 
-	private ComboBoxModel buildRelationshipPartnerComboAdapter()
-	{
-		return new ComboBoxModelAdapter(buildRelationshipPartnerListModel(),
-												  buildRelationshipPartnerHolder());
-	}
+        return new ListCollectionValueModelAdapter(new ItemPropertyListValueModelAdapter(mappingsHolder, MWMapping.NAME_PROPERTY));
+    }
 
-	private PropertyValueModel buildRelationshipPartnerHolder()
-	{
-		return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractTableReferenceMapping.RELATIONSHIP_PARTNER_MAPPING_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				MWAbstractTableReferenceMapping mapping = (MWAbstractTableReferenceMapping) subject;
-				return mapping.getRelationshipPartnerMapping();
-			}
+    private ComboBoxModel buildRelationshipPartnerComboAdapter()
+    {
+        return new ComboBoxModelAdapter(buildRelationshipPartnerListModel(),
+                                                  buildRelationshipPartnerHolder());
+    }
 
-			protected void setValueOnSubject(Object value)
-			{
-				MWAbstractTableReferenceMapping mapping = (MWAbstractTableReferenceMapping) subject;
-				mapping.setRelationshipPartnerMapping((MWMapping) value);
-			}
-		};
-	}
+    private PropertyValueModel buildRelationshipPartnerHolder()
+    {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractTableReferenceMapping.RELATIONSHIP_PARTNER_MAPPING_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                MWAbstractTableReferenceMapping mapping = (MWAbstractTableReferenceMapping) subject;
+                return mapping.getRelationshipPartnerMapping();
+            }
 
-	private ListValueModel buildRelationshipPartnerListModel()
-	{
-		return new SortedListValueModelAdapter
-		(
-			new FilteringCollectionValueModel(buildRelationshipPartnerCollectionHolder())
-			{
-				protected boolean accept(Object value)
-				{
-					return value != subject();
-				}
-			}
-		);
-	}
+            protected void setValueOnSubject(Object value)
+            {
+                MWAbstractTableReferenceMapping mapping = (MWAbstractTableReferenceMapping) subject;
+                mapping.setRelationshipPartnerMapping((MWMapping) value);
+            }
+        };
+    }
+
+    private ListValueModel buildRelationshipPartnerListModel()
+    {
+        return new SortedListValueModelAdapter
+        (
+            new FilteringCollectionValueModel(buildRelationshipPartnerCollectionHolder())
+            {
+                protected boolean accept(Object value)
+                {
+                    return value != subject();
+                }
+            }
+        );
+    }
 
     private NodeSelector buildMappingNodeSelector() {
         return new NodeSelector() {
             public void selectNodeFor(Object item) {
                 ProjectNode projectNode = (ProjectNode) navigatorSelectionModel().getSelectedProjectNodes()[0];
-                projectNode.selectMappingNodeFor((MWMapping) item, navigatorSelectionModel());       
-               
+                projectNode.selectMappingNodeFor((MWMapping) item, navigatorSelectionModel());
+
             }
         };
     }
-    
-    
-	protected void initializeLayout()
-	{
-		JCheckBox maintainsBidiRelationshipCheckBox = buildCheckBox
-		(
-			"MAINTAINS_BIDI_RELATIONSHIP_CHECK_BOX",
-			buildMaintainsBidirectionalityRelationshipCheckBoxAdapter()
-		);
 
-		JComponent relationshipPartnerWidgets = buildLabeledComponent
-		(
-			"MAINTAINS_BIDI_RELATIONSHIP_RELATIONSHIP_PARTNER_CHOOSER",
-			buildRelationshipPartnerChooser()
-		);
 
-		new ComponentEnabler(buildMaintainsBidirectionalityRelationshipHolder(), relationshipPartnerWidgets.getComponents());
+    protected void initializeLayout()
+    {
+        JCheckBox maintainsBidiRelationshipCheckBox = buildCheckBox
+        (
+            "MAINTAINS_BIDI_RELATIONSHIP_CHECK_BOX",
+            buildMaintainsBidirectionalityRelationshipCheckBoxAdapter()
+        );
 
-		GroupBox groupBox = new GroupBox(maintainsBidiRelationshipCheckBox, relationshipPartnerWidgets);
-		add(groupBox, BorderLayout.CENTER);
-		addHelpTopicId(this, "mapping.maintainsBidirectionalRelationship");
-	}
+        JComponent relationshipPartnerWidgets = buildLabeledComponent
+        (
+            "MAINTAINS_BIDI_RELATIONSHIP_RELATIONSHIP_PARTNER_CHOOSER",
+            buildRelationshipPartnerChooser()
+        );
+
+        new ComponentEnabler(buildMaintainsBidirectionalityRelationshipHolder(), relationshipPartnerWidgets.getComponents());
+
+        GroupBox groupBox = new GroupBox(maintainsBidiRelationshipCheckBox, relationshipPartnerWidgets);
+        add(groupBox, BorderLayout.CENTER);
+        addHelpTopicId(this, "mapping.maintainsBidirectionalRelationship");
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -123,13 +123,13 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 return  new OracleArrayTypeWrapper(databaseType);
             }
             if (complexType.isStruct()) {
-            	return new OracleObjectTypeWrapper(databaseType);
-            } 
+                return new OracleObjectTypeWrapper(databaseType);
+            }
             if (complexType.isRecord()) {
-            	return new PLSQLRecordWrapper(databaseType);
+                return new PLSQLRecordWrapper(databaseType);
             }
             if (complexType.isCollection()) {
-            	return new PLSQLCollectionWrapper(databaseType);
+                return new PLSQLCollectionWrapper(databaseType);
             }
             if (complexType.isCursor()) {
                 return new PLSQLCursorWrapper(databaseType);
@@ -206,7 +206,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         // 5757849 -- add metadata support for ObjectRelationalDatabaseField
         addDescriptor(buildObjectRelationalDatabaseFieldDescriptor());
-        
+
         // 242452 -- add metadata support for XMLLogin's DocumentPreservationPolicy
         addDescriptor(buildDocumentPreservationPolicyDescriptor());
         addDescriptor(buildDescriptorLevelDocumentPreservationPolicyDescriptor());
@@ -699,7 +699,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         ObjectTypeConverter identityMapClassConverter = (ObjectTypeConverter)identityMapClassMapping.getConverter();
         identityMapClassConverter.addConversionValue("soft-reference", SoftIdentityMap.class);
 
-	    XMLDirectMapping remoteIdentityMapClassMapping = (XMLDirectMapping)descriptor.getMappingForAttributeName("remoteIdentityMapClass");
+        XMLDirectMapping remoteIdentityMapClassMapping = (XMLDirectMapping)descriptor.getMappingForAttributeName("remoteIdentityMapClass");
         ObjectTypeConverter remoteIdentityMapClassConverter = (ObjectTypeConverter)remoteIdentityMapClassMapping.getConverter();
         remoteIdentityMapClassConverter.addConversionValue("soft-reference", SoftIdentityMap.class);
 
@@ -1262,7 +1262,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         return descriptor;
     }
-    
+
     protected ClassDescriptor buildNodeOrderingPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(NodeOrderingPolicy.class);
@@ -1363,7 +1363,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
      protected ClassDescriptor buildIsSetNullPolicyDescriptor() {
          // The IsSetPerformedForAbsentNode flag is always false on this IsSet mapping
-    	 XMLDescriptor aDescriptor = new XMLDescriptor();
+         XMLDescriptor aDescriptor = new XMLDescriptor();
          aDescriptor.setJavaClass(IsSetNullPolicy.class);
          aDescriptor.getInheritancePolicy().setParentClass(AbstractNullPolicy.class);
 
@@ -1396,35 +1396,35 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
       */
      public static class IsSetNullPolicyIsSetParametersAttributeAccessor extends AttributeAccessor {
          public IsSetNullPolicyIsSetParametersAttributeAccessor() {
-		 super();
+         super();
          }
 
          @Override
          public Object getAttributeValueFromObject(Object object) throws DescriptorException {
-        	 IsSetNullPolicy aPolicy = (IsSetNullPolicy)object;
-       		 NonSynchronizedVector aCollection = new NonSynchronizedVector();
-       		 for(int i = 0, size = aPolicy.getIsSetParameters().length; i<size;i++) {
-       			 aCollection.add(aPolicy.getIsSetParameters()[i]);
-       		 }
-       		 return aCollection;
+             IsSetNullPolicy aPolicy = (IsSetNullPolicy)object;
+                NonSynchronizedVector aCollection = new NonSynchronizedVector();
+                for(int i = 0, size = aPolicy.getIsSetParameters().length; i<size;i++) {
+                    aCollection.add(aPolicy.getIsSetParameters()[i]);
+                }
+                return aCollection;
          }
 
          @Override
          public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
-        	 // Convert the collection of Strings to an array of Object values (round-trip)
-        	 if(value instanceof Collection) {
-    			 int i = 0;
-    			 Object[] parameters = new Object[((Collection)value).size()];
-    			 for(Iterator anIterator = ((Collection)value).iterator(); anIterator.hasNext();) {
-   					 // Lookup the object type via the predefined parameterTypes array and convert based on that type
-   					 parameters[i] = XMLConversionManager.getDefaultXMLManager().convertObject(//
-   							 anIterator.next(), ((IsSetNullPolicy)object).getIsSetParameterTypes()[i++]);
-    			 }
-    			 ((IsSetNullPolicy)object).setIsSetParameters(parameters);
-        	 } else {
-        		 // Cast to object array
-        		 ((IsSetNullPolicy)object).setIsSetParameters((Object[])value);
-        	 }
+             // Convert the collection of Strings to an array of Object values (round-trip)
+             if(value instanceof Collection) {
+                 int i = 0;
+                 Object[] parameters = new Object[((Collection)value).size()];
+                 for(Iterator anIterator = ((Collection)value).iterator(); anIterator.hasNext();) {
+                        // Lookup the object type via the predefined parameterTypes array and convert based on that type
+                        parameters[i] = XMLConversionManager.getDefaultXMLManager().convertObject(//
+                                anIterator.next(), ((IsSetNullPolicy)object).getIsSetParameterTypes()[i++]);
+                 }
+                 ((IsSetNullPolicy)object).setIsSetParameters(parameters);
+             } else {
+                 // Cast to object array
+                 ((IsSetNullPolicy)object).setIsSetParameters((Object[])value);
+             }
          }
      }
 
@@ -1440,32 +1440,32 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
          @Override
          public Object getAttributeValueFromObject(Object object) throws DescriptorException {
-        	 IsSetNullPolicy aPolicy = (IsSetNullPolicy)object;
-       		 NonSynchronizedVector aCollection = new NonSynchronizedVector();
-       		 for(int i = 0, size = aPolicy.getIsSetParameterTypes().length; i<size;i++) {
-       			 aCollection.add(aPolicy.getIsSetParameterTypes()[i]);
-       		 }
-       		 return aCollection;
+             IsSetNullPolicy aPolicy = (IsSetNullPolicy)object;
+                NonSynchronizedVector aCollection = new NonSynchronizedVector();
+                for(int i = 0, size = aPolicy.getIsSetParameterTypes().length; i<size;i++) {
+                    aCollection.add(aPolicy.getIsSetParameterTypes()[i]);
+                }
+                return aCollection;
          }
 
          @Override
          public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
-        	 try {
-        		 // Get the Class of each entry in the collection
-        		 if(value instanceof Collection) {
-        			 Class[] parameterTypes = new Class[((Collection)value).size()];
-        			 int i = 0;
-        			 for(Iterator anIterator = ((Collection)value).iterator(); anIterator.hasNext();) {
-        				 parameterTypes[i++] = Class.forName((String)anIterator.next());
-        			 }
-        			 ((IsSetNullPolicy)object).setIsSetParameterTypes(parameterTypes);
-        		 } else {
-        			 // cast to class array
-        			 ((IsSetNullPolicy)object).setIsSetParameterTypes((Class[])value);
-        		 }
-        	 } catch (ClassNotFoundException e) {
-        		 throw new RuntimeException(e);
-        	 }
+             try {
+                 // Get the Class of each entry in the collection
+                 if(value instanceof Collection) {
+                     Class[] parameterTypes = new Class[((Collection)value).size()];
+                     int i = 0;
+                     for(Iterator anIterator = ((Collection)value).iterator(); anIterator.hasNext();) {
+                         parameterTypes[i++] = Class.forName((String)anIterator.next());
+                     }
+                     ((IsSetNullPolicy)object).setIsSetParameterTypes(parameterTypes);
+                 } else {
+                     // cast to class array
+                     ((IsSetNullPolicy)object).setIsSetParameterTypes((Class[])value);
+                 }
+             } catch (ClassNotFoundException e) {
+                 throw new RuntimeException(e);
+             }
          }
      }
 
@@ -1499,30 +1499,30 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
          @Override
          public Object getAttributeValueFromObject(Object object) throws DescriptorException {
-          	// If the policy is default (NullPolicy(ispfan=true, inrben=false, inrbxnn=false, XMLNullRep=ABSENT_NODE) return null
-          	AbstractNullPolicy value = ((XMLNillableMapping)object).getNullPolicy();
-          	if(value instanceof NullPolicy) {
-              	NullPolicy aPolicy = (NullPolicy)value;
-              	if(aPolicy.getIsSetPerformedForAbsentNode() && !aPolicy.isNullRepresentedByEmptyNode() //
-              			&& !aPolicy.isNullRepresentedByXsiNil() //
-              			&& aPolicy.getMarshalNullRepresentation().equals(XMLNullRepresentationType.ABSENT_NODE)) {
-              		// The default policy is represented by null
-              		return null;
-              	}
-          	}
-          	return ((XMLNillableMapping)object).getNullPolicy();
+              // If the policy is default (NullPolicy(ispfan=true, inrben=false, inrbxnn=false, XMLNullRep=ABSENT_NODE) return null
+              AbstractNullPolicy value = ((XMLNillableMapping)object).getNullPolicy();
+              if(value instanceof NullPolicy) {
+                  NullPolicy aPolicy = (NullPolicy)value;
+                  if(aPolicy.getIsSetPerformedForAbsentNode() && !aPolicy.isNullRepresentedByEmptyNode() //
+                          && !aPolicy.isNullRepresentedByXsiNil() //
+                          && aPolicy.getMarshalNullRepresentation().equals(XMLNullRepresentationType.ABSENT_NODE)) {
+                      // The default policy is represented by null
+                      return null;
+                  }
+              }
+              return ((XMLNillableMapping)object).getNullPolicy();
          }
 
          @Override
          public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
-         	// If value is a default policy represented by null - return (NullPolicy(ispfan=true, inrben=false, inrbxn=false, XMLNullRep=ABSENT_NODE)
-          	if(null == value) {
-          		// Create and set a default policy
-          		((XMLNillableMapping)object).setNullPolicy(new NullPolicy());
-          	} else {
-          		// Set the value as policy
-              	((XMLNillableMapping)object).setNullPolicy((AbstractNullPolicy)value);
-          	}
+             // If value is a default policy represented by null - return (NullPolicy(ispfan=true, inrben=false, inrbxn=false, XMLNullRep=ABSENT_NODE)
+              if(null == value) {
+                  // Create and set a default policy
+                  ((XMLNillableMapping)object).setNullPolicy(new NullPolicy());
+              } else {
+                  // Set the value as policy
+                  ((XMLNillableMapping)object).setNullPolicy((AbstractNullPolicy)value);
+              }
          }
      }
 
@@ -1656,12 +1656,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          databaseTypeMapping.setAttributeName("databaseTypeWrapper");
          databaseTypeMapping.setAttributeAccessor(new AttributeAccessor() {
              public Object getAttributeValueFromObject(Object object) {
-            	 OracleArrayType array = (OracleArrayType)object;
+                 OracleArrayType array = (OracleArrayType)object;
                  DatabaseType type = array.getNestedType();
                  return wrapType(type);
              }
              public void setAttributeValueInObject(Object object, Object value) {
-            	 OracleArrayType array = (OracleArrayType)object;
+                 OracleArrayType array = (OracleArrayType)object;
                  DatabaseTypeWrapper type = (DatabaseTypeWrapper)value;
                  array.setNestedType(type.getWrappedType());
              }
@@ -1711,12 +1711,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                  return associations;
              }
              public void setAttributeValueInObject(Object object, Object value) {
-            	 OracleObjectType objectType = (OracleObjectType) object;
+                 OracleObjectType objectType = (OracleObjectType) object;
                  List associations = (List) value;
                  Map fieldMap = new LinkedHashMap<String, DatabaseType>(associations.size() + 1);
                  Iterator iterator = associations.iterator();
                  while (iterator.hasNext()) {
-                	 ObjectTypeFieldAssociation association = (ObjectTypeFieldAssociation)iterator.next();
+                     ObjectTypeFieldAssociation association = (ObjectTypeFieldAssociation)iterator.next();
                      fieldMap.put(association.getKey(), unwrapType((DatabaseTypeWrapper)association.getValue()));
                  }
                  objectType.setFields(fieldMap);
@@ -1724,41 +1724,41 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          });
          fieldsMapping.setXPath(getPrimaryNamespaceXPath() + "fields/" + getPrimaryNamespaceXPath() + "field");
          descriptor.addMapping(fieldsMapping);
-         
+
          return descriptor;
      }
-     
+
      /**
       * Inner class used to map Map containers where the key is String and
       * the value is a DatabaseType.  The value must be wrapped/unwrapped
       * using the wrap/unwrap type methods on the outer class.
       */
      public class ObjectTypeFieldAssociation implements Map.Entry {
-    	 String key;
-    	 DatabaseTypeWrapper value;
-    	 
-    	 public ObjectTypeFieldAssociation() {
-    		 super();
-    	 }
-    	 
-    	 public ObjectTypeFieldAssociation(String key, DatabaseTypeWrapper value) {
-    		 this.key = key;
-    		 this.value = value;
-    	 }
+         String key;
+         DatabaseTypeWrapper value;
 
-		public Object getKey() {
-			return key;
-		}
+         public ObjectTypeFieldAssociation() {
+             super();
+         }
 
-		public Object getValue() {
-			return value;
-		}
+         public ObjectTypeFieldAssociation(String key, DatabaseTypeWrapper value) {
+             this.key = key;
+             this.value = value;
+         }
 
-		public Object setValue(Object arg0) {
-	        Object oldValue = this.value;
-	        this.value = (DatabaseTypeWrapper) arg0;
-	        return oldValue;
-		}
+        public Object getKey() {
+            return key;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public Object setValue(Object arg0) {
+            Object oldValue = this.value;
+            this.value = (DatabaseTypeWrapper) arg0;
+            return oldValue;
+        }
      }
      /**
       * Builds a descriptor for the ObjectTypeFieldAssociation class.
@@ -1767,18 +1767,18 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          XMLDescriptor descriptor = new XMLDescriptor();
          descriptor.setJavaClass(ObjectTypeFieldAssociation.class);
          descriptor.setInstantiationPolicy(new ObjectTypeFieldAssociationInstantiationPolicy(this));
-    	 
+
          XMLDirectMapping keyMapping = new XMLDirectMapping();
          keyMapping.setAttributeName("key");
          keyMapping.setXPath(getPrimaryNamespaceXPath() + "key/text()");
          descriptor.addMapping(keyMapping);
-         
+
          XMLCompositeObjectMapping valueMapping = new XMLCompositeObjectMapping();
          valueMapping.setAttributeName("value");
          valueMapping.setReferenceClass(DatabaseTypeWrapper.class);
          valueMapping.setXPath(getPrimaryNamespaceXPath() + "value");
          descriptor.addMapping(valueMapping);
-         
+
          return descriptor;
      }
 
@@ -1963,22 +1963,22 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          XMLCompositeObjectMapping databaseTypeMapping = new XMLCompositeObjectMapping();
          databaseTypeMapping.setAttributeName("databaseTypeWrapper");
          databaseTypeMapping.setAttributeAccessor(new AttributeAccessor() {
-     	    public Object getAttributeValueFromObject(Object object) {
-     	    	PLSQLargument argument = (PLSQLargument)object;
-     	    	DatabaseType type = argument.databaseType;
-     	    	return wrapType(type);
-     	    }
+             public Object getAttributeValueFromObject(Object object) {
+                 PLSQLargument argument = (PLSQLargument)object;
+                 DatabaseType type = argument.databaseType;
+                 return wrapType(type);
+             }
 
-     	    public void setAttributeValueInObject(Object object, Object value) {
-     	    	PLSQLargument argument = (PLSQLargument)object;
-     	    	DatabaseTypeWrapper type = (DatabaseTypeWrapper)value;
-     	    	argument.databaseType = type.getWrappedType();
-     	    }
+             public void setAttributeValueInObject(Object object, Object value) {
+                 PLSQLargument argument = (PLSQLargument)object;
+                 DatabaseTypeWrapper type = (DatabaseTypeWrapper)value;
+                 argument.databaseType = type.getWrappedType();
+             }
           });
          databaseTypeMapping.setReferenceClass(DatabaseTypeWrapper.class);
          databaseTypeMapping.setXPath(".");
          descriptor.addMapping(databaseTypeMapping);
-         
+
          return descriptor;
      }
 
@@ -2061,11 +2061,11 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
          return descriptor;
      }
-     
+
      protected ClassDescriptor buildXMLChoiceFieldToClassAssociationDescriptor() {
          XMLDescriptor descriptor = new XMLDescriptor();
          descriptor.setJavaClass(XMLChoiceFieldToClassAssociation.class);
-         
+
          XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
          fieldMapping.setAttributeName("xmlField");
          fieldMapping.setGetMethodName("getXmlField");
@@ -2073,28 +2073,28 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          fieldMapping.setXPath(getPrimaryNamespaceXPath() + "xml-field");
          fieldMapping.setReferenceClass(XMLField.class);
          descriptor.addMapping(fieldMapping);
-         
+
          XMLDirectMapping classNameMapping = new XMLDirectMapping();
          classNameMapping.setAttributeName("className");
          classNameMapping.setGetMethodName("getClassName");
          classNameMapping.setSetMethodName("setClassName");
          classNameMapping.setXPath(getPrimaryNamespaceXPath() + "class-name/text()");
          descriptor.addMapping(classNameMapping);
-         
+
          return descriptor;
      }
-     
+
      protected ClassDescriptor buildXMLChoiceCollectionMappingDescriptor() {
          XMLDescriptor descriptor = new XMLDescriptor();
          descriptor.setJavaClass(XMLChoiceCollectionMapping.class);
          descriptor.getInheritancePolicy().setParentClass(DatabaseMapping.class);
-         
+
          XMLCompositeObjectMapping containerPolicyMapping = new XMLCompositeObjectMapping();
          containerPolicyMapping.setAttributeName("containerPolicy");
          containerPolicyMapping.setReferenceClass(ContainerPolicy.class);
          containerPolicyMapping.setXPath(getPrimaryNamespaceXPath() + "container-policy");
          descriptor.addMapping(containerPolicyMapping);
-         
+
          XMLCompositeCollectionMapping fieldToClassNameMapping = new XMLCompositeCollectionMapping();
          fieldToClassNameMapping.setAttributeName("fieldToClassAssociations");
          fieldToClassNameMapping.setGetMethodName("getChoiceFieldToClassAssociations");
@@ -2103,15 +2103,15 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          fieldToClassNameMapping.useCollectionClass(ArrayList.class);
          fieldToClassNameMapping.setXPath(getPrimaryNamespaceXPath() + "field-to-class-association");
          descriptor.addMapping(fieldToClassNameMapping);
-         
+
          return descriptor;
      }
-     
+
      protected ClassDescriptor buildXMLChoiceObjectMappingDescriptor() {
          XMLDescriptor descriptor = new XMLDescriptor();
          descriptor.setJavaClass(XMLChoiceObjectMapping.class);
          descriptor.getInheritancePolicy().setParentClass(DatabaseMapping.class);
-         
+
          XMLCompositeCollectionMapping fieldToClassNameMapping = new XMLCompositeCollectionMapping();
          fieldToClassNameMapping.setAttributeName("fieldToClassAssociations");
          fieldToClassNameMapping.setGetMethodName("getChoiceFieldToClassAssociations");
@@ -2120,9 +2120,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          fieldToClassNameMapping.useCollectionClass(ArrayList.class);
          fieldToClassNameMapping.setXPath(getPrimaryNamespaceXPath() + "field-to-class-association");
          descriptor.addMapping(fieldToClassNameMapping);
-         
+
          return descriptor;
-     }     
-     
+     }
+
 
 }

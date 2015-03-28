@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,247 +26,247 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 @SuppressWarnings("nls")
 public final class BetweenExpressionTest extends JPQLParserTest {
 
-	@Test
-	public void test_JPQLQuery_01() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 20 AND 40";
+    @Test
+    public void test_JPQLQuery_01() {
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 20 AND 40";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(path("e.age").between(numeric(20), numeric(40)))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(path("e.age").between(numeric(20), numeric(40)))
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_02() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN (SELECT e.age FROM Employee e) AND 40";
+    @Test
+    public void test_JPQLQuery_02() {
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN (SELECT e.age FROM Employee e) AND 40";
 
-		ExpressionTester subquery = subquery(
-			subSelect(path("e.age")),
-			subFrom("Employee", "e")
-		);
+        ExpressionTester subquery = subquery(
+            subSelect(path("e.age")),
+            subFrom("Employee", "e")
+        );
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(
-					path("e.age")
-				.between(
-					sub(subquery),
-					numeric(40)
-				)
-			)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(
+                    path("e.age")
+                .between(
+                    sub(subquery),
+                    numeric(40)
+                )
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_03() {
+    @Test
+    public void test_JPQLQuery_03() {
 
-		String jpqlQuery = "SELECT e, m " +
-		               "FROM Employee e, Manager m " +
-		               "WHERE e.age BETWEEN (SELECT e.age FROM Employee e) AND (SELECT m.age FROM Manager m)";
+        String jpqlQuery = "SELECT e, m " +
+                       "FROM Employee e, Manager m " +
+                       "WHERE e.age BETWEEN (SELECT e.age FROM Employee e) AND (SELECT m.age FROM Manager m)";
 
-		ExpressionTester subquery1 = subquery(
-			subSelect(path("e.age")),
-			subFrom("Employee", "e")
-		);
+        ExpressionTester subquery1 = subquery(
+            subSelect(path("e.age")),
+            subFrom("Employee", "e")
+        );
 
-		ExpressionTester subquery2 = subquery(
-			subSelect(path("m.age")),
-			subFrom("Manager", "m")
-		);
+        ExpressionTester subquery2 = subquery(
+            subSelect(path("m.age")),
+            subFrom("Manager", "m")
+        );
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e"), variable("m")),
-			from("Employee", "e", "Manager", "m"),
-			where(
-					path("e.age")
-				.between(
-					sub(subquery1),
-					sub(subquery2)
-				)
-			)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e"), variable("m")),
+            from("Employee", "e", "Manager", "m"),
+            where(
+                    path("e.age")
+                .between(
+                    sub(subquery1),
+                    sub(subquery2)
+                )
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_04() {
+    @Test
+    public void test_JPQLQuery_04() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN";
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN";
 
-		BetweenExpressionTester betweenExpression = path("e.age").between(nullExpression(), nullExpression());
-		betweenExpression.hasAnd = false;
-		betweenExpression.hasSpaceAfterAnd = false;
-		betweenExpression.hasSpaceAfterBetween = false;
-		betweenExpression.hasSpaceAfterLowerBound = false;
+        BetweenExpressionTester betweenExpression = path("e.age").between(nullExpression(), nullExpression());
+        betweenExpression.hasAnd = false;
+        betweenExpression.hasSpaceAfterAnd = false;
+        betweenExpression.hasSpaceAfterBetween = false;
+        betweenExpression.hasSpaceAfterLowerBound = false;
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(betweenExpression)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(betweenExpression)
+        );
 
-		testInvalidQuery(jpqlQuery, selectStatement);
-	}
+        testInvalidQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_05() {
+    @Test
+    public void test_JPQLQuery_05() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN AND";
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN AND";
 
-		BetweenExpressionTester betweenExpression = path("e.age").between(nullExpression(), nullExpression());
-		betweenExpression.hasSpaceAfterAnd = false;
-		betweenExpression.hasSpaceAfterLowerBound = false;
+        BetweenExpressionTester betweenExpression = path("e.age").between(nullExpression(), nullExpression());
+        betweenExpression.hasSpaceAfterAnd = false;
+        betweenExpression.hasSpaceAfterLowerBound = false;
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(betweenExpression)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(betweenExpression)
+        );
 
-		testInvalidQuery(jpqlQuery, selectStatement);
-	}
+        testInvalidQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_06() {
+    @Test
+    public void test_JPQLQuery_06() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE BETWEEN ";
+        String jpqlQuery = "SELECT e FROM Employee e WHERE BETWEEN ";
 
-		BetweenExpressionTester betweenExpression = between(
-			nullExpression(),
-			nullExpression(),
-			nullExpression()
-		);
-		betweenExpression.hasAnd = false;
-		betweenExpression.hasSpaceAfterAnd = false;
-		betweenExpression.hasSpaceAfterLowerBound = false;
+        BetweenExpressionTester betweenExpression = between(
+            nullExpression(),
+            nullExpression(),
+            nullExpression()
+        );
+        betweenExpression.hasAnd = false;
+        betweenExpression.hasSpaceAfterAnd = false;
+        betweenExpression.hasSpaceAfterLowerBound = false;
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(betweenExpression)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(betweenExpression)
+        );
 
-		testInvalidQuery(jpqlQuery, selectStatement);
-	}
+        testInvalidQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_07() {
+    @Test
+    public void test_JPQLQuery_07() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE BETWEEN 10 AND";
+        String jpqlQuery = "SELECT e FROM Employee e WHERE BETWEEN 10 AND";
 
-		BetweenExpressionTester betweenExpression = between(nullExpression(), numeric(10), nullExpression());
-		betweenExpression.hasSpaceAfterAnd = false;
+        BetweenExpressionTester betweenExpression = between(nullExpression(), numeric(10), nullExpression());
+        betweenExpression.hasSpaceAfterAnd = false;
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(betweenExpression)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(betweenExpression)
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_08() {
+    @Test
+    public void test_JPQLQuery_08() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE NOT BETWEEN 10 AND 20";
+        String jpqlQuery = "SELECT e FROM Employee e WHERE NOT BETWEEN 10 AND 20";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(notBetween(nullExpression(), numeric(10), numeric(20)))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(notBetween(nullExpression(), numeric(10), numeric(20)))
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_09() {
+    @Test
+    public void test_JPQLQuery_09() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age NOT BETWEEN AND 20";
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age NOT BETWEEN AND 20";
 
-		BetweenExpressionTester betweenExpression = notBetween(
-			path("e.age"),
-			nullExpression(),
-			numeric(20)
-		);
-		betweenExpression.hasSpaceAfterLowerBound = false;
+        BetweenExpressionTester betweenExpression = notBetween(
+            path("e.age"),
+            nullExpression(),
+            numeric(20)
+        );
+        betweenExpression.hasSpaceAfterLowerBound = false;
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(betweenExpression)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(betweenExpression)
+        );
 
-		testInvalidQuery(jpqlQuery, selectStatement);
-	}
+        testInvalidQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_10() {
+    @Test
+    public void test_JPQLQuery_10() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN ORDER BY e.name";
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN ORDER BY e.name";
 
-		BetweenExpressionTester betweenExpression = between(
-			path("e.age"),
-			nullExpression(),
-			nullExpression()
-		);
-		betweenExpression.hasAnd = false;
-		betweenExpression.hasSpaceAfterAnd = false;
-		betweenExpression.hasSpaceAfterLowerBound = false;
+        BetweenExpressionTester betweenExpression = between(
+            path("e.age"),
+            nullExpression(),
+            nullExpression()
+        );
+        betweenExpression.hasAnd = false;
+        betweenExpression.hasSpaceAfterAnd = false;
+        betweenExpression.hasSpaceAfterLowerBound = false;
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(betweenExpression),
-			orderBy(orderByItem("e.name"))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(betweenExpression),
+            orderBy(orderByItem("e.name"))
+        );
 
-		testInvalidQuery(jpqlQuery, selectStatement);
-	}
+        testInvalidQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_11() {
+    @Test
+    public void test_JPQLQuery_11() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 10 AND ORDER BY e.name";
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 10 AND ORDER BY e.name";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(path("e.age").between(numeric(10), nullExpression())),
-			orderBy(orderByItem("e.name"))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(path("e.age").between(numeric(10), nullExpression())),
+            orderBy(orderByItem("e.name"))
+        );
 
-		testInvalidQuery(jpqlQuery, selectStatement);
-	}
+        testInvalidQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_12() {
+    @Test
+    public void test_JPQLQuery_12() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 10 ORDER BY e.name";
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 10 ORDER BY e.name";
 
-		BetweenExpressionTester betweenExpression = between(
-			path("e.age"),
-			numeric(10),
-			nullExpression()
-		);
-		betweenExpression.hasAnd = false;
-		betweenExpression.hasSpaceAfterAnd = false;
+        BetweenExpressionTester betweenExpression = between(
+            path("e.age"),
+            numeric(10),
+            nullExpression()
+        );
+        betweenExpression.hasAnd = false;
+        betweenExpression.hasSpaceAfterAnd = false;
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(betweenExpression),
-			orderBy(orderByItem("e.name"))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(betweenExpression),
+            orderBy(orderByItem("e.name"))
+        );
 
-		testInvalidQuery(jpqlQuery, selectStatement);
-	}
+        testInvalidQuery(jpqlQuery, selectStatement);
+    }
 }

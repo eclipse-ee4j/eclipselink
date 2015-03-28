@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,64 +40,64 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
  */
 public class FromClauseStateObject extends AbstractFromClauseStateObject {
 
-	/**
-	 * Creates a new <code>FromClauseStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public FromClauseStateObject(SelectStatementStateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>FromClauseStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public FromClauseStateObject(SelectStatementStateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String declarationBNF() {
-		return InternalFromClauseBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String declarationBNF() {
+        return InternalFromClauseBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public IManagedType findManagedType(StateObject stateObject) {
-		// This is the declaration clause of the top-level query
-		return getManagedType(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public IManagedType findManagedType(StateObject stateObject) {
+        // This is the declaration clause of the top-level query
+        return getManagedType(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public FromClause getExpression() {
-		return (FromClause) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FromClause getExpression() {
+        return (FromClause) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SelectStatementStateObject getParent() {
-		return (SelectStatementStateObject) super.getParent();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SelectStatementStateObject getParent() {
+        return (SelectStatementStateObject) super.getParent();
+    }
 
-	/**
-	 * Keeps a reference of the {@link FromClause parsed object} object, which should only be done
-	 * when this object is instantiated during the conversion of a parsed JPQL query into {@link
-	 * StateObject StateObjects}.
-	 *
-	 * @param expression The {@link FromClause parsed object} representing a <code><b>FROM</b></code>
-	 * expression
-	 */
-	public void setExpression(FromClause expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link FromClause parsed object} object, which should only be done
+     * when this object is instantiated during the conversion of a parsed JPQL query into {@link
+     * StateObject StateObjects}.
+     *
+     * @param expression The {@link FromClause parsed object} representing a <code><b>FROM</b></code>
+     * expression
+     */
+    public void setExpression(FromClause expression) {
+        super.setExpression(expression);
+    }
 }

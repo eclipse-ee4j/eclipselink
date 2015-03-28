@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     08/10/2009-2.0 Guy Pelletier 
+ *     08/10/2009-2.0 Guy Pelletier
  *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
- *     03/06/2013-2.5 Guy Pelletier 
- *       - 267391: JPA 2.1 Functionality for Java EE 7 (JSR-338)       
- ******************************************************************************/  
+ *     03/06/2013-2.5 Guy Pelletier
+ *       - 267391: JPA 2.1 Functionality for Java EE 7 (JSR-338)
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
@@ -29,9 +29,9 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
 
 /**
- * A mapping project used to read JPA 2.0 metadata (persistence.xml and its 
- * persistence units) through OX mappings. 
- * 
+ * A mapping project used to read JPA 2.0 metadata (persistence.xml and its
+ * persistence units) through OX mappings.
+ *
  * @author Guy Pelletier, Doug Clarke
  * @since EclipseLink 1.2
  */
@@ -46,7 +46,7 @@ public class PersistenceXMLMappings {
 
         descriptor.setJavaClass(PersistenceXML.class);
         descriptor.setDefaultRootElement("persistence");
-        
+
         XMLCompositeCollectionMapping puMapping = new XMLCompositeCollectionMapping();
         puMapping.setAttributeName("persistenceUnitInfos");
         puMapping.setReferenceClass(SEPersistenceUnitInfo.class);
@@ -64,9 +64,9 @@ public class PersistenceXMLMappings {
         descriptor.setNamespaceResolver(resolver);
 
         descriptor.setJavaClass(SEPersistenceUnitInfo.class);
-        
+
         descriptor.addDirectMapping("persistenceUnitName", "@name");
-        
+
         // For the canonical model generation we don't exclude the unlisted
         // classes unless explicitly set by the user.
         XMLDirectMapping mapping = new XMLDirectMapping();
@@ -74,7 +74,7 @@ public class PersistenceXMLMappings {
         mapping.setXPath("exclude-unlisted-classes/text()");
         mapping.setNullValue(false);
         descriptor.addMapping(mapping);
-        
+
         XMLCompositeDirectCollectionMapping classesMapping = new XMLCompositeDirectCollectionMapping();
         classesMapping.setAttributeName("managedClassNames");
         classesMapping.setXPath("class/text()");
@@ -84,7 +84,7 @@ public class PersistenceXMLMappings {
         mappingFilesMapping.setAttributeName("mappingFiles");
         mappingFilesMapping.setXPath("mapping-file/text()");
         descriptor.addMapping(mappingFilesMapping);
-        
+
         XMLCompositeCollectionMapping persistenceUnitPropertiesMapping = new XMLCompositeCollectionMapping();
         persistenceUnitPropertiesMapping.setAttributeName("persistenceUnitProperties");
         persistenceUnitPropertiesMapping.setGetMethodName("getPersistenceUnitProperties");
@@ -95,7 +95,7 @@ public class PersistenceXMLMappings {
 
         return descriptor;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -105,24 +105,24 @@ public class PersistenceXMLMappings {
         descriptor.setJavaClass(SEPersistenceUnitProperty.class);
         descriptor.addDirectMapping("name", "@name");
         descriptor.addDirectMapping("value", "@value");
-        
+
         return descriptor;
     }
-    
+
     /**
      * INTERNAL:
      */
     public static XMLContext createXML2_0Context() {
         return createXMLContext("http://java.sun.com/xml/ns/persistence");
     }
-    
+
     /**
      * INTERNAL:
      */
     public static XMLContext createXML2_1Context() {
         return createXMLContext("http://xmlns.jcp.org/xml/ns/persistence");
     }
-    
+
     /**
      * INTERNAL:
      */

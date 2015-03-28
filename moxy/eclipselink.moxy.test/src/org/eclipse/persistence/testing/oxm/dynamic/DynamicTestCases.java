@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,9 +43,9 @@ public class DynamicTestCases extends XMLMappingTestCases {
     private static final String EMPLOYEE_CLASS_NAME = "org.eclipse.persistence.testing.oxm.dynamic.XEmployee";
     private static final String ADDRESS_CLASS_NAME = "org.eclipse.persistence.testing.oxm.dynamic.XAddress";
     private static final String PHONE_CLASS_NAME = "org.eclipse.persistence.testing.oxm.dynamic.XPhoneNumber";
-    private static final String EMAIL_CLASS_NAME = "org.eclipse.persistence.testing.oxm.dynamic.XEmail";    
-    private static final String SEC_CRED_CLASS_NAME = "org.eclipse.persistence.testing.oxm.dynamic.XSecurityCredential";    
-    private static final String ROOT_CLASS_NAME = "org.eclipse.persistence.testing.oxm.dynamic.XRoot";    
+    private static final String EMAIL_CLASS_NAME = "org.eclipse.persistence.testing.oxm.dynamic.XEmail";
+    private static final String SEC_CRED_CLASS_NAME = "org.eclipse.persistence.testing.oxm.dynamic.XSecurityCredential";
+    private static final String ROOT_CLASS_NAME = "org.eclipse.persistence.testing.oxm.dynamic.XRoot";
 
     public DynamicTestCases(String name) throws Exception {
         super(name);
@@ -62,10 +62,10 @@ public class DynamicTestCases extends XMLMappingTestCases {
     public Object getControlObject() {
         try {
             Object rootObj = newInstance(ROOT_CLASS_NAME);
-        	
+
             // =============
-        	
-        	Object employeeObj = newInstance(EMPLOYEE_CLASS_NAME);
+
+            Object employeeObj = newInstance(EMPLOYEE_CLASS_NAME);
             setValue(employeeObj, "name", "Jane Doe");
 
             // =============
@@ -74,7 +74,7 @@ public class DynamicTestCases extends XMLMappingTestCases {
             setValue(addressObj, "street", "123 Fake Street");
 
             setValue(addressObj, "owningEmployee", employeeObj);
-            
+
             setValue(employeeObj, "address", addressObj);
 
             // =============
@@ -94,7 +94,7 @@ public class DynamicTestCases extends XMLMappingTestCases {
             setValue(employeeObj, "phoneNumbers", phoneNumbers);
 
             // =============
-            
+
             Object email1 = newInstance(EMAIL_CLASS_NAME);
             setValue(email1, "id", "123");
             setValue(email1, "username", "jane.doe");
@@ -105,8 +105,8 @@ public class DynamicTestCases extends XMLMappingTestCases {
             setValue(email2, "id", "456");
             setValue(email2, "username", "jdoe1972");
             setValue(email2, "domain", "rocketmail.com");
-            setValue(email2, "owningEmployee", employeeObj);            
-            
+            setValue(email2, "owningEmployee", employeeObj);
+
             ArrayList emails = new ArrayList();
             emails.add(email1);
             emails.add(email2);
@@ -114,18 +114,18 @@ public class DynamicTestCases extends XMLMappingTestCases {
             setValue(employeeObj, "emails", emails);
 
             // =============
-            
+
             Object secCred = newInstance(SEC_CRED_CLASS_NAME);
             setValue(secCred, "id", "123");
-            setValue(secCred, "zone", "17A");            
+            setValue(secCred, "zone", "17A");
             setValue(secCred, "keyNumber", "82347623847");
-            
+
             setValue(employeeObj, "securityCredential", secCred);
-            
+
             setValue(secCred, "owningEmployee", employeeObj);
 
-            // =============            
-            
+            // =============
+
             setValue(rootObj, "employee", employeeObj);
             setValue(rootObj, "emails", emails);
             setValue(rootObj, "securityCredential", secCred);

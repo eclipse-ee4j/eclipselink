@@ -1,20 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     06/16/2009-2.0 Guy Pelletier 
+ *     06/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
- *     07/16/2009-2.0 Guy Pelletier 
+ *     07/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     06/19/2014-2.6: Tomas Kraus
  *       - 437578: New model to verify @Cacheable inheritance in JPA 2.1
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.cacheable;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -42,11 +42,11 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildProductFalseTable());
         addTableDefinition(buildProductTrueTable());
     }
-    
+
     public static TableDefinition buildCACHEABLE_FALSE_ENTITYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CACHEABLE_FALSE");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -56,7 +56,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-        
+
         FieldDefinition protectedFK = new FieldDefinition();
         protectedFK.setName("PROTECTED_FK");
         protectedFK.setTypeName("NUMERIC");
@@ -75,10 +75,10 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         cacheableFSFK.setUnique(false);
         cacheableFSFK.setIsIdentity(false);
         table.addField(cacheableFSFK);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildCACHEABLE_FALSE_DETAILTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CACHEABLE_FALSE_DETAIL");
@@ -91,7 +91,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldDescription = new FieldDefinition();
         fieldDescription.setName("DESCRIPTION");
         fieldDescription.setTypeName("VARCHAR2");
@@ -104,11 +104,11 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCACHEABLE_FALSE_DETAIL_BPTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CACHEABLE_FALSE_DETAIL_BP");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -118,7 +118,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldDescription = new FieldDefinition();
         fieldDescription.setName("DESCRIPTION");
         fieldDescription.setTypeName("VARCHAR2");
@@ -128,7 +128,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldDescription.setUnique(false);
         fieldDescription.setIsIdentity(false);
         table.addField(fieldDescription);
-        
+
         FieldDefinition fieldEntity = new FieldDefinition();
         fieldEntity.setName("ENTITY_ID");
         fieldEntity.setTypeName("NUMERIC");
@@ -141,11 +141,11 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCACHEABLE_FALSE_TO_DETAILTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CACHEABLE_FALSE_TO_DETAIL");
-    
+
         FieldDefinition fieldEntityID = new FieldDefinition();
         fieldEntityID.setName("ENTITY_ID");
         fieldEntityID.setTypeName("NUMERIC");
@@ -154,7 +154,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldEntityID.setIsPrimaryKey(true);
         fieldEntityID.setUnique(false);
         fieldEntityID.setIsIdentity(false);
-        table.addField(fieldEntityID);    
+        table.addField(fieldEntityID);
 
         FieldDefinition fieldDetailID = new FieldDefinition();
         fieldDetailID.setName("DETAIL_ID");
@@ -164,7 +164,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldDetailID.setIsPrimaryKey(true);
         fieldDetailID.setUnique(false);
         fieldDetailID.setIsIdentity(false);
-        table.addField(fieldDetailID);    
+        table.addField(fieldDetailID);
 
         FieldDefinition fieldIndex = new FieldDefinition();
         fieldIndex.setName("IND");
@@ -174,15 +174,15 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldIndex.setIsPrimaryKey(true);
         fieldIndex.setUnique(false);
         fieldIndex.setIsIdentity(false);
-        table.addField(fieldIndex);    
+        table.addField(fieldIndex);
 
         return table;
     }
-    
+
     public static TableDefinition buildCACHEABLE_PROTECTED_ENTITYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CACHEABLE_PROTECTED");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -192,7 +192,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -215,11 +215,11 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCACHEABLE_TRUE_ENTITYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CACHEABLE_TRUE");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -229,7 +229,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -239,7 +239,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
-        
+
         FieldDefinition embNAME = new FieldDefinition();
         embNAME.setName("SE_NAME");
         embNAME.setTypeName("VARCHAR");
@@ -249,7 +249,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         embNAME.setUnique(false);
         embNAME.setIsIdentity(false);
         table.addField(embNAME);
-        
+
         FieldDefinition fieldDTYPE = new FieldDefinition();
         fieldDTYPE.setName("DTYPE");
         fieldDTYPE.setTypeName("VARCHAR2");
@@ -260,14 +260,14 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldDTYPE.setUnique(false);
         fieldDTYPE.setShouldAllowNull(true);
         table.addField(fieldDTYPE);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildCACHEABLE_TRUE_DERIVED_ID_ENTITYTable(){
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CACHEABLE_TRUE_DER");
-        
+
         FieldDefinition fieldCF_ID = new FieldDefinition();
         fieldCF_ID.setName("CF_ID");
         fieldCF_ID.setTypeName("NUMERIC");
@@ -278,7 +278,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldCF_ID.setIsIdentity(true);
         fieldCF_ID.setForeignKeyFieldName("JPA_CACHEABLE_FALSE.ID");
         table.addField(fieldCF_ID);
-        
+
         FieldDefinition fieldDESC = new FieldDefinition();
         fieldDESC.setName("DESCRIPTION");
         fieldDESC.setTypeName("VARCHAR");
@@ -288,14 +288,14 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldDESC.setUnique(false);
         fieldDESC.setIsIdentity(true);
         table.addField(fieldDESC);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildCACHEABLE_FORCE_PROTECTED_ENTITYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CACHEABLE_FORCE_PROTECTED");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -305,7 +305,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -315,7 +315,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldDTYPE = new FieldDefinition();
         fieldDTYPE.setName("DTYPE");
         fieldDTYPE.setTypeName("VARCHAR2");
@@ -326,7 +326,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldDTYPE.setUnique(false);
         fieldDTYPE.setShouldAllowNull(true);
         table.addField(fieldDTYPE);
-    
+
         FieldDefinition falseFK = new FieldDefinition();
         falseFK.setName("FALSE_FK");
         falseFK.setTypeName("NUMERIC");
@@ -339,11 +339,11 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCACHEABLE_FORCE_PROTECTED_ENTITY_WITH_COMPOSITTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CACHEABLE_F_P_W_C");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -353,7 +353,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -363,7 +363,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldSE_NAME = new FieldDefinition();
         fieldSE_NAME.setName("SE_NAME");
         fieldSE_NAME.setTypeName("VARCHAR");
@@ -373,7 +373,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldSE_NAME.setUnique(false);
         fieldSE_NAME.setIsIdentity(false);
         table.addField(fieldSE_NAME);
-        
+
         FieldDefinition fieldEMBNAME = new FieldDefinition();
         fieldEMBNAME.setName("EMB_NAME");
         fieldEMBNAME.setTypeName("VARCHAR");
@@ -383,7 +383,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldEMBNAME.setUnique(false);
         fieldEMBNAME.setIsIdentity(false);
         table.addField(fieldEMBNAME);
-        
+
 
         FieldDefinition falseFK = new FieldDefinition();
         falseFK.setName("PROTECTED_FK");
@@ -400,7 +400,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
     public static TableDefinition buildSUB_CACHEABLE_FALSE_ENTITYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_SUB_CACHEABLE_FALSE");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -410,14 +410,14 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildSUB_CACHEABLE_NONE_ENTITYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_SUB_CACHEABLE_NONE");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -427,13 +427,13 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         return table;
     }
-	public static TableDefinition buildCACHEABLE_RELATIONSHIPS_ENTITYTable() {
+    public static TableDefinition buildCACHEABLE_RELATIONSHIPS_ENTITYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CACHEREL");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -464,7 +464,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false );
         field.setForeignKeyFieldName("JPA_CACHEABLE_FORCE_PROTECTED.ID");
         table.addField(field);
-    
+
         return table;
     }
 
@@ -484,7 +484,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false );
         field.setForeignKeyFieldName("JPA_CACHEREL.ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("CACHBLE_PRT_ID");
@@ -516,7 +516,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false );
         field.setForeignKeyFieldName("JPA_CACHEREL.ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("CACHBLE_FLDETAIL_ID");
@@ -535,7 +535,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
     public static TableDefinition buildCACHEABLEREL_PROTECTEMBEDDABLETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CACHREL_PROTECTEMB");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -566,13 +566,13 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         falseFK.setUnique(false);
         falseFK.setIsIdentity(false);
         table.addField(falseFK);
-    
+
         return table;
     }
 
     /**
      * Build table for {@see org.eclipse.persistence.testing.models.jpa.cacheable.ProductFalse}
-     * class. 
+     * class.
      * @return Initialized {@see TableDefinition} instance.
      */
     public static TableDefinition buildProductFalseTable() {
@@ -587,7 +587,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
 
     /**
      * Build table for {@see org.eclipse.persistence.testing.models.jpa.cacheable.ProductTrue}
-     * class. 
+     * class.
      * @return Initialized {@see TableDefinition} instance.
      */
     public static TableDefinition buildProductTrueTable() {

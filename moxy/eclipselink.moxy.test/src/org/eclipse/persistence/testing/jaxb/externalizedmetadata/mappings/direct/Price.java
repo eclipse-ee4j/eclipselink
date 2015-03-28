@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,23 +15,23 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direc
 public class Price {
     public java.math.BigDecimal price;
     public String currency;
-    
+
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
-       
-    java.math.BigDecimal getPrice() { 
+
+    java.math.BigDecimal getPrice() {
         wasGetCalled = true;
-        return price; 
-    }
-    
-    void setPrice(java.math.BigDecimal price) {
-        wasSetCalled = true;
-        this.price = price; 
+        return price;
     }
 
-    
+    void setPrice(java.math.BigDecimal price) {
+        wasSetCalled = true;
+        this.price = price;
+    }
+
+
     public boolean equals(Object obj) {
         Price pObj;
         try {
@@ -39,7 +39,7 @@ public class Price {
         } catch (ClassCastException cce) {
             return false;
         }
-        
+
         if (price == null) {
             if (pObj.price != null) {
                 return false;

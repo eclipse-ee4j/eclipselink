@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.performance.java;
 
 import java.lang.reflect.Method;
@@ -61,7 +61,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
     public void addSynchronizedTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected int index2 = 0;
-            
+
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
@@ -87,7 +87,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
     public void addSynchronizedBlockTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected int index2 = 0;
-            
+
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
@@ -114,7 +114,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
     public void addFinalTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected int index2 = 0;
-            
+
             public final void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
@@ -139,7 +139,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
     public void addReflectionTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected int index2 = 0;
-            
+
             public Method method;
             public Object[] args;
 
@@ -157,7 +157,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
                     args = new Object[0];
                 }
             }
-            
+
             public final void test() {
                 for (int index = 0; index < 100; index++) {
                     try {
@@ -179,14 +179,14 @@ public class MethodTest extends PerformanceComparisonTestCase {
         test.setName("ReflectionTest");
         addTest(test);
     }
-    
+
     /**
      * Inlined.
      */
     public void addInlinedTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected int index2 = 0;
-            
+
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     // Do something simple.
@@ -200,19 +200,19 @@ public class MethodTest extends PerformanceComparisonTestCase {
         test.setName("InlinedTest");
         addTest(test);
     }
-    
+
     /**
      * Normal.
      */
     public void addNormalTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
-            
+
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
                 }
             }
-            
+
             public void doTest() {
                 // Do something simple.
                 index = index + 10;
@@ -224,7 +224,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
         test.setName("NormalTest");
         addTest(test);
     }
-    
+
     /**
      * Normal.
      */
@@ -239,20 +239,20 @@ public class MethodTest extends PerformanceComparisonTestCase {
         test.setName("NormalTest2");
         addTest(test);
     }
-    
+
     /**
      * Normal.
      */
     public void addNormalTest3() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected int index2 = 0;
-            
+
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
                 }
             }
-            
+
             public void doTest() {
                 // Do something simple.
                 index2 = index2 + 10;
@@ -271,13 +271,13 @@ public class MethodTest extends PerformanceComparisonTestCase {
     public void addVolatileTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected volatile int index2 = 0;
-            
+
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
                 }
             }
-            
+
             public void doTest() {
                 // Do something simple.
                 index2 = index2 + 10;

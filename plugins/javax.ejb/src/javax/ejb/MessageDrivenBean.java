@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,7 +42,7 @@ package javax.ejb;
 
 /**
  * The MessageDrivenBean interface defines methods that the EJB container uses
- * to notify a message driven bean instance of the instance's life cycle 
+ * to notify a message driven bean instance of the instance's life cycle
  * events.
  * <p>
  * As of EJB 3.0 it is no longer required that a message driven bean class
@@ -52,7 +52,7 @@ package javax.ejb;
  */
 public interface MessageDrivenBean extends EnterpriseBean {
     /**
-     * Set the associated message-driven context. The container calls 
+     * Set the associated message-driven context. The container calls
      * this method after the instance creation.
      *
      * <p> The message driven bean instance should store the reference to the
@@ -69,10 +69,10 @@ public interface MessageDrivenBean extends EnterpriseBean {
     void setMessageDrivenContext(MessageDrivenContext ctx) throws EJBException;
 
     /**
-     * A container invokes this method before it ends the life of the 
-     * message-driven object. This happens when a container decides to 
+     * A container invokes this method before it ends the life of the
+     * message-driven object. This happens when a container decides to
      * terminate the message-driven object.
-     * 
+     *
      * <p> This method is called with no transaction context.
      *
      * @exception EJBException Thrown by the method to indicate a failure

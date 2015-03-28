@@ -40,7 +40,7 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import dbws.testing.DBWSTestSuite;
 
 /**
- * Tests PL/SQL functions/procedures with a strongly-typed 
+ * Tests PL/SQL functions/procedures with a strongly-typed
  * ref cursor OUT argument.
  *
  */
@@ -71,13 +71,13 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
     static final String STRONGLY_TYPED_REF_CURSOR = "STR_CURSOR";
     static final String STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE = STRONGLY_TYPED_REF_CURSOR + "_TEST";
     static final String CREATE_TAB1_SHADOW_TYPE = "CREATE OR REPLACE TYPE " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "_STRC_TAB1 AS TABLE OF VARCHAR2(111)";
-    static final String CREATE_STRC_CURSOR_SHADOW_TYPE = 
+    static final String CREATE_STRC_CURSOR_SHADOW_TYPE =
         "CREATE OR REPLACE TYPE STR_CURSOR_TEST_STR_CURSOR AS OBJECT(" +
             "\n ID NUMBER," +
             "\n NAME VARCHAR(25)," +
             "\n SINCE DATE" +
         "\n)";
-    
+
     static final String CREATE_STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE =
         "CREATE OR REPLACE PACKAGE " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + " AS" +
             "\nTYPE STRC_TAB1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
@@ -97,7 +97,7 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
             "\nFUNCTION GET_EMPREC_FUNC(ENAME IN VARCHAR) RETURN EMPREC_CURSOR;" +
             "\nFUNCTION GET_EMPREC2_FUNC(MYTAB1 IN STRC_TAB1) RETURN EMPREC_CURSOR;" +
         "\nEND " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + ";";
-    
+
     static final String CREATE_STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE_BODY =
         "CREATE OR REPLACE PACKAGE BODY " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + " AS" +
             "\nPROCEDURE GET_EMS(P_EMS " + STRONGLY_TYPED_REF_CURSOR_TABLE+".NAME%TYPE, P_EMS_SET OUT " + STRONGLY_TYPED_REF_CURSOR + ") AS" +
@@ -112,13 +112,13 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
             "\nEND GET_EMS2;" +
             "\nPROCEDURE GET_EMPREC(ENAME IN VARCHAR, EMPREC_SET OUT EMPREC_CURSOR) AS" +
             "\nBEGIN" +
-                "\nOPEN EMPREC_SET FOR" + 
-                "\nSELECT * FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE + " WHERE NAME LIKE ENAME;" + 
+                "\nOPEN EMPREC_SET FOR" +
+                "\nSELECT * FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE + " WHERE NAME LIKE ENAME;" +
             "\nEND GET_EMPREC;" +
             "\nPROCEDURE GET_EMPREC2(MYTAB1 IN STRC_TAB1, EMPREC_SET OUT EMPREC_CURSOR) AS" +
             "\nBEGIN" +
-                "\nOPEN EMPREC_SET FOR" + 
-                "\nSELECT * FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE + " WHERE NAME LIKE MYTAB1(1);" + 
+                "\nOPEN EMPREC_SET FOR" +
+                "\nSELECT * FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE + " WHERE NAME LIKE MYTAB1(1);" +
             "\nEND GET_EMPREC2;" +
             "\nFUNCTION GET_EMS_FUNC(P_EMS " + STRONGLY_TYPED_REF_CURSOR_TABLE+".NAME%TYPE) RETURN " + STRONGLY_TYPED_REF_CURSOR + " IS" +
             "\nP_EMS_SET " + STRONGLY_TYPED_REF_CURSOR + ";" +
@@ -137,14 +137,14 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
             "\nFUNCTION GET_EMPREC_FUNC(ENAME IN VARCHAR) RETURN EMPREC_CURSOR IS" +
             "\nEMPREC_SET EMPREC_CURSOR;" +
             "\nBEGIN" +
-                "\nOPEN EMPREC_SET FOR" + 
-                "\nSELECT * FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE + " WHERE NAME LIKE ENAME;" + 
+                "\nOPEN EMPREC_SET FOR" +
+                "\nSELECT * FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE + " WHERE NAME LIKE ENAME;" +
                 "\nRETURN EMPREC_SET;" +
             "\nEND GET_EMPREC_FUNC;" +
             "\nFUNCTION GET_EMPREC2_FUNC(MYTAB1 IN STRC_TAB1) RETURN EMPREC_CURSOR IS" +
             "\nEMPREC_SET EMPREC_CURSOR;" +
             "\nBEGIN" +
-                "\nOPEN EMPREC_SET FOR" + 
+                "\nOPEN EMPREC_SET FOR" +
                 "\nSELECT * FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE + " WHERE NAME LIKE MYTAB1(1);" +
                 "\nRETURN EMPREC_SET;" +
             "\nEND GET_EMPREC2_FUNC;" +
@@ -232,12 +232,12 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
                   "isSimpleXMLFormat=\"true\" " +
               "/>" +
               "<plsql-procedure " +
-	              "name=\"emprecRefCursorTest\" " +
-		          "catalogPattern=\"" + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "\" " +
-		          "procedurePattern=\"GET_EMPREC\" " +
-		          "isCollection=\"true\" " +
-		          "isSimpleXMLFormat=\"true\" " +
-		      "/>" +
+                  "name=\"emprecRefCursorTest\" " +
+                  "catalogPattern=\"" + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "\" " +
+                  "procedurePattern=\"GET_EMPREC\" " +
+                  "isCollection=\"true\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+              "/>" +
               "<plsql-procedure " +
                   "name=\"emprecRefCursorTest2\" " +
                   "catalogPattern=\"" + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "\" " +
@@ -273,7 +273,7 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
                   "isCollection=\"true\" " +
                   "isSimpleXMLFormat=\"true\" " +
               "/>" +
-              
+
             "</dbws-builder>";
           builder = new DBWSBuilder();
           DBWSTestSuite.setUp(".");

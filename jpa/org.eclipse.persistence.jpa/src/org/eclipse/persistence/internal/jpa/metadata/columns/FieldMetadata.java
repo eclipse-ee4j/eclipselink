@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * Synonym for Column for NoSql data.
  */
 public class FieldMetadata extends ColumnMetadata {
-    
+
     /**
      * INTERNAL:
      * Used for XML loading.
@@ -28,7 +28,7 @@ public class FieldMetadata extends ColumnMetadata {
     public FieldMetadata() {
         super("<field>");
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.

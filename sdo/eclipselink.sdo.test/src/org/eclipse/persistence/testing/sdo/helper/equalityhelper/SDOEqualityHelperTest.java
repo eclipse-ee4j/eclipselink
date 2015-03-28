@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.equalityhelper;
 
 import commonj.sdo.DataObject;
@@ -24,13 +24,13 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
     }
 
     // compare a DataObject with itself by deep equal --- true
-    // see SDOEqualityHelperBidirectionalTest.java for a complete bidirectional model    
+    // see SDOEqualityHelperBidirectionalTest.java for a complete bidirectional model
     public void testDeepEqualWithADataObjectToItself() {
         assertTrue(equalityHelper.equal(root, root));
     }
 
     // compare a DataObject with its Deep copy by deep equal --- true
-    // see SDOEqualityHelperBidirectionalTest.java for a complete bidirectional model    
+    // see SDOEqualityHelperBidirectionalTest.java for a complete bidirectional model
     public void testDeepEqualWithADataObjectToItsDeepCopy() {
         DataObject deepCopy = copyHelper.copy(root);
         assertTrue(equalityHelper.equal(root, deepCopy));
@@ -58,7 +58,7 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
     }
 
     // !! this test case base on the following and Now its meaning is still not sure     !!
-    // Note that properties to a containing DataObject are not compared which 
+    // Note that properties to a containing DataObject are not compared which
     // means two DataObject trees can be equal even if their containers are not equal.
     public void testDeepEqualWithADataObjectToAnotherDataObjectWithDifferentParents() {
         this.assertTrue(equalityHelper.equal(containedDataObject, containedDataObject_1));
@@ -236,28 +236,28 @@ public class SDOEqualityHelperTest extends SDOEqualityHelperEqualTestCases {
     /**
      * Test whether EqualityHelper.compareProperty() handles nested objects that are null but isSet=true
      * (Where we do not have a bidirectional child property)
-     * See SDOCopyHelperDeepTest for the same test with the bidirectional child 
+     * See SDOCopyHelperDeepTest for the same test with the bidirectional child
      */
     public void testDeepEqualWithUnsetComplexChild() {
-    	// clear complex child
-    	root.unset("rootproperty2-notdatatype");	
-    	SDODataObject copyOfRoot = (SDODataObject)copyHelper.copy(root);
-    	assertFalse(root.isSet("rootproperty2-notdatatype"));
-    	
-    	assertNotNull(copyOfRoot);
-    	assertTrue(equalityHelper.equal(root, copyOfRoot));
+        // clear complex child
+        root.unset("rootproperty2-notdatatype");
+        SDODataObject copyOfRoot = (SDODataObject)copyHelper.copy(root);
+        assertFalse(root.isSet("rootproperty2-notdatatype"));
+
+        assertNotNull(copyOfRoot);
+        assertTrue(equalityHelper.equal(root, copyOfRoot));
     }
     //  TODO: process non-containment side of bidirectionals see #5853175
     public void testDeepEqualWithSetNullComplexChild() {
-    	// clear complex child
-    	root.set("rootproperty2-notdatatype", null);	
-    	SDODataObject copyOfRoot = (SDODataObject)copyHelper.copy(root);
-    	assertFalse(root.isSet("rootproperty2-notdatatype"));
-    	assertNotNull(copyOfRoot);
-    	// this assertion previously failed before fix for #5852525
-    	assertTrue(equalityHelper.equal(root, copyOfRoot));
+        // clear complex child
+        root.set("rootproperty2-notdatatype", null);
+        SDODataObject copyOfRoot = (SDODataObject)copyHelper.copy(root);
+        assertFalse(root.isSet("rootproperty2-notdatatype"));
+        assertNotNull(copyOfRoot);
+        // this assertion previously failed before fix for #5852525
+        assertTrue(equalityHelper.equal(root, copyOfRoot));
     }
-    
+
     // compare DataObject with properties as many
     public void testDeepEqualWithTwoDataObjectsHavingManyTypeDataTypePropertiesDataObjectsFail() {
         //rootProperty4.setContainment(false);

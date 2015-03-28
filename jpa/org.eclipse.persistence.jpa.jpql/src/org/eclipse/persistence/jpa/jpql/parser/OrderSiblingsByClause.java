@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,26 +27,26 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public final class OrderSiblingsByClause extends AbstractOrderByClause {
 
-	/**
-	 * Creates a new <code>OrderSiblingsByClause</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public OrderSiblingsByClause(AbstractExpression parent) {
-		super(parent, ORDER_SIBLINGS_BY);
-	}
+    /**
+     * Creates a new <code>OrderSiblingsByClause</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public OrderSiblingsByClause(AbstractExpression parent) {
+        super(parent, ORDER_SIBLINGS_BY);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		acceptUnknownVisitor(visitor);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        acceptUnknownVisitor(visitor);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(OrderSiblingsByClauseBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(OrderSiblingsByClauseBNF.ID);
+    }
 }

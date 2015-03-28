@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -24,37 +24,37 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.project.xml.MWOXPro
 
 public class ProjectCellRendererAdapter extends NoneSelectedCellRendererAdapter
 {
-	public ProjectCellRendererAdapter(ResourceRepository repository) {
-		super(repository);
-	}
+    public ProjectCellRendererAdapter(ResourceRepository repository) {
+        super(repository);
+    }
 
-	public String buildAccessibleName(Object value) {
-		if (value instanceof MWRelationalProject)
-			return resourceRepository().getString("ACCESSIBLE_RELATIONAL_PROJECT_NODE", ((MWRelationalProject)value).displayString());
+    public String buildAccessibleName(Object value) {
+        if (value instanceof MWRelationalProject)
+            return resourceRepository().getString("ACCESSIBLE_RELATIONAL_PROJECT_NODE", ((MWRelationalProject)value).displayString());
 
-		if (value instanceof MWEisProject)
-			return resourceRepository().getString("ACCESSIBLE_EIS_PROJECT_NODE", ((MWEisProject)value).displayString());
+        if (value instanceof MWEisProject)
+            return resourceRepository().getString("ACCESSIBLE_EIS_PROJECT_NODE", ((MWEisProject)value).displayString());
 
-		if (value instanceof MWOXProject)
-			return resourceRepository().getString("ACCESSIBLE_OX_PROJECT_NODE", ((MWOXProject)value).displayString());
+        if (value instanceof MWOXProject)
+            return resourceRepository().getString("ACCESSIBLE_OX_PROJECT_NODE", ((MWOXProject)value).displayString());
 
-		return null;
-	}
+        return null;
+    }
 
     protected Icon buildNonNullValueIcon(Object value) {
-		if (value instanceof MWRelationalProject)
-			return resourceRepository().getIcon("project.relational");
+        if (value instanceof MWRelationalProject)
+            return resourceRepository().getIcon("project.relational");
 
-		if (value instanceof MWEisProject)
-			return resourceRepository().getIcon("project.eis");
+        if (value instanceof MWEisProject)
+            return resourceRepository().getIcon("project.eis");
 
-		if (value instanceof MWOXProject)
-			return resourceRepository().getIcon("project.ox");
+        if (value instanceof MWOXProject)
+            return resourceRepository().getIcon("project.ox");
 
-		return resourceRepository().getIcon("warning");
-	}
+        return resourceRepository().getIcon("warning");
+    }
 
-	protected String buildNonNullValueText(Object value) {
-		return ((MWProject) value).getName();
-	}
+    protected String buildNonNullValueText(Object value) {
+        return ((MWProject) value).getName();
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -36,7 +36,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
     protected String tableAliasInSelectCallForExist;
     protected Collection primaryKeyFields;
     protected boolean shouldExtractWhereClauseFromSelectCallForExist;
-    
+
     public void setSelectCallForExist(SQLCall selectCallForExist) {
         this.selectCallForExist = selectCallForExist;
     }
@@ -74,7 +74,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
         return shouldExtractWhereClauseFromSelectCallForExist;
     }
 
-    
+
     /**
      * Append the string containing the SQL insert string for the given table.
      */
@@ -89,7 +89,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
 
             if(selectCallForExist != null) {
                 if(shouldExtractWhereClauseFromSelectCallForExist) {
-                    // Should get here only in case selectCallForExist doesn't have aliases and 
+                    // Should get here only in case selectCallForExist doesn't have aliases and
                     // targets the same table as the statement.
                     // Instead of making selectCallForExist part of " WHERE EXIST("
                     // just extract its where clause.
@@ -107,21 +107,21 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
                     writer.write(")");
                 }
                 // Bug 301888 - DB2: UpdateAll/DeleteAll using WHERE EXIST fail.
-                // If selectCallForExist has been explicitly set to not use binding then call should be set the same way. 
+                // If selectCallForExist has been explicitly set to not use binding then call should be set the same way.
                 if(selectCallForExist.isUsesBindingSet() && !selectCallForExist.usesBinding(session)) {
                     call.setUsesBinding(false);
                 }
             }
 
             call.setSQLString(writer.toString());
-            
+
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-                
+
         return call;
     }
-    
+
     protected SQLCall buildSimple(AbstractSession session) {
         SQLCall call = new SQLCall();
         call.returnNothing();
@@ -188,7 +188,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
     protected void writeSelect(Writer writer, SQLCall selectCall, String tableAliasInSelectCall, SQLCall call, DatasourcePlatform platform) throws IOException {
         String str = selectCall.getSQLString();
         writer.write(str);
-        
+
         boolean hasWhereClause = str.toUpperCase().indexOf(" WHERE ") >= 0;
 
         // Auto join
@@ -213,10 +213,10 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
             writer.write('.');
             writer.write(fieldName);
         }
-        
+
         call.getParameters().addAll(selectCall.getParameters());
-        call.getParameterTypes().addAll(selectCall.getParameterTypes());            
-    }    
+        call.getParameterTypes().addAll(selectCall.getParameterTypes());
+    }
 
     protected boolean writeWhere(Writer writer, SQLCall selectCall, SQLCall call) throws IOException {
         String selectStr = selectCallForExist.getSQLString();
@@ -233,7 +233,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
 
         // add parameters
         call.getParameters().addAll(selectCall.getParameters());
-        call.getParameterTypes().addAll(selectCall.getParameterTypes());            
+        call.getParameterTypes().addAll(selectCall.getParameterTypes());
 
         return true;
     }

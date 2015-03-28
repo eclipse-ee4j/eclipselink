@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.aggregate;
 
 
@@ -31,7 +31,7 @@ public class WorkingAddress extends Address1 {
     public static WorkingAddress example1() {
         WorkingAddress example = new WorkingAddress();
 
-        //	example.setApartmentNumber(700);
+        //    example.setApartmentNumber(700);
         example.setBuildingNumber(220);
         example.setCity("Ottawa");
         example.setCountry("Canada");
@@ -46,7 +46,7 @@ public class WorkingAddress extends Address1 {
     public static WorkingAddress example2() {
         WorkingAddress example = new WorkingAddress();
 
-        //	example.setApartmentNumber(750);
+        //    example.setApartmentNumber(750);
         example.setBuildingNumber(220);
         example.setCity("Ottawa");
         example.setCountry("Canada");

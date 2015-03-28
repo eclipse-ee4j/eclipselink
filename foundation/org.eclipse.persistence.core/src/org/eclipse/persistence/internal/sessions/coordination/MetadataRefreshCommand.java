@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     01/19/2012-2.4 Chris Delahunt
- *       - 368490: Add support for Metadata to be refreshed through RCM 
+ *       - 368490: Add support for Metadata to be refreshed through RCM
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.coordination;
 
@@ -22,7 +22,7 @@ import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
 
 /**
  * <p>
- * <b>Purpose</b>: A Command implementation used to signal JPA EntityManagerFactory to refresh its 
+ * <b>Purpose</b>: A Command implementation used to signal JPA EntityManagerFactory to refresh its
  * metadata.
  * <p>
  * @author Chris Delahunt
@@ -30,7 +30,7 @@ import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
  */
 public class MetadataRefreshCommand extends Command {
     protected Map properties;
-    
+
     public MetadataRefreshCommand(Map properties) {
         super();
         this.properties = properties;

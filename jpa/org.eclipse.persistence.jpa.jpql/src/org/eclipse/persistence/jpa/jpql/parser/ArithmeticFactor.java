@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,187 +28,187 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class ArithmeticFactor extends AbstractExpression {
 
-	/**
-	 * The {@link Expression} representing the arithmetic primary.
-	 */
-	private AbstractExpression expression;
+    /**
+     * The {@link Expression} representing the arithmetic primary.
+     */
+    private AbstractExpression expression;
 
-	/**
-	 * Determines whether there is a whitespace after the arithmetic operator.
-	 */
-	private boolean hasSpaceAfterArithmeticOperator;
+    /**
+     * Determines whether there is a whitespace after the arithmetic operator.
+     */
+    private boolean hasSpaceAfterArithmeticOperator;
 
-	/**
-	 * The arithmetic operator, either '+' or '-'.
-	 */
-	private char operator;
+    /**
+     * The arithmetic operator, either '+' or '-'.
+     */
+    private char operator;
 
-	/**
-	 * Creates a new <code>ArithmeticFactor</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param arithmeticFactor The arithmetic factor, which is either '+' or '-'
-	 */
-	public ArithmeticFactor(AbstractExpression parent, String arithmeticFactor) {
-		super(parent, arithmeticFactor);
-		operator = arithmeticFactor.charAt(0);
-	}
+    /**
+     * Creates a new <code>ArithmeticFactor</code>.
+     *
+     * @param parent The parent of this expression
+     * @param arithmeticFactor The arithmetic factor, which is either '+' or '-'
+     */
+    public ArithmeticFactor(AbstractExpression parent, String arithmeticFactor) {
+        super(parent, arithmeticFactor);
+        operator = arithmeticFactor.charAt(0);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void acceptChildren(ExpressionVisitor visitor) {
-		getExpression().accept(visitor);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void acceptChildren(ExpressionVisitor visitor) {
+        getExpression().accept(visitor);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addChildrenTo(Collection<Expression> children) {
-		children.add(getExpression());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addChildrenTo(Collection<Expression> children) {
+        children.add(getExpression());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addOrderedChildrenTo(List<Expression> children) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addOrderedChildrenTo(List<Expression> children) {
 
-		children.add(buildStringExpression(operator));
+        children.add(buildStringExpression(operator));
 
-		if (hasSpaceAfterArithmeticOperator) {
-			children.add(buildStringExpression(SPACE));
-		}
+        if (hasSpaceAfterArithmeticOperator) {
+            children.add(buildStringExpression(SPACE));
+        }
 
-		if (expression != null) {
-			children.add(expression);
-		}
-	}
+        if (expression != null) {
+            children.add(expression);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPQLQueryBNF findQueryBNF(Expression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JPQLQueryBNF findQueryBNF(Expression expression) {
 
-		if ((this.expression != null) && this.expression.isAncestor(expression)) {
-			return getQueryBNF(ArithmeticPrimaryBNF.ID);
-		}
+        if ((this.expression != null) && this.expression.isAncestor(expression)) {
+            return getQueryBNF(ArithmeticPrimaryBNF.ID);
+        }
 
-		return super.findQueryBNF(expression);
-	}
+        return super.findQueryBNF(expression);
+    }
 
-	/**
-	 * Returns the {@link Expression} representing the arithmetic primary.
-	 *
-	 * @return The expression representing the arithmetic primary
-	 */
-	public Expression getExpression() {
-		if (expression == null) {
-			expression = buildNullExpression();
-		}
-		return expression;
-	}
+    /**
+     * Returns the {@link Expression} representing the arithmetic primary.
+     *
+     * @return The expression representing the arithmetic primary
+     */
+    public Expression getExpression() {
+        if (expression == null) {
+            expression = buildNullExpression();
+        }
+        return expression;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(ArithmeticFactorBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(ArithmeticFactorBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean handleAggregate(JPQLQueryBNF queryBNF) {
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean handleAggregate(JPQLQueryBNF queryBNF) {
+        return false;
+    }
 
-	/**
-	 * Determines whether the arithmetic primary was parsed.
-	 *
-	 * @return <code>true</code> the arithmetic primary was parsed; <code>false</code> if nothing was parsed
-	 */
-	public boolean hasExpression() {
-		return expression != null &&
-		      !expression.isNull();
-	}
+    /**
+     * Determines whether the arithmetic primary was parsed.
+     *
+     * @return <code>true</code> the arithmetic primary was parsed; <code>false</code> if nothing was parsed
+     */
+    public boolean hasExpression() {
+        return expression != null &&
+              !expression.isNull();
+    }
 
-	/**
-	 * Determines whether a whitespace was parsed after the arithmetic operator.
-	 *
-	 * @return <code>true</code> if there was a whitespace after the arithmetic operator;
-	 * <code>false</code> otherwise
-	 */
-	public boolean hasSpaceAfterArithmeticOperator() {
-		return hasSpaceAfterArithmeticOperator;
-	}
+    /**
+     * Determines whether a whitespace was parsed after the arithmetic operator.
+     *
+     * @return <code>true</code> if there was a whitespace after the arithmetic operator;
+     * <code>false</code> otherwise
+     */
+    public boolean hasSpaceAfterArithmeticOperator() {
+        return hasSpaceAfterArithmeticOperator;
+    }
 
-	/**
-	 * Determines if the arithmetic primary is prepended with the minus sign.
-	 *
-	 * @return <code>true</code> if the expression is prepended with '-'; <code>false</code> otherwise
-	 */
-	public boolean isNegative() {
-		return operator == '-';
-	}
+    /**
+     * Determines if the arithmetic primary is prepended with the minus sign.
+     *
+     * @return <code>true</code> if the expression is prepended with '-'; <code>false</code> otherwise
+     */
+    public boolean isNegative() {
+        return operator == '-';
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-		return wordParser.isArithmeticSymbol(wordParser.character()) ||
-		       super.isParsingComplete(wordParser, word, expression);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+        return wordParser.isArithmeticSymbol(wordParser.character()) ||
+               super.isParsingComplete(wordParser, word, expression);
+    }
 
-	/**
-	 * Determines if the arithmetic primary is prepended with the plus sign.
-	 *
-	 * @return <code>true</code> if the expression is prepended with '+'; <code>false</code> otherwise
-	 */
-	public boolean isPositive() {
-		return operator == '+';
-	}
+    /**
+     * Determines if the arithmetic primary is prepended with the plus sign.
+     *
+     * @return <code>true</code> if the expression is prepended with '+'; <code>false</code> otherwise
+     */
+    public boolean isPositive() {
+        return operator == '+';
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void parse(WordParser wordParser, boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse(WordParser wordParser, boolean tolerant) {
 
-		// Remove the arithmetic operator
-		wordParser.moveForward(1);
+        // Remove the arithmetic operator
+        wordParser.moveForward(1);
 
-		hasSpaceAfterArithmeticOperator = (wordParser.skipLeadingWhitespace() > 0);
+        hasSpaceAfterArithmeticOperator = (wordParser.skipLeadingWhitespace() > 0);
 
-		// Parse the expression
-		expression = parse(wordParser, ArithmeticFactorBNF.ID, tolerant);
-	}
+        // Parse the expression
+        expression = parse(wordParser, ArithmeticFactorBNF.ID, tolerant);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toParsedText(StringBuilder writer, boolean actual) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toParsedText(StringBuilder writer, boolean actual) {
 
-		writer.append(operator);
+        writer.append(operator);
 
-		if (hasSpaceAfterArithmeticOperator) {
-			writer.append(SPACE);
-		}
+        if (hasSpaceAfterArithmeticOperator) {
+            writer.append(SPACE);
+        }
 
-		if (expression != null) {
-			expression.toParsedText(writer, actual);
-		}
-	}
+        if (expression != null) {
+            expression.toParsedText(writer, actual);
+        }
+    }
 }

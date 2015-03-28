@@ -69,7 +69,7 @@ import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, CoreAbstractSession, CoreField, CoreMapping> implements ObjectBuilder {
 
     public static final String CYCLE_RECOVERABLE = "com.sun.xml.bind.CycleRecoverable";
-    public static final String CYCLE_RECOVERABLE_CONTEXT = "com.sun.xml.bind.CycleRecoverable$Context";    
+    public static final String CYCLE_RECOVERABLE_CONTEXT = "com.sun.xml.bind.CycleRecoverable$Context";
     public static final String ON_CYCLE_DETECTED = "onCycleDetected";
 
     private List<ContainerValue> containerValues;
@@ -103,19 +103,19 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
     }
 
     private void addContainerValue(ContainerValue containerValue) {
-        if (null == this.containerValues) {         
+        if (null == this.containerValues) {
             this.containerValues = new ArrayList();
         }
         containerValue.setIndex(counter++);
         this.containerValues.add(containerValue);
-        
+
         if(containerValue.isDefaultEmptyContainer()){
             addDefaultEmptyContainerValue(containerValue);
         }
     }
 
     private void addDefaultEmptyContainerValue(ContainerValue containerValue){
-        if (null == this.defaultEmptyContainerValues) {         
+        if (null == this.defaultEmptyContainerValues) {
             this.defaultEmptyContainerValues = new ArrayList();
         }
         this.defaultEmptyContainerValues.add(containerValue);
@@ -268,7 +268,7 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
     public Object extractPrimaryKeyFromObject(Object object, CoreAbstractSession session) {
         throw new UnsupportedOperationException();
     }
- 
+
     public List<ContainerValue> getContainerValues() {
         return this.containerValues;
     }
@@ -323,25 +323,25 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                 return;
             }
             Descriptor xmlDescriptor = (Descriptor) descriptor;
-    
+
             // MAPPINGS
             Iterator mappingIterator = xmlDescriptor.getMappings().iterator();
             Iterator fieldTransformerIterator;
             Mapping xmlMapping;
-    
+
             // Transformation Mapping
             TransformationMapping transformationMapping;
             FieldTransformerNodeValue fieldTransformerNodeValue;
             Object[] nextFieldToTransformer;
-    
+
             // Simple Type Translator
             TypeNodeValue typeNodeValue;
-    
+
             NodeValue mappingNodeValue = null;
             Field xmlField;
             while (mappingIterator.hasNext()) {
                 xmlMapping = (Mapping)mappingIterator.next();
-                
+
                 xmlField = (Field)xmlMapping.getField();
                 if (xmlMapping.isTransformationMapping()) {
                     transformationMapping = (TransformationMapping)xmlMapping;
@@ -387,8 +387,8 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
 
                     } else if (xmlMapping instanceof VariableXPathCollectionMapping) {
                         mappingNodeValue = new XMLVariableXPathCollectionMappingNodeValue((VariableXPathCollectionMapping)xmlMapping);
-                    } else if (xmlMapping instanceof VariableXPathObjectMapping){ 
-                    	mappingNodeValue = new XMLVariableXPathObjectMappingNodeValue((VariableXPathObjectMapping)xmlMapping);
+                    } else if (xmlMapping instanceof VariableXPathObjectMapping){
+                        mappingNodeValue = new XMLVariableXPathObjectMappingNodeValue((VariableXPathObjectMapping)xmlMapping);
                     } else if (xmlMapping instanceof AnyObjectMapping) {
                         mappingNodeValue = new XMLAnyObjectMappingNodeValue((AnyObjectMapping)xmlMapping);
                     } else if (xmlMapping instanceof AnyCollectionMapping) {
@@ -405,19 +405,19 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                         mappingNodeValue = new XMLFragmentCollectionMappingNodeValue((FragmentCollectionMapping)xmlMapping);
                     } else if (xmlMapping instanceof CollectionReferenceMapping) {
                         CollectionReferenceMapping xmlColMapping = (CollectionReferenceMapping)xmlMapping;
-                        
+
                         List fields = xmlColMapping.getFields();
                         Field xmlColMappingField = (Field) xmlColMapping.getField();
                         XPathNode branchNode;
                         if(null == xmlColMappingField) {
-                            if(fields.size() > 1 && !xmlColMapping.usesSingleNode()) {                                
+                            if(fields.size() > 1 && !xmlColMapping.usesSingleNode()) {
                                 addChild(XPathFragment.SELF_FRAGMENT, new XMLCollectionReferenceMappingMarshalNodeValue(xmlColMapping), xmlDescriptor.getNamespaceResolver());
                             }
                             branchNode = rootXPathNode;
                         } else {
                             branchNode = addChild(((Field) xmlColMapping.getField()).getXPathFragment(), new XMLCollectionReferenceMappingMarshalNodeValue(xmlColMapping), xmlDescriptor.getNamespaceResolver());
-                        }                        
-                    
+                        }
+
                         int containerIndex = -1;
                         for (int i = 0, size = fields.size(); i < size; i++) {
                             Field xmlFld = (Field)fields.get(i);
@@ -433,8 +433,8 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                             }
                             branchNode.addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
                         }
-                       
-                      
+
+
                         continue;
                     } else if (xmlMapping instanceof ObjectReferenceMapping) {
                         ObjectReferenceMapping xmlORMapping = (ObjectReferenceMapping)xmlMapping;

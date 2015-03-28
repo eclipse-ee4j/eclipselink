@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -25,48 +25,48 @@ import org.eclipse.persistence.tools.workbench.scplugin.ui.session.basic.Session
  */
 public class SessionLoggingPropertiesPageTest extends AbstractSessionPanelTest
 {
-	public SessionLoggingPropertiesPageTest(String name)
-	{
-		super(name);
-	}
+    public SessionLoggingPropertiesPageTest(String name)
+    {
+        super(name);
+    }
 
-	protected void _testComponentEntry()
-	{
-		
-	}
+    protected void _testComponentEntry()
+    {
 
-	protected JComponent buildPane() throws Exception
-	{
-		return buildPage(SessionLoggingPropertiesPage.class, getNodeHolder());
-	}
+    }
 
-	public static void main(String[] args) throws Exception
-	{
-		new SessionLoggingPropertiesPageTest("SessionLoggingPropertiesPageTest")
-					.execute(args);
-	}
+    protected JComponent buildPane() throws Exception
+    {
+        return buildPage(SessionLoggingPropertiesPage.class, getNodeHolder());
+    }
 
-	protected String windowTitle()
-	{
-		return "Testing Session Logging Page";
-	}
+    public static void main(String[] args) throws Exception
+    {
+        new SessionLoggingPropertiesPageTest("SessionLoggingPropertiesPageTest")
+                    .execute(args);
+    }
 
-	protected void printModel()
-	{
-		SessionAdapter session = (SessionAdapter) this.getSelectionHolder().getValue();
-		LogAdapter log = session.getLog();
-		String displayString = log.displayString();
-		if (log instanceof DefaultSessionLogAdapter)
-		{
-			displayString += " | " + ((DefaultSessionLogAdapter) log).getLogLevel()
-						+ " | " + ((DefaultSessionLogAdapter) log).getFileName();
-		}
-		System.out.println("subject.log( " + displayString + " )");
-	}
+    protected String windowTitle()
+    {
+        return "Testing Session Logging Page";
+    }
 
-	protected void resetProperty()
-	{
-		SessionAdapter session = ((SessionAdapter) this.getSelectionHolder().getValue());
-		session.setDefaultLogging();
-	}
+    protected void printModel()
+    {
+        SessionAdapter session = (SessionAdapter) this.getSelectionHolder().getValue();
+        LogAdapter log = session.getLog();
+        String displayString = log.displayString();
+        if (log instanceof DefaultSessionLogAdapter)
+        {
+            displayString += " | " + ((DefaultSessionLogAdapter) log).getLogLevel()
+                        + " | " + ((DefaultSessionLogAdapter) log).getFileName();
+        }
+        System.out.println("subject.log( " + displayString + " )");
+    }
+
+    protected void resetProperty()
+    {
+        SessionAdapter session = ((SessionAdapter) this.getSelectionHolder().getValue());
+        session.setDefaultLogging();
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,24 +28,24 @@ import javax.persistence.metamodel.Metamodel;
  * <b>Description</b>: The predicate forms the least specific expression node.  Predicates
  * result in boolean expressions that are combined to form the final expression.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria Predicate
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
 public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
-    
+
     protected BooleanOperator booloperator;
-    
+
     public <T> PredicateImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> parentExpressions, BooleanOperator operator){
         super(metamodel, expressionNode, parentExpressions);
         this.booloperator = operator;
     }
-    
+
     /**
      * INTERNAL:
-     * This method returns null if this is not a conjunction/disjunction 
+     * This method returns null if this is not a conjunction/disjunction
      * TRUE if this is a conjunction, FALSE for disjunction.
      */
     public Boolean getJunctionValue() {
@@ -59,7 +59,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     /**
      * Return the boolean operator for the predicate. If the predicate is
      * simple, this is AND.
-     * 
+     *
      * @return boolean operator for the predicate
      */
     public BooleanOperator getOperator(){
@@ -68,7 +68,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
 
     /**
      * Return the top-level conjuncts or disjuncts of the predicate.
-     * 
+     *
      * @return list boolean expressions forming the predicate
      */
     public List<Expression<Boolean>> getExpressions(){
@@ -77,7 +77,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
 
     /**
      * Apply negation to the predicate.
-     * 
+     *
      * @return the negated predicate
      */
     public Predicate not(){
@@ -114,7 +114,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     public boolean isPredicate(){
         return true;
     }
-    
+
     @Override
     public boolean isCompoundExpression(){
         return false;

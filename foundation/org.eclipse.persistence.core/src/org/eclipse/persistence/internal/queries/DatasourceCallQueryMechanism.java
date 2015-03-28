@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     07/13/2012-2.5 Guy Pelletier 
+ *     07/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier 
+ *     08/24/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
 import java.util.*;
@@ -46,7 +46,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
 
     public DatasourceCallQueryMechanism() {
     }
-    
+
     /**
      * Initialize the state of the query
      * @param query - owner of mechanism
@@ -84,7 +84,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             throw QueryException.mustUseCursorStreamPolicy();
         }
     }
-    
+
     /**
      * Read all rows from the database, return ResultSet
      * @exception  DatabaseException - an error has occurred on the database
@@ -92,7 +92,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     public DatabaseCall selectResultSet() throws DatabaseException {
         try {
             // For CR 2923 must move to session we will execute call on now
-            // so correct DatasourcePlatform used by translate.        
+            // so correct DatasourcePlatform used by translate.
             AbstractSession sessionToUse = this.query.getExecutionSession();
             DatabaseCall clonedCall = (DatabaseCall)this.call.clone();
             clonedCall.setQuery(this.query);
@@ -115,7 +115,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         } else {
             if (hasMultipleCalls()) {
                 Integer returnedRowCount = null;
-                
+
                 // Deletion must occur in reverse order.
                 for (int index = getCalls().size() - 1; index >= 0; index--) {
                     DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
@@ -137,7 +137,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     public Integer deleteAllUsingTempTables() throws DatabaseException {
         DatabaseException ex = null;
         Integer returnedRowCount = null;
-        
+
         // Deletion must occur in reverse order.
 
         // first call - crete temp table.
@@ -147,7 +147,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             executeCall(databseCall);
         } catch (DatabaseException databaseEx) {
             // ignore
-        }                
+        }
 
         // second call - populate temp table.
         // if that fails save the exception and untill cleanup
@@ -159,7 +159,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                 ex = databaseEx;
             }
         }
-        
+
         // third (a call per table) - delete from original tables calls.
         // if that fails save the exception untill cleanup
         for (int index = getCalls().size() - 3; index >= 1 && ex == null; index--) {
@@ -184,7 +184,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         if(ex != null) {
             throw ex;
         }
-        
+
         return returnedRowCount;
     }
 
@@ -219,7 +219,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     public Object execute() throws DatabaseException {
         return executeCall();
     }
-    
+
     /**
      * Execute the call.  It is assumed the call has been fully prepared.
      * @exception  DatabaseException - an error has occurred on the database.
@@ -234,7 +234,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      */
     protected Object executeCall(DatasourceCall databaseCall) throws DatabaseException {
         // For CR 2923 must move to session we will execute call on now
-        // so correct DatasourcePlatform used by translate.        
+        // so correct DatasourcePlatform used by translate.
         AbstractSession sessionToUse = this.query.getExecutionSession();
         DatasourceCall clonedCall = (DatasourceCall)databaseCall.clone();
         clonedCall.setQuery(this.query);
@@ -394,7 +394,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         //Oracle thin driver handles LOB differently. During the insert, empty lob would be
         //insert first, and then the LOb locator is retrieved and LOB data are written through
         //the locator.
-        // 
+        //
         // Bug 2804663 - LOBValueWriter is no longer a singleton, so we execute any deferred
         // select calls through the DatabaseAccessor which holds the writer instance
         AbstractSession executionSession = this.query.getExecutionSession();
@@ -421,7 +421,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             updateObjectAndRowWithReturnRow(returnFields, false);
         }
     }
-    
+
     /**
      * Return true if this is a call query mechanism
      */
@@ -460,7 +460,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             getCall().prepare(executionSession);
         }
     }
-    
+
     /**
      * Pre-build configure the call.
      */
@@ -530,14 +530,14 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call. This method assumes the query was built
      * using a stored procedure query which is a single call.
-     * 
-     * The return type on the call will already be set and 
+     *
+     * The return type on the call will already be set and
      */
     public void prepareExecute() {
         getCall().setExecuteUpdate();
         prepareCall();
     }
-    
+
     /**
      * Pre-build configure the call.
      */
@@ -596,9 +596,9 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                     }
                 }
             }
-        }        
+        }
     }
-    
+
     /**
      * Pre-build configure the call.
      */
@@ -810,7 +810,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         //Oracle thin driver handles LOB differently. During the insert, empty lob would be
         //insert first, and then the LOb locator is retrieved and LOB data are written through
         //the locator.
-        // 
+        //
         // Bug 2804663 - LOBValueWriter is no longer a singleton, so we execute any deferred
         // select calls through the DatabaseAccessor which holds the writer instance
         //
@@ -834,7 +834,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         } else {
             Integer rowCount = executeNoSelectCall();
             if(((UpdateAllQuery)this.query).isPreparedUsingTempStorage()) {
-                // the query was prepared using Oracle anonymous block 
+                // the query was prepared using Oracle anonymous block
                 AbstractRecord outputRow = (AbstractRecord)this.query.getProperty("output");
                 rowCount = (Integer)outputRow.get("ROW_COUNT");
             }
@@ -851,7 +851,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         int nTables = getCalls().size() / 4;
         DatabaseException ex = null;
         Integer returnedRowCount = null;
-        
+
         // first quarter - crete temp tables calls.
         // may fail in case global temp table already exists.
         for (int index = 0; index < nTables; index++) {
@@ -873,7 +873,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                 ex = databaseEx;
             }
         }
-        
+
         // third quarter - update original tables calls.
         // if that fails save the exception and until cleanup
         for (int index = nTables*2; index < nTables*3 && ex == null; index++) {
@@ -887,7 +887,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                 ex = databaseEx;
             }
         }
-        
+
         // last quarter - cleanup temp tables calls.
         // ignore exceptions here.
         for (int index = nTables*3; index < nTables*4; index++) {
@@ -902,7 +902,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         if(ex != null) {
             throw ex;
         }
-        
+
         return returnedRowCount;
     }
 
@@ -914,7 +914,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         writeQuery.setModifyRow(this.getDescriptor().getObjectBuilder().buildRow(writeQuery.getObject(), this.getSession(), WriteType.INSERT));
 
         // For CR 2923 must move to session we will execute call on now
-        // so correct DatasourcePlatform used by translate. 
+        // so correct DatasourcePlatform used by translate.
         AbstractSession sessionToUse = this.query.getExecutionSession();
 
         // yes - this is a bit ugly...

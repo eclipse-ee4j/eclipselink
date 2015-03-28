@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
@@ -18,7 +18,7 @@ import java.util.*;
  * Used to allow iterating over a maps cache keys.
  */
 public class IdentityMapKeyEnumeration implements Enumeration {
-    
+
     protected FullIdentityMap map;
     protected Iterator cacheKeysIterator;
     protected CacheKey nextKey;
@@ -27,7 +27,7 @@ public class IdentityMapKeyEnumeration implements Enumeration {
     public IdentityMapKeyEnumeration(FullIdentityMap map) {
         this(map, true);
     }
-    
+
     public IdentityMapKeyEnumeration(FullIdentityMap map, boolean shouldCheckReadLocks) {
         this.map = map;
         this.shouldCheckReadLocks = shouldCheckReadLocks;
@@ -59,11 +59,11 @@ public class IdentityMapKeyEnumeration implements Enumeration {
         }
         return key;
     }
-    
+
     public boolean getShouldCheckReadLocks() {
         return this.shouldCheckReadLocks;
     }
-    
+
     public void setShouldCheckReadLocks(boolean shouldCheckReadLocks) {
         this.shouldCheckReadLocks = shouldCheckReadLocks;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -213,7 +213,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     public void setContainerAttributeName(String attributeName) {
         if (this.inverseReferenceMapping == null) {
             return;
-        }    	
+        }
         this.inverseReferenceMapping.setAttributeName(attributeName);
     }
 
@@ -296,9 +296,9 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         return true;
     }
 
-    
-    public void convertClassNamesToClasses(ClassLoader classLoader){        
-        if(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS.equals(referenceClassName)){            
+
+    public void convertClassNamesToClasses(ClassLoader classLoader){
+        if(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS.equals(referenceClassName)){
             return;
         }
         super.convertClassNamesToClasses(classLoader);
@@ -324,37 +324,37 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 cp.setContainerClass(cls);
             }
             if (cp instanceof MapContainerPolicy) {
-            	initializeMapContainerPolicy(session, (MapContainerPolicy)cp);
-                               
+                initializeMapContainerPolicy(session, (MapContainerPolicy)cp);
+
             }
         }
-       
 
-      
+
+
         if(null != getContainerAccessor()) {
             getContainerAccessor().initializeAttributes(this.referenceClass);
         }
 
     }
-        
+
     protected void initializeMapContainerPolicy(AbstractSession session, MapContainerPolicy cp){
-    	 cp.setElementClass(this.referenceClass);
+         cp.setElementClass(this.referenceClass);
     }
-    
+
     protected void initializeReferenceDescriptorAndField(AbstractSession session){
-    	 if (this.referenceClass != null) {
+         if (this.referenceClass != null) {
              super.initialize(session);
          } else {
-        	  //below should be the same as AbstractCompositeCollectionMapping.initialize
+              //below should be the same as AbstractCompositeCollectionMapping.initialize
              if (this.field == null) {
                  throw DescriptorException.fieldNameNotSetInMapping(this);
              }
              setField(getDescriptor().buildField(this.field));
-             setFields(collectFields());   
+             setFields(collectFields());
              if (hasConverter()) {
                  getConverter().initialize(this, session);
              }
-         }    	
+         }
     }
 
     /**
@@ -396,7 +396,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         XMLRecord parent = (XMLRecord) parentRow;
 
         if (classDesc != null) {
-        	return buildCompositeRowForDescriptor(classDesc, attributeValue, session, parent, writeType);
+            return buildCompositeRowForDescriptor(classDesc, attributeValue, session, parent, writeType);
         } else {
             if (attributeValue instanceof Element && getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) {
                 return new DOMRecord((Element) attributeValue);
@@ -409,17 +409,17 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     }
 
 
-   	protected AbstractRecord buildCompositeRowForDescriptor(ClassDescriptor classDesc, Object attributeValue, AbstractSession session, XMLRecord parentRow, WriteType writeType) {
-	    XMLObjectBuilder objectBuilder = (XMLObjectBuilder) classDesc.getObjectBuilder();
-	
-	    
-	    XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parentRow, this);
-	    child.setNamespaceResolver(parentRow.getNamespaceResolver());
-	    child.setSession(session);
-	    objectBuilder.buildIntoNestedRow(child, attributeValue, session, (XMLDescriptor)getReferenceDescriptor(), (XMLField) getField());
-	    return child;
+       protected AbstractRecord buildCompositeRowForDescriptor(ClassDescriptor classDesc, Object attributeValue, AbstractSession session, XMLRecord parentRow, WriteType writeType) {
+        XMLObjectBuilder objectBuilder = (XMLObjectBuilder) classDesc.getObjectBuilder();
+
+
+        XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parentRow, this);
+        child.setNamespaceResolver(parentRow.getNamespaceResolver());
+        child.setSession(session);
+        objectBuilder.buildIntoNestedRow(child, attributeValue, session, (XMLDescriptor)getReferenceDescriptor(), (XMLField) getField());
+        return child;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -531,8 +531,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     public Object buildObjectFromNestedRow(AbstractRecord nestedRow, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) {
         Object objectToAdd = null;
         ClassDescriptor aDescriptor = getReferenceDescriptor((DOMRecord) nestedRow);
-        
-        if(aDescriptor == null){    
+
+        if(aDescriptor == null){
             if ((getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                 XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) ((DOMRecord)nestedRow).getDOM());
                 objectToAdd = ((DOMRecord)nestedRow).getDOM();
@@ -554,7 +554,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                     }
                 }
                  //simple case
-                 objectToAdd = convertToSimpleTypeIfPresent(objectToAdd, nestedRow,executionSession);       
+                 objectToAdd = convertToSimpleTypeIfPresent(objectToAdd, nestedRow,executionSession);
             }
         }
         else{
@@ -563,8 +563,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 if (newElementClass == null) {
                     // no xsi:type attribute - look for type indicator on the field
                     QName leafElementType = ((XMLField) getField()).getLeafElementType();
-                    if (leafElementType != null) {                    	
-                    	XPathQName leafElementXPathQName = new XPathQName(leafElementType, ((XMLRecord) nestedRow).isNamespaceAware());
+                    if (leafElementType != null) {
+                        XPathQName leafElementXPathQName = new XPathQName(leafElementType, ((XMLRecord) nestedRow).isNamespaceAware());
                         Object indicator = aDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementXPathQName);
                         if(indicator != null) {
                             newElementClass = (Class) indicator;
@@ -574,7 +574,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 if (newElementClass != null) {
                     aDescriptor = this.getReferenceDescriptor(newElementClass, executionSession);
                 } else {
-                    // since there is no xsi:type attribute or leaf element type set, 
+                    // since there is no xsi:type attribute or leaf element type set,
                     // use the reference descriptor -  make sure it is non-abstract
                     if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
                         // throw an exception
@@ -583,7 +583,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 }
             }
 
-            //Object element 
+            //Object element
             objectToAdd = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, null, joinManager, executionSession);
             objectToAdd = convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
         }
@@ -779,7 +779,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
     /**
      * INTERNAL
-     * Indicate whether by default an empty container should be set on the 
+     * Indicate whether by default an empty container should be set on the
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */

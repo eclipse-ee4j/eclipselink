@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,14 +41,14 @@ import org.w3c.dom.Text;
 
 /**
  * <p><b>Purpose: </b>This mapping provides a means to keep a part of the xml tree as a collection
- * of DOM elements. 
- * 
+ * of DOM elements.
+ *
  * <p><b>Setting the XPath</b>: TopLink XML mappings make use of XPath statements to find the relevant
  * data in an XML document.  The XPath statement is relative to the context node specified in the descriptor.
  * The XPath may contain path and positional information;  the last node in the XPath forms the local
  * root node for the fragment.  The XPath is specified on the mapping using the <code>setXPath</code>
  * method.
- * 
+ *
  * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">XPath</th>
@@ -254,7 +254,7 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
 
     /**
      * INTERNAL
-     * Indicate whether by default an empty container should be set on the 
+     * Indicate whether by default an empty container should be set on the
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */

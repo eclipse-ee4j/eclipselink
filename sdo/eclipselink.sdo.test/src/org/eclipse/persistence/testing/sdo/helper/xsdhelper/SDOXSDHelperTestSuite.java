@@ -9,7 +9,7 @@ import junit.framework.TestSuite;
 public class SDOXSDHelperTestSuite {
     public SDOXSDHelperTestSuite() {
     }
-    
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }

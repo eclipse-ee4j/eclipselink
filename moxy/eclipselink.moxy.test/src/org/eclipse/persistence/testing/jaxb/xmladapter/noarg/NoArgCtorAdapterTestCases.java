@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,14 +34,14 @@ public class NoArgCtorAdapterTestCases extends JAXBWithJSONTestCases {
     }
 
     protected Object getControlObject() {
-        Root root = new Root();        
+        Root root = new Root();
         root.name = "Bob";
         root.theThing = new Something("testing");
         return root;
     }
-    
+
     public void testContextCreation(){
-        assertNotNull(((AbstractSession)(((JAXBContext)jaxbContext).getXMLContext().getSessions().get(0))).getDescriptor(Root.class));        
+        assertNotNull(((AbstractSession)(((JAXBContext)jaxbContext).getXMLContext().getSessions().get(0))).getDescriptor(Root.class));
         assertNotNull(((AbstractSession)(((JAXBContext)jaxbContext).getXMLContext().getSessions().get(0))).getDescriptor(SomethingElse.class));
         assertNull(((AbstractSession)(((JAXBContext)jaxbContext).getXMLContext().getSessions().get(0))).getDescriptor(Something.class));
     }

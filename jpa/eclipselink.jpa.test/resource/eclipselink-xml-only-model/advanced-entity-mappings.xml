@@ -323,7 +323,7 @@
             </id>
             <basic name="name"/>
             <one-to-many name="employees" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee" mapped-by="department"/>
-            
+
             <one-to-one name="departmentHead" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee">
                 <join-column name="DEPT_HEAD"/>
             </one-to-one>
@@ -431,11 +431,11 @@
         <attributes>
             <basic name="startDate">
                 <column name="S_DATE"/>
-				<temporal>DATE</temporal>
+                <temporal>DATE</temporal>
             </basic>
             <basic name="endDate">
                 <column name="E_DATE"/>
-				<temporal>DATE</temporal>
+                <temporal>DATE</temporal>
             </basic>
         </attributes>
     </embeddable>

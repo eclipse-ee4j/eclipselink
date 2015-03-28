@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -448,7 +448,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             int updatedLastNames = q.executeUpdate();
             assertEquals("simpleCriteriaUpdateTest: wrong number of updated instances",
                     nrOfEmpsWLastName, updatedLastNames);
-            
+
         } finally {
             closeEntityManagerAndTransaction(em);
         }
@@ -525,7 +525,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
 
     public void testCriteriaDeleteCompareSQL() {
         EntityManager em = createEntityManager();
-        
+
         JpaEntityManager jpaEM = JpaHelper.getEntityManager((EntityManager)em.getDelegate());
         EJBQueryImpl query = (EJBQueryImpl)jpaEM.createQuery("DELETE FROM PhoneNumber phone where phone.owner.firstName is not null");
         String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
@@ -546,7 +546,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
                 new org.eclipse.persistence.sessions.DatabaseRecord());
 
         closeEntityManager(em);
-        
+
         if (testSQL != null) {
             this.assertEquals("Delete Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
                         +testSQL + "\"  but we expected: \""+baseSQL+"\"", testSQL, baseSQL);

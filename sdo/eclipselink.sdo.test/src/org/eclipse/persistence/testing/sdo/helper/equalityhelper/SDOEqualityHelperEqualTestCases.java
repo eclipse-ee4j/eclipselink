@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.equalityhelper;
 
 import commonj.sdo.DataObject;
@@ -115,7 +115,7 @@ public class SDOEqualityHelperEqualTestCases extends SDOTestCase {
 
         rootProperty2 = new SDOProperty(aHelperContext);//root's property2
         rootProperty2.setName("rootproperty2-notdatatype");
-        rootProperty2.setContainment(true);// containment property        
+        rootProperty2.setContainment(true);// containment property
         DataObject rootProperty2_typeDO = defineType("notDataTypeUri", "notDataType");
         SDOType rootProperty2_type = (SDOType)typeHelper.define(rootProperty2_typeDO);
 
@@ -184,7 +184,7 @@ public class SDOEqualityHelperEqualTestCases extends SDOTestCase {
         contained1Property1_type.setDataType(false);// not datatype
         contained1Property1.setType(contained1Property1_type);
 
-        // bidirectional to containedByContainedDataObject        
+        // bidirectional to containedByContainedDataObject
         contained1Property1.setOpposite(containedByContainedProperty1);
 
         containedType1.addDeclaredProperty(contained1Property1);
@@ -199,7 +199,7 @@ public class SDOEqualityHelperEqualTestCases extends SDOTestCase {
 
         containedByContainedProperty1 = new SDOProperty(aHelperContext);// containedByContainedDataObject's property1
         containedByContainedProperty1.setName("containedByContainedProperty1-notdataType");
-        containedByContainedProperty1.setContainment(false);// not containment property        
+        containedByContainedProperty1.setContainment(false);// not containment property
 
         DataObject containedByContainedProperty1_typeDO = defineType("containedByContainedProperty1Uri", "containedByContainedProperty1_notdataType");
         SDOType containedByContainedProperty1_type = (SDOType)typeHelper.define(containedByContainedProperty1_typeDO);
@@ -207,7 +207,7 @@ public class SDOEqualityHelperEqualTestCases extends SDOTestCase {
         containedByContainedProperty1_type.setDataType(false);// not datatype
         containedByContainedProperty1.setType(containedByContainedProperty1_type);
 
-        // bidirectional to containedDataObject1        
+        // bidirectional to containedDataObject1
         containedByContainedProperty1.setOpposite(contained1Property1);
 
         containedByContainedType.addDeclaredProperty(containedByContainedProperty1);
@@ -253,7 +253,7 @@ public class SDOEqualityHelperEqualTestCases extends SDOTestCase {
         //containedDataObject.set(containedProperty2, containedByContainedDataObject);// child: containedByContainedDataObject
         //containedDataObject_1.set(containedProperty2, containedByContainedDataObject);// child: containedByContainedDataObject
         //containedDataObject1.set(contained1Property1, containedByContainedDataObject);// opposite
-        //containedByContainedDataObject.set(containedByContainedProperty1, containedDataObject1);// opposite      
+        //containedByContainedDataObject.set(containedByContainedProperty1, containedDataObject1);// opposite
 
         /*
               // UC02xx: setup some bidirectional properties that have the same copy root

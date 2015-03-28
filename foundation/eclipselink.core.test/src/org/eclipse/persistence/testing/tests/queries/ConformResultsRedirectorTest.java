@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -25,11 +25,11 @@ import org.eclipse.persistence.testing.framework.TestCase;
 /**
  *  Test for bug 3324757 REDIRECT QUERY RESULTS DO NOT CONFORM TO A UNITOFWORK
  *  <p>
- *  This was a bug with the old query design.  The problem was a UnitOfWork 
- *  would send the query to the parent, and the parent would execute the 
+ *  This was a bug with the old query design.  The problem was a UnitOfWork
+ *  would send the query to the parent, and the parent would execute the
  *  redirected query.
  *  <p>
- *  If the query was a conforming query, then conforming would fail as outside 
+ *  If the query was a conforming query, then conforming would fail as outside
  *  UnitOfWork.
  *  @author  smcritch
  *  @since   release specific (what release of product did this appear in)
@@ -55,7 +55,7 @@ ConformResultsRedirectorTest extends TestCase implements QueryRedirector {
 
             Vector conformingAddresses = (Vector)unitOfWork.executeQuery(query);
 
-            strongAssert(addresses.size() == conformingAddresses.size() + 1, 
+            strongAssert(addresses.size() == conformingAddresses.size() + 1,
                          "The redirected conforming query was not invoked.");
         } finally {
             unitOfWork.release();

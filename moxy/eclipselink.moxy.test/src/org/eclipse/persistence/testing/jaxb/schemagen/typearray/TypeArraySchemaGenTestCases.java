@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -41,24 +41,24 @@ import org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml.Employee;
 
 /**
  * Tests schema generation from a Type[].
- * 
+ *
  */
 public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
     MySchemaOutputResolver outputResolver;
     boolean shouldGenerateSchema;
     static String PATH="org/eclipse/persistence/testing/jaxb/schemagen/deploymentxml/";
     static String TYPEARRAY_PATH="org/eclipse/persistence/testing/jaxb/schemagen/typearray/";
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public TypeArraySchemaGenTestCases(String name) throws Exception {
         super(name);
         shouldGenerateSchema = true;
     }
-    
+
     /**
      * Generate the schema for these tests once only.  If generation fails, it will do so
      * for each test (meaning all tests will result in a generation failure).  If generation
@@ -73,7 +73,7 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
                 Field employeesField = EmployeeHolder.class.getDeclaredField(EmployeeHolder.EMPLOYEES_FIELD_NAME);
                 typesToBeBound[0] = Employee[].class;
                 typesToBeBound[1] = employeesField.getGenericType();
-                
+
                 additionalGlobalElements.put(new QName("ASingleString"), String.class);
                 additionalGlobalElements.put(new QName("example.com", "ASingleEmployee"), Employee.class);
                 additionalGlobalElements.put(new QName("ASingleInt"), int.class);
@@ -96,17 +96,17 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests basic schema generation from deployment xml.
-     * 
+     *
      */
     public void testSchemaGenFromTypesArray() throws Exception {
-	    generateSchema();
+        generateSchema();
         String result = validateAgainstSchema(PATH + "Employee.xml", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
     /**
      * Tests user-set additional global element generation (Employee).
-     * 
+     *
      * @throws Exception
      */
     public void testSchemaGenFromTypesArrayWithElements() throws Exception {
@@ -125,7 +125,7 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests user-set additional global element generation (String)
-     * 
+     *
      * @throws Exception
      */
     public void testSchemaGenFromTypesArrayWithStringElement() throws Exception {
@@ -136,7 +136,7 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests user-set additional global element generation (int)
-     * 
+     *
      * @throws Exception
      */
     public void testSchemaGenFromTypesArrayWithIntElement() throws Exception {
@@ -147,7 +147,7 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests user-set additional global element generation (List<Employee>)
-     * 
+     *
      * @throws Exception
      */
     public void testSchemaGenFromTypesArrayWithParameterizedElement() throws Exception {
@@ -166,7 +166,7 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests user-set additional global element generation (Employee[])
-     * 
+     *
      * @throws Exception
      */
     public void testSchemaGenFromTypesArrayWithArrayElement() throws Exception {

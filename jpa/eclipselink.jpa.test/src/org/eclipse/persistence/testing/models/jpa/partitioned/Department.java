@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/06/2009-2.0 Guy Pelletier 
+ *     11/06/2009-2.0 Guy Pelletier
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.partitioned;
@@ -41,7 +41,7 @@ import static javax.persistence.GenerationType.TABLE;
  * <b>Purpose</b>: Represents the department of an Employee
  * <p>
  * <b>Description</b>: Held in a private 1:1 relationship from Employee
- * 
+ *
  * @see Employee
  */
 @Entity
@@ -115,7 +115,7 @@ public class Department implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     @OneToOne(cascade = PERSIST, optional=true)
     @JoinColumns({
         @JoinColumn(name="DEPT_HEAD", referencedColumnName="EMP_ID"),
@@ -123,7 +123,7 @@ public class Department implements Serializable {
     public Employee getDepartmentHead() {
         return this.departmentHead;
     }
-    
+
     public void setDepartmentHead(Employee employee) {
         this.departmentHead = employee;
     }

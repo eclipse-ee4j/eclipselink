@@ -4,14 +4,14 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.security.AccessController;
@@ -35,9 +35,9 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 /**
  * <p><b>Purpose</b>:
  * Concrete class to represent the EntityResult structure as defined by
- * the EJB 3.0 Persistence specification.  This class is a subcomponent of the 
+ * the EJB 3.0 Persistence specification.  This class is a subcomponent of the
  * SQLResultSetMapping
- * 
+ *
  * @see SQLResultSetMapping
  * @author Gordon Yorke
  * @since TopLink Java Essentials
@@ -46,15 +46,15 @@ public class EntityResult extends SQLResult {
     /** Stores the class name of result  */
     protected String entityClassName;
     protected transient Class entityClass;
-    
+
     /** Stores the list of FieldResult */
     protected Map fieldResults;
-    
+
     /** Stores the column that will contain the value to determine the correct subclass
      * to create if applicable.
      */
     protected DatabaseField discriminatorColumn;
-    
+
     public EntityResult(Class entityClass){
         this.entityClass = entityClass;
         if (this.entityClass == null){
@@ -62,14 +62,14 @@ public class EntityResult extends SQLResult {
         }
         this.entityClassName = entityClass.getName();
     }
-    
+
     public EntityResult(String entityClassName){
         this.entityClassName = entityClassName;
         if (this.entityClassName == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_value_for_entity_result"));
         }
     }
-    
+
     public void addFieldResult(FieldResult fieldResult){
         if (fieldResult == null || fieldResult.getAttributeName() == null){
             return;
@@ -81,13 +81,13 @@ public class EntityResult extends SQLResult {
             existingFieldResult.add(fieldResult);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this query to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
@@ -106,7 +106,7 @@ public class EntityResult extends SQLResult {
             throw ValidationException.classNotFoundWhileConvertingClassNames(entityClassName, exc);
         }
         this.entityClass = entityClass;
-    };   
+    };
 
     /**
      * Accessor for the internally stored list of FieldResult.  Calling this
@@ -118,7 +118,7 @@ public class EntityResult extends SQLResult {
         }
         return this.fieldResults;
     }
-    
+
     /**
      * Returns the column name for the column that will store the value used to
      * determine the subclass type if applicable.
@@ -137,7 +137,7 @@ public class EntityResult extends SQLResult {
         }
         this.discriminatorColumn = new DatabaseField(column);
     }
-    
+
     public void setDiscriminatorColumn(DatabaseField column){
         if (column == null){
             return;
@@ -168,9 +168,9 @@ public class EntityResult extends SQLResult {
                 if (value == AbstractRecord.noEntry){
                     throw QueryException.discriminatorColumnNotSelected(this.discriminatorColumn.getName(), getSQLResultMapping().getName());
                 }
-            }            
+            }
             entityRecord.put(descriptor.getInheritancePolicy().getClassIndicatorField(), value);
-            
+
             // if multiple types may have been read get the correct descriptor.
             if ( descriptor.getInheritancePolicy().shouldReadSubclasses()) {
                 Class classValue = descriptor.getInheritancePolicy().classFromRow(entityRecord, query.getSession());
@@ -202,7 +202,7 @@ public class EntityResult extends SQLResult {
     public boolean isEntityResult(){
         return true;
     }
-    
+
     /**
      * INTERNAL:
      *   This method is for processing all FieldResults for a mapping.  Adds DatabaseFields to the passed in entityRecord
@@ -230,7 +230,7 @@ public class EntityResult extends SQLResult {
             entityRecord.put(dbfield, databaseRecord.get(tempFieldResult.getColumn()));
         }
     }
-    
+
     /**
      * INTERNAL:
      *   This method is for processing a single FieldResult, returning the DatabaseField it refers to.
@@ -251,5 +251,5 @@ public class EntityResult extends SQLResult {
             return mapping.getFields().firstElement();
         }
     }
-    
+
 }

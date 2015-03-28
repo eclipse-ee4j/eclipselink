@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,10 +55,10 @@ import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
 public class ShadowDDLGenerator {
 
     static final String ROWTYPE_PREFIX = "_ROWTYPE_SQL";
-    
+
     protected PLSQLPackageType plsqlPackageType;
     protected Map<String, Integer> rowTYPETypeCounts;
-    protected Map<CompositeDatabaseTypeWithEnclosedType, DDLWrapper> createDDLs = 
+    protected Map<CompositeDatabaseTypeWithEnclosedType, DDLWrapper> createDDLs =
         new HashMap<CompositeDatabaseTypeWithEnclosedType, DDLWrapper>();
     protected Map<CompositeDatabaseTypeWithEnclosedType, DDLWrapper> dropDDLs =
         new HashMap<CompositeDatabaseTypeWithEnclosedType, DDLWrapper>();
@@ -95,11 +95,11 @@ public class ShadowDDLGenerator {
         }
         return allDDLs;
     }
-    
+
     protected String getShadowROWTYPETypeName(ROWTYPEType rowTYPEType) {
-    	return rowTYPEType.getTypeName().replace(PERCENT, UNDERSCORE);
+        return rowTYPEType.getTypeName().replace(PERCENT, UNDERSCORE);
     }
-    
+
     class CountROWTYPETypesVisitor extends BaseDatabaseTypeVisitor {
         Map<String, Integer> rowTYPETypeCounts = new HashMap<String, Integer>();
         int initialRowTYPETypeCount = 0;
@@ -168,28 +168,28 @@ public class ShadowDDLGenerator {
         }
         @Override
         public void beginVisit(FieldType fieldType) {
-        	//skip fields from ObjectType's
-        	if (!recordTypes.isEmpty()) {
-        		PLSQLRecordType currentRecordType = recordTypes.peek();
-	            if (currentRecordType != null) {
-	                DDLWrapper ddlWrapper = createDDLs.get(currentRecordType);
-	                if (!ddlWrapper.finished) {
-	                    String fieldName = fieldType.getFieldName();
-	                    for (int i = 0, len = currentRecordType.getFields().size(); i < len; i++) {
-	                        FieldType f = currentRecordType.getFields().get(i);
-	                        if (fieldName.equals(f.getFieldName())) {
-	                            ddlWrapper.ddl += SPACES + fieldName + SINGLE_SPACE;
-	                            DatabaseType fieldDataType = f.getEnclosedType();
-	                            String fieldShadowName = null;
-	                            if (fieldDataType.isPLSQLType()) {
-	                                fieldShadowName = ((PLSQLType)fieldDataType).getParentType().
-	                                    getPackageName() + UNDERSCORE + fieldDataType.
-	                                    getTypeName().toUpperCase();
-	                            } else if (fieldDataType.isTYPEType()) {
-	                                fieldShadowName = getShadowTypeName(fieldDataType);
-	                                TYPEType tType = (TYPEType) fieldDataType;
-	                                if (tType.getEnclosedType().isFieldType()) {
-	                                    FieldType fType = (FieldType) tType.getEnclosedType();
+            //skip fields from ObjectType's
+            if (!recordTypes.isEmpty()) {
+                PLSQLRecordType currentRecordType = recordTypes.peek();
+                if (currentRecordType != null) {
+                    DDLWrapper ddlWrapper = createDDLs.get(currentRecordType);
+                    if (!ddlWrapper.finished) {
+                        String fieldName = fieldType.getFieldName();
+                        for (int i = 0, len = currentRecordType.getFields().size(); i < len; i++) {
+                            FieldType f = currentRecordType.getFields().get(i);
+                            if (fieldName.equals(f.getFieldName())) {
+                                ddlWrapper.ddl += SPACES + fieldName + SINGLE_SPACE;
+                                DatabaseType fieldDataType = f.getEnclosedType();
+                                String fieldShadowName = null;
+                                if (fieldDataType.isPLSQLType()) {
+                                    fieldShadowName = ((PLSQLType)fieldDataType).getParentType().
+                                        getPackageName() + UNDERSCORE + fieldDataType.
+                                        getTypeName().toUpperCase();
+                                } else if (fieldDataType.isTYPEType()) {
+                                    fieldShadowName = getShadowTypeName(fieldDataType);
+                                    TYPEType tType = (TYPEType) fieldDataType;
+                                    if (tType.getEnclosedType().isFieldType()) {
+                                        FieldType fType = (FieldType) tType.getEnclosedType();
                                         if (fType.getEnclosedType().isPrecisionType()) {
                                             PrecisionType pType = (PrecisionType) fType.getEnclosedType();
                                             long precision = pType.getPrecision();

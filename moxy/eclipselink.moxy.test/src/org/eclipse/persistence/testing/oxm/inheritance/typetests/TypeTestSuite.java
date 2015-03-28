@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.inheritance.typetests;
 
 import junit.framework.Test;
@@ -41,21 +41,21 @@ public class TypeTestSuite extends TestCase {
         TestSuite suite = new TestSuite("Type Test Suite");
         try {
             // --------------------- basic tests ---------------------
-            // use case #1-1 
+            // use case #1-1
             suite.addTestSuite(ContactAsRootTestCases.class);
-            // use case #1-2 
+            // use case #1-2
             suite.addTestSuite(ContactAsRootWithAddressXsiTestCases.class);
-            // use case #2-1 
+            // use case #2-1
             suite.addTestSuite(ContactAsNestedTestCases.class);
-            // use case #2-2 
+            // use case #2-2
             suite.addTestSuite(ContactAsNestedWithAddressXsiTestCases.class);
-            // use case #2-3 
+            // use case #2-3
             suite.addTestSuite(ContactAsNestedWithCdnAddressXsiTestCases.class);
-            // use case #3-1 
+            // use case #3-1
             suite.addTestSuite(AddressAsNestedTestCases.class);
-            // use case #3-2 
+            // use case #3-2
             suite.addTestSuite(AddressAsNestedWithCdnAddressXsiTestCases.class);
-            // use case #4-1 
+            // use case #4-1
             suite.addTestSuite(CanadianAddressAsNestedTestCases.class);
             // use case #5-1
             suite.addTestSuite(XmlRootWithContactXsiTestCases.class);
@@ -97,7 +97,7 @@ public class TypeTestSuite extends TestCase {
             suite.addTestSuite(ContactsAsNestedWithCdnAddressXsiNoRefClassTestCases.class);
 
             suite.addTestSuite(CanadianAddressAsRefClassTestCases.class);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }

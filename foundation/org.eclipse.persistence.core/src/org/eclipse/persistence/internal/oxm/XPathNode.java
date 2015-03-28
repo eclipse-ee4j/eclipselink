@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -230,7 +230,7 @@ public class XPathNode {
             // b5259059 all cases X0X1 (1mapping xpath=null, 2nd mapping xpath=filled
             // catch when object.getXPathFragment() == null
             // (this will also catch case where perfNode XPath is null)
-            //          	return false;
+            //              return false;
         } catch (ClassCastException e) {
             return false;
         }
@@ -301,7 +301,7 @@ public class XPathNode {
                 nonAttributeChildrenMap = new LinkedHashMap();
             }
             if(anXPathFragment !=null && Constants.SCHEMA_TYPE_ATTRIBUTE.equals(anXPathFragment.getLocalName())){
-		hasTypeChild = true;
+        hasTypeChild = true;
             }
             children = nonAttributeChildren;
             childrenMap = nonAttributeChildrenMap;

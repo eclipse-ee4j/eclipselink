@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,13 +26,13 @@ public class MyAttachmentUnmarshaller extends AttachmentUnmarshaller {
         if(obj instanceof byte[]){
             return (byte[])obj;
         }
-        
+
         try {
             return ((String)((DataHandler)obj).getContent()).getBytes();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
-        }        
+        }
     }
     public DataHandler getAttachmentAsDataHandler(String cid) {
         Object obj = MyAttachmentMarshaller.attachments.get(cid);

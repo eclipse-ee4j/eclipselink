@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries;
 
 import org.eclipse.persistence.testing.framework.*;
@@ -34,7 +34,7 @@ public class QueryTimeoutConnectionReleasedTest extends TestCase {
     public QueryTimeoutConnectionReleasedTest() {
         setDescription("Test the ServerSession releases pooled connections with a query returning a cursor and query timeout set");
     }
-    
+
     public void setup() {
         preConnectionsAvailable = 0;
         postConnectionsAvailable = 0;
@@ -44,7 +44,7 @@ public class QueryTimeoutConnectionReleasedTest extends TestCase {
         serverSession.setLogin(clonedLogin);
         serverSession.login();
     }
-    
+
     public void test() {
         if (getSession().getPlatform().isSymfoware()) {
             throwWarning("Test QueryTimeoutConnectionReleasedTest skipped for this platform, "
@@ -74,7 +74,7 @@ public class QueryTimeoutConnectionReleasedTest extends TestCase {
             postConnectionsAvailable = serverSession.getReadConnectionPool().getConnectionsAvailable().size();
         }
     }
-    
+
     public void verify() {
         // It is expected that the query timeout was exceeded, and also the number of connections available after the exception is the same as before
         if (queryTimeoutExceeded) {
@@ -86,11 +86,11 @@ public class QueryTimeoutConnectionReleasedTest extends TestCase {
         }
     }
 
-	public void reset() {
-		if (this.serverSession != null) {
-			serverSession.logout();
-			serverSession.release();
-		}
-	}
+    public void reset() {
+        if (this.serverSession != null) {
+            serverSession.logout();
+            serverSession.release();
+        }
+    }
 
 }

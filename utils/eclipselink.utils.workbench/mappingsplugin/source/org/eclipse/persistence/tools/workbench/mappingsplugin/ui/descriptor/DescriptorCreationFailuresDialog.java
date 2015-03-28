@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -38,111 +38,111 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  */
 public class DescriptorCreationFailuresDialog extends StatusDialog {
 
-	private final DescriptorCreationFailureContainer failures;
+    private final DescriptorCreationFailureContainer failures;
 
-	public DescriptorCreationFailuresDialog(DescriptorCreationFailureContainer failures, WorkbenchContext context) {
-		super(context.buildExpandedResourceRepositoryContext(UiDescriptorBundle.class),
-			buildStatus(failures),
-			"ERROR_CREATING_DESCRIPTORS_TITLE",
-			"XML_PROJECTS_DONT_SUPPORT_INTERFACE_DESCRIPTORS_MESSAGE",
-			"dialog.descriptorsNotCreated");
+    public DescriptorCreationFailuresDialog(DescriptorCreationFailureContainer failures, WorkbenchContext context) {
+        super(context.buildExpandedResourceRepositoryContext(UiDescriptorBundle.class),
+            buildStatus(failures),
+            "ERROR_CREATING_DESCRIPTORS_TITLE",
+            "XML_PROJECTS_DONT_SUPPORT_INTERFACE_DESCRIPTORS_MESSAGE",
+            "dialog.descriptorsNotCreated");
 
-		this.failures = failures;
-	}
+        this.failures = failures;
+    }
 
-	private static Collection buildStatus(DescriptorCreationFailureContainer failures) {
-		SortedSet failuresSet = CollectionTools.sortedSet(failures.failureEvents(), new Comparator() {
-			public int compare(Object object1, Object object2) {
-				DescriptorCreationFailureEvent event1 = (DescriptorCreationFailureEvent) object1;
-				DescriptorCreationFailureEvent event2 = (DescriptorCreationFailureEvent) object2;
-				return event1.getClassName().compareTo(event2.getClassName());
-			}
-		});
-		Collection statusList = new Vector(failuresSet.size());
+    private static Collection buildStatus(DescriptorCreationFailureContainer failures) {
+        SortedSet failuresSet = CollectionTools.sortedSet(failures.failureEvents(), new Comparator() {
+            public int compare(Object object1, Object object2) {
+                DescriptorCreationFailureEvent event1 = (DescriptorCreationFailureEvent) object1;
+                DescriptorCreationFailureEvent event2 = (DescriptorCreationFailureEvent) object2;
+                return event1.getClassName().compareTo(event2.getClassName());
+            }
+        });
+        Collection statusList = new Vector(failuresSet.size());
 
-		// Iterator through all the failures
-		for (Iterator iter = failuresSet.iterator(); iter.hasNext(); ) {
+        // Iterator through all the failures
+        for (Iterator iter = failuresSet.iterator(); iter.hasNext(); ) {
 
-			// Retrieve the failure
-			DescriptorCreationFailureEvent event = (DescriptorCreationFailureEvent) iter.next();
-			Error error = new Error(event);
+            // Retrieve the failure
+            DescriptorCreationFailureEvent event = (DescriptorCreationFailureEvent) iter.next();
+            Error error = new Error(event);
 
-			// Add the status to list
-			StatusDialog.Status status = StatusDialog.createStatus(event.getClassName(), Collections.singletonList(error));
-			statusList.add(status);
-		}
+            // Add the status to list
+            StatusDialog.Status status = StatusDialog.createStatus(event.getClassName(), Collections.singletonList(error));
+            statusList.add(status);
+        }
 
-		return statusList;
-	}
+        return statusList;
+    }
 
-	protected CellRendererAdapter buildNodeRenderer(Object value) {
-		if (value instanceof String)
-			return new ClassNameCellRendererAdapter();
+    protected CellRendererAdapter buildNodeRenderer(Object value) {
+        if (value instanceof String)
+            return new ClassNameCellRendererAdapter();
 
-		if (value instanceof Error)
-			return new ErrorCellRendererAdapter();
+        if (value instanceof Error)
+            return new ErrorCellRendererAdapter();
 
-		return super.buildNodeRenderer(value);
-	}
+        return super.buildNodeRenderer(value);
+    }
 
-	//remove the descriptors before returning from the dialog
-	protected boolean preConfirm() {		
-		Iterator failureEvents = this.failures.failureEvents();
-		while (failureEvents.hasNext()){
-			
-			DescriptorCreationFailureEvent event = (DescriptorCreationFailureEvent) failureEvents.next();
-			Object source = event.getSource();
-			if (source instanceof MWDescriptor) {
-				((MWDescriptor) source).getProject().removeDescriptor((MWDescriptor) source);
-			}
-		}		return super.preConfirm();
-	}
+    //remove the descriptors before returning from the dialog
+    protected boolean preConfirm() {
+        Iterator failureEvents = this.failures.failureEvents();
+        while (failureEvents.hasNext()){
 
-	protected class ClassNameCellRendererAdapter extends AbstractCellRendererAdapter {
-		public Icon buildIcon(Object value) {
-			return resourceRepository().getIcon("class.public");
-		}
+            DescriptorCreationFailureEvent event = (DescriptorCreationFailureEvent) failureEvents.next();
+            Object source = event.getSource();
+            if (source instanceof MWDescriptor) {
+                ((MWDescriptor) source).getProject().removeDescriptor((MWDescriptor) source);
+            }
+        }        return super.preConfirm();
+    }
 
-		public String buildText(Object value) {
-			String className = (String) value;
+    protected class ClassNameCellRendererAdapter extends AbstractCellRendererAdapter {
+        public Icon buildIcon(Object value) {
+            return resourceRepository().getIcon("class.public");
+        }
 
-			if (className.indexOf(".") == -1) {
-				return className + " " + resourceRepository().getString("DEFAULT_PACKAGE");
-			}
+        public String buildText(Object value) {
+            String className = (String) value;
 
-			return ClassTools.shortNameForClassNamed(className) + " (" + ClassTools.packageNameForClassNamed(className) + ")";
-		}
-	}
+            if (className.indexOf(".") == -1) {
+                return className + " " + resourceRepository().getString("DEFAULT_PACKAGE");
+            }
 
-	private static class Error {
+            return ClassTools.shortNameForClassNamed(className) + " (" + ClassTools.packageNameForClassNamed(className) + ")";
+        }
+    }
 
-		private String errorMessage;
-		private final DescriptorCreationFailureEvent event;
+    private static class Error {
 
-		Error(DescriptorCreationFailureEvent event) {
-			super();
-			this.event = event;
-		}
+        private String errorMessage;
+        private final DescriptorCreationFailureEvent event;
 
-		private String buildErrorMessage(StringRepository repository) {
-			return repository.getString(this.event.getResourceStringKey());
-		}
+        Error(DescriptorCreationFailureEvent event) {
+            super();
+            this.event = event;
+        }
 
-		public String getErrorMessage(StringRepository repository) {
-			if (this.errorMessage == null) {
-				this.errorMessage = buildErrorMessage(repository);
-			}
-			return this.errorMessage;
-		}
-	}
+        private String buildErrorMessage(StringRepository repository) {
+            return repository.getString(this.event.getResourceStringKey());
+        }
 
-	private class ErrorCellRendererAdapter extends AbstractCellRendererAdapter {
-		public Icon buildIcon(Object value) {
-			return resourceRepository().getIcon("error");
-		}
+        public String getErrorMessage(StringRepository repository) {
+            if (this.errorMessage == null) {
+                this.errorMessage = buildErrorMessage(repository);
+            }
+            return this.errorMessage;
+        }
+    }
 
-		public String buildText(Object value) {
-			return ((Error) value).getErrorMessage(resourceRepository());
-		}
-	}
+    private class ErrorCellRendererAdapter extends AbstractCellRendererAdapter {
+        public Icon buildIcon(Object value) {
+            return resourceRepository().getIcon("error");
+        }
+
+        public String buildText(Object value) {
+            return ((Error) value).getErrorMessage(resourceRepository());
+        }
+    }
 }

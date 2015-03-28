@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import java.util.*;
@@ -32,33 +32,33 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
 @Table(name="CMP3_FA_ADDRESS")
 @NamedNativeQueries({
     @NamedNativeQuery(
-        name="findAllFieldAccessSQLAddresses", 
+        name="findAllFieldAccessSQLAddresses",
         query="select * from CMP3_FA_ADDRESS",
         resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address.class
     ),
     @NamedNativeQuery(
-        name="findAllFieldAccessSQLAddressesByCity_QuestionMark_Number", 
+        name="findAllFieldAccessSQLAddressesByCity_QuestionMark_Number",
         query="select * from CMP3_FA_ADDRESS where CITY=?1",
         resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address.class
     ),
     @NamedNativeQuery(
-        name="findAllFieldAccessSQLAddressesByCity_QuestionMark", 
+        name="findAllFieldAccessSQLAddressesByCity_QuestionMark",
         query="select * from CMP3_FA_ADDRESS where CITY=?",
         resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address.class
     ),
     @NamedNativeQuery(
-        name="findAllFieldAccessSQLAddressesByCityAndCountry_QuestionMark_Number", 
+        name="findAllFieldAccessSQLAddressesByCityAndCountry_QuestionMark_Number",
         query="select * from CMP3_FA_ADDRESS where CITY=?1 and COUNTRY=?2",
         resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address.class
     ),
     @NamedNativeQuery(
-        name="findAllFieldAccessSQLAddressesByCityAndCountry_QuestionMark", 
+        name="findAllFieldAccessSQLAddressesByCityAndCountry_QuestionMark",
         query="select * from CMP3_FA_ADDRESS where CITY=? and COUNTRY=?",
         resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address.class
     )}
 )
 @NamedQuery(
-    name="findAllFieldAccessAddressesByPostalCode", 
+    name="findAllFieldAccessAddressesByPostalCode",
     query="SELECT OBJECT(address) FROM Address address WHERE address.postalCode = :postalcode"
 )
 @NamedStoredProcedureQueries({
@@ -92,16 +92,16 @@ public class Address implements Serializable {
     @SequenceGenerator(name="FA_ADD_SEQ_GENERATOR", sequenceName="ADDRESS_SEQ", allocationSize=25)
     @Column(name="ADDRESS_ID")
     private Integer id;
-    
+
     private String street;
     private String city;
     private String province;
-    
+
     @Column(name="P_CODE")
     private String postalCode;
-    
+
     private String country;
-    
+
     @OneToMany(cascade=ALL, mappedBy="address")
     private Collection<Employee> employees;
 
@@ -133,7 +133,7 @@ public class Address implements Serializable {
         copy.postalCode = this.postalCode;
         return copy;
     }
-    
+
     public TransferAddress transferCopy() {
         TransferAddress copy = new TransferAddress();
         copy.id = this.id;
@@ -144,65 +144,65 @@ public class Address implements Serializable {
         copy.postalCode = this.postalCode;
         return copy;
     }
-    
-    public Integer getId() { 
-        return id; 
-    }
-    
-    public void setId(Integer id) { 
-        this.id = id; 
+
+    public Integer getId() {
+        return id;
     }
 
-    public String getStreet() { 
-        return street; 
-    }
-    
-    public void setStreet(String street) { 
-        this.street = street; 
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getCity() { 
-        return city; 
-    }
-    
-    public void setCity(String city) { 
-        this.city = city; 
+    public String getStreet() {
+        return street;
     }
 
-    public String getProvince() { 
-        return province; 
-    }
-        
-    public void setProvince(String province) { 
-        this.province = province; 
+    public void setStreet(String street) {
+        this.street = street;
     }
 
-    public String getPostalCode() { 
-        return postalCode; 
-    }
-    
-    public void setPostalCode(String postalCode) { 
-        this.postalCode = postalCode; 
+    public String getCity() {
+        return city;
     }
 
-    public String getCountry() { 
-        return country; 
+    public void setCity(String city) {
+        this.city = city;
     }
-    
-    public void setCountry(String country) { 
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
         this.country = country;
     }
-    
-    public Collection<Employee> getEmployees() { 
-        return employees; 
+
+    public Collection<Employee> getEmployees() {
+        return employees;
     }
-    
+
     public void setEmployees(Collection<Employee> employees) {
         this.employees = employees;
     }
-    
+
     public class TransferAddress {
-        public Integer id;    
+        public Integer id;
         public String street;
         public String city;
         public String province;

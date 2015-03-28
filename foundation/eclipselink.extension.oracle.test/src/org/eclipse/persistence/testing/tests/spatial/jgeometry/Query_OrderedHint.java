@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.spatial.jgeometry;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class Query_OrderedHint extends SimpleSpatialTestCase {
     public Query_OrderedHint(String name){
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("Query_OrderedHint");
@@ -52,7 +52,7 @@ public class Query_OrderedHint extends SimpleSpatialTestCase {
             }
         };
     }
-       
+
     public void testReadAll() throws Exception {
         String sql = "select GID, GEOMETRY from SIMPLE_SPATIAL ORDER BY GID";
         SQLReader reader = new SQLReader(session, sql);
@@ -61,7 +61,7 @@ public class Query_OrderedHint extends SimpleSpatialTestCase {
         raq.addAscendingOrdering("id");
         raq.setHintString("/*+ ORDERED */ ");
 
-        List<Spatial> results = 
+        List<Spatial> results =
             (List<Spatial>)session.executeQuery(raq);
 
         String compareResult = reader.compare(results);

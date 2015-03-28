@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.Property;
@@ -84,7 +84,7 @@ public class SDOCopyHelper implements CopyHelper {
      * This default constructor must be used in conjunction with the setHelperContext() function.
      * The custom constructor that takes a HelperContext parameter is recommended over this default constructor.
      */
-    public SDOCopyHelper() { 
+    public SDOCopyHelper() {
     }
 
     /**
@@ -130,7 +130,7 @@ public class SDOCopyHelper implements CopyHelper {
         for (Iterator anOCIterator = ocListOriginal.iterator(); anOCIterator.hasNext();) {
             copy.addOpenContentProperty((Property)anOCIterator.next());
         }
-        
+
         List ocAttrsListOriginal = ((SDODataObject)dataObject)._getOpenContentPropertiesAttributes();
         for (Iterator anOCAttrIterator = ocAttrsListOriginal.iterator(); anOCAttrIterator.hasNext();) {
             copy.addOpenContentProperty((Property)anOCAttrIterator.next());
@@ -237,10 +237,10 @@ public class SDOCopyHelper implements CopyHelper {
             //* @param doMap (cache original -> copy DataObject instances to set non-containment properties after tree construction)
             HashMap doMap = new HashMap();
 
-            //* @param propMap (cache original DO:non-containment property values to be set after tree construction)            
+            //* @param propMap (cache original DO:non-containment property values to be set after tree construction)
             HashMap ncPropMap = new HashMap();
 
-            // build object instances by recursing the tree        	            
+            // build object instances by recursing the tree
             SDODataObject aCopy = copyPrivate((SDODataObject)dataObject, doMap, ncPropMap, cs);
 
             // After the copy containment tree has been built
@@ -343,7 +343,7 @@ public class SDOCopyHelper implements CopyHelper {
                         }
                     }
 
-                    // check if the target copies are in our map (inside copy tree scope) 
+                    // check if the target copies are in our map (inside copy tree scope)
                     // when containment = false then targetDOCopy is empty
                     // Assume: all items in the list share the same property
                     isPropertyInsideCopyTreeScope = ((List)targetDOCopy).size() > 0;
@@ -387,14 +387,14 @@ public class SDOCopyHelper implements CopyHelper {
         if (cs != null && cs.isDeleted(dataObject)) {
             origSequence = cs.getOldSequence(dataObject);
         }
-        
+
         SDOProperty seqProperty = null;
         try {
             List settings = origSequence.getSettings();
             for (int index = 0, size = origSequence.size(); index < size; index++) {
-                Setting nextSetting = (Setting)settings.get(index);                
+                Setting nextSetting = (Setting)settings.get(index);
                 seqProperty = origSequence.getProperty(nextSetting);
-                
+
                 if ((null == seqProperty) || seqProperty.getType().isDataType()) {
                     Setting copySetting = nextSetting.copy(copy);
                     copySequence.getSettings().add(copySetting);
@@ -402,14 +402,14 @@ public class SDOCopyHelper implements CopyHelper {
                 } else {
                     Object copySeqValue = null;
                     Object origSeqValue = origSequence.getValue(index);
-                    
+
                     if (cs != null) {
                         Object orig = cs.getReverseDeletedMap().get(origSeqValue);
                         if (orig != null) {
                             origSeqValue = orig;
                         }
                     }
-                    
+
                     if (origSeqValue instanceof XMLRoot) {
                         origSeqValue = ((XMLRoot)origSeqValue).getObject();
                     }
@@ -437,7 +437,7 @@ public class SDOCopyHelper implements CopyHelper {
                  * see #6026714
                  */
             }
-        } catch (ClassCastException cce) {// catch any failure of a DataObject cast above          
+        } catch (ClassCastException cce) {// catch any failure of a DataObject cast above
             throw SDOException.foundSimpleValueForNonDataTypeProperty(seqProperty.getName());
         }
     }
@@ -455,7 +455,7 @@ public class SDOCopyHelper implements CopyHelper {
          * for each containment dataObject populate the sequence
          */
 
-        // iterate containment nodes		
+        // iterate containment nodes
         for (Iterator cIterator = doMap.keySet().iterator(); cIterator.hasNext();) {
             DataObject cObject = (DataObject)cIterator.next();
             DataObject copyDO = (DataObject)doMap.get(cObject);
@@ -507,7 +507,7 @@ public class SDOCopyHelper implements CopyHelper {
         SDOChangeSummary copyCS = (SDOChangeSummary)aCopyCS;
 
         // handled by copy constructor
-        // map of copy of original ListWrapper (CS2) to its new copy of a copy (CS2) - link ValueStores to Elements 
+        // map of copy of original ListWrapper (CS2) to its new copy of a copy (CS2) - link ValueStores to Elements
         HashMap copyListWrapperCS2toCopyOfListCS2Map = new HashMap();
 
         // in the absence of a ListWrapper.getProperty() we keep a map
@@ -529,17 +529,17 @@ public class SDOCopyHelper implements CopyHelper {
             copyCS.getDeleted().add(aCopyOfOriginalObject);
             // Assumption check do map before a possible re-add - reset()
             if (null == origDOCS1toCopyDOCS2Map.get(anOriginalObject)) {
-                // add temp map of original  : copy of original            
+                // add temp map of original  : copy of original
                 origDOCS1toCopyDOCS2Map.put(anOriginalObject, aCopyOfOriginalObject);
-            } 
+            }
         }
 
-        // iterate created objects    	
+        // iterate created objects
         for (Iterator aIterator = originalCS.getCreated().iterator(); aIterator.hasNext();) {
             copyCS.getCreated().add(origDOCS1toCopyDOCS2Map.get(aIterator.next()));
         }
 
-        // add modified objects    	
+        // add modified objects
         for (Iterator anIterator = originalCS.getModified().iterator(); anIterator.hasNext();) {
             copyCS.getModified().add(origDOCS1toCopyDOCS2Map.get(anIterator.next()));
         }
@@ -558,7 +558,7 @@ public class SDOCopyHelper implements CopyHelper {
 
             /**
              * Recursively shallow-copy elements (by iterating the ovs map and iterating the properties of each item)
-             * Fix the dataObject pointer 
+             * Fix the dataObject pointer
              */
             aVSCopy = createValueStore();
             aVSOriginal = (ValueStore)originalCS.getOriginalValueStores().get(anOriginalObject);
@@ -567,7 +567,7 @@ public class SDOCopyHelper implements CopyHelper {
             Object aVSPropertyItem = null;
 
             // get the # of non-opencontent properties for the object holding the CS - do not use DVS.getTypePropertyValues()
-            for (int size = ((SDOType) anOriginalObject.getType()).getDeclaredProperties().size(), i = 0; 
+            for (int size = ((SDOType) anOriginalObject.getType()).getDeclaredProperties().size(), i = 0;
                      i < size; i++) {
                 aVSPropertyItem = aVSOriginal.getDeclaredProperty(i);
                 // only iterate set properties
@@ -609,11 +609,11 @@ public class SDOCopyHelper implements CopyHelper {
             // add existing properties
             ocPropertiesList.addAll(((SDODataObject)anOriginalObject)._getOpenContentProperties());
             ocPropertiesList.addAll(((SDODataObject)anOriginalObject)._getOpenContentPropertiesAttributes());
-            // iterate existing open content properties            
+            // iterate existing open content properties
             for (Iterator i = ocPropertiesList.iterator(); i.hasNext();) {
                 SDOProperty ocProperty = (SDOProperty)i.next();
                 if (aVSOriginal.isSetOpenContentProperty(ocProperty)) {
-                    // get oc value              
+                    // get oc value
                     Object anOCPropertyItem = aVSOriginal.getOpenContentProperty(ocProperty);
 
                     // get oc copy - shallow copy the object values
@@ -677,7 +677,7 @@ public class SDOCopyHelper implements CopyHelper {
                     // get the copy of the original (in the current valuestore) - we need do not make a copy of this copy
                     // we should have a copy of the copy for List items - ListWrapper.add(item) will remove the item from its original wrapper
                     aListItemCopy = origDOCS1toCopyDOCS2Map.get(aListItem);
-                } else { 
+                } else {
                     aListItemCopy = aListItem;
                 }
                 aCopyList.add(aListItemCopy);
@@ -695,7 +695,7 @@ public class SDOCopyHelper implements CopyHelper {
                 aListItem = aListIterator.next();
                 // for simple many types we use the original in the copy
                 if (!aProperty.getType().isDataType()) {
-                    aListItemCopy = origDOCS1toCopyDOCS2Map.get(aListItem);                    
+                    aListItemCopy = origDOCS1toCopyDOCS2Map.get(aListItem);
                 } else {
                     aListItemCopy = aListItem;
                 }
@@ -703,7 +703,7 @@ public class SDOCopyHelper implements CopyHelper {
                 // don't add nulls to the listWrapper so an undoChanges will encounter an NPE later
                 if (aListItemCopy != null) {
                     listValueCopy.add(aListItemCopy);
-                } 
+                }
             }
 
             // set the copy map entry keyed on copy with value a deep copy of the copy
@@ -830,7 +830,7 @@ public class SDOCopyHelper implements CopyHelper {
             return null;// this is acceptable behavior
         }
 
-        SDODataObject copy = (SDODataObject)getHelperContext()// 
+        SDODataObject copy = (SDODataObject)getHelperContext()//
         .getDataFactory().create(dataObject.getType().getURI(), dataObject.getType().getName());
 
         // store current object for reference by the non-containment map
@@ -840,7 +840,7 @@ public class SDOCopyHelper implements CopyHelper {
         for (Iterator anOCIterator = ocListOriginal.iterator(); anOCIterator.hasNext();) {
             copy.addOpenContentProperty((Property)anOCIterator.next());
         }
-        
+
         List ocAttrsListOriginal = dataObject._getOpenContentPropertiesAttributes();
         for (Iterator anOCAttrIterator = ocAttrsListOriginal.iterator(); anOCAttrIterator.hasNext();) {
             copy.addOpenContentProperty((Property)anOCAttrIterator.next());
@@ -872,7 +872,7 @@ public class SDOCopyHelper implements CopyHelper {
                     // cont=true,  opp=false -> normal containment
                     // cont=true,  opp=true  -> bidirectional
                     if (eachProperty.isContainment()) {
-                        // process containment properties (normal, half of bidirectionals)                        
+                        // process containment properties (normal, half of bidirectionals)
                         copyContainmentPropertyValue(copy, eachProperty, o, doMap, ncPropMap, cs);
                     } else {
                         // copy non-containment do (not properties (unidirectional, half of bidirectionals))
@@ -891,7 +891,7 @@ public class SDOCopyHelper implements CopyHelper {
                         }
                     }
                 }
-            }            
+            }
         }
 
         // sequences will not be processed until the entire tree is copied so we can resolve any reference relationships
@@ -1006,6 +1006,6 @@ public class SDOCopyHelper implements CopyHelper {
             }
             return returnValue;
         }
-        return dataObject.get(property);// get the value of current property                      
+        return dataObject.get(property);// get the value of current property
     }
 }

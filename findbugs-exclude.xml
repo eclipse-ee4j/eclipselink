@@ -49,7 +49,7 @@
         </Or>
         <Bug pattern="MS_SHOULD_BE_FINAL"/>
     </Match>
-    
+
     <!--
         As designed, not an error
     -->

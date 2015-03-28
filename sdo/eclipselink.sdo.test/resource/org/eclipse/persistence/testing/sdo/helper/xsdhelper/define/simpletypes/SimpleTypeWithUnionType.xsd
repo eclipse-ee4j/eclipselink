@@ -12,11 +12,11 @@
             </xsd:simpleType>
          </xsd:union>
     </xsd:simpleType>
-    
+
     <xsd:simpleType name='my-other-integer'>
       <xsd:restriction base='xsd:integer'/>
     </xsd:simpleType>
-    
+
     <xsd:complexType name='testComplexType'>
       <xsd:sequence>
         <xsd:element name='testElement' type='my-int'/>

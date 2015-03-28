@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
- ******************************************************************************/  
+ *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fetchgroups;
 
 import static org.junit.Assert.assertFalse;
@@ -40,7 +40,7 @@ import org.eclipse.persistence.sessions.server.Server;
 /**
  * Test utility to verify the state of entities after they are loaded, copied,
  * or detached with respect to a defined FetchGroup.
- * 
+ *
  * @author dclarke
  * @since EclipseLink 2.1.0
  */
@@ -156,7 +156,7 @@ public class FetchGroupAssert {
     /**
      * Assert that the entity provided has the attributes defined in the
      * FetchGroup loaded.
-     * 
+     *
      * @param emf
      * @param entity
      * @param fetchGroup
@@ -190,7 +190,7 @@ public class FetchGroupAssert {
                 assertTrue("Optimistic version mapping not fetched: " + entity, tracker._persistence_isAttributeFetched(mapping.getAttributeName()));
             } else if (tracker._persistence_getFetchGroup().containsAttribute(mapping.getAttributeName())) {
                 assertTrue(tracker._persistence_isAttributeFetched(mapping.getAttributeName()));
-                // EntityFetchGroup never has nested fetch groups. 
+                // EntityFetchGroup never has nested fetch groups.
 /*                AttributeItem attrFI = tracker._persistence_getFetchGroup().getItem(mapping.getAttributeName());
                 if (attrFI.getGroup() != null) {
                     Object value = mapping.getAttributeValueFromObject(entity);

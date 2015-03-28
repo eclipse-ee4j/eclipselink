@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -50,265 +50,265 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationI
 
 /**
  * QueryGeneralPanel is one of the nested tabs found on the NamedQueries tab of a descriptor.
- * The user chooses the query type on this tab.  They can also add and remove query 
+ * The user chooses the query type on this tab.  They can also add and remove query
  * parameters on the QueryParametersPanel
  */
 final public class QueryGeneralPanel
-	extends AbstractPanel
+    extends AbstractPanel
 {
-	private PropertyValueModel queryHolder;
-	private QueryParametersPanel queryParametersPanel;
-	
-	public QueryGeneralPanel(PropertyValueModel queryHolder,
-	                         ObjectListSelectionModel querySelectionModel,
-	                         WorkbenchContextHolder contextHolder) {
-		super(contextHolder);
-		this.queryHolder = queryHolder;
-		initializeLayout(querySelectionModel);
-	}
+    private PropertyValueModel queryHolder;
+    private QueryParametersPanel queryParametersPanel;
+
+    public QueryGeneralPanel(PropertyValueModel queryHolder,
+                             ObjectListSelectionModel querySelectionModel,
+                             WorkbenchContextHolder contextHolder) {
+        super(contextHolder);
+        this.queryHolder = queryHolder;
+        initializeLayout(querySelectionModel);
+    }
 
 
-	private MWQuery getQuery() {
-		return (MWQuery) this.queryHolder.getValue();
-	}
-	
-	public String helpTopicId() {
-		return "descriptor.queries.general";
-	}
-		
-	private void initializeLayout(ObjectListSelectionModel querySelectionModel) {
+    private MWQuery getQuery() {
+        return (MWQuery) this.queryHolder.getValue();
+    }
 
-		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    public String helpTopicId() {
+        return "descriptor.queries.general";
+    }
 
-		initializeQueryTypePanel(querySelectionModel);
-		initializeParametersPanel();
-		
-		/*GridBagConstraints constraints = new GridBagConstraints();
-		
-		this.partialAttributeQueryCheckBox = new CheckBox("Partial Attribute Query");
-		this.partialAttributeQueryCheckBox.addActionListener(new SetPartialAttributeQueryAction());
-		
-		constraints.gridx		= 0;
-		constraints.gridy		= 2;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 0;
-		constraints.fill		= GridBagConstraints.NONE;
-		constraints.anchor		= GridBagConstraints.NORTHWEST;
-		constraints.insets		= new Insets(5, 5, 0, 5);
-		
-		add(this.partialAttributeQueryCheckBox, constraints);*/
-		addHelpTopicId(this, helpTopicId());
-	}
+    private void initializeLayout(ObjectListSelectionModel querySelectionModel) {
 
-	private void initializeParametersPanel() {
-		GridBagConstraints constraints = new GridBagConstraints();
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-		this.queryParametersPanel = new QueryParametersPanel(this.queryHolder, getWorkbenchContextHolder());
-		this.queryParametersPanel.setBorder(buildTitledBorder("QUERY_PARAMETERS_TABLE_TITLE"));
+        initializeQueryTypePanel(querySelectionModel);
+        initializeParametersPanel();
 
-		constraints.gridx = 0;
-		constraints.gridy = 1;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 1;
-		constraints.weighty = 1;
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.insets = new Insets(10, 0, 0, 0);
+        /*GridBagConstraints constraints = new GridBagConstraints();
 
-		add(this.queryParametersPanel, constraints);
-	}
-	
-	private void initializeQueryTypePanel(ObjectListSelectionModel querySelectionModel) {
-		GridBagConstraints constraints = new GridBagConstraints();
+        this.partialAttributeQueryCheckBox = new CheckBox("Partial Attribute Query");
+        this.partialAttributeQueryCheckBox.addActionListener(new SetPartialAttributeQueryAction());
 
-		// Query Type widgets
-		JPanel queryTypePanel = new JPanel(new GridBagLayout());
+        constraints.gridx        = 0;
+        constraints.gridy        = 2;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 0;
+        constraints.fill        = GridBagConstraints.NONE;
+        constraints.anchor        = GridBagConstraints.NORTHWEST;
+        constraints.insets        = new Insets(5, 5, 0, 5);
 
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 1;
-		constraints.weighty = 0;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.insets = new Insets(0, 0, 0, 0);
+        add(this.partialAttributeQueryCheckBox, constraints);*/
+        addHelpTopicId(this, helpTopicId());
+    }
 
-		add(queryTypePanel, constraints);
+    private void initializeParametersPanel() {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		// Query type label
-		JLabel typeLabel = this.buildQueryTypeLabel();
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 0;
-		constraints.weighty = 0;
-		constraints.fill = GridBagConstraints.NONE;
-		constraints.anchor = GridBagConstraints.LINE_START;
-		constraints.insets = new Insets(0, 0, 0, 0);
-		queryTypePanel.add(typeLabel, constraints);
+        this.queryParametersPanel = new QueryParametersPanel(this.queryHolder, getWorkbenchContextHolder());
+        this.queryParametersPanel.setBorder(buildTitledBorder("QUERY_PARAMETERS_TABLE_TITLE"));
 
-		// Query type combo box
-		JComboBox queryTypeComboBox = buildQueryTypeComboBox(querySelectionModel);
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(10, 0, 0, 0);
 
-		constraints.gridx = 1;
-		constraints.gridy = 0;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 1;
-		constraints.weighty = 0;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.insets = new Insets(0, 5, 0, 0);
+        add(this.queryParametersPanel, constraints);
+    }
 
-		queryTypePanel.add(queryTypeComboBox, constraints);
-		typeLabel.setLabelFor(queryTypeComboBox);
+    private void initializeQueryTypePanel(ObjectListSelectionModel querySelectionModel) {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		addHelpTopicId(queryTypePanel, helpTopicId() + ".type");
-	}
-	
-	private JLabel buildQueryTypeLabel() {
-		JLabel label = buildLabel("QUERY_TYPE_COMBO_BOX_LABEL");
-		this.queryHolder.addPropertyChangeListener(ValueModel.VALUE, this.buildQueryTypeLabelListener(label));
-		return label;
-	}
-	
-	private PropertyChangeListener buildQueryTypeLabelListener(final JLabel label) {
-		return new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent evt) {
-				label.setEnabled(getQuery() != null);
-			}
-		};
-	}
-	
-	private JComboBox buildQueryTypeComboBox(ObjectListSelectionModel querySelectionModel) {
-		JComboBox comboBox = new JComboBox(new ComboBoxModelAdapter(buildQueryTypeValueModel(), buildQueryTypePropertyAdapter(querySelectionModel)));
-		comboBox.setEnabled(false);
-		comboBox.setEditable(false);
-		this.queryHolder.addPropertyChangeListener(buildQueryTypeChooserListener(comboBox));
-		return comboBox;
-	}
+        // Query Type widgets
+        JPanel queryTypePanel = new JPanel(new GridBagLayout());
 
-	private CollectionValueModel buildQueryTypeValueModel() {
-		return new CollectionAspectAdapter(this.queryHolder) {
-			protected Iterator getValueFromSubject() {
-				return new TransformationIterator(((MWQuery) this.subject).queryTypes()) {
-					protected Object transform(Object next) {
-						return resourceRepository().getString((String) next);
-					}
-				};
-			}
-		};
-	}	
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(0, 0, 0, 0);
 
-	private boolean queryTypeCanChange() {
-		String promptValue = TriStateBoolean.UNDEFINED.toString();
-		String value = preferences().get(MappingsPlugin.CHANGE_QUERY_TYPE_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE, promptValue);
-		boolean changeQueryType;
+        add(queryTypePanel, constraints);
 
-		if (value.equals(promptValue)) {
-			changeQueryType = promptToChangeQueryType();
-		}
-		else {
-			changeQueryType = TriStateBoolean.TRUE.toString().equals(value);
-			if (!changeQueryType) {
-				JOptionPane.showMessageDialog(
-						this.getWorkbenchContext().getCurrentWindow(),
-						this.resourceRepository().getString("QUERY_TYPE_CHANGE_DISSALLOWED"));
-			}
-		}
+        // Query type label
+        JLabel typeLabel = this.buildQueryTypeLabel();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 0;
+        constraints.weighty = 0;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.insets = new Insets(0, 0, 0, 0);
+        queryTypePanel.add(typeLabel, constraints);
 
-		return changeQueryType;
-	}
+        // Query type combo box
+        JComboBox queryTypeComboBox = buildQueryTypeComboBox(querySelectionModel);
 
-	private boolean promptToChangeQueryType() {
-		if (this.preferences().getBoolean(MappingsPlugin.CHANGE_QUERY_TYPE_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE, false)) {
-			return true;
-		}
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(0, 5, 0, 0);
 
-		// build dialog panel
-		String title = this.resourceRepository().getString("QUERY_CHANGE_QUERY_TYPE_TITLE");
-		String message = this.resourceRepository().getString("QUERY_CHANGE_QUERY_TYPE_MESSAGE");
-		PropertyValueModel dontAskAgainHolder = new SimplePropertyValueModel(new Boolean(false));
-		JComponent dontAskAgainPanel = 
-			SwingComponentFactory.buildDoNotAskAgainPanel(message, dontAskAgainHolder, this.resourceRepository());
-		
-		JOptionPane queryChangePane = new JOptionPane(dontAskAgainPanel, JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-		JDialog queryChangeDialog = queryChangePane.createDialog(this.getWorkbenchContext().getCurrentWindow(), title);
-		queryChangeDialog.setSize(400, 150);
-		queryChangeDialog.setResizable(false);
-		queryChangeDialog.show();
-		queryChangeDialog.dispose();
-		int response = -1;
-		Object value = queryChangePane.getValue();
-		if (value != null && value instanceof Integer) {
-			response = ((Integer)value).intValue();
-		}
+        queryTypePanel.add(queryTypeComboBox, constraints);
+        typeLabel.setLabelFor(queryTypeComboBox);
 
-		// prompt user for response
-//		int response = 
-//			JOptionPane.showConfirmDialog(
-//				this.getWorkbenchContext().getCurrentWindow(),
-//				dontAskAgainPanel,
-//				title,
-//				JOptionPane.YES_NO_OPTION,
-//				JOptionPane.WARNING_MESSAGE
-//			);
+        addHelpTopicId(queryTypePanel, helpTopicId() + ".type");
+    }
 
-		if (dontAskAgainHolder.getValue().equals(Boolean.TRUE)) {
-			if (response == JOptionPane.YES_OPTION) {
-				this.preferences().putBoolean(MappingsPlugin.CHANGE_QUERY_TYPE_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE, true);
-			}
-			else if (response == JOptionPane.NO_OPTION) {
-				this.preferences().putBoolean(MappingsPlugin.CHANGE_QUERY_TYPE_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE, false);
-			}
-		}
+    private JLabel buildQueryTypeLabel() {
+        JLabel label = buildLabel("QUERY_TYPE_COMBO_BOX_LABEL");
+        this.queryHolder.addPropertyChangeListener(ValueModel.VALUE, this.buildQueryTypeLabelListener(label));
+        return label;
+    }
 
-		return (response == JOptionPane.OK_OPTION);
-	}
+    private PropertyChangeListener buildQueryTypeLabelListener(final JLabel label) {
+        return new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+                label.setEnabled(getQuery() != null);
+            }
+        };
+    }
 
-	private PropertyValueModel buildQueryTypePropertyAdapter(final ObjectListSelectionModel querySelectionModel) {
-		return new PropertyAspectAdapter(this.queryHolder) {
-			protected Object getValueFromSubject() {
-				return resourceRepository().getString(((MWQuery) this.subject).queryType());
-			}
-		
-			protected void setValueOnSubject(Object value) {
-				if (!QueryGeneralPanel.this.queryTypeCanChange())
-					return;
+    private JComboBox buildQueryTypeComboBox(ObjectListSelectionModel querySelectionModel) {
+        JComboBox comboBox = new JComboBox(new ComboBoxModelAdapter(buildQueryTypeValueModel(), buildQueryTypePropertyAdapter(querySelectionModel)));
+        comboBox.setEnabled(false);
+        comboBox.setEditable(false);
+        this.queryHolder.addPropertyChangeListener(buildQueryTypeChooserListener(comboBox));
+        return comboBox;
+    }
 
-				MWQuery newQuery;
-				if (value == resourceRepository().getString(MWQuery.REPORT_QUERY)) {
-					newQuery = getQuery().asReportQuery();
-				}
-				else if (value == resourceRepository().getString(MWQuery.READ_ALL_QUERY)) {
-					newQuery = getQuery().asReadAllQuery();
-				}			
-				else {//if (value == MWQuery.READ_OBJECT_QUERY) 
-					newQuery = getQuery().asReadObjectQuery();
-				}
-				querySelectionModel.setSelectedValue(newQuery);
-			}	
-		};	
-	}
-	
-	private PropertyChangeListener buildQueryTypeChooserListener(final JComboBox comboBox) {
-		return new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent evt) {
-				if (getQuery() == null) {
-					comboBox.setEnabled(false);
-				} else {
-					comboBox.setEnabled(true);
-				}
-			}
-		};
-	}
-		
-	protected void selectParameter(MWQueryParameter parameter) {
-		this.queryParametersPanel.selectParameter(parameter);
-	}
+    private CollectionValueModel buildQueryTypeValueModel() {
+        return new CollectionAspectAdapter(this.queryHolder) {
+            protected Iterator getValueFromSubject() {
+                return new TransformationIterator(((MWQuery) this.subject).queryTypes()) {
+                    protected Object transform(Object next) {
+                        return resourceRepository().getString((String) next);
+                    }
+                };
+            }
+        };
+    }
+
+    private boolean queryTypeCanChange() {
+        String promptValue = TriStateBoolean.UNDEFINED.toString();
+        String value = preferences().get(MappingsPlugin.CHANGE_QUERY_TYPE_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE, promptValue);
+        boolean changeQueryType;
+
+        if (value.equals(promptValue)) {
+            changeQueryType = promptToChangeQueryType();
+        }
+        else {
+            changeQueryType = TriStateBoolean.TRUE.toString().equals(value);
+            if (!changeQueryType) {
+                JOptionPane.showMessageDialog(
+                        this.getWorkbenchContext().getCurrentWindow(),
+                        this.resourceRepository().getString("QUERY_TYPE_CHANGE_DISSALLOWED"));
+            }
+        }
+
+        return changeQueryType;
+    }
+
+    private boolean promptToChangeQueryType() {
+        if (this.preferences().getBoolean(MappingsPlugin.CHANGE_QUERY_TYPE_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE, false)) {
+            return true;
+        }
+
+        // build dialog panel
+        String title = this.resourceRepository().getString("QUERY_CHANGE_QUERY_TYPE_TITLE");
+        String message = this.resourceRepository().getString("QUERY_CHANGE_QUERY_TYPE_MESSAGE");
+        PropertyValueModel dontAskAgainHolder = new SimplePropertyValueModel(new Boolean(false));
+        JComponent dontAskAgainPanel =
+            SwingComponentFactory.buildDoNotAskAgainPanel(message, dontAskAgainHolder, this.resourceRepository());
+
+        JOptionPane queryChangePane = new JOptionPane(dontAskAgainPanel, JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+        JDialog queryChangeDialog = queryChangePane.createDialog(this.getWorkbenchContext().getCurrentWindow(), title);
+        queryChangeDialog.setSize(400, 150);
+        queryChangeDialog.setResizable(false);
+        queryChangeDialog.show();
+        queryChangeDialog.dispose();
+        int response = -1;
+        Object value = queryChangePane.getValue();
+        if (value != null && value instanceof Integer) {
+            response = ((Integer)value).intValue();
+        }
+
+        // prompt user for response
+//        int response =
+//            JOptionPane.showConfirmDialog(
+//                this.getWorkbenchContext().getCurrentWindow(),
+//                dontAskAgainPanel,
+//                title,
+//                JOptionPane.YES_NO_OPTION,
+//                JOptionPane.WARNING_MESSAGE
+//            );
+
+        if (dontAskAgainHolder.getValue().equals(Boolean.TRUE)) {
+            if (response == JOptionPane.YES_OPTION) {
+                this.preferences().putBoolean(MappingsPlugin.CHANGE_QUERY_TYPE_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE, true);
+            }
+            else if (response == JOptionPane.NO_OPTION) {
+                this.preferences().putBoolean(MappingsPlugin.CHANGE_QUERY_TYPE_DO_NOT_THIS_SHOW_AGAIN_PREFERENCE, false);
+            }
+        }
+
+        return (response == JOptionPane.OK_OPTION);
+    }
+
+    private PropertyValueModel buildQueryTypePropertyAdapter(final ObjectListSelectionModel querySelectionModel) {
+        return new PropertyAspectAdapter(this.queryHolder) {
+            protected Object getValueFromSubject() {
+                return resourceRepository().getString(((MWQuery) this.subject).queryType());
+            }
+
+            protected void setValueOnSubject(Object value) {
+                if (!QueryGeneralPanel.this.queryTypeCanChange())
+                    return;
+
+                MWQuery newQuery;
+                if (value == resourceRepository().getString(MWQuery.REPORT_QUERY)) {
+                    newQuery = getQuery().asReportQuery();
+                }
+                else if (value == resourceRepository().getString(MWQuery.READ_ALL_QUERY)) {
+                    newQuery = getQuery().asReadAllQuery();
+                }
+                else {//if (value == MWQuery.READ_OBJECT_QUERY)
+                    newQuery = getQuery().asReadObjectQuery();
+                }
+                querySelectionModel.setSelectedValue(newQuery);
+            }
+        };
+    }
+
+    private PropertyChangeListener buildQueryTypeChooserListener(final JComboBox comboBox) {
+        return new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (getQuery() == null) {
+                    comboBox.setEnabled(false);
+                } else {
+                    comboBox.setEnabled(true);
+                }
+            }
+        };
+    }
+
+    protected void selectParameter(MWQueryParameter parameter) {
+        this.queryParametersPanel.selectParameter(parameter);
+    }
 }

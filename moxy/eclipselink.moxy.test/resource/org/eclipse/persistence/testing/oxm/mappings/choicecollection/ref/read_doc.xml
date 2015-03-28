@@ -1,11 +1,11 @@
 <root>
    <employees>
       <employee>
-	     <name>Jane Doe</name>
-		 <address>
-		    <address-id>1</address-id>
-			<zip>123456</zip>
-		 </address>
+         <name>Jane Doe</name>
+         <address>
+            <address-id>1</address-id>
+            <zip>123456</zip>
+         </address>
          <work-address>
             <id>2</id>
             <zip>654321</zip>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -67,21 +67,21 @@ public class SchemaResolverSystemIdTestCases extends XSDHelperDefineTestCases {
         List types = ((SDOXSDHelper)xsdHelper).define(source, new MySchemaResolver());
         assertEquals(1, types.size());
     }
-    
+
     public void testDOMSourceDefine() {
         DOMSource source = new DOMSource();
         source.setSystemId("xyz:zxy");
         List types = ((SDOXSDHelper)xsdHelper).define(source, new MySchemaResolver());
         assertEquals(1, types.size());
     }
-    
+
     public void testDefineWithIDAndStream() {
-        String schema = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + 
-        "<xsd:complexType name=\"employee-type\">" + 
-        "<xsd:sequence>" + 
-        "<xsd:element name=\"name\" type=\"xsd:string\"/>" + 
-        "</xsd:sequence>" + 
-        "</xsd:complexType>" + 
+        String schema = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+        "<xsd:complexType name=\"employee-type\">" +
+        "<xsd:sequence>" +
+        "<xsd:element name=\"name\" type=\"xsd:string\"/>" +
+        "</xsd:sequence>" +
+        "</xsd:complexType>" +
         "<xsd:element name=\"employee\" type=\"employee-type\"/>" +
         "</xsd:schema>";
 
@@ -90,25 +90,25 @@ public class SchemaResolverSystemIdTestCases extends XSDHelperDefineTestCases {
         source.setInputStream(new ByteArrayInputStream(schema.getBytes()));
         List types = ((SDOXSDHelper)xsdHelper).define(source, new DefaultSchemaResolver());
         assertEquals(1, types.size());
-        
+
     }
-    
+
     public void testDOMSourceWithNodeDefine() {
-        String schema = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + 
-        "<xsd:complexType name=\"employee-type\">" + 
-        "<xsd:sequence>" + 
-        "<xsd:element name=\"name\" type=\"xsd:string\"/>" + 
-        "</xsd:sequence>" + 
-        "</xsd:complexType>" + 
+        String schema = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+        "<xsd:complexType name=\"employee-type\">" +
+        "<xsd:sequence>" +
+        "<xsd:element name=\"name\" type=\"xsd:string\"/>" +
+        "</xsd:sequence>" +
+        "</xsd:complexType>" +
         "<xsd:element name=\"employee\" type=\"employee-type\"/>" +
         "</xsd:schema>";
- 
+
         XMLParser parser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
         Node node = parser.parse(new StringReader(schema));
         DOMSource source = new DOMSource(node, "some-id");
         List types = ((SDOXSDHelper)xsdHelper).define(source, new DefaultSchemaResolver());
         assertEquals(1, types.size());
-        
+
     }
 
     public static class MySchemaResolver implements SchemaResolver {
@@ -118,18 +118,18 @@ public class SchemaResolverSystemIdTestCases extends XSDHelperDefineTestCases {
         }
 
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-            String schema = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + 
-            "<xsd:complexType name=\"employee-type\">" + 
-            "<xsd:sequence>" + 
-            "<xsd:element name=\"name\" type=\"xsd:string\"/>" + 
-            "</xsd:sequence>" + 
-            "</xsd:complexType>" + 
+            String schema = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+            "<xsd:complexType name=\"employee-type\">" +
+            "<xsd:sequence>" +
+            "<xsd:element name=\"name\" type=\"xsd:string\"/>" +
+            "</xsd:sequence>" +
+            "</xsd:complexType>" +
             "<xsd:element name=\"employee\" type=\"employee-type\"/>" +
             "</xsd:schema>";
-            
+
             return new InputSource(new StringReader(schema));
         }
-        
+
     }
 
     private static class MySource implements Source {

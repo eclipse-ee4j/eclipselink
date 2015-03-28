@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,55 +25,55 @@ import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJ
 
 public class TypeMappingInfoObjectTestCases extends TypeMappingInfoWithJSONTestCases{
 
-	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/object/employee.xml";
-	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/object/employee.json";
-	
-	public TypeMappingInfoObjectTestCases(String name) throws Exception {
-		super(name);
-		setControlDocument(XML_RESOURCE);	
-		setControlJSON(JSON_RESOURCE);
-		setTypeMappingInfos(getTypeMappingInfos());	
-	}
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/object/employee.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/object/employee.json";
 
-	protected TypeMappingInfo[] getTypeMappingInfos()throws Exception {
-	    if(typeMappingInfos == null) {
-	    	
-	    	typeMappingInfos = new TypeMappingInfo[2];
+    public TypeMappingInfoObjectTestCases(String name) throws Exception {
+        super(name);
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setTypeMappingInfos(getTypeMappingInfos());
+    }
 
-	        TypeMappingInfo tpi = new TypeMappingInfo();
-	        tpi.setXmlTagName(new QName("someuri","response"));       
-	        tpi.setElementScope(ElementScope.Global);
-	        tpi.setType(Object.class);
-	        typeMappingInfos[0] = tpi;        
+    protected TypeMappingInfo[] getTypeMappingInfos()throws Exception {
+        if(typeMappingInfos == null) {
 
-	        TypeMappingInfo tmi = new TypeMappingInfo();
-	        tmi.setType(Employee.class);
-	        tmi.setXmlTagName(new QName("someuri", "employee"));
-	        tmi.setElementScope(ElementScope.Global);
-	        typeMappingInfos[1] = tmi;
-	    	
-	    	
-	    }
-		return typeMappingInfos;		
-	}
-	
+            typeMappingInfos = new TypeMappingInfo[2];
+
+            TypeMappingInfo tpi = new TypeMappingInfo();
+            tpi.setXmlTagName(new QName("someuri","response"));
+            tpi.setElementScope(ElementScope.Global);
+            tpi.setType(Object.class);
+            typeMappingInfos[0] = tpi;
+
+            TypeMappingInfo tmi = new TypeMappingInfo();
+            tmi.setType(Employee.class);
+            tmi.setXmlTagName(new QName("someuri", "employee"));
+            tmi.setElementScope(ElementScope.Global);
+            typeMappingInfos[1] = tmi;
+
+
+        }
+        return typeMappingInfos;
+    }
+
    protected Object getControlObject() {
-		
-		QName qname = new QName("someuri","response");
-		
-		Employee emp = new Employee();
+
+        QName qname = new QName("someuri","response");
+
+        Employee emp = new Employee();
         emp.id = "123";
         emp.name="aaa";
 
         JAXBElement<Object> elem = new JAXBElement<Object>(qname, Object.class, emp);
-		return elem;
-	}
+        return elem;
+    }
 
-   public Map<String, InputStream> getControlSchemaFiles(){			 		   
-	    InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/object/employee.xsd");
-		
-		Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
-		controlSchema.put("someuri", instream);
-		return controlSchema;
-	}
+   public Map<String, InputStream> getControlSchemaFiles(){
+        InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/object/employee.xsd");
+
+        Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
+        controlSchema.put("someuri", instream);
+        return controlSchema;
+    }
 }

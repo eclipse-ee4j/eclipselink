@@ -1,17 +1,17 @@
 /*******************************************************************************
  * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
  *     05/19/2014-2.6 Tomas Kraus
  *       - 437578: Added cacheable field and updated setting isolation from parent.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.security.AccessController;
@@ -60,7 +60,7 @@ public class CachePolicy implements Cloneable, Serializable {
     protected boolean shouldAlwaysRefreshCache;
     protected boolean shouldOnlyRefreshCacheIfNewerVersion;
     protected boolean shouldDisableCacheHits;
-    
+
     protected Class remoteIdentityMapClass;
     protected int remoteIdentityMapSize;
     protected boolean shouldAlwaysRefreshCacheOnRemote;
@@ -102,21 +102,21 @@ public class CachePolicy implements Cloneable, Serializable {
 
     /** Allow cache key type to be configured. */
     protected CacheKeyType cacheKeyType;
-        
+
     //Added for interceptor support.
     protected Class cacheInterceptorClass;
     //Added for interceptor support.
     protected String cacheInterceptorClassName;
-        
+
     /** This flag controls how the MergeManager should merge an Entity when merging into the shared cache.*/
     protected boolean fullyMergeEntity;
-    
+
     /**
-     * In certain cases and cache types it is more efficient to preFetch the cache keys from the cache when 
-     * building the results of the query.  Set this flag to true to prefetch the results. 
+     * In certain cases and cache types it is more efficient to preFetch the cache keys from the cache when
+     * building the results of the query.  Set this flag to true to prefetch the results.
      */
     protected boolean prefetchCacheKeys;
-    
+
     protected Map<List<DatabaseField>, CacheIndex> cacheIndexes;
 
     /** Allows configuration of database change event notification. */
@@ -130,7 +130,7 @@ public class CachePolicy implements Cloneable, Serializable {
         this.identityMapSize = -1;
         this.remoteIdentityMapSize = -1;
     }
-    
+
     /**
      * Returns what type of database change notification an entity/descriptor should use.
      * This is only relevant if the persistence unit/session has been configured with a DatabaseEventListener,
@@ -140,7 +140,7 @@ public class CachePolicy implements Cloneable, Serializable {
     public DatabaseChangeNotificationType getDatabaseChangeNotificationType() {
         return databaseChangeNotificationType;
     }
-    
+
     /**
      * Configures what type of database change notification an entity/descriptor should use.
      * This is only relevant if the persistence unit/session has been configured with a DatabaseEventListener,
@@ -166,7 +166,7 @@ public class CachePolicy implements Cloneable, Serializable {
                         new Object[]{descriptorDescriptor.getAlias(),
                                 parentPolicy.getCacheIsolation(), descriptor.getAlias(),
                                 getCacheIsolation()});
-                setCacheIsolation(parentPolicy.getCacheIsolation());                    
+                setCacheIsolation(parentPolicy.getCacheIsolation());
             }
         }
         // Child must maintain the same indexes as the parent.
@@ -191,7 +191,7 @@ public class CachePolicy implements Cloneable, Serializable {
         if (!isSharedIsolation()) {
             descriptor.notifyReferencingDescriptorsOfIsolation(session);
         }
-        
+
         // PERF: If using isolated cache, then default uow isolation to always (avoids merge/double build).
         if ((getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION) || this.wasDefaultUnitOfWorkCacheIsolationLevel) {
             this.wasDefaultUnitOfWorkCacheIsolationLevel = true;
@@ -218,7 +218,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * Allow the inheritance properties of the descriptor to be initialized.
      * The descriptor's parent must first be initialized.
      */
-    public void initialize(ClassDescriptor descriptor, AbstractSession session) throws DescriptorException {        
+    public void initialize(ClassDescriptor descriptor, AbstractSession session) throws DescriptorException {
         if (hasCacheIndexes()) {
             for (CacheIndex index : getCacheIndexes().values()) {
                 for (int count = 0; count < index.getFields().size(); count++) {
@@ -263,7 +263,7 @@ public class CachePolicy implements Cloneable, Serializable {
             ((DatabaseSession)session).getDatabaseEventListener().initialize(descriptor, session);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Return the cache index for the field names.
@@ -271,7 +271,7 @@ public class CachePolicy implements Cloneable, Serializable {
     public CacheIndex getCacheIndex(List<DatabaseField> fields) {
         return getCacheIndexes().get(fields);
     }
-    
+
     /**
      * PUBLIC:
      * Add the cache index to the descriptor's cache settings.
@@ -282,7 +282,7 @@ public class CachePolicy implements Cloneable, Serializable {
     public void addCacheIndex(CacheIndex index) {
         getCacheIndexes().put(index.getFields(), index);
     }
-    
+
     /**
      * PUBLIC:
      * Add the cache index to the descriptor's cache settings.
@@ -293,7 +293,7 @@ public class CachePolicy implements Cloneable, Serializable {
     public void addCacheIndex(String... fields) {
         addCacheIndex(new CacheIndex(fields));
     }
-    
+
     /**
      * PUBLIC:
      * Add the cache index to the descriptor's cache settings.
@@ -304,11 +304,11 @@ public class CachePolicy implements Cloneable, Serializable {
     public void addCacheIndex(DatabaseField fields[]) {
         addCacheIndex(new CacheIndex(fields));
     }
-    
+
     public boolean hasCacheIndexes() {
         return (this.cacheIndexes != null) && (!this.cacheIndexes.isEmpty());
     }
-    
+
     public Map<List<DatabaseField>, CacheIndex> getCacheIndexes() {
         if (this.cacheIndexes == null) {
             this.cacheIndexes = new HashMap<List<DatabaseField>, CacheIndex>();
@@ -319,7 +319,7 @@ public class CachePolicy implements Cloneable, Serializable {
     public void setCacheIndexes(Map<List<DatabaseField>, CacheIndex> cacheIndexes) {
         this.cacheIndexes = cacheIndexes;
     }
-    
+
     public CachePolicy clone() {
         try {
             return (CachePolicy)super.clone();
@@ -350,7 +350,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * Convert all the class-name-based settings in this Descriptor to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         try {
@@ -399,21 +399,21 @@ public class CachePolicy implements Cloneable, Serializable {
      * Advanced users could use this interceptor to audit, profile or log cache access.  This Interceptor
      * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
      * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
-     * 
+     *
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
     public Class getCacheInterceptorClass(){
         return this.cacheInterceptorClass;
     }
-    
+
     /**
      * A CacheInterceptor is an adaptor that when overridden and assigned to a Descriptor all interaction
      * between EclipseLink and the internal cache for that class will pass through the Interceptor.
      * Advanced users could use this interceptor to audit, profile or log cache access.  This Interceptor
      * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
      * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
-     * 
+     *
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
@@ -680,7 +680,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * PUBLIC:
      * Controls how the Entity instances and data will be cached.  See the CacheIsolationType for details on the options.
      * To disable all second level caching simply set CacheIsolationType.ISOLATED.  Note that setting the isolation
-     * will automatically set the corresponding cacheSynchronizationType.   
+     * will automatically set the corresponding cacheSynchronizationType.
      * ISOLATED = DO_NOT_SEND_CHANGES, PROTECTED and SHARED = SEND_OBJECT_CHANGES
      */
     public void setCacheIsolation(CacheIsolationType isolationType) {
@@ -701,7 +701,7 @@ public class CachePolicy implements Cloneable, Serializable {
     public boolean shouldIsolateObjectsInUnitOfWork() {
         return this.unitOfWorkCacheIsolationLevel == ISOLATE_CACHE_ALWAYS;
     }
-          
+
     /**
      * INTERNAL:
      * Return if the unit of work should by-pass the IsolatedSession cache.
@@ -711,7 +711,7 @@ public class CachePolicy implements Cloneable, Serializable {
     public boolean shouldIsolateProtectedObjectsInUnitOfWork() {
         return this.unitOfWorkCacheIsolationLevel == ISOLATE_FROM_CLIENT_SESSION;
     }
-          
+
     /**
      * INTERNAL:
      * Return if the unit of work should by-pass the session cache after an early transaction.
@@ -719,7 +719,7 @@ public class CachePolicy implements Cloneable, Serializable {
     public boolean shouldIsolateObjectsInUnitOfWorkEarlyTransaction() {
         return this.unitOfWorkCacheIsolationLevel == ISOLATE_CACHE_AFTER_TRANSACTION;
     }
-              
+
     /**
      * INTERNAL:
      * Return if the unit of work should use the session cache after an early transaction.
@@ -727,7 +727,7 @@ public class CachePolicy implements Cloneable, Serializable {
     public boolean shouldUseSessionCacheInUnitOfWorkEarlyTransaction() {
         return this.unitOfWorkCacheIsolationLevel == USE_SESSION_CACHE_AFTER_TRANSACTION;
     }
-    
+
     /**
      * ADVANCED:
      * Return the unit of work cache isolation setting.
@@ -737,14 +737,14 @@ public class CachePolicy implements Cloneable, Serializable {
     public int getUnitOfWorkCacheIsolationLevel() {
         return unitOfWorkCacheIsolationLevel;
     }
-    
+
     /**
      * ADVANCED:
      * This setting configures how the session cache will be used in a unit of work.
      * Most of the options only apply to a unit of work in an early transaction,
      * such as a unit of work that was flushed (writeChanges), issued a modify query, or acquired a pessimistic lock.
      * <p> USE_SESSION_CACHE_AFTER_TRANSACTION - Objects built from new data accessed after a unit of work early transaction are stored in the session cache.
-     * This options is the most efficient as it allows the cache to be used after an early transaction. 
+     * This options is the most efficient as it allows the cache to be used after an early transaction.
      * This should only be used if it is known that this class is not modified in the transaction,
      * otherwise this could cause uncommitted data to be loaded into the session cache.
      * ISOLATE_NEW_DATA_AFTER_TRANSACTION - Default (when using caching): Objects built from new data accessed after a unit of work early transaction are only stored in the unit of work.
@@ -1034,7 +1034,7 @@ public class CachePolicy implements Cloneable, Serializable {
     public void useHardCacheWeakIdentityMap() {
         setIdentityMapClass(ClassConstants.HardCacheWeakIdentityMap_Class);
     }
-    
+
     /**
      * PUBLIC:
      * Set the class of identity map to be the soft identity map.

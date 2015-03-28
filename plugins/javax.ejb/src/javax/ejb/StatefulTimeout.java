@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  * be idle (not receive any client invocations) before it
  * is eligible for removal by the container.
  * <p>
- * 
+ *
  * The semantics of the <code>value</value> element are as follows:
  * <ul>
  * <li>A value <code>&#062;</code>0 indicates a timeout value in the units
@@ -61,11 +61,11 @@ import java.util.concurrent.TimeUnit;
  * <li>A value of -1 means the bean will never be removed due to timeout.
  * </ul>
  * Values less than -1 are not valid.
- * 
+ *
  * @since EJB 3.1
  */
 
-@Target(TYPE) 
+@Target(TYPE)
 @Retention(RUNTIME)
 public @interface StatefulTimeout {
 
@@ -80,7 +80,7 @@ public @interface StatefulTimeout {
      * <li>A value of -1 means the bean will never be removed due to timeout.
      * </ul>
      * Values less than -1 are not valid.
-     * 
+     *
      */
     long value();
 

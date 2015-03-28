@@ -1,19 +1,19 @@
 <!--/*******************************************************************************
-* This program and the accompanying materials are made available under the 
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
-* which accompanies this distribution. 
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at 
+* and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
-*   - multi-word targets use hyphens '-' 
+*   - multi-word targets use hyphens '-'
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatenated
-*     e.g. 'runpathref'  
+*     e.g. 'runpathref'
 *   - multi-word tasks (taskdef) names are concatenated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
@@ -39,7 +39,7 @@
     <property file="${user.home}/websphere.properties"/>
     <property file="./websphere.properties"/>
 
-	<property name="suffix" value="sh"/>
+    <property name="suffix" value="sh"/>
 
     <condition property="is.as">
         <contains string="${server.version}" substring="as"/>
@@ -71,7 +71,7 @@
             <arg value="server1"/>
             <arg value="-Dis.JTA=${is.JTA}"/>
             <arg value="-Dejb.lookup=${ejb.lookup}"/>
-        </exec> 
+        </exec>
     </target>
 
     <!-- Start the ND edition server. -->
@@ -85,7 +85,7 @@
             <arg value="server1"/>
             <arg value="-Dis.JTA=${is.JTA}"/>
             <arg value="-Dejb.lookup=${ejb.lookup}"/>
-        </exec> 
+        </exec>
     </target>
 
     <!--
@@ -96,8 +96,8 @@
         <echo message="*****Config WebSphere Server*****"/>
         <copy overwrite="true" file="${was.jython.scripts.dir}/configWebSphere.py" tofile="${was.home}/bin/configWebSphere.py"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%oracleDriver%%" value="${oracle.extensions.jar.dir}/ojdbc7.jar"/>
-		<replace file="${was.home}/bin/configWebSphere.py" token="%%nodeName%%" value="${nodeName}"/>
-		<replace file="${was.home}/bin/configWebSphere.py" token="%%serverName%%" value="${serverName}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="%%nodeName%%" value="${nodeName}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="%%serverName%%" value="${serverName}"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%dbUser%%" value="${db.user}"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%dbPassword%%" value="${db.pwd}"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%dbURL%%" value="${db.url}"/>
@@ -131,7 +131,7 @@
     <target name="websphere-stop-as" if="is.as">
         <exec executable="${was.home}/bin/stopServer.${suffix}">
             <arg value="server1"/>
-        </exec> 
+        </exec>
     </target>
 
     <!-- Stop the ND edition server. -->
@@ -153,12 +153,12 @@
     <target name="websphere-deploy">
         <echo message="*****Deploy ${application.name} on WebSphere Server*****"/>
         <copy overwrite="true" file="${was.jython.scripts.dir}/installApps.py" tofile="${was.home}/bin/installApps.py"/>
-		<replace file="${was.home}/bin/installApps.py" token="%%serverVersion%%" value="${server.version}"/>
-	    <replace file="${was.home}/bin/installApps.py" token="%%cellName%%" value="${cellName}"/>
-		<replace file="${was.home}/bin/installApps.py" token="%%nodeName%%" value="${nodeName}"/>
-		<replace file="${was.home}/bin/installApps.py" token="%%serverName%%" value="${serverName}"/>
+        <replace file="${was.home}/bin/installApps.py" token="%%serverVersion%%" value="${server.version}"/>
+        <replace file="${was.home}/bin/installApps.py" token="%%cellName%%" value="${cellName}"/>
+        <replace file="${was.home}/bin/installApps.py" token="%%nodeName%%" value="${nodeName}"/>
+        <replace file="${was.home}/bin/installApps.py" token="%%serverName%%" value="${serverName}"/>
         <replace file="${was.home}/bin/installApps.py" token="%%appName%%" value="${application.name}"/>
-		<property name="ear.name" value="${application.name}.ear"/>
+        <property name="ear.name" value="${application.name}.ear"/>
         <replace file="${was.home}/bin/installApps.py" token="%%ear%%" value="${ear.name}"/>
         <sleep seconds="20"/>
         <exec executable="${was.home}/bin/wsadmin.${suffix}">

@@ -183,7 +183,7 @@
             </fileset>
         </jar>
     </target>
-        
+
     <target name="package" depends="init, package-src" description="jar OSGI bundle">
         <jar jarfile="${jpars.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" duplicate="preserve" manifest="${src.dir}/../META-INF/MANIFEST.MF">
             <fileset dir="${jpars.2.base.dir}">

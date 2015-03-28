@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.util.*;
@@ -164,7 +164,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      *    doesn't work for fields locking.
      *    It degenerates into useless pattern: "if the original locking value is unchanged
      *    then the object hasn't been changed".
-     *    
+     *
      * Use compareWriteLockValues method only if this method returns true.
      */
     public boolean supportsWriteLockValuesComparison() {
@@ -186,7 +186,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      */
     public int compareWriteLockValues(Object value1, Object value2){
         // should never be called because supportsWriteLockValuesComparison() returns false.
-    	return -1;    	
+        return -1;
     }
 
     /**
@@ -224,7 +224,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     public Object getBaseValue(){
         return null; // this locking type does not store values in the cache
     }
-    
+
     /**
      * INTERNAL:
      * Returns the fields that should be compared in the where clause.
@@ -251,7 +251,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
 
     /**
      * ADVANCED:
-     * returns the LockOnChange mode for this policy.  This mode specifies if a 
+     * returns the LockOnChange mode for this policy.  This mode specifies if a
      * Optimistic Write lock should be enforced on this entity when a set of mappings are changed.
      * Unfortunately this locking policy can not enforce an optimistic write lock unless a FK or DTF field
      * has changed so this type returns LockOnChange.NONE
@@ -306,7 +306,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     public void initializeProperties() {
         //nothing to do
     }
-    
+
      /**
       * PUBLIC:
       * Return true if the lock value is stored in the cache.
@@ -314,7 +314,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      public boolean isStoredInCache() {
          return false;
      }
-         
+
     /**
      * PUBLIC:
      * Return true if the policy uses cascade locking. Currently, not supported
@@ -401,7 +401,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
 
     /**
      * ADVANCED:
-     * Sets the LockOnChange mode for this policy.  This mode specifies if a 
+     * Sets the LockOnChange mode for this policy.  This mode specifies if a
      * Optimistic Write lock should be enforced on this entity when set of mappings are changed.
      * Unfortunately this locking policy can not always force an optimistic lock unless the core fields have changed
      */

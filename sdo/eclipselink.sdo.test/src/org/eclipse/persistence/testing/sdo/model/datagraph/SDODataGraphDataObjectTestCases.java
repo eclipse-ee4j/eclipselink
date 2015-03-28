@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.sdo.model.datagraph;
 
@@ -29,7 +29,7 @@ import commonj.sdo.Type;
 
 public class SDODataGraphDataObjectTestCases extends SDOTestCase {
     protected DataGraph dataGraph;
-    
+
     public static final String URINAME = "http://www.example.org";
     public static final String COMPANY_TYPENAME = "Company";
     public static final String PO_TYPENAME = "PurchaseOrder";
@@ -58,138 +58,138 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
         dateType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATE);
         yearMonthDayType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.YEARMONTHDAY);
         decimalType = SDOConstants.SDO_DECIMAL;
-        idType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.ID);     
+        idType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.ID);
     }
-   
+
     /**
      * This function will define control types programmatically to compare to XSD definition
      * by using the standard spec SDODataObject generation method on page
-     * 
+     *
      * The existing getControlTypes() uses non-public Property constructors
      * @throws Exception
      */
     public DataObject createRootObject(List<Type> types) {
-    	DataObject aRoot = null;
-    		DataObject cust1 = dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
-    		cust1.set("custID", 5);
-    		
-    		DataObject item1 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-    		item1.set("itemID", 3);
-    		item1.set("name", "item1-DF");    		
-    		DataObject item2 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-    		item2.set("itemID", 6);
-    		item2.set("name", "item2-DF");    		
-    		DataObject item3 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-    		item3.set("itemID", 7);
-    		item3.set("name", "item3-DF");    		
-    		
-    		DataObject billTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
-    		billTo.set("name", "bill");
-    		DataObject shipTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
-    		shipTo.set("name", "ship");
+        DataObject aRoot = null;
+            DataObject cust1 = dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
+            cust1.set("custID", 5);
 
-    		DataObject po1 = dataFactory.create(typeHelper.getType(URINAME, PO_TYPENAME));
-    		po1.set("poID", 10);
-    		po1.set("shipTo", shipTo);
-    		po1.set("billTo", billTo);
-    		po1.set("orderDate", "1999-10-20");
-    		
-    		// references to company/item
-    		List<DataObject> itemsRef = new ArrayList<DataObject>();
-    		itemsRef.add(item2);//6);
-    		itemsRef.add(item3);//7);
-    		po1.set("item", itemsRef); // unwrapping exception
-    		
+            DataObject item1 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            item1.set("itemID", 3);
+            item1.set("name", "item1-DF");
+            DataObject item2 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            item2.set("itemID", 6);
+            item2.set("name", "item2-DF");
+            DataObject item3 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            item3.set("itemID", 7);
+            item3.set("name", "item3-DF");
+
+            DataObject billTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
+            billTo.set("name", "bill");
+            DataObject shipTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
+            shipTo.set("name", "ship");
+
+            DataObject po1 = dataFactory.create(typeHelper.getType(URINAME, PO_TYPENAME));
+            po1.set("poID", 10);
+            po1.set("shipTo", shipTo);
+            po1.set("billTo", billTo);
+            po1.set("orderDate", "1999-10-20");
+
+            // references to company/item
+            List<DataObject> itemsRef = new ArrayList<DataObject>();
+            itemsRef.add(item2);//6);
+            itemsRef.add(item3);//7);
+            po1.set("item", itemsRef); // unwrapping exception
+
             aRoot = dataFactory.create(typeHelper.getType(URINAME, COMPANY_TYPENAME));
             List<DataObject> customers = new ArrayList<DataObject>();
             customers.add(cust1);
             aRoot.set("cust", customers);
             // add purchaseOrders
-    		List<DataObject> pos = new ArrayList<DataObject>();
-    		pos.add(po1);
+            List<DataObject> pos = new ArrayList<DataObject>();
+            pos.add(po1);
             aRoot.set(PO_PATH, pos);
 
             // add items (containment)
-    		List<DataObject> items = new ArrayList<DataObject>();
-    		items.add(item1);
-    		items.add(item2);
-    		items.add(item3);
-    		aRoot.set("item", items);
-    		
-            aRoot.set("name", "mycomp-DF");    		
-    	
-    	return aRoot;
+            List<DataObject> items = new ArrayList<DataObject>();
+            items.add(item1);
+            items.add(item2);
+            items.add(item3);
+            aRoot.set("item", items);
+
+            aRoot.set("name", "mycomp-DF");
+
+        return aRoot;
     }
 
     public DataObject populateRootDataGraphDataObject(DataObject aRoot, List<Type> types) {
-    		DataObject cust1 = dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
-    		cust1.set("custID", 5);
-    		
-    		DataObject item1 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-    		item1.set("itemID", 3);
-    		item1.set("name", "item1-DF");    		
-    		DataObject item2 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-    		item2.set("itemID", 6);
-    		item2.set("name", "item2-DF");    		
-    		DataObject item3 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-    		item3.set("itemID", 7);
-    		item3.set("name", "item3-DF");    		
-    		
-    		DataObject billTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
-    		billTo.set("name", "bill");
-    		DataObject shipTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
-    		shipTo.set("name", "ship");
+            DataObject cust1 = dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
+            cust1.set("custID", 5);
 
-    		DataObject po1 = dataFactory.create(typeHelper.getType(URINAME, PO_TYPENAME));
-    		po1.set("poID", 10);
-    		po1.set("shipTo", shipTo);
-    		po1.set("billTo", billTo);
-    		po1.set("orderDate", "1999-10-20");
-    		
-    		// references to company/item
-    		List<DataObject> itemsRef = new ArrayList<DataObject>();
-    		itemsRef.add(item2);//6);
-    		itemsRef.add(item3);//7);
-    		po1.set("item", itemsRef); // unwrapping exception
-    		
+            DataObject item1 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            item1.set("itemID", 3);
+            item1.set("name", "item1-DF");
+            DataObject item2 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            item2.set("itemID", 6);
+            item2.set("name", "item2-DF");
+            DataObject item3 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            item3.set("itemID", 7);
+            item3.set("name", "item3-DF");
+
+            DataObject billTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
+            billTo.set("name", "bill");
+            DataObject shipTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
+            shipTo.set("name", "ship");
+
+            DataObject po1 = dataFactory.create(typeHelper.getType(URINAME, PO_TYPENAME));
+            po1.set("poID", 10);
+            po1.set("shipTo", shipTo);
+            po1.set("billTo", billTo);
+            po1.set("orderDate", "1999-10-20");
+
+            // references to company/item
+            List<DataObject> itemsRef = new ArrayList<DataObject>();
+            itemsRef.add(item2);//6);
+            itemsRef.add(item3);//7);
+            po1.set("item", itemsRef); // unwrapping exception
+
             //aRoot = dataFactory.create(typeHelper.getType(URINAME, COMPANY_TYPENAME));
             List<DataObject> customers = new ArrayList<DataObject>();
             customers.add(cust1);
             aRoot.set("cust", customers);
             // add purchaseOrders
-    		List<DataObject> pos = new ArrayList<DataObject>();
-    		pos.add(po1);
+            List<DataObject> pos = new ArrayList<DataObject>();
+            pos.add(po1);
             aRoot.set(PO_PATH, pos);
 
             // add items (containment)
-    		List<DataObject> items = new ArrayList<DataObject>();
-    		items.add(item1);
-    		items.add(item2);
-    		items.add(item3);
-    		aRoot.set("item", items);
-    		
-            aRoot.set("name", "mycomp-DF");    		
-    	return aRoot;
+            List<DataObject> items = new ArrayList<DataObject>();
+            items.add(item1);
+            items.add(item2);
+            items.add(item3);
+            aRoot.set("item", items);
+
+            aRoot.set("name", "mycomp-DF");
+        return aRoot;
     }
-    
+
     public List<Type> getControlTypes() {
         List<Type> types = new ArrayList<Type>();
         if(typeHelper.getType(URINAME, COMPANY_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, COMPANY_TYPENAME));
+            types.add(typeHelper.getType(URINAME, COMPANY_TYPENAME));
         }
         if(typeHelper.getType(URINAME, PO_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, PO_TYPENAME));
+            types.add(typeHelper.getType(URINAME, PO_TYPENAME));
         }
         if(typeHelper.getType(URINAME, CUSTOMER_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
+            types.add(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
         }
         if(typeHelper.getType(URINAME, ADDRESS_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
+            types.add(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
         }
         if(typeHelper.getType(URINAME, ITEM_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            types.add(typeHelper.getType(URINAME, ITEM_TYPENAME));
         }
-    	return types;
+        return types;
     }
 
     protected List<Type> getTypesToGenerateFrom() {
@@ -199,17 +199,17 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
     protected String getControlRootURI() {
         return URINAME;
     }
-    
+
     protected String getControlRootName() {
         return "company";
     }
 
 
     private Type defineAndPostProcessUnidirectional(String containingPropertyLocalName, DataObject typeToDefine, //
-    		String idPropertyName, String containingPropertyName) {
-    	// define the current type
+            String idPropertyName, String containingPropertyName) {
+        // define the current type
         Type aType = typeHelper.define(typeToDefine);
-        // get the 
+        // get the
         Property containingProperty = aType.getProperty(containingPropertyName);
         ((SDOProperty)containingProperty).setXsd(true);
         ((SDOProperty)containingProperty).setXsdLocalName(containingProperty.getContainingType().getName());//containingPropertyLocalName);
@@ -224,14 +224,14 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
         //((SDOType)aType).setIDProp(aType.getProperty(idPropertyName));
         return aType;
     }
-*/    
+*/
     private Type registerAddressType() {
         DataObject addressType = dataFactory.create(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDOProperty prop = (SDOProperty)addressType.getType().getProperty("uri");
         addressType.set(prop, getControlRootURI());
         prop = (SDOProperty)addressType.getType().getProperty(SDOConstants.SDOXML_NAME);
         addressType.set(prop,  ADDRESS_TYPENAME);
-        
+
         addProperty(addressType, "name", stringType);
         addProperty(addressType, "street", stringType);
         addProperty(addressType, "city", stringType);
@@ -275,10 +275,10 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
 
     // sequenced
     private Type registerPurchaseOrderType(Type addressType, Type itemType, Type customerType) {
-    	/**
-    	 * instance properties available
-    	 * aliasName, name, many, containment, default, readOnly, type, opposite, nullable
-    	 */
+        /**
+         * instance properties available
+         * aliasName, name, many, containment, default, readOnly, type, opposite, nullable
+         */
         DataObject purchaseOrderTypeDO = dataFactory.create(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDOProperty prop = (SDOProperty)purchaseOrderTypeDO.getType().getProperty("uri");
         purchaseOrderTypeDO.set(prop, getControlRootURI());
@@ -290,7 +290,7 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
 
         // set unidirection reference id
         setIDPropForReferenceProperties(purchaseOrderTypeDO, "poID");
-        
+
         // add properties in sequence
         DataObject shipToProp = addProperty(purchaseOrderTypeDO, "shipTo", addressType, true);
         assertNotNull(shipToProp);
@@ -305,7 +305,7 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
 
         String containingPropertyName = "item";
         Type aType = defineAndPostProcessUnidirectional(typeName, purchaseOrderTypeDO, idPropName, containingPropertyName);
-        
+
         return aType;
     }
 
@@ -324,7 +324,7 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
 //        SDOProperty nameProp = (SDOProperty)companyType.getType().getProperty(SDOConstants.XMLELEMENT_PROPERTY_NAME);
 //        assertNotNull(nameProp);
         //name.set(SDOConstants.XMLELEMENT_PROPERTY_NAME, false);
-        //nameProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.FALSE);        
+        //nameProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.FALSE);
         DataObject custProp =  addProperty(companyType, "cust", customerType, true, true);
         assertNotNull(custProp);
         DataObject poProp = addProperty(companyType, PO_PATH, purchaseOrderType, true, true);
@@ -345,7 +345,7 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
         String idPropName = "custID";
         customerType.set(prop, typeName);
         setIDPropForReferenceProperties(customerType, "custID");
-        
+
         DataObject custidProperty = addProperty(customerType, idPropName, stringType);
         assertNotNull(custidProperty);
         DataObject poProp = addProperty(customerType, "purchaseOrder", purchaseOrderType, false, false);
@@ -355,8 +355,8 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
         Type aType = defineAndPostProcessUnidirectional(typeName, customerType, idPropName, containingPropertyName);
         return aType;
     }
-    
-    
+
+
     /**
      * See section 3.8.4 p.41
      * We would like to create at least one test framework that uses the standard createDataObject spec
@@ -368,9 +368,9 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
         //boolean createTogether = false;
         Type poType = null;
         Type customerType = null;
-        	poType = registerPurchaseOrderType(addressType, itemType, customerType);        	
-        	customerType = registerCustomerType(poType);
+            poType = registerPurchaseOrderType(addressType, itemType, customerType);
+            customerType = registerCustomerType(poType);
         Type companyType = registerCompanyType(poType, customerType, itemType);
         assertNotNull(companyType);
-    }    
+    }
 }

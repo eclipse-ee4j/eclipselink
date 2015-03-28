@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,20 +44,20 @@ import static org.junit.Assert.assertTrue;
  *
  */
 public class SimplePLSQLServiceTestSuite extends DBWSTestSuite {
-	public static final String TEST = "simpleplsql";
-	public static final String TEST_NAMESPACE = "urn:simpleplsql";
-	public static final String SERVICE = "simpleplsqlService";
-	public static final String SERVICE_NAMESPACE = "urn:simpleplsqlService";
-	public static final String SERVICE_PORT = "simpleplsqlServicePort";
+    public static final String TEST = "simpleplsql";
+    public static final String TEST_NAMESPACE = "urn:simpleplsql";
+    public static final String SERVICE = "simpleplsqlService";
+    public static final String SERVICE_NAMESPACE = "urn:simpleplsqlService";
+    public static final String SERVICE_PORT = "simpleplsqlServicePort";
 
     static final String REQUEST_MSG =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Header/>" +
-			 "<env:Body>" +
-				"<"+TEST+ " xmlns="+ "\"" + SERVICE_NAMESPACE + "\"" + ">" +
-				  "<ARG1>blah</ARG1>" +
-				"</simpleplsql>" +
-			  "</env:Body>" +
+             "<env:Body>" +
+                "<"+TEST+ " xmlns="+ "\"" + SERVICE_NAMESPACE + "\"" + ">" +
+                  "<ARG1>blah</ARG1>" +
+                "</simpleplsql>" +
+              "</env:Body>" +
         "</env:Envelope>";
 
     static final String RESPONSE_MSG =
@@ -69,21 +69,21 @@ public class SimplePLSQLServiceTestSuite extends DBWSTestSuite {
               "</simple-xml>" +
             "</simple-xml-format>" +
           "</srvc:result>" +
-		"</srvc:simpleplsqlResponse>";
+        "</srvc:simpleplsqlResponse>";
 
     @BeforeClass
     public static void setUp() {
-	    if (conn == null) {
-	        try {
-	            conn = buildConnection();
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    if (ddlCreate) {
-        	runDdl(conn, CREATE_PACKAGE, ddlDebug);
-        	runDdl(conn, CREATE_PACKAGE_BODY, ddlDebug);
-	    }
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_PACKAGE, ddlDebug);
+            runDdl(conn, CREATE_PACKAGE_BODY, ddlDebug);
+        }
     }
 
     @AfterClass
@@ -96,32 +96,32 @@ public class SimplePLSQLServiceTestSuite extends DBWSTestSuite {
 
     @Test
     public void testService() {
-    	try {
-	        QName qname = new QName(SERVICE_NAMESPACE, SERVICE_PORT);
-	        Service service = Service.create(new QName(TEST_NAMESPACE, SERVICE));
-	        service.addPort(qname, SOAPBinding.SOAP11HTTP_BINDING, "http://" + host + ":" + port + "/simpleplsql/simpleplsql");
-	        Dispatch<SOAPMessage> sourceDispatch = service.createDispatch(qname, SOAPMessage.class, Service.Mode.MESSAGE);
+        try {
+            QName qname = new QName(SERVICE_NAMESPACE, SERVICE_PORT);
+            Service service = Service.create(new QName(TEST_NAMESPACE, SERVICE));
+            service.addPort(qname, SOAPBinding.SOAP11HTTP_BINDING, "http://" + host + ":" + port + "/simpleplsql/simpleplsql");
+            Dispatch<SOAPMessage> sourceDispatch = service.createDispatch(qname, SOAPMessage.class, Service.Mode.MESSAGE);
 
-	        // Test plsql proc
-	        SOAPMessage request = createSOAPMessage(REQUEST_MSG);
-	        SOAPMessage response = sourceDispatch.invoke(request);
-	        assertNotNull("Test failed:  response is null.", response);
+            // Test plsql proc
+            SOAPMessage request = createSOAPMessage(REQUEST_MSG);
+            SOAPMessage response = sourceDispatch.invoke(request);
+            assertNotNull("Test failed:  response is null.", response);
 
             SOAPBody responseBody = response.getSOAPPart().getEnvelope().getBody();
             Document resultDoc = responseBody.extractContentAsDocument();
-            
+
             NodeList elts = resultDoc.getDocumentElement().getElementsByTagNameNS(SERVICE_NAMESPACE, "result");
             assertTrue("The wrong number of elements were returned.", ((elts != null && elts.getLength() > 0) && elts.getLength() == 1));
             Node testNode = elts.item(0);
             assertTrue("Didn't find [<srvc:result>] element", testNode.getLocalName().equalsIgnoreCase("result"));
-            
+
             Document controlDoc = xmlParser.parse(new StringReader(RESPONSE_MSG));
             elts = controlDoc.getDocumentElement().getElementsByTagNameNS(SERVICE_NAMESPACE, "result");
             Node ctrlNode = elts.item(0);
-            
+
             assertTrue("\nDocument comparison failed.  Expected:\n" + documentToString(ctrlNode) + "\nbut was:\n" + documentToString(testNode), comparer.isNodeEqual(ctrlNode, testNode));
-    	} catch (Exception x) {
-    		fail("Service test failed: " + x.getMessage());
-    	}
-	}
+        } catch (Exception x) {
+            fail("Service test failed: " + x.getMessage());
+        }
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,13 +42,13 @@ package javax.ejb;
 
 /**
  * The EJBLocalObject interface must be extended by all enterprise beans' local
- * interfaces. An enterprise bean's local interface provides the local client 
- * view of an EJB object. An enterprise bean's local interface defines 
+ * interfaces. An enterprise bean's local interface provides the local client
+ * view of an EJB object. An enterprise bean's local interface defines
  * the business methods callable by local clients.
  *
  * <p> The enterprise bean's local interface is defined by the enterprise
  * bean provider and implemented by the enterprise bean container.
- * 
+ *
  * <p>
  * Enterprise beans written to the EJB 3.0 and later APIs do not require
  * a local interface that extends the EJBLocalObject interface.  A local
@@ -61,19 +61,19 @@ public interface EJBLocalObject {
      * Obtain the enterprise bean's local home interface. The local home
      * interface defines the enterprise bean's create, finder, remove,
      * and home business methods that are available to local clients.
-     * 
+     *
      * @return A reference to the enterprise bean's local home interface.
      *
      * @exception EJBException Thrown when the method failed due to a
      *    system-level failure.
      *
      */
-    public EJBLocalHome getEJBLocalHome() throws EJBException; 
+    public EJBLocalHome getEJBLocalHome() throws EJBException;
 
     /**
-     * Obtain the primary key of the EJB local object. 
+     * Obtain the primary key of the EJB local object.
      *
-     * <p> This method can be called on an entity bean. 
+     * <p> This method can be called on an entity bean.
      * An attempt to invoke this method on a session bean will result in
      * an EJBException.
      *
@@ -94,16 +94,16 @@ public interface EJBLocalObject {
      * @exception EJBException Thrown when the method failed due to a
      *    system-level failure.
      *
-     */ 
+     */
     public void remove() throws RemoveException, EJBException;
 
     /**
-     * Test if a given EJB local object is identical to the invoked EJB 
+     * Test if a given EJB local object is identical to the invoked EJB
      * local object.
      *
      * @param obj An object to test for identity with the invoked object.
      *
-     * @return True if the given EJB local object is identical to the 
+     * @return True if the given EJB local object is identical to the
      * invoked object, false otherwise.
      *
      *
@@ -112,4 +112,4 @@ public interface EJBLocalObject {
      *
      */
     boolean isIdentical(EJBLocalObject obj) throws EJBException;
-} 
+}

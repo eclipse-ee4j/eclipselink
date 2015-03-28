@@ -3,11 +3,11 @@
       "ReqId":"100",
       "Instrmt":{
           "Sym":"$CAD",
-	  "Ordered":"1997-05-12"
+      "Ordered":"1997-05-12"
       },
       "Leg":{
          "Sym":"CAD$",
-	  "Ordered":"1997-05-12T00:00:00"
+      "Ordered":"1997-05-12T00:00:00"
       }
    },
    "OrderDate":{

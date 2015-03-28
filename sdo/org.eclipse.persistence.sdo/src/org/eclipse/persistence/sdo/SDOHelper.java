@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.  
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -62,7 +62,7 @@ public class SDOHelper {
     /**
      * Return the EclipseLink implementation of Type. The given Type is assumed to be an instance of
      * {@link org.eclipse.persistence.sdo.SDOType}. If not, an exception will be thrown.
-     * 
+     *
      * @param type
      * @return
      * @throws IllegalArgumentException
@@ -80,7 +80,7 @@ public class SDOHelper {
      * Return the EclipseLink implementation of Property. The given Property is assumed to be an
      * instance of {@link org.eclipse.persistence.sdo.SDOProperty}. If not, an exception will be
      * thrown.
-     * 
+     *
      * @param property
      * @return
      * @throws IllegalArgumentException
@@ -98,7 +98,7 @@ public class SDOHelper {
      * Return the EclipseLink implementation of DataObject. The given DataObject is assumed to be an
      * instance of {@link org.eclipse.persistence.sdo.SDODataObject}. If not, an exception will be
      * thrown.
-     * 
+     *
      * @param dataObject
      * @return
      * @throws IllegalArgumentException
@@ -116,7 +116,7 @@ public class SDOHelper {
      * Return the EclipseLink implementation of ChangeSummary. The given ChangeSummary is assumed to
      * be an instance of {@link org.eclipse.persistence.sdo.SDOChangeSummary}. If not, an exception
      * will be thrown.
-     * 
+     *
      * @param changeSummary
      * @return
      * @throws IllegalArgumentException
@@ -134,7 +134,7 @@ public class SDOHelper {
      * Return the EclipseLink implementation of Sequence. The given Sequence is assumed to be an
      * instance of {@link org.eclipse.persistence.sdo.SDOSequence}. If not, an exception will be
      * thrown.
-     * 
+     *
      * @param sequence
      * @return
      * @throws IllegalArgumentException
@@ -150,9 +150,9 @@ public class SDOHelper {
 
     /**
      * Return the EclipseLink implementation of HelperContext.  If the given HelperContext
-     * is an instance of the DefaultContext, an SDOHelperContext will be obtained via 
+     * is an instance of the DefaultContext, an SDOHelperContext will be obtained via
      * SDOHelperContext.getHelperContext().  Otherwise, the given HelperContext is assumed to be an
-     * instance of {@link org.eclipse.persistence.sdo.helper.SDOHelperContext}. If not, an exception 
+     * instance of {@link org.eclipse.persistence.sdo.helper.SDOHelperContext}. If not, an exception
      * will be thrown.
 
      * @param helperContext
@@ -173,9 +173,9 @@ public class SDOHelper {
 
     /**
      * Return the EclipseLink implementation of CopyHelper. The given CopyHelper is assumed to be an
-     * instance of {@link org.eclipse.persistence.sdo.helper.SDOCopyHelper}. If not, an exception 
+     * instance of {@link org.eclipse.persistence.sdo.helper.SDOCopyHelper}. If not, an exception
      * will be thrown.
-     * 
+     *
      * @param copyHelper
      * @return
      * @throws IllegalArgumentException
@@ -191,9 +191,9 @@ public class SDOHelper {
 
     /**
      * Return the EclipseLink implementation of DataFactory.  The given DataFactory is assumed to be an
-     * instance of {@link org.eclipse.persistence.sdo.helper.SDODataFactory}. If not, an exception 
+     * instance of {@link org.eclipse.persistence.sdo.helper.SDODataFactory}. If not, an exception
      * will be thrown.
-     * 
+     *
      * @param dataFactory
      * @return
      * @throws IllegalArgumentException
@@ -209,9 +209,9 @@ public class SDOHelper {
 
     /**
      * Return the EclipseLink implementation of DataHelper.  The given DataHelper is assumed to be an
-     * instance of {@link org.eclipse.persistence.sdo.helper.SDODataHelper}. If not, an exception 
+     * instance of {@link org.eclipse.persistence.sdo.helper.SDODataHelper}. If not, an exception
      * will be thrown.
-     * 
+     *
      * @param dataHelper
      * @return
      * @throws IllegalArgumentException
@@ -227,9 +227,9 @@ public class SDOHelper {
 
     /**
      * Return the EclipseLink implementation of EqualityHelper.  The given EqualityHelper is assumed to be an
-     * instance of {@link org.eclipse.persistence.sdo.helper.SDOEqualityHelper}. If not, an exception 
+     * instance of {@link org.eclipse.persistence.sdo.helper.SDOEqualityHelper}. If not, an exception
      * will be thrown.
-     * 
+     *
      * @param equalityHelper
      * @return
      * @throws IllegalArgumentException
@@ -245,9 +245,9 @@ public class SDOHelper {
 
     /**
      * Return the EclipseLink implementation of TypeHelper.  The given TypeHelper is assumed to be an
-     * instance of {@link org.eclipse.persistence.sdo.helper.SDOTypeHelper}. If not, an exception 
+     * instance of {@link org.eclipse.persistence.sdo.helper.SDOTypeHelper}. If not, an exception
      * will be thrown.
-     * 
+     *
      * @param typeHelper
      * @return
      * @throws IllegalArgumentException
@@ -263,9 +263,9 @@ public class SDOHelper {
 
     /**
      * Return the EclipseLink implementation of XMLHelper.  The given XMLHelper is assumed to be an
-     * instance of {@link org.eclipse.persistence.sdo.helper.SDOXMLHelper}. If not, an exception 
+     * instance of {@link org.eclipse.persistence.sdo.helper.SDOXMLHelper}. If not, an exception
      * will be thrown.
-     * 
+     *
      * @param xmlHelper
      * @return
      * @throws IllegalArgumentException
@@ -281,9 +281,9 @@ public class SDOHelper {
 
     /**
      * Return the EclipseLink implementation of XSDHelper.  The given XSDHelper is assumed to be an
-     * instance of {@link org.eclipse.persistence.sdo.helper.SDOXSDHelper}. If not, an exception 
+     * instance of {@link org.eclipse.persistence.sdo.helper.SDOXSDHelper}. If not, an exception
      * will be thrown.
-     * 
+     *
      * @param xsdHelper
      * @return
      * @throws IllegalArgumentException
@@ -310,7 +310,7 @@ public class SDOHelper {
      *   org.eclipse.persistence.sdo.type.SDOObjectType,
      *   org.eclipse.persistence.sdo.type.SDOWrapperType,
      *   org.eclipse.persistence.sdo.type.SDOXMLHelperLoadOptionsType
-     * 
+     *
      * @param <T>
      * @param type
      * @param clazz
@@ -361,7 +361,7 @@ public class SDOHelper {
      * Unwraps a given Property resulting in an EclipseLink SDOProperty. Assumes that the
      * given Property is an instance of EclipseLink SDOProperty, and clazz is
      * org.eclipse.persistence.sdo.SDOProperty.
-     * 
+     *
      * @param <T>
      * @param property
      * @param clazz
@@ -380,7 +380,7 @@ public class SDOHelper {
      * Unwraps a given DataObject resulting in an EclipseLink SDODataObject. Assumes that the
      * given DataObject is an instance of EclipseLink SDODataObject, and clazz is
      * org.eclipse.persistence.sdo.SDODataObject.
-     * 
+     *
      * @param <T>
      * @param dataObject
      * @param clazz
@@ -399,7 +399,7 @@ public class SDOHelper {
      * Unwraps a given ChangeSummary resulting in an EclipseLink SDOChangeSummary. Assumes that the
      * given ChangeSummary is an instance of EclipseLink SDOChangeSummary, and clazz is
      * org.eclipse.persistence.sdo.SDOChangeSummary.
-     * 
+     *
      * @param <T>
      * @param changeSummary
      * @param clazz
@@ -418,7 +418,7 @@ public class SDOHelper {
      * Unwraps a given Sequence resulting in an EclipseLink SDOSequence. Assumes that the
      * given Sequence is an instance of EclipseLink SDOSequence, and clazz is
      * org.eclipse.persistence.sdo.SDOSequence.
-     * 
+     *
      * @param <T>
      * @param sequence
      * @param clazz
@@ -437,7 +437,7 @@ public class SDOHelper {
      * Unwraps a given HelperContext resulting in an EclipseLink SDOHelperContext. Assumes that the
      * given HelperContext is an instance of EclipseLink SDOHelperContext, and clazz is
      * org.eclipse.persistence.sdo.helper.SDOHelperContext.
-     * 
+     *
      * @param <T>
      * @param helperContext
      * @param clazz
@@ -456,7 +456,7 @@ public class SDOHelper {
      * Unwraps a given CopyHelper resulting in an EclipseLink SDOCopyHelper. Assumes that the
      * given CopyHelper is an instance of EclipseLink SDOCopyHelper, and clazz is
      * org.eclipse.persistence.sdo.helper.SDOCopyHelper.
-     * 
+     *
      * @param <T>
      * @param copyHelper
      * @param clazz
@@ -475,7 +475,7 @@ public class SDOHelper {
      * Unwraps a given DataFactory resulting in an EclipseLink SDODataFactory. Assumes that the
      * given DataFactory is an instance of EclipseLink SDODataFactory, and clazz is
      * org.eclipse.persistence.sdo.helper.SDODataFactory.
-     * 
+     *
      * @param <T>
      * @param dataFactory
      * @param clazz
@@ -494,7 +494,7 @@ public class SDOHelper {
      * Unwraps a given DataHelper resulting in an EclipseLink SDODataHelper. Assumes that the
      * given DataHelper is an instance of EclipseLink SDODataHelper, and clazz is
      * org.eclipse.persistence.sdo.helper.SDODataHelper.
-     * 
+     *
      * @param <T>
      * @param dataHelper
      * @param clazz
@@ -513,7 +513,7 @@ public class SDOHelper {
      * Unwraps a given EqualityHelper resulting in an EclipseLink SDOEqualityHelper. Assumes that the
      * given EqualityHelper is an instance of EclipseLink SDOEqualityHelper, and clazz is
      * org.eclipse.persistence.sdo.helper.SDOEqualityHelper.
-     * 
+     *
      * @param <T>
      * @param equalityHelper
      * @param clazz
@@ -532,7 +532,7 @@ public class SDOHelper {
      * Unwraps a given TypeHelper resulting in an EclipseLink SDOTypeHelper. Assumes that the
      * given TypeHelper is an instance of EclipseLink SDOTypeHelper, and clazz is
      * org.eclipse.persistence.sdo.helper.SDOTypeHelper.
-     * 
+     *
      * @param <T>
      * @param typeHelper
      * @param clazz
@@ -548,12 +548,12 @@ public class SDOHelper {
     }
 
     /**
-     * Unwraps a given XMLHelper resulting in an EclipseLink SDOXMLHelper or an EclipseLink 
-     * XMLContext depending on clazz.  Assumes that the given XMLHelper is an instance of 
-     * EclipseLink SDOXMLHelper, and clazz is one of 
+     * Unwraps a given XMLHelper resulting in an EclipseLink SDOXMLHelper or an EclipseLink
+     * XMLContext depending on clazz.  Assumes that the given XMLHelper is an instance of
+     * EclipseLink SDOXMLHelper, and clazz is one of
      * org.eclipse.persistence.sdo.helper.SDOXMLHelper, or
      * org.eclipse.persistence.oxm.XMLContext.  If not, an exception will be thrown.
-     * 
+     *
      * @param <T>
      * @param xmlHelper
      * @param clazz
@@ -581,7 +581,7 @@ public class SDOHelper {
      * Unwraps a given XSDHelper resulting in an EclipseLink SDOXSDHelper. Assumes that the
      * given XSDHelper is an instance of EclipseLink SDOXSDHelper, and clazz is
      * org.eclipse.persistence.sdo.helper.SDOXSDHelper.
-     * 
+     *
      * @param <T>
      * @param xsdHelper
      * @param clazz

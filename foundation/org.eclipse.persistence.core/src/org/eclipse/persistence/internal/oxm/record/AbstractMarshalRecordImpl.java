@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -118,7 +118,7 @@ public class AbstractMarshalRecordImpl<
             return true;
         }
 
-        
+
 
         QName leafType = null;
         if (xmlField != null) {
@@ -172,8 +172,8 @@ public class AbstractMarshalRecordImpl<
                     }
                     classIndicatorUri = descriptor.getNonNullNamespaceResolver().resolveNamespacePrefix(prefix);
                 }
-                if(leafType == null 
-                        || isRootElement && marshaller.isApplicationJSON() && !marshaller.isIncludeRoot() 
+                if(leafType == null
+                        || isRootElement && marshaller.isApplicationJSON() && !marshaller.isIncludeRoot()
                         || !(leafType.getLocalPart().equals(classIndicatorLocal))
                         || (classIndicatorUri == null && (leafType.getNamespaceURI() != null && leafType.getNamespaceURI().length() >0))
                         || (classIndicatorUri != null && !classIndicatorUri.equals(leafType.getNamespaceURI()))
@@ -207,8 +207,8 @@ public class AbstractMarshalRecordImpl<
                 if (xmlRef == null) {
                     return false;
                 }
-            
-	    if (xr.getDeclaredType() != null && xr.getDeclaredType() == xr.getObject().getClass()) {
+
+        if (xr.getDeclaredType() != null && xr.getDeclaredType() == xr.getObject().getClass()) {
                     return false;
                 }
 
@@ -424,7 +424,7 @@ public class AbstractMarshalRecordImpl<
         this.marshaller = marshaller;
         if(marshaller != null){
             if(marshaller.getNamespacePrefixMapper() != null){
-                namespaceAware = true;              
+                namespaceAware = true;
             }else{
                 namespaceAware = marshaller.isApplicationXML();
             }
@@ -466,14 +466,14 @@ public class AbstractMarshalRecordImpl<
                 prefix = namespaceResolver.generatePrefix(Constants.SCHEMA_PREFIX);
                 typeValue = prefix + getNamespaceSeparator() + typeValue;
                 namespaceDeclaration(prefix, typeUri);
-             
+
             } else if (typePrefix != null && !typePrefix.equals(Constants.EMPTY_STRING)){
                 String existingUri = namespaceResolver.resolveNamespacePrefix(typePrefix);
                 if(existingUri != null){
                     prefix = namespaceResolver.generatePrefix();
                 }else{
-                    prefix = typePrefix;   
-                }               
+                    prefix = typePrefix;
+                }
                 typeValue = prefix + getNamespaceSeparator() + typeValue;
                 namespaceDeclaration(prefix, typeUri);
             }else{
@@ -483,7 +483,7 @@ public class AbstractMarshalRecordImpl<
 
             }
         }
-        
+
         String xsiPrefix = null;
         if(isNamespaceAware()){
             xsiPrefix = namespaceResolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
@@ -501,7 +501,7 @@ public class AbstractMarshalRecordImpl<
     @Override
     public void writeXsiTypeAttribute(Descriptor xmlDescriptor, XMLSchemaReference xmlRef, boolean addToNamespaceResolver) {
         QName contextAsQName = xmlRef.getSchemaContextAsQName();
-        
+
         if(contextAsQName == null){
             contextAsQName = xmlRef.getSchemaContextAsQName(namespaceResolver);
         }

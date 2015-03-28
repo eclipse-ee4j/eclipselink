@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,26 +25,26 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
 
     private JsonGenerator jsonGenerator;
     private String rootKeyName;
-          
+
     public JsonGeneratorRecord(JsonGenerator generator, String rootKeyName){
-        super();       
+        super();
         this.jsonGenerator = generator;
         this.rootKeyName = rootKeyName;
     }
-    
+
     protected void startRootObject(){
-        super.startRootObject();        
+        super.startRootObject();
         position.setKeyName(rootKeyName);
         setComplex(position, true);
     }
-   
+
     protected void finishLevel(){
         if(!(position.isCollection && position.isEmptyCollection() && position.getKeyName() == null)){
-            jsonGenerator.writeEnd(); 
+            jsonGenerator.writeEnd();
         }
         super.finishLevel();
-    }   
-  
+    }
+
     protected void startRootLevelCollection(){
         if(rootKeyName != null){
             jsonGenerator.writeStartArray(rootKeyName);
@@ -54,8 +54,8 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
     }
 
     @Override
-    public void endCollection() {        
-        finishLevel();    
+    public void endCollection() {
+        finishLevel();
     }
 
     protected void setComplex(Level level, boolean complex){
@@ -67,13 +67,13 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
                 parentLevel.setEmptyCollection(false);
             }
             if((parentLevel != null && parentLevel.isCollection && !parentLevel.isEmptyCollection()) || level.keyName == null){
-                jsonGenerator.writeStartObject();                    
+                jsonGenerator.writeStartObject();
             }else{
                 jsonGenerator.writeStartObject(level.keyName);
             }
         }
     }
-    
+
     protected void startEmptyCollection(){
        jsonGenerator.writeStartArray(position.keyName);
     }
@@ -82,21 +82,21 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
         jsonGenerator.writeStartArray(keyName);
         jsonGenerator.writeEnd();
     }
-    
+
     protected void addValueToObject(Level level, String keyName, Object value, QName schemaType){
-        
+
         if(value == NULL){
-            jsonGenerator.writeNull(keyName);            
+            jsonGenerator.writeNull(keyName);
         }else if(value instanceof Integer){
-            jsonGenerator.write(keyName, (Integer)value);             
-        }else if(value instanceof BigDecimal){            
+            jsonGenerator.write(keyName, (Integer)value);
+        }else if(value instanceof BigDecimal){
             jsonGenerator.write(keyName, (BigDecimal)value);
         }else if(value instanceof BigInteger){
             jsonGenerator.write(keyName, (BigInteger)value);
         }else if(value instanceof Boolean){
             jsonGenerator.write(keyName, (Boolean)value);
         }else if(value instanceof Character){
-            jsonGenerator.write(keyName, (Character)value);;  
+            jsonGenerator.write(keyName, (Character)value);;
         }else if(value instanceof Double){
             jsonGenerator.write(keyName, (Double)value);
         }else if(value instanceof Float){
@@ -114,22 +114,22 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
                     BigDecimal convertedNumberValue = ((BigDecimal) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType));
                     jsonGenerator.write(keyName, (BigDecimal)convertedNumberValue);
             }else{
-                jsonGenerator.write(keyName, convertedValue);                
+                jsonGenerator.write(keyName, convertedValue);
             }
-                
+
         }
     }
-    
+
     protected void addValueToArray(Level level, Object value, QName schemaType){
-        if(value == NULL){            
+        if(value == NULL){
             jsonGenerator.writeNull();
         }else if(value instanceof Integer){
-            jsonGenerator.write((Integer)value);             
+            jsonGenerator.write((Integer)value);
         }else if(value instanceof BigDecimal){
             jsonGenerator.write((BigDecimal)value);
         }else if(value instanceof BigInteger){
             jsonGenerator.write((BigInteger)value);
-        }else if(value instanceof Boolean){                            
+        }else if(value instanceof Boolean){
             jsonGenerator.write((Boolean)value);
         }else if(value instanceof Character){
             jsonGenerator.write((Character)value);
@@ -140,7 +140,7 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
         }else if(value instanceof Long){
             jsonGenerator.write((Long)value);
         }else if(value instanceof String){
-            jsonGenerator.write((String)value);            
+            jsonGenerator.write((String)value);
         }else{
             ConversionManager conversionManager = getConversionManager();
             String convertedValue = (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
@@ -148,11 +148,11 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
             if((schemaType == null || theClass == null) && (CoreClassConstants.NUMBER.isAssignableFrom(value.getClass()))){
                 //if it's still a number and falls through the cracks we dont want "" around the value
                     BigDecimal convertedNumberValue = ((BigDecimal) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType));
-                    jsonGenerator.write((BigDecimal)convertedNumberValue);            
+                    jsonGenerator.write((BigDecimal)convertedNumberValue);
 
             }else{
-                jsonGenerator.write(convertedValue);                
+                jsonGenerator.write(convertedValue);
             }
         }
-    }            
+    }
 }

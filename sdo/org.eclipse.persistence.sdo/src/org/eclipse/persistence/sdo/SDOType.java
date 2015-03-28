@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo;
 
 import commonj.sdo.DataObject;
@@ -48,7 +48,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 
 public class SDOType implements Type, Serializable {
-    private static final Class[] EMPTY_CLASS_ARRAY = new Class[0]; 
+    private static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
 
     private QName qName;
     private boolean open;// if this Type is open
@@ -193,7 +193,7 @@ public class SDOType implements Type, Serializable {
     }
 
     /**
-     * Verify that the class is a valid instance class. 
+     * Verify that the class is a valid instance class.
      */
     private boolean isValidInstanceClass(Class clazz) {
         if(isDataType) {
@@ -212,17 +212,17 @@ public class SDOType implements Type, Serializable {
                     String getMethodName = SDOUtil.getMethodName(sdoProperty.getName(), javaType);
                     PrivilegedAccessHelper.getPublicMethod(clazz, getMethodName, EMPTY_CLASS_ARRAY, false);
                 } catch(NoSuchMethodException e) {
-                	//if the method isn't found and the type is boolean try looking for a "get" method instead of an "is" method
-                	if(sdoPropertyType == SDOConstants.SDO_BOOLEAN || sdoPropertyType == SDOConstants.SDO_BOOLEANOBJECT ){
+                    //if the method isn't found and the type is boolean try looking for a "get" method instead of an "is" method
+                    if(sdoPropertyType == SDOConstants.SDO_BOOLEAN || sdoPropertyType == SDOConstants.SDO_BOOLEANOBJECT ){
                         try{
-                        	String booleanGetterMethodName = SDOUtil.getBooleanGetMethodName(sdoProperty.getName(), javaType);
+                            String booleanGetterMethodName = SDOUtil.getBooleanGetMethodName(sdoProperty.getName(), javaType);
                             PrivilegedAccessHelper.getPublicMethod(clazz, booleanGetterMethodName, EMPTY_CLASS_ARRAY, false);
                         } catch(NoSuchMethodException e2) {
                             return false;
-                        }                    
-                	}else{
+                        }
+                    }else{
                         return false;
-                	}
+                    }
                 }
             }
         }
@@ -618,7 +618,7 @@ public class SDOType implements Type, Serializable {
       */
     public void setInstanceClassName(String instanceClassName) {
         javaClassName = instanceClassName;
-        javaClass = null;       
+        javaClass = null;
     }
 
     /**
@@ -659,7 +659,7 @@ public class SDOType implements Type, Serializable {
     public void setXmlDescriptor(XMLDescriptor anXMLDescriptor) {
         xmlDescriptor = anXMLDescriptor;
     }
-   
+
     public XMLDescriptor getXmlDescriptor() {
         return xmlDescriptor;
     }
@@ -702,7 +702,7 @@ public class SDOType implements Type, Serializable {
      * INTERNAL:
      * Convenience method that sets up class indicator and @sdoRef
      * attribute.
-     * 
+     *
      * @param xdesc
      * @param pCls
      */
@@ -717,8 +717,8 @@ public class SDOType implements Type, Serializable {
             parentIndicator = parentPrefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + parentIndicator;
         }
         xdesc.getInheritancePolicy().addClassIndicator(pCls, parentIndicator);
-        
-        
+
+
         // only add the @sdoRef attribute if necessary
         if (xdesc.getMappingForAttributeName(SDO_REF_MAPPING_ATTRIBUTE_NAME) == null) {
             String sdoPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(SDOConstants.SDO_URL);
@@ -910,7 +910,7 @@ public class SDOType implements Type, Serializable {
     public Class getImplClass() {
         if ((javaImplClass == null) && (getImplClassName() != null)) {
             try {
-                SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();              
+                SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();
                 javaImplClass = loader.loadClass(getImplClassName(), this);
                 xmlDescriptor.setJavaClass(javaImplClass);
             } catch (ClassNotFoundException e) {
@@ -962,7 +962,7 @@ public class SDOType implements Type, Serializable {
     public void setInstanceProperty(Property property, Object value) {
         if (property.equals(SDOConstants.JAVA_CLASS_PROPERTY) && value instanceof String) {
             setInstanceClassName((String)value);
-        }      
+        }
         getPropertyValues().put(property, value);
     }
 
@@ -1025,7 +1025,7 @@ public class SDOType implements Type, Serializable {
         getProperties().add(insertPosition, property);
         if(isBaseType()) {
             int subTypesSize = getSubTypes().size();
-    
+
             SDOType nextSubType = null;
             for (int i = 0; i < subTypesSize; i++) {
                 nextSubType = (SDOType)getSubTypes().get(i);
@@ -1139,7 +1139,7 @@ public class SDOType implements Type, Serializable {
     public void setPseudoDefault(Object anObject) {
         pseudoDefault = anObject;
     }
-    
+
     /**
      * Return the HelperContext object associated with this type.
      * For example, the typeHelper associated with the returned HelperContext would contain this type
@@ -1151,11 +1151,11 @@ public class SDOType implements Type, Serializable {
     public boolean isChangeSummaryType() {
         return false;
     }
-    
+
     public boolean isDataObjectType() {
         return false;
     }
-    
+
     public boolean isTypeType() {
         return false;
     }

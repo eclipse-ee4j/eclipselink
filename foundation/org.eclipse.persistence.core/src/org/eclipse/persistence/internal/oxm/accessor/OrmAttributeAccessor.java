@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -39,19 +39,19 @@ public class OrmAttributeAccessor extends AttributeAccessor {
         this.ormAccessor = ormAccessor;
         this.oxmAccessor = oxmAccessor;
     }
-    
+
     public void setValueHolderProperty(boolean isValueHolder) {
         isValueHolderProperty = isValueHolder;
     }
-    
+
     public void setChangeTracking(boolean changeTracking) {
         this.isChangeTracking = changeTracking;
     }
-    
+
     public boolean isValueHolderProperty() {
         return this.isValueHolderProperty;
     }
-    
+
     public boolean isChangeTracking() {
         return this.isChangeTracking;
     }
@@ -69,7 +69,7 @@ public class OrmAttributeAccessor extends AttributeAccessor {
         }
         return oxmAccessor.getAttributeValueFromObject(object);
     }
-	
+
     public void setAttributeValueInObject(Object object, Object value) {
         if(isChangeTracking) {
             Object oldValue = getAttributeValueFromObject(object);
@@ -89,31 +89,31 @@ public class OrmAttributeAccessor extends AttributeAccessor {
         }
         oxmAccessor.setAttributeValueInObject(object, value);
     }
-    
+
     public AttributeAccessor getOrmAccessor() {
         return this.ormAccessor;
     }
-    
+
     public CoreAttributeAccessor getOxmAccessor() {
         return this.oxmAccessor;
     }
-    
+
     public void setOrmAccessor(AttributeAccessor accessor) {
         this.ormAccessor = accessor;
     }
-    
+
     public void setOxmAccessor(AttributeAccessor accessor) {
         this.oxmAccessor = accessor;
     }
-    
+
     public Class getAttributeClass() {
         return oxmAccessor.getAttributeClass();
     }
-    
+
     public boolean isMethodAttributeAccessor() {
         return oxmAccessor.isMethodAttributeAccessor();
     }
-    
+
     public String getAttributeName() {
         return oxmAccessor.getAttributeName();
     }

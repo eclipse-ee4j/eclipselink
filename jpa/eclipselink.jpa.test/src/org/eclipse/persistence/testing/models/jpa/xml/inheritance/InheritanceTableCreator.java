@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     12/18/2009-2.1 Guy Pelletier 
+ *     12/18/2009-2.1 Guy Pelletier
  *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.models.jpa.xml.inheritance;
@@ -37,7 +37,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         addTableDefinition(buildCOMPANYTable());
         addTableDefinition(buildENGINEERTable());
         addTableDefinition(buildPERSONTable());
-        
+
         addTableDefinition(buildAPPLETable());
         addTableDefinition(buildMACBOOKTable());
         addTableDefinition(buildMACBOOKPROTable());
@@ -60,7 +60,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
 
         return table;
     }
-    
+
     public TableDefinition buildMACBOOKTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_MACBOOK");
@@ -76,7 +76,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldID.setShouldAllowNull(false);
         fieldID.setForeignKeyFieldName("XML_APPLE.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldRAM = new FieldDefinition();
         fieldRAM.setName("RAM");
         fieldRAM.setTypeName("NUMBER");
@@ -90,7 +90,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
 
         return table;
     }
-    
+
     public TableDefinition buildMACBOOKPROTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_MACBOOK_PRO");
@@ -106,7 +106,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldID.setShouldAllowNull(false);
         fieldID.setForeignKeyFieldName("XML_MACBOOK.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldCOLOR = new FieldDefinition();
         fieldCOLOR.setName("COLOR");
         fieldCOLOR.setTypeName("VARCHAR2");
@@ -120,7 +120,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
 
         return table;
     }
-    
+
     public TableDefinition buildBICYCLETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_BICYCLE");
@@ -424,7 +424,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldCAR_ID.setShouldAllowNull(true);
         fieldCAR_ID.setForeignKeyFieldName("CMP3_XML_FUEL_VEH.ID");
         table.addField(fieldCAR_ID);
-        
+
         FieldDefinition fieldBOAT_ID = new FieldDefinition();
         fieldBOAT_ID.setName("BOAT_ID");
         fieldBOAT_ID.setTypeName("NUMBER");

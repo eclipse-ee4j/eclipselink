@@ -1,17 +1,17 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     14/05/2012-2.4 Guy Pelletier   
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.structures;
 
 import java.util.*;
@@ -46,7 +46,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
     public ObjectRelationalDataTypeDescriptor() {
         this.orderedFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
     }
-    
+
     /**
      * INTERNAL:
      * Auto-Default orderedFields to fields
@@ -79,7 +79,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      */
     @Override
     public Vector buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
-        
+
         if(fieldValue == null) {
             return null;
         }
@@ -106,7 +106,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
             ((DatabaseAccessor)session.getAccessor()).decrementCallCount();
         }
     }
-    
+
     /**
      * INTERNAL:
      * Build and return the field value from the specified nested database row.
@@ -130,14 +130,14 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         Object[] fields = new Object[nestedRows.size()];
         java.sql.Connection connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
         boolean reconnected = false;
-        
+
         try {
             if (connection == null) {
                 ((DatabaseAccessor)session.getAccessor()).incrementCallCount(session);
                 reconnected = true;
                 connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
             }
-        
+
             int i = 0;
             for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
                 AbstractRecord nestedRow = (AbstractRecord)stream.nextElement();
@@ -153,14 +153,14 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
             }
         }
     }
-    
+
      /**
       * INTERNAL:
       * Build and return the nested rows from the specified field value.
-      * This method allows the field value to  be an ARRAY containing other structures 
+      * This method allows the field value to  be an ARRAY containing other structures
       * such as arrays or Struct, or direct values.
       */
-     static public Object buildContainerFromArray(Array fieldValue, ObjectRelationalDatabaseField arrayField, AbstractSession session) throws DatabaseException {        
+     static public Object buildContainerFromArray(Array fieldValue, ObjectRelationalDatabaseField arrayField, AbstractSession session) throws DatabaseException {
         if (arrayField.getType()==null){
             return fieldValue;
         }
@@ -182,7 +182,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
             if ((nestedType != null) && nestedType.getSqlType()==Types.STRUCT){
                 ClassDescriptor descriptor = session.getDescriptor(nestedType.getType());
                 if ((descriptor != null) && (descriptor.isObjectRelationalDataTypeDescriptor())) {
-                    //this is used to convert non-null objects passed through stored procedures and custom SQL to structs 
+                    //this is used to convert non-null objects passed through stored procedures and custom SQL to structs
                     ord=(ObjectRelationalDataTypeDescriptor)descriptor;
                 }
             } else if ((nestedType != null) && (nestedType instanceof ObjectRelationalDatabaseField) ){
@@ -215,8 +215,8 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
                 descriptor.getObjectBuilder().buildAttributesIntoObject(arrayValue, null, nestedRow, query, null, null, false, session);
             } else if (isNestedStructure && (arrayValue instanceof Array)){
                 arrayValue = buildContainerFromArray((Array)arrayValue, (ObjectRelationalDatabaseField)nestedType, session);
-            }             
-             
+            }
+
             cp.addInto(arrayValue, container, session);
         }
         return container;
@@ -229,10 +229,10 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      */
      @Override
     public AbstractRecord buildNestedRowFromFieldValue(Object fieldValue) throws DatabaseException {
-        
+
         AbstractRecord row = new DatabaseRecord();
         Object[] attributes = (Object[])fieldValue;
-         
+
         for (int index = 0; index < getAllOrderedFields().size(); index++) {
             DatabaseField field = (DatabaseField) getAllOrderedFields().get(index);
             row.put(field, attributes[index]);
@@ -267,11 +267,11 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      */
     @Override
     public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) throws DatabaseException {
-        
+
         if(fieldValue==null){
             return null;
         }
-        
+
         Object[] structs = (Object[])fieldValue;
 
         Vector nestedRows = new Vector(structs.length);
@@ -297,7 +297,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         } catch (java.sql.SQLException exception) {
             throw DatabaseException.sqlException(exception);
         }
-        
+
         if(attributes!=null){
             for(int i=0;i<attributes.length;i++){
                 if(attributes[i] instanceof Array ){
@@ -318,36 +318,36 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
     public Struct buildStructureFromRow(AbstractRecord row, AbstractSession session, java.sql.Connection connection) throws DatabaseException {
         Struct structure;
         boolean reconnected = false;
-        
+
         try {
             if (connection == null) {
                 ((DatabaseAccessor)session.getAccessor()).incrementCallCount(session);
                 reconnected = true;
                 connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
             }
-        
+
             Object[] fields = new Object[getOrderedFields().size()];
             for (int index = 0; index < getOrderedFields().size(); index++) {
                 DatabaseField field = (DatabaseField)getOrderedFields().elementAt(index);
                 fields[index] = row.get(field);
             }
-                        
+
             structure = session.getPlatform().createStruct(getStructureName(), fields, session, connection);
         } catch (java.sql.SQLException exception) {
             throw DatabaseException.sqlException(exception, session, false);
         } finally {
             if (reconnected) {
-                ((DatabaseAccessor)session.getAccessor()).decrementCallCount();    
+                ((DatabaseAccessor)session.getAccessor()).decrementCallCount();
             }
         }
 
         return structure;
     }
-    
+
     /**
      * INTERNAL:
      * Build array of objects for Array data type.
-     */    
+     */
     public static Object buildArrayObjectFromArray(Object array) throws DatabaseException {
         Object[] objects = null;
         if(array==null){
@@ -372,7 +372,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         }
         return objects;
     }
-    
+
     /**
      * INTERNAL:
      * Build array of objects for Struct data type.
@@ -464,7 +464,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
     public String getStructureName() {
         return structureName;
     }
-    
+
     /**
      *  PUBLIC:
      *  Return if this is an ObjectRelationalDataTypeDescriptor.

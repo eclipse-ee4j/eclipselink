@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,7 +37,7 @@ public interface AnyCollectionMapping<
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
     public UNMARSHAL_KEEP_AS_ELEMENT_POLICY getKeepAsElementPolicy();
- 
+
     public boolean isMixedContent();
 
     public boolean isWhitespacePreservedForMixedContent();
@@ -47,15 +47,15 @@ public interface AnyCollectionMapping<
     public void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY unmarshalKeepAsElementPolicy);
 
     public void setField(FIELD field);
-    
+
     public void setIsWriteOnly(boolean b);
-        
+
     public void setMixedContent(boolean mixed);
-    
+
     public void setPreserveWhitespaceForMixedContent(boolean preserveWhitespace);
-    
+
     public void setUseXMLRoot(boolean useXMLRoot);
-    
+
     /**
      * Configure the mapping to use an instance of the specified container class
      * to hold the target objects.
@@ -63,7 +63,7 @@ public interface AnyCollectionMapping<
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
     public void useCollectionClass(Class concreteContainerClass);
-    
+
     public boolean usesXMLRoot();
 
 }

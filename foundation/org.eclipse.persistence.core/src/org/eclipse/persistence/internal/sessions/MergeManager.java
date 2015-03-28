@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     02/11/2009-1.1 Michael O'Brien 
- *        - 259993: As part 2) During mergeClonesAfterCompletion() 
- *        If the the acquire and release threads are different 
+ *     02/11/2009-1.1 Michael O'Brien
+ *        - 259993: As part 2) During mergeClonesAfterCompletion()
+ *        If the the acquire and release threads are different
  *        switch back to the stored acquire thread stored on the mergeManager.
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
@@ -53,7 +53,7 @@ public class MergeManager {
 
     /** Used to unravel recursion. */
     protected Map<AbstractSession, Map<Object, Object>> objectsAlreadyMerged;
-    
+
     /** Used to keep track of merged new objects. */
     protected IdentityHashMap mergedNewObjects;
 
@@ -82,26 +82,26 @@ public class MergeManager {
     public static final int CASCADE_PRIVATE_PARTS = 2;
     public static final int CASCADE_ALL_PARTS = 3;
     public static final int CASCADE_BY_MAPPING = 4;
-    
+
     /** Backdoor to disable merge locks. */
     public static boolean LOCK_ON_MERGE = true;
-    
+
     /** Stored so that all objects merged by a merge manager can have the same readTime. */
     protected long systemTime = 0;
-    
+
     /** Force cascade merge even if a clone is already registered */
     // GF#1139 Cascade doesn't work when merging managed entity
     protected boolean forceCascade;
-    
+
     /** records that deferred locks have been employed for the merge process */
     protected boolean isTransitionedToDeferredLocks = false;
 
     /** save the currentThread for later comparison to the activeThread in case they don't match */
     protected Thread lockThread;
-    
+
     /** records that this merge process is for a refresh */
     protected boolean isForRefresh;
-    
+
     public MergeManager(AbstractSession session) {
         this.session = session;
         this.mergedNewObjects = new IdentityHashMap();
@@ -234,10 +234,10 @@ public class MergeManager {
 
         throw ValidationException.invalidMergePolicy();
     }
-    
+
     /**
      * INTERNAL:
-     * Used to register an existing object used in nested unit of work with 
+     * Used to register an existing object used in nested unit of work with
      * read-only class in root unit of work.
      */
     public Object registerExistingObjectOfReadOnlyClassInNestedTransaction(Object source, ClassDescriptor descriptor, AbstractSession targetSession) {
@@ -247,7 +247,7 @@ public class MergeManager {
                 return ((UnitOfWorkImpl)targetSession).registerExistingObject(source);
             }
         }
-        
+
         return null;
     }
 
@@ -258,7 +258,7 @@ public class MergeManager {
     public Object getWriteLockQueued() {
         return this.writeLockQueued;
     }
-    
+
     /**
      * @return the isForMerge
      */
@@ -281,7 +281,7 @@ public class MergeManager {
     public boolean isTransitionedToDeferredLocks(){
         return this.isTransitionedToDeferredLocks;
     }
-    
+
     /**
      * Recursively merge changes in the object dependent on the merge policy.
      * The map is used to resolve recursion.
@@ -296,7 +296,7 @@ public class MergeManager {
             return object;
         }
 
-        // Means that object is either already merged or in the process of being merged.	
+        // Means that object is either already merged or in the process of being merged.
         if (isAlreadyMerged(object, targetSession)) {
             return object;
         }
@@ -340,7 +340,7 @@ public class MergeManager {
         }
         return sessionMap.containsKey(object);
     }
-    
+
     public Object getMergedObject(Object key, AbstractSession targetSession){
         Map sessionMap = this.objectsAlreadyMerged.get(targetSession);
         if (sessionMap == null){
@@ -472,7 +472,7 @@ public class MergeManager {
      */
     protected Object mergeChangesIntoDistributedCache(Object original, ObjectChangeSet changeSet) {
         AbstractSession session = this.session;
-        
+
         // Determine if the object needs to be registered in the parent's clone mapping,
         // This is required for registered new objects in a nested unit of work.
         Class localClassType = changeSet.getClassType(session);
@@ -483,7 +483,7 @@ public class MergeManager {
             session.getIdentityMapAccessorInstance().invalidateObject(changeSet.getId(), localClassType);
             return original;
         }
-        
+
         // If version locking was used, check if the cache version is the correct version, otherwise invalidate,
         // Don't know for no locking, or field locking, so always merge.
         if ((!changeSet.isNew()) && descriptor.usesVersionLocking()) {
@@ -492,7 +492,7 @@ public class MergeManager {
                 changeSet.rebuildWriteLockValueFromUserFormat(descriptor, session);
             }
             int difference = descriptor.getOptimisticLockingPolicy().getVersionDifference(changeSet.getInitialWriteLockValue(), original, changeSet.getId(), session);
-            
+
             // Should be = 0 if was a good update, otherwise was already refreshed, or a version change was lost.
             if (difference < 0) {
                 // The current version is newer than the one on the remote system, was refreshed already, ignore change.
@@ -516,8 +516,8 @@ public class MergeManager {
             CacheKey cacheKey = changeSet.getActiveCacheKey();
             // The cache key should never be null for the new commit locks, but may be depending on the cache isolation level may not be locked,
             // so needs to be re-acquired.
-            if (cacheKey == null || !cacheKey.isAcquired()) {                
-                // ELBug 355610 - Use appendLock() instead of acquireLock() for transitioning 
+            if (cacheKey == null || !cacheKey.isAcquired()) {
+                // ELBug 355610 - Use appendLock() instead of acquireLock() for transitioning
                 // to deferred locks for new objects in order to avoid the possibility of a deadlock.
                 cacheKey = session.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(primaryKey, original, descriptor, this, session);
             }
@@ -540,7 +540,7 @@ public class MergeManager {
      * The map is used to resolve recursion.
      */
     protected Object mergeChangesOfCloneIntoWorkingCopy(Object rmiClone) {
-        
+
         Object registeredObject = null;
         if (isForRefresh){
             UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
@@ -568,28 +568,28 @@ public class MergeManager {
         ClassDescriptor descriptor = this.session.getDescriptor(rmiClone);
         try {
             ObjectBuilder builder = descriptor.getObjectBuilder();
-            
+
             if (!isForRefresh && registeredObject != rmiClone && descriptor.usesVersionLocking() && ! mergedNewObjects.containsKey(registeredObject)) {
                 VersionLockingPolicy policy = (VersionLockingPolicy) descriptor.getOptimisticLockingPolicy();
                 if (policy.isStoredInObject()) {
-                    Object currentValue = builder.extractValueFromObjectForField(registeredObject, policy.getWriteLockField(), session); 
-                
+                    Object currentValue = builder.extractValueFromObjectForField(registeredObject, policy.getWriteLockField(), session);
+
                     if (policy.isNewerVersion(currentValue, rmiClone, session.keyFromObject(rmiClone, descriptor), session)) {
                         throw OptimisticLockException.objectChangedSinceLastMerge(rmiClone);
                     }
                 }
             }
-            
+
             // Toggle change tracking during the merge.
             descriptor.getObjectChangePolicy().dissableEventProcessing(registeredObject);
-            
+
             boolean cascadeOnly = false;
-            if (registeredObject == rmiClone || mergedNewObjects.containsKey(registeredObject)) {    
+            if (registeredObject == rmiClone || mergedNewObjects.containsKey(registeredObject)) {
                 // GF#1139 Cascade merge operations to relationship mappings even if already registered
                 cascadeOnly = true;
             }
-            
-            // Merge into the clone from the original and use the clone as 
+
+            // Merge into the clone from the original and use the clone as
             // backup as anything different should be merged.
             builder.mergeIntoObject(registeredObject, null, false, rmiClone, this, this.session, cascadeOnly, false, false);
             if (isForRefresh){
@@ -640,7 +640,7 @@ public class MergeManager {
         if (original == null) {
             return clone;
         }
-        
+
         // Toggle change tracking during the merge.
         descriptor.getObjectChangePolicy().dissableEventProcessing(clone);
         try {
@@ -656,7 +656,7 @@ public class MergeManager {
         if (primaryKey == null) {
             return clone;
         }
-        
+
         if (descriptor.usesOptimisticLocking()) {
             descriptor.getOptimisticLockingPolicy().mergeIntoParentCache((UnitOfWorkImpl)this.session, primaryKey, clone);
         }
@@ -677,7 +677,7 @@ public class MergeManager {
     protected Object mergeChangesOfWorkingCopyIntoOriginal(Object clone, ObjectChangeSet objectChangeSet) {
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
         AbstractSession parent = unitOfWork.getParent();
-        
+
         // If the clone is deleted, avoid this merge and simply return the clone.
         if (unitOfWork.isObjectDeleted(clone)) {
             return clone;
@@ -696,7 +696,7 @@ public class MergeManager {
         }
         AbstractSession parentSession = unitOfWork.getParentIdentityMapSession(descriptor, false, false);
         CacheKey cacheKey = mergeChangesOfWorkingCopyIntoOriginal(clone, objectChangeSet, descriptor, parentSession, unitOfWork);
-        
+
         AbstractSession sharedSession = parentSession;
         if (descriptor.getCachePolicy().isProtectedIsolation()) {
             if (parentSession.isIsolatedClientSession()){
@@ -719,7 +719,7 @@ public class MergeManager {
         }
         return clone;
     }
-    
+
     /**
      * Recursively merge to clone into the original in its parent.
      * The map is used to resolve recursion.
@@ -738,8 +738,8 @@ public class MergeManager {
             #7 - merging references to detached objects
             #8 - merging into protected cache
             #9 - grid cache
-        */        
-        
+        */
+
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
         // This always finds an original different from the clone, even if it has to create one.
         // This must be done after special cases have been computed because it registers unregistered new objects.
@@ -847,14 +847,14 @@ public class MergeManager {
                 updateCacheKeyProperties(unitOfWork, cacheKey, original, clone, objectChangeSet, descriptor);
             } else if (objectChangeSet == null) {
                 // #6, 7 - referenced objects
-                // PERF: If we have no change set and it has an original, then no merging is required, just use the original object.                
+                // PERF: If we have no change set and it has an original, then no merging is required, just use the original object.
             } else if (descriptor.getFullyMergeEntity() && objectChangeSet.hasChanges()){
                 objectBuilder.mergeIntoObject(original, objectChangeSet, false, clone, this, targetSession, false, false, true);
             } else {
                 // #1, 2, 3 existing objects, new objects with originals
-                // Regardless if the object is new, old, valid or invalid, merging will ensure there is a stub of an object in the 
-                // shared cache for filling in foreign reference relationships. If merge did not occur in some cases (new  objects, garbage 
-                // collection objects, object read in a transaction) then no object would be in the shared cache and foreign reference 
+                // Regardless if the object is new, old, valid or invalid, merging will ensure there is a stub of an object in the
+                // shared cache for filling in foreign reference relationships. If merge did not occur in some cases (new  objects, garbage
+                // collection objects, object read in a transaction) then no object would be in the shared cache and foreign reference
                 // mappings would be set to null when they should be set to an object.
                 if (objectChangeSet.hasChanges()) {
                     // #1, 2, 3 existing objects, new objects with originals
@@ -862,7 +862,7 @@ public class MergeManager {
                     // writeLockValue when we do not own the lock.
                     if (!objectChangeSet.isNew()) {
                         if (objectChangeSet.shouldInvalidateObject(original, targetSession) && (!unitOfWork.isNestedUnitOfWork())) {
-                            // Invalidate any object that was marked invalid during the change calculation, even if it was new as multiple flushes 
+                            // Invalidate any object that was marked invalid during the change calculation, even if it was new as multiple flushes
                             // and custom SQL could still produce invalid new objects. ? This seems to contradict the new check?
                             targetSession.getIdentityMapAccessor().invalidateObject(original);
                             // no need to update cacheKey properties here
@@ -929,7 +929,7 @@ public class MergeManager {
         try {
             descriptor.getObjectBuilder().mergeIntoObject(original, false, clone, this, this.session);
         } finally {
-            descriptor.getObjectChangePolicy().enableEventProcessing(original);            
+            descriptor.getObjectChangePolicy().enableEventProcessing(original);
         }
 
         if (((RemoteUnitOfWork)unitOfWork.getParent()).getUnregisteredNewObjectsCache().contains(original)) {
@@ -990,7 +990,7 @@ public class MergeManager {
     public Object mergeNewObjectIntoCache(ObjectChangeSet changeSet) {
         Class localClassType = changeSet.getClassType(session);
         ClassDescriptor descriptor = this.session.getDescriptor(localClassType);
-        
+
         Object newObject = null;
         if (!isAlreadyMerged(changeSet, this.session)) {
             // if we haven't merged this object already then build a new object
@@ -1062,7 +1062,7 @@ public class MergeManager {
                 if (shouldMergeCloneIntoWorkingCopy() || shouldMergeCloneWithReferencesIntoWorkingCopy()) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cannot_merge_removed_entity", new Object[] { clone }));
                 }
-            }            
+            }
             return objectFromCache;
         }
 
@@ -1070,10 +1070,10 @@ public class MergeManager {
         // Optimize cache option to avoid executing the does exist query.
         if (existQuery.shouldCheckCacheForDoesExist()) {
             checkNewObjectLockVersion(clone, primaryKey, descriptor, unitOfWork);
-            Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor, false);            
+            Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor, false);
             if (unitOfWork.hasNewObjects() && unitOfWork.getNewObjectsOriginalToClone().containsKey(clone)) {
                 this.mergedNewObjects.put(registeredObject, registeredObject);
-            }            
+            }
             return registeredObject;
         }
 
@@ -1088,7 +1088,7 @@ public class MergeManager {
             this.mergedNewObjects.put(registeredObject, registeredObject);
             return registeredObject;
         }
-    
+
         // Otherwise it is existing and not in the cache so it must be read.
         Object object = unitOfWork.readObject(clone);
         if (object == null) {
@@ -1115,7 +1115,7 @@ public class MergeManager {
             }
         }
     }
-    
+
     /**
      * Determine if the object is a registered new object, and that this is a nested unit of work
      * merge into the parent.  In this case private mappings will register the object as being removed.
@@ -1263,22 +1263,22 @@ public class MergeManager {
     }
 
     /**
-     * This is used to cascade merge even if a clone is already registered. 
+     * This is used to cascade merge even if a clone is already registered.
      */
     public boolean shouldForceCascade() {
         return forceCascade;
     }
-    
+
     /**
      * INTERNAL:
-     * Used to return a map containing new objects found through the 
+     * Used to return a map containing new objects found through the
      * registerObjectForMergeCloneIntoWorkingCopy method.
      * @return Map
      */
     public IdentityHashMap getMergedNewObjects(){
         return mergedNewObjects;
     }
-    
+
     /**
      * INTERNAL:
      * Records that this merge manager has transitioned to use deferred locks during the merge.
@@ -1286,7 +1286,7 @@ public class MergeManager {
     public void transitionToDeferredLocks(){
         this.isTransitionedToDeferredLocks = true;
     }
-    
+
     /**
      * INTERNAL:
      * Update CacheKey properties with new information.  This method is called if this code
@@ -1299,7 +1299,7 @@ public class MergeManager {
             // so needs to be re-acquired.
             if (cacheKey == null || !cacheKey.isAcquired()) {
                 Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(original, unitOfWork);
-                
+
                 cacheKey = unitOfWork.getParent().getIdentityMapAccessorInstance().acquireLockNoWait(primaryKey, original.getClass(), false, descriptor);
                 locked = cacheKey != null;
             }

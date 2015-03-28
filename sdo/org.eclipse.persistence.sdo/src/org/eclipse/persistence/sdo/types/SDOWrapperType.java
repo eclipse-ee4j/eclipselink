@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the terms
 * of the Eclipse Public License v1.0 and Eclipse Distribution License v1.0
 * which accompanies this distribution.
@@ -92,7 +92,7 @@ public class SDOWrapperType extends SDOType implements Type {
             setImplClassName(implClassName);
             getImplClass();
         } else {
-            this.javaImplClass = implClasses[0]; 
+            this.javaImplClass = implClasses[0];
             this.xmlDescriptor.setJavaClass(javaImplClass);
         }
 
@@ -102,7 +102,7 @@ public class SDOWrapperType extends SDOType implements Type {
         // change getType(Class) on typehelperdelegate to check map first
 
         initializeDescriptor(xmlDescriptor, schemaTypes[0], aPropertyType, valueProperty);
-        
+
         descriptorsMap = new HashMap<QName, XMLDescriptor>();
         descriptorsMap.put(schemaTypes[0], xmlDescriptor);
         setSchemaContext(xmlDescriptor, schemaTypes[0]);
@@ -136,9 +136,9 @@ public class SDOWrapperType extends SDOType implements Type {
 
     /**
      * Convenience method that sets a schema context (as QName) on a given descriptor.
-     * 
+     *
      * If either schemaType or desc is null, no action is performed.
-     * 
+     *
      * @param desc XML descriptor to which an XMLSchemaReference will be added
      * @param schemaType QName that will be set as the schema context QName
      */

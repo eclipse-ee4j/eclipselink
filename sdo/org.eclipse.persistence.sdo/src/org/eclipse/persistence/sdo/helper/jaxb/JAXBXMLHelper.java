@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -16,16 +16,16 @@ import commonj.sdo.helper.HelperContext;
 import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegate;
 
 /**
- * This implementation of commonj.sdo.helper.XMLHelper is responsible for 
- * ensuring that newly unmarshalled DataObjects are assigned a JAXB aware 
+ * This implementation of commonj.sdo.helper.XMLHelper is responsible for
+ * ensuring that newly unmarshalled DataObjects are assigned a JAXB aware
  * value store.
  * <pre>
  * XMLHelper xmlHelper = jaxbHelperContext.getXMLHelper();
  * XMLDocument xmlDocument = xmlHelper.load(xml);
  * DataObject customerDO = xmlDocument.getRootObject();
- * 
+ *
  * Customer customer = jaxbHelperContext.unwrap(customerDO);
- * </pre> 
+ * </pre>
  */
 public class JAXBXMLHelper extends SDOXMLHelperDelegate {
 

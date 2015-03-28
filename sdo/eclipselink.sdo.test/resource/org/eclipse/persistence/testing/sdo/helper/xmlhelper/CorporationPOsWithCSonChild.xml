@@ -3,7 +3,7 @@
    <ns0:name>aCorporation</ns0:name>
    <ns0:stock>
       <ns0:myChangeSummary logging="true">
-      </ns0:myChangeSummary>   
+      </ns0:myChangeSummary>
       <ns0:symbol>COR.N</ns0:symbol>
       <ns0:exchange>Nasdaq</ns0:exchange>
       <ns0:results>
@@ -17,7 +17,7 @@
    </ns0:stock>
    <ns0:stock>
       <ns0:myChangeSummary logging="true">
-      </ns0:myChangeSummary>   
+      </ns0:myChangeSummary>
       <ns0:symbol>COR.T</ns0:symbol>
       <ns0:exchange>TSE</ns0:exchange>
       <ns0:results>
@@ -31,7 +31,7 @@
    </ns0:stock>
    <ns0:stock>
       <ns0:myChangeSummary logging="true">
-      </ns0:myChangeSummary>   
+      </ns0:myChangeSummary>
       <ns0:symbol>COR.N</ns0:symbol>
       <ns0:exchange>NYSE</ns0:exchange>
       <ns0:results>
@@ -81,7 +81,7 @@
                <ns0:productName>Lawnmower</ns0:productName>
                   <ns0:price>
                      <ns0:dollarAmount>201.01</ns0:dollarAmount>
-                     <ns0:currency>US</ns0:currency>		
+                     <ns0:currency>US</ns0:currency>
                   </ns0:price>
                   <ns0:price>
                      <ns0:dollarAmount>202.02</ns0:dollarAmount>
@@ -111,7 +111,7 @@
       </ns0:purchaseOrder>
       <ns0:employee>
          <ns0:id>2001</ns0:id>
-         <ns0:name>Employee1</ns0:name>         
+         <ns0:name>Employee1</ns0:name>
       </ns0:employee>
    </ns0:development>
    <ns0:sales>
@@ -152,7 +152,7 @@
                <ns0:productName>Lawnmower</ns0:productName>
                   <ns0:price>
                      <ns0:dollarAmount>201.01</ns0:dollarAmount>
-                     <ns0:currency>US</ns0:currency>		
+                     <ns0:currency>US</ns0:currency>
                   </ns0:price>
                   <ns0:price>
                      <ns0:dollarAmount>202.02</ns0:dollarAmount>

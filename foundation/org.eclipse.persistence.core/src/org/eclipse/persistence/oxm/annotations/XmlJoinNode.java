@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,20 +21,20 @@ import java.lang.annotation.Target;
 /**
  * <p><b>XmlJoinNode</b> is used in conjunction with {@code XmlKey} to specify a reference mapping. This is similar
  * to XmlID and XmlIDREF but allows for keys that are of types other than ID. When used with {@code XmlJoinNodes} can
- * be used to allow composite keys. The referencedXmlPath must match the xpath of a field on the target class that has 
+ * be used to allow composite keys. The referencedXmlPath must match the xpath of a field on the target class that has
  * been annotated with either XmlID or XmlKey.
- * 
+ *
  * <p><b>Example:</b>
  * <pre>
- * &#64;XmlRootElement 
+ * &#64;XmlRootElement
  * &#64;XmlAccessorType(XmlAccessType.FIELD)
  * public class Employee {
- *     
+ *
  *     &#64;XmlKey
  *     public String id;
  *
  *     public String department;
- *     
+ *
        &#64;XmlJoinNode(xmlPath="manager/id/text()", referencedXmlPath="id/text()")
  *     public Employee manager;
  * }

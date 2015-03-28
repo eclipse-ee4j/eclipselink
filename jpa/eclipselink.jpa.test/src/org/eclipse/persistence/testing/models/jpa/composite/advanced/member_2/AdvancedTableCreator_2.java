@@ -1,23 +1,23 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     02/25/2009-2.0 Guy Pelletier 
+ *     02/25/2009-2.0 Guy Pelletier
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     06/16/2010-2.2 Guy Pelletier 
+ *     06/16/2010-2.2 Guy Pelletier
  *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     10/27/2010-2.2 Guy Pelletier 
+ *     10/27/2010-2.2 Guy Pelletier
  *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -92,7 +92,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
 //        fieldID.setForeignKeyFieldName("MBR1_DEPT.ID");
         table.addField(fieldID);
-        
+
         // SECTION: FIELD
         FieldDefinition fieldEMP = new FieldDefinition();
         fieldEMP.setName("managers_EMP_ID");
@@ -104,14 +104,14 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         fieldEMP.setIsIdentity(false);
         fieldEMP.setForeignKeyFieldName("MBR2_EMPLOYEE.EMP_ID");
         table.addField(fieldEMP);
-        
-        return table;   
+
+        return table;
     }
 
     public TableDefinition buildEMPLOYEETable() {
         TableDefinition table = new TableDefinition();
         table.setName("MBR2_EMPLOYEE");
-    
+
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
         field.setTypeName("NUMERIC");
@@ -121,7 +121,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("F_NAME");
         field1.setTypeName("VARCHAR");
@@ -131,7 +131,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("L_NAME");
         field2.setTypeName("VARCHAR");
@@ -141,7 +141,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         table.addField(field2);
-        
+
         FieldDefinition fieldGender = new FieldDefinition();
         fieldGender.setName("GENDER");
         fieldGender.setTypeName("VARCHAR");
@@ -151,7 +151,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         fieldGender.setUnique(false);
         fieldGender.setIsIdentity(false);
         table.addField(fieldGender);
-    
+
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("START_DATE");
         field3.setTypeName("DATE");
@@ -161,7 +161,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("END_DATE");
         field4.setTypeName("DATE");
@@ -171,7 +171,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field4.setUnique(false);
         field4.setIsIdentity(false);
         table.addField(field4);
-    
+
         FieldDefinition field5 = new FieldDefinition();
         field5.setName("START_TIME");
         field5.setTypeName("TIME");
@@ -222,7 +222,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field8.setIsIdentity(false);
 //        field8.setForeignKeyFieldName("MBR1_ADDRESS.ADDRESS_ID");
         table.addField(field8);
-    
+
         FieldDefinition field9 = new FieldDefinition();
         field9.setName("MANAGER_EMP_ID");
         field9.setTypeName("NUMERIC");
@@ -233,7 +233,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field9.setIsIdentity(false);
         field9.setForeignKeyFieldName("MBR2_EMPLOYEE.EMP_ID");
         table.addField(field9);
-    
+
         FieldDefinition field10 = new FieldDefinition();
         field10.setName("VERSION");
         field10.setTypeName("NUMERIC");
@@ -243,7 +243,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field10.setUnique(false);
         field10.setIsIdentity(false);
         table.addField(field10);
-        
+
         FieldDefinition fieldDEPT = new FieldDefinition();
         fieldDEPT.setName("DEPT_ID");
         fieldDEPT.setTypeName("NUMERIC");
@@ -254,7 +254,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         fieldDEPT.setIsIdentity(false);
 //        fieldDEPT.setForeignKeyFieldName("MBR1_DEPT.ID");
         table.addField(fieldDEPT);
-        
+
         FieldDefinition fieldStatus = new FieldDefinition();
         fieldStatus.setName("STATUS");
         fieldStatus.setTypeName("NUMERIC");
@@ -264,7 +264,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         fieldStatus.setIsIdentity(false);
         fieldStatus.setShouldAllowNull(true);
         table.addField(fieldStatus);
-    
+
         FieldDefinition fieldPayScale = new FieldDefinition();
         fieldPayScale.setName("PAY_SCALE");
         fieldPayScale.setTypeName("VARCHAR");
@@ -274,7 +274,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         fieldPayScale.setIsIdentity(false);
         fieldPayScale.setShouldAllowNull(true);
         table.addField(fieldPayScale);
-        
+
         FieldDefinition fieldRoomNumber = new FieldDefinition();
         fieldRoomNumber.setName("ROOM_NUM");
         fieldRoomNumber.setTypeName("NUMBER");
@@ -285,7 +285,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         fieldRoomNumber.setUnique(false);
         fieldRoomNumber.setShouldAllowNull(true);
         table.addField(fieldRoomNumber);
-        
+
         // SECTION: FIELD
         FieldDefinition fieldFormerCompany = new FieldDefinition();
         fieldFormerCompany.setName("FORMER_COMPANY");
@@ -296,7 +296,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         fieldFormerCompany.setUnique(false );
         fieldFormerCompany.setIsIdentity(false );
         table.addField(fieldFormerCompany);
-    
+
         // SECTION: FIELD
         FieldDefinition fieldFormerStartDate = new FieldDefinition();
         fieldFormerStartDate.setName("FORMER_START_DATE");
@@ -307,7 +307,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         fieldFormerStartDate.setUnique(false );
         fieldFormerStartDate.setIsIdentity(false );
         table.addField(fieldFormerStartDate);
-    
+
         // SECTION: FIELD
         FieldDefinition fieldFormerEndDate = new FieldDefinition();
         fieldFormerEndDate.setName("FORMER_END_DATE");
@@ -329,7 +329,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         fieldHugeProj.setIsIdentity(false);
 //        fieldHugeProj.setForeignKeyFieldName("MBR3_PROJECT.PROJ_ID");
         table.addField(fieldHugeProj);
-        
+
         return table;
     }
 
@@ -361,7 +361,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         table.addField(fieldSALARY);
 
         return table;
-    }    
+    }
 
     // this is for Project.teamMembers ManyToMany, which is independent from Employee.projects ManyToMany.
     public TableDefinition buildPROJECT_EMPTable() {
@@ -380,7 +380,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field.setIsIdentity(false );
 //        field.setForeignKeyFieldName("MBR3_PROJECT.PROJ_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("teamMembers_EMP_ID");

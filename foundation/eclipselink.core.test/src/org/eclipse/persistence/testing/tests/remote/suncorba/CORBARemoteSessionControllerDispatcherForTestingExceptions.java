@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.remote.suncorba;
 
 import org.eclipse.persistence.internal.sessions.remote.Transporter;
@@ -19,23 +19,23 @@ import org.eclipse.persistence.testing.tests.remote.TransporterGenerator;
 
 /**
  * RemoteSessionController sits between the remote session and the session. Any interaction between these
- * two classes takes place through this object. As the object extends unicast remote object it listens to 
+ * two classes takes place through this object. As the object extends unicast remote object it listens to
  * only single remote session during runtime.
  */
- 
+
 public class CORBARemoteSessionControllerDispatcherForTestingExceptions extends CORBARemoteSessionControllerDispatcher {
     protected TransporterGenerator generator;
 
 public CORBARemoteSessionControllerDispatcherForTestingExceptions(Session session)
 {
-	// This call to the super is required in RMI.
+    // This call to the super is required in RMI.
     this(session, (TransporterGenerator)session.getProperty("TransporterGenerator"));
 }
 public CORBARemoteSessionControllerDispatcherForTestingExceptions(Session session, TransporterGenerator generator)
 {
-	// This call to the super is required in RMI.
-	super(session);
-	this.controller = null;
+    // This call to the super is required in RMI.
+    super(session);
+    this.controller = null;
     this.generator = generator;
 }
 
@@ -45,7 +45,7 @@ protected Transporter handleByMode() {
 
 /**
  * INTERNAL:
- * This method is intended to be used by by sessions that wish to execute a command on a 
+ * This method is intended to be used by by sessions that wish to execute a command on a
  * remote session
  * @param remoteCommand RemoteCommand The command to be executed on the remote session
  */
@@ -58,7 +58,7 @@ public Transporter processCommand(Transporter remoteTransporter)
 /**
  * Begin a transaction on the database.
  */
- 
+
 public Transporter beginTransaction()
 {
     return handleByMode();
@@ -67,7 +67,7 @@ public Transporter beginTransaction()
 /**
  * Begin a transaction on the database.
  */
- 
+
 public Transporter beginEarlyTransaction()
 {
     return handleByMode();
@@ -75,7 +75,7 @@ public Transporter beginEarlyTransaction()
 /**
  * Remote unit of work after serialization is commited locally.
  */
- 
+
 public Transporter commitRootUnitOfWork(Transporter remoteUnitOfWork)
 {
     return handleByMode();
@@ -83,7 +83,7 @@ public Transporter commitRootUnitOfWork(Transporter remoteUnitOfWork)
 /**
  * Commit a transaction on the database.
  */
- 
+
 public Transporter commitTransaction()
 {
     return handleByMode();
@@ -93,7 +93,7 @@ public Transporter commitTransaction()
  * Return if the two object match completely.
  * This checks the objects attributes and their private parts.
  */
- 
+
 public Transporter compareObjects(Transporter firstObject, Transporter secondObject)
 {
     return handleByMode();
@@ -129,21 +129,21 @@ public Transporter containsObjectInIdentityMap__oracle_toplink_internal_remote_T
 /**
  * Used for closing cursored streams across RMI.
  */
- 
+
 public Transporter cursoredStreamClose(Transporter remoteCursoredStreamID) {
     return handleByMode();
 }
-/** 
- * Retrieve next page size of objects from the remote cursored stream 
+/**
+ * Retrieve next page size of objects from the remote cursored stream
  */
- 
+
 public Transporter cursoredStreamNextPage(Transporter remoteCursoredStream, int pageSize) {
     return handleByMode();
 }
-/** 
+/**
  * Return the cursored stream size
  */
- 
+
 public Transporter cursoredStreamSize(Transporter remoteCursoredStreamOid) {
     return handleByMode();
 }
@@ -156,33 +156,33 @@ public Transporter cursorSelectObjects(Transporter remoteTransporter)
     return handleByMode();
 }
 /**
- * A remote query after serialization is executed locally. 
+ * A remote query after serialization is executed locally.
  */
- 
+
 public Transporter executeNamedQuery(Transporter nameTransporter, Transporter classTransporter, Transporter argumentsTransporter)
 {
     return handleByMode();
 }
 /**
- * A remote query after serialization is executed locally. 
+ * A remote query after serialization is executed locally.
  */
- 
+
 public Transporter executeQuery(Transporter query)
 {
     return handleByMode();
 }
-/** 
+/**
  * Extract descriptor from the session
  */
- 
+
 public Transporter getDescriptor(Transporter theClass)
 {
     return handleByMode();
 }
-/** 
+/**
  * Extract descriptor from the session
  */
- 
+
 public Transporter getDescriptorForAlias(Transporter theClass)
 {
     return handleByMode();
@@ -226,7 +226,7 @@ public Transporter getFromIdentityMap__oracle_toplink_internal_remote_Transporte
 /**
  * Get the associated session login.
  */
- 
+
 public Transporter getLogin()
 {
     return handleByMode();
@@ -295,7 +295,7 @@ public Transporter initializeIdentityMapsOnServerSession()
 /**
  * The corresponding original value holder is instantiated.
  */
- 
+
 public Transporter instantiateRemoteValueHolderOnServer(Transporter remoteValueHolder)
 {
     return handleByMode();
@@ -343,7 +343,7 @@ public Transporter printIdentityMaps()
  * Caution should be used when calling to avoid violating object identity.
  * The application should only call this is it knows that no references to the object exist.
  */
- 
+
 public Transporter removeFromIdentityMap__oracle_toplink_internal_remote_Transporter(Transporter domainObject)
 {
     return handleByMode();
@@ -354,7 +354,7 @@ public Transporter removeFromIdentityMap__oracle_toplink_internal_remote_Transpo
  * Caution should be used when calling to avoid violating object identity.
  * The application should only call this is it knows that no references to the object exist.
  */
- 
+
 public Transporter removeFromIdentityMap__oracle_toplink_internal_remote_Transporter__oracle_toplink_internal_remote_Transporter(Transporter key, Transporter theClass)
 {
     return handleByMode();
@@ -362,7 +362,7 @@ public Transporter removeFromIdentityMap__oracle_toplink_internal_remote_Transpo
 /**
  * Rollback a transaction on the database.
  */
- 
+
 public Transporter rollbackTransaction()
 {
     return handleByMode();
@@ -370,105 +370,105 @@ public Transporter rollbackTransaction()
 /**
  * Moves the cursor to the given row number in the result set
  */
- 
+
 public Transporter scrollableCursorAbsolute(Transporter remoteScrollableCursorOid, int rows) {
     return handleByMode();
 }
 /**
  * Moves the cursor to the end of the result set, just after the last row.
  */
- 
+
 public Transporter scrollableCursorAfterLast(Transporter remoteScrollableCursorOid){
     return handleByMode();
 }
 /**
  * Moves the cursor to the front of the result set, just before the first row
  */
- 
+
 public Transporter scrollableCursorBeforeFirst(Transporter remoteScrollableCursor) {
     return handleByMode();
 }
 /**
  * Used for closing scrollable cursor across RMI.
  */
- 
+
 public Transporter scrollableCursorClose(Transporter remoteScrollableCursorOid)  {
     return handleByMode();
 }
 /**
  * Retrieves the current row index number
  */
- 
+
 public Transporter scrollableCursorCurrentIndex(Transporter remoteScrollableCursor) {
     return handleByMode();
 }
 /**
  * Moves the cursor to the first row in the result set
  */
- 
+
 public Transporter scrollableCursorFirst(Transporter remoteScrollableCursor) {
     return handleByMode();
 }
 /**
  * Indicates whether the cursor is after the last row in the result set.
  */
- 
+
 public Transporter scrollableCursorIsAfterLast(Transporter remoteScrollableCursor) {
     return handleByMode();
 }
 /**
  * Indicates whether the cursor is before the first row in the result set.
  */
- 
+
 public Transporter scrollableCursorIsBeforeFirst(Transporter remoteScrollableCursor) {
     return handleByMode();
 }
 /**
  * Indicates whether the cursor is on the first row of the result set.
  */
-  
+
 public Transporter scrollableCursorIsFirst(Transporter remoteScrollableCursor) {
     return handleByMode();
 }
 /**
  * Indicates whether the cursor is on the last row of the result set.
  */
- 
+
 public Transporter scrollableCursorIsLast(Transporter remoteScrollableCursor)  {
     return handleByMode();
 }
 /**
  * Moves the cursor to the last row in the result set
  */
- 
+
 public Transporter scrollableCursorLast(Transporter remoteScrollableCursor)  {
     return handleByMode();
 }
-/** 
- * Retrieve next object from the scrollable cursor 
+/**
+ * Retrieve next object from the scrollable cursor
  */
- 
+
 public Transporter scrollableCursorNextObject(Transporter scrollableCursorOid) {
     return handleByMode();
 }
-/** 
- * Retrieve previous object from the scrollable cursor 
+/**
+ * Retrieve previous object from the scrollable cursor
  */
- 
+
 public Transporter scrollableCursorPreviousObject(Transporter scrollableCursorOid) {
     return handleByMode();
 }
 /**
  * Moves the cursor to the given row number in the result set
  */
- 
+
 public Transporter scrollableCursorRelative(Transporter remoteScrollableCursor, int rows)  {
     return handleByMode();
 }
-/** 
+/**
  * Return the cursor size
  */
- 
+
 public Transporter scrollableCursorSize(Transporter remoteCursorOid) {
     return handleByMode();
 }
@@ -485,7 +485,7 @@ public Transporter setExceptionHandler(Transporter exceptionHandler)
 /**
  * PUBLIC:
  * Set the writer to which an accessor writes logged messages and SQL.
- * If not set, this reference defaults to a writer on System.out. 
+ * If not set, this reference defaults to a writer on System.out.
  * To enable logging logMessages() is used.
  *
  * @see #logMessages()

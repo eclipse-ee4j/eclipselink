@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, Oracle. All rights reserved.
+ * Copyright (c) 2008, 2015 , Oracle. All rights reserved.
  *
  * This software is the proprietary information of Oracle Corporation.
  * Use is subject to license terms.
@@ -33,104 +33,104 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.CellRendererAdapter;
 final class ComboCellRenderer implements ListCellRenderer,
                                          UIResource
 {
-	/**
-	 * The <code>ListCellRenderer</code> set by the UI delegate that will
-	 * return the actual <code>Component</code>
-	 */
-	final ListCellRenderer cellRenderer;
+    /**
+     * The <code>ListCellRenderer</code> set by the UI delegate that will
+     * return the actual <code>Component</code>
+     */
+    final ListCellRenderer cellRenderer;
 
-	/**
-	 * The adapter used to update the text, icon, tooltip and accessible name.
-	 */
-	final CellRendererAdapter cellRendererAdapter;
+    /**
+     * The adapter used to update the text, icon, tooltip and accessible name.
+     */
+    final CellRendererAdapter cellRendererAdapter;
 
-	/**
-	 * The object used as the prototype value, which is used to speed up the
-	 * calculation of the widget.
-	 */
-	private final Component prototypeRenderer;
+    /**
+     * The object used as the prototype value, which is used to speed up the
+     * calculation of the widget.
+     */
+    private final Component prototypeRenderer;
 
-	/**
-	 * Creates a new <code>ListCellRenderer</code>.
-	 *
-	 * @param cellRenderer The <code>ListCellRenderer</code> set by the UI
-	 * delegate that will return the actual <code>Component</code>
-	 * @param cellRendererAdapter The adapter used to update the text, icon,
-	 * tooltip and accessible name
-	 * @param prototypeRenderer
-	 */
-	ComboCellRenderer(ListCellRenderer cellRenderer,
-	                     CellRendererAdapter cellRendererAdapter,
-	                     Component prototypeRenderer)
-	{
-		super();
+    /**
+     * Creates a new <code>ListCellRenderer</code>.
+     *
+     * @param cellRenderer The <code>ListCellRenderer</code> set by the UI
+     * delegate that will return the actual <code>Component</code>
+     * @param cellRendererAdapter The adapter used to update the text, icon,
+     * tooltip and accessible name
+     * @param prototypeRenderer
+     */
+    ComboCellRenderer(ListCellRenderer cellRenderer,
+                         CellRendererAdapter cellRendererAdapter,
+                         Component prototypeRenderer)
+    {
+        super();
 
-		this.cellRenderer        = cellRenderer;
-		this.prototypeRenderer   = prototypeRenderer;
-		this.cellRendererAdapter = cellRendererAdapter;
-	}
+        this.cellRenderer        = cellRenderer;
+        this.prototypeRenderer   = prototypeRenderer;
+        this.cellRendererAdapter = cellRendererAdapter;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Component getListCellRendererComponent(JList list,
-	                                              Object value,
-	                                              int index,
-	                                              boolean selected,
-	                                              boolean cellHasFocus)
-	{
-		// Don't need to format the cell, use the prototype renderer directly
-		if (value == prototypeRenderer)
-		{
-			return prototypeRenderer;
-		}
+    /**
+     * {@inheritDoc}
+     */
+    public Component getListCellRendererComponent(JList list,
+                                                  Object value,
+                                                  int index,
+                                                  boolean selected,
+                                                  boolean cellHasFocus)
+    {
+        // Don't need to format the cell, use the prototype renderer directly
+        if (value == prototypeRenderer)
+        {
+            return prototypeRenderer;
+        }
 
-		// This will allow the look and feel to set anything in order to
-		// reflect the native OS
-		JLabel renderer = (JLabel) cellRenderer.getListCellRendererComponent
-		(
-			list,
-			null,
-			index,
-			selected,
-			cellHasFocus
-		);
+        // This will allow the look and feel to set anything in order to
+        // reflect the native OS
+        JLabel renderer = (JLabel) cellRenderer.getListCellRendererComponent
+        (
+            list,
+            null,
+            index,
+            selected,
+            cellHasFocus
+        );
 
-		renderer.setEnabled(list.isEnabled());
+        renderer.setEnabled(list.isEnabled());
 
-		// Update the renderer's properties by converting the value to
-		// something displayable (text, icon, tooltip)
-		updateRenderer(renderer, value);
+        // Update the renderer's properties by converting the value to
+        // something displayable (text, icon, tooltip)
+        updateRenderer(renderer, value);
 
-		// If the list does not have the focus, show the selected cell has
-		// "partially" selected
-		if (selected         &&
-		    !list.hasFocus() &&
-		     list.isFocusable())
-		{
-			renderer.setForeground(list.getForeground());
-			renderer.setBackground(UIManager.getColor("Panel.background"));
-		}
+        // If the list does not have the focus, show the selected cell has
+        // "partially" selected
+        if (selected         &&
+            !list.hasFocus() &&
+             list.isFocusable())
+        {
+            renderer.setForeground(list.getForeground());
+            renderer.setBackground(UIManager.getColor("Panel.background"));
+        }
 
-		// Grey out the icon
-		if (!list.isEnabled()                  &&
-		    renderer.getIcon()         != null &&
-		    renderer.getDisabledIcon() == null &&
-		    renderer.getIcon() instanceof ImageIcon)
-		{
-			ImageIcon icon = (ImageIcon) renderer.getIcon();
-			Image image = GrayFilter.createDisabledImage(icon.getImage());
-			renderer.setIcon(new ImageIcon(image));
-		}
+        // Grey out the icon
+        if (!list.isEnabled()                  &&
+            renderer.getIcon()         != null &&
+            renderer.getDisabledIcon() == null &&
+            renderer.getIcon() instanceof ImageIcon)
+        {
+            ImageIcon icon = (ImageIcon) renderer.getIcon();
+            Image image = GrayFilter.createDisabledImage(icon.getImage());
+            renderer.setIcon(new ImageIcon(image));
+        }
 
-		return renderer;
-	}
+        return renderer;
+    }
 
-	private void updateRenderer(JLabel renderer, Object value)
-	{
-		renderer.setText(cellRendererAdapter.buildText(value));
-		renderer.setIcon(cellRendererAdapter.buildIcon(value));
-		renderer.setToolTipText(cellRendererAdapter.buildToolTipText(value));
-		renderer.getAccessibleContext().setAccessibleName(cellRendererAdapter.buildAccessibleName(value));
-	}
+    private void updateRenderer(JLabel renderer, Object value)
+    {
+        renderer.setText(cellRendererAdapter.buildText(value));
+        renderer.setIcon(cellRendererAdapter.buildIcon(value));
+        renderer.setToolTipText(cellRendererAdapter.buildToolTipText(value));
+        renderer.getAccessibleContext().setAccessibleName(cellRendererAdapter.buildAccessibleName(value));
+    }
 }

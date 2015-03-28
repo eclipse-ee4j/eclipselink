@@ -7,14 +7,14 @@
    </xsd:complexType>
    <xsd:complexType name="Item" sdoXML:name="ItemSDO">
       <xsd:sequence maxOccurs="unbounded">
-         <xsd:element name="porder" type="xsd:decimal" sdoXML:string="true" sdoXML:many="false" minOccurs="0"/>	 
-         <xsd:element name="skusTest" type="SKU"  minOccurs="0"/>	 
-         <xsd:element name="binaryData" type="xsd:base64Binary" minOccurs="0" ns0:mimeTypeProperty="theMimeType" sdoXML:many="false"/>	 
-         <xsd:element name="binaryDataHandler" type="myBinaryHandlerType" ns0:mimeTypeProperty="theMimeType" sdoXML:many="false" minOccurs="0"/>	 
-	 <xsd:element name="binaryDataMany" type="xsd:base64Binary" minOccurs="0" ns0:mimeTypeProperty="theMimeType"/>	 
-         <xsd:element name="binaryDataHandlerMany" type="myBinaryHandlerType" ns0:mimeTypeProperty="theMimeType" minOccurs="0"/>	 
-         <xsd:element name="binaryDataHandlerNoMime" type="myBinaryHandlerType" sdoXML:many="false" minOccurs="0"/>	 
-         <xsd:element name="binaryDataHandlerManyNoMime" type="myBinaryHandlerType" minOccurs="0"/>	 
+         <xsd:element name="porder" type="xsd:decimal" sdoXML:string="true" sdoXML:many="false" minOccurs="0"/>
+         <xsd:element name="skusTest" type="SKU"  minOccurs="0"/>
+         <xsd:element name="binaryData" type="xsd:base64Binary" minOccurs="0" ns0:mimeTypeProperty="theMimeType" sdoXML:many="false"/>
+         <xsd:element name="binaryDataHandler" type="myBinaryHandlerType" ns0:mimeTypeProperty="theMimeType" sdoXML:many="false" minOccurs="0"/>
+     <xsd:element name="binaryDataMany" type="xsd:base64Binary" minOccurs="0" ns0:mimeTypeProperty="theMimeType"/>
+         <xsd:element name="binaryDataHandlerMany" type="myBinaryHandlerType" ns0:mimeTypeProperty="theMimeType" minOccurs="0"/>
+         <xsd:element name="binaryDataHandlerNoMime" type="myBinaryHandlerType" sdoXML:many="false" minOccurs="0"/>
+         <xsd:element name="binaryDataHandlerManyNoMime" type="myBinaryHandlerType" minOccurs="0"/>
       </xsd:sequence>
       <xsd:attribute name="theMimeType" type="xsd:string"/>
       <xsd:attribute name="productName" type="xsd:ID"/>
@@ -24,7 +24,7 @@
    <xsd:complexType name="PurchaseOrder" sdoXML:aliasName="Purchase">
       <xsd:sequence maxOccurs="unbounded">
          <xsd:element name="items" sdoXML:dataType="Items" minOccurs="0" sdoXML:many="false"/>
-	 <xsd:element name="topPriorityItems" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded" sdoXML:propertyType="ItemSDO" sdoXML:many="false"/>
+     <xsd:element name="topPriorityItems" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded" sdoXML:propertyType="ItemSDO" sdoXML:many="false"/>
       </xsd:sequence>
       <xsd:attribute name="comment" type="xsd:string"/>
       <xsd:attribute name="orderDate" type="xsd:dateTime" sdoXML:dataType="MyTimeStamp"/>

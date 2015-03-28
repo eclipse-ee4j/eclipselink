@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.util.Vector;
@@ -21,47 +21,47 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 public class MutableAttributeObject {
 
     protected int id;
-    
+
     // supported byte[] type
     protected byte[] byteArray;
-    
+
     // java.util types
     protected java.util.Calendar utilCalendar;
     protected java.util.Date utilDate;
-    
+
     // java.sql types
     protected java.sql.Date sqlDate;
     protected java.sql.Time sqlTime;
     protected java.sql.Timestamp sqlTimestamp;
-    
+
     // custom java.util.Date subclass
     protected DateSubclass dateSubclass;
 
     public MutableAttributeObject() {
         super();
     }
-    
+
     public static MutableAttributeObject example1() {
         MutableAttributeObject container = new MutableAttributeObject();
-        
+
         long timeNow = System.currentTimeMillis();
 
         // byte[] with all values set to 1
         byte[] someBytes = new byte[128];
         java.util.Arrays.fill(someBytes, (byte)1);
         container.setByteArray(someBytes);
-        
+
         // java.util types
         container.setUtilDate(new java.util.Date(timeNow));
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.setTimeInMillis(timeNow);
         container.setUtilCalendar(cal);
-        
+
         // java.sql types
         container.setSqlTime(new java.sql.Time(timeNow));
         container.setSqlDate(new java.sql.Date(timeNow));
         container.setSqlTimestamp(new java.sql.Timestamp(timeNow));
-        
+
         // custom date subclass
         container.setDateSubclass(new DateSubclass());
         return container;
@@ -130,7 +130,7 @@ public class MutableAttributeObject {
     public void setDateSubclass(DateSubclass dateSubclass) {
         this.dateSubclass = dateSubclass;
     }
-    
+
     public static RelationalDescriptor descriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -162,7 +162,7 @@ public class MutableAttributeObject {
 
         return descriptor;
     }
-    
+
     public static TableDefinition tableDefinition() {
         TableDefinition definition = new TableDefinition();
 
@@ -170,7 +170,7 @@ public class MutableAttributeObject {
 
         // identity field
         definition.addIdentityField("ID", java.lang.Integer.class);
-        
+
         // regular direct mapping fields
         definition.addField("BYTE_ARRAY", java.sql.Blob.class); // byte[] mapping to BLOB
         definition.addField("DATE_SUBCLASS", java.sql.Date.class);
@@ -182,5 +182,5 @@ public class MutableAttributeObject {
 
         return definition;
     }
-    
+
 }

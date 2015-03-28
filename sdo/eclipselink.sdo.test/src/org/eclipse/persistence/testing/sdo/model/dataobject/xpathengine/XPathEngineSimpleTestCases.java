@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject.xpathengine;
 
 import commonj.sdo.DataObject;
@@ -54,31 +54,31 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
         assertTrue(returnValue instanceof DataObject);
         assertEquals("Baby Monitor", ((DataObject)returnValue).get("productName"));
     }
-    
+
     public void testQuotedStringQueryWithoutWhitespace2() {
         Object returnValue = rootObject.get("items/item[partNum = \"926-AA\"]");
         assertTrue(returnValue instanceof DataObject);
         assertEquals("Baby Monitor", ((DataObject)returnValue).get("productName"));
     }
-   
+
     public void testQuotedStringQueryWithoutWhitespace3() {
         Object returnValue = rootObject.get("items/item[partNum =\"926-AA\"]");
         assertTrue(returnValue instanceof DataObject);
         assertEquals("Baby Monitor", ((DataObject)returnValue).get("productName"));
     }
-    
+
     public void testInvalidQuotedStringQueryWithWhitespace1() {
         Object returnValue = rootObject.get("items/item[partNum=\' 926-AA\']");
         // should fail
         assertTrue(returnValue == null);
     }
-    
+
     public void testInvalidQuotedStringQueryWithWhitespace2() {
         Object returnValue = rootObject.get("items/item[partNum = \" 926-AA\"]");
         // should fail
         assertTrue(returnValue == null);
     }
-    
+
     public void testInvalidQuotedStringQueryWithWhitespace3() {
         Object returnValue = rootObject.get("items/item[partNum= \" 926-AA\"]");
         // should fail
@@ -96,13 +96,13 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
         assertTrue(returnValue instanceof DataObject);
         assertEquals("Lawnmower", ((DataObject)returnValue).get("productName"));
     }
-    
+
     public void testValidQuotedStringQueryWithWhitespace2() {
         Object returnValue = rootObject.get("items/item[partNum = \" 872-AA\"]");
         assertTrue(returnValue instanceof DataObject);
         assertEquals("Lawnmower", ((DataObject)returnValue).get("productName"));
     }
-    
+
     public void testValidQuotedStringQueryWithWhitespace3() {
         Object returnValue = rootObject.get("items/item[partNum= \" 872-AA\"]");
         assertTrue(returnValue instanceof DataObject);
@@ -120,13 +120,13 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
         assertTrue(returnValue instanceof DataObject);
         assertEquals("Baby Monitor", ((DataObject)returnValue).get("productName"));
     }
-    
+
     public void testStringQueryWithWhitespaces2() {
         Object returnValue = rootObject.get("items/item[partNum =926-AA]");
         assertTrue(returnValue instanceof DataObject);
         assertEquals("Baby Monitor", ((DataObject)returnValue).get("productName"));
     }
-    
+
     public void testStringQueryWithWhitespaces3() {
         Object returnValue = rootObject.get("items/item[partNum = 926-AA]");
         assertTrue(returnValue instanceof DataObject);
@@ -139,13 +139,13 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
         assertTrue(returnValue instanceof DataObject);
         assertEquals("Lawnmower", ((DataObject)returnValue).get("productName"));
     }
-    
+
     public void testFloatQueryWithWhitespaces2() {
         Object returnValue = rootObject.get("items/item[USPrice= 148.95]");
         assertTrue(returnValue instanceof DataObject);
         assertEquals("Lawnmower", ((DataObject)returnValue).get("productName"));
     }
-    
+
     public void testFloatQueryWithWhitespaces3() {
         Object returnValue = rootObject.get("items/item[USPrice =148.95]");
         assertTrue(returnValue instanceof DataObject);
@@ -170,12 +170,12 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
         assertTrue(returnValue instanceof DataObject);
         assertEquals("Lawnmower", ((DataObject)returnValue).get("productName"));
     }
-    
+
     // ------------------- Set with unreachable path tests -------------------//
     public void testSetPropertyOnNullDataObject() {
         boolean expectedEx = false;
         boolean unexpectedEx = false;
-        
+
         try {
             SDODataFactory factory =  (SDODataFactory) getHelperContext().getDataFactory();
             SDODataObject po = (SDODataObject) factory.create("http://www.example.org", "PurchaseOrderType");
@@ -195,7 +195,7 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
     public void testSetPropertyOnNullNestedDataObject() {
         boolean expectedEx = false;
         boolean unexpectedEx = false;
-        
+
         try {
             SDODataFactory factory =  (SDODataFactory) getHelperContext().getDataFactory();
             SDODataObject po = (SDODataObject) factory.create("http://www.example.org", "PurchaseOrderType");
@@ -217,7 +217,7 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
     public void testSetPropertyOnNullListWrapper() {
         boolean expectedEx = false;
         boolean unexpectedEx = false;
-        
+
         try {
             SDODataFactory factory =  (SDODataFactory) getHelperContext().getDataFactory();
             SDODataObject po = (SDODataObject) factory.create("http://www.example.org", "PurchaseOrderType");

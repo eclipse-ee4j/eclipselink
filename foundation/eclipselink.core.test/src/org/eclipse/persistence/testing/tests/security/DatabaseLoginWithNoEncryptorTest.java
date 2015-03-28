@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.security;
 
 import java.util.Properties;
@@ -23,9 +23,9 @@ import org.eclipse.persistence.sessions.Session;
 /**
  * Tests the database login when no encryption object has been initialized via
  * the setPassword() or setEncryptedPassword() methods.
- * 
+ *
  * Fix for bug 2700529
- * 
+ *
  * @author Guy Pelletier
  */
 public class DatabaseLoginWithNoEncryptorTest extends AutoVerifyTestCase {
@@ -50,7 +50,7 @@ public class DatabaseLoginWithNoEncryptorTest extends AutoVerifyTestCase {
     exceptionOccurred = false;
 
     originalSession = getSession();
-    
+
     DatabaseLogin login = new DatabaseLogin();
     login.setPlatform(originalSession.getLogin().getPlatform());
     //this change for making tests pass on oc4j server, suggested by James
@@ -60,13 +60,13 @@ public class DatabaseLoginWithNoEncryptorTest extends AutoVerifyTestCase {
     */
     login.setConnector(originalSession.getLogin().getConnector());
     Properties properties = new Properties();
-	if (originalSession.getLogin().getUserName() != null){
-		properties.setProperty("user", originalSession.getLogin().getUserName());
-	}
-    if (originalSession.getLogin().getPassword() != null){
-		properties.setProperty("password", originalSession.getLogin().getPassword());
+    if (originalSession.getLogin().getUserName() != null){
+        properties.setProperty("user", originalSession.getLogin().getUserName());
     }
-    
+    if (originalSession.getLogin().getPassword() != null){
+        properties.setProperty("password", originalSession.getLogin().getPassword());
+    }
+
         login.setProperties(properties);
 
         mySession = new Project(login).createDatabaseSession();

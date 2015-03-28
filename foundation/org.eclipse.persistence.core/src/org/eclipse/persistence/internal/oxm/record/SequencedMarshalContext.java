@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.util.List;
@@ -26,7 +26,7 @@ import org.eclipse.persistence.oxm.sequenced.Setting;
 
 /**
  * An implementation of MarshalContext for handling sequenced objects that
- * are mapped to XML. 
+ * are mapped to XML.
  */
 public class SequencedMarshalContext implements MarshalContext {
 
@@ -76,7 +76,7 @@ public class SequencedMarshalContext implements MarshalContext {
                 indexFragment.setXPath(setting.getName());
                 indexFragment.setNamespaceURI(setting.getNamespaceURI());
                 return xPathNode.getNonAttributeChildrenMap().get(indexFragment);
-                
+
             }
         }
     }
@@ -93,7 +93,7 @@ public class SequencedMarshalContext implements MarshalContext {
             return nodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, this);
         }
     }
-    
+
     public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XPathFragment rootFragment) {
         if(nodeValue.isContainerValue()) {
             ((ContainerValue)nodeValue).marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, this);
@@ -102,6 +102,6 @@ public class SequencedMarshalContext implements MarshalContext {
             return nodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, this, rootFragment);
         }
     }
-    
+
 
 }

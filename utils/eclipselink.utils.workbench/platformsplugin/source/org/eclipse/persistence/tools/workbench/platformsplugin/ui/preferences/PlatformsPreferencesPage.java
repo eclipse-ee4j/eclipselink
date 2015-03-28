@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -34,42 +34,42 @@ import org.eclipse.persistence.tools.workbench.utility.string.BidiStringConverte
  */
 final class PlatformsPreferencesPage extends AbstractPanel {
 
-	PlatformsPreferencesPage(PreferencesContext context) {
-		super(context);
-		this.intializeLayout();
-	}
+    PlatformsPreferencesPage(PreferencesContext context) {
+        super(context);
+        this.intializeLayout();
+    }
 
-	private void intializeLayout() {
-		GridBagConstraints constraints = new GridBagConstraints();
+    private void intializeLayout() {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		JCheckBox splashScreenCheckBox = this.buildCheckBox("PREFERENCES.PLATFORMS.VISIBLE_IN_PRODUCTION", this.buildVisibleInProductionModel());
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 1;
-		constraints.weighty = 1;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.PAGE_START;
-		constraints.insets = new Insets(0, 0, 0, 0);
-		this.add(splashScreenCheckBox, constraints);
-		
-		addHelpTopicId(this, "preferences.platforms");
-	}
+        JCheckBox splashScreenCheckBox = this.buildCheckBox("PREFERENCES.PLATFORMS.VISIBLE_IN_PRODUCTION", this.buildVisibleInProductionModel());
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.PAGE_START;
+        constraints.insets = new Insets(0, 0, 0, 0);
+        this.add(splashScreenCheckBox, constraints);
 
-	// ***** "visible in production" check box
-	private ButtonModel buildVisibleInProductionModel() {
-		return new CheckBoxModelAdapter(this.buildBufferedVisibleInProductionAdapter());
-	}
+        addHelpTopicId(this, "preferences.platforms");
+    }
 
-	private PropertyValueModel buildBufferedVisibleInProductionAdapter() {
-		return new BufferedPropertyValueModel(this.buildVisibleInProductionAdapter(), this.getPreferencesContext().getBufferTrigger());
-	}
+    // ***** "visible in production" check box
+    private ButtonModel buildVisibleInProductionModel() {
+        return new CheckBoxModelAdapter(this.buildBufferedVisibleInProductionAdapter());
+    }
 
-	private PropertyValueModel buildVisibleInProductionAdapter() {
-		PreferencePropertyValueModel adapter = new PreferencePropertyValueModel(this.preferences(), PlatformsPlugin.VISIBLE_IN_PRODUCTION_PREFERENCE, PlatformsPlugin.VISIBLE_IN_PRODUCTION_PREFERENCE_DEFAULT);
-		adapter.setConverter(BidiStringConverter.BOOLEAN_CONVERTER);
-		return adapter;
-	}
+    private PropertyValueModel buildBufferedVisibleInProductionAdapter() {
+        return new BufferedPropertyValueModel(this.buildVisibleInProductionAdapter(), this.getPreferencesContext().getBufferTrigger());
+    }
+
+    private PropertyValueModel buildVisibleInProductionAdapter() {
+        PreferencePropertyValueModel adapter = new PreferencePropertyValueModel(this.preferences(), PlatformsPlugin.VISIBLE_IN_PRODUCTION_PREFERENCE, PlatformsPlugin.VISIBLE_IN_PRODUCTION_PREFERENCE_DEFAULT);
+        adapter.setConverter(BidiStringConverter.BOOLEAN_CONVERTER);
+        return adapter;
+    }
 
 }

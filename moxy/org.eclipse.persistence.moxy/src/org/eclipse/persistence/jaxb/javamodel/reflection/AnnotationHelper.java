@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,14 +18,14 @@ import java.lang.reflect.AnnotatedElement;
 
 /**
  * <p><b>Purpose:</b>Provide a class which is responsible for returning Annotations
- * from AnnotatedElements. This class can be extended in the case that the annotation 
+ * from AnnotatedElements. This class can be extended in the case that the annotation
  * data is being provided from an external source.
- * 
+ *
  * @author mmacivor
  *
  */
 public class AnnotationHelper {
-  
+
     /**
      * Get an annotation of type annotationClass if it's present on the AnnotatedElement
      * elem.

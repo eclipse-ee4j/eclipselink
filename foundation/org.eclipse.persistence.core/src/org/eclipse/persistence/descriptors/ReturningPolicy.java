@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
@@ -62,8 +62,8 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * Populated during descriptor initialization using infos.
      * Here's the order:
      * <pre>
-     * main[INSERT][RETURN_ONLY]  main[INSERT][WRITE_RETURN]  main[INSERT][MAPPED]	main[INSERT][UNMAPPED]	main[INSERT][ALL]
-     * main[UPDATE][RETURN_ONLY]  main[UPDATE][WRITE_RETURN]  main[UPDATE][MAPPED]	main[UPDATE][UNMAPPED]	main[UPDATE][ALL]
+     * main[INSERT][RETURN_ONLY]  main[INSERT][WRITE_RETURN]  main[INSERT][MAPPED]    main[INSERT][UNMAPPED]    main[INSERT][ALL]
+     * main[UPDATE][RETURN_ONLY]  main[UPDATE][WRITE_RETURN]  main[UPDATE][MAPPED]    main[UPDATE][UNMAPPED]    main[UPDATE][ALL]
      * </pre>
      * After initialization main[UPDATE,WRITE_RETURN] will contain all DatabaseFields that should be
      * returned on Update as read-write.
@@ -604,12 +604,12 @@ public class ReturningPolicy implements Serializable, Cloneable {
         for (int i = 0; i < infos.size(); i++) {
             Info info1 = infos.get(i);
             info1 = (Info)info1.clone();
-            DatabaseField descField = getDescriptor().buildField(info1.getField()); 
+            DatabaseField descField = getDescriptor().buildField(info1.getField());
             if(info1.getField().getType() == null) {
                 info1.setField(descField);
             } else {
                 // keep the original type if specified
-                info1.getField().setName(descField.getName()); 
+                info1.getField().setName(descField.getName());
                 info1.getField().setTableName(getDescriptor().getDefaultTable().getQualifiedNameDelimited(session.getPlatform()));
             }
             Info info2 = (Info)infoHashtable.get(info1.getField());

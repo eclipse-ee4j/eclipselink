@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -34,27 +34,27 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
 
 /**
  * JPA scripting API implementation.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.5.1
  */
 public class RuntimeFactory {
-    
+
     public EntityManagerFactory createEntityManagerFactory(PersistenceUnit pu) {
         EntityManagerSetupImpl emSetupImpl = null;
         boolean isNew = false;
         // the name that uniquely defines persistence unit
         String name = pu.getName();
-        
+
         pu.setProperty(PersistenceUnitProperties.METADATA_SOURCE, new MetadataSource(pu));
         SEPersistenceUnitInfo puInfo = (SEPersistenceUnitInfo) pu.getPersistenceUnitInfo();
-        
+
         JPAInitializer initializer = new PersistenceProvider().getInitializer(name, null);
         Map<String, Object> props = new HashMap<String, Object>();
 
         String uniqueName = initializer.createUniquePersistenceUnitName(puInfo);
         String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(props, puInfo, uniqueName);
-        
+
         try {
             synchronized (EntityManagerFactoryProvider.emSetupImpls) {
                 emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
@@ -77,7 +77,7 @@ public class RuntimeFactory {
                 if (emSetupImpl == null) {
                     // there may be initial emSetupImpl cached in Initializer - remove it and use.
                     emSetupImpl = initializer.extractInitialEmSetupImpl(name);
-                    
+
                     if (emSetupImpl == null) {
                         // create and predeploy a new emSetupImpl
                         emSetupImpl = initializer.callPredeploy(puInfo, props, uniqueName, sessionName);
@@ -85,7 +85,7 @@ public class RuntimeFactory {
                         // change the name
                         emSetupImpl.changeSessionName(sessionName);
                     }
-                    
+
                     // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
                     emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), props);
                     EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, emSetupImpl);
@@ -121,7 +121,7 @@ public class RuntimeFactory {
         }
 
         EntityManagerFactoryImpl factory = null;
-        
+
         try {
             factory = new EntityManagerFactoryImpl(emSetupImpl, props);
 
@@ -136,14 +136,14 @@ public class RuntimeFactory {
             } else {
                 emSetupImpl.undeploy();
             }
-            
+
             throw ex;
         }
 
         return factory;
 
     }
-    
+
     public static RuntimeFactory getInstance() {
         return new RuntimeFactory();
     }

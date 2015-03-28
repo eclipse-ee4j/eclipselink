@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,10 +65,10 @@ public class DequeHolder {
     @XmlAttribute
     protected Deque<String> collection12;
 
-    @XmlElements({@XmlElement(name="collection13integer", type=Integer.class), @XmlElement(name="collection13string", type=String.class)})   
+    @XmlElements({@XmlElement(name="collection13integer", type=Integer.class), @XmlElement(name="collection13string", type=String.class)})
     protected Deque collection13;
-    
-    @XmlElements({@XmlElement(name="collection14integer", type=Integer.class), @XmlElement(name="collection14string", type=String.class, nillable=true)})   
+
+    @XmlElements({@XmlElement(name="collection14integer", type=Integer.class), @XmlElement(name="collection14string", type=String.class, nillable=true)})
     protected Deque collection14;
 
     @XmlElement
@@ -155,7 +155,7 @@ public class DequeHolder {
     public void setCollection12(Deque<String> collection12) {
         this.collection12 = collection12;
     }
-    
+
     public Deque getCollection13() {
         return collection13;
     }
@@ -194,15 +194,15 @@ public class DequeHolder {
      }
 
     private boolean compareMaps(Map map1, Map map2) {
-    	if(map1 == null){
-    		return map2 == null;
-    	}
-    	if(map1.size() != map2.size()){
-    		return false;
-    	}
-    	return map1.equals(map2);
+        if(map1 == null){
+            return map2 == null;
+        }
+        if(map1.size() != map2.size()){
+            return false;
+        }
+        return map1.equals(map2);
     }
-        
+
     private boolean compareCollections(Collection compareList1, Collection compareList2) {
         if (compareList1 == null) {
             return compareList2 == null;
@@ -216,57 +216,57 @@ public class DequeHolder {
             Iterator iter1 = compareList1.iterator();
             Iterator iter2 = compareList2.iterator();
             while(iter1.hasNext()){
-            	Object next1 = iter1.next();
-            	Object next2 = iter2.next();
-            	if(!compareObjects(next1, next2)){
-            		return false;
-            	}
+                Object next1 = iter1.next();
+                Object next2 = iter2.next();
+                if(!compareObjects(next1, next2)){
+                    return false;
+                }
             }
-            return true;       
+            return true;
         }
     }
-    
-     
+
+
      private boolean compareObjects(Object obj1, Object obj2){
-    	if(obj1 == null & obj2 == null){
-    		return true;
-    	}
-     	if(obj1 instanceof JAXBElement){
-     		 if(obj2 instanceof JAXBElement){
- 	    		 if(! ((JAXBElement)obj1).getName().getLocalPart().equals(((JAXBElement)obj2).getName().getLocalPart())){
- 	    			 return false;
- 	    		 }
- 	    		 if(! ((JAXBElement)obj1).getDeclaredType().equals(((JAXBElement)obj2).getDeclaredType())){
- 	    			 return false;
- 	    		 }
- 	    		 if(! ((JAXBElement)obj1).getValue().equals(((JAXBElement)obj2).getValue())){
- 	    			 return false;
- 	    		 } 
- 	    	     return true;
-     		 }
-     		 return false;
-     	}else{
-     		 if(obj1.getClass().isArray() && obj2.getClass().isArray()){
-     	         return compareArrays(obj1, obj2);
-     	     }else{
-     		    return obj1.equals(obj2);
-     	     }
-     	}
+        if(obj1 == null & obj2 == null){
+            return true;
+        }
+         if(obj1 instanceof JAXBElement){
+              if(obj2 instanceof JAXBElement){
+                  if(! ((JAXBElement)obj1).getName().getLocalPart().equals(((JAXBElement)obj2).getName().getLocalPart())){
+                      return false;
+                  }
+                  if(! ((JAXBElement)obj1).getDeclaredType().equals(((JAXBElement)obj2).getDeclaredType())){
+                      return false;
+                  }
+                  if(! ((JAXBElement)obj1).getValue().equals(((JAXBElement)obj2).getValue())){
+                      return false;
+                  }
+                  return true;
+              }
+              return false;
+         }else{
+              if(obj1.getClass().isArray() && obj2.getClass().isArray()){
+                  return compareArrays(obj1, obj2);
+              }else{
+                 return obj1.equals(obj2);
+              }
+         }
      }
 
-     protected boolean compareArrays(Object controlValue, Object testValue) {    	
+     protected boolean compareArrays(Object controlValue, Object testValue) {
          int controlSize = Array.getLength(controlValue);
          int objSize = Array.getLength(testValue);
          if(controlSize != objSize){
-         	return false;
+             return false;
          }
          for(int x=0; x<controlSize; x++) {
              Object controlItem = Array.get(controlValue, x);
              Object testItem = Array.get(testValue, x);
-                            
+
              if(!controlItem.equals(testItem)){
-              	return false;
-             }           
+                  return false;
+             }
          }
          return true;
      }

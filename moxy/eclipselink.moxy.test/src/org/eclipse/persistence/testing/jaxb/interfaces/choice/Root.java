@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -26,29 +26,29 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "ListmyObject", namespace = "someNamespace")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Root {
-	
-	/*
-	 * customer is using a List and specifies the Interface ImyObject that just contains 
-	 * getters and setters
-	 */
-	@XmlElements(value = { @XmlElement(name = "myObject", type = MyObject.class), @XmlElement(name = "otherObject", type = MyOtherObject.class) })
-	protected List<MyInterface> myList = new ArrayList<MyInterface>();
 
-	public List<MyInterface> getMyList() {
-		return myList;
-	}
+    /*
+     * customer is using a List and specifies the Interface ImyObject that just contains
+     * getters and setters
+     */
+    @XmlElements(value = { @XmlElement(name = "myObject", type = MyObject.class), @XmlElement(name = "otherObject", type = MyOtherObject.class) })
+    protected List<MyInterface> myList = new ArrayList<MyInterface>();
 
-	public void setMyList(List<MyInterface> m_listMyObject) {
-		this.myList = m_listMyObject;
-	}
-	
-	public boolean equals(Object obj){
-		if(obj instanceof Root){
-			Root compare = (Root)obj;
-			return myList.equals(compare.myList);
-		}
-		return false;
-	}
+    public List<MyInterface> getMyList() {
+        return myList;
+    }
+
+    public void setMyList(List<MyInterface> m_listMyObject) {
+        this.myList = m_listMyObject;
+    }
+
+    public boolean equals(Object obj){
+        if(obj instanceof Root){
+            Root compare = (Root)obj;
+            return myList.equals(compare.myList);
+        }
+        return false;
+    }
 
     @Override
     public int hashCode() {

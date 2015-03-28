@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,15 +38,15 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <p>
  * <b>Description</b>: This class represents a join of an attribute from a "From"element.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria MapJoin
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
 
 public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, K, V> {
-    
+
     public <T> MapJoinImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<V> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact){
         this(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact,JoinType.INNER);
     }
@@ -93,7 +93,7 @@ public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, 
     public Path<V> value() {
         return this;
     }
-    
+
     public MapJoinImpl<Z, K, V> on(Expression<Boolean> restriction) {
         return (MapJoinImpl<Z, K, V>)super.on(restriction);
     }

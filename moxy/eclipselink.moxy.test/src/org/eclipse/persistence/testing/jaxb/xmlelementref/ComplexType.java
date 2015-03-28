@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,7 +36,7 @@ public class ComplexType {
 
  /**
   * Gets the value of the global property.
-  * 
+  *
   */
  public boolean isGlobal() {
      return global;
@@ -44,7 +44,7 @@ public class ComplexType {
 
  /**
   * Sets the value of the global property.
-  * 
+  *
   */
  public void setGlobal(boolean value) {
      this.global = value;
@@ -70,36 +70,36 @@ public class ComplexType {
      }
 
      public boolean equals(Object theObject){
-    	 if(!(theObject instanceof TestLocal)){
-    		 return false;
-    	 }    	 
-    	 if(((TestLocal)theObject).getDeclaredType() != getDeclaredType()){
-    		 return false;
-    	 }
-    	 if(((TestLocal)theObject).getName() != getName()){
-    		 return false;
-    	 }
-    	 if(((TestLocal)theObject).getScope() != getScope()){
-    		 return false;
-    	 }
-    	 if(!(((TestLocal)theObject).getValue().equals(getValue()))){
-    		 return false;
-    	 }
-    	 return true;
+         if(!(theObject instanceof TestLocal)){
+             return false;
+         }
+         if(((TestLocal)theObject).getDeclaredType() != getDeclaredType()){
+             return false;
+         }
+         if(((TestLocal)theObject).getName() != getName()){
+             return false;
+         }
+         if(((TestLocal)theObject).getScope() != getScope()){
+             return false;
+         }
+         if(!(((TestLocal)theObject).getValue().equals(getValue()))){
+             return false;
+         }
+         return true;
      }
  }
- 
+
  public boolean equals(Object theObject){
-	 if(!(theObject instanceof ComplexType)){
-		 return false;
-	 }
-	 if(((ComplexType)theObject).isGlobal() != isGlobal()){
-		 return false;
-	 }
-	 if(!(((ComplexType)theObject).getLocal().equals(getLocal()))){
-		 return false;
-	 } 
-	 return true;
+     if(!(theObject instanceof ComplexType)){
+         return false;
+     }
+     if(((ComplexType)theObject).isGlobal() != isGlobal()){
+         return false;
+     }
+     if(!(((ComplexType)theObject).getLocal().equals(getLocal()))){
+         return false;
+     }
+     return true;
  }
 
 }

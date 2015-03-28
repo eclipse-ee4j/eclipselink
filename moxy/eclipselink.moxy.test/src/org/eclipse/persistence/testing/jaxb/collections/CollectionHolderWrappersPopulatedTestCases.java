@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
-public class CollectionHolderWrappersPopulatedTestCases extends JAXBWithJSONTestCases 
+public class CollectionHolderWrappersPopulatedTestCases extends JAXBWithJSONTestCases
 {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/emptycollectionholderwrapperspopulated.xml";
@@ -44,41 +44,41 @@ public class CollectionHolderWrappersPopulatedTestCases extends JAXBWithJSONTest
 
     @Override
     protected Object getControlObject() {
-    	CollectionHolderWrappers obj  = new CollectionHolderWrappers();
-    	List<Integer> numbers = new ArrayList<Integer>();
-    	obj.collection1 = new ArrayList<Integer>();
-    	obj.collection1.add(10);
-    	obj.collection1.add(20);
-    	
-    	obj.collection2 = new ArrayList<Object>(obj.collection1);
-    	
-    	obj.collection3 = new ArrayList<Object>();
-    	obj.collection3.add(new CollectionHolderWrappers());
-    	    	
-    	obj.collection4 = new ArrayList<CollectionHolderWrappers>();    	    	    
-    	obj.collection4.add(new CollectionHolderWrappers());
-    	
-    	obj.collection5 = new ArrayList<JAXBElement<String>>();
-    	obj.collection5.add(new JAXBElement<String>(new QName("root"), String.class, "abcvalue"));
-    	
-    	obj.collection6 = new ArrayList<CoinEnum>();
-    	obj.collection6.add(CoinEnum.DIME);
-    	
-    	obj.collection7 = new ArrayList<byte[]>();
-    	obj.collection7.add(new String("abc").getBytes());
-    	obj.collection7.add(new String("def").getBytes());
-    	return obj;
+        CollectionHolderWrappers obj  = new CollectionHolderWrappers();
+        List<Integer> numbers = new ArrayList<Integer>();
+        obj.collection1 = new ArrayList<Integer>();
+        obj.collection1.add(10);
+        obj.collection1.add(20);
+
+        obj.collection2 = new ArrayList<Object>(obj.collection1);
+
+        obj.collection3 = new ArrayList<Object>();
+        obj.collection3.add(new CollectionHolderWrappers());
+
+        obj.collection4 = new ArrayList<CollectionHolderWrappers>();
+        obj.collection4.add(new CollectionHolderWrappers());
+
+        obj.collection5 = new ArrayList<JAXBElement<String>>();
+        obj.collection5.add(new JAXBElement<String>(new QName("root"), String.class, "abcvalue"));
+
+        obj.collection6 = new ArrayList<CoinEnum>();
+        obj.collection6.add(CoinEnum.DIME);
+
+        obj.collection7 = new ArrayList<byte[]>();
+        obj.collection7.add(new String("abc").getBytes());
+        obj.collection7.add(new String("def").getBytes());
+        return obj;
     }
 
     public boolean shouldRemoveWhitespaceFromControlDocJSON(){
-    	return false;
+        return false;
     }
-    
+
     @Override
     public Object getReadControlObject() {
         CollectionHolderWrappers obj = (CollectionHolderWrappers)getControlObject();
         obj.collection3 = new ArrayList<Object>();
-        
+
         Document doc = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
         obj.collection3.add(doc.createElementNS("", "collectionHolderWrappers"));
         return obj;

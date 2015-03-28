@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -47,7 +47,7 @@ public class DynamicTestProject extends Project {
         name.setAttributeName("name");
         name.setXPath("name/text()");
         descriptor.addMapping(name);
-        
+
         XMLCompositeObjectMapping addr = new XMLCompositeObjectMapping();
         addr.setAttributeName("address");
         addr.setXPath("address");
@@ -67,13 +67,13 @@ public class DynamicTestProject extends Project {
         emails.setReferenceClassName("org.eclipse.persistence.testing.oxm.dynamic.XEmail");
         emails.addSourceToTargetKeyFieldAssociation("email-id/text()", "@id");
         descriptor.addMapping(emails);
-        
+
         XMLObjectReferenceMapping secCred = new XMLObjectReferenceMapping();
         secCred.setAttributeName("securityCredential");
         secCred.setReferenceClassName("org.eclipse.persistence.testing.oxm.dynamic.XSecurityCredential");
         secCred.addSourceToTargetKeyFieldAssociation("sec-cred-id/text()", "@id");
         descriptor.addMapping(secCred);
-        
+
         this.addDescriptor(descriptor);
     }
 
@@ -93,7 +93,7 @@ public class DynamicTestProject extends Project {
         owningEmployee.setSetMethodName("setOwningEmployee");
         owningEmployee.setGetMethodName("getOwningEmployee");
         descriptor.addMapping(owningEmployee);
-        
+
         this.addDescriptor(descriptor);
     }
 
@@ -113,7 +113,7 @@ public class DynamicTestProject extends Project {
         owningEmployee.setSetMethodName("setOwningEmployee");
         owningEmployee.setGetMethodName("getOwningEmployee");
         descriptor.addMapping(owningEmployee);
-        
+
         this.addDescriptor(descriptor);
     }
 
@@ -126,7 +126,7 @@ public class DynamicTestProject extends Project {
         id.setAttributeName("id");
         id.setXPath("@id");
         descriptor.addMapping(id);
-        
+
         XMLDirectMapping zone = new XMLDirectMapping();
         zone.setAttributeName("zone");
         zone.setXPath("zone/text()");
@@ -136,7 +136,7 @@ public class DynamicTestProject extends Project {
         keyNumber.setAttributeName("keyNumber");
         keyNumber.setXPath("key-number/text()");
         descriptor.addMapping(keyNumber);
-        
+
         XMLInverseReferenceMapping owningEmployee = new XMLInverseReferenceMapping();
         owningEmployee.setReferenceClassName("org.eclipse.persistence.testing.oxm.dynamic.XEmployee");
         owningEmployee.setMappedBy("securityCredential");
@@ -144,20 +144,20 @@ public class DynamicTestProject extends Project {
         owningEmployee.setSetMethodName("setOwningEmployee");
         owningEmployee.setGetMethodName("getOwningEmployee");
         descriptor.addMapping(owningEmployee);
-        
+
         this.addDescriptor(descriptor);
     }
-    
+
     private void addEmailDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClassName("org.eclipse.persistence.testing.oxm.dynamic.XEmail");
         descriptor.addPrimaryKeyFieldName("@id");
-        
+
         XMLDirectMapping id = new XMLDirectMapping();
         id.setAttributeName("id");
         id.setXPath("@id");
         descriptor.addMapping(id);
-        
+
         XMLDirectMapping username = new XMLDirectMapping();
         username.setAttributeName("username");
         username.setXPath("username/text()");
@@ -174,11 +174,11 @@ public class DynamicTestProject extends Project {
         owningEmployee.setAttributeName("owningEmployee");
         owningEmployee.setSetMethodName("setOwningEmployee");
         owningEmployee.setGetMethodName("getOwningEmployee");
-        descriptor.addMapping(owningEmployee);        
-        
+        descriptor.addMapping(owningEmployee);
+
         this.addDescriptor(descriptor);
     }
-    
+
     private void addRootDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClassName("org.eclipse.persistence.testing.oxm.dynamic.XRoot");
@@ -201,8 +201,8 @@ public class DynamicTestProject extends Project {
         secCred.setXPath("security-credential");
         secCred.setReferenceClassName("org.eclipse.persistence.testing.oxm.dynamic.XSecurityCredential");
         descriptor.addMapping(secCred);
-        
+
         this.addDescriptor(descriptor);
     }
-    
+
 }

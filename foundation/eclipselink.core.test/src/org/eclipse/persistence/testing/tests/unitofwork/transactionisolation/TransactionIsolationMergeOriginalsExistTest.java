@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork.transactionisolation;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -40,7 +40,7 @@ public class TransactionIsolationMergeOriginalsExistTest extends TransactionIsol
 
         // want to avoid cache hit here, so make it go to database...
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression expression = 
+        Expression expression =
             builder.get("firstName").equal(original.getFirstName()).and(builder.get("lastName").equal(original.getLastName()));
 
         Employee employeeClone = (Employee)unitOfWork.readAllObjects(Employee.class, expression).elementAt(0);
@@ -55,7 +55,7 @@ public class TransactionIsolationMergeOriginalsExistTest extends TransactionIsol
         Employee newOriginal = (Employee)getSession().executeQuery(cacheQuery);
 
         strongAssert(newOriginal != null, "There should now be an original in the shared cache.");
-        strongAssert(newOriginal == original, 
+        strongAssert(newOriginal == original,
                      "The original should in the shared cache should still have its identity.");
         strongAssert(newOriginal.getFirstName().equals("elle"), "Changes were not merged into the shared cache");
     }

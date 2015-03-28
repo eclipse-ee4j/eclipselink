@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -21,71 +21,71 @@ import org.eclipse.persistence.internal.sessions.factories.model.property.Proper
  * @author Pascal Filion
  */
 public class PropertyAdapter extends SCAdapter {
-	// property change
-	public static final String NAME_PROPERTY = "name";
-	public static final String VALUE_PROPERTY = "value";
+    // property change
+    public static final String NAME_PROPERTY = "name";
+    public static final String VALUE_PROPERTY = "value";
 
-	/**
-	 * Creates a new PropertyAdapter for the specified model object.
-	 */
-	PropertyAdapter( SCAdapter parent, PropertyConfig scConfig) {
-		
-		super( parent, scConfig);
-	}
+    /**
+     * Creates a new PropertyAdapter for the specified model object.
+     */
+    PropertyAdapter( SCAdapter parent, PropertyConfig scConfig) {
 
-	/**
-	 * Creates a new PropertyAdapter.
-	 */
-	protected PropertyAdapter( SCAdapter parent) {
-		
-		super( parent);
-	}
+        super( parent, scConfig);
+    }
 
-	/**
-	 * Factory method for building this model.
-	 */
-	protected Object buildModel() {
-		
-		return new PropertyConfig();
-	}
+    /**
+     * Creates a new PropertyAdapter.
+     */
+    protected PropertyAdapter( SCAdapter parent) {
 
-	public String getName() {
+        super( parent);
+    }
 
-		return propertyConfig().getName();
-	}
+    /**
+     * Factory method for building this model.
+     */
+    protected Object buildModel() {
 
-	public String getValue() {
+        return new PropertyConfig();
+    }
 
-		return propertyConfig().getValue();
-	}
+    public String getName() {
 
-	/**
-	 * Returns this Config Model Object.
-	 */
-	final PropertyConfig propertyConfig() {
-		
-		return ( PropertyConfig)this.getModel();
-	}
+        return propertyConfig().getName();
+    }
 
-	public void setName( String name) {
+    public String getValue() {
 
-		String oldName = getName();
-		propertyConfig().setName(name);
-		firePropertyChanged(NAME_PROPERTY, oldName, name);
-	}
+        return propertyConfig().getValue();
+    }
 
-	public void setValue( String value) {
+    /**
+     * Returns this Config Model Object.
+     */
+    final PropertyConfig propertyConfig() {
 
-		String oldValue = getValue();
-		propertyConfig().setValue(value);
-		firePropertyChanged(VALUE_PROPERTY, oldValue, value);
-	}
+        return ( PropertyConfig)this.getModel();
+    }
 
-	public void toString( StringBuffer sb) {
+    public void setName( String name) {
 
-		sb.append("name=");
-		sb.append(getName());
-		sb.append(", value=");
-		sb.append(getValue());
-	}
+        String oldName = getName();
+        propertyConfig().setName(name);
+        firePropertyChanged(NAME_PROPERTY, oldName, name);
+    }
+
+    public void setValue( String value) {
+
+        String oldValue = getValue();
+        propertyConfig().setValue(value);
+        firePropertyChanged(VALUE_PROPERTY, oldValue, value);
+    }
+
+    public void toString( StringBuffer sb) {
+
+        sb.append("name=");
+        sb.append(getName());
+        sb.append(", value=");
+        sb.append(getValue());
+    }
 }

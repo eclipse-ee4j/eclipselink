@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.spatial.jgeometry.wrapped;
 
 import junit.extensions.TestSetup;
@@ -34,7 +34,7 @@ public class DeleteTests extends WrappedSpatialTestCase {
     public DeleteTests(String name){
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("DeleteTests");
@@ -53,7 +53,7 @@ public class DeleteTests extends WrappedSpatialTestCase {
             }
         };
     }
- 
+
     public void testAnySingleDelete() throws Exception {
         int initialQuantity = countWrappedSpatial(session);
 
@@ -66,14 +66,14 @@ public class DeleteTests extends WrappedSpatialTestCase {
         uow.writeChanges();
         int afterCount = countWrappedSpatial(uow);
 
-        assertEquals("Number of rows does not match", initialQuantity - 1, 
+        assertEquals("Number of rows does not match", initialQuantity - 1,
                      afterCount);
 
         uow.release();
     }
 
     public static int countWrappedSpatial(Session session) {
-        ReportQuery rq = 
+        ReportQuery rq =
             new ReportQuery(WrappedSpatial.class, new ExpressionBuilder());
 
         rq.addCount();

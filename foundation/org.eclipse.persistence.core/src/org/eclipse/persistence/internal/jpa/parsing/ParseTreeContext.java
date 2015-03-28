@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import java.util.*;
@@ -44,7 +44,7 @@ public class ParseTreeContext {
     private List parameterNames;
     private NodeFactory nodeFactory;
     private String queryInfo;
-    
+
     /**
      * INTERNAL
      * Return a new initialized ParseTreeContext
@@ -77,7 +77,7 @@ public class ParseTreeContext {
         }
     }
 
-    /** 
+    /**
      * INTERNAL
      * Associate the given path with the given variable.
      */
@@ -92,23 +92,23 @@ public class ParseTreeContext {
                 getQueryInfo(), line, column, variable, text);
         }
     }
-    /** 
+    /**
      * INTERNAL
      */
     public void unregisterVariable(String variable) {
         variableDecls.remove(variable);
     }
-    
-    /** 
+
+    /**
      * INTERNAL
-     * Returns true if the specified string denotes a variable. 
+     * Returns true if the specified string denotes a variable.
      */
     public boolean isVariable(String variable) {
         VariableDecl decl = (VariableDecl)variableDecls.get(variable);
         return decl != null;
     }
 
-    /** 
+    /**
      * INTERNAL
      * Returns true if the specified string denotes a range variable.
      */
@@ -118,17 +118,17 @@ public class ParseTreeContext {
         return (decl != null) && decl.isRangeVariable;
     }
 
-    /** 
+    /**
      * INTERNAL
      * Returns the abstract schema name if the specified string denotes a
-     * range variable.  
+     * range variable.
      */
     public String schemaForVariable(String variable) {
         VariableDecl decl = (VariableDecl)variableDecls.get(variable);
         return (decl != null) ? decl.schema : null;
     }
 
-    /** 
+    /**
      * INTERNAL
      * Answer the class associated with the provided schema name
      */
@@ -156,7 +156,7 @@ public class ParseTreeContext {
             Map.Entry entry = (Map.Entry)i.next();
             String nextVariable = (String)entry.getKey();
             VariableDecl decl = (VariableDecl)entry.getValue();
-            if ((decl.schema != null) && 
+            if ((decl.schema != null) &&
                 (theClass == this.classForSchemaName(decl.schema, context))) {
                 return nextVariable;
             }
@@ -164,7 +164,7 @@ public class ParseTreeContext {
         return null;
     }
 
-    /** 
+    /**
      * INTERNAL
      * Returns the path if the specified string denotes a join or collection
      * member variable.
@@ -197,14 +197,14 @@ public class ParseTreeContext {
     /**
      * INTERNAL
      * Returns true if the specified string denotes a variable declared in an
-     * outer scope. 
+     * outer scope.
      */
     public boolean isDeclaredInOuterScope(String variable) {
         VariableDecl decl = (VariableDecl)variableDecls.get(variable);
         return (decl != null) ? (decl.scope < currentScope) : false;
     }
 
-    /** 
+    /**
      * INTERNAL
      * Sets the scope of the specified variable to the current scope.
      */
@@ -215,7 +215,7 @@ public class ParseTreeContext {
         }
     }
 
-    /** 
+    /**
      * INTERNAL
      * Enters a new scope. This initializes the set of outer scope variables.
      */
@@ -223,8 +223,8 @@ public class ParseTreeContext {
         currentScope++;
         resetOuterScopeVariables();
     }
-    
-    /** 
+
+    /**
      * INTERNAL
      * Leaves the current scope.
      */
@@ -232,7 +232,7 @@ public class ParseTreeContext {
         currentScope--;
     }
 
-    /** 
+    /**
      * INTERNAL
      * Adds the specified variable to the set of outer scope variables.
      */
@@ -240,31 +240,31 @@ public class ParseTreeContext {
         outerScopeVariables.add(variable);
     }
 
-    /** 
-     * INTERNAL 
+    /**
+     * INTERNAL
      * Returns the set of outer scope variables.
      */
     public Set getOuterScopeVariables() {
         return outerScopeVariables;
     }
 
-    /** 
-     * INTERNAL 
+    /**
+     * INTERNAL
      * Resets the set of outer scope variables.
      */
     public void resetOuterScopeVariables() {
         outerScopeVariables = new HashSet();
     }
 
-    /** 
-     * INTERNAL 
+    /**
+     * INTERNAL
      * Resets the set of outer scope variables.
      */
     public void resetOuterScopeVariables(Set variables) {
         outerScopeVariables = variables;
     }
 
-    /** 
+    /**
      * Associate the given variableName with the given node representing a
      * JOIN FETCH node.
      */
@@ -292,7 +292,7 @@ public class ParseTreeContext {
         }
     }
 
-    /** Returns s set of variables that are declared in the current scope, 
+    /** Returns s set of variables that are declared in the current scope,
      * but not used in the query. */
     public Set getUnusedVariables() {
         Set unused = new HashSet();
@@ -306,7 +306,7 @@ public class ParseTreeContext {
         }
         return unused;
     }
-    
+
     //answer true if two or more variables are mapped to the same type name in variableTypes
     //true => "SELECT OBJECT (emp1) FROM Employee emp1, Employee emp2 WHERE ..."
     //false => "SELECT OBJECT (emp) FROM Employee emp WHERE ..."
@@ -326,7 +326,7 @@ public class ParseTreeContext {
         return typeNamesToVariables.size() != nrOfRangeVariables;
     }
 
-    //answer true if two or more aliases are involved in the FROM (different types) 
+    //answer true if two or more aliases are involved in the FROM (different types)
     //true => "SELECT OBJECT (emp1) FROM Employee emp1, Address addr1 WHERE ..."
     //false => "SELECT OBJECT (emp) FROM Employee emp WHERE ..."
     //false => "SELECT OBJECT (emp1) FROM Employee emp1, Employee emp2 WHERE ..."
@@ -343,7 +343,7 @@ public class ParseTreeContext {
         return typeNamesToVariables.size() > 1;
     }
 
-    /** 
+    /**
      * INTERNAL
      * Returns the type helper stored in this context.
      */
@@ -351,15 +351,15 @@ public class ParseTreeContext {
         return typeHelper;
     }
 
-    /** 
+    /**
      * INTERNAL
      * Stores the specified type helper in this context.
      */
     public void setTypeHelper(TypeHelper typeHelper) {
         this.typeHelper = typeHelper;
     }
-    
-    /** 
+
+    /**
      * INTERNAL
      * Add a parameter.
      */
@@ -369,7 +369,7 @@ public class ParseTreeContext {
         }
     }
 
-    /** 
+    /**
      * INTERNAL
      * Defines the type of the parameter with the specified name.
      */
@@ -386,17 +386,17 @@ public class ParseTreeContext {
             } else {
                 // error case old usage and new usage do not match type
                 throw JPQLException.invalidMultipleUseOfSameParameter(
-                    getQueryInfo(), line, column, parameterName, 
-                    typeHelper.getTypeName(oldType), 
+                    getQueryInfo(), line, column, parameterName,
+                    typeHelper.getTypeName(oldType),
                     typeHelper.getTypeName(parameterType));
             }
         } else {
-            // new entry 
+            // new entry
             parameterTypes.put(parameterName, parameterType);
         }
     }
 
-    /** 
+    /**
      * INTERNAL
      * Returns true if the query has at least one parameter.
      */
@@ -404,15 +404,15 @@ public class ParseTreeContext {
         return !parameterNames.isEmpty();
     }
 
-    /** 
+    /**
      * INTERNAL
      * Return the type of the specified parameter.
      */
     public Object getParameterType(String parameter) {
         return parameterTypes.get(parameter);
     }
-    
-    /** 
+
+    /**
      * INTERNAL
      * Return the parameter names.
      */
@@ -420,7 +420,7 @@ public class ParseTreeContext {
         return parameterNames;
     }
 
-    /** 
+    /**
      * INTERNAL
      * Class defining the type of the values the variableDecls map.
      * It holds the following values:

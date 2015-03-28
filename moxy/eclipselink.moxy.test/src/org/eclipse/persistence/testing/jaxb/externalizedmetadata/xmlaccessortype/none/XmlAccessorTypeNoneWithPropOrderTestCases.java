@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,13 +28,13 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
  * Tests XmlAccessorType via eclipselink-oxm.xml
  *
  */
-public class XmlAccessorTypeNoneWithPropOrderTestCases extends JAXBWithJSONTestCases {    
+public class XmlAccessorTypeNoneWithPropOrderTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/employee-no-access.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/employee-no-access.json";
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public XmlAccessorTypeNoneWithPropOrderTestCases(String name) throws Exception{
@@ -43,33 +43,33 @@ public class XmlAccessorTypeNoneWithPropOrderTestCases extends JAXBWithJSONTestC
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
-    
-    protected Object getControlObject() {
-		Employee emp = new Employee(0);	
-		emp.firstName = "firstName";
-		emp.lastName = "lastName";		
-		return emp;
-	}	   
-    
-    
-    public Object getWriteControlObject() {
-		Employee emp = new Employee(666);	
-		emp.firstName = "firstName";
-		emp.lastName = "lastName";		
-		return emp;
-	}	
-    public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/none/eclipselink-proporder-oxm.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.none", new StreamSource(inputStream));
-	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-        
+    protected Object getControlObject() {
+        Employee emp = new Employee(0);
+        emp.firstName = "firstName";
+        emp.lastName = "lastName";
+        return emp;
+    }
+
+
+    public Object getWriteControlObject() {
+        Employee emp = new Employee(666);
+        emp.firstName = "firstName";
+        emp.lastName = "lastName";
+        return emp;
+    }
+    public Map getProperties(){
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/none/eclipselink-proporder-oxm.xml");
+
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.none", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
         return properties;
-	}
+    }
 
     public void testRoundTrip() throws Exception{
         // Not applicable since id is a write only mapping
-     }   
+     }
    }

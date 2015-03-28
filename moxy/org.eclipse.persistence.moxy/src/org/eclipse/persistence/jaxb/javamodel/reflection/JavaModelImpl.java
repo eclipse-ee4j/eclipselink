@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,9 +25,9 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModel;
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>The JavaModel is the central access point to the TopLink
- * JAXB 2.0 Java model implementation's source/class files.  A JavaModel has 
+ * JAXB 2.0 Java model implementation's source/class files.  A JavaModel has
  * an underlying source/classpath that defines its search path.
- * 
+ *
  * <p><b>Responsibilities:</b>
  * <ul>
  * <li>Return a JavaClass based on a Class or Class name</li>
@@ -110,20 +110,20 @@ public class JavaModelImpl implements JavaModel {
     }
 
     public AnnotationHelper getAnnotationHelper() {
-    	return this.annotationHelper;
+        return this.annotationHelper;
     }
-    
+
     /**
      * Set the Map of package names to metadata complete indicators for this
      * JavaModelInput.  If a given package has no entry in this map it is
      * assumed to be metadata incomplete.
-     *   
+     *
      * @param metadataCompletePackageMap
      */
     public void setMetadataCompletePackageMap(Map<String, Boolean> metadataCompletePackageMap) {
         this.metadataCompletePackages = metadataCompletePackageMap;
     }
-    
+
     public Map<String, JavaClassImpl> getCachedJavaClasses() {
         if(this.cachedJavaClasses == null) {
             this.cachedJavaClasses = new HashMap<String, JavaClassImpl>();
@@ -131,11 +131,11 @@ public class JavaModelImpl implements JavaModel {
         return this.cachedJavaClasses;
     }
 
-	public boolean hasXmlBindings() {
-		return hasXmlBindings;
-	}
+    public boolean hasXmlBindings() {
+        return hasXmlBindings;
+    }
 
-	public void setHasXmlBindings(boolean hasXmlBindings) {
-		this.hasXmlBindings = hasXmlBindings;
-	}
+    public void setHasXmlBindings(boolean hasXmlBindings) {
+        this.hasXmlBindings = hasXmlBindings;
+    }
 }

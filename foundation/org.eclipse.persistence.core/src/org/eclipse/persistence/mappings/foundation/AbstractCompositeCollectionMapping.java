@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *      *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.foundation;
 
 import java.util.*;
@@ -197,7 +197,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
@@ -219,7 +219,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
@@ -276,21 +276,21 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     public boolean compareElementsForChange(Object element1, Object element2, AbstractSession session) {
         return this.compareElements(element1, element2, session);
     }
-  
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        
+
         containerPolicy.convertClassNamesToClasses(classLoader);
     }
-    
+
 
     protected ChangeRecord convertToChangeRecord(Object cloneCollection, ObjectChangeSet owner, AbstractSession session) {
         ContainerPolicy cp = getContainerPolicy();
@@ -637,7 +637,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
                     return buildClonePart(cached, null, cacheKey, attributeValue, refreshCascade, executionSession);
                 }
                 return result;
-                
+
             }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
                 return null;
             }
@@ -661,7 +661,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
 
         Object result = cp.containerInstance(nestedRows.size());
         for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
-        	AbstractRecord nestedRow = (AbstractRecord)stream.nextElement();
+            AbstractRecord nestedRow = (AbstractRecord)stream.nextElement();
 
             ClassDescriptor descriptor = this.getReferenceDescriptor();
             if (descriptor.hasInheritance()) {
@@ -784,7 +784,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     public boolean isCollectionMapping() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Build and return the change record that results

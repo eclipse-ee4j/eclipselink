@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.inheritance;
 
 import java.util.*;
@@ -20,7 +20,7 @@ import org.eclipse.persistence.indirection.*;
 /**
  * STI stands for Single Table Inheritance.
  * STI_Employee references and referenced by STI_Project class,
- * which is mapped with its subclasses STI_SmallProject and STI_LargeProject 
+ * which is mapped with its subclasses STI_SmallProject and STI_LargeProject
  * to a single table.
  * STI_Employee is a simplified version of Employee.
  */

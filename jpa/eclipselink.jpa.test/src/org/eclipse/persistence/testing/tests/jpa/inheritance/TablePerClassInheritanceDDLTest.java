@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,7 +26,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUnitTest {
     static EntityManagerFactory factory;
-    
+
     public TablePerClassInheritanceDDLTest() {
         super();
     }
@@ -34,7 +34,7 @@ public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUn
     public TablePerClassInheritanceDDLTest(String name) {
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("TablePerClassInheritanceDDLTest");
@@ -49,7 +49,7 @@ public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUn
         suite.addTest(new TablePerClassInheritanceDDLTest("testValidateAssassinWithBombAndEliminations"));
         suite.addTest(new TablePerClassInheritanceDDLTest("testNamedQueryFindAllWeapons"));
         suite.addTest(new TablePerClassInheritanceDDLTest("testNamedQueryFindAllWeaponsWhereDescriptionContainsSniper"));
-        suite.addTest(new TablePerClassInheritanceDDLTest("testBatchFindAllWeapons"));        
+        suite.addTest(new TablePerClassInheritanceDDLTest("testBatchFindAllWeapons"));
         suite.addTest(new TablePerClassInheritanceDDLTest("testCreateNewSocialClubsWithMembers"));
         suite.addTest(new TablePerClassInheritanceDDLTest("testValidateSocialClub1Members"));
         suite.addTest(new TablePerClassInheritanceDDLTest("testValidateSocialClub2Members"));
@@ -62,7 +62,7 @@ public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUn
         suite.addTest(new TablePerClassInheritanceDDLTest("testTeardown"));
         return suite;
     }
-    
+
     /**
      * DDL should be generated when creating factory.
      */
@@ -75,7 +75,7 @@ public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUn
             super.testSetup();
         }
     }
-        
+
     /**
      * DDL should be generated when creating factory.
      */
@@ -98,7 +98,7 @@ public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUn
             }
             // Ensure real one inits first.
             super.createEntityManager().close();
-            
+
             Map properties = new HashMap(getPersistenceProperties());
             properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
             properties.put(PersistenceUnitProperties.DDL_GENERATION_MODE, PersistenceUnitProperties.DDL_DATABASE_GENERATION);
@@ -107,7 +107,7 @@ public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUn
         }
         return this.factory;
     }
-    
+
     /**
      * Use a custom factory to generate DDL.
      */

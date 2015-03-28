@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     11/19/2009-2.0 Gordon Yorke 
+ *     11/19/2009-2.0 Gordon Yorke
  *       - 239825: XML configuration for Interceptors and Default redirectors
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
 import java.util.List;
@@ -26,11 +26,11 @@ import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
 import org.eclipse.persistence.sessions.interceptors.CacheKeyInterceptor;
 
 public class CacheAuditor extends CacheInterceptor {
-    
+
     protected boolean shouldThrow;
-    
+
     protected int accessCount;
-    
+
     protected Boolean lastAcquireNoWait = null;
 
     public CacheAuditor(IdentityMap targetIdentityMap, AbstractSession interceptedSession) {
@@ -58,7 +58,7 @@ public class CacheAuditor extends CacheInterceptor {
 
     public void release() {
     }
-    
+
     /* (non-Javadoc)
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor#acquireDeferredLock(java.lang.Object)
      */
@@ -112,7 +112,7 @@ public class CacheAuditor extends CacheInterceptor {
     @Override
     public void lazyRelationshipLoaded(Object rootEntity, ValueHolderInterface valueHolder, ForeignReferenceMapping mapping) {
         // TODO Auto-generated method stub
-        
+
     }
 
     /**

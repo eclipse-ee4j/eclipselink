@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     2010-10-27 - James Sutherland (Oracle) initial impl
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.partitioned;
 
 import java.util.HashMap;
@@ -38,7 +38,7 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 public class PartitionedTestSuite extends JUnitTestCase {
     public static boolean validDatabase = true;
     public static boolean isRAC = false;
-        
+
     public static Test suite() {
         TestSuite suite = new TestSuite("PartitioningTests");
         suite.addTest(new PartitionedTestSuite("testSetup"));
@@ -57,11 +57,11 @@ public class PartitionedTestSuite extends JUnitTestCase {
         suite.addTest(new PartitionedTestSuite("testPersistOfficeWithLongName"));
         return suite;
     }
-    
+
     public PartitionedTestSuite(String name) {
         super(name);
     }
-    
+
     /**
      * Return the name of the persistence context this test uses.
      * This allow a subclass test to set this only in one place.
@@ -133,7 +133,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
                     url);
             properties.put(
                     PersistenceUnitProperties.CONNECTION_POOL + "node3." + PersistenceUnitProperties.CONNECTION_POOL_MAX,
-                    "8");            
+                    "8");
         } else if (!isOnServer() && getServerSession().getPlatform().isOracle() && (getServerSession().getLogin().getURL().indexOf("@(DESCRIPTION") != -1)) {
             isRAC = true;
             // UCP RAC callback testing.
@@ -194,8 +194,8 @@ public class PartitionedTestSuite extends JUnitTestCase {
             mapping.getSelectionQuery().setPartitioningPolicy(policy);
         }
         new PartitionedTableCreator().replaceTables(getDatabaseSession());
-        
-        EntityManager em = createEntityManager();    
+
+        EntityManager em = createEntityManager();
         try {
             PopulationManager.resetDefaultManager();
             beginTransaction(em);
@@ -203,10 +203,10 @@ public class PartitionedTestSuite extends JUnitTestCase {
             commitTransaction(em);
         } finally {
             closeEntityManagerAndTransaction(em);
-        }        
+        }
         clearCache();
     }
-    
+
     /**
      * Test reading.
      */
@@ -214,7 +214,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
         if (!this.validDatabase) {
             return;
         }
-        EntityManager em = createEntityManager();    
+        EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
             Query query = em.createQuery("Select e from Employee e where e.firstName = :name");
@@ -238,7 +238,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
         }  catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
-            }            
+            }
             closeEntityManager(em);
             throw e;
         }
@@ -246,7 +246,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
         verifyObject(new EmployeePopulator().employeeExample2());
         verifyObject(new EmployeePopulator().employeeExample3());
     }
-    
+
     /**
      * Test reading.
      */
@@ -254,7 +254,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
         if (!this.validDatabase) {
             return;
         }
-        EntityManager em = createEntityManager();    
+        EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
             Query query = em.createQuery("Select p from Project p where p.name = :name");
@@ -274,11 +274,11 @@ public class PartitionedTestSuite extends JUnitTestCase {
                     fail("Project not correct.");
                 }
                 closeEntityManager(em);
-            }            
+            }
         }  catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
-            }            
+            }
             closeEntityManager(em);
             throw e;
         }
@@ -286,7 +286,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
         verifyObject(new EmployeePopulator().largeProjectExample2());
         verifyObject(new EmployeePopulator().smallProjectExample1());
     }
-    
+
     /**
      * Test reading.
      */
@@ -294,7 +294,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
         if (!this.validDatabase) {
             return;
         }
-        EntityManager em = createEntityManager();    
+        EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
             int size = em.createQuery("Select e from Employee e").getResultList().size();
@@ -308,12 +308,12 @@ public class PartitionedTestSuite extends JUnitTestCase {
         }  catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
-            }            
+            }
             closeEntityManager(em);
             throw e;
         }
     }
-    
+
     /**
      * Test reading.
      */
@@ -321,7 +321,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
         if (!this.validDatabase) {
             return;
         }
-        EntityManager em = createEntityManager();    
+        EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
             int size = em.createQuery("Select p from Project p").getResultList().size();
@@ -335,12 +335,12 @@ public class PartitionedTestSuite extends JUnitTestCase {
         }  catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
-            }            
+            }
             closeEntityManager(em);
             throw e;
         }
     }
-    
+
     /**
      * Test remove.
      */
@@ -352,7 +352,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
             verifyPersistAndRemove(new EmployeePopulator().basicEmployeeExample1());
         }
     }
-    
+
     /**
      * Test remove.
      */
@@ -364,7 +364,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
             verifyPersistAndRemove(new EmployeePopulator().basicLargeProjectExample2());
         }
     }
-    
+
     /**
      * Test persist.
      */
@@ -376,7 +376,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
             verifyPersist(new EmployeePopulator().basicEmployeeExample2());
         }
     }
-    
+
     /**
      * Test persist an Office with a long name to produce a potential negative hashcode.
      * Bug 371514 - fragile hashing in HashPartitioningPolicy
@@ -391,7 +391,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
             verifyPersist(new Office(longName, index + 1));
         }
     }
-    
+
     /**
      * Test persist.
      */
@@ -404,7 +404,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
             verifyPersist(new EmployeePopulator().basicSmallProjectExample3());
         }
     }
-    
+
     /**
      * Test update.
      */
@@ -436,13 +436,13 @@ public class PartitionedTestSuite extends JUnitTestCase {
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
-                }            
+                }
                 closeEntityManager(em);
                 throw e;
             }
         }
     }
-    
+
     /**
      * Test update.
      */
@@ -470,13 +470,13 @@ public class PartitionedTestSuite extends JUnitTestCase {
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
-                }            
+                }
                 closeEntityManager(em);
                 throw e;
             }
         }
     }
-    
+
     /**
      * Test that partitioning is being used.
      */
@@ -512,10 +512,10 @@ public class PartitionedTestSuite extends JUnitTestCase {
             }
             throw e;
         } finally {
-            closeEntityManager(em);            
+            closeEntityManager(em);
         }
     }
-    
+
     /**
      * Test exclusive partitioning with persist.
      * The persist should decide the connection, not the query.
@@ -559,7 +559,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
                     return;
                 }
             } finally {
-                closeEntityManagerAndTransaction(em);            
+                closeEntityManagerAndTransaction(em);
             }
         }
     }

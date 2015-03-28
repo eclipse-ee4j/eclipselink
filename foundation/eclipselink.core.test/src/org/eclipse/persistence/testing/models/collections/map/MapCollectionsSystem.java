@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.collections.map;
 
 import java.util.Vector;
@@ -21,7 +21,7 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
 public class MapCollectionsSystem extends TestSystem {
-    
+
     public MapCollectionsSystem() {
         project = new MapCollectionsProject();
     }
@@ -67,7 +67,7 @@ public class MapCollectionsSystem extends TestSystem {
         schemaManager.replaceObject(EntityEntityU1MMapHolder.tableDefinition());
         schemaManager.createSequences();
     }
-    
+
     public void populate(DatabaseSession session) {
         MapPopulator system = new MapPopulator();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
@@ -89,7 +89,7 @@ public class MapCollectionsSystem extends TestSystem {
         PopulationManager.getDefaultManager().addAllObjectsForClass(AggregateAggregateMapHolder.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(EntityEntityMapHolder.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(EntityEntityU1MMapHolder.class, allObjects);
-        
+
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
     }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.distributedservers.rcm.broadcast;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class BroadcastReconnectionTest extends TestWrapper {
     }
 
     // Exception handler tries to re-creates local connection in a new thread.
-    // Used only in case shouldRemoveConnectionOnError==true and 
+    // Used only in case shouldRemoveConnectionOnError==true and
     // there is an exception thrown by local connection while it listens:
     // that happens in JMS case, doesn't happen with Oc4jJGroups.
 
@@ -164,7 +164,7 @@ public class BroadcastReconnectionTest extends TestWrapper {
             firstRunTestException = ex;
         }
         // Because the factory was either stopped or destroyed verify should fail.
-        // However eventLock allows the wrapped test to proceed as soon as either 
+        // However eventLock allows the wrapped test to proceed as soon as either
         // exception is thrown or connection is removed on the source - therefore there's no guarantee
         // that the message failed to be sent by the source will fail to be eventually recieved by the target -
         // may be if we waited a little bit more it would have reached the target.
@@ -186,7 +186,7 @@ public class BroadcastReconnectionTest extends TestWrapper {
         // should be equal to !shouldRemoveConnectionOnError:
         // exception is thrown only in case connection is NOT to be removed on error
         sourceHasThrownErrorPropagatingCommandException = state == BroadcastEventLock.UNLOCKED_BY_SOURCE_EXCEPTION_HANDLER;
-        // should be equal to shouldRemoveConnectionOnError: 
+        // should be equal to shouldRemoveConnectionOnError:
         // connection is removed only in case connection is to be removed on error
         sourceHasRemovedRemoteConnection = state == BroadcastEventLock.UNLOCKED_BY_SOURCE_SESSION;
 

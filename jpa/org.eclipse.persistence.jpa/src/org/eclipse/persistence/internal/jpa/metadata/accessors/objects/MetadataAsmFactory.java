@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, Hans Harz, Andrew Rustleund. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle, Hans Harz, Andrew Rustleund. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - initial impl
- *     05/14/2010-2.1 Guy Pelletier 
+ *     05/14/2010-2.1 Guy Pelletier
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
- *     Hans Harz, Andrew Rustleund - Bug 324862 - IndexOutOfBoundsException in 
+ *     Hans Harz, Andrew Rustleund - Bug 324862 - IndexOutOfBoundsException in
  *           DatabaseSessionImpl.initializeDescriptors because @MapKey Annotation is not found.
  *     04/21/2011-2.3 dclarke: Upgraded to support ASM 3.3.1
  *     08/10/2011-2.3 Lloyd Fernandes : Bug 336133 - Validation error during processing on parameterized generic OneToMany Entity relationship from MappedSuperclass
- *     10/05/2012-2.4.1 Guy Pelletier 
+ *     10/05/2012-2.4.1 Guy Pelletier
  *       - 373092: Exceptions using generics, embedded key and entity inheritance
  *     19/04/2014-2.6 Lukas Jungmann
  *       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
@@ -42,7 +42,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
 /**
  * INTERNAL: A metadata factory that uses ASM technology and no reflection
  * whatsoever to process the metadata model.
- * 
+ *
  * @author James Sutherland
  * @since EclipseLink 1.2
  */
@@ -100,10 +100,10 @@ public class MetadataAsmFactory extends MetadataFactory {
                         metadataClass.addInterface(reflectInterface.getName());
                     }
                 } catch (Exception failed) {
-                    metadataClass.setIsAccessible(false);                    
+                    metadataClass.setIsAccessible(false);
                 }
             } else {
-                metadataClass.setIsAccessible(false);                
+                metadataClass.setIsAccessible(false);
             }
             addMetadataClass(metadataClass);
         } finally {
@@ -175,7 +175,7 @@ public class MetadataAsmFactory extends MetadataFactory {
                         break;
                     }
                     String variable = parentGenericTypes.get(parentIndex);
-                    
+
                     // if we get as far as the superclass name in the parent generic type list,
                     // there is nothing more to process.  We have processed all the generics in the type definition
                     if (variable.equals(parent.getSuperclassName())){
@@ -261,7 +261,7 @@ public class MetadataAsmFactory extends MetadataFactory {
     /**
      * {@link AnnotationVisitor} used to process class, field , and method
      * annotations populating a {@link MetadataAnnotation} and its nested state.
-     * 
+     *
      * @see MetadataAnnotationArrayVisitor for population of array attributes
      */
     class MetadataAnnotationVisitor extends AnnotationVisitor {
@@ -365,7 +365,7 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         public MetadataFieldVisitor(MetadataClass classMetadata, int access, String name, String desc, String signature, Object value) {
             super(Opcodes.ASM5);
-        	this.field = new MetadataField(classMetadata);
+            this.field = new MetadataField(classMetadata);
             this.field.setModifiers(access);
             this.field.setName(name);
             this.field.setAttributeName(name);
@@ -510,14 +510,14 @@ public class MetadataAsmFactory extends MetadataFactory {
                     // Is a generic type variable.
                     int start = index;
                     int end = start;
-                    
+
                     char myNext = next;
-                    
+
                     while (':' != myNext && '(' != myNext && ')' != myNext && '<' != myNext && '>' != myNext && ';' != myNext && end < length - 1) {
                         end++;
                         myNext = chars[end];
                     }
-                    
+
                     if (myNext == ':') {
                         arguments.add(desc.substring(start, end));
                         isGenericTyped=true;

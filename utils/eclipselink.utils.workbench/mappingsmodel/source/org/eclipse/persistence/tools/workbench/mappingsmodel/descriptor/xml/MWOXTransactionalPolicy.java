@@ -16,12 +16,12 @@ public class MWOXTransactionalPolicy extends MWAbstractTransactionalPolicy {
     private MWXmlPrimaryKeyPolicy primaryKeyPolicy;
 
     // ********** static methods **********
-	
-	public static XMLDescriptor buildDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.setJavaClass(MWOXTransactionalPolicy.class);
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractTransactionalPolicy.class);
-		
+
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MWOXTransactionalPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(MWAbstractTransactionalPolicy.class);
+
 
         XMLCompositeObjectMapping primaryKeyFieldPolicyMapping = new XMLCompositeObjectMapping();
         primaryKeyFieldPolicyMapping.setAttributeName("primaryKeyPolicy");
@@ -30,20 +30,20 @@ public class MWOXTransactionalPolicy extends MWAbstractTransactionalPolicy {
         descriptor.addMapping(primaryKeyFieldPolicyMapping);
 
         return descriptor;
-	}
-	
-	// ********** Constructors **********
+    }
 
-	/** Default constructor - for TopLink use only. */
-	private MWOXTransactionalPolicy() {
-		super();
-	}
+    // ********** Constructors **********
 
-	MWOXTransactionalPolicy(MWOXDescriptor parent) {
-		super(parent);
-	}
+    /** Default constructor - for TopLink use only. */
+    private MWOXTransactionalPolicy() {
+        super();
+    }
 
-	// **************** Initialization ****************************************
+    MWOXTransactionalPolicy(MWOXDescriptor parent) {
+        super(parent);
+    }
+
+    // **************** Initialization ****************************************
 
     protected void initialize(Node parent) {
         super.initialize(parent);
@@ -56,23 +56,23 @@ public class MWOXTransactionalPolicy extends MWAbstractTransactionalPolicy {
     }
 
     @Override
-	protected MWLockingPolicy buildLockingPolicy() {
-		return new MWOXDescriptorLockingPolicy(this);
-	}
+    protected MWLockingPolicy buildLockingPolicy() {
+        return new MWOXDescriptorLockingPolicy(this);
+    }
 
-	@Override
-	protected MWQueryManager buildQueryManager() {
-		return new MWOXQueryManager(this);
-	}
+    @Override
+    protected MWQueryManager buildQueryManager() {
+        return new MWOXQueryManager(this);
+    }
 
     public MWXmlPrimaryKeyPolicy getPrimaryKeyPolicy() {
         return this.primaryKeyPolicy;
     }
 
     // *************** Runtime Conversion ********************
-    
+
     public void adjustRuntimeDescriptor(ClassDescriptor runtimeDescriptor) {
         this.primaryKeyPolicy.adjustRuntimeDescriptor(runtimeDescriptor);
     }
-    
+
 }

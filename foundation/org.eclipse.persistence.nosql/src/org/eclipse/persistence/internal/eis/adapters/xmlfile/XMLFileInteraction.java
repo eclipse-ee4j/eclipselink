@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.eis.adapters.xmlfile;
 
 import java.io.*;
@@ -68,14 +68,14 @@ public class XMLFileInteraction implements Interaction {
                 autocommit = false;
                 recordToReturn = executeRead(xmlSpec, file);
             } else if (xmlSpec.getInteractionType() == XMLFileInteractionSpec.INSERT) {
-            	recordToReturn = executeInsert(xmlSpec, file, (EISDOMRecord)input);
+                recordToReturn = executeInsert(xmlSpec, file, (EISDOMRecord)input);
             } else if (xmlSpec.getInteractionType() == XMLFileInteractionSpec.UPDATE) {
-            	recordToReturn = executeUpdate(xmlSpec, file, (EISDOMRecord)input);
+                recordToReturn = executeUpdate(xmlSpec, file, (EISDOMRecord)input);
             } else if (xmlSpec.getInteractionType() == XMLFileInteractionSpec.DELETE) {
-            	recordToReturn = executeDelete(xmlSpec, file);
+                recordToReturn = executeDelete(xmlSpec, file);
             }
             if (recordToReturn != null) {
-            	((EISDOMRecord) recordToReturn).setSession(((EISDOMRecord)input).getSession());
+                ((EISDOMRecord) recordToReturn).setSession(((EISDOMRecord)input).getSession());
             }
             return recordToReturn;
         } catch (Exception exception) {
@@ -92,13 +92,13 @@ public class XMLFileInteraction implements Interaction {
      * Execute the read operation.
      */
     public Record executeRead(XMLFileInteractionSpec spec, File file) throws Exception {
-        // Parse file and return document, or xpath/xquery result from dom.	
+        // Parse file and return document, or xpath/xquery result from dom.
         if (!file.exists()) {
             return null;
         }
         EISDOMRecord fileRecord = connection.getXMLFileTransaction().retrieveDOMRecord(file);
 
-        // Check for and process XPath or XQuery		
+        // Check for and process XPath or XQuery
         if (spec.getXPath() != null) {
             // Either a value/string or list of element records is returned
             Object result = fileRecord.getValues(buildField(spec));
@@ -125,10 +125,10 @@ public class XMLFileInteraction implements Interaction {
      * Execute the insert operation.
      */
     public Record executeInsert(XMLFileInteractionSpec spec, File file, EISDOMRecord input) throws Exception {
-        // Write input record dom to file, or insert dom node.	
+        // Write input record dom to file, or insert dom node.
         EISDOMRecord outputToFile = input;
 
-        // If xpath, parse, insert node, then write back	
+        // If xpath, parse, insert node, then write back
         if (spec.getXPath() != null) {
             // If the file exists get tx dom.
             outputToFile = connection.getXMLFileTransaction().retrieveDOMRecord(file);
@@ -149,7 +149,7 @@ public class XMLFileInteraction implements Interaction {
         // Write input record dom to file, or insert dom node.
         EISDOMRecord outputToFile = input;
 
-        // If xpath, get tx dom, find and update node, (tx commit will write back)			
+        // If xpath, get tx dom, find and update node, (tx commit will write back)
         if (spec.getXPath() != null) {
             outputToFile = connection.getXMLFileTransaction().retrieveDOMRecord(file);
             outputToFile.put(buildField(spec), input);
@@ -166,7 +166,7 @@ public class XMLFileInteraction implements Interaction {
             return null;
         }
 
-        // If xpath, get tx dom, delete node, (tx commit will write back)	
+        // If xpath, get tx dom, delete node, (tx commit will write back)
         if (spec.getXPath() != null) {
             EISDOMRecord outputToFile = connection.getXMLFileTransaction().retrieveDOMRecord(file);
             outputToFile.remove(buildField(spec));

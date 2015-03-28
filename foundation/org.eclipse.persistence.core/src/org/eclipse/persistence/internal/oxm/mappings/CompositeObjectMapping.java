@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,11 +54,11 @@ public interface CompositeObjectMapping<
     public boolean hasConverter();
 
     public void setConverter(CONVERTER converter);
-    
+
     public void setIsWriteOnly(boolean b);
-    
+
     public void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY keepAsElementPolicy);
-    
+
     /**
      * Set the AbstractNullPolicy on the mapping<br>
      * The default policy is NullPolicy.<br>
@@ -66,16 +66,16 @@ public interface CompositeObjectMapping<
      * @param aNullPolicy
      */
     public void setNullPolicy(AbstractNullPolicy aNullPolicy);
-    
+
     /**
      * This is a reference class whose instances this mapping will store in the domain objects.
      */
     public void setReferenceClass(Class aClass);
-    
+
     public void setReferenceClassName(String aClassName);
-    
+
     public void setXPath(String string);
-    
+
     /**
      * ADVANCED:
      * Set the field in the mapping.

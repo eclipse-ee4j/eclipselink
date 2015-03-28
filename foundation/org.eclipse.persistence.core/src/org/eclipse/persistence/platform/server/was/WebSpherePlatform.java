@@ -1,21 +1,21 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     06/30/2010-2.1.1 Michael O'Brien 
+ *     06/30/2010-2.1.1 Michael O'Brien
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
  *     12/18/2014-2.6 Rick Curtis
  *       455690: Move JNDIConnector lookup type to ServerPlatform.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.server.was;
 
 import java.lang.reflect.InvocationTargetException;
@@ -51,12 +51,12 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
      * Cached WAS util class used to reflectively check connections and unwrap them.
      */
     protected Class websphereUtilClass;
-    
+
     /**
      * Cached WAS util method used for unwrapping connections.
      */
     protected Method vendorConnectionMethod;
-    
+
     /**
      * INTERNAL:
      * Default Constructor: All behavior for the default constructor is inherited
@@ -65,10 +65,10 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
         super(newDatabaseSession);
         this.disableRuntimeServices();
     }
-    
+
     /**
-     * INTERNAL: getExternalTransactionControllerClass(): Answer the class of 
-     * external transaction controller to use for WebSphere. This is 
+     * INTERNAL: getExternalTransactionControllerClass(): Answer the class of
+     * external transaction controller to use for WebSphere. This is
      * read-only.
      *
      * @return Class externalTransactionControllerClass
@@ -79,9 +79,9 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
      */
     public Class getExternalTransactionControllerClass() {
-    	if (externalTransactionControllerClass == null){
-    		externalTransactionControllerClass = WebSphereTransactionController.class;
-    	}
+        if (externalTransactionControllerClass == null){
+            externalTransactionControllerClass = WebSphereTransactionController.class;
+        }
         return externalTransactionControllerClass;
     }
 
@@ -100,7 +100,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
         }
         return this.websphereUtilClass;
     }
-    
+
     /**
      * Return the class (interface) for the WebSphere JDBC connection wrapper.
      */
@@ -115,7 +115,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
         }
         return this.websphereConnectionClass;
     }
-    
+
     /**
      * Return the method for the WebSphere JDBC connection wrapper vendorConnection.
      */

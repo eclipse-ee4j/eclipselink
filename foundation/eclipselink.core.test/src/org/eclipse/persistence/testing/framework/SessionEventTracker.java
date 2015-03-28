@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     July 13, 2011 - Andrei Ilitchev (Oracle) - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import java.util.ArrayList;
@@ -25,14 +25,14 @@ import org.eclipse.persistence.sessions.SessionEventListener;
 
 /**
  * <p><b>Purpose</b>: Used to test handling of session events.
- * 
+ *
  * Create several instances of the class;
  * name them to distinguish from each other;
  * add them to different sessions' EventManagers.
- * 
+ *
  * In the test:
  *   // clear the previously logged event handlings
- *   SessionEventTracker.clearLog(); 
+ *   SessionEventTracker.clearLog();
  *   // define which events should be tracked, for instance:
  *   // first clear all the previously set events,
  *   SessionEventTracker.noneEvents();
@@ -41,20 +41,20 @@ import org.eclipse.persistence.sessions.SessionEventListener;
  *   SessionEventTracker.addEvent(SessionEvent.PostLogin);
  *   // start tracking
  *   SessionEventTracker.startTracking();
- *   
+ *
  *   // do something
  *
  *   SessionEventTracker.stopTracking();
  *   // analyze listeners and events Lists.
- *   
+ *
  *   clean up (optional)
  *   SessionEventTracker.clearLog();
  *   // return back to the default setting - handling all events
  *   SessionEventTracker.allEvents();
- *   
+ *
  *   In static handlings list contains instances of Handling class -
  *   each holds an event and a listener that has handled it.
- *   
+ *
  *   It's possible to set error on a Handling (see examples preLogin and postLogin) -
  *   that sends the erroneous Handling to errors list (still kept on handlings list, too).
  *
@@ -63,7 +63,7 @@ import org.eclipse.persistence.sessions.SessionEventListener;
  * @see SessionEvent
  */
 public class SessionEventTracker implements SessionEventListener {
-    
+
     // in order from 1 to (currently) 35 (no holes!).
     // should be kept in sync with SessionEvent codes.
     public static final String[] eventNames = {
@@ -103,15 +103,15 @@ public class SessionEventTracker implements SessionEventListener {
         "PreReleaseExclusiveConnection",
         "NoRowsModified"
     };
-    
+
     public static int nEvents = eventNames.length;
-    
+
     public static boolean isTracking;
     public static boolean[] shouldTrackEvent = new boolean[nEvents];
     static {
         allEvents();
     }
-    
+
     public static class Handling {
         public Handling(SessionEventTracker listener, SessionEvent event) {
             this.time = System.currentTimeMillis();
@@ -147,20 +147,20 @@ public class SessionEventTracker implements SessionEventListener {
             return listener;
         }
     }
-    
+
     protected static List<Handling> handlings = new ArrayList();
     protected static List<Handling> errors = new ArrayList();
-    
+
     protected String name = "";
-    
+
     public SessionEventTracker() {
         super();
     }
-    
+
     public SessionEventTracker(String name) {
         this.name = name;
     }
-    
+
     public static void startTracking() {
         isTracking = true;
     }
@@ -168,11 +168,11 @@ public class SessionEventTracker implements SessionEventListener {
     public static void stopTracking() {
         isTracking = false;
     }
-    
+
     public static boolean isTracking() {
         return isTracking;
     }
-    
+
     public static boolean isTrackingEvent(SessionEvent event) {
         if (isTracking) {
             return shouldTrackEvent[event.getEventCode()];
@@ -180,11 +180,11 @@ public class SessionEventTracker implements SessionEventListener {
             return false;
         }
     }
-    
+
     public static int size() {
         return handlings.size();
     }
-    
+
     public static void clearLog() {
         handlings = new ArrayList();
         errors = new ArrayList();
@@ -195,13 +195,13 @@ public class SessionEventTracker implements SessionEventListener {
             shouldTrackEvent[i] = true;
         }
     }
-    
+
     public static void noneEvents() {
         for (int i=1; i<nEvents; i++) {
             shouldTrackEvent[i] = false;
         }
     }
-    
+
     public static void addEvent(int eventCode) {
         if (eventCode <= 0) {
             throw new TestErrorException("event code " + eventCode + " is wrong - should be a positive number");
@@ -210,7 +210,7 @@ public class SessionEventTracker implements SessionEventListener {
         }
         shouldTrackEvent[eventCode] = true;
     }
-    
+
     public static void removeEvent(int eventCode) {
         if (eventCode <= 0) {
             throw new TestErrorException("event code " + eventCode + " is wrong - should be a positive number");
@@ -219,23 +219,23 @@ public class SessionEventTracker implements SessionEventListener {
         }
         shouldTrackEvent[eventCode] = false;
     }
-    
+
     public static List<Handling> getHandlings() {
         return handlings;
     }
-    
+
     public static List<Handling> getErrors() {
         return errors;
     }
-    
+
     public String getName() {
         return this.name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     /**
      * PUBLIC:
      * This event is raised on the session if a descriptor is missing for a class being persisted.
@@ -302,7 +302,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on when using the server/client sessions.
      * This event is raised after a connection is acquired from a connection pool.
      */
-    public void postAcquireConnection(SessionEvent event) { 
+    public void postAcquireConnection(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
         }
@@ -645,7 +645,7 @@ public class SessionEventTracker implements SessionEventListener {
         Handling handling = log(event);
         if (((DatabaseSessionImpl)event.getSession()).isLoggedIn()) {
             handling.setError("session is already logged in");
-        }        
+        }
     }
 
     /**
@@ -694,7 +694,7 @@ public class SessionEventTracker implements SessionEventListener {
             handling.setError(errorMsg);
         }
     }
-    
+
     protected Handling log(SessionEvent event) {
         Handling handling = new Handling(this, event);
         synchronized (handlings) {
@@ -702,11 +702,11 @@ public class SessionEventTracker implements SessionEventListener {
         }
         return handling;
     }
-    
+
     public String toString() {
         return Helper.getShortClassName(this) + "(" + (name != null ? name : "") + ")";
     }
-    
+
     public static String eventToString(SessionEvent event) {
         return getEventName(event.getEventCode()) + "[" + sessionToString(event.getSession()) + "]";
     }
@@ -719,8 +719,8 @@ public class SessionEventTracker implements SessionEventListener {
         }
         return eventNames[eventCode - 1];
     }
-    
+
     public static String sessionToString(Session session) {
         return Helper.getShortClassName(session) + "(" + session.getName() + ")";
-    }    
+    }
 }

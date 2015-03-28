@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.weaving;
 
 import java.lang.reflect.Field;
@@ -140,7 +140,7 @@ public class EmployeeWeavingTestModel extends TestModel {
 
         return suite;
     }
-    
+
     public TestSuite getWeaverTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("WeaverTestSuite");
@@ -149,7 +149,7 @@ public class EmployeeWeavingTestModel extends TestModel {
         suite.addTest(buildWeaverTest());
         return suite;
     }
-    
+
     public TestSuite getFetchGroupsTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("FetchGroupsTestSuite");
@@ -163,7 +163,7 @@ public class EmployeeWeavingTestModel extends TestModel {
         suite.addTest(buildFetchGroupUpdateNonFetchedObjectUOWTest());
         return suite;
     }
-    
+
     public TestCase buildWeaverTest() {
         TestCase test = new TestCase() {
             public void test() {
@@ -177,7 +177,7 @@ public class EmployeeWeavingTestModel extends TestModel {
                     throwError("EmployeeSystem should not be weaved.");
                 }
             }
-            
+
             public void testWeaving(Object object, boolean indirection) {
                 if (!(object instanceof PersistenceWeaved)) {
                     throwError("Object not weaved:" + object);
@@ -209,7 +209,7 @@ public class EmployeeWeavingTestModel extends TestModel {
         test.setName("WeaverTeest");
         return test;
     }
-    
+
     /**
      * Test a basic fetch group read.
      */
@@ -223,7 +223,7 @@ public class EmployeeWeavingTestModel extends TestModel {
                 fetchGroup.addAttribute("firstName");
                 fetchGroup.addAttribute("lastName");
                 query.setFetchGroup(fetchGroup);
-                
+
                 Employee partial = (Employee)getSession().executeQuery(query);
                 verfiyFetchGroup(this, partial, fetched);
             }
@@ -231,7 +231,7 @@ public class EmployeeWeavingTestModel extends TestModel {
         test.setName("FetchGroupReadObjectTest");
         return test;
     }
-    
+
     /**
      * Test a fetch group read in a unit of work.
      */
@@ -245,7 +245,7 @@ public class EmployeeWeavingTestModel extends TestModel {
                 fetchGroup.addAttribute("firstName");
                 fetchGroup.addAttribute("lastName");
                 query.setFetchGroup(fetchGroup);
-                
+
                 Employee partial = (Employee)getSession().acquireUnitOfWork().executeQuery(query);
                 verfiyFetchGroup(this, partial, fetched);
             }
@@ -253,7 +253,7 @@ public class EmployeeWeavingTestModel extends TestModel {
         test.setName("FetchGroupReadObjectUOWTest");
         return test;
     }
-    
+
     /**
      * Test a fetch group update in a unit of work.
      */
@@ -267,7 +267,7 @@ public class EmployeeWeavingTestModel extends TestModel {
                 fetchGroup.addAttribute("firstName");
                 fetchGroup.addAttribute("lastName");
                 query.setFetchGroup(fetchGroup);
-                
+
                 UnitOfWork uow = getSession().acquireUnitOfWork();
                 Employee partial = (Employee)uow.executeQuery(query);
                 partial.setFirstName("partial");
@@ -275,13 +275,13 @@ public class EmployeeWeavingTestModel extends TestModel {
                 fetched = (Employee)getSession().readObject(partial);
                 if (!fetched.getFirstName().equals("partial")) {
                     throwError("Partial update not merged.");
-                }                
+                }
             }
         };
         test.setName("FetchGroupUpdateObjectUOWTest");
         return test;
     }
-    
+
     /**
      * Test a fetch group update in a unit of work.
      */
@@ -296,7 +296,7 @@ public class EmployeeWeavingTestModel extends TestModel {
                 fetchGroup.addAttribute("lastName");
                 fetchGroup.addAttribute("address");
                 query.setFetchGroup(fetchGroup);
-                
+
                 UnitOfWork uow = getSession().acquireUnitOfWork();
                 Employee partial = (Employee)uow.executeQuery(query);
                 partial.setSalary(1234);
@@ -304,13 +304,13 @@ public class EmployeeWeavingTestModel extends TestModel {
                 fetched = (Employee)getSession().readObject(partial);
                 if (fetched.getSalary() != 1234) {
                     throwError("Partial update not merged.");
-                }                
+                }
             }
         };
         test.setName("FetchGroupUpdateNonFetchedObjectUOWTest");
         return test;
     }
-    
+
     /**
      * Test a fetch group read in a unit of work early transaction.
      */
@@ -325,7 +325,7 @@ public class EmployeeWeavingTestModel extends TestModel {
                 fetchGroup.addAttribute("lastName");
                 fetchGroup.addAttribute("manager");
                 query.setFetchGroup(fetchGroup);
-                
+
                 UnitOfWork uow = getSession().acquireUnitOfWork();
                 uow.beginEarlyTransaction();
                 try {
@@ -339,7 +339,7 @@ public class EmployeeWeavingTestModel extends TestModel {
         test.setName("FetchGroupReadObjectUOWTransactionTest");
         return test;
     }
-    
+
     /**
      * Test a basic fetch group read.
      */
@@ -353,7 +353,7 @@ public class EmployeeWeavingTestModel extends TestModel {
                 fetchGroup.addAttribute("lastName");
                 fetchGroup.addAttribute("period");
                 query.setFetchGroup(fetchGroup);
-                
+
                 List result = (List)getSession().executeQuery(query);
                 for (Iterator iterator = result.iterator(); iterator.hasNext(); ) {
                     Employee partial = (Employee)iterator.next();
@@ -365,11 +365,11 @@ public class EmployeeWeavingTestModel extends TestModel {
         test.setName("FetchGroupReadAllTest");
         return test;
     }
-    
+
     /**
      * Helper verify method used to verify partially fetch objects (first/lastName).
      */
-    public void verfiyFetchGroup(TestCase test, Employee partial, Employee fetched) throws Exception {    
+    public void verfiyFetchGroup(TestCase test, Employee partial, Employee fetched) throws Exception {
         Field firstNameField = Employee.class.getDeclaredField("firstName");
         firstNameField.setAccessible(true);
         if (!(fetched.getFirstName().equals(firstNameField.get(partial)))) {

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,7 +51,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * @since EJB 3.1
  */
 
-@Target(TYPE) 
+@Target(TYPE)
 @Retention(RUNTIME)
 public @interface Singleton {
 
@@ -62,19 +62,19 @@ public @interface Singleton {
     String name() default "";
 
     /**
-      * A product specific name(for example, global JNDI name) 
-      * that this session bean should be mapped to.  
-      * 
-      * Application servers are not required to support any particular 
-      * form or type of mapped name, nor the ability to use mapped names. 
-      * The mapped name is product-dependent and often installation-dependent. 
-      * No use of a mapped name is portable. 
-      */ 
+      * A product specific name(for example, global JNDI name)
+      * that this session bean should be mapped to.
+      *
+      * Application servers are not required to support any particular
+      * form or type of mapped name, nor the ability to use mapped names.
+      * The mapped name is product-dependent and often installation-dependent.
+      * No use of a mapped name is portable.
+      */
     String mappedName() default "";
 
     /**
      * A string describing the singleton session bean.
-     */ 
+     */
     String description() default "";
 }
 

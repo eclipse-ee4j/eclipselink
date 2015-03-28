@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     ailitche - testing for embedded with FK OneToMany
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import javax.persistence.AssociationOverride;
@@ -23,24 +23,24 @@ import javax.persistence.JoinColumn;
 
 @Entity
 public class PatentInvestigator {
-    @Id 
+    @Id
     private int id;
 
-    @Embedded 
+    @Embedded
     @AttributeOverride(name="description", column=@Column(name = "LAST_DESRIPTION"))
     @AssociationOverride(name="patent", joinColumns=@JoinColumn(name = "LAST_PATENT"))
     private PatentInvestigation last;
 
-    @Embedded 
+    @Embedded
     @AttributeOverride(name="description", column=@Column(name = "CURRENT_DESRIPTION"))
     @AssociationOverride(name="patent", joinColumns=@JoinColumn(name = "CURRENT_PATENT"))
     private PatentInvestigation current;
 
-    @Embedded 
+    @Embedded
     @AttributeOverride(name="description", column=@Column(name = "NEXT_DESRIPTION"))
     @AssociationOverride(name="patent", joinColumns=@JoinColumn(name = "NEXT_PATENT"))
     private PatentInvestigation next;
-    
+
     public int getId() {
         return id;
     }

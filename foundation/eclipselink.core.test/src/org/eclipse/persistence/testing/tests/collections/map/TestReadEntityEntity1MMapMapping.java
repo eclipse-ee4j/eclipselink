@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.Iterator;
@@ -33,24 +33,24 @@ public class TestReadEntityEntity1MMapMapping extends TestCase {
     protected int oldFetchJoinValue = 0;
     protected OneToManyMapping mapping = null;
     protected Expression holderExp;
-    
-    
+
+
     public TestReadEntityEntity1MMapMapping(){
         super();
     }
-    
+
     public TestReadEntityEntity1MMapMapping(int fetchJoin){
         this();
         fetchJoinRelationship = fetchJoin;
         setName("TestReadEntityEntity1MMapMapping fetchJoin = " + fetchJoin);
     }
-    
+
     public void setup(){
         mapping = (OneToManyMapping)getSession().getProject().getDescriptor(EntityEntity1MMapHolder.class).getMappingForAttributeName("entityToEntityMap");
         oldFetchJoinValue = mapping.getJoinFetch();
         mapping.setJoinFetch(fetchJoinRelationship);
         getSession().getProject().getDescriptor(EntityEntity1MMapHolder.class).reInitializeJoinedAttributes();
-        
+
         UnitOfWork uow = getSession().acquireUnitOfWork();
         EntityEntity1MMapHolder holder = new EntityEntity1MMapHolder();
         EEOTMMapValue value = new EEOTMMapValue();
@@ -61,7 +61,7 @@ public class TestReadEntityEntity1MMapMapping extends TestCase {
         key.setData("data1");
         holder.addEntityToEntityMapItem(key, value);
         uow.registerObject(key);
-        
+
         EEOTMMapValue value2 = new EEOTMMapValue();
         value2.setId(2);
         value2.getHolder().setValue(holder);
@@ -76,21 +76,21 @@ public class TestReadEntityEntity1MMapMapping extends TestCase {
         holderExp = (new ExpressionBuilder()).get("id").equal(holder.getId());
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
-    
+
     public void test(){
         holders = getSession().readAllObjects(EntityEntity1MMapHolder.class, holderExp);
     }
-    
+
     public void verify(){
         if (holders == null || holders.size() != 1){
             throw new TestErrorException("Incorrect number of MapHolders was read.");
         }
         EntityEntity1MMapHolder holder = (EntityEntity1MMapHolder)holders.get(0);
-        
+
         if (!((IndirectMap)holder.getEntityToEntityMap()).getValueHolder().isInstantiated() && fetchJoinRelationship > 0){
             throw new TestErrorException("Relationship was not properly joined.");
         }
-        
+
         if (holder.getEntityToEntityMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");
         }
@@ -105,7 +105,7 @@ public class TestReadEntityEntity1MMapMapping extends TestCase {
             throw new TestErrorException("EntityMapKey had wrong data");
         }
     }
-    
+
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Iterator i = holders.iterator();

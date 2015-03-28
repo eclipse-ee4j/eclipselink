@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.distributedservers;
 
 import java.util.Enumeration;
@@ -62,7 +62,7 @@ public abstract class DistributedServersModel extends TestModel {
 
         test = new UpdateChangeObjectTest(employee);
         addTest(test);
-        
+
         //bug 205939
         addTest(new UpdateChangeObjectTestEmployee1((Employee1) manager.getObject(Employee1.class, "example1")));
 
@@ -146,7 +146,7 @@ public abstract class DistributedServersModel extends TestModel {
     public boolean requiresRegistry() {
         return true;
     }
-    
+
     /**
      * This method sets up the distributed servers and the registry
      * Creation date: (7/21/00 10:44:03 AM)

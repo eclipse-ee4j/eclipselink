@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/02/2009-2.0 Chris delahunt 
+ *     02/02/2009-2.0 Chris delahunt
  *       - 241765: JPA 2.0 Derived identities
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
 import javax.persistence.Entity;
@@ -46,7 +46,7 @@ public class DepartmentAdminRole {
     }
 
     @Id
-    //This is required by the spec, but if not specified, defaults field names to NAME, ROLE and LOCATION. 
+    //This is required by the spec, but if not specified, defaults field names to NAME, ROLE and LOCATION.
     @JoinColumns({
         @JoinColumn(name="DEPT_NAME", referencedColumnName="NAME"),
         @JoinColumn(name="DEPT_ROLE", referencedColumnName="DROLE"),
@@ -63,7 +63,7 @@ public class DepartmentAdminRole {
     public void setDepartment(Department department){
         this.department = department;
     }
-    
+
     @ManyToOne
     @JoinColumn(name="POOL_ID")
     public AdminPool getPool() {
@@ -73,7 +73,7 @@ public class DepartmentAdminRole {
     public void setPool(AdminPool pool) {
         this.pool = pool;
     }
-    
+
     public DepartmentAdminRolePK buildDepartmentAdminRolePK(){
         return new DepartmentAdminRolePK(department.getName(), department.getRole(), department.getLocation(), admin.getEmployee().getId());
     }

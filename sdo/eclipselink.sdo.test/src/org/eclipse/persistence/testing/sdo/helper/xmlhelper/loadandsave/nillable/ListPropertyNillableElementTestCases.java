@@ -33,7 +33,7 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
     public ListPropertyNillableElementTestCases(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nillable.ListPropertyNillableElementTestCases" };
         TestRunner.main(arguments);
@@ -53,12 +53,12 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
     protected String getControlRootName() {
         return "ListPropertyTest";
     }
-    
+
     @Override
     protected String getControlRootURI() {
         return "http://www.example.org";
     }
-    
+
     @Override
     protected String getSchemaName() {
         return SCHEMA_NAME;
@@ -68,12 +68,12 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
     protected String getNoSchemaControlWriteFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/nillable/ListPropertyNillableElementTestNoSchema.xml";
     }
-        
+
     @Override
     protected void registerTypes() {}
     @Override
     public void testClassGenerationLoadAndSave() throws Exception {}
-    
+
     // ====== CUSTOM TESTS DERIVED FROM THE SDO 2.1.1 TCK ====== //
     /**
      * 'child' property is nillable, so null is allowed
@@ -86,7 +86,7 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             SDOElementResolver resolver = new SDOElementResolver(schemas);
             List<SDOType> types = ((SDOXSDHelper) aHelperContext.getXSDHelper()).define(new DOMSource(schemas[0], getSchemaName()), resolver);
             assertEquals(3, types.size());
-            
+
             XMLDocument doc = aHelperContext.getXMLHelper().load(new FileInputStream(new File(getControlFileName())));
 
             DataObject rootObj = doc.getRootObject();
@@ -97,10 +97,10 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             assertEquals(2, listTest.size());
             listTest.add(null);
             assertEquals(3, listTest.size());
-            
+
             // DEBUGGING
             //hc.getXMLHelper().save(doc.getRootObject(), doc.getRootElementURI(), doc.getRootElementName(), System.out);
-            
+
             String xml = aHelperContext.getXMLHelper().save(doc.getRootObject(), doc.getRootElementURI(), doc.getRootElementName());
             assertTrue(xml.indexOf("xsi:nil=\"true\"") > 0);
         } catch (Exception xxx) {
@@ -120,7 +120,7 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             SDOElementResolver resolver = new SDOElementResolver(schemas);
             List<SDOType> types = ((SDOXSDHelper) aHelperContext.getXSDHelper()).define(new DOMSource(schemas[0], getSchemaName()), resolver);
             assertEquals(3, types.size());
-            
+
             XMLDocument doc = aHelperContext.getXMLHelper().load(new FileInputStream(new File(getControlFileName())));
 
             DataObject rootObj = doc.getRootObject();
@@ -135,7 +135,7 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             } catch (UnsupportedOperationException uoe) {
                 exceptionOccurred = true;
             }
-            
+
             assertTrue("An UnsupportedOperationException did not occur as expected (adding null to non-nillable list is not allowed)", exceptionOccurred);
             assertEquals(2, listTest.size());
             aHelperContext.getXMLHelper().save(doc.getRootObject(), doc.getRootElementURI(), doc.getRootElementName());
@@ -157,13 +157,13 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             SDOElementResolver resolver = new SDOElementResolver(schemas);
             List<SDOType> types = ((SDOXSDHelper) aHelperContext.getXSDHelper()).define(new DOMSource(schemas[0], getSchemaName()), resolver);
             assertEquals(3, types.size());
-            
+
             XMLDocument doc = aHelperContext.getXMLHelper().load(new FileInputStream(new File(getControlFileName())));
 
             DataObject rootObj = doc.getRootObject();
             DataObject childDo = rootObj.getDataObject("childContain");
             List listTest = childDo.getList("child");
-            
+
             Collection kids = new ArrayList();
             kids.add(listTest.get(0));
             kids.add(null);
@@ -175,7 +175,7 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             } catch (UnsupportedOperationException uoe) {
                 exceptionOccurred = true;
             }
-            
+
             assertFalse("An unexpected UnsupportedOperationException occurred", exceptionOccurred);
             aHelperContext.getXMLHelper().save(doc.getRootObject(), doc.getRootElementURI(), doc.getRootElementName());
         } catch (Exception xxx) {
@@ -196,13 +196,13 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             SDOElementResolver resolver = new SDOElementResolver(schemas);
             List<SDOType> types = ((SDOXSDHelper) aHelperContext.getXSDHelper()).define(new DOMSource(schemas[0], getSchemaName()), resolver);
             assertEquals(3, types.size());
-            
+
             XMLDocument doc = aHelperContext.getXMLHelper().load(new FileInputStream(new File(getControlFileName())));
 
             DataObject rootObj = doc.getRootObject();
             DataObject childDo = rootObj.getDataObject("childContain");
             List listTest = childDo.getList("kid");
-            
+
             Collection kids = new ArrayList();
             kids.add(listTest.get(0));
             kids.add(null);
@@ -214,7 +214,7 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             } catch (UnsupportedOperationException uoe) {
                 exceptionOccurred = true;
             }
-            
+
             assertTrue("An UnsupportedOperationException did not occur as expected (adding a collection with a null entry to non-nillable list property is not allowed)", exceptionOccurred);
             aHelperContext.getXMLHelper().save(doc.getRootObject(), doc.getRootElementURI(), doc.getRootElementName());
         } catch (Exception xxx) {

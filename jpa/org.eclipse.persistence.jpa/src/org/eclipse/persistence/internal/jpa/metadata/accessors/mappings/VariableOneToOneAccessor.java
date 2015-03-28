@@ -1,38 +1,38 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     03/26/2008-1.0M6 Guy Pelletier 
+ *     03/26/2008-1.0M6 Guy Pelletier
  *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
- *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files  
- *     02/06/2009-2.0 Guy Pelletier 
+ *     05/16/2008-1.0M8 Guy Pelletier
+ *       - 218084: Implement metadata merging functionality between mapping files
+ *     02/06/2009-2.0 Guy Pelletier
  *       - 248293: JPA 2.0 Element Collections (part 2)
- *     03/27/2009-2.0 Guy Pelletier 
+ *     03/27/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     05/1/2009-2.0 Guy Pelletier 
- *       - 249033: JPA 2.0 Orphan removal   
- *     09/29/2009-2.0 Guy Pelletier 
+ *     05/1/2009-2.0 Guy Pelletier
+ *       - 249033: JPA 2.0 Orphan removal
+ *     09/29/2009-2.0 Guy Pelletier
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
- *     04/27/2010-2.1 Guy Pelletier 
+ *     04/27/2010-2.1 Guy Pelletier
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
- *     06/14/2010-2.2 Guy Pelletier 
+ *     06/14/2010-2.2 Guy Pelletier
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
- *     09/03/2010-2.2 Guy Pelletier 
+ *     09/03/2010-2.2 Guy Pelletier
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
- *     01/25/2011-2.3 Guy Pelletier 
+ *     01/25/2011-2.3 Guy Pelletier
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     04/05/2011-2.3 Guy Pelletier 
+ *     04/05/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 3)
- *     11/19/2012-2.5 Guy Pelletier 
+ *     11/19/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
@@ -59,10 +59,10 @@ import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 
 /**
  * INTERNAL:
- * A variable one to one relationship accessor. A VariableOneToOne annotation 
- * currently is not required to be defined on the accessible object, that is, 
+ * A variable one to one relationship accessor. A VariableOneToOne annotation
+ * currently is not required to be defined on the accessible object, that is,
  * a v1-1 can default if the raw class is an interface.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -71,17 +71,17 @@ import org.eclipse.persistence.mappings.VariableOneToOneMapping;
  * - any metadata mapped from XML to this class must be initialized in the
  *   initXMLObject  method.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
 public class VariableOneToOneAccessor extends ObjectAccessor {
     public static final String DEFAULT_QUERY_KEY = "id";
-    
+
     private Integer m_lastDiscriminatorIndex;
     private DiscriminatorColumnMetadata m_discriminatorColumn;
     private List<DiscriminatorClassMetadata> m_discriminatorClasses;
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -89,32 +89,32 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     public VariableOneToOneAccessor() {
         super("<variable-one-to-one>");
     }
-    
+
     /**
      * INTERNAL:
      */
     public VariableOneToOneAccessor(MetadataAnnotation variableOneToOne, MetadataAnnotatedElement annotatedElement, ClassAccessor classAccessor) {
         super(variableOneToOne, annotatedElement, classAccessor);
-        
+
         // Initialiaze the discriminator classes list.
         m_discriminatorClasses = new ArrayList<DiscriminatorClassMetadata>();
-        
+
         // We must check because VariableOneToOne's can default.
         if (variableOneToOne != null) {
             // Parent class looks for 'targetEntity' and not 'targetInterface'
             // Need to set it correctly.
             setTargetEntity(getMetadataClass(variableOneToOne.getAttributeString("targetInterface")));
             setOrphanRemoval(variableOneToOne.getAttributeBooleanDefaultFalse("orphanRemoval"));
-            
+
             m_discriminatorColumn = new DiscriminatorColumnMetadata(variableOneToOne.getAttributeAnnotation("discriminatorColumn"), this);
-            
+
             // Set the discriminator classes if specified.
             for (Object discriminatorClass : variableOneToOne.getAttributeArray("discriminatorClasses")) {
                 m_discriminatorClasses.add(new DiscriminatorClassMetadata((MetadataAnnotation) discriminatorClass, this));
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * In stage 2 processing entities may be added to the discriminator
@@ -122,14 +122,14 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
      * explicitely added but define the interface associated with this
      * accessors target interface.
      */
-    public void addDiscriminatorClassFor(EntityAccessor accessor) {                
+    public void addDiscriminatorClassFor(EntityAccessor accessor) {
         // We didn't find a discriminator class metadata for the given entity
         // accessor so we need to default one.
         VariableOneToOneMapping mapping = (VariableOneToOneMapping) getDescriptor().getMappingForAttributeName(getAttributeName());
 
         // Also need to add the interface to the descriptor.
         accessor.getDescriptor().getClassDescriptor().getInterfacePolicy().addParentInterfaceName(mapping.getReferenceClassName());
-        
+
         for (DiscriminatorClassMetadata discriminatorClass : m_discriminatorClasses) {
             if (discriminatorClass.getValueClass().equals(accessor.getJavaClass())) {
                 // A discriminator class was configured for this entity, do
@@ -137,12 +137,12 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
                 return;
             }
         }
-        
+
         Class type = mapping.getTypeField().getType();
         if (type.equals(String.class)) {
-            mapping.addClassNameIndicator(accessor.getJavaClassName(), accessor.getDescriptor().getAlias());  
+            mapping.addClassNameIndicator(accessor.getJavaClassName(), accessor.getDescriptor().getAlias());
         } else if (type.equals(Character.class)) {
-            mapping.addClassNameIndicator(accessor.getJavaClassName(), accessor.getJavaClassName().substring(0, 1));  
+            mapping.addClassNameIndicator(accessor.getJavaClassName(), accessor.getJavaClassName().substring(0, 1));
         } else {
             if (m_lastDiscriminatorIndex == null) {
                 // Our discriminators are added as Strings ...
@@ -154,11 +154,11 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
                     }
                 }
             }
-            
+
             mapping.addClassNameIndicator(accessor.getJavaClassName(), ++m_lastDiscriminatorIndex);
-        } 
+        }
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -166,17 +166,17 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && objectToCompare instanceof VariableOneToOneAccessor) {
             VariableOneToOneAccessor variableOneToOneAccessor = (VariableOneToOneAccessor) objectToCompare;
-            
+
             if (! valuesMatch(m_discriminatorColumn, variableOneToOneAccessor.getDiscriminatorColumn())) {
                 return false;
             }
-            
+
             return valuesMatch(m_discriminatorClasses, variableOneToOneAccessor.getDiscriminatorClasses());
         }
-        
+
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -184,7 +184,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     public List<DiscriminatorClassMetadata> getDiscriminatorClasses() {
         return m_discriminatorClasses;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -192,7 +192,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     public DiscriminatorColumnMetadata getDiscriminatorColumn() {
         return m_discriminatorColumn;
     }
-    
+
     /**
      * INTERNAL:
      * Return the logging context for this accessor.
@@ -200,32 +200,32 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     protected String getLoggingContext() {
         return MetadataLogger.VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS;
     }
-    
+
     /**
      * INTERNAL:
      * In a variable one to one case, there is no knowledge of a reference
-     * descriptor and the join columns should be defaulted based on the owner 
+     * descriptor and the join columns should be defaulted based on the owner
      * of the variable one to one's descriptor.
      */
     @Override
     public MetadataDescriptor getReferenceDescriptor() {
         return getDescriptor();
     }
-    
+
     /**
      * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
-    
+
         // Init the single ORMetadata objects.
         initXMLObject(m_discriminatorColumn, accessibleObject);
-        
+
         // Init the lists of ORMetadata objects.
         initXMLObjects(m_discriminatorClasses, accessibleObject);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -233,15 +233,15 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     public boolean isVariableOneToOne() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
-     * Process a variable one to one setting into an EclipseLink 
+     * Process a variable one to one setting into an EclipseLink
      * VariableOneToOneMapping.
      */
     public void process() {
         super.process();
-        
+
         // Add ourselves to the list of variable one to one accessors to this
         // interface. If an InterfaceAccessor doesn't exist, create one. It
         // will be re-used for each variable one to one accessor that uses
@@ -253,16 +253,16 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
             getProject().addInterfaceAccessor(interfaceAccessor);
         }
         interfaceAccessor.addVariableOneToOneAccessor(this);
-        
+
         // Now process our variable one to one mapping.
         VariableOneToOneMapping mapping = new VariableOneToOneMapping();
         processRelationshipMapping(mapping);
-        
+
         mapping.setIsOptional(isOptional());
-        
+
         // Process the indirection.
         processIndirection(mapping);
-        
+
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
 
@@ -272,16 +272,16 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         } else {
             mapping.setTypeField(m_discriminatorColumn.process(getDescriptor(), MetadataLogger.VARIABLE_ONE_TO_ONE_DISCRIMINATOR_COLUMN));
         }
-        
+
         // Process the discriminator classes.
         for (DiscriminatorClassMetadata discriminatorClass : m_discriminatorClasses) {
             discriminatorClass.process(mapping);
         }
-        
+
         // Process the foreign query keys from the join columns.
         processForeignQueryKeyNames(mapping);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -291,7 +291,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
             // The query key name will be extracted from the referenced column
             // name. It defaults to ID otherwise.
             String queryKeyName = getName(joinColumn.getReferencedColumnName(), DEFAULT_QUERY_KEY, MetadataLogger.QK_COLUMN);
-            
+
             DatabaseField fkField = joinColumn.getForeignKeyField(null);
             setFieldName(fkField, getDefaultAttributeName() + "_ID", MetadataLogger.FK_COLUMN);
             // Set the table name if one is not already set.
@@ -301,15 +301,15 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
 
             // Add the foreign query key to the mapping.
             mapping.addForeignQueryKeyName(fkField, queryKeyName);
-            
-            // If any of the join columns is marked read-only then set the 
+
+            // If any of the join columns is marked read-only then set the
             // mapping to be read only.
             if (fkField.isReadOnly()) {
                 mapping.setIsReadOnly(true);
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -317,7 +317,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     public void setDiscriminatorClasses(List<DiscriminatorClassMetadata> discriminatorClasses) {
         m_discriminatorClasses = discriminatorClasses;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.

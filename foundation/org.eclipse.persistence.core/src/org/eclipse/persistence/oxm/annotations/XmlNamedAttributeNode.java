@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,11 +34,11 @@ public @interface XmlNamedAttributeNode {
      * required: the name of the property
      */
     String value();
- 
-    /** optional: if this property referenced another JAXB Object, 
-     *  specify the name of the object graph to use for that nested object. 
+
+    /** optional: if this property referenced another JAXB Object,
+     *  specify the name of the object graph to use for that nested object.
      *   By default, the full object will be read.
-     */ 
+     */
     String subgraph() default "";
 }
-     
+

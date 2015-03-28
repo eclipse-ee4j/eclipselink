@@ -1,22 +1,22 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     06/30/2010-2.1.1 Michael O'Brien 
+ *     06/30/2010-2.1.1 Michael O'Brien
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
  *       add new isRuntimeServicesEnabledDefault()
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
  *     12/18/2014-2.6 Rick Curtis
  *       - 455690: Move JNDIConnector lookup type to ServerPlatform.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.server;
 
 import java.security.AccessController;
@@ -74,14 +74,14 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     // Secondary override properties can be set to disable MBean registration
     /** This System property "eclipselink.register.dev.mbean" when set to true will enable registration/unregistration of the DevelopmentServices MBean */
     public static final String JMX_REGISTER_DEV_MBEAN_PROPERTY = "eclipselink.register.dev.mbean";
-    /** This System property "eclipselink.register.run.mbean" when set to true will enable registration/unregistration of the RuntimeServices MBean */    
+    /** This System property "eclipselink.register.run.mbean" when set to true will enable registration/unregistration of the RuntimeServices MBean */
     public static final String JMX_REGISTER_RUN_MBEAN_PROPERTY = "eclipselink.register.run.mbean";
     /**
      * INTERNAL:
      * Answer "unknown" as a default for platforms that do not implement getModuleName()
      */
     public static final String DEFAULT_SERVER_NAME_AND_VERSION = ToStringLocalization.buildMessage("unknown");
-        
+
     /**
      * INTERNAL:
      * isRuntimeServicesEnabled: Determines if the JMX Runtime Services will be deployed at runtime
@@ -91,14 +91,14 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     // Only a "false" value will disable MBean registration for both beans
     protected boolean shouldRegisterDevelopmentBean = true;
     protected boolean shouldRegisterRuntimeBean = true;
-    
-    
+
+
     /**
      * externalTransactionControllerClass: This is a user-specifiable class defining the class
      * of external transaction controller to be set into the DatabaseSession
      */
     protected Class externalTransactionControllerClass;
-	
+
 
     /**
      * INTERNAL:
@@ -107,7 +107,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      */
     private boolean isJTAEnabled;
 
-    
+
     /**
      * INTERNAL:
      * isCMP: true if the container created the server platform, because we're configured
@@ -120,13 +120,13 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * databaseSession: The instance of DatabaseSession that I am helping.
      */
     private DatabaseSession databaseSession;
-    
+
     /**
      * INTERNAL:
      * Server name and version.
      */
     protected String serverNameAndVersion;
-    
+
     /**
      * Allow the thread pool size to be configured.
      */
@@ -140,7 +140,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: Default Constructor: Initialize so that runtime services and
      * JTA are enabled. Set the DatabaseSession that I will be helping.
-     * 
+     *
      * @param newDatabaseSession
      *            The instance of DatabaseSession that I am helping.
      */
@@ -168,16 +168,16 @@ public abstract class ServerPlatformBase implements ServerPlatform {
             if(shouldRegisterDevelopmentBeanProperty.toLowerCase().indexOf("true") > -1) {
                 shouldRegisterDevelopmentBean = true;
             }
-        }        
+        }
     }
-    
+
     /**
      * INTERNAL: configureProfiler(): set default performance profiler used in this server.
      */
     public void configureProfiler(org.eclipse.persistence.sessions.Session session) {
         return;
     }
-    
+
     /**
      * INTERNAL: getDatabaseSession(): Answer the instance of DatabaseSession the receiver is helping.
      *
@@ -191,7 +191,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * PUBLIC: getServerNameAndVersion(): Talk to the relevant server class library, and get the server name
      * and version
-     * 
+     *
      * @return String serverNameAndVersion
      */
     @Override
@@ -261,7 +261,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     public void setExternalTransactionControllerClass(Class newClass) {
         this.externalTransactionControllerClass = newClass;
     }
-    
+
     /**
      * INTERNAL: initializeExternalTransactionController(): Populate the DatabaseSession's
      * external transaction controller with an instance of my transaction controller class.
@@ -284,7 +284,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         }
 
         //check if the transaction controller class is overridden by a preLogin or equivalent,
-        //or if the transaction controller was already defined, in which case they should have written 
+        //or if the transaction controller was already defined, in which case they should have written
         //a subclass. Show a warning
         try {
             if (getDatabaseSession().getExternalTransactionController() != null) {
@@ -342,9 +342,9 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         return this.isJTAEnabled;
     }
 
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * isRuntimeServicesEnabledDefault(): Answer true if the JMX/MBean providing runtime services for
      * the receiver's DatabaseSession will be deployed at runtime.
      * Provide the default value for {@link #isRuntimeServicesEnabled()} for a
@@ -355,9 +355,9 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     public boolean isRuntimeServicesEnabledDefault() {
         return false;
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * isRuntimeServicesEnabled(): Answer true if the JMX/MBean providing runtime services for
      * the receiver's DatabaseSession will be deployed at runtime.
      *
@@ -368,7 +368,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     public boolean isRuntimeServicesEnabled() {
         return this.isRuntimeServicesEnabled;
     }
-    
+
     /**
      * INTERNAL: disableRuntimeServices(): Configure the receiver such that no JMX/MBean will be registered
      * to provide runtime services for my DatabaseSession at runtime.
@@ -382,7 +382,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * enableRuntimeServices(): Configure the receiver such that JMX/MBeans will be registered
      * to provide runtime services for my DatabaseSession at runtime.
      *
@@ -393,8 +393,8 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         this.ensureNotLoggedIn();
         this.isRuntimeServicesEnabled = true;
     }
-    
-    
+
+
     /**
      * INTERNAL: disableJTA(): Configure the receiver such that my external transaction controller class will
      * be ignored, and will NOT be used to populate DatabaseSession's external transaction controller class
@@ -415,7 +415,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL:  This method is used to unwrap the connection wrapped by
      * the application server.  TopLink needs this unwrapped connection for certain
      * database vendor specific support. (i.e. TIMESTAMPTZ,NCHAR,XMLTYPE)
-     * 
+     *
      * Be default we will use the connection's metadata to try to get the connection
      */
     @Override
@@ -424,9 +424,9 @@ public abstract class ServerPlatformBase implements ServerPlatform {
             return connection.getMetaData().getConnection();
         } catch (java.sql.SQLException e){
             ((DatabaseSessionImpl)getDatabaseSession()).log(SessionLog.WARNING, SessionLog.CONNECTION, "cannot_unwrap_connection", e);
-            return connection;            
+            return connection;
         }
-    }  
+    }
 
     /**
      * INTERNAL: launchContainerRunnable(Runnable runnable): Use the container library to
@@ -469,7 +469,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     public org.eclipse.persistence.logging.SessionLog getServerLog() {
         return new ServerLog();
     }
-    
+
     /**
      * Return the thread pool size.
      */
@@ -477,7 +477,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     public int getThreadPoolSize() {
         return threadPoolSize;
     }
-    
+
     /**
      * Set the thread pool size.
      */
@@ -506,11 +506,11 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     public void setThreadPool(ExecutorService threadPool) {
         this.threadPool = threadPool;
     }
-    
+
     /**
      * INTERNAL: isCMP(): Answer true if we're in the context of CMP (i.e. the container created me)
      *
-     * @return boolean 
+     * @return boolean
      */
     public boolean isCMP() {
         return isCMP;
@@ -526,7 +526,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: shouldUseDriverManager(): Indicates whether DriverManager should be used while connecting DefaultConnector.
      *
-     * @return boolean 
+     * @return boolean
      */
     @Override
     public boolean shouldUseDriverManager() {
@@ -540,7 +540,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * If a communication error has occurred then the query may be retried.
      * If this platform is unable to determine if the error was communication based it will return
      * false forcing the error to be thrown to the user.
-     */    
+     */
     @Override
     public boolean wasFailureCommunicationBased(SQLException exception, Accessor connection, AbstractSession sessionForProfile){
         return getDatabaseSession().getPlatform().wasFailureCommunicationBased(exception, connection.getConnection(), sessionForProfile);
@@ -556,13 +556,13 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * Clears statement cache of the wrapper connection.
      * Required by Oracle proxy authentication: currently connection statement cache
      * becomes invalid on switching to/from proxy session.
-     * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer  
+     * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer
      * before opening proxy session and before closing it.
      */
     @Override
-    public void clearStatementCache(java.sql.Connection connection) {   
+    public void clearStatementCache(java.sql.Connection connection) {
     }
-    
+
     /**
      * INTERNAL: registerMBean(): Create and deploy the JMX MBean to provide runtime services for my
      * databaseSession.
@@ -596,7 +596,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         }
         this.serverSpecificUnregisterMBean();
     }
-    
+
     /**
      * INTERNAL: perform any require shutdown tasks.
      */
@@ -609,7 +609,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         }
     }
 
-    
+
     /**
      * INTERNAL: serverSpecificUnregisterMBean(): Server specific implementation of the
      * unregistration of the JMX MBean from its server.
@@ -638,8 +638,8 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @return Return JNDIConnector.COMPOSITE_NAME_LOOKUP.
      */
     @Override
-    public int getJNDIConnectorLookupType() { 
-        return JNDIConnector.COMPOSITE_NAME_LOOKUP; 
+    public int getJNDIConnectorLookupType() {
+        return JNDIConnector.COMPOSITE_NAME_LOOKUP;
     }
 
     @Override
@@ -651,6 +651,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     public boolean usesPartitions() {
         return false;
     }
-    
-    
+
+
 }

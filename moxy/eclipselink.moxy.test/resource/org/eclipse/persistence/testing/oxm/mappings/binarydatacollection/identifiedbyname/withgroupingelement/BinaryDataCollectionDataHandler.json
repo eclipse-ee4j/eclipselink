@@ -1,6 +1,6 @@
 {"employee":{
    "id":123,
-   "photos":{  
+   "photos":{
       "list":{
           "photo":["c_id0","c_id0"]
         }

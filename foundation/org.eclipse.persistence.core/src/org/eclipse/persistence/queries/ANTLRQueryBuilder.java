@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,12 +23,12 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * This class defines the default {@link JPAQueryBuilder} implementation that
  * uses an Antlr-based parser and {@link DatabaseQuery} conversion mechanism.
- * 
+ *
  * @see JPQLParser
  * @see JPQLParser
  * @see JPQLParserFactory
  * @see JPAQueryBuilder
- * 
+ *
  * @version 2.4
  * @since 2.2
  * @author John Bracken
@@ -46,18 +46,18 @@ public final class ANTLRQueryBuilder implements JPAQueryBuilder {
 
     /**
      * Allow the parser validation level to be set.
-     * 
+     *
      * @param level
      *            The validation levels are defined in ParserValidationType
      */
     public void setValidationLevel(String level) {
         // Not supported.
     }
-    
+
     /**
      * Builds a {@link JPQLParseTree} based on the given query and associated
      * {@link AbstractSession}.
-     * 
+     *
      * @param jpqlQuery
      *            The JPQL query
      * @param session
@@ -108,7 +108,7 @@ public final class ANTLRQueryBuilder implements JPAQueryBuilder {
 
     /**
      * Populates the given query based on the provided parse tree and session.
-     * 
+     *
      * @param session
      *            The associated {@link AbstractSession}
      * @param parseTree

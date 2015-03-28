@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
 import commonj.sdo.DataObject;
@@ -66,10 +66,10 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         //return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderBookingRequestNoSchema.xml";
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderBookingRequestNoSchema.xml");
     }
-    
+
      protected String getControlWriteFileName() {
-            
-       return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderBookingRequestWrite.xml");      
+
+       return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderBookingRequestWrite.xml");
     }
 
     protected String getControlRootURI() {
@@ -79,24 +79,24 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
     protected String getControlRootName() {
         return "SOAOrderBookingProcessRequest";
     }
-    
+
     protected String getRootInterfaceName() {
         return "SOAOrderBookingProcessRequest";
     }
-    
+
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
     protected List<String> getPackages() {
-        List<String> packages = new ArrayList<String>();       
+        List<String> packages = new ArrayList<String>();
         packages.add("com/globalcompany/ns/orderbooking");
         packages.add("com/globalcompany/ns/order");
         return packages;
     }
-    
+
     protected void generateClasses(String tmpDirName) throws Exception{
-            
+
         URL url = new URL(getSchemaLocation() + getSchemaName());
         InputStream is = url.openStream();
-        
+
         SDOClassGenerator classGenerator = new SDOClassGenerator(aHelperContext);
 
         DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
@@ -105,7 +105,7 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         classGenerator.generate(ss, tmpDirName, schemaResolver);
     }
 
-        
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveWithImportsTestCases" };
         TestRunner.main(arguments);
@@ -133,7 +133,7 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         Type itemSDOType = typeHelper.define(itemType);
 
         DataObject orderItemsType = defineType("http://www.globalcompany.com/ns/order", "OrderItemsType");
-        DataObject itemsProp = addProperty(orderItemsType, "Item", itemSDOType, true, true, true);        
+        DataObject itemsProp = addProperty(orderItemsType, "Item", itemSDOType, true, true, true);
         Type orderItemsSDOType = typeHelper.define(orderItemsType);
 
         DataObject addressType = defineType("http://www.globalcompany.com/ns/order", "Address");
@@ -168,7 +168,7 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         addProperty(orderInfoType, "ApprovalRequired", booleanType,false, false, true);
 
         //DataObject orderPoProp = addProperty(orderInfoType, "PurchaseOrder", poSDOType);
-        //orderPoProp.set("containment", false);        
+        //orderPoProp.set("containment", false);
         Type orderInfoSDOType = typeHelper.define(orderInfoType);
 
         DataObject poType = defineType("http://www.globalcompany.com/ns/order", "PurchaseOrderType");
@@ -187,17 +187,17 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         purchaseOrderPropDO.set("name", "PurchaseOrder");
         purchaseOrderPropDO.set("type", poSDOType);
         Property prop = typeHelper.defineOpenContentProperty("http://www.globalcompany.com/ns/order", purchaseOrderPropDO);
-        
+
         DataObject purchaseOrderPropDO2 = dataFactory.create(propertyType);
         purchaseOrderPropDO2.set("name", "PurchaseOrder2");
         purchaseOrderPropDO2.set("type", poSDOType);
         Property prop2 = typeHelper.defineOpenContentProperty("http://www.globalcompany.com/ns/order", purchaseOrderPropDO2);
-        
+
         DataObject purchaseOrderPropDO3 = dataFactory.create(propertyType);
         purchaseOrderPropDO3.set("name", "PurchaseOrder3");
         purchaseOrderPropDO3.set("type", poSDOType);
         Property prop3 = typeHelper.defineOpenContentProperty("http://www.globalcompany.com/ns/order", purchaseOrderPropDO3);
-        
+
         DataObject purchaseOrderPropDO4 = dataFactory.create(propertyType);
         purchaseOrderPropDO4.set("name", "PurchaseOrder4");
         purchaseOrderPropDO4.set("type", poSDOType);
@@ -209,10 +209,10 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         DataObject SOAOrderBookingProcessRequestTypeDO = defineType(getControlRootURI(), "SOAOrderBookingProcessRequest");
         SOAOrderBookingProcessRequestTypeDO.set("open", true);
         //DataObject poProp = addProperty(SOAOrderBookingProcessRequestTypeDO, "PurchaseOrder", poSDOType, true, false, true);
-        
+
         // now define the Customer type so that customers can be made
         Type SOAOrderBookingProcessRequestType = typeHelper.define(SOAOrderBookingProcessRequestTypeDO);
-        
+
         DataObject SOAOrderBookingProcessRequestPropDO = dataFactory.create(propertyType);
         SOAOrderBookingProcessRequestPropDO.set("name", getControlRootName());
         SOAOrderBookingProcessRequestPropDO.set("type", SOAOrderBookingProcessRequestType);

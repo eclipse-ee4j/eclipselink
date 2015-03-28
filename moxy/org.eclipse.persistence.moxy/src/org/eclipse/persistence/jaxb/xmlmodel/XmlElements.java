@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,9 +22,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -46,8 +46,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -87,11 +87,11 @@ public class XmlElements
 
     /**
      * Gets the value of the xmlAccessMethods property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public XmlAccessMethods getXmlAccessMethods() {
         return xmlAccessMethods;
@@ -99,11 +99,11 @@ public class XmlElements
 
     /**
      * Sets the value of the xmlAccessMethods property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public void setXmlAccessMethods(XmlAccessMethods value) {
         this.xmlAccessMethods = value;
@@ -111,25 +111,25 @@ public class XmlElements
 
     /**
      * Gets the value of the xmlElement property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the xmlElement property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getXmlElement().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link org.eclipse.persistence.jaxb.xmlmodel.XmlElement }
-     * 
-     * 
+     *
+     *
      */
     public List<org.eclipse.persistence.jaxb.xmlmodel.XmlElement> getXmlElement() {
         if (xmlElement == null) {
@@ -140,11 +140,11 @@ public class XmlElements
 
     /**
      * Gets the value of the xmlElementWrapper property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlElementWrapper }
-     *     
+     *
      */
     public XmlElementWrapper getXmlElementWrapper() {
         return xmlElementWrapper;
@@ -152,11 +152,11 @@ public class XmlElements
 
     /**
      * Sets the value of the xmlElementWrapper property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlElementWrapper }
-     *     
+     *
      */
     public void setXmlElementWrapper(XmlElementWrapper value) {
         this.xmlElementWrapper = value;
@@ -164,11 +164,11 @@ public class XmlElements
 
     /**
      * Gets the value of the xmlJavaTypeAdapter property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlJavaTypeAdapter }
-     *     
+     *
      */
     public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
         return xmlJavaTypeAdapter;
@@ -176,11 +176,11 @@ public class XmlElements
 
     /**
      * Sets the value of the xmlJavaTypeAdapter property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlJavaTypeAdapter }
-     *     
+     *
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
         this.xmlJavaTypeAdapter = value;
@@ -188,11 +188,11 @@ public class XmlElements
 
     /**
      * Gets the value of the xmlProperties property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public XmlProperties getXmlProperties() {
         return xmlProperties;
@@ -200,11 +200,11 @@ public class XmlElements
 
     /**
      * Sets the value of the xmlProperties property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
@@ -212,25 +212,25 @@ public class XmlElements
 
     /**
      * Gets the value of the xmlJoinNodes property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the xmlJoinNodes property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getXmlJoinNodes().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link XmlJoinNodes }
-     * 
-     * 
+     *
+     *
      */
     public List<XmlJoinNodes> getXmlJoinNodes() {
         if (xmlJoinNodes == null) {
@@ -241,21 +241,21 @@ public class XmlElements
 
     /**
      * Indicates if xmlJoinNodes has been set, i.e. has non-zero size.
-     * 
-     * @return true if xmlJoinNodes has been set, i.e. there are one or 
+     *
+     * @return true if xmlJoinNodes has been set, i.e. there are one or
      * more entries, false otherwise
      */
     public boolean hasXmlJoinNodes() {
         return getXmlJoinNodes().size() > 0;
     }
-    
+
     /**
      * Gets the value of the xmlIdref property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isXmlIdref() {
         if (xmlIdref == null) {
@@ -267,11 +267,11 @@ public class XmlElements
 
     /**
      * Sets the value of the xmlIdref property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setXmlIdref(Boolean value) {
         this.xmlIdref = value;
@@ -279,11 +279,11 @@ public class XmlElements
 
     /**
      * Gets the value of the xmlList property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isXmlList() {
         if (xmlList == null) {
@@ -295,11 +295,11 @@ public class XmlElements
 
     /**
      * Sets the value of the xmlList property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setXmlList(Boolean value) {
         this.xmlList = value;
@@ -307,11 +307,11 @@ public class XmlElements
 
     /**
      * Gets the value of the readOnly property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isReadOnly() {
         if (readOnly == null) {
@@ -323,11 +323,11 @@ public class XmlElements
 
     /**
      * Sets the value of the readOnly property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setReadOnly(Boolean value) {
         this.readOnly = value;
@@ -335,20 +335,20 @@ public class XmlElements
 
     /**
      * Indicates if readOnly has been set, i.e. is non-null.
-     * 
+     *
      * @return true if readOnly has been set, i.e. is non-null, false otherwise
      */
     public boolean isSetReadOnly() {
         return this.readOnly != null;
     }
-    
+
     /**
      * Gets the value of the writeOnly property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isWriteOnly() {
         if (writeOnly == null) {
@@ -360,11 +360,11 @@ public class XmlElements
 
     /**
      * Sets the value of the writeOnly property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setWriteOnly(Boolean value) {
         this.writeOnly = value;
@@ -372,20 +372,20 @@ public class XmlElements
 
     /**
      * Indicates if writeOnly has been set, i.e. is non-null.
-     * 
+     *
      * @return true if writeOnly has been set, i.e. is non-null, false otherwise
      */
     public boolean isSetWriteOnly() {
         return this.writeOnly != null;
     }
-    
+
     /**
      * Gets the value of the containerType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getContainerType() {
         if (containerType == null) {
@@ -397,11 +397,11 @@ public class XmlElements
 
     /**
      * Sets the value of the containerType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setContainerType(String value) {
         this.containerType = value;

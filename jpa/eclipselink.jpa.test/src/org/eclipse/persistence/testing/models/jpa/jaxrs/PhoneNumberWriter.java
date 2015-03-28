@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,40 +34,40 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 @Produces(MediaType.APPLICATION_XML)
 public class PhoneNumberWriter implements MessageBodyWriter<PhoneNumber> {
 
-	private JAXBContext jc;
+    private JAXBContext jc;
 
-	public PhoneNumberWriter() {
-		try {
-			Map<String, Object> properties = new HashMap<String, Object>(1);
-			properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY,
-					"META-INF/binding-phonenumber.xml");
-			jc = JAXBContext.newInstance(new Class[] { PhoneNumber.class },
-					properties);
-		} catch (JAXBException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public PhoneNumberWriter() {
+        try {
+            Map<String, Object> properties = new HashMap<String, Object>(1);
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY,
+                    "META-INF/binding-phonenumber.xml");
+            jc = JAXBContext.newInstance(new Class[] { PhoneNumber.class },
+                    properties);
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public long getSize(PhoneNumber t, Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType) {
-		return -1;
-	}
+    public long getSize(PhoneNumber t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return -1;
+    }
 
-	public boolean isWriteable(Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType) {
-		return type == PhoneNumber.class;
-	}
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return type == PhoneNumber.class;
+    }
 
-	public void writeTo(PhoneNumber t, Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType,
-			MultivaluedMap<String, Object> httpHeaders,
-			OutputStream entityStream) throws IOException,
-			WebApplicationException {
-		try {
-			jc.createMarshaller().marshal(t, entityStream);
-		} catch (JAXBException e) {
-			throw new WebApplicationException(e);
-		}
-	}
+    public void writeTo(PhoneNumber t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException,
+            WebApplicationException {
+        try {
+            jc.createMarshaller().marshal(t, entityStream);
+        } catch (JAXBException e) {
+            throw new WebApplicationException(e);
+        }
+    }
 
 }

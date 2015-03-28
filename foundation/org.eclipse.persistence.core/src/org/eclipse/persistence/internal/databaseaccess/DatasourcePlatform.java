@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.*;
@@ -57,11 +57,11 @@ public class DatasourcePlatform implements Platform {
 
     /** Store map of sequence names to sequences */
     protected Map sequences;
-    
+
     /** Delimiter to use for fields and tables using spaces or other special values */
     protected String startDelimiter = null;
     protected String endDelimiter = null;
-    
+
     /** Ensures that only one thread at a time can add/remove sequences */
     protected Object sequencesLock = new Boolean(true);
 
@@ -209,7 +209,7 @@ public class DatasourcePlatform implements Platform {
         }
         return conversionManager;
     }
-    
+
     /**
      * The platform hold its own instance of conversion manager to allow customization.
      */
@@ -219,24 +219,24 @@ public class DatasourcePlatform implements Platform {
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     * 
+     *
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the end of the value.
      */
     public String getEndDelimiter() {
         return endDelimiter;
     }
-    
+
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     * 
+     *
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the end of the value.
      */
     public void setEndDelimiter(String endDelimiter) {
         this.endDelimiter = endDelimiter;
     }
-    
+
     /**
      * Return the operator for the operator constant defined in ExpressionOperator.
      */
@@ -278,24 +278,24 @@ public class DatasourcePlatform implements Platform {
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     * 
+     *
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the start of the value.
      */
     public String getStartDelimiter() {
         return startDelimiter;
     }
-    
+
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     * 
+     *
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the start of the value.
      */
     public void setStartDelimiter(String startDelimiter) {
         this.startDelimiter = startDelimiter;
     }
-    
+
     /**
      * Return the qualifier for the table. Required by some
      * databases such as Oracle and DB2
@@ -429,7 +429,7 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.trunc());
         addOperator(ExpressionOperator.greatest());
         addOperator(ExpressionOperator.least());
-        
+
         addOperator(ExpressionOperator.standardDeviation());
         addOperator(ExpressionOperator.variance());
 
@@ -438,21 +438,21 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.ref());
         addOperator(ExpressionOperator.refToHex());
         addOperator(ExpressionOperator.value());
-        
+
         addOperator(ExpressionOperator.coalesce());
         addOperator(ExpressionOperator.caseStatement());
         addOperator(ExpressionOperator.caseConditionStatement());
     }
-    
+
     /**
      * INTERNAL:
      * Allow the platform to initialize the CRUD queries to defaults.
      * This is mainly used by EIS platforms, but could be used by relational ones for special behavior.
      */
     public void initializeDefaultQueries(DescriptorQueryManager queryManager, AbstractSession session) {
-        
+
     }
-    
+
     public boolean isAccess() {
         return false;
     }
@@ -472,7 +472,7 @@ public class DatasourcePlatform implements Platform {
     public boolean isDB2() {
         return false;
     }
-    
+
      public boolean isHANA() {
          return false;
      }
@@ -514,9 +514,9 @@ public class DatasourcePlatform implements Platform {
     }
 
     public boolean isPostgreSQL(){
-    	return false;
+        return false;
     }
-    
+
     public boolean isPointBase() {
         return false;
     }
@@ -527,8 +527,8 @@ public class DatasourcePlatform implements Platform {
 
     public boolean isFirebird() {
         return false;
-    }    
-    
+    }
+
     public boolean isSQLServer() {
         return false;
     }
@@ -548,7 +548,7 @@ public class DatasourcePlatform implements Platform {
     public boolean isTimesTen7() {
         return false;
     }
-    
+
     public boolean isMaxDB() {
         return false;
     }
@@ -557,9 +557,9 @@ public class DatasourcePlatform implements Platform {
      * Allow the platform to initialize itself after login/init.
      */
     public void initialize() {
-        
+
     }
-    
+
     /**
      * OBSOLETE:
      * Can override the default query for returning the sequence numbers.
@@ -681,7 +681,7 @@ public class DatasourcePlatform implements Platform {
      * Add sequence corresponding to the name.
      * Use this method with isSessionConnected parameter set to true
      * to add a sequence to connected session.
-     * If the session is connected then the sequence is added only 
+     * If the session is connected then the sequence is added only
      * if there is no sequence with the same name already in use.
      */
     public void addSequence(Sequence sequence, boolean isSessionConnected) {
@@ -797,7 +797,7 @@ public class DatasourcePlatform implements Platform {
     public void setSequences(Map sequences) {
         this.sequences = sequences;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether defaultSequence is the same as platform default sequence.
@@ -809,7 +809,7 @@ public class DatasourcePlatform implements Platform {
             return getDefaultSequence().equals(createPlatformDefaultSequence());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Returns the correct quote character to use around SQL Identifiers that contain
@@ -822,14 +822,14 @@ public class DatasourcePlatform implements Platform {
     public String getIdentifierQuoteCharacter() {
         return "";
     }
-    
+
     /**
      * INTERNAL:
      */
     public ConnectionCustomizer createConnectionCustomizer(Accessor accessor, AbstractSession session) {
         return null;
     }
-    
+
     /**
      * Allows query prepare to be disable in the platform.
      * This is required for some EIS platforms, that cannot prepare the call.
@@ -837,14 +837,14 @@ public class DatasourcePlatform implements Platform {
     public boolean shouldPrepare(DatabaseQuery query) {
         return true;
     }
-    
+
     /**
      * Return if the database requires the ORDER BY fields to be part of the select clause.
      */
     public boolean shouldSelectIncludeOrderBy() {
         return false;
     }
-    
+
     /**
      * Return if the database requires the ORDER BY fields to be part of the select clause.
      */
@@ -918,7 +918,7 @@ public class DatasourcePlatform implements Platform {
     public ValueReadQuery buildSelectQueryForIdentity() {
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Returns query used to read back the value generated by Identity.
@@ -930,7 +930,7 @@ public class DatasourcePlatform implements Platform {
     public ValueReadQuery buildSelectQueryForIdentity(String seqName, Integer size) {
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Return the correct call type for the native query string.

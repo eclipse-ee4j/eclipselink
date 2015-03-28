@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,17 +47,17 @@ public class BinderWithNullPolicyTestCases extends TestCase{
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeA.class}, null);
 
         Binder binder = ctx.createBinder();
-        
+
         EmployeeA emp = (EmployeeA)binder.unmarshal(parser.parse(new StringReader(xml)));
-        
+
         emp.setName(null);
-        
+
         binder.updateXML(emp);
-        
+
         JAXBXMLComparer comparer = new JAXBXMLComparer();
         assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, ((Node)binder.getXMLNode(emp)).getOwnerDocument()));
     }
-    
+
     public void testXsiNilNullMarshal() throws Exception {
         String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/xsinil.xml";
@@ -66,17 +66,17 @@ public class BinderWithNullPolicyTestCases extends TestCase{
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeB.class}, null);
 
         Binder binder = ctx.createBinder();
-        
+
         EmployeeB emp = (EmployeeB)binder.unmarshal(parser.parse(new StringReader(xml)));
-        
+
         emp.setName(null);
-        
+
         binder.updateXML(emp);
-        
+
         JAXBXMLComparer comparer = new JAXBXMLComparer();
         assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, ((Node)binder.getXMLNode(emp)).getOwnerDocument()));
     }
-    
+
     public void testXsiNilUnmarshalMarshalValue() throws Exception {
         String xml = "<employee><!-- Comment 1 --><name xmlns:xsi=\"" + javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI + "\" xsi:nil=\"true\">Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/nilwithvalue.xml";
@@ -85,17 +85,17 @@ public class BinderWithNullPolicyTestCases extends TestCase{
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeB.class}, null);
 
         Binder binder = ctx.createBinder();
-        
+
         EmployeeB emp = (EmployeeB)binder.unmarshal(parser.parse(new StringReader(xml)));
-        
+
         emp.setName("Matt");
-        
+
         binder.updateXML(emp);
-        
+
         JAXBXMLComparer comparer = new JAXBXMLComparer();
         assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, ((Node)binder.getXMLNode(emp)).getOwnerDocument()));
     }
-    
+
     public void testEmptyNode() throws Exception {
         String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/emptynode.xml";
@@ -104,13 +104,13 @@ public class BinderWithNullPolicyTestCases extends TestCase{
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeC.class}, null);
 
         Binder binder = ctx.createBinder();
-        
+
         EmployeeC emp = (EmployeeC)binder.unmarshal(parser.parse(new StringReader(xml)));
-        
+
         emp.setName(null);
-        
+
         binder.updateXML(emp);
-        
+
         JAXBXMLComparer comparer = new JAXBXMLComparer();
         assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, ((Node)binder.getXMLNode(emp)).getOwnerDocument()));
     }

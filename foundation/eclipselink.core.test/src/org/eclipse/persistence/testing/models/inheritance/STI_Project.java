@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.inheritance;
 
 import java.math.*;
@@ -20,7 +20,7 @@ import java.util.Vector;
 /**
  * STI stands for Single Table Inheritance.
  * STI_Project references and referenced by STI_Employee class,
- * STI_Project is mapped with its subclasses STI_SmallProject and STI_LargeProject 
+ * STI_Project is mapped with its subclasses STI_SmallProject and STI_LargeProject
  * to a single table.
  */
 public abstract class STI_Project implements Serializable {
@@ -78,10 +78,10 @@ public abstract class STI_Project implements Serializable {
     public Vector getTeamMembers() {
         return (Vector)teamMembers.getValue();
     }
-    
-	public void setTeamMembers(Vector employees) {
-		this.teamMembers.setValue(employees);
-	}
+
+    public void setTeamMembers(Vector employees) {
+        this.teamMembers.setValue(employees);
+    }
 
     public void addTeamMember(STI_Employee employee) {
         getTeamMembers().add(employee);

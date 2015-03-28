@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -15,13 +15,13 @@ package org.eclipse.persistence.tools.workbench.test.models.crimescene;
 import org.eclipse.persistence.sessions.Record;
 
 public class Suspect extends Person {
-	private String alias = "";
-	private float height;
+    private String alias = "";
+    private float height;
 /**
  * Create a new Suspect object.
  */
 public Suspect() {
-	super();
+    super();
 }
 /**
 *
@@ -30,10 +30,10 @@ public Suspect() {
 *
 **/
 public float calculateHeight(Record row) {
-	Integer feet = (Integer) row.get("HEIGHT_FEET");
-	Integer inches = (Integer) row.get("HEIGHT_INCHES");
-	int totalInches = feet.intValue() * 12 + inches.intValue();
-	return totalInches * (float).0254;
+    Integer feet = (Integer) row.get("HEIGHT_FEET");
+    Integer inches = (Integer) row.get("HEIGHT_INCHES");
+    int totalInches = feet.intValue() * 12 + inches.intValue();
+    return totalInches * (float).0254;
 }
 /**
  * Return this suspect's alias
@@ -42,7 +42,7 @@ public float calculateHeight(Record row) {
  * @return java.lang.String
  */
 public String getAlias() {
-	return this.alias;
+    return this.alias;
 }
 /**
 *
@@ -50,7 +50,7 @@ public String getAlias() {
 *
 **/
 public float getHeight() {
-	return this.height;
+    return this.height;
 }
 /**
 *
@@ -59,7 +59,7 @@ public float getHeight() {
 *
 **/
 public int heightInFeet() {
-	return (int)((getHeight() / (float).0254) / 12);
+    return (int)((getHeight() / (float).0254) / 12);
 }
 /**
 *
@@ -68,7 +68,7 @@ public int heightInFeet() {
 *
 **/
 public int inchesRemainder() {
-	return (int)(getHeight() / (float).0254) % 12;
+    return (int)(getHeight() / (float).0254) % 12;
 }
 /**
  * Set this suspect's alias
@@ -77,14 +77,14 @@ public int inchesRemainder() {
  * @param newValue java.lang.String
  */
 public void setAlias(String newValue) {
-	this.alias = newValue;
+    this.alias = newValue;
 }
 /**
- * 
+ *
  * @param newHeight float
  */
 public void setHeight(float newHeight) {
-	this.height = newHeight;
+    this.height = newHeight;
 }
 /**
  * Return the full name of this suspect, with his/her alias,
@@ -93,6 +93,6 @@ public void setHeight(float newHeight) {
  */
 @Override
 public String toString() {
-	return getFirstName() + " \"" + getAlias() + "\" " + getLastName();
+    return getFirstName() + " \"" + getAlias() + "\" " + getLastName();
 }
 }

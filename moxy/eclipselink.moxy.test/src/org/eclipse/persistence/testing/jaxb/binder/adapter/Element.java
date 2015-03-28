@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,24 +28,24 @@ public class Element {
 
     @XmlJavaTypeAdapter(MapEntryAdapter.class)
     public Map<Integer, String> value;
-    
+
     public String toString() {
         StringBuffer str = new StringBuffer();
-        
+
         str.append("Element[key=");
         str.append(this.key);
         str.append(", value=");
         for (Integer key : value.keySet()) {
-            str.append("(");    
-            str.append(key);    
-            str.append(",");    
-            str.append(value.get(key));    
-            str.append(")");    
+            str.append("(");
+            str.append(key);
+            str.append(",");
+            str.append(value.get(key));
+            str.append(")");
         }
-        str.append("]");    
+        str.append("]");
         return str.toString();
     }
-    
+
     public boolean equals(Object obj) {
         if (!(obj instanceof Element)) {
             return false;

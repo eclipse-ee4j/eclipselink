@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.xmlfragment;
 
 import java.io.InputStream;
@@ -152,7 +152,7 @@ public class XMLFragmentNSAttributeTestCases extends OXTestCase {
         Document testDocument = xmlMarshaller.objectToXML(getWriteControlObject("nsx", "http://www.example.com/test-uri"));
         objectToXMLDocumentTest(testDocument, XML_RESOURCE_DIFF_PFX, "testObjectToXMLDocumentDifferentPrefix");
     }
-    
+
     /**
      * Test ContentHandlerRecord - prefixes and uris match
      */
@@ -261,14 +261,14 @@ public class XMLFragmentNSAttributeTestCases extends OXTestCase {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
         Document xdoc = parser.parse(inputStream);
         inputStream.close();
-        
+
         log("\n**testObjectToFormattedXMLStringWriter**");
         log("Expected:");
         log(xdoc);
         log("\nActual:");
         log(testDocument);
         log("\n");
-        
+
         assertXMLIdentical(xdoc, importNodeFix(testDocument));
     }
 
@@ -292,17 +292,17 @@ public class XMLFragmentNSAttributeTestCases extends OXTestCase {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE_DIFF_PFX);
         Document xdoc = parser.parse(inputStream);
         inputStream.close();
-        
+
         log("\n**testObjectToFormattedXMLStringWriterDifferentPrefix**");
         log("Expected:");
         log(xdoc);
         log("\nActual:");
         log(testDocument);
         log("\n");
-        
+
         assertXMLIdentical(xdoc, importNodeFix(testDocument));
     }
-    
+
     // ------------------ CONVENIENCE METHODS ------------------ //
     protected void objectToXMLDocumentTest(Document testDocument, String resource, String testCase) throws Exception {
         setControlDocument(resource);
@@ -312,10 +312,10 @@ public class XMLFragmentNSAttributeTestCases extends OXTestCase {
         log("\nActual:");
         log(testDocument);
         log("\n");
-        
+
         assertXMLIdentical(getWriteControlDocument(), importNodeFix(testDocument));
     }
-    
+
     protected void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");
@@ -324,8 +324,8 @@ public class XMLFragmentNSAttributeTestCases extends OXTestCase {
         log(testObject.toString());
         log("\n");
         assertEquals(getReadControlObject(), testObject);
-    }    
-    
+    }
+
     protected Document importNodeFix(Document testDocument) {
         try {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -336,7 +336,7 @@ public class XMLFragmentNSAttributeTestCases extends OXTestCase {
             writer.close();
             reader.close();
         } catch (Exception x) {}
-        
+
         return testDocument;
     }
 }

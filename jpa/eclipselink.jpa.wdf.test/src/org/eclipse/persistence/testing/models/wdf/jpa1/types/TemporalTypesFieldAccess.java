@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -32,7 +32,7 @@ import javax.persistence.Transient;
 
 /*
  * This entity class contains all supported <i>basic </i> data types.
- * 
+ *
  * The Basic annotation is the simplest type of mapping to a database column. It can optionally be applied to any persistent
  * property or instance variable of the following type: Java primitive types, wrappers of the primitive types, java.lang.String,
  * java.math.BigInteger, java.math.BigDecimal, java.util.Date, java.util.Calendar, java.sql.Date, java.sql.Time,

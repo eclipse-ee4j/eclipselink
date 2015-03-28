@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.xmlmarshaller;
 
 import java.io.*;
@@ -64,7 +64,7 @@ public class XMLMarshalTestCases extends OXTestCase {
      }
 
     public static void main(String[] args) {
-        
+
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshalTestCases" };
         TestRunner.main(arguments);
     }
@@ -99,7 +99,7 @@ public class XMLMarshalTestCases extends OXTestCase {
         return employee;
     }
 
-    
+
         public void testMarshalObjectToWriterNoNamespace() throws Exception {
             StringWriter writer = new StringWriter();
 
@@ -135,7 +135,7 @@ public class XMLMarshalTestCases extends OXTestCase {
 
             assertXMLIdentical(controlDocument, testDocument);
         }
-    
+
     public void testMarshalObjectToElement() throws Exception {
         Document marshalToNodeControl = setupControlDocument(MARSHAL_TO_NODE_RESOURCE);
 
@@ -150,7 +150,7 @@ public class XMLMarshalTestCases extends OXTestCase {
 
         assertXMLIdentical(marshalToNodeControl, document);
     }
-       
+
         public void testMarshalObjectToDocument() {
             Document document = parser.newDocument();
             marshaller.marshal(controlObject, document);
@@ -557,7 +557,7 @@ public class XMLMarshalTestCases extends OXTestCase {
             }
 
             assertTrue("An XMLValidation should have been caught but wasn't.", false);
-        }      
+        }
 
         public void testMarshalToElementWithNoNamespaceResolver() {
             XMLDescriptor descriptor = ((XMLDescriptor)context.getSession(0).getProject().getDescriptor(Employee.class));

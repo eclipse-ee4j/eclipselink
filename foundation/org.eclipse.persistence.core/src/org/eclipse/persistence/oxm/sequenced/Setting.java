@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.sequenced;
 
 import java.util.List;
@@ -21,14 +21,14 @@ import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 /**
  * <p>Setting objects are used to control the order in which the
  * mappings for Sequenced Objects are processed.</p>
- * 
+ *
  * <b>Example 1</b>
  * <pre>
  * Setting piSetting = new Setting(null, "personal-info");
- * 
+ *
  * Setting fnSetting = new Setting(null, "first-name");
  * piSetting.addChild(fnSetting);
- * 
+ *
  * Setting fnTextSetting = new Setting(null, "text()");
  * fnTextSetting.setObject(customerObject);
  * fnTextSetting.setMapping(customerFirstNameMapping);
@@ -37,13 +37,13 @@ import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
  *
  * Setting lnSetting = new Setting(null, "last-name");
  * piSetting.addChild(lnSetting);
- * 
+ *
  * Setting lnTextSetting = new Setting(null, "text()");
  * lnTextSetting.setObject(customerObject);
  * lnTextSetting.setMapping(customerLastNameMapping);
  * lnTextSetting.setValue("Doe");
  * lnSetting.getSequence().add(lnTextSetting);
- * </pre> 
+ * </pre>
  * <pre>
  * &lt;personal-info&gt;
  *      &lt;first-name&gt;Jane&lt;/first-name&gt;
@@ -53,10 +53,10 @@ import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
  * <b>Example 2</b>
  * <pre>
  * Setting fnpiSetting = new Setting(null, "personal-info");
- * 
+ *
  * Setting fnSetting = new Setting(null, "first-name");
  * fnpiSetting.addChild(fnSetting);
- * 
+ *
  * Setting fnTextSetting = new Setting(null, "text()");
  * fnTextSetting.setObject(customerObject);
  * fnTextSetting.setMapping(customerFirstNameMapping);
@@ -67,13 +67,13 @@ import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 
  * Setting lastNameSetting = new Setting(null, "last-name");
  * lnpiSetting.addChild(lnSetting);
- * 
+ *
  * Setting lnTextSetting = new Setting(null, "text()");
  * lnTextSetting.setObject(customerObject);
  * lnTextSetting.setMapping(customerLastNameMapping);
  * lnTextSetting.setValue("Doe");
  * lnSetting.addChild(lnTextSetting);
- * </pre> 
+ * </pre>
  * <pre>
  * &lt;personal-info&gt;
  *      &lt;first-name&gt;Jane&lt;/first-name&gt;
@@ -102,33 +102,33 @@ public class Setting {
         this.setNamespaceURI(namespaceURI);
         this.setName(name);
     }
-	
+
     /**
-     * <p>Return the name of the setting.  The name of the setting corresponds 
+     * <p>Return the name of the setting.  The name of the setting corresponds
      * to a fragment of an XPath in an object-to-XML mapping.</p>
      * <b>Example</b>
-     * <p>For the XPath personal-info/first-name/text() would correspond to 3 
+     * <p>For the XPath personal-info/first-name/text() would correspond to 3
      * Setting objects with names "personal-info", "first-name", and "text()"
-     * </p>  
+     * </p>
      */
     public String getName() {
         return name;
     }
 
     /**
-     * <p>Specify the name of the setting.  The name of the setting corresponds 
+     * <p>Specify the name of the setting.  The name of the setting corresponds
      * to a fragment of an XPath in an object-to-XML mapping.</p>
      * <b>Example</b>
-     * <p>For the XPath personal-info/first-name/text() would correspond to 3 
+     * <p>For the XPath personal-info/first-name/text() would correspond to 3
      * Setting objects with names "personal-info", "first-name", and "text()"
-     * </p>  
+     * </p>
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * @return The namespace URI that qualifies the name of the Setting (if there 
+     * @return The namespace URI that qualifies the name of the Setting (if there
      * is one).
      */
     public String getNamespaceURI() {
@@ -136,7 +136,7 @@ public class Setting {
     }
 
     /**
-     * @param namespaceURI Specify the namespace URI that qualifies the name of the Setting (if 
+     * @param namespaceURI Specify the namespace URI that qualifies the name of the Setting (if
      * there is one).
      */
     public void setNamespaceURI(String namespaceURI) {
@@ -151,7 +151,7 @@ public class Setting {
     }
 
     /**
-     * Set the value on the Setting.  This method will also update the corresponding 
+     * Set the value on the Setting.  This method will also update the corresponding
      * domain object using the specified mapping.
      * @param value
      */
@@ -161,7 +161,7 @@ public class Setting {
 
     /**
      * @param value The value to be set on the Setting.
-     * @param updateObject This flag indicates if an update is performed 
+     * @param updateObject This flag indicates if an update is performed
      * on the corresponding domain object using the specified mapping.
      */
     public void setValue(Object value, boolean updateObject) {
@@ -173,7 +173,7 @@ public class Setting {
             if(!mapping.isWriteOnly()) {
                 mapping.setAttributeValueInObject(object, value);
             }
-        }              
+        }
     }
 
     /**
@@ -199,7 +199,7 @@ public class Setting {
     }
 
     /**
-     * @return The domain object to which this Setting applies. 
+     * @return The domain object to which this Setting applies.
      */
     public Object getObject() {
         return object;
@@ -227,8 +227,8 @@ public class Setting {
     }
 
     /**
-     * 
-     * @param childSetting This setting will be added to the parent.  The parenting 
+     *
+     * @param childSetting This setting will be added to the parent.  The parenting
      * information will be updated automatically.  A child must only be added to one parent.
      */
     public void addChild(Setting childSetting) {
@@ -247,7 +247,7 @@ public class Setting {
     }
 
     /**
-     * @param parentSetting The parent Setting or null if this setting has not parent. 
+     * @param parentSetting The parent Setting or null if this setting has not parent.
      */
     public void setParent(Setting parentSetting) {
         this.parent = parentSetting;
@@ -295,7 +295,7 @@ public class Setting {
         }
         return copy;
     }
-    
+
     public Setting copy(Object newParent, Object copyValue) {
         Setting copy = new Setting();
         copy.setName(name);

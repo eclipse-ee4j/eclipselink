@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
@@ -41,27 +41,27 @@ import org.eclipse.persistence.testing.models.jpa.datetime.DateTimeTableCreator;
  * @see org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator
  * @see JUnitDomainObjectComparer
  */
- 
-public class JUnitJPQLModifyTestSuite extends JUnitTestCase {  
-  
+
+public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
+
     static JUnitDomainObjectComparer comparer; //the global comparer object used in all tests
-  
+
     public JUnitJPQLModifyTestSuite()
     {
         super();
     }
-  
+
     public JUnitJPQLModifyTestSuite(String name)
     {
         super(name);
     }
-  
+
     //This method is run at the start of EVERY test case method
     public void setUp()
     {
         //get session to start setup
         DatabaseSession session = JUnitTestCase.getServerSession();
-        
+
         new AdvancedTableCreator().replaceTables(session);
 
         //create a new EmployeePopulator
@@ -69,24 +69,24 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
         //Populate the tables
         employeePopulator.buildExamples();
-        
+
         //Persist the examples in the database
         employeePopulator.persistExample(session);
 
         // drop and create DateTime tables and persist dateTime test data
         new DateTimeTableCreator().replaceTables(JUnitTestCase.getServerSession());
-        DateTimePopulator dateTimePopulator = new DateTimePopulator();                
+        DateTimePopulator dateTimePopulator = new DateTimePopulator();
         dateTimePopulator.persistExample(getServerSession());
     }
-  
+
     //This method is run at the end of EVERY test case method
     public void tearDown()
     {
         clearCache();
     }
-  
+
     //This suite contains all tests contained in this class
-    public static Test suite() 
+    public static Test suite()
     {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLModifyTestSuite");
@@ -104,7 +104,7 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -112,17 +112,17 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         clearCache();
         //get session to start setup
         DatabaseSession session = JUnitTestCase.getServerSession();
-        
+
         //initialize the global comparer object
         comparer = new JUnitDomainObjectComparer();
-        
+
         //set the session for the comparer to use
         comparer.setSession((AbstractSession)session.getActiveSession());
 
     }
-    
+
     public void simpleUpdate()
-    {          
+    {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test simpleUpdate skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -138,14 +138,14 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
-            assertEquals("simpleUpdate: wrong number of updated instances", 
+            assertEquals("simpleUpdate: wrong number of updated instances",
                          nrOfEmps, updated);
             commitTransaction(em);
 
             // check database changes
             int nr = executeJPQLReturningInt(
                 em, "SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'CHANGED'");
-            assertEquals("simpleUpdate: unexpected number of changed values in the database", 
+            assertEquals("simpleUpdate: unexpected number of changed values in the database",
                          nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
@@ -155,7 +155,7 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
     }
 
     public void updateWithSubquery()
-    {          
+    {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test updateWithSubquery skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -166,13 +166,13 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
             em, "SELECT COUNT(e) FROM Employee e WHERE e.managedEmployees IS NOT EMPTY");
 
         // test query
-        String update = "UPDATE Employee e SET e.firstName = 'CHANGED'" +  
+        String update = "UPDATE Employee e SET e.firstName = 'CHANGED'" +
                         " WHERE (SELECT COUNT(m) FROM e.managedEmployees m) > 0";
         beginTransaction(em);
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
-            assertEquals("updateWithSubquery: wrong number of updated instances", 
+            assertEquals("updateWithSubquery: wrong number of updated instances",
                          nrOfEmps, updated);
         } finally {
             if (isTransactionActive(em)){
@@ -182,7 +182,7 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
     }
 
     public void updateEmbedded()
-    {          
+    {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test updateEmbedded skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -199,14 +199,14 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
-            assertEquals("updateEmbedded: wrong number of updated instances", 
+            assertEquals("updateEmbedded: wrong number of updated instances",
                          nrOfEmps, updated);
             commitTransaction(em);
 
             // check database changes
             int nr = executeJPQLReturningInt(
                 em, "SELECT COUNT(e) FROM Employee e WHERE e.period.startDate IS NULL");
-            assertEquals("updateEmbedded: unexpected number of changed values in the database", 
+            assertEquals("updateEmbedded: unexpected number of changed values in the database",
                          nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
@@ -241,7 +241,7 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
             commitTransaction(em);
             // check database changes
-           
+
             Query q = em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.period.startDate=:startDate")
             .setParameter("startDate", startDate);
             Object result = q.getSingleResult();
@@ -256,7 +256,7 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
     }
 
     public void updateUnqualifiedAttributeInSet()
-    {          
+    {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test updateUnqualifiedAttributeInSet skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -272,14 +272,14 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
-            assertEquals("updateUnqualifiedAttributeInSet: wrong number of updated instances", 
+            assertEquals("updateUnqualifiedAttributeInSet: wrong number of updated instances",
                          nrOfEmps, updated);
             commitTransaction(em);
 
             // check database changes
             int nr = executeJPQLReturningInt(
                 em, "SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'CHANGED'");
-            assertEquals("updateUnqualifiedAttributeInSet: unexpected number of changed values in the database", 
+            assertEquals("updateUnqualifiedAttributeInSet: unexpected number of changed values in the database",
                          nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
@@ -293,14 +293,14 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
-            assertEquals("simpleUpdate: wrong number of updated instances", 
+            assertEquals("simpleUpdate: wrong number of updated instances",
                          nrOfEmps, updated);
             commitTransaction(em);
 
             // check database changes
             int nr = executeJPQLReturningInt(
                 em, "SELECT COUNT(e) FROM Employee e WHERE e.period.startDate IS NULL");
-            assertEquals("simpleUpdate: unexpected number of changed values in the database", 
+            assertEquals("simpleUpdate: unexpected number of changed values in the database",
                          nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
@@ -310,7 +310,7 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
     }
 
     public void updateUnqualifiedAttributeInWhere()
-    {          
+    {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test updateUnqualifiedAttributeInWhere skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -321,20 +321,20 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
             em, "SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'Bob'");
 
         // test query
-        String update = 
+        String update =
             "UPDATE Employee SET firstName = 'CHANGED' WHERE firstName = 'Bob'";
         beginTransaction(em);
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
-            assertEquals("updateUnqualifiedAttributeInWhere: wrong number of updated instances", 
+            assertEquals("updateUnqualifiedAttributeInWhere: wrong number of updated instances",
                          nrOfEmps, updated);
             commitTransaction(em);
 
             // check database changes
             int nr = executeJPQLReturningInt(
                 em, "SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'CHANGED'");
-            assertEquals("simpleUnqualifiedUpdate: unexpected number of changed values in the database", 
+            assertEquals("simpleUnqualifiedUpdate: unexpected number of changed values in the database",
                          nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
@@ -344,22 +344,22 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
         nrOfEmps = executeJPQLReturningInt(
             em, "SELECT COUNT(e) FROM Employee e WHERE e.managedEmployees IS NOT EMPTY");
-        
+
         // test query
-        update = "UPDATE Employee SET firstName = 'MODIFIED' " + 
+        update = "UPDATE Employee SET firstName = 'MODIFIED' " +
                  "WHERE (SELECT COUNT(m) FROM managedEmployees m) > 0";
         beginTransaction(em);
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
-            assertEquals("simpleUpdate: wrong number of updated instances", 
+            assertEquals("simpleUpdate: wrong number of updated instances",
                          nrOfEmps, updated);
             commitTransaction(em);
-            
+
             // check database changes
             int nr = executeJPQLReturningInt(
                 em, "SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'MODIFIED'");
-            assertEquals("simpleUpdate: unexpected number of changed values in the database", 
+            assertEquals("simpleUpdate: unexpected number of changed values in the database",
                          nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
@@ -372,7 +372,7 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
     // expression in the where clause mixed with input parameters
     public void updateUnqualifiedAttributeInWhereWithInputParameter() {
 
-   	 EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager();
 
         try {
            Query query = em.createQuery("update Employee set salary = :salary where version = :version");
@@ -398,54 +398,54 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
             jpql = "UPDATE DateTime SET date = CURRENT_DATE";
             beginTransaction(em);
             updated = em.createQuery(jpql).executeUpdate();
-            assertEquals("updateDateTimeFields set date: " + 
+            assertEquals("updateDateTimeFields set date: " +
                          "wrong number of updated instances", exp, updated);
             commitTransaction(em);
-            
+
             // check database changes
             jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.date <= CURRENT_DATE";
-            assertEquals("updateDateTimeFields set date: " + 
-                         "unexpected number of changed values in the database", 
+            assertEquals("updateDateTimeFields set date: " +
+                         "unexpected number of changed values in the database",
                          exp, executeJPQLReturningInt(em, jpql));
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
         }
-        
+
         // test query setting java.sql.Time field
         try {
             jpql = "UPDATE DateTime SET time = CURRENT_TIME";
             beginTransaction(em);
             updated = em.createQuery(jpql).executeUpdate();
-            assertEquals("updateDateTimeFields set time: " + 
+            assertEquals("updateDateTimeFields set time: " +
                          "wrong number of updated instances", exp, updated);
             commitTransaction(em);
-            
+
             // check database changes
             jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.time <= CURRENT_TIME";
-            assertEquals("updateDateTimeFields set time: " + 
-                         "unexpected number of changed values in the database", 
+            assertEquals("updateDateTimeFields set time: " +
+                         "unexpected number of changed values in the database",
                          exp, executeJPQLReturningInt(em, jpql));
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
         }
-        
+
         // test query setting java.sql.Timestamp field
         try {
             jpql = "UPDATE DateTime SET timestamp = CURRENT_TIMESTAMP";
             beginTransaction(em);
             updated = em.createQuery(jpql).executeUpdate();
-            assertEquals("updateDateTimeFields set timestamp: " + 
+            assertEquals("updateDateTimeFields set timestamp: " +
                          "wrong number of updated instances", exp, updated);
             commitTransaction(em);
 
             // check database changes
             jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.timestamp <= CURRENT_TIMESTAMP";
-            assertEquals("updateDateTimeFields set timestamp: " + 
-                         "unexpected number of changed values in the database", 
+            assertEquals("updateDateTimeFields set timestamp: " +
+                         "unexpected number of changed values in the database",
                          exp, executeJPQLReturningInt(em, jpql));
         } finally {
             if (isTransactionActive(em)){
@@ -464,8 +464,8 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
             // check database changes
             jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.utilDate <= CURRENT_TIMESTAMP";
-            assertEquals("updateDateTimeFields set utilDate: " + 
-                         "unexpected number of changed values in the database", 
+            assertEquals("updateDateTimeFields set utilDate: " +
+                         "unexpected number of changed values in the database",
                          exp, executeJPQLReturningInt(em, jpql));
         } finally {
             if (isTransactionActive(em)){
@@ -484,8 +484,8 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
             // check database changes
             jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.calendar <= CURRENT_TIMESTAMP";
-            assertEquals("updateDateTimeFields set calendar: " + 
-                         "unexpected number of changed values in the database", 
+            assertEquals("updateDateTimeFields set calendar: " +
+                         "unexpected number of changed values in the database",
                          exp, executeJPQLReturningInt(em, jpql));
         } finally {
             if (isTransactionActive(em)){
@@ -495,7 +495,7 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
     }
 
     public void simpleDelete()
-    {          
+    {
         EntityManager em = createEntityManager();
         String jpql = "SELECT COUNT(p) FROM PhoneNumber p WHERE p.areaCode = '613'";
         int nrOfEmps = executeJPQLReturningInt(em, jpql);
@@ -506,13 +506,13 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         try {
             Query q = em.createQuery(delete);
             int deleted = q.executeUpdate();
-            assertEquals("simpleDelete: wrong number of deleted instances", 
+            assertEquals("simpleDelete: wrong number of deleted instances",
                          nrOfEmps, deleted);
             commitTransaction(em);
 
             // check database changes
             int nr = executeJPQLReturningInt(em, jpql);
-            assertEquals("simpleDelete: unexpected number of instances in the database", 
+            assertEquals("simpleDelete: unexpected number of instances in the database",
                          0, nr);
         } finally {
             if (isTransactionActive(em)){
@@ -522,7 +522,7 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
     }
 
     /** Helper method executing a JPQL query retuning an int value. */
-    private int executeJPQLReturningInt(EntityManager em, String jpql) 
+    private int executeJPQLReturningInt(EntityManager em, String jpql)
     {
         Query q = em.createQuery(jpql);
         Object result = q.getSingleResult();
@@ -535,10 +535,10 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
           warning("INTERSECT not supported on Symfoware.");
           return;
        }
-   	 EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager();
        beginTransaction(em);
        try {
-      	 String jpql = "Update Employee a SET a.payScale = :acctStatus WHERE LOCATE(:acctName, a.lastName)> 0";
+           String jpql = "Update Employee a SET a.payScale = :acctStatus WHERE LOCATE(:acctName, a.lastName)> 0";
           Query query = em.createQuery(jpql);
           query.setParameter("acctStatus", Employee.SalaryRate.EXECUTIVE);
           query.setParameter("acctName",   "Jones");
@@ -547,9 +547,9 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
           commitTransaction(em);
        }
        finally {
-      	 if (isTransactionActive(em)){
-      		 rollbackTransaction(em);
-      	 }
+           if (isTransactionActive(em)){
+               rollbackTransaction(em);
+           }
        }
     }
 }

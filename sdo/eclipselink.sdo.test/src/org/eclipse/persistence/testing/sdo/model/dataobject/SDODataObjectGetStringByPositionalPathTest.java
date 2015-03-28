@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import java.math.BigDecimal;
@@ -29,7 +29,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
     public SDODataObjectGetStringByPositionalPathTest(String name) {
         super(name);
     }
-        
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetStringByPositionalPathTest" };
         TestRunner.main(arguments);
@@ -49,11 +49,11 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
 
     //2. purpose: getString with Undefined boolean Property
     public void testGetStringConversionFromUnDefinedProperty() {
-        
+
         try {
             dataObject_a.getString(UNDEFINED_PATH);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -70,7 +70,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         this.assertEquals(by_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
-  
+
 
     //4. purpose: getString with Defined character Property
     public void testGetStringConversionFromDefinedCharacterProperty() {
@@ -84,7 +84,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         this.assertEquals(str_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
-   
+
 
     //6. purpose: getString with Defined Double Property
     public void testGetStringConversionFromDefinedDoubleProperty() {
@@ -110,7 +110,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         this.assertEquals(fl_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
-   
+
     //10. purpose: getString with Defined int Property
     public void testGetStringConversionFromDefinedIntProperty() {
         // dataObject's type add int property
@@ -123,7 +123,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         this.assertEquals(in_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
-  
+
     //12. purpose: getString with Defined long Property
     public void testGetStringConversionFromDefinedLongProperty() {
         // dataObject's type add short property
@@ -135,7 +135,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         this.assertEquals(lg_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
-   
+
 
     //14. purpose: getString with Defined short Property
     public void testGetStringConversionFromDefinedShortProperty() {
@@ -149,7 +149,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         this.assertEquals(shr_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
-   
+
 
     //16. purpose: getString with Defined String Property
     public void testGetIntConversionFromDefinedStringProperty() {
@@ -198,7 +198,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
-        
+
         String str = "12";
 
         dataObject_a.setString(property1, str);// c dataobject's a property has value boolean 'true'
@@ -224,14 +224,14 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
 
     }*/
 
-   
+
     //18. purpose: getString with bytes property
     public void testGetStringFromBytes() {
         SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
-        prop.setType(SDOConstants.SDO_BYTES);        
-        
+        prop.setType(SDOConstants.SDO_BYTES);
+
         byte[] bytes = new byte[]{10, 100};
-              
+
         dataObject_c.set(prop, bytes);
         try {
             String value = dataObject_a.getString(propertyPath_a_b_c);
@@ -252,7 +252,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         this.assertEquals(bd.toString(), dataObject_a.getString(propertyPath_a_b_c));
     }
 
-  
+
     //21. purpose: getString with Defined integer Property
     public void testGetStringConversionFromDefinedIntegerProperty() {
         // dataObject's type add int property
@@ -264,7 +264,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         this.assertEquals(bi.toString(), dataObject_a.getString(propertyPath_a_b_c));
     }
 
-  
+
 
     //23. purpose: getString with Defined date Property
     public void testGetStringConversionFromDefinedDateProperty() {
@@ -288,7 +288,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         this.assertEquals("2001-01-01T00:00:00Z", dataObject_a.getString(propertyPath_a_b_c));
     }
 
-  
+
 
     //purpose: getStringt with nul value
     public void testGetStringWithNullArgument() {
@@ -296,7 +296,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
             String p = null;
             dataObject_a.getString(p);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 }

@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ import java.util.Set;
 
 /**
  * A set of at most two elements.
- * 
+ *
  * @author Eric Bruneton
  */
 class SmallSet<E> extends AbstractSet<E> implements Iterator<E> {

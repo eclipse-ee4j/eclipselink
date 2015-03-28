@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,98 +32,98 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
  */
 public abstract class AbstractMethodMapping extends AbstractMapping {
 
-	/**
-	 * Creates a new <code>AbstractMethodMapping</code>.
-	 *
-	 * @param parent The parent of this mapping
-	 * @param method The Java {@link Method} wrapped by this mapping
-	 */
-	protected AbstractMethodMapping(IManagedType parent, Method method) {
-		super(parent, method);
-	}
+    /**
+     * Creates a new <code>AbstractMethodMapping</code>.
+     *
+     * @param parent The parent of this mapping
+     * @param method The Java {@link Method} wrapped by this mapping
+     */
+    protected AbstractMethodMapping(IManagedType parent, Method method) {
+        super(parent, method);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Method getMember() {
-		return (Method) super.getMember();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Method getMember() {
+        return (Method) super.getMember();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected Annotation[] getMemberAnnotations() {
-		return getMember().getAnnotations();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Annotation[] getMemberAnnotations() {
+        return getMember().getAnnotations();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected Type getMemberGenericType() {
-		return getMember().getGenericReturnType();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Type getMemberGenericType() {
+        return getMember().getGenericReturnType();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected Class<?> getMemberType() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Class<?> getMemberType() {
 
-		Method method = getMember();
-		Class<?> type = method.getReturnType();
+        Method method = getMember();
+        Class<?> type = method.getReturnType();
 
-		if (type == Void.class) {
-			return method.getParameterTypes()[0];
-		}
-		else {
+        if (type == Void.class) {
+            return method.getParameterTypes()[0];
+        }
+        else {
 
-			// One to One
-			OneToOne oneToOne = method.getAnnotation(OneToOne.class);
-			if (oneToOne != null) {
-				Class<?> targetEntity = oneToOne.targetEntity();
-				if (targetEntity != void.class) {
-					return targetEntity;
-				}
-			}
+            // One to One
+            OneToOne oneToOne = method.getAnnotation(OneToOne.class);
+            if (oneToOne != null) {
+                Class<?> targetEntity = oneToOne.targetEntity();
+                if (targetEntity != void.class) {
+                    return targetEntity;
+                }
+            }
 
-			// Many to One
-			ManyToOne manyToOne = method.getAnnotation(ManyToOne.class);
-			if (manyToOne != null) {
-				Class<?> targetEntity = manyToOne.targetEntity();
-				if (targetEntity != void.class) {
-					return targetEntity;
-				}
-			}
+            // Many to One
+            ManyToOne manyToOne = method.getAnnotation(ManyToOne.class);
+            if (manyToOne != null) {
+                Class<?> targetEntity = manyToOne.targetEntity();
+                if (targetEntity != void.class) {
+                    return targetEntity;
+                }
+            }
 
-			// Many to Many
-			ManyToMany manyToMany = method.getAnnotation(ManyToMany.class);
-			if (manyToMany != null) {
-				Class<?> targetEntity = manyToMany.targetEntity();
-				if (targetEntity != void.class) {
-					return targetEntity;
-				}
-			}
+            // Many to Many
+            ManyToMany manyToMany = method.getAnnotation(ManyToMany.class);
+            if (manyToMany != null) {
+                Class<?> targetEntity = manyToMany.targetEntity();
+                if (targetEntity != void.class) {
+                    return targetEntity;
+                }
+            }
 
-			// One to Many
-			OneToMany oneToMany = method.getAnnotation(OneToMany.class);
-			if (oneToMany != null) {
-				Class<?> targetEntity = oneToMany.targetEntity();
-				if (targetEntity != void.class) {
-					return targetEntity;
-				}
-			}
+            // One to Many
+            OneToMany oneToMany = method.getAnnotation(OneToMany.class);
+            if (oneToMany != null) {
+                Class<?> targetEntity = oneToMany.targetEntity();
+                if (targetEntity != void.class) {
+                    return targetEntity;
+                }
+            }
 
-			return type;
-		}
-	}
+            return type;
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
-		return getMember().isAnnotationPresent(annotationType);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
+        return getMember().isAnnotationPresent(annotationType);
+    }
 }

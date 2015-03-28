@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
 import javax.resource.cci.*;
@@ -30,28 +30,28 @@ public class MongoInteractionSpec implements InteractionSpec {
 
     /** Operation query options. */
     protected int options;
-    
+
     /** Operation read preference. */
     protected ReadPreference readPreference;
-    
+
     /** Operation write concern. */
     protected WriteConcern writeConcern;
-    
+
     /** Operation skip for finds, number of rows to skip. */
     protected int skip;
-    
+
     /** Operation limit for finds, number of rows to fetch. */
     protected int limit;
 
     /** Operation batchSize for finds, fetch size. */
     protected int batchSize;
-    
+
     /** Operation upsert, to perform insert if document is missing. */
     protected boolean upsert;
-    
+
     /** Operation multi, to perform update all matching documents. */
     protected boolean multi;
-    
+
     public String getCollection() {
         return collection;
     }
@@ -67,7 +67,7 @@ public class MongoInteractionSpec implements InteractionSpec {
     public void setOperation(MongoOperation operation) {
         this.operation = operation;
     }
-    
+
     public int getOptions() {
         return options;
     }
@@ -99,7 +99,7 @@ public class MongoInteractionSpec implements InteractionSpec {
     public void setSkip(int skip) {
         this.skip = skip;
     }
-    
+
     public int getLimit() {
         return limit;
     }
@@ -131,7 +131,7 @@ public class MongoInteractionSpec implements InteractionSpec {
     public void setMulti(boolean multi) {
         this.multi = multi;
     }
-    
+
     public String getCode() {
         return code;
     }

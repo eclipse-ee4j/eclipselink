@@ -143,7 +143,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
 /**
  * This class is responsible for generating an XMLEntityMappings instance based
  * on a given list of meta-model database types.
- * 
+ *
  * @see org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings
  * @see org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseType
  */
@@ -152,67 +152,67 @@ public class JPAMetadataGenerator {
     protected DatabasePlatform dbPlatform;
     protected String defaultPackage;
     protected boolean generateCRUDOps = false;
-    
+
     // keep track of processed composite types to avoid duplicates and wasted effort
     protected List<String> processedTypes = null;
-    
+
     // keep track of processed embeddables to avoid duplicates and wasted effort
     protected List<String> generatedEmbeddables = null;
-    
+
     // default platform will be Oracle11Platform
     protected static final String DEFAULT_PLATFORM = "org.eclipse.persistence.platform.database.oracle.Oracle11Platform";
-    
+
     /**
      * Default constructor.  Sets the default package name to null, and dbPlatform to
      * org.eclipse.persistence.platform.database.oracle.Oracle11Platform.
-     * 
+     *
      * The default package name will be prepended to generated class names for database
      * artifacts that are not in a PL/SQL package.
-     * 
-     * The database platform is used to get class names for database types, i.e. 
+     *
+     * The database platform is used to get class names for database types, i.e.
      * java.math.BigDecimal for DECIMAL.
-     * 
+     *
      * @see org.eclipse.persistence.platform.database.oracle.Oracle11Platform
      * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
      */
     public JPAMetadataGenerator() {
         this(null, DEFAULT_PLATFORM);
     }
-    
+
     /**
      * This constructor allows setting the default package name and database platform.
-     * 
+     *
      * @param defaultPackage package name to be prepended to generated class names for artifacts
      * not in a PL/SQL package such as an Entity (to avoid having classes in the default package)
-     * @param platformClassName class name of the DatabasePlatform to be used to get class names 
+     * @param platformClassName class name of the DatabasePlatform to be used to get class names
      * for database types, i.e. java.math.BigDecimal for DECIMAL.
      * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
      */
     public JPAMetadataGenerator(String defaultPackage, String platformClassName) {
         this(defaultPackage, loadDatabasePlatform(platformClassName));
-    }    
+    }
 
     /**
      * This constructor allows setting the default package name and database platform.
-     * 
+     *
      * @param defaultPackage package name to be prepended to generated class names for artifacts
      * not in a PL/SQL package such as an Entity (to avoid having classes in the default package)
-     * @param dbPlatform DatabasePlatform to be used to get class names for database types, i.e. 
+     * @param dbPlatform DatabasePlatform to be used to get class names for database types, i.e.
      * java.math.BigDecimal for DECIMAL.
      * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
      */
     public JPAMetadataGenerator(String defaultPackage, DatabasePlatform dbPlatform) {
         this(defaultPackage, dbPlatform, false);
     }
-    
+
     /**
      * This constructor allows setting the default package name and database platform.
-     * 
+     *
      * @param defaultPackage package name to be prepended to generated class names for artifacts
      * not in a PL/SQL package such as an Entity (to avoid having classes in the default package)
-     * @param dbPlatform DatabasePlatform to be used to get class names for database types, i.e. 
+     * @param dbPlatform DatabasePlatform to be used to get class names for database types, i.e.
      * java.math.BigDecimal for DECIMAL.
-     * @param generateCRUDOps if true, CRUD operations (NamedNativeQueryMetadata) will be 
+     * @param generateCRUDOps if true, CRUD operations (NamedNativeQueryMetadata) will be
      * generated for each Entity
      * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
      */
@@ -220,18 +220,18 @@ public class JPAMetadataGenerator {
         this.defaultPackage = defaultPackage.toLowerCase();
         this.dbPlatform = dbPlatform;
         this.generateCRUDOps = generateCRUDOps;
-        
+
         xmlEntityMappings = new XMLEntityMappings();
-        
+
         // initialize the various lists - some used, some not
         initializeXMLEntityMappingLists();
     }
-    
+
     /**
      * XMLEntityMappings processing at runtime (i.e. PersistenceUnitProcessor.processORMetadata)
      * assumes that all lists are initialized.  We need to init all lists to avoid runtime
      * exceptions.
-     * 
+     *
      * @see org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings
      */
     protected void initializeXMLEntityMappingLists() {
@@ -251,7 +251,7 @@ public class JPAMetadataGenerator {
         xmlEntityMappings.setNamedPLSQLStoredProcedureQueries(new ArrayList<NamedPLSQLStoredProcedureQueryMetadata>());
         xmlEntityMappings.setNamedStoredFunctionQueries(new ArrayList<NamedStoredFunctionQueryMetadata>());
         xmlEntityMappings.setNamedStoredProcedureQueries(new ArrayList<NamedStoredProcedureQueryMetadata>());
-        
+
         // initialize other various lists (to avoid exceptions)
         xmlEntityMappings.setMixedConverters(new ArrayList<MixedConverterMetadata>());
         xmlEntityMappings.setMappedSuperclasses(new ArrayList<MappedSuperclassAccessor>());
@@ -272,12 +272,12 @@ public class JPAMetadataGenerator {
         xmlEntityMappings.setNamedQueries(new ArrayList<NamedQueryMetadata>());
         xmlEntityMappings.setSqlResultSetMappings(new ArrayList<SQLResultSetMappingMetadata>());
     }
-    
+
     /**
      * XMLAttributes processing at runtime (i.e. PersistenceUnitProcessor.processORMetadata)
      * assumes that all lists are initialized.  We need to init all lists to avoid runtime
      * exceptions.
-     * 
+     *
      * @see org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttributes
      */
     protected void initializeXMLAttributeLists(ClassAccessor accessor) {
@@ -287,8 +287,8 @@ public class JPAMetadataGenerator {
         accessor.getAttributes().setArrays(new ArrayList<ArrayAccessor>());
         accessor.getAttributes().setStructures(new ArrayList<StructureAccessor>());
         accessor.getAttributes().setEmbeddeds(new ArrayList<EmbeddedAccessor>());
-        
-        // initialize other various lists (to avoid exceptions) 
+
+        // initialize other various lists (to avoid exceptions)
         accessor.getAttributes().setBasicCollections(new ArrayList<BasicCollectionAccessor>());
         accessor.getAttributes().setBasicMaps(new ArrayList<BasicMapAccessor>());
         accessor.getAttributes().setElementCollections(new ArrayList<ElementCollectionAccessor>());
@@ -301,17 +301,17 @@ public class JPAMetadataGenerator {
         accessor.getAttributes().setVariableOneToOnes(new ArrayList<VariableOneToOneAccessor>());
         accessor.getAttributes().setVersions(new ArrayList<VersionAccessor>());
     }
-    
+
     /**
      * Generate an XMLEntityMappings instance based on a given list of meta-model database types.
-     * 
+     *
      * @param databaseTypes the list of meta-model database types to be used to generate an XMLEntityMappings
      * @see org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseType
      */
     public XMLEntityMappings generateXmlEntityMappings(List<CompositeDatabaseType> databaseTypes) {
         List<ProcedureType> procedures = new ArrayList<ProcedureType>();
         List<TableType> tables = new ArrayList<TableType>();
-        
+
         // populate lists of TableTypes and ProcedureTypes
         for (CompositeDatabaseType dbType : databaseTypes) {
             if (dbType.isTableType()) {
@@ -320,10 +320,10 @@ public class JPAMetadataGenerator {
                 procedures.add((ProcedureType) dbType);
             }
         }
-        
+
         // handle stored procedure overloading
         handleOverloading(procedures);
-        
+
         // process TableTypes
         for (TableType table : tables) {
             EntityAccessor entity = processTableType(table);
@@ -351,7 +351,7 @@ public class JPAMetadataGenerator {
         }
         return xmlEntityMappings;
     }
-    
+
     /**
      * Generate an EntityAccessor based on the given TableType.
      */
@@ -359,15 +359,15 @@ public class JPAMetadataGenerator {
         EntityAccessor entity = new EntityAccessor();
         entity.setAccess(EL_ACCESS_VIRTUAL);
         entity.setClassName(getEntityName(tType.getTableName(), defaultPackage));
-        
+
         // initialize the various lists - some used, some not
         initializeXMLAttributeLists(entity);
-        
+
         // set the table name on the entity
         TableMetadata table = new TableMetadata();
         table.setName(tType.getTableName());
         entity.setTable(table);
-        
+
         // process the table columns
         for (FieldType fType : tType.getColumns()) {
             BasicAccessor attribute;
@@ -391,7 +391,7 @@ public class JPAMetadataGenerator {
 
         return entity;
     }
-    
+
     /**
      * Generate a stored function query based on the given FunctionType.
      */
@@ -408,10 +408,10 @@ public class JPAMetadataGenerator {
                 params.add(processArgument(arg));
             }
             storedFunc.setParameters(params);
-        }                
+        }
         return storedFunc;
     }
-    
+
     /**
      * Generate a stored procedure query based on the given ProcedureType.
      */
@@ -430,7 +430,7 @@ public class JPAMetadataGenerator {
         }
         return storedProc;
     }
-    
+
     /**
      * Generate a PL/SQL stored function query based on the given FunctionType.
      */
@@ -446,11 +446,11 @@ public class JPAMetadataGenerator {
             for (ArgumentType arg : fType.getArguments()) {
                 params.add(processPLSQLArgument(arg));
             }
-        }                
+        }
         storedFunc.setParameters(params);
         return storedFunc;
     }
-    
+
     /**
      * Generate a PL/SQL stored procedure query based on the given ProcedureType.
      */
@@ -468,12 +468,12 @@ public class JPAMetadataGenerator {
         }
         return storedProc;
     }
-    
+
     /**
-     * Convenience method that returns a query name  for a given ProcedureType.  
-     * The name will be the procedureName value of the ProcedureType with 
+     * Convenience method that returns a query name  for a given ProcedureType.
+     * The name will be the procedureName value of the ProcedureType with
      * "_" + overload value if the ProcedureType's overload value is > 0.
-     * 
+     *
      * For example, if the procedureName value is "P1" and overload == 0, "P1"
      * is returned.  If the procedureName value is "P1" and overload == 4,
      * "P1_4" is returned.
@@ -509,7 +509,7 @@ public class JPAMetadataGenerator {
         }
         return param;
     }
-    
+
     /**
      * Generate a PL/SQL parameter based on the given ArgumentType. For
      * non-PL/SQL arguments the processArgument method should be used.
@@ -528,7 +528,7 @@ public class JPAMetadataGenerator {
             }
             arg.setEnclosedType(plsqlRec);
         }
-        
+
         PLSQLParameterMetadata param = new PLSQLParameterMetadata();
         // handle cursor
         if (arg.isPLSQLCursorType()) {
@@ -544,7 +544,7 @@ public class JPAMetadataGenerator {
             }
             param.setName(arg.getArgumentName());
         }
-        
+
         String dbType = arg.getTypeName();
         // handle composites
         if (arg.isComposite()) {
@@ -559,7 +559,7 @@ public class JPAMetadataGenerator {
         param.setDatabaseType(processTypeName(dbType));
         return param;
     }
-    
+
     /**
      * Generate object type metadata based on the given ObjectType.
      */
@@ -579,16 +579,16 @@ public class JPAMetadataGenerator {
             }
         }
         objectType.setFields(fields);
-        
+
         // avoid double-processing
         getProcessedTypes().add(objectType.getName());
-        
+
         // generate an EmbeddableAccessor for this type
         generateEmbeddable(objectType, oType);
 
         return objectType;
     }
-    
+
     /**
      * Generate array type metadata based on the given VArray or ObjectTable type.
      */
@@ -603,32 +603,32 @@ public class JPAMetadataGenerator {
             arrayType.setNestedType(((ObjectTableType) dbType).getEnclosedType().getTypeName());
         }
         // avoid double-processing
-        getProcessedTypes().add(arrayType.getName());     
-        
+        getProcessedTypes().add(arrayType.getName());
+
         // generate an EmbeddableAccessor for this type
         generateEmbeddable(arrayType, (CompositeDatabaseTypeWithEnclosedType) dbType);
 
         return arrayType;
     }
-    
+
     /**
      * Process the given PLSQLCollectionType and return a PLSQLTableMetadata instance.
-     * 
+     *
      */
     protected PLSQLTableMetadata processPLSQLCollectionType(PLSQLCollectionType plsqlCollectionType) {
         String typeName = getQualifiedTypeName(plsqlCollectionType);
         String compatiableName = getQualifiedCompatibleTypeName(plsqlCollectionType);
         String targetClassName = compatiableName;
-        
+
         PLSQLTableMetadata plsqlTable = new PLSQLTableMetadata();
         plsqlTable.setName(typeName);
         plsqlTable.setCompatibleType(compatiableName);
         plsqlTable.setJavaType(getGeneratedJavaClassName(typeName));
-        
+
         // handle Nested Table (i.e. non-Varray)
         plsqlTable.setNestedTable(!plsqlCollectionType.isIndexed());
         String dbType = plsqlCollectionType.getEnclosedType().getTypeName();
-        if (!(getJDBCTypeFromTypeName(dbType) == Types.OTHER)) {          
+        if (!(getJDBCTypeFromTypeName(dbType) == Types.OTHER)) {
             // need special handling for nested PL/SQL scalar types
             if (isArgPLSQLScalar(dbType)) {
                 plsqlTable.setNestedType(getOraclePLSQLTypeForName(dbType));
@@ -652,16 +652,16 @@ public class JPAMetadataGenerator {
         }
         // avoid double-processing
         getProcessedTypes().add(plsqlTable.getName());
-        
+
         // generate an EmbeddableAccessor for this type
         generateEmbeddable(plsqlTable, targetClassName);
 
         return plsqlTable;
     }
-    
+
     /**
      * Process the given PLSQLRecordType and return a PLSQLRecordMetadata instance.
-     * 
+     *
      */
     protected PLSQLRecordMetadata processPLSQLRecordType(PLSQLRecordType plsqlRecordType) {
         // for %ROWTYPE we create a 'place holder' PL/SQL Record - in this case there is no package name
@@ -670,7 +670,7 @@ public class JPAMetadataGenerator {
         if (compatibleName.contains(PERCENT)) {
             compatibleName = compatibleName.replace(PERCENT, UNDERSCORE);
         }
-        
+
         PLSQLRecordMetadata plsqlRecord = new PLSQLRecordMetadata();
         plsqlRecord.setName(typeName);
         plsqlRecord.setCompatibleType(compatibleName);
@@ -698,16 +698,16 @@ public class JPAMetadataGenerator {
             fields.add(field);
         }
         plsqlRecord.setFields(fields);
-        
+
         // avoid double-processing
         getProcessedTypes().add(plsqlRecord.getName());
-        
+
         // generate an EmbeddableAccessor for this type
         generateEmbeddable(plsqlRecord, plsqlRecordType);
-        
+
         return plsqlRecord;
     }
-    
+
     /**
      * Process the given composite database type.
      */
@@ -716,7 +716,7 @@ public class JPAMetadataGenerator {
     }
     /**
      * Process the given composite database type.  For PL/SQL types, typeName will be
-     * the fully qualified type name (i.e. packagename.typename).  The type should 
+     * the fully qualified type name (i.e. packagename.typename).  The type should
      * be one of:  PLSQLCollection, PLSQLRecord, Object, ObjectTable, or Varray.
      */
     protected void processCompositeType(DatabaseType compositeType, String typeName) {
@@ -733,11 +733,11 @@ public class JPAMetadataGenerator {
             }
         }
     }
-    
+
     /**
      * Generate an Embeddable for the given PLSQLTableMetadata, and add
      * it to the list of Embeddables on the XMLEntityMappings instance.
-     * 
+     *
      * @param tableMetadata PLSQLTableMetadata used to build the Embeddable
      */
     protected void generateEmbeddable(PLSQLTableMetadata tableMetadata, String targetClassName) {
@@ -747,19 +747,19 @@ public class JPAMetadataGenerator {
 
             ArrayAccessor array = generateArrayAccessor(ITEMS_FLD_STR, ITEMS_COL_STR, tableMetadata.getCompatibleType(), targetClassName);
             embeddable.getAttributes().getArrays().add(array);
-            
+
             // set on the XMLEntityMappings instance
             xmlEntityMappings.getEmbeddables().add(embeddable);
-            
+
             // track to avoid double processing
             getGeneratedEmbeddables().add(tableMetadata.getJavaType());
         }
     }
-    
+
     /**
-     * Generate an Embeddable for the given PLSQLRecordMetadata and PLSQLRecordType, 
+     * Generate an Embeddable for the given PLSQLRecordMetadata and PLSQLRecordType,
      * and add it to the list of Embeddables on the XMLEntityMappings instance.
-     * 
+     *
      * @param recordMetadata PLSQLRecordMetadata used to build the Embeddable
      * @param recordType PLSQLRecordType used to build the Embeddable
      */
@@ -767,7 +767,7 @@ public class JPAMetadataGenerator {
         // avoid double-processing
         if (!embeddableAlreadyProcessed(recordMetadata.getJavaType())) {
             EmbeddableAccessor embeddable = initEmbeddable(recordMetadata.getJavaType());
-            
+
             // add a struct to satisfy field ordering
             StructMetadata struct = new StructMetadata();
             struct.setName(recordMetadata.getCompatibleType());
@@ -777,18 +777,18 @@ public class JPAMetadataGenerator {
             }
             struct.setFields(fields);
             embeddable.setStruct(struct);
-            
+
             // add an attribute to the embeddable for each of the record's fields
             addEmbeddableAttributes(embeddable, recordType.getFields());
 
             // set on the XMLEntityMappings instance
             xmlEntityMappings.getEmbeddables().add(embeddable);
-            
+
             // track to avoid double processing
             getGeneratedEmbeddables().add(recordMetadata.getJavaType());
         }
     }
-    
+
     /**
      * Generate an Embeddable for the given OracleArrayTypeMetadata, and add
      * it to the list of Embeddables on the XMLEntityMappings instance.
@@ -797,25 +797,25 @@ public class JPAMetadataGenerator {
         // avoid double-processing
         if (!embeddableAlreadyProcessed(arrayTypeMetadata.getJavaType())) {
             EmbeddableAccessor embeddable = initEmbeddable(arrayTypeMetadata.getJavaType());
-            
-            ArrayAccessor array; 
+
+            ArrayAccessor array;
             if (dbType.getEnclosedType().isComposite()) {
-                array = generateArrayAccessor(ITEMS_FLD_STR, ITEMS_COL_STR, arrayTypeMetadata.getNestedType(), 
+                array = generateArrayAccessor(ITEMS_FLD_STR, ITEMS_COL_STR, arrayTypeMetadata.getNestedType(),
                         getGeneratedJavaClassName(arrayTypeMetadata.getNestedType(), defaultPackage));
             } else {
                 array = generateArrayAccessor(ITEMS_FLD_STR, ITEMS_COL_STR, dbType.getEnclosedType().getTypeName());
             }
-            
+
             embeddable.getAttributes().getArrays().add(array);
-            
+
             // set on the XMLEntityMappings instance
             xmlEntityMappings.getEmbeddables().add(embeddable);
-            
+
             // track to avoid double processing
             getGeneratedEmbeddables().add(arrayTypeMetadata.getJavaType());
         }
     }
-    
+
     /**
      * Generate an Embeddable for the given OracleObjectTypeMetadata, and add
      * it to the list of Embeddables on the XMLEntityMappings instance.
@@ -823,8 +823,8 @@ public class JPAMetadataGenerator {
     protected void generateEmbeddable(OracleObjectTypeMetadata objectTypeMetadata, ObjectType objectType) {
         // avoid double-processing
         if (!embeddableAlreadyProcessed(objectTypeMetadata.getJavaType())) {
-            EmbeddableAccessor embeddable = initEmbeddable(objectTypeMetadata.getJavaType());      
-            
+            EmbeddableAccessor embeddable = initEmbeddable(objectTypeMetadata.getJavaType());
+
             // add a struct to satisfy field ordering
             StructMetadata struct = new StructMetadata();
             struct.setName(objectTypeMetadata.getName());
@@ -834,13 +834,13 @@ public class JPAMetadataGenerator {
             }
             struct.setFields(fields);
             embeddable.setStruct(struct);
-            
+
             // add an attribute to the embeddable for each of the object's fields
             addEmbeddableAttributes(embeddable, objectType.getFields());
 
             // set on the XMLEntityMappings instance
             xmlEntityMappings.getEmbeddables().add(embeddable);
-            
+
             // track to avoid double processing
             getGeneratedEmbeddables().add(objectTypeMetadata.getJavaType());
         }
@@ -848,7 +848,7 @@ public class JPAMetadataGenerator {
 
     /**
      * Convenience method that creates and EmbeddableAccessor, setting the class name to the
-     * provided embeddableClassName, initializes the various lists (Basics, Arrays, etc.), 
+     * provided embeddableClassName, initializes the various lists (Basics, Arrays, etc.),
      * and sets the access type to 'VIRTUAL'.
      */
     protected EmbeddableAccessor initEmbeddable(String embeddableClassName) {
@@ -860,11 +860,11 @@ public class JPAMetadataGenerator {
         initializeXMLAttributeLists(embeddable);
         return embeddable;
     }
-    
+
     /**
-     * Process a list of FieldTypes, creating an attribute for each - the created 
+     * Process a list of FieldTypes, creating an attribute for each - the created
      * XMLAttributes are set on the given EmbeddableAccessor.
-     * 
+     *
      * @see org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttributes
      */
     protected void addEmbeddableAttributes(EmbeddableAccessor embeddable, List<FieldType> fields) {
@@ -888,31 +888,31 @@ public class JPAMetadataGenerator {
                     array = generateArrayAccessor(fld.getFieldName().toLowerCase(), fld.getFieldName(), enclosedType.getTypeName());
                 } else {
                     ObjectTableType otType = (ObjectTableType) enclosedType;
-                    array = generateArrayAccessor(fld.getFieldName().toLowerCase(), fld.getFieldName(), otType.getEnclosedType().getTypeName(), 
+                    array = generateArrayAccessor(fld.getFieldName().toLowerCase(), fld.getFieldName(), otType.getEnclosedType().getTypeName(),
                             getGeneratedJavaClassName(otType.getEnclosedType().getTypeName(), defaultPackage));
                 }
                 embeddable.getAttributes().getArrays().add(array);
             } else if (enclosedType.isObjectType()) {  // struct
-                StructureAccessor structure = generateStructureAccessor(fld.getFieldName().toLowerCase(), fld.getFieldName(), 
+                StructureAccessor structure = generateStructureAccessor(fld.getFieldName().toLowerCase(), fld.getFieldName(),
                         getGeneratedJavaClassName(enclosedType.getTypeName(), defaultPackage));
                 embeddable.getAttributes().getStructures().add(structure);
             } else if (enclosedType.isTYPEType()) {
                 TYPEType tType = (TYPEType) enclosedType;
                 BasicAccessor basic = generateBasicAccessor(fld.getFieldName().toLowerCase(), fld.getFieldName(), getClassNameFromJDBCTypeName(tType.getTypeName(), dbPlatform));
-                embeddable.getAttributes().getBasics().add(basic);                
+                embeddable.getAttributes().getBasics().add(basic);
             }
         }
     }
-    
+
     /**
      * Returns an ArrayAccessor instance, constructed based on the given String values.  This method
      * can be used when the database type and target class names are the same.
-     * 
+     *
      */
     protected ArrayAccessor generateArrayAccessor(String arrayName, String columnName, String databaseTypeName) {
         return generateArrayAccessor(arrayName, columnName, databaseTypeName, databaseTypeName);
     }
-    
+
     /**
      * Returns an ArrayAccessor instance, constructed based on the given String values.
      */
@@ -927,7 +927,7 @@ public class JPAMetadataGenerator {
         array.setColumn(column);
         return array;
     }
-    
+
     /**
      * Returns a BasicAccessor instance, constructed based on the given String values.
      */
@@ -935,21 +935,21 @@ public class JPAMetadataGenerator {
         BasicAccessor basic = new BasicAccessor();
         basic.setName(basicName);
         basic.setAttributeType(attributeTypeName);
-        
+
         ColumnMetadata column = new ColumnMetadata();
         column.setName(columnName);
         basic.setColumn(column);
         return basic;
     }
-    
+
     /**
-     * Returns a StructureAccessor instance, constructed based on the given String values.  This method can be used 
+     * Returns a StructureAccessor instance, constructed based on the given String values.  This method can be used
      * when the attribute type and target class names are the same.
      */
     protected StructureAccessor generateStructureAccessor(String structureName, String columnName, String attributeTypeName) {
         return generateStructureAccessor(structureName, columnName, attributeTypeName, attributeTypeName);
     }
-    
+
     /**
      * Returns a StructureAccessor instance, constructed based on the given String values.
      */
@@ -963,7 +963,7 @@ public class JPAMetadataGenerator {
         structure.setColumn(column);
         return structure;
     }
-    
+
     /**
      * Generates NamedNativeQueryMetadata for CRUD operations (create,
      * findAll, findByPk, update and delete) for a given Entity if
@@ -976,18 +976,18 @@ public class JPAMetadataGenerator {
             if (entity.getNamedNativeQueries() == null) {
                 entity.setNamedNativeQueries(new ArrayList<NamedNativeQueryMetadata>());
             }
-            
+
             String tableName = entity.getTable().getName();
             String entityType = getUnqualifiedEntityName(tableName) + TYPE_STR;
-            
+
             List<IdAccessor> ids = entity.getAttributes().getIds();
             List<BasicAccessor> basics = entity.getAttributes().getBasics();
-            
+
             // list of all mappings (ids and basics)
             List<MappingAccessor> mappings = new ArrayList<MappingAccessor>();
             mappings.addAll(ids);
             mappings.addAll(basics);
-            
+
             // process primary keys
             String pks = null;
             int pkCount = 0;
@@ -1001,14 +1001,14 @@ public class JPAMetadataGenerator {
             if (pks != null) {
                 pks = pks.concat(CLOSE_BRACKET);
             }
-            
+
             // find by PK
             NamedNativeQueryMetadata crudQuery = new NamedNativeQueryMetadata();
             crudQuery.setName(PK_QUERYNAME + UNDERSCORE + entityType);
             crudQuery.setQuery(SELECT_FROM_STR + tableName + WHERE_STR + pks);
             crudQuery.setResultClassName(entity.getClassName());
             entity.getNamedNativeQueries().add(crudQuery);
-            
+
             // find all
             crudQuery = new NamedNativeQueryMetadata();
             crudQuery.setName(ALL_QUERYNAME + UNDERSCORE + entityType);
@@ -1027,14 +1027,14 @@ public class JPAMetadataGenerator {
             crudQuery.setName(CREATE_OPERATION_NAME + UNDERSCORE + entityType);
             crudQuery.setQuery(sqlStmt.toString());
             entity.getNamedNativeQueries().add(crudQuery);
-            
+
             // update
             sqlStmt = new StringBuilder(128);
             sqlStmt.append(UPDATE_STR).append(tableName).append(SET_STR);
             MetadataHelper.buildColsAndValuesBindingsFromMappings(sqlStmt, basics,
                     pkCount, EQUALS_BINDING_STR, COMMA_SPACE_STR);
             sqlStmt.append(WHERE_STR).append(pks);
-            
+
             crudQuery = new NamedNativeQueryMetadata();
             crudQuery.setName(UPDATE_OPERATION_NAME + UNDERSCORE + entityType);
             crudQuery.setQuery(sqlStmt.toString());
@@ -1047,17 +1047,17 @@ public class JPAMetadataGenerator {
             entity.getNamedNativeQueries().add(crudQuery);
         }
     }
-  
+
     /**
-     * If set to true, NamedNativeQueryMetadata for CRUD operations (create, findAll, findByPk, 
+     * If set to true, NamedNativeQueryMetadata for CRUD operations (create, findAll, findByPk,
      * update and delete) will be generated for each Entity.  The default is false.
-     * 
+     *
      * @param generateCRUDOps
      */
     protected void setGenerateCRUDOps(boolean generateCRUDOps) {
         this.generateCRUDOps = generateCRUDOps;
     }
-    
+
     /**
      * Lazy-load the List of processed composite types.
      */
@@ -1076,7 +1076,7 @@ public class JPAMetadataGenerator {
         }
         return generatedEmbeddables;
     }
-    
+
     /**
      * Indicates if an embeddable has already been processed - the list of
      * generated embeddable names will be checked for the given typeName.
@@ -1084,7 +1084,7 @@ public class JPAMetadataGenerator {
     protected boolean embeddableAlreadyProcessed(String embeddableName) {
         return generatedEmbeddables != null && generatedEmbeddables.size() > 0 && generatedEmbeddables.contains(embeddableName);
     }
-    
+
     /**
      * Indicates if a type has already been processed - the list of
      * processed type names will be checked for the given typeName.
@@ -1096,7 +1096,7 @@ public class JPAMetadataGenerator {
     /**
      * Attempt to load the DatabasePlatform using the given platform class name.  If the
      * platform cannot be loaded Oracle11Platform will be returned - if available.
-     * 
+     *
      * @param platformClassName class name of the DatabasePlatform to be loaded
      * @return DatabasePlatform loaded for the given platformClassname, or Oracle11Platform if not found
      * @see org.eclipse.persistence.platform.database.oracle.Oracle11Platform

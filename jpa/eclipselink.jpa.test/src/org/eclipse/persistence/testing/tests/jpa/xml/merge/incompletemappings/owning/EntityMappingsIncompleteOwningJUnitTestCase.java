@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.tests.jpa.xml.merge.incompletemappings.owning;
@@ -30,17 +30,17 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  */
 public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
     private static Integer employeeId;
-    
+
     public EntityMappingsIncompleteOwningJUnitTestCase() {
         super();
     }
-    
+
     public EntityMappingsIncompleteOwningJUnitTestCase(String name) {
         super(name);
     }
-    
+
     public void setUp() {try{super.setUp();}catch(Exception x){}}
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite("Owning Model");
         suite.addTest(new EntityMappingsIncompleteOwningJUnitTestCase("testSetup"));
@@ -48,10 +48,10 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsIncompleteOwningJUnitTestCase("testReadEmployee"));
         suite.addTest(new EntityMappingsIncompleteOwningJUnitTestCase("testUpdateEmployee"));
         suite.addTest(new EntityMappingsIncompleteOwningJUnitTestCase("testDeleteEmployee"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -60,12 +60,12 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
         new AdvancedTableCreator().replaceTables(session);
         clearCache();
     }
-    
+
     public void testCreateEmployee() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            Employee employee = ModelExamples.employeeExample1();		
+            Employee employee = ModelExamples.employeeExample1();
             ArrayList projects = new ArrayList();
             projects.add(ModelExamples.projectExample1());
             projects.add(ModelExamples.projectExample2());
@@ -73,7 +73,7 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
             employee.setAddress(ModelExamples.addressExample1());
             em.persist(employee);
             employeeId = employee.getId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -81,9 +81,9 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        
+
     }
-    
+
     public void testDeleteEmployee() {
         EntityManager em = createEntityManager();
         beginTransaction(em);

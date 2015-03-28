@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.util.*;
@@ -45,7 +45,7 @@ public abstract class ObjectExpression extends DataExpression {
 
     /** Allow for an ON clause to be specified on a join condition. */
     protected Expression onClause;
-    
+
     /** Used to track the index of the OuterJoinExpressionHolder that might be associated to this expression */
     private Integer outerJoinExpIndex = null;
 
@@ -60,7 +60,7 @@ public abstract class ObjectExpression extends DataExpression {
      * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base
      * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
      * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
-     * 
+     *
      * downcast uses Expression.type() internally to guarantee the results are of the specified class.
      * <p>Example:
      * <pre><blockquote>
@@ -163,7 +163,7 @@ public abstract class ObjectExpression extends DataExpression {
                 tablesJoinExpressions.put(table, joinExpression);
             }
         }
-        
+
         return tablesJoinExpressions;
     }
 
@@ -203,7 +203,7 @@ public abstract class ObjectExpression extends DataExpression {
         queryKey.doQueryToManyRelationship();
         return queryKey;
     }
-    
+
     /**
      * ADVANCED:
      * Return an expression representing traversal of a 1:many or many:many relationship.
@@ -228,7 +228,7 @@ public abstract class ObjectExpression extends DataExpression {
         queryKey.doQueryToManyRelationship();
         return queryKey;
     }
-    
+
     /**
      * INTERNAL
      * Return true if it uses a cast class and query is downcasting. It will
@@ -238,13 +238,13 @@ public abstract class ObjectExpression extends DataExpression {
         if (castClass == null){
             return false;
         }
-        
+
         if (rootDescriptor.getJavaClass() == castClass){
             return false;
         }
 
         ClassDescriptor castDescriptor = session.getClassDescriptor(castClass);
-        
+
         if (castDescriptor == null){
             throw QueryException.couldNotFindCastDescriptor(castClass, getBaseExpression());
         }
@@ -258,7 +258,7 @@ public abstract class ObjectExpression extends DataExpression {
             }
             parentDescriptor = parentDescriptor.getInheritancePolicy().getParentDescriptor();
         }
-        
+
         throw QueryException.couldNotFindCastDescriptor(castClass, getBaseExpression());
     }
 
@@ -278,7 +278,7 @@ public abstract class ObjectExpression extends DataExpression {
 
     /**
      * INTERNAL
-     * Return the descriptor which contains this query key, look in the inheritance hierarchy 
+     * Return the descriptor which contains this query key, look in the inheritance hierarchy
      * of rootDescriptor for the descriptor.
      */
     public ClassDescriptor convertToCastDescriptor(ClassDescriptor rootDescriptor, AbstractSession session) {
@@ -287,7 +287,7 @@ public abstract class ObjectExpression extends DataExpression {
         }
 
         ClassDescriptor castDescriptor = session.getClassDescriptor(castClass);
-        
+
         if (castDescriptor == null){
             throw QueryException.couldNotFindCastDescriptor(castClass, getBaseExpression());
         }
@@ -312,7 +312,7 @@ public abstract class ObjectExpression extends DataExpression {
 
         throw QueryException.couldNotFindCastDescriptor(castClass, getBaseExpression());
     }
-    
+
     public List<Expression> copyDerivedExpressions(Map alreadyDone) {
         if (this.derivedExpressions == null) {
             return null;
@@ -412,7 +412,7 @@ public abstract class ObjectExpression extends DataExpression {
         ObjectExpression exp = existingDerivedExpressionNamed(attributeName);
 
         // The same (aliased) table cannot participate in a normal join and an outer join.
-        // To help enforce this, if the node already exists 
+        // To help enforce this, if the node already exists
         if (exp != null) {
             return exp;
         }
@@ -420,11 +420,11 @@ public abstract class ObjectExpression extends DataExpression {
         result.doUseOuterJoin();
         return result;
     }
-    
+
     public Class getCastClass() {
         return castClass;
     }
-    
+
     /**
      * PUBLIC:
      * Return an expression that wraps the inheritance type field in an expression.
@@ -565,7 +565,7 @@ public abstract class ObjectExpression extends DataExpression {
     public List<DatabaseTable> getAdditionalTables() {
         return null;
     }
-    
+
     /**
      * Return any tables that are defined by this expression (and not its base).
      */
@@ -624,12 +624,12 @@ public abstract class ObjectExpression extends DataExpression {
      * indicates whether additional expressions for multitable inheritance should be used and are available
      */
     public boolean isUsingOuterJoinForMultitableInheritance() {
-        return shouldUseOuterJoinForMultitableInheritance() && 
+        return shouldUseOuterJoinForMultitableInheritance() &&
                 getDescriptor() != null && getDescriptor().hasInheritance() &&
                 getDescriptor().getInheritancePolicy().hasMultipleTableChild() &&
                 getDescriptor().getInheritancePolicy().shouldReadSubclasses();
     }
-    
+
     public QueryKeyExpression newDerivedExpressionNamed(String attributeName) {
         QueryKeyExpression result = new QueryKeyExpression(attributeName, this);
         addDerivedExpression(result);
@@ -697,7 +697,7 @@ public abstract class ObjectExpression extends DataExpression {
             }
         }
     }
-    
+
     public Expression getOnClause() {
         return onClause;
     }
@@ -705,11 +705,11 @@ public abstract class ObjectExpression extends DataExpression {
     public void setOnClause(Expression onClause) {
         this.onClause = onClause;
     }
-    
+
     public void setCastClass(Class castClass) {
         this.castClass = castClass;
     }
-    
+
     /**
      * INTERNAL:
      * set the flag indicating whether subclasses should be joined
@@ -725,7 +725,7 @@ public abstract class ObjectExpression extends DataExpression {
     public boolean shouldUseOuterJoinForMultitableInheritance() {
         return shouldUseOuterJoinForMultitableInheritance;
     }
-    
+
     /**
      * INTERNAL:
      * writes the first field from each of the owned tables, used for
@@ -737,7 +737,7 @@ public abstract class ObjectExpression extends DataExpression {
             if (printer.getPlatform().shouldPrintAliasForUpdate()) {
                 writeAlias(printer, field, statement);
             } else {
-                writeField(printer, field, statement);                
+                writeField(printer, field, statement);
             }
         }
     }
@@ -757,7 +757,7 @@ public abstract class ObjectExpression extends DataExpression {
     public void setOuterJoinExpIndex(Integer outerJoinExpIndex) {
         this.outerJoinExpIndex = outerJoinExpIndex;
     }
-    
+
     /**
      * INTERNAL:
      * Parses an expression to return the first non-AggregateObjectMapping expression after the base ExpressionBuilder.

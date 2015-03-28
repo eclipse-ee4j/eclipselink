@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,7 +31,7 @@ public class XmlTransformationTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmltransformation/employee.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmltransformation/employee.json";
     private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmltransformation/employee.xsd";
-    
+
     private static final String EMP_NAME = "John Smith";
     private static final String START = "9:00AM";
     private static final String END = "5:00PM";
@@ -54,31 +54,31 @@ public class XmlTransformationTestCases extends JAXBWithJSONTestCases {
     }
 
     public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmltransformation/eclipselink-oxm.xml");
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmltransformation/eclipselink-oxm.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
-	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-        
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
         return properties;
-	}
+    }
 
     public void testSchemaGen() throws Exception{
-    	List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream(XSD_RESOURCE);
-    	controlSchemas.add(is);
-    	super.testSchemaGen(controlSchemas);
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream(XSD_RESOURCE);
+        controlSchemas.add(is);
+        super.testSchemaGen(controlSchemas);
     }
-    
-    public void testInstanceDocValidation() throws Exception {    	
-        StreamSource schemaSource = new StreamSource(ClassLoader.getSystemResourceAsStream(XSD_RESOURCE)); 
-                
+
+    public void testInstanceDocValidation() throws Exception {
+        StreamSource schemaSource = new StreamSource(ClassLoader.getSystemResourceAsStream(XSD_RESOURCE));
+
         MyMapStreamSchemaOutputResolver outputResolver = new MyMapStreamSchemaOutputResolver();
         getJAXBContext().generateSchema(outputResolver);
-        
+
         InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-        String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver );        
+        String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver );
         assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
-    }      
+    }
 }

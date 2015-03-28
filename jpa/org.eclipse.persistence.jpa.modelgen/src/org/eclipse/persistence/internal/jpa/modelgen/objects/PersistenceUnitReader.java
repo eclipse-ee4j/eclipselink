@@ -1,24 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     08/10/2009-2.0 Guy Pelletier 
+ *     08/10/2009-2.0 Guy Pelletier
  *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
- *     11/20/2009-2.0 Guy Pelletier/Mitesh Meswani 
+ *     11/20/2009-2.0 Guy Pelletier/Mitesh Meswani
  *       - 295376: Improve usability of MetaModel generator
- *     04/29/2010-2.0.3 Guy Pelletier 
+ *     04/29/2010-2.0.3 Guy Pelletier
  *       - 311020: Canonical model generator should not throw an exception when no persistence.xml is found
- *     06/01/2010-2.1 Guy Pelletier 
+ *     06/01/2010-2.1 Guy Pelletier
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
- *     03/06/2013-2.5 Guy Pelletier 
+ *     03/06/2013-2.5 Guy Pelletier
  *       - 267391: JPA 2.1 Functionality for Java EE 7 (JSR-338)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
 import java.io.FileInputStream;
@@ -48,31 +48,31 @@ import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProper
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_LOAD_XML_DEFAULT;
 
 /**
- * Used to read persistence units through the java annotation processing API. 
- * 
+ * Used to read persistence units through the java annotation processing API.
+ *
  * @author Guy Pelletier, Peter Krogh
  * @since EclipseLink 1.2
  */
 public class PersistenceUnitReader {
     protected MetadataMirrorFactory factory;
     protected ProcessingEnvironment processingEnv;
-    
+
     /**
      * INTERNAL:
      */
     public PersistenceUnitReader(MetadataMirrorFactory factory) throws IOException {
         this.factory = factory;
         processingEnv = factory.getProcessingEnvironment();
-        
+
         // As a performance enhancement to avoid reloading and merging XML
         // metadata for every compile round, the user may choose to turn off
-        // the XML loading by setting the load XML flag to false. 
+        // the XML loading by setting the load XML flag to false.
         if (Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_LOAD_XML, CANONICAL_MODEL_LOAD_XML_DEFAULT, processingEnv.getOptions()))) {
             // after initializing our member variables, initialize the pu's.
             initPersistenceUnits();
         }
     }
-    
+
     /**
      * INTERAL:
      * Close the given input stream.
@@ -86,21 +86,21 @@ public class PersistenceUnitReader {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      */
     protected FileObject getFileObject(String filename, ProcessingEnvironment processingEnv) throws IOException {
         return processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", filename);
     }
-    
+
     /**
      * INTERNAL:
      * Return an input stream for the given filename.
      */
     protected InputStream getInputStream(String filename, boolean loadingPersistenceXML) {
         InputStream inputStream = null;
-        
+
         try {
             FileObject fileObject = getFileObject(filename, processingEnv);
             inputStream = fileObject.openInputStream();
@@ -115,14 +115,14 @@ public class PersistenceUnitReader {
                     processingEnv.getMessager().printMessage(Kind.NOTE, "The persistence xml file ["+filename+"] was not found. NO GENERATION will occur!! Please ensure a persistence xml file is available either from the CLASS_OUTPUT directory [META-INF/persistence.xml] or using the eclipselink.persistencexml property to specify its location. ");
                 } else {
                     // For any other mapping file log a message.
-                    processingEnv.getMessager().printMessage(Kind.NOTE, "Optional file was not found: " + filename + " continuing with generation."); 
+                    processingEnv.getMessager().printMessage(Kind.NOTE, "Optional file was not found: " + filename + " continuing with generation.");
                 }
             }
-        }   
-        
+        }
+
         return inputStream;
     }
-    
+
     /**
      * INTERNAL:
      * This method will look for an process the -A eclipselink.persistenceunits
@@ -132,26 +132,26 @@ public class PersistenceUnitReader {
     protected HashSet<String> getPersistenceUnitList(ProcessingEnvironment processingEnv ) {
         String persistenceUnits = processingEnv.getOptions().get(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_UNITS);
         HashSet<String> persistenceUnitList = null;
-        
+
         if (persistenceUnits != null) {
             persistenceUnitList = new HashSet<String>();
             StringTokenizer st = new StringTokenizer(persistenceUnits, ",");
-        
+
             while (st.hasMoreTokens()) {
                 persistenceUnitList.add(((String) st.nextToken()).trim());
             }
         }
-        
+
         return persistenceUnitList;
     }
-    
+
     /**
      * INTERNAL:
      */
     public Collection<PersistenceUnit> getPersistenceUnits() {
         return factory.getPersistenceUnits();
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -159,7 +159,7 @@ public class PersistenceUnitReader {
         for (String optionKey : processingEnv.getOptions().keySet()) {
             processingEnv.getMessager().printMessage(Kind.OTHER, "Found Option : " + optionKey + ", with value: " + processingEnv.getOptions().get(optionKey));
         }
-        
+
         String filename = CanonicalModelProperties.getOption(ECLIPSELINK_PERSISTENCE_XML, ECLIPSELINK_PERSISTENCE_XML_DEFAULT, processingEnv.getOptions());
         HashSet<String> persistenceUnitList = getPersistenceUnitList(processingEnv);
 
@@ -168,11 +168,11 @@ public class PersistenceUnitReader {
 
         try {
             inStream1 = getInputStream(filename, true);
-            
+
             // If the persistence.xml was not found, then there is nothing to do.
             if (inStream1 != null) {
                 PersistenceXML persistenceXML;
-                
+
                 try {
                     // Try a 2.1 context first.
                     persistenceXML = (PersistenceXML) PersistenceXMLMappings.createXML2_1Context().createUnmarshaller().unmarshal(inStream1);

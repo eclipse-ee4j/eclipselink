@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,12 +29,12 @@ import org.eclipse.persistence.sessions.Project;
  * <p>
  * <b>Purpose</b>: Represents an Expression in the Criteria API heirarchy.
  * <p>
- * <b>Description</b>: Expressions are expression nodes that can not be joined from 
+ * <b>Description</b>: Expressions are expression nodes that can not be joined from
  * and may or not be the result of a Path expression.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria Expression
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
@@ -42,12 +42,12 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     protected Metamodel metamodel;
     protected boolean isLiteral;
     protected Object literal;
-    
+
     protected ExpressionImpl(Metamodel metamodel, Class<X> javaType, org.eclipse.persistence.expressions.Expression expressionNode){
         super(javaType, expressionNode);
         this.metamodel = metamodel;
     }
-    
+
     public ExpressionImpl(Metamodel metamodel, Class<X> javaType, org.eclipse.persistence.expressions.Expression expressionNode, Object value){
         super(javaType, expressionNode);
         this.metamodel = metamodel;
@@ -68,11 +68,11 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         }
         return (Expression<T>) this;
     }
-    
+
     protected <T> Expression<T> buildExpressionForAs(Class<T> type) {
         return (Expression<T>) this;
     }
-    
+
     public Predicate in(Object... values) {
         List list = new ArrayList();
         list.add(this);
@@ -133,24 +133,24 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         list.add(this);
         return new InImpl(metamodel, this, (ExpressionImpl)values, list);
     }
-    
+
     public Predicate isNotNull() {
         List list = new ArrayList();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.notNull(), list, "not null");
     }
 
-    
+
     public Predicate isNull() {
         List list = new ArrayList();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.isNull(), list, "is null");
     }
-    
+
     public boolean isPredicate(){
         return false;
     }
-    
+
     public boolean isSubquery(){
         return false;
     }
@@ -175,5 +175,5 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery){
         //no-op because an expression will have no root
     }
-    
+
 }

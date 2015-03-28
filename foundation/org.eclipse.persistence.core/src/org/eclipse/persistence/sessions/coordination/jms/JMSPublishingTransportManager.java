@@ -1,12 +1,12 @@
-/*******************************************************************************  
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.  
- * This program and the accompanying materials are made available under the  
- * terms of the Eclipse Public License v1.0, which accompanies this distribution  
- * and is available at http://www.eclipse.org/legal/epl-v10.html.  
- *  
- * Contributors: 
+/*******************************************************************************
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0, which accompanies this distribution
+ * and is available at http://www.eclipse.org/legal/epl-v10.html.
+ *
+ * Contributors:
  *     cdelahun - Bug 214534: added JMS Cache Coordination for publishing only
- ******************************************************************************/    
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.coordination.jms;
 
 import java.util.Map;
@@ -27,9 +27,9 @@ import org.eclipse.persistence.sessions.coordination.TransportManager;
 /**
  * <p>
  * <b>Purpose</b>: Provide a transport implementation for the Remote Command Module (RCM) that publishes
- * to a JMS topic.  
+ * to a JMS topic.
  * <p>
- * <b>Description</b>: This class manages two connections: an external connection for publishing to JMS, 
+ * <b>Description</b>: This class manages two connections: an external connection for publishing to JMS,
  *  and a local connection which can be used to process JMS messages received from an application JMS listener.
  * <p>
  * @author Chris Delahunt
@@ -37,10 +37,10 @@ import org.eclipse.persistence.sessions.coordination.TransportManager;
  */
 public class JMSPublishingTransportManager extends BroadcastTransportManager {
     protected String connectionFactoryName;
-    
-    /* 
-     * flag used to toggle between spec compliant behavior and legacy behavior.  Default false causes external JMSTopicRemoteConnection to cache the 
-     * TopicConnectionFactory and obtain TopicConnections etc only when executeCommand is called, releasing them immediately.  
+
+    /*
+     * flag used to toggle between spec compliant behavior and legacy behavior.  Default false causes external JMSTopicRemoteConnection to cache the
+     * TopicConnectionFactory and obtain TopicConnections etc only when executeCommand is called, releasing them immediately.
      * True causes TopicConnection, TopicSession and TopicPublisher to be held and used for every executeCommand call.
      * A value of true has spec implications, as TopicPublishers are not concurrent objects, but was added in for applications
      * that may have worked previously but encounter performance issues with repeatedly creating TopicConnections etc.
@@ -49,12 +49,12 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
 
     public static final String DEFAULT_TOPIC = "jms/EclipseLinkTopic";
     public static final String DEFAULT_CONNECTION_FACTORY = "jms/EclipseLinkTopicConnectionFactory";
-    /**  
-     * PUBLIC:  
-     * Creates a JMSPublishingOnlyTopicTransportManager  
-     */  
-    public JMSPublishingTransportManager(RemoteCommandManager rcm) {  
-        super(rcm);  
+    /**
+     * PUBLIC:
+     * Creates a JMSPublishingOnlyTopicTransportManager
+     */
+    public JMSPublishingTransportManager(RemoteCommandManager rcm) {
+        super(rcm);
     }
 
     /**
@@ -104,7 +104,7 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
      * INTERNAL:
      * JMSPublishingTransportManager has maximum one external connection.
      * Verify there are no external connections,
-     * create a new external connection, 
+     * create a new external connection,
      * add it to external connections' map.
      */
     public void createExternalConnection() {
@@ -118,7 +118,7 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
                     // call createExternalConnection method again.
                     rcm.handleException(rcmException);
                 }
-            }            
+            }
         }
     }
 
@@ -135,7 +135,7 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
             localConnection = new JMSTopicRemoteConnection(rcm);
         }
     }
-    
+
 
     /**
      * INTERNAL:
@@ -149,16 +149,16 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
         }
         return super.getConnectionsToExternalServicesForCommandPropagation();
     }
-    
+
     /**
      * PUBLIC:
      * flag used to toggle between j2EE/JMS spec compliant behavior and legacy behavior.  Default value false causes external
-     *  JMSTopicRemoteConnection to cache the TopicConnectionFactory and obtain TopicConnections, TopicSession and TopicPublishers 
+     *  JMSTopicRemoteConnection to cache the TopicConnectionFactory and obtain TopicConnections, TopicSession and TopicPublishers
      *  every time executeCommand is called, and then closing them immediately.  This is JMS and J2EE compliant, as the TopicConnection
      *  is never reused in different threads.
-     * True causes TopicConnection, TopicSession and TopicPublisher to be cached within the JMSTopicRemoteConnection and used for 
-     *  every executeCommand call.  These objects can potentially used concurrently, which the JMS spec does not force 
-     *  providers to support.  
+     * True causes TopicConnection, TopicSession and TopicPublisher to be cached within the JMSTopicRemoteConnection and used for
+     *  every executeCommand call.  These objects can potentially used concurrently, which the JMS spec does not force
+     *  providers to support.
      */
     public boolean getReuseJMSTopicPublisher(){
         return this.reuseJMSTopicPublisher;
@@ -237,17 +237,17 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
             throw ValidationException.operationNotSupported("setNamingServiceType");
         }
     }
-    
+
     /**
      * PUBLIC:
      * flag used to toggle between j2EE/JMS spec compliant behavior and legacy behavior.  Default value false causes external
-     *  JMSTopicRemoteConnection to cache the TopicConnectionFactory and obtain TopicConnections, TopicSession and TopicPublishers 
+     *  JMSTopicRemoteConnection to cache the TopicConnectionFactory and obtain TopicConnections, TopicSession and TopicPublishers
      *  every time executeCommand is called, and then closing them immediately.  This is JMS and J2EE compliant, as the TopicConnection
      *  is never reused in different threads.
-     * True causes TopicConnection, TopicSession and TopicPublisher to be cached within the JMSTopicRemoteConnection and used for 
-     *  every executeCommand call.  These objects can potentially used concurrently, which the JMS spec does not force 
-     *  providers to support.  
-     *  
+     * True causes TopicConnection, TopicSession and TopicPublisher to be cached within the JMSTopicRemoteConnection and used for
+     *  every executeCommand call.  These objects can potentially used concurrently, which the JMS spec does not force
+     *  providers to support.
+     *
      *  @param reuseJMSTopicPublisher
      */
     public void setShouldReuseJMSTopicPublisher(boolean reuseJMSTopicPublisher){
@@ -270,4 +270,4 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
         getRemoteContextProperties().put(Context.PROVIDER_URL, jmsHostUrl);
         rcm.getServiceId().setURL(jmsHostUrl);
     }
-}  
+}

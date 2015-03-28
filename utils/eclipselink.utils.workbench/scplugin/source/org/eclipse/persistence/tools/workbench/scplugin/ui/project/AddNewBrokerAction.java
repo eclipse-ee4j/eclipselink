@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -35,97 +35,97 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 public class AddNewBrokerAction extends AbstractFrameworkAction {
 
-	private final boolean selectNode;
+    private final boolean selectNode;
 
-	public AddNewBrokerAction( WorkbenchContext context) {
-		this( context, true);
-	}
+    public AddNewBrokerAction( WorkbenchContext context) {
+        this( context, true);
+    }
 
-	public AddNewBrokerAction( WorkbenchContext context, boolean selectNode) {
-		super( context);
-		this.selectNode = selectNode;
-	}
+    public AddNewBrokerAction( WorkbenchContext context, boolean selectNode) {
+        super( context);
+        this.selectNode = selectNode;
+    }
 
-	protected void initialize() {
-		super.initialize();
-		this.initializeText( "ADD_BROKER");
-		this.initializeMnemonic( "ADD_BROKER");
-		// no accelerator
-		this.initializeIcon( "ADD_BROKER");
-		this.initializeToolTipText( "ADD_BROKER.TOOL_TIP");
-	}
+    protected void initialize() {
+        super.initialize();
+        this.initializeText( "ADD_BROKER");
+        this.initializeMnemonic( "ADD_BROKER");
+        // no accelerator
+        this.initializeIcon( "ADD_BROKER");
+        this.initializeToolTipText( "ADD_BROKER.TOOL_TIP");
+    }
 
-	private ObjectListSelectionModel buildSelectionModel(CollectionValueModel itemHolder) {
+    private ObjectListSelectionModel buildSelectionModel(CollectionValueModel itemHolder) {
 
-		ListModelAdapter adapter = new ListModelAdapter(itemHolder);
-		return new ObjectListSelectionModel(adapter);
-	}
+        ListModelAdapter adapter = new ListModelAdapter(itemHolder);
+        return new ObjectListSelectionModel(adapter);
+    }
 
-	private CollectionValueModel buildSessionCollectionHolder(TopLinkSessionsAdapter topLinkSessions) {
+    private CollectionValueModel buildSessionCollectionHolder(TopLinkSessionsAdapter topLinkSessions) {
 
-		Collection sessions = CollectionTools.collection(topLinkSessions.databaseSessions());
-		return new ReadOnlyCollectionValueModel(sessions);
-	}
+        Collection sessions = CollectionTools.collection(topLinkSessions.databaseSessions());
+        return new ReadOnlyCollectionValueModel(sessions);
+    }
 
-	private Collection buildSessionBrokerNames(TopLinkSessionsAdapter topLinkSessions) {
-		return CollectionTools.collection(topLinkSessions.sessionBrokerNames());
-	}
+    private Collection buildSessionBrokerNames(TopLinkSessionsAdapter topLinkSessions) {
+        return CollectionTools.collection(topLinkSessions.sessionBrokerNames());
+    }
 
-	public void execute() {
-		super.execute();
-	}
+    public void execute() {
+        super.execute();
+    }
 
-	protected void execute( ApplicationNode selectedNode) {
+    protected void execute( ApplicationNode selectedNode) {
 
-		TopLinkSessionsAdapter topLinkSessions = ( TopLinkSessionsAdapter) selectedNode.getValue();
-		SimplePropertyValueModel stringHolder = new SimplePropertyValueModel();
-		SimplePropertyValueModel serverPlatformHolder = new SimplePropertyValueModel();
-		CollectionValueModel itemHolder = buildSessionCollectionHolder(topLinkSessions);
-		ObjectListSelectionModel selectionModel = buildSelectionModel(itemHolder);
-		Collection sessionBrokerNames = buildSessionBrokerNames(topLinkSessions);
+        TopLinkSessionsAdapter topLinkSessions = ( TopLinkSessionsAdapter) selectedNode.getValue();
+        SimplePropertyValueModel stringHolder = new SimplePropertyValueModel();
+        SimplePropertyValueModel serverPlatformHolder = new SimplePropertyValueModel();
+        CollectionValueModel itemHolder = buildSessionCollectionHolder(topLinkSessions);
+        ObjectListSelectionModel selectionModel = buildSelectionModel(itemHolder);
+        Collection sessionBrokerNames = buildSessionBrokerNames(topLinkSessions);
 
-		BrokerCreationDialog dialog = new BrokerCreationDialog(
-			getWorkbenchContext(),
-			itemHolder,
-			selectionModel,
-			stringHolder,
-			serverPlatformHolder,
-			sessionBrokerNames
-		);
+        BrokerCreationDialog dialog = new BrokerCreationDialog(
+            getWorkbenchContext(),
+            itemHolder,
+            selectionModel,
+            stringHolder,
+            serverPlatformHolder,
+            sessionBrokerNames
+        );
 
-		dialog.show();
+        dialog.show();
 
-		if( dialog.wasCanceled())
-			return;
+        if( dialog.wasCanceled())
+            return;
 
-		navigatorSelectionModel().pushExpansionState();
+        navigatorSelectionModel().pushExpansionState();
 
-		// Server Platform
-		ServerPlatform sp;
+        // Server Platform
+        ServerPlatform sp;
 
-		if( dialog.usesServerPlatform()) {
-			sp = new ServerPlatform(( String)serverPlatformHolder.getValue()); 
-		}
-		else {
-			String serverClassName = NullServerPlatformAdapter.instance().getServerClassName();
-			sp = new ServerPlatform( ClassTools.shortNameForClassNamed( serverClassName));
-		}
+        if( dialog.usesServerPlatform()) {
+            sp = new ServerPlatform(( String)serverPlatformHolder.getValue());
+        }
+        else {
+            String serverClassName = NullServerPlatformAdapter.instance().getServerClassName();
+            sp = new ServerPlatform( ClassTools.shortNameForClassNamed( serverClassName));
+        }
 
-		// Create the Session Broker
-		SessionBrokerAdapter newBroker = topLinkSessions.addSessionBrokerNamed( (String) stringHolder.getValue(), sp);
+        // Create the Session Broker
+        SessionBrokerAdapter newBroker = topLinkSessions.addSessionBrokerNamed( (String) stringHolder.getValue(), sp);
 
-		// All all the sessions to the broker
-		Iterator iter = CollectionTools.iterator( selectionModel.getSelectedValues());
+        // All all the sessions to the broker
+        Iterator iter = CollectionTools.iterator( selectionModel.getSelectedValues());
 
-		while( iter.hasNext()) {
-			SessionAdapter sessionAdapter = ( SessionAdapter)iter.next();
-			newBroker.manage( sessionAdapter.getName());
-		}
+        while( iter.hasNext()) {
+            SessionAdapter sessionAdapter = ( SessionAdapter)iter.next();
+            newBroker.manage( sessionAdapter.getName());
+        }
 
-		navigatorSelectionModel().popAndRestoreExpansionState();
+        navigatorSelectionModel().popAndRestoreExpansionState();
 
-		if( this.selectNode) {
-			(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newBroker, navigatorSelectionModel());
-		}
-	}
+        if( this.selectNode) {
+            (( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( newBroker, navigatorSelectionModel());
+        }
+    }
 }

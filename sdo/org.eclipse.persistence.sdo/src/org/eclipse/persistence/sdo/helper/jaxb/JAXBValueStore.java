@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -97,7 +97,7 @@ public class JAXBValueStore implements ValueStore {
     }
 
     /**
-     * Return the POJO associated with this value store. 
+     * Return the POJO associated with this value store.
      */
     Object getEntity() {
         return entity;
@@ -105,7 +105,7 @@ public class JAXBValueStore implements ValueStore {
 
     /**
      * Return the XMLDescriptor associated with this value store.
-     * This is the XMLDescriptor for the associated POJO. 
+     * This is the XMLDescriptor for the associated POJO.
      */
     XMLDescriptor getEntityDescriptor() {
         return descriptor;
@@ -113,7 +113,7 @@ public class JAXBValueStore implements ValueStore {
 
     /**
      * Return the JAXBHelperContext.  This is the JAXBHelperContext
-     * used to create the DataObject.  
+     * used to create the DataObject.
      */
     JAXBHelperContext getJAXBHelperContext() {
         return jaxbHelperContext;
@@ -244,7 +244,7 @@ public class JAXBValueStore implements ValueStore {
             if (mapping.isAbstractCompositeCollectionMapping()) {
                 XMLCompositeCollectionMapping compositeMapping = (XMLCompositeCollectionMapping) mapping;
                 if (compositeMapping.getContainerAccessor() != null) {
-                    
+
                     Object oldContainer = mapping.getAttributeValueFromObject(entity);
                     if (oldContainer != null) {
                         AbstractSession session = ((JAXBContext) jaxbHelperContext.getJAXBContext()).getXMLContext().getSession(entity);
@@ -297,7 +297,7 @@ public class JAXBValueStore implements ValueStore {
     }
 
     public ValueStore copy() {
-        AbstractSession session = ((JAXBContext) jaxbHelperContext.getJAXBContext()).getXMLContext().getSession(entity);        
+        AbstractSession session = ((JAXBContext) jaxbHelperContext.getJAXBContext()).getXMLContext().getSession(entity);
         Object originalEntity = entity;
         entity = descriptor.getInstantiationPolicy().buildNewInstance();
 
@@ -334,7 +334,7 @@ public class JAXBValueStore implements ValueStore {
 
     /**
      * Return the JAXB mapping for the SDO property.  They are matched
-     * on their XML schema representation. 
+     * on their XML schema representation.
      */
     Mapping getJAXBMappingForProperty(SDOProperty sdoProperty) {
         DatabaseMapping sdoMapping = sdoProperty.getXmlMapping();
@@ -361,7 +361,7 @@ public class JAXBValueStore implements ValueStore {
                     xPathNode = (XPathNode) attributeChildrenMap.get(xPathFragment);
                 }
             } else if (xPathFragment.nameIsText()) {
-                xPathNode = xPathNode.getTextNode(); 
+                xPathNode = xPathNode.getTextNode();
             } else {
                 Map nonAttributeChildrenMap = xPathNode.getNonAttributeChildrenMap();
                 if (null == nonAttributeChildrenMap) {

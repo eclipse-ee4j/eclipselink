@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,31 +27,31 @@ package org.eclipse.persistence.jpa.jpql.tools;
  */
 public interface TextEdit {
 
-	/**
-	 * Returns the length of the text to replace with the new value.
-	 *
-	 * @return The old value's length
-	 */
-	int getLength();
+    /**
+     * Returns the length of the text to replace with the new value.
+     *
+     * @return The old value's length
+     */
+    int getLength();
 
-	/**
-	 * Returns the new value that should replace the old value.
-	 *
-	 * @return The value to replace the old value
-	 */
-	String getNewValue();
+    /**
+     * Returns the new value that should replace the old value.
+     *
+     * @return The value to replace the old value
+     */
+    String getNewValue();
 
-	/**
-	 * Returns the location of the old value within the text.
-	 *
-	 * @return The location of the old value within the text
-	 */
-	int getOffset();
+    /**
+     * Returns the location of the old value within the text.
+     *
+     * @return The location of the old value within the text
+     */
+    int getOffset();
 
-	/**
-	 * Returns the value that was found within the text that should be replaced by the new value.
-	 *
-	 * @return The value to replace
-	 */
-	String getOldValue();
+    /**
+     * Returns the value that was found within the text that should be replaced by the new value.
+     *
+     * @return The value to replace
+     */
+    String getOldValue();
 }

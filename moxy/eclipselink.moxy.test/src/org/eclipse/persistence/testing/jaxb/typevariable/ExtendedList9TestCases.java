@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,7 +28,7 @@ public class ExtendedList9TestCases extends JAXBWithJSONTestCases {
 
     @Override
     protected ExtendedList9Root getControlObject() {
-    	ExtendedList9Root control = new ExtendedList9Root();
+        ExtendedList9Root control = new ExtendedList9Root();
         control.foo = new ExtendedList9<FooImpl>();
         control.foo.add(new FooImpl());
         control.foo.add(new FooImpl());

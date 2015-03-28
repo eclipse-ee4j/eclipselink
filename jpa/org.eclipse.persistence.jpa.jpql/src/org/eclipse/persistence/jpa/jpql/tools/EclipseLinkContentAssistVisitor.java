@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -71,1532 +71,1532 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisitor
                                              implements EclipseLinkExpressionVisitor {
 
-	/**
-	 * Creates a new <code>EclipseLinkContentAssistVisitor</code>.
-	 *
-	 * @param queryContext The context used to query information about the query
-	 * @exception NullPointerException The {@link JPQLQueryContext} cannot be <code>null</code>
-	 */
-	public EclipseLinkContentAssistVisitor(JPQLQueryContext queryContext) {
-		super(queryContext);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AcceptableTypeVisitor buildAcceptableTypeVisitor() {
-		return new AcceptableTypeVisitor();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AppendableExpressionVisitor buildAppendableExpressionVisitor() {
-		return new AppendableExpressionVisitor(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected EndingQueryPositionBuilder buildEndingQueryPositionBuilder() {
-		return new EndingQueryPositionBuilder(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected FollowingClausesVisitor buildFollowingClausesVisitor() {
-		return new FollowingClausesVisitor();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected FromClauseCollectionHelper buildFromClauseCollectionHelper() {
-		return new FromClauseCollectionHelper(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected FromClauseStatementHelper buildFromClauseStatementHelper() {
-		return new FromClauseStatementHelper(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected GroupByClauseCollectionHelper buildGroupByClauseCollectionHelper() {
-		return new GroupByClauseCollectionHelper(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected IncompleteCollectionExpressionVisitor buildIncompleteCollectionExpressionVisitor() {
-		return new IncompleteCollectionExpressionVisitor();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected OrderByClauseStatementHelper buildOrderByClauseStatementHelper() {
-		return new OrderByClauseStatementHelper(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected SimpleFromClauseStatementHelper buildSimpleFromClauseStatementHelper() {
-		return new SimpleFromClauseStatementHelper(this);
-	}
-
-	protected TableExpressionVisitor buildTableExpressionVisitor() {
-		return new TableExpressionVisitor();
-	}
-
-	protected UnionClauseStatementHelper buildUnionClauseStatementHelper() {
-		return new UnionClauseStatementHelper();
-	}
-
-	/**
-	 * Returns the enum constant of the EclipseLink version specified in the {@link JPQLQueryContext}.
-	 *
-	 * @return The EclipseLink version specified or the default version (i.e. the version of the
-	 * current release)
-	 * @since 2.5
-	 */
-	protected EclipseLinkVersion getEcliseLinkVersion() {
-		return EclipseLinkVersion.value(queryContext.getProviderVersion());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLGrammar getLatestGrammar() {
-		return DefaultEclipseLinkJPQLGrammar.instance();
-	}
-
-	protected TableExpressionVisitor getTableExpressionVisitor() {
-		TableExpressionVisitor visitor = getHelper(TableExpressionVisitor.class);
-		if (visitor == null) {
-			visitor = buildTableExpressionVisitor();
-			registerHelper(TableExpressionVisitor.class, visitor);
-		}
-		return visitor;
-	}
-
-	protected String getTableName(String variableName) {
-
-		Declaration declaration = queryContext.getDeclaration(variableName);
-		Expression baseExpression = (declaration != null) ? declaration.getBaseExpression() : null;
-
-		if ((baseExpression != null) && isTableExpression(baseExpression)) {
-	   	return queryContext.literal(baseExpression, LiteralType.STRING_LITERAL);
-		}
-
-		return null;
-	}
-
-	protected UnionClauseStatementHelper getUnionClauseStatementHelper() {
-		UnionClauseStatementHelper helper = getHelper(UnionClauseStatementHelper.class);
-		if (helper == null) {
-			helper = buildUnionClauseStatementHelper();
-			registerHelper(UnionClauseStatementHelper.class, helper);
-		}
-		return helper;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initialize() {
-		super.initialize();
-		identifierFilters.put(REGEXP,    VALID_IDENTIFIER_FILTER);
-		identifierFilters.put(NOT_EQUAL, VALID_IDENTIFIER_FILTER);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isJoinFetchIdentifiable() {
-		EclipseLinkVersion version = EclipseLinkVersion.value(queryContext.getProviderVersion());
-		return version.isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
-	}
-
-	protected boolean isTableExpression(Expression expression) {
-		TableExpressionVisitor visitor = getTableExpressionVisitor();
-		try {
-			visitor.expression = expression;
-			expression.accept(visitor);
-			return visitor.valid;
-		}
-		finally {
-			visitor.valid = false;
-			visitor.expression = null;
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(AsOfClause expression) {
-		super.visit(expression);
-		int position = queryPosition.getPosition(expression) - corrections.peek();
-
-		// Within "AS OF"
-		if (isPositionWithin(position, AS_OF)) {
-			proposals.addIdentifier(AS_OF);
-		}
-		// After "AS OF"
-		else if (expression.hasSpaceAfterIdentifier()) {
-
-			int length = AS_OF.length() + SPACE_LENGTH;
-
-			// Right after "AS OF "
-			if (position == length) {
-				addIdentifier(SCN);
-				addIdentifier(TIMESTAMP);
-
-				if (!expression.hasScn() &&
-				    !expression.hasTimestamp()) {
-
-					addIdentificationVariables();
-					addFunctionIdentifiers(ScalarExpressionBNF.ID);
-				}
-			}
-			// After "AS OF SCN" or "AS OF TIMESTAMP"
-			else if (expression.hasScn() ||
-			         expression.hasSpaceAfterIdentifier()) {
-
-				// SCN
-				if (expression.hasScn() && isPositionWithin(position, length, SCN)) {
-					proposals.addIdentifier(SCN);
-					proposals.addIdentifier(TIMESTAMP);
-				}
-				// TIMESTAMP
-				else if (expression.hasTimestamp() && isPositionWithin(position, length, TIMESTAMP)) {
-					proposals.addIdentifier(SCN);
-					proposals.addIdentifier(TIMESTAMP);
-				}
-				else {
-
-					if (expression.hasScn()) {
-						length += SCN.length();
-					}
-					else if (expression.hasTimestamp()) {
-						length += TIMESTAMP.length();
-					}
-
-					// After "AS OF SCN " or "AS OF TIMESTAMP "
-					if (expression.hasSpaceAfterCategory()) {
-						addIdentificationVariables();
-						addFunctionIdentifiers(ScalarExpressionBNF.ID);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(CastExpression expression) {
-		super.visit(expression);
-		int position = queryPosition.getPosition(expression) - corrections.peek();
-		String identifier = expression.getIdentifier();
-
-		// Within CAST
-		if (isPositionWithin(position, identifier)) {
-			addIdentifier(identifier);
-			addIdentificationVariables();
-			addFunctionIdentifiers(expression.getParent().findQueryBNF(expression));
-		}
-		// After "CAST("
-		else if (expression.hasLeftParenthesis()) {
-			int length = identifier.length() + 1 /* '(' */;
-
-			// Right after "CAST("
-			if (position == length) {
-				addIdentificationVariables();
-				addFunctionIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
-			}
-			else if (expression.hasExpression()) {
-				Expression scalarExpression = expression.getExpression();
-
-				if (isComplete(scalarExpression)) {
-					length += scalarExpression.getLength();
-
-					if (expression.hasSpaceAfterExpression()) {
-						length++;
-
-						// Right before "AS" or database type
-						if (position == length) {
-							addAggregateIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
-							proposals.addIdentifier(AS);
-						}
-						// Within "AS"
-						else if (isPositionWithin(position, length, AS)) {
-							proposals.addIdentifier(AS);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(ConnectByClause expression) {
-		super.visit(expression);
-		int position = queryPosition.getPosition(expression) - corrections.peek();
-
-		// Within "CONNECT BY"
-		if (isPositionWithin(position, CONNECT_BY)) {
-			proposals.addIdentifier(CONNECT_BY);
-		}
-		// After "CONNECT BY"
-		else if (expression.hasSpaceAfterConnectBy()) {
-
-			int length = CONNECT_BY.length() + SPACE_LENGTH;
-
-			// Right after "CONNECT BY "
-			if (position == length) {
-				addIdentificationVariables();
-				addFunctionIdentifiers(CollectionValuedPathExpressionBNF.ID);
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(DatabaseType expression) {
-		super.visit(expression);
-		// Nothing to do, this is database specific
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(ExtractExpression expression) {
-		super.visit(expression);
-		int position = queryPosition.getPosition(expression) - corrections.peek();
-		String identifier = expression.getIdentifier();
-
-		// Within "EXTRACT"
-		if (isPositionWithin(position, identifier)) {
-			proposals.addIdentifier(identifier);
-			addFunctionIdentifiers(expression);
-		}
-		// After "EXTRACT("
-		else if (expression.hasLeftParenthesis()) {
-			int length = identifier.length() + 1 /* '(' */;
-
-			// Right after "EXTRACT("
-			if (position == length) {
-				// Nothing to do, unless we show basic date parts
-			}
-
-			if (expression.hasDatePart()) {
-				String datePart = expression.getDatePart();
-
-				// Within "<date part>"
-				if (isPositionWithin(position, length, datePart)) {
-					// Nothing to do, unless we show basic date parts
-				}
-
-				length += datePart.length();
-
-				// After "<date part> "
-				if (expression.hasSpaceAfterDatePart()) {
-					length++;
-
-					// Right before "FROM"
-					if (position == length) {
-						addIdentifier(FROM);
-
-						// Only add the scalar expression's functions if it is not specified
-						// or the FROM identifier is not present
-						if (!expression.hasExpression() || !expression.hasFrom()) {
-							addIdentificationVariables();
-							addFunctionIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
-						}
-					}
-				}
-			}
-
-			if (expression.hasFrom()) {
-
-				// Within "FROM"
-				if (isPositionWithin(position, length, FROM)) {
-					proposals.addIdentifier(FROM);
-
-					// Only add the scalar expression's functions if it is not specified
-					if (!expression.hasExpression()) {
-						addIdentificationVariables();
-						addFunctionIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
-					}
-				}
-
-				length += 4 /* FROM */;
-
-				if (expression.hasSpaceAfterFrom()) {
-					length++;
-				}
-
-				// Right after "FROM "
-				if (position == length) {
-					addIdentificationVariables();
-					addFunctionIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
-				}
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(HierarchicalQueryClause expression) {
-		super.visit(expression);
-		int position = queryPosition.getPosition(expression) - corrections.peek();
-
-		// At the beginning of the clause
-		if (position == 0) {
-			addIdentifier(START_WITH);
-
-			if (!expression.hasStartWithClause()) {
-				addIdentifier(CONNECT_BY);
-			}
-		}
-		else {
-			int length = 0;
-
-			// After the start with clause
-			if (expression.hasStartWithClause()) {
-				length += expression.getStartWithClause().getLength();
-
-				// Right after the start with clause
-				if (hasVirtualSpace() && (position == length + SPACE_LENGTH)) {
-					addIdentifier(CONNECT_BY);
-				}
-				// After the start with clause
-				else if (expression.hasSpaceAfterStartWithClause()) {
-					length++;
-
-					// Right after the start with clause
-					if (position == length) {
-						addIdentifier(CONNECT_BY);
-					}
-				}
-			}
-
-			length += expression.getConnectByClause().getLength();
-
-			// Right after the connect by clause
-			if (hasVirtualSpace() && (position == length + SPACE_LENGTH)) {
-				addIdentifier(ORDER_SIBLINGS_BY);
-			}
-			// After the connect by clause
-			else if (expression.hasSpaceAfterConnectByClause()) {
-				length++;
-
-				if (position == length) {
-					addIdentifier(ORDER_SIBLINGS_BY);
-				}
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(OrderByItem expression) {
-		super.visit(expression);
-		int position = queryPosition.getPosition(expression) - corrections.peek();
-
-		// After the order by item
-		if (expression.hasExpression()) {
-			int length = expression.getExpression().getLength();
-
-			if (expression.hasSpaceAfterExpression()) {
-				length++;
-
-				// Right after the order by item
-				if (position == length) {
-
-					// Only add "NULLS FIRST" and "NULLS LAST" if the ordering is not specified
-					if (expression.getOrdering() == Ordering.DEFAULT) {
-						proposals.addIdentifier(NULLS_FIRST);
-						proposals.addIdentifier(NULLS_LAST);
-					}
-				}
-				else {
-					length += expression.getActualOrdering().length();
-
-					if (position > length) {
-						if (expression.hasSpaceAfterOrdering()) {
-							length += SPACE_LENGTH;
-
-							// Right before "NULLS FIRST" or "NULLS LAST"
-							if (position == length) {
-								proposals.addIdentifier(NULLS_FIRST);
-								proposals.addIdentifier(NULLS_LAST);
-							}
-							else {
-								String nullOrdering = expression.getActualNullOrdering();
-
-								// Within "NULLS FIRST" or "NULLS LAST"
-								if (isPositionWithin(position, length, nullOrdering)) {
-									proposals.addIdentifier(NULLS_FIRST);
-									proposals.addIdentifier(NULLS_LAST);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(OrderSiblingsByClause expression) {
-		if (!isLocked(expression)) {
-			super.visit(expression);
-			visitCollectionExpression(expression, ORDER_SIBLINGS_BY, getOrderByClauseCollectionHelper());
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(RegexpExpression expression) {
-		super.visit(expression);
-		int position = queryPosition.getPosition(expression) - corrections.peek();
-		int length = 0;
-
-		if (expression.hasStringExpression()) {
-			length += expression.getStringExpression().getLength();
-
-			if (expression.hasSpaceAfterStringExpression()) {
-				length += SPACE_LENGTH;
-			}
-		}
-
-		// Within "REGEXP"
-		if (isPositionWithin(position, length, REGEXP)) {
-			proposals.addIdentifier(REGEXP);
-		}
-		// After "REGEXP"
-		else {
-			length += 6 /* REGEXP */;
-
-			// After "REGEXP "
-			if (expression.hasSpaceAfterIdentifier()) {
-				length += SPACE_LENGTH;
-
-				// Right after "REGEXP "
-				addIdentificationVariables();
-				addFunctionIdentifiers(PatternValueBNF.ID);
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(StartWithClause expression) {
-		if (!isLocked(expression)) {
-			super.visit(expression);
-			visitCollectionExpression(expression, expression.getIdentifier(), getConditionalClauseCollectionHelper());
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TableExpression expression) {
-		super.visit(expression);
-		int position = queryPosition.getPosition(expression);
-
-		// Within "TABLE"
-		if (isPositionWithin(position, TABLE)) {
-			proposals.addIdentifier(TABLE);
-		}
-		// After '('
-		else if (expression.hasLeftParenthesis()) {
-			int length = TABLE.length() + SPACE_LENGTH;
-
-			// Right after '('
-			if (position == length) {
-				proposals.setTableNamePrefix(ExpressionTools.EMPTY_STRING);
-			}
-			else {
-				Expression nameExpression = expression.getExpression();
-				String tableName = queryContext.literal(nameExpression, LiteralType.STRING_LITERAL);
-
-				if (tableName.length() == 0) {
-					tableName = queryContext.literal(nameExpression, LiteralType.IDENTIFICATION_VARIABLE);
-				}
-
-				int tableNameLength = tableName.length();
-
-				// Within the string literal representing the table name
-				if ((position > length) && (position <= length + tableNameLength)) {
-					String prefix = tableName.substring(0, position - length);
-					prefix = ExpressionTools.unquote(prefix);
-					proposals.setTableNamePrefix(prefix);
-				}
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TableVariableDeclaration expression) {
-		super.visit(expression);
-
-		TableExpression tableExpression = expression.getTableExpression();
-		int position = queryPosition.getPosition(expression) - corrections.peek();
-		int length = tableExpression.getLength();
-
-		// After "TABLE()"
-		if (expression.hasSpaceAfterTableExpression()) {
-			length += SPACE_LENGTH;
-
-			// Right after "TABLE() "
-			if (isPositionWithin(position, length, AS) &&
-			    isComplete(tableExpression)) {
-
-				addIdentifier(AS);
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(UnionClause expression) {
-		super.visit(expression);
-		int position = queryPosition.getPosition(expression) - corrections.peek();
-		String identifier = expression.getIdentifier();
-
-		// Within <identifier>
-		if (isPositionWithin(position, identifier)) {
-			proposals.addIdentifier(EXCEPT);
-			proposals.addIdentifier(INTERSECT);
-			proposals.addIdentifier(UNION);
-		}
-		// After "<identifier> "
-		else if (expression.hasSpaceAfterIdentifier()) {
-			int length = identifier.length() + SPACE_LENGTH;
-
-			// Right after "<identifier> "
-			if (position == length) {
-				proposals.addIdentifier(ALL);
-
-				if (!expression.hasAll()) {
-					addIdentifier(SELECT);
-				}
-			}
-			// Within "ALL"
-			else if (isPositionWithin(position, length, ALL)) {
-				addIdentifier(ALL);
-			}
-			else {
-				if ((position == length) && !expression.hasAll()) {
-					proposals.addIdentifier(SELECT);
-				}
-				else {
-
-					if (expression.hasAll()) {
-						length += 3 /* ALL */;
-					}
-
-					// After "ALL "
-					if (expression.hasSpaceAfterAll()) {
-						length += SPACE_LENGTH;
-
-						// Right after "ALL "
-						if (position == length) {
-							proposals.addIdentifier(SELECT);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void visitThirdPartyPathExpression(AbstractPathExpression expression,
-	                                             String variableName) {
-
-		// Check to see if a column name can be resolved
-		int position = queryPosition.getPosition(expression);
-		String text = expression.toActualText();
-		int dotIndex = text.indexOf(DOT);
-		int secondDotIndex = (dotIndex > -1) ? text.indexOf(DOT, dotIndex + 1) : -1;
-
-		// The cursor position is after the first dot and either there is no second dot or the
-		// position is before the second dot, which means a table name and column names could
-		// potentially be resolved
-		if ((secondDotIndex == -1) || (position < secondDotIndex)) {
-			String tableName = getTableName(variableName);
-
-			if (tableName != ExpressionTools.EMPTY_STRING) {
-				tableName = ExpressionTools.unquote(tableName);
-				proposals.setTableName(tableName, text.substring(dotIndex + 1, position));
-			}
-		}
-	}
+    /**
+     * Creates a new <code>EclipseLinkContentAssistVisitor</code>.
+     *
+     * @param queryContext The context used to query information about the query
+     * @exception NullPointerException The {@link JPQLQueryContext} cannot be <code>null</code>
+     */
+    public EclipseLinkContentAssistVisitor(JPQLQueryContext queryContext) {
+        super(queryContext);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AcceptableTypeVisitor buildAcceptableTypeVisitor() {
+        return new AcceptableTypeVisitor();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AppendableExpressionVisitor buildAppendableExpressionVisitor() {
+        return new AppendableExpressionVisitor(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EndingQueryPositionBuilder buildEndingQueryPositionBuilder() {
+        return new EndingQueryPositionBuilder(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected FollowingClausesVisitor buildFollowingClausesVisitor() {
+        return new FollowingClausesVisitor();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected FromClauseCollectionHelper buildFromClauseCollectionHelper() {
+        return new FromClauseCollectionHelper(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected FromClauseStatementHelper buildFromClauseStatementHelper() {
+        return new FromClauseStatementHelper(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected GroupByClauseCollectionHelper buildGroupByClauseCollectionHelper() {
+        return new GroupByClauseCollectionHelper(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected IncompleteCollectionExpressionVisitor buildIncompleteCollectionExpressionVisitor() {
+        return new IncompleteCollectionExpressionVisitor();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected OrderByClauseStatementHelper buildOrderByClauseStatementHelper() {
+        return new OrderByClauseStatementHelper(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected SimpleFromClauseStatementHelper buildSimpleFromClauseStatementHelper() {
+        return new SimpleFromClauseStatementHelper(this);
+    }
+
+    protected TableExpressionVisitor buildTableExpressionVisitor() {
+        return new TableExpressionVisitor();
+    }
+
+    protected UnionClauseStatementHelper buildUnionClauseStatementHelper() {
+        return new UnionClauseStatementHelper();
+    }
+
+    /**
+     * Returns the enum constant of the EclipseLink version specified in the {@link JPQLQueryContext}.
+     *
+     * @return The EclipseLink version specified or the default version (i.e. the version of the
+     * current release)
+     * @since 2.5
+     */
+    protected EclipseLinkVersion getEcliseLinkVersion() {
+        return EclipseLinkVersion.value(queryContext.getProviderVersion());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLGrammar getLatestGrammar() {
+        return DefaultEclipseLinkJPQLGrammar.instance();
+    }
+
+    protected TableExpressionVisitor getTableExpressionVisitor() {
+        TableExpressionVisitor visitor = getHelper(TableExpressionVisitor.class);
+        if (visitor == null) {
+            visitor = buildTableExpressionVisitor();
+            registerHelper(TableExpressionVisitor.class, visitor);
+        }
+        return visitor;
+    }
+
+    protected String getTableName(String variableName) {
+
+        Declaration declaration = queryContext.getDeclaration(variableName);
+        Expression baseExpression = (declaration != null) ? declaration.getBaseExpression() : null;
+
+        if ((baseExpression != null) && isTableExpression(baseExpression)) {
+           return queryContext.literal(baseExpression, LiteralType.STRING_LITERAL);
+        }
+
+        return null;
+    }
+
+    protected UnionClauseStatementHelper getUnionClauseStatementHelper() {
+        UnionClauseStatementHelper helper = getHelper(UnionClauseStatementHelper.class);
+        if (helper == null) {
+            helper = buildUnionClauseStatementHelper();
+            registerHelper(UnionClauseStatementHelper.class, helper);
+        }
+        return helper;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initialize() {
+        super.initialize();
+        identifierFilters.put(REGEXP,    VALID_IDENTIFIER_FILTER);
+        identifierFilters.put(NOT_EQUAL, VALID_IDENTIFIER_FILTER);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isJoinFetchIdentifiable() {
+        EclipseLinkVersion version = EclipseLinkVersion.value(queryContext.getProviderVersion());
+        return version.isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
+    }
+
+    protected boolean isTableExpression(Expression expression) {
+        TableExpressionVisitor visitor = getTableExpressionVisitor();
+        try {
+            visitor.expression = expression;
+            expression.accept(visitor);
+            return visitor.valid;
+        }
+        finally {
+            visitor.valid = false;
+            visitor.expression = null;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(AsOfClause expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+
+        // Within "AS OF"
+        if (isPositionWithin(position, AS_OF)) {
+            proposals.addIdentifier(AS_OF);
+        }
+        // After "AS OF"
+        else if (expression.hasSpaceAfterIdentifier()) {
+
+            int length = AS_OF.length() + SPACE_LENGTH;
+
+            // Right after "AS OF "
+            if (position == length) {
+                addIdentifier(SCN);
+                addIdentifier(TIMESTAMP);
+
+                if (!expression.hasScn() &&
+                    !expression.hasTimestamp()) {
+
+                    addIdentificationVariables();
+                    addFunctionIdentifiers(ScalarExpressionBNF.ID);
+                }
+            }
+            // After "AS OF SCN" or "AS OF TIMESTAMP"
+            else if (expression.hasScn() ||
+                     expression.hasSpaceAfterIdentifier()) {
+
+                // SCN
+                if (expression.hasScn() && isPositionWithin(position, length, SCN)) {
+                    proposals.addIdentifier(SCN);
+                    proposals.addIdentifier(TIMESTAMP);
+                }
+                // TIMESTAMP
+                else if (expression.hasTimestamp() && isPositionWithin(position, length, TIMESTAMP)) {
+                    proposals.addIdentifier(SCN);
+                    proposals.addIdentifier(TIMESTAMP);
+                }
+                else {
+
+                    if (expression.hasScn()) {
+                        length += SCN.length();
+                    }
+                    else if (expression.hasTimestamp()) {
+                        length += TIMESTAMP.length();
+                    }
+
+                    // After "AS OF SCN " or "AS OF TIMESTAMP "
+                    if (expression.hasSpaceAfterCategory()) {
+                        addIdentificationVariables();
+                        addFunctionIdentifiers(ScalarExpressionBNF.ID);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(CastExpression expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+        String identifier = expression.getIdentifier();
+
+        // Within CAST
+        if (isPositionWithin(position, identifier)) {
+            addIdentifier(identifier);
+            addIdentificationVariables();
+            addFunctionIdentifiers(expression.getParent().findQueryBNF(expression));
+        }
+        // After "CAST("
+        else if (expression.hasLeftParenthesis()) {
+            int length = identifier.length() + 1 /* '(' */;
+
+            // Right after "CAST("
+            if (position == length) {
+                addIdentificationVariables();
+                addFunctionIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
+            }
+            else if (expression.hasExpression()) {
+                Expression scalarExpression = expression.getExpression();
+
+                if (isComplete(scalarExpression)) {
+                    length += scalarExpression.getLength();
+
+                    if (expression.hasSpaceAfterExpression()) {
+                        length++;
+
+                        // Right before "AS" or database type
+                        if (position == length) {
+                            addAggregateIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
+                            proposals.addIdentifier(AS);
+                        }
+                        // Within "AS"
+                        else if (isPositionWithin(position, length, AS)) {
+                            proposals.addIdentifier(AS);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(ConnectByClause expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+
+        // Within "CONNECT BY"
+        if (isPositionWithin(position, CONNECT_BY)) {
+            proposals.addIdentifier(CONNECT_BY);
+        }
+        // After "CONNECT BY"
+        else if (expression.hasSpaceAfterConnectBy()) {
+
+            int length = CONNECT_BY.length() + SPACE_LENGTH;
+
+            // Right after "CONNECT BY "
+            if (position == length) {
+                addIdentificationVariables();
+                addFunctionIdentifiers(CollectionValuedPathExpressionBNF.ID);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(DatabaseType expression) {
+        super.visit(expression);
+        // Nothing to do, this is database specific
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(ExtractExpression expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+        String identifier = expression.getIdentifier();
+
+        // Within "EXTRACT"
+        if (isPositionWithin(position, identifier)) {
+            proposals.addIdentifier(identifier);
+            addFunctionIdentifiers(expression);
+        }
+        // After "EXTRACT("
+        else if (expression.hasLeftParenthesis()) {
+            int length = identifier.length() + 1 /* '(' */;
+
+            // Right after "EXTRACT("
+            if (position == length) {
+                // Nothing to do, unless we show basic date parts
+            }
+
+            if (expression.hasDatePart()) {
+                String datePart = expression.getDatePart();
+
+                // Within "<date part>"
+                if (isPositionWithin(position, length, datePart)) {
+                    // Nothing to do, unless we show basic date parts
+                }
+
+                length += datePart.length();
+
+                // After "<date part> "
+                if (expression.hasSpaceAfterDatePart()) {
+                    length++;
+
+                    // Right before "FROM"
+                    if (position == length) {
+                        addIdentifier(FROM);
+
+                        // Only add the scalar expression's functions if it is not specified
+                        // or the FROM identifier is not present
+                        if (!expression.hasExpression() || !expression.hasFrom()) {
+                            addIdentificationVariables();
+                            addFunctionIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
+                        }
+                    }
+                }
+            }
+
+            if (expression.hasFrom()) {
+
+                // Within "FROM"
+                if (isPositionWithin(position, length, FROM)) {
+                    proposals.addIdentifier(FROM);
+
+                    // Only add the scalar expression's functions if it is not specified
+                    if (!expression.hasExpression()) {
+                        addIdentificationVariables();
+                        addFunctionIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
+                    }
+                }
+
+                length += 4 /* FROM */;
+
+                if (expression.hasSpaceAfterFrom()) {
+                    length++;
+                }
+
+                // Right after "FROM "
+                if (position == length) {
+                    addIdentificationVariables();
+                    addFunctionIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
+                }
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(HierarchicalQueryClause expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+
+        // At the beginning of the clause
+        if (position == 0) {
+            addIdentifier(START_WITH);
+
+            if (!expression.hasStartWithClause()) {
+                addIdentifier(CONNECT_BY);
+            }
+        }
+        else {
+            int length = 0;
+
+            // After the start with clause
+            if (expression.hasStartWithClause()) {
+                length += expression.getStartWithClause().getLength();
+
+                // Right after the start with clause
+                if (hasVirtualSpace() && (position == length + SPACE_LENGTH)) {
+                    addIdentifier(CONNECT_BY);
+                }
+                // After the start with clause
+                else if (expression.hasSpaceAfterStartWithClause()) {
+                    length++;
+
+                    // Right after the start with clause
+                    if (position == length) {
+                        addIdentifier(CONNECT_BY);
+                    }
+                }
+            }
+
+            length += expression.getConnectByClause().getLength();
+
+            // Right after the connect by clause
+            if (hasVirtualSpace() && (position == length + SPACE_LENGTH)) {
+                addIdentifier(ORDER_SIBLINGS_BY);
+            }
+            // After the connect by clause
+            else if (expression.hasSpaceAfterConnectByClause()) {
+                length++;
+
+                if (position == length) {
+                    addIdentifier(ORDER_SIBLINGS_BY);
+                }
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void visit(OrderByItem expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+
+        // After the order by item
+        if (expression.hasExpression()) {
+            int length = expression.getExpression().getLength();
+
+            if (expression.hasSpaceAfterExpression()) {
+                length++;
+
+                // Right after the order by item
+                if (position == length) {
+
+                    // Only add "NULLS FIRST" and "NULLS LAST" if the ordering is not specified
+                    if (expression.getOrdering() == Ordering.DEFAULT) {
+                        proposals.addIdentifier(NULLS_FIRST);
+                        proposals.addIdentifier(NULLS_LAST);
+                    }
+                }
+                else {
+                    length += expression.getActualOrdering().length();
+
+                    if (position > length) {
+                        if (expression.hasSpaceAfterOrdering()) {
+                            length += SPACE_LENGTH;
+
+                            // Right before "NULLS FIRST" or "NULLS LAST"
+                            if (position == length) {
+                                proposals.addIdentifier(NULLS_FIRST);
+                                proposals.addIdentifier(NULLS_LAST);
+                            }
+                            else {
+                                String nullOrdering = expression.getActualNullOrdering();
+
+                                // Within "NULLS FIRST" or "NULLS LAST"
+                                if (isPositionWithin(position, length, nullOrdering)) {
+                                    proposals.addIdentifier(NULLS_FIRST);
+                                    proposals.addIdentifier(NULLS_LAST);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(OrderSiblingsByClause expression) {
+        if (!isLocked(expression)) {
+            super.visit(expression);
+            visitCollectionExpression(expression, ORDER_SIBLINGS_BY, getOrderByClauseCollectionHelper());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(RegexpExpression expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+        int length = 0;
+
+        if (expression.hasStringExpression()) {
+            length += expression.getStringExpression().getLength();
+
+            if (expression.hasSpaceAfterStringExpression()) {
+                length += SPACE_LENGTH;
+            }
+        }
+
+        // Within "REGEXP"
+        if (isPositionWithin(position, length, REGEXP)) {
+            proposals.addIdentifier(REGEXP);
+        }
+        // After "REGEXP"
+        else {
+            length += 6 /* REGEXP */;
+
+            // After "REGEXP "
+            if (expression.hasSpaceAfterIdentifier()) {
+                length += SPACE_LENGTH;
+
+                // Right after "REGEXP "
+                addIdentificationVariables();
+                addFunctionIdentifiers(PatternValueBNF.ID);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(StartWithClause expression) {
+        if (!isLocked(expression)) {
+            super.visit(expression);
+            visitCollectionExpression(expression, expression.getIdentifier(), getConditionalClauseCollectionHelper());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(TableExpression expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression);
+
+        // Within "TABLE"
+        if (isPositionWithin(position, TABLE)) {
+            proposals.addIdentifier(TABLE);
+        }
+        // After '('
+        else if (expression.hasLeftParenthesis()) {
+            int length = TABLE.length() + SPACE_LENGTH;
+
+            // Right after '('
+            if (position == length) {
+                proposals.setTableNamePrefix(ExpressionTools.EMPTY_STRING);
+            }
+            else {
+                Expression nameExpression = expression.getExpression();
+                String tableName = queryContext.literal(nameExpression, LiteralType.STRING_LITERAL);
+
+                if (tableName.length() == 0) {
+                    tableName = queryContext.literal(nameExpression, LiteralType.IDENTIFICATION_VARIABLE);
+                }
+
+                int tableNameLength = tableName.length();
+
+                // Within the string literal representing the table name
+                if ((position > length) && (position <= length + tableNameLength)) {
+                    String prefix = tableName.substring(0, position - length);
+                    prefix = ExpressionTools.unquote(prefix);
+                    proposals.setTableNamePrefix(prefix);
+                }
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(TableVariableDeclaration expression) {
+        super.visit(expression);
+
+        TableExpression tableExpression = expression.getTableExpression();
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+        int length = tableExpression.getLength();
+
+        // After "TABLE()"
+        if (expression.hasSpaceAfterTableExpression()) {
+            length += SPACE_LENGTH;
+
+            // Right after "TABLE() "
+            if (isPositionWithin(position, length, AS) &&
+                isComplete(tableExpression)) {
+
+                addIdentifier(AS);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(UnionClause expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+        String identifier = expression.getIdentifier();
+
+        // Within <identifier>
+        if (isPositionWithin(position, identifier)) {
+            proposals.addIdentifier(EXCEPT);
+            proposals.addIdentifier(INTERSECT);
+            proposals.addIdentifier(UNION);
+        }
+        // After "<identifier> "
+        else if (expression.hasSpaceAfterIdentifier()) {
+            int length = identifier.length() + SPACE_LENGTH;
+
+            // Right after "<identifier> "
+            if (position == length) {
+                proposals.addIdentifier(ALL);
+
+                if (!expression.hasAll()) {
+                    addIdentifier(SELECT);
+                }
+            }
+            // Within "ALL"
+            else if (isPositionWithin(position, length, ALL)) {
+                addIdentifier(ALL);
+            }
+            else {
+                if ((position == length) && !expression.hasAll()) {
+                    proposals.addIdentifier(SELECT);
+                }
+                else {
+
+                    if (expression.hasAll()) {
+                        length += 3 /* ALL */;
+                    }
+
+                    // After "ALL "
+                    if (expression.hasSpaceAfterAll()) {
+                        length += SPACE_LENGTH;
+
+                        // Right after "ALL "
+                        if (position == length) {
+                            proposals.addIdentifier(SELECT);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void visitThirdPartyPathExpression(AbstractPathExpression expression,
+                                                 String variableName) {
+
+        // Check to see if a column name can be resolved
+        int position = queryPosition.getPosition(expression);
+        String text = expression.toActualText();
+        int dotIndex = text.indexOf(DOT);
+        int secondDotIndex = (dotIndex > -1) ? text.indexOf(DOT, dotIndex + 1) : -1;
+
+        // The cursor position is after the first dot and either there is no second dot or the
+        // position is before the second dot, which means a table name and column names could
+        // potentially be resolved
+        if ((secondDotIndex == -1) || (position < secondDotIndex)) {
+            String tableName = getTableName(variableName);
+
+            if (tableName != ExpressionTools.EMPTY_STRING) {
+                tableName = ExpressionTools.unquote(tableName);
+                proposals.setTableName(tableName, text.substring(dotIndex + 1, position));
+            }
+        }
+    }
 
     // Made static final for performance reasons.
-	protected static final class AcceptableTypeVisitor extends AbstractContentAssistVisitor.AcceptableTypeVisitor {
-	}
+    protected static final class AcceptableTypeVisitor extends AbstractContentAssistVisitor.AcceptableTypeVisitor {
+    }
 
     // Made static final for performance reasons.
-	protected static final class AppendableExpressionVisitor extends AbstractContentAssistVisitor.AppendableExpressionVisitor
-	                                            implements EclipseLinkExpressionVisitor {
+    protected static final class AppendableExpressionVisitor extends AbstractContentAssistVisitor.AppendableExpressionVisitor
+                                                implements EclipseLinkExpressionVisitor {
         AppendableExpressionVisitor(AbstractContentAssistVisitor visitor) {
             super(visitor);
         }
 
         /**
-		 * {@inheritDoc}
-		 */
-		public void visit(AsOfClause expression) {
-			if (expression.hasExpression()) {
-				expression.getExpression().accept(this);
-			}
-		}
+         * {@inheritDoc}
+         */
+        public void visit(AsOfClause expression) {
+            if (expression.hasExpression()) {
+                expression.getExpression().accept(this);
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(CastExpression expression) {
-			appendable = !conditionalExpression &&
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(CastExpression expression) {
+            appendable = !conditionalExpression &&
                       expression.hasRightParenthesis();
-		}
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(ConnectByClause expression) {
-			if (expression.hasExpression()) {
-				expression.getExpression().accept(this);
-			}
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ConnectByClause expression) {
+            if (expression.hasExpression()) {
+                expression.getExpression().accept(this);
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(DatabaseType expression) {
-			// Always complete since it's a single word
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(DatabaseType expression) {
+            // Always complete since it's a single word
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(ExtractExpression expression) {
-			appendable = !conditionalExpression &&
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ExtractExpression expression) {
+            appendable = !conditionalExpression &&
                       expression.hasRightParenthesis();
-		}
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(HierarchicalQueryClause expression) {
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(HierarchicalQueryClause expression) {
 
-			if (expression.hasOrderSiblingsByClause()) {
-				expression.getOrderSiblingsByClause().accept(this);
-			}
-			else if (expression.hasConnectByClause()) {
-				expression.getConnectByClause().accept(this);
-			}
-			else if (expression.hasStartWithClause()) {
-				expression.getStartWithClause().accept(this);
-			}
-		}
+            if (expression.hasOrderSiblingsByClause()) {
+                expression.getOrderSiblingsByClause().accept(this);
+            }
+            else if (expression.hasConnectByClause()) {
+                expression.getConnectByClause().accept(this);
+            }
+            else if (expression.hasStartWithClause()) {
+                expression.getStartWithClause().accept(this);
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(OrderSiblingsByClause expression) {
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OrderSiblingsByClause expression) {
 
-			if (expression.hasOrderByItems()) {
-				clauseOfItems = true;
-				expression.getOrderByItems().accept(this);
-				clauseOfItems = false;
-			}
-		}
+            if (expression.hasOrderByItems()) {
+                clauseOfItems = true;
+                expression.getOrderByItems().accept(this);
+                clauseOfItems = false;
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(RegexpExpression expression) {
-			if (expression.hasPatternValue()) {
-				expression.getPatternValue().accept(this);
-			}
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(RegexpExpression expression) {
+            if (expression.hasPatternValue()) {
+                expression.getPatternValue().accept(this);
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(StartWithClause expression) {
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(StartWithClause expression) {
 
-			if (expression.hasConditionalExpression()) {
-				conditionalExpression = true;
-				expression.getConditionalExpression().accept(this);
-				conditionalExpression = false;
-			}
-		}
+            if (expression.hasConditionalExpression()) {
+                conditionalExpression = true;
+                expression.getConditionalExpression().accept(this);
+                conditionalExpression = false;
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(TableExpression expression) {
-			appendable = !conditionalExpression &&
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(TableExpression expression) {
+            appendable = !conditionalExpression &&
                       expression.hasRightParenthesis();
-		}
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(TableVariableDeclaration expression) {
-			if (expression.hasIdentificationVariable()) {
-				expression.getIdentificationVariable().accept(this);
-			}
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(TableVariableDeclaration expression) {
+            if (expression.hasIdentificationVariable()) {
+                expression.getIdentificationVariable().accept(this);
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(UnionClause expression) {
-			if (expression.hasQuery()) {
-				expression.getQuery().accept(this);
-			}
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(UnionClause expression) {
+            if (expression.hasQuery()) {
+                expression.getQuery().accept(this);
+            }
+        }
+    }
 
     // Made static final for performance reasons.
-	protected static final class EndingQueryPositionBuilder extends AbstractContentAssistVisitor.EndingQueryPositionBuilder
-	                                           implements EclipseLinkExpressionVisitor {
+    protected static final class EndingQueryPositionBuilder extends AbstractContentAssistVisitor.EndingQueryPositionBuilder
+                                               implements EclipseLinkExpressionVisitor {
 
         protected EndingQueryPositionBuilder(AbstractContentAssistVisitor visitor) {
             super(visitor);
         }
 
         /**
-		 * {@inheritDoc}
-		 */
-		public void visit(AsOfClause expression) {
+         * {@inheritDoc}
+         */
+        public void visit(AsOfClause expression) {
 
-			if (badExpression) {
-				return;
-			}
+            if (badExpression) {
+                return;
+            }
 
-			if (expression.hasExpression()) {
-				expression.getExpression().accept(this);
-			}
+            if (expression.hasExpression()) {
+                expression.getExpression().accept(this);
+            }
 
-			if (queryPosition.getExpression() == null) {
-				queryPosition.setExpression(expression);
-			}
+            if (queryPosition.getExpression() == null) {
+                queryPosition.setExpression(expression);
+            }
 
-			queryPosition.addPosition(expression, expression.getLength() - correction);
-		}
+            queryPosition.addPosition(expression, expression.getLength() - correction);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(CastExpression expression) {
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(CastExpression expression) {
 
-			if (badExpression) {
-				return;
-			}
+            if (badExpression) {
+                return;
+            }
 
-			if (expression.hasScalarExpression() &&
-			   !expression.hasAs() &&
-			   !expression.hasDatabaseType() &&
-			   !expression.hasRightParenthesis()) {
+            if (expression.hasScalarExpression() &&
+               !expression.hasAs() &&
+               !expression.hasDatabaseType() &&
+               !expression.hasRightParenthesis()) {
 
-				expression.getExpression().accept(this);
-			}
+                expression.getExpression().accept(this);
+            }
 
-			if (queryPosition.getExpression() == null) {
-				queryPosition.setExpression(expression);
-			}
+            if (queryPosition.getExpression() == null) {
+                queryPosition.setExpression(expression);
+            }
 
-			queryPosition.addPosition(expression, expression.getLength() - correction);
-		}
+            queryPosition.addPosition(expression, expression.getLength() - correction);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(ConnectByClause expression) {
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ConnectByClause expression) {
 
-			if (badExpression) {
-				return;
-			}
+            if (badExpression) {
+                return;
+            }
 
-			if (expression.hasExpression()) {
-				expression.getExpression().accept(this);
-			}
+            if (expression.hasExpression()) {
+                expression.getExpression().accept(this);
+            }
 
-			if (queryPosition.getExpression() == null) {
-				queryPosition.setExpression(expression);
-			}
+            if (queryPosition.getExpression() == null) {
+                queryPosition.setExpression(expression);
+            }
 
-			queryPosition.addPosition(expression, expression.getLength() - correction);
-		}
+            queryPosition.addPosition(expression, expression.getLength() - correction);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(DatabaseType expression) {
-			visitAbstractDoubleEncapsulatedExpression(expression);
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(DatabaseType expression) {
+            visitAbstractDoubleEncapsulatedExpression(expression);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(ExtractExpression expression) {
-			visitAbstractSingleEncapsulatedExpression(expression);
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ExtractExpression expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(HierarchicalQueryClause expression) {
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(HierarchicalQueryClause expression) {
 
-			if (badExpression) {
-				return;
-			}
+            if (badExpression) {
+                return;
+            }
 
-			if (expression.hasOrderSiblingsByClause()) {
-				expression.getOrderSiblingsByClause().accept(this);
-			}
-			else if (expression.hasConnectByClause()) {
-				expression.getConnectByClause().accept(this);
-				if (expression.hasSpaceAfterConnectByClause()) {
-					virtualSpace = true;
-				}
-			}
-			else if (expression.hasStartWithClause()) {
-				expression.getStartWithClause().accept(this);
-				if (expression.hasSpaceAfterStartWithClause()) {
-					virtualSpace = true;
-				}
-			}
+            if (expression.hasOrderSiblingsByClause()) {
+                expression.getOrderSiblingsByClause().accept(this);
+            }
+            else if (expression.hasConnectByClause()) {
+                expression.getConnectByClause().accept(this);
+                if (expression.hasSpaceAfterConnectByClause()) {
+                    virtualSpace = true;
+                }
+            }
+            else if (expression.hasStartWithClause()) {
+                expression.getStartWithClause().accept(this);
+                if (expression.hasSpaceAfterStartWithClause()) {
+                    virtualSpace = true;
+                }
+            }
 
-			if (queryPosition.getExpression() == null) {
-				queryPosition.setExpression(expression);
-			}
+            if (queryPosition.getExpression() == null) {
+                queryPosition.setExpression(expression);
+            }
 
-			queryPosition.addPosition(expression, expression.getLength() - correction);
-		}
+            queryPosition.addPosition(expression, expression.getLength() - correction);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(OrderSiblingsByClause expression) {
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OrderSiblingsByClause expression) {
 
-			if (badExpression) {
-				return;
-			}
+            if (badExpression) {
+                return;
+            }
 
-			if (expression.hasOrderByItems()) {
-				expression.getOrderByItems().accept(this);
-			}
+            if (expression.hasOrderByItems()) {
+                expression.getOrderByItems().accept(this);
+            }
 
-			if (queryPosition.getExpression() == null) {
-				queryPosition.setExpression(expression);
-			}
+            if (queryPosition.getExpression() == null) {
+                queryPosition.setExpression(expression);
+            }
 
-			queryPosition.addPosition(expression, expression.getLength() - correction);
-		}
+            queryPosition.addPosition(expression, expression.getLength() - correction);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(RegexpExpression expression) {
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(RegexpExpression expression) {
 
-			if (badExpression) {
-				return;
-			}
+            if (badExpression) {
+                return;
+            }
 
-			if (expression.hasPatternValue()) {
-				expression.getPatternValue().accept(this);
-			}
+            if (expression.hasPatternValue()) {
+                expression.getPatternValue().accept(this);
+            }
 
-			if (queryPosition.getExpression() == null) {
-				queryPosition.setExpression(expression);
-			}
+            if (queryPosition.getExpression() == null) {
+                queryPosition.setExpression(expression);
+            }
 
-			queryPosition.addPosition(expression, expression.getLength() - correction);
-		}
+            queryPosition.addPosition(expression, expression.getLength() - correction);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(StartWithClause expression) {
-			visitAbstractConditionalClause(expression);
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(StartWithClause expression) {
+            visitAbstractConditionalClause(expression);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(TableExpression expression) {
-			visitAbstractSingleEncapsulatedExpression(expression);
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(TableExpression expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(TableVariableDeclaration expression) {
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(TableVariableDeclaration expression) {
 
-			if (badExpression) {
-				return;
-			}
+            if (badExpression) {
+                return;
+            }
 
-			if (expression.hasIdentificationVariable()) {
-				expression.getIdentificationVariable().accept(this);
-			}
-			else if (!expression.hasAs()) {
-				expression.getTableExpression().accept(this);
-			}
+            if (expression.hasIdentificationVariable()) {
+                expression.getIdentificationVariable().accept(this);
+            }
+            else if (!expression.hasAs()) {
+                expression.getTableExpression().accept(this);
+            }
 
-			if (queryPosition.getExpression() == null) {
-				queryPosition.setExpression(expression);
-			}
+            if (queryPosition.getExpression() == null) {
+                queryPosition.setExpression(expression);
+            }
 
-			queryPosition.addPosition(expression, expression.getLength() - correction);
-		}
+            queryPosition.addPosition(expression, expression.getLength() - correction);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void visit(UnionClause expression) {
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(UnionClause expression) {
 
-			if (badExpression) {
-				return;
-			}
+            if (badExpression) {
+                return;
+            }
 
-			if (expression.hasQuery()) {
-				expression.getQuery().accept(this);
-			}
+            if (expression.hasQuery()) {
+                expression.getQuery().accept(this);
+            }
 
-			if (queryPosition.getExpression() == null) {
-				queryPosition.setExpression(expression);
-			}
+            if (queryPosition.getExpression() == null) {
+                queryPosition.setExpression(expression);
+            }
 
-			queryPosition.addPosition(expression, expression.getLength() - correction);
-		}
-	}
+            queryPosition.addPosition(expression, expression.getLength() - correction);
+        }
+    }
 
     // Made static final for performance reasons.
-	/**
-	 * This visitor adds support for the additional clauses provided by EclipseLink, such as the
-	 */
-	protected static final class FollowingClausesVisitor extends AbstractContentAssistVisitor.FollowingClausesVisitor {
+    /**
+     * This visitor adds support for the additional clauses provided by EclipseLink, such as the
+     */
+    protected static final class FollowingClausesVisitor extends AbstractContentAssistVisitor.FollowingClausesVisitor {
 
-		protected boolean hasAsOfClause;
-		protected boolean hasConnectByClause;
-		protected boolean hasOrderSiblingsByClause;
-		protected boolean hasStartWithClause;
-		protected boolean introspect;
+        protected boolean hasAsOfClause;
+        protected boolean hasConnectByClause;
+        protected boolean hasOrderSiblingsByClause;
+        protected boolean hasStartWithClause;
+        protected boolean introspect;
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void dispose() {
-			super.dispose();
-			hasAsOfClause            = false;
-			hasConnectByClause       = false;
-			hasStartWithClause       = false;
-			hasOrderSiblingsByClause = false;
-		}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void dispose() {
+            super.dispose();
+            hasAsOfClause            = false;
+            hasConnectByClause       = false;
+            hasStartWithClause       = false;
+            hasOrderSiblingsByClause = false;
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		protected boolean hasFromClause(AbstractSelectStatement expression) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected boolean hasFromClause(AbstractSelectStatement expression) {
 
-			introspect = true;
-			expression.getFromClause().accept(this);
-			introspect = false;
+            introspect = true;
+            expression.getFromClause().accept(this);
+            introspect = false;
 
-			if (afterIdentifier == SELECT) {
+            if (afterIdentifier == SELECT) {
 
-				if (beforeIdentifier == START_WITH) {
-					return expression.hasFromClause();
-				}
+                if (beforeIdentifier == START_WITH) {
+                    return expression.hasFromClause();
+                }
 
-				if (beforeIdentifier == CONNECT_BY) {
-					return expression.hasFromClause() ||
-					       hasStartWithClause;
-				}
+                if (beforeIdentifier == CONNECT_BY) {
+                    return expression.hasFromClause() ||
+                           hasStartWithClause;
+                }
 
-				if (beforeIdentifier == ORDER_SIBLINGS_BY) {
-					return expression.hasFromClause() ||
-					       hasStartWithClause         ||
-					       hasConnectByClause;
-				}
+                if (beforeIdentifier == ORDER_SIBLINGS_BY) {
+                    return expression.hasFromClause() ||
+                           hasStartWithClause         ||
+                           hasConnectByClause;
+                }
 
-				if (beforeIdentifier == AS_OF) {
-					return expression.hasFromClause() ||
-					       hasStartWithClause         ||
-					       hasConnectByClause         ||
-					       hasOrderSiblingsByClause;
-				}
+                if (beforeIdentifier == AS_OF) {
+                    return expression.hasFromClause() ||
+                           hasStartWithClause         ||
+                           hasConnectByClause         ||
+                           hasOrderSiblingsByClause;
+                }
 
-				if (beforeIdentifier == WHERE) {
-					return expression.hasFromClause() ||
-					       hasStartWithClause         ||
-					       hasConnectByClause         ||
-					       hasOrderSiblingsByClause   ||
-					       hasAsOfClause;
-				}
-			}
-			else if (afterIdentifier == FROM) {
+                if (beforeIdentifier == WHERE) {
+                    return expression.hasFromClause() ||
+                           hasStartWithClause         ||
+                           hasConnectByClause         ||
+                           hasOrderSiblingsByClause   ||
+                           hasAsOfClause;
+                }
+            }
+            else if (afterIdentifier == FROM) {
 
-				if (beforeIdentifier == CONNECT_BY) {
-					return hasStartWithClause;
-				}
+                if (beforeIdentifier == CONNECT_BY) {
+                    return hasStartWithClause;
+                }
 
-				if (beforeIdentifier == ORDER_SIBLINGS_BY) {
-					return hasStartWithClause ||
-					       hasConnectByClause;
-				}
+                if (beforeIdentifier == ORDER_SIBLINGS_BY) {
+                    return hasStartWithClause ||
+                           hasConnectByClause;
+                }
 
-				if (beforeIdentifier == AS_OF) {
-					return hasStartWithClause ||
-					       hasConnectByClause ||
-					       hasOrderSiblingsByClause;
-				}
+                if (beforeIdentifier == AS_OF) {
+                    return hasStartWithClause ||
+                           hasConnectByClause ||
+                           hasOrderSiblingsByClause;
+                }
 
-				if (beforeIdentifier == WHERE) {
-					return hasStartWithClause       ||
-					       hasConnectByClause       ||
-					       hasOrderSiblingsByClause ||
-					       hasAsOfClause;
-				}
-			}
-			else if (afterIdentifier == START_WITH) {
+                if (beforeIdentifier == WHERE) {
+                    return hasStartWithClause       ||
+                           hasConnectByClause       ||
+                           hasOrderSiblingsByClause ||
+                           hasAsOfClause;
+                }
+            }
+            else if (afterIdentifier == START_WITH) {
 
-				if (beforeIdentifier == ORDER_SIBLINGS_BY) {
-					return hasConnectByClause;
-				}
+                if (beforeIdentifier == ORDER_SIBLINGS_BY) {
+                    return hasConnectByClause;
+                }
 
-				if (beforeIdentifier == AS_OF) {
-					return hasConnectByClause ||
-					       hasOrderSiblingsByClause;
-				}
+                if (beforeIdentifier == AS_OF) {
+                    return hasConnectByClause ||
+                           hasOrderSiblingsByClause;
+                }
 
-				if (beforeIdentifier == WHERE) {
-					return hasConnectByClause       ||
-					       hasOrderSiblingsByClause ||
-					       hasAsOfClause;
-				}
-			}
-			else if (afterIdentifier == CONNECT_BY) {
+                if (beforeIdentifier == WHERE) {
+                    return hasConnectByClause       ||
+                           hasOrderSiblingsByClause ||
+                           hasAsOfClause;
+                }
+            }
+            else if (afterIdentifier == CONNECT_BY) {
 
-				if (beforeIdentifier == AS_OF) {
-					return hasOrderSiblingsByClause;
-				}
+                if (beforeIdentifier == AS_OF) {
+                    return hasOrderSiblingsByClause;
+                }
 
-				if (beforeIdentifier == WHERE) {
-					return hasOrderSiblingsByClause ||
-					       hasAsOfClause;
-				}
-			}
-			else if (afterIdentifier == ORDER_SIBLINGS_BY) {
+                if (beforeIdentifier == WHERE) {
+                    return hasOrderSiblingsByClause ||
+                           hasAsOfClause;
+                }
+            }
+            else if (afterIdentifier == ORDER_SIBLINGS_BY) {
 
-				if (beforeIdentifier == WHERE) {
-					return hasAsOfClause;
-				}
-			}
+                if (beforeIdentifier == WHERE) {
+                    return hasAsOfClause;
+                }
+            }
 
-			return false;
-		}
+            return false;
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(FromClause expression) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(FromClause expression) {
 
-			if (!introspect) {
-				super.visit(expression);
-			}
-			else {
-				hasAsOfClause = expression.hasAsOfClause();
+            if (!introspect) {
+                super.visit(expression);
+            }
+            else {
+                hasAsOfClause = expression.hasAsOfClause();
 
-				if (expression.hasHierarchicalQueryClause()) {
-					expression.getHierarchicalQueryClause().accept(this);
-				}
-			}
-		}
+                if (expression.hasHierarchicalQueryClause()) {
+                    expression.getHierarchicalQueryClause().accept(this);
+                }
+            }
+        }
 
-		public void visit(HierarchicalQueryClause expression) {
+        public void visit(HierarchicalQueryClause expression) {
 
-			if (!introspect) {
-				super.visit(expression);
-			}
-			else {
-				hasConnectByClause       = expression.hasConnectByClause();
-				hasStartWithClause       = expression.hasStartWithClause();
-				hasOrderSiblingsByClause = expression.hasOrderSiblingsByClause();
-			}
-		}
+            if (!introspect) {
+                super.visit(expression);
+            }
+            else {
+                hasConnectByClause       = expression.hasConnectByClause();
+                hasStartWithClause       = expression.hasStartWithClause();
+                hasOrderSiblingsByClause = expression.hasOrderSiblingsByClause();
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SimpleFromClause expression) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(SimpleFromClause expression) {
 
-			if (!introspect) {
-				super.visit(expression);
-			}
-			else {
-				hasAsOfClause = expression.hasAsOfClause();
+            if (!introspect) {
+                super.visit(expression);
+            }
+            else {
+                hasAsOfClause = expression.hasAsOfClause();
 
-				if (expression.hasHierarchicalQueryClause()) {
-					expression.getHierarchicalQueryClause().accept(this);
-				}
-			}
-		}
-	}
+                if (expression.hasHierarchicalQueryClause()) {
+                    expression.getHierarchicalQueryClause().accept(this);
+                }
+            }
+        }
+    }
 
-	protected class FromClauseCollectionHelper extends AbstractContentAssistVisitor.FromClauseCollectionHelper {
+    protected class FromClauseCollectionHelper extends AbstractContentAssistVisitor.FromClauseCollectionHelper {
 
         protected FromClauseCollectionHelper(AbstractContentAssistVisitor visitor) {
             super(visitor);
         }
 
         /**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void addAtTheEndOfChild(AbstractFromClause expression,
-		                               CollectionExpression collectionExpression,
-		                               int index,
-		                               boolean hasComma,
-		                               boolean virtualSpace) {
+         * {@inheritDoc}
+         */
+        @Override
+        public void addAtTheEndOfChild(AbstractFromClause expression,
+                                       CollectionExpression collectionExpression,
+                                       int index,
+                                       boolean hasComma,
+                                       boolean virtualSpace) {
 
- 			super.addAtTheEndOfChild(expression, collectionExpression, index, hasComma, virtualSpace);
- 			boolean end = (index + 1 == collectionExpression.childrenSize());
+             super.addAtTheEndOfChild(expression, collectionExpression, index, hasComma, virtualSpace);
+             boolean end = (index + 1 == collectionExpression.childrenSize());
 
-			// At the end of a range variable declaration, the following clauses can be added
-			// Example: "SELECT e FROM Employee e |"
-			// Example: "SELECT e FROM Employee e, Address a |"
- 			// Example: "SELECT e FROM Employee e |, Address a " <- Not valid to add the clauses
-			if (((index == 0) || hasComma) && end && virtualSpace) {
+            // At the end of a range variable declaration, the following clauses can be added
+            // Example: "SELECT e FROM Employee e |"
+            // Example: "SELECT e FROM Employee e, Address a |"
+             // Example: "SELECT e FROM Employee e |, Address a " <- Not valid to add the clauses
+            if (((index == 0) || hasComma) && end && virtualSpace) {
 
-				if (isComplete(collectionExpression.getChild(0))) {
+                if (isComplete(collectionExpression.getChild(0))) {
 
-					EclipseLinkContentAssistVisitor.this.addIdentifier(START_WITH);
+                    EclipseLinkContentAssistVisitor.this.addIdentifier(START_WITH);
 
-					if (!hasClausesDefinedBetween(expression, FROM, CONNECT_BY)) {
-						EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
-					}
+                    if (!hasClausesDefinedBetween(expression, FROM, CONNECT_BY)) {
+                        EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
+                    }
 
-					if (!hasClausesDefinedBetween(expression, FROM, ORDER_SIBLINGS_BY)) {
-						EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
-					}
+                    if (!hasClausesDefinedBetween(expression, FROM, ORDER_SIBLINGS_BY)) {
+                        EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
+                    }
 
-					if (!hasClausesDefinedBetween(expression, FROM, AS_OF)) {
-						EclipseLinkContentAssistVisitor.this.addIdentifier(AS_OF);
-					}
-				}
-			}
-			// Special case to handle a range variable declaration that can also
-			// be either the beginning of the following clauses
-			// Example: "SELECT e FROM Employee o o|" <- Valid
-			// Example: "SELECT e FROM Employee o, Address a o|" <- Valid
-			// Example: "SELECT e FROM Employee o|" <- Not valid
-			else if ((index > 0) && end && !hasComma) {
+                    if (!hasClausesDefinedBetween(expression, FROM, AS_OF)) {
+                        EclipseLinkContentAssistVisitor.this.addIdentifier(AS_OF);
+                    }
+                }
+            }
+            // Special case to handle a range variable declaration that can also
+            // be either the beginning of the following clauses
+            // Example: "SELECT e FROM Employee o o|" <- Valid
+            // Example: "SELECT e FROM Employee o, Address a o|" <- Valid
+            // Example: "SELECT e FROM Employee o|" <- Not valid
+            else if ((index > 0) && end && !hasComma) {
 
-				int position = queryPosition.getPosition();
-				addCompositeIdentifier(START_WITH, 4 /* START - 1 */);
+                int position = queryPosition.getPosition();
+                addCompositeIdentifier(START_WITH, 4 /* START - 1 */);
 
-				if (!hasClausesDefinedBetween(expression, FROM, CONNECT_BY)) {
-					addCompositeIdentifier(CONNECT_BY, 6 /* CONNECT - 1 */);
-				}
+                if (!hasClausesDefinedBetween(expression, FROM, CONNECT_BY)) {
+                    addCompositeIdentifier(CONNECT_BY, 6 /* CONNECT - 1 */);
+                }
 
-				if (!hasClausesDefinedBetween(expression, FROM, ORDER_SIBLINGS_BY)) {
-					addCompositeIdentifier(ORDER_SIBLINGS_BY, 4 /* ORDER - 1 */);
-				}
+                if (!hasClausesDefinedBetween(expression, FROM, ORDER_SIBLINGS_BY)) {
+                    addCompositeIdentifier(ORDER_SIBLINGS_BY, 4 /* ORDER - 1 */);
+                }
 
-				// AS OF clause
-				if (!hasClausesDefinedBetween(expression, FROM, AS_OF)) {
-					addCompositeIdentifier(AS_OF, 1 /* AS - 1 */);
-				}
-			}
-		}
+                // AS OF clause
+                if (!hasClausesDefinedBetween(expression, FROM, AS_OF)) {
+                    addCompositeIdentifier(AS_OF, 1 /* AS - 1 */);
+                }
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void addTheBeginningOfChild(AbstractFromClause expression,
-		                                   CollectionExpression collectionExpression,
-		                                   int index,
-		                                   boolean hasComma) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void addTheBeginningOfChild(AbstractFromClause expression,
+                                           CollectionExpression collectionExpression,
+                                           int index,
+                                           boolean hasComma) {
 
-			super.addTheBeginningOfChild(expression, collectionExpression, index, hasComma);
+            super.addTheBeginningOfChild(expression, collectionExpression, index, hasComma);
 
-			// 1. At the beginning of the FROM declaration, fully qualified class names are valid proposals
-			// 2. To be valid elsewhere, the declarations have to be separated by a comma
-			//    "SELECT e FROM Employee e W|" <- entity names are not valid proposals, only 'WHERE' is
-			if ((index == 0) || hasComma) {
-				proposals.setClassNamePrefix(word, ClassType.INSTANTIABLE);
-			}
+            // 1. At the beginning of the FROM declaration, fully qualified class names are valid proposals
+            // 2. To be valid elsewhere, the declarations have to be separated by a comma
+            //    "SELECT e FROM Employee e W|" <- entity names are not valid proposals, only 'WHERE' is
+            if ((index == 0) || hasComma) {
+                proposals.setClassNamePrefix(word, ClassType.INSTANTIABLE);
+            }
 
-			// The identifier for a TABLE declaration can only be added after
-			// the first declaration, as long as there is a comma before it
-			// "SELECT e FROM Employee e, |" <- 'TABLE' is a valid proposal
-			// "SELECT e FROM Employee e, T|" <- 'TABLE' is a valid proposal
-			// "SELECT e FROM Employee e T|" <- 'TABLE' is NOT a valid proposal
-			if ((index > 0) && hasComma) {
-				EclipseLinkContentAssistVisitor.this.addIdentifier(TABLE);
-			}
+            // The identifier for a TABLE declaration can only be added after
+            // the first declaration, as long as there is a comma before it
+            // "SELECT e FROM Employee e, |" <- 'TABLE' is a valid proposal
+            // "SELECT e FROM Employee e, T|" <- 'TABLE' is a valid proposal
+            // "SELECT e FROM Employee e T|" <- 'TABLE' is NOT a valid proposal
+            if ((index > 0) && hasComma) {
+                EclipseLinkContentAssistVisitor.this.addIdentifier(TABLE);
+            }
 
-			// Add the "internal" clauses of the FROM clause defined by EclipseLink
-			// only if it ends the FROM clause expression
-			if (collectionExpression != null) {
-				boolean end = (index + 1 == collectionExpression.childrenSize());
+            // Add the "internal" clauses of the FROM clause defined by EclipseLink
+            // only if it ends the FROM clause expression
+            if (collectionExpression != null) {
+                boolean end = (index + 1 == collectionExpression.childrenSize());
 
-	 			if (end && !hasComma) {
+                 if (end && !hasComma) {
 
-					EclipseLinkContentAssistVisitor.this.addIdentifier(START_WITH);
+                    EclipseLinkContentAssistVisitor.this.addIdentifier(START_WITH);
 
-					if (!hasClausesDefinedBetween(expression, FROM, CONNECT_BY)) {
-						EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
-					}
+                    if (!hasClausesDefinedBetween(expression, FROM, CONNECT_BY)) {
+                        EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
+                    }
 
-					if (!hasClausesDefinedBetween(expression, FROM, ORDER_SIBLINGS_BY)) {
-						EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
-					}
+                    if (!hasClausesDefinedBetween(expression, FROM, ORDER_SIBLINGS_BY)) {
+                        EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
+                    }
 
-					if (!hasClausesDefinedBetween(expression, FROM, AS_OF)) {
-						EclipseLinkContentAssistVisitor.this.addIdentifier(AS_OF);
-					}
-	 			}
-			}
-		}
-	}
+                    if (!hasClausesDefinedBetween(expression, FROM, AS_OF)) {
+                        EclipseLinkContentAssistVisitor.this.addIdentifier(AS_OF);
+                    }
+                 }
+            }
+        }
+    }
 
-	protected class FromClauseStatementHelper extends AbstractContentAssistVisitor.FromClauseStatementHelper {
+    protected class FromClauseStatementHelper extends AbstractContentAssistVisitor.FromClauseStatementHelper {
 
         protected FromClauseStatementHelper(AbstractContentAssistVisitor visitor) {
             super(visitor);
         }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void addInternalClauseProposals(SelectStatement expression) {
-			super.addInternalClauseProposals(expression);
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void addInternalClauseProposals(SelectStatement expression) {
+            super.addInternalClauseProposals(expression);
 
-			if (!hasClausesDefinedBetween(expression, FROM, WHERE)) {
-				EclipseLinkContentAssistVisitor.this.addIdentifier(START_WITH);
-			}
+            if (!hasClausesDefinedBetween(expression, FROM, WHERE)) {
+                EclipseLinkContentAssistVisitor.this.addIdentifier(START_WITH);
+            }
 
-			if (!hasClausesDefinedBetween(expression, START_WITH, ORDER_SIBLINGS_BY)) {
-				EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
-			}
+            if (!hasClausesDefinedBetween(expression, START_WITH, ORDER_SIBLINGS_BY)) {
+                EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
+            }
 
-			if (!hasClausesDefinedBetween(expression, CONNECT_BY, AS_OF)) {
-				EclipseLinkContentAssistVisitor.this.addIdentifier(ORDER_SIBLINGS_BY);
-			}
+            if (!hasClausesDefinedBetween(expression, CONNECT_BY, AS_OF)) {
+                EclipseLinkContentAssistVisitor.this.addIdentifier(ORDER_SIBLINGS_BY);
+            }
 
-			if (!hasClausesDefinedBetween(expression, ORDER_SIBLINGS_BY, WHERE)) {
-				EclipseLinkContentAssistVisitor.this.addIdentifier(AS_OF);
-			}
-		}
-	}
+            if (!hasClausesDefinedBetween(expression, ORDER_SIBLINGS_BY, WHERE)) {
+                EclipseLinkContentAssistVisitor.this.addIdentifier(AS_OF);
+            }
+        }
+    }
 
-	/**
-	 * This subclass adds support for EclipseLink specific support.
-	 */
-	protected class IncompleteCollectionExpressionVisitor extends AbstractContentAssistVisitor.IncompleteCollectionExpressionVisitor {
+    /**
+     * This subclass adds support for EclipseLink specific support.
+     */
+    protected class IncompleteCollectionExpressionVisitor extends AbstractContentAssistVisitor.IncompleteCollectionExpressionVisitor {
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		protected List<String> compositeIdentifiersAfter(String clause) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected List<String> compositeIdentifiersAfter(String clause) {
 
-			// Add support for hierarchical query and AS OF clauses
-			if ((clause == FROM) && getEcliseLinkVersion().isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_5)) {
-				List<String> identifiers = super.compositeIdentifiersAfter(clause);
-				identifiers.add(START_WITH);
-				identifiers.add(CONNECT_BY);
-				identifiers.add(ORDER_SIBLINGS_BY);
-				identifiers.add(AS_OF);
-				return identifiers;
-			}
+            // Add support for hierarchical query and AS OF clauses
+            if ((clause == FROM) && getEcliseLinkVersion().isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_5)) {
+                List<String> identifiers = super.compositeIdentifiersAfter(clause);
+                identifiers.add(START_WITH);
+                identifiers.add(CONNECT_BY);
+                identifiers.add(ORDER_SIBLINGS_BY);
+                identifiers.add(AS_OF);
+                return identifiers;
+            }
 
-			return super.compositeIdentifiersAfter(clause);
-		}
-	}
+            return super.compositeIdentifiersAfter(clause);
+        }
+    }
 
-	protected class OrderByClauseStatementHelper extends AbstractContentAssistVisitor.OrderByClauseStatementHelper {
+    protected class OrderByClauseStatementHelper extends AbstractContentAssistVisitor.OrderByClauseStatementHelper {
 
         protected OrderByClauseStatementHelper(AbstractContentAssistVisitor visitor) {
             super(visitor);
         }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public UnionClauseStatementHelper getNextHelper() {
-			return getUnionClauseStatementHelper();
-		}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public UnionClauseStatementHelper getNextHelper() {
+            return getUnionClauseStatementHelper();
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public boolean hasSpaceAfterClause(SelectStatement expression) {
-			return expression.hasSpaceBeforeUnion();
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean hasSpaceAfterClause(SelectStatement expression) {
+            return expression.hasSpaceBeforeUnion();
+        }
+    }
 
-	protected class SimpleFromClauseStatementHelper extends AbstractContentAssistVisitor.SimpleFromClauseStatementHelper {
+    protected class SimpleFromClauseStatementHelper extends AbstractContentAssistVisitor.SimpleFromClauseStatementHelper {
 
         protected SimpleFromClauseStatementHelper(AbstractContentAssistVisitor visitor) {
             super(visitor);
         }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void addInternalClauseProposals(SimpleSelectStatement expression) {
-			super.addInternalClauseProposals(expression);
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void addInternalClauseProposals(SimpleSelectStatement expression) {
+            super.addInternalClauseProposals(expression);
 
-			EclipseLinkContentAssistVisitor.this.addIdentifier(START_WITH);
+            EclipseLinkContentAssistVisitor.this.addIdentifier(START_WITH);
 
-			if (!hasClausesDefinedBetween(expression, FROM, CONNECT_BY)) {
-				EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
-			}
+            if (!hasClausesDefinedBetween(expression, FROM, CONNECT_BY)) {
+                EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
+            }
 
-			if (!hasClausesDefinedBetween(expression, FROM, ORDER_SIBLINGS_BY)) {
-				EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
-			}
+            if (!hasClausesDefinedBetween(expression, FROM, ORDER_SIBLINGS_BY)) {
+                EclipseLinkContentAssistVisitor.this.addIdentifier(CONNECT_BY);
+            }
 
-			if (!hasClausesDefinedBetween(expression, FROM, AS_OF)) {
-				EclipseLinkContentAssistVisitor.this.addIdentifier(AS_OF);
-			}
-		}
-	}
+            if (!hasClausesDefinedBetween(expression, FROM, AS_OF)) {
+                EclipseLinkContentAssistVisitor.this.addIdentifier(AS_OF);
+            }
+        }
+    }
 
-	protected class TableExpressionVisitor extends AbstractEclipseLinkExpressionVisitor {
+    protected class TableExpressionVisitor extends AbstractEclipseLinkExpressionVisitor {
 
-		/**
-		 * The {@link Expression} being visited.
-		 */
-		protected Expression expression;
+        /**
+         * The {@link Expression} being visited.
+         */
+        protected Expression expression;
 
-		/**
-		 * <code>true</code> if the {@link Expression} being visited is a {@link TableExpression}.
-		 */
-		protected boolean valid;
+        /**
+         * <code>true</code> if the {@link Expression} being visited is a {@link TableExpression}.
+         */
+        protected boolean valid;
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(TableExpression expression) {
-			valid = (this.expression == expression);
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(TableExpression expression) {
+            valid = (this.expression == expression);
+        }
+    }
 
-	protected class UnionClauseStatementHelper implements StatementHelper<SelectStatement> {
+    protected class UnionClauseStatementHelper implements StatementHelper<SelectStatement> {
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void addClauseProposals() {
-			addIdentifier(EXCEPT);
-			addIdentifier(INTERSECT);
-			addIdentifier(UNION);
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public void addClauseProposals() {
+            addIdentifier(EXCEPT);
+            addIdentifier(INTERSECT);
+            addIdentifier(UNION);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void addInternalClauseProposals(SelectStatement expression) {
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public void addInternalClauseProposals(SelectStatement expression) {
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public Expression getClause(SelectStatement expression) {
-			return expression.getUnionClauses();
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public Expression getClause(SelectStatement expression) {
+            return expression.getUnionClauses();
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public StatementHelper<? extends SelectStatement> getNextHelper() {
-			return null;
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public StatementHelper<? extends SelectStatement> getNextHelper() {
+            return null;
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean hasClause(SelectStatement expression) {
-			return expression.hasUnionClauses();
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public boolean hasClause(SelectStatement expression) {
+            return expression.hasUnionClauses();
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean hasSpaceAfterClause(SelectStatement expression) {
-			return false;
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public boolean hasSpaceAfterClause(SelectStatement expression) {
+            return false;
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean isClauseComplete(SelectStatement expression) {
-			return isComplete(expression.getUnionClauses());
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public boolean isClauseComplete(SelectStatement expression) {
+            return isComplete(expression.getUnionClauses());
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean isRequired() {
-			return false;
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        public boolean isRequired() {
+            return false;
+        }
+    }
 }

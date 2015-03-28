@@ -121,12 +121,12 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                 }
                 else {
                     if (!xrService.descriptorsByQName.containsKey(type)) {
-                    	if (type.equals(SXF_QNAME)) {
-                    		databaseQueryToInitialize = new DataReadQuery();
-                    	}
-                    	else {
-                    		databaseQueryToInitialize = new ValueReadQuery();
-                    	}
+                        if (type.equals(SXF_QNAME)) {
+                            databaseQueryToInitialize = new DataReadQuery();
+                        }
+                        else {
+                            databaseQueryToInitialize = new ValueReadQuery();
+                        }
                     }
                     else {
                         // read object query for the class mapped to the type
@@ -205,7 +205,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                             spCall.addNamedOutputArgument(arg.getName());
                         }
                     }
-                }                
+                }
             } else {
                 if (spCall.isStoredFunctionCall() && isCursorType(xrService, resultType)) {
                     spCall.setIsCursorOutputProcedure(true);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,9 +33,9 @@ public class JAXBElementEnumTestCases extends JAXBElementTestCases {
         setControlJSON(JSON_RESOURCE);
         setTargetClass(targetClass);
     }
-    
+
     public Class getUnmarshalClass(){
-    	return targetClass;
+        return targetClass;
     }
 
     public static void main(String[] args) {
@@ -55,8 +55,8 @@ public class JAXBElementEnumTestCases extends JAXBElementTestCases {
         Coin coin = Coin.NICKEL;
 
         return new JAXBElement(new QName(CONTROL_NAMESPACE_URI, "coin"), targetClass, coin);
-    } 
-    
+    }
+
     @Override
     public Class[] getClasses() {
         return new Class[]{Coin.class};

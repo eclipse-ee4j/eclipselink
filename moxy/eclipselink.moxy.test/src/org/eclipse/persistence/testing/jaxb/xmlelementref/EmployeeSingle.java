@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -18,14 +18,14 @@ import javax.xml.bind.JAXBElement;
 
 @XmlRootElement(name="employee-single")
 public class EmployeeSingle {
-	
-	@XmlElementRef(name="integer-root", namespace="myns")
-	public JAXBElement<Integer> intRoot;
-	
-	public boolean equals(Object emp) {
-		JAXBElement root1 = this.intRoot;
-		JAXBElement root2 = ((EmployeeSingle)emp).intRoot;
-		
-		return root1.getName().equals(root2.getName()) && root1.getValue().equals(root2.getValue()) && root1.getDeclaredType() == root2.getDeclaredType();
-	}
+
+    @XmlElementRef(name="integer-root", namespace="myns")
+    public JAXBElement<Integer> intRoot;
+
+    public boolean equals(Object emp) {
+        JAXBElement root1 = this.intRoot;
+        JAXBElement root2 = ((EmployeeSingle)emp).intRoot;
+
+        return root1.getName().equals(root2.getName()) && root1.getValue().equals(root2.getValue()) && root1.getDeclaredType() == root2.getDeclaredType();
+    }
 }

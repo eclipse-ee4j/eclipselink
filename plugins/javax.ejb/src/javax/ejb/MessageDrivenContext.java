@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,11 +41,11 @@
 package javax.ejb;
 
 /**
- * The MessageDrivenContext interface provides access to the runtime 
+ * The MessageDrivenContext interface provides access to the runtime
  * message-driven context that the container provides for a message-driven
  * bean instance. The container passes the <code>MessageDrivenContext</code>
- * interface to an instance after the instance has been created. The 
- * message-driven context remains associated with the instance for the 
+ * interface to an instance after the instance has been created. The
+ * message-driven context remains associated with the instance for the
  * lifetime of the instance.
  *
  * @since EJB 2.0

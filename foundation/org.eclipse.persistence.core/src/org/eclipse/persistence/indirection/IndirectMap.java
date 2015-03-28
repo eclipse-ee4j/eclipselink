@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.indirection;
 
 import java.beans.PropertyChangeListener;
@@ -53,7 +53,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
 
     /** Change tracking listener. */
     private transient PropertyChangeListener changeListener;
-    
+
     /** The mapping attribute name, used to raise change events. */
     private transient String attributeName;
 
@@ -139,7 +139,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
         }
     }
 
-    
+
     /**
      * INTERNAL:
      * clear any changes that have been deferred to instantiation.
@@ -148,7 +148,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
     @Override
     public void clearDeferredChanges(){
     }
-    
+
     /**
      * @see java.util.Hashtable#clone()
      * This will result in a database query if necessary.
@@ -215,39 +215,39 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
     public Set<Map.Entry<K,V>> entrySet() {
         return new Set<Map.Entry<K,V>> (){
             Set<Map.Entry<K,V>> delegateSet = IndirectMap.this.getDelegate().entrySet();
-            
+
             @Override
             public int size(){
                 return this.delegateSet.size();
             }
-        
+
             @Override
             public boolean isEmpty(){
                 return this.delegateSet.isEmpty();
             }
-        
+
             @Override
             public boolean contains(Object o){
                 return this.delegateSet.contains(o);
             }
-        
+
             @Override
             public Iterator<Map.Entry<K,V>> iterator(){
                 return new Iterator<Map.Entry<K,V>>() {
                     Iterator<Map.Entry<K, V>> delegateIterator = delegateSet.iterator();
                     Map.Entry<K, V> currentObject;
-                    
+
                     @Override
                     public boolean hasNext() {
                         return this.delegateIterator.hasNext();
                     }
-                    
+
                     @Override
                     public Map.Entry<K, V> next() {
                         this.currentObject = this.delegateIterator.next();
                         return this.currentObject;
                     }
-                    
+
                     @Override
                     public void remove() {
                         raiseRemoveChangeEvent(currentObject.getKey(), currentObject.getValue());
@@ -255,22 +255,22 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                     }
                 };
             }
-        
+
             @Override
             public Object[] toArray(){
                 return this.delegateSet.toArray();
             }
-    
+
             @Override
             public <T> T[] toArray(T a[]){
                 return this.delegateSet.toArray(a);
             }
-    
+
             @Override
             public boolean add(Map.Entry<K, V> o){
                 return this.delegateSet.add(o);
             }
-        
+
             @Override
             public boolean remove(Object o){
                 if (!(o instanceof Map.Entry)) {
@@ -278,17 +278,17 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                 }
                 return (IndirectMap.this.remove(((Map.Entry)o).getKey()) != null);
             }
-        
+
             @Override
             public boolean containsAll(Collection<?> c){
                 return this.delegateSet.containsAll(c);
             }
-        
+
             @Override
             public boolean addAll(Collection<? extends Map.Entry<K, V>> c){
                 return this.delegateSet.addAll(c);
             }
-        
+
             @Override
             public boolean retainAll(Collection<?> c){
                 boolean result = false;
@@ -303,7 +303,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                 }
                 return result;
             }
-            
+
             @Override
             public boolean removeAll(Collection<?> c){
                 boolean result = false;
@@ -319,17 +319,17 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                 }
                 return result;
             }
-        
+
             @Override
             public void clear(){
                 IndirectMap.this.clear();
             }
-        
+
             @Override
             public boolean equals(Object o){
                 return this.delegateSet.equals(o);
             }
-            
+
             @Override
             public int hashCode(){
                 return this.delegateSet.hashCode();
@@ -369,7 +369,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
         }
         return delegate;
     }
-    
+
     /**
      * INTERNAL:
      * Return the real collection object.
@@ -388,7 +388,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      public String getTrackedAttributeName() {
          return attributeName;
      }
-     
+
     /**
      * Return the property change listener for change tracking.
      */
@@ -396,7 +396,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      public PropertyChangeListener _persistence_getPropertyChangeListener() {
          return changeListener;
      }
-    
+
      /**
       * PUBLIC:
       * Return the valueHolder.
@@ -430,7 +430,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      public boolean hasTrackedPropertyChangeListener() {
          return this.changeListener != null;
      }
-     
+
     /**
      * Initialize the instance.
      */
@@ -481,42 +481,42 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      */
     @Override
     public Set<K> keySet() {
-        
+
         return new Set<K> (){
             Set<K> delegateSet = IndirectMap.this.getDelegate().keySet();
-            
+
             @Override
             public int size(){
                 return this.delegateSet.size();
             }
-        
+
             @Override
             public boolean isEmpty(){
                 return this.delegateSet.isEmpty();
             }
-        
+
             @Override
             public boolean contains(Object o){
                 return this.delegateSet.contains(o);
             }
-        
+
             @Override
             public Iterator<K> iterator(){
                 return new Iterator<K>() {
                     Iterator<K> delegateIterator = delegateSet.iterator();
                     K currentObject;
-                    
+
                     @Override
                     public boolean hasNext() {
                         return this.delegateIterator.hasNext();
                     }
-                    
+
                     @Override
                     public K next() {
                         this.currentObject = this.delegateIterator.next();
                         return this.currentObject;
                     }
-                    
+
                     @Override
                     public void remove() {
                         IndirectMap.this.raiseRemoveChangeEvent(currentObject, IndirectMap.this.getDelegate().get(currentObject));
@@ -524,37 +524,37 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                     }
                 };
             }
-        
+
             @Override
             public Object[] toArray(){
                 return this.delegateSet.toArray();
             }
-    
+
             @Override
             public Object[] toArray(Object a[]){
                 return this.delegateSet.toArray(a);
             }
-    
+
             @Override
             public boolean add(K o){
                 return this.delegateSet.add(o);
             }
-        
+
             @Override
             public boolean remove(Object o){
                 return (IndirectMap.this.remove(o) != null);
             }
-        
+
             @Override
             public boolean containsAll(Collection<?> c){
                 return this.delegateSet.containsAll(c);
             }
-        
+
             @Override
             public boolean addAll(Collection<? extends K> c){
                 return this.delegateSet.addAll(c);
             }
-        
+
             @Override
             public boolean retainAll(Collection<?> c){
                 boolean result = false;
@@ -569,7 +569,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                 }
                 return result;
             }
-            
+
             @Override
             public boolean removeAll(Collection<?> c){
                 boolean result = false;
@@ -580,24 +580,24 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                 }
                 return result;
             }
-        
+
             @Override
             public void clear(){
                 IndirectMap.this.clear();
             }
-        
+
             @Override
             public boolean equals(Object o){
                 return this.delegateSet.equals(o);
             }
-            
+
             @Override
             public int hashCode(){
                 return this.delegateSet.hashCode();
             }
         };
-            
-            
+
+
     }
 
     /**
@@ -612,7 +612,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
         raiseAddChangeEvent(key, value);
         return oldValue;
     }
-    
+
 
     /**
      * @see java.util.Hashtable#putAll(java.util.Map)
@@ -689,7 +689,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      public void _persistence_setPropertyChangeListener(PropertyChangeListener changeListener) {
          this.changeListener = changeListener;
      }
-     
+
     /**
      * INTERNAL:
      * Set the value holder.
@@ -707,16 +707,16 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
     public int size() {
         return this.getDelegate().size();
     }
-    
+
     /**
      * INTERNAL
-     * Set whether this collection should attempt do deal with adds and removes without retrieving the 
+     * Set whether this collection should attempt do deal with adds and removes without retrieving the
      * collection from the dB
      */
     @Override
     public void setUseLazyInstantiation(boolean useLazyInstantiation){
     }
-    
+
     /**
      * INTERNAL:
      * Return the elements that have been removed before instantiation.
@@ -734,7 +734,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
     public Collection getAddedElements() {
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Return if any elements that have been added or removed before instantiation.
@@ -775,34 +775,34 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             public int size(){
                 return delegateCollection.size();
             }
-            
+
             @Override
             public boolean isEmpty(){
                 return delegateCollection.isEmpty();
             }
-            
+
             @Override
             public boolean contains(Object o){
                 return delegateCollection.contains(o);
             }
-            
+
             @Override
             public Iterator<V> iterator() {
                 return new Iterator<V>() {
                     Iterator<V> delegateIterator = delegateCollection.iterator();
                     V currentObject;
-                    
+
                     @Override
                     public boolean hasNext() {
                         return this.delegateIterator.hasNext();
                     }
-                    
+
                     @Override
                     public V next() {
                         this.currentObject = this.delegateIterator.next();
                         return this.currentObject;
                     }
-                    
+
                     @Override
                     public void remove() {
                         Iterator iterator = IndirectMap.this.getDelegate().entrySet().iterator();
@@ -811,28 +811,28 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                             if (entry.getValue().equals(currentObject)){
                                 IndirectMap.this.raiseRemoveChangeEvent(entry.getKey(), entry.getValue());
                             }
-                            
+
                         }
                         this.delegateIterator.remove();
                     }
                 };
             }
-        
+
             @Override
             public Object[] toArray(){
                 return this.delegateCollection.toArray();
             }
-            
+
             @Override
             public <T> T[] toArray(T a[]){
                 return this.delegateCollection.toArray(a);
             }
-            
+
             @Override
             public boolean add(V o){
                 return this.delegateCollection.add(o);
             }
-            
+
             @Override
             public boolean remove(Object o){
                 Iterator iterator = IndirectMap.this.getDelegate().entrySet().iterator();
@@ -841,21 +841,21 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                     if (entry.getValue().equals(o)){
                         IndirectMap.this.raiseRemoveChangeEvent(entry.getKey(), entry.getValue());
                     }
-                    return true;    
+                    return true;
                 }
                 return false;
             }
-            
+
             @Override
             public boolean containsAll(Collection<?> c){
                 return this.delegateCollection.containsAll(c);
             }
-            
+
             @Override
             public boolean addAll(Collection<? extends V> c){
                 return this.delegateCollection.addAll(c);
             }
-            
+
             @Override
             public boolean removeAll(Collection<?> c){
                 boolean result = false;
@@ -866,7 +866,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                 }
                 return result;
             }
-            
+
             @Override
             public boolean retainAll(Collection<?> c){
                 boolean result = false;
@@ -879,23 +879,23 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                 }
                 return result;
             }
-            
+
             @Override
             public void clear(){
                 IndirectMap.this.clear();
             }
-            
-            
+
+
             @Override
             public boolean equals(Object o){
                 return this.delegateCollection.equals(o);
             }
-            
+
             @Override
             public int hashCode(){
                 return this.delegateCollection.hashCode();
             }
-            
+
         };
     }
 }

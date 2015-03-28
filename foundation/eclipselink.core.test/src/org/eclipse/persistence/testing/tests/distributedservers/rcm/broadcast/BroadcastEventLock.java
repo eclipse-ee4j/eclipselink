@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.distributedservers.rcm.broadcast;
 
 import org.eclipse.persistence.exceptions.ExceptionHandler;
@@ -21,18 +21,18 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.testing.framework.TestProblemException;
 
 // This is a helper class used by TestWrapper.
-// In case uow merge happened on source, it allows to wait until 
-// either the distributed merge is completed on target 
+// In case uow merge happened on source, it allows to wait until
+// either the distributed merge is completed on target
 // or something goes wrong.
 // lock could be triggered by
 //   merge into uow event in the source session.
 //   direct call to lock method.
 // If locked, waitUntilUnlocked method waits until unlocked, which could be triggered by:
 //   error propagating remote command on the source session;
-//   lack of localConnection on the source session (happens if connection removed on error); 
+//   lack of localConnection on the source session (happens if connection removed on error);
 //   distributed merge into uow event in the target session;
 //   direct call to unlock method.
-// Used by TestWrapper in the following pattern: 
+// Used by TestWrapper in the following pattern:
 //   eventLock.initialize();
 //   internalTest.test();
 //   eventLock.waitUntilUnlocked();

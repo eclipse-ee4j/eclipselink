@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,13 +36,13 @@ import org.w3c.dom.Document;
  *
  */
 public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
-    private MySchemaOutputResolver outputResolver; 
+    private MySchemaOutputResolver outputResolver;
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattachmentref";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlattachmentref/";
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public XmlAttachmentRefCases(String name) {
@@ -51,8 +51,8 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
     }
 
     /**
-     * Tests @XmlAttachmentRef override via eclipselink-oxm.xml.  
-     * 
+     * Tests @XmlAttachmentRef override via eclipselink-oxm.xml.
+     *
      * Positive test.
      */
     public void testSchemaGen() {
@@ -61,13 +61,13 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
         String controlSchema = PATH + "schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
     }
-    
+
     /**
      * Tests unmarshalling an instance doc with an attachment, then marshalling out the
      * object and comparing the documents.
-     * 
+     *
      * Positive test.
-     * @throws JAXBException 
+     * @throws JAXBException
      */
     public void testXmlAttachmentRefUnmarshalThenMarshal() throws JAXBException {
       /*  String metadataFile = PATH + "eclipselink-oxm.xml";
@@ -88,23 +88,23 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
             fail("JAXBContext creation failed");
         }
 */
-    	
-    	Class[] classesToProcess = new Class[] { AttTypes.class };
+
+        Class[] classesToProcess = new Class[] { AttTypes.class };
         MySchemaOutputResolver outputResolver = generateSchema(classesToProcess, CONTEXT_PATH , PATH, 1);
-    	
+
         // test unmarshal
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
 
-        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");      
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
         MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
-        
+
         String instanceDoc = PATH + "att-types.xml";
         InputStream iDocStream = loader.getResourceAsStream(instanceDoc);
         if (iDocStream == null) {
             fail("Couldn't load instance document [" + instanceDoc + "]");
         }
-        
+
         AttTypes attTypes = null;
         try {
             attTypes = (AttTypes) unmarshaller.unmarshal(new StreamSource(iDocStream));
@@ -112,7 +112,7 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
             e.printStackTrace();
             fail("Unmarshal operation failed.");
         }
-        
+
         // test marshal
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
@@ -133,28 +133,28 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
         }
         assertTrue("Unmarshal then marshal failed", compareDocuments(ctrlDoc, testDoc));
     }
-    
+
     /**
-     * Tests exception handling:  an xml-attachment-ref is applied to a 
+     * Tests exception handling:  an xml-attachment-ref is applied to a
      * non-DataHandler property.
-     * 
+     *
      * Negative test.
      */
     public void testInvalidXmlAttachmentRef() {
         String metadataFile = PATH + "eclipselink-oxm-invalid.xml";
-  /*      
-    	Class[] classesToProcess = new Class[] { AttTypes.class };
+  /*
+        Class[] classesToProcess = new Class[] { AttTypes.class };
         boolean exceptionOccurred = false;
 
-    	try{
+        try{
             MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, CONTEXT_PATH , metadataFile, 1);
-    	}catch(JAXBException e1) {
+        }catch(JAXBException e1) {
             exceptionOccurred = true;
         }
-        
+
         assertTrue("The expected exception did not occur.", exceptionOccurred);
 */
-  
+
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
@@ -171,7 +171,7 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
         } catch (JAXBException e1) {
             exceptionOccurred = true;
         }
-        
+
         assertTrue("The expected exception did not occur.", exceptionOccurred);
     }
 }

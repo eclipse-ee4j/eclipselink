@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -18,32 +18,32 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 /**
- * 
+ *
  */
 public class AllUIToolsAppSwingTests {
-	
-	public static Test suite() {
-		TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllUIToolsAppSwingTests.class));
 
-		suite.addTest(CheckBoxModelAdapterTests.suite());
-		suite.addTest(ComboBoxModelAdapterTests.suite());
-		suite.addTest(DateSpinnerModelAdapterTests.suite());
-		suite.addTest(DocumentAdapterTests.suite());
-		suite.addTest(ListModelAdapterTests.suite());
-		suite.addTest(ListSpinnerModelAdapterTests.suite());
-		suite.addTest(NumberSpinnerModelAdapterTests.suite());
-		suite.addTest(ObjectListSelectionModelTests.suite());
-		suite.addTest(PrimitiveListTreeModelTests.suite());
-		suite.addTest(RadioButtonModelAdapterTests.suite());
-		suite.addTest(SpinnerModelAdapterTests.suite());
-		suite.addTest(TableModelAdapterTests.suite());
-		suite.addTest(TreeModelAdapterTests.suite());
-	
-		return suite;
-	}
-	
-	private AllUIToolsAppSwingTests() {
-		super();
-	}
-	
+    public static Test suite() {
+        TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllUIToolsAppSwingTests.class));
+
+        suite.addTest(CheckBoxModelAdapterTests.suite());
+        suite.addTest(ComboBoxModelAdapterTests.suite());
+        suite.addTest(DateSpinnerModelAdapterTests.suite());
+        suite.addTest(DocumentAdapterTests.suite());
+        suite.addTest(ListModelAdapterTests.suite());
+        suite.addTest(ListSpinnerModelAdapterTests.suite());
+        suite.addTest(NumberSpinnerModelAdapterTests.suite());
+        suite.addTest(ObjectListSelectionModelTests.suite());
+        suite.addTest(PrimitiveListTreeModelTests.suite());
+        suite.addTest(RadioButtonModelAdapterTests.suite());
+        suite.addTest(SpinnerModelAdapterTests.suite());
+        suite.addTest(TableModelAdapterTests.suite());
+        suite.addTest(TreeModelAdapterTests.suite());
+
+        return suite;
+    }
+
+    private AllUIToolsAppSwingTests() {
+        super();
+    }
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,88 +27,88 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class AndExpressionFactory extends ExpressionFactory {
 
-	/**
-	 * This {@link ExpressionVisitor} is used to check if the {@link Expression}
-	 * passed to this factory is an {@link OrExpression}.
-	 */
-	private OrExpressionVisitor visitor;
+    /**
+     * This {@link ExpressionVisitor} is used to check if the {@link Expression}
+     * passed to this factory is an {@link OrExpression}.
+     */
+    private OrExpressionVisitor visitor;
 
-	/**
-	 * The unique identifier of this {@link AndExpression}.
-	 */
-	public static final String ID = Expression.AND;
+    /**
+     * The unique identifier of this {@link AndExpression}.
+     */
+    public static final String ID = Expression.AND;
 
-	/**
-	 * Creates a new <code>AndExpressionFactory</code>.
-	 */
-	public AndExpressionFactory() {
-		super(ID, Expression.AND);
-	}
+    /**
+     * Creates a new <code>AndExpressionFactory</code>.
+     */
+    public AndExpressionFactory() {
+        super(ID, Expression.AND);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("null")
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("null")
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		if (expression != null) {
-			expression.accept(visitor());
-		}
+        if (expression != null) {
+            expression.accept(visitor());
+        }
 
-		if ((visitor != null) && visitor.found) {
-			visitor.found = false;
-			OrExpression orExpression = (OrExpression) expression;
+        if ((visitor != null) && visitor.found) {
+            visitor.found = false;
+            OrExpression orExpression = (OrExpression) expression;
 
-			AndExpression andExpression = new AndExpression(parent);
-			andExpression.setLeftExpression((AbstractExpression) orExpression.getRightExpression());
-			andExpression.parse(wordParser, tolerant);
-			orExpression.setRightExpression(andExpression);
+            AndExpression andExpression = new AndExpression(parent);
+            andExpression.setLeftExpression((AbstractExpression) orExpression.getRightExpression());
+            andExpression.parse(wordParser, tolerant);
+            orExpression.setRightExpression(andExpression);
 
-			return orExpression;
-		}
-		else {
-			AndExpression andExpression = new AndExpression(parent);
+            return orExpression;
+        }
+        else {
+            AndExpression andExpression = new AndExpression(parent);
 
-			if (expression != null) {
-				andExpression.setLeftExpression(expression);
-			}
+            if (expression != null) {
+                andExpression.setLeftExpression(expression);
+            }
 
-			andExpression.parse(wordParser, tolerant);
-			return andExpression;
-		}
-	}
+            andExpression.parse(wordParser, tolerant);
+            return andExpression;
+        }
+    }
 
-	private OrExpressionVisitor visitor() {
-		if (visitor == null) {
-			visitor = new OrExpressionVisitor();
-		}
-		return visitor;
-	}
+    private OrExpressionVisitor visitor() {
+        if (visitor == null) {
+            visitor = new OrExpressionVisitor();
+        }
+        return visitor;
+    }
 
     // Made static final for performance reasons.
-	/**
-	 * This {@link ExpressionVisitor} is used to check if the {@link Expression} passed to this
-	 * factory is an {@link OrExpression}.
-	 */
-	private static final class OrExpressionVisitor extends AbstractExpressionVisitor {
+    /**
+     * This {@link ExpressionVisitor} is used to check if the {@link Expression} passed to this
+     * factory is an {@link OrExpression}.
+     */
+    private static final class OrExpressionVisitor extends AbstractExpressionVisitor {
 
-		/**
-		 * This flag is turned on if the {@link Expression} visited is {@link OrExpression}.
-		 */
-		boolean found;
+        /**
+         * This flag is turned on if the {@link Expression} visited is {@link OrExpression}.
+         */
+        boolean found;
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(OrExpression expression) {
-			found = true;
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(OrExpression expression) {
+            found = true;
+        }
+    }
 }

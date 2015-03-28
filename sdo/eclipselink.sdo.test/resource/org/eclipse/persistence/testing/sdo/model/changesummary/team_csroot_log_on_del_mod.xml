@@ -4,5 +4,5 @@
       <ns0:manager sdo:ref="#/root/ns0:manager">
          <name>Jane Doe</name>
       </ns0:manager>
-   </myChangeSummary>   
+   </myChangeSummary>
 </root>

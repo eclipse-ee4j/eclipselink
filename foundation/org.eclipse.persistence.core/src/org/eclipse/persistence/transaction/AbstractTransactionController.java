@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.transaction;
 
 import java.util.*;
@@ -76,7 +76,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
     /** or the session is a session broker with only one member requiring sequencing callbacks. */
     /** more - the session is a session broker with several members requiring sequencing callbacks. */
     protected int numSessionsRequiringSequencingCallback;
-    
+
     /** Allow exception in before/after completion to be wrapped. */
     protected ExceptionHandler exceptionHandler;
 
@@ -150,7 +150,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
             Object status = getTransactionStatus();
             logTxStateTrace(session, "TX_begin", status);
 
-            // Make sure that we are in a state that we can actually start 
+            // Make sure that we are in a state that we can actually start
             // a transaction (e.g. ensure one is not already in progress)
             if (canBeginTransaction_impl(status)) {
                 logTxTrace(session, "TX_beginningTxn", null);
@@ -300,7 +300,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
         if (transaction == null) {
             return null;
         }
-        
+
         UnitOfWorkImpl activeUnitOfWork = lookupActiveUnitOfWork(transaction);
         if (activeUnitOfWork == null) {
             // Txn is active but no UoW has been associated with it yet, so create one.
@@ -471,7 +471,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * 2. in the very end of connecting sequencing or adding descriptors to sequencing,
      * after it's determined whether sequencing callbacks (and therefore listeners)
      * will be required.
-     * 
+     *
      * In SessionBroker case each member's sequencing may call this method.
      * Note that the number of sessions requiring callbacks may never decrease,
      * therefore if isSequencingCallbackRequired method has returned true once,
@@ -542,7 +542,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
         }
         return listener.getSequencingCallback(dbSession, sequencingCallbackFactory);
     }
-    
+
     /**
      * INTERNAL:
      * Clears sequencing listeners.

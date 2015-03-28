@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,28 +19,28 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class MapCollectionToXmlAttributeTest extends JAXBWithJSONTestCases {
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlattribute/collectionxmlattribute.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlattribute/collectionxmlattribute.json";
-	
-	public MapCollectionToXmlAttributeTest(String name) throws Exception {
-		super(name);
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-		Class[] classes = new Class[1];
-		classes[0] = MapCollectionToXmlAttribute.class;
-		setClasses(classes);
-	}
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlattribute/collectionxmlattribute.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlattribute/collectionxmlattribute.json";
 
-	protected Object getControlObject() {
+    public MapCollectionToXmlAttributeTest(String name) throws Exception {
+        super(name);
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        Class[] classes = new Class[1];
+        classes[0] = MapCollectionToXmlAttribute.class;
+        setClasses(classes);
+    }
 
-		MapCollectionToXmlAttribute ls = new MapCollectionToXmlAttribute();
-		List<String> words = new ArrayList();
-		words.add("one");
-		words.add("two");
-		words.add("three");
-		ls.items = words;
+    protected Object getControlObject() {
+
+        MapCollectionToXmlAttribute ls = new MapCollectionToXmlAttribute();
+        List<String> words = new ArrayList();
+        words.add("one");
+        words.add("two");
+        words.add("three");
+        ls.items = words;
         return ls;
-	}
+    }
 
 
 

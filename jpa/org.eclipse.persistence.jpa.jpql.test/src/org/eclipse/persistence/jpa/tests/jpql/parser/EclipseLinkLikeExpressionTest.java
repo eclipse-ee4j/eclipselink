@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,81 +19,81 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 @SuppressWarnings("nls")
 public final class EclipseLinkLikeExpressionTest extends JPQLParserTest {
 
-	@Test
-	public void test_JPQLQuery_01() {
+    @Test
+    public void test_JPQLQuery_01() {
 
-		String query = "Select e from Employee e where UPPER(e.firstName) like UPPER('b%')";
+        String query = "Select e from Employee e where UPPER(e.firstName) like UPPER('b%')";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(
-					upper(path("e.firstName"))
-				.like(
-					upper(string("'b%'"))
-				)
-			)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(
+                    upper(path("e.firstName"))
+                .like(
+                    upper(string("'b%'"))
+                )
+            )
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_02() {
+    @Test
+    public void test_JPQLQuery_02() {
 
-		String query = "Select e from Employee e where UPPER(e.firstName) like UPPER('b%') ESCAPE ' '";
+        String query = "Select e from Employee e where UPPER(e.firstName) like UPPER('b%') ESCAPE ' '";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(
-					upper(path("e.firstName"))
-				.like(
-					upper(string("'b%'")),
-					string("' '")
-				)
-			)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(
+                    upper(path("e.firstName"))
+                .like(
+                    upper(string("'b%'")),
+                    string("' '")
+                )
+            )
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_03() {
+    @Test
+    public void test_JPQLQuery_03() {
 
-		String query = "Select e from Employee e where UPPER(e.firstName) like UPPER('b%') + 2";
+        String query = "Select e from Employee e where UPPER(e.firstName) like UPPER('b%') + 2";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(
-					upper(path("e.firstName"))
-				.like(
-					upper(string("'b%'")).add(numeric(2))
-				)
-			)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(
+                    upper(path("e.firstName"))
+                .like(
+                    upper(string("'b%'")).add(numeric(2))
+                )
+            )
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_04() {
+    @Test
+    public void test_JPQLQuery_04() {
 
-		String query = "Select e from Employee e where UPPER(e.firstName) like UPPER('b%') + 2 ESCAPE ' '";
+        String query = "Select e from Employee e where UPPER(e.firstName) like UPPER('b%') + 2 ESCAPE ' '";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(
-					upper(path("e.firstName"))
-				.like(
-					upper(string("'b%'")).add(numeric(2)),
-					string("' '")
-				)
-			)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(
+                    upper(path("e.firstName"))
+                .like(
+                    upper(string("'b%'")).add(numeric(2)),
+                    string("' '")
+                )
+            )
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 }

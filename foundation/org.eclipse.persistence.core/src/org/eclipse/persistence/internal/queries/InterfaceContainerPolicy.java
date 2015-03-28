@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
 import java.security.AccessController;
@@ -69,7 +69,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
     public InterfaceContainerPolicy(String containerClassName) {
         setContainerClassName(containerClassName);
     }
-    
+
     /**
      * INTERNAL:
      * Return if the policy is equal to the other.
@@ -104,7 +104,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * Convert all the class-name-based settings in this ContainerPolicy to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
@@ -128,7 +128,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         }
         setContainerClass(containerClass);
     }
-    
+
     /**
      * INTERNAL:
      * Creates a CollectionChangeEvent for the container
@@ -206,7 +206,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
     public DatabaseField getDirectKeyField(CollectionMapping mapping) {
         return null;
     }
-    
+
     public abstract Class getInterfaceType();
 
     /**
@@ -254,7 +254,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
     public boolean isMapKeyAttribute(){
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Validate the container type.
@@ -295,7 +295,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
     public void setContainerClassName(String containerClassName) {
         this.containerClassName = containerClassName;
     }
-    
+
     /**
      * INTERNAL:
      * Return a container populated with the contents of the specified Vector.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,24 +19,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="javac")
 public class JavacTask extends Task{
-	@XmlAttribute
-	public String name;
-	
-	
+    @XmlAttribute
+    public String name;
+
+
  public String getName(){
-	 return name;
+     return name;
  }
  public void setName(String name){
-	 this.name = name;
+     this.name = name;
  }
- 
-	public boolean equals(Object obj) {
+
+    public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof JavacTask)) {
             return false;
         }
         JavacTask javacTask = (JavacTask) obj;
-        
+
         return javacTask.name.equals(this.name);
-	} 
+    }
 
 }

@@ -52,15 +52,15 @@
         <serializer>
           <class-name>oracle.eclipselink.coherence.integrated.cache.WrapperSerializer</class-name>
         </serializer>
-		<!--serializer>
-		  <class-name>com.tangosol.io.pof.ConfigurablePofContext</class-name>
-		  <init-params>
-			<init-param>
-			  <param-value>performance-pof-config.xml</param-value>
-			  <param-type>String</param-type>
-			</init-param>
-		  </init-params>
-		</serializer-->
+        <!--serializer>
+          <class-name>com.tangosol.io.pof.ConfigurablePofContext</class-name>
+          <init-params>
+            <init-param>
+              <param-value>performance-pof-config.xml</param-value>
+              <param-type>String</param-type>
+            </init-param>
+          </init-params>
+        </serializer-->
       <backing-map-scheme>
         <read-write-backing-map-scheme>
           <internal-cache-scheme>

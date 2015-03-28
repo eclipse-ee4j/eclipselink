@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,21 +31,21 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-	RefactoringToolTest2_1.class
+    RefactoringToolTest2_1.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllRefactoringToolTest2_1 {
 
-	private AllRefactoringToolTest2_1() {
-		super();
-	}
+    private AllRefactoringToolTest2_1() {
+        super();
+    }
 
-	@IJPQLQueryBuilderTestHelper
-	static IJPQLQueryBuilder[] buildJPQLQueryBuilders() {
-		return new IJPQLQueryBuilder[] {
-			new JPQLQueryBuilder2_1(),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_4.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_5.instance())
-		};
-	}
+    @IJPQLQueryBuilderTestHelper
+    static IJPQLQueryBuilder[] buildJPQLQueryBuilders() {
+        return new IJPQLQueryBuilder[] {
+            new JPQLQueryBuilder2_1(),
+            new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_4.instance()),
+            new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_5.instance())
+        };
+    }
 }

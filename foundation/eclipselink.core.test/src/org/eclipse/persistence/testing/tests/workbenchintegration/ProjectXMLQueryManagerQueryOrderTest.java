@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import java.util.Iterator;
@@ -24,8 +24,8 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
  * bug: 5677655
- * Used to compare the order of queries contained in the DescriptorQueryManager so that 
- * XML files written out the same as they were read in wrt query order.  
+ * Used to compare the order of queries contained in the DescriptorQueryManager so that
+ * XML files written out the same as they were read in wrt query order.
  */
 public class ProjectXMLQueryManagerQueryOrderTest extends AutoVerifyTestCase {
     Vector original, current; //list of queries to compare
@@ -37,11 +37,11 @@ public class ProjectXMLQueryManagerQueryOrderTest extends AutoVerifyTestCase {
         original = current = null;
 
         Project initialProj = (new EmployeeWorkbenchIntegrationSystem()).getInitialProject();
-        ClassDescriptor initialDescriptor = 
+        ClassDescriptor initialDescriptor =
             initialProj.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
 
         Project readinProj = this.getSession().getProject();
-        ClassDescriptor currentDescriptor = 
+        ClassDescriptor currentDescriptor =
             readinProj.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         original = initialDescriptor.getDescriptorQueryManager().getAllQueries();
         current = currentDescriptor.getDescriptorQueryManager().getAllQueries();
@@ -67,7 +67,7 @@ public class ProjectXMLQueryManagerQueryOrderTest extends AutoVerifyTestCase {
             }
 
             DatabaseQuery currentQuery = (DatabaseQuery)curr.next();
-            if ((origQuery.getName() != currentQuery.getName()) && 
+            if ((origQuery.getName() != currentQuery.getName()) &&
                 ((origQuery.getName() == null) || !origQuery.getName().equals(currentQuery.getName())))
                 if (!argumentTypes.equals(currentQuery.getArgumentTypeNames())) {
                     throw new TestErrorException("A query in the descriptor query manager does not match the original based on arguments");

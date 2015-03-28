@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import org.eclipse.persistence.jpa.JpaEntityManager;
@@ -19,30 +19,30 @@ import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
 
 public class EMPersistAndCommitTest extends EntityContainerTestBase  {
     public EMPersistAndCommitTest() {
-		setDescription("Test persist and commit in EntityManager");
+        setDescription("Test persist and commit in EntityManager");
     }
 
     //reset gets called twice on error
     protected boolean reset = false;
-    
+
     public void setup (){
         super.setup();
         this.reset = true;
     }
-    
+
     public void reset (){
         if (reset){
             reset = false;
         }
         super.reset();
     }
-    
+
     public Integer[] empIDs = new Integer[2];
     public Integer[] projIDs = new Integer[3];
     public Integer[] addrIDs = new Integer[1];
-    
+
     public void test(){
-    
+
         Employee employee  = new Employee();
         Address address = new Address();
         try {
@@ -52,7 +52,7 @@ public class EMPersistAndCommitTest extends EntityContainerTestBase  {
             address.setCountry("Canada");
             address.setCity("Ottawa");
             employee.setAddress(address);
-			getEntityManager().persist(employee);
+            getEntityManager().persist(employee);
             commitTransaction();
         } catch (Exception ex) {
             rollbackTransaction();
@@ -65,7 +65,7 @@ public class EMPersistAndCommitTest extends EntityContainerTestBase  {
             beginTransaction();
             project.setName("Project # 1");
             project.setDescription("A simple Project");
-			getEntityManager().persist(project);
+            getEntityManager().persist(project);
             commitTransaction();
         } catch (Exception ex) {
             rollbackTransaction();
@@ -78,7 +78,7 @@ public class EMPersistAndCommitTest extends EntityContainerTestBase  {
             beginTransaction();
             project.setName("Small Project # 1");
             project.setDescription("A small Project");
-			getEntityManager().persist(project);
+            getEntityManager().persist(project);
             commitTransaction();
         } catch (Exception ex) {
             rollbackTransaction();
@@ -99,7 +99,7 @@ public class EMPersistAndCommitTest extends EntityContainerTestBase  {
             throw new TestErrorException("Exception thrown durring create of largeproject" + ex);
         }
         projIDs[2] = project.getId();
-        
+
         address = new Address();
         try {
             beginTransaction();
@@ -112,7 +112,7 @@ public class EMPersistAndCommitTest extends EntityContainerTestBase  {
             throw new TestErrorException("Exception thrown durring create of address1" + ex);
         }
         addrIDs[0] = address.getID();
-        
+
         try{
             beginTransaction();
             Employee emp = getEntityManager().find(Employee.class, empIDs[0]);
@@ -123,7 +123,7 @@ public class EMPersistAndCommitTest extends EntityContainerTestBase  {
             throw new TestErrorException("Exception thrown durring addition of phonenumber" + ex);
         }
     }
-    
+
     public void verify(){
         //lets check the cache for the objects
         Employee emp = getEntityManager().find(Employee.class, empIDs[0]);
@@ -155,7 +155,7 @@ public class EMPersistAndCommitTest extends EntityContainerTestBase  {
 
         //lets initialize the identity map to make sure they were persisted
         ((JpaEntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        
+
         emp = getEntityManager().find(Employee.class, empIDs[0]);
         if (emp == null){
             throw new TestErrorException("Employee, empID: " + empIDs[0] + " Not created");

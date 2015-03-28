@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.io.Serializable;
@@ -52,11 +52,11 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     public BatchFetchPolicy() {
         this.type = BatchFetchType.JOIN;
     }
-    
+
     public BatchFetchPolicy(BatchFetchType type) {
         this.type = type;
     }
-    
+
     public BatchFetchPolicy clone() {
         BatchFetchPolicy clone = null;
         try {
@@ -69,28 +69,28 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
         }
         return clone;
     }
-    
+
     /**
      * Return if using the IN fetch type.
      */
     public boolean isIN() {
         return this.type == BatchFetchType.IN;
     }
-    
+
     /**
      * Return if using the JOIN fetch type.
      */
     public boolean isJOIN() {
         return this.type == BatchFetchType.JOIN;
     }
-    
+
     /**
      * Return if using the EXISTS fetch type.
      */
     public boolean isEXISTS() {
         return this.type == BatchFetchType.EXISTS;
     }
-    
+
     /**
      * Return the batch fetch type, (JOIN, IN, EXISTS).
      */
@@ -162,7 +162,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     public List<Expression> getAttributeExpressions() {
         if (this.attributeExpressions == null) {
             this.attributeExpressions = new ArrayList<Expression>();
-        }        
+        }
         return this.attributeExpressions;
     }
 
@@ -190,7 +190,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     public void setBatchedMappings(List<DatabaseMapping> batchedMappings) {
         this.batchedMappings = batchedMappings;
     }
-    
+
     /**
      * INTERNAL:
      * Return if the attribute is specified for batch reading.
@@ -212,7 +212,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
         }
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Return if the attribute is specified for batch reading.
@@ -274,7 +274,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
         this.dataResults = new HashMap<Object, List<AbstractRecord>>();
         this.dataResults.put(this, rows);
     }
-    
+
     /**
      * INTERNAL:
      * Return temporary list of rows from parent batch query per batched mapping.
@@ -283,7 +283,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     public List<AbstractRecord> getAllDataResults() {
         return this.dataResults.get(this);
     }
-    
+
     /**
      * INTERNAL:
      * Return temporary list of rows from parent batch query per batched mapping.

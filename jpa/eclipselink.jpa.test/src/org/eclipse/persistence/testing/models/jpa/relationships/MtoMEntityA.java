@@ -1,11 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corporation. 
+ * Copyright (c) 2014, 2015  IBM Corporation.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributors:
- *     06/25/2014-2.5.2 Rick Curtis 
+ *     06/25/2014-2.5.2 Rick Curtis
  *       - 438177: Test M2M map
  *******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.relationships;
@@ -27,16 +27,16 @@ import javax.persistence.Table;
 public class MtoMEntityA {
     @Id
     private int id;
-    
+
     private String name;
-    
+
     @ManyToMany
     @JoinTable(name = "MM_MNMK_JT")
     private Map<Integer, MtoMEntityB> entityB;
-    
+
     @ManyToMany
     private Map<Integer, MtoMEntityB> entityBDefault;
-    
+
     public MtoMEntityA() {
         entityB = new HashMap<Integer, MtoMEntityB>();
         entityBDefault = new HashMap<Integer, MtoMEntityB>();
@@ -65,8 +65,8 @@ public class MtoMEntityA {
     public void setEntityB(Map<Integer, MtoMEntityB> entityB) {
         this.entityB = entityB;
     }
-    
-    
+
+
 
     public Map<Integer, MtoMEntityB> getEntityBDefault() {
         return entityBDefault;

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors.changetracking;
 
 import java.beans.PropertyChangeListener;
@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
  * A DeferredChangeDetectionPolicy defers all change detection to the UnitOfWork's
  * change detection process.  Essentially, the calculateChanges() method will run
  * for all objects in a UnitOfWork.  This is the default ObjectChangePolicy unless weaving is used.
- * 
+ *
  * @author Tom Ware
  */
 public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.io.Serializable {
@@ -55,7 +55,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
     public ObjectChangeSet calculateChangesForExistingObject(Object clone, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
         return calculateChanges(clone, unitOfWork.getBackupClone(clone, descriptor), false, changeSet, unitOfWork, descriptor, shouldRaiseEvent);
     }
-    
+
     /**
      * INTERNAL:
      * calculateChanges creates a change set for a particular object.  In DeferredChangeDetectionPolicy
@@ -87,13 +87,13 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
                 descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreUpdateEvent, writeQuery));
             }
         }
-        
+
         ObjectChangeSet changes = createObjectChangeSet(clone, backUp, changeSet, isNew, unitOfWork, descriptor);
         if(changes.hasChanges() && descriptor.hasMappingsPostCalculateChanges() && ! changes.isNew() && ! unitOfWork.getCommitManager().isActive() && !unitOfWork.isNestedUnitOfWork()) {
             // if we are in the commit because of an event skip this postCalculateChanges step as we have already executed it.
             int size = descriptor.getMappingsPostCalculateChanges().size();
             for(int i=0; i < size; i++) {
-                DatabaseMapping mapping = descriptor.getMappingsPostCalculateChanges().get(i); 
+                DatabaseMapping mapping = descriptor.getMappingsPostCalculateChanges().get(i);
                 org.eclipse.persistence.sessions.changesets.ChangeRecord record = changes.getChangesForAttributeNamed(mapping.getAttributeName());
                 if(record != null) {
                     // Deferred attributes will already have been acted on, therefore we need
@@ -118,7 +118,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
         if (!changes.hasForcedChangesFromCascadeLocking() && unitOfWork.hasOptimisticReadLockObjects()) {
             Boolean modifyVersionField = (Boolean)unitOfWork.getOptimisticReadLockObjects().get(clone);
             if ((modifyVersionField != null) && (unitOfWork instanceof RepeatableWriteUnitOfWork) && (((RepeatableWriteUnitOfWork)unitOfWork).getCumulativeUOWChangeSet() != null)) {
-                // modify the version field if the UOW cumulative change set does not contain a changeset for this clone 
+                // modify the version field if the UOW cumulative change set does not contain a changeset for this clone
                 if (((RepeatableWriteUnitOfWork)unitOfWork).getCumulativeUOWChangeSet().getObjectChangeSetForClone(clone) == null) {
                     modifyVersionField = Boolean.TRUE;
                 }
@@ -156,20 +156,20 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
 
         // The following code deals with reads that force changes to the flag associated with optimistic locking.
         FetchGroup fetchGroup = null;
-        // The flag indicates whether should get fetch group - to avoid doing 
+        // The flag indicates whether should get fetch group - to avoid doing
         // that twice. Useful because fetchGroup may be null.
         boolean shouldGetFetchGroup = true;
         if ((descriptor.usesOptimisticLocking()) && (changes.getId() != null)) {
             if (descriptor.hasFetchGroupManager()) {
                 fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(clone);
             }
-            
+
             if (fetchGroup == null || fetchGroup != descriptor.getFetchGroupManager().getIdEntityFetchGroup()) {
                 changes.setOptimisticLockingPolicyAndInitialWriteLockValue(descriptor.getOptimisticLockingPolicy(), session);
             }
-            
+
             // already tried to get the fetch group - no need to do that again.
-            shouldGetFetchGroup = false;            
+            shouldGetFetchGroup = false;
         }
 
         // PERF: Do not create change records for new objects.
@@ -206,7 +206,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
     public void enableEventProcessing(Object changeTracker){
         //no-op
     }
-    
+
     /**
      * INTERNAL:
      * Return true if the Object should be compared, false otherwise.  In DeferredChangeDetectionPolicy,
@@ -234,7 +234,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
     public void setAggregateChangeListener(Object parent, Object aggregate, UnitOfWorkImpl uow, ClassDescriptor descriptor, String mappingAttribute){
         //no-op
     }
-    
+
     /**
      * INTERNAL:
      * Set ChangeListener for the clone
@@ -250,7 +250,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
     public void setChangeSetOnListener(ObjectChangeSet objectChangeSet, Object clone){
         //no-op
     }
-    
+
     /**
      * INTERNAL:
      * Clear changes in the ChangeListener of the clone
@@ -323,7 +323,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
 
     /**
      * INTERNAL:
-     * In cases where a relationship with detached or new entities is merged into itself previous changes may have been recorded for 
+     * In cases where a relationship with detached or new entities is merged into itself previous changes may have been recorded for
      * the detached/new entity that need to be updated.
      */
     public void updateListenerForSelfMerge(ObjectChangeListener listener, ForeignReferenceMapping mapping, Object source, Object target, UnitOfWorkImpl unitOfWork) {

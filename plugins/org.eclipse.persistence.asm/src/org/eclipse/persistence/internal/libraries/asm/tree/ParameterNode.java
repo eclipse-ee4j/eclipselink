@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 
 /**
  * A node that represents a parameter access and name.
- * 
+ *
  * @author Remi Forax
  */
 public class ParameterNode {
@@ -51,7 +51,7 @@ public class ParameterNode {
 
     /**
      * Constructs a new {@link ParameterNode}.
-     * 
+     *
      * @param access
      *            The parameter's access flags. Valid values are
      *            <tt>ACC_FINAL</tt>, <tt>ACC_SYNTHETIC</tt> or/and
@@ -66,7 +66,7 @@ public class ParameterNode {
 
     /**
      * Makes the given visitor visit this parameter declaration.
-     * 
+     *
      * @param mv
      *            a method visitor.
      */

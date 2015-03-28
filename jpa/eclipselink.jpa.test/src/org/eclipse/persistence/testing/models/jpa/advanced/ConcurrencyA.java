@@ -10,13 +10,13 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class ConcurrencyA implements Serializable{
-    
+
     @Id
     @GeneratedValue
     protected int id;
-    
+
     protected String name;
-    
+
     @OneToOne(fetch=FetchType.LAZY)
     protected ConcurrencyB concurrencyB;
 

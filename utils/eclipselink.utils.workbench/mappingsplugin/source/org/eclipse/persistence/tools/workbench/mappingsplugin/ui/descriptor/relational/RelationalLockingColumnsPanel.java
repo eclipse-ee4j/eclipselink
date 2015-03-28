@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -57,288 +57,288 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.AdaptableListCellRen
 
 public class RelationalLockingColumnsPanel extends AbstractSubjectPanel
 {
-	// **************** Constructors ******************************************
-	
-	RelationalLockingColumnsPanel(PropertyValueModel lockingPolicyHolder, WorkbenchContextHolder contextHolder) 
-	{
-		super(lockingPolicyHolder, contextHolder);
-		this.initializeLayout();
-	}
-	
-	
-	// **************** Initialization ****************************************
-		
-	protected void initializeLayout() 
-	{
-		
-		GridBagConstraints constraints = new GridBagConstraints();
-		
-		constraints.gridx		= 0;
-		constraints.gridy		= 0;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 1;
-		constraints.fill		= GridBagConstraints.HORIZONTAL;
-		constraints.anchor		= GridBagConstraints.LINE_START;
-		constraints.insets		= new Insets(0, 1, 1, 1);
+    // **************** Constructors ******************************************
 
-		this.add(this.buildColumnLockingColumnsList(), constraints);
+    RelationalLockingColumnsPanel(PropertyValueModel lockingPolicyHolder, WorkbenchContextHolder contextHolder)
+    {
+        super(lockingPolicyHolder, contextHolder);
+        this.initializeLayout();
+    }
 
-		addHelpTopicId(this, this.helpTopicId());
 
-	}
-	
-	private AddRemoveListPanel buildColumnLockingColumnsList() {
-		AddRemoveListPanel listPanel = 
+    // **************** Initialization ****************************************
+
+    protected void initializeLayout()
+    {
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.gridx        = 0;
+        constraints.gridy        = 0;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 1;
+        constraints.fill        = GridBagConstraints.HORIZONTAL;
+        constraints.anchor        = GridBagConstraints.LINE_START;
+        constraints.insets        = new Insets(0, 1, 1, 1);
+
+        this.add(this.buildColumnLockingColumnsList(), constraints);
+
+        addHelpTopicId(this, this.helpTopicId());
+
+    }
+
+    private AddRemoveListPanel buildColumnLockingColumnsList() {
+        AddRemoveListPanel listPanel =
             new AddRemoveListPanel(
-                    getApplicationContext(), 
-                    this.buildPrimaryKeysAddRemoveAdapter(), 
-									 						  
-                    this.buildSortedColumnLockingColumnsHolder(), 
+                    getApplicationContext(),
+                    this.buildPrimaryKeysAddRemoveAdapter(),
+
+                    this.buildSortedColumnLockingColumnsHolder(),
                     AddRemovePanel.RIGHT,
                     resourceRepository().getString("LOCKING_POLICY_SELECTED_FIELDS_LOCKING"),
                     RelationalMappingComponentFactory.buildColumnNodeSelector(getWorkbenchContextHolder()));
-		listPanel.setBorder(buildStandardEmptyBorder());
-		listPanel.setCellRenderer(buildColumnLockingColumnsListCellRenderer());
-		return listPanel;
-	}
-	
-	private AddRemoveListPanel.Adapter buildPrimaryKeysAddRemoveAdapter() {
-		return new AddRemoveListPanel.Adapter() {	
-			public void addNewItem(ObjectListSelectionModel listSelectionModel) {
-				listSelectionModel.setSelectedValues(addColumnLockingColumns());
-			}
-			
-			public void removeSelectedItems(ObjectListSelectionModel listSelectionModel) {
-				removeColumnLockingColumns(listSelectionModel.getSelectedValues());
-			}
-		};
-	}
-	
-	/**
-	 * Overide since this panel should be treated as a single Component.
-	 */
-	public void setEnabled(boolean enabled)
-	{
-		super.setEnabled(enabled);
-		Component[] children = getComponents();
-		for (int i = 0; i < children.length; i++)
-		{
-			children[i].setEnabled(enabled);
-		}
-	}
-	
-	Object[] addColumnLockingColumns()
-	{
-		Object[] columnLockingColumns = new LockingColumnDialog(getWorkbenchContext()).promptForPrimaryKeys();
-		
-		for (int i = 0; i < columnLockingColumns.length; i ++) {
-			((MWTableDescriptorLockingPolicy)relationalDescriptor().getLockingPolicy()).addColumnLockColumn((MWColumn) columnLockingColumns[i]);
-		}
-		
-		return columnLockingColumns;
-	}
-	
-	void removeColumnLockingColumns(Object[] lockingColumns) 
-	{
-		for (int i = 0; i < lockingColumns.length; i ++) {
-			((MWTableDescriptorLockingPolicy)relationalDescriptor().getLockingPolicy()).removeColumnLockColumn((MWColumn) lockingColumns[i]);
-		}
-	}
-	
-		
-	private ListValueModel buildSortedColumnLockingColumnsHolder() 
-	{	
-		return new SortedListValueModelAdapter(buildNamedColumnLockingColumnsHolder());
-	}
-	
-	private ListValueModel buildNamedColumnLockingColumnsHolder() 
-	{
-		return new ItemPropertyListValueModelAdapter(buildColumnLockingColumnsHolder(), MWColumn.QUALIFIED_NAME_PROPERTY, MWColumn.DATABASE_TYPE_PROPERTY);
-	}
-	
-	private CollectionValueModel buildColumnLockingColumnsHolder() 
-	{
-		return new CollectionAspectAdapter(getSubjectHolder(), MWTableDescriptorLockingPolicy.COLUMN_LOCK_COLUMNS_COLLECTION) 
-		{
-			protected Iterator getValueFromSubject() 
-			{
-				return ((MWTableDescriptorLockingPolicy) this.subject).columnLockColumns();
-			}
-		};
-	}
-	
-	private ListCellRenderer buildColumnLockingColumnsListCellRenderer() 
-	{
-		return new AdaptableListCellRenderer(new ColumnCellRendererAdapter(resourceRepository()));
-	}
-	
-	
-	// **************** Internal **********************************************
-	
-	private MWTableDescriptor relationalDescriptor() 
-	{
-		return ((MWTableDescriptorLockingPolicy) this.getSubjectHolder().getValue()).getOwningTableDescriptor();
-	}
+        listPanel.setBorder(buildStandardEmptyBorder());
+        listPanel.setCellRenderer(buildColumnLockingColumnsListCellRenderer());
+        return listPanel;
+    }
 
-	/**
-	 * broaden access a bit
-	 */
-	protected ValueModel getSubjectHolder() {
-		return super.getSubjectHolder();
-	}
-	
-	// **************** Public ************************************************
-	
-	public String helpTopicId() 
-	{
-		return "descriptor.locking.selectedfields";
-	}
-	
-	
-	// **************** Member classes ****************************************
-	
-	private class LockingColumnDialog
-		extends AbstractDialog
-	{	
-		private ListModel lockingColumnsModel;
-		
-		private ObjectListSelectionModel lockingColumnsSelectionModel;
-		
-		
-		LockingColumnDialog(WorkbenchContext context) 
-		{
-			super(context);
-		}
-		
-		protected void initialize() 
-		{
-			super.initialize();
-			this.lockingColumnsModel = this.buildPrimaryKeyListAdapter();
-			this.lockingColumnsSelectionModel = this.buildLockingColumnsSelectionModel();
-			
-			this.setTitle(resourceRepository().getString("LOCKING_ADD_REMOVE_DIALOG_TITLE"));
-			this.getOKAction().setEnabled(false);
-		}
-		
-		private ListModel buildPrimaryKeyListAdapter() 
-		{
-			return new ListModelAdapter(this.buildSortedColumnsHolder());
-		}
-		
-		private ListValueModel buildSortedColumnsHolder() {
-			return new SortedListValueModelAdapter(buildAllColumnsCollectionHolder());
-		}
-		
-		private CollectionValueModel buildAllColumnsCollectionHolder() {
-			return new CompositeCollectionValueModel(buildSortedTablesHolder()) {
-				protected CollectionValueModel transform(Object value) {
-					return new ListCollectionValueModelAdapter(buildSortedColumnsHolder((MWTable) value));
-				}
-			};
-		}
-		
-		private ListValueModel buildSortedTablesHolder() {
-			return new SortedListValueModelAdapter(buildTableNameAdapter());
-		}
-		
-		private ListValueModel buildTableNameAdapter() {
-			return new ItemPropertyListValueModelAdapter(buildTablesHolder(), MWTable.QUALIFIED_NAME_PROPERTY);
-		}
+    private AddRemoveListPanel.Adapter buildPrimaryKeysAddRemoveAdapter() {
+        return new AddRemoveListPanel.Adapter() {
+            public void addNewItem(ObjectListSelectionModel listSelectionModel) {
+                listSelectionModel.setSelectedValues(addColumnLockingColumns());
+            }
 
-		private CollectionValueModel buildTablesHolder() {
-			return new CollectionAspectAdapter(getSubjectHolder()) {
-				protected Iterator getValueFromSubject() {
-					return ((MWTableDescriptorLockingPolicy) this.subject).getOwningTableDescriptor().associatedTables();
-				}
-			};
-		}
+            public void removeSelectedItems(ObjectListSelectionModel listSelectionModel) {
+                removeColumnLockingColumns(listSelectionModel.getSelectedValues());
+            }
+        };
+    }
 
-		ListValueModel buildSortedColumnsHolder(MWTable table) {
-			return new SortedListValueModelAdapter(buildColumnNameAdapter(table));
-		}
-		private ListValueModel buildColumnNameAdapter(MWTable table) {
-			return new ItemPropertyListValueModelAdapter(buildColumnsHolder(table), MWColumn.NAME_PROPERTY);
-		}
-		
+    /**
+     * Overide since this panel should be treated as a single Component.
+     */
+    public void setEnabled(boolean enabled)
+    {
+        super.setEnabled(enabled);
+        Component[] children = getComponents();
+        for (int i = 0; i < children.length; i++)
+        {
+            children[i].setEnabled(enabled);
+        }
+    }
 
-		private CollectionAspectAdapter buildColumnsHolder(MWTable table) {
-			return new CollectionAspectAdapter(MWTable.COLUMNS_COLLECTION, table) {
-				protected Iterator getValueFromSubject() {
-					return ((MWTable) this.subject).columns();
-				}
-				protected int sizeFromSubject() {
-					return ((MWTable) this.subject).columnsSize();
-				}
-			};	
-		}
-		
-		private ObjectListSelectionModel buildLockingColumnsSelectionModel() {
-			ObjectListSelectionModel selectionModel = new ObjectListSelectionModel(this.lockingColumnsModel);
-			selectionModel.addListSelectionListener(this.buildSelectionListener());
-			return selectionModel;
-		}
-		
-		private ListSelectionListener buildSelectionListener() {
-			return new ListSelectionListener() {
-				public void valueChanged(ListSelectionEvent e) {
-					if ( ! e.getValueIsAdjusting()) {
-						LockingColumnDialog.this.selectionChanged();
-					}
-				}
-			};
-		}
-		
-		void selectionChanged() {
-			this.getOKAction().setEnabled(! this.lockingColumnsSelectionModel.isSelectionEmpty());
-		}
-		
-		protected Component buildMainPanel() {
-			JList list = SwingComponentFactory.buildList(this.lockingColumnsModel);
-			list.setSelectionModel(this.lockingColumnsSelectionModel);
-			list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-			list.setCellRenderer(this.buildListCellRenderer());
-			list.addMouseListener(buildListMouseListener());
-			return new JScrollPane(list);
-		}
-		
-		private ListCellRenderer buildListCellRenderer() {
-			return new AdaptableListCellRenderer(new ColumnCellRendererAdapter(this.resourceRepository()));			
-		}
-		
-		/**
-		 * Double-clicking on a selection in the list will automatically
-		 * make the selection.
-		 */
-		protected MouseListener buildListMouseListener() {
-			return new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					if (e.getClickCount() == 2) {
-						LockingColumnDialog.this.clickOK();
-					}
-				}
-			};
-		}
+    Object[] addColumnLockingColumns()
+    {
+        Object[] columnLockingColumns = new LockingColumnDialog(getWorkbenchContext()).promptForPrimaryKeys();
 
-		/**
-		 * broaden access a bit
-		 */
-		protected void clickOK() {
-			super.clickOK();
-		}
+        for (int i = 0; i < columnLockingColumns.length; i ++) {
+            ((MWTableDescriptorLockingPolicy)relationalDescriptor().getLockingPolicy()).addColumnLockColumn((MWColumn) columnLockingColumns[i]);
+        }
 
-		protected String helpTopicId() {
-			return RelationalLockingColumnsPanel.this.helpTopicId();
-		}
-		
-		Object[] promptForPrimaryKeys() {
-			this.show();
-			
-			if (this.wasConfirmed()) {
-				return this.lockingColumnsSelectionModel.getSelectedValues();
-			}
-			return new Object[0];
-		}
-	}
+        return columnLockingColumns;
+    }
+
+    void removeColumnLockingColumns(Object[] lockingColumns)
+    {
+        for (int i = 0; i < lockingColumns.length; i ++) {
+            ((MWTableDescriptorLockingPolicy)relationalDescriptor().getLockingPolicy()).removeColumnLockColumn((MWColumn) lockingColumns[i]);
+        }
+    }
+
+
+    private ListValueModel buildSortedColumnLockingColumnsHolder()
+    {
+        return new SortedListValueModelAdapter(buildNamedColumnLockingColumnsHolder());
+    }
+
+    private ListValueModel buildNamedColumnLockingColumnsHolder()
+    {
+        return new ItemPropertyListValueModelAdapter(buildColumnLockingColumnsHolder(), MWColumn.QUALIFIED_NAME_PROPERTY, MWColumn.DATABASE_TYPE_PROPERTY);
+    }
+
+    private CollectionValueModel buildColumnLockingColumnsHolder()
+    {
+        return new CollectionAspectAdapter(getSubjectHolder(), MWTableDescriptorLockingPolicy.COLUMN_LOCK_COLUMNS_COLLECTION)
+        {
+            protected Iterator getValueFromSubject()
+            {
+                return ((MWTableDescriptorLockingPolicy) this.subject).columnLockColumns();
+            }
+        };
+    }
+
+    private ListCellRenderer buildColumnLockingColumnsListCellRenderer()
+    {
+        return new AdaptableListCellRenderer(new ColumnCellRendererAdapter(resourceRepository()));
+    }
+
+
+    // **************** Internal **********************************************
+
+    private MWTableDescriptor relationalDescriptor()
+    {
+        return ((MWTableDescriptorLockingPolicy) this.getSubjectHolder().getValue()).getOwningTableDescriptor();
+    }
+
+    /**
+     * broaden access a bit
+     */
+    protected ValueModel getSubjectHolder() {
+        return super.getSubjectHolder();
+    }
+
+    // **************** Public ************************************************
+
+    public String helpTopicId()
+    {
+        return "descriptor.locking.selectedfields";
+    }
+
+
+    // **************** Member classes ****************************************
+
+    private class LockingColumnDialog
+        extends AbstractDialog
+    {
+        private ListModel lockingColumnsModel;
+
+        private ObjectListSelectionModel lockingColumnsSelectionModel;
+
+
+        LockingColumnDialog(WorkbenchContext context)
+        {
+            super(context);
+        }
+
+        protected void initialize()
+        {
+            super.initialize();
+            this.lockingColumnsModel = this.buildPrimaryKeyListAdapter();
+            this.lockingColumnsSelectionModel = this.buildLockingColumnsSelectionModel();
+
+            this.setTitle(resourceRepository().getString("LOCKING_ADD_REMOVE_DIALOG_TITLE"));
+            this.getOKAction().setEnabled(false);
+        }
+
+        private ListModel buildPrimaryKeyListAdapter()
+        {
+            return new ListModelAdapter(this.buildSortedColumnsHolder());
+        }
+
+        private ListValueModel buildSortedColumnsHolder() {
+            return new SortedListValueModelAdapter(buildAllColumnsCollectionHolder());
+        }
+
+        private CollectionValueModel buildAllColumnsCollectionHolder() {
+            return new CompositeCollectionValueModel(buildSortedTablesHolder()) {
+                protected CollectionValueModel transform(Object value) {
+                    return new ListCollectionValueModelAdapter(buildSortedColumnsHolder((MWTable) value));
+                }
+            };
+        }
+
+        private ListValueModel buildSortedTablesHolder() {
+            return new SortedListValueModelAdapter(buildTableNameAdapter());
+        }
+
+        private ListValueModel buildTableNameAdapter() {
+            return new ItemPropertyListValueModelAdapter(buildTablesHolder(), MWTable.QUALIFIED_NAME_PROPERTY);
+        }
+
+        private CollectionValueModel buildTablesHolder() {
+            return new CollectionAspectAdapter(getSubjectHolder()) {
+                protected Iterator getValueFromSubject() {
+                    return ((MWTableDescriptorLockingPolicy) this.subject).getOwningTableDescriptor().associatedTables();
+                }
+            };
+        }
+
+        ListValueModel buildSortedColumnsHolder(MWTable table) {
+            return new SortedListValueModelAdapter(buildColumnNameAdapter(table));
+        }
+        private ListValueModel buildColumnNameAdapter(MWTable table) {
+            return new ItemPropertyListValueModelAdapter(buildColumnsHolder(table), MWColumn.NAME_PROPERTY);
+        }
+
+
+        private CollectionAspectAdapter buildColumnsHolder(MWTable table) {
+            return new CollectionAspectAdapter(MWTable.COLUMNS_COLLECTION, table) {
+                protected Iterator getValueFromSubject() {
+                    return ((MWTable) this.subject).columns();
+                }
+                protected int sizeFromSubject() {
+                    return ((MWTable) this.subject).columnsSize();
+                }
+            };
+        }
+
+        private ObjectListSelectionModel buildLockingColumnsSelectionModel() {
+            ObjectListSelectionModel selectionModel = new ObjectListSelectionModel(this.lockingColumnsModel);
+            selectionModel.addListSelectionListener(this.buildSelectionListener());
+            return selectionModel;
+        }
+
+        private ListSelectionListener buildSelectionListener() {
+            return new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e) {
+                    if ( ! e.getValueIsAdjusting()) {
+                        LockingColumnDialog.this.selectionChanged();
+                    }
+                }
+            };
+        }
+
+        void selectionChanged() {
+            this.getOKAction().setEnabled(! this.lockingColumnsSelectionModel.isSelectionEmpty());
+        }
+
+        protected Component buildMainPanel() {
+            JList list = SwingComponentFactory.buildList(this.lockingColumnsModel);
+            list.setSelectionModel(this.lockingColumnsSelectionModel);
+            list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+            list.setCellRenderer(this.buildListCellRenderer());
+            list.addMouseListener(buildListMouseListener());
+            return new JScrollPane(list);
+        }
+
+        private ListCellRenderer buildListCellRenderer() {
+            return new AdaptableListCellRenderer(new ColumnCellRendererAdapter(this.resourceRepository()));
+        }
+
+        /**
+         * Double-clicking on a selection in the list will automatically
+         * make the selection.
+         */
+        protected MouseListener buildListMouseListener() {
+            return new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 2) {
+                        LockingColumnDialog.this.clickOK();
+                    }
+                }
+            };
+        }
+
+        /**
+         * broaden access a bit
+         */
+        protected void clickOK() {
+            super.clickOK();
+        }
+
+        protected String helpTopicId() {
+            return RelationalLockingColumnsPanel.this.helpTopicId();
+        }
+
+        Object[] promptForPrimaryKeys() {
+            this.show();
+
+            if (this.wasConfirmed()) {
+                return this.lockingColumnsSelectionModel.getSelectedValues();
+            }
+            return new Object[0];
+        }
+    }
 }

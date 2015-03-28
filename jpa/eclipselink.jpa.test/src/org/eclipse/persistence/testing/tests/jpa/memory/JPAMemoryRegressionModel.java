@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
  package org.eclipse.persistence.testing.tests.jpa.memory;
 
 
@@ -63,7 +63,7 @@ public class JPAMemoryRegressionModel extends TestModel {
             // Create using DatabaseSession if not EclipseLink JPA.
             new EmployeeTableCreator().replaceTables(getDatabaseSession());
         }
-        
+
         manager.getTransaction().begin();
 
         // Populate database
@@ -94,7 +94,7 @@ public class JPAMemoryRegressionModel extends TestModel {
         ((JpaEntityManager)manager).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         manager.close();
     }
-    
+
     /**
      * Setup the JPA provider.
      */
@@ -110,11 +110,11 @@ public class JPAMemoryRegressionModel extends TestModel {
         Map properties = getPersistenceProperties();
         getExecutor().setEntityManagerFactory(provider.createEntityManagerFactory("performance", properties));
     }
-    
+
     /**
      * Build the persistence properties.
      */
-    public Map getPersistenceProperties() {    
+    public Map getPersistenceProperties() {
         Map properties = new HashMap();
         properties.put("eclipselink.jdbc.driver", getSession().getLogin().getDriverClassName());
         properties.put("eclipselink.jdbc.url", getSession().getLogin().getConnectionString());
@@ -124,7 +124,7 @@ public class JPAMemoryRegressionModel extends TestModel {
         properties.put("eclipselink.jdbc.cache-statements", "true");
         return properties;
     }
-    
+
     /**
      * Measure the amount of memory used by inserts.
      */
@@ -135,7 +135,7 @@ public class JPAMemoryRegressionModel extends TestModel {
                 getExecutor().getEntityManagerFactory().close();
                 getExecutor().setEntityManagerFactory(null);
             }
-            
+
             public void test() {
                 EntityManager manager = createEntityManager();
                 Query query = manager.createQuery("Select e from Employee e");
@@ -146,7 +146,7 @@ public class JPAMemoryRegressionModel extends TestModel {
         test.setName("BootstrapMemoryTest");
         return test;
     }
-    
+
     /**
      * Measure the amount of memory used by inserts.
      */
@@ -158,7 +158,7 @@ public class JPAMemoryRegressionModel extends TestModel {
                 ((JpaEntityManager)manager).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
                 manager.close();
             }
-            
+
             public void test() {
                 for (int count = 0; count < 500; count++) {
                     EntityManager manager = createEntityManager();
@@ -171,7 +171,7 @@ public class JPAMemoryRegressionModel extends TestModel {
                     manager.close();
                 }
             }
-            
+
             @Override
             public void endTest() {
                 EntityManager manager = createEntityManager();
@@ -197,7 +197,7 @@ public class JPAMemoryRegressionModel extends TestModel {
                 ((JpaEntityManager)manager).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
                 manager.close();
             }
-            
+
             public void test() {
                 EntityManager manager = createEntityManager();
                 Query query = manager.createQuery("Select e from Employee e");
@@ -209,7 +209,7 @@ public class JPAMemoryRegressionModel extends TestModel {
                 }
                 manager.close();
             }
-            
+
             @Override
             public void endTest() {
                 EntityManager manager = createEntityManager();
@@ -228,7 +228,7 @@ public class JPAMemoryRegressionModel extends TestModel {
         MemoryRegressionTestCase test = new MemoryRegressionTestCase() {
             @SuppressWarnings("unused")
             List results;
-            
+
             @Override
             public void startTest() {
                 EntityManager manager = createEntityManager();
@@ -241,7 +241,7 @@ public class JPAMemoryRegressionModel extends TestModel {
                 results = query.getResultList();
                 manager.close();
             }
-            
+
             @Override
             public void endTest() {
                 results = null;
@@ -253,5 +253,5 @@ public class JPAMemoryRegressionModel extends TestModel {
         test.setName("ReadMemoryTest");
         return test;
     }
-    
+
 }

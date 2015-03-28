@@ -17,5 +17,5 @@
    <xsd:element name="customerType" type="CustomerType"/>
    <xsd:element name="phoneType" type="PhoneType"/>
    <xsd:element name="billToType" type="AddressType"/>
-   <xsd:element name="shipToType" type="AddressType"/>   
+   <xsd:element name="shipToType" type="AddressType"/>
 </xsd:schema>

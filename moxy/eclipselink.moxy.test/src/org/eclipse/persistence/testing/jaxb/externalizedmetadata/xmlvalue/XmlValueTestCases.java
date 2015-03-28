@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,10 +36,10 @@ public class XmlValueTestCases extends JAXBWithJSONTestCases {
     private static final String ADAPTER_OXM_DOC = ADAPTER_PATH + "oxm.xml";
     private static final String XML_RESOURCE = ADAPTER_PATH + "boolean.xml";
     private static final String JSON_RESOURCE = ADAPTER_PATH + "boolean.json";
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public XmlValueTestCases(String name) throws Exception{
@@ -50,28 +50,28 @@ public class XmlValueTestCases extends JAXBWithJSONTestCases {
     }
 
     public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream(ADAPTER_OXM_DOC);
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(ADAPTER_OXM_DOC);
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.adapter", new StreamSource(inputStream));
-		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-		properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-	        
-	    return properties;
-	}
-	    
-	
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.adapter", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+        return properties;
+    }
+
+
     public Object getControlObject() {
         MyValueClass mvc = new MyValueClass();
         mvc.blah = new Boolean("true");
-        return mvc;        
+        return mvc;
     }
 
     /**
      * Tests @XmlValue via eclipselink-oxm.xml.
-     * 
+     *
      * An exception should occur since more than one field is set as XmlValue.
-     * 
+     *
      * Negative test.
      */
     public void testTwoXmlValues() {
@@ -86,22 +86,22 @@ public class XmlValueTestCases extends JAXBWithJSONTestCases {
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         boolean exceptionOccurred = false;
-        
-        try { 
+
+        try {
             JAXBContextFactory.createContext(new Class[] { InternationalPriceNoAnnotation.class }, properties, getClass().getClassLoader());
         } catch (Exception x) {
             exceptionOccurred = true;
         }
-        
+
         assertTrue("The expected exception was not thrown", exceptionOccurred);
     }
 
     /**
      * Tests @XmlValue via eclipselink-oxm.xml.
-     * 
+     *
      * An exception should occur since only XmlAttributes are allowed when
      * there is an XmlValue.
-     * 
+     *
      * Negative test.
      */
     public void testXmlValueWithElement() {
@@ -116,14 +116,14 @@ public class XmlValueTestCases extends JAXBWithJSONTestCases {
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         boolean exceptionOccurred = false;
-        
-        try { 
+
+        try {
             JAXBContextFactory.createContext(new Class[] { InternationalPriceNoAnnotation.class }, properties, getClass().getClassLoader());
         } catch (Exception x) {
             exceptionOccurred = true;
         }
-        
+
         assertTrue("The expected exception was not thrown", exceptionOccurred);
     }
-      
+
 }

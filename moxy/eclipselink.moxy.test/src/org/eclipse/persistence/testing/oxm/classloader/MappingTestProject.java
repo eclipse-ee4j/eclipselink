@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -71,8 +71,8 @@ public class MappingTestProject extends Project {
     }
 
     /**
-     * The root descriptor contains a single mapping test object and a 
-     * list of address objects 
+     * The root descriptor contains a single mapping test object and a
+     * list of address objects
      */
     public ClassDescriptor buildRootObjectDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -177,7 +177,7 @@ public class MappingTestProject extends Project {
 
         // 1- binary and choice are supported with SAX and Java project
         // 2- neither is supported with deployment XML
-        // 3- binary is supported with DOM 
+        // 3- binary is supported with DOM
         if (metadata == OXTestCase.Metadata.JAVA) {
             descriptor.addMapping(photoMapping);
             descriptor.addMapping(photosMapping);
@@ -185,8 +185,8 @@ public class MappingTestProject extends Project {
         if (platform == OXTestCase.Platform.SAX) {
             descriptor.addMapping(choiceMapping);
             descriptor.addMapping(choiceColMapping);
-        } 
-        
+        }
+
         // object reference mapping
         XMLObjectReferenceMapping orMapping = new XMLObjectReferenceMapping();
         orMapping.setAttributeName("address");

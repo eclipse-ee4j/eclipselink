@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     06/30/2010-2.1.1 Michael O'Brien 
+ *     06/30/2010-2.1.1 Michael O'Brien
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
  ******************************************************************************/
 package org.eclipse.persistence.platform.server.wls;
 
@@ -29,7 +29,7 @@ import org.eclipse.persistence.transaction.wls.WebLogicTransactionController;
 
 /**
  * PUBLIC:
- * 
+ *
  * This is the concrete subclass responsible for representing WebLogic-specific
  * server behavior.
  * <p>
@@ -54,19 +54,19 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
      * unwrapping connections.
      */
     protected Method vendorConnectionMethod;
-    
+
     /**
      * Cached WLConnection.clearStatementCache() Method used for
      * clearing statement cache.
      */
     protected Method clearStatementCacheMethod;
-    
+
     /**
      * Indicates whether WLConnection.clearStatementCache() should be called:
      * there is no need to call it in WebLogic Server 10.3.4 or later.
      */
     protected boolean shouldClearStatementCache;
-    
+
     /**
      * INTERNAL: Default Constructor: All behavior for the default constructor
      * is inherited.
@@ -94,9 +94,9 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     /**
      * INTERNAL: getExternalTransactionControllerClass(): Answer the class of
      * external transaction controller to use for WebLogic. This is read-only.
-     * 
+     *
      * @return Class externalTransactionControllerClass
-     * 
+     *
      * @see org.eclipse.persistence.transaction.JTATransactionController
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#isJTAEnabled()
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#disableJTA()
@@ -123,7 +123,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
         }
         return this.weblogicConnectionClass;
     }
-    
+
     /**
      * Return the method for the WebLogic JDBC connection wrapper vendorConnection.
      */
@@ -177,12 +177,12 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
      * Clears statement cache of WebLogic connection using the WebLogic API reflectively.
      * Required by Oracle proxy authentication: currently connection statement cache
      * becomes invalid on switching to/from proxy session.
-     * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer  
+     * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer
      * before opening proxy session and before closing it.
      */
     public void clearStatementCache(Connection connection) {
         if(this.serverNameAndVersion == null) {
-            // this will initialize shouldClearStatementCache, too. 
+            // this will initialize shouldClearStatementCache, too.
             initializeServerNameAndVersion();
         }
         if (this.shouldClearStatementCache && getWebLogicConnectionClass().isInstance(connection) && getClearStatementCacheMethod() != null) {

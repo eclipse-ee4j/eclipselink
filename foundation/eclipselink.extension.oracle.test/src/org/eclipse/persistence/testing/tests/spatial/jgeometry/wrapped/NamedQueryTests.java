@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.spatial.jgeometry.wrapped;
 
 import java.util.List;
@@ -46,11 +46,11 @@ import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.Spatial;
 public class NamedQueryTests extends WrappedSpatialTestCase {
     private static final String SESSION_QUERY_NAME = "wrapped-jgeometry-session-query";
     private static final String DESCRIPTOR_QUERY_NAME = "wrapped-jgeometry-descriptor-query";
-    
+
     public NamedQueryTests(String name){
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("NamedQueryTests");
@@ -80,7 +80,7 @@ public class NamedQueryTests extends WrappedSpatialTestCase {
 
                     raq = new ReadAllQuery(WrappedSpatial.class);
                     eb = raq.getExpressionBuilder();
-                    
+
                     parameters = new SpatialParameters();
                     parameters.setDistance(10d);
                     selectionCriteria = SpatialExpressionFactory.withinDistance(eb.get("geometry").getField("geom"), eb.getParameter("GEOMETRY"), parameters);
@@ -96,27 +96,27 @@ public class NamedQueryTests extends WrappedSpatialTestCase {
             }
 
             protected void tearDown() {
-                try{            	
+                try{
                     getSession().removeQuery(SESSION_QUERY_NAME);
                     getSession().getClassDescriptor(WrappedSpatial.class).getDescriptorQueryManager().removeQuery(DESCRIPTOR_QUERY_NAME);
-        		}catch (Exception e){
-            	    throw new TestProblemException("Could not tearDown NamedQueryTests for SimpleSpatialTestCase.", e);
-            	}
+                }catch (Exception e){
+                    throw new TestProblemException("Could not tearDown NamedQueryTests for SimpleSpatialTestCase.", e);
+                }
             }
         };
     }
 
     public void executeNamedSessionQuery() throws Exception {
-        String sql = 
-            "select GID, GEOMETRY FROM WRAPPED_SPATIAL WS where mdsys.sdo_relate(ws.geometry.geom, " + 
-            "mdsys.sdo_geometry(3,null,null, mdsys.sdo_elem_info_array(1,3,3),  " + 
-            "mdsys.sdo_ordinate_array(1,1, 20, 20)), " + 
+        String sql =
+            "select GID, GEOMETRY FROM WRAPPED_SPATIAL WS where mdsys.sdo_relate(ws.geometry.geom, " +
+            "mdsys.sdo_geometry(3,null,null, mdsys.sdo_elem_info_array(1,3,3),  " +
+            "mdsys.sdo_ordinate_array(1,1, 20, 20)), " +
             "'MASK=ANYINTERACT QUERYTYPE=WINDOW') = 'TRUE' ORDER BY GID";
         SQLReader reader = new SQLReader(session, sql);
         double[] points = new double[] { 1, 1, 1, 20, 10, 20, 20, 1, 1, 1 };
         JGeometry rectangle = JGeometry.createLinearPolygon(points, 2, 0);
 
-        List<Spatial> results = 
+        List<Spatial> results =
             (List)session.executeQuery(SESSION_QUERY_NAME, rectangle);
 
         String compareResult = reader.compare(results);
@@ -143,20 +143,20 @@ public class NamedQueryTests extends WrappedSpatialTestCase {
     }
 
     public void executeDescriptorNamedQuery() throws Exception {
-        String sql = 
-            "select GID, GEOMETRY FROM WRAPPED_SPATIAL WS where " + 
-            "mdsys.sdo_within_distance(ws.geometry.geom, " + 
-            "mdsys.sdo_geometry(3,null,null, " + 
-            "mdsys.sdo_elem_info_array(1,3,4), " + 
-            "mdsys.sdo_ordinate_array(-10,0, 0, 10, 10, 0)), " + 
+        String sql =
+            "select GID, GEOMETRY FROM WRAPPED_SPATIAL WS where " +
+            "mdsys.sdo_within_distance(ws.geometry.geom, " +
+            "mdsys.sdo_geometry(3,null,null, " +
+            "mdsys.sdo_elem_info_array(1,3,4), " +
+            "mdsys.sdo_ordinate_array(-10,0, 0, 10, 10, 0)), " +
             "'DISTANCE=10') = 'TRUE' ORDER BY GID";
 
         SQLReader reader = new SQLReader(session, sql);
 
         JGeometry circle = JGeometry.createCircle(-10, 0, 0, 10, 10, 0, 0);
 
-        List<Spatial> results = 
-            (List)session.executeQuery(DESCRIPTOR_QUERY_NAME, 
+        List<Spatial> results =
+            (List)session.executeQuery(DESCRIPTOR_QUERY_NAME,
                                        WrappedSpatial.class, circle);
 
         String compareResult = reader.compare(results);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class ByteToExampleEnumAdapter extends XmlAdapter<ExampleEnum, Byte> {
     public ByteToExampleEnumAdapter(){}
-    
+
     public ExampleEnum marshal(Byte v) throws Exception {
         ExampleEnum[] exArray = ExampleEnum.values();
         for(ExampleEnum ex : exArray) {

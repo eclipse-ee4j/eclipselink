@@ -2,6 +2,6 @@
     "employee":[{}],
     "addresses":{
         "address":[
-	{"aid":"a100"},{"aid":"a101"},{"aid":"a102"}]
+    {"aid":"a100"},{"aid":"a101"},{"aid":"a102"}]
     }
 }}

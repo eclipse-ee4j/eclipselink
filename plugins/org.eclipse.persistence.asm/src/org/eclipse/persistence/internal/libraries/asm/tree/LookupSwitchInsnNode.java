@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * A node that represents a LOOKUPSWITCH instruction.
- * 
+ *
  * @author Eric Bruneton
  */
 public class LookupSwitchInsnNode extends AbstractInsnNode {
@@ -63,7 +63,7 @@ public class LookupSwitchInsnNode extends AbstractInsnNode {
 
     /**
      * Constructs a new {@link LookupSwitchInsnNode}.
-     * 
+     *
      * @param dflt
      *            beginning of the default handler block.
      * @param keys

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 
@@ -34,11 +34,11 @@ public class InMemoryQueryIndirectionPolicy implements java.io.Serializable {
     public static final int SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED = 2;
     /** If a non-instantiated indirection object is encountered the object is assumed to not conform. */
     public static final int SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED = 3;
-    
+
     protected int policy;
     /** Used to set the policy state in the query. */
     protected ObjectLevelReadQuery query;
-    
+
     public InMemoryQueryIndirectionPolicy() {
         this.policy = SHOULD_THROW_INDIRECTION_EXCEPTION;
     }
@@ -46,7 +46,7 @@ public class InMemoryQueryIndirectionPolicy implements java.io.Serializable {
     public InMemoryQueryIndirectionPolicy(int policyValue) {
         this.policy = policyValue;
     }
-    
+
     public InMemoryQueryIndirectionPolicy(int policy, ObjectLevelReadQuery query) {
         this.policy = policy;
         this.query = query;
@@ -94,7 +94,7 @@ public class InMemoryQueryIndirectionPolicy implements java.io.Serializable {
             this.query.setInMemoryQueryIndirectionPolicyState(policy);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return the query.
@@ -102,7 +102,7 @@ public class InMemoryQueryIndirectionPolicy implements java.io.Serializable {
     public ObjectLevelReadQuery getQuery() {
         return query;
     }
-    
+
     /**
      * INTERNAL:
      * Set the query.

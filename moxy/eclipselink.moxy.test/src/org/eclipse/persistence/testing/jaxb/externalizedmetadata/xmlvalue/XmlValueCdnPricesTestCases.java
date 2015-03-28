@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,57 +32,57 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class XmlValueCdnPricesTestCases extends JAXBWithJSONTestCases{
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/cdnprices.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/cdnprices.json";
-    
-	public XmlValueCdnPricesTestCases(String name) throws Exception {
-		super(name);
-		setClasses(new Class[] { CDNPricesNoAnnotation.class });
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-	}
-	
-	   
+
+    public XmlValueCdnPricesTestCases(String name) throws Exception {
+        super(name);
+        setClasses(new Class[] { CDNPricesNoAnnotation.class });
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+    }
+
+
     public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/eclipselink-oxm-cdnprices.xml");
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/eclipselink-oxm-cdnprices.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue", new StreamSource(inputStream));
-		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-		properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-	        
-	    return properties;
-	}
-	    
-	    
-	public void testSchemaGen() throws Exception{
-	   	List controlSchemas = new ArrayList();
-	   	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/cdnprices_schema.xsd");	    	
-	   	controlSchemas.add(is);
-	   	
-	   	super.testSchemaGen(controlSchemas);	  
-	   	
-	   	InputStream src = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-	   	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/cdnprices_schema.xsd");
-	   	String result = validateAgainstSchema(src, new StreamSource(schema));
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+        return properties;
+    }
+
+
+    public void testSchemaGen() throws Exception{
+           List controlSchemas = new ArrayList();
+           InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/cdnprices_schema.xsd");
+           controlSchemas.add(is);
+
+           super.testSchemaGen(controlSchemas);
+
+           InputStream src = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+           InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/cdnprices_schema.xsd");
+           String result = validateAgainstSchema(src, new StreamSource(schema));
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-	}
+    }
 
-	protected Object getControlObject() {
-		CDNPricesNoAnnotation price = new CDNPricesNoAnnotation();
-	    price.prices = new ArrayList();
-	    price.prices.add(new BigDecimal("123.45678901234567890"));
-	    price.prices.add(new BigDecimal("234.45678901234567890"));
-	    price.prices.add(new BigDecimal("345.45678901234567890"));	    
-	    return price;
-	}
-	
-	 public void testContainerType() {
-	    
-	        XMLDescriptor xDesc = xmlContext.getDescriptor(new QName("canadian-price"));
-	        assertNotNull("No descriptor was generated for CDNPricesNoAnnotation.", xDesc);
-	        DatabaseMapping mapping = xDesc.getMappingForAttributeName("prices");
-	        assertNotNull("No mapping exists on CDNPricesNoAnnotation for attribute [prices].", mapping);
-	        assertTrue("Expected an XMLCompositeDirectCollectionMapping for attribute [prices], but was [" + mapping.toString() +"].", mapping instanceof XMLCompositeDirectCollectionMapping);
-	        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
-	    }
-    
+    protected Object getControlObject() {
+        CDNPricesNoAnnotation price = new CDNPricesNoAnnotation();
+        price.prices = new ArrayList();
+        price.prices.add(new BigDecimal("123.45678901234567890"));
+        price.prices.add(new BigDecimal("234.45678901234567890"));
+        price.prices.add(new BigDecimal("345.45678901234567890"));
+        return price;
+    }
+
+     public void testContainerType() {
+
+            XMLDescriptor xDesc = xmlContext.getDescriptor(new QName("canadian-price"));
+            assertNotNull("No descriptor was generated for CDNPricesNoAnnotation.", xDesc);
+            DatabaseMapping mapping = xDesc.getMappingForAttributeName("prices");
+            assertNotNull("No mapping exists on CDNPricesNoAnnotation for attribute [prices].", mapping);
+            assertTrue("Expected an XMLCompositeDirectCollectionMapping for attribute [prices], but was [" + mapping.toString() +"].", mapping instanceof XMLCompositeDirectCollectionMapping);
+            assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
+        }
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
  * <p><b>Purpose</b>:  Provides a wrapper for a java type to be used when creating a JAXB context. This allows for
  * additional information (such as parameter level annotations and element tag names) to be included in addition
  * to the type itself.
- * 
+ *
  * @author mmacivor
  */
 public class TypeMappingInfo {
@@ -37,18 +37,18 @@ public class TypeMappingInfo {
     private Element xmlElement;
     private boolean nillable;
     private Descriptor xmlDescriptor;
-  
+
     private QName schemaType;
 
     /**
      * INTERNAL:
      * Indicates the schema type to be used during marshal
      */
-   	public QName getSchemaType() {
-   		return schemaType;
-   	}    
-    
-	/**
+       public QName getSchemaType() {
+           return schemaType;
+       }
+
+    /**
      * Indicates if a global element should be generated for this type.
      */
     public ElementScope getElementScope() {
@@ -64,17 +64,17 @@ public class TypeMappingInfo {
      * @return
      */
     public boolean isNillable() {
-		return nillable;
-	}
+        return nillable;
+    }
 
     /**
      * Set if the global element should be marked as nillable
      * @param nillable
      */
-	public void setNillable(boolean nillable) {
-		this.nillable = nillable;
-	}
-    
+    public void setNillable(boolean nillable) {
+        this.nillable = nillable;
+    }
+
     /**
      * Root element name associated with this type;
      */
@@ -96,15 +96,15 @@ public class TypeMappingInfo {
     public void setType(Type t) {
         this.type = t;
         if(type instanceof Class){
-            if (((Class)type) == CoreClassConstants.ABYTE || ((Class)type) == CoreClassConstants.APBYTE || 
-        	   ((Class)type).getCanonicalName().equals("javax.activation.DataHandler")) {
-        	   schemaType = Constants.BASE_64_BINARY_QNAME;
-        	}
+            if (((Class)type) == CoreClassConstants.ABYTE || ((Class)type) == CoreClassConstants.APBYTE ||
+               ((Class)type).getCanonicalName().equals("javax.activation.DataHandler")) {
+               schemaType = Constants.BASE_64_BINARY_QNAME;
+            }
         }
     }
 
     /**
-     * Representing parameter level annotations that should be applied to this 
+     * Representing parameter level annotations that should be applied to this
      * type.
      */
     public Annotation[] getAnnotations() {
@@ -141,7 +141,7 @@ public class TypeMappingInfo {
     /**
      * Returns the xml-element as a <code>Element</code> which represents the
      * parameter level annotations that should be applied to this type.
-     * 
+     *
      * @return <code>Element</code> which represents the parameter level
      *         annotations that should be applied to this type if set, otherwise
      *         null
@@ -155,17 +155,17 @@ public class TypeMappingInfo {
      * annotations that should be applied to this type. If
      * <code>xmlElement</code> is non-null, any annotations set on this instance
      * will be completely ignored.
-     * 
+     *
      * The following XML representations of parameter level annotations will be
      * supported:
      * <ul>
      * <li>xml-element</li> <li>xml-attachment-ref</li> <li>xml-list</li> <li>
      * xml-mime-type</li> <li>xml-java-type-adapter</li>
      * </ul>
-     * 
+     *
      * @param xmlElement
      *            <code>Element</code> created from an xml-element
-     * 
+     *
      * @see org.w3c.dom.Element
      * @see org.eclipse.persistence.jaxb.xmlmodel.XmlElement
      */

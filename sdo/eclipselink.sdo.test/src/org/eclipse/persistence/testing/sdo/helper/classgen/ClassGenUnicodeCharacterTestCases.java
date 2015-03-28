@@ -43,17 +43,17 @@ public class ClassGenUnicodeCharacterTestCases extends SDOClassGenTestCases {
         list.add("DeptView\u00c9SDOImpl.java");
         return list;
     }
-    
+
     protected List<String> getPackages() {
-        List<String> packages = new ArrayList<String>();       
+        List<String> packages = new ArrayList<String>();
         packages.add("model/mbcs/common");
-        packages.add("model/mbcs/common");        
+        packages.add("model/mbcs/common");
         return packages;
     }
-    
+
     public String getSchema(InputStream is, String fileName) {
-        String xsdSchema = EMPTY_STRING;        
-        try {            
+        String xsdSchema = EMPTY_STRING;
+        try {
             InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"));
             BufferedReader reader = new BufferedReader(isr);
             String nextLine = reader.readLine();

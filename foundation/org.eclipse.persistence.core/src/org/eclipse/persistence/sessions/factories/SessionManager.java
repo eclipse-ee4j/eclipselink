@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.factories;
 
 import java.security.AccessController;
@@ -55,7 +55,7 @@ import org.eclipse.persistence.sessions.Session;
 public class SessionManager {
     /** Allow for usage of schema validation to be configurable. */
     protected static boolean shouldUseSchemaValidation = true;
-    
+
     protected static volatile SessionManager manager;
     protected AbstractSession defaultSession;
     protected ConcurrentMap<String, Session> sessions = null;
@@ -70,7 +70,7 @@ public class SessionManager {
     static {
         init();
     }
-    
+
     private static void init() {
         String platformClass = ServerPlatformUtils.detectServerPlatform(null);
         try {
@@ -91,7 +91,7 @@ public class SessionManager {
             manager = initializeManager();
         }
     }
-    
+
     /**
      * PUBLIC:
      * Return if schema validation will be used when parsing the 10g (10.1.3) sessions XML.
@@ -115,7 +115,7 @@ public class SessionManager {
     public static void setShouldUseSchemaValidation(boolean useSchemaValidation) {
         shouldUseSchemaValidation = useSchemaValidation;
     }
-    
+
     /**
      * PUBLIC:
      * The default constructor to create a new session manager.
@@ -411,7 +411,7 @@ public class SessionManager {
         loader.setResourceName(filename);
         return getSession(loader);
     }
-    
+
     /**
      * PUBLIC:
      * Return the session by name, in the file specified, using the class loader to find the resource.
@@ -542,7 +542,7 @@ public class SessionManager {
         loader.setShouldCheckClassLoader(shouldCheckClassLoader);
         return getSession(loader);
     }
-        
+
     /**
      * PUBLIC:
      * Return the session by name, loading the configuration from the file
@@ -551,7 +551,7 @@ public class SessionManager {
      * @param loader {@link XMLSessionConfigLoader} containing session configuration
      * @return session with given session name
      */
-    public AbstractSession getSession(XMLSessionConfigLoader loader) { 
+    public AbstractSession getSession(XMLSessionConfigLoader loader) {
         AbstractSession session = (AbstractSession)getSessions().get(loader.getSessionName());
         boolean shouldRefreshSession = loader.shouldRefresh();
         if (loader.shouldCheckClassLoader() && (session != null) && !session.getDatasourcePlatform().getConversionManager().getLoader().equals(loader.getClassLoader())) {
@@ -578,10 +578,10 @@ public class SessionManager {
                             } catch (Throwable ignore) {
                                 LOG.logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, ignore);
                             }
-                        }        
+                        }
                         getSessions().remove(loader.getSessionName());
                     }
-        
+
                     if (loader.load(this, loader.getClassLoader())) {
                         session = (AbstractSession)getSessions().get(loader.getSessionName());
                     }
@@ -638,7 +638,7 @@ public class SessionManager {
     /**
      * PUBLIC:
      * Set the default session.
-     * If not set the session configuration is stored in a sessions.xml 
+     * If not set the session configuration is stored in a sessions.xml
      * file in a TopLink directory on your classpath.
      * Other sessions are supported through the getSession by name API.
      *
@@ -678,7 +678,7 @@ public class SessionManager {
             }
         }
     }
-    
+
     private static String getPartitionID() {
         return detectedPlatform.getPartitionID();
     }

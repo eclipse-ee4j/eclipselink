@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
 import java.security.AccessController;
@@ -27,8 +27,8 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 /**
  * INTERNAL:
  * <p><b>Purpose</b>:Provide a means to Convert an Enumeration type to/from either a string representation
- * of the enum facet or a user defined value. 
- * 
+ * of the enum facet or a user defined value.
+ *
  * <p><b>Responsibilities:</b></p>
  * <ul>
  * <li>Initialize the conversion values to be the Enum facets</li>
@@ -38,7 +38,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 public class JAXBEnumTypeConverter extends ObjectTypeConverter {
     private Class m_enumClass;
     private String m_enumClassName;
-	private boolean m_usesOrdinalValues;
+    private boolean m_usesOrdinalValues;
 
     /**
      * PUBLIC:
@@ -47,15 +47,15 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
         super((DatabaseMapping)mapping);
 
         m_enumClassName = enumClassName;
-		m_usesOrdinalValues = usesOrdinalValues;
+        m_usesOrdinalValues = usesOrdinalValues;
     }
-    
+
     /**
      * INTERNAL:
-     * Convert all the class-name-based settings in this converter to actual 
-     * class-based settings. This method is used when converting a project 
+     * Convert all the class-name-based settings in this converter to actual
+     * class-based settings. This method is used when converting a project
      * that has been built with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         try {
@@ -72,7 +72,7 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
             throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, exception);
         }
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -81,7 +81,7 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
         while (i.hasNext()) {
             Enum theEnum = i.next();
             if (this.getAttributeToFieldValues().get(theEnum) == null) {
-                Object existingVal = this.getAttributeToFieldValues().get(theEnum.name()); 
+                Object existingVal = this.getAttributeToFieldValues().get(theEnum.name());
                 if (existingVal != null) {
                     this.getAttributeToFieldValues().remove(theEnum.name());
                     addConversionValue(existingVal, theEnum);
@@ -95,17 +95,17 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
                 }
             }
         }
-        
+
         super.initialize(mapping, session);
     }
-    
+
     /**
      * PUBLIC:
      * Returns true if this converter uses ordinal values for the enum
      * conversion.
      */
-	public boolean usesOrdinalValues() {
-		return m_usesOrdinalValues;   
+    public boolean usesOrdinalValues() {
+        return m_usesOrdinalValues;
     }
 
     @Override
@@ -118,7 +118,7 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
                     fieldValue = ((String) fieldValue).trim();
                     return super.convertDataValueToObjectValue(fieldValue, session);
                 }
-            } 
+            }
             throw e;
         }
     }

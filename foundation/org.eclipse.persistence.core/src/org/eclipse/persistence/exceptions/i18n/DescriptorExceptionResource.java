@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     09/24/2014-2.6 Rick Curtis 
+ *     09/24/2014-2.6 Rick Curtis
  *       - 443762 : Misc message cleanup.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
@@ -135,9 +135,9 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "113", "The constructor was inaccessible." },
                                            { "114", "Problem in creating new instance using creation method [{0}].  The creation method is not accessible." },
                                            { "115", "No conversion value provided for the attribute [{0}]." },
-                                           
+
     { "116", "No conversion value provided for the value [{0}] in field [{1}]." },
-                                           
+
     { "118", "The object [{0}] must not have read-only mappings to its write lock fields." },
                                            { "119", "The object''s [{0}] mappings to its write lock fields must be read-only." },
                                            { "120", "The query key [{0}] is defined in the parent descriptor [{1}], but not in the child descriptor [{2}]." },
@@ -229,7 +229,7 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "214", "{0} specifies relation table, that is not compatible with addForeignKey(Name) method, or use addSourceRelationKeyField(Name) and addTargetRelationKeyFieldName methods instead."},
                                            { "215", "{0} must have non-null RelationTableMechanism."},
                                            { "216", "CacheKeyType cannot be ID_VALUE for a composite primary key.."},
-                                           { "217", "Invalid XPath for XMLDirectMapping/XMLCompositeDirectCollectionMapping. XPath must either contain an @ symbol for attributes or end in /text() for text nodes. For example: \"@name\" or \"name/text()\""}, 
+                                           { "217", "Invalid XPath for XMLDirectMapping/XMLCompositeDirectCollectionMapping. XPath must either contain an @ symbol for attributes or end in /text() for text nodes. For example: \"@name\" or \"name/text()\""},
                                            // 323148
                                            { "218", "A NullPointerException would have occurred accessing a non-existent weaved _vh_ method [{0}].  The class was not weaved properly - for EE deployments, check the module order in the application.xml deployment descriptor and verify that the module containing the persistence unit is ahead of any other module that uses it."},
                                            { "219", "The additional criteria from [{1}] is not allowed within an inheritance hierarchy using views."},

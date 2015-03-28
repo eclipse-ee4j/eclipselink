@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
 import java.util.*;
@@ -39,23 +39,23 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
     public Object set(int index, Object element) {
         return l.set(index+offset, element);
     }
-    
+
     public void setElementAt(Object obj, int index) {
         set(index, obj);
     }
-    
+
     public Object elementAt(int index) {
         return get(index);
     }
-    
+
     public Object firstElement() {
         return get(0);
-    }    
-    
+    }
+
     public Object lastElement() {
         return get(size() - 1);
     }
-    
+
     public int indexOf(Object elem, int index) {
         int size = size();
         if (elem == null) {
@@ -69,7 +69,7 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         }
         return -1;
     }
-    
+
     public int lastIndexOf(Object elem, int index) {
         int size = size();
         if (index >= size)
@@ -85,7 +85,7 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         }
         return -1;
     }
-    
+
     public Object get(int index) {
         return l.get(index+offset);
     }
@@ -135,11 +135,11 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
     public Enumeration elements() {
         return new Enumeration() {
             int count = 0;
-    
+
             public boolean hasMoreElements() {
                 return count < size();
             }
-    
+
             public Object nextElement() {
                 if (count < elementCount) {
                     return get(count++);
@@ -148,7 +148,7 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
             }
         };
     }
-        
+
     public Object[] toArray() {
         Object[] result = new Object[size];
         System.arraycopy(l.toArray(), offset, result, 0, size);
@@ -159,7 +159,7 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         if (a.length < size)
             a = (Object[])java.lang.reflect.Array.newInstance(
                                 a.getClass().getComponentType(), size);
-        
+
         System.arraycopy(l.toArray(), offset, a, 0, size);
 
         if (a.length > size)

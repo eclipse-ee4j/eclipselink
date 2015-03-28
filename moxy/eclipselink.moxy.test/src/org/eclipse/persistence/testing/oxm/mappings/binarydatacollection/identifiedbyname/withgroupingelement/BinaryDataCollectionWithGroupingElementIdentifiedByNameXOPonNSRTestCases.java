@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -59,7 +59,7 @@ public class BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTest
     protected Object getControlObject() {
         Employee employee = null;
 
-        //	  	try {
+        //          try {
         Vector photos = new Vector();
         photos.addElement(MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes());
         photos.addElement(MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes());
@@ -71,20 +71,20 @@ public class BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTest
         employee.setID(Employee.DEFAULT_ID);
         employee.setPhotos(photos);
 
-        //	  	} catch (MalformedURLException mue) {
-        //	  		System.out.println("BinaryDataCollection: Exception: " + mue.getMessage());
-        //	  		mue.printStackTrace();
-        //	  	}
+        //          } catch (MalformedURLException mue) {
+        //              System.out.println("BinaryDataCollection: Exception: " + mue.getMessage());
+        //              mue.printStackTrace();
+        //          }
         return employee;
     }
 
     public void setUp() throws Exception {
         super.setUp();
         MyAttachmentUnmarshaller handler = new MyAttachmentUnmarshaller();
-        
+
         handler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID,MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes());
-        xmlUnmarshaller.setAttachmentUnmarshaller(handler);	    
-        
+        xmlUnmarshaller.setAttachmentUnmarshaller(handler);
+
     }
 
     @Override

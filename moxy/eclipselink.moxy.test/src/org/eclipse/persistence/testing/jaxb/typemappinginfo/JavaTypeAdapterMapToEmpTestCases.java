@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,37 +27,37 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 public class JavaTypeAdapterMapToEmpTestCases extends TypeMappingInfoWithJSONTestCases {
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/maptoemployee.xml";
     protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/maptoemployee.json";
-    
+
     @XmlJavaTypeAdapter(MapToEmployeeAdapter.class)
     public Object javaTypeAdapterField;
-    
+
     public JavaTypeAdapterMapToEmpTestCases(String name) throws Exception {
         super(name);
         init();
     }
-    
+
     public void init() throws Exception {
-        setControlDocument(XML_RESOURCE);   
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setTypeMappingInfos(getTypeMappingInfos()); 
+        setTypeMappingInfos(getTypeMappingInfos());
     }
-    
+
     protected TypeMappingInfo[] getTypeMappingInfos()throws Exception {
         if(typeMappingInfos == null) {
             typeMappingInfos = new TypeMappingInfo[1];
             TypeMappingInfo tmi = new TypeMappingInfo();
-            tmi.setXmlTagName(new QName("someUri","testTagname"));      
-            tmi.setElementScope(ElementScope.Global);       
+            tmi.setXmlTagName(new QName("someUri","testTagname"));
+            tmi.setElementScope(ElementScope.Global);
             tmi.setType(Map.class);
             Annotation[] annotations = new Annotation[1];
-            
+
             annotations[0] = getClass().getField("javaTypeAdapterField").getAnnotations()[0];
             tmi.setAnnotations(annotations);
-            typeMappingInfos[0] = tmi;          
+            typeMappingInfos[0] = tmi;
         }
-        return typeMappingInfos;        
+        return typeMappingInfos;
     }
-    
+
     protected Object getControlObject() {
         Map map = new HashMap();
         map.put("firstName", "John");
@@ -68,7 +68,7 @@ public class JavaTypeAdapterMapToEmpTestCases extends TypeMappingInfoWithJSONTes
 
         return jaxbElement;
     }
- 
+
     public Object getWriteControlObject() {
         Map map = new HashMap();
         map.put("firstName", "John");
@@ -79,9 +79,9 @@ public class JavaTypeAdapterMapToEmpTestCases extends TypeMappingInfoWithJSONTes
 
         return jaxbElement;
     }
-    public Map<String, InputStream> getControlSchemaFiles(){                       
+    public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/maptoemployee.xsd");
-        
+
         Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
         controlSchema.put("someUri", instream);
         return controlSchema;
@@ -89,6 +89,6 @@ public class JavaTypeAdapterMapToEmpTestCases extends TypeMappingInfoWithJSONTes
 
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE;
-    }    
+    }
 }
 

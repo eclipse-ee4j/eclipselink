@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
@@ -59,7 +59,7 @@ public class SimpleTypeTestSuite {
     static EntityManagerFactory emf = null;
     static JPADynamicHelper helper = null;
     static DynamicType simpleType = null;
-    
+
     @BeforeClass
     public static void setUp() throws Exception {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
@@ -102,14 +102,14 @@ public class SimpleTypeTestSuite {
         }
         JpaHelper.getServerSession(emf).getIdentityMapAccessor().initializeAllIdentityMaps();
     }
-    
+
     @Test
     public void verifyConfig() throws Exception {
         ClassDescriptor descriptor = helper.getSession().getClassDescriptorForAlias("Simple");
         assertNotNull("No descriptor found for alias='Simple'", descriptor);
         DynamicTypeImpl simpleTypeImpl = (DynamicTypeImpl)simpleType;
         assertNotNull("'Simple' EntityType not found", simpleTypeImpl);
-        assertEquals(1 + descriptor.getPrimaryKeyFields().size(), 
+        assertEquals(1 + descriptor.getPrimaryKeyFields().size(),
             simpleTypeImpl.getMappingsRequiringInitialization().size());
         assertEquals(descriptor, simpleTypeImpl.getDescriptor());
     }
@@ -151,7 +151,7 @@ public class SimpleTypeTestSuite {
     public void verifyDefaultValuesFromDescriptor() throws Exception {
         DynamicTypeImpl simpleTypeImpl = (DynamicTypeImpl)simpleType;
         assertNotNull(simpleTypeImpl);
-        DynamicEntity simpleInstance = 
+        DynamicEntity simpleInstance =
             (DynamicEntity)simpleTypeImpl.getDescriptor().getObjectBuilder().buildNewInstance();
         assertDefaultValues(simpleInstance);
     }
@@ -159,7 +159,7 @@ public class SimpleTypeTestSuite {
     protected void assertDefaultValues(DynamicEntity simpleInstance) {
         assertNotNull(simpleInstance);
 
-        assertEquals("id not default value", 
+        assertEquals("id not default value",
             0, simpleInstance.<Integer>get("id").intValue());
         assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
         assertEquals("value2 not default value on new instance",

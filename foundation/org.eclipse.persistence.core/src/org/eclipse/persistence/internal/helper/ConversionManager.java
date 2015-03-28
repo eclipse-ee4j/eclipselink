@@ -120,7 +120,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return convertObjectToDouble(sourceObject);
             } else if ((javaClass == ClassConstants.FLOAT) || (javaClass == ClassConstants.PFLOAT && !(sourceObject instanceof Float))) {
                 return convertObjectToFloat(sourceObject);
-        	} else if ((javaClass == ClassConstants.LONG) || (javaClass == ClassConstants.PLONG && !(sourceObject instanceof Long))) {
+            } else if ((javaClass == ClassConstants.LONG) || (javaClass == ClassConstants.PLONG && !(sourceObject instanceof Long))) {
                 return convertObjectToLong(sourceObject);
             } else if ((javaClass == ClassConstants.SHORT) || (javaClass == ClassConstants.PSHORT && !(sourceObject instanceof Short))) {
                 return convertObjectToShort(sourceObject);
@@ -152,15 +152,15 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         } catch (Exception e) {
             throw ConversionException.couldNotBeConverted(sourceObject, javaClass, e);
         }
-        
+
         // Check if object is instance of the real class for the primitive class.
-        if ((((javaClass == ClassConstants.PBOOLEAN) && (sourceObject instanceof Boolean)  ) || 
-            ((javaClass == ClassConstants.PLONG) && (sourceObject instanceof Long) ) || 
-            ((javaClass == ClassConstants.PINT) && (sourceObject instanceof Integer)  ) || 
-            ((javaClass == ClassConstants.PFLOAT) && (sourceObject instanceof Float)) || 
-            ((javaClass == ClassConstants.PDOUBLE) &&  (sourceObject instanceof Double) ) || 
-            ((javaClass == ClassConstants.PBYTE) &&  (sourceObject instanceof Byte)) || 
-            ((javaClass == ClassConstants.PCHAR) &&  (sourceObject instanceof Character)) || 
+        if ((((javaClass == ClassConstants.PBOOLEAN) && (sourceObject instanceof Boolean)  ) ||
+            ((javaClass == ClassConstants.PLONG) && (sourceObject instanceof Long) ) ||
+            ((javaClass == ClassConstants.PINT) && (sourceObject instanceof Integer)  ) ||
+            ((javaClass == ClassConstants.PFLOAT) && (sourceObject instanceof Float)) ||
+            ((javaClass == ClassConstants.PDOUBLE) &&  (sourceObject instanceof Double) ) ||
+            ((javaClass == ClassConstants.PBYTE) &&  (sourceObject instanceof Byte)) ||
+            ((javaClass == ClassConstants.PCHAR) &&  (sourceObject instanceof Character)) ||
             ((javaClass == ClassConstants.PSHORT) &&  (sourceObject instanceof Short)))) {
             return sourceObject;
         }
@@ -189,9 +189,9 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             } else if (sourceObject instanceof BigInteger) {
                 bigDecimal = new BigDecimal((BigInteger)sourceObject);
             } else if (sourceObject instanceof Number) {
-                // Doubles do not maintain scale, because of this it is 
+                // Doubles do not maintain scale, because of this it is
                 // impossible to distinguish between 1 and 1.0.  In order to
-                // maintain backwards compatibility both 1 and 1.0 will be 
+                // maintain backwards compatibility both 1 and 1.0 will be
                 // treated as BigDecimal(1).
                 String numberString = String.valueOf(sourceObject);
                 if(numberString.endsWith(".0") || numberString.contains(".0E+")) {
@@ -886,7 +886,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     public boolean hasDefaultNullValues(){
         return this.defaultNullValues != null;
     }
-    
+
     /**
      * INTERNAL:
      * Load the class using the default managers class loader.
@@ -987,7 +987,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      */
     public void setDefaultNullValue(Class theClass, Object theValue) {
         if (this.defaultNullValues == null){
-            this.defaultNullValues = new HashMap(5); 
+            this.defaultNullValues = new HashMap(5);
         }
         getDefaultNullValues().put(theClass, theValue);
     }

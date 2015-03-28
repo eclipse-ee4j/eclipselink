@@ -18,7 +18,7 @@ import org.eclipse.persistence.testing.tests.failover.emulateddriver.EmulatedDri
  * This test will test TopLink Failover support within a TopLink Connection pool.
  * It is expected that upon a connection failure TopLink will remove all broken connections
  * From the TopLink Pool and then reattempt connection to the datasource.
- * 
+ *
  * @author gyorke
  *
  */public class FullDatabaseFailureTest extends TestCase
@@ -64,18 +64,18 @@ import org.eclipse.persistence.testing.tests.failover.emulateddriver.EmulatedDri
     {
         try
         {
-        	EmulatedDriver.fullFailure = true;
+            EmulatedDriver.fullFailure = true;
             session.acquireClientSession().readObject(Address.class);
         }
         catch(DatabaseException ex)
         {
             return;  //Exception expected
         }finally{
-        	EmulatedDriver.fullFailure = false;
+            EmulatedDriver.fullFailure = false;
         }
         throw new TestErrorException("Should have thrown exception as database connection is unavailable.");
     }
-    
+
     public void reset()
     {
         if(session != null) {
@@ -84,7 +84,7 @@ import org.eclipse.persistence.testing.tests.failover.emulateddriver.EmulatedDri
             } finally {
                 session = null;
             }
-            
+
         }
     }
 }

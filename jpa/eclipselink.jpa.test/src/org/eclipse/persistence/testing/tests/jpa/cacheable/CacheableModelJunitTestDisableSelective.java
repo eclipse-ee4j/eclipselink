@@ -1,20 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     06/16/2009-2.0 Guy Pelletier 
+ *     06/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
- *     07/16/2009-2.0 Guy Pelletier 
+ *     07/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
- *     06/09/2010-2.0.3 Guy Pelletier 
+ *     06/09/2010-2.0.3 Guy Pelletier
  *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
 import junit.framework.*;
@@ -23,28 +23,28 @@ import javax.persistence.EntityManager;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
- 
+
 /*
  * The test is testing against "MulitPU-4" persistence unit which has <shared-cache-mode> to be DISABLE_SELECTIVE
  */
 public class CacheableModelJunitTestDisableSelective extends CacheableModelJunitTest {
-    
+
     public CacheableModelJunitTestDisableSelective() {
         super();
     }
-    
+
     public CacheableModelJunitTestDisableSelective(String name) {
         super(name);
         setPuName("MulitPU-4");
     }
-    
+
     /**
-     * Convenience method. 
+     * Convenience method.
      */
     public void clearDSCache() {
         clearCache("MulitPU-4");
     }
-    
+
     /**
      * Convenience method.
      */
@@ -53,21 +53,21 @@ public class CacheableModelJunitTestDisableSelective extends CacheableModelJunit
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Convenience method.
      */
     public EntityManager createDSEntityManager() {
         return createEntityManager("MulitPU-4");
     }
-        
+
     /**
      * Convenience method.
      */
     public ServerSession getDSServerSession() {
         return getPUServerSession("MulitPU-4");
     }
-    
+
     /**
      * Convenience method.
      */
@@ -75,7 +75,7 @@ public class CacheableModelJunitTestDisableSelective extends CacheableModelJunit
     public ServerSession getPUServerSession(String puName) {
         return JUnitTestCase.getServerSession("MulitPU-4");
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("CacheableModelJunitTestDisableSelective");
@@ -83,16 +83,16 @@ public class CacheableModelJunitTestDisableSelective extends CacheableModelJunit
         if (! JUnitTestCase.isJPA10()) {
             suite.addTest(new CacheableModelJunitTestDisableSelective("testSetup"));
             suite.addTest(new CacheableModelJunitTestDisableSelective("testCachingOnDISABLE_SELECTIVE"));
-            
+
             // Test cache retrieve mode of BYPASS and USE through the EM.
             suite.addTest(new CacheableModelJunitTestDisableSelective("testCreateEntities"));
-            
+
             suite.addTest(new CacheableModelJunitTestDisableSelective("testFindWithEMProperties"));
             suite.addTest(new CacheableModelJunitTestDisableSelective("testFindWithFindProperties"));
-            
+
             suite.addTest(new CacheableModelJunitTestDisableSelective("testRefreshWithEMProperties"));
             suite.addTest(new CacheableModelJunitTestDisableSelective("testRefreshWithRefreshProperties"));
-            
+
             // Test various usage scenarios ..
             suite.addTest(new CacheableModelJunitTestDisableSelective("testRetrieveBYPASSStoreUSE1"));
             suite.addTest(new CacheableModelJunitTestDisableSelective("testRetrieveBYPASSStoreUSE2"));
@@ -110,7 +110,7 @@ public class CacheableModelJunitTestDisableSelective extends CacheableModelJunit
             suite.addTest(new CacheableModelJunitTestDisableSelective("testProtectedIsolation"));
             suite.addTest(new CacheableModelJunitTestDisableSelective("testProtectedCaching"));
             suite.addTest(new CacheableModelJunitTestDisableSelective("testReadOnlyTree"));
-            
+
             suite.addTest(new CacheableModelJunitTestDisableSelective("testUpdateForceProtectedBasic"));
             suite.addTest(new CacheableModelJunitTestDisableSelective("testUpdateForceProtectedOneToOne"));
             suite.addTest(new CacheableModelJunitTestDisableSelective("testUpdateProtectedBasic"));
@@ -124,7 +124,7 @@ public class CacheableModelJunitTestDisableSelective extends CacheableModelJunit
             suite.addTest(new CacheableModelJunitTestDisableSelective("testUpdateProtectedManyToMany"));
             suite.addTest(new CacheableModelJunitTestDisableSelective("testUpdateProtectedElementCollection"));
             suite.addTest(new CacheableModelJunitTestDisableSelective("testIsolationBeforeEarlyTxBegin"));
-            
+
             // Bug 340074
             suite.addTest(new CacheableModelJunitTestDisableSelective("testFindWithLegacyFindProperties"));
             suite.addTest(new CacheableModelJunitTestDisableSelective("testFindWithEMLegacyProperties"));
@@ -134,7 +134,7 @@ public class CacheableModelJunitTestDisableSelective extends CacheableModelJunit
         }
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */

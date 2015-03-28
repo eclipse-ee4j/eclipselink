@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.internal.helper.*;
@@ -65,7 +65,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
                 throw QueryException.objectToModifyNotSpecified(this);
             }
 
-            //Bug#3947714  Pass the object instead of class in case object is proxy            
+            //Bug#3947714  Pass the object instead of class in case object is proxy
             ClassDescriptor referenceDescriptor = session.getDescriptor(getObject());
             if (referenceDescriptor == null) {
                 throw QueryException.descriptorIsMissing(getObject().getClass(), this);
@@ -114,7 +114,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      */
     public Object getBackupClone() {
         // PERF: A backup clone is only required for the old commit,
-        // So avoid its creation for normal commit.	
+        // So avoid its creation for normal commit.
         if ((backupClone == null) && this.session.isUnitOfWork()) {
             setBackupClone(((UnitOfWorkImpl)this.session).getBackupCloneForCommit(this.object, this.descriptor));
         }
@@ -155,7 +155,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
             }
             return null;
         }
-        return this.object.getClass();        
+        return this.object.getClass();
     }
 
     /**

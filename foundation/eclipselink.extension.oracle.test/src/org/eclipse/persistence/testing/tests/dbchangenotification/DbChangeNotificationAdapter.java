@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.dbchangenotification;
 
 import java.util.*;
@@ -77,20 +77,20 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
             createOrReplaceStoredFunctionNOTIFY_IS_ENABLED(session);
             createOrReplaceStoredFunctionNOTIFY_MAKE_MSG(session);
             createOrReplaceTriggers(session);
-            //		disableTriggers(session);
+            //        disableTriggers(session);
         } finally {
             clear();
         }
     }
 
     protected void dropAndCreateQueue(Session session) {
-        //	execute(session, "BEGIN DBMS_AQADM.STOP_QUEUE (queue_name => '" + queueName + "'); END;", false);
-        //	execute(session, "BEGIN DBMS_AQADM.DROP_QUEUE (queue_name => '" + queueName + "'); END;", false);
-        //	execute(session, "BEGIN DBMS_AQADM.DROP_QUEUE_TABLE (queue_table => '" + queueTableName + "'); END;", false);
+        //    execute(session, "BEGIN DBMS_AQADM.STOP_QUEUE (queue_name => '" + queueName + "'); END;", false);
+        //    execute(session, "BEGIN DBMS_AQADM.DROP_QUEUE (queue_name => '" + queueName + "'); END;", false);
+        //    execute(session, "BEGIN DBMS_AQADM.DROP_QUEUE_TABLE (queue_table => '" + queueTableName + "'); END;", false);
         execute(session, "BEGIN DBMS_AQADM.DROP_QUEUE_TABLE (queue_table => '" + queueTableName + "', force => TRUE); END;", false);
 
         execute(session, "BEGIN DBMS_AQADM.CREATE_QUEUE_TABLE (queue_table => '" + queueTableName + "', multiple_consumers => " + useMultipleConsumers + ", queue_payload_type => 'SYS.AQ$_JMS_TEXT_MESSAGE'); END;", true);
-        //	execute(session, "BEGIN DBMS_AQADM.CREATE_QUEUE_TABLE (queue_table => '" + queueTableName + "', multiple_consumers => TRUE, queue_payload_type => 'SYS.AQ$_JMS_TEXT_MESSAGE', message_grouping => DBMS_AQADM.TRANSACTIONAL); END;", true);
+        //    execute(session, "BEGIN DBMS_AQADM.CREATE_QUEUE_TABLE (queue_table => '" + queueTableName + "', multiple_consumers => TRUE, queue_payload_type => 'SYS.AQ$_JMS_TEXT_MESSAGE', message_grouping => DBMS_AQADM.TRANSACTIONAL); END;", true);
         execute(session, "BEGIN DBMS_AQADM.CREATE_QUEUE (queue_name => '" + queueName + "', queue_table => '" + queueTableName + "'); END;", true);
         execute(session, "BEGIN DBMS_AQADM.START_QUEUE (queue_name => '" + queueName + "'); END;", true);
     }
@@ -112,14 +112,14 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
 
     protected void createOrReplaceStoredFunctionNOTIFY_MAKE_MSG(Session session) {
         String[] str =
-        //					"  msg.set_userid(NOTIFY_GET_APPID);",
+        //                    "  msg.set_userid(NOTIFY_GET_APPID);",
         { "CREATE OR REPLACE  FUNCTION NOTIFY_MAKE_MSG (", "  table_name VARCHAR2", ")", "RETURN SYS.AQ$_JMS_TEXT_MESSAGE", "as", "  msg SYS.AQ$_JMS_TEXT_MESSAGE;", "BEGIN", "  msg := SYS.AQ$_JMS_TEXT_MESSAGE.CONSTRUCT();", "  msg.set_string_property('APP', NOTIFY_GET_APPID);", "  msg.set_string_property('TABLE', table_name);", "  RETURN msg;", "END;" };
         execute(session, str, true);
     }
 
     protected void createOrReplaceStoredProcedureNOTIFY_ENQUEUE(Session session) {
         String[] str =
-        //					"    queue_name => '" + queueName + "',",
+        //                    "    queue_name => '" + queueName + "',",
         { "CREATE OR REPLACE  PROCEDURE NOTIFY_ENQUEUE (", "  p_queue_name VARCHAR2,", "  msg SYS.AQ$_JMS_TEXT_MESSAGE", ")", "as", "  queue_options   DBMS_AQ.ENQUEUE_OPTIONS_T;", "  msg_properties  DBMS_AQ.MESSAGE_PROPERTIES_T;", "  msg_id          RAW(16);", "  no_recipients_for_message EXCEPTION;", "  PRAGMA EXCEPTION_INIT(no_recipients_for_message, -24033);", "BEGIN", "  DBMS_AQ.ENQUEUE(", "    queue_name => p_queue_name,", "    enqueue_options => queue_options,", "    message_properties => msg_properties,", "    payload => msg,", "    msgid => msg_id);", "  EXCEPTION", "    WHEN no_recipients_for_message THEN", "      NULL;-- should be ignored", "END;" };
         execute(session, str, true);
     }
@@ -157,7 +157,7 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
         }
 
         str = str + "  NOTIFY_ENQUEUE('" + queueName + "', msg);\n";
-        //	str = str + "  NOTIFY_ENQUEUE(msg);\n";
+        //    str = str + "  NOTIFY_ENQUEUE(msg);\n";
         str = str + "END;";
 
         execute(session, str, true);

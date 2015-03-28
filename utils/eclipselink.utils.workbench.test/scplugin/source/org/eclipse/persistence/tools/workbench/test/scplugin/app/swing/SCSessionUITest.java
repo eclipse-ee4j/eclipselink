@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -22,40 +22,40 @@ import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueMo
  */
 public abstract class SCSessionUITest extends SCAbstractUITest {
 
-	private SessionAdapter subject;
-	private PropertyValueModel subjectHolder;
-	
-	protected SCSessionUITest() {
-		super();
-	}
-	
-	protected void setUp() {
-		
-		super.setUp();
+    private SessionAdapter subject;
+    private PropertyValueModel subjectHolder;
 
-		this.subject = getTopLinkSessions().sessionNamed( "SC-EmployeeTest");
-		
-		this.subjectHolder = new SimplePropertyValueModel( this.subject);
-	}
-	
-	protected SessionAdapter subject() {
-		return this.subject;
-	}	
-	
-	protected PropertyValueModel subjectHolder() {
-		return this.subjectHolder;
-	}
+    protected SCSessionUITest() {
+        super();
+    }
 
-	protected void clearModel() {
-		this.subjectHolder.setValue( null);
-	}
+    protected void setUp() {
 
-	protected void restoreModel() {
-		this.subjectHolder.setValue( subject());
-	}
+        super.setUp();
 
-	protected void printModel() {
-		System.out.println( subject());
-	}
+        this.subject = getTopLinkSessions().sessionNamed( "SC-EmployeeTest");
+
+        this.subjectHolder = new SimplePropertyValueModel( this.subject);
+    }
+
+    protected SessionAdapter subject() {
+        return this.subject;
+    }
+
+    protected PropertyValueModel subjectHolder() {
+        return this.subjectHolder;
+    }
+
+    protected void clearModel() {
+        this.subjectHolder.setValue( null);
+    }
+
+    protected void restoreModel() {
+        this.subjectHolder.setValue( subject());
+    }
+
+    protected void printModel() {
+        System.out.println( subject());
+    }
 
 }

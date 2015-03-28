@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,7 +59,7 @@ public class ProcedureTypeTestSuite {
             "\nT := CONCAT('barfoo-' , U);" +
             "\nV := V + 1;" +
         "\nEND OUTININOUTARGSSP;";
-    
+
     static final String DROP_OUT_IN_INOUT_ARGSSP_PROC =
         "DROP PROCEDURE OUTININOUTARGSSP";
 
@@ -70,11 +70,11 @@ public class ProcedureTypeTestSuite {
     @SuppressWarnings("rawtypes")
     static List dbProcedures;
     static DatabaseTypeBuilder dbTypeBuilder;
-    
+
     @BeforeClass
     public static void setUp() throws ClassNotFoundException, SQLException {
         AllTests.setUp();
-        
+
         String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
         if ("true".equalsIgnoreCase(ddlCreateProp)) {
             ddlCreate = true;
@@ -106,7 +106,7 @@ public class ProcedureTypeTestSuite {
             runDdl(conn, DROP_OUT_IN_INOUT_ARGSSP_PROC, ddlDebug);
         }
     }
-    
+
     @Test
     @SuppressWarnings({ "unchecked" })
     public void testJPAProcedureMetadata() {
@@ -136,7 +136,7 @@ public class ProcedureTypeTestSuite {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
         "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
         "   <orm:named-stored-procedure-query name=\"OUTININOUTARGSSP\" procedure-name=\"OUTININOUTARGSSP\" returns-result-set=\"false\">\n" +
         "      <orm:parameter mode=\"OUT\" name=\"T\" type=\"java.lang.String\" class=\"java.lang.String\" jdbc-type=\"12\" jdbc-type-name=\"VARCHAR\"/>\n" +
         "      <orm:parameter mode=\"IN\" name=\"U\" type=\"java.lang.String\" class=\"java.lang.String\" jdbc-type=\"12\" jdbc-type-name=\"VARCHAR\"/>\n" +

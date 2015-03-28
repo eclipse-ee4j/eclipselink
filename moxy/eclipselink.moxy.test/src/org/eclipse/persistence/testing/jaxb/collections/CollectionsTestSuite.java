@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,12 +26,12 @@ public class CollectionsTestSuite extends TestSuite {
         suite.addTestSuite(CollectionHolderInitializedTestCases.class);
         suite.addTestSuite(CollectionHolderInitializedWithNullsTestCases.class);
         suite.addTestSuite(CollectionHolderNillableTestCases.class);
-        suite.addTestSuite(CollectionHolderNillableWithNullsTestCases.class);        
+        suite.addTestSuite(CollectionHolderNillableWithNullsTestCases.class);
         suite.addTestSuite(CollectionHolderWrappersTestCases.class);
         suite.addTestSuite(CollectionHolderWrappersInitializedTestCases.class);
-        suite.addTestSuite(CollectionHolderWrappersNillableTestCases.class);       
+        suite.addTestSuite(CollectionHolderWrappersNillableTestCases.class);
         suite.addTestSuite(CollectionHolderWrappersNillableInitializedTestCases.class);
-        suite.addTestSuite(CollectionHolderWrappersOverrideTestCases.class);       
+        suite.addTestSuite(CollectionHolderWrappersOverrideTestCases.class);
         suite.addTestSuite(CollectionHolderWrappersPopulatedTestCases.class);
         suite.addTestSuite(CollectionHolderInitializedELTestCases.class);
         suite.addTestSuite(CollectionHolderWrappersNillableInitializedELTestCases.class);

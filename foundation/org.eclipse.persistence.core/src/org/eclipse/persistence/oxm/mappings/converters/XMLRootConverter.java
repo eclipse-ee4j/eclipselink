@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -22,7 +22,7 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.sessions.Session;
 
 /**
- * <p><b>Purpose: </b> Provides an implementation of XMLConverter to wrap/unwrap objects in an 
+ * <p><b>Purpose: </b> Provides an implementation of XMLConverter to wrap/unwrap objects in an
  * XMLRoot in order to capture element name information.
  * <p><b>Responsibilities</b>
  * <ul>
@@ -34,69 +34,69 @@ import org.eclipse.persistence.sessions.Session;
  * @see org.eclipse.persistence.mappings.converters.Converter Converter
  */
 public class XMLRootConverter implements XMLConverter {
-	private XPathFragment rootFragment;
-	private XMLField associatedField;
-	private DatabaseMapping mapping;
-	
-	public XMLRootConverter(XMLField associatedField) {
-		this.associatedField = associatedField;
-	}
-	
-	public Object convertDataValueToObjectValue(Object dataValue,
-			Session session, XMLUnmarshaller unmarshaller) {
-		return convertDataValueToObjectValue(dataValue, session);
-	}
+    private XPathFragment rootFragment;
+    private XMLField associatedField;
+    private DatabaseMapping mapping;
 
-	public Object convertObjectValueToDataValue(Object objectValue,
-			Session session, XMLMarshaller marshaller) {
-		return convertObjectValueToDataValue(objectValue, session);
-	}
+    public XMLRootConverter(XMLField associatedField) {
+        this.associatedField = associatedField;
+    }
 
-	public Object convertDataValueToObjectValue(Object dataValue,
-			Session session) {
-		XMLRoot root = new XMLRoot();
-		root.setLocalName(this.rootFragment.getLocalName());
-		root.setNamespaceURI(this.rootFragment.getNamespaceURI());
-		
-		if(mapping.isAbstractDirectMapping()){
-			if ((dataValue == null) || (dataValue.getClass() != mapping.getAttributeClassification())) {
-				try {
-					dataValue = session.getDatasourcePlatform().convertObject(dataValue, mapping.getAttributeClassification());
-				} catch (ConversionException e) {
-					throw ConversionException.couldNotBeConverted(this, mapping.getDescriptor(), e);
-				}
-			}
-		}
-		
-		root.setObject(dataValue);
-		
-		return root;
-	}
+    public Object convertDataValueToObjectValue(Object dataValue,
+            Session session, XMLUnmarshaller unmarshaller) {
+        return convertDataValueToObjectValue(dataValue, session);
+    }
 
-	public Object convertObjectValueToDataValue(Object objectValue,
-			Session session) {
-		if(objectValue instanceof XMLRoot) {
-			return ((XMLRoot)objectValue).getObject();
-		} else {
-			return objectValue;
-		}
-	}
+    public Object convertObjectValueToDataValue(Object objectValue,
+            Session session, XMLMarshaller marshaller) {
+        return convertObjectValueToDataValue(objectValue, session);
+    }
 
-	public void initialize(DatabaseMapping mapping, Session session) {
-		XPathFragment fragment = associatedField.getXPathFragment();
-		while(fragment.getNextFragment() != null && !(fragment.getNextFragment().nameIsText())) {
-			fragment = fragment.getNextFragment();
-		}
-		if(fragment.hasNamespace() && associatedField.getNamespaceResolver() != null){
-			String uri = associatedField.getNamespaceResolver().resolveNamespacePrefix(fragment.getPrefix());
-			fragment.setNamespaceURI(uri);
-		}
-		this.rootFragment = fragment;
-		this.mapping = mapping;
-	}
+    public Object convertDataValueToObjectValue(Object dataValue,
+            Session session) {
+        XMLRoot root = new XMLRoot();
+        root.setLocalName(this.rootFragment.getLocalName());
+        root.setNamespaceURI(this.rootFragment.getNamespaceURI());
 
-	public boolean isMutable() {
-		return false;
-	}
+        if(mapping.isAbstractDirectMapping()){
+            if ((dataValue == null) || (dataValue.getClass() != mapping.getAttributeClassification())) {
+                try {
+                    dataValue = session.getDatasourcePlatform().convertObject(dataValue, mapping.getAttributeClassification());
+                } catch (ConversionException e) {
+                    throw ConversionException.couldNotBeConverted(this, mapping.getDescriptor(), e);
+                }
+            }
+        }
+
+        root.setObject(dataValue);
+
+        return root;
+    }
+
+    public Object convertObjectValueToDataValue(Object objectValue,
+            Session session) {
+        if(objectValue instanceof XMLRoot) {
+            return ((XMLRoot)objectValue).getObject();
+        } else {
+            return objectValue;
+        }
+    }
+
+    public void initialize(DatabaseMapping mapping, Session session) {
+        XPathFragment fragment = associatedField.getXPathFragment();
+        while(fragment.getNextFragment() != null && !(fragment.getNextFragment().nameIsText())) {
+            fragment = fragment.getNextFragment();
+        }
+        if(fragment.hasNamespace() && associatedField.getNamespaceResolver() != null){
+            String uri = associatedField.getNamespaceResolver().resolveNamespacePrefix(fragment.getPrefix());
+            fragment.setNamespaceURI(uri);
+        }
+        this.rootFragment = fragment;
+        this.mapping = mapping;
+    }
+
+    public boolean isMutable() {
+        return false;
+    }
 
 }

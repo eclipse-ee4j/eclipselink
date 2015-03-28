@@ -39,27 +39,27 @@ public class InterfaceChoiceTestCases extends JAXBWithJSONTestCases {
         return namespaces;
     }
 
-	@Override
-	protected Object getControlObject() {
-		Root root = new Root();
-		
+    @Override
+    protected Object getControlObject() {
+        Root root = new Root();
+
         ArrayList<MyInterface> things = new ArrayList<MyInterface>();
 
-		MyObject mo = new MyObject();
-	    Properties p = new Properties();
-	    p.put("formatted", true);
-	    mo.setProperties(p);
+        MyObject mo = new MyObject();
+        Properties p = new Properties();
+        p.put("formatted", true);
+        mo.setProperties(p);
 
-	    MyOtherObject ro = new MyOtherObject();
-	    Properties rp = new Properties();
-	    rp.put("formatted", false);
-	    ro.setProperties(rp);
-	        
-	    things.add(mo);
-	    things.add(ro);
-	        
-	    root.setMyList(things);	
-		return root;
-	}
+        MyOtherObject ro = new MyOtherObject();
+        Properties rp = new Properties();
+        rp.put("formatted", false);
+        ro.setProperties(rp);
+
+        things.add(mo);
+        things.add(ro);
+
+        root.setMyList(things);
+        return root;
+    }
 
 }

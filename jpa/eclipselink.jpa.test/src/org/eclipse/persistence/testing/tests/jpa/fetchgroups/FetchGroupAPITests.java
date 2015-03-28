@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
+ *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fetchgroups;
 
@@ -23,7 +23,7 @@ import static org.eclipse.persistence.internal.helper.StringHelper.DOT;
 
 /**
  * Simple tests to verify the functionality of FetchGroup API
- * 
+ *
  * @author dclarke
  * @since EclipseLink 2.1
  */
@@ -32,11 +32,11 @@ public class FetchGroupAPITests extends TestCase {
     public FetchGroupAPITests() {
         super();
     }
-    
+
     public FetchGroupAPITests(String name) {
         super(name);
     }
-    
+
     public static junit.framework.Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("FetchGroupAPITests");

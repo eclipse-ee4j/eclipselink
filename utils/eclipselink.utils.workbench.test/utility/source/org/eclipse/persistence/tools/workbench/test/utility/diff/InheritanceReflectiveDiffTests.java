@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -35,86 +35,86 @@ import org.eclipse.persistence.tools.workbench.utility.diff.ReflectiveDifferenti
 
 public class InheritanceReflectiveDiffTests extends MultiClassReflectiveDiffTests {
 
-	public static Test suite() {
-		return new TestSuite(InheritanceReflectiveDiffTests.class);
-	}
-	
-	public InheritanceReflectiveDiffTests(String name) {
-		super(name);
-	}
+    public static Test suite() {
+        return new TestSuite(InheritanceReflectiveDiffTests.class);
+    }
 
-	protected Differentiator buildDifferentiator() {
-		DiffEngine diffEngine = new DiffEngine();
+    public InheritanceReflectiveDiffTests(String name) {
+        super(name);
+    }
 
-		ReflectiveDifferentiator rd;
-		rd = diffEngine.addReflectiveDifferentiator(SimpleEmployee.class);
-		rd.addKeyFieldNamed("id");
+    protected Differentiator buildDifferentiator() {
+        DiffEngine diffEngine = new DiffEngine();
 
-		rd = diffEngine.addReflectiveDifferentiator(InheritanceEmployee.class);
-		rd.addCollectionFieldNamed("dependents");
-		rd.addListFieldNamed("cars");
-		rd.addMapFieldNamed("phoneNumbers");
-		rd.addReferenceCollectionFieldNamed("underlings");
-		rd.addReferenceListFieldNamed("vacationBackups");
-		rd.addReferenceMapFieldNamed("eatingPartners");
+        ReflectiveDifferentiator rd;
+        rd = diffEngine.addReflectiveDifferentiator(SimpleEmployee.class);
+        rd.addKeyFieldNamed("id");
 
-		diffEngine.addReflectiveDifferentiator(Address.class);
+        rd = diffEngine.addReflectiveDifferentiator(InheritanceEmployee.class);
+        rd.addCollectionFieldNamed("dependents");
+        rd.addListFieldNamed("cars");
+        rd.addMapFieldNamed("phoneNumbers");
+        rd.addReferenceCollectionFieldNamed("underlings");
+        rd.addReferenceListFieldNamed("vacationBackups");
+        rd.addReferenceMapFieldNamed("eatingPartners");
 
-		rd = diffEngine.addReflectiveDifferentiator(Dependent.class);
-		rd.addKeyFieldNamed("name");
+        diffEngine.addReflectiveDifferentiator(Address.class);
 
-		rd = diffEngine.addReflectiveDifferentiator(Car.class);
-		rd.addKeyFieldNamed("name");
+        rd = diffEngine.addReflectiveDifferentiator(Dependent.class);
+        rd.addKeyFieldNamed("name");
 
-		rd = diffEngine.addReflectiveDifferentiator(PhoneNumber.class);
-		rd.addKeyFieldNamed("areaCode");
-		rd.addKeyFieldNamed("exchange");
-		rd.addKeyFieldNamed("number");
-		rd.addKeyFieldNamed("extension");
+        rd = diffEngine.addReflectiveDifferentiator(Car.class);
+        rd.addKeyFieldNamed("name");
 
-		diffEngine.setUserDifferentiator(State.class, IdentityDifferentiator.instance());
+        rd = diffEngine.addReflectiveDifferentiator(PhoneNumber.class);
+        rd.addKeyFieldNamed("areaCode");
+        rd.addKeyFieldNamed("exchange");
+        rd.addKeyFieldNamed("number");
+        rd.addKeyFieldNamed("extension");
 
-		return diffEngine;
-	}
+        diffEngine.setUserDifferentiator(State.class, IdentityDifferentiator.instance());
 
-	protected Employee buildEmployee(int id, String name) {
-		return new InheritanceEmployee(id, name);
-	}
+        return diffEngine;
+    }
 
-	protected ReflectiveDifferentiator employeeDifferentiator() {
-		return (ReflectiveDifferentiator) ((DiffEngine) this.differentiator).getUserDifferentiator(SimpleEmployee.class);
-	}
+    protected Employee buildEmployee(int id, String name) {
+        return new InheritanceEmployee(id, name);
+    }
 
-	public void testInheritanceMismatch() {
-		this.employee2.setId(77);
-		this.employee2.setName("Barney Rubble");
-		Address address2 = this.employee2.getAddress();
-		address2.setStreet("112 Boogie-Woogie Avenue");
-		address2.setCity("Hollyrock");
-		CompositeDiff diff = (CompositeDiff) this.differentiator.diff(this.employee1, this.employee2);
-		this.verifyDiffMismatch(diff, this.employee1, this.employee2);
+    protected ReflectiveDifferentiator employeeDifferentiator() {
+        return (ReflectiveDifferentiator) ((DiffEngine) this.differentiator).getUserDifferentiator(SimpleEmployee.class);
+    }
 
-		List leafMismatches = DiffTestTools.differentLeafDiffList(diff);
-		assertEquals(4, leafMismatches.size());
+    public void testInheritanceMismatch() {
+        this.employee2.setId(77);
+        this.employee2.setName("Barney Rubble");
+        Address address2 = this.employee2.getAddress();
+        address2.setStreet("112 Boogie-Woogie Avenue");
+        address2.setCity("Hollyrock");
+        CompositeDiff diff = (CompositeDiff) this.differentiator.diff(this.employee1, this.employee2);
+        this.verifyDiffMismatch(diff, this.employee1, this.employee2);
 
-		// inheritance order, then alphabetical order...
-		Diff leafDiff;
+        List leafMismatches = DiffTestTools.differentLeafDiffList(diff);
+        assertEquals(4, leafMismatches.size());
 
-		leafDiff = (Diff) leafMismatches.get(0);		// id
-		assertEquals(new Integer(1), leafDiff.getObject1());
-		assertEquals(new Integer(77), leafDiff.getObject2());
+        // inheritance order, then alphabetical order...
+        Diff leafDiff;
 
-		leafDiff = (Diff) leafMismatches.get(1);		// name
-		assertEquals("Fred Flintstone", leafDiff.getObject1());
-		assertEquals("Barney Rubble", leafDiff.getObject2());
+        leafDiff = (Diff) leafMismatches.get(0);        // id
+        assertEquals(new Integer(1), leafDiff.getObject1());
+        assertEquals(new Integer(77), leafDiff.getObject2());
 
-		leafDiff = (Diff) leafMismatches.get(2);		// city
-		assertEquals("Bedrock", leafDiff.getObject1());
-		assertEquals("Hollyrock", leafDiff.getObject2());
+        leafDiff = (Diff) leafMismatches.get(1);        // name
+        assertEquals("Fred Flintstone", leafDiff.getObject1());
+        assertEquals("Barney Rubble", leafDiff.getObject2());
 
-		leafDiff = (Diff) leafMismatches.get(3);		// street
-		assertEquals("201 Cobblestone Way", leafDiff.getObject1());
-		assertEquals("112 Boogie-Woogie Avenue", leafDiff.getObject2());
-	}
+        leafDiff = (Diff) leafMismatches.get(2);        // city
+        assertEquals("Bedrock", leafDiff.getObject1());
+        assertEquals("Hollyrock", leafDiff.getObject2());
+
+        leafDiff = (Diff) leafMismatches.get(3);        // street
+        assertEquals("201 Cobblestone Way", leafDiff.getObject1());
+        assertEquals("112 Boogie-Woogie Avenue", leafDiff.getObject2());
+    }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,19 +26,19 @@ import org.eclipse.persistence.oxm.annotations.XmlWriteTransformers;
 @XmlRootElement(name="employee")
 public class Employee {
     public String name;
-    
+
     @XmlReadTransformer(transformerClass = NormalHoursTransformer.class)
     @XmlWriteTransformers({
         @XmlWriteTransformer(transformerClass = StartTimeTransformer.class, xmlPath= "normal-hours/start-time/text()"),
         @XmlWriteTransformer(transformerClass = EndTimeTransformer.class, xmlPath="normal-hours/end-time/text()")
     })
     public String[] normalHours;
-    
+
     @XmlTransient
     public String getStartTime() {
         return normalHours[0];
     }
-    
+
     @XmlTransient
     public String getEndTime() {
         return normalHours[1];

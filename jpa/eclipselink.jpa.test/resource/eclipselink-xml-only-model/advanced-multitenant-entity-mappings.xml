@@ -2,7 +2,7 @@
 <entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <description>Advanced Multitenant Test Model Instance Document</description>
     <package>org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant</package>
-    
+
     <entity name="XMLMafiaFamily" class="MafiaFamily">
         <multitenant>
             <tenant-discriminator-column name="TENANT_ID" context-property="tenant.id"/>
@@ -34,7 +34,7 @@
             </element-collection>
         </attributes>
     </entity>
-    
+
     <entity name="XMLMafioso" class="Mafioso">
         <multitenant>
             <tenant-discriminator-column name="TENANT_ID" context-property="tenant.id"/>
@@ -61,7 +61,7 @@
             </many-to-one>
         </attributes>
     </entity>
-    
+
     <entity name="XMLBoss" class="Boss">
         <table name="XML_BOSS"/>
         <discriminator-value>DON</discriminator-value>
@@ -77,7 +77,7 @@
             </one-to-one>
         </attributes>
     </entity>
-    
+
     <entity name="XMLUnderboss" class="Underboss">
         <table name="XML_UNDERBOSS"/>
         <discriminator-value>LITTLE_DON</discriminator-value>
@@ -90,7 +90,7 @@
             </one-to-one>
         </attributes>
     </entity>
-    
+
     <entity name="XMLCapo" class="Capo">
         <table name="XML_CAPO"/>
         <discriminator-value>CAPO</discriminator-value>
@@ -99,7 +99,7 @@
             <one-to-many name="soldiers" mapped-by="capo"/>
         </attributes>
     </entity>
-    
+
     <entity name="XMLSoldier" class="Soldier">
         <table name="XML_SOLDIER"/>
         <discriminator-value>SOLDIER</discriminator-value>
@@ -112,7 +112,7 @@
             </many-to-many>
         </attributes>
     </entity>
-    
+
     <entity name="XMLContract" class="Contract">
         <multitenant type="SINGLE_TABLE"/>
         <table name="XML_CONTRACT"/>
@@ -143,8 +143,8 @@
                     <cascade-all/>
                 </cascade>
             </many-to-many>
-            
+
         </attributes>
     </entity>
-    
+
 </entity-mappings>

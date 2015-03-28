@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial implementation
  *     tware - implemenation of basic CRUD functionality
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- *     14/05/2012-2.4 Guy Pelletier  
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
@@ -71,30 +71,30 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * A MappedKeyMapContainerPolicy should be used for mappings to implementers of Map.
  * It differs from MapContainerPolicy by allowing the MapKey to be an otherwise unmapped
  * column in a table rather than a mapped element of the value in the map.
- * 
+ *
  * This container policy holds a reference to a KeyMapping that will be used to construct the key
  * from the database and a reference to its owner which creates the value for the map.
- * 
+ *
  * The key of the map can be any implementer of MapKeyMapping and the data representing the
  * key can either be stored in the target table of the value mapping, or in a collection table that
  * associates the source to the target.   The data can either be everything necessary to compose the
  * key, or foreign keys that allow the key to be retrieved
- * 
+ *
  * @see MapContainerPolicy
  * @see MapKeyMapping
  * @see MapComponentMapping
- * 
+ *
  * @author tware
  *
  */
 public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements CoreMappedKeyMapContainerPolicy<AbstractSession> {
-    
+
     protected MapKeyMapping keyMapping;
 
     protected MapComponentMapping valueMapping;
-    
+
     public DatabaseQuery keyQuery;
-    
+
     /**
      * INTERNAL:
      * Construct a new policy.
@@ -118,7 +118,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public MappedKeyMapContainerPolicy(String containerClassName) {
         super(containerClassName);
     }
-    
+
     /**
      * INTERNAL:
      * Called when the selection query is being initialize to add the fields for the key to the query
@@ -127,7 +127,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression) {
         keyMapping.addAdditionalFieldsToQuery(selectionQuery, baseExpression);
     }
-    
+
     /**
      * INTERNAL:
      * Add any non-Foreign-key data from an Object describe by a MapKeyMapping to a database row
@@ -151,11 +151,11 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public Object getKeyType() {
         return keyMapping.getMapKeyTargetType();
     }
-    
+
     /**
      * INTERNAL:
      * Called when the insert query is being initialized to ensure the fields for the key are in the insert query
-     * 
+     *
      * @see MappedKeyMapContainerPolicy
      */
     @Override
@@ -165,7 +165,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         }
         keyMapping.addFieldsForMapKey(joinRow);
     }
-    
+
     /**
      * INTERNAL:
      * Add element into container which implements the Map interface.
@@ -181,7 +181,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         }
         throw QueryException.cannotAddToContainer(element, container, this);
     }
-    
+
     /**
      * INTERNAL:
      * This is used for ordered List containers to add all of the elements
@@ -191,7 +191,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      */
     @Override
     public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord row, DataReadQuery query, CacheKey parentCacheKey, boolean isTargetProtected) {
-        Object key = this.keyMapping.createMapComponentFromRow(row, null, parentCacheKey, session, isTargetProtected);        
+        Object key = this.keyMapping.createMapComponentFromRow(row, null, parentCacheKey, session, isTargetProtected);
         Object value = this.valueMapping.createMapComponentFromRow(row, null, parentCacheKey, session, isTargetProtected);
         return addInto(key, value, container, session);
     }
@@ -200,12 +200,12 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      * INTERNAL:
      * Add element to that implements the Map interface
      * use the row to compute the key
-     */ 
+     */
     @Override
     public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, boolean isTargetProtected) {
         Object key = null;
         Object value = null;
-        
+
         // we are a direct collection mapping.  This means the key will be element and the value will come
         // from dbRow
         if ((valueMapping != null) && (((DatabaseMapping)valueMapping).isDirectCollectionMapping()) && (session.getDescriptor(element.getClass()) != null)) {
@@ -221,7 +221,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         }
         return addInto(key, value, container, session);
     }
-    
+
     /**
      * INTERNAL:
      * Used for joining.  Add any queries necessary for joining to the join manager
@@ -233,7 +233,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
             joinManager.getJoinedMappingQueries_().put((DatabaseMapping)keyMapping, nestedQuery);
         }
     }
-    
+
     /**
      * Build a clone for the key of a Map represented by this container policy.
      */
@@ -242,7 +242,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         return keyMapping.buildElementClone(key, parent, parentCacheKey, refreshCascade, cloningSession, isExisting, isCacheCheckComplete);
 
     }
-    
+
     /**
      * INTERNAL:
      * Certain key mappings favor different types of selection query.  Return the appropriate
@@ -261,7 +261,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public Object buildKey(AbstractRecord row, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return keyMapping.createMapComponentFromRow(row, query, parentCacheKey, session, isTargetProtected);
     }
-        
+
     /**
      * Extract the key for the map from the provided row.
      */
@@ -304,9 +304,9 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      */
     @Override
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
-        keyMapping.cascadeDiscoverAndPersistUnregisteredNewObjects(((Map.Entry)object).getKey(), newObjects, unregisteredExistingObjects, visitedObjects, uow, false, cascadeErrors);     
+        keyMapping.cascadeDiscoverAndPersistUnregisteredNewObjects(((Map.Entry)object).getKey(), newObjects, unregisteredExistingObjects, visitedObjects, uow, false, cascadeErrors);
     }
-    
+
     /**
      * INTERNAL:
      * Cascade registerNew to any mappings managed by the container policy. This will cascade the register to the key mapping.
@@ -315,7 +315,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         keyMapping.cascadePerformRemoveIfRequired(((Map.Entry)object).getKey(), uow, visitedObjects, false);
     }
-    
+
     /**
      * INTERNAL:
      * Cascade registerNew to any mappings managed by the container policy. This will cascade the register to the key mapping.
@@ -332,16 +332,16 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     @Override
     public Object clone() {
         MappedKeyMapContainerPolicy clone = (MappedKeyMapContainerPolicy) super.clone();
-        
+
         clone.keyMapping = (MapKeyMapping) this.keyMapping.clone();
-        
+
         if (this.keyQuery != null) {
             clone.keyQuery = (DatabaseQuery) this.keyQuery.clone();
         }
-        
+
         return clone;
     }
-    
+
     /**
      * INTERNAL:
      * Return true if keys are the same.  False otherwise
@@ -360,7 +360,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         }
         return true;
     }
-        
+
     /**
      * INTERNAL:
      * Return true if keys are the same in the source as the backup.  False otherwise
@@ -375,7 +375,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         }
         return super.compareKeys(sourceValue, session);
     }
-    
+
     /**
      * INTERNAL:
      * Create change sets that contain map keys.
@@ -390,7 +390,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
             changeSet.setOldKey(association.getKey());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Create a query key that links to the map key.
@@ -399,7 +399,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public QueryKey createQueryKeyForMapKey() {
         return keyMapping.createQueryKeyForMapKey();
     }
-    
+
     /**
      * INTERNAL:
      * This method will actually potentially wrap an object in two ways.  It will first wrap the object
@@ -414,19 +414,19 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         Object value = referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(unwrapIteratorResult(wrappedObject), referenceDescriptor, targetSession), mergeManager.getSession());
         return new Association(key, value);
     }
-    
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this ContainerPolicy to actual class-based
      * settings
-     * @param classLoader 
+     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         ((DatabaseMapping)keyMapping).convertClassNamesToClasses(classLoader);
     }
-    
-    
+
+
     /**
      * INTERNAL:
      * Delete the key and value of the passed association passed object.
@@ -438,7 +438,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         }
         session.deleteObject(unwrapIteratorResult(objectDeleted));
     }
-    
+
     /**
      * INTERNAL:
      * Return any tables that will be required when this mapping is used as part of a join query.
@@ -447,7 +447,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public List<DatabaseTable> getAdditionalTablesForJoinQuery() {
         return keyMapping.getAdditionalTablesForJoinQuery();
     }
-    
+
     /**
      * INTERNAL:
      * Return any additional fields required by the policy for a fetch join.
@@ -456,7 +456,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public List<DatabaseField> getAdditionalFieldsForJoin(CollectionMapping baseMapping) {
         return keyMapping.getAllFieldsForMapKey();
     }
-    
+
     /**
      * INTERNAL:
      * Return a Map of any foreign keys defined within the the MapKey.
@@ -464,7 +464,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey() {
         return keyMapping.getForeignKeyFieldsForMapKey();
     }
-    
+
     /**
      * INTERNAL:
      * Return the reference descriptor for the map key if it exists.
@@ -473,7 +473,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public ClassDescriptor getDescriptorForMapKey() {
         return keyMapping.getReferenceDescriptor();
     }
-    
+
     /**
      * INTERNAL:
      * Used when objects are added or removed during an update.
@@ -488,8 +488,8 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         }
         return new Association(key ,changeSet.getUnitOfWorkClone());
     }
-    
-    
+
+
     /**
      * INTERNAL:
      * Return the DatabaseField that represents the key in a DirectMapMapping.  If the
@@ -502,7 +502,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         }
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Return the fields that make up the identity of the mapped object.  For mappings with
@@ -513,7 +513,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public List<DatabaseField> getIdentityFieldsForMapKey() {
         return keyMapping.getIdentityFieldsForMapKey();
     }
-    
+
     /**
      * INTERNAL:
      * Get the Converter for the key of this mapping if one exists.
@@ -524,7 +524,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         }
         return null;
     }
-    
+
     public MapKeyMapping getKeyMapping() {
         return keyMapping;
     }
@@ -536,7 +536,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public DatabaseQuery getKeyQuery() {
         return keyQuery;
     }
-    
+
     /**
      * INTERNAL:
      * Get the selection criteria for the map key.
@@ -545,7 +545,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public Expression getKeySelectionCriteria() {
         return keyMapping.getAdditionalSelectionCriteriaForMapKey();
     }
-    
+
     public MapComponentMapping getValueMapping(){
         return valueMapping;
     }
@@ -559,7 +559,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         getKeyMapping().preinitializeMapKey(keyTable);
         ((DatabaseMapping)keyMapping).initialize(session);
     }
-    
+
     /**
      * CollectionTableMapContainerPolicy is for mappings where the key is stored in a table separately from the map
      * element.
@@ -573,7 +573,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public boolean isMappedKeyMapPolicy() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Return whether a map key this container policy represents is an attribute
@@ -583,7 +583,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public boolean isMapKeyAttribute() {
         return ((DatabaseMapping)keyMapping).isAbstractDirectMapping();
     }
-    
+
     /**
      * INTERNAL:
      * Return if the map key this container policy represents is a OneToOne.
@@ -592,7 +592,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public boolean isMapKeyObject() {
         return ((DatabaseMapping)keyMapping).isOneToOneMapping();
     }
-    
+
     /**
      * INTERNAL:
      * Used in Descriptor Iteration to iterate on map keys.
@@ -602,7 +602,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         Object key = ((Map.Entry)element).getKey();
         keyMapping.iterateOnMapKey(iterator, key);
     }
-    
+
     /**
      * INTERNAL:
      * Add the provided object to the deleted objects list on the commit manager.
@@ -634,7 +634,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      * INTERNAL:
      * This method is used to check the key mapping to ensure that it does not write to
      * a field that is written by another mapping.  There are two possibilities:
-     * 
+     *
      * 1. The conflicting mapping has already been processed.  In that case, we add MultipleWritableMappings
      * exception to the integrity checker right away
      * 2. There are no conflicting mappings.  In that case, we store the list of fields that this mapping
@@ -647,7 +647,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
             Iterator<DatabaseField> i = getIdentityFieldsForMapKey().iterator();
             while (i.hasNext()){
                 DatabaseField field = i.next();
-                if (mapping.getReferenceDescriptor().getObjectBuilder().getMappingsByField().containsKey(field) || mapping.getReferenceDescriptor().getAdditionalWritableMapKeyFields().contains(field)) {  
+                if (mapping.getReferenceDescriptor().getObjectBuilder().getMappingsByField().containsKey(field) || mapping.getReferenceDescriptor().getAdditionalWritableMapKeyFields().contains(field)) {
                     session.getIntegrityChecker().handleError(DescriptorException.multipleWriteMappingsForField(field.toString(), mapping));
                 } else {
                     mapping.getReferenceDescriptor().getAdditionalWritableMapKeyFields().add(field);
@@ -655,7 +655,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Add the key and value from provided association to the deleted objects list on the commit manager.
@@ -678,7 +678,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public boolean requiresDataModificationEvents(){
         return keyMapping.requiresDataModificationEventsForMapKey();
     }
-    
+
     /**
      * INTERNAL:
      * Return the key for the specified element.
@@ -690,8 +690,8 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
             return null;
         }
         return super.keyFrom(element, session);
-    }   
-    
+    }
+
     /**
      * INTERNAL:
      * Some subclasses need to post initialize mappings associated with them.
@@ -770,7 +770,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
             ((AggregateObjectMapping)keyMapping).preUpdateAttributeValue(query, ((Map.Entry)object).getKey());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Returns true if the key mapping is an AggregateObjectMapping.
@@ -780,7 +780,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public boolean propagatesEventsToCollection() {
         return ((DatabaseMapping)keyMapping).isAggregateObjectMapping();
     }
-    
+
     /**
      * INTERNAL:
      * Set the DatabaseField that will represent the key in a DirectMapMapping.
@@ -796,7 +796,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
             ((AbstractDirectMapping)keyMapping).setField(keyField);;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used during initialization of DirectMapMapping.  Sets the descriptor associated with
@@ -805,7 +805,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public void setDescriptorForKeyMapping(ClassDescriptor descriptor){
         ((DatabaseMapping)keyMapping).setDescriptor(descriptor);
     }
-    
+
     /**
      * INTERNAL:
      * Set a converter on the KeyField of a DirectCollectionMapping.
@@ -817,7 +817,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
             throw DescriptorException.cannotSetConverterForNonDirectMapping(mapping.getDescriptor(), mapping, keyConverter.getClass().getName());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Set the name of the class to be used as a converter for the key of a DirectMapMaping.
@@ -830,7 +830,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         }
 
     }
-    
+
     public void setKeyMapping(MapKeyMapping mapping){
         if (((DatabaseMapping)mapping).isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).getIndirectionPolicy().usesIndirection()){
             throw ValidationException.mapKeyCannotUseIndirection((DatabaseMapping)mapping);
@@ -838,7 +838,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         this.keyMapping = mapping;
         ((DatabaseMapping)mapping).setIsMapKeyMapping(true);
     }
-    
+
     /**
      * INTERNAL:
      * Some map keys must be obtained from the database.  This query is used to obtain the key
@@ -847,11 +847,11 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public void setKeyQuery(DatabaseQuery keyQuery) {
         this.keyQuery = keyQuery;
     }
-    
+
     public void setValueMapping(MapComponentMapping mapping) {
         this.valueMapping = mapping;
     }
-    
+
     /**
      * INTERNAL:
      * Return whether data for a map key must be included on a Delete datamodification event
@@ -861,8 +861,8 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
     public boolean shouldIncludeKeyInDeleteEvent() {
         return ((DatabaseMapping)keyMapping).isPrivateOwned();
     }
-    
-    
+
+
     /**
      * INTERNAL:
      * Certain types of container policies require an extra update statement after a relationship
@@ -883,7 +883,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         indexList.put((DatabaseMapping)keyMapping, index);
         return getAdditionalFieldsForJoin(null).size();
     }
-    
+
     /**
      * INTERNAL:
      * Allow the key to be unwrapped.  This will be overridden by container policies that
@@ -910,7 +910,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
             ++index;
             values[index/2] = pks[index];
         }
-        
+
         List<Object> keyObjects = keyMapping.createMapComponentsFromSerializableKeyInfo(keys, session);
         if (((DatabaseMapping)valueMapping).isElementCollectionMapping()) {
             for(int i = 0; i < mapSize; i++){
@@ -919,7 +919,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         } else {
             Map<Object, Object> fromCache = session.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(values, elementDescriptor);
             List foreignKeyValues = new ArrayList(pks.length - fromCache.size());
-            
+
             CacheKeyType cacheKeyType = this.elementDescriptor.getCachePolicy().getCacheKeyType();
             for (int index = 0; index < mapSize; ++index){
                 Object pk = values[index];
@@ -947,7 +947,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
                 arguments.add(foreignKeyValues);
                 if (pkCount > 1000){
                     int index = 0;
-                    
+
                     while ( index+1000 < pkCount ) { // some databases only support ins < 1000 entries
                         List pkList = new ArrayList();
                         pkList.addAll(foreignKeyValues.subList(index, index+1000));
@@ -972,7 +972,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
                     fromCache.put(pk, element);
                 }
             }
-        
+
             Iterator keyIterator = keyObjects.iterator();
             for(Object key : values){
                 addInto(keyIterator.next(), fromCache.get(key), result, session);
@@ -980,5 +980,5 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
         }
         return result;
     }
-    
+
 }

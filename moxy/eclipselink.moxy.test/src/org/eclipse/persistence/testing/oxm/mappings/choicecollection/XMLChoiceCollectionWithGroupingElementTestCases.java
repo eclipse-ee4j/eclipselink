@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.choicecollection;
 
 import java.io.FileReader;
@@ -38,7 +38,7 @@ public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLWithJSON
   protected Object getControlObject() {
     Employee employee = new Employee();
     employee.name = "Jane Doe";
-    
+
     employee.choice = new java.util.Vector<Object>();
     employee.choice.add("123 Fake Street");
     employee.choice.add(new Integer(12));
@@ -47,38 +47,38 @@ public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLWithJSON
     addr.street = "45 O'Connor";
     employee.choice.add(addr);
     employee.choice.add(new Integer(14));
-    
-    employee.phone = "123-4567"; 
-    
+
+    employee.phone = "123-4567";
+
     return employee;
   }
-  
-  
-  public Object getJSONReadControlObject() {	  
-	    Employee employee = new Employee();
-	    employee.name = "Jane Doe";
-	    
-	    employee.choice = new java.util.Vector<Object>();
-	    employee.choice.add("123 Fake Street");
-	    employee.choice.add(new Integer(12));
-	    employee.choice.add(new Integer(14));
-	    Address addr = new Address();
-	    addr.city = "Ottawa";
-	    addr.street = "45 O'Connor";
-	    employee.choice.add(addr);
-	    	    
-	    employee.phone = "123-4567"; 
-	    
-	    return employee;
-	  }
-  
+
+
+  public Object getJSONReadControlObject() {
+        Employee employee = new Employee();
+        employee.name = "Jane Doe";
+
+        employee.choice = new java.util.Vector<Object>();
+        employee.choice.add("123 Fake Street");
+        employee.choice.add(new Integer(12));
+        employee.choice.add(new Integer(14));
+        Address addr = new Address();
+        addr.city = "Ottawa";
+        addr.street = "45 O'Connor";
+        employee.choice.add(addr);
+
+        employee.phone = "123-4567";
+
+        return employee;
+      }
+
   public Project getNewProject(Project originalProject, ClassLoader classLoader) {
       Project project = super.getNewProject(originalProject, classLoader);
       //project.getDatasourceLogin().setPlatform(new SAXPlatform());
-      
+
       return project;
-  }  
-  
+  }
+
   public void testReadDeploymentXML() {
       try {
           // Read the deploymentXML-file.xml back in with XMLProjectReader

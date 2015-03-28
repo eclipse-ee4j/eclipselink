@@ -48,10 +48,10 @@ public class CompositeCollectionAbsentNodeTestCases extends XMLWithJSONMappingTe
     public Metadata getMetadata() {
         return Metadata.JAVA;
     }
-    
+
     public Object getWriteControlObject() {
-    	
-    	 Employee anEmployee = new Employee();
+
+         Employee anEmployee = new Employee();
          anEmployee.setId(123);
          anEmployee.setFirstName("Jane");
          anEmployee.setLastName("Doe");
@@ -77,9 +77,9 @@ public class CompositeCollectionAbsentNodeTestCases extends XMLWithJSONMappingTe
         anEmployee.setFirstName("Jane");
         anEmployee.setLastName("Doe");
 
-        Vector developers = new Vector();        
+        Vector developers = new Vector();
         developers.add(anEmployee);
-        
+
 
         Team aTeam = new Team();
         aTeam.setId(123);

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -27,7 +27,7 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
 public class UnmarshalLevelTestCases extends OXTestCase {
 
     private XMLInputFactory xmlInputFactory;
-    
+
     public UnmarshalLevelTestCases(String name) {
         super(name);
     }
@@ -84,9 +84,9 @@ public class UnmarshalLevelTestCases extends OXTestCase {
 
         instream.close();
     }
-    
+
     public void testUnmarshalLevelElementWithClass() throws Exception{
-    	   if(null == xmlInputFactory) {
+           if(null == xmlInputFactory) {
                return;
            }
 
@@ -99,7 +99,7 @@ public class UnmarshalLevelTestCases extends OXTestCase {
            XMLUnmarshaller xmlUnmarshaller = xmlContext.createUnmarshaller();
            staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
            XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(xmlStreamReader);
-           xmlUnmarshaller.unmarshal(staxReader, inputSource, Address.class);          
+           xmlUnmarshaller.unmarshal(staxReader, inputSource, Address.class);
 
            if(xmlStreamReader.getEventType() != XMLStreamReader.END_DOCUMENT) {
                fail("The last event type should have the been end document");

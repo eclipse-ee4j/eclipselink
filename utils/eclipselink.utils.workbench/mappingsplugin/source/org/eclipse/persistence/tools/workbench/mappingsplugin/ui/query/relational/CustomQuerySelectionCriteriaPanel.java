@@ -43,381 +43,381 @@ import org.eclipse.persistence.tools.workbench.utility.TriStateBoolean;
  */
 final public class CustomQuerySelectionCriteriaPanel extends AbstractPanel
 {
-	private QueryFormatPanel queryFormatPanel;
-	private Map<Class<? extends MWQueryFormat>, JComponent> queryFormatPanelMap;
-	private PropertyValueModel queryHolder;
+    private QueryFormatPanel queryFormatPanel;
+    private Map<Class<? extends MWQueryFormat>, JComponent> queryFormatPanelMap;
+    private PropertyValueModel queryHolder;
 
-	public CustomQuerySelectionCriteriaPanel(PropertyValueModel queryHolder,
-	                            WorkbenchContextHolder workbenchContextHolder)
-	{
-		super(workbenchContextHolder);
-		addHelpTopicId(this, helpTopicId());
-		this.queryHolder = queryHolder;
-		initializeLayout();
-	}
+    public CustomQuerySelectionCriteriaPanel(PropertyValueModel queryHolder,
+                                WorkbenchContextHolder workbenchContextHolder)
+    {
+        super(workbenchContextHolder);
+        addHelpTopicId(this, helpTopicId());
+        this.queryHolder = queryHolder;
+        initializeLayout();
+    }
 
-	private Transformer buildPaneTransformer()
-	{
-		return new Transformer()
-		{
-			public JComponent transform(Object queryFormat)
-			{
-				if (queryFormat == null)
-				{
-					return null;
-				}
+    private Transformer buildPaneTransformer()
+    {
+        return new Transformer()
+        {
+            public JComponent transform(Object queryFormat)
+            {
+                if (queryFormat == null)
+                {
+                    return null;
+                }
 
-				return queryFormatPanelMap.get(queryFormat.getClass());
-			}
-		};
-	}
+                return queryFormatPanelMap.get(queryFormat.getClass());
+            }
+        };
+    }
 
-	private PropertyValueModel buildQueryFormatHolder()
-	{
-		return new PropertyAspectAdapter(buildRelationalOptionsHolder(), MWRelationalQuery.QUERY_FORMAT_TYPE_PROPERTY)
-		{
-			@Override
-			protected Object getValueFromSubject()
-			{
-				return ((MWRelationalQuery)subject).getQueryFormat();
-			}
-		};
-	}
+    private PropertyValueModel buildQueryFormatHolder()
+    {
+        return new PropertyAspectAdapter(buildRelationalOptionsHolder(), MWRelationalQuery.QUERY_FORMAT_TYPE_PROPERTY)
+        {
+            @Override
+            protected Object getValueFromSubject()
+            {
+                return ((MWRelationalQuery)subject).getQueryFormat();
+            }
+        };
+    }
 
-	private ValueModel buildRelationalOptionsHolder()
-	{
-		return new TransformationValueModel(buildRelationalQueryHolder())
-		{
-			@Override
-			protected Object transformNonNull(Object value)
-			{
-				return ((MWRelationalQuery)value).getRelationalOptions();
-			};
-		};
-	}
+    private ValueModel buildRelationalOptionsHolder()
+    {
+        return new TransformationValueModel(buildRelationalQueryHolder())
+        {
+            @Override
+            protected Object transformNonNull(Object value)
+            {
+                return ((MWRelationalQuery)value).getRelationalOptions();
+            };
+        };
+    }
 
-	private ValueModel buildRelationalQueryHolder()
-	{
-		return new TransformationValueModel(this.queryHolder)
-		{
-			@Override
-			protected Object transformNonNull(Object value)
-			{
-				return value;
-			}
-		};
-	}
+    private ValueModel buildRelationalQueryHolder()
+    {
+        return new TransformationValueModel(this.queryHolder)
+        {
+            @Override
+            protected Object transformNonNull(Object value)
+            {
+                return value;
+            }
+        };
+    }
 
-	private String helpTopicId()
-	{
-		return "descriptor.queries.format";
-	}
-	
-	protected void initializeLayout()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
-		initializeMaps();
+    private String helpTopicId()
+    {
+        return "descriptor.queries.format";
+    }
 
-		SwitcherPanel switcherPane = new SwitcherPanel
-		(
-			buildQueryFormatHolder(),
-			buildPaneTransformer()
-		);
+    protected void initializeLayout()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
+        initializeMaps();
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 0;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 1;
-		constraints.fill       = GridBagConstraints.BOTH;
-		constraints.anchor     = GridBagConstraints.PAGE_START;
-		constraints.insets     = new Insets(0, 0, 0, 0);
+        SwitcherPanel switcherPane = new SwitcherPanel
+        (
+            buildQueryFormatHolder(),
+            buildPaneTransformer()
+        );
 
-		add(switcherPane, constraints);
-	}
+        constraints.gridx      = 0;
+        constraints.gridy      = 0;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 1;
+        constraints.fill       = GridBagConstraints.BOTH;
+        constraints.anchor     = GridBagConstraints.PAGE_START;
+        constraints.insets     = new Insets(0, 0, 0, 0);
 
-	private void initializeMaps()
-	{
-		queryFormatPanel = new QueryFormatPanel
-		(
-			this.queryHolder,
-			buildQueryFormatHolder(),
-			getWorkbenchContextHolder()
-		);
+        add(switcherPane, constraints);
+    }
 
-		queryFormatPanelMap = new Hashtable<Class<? extends MWQueryFormat>, JComponent>();
-		queryFormatPanelMap.put(MWStoredProcedureQueryFormat.class, queryFormatPanel);
-		queryFormatPanelMap.put(MWSQLQueryFormat.class,           	queryFormatPanel);
-		queryFormatPanelMap.put(MWEJBQLQueryFormat.class,         	queryFormatPanel);
-	}
+    private void initializeMaps()
+    {
+        queryFormatPanel = new QueryFormatPanel
+        (
+            this.queryHolder,
+            buildQueryFormatHolder(),
+            getWorkbenchContextHolder()
+        );
 
-	private boolean promptToChangeSelectionCriteriaType()
-	{
-		if (preferences().getBoolean(MappingsPlugin.CHANGE_QUERY_FORMAT_DO_NOT_SHOW_THIS_AGAIN_PREFERENCE, false))
-		{
-			return true;
-		}
+        queryFormatPanelMap = new Hashtable<Class<? extends MWQueryFormat>, JComponent>();
+        queryFormatPanelMap.put(MWStoredProcedureQueryFormat.class, queryFormatPanel);
+        queryFormatPanelMap.put(MWSQLQueryFormat.class,               queryFormatPanel);
+        queryFormatPanelMap.put(MWEJBQLQueryFormat.class,             queryFormatPanel);
+    }
 
-		// build dialog panel
-		String title = this.resourceRepository().getString("QUERY_QUERY_FORMAT_TITLE");
-		String message = this.resourceRepository().getString("QUERY_QUERY_FORMAT_MESSAGE");
-		PropertyValueModel dontAskAgainHolder = new SimplePropertyValueModel(new Boolean(false));
-		JComponent dontAskAgainPanel =
-			SwingComponentFactory.buildDoNotAskAgainPanel(message, dontAskAgainHolder, this.resourceRepository());
+    private boolean promptToChangeSelectionCriteriaType()
+    {
+        if (preferences().getBoolean(MappingsPlugin.CHANGE_QUERY_FORMAT_DO_NOT_SHOW_THIS_AGAIN_PREFERENCE, false))
+        {
+            return true;
+        }
 
-		// prompt user for response
-		int response =
-			JOptionPane.showConfirmDialog(
-				this.getWorkbenchContext().getCurrentWindow(),
-				dontAskAgainPanel,
-				title,
-				JOptionPane.YES_NO_OPTION,
-				JOptionPane.WARNING_MESSAGE
-			);
+        // build dialog panel
+        String title = this.resourceRepository().getString("QUERY_QUERY_FORMAT_TITLE");
+        String message = this.resourceRepository().getString("QUERY_QUERY_FORMAT_MESSAGE");
+        PropertyValueModel dontAskAgainHolder = new SimplePropertyValueModel(new Boolean(false));
+        JComponent dontAskAgainPanel =
+            SwingComponentFactory.buildDoNotAskAgainPanel(message, dontAskAgainHolder, this.resourceRepository());
 
-		if (dontAskAgainHolder.getValue().equals(Boolean.TRUE)) {
-			if (response == JOptionPane.YES_OPTION) {
-				this.preferences().putBoolean(MappingsPlugin.CHANGE_QUERY_FORMAT_DO_NOT_SHOW_THIS_AGAIN_PREFERENCE, true);
-			}
-			else if (response == JOptionPane.NO_OPTION) {
-				this.preferences().putBoolean(MappingsPlugin.CHANGE_QUERY_FORMAT_DO_NOT_SHOW_THIS_AGAIN_PREFERENCE, false);
-			}
-		}
+        // prompt user for response
+        int response =
+            JOptionPane.showConfirmDialog(
+                this.getWorkbenchContext().getCurrentWindow(),
+                dontAskAgainPanel,
+                title,
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+            );
 
-		return (response == JOptionPane.OK_OPTION);
-	}
+        if (dontAskAgainHolder.getValue().equals(Boolean.TRUE)) {
+            if (response == JOptionPane.YES_OPTION) {
+                this.preferences().putBoolean(MappingsPlugin.CHANGE_QUERY_FORMAT_DO_NOT_SHOW_THIS_AGAIN_PREFERENCE, true);
+            }
+            else if (response == JOptionPane.NO_OPTION) {
+                this.preferences().putBoolean(MappingsPlugin.CHANGE_QUERY_FORMAT_DO_NOT_SHOW_THIS_AGAIN_PREFERENCE, false);
+            }
+        }
 
-	private boolean queryFormatCanChange()
-	{
-		String promptValue = TriStateBoolean.UNDEFINED.toString();
-		String value = preferences().get(MappingsPlugin.CHANGE_QUERY_FORMAT_DO_NOT_SHOW_THIS_AGAIN_PREFERENCE, "undefined");
-		boolean changeQueryType;
+        return (response == JOptionPane.OK_OPTION);
+    }
 
-		if (value.equals(promptValue)) {
-			changeQueryType = promptToChangeSelectionCriteriaType();
-		}
-		else {
-			changeQueryType = TriStateBoolean.TRUE.toString().equals(value);
-			if (!changeQueryType) {
-				JOptionPane.showMessageDialog(
-						getRootPane(),
-						resourceRepository().getString("QUERY_FORMAT_CHANGE_DISSALLOWED"),
-						application().getShortProductName(),
-						JOptionPane.INFORMATION_MESSAGE);
-			}
-		}
+    private boolean queryFormatCanChange()
+    {
+        String promptValue = TriStateBoolean.UNDEFINED.toString();
+        String value = preferences().get(MappingsPlugin.CHANGE_QUERY_FORMAT_DO_NOT_SHOW_THIS_AGAIN_PREFERENCE, "undefined");
+        boolean changeQueryType;
 
-		return changeQueryType;
-	}
+        if (value.equals(promptValue)) {
+            changeQueryType = promptToChangeSelectionCriteriaType();
+        }
+        else {
+            changeQueryType = TriStateBoolean.TRUE.toString().equals(value);
+            if (!changeQueryType) {
+                JOptionPane.showMessageDialog(
+                        getRootPane(),
+                        resourceRepository().getString("QUERY_FORMAT_CHANGE_DISSALLOWED"),
+                        application().getShortProductName(),
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
 
-	private abstract class AbstractQueryFormatPanel extends AbstractPanel
-	{
-		protected PropertyValueModel queryHolder;
-		protected PropertyValueModel queryFormatHolder;
-		
-		protected AbstractQueryFormatPanel(PropertyValueModel queryHolder,
-										   PropertyValueModel queryFormatHolder,
-		                                   WorkbenchContextHolder workbenchContextHolder)
-		{
-			super(workbenchContextHolder);
-			
-			this.queryFormatHolder = queryFormatHolder;
-			this.queryHolder = queryHolder;
-		}
-	}
+        return changeQueryType;
+    }
 
-	private final class QueryFormatPanel extends AbstractQueryFormatPanel
-	{
-		private CustomStoredProcedureQueryFormatSubPanel storedProcedurePanel;
-		private StringQueryFormatSubPanel stringQueryFormatPanel;
-		private Map<Class<? extends MWQueryFormat>, JComponent> subQueryFormatPanelMap;
+    private abstract class AbstractQueryFormatPanel extends AbstractPanel
+    {
+        protected PropertyValueModel queryHolder;
+        protected PropertyValueModel queryFormatHolder;
 
-		public QueryFormatPanel(PropertyValueModel queryHolder,
-								PropertyValueModel queryFormatHolder,
-				                WorkbenchContextHolder workbenchContextHolder)
-		{
-			super(queryHolder, queryFormatHolder, workbenchContextHolder);
-			initializeLayout();
-		}
+        protected AbstractQueryFormatPanel(PropertyValueModel queryHolder,
+                                           PropertyValueModel queryFormatHolder,
+                                           WorkbenchContextHolder workbenchContextHolder)
+        {
+            super(workbenchContextHolder);
 
-		private ValueModel buildStoredProcedureQueryFormatHolder()
-		{
-			return new TransformationValueModel(this.queryFormatHolder)
-			{
-				@Override
-				protected Object transform(Object value)
-				{
-					return (value instanceof MWStoredProcedureQueryFormat) ? (MWStoredProcedureQueryFormat) value : null;
-				}
-			};
-		}
+            this.queryFormatHolder = queryFormatHolder;
+            this.queryHolder = queryHolder;
+        }
+    }
 
-		private Transformer buildPaneTransformer()
-		{
-			return new Transformer()
-			{
-				public JComponent transform(Object queryFormat)
-				{
-					if (queryFormat == null)
-					{
-						return null;
-					}
+    private final class QueryFormatPanel extends AbstractQueryFormatPanel
+    {
+        private CustomStoredProcedureQueryFormatSubPanel storedProcedurePanel;
+        private StringQueryFormatSubPanel stringQueryFormatPanel;
+        private Map<Class<? extends MWQueryFormat>, JComponent> subQueryFormatPanelMap;
 
-					return subQueryFormatPanelMap.get(queryFormat.getClass());
-				}
-			};
-		}
+        public QueryFormatPanel(PropertyValueModel queryHolder,
+                                PropertyValueModel queryFormatHolder,
+                                WorkbenchContextHolder workbenchContextHolder)
+        {
+            super(queryHolder, queryFormatHolder, workbenchContextHolder);
+            initializeLayout();
+        }
 
-		private ValueModel buildQueryComponentEnableBooleanHolder()
-		{
-			return new TransformationValueModel(this.queryFormatHolder)
-			{
-				@Override
-				protected Object transform(Object value)
-				{
-					return (value != null);
-				}
-			};
-		}
+        private ValueModel buildStoredProcedureQueryFormatHolder()
+        {
+            return new TransformationValueModel(this.queryFormatHolder)
+            {
+                @Override
+                protected Object transform(Object value)
+                {
+                    return (value instanceof MWStoredProcedureQueryFormat) ? (MWStoredProcedureQueryFormat) value : null;
+                }
+            };
+        }
 
-		private PropertyValueModel buildQueryFormatTypeHolder()
-		{
-			return new PropertyAspectAdapter(buildRelationalOptionsHolder(), MWRelationalQuery.QUERY_FORMAT_TYPE_PROPERTY)
-			{
-				@Override
-				protected Object getValueFromSubject()
-				{
-					return ((MWRelationalQuery)subject).getQueryFormatType();
-				}
+        private Transformer buildPaneTransformer()
+        {
+            return new Transformer()
+            {
+                public JComponent transform(Object queryFormat)
+                {
+                    if (queryFormat == null)
+                    {
+                        return null;
+                    }
 
-				@Override
-				protected void setValueOnSubject(Object value)
-				{
-					if (CustomQuerySelectionCriteriaPanel.this.queryFormatCanChange())
-					{
-						((MWRelationalQuery)subject).setQueryFormatType((String)value);
-					}
-				}
-			};
-		}
+                    return subQueryFormatPanelMap.get(queryFormat.getClass());
+                }
+            };
+        }
 
-		private ListCellRenderer buildSelectionCriteraCellRenderer()
-		{
-			return new SimpleListCellRenderer()
-			{
-				@Override
-				public String buildText(Object value)
-				{
-					if (value == MWRelationalQuery.STORED_PROCEDURE_FORMAT)
-					{
-						return resourceRepository().getString("STORED_PROCEDURE_OPTION");
-					}
+        private ValueModel buildQueryComponentEnableBooleanHolder()
+        {
+            return new TransformationValueModel(this.queryFormatHolder)
+            {
+                @Override
+                protected Object transform(Object value)
+                {
+                    return (value != null);
+                }
+            };
+        }
 
-					if (value == MWRelationalQuery.SQL_FORMAT)
-					{
-						return resourceRepository().getString("SQL_OPTION");
-					}
+        private PropertyValueModel buildQueryFormatTypeHolder()
+        {
+            return new PropertyAspectAdapter(buildRelationalOptionsHolder(), MWRelationalQuery.QUERY_FORMAT_TYPE_PROPERTY)
+            {
+                @Override
+                protected Object getValueFromSubject()
+                {
+                    return ((MWRelationalQuery)subject).getQueryFormatType();
+                }
 
-					return resourceRepository().getString("EJBQL_OPTION");
-				}
-			};
-		}
+                @Override
+                protected void setValueOnSubject(Object value)
+                {
+                    if (CustomQuerySelectionCriteriaPanel.this.queryFormatCanChange())
+                    {
+                        ((MWRelationalQuery)subject).setQueryFormatType((String)value);
+                    }
+                }
+            };
+        }
 
-		private ComboBoxModel buildSelectionCriteriaComboModel()
-		{
-			return new ComboBoxModelAdapter
-			(
-				selectionCriteriaOptionsModel(),
-				buildQueryFormatTypeHolder()
-			);
-		}
+        private ListCellRenderer buildSelectionCriteraCellRenderer()
+        {
+            return new SimpleListCellRenderer()
+            {
+                @Override
+                public String buildText(Object value)
+                {
+                    if (value == MWRelationalQuery.STORED_PROCEDURE_FORMAT)
+                    {
+                        return resourceRepository().getString("STORED_PROCEDURE_OPTION");
+                    }
 
-		private ValueModel buildStringQueryFormatHolder()
-		{
-			return new TransformationValueModel(this.queryFormatHolder)
-			{
-				@Override
-				protected Object transform(Object value)
-				{
-					return (value instanceof MWStringQueryFormat) ? (MWStringQueryFormat) value : null;
-				}
-			};
-		}
+                    if (value == MWRelationalQuery.SQL_FORMAT)
+                    {
+                        return resourceRepository().getString("SQL_OPTION");
+                    }
 
-		protected void initializeLayout()
-		{
-			GridBagConstraints constraints = new GridBagConstraints();
-			initializeMaps();
+                    return resourceRepository().getString("EJBQL_OPTION");
+                }
+            };
+        }
 
-			// Query Format Type widgets
-			JComponent queryFormatTypeWidgets = buildLabeledComboBox
-			(
-				"SELECTION_CRITERIA_TYPE_LABEL",
-				buildSelectionCriteriaComboModel(),
-				buildSelectionCriteraCellRenderer()
-			);
+        private ComboBoxModel buildSelectionCriteriaComboModel()
+        {
+            return new ComboBoxModelAdapter
+            (
+                selectionCriteriaOptionsModel(),
+                buildQueryFormatTypeHolder()
+            );
+        }
 
-			constraints.gridx      = 0;
-			constraints.gridy      = 0;
-			constraints.gridwidth  = 1;
-			constraints.gridheight = 1;
-			constraints.weightx    = 1;
-			constraints.weighty    = 0;
-			constraints.fill       = GridBagConstraints.HORIZONTAL;
-			constraints.anchor     = GridBagConstraints.PAGE_START;
-			constraints.insets     = new Insets(0, 0, 0, 0);
+        private ValueModel buildStringQueryFormatHolder()
+        {
+            return new TransformationValueModel(this.queryFormatHolder)
+            {
+                @Override
+                protected Object transform(Object value)
+                {
+                    return (value instanceof MWStringQueryFormat) ? (MWStringQueryFormat) value : null;
+                }
+            };
+        }
 
-			add(queryFormatTypeWidgets, constraints);
-			new ComponentEnabler(buildQueryComponentEnableBooleanHolder(), queryFormatTypeWidgets);
+        protected void initializeLayout()
+        {
+            GridBagConstraints constraints = new GridBagConstraints();
+            initializeMaps();
 
-			// Pane switcher
-			SwitcherPanel switcherPane = new SwitcherPanel
-			(
-				this.queryFormatHolder,
-				buildPaneTransformer()
-			);
+            // Query Format Type widgets
+            JComponent queryFormatTypeWidgets = buildLabeledComboBox
+            (
+                "SELECTION_CRITERIA_TYPE_LABEL",
+                buildSelectionCriteriaComboModel(),
+                buildSelectionCriteraCellRenderer()
+            );
 
-			constraints.gridx      = 0;
-			constraints.gridy      = 1;
-			constraints.gridwidth  = 1;
-			constraints.gridheight = 1;
-			constraints.weightx    = 1;
-			constraints.weighty    = 1;
-			constraints.fill       = GridBagConstraints.BOTH;
-			constraints.anchor     = GridBagConstraints.LINE_START;
-			constraints.insets     = new Insets(5, 0, 0, 0);
+            constraints.gridx      = 0;
+            constraints.gridy      = 0;
+            constraints.gridwidth  = 1;
+            constraints.gridheight = 1;
+            constraints.weightx    = 1;
+            constraints.weighty    = 0;
+            constraints.fill       = GridBagConstraints.HORIZONTAL;
+            constraints.anchor     = GridBagConstraints.PAGE_START;
+            constraints.insets     = new Insets(0, 0, 0, 0);
 
-			add(switcherPane, constraints);
-		}
+            add(queryFormatTypeWidgets, constraints);
+            new ComponentEnabler(buildQueryComponentEnableBooleanHolder(), queryFormatTypeWidgets);
 
-		private void initializeMaps()
-		{
-			stringQueryFormatPanel = new StringQueryFormatSubPanel
-			(
-				buildStringQueryFormatHolder(),
-				getWorkbenchContextHolder()
-			);
+            // Pane switcher
+            SwitcherPanel switcherPane = new SwitcherPanel
+            (
+                this.queryFormatHolder,
+                buildPaneTransformer()
+            );
 
-			storedProcedurePanel = new CustomStoredProcedureQueryFormatSubPanel
-			(
-				buildStoredProcedureQueryFormatHolder(),
-				getWorkbenchContextHolder()
-			);
+            constraints.gridx      = 0;
+            constraints.gridy      = 1;
+            constraints.gridwidth  = 1;
+            constraints.gridheight = 1;
+            constraints.weightx    = 1;
+            constraints.weighty    = 1;
+            constraints.fill       = GridBagConstraints.BOTH;
+            constraints.anchor     = GridBagConstraints.LINE_START;
+            constraints.insets     = new Insets(5, 0, 0, 0);
 
-			subQueryFormatPanelMap = new Hashtable<Class<? extends MWQueryFormat>, JComponent>();
-			subQueryFormatPanelMap.put(MWStoredProcedureQueryFormat.class, storedProcedurePanel);
-			subQueryFormatPanelMap.put(MWSQLQueryFormat.class,        stringQueryFormatPanel);
-			subQueryFormatPanelMap.put(MWEJBQLQueryFormat.class,      stringQueryFormatPanel);
-		}
+            add(switcherPane, constraints);
+        }
 
-		private CollectionValueModel selectionCriteriaOptionsModel()
-		{
-			Collection<String> options = new ArrayList<String>();
-			options.add(MWRelationalQuery.STORED_PROCEDURE_FORMAT);
-			options.add(MWRelationalQuery.SQL_FORMAT);
-			options.add(MWRelationalQuery.EJBQL_FORMAT);
-			return new ReadOnlyCollectionValueModel(options);
-		}
-	}
+        private void initializeMaps()
+        {
+            stringQueryFormatPanel = new StringQueryFormatSubPanel
+            (
+                buildStringQueryFormatHolder(),
+                getWorkbenchContextHolder()
+            );
+
+            storedProcedurePanel = new CustomStoredProcedureQueryFormatSubPanel
+            (
+                buildStoredProcedureQueryFormatHolder(),
+                getWorkbenchContextHolder()
+            );
+
+            subQueryFormatPanelMap = new Hashtable<Class<? extends MWQueryFormat>, JComponent>();
+            subQueryFormatPanelMap.put(MWStoredProcedureQueryFormat.class, storedProcedurePanel);
+            subQueryFormatPanelMap.put(MWSQLQueryFormat.class,        stringQueryFormatPanel);
+            subQueryFormatPanelMap.put(MWEJBQLQueryFormat.class,      stringQueryFormatPanel);
+        }
+
+        private CollectionValueModel selectionCriteriaOptionsModel()
+        {
+            Collection<String> options = new ArrayList<String>();
+            options.add(MWRelationalQuery.STORED_PROCEDURE_FORMAT);
+            options.add(MWRelationalQuery.SQL_FORMAT);
+            options.add(MWRelationalQuery.EJBQL_FORMAT);
+            return new ReadOnlyCollectionValueModel(options);
+        }
+    }
 }

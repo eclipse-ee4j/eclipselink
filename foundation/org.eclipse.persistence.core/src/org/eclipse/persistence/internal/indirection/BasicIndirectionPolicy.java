@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.indirection;
 
 import java.rmi.server.ObjID;
@@ -81,7 +81,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * for custom value holder types. Certain policies like the
      * TransparentIndirectionPolicy may wrap the valueholder in another object.
      */
-    
+
     public Object buildIndirectObject(ValueHolderInterface valueHolder){
         return valueHolder;
     }
@@ -96,7 +96,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
     public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         ValueHolderInterface valueHolder = (ValueHolderInterface) attributeValue;
         ValueHolderInterface result;
-        
+
         if (!buildDirectlyFromRow && cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)) {
             // CR#3156435 Throw a meaningful exception if a serialized/dead value holder is detected.
             // This can occur if an existing serialized object is attempt to be registered as new.
@@ -175,17 +175,17 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
             RemoteValueHolder rvh = (RemoteValueHolder)this.mapping.getAttributeValueFromObject(object);
             rvh.setSession(session);
             rvh.setMapping(this.mapping);
-    
+
             if ((!query.shouldMaintainCache()) && ((!query.shouldCascadeParts()) || (query.shouldCascadePrivateParts() && (!this.mapping.isPrivateOwned())))) {
                 rvh.setQuery(null);
             } else {
                 rvh.setQuery(query);
             }
-    
+
             // set to uninstantiated since no objects are serialized past remote value holders
             rvh.setUninstantiated();
         }else{
-            this.mapping.fixRealObjectReferences(object, objectDescriptors, processedObjects, query, session);        
+            this.mapping.fixRealObjectReferences(object, objectDescriptors, processedObjects, query, session);
         }
     }
 
@@ -265,14 +265,14 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
             return unitOfWorkIndirectionObject;
         }
     }
-    
+
     /**
      * Reset the wrapper used to store the value.
      */
     public void reset(Object target) {
         this.mapping.setAttributeValueInObject(target, new ValueHolder());
     }
-    
+
     /**
      * INTERNAL:
      * Return the "real" attribute value, as opposed to any wrapper.
@@ -297,7 +297,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
 
     /**
      * INTERNAL:
-     * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue 
+     * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue
      * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
      * This method is used to help determine if indirection has been triggered
      * @param attributeValue
@@ -310,7 +310,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
         //it has not been built into the clone previously
         return attributeValue != null && !(attributeValue instanceof ValueHolder && ((ValueHolder)attributeValue).isNewlyWeavedValueHolder());
     }
-    
+
     /**
      * INTERNAL:
      *    Iterate over the specified attribute value,
@@ -350,7 +350,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
     public boolean objectIsInstantiated(Object object) {
         return ((ValueHolderInterface)object).isInstantiated();
     }
-    
+
     /**
      * INTERNAL:
      * Return whether the specified object can be instantiated without database access.
@@ -383,12 +383,12 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * set the source object into QueryBasedValueHolder.
      * Used only by transparent indirection.
      */
-    public void setSourceObject(Object sourceObject, Object attributeValue) {        
+    public void setSourceObject(Object sourceObject, Object attributeValue) {
         if (attributeValue instanceof QueryBasedValueHolder) {
             ((QueryBasedValueHolder)attributeValue).setSourceObject(sourceObject);
         }
     }
-    
+
     /**
      * INTERNAL:
      *    Return whether the type is appropriate for the indirection policy.
@@ -419,7 +419,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
         }
         return attributeValue;
     }
-    
+
     /**
      * INTERNAL:
      *    Verify that attributeType is correct for the
@@ -492,7 +492,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, Object sourceObject, AbstractSession session) {
         return new QueryBasedValueHolder(query, sourceObject, row, session);
     }
-    
+
     /**
      * INTERNAL:
      * Return the value to be stored in the object's attribute.

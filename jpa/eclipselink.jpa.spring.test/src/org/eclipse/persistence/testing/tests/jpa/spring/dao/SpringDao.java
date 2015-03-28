@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -21,23 +21,23 @@ import test.org.eclipse.persistence.testing.models.jpa.spring.Truck;
 import org.springframework.orm.jpa.support.JpaDaoSupport;
 
 /**
- * This class is a JPA data access object and implements Spring's jpaTemplate which functions 
+ * This class is a JPA data access object and implements Spring's jpaTemplate which functions
  * as an alternative to a basic EntityManager.
  */
 public class SpringDao extends JpaDaoSupport {
-    
+
     public void persist(Object obj) {
         getJpaTemplate().persist(obj);
     }
 
     public void remove(Object obj) {
-        getJpaTemplate().remove(obj); 
+        getJpaTemplate().remove(obj);
     }
 
     public void flush() {
         getJpaTemplate().flush();
     }
-    
+
     public Object find(Object obj) {
         if (obj instanceof Truck){
             Truck t = (Truck)obj;
@@ -59,7 +59,7 @@ public class SpringDao extends JpaDaoSupport {
     public Object merge(Object obj) {
         return getJpaTemplate().merge(obj);
     }
-    
+
     public void refresh(Object obj) {
         getJpaTemplate().refresh(obj);
     }
@@ -67,9 +67,9 @@ public class SpringDao extends JpaDaoSupport {
     public List findByNamedQuery(String query, String driverName) {
         return getJpaTemplate().findByNamedQuery(query, driverName);
     }
-    
+
     public List findByQuery(String query) {
         return getJpaTemplate().find(query);
     }
-    
+
 }

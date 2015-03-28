@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/23/2008-1.1 Guy Pelletier 
+ *     09/23/2008-1.1 Guy Pelletier
  *       - 241651: JPA 2.0 Access Type support
- *     03/03/2010 - 2.1 Michael O'Brien  
- *       - 302316: clear the object cache when testing stored procedure returns on SQLServer 
+ *     03/03/2010 - 2.1 Michael O'Brien
+ *       - 302316: clear the object cache when testing stored procedure returns on SQLServer
  *         to avoid false positives visible only when debugging in DatabaseCall.buildOutputRow()
  *       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
- *       
+ *
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced;
 
@@ -62,14 +62,14 @@ public class EmployeePopulator {
     public StoredProcedureDefinition buildOracleStoredProcedureReadFromAddress(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("SProc_Read_XML_BR1_Address");
-        
+
         proc.addInOutputArgument("address_id_v", Integer.class);
         proc.addOutputArgument("street_v", String.class);
         proc.addOutputArgument("city_v", String.class);
         proc.addOutputArgument("country_v", String.class);
         proc.addOutputArgument("province_v", String.class);
         proc.addOutputArgument("p_code_v", String.class);
-                
+
         /**
          * SQLServer 2008 requires extra prefix and delimiting chars in select statements in stored procedures
          */
@@ -80,18 +80,18 @@ public class EmployeePopulator {
         } else {
             statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM XML_MBR1_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
         }
-        
+
         proc.addStatement(statement);
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildOracleStoredProcedureReadInOut(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("SProc_Read_XML_BR1_InOut");
-        
+
         proc.addInOutputArgument("address_id_v", Long.class);
         proc.addOutputArgument("street_v", String.class);
-        
+
         /**
          * SQLServer 2008 requires extra prefix and delimiting chars in select statements in stored procedures
          */
@@ -102,11 +102,11 @@ public class EmployeePopulator {
         } else {
             statement = "SELECT ADDRESS_ID, STREET into address_id_v, street_v from XML_MBR1_ADDRESS where (ADDRESS_ID = address_id_v)";
         }
-        
+
         proc.addStatement(statement);
         return proc;
     }
-    
+
     public Address addressExample1() {
         Address address = new Address();
 
@@ -337,7 +337,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
      public Employee basicEmployeeExample14() {
         Employee employee = createEmployee();
 
@@ -347,7 +347,7 @@ public class EmployeePopulator {
             employee.setSalary(49);
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());
- 
+
             employee.addPhoneNumber(phoneNumberExample1());
 
         } catch (Exception exception) {
@@ -356,7 +356,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee basicEmployeeExample2() {
         Employee employee = createEmployee();
 
@@ -814,24 +814,24 @@ public class EmployeePopulator {
         smallProjectExample9();
         smallProjectExample10();
     }
-    
-    public void persistExample(Session session) {        
-        Vector allObjects = new Vector();        
-        UnitOfWork unitOfWork = session.acquireUnitOfWork();        
+
+    public void persistExample(Session session) {
+        Vector allObjects = new Vector();
+        UnitOfWork unitOfWork = session.acquireUnitOfWork();
         PopulationManager.getDefaultManager().addAllObjectsForClass(Employee.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(SmallProject.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(LargeProject.class, allObjects);
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
-        
-        DatabaseSession addressSession = (DatabaseSession)((SessionBroker)session).getSessionForClass(Address.class); 
+
+        DatabaseSession addressSession = (DatabaseSession)((SessionBroker)session).getSessionForClass(Address.class);
         if (TestCase.supportsStoredProcedures(addressSession)) {
             SchemaManager schema = new SchemaManager(addressSession);
             schema.replaceObject(buildOracleStoredProcedureReadFromAddress(addressSession));
             schema.replaceObject(buildOracleStoredProcedureReadInOut(addressSession));
         }
     }
-    
+
     protected boolean containsObject(Class domainClass, String identifier) {
         return populationManager.containsObject(domainClass, identifier);
     }
@@ -919,7 +919,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee employeeExample13() {
         if (containsObject(Employee.class, "0013")) {
             return (Employee)getObject(Employee.class, "0013");
@@ -927,10 +927,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample13();
         registerObject(Employee.class, employee, "0013");
-        
+
         return employee;
     }
-    
+
      public Employee employeeExample14() {
         if (containsObject(Employee.class, "0014")) {
             return (Employee)getObject(Employee.class, "0014");
@@ -938,10 +938,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample14();
         registerObject(Employee.class, employee, "0014");
-        
+
         return employee;
     }
-    
+
     public Employee employeeExample2() {
         if (containsObject(Employee.class, "0002")) {
             return (Employee)getObject(Employee.class, "0002");

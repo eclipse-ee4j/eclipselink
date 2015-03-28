@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -22,49 +22,49 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMe
  * Wrap a java.lang.reflect.Method.
  */
 final class CLExternalMethod
-	extends CLExternalMember
-	implements ExternalMethod
+    extends CLExternalMember
+    implements ExternalMethod
 {
 
-	/**
-	 * Constructor.
-	 */
-	CLExternalMethod(Method method, CLExternalClass declaringExternalClass) {
-		super(method, declaringExternalClass);
-	}
+    /**
+     * Constructor.
+     */
+    CLExternalMethod(Method method, CLExternalClass declaringExternalClass) {
+        super(method, declaringExternalClass);
+    }
 
 
-	// ********** ExternalMethod implementation **********
+    // ********** ExternalMethod implementation **********
 
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMethod#getExceptionTypes()
-	 */
-	public ExternalClassDescription[] getExceptionTypes() {
-		return this.buildClassDescriptionArray(this.getMethod().getExceptionTypes());
-	}
+    /**
+     * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMethod#getExceptionTypes()
+     */
+    public ExternalClassDescription[] getExceptionTypes() {
+        return this.buildClassDescriptionArray(this.getMethod().getExceptionTypes());
+    }
 
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMethod#getParameterTypes()
-	 */
-	public ExternalClassDescription[] getParameterTypes() {
-		return this.buildClassDescriptionArray(this.getMethod().getParameterTypes());
-	}
+    /**
+     * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMethod#getParameterTypes()
+     */
+    public ExternalClassDescription[] getParameterTypes() {
+        return this.buildClassDescriptionArray(this.getMethod().getParameterTypes());
+    }
 
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMethod#getReturnType()
-	 */
-	public ExternalClassDescription getReturnType() {
-		return this.classDescriptionFor(this.getMethod().getReturnType());
-	}
+    /**
+     * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMethod#getReturnType()
+     */
+    public ExternalClassDescription getReturnType() {
+        return this.classDescriptionFor(this.getMethod().getReturnType());
+    }
 
 
-	// ********** internal methods **********
+    // ********** internal methods **********
 
-	/**
-	 * Convenience method.
-	 */
-	private Method getMethod() {
-		return (Method) this.member;
-	}
+    /**
+     * Convenience method.
+     */
+    private Method getMethod() {
+        return (Method) this.member;
+    }
 
 }

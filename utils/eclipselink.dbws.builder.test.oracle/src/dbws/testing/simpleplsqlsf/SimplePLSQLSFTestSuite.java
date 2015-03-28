@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,11 +41,11 @@ import dbws.testing.DBWSTestSuite;
 
 public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
 
-    static final String CREATE_OBJECT_TYPE = 
-        "CREATE OR REPLACE TYPE DBWS_XML_WRAPPER AS OBJECT (" + 
+    static final String CREATE_OBJECT_TYPE =
+        "CREATE OR REPLACE TYPE DBWS_XML_WRAPPER AS OBJECT (" +
             "\nxmltext VARCHAR2(100)" +
         ")";
-        
+
     static final String CREATE_SIMPLESF_TABLE =
         "CREATE TABLE SIMPLESF (" +
             "\nEMPNO DECIMAL(4,0) NOT NULL," +
@@ -116,7 +116,7 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
                 "\nRETURN 666;" +
             "\nEND TEST_MULTI_OUT;" +
             "\nFUNCTION GET_XMLTYPE(W IN DBWS_XML_WRAPPER) RETURN XMLTYPE AS" +
-            "\nX XMLTYPE;" + 
+            "\nX XMLTYPE;" +
             "\nBEGIN" +
                 "\nX := XMLTYPE(CONCAT(CONCAT('<some>', W.xmltext), '</some>'));" +
                 "\nRETURN X;" +

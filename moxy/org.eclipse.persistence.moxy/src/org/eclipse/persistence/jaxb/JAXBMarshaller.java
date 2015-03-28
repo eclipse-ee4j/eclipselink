@@ -83,9 +83,9 @@ import org.xml.sax.ContentHandler;
  * <li>Perform Object to XML Conversions</li>
  * </ul>
  * <p>This implementation of the JAXB 2.1/2.2 Marshaller interface provides the
- * required functionality by acting as a thin wrapper on the existing 
+ * required functionality by acting as a thin wrapper on the existing
  * XMLMarshaller API.</p>
- * 
+ *
  * @author mmacivor
  * @since Oracle TopLink 11.1.1.0.0
  * @see javax.xml.bind.Marshaller
@@ -119,7 +119,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     private static final String SUN_CHARACTER_ESCAPE_HANDLER= "com.sun.xml.bind.characterEscapeHandler";
     private static final String SUN_JSE_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.internal.bind.characterEscapeHandler";
-    
+
     // XML_DECLARATION is the "opposite" to JAXB_FRAGMENT.  If XML_DECLARATION is set to false it means JAXB_FRAGMENT should be set to true.
     private static final String XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
 
@@ -150,13 +150,13 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
      * JAXBElement. XMLRoot will be used to hold the contents of the JAXBElement
      * while the marshal operation is performed by TopLink OXM. This will avoid
      * adding any runtime dependencies to TopLink.
-     * 
+     *
      * @param elt
      * @return
      */
     private Root createXMLRootFromJAXBElement(JAXBElement elt) {
         // create an XMLRoot to hand into the marshaller
-    	Root xmlroot = new Root();
+        Root xmlroot = new Root();
         Object objectValue = elt.getValue();
         xmlroot.setObject(objectValue);
         QName qname = elt.getName();
@@ -164,7 +164,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlroot.setNamespaceURI(qname.getNamespaceURI());
         xmlroot.setDeclaredType(elt.getDeclaredType());
         xmlroot.setNil(elt.isNil());
-        if (elt.getDeclaredType() == CoreClassConstants.ABYTE || elt.getDeclaredType() == CoreClassConstants.APBYTE || 
+        if (elt.getDeclaredType() == CoreClassConstants.ABYTE || elt.getDeclaredType() == CoreClassConstants.APBYTE ||
                 elt.getDeclaredType().getCanonicalName().equals("javax.activation.DataHandler") ||
                 elt.getDeclaredType().isEnum()) {
             // need a binary data mapping so need to wrap
@@ -265,7 +265,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     /**
      * Get a property from the JAXBMarshaller. Attempting to get any unsupported
-     * property will result in a javax.xml.bind.PropertyException 
+     * property will result in a javax.xml.bind.PropertyException
      * @see org.eclipse.persistence.jaxb.MarshallerProperties
      */
     public Object getProperty(String key) throws PropertyException {
@@ -300,7 +300,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
             return xmlMarshaller.isIncludeRoot();
         } else if (MarshallerProperties.JSON_VALUE_WRAPPER.equals(key)) {
-            return xmlMarshaller.getValueWrapper(); 
+            return xmlMarshaller.getValueWrapper();
         } else if (MarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)) {
             return xmlMarshaller.getNamespaceSeparator();
         } else if (MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
@@ -318,7 +318,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         } else if (SUN_NAMESPACE_PREFIX_MAPPER.equals(key) || SUN_JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
             NamespacePrefixMapperWrapper wrapper = (NamespacePrefixMapperWrapper) xmlMarshaller.getNamespacePrefixMapper();
             if(wrapper == null){
-            	return null;
+                return null;
             }
             return wrapper.getPrefixMapper();
         } else if (MarshallerProperties.OBJECT_GRAPH.equals(key)) {
@@ -538,16 +538,16 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
             if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() > 0){
                 RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
-           
-	            if (adapter != null) {
-	                try {
-	                    value = adapter.getXmlAdapter().marshal(value);
-	                } catch (Exception ex) {
-	                    throw new JAXBException(XMLMarshalException.marshalException(ex));
-	                }
-	            }
+
+                if (adapter != null) {
+                    try {
+                        value = adapter.getXmlAdapter().marshal(value);
+                    } catch (Exception ex) {
+                        throw new JAXBException(XMLMarshalException.marshalException(ex));
+                    }
+                }
             }
-            value = wrapObject(value, element, type);            
+            value = wrapObject(value, element, type);
             marshal(value, result);
         }
     }
@@ -611,22 +611,22 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     private Object modifySingleObjectIfNeeded(Object obj){
-	// let the JAXBIntrospector determine if the object is a JAXBElement
+    // let the JAXBIntrospector determine if the object is a JAXBElement
         if (obj instanceof JAXBElement) {
             // use the JAXBElement's properties to populate an XMLRoot
             return createXMLRootFromJAXBElement((JAXBElement) obj);
         } else if(obj != null && obj.getClass().isEnum()) {
-        	return wrapEnumeration(obj, obj.getClass());
+            return wrapEnumeration(obj, obj.getClass());
         } else if (obj instanceof JSONWithPadding){
-        	Object nestedObject = ((JSONWithPadding)obj).getObject();
-        	if(nestedObject != null){
-	        	Object newNestedObject = modifyObjectIfNeeded(nestedObject);
-	        	if(nestedObject != newNestedObject){
-	        		return new JSONWithPadding(newNestedObject,((JSONWithPadding)obj).getCallbackName());
-	        	}
-        	}             
+            Object nestedObject = ((JSONWithPadding)obj).getObject();
+            if(nestedObject != null){
+                Object newNestedObject = modifyObjectIfNeeded(nestedObject);
+                if(nestedObject != newNestedObject){
+                    return new JSONWithPadding(newNestedObject,((JSONWithPadding)obj).getCallbackName());
+                }
+            }
         }
-    	return obj;
+        return obj;
     }
 
     public void marshal(Object object, XMLStreamWriter streamWriter, TypeMappingInfo type) throws JAXBException {
@@ -642,13 +642,13 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             }
             if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() > 0){
                 RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
-	            if (adapter != null) {
-	                try {
-	                    value = adapter.getXmlAdapter().marshal(value);
-	                } catch (Exception ex) {
-	                    throw new JAXBException(XMLMarshalException.marshalException(ex));
-	                }
-	            }
+                if (adapter != null) {
+                    try {
+                        value = adapter.getXmlAdapter().marshal(value);
+                    } catch (Exception ex) {
+                        throw new JAXBException(XMLMarshalException.marshalException(ex));
+                    }
+                }
             }
 
             value = wrapObject(value, element, type);
@@ -657,28 +657,28 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     private Object wrapObject(Object object, JAXBElement wrapperElement, TypeMappingInfo typeMappingInfo) {
-    	if(jaxbContext.getTypeMappingInfoToGeneratedType().size() > 0){
-	        Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
-	        if(generatedClass != null && object == null && wrapperElement != null) {
+        if(jaxbContext.getTypeMappingInfoToGeneratedType().size() > 0){
+            Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
+            if(generatedClass != null && object == null && wrapperElement != null) {
             return wrapObjectInXMLRoot(wrapperElement, object, typeMappingInfo);
-	        }
-    	
-	        if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
-	            ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
-	            Object newObject = desc.getInstantiationPolicy().buildNewInstance();
-	            ((WrappedValue) newObject).setValue(object);
-	            object = newObject;
-	        } else if (generatedClass != null) {
-	            // should be a many value
-	            ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
-	            Object newObject = desc.getInstantiationPolicy().buildNewInstance();
-	            ((ManyValue) newObject).setItem(object);
-	            object = newObject;
-	        }
-    	}
+            }
+
+            if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
+                ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
+                Object newObject = desc.getInstantiationPolicy().buildNewInstance();
+                ((WrappedValue) newObject).setValue(object);
+                object = newObject;
+            } else if (generatedClass != null) {
+                // should be a many value
+                ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
+                Object newObject = desc.getInstantiationPolicy().buildNewInstance();
+                ((ManyValue) newObject).setItem(object);
+                object = newObject;
+            }
+        }
 
         if (null == wrapperElement) {
-        	Root xmlRoot = new Root();
+            Root xmlRoot = new Root();
             QName xmlTagName = typeMappingInfo.getXmlTagName();
             if (null == xmlTagName) {
                 return object;
@@ -693,7 +693,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     private Root wrapObjectInXMLRoot(JAXBElement wrapperElement, Object value, TypeMappingInfo typeMappingInfo) {
-    	Root xmlroot = new Root();
+        Root xmlroot = new Root();
         Object objectValue = value;
         xmlroot.setObject(objectValue);
         QName qname = wrapperElement.getName();
@@ -701,9 +701,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlroot.setNamespaceURI(qname.getNamespaceURI());
         xmlroot.setDeclaredType(wrapperElement.getDeclaredType());
         if(typeMappingInfo != null){
-        	xmlroot.setSchemaType(typeMappingInfo.getSchemaType());
+            xmlroot.setSchemaType(typeMappingInfo.getSchemaType());
         } else if(value != null) {
-            if (value.getClass() == CoreClassConstants.ABYTE || value.getClass() == CoreClassConstants.APBYTE || 
+            if (value.getClass() == CoreClassConstants.ABYTE || value.getClass() == CoreClassConstants.APBYTE ||
                     value.getClass().getCanonicalName().equals("javax.activation.DataHandler")) {
                 xmlroot.setSchemaType(Constants.BASE_64_BINARY_QNAME);
             }
@@ -775,10 +775,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 }
             }
             value = wrapObject(value, element, type);
-            marshal(value, record);            
+            marshal(value, record);
         }
     }
-    
+
     public void setAdapter(Class javaClass, XmlAdapter adapter) {
         HashMap result = (HashMap) xmlMarshaller.getProperty(XML_JAVATYPE_ADAPTERS);
         if (result == null) {
@@ -828,7 +828,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     /**
      * Set a property on the JAXBMarshaller. Attempting to set any unsupported
-     * property will result in a javax.xml.bind.PropertyException 
+     * property will result in a javax.xml.bind.PropertyException
      * @see org.eclipse.persistence.jaxb.MarshallerProperties
      */
     public void setProperty(String key, Object value) throws PropertyException {
@@ -836,14 +836,14 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             if (key == null) {
                 throw new IllegalArgumentException();
             } else if (Constants.JAXB_FRAGMENT.equals(key)) {
-            	if(value == null){
-                 	throw new PropertyException(key, Constants.EMPTY_STRING);                	
-                }         
+                if(value == null){
+                     throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
                 Boolean fragment = (Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
             } else if (JAXB_FORMATTED_OUTPUT.equals(key)) {
-            	if(value == null){
-                 	throw new PropertyException(key, Constants.EMPTY_STRING);                	
+                if(value == null){
+                     throw new PropertyException(key, Constants.EMPTY_STRING);
                  }
                 Boolean formattedOutput = (Boolean) value;
                 xmlMarshaller.setFormattedOutput(formattedOutput.booleanValue());
@@ -853,25 +853,25 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 xmlMarshaller.setSchemaLocation((String) value);
             } else if (JAXB_NO_NAMESPACE_SCHEMA_LOCATION.equals(key)) {
                 xmlMarshaller.setNoNamespaceSchemaLocation((String) value);
-            } else if(MarshallerProperties.NAMESPACE_PREFIX_MAPPER.equals(key)) { 
-            	if(value == null){
-            		xmlMarshaller.setNamespacePrefixMapper(null);
-            	}else if(value instanceof Map){
-            		NamespacePrefixMapper namespacePrefixMapper = new MapNamespacePrefixMapper((Map)value);
-            		xmlMarshaller.setNamespacePrefixMapper(namespacePrefixMapper);
-            	}else{
+            } else if(MarshallerProperties.NAMESPACE_PREFIX_MAPPER.equals(key)) {
+                if(value == null){
+                    xmlMarshaller.setNamespacePrefixMapper(null);
+                }else if(value instanceof Map){
+                    NamespacePrefixMapper namespacePrefixMapper = new MapNamespacePrefixMapper((Map)value);
+                    xmlMarshaller.setNamespacePrefixMapper(namespacePrefixMapper);
+                }else{
                     xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper)value);
-            	}
+                }
             } else if(SUN_NAMESPACE_PREFIX_MAPPER.equals(key) || SUN_JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
-            	if(value == null){
-            		xmlMarshaller.setNamespacePrefixMapper(null);
-            	}else{
+                if(value == null){
+                    xmlMarshaller.setNamespacePrefixMapper(null);
+                }else{
                     xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
-            	}
+                }
             } else if (MarshallerProperties.INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
                 xmlMarshaller.setIndentString((String) value);
             } else if (MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS.equals(key)){
-            	xmlMarshaller.setMarshalEmptyCollections((Boolean) value);
+                xmlMarshaller.setMarshalEmptyCollections((Boolean) value);
             } else if (MarshallerProperties.JSON_REDUCE_ANY_ARRAYS.equals(key)){
                 xmlMarshaller.setReduceAnyArrays((Boolean) value);
             } else if (MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
@@ -889,16 +889,16 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                     xmlMarshaller.setCharacterEscapeHandler(new CharacterEscapeHandlerWrapper(value));
                 }
             } else if (XML_DECLARATION.equals(key)) {
-            	if(value == null){
-                 	throw new PropertyException(key, Constants.EMPTY_STRING);                	
+                if(value == null){
+                     throw new PropertyException(key, Constants.EMPTY_STRING);
                  }
                 Boolean fragment = !(Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
             } else if (XML_HEADERS.equals(key)) {
                 xmlMarshaller.setXmlHeader((String) value);
             } else if (OBJECT_IDENTITY_CYCLE_DETECTION.equals(key)) {
-            	if(value == null){
-                 	throw new PropertyException(key, Constants.EMPTY_STRING);                	
+                if(value == null){
+                     throw new PropertyException(key, Constants.EMPTY_STRING);
                  }
                 xmlMarshaller.setEqualUsingIdenity(((Boolean) value).booleanValue());
             } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
@@ -909,14 +909,14 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                     mType = MediaType.getMediaType((String)value);
                 }
                 if(mType == null){
-                	throw new PropertyException(key, Constants.EMPTY_STRING);                	
-                }                 
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
                 xmlMarshaller.setMediaType(mType);
             } else if (MarshallerProperties.JSON_ATTRIBUTE_PREFIX.equals(key)) {
                 xmlMarshaller.setAttributePrefix((String)value);
             } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
-		 if(value == null){
-			throw new PropertyException(key, Constants.EMPTY_STRING);
+         if(value == null){
+            throw new PropertyException(key, Constants.EMPTY_STRING);
                  }
                 xmlMarshaller.setIncludeRoot((Boolean)value);
             } else if(MarshallerProperties.JSON_VALUE_WRAPPER.equals(key)){
@@ -925,8 +925,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 }
                 xmlMarshaller.setValueWrapper((String)value);
             } else if(MarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){
-		if(value == null){
-			throw new PropertyException(key, Constants.EMPTY_STRING);
+        if(value == null){
+            throw new PropertyException(key, Constants.EMPTY_STRING);
                  }
                 xmlMarshaller.setNamespaceSeparator((Character)value);
             } else if(MarshallerProperties.OBJECT_GRAPH.equals(key)) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,9 +50,9 @@ import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_URL;
  */
 public class AllTests {
     public static final String DELIM = "|";
-    
+
     /**
-     * Build a MYSQL database connection to use when executing create and 
+     * Build a MYSQL database connection to use when executing create and
      * drop DDL statements.
      */
     public static Connection buildConnection() throws ClassNotFoundException, SQLException {
@@ -65,7 +65,7 @@ public class AllTests {
 
     /**
      * Execute the given DDL string.  If more than one statement is contained within the
-     * given string, it is expected that the statements are separated by '|'.  
+     * given string, it is expected that the statements are separated by '|'.
      */
     public static void runDdl(String ddl, boolean printStackTrace) throws ClassNotFoundException, SQLException {
         try {

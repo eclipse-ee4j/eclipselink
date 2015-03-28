@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.externalizable;
 
 import commonj.sdo.DataObject;
@@ -37,7 +37,7 @@ public class SDOResolvableTest extends SDOResolvableTestCases {
     public SDOResolvableTest(String name) {
         super(name);
     }
-    
+
     public void setUp() {
         try {
             xmlComparer = new SDOXMLComparer();
@@ -60,7 +60,7 @@ public class SDOResolvableTest extends SDOResolvableTestCases {
                 fail("Could not create parser.");
                 e.printStackTrace();
             }
-            
+
             ((SDOTypeHelper) typeHelper).reset();
             ((SDOXMLHelper) xmlHelper).reset();
             ((SDOXSDHelper) xsdHelper).reset();
@@ -114,11 +114,11 @@ public class SDOResolvableTest extends SDOResolvableTestCases {
     public void testWriteReadRootDataObject() {
         // invoke serialization
         //log("SDOResolvable.testWriteReadRootDataObject() UC10|30");
-        // check that we received a DataObject        
+        // check that we received a DataObject
         assertNotNull(root);
 
         serialize(root, SERIALIZATION_FILE_NAME);
-        // deserialize the binary file representation    	
+        // deserialize the binary file representation
         DataObject aDeserializedDataObject = (DataObject)deserialize(SERIALIZATION_FILE_NAME);
 
         // the original and deserialized objects should be the same
@@ -139,7 +139,7 @@ public class SDOResolvableTest extends SDOResolvableTestCases {
         // deserialize the binary file representation
         DataObject aDeserializedDataObject = deserialize(SERIALIZATION_FILE_NAME);
 
-        // the original and deserialized objects should be the same    	
+        // the original and deserialized objects should be the same
         assertTrue(equalityHelper.equal(anObject, aDeserializedDataObject));
     }
 
@@ -157,7 +157,7 @@ public class SDOResolvableTest extends SDOResolvableTestCases {
         // deserialize the binary file representation
         DataObject aDeserializedDataObject = deserialize(SERIALIZATION_FILE_NAME);
 
-        // the original and deserialized objects should be the same    	
+        // the original and deserialized objects should be the same
         assertTrue(equalityHelper.equal(anObject, aDeserializedDataObject));
     }
 
@@ -201,7 +201,7 @@ public class SDOResolvableTest extends SDOResolvableTestCases {
         List items = itemsDO.getList("item");
 
         serializeList(items, SERIALIZATION_FILE_NAME + 2);
-        // deserialize the binary file representation    	
+        // deserialize the binary file representation
         List aDeserializedDataObject = deserializeList(SERIALIZATION_FILE_NAME + 2);
 
         assertEquals(items.size(), aDeserializedDataObject.size());
@@ -218,9 +218,9 @@ public class SDOResolvableTest extends SDOResolvableTestCases {
         List items = itemsDO.getList("item");
         ArrayList theList = new ArrayList(items);
 
-        // invoke serialization      
+        // invoke serialization
         serializeList(theList, SERIALIZATION_FILE_NAME + 3);
-        // deserialize the binary file representation    	
+        // deserialize the binary file representation
         List aDeserializedDataObject = deserializeList(SERIALIZATION_FILE_NAME + 3);
 
         assertEquals(items.size(), aDeserializedDataObject.size());

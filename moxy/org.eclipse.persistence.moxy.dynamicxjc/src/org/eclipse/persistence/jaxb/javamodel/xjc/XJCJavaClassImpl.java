@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 - 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 - 2014, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -67,7 +67,7 @@ public class XJCJavaClassImpl implements JavaClass {
     private boolean isPrimitive;
 
     private JavaClass arg;
-    
+
     private DynamicClassLoader dynamicClassLoader;
 
     private static Field JDEFINEDCLASS_ANNOTATIONS = null;
@@ -127,9 +127,9 @@ public class XJCJavaClassImpl implements JavaClass {
     // ========================================================================
 
     public void setActualTypeArgument(JavaClass javaClass){
-    	arg = javaClass;
+        arg = javaClass;
     }
-    
+
     /**
      * Return the "actual" type from a parameterized type.  For example, if this
      * <code>JavaClass</code> represents <code>List&lt;Employee</code>, this method will return the
@@ -138,18 +138,18 @@ public class XJCJavaClassImpl implements JavaClass {
      * @return a <code>Collection</code> containing the actual type's <code>JavaClass</code>.
      */
     public Collection<JavaClass> getActualTypeArguments() {
-    	
-    	
+
+
         JTypeVar[] typeParams = xjcClass.typeParams();
 
         if (null == typeParams || 0 == typeParams.length ) {
-        	if(arg != null){
-        		java.util.List<JavaClass> theList = new ArrayList<JavaClass>(1);
-        		theList.add(arg);
-        		return theList;
-        	}else{
+            if(arg != null){
+                java.util.List<JavaClass> theList = new ArrayList<JavaClass>(1);
+                theList.add(arg);
+                return theList;
+            }else{
                 return new ArrayList<JavaClass>(0);
-        	}
+            }
         }
 
         try {

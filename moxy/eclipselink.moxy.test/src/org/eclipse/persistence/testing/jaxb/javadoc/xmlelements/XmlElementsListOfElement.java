@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,9 +19,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 
 @XmlRootElement(name="employee-data")
-public class XmlElementsListOfElement 
+public class XmlElementsListOfElement
 {
- 
+
     @XmlElements({@XmlElement(name="A", type=Integer.class), @XmlElement(name="B", type=Float.class)})
     public List items;
 /*
@@ -32,7 +32,7 @@ public class XmlElementsListOfElement
 */
     public boolean equals(Object object) {
         XmlElementsListOfElement  example = ((XmlElementsListOfElement )object);
-        return example.items.size() == this.items.size() && example.items.get(0).equals(this.items.get(0));        
+        return example.items.size() == this.items.size() && example.items.get(0).equals(this.items.get(0));
     }
 }
 

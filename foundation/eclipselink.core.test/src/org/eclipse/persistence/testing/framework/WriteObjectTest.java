@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import org.eclipse.persistence.queries.*;
@@ -24,7 +24,7 @@ import org.eclipse.persistence.mappings.foundation.*;
  * Should originalObject contain no changes to the original object from the
  * database (a TRIVIAL UPDATE), find and mutate a direct to field mapping before
  * writing the object to the database.  If originalObject is different from but
- * has the same primary key as an object on the database, do not mutate the 
+ * has the same primary key as an object on the database, do not mutate the
  * object as it has already been changed (a NON-TRIVIAL UPDATE).
  * <p>
  * <b>Responsibilities</b>:
@@ -46,7 +46,7 @@ public class WriteObjectTest extends TransactionalTestCase {
     /** The originalObject is read from the database and stored here */
     protected Object objectToBeWritten;
 
-    /** The object from the database is read in verify to compare against the 
+    /** The object from the database is read in verify to compare against the
     * objectToBeWritten.
     */
     protected Object objectFromDatabase;
@@ -141,12 +141,12 @@ public class WriteObjectTest extends TransactionalTestCase {
          */
         if (mutatableMapping != null) {
             mutatableMapping.setAttributeValueInObject(
-                objectToBeMutated, 
+                objectToBeMutated,
                 mutatableMapping.getAttributeValueFromObject(
                     objectToBeMutated) + mutationString);
         }
         else {
-            // Can't necessarily throw error/warning as some projects 
+            // Can't necessarily throw error/warning as some projects
             // (i.e. LOB project) have descriptors that are not simple to mutate
         }
 
@@ -191,7 +191,7 @@ public class WriteObjectTest extends TransactionalTestCase {
     }
 
     /**
-     * Some subclasses of WriteObjectTest will not return the correct results if 
+     * Some subclasses of WriteObjectTest will not return the correct results if
      * the object is mutated, for example tests that pass null values and expect
      * nulls to be returned.  If this flag is set then the object will not be
      * mutated before attempting to write to the database.
@@ -242,7 +242,7 @@ public class WriteObjectTest extends TransactionalTestCase {
 
 
     /**
-     * The test() method will, if required, pass the object to the 
+     * The test() method will, if required, pass the object to the
      * findAndMutateDirectToFieldMappingInObject method, and will then attempt
      * to write the object to the database.
      */
@@ -252,7 +252,7 @@ public class WriteObjectTest extends TransactionalTestCase {
             // Only want to do this if the update is trivial
             // Otherwise there are already changes in the object that
             // will generate SQL
-            this.objectToBeWritten = 
+            this.objectToBeWritten =
                 this.findAndMutateDirectToFieldMappingInObject(
                     this.objectToBeWritten, false);
         }
@@ -261,8 +261,8 @@ public class WriteObjectTest extends TransactionalTestCase {
     }
 
     /**
-     * Verify if the objects match completely through allowing the session 
-     * to use the descriptors.  This will compare the objects and all of 
+     * Verify if the objects match completely through allowing the session
+     * to use the descriptors.  This will compare the objects and all of
      * their privately owned parts.
      */
     protected void verify() {
@@ -271,7 +271,7 @@ public class WriteObjectTest extends TransactionalTestCase {
 
         if (!(compareObjects(this.objectToBeWritten, this.objectFromDatabase))) {
             throw new TestErrorException("The object inserted into the database, '"
-                + this.objectFromDatabase + "' does not match the original, '" 
+                + this.objectFromDatabase + "' does not match the original, '"
                 + this.objectToBeWritten + "'.");
         }
     }

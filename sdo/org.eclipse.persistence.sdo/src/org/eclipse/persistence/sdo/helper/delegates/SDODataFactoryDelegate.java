@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -38,7 +38,7 @@ public class SDODataFactoryDelegate implements SDODataFactory {
         // set context before initializing maps
         aHelperContext = aContext;
     }
-    
+
     public DataObject create(String uri, String typeName) {
         Type sdoType = getHelperContext().getTypeHelper().getType(uri, typeName);
         if (sdoType != null) {
@@ -55,7 +55,7 @@ public class SDODataFactoryDelegate implements SDODataFactory {
         if (type != null) {
             return create(type);
         }
-        
+
         // at this point the type may not have been defined or there could be a classloader issue
         SDOXMLHelper xmlHelper = (SDOXMLHelper) getHelperContext().getXMLHelper();
         ClassLoader contextLoader = xmlHelper.getLoader();
@@ -79,7 +79,7 @@ public class SDODataFactoryDelegate implements SDODataFactory {
             }
             contextLoader = parentLoader;
         }
-        
+
         throw new IllegalArgumentException(SDOException.typeNotFoundForInterface(interfaceClass.getName(), loadersAreRelated));
     }
 
@@ -88,10 +88,10 @@ public class SDODataFactoryDelegate implements SDODataFactory {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("create", "type"));
         }
         SDOType sdoType = (SDOType) type;
-        
+
         if (sdoType.isAbstract()) {
-            //throw illegal arg exception 
-            //spec page 40                        
+            //throw illegal arg exception
+            //spec page 40
             throw new IllegalArgumentException(SDOException.errorCreatingDataObjectForType(sdoType.getURI(), sdoType.getName()));
         }
 

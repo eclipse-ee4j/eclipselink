@@ -6,7 +6,7 @@
 
         <!-- mapping files that are packaged in xml-only-model-tests.jar. -->
         <mapping-file>META-INF/advanced-entity-mappings.xml</mapping-file>
-        <!-- inheritance-entity-mappings.xml is packaged as META-INF/orm.xml 
+        <!-- inheritance-entity-mappings.xml is packaged as META-INF/orm.xml
              to test default listeners are added only once (GF #589) as well as
              to test that we can read orm.xml from referenced jar(GF #1131)
              See build.xml for more details.
@@ -31,7 +31,7 @@
         <!-- this is here for testing purposes GF #588, do not remove. -->
         <class>org.eclipse.persistence.testing.models.jpa.xml.inherited.Beer</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
-        
+
         <properties>
             <!-- JDBC properties will be given by test.properties file in runtime -->
             <property name="eclipselink.session-name" value="default-session"/>

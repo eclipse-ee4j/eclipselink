@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.expressions;
 
 import org.eclipse.persistence.testing.models.employee.domain.*;
@@ -107,7 +107,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
             test.setDescription("Tests whether a parallel select will use distinct.");
             addTest(test);
     }
-    
+
     /**
      * Test that outer expressions are normalized inside sub-selects correctly.
      */
@@ -284,27 +284,27 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         addTest(test);
     }
 
-	/**
-	 * Tests a common usage of parallel selects: to avoid defining a mapping between
-	 * tables.
-	 * @bug 2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
-	 */
-	private void addParallelSelectWithBatchAttributeTest() {
-		ExpressionBuilder builder = new ExpressionBuilder();
-		ExpressionBuilder otherBuilder = new ExpressionBuilder(Address.class);
+    /**
+     * Tests a common usage of parallel selects: to avoid defining a mapping between
+     * tables.
+     * @bug 2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
+     */
+    private void addParallelSelectWithBatchAttributeTest() {
+        ExpressionBuilder builder = new ExpressionBuilder();
+        ExpressionBuilder otherBuilder = new ExpressionBuilder(Address.class);
 
-		Expression expression = builder.getField("ADDR_ID").equal(otherBuilder.getField("ADDRESS_ID"));
-		expression = expression.and(otherBuilder.get("province").equal("ONT"));
+        Expression expression = builder.getField("ADDR_ID").equal(otherBuilder.getField("ADDRESS_ID"));
+        expression = expression.and(otherBuilder.get("province").equal("ONT"));
 
-		ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 6);
-		test.setExpression(expression);
-		test.testBatchAttributesOnEmployee();
-		test.setName("ParallelSelectWithBatchAttributeTest");
-		test.setDescription("Test batch reading attributes from query with parallel selects.  For 2637484");
-		addTest(test);
-	}
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 6);
+        test.setExpression(expression);
+        test.testBatchAttributesOnEmployee();
+        test.setName("ParallelSelectWithBatchAttributeTest");
+        test.setDescription("Test batch reading attributes from query with parallel selects.  For 2637484");
+        addTest(test);
+    }
 
-	/**
+    /**
      *  @bug 2612185 Support ReportItems,OrderBy Expressions from Parallel Builders.
      *  Find all managers of employees who have a spouse at work and a family
      *  income in excess of 100,000.
@@ -356,67 +356,67 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         addTest(test);
     }
 
-	/**
-	 * @bug  2718460 QUERY EXCEPTION THROWN USING BATCH READS AND OBJECT COMPARISONS
-	 */
-	private void addObjectComparisonWithBatchAttributeTest() {
-		ExpressionBuilder builder = new ExpressionBuilder();
-		ExpressionBuilder otherBuilder = new ExpressionBuilder(Employee.class);
+    /**
+     * @bug  2718460 QUERY EXCEPTION THROWN USING BATCH READS AND OBJECT COMPARISONS
+     */
+    private void addObjectComparisonWithBatchAttributeTest() {
+        ExpressionBuilder builder = new ExpressionBuilder();
+        ExpressionBuilder otherBuilder = new ExpressionBuilder(Employee.class);
 
-		Expression expression = builder.get("lastName").equal(otherBuilder.get("lastName")).and(builder.notEqual(otherBuilder));
+        Expression expression = builder.get("lastName").equal(otherBuilder.get("lastName")).and(builder.notEqual(otherBuilder));
 
-		ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 6);
-		test.setExpression(expression);
-		test.testBatchAttributesOnEmployee();
-		test.setName("ObjectComparisonWithBatchAttributeTest");
-		test.setDescription("Test batch reading attributes from query with object comparisons.  Bug 2718460.");
-		addTest(test);
-	}
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 6);
+        test.setExpression(expression);
+        test.testBatchAttributesOnEmployee();
+        test.setName("ObjectComparisonWithBatchAttributeTest");
+        test.setDescription("Test batch reading attributes from query with object comparisons.  Bug 2718460.");
+        addTest(test);
+    }
 
-	/**
-	 *  @bug 2612140 CR2973- BATCHATTRIBUTE QUERIES WILL FAIL WHEN THE INITIAL QUERY HAS A SUBQUERY
-	 */
-	private void addExistsWithBatchAttributeTest() {
-		ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
-		ExpressionBuilder innerBuilder = new ExpressionBuilder(Address.class);
+    /**
+     *  @bug 2612140 CR2973- BATCHATTRIBUTE QUERIES WILL FAIL WHEN THE INITIAL QUERY HAS A SUBQUERY
+     */
+    private void addExistsWithBatchAttributeTest() {
+        ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
+        ExpressionBuilder innerBuilder = new ExpressionBuilder(Address.class);
 
-		Expression innerExpression = innerBuilder.equal(builder.get("address"));
-		innerExpression = innerExpression.and(innerBuilder.get("province").equal("ONT"));
+        Expression innerExpression = innerBuilder.equal(builder.get("address"));
+        innerExpression = innerExpression.and(innerBuilder.get("province").equal("ONT"));
 
-		ReportQuery subquery = new ReportQuery(Address.class, innerBuilder);
-		subquery.addAttribute("id");
-		subquery.setSelectionCriteria(innerExpression);
+        ReportQuery subquery = new ReportQuery(Address.class, innerBuilder);
+        subquery.addAttribute("id");
+        subquery.setSelectionCriteria(innerExpression);
 
-		Expression expression = builder.exists(subquery);
+        Expression expression = builder.exists(subquery);
 
-		ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 6);
-		test.setExpression(expression);
-		test.testBatchAttributesOnEmployee();
-		test.setName("ExistsWithBatchAttributeTest");
-		test.setDescription("Test batch reading attributes from query with exists (correlatedsub selects).  For 2612140.");
-		addTest(test);
-	}
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 6);
+        test.setExpression(expression);
+        test.testBatchAttributesOnEmployee();
+        test.setName("ExistsWithBatchAttributeTest");
+        test.setDescription("Test batch reading attributes from query with exists (correlatedsub selects).  For 2612140.");
+        addTest(test);
+    }
 
-	/**
-	 *  @bug 2612567 CR4298- NULLPOINTEREXCEPTION WHEN USING SUBQUERY AND BATCH READING IN 4.6
-	 */
-	private void addSubSelectInWithBatchAttributeTest() {
-		ExpressionBuilder innerBuilder = new ExpressionBuilder();
-		ExpressionBuilder outerBuilder = new ExpressionBuilder();
+    /**
+     *  @bug 2612567 CR4298- NULLPOINTEREXCEPTION WHEN USING SUBQUERY AND BATCH READING IN 4.6
+     */
+    private void addSubSelectInWithBatchAttributeTest() {
+        ExpressionBuilder innerBuilder = new ExpressionBuilder();
+        ExpressionBuilder outerBuilder = new ExpressionBuilder();
 
-		ReportQuery subQuery = new ReportQuery(Employee.class, innerBuilder);
-		subQuery.addAttribute("lastName");
-		subQuery.setSelectionCriteria(innerBuilder.get("firstName").like("B%"));
+        ReportQuery subQuery = new ReportQuery(Employee.class, innerBuilder);
+        subQuery.addAttribute("lastName");
+        subQuery.setSelectionCriteria(innerBuilder.get("firstName").like("B%"));
 
-		Expression expression = outerBuilder.get("lastName").in(subQuery);
+        Expression expression = outerBuilder.get("lastName").in(subQuery);
 
-		ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 4);
-		test.setExpression(expression);
-		test.testBatchAttributesOnEmployee();
-		test.setName("SubSelectInWithBatchAttributeTest");
-		test.setDescription("Regression test batch reading attributes from query with IN sub select, for 2612567.");
-		addTest(test);
-	}
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 4);
+        test.setExpression(expression);
+        test.testBatchAttributesOnEmployee();
+        test.setName("SubSelectInWithBatchAttributeTest");
+        test.setDescription("Regression test batch reading attributes from query with IN sub select, for 2612567.");
+        addTest(test);
+    }
 
     private void addSubSelectCountTest() {
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -773,7 +773,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         ReportQuery subQuery = new ReportQuery(Project.class, new ExpressionBuilder(Project.class));
         subQuery.addCount("id");
         subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().equal(builder.anyOf("projects")));
-        
+
         ReportQuery query = new ReportQuery(Employee.class, builder);
         query.addAttribute("id");
         query.addAttribute("firstName");
@@ -787,20 +787,20 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         test.setDescription("Test subselects that uses an object eqauls");
         addTest(test);
     }
-    
+
     private void addSubSelectSelectClauseTest() {
         ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
         ReportQuery subQuery = new ReportQuery(Project.class, new ExpressionBuilder(Project.class));
         subQuery.addCount("id");
         subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().equal(builder.anyOf("projects")));
-        
+
         ReportQuery query = new ReportQuery(Employee.class, builder);
         query.addAttribute("id");
         query.addAttribute("firstName");
         query.addItem("count", builder.subQuery(subQuery));
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 12);
-        // Symfoware does not allow specifying a subquery in the select list 
+        // Symfoware does not allow specifying a subquery in the select list
         // for a query specification or for the single-row SELECT statement. (bug 372172)
         test.addUnsupportedPlatform(SymfowarePlatform.class);
         test.setQuery(query);
@@ -814,14 +814,14 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         ReportQuery subQuery = new ReportQuery(Project.class, new ExpressionBuilder(Project.class));
         subQuery.addCount("id");
         subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().get("id").equal(builder.anyOf("projects").get("id")));
-        
+
         ReportQuery query = new ReportQuery(Employee.class, builder);
         query.addAttribute("id");
         query.addAttribute("firstName");
         query.addItem("count", builder.subQuery(subQuery));
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 12);
-        // Symfoware does not allow specifying a subquery in the select list 
+        // Symfoware does not allow specifying a subquery in the select list
         // for a query specification or for the single-row SELECT statement. (bug 372172)
         test.addUnsupportedPlatform(SymfowarePlatform.class);
         test.setQuery(query);
@@ -834,7 +834,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
         ReportQuery subQuery = new ReportQuery(LargeProject.class, new ExpressionBuilder(LargeProject.class));
         subQuery.addAttribute("id");
-        
+
         ReportQuery query = new ReportQuery(Employee.class, builder);
         query.addAttribute("id");
         query.addAttribute("firstName");
@@ -854,7 +854,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         ReportQuery subQuery = new ReportQuery(LargeProject.class, new ExpressionBuilder(LargeProject.class));
         subQuery.addItem("id", subQuery.getExpressionBuilder().get("id").average());
         subQuery.addItem("id2", subQuery.getExpressionBuilder().get("id").maximum());
-        
+
         ReportQuery query = new ReportQuery(Employee.class, builder);
         query.addItem("e", builder);
         Expression alias = builder.getAlias(builder.subQuery(subQuery));

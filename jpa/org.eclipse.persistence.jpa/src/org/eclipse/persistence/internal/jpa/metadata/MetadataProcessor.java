@@ -1,39 +1,39 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/16/2008-1.0M8 Guy Pelletier 
+ *     05/16/2008-1.0M8 Guy Pelletier
  *       - 218084: Implement metadata merging functionality between mapping files
- *     05/23/2008-1.0M8 Guy Pelletier 
+ *     05/23/2008-1.0M8 Guy Pelletier
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
- *     12/10/2008-1.1 Michael O'Brien 
+ *     12/10/2008-1.1 Michael O'Brien
  *       - 257606: Add orm.xml schema validation true/(false) flag support in persistence.xml
- *     01/28/2009-2.0 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier
  *       - 248293: JPA 2.0 Element Collections (part 1)
- *     03/27/2009-2.0 Guy Pelletier 
+ *     03/27/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     03/08/2010-2.1 Guy Pelletier 
+ *     03/08/2010-2.1 Guy Pelletier
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     05/14/2010-2.1 Guy Pelletier 
+ *     05/14/2010-2.1 Guy Pelletier
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
- *     04/01/2011-2.3 Guy Pelletier 
+ *     04/01/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 2)
- *     09/20/2011-2.3.1 Guy Pelletier 
+ *     09/20/2011-2.3.1 Guy Pelletier
  *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
- *     06/20/2012-2.5 Guy Pelletier 
+ *     06/20/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     10/09/2012-2.5 Guy Pelletier 
+ *     10/09/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
  *     08/18/2014-2.5 Jody Grassel (IBM Corporation)
  *       - 440802: xml-mapping-metadata-complete does not exclude @Entity annotated entities
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import java.io.IOException;
@@ -77,8 +77,8 @@ import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
- * The object/relational metadata processor for the EJB3.0 specification. 
- * 
+ * The object/relational metadata processor for the EJB3.0 specification.
+ *
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
@@ -97,7 +97,7 @@ public class MetadataProcessor {
      * Empty processor to be used as a composite processor.
      */
     public MetadataProcessor() {}
-    
+
     /**
      * INTERNAL:
      * Called from EntityManagerSetupImpl. The 'real' EJB 3.0 processing
@@ -114,7 +114,7 @@ public class MetadataProcessor {
             m_project.setCompositeProcessor(m_compositeProcessor);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Add containedProcessor to compositeProcessor.
@@ -125,31 +125,31 @@ public class MetadataProcessor {
         }
         m_compositeMemberProcessors.add(compositeMemberProcessor);
     }
-    
+
     /**
-     * INTERNAL: 
-     * Method to place EntityListener's on the descriptors from the given 
+     * INTERNAL:
+     * Method to place EntityListener's on the descriptors from the given
      * session. This call is made from the EntityManagerSetup deploy call.
      */
     public void addEntityListeners() {
         // Process the listeners for all the class accessors, but before
-        // doing so, update the accessors associated class since the loader 
+        // doing so, update the accessors associated class since the loader
         // should have changed changed.
-        for (EntityAccessor accessor : m_project.getEntityAccessors()) { 
+        for (EntityAccessor accessor : m_project.getEntityAccessors()) {
             accessor.setJavaClass(accessor.getDescriptor().getJavaClass());
             accessor.processListeners(m_loader);
         }
     }
-    
+
     /**
      * INTERNAL:
-     * Method to place NamedQueries and NamedNativeQueries on the given session. 
+     * Method to place NamedQueries and NamedNativeQueries on the given session.
      * This call is made from the EntityManagerSetup deploy call.
      */
     public void addNamedQueries() {
         m_project.processQueries();
     }
-    
+
     /**
      * INTERNAL:
      * During EntityManagerSetup deploy, using the real class loader we must
@@ -158,11 +158,11 @@ public class MetadataProcessor {
     public void createDynamicClasses() {
         m_project.createDynamicClasses(m_loader);
     }
-    
+
     public void createRestInterfaces(){
         m_project.createRestInterfaces(m_loader);
     }
-        
+
     /**
      * INTERNAL:
      * Return compositeProcessor.
@@ -170,7 +170,7 @@ public class MetadataProcessor {
     public MetadataProcessor getCompositeProcessor() {
         return m_compositeProcessor;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -201,30 +201,30 @@ public class MetadataProcessor {
         }
         return pearProjects;
     }
-    
+
     /**
      * INTERNAL:
-     * Return a set of class names for each entity, embeddable and mapped 
-     * superclass found in the mapping files to be processed by the 
+     * Return a set of class names for each entity, embeddable and mapped
+     * superclass found in the mapping files to be processed by the
      * MetadataProcessor.
      */
     public Set<String> getPersistenceUnitClassSetFromMappingFiles() {
         HashSet<String> classSet = new HashSet<String>();
-        
+
         for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
             for (ClassAccessor entity : entityMappings.getEntities()) {
                 classSet.add(entityMappings.getPackageQualifiedClassName(entity.getClassName()));
             }
-            
+
             for (ClassAccessor embeddable : entityMappings.getEmbeddables()) {
                 classSet.add(entityMappings.getPackageQualifiedClassName(embeddable.getClassName()));
             }
-            
+
             for (ClassAccessor mappedSuperclass : entityMappings.getMappedSuperclasses()) {
                 classSet.add(entityMappings.getPackageQualifiedClassName(mappedSuperclass.getClassName()));
             }
         }
-        
+
         return classSet;
     }
 
@@ -234,13 +234,13 @@ public class MetadataProcessor {
     public MetadataProject getProject() {
         return m_project;
     }
-    
+
     /**
      * INTERNAL:
      * Adds a list of StructConverter string names that were defined in the
      * metadata of this project to the native EclipseLink project.
-     * 
-     * These StructConverters can be added to the Project to be processed later 
+     *
+     * These StructConverters can be added to the Project to be processed later
      */
     public void addStructConverterNames() {
         List<String> structConverters = new ArrayList<String>();
@@ -251,18 +251,18 @@ public class MetadataProcessor {
             m_session.getProject().setStructConverters(structConverters);
         }
     }
-     
+
     /**
      * INTERNAL:
      * Handle an exception that occurred while processing ORM xml.
      */
     protected void handleORMException(RuntimeException e, String mappingFile, boolean throwException){
         if (m_session == null) {
-            // Metadata processor is mainly used with a session. Java SE 
+            // Metadata processor is mainly used with a session. Java SE
             // bootstrapping uses some functions such as ORM processing without
-            // a session. In these cases, it is impossible to get the session 
-            // to properly handle the exception. As a result we log an error. 
-            // The same code will be called later in the bootstrapping code 
+            // a session. In these cases, it is impossible to get the session
+            // to properly handle the exception. As a result we log an error.
+            // The same code will be called later in the bootstrapping code
             // and the error will be handled then.
             AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.METADATA, EntityManagerSetupImpl.ERROR_LOADING_XML_FILE, new Object[] {mappingFile, e});
         } else if (!throwException) {
@@ -273,46 +273,46 @@ public class MetadataProcessor {
             m_session.handleException(e);
         }
     }
-    
+
     /**
      * INTERNAL:
-     * This method is responsible for discovering all the entity classes for 
-     * this PU and adding corresponding MetadataDescriptor in the 
+     * This method is responsible for discovering all the entity classes for
+     * this PU and adding corresponding MetadataDescriptor in the
      * MetadataProject.
-     * 
-     * This method will also gather all the weavable classes for this PU. 
+     *
+     * This method will also gather all the weavable classes for this PU.
      * Currently, entity and embeddable classes are weavable.
-     * 
+     *
      * NOTE: The order of processing should not be changed as the steps are
      * dependent on one another.
      */
-    protected void initPersistenceUnitClasses() {        
+    protected void initPersistenceUnitClasses() {
         // 1 - Iterate through the classes that are defined in the <mapping>
         // files and add them to the map. This will merge the accessors where
         // necessary.
         HashMap<String, EntityAccessor> entities = new HashMap<String, EntityAccessor>();
         HashMap<String, EmbeddableAccessor> embeddables = new HashMap<String, EmbeddableAccessor>();
-        
+
         for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
-            entityMappings.initPersistenceUnitClasses(entities, embeddables);  
+            entityMappings.initPersistenceUnitClasses(entities, embeddables);
         }
 
-        // 2 - Iterate through all the XML entities and add them to the project 
+        // 2 - Iterate through all the XML entities and add them to the project
         // and apply any persistence unit defaults.
         for (EntityAccessor entity : entities.values()) {
             // This will apply global persistence unit defaults.
             m_project.addEntityAccessor(entity);
-            
+
             // This will override any global settings.
             entity.getEntityMappings().processEntityMappingsDefaults(entity);
         }
 
-        // 3 - Iterate though all the XML embeddables and add them to the 
+        // 3 - Iterate though all the XML embeddables and add them to the
         // project and apply any persistence unit defaults.
         for (EmbeddableAccessor embeddable : embeddables.values()) {
             // This will apply global persistence unit defaults.
             m_project.addEmbeddableAccessor(embeddable);
-            
+
             // This will override any global settings.
             embeddable.getEntityMappings().processEntityMappingsDefaults(embeddable);
         }
@@ -322,12 +322,12 @@ public class MetadataProcessor {
         if (m_project.getPersistenceUnitMetadata() != null && m_project.getPersistenceUnitMetadata().isXMLMappingMetadataComplete()) {
             return;
         }
-        
+
         // 4 - Iterate through the classes that are referenced from the
         // persistence.xml file.
         PersistenceUnitInfo persistenceUnitInfo = m_project.getPersistenceUnitInfo();
         List<String> classNames = new ArrayList<String>();
-        
+
         // Add all the <class> specifications.
         classNames.addAll(persistenceUnitInfo.getManagedClassNames());
 
@@ -341,11 +341,11 @@ public class MetadataProcessor {
         if (! persistenceUnitInfo.excludeUnlistedClasses()) {
             unlistedClasses = PersistenceUnitProcessor.getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), m_loader, m_predeployProperties);
         }
-        
-        // 5 - Go through all the class names we found and add those classes 
+
+        // 5 - Go through all the class names we found and add those classes
         // that have not yet been added. Be sure to check that the accessor
-        // does not already exist since adding an accessor will merge its 
-        // contents with an existing accessor and we only want that to happen 
+        // does not already exist since adding an accessor will merge its
+        // contents with an existing accessor and we only want that to happen
         // in the XML case. Also, don't add an entity accessor if an embeddable
         // accessor to the same class exists (and vice versa). XML accessors
         // are loaded first, so preserve what we find there.
@@ -359,8 +359,8 @@ public class MetadataProcessor {
             if (iterator.hasNext()) {
                 String className = iterator.next();
                 MetadataClass candidateClass = m_factory.getMetadataClass(className, unlisted);
-                // JBoss Bug 227630: Do not process a null class whether it was from a 
-                // NPE or a CNF, a warning or exception is thrown in loadClass() 
+                // JBoss Bug 227630: Do not process a null class whether it was from a
+                // NPE or a CNF, a warning or exception is thrown in loadClass()
                 if (candidateClass != null) {
                     if (PersistenceUnitProcessor.isEntity(candidateClass) && ! m_project.hasEntity(candidateClass) && ! m_project.hasEmbeddable(candidateClass)) {
                         m_project.addEntityAccessor(new EntityAccessor(PersistenceUnitProcessor.getEntityAnnotation(candidateClass), candidateClass, m_project));
@@ -373,14 +373,14 @@ public class MetadataProcessor {
                     } else if (PersistenceUnitProcessor.isMappedSuperclass(candidateClass) && ! m_project.hasMappedSuperclass(candidateClass)) {
                         // ensure mapped superclasses will be added to the metamodel even if they do not have entity subclasses
                         MetadataDescriptor metadataDescriptor = new MetadataDescriptor(candidateClass);
-                        // add the mapped superclass to keep track of it in case it is not processed later (has no subclasses).  
+                        // add the mapped superclass to keep track of it in case it is not processed later (has no subclasses).
                         m_session.getProject().addMappedSuperclass(candidateClass.getName(), metadataDescriptor.getClassDescriptor(), false);
                     }
                 }
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * This method is responsible for figuring out list of mapping files to
@@ -391,15 +391,15 @@ public class MetadataProcessor {
     public void loadMappingFiles(boolean throwExceptionOnFail) {
         // Read all the standard XML mapping files first.
         loadStandardMappingFiles(MetadataHelper.JPA_ORM_FILE);
-        
+
         // Read all the explicitly specified mapping files second.
         loadSpecifiedMappingFiles(throwExceptionOnFail);
 
         // Read all the standard eclipselink files last (if the user hasn't
-        // explicitly excluded them). The eclipselink orm files will be 
-        // processed last therefore allowing them to override and merge 
+        // explicitly excluded them). The eclipselink orm files will be
+        // processed last therefore allowing them to override and merge
         // metadata where necessary. Note: we want the eclipselink orm
-        // metadata to merge into standard jpa files and not vice versa. 
+        // metadata to merge into standard jpa files and not vice versa.
         // Loading them last will ensure this happens.
         Boolean excludeEclipseLinkORM = Boolean.valueOf((String) m_project.getPersistenceUnitInfo().getProperties().get(PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE));
         if (! excludeEclipseLinkORM) {
@@ -419,19 +419,19 @@ public class MetadataProcessor {
      */
     protected void loadSpecifiedMappingFiles(boolean throwExceptionOnFail) {
         PersistenceUnitInfo puInfo = m_project.getPersistenceUnitInfo();
-        
+
         for (String mappingFileName : puInfo.getMappingFileNames()) {
             try {
                 Enumeration<URL> mappingFileURLs = m_loader.getResources(mappingFileName);
-                
+
                 if (!mappingFileURLs.hasMoreElements()){
                     mappingFileURLs = m_loader.getResources("/./" + mappingFileName);
                 }
-                
+
                 if (mappingFileURLs.hasMoreElements()) {
                     URL nextURL = mappingFileURLs.nextElement();
                     if (nextURL == null) {
-                        nextURL = mappingFileURLs.nextElement();                        
+                        nextURL = mappingFileURLs.nextElement();
                     }
 
                     if (mappingFileURLs.hasMoreElements()) {
@@ -440,7 +440,7 @@ public class MetadataProcessor {
                         Throwable throwable = ValidationException.nonUniqueMappingFileName(puInfo.getPersistenceUnitName(), mappingFileName);
                         getSessionLog().logThrowable(SessionLog.FINER, SessionLog.METADATA, throwable);
                     }
-                    
+
                     // Read the document through OX and add it to the project.
                     m_project.addEntityMappings(XMLEntityMappingsReader.read(nextURL, m_loader, m_project.getPersistenceUnitInfo().getProperties()));
                 } else {
@@ -451,7 +451,7 @@ public class MetadataProcessor {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -459,7 +459,7 @@ public class MetadataProcessor {
         PersistenceUnitInfo puInfo = m_project.getPersistenceUnitInfo();
         Collection<URL> rootUrls = new HashSet<URL>(puInfo.getJarFileUrls());
         rootUrls.add(puInfo.getPersistenceUnitRootUrl());
-        
+
         for (URL rootURL : rootUrls) {
             getSessionLog().log(SessionLog.FINER, SessionLog.METADATA, "searching_for_default_mapping_file", new Object[] { ormXMLFile, rootURL }, true);
             URL ormURL = null;
@@ -467,7 +467,7 @@ public class MetadataProcessor {
             Archive par = null;
             try {
                 par = PersistenceUnitProcessor.getArchiveFactory(m_loader).createArchive(rootURL, null);
-                
+
                 if (par != null) {
                     ormURL = par.getEntryAsURL(ormXMLFile);
 
@@ -505,9 +505,9 @@ public class MetadataProcessor {
             return AbstractSessionLog.getLog();
         }
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Process the customizer for those entities and embeddables that have one
      * defined. This must be the last thing called on this processor before
      * cleanup.
@@ -515,7 +515,7 @@ public class MetadataProcessor {
     public void processCustomizers() {
         for (ClassAccessor classAccessor: m_project.getAccessorsWithCustomizer()) {
             DescriptorCustomizer customizer = (DescriptorCustomizer) MetadataHelper.getClassInstance(classAccessor.getCustomizerClass().getName(), m_loader);
-            
+
             try {
                 customizer.customize(classAccessor.getDescriptor().getClassDescriptor());
             } catch (Exception e) {
@@ -533,10 +533,10 @@ public class MetadataProcessor {
     public void processEntityMappings(PersistenceUnitProcessor.Mode mode) {
         if (mode == PersistenceUnitProcessor.Mode.ALL || mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
             m_factory = new MetadataAsmFactory(m_project.getLogger(), m_loader);
-            
-            // 1 - Process persistence unit meta data/defaults defined in ORM XML 
-            // instance documents in the persistence unit. If multiple conflicting 
-            // persistence unit meta data is found, this call will throw an 
+
+            // 1 - Process persistence unit meta data/defaults defined in ORM XML
+            // instance documents in the persistence unit. If multiple conflicting
+            // persistence unit meta data is found, this call will throw an
             // exception. The meta data we find here will be applied in the
             // initialize call below.
             for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
@@ -546,11 +546,11 @@ public class MetadataProcessor {
                 entityMappings.setLoader(m_loader);
                 entityMappings.setProject(m_project);
                 entityMappings.setMetadataFactory(m_factory);
-                
+
                 // Process the persistence unit metadata if defined.
                 entityMappings.processPersistenceUnitMetadata();
             }
-            
+
             // 2 - Initialize all the persistence unit class with the meta data we
             // processed in step 1.
             initPersistenceUnitClasses();
@@ -564,7 +564,7 @@ public class MetadataProcessor {
 
     /**
      * INTERNAL:
-     * Process the ORM metadata on this processors metadata project 
+     * Process the ORM metadata on this processors metadata project
      * (representing a single persistence-unit)
      */
     public void processORMMetadata(PersistenceUnitProcessor.Mode mode) {
@@ -572,7 +572,7 @@ public class MetadataProcessor {
             m_project.processStage1();
             m_project.processStage2();
         }
-        
+
         if (mode != PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
             m_project.processStage3(mode);
         }

@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 @Entity
 public class SmallProject extends Project {
 
-	public SmallProject() {
-		super();
-	}
+    public SmallProject() {
+        super();
+    }
 }

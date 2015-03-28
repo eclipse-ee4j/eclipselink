@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,183 +35,183 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 @SuppressWarnings("nls")
 public final class EclipseLinkSemanticValidatorTest2_4 extends AbstractSemanticValidatorTest {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLQueryContext buildQueryContext() {
-		return new EclipseLinkJPQLQueryContext(jpqlGrammar);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLQueryContext buildQueryContext() {
+        return new EclipseLinkJPQLQueryContext(jpqlGrammar);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractSemanticValidator buildValidator() {
-		return new EclipseLinkSemanticValidator(
-			buildSemanticValidatorHelper(),
-			EclipseLinkSemanticValidatorExtension.NULL_EXTENSION
-		);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractSemanticValidator buildValidator() {
+        return new EclipseLinkSemanticValidator(
+            buildSemanticValidatorHelper(),
+            EclipseLinkSemanticValidatorExtension.NULL_EXTENSION
+        );
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isComparisonTypeChecked() {
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isComparisonTypeChecked() {
+        return false;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isPathExpressionToCollectionMappingAllowed() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isPathExpressionToCollectionMappingAllowed() {
+        return true;
+    }
 
-	@Test
-	public final void test_AbstractFromClause_InvalidFirstIdentificationVariableDeclaration_07() throws Exception {
+    @Test
+    public final void test_AbstractFromClause_InvalidFirstIdentificationVariableDeclaration_07() throws Exception {
 
-		String jpqlQuery = "select e from (select e2 from Employee e2) e";
-		int startPosition = "select e from ".length();
-		int endPosition   = jpqlQuery.length();
+        String jpqlQuery = "select e from (select e2 from Employee e2) e";
+        int startPosition = "select e from ".length();
+        int endPosition   = jpqlQuery.length();
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testHasOnlyOneProblem(
-			problems,
-			AbstractFromClause_InvalidFirstIdentificationVariableDeclaration,
-			startPosition,
-			endPosition
-		);
-	}
+        testHasOnlyOneProblem(
+            problems,
+            AbstractFromClause_InvalidFirstIdentificationVariableDeclaration,
+            startPosition,
+            endPosition
+        );
+    }
 
-	@Test
-	public final void test_AbstractFromClause_InvalidFirstIdentificationVariableDeclaration_08() throws Exception {
+    @Test
+    public final void test_AbstractFromClause_InvalidFirstIdentificationVariableDeclaration_08() throws Exception {
 
-		String jpqlQuery = "select e3 from Employee e, (select e2 from Employee e2) e3, IN(e.phoneNumbers) p";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        String jpqlQuery = "select e3 from Employee e, (select e2 from Employee e2) e3, IN(e.phoneNumbers) p";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public final void test_AbstractFromClause_InvalidFirstIdentificationVariableDeclaration_09() throws Exception {
+    @Test
+    public final void test_AbstractFromClause_InvalidFirstIdentificationVariableDeclaration_09() throws Exception {
 
-		String jpqlQuery = "select EMP from TABLE('EMPLOYEE') EMP";
-		int startPosition = "select EMP from ".length();
-		int endPosition   = jpqlQuery.length();
+        String jpqlQuery = "select EMP from TABLE('EMPLOYEE') EMP";
+        int startPosition = "select EMP from ".length();
+        int endPosition   = jpqlQuery.length();
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testHasOnlyOneProblem(
-			problems,
-			AbstractFromClause_InvalidFirstIdentificationVariableDeclaration,
-			startPosition,
-			endPosition
-		);
-	}
+        testHasOnlyOneProblem(
+            problems,
+            AbstractFromClause_InvalidFirstIdentificationVariableDeclaration,
+            startPosition,
+            endPosition
+        );
+    }
 
-	@Test
-	public final void test_AbstractFromClause_InvalidFirstIdentificationVariableDeclaration_10() throws Exception {
+    @Test
+    public final void test_AbstractFromClause_InvalidFirstIdentificationVariableDeclaration_10() throws Exception {
 
-		String jpqlQuery = "select e from TABLE('EMPLOYEE') EMP, Employee e";
-		int startPosition = "select e from ".length();
-		int endPosition   = "select e from TABLE('EMPLOYEE') EMP".length();
+        String jpqlQuery = "select e from TABLE('EMPLOYEE') EMP, Employee e";
+        int startPosition = "select e from ".length();
+        int endPosition   = "select e from TABLE('EMPLOYEE') EMP".length();
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testHasOnlyOneProblem(
-			problems,
-			AbstractFromClause_InvalidFirstIdentificationVariableDeclaration,
-			startPosition,
-			endPosition
-		);
-	}
+        testHasOnlyOneProblem(
+            problems,
+            AbstractFromClause_InvalidFirstIdentificationVariableDeclaration,
+            startPosition,
+            endPosition
+        );
+    }
 
-	@Test
-	public final void test_CollectionValuedPathExpression_NotResolvable() throws Exception {
+    @Test
+    public final void test_CollectionValuedPathExpression_NotResolvable() throws Exception {
 
-		String query = "SELECT a FROM jpql.query.Address a";
-		List<JPQLQueryProblem> problems = validate(query);
-		testHasNoProblems(problems);
-	}
+        String query = "SELECT a FROM jpql.query.Address a";
+        List<JPQLQueryProblem> problems = validate(query);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public final void test_FunctionExpression_UnknownColumn_01() throws Exception {
+    @Test
+    public final void test_FunctionExpression_UnknownColumn_01() throws Exception {
 
-		String jpqlQuery  = "SELECT e FROM Employee e WHERE COLUMN('MANAGER_ID', e) = :id";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        String jpqlQuery  = "SELECT e FROM Employee e WHERE COLUMN('MANAGER_ID', e) = :id";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public final void test_FunctionExpression_UnknownColumn_02() throws Exception {
+    @Test
+    public final void test_FunctionExpression_UnknownColumn_02() throws Exception {
 
-		String jpqlQuery  = "SELECT e FROM Employee e WHERE COLUMN('MGR', e) = :id";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        String jpqlQuery  = "SELECT e FROM Employee e WHERE COLUMN('MGR', e) = :id";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public final void test_StateFieldPathExpression_NotResolvable_001() throws Exception {
+    @Test
+    public final void test_StateFieldPathExpression_NotResolvable_001() throws Exception {
 
-		// Note: EclipseLinkSemanticValidatorExtension not implemented
-		String jpqlQuery  = "select e from Employee e where e.empId in (select table('employee').id from Employee e)";
-		int startPosition = "select e from Employee e where e.empId in(select ".length();
-		int endPosition   = "select e from Employee e where e.empId in(select table('employee').id".length();
+        // Note: EclipseLinkSemanticValidatorExtension not implemented
+        String jpqlQuery  = "select e from Employee e where e.empId in (select table('employee').id from Employee e)";
+        int startPosition = "select e from Employee e where e.empId in(select ".length();
+        int endPosition   = "select e from Employee e where e.empId in(select table('employee').id".length();
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testHasOnlyOneProblem(
-			problems,
-			StateFieldPathExpression_NotResolvable,
-			startPosition,
-			endPosition
-		);
-	}
+        testHasOnlyOneProblem(
+            problems,
+            StateFieldPathExpression_NotResolvable,
+            startPosition,
+            endPosition
+        );
+    }
 
-	@Test
-	public final void test_StateFieldPathExpression_NotResolvable_002() throws Exception {
+    @Test
+    public final void test_StateFieldPathExpression_NotResolvable_002() throws Exception {
 
-		String jpqlQuery  = "Select avg(e3.c) from Employee e, (Select count(e2) as c, e2.name from Employee e2 group by e2.name) e3 where e.name = e3.name";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        String jpqlQuery  = "Select avg(e3.c) from Employee e, (Select count(e2) as c, e2.name from Employee e2 group by e2.name) e3 where e.name = e3.name";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public final void test_StateFieldPathExpression_UnknownColumn_01() throws Exception {
+    @Test
+    public final void test_StateFieldPathExpression_UnknownColumn_01() throws Exception {
 
-		// Note: EclipseLinkSemanticValidatorExtension not implemented
-		String jpqlQuery  = "select e from Employee e, table('EMPLOYEE') EMP where e.name = EMP.LAST_NAME";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        // Note: EclipseLinkSemanticValidatorExtension not implemented
+        String jpqlQuery  = "select e from Employee e, table('EMPLOYEE') EMP where e.name = EMP.LAST_NAME";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public final void test_StateFieldPathExpression_UnknownColumn_02() throws Exception {
+    @Test
+    public final void test_StateFieldPathExpression_UnknownColumn_02() throws Exception {
 
-		// Note: EclipseLinkSemanticValidatorExtension not implemented
-		String jpqlQuery  = "select e from Employee e, table('EMPLOYEE') EMP where e.name = EMP.NAME";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        // Note: EclipseLinkSemanticValidatorExtension not implemented
+        String jpqlQuery  = "select e from Employee e, table('EMPLOYEE') EMP where e.name = EMP.NAME";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public final void test_StateFieldPathExpression_UnknownColumn_03() throws Exception {
+    @Test
+    public final void test_StateFieldPathExpression_UnknownColumn_03() throws Exception {
 
-		// Note: EclipseLinkSemanticValidatorExtension not implemented
-		String jpqlQuery  = "select e from Employee e, table('ADDRESS') ADDR where (select a from Address a where a.zip = ADDR.ZIP_CODE) is not null";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        // Note: EclipseLinkSemanticValidatorExtension not implemented
+        String jpqlQuery  = "select e from Employee e, table('ADDRESS') ADDR where (select a from Address a where a.zip = ADDR.ZIP_CODE) is not null";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public final void test_StateFieldPathExpression_UnknownColumn_04() throws Exception {
+    @Test
+    public final void test_StateFieldPathExpression_UnknownColumn_04() throws Exception {
 
-		// Note: EclipseLinkSemanticValidatorExtension not implemented
-		String jpqlQuery  = "select e from Employee e, table('ADDRESS') ADDR where (select a from Address a where a.zip = ADDR.CODE) is not null";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        // Note: EclipseLinkSemanticValidatorExtension not implemented
+        String jpqlQuery  = "select e from Employee e, table('ADDRESS') ADDR where (select a from Address a where a.zip = ADDR.CODE) is not null";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -32,39 +32,39 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 public final class MWDirectMapContainerPolicy extends MWModel implements MWContainerPolicy {
 
     private DefaultingContainerClass containerClass;
-    
-	// ********** Static Methods **********
-	
-	public static XMLDescriptor buildDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.setJavaClass(MWDirectMapContainerPolicy.class);
+
+    // ********** Static Methods **********
+
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MWDirectMapContainerPolicy.class);
 
         XMLCompositeObjectMapping containerClassMapping = new XMLCompositeObjectMapping();
         containerClassMapping.setAttributeName("containerClass");
         containerClassMapping.setReferenceClass(DefaultingContainerClass.class);
         containerClassMapping.setXPath("container-class");
         descriptor.addMapping(containerClassMapping);
-        
-		return descriptor;
-	}
+
+        return descriptor;
+    }
 
 
-	// ********** Constructors **********
-	
-	/**
-	 * Default constructor - for TopLink use only.
-	 */
+    // ********** Constructors **********
 
-	private MWDirectMapContainerPolicy() {
-		super();
-	}
+    /**
+     * Default constructor - for TopLink use only.
+     */
 
-	public MWDirectMapContainerPolicy(MWRelationalDirectMapMapping parent) {
-		super(parent);
-	}
+    private MWDirectMapContainerPolicy() {
+        super();
+    }
+
+    public MWDirectMapContainerPolicy(MWRelationalDirectMapMapping parent) {
+        super(parent);
+    }
 
     // **************** Building and Initializing *************
-    
+
     protected void initialize(Node parent) {
         super.initialize(parent);
         this.containerClass = new DefaultingContainerClass(this);
@@ -74,83 +74,83 @@ public final class MWDirectMapContainerPolicy extends MWModel implements MWConta
         super.addChildrenTo(children);
         children.add(this.containerClass);
     }
-    
+
     public DefaultingContainerClass getDefaultingContainerClass() {
         return this.containerClass;
     }
-  
-	//TODO copied from MWMapContainerPolicy
-	public MWClass defaultContainerClass() {
-		if (this.getMapping().usesTransparentIndirection()) {
-			return this.defaultIndirectContainerClass();
-		}
-				
-		MWClassAttribute instanceVariable = this.getInstanceVariable();
-		MWClass attributeContainerType;
-			
-		if (instanceVariable.isValueHolder()) {
-			attributeContainerType = getInstanceVariable().getValueType();
-		}
-		else {
-			attributeContainerType = getInstanceVariable().getType();
-		}
-		
-		if (attributeContainerType.isAssignableToMap() && attributeContainerType.isInstantiable()) {
-			return attributeContainerType;
-		}
-		
+
+    //TODO copied from MWMapContainerPolicy
+    public MWClass defaultContainerClass() {
+        if (this.getMapping().usesTransparentIndirection()) {
+            return this.defaultIndirectContainerClass();
+        }
+
+        MWClassAttribute instanceVariable = this.getInstanceVariable();
+        MWClass attributeContainerType;
+
+        if (instanceVariable.isValueHolder()) {
+            attributeContainerType = getInstanceVariable().getValueType();
+        }
+        else {
+            attributeContainerType = getInstanceVariable().getType();
+        }
+
+        if (attributeContainerType.isAssignableToMap() && attributeContainerType.isInstantiable()) {
+            return attributeContainerType;
+        }
+
         return typeFor(HashMap.class);
-	}
-	
-	private MWClass defaultIndirectContainerClass() {
-		return typeFor(IndirectMap.class);
-	}
+    }
+
+    private MWClass defaultIndirectContainerClass() {
+        return typeFor(IndirectMap.class);
+    }
 
     private MWRelationalDirectMapMapping getMapping() {
         return (MWRelationalDirectMapMapping) getParent();
     }
-    
+
     private MWClassAttribute getInstanceVariable() {
         return getMapping().getInstanceVariable();
     }
-    
+
     public boolean usesSorting() {
-    	return false;
+        return false;
     }
-    
+
     public void setUsesSorting(boolean sort) {
-    	// do nothing currently only applies to set container policies
+        // do nothing currently only applies to set container policies
     }
-       
+
     public void referenceDescriptorChanged(MWDescriptor newReferenceDescriptor) {
         // this should probably never be called
     }
 
-	public MWClass getComparatorClass() {
-		return null;
-	}
+    public MWClass getComparatorClass() {
+        return null;
+    }
 
-	public void setComparatorClass(MWClass comparatorClass) {
-		// do nothing currently only applies to set container policies
-	}
+    public void setComparatorClass(MWClass comparatorClass) {
+        // do nothing currently only applies to set container policies
+    }
 
-	// **************** Problem Handling **************************************
-	
-	protected void addProblemsTo(List currentProblems) {
-		super.addProblemsTo(currentProblems);
-		MWClass containerType = this.getDefaultingContainerClass().getContainerClass();
-		if ((containerType != null) && ! containerType.mightBeAssignableToMap()) {
-			currentProblems.add(this.buildProblem(ProblemConstants.MAPPING_CONTAINER_CLASS_NOT_MAP));
-		}
-	}
-	
-	
-	// **************** Runtime Conversion ************************************
-	
-	public ContainerPolicy runtimeContainerPolicy() {
-		MappedKeyMapContainerPolicy containerPolicy = new MappedKeyMapContainerPolicy();
-		containerPolicy.setContainerClassName(getDefaultingContainerClass().getContainerClass().getName());
-		return containerPolicy;
-	}
+    // **************** Problem Handling **************************************
+
+    protected void addProblemsTo(List currentProblems) {
+        super.addProblemsTo(currentProblems);
+        MWClass containerType = this.getDefaultingContainerClass().getContainerClass();
+        if ((containerType != null) && ! containerType.mightBeAssignableToMap()) {
+            currentProblems.add(this.buildProblem(ProblemConstants.MAPPING_CONTAINER_CLASS_NOT_MAP));
+        }
+    }
+
+
+    // **************** Runtime Conversion ************************************
+
+    public ContainerPolicy runtimeContainerPolicy() {
+        MappedKeyMapContainerPolicy containerPolicy = new MappedKeyMapContainerPolicy();
+        containerPolicy.setContainerClassName(getDefaultingContainerClass().getContainerClass().getName());
+        return containerPolicy;
+    }
 
 }

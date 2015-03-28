@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,18 +50,18 @@ public class XmlMetadataCompleteTestCases extends ExternalizedMetadataTestCases 
 
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public XmlMetadataCompleteTestCases(String name) {
         super(name);
     }
-    
+
     /**
-     * This method will be responsible for schema generation, which will create the 
+     * This method will be responsible for schema generation, which will create the
      * JAXBContext we will use.  The eclipselink metadata file will be validated
      * as well.
-     * 
+     *
      */
     public void setUp() throws Exception {
         super.setUp();
@@ -70,7 +70,7 @@ public class XmlMetadataCompleteTestCases extends ExternalizedMetadataTestCases 
 
     /**
      * Test schema generation w/o oxm.xml overrides.
-     * 
+     *
      * Positive test.
      */
     public void testNoOverrideSchemaGen() {
@@ -81,11 +81,11 @@ public class XmlMetadataCompleteTestCases extends ExternalizedMetadataTestCases 
 
     /**
      * Test schema generation with oxm.xml overrides.
-     * 
+     *
      * Positive test.
      */
     public void testOverrideSchemaGen() {
-        MyStreamSchemaOutputResolver resolver = new MyStreamSchemaOutputResolver(); 
+        MyStreamSchemaOutputResolver resolver = new MyStreamSchemaOutputResolver();
         generateSchemaWithFileName(classes, CONTEXT_PATH, OXM_OVERRIDES_DOC, 2, resolver);
         // validate the schema2
         compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(XSD_DOC_OVERRIDE_1));

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Gordon Yorke - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.internal.indirection;
 
@@ -31,12 +31,12 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  * store a cached relationship and to load that relationship from a cache. This
  * functionality requires that the persistent identities of the targets can be
  * collected as database type foreign key queries are unavailable.
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.1
  */
 public class CacheBasedValueHolder extends DatabaseValueHolder {
-    
+
     protected transient ForeignReferenceMapping mapping;
     protected Object[] references;
     /** Setting to force the instantiation of the Collection on modification */
@@ -49,11 +49,11 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
         this.session = session;
         this.row = foreignKeys;
     }
-    
+
     public Object[] getCachedPKs(){
         return this.references;
     }
-    
+
 
     /**
      * Process against the UOW and attempt to load a local copy before going to the shared cache
@@ -116,7 +116,7 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
     public void setShouldAllowInstantiationDeferral(boolean shouldAllowInstantiationDeferral){
         this.shouldAllowInstantiationDeferral = shouldAllowInstantiationDeferral;
     }
-    
+
     /**
      * INTERNAL:
      * Return if add/remove should trigger instantiation or avoid.
@@ -126,6 +126,6 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
         return this.shouldAllowInstantiationDeferral;
     }
 
-    
+
 
 }

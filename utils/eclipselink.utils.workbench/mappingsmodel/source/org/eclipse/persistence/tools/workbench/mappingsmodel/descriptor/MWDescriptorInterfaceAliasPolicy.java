@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -36,133 +36,133 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
  */
 public final class MWDescriptorInterfaceAliasPolicy extends MWAbstractDescriptorPolicy {
 
-	private MWClassHandle interfaceAliasHandle;
-		public final static String INTERFACE_ALIAS_PROPERTY = "interfaceAlias";
+    private MWClassHandle interfaceAliasHandle;
+        public final static String INTERFACE_ALIAS_PROPERTY = "interfaceAlias";
 
 
-	// ********** constructors **********
+    // ********** constructors **********
 
-	private MWDescriptorInterfaceAliasPolicy() {
-		// for TopLink use only
-		super();
-	}
+    private MWDescriptorInterfaceAliasPolicy() {
+        // for TopLink use only
+        super();
+    }
 
-	public MWDescriptorInterfaceAliasPolicy(MWMappingDescriptor descriptor) {
-		super(descriptor);
-	}
-
-
-	// ********** initialization **********
-	
-	protected void initialize(Node parent) {
-		super.initialize(parent);
-		this.interfaceAliasHandle = new MWClassHandle(this, this.buildInterfaceAliasScrubber());
-	}
+    public MWDescriptorInterfaceAliasPolicy(MWMappingDescriptor descriptor) {
+        super(descriptor);
+    }
 
 
-	// ********** containment hierarchy **********
-	
-	protected void addChildrenTo(List children) {
-		super.addChildrenTo(children);
-		children.add(this.interfaceAliasHandle);
-	}
+    // ********** initialization **********
 
-	private NodeReferenceScrubber buildInterfaceAliasScrubber() {
-		return new NodeReferenceScrubber() {
-			public void nodeReferenceRemoved(Node node, MWHandle handle) {
-				MWDescriptorInterfaceAliasPolicy.this.setInterfaceAlias(null);
-			}
-			public String toString() {
-				return "MWDescriptorInterfaceAliasPolicy.buildInterfaceAliasScrubber()";
-			}
-		};
-	}
+    protected void initialize(Node parent) {
+        super.initialize(parent);
+        this.interfaceAliasHandle = new MWClassHandle(this, this.buildInterfaceAliasScrubber());
+    }
 
 
-	// ********** accessors **********
-	
-	public MWClass getInterfaceAlias() {
-		return this.interfaceAliasHandle.getType();
-	}
+    // ********** containment hierarchy **********
 
-	public void setInterfaceAlias(MWClass newInterfaceAlias) {
-		MWClass oldValue = getInterfaceAlias();
-		this.interfaceAliasHandle.setType(newInterfaceAlias);
-		// If you use an interface as an alias, it should be removed from the
-		// project.
-		if (newInterfaceAlias != null) {
-			getOwningDescriptor().getProject().removeDescriptorForType(newInterfaceAlias);
-		}
-		firePropertyChanged(INTERFACE_ALIAS_PROPERTY, oldValue, interfaceAliasHandle.getType());
-	}
+    protected void addChildrenTo(List children) {
+        super.addChildrenTo(children);
+        children.add(this.interfaceAliasHandle);
+    }
 
-
-	// ********** run-time **********
-	
-	public void adjustRuntimeDescriptor(ClassDescriptor runtimeDescriptor) {
-		MWClass interfaceAlias = getInterfaceAlias();
-		if (interfaceAlias != null) {
-			runtimeDescriptor.getInterfacePolicy().addParentInterfaceName(getInterfaceAlias().getName());
-		}
-	}
+    private NodeReferenceScrubber buildInterfaceAliasScrubber() {
+        return new NodeReferenceScrubber() {
+            public void nodeReferenceRemoved(Node node, MWHandle handle) {
+                MWDescriptorInterfaceAliasPolicy.this.setInterfaceAlias(null);
+            }
+            public String toString() {
+                return "MWDescriptorInterfaceAliasPolicy.buildInterfaceAliasScrubber()";
+            }
+        };
+    }
 
 
-	// ********** MWAbstractDescriptorPolicy implementation **********
-	
-	public MWDescriptorPolicy getPersistedPolicy() {
-		return this;
-	}
+    // ********** accessors **********
 
-	public boolean isActive() {
-		return true;
-	}
+    public MWClass getInterfaceAlias() {
+        return this.interfaceAliasHandle.getType();
+    }
 
-
-	// ********** problems **********
-	
-	protected void addProblemsTo(List problems) {
-		super.addProblemsTo(problems);
-		this.checkInterfaceAlias(problems);
-	}
-
-	private void checkInterfaceAlias(List problems) {
-		if (this.getInterfaceAlias() == null) {
-			problems.add(this.buildProblem(ProblemConstants.DESCRIPTOR_INTERFACE_ALIAS_INTERFACE_SPECIFIED));
-		}
-	}
+    public void setInterfaceAlias(MWClass newInterfaceAlias) {
+        MWClass oldValue = getInterfaceAlias();
+        this.interfaceAliasHandle.setType(newInterfaceAlias);
+        // If you use an interface as an alias, it should be removed from the
+        // project.
+        if (newInterfaceAlias != null) {
+            getOwningDescriptor().getProject().removeDescriptorForType(newInterfaceAlias);
+        }
+        firePropertyChanged(INTERFACE_ALIAS_PROPERTY, oldValue, interfaceAliasHandle.getType());
+    }
 
 
-	// ********** misc **********
+    // ********** run-time **********
 
-	public void toString(StringBuffer sb) {
-		this.getInterfaceAlias().toString(sb);
-	}
+    public void adjustRuntimeDescriptor(ClassDescriptor runtimeDescriptor) {
+        MWClass interfaceAlias = getInterfaceAlias();
+        if (interfaceAlias != null) {
+            runtimeDescriptor.getInterfacePolicy().addParentInterfaceName(getInterfaceAlias().getName());
+        }
+    }
 
 
-	// ********** TopLink methods **********
+    // ********** MWAbstractDescriptorPolicy implementation **********
 
-	public static XMLDescriptor buildDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.setJavaClass(MWDescriptorInterfaceAliasPolicy.class);
+    public MWDescriptorPolicy getPersistedPolicy() {
+        return this;
+    }
 
-		XMLCompositeObjectMapping interfaceAliasHandleMapping = new XMLCompositeObjectMapping();
-		interfaceAliasHandleMapping.setAttributeName("interfaceAliasHandle");
-		interfaceAliasHandleMapping.setSetMethodName("setInterfaceAliasHandleForTopLink");
-		interfaceAliasHandleMapping.setGetMethodName("getInterfaceAliasHandleForTopLink");
-		interfaceAliasHandleMapping.setReferenceClass(MWClassHandle.class);
-		interfaceAliasHandleMapping.setXPath("interface-alias-type-handle");
-		descriptor.addMapping(interfaceAliasHandleMapping);
-		return descriptor;
-	}
+    public boolean isActive() {
+        return true;
+    }
 
-	/**
-	 * check for null
-	 */
-	private MWClassHandle getInterfaceAliasHandleForTopLink() {
-		return (this.interfaceAliasHandle.getType() == null) ? null : this.interfaceAliasHandle;
-	}
-	private void setInterfaceAliasHandleForTopLink(MWClassHandle handle) {
-		NodeReferenceScrubber scrubber = this.buildInterfaceAliasScrubber();
-		this.interfaceAliasHandle = ((handle == null) ? new MWClassHandle(this, scrubber) : handle.setScrubber(scrubber));
-	}
+
+    // ********** problems **********
+
+    protected void addProblemsTo(List problems) {
+        super.addProblemsTo(problems);
+        this.checkInterfaceAlias(problems);
+    }
+
+    private void checkInterfaceAlias(List problems) {
+        if (this.getInterfaceAlias() == null) {
+            problems.add(this.buildProblem(ProblemConstants.DESCRIPTOR_INTERFACE_ALIAS_INTERFACE_SPECIFIED));
+        }
+    }
+
+
+    // ********** misc **********
+
+    public void toString(StringBuffer sb) {
+        this.getInterfaceAlias().toString(sb);
+    }
+
+
+    // ********** TopLink methods **********
+
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MWDescriptorInterfaceAliasPolicy.class);
+
+        XMLCompositeObjectMapping interfaceAliasHandleMapping = new XMLCompositeObjectMapping();
+        interfaceAliasHandleMapping.setAttributeName("interfaceAliasHandle");
+        interfaceAliasHandleMapping.setSetMethodName("setInterfaceAliasHandleForTopLink");
+        interfaceAliasHandleMapping.setGetMethodName("getInterfaceAliasHandleForTopLink");
+        interfaceAliasHandleMapping.setReferenceClass(MWClassHandle.class);
+        interfaceAliasHandleMapping.setXPath("interface-alias-type-handle");
+        descriptor.addMapping(interfaceAliasHandleMapping);
+        return descriptor;
+    }
+
+    /**
+     * check for null
+     */
+    private MWClassHandle getInterfaceAliasHandleForTopLink() {
+        return (this.interfaceAliasHandle.getType() == null) ? null : this.interfaceAliasHandle;
+    }
+    private void setInterfaceAliasHandleForTopLink(MWClassHandle handle) {
+        NodeReferenceScrubber scrubber = this.buildInterfaceAliasScrubber();
+        this.interfaceAliasHandle = ((handle == null) ? new MWClassHandle(this, scrubber) : handle.setScrubber(scrubber));
+    }
 }

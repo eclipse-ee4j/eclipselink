@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -66,7 +66,7 @@ public class ContentTypeTestCases extends TestCase {
             ConversionException ce = (ConversionException) ex.getLinkedException();
             XMLMarshalException me = (XMLMarshalException) ce.getInternalException();
             if (me.getErrorCode() != XMLMarshalException.NO_ENCODER_FOR_MIME_TYPE) {
-                throw ex; 
+                throw ex;
             } else {
                 return;
             }
@@ -92,7 +92,7 @@ public class ContentTypeTestCases extends TestCase {
             ConversionException ce = (ConversionException) ex.getLinkedException();
             XMLMarshalException me = (XMLMarshalException) ce.getInternalException();
             if (me.getErrorCode() != XMLMarshalException.NO_ENCODER_FOR_MIME_TYPE) {
-                throw ex; 
+                throw ex;
             } else {
                 return;
             }
@@ -118,7 +118,7 @@ public class ContentTypeTestCases extends TestCase {
             ConversionException ce = (ConversionException) ex.getLinkedException();
             XMLMarshalException me = (XMLMarshalException) ce.getInternalException();
             if (me.getErrorCode() != XMLMarshalException.NO_ENCODER_FOR_MIME_TYPE) {
-                throw ex; 
+                throw ex;
             } else {
                 return;
             }

@@ -692,11 +692,11 @@
                   <type-mappings>
                      <type-mapping>
                         <object-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Male</object-value>
-						<data-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">M</data-value>
+                        <data-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">M</data-value>
                      </type-mapping>
                      <type-mapping>
                         <object-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Female</object-value>
-						<data-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">F</data-value>
+                        <data-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">F</data-value>
                      </type-mapping>
                   </type-mappings>
                </converter>

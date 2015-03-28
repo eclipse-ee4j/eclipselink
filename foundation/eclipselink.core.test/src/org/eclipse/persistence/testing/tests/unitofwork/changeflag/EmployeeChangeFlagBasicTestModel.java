@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork.changeflag;
 
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
@@ -154,7 +154,7 @@ public class EmployeeChangeFlagBasicTestModel extends EmployeeBasicTestModel {
         suite.addTest(new ReadAllTest(LargeProject.class, 5));
         suite.addTest(new ReadAllTest(SmallProject.class, 10));
 
-        suite.addTest(new ReadAllCallTest(Employee.class, 12, 
+        suite.addTest(new ReadAllCallTest(Employee.class, 12,
                                           new SQLCall("SELECT  t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER, t0.END_DATE, t0.START_DATE, t0.MANAGER_ID, t0.END_TIME, t0.START_TIME, t0.ADDR_ID FROM EMPLOYEE t0, SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID")));
 
         return suite;
@@ -178,26 +178,26 @@ public class EmployeeChangeFlagBasicTestModel extends EmployeeBasicTestModel {
 
         Employee employee = (Employee)manager.getObject(employeeClass, "0001");
 
-        suite.addTest(new ReadObjectCallTest(employeeClass, 
-                                             new SQLCall("SELECT t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER, t0.END_DATE, t0.START_DATE, t0.MANAGER_ID, t0.END_TIME, t0.START_TIME, t0.ADDR_ID FROM EMPLOYEE t0, SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID AND t0.F_NAME = '" + 
-                                                         employee.getFirstName() + "' AND t0.L_NAME = '" + 
+        suite.addTest(new ReadObjectCallTest(employeeClass,
+                                             new SQLCall("SELECT t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER, t0.END_DATE, t0.START_DATE, t0.MANAGER_ID, t0.END_TIME, t0.START_TIME, t0.ADDR_ID FROM EMPLOYEE t0, SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID AND t0.F_NAME = '" +
+                                                         employee.getFirstName() + "' AND t0.L_NAME = '" +
                                                          employee.getLastName() + "'")));
         employee = (Employee)manager.getObject(employeeClass, "0002");
-        suite.addTest(new ReadObjectCallTest(employeeClass, 
-                                             new SQLCall("SELECT  t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER, t0.END_DATE, t0.START_DATE, t0.MANAGER_ID, t0.END_TIME, t0.START_TIME, t0.ADDR_ID FROM EMPLOYEE t0, SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID AND t0.F_NAME = '" + 
-                                                         employee.getFirstName() + "' AND t0.L_NAME = '" + 
+        suite.addTest(new ReadObjectCallTest(employeeClass,
+                                             new SQLCall("SELECT  t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER, t0.END_DATE, t0.START_DATE, t0.MANAGER_ID, t0.END_TIME, t0.START_TIME, t0.ADDR_ID FROM EMPLOYEE t0, SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID AND t0.F_NAME = '" +
+                                                         employee.getFirstName() + "' AND t0.L_NAME = '" +
                                                          employee.getLastName() + "'")));
         employee = (Employee)manager.getObject(employeeClass, "0003");
-        suite.addTest(new ReadObjectCallTest(employeeClass, 
-                                             new SQLCall("SELECT  t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER, t0.END_DATE, t0.START_DATE, t0.MANAGER_ID, t0.END_TIME, t0.START_TIME, t0.ADDR_ID FROM EMPLOYEE t0, SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID AND t0.F_NAME = '" + 
-                                                         employee.getFirstName() + "' AND t0.L_NAME = '" + 
+        suite.addTest(new ReadObjectCallTest(employeeClass,
+                                             new SQLCall("SELECT  t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER, t0.END_DATE, t0.START_DATE, t0.MANAGER_ID, t0.END_TIME, t0.START_TIME, t0.ADDR_ID FROM EMPLOYEE t0, SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID AND t0.F_NAME = '" +
+                                                         employee.getFirstName() + "' AND t0.L_NAME = '" +
                                                          employee.getLastName() + "'")));
 
 
-        org.eclipse.persistence.testing.models.employee.domain.Project project = 
+        org.eclipse.persistence.testing.models.employee.domain.Project project =
             (org.eclipse.persistence.testing.models.employee.domain.Project)manager.getObject(largeProjectClass, "0001");
         ReadObjectTest test = new ReadObjectTest(project);
-        test.setQuery(new org.eclipse.persistence.queries.ReadObjectQuery(org.eclipse.persistence.testing.models.employee.domain.Project.class, 
+        test.setQuery(new org.eclipse.persistence.queries.ReadObjectQuery(org.eclipse.persistence.testing.models.employee.domain.Project.class,
                                                                         new org.eclipse.persistence.expressions.ExpressionBuilder().get("id").equal(project.getId())));
         suite.addTest(test);
 

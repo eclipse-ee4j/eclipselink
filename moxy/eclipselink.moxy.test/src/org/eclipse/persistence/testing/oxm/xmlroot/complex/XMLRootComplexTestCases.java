@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.xmlroot.complex;
 
 import java.io.InputStream;
@@ -71,7 +71,7 @@ public class XMLRootComplexTestCases extends XMLMappingTestCases {
         java.net.URL url = ClassLoader.getSystemResource(getXMLResource());
         Object testObject = xmlUnmarshaller.unmarshal(url, Person.class);
         xmlToObjectTest(testObject);
-    }    
+    }
 
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
@@ -87,7 +87,7 @@ public class XMLRootComplexTestCases extends XMLMappingTestCases {
                 xmlToObjectTest(testObject);
         }
     }
-    
+
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -101,7 +101,7 @@ public class XMLRootComplexTestCases extends XMLMappingTestCases {
                 instream.close();
                 xmlToObjectTest(testObject);
         }
-    }    
+    }
 
     public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**testXMLDocumentToObject**");
@@ -114,7 +114,7 @@ public class XMLRootComplexTestCases extends XMLMappingTestCases {
             XMLRoot controlObj = (XMLRoot)getReadControlObject();
             XMLRoot testObj = (XMLRoot)testObject;
 
-            this.assertEquals(controlObj.getLocalName(), testObj.getLocalName());            
+            this.assertEquals(controlObj.getLocalName(), testObj.getLocalName());
             this.assertEquals(controlObj.getNamespaceURI(), testObj.getNamespaceURI());
             this.assertEquals(controlObj.getObject(), testObj.getObject());
         } else {

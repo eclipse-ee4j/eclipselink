@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.isolatedsession;
 
 import java.util.*;
@@ -20,7 +20,7 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.exceptions.*;
 
-// 05/28/2008-1.0M8 Andrei Ilitchev 
+// 05/28/2008-1.0M8 Andrei Ilitchev
 //   - 224964: Provide support for Proxy Authentication through JPA.
 //      Changed behaviour of ExclusiveIsolatedClientSession - it no longer throws exception
 //      on attempt to instantiate value holder for isolated object when the session is closed,
@@ -34,13 +34,13 @@ public class ExclusiveConnectionClosedExceptionTest extends AutoVerifyTestCase {
     class Listener extends SessionEventAdapter {
         public void postAcquireExclusiveConnection(SessionEvent event) {
             numAcquireExclusive++;
-            // Bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception 
+            // Bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception
             event.getSession().executeNonSelectingSQL("UPDATE ISOLATED_EMPLOYEE SET F_NAME = 'A' WHERE EMP_ID = 0");
         }
-    
+
         public void preReleaseExclusiveConnection(SessionEvent event) {
             numReleaseExclusive++;
-            // Bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception 
+            // Bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception
             event.getSession().executeNonSelectingSQL("UPDATE EMPLOYEE SET F_NAME = 'A' WHERE EMP_ID = 0");
         }
     }

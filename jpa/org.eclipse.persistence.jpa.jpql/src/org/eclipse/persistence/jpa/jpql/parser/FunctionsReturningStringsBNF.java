@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,29 +28,29 @@ package org.eclipse.persistence.jpa.jpql.parser;
 @SuppressWarnings("nls")
 public final class FunctionsReturningStringsBNF extends JPQLQueryBNF {
 
-	/**
-	 * The unique identifier of this BNF rule.
-	 */
-	public static final String ID = "functions_returning_strings";
+    /**
+     * The unique identifier of this BNF rule.
+     */
+    public static final String ID = "functions_returning_strings";
 
-	/**
-	 * Creates a new <code>FunctionsReturningStringsBNF</code>.
-	 */
-	public FunctionsReturningStringsBNF() {
-		super(ID);
-	}
+    /**
+     * Creates a new <code>FunctionsReturningStringsBNF</code>.
+     */
+    public FunctionsReturningStringsBNF() {
+        super(ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initialize() {
-		super.initialize();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initialize() {
+        super.initialize();
 
-		registerExpressionFactory(ConcatExpressionFactory.ID);
-		registerExpressionFactory(SubstringExpressionFactory.ID);
-		registerExpressionFactory(TrimExpressionFactory.ID);
-		registerExpressionFactory(LowerExpressionFactory.ID);
-		registerExpressionFactory(UpperExpressionFactory.ID);
-	}
+        registerExpressionFactory(ConcatExpressionFactory.ID);
+        registerExpressionFactory(SubstringExpressionFactory.ID);
+        registerExpressionFactory(TrimExpressionFactory.ID);
+        registerExpressionFactory(LowerExpressionFactory.ID);
+        registerExpressionFactory(UpperExpressionFactory.ID);
+    }
 }

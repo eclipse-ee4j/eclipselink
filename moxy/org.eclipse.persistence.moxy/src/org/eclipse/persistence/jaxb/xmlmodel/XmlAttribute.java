@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,9 +22,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -55,8 +55,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -113,13 +113,13 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlAbstractNullPolicy property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link XmlNullPolicy }{@code >}
      *     {@link JAXBElement }{@code <}{@link XmlAbstractNullPolicy }{@code >}
      *     {@link JAXBElement }{@code <}{@link XmlIsSetNullPolicy }{@code >}
-     *     
+     *
      */
     public JAXBElement<? extends XmlAbstractNullPolicy> getXmlAbstractNullPolicy() {
         return xmlAbstractNullPolicy;
@@ -127,13 +127,13 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlAbstractNullPolicy property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link XmlNullPolicy }{@code >}
      *     {@link JAXBElement }{@code <}{@link XmlAbstractNullPolicy }{@code >}
      *     {@link JAXBElement }{@code <}{@link XmlIsSetNullPolicy }{@code >}
-     *     
+     *
      */
     public void setXmlAbstractNullPolicy(JAXBElement<? extends XmlAbstractNullPolicy> value) {
         this.xmlAbstractNullPolicy = ((JAXBElement<? extends XmlAbstractNullPolicy> ) value);
@@ -141,11 +141,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlAccessMethods property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public XmlAccessMethods getXmlAccessMethods() {
         return xmlAccessMethods;
@@ -153,11 +153,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlAccessMethods property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public void setXmlAccessMethods(XmlAccessMethods value) {
         this.xmlAccessMethods = value;
@@ -165,11 +165,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlJavaTypeAdapter property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlJavaTypeAdapter }
-     *     
+     *
      */
     public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
         return xmlJavaTypeAdapter;
@@ -177,11 +177,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlJavaTypeAdapter property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlJavaTypeAdapter }
-     *     
+     *
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
         this.xmlJavaTypeAdapter = value;
@@ -189,11 +189,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlProperties property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public XmlProperties getXmlProperties() {
         return xmlProperties;
@@ -201,11 +201,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlProperties property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
@@ -213,11 +213,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlSchemaType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlSchemaType }
-     *     
+     *
      */
     public XmlSchemaType getXmlSchemaType() {
         return xmlSchemaType;
@@ -225,11 +225,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlSchemaType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlSchemaType }
-     *     
+     *
      */
     public void setXmlSchemaType(XmlSchemaType value) {
         this.xmlSchemaType = value;
@@ -237,11 +237,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the name property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getName() {
         if (name == null) {
@@ -253,11 +253,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the name property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setName(String value) {
         this.name = value;
@@ -265,11 +265,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the namespace property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getNamespace() {
         if (namespace == null) {
@@ -281,32 +281,32 @@ public class XmlAttribute
 
     /**
      * Sets the value of the namespace property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setNamespace(String value) {
         this.namespace = value;
     }
-    
+
     /**
      * Indicates if the required flag was set via external metadata.
-     * 
+     *
      * @return
      */
     public boolean isSetRequired() {
         return required != null;
     }
-    
+
     /**
      * Gets the value of the required property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isRequired() {
         if (required == null) {
@@ -318,11 +318,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the required property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setRequired(Boolean value) {
         this.required = value;
@@ -330,11 +330,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlId property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isXmlId() {
         if (xmlId == null) {
@@ -346,11 +346,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlId property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setXmlId(Boolean value) {
         this.xmlId = value;
@@ -358,11 +358,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlIdref property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isXmlIdref() {
         if (xmlIdref == null) {
@@ -374,11 +374,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlIdref property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setXmlIdref(Boolean value) {
         this.xmlIdref = value;
@@ -386,11 +386,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlKey property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isXmlKey() {
         if (xmlKey == null) {
@@ -402,11 +402,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlKey property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setXmlKey(Boolean value) {
         this.xmlKey = value;
@@ -414,11 +414,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlList property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isXmlList() {
         if (xmlList == null) {
@@ -430,11 +430,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlList property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setXmlList(Boolean value) {
         this.xmlList = value;
@@ -442,11 +442,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlInlineBinaryData property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isXmlInlineBinaryData() {
         if (xmlInlineBinaryData == null) {
@@ -458,11 +458,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlInlineBinaryData property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setXmlInlineBinaryData(Boolean value) {
         this.xmlInlineBinaryData = value;
@@ -470,11 +470,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlAttachmentRef property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isXmlAttachmentRef() {
         if (xmlAttachmentRef == null) {
@@ -486,11 +486,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlAttachmentRef property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setXmlAttachmentRef(Boolean value) {
         this.xmlAttachmentRef = value;
@@ -498,11 +498,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlMimeType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getXmlMimeType() {
         return xmlMimeType;
@@ -510,11 +510,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlMimeType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setXmlMimeType(String value) {
         this.xmlMimeType = value;
@@ -522,11 +522,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the readOnly property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isReadOnly() {
         if (readOnly == null) {
@@ -538,19 +538,19 @@ public class XmlAttribute
 
     /**
      * Sets the value of the readOnly property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setReadOnly(Boolean value) {
         this.readOnly = value;
     }
-    
+
     /**
      * Indicates if the isReadOnly flag was set.
-     * 
+     *
      * @return
      */
     public boolean isSetReadOnly() {
@@ -559,11 +559,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the writeOnly property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isWriteOnly() {
         if (writeOnly == null) {
@@ -575,11 +575,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the writeOnly property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setWriteOnly(Boolean value) {
         this.writeOnly = value;
@@ -587,7 +587,7 @@ public class XmlAttribute
 
     /**
      * Indicates if the isWriteOnly flag was set.
-     * 
+     *
      * @return
      */
     public boolean isSetWriteOnly() {
@@ -596,11 +596,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the type property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getType() {
         if (type == null) {
@@ -612,11 +612,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the type property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setType(String value) {
         this.type = value;
@@ -624,11 +624,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the xmlPath property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getXmlPath() {
         return xmlPath;
@@ -636,11 +636,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the xmlPath property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setXmlPath(String value) {
         this.xmlPath = value;
@@ -648,11 +648,11 @@ public class XmlAttribute
 
     /**
      * Gets the value of the containerType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getContainerType() {
         if (containerType == null) {
@@ -664,11 +664,11 @@ public class XmlAttribute
 
     /**
      * Sets the value of the containerType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setContainerType(String value) {
         this.containerType = value;

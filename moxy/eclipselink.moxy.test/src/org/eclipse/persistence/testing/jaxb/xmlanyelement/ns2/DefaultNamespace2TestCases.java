@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,9 +43,9 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = Root.class;
-        setClasses(classes);       
+        setClasses(classes);
     }
-    
+
        @Override
     protected Root getControlObject() {
         Root root = new Root();
@@ -69,19 +69,19 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
 
            return root;
        }
-       
+
        @Override
        protected Root getJSONReadControlObject() {
            Root root = new Root();
 
-           XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();           
-           Element element = xmlPlatform.createDocument().createElement("childelem");           
+           XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
+           Element element = xmlPlatform.createDocument().createElement("childelem");
            root.setChild(element);
 
            return root;
        }
-       
-	   public void testObjectToXMLStreamWriterRepairing() throws Exception {
+
+       public void testObjectToXMLStreamWriterRepairing() throws Exception {
         if(XML_OUTPUT_FACTORY != null) {
             StringWriter writer = new StringWriter();
 
@@ -104,18 +104,18 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
-            } 
+            }
             if(expectsMarshalException){
-        		fail("An exception should have occurred but didn't.");
-        		return;
-        	}
+                fail("An exception should have occurred but didn't.");
+                return;
+            }
 
             streamWriter.flush();
             int sizeAfter = getNamespaceResolverSize(desc);
 
             assertEquals(sizeBefore, sizeAfter);
             Document testDocument = getTestDocument(writer.toString());
-            
+
             writer.close();
             objectToXMLDocumentTest(testDocument);
         }
@@ -145,7 +145,7 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
                } catch(Exception e) {
                    assertMarshalException(e);
                    return;
-               } 
+               }
                if(expectsMarshalException){
                    fail("An exception should have occurred but didn't.");
                    return;
@@ -155,7 +155,7 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
                int sizeAfter = getNamespaceResolverSize(desc);
 
                assertEquals(sizeBefore, sizeAfter);
-              
+
                Document testDocument = getTestDocument(writer.toString());
                writer.close();
                objectToXMLDocumentTest(testDocument);
@@ -163,5 +163,5 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
        }
 
 
-       
+
 }

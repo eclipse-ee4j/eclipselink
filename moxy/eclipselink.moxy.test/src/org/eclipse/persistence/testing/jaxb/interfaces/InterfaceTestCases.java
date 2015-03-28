@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -49,7 +49,7 @@ public class InterfaceTestCases extends OXTestCase {
         assertNotNull(customer.getPhoneNumbers());
         assertEquals(2, customer.getPhoneNumbers().size());
         assertEquals("cell", customer.getPhoneNumbers().get(1).getType());
-        
+
         StringWriter writer = new StringWriter();
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);

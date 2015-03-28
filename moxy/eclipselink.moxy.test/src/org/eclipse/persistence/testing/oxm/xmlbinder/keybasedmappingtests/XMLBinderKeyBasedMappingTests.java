@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.xmlbinder.keybasedmappingtests;
 
 import java.io.*;
@@ -60,21 +60,21 @@ public class XMLBinderKeyBasedMappingTests extends OXTestCase {
     public void testUpdateXMLValue() throws Exception {
         Document sourceDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/keybasedmappingtests/updatevalue_before.xml");
         Document controlDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/keybasedmappingtests/updatevalue_after.xml");
-        
+
         //Switch the employee's Address so the keys get updated
         Root root = (Root)binder.unmarshal(sourceDocument);
         Employee emp = root.employee;
         emp.address = (Address)root.addresses.toArray()[1];
-        
+
         binder.updateXML(emp);
         assertXMLIdentical(controlDocument, binder.getXMLNode(root).getOwnerDocument());
     }
 
     public void testUpdateXMLCollection() throws Exception {
-        
+
         Document sourceDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/keybasedmappingtests/updatecollection_before.xml");
         Document controlDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/keybasedmappingtests/updatecollection_after.xml");
-        
+
         Root root = (Root)binder.unmarshal(sourceDocument);
         //Swap the order of addresses.
         Vector newAddrs = new Vector(root.addresses.size());
@@ -86,17 +86,17 @@ public class XMLBinderKeyBasedMappingTests extends OXTestCase {
         binder.updateXML(root);
         assertXMLIdentical(controlDocument, binder.getXMLNode(root).getOwnerDocument());
     }
-    
+
     public void testNullAddress() throws Exception {
-        //Read in an employee with a null address, set the address and verify 
+        //Read in an employee with a null address, set the address and verify
         //The keys are written out properly.
         Document sourceDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/keybasedmappingtests/nulladdress_before.xml");
         Document controlDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/keybasedmappingtests/nulladdress_after.xml");
-        
+
         Root root = (Root)binder.unmarshal(sourceDocument);
         root.employee.address = (Address)root.addresses.toArray()[0];
         binder.updateXML(root.employee);
-        
+
         assertXMLIdentical(controlDocument, binder.getXMLNode(root).getOwnerDocument());
     }
     public void testUpdateObject() throws Exception {
@@ -105,11 +105,11 @@ public class XMLBinderKeyBasedMappingTests extends OXTestCase {
 
         Root root = (Root)binder.unmarshal(sourceDocument);
         Employee emp = root.employee;
-        
+
         //change the employee's addr id in the doc and then update to ensure the correct
         //address is present.
         Node employeeNode = binder.getXMLNode(emp);
-        
+
         NodeList addressIds = ((Element)employeeNode).getElementsByTagName("address-id");
         addressIds.item(0).getFirstChild().setNodeValue("11199");
         log("Employee:" + emp);
@@ -117,11 +117,11 @@ public class XMLBinderKeyBasedMappingTests extends OXTestCase {
         binder.updateObject(binder.getXMLNode(root));
         log("Employee:" + emp);
         log("Address:" + emp.address);
-        
+
         assertTrue(emp.address.equals(controlemp.address));
 
     }
-    
+
     public Employee getControlEmployee() {
         Employee emp = new Employee();
         emp.id = "222";
@@ -129,7 +129,7 @@ public class XMLBinderKeyBasedMappingTests extends OXTestCase {
         emp.address = getControlAddress();
         return emp;
     }
-    
+
     public Address getControlAddress() {
         Address addr = new Address();
         addr.id = "11199";
@@ -139,7 +139,7 @@ public class XMLBinderKeyBasedMappingTests extends OXTestCase {
         addr.zip = "Y0Y0Y0";
         return addr;
     }
-    
+
     private Document parse(String resource) throws Exception {
         InputStream stream = getClass().getClassLoader().getResourceAsStream(resource);
         Document document = parser.parse(stream);

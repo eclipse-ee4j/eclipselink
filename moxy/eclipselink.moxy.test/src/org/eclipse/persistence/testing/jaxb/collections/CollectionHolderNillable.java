@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class CollectionHolderNillable {
 
-	@XmlElement(nillable = true)
+    @XmlElement(nillable = true)
     protected List<Integer> collection1;
 
     @XmlList
@@ -104,11 +104,11 @@ public class CollectionHolderNillable {
             if(map2 == null){
                 return false;
             }
-          
+
             return map1.equals(map2);
         }
     }
-    
+
      private boolean compareCollections(Collection compareList1, Collection compareList2){
          if(compareList1 == null){
              return compareList2 == null;
@@ -121,7 +121,7 @@ public class CollectionHolderNillable {
              }
              Iterator iter1 = compareList1.iterator();
              Iterator iter2 = compareList2.iterator();
-             
+
              while(iter1.hasNext()){
                  if(!(compareItems(iter1.next(), iter2.next()))){
                      return false;
@@ -131,9 +131,9 @@ public class CollectionHolderNillable {
          }
 
      }
-     
+
      private boolean compareItems(Object item1, Object item2){
-         
+
          if(item1 instanceof JAXBElement){
              if(!(item2 instanceof JAXBElement)){
                  return false;

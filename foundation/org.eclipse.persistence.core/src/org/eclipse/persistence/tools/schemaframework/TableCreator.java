@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     02/04/2013-2.5 Guy Pelletier 
+ *     02/04/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.util.*;
@@ -37,7 +37,7 @@ import org.eclipse.persistence.sessions.Session;
 public class TableCreator {
     /** Flag to disable table existence check before create. */
     public static boolean CHECK_EXISTENCE = true;
-    
+
     protected List<TableDefinition> tableDefinitions;
     protected String name;
     protected boolean ignoreDatabaseException; //if true, DDL generation will continue even if exceptions occur
@@ -57,7 +57,7 @@ public class TableCreator {
     public void addTableDefinition(TableDefinition tableDefinition) {
         this.tableDefinitions.add(tableDefinition);
     }
-    
+
     /**
      * Add a set of tables.
      */
@@ -80,7 +80,7 @@ public class TableCreator {
     public void createConstraints(DatabaseSession session, SchemaManager schemaManager) {
         createConstraints(session, schemaManager, true);
     }
-    
+
     /**
      * Create constraints.
      */
@@ -105,7 +105,7 @@ public class TableCreator {
                 }
             }
         }
-        
+
         for (TableDefinition table : tables) {
             try {
                 schemaManager.createForeignConstraints(table);
@@ -116,7 +116,7 @@ public class TableCreator {
             }
         }
     }
-    
+
     /**
      * This creates the tables on the database.
      * If the table already exists this will fail.
@@ -173,7 +173,7 @@ public class TableCreator {
                 }
             }
         }
-        
+
         createConstraints(missingTables, session, schemaManager, false);
 
         schemaManager.createOrReplaceSequences(createSequenceTables, createSequences);
@@ -305,7 +305,7 @@ public class TableCreator {
     public void replaceTables(DatabaseSession session, SchemaManager schemaManager) {
         replaceTables(session, schemaManager, true, true);
     }
-    
+
     /**
      * Recreate the tables on the database.
      * This will drop the tables if they exist and recreate them.
@@ -313,7 +313,7 @@ public class TableCreator {
     public void replaceTables(DatabaseSession session, SchemaManager schemaManager, boolean createSequenceTables) {
         replaceTables(session, schemaManager, createSequenceTables, false);
     }
-    
+
     /**
      * Recreate the tables on the database.
      * This will drop the tables if they exist and recreate them.
@@ -321,7 +321,7 @@ public class TableCreator {
     public void replaceTables(DatabaseSession session, SchemaManager schemaManager, boolean createSequenceTables, boolean createSequences) {
         replaceTablesAndConstraints(schemaManager, session, createSequenceTables, createSequences);
     }
-    
+
     protected void replaceTablesAndConstraints(SchemaManager schemaManager, DatabaseSession session, boolean createSequenceTables, boolean createSequences) {
         buildConstraints(schemaManager, true);
         boolean ignore = shouldIgnoreDatabaseException();
@@ -329,15 +329,15 @@ public class TableCreator {
         try {
             dropTables(session, schemaManager, false);
         } finally {
-            setIgnoreDatabaseException(ignore);            
+            setIgnoreDatabaseException(ignore);
         }
         createTables(session, schemaManager, false, false, createSequenceTables, createSequences);
     }
-    
+
     protected void replaceTablesAndConstraints(SchemaManager schemaManager, DatabaseSession session) {
         replaceTables(session, schemaManager, false, false);
     }
-    
+
     /**
      * Convert any field constraint to constraint objects.
      */
@@ -371,7 +371,7 @@ public class TableCreator {
     }
 
     /**
-     * Set flag whether DatabaseException should be ignored. 
+     * Set flag whether DatabaseException should be ignored.
      */
     public void setIgnoreDatabaseException(boolean ignoreDatabaseException) {
         this.ignoreDatabaseException = ignoreDatabaseException;
@@ -380,7 +380,7 @@ public class TableCreator {
     /**
      * This returns the Sequence Table's qualified name, without delimiting.
      * @param session
-     * @return the qualified table name  
+     * @return the qualified table name
      */
     protected String getSequenceTableName(Session session) {
         String sequenceTableName = null;
@@ -392,17 +392,17 @@ public class TableCreator {
         }
         return sequenceTableName;
     }
-    
+
     /**
      * Create or extend the tables on the database.
      * This will alter existing tables to add missing fields or create the table otherwise.
-     * It will also create Sequences tables and objects. 
+     * It will also create Sequences tables and objects.
      */
     public void extendTables(DatabaseSession session, SchemaManager schemaManager) {
         extendTablesAndConstraints(schemaManager, session);
         schemaManager.createOrReplaceSequences(true, true);
     }
-    
+
     protected void extendTablesAndConstraints(SchemaManager schemaManager, DatabaseSession session) {
         buildConstraints(schemaManager, true);
         boolean ignore = shouldIgnoreDatabaseException();
@@ -410,10 +410,10 @@ public class TableCreator {
         try {
             extendTables(session, schemaManager, false);
         } finally {
-            setIgnoreDatabaseException(ignore);            
+            setIgnoreDatabaseException(ignore);
         }
     }
-    
+
     /**
      * This creates/extends the tables on the database.
      */
@@ -445,14 +445,14 @@ public class TableCreator {
                     //Assume the table exists, so lookup the column info
 
                     //While SQL is case insensitive, getColumnInfo is and will not return the table info unless the name is passed in
-                    //as it is stored internally.  
+                    //as it is stored internally.
                     String tableName = table.getTable()==null? table.getName(): table.getTable().getName();
                     boolean usesDelimiting = (table.getTable()!=null && table.getTable().shouldUseDelimiters());
                     List<DatabaseRecord> columnInfo = null;
 
                     //I need the actual table catalog, schema and tableName for getTableInfo.
                     columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
-                    
+
                     if (!usesDelimiting && (columnInfo == null || columnInfo.isEmpty()) ) {
                         tableName = tableName.toUpperCase();
                         columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);

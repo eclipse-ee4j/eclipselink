@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.DataObject;
@@ -74,7 +74,7 @@ public class SDODataObjectOpenContentBug6011530TestCases extends SDOTestCase {
         assertEquals(childDataObject.getType(), openProp.getType());
 
     }
-    
+
      public void testSetDefineOpenContentManyProperty() throws Exception {
         List value = new ArrayList();
         value.add(childDataObject);
@@ -86,22 +86,22 @@ public class SDODataObjectOpenContentBug6011530TestCases extends SDOTestCase {
         assertTrue(openProp.isMany());
         assertEquals(childDataObject.getType(), openProp.getType());
     }
-    
+
       public void testSetDefineOpenContentManyPropertyContainmentChild() throws Exception {
         SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
 
         List value = new ArrayList();
         Type addressSDOType = typeHelper.getType("my.uri", "address");
         DataObject childDataObjectContainment = dataFactory.create(addressSDOType);
-        
+
         DataObject someOther = dataFactory.create(typeType);
         someOther.set("name", "someOther");
         someOther.set("uri", "my.uri");
-        addProperty(someOther,"test", addressSDOType, true, false, true);        
+        addProperty(someOther,"test", addressSDOType, true, false, true);
         Type someOtherParentType = typeHelper.define(someOther);
         DataObject someOtherParentDO = dataFactory.create(someOtherParentType);
         someOtherParentDO.set("test", childDataObjectContainment);
-                
+
         value.add(childDataObjectContainment);
         rootDataObject.set("addressOpenContent", value);
         Property openProp = rootDataObject.getInstanceProperty("addressOpenContent");
@@ -111,7 +111,7 @@ public class SDODataObjectOpenContentBug6011530TestCases extends SDOTestCase {
         assertTrue(openProp.isMany());
         assertEquals(childDataObject.getType(), openProp.getType());
     }
-    
+
     public void testSetDefineOpenContentManySimpleProperty() throws Exception {
         List value = new ArrayList();
         value.add(new Integer(4));
@@ -122,26 +122,26 @@ public class SDODataObjectOpenContentBug6011530TestCases extends SDOTestCase {
         assertFalse(openProp.isContainment());
         assertTrue(openProp.isMany());
         assertEquals(SDOConstants.SDO_INTOBJECT, openProp.getType());
-        
+
         assertTrue(rootDataObject.isSet("addressOpenContent"));
         rootDataObject.unset("addressOpenContent");
         assertFalse(rootDataObject.isSet("addressOpenContent"));
     }
-    
+
      public void testSetDefineOpenContentManySimplePropertyEmpty() throws Exception {
-        List value = new ArrayList();        
+        List value = new ArrayList();
         rootDataObject.set("addressOpenContent", value);
         Property openProp = rootDataObject.getInstanceProperty("addressOpenContent");
         assertNull(openProp);
-        
+
     }
-    
+
      public void testSetDefineOpenContentManySimplePropertyNullInList() throws Exception {
-        List value = new ArrayList();        
+        List value = new ArrayList();
         value.add(null);
         rootDataObject.set("addressOpenContent", value);
         Property openProp = rootDataObject.getInstanceProperty("addressOpenContent");
-        assertNull(openProp);        
+        assertNull(openProp);
     }
 
     public void testSetDefineOpenContentContained() throws Exception {
@@ -181,7 +181,7 @@ public class SDODataObjectOpenContentBug6011530TestCases extends SDOTestCase {
         assertEquals(SDOConstants.SDO_STRING, openProp.getType());
 
     }
-    
+
     public void testSetDefineOpenContentSimple2() throws Exception {
         BigInteger value = new BigInteger("123");
         rootDataObject.set("stringOpenContent", value);
@@ -192,5 +192,5 @@ public class SDODataObjectOpenContentBug6011530TestCases extends SDOTestCase {
         assertFalse(openProp.isMany());
         assertEquals(SDOConstants.SDO_INTEGER, openProp.getType());
     }
-        
+
 }

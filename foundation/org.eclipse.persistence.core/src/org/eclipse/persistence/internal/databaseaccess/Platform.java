@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.*;
@@ -33,7 +33,7 @@ import org.eclipse.persistence.sequencing.Sequence;
  */
 public interface Platform extends CorePlatform<ConversionManager>, Serializable, Cloneable {
     public Object clone();
-    
+
     /**
      * Convert the object to the appropriate type by invoking the appropriate
      * ConversionManager method
@@ -93,19 +93,19 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
     public boolean isDBase();
 
     public boolean isHANA();
-    
+
     public boolean isHSQL();
 
     public boolean isInformix();
 
     public boolean isMaxDB();
-    
+
     public boolean isMySQL();
 
     public boolean isODBC();
 
     public boolean isOracle();
-    
+
     public boolean isOracle9();
 
     public boolean isPointBase();
@@ -119,11 +119,11 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
     public boolean isSymfoware();
 
     public boolean isTimesTen();
-    
+
     public boolean isTimesTen7();
-    
+
     public boolean isPostgreSQL();
-    
+
     /**
      * Allow the platform to initialize itself after login/init.
      */
@@ -154,7 +154,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     * 
+     *
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the end of the value.
      */
@@ -162,12 +162,12 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     * 
+     *
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the start of the value.
      */
     public String getStartDelimiter();
-    
+
     /**
      * Allow for the platform to handle the representation of parameters specially.
      */
@@ -206,7 +206,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * don't do: getSequence(name).setName(newName))
      * Use this method with isConnected parameter set to true
      * to add a sequence to connected session.
-     * If sequencing is connected then the sequence is added only 
+     * If sequencing is connected then the sequence is added only
      * if there is no sequence with the same name already in use.
      */
     public void addSequence(Sequence sequence, boolean isConnected);
@@ -253,7 +253,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * Used only for reading from XML.
      */
     public void setSequences(Map sequences);
-  
+
     /**
      * INTERNAL:
      * Indicates whether defaultSequence is the same as platform default sequence.

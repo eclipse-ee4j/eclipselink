@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,76 +50,76 @@ import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
  */
 public class SnapshotCloneIterable<E> extends CloneIterable<E> {
 
-	private final Object[] array;
+    private final Object[] array;
 
 
-	// ********** constructors **********
+    // ********** constructors **********
 
-	/**
-	 * Construct a "snapshot" iterable for the specified iterator.
-	 * The {@link Iterator#remove()} operation will not be supported
-	 * by the iterator returned by {@link #iterator()}
-	 * unless a subclass overrides the iterable's {@link #remove(Object)}
-	 * method.
-	 */
-	public SnapshotCloneIterable(Iterator<? extends E> iterator) {
-		super();
-		this.array = CollectionTools.array(Object.class, iterator);
-	}
+    /**
+     * Construct a "snapshot" iterable for the specified iterator.
+     * The {@link Iterator#remove()} operation will not be supported
+     * by the iterator returned by {@link #iterator()}
+     * unless a subclass overrides the iterable's {@link #remove(Object)}
+     * method.
+     */
+    public SnapshotCloneIterable(Iterator<? extends E> iterator) {
+        super();
+        this.array = CollectionTools.array(Object.class, iterator);
+    }
 
-	/**
-	 * Construct a "snapshot" iterable for the specified iterator.
-	 * The specified remover will be used by any generated iterators to
-	 * remove objects from the original collection.
-	 */
-	public SnapshotCloneIterable(Iterator<? extends E> iterator, CloneIterator.Remover<E> remover) {
-		super(remover);
-		this.array =CollectionTools.array(Object.class, iterator);
-	}
+    /**
+     * Construct a "snapshot" iterable for the specified iterator.
+     * The specified remover will be used by any generated iterators to
+     * remove objects from the original collection.
+     */
+    public SnapshotCloneIterable(Iterator<? extends E> iterator, CloneIterator.Remover<E> remover) {
+        super(remover);
+        this.array =CollectionTools.array(Object.class, iterator);
+    }
 
-	/**
-	 * Construct a "snapshot" iterable for the specified collection.
-	 * The {@link Iterator#remove()} operation will not be supported
-	 * by the iterator returned by {@link #iterator()}
-	 * unless a subclass overrides the iterable's {@link #remove(Object)}
-	 * method.
-	 */
-	public SnapshotCloneIterable(Collection<? extends E> collection) {
-		super();
-		this.array = collection.toArray();
-	}
+    /**
+     * Construct a "snapshot" iterable for the specified collection.
+     * The {@link Iterator#remove()} operation will not be supported
+     * by the iterator returned by {@link #iterator()}
+     * unless a subclass overrides the iterable's {@link #remove(Object)}
+     * method.
+     */
+    public SnapshotCloneIterable(Collection<? extends E> collection) {
+        super();
+        this.array = collection.toArray();
+    }
 
-	/**
-	 * Construct a "snapshot" iterable for the specified collection.
-	 * The specified remover will be used by any generated iterators to
-	 * remove objects from the original collection.
-	 */
-	public SnapshotCloneIterable(Collection<? extends E> collection, CloneIterator.Remover<E> remover) {
-		super(remover);
-		this.array = collection.toArray();
-	}
-
-
-	// ********** Iterable implementation **********
-
-	public Iterator<E> iterator() {
-		return new LocalCloneIterator<E>(this.remover, this.array);
-	}
-
-	@Override
-	public String toString() {
-		return Arrays.toString(this.array);
-	}
+    /**
+     * Construct a "snapshot" iterable for the specified collection.
+     * The specified remover will be used by any generated iterators to
+     * remove objects from the original collection.
+     */
+    public SnapshotCloneIterable(Collection<? extends E> collection, CloneIterator.Remover<E> remover) {
+        super(remover);
+        this.array = collection.toArray();
+    }
 
 
-	// ********** clone iterator **********
+    // ********** Iterable implementation **********
 
-	/**
-	 * provide access to "internal" constructor
-	 */
-	protected static class LocalCloneIterator<E> extends CloneIterator<E> {
-		protected LocalCloneIterator(Remover<E> remover, Object[] array) {
-			super(remover, array);
-		}
-	}
+    public Iterator<E> iterator() {
+        return new LocalCloneIterator<E>(this.remover, this.array);
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(this.array);
+    }
+
+
+    // ********** clone iterator **********
+
+    /**
+     * provide access to "internal" constructor
+     */
+    protected static class LocalCloneIterator<E> extends CloneIterator<E> {
+        protected LocalCloneIterator(Remover<E> remover, Object[] array) {
+            super(remover, array);
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,11 +17,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(namespace="namespace3")
 public class Simple {
-   @XmlElement(namespace="namespace1") 
+   @XmlElement(namespace="namespace1")
   public int thing1;
    @XmlElement(namespace="namespace2")
   public int thing2;
-   
+
    public boolean equals(Object obj){
        if(!(obj instanceof Simple)){
            return false;

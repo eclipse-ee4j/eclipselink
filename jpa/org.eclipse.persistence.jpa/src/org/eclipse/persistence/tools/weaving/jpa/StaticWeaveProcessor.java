@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.weaving.jpa;
 
 import java.io.ByteArrayOutputStream;
@@ -44,8 +44,8 @@ import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * <p>
- * <b>Description</b>: The StaticWeaveProcessor controls the static weaving process.  It is invoked by both the command line 
- * StaticWeave class and the StaticWeaveAntTask. 
+ * <b>Description</b>: The StaticWeaveProcessor controls the static weaving process.  It is invoked by both the command line
+ * StaticWeave class and the StaticWeaveAntTask.
  * <p>
  * <b>Responsibilities</b>: Process the source classes, performs weaving as necessary out outputs to the target
  */
@@ -57,10 +57,10 @@ public class StaticWeaveProcessor {
     private String persistenceXMLLocation;
     private Writer logWriter;
     private ClassLoader classLoader;
-    private int logLevel = SessionLog.OFF; 
-    
+    private int logLevel = SessionLog.OFF;
+
     private static final int NUMBER_OF_BYTES = 1024;
-    
+
     /**
      * Constructs an instance of StaticWeaveProcessor
      * @param source the name of the location to be weaved
@@ -86,7 +86,7 @@ public class StaticWeaveProcessor {
         this.source=source.toURL();
         this.target=target.toURL();
     }
-    
+
     /**
      * Constructs an instance of StaticWeaveProcessor
      * @param source the URL of the source to be weaved
@@ -96,7 +96,7 @@ public class StaticWeaveProcessor {
         this.source = source;
         this.target = target;
     }
-    
+
     /**
      * The method allows user to specify the output for the log message.
      * @param logWriter the location where the log message writes to. the default value is standard out
@@ -104,7 +104,7 @@ public class StaticWeaveProcessor {
     public void setLog(Writer logWriter){
         this.logWriter = logWriter;
     }
-    
+
     /**
      * The method allows user to define nine levels EclipseLink logging.
      * @param level - the integer value of log level. default is OFF.
@@ -112,17 +112,17 @@ public class StaticWeaveProcessor {
     public void setLogLevel(int level){
         this.logLevel = level;
     }
-    
+
     /**
      * Set the user classloader.
      */
     public void setClassLoader(ClassLoader classLoader){
         this.classLoader=classLoader;
     }
-    
+
     /**
      * Set an explicitly identified URL of the location containing persistence.xml.
-     * @param persistenceInfo the URL of the location containing persistence.xml, the URL 
+     * @param persistenceInfo the URL of the location containing persistence.xml, the URL
      * must point to the root of META-INF/persistence.xml
      */
     public void setPersistenceInfo(URL persistenceInfo){
@@ -163,8 +163,8 @@ public class StaticWeaveProcessor {
             this.persistenceInfo=persistenceInfoFile.toURL();
         }
     }
-    
-    
+
+
     /**
      * This method performs weaving function on the class individually from the specified source.
      */
@@ -172,7 +172,7 @@ public class StaticWeaveProcessor {
         preProcess();
         process();
     }
-    
+
     /**
      * INTERNAL:
      * This method perform all necessary steps(verification, pre-build the target directory)
@@ -189,32 +189,32 @@ public class StaticWeaveProcessor {
         if(!(new File(Helper.toURI(source)).exists())){
             throw StaticWeaveException.missingSource();
         }
-        
+
         URI targetURI = Helper.toURI(target);
         //Verification target and source, two use cases create warning or exception.
-        //1. If source is directory and target is jar - 
-        //   This will lead unknown outcome, user attempt to use this tool to pack outcome into a Jar. 
+        //1. If source is directory and target is jar -
+        //   This will lead unknown outcome, user attempt to use this tool to pack outcome into a Jar.
         //   Warning message will be logged, this is can be worked around by other utilities.
-        //2. Both source and target are specified as a same jar -  
+        //2. Both source and target are specified as a same jar -
         //   User was trying to perform weaving in same Jar which is not supported, an Exception will be thrown.
         if(isDirectory(source) && targetURI.toString().endsWith(".jar")){
             AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.WEAVER, ToStringLocalization.buildMessage("staticweave_processor_unknown_outcome", new Object[]{null}), null, false);
         }
-        
+
         if(!isDirectory(source) && target.toString().equals(source.toString())){
             throw StaticWeaveException.weaveInplaceForJar(source.toString());
         }
-        
+
         //pre-create target if it is directory and dose not exist.
-        //Using the method File.isDirectory() is not enough to determine what the type(dir or jar) 
-        //of the target(specified by URL)that user want to create. File.isDirectory() will return false in 
-        //two possibilities, the location either is not directory or the location dose not exist. 
-        //Therefore pre-build of the directory target is required. Pre-build for the file(JAR) target 
-        //is not required since it gets built automatically by opening outputstream.  
+        //Using the method File.isDirectory() is not enough to determine what the type(dir or jar)
+        //of the target(specified by URL)that user want to create. File.isDirectory() will return false in
+        //two possibilities, the location either is not directory or the location dose not exist.
+        //Therefore pre-build of the directory target is required. Pre-build for the file(JAR) target
+        //is not required since it gets built automatically by opening outputstream.
         if(!(new File(targetURI)).exists()){
             if(!targetURI.toString().endsWith(".jar")){
                 (new File(targetURI)).mkdirs();
-                //if directory fails to build, which may leads to unknown outcome since it will 
+                //if directory fails to build, which may leads to unknown outcome since it will
                 //be treated as single file in the class StaticWeaveHandler and automatically gets built
                 //by outputstream.
 
@@ -223,7 +223,7 @@ public class StaticWeaveProcessor {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * The method performs weaving function
@@ -236,11 +236,11 @@ public class StaticWeaveProcessor {
         }else{
             swoh= new StaticWeaveJAROutputHandler(new JarOutputStream(new FileOutputStream(new File(Helper.toURI(this.target)))));
         }
-        
+
         // Instantiate classloader.
         this.classLoader = (this.classLoader == null)? Thread.currentThread().getContextClassLoader():this.classLoader;
         this.classLoader = new URLClassLoader(getURLs(), this.classLoader);
-        
+
         // Instantiate the classtransformer, we check if the persistenceinfo URL has been specified.
         StaticWeaveClassTransformer classTransformer=null;
         if (persistenceInfo!=null) {
@@ -257,21 +257,21 @@ public class StaticWeaveProcessor {
                 while (entries.hasNext()){
                     String entryName = (String)entries.next();
                     InputStream entryInputStream = sourceArchive.getEntry(entryName);
-                
+
                     // Add a directory entry
                     swoh.addDirEntry(getDirectoryFromEntryName(entryName));
-                
+
                     // Add a regular entry
                     JarEntry newEntry = new JarEntry(entryName);
-                
+
                     // Ignore non-class files.
                     if (!(entryName.endsWith(".class"))) {
                         swoh.addEntry(entryInputStream, newEntry);
-                        continue;            
+                        continue;
                     }
-                
+
                     String className = PersistenceUnitProcessor.buildClassNameFromEntryString(entryName) ;
-                
+
                     byte[] originalClassBytes=null;
                     byte[] transferredClassBytes=null;
                     try {
@@ -282,7 +282,7 @@ public class StaticWeaveProcessor {
                             swoh.addEntry(entryInputStream, newEntry);
                             continue;
                         }
-                    
+
                         // Try to read the loaded class bytes, the class bytes is required for
                         // classtransformer to perform transfer. Simply copy entry to the target(no weaving)
                         // if the class bytes can't be read.
@@ -306,11 +306,11 @@ public class StaticWeaveProcessor {
                             swoh.addEntry(entryInputStream, newEntry);
                             continue;
                         }
-                    
+
                         // If everything is OK so far, we perform the weaving. we need three parameters in order to
                         // class to perform weaving for that class, the class name,the class object and class bytes.
                         transferredClassBytes = classTransformer.transform(className.replace('.', '/'), thisClass, originalClassBytes);
-                    
+
                         // If transferredClassBytes is null means the class dose not get woven.
                         if (transferredClassBytes!=null){
                             swoh.addEntry(newEntry, transferredClassBytes);
@@ -328,7 +328,7 @@ public class StaticWeaveProcessor {
                         swoh.addEntry(entryInputStream, newEntry);
                         continue;
                     } finally {
-                        // Need close the inputstream for current entry before processing next one. 
+                        // Need close the inputstream for current entry before processing next one.
                         entryInputStream.close();
                     }
                 }
@@ -338,8 +338,8 @@ public class StaticWeaveProcessor {
             }
         }
     }
-    
-    //Extract directory from entry name.    
+
+    //Extract directory from entry name.
     public static String getDirectoryFromEntryName(String entryName){
         String result="";
         if (entryName==null ) {
@@ -347,10 +347,10 @@ public class StaticWeaveProcessor {
         }
         if(entryName.lastIndexOf("/")>=0){
             result=entryName.substring(0, entryName.lastIndexOf("/"))+File.separator;
-        } 
+        }
         return result;
     }
-    
+
     /**
      * Determine whether or not the URL is pointing to directory.
      */
@@ -362,7 +362,7 @@ public class StaticWeaveProcessor {
             return false;
         }
     }
-    
+
     /**
      * Generate URL array for specified source and persistenceinfo.
      */

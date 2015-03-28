@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,74 +25,74 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class EntityTypeLiteral extends AbstractExpression {
 
-	/**
-	 * Creates a new <code>EntityTypeLiteral</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param entityTypeName The name of the entity
-	 */
-	public EntityTypeLiteral(AbstractExpression parent, String entityTypeName) {
-		super(parent, entityTypeName);
-	}
+    /**
+     * Creates a new <code>EntityTypeLiteral</code>.
+     *
+     * @param parent The parent of this expression
+     * @param entityTypeName The name of the entity
+     */
+    public EntityTypeLiteral(AbstractExpression parent, String entityTypeName) {
+        super(parent, entityTypeName);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void acceptChildren(ExpressionVisitor visitor) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void acceptChildren(ExpressionVisitor visitor) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addOrderedChildrenTo(List<Expression> children) {
-		children.add(buildStringExpression(getText()));
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addOrderedChildrenTo(List<Expression> children) {
+        children.add(buildStringExpression(getText()));
+    }
 
-	/**
-	 * Returns the name of the entity type.
-	 *
-	 * @return The name of the entity that was parsed
-	 */
-	public String getEntityTypeName() {
-		return getText();
-	}
+    /**
+     * Returns the name of the entity type.
+     *
+     * @return The name of the entity that was parsed
+     */
+    public String getEntityTypeName() {
+        return getText();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(EntityTypeLiteralBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(EntityTypeLiteralBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void parse(WordParser wordParser, boolean tolerant) {
-		wordParser.moveForward(getText());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse(WordParser wordParser, boolean tolerant) {
+        wordParser.moveForward(getText());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toParsedText() {
-		return getText();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toParsedText() {
+        return getText();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toParsedText(StringBuilder writer, boolean actual) {
-		writer.append(getText());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toParsedText(StringBuilder writer, boolean actual) {
+        writer.append(getText());
+    }
 }

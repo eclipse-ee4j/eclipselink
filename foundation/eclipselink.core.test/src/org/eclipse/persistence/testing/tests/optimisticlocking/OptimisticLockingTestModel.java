@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.optimisticlocking;
 
 import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
@@ -39,28 +39,28 @@ public class OptimisticLockingTestModel extends TestModel {
         addTest(getLockingExceptionTestSuite());
         addTest(getUpdateNullValueOptimisticLockingTestSuite());
     }
-    
+
     public static TestSuite getLockingExceptionTestSuite() {
         TestSuite suite;
-        
+
         suite = new TestSuite();
         suite.setName("LockingExceptionTestSuite");
-   
+
         suite.addTest(new OptimisticLockingPolicyDeleteRowTest(Guitar.class));
         suite.addTest(new OptimisticLockingPolicyDeleteRowTest(RockMusician.class));
         suite.addTest(new OptimisticLockingPolicyDeleteRowTest(RockBand.class));
-    
+
         suite.addTest(new OptimisticLockingPolicyChangedValueUpdateTest(Guitar.class));
         suite.addTest(new OptimisticLockingPolicyChangedValueUpdateTest(RockMusician.class));
         suite.addTest(new OptimisticLockingPolicyChangedValueUpdateTest(RockBand.class));
-    
+
         suite.addTest(new OptimisticLockingPolicyUpdateTest(Guitar.class));
         suite.addTest(new OptimisticLockingPolicyUpdateTest(RockMusician.class));
         suite.addTest(new OptimisticLockingPolicyUpdateTest(RockBand.class));
-    
-        return suite;        
+
+        return suite;
     }
-    
+
     public static TestSuite getOptimisticLockingTestSuite() {
         TestSuite suite;
 
@@ -92,21 +92,21 @@ public class OptimisticLockingTestModel extends TestModel {
         suite.addTest(new TimestampNewObjectInCache(LockInObject.example1()));
         suite.addTest(new TimestampNewObjectInCache(TimestampInObject.example1()));
         suite.addTest(new ChangeSetOptimisticLockingUpdateTest(TimestampInAggregateObject.class));
-        suite.addTest(new ChangeSetOptimisticLockingUpdateTest(LockInAggregateObject.class));    
+        suite.addTest(new ChangeSetOptimisticLockingUpdateTest(LockInAggregateObject.class));
         suite.addTest(new ChangeSetOptimisticLockingUpdateTest(TimestampInCache.class));
         suite.addTest(new ChangeSetOptimisticLockingUpdateTest(LockInCache.class));
         suite.addTest(new ChangeSetOptimisticLockingUpdateTest(TimestampInObject.class));
         suite.addTest(new ChangeSetOptimisticLockingUpdateTest(LockInObject.class));
         suite.addTest(new ChangeSetOptimisticLockingInsertTest(TimestampInAggregateObject.class));
-        suite.addTest(new ChangeSetOptimisticLockingInsertTest(LockInAggregateObject.class));    
+        suite.addTest(new ChangeSetOptimisticLockingInsertTest(LockInAggregateObject.class));
         suite.addTest(new ChangeSetOptimisticLockingInsertTest(TimestampInCache.class));
         suite.addTest(new ChangeSetOptimisticLockingInsertTest(LockInCache.class));
         suite.addTest(new ChangeSetOptimisticLockingInsertTest(TimestampInObject.class));
         suite.addTest(new ChangeSetOptimisticLockingInsertTest(LockInObject.class));
         suite.addTest(new WriteLockValueSerializationTest());
-        
+
         suite.addTest(new FieldsLockingCachedUpdateCallsTest());
-        
+
         // EL bug 247884 - NullPointerException using Timestamp (server) based optimistic locking and UpdateAllQuery
         suite.addTest(new UpdateAllWithTimestampLockingTest());
         // EL bug 422610 - Null aggregate with lock field using TimestampLockingPolicy causes NPE on change calculation
@@ -119,7 +119,7 @@ public class OptimisticLockingTestModel extends TestModel {
         TestSuite suite = new TestSuite();
         suite.setName("CascadeOptimisticLockingTestSuite");
         suite.setDescription("This suite tests the functionality of the cascade optimistic locking policy.");
-        
+
         suite.addTest(new Cascaded121OptimisticLockingTest());
         suite.addTest(new Cascaded12MOptimisticLockingTest());
         suite.addTest(new CascadedCollectionOptimisticLockingTest());
@@ -130,17 +130,17 @@ public class OptimisticLockingTestModel extends TestModel {
         suite.addTest(new Cascaded12MInheritanceListOnSuperOptimisticLockingTest());
         // EL bug 342632
         suite.addTest(new CascadedVersionLockingMultiplePrivateOwnedTest());
-    
+
         return suite;
     }
-    
+
     // EL bug 319759
     public static TestSuite getUpdateNullValueOptimisticLockingTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("UpdateNullValueOptimisticLockingTestSuite");
         suite.setDescription("Tests the functionality of updating fields with a null database value, with optimistic locking");
-        
-        final Class[] policies = { AllFieldsLockingPolicy.class, SelectedFieldsLockingPolicy.class,  
+
+        final Class[] policies = { AllFieldsLockingPolicy.class, SelectedFieldsLockingPolicy.class,
                 ChangedFieldsLockingPolicy.class, VersionLockingPolicy.class, TimestampLockingPolicy.class };
         // done this way for test ordering
         for (int i = 0; i < policies.length; i++) {
@@ -167,8 +167,8 @@ public class OptimisticLockingTestModel extends TestModel {
         for (int i = 0; i < policies.length; i++) {
             suite.addTest(new UpdateNullManyToManyValueTest(policies[i]));
         }
-        
+
         return suite;
     }
-    
+
 }

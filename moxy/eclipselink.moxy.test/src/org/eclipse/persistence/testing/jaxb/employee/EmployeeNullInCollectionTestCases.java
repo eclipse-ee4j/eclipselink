@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,7 +29,7 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee_null.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee_null.json";
-    private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee_null.xml";   
+    private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee_null.xml";
     private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
     private final static String CONTROL_RESPONSIBILITY2 = "";
     private final static String CONTROL_RESPONSIBILITY3 = null;
@@ -39,19 +39,19 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
 
     public EmployeeNullInCollectionTestCases(String name) throws Exception {
         super(name);
-        
-        setControlDocument(XML_RESOURCE);  
-        setWriteControlDocument(XML_WRITE_RESOURCE);       
+
+        setControlDocument(XML_RESOURCE);
+        setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        
+
         Class[] classes = new Class[1];
         classes[0] = Employee_B.class;
         setClasses(classes);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.TRUE);
     }
-    
+
     public void testRoundTrip(){
-        
+
     }
 
     protected Object getControlObject() {
@@ -66,15 +66,15 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(2005,04,24,16,06,53);
-      
+
         employee.birthday = cal;
-                
+
         employee.id = CONTROL_ID;
-        
+
         employee.responsibilities = responsibilities;
-        
+
         employee.setBlah("Some String");
-        
+
         JAXBElement<Employee_B> elem = new JAXBElement<Employee_B>(new QName("examplenamespace", "employee-data"), Employee_B.class, employee);
 
         return elem;
@@ -98,14 +98,14 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
     }
 
     public Class getUnmarshalClass(){
-	return Employee_B.class;
+    return Employee_B.class;
     }
     /*
     public void test(){
-    	super.testJSONUnmarshalFromInputSource()
-    	super.testJSONUnmarshalFromInputStream()
-    	super.testJSONUnmarshalFromReader()
-    	super.testJSONUnmarshalFromURL()
+        super.testJSONUnmarshalFromInputSource()
+        super.testJSONUnmarshalFromInputStream()
+        super.testJSONUnmarshalFromReader()
+        super.testJSONUnmarshalFromURL()
     }
     *//*
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
@@ -152,18 +152,18 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
             xmlToObjectTest(testObject);
         }
     }
-    
+
     public void testXMLToObjectFromNode() throws Exception {
         if(isUnmarshalTest()) {
-            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);            
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             Node node  = parser.parse(instream);
             Object testObject = jaxbUnmarshaller.unmarshal(node, Employee_B.class);
             instream.close();
             xmlToObjectTest(testObject);
         }
     }
-  
-    
+
+
     public void testXMLToObjectFromURL() throws Exception {
         if(isUnmarshalTest()) {
             java.net.URL url = ClassLoader.getSystemResource(resourceName);
@@ -171,7 +171,7 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
             xmlToObjectTest(testObject);
         }
     }
-    
+
     public void testXMLToObjectFromXMLStreamReaderEx() throws Exception {
         if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -185,9 +185,9 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
             instream.close();
             xmlToObjectTest(testObject);
         }
-    } 
+    }
     */
     public void testUnmarshallerHandler() throws Exception {
         //Not Applicable.
-    }    
+    }
 }

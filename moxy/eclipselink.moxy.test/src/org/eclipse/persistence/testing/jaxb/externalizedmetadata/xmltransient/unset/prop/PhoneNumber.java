@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class PhoneNumber {
     private String type;
     private String number;
-    
+
     @XmlTransient
     public String getType() {
         return type;
@@ -19,7 +19,7 @@ public class PhoneNumber {
     public void setNumber(String number) {
         this.number = number;
     }
-    
+
     public boolean equals(Object obj) {
         PhoneNumber num = (PhoneNumber)obj;
         return type.equals(num.getType()) && number.equals(num.getNumber());

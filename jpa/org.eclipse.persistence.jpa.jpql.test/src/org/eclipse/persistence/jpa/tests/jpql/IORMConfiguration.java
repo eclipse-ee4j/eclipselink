@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,12 +25,12 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IQuery;
  */
 public interface IORMConfiguration extends IManagedTypeProvider {
 
-	/**
-	 * Returns the external form of the given named JPQL query;
-	 *
-	 * @param queryName The name of the JPQL query to retrieve
-	 * @return The {@link IQuery} representing the JPQL query named with the given name; or
-	 * <code>null</code> if none could be found
-	 */
-	IQuery getNamedQuery(String queryName);
+    /**
+     * Returns the external form of the given named JPQL query;
+     *
+     * @param queryName The name of the JPQL query to retrieve
+     * @return The {@link IQuery} representing the JPQL query named with the given name; or
+     * <code>null</code> if none could be found
+     */
+    IQuery getNamedQuery(String queryName);
 }

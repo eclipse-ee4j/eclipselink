@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998 - 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998 - 2014, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -29,15 +29,15 @@ import java.util.Collection;
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>A wrapper for a JDK Method.  This implementation
- * of the EclipseLink JAXB 2.X Java model simply makes reflective calls on the 
- * underlying JDK object. 
- * 
+ * of the EclipseLink JAXB 2.X Java model simply makes reflective calls on the
+ * underlying JDK object.
+ *
  * <p><b>Responsibilities:</b>
  * <ul>
- * <li>Provide access to the underlying method's name, parameters, 
+ * <li>Provide access to the underlying method's name, parameters,
  * modifiers, annotations, etc.</li>
  * </ul>
- *  
+ *
  * @since Oracle TopLink 11.1.1.0.0
  * @see org.eclipse.persistence.jaxb.javamodel.JavaMethod
  * @see java.lang.reflect.Method
@@ -143,9 +143,9 @@ public class JavaMethodImpl implements JavaMethod {
     }
 
     public AnnotatedElement getAnnotatedElement() {
-    	return jMethod;
+        return jMethod;
     }
-    
+
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }

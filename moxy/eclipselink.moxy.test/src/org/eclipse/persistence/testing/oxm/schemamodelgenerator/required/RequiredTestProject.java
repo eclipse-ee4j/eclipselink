@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -54,9 +54,9 @@ public class RequiredTestProject extends Project {
         directAttributeMapping.setAttributeName("directAttribute");
         directAttributeMapping.setXPath("@directAttribute");
         ((XMLField) directAttributeMapping.getField()).setRequired(shouldSetMappingsToRequired);
-        descriptor.addMapping(directAttributeMapping);        
-        
-        XMLCompositeDirectCollectionMapping directCollectionMapping = new XMLCompositeDirectCollectionMapping(); 
+        descriptor.addMapping(directAttributeMapping);
+
+        XMLCompositeDirectCollectionMapping directCollectionMapping = new XMLCompositeDirectCollectionMapping();
         directCollectionMapping.setAttributeName("directCollection");
         directCollectionMapping.setXPath("directCollection/text()");
         ((XMLField) directCollectionMapping.getField()).setRequired(shouldSetMappingsToRequired);
@@ -66,14 +66,14 @@ public class RequiredTestProject extends Project {
         compositeObjectMapping.setAttributeName("compositeObject");
         compositeObjectMapping.setXPath("compositeObject/text()");
         compositeObjectMapping.setReferenceClass(RequiredTestSubObject.class);
-        ((XMLField) compositeObjectMapping.getField()).setRequired(shouldSetMappingsToRequired);        
+        ((XMLField) compositeObjectMapping.getField()).setRequired(shouldSetMappingsToRequired);
         descriptor.addMapping(compositeObjectMapping);
 
         XMLCompositeCollectionMapping compositeCollectionMapping = new XMLCompositeCollectionMapping();
         compositeCollectionMapping.setAttributeName("compositeCollection");
         compositeCollectionMapping.setXPath("compositeCollection/text()");
         compositeCollectionMapping.setReferenceClass(RequiredTestSubObject.class);
-        ((XMLField) compositeCollectionMapping.getField()).setRequired(shouldSetMappingsToRequired);        
+        ((XMLField) compositeCollectionMapping.getField()).setRequired(shouldSetMappingsToRequired);
         descriptor.addMapping(compositeCollectionMapping);
 
         return descriptor;

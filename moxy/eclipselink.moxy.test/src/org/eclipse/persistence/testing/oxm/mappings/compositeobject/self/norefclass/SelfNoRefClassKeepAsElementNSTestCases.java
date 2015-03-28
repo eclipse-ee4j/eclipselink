@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Denise Smith - May 8/2009 
+ *     Denise Smith - May 8/2009
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass;
 
@@ -28,7 +28,7 @@ import org.w3c.dom.Element;
 
 public class SelfNoRefClassKeepAsElementNSTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/norefclass/SelfNoRefKeepAsElementNS.xml";
-    
+
     public SelfNoRefClassKeepAsElementNSTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
@@ -37,32 +37,32 @@ public class SelfNoRefClassKeepAsElementNSTestCases extends XMLMappingTestCases 
         mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
         setProject(p);
     }
-    
+
     protected Object getControlObject() {
-    	Root theRoot = new Root();
-    	try{
-    		    		
-	    	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	    	factory.setNamespaceAware(true);
-	    	DocumentBuilder builder = factory.newDocumentBuilder();
-	    
-	    	Document doc = builder.newDocument();
-	    	Element rootElem = doc.createElementNS("namespace1", "ns0:root");
-	    	rootElem.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:ns0", "namespace1");	    	
-	    	doc.appendChild(rootElem);
-	    	
-	    	Element addressElement = doc.createElementNS("namespace1", "ns0:address");
-	    	Element streetElement = doc.createElementNS("namespace1", "ns0:street");
-	    	streetElement.setTextContent("myStreet");
-	    	addressElement.appendChild(streetElement);
-	    		    	
-	    	rootElem.appendChild(addressElement);
-	    	theRoot.setTheObject(rootElem);	    	
-	    	
-    	}catch(Exception e){
-    		fail(e.getMessage());
-    	}
-    	return theRoot;
+        Root theRoot = new Root();
+        try{
+
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            Document doc = builder.newDocument();
+            Element rootElem = doc.createElementNS("namespace1", "ns0:root");
+            rootElem.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:ns0", "namespace1");
+            doc.appendChild(rootElem);
+
+            Element addressElement = doc.createElementNS("namespace1", "ns0:address");
+            Element streetElement = doc.createElementNS("namespace1", "ns0:street");
+            streetElement.setTextContent("myStreet");
+            addressElement.appendChild(streetElement);
+
+            rootElem.appendChild(addressElement);
+            theRoot.setTheObject(rootElem);
+
+        }catch(Exception e){
+            fail(e.getMessage());
+        }
+        return theRoot;
     }
 
 }

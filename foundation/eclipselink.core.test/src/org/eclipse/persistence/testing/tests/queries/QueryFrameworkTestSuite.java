@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries;
 
 import java.util.*;
@@ -55,7 +55,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new ZeroPrimaryKeyExistenceCheckTest(false));
         // EL Bug 244241 - connection not released on query timeout when cursor used
         addTest(new QueryTimeoutConnectionReleasedTest());
-        // EL Bug 245448 - Add regression tests for querying across  relationships using nested 
+        // EL Bug 245448 - Add regression tests for querying across  relationships using nested
         // joining and DailyCacheInvalidationPolicy
         addTest(new QueryExecutionTimeSetOnBuildObjectTest());
         // EL Bug 245986 - Add regression testing for queries using custom SQL and partial attribute population
@@ -128,7 +128,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new CursoredStreamWithUnitOfWorkTest());
         addTest(new CursoredStreamDistinctTest());
 
-        //addTest(new CursoredStreamReleaseConnectionsTest(Employee.class, new org.eclipse.persistence.expressions.ExpressionBuilder().get("address").get("city").equal("Ottawa")));				
+        //addTest(new CursoredStreamReleaseConnectionsTest(Employee.class, new org.eclipse.persistence.expressions.ExpressionBuilder().get("address").get("city").equal("Ottawa")));
         addTest(new CursoredStreamReleaseConnectionsTest(false));
         addTest(new CursoredStreamReleaseConnectionsTest(true));
 
@@ -138,7 +138,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new ScrollableCursorBackwardReadingTest());
         addTest(new ScrollableCursorStatementCachingReadTest());
         addTest(new ScrollableCursorNavigationAPITest());
-        
+
         // Cursor conforming tests...
         addTest(new CursoredStreamConformingTest());
         addTest(new CursoredStreamConformingTest(true));
@@ -183,7 +183,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new ReloadSelectionObjectTest(new EmployeePopulator().basicEmployeeExample1(), false));
         addTest(new BadQueryTest());
         addTest(new Jdk12ScrollableCursorTest());
-        //Bug#2839852  Refreshing is not possible if the query uses checkCacheOnly.        
+        //Bug#2839852  Refreshing is not possible if the query uses checkCacheOnly.
         addTest(new RefreshWithCheckCacheOnlyTest());
 
         /** Test cascaded read queries */
@@ -253,14 +253,14 @@ public class QueryFrameworkTestSuite extends TestSuite {
 
         // Created for CR# 4286
         addTest(new DeleteAllQueryTest());
-        
+
         // Created for bug 5840824
         addTest(new DeleteObjectPrivatelyOwningUntriggeredIndirection());
 
         // Created for BUG# 2692956
         addTest(new RedirectQueryOnUOWTest());
         addTest(new RedirectorOnDescriptorTest());
-        
+
         addTest(new DoNotRedirectDefaultRedirectorTest());
 
         //created for BUG# 3037982
@@ -341,7 +341,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
                     throwWarning("Database does not support INTERSECT");
                 }
             }
-            
+
             @Override
             public void test() {
                 ExpressionBuilder e = new ExpressionBuilder();
@@ -383,7 +383,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
                 exceptAll.addItem("employee", e7);
                 exceptAll.setSelectionCriteria(e7.get("firstName").equal("Sarah"));
                 query.addUnionExpression(e.exceptAll(e.subQuery(exceptAll)));*/
-                
+
                 List result = (List)getSession().executeQuery(query);
                 if (result.size() > 0) {
                     throwError("Expected 0 elements: " + result);
@@ -405,7 +405,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
                 query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").equal(
                         query.getExpressionBuilder().getParameter("firstName")));
                 query.addArgument("firstName");
-                query.addArgumentValue("Bob");                
+                query.addArgumentValue("Bob");
                 List<Employee> result = (List) getSession().executeQuery(query);
                 for (Employee employee : result) {
                     if (!employee.getFirstName().equals("Bob")) {
@@ -417,7 +417,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         test.setName("ArgumentValuesTest");
         return test;
     }
-    
+
     /**
      * Test getting the SQL for a parameterized query.
      */
@@ -451,7 +451,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
                 boolean TYPE_SCROLL_INSENSITIVE_isSupported = true;
                 boolean CONCUR_UPDATABLE_isSupported = true;
                 if(getSession().getPlatform().isSQLServer()) {
-                    // In case either TYPE_SCROLL_INSENSITIVE or CONCUR_UPDATABLE used  
+                    // In case either TYPE_SCROLL_INSENSITIVE or CONCUR_UPDATABLE used
                     // MS SQL Server  Version: 9.00.2050;  MS SQL Server 2005 JDBC Driver  Version: 1.2.2828.100 throws exception:
                     // com.microsoft.sqlserver.jdbc.SQLServerException: The cursor type/concurrency combination is not supported.
                     TYPE_SCROLL_INSENSITIVE_isSupported = false;
@@ -493,7 +493,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         test.setName("JoinSubclassesQueryTest");
         return test;
     }
-    
+
     public PredefinedQueryTest buildPredefinedAnyOfObjectComparisonTest() {
         Employee employee = (Employee)PopulationManager.getDefaultManager().getObject(Employee.class, "0002");
 
@@ -665,7 +665,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
 
         return test;
     }
-    
+
     /**
      * Test the record Map API.
      */

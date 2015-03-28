@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.DataObject;
@@ -35,7 +35,7 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
     //1. purpose: getChar with Boolean property
     public void testGetCharacterFromBoolean() {
         property_c = new SDOProperty(aHelperContext);
-        
+
         property_c.setName(PROPERTY_NAME_C);
         property_c.setType(SDOConstants.SDO_BOOLEAN);
         type_c.addDeclaredProperty(property_c);
@@ -45,7 +45,7 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -95,7 +95,7 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -108,7 +108,7 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         dataObject_c._setType(type_c);
         double theValue = 2;
         dataObject_c.set(property_c, theValue);
-        try {            
+        try {
             char value = dataObject_a.getChar(propertyPath_a_b_c);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
@@ -126,7 +126,7 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         dataObject_c._setType(type_c);
         float theValue = 2;
         dataObject_c.set(property_c, theValue);
-        try {            
+        try {
             char value = dataObject_a.getChar(propertyPath_a_b_c);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
@@ -216,7 +216,7 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -232,7 +232,7 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -245,7 +245,7 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         dataObject_c._setType(type_c);
         BigDecimal theValue = new BigDecimal(2);
         dataObject_c.set(property_c, theValue);
-        try {            
+        try {
             char value = dataObject_a.getChar(propertyPath_a_b_c);
             char controlValue = (char)theValue.byteValue();
             assertEquals(controlValue, value);
@@ -278,12 +278,12 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         property_c.setName(PROPERTY_NAME_C);
         property_c.setType(SDOConstants.SDO_DATE);
         type_c.addDeclaredProperty(property_c);
-        dataObject_c._setType(type_c);        
+        dataObject_c._setType(type_c);
         dataObject_c.set(property_c, Calendar.getInstance().getTime());
         try {
             dataObject_a.getChar(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -293,10 +293,10 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
             String p = null;
             dataObject_a.getChar(p);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
-    
+
          //22. purpose: getDouble from null
     public void testGetCharFromNull() {
         property_c = new SDOProperty(aHelperContext);
@@ -305,14 +305,14 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
         dataObject_c.set(property_c, null);
-        
+
         char value = dataObject_a.getChar(propertyPath_a_b_c);
         char charValue = '\u0000';
-        assertEquals(charValue, value);            
+        assertEquals(charValue, value);
         DataObject doNext = dataObject_a.getDataObject("PName-a");
-        doNext = doNext.getDataObject("PName-b");        
+        doNext = doNext.getDataObject("PName-b");
         Property prop  = doNext.getInstanceProperty("PName-c");
-        char value2 =  doNext.getChar(prop);        
-        assertEquals(charValue, value2);       
+        char value2 =  doNext.getChar(prop);
+        assertEquals(charValue, value2);
     }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,63 +28,63 @@ import javax.swing.JComponent;
  */
 public final class Spacer extends JComponent
 {
-	/**
-	 * The minimum size this spacer should have as its minimum and preferred
-	 * sizes.
-	 */
-	private final Dimension minimumSize;
+    /**
+     * The minimum size this spacer should have as its minimum and preferred
+     * sizes.
+     */
+    private final Dimension minimumSize;
 
-	/**
-	 * Creates a new <code>Spacer</code>.
-	 */
-	public Spacer()
-	{
-		this(0);
-	}
+    /**
+     * Creates a new <code>Spacer</code>.
+     */
+    public Spacer()
+    {
+        this(0);
+    }
 
-	/**
-	 * @param preferredSize
-	 */
-	public void setPreferredSize(Dimension preferredSize)
-	{
-		super.setPreferredSize(preferredSize);
+    /**
+     * @param preferredSize
+     */
+    public void setPreferredSize(Dimension preferredSize)
+    {
+        super.setPreferredSize(preferredSize);
 
-		if (preferredSize != null)
-			setVisible(preferredSize.width > 0);
-	}
+        if (preferredSize != null)
+            setVisible(preferredSize.width > 0);
+    }
 
-	/**
-	 * Creates a new <code>Spacer</code>.
-	 *
-	 * @param minimumWidth The minimum width this spacer should have as its
-	 * preferred size
-	 */
-	public Spacer(int minimumWidth)
-	{
-		super();
+    /**
+     * Creates a new <code>Spacer</code>.
+     *
+     * @param minimumWidth The minimum width this spacer should have as its
+     * preferred size
+     */
+    public Spacer(int minimumWidth)
+    {
+        super();
 
-		this.minimumSize = new Dimension(minimumWidth, 0);
-		setLayout(new SpacerLayout());
-	}
+        this.minimumSize = new Dimension(minimumWidth, 0);
+        setLayout(new SpacerLayout());
+    }
 
-	/**
-	 * This <code>LayoutManager</code> returns the {@link Spacer#minimumWidth}
-	 * for the preferred and minimum width.
-	 */
-	private class SpacerLayout implements LayoutManager
-	{
-		public void addLayoutComponent(String name, Component component) {}
-		public void layoutContainer(Container parent) {}
-		public void removeLayoutComponent(Component component) {}
+    /**
+     * This <code>LayoutManager</code> returns the {@link Spacer#minimumWidth}
+     * for the preferred and minimum width.
+     */
+    private class SpacerLayout implements LayoutManager
+    {
+        public void addLayoutComponent(String name, Component component) {}
+        public void layoutContainer(Container parent) {}
+        public void removeLayoutComponent(Component component) {}
 
-		public Dimension minimumLayoutSize(Container parent)
-		{
-			return (Dimension) Spacer.this.minimumSize.clone();
-		}
+        public Dimension minimumLayoutSize(Container parent)
+        {
+            return (Dimension) Spacer.this.minimumSize.clone();
+        }
 
-		public Dimension preferredLayoutSize(Container parent)
-		{
-			return (Dimension) Spacer.this.minimumSize.clone();
-		}
-	}
+        public Dimension preferredLayoutSize(Container parent)
+        {
+            return (Dimension) Spacer.this.minimumSize.clone();
+        }
+    }
 }

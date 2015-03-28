@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties;
@@ -42,7 +42,7 @@ public class ModelExamples  {
         order.setItem(itemExample1());
         return order;
     }
-    
+
 
     public static Order orderExample2(){
         Order order = new Order();
@@ -51,7 +51,7 @@ public class ModelExamples  {
         order.setItem(itemExample2());
         return order;
     }
-    
+
     public static Order orderExample3(){
         Order order = new Order();
         order.setQuantity(10);
@@ -59,7 +59,7 @@ public class ModelExamples  {
         order.setItem(itemExample3());
         return order;
     }
-    
+
     public static Item itemExample1(){
         Item item = new Item();
         item.setName("Computer LCD");
@@ -73,15 +73,15 @@ public class ModelExamples  {
         item.setDescription("P4G Dual Core ");
         return item;
     }
-    
+
     public static Item itemExample3(){
         Item item = new Item();
         item.setName("Laser Printer");
         item.setDescription("300 dpi HP laser printer 2000");
         return item;
     }
-    
-    
+
+
     public static SalesPerson SPExample1(){
         SalesPerson sp = new SalesPerson();
         sp.setName("Linda Stanfer");
@@ -98,5 +98,5 @@ public class ModelExamples  {
         sp.setName("Radhika");
         return sp;
     }
-   
+
 }

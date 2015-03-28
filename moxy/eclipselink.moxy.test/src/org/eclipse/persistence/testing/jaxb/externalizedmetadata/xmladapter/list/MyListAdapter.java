@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,18 +24,18 @@ public final class MyListAdapter extends XmlAdapter<Object, List<String>> {
     public static String VAL2 = "22";
     public static String EMPTY_STR = "";
     public static String SPACE = " ";
-    
+
     public MyListAdapter() {}
-	
-	public List<String> unmarshal(Object arg0) throws Exception {
-	    List<String> list = new ArrayList<String>();
-		if (arg0 instanceof Bar) {
-		    String idstr = ((Bar)arg0).id;
-		    StringTokenizer stok = new StringTokenizer(idstr, SPACE);
-		    while (stok.hasMoreTokens()) {
-	            list.add(stok.nextToken());
-		    }
-		}
+
+    public List<String> unmarshal(Object arg0) throws Exception {
+        List<String> list = new ArrayList<String>();
+        if (arg0 instanceof Bar) {
+            String idstr = ((Bar)arg0).id;
+            StringTokenizer stok = new StringTokenizer(idstr, SPACE);
+            while (stok.hasMoreTokens()) {
+                list.add(stok.nextToken());
+            }
+        }
         return list;
     }
 
@@ -43,8 +43,8 @@ public final class MyListAdapter extends XmlAdapter<Object, List<String>> {
         Bar bar = new Bar();
         String id = EMPTY_STR;
         if (arg0.get(0).equals(VAL0)) {
-			id += arg0.get(0);
-		}
+            id += arg0.get(0);
+        }
         if (arg0.get(1).equals(VAL1)) {
             id += SPACE + arg0.get(1);
         }

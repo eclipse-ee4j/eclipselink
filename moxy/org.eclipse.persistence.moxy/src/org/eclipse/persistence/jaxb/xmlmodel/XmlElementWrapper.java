@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,9 +21,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -36,8 +36,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
@@ -55,11 +55,11 @@ public class XmlElementWrapper {
 
     /**
      * Gets the value of the name property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getName() {
         if (name == null) {
@@ -71,11 +71,11 @@ public class XmlElementWrapper {
 
     /**
      * Sets the value of the name property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setName(String value) {
         this.name = value;
@@ -83,11 +83,11 @@ public class XmlElementWrapper {
 
     /**
      * Gets the value of the namespace property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getNamespace() {
         if (namespace == null) {
@@ -99,11 +99,11 @@ public class XmlElementWrapper {
 
     /**
      * Sets the value of the namespace property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setNamespace(String value) {
         this.namespace = value;
@@ -111,11 +111,11 @@ public class XmlElementWrapper {
 
     /**
      * Gets the value of the nillable property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isNillable() {
         if (nillable == null) {
@@ -127,11 +127,11 @@ public class XmlElementWrapper {
 
     /**
      * Sets the value of the nillable property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setNillable(Boolean value) {
         this.nillable = value;
@@ -139,11 +139,11 @@ public class XmlElementWrapper {
 
     /**
      * Gets the value of the required property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isRequired() {
         if (required == null) {
@@ -155,11 +155,11 @@ public class XmlElementWrapper {
 
     /**
      * Sets the value of the required property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setRequired(Boolean value) {
         this.required = value;

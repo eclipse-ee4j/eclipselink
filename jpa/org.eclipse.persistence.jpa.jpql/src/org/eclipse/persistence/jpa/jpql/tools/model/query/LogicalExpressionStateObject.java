@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,53 +30,53 @@ import org.eclipse.persistence.jpa.jpql.parser.LogicalExpression;
  */
 public abstract class LogicalExpressionStateObject extends CompoundExpressionStateObject {
 
-	/**
-	 * Creates a new <code>LogicalExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	protected LogicalExpressionStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>LogicalExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    protected LogicalExpressionStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>LogicalExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param leftStateObject The {@link StateObject} representing the left expression
-	 * @param rightStateObject The {@link StateObject} representing the right expression
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	protected LogicalExpressionStateObject(StateObject parent,
-	                                       StateObject leftStateObject,
-	                                       StateObject rightStateObject) {
+    /**
+     * Creates a new <code>LogicalExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param leftStateObject The {@link StateObject} representing the left expression
+     * @param rightStateObject The {@link StateObject} representing the right expression
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    protected LogicalExpressionStateObject(StateObject parent,
+                                           StateObject leftStateObject,
+                                           StateObject rightStateObject) {
 
-		super(parent, leftStateObject, rightStateObject);
-	}
+        super(parent, leftStateObject, rightStateObject);
+    }
 
-	/**
-	 * Creates a new <code>LogicalExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param leftJpqlFragment The string representation of the left expression to parse and to
-	 * convert into a {@link StateObject}
-	 * @param rightJpqlFragment The string representation of the right expression to parse and to
-	 * convert into a {@link StateObject}
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	protected LogicalExpressionStateObject(StateObject parent,
-	                                       String leftJpqlFragment,
-	                                       String rightJpqlFragment) {
+    /**
+     * Creates a new <code>LogicalExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param leftJpqlFragment The string representation of the left expression to parse and to
+     * convert into a {@link StateObject}
+     * @param rightJpqlFragment The string representation of the right expression to parse and to
+     * convert into a {@link StateObject}
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    protected LogicalExpressionStateObject(StateObject parent,
+                                           String leftJpqlFragment,
+                                           String rightJpqlFragment) {
 
-		super(parent, leftJpqlFragment, rightJpqlFragment);
-	}
+        super(parent, leftJpqlFragment, rightJpqlFragment);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public LogicalExpression getExpression() {
-		return (LogicalExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public LogicalExpression getExpression() {
+        return (LogicalExpression) super.getExpression();
+    }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -40,76 +40,76 @@ import org.eclipse.persistence.tools.workbench.utility.filters.Filter;
 
 
 /**
- *	Used for choosing an MWQueryable when creating an MWExpression
+ *    Used for choosing an MWQueryable when creating an MWExpression
  */
-final class QueryableEditDialog 
-	extends AbstractDialog
+final class QueryableEditDialog
+    extends AbstractDialog
 {
-	private QueryableTree queryKeyTree;	
-	private MWQueryableArgument argument;
-		
-	QueryableEditDialog(MWQueryableArgument argument, WorkbenchContext context) {
-		super(context, (Dialog) context.getCurrentWindow());
-		this.argument = argument;
-	}
-	
-	protected String helpTopicId() {
-		return "dialogEditQueryable";
-	}
+    private QueryableTree queryKeyTree;
+    private MWQueryableArgument argument;
 
-	/**
-	* Invoked each time a node is selected or unselected.
-	*/
-	private TreeSelectionListener buildTreeSelectionHandler() {
-		return new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
-				updateOKButton();
-			}
-		};
-	}
-	
-	private MWMappingDescriptor getDescriptor() {
-		return argument.getParentQuery().getOwningDescriptor();
-	}
-		
-	protected Component buildMainPanel() {
-		getOKAction().setEnabled(false);
+    QueryableEditDialog(MWQueryableArgument argument, WorkbenchContext context) {
+        super(context, (Dialog) context.getCurrentWindow());
+        this.argument = argument;
+    }
 
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints constraints = new GridBagConstraints();
-		this.setTitle(resourceRepository().getString("CHOOSE_QUERY_KEY_DIALOG_TITLE.title"));
-		
+    protected String helpTopicId() {
+        return "dialogEditQueryable";
+    }
 
-		queryKeyTree = new QueryableTree(new QueryableTreeModel(new DefaultMutableTreeNode(getDescriptor()), buildQueryableFilter()), getWorkbenchContext());
-		JScrollPane scrollPane = new JScrollPane(queryKeyTree);
-		scrollPane.setPreferredSize(new Dimension(250,200));
+    /**
+    * Invoked each time a node is selected or unselected.
+    */
+    private TreeSelectionListener buildTreeSelectionHandler() {
+        return new TreeSelectionListener() {
+            public void valueChanged(TreeSelectionEvent e) {
+                updateOKButton();
+            }
+        };
+    }
 
-		queryKeyTree.addTreeSelectionListener(buildTreeSelectionHandler());
-		queryKeyTree.setSelectedQueryableArgumentElement(argument.getQueryableArgumentElement());
+    private MWMappingDescriptor getDescriptor() {
+        return argument.getParentQuery().getOwningDescriptor();
+    }
 
-		SwingComponentFactory.addDoubleClickMouseListener(queryKeyTree, new DoubleClickMouseListener() {
-			public void mouseDoubleClicked(MouseEvent e) {
-				TreePath path = queryKeyTree.getPathForLocation(e.getX(), e.getY());
+    protected Component buildMainPanel() {
+        getOKAction().setEnabled(false);
 
-				if (path != null) {
-					clickOK();
-				}
-			}
-		});
-		
-		constraints.gridx		= 0;
-		constraints.gridy		= 0;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 1;
-		constraints.fill		= GridBagConstraints.BOTH;
-		constraints.anchor		= GridBagConstraints.CENTER;
-		constraints.insets		= new Insets(5, 5, 5, 5);
-		panel.add(scrollPane, constraints);	
-		
-		return panel;	
-	}
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        this.setTitle(resourceRepository().getString("CHOOSE_QUERY_KEY_DIALOG_TITLE.title"));
+
+
+        queryKeyTree = new QueryableTree(new QueryableTreeModel(new DefaultMutableTreeNode(getDescriptor()), buildQueryableFilter()), getWorkbenchContext());
+        JScrollPane scrollPane = new JScrollPane(queryKeyTree);
+        scrollPane.setPreferredSize(new Dimension(250,200));
+
+        queryKeyTree.addTreeSelectionListener(buildTreeSelectionHandler());
+        queryKeyTree.setSelectedQueryableArgumentElement(argument.getQueryableArgumentElement());
+
+        SwingComponentFactory.addDoubleClickMouseListener(queryKeyTree, new DoubleClickMouseListener() {
+            public void mouseDoubleClicked(MouseEvent e) {
+                TreePath path = queryKeyTree.getPathForLocation(e.getX(), e.getY());
+
+                if (path != null) {
+                    clickOK();
+                }
+            }
+        });
+
+        constraints.gridx        = 0;
+        constraints.gridy        = 0;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 1;
+        constraints.fill        = GridBagConstraints.BOTH;
+        constraints.anchor        = GridBagConstraints.CENTER;
+        constraints.insets        = new Insets(5, 5, 5, 5);
+        panel.add(scrollPane, constraints);
+
+        return panel;
+    }
 
     private Filter buildQueryableFilter() {
         return new Filter() {
@@ -118,40 +118,40 @@ final class QueryableEditDialog
             }
         };
     }
-    
-	protected boolean preConfirm() {
-		TreePath selectionPath = this.queryKeyTree.getSelectionPath();
 
-		List queryablePath = new ArrayList();
-		List allowsNull = new ArrayList();
-		
-		QueryableTreeNode selectedNode = (QueryableTreeNode) selectionPath.getLastPathComponent();
-		allowsNull.add(Boolean.valueOf(selectedNode.isAllowsNull()));
-		MWQueryable queryableObject = selectedNode.getQueryable();
-		queryablePath.add(queryableObject);
-		selectionPath = selectionPath.getParentPath();
-		
-		while (selectionPath.getPathCount() > 1) //first path component is always a descriptor, we want to quit before reaching it
-		{
-			selectedNode = (QueryableTreeNode) selectionPath.getLastPathComponent();
-			allowsNull.add(new Boolean(selectedNode.isAllowsNull()));
-			MWQueryable joinedQueryable = selectedNode.getQueryable();
-			queryablePath.add(joinedQueryable);
-			selectionPath = selectionPath.getParentPath();
-		}
-		this.argument.setQueryableArgument(queryablePath.iterator(),  allowsNull.iterator());
+    protected boolean preConfirm() {
+        TreePath selectionPath = this.queryKeyTree.getSelectionPath();
+
+        List queryablePath = new ArrayList();
+        List allowsNull = new ArrayList();
+
+        QueryableTreeNode selectedNode = (QueryableTreeNode) selectionPath.getLastPathComponent();
+        allowsNull.add(Boolean.valueOf(selectedNode.isAllowsNull()));
+        MWQueryable queryableObject = selectedNode.getQueryable();
+        queryablePath.add(queryableObject);
+        selectionPath = selectionPath.getParentPath();
+
+        while (selectionPath.getPathCount() > 1) //first path component is always a descriptor, we want to quit before reaching it
+        {
+            selectedNode = (QueryableTreeNode) selectionPath.getLastPathComponent();
+            allowsNull.add(new Boolean(selectedNode.isAllowsNull()));
+            MWQueryable joinedQueryable = selectedNode.getQueryable();
+            queryablePath.add(joinedQueryable);
+            selectionPath = selectionPath.getParentPath();
+        }
+        this.argument.setQueryableArgument(queryablePath.iterator(),  allowsNull.iterator());
 
 
-		((DefaultMutableTreeNode) queryKeyTree.getModel().getRoot()).removeAllChildren();
-		return super.preConfirm();
-	}
-	
-	protected void cancelPressed() {
-		((DefaultMutableTreeNode) queryKeyTree.getModel().getRoot()).removeAllChildren();
-		super.cancelPressed();
-	}
-	
-	private void updateOKButton() {
-		getOKAction().setEnabled(queryKeyTree.getSelectionCount() > 0);
-	}	
+        ((DefaultMutableTreeNode) queryKeyTree.getModel().getRoot()).removeAllChildren();
+        return super.preConfirm();
+    }
+
+    protected void cancelPressed() {
+        ((DefaultMutableTreeNode) queryKeyTree.getModel().getRoot()).removeAllChildren();
+        super.cancelPressed();
+    }
+
+    private void updateOKButton() {
+        getOKAction().setEnabled(queryKeyTree.getSelectionCount() > 0);
+    }
 }

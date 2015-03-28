@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 @XmlRootElement(name="root-element-should-be-ignored")
 public class Employee {
     private int id;
-    
+
     @XmlElementWrapper(name="items")
     @XmlElements({
         @XmlElement(name="A", type=Integer.class),
@@ -44,12 +44,12 @@ public class Employee {
 
     @XmlAttribute(name="attribute-should-be-ignored")
     public String name;
-    
+
     @XmlElement(name="element-should-be-ignored")
     public int getId() {
         return id;
     }
-    
+
     public void setId(int newId) {
         id = newId;
     }

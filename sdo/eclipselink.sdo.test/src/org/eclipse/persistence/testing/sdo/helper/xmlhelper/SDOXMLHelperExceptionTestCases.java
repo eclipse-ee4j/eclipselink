@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -35,7 +35,7 @@ public class SDOXMLHelperExceptionTestCases extends SDOXMLHelperTestCases {
     public SDOXMLHelperExceptionTestCases(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xmlhelper.SDOXMLHelperExceptionTestCases" };
         TestRunner.main(arguments);
@@ -44,7 +44,7 @@ public class SDOXMLHelperExceptionTestCases extends SDOXMLHelperTestCases {
     public void testSaveToStreamException() throws Exception {
         XMLDocument xmlDocument = null;
         OutputStream outputStream = new ByteArrayOutputStream();
-        Object options = null; 
+        Object options = null;
         try {
             xmlHelper.save(xmlDocument, outputStream, options);
             fail("An IllegalArugmentException should have occurred");
@@ -53,8 +53,8 @@ public class SDOXMLHelperExceptionTestCases extends SDOXMLHelperTestCases {
 
     public void testSaveToResultException() throws Exception {
         XMLDocument xmlDocument = null;
-        Result outputResult = new StreamResult(); 
-        Object options = null; 
+        Result outputResult = new StreamResult();
+        Object options = null;
         try {
             xmlHelper.save(xmlDocument, outputResult, options);
             fail("An IllegalArugmentException should have occurred");
@@ -64,7 +64,7 @@ public class SDOXMLHelperExceptionTestCases extends SDOXMLHelperTestCases {
     public void testSaveToWriterException() throws Exception {
         XMLDocument xmlDocument = null;
         Writer outputWriter = new PrintWriter(new ByteArrayOutputStream());
-        Object options = null; 
+        Object options = null;
         try {
             xmlHelper.save(xmlDocument, outputWriter, options);
             fail("An IllegalArugmentException should have occurred");

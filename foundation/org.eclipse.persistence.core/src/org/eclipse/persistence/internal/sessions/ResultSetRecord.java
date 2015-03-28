@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.sql.ResultSet;
@@ -24,11 +24,11 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
  * PERF: Record used by ObjectLevelReadQuery ResultSet optimization.
  * The record corresponds to a single position (resultSet.next() is never called).
  * In case the cached object used instead of creating a new one from the record,
- * the not needed fields' values are never obtained from resultSet 
+ * the not needed fields' values are never obtained from resultSet
  * (that's especially important for expensive LOBs).
  * If alternatively the record is used to populate an object then all
  * the values obtained from resultSet and resultSet is nullified.
- * In this case the fields' values not required after object population 
+ * In this case the fields' values not required after object population
  * (those not involved in indirection) are nullified to save space in the record.
  */
 public class ResultSetRecord extends ArrayRecord {
@@ -42,7 +42,7 @@ public class ResultSetRecord extends ArrayRecord {
     protected ResultSetRecord() {
         super();
     }
-    
+
     public ResultSetRecord(Vector fields, DatabaseField[] fieldsArray, ResultSet resultSet, ResultSetMetaData metaData, DatabaseAccessor accessor, AbstractSession session, DatabasePlatform platform, boolean optimizeData) {
         super(fields, fieldsArray, new Object[fieldsArray.length]);
         this.resultSet = resultSet;
@@ -52,7 +52,7 @@ public class ResultSetRecord extends ArrayRecord {
         this.optimizeData = optimizeData;
         this.session = session;
     }
-    
+
     /**
      * Obtains all the value from resultSet and removes it.
      * resultSet must be non null.
@@ -74,7 +74,7 @@ public class ResultSetRecord extends ArrayRecord {
         this.platform = null;
         this.session = null;
     }
-    
+
     /**
      * Remove values corresponding to all fields not related to indirection.
      */
@@ -92,7 +92,7 @@ public class ResultSetRecord extends ArrayRecord {
             }
         }
     }
-    
+
     public void removAllValue() {
         if (this.valuesArray != null) {
             int size = this.valuesArray.length;
@@ -101,7 +101,7 @@ public class ResultSetRecord extends ArrayRecord {
             }
         }
     }
-    
+
     /**
      * Indicates whether resultSet is still here.
      * @return
@@ -109,7 +109,7 @@ public class ResultSetRecord extends ArrayRecord {
     public boolean hasResultSet() {
         return this.resultSet != null;
     }
-    
+
     public void removeResultSet() {
         this.resultSet = null;
         this.metaData = null;
@@ -141,7 +141,7 @@ public class ResultSetRecord extends ArrayRecord {
         }
         super.checkValues();
     }
-    
+
     /**
      * PUBLIC:
      * Check if the value is contained in the row.
@@ -165,7 +165,7 @@ public class ResultSetRecord extends ArrayRecord {
             int index = key.index;
             if ((index < 0) || (index >= this.size)) {
                 index = 0;
-            }            
+            }
             DatabaseField field = this.fieldsArray[index];
             if ((field != key) && !field.equals(key)) {
                 index = -1;
@@ -179,13 +179,13 @@ public class ResultSetRecord extends ArrayRecord {
                         index = fieldIndex;
                         break;
                     }
-                }       
+                }
                 if (index < 0) {
                     return null;
                 }
             }
             if (this.resultSet != null) {
-                Object value = this.valuesArray[index]; 
+                Object value = this.valuesArray[index];
                 if (value == null) {
                     value = this.accessor.getObject(this.resultSet, field, this.metaData, index + 1, this.platform, this.optimizeData, this.session);
                     this.valuesArray[index] = value;
@@ -201,7 +201,7 @@ public class ResultSetRecord extends ArrayRecord {
             return super.get(key);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Retrieve the value for the field. If missing DatabaseRow.noEntry is returned.
@@ -214,7 +214,7 @@ public class ResultSetRecord extends ArrayRecord {
             int index = key.index;
             if ((index < 0) || (index >= this.size)) {
                 index = 0;
-            }            
+            }
             DatabaseField field = this.fieldsArray[index];
             if ((field != key) && !field.equals(key)) {
                 index = -1;
@@ -228,13 +228,13 @@ public class ResultSetRecord extends ArrayRecord {
                         index = fieldIndex;
                         break;
                     }
-                }                
+                }
                 if (index < 0) {
                     return null;
                 }
             }
             if (this.resultSet != null) {
-                Object value = this.valuesArray[index]; 
+                Object value = this.valuesArray[index];
                 if (value == null) {
                     value = this.accessor.getObject(this.resultSet, field, this.metaData, index + 1, this.platform, this.optimizeData, this.session);
                     this.valuesArray[index] = value;
@@ -256,7 +256,7 @@ public class ResultSetRecord extends ArrayRecord {
         return (this.resultSet != null ? " hasResultSet" : "");
     }
 
-    @Override 
+    @Override
     public void setSopObject(Object sopObject) {
         super.setSopObject(sopObject);
         // sopObject is set - the row is used to populate object

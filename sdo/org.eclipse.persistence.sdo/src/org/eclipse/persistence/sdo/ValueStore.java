@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo;
 
 import commonj.sdo.DataObject;
@@ -26,11 +26,11 @@ import commonj.sdo.Property;
  *   </p><p>
  *   Possible implementers must maintain DataObject integrity
  *   which includes containment and changeSummary.
- *   
+ *
  *   </p><p>Setup:<br>
  *   Before using the ValueStore interface the type tree must be defined by loading in the
  *   XSD schema file that matches the plugged in model if using dynamic classes.
- * </p><p>  
+ * </p><p>
  * The ValueStore interface enables 3rd party implementers of the SDO API to plug-in their
  * object model in place of the default SDO DataObject interface.
  * The Map like functions set/get and the List like functions isSet/unset are left to the

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2015 IBM Corporation, Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -83,7 +83,7 @@ public final class ServerPlatformUtils {
 
     /**
      * Create an instance of {@link ServerPlatform} from parameters passed in.
-     * 
+     *
      * @param session {@link DatabaseSession} which will be passed to the constructor of {@link ServerPlatform}
      * @param platformClass fully qualified name of the {@link ServerPlatform} implementation to initialize
      * @param loader {@link ClassLoader} to look up given platformClass

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -39,11 +39,11 @@ public abstract class XMLReaderAdapter extends XMLReader {
     protected LexicalHandler lexicalHandler;
 
     public XMLReaderAdapter() {
-    	super();
+        super();
     }
 
     public XMLReaderAdapter(Unmarshaller xmlUnmarshaller) {
-    	super();
+        super();
         if(null != xmlUnmarshaller) {
             Schema schema = xmlUnmarshaller.getSchema();
             if(null != schema) {
@@ -151,7 +151,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
         private ContentHandler contentHandler;
 
         public ExtendedContentHandlerAdapter(ContentHandler contentHandler) {
-            this.contentHandler = contentHandler; 
+            this.contentHandler = contentHandler;
         }
 
         public void setDocumentLocator(Locator locator) {
@@ -237,8 +237,8 @@ public abstract class XMLReaderAdapter extends XMLReader {
                 return -1;
             }
             int index = 0;
-            for(Attribute attribute : attributes()) {                
-              	if(localName.equals(attribute.getLocalName()) && uri.equals(attribute.getUri())){
+            for(Attribute attribute : attributes()) {
+                  if(localName.equals(attribute.getLocalName()) && uri.equals(attribute.getUri())){
                     return index;
                 }
                 index++;
@@ -310,7 +310,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
         public Attribute(String uri, String localName, String name, String value) {
             this.localName = localName;
             if(uri == null){
-            	this.uri = Constants.EMPTY_STRING;
+                this.uri = Constants.EMPTY_STRING;
             }else{
                 this.uri = uri;
             }
@@ -329,7 +329,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
         public String getLocalName() {
             return localName;
         }
-        
+
         public String getUri() {
             return uri;
         }

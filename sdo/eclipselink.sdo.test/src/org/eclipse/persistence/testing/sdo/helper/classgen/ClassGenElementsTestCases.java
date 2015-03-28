@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.classgen;
 
 import java.io.StringReader;
@@ -35,7 +35,7 @@ public class ClassGenElementsTestCases extends SDOClassGenTestCases {
 
     public void setUp() {
         // schemaGen in the super will fail schema load  with a NPE that generates an empty xsdString for this suite - normal
-    	super.setUp();
+        super.setUp();
         classGenerator = new SDOClassGenerator(aHelperContext);
         controlFileNames = new ArrayList<String>();
     }
@@ -197,12 +197,12 @@ public class ClassGenElementsTestCases extends SDOClassGenTestCases {
         controlFileNames.add("MyTestType.java");
         controlFileNames.add("MyTestTypeImpl.java");
         // JIRA-235: simple single type references: Spec sect 9.2 (1) oppositeType.dataType must be false
-        try {            
+        try {
             runClassGenTest(xsdSchemaName, 1);
             fail("An SDOException " + SDOException.CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE //
-            		+ " should have occurred but did not.");
-        } catch (SDOException e) {            
-            assertEquals(SDOException.CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE ,e.getErrorCode());            
+                    + " should have occurred but did not.");
+        } catch (SDOException e) {
+            assertEquals(SDOException.CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE ,e.getErrorCode());
         }
     }
 

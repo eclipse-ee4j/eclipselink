@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,7 +26,7 @@ import org.eclipse.persistence.sessions.Session;
  * @author James Sutherland
  */
 public class JavaSerializer extends AbstractSerializer {
-	public static final JavaSerializer instance = new JavaSerializer();
+    public static final JavaSerializer instance = new JavaSerializer();
     public Object serialize(Object object, Session session) {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         try {
@@ -36,13 +36,13 @@ public class JavaSerializer extends AbstractSerializer {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-        return byteOut.toByteArray();        
+        return byteOut.toByteArray();
     }
-    
+
     public Class getType() {
         return byte[].class;
     }
-    
+
     public Object deserialize(Object bytes, Session session) {
         ByteArrayInputStream byteIn = new ByteArrayInputStream((byte[])bytes);
         try {
@@ -55,9 +55,9 @@ public class JavaSerializer extends AbstractSerializer {
             return objectIn.readObject();
         } catch (Exception exception) {
             throw new RuntimeException(exception);
-        }        
+        }
     }
-    
+
     public String toString() {
         return getClass().getSimpleName();
     }

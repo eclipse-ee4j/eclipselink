@@ -1,17 +1,17 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/14/2011-2.3.1 Guy Pelletier 
+ *     09/14/2011-2.3.1 Guy Pelletier
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle;
 
 import java.io.IOException;
@@ -81,12 +81,12 @@ public class Oracle9Platform extends Oracle8Platform {
      * */
     protected transient boolean shouldPrintCalendar;
     /* Indicates whether TIMESTAMPTZ.timestampValue returns Timestamp in GMT.
-     * The flag is set to false unless 
+     * The flag is set to false unless
      * Oracle jdbc version is 11.1.0.7 or later and
      * OracleConnection's "oracle.jdbc.timestampTzInGmt" property is set to "true".
      * Though the property is defined per connection it is safe to assume that all connections
      * used with the platform are identical because they all created by the same DatabaseLogin
-     * with the same properties. 
+     * with the same properties.
      * */
     protected transient boolean isTimestampInGmt;
     /* Indicates whether TIMESTAMPLTZ.toTimestamp returns Timestamp in GMT.
@@ -94,17 +94,17 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     protected transient boolean isLtzTimestampInGmt;
     /* Indicates whether driverVersion, shouldPrintCalendar, isTimestampInGmt have been initialized.
-     * To re-initialize connection data call clearConnectionData method. 
+     * To re-initialize connection data call clearConnectionData method.
      */
     protected transient boolean isConnectionDataInitialized;
-    
+
     /** Indicates whether time component of java.sql.Date should be truncated (hours, minutes, seconds all set to zero)
-     * before been passed as a parameter to PreparedStatement. 
+     * before been passed as a parameter to PreparedStatement.
      * Starting with version 12.1 oracle jdbc Statement.setDate no longer zeroes sql.Date's entire time component (only milliseconds).
      * Set this flag to true to make the platform to truncate days/hours/minutes before passing the date to Statement.setDate method.
      */
     protected boolean shouldTruncateDate;
-    
+
     private XMLTypeFactory xmlTypeFactory;
 
     /**
@@ -116,12 +116,12 @@ public class Oracle9Platform extends Oracle8Platform {
     private static final Class ORACLE_SQL_TIMESTAMP    = oracle.sql.TIMESTAMP.class;
     private static final Class ORACLE_SQL_TIMESTAMPTZ  = oracle.sql.TIMESTAMPTZ.class;
     private static final Class ORACLE_SQL_TIMESTAMPLTZ = oracle.sql.TIMESTAMPLTZ.class;
-    
-    
+
+
     public Oracle9Platform(){
         super();
     }
-    
+
     /**
      * INTERNAL:
      * This class used for binding of NCHAR, NSTRING, NCLOB types.
@@ -170,7 +170,7 @@ public class Oracle9Platform extends Oracle8Platform {
         Oracle9Platform oracle9Platform = (Oracle9Platform)platform;
         oracle9Platform.setShouldTruncateDate(shouldTruncateDate());
     }
-    
+
     /**
      * INTERNAL:
      * Get a timestamp value from a result set.
@@ -199,7 +199,7 @@ public class Oracle9Platform extends Oracle8Platform {
                         return result;
                     }
                 }
-                
+
                 return getXMLTypeFactory().getString((OPAQUE)result);
             } catch (SQLException ex) {
                 throw DatabaseException.sqlException(ex, null, session, false);
@@ -208,18 +208,18 @@ public class Oracle9Platform extends Oracle8Platform {
             return super.getObjectFromResultSet(resultSet, columnNumber, type, session);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Get a TIMESTAMPTZ value from a result set.
      */
     public Object getTIMESTAMPTZFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session) throws java.sql.SQLException {
         TIMESTAMPTZ tsTZ = (TIMESTAMPTZ)resultSet.getObject(columnNumber);
-        //Need to call timestampValue once here with the connection to avoid null point 
+        //Need to call timestampValue once here with the connection to avoid null point
         //exception later when timestampValue is called in converObject()
         if ((tsTZ != null) && (tsTZ.getLength() != 0)) {
             Connection connection = getConnection(session, resultSet.getStatement().getConnection());
-            //Bug#4364359  Add a wrapper to overcome TIMESTAMPTZ not serializable as of jdbc 9.2.0.5 and 10.1.0.2.  
+            //Bug#4364359  Add a wrapper to overcome TIMESTAMPTZ not serializable as of jdbc 9.2.0.5 and 10.1.0.2.
             //It has been fixed in the next version for both streams
             Timestamp timestampToWrap = tsTZ.timestampValue(connection);
             TimeZone timezoneToWrap = TIMESTAMPHelper.extractTimeZone(tsTZ.toBytes());
@@ -227,21 +227,21 @@ public class Oracle9Platform extends Oracle8Platform {
         }
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Get a TIMESTAMPLTZ value from a result set.
      */
     public Object getTIMESTAMPLTZFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session) throws java.sql.SQLException {
         //TIMESTAMPLTZ needs to be converted to Timestamp here because it requires the connection.
-        //However the java object is not know here.  The solution is to store Timestamp and the 
+        //However the java object is not know here.  The solution is to store Timestamp and the
         //session timezone in a wrapper class, which will be used later in converObject().
         TIMESTAMPLTZ tsLTZ = (TIMESTAMPLTZ)resultSet.getObject(columnNumber);
         if ((tsLTZ != null) && (tsLTZ.getLength() != 0)) {
             Connection connection = getConnection(session, resultSet.getStatement().getConnection());
             Timestamp timestampToWrap = TIMESTAMPLTZ.toTimestamp(connection, tsLTZ.toBytes());
             String sessionTimeZone = ((OracleConnection)connection).getSessionTimeZone();
-            //Bug#4364359  Add a separate wrapper for TIMESTAMPLTZ.  
+            //Bug#4364359  Add a separate wrapper for TIMESTAMPLTZ.
             return new TIMESTAMPLTZWrapper(timestampToWrap, sessionTimeZone, this.isLtzTimestampInGmt);
         }
         return null;
@@ -304,7 +304,7 @@ public class Oracle9Platform extends Oracle8Platform {
 
     /**
      * Build the hint string used for first rows.
-     * 
+     *
      * Allows it to be overridden
      * @param max
      * @return
@@ -312,7 +312,7 @@ public class Oracle9Platform extends Oracle8Platform {
     protected String buildFirstRowsHint(int max){
         return HINT_START + '(' + max + ')'+ HINT_END;
     }
-    
+
     /**
      * INTERNAL:
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
@@ -352,7 +352,7 @@ public class Oracle9Platform extends Oracle8Platform {
         if ((javaClass == TIMESTAMPTypes.TIMESTAMP_CLASS) || (javaClass == TIMESTAMPTypes.TIMESTAMPLTZ_CLASS)) {
             return sourceObject;
         }
-        
+
         if (javaClass == TIMESTAMPTypes.TIMESTAMPTZ_CLASS) {
             if (sourceObject instanceof java.util.Date) {
                 Calendar cal = Calendar.getInstance();
@@ -364,7 +364,7 @@ public class Oracle9Platform extends Oracle8Platform {
         }
 
         if (javaClass == XMLTYPE) {
-            //Don't convert to XMLTypes. This will be done by the 
+            //Don't convert to XMLTypes. This will be done by the
             //XMLTypeBindCallCustomParameter to ensure the correct
             //Connection is used
             return sourceObject;
@@ -428,9 +428,9 @@ public class Oracle9Platform extends Oracle8Platform {
 
     /**
      * INTERNAL:
-     * Appends an Oracle specific Timestamp with timezone and daylight time 
+     * Appends an Oracle specific Timestamp with timezone and daylight time
      * elements if usesNativeSQL is true, otherwise use the ODBC format.
-     * Native Format: 
+     * Native Format:
      * (DST) to_timestamp_tz ('1997-11-06 10:35:45.345 America/Los_Angeles','yyyy-mm-dd hh:mm:ss.ff TZR TZD')
      * (non-DST) to_timestamp_tz ('1997-11-06 10:35:45.345 America/Los_Angeles','yyyy-mm-dd hh:mm:ss.ff TZR')
      */
@@ -474,12 +474,12 @@ public class Oracle9Platform extends Oracle8Platform {
         }
         this.isConnectionDataInitialized = true;
     }
-    
+
     public void clearConnectionData() {
         this.driverVersion = null;
         this.isConnectionDataInitialized = false;
     }
-    
+
     /**
      * INTERNAL:
      * Clears both implicit and explicit caches of OracleConnection
@@ -504,7 +504,7 @@ public class Oracle9Platform extends Oracle8Platform {
             }
         }
     }
-    
+
     /**
      *  INTERNAL:
      *  Note that index (not index+1) is used in statement.setObject(index, parameter)
@@ -611,8 +611,8 @@ public class Oracle9Platform extends Oracle8Platform {
     @Override
     public void setLobValueLimits(int lobValueLimits) {
         this.lobValueLimits = lobValueLimits;
-    }    
-    
+    }
+
     /**
      * INTERNAL:
      * Return if the type is a special oracle type.
@@ -621,7 +621,7 @@ public class Oracle9Platform extends Oracle8Platform {
     protected boolean isOracle9Specific(Class type) {
         return (type == NCHAR) || (type == NSTRING) || (type == NCLOB) || (type == XMLTYPE);
     }
-    
+
     /**
      * INTERNAL:
      * Used in write LOB method only to identify a CLOB.
@@ -630,7 +630,7 @@ public class Oracle9Platform extends Oracle8Platform {
     protected boolean isClob(Class type) {
         return NCLOB.equals(type) || super.isClob(type);
     }
-    
+
     /**
      * INTERNAL:
      * Used by SQLCall.translate(..)
@@ -661,7 +661,7 @@ public class Oracle9Platform extends Oracle8Platform {
             }
         }
         return super.getCustomModifyValueForCall(call, value, field, shouldBind);
-    }  
+    }
 
     protected Vector buildFromStringCharVec(Class javaClass) {
         Vector vec = getConversionManager().getDataTypesConvertedFrom(javaClass);
@@ -672,7 +672,7 @@ public class Oracle9Platform extends Oracle8Platform {
         }
         return vec;
     }
-    
+
     /**
      * INTERNAL:
      * Return the list of Classes that can be converted to from the passed in javaClass.
@@ -703,7 +703,7 @@ public class Oracle9Platform extends Oracle8Platform {
         dataTypesConvertedFromAClass.put(javaClass, dataTypes);
         return dataTypes;
     }
-    
+
     /**
      * INTERNAL:
      * Return the list of Classes that can be converted from to the passed in javaClass.
@@ -730,8 +730,8 @@ public class Oracle9Platform extends Oracle8Platform {
         dataTypesConvertedToAClass.put(javaClass, dataTypes);
         return dataTypes;
     }
-    
-    
+
+
     /**
      * Return the JDBC type for the given database field to be passed to Statement.setNull
      * The Oracle driver does not like the OPAQUE type so VARCHAR must be used.
@@ -745,7 +745,7 @@ public class Oracle9Platform extends Oracle8Platform {
         }
         return type;
     }
-    
+
     /**
      * Return the JDBC type for the Java type.
      * The Oracle driver does not like the OPAQUE type so VARCHAR must be used.
@@ -759,14 +759,14 @@ public class Oracle9Platform extends Oracle8Platform {
         }
         return super.getJDBCType(javaType);
     }
-    
+
     /**
      * INTERNAL: This gets called on each batch statement execution
      * Needs to be implemented so that it returns the number of rows successfully modified
-     * by this statement for optimistic locking purposes (if useNativeBatchWriting is enabled, and 
-     * the call uses optimistic locking).  
-     * 
-     * @param isStatementPrepared - flag is set to true if this statement is prepared 
+     * by this statement for optimistic locking purposes (if useNativeBatchWriting is enabled, and
+     * the call uses optimistic locking).
+     *
+     * @param isStatementPrepared - flag is set to true if this statement is prepared
      * @return - number of rows modified/deleted by this statement
      */
     @Override
@@ -783,39 +783,39 @@ public class Oracle9Platform extends Oracle8Platform {
             return super.executeBatch(statement, isStatementPrepared);
         }
     }
-    
+
     /**
      * INTERNAL: This gets called on each iteration to add parameters to the batch
      * Needs to be implemented so that it returns the number of rows successfully modified
-     * by this statement for optimistic locking purposes (if useNativeBatchWriting is enabled, and 
-     * the call uses optimistic locking).  Is used with parameterized SQL 
-     * 
+     * by this statement for optimistic locking purposes (if useNativeBatchWriting is enabled, and
+     * the call uses optimistic locking).  Is used with parameterized SQL
+     *
      * @return - number of rows modified/deleted by this statement if it was executed (0 if it wasn't)
      */
     @Override
     public int addBatch(PreparedStatement statement) throws java.sql.SQLException {
         if (usesNativeBatchWriting()){
-            return statement.executeUpdate(); 
+            return statement.executeUpdate();
         }else{
             return super.addBatch(statement);
         }
     }
-    
+
     /**
      * INTERNAL: Allows setting the batch size on the statement
      * Is used with parameterized SQL, and should only be passed in prepared statements
-     * 
+     *
      * @return - statement to be used for batch writing
      */
     @Override
     public Statement prepareBatchStatement(Statement statement, int maxBatchWritingSize) throws java.sql.SQLException {
         if (usesNativeBatchWriting()){
             //add max statement setting
-            ((OraclePreparedStatement) statement).setExecuteBatch(maxBatchWritingSize); 
+            ((OraclePreparedStatement) statement).setExecuteBatch(maxBatchWritingSize);
         }
         return statement;
     }
-    
+
     /**
      * INTERNAL:
      * Lazy initialization of xmlTypeFactory allows to avoid loading xdb-dependent
@@ -841,7 +841,7 @@ public class Oracle9Platform extends Oracle8Platform {
         }
         return xmlTypeFactory;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether the passed object is an instance of XDBDocument.
@@ -874,10 +874,10 @@ public class Oracle9Platform extends Oracle8Platform {
             return super.unwrapOracleConnection(connection);
         }
     }
-    
+
     /**
      * PUBLIC:
-     * Return is this is the Oracle 9 platform. 
+     * Return is this is the Oracle 9 platform.
      */
     @Override
     public boolean isOracle9() {
@@ -896,21 +896,21 @@ public class Oracle9Platform extends Oracle8Platform {
             return new OracleJDBC_10_1_0_2ProxyConnectionCustomizer(accessor, session);
         }
     }
-    
+
     /**
      * INTERNAL: Return the driver version.
      */
     public String getDriverVersion() {
         return driverVersion;
     }
-    
+
     /**
      * INTERNAL: Return if timestamps are returned in GMT by the driver.
      */
     public boolean isTimestampInGmt() {
         return isTimestampInGmt;
     }
-    
+
     /**
      * INTERNAL: Return if ltz timestamps are returned in GMT by the driver.
      */
@@ -921,7 +921,7 @@ public class Oracle9Platform extends Oracle8Platform {
     /**
      * PUBLIC:
      * Indicates whether time component of java.sql.Date should be truncated (hours, minutes, seconds all set to zero)
-     * before been passed as a parameter to PreparedStatement. 
+     * before been passed as a parameter to PreparedStatement.
      * Starting with version 12.1 oracle jdbc Statement.setDate no longer zeroes sql.Date's entire time component (only milliseconds).
      * "true" indicates that the platform truncates days/hours/minutes before passing the date to Statement.setDate method.
      */
@@ -932,7 +932,7 @@ public class Oracle9Platform extends Oracle8Platform {
     /**
      * PUBLIC:
      * Indicates whether time component of java.sql.Date should be truncated (hours, minutes, seconds all set to zero)
-     * before been passed as a parameter to PreparedStatement. 
+     * before been passed as a parameter to PreparedStatement.
      * Starting with version 12.1 oracle jdbc Statement.setDate no longer zeroes sql.Date's entire time component (only milliseconds).
      * Set this flag to true to make the platform to truncate days/hours/minutes before passing the date to Statement.setDate method.
      */

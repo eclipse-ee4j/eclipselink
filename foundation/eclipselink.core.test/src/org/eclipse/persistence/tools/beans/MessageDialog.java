@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.beans;
 
 import javax.swing.*;
@@ -68,7 +68,7 @@ public class MessageDialog extends JDialog {
     /**
      * Center a component with relation to another component.
      */
-    public static void centerComponent(java.awt.Component component, 
+    public static void centerComponent(java.awt.Component component,
                                        java.awt.Component parent) {
         while (parent.getParent() != null) {
             parent = parent.getParent();
@@ -85,7 +85,7 @@ public class MessageDialog extends JDialog {
         size.height = size.height / 2;
         size.width = size.width / 2;
 
-        component.setLocation(parentSize.width - size.width + xOffset, 
+        component.setLocation(parentSize.width - size.width + xOffset,
                               parentSize.height - size.height + yOffset);
     }
 
@@ -122,7 +122,7 @@ public class MessageDialog extends JDialog {
      * main entrypoint - starts the part when it is run as an application
      * @param args java.lang.String[]
      */
-    public static void displayException(Throwable exception, 
+    public static void displayException(Throwable exception,
                                         java.awt.Container parent) {
         displayMessage(exception.toString(), parent);
     }
@@ -147,7 +147,7 @@ public class MessageDialog extends JDialog {
      * main entrypoint - starts the part when it is run as an application
      * @param args java.lang.String[]
      */
-    public static void displayMessage(String message, 
+    public static void displayMessage(String message,
                                       java.awt.Container parent) {
         try {
             MessageDialog aMessageDialog;
@@ -176,27 +176,27 @@ public class MessageDialog extends JDialog {
                 ivjJDialogContentPane.setLayout(new java.awt.GridBagLayout());
                 ivjJDialogContentPane.setBackground(java.awt.SystemColor.control);
 
-                java.awt.GridBagConstraints constraintsOKButton = 
+                java.awt.GridBagConstraints constraintsOKButton =
                     new java.awt.GridBagConstraints();
                 constraintsOKButton.gridx = 0;
                 constraintsOKButton.gridy = 1;
                 constraintsOKButton.weightx = 1.0;
                 constraintsOKButton.ipadx = 20;
                 constraintsOKButton.insets = new java.awt.Insets(0, 0, 4, 0);
-                getJDialogContentPane().add(getOKButton(), 
+                getJDialogContentPane().add(getOKButton(),
                                             constraintsOKButton);
 
-                java.awt.GridBagConstraints constraintsMessageScrollPane = 
+                java.awt.GridBagConstraints constraintsMessageScrollPane =
                     new java.awt.GridBagConstraints();
                 constraintsMessageScrollPane.gridx = 0;
                 constraintsMessageScrollPane.gridy = 0;
-                constraintsMessageScrollPane.fill = 
+                constraintsMessageScrollPane.fill =
                         java.awt.GridBagConstraints.BOTH;
                 constraintsMessageScrollPane.weightx = 1.0;
                 constraintsMessageScrollPane.weighty = 1.0;
-                constraintsMessageScrollPane.insets = 
+                constraintsMessageScrollPane.insets =
                         new java.awt.Insets(4, 4, 4, 4);
-                getJDialogContentPane().add(getMessageScrollPane(), 
+                getJDialogContentPane().add(getMessageScrollPane(),
                                             constraintsMessageScrollPane);
                 // user code begin {1}
                 // user code end

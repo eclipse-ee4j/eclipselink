@@ -30,18 +30,18 @@ import org.w3c.dom.Document;
 public class NameTransformerTestCases extends JAXBWithJSONTestCases{
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/nametransformerupper.xml";
     protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/nametransformerupper.json";
-    
-	private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
-	private final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
-	private final static String CONTROL_RESPONSIBILITY3 = "Write Design Spec";
-	private final static String CONTROL_FIRST_NAME = "Bob";
-	private final static String CONTROL_LAST_NAME = "Smith";
-	private final static int CONTROL_ID = 10;
+
+    private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
+    private final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
+    private final static String CONTROL_RESPONSIBILITY3 = "Write Design Spec";
+    private final static String CONTROL_FIRST_NAME = "Bob";
+    private final static String CONTROL_LAST_NAME = "Smith";
+    private final static int CONTROL_ID = 10;
 
     public NameTransformerTestCases(String name) throws Exception {
-        super(name);		
+        super(name);
     }
-	
+
     public void setUp() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -75,78 +75,78 @@ public class NameTransformerTestCases extends JAXBWithJSONTestCases{
         responsibilities.add(CONTROL_RESPONSIBILITY3);
 
         Employee employee = new Employee();
-		employee.firstName = CONTROL_FIRST_NAME;
-		employee.lastName = CONTROL_LAST_NAME;
-		Calendar cal = Calendar.getInstance();
-		cal.clear();
-		cal.set(2005,04,24,16,06,53);
-			
-		employee.birthday = cal;
-				
-		employee.id = CONTROL_ID;
-		
-		employee.responsibilities = responsibilities;
-		
-		employee.responsibilities2 = responsibilities;
-		
-		employee.setBlah("Some String");
-             
-		Phone p = new Phone();
-		p.number = "1234567";
-		employee.phone = p;
-		
-		Address addr = new Address();		
-		addr.id = 1;
-		addr.cityName = "Dartmouth";
-		employee.address = addr;
-		
+        employee.firstName = CONTROL_FIRST_NAME;
+        employee.lastName = CONTROL_LAST_NAME;
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(2005,04,24,16,06,53);
+
+        employee.birthday = cal;
+
+        employee.id = CONTROL_ID;
+
+        employee.responsibilities = responsibilities;
+
+        employee.responsibilities2 = responsibilities;
+
+        employee.setBlah("Some String");
+
+        Phone p = new Phone();
+        p.number = "1234567";
+        employee.phone = p;
+
+        Address addr = new Address();
+        addr.id = 1;
+        addr.cityName = "Dartmouth";
+        employee.address = addr;
+
         return employee;
     }
-    
-	
+
+
     public void testSchemaGen() throws Exception {
-        List<InputStream> controlSchemas = new ArrayList<InputStream>();		
+        List<InputStream> controlSchemas = new ArrayList<InputStream>();
         InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/nametransformerupper.xsd");
-        controlSchemas.add(is);		
+        controlSchemas.add(is);
         super.testSchemaGen(controlSchemas);
     }
-	
+
     protected Map getProperties() {
-		
-        Map overrides = new HashMap();		
-        String overridesString = 
+
+        Map overrides = new HashMap();
+        String overridesString =
         "<?xml version='1.0' encoding='UTF-8'?>" +
         "<xml-bindings xmlns='http://www.eclipse.org/eclipselink/xsds/persistence/oxm' xml-name-transformer='org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.MyUpperTransformer'>" +
         "<xml-schema namespace='myuri'/>" +
-    	"<java-types>" +
-		"<java-type name='org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.Address' xml-name-transformer='org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.MyDoubleTransformer'>" +
-		"</java-type>" +
-	    "</java-types>" +
+        "<java-types>" +
+        "<java-type name='org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.Address' xml-name-transformer='org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.MyDoubleTransformer'>" +
+        "</java-type>" +
+        "</java-types>" +
         "</xml-bindings>";
 
         DOMSource src = null;
-        try {		      
+        try {
             Document doc = parser.parse(new ByteArrayInputStream(overridesString.getBytes()));
             src = new DOMSource(doc.getDocumentElement());
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        fail("An error occurred during setup");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An error occurred during setup");
         }
-		    
+
         overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer", src);
 
         Map props = new HashMap();
         props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
         return props;
-    }	
-    
-   
+    }
+
+
     //package-info has MyLowerTransformer
     //address annotation has MyLowerTransformer
     //bindings xml-bindings has MyUpperTransformer
     //bindings address has MyDoubleTransformer
     //phone should get MyUpperTransformer from bindings packagelevel
-    
+
     //Employee - MyUpperTransformer
     //Address - MyDoubleTransformer
     //Phone - MyUpperTransformer

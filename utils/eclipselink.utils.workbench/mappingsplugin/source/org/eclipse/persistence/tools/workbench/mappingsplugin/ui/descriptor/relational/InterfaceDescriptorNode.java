@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -22,80 +22,80 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.descriptor.Desc
 
 
 public final class InterfaceDescriptorNode
-	extends DescriptorNode
+    extends DescriptorNode
 {
 
-	// ********** constructors/initialization **********
+    // ********** constructors/initialization **********
 
-	public InterfaceDescriptorNode(MWInterfaceDescriptor descriptor, DescriptorPackageNode parentNode) {
-		super(descriptor, parentNode);
-	}
-
-
-
-	// ********** DescriptorNode implementation **********
-
-	protected boolean supportsAdvancedProperties() {
-		return false;
-	}
-	
-	protected boolean supportsDescriptorMorphing() {
-		return false;
-	}
-
-	// ********** ApplicationNode implementation **********
-
-	public String helpTopicID() {
-		return "descriptor.interface";
-	}
-
-	public GroupContainerDescription buildMenuDescription(WorkbenchContext context)
-	{
-		GroupContainerDescription desc =  super.buildMenuDescription(context);
-		context = buildLocalWorkbenchContext(context);
-		
-		MenuGroupDescription classItems = new MenuGroupDescription();
-		classItems.add(getMappingsPlugin().getRefreshClassesAction(context));
-		classItems.add(getMappingsPlugin().getAddOrRefreshClassesAction(context));
-		classItems.add(getMappingsPlugin().getCreateNewClassAction(context));
-		desc.add(classItems);
-		
-		MenuGroupDescription descItems = new MenuGroupDescription();
-		descItems.add(getRemoveDescriptorAction(context));
-		descItems.add(getRenameDescriptorAction(context));
-		descItems.add(getMoveDescriptorAction(context));
-		desc.add(descItems);
-		
-		desc.add(buildOracleHelpMenuGroup(context));
-		
-		return desc;
-	}
-	
-	public GroupContainerDescription buildToolBarDescription(WorkbenchContext workbenchContext)
-	{
-		return new ToolBarDescription();
-	}
-	
-	protected String accessibleNameKey() {
-		return "ACCESSIBLE_INTERFACE_DESCRIPTOR_NODE";
-	}
-
-	public String buildIconKey() {
-		return "descriptor.interface";
-	}
+    public InterfaceDescriptorNode(MWInterfaceDescriptor descriptor, DescriptorPackageNode parentNode) {
+        super(descriptor, parentNode);
+    }
 
 
-	// ********** MWApplicationNode overrides **********
 
-	protected Class propertiesPageClass() {
-		return InterfaceDescriptorPropertiesPage.class;
-	}
+    // ********** DescriptorNode implementation **********
 
-	
-	// ********** DescriptorNode overrides **********
-	
-	public boolean hasEjbPolicy() {
-		return false;
-	}
-	
+    protected boolean supportsAdvancedProperties() {
+        return false;
+    }
+
+    protected boolean supportsDescriptorMorphing() {
+        return false;
+    }
+
+    // ********** ApplicationNode implementation **********
+
+    public String helpTopicID() {
+        return "descriptor.interface";
+    }
+
+    public GroupContainerDescription buildMenuDescription(WorkbenchContext context)
+    {
+        GroupContainerDescription desc =  super.buildMenuDescription(context);
+        context = buildLocalWorkbenchContext(context);
+
+        MenuGroupDescription classItems = new MenuGroupDescription();
+        classItems.add(getMappingsPlugin().getRefreshClassesAction(context));
+        classItems.add(getMappingsPlugin().getAddOrRefreshClassesAction(context));
+        classItems.add(getMappingsPlugin().getCreateNewClassAction(context));
+        desc.add(classItems);
+
+        MenuGroupDescription descItems = new MenuGroupDescription();
+        descItems.add(getRemoveDescriptorAction(context));
+        descItems.add(getRenameDescriptorAction(context));
+        descItems.add(getMoveDescriptorAction(context));
+        desc.add(descItems);
+
+        desc.add(buildOracleHelpMenuGroup(context));
+
+        return desc;
+    }
+
+    public GroupContainerDescription buildToolBarDescription(WorkbenchContext workbenchContext)
+    {
+        return new ToolBarDescription();
+    }
+
+    protected String accessibleNameKey() {
+        return "ACCESSIBLE_INTERFACE_DESCRIPTOR_NODE";
+    }
+
+    public String buildIconKey() {
+        return "descriptor.interface";
+    }
+
+
+    // ********** MWApplicationNode overrides **********
+
+    protected Class propertiesPageClass() {
+        return InterfaceDescriptorPropertiesPage.class;
+    }
+
+
+    // ********** DescriptorNode overrides **********
+
+    public boolean hasEjbPolicy() {
+        return false;
+    }
+
 }

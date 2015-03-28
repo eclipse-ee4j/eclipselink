@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
@@ -35,24 +35,24 @@ import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
 import org.eclipse.persistence.queries.ReadAllQuery;
- 
+
 public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
-        
+
     static protected Class[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
     static protected Vector[] objectVectors = {null, null, null, null};
-    
+
     static protected EmployeePopulator populator = new EmployeePopulator();
     protected DatabaseSession dbSession;
 
     public JoinedAttributeAdvancedJunitTest() {
         super();
     }
-    
+
     public JoinedAttributeAdvancedJunitTest(String name) {
         super(name);
     }
-    
-    // the session is cached to avoid extra dealing with SessionManager - 
+
+    // the session is cached to avoid extra dealing with SessionManager -
     // without session caching each test caused at least 5 ClientSessins being acquired / released.
     protected DatabaseSession getDbSession() {
         if(dbSession == null) {
@@ -60,11 +60,11 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         }
         return dbSession;
     }
-    
+
     protected UnitOfWork acquireUnitOfWork() {
-        return getDbSession().acquireUnitOfWork();   
+        return getDbSession().acquireUnitOfWork();
     }
-    
+
     protected void clear() {
         UnitOfWork uow = acquireUnitOfWork();
 
@@ -83,7 +83,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
               emp.setManager(null);
               emp.setAddress(null);
               uow.deleteObject(emp);
-            }; 
+            };
         }
 
         UpdateAllQuery updateProjects = new UpdateAllQuery(Project.class);
@@ -97,7 +97,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         uow.commit();
         dbSessionClearCache();
     }
-    
+
     protected void populate() {
         populator.buildExamples();
         populator.persistExample(getDbSession());
@@ -106,11 +106,11 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             objectVectors[i] = getDbSession().readAllObjects(classes[i]);
         }
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("JoinedAttributeAdvancedJunitTest (fieldaccess)");
-        
+
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testSetup"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamMembers"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectJoinTeamLeaderJoinAddressWhereTeamLeaderNotNull"));
@@ -128,10 +128,10 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testMultipleUnrelatedResultWithOneToManyJoins"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToOneJoins"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -140,19 +140,19 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         populate();
         clearCache("fieldaccess");
     }
-    
+
     public void tearDown() {
         dbSessionClearCache();
         dbSession = null;
         super.tearDown();
     }
-        
+
     public void testProjectJoinTeamMembers() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         query.addJoinedAttribute(query.getExpressionBuilder().anyOf("teamMembers"));
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
@@ -160,15 +160,15 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
+
     public void testProjectJoinTeamLeaderJoinAddressWhereTeamLeaderNotNull() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
         Expression teamLeader = query.getExpressionBuilder().get("teamLeader");
         query.setSelectionCriteria(teamLeader.notNull());
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         query.addJoinedAttribute(teamLeader);
         Expression teamLeaderAddress = teamLeader.get("address");
         query.addJoinedAttribute(teamLeaderAddress);
@@ -178,13 +178,13 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
+
     public void testProjectJoinTeamMembersJoinAddress() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         Expression teamMembers = query.getExpressionBuilder().anyOf("teamMembers");
         query.addJoinedAttribute(teamMembers);
         Expression teamMembersAddress = teamMembers.get("address");
@@ -195,13 +195,13 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
+
     public void testProjectOuterJoinTeamMembersJoinAddress() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         Expression teamMembers = query.getExpressionBuilder().anyOfAllowingNone("teamMembers");
         query.addJoinedAttribute(teamMembers);
         Expression teamMembersAddress = teamMembers.get("address");
@@ -212,13 +212,13 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
+
     public void testProjectOuterJoinTeamMembersOuterJoinAddress() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         Expression teamMembers = query.getExpressionBuilder().anyOfAllowingNone("teamMembers");
         query.addJoinedAttribute(teamMembers);
         Expression teamMembersAddress = teamMembers.getAllowingNull("address");
@@ -229,13 +229,13 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
+
     public void testProjectJoinTeamMembersOuterJoinAddress() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         Expression teamMembers = query.getExpressionBuilder().anyOf("teamMembers");
         query.addJoinedAttribute(teamMembers);
         Expression teamMembersAddress = teamMembers.getAllowingNull("address");
@@ -246,14 +246,14 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
+
     public void testProblemReporterProjectJoinTeamMembersJoinAddress() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("name").equal("Problem Reporter"));
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         Expression teamMembers = query.getExpressionBuilder().anyOf("teamMembers");
         query.addJoinedAttribute(teamMembers);
         Expression teamMembersAddress = teamMembers.get("address");
@@ -264,11 +264,11 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
+
     public void testEmployeeJoinProjects() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         query.addJoinedAttribute(query.getExpressionBuilder().anyOf("projects"));
 
@@ -277,12 +277,12 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
+
     public void testEmployeeJoinProjectsJoinTeamLeaderJoinAddressWhereManagerIsNull() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("manager").isNull());
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         Expression projects = query.getExpressionBuilder().anyOf("projects");
         query.addJoinedAttribute(projects);
@@ -296,15 +296,15 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
+
     public void testProjectOuterJoinTeamLeaderAddressTeamMembersAddressPhonesWhereProjectName() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Project.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("name").equal("Problem Reporting System").
             or(query.getExpressionBuilder().get("name").equal("Bleep Blob")));
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         Expression teamLeader = query.getExpressionBuilder().getAllowingNull("teamLeader");
         query.addJoinedAttribute(teamLeader);
         Expression teamLeaderAddress = teamLeader.getAllowingNull("address");
@@ -321,13 +321,13 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
+
     public void testEmployeeOuterJoinAddressPhoneProjectsTeamLeaderAddressTeamMembersPhones() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         // Note that without the following two lines address and phones are not read not for all Employees:
         // once an Employee is built (without Address and Phones)
         // it's not going to be rebuilt (get Address and Phones) when it's
@@ -336,7 +336,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         // teamMembers would've got Phones and Addresses).
         query.addJoinedAttribute(query.getExpressionBuilder().getAllowingNull("address"));
         query.addJoinedAttribute(query.getExpressionBuilder().anyOfAllowingNone("phoneNumbers"));
-        
+
         Expression projects = query.getExpressionBuilder().anyOfAllowingNone("projects");
         query.addJoinedAttribute(projects);
         Expression teamLeader = projects.getAllowingNull("teamLeader");
@@ -359,7 +359,7 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         query.setReferenceClass(Employee.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("lastName").equal("Way").
                                     or(query.getExpressionBuilder().get("lastName").equal("Jones")));
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         Expression manager = query.getExpressionBuilder().get("manager");
         query.addJoinedAttribute(manager);
@@ -374,7 +374,7 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
             fail(errorMsg);
         }
     }
-    
+
     public void testTwoUnrelatedResultWithOneToManyJoins() {
         if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
             getServerSession("fieldaccess").logMessage("Test testTwoUnrelatedResultWithOneToManyJoins skipped for this platform, "
@@ -388,7 +388,7 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         for (Iterator iterator = emp.getPhoneNumbers().iterator(); iterator.hasNext();){
             ((PhoneNumber)iterator.next()).getOwner();
         }
-        
+
         raq = new ReadAllQuery(Address.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
@@ -396,16 +396,16 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
             ((Employee)iterator.next()).getAddress();
         }
-        
+
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        
+
         ReportQuery query = new ReportQuery();
         query.setShouldReturnWithoutReportQueryResult(true);
         query.setReferenceClass(Employee.class);
 
         ExpressionBuilder eb = new ExpressionBuilder(Address.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(emp.getId()).and(eb.get("id").equal(addr.getId())));
-        
+
         List list = new ArrayList();
         list.add(query.getExpressionBuilder().anyOf("phoneNumbers"));
         query.addItem("employee", query.getExpressionBuilder(), list);
@@ -413,9 +413,9 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         list = new ArrayList();
         list.add(eb.anyOf("employees"));
         query.addItem("address", eb, list);
-        
+
         Vector result = (Vector)getDbSession().executeQuery(query);
-        
+
         DeleteAllQuery deleteAll = new DeleteAllQuery(PhoneNumber.class);
         deleteAll.setSelectionCriteria(deleteAll.getExpressionBuilder().get("owner").get("id").equal(emp.getId()));
         UnitOfWork uow = getDbSession().acquireUnitOfWork();
@@ -425,13 +425,13 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         updall.addUpdate("address", null);
         updall.setSelectionCriteria(updall.getExpressionBuilder().get("address").get("id").equal(addr.getId()));
         uow.executeQuery(updall);
-        
+
         uow.commit();
-        
+
         try {
             Employee emp2 = (Employee)((Object[])result.firstElement())[0];
             Address addr2 = (Address)((Object[])result.firstElement())[1];
-    
+
             assertTrue("PhoneNumbers were not joined correctly, emp.getPhoneNumbers().size = " + emp.getPhoneNumbers().size() + " emp2.getPhoneNumbers().size = " + emp2.getPhoneNumbers().size(), (emp.getPhoneNumbers().size() == emp2.getPhoneNumbers().size()));
             assertTrue("Employees were not joined correctly, addr.employees.size = " + addr.getEmployees().size() + "addr2.employees.size = " + addr2.getEmployees().size(), (addr.getEmployees().size() == addr2.getEmployees().size()));
         } finally {
@@ -439,7 +439,7 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         }
 
     }
-    
+
     public void testMultipleUnrelatedResultWithOneToManyJoins() {
         if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
             getServerSession("fieldaccess").logMessage("Test testMultipleUnrelatedResultWithOneToManyJoins skipped for this platform, "
@@ -453,7 +453,7 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         for (Iterator iterator = emp.getPhoneNumbers().iterator(); iterator.hasNext();){
             ((PhoneNumber)iterator.next()).getOwner();
         }
-        
+
         raq = new ReadAllQuery(Address.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
@@ -463,13 +463,13 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
             addrEmp.getAddress();
             addrEmp.getPhoneNumbers().size(); // as the report query will join in all phones to all emps, make sure we can compare.
         }
-        
+
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        
+
         ReportQuery query = new ReportQuery();
         query.setShouldReturnWithoutReportQueryResult(true);
         query.setReferenceClass(Address.class);
-        
+
         ExpressionBuilder eb = new ExpressionBuilder(Employee.class);
 
         List list = new ArrayList();
@@ -481,10 +481,10 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         query.addItem("address", query.getExpressionBuilder(), list);
 
         query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(addr.getId()));
-        
-        
+
+
         Vector result = (Vector)getDbSession().executeQuery(query);
-        
+
         DeleteAllQuery deleteAll = new DeleteAllQuery(PhoneNumber.class);
         deleteAll.setSelectionCriteria(deleteAll.getExpressionBuilder().get("owner").get("id").equal(emp.getId()));
         UnitOfWork uow = getDbSession().acquireUnitOfWork();
@@ -494,9 +494,9 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         updall.addUpdate("address", null);
         updall.setSelectionCriteria(updall.getExpressionBuilder().get("address").get("id").equal(addr.getId()));
         uow.executeQuery(updall);
-        
+
         uow.commit();
-        
+
         try {
             Employee emp2 = null;
             Address addr2 = null;
@@ -515,7 +515,7 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         }
 
     }
-    
+
     public void testTwoUnrelatedResultWithOneToOneJoins() {
         if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
             getServerSession("fieldaccess").logMessage("Test testTwoUnrelatedResultWithOneToOneJoins skipped for this platform, "
@@ -526,7 +526,7 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("lastName").equal("Way").or(raq.getExpressionBuilder().get("lastName").equal("Jones")));
         Employee emp = (Employee)((Vector)getDbSession().executeQuery(raq)).firstElement();
         emp.getAddress();
-        
+
         raq = new ReadAllQuery(Address.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
@@ -534,16 +534,16 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
             ((Employee)iterator.next()).getAddress();
         }
-        
+
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        
+
         ReportQuery query = new ReportQuery();
         query.setShouldReturnWithoutReportQueryResult(true);
         query.setReferenceClass(Employee.class);
 
         ExpressionBuilder eb = new ExpressionBuilder(Address.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(emp.getId()).and(eb.get("id").equal(addr.getId())));
-        
+
         List list = new ArrayList();
         list.add(query.getExpressionBuilder().get("address"));
         query.addItem("employee", query.getExpressionBuilder(), list);
@@ -551,9 +551,9 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         list = new ArrayList();
         list.add(eb.anyOf("employees"));
         query.addItem("address", eb, list);
-        
+
         Vector result = (Vector)getDbSession().executeQuery(query);
-        
+
         UpdateAllQuery updall = new UpdateAllQuery(Employee.class);
         updall.addUpdate("address", null);
         updall.setSelectionCriteria(updall.getExpressionBuilder().get("id").equal(emp.getId()));
@@ -564,9 +564,9 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         updall.addUpdate("address", null);
         updall.setSelectionCriteria(updall.getExpressionBuilder().get("address").get("id").equal(addr.getId()));
         uow.executeQuery(updall);
-        
+
         uow.commit();
-        
+
         try {
             Employee emp2 = (Employee)((Object[])result.firstElement())[0];
             Address addr2 = (Address)((Object[])result.firstElement())[1];
@@ -578,7 +578,7 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
             testSetup();
         }
     }
-    
+
     public void testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem() {
         if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
             getServerSession("fieldaccess").logMessage("Test testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem skipped for this platform, "
@@ -589,7 +589,7 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("lastName").equal("Way").or(raq.getExpressionBuilder().get("lastName").equal("Jones")));
         Employee emp = (Employee)((Vector)getDbSession().executeQuery(raq)).firstElement();
         emp.getAddress();
-        
+
         raq = new ReadAllQuery(Address.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
@@ -597,16 +597,16 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
             ((Employee)iterator.next()).getAddress();
         }
-        
+
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        
+
         ReportQuery query = new ReportQuery();
         query.setShouldReturnWithoutReportQueryResult(true);
         query.setReferenceClass(Employee.class);
 
         ExpressionBuilder eb = new ExpressionBuilder(Address.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(emp.getId()).and(eb.get("id").equal(addr.getId())));
-        
+
         List list = new ArrayList();
         list.add(query.getExpressionBuilder().get("address"));
         query.addItem("employee", query.getExpressionBuilder(), list);
@@ -615,9 +615,9 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         list = new ArrayList();
         list.add(eb.anyOf("employees"));
         query.addItem("address", eb, list);
-        
+
         Vector result = (Vector)getDbSession().executeQuery(query);
-        
+
         UpdateAllQuery updall = new UpdateAllQuery(Employee.class);
         updall.addUpdate("address", null);
         updall.setSelectionCriteria(updall.getExpressionBuilder().get("id").equal(emp.getId()));
@@ -628,9 +628,9 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         updall.addUpdate("address", null);
         updall.setSelectionCriteria(updall.getExpressionBuilder().get("address").get("id").equal(addr.getId()));
         uow.executeQuery(updall);
-        
+
         uow.commit();
-        
+
         Employee emp2 = (Employee)((Object[])result.firstElement())[0];
         Address addr2 = (Address)((Object[])result.firstElement())[2];
         try {
@@ -639,7 +639,7 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
             if (!emp2.getFirstName().equals(((Object[])result.firstElement())[1])) {
                 fail("Failed to return employee name as an separate item");
             }
-    
+
         } finally {
             testSetup();
         }
@@ -663,7 +663,7 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
             return false;
         }
         Vector currentVector = getDbSession().readAllObjects(classes[i]);
-        
+
         if(currentVector.size() != objectVectors[i].size()) {
             return false;
         }

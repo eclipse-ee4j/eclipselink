@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     GYorke - non-bug update to set accessor in case of connection failure.  Thi
  *              will allow the retry code to function.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.util.*;
@@ -40,8 +40,8 @@ import org.eclipse.persistence.sessions.server.ConnectionPool;
  *
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
- * 
- * 05/28/2008-1.0M8 Andrei Ilitchev. 
+ *
+ * 05/28/2008-1.0M8 Andrei Ilitchev.
  *   - 224964: Provide support for Proxy Authentication through JPA.
  *     Added ConnectionCustomizer, also fixed  postConnect/preDisconnect ExternalConnection calls so that they called in case of reads, too.
  */
@@ -58,7 +58,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * This is used for connection pooling for loadbalancing and for external connection pooling.
      */
     protected int callCount;
-    
+
     /**
      * Keep track of the number of the storedprocedure statement that being executed.
      */
@@ -67,21 +67,21 @@ public abstract class DatasourceAccessor implements Accessor {
      * Keep track of the number of the read statement that being executed.
      */
     public int readStatementsCount;
-    
+
     /**
      * Keep track of the number of the write statement that being executed.
      */
     public int writeStatementsCount;
-    
+
     //Stores the number of executed read SQL statements
     public static final String READ_STATEMENTS_COUNT_PROPERTY = "Read_Statements_Count_Property";
 
     //Stores the number of executed write SQL statements
     public static final String WRITE_STATEMENTS_COUNT_PROPERTY = "Write_Statements_Count_Property";
-    
+
     //Stores the number of executed store procedure statements
     public static final String STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY = "StoredProcedure_Statements_Count_Property";
-    
+
 
     /** Keep track if the accessor is within a transaction context */
     protected boolean isInTransaction;
@@ -92,21 +92,21 @@ public abstract class DatasourceAccessor implements Accessor {
     /** PERF: Cache platform to avoid gets (small but can add up). */
     /** This is also required to ensure all accessors for a session are using the same platform. */
     protected DatasourcePlatform platform;
-    
+
     /**
      *  This attribute is used to determine if the connection should be returned to the pool or
      *  removed from the pool and closed.  It will be set to false if an exception occurs during
      *  Call execution.
      */
     protected boolean isValid;
-    
+
     /**
      *  During (not external) transaction, SequencingManager may set SequencingCallback on the accessor,
      *  The callback's only method is called when transaction commits,
      *  after transaction is completed the callback is discarded.
      */
     protected transient SequencingCallback sequencingCallback;
-    
+
     /**
      * This attribute is used to track failures on an accessor that may be communication based.
      * If a failure is detected executing a call with a query timeout this flag is set.  If an error happens
@@ -134,21 +134,21 @@ public abstract class DatasourceAccessor implements Accessor {
      * PERF: Cache connection pooling flag.
      */
     protected boolean usesExternalConnectionPooling;
-    
+
     /**
      * Back-door to allow isConnect checks.
      * Since we now support fail-over and retry, removing old isConnected usage which can
      * cause major performance issues (on Sybase), and minor ones in general.
      */
     public static boolean shouldCheckConnection = false;
-    
+
     /**
      * Allows session-specific connection customization.
      */
     protected ConnectionCustomizer customizer;
 
     protected ConnectionPool pool;
-    
+
     /**
      *    Default Constructor.
      */
@@ -197,13 +197,13 @@ public abstract class DatasourceAccessor implements Accessor {
     }
 
     /**
-     * This should be set to false if a communication failure occurred during a call execution.  
+     * This should be set to false if a communication failure occurred during a call execution.
      * In the case of an invalid accessor the Accessor will not be returned to the pool.
      */
     public void setIsValid(boolean isValid){
         this.isValid = isValid;
     }
-    
+
     /**
      * Return the transaction status of the receiver.
      */
@@ -219,7 +219,7 @@ public abstract class DatasourceAccessor implements Accessor {
     public boolean isValid(){
         return this.isValid;
     }
-    
+
     public boolean isPossibleFailure() {
         return possibleFailure;
     }
@@ -478,7 +478,7 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     protected void setLogin(Login login) {
         this.login = login;
-        this.usesExternalConnectionPooling = login.shouldUseExternalConnectionPooling();        
+        this.usesExternalConnectionPooling = login.shouldUseExternalConnectionPooling();
     }
 
     /**
@@ -556,7 +556,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * pre-check whether messages should be logged.
      */
     public void reestablishConnection(AbstractSession session) throws DatabaseException {
-        if (session.shouldLog(SessionLog.CONFIG, SessionLog.CONNECTION)) {// Avoid printing if no logging required.		
+        if (session.shouldLog(SessionLog.CONFIG, SessionLog.CONNECTION)) {// Avoid printing if no logging required.
             Object[] args = { getLogin() };
             session.log(SessionLog.CONFIG, SessionLog.CONNECTION, "reconnecting", args, this);
         }
@@ -629,7 +629,7 @@ public abstract class DatasourceAccessor implements Accessor {
     public int getReadStatementsCount() {
         return readStatementsCount;
     }
-    
+
     /**
      * Return the number of write statements.
      */
@@ -643,7 +643,7 @@ public abstract class DatasourceAccessor implements Accessor {
     public int getStoredProcedureStatementsCount() {
         return storedProcedureStatementsCount;
     }
-    
+
     /**
      * Return table information for the specified
      * database objects.
@@ -758,17 +758,17 @@ public abstract class DatasourceAccessor implements Accessor {
 
     /**
      * Attempts to create ConnectionCustomizer. If created the customizer is cached by the accessor.
-     * Called by the owner of accessor (DatabaseSession, ServerSession through ConnectionPool) just once, 
-     * typically right after the accessor is created. 
+     * Called by the owner of accessor (DatabaseSession, ServerSession through ConnectionPool) just once,
+     * typically right after the accessor is created.
      * Also called by ClientSession when it acquires write accessor.
      * If accessor already has a customizer set by ConnectionPool then ClientSession's customizer
      * compared with the existing one and if they are not equal (don't produce identical customization)
      * then the new customizer set onto accessor, caching the old customizer so that it could be restored later.
      */
     public void createCustomizer(AbstractSession session) {
-        ConnectionCustomizer newCustomizer;        
+        ConnectionCustomizer newCustomizer;
         if(customizer == null) {
-            // Create a new customizer. The platform may be null if the accessor hasn't yet been connected. 
+            // Create a new customizer. The platform may be null if the accessor hasn't yet been connected.
             if(platform != null) {
                 newCustomizer = platform.createConnectionCustomizer(this, session);
             } else {
@@ -785,7 +785,7 @@ public abstract class DatasourceAccessor implements Accessor {
             if(customizer.getSession() == session) {
                 return;
             }
-            // Create a new customizer. The platform may be null if the accessor hasn't yet been connected. 
+            // Create a new customizer. The platform may be null if the accessor hasn't yet been connected.
             if(platform != null) {
                 newCustomizer = platform.createConnectionCustomizer(this, session);
             } else {
@@ -822,9 +822,9 @@ public abstract class DatasourceAccessor implements Accessor {
                     setCustomizer(newCustomizer);
                 }
             }
-        } 
+        }
     }
-    
+
     /**
      * Set customizer, customize the connection if it's available.
      */
@@ -834,12 +834,12 @@ public abstract class DatasourceAccessor implements Accessor {
             customizer.customize();
         }
     }
-  
+
     /**
      * Clear customizer if it's active and set it to null.
      * Called by the same object that has created customizer (DatabaseSession, ConnectionPool) when
      * the latter is no longer required, typically before releasing the accessor.
-     * Ignored if there's no customizer. 
+     * Ignored if there's no customizer.
      */
     public void releaseCustomizer() {
         if(customizer != null) {
@@ -849,7 +849,7 @@ public abstract class DatasourceAccessor implements Accessor {
             customizer = null;
         }
     }
-   
+
    /**
     * Clear and remove customizer if its session is the same as the passed one;
     * in case prevCustomizer exists set it as a new customizer.
@@ -857,7 +857,7 @@ public abstract class DatasourceAccessor implements Accessor {
     * if the customizer was created by the ClientSession it's removed, and
     * the previous customizer (that ConnectionPool had set) is brought back;
     * otherwise the customizer (created by ConnectionPool) is kept.
-    * Ignored if there's no customizer. 
+    * Ignored if there's no customizer.
     */
    public void releaseCustomizer(AbstractSession session) {
        if(customizer != null) {
@@ -873,10 +873,10 @@ public abstract class DatasourceAccessor implements Accessor {
            }
        }
    }
-  
+
    /**
     * This method is called by reestablishConnection.
-    * Nothing needs to be done in case customize is not active (customization hasn't been applied yet). 
+    * Nothing needs to be done in case customize is not active (customization hasn't been applied yet).
     * to repair existing customizer after connection became invalid.
     * However if connection has been customized then
     * if connection is still there and deemed to be valid - clear customization.
@@ -886,7 +886,7 @@ public abstract class DatasourceAccessor implements Accessor {
    protected void reestablishCustomizer() {
        if(customizer != null && customizer.isActive()) {
            if(isValid()) {
-               // the method eats SQLException in case of a failure.   
+               // the method eats SQLException in case of a failure.
                customizer.clear();
            } else {
                // It's an invalid connection - don't bother trying to clear customization.

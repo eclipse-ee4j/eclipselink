@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.config.StoredProcedureParameter;
 
 /**
  * JPA scripting API implementation.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.5.1
  */
@@ -29,7 +29,7 @@ public abstract class AbstractStoredQueryImpl<T extends NamedStoredProcedureQuer
 
     public AbstractStoredQueryImpl(T t) {
         super(t);
-        
+
         getMetadata().setParameters(new ArrayList<StoredProcedureParameterMetadata>());
     }
 
@@ -38,7 +38,7 @@ public abstract class AbstractStoredQueryImpl<T extends NamedStoredProcedureQuer
         getMetadata().getParameters().add(parameter.getMetadata());
         return parameter;
     }
-    
+
     public R setCallByIndex(Boolean callByIndex) {
         getMetadata().setCallByIndex(callByIndex);
         return (R) this;

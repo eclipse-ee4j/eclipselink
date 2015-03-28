@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import java.util.ArrayList;
@@ -74,34 +74,34 @@ public class SDODataObjectConversionWithPathTestCases extends SDOTestCase {// Te
         property_a.setName(PROPERTY_NAME_A);
         type_a.addDeclaredProperty(property_a);
         dataObject_a =  (SDODataObject)dataFactory.create(type_a);
-                
+
         property_b = new SDOProperty(aHelperContext);
         property_b.setName(PROPERTY_NAME_B);
         property_b.setType(type_c);
-        type_b.addDeclaredProperty(property_b);        
+        type_b.addDeclaredProperty(property_b);
         dataObject_b = (SDODataObject)dataFactory.create(type_b);
-        
+
         dataObject_c = (SDODataObject)dataFactory.create(type_c);
         dataObject_a.set(property_a, dataObject_b);// a dataobject's a property has value b dataobject
         dataObject_b.set(property_b, dataObject_c);// b dataobject's b property has value c dataobject
-        
-        
+
+
 
         property_a_bNotSDODataOject = new SDOProperty(aHelperContext);
         property_a_bNotSDODataOject.setName(PROPERTY_NAME_A);
         property_a_bNotSDODataOject.setType(type_b_bNotSDODataOject);
         type_a_bNotSDODataOject.addDeclaredProperty(property_a_bNotSDODataOject);
-          
+
         dataObject_a_bNotSDODataOject = (SDODataObject)dataFactory.create(type_a_bNotSDODataOject);
-        
-        
+
+
         property_b_bNotSDODataOject = new SDOProperty(aHelperContext);
         property_b_bNotSDODataOject.setName(PROPERTY_NAME_B);
         property_b_bNotSDODataOject.setType(SDOConstants.SDO_STRING);
-        type_b_bNotSDODataOject.addDeclaredProperty(property_b_bNotSDODataOject);        
+        type_b_bNotSDODataOject.addDeclaredProperty(property_b_bNotSDODataOject);
         dataObject_b_bNotSDODataOject = (SDODataObject)dataFactory.create(type_b_bNotSDODataOject);
 
-        
+
         dataObject_c_bNotSDODataOject = (SDODataObject)dataFactory.create(type_c);
         dataObject_a_bNotSDODataOject.set(property_a_bNotSDODataOject, dataObject_b_bNotSDODataOject);// a dataobject's a property has value b dataobject
         dataObject_b_bNotSDODataOject.set(property_b_bNotSDODataOject, "test");// b dataobject's b property has value c dataobject
@@ -115,11 +115,11 @@ public class SDODataObjectConversionWithPathTestCases extends SDOTestCase {// Te
 
         type_a.setBaseTypes(basTypes_a);
         type_b.setBaseTypes(basTypes_b);*/
-        
+
         property_a_pathLength_1 = new SDOProperty(aHelperContext);
         property_a_pathLength_1.setName(PROPERTY_NAME_A_LENGTH_1);
         type_a_pathLength_1.addDeclaredProperty(property_a_pathLength_1);
-        
+
         dataObject_a_pathLength_1 = (SDODataObject)dataFactory.create(type_a_pathLength_1);
 
     }

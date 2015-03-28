@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -17,12 +17,12 @@ import org.eclipse.persistence.jpa.config.Column;
 
 /**
  * JPA scripting API implementation.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.5.1
  */
 public class ColumnImpl extends AbstractDirectColumnImpl<ColumnMetadata, Column> implements Column {
-    
+
     public ColumnImpl() {
         super(new ColumnMetadata());
     }
@@ -41,7 +41,7 @@ public class ColumnImpl extends AbstractDirectColumnImpl<ColumnMetadata, Column>
         getMetadata().setScale(scale);
         return this;
     }
-    
+
     public Column setTable(String table) {
         getMetadata().setTable(table);
         return this;
@@ -51,5 +51,5 @@ public class ColumnImpl extends AbstractDirectColumnImpl<ColumnMetadata, Column>
         getMetadata().setUnique(unique);
         return this;
     }
-    
+
 }

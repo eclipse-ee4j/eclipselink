@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.math.BigDecimal;
@@ -111,9 +111,9 @@ public class ConcurrentRefreshOnCloneTest extends AutoVerifyTestCase {
         } catch (Exception ex) {
             //just an inturrupt ignore
         }
-        if (getAbstractSession().compareObjectsDontMatch(ConcurrentRefreshOnCloneTest.lock, 
+        if (getAbstractSession().compareObjectsDontMatch(ConcurrentRefreshOnCloneTest.lock,
                                                          ConcurrentRefreshOnCloneTest.clone)) {
-            if (getAbstractSession().compareObjectsDontMatch(ConcurrentRefreshOnCloneTest.original, 
+            if (getAbstractSession().compareObjectsDontMatch(ConcurrentRefreshOnCloneTest.original,
                                                              ConcurrentRefreshOnCloneTest.clone)) {
                 throw new TestErrorException("The test failed to clone the object without data corruption");
             }
@@ -125,7 +125,7 @@ public class ConcurrentRefreshOnCloneTest extends AutoVerifyTestCase {
                 public void run() {
                     if (ConcurrentRefreshOnCloneTest.this.toClone) {
                         UnitOfWork uow = ConcurrentRefreshOnCloneTest.session.acquireUnitOfWork();
-                        ConcurrentRefreshOnCloneTest.clone = 
+                        ConcurrentRefreshOnCloneTest.clone =
                                 (ConcurrentAddress)uow.registerObject(ConcurrentRefreshOnCloneTest.lock);
                     } else {
                         try {

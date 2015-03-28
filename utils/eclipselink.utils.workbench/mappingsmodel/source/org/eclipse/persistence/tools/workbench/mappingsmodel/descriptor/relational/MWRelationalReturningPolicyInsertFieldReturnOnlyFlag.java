@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -31,104 +31,104 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 
 
 public class MWRelationalReturningPolicyInsertFieldReturnOnlyFlag
-	extends MWReturningPolicyInsertFieldReturnOnlyFlag
+    extends MWReturningPolicyInsertFieldReturnOnlyFlag
 {
 
-	private MWColumnHandle columnHandle;
+    private MWColumnHandle columnHandle;
 
 
-	// ********** constructors/initialization **********
+    // ********** constructors/initialization **********
 
-	/** Default constructor - for TopLink use only */
-	private MWRelationalReturningPolicyInsertFieldReturnOnlyFlag() {
-		super();
-	}
+    /** Default constructor - for TopLink use only */
+    private MWRelationalReturningPolicyInsertFieldReturnOnlyFlag() {
+        super();
+    }
 
-	MWRelationalReturningPolicyInsertFieldReturnOnlyFlag(MWRelationalReturningPolicy parent, MWColumn column) {
-		super(parent);
-		this.columnHandle.setColumn(column);
-	}
+    MWRelationalReturningPolicyInsertFieldReturnOnlyFlag(MWRelationalReturningPolicy parent, MWColumn column) {
+        super(parent);
+        this.columnHandle.setColumn(column);
+    }
 
-	protected void initialize(Node parent) {
-		super.initialize(parent);
-		this.columnHandle = new MWColumnHandle(this, this.buildColumnScrubber());
-	}
-
-
-	// ********** containment hierarchy **********
-
-	protected void addChildrenTo(List children) {
-		super.addChildrenTo(children);
-		children.add(this.columnHandle);
-	}
-
-	private NodeReferenceScrubber buildColumnScrubber() {
-		return new NodeReferenceScrubber() {
-			public void nodeReferenceRemoved(Node node, MWHandle handle) {
-				MWRelationalReturningPolicyInsertFieldReturnOnlyFlag.this.columnRemoved();
-			}
-			public String toString() {
-				return "MWRelationalReturningPolicyInsertFieldReturnOnlyFlag.buildColumnScrubber()";
-			}
-		};
-	}
-
-	void columnRemoved() {
-		// we don't really need to clear the column;
-		// and some listeners would really appreciate it if we kept it around
-		// this.columnHandle.setColumn(null);
-		this.getPolicy().removeInsertFieldReturnOnlyFlag(this);
-	}
-
-	private MWRelationalReturningPolicy getPolicy() {
-		return (MWRelationalReturningPolicy) this.getParent();
-	}
-
-	// ********** MWReturningPolicyInsertFieldReturnOnlyFlag implementation **********
-
-	public MWDataField getField() {
-		return this.columnHandle.getColumn();
-	}
+    protected void initialize(Node parent) {
+        super.initialize(parent);
+        this.columnHandle = new MWColumnHandle(this, this.buildColumnScrubber());
+    }
 
 
-	// ********** problems **********
+    // ********** containment hierarchy **********
 
-	protected void addProblemsTo(List currentProblems) {
-		super.addProblemsTo(currentProblems);
-		if ( ! CollectionTools.contains(((MWTableDescriptor) this.getOwningDescriptor()).allAssociatedColumns(), this.getField())) {
-			currentProblems.add(this.buildProblem(ProblemConstants.DESCRIPTOR_RETURNING_POLICY_INSERT_FIELD_NOT_VALID, this.getField().fieldName()));					
-		}
-	}
+    protected void addChildrenTo(List children) {
+        super.addChildrenTo(children);
+        children.add(this.columnHandle);
+    }
+
+    private NodeReferenceScrubber buildColumnScrubber() {
+        return new NodeReferenceScrubber() {
+            public void nodeReferenceRemoved(Node node, MWHandle handle) {
+                MWRelationalReturningPolicyInsertFieldReturnOnlyFlag.this.columnRemoved();
+            }
+            public String toString() {
+                return "MWRelationalReturningPolicyInsertFieldReturnOnlyFlag.buildColumnScrubber()";
+            }
+        };
+    }
+
+    void columnRemoved() {
+        // we don't really need to clear the column;
+        // and some listeners would really appreciate it if we kept it around
+        // this.columnHandle.setColumn(null);
+        this.getPolicy().removeInsertFieldReturnOnlyFlag(this);
+    }
+
+    private MWRelationalReturningPolicy getPolicy() {
+        return (MWRelationalReturningPolicy) this.getParent();
+    }
+
+    // ********** MWReturningPolicyInsertFieldReturnOnlyFlag implementation **********
+
+    public MWDataField getField() {
+        return this.columnHandle.getColumn();
+    }
 
 
-	// ********** TopLink methods **********
+    // ********** problems **********
 
-	public static XMLDescriptor buildDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.setJavaClass(MWRelationalReturningPolicyInsertFieldReturnOnlyFlag.class);
+    protected void addProblemsTo(List currentProblems) {
+        super.addProblemsTo(currentProblems);
+        if ( ! CollectionTools.contains(((MWTableDescriptor) this.getOwningDescriptor()).allAssociatedColumns(), this.getField())) {
+            currentProblems.add(this.buildProblem(ProblemConstants.DESCRIPTOR_RETURNING_POLICY_INSERT_FIELD_NOT_VALID, this.getField().fieldName()));
+        }
+    }
 
-		XMLCompositeObjectMapping columnHandleMapping = new XMLCompositeObjectMapping();
-		columnHandleMapping.setAttributeName("columnHandle");
-		columnHandleMapping.setGetMethodName("getColumnHandleForTopLink");
-		columnHandleMapping.setSetMethodName("setColumnHandleForTopLink");
-		columnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		columnHandleMapping.setXPath("column-handle");
-		descriptor.addMapping(columnHandleMapping);
 
-		((XMLDirectMapping)descriptor.addDirectMapping("returnOnly", "return-only/text()")).setNullValue(Boolean.FALSE);
+    // ********** TopLink methods **********
 
-		return descriptor;
-	}
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MWRelationalReturningPolicyInsertFieldReturnOnlyFlag.class);
 
-	/**
-	 * check for null
-	 */
-	private MWColumnHandle getColumnHandleForTopLink() {
-		return (this.columnHandle.getColumn() == null) ? null : this.columnHandle;
-	}
-	private void setColumnHandleForTopLink(MWColumnHandle handle) {
-		NodeReferenceScrubber scrubber = this.buildColumnScrubber();
-		this.columnHandle = ((handle == null) ? new MWColumnHandle(this, scrubber) : handle.setScrubber(scrubber));
-	}
+        XMLCompositeObjectMapping columnHandleMapping = new XMLCompositeObjectMapping();
+        columnHandleMapping.setAttributeName("columnHandle");
+        columnHandleMapping.setGetMethodName("getColumnHandleForTopLink");
+        columnHandleMapping.setSetMethodName("setColumnHandleForTopLink");
+        columnHandleMapping.setReferenceClass(MWColumnHandle.class);
+        columnHandleMapping.setXPath("column-handle");
+        descriptor.addMapping(columnHandleMapping);
+
+        ((XMLDirectMapping)descriptor.addDirectMapping("returnOnly", "return-only/text()")).setNullValue(Boolean.FALSE);
+
+        return descriptor;
+    }
+
+    /**
+     * check for null
+     */
+    private MWColumnHandle getColumnHandleForTopLink() {
+        return (this.columnHandle.getColumn() == null) ? null : this.columnHandle;
+    }
+    private void setColumnHandleForTopLink(MWColumnHandle handle) {
+        NodeReferenceScrubber scrubber = this.buildColumnScrubber();
+        this.columnHandle = ((handle == null) ? new MWColumnHandle(this, scrubber) : handle.setScrubber(scrubber));
+    }
 
 }

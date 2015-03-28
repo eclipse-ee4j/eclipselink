@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.util.*;
@@ -35,7 +35,7 @@ public interface DescriptorEventListener extends EventListener {
      */
     // CR#2660080 was missing aboutToDelete
     public void aboutToDelete(DescriptorEvent event);
-    
+
     /**
      * This event is raised before a new object is inserted to the database.
      * The object's row has already been built and is accessible from the event.
@@ -52,11 +52,11 @@ public interface DescriptorEventListener extends EventListener {
     public void aboutToUpdate(DescriptorEvent event);
 
     /**
-     * Implementers should define this method if they need or want to restrict 
+     * Implementers should define this method if they need or want to restrict
      * the calling of inherited events.
      */
      public boolean isOverriddenEvent(DescriptorEvent event, Vector eventManagers);
-     
+
     /**
      * This event is raised after an object is built from its row on a read operation.
      * This event can be used to initialize non-persistent or non-mapped state in the object.
@@ -106,7 +106,7 @@ public interface DescriptorEventListener extends EventListener {
      * This event is only raised for new objects or objects that had changes and were updated.
      */
     public void postWrite(DescriptorEvent event);
-    
+
     /**
      * This event is raised before an object is deleted from the database.
      */
@@ -122,12 +122,12 @@ public interface DescriptorEventListener extends EventListener {
      * create operation is initiated on an object.
      */
     public void prePersist(DescriptorEvent event);
-    
+
     /**
      * This event is raised when the remove operation is initiated on an object.
      */
     public void preRemove(DescriptorEvent event);
-    
+
     /**
      * This event is raised for all existing objects written or committed in a unit of work.
      * This event is raised before the object's changes are computed,
@@ -137,14 +137,14 @@ public interface DescriptorEventListener extends EventListener {
     public void preUpdate(DescriptorEvent event);
 
     /**
-     * This event is raised before an object is updated regardless if the object 
-     * has any database changes. This event was created to support EJB 3.0 
-     * events. The object in this case will not have a row accessible from the 
-     * event. For objects that have database changes, an aboutToUpdate will also 
+     * This event is raised before an object is updated regardless if the object
+     * has any database changes. This event was created to support EJB 3.0
+     * events. The object in this case will not have a row accessible from the
+     * event. For objects that have database changes, an aboutToUpdate will also
      * be triggered.
      */
     public void preUpdateWithChanges(DescriptorEvent event);
-    
+
     /**
      * This event is raised for all new or existing objects written or committed in a unit of work.
      * This event is raised before the object's changes are computed,

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,9 +37,9 @@ public class WithoutXmlRootElementTestCases extends JSONMarshalUnmarshalTestCase
 
     @Override
     public Class getUnmarshalClass(){
-    	return WithoutXmlRootElementRoot.class;
+        return WithoutXmlRootElementRoot.class;
     }
-    
+
     @Override
     protected List<WithoutXmlRootElementRoot> getControlObject() {
         List<WithoutXmlRootElementRoot> list = new ArrayList<WithoutXmlRootElementRoot>(2);
@@ -56,12 +56,12 @@ public class WithoutXmlRootElementTestCases extends JSONMarshalUnmarshalTestCase
     }
 
     @Override
-	public Object getReadControlObject() {
-    	JAXBElement elem = new JAXBElement(new QName(""),WithoutXmlRootElementRoot.class, getControlObject() );
-    	
-    	return elem;
+    public Object getReadControlObject() {
+        JAXBElement elem = new JAXBElement(new QName(""),WithoutXmlRootElementRoot.class, getControlObject() );
+
+        return elem;
     }
-    
+
     public void testUnmarshal() throws Exception {
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         List<WithoutXmlRootElementRoot>  test = (List<WithoutXmlRootElementRoot>) jsonUnmarshaller.unmarshal(new StreamSource(inputStream), WithoutXmlRootElementRoot.class).getValue();
@@ -78,10 +78,10 @@ public class WithoutXmlRootElementTestCases extends JSONMarshalUnmarshalTestCase
     }
 
     protected boolean shouldRemoveWhitespaceFromControlDocJSON(){
-		return false;
-	}
-    
+        return false;
+    }
+
     public String getWriteControlJSONFormatted(){
-    	return CONTROL_JSON_FORMATTED;
+        return CONTROL_JSON_FORMATTED;
     }
 }

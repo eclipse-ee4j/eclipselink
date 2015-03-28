@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -178,7 +178,7 @@ public class BasicTypesFieldAccess {
 
     // arrays
     @Basic
-	@Column(name = "PBA_BINARY", length = 8, columnDefinition = "BINARY(8)")
+    @Column(name = "PBA_BINARY", length = 8, columnDefinition = "BINARY(8)")
     @Mutable
     protected byte[] primitiveByteArray2Binary; // BINARY
 
@@ -194,7 +194,7 @@ public class BasicTypesFieldAccess {
     protected byte[] primitiveByteArray2Blob; // BLOB
 
     @Basic
-	@Column(name = "WBA_BINARY", length = 8, columnDefinition = "BINARY(8)")
+    @Column(name = "WBA_BINARY", length = 8, columnDefinition = "BINARY(8)")
     @Mutable
     protected Byte[] wrapperByteArray2Binary; // BINARY
 
@@ -210,7 +210,7 @@ public class BasicTypesFieldAccess {
     protected Byte[] wrapperByteArray2Blob; // BLOB
 
     @Basic
-	@Column(name = "PCA_VARCHAR", columnDefinition = "VARCHAR(255)")
+    @Column(name = "PCA_VARCHAR", columnDefinition = "VARCHAR(255)")
     @Mutable
     protected char[] primitiveCharArray2Varchar; // VARCHAR
 
@@ -221,7 +221,7 @@ public class BasicTypesFieldAccess {
     protected char[] primitiveCharArray2Clob; // CLOB
 
     @Basic
-	@Column(name = "WCA_VARCHAR", columnDefinition = "VARCHAR(255)")
+    @Column(name = "WCA_VARCHAR", columnDefinition = "VARCHAR(255)")
     @Mutable
     protected Character[] wrapperCharacterArray2Varchar; // VARCHAR
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,48 +28,48 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
  */
 public class MultipleTableRuntimeProject {
 
-	private Project runtimeProject;
+    private Project runtimeProject;
 
-	public MultipleTableRuntimeProject() {
+    public MultipleTableRuntimeProject() {
         this.runtimeProject = new Project();
-		this.runtimeProject.setName("MultipleTable");
-		this.applyLogin();
+        this.runtimeProject.setName("MultipleTable");
+        this.applyLogin();
 
-		this.runtimeProject.addDescriptor(buildCowDescriptor());
-		this.runtimeProject.addDescriptor(buildHorseDescriptor());
-		this.runtimeProject.addDescriptor(buildHumanDescriptor());
-		this.runtimeProject.addDescriptor(buildSwanDescriptor());
+        this.runtimeProject.addDescriptor(buildCowDescriptor());
+        this.runtimeProject.addDescriptor(buildHorseDescriptor());
+        this.runtimeProject.addDescriptor(buildHumanDescriptor());
+        this.runtimeProject.addDescriptor(buildSwanDescriptor());
     }
 
-	public void applyLogin() {
-		DatabaseLogin login = new DatabaseLogin();
-		login.usePlatform(new org.eclipse.persistence.platform.database.MySQLPlatform());
-		login.setDriverClassName(TestDatabases.mySQLDriverClassName());
-		login.setConnectionString(TestDatabases.mySQLServerURL());
-		login.setUserName(TestDatabases.userName());
-		login.setPassword(TestDatabases.password());
+    public void applyLogin() {
+        DatabaseLogin login = new DatabaseLogin();
+        login.usePlatform(new org.eclipse.persistence.platform.database.MySQLPlatform());
+        login.setDriverClassName(TestDatabases.mySQLDriverClassName());
+        login.setConnectionString(TestDatabases.mySQLServerURL());
+        login.setUserName(TestDatabases.userName());
+        login.setPassword(TestDatabases.password());
 
-		// Configuration properties.
-		((TableSequence) login.getDefaultSequence()).setTableName("SEQUENCE");
-		((TableSequence) login.getDefaultSequence()).setNameFieldName("SEQ_NAME");
-		((TableSequence) login.getDefaultSequence()).setCounterFieldName("SEQ_COUNT");
-		login.setShouldCacheAllStatements(false);
-		login.setUsesByteArrayBinding(true);
-		login.setUsesStringBinding(false);
-		if (login.shouldUseByteArrayBinding()) { // Can only be used with binding.
-			login.setUsesStreamsForBinding(false);
-		}
-		login.setShouldForceFieldNamesToUpperCase(false);
-		login.setShouldOptimizeDataConversion(true);
-		login.setShouldTrimStrings(true);
-		login.setUsesBatchWriting(false);
-		if (login.shouldUseBatchWriting()) { // Can only be used with batch writing.
-			login.setUsesJDBCBatchWriting(true);
-		}
-		login.setUsesExternalConnectionPooling(false);
-		login.setUsesExternalTransactionController(false);
-		this.runtimeProject.setLogin(login);
-	}
+        // Configuration properties.
+        ((TableSequence) login.getDefaultSequence()).setTableName("SEQUENCE");
+        ((TableSequence) login.getDefaultSequence()).setNameFieldName("SEQ_NAME");
+        ((TableSequence) login.getDefaultSequence()).setCounterFieldName("SEQ_COUNT");
+        login.setShouldCacheAllStatements(false);
+        login.setUsesByteArrayBinding(true);
+        login.setUsesStringBinding(false);
+        if (login.shouldUseByteArrayBinding()) { // Can only be used with binding.
+            login.setUsesStreamsForBinding(false);
+        }
+        login.setShouldForceFieldNamesToUpperCase(false);
+        login.setShouldOptimizeDataConversion(true);
+        login.setShouldTrimStrings(true);
+        login.setUsesBatchWriting(false);
+        if (login.shouldUseBatchWriting()) { // Can only be used with batch writing.
+            login.setUsesJDBCBatchWriting(true);
+        }
+        login.setUsesExternalConnectionPooling(false);
+        login.setUsesExternalTransactionController(false);
+        this.runtimeProject.setLogin(login);
+    }
 
     public ClassDescriptor buildCowDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
@@ -85,7 +85,7 @@ public class MultipleTableRuntimeProject {
         descriptor.setSequenceNumberFieldName("MULTI_CALFS.ID");
         descriptor.setSequenceNumberName("CALF_COUNT_SEQ");
         descriptor.setAlias("Cow");
-		descriptor.setIsIsolated(false);
+        descriptor.setIsIsolated(false);
 
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
@@ -128,7 +128,7 @@ public class MultipleTableRuntimeProject {
         descriptor.setSequenceNumberFieldName("MULTI_HORSE.ID");
         descriptor.setSequenceNumberName("MULTI_HORSE_SEQ");
         descriptor.setAlias("Horse");
-		descriptor.setIsIsolated(false);
+        descriptor.setIsIsolated(false);
 
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
@@ -166,7 +166,7 @@ public class MultipleTableRuntimeProject {
         descriptor.setSequenceNumberFieldName("MULTI_HUMAN.ID");
         descriptor.setSequenceNumberName("MULTI_HUMAN_SEQ");
         descriptor.setAlias("Human");
-		descriptor.setIsIsolated(false);
+        descriptor.setIsIsolated(false);
 
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
@@ -204,7 +204,7 @@ public class MultipleTableRuntimeProject {
         descriptor.setSequenceNumberFieldName("MULTI_SWAN.ID");
         descriptor.setSequenceNumberName("MULTI_SWAN_SEQ");
         descriptor.setAlias("Swan");
-		descriptor.setIsIsolated(false);
+        descriptor.setIsIsolated(false);
 
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
@@ -228,7 +228,7 @@ public class MultipleTableRuntimeProject {
         return descriptor;
     }
 
-	public Project getRuntimeProject() {
-		return runtimeProject;
-	}
+    public Project getRuntimeProject() {
+        return runtimeProject;
+    }
 }

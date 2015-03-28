@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     06/1/2011-2.3 Guy Pelletier 
+ *     06/1/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 9)
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
@@ -54,76 +54,76 @@ public class Address implements Serializable {
         this.mafiosos = new Vector<Mafioso>();
     }
 
-    public String getCity() { 
-        return city; 
+    public String getCity() {
+        return city;
     }
-    
-    public String getCountry() { 
-        return country; 
+
+    public String getCountry() {
+        return country;
     }
 
     @Id
     @GeneratedValue
     @Column(name="ADDRESS_ID")
-    public int getId() { 
-        return id; 
+    public int getId() {
+        return id;
     }
-    
+
     @OneToMany(cascade=ALL, mappedBy="address")
-    public Collection<Mafioso> getMafiosos() { 
-        return mafiosos; 
+    public Collection<Mafioso> getMafiosos() {
+        return mafiosos;
     }
 
     @Column(name="P_CODE")
-    public String getPostalCode() { 
-        return postalCode; 
+    public String getPostalCode() {
+        return postalCode;
     }
 
-    public String getProvince() { 
-        return province; 
+    public String getProvince() {
+        return province;
     }
 
-    public String getStreet() { 
-        return street; 
+    public String getStreet() {
+        return street;
     }
-    
+
     @Version
     public Integer getVersion() {
-        return version; 
+        return version;
     }
 
-    public void setCity(String city) { 
-        this.city = city; 
+    public void setCity(String city) {
+        this.city = city;
     }
-    
-    public void setCountry(String country) { 
+
+    public void setCountry(String country) {
         this.country = country;
     }
 
-    public void setId(int id) { 
-        this.id = id; 
+    public void setId(int id) {
+        this.id = id;
     }
-    
+
     public void setMafiosos(Collection<Mafioso> mafiosos) {
         this.mafiosos = mafiosos;
     }
 
-    public void setPostalCode(String postalCode) { 
-        this.postalCode = postalCode; 
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
     }
-    
-    public void setProvince(String province) { 
-        this.province = province; 
+
+    public void setProvince(String province) {
+        this.province = province;
     }
-    
-    public void setStreet(String street) { 
-        this.street = street; 
+
+    public void setStreet(String street) {
+        this.street = street;
     }
-    
+
     public void setVersion(Integer version) {
         this.version = version;
     }
-    
+
     public String toString() {
         return "Address[" + getId() + "] : " + street + ", " + city + ", " + province + ", " + postalCode + ", " + country;
     }

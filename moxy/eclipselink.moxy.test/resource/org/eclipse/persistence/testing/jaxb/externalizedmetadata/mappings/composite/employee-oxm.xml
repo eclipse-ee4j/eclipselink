@@ -3,8 +3,8 @@
     <xml-schema namespace="http://www.example.com/employees" >
         <xml-ns namespace-uri="http://www.example.com/contacts" prefix="c"/>
     </xml-schema>
-	<java-types>
-		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.Employee" xml-accessor-type="FIELD">
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.Employee" xml-accessor-type="FIELD">
             <xml-root-element name="employee" />
             <java-attributes>
                 <xml-element java-attribute="foo" xml-path="." />
@@ -22,14 +22,14 @@
                     <xml-null-policy xsi-nil-represents-null="false" empty-node-represents-null="false" null-representation-for-xml="EMPTY_NODE" is-set-performed-for-absent-node="true" />
                 </xml-element>
             </java-attributes>
-		</java-type>
+        </java-type>
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.Foo" xml-accessor-type="FIELD">
             <java-attributes>
                 <xml-attribute java-attribute="foodata">
                     <!--  foodata will be write only -->
                     <xml-access-methods get-method="getFoodata" />
                 </xml-attribute>
-            </java-attributes>        
+            </java-attributes>
         </java-type>
-	</java-types>
+    </java-types>
 </xml-bindings>

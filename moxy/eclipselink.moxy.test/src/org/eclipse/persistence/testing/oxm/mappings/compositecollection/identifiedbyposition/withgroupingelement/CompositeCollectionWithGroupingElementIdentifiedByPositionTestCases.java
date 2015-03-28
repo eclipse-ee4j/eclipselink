@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyposition.withgroupingelement;
 
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -39,7 +39,7 @@ public class CompositeCollectionWithGroupingElementIdentifiedByPositionTestCases
   public CompositeCollectionWithGroupingElementIdentifiedByPositionTestCases(String name) throws Exception {
     super(name);
     setControlDocument(XML_RESOURCE);
-		setProject(new CompositeCollectionWithGroupingElementIdentifiedByPositionProject());
+        setProject(new CompositeCollectionWithGroupingElementIdentifiedByPositionProject());
   }
 
   protected Object getControlObject() {
@@ -69,7 +69,7 @@ public class CompositeCollectionWithGroupingElementIdentifiedByPositionTestCases
     mailingAddress2.setProvince(CONTROL_MAILING_ADDRESS_2_PROVINCE);
     mailingAddress2.setPostalCode(CONTROL_MAILING_ADDRESS_2_POSTAL_CODE);
     employee.getMailingAddresses().add(mailingAddress2);
-    
+
     return employee;
   }
 

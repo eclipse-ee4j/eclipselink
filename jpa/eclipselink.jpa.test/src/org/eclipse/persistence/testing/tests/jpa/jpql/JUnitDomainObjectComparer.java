@@ -1,31 +1,31 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
- 
+
  /**
  * <p>
  * <b>Purpose</b>: Compare two objects
  * <p>
- * <b>Description</b>: This class compares the two objects passed. If they are 
- * collections it Iterates through them and compares the elements. 
+ * <b>Description</b>: This class compares the two objects passed. If they are
+ * collections it Iterates through them and compares the elements.
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
  * <li> Compare two objects and return true/false
  * </ul>
  */
- 
+
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 // Java imports
@@ -44,11 +44,11 @@ public class JUnitDomainObjectComparer
     public boolean compareObjects(Object obj1, Object obj2) {
         if((obj1 == null) && (obj2 == null)) {
             return true;
-        } 
+        }
         if((obj1 == null) || (obj2 == null)) {
             return false;
         }
-        
+
         if ((obj1 instanceof Collection)  && !(obj2 instanceof Collection)) {
             return compareObjects(obj2, (Collection)obj1);
         } else if ( !(obj1  instanceof Collection)  && (obj2 instanceof Collection)) {
@@ -56,54 +56,54 @@ public class JUnitDomainObjectComparer
         } else if ((obj1 instanceof Collection) && (obj2 instanceof Collection)) {
             return compareObjects((Collection)obj1, (Collection)obj2);
         } else {
-    		if (getSession().compareObjects(obj1, obj2)) {
-    			return true;
-    		} else {
-        		boolean areEqual = false;
-	        	if (JUnitTestCase.usesSOP()) {
-	        		// In SOP case the PhoneNumber may be read only from Employee's sopObject.
-	        		// That means that unless read-only attribute PhoneNumber.id is explicitly set (which never happens) it will stay null forever.
-        			if ((obj1 instanceof PhoneNumber) && (obj2 instanceof PhoneNumber)) {
+            if (getSession().compareObjects(obj1, obj2)) {
+                return true;
+            } else {
+                boolean areEqual = false;
+                if (JUnitTestCase.usesSOP()) {
+                    // In SOP case the PhoneNumber may be read only from Employee's sopObject.
+                    // That means that unless read-only attribute PhoneNumber.id is explicitly set (which never happens) it will stay null forever.
+                    if ((obj1 instanceof PhoneNumber) && (obj2 instanceof PhoneNumber)) {
                         PhoneNumber phone1 = (PhoneNumber)obj1;
                         PhoneNumber phone2 = (PhoneNumber)obj2;
                         if (phone1.getId() == null && phone1.getOwner() != null && phone1.getOwner().getId() != null) {
-                        	// assign ownerId
-                        	phone1.setId(phone1.getOwner().getId());
-                        	areEqual = getSession().compareObjects(obj1, obj2);
-                        	// reset to the original state
-                        	phone1.setId(null);
+                            // assign ownerId
+                            phone1.setId(phone1.getOwner().getId());
+                            areEqual = getSession().compareObjects(obj1, obj2);
+                            // reset to the original state
+                            phone1.setId(null);
                         } else if (phone2.getId() == null && phone2.getOwner() != null && phone2.getOwner().getId() != null) {
-                        	// assign ownerId
-                        	phone2.setId(phone2.getOwner().getId());
-                        	areEqual = getSession().compareObjects(obj1, obj2);
-                        	// reset to the original state
-                        	phone2.setId(null);
+                            // assign ownerId
+                            phone2.setId(phone2.getOwner().getId());
+                            areEqual = getSession().compareObjects(obj1, obj2);
+                            // reset to the original state
+                            phone2.setId(null);
                         }
-        			} else if ((obj1 instanceof Employee) && (obj2 instanceof Employee)) {
+                    } else if ((obj1 instanceof Employee) && (obj2 instanceof Employee)) {
                         Employee emp1 = (Employee)obj1;
                         Employee emp2 = (Employee)obj2;
                         Collection<PhoneNumber> phoneNumbers1 = emp1.getPhoneNumbers();
                         Collection<PhoneNumber> phoneNumbers2 = emp2.getPhoneNumbers();
                         // compare PhoneNumbers so that PhoneNumber.id == null are worked around (see PhoneNumber case above)
                         if (compareObjects(phoneNumbers1, phoneNumbers2)) {
-                        	emp1.setPhoneNumbers(new ArrayList<PhoneNumber>());
-                        	emp2.setPhoneNumbers(new ArrayList<PhoneNumber>());
+                            emp1.setPhoneNumbers(new ArrayList<PhoneNumber>());
+                            emp2.setPhoneNumbers(new ArrayList<PhoneNumber>());
                             // now compare the rest
-                        	areEqual = getSession().compareObjects(obj1, obj2);
-                        	// reset to the original state
-                        	emp1.setPhoneNumbers(phoneNumbers1);
-                        	emp2.setPhoneNumbers(phoneNumbers2);
+                            areEqual = getSession().compareObjects(obj1, obj2);
+                            // reset to the original state
+                            emp1.setPhoneNumbers(phoneNumbers1);
+                            emp2.setPhoneNumbers(phoneNumbers2);
                         }
-        			}
-	        	}
-	        	return areEqual;
-    		}
+                    }
+                }
+                return areEqual;
+            }
         }
     }
 
     public boolean compareObjects(Object domainObject1, Collection aCollection) {
-        Iterator itr = aCollection.iterator();      
-        
+        Iterator itr = aCollection.iterator();
+
         while (itr.hasNext()) {
             Object domainObject2 = itr.next();
             if (compareObjects(domainObject1, domainObject2)) {
@@ -115,7 +115,7 @@ public class JUnitDomainObjectComparer
 
     public boolean compareObjects(Collection objects1, Collection objects2) {
         boolean allMatched = true;
-        
+
         if (objects1.size() != objects2.size()) {
             allMatched = false;
         } /*else if (objects1.isEmpty() || objects2.isEmpty()) {
@@ -123,9 +123,9 @@ public class JUnitDomainObjectComparer
         }*/
         //Enumeration enum1 = objects1.elements();
         Iterator itr1 = objects1.iterator();
-        
+
         while (itr1.hasNext()) {
-            Object obj1 = itr1.next();            
+            Object obj1 = itr1.next();
 
             if (obj1 == null) {
                 allMatched = allMatched & objects2.contains(null);
@@ -152,14 +152,14 @@ public class JUnitDomainObjectComparer
                 allMatched = allMatched && compareObjects(phone1, phone2);
             }
             if(obj1.getClass().equals(String.class)){
-                allMatched = allMatched && objects2.contains(obj1);           
-                    
+                allMatched = allMatched && objects2.contains(obj1);
+
             }
         }
         return allMatched;
     }
     public PhoneNumber findPhoneNumberIn(PhoneNumber phone1, Collection phones){
-        
+
         Iterator itr = phones.iterator();
         while (itr.hasNext()) {
             PhoneNumber pTemp = (PhoneNumber)itr.next();
@@ -174,10 +174,10 @@ public class JUnitDomainObjectComparer
         return null;
     }
     public Project findProjectByIdIn(Project project, Collection projects){
-        
-        Iterator itr = projects.iterator();        
+
+        Iterator itr = projects.iterator();
         while (itr.hasNext()) {
-        
+
             Project pTemp = (Project)itr.next();
             if ((pTemp != null) && pTemp.getId().equals(project.getId())) {
                 return pTemp;
@@ -186,8 +186,8 @@ public class JUnitDomainObjectComparer
         return null;
     }
     public Employee findEmployeeByIdIn(Employee emp, Collection employees){
-        Iterator itr = employees.iterator();        
-        
+        Iterator itr = employees.iterator();
+
         while (itr.hasNext()) {
             Employee eTemp = (Employee)itr.next();
             if ((eTemp != null) && eTemp.getId().equals(emp.getId())) {

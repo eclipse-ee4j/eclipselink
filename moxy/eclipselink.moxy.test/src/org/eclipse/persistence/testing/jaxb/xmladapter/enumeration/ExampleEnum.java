@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,18 +21,18 @@ import javax.xml.bind.annotation.XmlType;
 public enum ExampleEnum {
 
     @XmlEnumValue("1")
-    VALUE1(1), 
+    VALUE1(1),
     @XmlEnumValue("2")
-    VALUE2(2), 
+    VALUE2(2),
     @XmlEnumValue("3")
     VALUE3(3);
-    
+
     int value;
-    
+
     private ExampleEnum(int value) {
         this.value = value;
     }
-    
+
     public int getValue() {
         return value;
     }

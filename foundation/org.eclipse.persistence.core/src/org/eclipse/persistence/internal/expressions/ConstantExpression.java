@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -52,7 +52,7 @@ public class ConstantExpression extends Expression {
         ConstantExpression expression = (ConstantExpression) object;
         return ((getValue() == expression.getValue()) || ((getValue() != null) && getValue().equals(expression.getValue())));
     }
-        
+
     /**
      * INTERNAL:
      * Compute a consistent hash-code for the expression.
@@ -65,7 +65,7 @@ public class ConstantExpression extends Expression {
         }
         return hashCode;
     }
-    
+
     /**
      * INTERNAL:
      * Used for debug printing.
@@ -108,7 +108,7 @@ public class ConstantExpression extends Expression {
     public boolean isValueExpression() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Normalize collection of values if they are expressions.
@@ -118,13 +118,13 @@ public class ConstantExpression extends Expression {
         super.normalize(normalizer);
         if (value == null)
             return this;
-        
+
         if (value instanceof Collection) {
             normalizeValueList(normalizer, (Collection)value);
         }
         return this;
     }
-    
+
     private void normalizeValueList(ExpressionNormalizer normalizer, Collection valueCollection) {
         for (Object obj : valueCollection) {
             if (obj instanceof Collection) {

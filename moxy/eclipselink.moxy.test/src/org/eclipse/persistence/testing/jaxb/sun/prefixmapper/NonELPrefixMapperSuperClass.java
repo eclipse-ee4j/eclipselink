@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2015  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,15 +17,15 @@ import org.eclipse.persistence.oxm.XMLConstants;
 public abstract class NonELPrefixMapperSuperClass extends com.sun.xml.bind.marshaller.NamespacePrefixMapper{
 
     public abstract String getPreferredPrefix(String arg0, String arg1, boolean arg2);
-    
+
     public java.lang.String[] getPreDeclaredNamespaceUris() {
         return null;
     }
-    
+
     public java.lang.String[] getPreDeclaredNamespaceUris2() {
         return null;
     }
-    
+
     public java.lang.String[] getContextualNamespaceDecls() {
         return null;
     }

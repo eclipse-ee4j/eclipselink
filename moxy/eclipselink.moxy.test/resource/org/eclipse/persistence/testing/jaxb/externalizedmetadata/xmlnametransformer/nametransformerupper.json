@@ -9,34 +9,34 @@
    },
    "PHONEELEM":"1234567",
    "responsibilities":{
-      "responsibility":[ 
+      "responsibility":[
          {
          "xsi.type":"string",
-	 "value":"Fix Bugs"
-	 },
-	 {
+     "value":"Fix Bugs"
+     },
+     {
          "xsi.type":"string",
-	 "value":"Write JAXB2.0 Prototype"
-	 },
-	 {
+     "value":"Write JAXB2.0 Prototype"
+     },
+     {
          "xsi.type":"string",
-	 "value":"Write Design Spec"
-	 }
-       ]     
+     "value":"Write Design Spec"
+     }
+       ]
    },
    "RESPONSIBILITIES2ELEM":[
    {
          "xsi.type":"string",
-	 "value":"Fix Bugs"
-	 },
-	 {
+     "value":"Fix Bugs"
+     },
+     {
          "xsi.type":"string",
-	 "value":"Write JAXB2.0 Prototype"
-	 },
-	 {
+     "value":"Write JAXB2.0 Prototype"
+     },
+     {
          "xsi.type":"string",
-	 "value":"Write Design Spec"
-	 }
+     "value":"Write Design Spec"
+     }
    ]
 }}
 

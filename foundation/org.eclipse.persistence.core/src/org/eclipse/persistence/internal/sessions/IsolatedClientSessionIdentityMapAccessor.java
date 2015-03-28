@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
@@ -37,7 +37,7 @@ import org.eclipse.persistence.internal.helper.WriteLockManager;
  * Any session specific functionality appears in subclasses
  */
 public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persistence.internal.sessions.IdentityMapAccessor {
-    
+
     protected Map objectsLockedForClone;
 
     /**
@@ -282,7 +282,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
         } else {
             return null;
         }
-        
+
         ClassDescriptor concreteDescriptor = descriptor;
         // Ensure correct subclass descriptor.
         if (objectFromCache.getClass() != descriptor.getJavaClass()) {
@@ -290,7 +290,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
         }
         ObjectBuilder builder = concreteDescriptor.getObjectBuilder();
         Object workingClone = null;
-        
+
         // The cache/objects being registered must first be locked to ensure
         // that a merge or refresh does not occur on the object while being cloned to
         // avoid cloning a partially merged/refreshed object.
@@ -347,7 +347,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
                 if (rootOfCloneRecursion) {
                     if (this.objectsLockedForClone == null) {
                         cacheKey.releaseReadLock();
-                    } else {                        
+                    } else {
                         for (Iterator iterator = this.objectsLockedForClone.values().iterator(); iterator.hasNext();) {
                             ((CacheKey)iterator.next()).releaseReadLock();
                         }
@@ -522,7 +522,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
             ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().initializeIdentityMap(theClass);
         }
     }
-    
+
     /**
      * Invalidate/remove any results for the class from the query cache.
      * This is used to invalidate the query cache on any change.
@@ -533,7 +533,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
             getIdentityMapManager().invalidateQueryCache(classThatChanged);
         } else {
             ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().invalidateQueryCache(classThatChanged);
-        }        
+        }
     }
 
     /**
@@ -582,14 +582,14 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * Return the cache key for the cache index or null if not found.
      */
     @Override
-    public CacheKey getCacheKeyByIndex(CacheIndex index, CacheId indexValues, boolean shouldCheckExpiry, ClassDescriptor descriptor) {        
+    public CacheKey getCacheKeyByIndex(CacheIndex index, CacheId indexValues, boolean shouldCheckExpiry, ClassDescriptor descriptor) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().getCacheKeyByIndex(index, indexValues, shouldCheckExpiry, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getCacheKeyByIndex(index, indexValues, shouldCheckExpiry, descriptor);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Used to print all the objects in the identity map of the passed in class.

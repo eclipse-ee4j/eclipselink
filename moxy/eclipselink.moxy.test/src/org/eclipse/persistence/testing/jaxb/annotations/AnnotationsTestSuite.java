@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -118,7 +118,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.qname.XmlElementDeclQNameNSTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.emptystringns.EmptyStringNSTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.unqualified.UnqualfiedTestCases.class);
-        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.xsitype.XsiTypeTestCases.class);        
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.xsitype.XsiTypeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.xsitype2.FooBarXsiTypeTestCases.class);
         suite.addTest(XmlLocationTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueTestSuite.suite());

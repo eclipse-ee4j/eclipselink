@@ -240,13 +240,13 @@ public class XMLSessionConfigLoader {
                 return buildSessionConfigs(sessionManager,loader,document,getProject());
             }
         }else{
-        	//upon this time, we knew this could be either toplink sessions.xml or invalid eclipse session.xml.
-        	if(document.getDocumentElement().getTagName().equals("toplink-sessions")){
-	            return buildSessionConfigs(sessionManager,loader,document,new XMLSessionConfigToplinkProject());
-        	}else{
+            //upon this time, we knew this could be either toplink sessions.xml or invalid eclipse session.xml.
+            if(document.getDocumentElement().getTagName().equals("toplink-sessions")){
+                return buildSessionConfigs(sessionManager,loader,document,new XMLSessionConfigToplinkProject());
+            }else{
                 // Throw the exceptions we encountered
                 throw SessionLoaderException.finalException(getExceptionStore());
-        	}
+            }
         }
         // 9.0.4 session.xml, return false to indicate we should load with the XMLLoader
         return false;
@@ -296,7 +296,7 @@ public class XMLSessionConfigLoader {
                 return (SessionConfigs)unmarshaller.unmarshal(document);
             }else{
                 // 9.0.4 session.xml or invalid xml format.
-            	throw SessionLoaderException.InvalidSessionXML();
+                throw SessionLoaderException.InvalidSessionXML();
             }
         } else {
             if (document.getDocumentElement().getTagName().equals("toplink-sessions")) {

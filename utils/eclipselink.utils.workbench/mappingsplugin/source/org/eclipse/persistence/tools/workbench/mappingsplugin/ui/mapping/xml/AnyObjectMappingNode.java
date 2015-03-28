@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -19,40 +19,40 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.mapping.Mapping
 
 
 public final class AnyObjectMappingNode
-	extends MappingNode
+    extends MappingNode
 {
-	// **************** Constructors ******************************************
-	
-	public AnyObjectMappingNode(MWAnyObjectMapping mapping, SelectionActionsPolicy mappingNodeTypePolicy, OXDescriptorNode parent) {
-		super(mapping, mappingNodeTypePolicy, parent);
-	}
-	
-	
-	// **************** MappingNode contract **********************************
-	
-	protected String buildIconKey() {
-		return "mapping.anyObject";
-	}
+    // **************** Constructors ******************************************
 
-	
-	// ************** AbstractApplicationNode overrides *************
+    public AnyObjectMappingNode(MWAnyObjectMapping mapping, SelectionActionsPolicy mappingNodeTypePolicy, OXDescriptorNode parent) {
+        super(mapping, mappingNodeTypePolicy, parent);
+    }
 
-	protected String accessibleNameKey() {
-		return "ACCESSIBLE_ANY_OBJECT_MAPPING_NODE";
-	}
 
-	
-	// **************** ApplicationNode contract ******************************
-	
-	public String helpTopicID() {
-//		return this.getDescriptorNode().mappingHelpTopicPrefix() + ".anyObject";
-		return "mapping.anyObject"; // For 10.1.3
-	}
-	
-	
-	// ********** MWApplicationNode overrides **********
+    // **************** MappingNode contract **********************************
 
-	protected Class propertiesPageClass() {
-		return AnyObjectMappingPropertiesPage.class;
-	}
+    protected String buildIconKey() {
+        return "mapping.anyObject";
+    }
+
+
+    // ************** AbstractApplicationNode overrides *************
+
+    protected String accessibleNameKey() {
+        return "ACCESSIBLE_ANY_OBJECT_MAPPING_NODE";
+    }
+
+
+    // **************** ApplicationNode contract ******************************
+
+    public String helpTopicID() {
+//        return this.getDescriptorNode().mappingHelpTopicPrefix() + ".anyObject";
+        return "mapping.anyObject"; // For 10.1.3
+    }
+
+
+    // ********** MWApplicationNode overrides **********
+
+    protected Class propertiesPageClass() {
+        return AnyObjectMappingPropertiesPage.class;
+    }
 }

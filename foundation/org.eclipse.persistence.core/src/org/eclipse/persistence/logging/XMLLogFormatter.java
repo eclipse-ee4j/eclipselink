@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.logging;
 
 import java.util.*;
@@ -33,7 +33,7 @@ public class XMLLogFormatter extends XMLFormatter {
     }
 
     // Append the time and date in ISO 8601 format
-	private void appendISO8601(StringBuffer sb, long millis) {
+    private void appendISO8601(StringBuffer sb, long millis) {
         Date date = new Date(millis);
         sb.append(date.getYear() + 1900);
         sb.append('-');
@@ -87,7 +87,7 @@ public class XMLLogFormatter extends XMLFormatter {
                 sb.append("  <date>");
                 appendISO8601(sb, record.getMillis());
                 sb.append("</date>\n");
-    
+
                 sb.append("  <millis>");
                 sb.append(record.getMillis());
                 sb.append("</millis>\n");
@@ -181,7 +181,7 @@ public class XMLLogFormatter extends XMLFormatter {
                 escape(sb, th.toString());
                 sb.append("</message>\n");
 
-                if ((record.getLevel().intValue() == Level.SEVERE.intValue()) || 
+                if ((record.getLevel().intValue() == Level.SEVERE.intValue()) ||
                         ((record.getLevel().intValue() <= Level.WARNING.intValue()) && record.shouldLogExceptionStackTrace())) {
                     StackTraceElement[] trace = th.getStackTrace();
                     for (int i = 0; i < trace.length; i++) {
@@ -202,7 +202,7 @@ public class XMLLogFormatter extends XMLFormatter {
                         sb.append("    </frame>\n");
                     }
                 }
-                
+
                 sb.append("  </exception>\n");
             }
 

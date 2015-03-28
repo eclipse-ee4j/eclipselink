@@ -108,10 +108,10 @@ public class Helper extends CoreHelper implements Serializable {
     /** Prime the platform-dependent temporary directory */
     protected static String TEMP_DIRECTORY = null;
 
-    /** Backdoor to allow 0 to be used in primary keys. 
+    /** Backdoor to allow 0 to be used in primary keys.
      * @deprecated
      * Instead of setting the flag to true use:
-     * session.getProject().setDefaultIdValidation(IdValidation.NULL)  
+     * session.getProject().setDefaultIdValidation(IdValidation.NULL)
      **/
     public static boolean isZeroValidPrimaryKey = false;
 
@@ -122,18 +122,18 @@ public class Helper extends CoreHelper implements Serializable {
     public static final String SET_IS_PROPERTY_METHOD_PREFIX = "setIs";
     public static final int POSITION_AFTER_IS_PREFIX = IS_PROPERTY_METHOD_PREFIX.length();
     public static final int POSITION_AFTER_GET_PREFIX = GET_PROPERTY_METHOD_PREFIX.length();
-    
+
     public static final String DEFAULT_DATABASE_DELIMITER = "\"";
-    
+
     public static final String PERSISTENCE_SET = "_persistence_set_";
     public static final String PERSISTENCE_GET = "_persistence_get_";
     // 323403: These constants are used to search for missing weaved functions - this is a copy is of the jpa project under ClassWeaver
     public static final String PERSISTENCE_FIELDNAME_PREFIX = "_persistence_";
-    public static final String PERSISTENCE_FIELDNAME_POSTFIX = "_vh";    
+    public static final String PERSISTENCE_FIELDNAME_POSTFIX = "_vh";
 
     private static String defaultStartDatabaseDelimiter = null;
     private static String defaultEndDatabaseDelimiter = null;
-    
+
     /**
      * Return if JDBC date access should be optimized.
      */
@@ -390,7 +390,7 @@ public class Helper extends CoreHelper implements Serializable {
      * INTERNAL:
      * Compares two version in num.num.num.num.num*** format.
      * -1, 0, 1 means the version1 is less than, equal, greater than version2.
-     * Example: compareVersions("11.1.0.6.0-Production", "11.1.0.7") == -1 
+     * Example: compareVersions("11.1.0.6.0-Production", "11.1.0.7") == -1
      * Example: compareVersions("WebLogic Server 10.3.4", "10.3.3.0") == 1
      */
     public static int compareVersions(String version1, String version2) {
@@ -410,7 +410,7 @@ public class Helper extends CoreHelper implements Serializable {
         // used to remove a non-digital prefix
         boolean isPrefix = true;
         for(int i=0; i<version.length(); i++) {
-            char ch = version.charAt(i); 
+            char ch = version.charAt(i);
             if('0' <= ch && ch <= '9') {
                 isPrefix = false;
                 // it's a digit
@@ -442,7 +442,7 @@ public class Helper extends CoreHelper implements Serializable {
         }
         return list;
     }
- 
+
     /**
      * INTERNAL:
      * Compares two lists of Integers
@@ -514,7 +514,7 @@ public class Helper extends CoreHelper implements Serializable {
         }
         return null;
     }
-    
+
     public static boolean compareArrays(Object[] array1, Object[] array2) {
         if (array1.length != array2.length) {
             return false;
@@ -640,7 +640,7 @@ public class Helper extends CoreHelper implements Serializable {
     public static boolean comparePotentialArrays(Object firstValue, Object secondValue) {
         Class firstClass = firstValue.getClass();
         Class secondClass = secondValue.getClass();
-        
+
         // Arrays must be checked for equality because default does identity
         if ((firstClass == ClassConstants.APBYTE) && (secondClass == ClassConstants.APBYTE)) {
             return compareByteArrays((byte[])firstValue, (byte[])secondValue);
@@ -653,7 +653,7 @@ public class Helper extends CoreHelper implements Serializable {
             return compareBigDecimals((java.math.BigDecimal)firstValue, (java.math.BigDecimal)secondValue);
         }
 
-        return false;   
+        return false;
     }
 
 
@@ -908,12 +908,12 @@ public class Helper extends CoreHelper implements Serializable {
      */
     public static boolean doesFileExist(String fileName) {
         FileReader reader = null;
-    	try {
-    		reader = new FileReader(fileName);
+        try {
+            reader = new FileReader(fileName);
         } catch (FileNotFoundException fnfException) {
             return false;
         } finally {
-		Helper.close(reader);
+        Helper.close(reader);
         }
 
         return true;
@@ -1234,8 +1234,8 @@ public class Helper extends CoreHelper implements Serializable {
         } finally {
             Helper.close(fos);
         }
-    }        
-    
+    }
+
     /**
      * Return a string containing the platform-appropriate
      * characters for separating entries in a path (e.g. the classpath)
@@ -1650,7 +1650,7 @@ public class Helper extends CoreHelper implements Serializable {
     public static String printCalendar(Calendar calendar, boolean useLocalTime) {
         String millisString;
 
-        //	String zeros = "000000000";
+        //    String zeros = "000000000";
         if (calendar.get(Calendar.MILLISECOND) == 0) {
             millisString = "0";
         } else {
@@ -1710,10 +1710,10 @@ public class Helper extends CoreHelper implements Serializable {
         }
         return numbString;
     }
- 
+
     /**
-     * Build a numerical string with leading 0s.  number is an existing number that 
-     * the new string will be built on.  totalDigits is the number of the required 
+     * Build a numerical string with leading 0s.  number is an existing number that
+     * the new string will be built on.  totalDigits is the number of the required
      * digits of the string.
      */
     public static String buildZeroPrefixWithoutSign(int number, int totalDigits) {
@@ -1791,7 +1791,7 @@ public class Helper extends CoreHelper implements Serializable {
         }
         return dateFromYearMonthDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
     }
-    
+
     /**
      * Return a sql.Date with time component zeroed out.
      * Starting with version 12.1 Oracle jdbc Statement.setDate method no longer zeroes out the time component.
@@ -2062,7 +2062,7 @@ public class Helper extends CoreHelper implements Serializable {
      * i.e. year is from 0, month is 0-11, date is 1-31, time is 0-23/59.
      */
     @SuppressWarnings("deprecation")
-	public static java.sql.Timestamp timestampFromYearMonthDateHourMinuteSecondNanos(int year, int month, int date, int hour, int minute, int second, int nanos) {
+    public static java.sql.Timestamp timestampFromYearMonthDateHourMinuteSecondNanos(int year, int month, int date, int hour, int minute, int second, int nanos) {
         // This was not converted to use Calendar for the conversion because calendars do not take nanos.
         // but it should be, and then just call setNanos.
         return new java.sql.Timestamp(year - 1900, month, date, hour, minute, second, nanos);
@@ -2219,7 +2219,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Returns true if the passed value is Number that is negative or equals to zero.
      */
     public static boolean isNumberNegativeOrZero(Object value) {
-        return ((value.getClass() == ClassConstants.BIGDECIMAL) && (((BigDecimal)value).signum() <= 0)) || 
+        return ((value.getClass() == ClassConstants.BIGDECIMAL) && (((BigDecimal)value).signum() <= 0)) ||
                 ((value.getClass() == ClassConstants.BIGINTEGER) && (((BigInteger)value).signum() <= 0)) ||
                 ((value instanceof Number) && (((Number)value).longValue() <= 0));
     }
@@ -2269,36 +2269,36 @@ public class Helper extends CoreHelper implements Serializable {
     public static String getWeavedValueHolderGetMethodName(String attributeName) {
         return PERSISTENCE_GET + attributeName + "_vh";
     }
-    
+
     /**
      * Return the set method name weaved for a value-holder attribute.
      */
     public static String getWeavedValueHolderSetMethodName(String attributeName) {
         return PERSISTENCE_SET + attributeName + "_vh";
     }
-    
+
     /**
      * Return the set method name weaved for getting attribute value.
      * This method is always weaved in field access case.
      * In property access case the method weaved only if attribute name is the same as property name:
      * for instance, the method weaved for "manager" attribute that uses "getManager" / "setManager" access methods,
-     * but not for "m_address" attribute that uses "getAddress" / "setAddress" access methods. 
+     * but not for "m_address" attribute that uses "getAddress" / "setAddress" access methods.
      */
     public static String getWeavedGetMethodName(String attributeName) {
         return PERSISTENCE_GET + attributeName;
     }
-    
+
     /**
      * Return the set method name weaved for setting attribute value.
      * This method is always weaved in field access case.
      * In property access case the method weaved only if attribute name is the same as property name:
      * for instance, the method weaved for "manager" attribute that uses "getManager" / "setManager" access methods,
-     * but not for "m_address" attribute that uses "getAddress" / "setAddress" access methods. 
+     * but not for "m_address" attribute that uses "getAddress" / "setAddress" access methods.
      */
     public static String getWeavedSetMethodName(String attributeName) {
         return PERSISTENCE_SET + attributeName;
     }
-    
+
     /**
      * Close a closeable object, eating the exception
      */
@@ -2319,7 +2319,7 @@ public class Helper extends CoreHelper implements Serializable {
      */
     public static String getAttributeNameFromMethodName(String methodName) {
         String restOfName = methodName;
-        
+
         // We're looking at method named 'get' or 'set', therefore,
         // there is no attribute name, set it to "" string for now.
         if (methodName.equals(GET_PROPERTY_METHOD_PREFIX) || methodName.equals(IS_PROPERTY_METHOD_PREFIX)) {
@@ -2332,25 +2332,25 @@ public class Helper extends CoreHelper implements Serializable {
         //added for bug 234222 - property name generation differs from Introspector.decapitalize
         return java.beans.Introspector.decapitalize(restOfName);
     }
-    
+
     public static String getDefaultStartDatabaseDelimiter(){
         if (defaultStartDatabaseDelimiter == null){
             defaultStartDatabaseDelimiter = DEFAULT_DATABASE_DELIMITER;
         }
         return defaultStartDatabaseDelimiter;
     }
-    
+
     public static String getDefaultEndDatabaseDelimiter(){
         if (defaultEndDatabaseDelimiter == null){
             defaultEndDatabaseDelimiter = DEFAULT_DATABASE_DELIMITER;
         }
         return defaultEndDatabaseDelimiter;
     }
-    
+
     public static void setDefaultStartDatabaseDelimiter(String delimiter){
         defaultStartDatabaseDelimiter = delimiter;
     }
-    
+
     public static void setDefaultEndDatabaseDelimiter(String delimiter){
         defaultEndDatabaseDelimiter = delimiter;
     }
@@ -2371,25 +2371,25 @@ public class Helper extends CoreHelper implements Serializable {
         pattern = pattern.replaceAll("\\+", "\\\\+");
         pattern = pattern.replaceAll("\\^", "\\\\^");
         pattern = pattern.replaceAll("\\|", "\\\\|");
-    
+
         // regular expressions to substitute SQL wildcards with regex wildcards
-    
+
         // Use look behind operators to replace "%" which is not preceded by "\" with ".*"
         pattern = pattern.replaceAll("(?<!\\\\)%", ".*");
-        
+
         // Use look behind operators to replace "_" which is not preceded by "\" with "."
-        pattern = pattern.replaceAll("(?<!\\\\)_", ".");   
-        
+        pattern = pattern.replaceAll("(?<!\\\\)_", ".");
+
         // replace "\%" with "%"
         pattern = pattern.replaceAll("\\\\%", "%");
-    
+
         // replace "\_" with "_"
         pattern = pattern.replaceAll("\\\\_", "_");
         // regex requires ^ and $ if pattern must start at start and end at end of string as like requires.
         pattern = "^" + pattern + "$";
         return pattern;
     }
-    
+
     public static boolean isLob(DatabaseField field) {
         int sqlType = field.sqlType;
         if (sqlType == DatabaseField.NULL_SQL_TYPE) {
@@ -2411,5 +2411,5 @@ public class Helper extends CoreHelper implements Serializable {
             }
         }
         return false;
-    }    
+    }
 }

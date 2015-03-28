@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     07/13/2012-2.5 Guy Pelletier 
+ *     07/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier 
+ *     08/24/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     09/13/2013-2.5 Guy Pelletier 
+ *     09/13/2013-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.transaction;
 
 import java.util.Map;
@@ -39,7 +39,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
      * Keep a weak reference to the open queries that are executed in this entity manager.
      */
     protected WeakHashMap<QueryImpl, QueryImpl> openQueriesMap;
-    
+
     protected EntityTransactionWrapper wrapper;
 
     protected boolean active = false;
@@ -47,7 +47,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
     protected boolean rollbackOnly = false;
 
     protected TransactionFinalizer finalizer;
-    
+
     /** PERF: Avoid finalization if not required by the application, and finalizers have major concurrency affects. */
     public static boolean isFinalizedRequired = false;
 
@@ -57,30 +57,30 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
             this.finalizer = new TransactionFinalizer();
         }
     }
-    
+
     /**
      * Within a transaction track any open queries that will need to be closed
      * on commit or rollback.
      */
     /**
      * Queries that leave the connection and are executed against this entity
-     * manager will be added here. On rollback or commit any left over open 
+     * manager will be added here. On rollback or commit any left over open
      * queries should be closed.
-     * 
+     *
      * @param query
      */
     public void addOpenQuery(QueryImpl query) {
         if (openQueriesMap == null) {
             openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
         }
-        
+
         openQueriesMap.put(query, query);
     }
-    
+
     /**
      * Start the current transaction. This can only be invoked if
      * {@link #isActive()} returns <code>false</code>.
-     * 
+     *
      * @throws IllegalStateException
      *             if isActive() is true.
      */
@@ -109,12 +109,12 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
             }
         }
     }
-    
+
     /**
      * Commit the current transaction, writing any un-flushed changes to the
      * database. This can only be invoked if {@link #isActive()} returns
      * <code>true</code>.
-     * 
+     *
      * @throws IllegalStateException
      *             if isActive() is false.
      */
@@ -122,10 +122,10 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
         if (!isActive()) {
             throw new IllegalStateException(TransactionException.transactionNotActive().getMessage());
         }
-    
+
         // Make sure any open queries are closed.
         closeOpenQueries();
-        
+
         try {
             if (this.wrapper.localUOW != null) {
                 this.wrapper.localUOW.setShouldTerminateTransaction(true);
@@ -169,7 +169,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
      * Roll back the current transaction, discarding any changes that have
      * happened in this transaction. This can only be invoked if
      * {@link #isActive()} returns <code>true</code>.
-     * 
+     *
      * @throws IllegalStateException
      *             if isActive() is false.
      */
@@ -177,10 +177,10 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
         if (!isActive()) {
             throw new IllegalStateException(TransactionException.transactionNotActive().getMessage());
         }
-        
+
         // Make sure any open queries are closed.
         closeOpenQueries();
-        
+
         try {
             if (wrapper.getLocalUnitOfWork() != null) {
                 this.wrapper.localUOW.setShouldTerminateTransaction(true);
@@ -198,7 +198,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
     /**
      * Mark the current transaction so that the only possible outcome of the
      * transaction is for the transaction to be rolled back.
-     * 
+     *
      * @throws IllegalStateException
      *             if isActive() is false.
      */
@@ -210,20 +210,20 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
         this.rollbackOnly = true;
     }
 
-    /** 
+    /**
      * Return the weak reference to the open queries.
      */
     protected Map<QueryImpl, QueryImpl> getOpenQueriesMap() {
         if (openQueriesMap == null) {
             openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
         }
-        
+
         return openQueriesMap;
     }
-    
+
     /**
      * Determine whether the current transaction has been marked for rollback.
-     * 
+     *
      * @throws IllegalStateException
      *             if isActive() is false.
      */

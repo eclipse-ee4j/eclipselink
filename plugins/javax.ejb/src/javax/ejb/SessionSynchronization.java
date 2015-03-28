@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,9 +47,9 @@ import java.rmi.RemoteException;
  * bean instance to be notified by its container of transaction
  * boundaries.
  *
- * <p> Only a stateful session bean with container-managed transaction 
+ * <p> Only a stateful session bean with container-managed transaction
  * demarcation can receive session synchronization notifications. Other bean
- * types must not implement the SessionSynchronization interface or use 
+ * types must not implement the SessionSynchronization interface or use
  * the session synchronization annotations.
  *
  * <p>  A stateful session bean class is not required to implement this interface.
@@ -71,11 +71,11 @@ public interface SessionSynchronization {
      *    caused by a system-level error.
      *
      * @exception RemoteException This exception is defined in the method
-     *    signature to provide backward compatibility for enterprise beans 
-     *    written for the EJB 1.0 specification. Enterprise beans written 
+     *    signature to provide backward compatibility for enterprise beans
+     *    written for the EJB 1.0 specification. Enterprise beans written
      *    for the EJB 1.1 and later specifications should throw the
-     *    javax.ejb.EJBException instead of this exception. 
-     *    Enterprise beans written for the EJB 2.0 and later specifications 
+     *    javax.ejb.EJBException instead of this exception.
+     *    Enterprise beans written for the EJB 2.0 and later specifications
      *    must not throw the java.rmi.RemoteException.
      *
      * @see AfterBegin
@@ -97,11 +97,11 @@ public interface SessionSynchronization {
      *    caused by a system-level error.
      *
      * @exception RemoteException This exception is defined in the method
-     *    signature to provide backward compatibility for enterprise beans 
-     *    written for the EJB 1.0 specification. Enterprise beans written 
+     *    signature to provide backward compatibility for enterprise beans
+     *    written for the EJB 1.0 specification. Enterprise beans written
      *    for the EJB 1.1 and later specification should throw the
      *    javax.ejb.EJBException instead of this exception.
-     *    Enterprise beans written for the EJB 2.0 and later specifications 
+     *    Enterprise beans written for the EJB 2.0 and later specifications
      *    must not throw the java.rmi.RemoteException.
      *
      * @see BeforeCompletion
@@ -122,15 +122,15 @@ public interface SessionSynchronization {
      *    caused by a system-level error.
      *
      * @exception RemoteException This exception is defined in the method
-     *    signature to provide backward compatibility for enterprise beans 
-     *    written for the EJB 1.0 specification. Enterprise beans written 
+     *    signature to provide backward compatibility for enterprise beans
+     *    written for the EJB 1.0 specification. Enterprise beans written
      *    for the EJB 1.1 and later specification should throw the
-     *    javax.ejb.EJBException instead of this exception. 
-     *    Enterprise beans written for the EJB 2.0 and later specifications 
+     *    javax.ejb.EJBException instead of this exception.
+     *    Enterprise beans written for the EJB 2.0 and later specifications
      *    must not throw the java.rmi.RemoteException.
      *
      * @see AfterCompletion
      */
     public void afterCompletion(boolean committed) throws EJBException,
-	    RemoteException;
+        RemoteException;
 }

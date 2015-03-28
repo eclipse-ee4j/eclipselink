@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -100,7 +100,7 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * INTERNAL:
      * Return the next object on the queue. The iterator is the one
      * returned from #iteratorFor().
-     * 
+     *
      * In the case of a Map, this will return a MapEntry to allow use of the key
      *
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
@@ -112,7 +112,7 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * INTERNAL:
      * Return the next object on the queue. The iterator is the one
      * returned from #iteratorFor().
-     * 
+     *
      * In the case of a Map, this will return a MapEntry to allow use of the key
      *
      * @see ContainerPolicy#iteratorFor(Object iterator, AbstractSession session)

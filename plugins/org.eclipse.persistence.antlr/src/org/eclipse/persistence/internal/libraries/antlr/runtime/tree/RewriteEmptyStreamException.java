@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
 /** Ref to ID or expr but no tokens in ID stream or subtrees in expr stream */
 public class RewriteEmptyStreamException extends RewriteCardinalityException {
-	public RewriteEmptyStreamException(String elementDescription) {
-		super(elementDescription);
-	}
+    public RewriteEmptyStreamException(String elementDescription) {
+        super(elementDescription);
+    }
 }

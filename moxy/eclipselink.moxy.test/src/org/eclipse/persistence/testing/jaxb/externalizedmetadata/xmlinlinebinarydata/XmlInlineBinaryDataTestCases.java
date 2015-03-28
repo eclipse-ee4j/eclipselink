@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,10 +33,10 @@ import org.w3c.dom.Document;
 public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases {
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlinlinebinarydata";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlinlinebinarydata/";
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public XmlInlineBinaryDataTestCases(String name) {
@@ -45,7 +45,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
 
     /**
      * Tests @XmlInlineBinaryData schema generation via eclipselink-oxm.xml.
-     * 
+     *
      * Positive test.
      */
     public void testXmlInlineBinaryDataSchemaGen() {
@@ -54,30 +54,30 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         String controlSchema = PATH + "schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
     }
-    
+
     /**
      * Tests class level XmlInlineBinaryData annotation override via XML metadata.
-     * Here, the class level annotation is overridden with 'false' in XML, hence 
+     * Here, the class level annotation is overridden with 'false' in XML, hence
      * we should use an attachment, and not inline the binary data.
-     * 
+     *
      * Positive test.
-     * @throws JAXBException 
+     * @throws JAXBException
      */
     public void testClassLevelXmlInlineBinaryOverride() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-class-override.xml";
-        
+
         Class[] classes = new Class[] { MyDataClassAnnotation.class };
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
-      
+
         // setup control object
-        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");      
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");
         MyDataClassAnnotation ctrlData = new MyDataClassAnnotation();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
         ctrlData.setData(data);
 
         MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.DATA_ID, data);
         MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.BYTES_ID, new byte[] { 0, 1, 2, 3 });
-        
+
         // test unmarshal
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
@@ -87,7 +87,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         if (iDocStream == null) {
             fail("Couldn't load instance document [" + instanceDoc + "]");
         }
-        
+
         MyDataClassAnnotation myData = null;
         try {
             myData = (MyDataClassAnnotation) unmarshaller.unmarshal(new StreamSource(iDocStream));
@@ -96,7 +96,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
             e.printStackTrace();
             fail("Unmarshal operation failed.");
         }
-        
+
         // test marshal
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
@@ -119,26 +119,26 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
         assertTrue("Marshal failed - documents are not equal", compareDocuments(ctrlDoc, testDoc));
     }
-    
+
     /**
-     * Tests property level XmlInlineBinaryData annotation override.  Here,  the class level 
+     * Tests property level XmlInlineBinaryData annotation override.  Here,  the class level
      * 'false' setting in XML metadata is overridden with an @XmlInlineBinaryData annotation
      * on the field.  The result is that we should inline the binary data as opposed to
      * using an attachment.
-     * 
+     *
      * Positive test.
-     * @throws JAXBException 
+     * @throws JAXBException
      */
     public void testPropertyLevelXmlInlineBinaryOverride() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-property.xml";
-        
+
         Class[] classes = new Class[] { MyDataPropertyAnnotation.class };
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
-        
+
         // setup control object
         MyDataPropertyAnnotation ctrlData = new MyDataPropertyAnnotation();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
-        
+
         // test unmarshal
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
@@ -148,7 +148,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         if (iDocStream == null) {
             fail("Couldn't load instance document [" + instanceDoc + "]");
         }
-        
+
         MyDataPropertyAnnotation myData = null;
         try {
             myData = (MyDataPropertyAnnotation) unmarshaller.unmarshal(new StreamSource(iDocStream));
@@ -157,7 +157,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
             e.printStackTrace();
             fail("Unmarshal operation failed.");
         }
-        
+
         // test marshal
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
@@ -184,11 +184,11 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
     /**
      * Tests Class level XmlInlineBinaryData annotation unmarshal/marshal.
      * No XML metadata is used for this test.
-     * 
+     *
      * Positive test.
      *
      * THIS TEST CAN BE ENABLED UPON RESOLUTION OF BUG# 299948
-     * @throws JAXBException 
+     * @throws JAXBException
      */
     public void testClassLevelXmlInlineBinaryNoOverride() throws JAXBException {
         JAXBContext jaxbContext = null;
@@ -200,14 +200,14 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
 
         // setup control object
-        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");      
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");
         MyDataClassAnnotation ctrlData = new MyDataClassAnnotation();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
         ctrlData.setData(data);
 
         MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.DATA_ID, data);
         MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.BYTES_ID, new byte[] { 0, 1, 2, 3 });
-        
+
         // test unmarshal
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
@@ -217,7 +217,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         if (iDocStream == null) {
             fail("Couldn't load instance document [" + instanceDoc + "]");
         }
-        
+
         MyDataClassAnnotation myData = null;
         try {
             myData = (MyDataClassAnnotation) unmarshaller.unmarshal(new StreamSource(iDocStream));
@@ -226,7 +226,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
             e.printStackTrace();
             fail("Unmarshal operation failed.");
         }
-        
+
         // test marshal
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
@@ -249,24 +249,24 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
         assertTrue("Marshal failed - documents are not equal", compareDocuments(ctrlDoc, testDoc));
     }
-    
-    
+
+
     /**
      * Tests property level XmlInlineBinaryData metadata override.  Here, the @XmlInlineBinaryData
-     * annotation on the field is overridden with 'false' in XML.  The result is that we should 
+     * annotation on the field is overridden with 'false' in XML.  The result is that we should
      * not inline the binary data.
-     * 
+     *
      * Positive test.
-     * @throws JAXBException 
+     * @throws JAXBException
      */
     public void testPropertyLevelXmlInlineBinaryOverrideViaMetadata() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-property-override.xml";
-        
+
         Class[] classes = new Class[] { MyDataPropertyAnnotation.class };
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
-       
+
         // setup control object
-        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");      
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");
         MyDataPropertyAnnotation ctrlData = new MyDataPropertyAnnotation();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
         ctrlData.setData(data);
@@ -283,7 +283,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         if (iDocStream == null) {
             fail("Couldn't load instance document [" + instanceDoc + "]");
         }
-        
+
         MyDataPropertyAnnotation myData = null;
         try {
             myData = (MyDataPropertyAnnotation) unmarshaller.unmarshal(new StreamSource(iDocStream));
@@ -292,7 +292,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
             e.printStackTrace();
             fail("Unmarshal operation failed.");
         }
-        
+
         // test marshal
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
@@ -315,24 +315,24 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         }
         assertTrue("Marshal failed - documents are not equal", compareDocuments(ctrlDoc, testDoc));
     }
-    
+
     /**
      * Tests class level XmlInlineBinaryData metadata override.  Here, there are no
      * class annotations, and no property level XML metadata declarations.
-     * 
+     *
      * Positive test.
-     * @throws JAXBException 
+     * @throws JAXBException
      */
     public void testClassLevelXmlInlineBinaryViaMetadata() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-class.xml";
-        
+
         Class[] classes = new Class[] { MyData.class };
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
-        
+
         // setup control object
         MyData ctrlData = new MyData();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
-        
+
         // test unmarshal
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
@@ -342,7 +342,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         if (iDocStream == null) {
             fail("Couldn't load instance document [" + instanceDoc + "]");
         }
-        
+
         MyData myData = null;
         try {
             myData = (MyData) unmarshaller.unmarshal(new StreamSource(iDocStream));
@@ -351,7 +351,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
             e.printStackTrace();
             fail("Unmarshal operation failed.");
         }
-        
+
         // test marshal
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
@@ -378,27 +378,27 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
     /**
      * Tests property level XmlInlineBinaryData metadata override.  Here, there are no
      * class annotations, and no class level XML metadata declarations.
-     * 
+     *
      * Positive test.
      *
      * THIS TEST CAN BE ENABLED UPON RESOLUTION OF BUG# 299948
-     * @throws JAXBException 
+     * @throws JAXBException
      */
     public void testPropertyLevelXmlInlineBinaryViaMetadata() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm.xml";
-        
+
         Class[] classes = new Class[] { MyData.class };
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
-       
+
         // setup control object
-        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");      
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");
         MyData ctrlData = new MyData();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
         ctrlData.setData(data);
 
         MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.DATA_ID, data);
         MyAttachmentMarshaller.attachments.put(MyAttachmentMarshaller.BYTES_ID, new byte[] { 0, 1, 2, 3 });
-        
+
         // test unmarshal
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
@@ -408,7 +408,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
         if (iDocStream == null) {
             fail("Couldn't load instance document [" + instanceDoc + "]");
         }
-        
+
         MyData myData = null;
         try {
             myData = (MyData) unmarshaller.unmarshal(new StreamSource(iDocStream));
@@ -417,7 +417,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
             e.printStackTrace();
             fail("Unmarshal operation failed.");
         }
-        
+
         // test marshal
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());

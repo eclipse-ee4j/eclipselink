@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,15 +21,15 @@ import javax.xml.namespace.QName;
 
 
 /**
- * 
+ *
  *           itemType attribute and simpleType child are mutually
  *           exclusive, but one or other is required
- *         
- * 
+ *
+ *
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -43,8 +43,8 @@ import javax.xml.namespace.QName;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -61,11 +61,11 @@ public class List
 
     /**
      * Gets the value of the simpleType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link LocalSimpleType }
-     *     
+     *
      */
     public LocalSimpleType getSimpleType() {
         return simpleType;
@@ -73,11 +73,11 @@ public class List
 
     /**
      * Sets the value of the simpleType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link LocalSimpleType }
-     *     
+     *
      */
     public void setSimpleType(LocalSimpleType value) {
         this.simpleType = value;
@@ -85,11 +85,11 @@ public class List
 
     /**
      * Gets the value of the itemType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link QName }
-     *     
+     *
      */
     public QName getItemType() {
         return itemType;
@@ -97,11 +97,11 @@ public class List
 
     /**
      * Sets the value of the itemType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link QName }
-     *     
+     *
      */
     public void setItemType(QName value) {
         this.itemType = value;

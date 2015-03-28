@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -67,7 +67,7 @@ public class PLSQLRecordTypeTestSuite {
         "CREATE OR REPLACE TYPE A_PHONE_TYPE_TABLE AS TABLE OF A_PHONE_TYPE";
     static final String CREATE_A_PHONE_TYPE_VARRAY =
         "CREATE OR REPLACE TYPE A_PHONE_TYPE_VARRAY AS VARRAY(10) OF A_PHONE_TYPE";
-    
+
     static final String CREATE_A_CONTACT_TYPE =
         "CREATE OR REPLACE TYPE A_CONTACT_TYPE AS OBJECT (" +
             "\nADDRESS VARCHAR2(40)," +
@@ -111,7 +111,7 @@ public class PLSQLRecordTypeTestSuite {
     static final String DROP_A_PHONE_TYPE_TABLE = "DROP TYPE A_PHONE_TYPE_TABLE";
     static final String DROP_A_PHONE_TYPE_VARRAY = "DROP TYPE A_PHONE_TYPE_VARRAY";
     static final String DROP_A_PHONE_TYPE = "DROP TYPE A_PHONE_TYPE";
-    
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -119,12 +119,12 @@ public class PLSQLRecordTypeTestSuite {
     @SuppressWarnings("rawtypes")
     static List dbProcedures;
     static DatabaseTypeBuilder dbTypeBuilder;
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @BeforeClass
     public static void setUp() throws ClassNotFoundException, SQLException {
         AllTests.setUp();
-        
+
         String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
         if ("true".equalsIgnoreCase(ddlCreateProp)) {
             ddlCreate = true;
@@ -145,17 +145,17 @@ public class PLSQLRecordTypeTestSuite {
             runDdl(conn, CREATE_PACKAGE2_PACKAGE, ddlDebug);
             runDdl(conn, CREATE_PACKAGE2_EMPREC_TYPE, ddlDebug);
         }
-        
+
         String schema = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
 
         List<String> procedurePatterns = new ArrayList<String>();
         procedurePatterns.add("COPYRECORD");
         procedurePatterns.add("COPYRECORD_FUNC");
         procedurePatterns.add("COPYCOMPLEXRECORD");
-        procedurePatterns.add("COPYCOMPLEXRECORD_FUNC");        
-        procedurePatterns.add("COPYMORECOMPLEXRECORD_FUNC");        
-        procedurePatterns.add("COPYSUPERCOMPLEXRECORD");        
-        
+        procedurePatterns.add("COPYCOMPLEXRECORD_FUNC");
+        procedurePatterns.add("COPYMORECOMPLEXRECORD_FUNC");
+        procedurePatterns.add("COPYSUPERCOMPLEXRECORD");
+
         // use DatabaseTypeBuilder to generate a list of PackageTypes
         dbTypeBuilder = new DatabaseTypeBuilder();
         dbProcedures = new ArrayList();
@@ -186,7 +186,7 @@ public class PLSQLRecordTypeTestSuite {
             runDdl(conn, DROP_A_PHONE_TYPE, ddlDebug);
         }
     }
-    
+
     @Test
     @SuppressWarnings({ "unchecked" })
     public void testJPAPLSQLRecordMetadata() {
@@ -217,7 +217,7 @@ public class PLSQLRecordTypeTestSuite {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
         "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
         "   <orm:named-plsql-stored-procedure-query name=\"COPYRECORD\" procedure-name=\"PACKAGE2.COPYRECORD\">\n" +
         "      <orm:parameter direction=\"IN\" name=\"OLDREC\" database-type=\"PACKAGE2.EMPREC\"/>\n" +
         "      <orm:parameter direction=\"OUT\" name=\"NEWREC\" database-type=\"PACKAGE2.EMPREC\"/>\n" +

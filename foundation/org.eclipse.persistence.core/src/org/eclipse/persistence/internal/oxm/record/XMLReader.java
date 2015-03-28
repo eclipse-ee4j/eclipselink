@@ -4,12 +4,12 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.io.IOException;
@@ -45,14 +45,14 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
  * <p><b>Responsibilities</b><ul>
  * <li>Wrap an instance of org.xml.sax.XMLReader and provide all the required API</li>
  * <li>Provide empty implementations of some callback methods that can be overridden in subclasses</li>
- * 
+ *
  *  @see org.eclipse.persistence.internal.oxm.record.DOMReader
  *  @author  mmacivor
  *  @since   release specific (what release of product did this appear in)
  */
 
 public class XMLReader implements org.xml.sax.XMLReader {
-    
+
     public static final String NAMESPACE_PREFIXES_FEATURE = "http://xml.org/sax/features/namespace-prefixes";
     public static final String REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE_FEATURE = "http://java.sun.com/xml/schema/features/report-ignored-element-content-whitespace";
 
@@ -74,23 +74,23 @@ public class XMLReader implements org.xml.sax.XMLReader {
         namespaceAware = true;
         namespaceSeparator = Constants.COLON;
     }
-    
+
     /**
      * INTERNAL:
      * return the Locator object associated with this reader
      * @since 2.4
      */
     public Locator getLocator(){
-    	return locator;
+        return locator;
     }
-    
+
     /**
      * INTERNAL:
      * set the Locator object to associate with this reader
      * @since 2.4
      */
     public void setLocator(Locator newLocator){
-    	locator = newLocator;
+        locator = newLocator;
     }
 
     public ContentHandler getContentHandler () {
@@ -104,14 +104,14 @@ public class XMLReader implements org.xml.sax.XMLReader {
             reader.setContentHandler(handler);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Determine if namespaces will be considered during marshal/unmarshal operations.
      * @since 2.4
      */
     public boolean isNamespaceAware() {
-    	return namespaceAware;
+        return namespaceAware;
     }
 
     /**
@@ -126,11 +126,11 @@ public class XMLReader implements org.xml.sax.XMLReader {
 
     /**
      * INTERNAL:
-	 * The character used to separate the prefix and uri portions when namespaces are present
+     * The character used to separate the prefix and uri portions when namespaces are present
      * @since 2.4
      */
     public char getNamespaceSeparator(){
-    	return namespaceSeparator;
+        return namespaceSeparator;
     }
 
     /**
@@ -148,16 +148,16 @@ public class XMLReader implements org.xml.sax.XMLReader {
      *  @return The MediaType associated with this reader
      */
     public MediaType getMediaType(){
-    	return Constants.APPLICATION_XML;
+        return Constants.APPLICATION_XML;
     }
-   
-    
+
+
     /**
      * INTERNAL:
      * @since 2.4
      */
     public Object convertValueBasedOnSchemaType(Field xmlField, Object value, ConversionManager conversionManager, AbstractUnmarshalRecord record) {
-    	return xmlField.convertValueBasedOnSchemaType(value, conversionManager, record);    	
+        return xmlField.convertValueBasedOnSchemaType(value, conversionManager, record);
     }
 
     public DTDHandler getDTDHandler () {
@@ -295,7 +295,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
         }
         return this.validatingContentHandler.getValidatorHandler();
     }
-    
+
     public void newObjectEvent(Object object, Object parent, Mapping selfRecordMapping) {
         //no op in this class.
     }
@@ -306,7 +306,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
 
     /**
      * This call back mechanism provides an opportunity for the XMLReader to
-     * provide an alternate conversion.  This optimization is currently only 
+     * provide an alternate conversion.  This optimization is currently only
      * leveraged for properties annotated with @XmlInlineBinaryData.
      * @param characters The characters to be converted.
      * @param dataType The type to be converted to.
@@ -315,41 +315,41 @@ public class XMLReader implements org.xml.sax.XMLReader {
     public Object getValue(CharSequence characters, Class<?> dataType) {
         return null;
     }
-    
+
     public boolean isNullRepresentedByXsiNil(AbstractNullPolicy nullPolicy){
-    	return nullPolicy.isNullRepresentedByXsiNil();    	
+        return nullPolicy.isNullRepresentedByXsiNil();
     }
-    
+
     public boolean isNullRecord(AbstractNullPolicy nullPolicy, Attributes atts, UnmarshalRecord record) {
-    	boolean isNil = isNullRepresentedByXsiNil(nullPolicy) && record.isNil();
-    	if (!nullPolicy.ignoreAttributesForNil()) {
-    		return isNil && !hasAttributes(atts);
-    	}
-    	return isNil;
+        boolean isNil = isNullRepresentedByXsiNil(nullPolicy) && record.isNil();
+        if (!nullPolicy.ignoreAttributesForNil()) {
+            return isNil && !hasAttributes(atts);
+        }
+        return isNil;
     }
-    
+
     private boolean hasAttributes(Attributes attributes) {
-    	QName nilAttrName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
-		for (int i = 0; i < attributes.getLength(); i++) {
-			if (!(nilAttrName.getNamespaceURI().equals(attributes.getURI(i)) &&
-					nilAttrName.getLocalPart().equals(attributes.getLocalName(i)))) {
-				return true;
-			}
-		}
-		return false;
-	}
+        QName nilAttrName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
+        for (int i = 0; i < attributes.getLength(); i++) {
+            if (!(nilAttrName.getNamespaceURI().equals(attributes.getURI(i)) &&
+                    nilAttrName.getLocalPart().equals(attributes.getLocalName(i)))) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public boolean isInCollection(){
-    	return true;
+        return true;
     }
- 
 
-    
+
+
     /**
      * Performance Optimization:
      * It is expensive to change the LexicalHandler on the underlying XMLReader
      * constantly through the setProperty(String, Object) mechanism.  So instead
-     * the LexicalHandlerWrapper is set once this way, and the "real" 
+     * the LexicalHandlerWrapper is set once this way, and the "real"
      * LexicalHandler is changed on the LexicalHandlerWrapper.
      */
     private static class LexicalHandlerWrapper implements LexicalHandler {
@@ -409,8 +409,8 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     /**
-     * Validate the SAX events reported to the ContentHandler.  This class is 
-     * being used rather than a ValidatorHandler in order to prevent default 
+     * Validate the SAX events reported to the ContentHandler.  This class is
+     * being used rather than a ValidatorHandler in order to prevent default
      * values from being populated.
      */
     protected static class ValidatingContentHandler implements ContentHandler {

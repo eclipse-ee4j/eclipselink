@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -77,287 +77,287 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  */
 public abstract class AbstractSessionsListPane extends AbstractSubjectPanel
 {
-	/**
-	 * Creates a new <code>AbstractSessionsListPane</code>.
-	 *
-	 * @param subjectHolder The holder of a {@link Nominative}
-	 * @param contextHolder The holder of the context to be used by this pane
-	 */
-	protected AbstractSessionsListPane(PropertyValueModel subjectHolder,
-												  WorkbenchContextHolder contextHolder)
-	{
-		super(subjectHolder, contextHolder);
-	}
+    /**
+     * Creates a new <code>AbstractSessionsListPane</code>.
+     *
+     * @param subjectHolder The holder of a {@link Nominative}
+     * @param contextHolder The holder of the context to be used by this pane
+     */
+    protected AbstractSessionsListPane(PropertyValueModel subjectHolder,
+                                                  WorkbenchContextHolder contextHolder)
+    {
+        super(subjectHolder, contextHolder);
+    }
 
-	/**
-	 * Requests the subclass to add a new session.
-	 */
-	protected abstract void addNewSession();
+    /**
+     * Requests the subclass to add a new session.
+     */
+    protected abstract void addNewSession();
 
-	/**
-	 * Creates the <code>ListCellRenderer</code> for the {@link AddRemoveListPanel}
-	 * in order to decorates the items of the list; which are instance of
-	 * {@link SessionAdapter}.
-	 *
-	 * @return A new <code>ListCellRenderer</code>
-	 */
-	private ListCellRenderer buidlAddRemoveListCellRenderer()
-	{
-		return new AdaptableListCellRenderer
-		(
-			new SessionCellRendererAdapter(resourceRepository())
-		);
-	}
+    /**
+     * Creates the <code>ListCellRenderer</code> for the {@link AddRemoveListPanel}
+     * in order to decorates the items of the list; which are instance of
+     * {@link SessionAdapter}.
+     *
+     * @return A new <code>ListCellRenderer</code>
+     */
+    private ListCellRenderer buidlAddRemoveListCellRenderer()
+    {
+        return new AdaptableListCellRenderer
+        (
+            new SessionCellRendererAdapter(resourceRepository())
+        );
+    }
 
-	/**
-	 * Creates the adapter required to update the underlying model when an item
-	 * need to be added or remove. This add or remove a {@link TopLinkSessionsAdapter}.
-	 *
-	 * @return A new <code>AddRemoveListPanel.Adapter</code>
-	 */
-	protected AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter()
-	{
-		return new AddRemoveListAdapter();
-	}
+    /**
+     * Creates the adapter required to update the underlying model when an item
+     * need to be added or remove. This add or remove a {@link TopLinkSessionsAdapter}.
+     *
+     * @return A new <code>AddRemoveListPanel.Adapter</code>
+     */
+    protected AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter()
+    {
+        return new AddRemoveListAdapter();
+    }
 
-	/**
-	 * Creates the <code>PropertyValueModel</code> that will be responsible to
-	 * listens to a display string change.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	protected PropertyValueModel buildDisplayStringHolder()
-	{
-		return new PropertyAspectAdapter(getSubjectHolder(), Displayable.DISPLAY_STRING_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				Nominative nominative = (Nominative) subject;
-				return nominative.getName();
-			}
-		};
-	}
+    /**
+     * Creates the <code>PropertyValueModel</code> that will be responsible to
+     * listens to a display string change.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    protected PropertyValueModel buildDisplayStringHolder()
+    {
+        return new PropertyAspectAdapter(getSubjectHolder(), Displayable.DISPLAY_STRING_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                Nominative nominative = (Nominative) subject;
+                return nominative.getName();
+            }
+        };
+    }
 
-	/**
-	 * Creates the <code>PropertyChangeListener</code> that will be responsible
-	 * to update the given titled border when the value changes.
-	 *
-	 * @param The border to update updated when the property changes
-	 * @return A new <code>PropertyChangeListener</code>
-	 */
-	protected PropertyChangeListener buildDisplayStringListener(final TitledBorder border)
-	{
-		return new PropertyChangeListener()
-		{
-			public void propertyChange(PropertyChangeEvent e)
-			{
-				if (e.getNewValue() != null)
-				{
-					border.setTitle(resourceRepository().getString("PROJECT_SESSIONS_LIST", e.getNewValue()));
-					repaint();
-				}
-			}
-		};
-	}
+    /**
+     * Creates the <code>PropertyChangeListener</code> that will be responsible
+     * to update the given titled border when the value changes.
+     *
+     * @param The border to update updated when the property changes
+     * @return A new <code>PropertyChangeListener</code>
+     */
+    protected PropertyChangeListener buildDisplayStringListener(final TitledBorder border)
+    {
+        return new PropertyChangeListener()
+        {
+            public void propertyChange(PropertyChangeEvent e)
+            {
+                if (e.getNewValue() != null)
+                {
+                    border.setTitle(resourceRepository().getString("PROJECT_SESSIONS_LIST", e.getNewValue()));
+                    repaint();
+                }
+            }
+        };
+    }
 
-	/**
-	 * Creates a new <code>AddRemoveListPanel</code> that will shows the sessions
-	 * contained in the sessions.xml.
-	 *
-	 * @return A new <code>AddRemoveListPanel</code>
-	 */
-	protected AddRemoveListPanel buildSessionListPane()
-	{
-		return new CustomizedSessionListPanel();
-	}
+    /**
+     * Creates a new <code>AddRemoveListPanel</code> that will shows the sessions
+     * contained in the sessions.xml.
+     *
+     * @return A new <code>AddRemoveListPanel</code>
+     */
+    protected AddRemoveListPanel buildSessionListPane()
+    {
+        return new CustomizedSessionListPanel();
+    }
 
-	/**
-	 * Creates the <code>CollectionValueModel</code> containing all the items to
-	 * be shown in the Sessions list.
-	 *
-	 * @return A new <code>CollectionValueModel</code>
-	 */
-	protected abstract CollectionValueModel buildSessionsCollectionHolder();
+    /**
+     * Creates the <code>CollectionValueModel</code> containing all the items to
+     * be shown in the Sessions list.
+     *
+     * @return A new <code>CollectionValueModel</code>
+     */
+    protected abstract CollectionValueModel buildSessionsCollectionHolder();
 
-	/**
-	 * Creates <code>ListValueModel</code> that will keep the rendering up to
-	 * date when the item's displayable property has changed. For
-	 * {@link SessionAdapter}, only its name is its displayable property.
-	 *
-	 * @return A new <code>ItemPropertyListValueModelAdapter</code>
-	 */
-	private ItemPropertyListValueModelAdapter buildSessionsItemListAdapter()
-	{
-		return new ItemPropertyListValueModelAdapter(buildSessionsCollectionHolder(),
-																	SessionAdapter.NAME_PROPERTY);
-	}
+    /**
+     * Creates <code>ListValueModel</code> that will keep the rendering up to
+     * date when the item's displayable property has changed. For
+     * {@link SessionAdapter}, only its name is its displayable property.
+     *
+     * @return A new <code>ItemPropertyListValueModelAdapter</code>
+     */
+    private ItemPropertyListValueModelAdapter buildSessionsItemListAdapter()
+    {
+        return new ItemPropertyListValueModelAdapter(buildSessionsCollectionHolder(),
+                                                                    SessionAdapter.NAME_PROPERTY);
+    }
 
-	/**
-	 * Creates the <code>SortedListValueModelAdapter</code> responsible to keep
-	 * the underlying list always sorted.
-	 *
-	 * @return A new <code>SortedListValueModelAdapter</code>
-	 */
-	private SortedListValueModelAdapter buildSortedSessionsListHolder()
-	{
-		return new SortedListValueModelAdapter(buildSessionsItemListAdapter());
-	}
+    /**
+     * Creates the <code>SortedListValueModelAdapter</code> responsible to keep
+     * the underlying list always sorted.
+     *
+     * @return A new <code>SortedListValueModelAdapter</code>
+     */
+    private SortedListValueModelAdapter buildSortedSessionsListHolder()
+    {
+        return new SortedListValueModelAdapter(buildSessionsItemListAdapter());
+    }
 
-	/**
-	 * Determines whether if the given collection of {@link SessionAdapter}s can
-	 * be removed from the list.
-	 *
-	 * @param sessions The collection of {@link SessionAdapter}s that have been
-	 * selected to be removed
-	 * @return <code>true<code> if they can be removed; <code>false<code>
-	 * otherwise
-	 */
-	protected boolean canRemoveSessions(Collection sessions)
-	{
-		return true;
-	}
+    /**
+     * Determines whether if the given collection of {@link SessionAdapter}s can
+     * be removed from the list.
+     *
+     * @param sessions The collection of {@link SessionAdapter}s that have been
+     * selected to be removed
+     * @return <code>true<code> if they can be removed; <code>false<code>
+     * otherwise
+     */
+    protected boolean canRemoveSessions(Collection sessions)
+    {
+        return true;
+    }
 
-	/**
-	 * Initializes the layout of this pane.
-	 */
-	protected void initializeLayout()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
+    /**
+     * Initializes the layout of this pane.
+     */
+    protected void initializeLayout()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		// Titled border
-		TitledBorder border = new TitledBorder("");
-		PropertyValueModel displayStringAdapter = buildDisplayStringHolder();
-		displayStringAdapter.addPropertyChangeListener(PropertyValueModel.VALUE, buildDisplayStringListener(border));
-		border.setTitle(resourceRepository().getString("PROJECT_SESSIONS_LIST", displayStringAdapter.getValue()));
+        // Titled border
+        TitledBorder border = new TitledBorder("");
+        PropertyValueModel displayStringAdapter = buildDisplayStringHolder();
+        displayStringAdapter.addPropertyChangeListener(PropertyValueModel.VALUE, buildDisplayStringListener(border));
+        border.setTitle(resourceRepository().getString("PROJECT_SESSIONS_LIST", displayStringAdapter.getValue()));
 
-		setBorder(BorderFactory.createCompoundBorder
-		(
-			border,
-			BorderFactory.createEmptyBorder(0, 5, 5, 5)
-		));
+        setBorder(BorderFactory.createCompoundBorder
+        (
+            border,
+            BorderFactory.createEmptyBorder(0, 5, 5, 5)
+        ));
 
-		// Sessions list
-		AddRemoveListPanel interfacesListPanel = buildSessionListPane();
-		interfacesListPanel.setCellRenderer(buidlAddRemoveListCellRenderer());
+        // Sessions list
+        AddRemoveListPanel interfacesListPanel = buildSessionListPane();
+        interfacesListPanel.setCellRenderer(buidlAddRemoveListCellRenderer());
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 1;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 1;
-		constraints.fill       = GridBagConstraints.BOTH;
-		constraints.anchor     = GridBagConstraints.CENTER;
-		constraints.insets     = new Insets(0, 0, 0, 0);
+        constraints.gridx      = 0;
+        constraints.gridy      = 1;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 1;
+        constraints.fill       = GridBagConstraints.BOTH;
+        constraints.anchor     = GridBagConstraints.CENTER;
+        constraints.insets     = new Insets(0, 0, 0, 0);
 
-		add(interfacesListPanel, constraints);
-		addPaneForAlignment(interfacesListPanel);
-	}
+        add(interfacesListPanel, constraints);
+        addPaneForAlignment(interfacesListPanel);
+    }
 
-	/**
-	 * Removes the <code>SessionAdapter</code>s contained in the given collection.
-	 *
-	 * @param sessions The {@link SessionAdapter}s to be removed from their parent
-	 */
-	protected abstract void removeSessions(Collection sessions);
+    /**
+     * Removes the <code>SessionAdapter</code>s contained in the given collection.
+     *
+     * @param sessions The {@link SessionAdapter}s to be removed from their parent
+     */
+    protected abstract void removeSessions(Collection sessions);
 
-	/**
-	 * Rename the selected session.
-	 *
-	 * @param session The session to be renamed
-	 */
-	protected void renameSession(SessionAdapter session)
-	{
-		TopLinkSessionsAdapter sessions = (TopLinkSessionsAdapter) session.getParent();
-		SimplePropertyValueModel stringHolder = new SimplePropertyValueModel();
-		stringHolder.setValue(session.getName());
+    /**
+     * Rename the selected session.
+     *
+     * @param session The session to be renamed
+     */
+    protected void renameSession(SessionAdapter session)
+    {
+        TopLinkSessionsAdapter sessions = (TopLinkSessionsAdapter) session.getParent();
+        SimplePropertyValueModel stringHolder = new SimplePropertyValueModel();
+        stringHolder.setValue(session.getName());
 
-		RenameDialog dialog = new RenameDialog(getWorkbenchContext(), stringHolder, sessions.getAllSessionsNames());
-		dialog.setVisible(true);
+        RenameDialog dialog = new RenameDialog(getWorkbenchContext(), stringHolder, sessions.getAllSessionsNames());
+        dialog.setVisible(true);
 
-		if (dialog.wasConfirmed())
-		{
-			session.setName((String) stringHolder.getValue());
-		}
-	}
+        if (dialog.wasConfirmed())
+        {
+            session.setName((String) stringHolder.getValue());
+        }
+    }
 
-	/**
-	 * The adapter used to perform the action when either the Add or Remove
-	 * button is triggered.
-	 */
-	protected class AddRemoveListAdapter implements AddRemoveListPanel.OptionAdapter
-	{
-		/**
-		 * Invoked when the user selects the Add button.
-		 *
-		 * @param listSelectionModel The model containing the selected items
-		 */
-		public void addNewItem(ObjectListSelectionModel listSelectionModel)
-		{
-			addNewSession();
-		}
+    /**
+     * The adapter used to perform the action when either the Add or Remove
+     * button is triggered.
+     */
+    protected class AddRemoveListAdapter implements AddRemoveListPanel.OptionAdapter
+    {
+        /**
+         * Invoked when the user selects the Add button.
+         *
+         * @param listSelectionModel The model containing the selected items
+         */
+        public void addNewItem(ObjectListSelectionModel listSelectionModel)
+        {
+            addNewSession();
+        }
 
-		/**
-		 * Resource string key for the optional button.
-		 *
-		 * @return "PROJECT_SESSIONS_RENAME_BUTTON"
-		 */
-		public String optionalButtonKey()
-		{
-			return "PROJECT_SESSIONS_RENAME_BUTTON";
-		}
+        /**
+         * Resource string key for the optional button.
+         *
+         * @return "PROJECT_SESSIONS_RENAME_BUTTON"
+         */
+        public String optionalButtonKey()
+        {
+            return "PROJECT_SESSIONS_RENAME_BUTTON";
+        }
 
-		/**
-		 * Invoked when the user selects the optional button.
-		 *
-		 * @param listSelectionModel The model containing the selected item
-		 */
-		public void optionOnSelection(ObjectListSelectionModel selectionModel)
-		{
-			renameSession((SessionAdapter) selectionModel.getSelectedValue());
-		}
-		
-		public boolean enableOptionOnSelectionChange(ObjectListSelectionModel listSelectionModel) {
-			return listSelectionModel.getSelectedValuesSize() == 1;
-		}
+        /**
+         * Invoked when the user selects the optional button.
+         *
+         * @param listSelectionModel The model containing the selected item
+         */
+        public void optionOnSelection(ObjectListSelectionModel selectionModel)
+        {
+            renameSession((SessionAdapter) selectionModel.getSelectedValue());
+        }
 
-		/**
-		 * Invoked when the user selects the Remove button.
-		 *
-		 * @param listSelectionModel The model containing the selected items
-		 */
-		public void removeSelectedItems(ObjectListSelectionModel listSelectionModel)
-		{
-			Collection sessions = CollectionTools.collection(listSelectionModel.getSelectedValues());
+        public boolean enableOptionOnSelectionChange(ObjectListSelectionModel listSelectionModel) {
+            return listSelectionModel.getSelectedValuesSize() == 1;
+        }
 
-			if (canRemoveSessions(sessions))
-				removeSessions(sessions);
-		}			
-	}
+        /**
+         * Invoked when the user selects the Remove button.
+         *
+         * @param listSelectionModel The model containing the selected items
+         */
+        public void removeSelectedItems(ObjectListSelectionModel listSelectionModel)
+        {
+            Collection sessions = CollectionTools.collection(listSelectionModel.getSelectedValues());
 
-	/**
-	 * This subclass will allow any subclass of <code>AbstractSessionsListPane</code>
-	 * to have access to the Add button in order to use a
-	 * {@link org.eclipse.persistence.tools.workbench.uitools.ComponentEnabler}.
-	 */
-	protected class CustomizedSessionListPanel extends AddRemoveListPanel
-	{
-		protected CustomizedSessionListPanel()
-		{
-			super(AbstractSessionsListPane.this.getApplicationContext(),
-					buildAddRemoveListPanelAdapter(),
-					buildSortedSessionsListHolder(),
-					AddRemoveListPanel.RIGHT);
-		}
+            if (canRemoveSessions(sessions))
+                removeSessions(sessions);
+        }
+    }
 
-		protected String addButtonKey()
-		{
-			return "PROJECT_SESSIONS_ADD_BUTTON";
-		}
-		
-		protected String removeButtonKey()
-		{
-			return "PROJECT_SESSIONS_REMOVE_BUTTON";
-		}
-	}
+    /**
+     * This subclass will allow any subclass of <code>AbstractSessionsListPane</code>
+     * to have access to the Add button in order to use a
+     * {@link org.eclipse.persistence.tools.workbench.uitools.ComponentEnabler}.
+     */
+    protected class CustomizedSessionListPanel extends AddRemoveListPanel
+    {
+        protected CustomizedSessionListPanel()
+        {
+            super(AbstractSessionsListPane.this.getApplicationContext(),
+                    buildAddRemoveListPanelAdapter(),
+                    buildSortedSessionsListHolder(),
+                    AddRemoveListPanel.RIGHT);
+        }
+
+        protected String addButtonKey()
+        {
+            return "PROJECT_SESSIONS_ADD_BUTTON";
+        }
+
+        protected String removeButtonKey()
+        {
+            return "PROJECT_SESSIONS_REMOVE_BUTTON";
+        }
+    }
 }

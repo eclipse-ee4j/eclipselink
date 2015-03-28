@@ -9,7 +9,7 @@ public class XmlElementRefNillStringTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/stringNill.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/stringNill.json";
-    
+
     public XmlElementRefNillStringTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
@@ -23,7 +23,7 @@ public class XmlElementRefNillStringTestCases extends JAXBWithJSONTestCases {
         r.foo = null;
         r.bar = new JAXBElement<String>(new QName("bar"), String.class, null);
         r.bar.setNil(true);
-        
+
         return r;
     }
 

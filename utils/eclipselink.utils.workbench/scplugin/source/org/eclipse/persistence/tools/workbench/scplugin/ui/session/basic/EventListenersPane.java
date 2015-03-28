@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -66,149 +66,149 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  */
 final class EventListenersPane extends AbstractSubjectPanel
 {
-	/**
-	 * Creates a new <code>EventListenersPane</code>.
-	 *
-	 * @param sessionAdapterHolder The holder of {@link SessionAdapter}
-	 * @param context The context used to retrieve the localized strings
-	 * @param group The parent <code>ComponentAligner</code> of the
-	 * <code>ComponentAligner</code> used by this pane
-	 */
-	public EventListenersPane(PropertyValueModel sessionAdapterHolder,
-									  WorkbenchContextHolder contextHolder)
-	{
-		super(new BorderLayout(), sessionAdapterHolder, contextHolder);
-		addHelpTopicId(this, "session.options.eventListeners");
-	}
+    /**
+     * Creates a new <code>EventListenersPane</code>.
+     *
+     * @param sessionAdapterHolder The holder of {@link SessionAdapter}
+     * @param context The context used to retrieve the localized strings
+     * @param group The parent <code>ComponentAligner</code> of the
+     * <code>ComponentAligner</code> used by this pane
+     */
+    public EventListenersPane(PropertyValueModel sessionAdapterHolder,
+                                      WorkbenchContextHolder contextHolder)
+    {
+        super(new BorderLayout(), sessionAdapterHolder, contextHolder);
+        addHelpTopicId(this, "session.options.eventListeners");
+    }
 
-	/**
-	 * Creates the <code>AddRemoveListPanel.Adapter</code> that will takes care
-	 * of updating the model when items are either added or removed from the
-	 * list.
-	 *
-	 * @return A new <code>AddRemoveListPanel.Adapter</code>
-	 */
-	private AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter()
-	{
-		return new AddRemoveListAdapter();
-	}
+    /**
+     * Creates the <code>AddRemoveListPanel.Adapter</code> that will takes care
+     * of updating the model when items are either added or removed from the
+     * list.
+     *
+     * @return A new <code>AddRemoveListPanel.Adapter</code>
+     */
+    private AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter()
+    {
+        return new AddRemoveListAdapter();
+    }
 
-	/**
-	 * Creates the <code>CollectionValueModel</code> containing all the items to
-	 * be shown in the Event Listener Classes list pane.
-	 *
-	 * @return A new <code>CollectionValueModel</code>
-	 */
-	private ListValueModel buildEventListenerListHolder()
-	{
-		return new ListAspectAdapter(getSubjectHolder(), SessionAdapter.SESSION_EVENT_LISTENERS_CONFIGS_LIST)
-		{
-			protected ListIterator getValueFromSubject()
-			{
-				SessionAdapter adapter = (SessionAdapter) this.subject;
-				return adapter.sessionEventListenerConfigs();
-			}
-		};
-	}
+    /**
+     * Creates the <code>CollectionValueModel</code> containing all the items to
+     * be shown in the Event Listener Classes list pane.
+     *
+     * @return A new <code>CollectionValueModel</code>
+     */
+    private ListValueModel buildEventListenerListHolder()
+    {
+        return new ListAspectAdapter(getSubjectHolder(), SessionAdapter.SESSION_EVENT_LISTENERS_CONFIGS_LIST)
+        {
+            protected ListIterator getValueFromSubject()
+            {
+                SessionAdapter adapter = (SessionAdapter) this.subject;
+                return adapter.sessionEventListenerConfigs();
+            }
+        };
+    }
 
-	/**
-	 * Creates a new <code>AddRemoveListPanel</code> that will shows the sessions
-	 * contained in the sessions.xml.
-	 *
-	 * @return A new <code>AddRemoveListPanel</code>
-	 */
-	private AddRemoveListPanel buildEventListenerListPane()
-	{
-		return new CustomizedAddRemoveListPanel();
-	}
+    /**
+     * Creates a new <code>AddRemoveListPanel</code> that will shows the sessions
+     * contained in the sessions.xml.
+     *
+     * @return A new <code>AddRemoveListPanel</code>
+     */
+    private AddRemoveListPanel buildEventListenerListPane()
+    {
+        return new CustomizedAddRemoveListPanel();
+    }
 
-	/**
-	 * Initializes the layout of this pane.
-	 */
-	protected void initializeLayout()
-	{
-		AddRemoveListPanel eventListenersListPanel = buildEventListenerListPane();
-		eventListenersListPanel.setCellRenderer(new SimpleListCellRenderer());
-		eventListenersListPanel.setBorder(BorderFactory.createCompoundBorder
-		(
-			buildTitledBorder("OPTIONS_EVENT_LISTENERS_LIST"),
-			BorderFactory.createEmptyBorder(0, 5, 5, 5)
-		));
+    /**
+     * Initializes the layout of this pane.
+     */
+    protected void initializeLayout()
+    {
+        AddRemoveListPanel eventListenersListPanel = buildEventListenerListPane();
+        eventListenersListPanel.setCellRenderer(new SimpleListCellRenderer());
+        eventListenersListPanel.setBorder(BorderFactory.createCompoundBorder
+        (
+            buildTitledBorder("OPTIONS_EVENT_LISTENERS_LIST"),
+            BorderFactory.createEmptyBorder(0, 5, 5, 5)
+        ));
 
-		add(eventListenersListPanel, BorderLayout.CENTER);
-		addPaneForAlignment(eventListenersListPanel);
-	}
+        add(eventListenersListPanel, BorderLayout.CENTER);
+        addPaneForAlignment(eventListenersListPanel);
+    }
 
-	/**
-	 * This <code>Adapter</code> is responsible to perform the action upon a
-	 * click on either the Add or Remove buttons.
-	 */
-	private class AddRemoveListAdapter implements AddRemoveListPanel.Adapter
-	{
-		public void addNewItem(ObjectListSelectionModel listSelectionModel)
-		{
-			SessionAdapter session = (SessionAdapter) subject();
-			SimplePropertyValueModel selectionHolder = new SimplePropertyValueModel();
+    /**
+     * This <code>Adapter</code> is responsible to perform the action upon a
+     * click on either the Add or Remove buttons.
+     */
+    private class AddRemoveListAdapter implements AddRemoveListPanel.Adapter
+    {
+        public void addNewItem(ObjectListSelectionModel listSelectionModel)
+        {
+            SessionAdapter session = (SessionAdapter) subject();
+            SimplePropertyValueModel selectionHolder = new SimplePropertyValueModel();
 
-			ClassChooserTools.promptForType
-			(
-				getWorkbenchContext(),
-				session.getClassRepository(),
-				selectionHolder
-			);
+            ClassChooserTools.promptForType
+            (
+                getWorkbenchContext(),
+                session.getClassRepository(),
+                selectionHolder
+            );
 
-			String eventListenerClassName = (String) selectionHolder.getValue();
+            String eventListenerClassName = (String) selectionHolder.getValue();
 
-			if ((eventListenerClassName != null) &&
-				 ! CollectionTools.contains(session.sessionEventListenerConfigs(), eventListenerClassName))
-			{
-				session.addPropertyConfigNamed(eventListenerClassName);
-			}
-		}
+            if ((eventListenerClassName != null) &&
+                 ! CollectionTools.contains(session.sessionEventListenerConfigs(), eventListenerClassName))
+            {
+                session.addPropertyConfigNamed(eventListenerClassName);
+            }
+        }
 
-		public void removeSelectedItems(ObjectListSelectionModel listSelectionModel)
-		{
-			SessionAdapter adapter = (SessionAdapter) subject();
-			Object[] selectedValues = listSelectionModel.getSelectedValues();
+        public void removeSelectedItems(ObjectListSelectionModel listSelectionModel)
+        {
+            SessionAdapter adapter = (SessionAdapter) subject();
+            Object[] selectedValues = listSelectionModel.getSelectedValues();
 
-			for (int index = selectedValues.length; --index >= 0;)
-			{
-				adapter.removePropertyConfigNamed((String) selectedValues[index]);
-			}
-		}
-	}
+            for (int index = selectedValues.length; --index >= 0;)
+            {
+                adapter.removePropertyConfigNamed((String) selectedValues[index]);
+            }
+        }
+    }
 
-	/**
-	 * This customized <code>AddRemoveListPanel</code> simply renames the Add and
-	 * Remove buttons.
-	 */
-	private class CustomizedAddRemoveListPanel extends AddRemoveListPanel
-	{
-		private CustomizedAddRemoveListPanel()
-		{
-			super(EventListenersPane.this.getApplicationContext(),
-					buildAddRemoveListPanelAdapter(),
-					buildEventListenerListHolder(),
-					AddRemoveListPanel.RIGHT);
-		}
+    /**
+     * This customized <code>AddRemoveListPanel</code> simply renames the Add and
+     * Remove buttons.
+     */
+    private class CustomizedAddRemoveListPanel extends AddRemoveListPanel
+    {
+        private CustomizedAddRemoveListPanel()
+        {
+            super(EventListenersPane.this.getApplicationContext(),
+                    buildAddRemoveListPanelAdapter(),
+                    buildEventListenerListHolder(),
+                    AddRemoveListPanel.RIGHT);
+        }
 
-		protected String addButtonKey()
-		{
-			return "OPTIONS_EVENT_LISTENERS_ADD_BUTTON";
-		}
+        protected String addButtonKey()
+        {
+            return "OPTIONS_EVENT_LISTENERS_ADD_BUTTON";
+        }
 
-		protected void buildButtonPanel(JComponent buttonPanel,
-												  JButton addButton,
-												  JButton removeButton,
-												  JButton optionalButton)
-		{
-			buttonPanel.add(addButton);
-			buttonPanel.add(removeButton);
-		}
+        protected void buildButtonPanel(JComponent buttonPanel,
+                                                  JButton addButton,
+                                                  JButton removeButton,
+                                                  JButton optionalButton)
+        {
+            buttonPanel.add(addButton);
+            buttonPanel.add(removeButton);
+        }
 
-		protected String removeButtonKey()
-		{
-			return "OPTIONS_EVENT_LISTENERS_REMOVE_BUTTON";
-		}
-	}
+        protected String removeButtonKey()
+        {
+            return "OPTIONS_EVENT_LISTENERS_REMOVE_BUTTON";
+        }
+    }
 }

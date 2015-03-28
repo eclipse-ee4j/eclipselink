@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.spatial.jgeometry.wrapped;
 
 import java.util.List;
@@ -41,11 +41,11 @@ import org.eclipse.persistence.testing.tests.spatial.jgeometry.SQLReader;
  * criteria.
  */
 public class Query_Basic_Tests extends WrappedSpatialTestCase {
-    
+
     public Query_Basic_Tests(String name){
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("Query_Basic_Tests");
@@ -69,7 +69,7 @@ public class Query_Basic_Tests extends WrappedSpatialTestCase {
             }
         };
     }
- 
+
     public void testReadAll() throws Exception {
         String sql = "select GID, GEOMETRY from WRAPPED_SPATIAL ORDER BY GID";
         SQLReader reader = new SQLReader(session, sql);
@@ -77,7 +77,7 @@ public class Query_Basic_Tests extends WrappedSpatialTestCase {
         ReadAllQuery raq = new ReadAllQuery(WrappedSpatial.class);
         raq.addAscendingOrdering("id");
 
-        List<Spatial> results = 
+        List<Spatial> results =
             (List<Spatial>)session.executeQuery(raq);
         assertNotNull(results);
 
@@ -96,14 +96,14 @@ public class Query_Basic_Tests extends WrappedSpatialTestCase {
 
         ReadAllQuery raq = new ReadAllQuery(WrappedSpatial.class);
         ExpressionBuilder eb = raq.getExpressionBuilder();
-       
+
         SpatialParameters parameters = new SpatialParameters();
         parameters.setQueryType(SpatialParameters.QueryType.WINDOW).setMask(Mask.ANYINTERACT);
         Expression selectionCriteria = SpatialExpressionFactory.relate(eb.get("geometry").getField("geom"), rectangle, parameters);
         raq.setSelectionCriteria(selectionCriteria);
         raq.addAscendingOrdering("id");
 
-        List<SimpleSpatial> results = 
+        List<SimpleSpatial> results =
             (List<SimpleSpatial>)session.executeQuery(raq);
 
         assertNotNull(results);
@@ -119,7 +119,7 @@ public class Query_Basic_Tests extends WrappedSpatialTestCase {
 
         ReadAllQuery raq = new ReadAllQuery(WrappedSpatial.class);
         ExpressionBuilder eb = raq.getExpressionBuilder();
-        
+
         SpatialParameters parameters = new SpatialParameters();
         parameters.setQueryType(SpatialParameters.QueryType.WINDOW).setMask(Mask.ANYINTERACT);
         Expression selectionCriteria = SpatialExpressionFactory.relate(eb.get("geometry").getField("geom"), rectangle, parameters);
@@ -127,7 +127,7 @@ public class Query_Basic_Tests extends WrappedSpatialTestCase {
         raq.setSelectionCriteria(selectionCriteria);
         raq.addAscendingOrdering("id");
 
-        List<SimpleSpatial> results = 
+        List<SimpleSpatial> results =
             (List<SimpleSpatial>)session.executeQuery(raq);
 
         assertNotNull(results);
@@ -142,8 +142,8 @@ public class Query_Basic_Tests extends WrappedSpatialTestCase {
 
         Expression selectionCriteria = eb.get("geometry").getField("geom").notNull();
         roq.setSelectionCriteria(selectionCriteria);
-        
-        List<WrappedSpatial> results = 
+
+        List<WrappedSpatial> results =
             (List<WrappedSpatial>)session.executeQuery(roq);
 
         assertNotNull(results);
@@ -158,29 +158,29 @@ public class Query_Basic_Tests extends WrappedSpatialTestCase {
         ExpressionBuilder eb = new ExpressionBuilder(WrappedSpatial.class);
 
         Expression geomExp = eb.get("geometry").getField("geom");
-        
+
         roq.setSelectionCriteria(geomExp.isNull());
 
-        List<WrappedSpatial> results = 
+        List<WrappedSpatial> results =
             (List<WrappedSpatial>)session.executeQuery(roq);
 
         assertNotNull(results);
         assertEquals(1, results.size());
     }
-    
+
     public void testGetTableGetField(){
         ReadAllQuery roq = new ReadAllQuery(WrappedSpatial.class);
         ExpressionBuilder eb = roq.getExpressionBuilder();
         roq.setSelectionCriteria(eb.getTable("WRAPPED_SPATIAL").getField("GEOMETRY").getField("GEOM").notNull());
 
-        List<SimpleSpatial> results = 
+        List<SimpleSpatial> results =
             (List<SimpleSpatial>)session.executeQuery(roq);
 
         assertNotNull(results);
         int countAll = DeleteTests.countWrappedSpatial(session);
 
         assertEquals("Incorrect number found", countAll - 1, results.size());
-        
+
     }
 
 }

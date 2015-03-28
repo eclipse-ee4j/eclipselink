@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -53,13 +53,13 @@ import junit.framework.TestCase;
 
 /**
  * These tests are designed to test basic schema model generation functionality.  The
- * associated project (TestProject) has three descriptors - Employee, Address and 
- * PhoneNumber - that contain XMLDirect, XMLCompositeDirectCollection, 
+ * associated project (TestProject) has three descriptors - Employee, Address and
+ * PhoneNumber - that contain XMLDirect, XMLCompositeDirectCollection,
  * XMLCompositeObject and XMLCompositeCollection mappings.  Different combinations of
  * element form default, schema context and default root element settings are tested.
  * Note that these tests will set the schema context and/or default root elements on
  * every descriptor, and NOT on a per descriptor basis.
- * 
+ *
  */
 public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
     protected static final String MYNS = "myns:examplenamespace";
@@ -78,7 +78,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
     /**
      * Test global complex type and global element generation.  Element form default
      * is qualified.
-     * 
+     *
      * @throws Exception
      */
     public void testElementFormQualified() throws Exception {
@@ -88,7 +88,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
         try {
             boolean setSchemaContext = true;
             boolean setDefaultRootElement = true;
-            
+
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, true);
 
@@ -97,10 +97,10 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYNS);
-            
+
             // debugging
             //writeSchema(generatedSchema);
-            
+
             assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
 
             tDoc = getDocument(generatedSchema);
@@ -113,11 +113,11 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
         assertNotNull("A problem occurred loading the control schema", cDoc);
         assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
     }
-    
+
     /**
-     * Test global element and anonymous complex type generation. Element form 
+     * Test global element and anonymous complex type generation. Element form
      * default is qualified.
-     * 
+     *
      * @throws Exception
      */
     public void testElementFormQualifiedNoSchemaContext() throws Exception {
@@ -127,7 +127,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
         try {
             boolean setSchemaContext = false;
             boolean setDefaultRootElement = true;
-            
+
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, true);
 
@@ -137,7 +137,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYNS);
             assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
-            
+
             // debugging
             //writeSchema(generatedSchema);
 
@@ -154,7 +154,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
 
     /**
      * Test global complex type generation.  Element form default is qualified.
-     * 
+     *
      * @throws Exception
      */
     public void testElementFormQualifiedNoDefaultRootElement() throws Exception {
@@ -174,7 +174,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYNS);
             assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
-            
+
             // debugging
             //writeSchema(generatedSchema);
 
@@ -201,7 +201,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
 
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
-            
+
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement, MYNS);
             loginProject(prj);
             List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
@@ -216,9 +216,9 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
 
     /**
      * Test global complex type and global element generation.  Element form default
-     * is unqualified.  Element refs will be generated for local elements whose 
+     * is unqualified.  Element refs will be generated for local elements whose
      * type is that of a global complex type.
-     * 
+     *
      * @throws Exception
      */
     public void testElementFormUnqualified() throws Exception {
@@ -234,11 +234,11 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
 
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYEMPTYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
-            
+
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYEMPTYNS);
             assertNotNull("No schema was generated for namespace ["+MYEMPTYNS+"]", generatedSchema);
-            
+
             // debugging
             //writeSchema(generatedSchema);
 
@@ -252,12 +252,12 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
         assertNotNull("A problem occurred loading the control schema", cDoc);
         assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
     }
-    
+
     /**
-     * Test global element generation.  Element form default is unqualified.   
-     * Element refs will be generated for local elements - the global 
+     * Test global element generation.  Element form default is unqualified.
+     * Element refs will be generated for local elements - the global
      * elements they refer to will have anonymous complex types generated.
-     *  
+     *
      * @throws Exception
      */
     public void testElementFormUnqualifiedNoSchemaContext() throws Exception {
@@ -270,7 +270,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
 
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYEMPTYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
-            
+
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement);
             loginProject(prj);
             List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
@@ -293,11 +293,11 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
     }
 
     /**
-     * Test global complex type generation.  Element form default is unqualified.  
-     * Element refs will be generated for local elements whose type is that of 
-     * a global complex type.  In these cases, global elements will be 
+     * Test global complex type generation.  Element form default is unqualified.
+     * Element refs will be generated for local elements whose type is that of
+     * a global complex type.  In these cases, global elements will be
      * generated for the refs.
-     * 
+     *
      * @throws Exception
      */
     public void testElementFormUnqualifiedNoDefaultRootElement() throws Exception {
@@ -310,7 +310,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
 
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYEMPTYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
-            
+
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement);
             loginProject(prj);
             List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
@@ -347,7 +347,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
 
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYEMPTYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
-            
+
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYEMPTYNS);
         } catch (Exception ex) {
@@ -360,7 +360,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
     /**
      * Add the Employee, Address and PhoneNumber descriptors to the List of descriptors
      * to be processed by the schema model generator.
-     * 
+     *
      * @param prj
      * @return
      */

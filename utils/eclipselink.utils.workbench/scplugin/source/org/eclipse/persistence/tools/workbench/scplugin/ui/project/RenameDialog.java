@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -32,116 +32,116 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.DocumentAdapter
 
 
 public class RenameDialog extends AbstractValidatingDialog {
-	
-	private JTextField nameTextField;
-	private final Collection sessionNames;
-	private final PropertyValueModel stringHolder;
-     		
-//	   ************ constructors / initialization ****************
 
-	public RenameDialog( WorkbenchContext context, PropertyValueModel stringHolder, Collection sessionNames) {
-			super(context);
-			this.stringHolder = stringHolder;
-			this.sessionNames = sessionNames;
-	}
-     
-	protected void initialize() {
-			super.initialize();
-			getOKAction().setEnabled( false);
-	}
+    private JTextField nameTextField;
+    private final Collection sessionNames;
+    private final PropertyValueModel stringHolder;
 
-	private Document buildNameDocumentAdapter() {
-		return new DocumentAdapter(stringHolder);
-	}
+//       ************ constructors / initialization ****************
 
-	protected Component buildMainPanel() {
-		GridBagConstraints constraints = new GridBagConstraints();
-		setTitle( resourceRepository().getString( "RENAME_DIALOG_TITLE"));
+    public RenameDialog( WorkbenchContext context, PropertyValueModel stringHolder, Collection sessionNames) {
+            super(context);
+            this.stringHolder = stringHolder;
+            this.sessionNames = sessionNames;
+    }
 
-		// Create the container
-		JPanel panel = new JPanel(new GridBagLayout());
+    protected void initialize() {
+            super.initialize();
+            getOKAction().setEnabled( false);
+    }
 
-		// Name label
-		JLabel nameLabel = new JLabel(resourceRepository().getString("SESSION_NAME_LABEL"));
-		nameLabel.setDisplayedMnemonic(resourceRepository().getMnemonic("SESSION_NAME_LABEL"));
-		nameLabel.setDisplayedMnemonicIndex(resourceRepository().getMnemonicIndex("SESSION_NAME_LABEL"));
+    private Document buildNameDocumentAdapter() {
+        return new DocumentAdapter(stringHolder);
+    }
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 0;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 0;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.NONE;
-		constraints.anchor     = GridBagConstraints.LINE_START;
-		constraints.insets     = new Insets(0, 0, 0, 0);
+    protected Component buildMainPanel() {
+        GridBagConstraints constraints = new GridBagConstraints();
+        setTitle( resourceRepository().getString( "RENAME_DIALOG_TITLE"));
 
-		panel.add(nameLabel, constraints);
+        // Create the container
+        JPanel panel = new JPanel(new GridBagLayout());
 
-		// Name text field
-		nameTextField = new JTextField(buildNameDocumentAdapter(), null, 20);
+        // Name label
+        JLabel nameLabel = new JLabel(resourceRepository().getString("SESSION_NAME_LABEL"));
+        nameLabel.setDisplayedMnemonic(resourceRepository().getMnemonic("SESSION_NAME_LABEL"));
+        nameLabel.setDisplayedMnemonicIndex(resourceRepository().getMnemonicIndex("SESSION_NAME_LABEL"));
 
-		constraints.gridx      = 1;
-		constraints.gridy      = 0;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.CENTER;
-		constraints.insets     = new Insets(0, 5, 0, 0);
+        constraints.gridx      = 0;
+        constraints.gridy      = 0;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 0;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.NONE;
+        constraints.anchor     = GridBagConstraints.LINE_START;
+        constraints.insets     = new Insets(0, 0, 0, 0);
 
-		panel.add(nameTextField, constraints);
-		nameLabel.setLabelFor(nameTextField);
+        panel.add(nameLabel, constraints);
 
-		nameTextField.getDocument().addDocumentListener(
-		   new DocumentListener() {
-			   public void insertUpdate( DocumentEvent e) {
-				   updateOKAction();
-			   }
-			   public void removeUpdate( DocumentEvent e) {
-				   updateOKAction();
-			   }
-			   public void changedUpdate( DocumentEvent e) {
-			   }
-		   }
-		);
+        // Name text field
+        nameTextField = new JTextField(buildNameDocumentAdapter(), null, 20);
 
-		helpManager().addTopicID(panel, helpTopicId() + ".name");
-		return panel;
-	}
-	
-	protected String getNewName() {
-		
-		return nameTextField.getText().trim();
-	}
+        constraints.gridx      = 1;
+        constraints.gridy      = 0;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.CENTER;
+        constraints.insets     = new Insets(0, 5, 0, 0);
 
-	private void updateOKAction() {
-		String sessionName = nameTextField.getText().trim();
-		boolean valid = ( sessionName.length() > 0) &&
-							 !sessionNames.contains( sessionName);
+        panel.add(nameTextField, constraints);
+        nameLabel.setLabelFor(nameTextField);
 
-		getOKAction().setEnabled( valid);
+        nameTextField.getDocument().addDocumentListener(
+           new DocumentListener() {
+               public void insertUpdate( DocumentEvent e) {
+                   updateOKAction();
+               }
+               public void removeUpdate( DocumentEvent e) {
+                   updateOKAction();
+               }
+               public void changedUpdate( DocumentEvent e) {
+               }
+           }
+        );
 
-		if( valid)
-			clearErrorMessage();
-		else
-			setErrorMessageKey( "SESSION_CREATION_DIALOG_INVALID_NAME");
-	}
+        helpManager().addTopicID(panel, helpTopicId() + ".name");
+        return panel;
+    }
 
-//	   ********** opening **********
+    protected String getNewName() {
 
-	protected String helpTopicId() {
-		return "dialog.renameSession";
-	}
+        return nameTextField.getText().trim();
+    }
 
-	protected void prepareToShow() {
+    private void updateOKAction() {
+        String sessionName = nameTextField.getText().trim();
+        boolean valid = ( sessionName.length() > 0) &&
+                             !sessionNames.contains( sessionName);
 
-		super.prepareToShow();
-		nameTextField.selectAll();
-	}
+        getOKAction().setEnabled( valid);
 
-	protected Component initialFocusComponent() {
-		return nameTextField;
-	}
+        if( valid)
+            clearErrorMessage();
+        else
+            setErrorMessageKey( "SESSION_CREATION_DIALOG_INVALID_NAME");
+    }
+
+//       ********** opening **********
+
+    protected String helpTopicId() {
+        return "dialog.renameSession";
+    }
+
+    protected void prepareToShow() {
+
+        super.prepareToShow();
+        nameTextField.selectAll();
+    }
+
+    protected Component initialFocusComponent() {
+        return nameTextField;
+    }
 }

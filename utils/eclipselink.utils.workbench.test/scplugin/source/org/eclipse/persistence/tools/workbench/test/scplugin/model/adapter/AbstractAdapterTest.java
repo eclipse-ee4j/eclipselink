@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -37,107 +37,107 @@ import junit.framework.TestCase;
  */
 public abstract class AbstractAdapterTest extends TestCase
 {
-	public AbstractAdapterTest(String name)
-	{
-		super(name);
-	}
+    public AbstractAdapterTest(String name)
+    {
+        super(name);
+    }
 
-	protected final ServerPlatform noServerPlatform()
-	{
-		return new ServerPlatform( "NoServerPlatform");
-	}
+    protected final ServerPlatform noServerPlatform()
+    {
+        return new ServerPlatform( "NoServerPlatform");
+    }
 
-	protected final DataSource buildOracleDataSource()
-	{
-		return buildDataSource( "Oracle");
-	}
+    protected final DataSource buildOracleDataSource()
+    {
+        return buildDataSource( "Oracle");
+    }
 
-	protected final DataSource buildAQDataSource()
-	{
-		return buildEisDataSource( "Oracle AQ");
-	}
+    protected final DataSource buildAQDataSource()
+    {
+        return buildEisDataSource( "Oracle AQ");
+    }
 
-	protected final DataSource buildDataSource( String platformName)
-	{
-		DatabasePlatform platform = DatabasePlatformRepository.getDefault().platformNamed( platformName);
-		return new DataSource( platform);
-	}
-	
-	protected final DataSource buildEisDataSource( String platformName)
-	{
-		return new DataSource( platformName);
-	}
+    protected final DataSource buildDataSource( String platformName)
+    {
+        DatabasePlatform platform = DatabasePlatformRepository.getDefault().platformNamed( platformName);
+        return new DataSource( platform);
+    }
 
-	protected final DataSource buildPreferedDataSourceFor( SCAdapter adapter)
-	{
-		return DataSource.buildPreferedDataSourceFor( adapter);
-	}
-	
-	protected SessionConfigs loadTopLinkSessions( File path) {
-		
-		SessionConfigs topLinkSessions =
-		    SessionManager.getManager().getInternalMWConfigObjects( path.getPath(), buildLoader( path), false);
-		
-		return topLinkSessions; 
-	}
-	
-	private ClassLoader buildLoader( File path) {
-	    final File topLinkSessionsPath = path;
-	    
-		URLClassLoader loader = new URLClassLoader( new URL[ 0], getClass().getClassLoader()) {
+    protected final DataSource buildEisDataSource( String platformName)
+    {
+        return new DataSource( platformName);
+    }
 
-		public URL findResource( String name) {
-				try {
-					if(  name.equals( topLinkSessionsPath.getPath())) {
-						return topLinkSessionsPath.toURL();
-					}
-				}
-				catch( MalformedURLException e) {
-					// Ignore so that super.findResource(String) will be called
-				}
-				URL url = super.findResource( name);
+    protected final DataSource buildPreferedDataSourceFor( SCAdapter adapter)
+    {
+        return DataSource.buildPreferedDataSourceFor( adapter);
+    }
 
-				if( url != null)
-					return url;
+    protected SessionConfigs loadTopLinkSessions( File path) {
 
-				// Use this class class loader
-				return getClass().getResource( name);
-			}
-		};
-		return loader;
-	}
-	
-	public boolean hasProblem(String messageKey, AbstractNodeModel model)
-	{
-		model.validateBranch();
+        SessionConfigs topLinkSessions =
+            SessionManager.getManager().getInternalMWConfigObjects( path.getPath(), buildLoader( path), false);
 
-		for (Iterator iter = model.problems(); iter.hasNext();)
-		{
-			Problem problem = (Problem) iter.next();
+        return topLinkSessions;
+    }
 
-			if (problem.getMessageKey().equals(messageKey))
-				return true;
-		}
+    private ClassLoader buildLoader( File path) {
+        final File topLinkSessionsPath = path;
 
-		return false;
-	}
+        URLClassLoader loader = new URLClassLoader( new URL[ 0], getClass().getClassLoader()) {
 
-	/**
-	 * Determines whether an object contains any problem in the given collection.
-	 *
-	 * @param errors
-	 * @param model
-	 */
-	public boolean hasAnyProblem(Collection errors, AbstractNodeModel model)
-	{
-		for (Iterator iter = errors.iterator(); iter.hasNext();)
-		{
-			String messageKey = (String) iter.next();
+        public URL findResource( String name) {
+                try {
+                    if(  name.equals( topLinkSessionsPath.getPath())) {
+                        return topLinkSessionsPath.toURL();
+                    }
+                }
+                catch( MalformedURLException e) {
+                    // Ignore so that super.findResource(String) will be called
+                }
+                URL url = super.findResource( name);
 
-			if (hasProblem(messageKey, model))
-				return true;
-		}
+                if( url != null)
+                    return url;
 
-		return false;
-	}
+                // Use this class class loader
+                return getClass().getResource( name);
+            }
+        };
+        return loader;
+    }
+
+    public boolean hasProblem(String messageKey, AbstractNodeModel model)
+    {
+        model.validateBranch();
+
+        for (Iterator iter = model.problems(); iter.hasNext();)
+        {
+            Problem problem = (Problem) iter.next();
+
+            if (problem.getMessageKey().equals(messageKey))
+                return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Determines whether an object contains any problem in the given collection.
+     *
+     * @param errors
+     * @param model
+     */
+    public boolean hasAnyProblem(Collection errors, AbstractNodeModel model)
+    {
+        for (Iterator iter = errors.iterator(); iter.hasNext();)
+        {
+            String messageKey = (String) iter.next();
+
+            if (hasProblem(messageKey, model))
+                return true;
+        }
+
+        return false;
+    }
 }

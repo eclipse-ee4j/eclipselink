@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,18 +26,18 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 @SuppressWarnings("nls")
 public final class FuncExpressionTest extends AbstractFunctionExpressionTest {
 
-	@Override
-	protected String functionName(int index) {
-		switch (index) {
-			case 0:  return "'NVC'";
-			case 1:  return "'invalid";
-			case 2:  return "''";
-			default: return "'sql'";
-		}
-	}
+    @Override
+    protected String functionName(int index) {
+        switch (index) {
+            case 0:  return "'NVC'";
+            case 1:  return "'invalid";
+            case 2:  return "''";
+            default: return "'sql'";
+        }
+    }
 
-	@Override
-	protected String identifier(int index) {
-		return FUNC;
-	}
+    @Override
+    protected String identifier(int index) {
+        return FUNC;
+    }
 }

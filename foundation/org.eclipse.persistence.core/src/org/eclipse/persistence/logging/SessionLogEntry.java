@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  *
  * @see SessionLog
  * @see DefaultSessionLog
- * 
+ *
  * @author Big Country
  * @since TOPLink/Java 3.0
  */
@@ -42,7 +42,7 @@ public class SessionLogEntry implements Serializable {
     protected String nameSpace;
     protected Object[] parameters;
     protected boolean shouldTranslate;
-    
+
     public SessionLogEntry(AbstractSession session) {
         this.date = new Date();
         this.thread = Thread.currentThread();
@@ -71,7 +71,7 @@ public class SessionLogEntry implements Serializable {
      * Create a new session log entry for a request level, a session, a message
      * and an accessor. <br>
      * Possible values for log level are listed in SessionLog.
-     * 
+     *
      * @see SessionLog
      */
     public SessionLogEntry(int level, AbstractSession session, String message, Object[] params, Accessor connection, boolean shouldTranslate) {
@@ -80,24 +80,24 @@ public class SessionLogEntry implements Serializable {
         this.parameters = params;
         this.shouldTranslate = shouldTranslate;
     }
-    
+
     /**
      * Create a new session log entry for a request level, a session, a message
      * and an accessor. <br>
      * Possible values for log level and category are listed in SessionLog.
-     * 
+     *
      * @see SessionLog
      */
     public SessionLogEntry(int level, String category, AbstractSession session, String message, Object[] params, Accessor connection, boolean shouldTranslate) {
         this(level, session, message, params, connection, shouldTranslate);
         this.nameSpace = category;
     }
-    
+
     /**
      * Create a new session log entry for a session, a level, a category and an
      * exception. <br>
      * Possible values for log level and category are listed in SessionLog.
-     * 
+     *
      * @see SessionLog
      */
     public SessionLogEntry(AbstractSession session, int level, String category, Throwable throwable) {
@@ -151,7 +151,7 @@ public class SessionLogEntry implements Serializable {
     /**
      * Return the request level of the log entry. <br>
      * Possible values for log level are listed in SessionLog.
-     * 
+     *
      * @see SessionLog
      */
     public int getLevel() {
@@ -161,7 +161,7 @@ public class SessionLogEntry implements Serializable {
     /**
      * Return the name space of the log entry. <br>
      * Possible values for log category (a String) are listed in SessionLog.
-     * 
+     *
      * @see SessionLog
      */
     public String getNameSpace() {
@@ -241,7 +241,7 @@ public class SessionLogEntry implements Serializable {
     /**
      * Set the request level of the log entry. <br>
      * Possible values for log level are listed in SessionLog.
-     * 
+     *
      * @see SessionLog
      */
     public void setLevel(int level) {
@@ -251,7 +251,7 @@ public class SessionLogEntry implements Serializable {
     /**
      * Set the name space of the log entry. <br>
      * Possible values for log category (a String) are listed in SessionLog.
-     * 
+     *
      * @see SessionLog
      */
     public void setNameSpace(String nameSpace) {

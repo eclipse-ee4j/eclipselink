@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -29,7 +29,7 @@ public class RequiredSchemaTestCases extends GenerateSchemaTestCases {
 
     protected static final String MYNS = "";
     protected static final String REQUIRED_RESOURCE = "org/eclipse/persistence/testing/oxm/schemamodelgenerator/required/required.xsd";
-    protected static final String NON_REQUIRED_RESOURCE = "org/eclipse/persistence/testing/oxm/schemamodelgenerator/required/non-required.xsd";    
+    protected static final String NON_REQUIRED_RESOURCE = "org/eclipse/persistence/testing/oxm/schemamodelgenerator/required/non-required.xsd";
 
     public RequiredSchemaTestCases(String name) throws Exception {
         super(name);
@@ -50,7 +50,7 @@ public class RequiredSchemaTestCases extends GenerateSchemaTestCases {
         try {
             boolean setSchemaContext = true;
             boolean setDefaultRootElement = true;
-            
+
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, true);
 
@@ -77,9 +77,9 @@ public class RequiredSchemaTestCases extends GenerateSchemaTestCases {
         }
         assertNotNull("Schema to Document conversion failed", tDoc);
         assertNotNull("A problem occurred loading the control schema", cDoc);
-        assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));        
+        assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
     }
-    
+
     private List<Descriptor> setupDescriptorList(Project prj) {
         List<Descriptor> descriptorsToProcess = new ArrayList<Descriptor>();
         descriptorsToProcess.add((Descriptor) prj.getDescriptorForAlias("RequiredTestObject"));

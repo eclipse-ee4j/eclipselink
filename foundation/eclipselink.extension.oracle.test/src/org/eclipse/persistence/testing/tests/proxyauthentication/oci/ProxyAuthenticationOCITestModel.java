@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -14,7 +14,7 @@
  *     That caused re-arranging of the tests: before the fix all the tests were directly in proxiauthentication package;
  *     now the old tests (minus thin-specific setup) were moved into the new proxyauthentication.oci package,
  *     and the new tests defined in the new proxyauthentication.thin package.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.proxyauthentication.oci;
 
 import java.util.HashMap;
@@ -61,10 +61,10 @@ public class ProxyAuthenticationOCITestModel extends TestModel {
     public void addRequiredSystems() {
         setupUser();
 
-        /*		addRequiredSystem(
-			new TestSystemAdapted(
-				new EmployeeSystem(),
-				new DbChangeNotificationAdapter(queueName, queueTableName, useMultipleConsumers)));*/
+        /*        addRequiredSystem(
+            new TestSystemAdapted(
+                new EmployeeSystem(),
+                new DbChangeNotificationAdapter(queueName, queueTableName, useMultipleConsumers)));*/
     }
 
     protected void setupUser() {
@@ -76,20 +76,20 @@ public class ProxyAuthenticationOCITestModel extends TestModel {
         try {
             if (!((AbstractSession)getSession()).getAccessor().getConnection().getMetaData().getUserName().equalsIgnoreCase(connUser)) {
                 /** to setup Proxy Authentication users in Oracle db, need to execute in sqlPlus or EnterpriseManager
-				1 - Connect as sysdba
-				connect sys/password as sysdba
+                1 - Connect as sysdba
+                connect sys/password as sysdba
 
-				2 - Create connUser
+                2 - Create connUser
                 create user PA_CONN identified by PA_CONN
-				grant connect to PA_CONN
+                grant connect to PA_CONN
 
                 3 - Create proxyUser
                 create user PA_PROXY identified by PA_PROXY
-				grant connect to PA_PROXY
+                grant connect to PA_PROXY
 
                 4. Grant proxyUser connection through connUser
                 alter user PA_PROXY grant connect through PA_CONN
-			*/
+            */
                 DatabaseLogin login = (DatabaseLogin)oldSession.getLogin().clone();
                 login.setUserName(connUser);
                 login.setPassword(connPassword);

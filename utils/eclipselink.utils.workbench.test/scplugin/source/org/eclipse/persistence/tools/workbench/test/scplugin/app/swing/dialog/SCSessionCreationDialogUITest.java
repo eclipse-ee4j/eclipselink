@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -23,64 +23,64 @@ import javax.swing.JPanel;
  */
 public class SCSessionCreationDialogUITest extends SCDialogUITest {
 
-	/**
-	 * Constructor for SCSessionCreationDialogUITest
-	 */
-	public SCSessionCreationDialogUITest() {
-		super();
-	}
+    /**
+     * Constructor for SCSessionCreationDialogUITest
+     */
+    public SCSessionCreationDialogUITest() {
+        super();
+    }
 
-	protected String windowTitle() {
+    protected String windowTitle() {
 
-		return "Session Creation Dialog Test";
-	}
+        return "Session Creation Dialog Test";
+    }
 
-	protected Component buildTestingPanel() {
-		
-		JPanel testPanel = new JPanel( new GridLayout( 1, 0));
-		testPanel.add( this.buildAddSessionButton());
+    protected Component buildTestingPanel() {
 
-		return testPanel;
-	}
+        JPanel testPanel = new JPanel( new GridLayout( 1, 0));
+        testPanel.add( this.buildAddSessionButton());
 
-	private JButton buildAddSessionButton() {
+        return testPanel;
+    }
 
-		JButton browseButton = new JButton( resourceRepository().getString( "ADD_SESSION"));
-//		browseButton.setMnemonic( resourceRepository().getMnemonic( "ADD_SESSION"));
+    private JButton buildAddSessionButton() {
 
-		browseButton.addActionListener( new AddNewSessionActionUITest( this.getWorkbenchContext()));
+        JButton browseButton = new JButton( resourceRepository().getString( "ADD_SESSION"));
+//        browseButton.setMnemonic( resourceRepository().getMnemonic( "ADD_SESSION"));
 
-		return browseButton;
-	}
-	
-//	private Action AddSessionAction() {
-//		Action action = new AbstractAction( "add session") {
-//			public void actionPerformed( ActionEvent event) {
-//				SCSessionCreationDialogUITest.this.addSession();
-//			}
-//		};
-//		action.setEnabled(true);
-//		return action;
-//	}
-//	protected void addSession() {
-//		JOptionPane.showMessageDialog( this.currentWindow(), "Under Construction...");
-//	}
+        browseButton.addActionListener( new AddNewSessionActionUITest( this.getWorkbenchContext()));
 
-	public static void main(String[] args) throws Exception {
-		new SCSessionCreationDialogUITest().exec(args);
-	}
-	
-	private void exec( String[] args) throws Exception {
+        return browseButton;
+    }
 
-		setUp();
-		
-		this.openWindow();
-	}
-	
-	protected void setUp() {
-		super.setUp();
-		
-		windowW = 200;
-		windowH = 100;
-	}
+//    private Action AddSessionAction() {
+//        Action action = new AbstractAction( "add session") {
+//            public void actionPerformed( ActionEvent event) {
+//                SCSessionCreationDialogUITest.this.addSession();
+//            }
+//        };
+//        action.setEnabled(true);
+//        return action;
+//    }
+//    protected void addSession() {
+//        JOptionPane.showMessageDialog( this.currentWindow(), "Under Construction...");
+//    }
+
+    public static void main(String[] args) throws Exception {
+        new SCSessionCreationDialogUITest().exec(args);
+    }
+
+    private void exec( String[] args) throws Exception {
+
+        setUp();
+
+        this.openWindow();
+    }
+
+    protected void setUp() {
+        super.setUp();
+
+        windowW = 200;
+        windowH = 100;
+    }
 }

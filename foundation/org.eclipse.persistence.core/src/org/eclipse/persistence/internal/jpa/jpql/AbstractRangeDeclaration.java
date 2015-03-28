@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,66 +32,66 @@ import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
  */
 abstract class AbstractRangeDeclaration extends Declaration {
 
-	/**
-	 * The list of <b>JOIN</b> expressions that are declared in the same declaration than the range
-	 * variable declaration represented by this declaration.
-	 */
-	protected List<Join> joins;
+    /**
+     * The list of <b>JOIN</b> expressions that are declared in the same declaration than the range
+     * variable declaration represented by this declaration.
+     */
+    protected List<Join> joins;
 
-	/**
-	 * Creates a new <code>AbstractRangeDeclaration</code>.
-	 *
-	 * @param queryContext The context used to query information about the application metadata and
-	 * cached information
-	 */
-	AbstractRangeDeclaration(JPQLQueryContext queryContext) {
-		super(queryContext);
-	}
+    /**
+     * Creates a new <code>AbstractRangeDeclaration</code>.
+     *
+     * @param queryContext The context used to query information about the application metadata and
+     * cached information
+     */
+    AbstractRangeDeclaration(JPQLQueryContext queryContext) {
+        super(queryContext);
+    }
 
-	/**
-	 * Adds the given {@link Join}.
-	 *
-	 * @param join The {@link Join} that is declared in the range variable declaration
-	 */
-	void addJoin(Join join) {
-		if (joins == null) {
-			joins = new LinkedList<Join>();
-		}
-		joins.add(join);
-	}
+    /**
+     * Adds the given {@link Join}.
+     *
+     * @param join The {@link Join} that is declared in the range variable declaration
+     */
+    void addJoin(Join join) {
+        if (joins == null) {
+            joins = new LinkedList<Join>();
+        }
+        joins.add(join);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public RangeVariableDeclaration getBaseExpression() {
-		return (RangeVariableDeclaration) super.getBaseExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RangeVariableDeclaration getBaseExpression() {
+        return (RangeVariableDeclaration) super.getBaseExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public IdentificationVariableDeclaration getDeclarationExpression() {
-		return (IdentificationVariableDeclaration) super.getDeclarationExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IdentificationVariableDeclaration getDeclarationExpression() {
+        return (IdentificationVariableDeclaration) super.getDeclarationExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Join> getJoins() {
-		if (joins == null) {
-			return Collections.emptyList();
-		}
-		return joins;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Join> getJoins() {
+        if (joins == null) {
+            return Collections.emptyList();
+        }
+        return joins;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasJoins() {
-		return joins != null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasJoins() {
+        return joins != null;
+    }
 }

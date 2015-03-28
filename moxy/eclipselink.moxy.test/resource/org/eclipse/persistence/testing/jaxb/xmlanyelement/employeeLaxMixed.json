@@ -8,19 +8,19 @@
      "jb1":["jb1String","jb3String"],
      "address":[{
           "street":"222 Fake Street",
-	  "city":"Toronto",
-	  "country":"Canada"
+      "city":"Toronto",
+      "country":"Canada"
      },
      {
           "street":"second address",
-	  "city":"Ottawa",
-	  "country":"Canada"
+      "city":"Ottawa",
+      "country":"Canada"
      }
      ],
      "jb2":[15],
      "jb4":[{
            "@type":"address",
-	    "street":"222 Fake Street",
+        "street":"222 Fake Street",
             "city":"Toronto",
            "country":"Canada"
         }

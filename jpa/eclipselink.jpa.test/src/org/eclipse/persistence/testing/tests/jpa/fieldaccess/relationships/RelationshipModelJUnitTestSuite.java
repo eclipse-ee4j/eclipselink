@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     03/26/2008-1.0M6 Guy Pelletier 
- *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema 
+ *     03/26/2008-1.0M6 Guy Pelletier
+ *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
@@ -40,19 +40,19 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
 
 public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
-    
+
     public RelationshipModelJUnitTestSuite() {
         super();
     }
-    
+
     public RelationshipModelJUnitTestSuite(String name) {
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("RelationshipModelJUnitTestSuite (field access)");
-        
+
         suite.addTest(new RelationshipModelJUnitTestSuite("testSetup"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testPersistCustomer"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testUpdateCustomer"));
@@ -65,10 +65,10 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new RelationshipModelJUnitTestSuite("testNamedQueryDoesNotExistTest"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testNamedQueryDoesNotExistTest"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testRemoveReference"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -76,7 +76,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
         clearCache("fieldaccess");
     }
-    
+
     /*
      * Tests for the executeUpdate method on the EJBQueryImpl class.
      * Also tests bugs 4288845 and 4293920, that params are passed in and used correctly.
@@ -161,7 +161,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             if (expectedException2 == null) {
                 fail("commit did not throw expected RollbackException");
             }
-    
+
             beginTransaction(em);
             Customer cus1 = em.find(Customer.class, cusIDs[0]);
             em.remove(cus1);
@@ -172,7 +172,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /*
      * Tests using the 'getResultCollection' api on a Query object obtained from the
      * EntityManager Also tests bugs 4300879 - check non Collection container
@@ -254,7 +254,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /*
      * Tests using the 'getSingleResult' api on a Query object obtained from the
      * EntityManager Also tests bugs 4300879 - check non Collection container
@@ -336,11 +336,11 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /*
      * Tests using the 'getSingleResult' api on a Query object obtained from the
      * EntityManager Tests fixes for bugs 4202835 and 4301674
-     * 
+     *
      * modified for changes in bug:4628215 (EntityNotFoundException)
      * EntityNotFoundException changed to NoResultException as per new spec
      */
@@ -360,7 +360,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             em.persist(cusClone1);
             em.persist(cusClone2);
             commitTransaction(em);
-                
+
             clearCache("fieldaccess");
             cusIDs[0] = cusClone1.getCustomerId();
             cusIDs[1] = cusClone2.getCustomerId();
@@ -389,11 +389,11 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             query2.setDatabaseQuery(readAllQuery);
             Map result = (Map) query2.getSingleResult();
             result.toString();
-    
+
             // check for single result found.
             Query query3 = em.createQuery("SELECT OBJECT(thecust) FROM FieldAccessCustomer thecust WHERE thecust.customerId = :id");
             returnedCustomer1 = (Customer) query3.setParameter("id", cusIDs[0]).getSingleResult();
-    
+
             // check for single result using a ReadObjectQuery (tests previous
             // fix for 4202835)
             EJBQueryImpl query4 = (EJBQueryImpl) em.createQuery("SELECT OBJECT(thecust) FROM FieldAccessCustomer thecust WHERE thecust.customerId = :id");
@@ -403,14 +403,14 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             query4.setDatabaseQuery(readObjectQuery);
             returnedCustomer2 = (Customer) query4.getSingleResult();
             commitTransaction(em);
-            
+
             beginTransaction(em);
             Customer cus1 = em.find(Customer.class, cusIDs[0]);
             em.remove(cus1);
             Customer cus2 = em.find(Customer.class, cusIDs[1]);
             em.remove(cus2);
             commitTransaction(em);
-            
+
             if (expectedException1 == null) {
                 fail("getSingelResult on query returning multiple values did not throw a NonUniqueResultException");
             }
@@ -429,10 +429,10 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Tests trying to execute a named query that does not exist.
-     * 
+     *
      * @author Guy Pelletier
      */
     public void testNamedQueryDoesNotExistTest() {
@@ -442,7 +442,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager("fieldaccess");
         m_npeCaught = false;
         m_illegalArgumentExceptionCaught = false;
-  
+
         try {
             em.createNamedQuery("doesNotExist").getResultList();
         } catch (NullPointerException e) {
@@ -452,7 +452,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         } catch (Exception e) {
             m_exception = e;
         }
-  
+
         if (m_npeCaught) {
             fail("A null pointer exception caught on the query.");
         } else if (!m_illegalArgumentExceptionCaught) {
@@ -463,7 +463,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     // Bug#4646580 Query arguments are added in EJBQL
     public void testNamedQueryWithArgumentsTest() {
         Integer[] cusIDs = new Integer[3];
@@ -486,9 +486,9 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             cusIDs[0] = cusClone1.getCustomerId();
             orderIDs[0] = order1.getOrderId();
             itemIDs[0] = item1.getItemId();
-    
+
             clearCache("fieldaccess");
-    
+
             try {
                 ServerSession ss = getServerSession("fieldaccess");
                 Vector vec = new Vector();
@@ -518,7 +518,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             fail("One order is expected but " + list.size() + " was returned");
         }
     }
-    
+
     // Test that persisting a customer works correctly.
     public void testPersistCustomer() {
         Customer customer = RelationshipsExamples.customerExample4();
@@ -552,18 +552,18 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             verifyObjectInEntityManager(order1, "fieldaccess");
             verifyObjectInEntityManager(order2, "fieldaccess");
             verifyObjectInEntityManager(item1, "fieldaccess");
-            verifyObjectInEntityManager(item2, "fieldaccess");  
-            commitTransaction(em);      
+            verifyObjectInEntityManager(item2, "fieldaccess");
+            commitTransaction(em);
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
-        }        
+        }
     }
-    
+
     // Test that updating a customer works correctly.
-    public void testUpdateCustomer() {        
+    public void testUpdateCustomer() {
         Customer customer = RelationshipsExamples.customerExample4();
         EntityManager em = createEntityManager("fieldaccess");
         try {
@@ -618,9 +618,9 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-        
+
     // Test that deleting a customer works correctly.
-    public void testDeleteCustomer() {        
+    public void testDeleteCustomer() {
         Customer customer = RelationshipsExamples.customerExample4();
         EntityManager em = createEntityManager("fieldaccess");
         try {
@@ -656,9 +656,9 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-        
+
     // Test reading a customer works correctly.
-    public void testReadCustomer() {        
+    public void testReadCustomer() {
         Customer customer = RelationshipsExamples.customerExample4();
         EntityManager em = createEntityManager("fieldaccess");
         try {
@@ -700,26 +700,26 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
 
     public void testRemoveReference() {
         EntityManager em = createEntityManager("fieldaccess");
-        
+
         try {
-            
+
             beginTransaction(em);
             Customer2 customer = new Customer2();
             em.persist(customer);
-            
+
             int id = customer.getCustomerId();
-            
+
             commitTransaction(em);
-            
+
             closeEntityManager(em);
             clearCache("fieldaccess");
-            
+
             em = createEntityManager("fieldaccess");
             beginTransaction(em);
-            Customer2 customerReference = em.getReference(Customer2.class, id);            
+            Customer2 customerReference = em.getReference(Customer2.class, id);
             em.remove(customerReference);
             commitTransaction(em);
-            
+
             assertNull("Customer was not removed", em.find(Customer2.class, id));
         } finally {
             if (isTransactionActive(em)) {

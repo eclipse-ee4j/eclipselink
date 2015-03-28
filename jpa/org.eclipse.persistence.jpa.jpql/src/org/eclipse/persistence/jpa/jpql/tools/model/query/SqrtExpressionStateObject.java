@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,86 +30,86 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public class SqrtExpressionStateObject extends AbstractSingleEncapsulatedExpressionStateObject {
 
-	/**
-	 * Creates a new <code>SqrtExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SqrtExpressionStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>SqrtExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SqrtExpressionStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>SqrtExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param stateObject The {@link StateObject} representing the encapsulated expression
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SqrtExpressionStateObject(StateObject parent, StateObject stateObject) {
-		super(parent, stateObject);
-	}
+    /**
+     * Creates a new <code>SqrtExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param stateObject The {@link StateObject} representing the encapsulated expression
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SqrtExpressionStateObject(StateObject parent, StateObject stateObject) {
+        super(parent, stateObject);
+    }
 
-	/**
-	 * Creates a new <code>SqrtExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param jpqlFragment The portion of the query representing the encapsulated expression
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SqrtExpressionStateObject(StateObject parent, String jpqlFragment) {
-		super(parent, jpqlFragment);
-	}
+    /**
+     * Creates a new <code>SqrtExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param jpqlFragment The portion of the query representing the encapsulated expression
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SqrtExpressionStateObject(StateObject parent, String jpqlFragment) {
+        super(parent, jpqlFragment);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SqrtExpression getExpression() {
-		return (SqrtExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SqrtExpression getExpression() {
+        return (SqrtExpression) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getIdentifier() {
-		return SQRT;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdentifier() {
+        return SQRT;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getQueryBNFId() {
-		return SimpleArithmeticExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getQueryBNFId() {
+        return SimpleArithmeticExpressionBNF.ID;
+    }
 
-	/**
-	 * Keeps a reference of the {@link SqrtExpression parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link SqrtExpression parsed object} representing a <code><b>SQRT</b></code>
-	 * expression
-	 */
-	public void setExpression(SqrtExpression expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link SqrtExpression parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link SqrtExpression parsed object} representing a <code><b>SQRT</b></code>
+     * expression
+     */
+    public void setExpression(SqrtExpression expression) {
+        super.setExpression(expression);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setStateObject(StateObject stateObject) {
-		super.setStateObject(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setStateObject(StateObject stateObject) {
+        super.setStateObject(stateObject);
+    }
 }

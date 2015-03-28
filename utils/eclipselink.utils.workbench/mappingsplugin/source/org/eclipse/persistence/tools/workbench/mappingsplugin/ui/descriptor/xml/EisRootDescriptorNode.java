@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -22,52 +22,52 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.descriptor.Desc
 public final class EisRootDescriptorNode extends EisDescriptorNode {
 
 
-	// ********** constructors/initialization **********
-	
-	public EisRootDescriptorNode(MWRootEisDescriptor descriptor, DescriptorPackageNode parentNode) {
-		super(descriptor, parentNode);
-	}
-			
-	public String helpTopicID() {
-		return "descriptor.eis.root";
-	}
+    // ********** constructors/initialization **********
 
-	public String buildIconKey() {
-		return "descriptor.eis.root";
-	}
-	
-	protected JMenuItem buildAdvancedPropertiesMenuItem(WorkbenchContext workbenchContext)
-	{
-		JMenuItem menuItem = new JMenuItem();
-		menuItem.setAction(getAdvancedPolicyAction(buildLocalWorkbenchContext(workbenchContext)));
-		
-		return menuItem;
-	}
+    public EisRootDescriptorNode(MWRootEisDescriptor descriptor, DescriptorPackageNode parentNode) {
+        super(descriptor, parentNode);
+    }
 
-	// ********** DescriptorNode implementation **********
+    public String helpTopicID() {
+        return "descriptor.eis.root";
+    }
 
-	protected String accessibleNameKey() {
-		return "ACCESSIBLE_EIS_ROOT_DESCRIPTOR_NODE";
-	}
+    public String buildIconKey() {
+        return "descriptor.eis.root";
+    }
 
-	// ********** DescriptorNode overrides *************
+    protected JMenuItem buildAdvancedPropertiesMenuItem(WorkbenchContext workbenchContext)
+    {
+        JMenuItem menuItem = new JMenuItem();
+        menuItem.setAction(getAdvancedPolicyAction(buildLocalWorkbenchContext(workbenchContext)));
 
-	public boolean supportsInterfaceAliasPolicy() {
-		return true;	
-	}
+        return menuItem;
+    }
 
-	// ********** MWApplicationNode overrides **********
+    // ********** DescriptorNode implementation **********
 
-	protected Class propertiesPageClass() {
-		return EisRootDescriptorTabbedPropertiesPage.class;
-	}
+    protected String accessibleNameKey() {
+        return "ACCESSIBLE_EIS_ROOT_DESCRIPTOR_NODE";
+    }
 
-	
-	public boolean isRootDescriptor() {
-		return true;
-	}
-	
-	public boolean supportsTransactionalDescriptorProperties() {
-		return true;
-	}
+    // ********** DescriptorNode overrides *************
+
+    public boolean supportsInterfaceAliasPolicy() {
+        return true;
+    }
+
+    // ********** MWApplicationNode overrides **********
+
+    protected Class propertiesPageClass() {
+        return EisRootDescriptorTabbedPropertiesPage.class;
+    }
+
+
+    public boolean isRootDescriptor() {
+        return true;
+    }
+
+    public boolean supportsTransactionalDescriptorProperties() {
+        return true;
+    }
 }

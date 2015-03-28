@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo;
 
 import commonj.sdo.ChangeSummary;
@@ -78,29 +78,29 @@ public class SDOTestCase extends junit.framework.TestCase {
     public DataFactory dataFactory;
     public SDODataHelper dataHelper;
     public DocumentBuilder parser;
-    public String classgenCompilePath; 
+    public String classgenCompilePath;
     public String tempFileDir;
     public SDOXMLComparer xmlComparer;
 
     protected static final String USER_DIR = System.getProperty("user.dir").replace('\\', '/');
-    protected static final String FILE_PROTOCOL = USER_DIR.startsWith("/")? "file:" : "file:/";    
+    protected static final String FILE_PROTOCOL = USER_DIR.startsWith("/")? "file:" : "file:/";
     protected static final String HTTP_PROTOCOL = "http://";
-    protected static final String NON_DEFAULT_JAVA_PACKAGE_DIR = "org/example";  
+    protected static final String NON_DEFAULT_JAVA_PACKAGE_DIR = "org/example";
     protected static final String NON_DEFAULT_JAVA_PACKAGE_NAME = "org.example";
     protected static final String NON_DEFAULT_URI = "http://www.example.org";
-    
+
     public SDOTestCase(String name) {
         super(name);
         useLogging = Boolean.getBoolean("useLogging");
         ignoreCRLF = Boolean.getBoolean("ignoreCRLF");
         customContext = Boolean.getBoolean("customContext");
         loggingLevelFinest = Boolean.getBoolean("loggingLevelFinest");
-		classgenCompilePath = System.getProperty("sdo.classgen.compile.path");
-		tempFileDir = System.getProperty("tempFileDir");
+        classgenCompilePath = System.getProperty("sdo.classgen.compile.path");
+        tempFileDir = System.getProperty("tempFileDir");
         if(null == tempFileDir || tempFileDir.length() < 1) {
-			tempFileDir = ".";
-		}
-	
+            tempFileDir = ".";
+        }
+
         if (loggingLevelFinest && AbstractSessionLog.getLog().getLevel() != AbstractSessionLog.FINEST) {
             // override default INFO logging level for static logs
             AbstractSessionLog.getLog().setLevel(AbstractSessionLog.FINEST);
@@ -111,7 +111,7 @@ public class SDOTestCase extends junit.framework.TestCase {
         // reverse the flags so that a false(from the flag not found) will not
         // default to a static context
     }
-    
+
     public void setUp() {
         xmlComparer = new SDOXMLComparer();
         if (customContext) {
@@ -139,18 +139,18 @@ public class SDOTestCase extends junit.framework.TestCase {
             fail("Could not create parser.");
             e.printStackTrace();
         }
-        
+
         ((SDOTypeHelper) typeHelper).reset();
         ((SDOXMLHelper) xmlHelper).reset();
         ((SDOXSDHelper) xsdHelper).reset();
     }
-    
+
     public void tearDown() throws Exception {
-        
+
         ((SDOTypeHelper) typeHelper).reset();
         ((SDOXMLHelper) xmlHelper).reset();
         ((SDOXSDHelper) xsdHelper).reset();
-        
+
         typeHelper = null;
         xmlHelper = null;
         xsdHelper = null;
@@ -159,21 +159,21 @@ public class SDOTestCase extends junit.framework.TestCase {
         dataFactory = null;
         parser = null;
         aHelperContext = null;
-        
-        
+
+
     }
-        
+
     public void assertXMLIdentical(Document control, Document test) {
         boolean isEqual = xmlComparer.isNodeEqual(control, test);
         String controlString = "";
         String testString = "";
-        
+
         if (!isEqual) {
-            org.eclipse.persistence.platform.xml.XMLTransformer t = 
+            org.eclipse.persistence.platform.xml.XMLTransformer t =
                 org.eclipse.persistence.platform.xml.XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
             java.io.StringWriter controlWriter = new java.io.StringWriter();
             t.transform(control, controlWriter);
-            
+
             t = org.eclipse.persistence.platform.xml.XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
             java.io.StringWriter testWriter = new java.io.StringWriter();
             t.transform(test, testWriter);
@@ -181,10 +181,10 @@ public class SDOTestCase extends junit.framework.TestCase {
             controlString = controlWriter.toString();
             testString = testWriter.toString();
         }
-        
+
         assertTrue("Documents are not equal.\nCONTROL:\n" + controlString + "\nTEST:\n" + testString, isEqual);
     }
-    
+
     public void assertSchemaIdentical(Document control, Document test) {
         assertTrue("Node " + control + " is not equal to node " + test, xmlComparer.isSchemaEqual(control, test));
     }
@@ -229,7 +229,7 @@ public class SDOTestCase extends junit.framework.TestCase {
         String xsdSchema = EMPTY_STRING;
         FileInputStream is = null;
         try {
-            is = new FileInputStream(fileName);           
+            is = new FileInputStream(fileName);
             return getSchema(is, fileName);
         } catch (Exception e) {
             log(getClass().toString() + ": Reading error for : " + fileName + " message: " + e.getClass() + " " + e.getMessage());
@@ -246,8 +246,8 @@ public class SDOTestCase extends junit.framework.TestCase {
     }
 
  public String getSchema(InputStream is, String fileName) {
-        String xsdSchema = EMPTY_STRING;        
-        try {            
+        String xsdSchema = EMPTY_STRING;
+        try {
             byte[] bytes = new byte[is.available()];
             is.read(bytes);
             xsdSchema = new String(bytes);
@@ -270,7 +270,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     /* Tree specific algorithms to aide in testing */
     /**
      * Return the depth of this dataObject from it's root
-     * 
+     *
      * @return int
      */
     public int depth(DataObject aChild) {
@@ -388,30 +388,30 @@ public class SDOTestCase extends junit.framework.TestCase {
             if (aProperty.isMany()) {
                 assertSame(((List) aPropertyValue).size(), 0);
             } else {
-            	if(!aProperty.getType().isDataType()) {
-            		assertEquals(aProperty.getDefault(),aPropertyValue);
-            		// assertSame(aProperty.getDefault(), dataobject.get(aProperty));
-            	} else {
-            		// JIRA-253: we return a wrapped numeric primitive when it has no default
-            		Type aType = aProperty.getType();
-                	if (aType.equals(SDO_BOOLEAN)) {
-                		assertEquals(false, ((Boolean)aPropertyValue).booleanValue());
-                	} else if (aType.equals(SDO_BYTE)) {
-                		assertEquals(0, ((Byte)aPropertyValue).byteValue());
-                	} else if (aType.equals(SDO_CHARACTER)) {
-                		assertEquals(0, ((Character)aPropertyValue).charValue());
-                	} else if (aType.equals(SDO_DOUBLE)) {
-                		assertEquals(0, ((Double)aPropertyValue).doubleValue());
-                	} else if (aType.equals(SDO_FLOAT)) {
-                		assertEquals(0, ((Float)aPropertyValue).floatValue());
-                	} else if (aType.equals(SDO_INT)) {
-                		assertEquals(0, ((Integer)aPropertyValue).intValue());
-                	} else if (aType.equals(SDO_SHORT)) {
-                		assertEquals(0, ((Short)aPropertyValue).shortValue());
-                	} else if (aType.equals(SDO_LONG)) {
-                		assertEquals(0, ((Long)aPropertyValue).longValue());
-                	}
-            	}                                
+                if(!aProperty.getType().isDataType()) {
+                    assertEquals(aProperty.getDefault(),aPropertyValue);
+                    // assertSame(aProperty.getDefault(), dataobject.get(aProperty));
+                } else {
+                    // JIRA-253: we return a wrapped numeric primitive when it has no default
+                    Type aType = aProperty.getType();
+                    if (aType.equals(SDO_BOOLEAN)) {
+                        assertEquals(false, ((Boolean)aPropertyValue).booleanValue());
+                    } else if (aType.equals(SDO_BYTE)) {
+                        assertEquals(0, ((Byte)aPropertyValue).byteValue());
+                    } else if (aType.equals(SDO_CHARACTER)) {
+                        assertEquals(0, ((Character)aPropertyValue).charValue());
+                    } else if (aType.equals(SDO_DOUBLE)) {
+                        assertEquals(0, ((Double)aPropertyValue).doubleValue());
+                    } else if (aType.equals(SDO_FLOAT)) {
+                        assertEquals(0, ((Float)aPropertyValue).floatValue());
+                    } else if (aType.equals(SDO_INT)) {
+                        assertEquals(0, ((Integer)aPropertyValue).intValue());
+                    } else if (aType.equals(SDO_SHORT)) {
+                        assertEquals(0, ((Short)aPropertyValue).shortValue());
+                    } else if (aType.equals(SDO_LONG)) {
+                        assertEquals(0, ((Long)aPropertyValue).longValue());
+                    }
+                }
             }
         }
     }
@@ -539,7 +539,7 @@ public class SDOTestCase extends junit.framework.TestCase {
      * ChangeSummary specific functions for undoChanges
      */
     /**
-     * 
+     *
      * @param currentDO
      * @param isCSonAncestor
      */
@@ -579,7 +579,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     }
 
     /**
-     * 
+     *
      * @param aChangeSummary
      * @param undoneDO
      * @param originalDO
@@ -603,7 +603,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     }
 
     /**
-     * 
+     *
      * @param aRootObject
      */
     // test undo when logging is off (with previous changes)
@@ -619,7 +619,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     }
 
     /**
-     * 
+     *
      * @param aRootObject
      * @param aCurrentValueStoreAfterLoggingFirstOnParam
      */
@@ -646,7 +646,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     }
 
     /**
-     * 
+     *
      * @param aRootObject
      * @param aCurrentValueStoreAfterLoggingFirstOnParam
      */
@@ -662,7 +662,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     }
 
     /**
-     * 
+     *
      * @param aRootObject
      * @param aCurrentSequenceAfterLoggingFirstOnParam
      */
@@ -685,7 +685,7 @@ public class SDOTestCase extends junit.framework.TestCase {
      * For shallow equal - only dataType=true objects are compared, DataObject
      * values are ignored but should be defaults. Note: A setting object should
      * handle its own isEqual() behavior
-     * 
+     *
      * @param aSequence
      * @param aSequenceCopy
      * @param isDeep
@@ -742,7 +742,7 @@ public class SDOTestCase extends junit.framework.TestCase {
             // the property field on the setting must point to the same property
             // instance as the original
             // handle both properties == null
-            if (originalProperty != copyProperty) { 
+            if (originalProperty != copyProperty) {
                 return false;
             }
 
@@ -809,12 +809,12 @@ public class SDOTestCase extends junit.framework.TestCase {
      * Remove CR\LF=13\10 from source and target strings so that we can run the
      * suite on windows without assertEquals() failing. Use the system property
      * -DignoreCRLF=true
-     * 
+     *
      * @param control
      * @param test
      * @param removeCRLF
      *            void
-     * 
+     *
      */
     protected DataObject addProperty(DataObject parentType, String name, Type propType) {
         DataObject newProperty = parentType.createDataObject("property");
@@ -826,7 +826,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     }
 
     /**
-     * 
+     *
      * @param parentType
      * @param name
      * @param propType
@@ -840,7 +840,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     }
 
     /**
-     * 
+     *
      * @param parentType
      * @param name
      * @param propType
@@ -862,14 +862,14 @@ public class SDOTestCase extends junit.framework.TestCase {
         }
         return newProperty;
     }
-    
+
     protected DataObject addProperty(DataObject parentType, String name, DataObject propTypeDO, boolean isContainment, boolean isMany, boolean isElement) {
         DataObject newProperty = parentType.createDataObject("property");
         SDOProperty prop = (SDOProperty) newProperty.getType().getProperty("name");
         newProperty.set(prop, name);
         prop = (SDOProperty) newProperty.getType().getProperty("type");
         newProperty.set(prop, propTypeDO);
-        
+
         newProperty.setBoolean(CONTAINMENT, isContainment);
         if (isElement) {
             newProperty.set(XMLELEMENT_PROPERTY, true);
@@ -880,9 +880,9 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      * Set the oc prop containing the idProp property - for unidirectional/bidirectional relationships
-     */ 
+     */
     public void setIDPropForReferenceProperties(DataObject doType, Object idProp) {
-    	// get the global property referencing the idProp property
+        // get the global property referencing the idProp property
         doType.set(ID_PROPERTY, idProp);
     }
 
@@ -892,11 +892,11 @@ public class SDOTestCase extends junit.framework.TestCase {
      * @return id Property or null
      */
     public SDOProperty getIDProp(Type aType) {
-   		return (SDOProperty)aType.getProperty((String)aType.get(SDOConstants.ID_PROPERTY));
+           return (SDOProperty)aType.getProperty((String)aType.get(SDOConstants.ID_PROPERTY));
     }
-    
+
     /**
-     * 
+     *
      * @param uri
      * @param name
      * @return
@@ -956,10 +956,10 @@ public class SDOTestCase extends junit.framework.TestCase {
         }
 
     }
-    
-     protected Document getDocument(InputStream inputStream) {        
+
+     protected Document getDocument(InputStream inputStream) {
         try {
-            
+
             Document document = parser.parse(inputStream);
             inputStream.close();
             return document;
@@ -1023,7 +1023,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     /**
      * Write to the output stream and return a success flag if no exceptions
      * thrown
-     * 
+     *
      * @param anObject
      * @param uri
      * @param typename
@@ -1063,7 +1063,7 @@ public class SDOTestCase extends junit.framework.TestCase {
         }
         return anObject;
     }
-    
+
      protected void emptyAndDeleteDirectory(File f) {
         if (f.isDirectory()) {
             File[] files = f.listFiles();
@@ -1078,7 +1078,7 @@ public class SDOTestCase extends junit.framework.TestCase {
             f.delete();
         }
     }
-    
+
      protected void deleteDirsOnExit(File f) {
         if (f.isDirectory()) {
             File[] files = f.listFiles();
@@ -1093,9 +1093,9 @@ public class SDOTestCase extends junit.framework.TestCase {
             f.deleteOnExit();
         }
     }
-    
+
     protected String getClassPathForCompile(){
         return classgenCompilePath;
     }
- 
+
 }

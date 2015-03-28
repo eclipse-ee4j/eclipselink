@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2008, Oracle. All rights reserved.
+ * Copyright (c) 2007, 2015, Oracle. All rights reserved.
  *
  * This software is the proprietary information of Oracle Corporation.
  * Use is subject to license terms.
@@ -54,7 +54,7 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.Transformer;
 
 /**
- * 
+ *
  * @see MWProcedure
  * @see StoredProcedurePropertiesPage – The parent container
  *
@@ -64,651 +64,651 @@ import org.eclipse.persistence.tools.workbench.utility.Transformer;
  */
 final class CustomStoredProcedurePropertiesPane extends AbstractSubjectPanel
 {
-	private PropertyValueModel selectedArgumentHolder;
-	
-	private CustomParameterInArgumentPane namedInPane;
-	private ValueInArgumentPane namedInValuePane;
-	private ParameterOutArgumentPane namedOutPane;
-	private CustomParameterInOutArgumentPane namedInOutPane;
-	private ValueInOutArgumentPane namedInOutValuePane; 
-	private CustomParameterInArgumentPane unnamedInPane;
-	private ValueInArgumentPane unnamedInValuePane;
-	private ParameterOutArgumentPane unnamedOutPane;
-	private CustomParameterInOutArgumentPane unnamedInOutPane;
-	private ValueInOutArgumentPane unnamedInOutValuePane;
-	
-	private PropertyValueModel useUnnamedOutputCursorHolder;
-	
-	/**
-	 * Creates a new <code>StoredProcedurePropertiesPane</code>.
-	 *
-	 * @param subjectHolder The holder of <code>MWProcedure</code>
-	 * @param workbenchContextHolder The holder of the <code>WorkbenchContext</code>,
-	 * used to retrieve the localized string, active window, etc
-	 */
-	CustomStoredProcedurePropertiesPane(PropertyValueModel procedureHolder,
-	                              WorkbenchContextHolder workbenchContextHolder)
-	{
-		super(procedureHolder, workbenchContextHolder);
-	}
+    private PropertyValueModel selectedArgumentHolder;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initializeLayout()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
-		this.selectedArgumentHolder = new SimplePropertyValueModel();
+    private CustomParameterInArgumentPane namedInPane;
+    private ValueInArgumentPane namedInValuePane;
+    private ParameterOutArgumentPane namedOutPane;
+    private CustomParameterInOutArgumentPane namedInOutPane;
+    private ValueInOutArgumentPane namedInOutValuePane;
+    private CustomParameterInArgumentPane unnamedInPane;
+    private ValueInArgumentPane unnamedInValuePane;
+    private ParameterOutArgumentPane unnamedOutPane;
+    private CustomParameterInOutArgumentPane unnamedInOutPane;
+    private ValueInOutArgumentPane unnamedInOutValuePane;
 
-		JComponent nameField = buildLabeledTextField("STORED_PROCEDURE_PROPERTIES_PAGE_PROCEDURE_NAME", buildNameDocument());
+    private PropertyValueModel useUnnamedOutputCursorHolder;
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 0;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.PAGE_START;
-		constraints.insets     = new Insets(0, 0, 0, 0);
+    /**
+     * Creates a new <code>StoredProcedurePropertiesPane</code>.
+     *
+     * @param subjectHolder The holder of <code>MWProcedure</code>
+     * @param workbenchContextHolder The holder of the <code>WorkbenchContext</code>,
+     * used to retrieve the localized string, active window, etc
+     */
+    CustomStoredProcedurePropertiesPane(PropertyValueModel procedureHolder,
+                                  WorkbenchContextHolder workbenchContextHolder)
+    {
+        super(procedureHolder, workbenchContextHolder);
+    }
 
-		add(nameField, constraints);
-		
-		JCheckBox useUnamedOutputCursorCheckbox = buildCheckBox("STORED_PROCEDURE_PROPERTIES_PAGE_USE_UNNAMED_OUPUT_CURSOR", buildUnnamedOuputCursorCheckboxModel());
-		
-		constraints.gridx      = 0;
-		constraints.gridy      = 1;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.LINE_START;
-		constraints.insets     = new Insets(5, 0, 0, 0);
-		
-		add(useUnamedOutputCursorCheckbox, constraints);
-		
-		JComponent outputCursorNameWidgets = buildLabeledTextField("STORED_PROCEDURE_PROPERTIES_PAGE_OUTPUT_CURSOR_NAME", buildOutputCursorNameDocument());
-		
-		constraints.gridx      = 0;
-		constraints.gridy      = 2;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.LINE_START;
-		constraints.insets     = new Insets(5, 10, 0, 0);
-		
-		add(outputCursorNameWidgets, constraints);
-				
-		new ComponentEnabler(buildReverseHolder(this.useUnnamedOutputCursorHolder), outputCursorNameWidgets);		
-		
-		JPanel argumentPanel = new JPanel(new GridBagLayout());
-		argumentPanel.setOpaque(false);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initializeLayout()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
+        this.selectedArgumentHolder = new SimplePropertyValueModel();
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 3;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 0;
-		constraints.weighty    = 1;
-		constraints.fill       = GridBagConstraints.BOTH;
-		constraints.anchor     = GridBagConstraints.LINE_START;
-		constraints.insets     = new Insets(5, 15, 0, 0);
-		
-		add(argumentPanel, constraints);
+        JComponent nameField = buildLabeledTextField("STORED_PROCEDURE_PROPERTIES_PAGE_PROCEDURE_NAME", buildNameDocument());
 
-			AddRemoveListPanel argumentsListPane = buildArgumentsListPanel();
-			argumentsListPane.setPreferredSize(new Dimension(175, 200));
-	
-			constraints.gridx      = 0;
-			constraints.gridy      = 0;
-			constraints.gridwidth  = 1;
-			constraints.gridheight = 1;
-			constraints.weightx    = 0;
-			constraints.weighty    = 1;
-			constraints.fill       = GridBagConstraints.VERTICAL;
-			constraints.anchor     = GridBagConstraints.PAGE_START;
-			constraints.insets     = new Insets(1, 0, 0, 0);
-	
-			argumentPanel.add(argumentsListPane, constraints);
-		
-				JComponent container = new JPanel(new GridBagLayout());
-				container.setOpaque(false);
-		
-				constraints.gridx      = 1;
-				constraints.gridy      = 0;
-				constraints.gridwidth  = 1;
-				constraints.gridheight = 2;
-				constraints.weightx    = 1;
-				constraints.weighty    = 0;
-				constraints.fill       = GridBagConstraints.BOTH;
-				constraints.anchor     = GridBagConstraints.PAGE_START;
-				constraints.insets     = new Insets(0, 10, 0, 0);
-		
-				argumentPanel.add(container, constraints);
-			
-				// type widgets
-				JTextField typeField = new JTextField(buildArgumentTypeDocument(selectedArgumentHolder), null, 20);
-				typeField.setEditable(false);
-				JComponent typeWidgets = buildLabeledComponent("ARGUMENT_TYPE_LABEL", typeField);
-		
-				constraints.gridx      = 0;
-				constraints.gridy      = 0;
-				constraints.gridwidth  = 1;
-				constraints.gridheight = 1;
-				constraints.weightx    = 1;
-				constraints.weighty    = 0;
-				constraints.fill       = GridBagConstraints.HORIZONTAL;
-				constraints.anchor     = GridBagConstraints.LINE_START;
-				constraints.insets     = new Insets(15, 0, 0, 0);
-		
-				container.add(typeWidgets, constraints);
-		
-				initializePanes();
-				
-				// Properties pane
-				SwitcherPanel argumentsPanel = new SwitcherPanel
-				(
-					selectedArgumentHolder,
-					buildArgumentTypeTransformer()
-				);
-		
-				constraints.gridx      = 0;
-				constraints.gridy      = 1;
-				constraints.gridwidth  = 1;
-				constraints.gridheight = 1;
-				constraints.weightx    = 1;
-				constraints.weighty    = 1;
-				constraints.fill       = GridBagConstraints.BOTH;
-				constraints.anchor     = GridBagConstraints.LINE_START;
-				constraints.insets     = new Insets(10, 0, 0, 0);
-		
-				container.add(argumentsPanel, constraints);
-				
-		Spacer endSpace = new Spacer();
-		
-		constraints.gridx      = 0;
-		constraints.gridy      = 4;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 0;
-		constraints.weighty    = 1;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.LINE_START;
-		constraints.insets     = new Insets(5, 15, 0, 0);
+        constraints.gridx      = 0;
+        constraints.gridy      = 0;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.PAGE_START;
+        constraints.insets     = new Insets(0, 0, 0, 0);
 
-		add(endSpace, constraints);
-	}
+        add(nameField, constraints);
 
-	protected AddRemoveListPanel buildArgumentsListPanel() {
-		AddRemoveListPanel argumentsListPanel = new AddRemoveListPanel(
-			getApplicationContext(),
-			buildAddRemoveListPanelAdapter(),
-			buildArgumentListValueModel(),
-			resourceRepository().getString("ARGUMENTS_LIST"));
-		argumentsListPanel.setCellRenderer(buildArgumentsListCellRenderer());
-		argumentsListPanel.setBorder(buildStandardEmptyBorder());
-		argumentsListPanel.addListSelectionListener(buildArgumentListSelectionListener());
-				
-		return argumentsListPanel;
-	}
-	
-	private AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter() {
-		return new AddRemoveListPanel.Adapter() {
-			
-			public void addNewItem(ObjectListSelectionModel listSelectionModel) {
-				promptToAddAgument(listSelectionModel);
-			}
+        JCheckBox useUnamedOutputCursorCheckbox = buildCheckBox("STORED_PROCEDURE_PROPERTIES_PAGE_USE_UNNAMED_OUPUT_CURSOR", buildUnnamedOuputCursorCheckboxModel());
 
-			public void removeSelectedItems(ObjectListSelectionModel listSelectionModel) {
-				removeSelectedArguments(listSelectionModel);
-			}
-		};
-	}
-	
-	protected ListSelectionListener buildArgumentListSelectionListener() {
-		return new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				if ( ! e.getValueIsAdjusting()) {
-					ObjectListSelectionModel listSelectionModel = (ObjectListSelectionModel) e.getSource();
-					Object[] values = listSelectionModel.getSelectedValues();
-					if (values.length == 1) {
-						selectedArgumentHolder.setValue(values[0]);
-					}
-					else {
-						selectedArgumentHolder.setValue(null);
-					}
-				}
-			}
-		};
-	}
-	
-	private ListCellRenderer buildArgumentsListCellRenderer() {
-		return new SimpleListCellRenderer() {
-			protected String buildText(Object value) {
-				if ("".equals(((MWAbstractProcedureArgument)value).getArgumentName())) {
-					return resourceRepository().getString("UNNAMED_ARGUMENT");
-				} else {
-					return ((MWAbstractProcedureArgument)value).getArgumentName();
-				}
-			}
-		};
-	}
-	
-	private DocumentAdapter buildNameDocument() {
-		return new DocumentAdapter(buildNameModel());
-	}
+        constraints.gridx      = 0;
+        constraints.gridy      = 1;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.LINE_START;
+        constraints.insets     = new Insets(5, 0, 0, 0);
 
-	private PropertyValueModel buildNameModel() {
-		return new PropertyAspectAdapter(getSubjectHolder(), MWProcedure.NAME_PROPERTY) {
-			@Override
-			protected Object getValueFromSubject() {
-				return ((MWProcedure)subject).getName();
-			}
+        add(useUnamedOutputCursorCheckbox, constraints);
 
-			@Override
-			protected void setValueOnSubject(Object value) {
-				((MWProcedure)subject).setName((String)value);
-			}
-		};
-	}
+        JComponent outputCursorNameWidgets = buildLabeledTextField("STORED_PROCEDURE_PROPERTIES_PAGE_OUTPUT_CURSOR_NAME", buildOutputCursorNameDocument());
 
-	protected void promptToAddAgument(ObjectListSelectionModel listSelectionModel)
-	{
-		AddArgumentDialog.AddArgumentBuilder builder;
+        constraints.gridx      = 0;
+        constraints.gridy      = 2;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.LINE_START;
+        constraints.insets     = new Insets(5, 10, 0, 0);
 
-		builder = new AddArgumentDialog.AddArgumentBuilder();
+        add(outputCursorNameWidgets, constraints);
 
-		builder.setTitle(resourceRepository().getString("ADD_ARGUMENT_DIALOG_TITLE"));
-		builder.setTextFieldDescription("ENTER_NEW_ARGUMENT_NAME");
-		builder.setHelpTopicId("dialog.addNewArgument");
-		//builder.setDescriptionTitle("ADD_ARGUMENT_DIALOG_DESCRIPTION_TITLE");
-		//builder.setDescription("ADD_ARGUMENT_DIALOG_DESCRIPTION");
+        new ComponentEnabler(buildReverseHolder(this.useUnnamedOutputCursorHolder), outputCursorNameWidgets);
 
-		AddArgumentDialog dialog = builder.buildDialog(getWorkbenchContext());
-		dialog.show();
-		
-		if (dialog.wasConfirmed()) {
-			AddArgumentDialog.ArgumentType argumentType = dialog.getArgumentType();
-			String argumentName = dialog.getNewName();
-			MWAbstractProcedureArgument newArgument;
+        JPanel argumentPanel = new JPanel(new GridBagLayout());
+        argumentPanel.setOpaque(false);
 
-			if (argumentType == AddArgumentDialog.ArgumentType.NAMED_IN) {
-				newArgument = ((MWProcedure)subject()).addNamedInArgument(argumentName);
-			}
-			else if (argumentType == AddArgumentDialog.ArgumentType.NAMED_OUT) {
-				newArgument = ((MWProcedure)subject()).addNamedOutputArgument(argumentName);
-			}
-			else if (argumentType == AddArgumentDialog.ArgumentType.NAMED_IN_OUT) {
-				newArgument = ((MWProcedure)subject()).addNamedInOutputArgument(argumentName);
-			}
-			else if (argumentType == AddArgumentDialog.ArgumentType.UNNAMED_IN) {
-				newArgument = ((MWProcedure)subject()).addUnamedInArgument();
-			}
-			else if (argumentType == AddArgumentDialog.ArgumentType.UNNAMED_OUT) {
-				newArgument = ((MWProcedure)subject()).addUnamedOutputArgument();
-			}
-			else {
-				newArgument = ((MWProcedure)subject()).addUnamedInOutputArgument();
-			}
+        constraints.gridx      = 0;
+        constraints.gridy      = 3;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 0;
+        constraints.weighty    = 1;
+        constraints.fill       = GridBagConstraints.BOTH;
+        constraints.anchor     = GridBagConstraints.LINE_START;
+        constraints.insets     = new Insets(5, 15, 0, 0);
 
-			if (dialog.getArgumentPassType() == AddArgumentDialog.ArgumentPassType.VALUE) {
-				newArgument.setPassType(MWAbstractProcedureArgument.VALUE_TYPE);
-			} else {
-				newArgument.setPassType(MWAbstractProcedureArgument.PARAMETER_TYPE);
-			}
-			
-			listSelectionModel.setSelectedValue(newArgument);			
-		}
-	}
-	
-	protected void removeSelectedArguments(ObjectListSelectionModel listSelectionModel)
-	{
-		Iterator arguments = CollectionTools.iterator(listSelectionModel.getSelectedValues());
+        add(argumentPanel, constraints);
 
-		while (arguments.hasNext())
-		{
-			((MWProcedure)subject()).removeArgument((MWAbstractProcedureArgument)arguments.next());
-		}
-	}
+            AddRemoveListPanel argumentsListPane = buildArgumentsListPanel();
+            argumentsListPane.setPreferredSize(new Dimension(175, 200));
 
-	private ListValueModel buildArgumentListValueModel() {
-		return new CollectionListValueModelAdapter(buildArgumentsHolder());
-	}
-	
-	private CollectionValueModel buildArgumentsHolder() {
-		return new CollectionAspectAdapter(getSubjectHolder(), MWProcedure.ARGUMENT_COLLECTION) {
-			@Override
-			protected Iterator getValueFromSubject() {
-				return ((MWProcedure)subject).getAllArguments();
-			}
-			@Override
-			protected int sizeFromSubject() {
-				return ((MWProcedure)subject).argumentsSize();
-			}
-		};
-	}
+            constraints.gridx      = 0;
+            constraints.gridy      = 0;
+            constraints.gridwidth  = 1;
+            constraints.gridheight = 1;
+            constraints.weightx    = 0;
+            constraints.weighty    = 1;
+            constraints.fill       = GridBagConstraints.VERTICAL;
+            constraints.anchor     = GridBagConstraints.PAGE_START;
+            constraints.insets     = new Insets(1, 0, 0, 0);
 
-	private void initializePanes()
-	{
-		namedInPane = new CustomParameterInArgumentPane(
-			buildNamedInArgumentHolder(),
-			getWorkbenchContextHolder()
-		);
-		
-		namedInValuePane = new ValueInArgumentPane(
-			buildNamedInArgumentHolder(),
-			getWorkbenchContextHolder()
-		);
+            argumentPanel.add(argumentsListPane, constraints);
 
-		namedOutPane = new ParameterOutArgumentPane(
-			buildNamedOutArgumentHolder(),
-			getWorkbenchContextHolder()
-		);
+                JComponent container = new JPanel(new GridBagLayout());
+                container.setOpaque(false);
 
-		namedInOutPane = new CustomParameterInOutArgumentPane(
-			buildNamedInOutArgumentHolder(),
-			getWorkbenchContextHolder()
-		);
-		
-		namedInOutValuePane = new ValueInOutArgumentPane(
-			buildNamedInOutArgumentHolder(),
-			getWorkbenchContextHolder()
-		);
+                constraints.gridx      = 1;
+                constraints.gridy      = 0;
+                constraints.gridwidth  = 1;
+                constraints.gridheight = 2;
+                constraints.weightx    = 1;
+                constraints.weighty    = 0;
+                constraints.fill       = GridBagConstraints.BOTH;
+                constraints.anchor     = GridBagConstraints.PAGE_START;
+                constraints.insets     = new Insets(0, 10, 0, 0);
 
-		unnamedInPane = new CustomParameterInArgumentPane(
-			buildUnnamedInArgumentHolder(),
-			getWorkbenchContextHolder()
-		);
-			
-		unnamedInValuePane = new ValueInArgumentPane(
-			buildUnnamedInArgumentHolder(),
-			getWorkbenchContextHolder()
-		);
+                argumentPanel.add(container, constraints);
 
-		unnamedOutPane = new ParameterOutArgumentPane(
-			buildUnnamedOutputArgumentHolder(),
-			getWorkbenchContextHolder()
-		);
+                // type widgets
+                JTextField typeField = new JTextField(buildArgumentTypeDocument(selectedArgumentHolder), null, 20);
+                typeField.setEditable(false);
+                JComponent typeWidgets = buildLabeledComponent("ARGUMENT_TYPE_LABEL", typeField);
 
-		unnamedInOutPane = new CustomParameterInOutArgumentPane(
-			buildUnnamedInOutputArgumentHolder(),
-			getWorkbenchContextHolder()
-		);
-			
-		unnamedInOutValuePane = new ValueInOutArgumentPane(
-			buildUnnamedInOutputArgumentHolder(),
-			getWorkbenchContextHolder()
-		);
+                constraints.gridx      = 0;
+                constraints.gridy      = 0;
+                constraints.gridwidth  = 1;
+                constraints.gridheight = 1;
+                constraints.weightx    = 1;
+                constraints.weighty    = 0;
+                constraints.fill       = GridBagConstraints.HORIZONTAL;
+                constraints.anchor     = GridBagConstraints.LINE_START;
+                constraints.insets     = new Insets(15, 0, 0, 0);
 
-	}
+                container.add(typeWidgets, constraints);
 
-	private Transformer buildArgumentTypeTransformer() {
-		return new Transformer() {
-			private JComponent emptyPane;
+                initializePanes();
 
-			private JComponent emptyPane() {
-				if (emptyPane == null) {
-					emptyPane = buildEmptyPanel();
-				}
+                // Properties pane
+                SwitcherPanel argumentsPanel = new SwitcherPanel
+                (
+                    selectedArgumentHolder,
+                    buildArgumentTypeTransformer()
+                );
 
-				return emptyPane;
-			}
+                constraints.gridx      = 0;
+                constraints.gridy      = 1;
+                constraints.gridwidth  = 1;
+                constraints.gridheight = 1;
+                constraints.weightx    = 1;
+                constraints.weighty    = 1;
+                constraints.fill       = GridBagConstraints.BOTH;
+                constraints.anchor     = GridBagConstraints.LINE_START;
+                constraints.insets     = new Insets(10, 0, 0, 0);
 
-			private JComponent namedInPane() {
-				return namedInPane;
-			}
-			
-			private JComponent namedInValuePane() {
-				return namedInValuePane;
-			}
+                container.add(argumentsPanel, constraints);
 
-			private JComponent namedOutPane() {
-				return namedOutPane;
-			}
+        Spacer endSpace = new Spacer();
 
-			private JComponent namedInOutPane() {
-				return namedInOutPane;
-			}
+        constraints.gridx      = 0;
+        constraints.gridy      = 4;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 0;
+        constraints.weighty    = 1;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.LINE_START;
+        constraints.insets     = new Insets(5, 15, 0, 0);
 
-			private JComponent namedInOutValue() {
-				return namedInOutValuePane;
-			}
-			
-			private JComponent unnamedInPane() {
-				return unnamedInPane;
-			}
+        add(endSpace, constraints);
+    }
 
-			private JComponent unnamedInValuePane() {
-				return unnamedInValuePane;
-			}
-			
-			private JComponent unnamedOutPane() {
-				return unnamedOutPane;
-			}
+    protected AddRemoveListPanel buildArgumentsListPanel() {
+        AddRemoveListPanel argumentsListPanel = new AddRemoveListPanel(
+            getApplicationContext(),
+            buildAddRemoveListPanelAdapter(),
+            buildArgumentListValueModel(),
+            resourceRepository().getString("ARGUMENTS_LIST"));
+        argumentsListPanel.setCellRenderer(buildArgumentsListCellRenderer());
+        argumentsListPanel.setBorder(buildStandardEmptyBorder());
+        argumentsListPanel.addListSelectionListener(buildArgumentListSelectionListener());
 
-			private JComponent unnamedInOutPane() {
-				return unnamedInOutPane;
-			}
-			
-			private JComponent unnamedInOutValuePane() {
-				return unnamedInOutValuePane;
-			}
+        return argumentsListPanel;
+    }
 
-			public JComponent transform(Object argument) {
-				if (argument == null) {
-					return emptyPane();
-				}
-				MWAbstractProcedureArgument procedureArg = (MWAbstractProcedureArgument)argument;
-				if (procedureArg.getPassType().equals(MWAbstractProcedureArgument.VALUE_TYPE)) {
-					if (procedureArg.isNamedIn()) {
-						return namedInValuePane();
-					} else if (procedureArg.isNamedInOut()) {
-						return namedInOutValue();
-					} else if (procedureArg.isUnnamedIn()) {
-						return unnamedInValuePane();
-					} else if (procedureArg.isUnnamedInOut()) {
-						return unnamedInOutValuePane();
-					}
-				} else {
-					
-					if (procedureArg.isNamedIn()) {
-						return namedInPane();
-					} else if (procedureArg.isNamedOut()) {
-						return namedOutPane();
-					} else if (procedureArg.isNamedInOut()) {
-						return namedInOutPane();
-					} else if (procedureArg.isUnnamedIn()) {
-						return unnamedInPane();
-					} else if (procedureArg.isUnnamedOut()) {
-						return unnamedOutPane();
-					} else if (procedureArg.isUnnamedInOut()) {
-						return unnamedInOutPane();
-					}
-				}
-				return emptyPane();
-			}
-		};
-	}
+    private AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter() {
+        return new AddRemoveListPanel.Adapter() {
 
-	private PropertyValueModel buildNamedInArgumentHolder() {
-		return new TransformationPropertyValueModel(this.selectedArgumentHolder) {			
-			@Override
-			protected Object transform(Object value) {
-				return (value instanceof MWProcedureNamedInArgument) ? (MWProcedureNamedInArgument) value : null;
-			}
-		};
-	}
-	
-	private PropertyValueModel buildNamedOutArgumentHolder() {
-		return new TransformationPropertyValueModel(this.selectedArgumentHolder) {
-			@Override
-			protected Object transform(Object value) {
-				return (value instanceof MWProcedureNamedOutputArgument) ? (MWProcedureNamedOutputArgument) value : null;
-			}
-		};
-	}
-	
-	private PropertyValueModel buildNamedInOutArgumentHolder() {
-		return new TransformationPropertyValueModel(this.selectedArgumentHolder) {
-			@Override
-			protected Object transform(Object value) {
-				return (value instanceof MWProcedureNamedInOutputArgument) ? (MWProcedureNamedInOutputArgument) value : null;
-			}
-		};
-	}
-	
-	private PropertyValueModel buildUnnamedInArgumentHolder() {
-		return new TransformationPropertyValueModel(this.selectedArgumentHolder) {
-			@Override
-			protected Object transform(Object value) {
-				return (value instanceof MWProcedureUnamedInArgument) ? (MWProcedureUnamedInArgument) value : null;
-			}
-		};
-	}
-	
-	private PropertyValueModel buildUnnamedOutputArgumentHolder() {
-		return new TransformationPropertyValueModel(this.selectedArgumentHolder) {
-			@Override
-			protected Object transform(Object value) {
-				return (value instanceof MWProcedureUnamedOutputArgument) ? (MWProcedureUnamedOutputArgument) value : null;
-			}
-		};
-	}
-	
-	private PropertyValueModel buildUnnamedInOutputArgumentHolder() {
-		return new TransformationPropertyValueModel(this.selectedArgumentHolder) {
-			@Override
-			protected Object transform(Object value) {
-				return (value instanceof MWProcedureUnamedInOutputArgument) ? (MWProcedureUnamedInOutputArgument) value : null;
-			}
-		};
-	}
-	
-	protected JComponent buildEmptyPanel()
-	{
-		JPanel container = new JPanel();
-		container.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(204, 204, 204)));
-		container.setOpaque(false);
+            public void addNewItem(ObjectListSelectionModel listSelectionModel) {
+                promptToAddAgument(listSelectionModel);
+            }
 
-		return container;
-	}
+            public void removeSelectedItems(ObjectListSelectionModel listSelectionModel) {
+                removeSelectedArguments(listSelectionModel);
+            }
+        };
+    }
 
-	protected final Document buildArgumentTypeDocument(PropertyValueModel argumentHolder)
-	{
-		return new DocumentAdapter(buildArgumentTypeHolder(argumentHolder));
-	}
+    protected ListSelectionListener buildArgumentListSelectionListener() {
+        return new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                if ( ! e.getValueIsAdjusting()) {
+                    ObjectListSelectionModel listSelectionModel = (ObjectListSelectionModel) e.getSource();
+                    Object[] values = listSelectionModel.getSelectedValues();
+                    if (values.length == 1) {
+                        selectedArgumentHolder.setValue(values[0]);
+                    }
+                    else {
+                        selectedArgumentHolder.setValue(null);
+                    }
+                }
+            }
+        };
+    }
 
-	private PropertyValueModel buildArgumentTypeHolder(PropertyValueModel argumentHolder)
-	{
-		return new TransformationPropertyValueModel(argumentHolder)
-		{
-			@Override
-			protected String transform(Object argument)
-			{
-				if ((argument == null) || (subject() == null))
-				{
-					return resourceRepository().getString("ARGUMENT_NONE_SELECTED");
-				}
+    private ListCellRenderer buildArgumentsListCellRenderer() {
+        return new SimpleListCellRenderer() {
+            protected String buildText(Object value) {
+                if ("".equals(((MWAbstractProcedureArgument)value).getArgumentName())) {
+                    return resourceRepository().getString("UNNAMED_ARGUMENT");
+                } else {
+                    return ((MWAbstractProcedureArgument)value).getArgumentName();
+                }
+            }
+        };
+    }
 
-				if (((MWAbstractProcedureArgument)argument).isNamedIn())
-				{
-					return resourceRepository().getString("ARGUMENT_NAMED_IN");
-				}
+    private DocumentAdapter buildNameDocument() {
+        return new DocumentAdapter(buildNameModel());
+    }
 
-				if (((MWAbstractProcedureArgument)argument).isNamedOut())
-				{
-					return resourceRepository().getString("ARGUMENT_NAMED_OUT");
-				}
+    private PropertyValueModel buildNameModel() {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWProcedure.NAME_PROPERTY) {
+            @Override
+            protected Object getValueFromSubject() {
+                return ((MWProcedure)subject).getName();
+            }
 
-				if (((MWAbstractProcedureArgument)argument).isNamedInOut())
-				{
-					return resourceRepository().getString("ARGUMENT_NAMED_IN_OUT");
-				}
+            @Override
+            protected void setValueOnSubject(Object value) {
+                ((MWProcedure)subject).setName((String)value);
+            }
+        };
+    }
 
-				if (((MWAbstractProcedureArgument)argument).isUnnamedIn())
-				{
-					return resourceRepository().getString("ARGUMENT_UNNAMED_IN");
-				}
+    protected void promptToAddAgument(ObjectListSelectionModel listSelectionModel)
+    {
+        AddArgumentDialog.AddArgumentBuilder builder;
 
-				if (((MWAbstractProcedureArgument)argument).isUnnamedOut())
-				{
-					return resourceRepository().getString("ARGUMENT_UNNAMED_OUT");
-				}
+        builder = new AddArgumentDialog.AddArgumentBuilder();
 
-				else
-				{
-					return resourceRepository().getString("ARGUMENT_UNNAMED_IN_OUT");
-				}
-				
-			}
-		};
-	}
+        builder.setTitle(resourceRepository().getString("ADD_ARGUMENT_DIALOG_TITLE"));
+        builder.setTextFieldDescription("ENTER_NEW_ARGUMENT_NAME");
+        builder.setHelpTopicId("dialog.addNewArgument");
+        //builder.setDescriptionTitle("ADD_ARGUMENT_DIALOG_DESCRIPTION_TITLE");
+        //builder.setDescription("ADD_ARGUMENT_DIALOG_DESCRIPTION");
 
-	private CheckBoxModelAdapter buildUnnamedOuputCursorCheckboxModel() {
-		this.useUnnamedOutputCursorHolder = buildUnnamedOutputCursorCheckboxModel();
-		return new CheckBoxModelAdapter(this.useUnnamedOutputCursorHolder);
-	}
-	
-	private PropertyValueModel buildUnnamedOutputCursorCheckboxModel() {
-		return new PropertyAspectAdapter(getSubjectHolder(), MWProcedure.USE_UNAMED_CURSOR_OUTPUT) {
-			@Override
-			protected Object getValueFromSubject() {
-				return ((MWProcedure)subject).getUseUnamedCursorOutput();
-			}
-			
-			@Override
-			protected void setValueOnSubject(Object value) {
-				((MWProcedure)subject).setUseUnamedCursorOutput((Boolean)value);
-			}
-		};
-	}
-	
-	private PropertyValueModel buildReverseHolder(PropertyValueModel holder) {
-		return new TransformationPropertyValueModel(holder) {
-			@Override
-			protected Object transform(Object value) {
-				if (value == null) {
-					return null;
-				}
-				if (((Boolean)value).booleanValue()) {
-					return Boolean.FALSE;
-				} else {
-					return Boolean.TRUE;
-				}
-			}
-		};
-	}
-	
-	private DocumentAdapter buildOutputCursorNameDocument() {
-		return new DocumentAdapter(buildOutputCursorNameModel());
-	}
+        AddArgumentDialog dialog = builder.buildDialog(getWorkbenchContext());
+        dialog.show();
 
-	private PropertyValueModel buildOutputCursorNameModel() {
-		return new PropertyAspectAdapter(getSubjectHolder(), MWProcedure.CURSOR_OUTPUT_NAME) {
-			@Override
-			protected Object getValueFromSubject() {
-				return ((MWProcedure)subject).getCursorOutputName();
-			}
+        if (dialog.wasConfirmed()) {
+            AddArgumentDialog.ArgumentType argumentType = dialog.getArgumentType();
+            String argumentName = dialog.getNewName();
+            MWAbstractProcedureArgument newArgument;
 
-			@Override
-			protected void setValueOnSubject(Object value) {
-				((MWProcedure)subject).setCursorOutputName((String)value);
-			}
-		};
-	}
+            if (argumentType == AddArgumentDialog.ArgumentType.NAMED_IN) {
+                newArgument = ((MWProcedure)subject()).addNamedInArgument(argumentName);
+            }
+            else if (argumentType == AddArgumentDialog.ArgumentType.NAMED_OUT) {
+                newArgument = ((MWProcedure)subject()).addNamedOutputArgument(argumentName);
+            }
+            else if (argumentType == AddArgumentDialog.ArgumentType.NAMED_IN_OUT) {
+                newArgument = ((MWProcedure)subject()).addNamedInOutputArgument(argumentName);
+            }
+            else if (argumentType == AddArgumentDialog.ArgumentType.UNNAMED_IN) {
+                newArgument = ((MWProcedure)subject()).addUnamedInArgument();
+            }
+            else if (argumentType == AddArgumentDialog.ArgumentType.UNNAMED_OUT) {
+                newArgument = ((MWProcedure)subject()).addUnamedOutputArgument();
+            }
+            else {
+                newArgument = ((MWProcedure)subject()).addUnamedInOutputArgument();
+            }
 
-	private void selectNewArgument(final AddRemoveTablePanel tablePane,
-	                               final ObjectListSelectionModel listSelectionModel,
-	                               final MWAbstractProcedureArgument argument,
-	                               final int count)
-	{
-		listSelectionModel.setSelectedValue(argument);
-//		int rowIndex = count - 1;
-//		tablePane.startEditing(rowIndex, 1);
-	}
-	
+            if (dialog.getArgumentPassType() == AddArgumentDialog.ArgumentPassType.VALUE) {
+                newArgument.setPassType(MWAbstractProcedureArgument.VALUE_TYPE);
+            } else {
+                newArgument.setPassType(MWAbstractProcedureArgument.PARAMETER_TYPE);
+            }
+
+            listSelectionModel.setSelectedValue(newArgument);
+        }
+    }
+
+    protected void removeSelectedArguments(ObjectListSelectionModel listSelectionModel)
+    {
+        Iterator arguments = CollectionTools.iterator(listSelectionModel.getSelectedValues());
+
+        while (arguments.hasNext())
+        {
+            ((MWProcedure)subject()).removeArgument((MWAbstractProcedureArgument)arguments.next());
+        }
+    }
+
+    private ListValueModel buildArgumentListValueModel() {
+        return new CollectionListValueModelAdapter(buildArgumentsHolder());
+    }
+
+    private CollectionValueModel buildArgumentsHolder() {
+        return new CollectionAspectAdapter(getSubjectHolder(), MWProcedure.ARGUMENT_COLLECTION) {
+            @Override
+            protected Iterator getValueFromSubject() {
+                return ((MWProcedure)subject).getAllArguments();
+            }
+            @Override
+            protected int sizeFromSubject() {
+                return ((MWProcedure)subject).argumentsSize();
+            }
+        };
+    }
+
+    private void initializePanes()
+    {
+        namedInPane = new CustomParameterInArgumentPane(
+            buildNamedInArgumentHolder(),
+            getWorkbenchContextHolder()
+        );
+
+        namedInValuePane = new ValueInArgumentPane(
+            buildNamedInArgumentHolder(),
+            getWorkbenchContextHolder()
+        );
+
+        namedOutPane = new ParameterOutArgumentPane(
+            buildNamedOutArgumentHolder(),
+            getWorkbenchContextHolder()
+        );
+
+        namedInOutPane = new CustomParameterInOutArgumentPane(
+            buildNamedInOutArgumentHolder(),
+            getWorkbenchContextHolder()
+        );
+
+        namedInOutValuePane = new ValueInOutArgumentPane(
+            buildNamedInOutArgumentHolder(),
+            getWorkbenchContextHolder()
+        );
+
+        unnamedInPane = new CustomParameterInArgumentPane(
+            buildUnnamedInArgumentHolder(),
+            getWorkbenchContextHolder()
+        );
+
+        unnamedInValuePane = new ValueInArgumentPane(
+            buildUnnamedInArgumentHolder(),
+            getWorkbenchContextHolder()
+        );
+
+        unnamedOutPane = new ParameterOutArgumentPane(
+            buildUnnamedOutputArgumentHolder(),
+            getWorkbenchContextHolder()
+        );
+
+        unnamedInOutPane = new CustomParameterInOutArgumentPane(
+            buildUnnamedInOutputArgumentHolder(),
+            getWorkbenchContextHolder()
+        );
+
+        unnamedInOutValuePane = new ValueInOutArgumentPane(
+            buildUnnamedInOutputArgumentHolder(),
+            getWorkbenchContextHolder()
+        );
+
+    }
+
+    private Transformer buildArgumentTypeTransformer() {
+        return new Transformer() {
+            private JComponent emptyPane;
+
+            private JComponent emptyPane() {
+                if (emptyPane == null) {
+                    emptyPane = buildEmptyPanel();
+                }
+
+                return emptyPane;
+            }
+
+            private JComponent namedInPane() {
+                return namedInPane;
+            }
+
+            private JComponent namedInValuePane() {
+                return namedInValuePane;
+            }
+
+            private JComponent namedOutPane() {
+                return namedOutPane;
+            }
+
+            private JComponent namedInOutPane() {
+                return namedInOutPane;
+            }
+
+            private JComponent namedInOutValue() {
+                return namedInOutValuePane;
+            }
+
+            private JComponent unnamedInPane() {
+                return unnamedInPane;
+            }
+
+            private JComponent unnamedInValuePane() {
+                return unnamedInValuePane;
+            }
+
+            private JComponent unnamedOutPane() {
+                return unnamedOutPane;
+            }
+
+            private JComponent unnamedInOutPane() {
+                return unnamedInOutPane;
+            }
+
+            private JComponent unnamedInOutValuePane() {
+                return unnamedInOutValuePane;
+            }
+
+            public JComponent transform(Object argument) {
+                if (argument == null) {
+                    return emptyPane();
+                }
+                MWAbstractProcedureArgument procedureArg = (MWAbstractProcedureArgument)argument;
+                if (procedureArg.getPassType().equals(MWAbstractProcedureArgument.VALUE_TYPE)) {
+                    if (procedureArg.isNamedIn()) {
+                        return namedInValuePane();
+                    } else if (procedureArg.isNamedInOut()) {
+                        return namedInOutValue();
+                    } else if (procedureArg.isUnnamedIn()) {
+                        return unnamedInValuePane();
+                    } else if (procedureArg.isUnnamedInOut()) {
+                        return unnamedInOutValuePane();
+                    }
+                } else {
+
+                    if (procedureArg.isNamedIn()) {
+                        return namedInPane();
+                    } else if (procedureArg.isNamedOut()) {
+                        return namedOutPane();
+                    } else if (procedureArg.isNamedInOut()) {
+                        return namedInOutPane();
+                    } else if (procedureArg.isUnnamedIn()) {
+                        return unnamedInPane();
+                    } else if (procedureArg.isUnnamedOut()) {
+                        return unnamedOutPane();
+                    } else if (procedureArg.isUnnamedInOut()) {
+                        return unnamedInOutPane();
+                    }
+                }
+                return emptyPane();
+            }
+        };
+    }
+
+    private PropertyValueModel buildNamedInArgumentHolder() {
+        return new TransformationPropertyValueModel(this.selectedArgumentHolder) {
+            @Override
+            protected Object transform(Object value) {
+                return (value instanceof MWProcedureNamedInArgument) ? (MWProcedureNamedInArgument) value : null;
+            }
+        };
+    }
+
+    private PropertyValueModel buildNamedOutArgumentHolder() {
+        return new TransformationPropertyValueModel(this.selectedArgumentHolder) {
+            @Override
+            protected Object transform(Object value) {
+                return (value instanceof MWProcedureNamedOutputArgument) ? (MWProcedureNamedOutputArgument) value : null;
+            }
+        };
+    }
+
+    private PropertyValueModel buildNamedInOutArgumentHolder() {
+        return new TransformationPropertyValueModel(this.selectedArgumentHolder) {
+            @Override
+            protected Object transform(Object value) {
+                return (value instanceof MWProcedureNamedInOutputArgument) ? (MWProcedureNamedInOutputArgument) value : null;
+            }
+        };
+    }
+
+    private PropertyValueModel buildUnnamedInArgumentHolder() {
+        return new TransformationPropertyValueModel(this.selectedArgumentHolder) {
+            @Override
+            protected Object transform(Object value) {
+                return (value instanceof MWProcedureUnamedInArgument) ? (MWProcedureUnamedInArgument) value : null;
+            }
+        };
+    }
+
+    private PropertyValueModel buildUnnamedOutputArgumentHolder() {
+        return new TransformationPropertyValueModel(this.selectedArgumentHolder) {
+            @Override
+            protected Object transform(Object value) {
+                return (value instanceof MWProcedureUnamedOutputArgument) ? (MWProcedureUnamedOutputArgument) value : null;
+            }
+        };
+    }
+
+    private PropertyValueModel buildUnnamedInOutputArgumentHolder() {
+        return new TransformationPropertyValueModel(this.selectedArgumentHolder) {
+            @Override
+            protected Object transform(Object value) {
+                return (value instanceof MWProcedureUnamedInOutputArgument) ? (MWProcedureUnamedInOutputArgument) value : null;
+            }
+        };
+    }
+
+    protected JComponent buildEmptyPanel()
+    {
+        JPanel container = new JPanel();
+        container.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(204, 204, 204)));
+        container.setOpaque(false);
+
+        return container;
+    }
+
+    protected final Document buildArgumentTypeDocument(PropertyValueModel argumentHolder)
+    {
+        return new DocumentAdapter(buildArgumentTypeHolder(argumentHolder));
+    }
+
+    private PropertyValueModel buildArgumentTypeHolder(PropertyValueModel argumentHolder)
+    {
+        return new TransformationPropertyValueModel(argumentHolder)
+        {
+            @Override
+            protected String transform(Object argument)
+            {
+                if ((argument == null) || (subject() == null))
+                {
+                    return resourceRepository().getString("ARGUMENT_NONE_SELECTED");
+                }
+
+                if (((MWAbstractProcedureArgument)argument).isNamedIn())
+                {
+                    return resourceRepository().getString("ARGUMENT_NAMED_IN");
+                }
+
+                if (((MWAbstractProcedureArgument)argument).isNamedOut())
+                {
+                    return resourceRepository().getString("ARGUMENT_NAMED_OUT");
+                }
+
+                if (((MWAbstractProcedureArgument)argument).isNamedInOut())
+                {
+                    return resourceRepository().getString("ARGUMENT_NAMED_IN_OUT");
+                }
+
+                if (((MWAbstractProcedureArgument)argument).isUnnamedIn())
+                {
+                    return resourceRepository().getString("ARGUMENT_UNNAMED_IN");
+                }
+
+                if (((MWAbstractProcedureArgument)argument).isUnnamedOut())
+                {
+                    return resourceRepository().getString("ARGUMENT_UNNAMED_OUT");
+                }
+
+                else
+                {
+                    return resourceRepository().getString("ARGUMENT_UNNAMED_IN_OUT");
+                }
+
+            }
+        };
+    }
+
+    private CheckBoxModelAdapter buildUnnamedOuputCursorCheckboxModel() {
+        this.useUnnamedOutputCursorHolder = buildUnnamedOutputCursorCheckboxModel();
+        return new CheckBoxModelAdapter(this.useUnnamedOutputCursorHolder);
+    }
+
+    private PropertyValueModel buildUnnamedOutputCursorCheckboxModel() {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWProcedure.USE_UNAMED_CURSOR_OUTPUT) {
+            @Override
+            protected Object getValueFromSubject() {
+                return ((MWProcedure)subject).getUseUnamedCursorOutput();
+            }
+
+            @Override
+            protected void setValueOnSubject(Object value) {
+                ((MWProcedure)subject).setUseUnamedCursorOutput((Boolean)value);
+            }
+        };
+    }
+
+    private PropertyValueModel buildReverseHolder(PropertyValueModel holder) {
+        return new TransformationPropertyValueModel(holder) {
+            @Override
+            protected Object transform(Object value) {
+                if (value == null) {
+                    return null;
+                }
+                if (((Boolean)value).booleanValue()) {
+                    return Boolean.FALSE;
+                } else {
+                    return Boolean.TRUE;
+                }
+            }
+        };
+    }
+
+    private DocumentAdapter buildOutputCursorNameDocument() {
+        return new DocumentAdapter(buildOutputCursorNameModel());
+    }
+
+    private PropertyValueModel buildOutputCursorNameModel() {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWProcedure.CURSOR_OUTPUT_NAME) {
+            @Override
+            protected Object getValueFromSubject() {
+                return ((MWProcedure)subject).getCursorOutputName();
+            }
+
+            @Override
+            protected void setValueOnSubject(Object value) {
+                ((MWProcedure)subject).setCursorOutputName((String)value);
+            }
+        };
+    }
+
+    private void selectNewArgument(final AddRemoveTablePanel tablePane,
+                                   final ObjectListSelectionModel listSelectionModel,
+                                   final MWAbstractProcedureArgument argument,
+                                   final int count)
+    {
+        listSelectionModel.setSelectedValue(argument);
+//        int rowIndex = count - 1;
+//        tablePane.startEditing(rowIndex, 1);
+    }
+
 }

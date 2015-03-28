@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -28,18 +28,18 @@
 package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 public class MismatchedRangeException extends RecognitionException {
-	public int a,b;
+    public int a,b;
 
-	/** Used for remote debugger deserialization */
-	public MismatchedRangeException() {;}
+    /** Used for remote debugger deserialization */
+    public MismatchedRangeException() {;}
 
-	public MismatchedRangeException(int a, int b, IntStream input) {
-		super(input);
-		this.a = a;
-		this.b = b;
-	}
+    public MismatchedRangeException(int a, int b, IntStream input) {
+        super(input);
+        this.a = a;
+        this.b = b;
+    }
 
-	public String toString() {
-		return "MismatchedNotSetException("+getUnexpectedType()+" not in ["+a+","+b+"])";
-	}
+    public String toString() {
+        return "MismatchedNotSetException("+getUnexpectedType()+" not in ["+a+","+b+"])";
+    }
 }

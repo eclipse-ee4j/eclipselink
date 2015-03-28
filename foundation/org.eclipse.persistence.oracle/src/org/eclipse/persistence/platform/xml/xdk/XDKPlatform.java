@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.xml.xdk;
 
 import java.lang.reflect.Method;
@@ -180,7 +180,7 @@ public class XDKPlatform implements XMLPlatform {
         }
 
         Node parentNode = contextNode.getParentNode();
-        if (parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE) {        
+        if (parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE) {
             return resolveNamespacePrefix(parentNode, namespacePrefix);
         }
 
@@ -232,7 +232,7 @@ public class XDKPlatform implements XMLPlatform {
             ((XMLDocument)document).validateContent(validator, true);
         } catch (XMLParseException e) {
             // Ignore this exception, the XMLError will be used to determine if theree
-            // were any errors.			
+            // were any errors.
         }
         handleErrors(xmlErr, errorHandler);
 
@@ -294,7 +294,7 @@ public class XDKPlatform implements XMLPlatform {
             ((XMLElement)elem).validateContent(validator, true);
         } catch (XMLParseException e) {
             // Ignore this exception, the XMLError will be used to determine if theree
-            // were any errors.			
+            // were any errors.
         }
         handleErrors(xmlErr, errorHandler);
 
@@ -412,7 +412,7 @@ public class XDKPlatform implements XMLPlatform {
         }
         return null;
     }
-    
+
      public void namespaceQualifyFragment(Element next) {
         namespaceQualifyFragment(next, new ArrayList<String>());
     }
@@ -430,14 +430,14 @@ public class XDKPlatform implements XMLPlatform {
             }
         }
 
-        //check all attributes prefixes and if any of them arent declared add them also.            
+        //check all attributes prefixes and if any of them arent declared add them also.
         NamedNodeMap attributes = next.getAttributes();
         int attributesSize = attributes.getLength();
         for (int i = 0; i < attributesSize; i++) {
             Attr nextAttribute = (Attr)attributes.item(i);
             String attributePrefix = nextAttribute.getPrefix();
             if (attributePrefix != null) {
-                //if attribute is a namespace declaration add to declared list 
+                //if attribute is a namespace declaration add to declared list
                 if (XMLConstants.XMLNS_URL.equals(nextAttribute.getNamespaceURI())) {
                     declaredPrefixes.add(nextAttribute.getLocalName());
                 } else {
@@ -449,13 +449,13 @@ public class XDKPlatform implements XMLPlatform {
                     }
 
                     //if xsi:type declaration deal with that value
-                    if (XMLConstants.SCHEMA_INSTANCE_URL.equals(nextAttribute.getNamespaceURI()) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(nextAttribute.getLocalName())) {                        
+                    if (XMLConstants.SCHEMA_INSTANCE_URL.equals(nextAttribute.getNamespaceURI()) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(nextAttribute.getLocalName())) {
                         String value = nextAttribute.getValue();
                         int colonIndex = value.indexOf(':');
                         if (colonIndex > -1) {
                             String prefix = value.substring(0, colonIndex);
                             namespaceDeclaration = next.getAttributeNode(XMLConstants.XMLNS +":" + prefix);
-                            if ((null == namespaceDeclaration) && !declaredPrefixes.contains(prefix)) {                                
+                            if ((null == namespaceDeclaration) && !declaredPrefixes.contains(prefix)) {
                                 String uri = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(next, prefix);
                                 (next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, uri);
                                 declaredPrefixes.add(prefix);

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.DataObject;
@@ -58,14 +58,14 @@ public class SDODataObjectJIRA81TestCases extends SDOTestCase {
         try {
             empDataObject.get("myList[3]");
         } catch (IndexOutOfBoundsException e) {
-        	// get() should not throw exceptions (SDO 2.1 Spec)
-        	fail("An IndexOutOfBoundsException occurred but was not expected.");
+            // get() should not throw exceptions (SDO 2.1 Spec)
+            fail("An IndexOutOfBoundsException occurred but was not expected.");
         }
         try {
             empDataObject.getList("myList").get(3);
         } catch (IndexOutOfBoundsException e) {
-        	// get() should not throw exceptions (SDO 2.1 Spec)
-        	fail("An IndexOutOfBoundsException occurred but was not expected.");
+            // get() should not throw exceptions (SDO 2.1 Spec)
+            fail("An IndexOutOfBoundsException occurred but was not expected.");
         }
     }
 
@@ -82,8 +82,8 @@ public class SDODataObjectJIRA81TestCases extends SDOTestCase {
         try {
             empDataObject.getList("myList").get(3);
         } catch (IndexOutOfBoundsException e) {
-        	// get() should not throw exceptions (SDO 2.1 Spec)
-        	fail("An IndexOutOfBoundsException occurred but was not expected.");
+            // get() should not throw exceptions (SDO 2.1 Spec)
+            fail("An IndexOutOfBoundsException occurred but was not expected.");
         }
     }
 }

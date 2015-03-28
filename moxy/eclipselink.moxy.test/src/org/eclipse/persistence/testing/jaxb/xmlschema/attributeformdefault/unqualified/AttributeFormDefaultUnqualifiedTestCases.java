@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,43 +27,43 @@ public class AttributeFormDefaultUnqualifiedTestCases extends JAXBWithJSONTestCa
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlschema/attributeformdefault/unqualifiedaddress.xml";
     protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlschema/attributeformdefault/unqualifiedaddress.json";
 
-	public AttributeFormDefaultUnqualifiedTestCases(String name) throws Exception {
-		super(name);
-	}
-	
-	public void setUp() throws Exception {
+    public AttributeFormDefaultUnqualifiedTestCases(String name) throws Exception {
+        super(name);
+    }
+
+    public void setUp() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-	    super.setUp();
-	    Type[] types = new Type[1];
-	    types[0] = Address.class;	        
-	    setTypes(types);
-	    
-	    Map namespaces = new HashMap<String, String>();
-	    namespaces.put("myns","ns0");
-	    jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
-	    jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+        super.setUp();
+        Type[] types = new Type[1];
+        types[0] = Address.class;
+        setTypes(types);
 
-	}
+        Map namespaces = new HashMap<String, String>();
+        namespaces.put("myns","ns0");
+        jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+
+    }
 
 
-	protected Object getControlObject() {
-		Address addr = new Address();
-		addr.city = "Ottawa";
-		addr.street ="Main Street";
-		addr.street2 ="Street2";
-		addr.street3 ="Street3";
-		addr.street4 ="Street4";
-		return addr;
-	}
-	
-	public void testSchemaGen() throws Exception{
-		InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlschema/attributeformdefault/unqualified.xsd");				
-    	List<InputStream> controlSchemas = new ArrayList<InputStream>();    	
-    	controlSchemas.add(controlInputStream);
-		
-		this.testSchemaGen(controlSchemas);
-	}
-		
+    protected Object getControlObject() {
+        Address addr = new Address();
+        addr.city = "Ottawa";
+        addr.street ="Main Street";
+        addr.street2 ="Street2";
+        addr.street3 ="Street3";
+        addr.street4 ="Street4";
+        return addr;
+    }
+
+    public void testSchemaGen() throws Exception{
+        InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlschema/attributeformdefault/unqualified.xsd");
+        List<InputStream> controlSchemas = new ArrayList<InputStream>();
+        controlSchemas.add(controlInputStream);
+
+        this.testSchemaGen(controlSchemas);
+    }
+
 }

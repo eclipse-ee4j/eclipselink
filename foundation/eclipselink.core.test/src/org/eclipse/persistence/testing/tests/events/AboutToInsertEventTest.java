@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.events;
 
 import java.util.*;
@@ -46,14 +46,14 @@ public abstract class AboutToInsertEventTest extends TestCase {
             throw new TestWarningException("This test can't run because the primary key is set into the object after INSERT ");
         }
 
-        // Multithreaded tests cannot initialize identity maps at this time. 
+        // Multithreaded tests cannot initialize identity maps at this time.
         // It might interfere with other tests
         if (!isMultithreaded) {
             getSession().getIdentityMapAccessor().initializeIdentityMaps();
         }
         beginTransaction();
 
-        // Save the accessor so we can the same accessor for reading was 
+        // Save the accessor so we can the same accessor for reading was
         // we use in our transaction.  This allows us to do reads on the
         // data we change in our transaction
         if (isMultithreaded) {

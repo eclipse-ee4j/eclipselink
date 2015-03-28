@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,32 +19,32 @@ import org.w3c.dom.Node;
 public class EmployeeWithList {
     public int a;
     public String b;
-    
+
     //@javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter(value=org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.MyDomAdapter.class)
     //@javax.xml.bind.annotation.XmlAnyElement(lax=false, value=org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.MyDomHandler.class)
     public java.util.List<Object> stuff;
 
     public EmployeeWithList() {}
-    
+
     public boolean equals(Object obj) {
         EmployeeWithList empObj;
         try {
             empObj = (EmployeeWithList) obj;
         } catch (ClassCastException e) { return false; }
-        
+
         if (empObj.stuff.size() != this.stuff.size()) { return false; }
         // assumes size of list is 2, and order is not relevant
-		XMLComparer comparer = new XMLComparer();
+        XMLComparer comparer = new XMLComparer();
 
         for (int i=0; i<2; i++) {
             Object stuffStr = empObj.stuff.get(i);
             if(stuff.get(i) instanceof Node){
-            	if(!(stuffStr instanceof Node)){
-            		return false;
-            	}
-            	if(!comparer.isNodeEqual((Node)stuff.get(i), (Node)stuffStr)){
-            		return false;
-            	}
+                if(!(stuffStr instanceof Node)){
+                    return false;
+                }
+                if(!comparer.isNodeEqual((Node)stuff.get(i), (Node)stuffStr)){
+                    return false;
+                }
             }else if (!(stuff.get(0).equals(stuffStr) || stuff.get(1).equals(stuffStr))) {
                 return false;
             }

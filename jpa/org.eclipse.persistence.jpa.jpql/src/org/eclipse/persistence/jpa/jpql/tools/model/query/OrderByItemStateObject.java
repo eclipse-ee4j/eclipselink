@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,258 +58,258 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 @SuppressWarnings("nls")
 public class OrderByItemStateObject extends AbstractStateObject {
 
-	/**
-	 * The ascending ordering.
-	 */
-	private Ordering ordering;
+    /**
+     * The ascending ordering.
+     */
+    private Ordering ordering;
 
-	/**
-	 * The {@link StateObject} representing the order by item.
-	 */
-	private StateObject stateObject;
+    /**
+     * The {@link StateObject} representing the order by item.
+     */
+    private StateObject stateObject;
 
-	/**
-	 * Notifies the ordering property has changed.
-	 */
-	public static final String ORDERING_PROPERTY = "ordering";
+    /**
+     * Notifies the ordering property has changed.
+     */
+    public static final String ORDERING_PROPERTY = "ordering";
 
-	/**
-	 * Notifies the ordering property has changed.
-	 */
-	public static final String STATE_OBJECT_PROPERTY = "stateObject";
+    /**
+     * Notifies the ordering property has changed.
+     */
+    public static final String STATE_OBJECT_PROPERTY = "stateObject";
 
-	/**
-	 * Creates a new <code>OrderByItemStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public OrderByItemStateObject(OrderByClauseStateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>OrderByItemStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public OrderByItemStateObject(OrderByClauseStateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>OrderByItemStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public OrderByItemStateObject(OrderByClauseStateObject parent, Ordering ordering) {
-		super(parent);
-		validateOrdering(ordering);
-		this.ordering = ordering;
-	}
+    /**
+     * Creates a new <code>OrderByItemStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public OrderByItemStateObject(OrderByClauseStateObject parent, Ordering ordering) {
+        super(parent);
+        validateOrdering(ordering);
+        this.ordering = ordering;
+    }
 
-	/**
-	 * Creates a new <code>OrderByItemStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param stateObject The {@link StateObject} of the item
-	 * @param ordering One of the possible {@link Ordering} choice
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public OrderByItemStateObject(OrderByClauseStateObject parent,
-	                              StateObject stateObject,
-	                              Ordering ordering) {
+    /**
+     * Creates a new <code>OrderByItemStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param stateObject The {@link StateObject} of the item
+     * @param ordering One of the possible {@link Ordering} choice
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public OrderByItemStateObject(OrderByClauseStateObject parent,
+                                  StateObject stateObject,
+                                  Ordering ordering) {
 
-		this(parent, ordering);
-		this.stateObject = parent(stateObject);
-	}
+        this(parent, ordering);
+        this.stateObject = parent(stateObject);
+    }
 
-	/**
-	 * Creates a new <code>OrderByItemStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param jpqlFragment The JPQL fragment representing the ordering item
-	 * @param ordering One of the possible {@link Ordering} choice
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public OrderByItemStateObject(OrderByClauseStateObject parent,
-	                              String jpqlFragment,
-	                              Ordering ordering) {
+    /**
+     * Creates a new <code>OrderByItemStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param jpqlFragment The JPQL fragment representing the ordering item
+     * @param ordering One of the possible {@link Ordering} choice
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public OrderByItemStateObject(OrderByClauseStateObject parent,
+                                  String jpqlFragment,
+                                  Ordering ordering) {
 
-		this(parent, ordering);
-		parse(jpqlFragment);
-	}
+        this(parent, ordering);
+        parse(jpqlFragment);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addChildren(List<StateObject> children) {
-		super.addChildren(children);
-		if (stateObject != null) {
-			children.add(stateObject);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addChildren(List<StateObject> children) {
+        super.addChildren(children);
+        if (stateObject != null) {
+            children.add(stateObject);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public OrderByItem getExpression() {
-		return (OrderByItem) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public OrderByItem getExpression() {
+        return (OrderByItem) super.getExpression();
+    }
 
-	/**
-	 * Returns the enum constant representing the ordering type.
-	 *
-	 * @return The constant representing the ordering, in the case the ordering was not parsed, then
-	 * {@link Ordering#DEFAULT} is returned
-	 */
-	public Ordering getOrdering() {
-		return ordering;
-	}
+    /**
+     * Returns the enum constant representing the ordering type.
+     *
+     * @return The constant representing the ordering, in the case the ordering was not parsed, then
+     * {@link Ordering#DEFAULT} is returned
+     */
+    public Ordering getOrdering() {
+        return ordering;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public OrderByClauseStateObject getParent() {
-		return (OrderByClauseStateObject) super.getParent();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public OrderByClauseStateObject getParent() {
+        return (OrderByClauseStateObject) super.getParent();
+    }
 
-	/**
-	 * Returns the {@link StateObject} representing the value used for ordering.
-	 *
-	 * @return The {@link StateObject} representing the value used for ordering
-	 */
-	public StateObject getStateObject() {
-		return stateObject;
-	}
+    /**
+     * Returns the {@link StateObject} representing the value used for ordering.
+     *
+     * @return The {@link StateObject} representing the value used for ordering
+     */
+    public StateObject getStateObject() {
+        return stateObject;
+    }
 
-	/**
-	 * Determines whether the {@link StateObject} representing the value used for ordering has been
-	 * defined.
-	 *
-	 * @return <code>true</code> if the ordering value is defined; <code>false</code> otherwise
-	 */
-	public boolean hasStateObject() {
-		return stateObject != null;
-	}
+    /**
+     * Determines whether the {@link StateObject} representing the value used for ordering has been
+     * defined.
+     *
+     * @return <code>true</code> if the ordering value is defined; <code>false</code> otherwise
+     */
+    public boolean hasStateObject() {
+        return stateObject != null;
+    }
 
-	/**
-	 * Determines whether the ordering was specified as being ascendant.
-	 *
-	 * @return <code>true</code> if <b>ASC</b> was parsed; <code>false</code> otherwise
-	 */
-	public boolean isAscending() {
-		return ordering == Ordering.ASC;
-	}
+    /**
+     * Determines whether the ordering was specified as being ascendant.
+     *
+     * @return <code>true</code> if <b>ASC</b> was parsed; <code>false</code> otherwise
+     */
+    public boolean isAscending() {
+        return ordering == Ordering.ASC;
+    }
 
-	/**
-	 * Determines whether the ordering was not specified.
-	 *
-	 * @return <code>true</code> if no ordering was parsed; <code>false</code> otherwise
-	 */
-	public boolean isDefault() {
-		return ordering == Ordering.DEFAULT;
-	}
+    /**
+     * Determines whether the ordering was not specified.
+     *
+     * @return <code>true</code> if no ordering was parsed; <code>false</code> otherwise
+     */
+    public boolean isDefault() {
+        return ordering == Ordering.DEFAULT;
+    }
 
-	/**
-	 * Determines whether the ordering was specified as being descendant.
-	 *
-	 * @return <code>true</code> if <b>DESC</b> was parsed; <code>false</code> otherwise
-	 */
-	public boolean isDescending() {
-		return ordering == Ordering.DESC;
-	}
+    /**
+     * Determines whether the ordering was specified as being descendant.
+     *
+     * @return <code>true</code> if <b>DESC</b> was parsed; <code>false</code> otherwise
+     */
+    public boolean isDescending() {
+        return ordering == Ordering.DESC;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isEquivalent(StateObject stateObject) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEquivalent(StateObject stateObject) {
 
-		if (super.isEquivalent(stateObject)) {
-			OrderByItemStateObject orderByItem = (OrderByItemStateObject) stateObject;
-			return ordering == orderByItem.ordering &&
-			       areEquivalent(stateObject, orderByItem.stateObject);
-		}
+        if (super.isEquivalent(stateObject)) {
+            OrderByItemStateObject orderByItem = (OrderByItemStateObject) stateObject;
+            return ordering == orderByItem.ordering &&
+                   areEquivalent(stateObject, orderByItem.stateObject);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Parses the given JPQL fragment, which represents either a state-field pathe expression or a
-	 * result variable, and creates the {@link StateObject}.
-	 *
-	 * @param jpqlFragment The portion of the query representing a state-field path expression or
-	 * result variable
-	 */
-	public void parse(String jpqlFragment) {
-		StateObject stateObject = buildStateObject(jpqlFragment, OrderByItemBNF.ID);
-		setStateObject(stateObject);
-	}
+    /**
+     * Parses the given JPQL fragment, which represents either a state-field pathe expression or a
+     * result variable, and creates the {@link StateObject}.
+     *
+     * @param jpqlFragment The portion of the query representing a state-field path expression or
+     * result variable
+     */
+    public void parse(String jpqlFragment) {
+        StateObject stateObject = buildStateObject(jpqlFragment, OrderByItemBNF.ID);
+        setStateObject(stateObject);
+    }
 
-	/**
-	 * Removes the ordering if it's specified, otherwise do nothing.
-	 */
-	public void removeOrdering() {
-		setOrdering(Ordering.DEFAULT);
-	}
+    /**
+     * Removes the ordering if it's specified, otherwise do nothing.
+     */
+    public void removeOrdering() {
+        setOrdering(Ordering.DEFAULT);
+    }
 
-	/**
-	 * Keeps a reference of the {@link OrderByItem parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link OrderByItem parsed object} representing an order by item
-	 */
-	public void setExpression(OrderByItem expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link OrderByItem parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link OrderByItem parsed object} representing an order by item
+     */
+    public void setExpression(OrderByItem expression) {
+        super.setExpression(expression);
+    }
 
-	/**
-	 * Sets the enum constant representing the ordering type.
-	 *
-	 * @param ordering The constant representing the ordering, in the case the ordering was not
-	 * parsed, then {@link Ordering#DEFAULT} should be used
-	 */
-	public void setOrdering(Ordering ordering) {
+    /**
+     * Sets the enum constant representing the ordering type.
+     *
+     * @param ordering The constant representing the ordering, in the case the ordering was not
+     * parsed, then {@link Ordering#DEFAULT} should be used
+     */
+    public void setOrdering(Ordering ordering) {
 
-		validateOrdering(ordering);
+        validateOrdering(ordering);
 
-		Ordering oldOrdering = this.ordering;
-		this.ordering = ordering;
-		firePropertyChanged(ORDERING_PROPERTY, oldOrdering, ordering);
-	}
+        Ordering oldOrdering = this.ordering;
+        this.ordering = ordering;
+        firePropertyChanged(ORDERING_PROPERTY, oldOrdering, ordering);
+    }
 
-	/**
-	 * Sets the {@link StateObject} representing the value used for ordering.
-	 *
-	 * @param stateObject The {@link StateObject} representing the value used for ordering
-	 */
-	public void setStateObject(StateObject stateObject) {
-		StateObject oldStateObject = this.stateObject;
-		this.stateObject = parent(stateObject);
-		firePropertyChanged(STATE_OBJECT_PROPERTY, oldStateObject, stateObject);
-	}
+    /**
+     * Sets the {@link StateObject} representing the value used for ordering.
+     *
+     * @param stateObject The {@link StateObject} representing the value used for ordering
+     */
+    public void setStateObject(StateObject stateObject) {
+        StateObject oldStateObject = this.stateObject;
+        this.stateObject = parent(stateObject);
+        firePropertyChanged(STATE_OBJECT_PROPERTY, oldStateObject, stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toTextInternal(Appendable writer) throws IOException {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toTextInternal(Appendable writer) throws IOException {
 
-		if (stateObject != null) {
-			stateObject.toString(writer);
-		}
+        if (stateObject != null) {
+            stateObject.toString(writer);
+        }
 
-		if (!isDefault()) {
-			writer.append(SPACE);
-			writer.append(ordering.name());
-		}
-	}
+        if (!isDefault()) {
+            writer.append(SPACE);
+            writer.append(ordering.name());
+        }
+    }
 
-	private void validateOrdering(Ordering ordering) {
-		Assert.isNotNull(ordering, "The Ordering cannot be null");
-	}
+    private void validateOrdering(Ordering ordering) {
+        Assert.isNotNull(ordering, "The Ordering cannot be null");
+    }
 }

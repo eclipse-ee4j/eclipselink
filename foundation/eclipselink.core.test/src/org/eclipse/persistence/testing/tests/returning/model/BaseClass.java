@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.returning.model;
 
 import java.math.BigDecimal;
@@ -18,7 +18,7 @@ import org.eclipse.persistence.sessions.*;
 
 public abstract class BaseClass implements Cloneable {
     public BigDecimal[] a_plus_minus_b_BigDecimal;
-    //	public Integer[] a_plus_minus_b_Integer;
+    //    public Integer[] a_plus_minus_b_Integer;
     public Integer a_Integer;
     public Integer b_Integer;
 
@@ -27,7 +27,7 @@ public abstract class BaseClass implements Cloneable {
 
     public BaseClass() {
         a_plus_minus_b_BigDecimal = new BigDecimal[2];
-        //		a_plus_minus_b_Integer = new Integer[2];
+        //        a_plus_minus_b_Integer = new Integer[2];
     }
 
     public BaseClass(double a, double b) {
@@ -89,22 +89,22 @@ public abstract class BaseClass implements Cloneable {
         return a_plus_minus_b_BigDecimal;
     }
 
-    /*	public Integer[] build_a_plus_minus_b_Integer(DatabaseRecord row, Session session) {
-//		Integer a = (Integer) session.getDatasourcePlatform().convertObject(row.get(getFieldAName()), Integer.class);
-//		Integer b = (Integer) session.getDatasourcePlatform().convertObject(row.get(getFieldBName()), Integer.class);	
-		BigDecimal a = (BigDecimal) session.getDatasourcePlatform().convertObject(row.get(getFieldAName()), BigDecimal.class);
-		BigDecimal b = (BigDecimal) session.getDatasourcePlatform().convertObject(row.get(getFieldBName()), BigDecimal.class);
-		if(a==null || b==null) {
-			a_plus_minus_b_Integer[0] = null;
-			a_plus_minus_b_Integer[1] = null;
-		} else {
-			BigDecimal a_plus_b = a.add(b);
-			BigDecimal a_minus_b = a.subtract(b);
-			a_plus_minus_b_Integer[0] = new Integer(a_plus_b.intValue());
-			a_plus_minus_b_Integer[1] = new Integer(a_minus_b.intValue());
-		}
-		return a_plus_minus_b_Integer;
-	}*/
+    /*    public Integer[] build_a_plus_minus_b_Integer(DatabaseRecord row, Session session) {
+//        Integer a = (Integer) session.getDatasourcePlatform().convertObject(row.get(getFieldAName()), Integer.class);
+//        Integer b = (Integer) session.getDatasourcePlatform().convertObject(row.get(getFieldBName()), Integer.class);
+        BigDecimal a = (BigDecimal) session.getDatasourcePlatform().convertObject(row.get(getFieldAName()), BigDecimal.class);
+        BigDecimal b = (BigDecimal) session.getDatasourcePlatform().convertObject(row.get(getFieldBName()), BigDecimal.class);
+        if(a==null || b==null) {
+            a_plus_minus_b_Integer[0] = null;
+            a_plus_minus_b_Integer[1] = null;
+        } else {
+            BigDecimal a_plus_b = a.add(b);
+            BigDecimal a_minus_b = a.subtract(b);
+            a_plus_minus_b_Integer[0] = new Integer(a_plus_b.intValue());
+            a_plus_minus_b_Integer[1] = new Integer(a_minus_b.intValue());
+        }
+        return a_plus_minus_b_Integer;
+    }*/
 
     public BigDecimal getA() {
         if (a_plus_minus_b_BigDecimal[0] == null || a_plus_minus_b_BigDecimal[1] == null) {
@@ -246,7 +246,7 @@ public abstract class BaseClass implements Cloneable {
         }
         return true;
     }
-    
+
     public boolean equals(Object other) {
         if(other == this) {
             return true;
@@ -266,7 +266,7 @@ public abstract class BaseClass implements Cloneable {
             BaseClass clone = (BaseClass)super.clone();
             clone.a_plus_minus_b_BigDecimal = new BigDecimal[2];
             for(int i=0; i < a_plus_minus_b_BigDecimal.length; i++) {
-                clone.a_plus_minus_b_BigDecimal[i] = a_plus_minus_b_BigDecimal[i]; 
+                clone.a_plus_minus_b_BigDecimal[i] = a_plus_minus_b_BigDecimal[i];
             }
             return clone;
         } catch (CloneNotSupportedException ex) {

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.util.Vector;
@@ -63,7 +63,7 @@ public class CommitAfterExecuteModifyQueryDuringTransTest extends org.eclipse.pe
         initialVersionField = getSession().getIdentityMapAccessor().getWriteLockValue(cachedEmployee);
 
         //query to be executed more than once
-        dataModifyQuery = 
+        dataModifyQuery =
                 new DataModifyQuery("UPDATE EMPLOYEE SET F_NAME = #F_NAME, VERSION = #VERSION WHERE L_NAME = #L_NAME");
         dataModifyQuery.addArgument("F_NAME");
         dataModifyQuery.addArgument("VERSION");
@@ -84,7 +84,7 @@ public class CommitAfterExecuteModifyQueryDuringTransTest extends org.eclipse.pe
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
             getSession().executeQuery(dataModifyQuery, myV);
         } catch (Exception internalException) {
-            throw new TestProblemException("Test case may not have cleaned up correctly affecting other tests", 
+            throw new TestProblemException("Test case may not have cleaned up correctly affecting other tests",
                                            internalException);
         }
     }

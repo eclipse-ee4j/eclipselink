@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     ailitchev - Bug 244124 in 2.1 - Add AttributeGroup for nesting and LoadGroup support  
+ *     ailitchev - Bug 244124 in 2.1 - Add AttributeGroup for nesting and LoadGroup support
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
@@ -91,11 +91,11 @@ import org.eclipse.persistence.sessions.UnitOfWork;
  * is configured the FetchGroup will also function as a {@link LoadGroup}
  * causing all of its specified relationships to be populated prior to returning
  * the results from the query execution.
- * 
+ *
  * @see FetchGroupManager
  * @see org.eclipse.persistence.config.QueryHints#FETCH_GROUP QueryHints.FETCH_GROUP
  * @see LoadGroup
- * 
+ *
  * @author King Wang, dclarke, ailitchev
  * @since TopLink 10.1.3
  */
@@ -106,18 +106,18 @@ public class FetchGroup extends AttributeGroup {
      * when processing the query result.
      */
     private boolean shouldLoad;
-    
+
     /**
      * Caches the EntityFetch group for this FetchGroup
      */
     protected EntityFetchGroup entityFetchGroup;
-    
+
     /**
      * Stores a reference to the root entity for an Aggregate Object relationship.
      * This ensures that partially loaded aggregates can be triggered.
      */
     protected FetchGroupTracker rootEntity;
-    
+
     public FetchGroup() {
         super();
     }
@@ -129,7 +129,7 @@ public class FetchGroup extends AttributeGroup {
     /**
      * Return the attribute names on the current FetchGroup. This does not
      * include the attributes on nested FetchGroups
-     * 
+     *
      * @deprecated Use {@link AttributeGroup#getAttributeNames()}
      */
     @Deprecated
@@ -140,7 +140,7 @@ public class FetchGroup extends AttributeGroup {
     /**
      * INTERNAL:
      * Called on attempt to get value of an attribute that hasn't been fetched yet.
-     * Returns an error message in case javax.persistence.EntityNotFoundException 
+     * Returns an error message in case javax.persistence.EntityNotFoundException
      * should be thrown by the calling method,
      * null otherwise.
      * <p>
@@ -188,7 +188,7 @@ public class FetchGroup extends AttributeGroup {
     /**
      * INTERNAL:
      * Called on attempt to assign value to an attribute that hasn't been fetched yet.
-     * Returns an error message in case javax.persistence.EntityNotFoundException 
+     * Returns an error message in case javax.persistence.EntityNotFoundException
      * should be thrown by the calling method,
      * null otherwise.
      * <p>
@@ -222,7 +222,7 @@ public class FetchGroup extends AttributeGroup {
      * from the query where this group was used have the requested relationships
      * populated. All subsequent attributes added to this group that create a
      * nested group will have this value applied to them.
-     * 
+     *
      * @see #setShouldLoadAll(boolean) to configure {@link #shouldLoad()} on
      *      nested groups
      */
@@ -234,10 +234,10 @@ public class FetchGroup extends AttributeGroup {
             setSubclassShouldLoad(shouldLoad);
         }
     }
-    
+
     /**
      * passes should load to subclasses.
-     * 
+     *
      * @see #setShouldLoadAll(boolean) to configure {@link #shouldLoad()} on
      *      nested groups
      */
@@ -249,12 +249,12 @@ public class FetchGroup extends AttributeGroup {
             }
         }
     }
-    
+
     /**
      * Configure this group to also act as a {@link LoadGroup} the same as
      * {@link #setShouldLoad(boolean)}. Additionally this method will apply the
      * provided boolean value to all nested groups already added.
-     * 
+     *
      * @see #setShouldLoad(boolean) to only configure this grup without
      *      effecting existing nested groups.
      */
@@ -271,7 +271,7 @@ public class FetchGroup extends AttributeGroup {
             }
         }
     }
-    
+
     /**
      * @return true if this group will be used as a {@link LoadGroup}when
      *         processing the results of a query to force the specified
@@ -280,7 +280,7 @@ public class FetchGroup extends AttributeGroup {
     public boolean shouldLoad() {
         return this.shouldLoad;
     }
-    
+
     @Override
     protected FetchGroup newGroup(String name, CoreAttributeGroup parent) {
         FetchGroup fetchGroup = new FetchGroup(name);
@@ -289,7 +289,7 @@ public class FetchGroup extends AttributeGroup {
         }
         return fetchGroup;
     }
-    
+
     @Override
     public boolean isFetchGroup() {
         return true;
@@ -305,11 +305,11 @@ public class FetchGroup extends AttributeGroup {
     public LoadGroup toLoadGroupLoadOnly() {
         return this.toLoadGroup(new HashMap<AttributeGroup, LoadGroup>(), true);
     }
-    
+
     @Override
     public FetchGroup clone() {
         return (FetchGroup)super.clone();
-    }    
+    }
 
     public LoadGroup toLoadGroup(Map<AttributeGroup, LoadGroup> cloneMap, boolean loadOnly){
         if (loadOnly && !this.shouldLoad){
@@ -354,6 +354,6 @@ public class FetchGroup extends AttributeGroup {
         this.entityFetchGroup = null;
         super.addAttributeKey(attributeNameOrPath, (group != null ? ((AttributeGroup)group).toFetchGroup() : null));
     }
-    
+
 
 }

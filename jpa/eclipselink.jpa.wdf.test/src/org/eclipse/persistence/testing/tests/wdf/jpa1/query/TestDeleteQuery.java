@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -134,7 +134,7 @@ public class TestDeleteQuery extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=338783, databaseNames={"org.eclipse.persistence.platform.database.oracle.Oracle10Platform", 
+    @Bugzilla(bugid=338783, databaseNames={"org.eclipse.persistence.platform.database.oracle.Oracle10Platform",
                                            "org.eclipse.persistence.platform.database.oracle.Oracle11Platform"})
     public void testDeleteAllDepartments() throws SQLException {
         EntityManager em = getEnvironment().getEntityManager();
@@ -147,9 +147,9 @@ public class TestDeleteQuery extends JPA1Base {
             emplyoeeDelete.executeUpdate(); // del emp before dep caused by FK
             Query query = em.createQuery("delete from Department d where d.id is not null");
             int count = query.executeUpdate();
-			if (!"JDBC".equals(getEnvironment().getPropertyValue(em, PersistenceUnitProperties.BATCH_WRITING))) {
-				verify(count == 2, "wrong update count: " + count);
-			}
+            if (!"JDBC".equals(getEnvironment().getPropertyValue(em, PersistenceUnitProperties.BATCH_WRITING))) {
+                verify(count == 2, "wrong update count: " + count);
+            }
             getEnvironment().commitTransaction(em);
             verifyCountOnDatabase(0, "TMP_DEP");
             init();
@@ -158,9 +158,9 @@ public class TestDeleteQuery extends JPA1Base {
             emplyoeeDelete.executeUpdate();
             query = em.createQuery("delete from Department d where d.id = 10");
             count = query.executeUpdate();
-			if (!"JDBC".equals(getEnvironment().getPropertyValue(em, PersistenceUnitProperties.BATCH_WRITING))) {
-				verify(count == 1, "wrong update count: " + count);
-			}
+            if (!"JDBC".equals(getEnvironment().getPropertyValue(em, PersistenceUnitProperties.BATCH_WRITING))) {
+                verify(count == 1, "wrong update count: " + count);
+            }
             getEnvironment().commitTransaction(em);
             verifyCountOnDatabase(1, "TMP_DEP");
         } finally {
@@ -191,7 +191,7 @@ public class TestDeleteQuery extends JPA1Base {
         int count = query.executeUpdate();
         verify(count == 1, "wrong update count: " + count);
         getEnvironment().commitTransaction(em);
-		getEnvironment().evict(em, Employee.class);
+        getEnvironment().evict(em, Employee.class);
         verify(null == em.find(Employee.class, Integer.valueOf(1)), "employee found");
     }
 
@@ -207,10 +207,10 @@ public class TestDeleteQuery extends JPA1Base {
             emplyoeeDelete.executeUpdate(); // del emp before dep caused by FK
             Query query = em.createNativeQuery("delete from TMP_DEP where ID is not null");
             int count = query.executeUpdate();
-            
-			if (!"JDBC".equals(getEnvironment().getPropertyValue(em, PersistenceUnitProperties.BATCH_WRITING))) {
-				verify(count == 2, "wrong update count: " + count);
-			}
+
+            if (!"JDBC".equals(getEnvironment().getPropertyValue(em, PersistenceUnitProperties.BATCH_WRITING))) {
+                verify(count == 2, "wrong update count: " + count);
+            }
             getEnvironment().commitTransaction(em);
             verifyCountOnDatabase(0, "TMP_DEP");
             init();
@@ -219,9 +219,9 @@ public class TestDeleteQuery extends JPA1Base {
             emplyoeeDelete.executeUpdate();
             query = em.createNativeQuery("delete from TMP_DEP where TMP_DEP.ID = 10");
             count = query.executeUpdate();
-			if (!"JDBC".equals(getEnvironment().getPropertyValue(em, PersistenceUnitProperties.BATCH_WRITING))) {
-				verify(count == 1, "wrong update count: " + count);
-			}
+            if (!"JDBC".equals(getEnvironment().getPropertyValue(em, PersistenceUnitProperties.BATCH_WRITING))) {
+                verify(count == 1, "wrong update count: " + count);
+            }
             getEnvironment().commitTransaction(em);
             verifyCountOnDatabase(1, "TMP_DEP");
         } finally {

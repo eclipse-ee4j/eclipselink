@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.isolatedsession;
 
 import java.util.ArrayList;
@@ -23,16 +23,16 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class IsolatedParent {
-    
+
     protected String id;
     protected String serial;
     protected List<IsolatedChild> children;
-    
+
     public IsolatedParent() {
         super();
         this.children = new ArrayList<IsolatedChild>();
     }
-    
+
     public List<IsolatedChild> getChildren() {
         return children;
     }
@@ -40,25 +40,25 @@ public class IsolatedParent {
     public void setChildren(List<IsolatedChild> children) {
         this.children = children;
     }
-    
+
     public void addChild(IsolatedChild child) {
         child.setParent(this);
         getChildren().add(child);
     }
-    
+
     public void removeChild(IsolatedChild child) {
         child.setParent(null);
         getChildren().remove(child);
     }
-    
+
     public String getSerial() {
         return this.serial;
     }
-    
+
     public void setSerial(String serial) {
         this.serial = serial;
     }
-    
+
     public String getId() {
         return id;
     }
@@ -66,7 +66,7 @@ public class IsolatedParent {
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public static IsolatedParent buildIsolatedParentExample1() {
         IsolatedParent parent = new IsolatedParent();
         parent.setId("100");
@@ -78,7 +78,7 @@ public class IsolatedParent {
         parent.addChild(child);
         return parent;
     }
-    
+
     public static IsolatedParent buildIsolatedParentExample2() {
         IsolatedParent parent = new IsolatedParent();
         parent.setId("200");
@@ -90,7 +90,7 @@ public class IsolatedParent {
         parent.addChild(child);
         return parent;
     }
-    
+
     public static TableDefinition buildISOLATEDPARENTTable() {
         TableDefinition tabledefinition = new TableDefinition();
 
@@ -118,17 +118,17 @@ public class IsolatedParent {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         tabledefinition.addField(field1);
-        
+
         return tabledefinition;
     }
-    
+
     public static void afterLoad(ClassDescriptor descriptor) {
         OneToManyMapping childrenMapping = (OneToManyMapping)descriptor.getMappingForAttributeName("children");
         Expression selectionCriteria = childrenMapping.buildSelectionCriteria();
         ExpressionBuilder builder = new ExpressionBuilder();
         childrenMapping.setSelectionCriteria(selectionCriteria.and(builder.get("deleted").equal("N")));
     }
-    
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + " id: [" + getId() + "] hashcode: [" + System.identityHashCode(this) + "]";

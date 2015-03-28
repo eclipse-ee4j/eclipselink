@@ -19,7 +19,7 @@
             </xsd:sequence>
          </xsd:extension>
       </xsd:complexContent>
-   </xsd:complexType>   
+   </xsd:complexType>
    <xsd:complexType name="myClass">
       <xsd:sequence>
          <xsd:element minOccurs="0" name="name" type="xsd:string"/>

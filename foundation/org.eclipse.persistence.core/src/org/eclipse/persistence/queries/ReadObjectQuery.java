@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     04/01/2011-2.3 Guy Pelletier 
+ *     04/01/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 2)
- *     09/09/2011-2.3.1 Guy Pelletier 
+ *     09/09/2011-2.3.1 Guy Pelletier
  *       - 356197: Add new VPD type to MultitenantType
- *     01/06/2011-2.3 Guy Pelletier 
+ *     01/06/2011-2.3 Guy Pelletier
  *       - 371453: JPA Multi-Tenancy in Bidirectional OneToOne Relation throws ArrayIndexOutOfBoundsException
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.*;
@@ -59,8 +59,8 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     protected Object selectionId;
 
     /** Can be used to refresh a specific non-cached instance from the database. */
-    protected boolean shouldLoadResultIntoSelectionObject = false;    
-    
+    protected boolean shouldLoadResultIntoSelectionObject = false;
+
     /**
      * PUBLIC:
      * Return a new read object query.
@@ -221,11 +221,11 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 throw QueryException.referenceClassMissing(this);
             }
             ClassDescriptor referenceDescriptor;
-            //Bug#3947714  In case getSelectionObject() is proxy            
+            //Bug#3947714  In case getSelectionObject() is proxy
             if (getSelectionObject() != null && session.getProject().hasProxyIndirection()) {
-                referenceDescriptor = session.getDescriptor(getSelectionObject());            
+                referenceDescriptor = session.getDescriptor(getSelectionObject());
             } else {
-                referenceDescriptor = session.getDescriptor(getReferenceClass());                
+                referenceDescriptor = session.getDescriptor(getReferenceClass());
             }
             if (referenceDescriptor == null) {
                 throw QueryException.descriptorIsMissing(getReferenceClass(), this);
@@ -277,7 +277,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             }
             if (shouldUseWrapperPolicy()) {
                 cachedObject = this.descriptor.getObjectBuilder().wrapObject(cachedObject, session);
-            }            
+            }
             return cachedObject;
         } else {
             if (!session.isUnitOfWork()) {
@@ -435,7 +435,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     protected Object executeObjectLevelReadQuery() throws DatabaseException {
         if (this.descriptor.isDescriptorForInterface()  || this.descriptor.hasTablePerClassPolicy()) {
             Object returnValue = this.descriptor.getInterfacePolicy().selectOneObjectUsingMultipleTableSubclassRead(this);
-            
+
             if (this.descriptor.hasTablePerClassPolicy() && (!this.descriptor.isAbstract()) && (returnValue == null)) {
                 // let it fall through to query the root.
             } else {
@@ -443,18 +443,18 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 return returnValue;
             }
         }
-        
+
         boolean shouldSetRowsForJoins = hasJoining() && this.joinedAttributeManager.isToManyJoin();
         AbstractSession session = getSession();
         Object result = null;
         AbstractRecord row = null;
-        
+
         Object sopObject = getTranslationRow().getSopObject();
         boolean useOptimization = false;
         if (sopObject == null) {
-            useOptimization = usesResultSetAccessOptimization(); 
-        }        
-        
+            useOptimization = usesResultSetAccessOptimization();
+        }
+
         if (useOptimization) {
             DatabaseCall call = ((DatasourceCallQueryMechanism)this.queryMechanism).selectResultSet();
             this.executionTime = System.currentTimeMillis();
@@ -464,7 +464,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             try {
                 if (resultSet.next()) {
                     ResultSetMetaData metaData = call.getResult().getMetaData();
-                    boolean useSimple = this.descriptor.getObjectBuilder().isSimple(); 
+                    boolean useSimple = this.descriptor.getObjectBuilder().isSimple();
                     DatabasePlatform platform = dbAccessor.getPlatform();
                     boolean optimizeData = platform.shouldOptimizeDataConversion();
                     if (useSimple) {
@@ -481,12 +481,12 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                     } else {
                         result = buildObject(row);
                     }
-                        
+
                     if (!useSimple && this.descriptor.getObjectBuilder().shouldKeepRow()) {
                         if (((ResultSetRecord)row).hasResultSet()) {
-                        	// ResultSet has not been fully triggered - that means the cached object was used. 
-                        	// Yet the row still may be cached in a value holder (see loadBatchReadAttributes and loadJoinedAttributes methods).
-                        	// Remove ResultSet to avoid attempt to trigger it (already closed) when pk or fk values (already extracted) accessed when the value holder is instantiated.
+                            // ResultSet has not been fully triggered - that means the cached object was used.
+                            // Yet the row still may be cached in a value holder (see loadBatchReadAttributes and loadJoinedAttributes methods).
+                            // Remove ResultSet to avoid attempt to trigger it (already closed) when pk or fk values (already extracted) accessed when the value holder is instantiated.
                             ((ResultSetRecord)row).removeResultSet();
                         } else {
                             ((ResultSetRecord)row).removeNonIndirectionValues();
@@ -539,7 +539,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                     row = getQueryMechanism().selectOneRow();
                 }
             }
-            
+
             this.executionTime = System.currentTimeMillis();
             if (row != null) {
                 if (session.isUnitOfWork()) {
@@ -548,7 +548,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                     result = buildObject(row);
                 }
                 if (sopObject != null) {
-                	// remove sopObject so it's not stuck in a value holder.
+                    // remove sopObject so it's not stuck in a value holder.
                     row.setSopObject(null);
                 }
             }
@@ -563,7 +563,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             } else if (this.selectionObject != null) {
                 session.getParentIdentityMapSession(this.descriptor, true, true).getIdentityMapAccessor().invalidateObject(this.selectionObject);
             }
-        }                
+        }
 
         if (this.shouldIncludeData && (sopObject == null)) {
             ComplexQueryResult complexResult = new ComplexQueryResult();
@@ -574,7 +574,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
 
         return result;
     }
-    
+
     /**
      * INTERNAL:
      * Execute the query building the objects directly from the database result-set.
@@ -703,7 +703,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     public void loadResultIntoSelectionObject() {
         setShouldLoadResultIntoSelectionObject(true);
     }
-    
+
     /**
      * INTERNAL:
      * Copy all setting from the query.
@@ -720,7 +720,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             this.shouldLoadResultIntoSelectionObject = readQuery.shouldLoadResultIntoSelectionObject;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Prepare the receiver for execution in a session.
@@ -730,7 +730,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             return;
         }
         super.prepare();
-        
+
         if ((this.selectionId != null) || (this.selectionObject != null)) {
             // The expression is set in the prepare as params.
             setSelectionCriteria(this.descriptor.getObjectBuilder().getPrimaryKeyExpression());
@@ -750,7 +750,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         if (this.descriptor.isDescriptorForInterface()) {
             return;
         }
-        
+
         // PERF: Disable cache check if not a primary key query.
         if (isExpressionQuery()) {
             Expression selectionCriteria = getSelectionCriteria();
@@ -763,7 +763,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 }
             }
         }
-        
+
         // If using 1-m joining select all rows.
         if ((this.joinedAttributeManager != null) && this.joinedAttributeManager.isToManyJoin()) {
             getQueryMechanism().prepareSelectAllRows();
@@ -774,7 +774,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         // should be called after prepareSelectRow so that the call knows whether it returns ResultSet
         prepareResultSetAccessOptimization();
     }
-    
+
     /**
      * INTERNAL:
      * Set the properties needed to be cascaded into the custom query including the translation row.
@@ -823,16 +823,16 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 this.translationRow = this.descriptor.getObjectBuilder().buildRowForTranslation(this.selectionObject, getSession());
             }
         }
-        
-        // If we have tenant discriminator fields we need to add them to the 
+
+        // If we have tenant discriminator fields we need to add them to the
         // database row when doing a primary key query.
-        // Modifying the translation row here will modify it on the original 
-        // query which is not good (will append the tenant field to the sql call 
-        // for subsequent queries) The translation row must be cloned to isolate 
+        // Modifying the translation row here will modify it on the original
+        // query which is not good (will append the tenant field to the sql call
+        // for subsequent queries) The translation row must be cloned to isolate
         // this.
         if (getDescriptor().hasMultitenantPolicy()) {
             this.translationRow = this.translationRow.clone();
-            getDescriptor().getMultitenantPolicy().addFieldsToRow(this.translationRow, getSession());            
+            getDescriptor().getMultitenantPolicy().addFieldsToRow(this.translationRow, getSession());
         }
     }
 
@@ -842,7 +842,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      */
     protected void prePrepare() throws QueryException {
         super.prePrepare();
-        //Bug#3947714  In case getSelectionObject() is proxy            
+        //Bug#3947714  In case getSelectionObject() is proxy
         if (getSelectionObject() != null && getSession().getProject().hasProxyIndirection()) {
             setSelectionObject(ProxyIndirectionPolicy.getValueFromProxy(getSelectionObject()));
         }
@@ -917,15 +917,15 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
 
     /**
      * INTERNAL:
-     * Return the primary key stored in this query 
-     * 
+     * Return the primary key stored in this query
+     *
      * @return the selection id of this ReadObjectQuery
      */
     @Override
     protected Object getQueryPrimaryKey(){
         return getSelectionId();
     }
-    
+
     /**
      * PUBLIC:
      * Return Id of the object to be selected by the query.
@@ -969,7 +969,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         if (selectionKey == null) {
             this.selectionId = null;
         } else if (selectionKey.size() == 1) {
-            this.selectionId = selectionKey.get(0);            
+            this.selectionId = selectionKey.get(0);
         } else {
             this.selectionId = new CacheId(selectionKey.toArray());
         }

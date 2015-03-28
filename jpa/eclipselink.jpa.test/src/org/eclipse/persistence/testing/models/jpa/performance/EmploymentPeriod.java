@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.performance;
 
 import java.sql.Date;
@@ -31,20 +31,20 @@ public class EmploymentPeriod implements Serializable {
     public EmploymentPeriod() {
     }
 
-	/*public void readExternal(PofReader in) throws IOException {
-		java.util.Date start = in.readDate(0);
-		java.util.Date end = in.readDate(1);
-		if (start != null) {
-			this.startDate = new Date(start.getTime());
-		}
-		if (end != null) {
-			this.endDate = new Date(end.getTime());
-		}
+    /*public void readExternal(PofReader in) throws IOException {
+        java.util.Date start = in.readDate(0);
+        java.util.Date end = in.readDate(1);
+        if (start != null) {
+            this.startDate = new Date(start.getTime());
+        }
+        if (end != null) {
+            this.endDate = new Date(end.getTime());
+        }
     }
- 
-	public void writeExternal(PofWriter out) throws IOException {
-		out.writeDate(0, this.startDate);
-		out.writeDate(1, this.endDate);
+
+    public void writeExternal(PofWriter out) throws IOException {
+        out.writeDate(0, this.startDate);
+        out.writeDate(1, this.endDate);
     }*/
 
     /**

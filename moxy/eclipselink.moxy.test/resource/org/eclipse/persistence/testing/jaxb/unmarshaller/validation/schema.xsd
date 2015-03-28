@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema 
-    xmlns="http://www.w3.org/2001/XMLSchema" 
-    targetNamespace="urn:foo" 
-    xmlns:tns="urn:foo" 
+<schema
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="urn:foo"
+    xmlns:tns="urn:foo"
     elementFormDefault="qualified">
 
     <element name="address" type="tns:address"/>

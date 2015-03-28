@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,73 +53,73 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration;
  */
 public class NumericResolver extends Resolver {
 
-	/**
-	 * The {@link Resolver resolvers} used to calculate the numeric type.
-	 */
-	private final Collection<Resolver> resolvers;
+    /**
+     * The {@link Resolver resolvers} used to calculate the numeric type.
+     */
+    private final Collection<Resolver> resolvers;
 
-	/**
-	 * Creates a new <code>NumericResolver</code>.
-	 *
-	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
-	 * @param typeResolvers The {@link Resolver resolvers} used to calculate the numeric type
-	 */
-	public NumericResolver(Resolver parent, Collection<Resolver> typeResolvers) {
-		super(parent);
-		this.resolvers = typeResolvers;
-	}
+    /**
+     * Creates a new <code>NumericResolver</code>.
+     *
+     * @param parent The parent {@link Resolver}, which is never <code>null</code>
+     * @param typeResolvers The {@link Resolver resolvers} used to calculate the numeric type
+     */
+    public NumericResolver(Resolver parent, Collection<Resolver> typeResolvers) {
+        super(parent);
+        this.resolvers = typeResolvers;
+    }
 
-	/**
-	 * Creates a new <code>NumericResolver</code>.
-	 *
-	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
-	 * @param resolver The {@link Resolver} used to calculate the numeric type
-	 */
-	public NumericResolver(Resolver parent, Resolver resolver) {
-		this(parent, Collections.singleton(resolver));
-	}
+    /**
+     * Creates a new <code>NumericResolver</code>.
+     *
+     * @param parent The parent {@link Resolver}, which is never <code>null</code>
+     * @param resolver The {@link Resolver} used to calculate the numeric type
+     */
+    public NumericResolver(Resolver parent, Resolver resolver) {
+        this(parent, Collections.singleton(resolver));
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected IType buildType() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected IType buildType() {
 
-		List<IType> types = new ArrayList<IType>(resolvers.size());
-		TypeHelper helper = getTypeHelper();
-		IType unresolvableType = helper.unknownType();
+        List<IType> types = new ArrayList<IType>(resolvers.size());
+        TypeHelper helper = getTypeHelper();
+        IType unresolvableType = helper.unknownType();
 
-		// Convert any primitive types into its Class type and any non-number into Object
-		for (Resolver typeResolver : resolvers) {
+        // Convert any primitive types into its Class type and any non-number into Object
+        for (Resolver typeResolver : resolvers) {
 
-			IType type = typeResolver.getType();
+            IType type = typeResolver.getType();
 
-			// Only a resolvable type will be added to the list
-			if (type != unresolvableType) {
-				// Non-numeric type cannot be added
-				if (!helper.isNumericType(type)) {
-					type = helper.objectType();
-				}
-				types.add(type);
-			}
-		}
+            // Only a resolvable type will be added to the list
+            if (type != unresolvableType) {
+                // Non-numeric type cannot be added
+                if (!helper.isNumericType(type)) {
+                    type = helper.objectType();
+                }
+                types.add(type);
+            }
+        }
 
-		if (types.isEmpty()) {
-			return helper.unknownType();
-		}
+        if (types.isEmpty()) {
+            return helper.unknownType();
+        }
 
-		// Comparing the types will result in putting the
-		// result at the beginning of the list
-		Collections.sort(types, new NumericTypeComparator(helper));
+        // Comparing the types will result in putting the
+        // result at the beginning of the list
+        Collections.sort(types, new NumericTypeComparator(helper));
 
-		return types.get(0);
-	}
+        return types.get(0);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ITypeDeclaration buildTypeDeclaration() {
-		return getType().getTypeDeclaration();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ITypeDeclaration buildTypeDeclaration() {
+        return getType().getTypeDeclaration();
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2015  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,7 +65,7 @@ public class XmlLocationTestCases extends JAXBTestCases {
         private String controlSysId = null;
 
         /**
-         * Different parsers take different approaches when returning the 
+         * Different parsers take different approaches when returning the
          * XML Location of a given element.  The default XML parser
          * considers the end of the opening tag as the beginning of the element
          * (eg L15 C89), whereas Woodstox and XDK use the beginning of the opening

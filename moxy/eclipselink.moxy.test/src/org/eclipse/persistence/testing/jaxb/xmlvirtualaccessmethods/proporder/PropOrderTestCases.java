@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,8 +29,8 @@ public class PropOrderTestCases extends JAXBWithJSONTestCases {
         setTypes(new Class[] {Customer.class, Parent.class, PhoneNumber.class, Address.class});
     }
 
-    
-    
+
+
     @Override
     protected Map getProperties() {
         Map<String, Object> properties = new HashMap<String, Object>();
@@ -54,8 +54,8 @@ public class PropOrderTestCases extends JAXBWithJSONTestCases {
         shippingAddress.setStreet("2 Shipping Road");
         customer.set("shippingAddress", shippingAddress);
 
-        List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(2); 
-            
+        List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(2);
+
         PhoneNumber workPhoneNumber = new PhoneNumber();
         phoneNumbers.add(workPhoneNumber);
 
@@ -65,13 +65,13 @@ public class PropOrderTestCases extends JAXBWithJSONTestCases {
         customer.set("phoneNumbers", phoneNumbers);
         return customer;
     }
-    
+
      public String getWriteControlJSONFormatted(){
-    	 return "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/customer_formatted.json";
+         return "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/customer_formatted.json";
      }
-     
+
      public boolean shouldRemoveWhitespaceFromControlDocJSON(){
-    	 return false;
+         return false;
      }
-    
+
 }

@@ -14,42 +14,42 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.names
 public class Employee extends Person {
 
     public String name;
-    
+
     public int age;
-    
+
     public String address;
-    
+
     public byte[] bytes;
-    
+
     public String jobTitle;
-    
+
     public List<Department> departments;
-    
+
     public Phone phone;
- 
+
     public boolean equals(Object obj){
-    	if(!(obj instanceof Employee)){
-    		return false;
-    	}
-    	if(!compareString(name, ((Employee)obj).name)){
-    		return false;
-    	}
-    	if(!compareString(address, ((Employee)obj).address)){
-    		return false;
-    	}
-    	
-    	if(!compareString(id, ((Employee)obj).id)){
-    		return false;
-    	}  
-    	
-    	if(!compareString(jobTitle, ((Employee)obj).jobTitle)){
-    		return false;
-    	} 
-    	
-    	if(age!=((Employee)obj).age){
-    		return false;
-    	}
-   
+        if(!(obj instanceof Employee)){
+            return false;
+        }
+        if(!compareString(name, ((Employee)obj).name)){
+            return false;
+        }
+        if(!compareString(address, ((Employee)obj).address)){
+            return false;
+        }
+
+        if(!compareString(id, ((Employee)obj).id)){
+            return false;
+        }
+
+        if(!compareString(jobTitle, ((Employee)obj).jobTitle)){
+            return false;
+        }
+
+        if(age!=((Employee)obj).age){
+            return false;
+        }
+
         if (bytes == null) {
             if (((Employee)obj).bytes != null) {
                 return false;
@@ -60,36 +60,36 @@ public class Employee extends Person {
         if (!Arrays.equals(bytes, ((Employee)obj).bytes)) {
             return false;
         }
-        
+
         if (phone == null){
-        	if(((Employee)obj).phone != null) {
+            if(((Employee)obj).phone != null) {
                return false;
-        	}
+            }
         }else{
-        	if(!phone.equals(((Employee)obj).phone)){
-        		return false;
-        	}
+            if(!phone.equals(((Employee)obj).phone)){
+                return false;
+            }
 
         }
-        
-    	
-    	return true;
+
+
+        return true;
     }
-    
+
     private boolean compareString(String control, String test){
-    	if(control == null){
-    		if(test != null){
-    			return false;
-    		}
-    	}else{
-    		if(test == null){
-    			return false;
-    		}else{
-    			if(!control.equals(test)){
-    				return false;
-    			}
-    		}
-    	}
-    	return true;
+        if(control == null){
+            if(test != null){
+                return false;
+            }
+        }else{
+            if(test == null){
+                return false;
+            }else{
+                if(!control.equals(test)){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

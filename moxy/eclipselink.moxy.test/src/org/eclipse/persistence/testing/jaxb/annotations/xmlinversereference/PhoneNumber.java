@@ -5,7 +5,7 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 public class PhoneNumber implements Linkable {
 
     public String number;
-    
+
     Customer customer;
 
     @XmlInverseReference(mappedBy="phoneNumber")
@@ -16,9 +16,9 @@ public class PhoneNumber implements Linkable {
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
-    
+
     private String link;
-    
+
     @Override
     public String getLink() {
         // TODO Auto-generated method stub

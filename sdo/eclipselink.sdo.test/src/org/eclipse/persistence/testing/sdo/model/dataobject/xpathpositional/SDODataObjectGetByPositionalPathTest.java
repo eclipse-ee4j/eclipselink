@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject.xpathpositional;
 
 import commonj.sdo.DataObject;
@@ -27,8 +27,8 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
     public SDODataObjectGetByPositionalPathTest(String name) {
         super(name);
     }
-    
-       
+
+
      public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.xpathpositional.SDODataObjectGetByPositionalPathTest" };
         TestRunner.main(arguments);
@@ -82,7 +82,7 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
         try {
             Object value = dataObject_a.get("PName-a/PName-b.1/PName-c");
         } catch (IndexOutOfBoundsException e) {
-        	// get() should not throw exception (SDO 2.1 Spec)
+            // get() should not throw exception (SDO 2.1 Spec)
             fail("An IndexOutOfBoundsException occurred but was not expected.");
         }
     }
@@ -94,7 +94,7 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
         property_c.setType(SDOConstants.SDO_STRING);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-        
+
         this.assertNull(dataObject_a.get("PName-a/PName-f.0/PName-c"));
 
         /*try
@@ -105,49 +105,49 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
     }
 
     // purpose: test one of properties is not existed in path
-    public void testGetByPositionalPathStringWithPropertyNameContainingDot() {        
+    public void testGetByPositionalPathStringWithPropertyNameContainingDot() {
         SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDODataObject myTypeDO = (SDODataObject)dataFactory.create(typeType);
         myTypeDO.set("name", "myType");
         myTypeDO.set("uri", "myUri");
-        
+
         this.addProperty(myTypeDO, "P.Name-b",SDOConstants.SDO_STRING, false, false, true);
-        
+
         Type myType = typeHelper.define(myTypeDO);
-        
+
         SDODataObject doTest = (SDODataObject)dataFactory.create(myType);
         assertNull(doTest.get("P.Name-b"));
-        
+
         doTest.set("P.Name-b", "test");
-        
-        assertEquals("test" ,doTest.get("P.Name-b"));      
+
+        assertEquals("test" ,doTest.get("P.Name-b"));
     }
-    
-      public void testGetByPositionalPathStringWithPropertyNameContainingDotMany() {        
+
+      public void testGetByPositionalPathStringWithPropertyNameContainingDotMany() {
         SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDODataObject myTypeDO = (SDODataObject)dataFactory.create(typeType);
         myTypeDO.set("name", "myType");
         myTypeDO.set("uri", "myUri");
 
         this.addProperty(myTypeDO, "P.Name-b",SDOConstants.SDO_STRING, false, true, true);
-        
+
         Type myType = typeHelper.define(myTypeDO);
-        
+
         SDODataObject doTest = (SDODataObject)dataFactory.create(myType);
-        
+
         Object value = doTest.get("P.Name-b");
         assertTrue(value instanceof List);
         assertTrue(((List)value).size() == 0);
-        
+
         List values = new ArrayList();
         values.add("test");
         values.add("test2");
         values.add("test3");
         doTest.set("P.Name-b", values);
-        
-        assertEquals("test" ,doTest.get("P.Name-b.0"));      
-        assertEquals("test2" ,doTest.get("P.Name-b.1"));      
-        assertEquals("test3" ,doTest.get("P.Name-b.2"));      
+
+        assertEquals("test" ,doTest.get("P.Name-b.0"));
+        assertEquals("test2" ,doTest.get("P.Name-b.1"));
+        assertEquals("test3" ,doTest.get("P.Name-b.2"));
     }
 
     // purpose: test path as ".."

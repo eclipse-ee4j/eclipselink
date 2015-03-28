@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.*;
@@ -130,7 +130,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
         this.previousRow = null;
         this.atEndOfCursor = false;
     }
-    
+
     /**
      * INTERNAL:
      * Clear only the cached next and previous object values.
@@ -566,13 +566,13 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                     this.nextRow = null;
                 }
             }
-            
+
             this.position = currentPosition + 1;  // bug 309142
             if (row == null) {
                 this.atEndOfCursor = true;
                 return null;
             }
-            
+
             // If using 1-m joining need to fetch 1-m rows as well.
             if (this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).hasJoining()) {
                 JoinedAttributeManager joinManager = ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager();
@@ -584,7 +584,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                     }
                 }
             }
-            
+
             Object object = buildAndRegisterObject(row);
             if (object == InvalidObject.instance) {
                 continue;
@@ -631,7 +631,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             if (row == null) {
                 return null;
             }
-            
+
             // If using 1-m joining need to fetch 1-m rows as well.
             if (this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).hasJoining()) {
                 JoinedAttributeManager joinManager = ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager();

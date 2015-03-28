@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.weaving.jpa;
 
 import java.io.File;
@@ -28,10 +28,10 @@ import org.eclipse.persistence.logging.SessionLog;
 
 /**
 * <p>
-* <b>Description</b>: This is the static weave command line processing class that verifies command options and invokes 
-* StaticWeaveProcessor to statically weave the classes. 
+* <b>Description</b>: This is the static weave command line processing class that verifies command options and invokes
+* StaticWeaveProcessor to statically weave the classes.
 * <p>
-*&nbsp;<b>Usage</b>:<br> 
+*&nbsp;<b>Usage</b>:<br>
 *&nbsp;&nbsp;StaticWeave [options] source target<br>
 *&nbsp;<b>Options</b>:<br>
 *&nbsp;&nbsp;-classpath<br>
@@ -47,7 +47,7 @@ import org.eclipse.persistence.logging.SessionLog;
 *<b>Example</b>:<br>
 *&nbsp;To weave all entities contained in c:\foo-source.jar with its persistence.xml contained within c:\foo-containing-persistence-xml.jar, and output to c:\\foo-target.jar,<br>
 *&nbsp;StaticWeave -persistenceinfo c:\foo-containing-persistencexml.jar -classpath c:\classpath1;c:\classpath2 c:\foo-source.jar c:\foo-target.jar
-* 
+*
 **/
 
 public class StaticWeave {
@@ -55,23 +55,23 @@ public class StaticWeave {
         // command line arguments
         private String[] argv;
 
-        // The location path of the source, null if none was given 
+        // The location path of the source, null if none was given
         private String source;
 
-        // The location path containing persistence.xml, null if none was given 
+        // The location path containing persistence.xml, null if none was given
         private String persistenceinfopath;
-        
+
         private String persistenceXmlLocation;
 
-        // The location path of the target, null if none was given 
+        // The location path of the target, null if none was given
         private String target;
 
         private int loglevel=SessionLog.OFF;
-        
+
         private Writer logWriter;
 
         private PrintStream vout = System.out;
-        
+
         private String[] classpaths;
 
         public static void main(String[] argv) {
@@ -79,14 +79,14 @@ public class StaticWeave {
             StaticWeave staticweaver = new StaticWeave(argv);
 
             try {
-                // Verify the command line arguments 
+                // Verify the command line arguments
                 staticweaver.processCommandLine();
                 staticweaver.start();
             } catch (Exception e) {
                 throw StaticWeaveException.exceptionPerformWeaving(e, argv);
             }
         }
-        
+
 
         public StaticWeave(String[] argv) {
             this.argv = argv;
@@ -117,7 +117,7 @@ public class StaticWeave {
 
 
         /*
-         * Verify command line option. 
+         * Verify command line option.
          */
         void processCommandLine() throws Exception
         {
@@ -136,7 +136,7 @@ public class StaticWeave {
                     i++;
                     continue;
                 }
-                
+
                 if (argv[i].equalsIgnoreCase("-persistenceinfo")) {
                     if ((i + 1) >= argv.length ){
                            printUsage();
@@ -146,7 +146,7 @@ public class StaticWeave {
                     i++;
                     continue;
                 }
-                
+
                 if (argv[i].equalsIgnoreCase("-persistencexml")) {
                     if ((i + 1) >= argv.length ){
                            printUsage();
@@ -156,7 +156,7 @@ public class StaticWeave {
                     i++;
                     continue;
                 }
-                
+
                 if (argv[i].equalsIgnoreCase("-log")) {
                     if ((i + 1) >= argv.length ){
                            printUsage();
@@ -174,13 +174,13 @@ public class StaticWeave {
                     }
 
                    if ( argv[i+1].equalsIgnoreCase("OFF") ||
-                        argv[i+1].equalsIgnoreCase("SEVERE") || 
-                        argv[i+1].equalsIgnoreCase("WARNING") || 
-                        argv[i+1].equalsIgnoreCase("INFO") || 
-                        argv[i+1].equalsIgnoreCase("CONFIG") || 
-                        argv[i+1].equalsIgnoreCase("FINE") || 
-                        argv[i+1].equalsIgnoreCase("FINER") || 
-                        argv[i+1].equalsIgnoreCase("FINEST") || 
+                        argv[i+1].equalsIgnoreCase("SEVERE") ||
+                        argv[i+1].equalsIgnoreCase("WARNING") ||
+                        argv[i+1].equalsIgnoreCase("INFO") ||
+                        argv[i+1].equalsIgnoreCase("CONFIG") ||
+                        argv[i+1].equalsIgnoreCase("FINE") ||
+                        argv[i+1].equalsIgnoreCase("FINER") ||
+                        argv[i+1].equalsIgnoreCase("FINEST") ||
                         argv[i+1].equalsIgnoreCase("ALL")) {
                        loglevel=AbstractSessionLog.translateStringToLoggingLevel(argv[i+1].toUpperCase());
                     } else{
@@ -190,12 +190,12 @@ public class StaticWeave {
                     i++;
                     continue;
                 }
-                
+
                 if(source!=null){
                     printUsage();
                     System.exit(1);
                 }
-                
+
                 if(target!=null){
                     printUsage();
                     System.exit(1);
@@ -214,17 +214,17 @@ public class StaticWeave {
                 target=argv[i];
                 i++;
             }
-            
-            
+
+
            //Ensure source and target have been specified
            if(source==null){
                 printUsage();
                 throw StaticWeaveException.missingSource();
-           } 
+           }
            if(target==null){
                 printUsage();
                 throw StaticWeaveException.missingTarget();
-           } 
+           }
         }
 
         /*
@@ -232,7 +232,7 @@ public class StaticWeave {
          */
         private void printUsage() {
             PrintStream o = vout;
-            
+
             // Because we can no longer use Helper.cr() inside of message bundles, we must break
             // up the message into separate lines and use Helper.cr() here instead. (bug6470503)
             String messageString = ToStringLocalization.buildMessage("staticweave_commandline_help_message_1of19");
@@ -273,10 +273,10 @@ public class StaticWeave {
             messageString += Helper.cr() + Helper.cr();
             messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_19of19");
             messageString += Helper.cr() + Helper.cr();
-            
+
             o.println(messageString);
         }
-        
+
         /*
          * Convert the specified classpath array to URL array where new classloader will build on.
          */

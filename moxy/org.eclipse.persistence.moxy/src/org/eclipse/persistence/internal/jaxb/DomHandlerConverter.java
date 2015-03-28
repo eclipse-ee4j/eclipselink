@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -92,11 +92,11 @@ public class DomHandlerConverter implements XMLConverter {
                 result = domHandler.createUnmarshaller(null);
             }
             if(result instanceof DOMResult){
-            	((DOMResult) result).setNode((org.w3c.dom.Element)dataValue);
+                ((DOMResult) result).setNode((org.w3c.dom.Element)dataValue);
             }else{
-                xmlPlatform.newXMLTransformer().transform((org.w3c.dom.Element)dataValue, result);                
+                xmlPlatform.newXMLTransformer().transform((org.w3c.dom.Element)dataValue, result);
             }
-            return domHandler.getElement(result);       
+            return domHandler.getElement(result);
         }
         return dataValue;
     }
@@ -112,12 +112,12 @@ public class DomHandlerConverter implements XMLConverter {
             }
             DOMResult result = new DOMResult();
              if(source instanceof DOMSource){
-            	Node n = ((DOMSource)source).getNode();
-            	if(n.getNodeType() == Node.DOCUMENT_NODE){
-            		return ((Document)n).getDocumentElement();
-            	}
-            	return n;
-            }else{                
+                Node n = ((DOMSource)source).getNode();
+                if(n.getNodeType() == Node.DOCUMENT_NODE){
+                    return ((Document)n).getDocumentElement();
+                }
+                return n;
+            }else{
                 XMLTransformer xmlTransformer = xmlPlatform.newXMLTransformer();
                 xmlTransformer.setFormattedOutput(marshaller.isFormattedOutput());
                 xmlTransformer.transform(source, result);

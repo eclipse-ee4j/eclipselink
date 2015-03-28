@@ -14,20 +14,20 @@ import org.eclipse.persistence.testing.tests.distributedservers.DistributedServe
 public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDistributedTest {
 
     protected ListHolder holder = null;
-    
+
     public NewObjectWithOptimisticLockingTest(){
         super();
         cacheSyncConfigValues.put(ListHolder.class, new Integer(ClassDescriptor.SEND_OBJECT_CHANGES));
         cacheSyncConfigValues.put(ListItem.class, new Integer(ClassDescriptor.SEND_OBJECT_CHANGES));
     }
-    
+
     public void setup(){
         super.setup();
         // super.setup begins transaction with intention to keep it until reset.
         // Cannot do it in this test because both sessions share the same accessor connection,
         // therefore end transaction.
         getAbstractSession().rollbackTransaction();
-        
+
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ListHolder holder = new ListHolder();
         holder = (ListHolder)uow.registerObject(holder);
@@ -38,7 +38,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         item.setHolder(holder);
         uow.commit();
     }
-    
+
     public void test(){
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);
         UnitOfWork uow = server.getDistributedSession().acquireUnitOfWork();
@@ -49,7 +49,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         holder.getItems().add(item);
         uow.commit();
     }
-    
+
     public void verify(){
         // ensure the changes are propagated
         try{
@@ -59,7 +59,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         if (holder.getItems().size() != 2){
             throw new TestErrorException("Incorrect number of items");
         }
-        
+
         boolean found = false;
         Iterator i = holder.getItems().iterator();
         while (i.hasNext()){
@@ -73,7 +73,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         }
 
     }
-    
+
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = (ListHolder)uow.readObject(ListHolder.class);

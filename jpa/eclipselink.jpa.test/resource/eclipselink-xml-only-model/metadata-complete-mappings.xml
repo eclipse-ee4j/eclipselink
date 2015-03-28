@@ -6,12 +6,12 @@
     <!-- This model is used to test the metadata complete feature from the   -->
     <!-- spec, namely the metadata-complete attribute from <entity>,         -->
     <!-- <mapped-superclass> and <embeddable> elements outside of a gloabal  -->
-    <!-- xml-mapping-metadata-complete setting. The persistence classes in   --> 
+    <!-- xml-mapping-metadata-complete setting. The persistence classes in   -->
     <!-- the pu are not persisted to the database and this model serves to   -->
     <!-- test the metadata processing of this flag only. Descriptors will    -->
-    <!-- have their mappings verified in the test suite:                     --> 
+    <!-- have their mappings verified in the test suite:                     -->
     <!-- EntityMappingsMetadataCompleteJUnitTestCase                         -->
-    
+
     <persistence-unit-metadata>
         <persistence-unit-defaults>
             <access>FIELD</access>
@@ -25,11 +25,11 @@
                 <column name="ID"/>
                 <generated-value/>
             </id>
-            
+
             <!-- Should ignore the @Column for 'brand' but should map it using defaults -->
         </attributes>
     </mapped-superclass>
-    
+
     <!-- The metadata-complete flag here should apply only to this class     -->
     <mapped-superclass class="Material" metadata-complete="false">
         <attributes>
@@ -37,11 +37,11 @@
                 <column name="ID"/>
                 <generated-value/>
             </id>
-            
+
             <!-- Should not ignore the @Column for 'cost' -->
         </attributes>
     </mapped-superclass>
-    
+
     <!-- The metadata-complete flag here should apply only to this class     -->
     <entity name="XMLHammer" class="Hammer" metadata-complete="true">
         <!-- The table should default and we should not pick up the @Table -->
@@ -49,11 +49,11 @@
             <basic name="weight">
                 <column name="WEIGHT"/>
             </basic>
-            
+
             <!-- Should ignore the @Column for 'color' but should map it using defaults -->
         </attributes>
     </entity>
-    
+
     <!-- The metadata-complete flag here should apply only to this class     -->
     <entity name="XMLScrewdriver" class="Screwdriver">
         <table name="XML_SCREWDRIVER"/>
@@ -61,17 +61,17 @@
             <basic name="type">
                 <column name="S_TYPE"/>
             </basic>
-            
+
             <!-- Should ignore the @Column for 'style' but should map it using defaults -->
         </attributes>
     </entity>
-    
+
     <!-- The metadata-complete flag here should apply only to this class     -->
     <entity name="XMLDrywall" class="Drywall" metadata-complete="true">
         <table name="XML_DRYWALL"/>
-        
+
         <!-- Should ignore the @Column for 'length' and 'width' but should map them using defaults -->
-    </entity>    
+    </entity>
 
 </entity-mappings>
 

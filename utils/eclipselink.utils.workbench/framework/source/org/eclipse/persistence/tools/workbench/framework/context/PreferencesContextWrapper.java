@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,80 +28,80 @@ import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
  * Subclasses can simply override the method(s) that should not be delegated.
  */
 public abstract class PreferencesContextWrapper
-	extends AbstractPreferencesContext
+    extends AbstractPreferencesContext
 {
-	private PreferencesContext delegate;
+    private PreferencesContext delegate;
 
 
-	// ********** constructor/initialization **********
+    // ********** constructor/initialization **********
 
-	/**
-	 * Construct an wrapper for the specified preferences context.
-	 */
-	public PreferencesContextWrapper(PreferencesContext delegate) {
-		super();
-		if (delegate == null) {
-			throw new NullPointerException();
-		}
-		this.delegate = delegate;
-	}
-
-
-	// ********** ApplicationContext implementation **********
-
-	/**
-	 * @see ApplicationContext#getApplication()
-	 */
-	public Application getApplication() {
-		return this.delegate.getApplication();
-	}
-
-	/**
-	 * @see ApplicationContext#getPreferences()
-	 */
-	public Preferences getPreferences() {
-		return this.delegate.getPreferences();
-	}
-
-	/**
-	 * @see ApplicationContext#getResourceRepository()
-	 */
-	public ResourceRepository getResourceRepository() {
-		return this.delegate.getResourceRepository();
-	}
-
-	/**
-	 * @see ApplicationContext#getNodeManager()
-	 */
-	public NodeManager getNodeManager() {
-		return this.delegate.getNodeManager();
-	}
-
-	/**
-	 * @see ApplicationContext#getHelpManager()
-	 */
-	public HelpManager getHelpManager() {
-		return this.delegate.getHelpManager();
-	}
+    /**
+     * Construct an wrapper for the specified preferences context.
+     */
+    public PreferencesContextWrapper(PreferencesContext delegate) {
+        super();
+        if (delegate == null) {
+            throw new NullPointerException();
+        }
+        this.delegate = delegate;
+    }
 
 
-	// ********** PreferencesContext implementation **********
+    // ********** ApplicationContext implementation **********
 
-	/**
-	 * @see PreferencesContext#getBufferTrigger()
-	 */
-	public ValueModel getBufferTrigger() {
-		return this.delegate.getBufferTrigger();
-	}
+    /**
+     * @see ApplicationContext#getApplication()
+     */
+    public Application getApplication() {
+        return this.delegate.getApplication();
+    }
+
+    /**
+     * @see ApplicationContext#getPreferences()
+     */
+    public Preferences getPreferences() {
+        return this.delegate.getPreferences();
+    }
+
+    /**
+     * @see ApplicationContext#getResourceRepository()
+     */
+    public ResourceRepository getResourceRepository() {
+        return this.delegate.getResourceRepository();
+    }
+
+    /**
+     * @see ApplicationContext#getNodeManager()
+     */
+    public NodeManager getNodeManager() {
+        return this.delegate.getNodeManager();
+    }
+
+    /**
+     * @see ApplicationContext#getHelpManager()
+     */
+    public HelpManager getHelpManager() {
+        return this.delegate.getHelpManager();
+    }
 
 
-	// ********** additional behavior **********
+    // ********** PreferencesContext implementation **********
 
-	/**
-	 * Allow access to the delegate.
-	 */
-	public PreferencesContext getDelegate() {
-		return this.delegate;
-	}
+    /**
+     * @see PreferencesContext#getBufferTrigger()
+     */
+    public ValueModel getBufferTrigger() {
+        return this.delegate.getBufferTrigger();
+    }
+
+
+    // ********** additional behavior **********
+
+    /**
+     * Allow access to the delegate.
+     */
+    public PreferencesContext getDelegate() {
+        return this.delegate;
+    }
 
 }

@@ -8,13 +8,13 @@ import javax.persistence.Id;
 
 @Entity
 public class ConcurrencyC implements Serializable {
-    
+
     @Id
     @GeneratedValue
     protected int id;
-    
+
     protected String name;
-    
+
     /**
      * @return the id
      */

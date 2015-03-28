@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.history;
 
 import java.util.*;
@@ -29,71 +29,71 @@ import org.eclipse.persistence.testing.models.employee.domain.Project;
 
 public class RollbackObjectsTest extends AutoVerifyTestCase {
 
-	Class domainClass;
-	AsOfClause pastTime;
-	Vector pastObjects;
-	
-	public RollbackObjectsTest(Class domainClass, AsOfClause pastTime) {
-		super();
-		this.domainClass = domainClass;
-		this.pastTime = pastTime;
-	}
+    Class domainClass;
+    AsOfClause pastTime;
+    Vector pastObjects;
 
-	public void setup() {
-		getSession().getIdentityMapAccessor().initializeIdentityMaps();
-	}
+    public RollbackObjectsTest(Class domainClass, AsOfClause pastTime) {
+        super();
+        this.domainClass = domainClass;
+        this.pastTime = pastTime;
+    }
 
-	public void test() {
-		org.eclipse.persistence.sessions.Session hs = getSession().acquireHistoricalSession(pastTime);
-		pastObjects = hs.readAllObjects(domainClass);
-		//getSession().getProject().checkDatabaseForDoesExist();
+    public void setup() {
+        getSession().getIdentityMapAccessor().initializeIdentityMaps();
+    }
 
-		Vector currentProjects = getSession().readAllObjects(Project.class);
-		for (Enumeration enumtr = currentProjects.elements(); enumtr.hasMoreElements();) {
-			((Project)enumtr.nextElement()).getTeamLeader();
-		}
+    public void test() {
+        org.eclipse.persistence.sessions.Session hs = getSession().acquireHistoricalSession(pastTime);
+        pastObjects = hs.readAllObjects(domainClass);
+        //getSession().getProject().checkDatabaseForDoesExist();
 
-			UnitOfWork uow = getSession().acquireUnitOfWork();
-		
-		for (Enumeration enumtr = pastObjects.elements(); enumtr.hasMoreElements();) {
-			Employee emp = (Employee)enumtr.nextElement();
-			emp.getProjects();
-			for (Enumeration proj = emp.getProjects().elements(); proj.hasMoreElements();) {
-				((Project)proj.nextElement()).getTeamLeader();
-			}
-			emp.getAddress();
-		}
-		for (Enumeration enumtr = pastObjects.elements(); enumtr.hasMoreElements();) {
-			Employee emp = (Employee)enumtr.nextElement();
-			uow.registerObject(emp);
-		}
+        Vector currentProjects = getSession().readAllObjects(Project.class);
+        for (Enumeration enumtr = currentProjects.elements(); enumtr.hasMoreElements();) {
+            ((Project)enumtr.nextElement()).getTeamLeader();
+        }
 
-		Vector pastProjects = hs.readAllObjects(Project.class);
-		for (Enumeration enumtr = pastProjects.elements(); enumtr.hasMoreElements();) {
-			Project project = (Project)enumtr.nextElement();
-			uow.registerObject(project);
-			uow.deepMergeClone(project);
-		}
-			//uow.registerAllObjects(pastProjects);
-			//clone = uow.deepClone(obj);
-			//} else {
-			//	clone = uow.deepMergeClone(obj);
-			//}
-			uow.commit();
-	}
+            UnitOfWork uow = getSession().acquireUnitOfWork();
 
-	public void verify() {
-		try {
-			Vector restoredObjects = getSession().readAllObjects(domainClass);
-			if (restoredObjects.size() != pastObjects.size()) {
-				throw new TestErrorException("Not all objects were restored.  Restored: " + restoredObjects.size() + " Total: " + pastObjects.size());
-			}
-		} finally {
-			pastObjects = null;
-		}
-	}
+        for (Enumeration enumtr = pastObjects.elements(); enumtr.hasMoreElements();) {
+            Employee emp = (Employee)enumtr.nextElement();
+            emp.getProjects();
+            for (Enumeration proj = emp.getProjects().elements(); proj.hasMoreElements();) {
+                ((Project)proj.nextElement()).getTeamLeader();
+            }
+            emp.getAddress();
+        }
+        for (Enumeration enumtr = pastObjects.elements(); enumtr.hasMoreElements();) {
+            Employee emp = (Employee)enumtr.nextElement();
+            uow.registerObject(emp);
+        }
 
-	public void reset() {
-		getSession().getIdentityMapAccessor().initializeIdentityMaps();
-	}
+        Vector pastProjects = hs.readAllObjects(Project.class);
+        for (Enumeration enumtr = pastProjects.elements(); enumtr.hasMoreElements();) {
+            Project project = (Project)enumtr.nextElement();
+            uow.registerObject(project);
+            uow.deepMergeClone(project);
+        }
+            //uow.registerAllObjects(pastProjects);
+            //clone = uow.deepClone(obj);
+            //} else {
+            //    clone = uow.deepMergeClone(obj);
+            //}
+            uow.commit();
+    }
+
+    public void verify() {
+        try {
+            Vector restoredObjects = getSession().readAllObjects(domainClass);
+            if (restoredObjects.size() != pastObjects.size()) {
+                throw new TestErrorException("Not all objects were restored.  Restored: " + restoredObjects.size() + " Total: " + pastObjects.size());
+            }
+        } finally {
+            pastObjects = null;
+        }
+    }
+
+    public void reset() {
+        getSession().getIdentityMapAccessor().initializeIdentityMaps();
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -35,13 +35,13 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
     protected HashMap tables_databaseFieldsToValues;
     protected HashMap tablesToPrimaryKeyFields;
     protected SQLCall selectCall;
-    
+
     protected static final String varSuffix = "_VAR";
     protected static final String typeSuffix = "_TYPE";
     protected static final String tab = "   ";
     protected static final String dbltab = tab + tab;
     protected static final String trpltab = dbltab + tab;
-    
+
     public void setSelectCall(SQLCall selectCall) {
         this.selectCall = selectCall;
     }
@@ -67,12 +67,12 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
     public DatabaseCall buildCall(AbstractSession session) {
         SQLCall call = new SQLCall();
         call.returnNothing();
-        
+
         Writer writer = new CharArrayWriter(100);
-        
+
         Vector mainPrimaryKeys = new Vector();
         mainPrimaryKeys.addAll((Collection)tablesToPrimaryKeyFields.get(table));
-        
+
         Vector allFields = (Vector)mainPrimaryKeys.clone();
         Iterator itDatabaseFieldsToValues = tables_databaseFieldsToValues.values().iterator();
         while(itDatabaseFieldsToValues.hasNext()) {
@@ -81,11 +81,11 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
                 allFields.addElement(itDatabaseFields.next());
             }
         }
-        
+
         try {
             //DECLARE
             writer.write("DECLARE\n");
-            
+
             for(int i=0; i < allFields.size(); i++) {
                 writeDeclareTypeAndVar(writer, (DatabaseField)allFields.elementAt(i), session.getPlatform());
             }
@@ -98,7 +98,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             int index = selectStr.toUpperCase().indexOf(" FROM ");
             String firstPart = selectStr.substring(0, index);
             String secondPart = selectStr.substring(index, selectStr.length());
-            
+
             writer.write(tab);
             writer.write(firstPart);
             writer.write(" BULK COLLECT INTO ");
@@ -113,14 +113,14 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             writer.write(";\n");
 
             call.getParameters().addAll(selectCall.getParameters());
-            call.getParameterTypes().addAll(selectCall.getParameterTypes());            
+            call.getParameterTypes().addAll(selectCall.getParameterTypes());
 
             DatabaseField firstMainPrimaryKey = (DatabaseField)mainPrimaryKeys.firstElement();
             writer.write(tab);
             writer.write("IF ");
             writeVar(writer, firstMainPrimaryKey, session.getPlatform());
             writer.write(".COUNT > 0 THEN\n");
-            
+
             Iterator itEntries = tables_databaseFieldsToValues.entrySet().iterator();
             while(itEntries.hasNext()) {
                 writeForAll(writer, firstMainPrimaryKey, session.getPlatform());
@@ -144,9 +144,9 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
                         writer.write(", ");
                     }
                 }
-                
+
                 writer.write(" WHERE ");
-                
+
                 Vector tablePrimaryKeys = new Vector();
                 tablePrimaryKeys.addAll((Collection)tablesToPrimaryKeyFields.get(t));
                 for(int i=0; i < mainPrimaryKeys.size(); i++) {
@@ -166,7 +166,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
 
             writer.write(tab);
             writer.write("END IF;\n");
-            
+
             writer.write(tab);
             DatabaseField outField = new DatabaseField("ROW_COUNT");
             outField.setType(Integer.class);
@@ -174,37 +174,37 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             writer.write(" := ");
             writeVar(writer, firstMainPrimaryKey, session.getPlatform());
             writer.write(".COUNT;\n");
-            
+
             writer.write("END;");
 
             call.setSQLString(writer.toString());
-            
+
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-                
+
         return call;
-    }    
-    
+    }
+
     protected static void writeUniqueFieldName(Writer writer, DatabaseField field, DatasourcePlatform platform) throws IOException {
         // EMPLOYEE_EMP_ID
         writer.write(field.getTable().getNameDelimited(platform));
         writer.write("_");
         writer.write(field.getNameDelimited(platform));
     }
-    
+
     protected static void writeType(Writer writer, DatabaseField field, DatasourcePlatform platform) throws IOException {
         // EMPLOYEE_EMP_ID_TYPE
         writeUniqueFieldName(writer, field, platform);
         writer.write(typeSuffix);
     }
-    
+
     protected static void writeVar(Writer writer, DatabaseField field, DatasourcePlatform platform) throws IOException {
-        // EMPLOYEE_EMP_ID_VAR 
+        // EMPLOYEE_EMP_ID_VAR
         writeUniqueFieldName(writer, field, platform);
         writer.write(varSuffix);
     }
-    
+
     protected static void writeDeclareTypeAndVar(Writer writer, DatabaseField field, DatasourcePlatform platform) throws IOException {
         //  TYPE EMPLOYEE_EMP_ID_TYPE IS TABLE OF EMPLOYEE.EMP_ID%TYPE;
         writer.write(tab);
@@ -213,7 +213,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
         writer.write(" IS TABLE OF ");
         writer.write(field.getQualifiedName());
         writer.write("%TYPE;\n");
-        
+
         //  EMPLOYEE_EMP_ID_VAR EMP_ID_TYPE;
         writer.write(tab);
         writeVar(writer, field, platform);

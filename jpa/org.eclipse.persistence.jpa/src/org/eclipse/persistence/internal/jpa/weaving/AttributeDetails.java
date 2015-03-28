@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
 
 import org.eclipse.persistence.internal.libraries.asm.Type;
@@ -23,7 +23,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  */
 
 public class AttributeDetails {
-	
+
     /** The name of this attribute. */
     protected String attributeName;
 
@@ -31,31 +31,31 @@ public class AttributeDetails {
     protected Type referenceClassType;
 
     protected boolean weaveValueHolders = false;
-    
+
     // Determine if we need to weave field level value holders as transient.
     // With JPA 2.0 a mapping may have PROPERTY access when the owning class
     // itself has FIELD access, meaning we want to avoid having the class
     // process a weaved value holder field into a descriptor mapping.
     protected boolean weaveTransientFieldValueHolders;
-    
+
     protected DatabaseMapping mapping;
-    
+
     protected String getterMethodName;
     protected String setterMethodName;
-    
+
     protected boolean attributeOnSuperClass = false;
-    
+
     /** Determines if the attribute has a real field. */
     protected boolean hasField = false;
-    
+
     /** Determines if the attribute has a real field. */
     protected Type declaringType;
 
     /** Caches the set method signature. */
     protected String setMethodSignature;
-    
+
     protected boolean isVirtualProperty = false;
-    
+
     public AttributeDetails(String attributeName, DatabaseMapping mapping) {
         this.attributeName = attributeName;
         this.mapping = mapping;
@@ -64,7 +64,7 @@ public class AttributeDetails {
     public String getAttributeName() {
         return this.attributeName;
     }
-    
+
     public DatabaseMapping getMapping() {
         return mapping;
     }
@@ -72,7 +72,7 @@ public class AttributeDetails {
     public String getGetterMethodName() {
         return getterMethodName;
     }
-    
+
     public String getSetterMethodSignature() {
         if (setMethodSignature == null) {
             if (isVirtualProperty){
@@ -83,7 +83,7 @@ public class AttributeDetails {
         }
         return setMethodSignature;
     }
-    
+
     public String getSetterMethodName() {
         return setterMethodName;
     }
@@ -91,7 +91,7 @@ public class AttributeDetails {
     public String getReferenceClassName() {
         return referenceClassName;
     }
-    
+
     public void setReferenceClassName(String className) {
         referenceClassName = className;
     }
@@ -99,7 +99,7 @@ public class AttributeDetails {
     public Type getDeclaringType() {
         return declaringType;
     }
-    
+
     public void setDeclaringType(Type declaringType) {
         this.declaringType = declaringType;
     }
@@ -107,11 +107,11 @@ public class AttributeDetails {
     public Type getReferenceClassType() {
         return referenceClassType;
     }
-    
+
     public void setReferenceClassType(Type classType){
         referenceClassType = classType;
     }
-    
+
     public void setAttributeOnSuperClass(boolean onSuperClass) {
         attributeOnSuperClass = onSuperClass;
     }
@@ -131,27 +131,27 @@ public class AttributeDetails {
     public void setWeaveTransientFieldValueHolders() {
         weaveTransientFieldValueHolders = true;
     }
-    
+
     public boolean weaveTransientFieldValueHolders() {
         return weaveTransientFieldValueHolders;
     }
-    
+
     public boolean weaveValueHolders() {
         return weaveValueHolders;
     }
-    
+
     public void weaveVH(boolean weaveValueHolders, DatabaseMapping mapping) {
         this.weaveValueHolders = weaveValueHolders;
     }
-    
+
     public void setGetterMethodName(String getMethodName){
         this.getterMethodName = getMethodName;
     }
-    
+
     public void setSetterMethodName(String setMethodName){
         this.setterMethodName = setMethodName;
     }
-    
+
     /**
      * Set if the attribute has a real field.
      * This allows properties to still be weaved at the field level.
@@ -159,7 +159,7 @@ public class AttributeDetails {
     public void setHasField(boolean hasField) {
         this.hasField = hasField;
     }
-    
+
     /**
      * Return if the attribute has a real field.
      * This allows properties to still be weaved at the field level.
@@ -167,7 +167,7 @@ public class AttributeDetails {
     public boolean hasField() {
         return hasField;
     }
-    
+
     public boolean isCollectionMapping() {
         return mapping.isCollectionMapping();
     }
@@ -175,11 +175,11 @@ public class AttributeDetails {
     public boolean isMappedWithAttributeAccess(){
         return getterMethodName == null;
     }
-    
+
     public boolean isOneToOneMapping() {
         return mapping.isOneToOneMapping();
     }
-	
+
     public boolean isLazy() {
         return mapping.isLazy();
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,9 +21,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -40,8 +40,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -67,11 +67,11 @@ public class XmlAnyAttribute
 
     /**
      * Gets the value of the xmlAccessMethods property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public XmlAccessMethods getXmlAccessMethods() {
         return xmlAccessMethods;
@@ -79,11 +79,11 @@ public class XmlAnyAttribute
 
     /**
      * Sets the value of the xmlAccessMethods property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public void setXmlAccessMethods(XmlAccessMethods value) {
         this.xmlAccessMethods = value;
@@ -91,11 +91,11 @@ public class XmlAnyAttribute
 
     /**
      * Gets the value of the xmlProperties property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public XmlProperties getXmlProperties() {
         return xmlProperties;
@@ -103,11 +103,11 @@ public class XmlAnyAttribute
 
     /**
      * Sets the value of the xmlProperties property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
@@ -115,11 +115,11 @@ public class XmlAnyAttribute
 
     /**
      * Gets the value of the readOnly property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isReadOnly() {
         if (readOnly == null) {
@@ -131,19 +131,19 @@ public class XmlAnyAttribute
 
     /**
      * Sets the value of the readOnly property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setReadOnly(Boolean value) {
         this.readOnly = value;
     }
-    
+
     /**
      * Indicates if readOnly has been set, i.e. is non-null.
-     *  
+     *
      * @return true if readOnly is non-null, false otherwise
      */
     public boolean isSetReadOnly() {
@@ -152,11 +152,11 @@ public class XmlAnyAttribute
 
     /**
      * Gets the value of the writeOnly property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isWriteOnly() {
         if (writeOnly == null) {
@@ -168,11 +168,11 @@ public class XmlAnyAttribute
 
     /**
      * Sets the value of the writeOnly property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setWriteOnly(Boolean value) {
         this.writeOnly = value;
@@ -180,7 +180,7 @@ public class XmlAnyAttribute
 
     /**
      * Indicates if writeOnly has been set, i.e. is non-null.
-     *  
+     *
      * @return true if writeOnly is non-null, false otherwise
      */
     public boolean isSetWriteOnly() {
@@ -189,11 +189,11 @@ public class XmlAnyAttribute
 
     /**
      * Gets the value of the xmlPath property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getXmlPath() {
         return xmlPath;
@@ -201,11 +201,11 @@ public class XmlAnyAttribute
 
     /**
      * Sets the value of the xmlPath property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setXmlPath(String value) {
         this.xmlPath = value;
@@ -213,11 +213,11 @@ public class XmlAnyAttribute
 
     /**
      * Gets the value of the containerType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getContainerType() {
         if (containerType == null) {
@@ -229,11 +229,11 @@ public class XmlAnyAttribute
 
     /**
      * Sets the value of the containerType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setContainerType(String value) {
         this.containerType = value;

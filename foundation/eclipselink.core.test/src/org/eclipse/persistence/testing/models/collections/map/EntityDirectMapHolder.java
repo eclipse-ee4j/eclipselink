@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.collections.map;
 
 import java.util.HashMap;
@@ -19,7 +19,7 @@ public class EntityDirectMapHolder {
 
     private int id;
     private Map entityToDirectMap = null;
-    
+
     public EntityDirectMapHolder(){
         entityToDirectMap = new HashMap();
     }
@@ -27,27 +27,27 @@ public class EntityDirectMapHolder {
     public Map getEntityToDirectMap(){
         return entityToDirectMap;
     }
-    
+
     public int getId(){
         return id;
     }
-    
+
     public void setEntityToDirectMap(Map map){
         entityToDirectMap = map;
     }
-    
+
     public void setId(int id){
         this.id = id;
     }
-    
+
     public void addEntityDirectMapItem(EntityMapKey key, Integer value){
         entityToDirectMap.put(key, value);
     }
-    
+
     public void removeEntityToDirectMapItem(EntityMapKey key){
         entityToDirectMap.remove(key);
     }
-    
+
     public static org.eclipse.persistence.tools.schemaframework.TableDefinition tableDefinition() {
         org.eclipse.persistence.tools.schemaframework.TableDefinition definition = new org.eclipse.persistence.tools.schemaframework.TableDefinition();
 
@@ -56,7 +56,7 @@ public class EntityDirectMapHolder {
 
         return definition;
     }
-    
+
     public static org.eclipse.persistence.tools.schemaframework.TableDefinition relationTableDefinition() {
         org.eclipse.persistence.tools.schemaframework.TableDefinition definition = new org.eclipse.persistence.tools.schemaframework.TableDefinition();
 
@@ -66,7 +66,7 @@ public class EntityDirectMapHolder {
         definition.addField("KEY_ID", Integer.class, 15);
         definition.addForeignKeyConstraint("ENT_DIR_MAP_REL_FK", "HOLDER_ID", "ID", "ENT_DIR_MAP_HOLDER");
         definition.addForeignKeyConstraint("ENT_DIR_MAP_REL_KEY_FK", "KEY_ID", "ID", "ENT_MAP_KEY");
-        
+
         return definition;
     }
 

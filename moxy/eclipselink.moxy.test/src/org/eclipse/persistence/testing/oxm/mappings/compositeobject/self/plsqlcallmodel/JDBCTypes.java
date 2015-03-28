@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
- 
+ ******************************************************************************/
+
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel;
 
 // javase imports
@@ -46,7 +46,7 @@ import static java.sql.Types.VARBINARY;
 import static java.sql.Types.VARCHAR;
 
 public enum JDBCTypes implements JDBCType {
-        
+
         ARRAY_TYPE(ARRAY, "ARRAY"),
         BIGINT_TYPE(BIGINT, "BIGINT"),
         BINARY_TYPE(BINARY, "BINARY"),
@@ -78,15 +78,15 @@ public enum JDBCTypes implements JDBCType {
         VARBINARY_TYPE(VARBINARY, "VARBINARY"),
         VARCHAR_TYPE(VARCHAR, "VARCHAR"),
         ;
-        
+
         private final int typeCode;
         private final String typeName;
-        
+
         JDBCTypes(int typeCode, String typeName) {
             this.typeCode = typeCode;
             this.typeName = typeName;
         }
-        
+
         public int getTypeCode() {
             return typeCode;
         }

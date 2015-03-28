@@ -4,7 +4,7 @@
       <ns0:purchaseOrder sdo:ref="#/ns0:purchaseOrder">
          <ns0:poId xsi:nil="true"/>
       </ns0:purchaseOrder>
-   </ns0:myChangeSummary>   
+   </ns0:myChangeSummary>
    <ns0:shipTo country="US">
       <ns0:name>Alice Smith</ns0:name>
       <ns0:street>123 Maple Street</ns0:street>

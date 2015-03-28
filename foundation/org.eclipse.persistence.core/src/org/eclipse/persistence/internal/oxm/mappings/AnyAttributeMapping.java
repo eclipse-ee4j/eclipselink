@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,15 +30,15 @@ public interface AnyAttributeMapping<
     public boolean isNamespaceDeclarationIncluded();
 
     public boolean isSchemaInstanceIncluded();
-    
+
     public void setField(FIELD field);
-    
+
     public void setIsWriteOnly(boolean b);
-    
+
     public void setNamespaceDeclarationIncluded(boolean isNamespaceDeclarationIncluded);
-    
+
     public void setSchemaInstanceIncluded(boolean isSchemaInstanceIncluded);
-    
+
     /**
      * INTERNAL:
      * Indicates the name of the Map class to be used.
@@ -47,4 +47,4 @@ public interface AnyAttributeMapping<
      */
     public void useMapClassName(String concreteMapClassName);
 }
-    
+

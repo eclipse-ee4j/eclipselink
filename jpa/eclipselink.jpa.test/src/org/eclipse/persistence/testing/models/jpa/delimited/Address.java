@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - add for testing JPA 2.0 delimited identifiers
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.delimited;
 
 import java.util.*;
@@ -27,14 +27,14 @@ import static javax.persistence.CascadeType.*;
 @Table(name="CMP3_DEL_ADDRESS")
 @NamedNativeQueries({
     @NamedNativeQuery(
-        name="findAllSQLAddresses", 
+        name="findAllSQLAddresses",
         query="select * from CMP3_DEL_ADDRESS",
         resultClass=org.eclipse.persistence.testing.models.jpa.delimited.Address.class
     )
 }
 )
 @NamedQuery(
-    name="findAllAddressesByPostalCode", 
+    name="findAllAddressesByPostalCode",
     query="SELECT OBJECT(address) FROM Address address WHERE address.postalCode = :postalcode"
 )
 public class Address implements Serializable {
@@ -69,58 +69,58 @@ public class Address implements Serializable {
     @GeneratedValue(generator="ADDRESS_SEQ")
     @SequenceGenerator(name="ADDRESS_SEQ", allocationSize=25)
     @Column(name="ADDRESS_ID")
-    public int getId() { 
-        return id; 
+    public int getId() {
+        return id;
     }
 
-    public void setId(int id) { 
-        this.id = id; 
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getStreet() { 
-        return street; 
+    public String getStreet() {
+        return street;
     }
 
-    public void setStreet(String street) { 
-        this.street = street; 
+    public void setStreet(String street) {
+        this.street = street;
     }
 
-    public String getCity() { 
-        return city; 
+    public String getCity() {
+        return city;
     }
 
-    public void setCity(String city) { 
-        this.city = city; 
+    public void setCity(String city) {
+        this.city = city;
     }
 
-    public String getProvince() { 
-        return province; 
+    public String getProvince() {
+        return province;
     }
 
-    public void setProvince(String province) { 
-        this.province = province; 
+    public void setProvince(String province) {
+        this.province = province;
     }
 
     @Column(name="P_CODE")
-    public String getPostalCode() { 
-        return postalCode; 
+    public String getPostalCode() {
+        return postalCode;
     }
 
-    public void setPostalCode(String postalCode) { 
-        this.postalCode = postalCode; 
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
     }
 
-    public String getCountry() { 
-        return country; 
+    public String getCountry() {
+        return country;
     }
 
-    public void setCountry(String country) { 
+    public void setCountry(String country) {
         this.country = country;
     }
 
     @OneToMany(cascade=ALL, mappedBy="address")
-    public Collection<Employee> getEmployees() { 
-        return employees; 
+    public Collection<Employee> getEmployees() {
+        return employees;
     }
 
     public void setEmployees(Collection<Employee> employees) {
@@ -129,7 +129,7 @@ public class Address implements Serializable {
 
     @Version
     public Integer getVersion() {
-        return version; 
+        return version;
     }
 
     public void setVersion(Integer version) {

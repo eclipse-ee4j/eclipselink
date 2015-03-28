@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,69 +27,69 @@ import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
  * that created it.
  */
 final class FrameworkPreferencesContext
-	extends AbstractPreferencesContext
+    extends AbstractPreferencesContext
 {
-	private FrameworkApplication application;
-	private ValueModel bufferTrigger;
+    private FrameworkApplication application;
+    private ValueModel bufferTrigger;
 
 
-	// ********** constructor **********
+    // ********** constructor **********
 
-	/**
-	 * Provide the application that will supply the context.
-	 */
-	public FrameworkPreferencesContext(FrameworkApplication application, ValueModel bufferTrigger) {
-		super();
-		this.application = application;
-		this.bufferTrigger = bufferTrigger;
-	}
-
-
-	// ********** ApplicationContext implementation **********
-
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.framework.ApplicationContext#getApplication()
-	 */
-	public Application getApplication() {
-		return application;
-	}
-
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.framework.ApplicationContext#getPreferences()
-	 */
-	public Preferences getPreferences() {
-		return application.getRootPreferences();
-	}
-
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.framework.ApplicationContext#getResourceRepository()
-	 */
-	public ResourceRepository getResourceRepository() {
-		return application.getResourceRepository();
-	}
-
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.framework.context.ApplicationContext#getNodeManager()
-	 */
-	public NodeManager getNodeManager() {
-		return application.getNodeManager();
-	}
-
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.framework.ApplicationContext#getHelpManager()
-	 */
-	public HelpManager getHelpManager() {
-		return application.getHelpManager();
-	}
+    /**
+     * Provide the application that will supply the context.
+     */
+    public FrameworkPreferencesContext(FrameworkApplication application, ValueModel bufferTrigger) {
+        super();
+        this.application = application;
+        this.bufferTrigger = bufferTrigger;
+    }
 
 
-	// ********** ApplicationContext implementation **********
+    // ********** ApplicationContext implementation **********
 
-	/**
-	 * @see PreferencesContext#getBufferTrigger()
-	 */
-	public ValueModel getBufferTrigger() {
-		return bufferTrigger;
-	}
+    /**
+     * @see org.eclipse.persistence.tools.workbench.framework.ApplicationContext#getApplication()
+     */
+    public Application getApplication() {
+        return application;
+    }
+
+    /**
+     * @see org.eclipse.persistence.tools.workbench.framework.ApplicationContext#getPreferences()
+     */
+    public Preferences getPreferences() {
+        return application.getRootPreferences();
+    }
+
+    /**
+     * @see org.eclipse.persistence.tools.workbench.framework.ApplicationContext#getResourceRepository()
+     */
+    public ResourceRepository getResourceRepository() {
+        return application.getResourceRepository();
+    }
+
+    /**
+     * @see org.eclipse.persistence.tools.workbench.framework.context.ApplicationContext#getNodeManager()
+     */
+    public NodeManager getNodeManager() {
+        return application.getNodeManager();
+    }
+
+    /**
+     * @see org.eclipse.persistence.tools.workbench.framework.ApplicationContext#getHelpManager()
+     */
+    public HelpManager getHelpManager() {
+        return application.getHelpManager();
+    }
+
+
+    // ********** ApplicationContext implementation **********
+
+    /**
+     * @see PreferencesContext#getBufferTrigger()
+     */
+    public ValueModel getBufferTrigger() {
+        return bufferTrigger;
+    }
 
 }

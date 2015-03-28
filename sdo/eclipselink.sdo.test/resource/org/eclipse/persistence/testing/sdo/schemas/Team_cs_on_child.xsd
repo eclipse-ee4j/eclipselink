@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://www.example.org" 
+            xmlns="http://www.example.org"
             xmlns:sdo="commonj.sdo"
             targetNamespace="http://www.example.org"
             elementFormDefault="qualified"
-            attributeFormDefault="unqualified"> 
+            attributeFormDefault="unqualified">
 
     <xsd:element name="team" type="Team"/>
 
     <xsd:complexType name="Yard">
         <xsd:sequence>
             <xsd:element name="squarefootage" type="xsd:string"/>
-	    <xsd:element name="length" type="xsd:string"/>
-	    <xsd:element name="width" type="xsd:string"/>
+        <xsd:element name="length" type="xsd:string"/>
+        <xsd:element name="width" type="xsd:string"/>
         </xsd:sequence>
     </xsd:complexType>
 
@@ -33,17 +33,17 @@
 
     <xsd:complexType name="Employee">
         <xsd:sequence>
-            <xsd:element name="id" type="xsd:string" minOccurs="0"/>        
-            <xsd:element name="name" type="xsd:string" minOccurs="0"/>            
+            <xsd:element name="id" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="name" type="xsd:string" minOccurs="0"/>
             <xsd:element name="address" type="Address" minOccurs="0"/>
             <xsd:element name="phone" type="Phone" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element name="myChangeSummary" type="sdo:ChangeSummaryType"/>        
+            <xsd:element name="myChangeSummary" type="sdo:ChangeSummaryType"/>
         </xsd:sequence>
     </xsd:complexType>
-    
+
     <xsd:complexType name="Team">
         <xsd:sequence>
-	    <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="name" type="xsd:string" minOccurs="0"/>
             <xsd:element name="manager" type="Employee"/>
             <xsd:element name="employee" type="Employee" maxOccurs="unbounded"/>
         </xsd:sequence>

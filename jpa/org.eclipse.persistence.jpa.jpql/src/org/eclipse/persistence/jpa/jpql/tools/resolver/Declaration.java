@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,115 +31,115 @@ import org.eclipse.persistence.jpa.jpql.parser.Join;
  */
 public abstract class Declaration implements JPQLQueryDeclaration {
 
-	/**
-	 * Either the range variable declaration if this is a range declaration otherwise the
-	 * collection-valued path expression when this is a collection member declaration.
-	 */
-	protected Expression baseExpression;
+    /**
+     * Either the range variable declaration if this is a range declaration otherwise the
+     * collection-valued path expression when this is a collection member declaration.
+     */
+    protected Expression baseExpression;
 
-	/**
-	 * The declaration expression, which is either an {@link
+    /**
+     * The declaration expression, which is either an {@link
      * org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration} or
-	 * a {@link org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration} when part
+     * a {@link org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration} when part
      * of a <b>FROM</b> clause, otherwise it's either the {@link
      * org.eclipse.persistence.jpa.jpql.parser.DeleteClause} or the {@link
      * org.eclipse.persistence.jpa.jpql.parser.UpdateClause}.
-	 */
-	protected Expression declarationExpression;
+     */
+    protected Expression declarationExpression;
 
-	/**
-	 * The identification variable used to declare the "root" object.
-	 */
-	protected IdentificationVariable identificationVariable;
+    /**
+     * The identification variable used to declare the "root" object.
+     */
+    protected IdentificationVariable identificationVariable;
 
-	/**
-	 * The "root" object for objects which may not be reachable by navigation, it is either the
-	 * abstract schema name (entity name), a derived path expression (which is only defined in a
-	 * subquery) or <code>null</code> if this {@link Declaration} is a collection member declaration.
-	 */
-	protected String rootPath;
+    /**
+     * The "root" object for objects which may not be reachable by navigation, it is either the
+     * abstract schema name (entity name), a derived path expression (which is only defined in a
+     * subquery) or <code>null</code> if this {@link Declaration} is a collection member declaration.
+     */
+    protected String rootPath;
 
-	/**
-	 * Creates a new <code>Declaration</code>.
-	 */
-	protected Declaration() {
-		super();
-	}
+    /**
+     * Creates a new <code>Declaration</code>.
+     */
+    protected Declaration() {
+        super();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Expression getBaseExpression() {
-		return baseExpression;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public Expression getBaseExpression() {
+        return baseExpression;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Expression getDeclarationExpression() {
-		return declarationExpression;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public Expression getDeclarationExpression() {
+        return declarationExpression;
+    }
 
-	/**
-	 * Returns the {@link IdentificationVariable} used to declare the "root" object.
-	 *
-	 * @return The alias for the "root" object
-	 */
-	public IdentificationVariable getIdentificationVariable() {
-		return identificationVariable;
-	}
+    /**
+     * Returns the {@link IdentificationVariable} used to declare the "root" object.
+     *
+     * @return The alias for the "root" object
+     */
+    public IdentificationVariable getIdentificationVariable() {
+        return identificationVariable;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public List<Join> getJoins() {
-		return Collections.emptyList();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public List<Join> getJoins() {
+        return Collections.emptyList();
+    }
 
-	/**
-	 * Returns the "root" object for objects which may not be reachable by navigation, it is
-	 * either the abstract schema name (entity name), a derived path expression (which is only
-	 * defined in a subquery) or <code>null</code> if this {@link Declaration} is a collection
-	 * member declaration.
-	 *
-	 * @return The "root" object for objects which may not be reachable by navigation or
-	 * <code>null</code> if this {@link Declaration} is a collection member declaration
-	 */
-	public String getRootPath() {
-		return rootPath;
-	}
+    /**
+     * Returns the "root" object for objects which may not be reachable by navigation, it is
+     * either the abstract schema name (entity name), a derived path expression (which is only
+     * defined in a subquery) or <code>null</code> if this {@link Declaration} is a collection
+     * member declaration.
+     *
+     * @return The "root" object for objects which may not be reachable by navigation or
+     * <code>null</code> if this {@link Declaration} is a collection member declaration
+     */
+    public String getRootPath() {
+        return rootPath;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getVariableName() {
-		if (identificationVariable == null) {
-			return ExpressionTools.EMPTY_STRING;
-		}
-		return identificationVariable.getVariableName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getVariableName() {
+        if (identificationVariable == null) {
+            return ExpressionTools.EMPTY_STRING;
+        }
+        return identificationVariable.getVariableName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean hasJoins() {
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public boolean hasJoins() {
+        return false;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
 
-		if (declarationExpression != null) {
-			return declarationExpression.toParsedText();
-		}
+        if (declarationExpression != null) {
+            return declarationExpression.toParsedText();
+        }
 
-		StringBuilder sb = new StringBuilder();
-		sb.append(rootPath);
-		sb.append(AbstractExpression.SPACE);
-		sb.append(identificationVariable);
-		return sb.toString();
-	}
+        StringBuilder sb = new StringBuilder();
+        sb.append(rootPath);
+        sb.append(AbstractExpression.SPACE);
+        sb.append(identificationVariable);
+        return sb.toString();
+    }
 }

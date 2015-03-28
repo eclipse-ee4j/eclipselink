@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -49,96 +49,96 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public class OrExpressionStateObject extends LogicalExpressionStateObject {
 
-	/**
-	 * Creates a new <code>OrExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public OrExpressionStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>OrExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public OrExpressionStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>OrExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param leftStateObject The {@link StateObject} representing the left expression
-	 * @param rightStateObject The {@link StateObject} representing the right expression
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public OrExpressionStateObject(StateObject parent,
-	                               StateObject leftStateObject,
-	                               StateObject rightStateObject) {
+    /**
+     * Creates a new <code>OrExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param leftStateObject The {@link StateObject} representing the left expression
+     * @param rightStateObject The {@link StateObject} representing the right expression
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public OrExpressionStateObject(StateObject parent,
+                                   StateObject leftStateObject,
+                                   StateObject rightStateObject) {
 
-		super(parent, leftStateObject, rightStateObject);
-	}
+        super(parent, leftStateObject, rightStateObject);
+    }
 
-	/**
-	 * Creates a new <code>OrExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param leftJpqlFragment The string representation of the left expression to parse and to
-	 * convert into a {@link StateObject}
-	 * @param rightJpqlFragment The string representation of the right expression to parse and to
-	 * convert into a {@link StateObject}
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public OrExpressionStateObject(StateObject parent,
-	                               String leftJpqlFragment,
-	                               String rightJpqlFragment) {
+    /**
+     * Creates a new <code>OrExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param leftJpqlFragment The string representation of the left expression to parse and to
+     * convert into a {@link StateObject}
+     * @param rightJpqlFragment The string representation of the right expression to parse and to
+     * convert into a {@link StateObject}
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public OrExpressionStateObject(StateObject parent,
+                                   String leftJpqlFragment,
+                                   String rightJpqlFragment) {
 
-		super(parent, leftJpqlFragment, rightJpqlFragment);
-	}
+        super(parent, leftJpqlFragment, rightJpqlFragment);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public OrExpression getExpression() {
-		return (OrExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public OrExpression getExpression() {
+        return (OrExpression) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getIdentifier() {
-		return OR;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdentifier() {
+        return OR;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getLeftQueryBNFId() {
-		return ConditionalExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getLeftQueryBNFId() {
+        return ConditionalExpressionBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getRightQueryBNFId() {
-		return ConditionalTermBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getRightQueryBNFId() {
+        return ConditionalTermBNF.ID;
+    }
 
-	/**
-	 * Keeps a reference of the {@link OrExpression parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link OrExpression parsed object} representing a logical
-	 * <code><b>OR</b></code> expression
-	 */
-	public void setExpression(OrExpression expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link OrExpression parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link OrExpression parsed object} representing a logical
+     * <code><b>OR</b></code> expression
+     */
+    public void setExpression(OrExpression expression) {
+        super.setExpression(expression);
+    }
 }

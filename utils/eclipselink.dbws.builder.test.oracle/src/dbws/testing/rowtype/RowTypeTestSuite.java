@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,20 +37,20 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import dbws.testing.DBWSTestSuite;
 
 /**
- * Tests %ROWTYPE support. If, in a PL/SQL package, you want a record 
+ * Tests %ROWTYPE support. If, in a PL/SQL package, you want a record
  * with fields (names & types, but not constraints) that mirror a
  * JDBC table, without defining the record in the package, %ROWTYPE
- * can be used, i.e. "PARAM1 OUT MYTABLE%ROWTYPE".  
+ * can be used, i.e. "PARAM1 OUT MYTABLE%ROWTYPE".
  *
  */
 public class RowTypeTestSuite extends DBWSTestSuite {
 
     static final String WSDL_REF = "ref=\"ns1:rtype_table_rowtypeType\"";
-    static final String XSD = 
+    static final String XSD =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:rowtype\" xmlns=\"urn:rowtype\" elementFormDefault=\"qualified\">" +
            "<xsd:complexType name=\"rtype_table_rowtypeType\">" +
-              "<xsd:sequence>" + 
+              "<xsd:sequence>" +
                  "<xsd:element name=\"id\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>" +
                  "<xsd:element name=\"name\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>" +
                  "<xsd:element name=\"since\" type=\"xsd:date\" minOccurs=\"0\" nillable=\"true\"/>" +
@@ -58,7 +58,7 @@ public class RowTypeTestSuite extends DBWSTestSuite {
            "</xsd:complexType>" +
            "<xsd:element name=\"rtype_table_rowtypeType\" type=\"rtype_table_rowtypeType\"/>" +
         "</xsd:schema>";
-    static final String SERVICE = 
+    static final String SERVICE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<dbws xmlns:ns1=\"urn:rowtype\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
            "<name>rowtype</name>" +
@@ -90,8 +90,8 @@ public class RowTypeTestSuite extends DBWSTestSuite {
               "</named-query>" +
             "</query>" +
         "</dbws>";
-    
-    
+
+
     static final String ROWTYPE_TEST_TABLE = "RTYPE_TABLE";
     static final String CREATE_ROWTYPE_TEST_TABLE = "CREATE TABLE " + ROWTYPE_TEST_TABLE + " (" +
         "\nID NUMBER NOT NULL," +
@@ -115,16 +115,16 @@ public class RowTypeTestSuite extends DBWSTestSuite {
             "\nPROCEDURE testProc(PARAM1 IN INTEGER, PARAM2 OUT " + ROWTYPE_TEST_TABLE + "%ROWTYPE);" +
             "\nFUNCTION test(PARAM1 IN INTEGER) RETURN " + ROWTYPE_TEST_TABLE + "%ROWTYPE;" +
         "\nEND " + ROWTYPE_TEST_PACKAGE + ";";
-    
+
     static final String CREATE_ROWTYPE_TEST_PACKAGE_BODY =
         "CREATE OR REPLACE PACKAGE BODY " + ROWTYPE_TEST_PACKAGE + " AS" +
             "\nPROCEDURE testProc(PARAM1 IN INTEGER, PARAM2 OUT " + ROWTYPE_TEST_TABLE + "%ROWTYPE) AS" +
             "\nBEGIN" +
               "\nPARAM2 := test(PARAM1);" +
             "\nEND testProc;" +
-            "\nFUNCTION test(PARAM1 IN INTEGER) RETURN " + ROWTYPE_TEST_TABLE + "%ROWTYPE AS" +        
+            "\nFUNCTION test(PARAM1 IN INTEGER) RETURN " + ROWTYPE_TEST_TABLE + "%ROWTYPE AS" +
                 "\nL_DATA1 " + ROWTYPE_TEST_TABLE + "%ROWTYPE;" +
-                "\nCURSOR C_EMP(PARAMTEMP IN INTEGER) IS SELECT * FROM " + ROWTYPE_TEST_TABLE + 
+                "\nCURSOR C_EMP(PARAMTEMP IN INTEGER) IS SELECT * FROM " + ROWTYPE_TEST_TABLE +
                     " WHERE " + ROWTYPE_TEST_TABLE + ".ID=PARAMTEMP;" +
             "\nBEGIN" +
                 "\nOPEN C_EMP(PARAM1);" +
@@ -135,7 +135,7 @@ public class RowTypeTestSuite extends DBWSTestSuite {
                 "\nRETURN L_DATA1;" +
             "\nEND test;" +
         "\nEND " + ROWTYPE_TEST_PACKAGE + ";";
-    
+
     static final String DROP_ROWTYPE_TEST_TABLE = "DROP TABLE " + ROWTYPE_TEST_TABLE;
     static final String DROP_ROWTYPE_SHADOWTYPE = "DROP TYPE " + ROWTYPE_TEST_TABLE + "_ROWTYPE";
     static final String DROP_ROWTYPE_TEST_PACKAGE = "DROP PACKAGE " + ROWTYPE_TEST_PACKAGE;
@@ -200,10 +200,10 @@ public class RowTypeTestSuite extends DBWSTestSuite {
                   "</property>" +
               "</properties>" +
               "<plsql-procedure " +
-	              "name=\"rowtypeTest2\" " +
-	              "catalogPattern=\"" + ROWTYPE_TEST_PACKAGE + "\" " +
-	              "procedurePattern=\"testProc\" " +
-	           "/>" +
+                  "name=\"rowtypeTest2\" " +
+                  "catalogPattern=\"" + ROWTYPE_TEST_PACKAGE + "\" " +
+                  "procedurePattern=\"testProc\" " +
+               "/>" +
               "<plsql-procedure " +
                   "name=\"rowtypeTest\" " +
                   "catalogPattern=\"" + ROWTYPE_TEST_PACKAGE + "\" " +
@@ -212,10 +212,10 @@ public class RowTypeTestSuite extends DBWSTestSuite {
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
-          
-          // execute shadow type ddl to generate JDBC equivalents of PL/SQL types 
+
+          // execute shadow type ddl to generate JDBC equivalents of PL/SQL types
           for (String ddl : builder.getTypeDDL()) {
-        	  runDdl(conn, ddl, ddlDebug);
+              runDdl(conn, ddl, ddlDebug);
           }
     }
 
@@ -226,9 +226,9 @@ public class RowTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_ROWTYPE_TEST_PACKAGE, ddlDebug);
             runDdl(conn, DROP_ROWTYPE_TEST_TABLE, ddlDebug);
         }
-        // drop shadow type ddl 
+        // drop shadow type ddl
         for (String ddl : builder.getTypeDropDDL()) {
-      	  	runDdl(conn, ddl, ddlDebug);
+                runDdl(conn, ddl, ddlDebug);
         }
     }
 
@@ -278,7 +278,7 @@ public class RowTypeTestSuite extends DBWSTestSuite {
         removeEmptyTextNodes(testDoc);
         assertTrue("Schema comparison failed.  Expected:\n" + documentToString(controlDoc) + "\nActual\n" + documentToString(testDoc), comparer.isNodeEqual(controlDoc, testDoc));
     }
-    
+
     /**
      * Test type names do not contain '%'
      */
@@ -291,7 +291,7 @@ public class RowTypeTestSuite extends DBWSTestSuite {
         removeEmptyTextNodes(testDoc);
         assertTrue("Service file comparison failed.  Expected:\n" + documentToString(controlDoc) + "\nActual\n" + documentToString(testDoc), comparer.isNodeEqual(controlDoc, testDoc));
     }
-    
+
     /**
      * Test element ref name does not contain '%'
      */

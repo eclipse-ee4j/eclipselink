@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/14/2011-2.3.1 Guy Pelletier 
+ *     09/14/2011-2.3.1 Guy Pelletier
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
@@ -34,7 +34,7 @@ public class TimesTenPlatform extends DatabasePlatform {
 
     // supportsForeignKeyConstraints is configurable because TimesTen does not support circular references/self references.
     private boolean supportsForeignKeyConstraints;
-    
+
     public TimesTenPlatform() {
         this.supportsForeignKeyConstraints = true;
     }
@@ -85,7 +85,7 @@ public class TimesTenPlatform extends DatabasePlatform {
 
     /**
      * Appends an TimesTen specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
-     * Native Format: 'YYYY-MM-DD HH:MM:SS' 
+     * Native Format: 'YYYY-MM-DD HH:MM:SS'
      */
     @Override
     protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
@@ -141,8 +141,8 @@ public class TimesTenPlatform extends DatabasePlatform {
         fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("VARBINARY", 64000));
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("VARCHAR", 64000));
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("VARBINARY", 64000));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("VARCHAR", 64000));        
-        
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("VARCHAR", 64000));
+
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
@@ -153,7 +153,7 @@ public class TimesTenPlatform extends DatabasePlatform {
     /**
      * INTERNAL:
      * Produce a DataReadQuery which updates(!) the sequence number in the db
-     * and returns it. 
+     * and returns it.
      * @param qualifiedSeqName known by TimesTen to be a defined sequence
      */
     @Override
@@ -169,7 +169,7 @@ public class TimesTenPlatform extends DatabasePlatform {
     public String getCreateViewString() {
         return "CREATE MATERIALIZED VIEW ";
     }
-    
+
     /**
      * INTERNAL:
      * Used for pessimistic locking.
@@ -178,7 +178,7 @@ public class TimesTenPlatform extends DatabasePlatform {
     public String getSelectForUpdateString() {
         return " FOR UPDATE";
     }
-    
+
     /**
      * PUBLIC:
      * TimesTen uses the Oracle syntax for getting the current timestamp.
@@ -233,7 +233,7 @@ public class TimesTenPlatform extends DatabasePlatform {
         }
         return this.printOuterJoinInWhereClause;
     }
-    
+
     /**
      *  INTERNAL:
      *  Indicates whether the platform supports sequence objects.

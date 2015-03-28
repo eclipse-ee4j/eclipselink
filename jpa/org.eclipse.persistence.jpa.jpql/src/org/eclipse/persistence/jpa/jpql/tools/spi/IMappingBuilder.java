@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,12 +29,12 @@ package org.eclipse.persistence.jpa.jpql.tools.spi;
  */
 public interface IMappingBuilder<T> extends IExternalForm {
 
-	/**
-	 * Creates a new {@link IMapping}.
-	 *
-	 * @param parent The parent of the mapping to create
-	 * @param value The object that represents the mapping
-	 * @return A new concrete instance of the external form
-	 */
-	IMapping buildMapping(IManagedType parent, T value);
+    /**
+     * Creates a new {@link IMapping}.
+     *
+     * @param parent The parent of the mapping to create
+     * @param value The object that represents the mapping
+     * @return A new concrete instance of the external form
+     */
+    IMapping buildMapping(IManagedType parent, T value);
 }

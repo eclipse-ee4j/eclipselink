@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -43,57 +43,57 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
  */
 public class RdbmsPropertiesPropertiesPage extends LoginPropertiesPropertiesPage
 {
-	/**
-	 * Creates a new <code>LoginPropertiesPropertiesPage</code>.
-	 *
-	 * @param nodeHolder The holder of {@link DatabaseLoginAdapter}
-	 * @param context
-	 */
-	public RdbmsPropertiesPropertiesPage(PropertyValueModel subjectHolder, WorkbenchContextHolder contextHolder)
-	{
-		super(subjectHolder, contextHolder);
-	}
+    /**
+     * Creates a new <code>LoginPropertiesPropertiesPage</code>.
+     *
+     * @param nodeHolder The holder of {@link DatabaseLoginAdapter}
+     * @param context
+     */
+    public RdbmsPropertiesPropertiesPage(PropertyValueModel subjectHolder, WorkbenchContextHolder contextHolder)
+    {
+        super(subjectHolder, contextHolder);
+    }
 
-	/**
-	 * Initializes the layout of this pane.
-	 *
-	 * @return The container with all its widgets
-	 */
-	protected Component buildPage()
-	{
-		JComponent subPane = (JComponent) super.buildPage();
-		buildPropertyPaneEnabler(subPane);
-		return subPane;
-	}
+    /**
+     * Initializes the layout of this pane.
+     *
+     * @return The container with all its widgets
+     */
+    protected Component buildPage()
+    {
+        JComponent subPane = (JComponent) super.buildPage();
+        buildPropertyPaneEnabler(subPane);
+        return subPane;
+    }
 
-	/**
-	 * Attaches the given pane with a {@link ComponentEnabler} in order update
-	 * the pane's enable state when the check box Use Properties is selected
-	 * (located in the Options - Advanced tab).
-	 *
-	 * @param pane The pane to have its enabled state (along with its children)
-	 * in sync with the Use Properties property.
-	 */
-	private void buildPropertyPaneEnabler(JComponent pane)
-	{
-		new ComponentEnabler(buildUsePropertiesHolder(), Collections.singleton(pane));
-	}
+    /**
+     * Attaches the given pane with a {@link ComponentEnabler} in order update
+     * the pane's enable state when the check box Use Properties is selected
+     * (located in the Options - Advanced tab).
+     *
+     * @param pane The pane to have its enabled state (along with its children)
+     * in sync with the Use Properties property.
+     */
+    private void buildPropertyPaneEnabler(JComponent pane)
+    {
+        new ComponentEnabler(buildUsePropertiesHolder(), Collections.singleton(pane));
+    }
 
-	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to handle the
-	 * Use Properties property.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildUsePropertiesHolder()
-	{
-		return new PropertyAspectAdapter(getSelectionHolder(), DatabaseLoginAdapter.USE_PROPERTIES_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				DatabaseLoginAdapter login = (DatabaseLoginAdapter) subject;
-				return Boolean.valueOf(login.usesProperties());
-			}
-		};
-	}
+    /**
+     * Creates the <code>PropertyValueModel</code> responsible to handle the
+     * Use Properties property.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    private PropertyValueModel buildUsePropertiesHolder()
+    {
+        return new PropertyAspectAdapter(getSelectionHolder(), DatabaseLoginAdapter.USE_PROPERTIES_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                DatabaseLoginAdapter login = (DatabaseLoginAdapter) subject;
+                return Boolean.valueOf(login.usesProperties());
+            }
+        };
+    }
 }

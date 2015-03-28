@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,87 +30,87 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public abstract class ArithmeticExpression extends CompoundExpression {
 
-	/**
-	 * Creates a new <code>ArithmeticExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param identifier The arithmetic sign
-	 */
-	protected ArithmeticExpression(AbstractExpression parent, String identifier) {
-		super(parent, identifier);
-	}
+    /**
+     * Creates a new <code>ArithmeticExpression</code>.
+     *
+     * @param parent The parent of this expression
+     * @param identifier The arithmetic sign
+     */
+    protected ArithmeticExpression(AbstractExpression parent, String identifier) {
+        super(parent, identifier);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPQLQueryBNF findQueryBNF(Expression expression) {
-		return getParent().findQueryBNF(expression);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JPQLQueryBNF findQueryBNF(Expression expression) {
+        return getParent().findQueryBNF(expression);
+    }
 
-	/**
-	 * Returns the arithmetic sign this expression is actually representing.
-	 *
-	 * @return The single character value of the arithmetic sign
-	 */
-	public final String getArithmeticSign() {
-		return getText();
-	}
+    /**
+     * Returns the arithmetic sign this expression is actually representing.
+     *
+     * @return The single character value of the arithmetic sign
+     */
+    public final String getArithmeticSign() {
+        return getText();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getLeftExpressionQueryBNFId() {
-		return ArithmeticExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getLeftExpressionQueryBNFId() {
+        return ArithmeticExpressionBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public final JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(ArithmeticTermBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public final JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(ArithmeticTermBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final String getRightExpressionQueryBNFId() {
-		return ArithmeticTermBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final String getRightExpressionQueryBNFId() {
+        return ArithmeticTermBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
-		char character = word.charAt(0);
+        char character = word.charAt(0);
 
-		// A comparison symbol needs to continue the parsing
-		if (character == '=' || character == '<' || character == '>') {
-			return true;
-		}
+        // A comparison symbol needs to continue the parsing
+        if (character == '=' || character == '<' || character == '>') {
+            return true;
+        }
 
-		// Addition/Subtraction will create a chain of operations
-		if (character == '+' || character == '-') {
-			return false;
-		}
+        // Addition/Subtraction will create a chain of operations
+        if (character == '+' || character == '-') {
+            return false;
+        }
 
-		// Multiplication/Division will group the expression together to follow the order of operation
-		if (character == '*' || character == '/') {
-			return (expression == null);
-		}
+        // Multiplication/Division will group the expression together to follow the order of operation
+        if (character == '*' || character == '/') {
+            return (expression == null);
+        }
 
-		return (expression != null);
-	}
+        return (expression != null);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected final String parseIdentifier(WordParser wordParser) {
-		return getText();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final String parseIdentifier(WordParser wordParser) {
+        return getText();
+    }
 }

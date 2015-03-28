@@ -10,5 +10,5 @@
   <xsd:import namespace="mynsC" schemaLocation="SchemaC.xsd"/>
   <xsd:import namespace="mynsB" schemaLocation="SchemaB.xsd"/>
   <xsd:element name="Test" type="ns1:TestType"/>
-   
+
 </xsd:schema>

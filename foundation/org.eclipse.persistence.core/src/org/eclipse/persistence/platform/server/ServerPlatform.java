@@ -1,22 +1,22 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     06/30/2010-2.1.1 Michael O'Brien 
+ *     06/30/2010-2.1.1 Michael O'Brien
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
  *       add new isRuntimeServicesEnabledDefault()
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
  *     12/18/2014-2.6 Rick Curtis
  *       - 455690: Move JNDIConnector lookup type to ServerPlatform.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.server;
 
 import java.sql.SQLException;
@@ -103,7 +103,7 @@ public interface ServerPlatform {
      * @see #initializeExternalTransactionController()
      */
     void setExternalTransactionControllerClass(Class newClass);
-    
+
     /**
      * INTERNAL: initializeExternalTransactionController(): Populate the DatabaseSession's
      * external transaction controller with an instance of my transaction controller class.
@@ -127,7 +127,7 @@ public interface ServerPlatform {
     boolean isJTAEnabled();
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * isRuntimeServicesEnabledDefault(): Answer true if the JMX/MBean providing runtime services for
      * the receiver's DatabaseSession will be deployed at runtime.
      * Provide the default value for {@link #isRuntimeServicesEnabled()} for a
@@ -182,22 +182,22 @@ public interface ServerPlatform {
      * @see #registerMBean()
      */
     void unregisterMBean();
-    
+
     /**
      * INTERNAL: perform any require shutdown tasks.
      */
     void shutdown();
-    
+
     /**
      * Return the thread pool size.
      */
     int getThreadPoolSize();
-    
+
     /**
      * Set the thread pool size.
      */
     void setThreadPoolSize(int threadPoolSize);
-    
+
     /**
      * INTERNAL:  This method is used to unwrap the oracle connection wrapped by
      * the application server.  TopLink needs this unwrapped connection for certain
@@ -205,7 +205,7 @@ public interface ServerPlatform {
      * This is added as a workaround for bug 4460996
      */
     java.sql.Connection unwrapConnection(java.sql.Connection connection);
-    
+
     /**
      * INTERNAL: launchContainerRunnable(Runnable runnable): Use the container library to
      * start the provided Runnable.
@@ -228,7 +228,7 @@ public interface ServerPlatform {
     /**
      * INTERNAL: shouldUseDriverManager(): Indicates whether DriverManager should be used while connecting DefaultConnector.
      *
-     * @return boolean 
+     * @return boolean
      */
     boolean shouldUseDriverManager();
 
@@ -242,26 +242,26 @@ public interface ServerPlatform {
      * false forcing the error to be thrown to the user.
      */
     boolean wasFailureCommunicationBased(SQLException exception, Accessor connection, AbstractSession sessionForProfile);
-    
+
     /**
      * INTERNAL:
      * JIRA EJBTHREE-572 requires that we use the real classLoader in place of the getNewTempClassLoader().
      * The override code should stay in place until the UCL3 loader does not throw a NPE on loadClass()
-     * 
+     *
      * @param puInfo - the persistence unit info
      * @return ClassLoaderHolder - a composite object containing the classLoader and the flag
      *     that is true if the classLoader returned is temporary
-     *     
+     *
      * @see org.eclipse.persistence.internal.helper.JPAClassLoaderHolder
      */
     JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo);
-    
+
     /**
      * INTERNAL:
      * Clears statement cache of the wrapper connection.
      * Required by Oracle proxy authentication: currently connection statement cache
      * becomes invalid on switching to/from proxy session.
-     * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer  
+     * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer
      * before opening proxy session and before closing it.
      */
     void clearStatementCache(java.sql.Connection connection);

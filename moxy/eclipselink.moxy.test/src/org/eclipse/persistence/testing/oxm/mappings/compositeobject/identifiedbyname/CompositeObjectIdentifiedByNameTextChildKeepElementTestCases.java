@@ -6,11 +6,11 @@ import org.eclipse.persistence.sessions.Project;
 
 public class CompositeObjectIdentifiedByNameTextChildKeepElementTestCases extends CompositeObjectIdentifiedByNameTextChildTestCases{
 
-	public CompositeObjectIdentifiedByNameTextChildKeepElementTestCases(			String name) throws Exception {
-		super(name);
-		Project p = new CompositeObjectIdentifiedByNameTextProject();
-		((XMLCompositeObjectMapping)p.getDescriptor(EmployeeWithObjects.class).getMappingForAttributeName("salary")).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
-		setProject(p);
-	}
+    public CompositeObjectIdentifiedByNameTextChildKeepElementTestCases(            String name) throws Exception {
+        super(name);
+        Project p = new CompositeObjectIdentifiedByNameTextProject();
+        ((XMLCompositeObjectMapping)p.getDescriptor(EmployeeWithObjects.class).getMappingForAttributeName("salary")).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+        setProject(p);
+    }
 
 }

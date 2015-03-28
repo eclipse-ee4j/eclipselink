@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,9 +30,9 @@ public class NameTransformerSimpleTestCases extends JAXBWithJSONTestCases{
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/nametransformersimple.xml";
     protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/nametransformersimple.json";
     public NameTransformerSimpleTestCases(String name) throws Exception {
-        super(name);		
+        super(name);
     }
-	
+
     public void setUp() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -41,49 +41,49 @@ public class NameTransformerSimpleTestCases extends JAXBWithJSONTestCases{
         types[0] = Phone.class;
         setTypes(types);
     }
-    
-    public void init() throws Exception {	
+
+    public void init() throws Exception {
         Type[] types = new Type[1];
         types[0] = Phone.class;
         setTypes(types);
     }
 
     protected Object getControlObject() {
-    	Phone p = new Phone();
-    	p.number = "1234567";
-    	return p;
+        Phone p = new Phone();
+        p.number = "1234567";
+        return p;
     }
-    
+
     public void testSchemaGen() throws Exception {
-        List<InputStream> controlSchemas = new ArrayList<InputStream>();		
+        List<InputStream> controlSchemas = new ArrayList<InputStream>();
         InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/nametransformersimple.xsd");
-        controlSchemas.add(is);		
+        controlSchemas.add(is);
         super.testSchemaGen(controlSchemas);
     }
-    
+
     protected Map getProperties() {
-		
-        Map overrides = new HashMap();		
-        String overridesString = 
+
+        Map overrides = new HashMap();
+        String overridesString =
         "<?xml version='1.0' encoding='UTF-8'?>" +
         "<xml-bindings xmlns='http://www.eclipse.org/eclipselink/xsds/persistence/oxm' xml-name-transformer='org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.MyUpperTransformer'>" +
-        "<xml-schema namespace='myuri'/>" +       
+        "<xml-schema namespace='myuri'/>" +
         "<java-types/>" +
         "</xml-bindings>";
-		
+
         DOMSource src = null;
-        try {		      
+        try {
             Document doc = parser.parse(new ByteArrayInputStream(overridesString.getBytes()));
             src = new DOMSource(doc.getDocumentElement());
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        fail("An error occurred during setup");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An error occurred during setup");
         }
-		    
+
         overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer", src);
 
         Map props = new HashMap();
         props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
         return props;
-    }	
+    }
 }

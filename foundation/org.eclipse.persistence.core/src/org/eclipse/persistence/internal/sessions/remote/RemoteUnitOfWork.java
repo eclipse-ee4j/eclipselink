@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     07/15/2011-2.2.1 Guy Pelletier 
+ *     07/15/2011-2.2.1 Guy Pelletier
  *       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.remote;
 
 import java.util.*;
@@ -42,7 +42,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
 
     public RemoteUnitOfWork() {
     }
-    
+
     public RemoteUnitOfWork(RemoteUnitOfWork parent) {
         this(parent, null);
     }
@@ -88,10 +88,10 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
         // This needs a special call for remote, to ensure subsequent queries isolate their data to a unit of work on the server.
         ((DistributedSession)getParent()).getRemoteConnection().beginEarlyTransaction();
         endOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
-        
+
         setWasTransactionBegunPrematurely(true);
     }
-    
+
     /**
      * The nested unit of work must also be remote.
      */
@@ -121,7 +121,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
     protected List collectNewObjects() {
         if ((this.newObjectsCloneToOriginal == null) || this.newObjectsCloneToOriginal.isEmpty()) {
             return null;
-        }      
+        }
         List newObjects = new ArrayList(this.newObjectsCloneToOriginal.size());
         for (Object newObject : this.newObjectsCloneToOriginal.keySet()) {
             newObjects.add(newObject);
@@ -149,7 +149,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
         UnitOfWorkImpl parent = ((UnitOfWorkImpl)getParent());
         // Must merge the transaction flag.
         parent.setWasTransactionBegunPrematurely(wasTransactionBegunPrematurely());
-        
+
         MergeManager manager = new MergeManager(this);
         manager.mergeWorkingCopyIntoRemote();
 
@@ -165,14 +165,14 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
             Object clone = manager.getTargetVersionOfSourceObject(remoteClone, parent.getDescriptor(remoteClone), parent);
             clones.put(remoteClone, clone);
         }
-        
+
         // Reset the remote change set to be the local one, need to reset all clones to local copy,
         // and reset transient variables.
         parent.setUnitOfWorkChangeSet(this.unitOfWorkChangeSet);
         fixRemoteChangeSet(this.unitOfWorkChangeSet, clones, parent);
         ((RemoteUnitOfWork)parent).setCumulativeUOWChangeSet(this.cumulativeUOWChangeSet);
         fixRemoteChangeSet(this.cumulativeUOWChangeSet, clones, parent);
-        
+
         // Set the deleted objects into the parent.
         if (this.objectsDeletedDuringCommit != null) {
             Map newDeletedObjects = new IdentityHashMap();
@@ -207,7 +207,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
             return;
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
-        
+
         // PERF: If this is an empty unit of work, do nothing (but still may need to commit SQL changes).
         boolean hasChanges = (this.unitOfWorkChangeSet != null) || hasCloneMapping() || hasDeletedObjects() || hasModifyAllQueries() || hasDeferredModifyAllQueries();
         if (hasChanges) {
@@ -222,7 +222,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
             log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
             return;
         }
-        
+
         if (!wasTransactionBegunPrematurely()) {
             beginEarlyTransaction();
         }
@@ -320,7 +320,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
             }
             return;
         }
-        
+
         // New objects cache is created to maintain the correspondence when they are returned back as different copy
         setNewObjectsCache(collectNewObjects());
         // Unregistered new objects cache is created to maintain the correspondence when they are returned back as different copy
@@ -357,7 +357,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
         // Now commit this unit of work to the parent remote session
         commitRootUnitOfWorkOnClient();
     }
-    
+
     /**
      * INTERNAL:
      * Changes are calculated on the client, so avoid recalculating them on the server.
@@ -381,9 +381,9 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
             // Avoid the resume on the server, only the client should resume.
             return;
         }
-        super.resumeUnitOfWork();        
+        super.resumeUnitOfWork();
     }
-    
+
     /**
      * Merges remote unit of work to parent remote session.
      */
@@ -408,7 +408,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
                 uowChangeSet.putNewObjectInChangesList((ObjectChangeSet)newChangeSets.next(), this);
             }
         }
-        
+
         //add the deleted objects
         if (this.objectsDeletedDuringCommit != null) {
             for (Object deletedObject : this.objectsDeletedDuringCommit.keySet()) {
@@ -676,7 +676,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
         if (session.hasEventManager()) {
             setEventManager(session.getEventManager().clone(this));
         }
-        //	setShouldLogMessages(session.shouldLogMessages());
+        //    setShouldLogMessages(session.shouldLogMessages());
         setSessionLog(session.getSessionLog());
         setLog(session.getLog());
         // These are transient so must be reset.
@@ -724,7 +724,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
                 Object clone = entry.getKey();
                 ObjectChangeSet changeSet = entry.getValue();
                 changeSet.postSerialize(clone, uowChangeSet, session);
-            }            
+            }
         } else {
             // Also need to reset the remote objects with their local clones.
             int size = uowChangeSet.getCloneToObjectChangeSet().size();

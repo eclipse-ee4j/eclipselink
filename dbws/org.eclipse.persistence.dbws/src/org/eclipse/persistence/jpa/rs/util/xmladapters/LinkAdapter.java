@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      bdoughan - initial implementation 
+ *      bdoughan - initial implementation
  *      tware - initial unmarshall method
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util.xmladapters;
@@ -31,12 +31,12 @@ import org.eclipse.persistence.queries.FetchGroup;
 /**
  * Used with JAXB to convert from a URL representing an relationship to an object
  * It provides functionality at marshall and unmarshall time
- * 
+ *
  * At marshall time, the target of a relationship will be marshalled as a URL that could be
  * used to find the object through a REST service
- * 
+ *
  * At unmarsall time, the URL will be deconstructed and used to find the object in JPA.
- * 
+ *
  * @author tware
  *
  */
@@ -52,7 +52,7 @@ public class LinkAdapter extends XmlAdapter<String, Object> {
         this.baseURI = baseURI;
         this.context = context;
     }
-    
+
     @Override
     public Object unmarshal(String v) throws Exception {
         if (v.equals("")){
@@ -64,7 +64,7 @@ public class LinkAdapter extends XmlAdapter<String, Object> {
         String entityId = fixedString.substring(lastSlash + 1);
         ClassDescriptor descriptor = context.getDescriptor(entityType);
         Object id = IdHelper.buildId(context, descriptor.getAlias(), entityId);
-        
+
         return constructObjectForId(entityType, id);
     }
 
@@ -80,13 +80,13 @@ public class LinkAdapter extends XmlAdapter<String, Object> {
         properties.put(QueryHints.FETCH_GROUP, fetchGroup);
         properties.put(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
         Object entity = context.find(null, entityType, id, properties);
-        
+
         if (entity == null){
             return IdHelper.buildObjectShell(context, entityType, id);
         }
         return entity;
     }
-    
+
     @Override
     public String marshal(Object v) throws Exception {
         if (null == v) {

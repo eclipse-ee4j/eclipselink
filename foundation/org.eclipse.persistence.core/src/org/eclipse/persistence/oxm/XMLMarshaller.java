@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -128,19 +128,19 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
         }
         XMLDescriptor xmlDescriptor = null;
         AbstractSession session = null;
-        
+
         boolean isXMLRoot = (object instanceof Root);
-        
+
         if(isXMLRoot){
             try{
-    	        session = context.getSession(((Root)object).getObject());
-    	        if(session != null){
-    	            xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
-        	    }
+                session = context.getSession(((Root)object).getObject());
+                if(session != null){
+                    xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
+                }
            }catch (XMLMarshalException marshalException) {
                 if (!isSimpleXMLRoot((Root) object)) {
-                	throw marshalException;    
-                }                
+                    throw marshalException;
+                }
             }
         }else{
             Class objectClass = object.getClass();
@@ -148,7 +148,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
                 MarshalRecord writerRecord = ((ExtendedResult)result).createRecord();
                 if(object instanceof Collection){
                     writerRecord.startCollection();
-                    for(Object o : (Collection) object) {                        
+                    for(Object o : (Collection) object) {
                         marshal(o, writerRecord);
                     }
                     writerRecord.endCollection();
@@ -162,8 +162,8 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
                 session = context.getSession(objectClass);
                 xmlDescriptor = getDescriptor(objectClass, session);
             }
-            
-            
+
+
         }
 
         //if this is a simple xml root, the session and descriptor will be null
@@ -173,7 +173,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
         }
         try {
             Document document = objectToXML(object, xmlDescriptor, isXMLRoot);
-            
+
             if ((result instanceof SAXResult) && (isFragment())) {
                 FragmentContentHandler fragmentHandler = new FragmentContentHandler(((SAXResult) result).getHandler());
                 getTransformer(); // Ensure transformer is initialized
@@ -198,13 +198,13 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
                         String namespace = null;
                         String localName = null;
                         if(isXMLRoot){
-                        	Root xmlRootObject = (Root)object;
+                            Root xmlRootObject = (Root)object;
                             if(xmlRootObject.getObject() != null && xmlRootObject.getObject() instanceof Node){
                                 namespace = ((Root)object).getNamespaceURI();
                                 localName = ((Root)object).getLocalName();
                             }
                         }
-                        
+
                         Object xmlStreamWriter = PrivilegedAccessHelper.invokeMethod(staxResultGetStreamWriterMethod, result);
                         if (xmlStreamWriter != null) {
                             Object domtostax = PrivilegedAccessHelper.newInstanceFromClass(domToStreamWriterClass);
@@ -222,7 +222,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
                         throw XMLMarshalException.marshalException(e);
                     }
                 }
-                getTransformer(); // Ensure transformer is initialized 
+                getTransformer(); // Ensure transformer is initialized
                 if (isXMLRoot) {
                     String oldEncoding = transformer.getEncoding();
                     String oldVersion = transformer.getVersion();
@@ -342,24 +342,24 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
 
     public Document objectToXML(Object object, Node parent, DocumentPreservationPolicy docPresPolicy) {
         boolean isXMLRoot = (object instanceof Root);
-        
+
         AbstractSession session = null;
         XMLDescriptor descriptor = null;
         if(isXMLRoot){
-        	try{
-        	    session = context.getSession(((Root)object).getObject());
-        	    if(session != null){
-        	        descriptor = getDescriptor(((Root)object).getObject(), session);
-        	    }
-        	}catch (XMLMarshalException marshalException) {
+            try{
+                session = context.getSession(((Root)object).getObject());
+                if(session != null){
+                    descriptor = getDescriptor(((Root)object).getObject(), session);
+                }
+            }catch (XMLMarshalException marshalException) {
                 if (!isSimpleXMLRoot((Root) object)) {
-                	throw marshalException;    
-                }                
+                    throw marshalException;
+                }
             }
         }else{
             Class objectClass = object.getClass();
-        	session = context.getSession(objectClass);
-        	descriptor = getDescriptor(objectClass, session);
+            session = context.getSession(objectClass);
+            descriptor = getDescriptor(objectClass, session);
         }
 
         String localRootName = descriptor.getDefaultRootElement();
@@ -457,7 +457,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
             ((Element) xmlRow.getDOM()).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         }
         xmlRow = (XMLRecord) bldr.buildRow(xmlRow, object,  objectSession, isXMLRoot);
-      
+
         document = xmlRow.getDocument();
 
         addSchemaLocations(document, session);
@@ -501,7 +501,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
         return new XMLMarshaller(this);
     }
 
-	/**
+    /**
      * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
      * @since 2.3.3
      */

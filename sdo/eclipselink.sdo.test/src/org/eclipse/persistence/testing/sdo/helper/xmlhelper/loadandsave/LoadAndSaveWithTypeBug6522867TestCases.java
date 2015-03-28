@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
 import commonj.sdo.DataObject;
@@ -32,11 +32,11 @@ public class LoadAndSaveWithTypeBug6522867TestCases extends LoadAndSaveWithOptio
         TestRunner.main(arguments);
     }
 
-    protected String getNoSchemaControlFileName() {       
+    protected String getNoSchemaControlFileName() {
        return  "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/purchaseOrderLocallyDeclaredNoSchema.xml";
     }
-    
-    protected String getNoSchemaControlWriteFileName() {       
+
+    protected String getNoSchemaControlWriteFileName() {
        return  "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/purchaseOrderLocallyDeclaredNoSchemaWrite.xml";
     }
 
@@ -52,7 +52,7 @@ public class LoadAndSaveWithTypeBug6522867TestCases extends LoadAndSaveWithOptio
         return "./org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderComplex.xsd";
     }
 
-    protected String getControlRootURI() {        
+    protected String getControlRootURI() {
         return NON_DEFAULT_URI;
     }
 
@@ -62,15 +62,15 @@ public class LoadAndSaveWithTypeBug6522867TestCases extends LoadAndSaveWithOptio
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
     protected List<String> getPackages() {
-        List<String> packages = new ArrayList<String>();       
+        List<String> packages = new ArrayList<String>();
         packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
         return packages;
-    }    
-    
-    protected Object getOptions() {   
+    }
+
+    protected Object getOptions() {
         Type theType = typeHelper.getType("http://www.example.org", "Items");
-        
-        DataObject optionsDataObject = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);              
+
+        DataObject optionsDataObject = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
         optionsDataObject.set(SDOConstants.TYPE_LOAD_OPTION ,theType);
         return optionsDataObject;
     }

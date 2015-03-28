@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.partitioned;
 
 import static javax.persistence.GenerationType.TABLE;
@@ -32,7 +32,7 @@ import org.eclipse.persistence.annotations.UnionPartitioning;
     connectionPools={"node2", "node3"})
 @Partitioned("HashPartitioningByNAME")
 public class Office {
-    
+
     @Id
     @Column(name="OFF_ID")
     @GeneratedValue(strategy=TABLE, generator="OFFICE_TABLE_GENERATOR")
@@ -41,11 +41,11 @@ public class Office {
     protected int number;
     @Column(name="OFF_NAME")
     protected String name;
-    
+
     public Office() {
         this(null, 0);
     }
-    
+
     public Office(String name, int number) {
         super();
         setName(name);

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors.changetracking;
 
 import java.beans.PropertyChangeEvent;
@@ -78,7 +78,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
         Boolean optimisticRead = null;
         if (unitOfWork.hasOptimisticReadLockObjects()) {
             optimisticRead = (Boolean)unitOfWork.getOptimisticReadLockObjects().get(object);
-            // Need to always compare/build change set for new objects and those that are being forced to 
+            // Need to always compare/build change set for new objects and those that are being forced to
             // updated (opt. read lock and forceUpdate)
             if (optimisticRead != null) {
                 return true;
@@ -89,7 +89,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
         }
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * This may cause a property change event to be raised to a listner in the case that a listener exists.
@@ -156,7 +156,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
      * initialize the Policy
      */
     public void initialize(AbstractSession session, ClassDescriptor descriptor) {
-        //3934266 If changePolicy is ObjectChangeTrackingPolicy or AttributeChangeTrackingPolicy, the class represented 
+        //3934266 If changePolicy is ObjectChangeTrackingPolicy or AttributeChangeTrackingPolicy, the class represented
         //by the descriptor must implement ChangeTracker interface.  Otherwise throw an exception.
         Class javaClass = descriptor.getJavaClass();
         if (!ChangeTracker.class.isAssignableFrom(javaClass)) {
@@ -170,7 +170,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
     public boolean isDeferredChangeDetectionPolicy(){
         return false;
     }
-    
+
     /**
      * Used to track instances of the change policies without doing an instance of check
      */

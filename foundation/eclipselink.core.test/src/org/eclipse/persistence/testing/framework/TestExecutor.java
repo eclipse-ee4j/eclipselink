@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import java.io.*;
@@ -37,13 +37,13 @@ public class TestExecutor {
     protected Writer log;
     /** This attribute is added to migrate tests to Ora*Tst */
     protected Writer regressionLog;
-    
+
     /** Session used to run tests. */
     protected Session session;
-    
+
     /** EntityManagerFactory used to run JPA tests. */
     protected EntityManagerFactory entityManagerFactory;
-    
+
     /** Allows the original test session to be stored and repalced. */
     protected Session originalSession;
 
@@ -53,7 +53,7 @@ public class TestExecutor {
 
     /** When set to true would log the results */
     protected boolean shouldLogResults;
-    
+
     protected Hashtable loadedModels;
 
     /** Contains a collection of all the configured systems */
@@ -70,16 +70,16 @@ public class TestExecutor {
 
     /** Hold a default JUnit TestResult.  Used to cache the result for JUnit tests run by the executor. */
     protected static junit.framework.TestResult defaultJUnitTestResult;
-    
+
     /** Hold JUnit TestResult but test.  Used to store the results for JUnit tests run by the executor. */
     protected static Map junitTestResults;
 
     /** This is used to get rid pf tests running on server(OC4J) */
     public boolean isServer = false;
-    
+
     /** Allow only errors to be logged. */
     protected boolean shouldLogOnlyErrors = false;
-    
+
     public static String CR = org.eclipse.persistence.internal.helper.Helper.cr();
 
     /**
@@ -94,15 +94,15 @@ public class TestExecutor {
         }
         return executor;
     }
-    
-    /** 
+
+    /**
      * Return if only errors should be logged.
      */
     public boolean shouldLogOnlyErrors() {
         return shouldLogOnlyErrors;
-    }    
-    
-    /** 
+    }
+
+    /**
      * Set if only errors should be logged.
      */
     public void setShouldLogOnlyErrors(boolean shouldLogOnlyErrors) {
@@ -260,7 +260,7 @@ public class TestExecutor {
             // Always catch warnings, and handle errors if shouldHandleErrors set.
             if ((!(exception instanceof TestWarningException)) && (!shouldHandleErrors())) {
                 throw exception;
-            }            
+            }
             if (getListener() != null) {
                 getListener().endTest(test);
             }
@@ -324,7 +324,7 @@ public class TestExecutor {
         }
         return getSession().getLog();
     }
-    
+
     /**
      * Create a new entity manager from the entity manager factory.
      * This entity manager is initialized from META-INF/persistence.xml.
@@ -332,7 +332,7 @@ public class TestExecutor {
     public EntityManager createEntityManager() {
         return getEntityManagerFactory().createEntityManager();
     }
-    
+
     /**
      * Return the executor entity manager factory.
      * This lazy initializes from the "performance" persistent unit using the default provider,
@@ -345,7 +345,7 @@ public class TestExecutor {
         }
         return entityManagerFactory;
     }
-    
+
     /**
      * Return the executor entity manager factory.
      * This lazy initializes from the "performance" persistent unit using the default provider,
@@ -360,14 +360,14 @@ public class TestExecutor {
         properties.put(PersistenceUnitProperties.LOGGING_LEVEL, getSession().getSessionLog().getLevelString());
         return properties;
     }
-    
+
     /**
      * Set the executor entity manager factory.
      */
     public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
     }
-    
+
     /**
      * Return the session cast to DatabaseSession.
      */
@@ -402,7 +402,7 @@ public class TestExecutor {
     public void setOriginalSession(Session originalSession) {
         this.originalSession = originalSession;
     }
-    
+
     /**
      * Swap the current session with the new session.
      * This allows a test or model to customize the session it uses.
@@ -411,7 +411,7 @@ public class TestExecutor {
         setOriginalSession(getSession());
         setSession(newSession);
     }
-    
+
     /**
      * Swap the current session with a new database session with the same login,
      * but no descriptors.
@@ -420,9 +420,9 @@ public class TestExecutor {
         DatabaseSession session = new Project(getSession().getLogin()).createDatabaseSession();
         session.setSessionLog(getSession().getSessionLog());
         session.login();
-        swapSession(session);        
+        swapSession(session);
     }
-    
+
     /**
      * Swap the current session with the new server session.
      */
@@ -432,7 +432,7 @@ public class TestExecutor {
         session.login();
         swapSession(session);
     }
-    
+
     /**
      * Swap the current session with the new session.
      * This allows a test or model to customize the session it uses.
@@ -483,7 +483,7 @@ public class TestExecutor {
     public void logResultForTestEntity(junit.framework.Test test) {
         logResultForTestEntity(test, false);
     }
-    
+
     /**
      * Logs the result for the given test entity if logResults is true.
      */
@@ -531,7 +531,7 @@ public class TestExecutor {
             log.write(CR);
             junit.framework.TestResult result = (junit.framework.TestResult) TestExecutor.getJUnitTestResults().get(test);
             if (result == null) {
-                log.write(indent + "## SETUP FAILURE ## (no tests run)");                
+                log.write(indent + "## SETUP FAILURE ## (no tests run)");
                 log.write(CR);
                 log.flush();
                 return;
@@ -576,7 +576,7 @@ public class TestExecutor {
                 for (Enumeration errors = result.errors(); errors.hasMoreElements();) {
                     junit.framework.TestFailure error = (junit.framework.TestFailure)errors.nextElement();
                     String testString = error.failedTest().toString();
-                    int startIndex = testString.indexOf("(");                    
+                    int startIndex = testString.indexOf("(");
                     if (startIndex != -1) {
                         log.write(indent + "TEST SUITE NAME: " + testString.substring(startIndex + 1, testString.length() - 1));
                         log.write(CR);
@@ -611,8 +611,8 @@ public class TestExecutor {
         try {
             TestExecutor executor = new TestExecutor();
 
-            //		executor.handleErrors();
-            //		executor.doNotLogResults();
+            //        executor.handleErrors();
+            //        executor.doNotLogResults();
             executor.execute((TestEntity)Class.forName(arguments[0]).newInstance());
         } catch (Throwable exception) {
             System.out.println(exception.toString());

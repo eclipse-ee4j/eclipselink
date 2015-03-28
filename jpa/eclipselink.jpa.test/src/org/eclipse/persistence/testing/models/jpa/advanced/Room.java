@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *    Vikram Bhatia - initial implementation 
- ******************************************************************************/  
+ *    Vikram Bhatia - initial implementation
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.io.Serializable;
@@ -32,7 +32,7 @@ public class Room implements Serializable, Cloneable {
     private int width;
     private int length;
     private int height;
-    
+
     @OneToMany(mappedBy="room", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private Collection<Door> doors;
 
@@ -75,25 +75,25 @@ public class Room implements Serializable, Cloneable {
     public void setDoors(Collection<Door> doors) {
         this.doors = doors;
     }
-    
+
     public void addDoor(Door door) {
         if (doors == null) {
             doors = new ArrayList<Door>();
         }
         doors.add(door);
     }
-    
+
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Room)) {
             return false;
         }
-        
+
         Room r = (Room) obj;
-        if (this.id == r.id && this.width == r.width 
+        if (this.id == r.id && this.width == r.width
                 && this.height == r.height && this.length == r.length) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -105,7 +105,7 @@ public class Room implements Serializable, Cloneable {
         try {
             Field f = this.getClass().getDeclaredField("height");
             f.setAccessible(true);
-            
+
             return f.getInt(this) > 0;
         } catch (Exception ex) {
             return false;

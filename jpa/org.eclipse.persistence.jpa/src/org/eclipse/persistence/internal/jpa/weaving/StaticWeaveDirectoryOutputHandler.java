@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
 
 import java.io.File;
@@ -30,8 +30,8 @@ import org.eclipse.persistence.internal.helper.Helper;
 public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutputHandler{
     private URL source=null;
     private URL target=null;
-    
-    
+
+
     /**
      * Construct an instance of StaticWeaveDirectoryOutputHandler.
      * @param source
@@ -52,7 +52,7 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
            file.mkdirs();
        }
     }
-    
+
     /**
      * Write entry bytes into target, this method is usually invoked  if class has been tranformed
      * @param targetEntry
@@ -62,24 +62,24 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
     public void addEntry(JarEntry targetEntry,byte[] entryBytes)throws IOException{
         FileOutputStream fos = null;
         try {
-	    	File target  = new File(this.target.getPath()+targetEntry.getName()).getAbsoluteFile();
-	        if(!target.exists()) {
-	            target.createNewFile();
-	        }
-	        fos = new FileOutputStream(target);
-	        fos.write(entryBytes);
+            File target  = new File(this.target.getPath()+targetEntry.getName()).getAbsoluteFile();
+            if(!target.exists()) {
+                target.createNewFile();
+            }
+            fos = new FileOutputStream(target);
+            fos.write(entryBytes);
         } finally {
-        	Helper.close(fos);
+            Helper.close(fos);
         }
     }
-    
+
     /**
      * Write entry into target, this method usually copy original class into target.
      * @param jis
      * @param entry
      * @throws IOException
      */
-    public void addEntry(InputStream jis,JarEntry entry) throws IOException,URISyntaxException {    
+    public void addEntry(InputStream jis,JarEntry entry) throws IOException,URISyntaxException {
         File target  = new File(this.target.getPath()+entry.getName()).getAbsoluteFile();
         if(!target.exists()) {
             target.createNewFile();
@@ -98,8 +98,8 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
                 readwriteStreams(jis,(new FileOutputStream(target)));
             }
         } finally {
-        	Helper.close(fis);
-        	Helper.close(fos);
+            Helper.close(fis);
+            Helper.close(fos);
         }
     }
 }

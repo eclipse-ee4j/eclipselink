@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -24,19 +24,19 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 
-public final class MWEisTransactionalPolicy 
-	extends MWAbstractTransactionalPolicy 
-{	
+public final class MWEisTransactionalPolicy
+    extends MWAbstractTransactionalPolicy
+{
     private MWXmlPrimaryKeyPolicy primaryKeyPolicy;
 
-    
+
     // ********** static methods **********
-	
-	public static XMLDescriptor buildDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.setJavaClass(MWEisTransactionalPolicy.class);
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractTransactionalPolicy.class);
-		
+
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MWEisTransactionalPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(MWAbstractTransactionalPolicy.class);
+
 
         XMLCompositeObjectMapping primaryKeyFieldPolicyMapping = new XMLCompositeObjectMapping();
         primaryKeyFieldPolicyMapping.setAttributeName("primaryKeyPolicy");
@@ -45,21 +45,21 @@ public final class MWEisTransactionalPolicy
         descriptor.addMapping(primaryKeyFieldPolicyMapping);
 
         return descriptor;
-	}
-	
-	
-	// ********** Constructors **********
+    }
 
-	/** Default constructor - for TopLink use only. */
-	private MWEisTransactionalPolicy() {
-		super();
-	}
 
-	MWEisTransactionalPolicy(MWRootEisDescriptor parent) {
-		super(parent);
-	}
-	
-    
+    // ********** Constructors **********
+
+    /** Default constructor - for TopLink use only. */
+    private MWEisTransactionalPolicy() {
+        super();
+    }
+
+    MWEisTransactionalPolicy(MWRootEisDescriptor parent) {
+        super(parent);
+    }
+
+
     // **************** Initialization ****************************************
 
     protected void initialize(Node parent) {
@@ -71,34 +71,34 @@ public final class MWEisTransactionalPolicy
         super.addChildrenTo(children);
         children.add(this.primaryKeyPolicy);
     }
-    
 
-	
-	protected MWQueryManager buildQueryManager() {
-		return new MWEisQueryManager(this);
-	}
+
+
+    protected MWQueryManager buildQueryManager() {
+        return new MWEisQueryManager(this);
+    }
 
     protected MWLockingPolicy buildLockingPolicy() {
         return new MWEisDescriptorLockingPolicy(this);
-    }	
-    
- 	// **************** "Public" **********************************************
-	
-	MWRootEisDescriptor descriptor() {
-		return (MWRootEisDescriptor) this.getParent();
-	}
+    }
 
-    
+     // **************** "Public" **********************************************
+
+    MWRootEisDescriptor descriptor() {
+        return (MWRootEisDescriptor) this.getParent();
+    }
+
+
     public MWXmlPrimaryKeyPolicy getPrimaryKeyPolicy() {
         return this.primaryKeyPolicy;
     }
 
-    
+
     // *************** Runtime Conversion ********************
-    
+
     public void adjustRuntimeDescriptor(ClassDescriptor runtimeDescriptor) {
         super.adjustRuntimeDescriptor(runtimeDescriptor);
         this.primaryKeyPolicy.adjustRuntimeDescriptor(runtimeDescriptor);
     }
-    
+
 }

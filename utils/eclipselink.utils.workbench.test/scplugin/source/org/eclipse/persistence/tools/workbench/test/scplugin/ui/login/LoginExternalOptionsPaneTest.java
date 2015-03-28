@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,36 +28,36 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
  */
 public class LoginExternalOptionsPaneTest extends AbstractLoginPaneTest
 {
-	public LoginExternalOptionsPaneTest(SCAbstractPanelTest parentTest,
-													PropertyValueModel nodeHolder,
-													DatabaseLoginAdapter selection)
-	{
-		super(parentTest, nodeHolder, selection);
-	}
+    public LoginExternalOptionsPaneTest(SCAbstractPanelTest parentTest,
+                                                    PropertyValueModel nodeHolder,
+                                                    DatabaseLoginAdapter selection)
+    {
+        super(parentTest, nodeHolder, selection);
+    }
 
-	protected void _testComponentEntryExternalConnectionPooling() throws Exception
-	{
-		LoginAdapter login = (LoginAdapter) getSelection();
-		DatabaseSessionAdapter session = (DatabaseSessionAdapter) login.getParent();
-				boolean value = session.usesExternalConnectionPooling();
+    protected void _testComponentEntryExternalConnectionPooling() throws Exception
+    {
+        LoginAdapter login = (LoginAdapter) getSelection();
+        DatabaseSessionAdapter session = (DatabaseSessionAdapter) login.getParent();
+                boolean value = session.usesExternalConnectionPooling();
 
-		simulateMnemonic("CONNECTION_EXTERNAL_CONNECTION_POOLING_CHECK_BOX");
+        simulateMnemonic("CONNECTION_EXTERNAL_CONNECTION_POOLING_CHECK_BOX");
 
-		assertTrue(value != session.usesExternalConnectionPooling());
-	}
+        assertTrue(value != session.usesExternalConnectionPooling());
+    }
 
-	protected void _testFocusTransferExternalConnectionPooling() throws Exception
-	{
-		testFocusTransferByMnemonic("CONNECTION_EXTERNAL_CONNECTION_POOLING_CHECK_BOX", COMPONENT_RADIO_BUTTON);
-	}
+    protected void _testFocusTransferExternalConnectionPooling() throws Exception
+    {
+        testFocusTransferByMnemonic("CONNECTION_EXTERNAL_CONNECTION_POOLING_CHECK_BOX", COMPONENT_RADIO_BUTTON);
+    }
 
-	protected JComponent buildPane() throws Exception
-	{
-		return null;
-	}
+    protected JComponent buildPane() throws Exception
+    {
+        return null;
+    }
 
-	protected String windowTitle()
-	{
-		return "Login External Options Test";
-	}
+    protected String windowTitle()
+    {
+        return "Login External Options Test";
+    }
 }

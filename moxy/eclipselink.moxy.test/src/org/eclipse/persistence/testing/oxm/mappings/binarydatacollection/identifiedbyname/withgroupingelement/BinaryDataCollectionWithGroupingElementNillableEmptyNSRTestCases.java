@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -54,7 +54,7 @@ public class BinaryDataCollectionWithGroupingElementNillableEmptyNSRTestCases ex
         Vector namespaces = new Vector();
 
         //namespaces.add(new Namespace(MyAttachmentUnmarshaller.XOP_NAMESPACE_PREFIX,//
-        //		MyAttachmentUnmarshaller.XOP_NAMESPACE_URL));
+        //        MyAttachmentUnmarshaller.XOP_NAMESPACE_URL));
         namespaceResolver.setNamespaces(namespaces);
         Project p = new BinaryDataCollectionWithGroupingElementIdentifiedByNameProject(namespaceResolver);
         ((XMLBinaryDataCollectionMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("photos")).getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
@@ -62,7 +62,7 @@ public class BinaryDataCollectionWithGroupingElementNillableEmptyNSRTestCases ex
         setProject(p);
     }
 
-    protected Object getControlObject() {        
+    protected Object getControlObject() {
         Vector photos = new Vector();
         photos.addElement(MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes());
         photos.addElement(null);
@@ -72,11 +72,11 @@ public class BinaryDataCollectionWithGroupingElementNillableEmptyNSRTestCases ex
 
     public void setUp() throws Exception {
         super.setUp();
-        
+
         MyAttachmentUnmarshaller handler = new MyAttachmentUnmarshaller();
 
         handler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID,MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes());
-        xmlUnmarshaller.setAttachmentUnmarshaller(handler);	       
+        xmlUnmarshaller.setAttachmentUnmarshaller(handler);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,9 +38,9 @@ public class AttributeNode extends Node {
 
     /** */
     private DatabaseMapping mapping;
-    
+
     private String castClassName = null;
-    
+
     private QueryKey attributeQueryKey = null;
 
     /**
@@ -58,18 +58,18 @@ public class AttributeNode extends Node {
         setAttributeName(name);
     }
 
-    /** 
-     * INTERNAL 
-     * If called this AttributeNode represents an unqualified field access. 
+    /**
+     * INTERNAL
+     * If called this AttributeNode represents an unqualified field access.
      * The method returns a DotNode representing a qualified field access with
      * the base variable as left child node and the attribute as right child
-     * node. 
+     * node.
      */
     public Node qualifyAttributeAccess(ParseTreeContext context) {
         return (Node)context.getNodeFactory().newQualifiedAttribute(
-            getLine(), getColumn(), context.getBaseVariable(), name); 
+            getLine(), getColumn(), context.getBaseVariable(), name);
     }
-    
+
     /**
      * INTERNAL
      * Validate the current node and calculates its type.
@@ -77,7 +77,7 @@ public class AttributeNode extends Node {
     public void validate(ParseTreeContext context) {
         // The type is calculated in the parent DotNode.
     }
-    
+
     public Expression appendCast(Expression exp, GenerationContext context){
         if (castClassName == null){
             return exp;
@@ -86,7 +86,7 @@ public class AttributeNode extends Node {
         Class cast = (Class)typeHelper.resolveSchema(castClassName);
         return exp.treat(cast);
     }
-    
+
     public Object computeActualType(Object initialType, TypeHelper typeHelper){
         if (castClassName != null){
             return typeHelper.resolveSchema(castClassName);
@@ -97,7 +97,7 @@ public class AttributeNode extends Node {
     public void checkForQueryKey(Object ownerType, TypeHelper typeHelper){
         attributeQueryKey = typeHelper.resolveQueryKey(ownerType, name);
     }
-    
+
     /** */
     public Expression addToExpression(Expression parentExpression, GenerationContext context) {
         if (isCollectionAttribute()) {
@@ -105,13 +105,13 @@ public class AttributeNode extends Node {
             if (context.hasMemberOfNode()) {
                 return parentExpression.noneOf(name, new ExpressionBuilder().equal(context.getMemberOfNode().getLeftExpression()));
             }
-            return outerJoin ? appendCast(parentExpression.anyOfAllowingNone(name), context) : 
+            return outerJoin ? appendCast(parentExpression.anyOfAllowingNone(name), context) :
                 appendCast(parentExpression.anyOf(name), context);
         } else {
             // check whether collection attribute is required
             if (requiresCollectionAttribute()) {
                 throw JPQLException.invalidCollectionMemberDecl(
-                    context.getParseTreeContext().getQueryInfo(), 
+                    context.getParseTreeContext().getQueryInfo(),
                     getLine(), getColumn(), name);
             }
 
@@ -148,7 +148,7 @@ public class AttributeNode extends Node {
     public void setCastClassName(String castClassName) {
         this.castClassName = castClassName;
     }
-    
+
     /** */
     public boolean isOuterJoin() {
         return outerJoin;

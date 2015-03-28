@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework.junit;
 
 import java.io.File;
@@ -36,9 +36,9 @@ public class JUnitTestCaseHelper {
 
     public static Map propertiesMap = null;
     public static Map persistencePropertiesTestMap = new HashMap();
-    
+
     public static Properties propertiesFromFile = null;
-    
+
     // Maps puName to properties
     //   "composite-advanced" -> Map,
     //   "xml-composite-advanced" -> Map
@@ -48,8 +48,8 @@ public class JUnitTestCaseHelper {
     //   "2" -> Map,
     //   "3" -> Map
     public static Map<String, Map> dbPropertiesMap = new HashMap();
-    
-    /** 
+
+    /**
      * If this property is set to "true" either in System properties or property file then
      * db properties corresponding to dbIndex that was not found will be substituted for default properties.
      * If ALL of the properties db2.user, db2.pwd, db2.url, db2.driver, db2.platform are not found
@@ -59,9 +59,9 @@ public class JUnitTestCaseHelper {
      * Setting the property to "true" allows to run session  test on a single data base (it will be used by all member sessions).
      **/
     public static final String SINGLE_DB = "single.db";
-    
+
     public static Boolean shouldUseSingleDb;
-    
+
     static {
         // These following properties used for property processing testing.
         // Some (or all) of them may override persistence properties.
@@ -80,7 +80,7 @@ public class JUnitTestCaseHelper {
     /**
      * Get common properties (including database properties) from System, for unavailable ones, read from test.properties file.
      * The location of properties file can be given by system property <tt>test.properties</tt>.
-     * The default location is "test.properties" file in current directory. 
+     * The default location is "test.properties" file in current directory.
      */
     public static Map<String, String> getDatabaseProperties() {
         if (propertiesMap == null) {
@@ -111,25 +111,25 @@ public class JUnitTestCaseHelper {
                 }
             }
         }
-        
-        if (puProperties != null) {            
+
+        if (puProperties != null) {
             return puProperties;
         } else {
             return getDatabaseProperties();
         }
     }
-    
+
     // No index corresponds to db.user, db.pwd,...
     // index = 2 -> db2.user, db2.pwd,... etc
     static Map<String, String> createDatabaseProperties(String dbIndex) {
         boolean addLoggingLevel = dbIndex == null || dbIndex.length() == 0;
-        
+
         String db_driver_key = insertIndex(DB_DRIVER_KEY, dbIndex);
         String db_url_key = insertIndex(DB_URL_KEY, dbIndex);
         String db_user_key = insertIndex(DB_USER_KEY, dbIndex);
         String db_pwd_key = insertIndex(DB_PWD_KEY, dbIndex);
         String db_platform_key = insertIndex(DB_PLATFORM_KEY, dbIndex);
-        
+
         String dbDriver = System.getProperty(db_driver_key);
         String dbUrl = System.getProperty(db_url_key);
         String dbUser = System.getProperty(db_user_key);
@@ -140,7 +140,7 @@ public class JUnitTestCaseHelper {
         //if not all of these properties available from System, read unavailable ones from test.properties file
         if ((dbDriver == null) || (dbUrl == null) || (dbUser == null) || (dbPwd == null) || (platform == null) || (logLevel == null))
         {
-            if (propertiesFromFile == null) {                
+            if (propertiesFromFile == null) {
                 createPropertiesFromFile();
             }
             if (dbDriver == null) {
@@ -189,10 +189,10 @@ public class JUnitTestCaseHelper {
         }
         return properties;
     }
-    
+
     public static Map createCompositeProperties(String[] sessions) {
         Map properties = new HashMap();
-        
+
         Map compositeMap = new HashMap();
         properties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, compositeMap);
         Map defaultProperties = getDatabaseProperties();
@@ -208,7 +208,7 @@ public class JUnitTestCaseHelper {
             Map sessionProperties = getDatabasePropertiesForIndex(dbIndex);
             if (sessionProperties.isEmpty() && shouldUseSingleDb()) {
                 // if non of these properties defined, then use firstSessionProperties
-                sessionProperties = defaultProperties; 
+                sessionProperties = defaultProperties;
             }
             if (!sessionProperties.isEmpty()) {
                 compositeMap.put(sessions[i], sessionProperties);
@@ -216,7 +216,7 @@ public class JUnitTestCaseHelper {
         }
         return properties;
     }
-    
+
     public static String insertIndex(String key, String index) {
         if (index == null || index.length() == 0) {
             return key;
@@ -238,11 +238,11 @@ public class JUnitTestCaseHelper {
             throw new RuntimeException("dbIndex is null or an empty String");
         }
     }
-    
+
     @SuppressWarnings("deprecation")
     public static void createPropertiesFromFile() {
         propertiesFromFile = new Properties();
-        File testPropertiesFile 
+        File testPropertiesFile
             = new File(System.getProperty(TEST_PROPERTIES_FILE_KEY, TEST_PROPERTIES_FILE_DEFAULT));
         URL url = null;
         if (testPropertiesFile.exists()) {
@@ -263,13 +263,13 @@ public class JUnitTestCaseHelper {
             }
         }
     }
-    
+
     public static boolean shouldUseSingleDb() {
         if (shouldUseSingleDb == null) {
             shouldUseSingleDb = Boolean.TRUE;
             String property = System.getProperty(SINGLE_DB);
             if (property == null) {
-                if (propertiesFromFile == null) {                
+                if (propertiesFromFile == null) {
                     createPropertiesFromFile();
                 }
                 property = (String) propertiesFromFile.get(SINGLE_DB);
@@ -282,5 +282,5 @@ public class JUnitTestCaseHelper {
         }
         return shouldUseSingleDb;
     }
-    
+
 }

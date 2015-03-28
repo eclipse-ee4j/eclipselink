@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,7 +60,7 @@ public class WithoutXmlRootElementArrayTestCases extends JSONMarshalUnmarshalTes
     }
 
     @Override
-	public JAXBElement<List> getReadControlObject() {
+    public JAXBElement<List> getReadControlObject() {
         WithoutXmlRootElementRoot[] array = getControlObject();
         ArrayList<WithoutXmlRootElementRoot> arrayList = new ArrayList<WithoutXmlRootElementRoot>(array.length);
         for(WithoutXmlRootElementRoot withoutXmlRootElementRoot : array) {
@@ -68,7 +68,7 @@ public class WithoutXmlRootElementArrayTestCases extends JSONMarshalUnmarshalTes
         }
         return new JAXBElement(new QName(""),WithoutXmlRootElementRoot.class, arrayList);
     }
-    
+
     public void testUnmarshal() throws Exception {
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         Collection<WithoutXmlRootElementRoot>  test = (Collection<WithoutXmlRootElementRoot>) jsonUnmarshaller.unmarshal(new StreamSource(inputStream), WithoutXmlRootElementRoot.class).getValue();
@@ -78,8 +78,8 @@ public class WithoutXmlRootElementArrayTestCases extends JSONMarshalUnmarshalTes
         Iterator<WithoutXmlRootElementRoot> controlIter = control.iterator();
         assertTrue(test.size() == control.size());
         while(controlIter.hasNext()){
-        	assertEquals(controlIter.next(), testIter.next());
-        }        
+            assertEquals(controlIter.next(), testIter.next());
+        }
     }
 
     public void testUnmarshalEmptyList() throws Exception {

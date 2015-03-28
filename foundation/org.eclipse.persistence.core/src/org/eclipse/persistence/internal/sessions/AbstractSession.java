@@ -9,21 +9,21 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     06/30/2011-2.3.1 Guy Pelletier 
+ *     06/30/2011-2.3.1 Guy Pelletier
  *       - 341940: Add disable/enable allowing native queries
- *     09/09/2011-2.3.1 Guy Pelletier 
- *       - 356197: Add new VPD type to MultitenantType 
- *     09/14/2011-2.3.1 Guy Pelletier 
+ *     09/09/2011-2.3.1 Guy Pelletier
+ *       - 356197: Add new VPD type to MultitenantType
+ *     09/14/2011-2.3.1 Guy Pelletier
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     05/14/2012-2.4 Guy Pelletier  
+ *     05/14/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- *     08/11/2012-2.5 Guy Pelletier  
+ *     08/11/2012-2.5 Guy Pelletier
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
- *     11/29/2012-2.5 Guy Pelletier 
+ *     11/29/2012-2.5 Guy Pelletier
  *       - 395406: Fix nightly static weave test errors
- *     08/11/2014-2.5 Rick Curtis 
+ *     08/11/2014-2.5 Rick Curtis
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
@@ -182,7 +182,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /** Stores predefine reusable queries.*/
     transient protected Map<String, List<DatabaseQuery>> queries;
-    
+
     /**
      * Stores predefined reusable AttributeGroups.
      */
@@ -211,7 +211,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * for the clone process. It should be populated with an EclipseLinkIdentityHashMap
      */
     protected Map objectsLockedForClone;
-    
+
     /** Destination for logged messages and SQL. */
     transient protected SessionLog sessionLog;
 
@@ -229,13 +229,13 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /** Last descriptor accessed, use to optimize descriptor lookup. */
     transient protected ClassDescriptor lastDescriptorAccessed;
-    
+
     /** PERF: cache descriptors from project. */
     transient protected Map<Class, ClassDescriptor> descriptors;
-    
+
     /** PERF: cache table per tenant descriptors needing to be initialized per EM */
     transient protected List<ClassDescriptor> tablePerTenantDescriptors;
-    
+
     /** PERF: cache table per tenant queries needing to be initialized per EM */
     transient protected List<DatabaseQuery> tablePerTenantQueries;
 
@@ -291,20 +291,20 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     protected Integer pessimisticLockTimeoutDefault;
 
     protected int queryTimeoutDefault;
-    
+
     /** Allow a session to enable concurrent processing. */
     protected boolean isConcurrent;
-    
+
     /**
      * This map will hold onto class to static metamodel class references from JPA.
      */
     protected Map<String, String> staticMetamodelClasses;
-    
-    /** temporarily holds a list of events that must be fired after the current operation completes. 
+
+    /** temporarily holds a list of events that must be fired after the current operation completes.
      *  Initialy created for postClone events.
      */
     protected List<DescriptorEvent> deferredEvents;
-    
+
     /** records that the UOW is executing deferred events.  Events could cause operations to occur that may attempt to restart the event execution.  This must be avoided*/
     protected boolean isExecutingEvents;
 
@@ -322,22 +322,22 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /** Set the Serializer to use by default for serialization. */
     transient protected Serializer serializer;
-    
+
     /** Allow CDI injection of entity listeners **/
     transient protected EntityListenerInjectionManager entityListenerInjectionManager;
-    
+
     /**
-     * Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization. 
-    * Optimization specified by the session is ignored if incompatible with other query settings. 
+     * Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization.
+    * Optimization specified by the session is ignored if incompatible with other query settings.
      */
-    protected boolean shouldOptimizeResultSetAccess; 
-    
+    protected boolean shouldOptimizeResultSetAccess;
+
     /**
      * Indicates whether Session creation should tolerate an invalid NamedQuery. If true, an exception
      * will be thrown on .createNamedQuery(..) rather than at init time.
      */
     protected boolean tolerateInvalidJPQL = false;
-    
+
     /**
      * INTERNAL:
      * Create and return a new session.
@@ -404,7 +404,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public void setSerializer(Serializer serializer) {
         this.serializer = serializer;
     }
-    
+
     /**
      * INTERNAL
      * Return the query builder used to parser JPQL.
@@ -420,7 +420,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         return this.queryBuilder;
     }
-    
+
     /**
      * INTERNAL
      * Set the query builder used to parser JPQL.
@@ -428,7 +428,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public void setQueryBuilder(JPAQueryBuilder queryBuilder) {
         this.queryBuilder = queryBuilder;
     }
-    
+
     /**
      * INTERNAL
      * Build the JPQL builder based on session properties.
@@ -469,7 +469,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         return builder;
     }
-    
+
     /**
      * INTERNAL:
      * PERF: Used for quick turning logging ON/OFF entirely.
@@ -502,7 +502,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return a unit of work for this session not registered with the JTS transaction.
      */
     public UnitOfWorkImpl acquireNonSynchronizedUnitOfWork() {
-    	return acquireNonSynchronizedUnitOfWork(null);
+        return acquireNonSynchronizedUnitOfWork(null);
     }
 
     /**
@@ -587,7 +587,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public void addAlias(String alias, ClassDescriptor descriptor) {
         project.addAlias(alias, descriptor);
     }
-    
+
     /**
      * INTERNAL:
      * Return all pre-defined not yet parsed EJBQL queries.
@@ -595,7 +595,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public void addJPAQuery(DatabaseQuery query) {
         getProject().addJPAQuery(query);
     }
-    
+
     /**
      * INTERNAL:
      * Return all pre-defined not yet parsed EJBQL multitenant queries.
@@ -603,7 +603,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public void addJPATablePerTenantQuery(DatabaseQuery query) {
         getProject().addJPATablePerTenantQuery(query);
     }
-    
+
     /**
      * PUBLIC:
      * Return a set of multitenant context properties this session
@@ -611,7 +611,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public void addMultitenantContextProperty(String contextProperty) {
         getMultitenantContextProperties().add(contextProperty);
     }
-    
+
     /**
      * INTERNAL:
      * Add the query to the session queries.
@@ -641,7 +641,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         queriesByName.add(query);
     }
-    
+
     /**
      * PUBLIC:
      * Add the query to the session queries with the given name.
@@ -651,7 +651,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         query.setName(name);
         addQuery(query, false);
     }
-    
+
     /**
      * PUBLIC:
      * Add the query to the session queries with the given name.
@@ -661,7 +661,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         query.setName(name);
         addQuery(query, replace);
     }
-    
+
     /**
      * INTERNAL:
      * Add a metamodel class to model class reference.
@@ -670,7 +670,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (staticMetamodelClasses == null) {
             staticMetamodelClasses = new HashMap<String, String>();
         }
-        
+
         staticMetamodelClasses.put(modelClassName, metamodelClassName);
     }
 
@@ -681,7 +681,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     protected void addTablePerTenantDescriptor(ClassDescriptor descriptor) {
         getTablePerTenantDescriptors().add(descriptor);
     }
-    
+
     /**
      * INTERNAL:
      * Add a query that queries a table per tenant entity
@@ -689,7 +689,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     protected void addTablePerTenantQuery(DatabaseQuery query) {
         getTablePerTenantQueries().add(query);
     }
-    
+
     /**
      * INTERNAL:
      * Called by beginTransaction() to start a transaction.
@@ -716,7 +716,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 try {
                     accessor.rollbackTransaction(this);
                 } catch (RuntimeException ignore) { }
-            }            
+            }
             throw exception;
         }
     }
@@ -789,7 +789,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         return exceptionToThrow;
     }
-    
+
     /**
      * INTERNAL:
      * Called in the end of beforeCompletion of external transaction synchronization listener.
@@ -926,7 +926,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             entityListenerInjectionManager.cleanUp(this);
         }
     }
-    
+
     /**
      * PUBLIC:
      * clear the integrityChecker. IntegrityChecker holds all the ClassDescriptor Exceptions.
@@ -1094,7 +1094,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * or have a common inheritance hierarchy mapped root class.
      * This can be used to obtain a scratch copy of an object,
      * or for templatizing an existing object into another new object.
-     * If there are no attributes in the group 
+     * If there are no attributes in the group
      * then the object and all of its privately owned parts will be copied.
      * Otherwise only the attributes included into the group will be copied.
      */
@@ -1197,7 +1197,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                     Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(elim, new Class[] {String.class}, false));
                     return (EntityListenerInjectionManager) AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {beanManager}));
             } else {
-                Class elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()); 
+                Class elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader());
                 Constructor constructor = PrivilegedAccessHelper.getConstructorFor(elim, new Class[] {Object.class}, false);
                 return (EntityListenerInjectionManager) PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {beanManager});
             }
@@ -1206,7 +1206,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         return new DisabledEntityListenerInjectionManager();
     }
-    
+
     /**
      * INTERNAL:
      * This method is similar to getAndCloneCacheKeyFromParent.  It purpose is to get protected cache data from the shared cache and
@@ -1223,7 +1223,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         try{
             Object key = null;
             Object lockValue = null;
-            long readTime = 0; 
+            long readTime = 0;
             if (cacheKey != null){
                 if (identityMapLocked) {
                     checkAndRefreshInvalidObject(cached, cacheKey, descriptor);
@@ -1257,7 +1257,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             if (rootOfCloneRecursion){
                 if (this.objectsLockedForClone == null && cacheKey != null) {
                     cacheKey.releaseReadLock();
-                } else {                        
+                } else {
                     for (Iterator iterator = this.objectsLockedForClone.values().iterator(); iterator.hasNext();) {
                         ((CacheKey)iterator.next()).releaseReadLock();
                     }
@@ -1417,26 +1417,26 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /**
      * INTERNAL:
-     * Set the table per tenant. This should be called per client session after 
-     * the start of a transaction. From JPA this method is called on the entity 
+     * Set the table per tenant. This should be called per client session after
+     * the start of a transaction. From JPA this method is called on the entity
      * manager by setting the multitenant table per tenant property.
      */
     public void updateTablePerTenantDescriptors(String property, Object value) {
         // When all the table per tenant descriptors are set, we should initialize them.
         boolean shouldInitializeDescriptors = hasTablePerTenantDescriptors();
-        
+
         for (ClassDescriptor descriptor : getTablePerTenantDescriptors()) {
             TablePerMultitenantPolicy policy = (TablePerMultitenantPolicy) descriptor.getMultitenantPolicy();
-            
+
             if ((! policy.hasContextTenant()) && policy.usesContextProperty(property)) {
                 policy.setContextTenant((String) value);
             }
-            
+
             shouldInitializeDescriptors = shouldInitializeDescriptors && policy.hasContextTenant();
         }
-        
+
         if (shouldInitializeDescriptors) {
-            // Now that the correct tables are set on all table per tenant 
+            // Now that the correct tables are set on all table per tenant
             // descriptors, we can go through the initialization phases safely.
             try {
                 // First initialize basic properties (things that do not depend on anything else)
@@ -1462,7 +1462,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             }
 
             getCommitManager().initializeCommitOrder();
-            
+
             // If we have table per tenant queries, initialize and add them now
             // once all the descriptors have been initialized.
             if (hasTablePerTenantQueries()) {
@@ -1472,7 +1472,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Updates the count of SessionProfiler event
@@ -1501,7 +1501,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (!this.isExecutingEvents && this.deferredEvents != null) {
             this.isExecutingEvents = true;
             try {
-                for (int i = 0; i < this.deferredEvents.size(); ++i) { 
+                for (int i = 0; i < this.deferredEvents.size(); ++i) {
                     // the size is checked every time here because the list may grow
                     DescriptorEvent event = this.deferredEvents.get(i);
                     event.getDescriptor().getEventManager().executeEvent(event);
@@ -1512,7 +1512,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             }
         }
     }
-    
+
 
     /**
      * INTERNAL:
@@ -1532,7 +1532,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Release (if required) connection after call.
@@ -1563,15 +1563,15 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             return value.intValue();
         }
     }
-    
+
     /**
      * PUBLIC:
      * Execute the sql on the database.
      * <p>Example:
      * <p>session.executeNonSelectingSQL("Delete from Employee");
      * @see #executeNonSelectingCall(Call)
-	 * Warning: Allowing an unverified SQL string to be passed into this
-	 * method makes your application vulnerable to SQL injection attacks.
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      */
     public void executeNonSelectingSQL(String sqlString) throws DatabaseException {
         executeNonSelectingCall(new SQLCall(sqlString));
@@ -1819,11 +1819,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (query == null) {
             throw QueryException.queryNotDefined();
         }
-        
+
         // Check for disabled native queries.
         if (query.isUserDefinedSQLCall() && query.isSQLCallQuery() && ! query.isJPQLCallQuery()) {
             if (! query.shouldAllowNativeSQLQuery(getProject().allowNativeSQLQueries())) {
-                // If the session/project says no to SQL queries and the database 
+                // If the session/project says no to SQL queries and the database
                 // query doesn't ask to bypass this decision then throw an exception.
                 throw QueryException.nativeSQLQueriesAreDisabled(query);
             }
@@ -1961,8 +1961,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Execute the sql on the database and return the result.
      * It must return a value, if no value is return executeNonSelectingSQL must be used.
      * A vector of database rows is returned, database row implements Java 2 Map which should be used to access the data.
- 	 * Warning: Allowing an unverified SQL string to be passed into this
-	 * method makes your application vulnerable to SQL injection attacks.
+      * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      * <p>Example:
      * <p>session.executeSelectingCall("Select * from Employee");
      *
@@ -2015,7 +2015,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         return this.accessors;
     }
-    
+
     /**
      * INTERNAL:
      * Return the connections to use for the query execution.
@@ -2096,7 +2096,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                         } else {
                             break; // Not sure what to do, so break (if a cursor, don't only want to open one cursor.
                         }
-                    }                        
+                    }
                 }
             }
             if (exception != null) {
@@ -2105,7 +2105,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         return result;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -2253,7 +2253,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /**
      * INTERNAL:
-     * Returns the appropriate IdentityMap session for this descriptor.  Sessions can be 
+     * Returns the appropriate IdentityMap session for this descriptor.  Sessions can be
      * chained and each session can have its own Cache/IdentityMap.  Entities can be stored
      * at different levels based on Cache Isolation.  This method will return the correct Session
      * for a particular Entity class based on the Isolation Level and the attributes provided.
@@ -2406,7 +2406,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if ((descriptor != null) && (descriptor.getJavaClass() == theClass)) {
             return descriptor;
         }
-        
+
         if (this.descriptors != null) {
             descriptor = this.descriptors.get(theClass);
         } else {
@@ -2424,7 +2424,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                     this.eventManager.missingDescriptor(theClass);
                 }
                 descriptor = getDescriptors().get(theClass);
-    
+
                 if (descriptor == null) {
                     // This allows for the correct descriptor to be found if the class implements an interface,
                     // or extends a class that a descriptor is registered for.
@@ -2486,7 +2486,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             return desc;
         }
     }
-    
+
     /**
      * ADVANCED:
      * Return all registered descriptors.
@@ -2587,7 +2587,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
         return integrityChecker;
     }
-    
+
     /**
      * ADVANCED:
      * Return all pre-defined not yet parsed JPQL queries.
@@ -2595,7 +2595,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public List<DatabaseQuery> getJPAQueries() {
         return getProject().getJPAQueries();
     }
-    
+
     /**
      * ADVANCED:
      * Return all pre-defined not yet parsed JPQL queries.
@@ -2603,7 +2603,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public List<DatabaseQuery> getJPATablePerTenantQueries() {
         return getProject().getJPATablePerTenantQueries();
     }
-    
+
     /**
      * PUBLIC:
      * Return the writer to which an accessor writes logged messages and SQL.
@@ -2654,17 +2654,17 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /**
      * INTERNAL:
-     * Return the static metamodel class associated with the given model class 
+     * Return the static metamodel class associated with the given model class
      * if available. Callers must handle null.
      */
     public String getStaticMetamodelClass(String modelClassName) {
         if (staticMetamodelClasses != null) {
             return staticMetamodelClasses.get(modelClassName);
         }
-        
+
         return null;
     }
-    
+
     /**
      * OBSOLETE:
      * Return the login, the login holds any database connection information given.
@@ -2691,7 +2691,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         return this.project.getDatasourceLogin();
     }
-    
+
     /**
      * INTERNAL:
      * Return the mapped superclass descriptor if one exists for the given
@@ -2699,14 +2699,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public ClassDescriptor getMappedSuperclass(String className) {
         ClassDescriptor desc = getProject().getMappedSuperclass(className);
-        
+
         if (desc == null && hasBroker()) {
             getBroker().getMappedSuperclass(className);
         }
 
         return desc;
     }
-    
+
     /**
      * PUBLIC:
      * Return a set of multitenant context properties this session
@@ -2718,7 +2718,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
         return this.multitenantContextProperties;
     }
-    
+
     /**
      * PUBLIC:
      * Return the name of the session.
@@ -2746,8 +2746,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /**
      * INTERNAL:
-     * For use within the merge process this method will get an object from the shared 
-     * cache using a readlock.  If a readlock is unavailable then the merge manager will be 
+     * For use within the merge process this method will get an object from the shared
+     * cache using a readlock.  If a readlock is unavailable then the merge manager will be
      * transitioned to deferred locks and a deferred lock will be used.
      */
     protected CacheKey getCacheKeyFromTargetSessionForMerge(Object implementation, ObjectBuilder builder, ClassDescriptor descriptor, MergeManager mergeManager){
@@ -2764,7 +2764,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
            }
            return cacheKey;
        }
-       
+
        cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor, true);
        if (cacheKey != null) {
            if (cacheKey.acquireReadLockNoWait()) {
@@ -2894,7 +2894,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public boolean hasProperties() {
         return ((properties != null) && !properties.isEmpty());
     }
-    
+
     /**
      * INTERNAL:
      * Return list of table per tenant multitenant descriptors.
@@ -2902,7 +2902,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public boolean hasTablePerTenantDescriptors() {
         return (tablePerTenantDescriptors != null && ! tablePerTenantDescriptors.isEmpty());
     }
-    
+
     /**
      * INTERNAL:
      * Return a list of table per tenant multitenant queries.
@@ -2933,12 +2933,12 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         return queries;
     }
-    
+
     /**
      * ADVANCED:
      * Return an attribute group of a particular name.
      */
-    
+
     /**
      * ADVANCED
      * Return all predefined attribute groups
@@ -3003,17 +3003,17 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public DatabaseQuery getQuery(String name, Vector arguments) {
         return getQuery(name, arguments, true);
     }
-    
+
     /**
      * INTERNAL:
      * Return the query from the session pre-defined queries with the given name and argument types.
      * This allows for common queries to be pre-defined, reused and executed by name.
      * This method should be used if the Session has multiple queries with the same name but
-     * different arguments. 
-     * 
+     * different arguments.
+     *
      * @parameter shouldSearchParent indicates whether parent should be searched if query not found.
      * @see #getQuery(String, arguments)
-     */    
+     */
     public DatabaseQuery getQuery(String name, Vector arguments, boolean shouldSearchParent) {
         Vector queries = (Vector)getQueries().get(name);
         if ((queries != null) && !queries.isEmpty()) {
@@ -3021,7 +3021,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             if (queries.size() == 1) {
                 return (DatabaseQuery)queries.firstElement();
             }
-    
+
             // CR#3754; Predrag; mar 19/2002;
             // We allow multiple named queries with the same name but
             // different argument set; we can have only one query with
@@ -3056,7 +3056,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * Returns an AttributeGroup by name
      */
-    
+
     /**
      * INTERNAL:
      * Return the Sequencing object used by the session.
@@ -3088,7 +3088,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         return this;
     }
-    
+
     /**
      * PUBLIC:
      * Return the session log to which an accessor logs messages and SQL.
@@ -3112,10 +3112,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (tablePerTenantDescriptors == null) {
             tablePerTenantDescriptors = new ArrayList<ClassDescriptor>();
         }
-        
+
         return tablePerTenantDescriptors;
     }
-    
+
     /**
      * INTERNAL:
      * Return list of table per tenant multitenant descriptors.
@@ -3124,10 +3124,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (tablePerTenantQueries == null) {
             tablePerTenantQueries = new ArrayList<DatabaseQuery>();
         }
-        
+
         return tablePerTenantQueries;
     }
-    
+
     /**
      * INTERNAL:
      * The transaction mutex ensure mutual exclusion on transaction across multiple threads.
@@ -3428,7 +3428,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public boolean isInTransaction() {
         return this.transactionMutex != null && this.transactionMutex.isAcquired();
     }
-    
+
     /**
      * INTERNAL:
      * used to see if JPA Queries have been processed during initialization
@@ -3436,7 +3436,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public boolean isJPAQueriesProcessed(){
         return this.jpaQueriesProcessed;
     }
-    
+
     /**
      * PUBLIC:
      * Returns true if Protected Entities should be built within this session
@@ -3593,8 +3593,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Read all of the instances of the class from the database return through execution the SQL string.
      * The SQL string must be a valid SQL select statement or selecting stored procedure call.
      * This operation can be customized through using a ReadAllQuery.
- 	 * Warning: Allowing an unverified SQL string to be passed into this
-	 * method makes your application vulnerable to SQL injection attacks.
+      * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      *
      * @see ReadAllQuery
      */
@@ -3658,8 +3658,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Read the first instance of the class from the database return through execution the SQL string.
      * The SQL string must be a valid SQL select statement or selecting stored procedure call.
      * This operation can be customized through using a ReadObjectQuery.
- 	 * Warning: Allowing an unverified SQL string to be passed into this
-	 * method makes your application vulnerable to SQL injection attacks.
+      * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      *
      * @see ReadObjectQuery
      */
@@ -3903,7 +3903,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             EntityListenerInjectionManager entityListenerInjectionManager) {
         this.entityListenerInjectionManager = entityListenerInjectionManager;
     }
-    
+
     /**
      * INTERNAL:
      * Set the event manager.
@@ -3945,7 +3945,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public void setIntegrityChecker(IntegrityChecker integrityChecker) {
         this.integrityChecker = integrityChecker;
     }
-    
+
     /**
      * INTERNAL:
      * used to set if JPA Queries have been processed during initialization
@@ -4073,8 +4073,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     }
 
     /**
-	 * PUBLIC: Allow for user defined properties.
-	 */
+     * PUBLIC: Allow for user defined properties.
+     */
     public void setProperty(String propertyName, Object propertyValue) {
         getProperties().put(propertyName, propertyValue);
     }
@@ -4312,7 +4312,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /**
      * INTERNAL:
-     * Process the JPA named queries into EclipseLink Session queries. This 
+     * Process the JPA named queries into EclipseLink Session queries. This
      * method is called after descriptor initialization.
      * Temporarily made public for ODI. Should not be used elsewhere.
      */
@@ -4322,38 +4322,38 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             for (DatabaseQuery jpaQuery : getJPAQueries()) {
                 processJPAQuery(jpaQuery);
             }
-            
+
             // Process the JPA queries that query table per tenant entities. At
             // the EMF level, these queries will be initialized and added right
             // away. At the EM level we must defer their initialization to each
             // individual client session.
             for (DatabaseQuery jpaQuery : getJPATablePerTenantQueries()) {
                 boolean processQuery = true;
-                
+
                 for (ClassDescriptor descriptor : jpaQuery.getDescriptors()) {
                     // If the descriptor is not fully initialized then we can
-                    // not initialize the query and must isolate it to be 
+                    // not initialize the query and must isolate it to be
                     // initialized and stored per client session (EM).
                     if (! descriptor.isFullyInitialized()) {
                         processQuery = false;
                         break;
                     }
                 }
-                
+
                 if (processQuery) {
                     processJPAQuery(jpaQuery);
                 } else {
                     addTablePerTenantQuery(jpaQuery);
                 }
             }
-            
+
             jpaQueriesProcessed = true;
         }
     }
-    
+
     /**
      * INTERNAL:
-     * Process the JPA named query into an EclipseLink Session query. This 
+     * Process the JPA named query into an EclipseLink Session query. This
      * method is called after descriptor initialization.
      */
     protected void processJPAQuery(DatabaseQuery jpaQuery) {
@@ -4374,7 +4374,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         addQuery(databaseQuery, false); // this should be true but for backward compatibility it
                                         // is set to false.
     }
-    
+
     /**
      * PUBLIC:
      * Return the CommandManager that allows this session to act as a
@@ -4539,14 +4539,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /**
      * PUBLIC:
-     * Return true if SQL logging should log visible bind parameters. If the 
-     * shouldDisplayData is not set, check the session log level and return 
+     * Return true if SQL logging should log visible bind parameters. If the
+     * shouldDisplayData is not set, check the session log level and return
      * true for a level greater than CONFIG.
      */
     public boolean shouldDisplayData() {
         return getSessionLog().shouldDisplayData();
     }
-    
+
     /**
      * PUBLIC:
      * <p>
@@ -5023,8 +5023,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 throw ValidationException.vpdNotSupported(getPlatform().getClass().getName());
             }
         }
-        
-        if (this.eventManager != null) { 
+
+        if (this.eventManager != null) {
             this.eventManager.postAcquireConnection(accessor);
         }
     }
@@ -5046,22 +5046,22 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 throw ValidationException.vpdNotSupported(getPlatform().getClass().getName());
             }
         }
-        
-        if (this.eventManager != null) { 
+
+        if (this.eventManager != null) {
             this.eventManager.preReleaseConnection(accessor);
         }
     }
 
     /**
      * INTERNAL:
-     * Execute the call on the database. Calling this method will bypass a 
+     * Execute the call on the database. Calling this method will bypass a
      * global setting to disallow native SQL queries. (set by default when
      * one Entity is marked as multitenant)
-     * 
-     * The row count is returned. 
-     * 
+     *
+     * The row count is returned.
+     *
      * The call can be a stored procedure call, SQL call or other type of call.
-     * 
+     *
      * <p>Example:
      * <p>session.executeNonSelectingCall(new SQLCall("Delete from Employee"), true);
      *
@@ -5083,17 +5083,17 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * INTERNAL:
      * Execute the call on the database and return the result. Calling this
-     * method will bypass a global setting to disallow native SQL queries. (set 
+     * method will bypass a global setting to disallow native SQL queries. (set
      * by default when one Entity is marked as multitenant)
-     *  
-     * The call must return a value, if no value is return executeNonSelectCall 
+     *
+     * The call must return a value, if no value is return executeNonSelectCall
      * must be used.
-     * 
+     *
      * The call can be a stored procedure call, SQL call or other type of call.
-     * 
-     * A vector of database rows is returned, database row implements Java 2 Map 
+     *
+     * A vector of database rows is returned, database row implements Java 2 Map
      * which should be used to access the data.
-     * 
+     *
      * <p>Example:
      * <p>session.executeSelectingCall(new SQLCall("Select * from Employee");
      *
@@ -5106,7 +5106,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         query.setIsExecutionClone(true);
         return (Vector)executeQuery(query);
     }
-    
+
     /**
      * INTERNAL:
      * This method is called in case externalConnectionPooling is used.
@@ -5139,14 +5139,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     * This method will load the passed object or collection of objects using the passed AttributeGroup.
     * In case of collection all members should be either objects of the same mapped type
     * or have a common inheritance hierarchy mapped root class.
-    * The AttributeGroup should correspond to the object type. 
-    * 
+    * The AttributeGroup should correspond to the object type.
+    *
     * @param objectOrCollection
     */
    public void load(Object objectOrCollection, AttributeGroup group) {
        if (objectOrCollection == null || group == null) {
            return;
-       }       
+       }
        if (objectOrCollection instanceof Collection) {
            Iterator iterator = ((Collection)objectOrCollection).iterator();
            while (iterator.hasNext()) {
@@ -5163,14 +5163,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     * This method will load the passed object or collection of objects using the passed AttributeGroup.
     * In case of collection all members should be either objects of the same mapped type
     * or have a common inheritance hierarchy mapped root class.
-    * The AttributeGroup should correspond to the object type. 
-    * 
+    * The AttributeGroup should correspond to the object type.
+    *
     * @param objectOrCollection
     */
    public void load(Object objectOrCollection, AttributeGroup group, ClassDescriptor referenceDescriptor, boolean fromFetchGroup) {
        if (objectOrCollection == null || group == null) {
            return;
-       }       
+       }
        if (objectOrCollection instanceof Collection) {
            Iterator iterator = ((Collection)objectOrCollection).iterator();
            while (iterator.hasNext()) {
@@ -5187,9 +5187,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
    }
 
    public CacheKey retrieveCacheKey(Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager, ObjectBuildingQuery query){
-       
+
        CacheKey cacheKey;
-       //lock the object in the IM     
+       //lock the object in the IM
        // PERF: Only use deferred locking if required.
        // CR#3876308 If joining is used, deferred locks are still required.
        if (query.requiresDeferredLocks()) {
@@ -5224,7 +5224,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
        return  cacheKey;
    }
 
-   
+
    /**
     * PUBLIC:
     * Return the session's partitioning policy.
@@ -5232,7 +5232,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
    public PartitioningPolicy getPartitioningPolicy() {
        return partitioningPolicy;
    }
-   
+
    /**
     * PUBLIC:
     * Set the session's partitioning policy.
@@ -5243,7 +5243,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
    public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy) {
        this.partitioningPolicy = partitioningPolicy;
    }
-   
+
    /**
     * INTERNAL:
     * This currently only used by JPA with RCM to force a refresh of the metadata used within EntityManagerFactoryWrappers
@@ -5251,11 +5251,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
    public MetadataRefreshListener getRefreshMetadataListener() {
        return metadatalistener;
    }
-   
+
    public void setRefreshMetadataListener(MetadataRefreshListener metadatalistener) {
        this.metadatalistener = metadatalistener;
    }
-   
+
    /**
     * ADVANCED:
     * Return if the session enables concurrent processing.
@@ -5277,41 +5277,41 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
    public void setIsConcurrent(boolean isConcurrent) {
        this.isConcurrent = isConcurrent;
    }
-   
+
    /**
     * ADVANCED:
-    * Set to indicate whether ObjectLevelReadQuery should by default use ResultSet Access optimization. 
+    * Set to indicate whether ObjectLevelReadQuery should by default use ResultSet Access optimization.
     * If not set then parent's flag is used, is none set then ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault is used.
-    * If the optimization specified by the session is ignored if incompatible with other query settings. 
+    * If the optimization specified by the session is ignored if incompatible with other query settings.
     */
    public void setShouldOptimizeResultSetAccess(boolean shouldOptimizeResultSetAccess) {
        this.shouldOptimizeResultSetAccess = shouldOptimizeResultSetAccess;
    }
-   
+
    /**
     * ADVANCED:
-    * Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization. 
-    * Optimization specified by the session is ignored if incompatible with other query settings. 
+    * Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization.
+    * Optimization specified by the session is ignored if incompatible with other query settings.
     */
    public boolean shouldOptimizeResultSetAccess() {
        return this.shouldOptimizeResultSetAccess;
-   }   
-   
+   }
+
    /**
-    * ADVANCED: Indicates whether an invalid NamedQuery will be tolerated at init time.  
-    * 
-    * Default is false. 
+    * ADVANCED: Indicates whether an invalid NamedQuery will be tolerated at init time.
+    *
+    * Default is false.
     */
    public void setTolerateInvalidJPQL(boolean b) {
        this.tolerateInvalidJPQL = b;
    }
-   
+
    /**
-    * ADVANCED: Indicates whether an invalid NamedQuery will be tolerated at init time.  
-    * 
-    * Default is false. 
+    * ADVANCED: Indicates whether an invalid NamedQuery will be tolerated at init time.
+    *
+    * Default is false.
     */
    public boolean shouldTolerateInvalidJPQL() {
        return this.tolerateInvalidJPQL;
-   }  
+   }
 }

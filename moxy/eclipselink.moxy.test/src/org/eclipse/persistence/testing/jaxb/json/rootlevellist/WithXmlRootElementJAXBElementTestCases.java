@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,7 @@ import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 public class WithXmlRootElementJAXBElementTestCases extends JSONMarshalUnmarshalTestCases {
 
     private static final String CONTROL_JSON = "org/eclipse/persistence/testing/jaxb/json/rootlevellist/JAXBElement.json";
-    
+
     public WithXmlRootElementJAXBElementTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {WithXmlRootElementRoot.class});
@@ -69,21 +69,21 @@ public class WithXmlRootElementJAXBElementTestCases extends JSONMarshalUnmarshal
 
         return list;
     }
-    
+
     @Override
     public Class getUnmarshalClass(){
-    	return WithXmlRootElementRoot.class;
+        return WithXmlRootElementRoot.class;
     }
-    
-    
+
+
     @Override
-	public Object getReadControlObject() {   
+    public Object getReadControlObject() {
          JAXBElement jbe = new JAXBElement(new QName(""), WithXmlRootElementRoot.class, getControlObject());
          return jbe;
     }
 
 
-    public void testUnmarshalEmptyList() throws Exception {    	
+    public void testUnmarshalEmptyList() throws Exception {
         List<WithXmlRootElementRoot>  test = (List<WithXmlRootElementRoot>) jsonUnmarshaller.unmarshal(new StreamSource(new StringReader("[]")), WithXmlRootElementRoot.class).getValue();
         assertEquals(0, test.size());
     }

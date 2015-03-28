@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,9 +22,9 @@ import javax.xml.namespace.QName;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -35,8 +35,8 @@ import javax.xml.namespace.QName;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
@@ -50,11 +50,11 @@ public class Keyref
 
     /**
      * Gets the value of the refer property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link QName }
-     *     
+     *
      */
     public QName getRefer() {
         return refer;
@@ -62,11 +62,11 @@ public class Keyref
 
     /**
      * Sets the value of the refer property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link QName }
-     *     
+     *
      */
     public void setRefer(QName value) {
         this.refer = value;

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.distributedcache;
 
 import java.rmi.registry.LocateRegistry;
@@ -55,7 +55,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         try {
             LocateRegistry.createRegistry(41099);
         } catch (Exception e) {
-            //hopefully this exception is just because the registry already exists            
+            //hopefully this exception is just because the registry already exists
         }
 
         cluster1Session = buildSession("cluster1");
@@ -63,7 +63,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
 
         cluster2Session = buildSession("cluster2");
         cluster2Session.login();
-        Thread.sleep(5000);// Let the Cache-sync get configured.  
+        Thread.sleep(5000);// Let the Cache-sync get configured.
 
         policy1 = disableOptimisticLocking(cluster1Session);
         policy2 = disableOptimisticLocking(cluster2Session);
@@ -80,32 +80,32 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         ServerSession session = null;
         Project p = getNewProject();
 
-        
+
         DatabaseLogin theLogin = originalSession.getLogin();
-	    p.setLogin(originalSession.getLogin());
+        p.setLogin(originalSession.getLogin());
         session = (ServerSession)p.createServerSession();
         session.setSessionLog(getSession().getSessionLog());
 
         RemoteCommandManager cm = new RemoteCommandManager(session);
-        
+
         // set propagate command asynchronously for testing
         cm.setShouldPropagateAsynchronously(true);
         cm.getDiscoveryManager().setAnnouncementDelay(0);
-        // ovewrite default to use RMI registry naming service  
+        // ovewrite default to use RMI registry naming service
         cm.getTransportManager().setNamingServiceType(TransportManager.REGISTRY_NAMING_SERVICE);
-        // set full rmi URL of local host 
+        // set full rmi URL of local host
         cm.setUrl("rmi://localhost:41099");
         // turn on cache sync with RCM
         session.setShouldPropagateChanges(true);
         cm.setServerPlatform(((org.eclipse.persistence.sessions.DatabaseSession)getSession()).getServerPlatform());
         cm.initialize();
-        
+
         // Sleep to allow RCM to startup and find each session.
         try {
             Thread.sleep(2000);
         } catch (Exception ignore) {
         }
-        
+
         return session;
     }
 
@@ -122,7 +122,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
 
         enableOptimisticLocking(cluster1Session, policy1);
         enableOptimisticLocking(cluster2Session, policy2);
-        
+
         cluster1Session.logout();
         cluster1Session = null;
         cluster2Session.logout();

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
@@ -52,35 +52,35 @@ import org.eclipse.persistence.testing.models.relationshipmaintenance.Dept;
  * @see org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator
  * @see JUnitDomainObjectComparer
  */
- 
-public class JUnitJPQLParameterTestSuite extends JUnitTestCase {  
-  
+
+public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
+
     static JUnitDomainObjectComparer comparer; //the global comparer object used in all tests
-  
+
     public JUnitJPQLParameterTestSuite()
     {
         super();
     }
-  
+
     public JUnitJPQLParameterTestSuite(String name)
     {
         super(name);
     }
-  
+
     //This method is run at the start of EVERY test case method
     public void setUp()
     {
 
     }
-  
+
     //This method is run at the end of EVERY test case method
     public void tearDown()
     {
         clearCache();
     }
-  
+
     //This suite contains all tests contained in this class
-    public static Test suite() 
+    public static Test suite()
     {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLParameterTestSuite");
@@ -96,7 +96,7 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
         }
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -104,42 +104,42 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
         clearCache();
         //get session to start setup
         DatabaseSession session = JUnitTestCase.getServerSession();
-        
+
         //create a new EmployeePopulator
         EmployeePopulator employeePopulator = new EmployeePopulator();
-        
+
         new AdvancedTableCreator().replaceTables(session);
-        
+
         //initialize the global comparer object
         comparer = new JUnitDomainObjectComparer();
-        
+
         //set the session for the comparer to use
-        comparer.setSession((AbstractSession)session.getActiveSession());              
-        
+        comparer.setSession((AbstractSession)session.getActiveSession());
+
         //Populate the tables
         employeePopulator.buildExamples();
-        
+
         //Persist the examples in the database
         employeePopulator.persistExample(session);
     }
-    
-    //Test case for selecting employee from the database using parameters 
+
+    //Test case for selecting employee from the database using parameters
     public void multipleParameterTest()
-    {          
+    {
         EntityManager em = createEntityManager();
-      
+
         Employee employee = (Employee) (getServerSession().readAllObjects(Employee.class).firstElement());
         Vector expectedResult = new Vector();
         expectedResult.add(employee);
-      
+
         Query query = em.createQuery("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = ?1 AND emp.id = ?3");
         query.setParameter(1, employee.getFirstName());
         query.setParameter(3, employee.getId());
         List result = query.getResultList();
-        
+
         assertTrue("Multiple Parameter Test Case Failed", comparer.compareObjects(result, expectedResult));
     }
-           
+
     // Test for GF#1123 - UPDATE with JPQL does not handle enums correctly.
     public void updateEnumParameter() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
@@ -177,13 +177,13 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
     }
 
     /** Helper method executing a JPQL query retuning an int value. */
-    private int executeJPQLReturningInt(EntityManager em, String jpql) 
+    private int executeJPQLReturningInt(EntityManager em, String jpql)
     {
         Query q = em.createQuery(jpql);
         Object result = q.getSingleResult();
         return ((Number)result).intValue();
     }
-    
+
     // Bug 344492
     public void emptyParametersForNonParameterizedNamedQueryTest() {
         EntityManager em = createEntityManager();
@@ -194,50 +194,50 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
         assertNotNull(parameters);
         assertEquals("Parameters size should be 0", 0, parameters.size());
     }
-    
+
     public void testQueryParametersCheckCacheTest() {
         testQueryParametersWithQueryAndCheckCache("SELECT p FROM JigsawPiece p, Jigsaw j WHERE j.id=:jigsawId AND p.id=:jigsawPieceId", true);
     }
-    
+
     public void testQueryParametersDontCheckCacheTest() {
         testQueryParametersWithQueryAndCheckCache("SELECT p FROM JigsawPiece p, Jigsaw j WHERE j.id=:jigsawId AND p.id=:jigsawPieceId", false);
     }
-    
+
     public void testQueryParametersReversedCheckCacheTest() {
         testQueryParametersWithQueryAndCheckCache("SELECT p FROM JigsawPiece p, Jigsaw j WHERE p.id=:jigsawPieceId AND j.id=:jigsawId", true);
     }
-    
+
     public void testQueryParametersReversedDontCheckCacheTest() {
         testQueryParametersWithQueryAndCheckCache("SELECT p FROM JigsawPiece p, Jigsaw j WHERE p.id=:jigsawPieceId AND j.id=:jigsawId", false);
     }
-    
+
     // EL bug 430042 - pk query parameter binding incorrect
     private void testQueryParametersWithQueryAndCheckCache(String jpqlQueryString, boolean checkCacheOnly) {
         EntityManager em = createEntityManager();
         Jigsaw jigsawTestData = null;
         JigsawPiece jigsawPieceTestData = null;
-        
+
         try {
             beginTransaction(em);
-            
+
             jigsawTestData = new Jigsaw();
             jigsawPieceTestData = new JigsawPiece();
             jigsawTestData.addPiece(jigsawPieceTestData);
             em.persist(jigsawTestData);
-            
+
             commitTransaction(em);
             closeEntityManager(em);
-            
+
             em = createEntityManager();
-            
+
             Query query = em.createQuery(jpqlQueryString);
             query.setParameter("jigsawId", jigsawTestData.getId());
             query.setParameter("jigsawPieceId", jigsawPieceTestData.getId());
-            
+
             if (checkCacheOnly) {
                 query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
             }
-            
+
             JigsawPiece resultPiece = (JigsawPiece) query.getSingleResult();
             assertNotNull("Query Entity should not be null", resultPiece);
             Jigsaw resultJigsaw = resultPiece.getJigsaw();
@@ -254,8 +254,8 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
                 }
                 commitTransaction(em);
             }
-            closeEntityManager(em);   
+            closeEntityManager(em);
         }
     }
-    
+
 }

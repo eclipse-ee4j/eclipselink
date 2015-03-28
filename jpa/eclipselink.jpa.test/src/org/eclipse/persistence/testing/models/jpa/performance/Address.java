@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.performance;
 
 import java.io.*;
@@ -38,22 +38,22 @@ public class Address implements Serializable {
         this.country = "";
     }
 
-/*	public void readExternal(PofReader in) throws IOException {
-		this.id = in.readLong(0);
-		this.street = in.readString(1);
-		this.city = in.readString(2);
-		this.province = in.readString(3);
-		this.postalCode = in.readString(4);
-		this.country = in.readString(5);
+/*    public void readExternal(PofReader in) throws IOException {
+        this.id = in.readLong(0);
+        this.street = in.readString(1);
+        this.city = in.readString(2);
+        this.province = in.readString(3);
+        this.postalCode = in.readString(4);
+        this.country = in.readString(5);
     }
- 
-	public void writeExternal(PofWriter out) throws IOException {
-		out.writeLong(0, this.id);
-		out.writeString(1, this.street);
-		out.writeString(2, this.city);
-		out.writeString(3, this.province);
-		out.writeString(4, this.postalCode);
-		out.writeString(5, this.country);
+
+    public void writeExternal(PofWriter out) throws IOException {
+        out.writeLong(0, this.id);
+        out.writeString(1, this.street);
+        out.writeString(2, this.city);
+        out.writeString(3, this.province);
+        out.writeString(4, this.postalCode);
+        out.writeString(5, this.country);
     }*/
 
     public String getCity() {
@@ -109,7 +109,7 @@ public class Address implements Serializable {
     public void internalSetStreet(String street) {
         this.street = street;
     }
-    
+
     public void setStreet(String street) {
         this.street = street;
     }

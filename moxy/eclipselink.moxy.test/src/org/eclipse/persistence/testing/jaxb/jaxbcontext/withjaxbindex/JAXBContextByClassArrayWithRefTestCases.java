@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,33 +28,33 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
  * We should also NOT process those listed in the jaxb.index (in this case ClassC)
  */
 public class JAXBContextByClassArrayWithRefTestCases  extends JAXBWithJSONTestCases{
-	 protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithref.xml";
-	 protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithref.json";
+     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithref.xml";
+     protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithref.json";
 
-		public JAXBContextByClassArrayWithRefTestCases(String name) throws Exception {
-			super(name);
-		}
-		
-		public void setUp() throws Exception {
-	        setControlDocument(XML_RESOURCE);
-	        setControlJSON(JSON_RESOURCE);
-		    super.setUp();
-		    Class[] classes = new Class[]{ClassAWithElementRef.class};
-		    setTypes(classes);
-		}
+        public JAXBContextByClassArrayWithRefTestCases(String name) throws Exception {
+            super(name);
+        }
 
-		protected Object getControlObject() {
-			ClassAWithElementRef classA = new ClassAWithElementRef();
-			JAXBElement<String> jbe = new JAXBElement<String>(new QName("a") ,String.class ,"someValue"); 
-			classA.setTheValue(jbe);
-			
-			return classA;
-		}
+        public void setUp() throws Exception {
+            setControlDocument(XML_RESOURCE);
+            setControlJSON(JSON_RESOURCE);
+            super.setUp();
+            Class[] classes = new Class[]{ClassAWithElementRef.class};
+            setTypes(classes);
+        }
 
-		public void testSchemaGen() throws Exception{
-			InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithref.xsd");		
-	    	List<InputStream> controlSchemas = new ArrayList<InputStream>();    	
-	    	controlSchemas.add(controlInputStream);		
-			this.testSchemaGen(controlSchemas);
-		}
+        protected Object getControlObject() {
+            ClassAWithElementRef classA = new ClassAWithElementRef();
+            JAXBElement<String> jbe = new JAXBElement<String>(new QName("a") ,String.class ,"someValue");
+            classA.setTheValue(jbe);
+
+            return classA;
+        }
+
+        public void testSchemaGen() throws Exception{
+            InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithref.xsd");
+            List<InputStream> controlSchemas = new ArrayList<InputStream>();
+            controlSchemas.add(controlInputStream);
+            this.testSchemaGen(controlSchemas);
+        }
 }

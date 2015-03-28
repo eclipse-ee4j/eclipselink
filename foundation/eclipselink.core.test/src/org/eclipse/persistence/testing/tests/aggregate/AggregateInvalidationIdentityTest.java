@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.aggregate;
 
 import org.eclipse.persistence.sessions.*;
@@ -42,10 +42,10 @@ public class AggregateInvalidationIdentityTest extends AutoVerifyTestCase {
         beginTransaction();
         session = (DatabaseSession)getSession();
         UnitOfWork uow = session.acquireUnitOfWork();
-        
+
         originalEmployee = Employee.example1();
         originalAddressDescription = originalEmployee.getAddressDescription();
-        
+
         uow.registerObject(originalEmployee);
         uow.commit();
     }
@@ -53,12 +53,12 @@ public class AggregateInvalidationIdentityTest extends AutoVerifyTestCase {
     public void test() {
         // here's the test - invalidate the non-aggregate parent
         session.getIdentityMapAccessor().invalidateObject(originalEmployee);
-        
+
         // now do a Read query to read the parent object back
         ReadObjectQuery query = new ReadObjectQuery(Employee.class);
         query.setSelectionObject(originalEmployee);
 
-        // cache the re-read objects        
+        // cache the re-read objects
         refreshedEmployee = (Employee) session.executeQuery(query);
         refreshedAddressDescription = refreshedEmployee.getAddressDescription();
     }

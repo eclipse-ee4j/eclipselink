@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,7 +47,7 @@ import org.eclipse.persistence.sessions.SessionEvent;
 
 /**
  * This adapter alters the way the JAXBContext handles relationships for an existing persistence unit.
- * It changes non-private relationship mappings to be read-only and replaces those mappings with a mapping 
+ * It changes non-private relationship mappings to be read-only and replaces those mappings with a mapping
  * to a weaved-in list of relationships that will produce links.
  * @author tware
  *
@@ -84,7 +84,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                 XMLDescriptor xmlDescriptor = (XMLDescriptor) project.getAliasDescriptors().get(descriptorAlias);
                 if (null != xmlDescriptor) {
                     if (null == xmlDescriptor.getDefaultRootElement()) {
-                        // set root element 
+                        // set root element
                         xmlDescriptor.setDefaultRootElement(xmlNameTransformer.transformRootElementName(xmlDescriptor.getJavaClass().getName()));
                         // set resultAlwaysXMLRoot to false, so that the elements are not wrapped in JAXBElements when unmarshalling.
                         xmlDescriptor.setResultAlwaysXMLRoot(false);
@@ -208,9 +208,9 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                                 }
                             }
                         } else if (mapping instanceof XMLCompositeObjectMapping) {
-                            // Fix for Bug 403113 - JPA-RS Isn't Serializing an Embeddable defined in an ElementCollection to JSON Correctly 
+                            // Fix for Bug 403113 - JPA-RS Isn't Serializing an Embeddable defined in an ElementCollection to JSON Correctly
                             // add choice mapping for one-to-one relationships within embeddables
-                            // Based on (http://wiki.eclipse.org/EclipseLink/Examples/JPA/NoSQL#Step_2_:_Map_the_data), 
+                            // Based on (http://wiki.eclipse.org/EclipseLink/Examples/JPA/NoSQL#Step_2_:_Map_the_data),
                             // the mappedBy option on relationships is not supported for NoSQL data, so no need to add inverse mapping
                             XMLCompositeObjectMapping jpaMapping = (XMLCompositeObjectMapping) mapping;
                             if (jpaMapping != null) {
@@ -300,7 +300,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
         if ((jpaMapping != null) && (jaxbDescriptor != null)) {
             if ((jpaMapping instanceof ForeignReferenceMapping) && ((jpaMapping.isAggregateCollectionMapping()) || (jpaMapping.isAggregateMapping()))) {
                 // Fix for Bug 402385 - JPA-RS: ClassNotFound when using ElementCollection of Embeddables
-                // Aggregates don't have identity to create links, thus no weaved REST adapters to insert choice mappings   
+                // Aggregates don't have identity to create links, thus no weaved REST adapters to insert choice mappings
                 return;
             }
 

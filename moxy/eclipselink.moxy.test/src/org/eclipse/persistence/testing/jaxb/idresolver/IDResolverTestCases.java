@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,7 +22,7 @@ public class IDResolverTestCases extends JAXBTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/idresolver/fruit.xml";
 
     private MyIDResolver idResolver = new MyIDResolver();
-    
+
     public IDResolverTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] { Apple.class, AppleRef.class, Box.class, FruitOrder.class, Orange.class, OrangeRef.class });
@@ -45,7 +45,7 @@ public class IDResolverTestCases extends JAXBTestCases {
         assertTrue("IDResolver.resolve(Map) was not called.", idResolver.hitResolve);
         assertTrue("IDResolver.bind(Object) was not called.", idResolver.hitBindSingle);
         assertTrue("IDResolver.resolve(Object) was not called.", idResolver.hitResolveSingle);
-        assertTrue("ValidationEventHandler was not set.", idResolver.eventHandlerNotNull);        
+        assertTrue("ValidationEventHandler was not set.", idResolver.eventHandlerNotNull);
     }
 
     public Object getControlObject() {

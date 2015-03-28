@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,23 +28,23 @@ package org.eclipse.persistence.jpa.jpql.tools.spi;
  */
 public interface IEclipseLinkMappingType extends IMappingType {
 
-	/**
-	 * The constant for a basic collection mapping, which is deprecated.
-	 */
-	int BASIC_COLLECTION = 101;
+    /**
+     * The constant for a basic collection mapping, which is deprecated.
+     */
+    int BASIC_COLLECTION = 101;
 
-	/**
-	 * The constant for a basic map mapping, which is deprecated.
-	 */
-	int BASIC_MAP = 102;
+    /**
+     * The constant for a basic map mapping, which is deprecated.
+     */
+    int BASIC_MAP = 102;
 
-	/**
-	 * The constant for a transformation mapping.
-	 */
-	int TRANSFORMATION = 103;
+    /**
+     * The constant for a transformation mapping.
+     */
+    int TRANSFORMATION = 103;
 
-	/**
-	 * The constant for a variable one to one mapping.
-	 */
-	int VARIABLE_ONE_TO_ONE = 104;
+    /**
+     * The constant for a variable one to one mapping.
+     */
+    int VARIABLE_ONE_TO_ONE = 104;
 }

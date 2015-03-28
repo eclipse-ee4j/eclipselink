@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -363,165 +363,165 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 @SuppressWarnings("nls")
 public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 
-	/**
-	 * The singleton instance of this {@link JPQLGrammar2_1}.
-	 */
-	private static final JPQLGrammar INSTANCE = new JPQLGrammar2_1();
+    /**
+     * The singleton instance of this {@link JPQLGrammar2_1}.
+     */
+    private static final JPQLGrammar INSTANCE = new JPQLGrammar2_1();
 
-	/**
-	 * Creates a new <code>JPQLExtension2_1</code>.
-	 */
-	public JPQLGrammar2_1() {
-		super();
-	}
+    /**
+     * Creates a new <code>JPQLExtension2_1</code>.
+     */
+    public JPQLGrammar2_1() {
+        super();
+    }
 
-	/**
-	 * Creates a new <code>JPQLGrammar2_1</code>.
-	 *
-	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
-	 * instantiating the base {@link JPQLGrammar}
-	 */
-	private JPQLGrammar2_1(AbstractJPQLGrammar jpqlGrammar) {
-		super(jpqlGrammar);
-	}
+    /**
+     * Creates a new <code>JPQLGrammar2_1</code>.
+     *
+     * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+     * instantiating the base {@link JPQLGrammar}
+     */
+    private JPQLGrammar2_1(AbstractJPQLGrammar jpqlGrammar) {
+        super(jpqlGrammar);
+    }
 
-	/**
-	 * Extends the given {@link JPQLGrammar} with the information of this one without instantiating
-	 * the base {@link JPQLGrammar}.
-	 *
-	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
-	 * instantiating the base {@link JPQLGrammar}
-	 */
-	public static void extend(AbstractJPQLGrammar jpqlGrammar) {
-		new JPQLGrammar2_1(jpqlGrammar);
-	}
+    /**
+     * Extends the given {@link JPQLGrammar} with the information of this one without instantiating
+     * the base {@link JPQLGrammar}.
+     *
+     * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+     * instantiating the base {@link JPQLGrammar}
+     */
+    public static void extend(AbstractJPQLGrammar jpqlGrammar) {
+        new JPQLGrammar2_1(jpqlGrammar);
+    }
 
-	/**
-	 * Returns the singleton instance of the default implementation of {@link JPQLGrammar} which
-	 * provides support for the JPQL grammar defined in the JPA 2.1 functional specification.
-	 *
-	 * @return The {@link JPQLGrammar} that only has support for JPA 2.1
-	 */
-	public static JPQLGrammar instance() {
-		return INSTANCE;
-	}
+    /**
+     * Returns the singleton instance of the default implementation of {@link JPQLGrammar} which
+     * provides support for the JPQL grammar defined in the JPA 2.1 functional specification.
+     *
+     * @return The {@link JPQLGrammar} that only has support for JPA 2.1
+     */
+    public static JPQLGrammar instance() {
+        return INSTANCE;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLGrammar buildBaseGrammar() {
-		return new JPQLGrammar2_0();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLGrammar buildBaseGrammar() {
+        return new JPQLGrammar2_0();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPAVersion getJPAVersion() {
-		return JPAVersion.VERSION_2_1;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPAVersion getJPAVersion() {
+        return JPAVersion.VERSION_2_1;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getProvider() {
-		return DefaultJPQLGrammar.PROVIDER_NAME;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getProvider() {
+        return DefaultJPQLGrammar.PROVIDER_NAME;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getProviderVersion() {
-		return ExpressionTools.EMPTY_STRING;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getProviderVersion() {
+        return ExpressionTools.EMPTY_STRING;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initializeBNFs() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initializeBNFs() {
 
-		registerBNF(new FunctionExpressionBNF());
-		registerBNF(new FunctionItemBNF());
-		registerBNF(new OnClauseBNF());
-		registerBNF(new TreatExpressionBNF());
+        registerBNF(new FunctionExpressionBNF());
+        registerBNF(new FunctionItemBNF());
+        registerBNF(new OnClauseBNF());
+        registerBNF(new TreatExpressionBNF());
 
-		// Extend the query BNF to add support for TREAT
-		addChildBNF(CollectionValuedPathExpressionBNF.ID, TreatExpressionBNF.ID);
-		addChildBNF(JoinAssociationPathExpressionBNF.ID,  TreatExpressionBNF.ID);
-		addChildBNF(SingleValuedPathExpressionBNF.ID,     TreatExpressionBNF.ID);
-		addChildBNF(StateFieldPathExpressionBNF.ID,       TreatExpressionBNF.ID);
+        // Extend the query BNF to add support for TREAT
+        addChildBNF(CollectionValuedPathExpressionBNF.ID, TreatExpressionBNF.ID);
+        addChildBNF(JoinAssociationPathExpressionBNF.ID,  TreatExpressionBNF.ID);
+        addChildBNF(SingleValuedPathExpressionBNF.ID,     TreatExpressionBNF.ID);
+        addChildBNF(StateFieldPathExpressionBNF.ID,       TreatExpressionBNF.ID);
 
-		// Extends the query BNF to add support for FUNCTION
-		addChildBNF(AggregateExpressionBNF.ID, FunctionExpressionBNF.ID);
+        // Extends the query BNF to add support for FUNCTION
+        addChildBNF(AggregateExpressionBNF.ID, FunctionExpressionBNF.ID);
 
-		// string_primary becomes string_expression in CONCAT
-		addChildBNF(InternalConcatExpressionBNF.ID, StringExpressionBNF.ID);
+        // string_primary becomes string_expression in CONCAT
+        addChildBNF(InternalConcatExpressionBNF.ID, StringExpressionBNF.ID);
 
-		// string_primary becomes string_expression, simply add the new query BNFs
-		addChildBNF(StringPrimaryBNF.ID,    FunctionExpressionBNF.ID);
-		addChildBNF(StringPrimaryBNF.ID,    SubqueryBNF.ID);
-		addChildBNF(StringExpressionBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(StringExpressionBNF.ID, SubqueryBNF.ID);
+        // string_primary becomes string_expression, simply add the new query BNFs
+        addChildBNF(StringPrimaryBNF.ID,    FunctionExpressionBNF.ID);
+        addChildBNF(StringPrimaryBNF.ID,    SubqueryBNF.ID);
+        addChildBNF(StringExpressionBNF.ID, FunctionExpressionBNF.ID);
+        addChildBNF(StringExpressionBNF.ID, SubqueryBNF.ID);
 
-		// datetime_primary becomes datetime_expression, simply add the new query BNFs
-		addChildBNF(DateTimePrimaryBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(DateTimePrimaryBNF.ID, SubqueryBNF.ID);
+        // datetime_primary becomes datetime_expression, simply add the new query BNFs
+        addChildBNF(DateTimePrimaryBNF.ID, FunctionExpressionBNF.ID);
+        addChildBNF(DateTimePrimaryBNF.ID, SubqueryBNF.ID);
 
-		// boolean_primary becomes boolean_expression, simply add the new query BNFs
-		addChildBNF(BooleanPrimaryBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(BooleanPrimaryBNF.ID, SubqueryBNF.ID);
+        // boolean_primary becomes boolean_expression, simply add the new query BNFs
+        addChildBNF(BooleanPrimaryBNF.ID, FunctionExpressionBNF.ID);
+        addChildBNF(BooleanPrimaryBNF.ID, SubqueryBNF.ID);
 
-		// enum_primary becomes enum_expression, simply add the new query BNFs
-		addChildBNF(EnumLiteralBNF.ID, SubqueryBNF.ID);
+        // enum_primary becomes enum_expression, simply add the new query BNFs
+        addChildBNF(EnumLiteralBNF.ID, SubqueryBNF.ID);
 
-		// arithmetic_primary becomes arithmetic_expression, simply add the new query BNFs
-		addChildBNF(ArithmeticPrimaryBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(ArithmeticPrimaryBNF.ID, SubqueryBNF.ID);
+        // arithmetic_primary becomes arithmetic_expression, simply add the new query BNFs
+        addChildBNF(ArithmeticPrimaryBNF.ID, FunctionExpressionBNF.ID);
+        addChildBNF(ArithmeticPrimaryBNF.ID, SubqueryBNF.ID);
 
-		// datetime_expression
-		addChildBNF(DatetimeExpressionBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(DatetimeExpressionBNF.ID, SubqueryBNF.ID);
+        // datetime_expression
+        addChildBNF(DatetimeExpressionBNF.ID, FunctionExpressionBNF.ID);
+        addChildBNF(DatetimeExpressionBNF.ID, SubqueryBNF.ID);
 
-		// boolean_expression
-		addChildBNF(BooleanExpressionBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(BooleanExpressionBNF.ID, SubqueryBNF.ID);
+        // boolean_expression
+        addChildBNF(BooleanExpressionBNF.ID, FunctionExpressionBNF.ID);
+        addChildBNF(BooleanExpressionBNF.ID, SubqueryBNF.ID);
 
-		// enum_expression
-		addChildBNF(EnumExpressionBNF.ID, SubqueryBNF.ID);
-	}
+        // enum_expression
+        addChildBNF(EnumExpressionBNF.ID, SubqueryBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initializeExpressionFactories() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initializeExpressionFactories() {
 
-		registerFactory(new FunctionExpressionFactory(FunctionExpressionFactory.ID, FUNCTION));
-		registerFactory(new OnClauseFactory());
-		registerFactory(new TreatExpressionFactory());
-	}
+        registerFactory(new FunctionExpressionFactory(FunctionExpressionFactory.ID, FUNCTION));
+        registerFactory(new OnClauseFactory());
+        registerFactory(new TreatExpressionFactory());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initializeIdentifiers() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initializeIdentifiers() {
 
-		registerIdentifierRole(FUNCTION,    IdentifierRole.FUNCTION); // FUNCTION(n, x1, ..., x2)
-		registerIdentifierRole(ON,          IdentifierRole.CLAUSE);   // ON x
-		registerIdentifierRole(TREAT,       IdentifierRole.FUNCTION); // TREAT(x AS y)
+        registerIdentifierRole(FUNCTION,    IdentifierRole.FUNCTION); // FUNCTION(n, x1, ..., x2)
+        registerIdentifierRole(ON,          IdentifierRole.CLAUSE);   // ON x
+        registerIdentifierRole(TREAT,       IdentifierRole.FUNCTION); // TREAT(x AS y)
 
-		registerIdentifierVersion(FUNCTION, JPAVersion.VERSION_2_1);
-		registerIdentifierVersion(ON,       JPAVersion.VERSION_2_1);
-		registerIdentifierVersion(TREAT,    JPAVersion.VERSION_2_1);
-	}
+        registerIdentifierVersion(FUNCTION, JPAVersion.VERSION_2_1);
+        registerIdentifierVersion(ON,       JPAVersion.VERSION_2_1);
+        registerIdentifierVersion(TREAT,    JPAVersion.VERSION_2_1);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return "JPQLGrammar 2.1";
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "JPQLGrammar 2.1";
+    }
 }

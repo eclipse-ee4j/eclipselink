@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,14 +30,14 @@ public class QNameTestCases extends JAXBWithJSONTestCases {
     @Override
     protected Object getControlObject() {
         Root root = new Root();
-        
+
         root.qname =  new QName("", "localPart1");
-        
+
         root.listOfNames = new ArrayList<QName>();
         root.listOfNames.add(new QName("myns1", "localPart2"));
         root.listOfNames.add(new QName("", "localPart3"));
         root.listOfNames.add(new QName("myns", "localPart4"));
-        
+
         return root;
     }
 

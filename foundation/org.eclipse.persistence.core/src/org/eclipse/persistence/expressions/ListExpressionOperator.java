@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial API and implementation from for JPA 2.0 criteria API
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.expressions;
 
 import org.eclipse.persistence.internal.helper.Helper;
@@ -19,14 +19,14 @@ import org.eclipse.persistence.internal.helper.Helper;
  * A ListExpressionOperator is used with an ArgumentListFunctionExpression.  It is capable
  * of expanding the number of arguments it can be an operator for.  It is built from a set
  * of start strings, a repeating set of separators and a set of termination strings
- * 
+ *
  * It typically represents a database function that has a variable list of arguments
- * 
+ *
  * e.g. COALESCE(arg1, arg2, arg3, .... argn)
- * 
+ *
  * In the example above "COALESCE(" is the start string, "," is the separator and ")" is the
  * end string
- * 
+ *
  * @see org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression
  * @see Expression#coalesce()
  * @author tware
@@ -39,7 +39,7 @@ public class ListExpressionOperator extends ExpressionOperator {
     protected String[] terminationStrings = null;
     protected int numberOfItems = 0;
     protected boolean isComplete = false;
-    
+
     public void copyTo(ExpressionOperator operator){
         super.copyTo(operator);
         if (operator instanceof ListExpressionOperator){
@@ -50,7 +50,7 @@ public class ListExpressionOperator extends ExpressionOperator {
             // may have a different number of items
         }
     }
-    
+
     /**
      * INTERNAL:
      * Recalculate the database strings each time this is called in
@@ -82,11 +82,11 @@ public class ListExpressionOperator extends ExpressionOperator {
     public int getNumberOfItems(){
         return numberOfItems;
     }
-    
+
     public void setNumberOfItems(int numberOfItems){
         this.numberOfItems = numberOfItems;
     }
-    
+
     public String[] getStartStrings() {
         return startStrings;
     }
@@ -94,7 +94,7 @@ public class ListExpressionOperator extends ExpressionOperator {
     public void setStartString(String startString) {
         this.startStrings = new String[]{startString};
     }
-    
+
     public void setStartStrings(String[] startStrings) {
         this.startStrings = startStrings;
     }
@@ -106,7 +106,7 @@ public class ListExpressionOperator extends ExpressionOperator {
     public void setSeparator(String separator) {
         this.separators = new String[]{separator};
     }
-    
+
     public void setSeparators(String[] separators) {
         this.separators = separators;
     }
@@ -118,22 +118,22 @@ public class ListExpressionOperator extends ExpressionOperator {
     public void setTerminationString(String terminationString) {
         this.terminationStrings = new String[]{terminationString};
     }
-    
+
     public void setTerminationStrings(String[] terminationStrings){
         this.terminationStrings = terminationStrings;
     }
-    
+
     public void incrementNumberOfItems(){
         numberOfItems++;
     }
-    
+
     public void setIsComplete(boolean isComplete){
         this.isComplete = isComplete;
     }
-    
+
     public boolean isComplete() {
         return isComplete;
     }
-    
-    
+
+
 }

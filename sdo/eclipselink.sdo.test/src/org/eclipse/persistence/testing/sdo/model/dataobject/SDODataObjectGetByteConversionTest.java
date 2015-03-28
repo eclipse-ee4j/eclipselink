@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -24,7 +24,7 @@ public class SDODataObjectGetByteConversionTest extends SDODataObjectConversionT
     public SDODataObjectGetByteConversionTest(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetByteConversionTest" };
         TestRunner.main(arguments);
@@ -248,11 +248,11 @@ public class SDODataObjectGetByteConversionTest extends SDODataObjectConversionT
     //18. purpose: getByte with decimal property
     public void testGetByteFromDecimal() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
-        property.setType(SDOConstants.SDO_DECIMAL);        
+        property.setType(SDOConstants.SDO_DECIMAL);
         BigDecimal theValue = new BigDecimal(12);
         dataObject.set(property, theValue);
         try {
-            byte value = dataObject.getByte(property);            
+            byte value = dataObject.getByte(property);
             byte controlValue = theValue.byteValue();
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -267,7 +267,7 @@ public class SDODataObjectGetByteConversionTest extends SDODataObjectConversionT
         BigInteger theValue = new BigInteger("12");
         dataObject.set(property, theValue);
         try {
-            byte value = dataObject.getByte(property);            
+            byte value = dataObject.getByte(property);
             byte controlValue = theValue.byteValue();
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -299,7 +299,7 @@ public class SDODataObjectGetByteConversionTest extends SDODataObjectConversionT
 
     public void testGetByteFromBooleanObject() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
-        property.setType(SDOConstants.SDO_BOOLEANOBJECT);        
+        property.setType(SDOConstants.SDO_BOOLEANOBJECT);
         Boolean theValue = Boolean.TRUE;
         dataObject.set(property, theValue);
         try {

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.simultaneous;
 
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -22,15 +22,15 @@ import org.eclipse.persistence.testing.models.employee.domain.Project;
 import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
 
 public class UpdateCacheKeyPropertiesTest extends AutoVerifyTestCase {
-    
+
     Employee emp = null;
     SmallProject project = null;
-    
+
 
     public UpdateCacheKeyPropertiesTest() {
         super();
     }
-    
+
 
     @Override
     protected void setup() throws Throwable {
@@ -63,7 +63,7 @@ public class UpdateCacheKeyPropertiesTest extends AutoVerifyTestCase {
             }
             fail("Bug 9484687 - deadlock occured.");
         }
-        
+
     } catch (Exception e) {
         e.printStackTrace();
     }
@@ -79,12 +79,12 @@ public class UpdateCacheKeyPropertiesTest extends AutoVerifyTestCase {
         uow.deleteObject(emp);
         uow.commit();
     }
-    
+
     public static class Reader implements Runnable{
         protected UnitOfWork uow;
         protected Project project;
         protected Employee emp;
-        
+
         public Reader(UnitOfWork uow, Employee emp, Project project){
             this.uow = uow;
             this.project = project;
@@ -116,10 +116,10 @@ public class UpdateCacheKeyPropertiesTest extends AutoVerifyTestCase {
             empKey.acquireDeferredLock();
             empKey.releaseDeferredLock();
             zonKey.releaseDeferredLock();
-            
-            
+
+
         }
-        
+
     }
 
     public static class Writer implements Runnable{
@@ -127,7 +127,7 @@ public class UpdateCacheKeyPropertiesTest extends AutoVerifyTestCase {
         protected Project project;
         protected Employee emp;
 
-        
+
         public Writer(UnitOfWork uow, Employee emp, Project project){
             this.uow = uow;
             this.project = project;
@@ -156,7 +156,7 @@ public class UpdateCacheKeyPropertiesTest extends AutoVerifyTestCase {
             }
 
         }
-        
+
     }
 
 }

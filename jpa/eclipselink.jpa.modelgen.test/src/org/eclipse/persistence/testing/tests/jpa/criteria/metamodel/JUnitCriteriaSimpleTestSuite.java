@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     07/05/2010-2.1.1 Michael O'Brien 
+ *     07/05/2010-2.1.1 Michael O'Brien
  *       - 321716: modelgen and jpa versions of duplicate code in both copies of
  *       JUnitCriteriaSimpleTestSuite must be kept in sync (to avoid only failing on WebSphere under Derby)
  *       (ideally there should be only one copy of the code - the other suite should reference or subclass for changes)
@@ -16,7 +16,7 @@
  *       org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.simpleModTest():1796
  *       org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.simpleModTest():1766
  *       - 321902: this copied code should be renamed, merged or subclassed off the original
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.criteria.metamodel;
 
 import java.util.Set;
@@ -108,7 +108,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.setName("JUnitJPQLSimpleTestSuite");
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testNotLoggedIn"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testSetup"));
-		suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleModTest"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleModTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest2"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("baseTestCase"));
@@ -175,18 +175,18 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //suite.addTest(new JUnitCriteriaSimpleTestSuite("testOneEqualsOne"));//Doesn't use canonical model
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleTypeTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleAsOrderByTest"));
-        
+
         return suite;
     }
-    
+
     public void testNotLoggedIn(){
         Map<String, Object> props = new HashMap<String, Object>();
         props.put(PersistenceUnitProperties.DDL_GENERATION, null);
         EntityManagerFactory em = Persistence.createEntityManagerFactory(getPersistenceUnitName());
-        
+
         assertNotNull(Employee_.address);
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -194,28 +194,28 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
         //get session to start setup
         DatabaseSession session = JUnitTestCase.getServerSession();
-        
+
         //create a new EmployeePopulator
         EmployeePopulator employeePopulator = new EmployeePopulator();
-        
+
         new AdvancedTableCreator().replaceTables(session);
-        
+
         //initialize the global comparer object
         comparer = new JUnitDomainObjectComparer();
-        
+
         //set the session for the comparer to use
-        comparer.setSession((AbstractSession)session.getActiveSession());              
-        
+        comparer.setSession((AbstractSession)session.getActiveSession());
+
         //Populate the tables
         employeePopulator.buildExamples();
-        
+
         //Persist the examples in the database
         employeePopulator.persistExample(session);
     }
-    
+
     //GF Bug#404
     //1.  Fetch join now works with LAZY.  The fix is to trigger the value holder during object registration.  The test is to serialize
-    //the results and deserialize it, then call getPhoneNumbers().size().  It used to throw an exception because the value holder 
+    //the results and deserialize it, then call getPhoneNumbers().size().  It used to throw an exception because the value holder
     //wasn't triggered and the data was in a transient attribute that was lost during serialization
     //2.  Test both scenarios of using the cache and bypassing the cache
     public void simpleJoinFetchTest() throws Exception {
@@ -226,9 +226,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         simpleJoinFetchTest(em);
     }
-    
-    
-    //bug#6130550:  
+
+
+    //bug#6130550:
     // tests that Fetch join works when returning objects that may already have been loaded in the em/uow (without the joined relationships)
     // Builds on simpleJoinFetchTest
     public void simpleJoinFetchTest2() throws Exception {
@@ -254,7 +254,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
         root.fetch(Employee_.phoneNumbers, JoinType.LEFT);
         List result = em.createQuery(cq).getResultList();
-        
+
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(byteStream);
 
@@ -269,7 +269,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Employee emp = (Employee)iterator.next();
             emp.getPhoneNumbers().size();
         }
-            
+
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.setShouldReturnWithoutReportQueryResult(true);
         reportQuery.setReferenceClass(Employee.class);
@@ -303,7 +303,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Employee emp = (Employee)iterator.next();
             emp.getPhoneNumbers().size();
         }
-            
+
         clearCache();
 
         expectedResult = (Vector)em.getUnitOfWork().executeQuery(reportQuery);
@@ -437,14 +437,14 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = CONCAT( :partOne, :partTwo )"
         beginTransaction(em);
-        try {  
+        try {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
             cq.where( qb.equal(root.get(Employee_.firstName), qb.concat(qb.parameter(String.class, "partOne"), qb.parameter(String.class, "partTwo"))) );
             Query query = em.createQuery(cq);
             query.setParameter("partOne", partOne).setParameter("partTwo", partTwo);
-      
+
             List result = query.getResultList();
             Assert.assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -480,7 +480,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
         cq.where( qb.like(qb.concat(root.get(Employee_.firstName), qb.literal("Smith") ), partOne+"Smith") );
         beginTransaction(em);
-        try {  
+        try {
             List result = em.createQuery(cq).getResultList();
             Assert.assertTrue("Concat test with constraints failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -488,7 +488,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
   //Test case for concat function with constants in EJBQL
 
     public void simpleCountTest() {
@@ -515,10 +515,10 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //cq.select(qb.count(root.get(PhoneNumber_.owner).get(Employee_.id)));
 
         beginTransaction(em);
-        try { 
+        try {
             List result = em.createQuery(cq).getResultList();
             System.out.println(" results are :"+result);
-        
+
             qb = em.getCriteriaBuilder();
             cq = qb.createQuery(Long.class);
             root = cq.from(PhoneNumber.class);
@@ -545,14 +545,14 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         partTwo = expectedResult.getFirstName().substring(1, 2);
         partThree = expectedResult.getFirstName().substring(2);
 
-        //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = CONCAT(\"" + partOne + "\", CONCAT(\"" + partTwo 
+        //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = CONCAT(\"" + partOne + "\", CONCAT(\"" + partTwo
         //      + "\", \"" + partThree + "\") )"
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
         cq.where( qb.equal( root.get(Employee_.firstName), qb.concat(qb.literal(partOne), qb.concat( qb.literal(partTwo), qb.literal(partThree)) ) ) );
         beginTransaction(em);
-        try { 
+        try {
             List result = em.createQuery(cq).getResultList();
             Assert.assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -569,9 +569,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         cq.distinct(true);
         cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class)).join(Employee_.phoneNumbers);
         beginTransaction(em);
-        try { 
+        try {
             List result = em.createQuery(cq).getResultList();
-        
+
             Set testSet = new HashSet();
             for (Iterator iterator = result.iterator(); iterator.hasNext(); ) {
                 Employee emp = (Employee)iterator.next();
@@ -611,7 +611,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             beginTransaction(em);
             try {
                 List result = em.createQuery(cq).getResultList();
-            
+
                 assertTrue("Failed to return null value", result.contains(null));
             } finally {
                 rollbackTransaction(em);
@@ -849,14 +849,14 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         PhoneNumber empPhoneNumbers = (PhoneNumber)((Vector)expectedResult.getPhoneNumbers()).firstElement();
 
-        //"SelecT OBJECT(emp) from Employee emp, in (emp.phoneNumbers) phone " + "Where phone.areaCode = \"" + empPhoneNumbers.getAreaCode() + "\"" 
+        //"SelecT OBJECT(emp) from Employee emp, in (emp.phoneNumbers) phone " + "Where phone.areaCode = \"" + empPhoneNumbers.getAreaCode() + "\""
         //      + "AND emp.firstName = \"" + expectedResult.getFirstName() + "\"" + "AND emp.lastName = \"" + expectedResult.getLastName() + "\""
-        
+
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
         Join phone = root.join(Employee_.phoneNumbers);
-        Predicate firstAnd = qb.and( qb.equal(phone.get(PhoneNumber_.areaCode), empPhoneNumbers.getAreaCode()), 
+        Predicate firstAnd = qb.and( qb.equal(phone.get(PhoneNumber_.areaCode), empPhoneNumbers.getAreaCode()),
                 qb.equal(root.get(Employee_.firstName), expectedResult.getFirstName()));
         cq.where( qb.and(firstAnd, qb.equal(root.get(Employee_.lastName), expectedResult.getLastName())) );
         beginTransaction(em);
@@ -911,7 +911,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void simpleInListTest() {
         EntityManager em = createEntityManager();
 
@@ -919,7 +919,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         List expectedResultList = new ArrayList();
         expectedResultList.add(expectedResult.getId());
-        
+
         clearCache();
 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :result"
@@ -956,7 +956,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
         cq.where( qb.equal( qb.length(root.get(Employee_.firstName)) , expectedResult.getFirstName().length()) );
         beginTransaction(em);
-        try {        
+        try {
             List result = em.createQuery(cq).getResultList();
 
             Assert.assertTrue("Simple Length Test failed", comparer.compareObjects(result, expectedResult));
@@ -981,7 +981,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
         cq.where( qb.like( root.get(Employee_.firstName), partialFirstName) );
         beginTransaction(em);
-        try { 
+        try {
             List result = em.createQuery(cq).getResultList();
 
             Assert.assertTrue("Simple Like Test failed", comparer.compareObjects(result, expectedResult));
@@ -1017,7 +1017,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
         cq.where( qb.like( root.get(Employee_.firstName), qb.parameter(String.class, "1")) );
         beginTransaction(em);
-        try { 
+        try {
             List result = em.createQuery(cq).setParameter("1", partialFirstName).getResultList();
 
             Assert.assertTrue("Simple Like Test with Parameter failed", comparer.compareObjects(result, expectedResult));
@@ -1049,7 +1049,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         CriteriaQuery<Address> cq = qb.createQuery(Address.class);
         Root<Address> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Address.class));
         cq.where( qb.like( root.get(Address_.street), qb.parameter(String.class, "pattern"), qb.parameter(Character.class, "esc")) );
-        
+
         String patternString = null;
         Character escChar = null;
         // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
@@ -1824,12 +1824,12 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
             result = em.createQuery(cq).getResultList();
 
-            Assert.assertTrue("Simple Mod test(2) failed", comparer.compareObjects(result, expectedResult)); 
+            Assert.assertTrue("Simple Mod test(2) failed", comparer.compareObjects(result, expectedResult));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
-        
+
     }
 
     public void simpleIsEmptyTest() {
@@ -1964,7 +1964,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void smallProjectNOTMemberOfProjectsTest() {
         EntityManager em = createEntityManager();
 
@@ -2123,9 +2123,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
                 phoneAnyOf.get("number").equal(employeeBuilder.all(subQuery)));
         query.setSelectionCriteria(selectionCriteria);
         query.setReferenceClass(Employee.class);
-        
+
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
-        
+
         clearCache();
 
         //"Select Distinct Object(emp) from Employee emp, IN(emp.phoneNumbers) p WHERE p.number = ALL (Select MIN(pp.number) FROM PhoneNumber pp)";
@@ -2135,7 +2135,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Subquery<Number> sq = cq.subquery(Number.class);
         Root<PhoneNumber> subroot = cq.from(PhoneNumber.class);
         sq.select(qb.min(subroot.<Number>get("number")));//number is a string? not sure this will work.
-        
+
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
         Join phone = root.join("phoneNumbers");
         cq.where(qb.equal(root.get("number"), qb.all(sq)));
@@ -2181,7 +2181,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Subquery<Number> sq = cq.subquery(Number.class);
             Root<PhoneNumber> subroot = sq.from(PhoneNumber.class);
             sq.select(qb.min(subroot.<Number>get("number")));//number is a string? not sure this will work.
-        
+
             Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
             Join phone = root.join(Employee_.phoneNumbers);
             cq.where(qb.equal(phone.get(PhoneNumber_.number), qb.all(sq)));
@@ -2237,7 +2237,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         uow = clientSession.acquireUnitOfWork();
         uow.deleteObject(phone);
         uow.commit();
-        
+
         clearCache();
     }
 
@@ -2286,7 +2286,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         uow = clientSession.acquireUnitOfWork();
         uow.deleteObject(phone);
         uow.commit();
-        
+
         clearCache();
     }
 
@@ -2390,7 +2390,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         List expectedResult = getServerSession().readAllObjects(LargeProject.class);
-        
+
         clearCache();
 
         //"SELECT OBJECT(proj) FROM Project proj WHERE TYPE(proj) = LargeProject"
@@ -2407,7 +2407,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void simpleAsOrderByTest(){
         EntityManager em = createEntityManager();
 
@@ -2417,9 +2417,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         query.returnSingleAttribute();
         query.dontRetrievePrimaryKeys();
         query.addOrdering(query.getExpressionBuilder().get("firstName").ascending());
-        
+
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
-        
+
         clearCache();
 
         //"SELECT e.firstName as firstName FROM Employee e ORDER BY firstName"

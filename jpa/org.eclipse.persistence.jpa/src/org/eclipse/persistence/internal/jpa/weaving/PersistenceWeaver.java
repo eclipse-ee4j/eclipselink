@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -35,30 +35,30 @@ import org.eclipse.persistence.sessions.Session;
  * INTERNAL:
  * This class performs dynamic bytecode weaving: for each attribute
  * mapped with One To One mapping with Basic Indirection it substitutes the
- * original attribute's type for ValueHolderInterface. 
+ * original attribute's type for ValueHolderInterface.
  */
 public class PersistenceWeaver implements ClassTransformer {
 
     public static final String EXCEPTION_WHILE_WEAVING = "exception_while_weaving";
-    
+
     protected Session session; // for logging
-    // Map<String, ClassDetails> where the key is className in JVM '/' format 
+    // Map<String, ClassDetails> where the key is className in JVM '/' format
     protected Map classDetailsMap;
-    
+
     public PersistenceWeaver(Session session, Map classDetailsMap) {
         this.session = session;
         this.classDetailsMap = classDetailsMap;
     }
-    
+
     /**
      * Allow the weaver to be clear to release its referenced memory.
      * This is require because the class loader reference to the transformer will never gc.
      */
     public void clear() {
         this.session = null;
-        this.classDetailsMap = null;        
+        this.classDetailsMap = null;
     }
-    
+
     public Map getClassDetailsMap() {
         return classDetailsMap;
     }
@@ -82,7 +82,7 @@ public class PersistenceWeaver implements ClassTransformer {
              * in the class.
              */
             ClassDetails classDetails = (ClassDetails)classDetailsMap.get(Helper.toSlashedClassName(className));
-    
+
             if (classDetails != null) {
                 ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "begin_weaving_class", className);
                 ClassReader classReader = new ClassReader(classfileBuffer);
@@ -102,9 +102,9 @@ public class PersistenceWeaver implements ClassTransformer {
                 }
                 if (classWeaver.weaved) {
                     byte[] bytes = classWriter.toByteArray();
-                    
+
                     String outputPath = System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
-    
+
                     if (!outputPath.equals("")) {
                         Helper.outputClassFile(className, bytes, outputPath);
                     }
@@ -134,7 +134,7 @@ public class PersistenceWeaver implements ClassTransformer {
         }
         return null; // returning null means 'use existing class bytes'
     }
-    
+
     // same as in org.eclipse.persistence.internal.helper.Helper, but uses
     // '/' slash as delimiter, not '.'
     protected static String getShortName(String name) {

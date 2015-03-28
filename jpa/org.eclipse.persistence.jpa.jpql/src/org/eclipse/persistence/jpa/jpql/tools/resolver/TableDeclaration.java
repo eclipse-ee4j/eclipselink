@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,26 +24,26 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
  */
 public class TableDeclaration extends Declaration {
 
-	/**
-	 * Creates a new <code>TableDeclaration</code>.
-	 */
-	public TableDeclaration() {
-		super();
-	}
+    /**
+     * Creates a new <code>TableDeclaration</code>.
+     */
+    public TableDeclaration() {
+        super();
+    }
 
-	/**
-	 * Returns the unquoted table name.
-	 *
-	 * @return The name of the table specified in the <code><b>TABLE</b></code> expression
-	 */
-	public String getTableName() {
-		return ExpressionTools.unquote(rootPath);
-	}
+    /**
+     * Returns the unquoted table name.
+     *
+     * @return The name of the table specified in the <code><b>TABLE</b></code> expression
+     */
+    public String getTableName() {
+        return ExpressionTools.unquote(rootPath);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Type getType() {
-		return Type.TABLE;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public Type getType() {
+        return Type.TABLE;
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
 import org.eclipse.persistence.logging.SessionLog;
@@ -54,9 +54,9 @@ public class SessionsXMLSchemaDefaultValueTest extends AutoVerifyTestCase {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSessionNoDefaultedTagsAllowed.xml");
 
         // don't log in the session
-        employeeSession = (DatabaseSession)SessionManager.getManager().getSession(loader, "EmployeeSession", getClass().getClassLoader(), false, true); // refresh the session  
+        employeeSession = (DatabaseSession)SessionManager.getManager().getSession(loader, "EmployeeSession", getClass().getClassLoader(), false, true); // refresh the session
         // don't log in the session
-        serverSession = (ServerSession)SessionManager.getManager().getSession(loader, "ServerSession", getClass().getClassLoader(), false, true); // refresh the session  
+        serverSession = (ServerSession)SessionManager.getManager().getSession(loader, "ServerSession", getClass().getClassLoader(), false, true); // refresh the session
     }
 
     protected void verify() {
@@ -64,7 +64,7 @@ public class SessionsXMLSchemaDefaultValueTest extends AutoVerifyTestCase {
             throw new TestErrorException("Employee session is null");
         }
 
-        // Bug 300111 - Platform should specify default sequence table 
+        // Bug 300111 - Platform should specify default sequence table
         if (!employeeSession.getDatasourceLogin().getPlatform().getSequenceTableName().equals(employeeSession.getPlatform().getDefaultSequenceTableName())) {
             throw new TestErrorException("The sequence table had the wrong default value");
         }
@@ -230,32 +230,32 @@ public class SessionsXMLSchemaDefaultValueTest extends AutoVerifyTestCase {
             throw new TestErrorException("The packet time to live had the wrong default value");
         }
         /*
-		if (serverSession.getServerPlatform().isRuntimeServicesEnabled() != XMLSessionConfigProject.ENABLE_RUNTIME_SERVICES_DEFAULT)
-		{
+        if (serverSession.getServerPlatform().isRuntimeServicesEnabled() != XMLSessionConfigProject.ENABLE_RUNTIME_SERVICES_DEFAULT)
+        {
       throw new TestErrorException("isRuntimeServicesEnabled did not match the default setting");
-		}
-		if (serverSession.getServerPlatform().isJTAEnabled() != XMLSessionConfigProject.ENABLE_JTA_DEFAULT)
-		{
+        }
+        if (serverSession.getServerPlatform().isJTAEnabled() != XMLSessionConfigProject.ENABLE_JTA_DEFAULT)
+        {
       throw new TestErrorException("isJTAEnabled did not match the default setting");
-		}
-		*/
+        }
+        */
         ConnectionPool readConnPool = serverSession.getConnectionPool("ReadConnectionPool");
         ConnectionPool writeConnPool = serverSession.getConnectionPool("WriteConnectionPool");
         ConnectionPool seqConnPool = serverSession.getConnectionPool("SequenceConnectionPool");
         /*
-		if((readConnPool == null) || (writeConnPool == null) || (seqConnPool == null))
-		{
+        if((readConnPool == null) || (writeConnPool == null) || (seqConnPool == null))
+        {
       throw new TestErrorException("Connection Pools were not created correctly");
-		}
-		if((readConnPool.getMaxNumberOfConnections()!=XMLSessionConfigProject.READ_CONNECTION_POOL_MAX_DEFAULT) ||
-			(readConnPool.getMinNumberOfConnections()!=XMLSessionConfigProject.READ_CONNECTION_POOL_MIN_DEFAULT) ||
-			(writeConnPool.getMaxNumberOfConnections()!=XMLSessionConfigProject.CONNECTION_POOL_MAX_DEFAULT) ||
-			(writeConnPool.getMinNumberOfConnections()!=XMLSessionConfigProject.CONNECTION_POOL_MIN_DEFAULT) ||
-			(seqConnPool.getMaxNumberOfConnections()!=XMLSessionConfigProject.CONNECTION_POOL_MAX_DEFAULT) ||
-			(seqConnPool.getMinNumberOfConnections()!=XMLSessionConfigProject.CONNECTION_POOL_MIN_DEFAULT))
-		{
+        }
+        if((readConnPool.getMaxNumberOfConnections()!=XMLSessionConfigProject.READ_CONNECTION_POOL_MAX_DEFAULT) ||
+            (readConnPool.getMinNumberOfConnections()!=XMLSessionConfigProject.READ_CONNECTION_POOL_MIN_DEFAULT) ||
+            (writeConnPool.getMaxNumberOfConnections()!=XMLSessionConfigProject.CONNECTION_POOL_MAX_DEFAULT) ||
+            (writeConnPool.getMinNumberOfConnections()!=XMLSessionConfigProject.CONNECTION_POOL_MIN_DEFAULT) ||
+            (seqConnPool.getMaxNumberOfConnections()!=XMLSessionConfigProject.CONNECTION_POOL_MAX_DEFAULT) ||
+            (seqConnPool.getMinNumberOfConnections()!=XMLSessionConfigProject.CONNECTION_POOL_MIN_DEFAULT))
+        {
       throw new TestErrorException("Connection Pools had the wrong default sizes");
-		}
-		*/
+        }
+        */
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -68,7 +68,7 @@ import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DEBUG;
 import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DROP;
 
 public class PLSQLcollectionTestSuite {
-    
+
     static final String CREATE_DDL =
         "CREATE OR REPLACE PACKAGE SOMEPACKAGE AS" +
         "    TYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
@@ -83,7 +83,7 @@ public class PLSQLcollectionTestSuite {
         "END SOMEPACKAGE;" +
         "|" +
         "CREATE OR REPLACE TYPE SOMEPACKAGE_TBL1 AS TABLE OF VARCHAR2(111)|" ;
-    
+
     static final String DROP_DDL =
         "DROP PACKAGE BODY SOMEPACKAGE|" +
         "DROP PACKAGE SOMEPACKAGE|" +
@@ -158,7 +158,7 @@ public class PLSQLcollectionTestSuite {
         query.addArgument("FOO", String.class);
         query.setCall(call);
         t1Descriptor.getQueryManager().addQuery(QUERY_NAME, query);
-        
+
         if (ddlCreate) {
             try {
                 AllTests.runDdl(CREATE_DDL, ddlDebug);
@@ -283,7 +283,7 @@ public class PLSQLcollectionTestSuite {
         DatabaseQuery query = t1Descriptor.getQueryManager().getQuery(QUERY_NAME);
         assertTrue(QUERY_NAME + " is wrong type of query: " + query.getClass().getSimpleName(),
             query.isDataModifyQuery());
-        
+
         session = projectFromXML.createDatabaseSession();
         session.dontLogMessages();
         t1Descriptor = session.getDescriptorForAlias("T1");
@@ -303,6 +303,6 @@ public class PLSQLcollectionTestSuite {
             msg = e.getMessage();
         }
         assertTrue("invocation somePackage.p1 failed: " + msg, worked);
-        
+
     }
 }

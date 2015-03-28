@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.weaving.jpa;
 
 import java.io.File;
@@ -31,7 +31,7 @@ import org.apache.tools.ant.types.Path;
 
 /**
 * <p>
-* <b>Description</b>: This is the static weave ant task definition class that verifies the value of specified attributes and invokes 
+* <b>Description</b>: This is the static weave ant task definition class that verifies the value of specified attributes and invokes
 *  StaticWeaveProcessor to weave classes.
 * <p>
 * <b>Usage</b>:
@@ -40,7 +40,7 @@ import org.apache.tools.ant.types.Path;
 * <li>The lib containing this weaving Ant task must be added into the classpath by using the -lib option on Ant command line instead of using the classpath attribute of the taskdef Ant task.
 * <li>Define weaving Ant task and Ant target by using following attributes:
 * <ul><li>source  - specify source location. In the default configuration StaticWeaveAntTask assumes the source contains the persistence.xml,if this is not the case, the location containing the persistence.xml must be explicitly identified by the attribute 'persistenceinfo'.
-* <li>target - specify the output location (either a directory or a jar).  
+* <li>target - specify the output location (either a directory or a jar).
 * <li>persistenceinfo - specify the location containing the persistence.xml. This is optional and should only be specified if the source does not contain the persistence.xml.
 * Weaving is not required for composite persistence unit - only for its members.
 * If composite persistence unit member can't be used independently from its composite (specifies {@literal <property name="eclipselink.composite-unit.member" value="true"/>})
@@ -68,15 +68,15 @@ import org.apache.tools.ant.types.Path;
 */
 
 public class StaticWeaveAntTask extends Task{
-    
+
     private String source;
     private String persistenceinfo;
     private String persistencexml;
     private String target;
     private Vector classPaths = new Vector();
     private int logLevel = SessionLog.OFF;
-    private Writer logWriter;    
-    
+    private Writer logWriter;
+
     /**
      * Set the input archive to be used to weave.
      */
@@ -90,7 +90,7 @@ public class StaticWeaveAntTask extends Task{
     public void setTarget(String target) {
            this.target = target;
     }
-   
+
     /**
      * Set the log file.
      */
@@ -101,38 +101,38 @@ public class StaticWeaveAntTask extends Task{
             throw StaticWeaveException.openLoggingFileException(logFile,e);
         }
     }
-    
+
     public void setLogLevel(String logLevel) {
         if (logLevel.equalsIgnoreCase("OFF") ||
-            logLevel.equalsIgnoreCase("SEVERE") || 
-            logLevel.equalsIgnoreCase("WARNING") || 
-            logLevel.equalsIgnoreCase("INFO") || 
-            logLevel.equalsIgnoreCase("CONFIG") || 
-            logLevel.equalsIgnoreCase("FINE") || 
-            logLevel.equalsIgnoreCase("FINER") || 
-            logLevel.equalsIgnoreCase("FINEST") || 
+            logLevel.equalsIgnoreCase("SEVERE") ||
+            logLevel.equalsIgnoreCase("WARNING") ||
+            logLevel.equalsIgnoreCase("INFO") ||
+            logLevel.equalsIgnoreCase("CONFIG") ||
+            logLevel.equalsIgnoreCase("FINE") ||
+            logLevel.equalsIgnoreCase("FINER") ||
+            logLevel.equalsIgnoreCase("FINEST") ||
             logLevel.equalsIgnoreCase("ALL")) {
             this.logLevel = AbstractSessionLog.translateStringToLoggingLevel(logLevel.toUpperCase());
         } else{
             throw StaticWeaveException.illegalLoggingLevel(logLevel);
         }
     }
-    
+
     public void setPersistenceinfo(String persistenceinfo) {
         this.persistenceinfo = persistenceinfo;
     }
-    
+
     public void setpersistencexml(String persistenceXMLLocation) {
         this.persistencexml = persistenceXMLLocation;
     }
-    
+
     /**
      * Add the dependent classpath in order to load classes from the specified input jar.
      */
     public void addClasspath(Path path) {
         classPaths.add(path);
     }
-    
+
     /**
      * Parse the class path element and store them into vector.
      */
@@ -151,10 +151,10 @@ public class StaticWeaveAntTask extends Task{
         }
         return pathElements;
     }
-    
+
     /**
      * Convert the path element into the URL which further pass into
-     * the classloader. 
+     * the classloader.
      */
     private URL[] getURLs(){
         Vector pathElements = getPathElement();
@@ -176,7 +176,7 @@ public class StaticWeaveAntTask extends Task{
        verifyOptions();
        start();
     }
-   
+
     /**
      * Verify the value of attributes.
      * @throws BuildException
@@ -185,12 +185,12 @@ public class StaticWeaveAntTask extends Task{
        if (source==null) {
            throw StaticWeaveException.missingSource();
        }
-       
+
        if (target==null) {
            throw StaticWeaveException.missingTarget();
        }
     }
-   
+
     /**
      * Invoke weaving process.
      */

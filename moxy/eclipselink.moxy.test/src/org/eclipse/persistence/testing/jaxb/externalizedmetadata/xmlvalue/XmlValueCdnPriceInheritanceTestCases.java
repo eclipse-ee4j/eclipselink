@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,42 +35,42 @@ public class XmlValueCdnPriceInheritanceTestCases extends JAXBWithJSONTestCases{
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/cdnprice.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/cdnprice.json";
 
-	public XmlValueCdnPriceInheritanceTestCases(String name) throws Exception {
-		super(name);
-		setClasses(new Class[] { CDNPriceInheritance.class });
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-	}
+    public XmlValueCdnPriceInheritanceTestCases(String name) throws Exception {
+        super(name);
+        setClasses(new Class[] { CDNPriceInheritance.class });
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+    }
 
 
     public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/eclipselink-oxm-cdnprice-inheritance.xml");
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/eclipselink-oxm-cdnprice-inheritance.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue", new StreamSource(inputStream));
-		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-		properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
-	    return properties;
-	}
+        return properties;
+    }
 
-	public void testSchemaGen() throws Exception{
-		List controlSchemas = new ArrayList();
-		InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/cdnpriceinheritance_schema.xsd");
-		controlSchemas.add(is);
+    public void testSchemaGen() throws Exception{
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/cdnpriceinheritance_schema.xsd");
+        controlSchemas.add(is);
 
-		super.testSchemaGen(controlSchemas);
+        super.testSchemaGen(controlSchemas);
 
-		InputStream src = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-		InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/cdnpriceinheritance_schema.xsd");
-		String result = validateAgainstSchema(src, new StreamSource(schema));
+        InputStream src = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+        InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/cdnpriceinheritance_schema.xsd");
+        String result = validateAgainstSchema(src, new StreamSource(schema));
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-	}
+    }
 
-	protected Object getControlObject() {
-		CDNPriceInheritance price = new CDNPriceInheritance();
+    protected Object getControlObject() {
+        CDNPriceInheritance price = new CDNPriceInheritance();
         price.price = new BigDecimal("123.45678901234567890");
         return price;
-	}
+    }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,7 +26,7 @@ public class StringNilTestCases extends JAXBWithJSONTestCases {
 
     public StringNilTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
         Class[] classes = new Class[1];
@@ -38,18 +38,18 @@ public class StringNilTestCases extends JAXBWithJSONTestCases {
         JAXBElement value = new StringObjectFactory().createStringRoot();
         value.setValue(null);
         value.setNil(true);
-        return value;      
+        return value;
     }
-   
-    public Map getProperties(){
-    	Map props = new HashMap();
-	    	
-    	Map namespaces = new HashMap();
-    	namespaces.put("myns","ns0");
 
-    	props.put(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
-    	
-	    return props;
+    public Map getProperties(){
+        Map props = new HashMap();
+
+        Map namespaces = new HashMap();
+        namespaces.put("myns","ns0");
+
+        props.put(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
+
+        return props;
 }
-    
+
 }

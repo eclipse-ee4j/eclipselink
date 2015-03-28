@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -39,39 +39,39 @@ public class InheritanceWithMultiplePackagesBackwardCompatibilityTestCases exten
     }
 
     protected Object getControlObject() {
-    	RootComplex root = new RootComplex();
-		SubType subType = new SubType();
-		subType.subTypeProp = 10;
-		root.baseTypeThing = subType;
-		
-		SubTypeLevel2 subTypeLevel2 = new SubTypeLevel2();
-		subTypeLevel2.baseProp = "boo";
-		
-		AnotherSubType anotherSubType = new AnotherSubType();
-		AnotherPackageSubType anotherPackageSubType = new AnotherPackageSubType();
-		List baseTypes = new ArrayList();
-		baseTypes.add(subType);
-		baseTypes.add(anotherSubType);
-		baseTypes.add(subTypeLevel2);
-		baseTypes.add(subType);
-		baseTypes.add(anotherPackageSubType);
-		root.baseTypeList = baseTypes;
-		
-		List objectList = new ArrayList(baseTypes);
-		objectList.add(new String("string test"));
-		objectList.add(new Integer(500));
-		root.objectList = objectList;
-		
-		List anyObjectList = new ArrayList(baseTypes);
-		anyObjectList.add(new String("string test2"));
-		
-		List choiceList = new ArrayList();
-		choiceList.add(anotherPackageSubType);
-		choiceList.add(subTypeLevel2);
-		choiceList.add(new String("choice string test"));
-		choiceList.add(new Integer(500));
-		root.choiceList = choiceList;
-		return root;
+        RootComplex root = new RootComplex();
+        SubType subType = new SubType();
+        subType.subTypeProp = 10;
+        root.baseTypeThing = subType;
+
+        SubTypeLevel2 subTypeLevel2 = new SubTypeLevel2();
+        subTypeLevel2.baseProp = "boo";
+
+        AnotherSubType anotherSubType = new AnotherSubType();
+        AnotherPackageSubType anotherPackageSubType = new AnotherPackageSubType();
+        List baseTypes = new ArrayList();
+        baseTypes.add(subType);
+        baseTypes.add(anotherSubType);
+        baseTypes.add(subTypeLevel2);
+        baseTypes.add(subType);
+        baseTypes.add(anotherPackageSubType);
+        root.baseTypeList = baseTypes;
+
+        List objectList = new ArrayList(baseTypes);
+        objectList.add(new String("string test"));
+        objectList.add(new Integer(500));
+        root.objectList = objectList;
+
+        List anyObjectList = new ArrayList(baseTypes);
+        anyObjectList.add(new String("string test2"));
+
+        List choiceList = new ArrayList();
+        choiceList.add(anotherPackageSubType);
+        choiceList.add(subTypeLevel2);
+        choiceList.add(new String("choice string test"));
+        choiceList.add(new Integer(500));
+        root.choiceList = choiceList;
+        return root;
     }
-    
+
 }

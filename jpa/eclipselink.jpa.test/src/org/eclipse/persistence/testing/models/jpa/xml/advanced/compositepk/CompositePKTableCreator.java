@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk;
 
@@ -26,11 +26,11 @@ public class CompositePKTableCreator extends TableCreator {
         addTableDefinition(buildDEPT_ADMINTable());
         addTableDefinition(buildCUBICLETable());
     }
-    
+
     public static TableDefinition buildADMINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_ADMIN");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("EMPLOYEE_EMP_ID");
         field.setTypeName("NUMERIC");
@@ -40,7 +40,7 @@ public class CompositePKTableCreator extends TableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("CONTRACT_COMPANY");
         field1.setTypeName("VARCHAR");
@@ -50,7 +50,7 @@ public class CompositePKTableCreator extends TableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -63,11 +63,11 @@ public class CompositePKTableCreator extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildADMIN_CONTRACTTable(){
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_ADMIN_CONTRACT");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("EMPLOYEE_EMP_ID");
         field.setTypeName("NUMERIC");
@@ -77,7 +77,7 @@ public class CompositePKTableCreator extends TableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("END_DATE");
         field4.setTypeName("DATE");
@@ -94,7 +94,7 @@ public class CompositePKTableCreator extends TableCreator {
     public static TableDefinition buildSCIENTISTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_SCIENTIST");
-    
+
         FieldDefinition ID_NUMBER_field = new FieldDefinition();
         ID_NUMBER_field.setName("ID_NUMBER");
         ID_NUMBER_field.setTypeName("NUMERIC");
@@ -104,7 +104,7 @@ public class CompositePKTableCreator extends TableCreator {
         ID_NUMBER_field.setUnique(false);
         ID_NUMBER_field.setIsIdentity(true);
         table.addField(ID_NUMBER_field);
-    
+
         FieldDefinition F_NAME_field = new FieldDefinition();
         F_NAME_field.setName("F_NAME");
         F_NAME_field.setTypeName("VARCHAR");
@@ -114,7 +114,7 @@ public class CompositePKTableCreator extends TableCreator {
         F_NAME_field.setUnique(false);
         F_NAME_field.setIsIdentity(true);
         table.addField(F_NAME_field);
-    
+
         FieldDefinition L_NAME_Field = new FieldDefinition();
         L_NAME_Field.setName("L_NAME");
         L_NAME_Field.setTypeName("VARCHAR");
@@ -124,7 +124,7 @@ public class CompositePKTableCreator extends TableCreator {
         L_NAME_Field.setUnique(false);
         L_NAME_Field.setIsIdentity(true);
         table.addField(L_NAME_Field);
-    
+
         FieldDefinition CUBE_ID_field = new FieldDefinition();
         CUBE_ID_field.setName("CUBE_ID");
         CUBE_ID_field.setTypeName("NUMERIC");
@@ -134,7 +134,7 @@ public class CompositePKTableCreator extends TableCreator {
         CUBE_ID_field.setUnique(false);
         CUBE_ID_field.setIsIdentity(false);
         table.addField(CUBE_ID_field);
-    
+
         FieldDefinition CUBE_CODE_field = new FieldDefinition();
         CUBE_CODE_field.setName("CUBE_CODE");
         CUBE_CODE_field.setTypeName("VARCHAR");
@@ -144,7 +144,7 @@ public class CompositePKTableCreator extends TableCreator {
         CUBE_CODE_field.setUnique(false);
         CUBE_CODE_field.setIsIdentity(false);
         table.addField(CUBE_CODE_field);
-    
+
         FieldDefinition DEPT_NAME_field = new FieldDefinition();
         DEPT_NAME_field.setName("DEPT_NAME");
         DEPT_NAME_field.setTypeName("VARCHAR");
@@ -154,7 +154,7 @@ public class CompositePKTableCreator extends TableCreator {
         DEPT_NAME_field.setUnique(false);
         DEPT_NAME_field.setIsIdentity(false);
         table.addField(DEPT_NAME_field);
-    
+
         FieldDefinition DEPT_ROLE_field = new FieldDefinition();
         DEPT_ROLE_field.setName("DEPT_ROLE");
         DEPT_ROLE_field.setTypeName("VARCHAR");
@@ -164,7 +164,7 @@ public class CompositePKTableCreator extends TableCreator {
         DEPT_ROLE_field.setUnique(false);
         DEPT_ROLE_field.setIsIdentity(false);
         table.addField(DEPT_ROLE_field);
-    
+
         FieldDefinition DEPT_LOCATION_field = new FieldDefinition();
         DEPT_LOCATION_field.setName("DEPT_LOCATION");
         DEPT_LOCATION_field.setTypeName("VARCHAR");
@@ -174,7 +174,7 @@ public class CompositePKTableCreator extends TableCreator {
         DEPT_LOCATION_field.setUnique(false);
         DEPT_LOCATION_field.setIsIdentity(false);
         table.addField(DEPT_LOCATION_field);
-        
+
         FieldDefinition fieldDTYPE = new FieldDefinition();
         fieldDTYPE.setName("DTYPE");
         fieldDTYPE.setTypeName("VARCHAR2");
@@ -205,10 +205,10 @@ public class CompositePKTableCreator extends TableCreator {
         fkConstraint2.addTargetField("DEPT_ROLE");
         fkConstraint2.addTargetField("LOCATION");
         table.addForeignKeyConstraint(fkConstraint2);
-       
+
         return table;
     }
-    
+
     public static TableDefinition buildDEPT_ADMINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_DEPT_ADMIN");
@@ -224,7 +224,7 @@ public class CompositePKTableCreator extends TableCreator {
         fieldName.setIsIdentity(false);
         //fieldName.setForeignKeyFieldName("CMP3_XML_DEPARTMENT.NAME");
         table.addField(fieldName);
-    
+
         FieldDefinition ROLE_field = new FieldDefinition();
         ROLE_field.setName("DEPT_ROLE");
         ROLE_field.setTypeName("VARCHAR");
@@ -235,7 +235,7 @@ public class CompositePKTableCreator extends TableCreator {
         ROLE_field.setIsIdentity(false);
         //ROLE_field.setForeignKeyFieldName("CMP3_XML_DEPARTMENT.ROLE");
         table.addField(ROLE_field);
-    
+
         FieldDefinition LOCATION_field = new FieldDefinition();
         LOCATION_field.setName("DEPT_LOCATION");
         LOCATION_field.setTypeName("VARCHAR");
@@ -246,7 +246,7 @@ public class CompositePKTableCreator extends TableCreator {
         LOCATION_field.setIsIdentity(false);
         //LOCATION_field.setForeignKeyFieldName("CMP3_XML_DEPARTMENT.LOCATION");
         table.addField(LOCATION_field);
-        
+
         // SECTION: FIELD
         FieldDefinition fieldEMP = new FieldDefinition();
         fieldEMP.setName("ADMIN_EMPLOYEE_EMP_ID");
@@ -259,9 +259,9 @@ public class CompositePKTableCreator extends TableCreator {
         //fieldEMP.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
         table.addField(fieldEMP);
 
-        return table;   
+        return table;
     }
-    
+
     public static TableDefinition buildDEPARTMENTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_DEPARTMENT");
@@ -275,7 +275,7 @@ public class CompositePKTableCreator extends TableCreator {
         NAME_field.setUnique(false);
         NAME_field.setIsIdentity(true);
         table.addField(NAME_field);
-    
+
         FieldDefinition ROLE_field = new FieldDefinition();
         ROLE_field.setName("DEPT_ROLE");
         ROLE_field.setTypeName("VARCHAR");
@@ -285,7 +285,7 @@ public class CompositePKTableCreator extends TableCreator {
         ROLE_field.setUnique(false);
         ROLE_field.setIsIdentity(true);
         table.addField(ROLE_field);
-    
+
         FieldDefinition LOCATION_field = new FieldDefinition();
         LOCATION_field.setName("LOCATION");
         LOCATION_field.setTypeName("VARCHAR");
@@ -312,7 +312,7 @@ public class CompositePKTableCreator extends TableCreator {
         ID_field.setUnique(false);
         ID_field.setIsIdentity(true);
         table.addField(ID_field);
-    
+
         FieldDefinition CODE_field = new FieldDefinition();
         CODE_field.setName("CODE");
         CODE_field.setTypeName("VARCHAR");
@@ -322,7 +322,7 @@ public class CompositePKTableCreator extends TableCreator {
         CODE_field.setUnique(false);
         CODE_field.setIsIdentity(true);
         table.addField(CODE_field);
-    
+
         return table;
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,61 +32,61 @@ import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
  */
 public class NumericLiteralStateObject extends SimpleStateObject {
 
-	/**
-	 * Creates a new <code>NumericLiteralStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public NumericLiteralStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>NumericLiteralStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public NumericLiteralStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>NumericLiteralStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param numeric The actual number
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public NumericLiteralStateObject(StateObject parent, Number numeric) {
-		super(parent, numeric.toString());
-	}
+    /**
+     * Creates a new <code>NumericLiteralStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param numeric The actual number
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public NumericLiteralStateObject(StateObject parent, Number numeric) {
+        super(parent, numeric.toString());
+    }
 
-	/**
-	 * Creates a new <code>NumericLiteralStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param numeric The string representation of the numeric literal
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public NumericLiteralStateObject(StateObject parent, String numeric) {
-		super(parent, numeric);
-	}
+    /**
+     * Creates a new <code>NumericLiteralStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param numeric The string representation of the numeric literal
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public NumericLiteralStateObject(StateObject parent, String numeric) {
+        super(parent, numeric);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NumericLiteral getExpression() {
-		return (NumericLiteral) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NumericLiteral getExpression() {
+        return (NumericLiteral) super.getExpression();
+    }
 
-	/**
-	 * Keeps a reference of the {@link NumericLiteral parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link NumericLiteral parsed object} representing a numeric literal
-	 */
-	public void setExpression(NumericLiteral expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link NumericLiteral parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link NumericLiteral parsed object} representing a numeric literal
+     */
+    public void setExpression(NumericLiteral expression) {
+        super.setExpression(expression);
+    }
 }

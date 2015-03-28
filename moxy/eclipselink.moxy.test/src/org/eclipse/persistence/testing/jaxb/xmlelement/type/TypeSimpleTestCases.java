@@ -31,23 +31,23 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class TypeSimpleTestCases extends JAXBWithJSONTestCases{
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/type/simpletype.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/type/simpletype.json";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/type/simpletype.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/type/simpletype.json";
 
-	
-	public TypeSimpleTestCases(String name) throws Exception {
+
+    public TypeSimpleTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[]{Foo.class, Bar.class, BarXmlValue.class};
         setClasses(classes);
         initXsiType();
-	}
-	
-	 protected Object getControlObject() {
-		 Foo f = new Foo();
-		 f.field = new BigInteger("10");
-		 return f;
-	 }
+    }
+
+     protected Object getControlObject() {
+         Foo f = new Foo();
+         f.field = new BigInteger("10");
+         return f;
+     }
 
 }

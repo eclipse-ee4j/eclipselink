@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -509,6 +509,6 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         assertTrue("Control document not same as instance document.  Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String SALARY_XML =
-    	"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
         "<value>3000</value>";
 }

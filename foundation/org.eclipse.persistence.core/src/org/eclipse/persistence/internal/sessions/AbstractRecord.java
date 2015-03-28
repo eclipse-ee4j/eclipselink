@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.io.*;
@@ -42,13 +42,13 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
 
     /** Optimize field creation for field name lookup. */
     protected DatabaseField lookupField;
-    
+
     /** PERF: Cache the row size. */
     protected int size;
 
     /** INTERNAL: indicator showing that no entry exists for a given key. */
     public static final AbstractRecord.NoEntry noEntry = new AbstractRecord.NoEntry();
-    
+
     /** INTERNAL: flag for any database field containing a null value */
     protected boolean nullValueInFields;
 
@@ -109,7 +109,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
         this.nullValueInFields = false;
         this.size = size;
     }
-    
+
     /**
      * Reset the row size.
      * This must be reset after any change to the row.
@@ -254,9 +254,9 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
     public Object get(String fieldName) {
         return get(getLookupField(fieldName));
     }
-    
+
     /**
-     * Internal: factored out of getIndicatingNoEntry(String) to reduce complexity and have 
+     * Internal: factored out of getIndicatingNoEntry(String) to reduce complexity and have
      * get(string) use get(DatabaseField) instead of getIndicatingNoEntry and then doing an extra check
      * @param fieldName
      * @return
@@ -389,10 +389,10 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
     public boolean isEmpty() {
         return size() == 0;
     }
-    
+
     /**
      * INTERNAL:
-     * Return true if the AbstractRecord has been marked as valid 
+     * Return true if the AbstractRecord has been marked as valid
      * to check the update call cache with, false otherwise.
      */
     public boolean hasNullValueInFields() {
@@ -406,7 +406,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
     public Enumeration keys() {
         return getFields().elements();
     }
-    
+
     /**
      * PUBLIC:
      * Returns a set of the keys.
@@ -414,7 +414,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
     public Set keySet() {
         return new KeySet();
     }
-    
+
     /**
      * Defines the virtual keySet.
      */
@@ -429,7 +429,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
             return AbstractRecord.this.remove(object) != null;
         }
     }
-    
+
     /**
      * Defines the virtual valuesSet.
      */
@@ -449,7 +449,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
             return true;
         }
     }
-    
+
     /**
      * Defines the virtual entrySet.
      */
@@ -477,7 +477,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
             AbstractRecord.this.clear();
         }
     }
-    
+
     /**
      * Defines the virtual entrySet iterator.
      */
@@ -507,7 +507,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
             AbstractRecord.this.remove(getFields().get(this.index));
         }
     }
-    
+
     /**
      * Defines the virtual keySet iterator.
      */
@@ -520,7 +520,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
             return getFields().get(this.index - 1);
         }
     }
-    
+
     /**
      * Defines the virtual valuesSet iterator.
      */
@@ -533,48 +533,48 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
             return getValues().get(this.index - 1);
         }
     }
-    
+
     /**
      * Entry class for implementing Map interface.
      */
     protected static class RecordEntry implements Entry {
-	Object key;
-	Object value;
+    Object key;
+    Object value;
 
-	public RecordEntry(Object key, Object value) {
-	    this.key = key;
+    public RecordEntry(Object key, Object value) {
+        this.key = key;
             this.value = value;
-	}
+    }
 
-	public Object getKey() {
-	    return key;
-	}
+    public Object getKey() {
+        return key;
+    }
 
-	public Object getValue() {
-	    return value;
-	}
+    public Object getValue() {
+        return value;
+    }
 
-	public Object setValue(Object value) {
-	    Object oldValue = this.value;
-	    this.value = value;
-	    return oldValue;
-	}
+    public Object setValue(Object value) {
+        Object oldValue = this.value;
+        this.value = value;
+        return oldValue;
+    }
 
-	public boolean equals(Object object) {
-	    if (!(object instanceof Map.Entry)) {
-		return false;
+    public boolean equals(Object object) {
+        if (!(object instanceof Map.Entry)) {
+        return false;
             }
-	    Map.Entry entry = (Map.Entry)object;
-	    return compare(key, entry.getKey()) && compare(value, entry.getValue());
-	}
+        Map.Entry entry = (Map.Entry)object;
+        return compare(key, entry.getKey()) && compare(value, entry.getValue());
+    }
 
-	public int hashCode() {
-	    return ((key == null) ? 0 : key.hashCode()) ^ ((value == null) ? 0 : value.hashCode());
-	}
+    public int hashCode() {
+        return ((key == null) ? 0 : key.hashCode()) ^ ((value == null) ? 0 : value.hashCode());
+    }
 
-	public String toString() {
-	    return key + "=" + value;
-	}
+    public String toString() {
+        return key + "=" + value;
+    }
 
         private boolean compare(Object object1, Object object2) {
             return (object1 == null ? object2 == null : object1.equals(object2));
@@ -584,16 +584,16 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
     /**
      * INTERNAL:
      * Merge the provided row into this row.  Existing field values in this row will
-     * be replaced with values from the provided row. Fields not in this row will be 
+     * be replaced with values from the provided row. Fields not in this row will be
      * added from provided row.  Values not in provided row will remain in this row.
      */
-    
+
     public void mergeFrom(AbstractRecord row){
         for (int index = 0; index < row.size(); ++index){
             this.put(row.getFields().get(index), row.getValues().get(index));
         }
     }
-    
+
     /**
      * PUBLIC:
      * Add the field-value pair to the row.
@@ -723,7 +723,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
     public void setNullValueInFields(boolean nullValueInFields) {
         this.nullValueInFields = nullValueInFields;
     }
-    
+
     protected void setValues(Vector values) {
         this.values = values;
     }
@@ -768,7 +768,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
     public Collection values() {
         return new ValuesSet();
     }
-    
+
     /**
      * INTERNAL:
      */

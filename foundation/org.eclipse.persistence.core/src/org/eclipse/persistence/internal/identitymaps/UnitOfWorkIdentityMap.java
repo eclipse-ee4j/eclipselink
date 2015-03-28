@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
@@ -25,9 +25,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class UnitOfWorkIdentityMap extends FullIdentityMap {
 
-    protected UnitOfWorkIdentityMap() {        
+    protected UnitOfWorkIdentityMap() {
     }
-    
+
     public UnitOfWorkIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
         super();
         this.maxSize = size;
@@ -37,7 +37,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
         this.session = session;
         this.isIsolated = isolated;
     }
-    
+
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
         return new CacheKey(primaryKey, object, writeLockValue, readTime, true);
@@ -74,7 +74,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
         }
         return cacheKey;
     }
-    
+
     /**
      * Avoid acquiring any lock as uow is single threaded.
      */
@@ -127,7 +127,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
         }
         return cacheKey;
     }
-    
+
     /**
      * Avoid acquiring any lock as uow is single threaded.
      */
@@ -135,7 +135,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     protected CacheKey getCacheKeyWithReadLock(Object primaryKey) {
         return getCacheKey(primaryKey, false);
     }
-    
+
     /**
      * Use hashmap put, as no concurrency in unit of work.
      */

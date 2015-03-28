@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.models.jpa.inheritance;
@@ -31,7 +31,7 @@ public class Engineer extends Person {
     public Company getCompany() {
         return company;
     }
-    
+
     @Column(name="TITLE")
     public String getTitle() {
         return title;
@@ -40,7 +40,7 @@ public class Engineer extends Person {
     public void setCompany(Company company) {
         this.company = company;
     }
-    
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -61,7 +61,7 @@ public class Engineer extends Person {
     public void setLaptops(List<Laptop> laptops) {
         this.laptops = laptops;
     }
-    
+
     @ManyToMany(cascade={PERSIST, MERGE})
     @JoinTable(
         name="CMP3_ENGINEER_DESKTOP",

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,7 +40,7 @@ public interface TransformationMapping<
      * <code>org.eclipse.persistence.sessions.Session</code>.
      */
     public void addFieldTransformation(String fieldName, String methodName);
-    
+
     /**
      * INTERNAL:
      * Add the name of a field and the name of a class which implements
@@ -70,14 +70,14 @@ public interface TransformationMapping<
      * record to set into the object, but should not set the value on the object, only return it.
      */
     public void setAttributeTransformation(String methodName);
-    
+
     /**
      * INTERNAL:
      * Set the Attribute Transformer Class Name
      * @param className
      */
     public void setAttributeTransformerClassName(String className);
-    
+
     /**
      * Used to specify whether the value of this mapping may be null.
      * This is used when generating DDL.

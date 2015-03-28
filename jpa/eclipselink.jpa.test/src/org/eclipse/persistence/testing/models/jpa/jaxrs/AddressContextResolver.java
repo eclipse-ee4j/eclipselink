@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Blaise Doughan - 2.3 - initial implementation
- *     Praba Vijayaratnam - 2.4 - added JSON support testing 
+ *     Praba Vijayaratnam - 2.4 - added JSON support testing
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.jaxrs;
 
@@ -33,24 +33,24 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 public class AddressContextResolver implements ContextResolver<JAXBContext> {
 
-	private JAXBContext jc;
+    private JAXBContext jc;
 
-	public AddressContextResolver() {
-		try {
-			Map<String, Object> props = new HashMap<String, Object>(1);
-			props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY,
-					"META-INF/binding-address.xml");
-			jc = JAXBContext.newInstance(new Class[] { Address.class }, props);
-		} catch (JAXBException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public AddressContextResolver() {
+        try {
+            Map<String, Object> props = new HashMap<String, Object>(1);
+            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY,
+                    "META-INF/binding-address.xml");
+            jc = JAXBContext.newInstance(new Class[] { Address.class }, props);
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public JAXBContext getContext(Class<?> clazz) {
-		if (Address.class == clazz) {
-			return jc;
-		}
-		return null;
-	}
+    public JAXBContext getContext(Class<?> clazz) {
+        if (Address.class == clazz) {
+            return jc;
+        }
+        return null;
+    }
 
 }

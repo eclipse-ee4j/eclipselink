@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject;
 
 import junit.framework.Test;
@@ -68,7 +68,7 @@ import org.eclipse.persistence.testing.oxm.mappings.compositeobject.singleelemen
 public class CompositeObjectMappingTestSuite extends TestCase {
     public static Test suite() {
         String metadataStr = System.getProperty(OXTestCase.METADATA_KEY, OXTestCase.METADATA_JAVA);
-        boolean deploymentXML = !(metadataStr.equals(OXTestCase.METADATA_JAVA)); 
+        boolean deploymentXML = !(metadataStr.equals(OXTestCase.METADATA_JAVA));
 
         TestSuite suite = new TestSuite("Composite Object Mapping Test Suite");
 
@@ -94,28 +94,28 @@ public class CompositeObjectMappingTestSuite extends TestCase {
             suite.addTestSuite(PLSQLCallModelTestCases.class);
         }
         // Null Policy refactor 3
-       	suite.addTestSuite(CompositeObjectNullPolicySetEmptyFalseIsSetFalseTestCases.class); 
-       	suite.addTestSuite(CompositeObjectNullPolicySetEmptyFalseIsSetTrueTestCases.class); 
-       	// UC 9-1 to 9-2 and 11.2
-       	suite.addTestSuite(CompositeObjectIsSetNullPolicySetEmptyFalseIsSetFalseTestCases.class); 
-       	// UC 9-1 to 9-2 and 11.5
-       	suite.addTestSuite(CompositeObjectIsSetNullPolicySetEmptyFalseIsSetTrueTestCases.class);
-       	// UC 9-3 to 9-4 and 11.2 - no round trip for unmarshal isset=false
-       	suite.addTestSuite(CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalseTestCases.class);
-       	// UC 9-3 to 9-4 and 11.5
-       	suite.addTestSuite(CompositeObjectIsSetNullPolicySetEmptyTrueIsSetTrueTestCases.class); 
-       	suite.addTestSuite(CompositeObjectNullPolicySetEmptyTrueIsSetFalseTestCases.class); 
-       	suite.addTestSuite(CompositeObjectNullPolicySetEmptyTrueIsSetTrueTestCases.class);
-       	suite.addTestSuite(CompositeObjectNullPolicySetNonNullTestCases.class);
-       	suite.addTestSuite(CompositeObjectNullPolicyAbsentIsSetAbsentFalseTestCases.class);
-       	suite.addTestSuite(CompositeObjectNullPolicyAbsentIsSetAbsentTrueTestCases.class);
-       	suite.addTestSuite(CompositeObjectIsSetNullPolicySetNonNullTestCases.class);
-        suite.addTestSuite(CompositeObjectIsSetNullPolicySetNonNullTextNodeTestCases.class);       	
-       	suite.addTestSuite(CompositeObjectIsSetNullPolicyAbsentIsSetAbsentFalseIsSetFalseTestCases.class);
-       	suite.addTestSuite(CompositeObjectIsSetNullPolicyAbsentIsSetAbsentFalseIsSetTrueTestCases.class); // check rountrip
-       	//suite.addTestSuite(CompositeObjectIsSetNullPolicyAbsentIsSetAbsentTrueTestCases.class); // invalid use case ISPFAN is always false
+           suite.addTestSuite(CompositeObjectNullPolicySetEmptyFalseIsSetFalseTestCases.class);
+           suite.addTestSuite(CompositeObjectNullPolicySetEmptyFalseIsSetTrueTestCases.class);
+           // UC 9-1 to 9-2 and 11.2
+           suite.addTestSuite(CompositeObjectIsSetNullPolicySetEmptyFalseIsSetFalseTestCases.class);
+           // UC 9-1 to 9-2 and 11.5
+           suite.addTestSuite(CompositeObjectIsSetNullPolicySetEmptyFalseIsSetTrueTestCases.class);
+           // UC 9-3 to 9-4 and 11.2 - no round trip for unmarshal isset=false
+           suite.addTestSuite(CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalseTestCases.class);
+           // UC 9-3 to 9-4 and 11.5
+           suite.addTestSuite(CompositeObjectIsSetNullPolicySetEmptyTrueIsSetTrueTestCases.class);
+           suite.addTestSuite(CompositeObjectNullPolicySetEmptyTrueIsSetFalseTestCases.class);
+           suite.addTestSuite(CompositeObjectNullPolicySetEmptyTrueIsSetTrueTestCases.class);
+           suite.addTestSuite(CompositeObjectNullPolicySetNonNullTestCases.class);
+           suite.addTestSuite(CompositeObjectNullPolicyAbsentIsSetAbsentFalseTestCases.class);
+           suite.addTestSuite(CompositeObjectNullPolicyAbsentIsSetAbsentTrueTestCases.class);
+           suite.addTestSuite(CompositeObjectIsSetNullPolicySetNonNullTestCases.class);
+        suite.addTestSuite(CompositeObjectIsSetNullPolicySetNonNullTextNodeTestCases.class);
+           suite.addTestSuite(CompositeObjectIsSetNullPolicyAbsentIsSetAbsentFalseIsSetFalseTestCases.class);
+           suite.addTestSuite(CompositeObjectIsSetNullPolicyAbsentIsSetAbsentFalseIsSetTrueTestCases.class); // check rountrip
+           //suite.addTestSuite(CompositeObjectIsSetNullPolicyAbsentIsSetAbsentTrueTestCases.class); // invalid use case ISPFAN is always false
 
-       	// pre-nillable refactor 3
+           // pre-nillable refactor 3
         suite.addTestSuite(CompositeObjectOptionalNodeNullPolicyElementTestCases.class);
         suite.addTestSuite(CompositeObjectNillableNodeNullPolicyTestCases.class);
         suite.addTestSuite(CompositeObjectNillableTextTestCases.class);
@@ -123,10 +123,10 @@ public class CompositeObjectMappingTestSuite extends TestCase {
         suite.addTestSuite(CompositeObjectIsSetNodeNullPolicyFalseTestCases.class);
 
         suite.addTestSuite(CompositeObjectKeepUnknownAsElementTestCases.class);
-        
+
         suite.addTestSuite(SelfNoRefClassKeepAsElementTestCases.class);
         suite.addTestSuite(SelfNoRefClassKeepAsElementNSTestCases.class);
-        
+
         suite.addTestSuite(CompositeObjectSelfComplexXsiTypeTestCases.class);
         suite.addTestSuite(CompositeObjectSelfSimpleXsiTypeTestCases.class);
         suite.addTestSuite(SelfWithOtherCompositeTestCases.class);

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import java.util.*;
@@ -149,7 +149,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
             System.out.println("End:" + getName() + ":" + getTestResult().getTotalTime());
         }
     }
-    
+
     /**
      * Executes this test comparison with the base-line.
      * Static allow reuse with EJB tests.
@@ -238,12 +238,12 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
             PerformanceComparisonTest test = (PerformanceComparisonTest)performanceTest.getTests().get(index);
             double allowable = test.getAllowableDecrease();
             if (difference < allowable) {
-                throw new TestErrorException("Decrease lower than allowable detected, decrease: " + difference + 
+                throw new TestErrorException("Decrease lower than allowable detected, decrease: " + difference +
                                              " allowed: " + allowable + " test: " + test.getName());
             }
         }
     }
-    
+
     /**
      * Build and return an emulated session for isolated Java performance from the database.
      */
@@ -263,7 +263,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
         DatabaseSession session = project.createDatabaseSession();
         session.setSessionLog(getSession().getSessionLog());
         session.login();
-        
+
         return session;
     }
 }

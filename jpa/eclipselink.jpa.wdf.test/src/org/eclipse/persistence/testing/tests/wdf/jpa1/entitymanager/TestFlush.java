@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -178,7 +178,7 @@ public class TestFlush extends JPA1Base {
             em.persist(emp1);
             em.persist(cub1);
             env.commitTransactionAndClear(em);
-            
+
             env.beginTransaction(em);
             emp1 = em.find(Employee.class, new Integer(emp1.getId()));
             cub1 = em.find(Cubicle.class, cub1.getId());
@@ -470,7 +470,7 @@ public class TestFlush extends JPA1Base {
             em.persist(dep);
             em.persist(emp1);
             env.commitTransactionAndClear(em);
-            
+
             env.beginTransaction(em);
             dep = em.find(Department.class, new Integer(dep.getId()));
             proj = em.find(Project.class, proj.getId());

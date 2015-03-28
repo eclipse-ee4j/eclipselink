@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,80 +32,80 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public final class DefaultSemanticValidatorTest2_1 extends AbstractSemanticValidatorTest {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLQueryContext buildQueryContext() {
-		return new DefaultJPQLQueryContext(jpqlGrammar);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLQueryContext buildQueryContext() {
+        return new DefaultJPQLQueryContext(jpqlGrammar);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractSemanticValidator buildValidator() {
-		return new DefaultSemanticValidator(buildSemanticValidatorHelper());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractSemanticValidator buildValidator() {
+        return new DefaultSemanticValidator(buildSemanticValidatorHelper());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isComparisonTypeChecked() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isComparisonTypeChecked() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isPathExpressionToCollectionMappingAllowed() {
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isPathExpressionToCollectionMappingAllowed() {
+        return false;
+    }
 
-	@Test
-	public final void test_ComplextPathExpression_01() throws Exception {
+    @Test
+    public final void test_ComplextPathExpression_01() throws Exception {
 
-		String jpqlQuery = "SELECT TREAT(p.project LargeProject) FROM Product p";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        String jpqlQuery = "SELECT TREAT(p.project LargeProject) FROM Product p";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public final void test_ComplextPathExpression_02() throws Exception {
+    @Test
+    public final void test_ComplextPathExpression_02() throws Exception {
 
-		String jpqlQuery = "SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate FROM Product p";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        String jpqlQuery = "SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate FROM Product p";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public final void test_EntityTypeLiteral_NotResolvable_1() throws Exception {
+    @Test
+    public final void test_EntityTypeLiteral_NotResolvable_1() throws Exception {
 
-		String jpqlQuery = "SELECT e FROM Employee e TREAT(e.phoneNumbers AS Phone) AS ee";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        String jpqlQuery = "SELECT e FROM Employee e TREAT(e.phoneNumbers AS Phone) AS ee";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testDoesNotHaveProblem(
-			problems,
-			JPQLQueryProblemMessages.EntityTypeLiteral_NotResolvable
-		);
-	}
+        testDoesNotHaveProblem(
+            problems,
+            JPQLQueryProblemMessages.EntityTypeLiteral_NotResolvable
+        );
+    }
 
-	@Test
-	public final void test_EntityTypeLiteral_NotResolvable_2() throws Exception {
+    @Test
+    public final void test_EntityTypeLiteral_NotResolvable_2() throws Exception {
 
-		String jpqlQuery = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS Phone2) AS ee";
-		int startPosition = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS ".length();
-		int endPosition   = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS Phone2".length();
+        String jpqlQuery = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS Phone2) AS ee";
+        int startPosition = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS ".length();
+        int endPosition   = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS Phone2".length();
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.EntityTypeLiteral_NotResolvable,
-			startPosition,
-			endPosition
-		);
-	}
+        testHasProblem(
+            problems,
+            JPQLQueryProblemMessages.EntityTypeLiteral_NotResolvable,
+            startPosition,
+            endPosition
+        );
+    }
 }

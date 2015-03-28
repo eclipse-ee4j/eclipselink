@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import javax.persistence.Column;
@@ -28,7 +28,7 @@ import java.util.Collection;
 
 /**
  * Composite Key Entity.
- * 
+ *
  * @author Wonseok Kim
  */
 @Entity
@@ -38,7 +38,7 @@ public class CKeyEntityC {
 
     @EmbeddedId
     private CKeyEntityCPK key;
-    
+
     // Test for GF#1392
     // If there is a same name column for the entity and many-to-many table, wrong pk constraint generated.
     @Column(name="C_ROLE")
@@ -51,7 +51,7 @@ public class CKeyEntityC {
         @JoinColumn(name="A_F_NAME", referencedColumnName = "F_NAME")
     })
     private CKeyEntityA a;
-    
+
     @ManyToMany
         @JoinTable(name="DDL_CKENT_C_B",
         joinColumns={

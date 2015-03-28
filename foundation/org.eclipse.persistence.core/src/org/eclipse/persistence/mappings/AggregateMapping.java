@@ -1,19 +1,19 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *      *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
 import java.util.*;
@@ -59,13 +59,13 @@ public abstract class AggregateMapping extends DatabaseMapping {
     protected ClassDescriptor referenceDescriptor;
 
     /**
-     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth)
      * references an entity.
      * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.
-     * Lazily initialized.  
+     * Lazily initialized.
      */
     protected Boolean hasNestedIdentityReference;
-    
+
     /**
      * Default constructor.
      */
@@ -95,7 +95,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             if (backupAttributeValue == null) {
                 backupAttributeValue = getObjectBuilder(sourceAttributeValue, sourceQuery.getSession()).buildNewInstance();
             }
-            
+
             aggregateQuery.setBackupClone(backupAttributeValue);
         }
         aggregateQuery.setCascadePolicy(sourceQuery.getCascadePolicy());
@@ -174,7 +174,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
     protected Object buildClonePart(Object original, Object clone, CacheKey cacheKey, Object attributeValue, Integer refreshCascade, AbstractSession cloningSession) {
         return buildClonePart(attributeValue, clone, cacheKey, refreshCascade, cloningSession, cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original));
     }
-    
+
     /**
      * INTERNAL:     * Build and return a clone of the attribute.
      */
@@ -356,12 +356,12 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         super.convertClassNamesToClasses(classLoader);
-        
+
         if (getReferenceClassName() != null) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
@@ -506,18 +506,18 @@ public abstract class AggregateMapping extends DatabaseMapping {
 
     /**
      * INTERNAL:
-     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth)
      * references an entity.
-     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.  
+     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.
      */
     @Override
     public boolean hasNestedIdentityReference() {
         if (hasNestedIdentityReference == null) {
             hasNestedIdentityReference = getReferenceDescriptor().hasNestedIdentityReference(true);
         }
-        return hasNestedIdentityReference; 
+        return hasNestedIdentityReference;
     }
-        
+
     /**
      * INTERNAL:
      * Initialize the reference descriptor.
@@ -565,7 +565,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
     protected void iterateOnAttributeValue(DescriptorIterator iterator, Object attributeValue) {
         iterator.iterateForAggregateMapping(attributeValue, this, getReferenceDescriptor(attributeValue, iterator.getSession()));
     }
-    
+
     /**
      * Force instantiation of the load group.
      */
@@ -578,7 +578,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             }
         }
     }
-    
+
     /**
      * Force instantiation of all indirections.
      */
@@ -589,7 +589,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             getObjectBuilder(value, session).loadAll(value, session);
         }
     }
-    
+
     /**
      * Merge the attribute values.
      */
@@ -607,7 +607,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         descriptor.getObjectChangePolicy().dissableEventProcessing(targetAttributeValue);
         try {
             descriptor.getObjectBuilder().mergeIntoObject(targetAttributeValue, isTargetUnInitialized, sourceAttributeValue, mergeManager, targetSession);
-        } finally {            
+        } finally {
             descriptor.getObjectChangePolicy().enableEventProcessing(targetAttributeValue);
         }
     }
@@ -639,9 +639,9 @@ public abstract class AggregateMapping extends DatabaseMapping {
             targetAggregate = objectBuilder.buildNewInstance();
             wasOriginalNull = true;
         } else {
-        	//bug 205939 - use the type from the changeset to determine if a new aggregate instance
-        	//is needed because of a class change.  The old way of using the sourceAggregate will not
-        	//work on a remote system after cache sync because the sourceAggregate will not be available
+            //bug 205939 - use the type from the changeset to determine if a new aggregate instance
+            //is needed because of a class change.  The old way of using the sourceAggregate will not
+            //work on a remote system after cache sync because the sourceAggregate will not be available
             if (aggregateChangeSet.getClassType(mergeManager.getSession()) != targetAggregate.getClass()) {
                 targetAggregate = objectBuilder.buildNewInstance();
                 wasOriginalNull = true;
@@ -671,13 +671,13 @@ public abstract class AggregateMapping extends DatabaseMapping {
             targetAttributeValue = buildNewMergeInstanceOf(sourceAttributeValue, mergeManager.getSession());
             mergeAttributeValue(targetAttributeValue, true, sourceAttributeValue, mergeManager, targetSession);
             // setting new instance so fire event as if set was called by user.
-            // this call will eventually get passed to updateChangeRecord which will 
+            // this call will eventually get passed to updateChangeRecord which will
             //ensure this new aggregates is fully initialized with listeners.
             // If merge into the unit of work, must only merge and raise the event is the value changed.
             if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())  && !mergeManager.isForRefresh()) {
                 this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), getAttributeValueFromObject(target), targetAttributeValue);
             }
-            
+
         } else {
             mergeAttributeValue(targetAttributeValue, isTargetUnInitialized, sourceAttributeValue, mergeManager, targetSession);
         }
@@ -952,9 +952,9 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * This is used by attribute change tracking.
      */
     public void updateChangeRecord(Object sourceClone, Object newValue, Object oldValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
-        //This method will be called when either the referenced aggregate has 
+        //This method will be called when either the referenced aggregate has
         //been changed or a component of the referenced aggregate has been changed
-        //this case is determined by the value of the sourceClone 
+        //this case is determined by the value of the sourceClone
         boolean isNewRecord = false;
         AggregateChangeRecord changeRecord = (AggregateChangeRecord)objectChangeSet.getChangesForAttributeNamed(this.getAttributeName());
         if (changeRecord == null){
@@ -964,7 +964,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             objectChangeSet.addChange(changeRecord);
             isNewRecord = true;
         }
-        
+
         if ( sourceClone.getClass().equals(objectChangeSet.getClassType(uow)) ) {
             if (isNewRecord) {
                 changeRecord.setOldValue(oldValue);
@@ -1037,7 +1037,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return whether the specified object and all its components have been deleted.

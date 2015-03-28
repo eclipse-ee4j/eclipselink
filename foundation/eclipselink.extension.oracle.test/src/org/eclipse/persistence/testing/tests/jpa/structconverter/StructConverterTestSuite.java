@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.structconverter;
 
 import javax.persistence.EntityManager;
@@ -35,7 +35,7 @@ import org.eclipse.persistence.testing.models.jpa.structconverter.DummyStructCon
 
 /**
  * TestSuite to ensure Annotation-based struct converters get properly added to the project
- * 
+ *
  * This test suite ensures the project is properly set-up and does a sanity test using one of the
  * converters.  Other tests are handled by the StructConverter tests suites in the TestBrowser.
  * @author tware
@@ -45,7 +45,7 @@ public class StructConverterTestSuite extends JUnitTestCase {
 
     public static final String STRUCT_CONVERTER_PU = "structConverter";
     public static final String XML_STRUCT_CONVERTER_PU = "xmlStructConverter";
-    
+
     public boolean supported = false;
 
     public StructConverterTestSuite(){
@@ -80,7 +80,7 @@ public class StructConverterTestSuite extends JUnitTestCase {
 
         getServerSession(STRUCT_CONVERTER_PU).executeNonSelectingSQL("CREATE INDEX jpa_test_idx on JPA_JGEOMETRY(jgeometry) indextype is mdsys.spatial_index parameters ('sdo_level=5 sdo_numtiles=6')");
     }
-    
+
     /**
      * Ensure the DatabasePlatform is setup with the proper StructConverters
      */
@@ -91,17 +91,17 @@ public class StructConverterTestSuite extends JUnitTestCase {
                 // trigger deploy
                 em.find(SimpleSpatial.class, new Long(1));
             } catch (Exception e){};
-            
+
             StructConverter converter = getServerSession(STRUCT_CONVERTER_PU).getPlatform().getTypeConverters().get(JGeometry.class);
             assertNotNull("Platform does not have correct JGeometryConverter.", converter);
             assertTrue("JGeometery struct converter is wrong type.", converter.getClass().getName().indexOf("JGeometryConverter") >= 0);
-            
+
             converter = getServerSession(STRUCT_CONVERTER_PU).getPlatform().getTypeConverters().get(DummyStructConverterType.class);
             assertNotNull("Platform does not have correct DummyStructConverter.", converter);
             assertTrue("JGeometery struct converter is wrong type.", converter.getClass().getName().indexOf("DummyStructConverter") >= 0);
         }
     }
-    
+
     /**
      * Ensure the DatabasePlatform is setup with the proper StructConverters
      */
@@ -112,61 +112,61 @@ public class StructConverterTestSuite extends JUnitTestCase {
                 // trigger deploy
                 em.find(SimpleXMLSpatial.class, new Long(1));
             } catch (Exception e){};
-            
+
             StructConverter converter = getServerSession(XML_STRUCT_CONVERTER_PU).getPlatform().getTypeConverters().get(JGeometry.class);
             assertNotNull("Platform does not have correct JGeometryConverter.", converter);
             assertTrue("JGeometery struct converter is wrong type.", converter.getClass().getName().indexOf("JGeometryConverter") >= 0);
-            
+
             converter = getServerSession(XML_STRUCT_CONVERTER_PU).getPlatform().getTypeConverters().get(DummyStructConverterType.class);
             assertNotNull("Platform does not have correct DummyStructConverter.", converter);
             assertTrue("JGeometery struct converter is wrong type.", converter.getClass().getName().indexOf("DummyStructConverter") >= 0);
         }
     }
-    
+
     /**
-     * Sanity test to ensure a read and a write with a Converter specified by 
+     * Sanity test to ensure a read and a write with a Converter specified by
      * annotations work properly
      */
     public void testSimpleSpatialWrite(){
         if (supported){
             EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-    
+
             beginTransaction(em);
             SimpleSpatial simpleSpatial = new SimpleSpatial(1000, pointCluster1());
             em.persist(simpleSpatial);
             em.flush();
-            
+
             em.clear();
-            
+
             simpleSpatial = em.find(SimpleSpatial.class, new Long(1000));
-            
+
             assertNotNull("JGeometry was not properly read in.", simpleSpatial.getJGeometry());
             rollbackTransaction(em);
         }
     }
-    
+
     /**
-     * Sanity test to ensure a read and a write with a Converter specified by 
+     * Sanity test to ensure a read and a write with a Converter specified by
      * xml work properly
      */
     public void testSimpleXMLSpatialWrite() {
         if (this.supported && !isOnServer()) {
             EntityManager em = createEntityManager(XML_STRUCT_CONVERTER_PU);
-    
+
             beginTransaction(em);
             SimpleXMLSpatial simpleSpatial = new SimpleXMLSpatial(1000, pointCluster1());
             em.persist(simpleSpatial);
             em.flush();
-            
+
             em.clear();
-            
+
             simpleSpatial = em.find(SimpleXMLSpatial.class, new Long(1000));
-            
+
             assertNotNull("JGeometry was not properly read in.", simpleSpatial.getJGeometry());
             rollbackTransaction(em);
         }
     }
-    
+
     /**
      * Tests if SpatialExpressions will work properly without hung up when using ANYINTERACT query type
      */
@@ -186,19 +186,19 @@ public class StructConverterTestSuite extends JUnitTestCase {
                 }
                 throw ex;
             }
-    
+
             clearCache(STRUCT_CONVERTER_PU);
-            
+
             ReadAllQuery raq = new ReadAllQuery(SimpleSpatial.class);
             ExpressionBuilder eb = raq.getExpressionBuilder();
-    
+
             SpatialParameters parameters = new SpatialParameters();
             parameters.setQueryType(SpatialParameters.QueryType.WINDOW).setMask(Mask.ANYINTERACT);
             Expression selectionCriteria = SpatialExpressionFactory.relate(eb.get("jGeometry"), newCircle, parameters);
             raq.setSelectionCriteria(selectionCriteria);
             raq.addAscendingOrdering("id");
             getServerSession(STRUCT_CONVERTER_PU).executeQuery(raq);
-            
+
             // now read using jpql -  should generate the same sql as the ReadAllQuery above.
             clearCache(STRUCT_CONVERTER_PU);
             Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('MDSYS.SDO_RELATE', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
@@ -207,7 +207,7 @@ public class StructConverterTestSuite extends JUnitTestCase {
             query.getResultList();
         }
     }
-    
+
     /**
      * mdsys.sdo_geometry(5,
      *                   NULL, null,
@@ -215,8 +215,8 @@ public class StructConverterTestSuite extends JUnitTestCase {
      *                   mdsys.sdo_ordinate_array(1.1, 1.1, 2.2, 2.2, 3.3, 4.4)));
      */
     public JGeometry pointCluster1() {
-        Object[] points = 
-            new Object[] { new double[] { 1.1, 1.1 }, new double[] { 2.2,                                                                      2.2 }, 
+        Object[] points =
+            new Object[] { new double[] { 1.1, 1.1 }, new double[] { 2.2,                                                                      2.2 },
                            new double[] { 3.3, 4.4 } };
         return JGeometry.createMultiPoint(points, 2, 0);
     }

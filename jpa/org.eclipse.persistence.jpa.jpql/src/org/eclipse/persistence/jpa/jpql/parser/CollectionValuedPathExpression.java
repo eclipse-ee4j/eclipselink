@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,53 +27,53 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public final class CollectionValuedPathExpression extends AbstractPathExpression {
 
-	/**
-	 * Creates a new <code>CollectionValuedPathExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param expression The identification variable that was already parsed, which means the
-	 * beginning of the parsing should start with a dot
-	 */
-	public CollectionValuedPathExpression(AbstractExpression parent, AbstractExpression expression) {
-		super(parent, expression);
-	}
+    /**
+     * Creates a new <code>CollectionValuedPathExpression</code>.
+     *
+     * @param parent The parent of this expression
+     * @param expression The identification variable that was already parsed, which means the
+     * beginning of the parsing should start with a dot
+     */
+    public CollectionValuedPathExpression(AbstractExpression parent, AbstractExpression expression) {
+        super(parent, expression);
+    }
 
-	/**
-	 * Creates a new <code>CollectionValuedPathExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param expression The identification variable that was already parsed, which means the
-	 * beginning of the parsing should start with a dot
-	 * @param paths The path expression that is following the identification variable
-	 */
-	public CollectionValuedPathExpression(AbstractExpression parent,
-	                                      AbstractExpression expression,
-	                                      String paths) {
+    /**
+     * Creates a new <code>CollectionValuedPathExpression</code>.
+     *
+     * @param parent The parent of this expression
+     * @param expression The identification variable that was already parsed, which means the
+     * beginning of the parsing should start with a dot
+     * @param paths The path expression that is following the identification variable
+     */
+    public CollectionValuedPathExpression(AbstractExpression parent,
+                                          AbstractExpression expression,
+                                          String paths) {
 
-		super(parent, expression, paths);
-	}
+        super(parent, expression, paths);
+    }
 
-	/**
-	 * Creates a new <code>CollectionValuedPathExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param paths The path expression
-	 */
-	public CollectionValuedPathExpression(AbstractExpression parent, String paths) {
-		super(parent, paths);
-	}
+    /**
+     * Creates a new <code>CollectionValuedPathExpression</code>.
+     *
+     * @param parent The parent of this expression
+     * @param paths The path expression
+     */
+    public CollectionValuedPathExpression(AbstractExpression parent, String paths) {
+        super(parent, paths);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(CollectionValuedPathExpressionBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(CollectionValuedPathExpressionBNF.ID);
+    }
 }

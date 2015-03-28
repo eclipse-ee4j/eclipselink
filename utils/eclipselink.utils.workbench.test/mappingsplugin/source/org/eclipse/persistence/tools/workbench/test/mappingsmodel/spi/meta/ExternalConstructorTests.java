@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,87 +26,87 @@ import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 
 
 public abstract class ExternalConstructorTests extends TestCase {
-	private ExternalClassRepository repository;
+    private ExternalClassRepository repository;
 
 
-	protected ExternalConstructorTests(String name) {
-		super(name);
-	}
-	
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.repository = this.buildRepository();
-	}
+    protected ExternalConstructorTests(String name) {
+        super(name);
+    }
 
-	protected abstract ExternalClassRepository buildRepository();
-	
-	protected void tearDown() throws Exception {
-		TestTools.clear(this);
-		super.tearDown();
-	}
+    protected void setUp() throws Exception {
+        super.setUp();
+        this.repository = this.buildRepository();
+    }
 
-	public void testDeclaringClass() throws Exception {
-		this.verifyDeclaringClass(java.lang.Object.class, new String[0]);
-		this.verifyDeclaringClass(java.util.Vector.class, new String[] {"java.util.Collection"});
-	}
+    protected abstract ExternalClassRepository buildRepository();
 
-	private void verifyDeclaringClass(Class javaClass, String[] parmTypeNames) throws Exception {
-		Constructor javaCtor = SPIMetaTestTools.constructor(javaClass, parmTypeNames);
-		ExternalConstructor exCtor = SPIMetaTestTools.constructor(this.exClassFor(javaClass), parmTypeNames);
-		assertEquals(javaCtor.getDeclaringClass().getName(), exCtor.getDeclaringClass().getName());
-	}
+    protected void tearDown() throws Exception {
+        TestTools.clear(this);
+        super.tearDown();
+    }
 
-	public void testModifiers() throws Exception {
-		this.verifyModifiers(java.lang.Object.class, new String[0]);
-		this.verifyModifiers(java.util.Vector.class, new String[] {"java.util.Collection"});
-	}
+    public void testDeclaringClass() throws Exception {
+        this.verifyDeclaringClass(java.lang.Object.class, new String[0]);
+        this.verifyDeclaringClass(java.util.Vector.class, new String[] {"java.util.Collection"});
+    }
 
-	private void verifyModifiers(Class javaClass, String[] parmTypeNames) throws Exception {
-		Constructor javaCtor = SPIMetaTestTools.constructor(javaClass, parmTypeNames);
-		ExternalConstructor exCtor = SPIMetaTestTools.constructor(this.exClassFor(javaClass), parmTypeNames);
-		assertEquals(javaCtor.getModifiers(), exCtor.getModifiers());
-	}
+    private void verifyDeclaringClass(Class javaClass, String[] parmTypeNames) throws Exception {
+        Constructor javaCtor = SPIMetaTestTools.constructor(javaClass, parmTypeNames);
+        ExternalConstructor exCtor = SPIMetaTestTools.constructor(this.exClassFor(javaClass), parmTypeNames);
+        assertEquals(javaCtor.getDeclaringClass().getName(), exCtor.getDeclaringClass().getName());
+    }
 
-	public void testExceptionTypes() throws Exception {
-		this.verifyExceptionTypes(java.lang.Object.class, new String[0]);
+    public void testModifiers() throws Exception {
+        this.verifyModifiers(java.lang.Object.class, new String[0]);
+        this.verifyModifiers(java.util.Vector.class, new String[] {"java.util.Collection"});
+    }
 
-		// now, verify a constructor that actually throws an exception
-		this.verifyExceptionTypes(FileInputStream.class, new String[] {"java.io.File"});
-	}
+    private void verifyModifiers(Class javaClass, String[] parmTypeNames) throws Exception {
+        Constructor javaCtor = SPIMetaTestTools.constructor(javaClass, parmTypeNames);
+        ExternalConstructor exCtor = SPIMetaTestTools.constructor(this.exClassFor(javaClass), parmTypeNames);
+        assertEquals(javaCtor.getModifiers(), exCtor.getModifiers());
+    }
 
-	private void verifyExceptionTypes(Class javaClass, String[] parmTypeNames) throws Exception {
-		Constructor javaCtor = SPIMetaTestTools.constructor(javaClass, parmTypeNames);
-		ExternalConstructor exCtor = SPIMetaTestTools.constructor(this.exClassFor(javaClass), parmTypeNames);
-		assertTrue(SPIMetaTestTools.compareClasses(javaCtor.getExceptionTypes(), exCtor.getExceptionTypes()));
-	}
+    public void testExceptionTypes() throws Exception {
+        this.verifyExceptionTypes(java.lang.Object.class, new String[0]);
 
-	public void testParameterTypes() throws Exception {
-		this.verifyParameterTypes(java.lang.Object.class, new String[0]);
-		this.verifyParameterTypes(java.util.HashMap.class, new String[] {"int", "float"});
-	}
+        // now, verify a constructor that actually throws an exception
+        this.verifyExceptionTypes(FileInputStream.class, new String[] {"java.io.File"});
+    }
 
-	private void verifyParameterTypes(Class javaClass, String[] parmTypeNames) throws Exception {
-		Constructor javaCtor = SPIMetaTestTools.constructor(javaClass, parmTypeNames);
-		ExternalConstructor exCtor = SPIMetaTestTools.constructor(this.exClassFor(javaClass), parmTypeNames);
-		assertTrue(SPIMetaTestTools.compareClasses(javaCtor.getParameterTypes(), exCtor.getParameterTypes()));
-	}
+    private void verifyExceptionTypes(Class javaClass, String[] parmTypeNames) throws Exception {
+        Constructor javaCtor = SPIMetaTestTools.constructor(javaClass, parmTypeNames);
+        ExternalConstructor exCtor = SPIMetaTestTools.constructor(this.exClassFor(javaClass), parmTypeNames);
+        assertTrue(SPIMetaTestTools.compareClasses(javaCtor.getExceptionTypes(), exCtor.getExceptionTypes()));
+    }
 
-	private ExternalClass exClassFor(Class javaClass) throws Exception {
-		return this.descriptionFor(javaClass).getExternalClass();
-	}
+    public void testParameterTypes() throws Exception {
+        this.verifyParameterTypes(java.lang.Object.class, new String[0]);
+        this.verifyParameterTypes(java.util.HashMap.class, new String[] {"int", "float"});
+    }
 
-	private ExternalClassDescription descriptionFor(Class javaClass) {
-		return this.descriptionForClassNamed(javaClass.getName());
-	}
+    private void verifyParameterTypes(Class javaClass, String[] parmTypeNames) throws Exception {
+        Constructor javaCtor = SPIMetaTestTools.constructor(javaClass, parmTypeNames);
+        ExternalConstructor exCtor = SPIMetaTestTools.constructor(this.exClassFor(javaClass), parmTypeNames);
+        assertTrue(SPIMetaTestTools.compareClasses(javaCtor.getParameterTypes(), exCtor.getParameterTypes()));
+    }
 
-	private ExternalClassDescription descriptionForClassNamed(String className) {
-		ExternalClassDescription[] descriptions = this.repository.getClassDescriptions();
-		for (int i = descriptions.length; i-- > 0; ) {
-			if (descriptions[i].getName().equals(className)) {
-				return descriptions[i];
-			}
-		}
-		throw new IllegalArgumentException(className);
-	}
+    private ExternalClass exClassFor(Class javaClass) throws Exception {
+        return this.descriptionFor(javaClass).getExternalClass();
+    }
+
+    private ExternalClassDescription descriptionFor(Class javaClass) {
+        return this.descriptionForClassNamed(javaClass.getName());
+    }
+
+    private ExternalClassDescription descriptionForClassNamed(String className) {
+        ExternalClassDescription[] descriptions = this.repository.getClassDescriptions();
+        for (int i = descriptions.length; i-- > 0; ) {
+            if (descriptions[i].getName().equals(className)) {
+                return descriptions[i];
+            }
+        }
+        throw new IllegalArgumentException(className);
+    }
 
 }

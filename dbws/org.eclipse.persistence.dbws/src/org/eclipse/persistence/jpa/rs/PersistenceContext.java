@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * 	   dclarke/tware - initial
+ *        dclarke/tware - initial
  *     2014-09-01-2.6.0 Dmitry Kornilov
  *       - JPARS 2.0 related changes
  ******************************************************************************/
@@ -113,14 +113,14 @@ import java.util.Set;
 
 /**
  * A wrapper around the JPA and JAXB artifacts used to persist an application.
- * 
+ *
  * A PersistenceContext provides the capability of using the same persistence unit in JPA to
- * to interact with a Database or other JPA-capable data source and in JAXB to interact with either 
+ * to interact with a Database or other JPA-capable data source and in JAXB to interact with either
  * XML or JSON.
- * 
- * A PersistenceContext can wrap either an existing persistence unit (EntityManagerFactory), or it can be used to bootstrap a 
+ *
+ * A PersistenceContext can wrap either an existing persistence unit (EntityManagerFactory), or it can be used to bootstrap a
  * fully dynamic persistence unit.
- * 
+ *
  * @author douglas.clarke, tom.ware
  */
 public class PersistenceContext {
@@ -250,7 +250,7 @@ public class PersistenceContext {
 
     /**
      * This method is used to help construct a JAXBContext from an existing EntityManagerFactory.
-     * 
+     *
      * For each package in the EntityManagerFactory, a MetadataSource that is capable of building a JAXBContext
      * that creates the same mappings in JAXB is created.  These MetadataSources are used to constuct the JAXContext
      * that is used for JSON and XML translation.
@@ -280,7 +280,7 @@ public class PersistenceContext {
      * Persist an entity in JPA and commit.
      * @param tenantId
      * @param entity
-     * @throws Exception 
+     * @throws Exception
      */
     public void create(Map<String, String> tenantId, Object entity) throws Exception {
         EntityManager em = getEmf().createEntityManager(tenantId);
@@ -544,7 +544,7 @@ public class PersistenceContext {
      * @param entity
      * @param partner the partner
      * @return the object
-     *  
+     *
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Object removeAttribute(Map<String, String> tenantId, String entityName, Object id, String attribute, String listItemId, Object entity, String partner)
@@ -579,7 +579,7 @@ public class PersistenceContext {
                     fieldName = field.getName();
                     if (fieldName.equals(attribute)) {
                         try {
-                            // call clear on this collection 
+                            // call clear on this collection
                             Object attributeValue = getAttribute(entity, attribute);
                             originalAttributeValue = attributeValue;
                             if (attributeValue instanceof Collection) {
@@ -1016,7 +1016,7 @@ public class PersistenceContext {
         if (JPARSLogger.isLoggableFinest()) {
             in = in.markSupported() ? in : new BufferedInputStream(in);
             // TODO: Make readlimit configurable. Some http servers allow http post size to be unlimited.
-            // If this is the case and if an application is sending huge post requests while jpars log 
+            // If this is the case and if an application is sending huge post requests while jpars log
             // level configured to finest, this readlimit might not be sufficient.
             in.mark(52428800); // (~50MB)
             JPARSLogger.entering(CLASS_NAME, "unmarshalEntity", in);
@@ -1044,11 +1044,11 @@ public class PersistenceContext {
         unmarshaller.setEventHandler(new ValidationEventHandler() {
             @Override
             /*
-             * ReferenceAdaptor unmarshal throws exception if the object referred by a link 
-             * doesn't exist, and this handler is required to interrupt the unmarshal 
+             * ReferenceAdaptor unmarshal throws exception if the object referred by a link
+             * doesn't exist, and this handler is required to interrupt the unmarshal
              * operation under this condition.
-             * (non-Javadoc) @see javax.xml.bind.ValidationEventHandler#handleEvent(javax.xml.bind.ValidationEvent) 
-             * 
+             * (non-Javadoc) @see javax.xml.bind.ValidationEventHandler#handleEvent(javax.xml.bind.ValidationEvent)
+             *
              */
             public boolean handleEvent(ValidationEvent event) {
                 if (event.getSeverity() != ValidationEvent.WARNING) {
@@ -1068,10 +1068,10 @@ public class PersistenceContext {
 
         if (acceptedMediaType == MediaType.APPLICATION_JSON_TYPE) {
             // Part of the fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=394059
-            // This issue happens when request has objects derived from an abstract class. 
+            // This issue happens when request has objects derived from an abstract class.
             // JSON_INCLUDE_ROOT is set to false for  JPA-RS. This means JSON requests won't have root tag.
-            // The unmarshal method needs to be called with type, so that moxy can unmarshal the message based on type. 
-            // For xml, root tag is always set, unmarshaller must use root of the message for unmarshalling and type should 
+            // The unmarshal method needs to be called with type, so that moxy can unmarshal the message based on type.
+            // For xml, root tag is always set, unmarshaller must use root of the message for unmarshalling and type should
             // not be passed to unmarshal for xml type requests.
             JAXBElement<?> element = unmarshaller.unmarshal(new StreamSource(in), type);
             if (element.getValue() instanceof List<?>) {
@@ -1099,7 +1099,7 @@ public class PersistenceContext {
 
     /**
      * Make adjustments to an unmarshalled entity based on what is found in the weaved fields
-     * 
+     *
      * @param entity
      * @return
      */

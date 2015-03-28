@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,17 +46,17 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
  * <p>
  * The behavior for constructors is like this:
  * <ol>
- * 
+ *
  * <li>as long as the INVOKESPECIAL for the object initialization has not been
  * reached, every bytecode instruction is dispatched in the ctor code visitor</li>
- * 
+ *
  * <li>when this one is reached, it is only added in the ctor code visitor and a
  * JP invoke is added</li>
- * 
+ *
  * <li>after that, only the other code visitor receives the instructions</li>
- * 
+ *
  * </ol>
- * 
+ *
  * @author Eugene Kuleshov
  * @author Eric Bruneton
  */
@@ -80,7 +80,7 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes 
 
     /**
      * Creates a new {@link AdviceAdapter}.
-     * 
+     *
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
      *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
@@ -593,7 +593,7 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes 
      * Called at the beginning of the method or after super class class call in
      * the constructor. <br>
      * <br>
-     * 
+     *
      * <i>Custom code can use or change all the local variables, but should not
      * change state of the stack.</i>
      */
@@ -604,7 +604,7 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes 
      * Called before explicit exit from the method using either return or throw.
      * Top element on the stack contains the return value or exception instance.
      * For example:
-     * 
+     *
      * <pre>
      *   public void onMethodExit(int opcode) {
      *     if(opcode==RETURN) {
@@ -622,22 +622,22 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes 
      *     visitIntInsn(SIPUSH, opcode);
      *     visitMethodInsn(INVOKESTATIC, owner, "onExit", "(Ljava/lang/Object;I)V");
      *   }
-     * 
+     *
      *   // an actual call back method
      *   public static void onExit(Object param, int opcode) {
      *     ...
      * </pre>
-     * 
+     *
      * <br>
      * <br>
-     * 
+     *
      * <i>Custom code can use or change all the local variables, but should not
      * change state of the stack.</i>
-     * 
+     *
      * @param opcode
      *            one of the RETURN, IRETURN, FRETURN, ARETURN, LRETURN, DRETURN
      *            or ATHROW
-     * 
+     *
      */
     protected void onMethodExit(int opcode) {
     }

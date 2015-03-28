@@ -1,23 +1,23 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
@@ -55,7 +55,7 @@ public interface Transaction {
      * @exception SecurityException Thrown to indicate that the thread is
      *    not allowed to commit the transaction.
      *
-     * @exception IllegalStateException Thrown if the transaction in the 
+     * @exception IllegalStateException Thrown if the transaction in the
      *    target object is inactive.
      *
      * @exception SystemException Thrown if the transaction manager
@@ -66,10 +66,10 @@ public interface Transaction {
                 SecurityException, IllegalStateException, SystemException;
 
     /**
-     * Disassociate the resource specified from the transaction associated 
+     * Disassociate the resource specified from the transaction associated
      * with the target Transaction object.
      *
-     * @param xaRes The XAResource object associated with the resource 
+     * @param xaRes The XAResource object associated with the resource
      *              (connection).
      *
      * @param flag One of the values of TMSUCCESS, TMSUSPEND, or TMFAIL.
@@ -81,17 +81,17 @@ public interface Transaction {
      *    encounters an unexpected error condition.
      *
      * @return <i>true</i> if the resource was delisted successfully; otherwise
-     *	  <i>false</i>.
+     *      <i>false</i>.
      *
      */
     public boolean delistResource(XAResource xaRes, int flag)
         throws IllegalStateException, SystemException;
 
     /**
-     * Enlist the resource specified with the transaction associated with the 
+     * Enlist the resource specified with the transaction associated with the
      * target Transaction object.
      *
-     * @param xaRes The XAResource object associated with the resource 
+     * @param xaRes The XAResource object associated with the resource
      *              (connection).
      *
      * @return <i>true</i> if the resource was enlisted successfully; otherwise
@@ -113,11 +113,11 @@ public interface Transaction {
         SystemException;
 
     /**
-     * Obtain the status of the transaction associated with the target 
+     * Obtain the status of the transaction associated with the target
      * Transaction object.
      *
      * @return The transaction status. If no transaction is associated with
-     *    the target object, this method returns the 
+     *    the target object, this method returns the
      *    Status.NoTransaction value.
      *
      * @exception SystemException Thrown if the transaction manager
@@ -141,7 +141,7 @@ public interface Transaction {
      *
      * @exception IllegalStateException Thrown if the transaction in the
      *    target object is in the prepared state or the transaction is
-     *	  inactive.
+     *      inactive.
      *
      * @exception SystemException Thrown if the transaction manager
      *    encounters an unexpected error condition.
@@ -162,7 +162,7 @@ public interface Transaction {
      *    encounters an unexpected error condition.
      *
      */
-	public void rollback() throws IllegalStateException, SystemException;
+    public void rollback() throws IllegalStateException, SystemException;
 
     /**
      * Modify the transaction associated with the target object such that

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -22,40 +22,40 @@ import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
 
 
 public class StaticValueModelTests extends TestCase {
-	private ValueModel objectHolder;
+    private ValueModel objectHolder;
 
-	public static Test suite() {
-		return new TestSuite(StaticValueModelTests.class);
-	}
-	
-	public StaticValueModelTests(String name) {
-		super(name);
-	}
+    public static Test suite() {
+        return new TestSuite(StaticValueModelTests.class);
+    }
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.objectHolder = this.buildObjectHolder();
-	}
+    public StaticValueModelTests(String name) {
+        super(name);
+    }
 
-	private ValueModel buildObjectHolder() {
-		return new AbstractReadOnlyPropertyValueModel() {
-			public Object getValue() {
-				return "foo";
-			}
-		};
-	}
+    protected void setUp() throws Exception {
+        super.setUp();
+        this.objectHolder = this.buildObjectHolder();
+    }
 
-	protected void tearDown() throws Exception {
-		TestTools.clear(this);
-		super.tearDown();
-	}
+    private ValueModel buildObjectHolder() {
+        return new AbstractReadOnlyPropertyValueModel() {
+            public Object getValue() {
+                return "foo";
+            }
+        };
+    }
 
-	public void testGetValue() {
-		assertEquals("foo", this.objectHolder.getValue());
-	}
+    protected void tearDown() throws Exception {
+        TestTools.clear(this);
+        super.tearDown();
+    }
 
-	public void testToString() {
-		assertTrue(this.objectHolder.toString().indexOf("foo") >= 0);
-	}
+    public void testGetValue() {
+        assertEquals("foo", this.objectHolder.getValue());
+    }
+
+    public void testToString() {
+        assertTrue(this.objectHolder.toString().indexOf("foo") >= 0);
+    }
 
 }

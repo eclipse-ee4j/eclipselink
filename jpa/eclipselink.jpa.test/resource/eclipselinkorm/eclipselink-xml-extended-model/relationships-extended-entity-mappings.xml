@@ -147,7 +147,7 @@
                 </cascade>
                 <discriminator-column name="DISTRIBUTOR_TYPE" discriminator-type="INTEGER"/>
                 <discriminator-class discriminator="1" value="MegaBrands"/>
-                <discriminator-class discriminator="2" value="Namco"/> 
+                <discriminator-class discriminator="2" value="Namco"/>
                 <join-column name="DISTRIBUTOR_ID" referenced-column-name="distributorId"/>
             </variable-one-to-one>
         </attributes>

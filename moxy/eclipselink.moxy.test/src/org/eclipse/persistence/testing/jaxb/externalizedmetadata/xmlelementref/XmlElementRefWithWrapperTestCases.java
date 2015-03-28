@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,61 +30,61 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlElementRefWithWrapperTestCases extends JAXBWithJSONTestCases{
 
-	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/foo-wrapper.xml";
-	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/foo-wrapper.json";
-	
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/foo-wrapper.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/foo-wrapper.json";
+
     public XmlElementRefWithWrapperTestCases(String name) throws Exception {
-		super(name);
-		setClasses(new Class[] { Foos.class, Bar.class });
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
+        super(name);
+        setClasses(new Class[] { Foos.class, Bar.class });
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 }
 
-	public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/eclipselink-oxm-wrapper.xml");
+    public Map getProperties(){
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/eclipselink-oxm-wrapper.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref", new StreamSource(inputStream));
-	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-        
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
         return properties;
-	}
-    
-	public void testContainerType(){
-	   // make sure container-type was processed correctly
+    }
+
+    public void testContainerType(){
+       // make sure container-type was processed correctly
         XMLDescriptor xDesc = xmlContext.getDescriptor(new QName("foos"));
         assertNotNull("No descriptor was generated for Foos.", xDesc);
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("items");
         assertNotNull("No mapping exists on Foos for attribute [items].", mapping);
         assertTrue("Expected an XMLChoiceCollectionMapping for attribute [items], but was [" + mapping.toString() +"].", mapping instanceof XMLChoiceCollectionMapping);
         assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLChoiceCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLChoiceCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
-	}
-	
-    public void testSchemaGen() throws Exception{
-    	List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/schema_wrapper.xsd");
-    	
-    	controlSchemas.add(is);
-    	
-    	super.testSchemaGen(controlSchemas);
-    	
-    	
     }
 
-	@Override
-	protected Object getControlObject() {
-		Foos foos = new Foos();
-		List itemsList = new ArrayList();
-		Bar bar = new Bar();
-		bar.id = 66;
-		
-		Bar bar2 = new Bar();
-		bar2.id = 99;
-     
-		itemsList.add(bar);
-		itemsList.add(bar2);
-		foos.items = itemsList;
-		return foos;
-	}
+    public void testSchemaGen() throws Exception{
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/schema_wrapper.xsd");
+
+        controlSchemas.add(is);
+
+        super.testSchemaGen(controlSchemas);
+
+
+    }
+
+    @Override
+    protected Object getControlObject() {
+        Foos foos = new Foos();
+        List itemsList = new ArrayList();
+        Bar bar = new Bar();
+        bar.id = 66;
+
+        Bar bar2 = new Bar();
+        bar2.id = 99;
+
+        itemsList.add(bar);
+        itemsList.add(bar2);
+        foos.items = itemsList;
+        return foos;
+    }
 }

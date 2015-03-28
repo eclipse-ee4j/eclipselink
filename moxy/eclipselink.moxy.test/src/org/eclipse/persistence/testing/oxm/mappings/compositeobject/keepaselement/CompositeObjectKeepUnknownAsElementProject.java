@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -25,7 +25,7 @@ public class CompositeObjectKeepUnknownAsElementProject extends Project {
 
     public CompositeObjectKeepUnknownAsElementProject() {
         this.addDescriptor(buildDocDescriptor());
-        this.addDescriptor(buildElemDescriptor());        
+        this.addDescriptor(buildElemDescriptor());
     }
 
     public ClassDescriptor buildDocDescriptor() {
@@ -37,21 +37,21 @@ public class CompositeObjectKeepUnknownAsElementProject extends Project {
         elemMapping.setAttributeName("elem");
         elemMapping.setGetMethodName("getElem");
         elemMapping.setSetMethodName("setElem");
-        elemMapping.setXPath("elem");        
+        elemMapping.setXPath("elem");
         elemMapping.setReferenceClass(Elem.class);
-        
+
         XMLCompositeObjectMapping elem1Mapping = new XMLCompositeObjectMapping();
         elem1Mapping.setAttributeName("elem1");
         elem1Mapping.setGetMethodName("getElem1");
         elem1Mapping.setSetMethodName("setElem1");
-        elem1Mapping.setXPath("elem1");        
+        elem1Mapping.setXPath("elem1");
         elem1Mapping.setReferenceClass(null);
-        elem1Mapping.setReferenceClassName(null);        
+        elem1Mapping.setReferenceClassName(null);
         elem1Mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
-        
+
         descriptor.addMapping(elemMapping);
-        descriptor.addMapping(elem1Mapping);        
-        
+        descriptor.addMapping(elem1Mapping);
+
         return descriptor;
     }
 
@@ -65,22 +65,22 @@ public class CompositeObjectKeepUnknownAsElementProject extends Project {
         elemMapping.setSetMethodName("setElem");
         elemMapping.setXPath("elem");
         elemMapping.setReferenceClass(null);
-        elemMapping.setReferenceClassName(null);        
-        elemMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);        
-        
+        elemMapping.setReferenceClassName(null);
+        elemMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+
         XMLCompositeObjectMapping elem1Mapping = new XMLCompositeObjectMapping();
         elem1Mapping.setAttributeName("elem1");
         elem1Mapping.setGetMethodName("getElem1");
         elem1Mapping.setSetMethodName("setElem1");
-        elem1Mapping.setXPath("elem1");        
+        elem1Mapping.setXPath("elem1");
         elem1Mapping.setReferenceClass(null);
-        elem1Mapping.setReferenceClassName(null);        
+        elem1Mapping.setReferenceClassName(null);
         elem1Mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
 
         descriptor.addMapping(elemMapping);
-        descriptor.addMapping(elem1Mapping);        
-        
+        descriptor.addMapping(elem1Mapping);
+
         return descriptor;
     }
-    
+
 }

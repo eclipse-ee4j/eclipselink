@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,8 +29,8 @@ public class MyCustomAccessorFactory implements AccessorFactory {
     public Accessor createPropertyAccessor(Class beanClass, Method getMethod, Method setMethod) throws JAXBException {
         return new MyCustomAccessorFactory.MyCustomPropertyAccessor(beanClass);
     }
-    
-    
+
+
     public static class MyCustomFieldAccessor extends Accessor {
 
         protected MyCustomFieldAccessor(Class valueType) {
@@ -47,8 +47,8 @@ public class MyCustomAccessorFactory implements AccessorFactory {
             value = value.substring(value.lastIndexOf(":") + 1);
             ((CustomerPackageLevel)arg0).fieldProperty = value;
         }
-    } 
-    
+    }
+
     public class MyCustomPropertyAccessor extends Accessor{
 
         protected MyCustomPropertyAccessor(Class valueType) {

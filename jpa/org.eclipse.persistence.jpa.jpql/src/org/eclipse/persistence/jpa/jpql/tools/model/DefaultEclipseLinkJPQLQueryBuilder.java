@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,10 +27,10 @@ import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
  */
 public final class DefaultEclipseLinkJPQLQueryBuilder extends JPQLQueryBuilderWrapper {
 
-	/**
-	 * Creates a new <code>DefaultEclipseLinkJPQLQueryBuilder</code>.
-	 */
-	public DefaultEclipseLinkJPQLQueryBuilder() {
-		super(new EclipseLinkJPQLQueryBuilder(DefaultEclipseLinkJPQLGrammar.instance()));
-	}
+    /**
+     * Creates a new <code>DefaultEclipseLinkJPQLQueryBuilder</code>.
+     */
+    public DefaultEclipseLinkJPQLQueryBuilder() {
+        super(new EclipseLinkJPQLQueryBuilder(DefaultEclipseLinkJPQLGrammar.instance()));
+    }
 }

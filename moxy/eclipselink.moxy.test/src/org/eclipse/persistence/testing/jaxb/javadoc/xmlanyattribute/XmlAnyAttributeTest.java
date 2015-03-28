@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,44 +24,44 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlAnyAttributeTest extends JAXBWithJSONTestCases{
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlanyattribute/xmlanyattribute.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlanyattribute/xmlanyattribute.json";
-	
-	public XmlAnyAttributeTest(String name) throws Exception {
-		super(name);
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-		Class[] classes = new Class[1];
-		classes[0] = XmlAnyAttributeModel.class;
-		setClasses(classes);
-		
-		jaxbUnmarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
-		Map<String, String> namespaces = new HashMap<String, String>();
-		namespaces.put("www.example.com","ns0");
-		jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
-	}
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlanyattribute/xmlanyattribute.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlanyattribute/xmlanyattribute.json";
 
-	public JAXBMarshaller getJSONMarshaller() throws Exception{
-		JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
-		jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-		jsonMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
-		Map<String, String> namespaces = new HashMap<String, String>();
-		namespaces.put("www.example.com","ns0");
-		
-		jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
-		return jsonMarshaller;
-	}
-	
-	protected Object getControlObject() {
+    public XmlAnyAttributeTest(String name) throws Exception {
+        super(name);
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        Class[] classes = new Class[1];
+        classes[0] = XmlAnyAttributeModel.class;
+        setClasses(classes);
 
-		XmlAnyAttributeModel model = new XmlAnyAttributeModel();
-		model.setTitle("A mixture of elements");
+        jaxbUnmarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put("www.example.com","ns0");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+    }
 
-		HashMap<QName,Object> amap = new HashMap<QName,Object>();
-		amap.put(new QName("www.example.com", "any"), "blah");
-		model.any = amap;
+    public JAXBMarshaller getJSONMarshaller() throws Exception{
+        JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
+        jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+        jsonMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put("www.example.com","ns0");
+
+        jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
+        return jsonMarshaller;
+    }
+
+    protected Object getControlObject() {
+
+        XmlAnyAttributeModel model = new XmlAnyAttributeModel();
+        model.setTitle("A mixture of elements");
+
+        HashMap<QName,Object> amap = new HashMap<QName,Object>();
+        amap.put(new QName("www.example.com", "any"), "blah");
+        model.any = amap;
         return model;
-	}
+    }
 
 
 }

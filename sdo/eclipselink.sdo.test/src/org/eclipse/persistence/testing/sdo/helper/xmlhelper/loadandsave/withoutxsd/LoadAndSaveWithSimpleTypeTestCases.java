@@ -21,14 +21,14 @@ public class LoadAndSaveWithSimpleTypeTestCases extends SDOTestCase {
         super(name);
         // TODO Auto-generated constructor stub
     }
-    
+
     public void testLoadFromStringSaveDocumentToWriter() throws Exception {
         FileInputStream inputStream = new FileInputStream(getControlFileName());
         byte[] bytes = new byte[inputStream.available()];
         inputStream.read(bytes);
-        DataObject optionsDataObject = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);              
+        DataObject optionsDataObject = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
         optionsDataObject.set(SDOConstants.TYPE_LOAD_OPTION, SDOConstants.SDO_INTEGER);
-        
+
         XMLDocument document = xmlHelper.load(new StringReader(new String(bytes)), "", optionsDataObject);
 
         verifyAfterLoad(document);
@@ -50,8 +50,8 @@ public class LoadAndSaveWithSimpleTypeTestCases extends SDOTestCase {
 
     private String getControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/bigint.xml";
-    }  
-    
+    }
+
     protected void compareXML(String controlFileName, String testString) throws Exception {
         compareXML(controlFileName, testString, true);
     }
@@ -82,6 +82,6 @@ public class LoadAndSaveWithSimpleTypeTestCases extends SDOTestCase {
             fail("An error occurred loading the control document");
             return null;
         }
-    }    
+    }
 
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.ArrayList;
@@ -55,12 +55,12 @@ public class AdvancedJunitTest extends JUnitTestCase {
     public AdvancedJunitTest() {
         super();
     }
-    
+
     public AdvancedJunitTest(String name) {
         super(name);
     }
-    
-    
+
+
     public static Test suite() {
         TestSuite suite = new TestSuite("AdvancedJunitTest");
 
@@ -76,10 +76,10 @@ public class AdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJunitTest("testElementCollectionEntityMapKeyRemove"));
         suite.addTest(new AdvancedJunitTest("testSwitchBatchDuringSessionEvent"));
         suite.addTest(new AdvancedJunitTest("testTableQualifierOnSequencingTableAndEntity"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -88,26 +88,26 @@ public class AdvancedJunitTest extends JUnitTestCase {
 
         clearCache();
     }
-    
+
     public void testGF1818() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             Vegetable vegetable = new Vegetable();
             vegetable.setId(new VegetablePK("Carrot", "Orange"));
             vegetable.setCost(2.09);
-        
+
             em.persist(vegetable);
             commitTransaction(em);
-            
+
         } catch (Exception e) {
             fail("An exception was caught: [" + e.getMessage() + "]");
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     public void testEL254937(){
         // Should not run in the server - bug 264589
         if (! isOnServer()) {
@@ -136,27 +136,27 @@ public class AdvancedJunitTest extends JUnitTestCase {
             assertTrue("Entity removed during flush was not removed from the shared cache on commit", cachedLargeProject==null);
         }
     }
-    
+
     public void testGF1894() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee emp = new Employee();
         emp.setFirstName("Guy");
         emp.setLastName("Pelletier");
-        
+
         Address address = new Address();
         address.setCity("College Town");
-        
+
         emp.setAddress(address);
-            
-        try {   
+
+        try {
             Employee empClone = em.merge(emp);
             assertNotNull("The id field for the merged new employee object was not generated.", empClone.getId());
             commitTransaction(em);
-            
+
             Employee empFromDB = em.find(Employee.class, empClone.getId());
             assertNotNull("The version locking field for the merged new employee object was not updated after commit.", empFromDB.getVersion());
-            
+
             beginTransaction(em);
             Employee empClone2 = em.merge(empFromDB);
             assertTrue("The id field on a existing merged employee object was modified on a subsequent merge.", empFromDB.getId().equals(empClone2.getId()));
@@ -164,74 +164,74 @@ public class AdvancedJunitTest extends JUnitTestCase {
         } catch (javax.persistence.OptimisticLockException e) {
             fail("An optimistic locking exception was caught on the merge of a new object. An insert should of occurred instead.");
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     public void testGF894() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             for (int i = 0; ; i++) {
                 GolferPK golferPK = new GolferPK(i);
                 Golfer golfer = em.find(Golfer.class, golferPK);
-            
+
                 if (golfer == null) {
                     golfer = new Golfer();
                     golfer.setGolferPK(golferPK);
-                
+
                     WorldRank worldRank = new WorldRank();
                     worldRank.setId(i);
                     golfer.setWorldRank(worldRank);
-                
+
                     em.persist(worldRank);
                     em.persist(golfer);
                     commitTransaction(em);
-                
+
                     break;
-                } 
+                }
             }
         } catch (Exception e) {
             fail("An exception was caught: [" + e.getMessage() + "]");
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     public void testManAndWoman() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             PartnerLink pLink1 = new PartnerLink();
             pLink1.setMan(new Man());
             em.persist(pLink1);
-            
+
             PartnerLink pLink2 = new PartnerLink();
             pLink2.setWoman(new Woman());
             em.persist(pLink2);
-            
+
             PartnerLink pLink3 = new PartnerLink();
             pLink3.setMan(new Man());
             pLink3.setWoman(new Woman());
             em.persist(pLink3);
-            
+
             commitTransaction(em);
-            
+
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             fail("An exception was caught: [" + e.getMessage() + "]");
         }
-        
+
         closeEntityManager(em);
     }
 
-    
+
     // https://bugs.eclipse.org/bugs/show_bug.cgi?id=279634
     public void testCreateDerivedPKFromPKValues() {
 
@@ -261,7 +261,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
     public void testStringArrayField() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         VegetablePK pk = new VegetablePK("Tomato", "Red");
         String[] tags = {"California", "XE"};
         try {
@@ -269,10 +269,10 @@ public class AdvancedJunitTest extends JUnitTestCase {
             vegetable.setId(pk);
             vegetable.setCost(2.09);
             vegetable.setTags(tags);
-        
+
             em.persist(vegetable);
             commitTransaction(em);
-            
+
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -281,7 +281,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
-        
+
         em = createEntityManager();
         beginTransaction(em);
         Vegetable vegetable;
@@ -290,7 +290,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
             commitTransaction(em);
             assertNotNull(vegetable);
             assertTrue(Arrays.equals(tags, vegetable.getTags()));
-            
+
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -300,11 +300,11 @@ public class AdvancedJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testElementCollectionClear() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             SimpleEntity se = new SimpleEntity();
             se.setId(101L);
@@ -317,7 +317,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
             nature.add(SimpleNature.PERSONALITY[4]);
             nature.add(SimpleNature.PERSONALITY[5]);
             se.setSimpleNature(nature);
-        
+
             em.persist(se);
             commitTransaction(em);
         } catch (RuntimeException e) {
@@ -328,7 +328,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
-        
+
         // Clear Cache.
         clearCache();
         em = createEntityManager();
@@ -338,10 +338,10 @@ public class AdvancedJunitTest extends JUnitTestCase {
             // Detach all entities.
             em.clear();
             closeEntityManager(em);
-            
+
             // Clear lazily loaded ElementCollection.
             se.getSimpleNature().clear();
-            
+
             em = createEntityManager();
             beginTransaction(em);
             em.merge(se);
@@ -354,7 +354,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
-        
+
         // Clear Cache
         clearCache();
         em = createEntityManager();
@@ -377,27 +377,27 @@ public class AdvancedJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testElementCollectionEntityMapKeyRemove() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             SimpleEntity se = new SimpleEntity();
             se.setId(102L);
             se.setDescription("Element Collection Entity MapKey Remove Test Record");
-            
+
             SimpleLanguage slen = new SimpleLanguage();
             slen.setCode("EN");
             slen.setDescription("English");
-            
+
             SimpleLanguage slfr = new SimpleLanguage();
             slfr.setCode("FR");
             slfr.setDescription("French");
-            
+
             se.getSimpleLanguage().put(slen, "Modest");
             se.getSimpleLanguage().put(slfr, "Modeste");
-        
+
             em.persist(slen);
             em.persist(slfr);
             em.persist(se);
@@ -410,11 +410,11 @@ public class AdvancedJunitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
-        
+
         // Clear Cache.
         clearCache();
         em = createEntityManager();
-        
+
         SimpleEntity se = null;
         SimpleLanguage slfr = null;
         try {
@@ -432,7 +432,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
-        
+
         // Clear Cache
         clearCache();
         em = createEntityManager();
@@ -449,7 +449,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testSwitchBatchDuringSessionEvent() {
         //Test for bug#419326
         EntityManager em = createEntityManager();
@@ -458,10 +458,10 @@ public class AdvancedJunitTest extends JUnitTestCase {
             Vegetable vegetable = em.find(Vegetable.class, new VegetablePK("Potato", "Yellow"));
             if (null != vegetable) {
                 //cleanup old data
-                em.remove(vegetable); 
+                em.remove(vegetable);
                 em.flush();
                 commitTransaction(em);
-            } 
+            }
         } catch (RuntimeException e) {
             throw e;
         } finally {
@@ -530,32 +530,32 @@ public class AdvancedJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /*
      * Test for Bug 445466
-     * When a table qualifier is configured on an Entity/TableSequence combination, 
-     * the SQL is not printed correctly. Programmatically test that an Entity's TableSequence 
-     * has the expected table name & qualifier information configured. 
+     * When a table qualifier is configured on an Entity/TableSequence combination,
+     * the SQL is not printed correctly. Programmatically test that an Entity's TableSequence
+     * has the expected table name & qualifier information configured.
      */
     public void testTableQualifierOnSequencingTableAndEntity() {
-        // Access serverSession directly, do not create an EM as the Entity 'EntityWithSchema' 
+        // Access serverSession directly, do not create an EM as the Entity 'EntityWithSchema'
         // has a hard-coded schema for programmatic testing only
         ClassDescriptor descriptor = getServerSession(getPersistenceUnitName()).getDescriptor(EntityWithSchema.class);
         TableSequence tableSequence = (TableSequence) descriptor.getSequence();
         DatabaseTable table = tableSequence.getTable();
-        
+
         String tableName = table.getName(); // returns fully qualified table name, by design
         String tableQualifier = table.getTableQualifier();
-        
+
         String tsQualifier = tableSequence.getQualifier();
         String tsTableName = tableSequence.getTableName();
         String tsQualifiedTableName = tableSequence.getQualifiedTableName();
-        
+
         assertNotNull("Table name should be non-null", tableName);
         assertTrue("Table name should not be empty", tableName.length() > 0);
         assertNotNull("Table qualifier should be non-null", tableQualifier);
         assertTrue("Table qualifier should not be empty", tableQualifier.length() > 0);
-        
+
         assertEquals("Table Sequence : table name (with qualifier) should be equal", (tableQualifier + "." + tableName), tsTableName);
         assertEquals("Table Sequence : table qualifier should be equal", tableQualifier, tsQualifier);
         assertEquals("Table Sequence : qualified table name should be equal", (tableQualifier + "." + tableName), tsQualifiedTableName);

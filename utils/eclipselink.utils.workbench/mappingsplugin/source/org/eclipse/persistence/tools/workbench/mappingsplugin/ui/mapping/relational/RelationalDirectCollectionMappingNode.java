@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -21,33 +21,33 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.mapping.Mapping
 public final class RelationalDirectCollectionMappingNode extends MappingNode {
 
 
-	public RelationalDirectCollectionMappingNode(MWRelationalDirectCollectionMapping value, SelectionActionsPolicy mappingNodeTypePolicy, MappingDescriptorNode parent) {
-		super(value, mappingNodeTypePolicy, parent);
-	}
+    public RelationalDirectCollectionMappingNode(MWRelationalDirectCollectionMapping value, SelectionActionsPolicy mappingNodeTypePolicy, MappingDescriptorNode parent) {
+        super(value, mappingNodeTypePolicy, parent);
+    }
 
 
-	// ************** AbstractApplicationNode overrides *************
+    // ************** AbstractApplicationNode overrides *************
 
-	protected String accessibleNameKey() {
-		return "ACCESSIBLE_DIRECT_COLLECTION_MAPPING_NODE";
-	}
-
-
-	// ************** ApplicationNode implementation *************
-	
-	public String helpTopicID() {
-		return this.getDescriptorNode().mappingHelpTopicPrefix() + ".directCollection";
-	}
-
-	protected String buildIconKey() {
-		return ((MWRelationalDirectCollectionMapping) getMapping()).iconKey();		
-	}
+    protected String accessibleNameKey() {
+        return "ACCESSIBLE_DIRECT_COLLECTION_MAPPING_NODE";
+    }
 
 
-	// ********** MWApplicationNode overrides **********
+    // ************** ApplicationNode implementation *************
 
-	protected Class propertiesPageClass() {
-		return RelationalDirectCollectionMappingTabbedPropertiesPage.class;
-	}
+    public String helpTopicID() {
+        return this.getDescriptorNode().mappingHelpTopicPrefix() + ".directCollection";
+    }
+
+    protected String buildIconKey() {
+        return ((MWRelationalDirectCollectionMapping) getMapping()).iconKey();
+    }
+
+
+    // ********** MWApplicationNode overrides **********
+
+    protected Class propertiesPageClass() {
+        return RelationalDirectCollectionMappingTabbedPropertiesPage.class;
+    }
 
 }

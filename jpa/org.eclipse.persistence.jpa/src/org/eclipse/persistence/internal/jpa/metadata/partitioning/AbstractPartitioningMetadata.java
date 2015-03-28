@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - initial API and implementation
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.partitioning;
 
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
@@ -23,15 +23,15 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 /**
  * INTERNAL:
  * Define JPA meta-data for partitioning policy.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author James Sutherland
  * @since EclipseLink 2.2
  */
@@ -44,10 +44,10 @@ public abstract class AbstractPartitioningMetadata extends ORMetadata {
      */
     public AbstractPartitioningMetadata(MetadataAnnotation annotation, MetadataAccessor accessor) {
         super(annotation, accessor);
-        
+
         this.name = annotation.getAttributeString("name");
     }
-    
+
     /**
      * INTERNAL:
      * Used for XML loading.
@@ -55,7 +55,7 @@ public abstract class AbstractPartitioningMetadata extends ORMetadata {
     protected AbstractPartitioningMetadata(String elementName) {
         super(elementName);
     }
-    
+
     public String getName() {
         return name;
     }
@@ -63,7 +63,7 @@ public abstract class AbstractPartitioningMetadata extends ORMetadata {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     /**
      * Equals is used for processing overrides from XML.
      */
@@ -71,18 +71,18 @@ public abstract class AbstractPartitioningMetadata extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof AbstractPartitioningMetadata) {
             AbstractPartitioningMetadata policy = (AbstractPartitioningMetadata) objectToCompare;
-            
+
             return valuesMatch(this.name, policy.getName());
         }
-        
+
         return false;
     }
-    
+
     /**
      * Require subclass to build policy.
      */
     public abstract PartitioningPolicy buildPolicy();
-    
+
     /**
      * Set common fields into policy.
      * Should be called by subclasses.

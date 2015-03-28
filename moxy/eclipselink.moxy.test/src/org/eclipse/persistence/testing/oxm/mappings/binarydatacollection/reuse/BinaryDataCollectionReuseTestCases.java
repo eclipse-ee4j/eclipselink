@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -49,10 +49,10 @@ public class BinaryDataCollectionReuseTestCases extends XMLWithJSONMappingTestCa
         MyAttachmentUnmarshaller handler = new MyAttachmentUnmarshaller();
 
         handler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID,MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes());
-        xmlUnmarshaller.setAttachmentUnmarshaller(handler);        
+        xmlUnmarshaller.setAttachmentUnmarshaller(handler);
     }
 
-    
+
     @Override
     protected XMLMarshaller createMarshaller() {
         XMLMarshaller marshaller = super.createMarshaller();

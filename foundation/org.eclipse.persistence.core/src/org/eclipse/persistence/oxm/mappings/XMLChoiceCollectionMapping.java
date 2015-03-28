@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -83,7 +83,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * group elements</li>
  * </ul>
  * <p>The XMLChoiceCollectionMapping is the collection version of the XMLChoiceMapping. This mapping
- * allows the user to specify a number of different xpaths, and types associated with those xpaths. 
+ * allows the user to specify a number of different xpaths, and types associated with those xpaths.
  * When any of these elements are encountered in the XML Document, they are read in as the correct
  * type and added to the collection.
  * <p><b>Setting up XPath mappings:</b>Unlike other OXM Mappings, instead of setting a single xpath,
@@ -92,7 +92,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * xmlChoiceCollectionMapping.addChoiceElement("mystring/text()", String.class);
  * <br>
  * xmlChoiceCollectionMapping.addChoiceElement("myaddress", Address.class);
- * 
+ *
  */
 
 public class XMLChoiceCollectionMapping extends DatabaseMapping implements ChoiceCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, Session, XMLUnmarshaller, XMLField, XMLMapping, XMLRecord>, XMLMapping {
@@ -119,7 +119,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     private Converter converter;
     private XMLCompositeDirectCollectionMapping mixedContentMapping;
     private XMLAnyCollectionMapping anyMapping;
-    
+
     private static final String DATA_HANDLER = "javax.activation.DataHandler";
     private static final String MIME_MULTIPART = "javax.mail.MimeMultipart";
     private static final String IMAGE = "java.awt.Image";
@@ -264,7 +264,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
        ArrayList<XMLMapping> processedMappings = new ArrayList<XMLMapping>();
        for(XMLMapping mapping:choiceElementMappings.values()) {
            if(((DatabaseMapping)mapping).isObjectReferenceMapping() && ((DatabaseMapping)mapping).isCollectionMapping() && !(processedMappings.contains(mapping))) {
-        	   ((XMLCollectionReferenceMapping)mapping).readFromRowIntoObject(row, joinManager, ((XMLRecord)row).getCurrentObject(), cacheKey, sourceQuery, executionSession, isTargetProtected, container);
+               ((XMLCollectionReferenceMapping)mapping).readFromRowIntoObject(row, joinManager, ((XMLRecord)row).getCurrentObject(), cacheKey, sourceQuery, executionSession, isTargetProtected, container);
                processedMappings.add(mapping);
            }
        }
@@ -320,7 +320,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                         if(xmlMapping.isAbstractCompositeCollectionMapping()) {
                             fieldValue = ((XMLCompositeCollectionMapping)xmlMapping).buildCompositeRow(fieldValue, session, row, writeType);
                         }
-                    
+
                         XMLEntry entry = new XMLEntry();
                         entry.setValue(fieldValue);
                         entry.setXMLField(associatedField);
@@ -333,7 +333,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     }
 
     private XMLField getFieldForName(String localName, String namespaceUri) {
-        Iterator fields = getFields().iterator(); 
+        Iterator fields = getFields().iterator();
         while(fields.hasNext()) {
             XMLField nextField = (XMLField)fields.next();
             XPathFragment fragment = nextField.getXPathFragment();
@@ -350,7 +350,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
             }
         }
         return null;
-    }    
+    }
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
 
     }
@@ -374,13 +374,13 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         XMLField field = new XMLField(xpath);
         addChoiceElement(field, elementType);
     }
-    
+
     public void addChoiceElement(String xpath, String elementTypeName) {
         XMLField field = new XMLField(xpath);
         addChoiceElement(field, elementTypeName);
     }
 
-    
+
     public void addChoiceElement(XMLField xmlField, Class elementType) {
         getFieldToClassMappings().put(xmlField, elementType);
         if(!(this.fieldToClassNameMappings.containsKey(xmlField))) {
@@ -391,7 +391,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
         addChoiceElementMapping(xmlField, elementType);
     }
-    
+
     public void addChoiceElement(List<XMLField> srcFields, Class elementType, List<XMLField> tgtFields) {
         for(XMLField sourceField:srcFields) {
             getFieldToClassMappings().put(sourceField, elementType);
@@ -402,7 +402,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
         addChoiceElementMapping(srcFields, elementType, tgtFields);
     }
-    
+
     public void addChoiceElement(List<XMLField> srcFields, String elementTypeName, List<XMLField> tgtFields) {
         for(XMLField sourceField:srcFields) {
             this.fieldToClassNameMappings.put(sourceField, elementTypeName);
@@ -412,7 +412,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
         addChoiceElementMapping(srcFields, elementTypeName, tgtFields);
     }
-    
+
     public void addChoiceElement(String srcXPath, Class elementType, String tgtXPath) {
         XMLField srcField = new XMLField(srcXPath);
         XMLField tgtField = new XMLField(tgtXPath);
@@ -426,9 +426,9 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         if(this.classNameToFieldMappings.get(elementTypeName) == null) {
             this.classNameToFieldMappings.put(elementTypeName, field);
         }
-        addChoiceElementMapping(field, elementTypeName, tgtField);        
+        addChoiceElementMapping(field, elementTypeName, tgtField);
     }
-    
+
     public void addChoiceElement(XMLField sourceField, Class elementType, XMLField targetField) {
         getFieldToClassMappings().put(sourceField, elementType);
         this.fieldToClassNameMappings.put(sourceField, elementType.getName());
@@ -437,7 +437,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
         addChoiceElementMapping(sourceField, elementType, targetField);
     }
-    
+
     private void addChoiceElementMapping(List<XMLField> sourceFields, Class theClass, List<XMLField> targetFields) {
         XMLCollectionReferenceMapping xmlMapping = new XMLCollectionReferenceMapping();
         xmlMapping.setReferenceClass(theClass);
@@ -460,8 +460,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
             this.choiceElementMappings.put(sourceField, xmlMapping);
         }
         this.choiceElementMappingsByClassName.put(theClass, xmlMapping);
-    } 
-    
+    }
+
     private void addChoiceElementMapping(XMLField sourceField, Class theClass, XMLField targetField) {
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setReferenceClass(theClass);
@@ -470,7 +470,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         this.choiceElementMappings.put(sourceField, mapping);
         this.choiceElementMappingsByClass.put(theClass, mapping);
     }
-    
+
     private void addChoiceElementMapping(XMLField sourceField, String className, XMLField targetField) {
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setReferenceClassName(className);
@@ -479,16 +479,16 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         this.choiceElementMappings.put(sourceField, mapping);
         this.choiceElementMappingsByClassName.put(className, mapping);
     }
-    
+
     public void addChoiceElement(XMLField field, String elementTypeName) {
         this.fieldToClassNameMappings.put(field, elementTypeName);
         if (classNameToFieldMappings.get(elementTypeName) == null) {
             classNameToFieldMappings.put(elementTypeName, field);
-        }        
+        }
         addChoiceElementMapping(field, elementTypeName);
     }
-    
-    
+
+
     public Map<XMLField, Class> getFieldToClassMappings() {
         return fieldToClassMappings;
     }
@@ -505,11 +505,11 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
             if(!(mappingsList.contains(next))) {
                 mappingsList.add(next);
             }
-        }      
-        
+        }
+
         if(isAny){
-        	//anyMapping = new XMLAnyCollectionMapping();
-        	mappingsList.add(anyMapping);
+            //anyMapping = new XMLAnyCollectionMapping();
+            mappingsList.add(anyMapping);
         }
         Iterator<XMLMapping> mappings = mappingsList.iterator();
         while(mappings.hasNext()){
@@ -519,16 +519,16 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                 converter = fieldsToConverters.get(nextMapping.getField());
             }
             if(nextMapping.isAbstractCompositeDirectCollectionMapping()){
-                XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();                   
+                XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
                 QName schemaType = xmlConversionManager.schemaType(((AbstractCompositeDirectCollectionMapping)nextMapping).getAttributeElementClass());
                 if(schemaType != null) {
                  ((XMLField)nextMapping.getField()).setSchemaType(schemaType);
-                }   
-                
+                }
+
                 if(converter != null){
                     ((AbstractCompositeDirectCollectionMapping)nextMapping).setValueConverter(converter);
                 }
-                ((AbstractCompositeDirectCollectionMapping)nextMapping).setContainerPolicy(getContainerPolicy());                                               
+                ((AbstractCompositeDirectCollectionMapping)nextMapping).setContainerPolicy(getContainerPolicy());
             }else if(nextMapping.isAbstractCompositeCollectionMapping()){
                 if(converter != null){
                     ((AbstractCompositeCollectionMapping)nextMapping).setConverter(converter);
@@ -539,18 +539,18 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                 if(converter != null) {
                     ((XMLBinaryDataCollectionMapping)nextMapping).setValueConverter(converter);
                 }
-            } else if (nextMapping instanceof XMLAnyCollectionMapping){ 
-            	((XMLAnyCollectionMapping)nextMapping).setContainerPolicy(getContainerPolicy());
-            	if(converter != null && converter instanceof XMLConverter) {                        		 
+            } else if (nextMapping instanceof XMLAnyCollectionMapping){
+                ((XMLAnyCollectionMapping)nextMapping).setContainerPolicy(getContainerPolicy());
+                if(converter != null && converter instanceof XMLConverter) {
                     ((XMLAnyCollectionMapping)nextMapping).setConverter((XMLConverter)converter);
                 }
             }else{
                 ((XMLCollectionReferenceMapping)nextMapping).setContainerPolicy(getContainerPolicy());
                 ((XMLCollectionReferenceMapping)nextMapping).setReuseContainer(true);
             }
-            
+
             nextMapping.initialize(session);
-        }        
+        }
     }
 
     public Map<Class, XMLField> getClassToFieldMappings() {
@@ -578,8 +578,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     }
 
     public void convertClassNamesToClasses(ClassLoader classLoader) {
-    	Iterator<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet().iterator();
-    	while (entries.hasNext()) {
+        Iterator<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet().iterator();
+        while (entries.hasNext()) {
             Map.Entry<XMLField, String> entry = entries.next();
             String className = entry.getValue();
             Class elementType = null;
@@ -601,7 +601,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
 
             if(fieldToClassMappings.get(entry.getKey()) == null) {
                 fieldToClassMappings.put(entry.getKey(), elementType);
-            }            
+            }
         }
         for(Entry<String, XMLField> next: this.classNameToFieldMappings.entrySet()) {
             String className = next.getKey();
@@ -620,7 +620,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                 throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
             }
             classToFieldMappings.put(elementType, next.getValue());
-        }    	
+        }
         if(classNameToSourceFieldsMappings != null) {
             Iterator<Entry<String, List<XMLField>>> sourceFieldEntries = classNameToSourceFieldsMappings.entrySet().iterator();
             while(sourceFieldEntries.hasNext()) {
@@ -668,7 +668,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
             }
         }
     }
-    
+
     public void addConverter(XMLField field, Converter converter) {
         if(this.fieldsToConverters == null) {
             fieldsToConverters = new HashMap<XMLField, Converter>();
@@ -700,20 +700,20 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     public ArrayList getChoiceFieldToClassAssociations() {
         ArrayList associations = new ArrayList();
         if(this.fieldToClassNameMappings.size() > 0) {
-        	
-        	Set<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet();
-        	Iterator<Entry<XMLField, String>> iter = entries.iterator();
-        	while(iter.hasNext()){
-        		Entry<XMLField, String> nextEntry = iter.next();
-        		XMLField xmlField = nextEntry.getKey();        	            
-                String className = nextEntry.getValue();        	            
+
+            Set<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet();
+            Iterator<Entry<XMLField, String>> iter = entries.iterator();
+            while(iter.hasNext()){
+                Entry<XMLField, String> nextEntry = iter.next();
+                XMLField xmlField = nextEntry.getKey();
+                String className = nextEntry.getValue();
                 XMLChoiceFieldToClassAssociation association = new XMLChoiceFieldToClassAssociation(xmlField, className);
                 associations.add(association);
             }
         }
         return associations;
     }
-    
+
 
     public void setChoiceFieldToClassAssociations(ArrayList associations) {
         if(associations.size() > 0) {
@@ -725,13 +725,13 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                 }
             }
         }
-    }    
-    
-    private void addChoiceElementMapping(XMLField xmlField, String className){              
+    }
+
+    private void addChoiceElementMapping(XMLField xmlField, String className){
          if (xmlField.getLastXPathFragment().nameIsText() || xmlField.getLastXPathFragment().isAttribute()) {
-             XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();             
-             xmlMapping.setAttributeElementClassName(className);             
-             xmlMapping.setField(xmlField);             
+             XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();
+             xmlMapping.setAttributeElementClassName(className);
+             xmlMapping.setField(xmlField);
              xmlMapping.setAttributeAccessor(temporaryAccessor);
              this.choiceElementMappings.put(xmlField, xmlMapping);
              this.choiceElementMappingsByClassName.put(className, xmlMapping);
@@ -745,22 +745,22 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                  this.choiceElementMappings.put(xmlField, xmlMapping);
                  this.choiceElementMappingsByClassName.put(className, xmlMapping);
              } else {
-                 XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();  
+                 XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();
                  if(!className.equals("java.lang.Object")){
                      xmlMapping.setReferenceClassName(className);
-                 }      
+                 }
                  xmlMapping.setField(xmlField);
                  xmlMapping.setAttributeAccessor(temporaryAccessor);
                  this.choiceElementMappings.put(xmlField, xmlMapping);
                  this.choiceElementMappingsByClassName.put(className, xmlMapping);
              }
-         }        
-    }    
-    
+         }
+    }
+
     private void addChoiceElementMapping(XMLField xmlField, Class theClass){
-    
+
         if (xmlField.getLastXPathFragment().nameIsText() || xmlField.getLastXPathFragment().isAttribute()) {
-            XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();            
+            XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();
             xmlMapping.setAttributeElementClass(theClass);
             xmlMapping.setField(xmlField);
             xmlMapping.setAttributeAccessor(temporaryAccessor);
@@ -776,7 +776,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                 this.choiceElementMappings.put(xmlField, xmlMapping);
                 this.choiceElementMappingsByClass.put(theClass, xmlMapping);
             } else {
-                XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();            
+                XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();
                 if(!theClass.equals(ClassConstants.OBJECT)){
                     xmlMapping.setReferenceClass(theClass);
                 }
@@ -785,25 +785,25 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                 this.choiceElementMappings.put(xmlField, xmlMapping);
                 this.choiceElementMappingsByClass.put(theClass, xmlMapping);
             }
-        }        
+        }
     }
-    
+
     public boolean isWriteOnly() {
         return this.isWriteOnly;
     }
-    
+
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
-    
+
     public boolean isAny() {
         return this.isAny;
     }
-    
+
     public void setIsAny(boolean b) {
         this.isAny = b;
     }
-    
+
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
@@ -811,21 +811,21 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         //Collection<XMLMapping> allMappings = new ArrayList<XMLMapping>();
         ArrayList<XMLMapping> mappingsList = new ArrayList<XMLMapping>();
         mappingsList.addAll(getChoiceElementMappings().values());
-        if(isAny){        	
-        	anyMapping = new XMLAnyCollectionMapping();
-        	//if(mixedGroupingElement != null){
-        	//	anyMapping.setField(new XMLField(mixedGroupingElement));
-        	//}
-        	anyMapping.setMixedContent(false);
-        	anyMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
-        	anyMapping.setUseXMLRoot(true);
-        	mappingsList.add(anyMapping);        	
+        if(isAny){
+            anyMapping = new XMLAnyCollectionMapping();
+            //if(mixedGroupingElement != null){
+            //    anyMapping.setField(new XMLField(mixedGroupingElement));
+            //}
+            anyMapping.setMixedContent(false);
+            anyMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+            anyMapping.setUseXMLRoot(true);
+            mappingsList.add(anyMapping);
         }
         for(XMLMapping next:getChoiceElementMappingsByClass().values()) {
             if(!(mappingsList.contains(next))) {
                 mappingsList.add(next);
             }
-        } 
+        }
         for(XMLMapping next:getChoiceElementMappingsByClass().values()) {
             if(!(mappingsList.contains(next))) {
                 mappingsList.add(next);
@@ -834,19 +834,19 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         Iterator<XMLMapping> mappings = mappingsList.iterator();
         while(mappings.hasNext()){
             DatabaseMapping nextMapping = (DatabaseMapping)mappings.next();
-            nextMapping.setAttributeName(this.getAttributeName());         
+            nextMapping.setAttributeName(this.getAttributeName());
             if(nextMapping.getAttributeAccessor() == temporaryAccessor){
-            	nextMapping.setAttributeAccessor(getAttributeAccessor());
+                nextMapping.setAttributeAccessor(getAttributeAccessor());
             }
             nextMapping.setIsReadOnly(this.isReadOnly());
             ((XMLMapping)nextMapping).setIsWriteOnly(this.isWriteOnly());
-            
+
             nextMapping.setDescriptor(getDescriptor());
-            
+
             nextMapping.preInitialize(session);
         }
     }
-    
+
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
@@ -855,37 +855,37 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     }
 
     /**
-     * Return true if the original container on the object should be used if 
+     * Return true if the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public boolean getReuseContainer() {
         return reuseContainer;
     }
 
     /**
-     * Specify whether the original container on the object should be used if 
+     * Specify whether the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
     }
-    
+
     public Map<Class, List<XMLField>> getClassToSourceFieldsMappings() {
         if(this.classToSourceFieldsMappings == null) {
             this.classToSourceFieldsMappings = new HashMap<Class, List<XMLField>>();
         }
         return this.classToSourceFieldsMappings;
     }
-    
+
     private Map<String, List<XMLField>> getClassNameToSourceFieldsMappings() {
         if(this.classNameToSourceFieldsMappings == null) {
             this.classNameToSourceFieldsMappings = new HashMap<String, List<XMLField>>();
         }
         return this.classNameToSourceFieldsMappings;
-    } 
-    
+    }
+
     private boolean isBinaryType(String className) {
         if(className.equals(byte[].class.getName()) || className.equals(Byte[].class.getName()) || className.equals(DATA_HANDLER)
                 || className.equals(IMAGE) || className.equals(MIME_MULTIPART)) {
@@ -893,7 +893,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
         return false;
     }
-    
+
     private boolean isBinaryType(Class theClass) {
         String className = theClass.getName();
         if(className.equals(byte[].class.getName()) || className.equals(Byte[].class.getName()) || className.equals(DATA_HANDLER)
@@ -905,24 +905,24 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
 
     public Map<String, XMLField> getClassNameToFieldMappings() {
         return classNameToFieldMappings;
-    } 
-    
+    }
+
     public boolean isMixedContent() {
        // return this.mixedContentMapping != null;
-    	return isMixedContent;
+        return isMixedContent;
     }
-    
+
     /**
      * PUBLIC:
-     * Allows the user to indicate that this mapping should also allow for mixed content in addition to 
+     * Allows the user to indicate that this mapping should also allow for mixed content in addition to
      * any of the elements in the choice. The grouping element parameter is used in the case that there is
      * a common grouping element to all the other elements in this choice. If so, that grouping element can
      * be specified here to allow the mixed content to be written/detected inside the wrapper element.
      * @since EclipseLink 2.3.1
      */
     public void setMixedContent(String groupingElement) {
-    	isMixedContent = true;
-    	
+        isMixedContent = true;
+
         String xpath = groupingElement;
         if(groupingElement.length() == 0) {
             xpath = "text()";
@@ -930,20 +930,20 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
             xpath += "/" + "text()";
         }
         XMLField field = new XMLField(xpath);
-        XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();             
+        XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();
         Class theClass = ClassConstants.STRING;
-        xmlMapping.setAttributeElementClass(theClass);             
-        xmlMapping.setField(field);             
+        xmlMapping.setAttributeElementClass(theClass);
+        xmlMapping.setField(field);
         xmlMapping.setAttributeAccessor(temporaryAccessor);
         this.mixedContentMapping = xmlMapping;
         this.choiceElementMappings.put(field, xmlMapping);
-        
+
     }
-    
+
     /**
      * PUBLIC:
-     * Allows the user to indicate that this mapping should also allow for mixed content in addition to 
-     * any of the elements in the choice. 
+     * Allows the user to indicate that this mapping should also allow for mixed content in addition to
+     * any of the elements in the choice.
      * @since EclipseLink 2.3.1
      */
     public void setMixedContent(boolean mixed) {
@@ -952,15 +952,15 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         } else {
             setMixedContent("");
         }
-    	isMixedContent = mixed;
+        isMixedContent = mixed;
     }
-    
+
     public XMLCompositeDirectCollectionMapping getMixedContentMapping() {
         return this.mixedContentMapping;
     }
 
     public XMLAnyCollectionMapping getAnyMapping(){
-    	return anyMapping;
+        return anyMapping;
     }
 
     /**
@@ -975,7 +975,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
 
     /**
      * INTERNAL
-     * Indicate whether by default an empty container should be set on the 
+     * Indicate whether by default an empty container should be set on the
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */
@@ -990,14 +990,14 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     public void setWrapperNullPolicy(AbstractNullPolicy policy) {
         this.wrapperNullPolicy = policy;
     }
-    
+
     public Map<Class, XMLMapping> getChoiceElementMappingsByClass() {
         return choiceElementMappingsByClass;
     }
 
     public void setChoiceElementMappingsByClass(Map<Class, XMLMapping> choiceElementMappingsByClass) {
         this.choiceElementMappingsByClass = choiceElementMappingsByClass;
-    }      
+    }
 
     /**
      * INTERNAL

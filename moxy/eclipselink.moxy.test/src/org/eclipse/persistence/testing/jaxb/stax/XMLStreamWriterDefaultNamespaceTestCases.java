@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,8 +35,8 @@ import junit.framework.TestCase;
 public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
 
     public XMLStreamWriterDefaultNamespaceTestCases(String name) {
-		super(name);
-	}
+        super(name);
+    }
 
     public void testDefaultNamespaceOverride() throws Exception {
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
@@ -79,10 +79,10 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
         Marshaller marshaller = ctx.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.marshal(employeeLax, streamWriter);
-        
+
         // Flush the contents of stream writer.
         streamWriter.flush();
-        
+
         String xml = "<?xml version=\"1.0\"?><employee xmlns=\"\">" + testXmlData + "</employee>";
         String xml2 = "<?xml version=\'1.0\'?><employee>" + testXmlData + "</employee>";
 
@@ -100,10 +100,10 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
         EmployeeLax employeeLax = new ObjectFactory().createEmployeeLax();
         Element childElement = parseXml(new ByteArrayInputStream(testXmlData.getBytes()));
         employeeLax.setChild(childElement);
-        
+
         return employeeLax;
     }
-    
+
     protected static Element parseXml(InputStream in) throws Exception {
        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
        docBuilderFactory.setNamespaceAware(true);

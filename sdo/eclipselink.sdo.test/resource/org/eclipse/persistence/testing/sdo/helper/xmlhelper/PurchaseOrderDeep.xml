@@ -20,27 +20,27 @@
          <productName>Lawnmower</productName>
          <quantity>1</quantity>
          <USPrice>148.95</USPrice>
-		 <!-- levels2 = null fails assertTrue here -->
-		 <levels2>
-			<level2>
-			</level2>
-			<level2>
-				<comment2>comment 1</comment2>
-			</level2>
-		 </levels2>
+         <!-- levels2 = null fails assertTrue here -->
+         <levels2>
+            <level2>
+            </level2>
+            <level2>
+                <comment2>comment 1</comment2>
+            </level2>
+         </levels2>
          <comment>Confirm this is electric2</comment>
       </item>
       <item partNum="926-AA">
          <productName>Baby Monitor</productName>
          <quantity>1</quantity>
          <USPrice>39.99</USPrice>
-		 <levels2>
-			<level2>
-			</level2>
-			<level2>
-				<comment2>comment 2</comment2>
-			</level2>
-		 </levels2>
+         <levels2>
+            <level2>
+            </level2>
+            <level2>
+                <comment2>comment 2</comment2>
+            </level2>
+         </levels2>
          <shipDate>1999-05-21</shipDate>
       </item>
    </items>

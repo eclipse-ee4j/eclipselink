@@ -13,7 +13,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 
 /**
  * Entity implementation class for Entity: BranchA
- * 
+ *
  */
 @Entity
 public class BranchA implements Serializable, PersistentIdentity {
@@ -85,7 +85,7 @@ public class BranchA implements Serializable, PersistentIdentity {
         this.leafs = new ArrayList<LeafA>();
         this.secondSet = new ArrayList<LeafA>();
     }
-    
+
     /**
      * @return the secondSet
      */

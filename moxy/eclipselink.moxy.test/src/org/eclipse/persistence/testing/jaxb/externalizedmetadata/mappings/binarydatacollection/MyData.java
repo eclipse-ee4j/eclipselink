@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,7 +24,7 @@ public class MyData {
     public boolean wasGetCalled;
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
-    
+
     public List<byte[]> getBytes() {
         wasGetCalled = true;
         return bytes;
@@ -46,7 +46,7 @@ public class MyData {
             if (mdObj.bytes != null) {
                 return false;
             }
-        } else { 
+        } else {
             if (mdObj.bytes == null) {
                 return false;
             }
@@ -60,7 +60,7 @@ public class MyData {
             if (mdObj.readOnlyBytes != null) {
                 return false;
             }
-        } else { 
+        } else {
             if (mdObj.readOnlyBytes == null) {
                 return false;
             }

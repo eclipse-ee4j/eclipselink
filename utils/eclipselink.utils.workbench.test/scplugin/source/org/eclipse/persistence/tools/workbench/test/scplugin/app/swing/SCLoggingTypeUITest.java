@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -44,142 +44,142 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  */
 public class SCLoggingTypeUITest extends SCSessionUITest {
 
-	private final static String STANDARD = "Standard";
-	private final static String JAVA = "Java";
-	private static List loggingTypeSelections;
+    private final static String STANDARD = "Standard";
+    private final static String JAVA = "Java";
+    private static List loggingTypeSelections;
 
-	private PropertyValueModel selectionHolder;
-	private ComboBoxModel comboBoxModel;
+    private PropertyValueModel selectionHolder;
+    private ComboBoxModel comboBoxModel;
 
-	public static void main( String[] args) throws Exception {
-		new SCLoggingTypeUITest().exec( args);
-	}
+    public static void main( String[] args) throws Exception {
+        new SCLoggingTypeUITest().exec( args);
+    }
 
-	private SCLoggingTypeUITest() {
-		super();
-	}
+    private SCLoggingTypeUITest() {
+        super();
+    }
 
-	protected String windowTitle() {
-		return "Select a Logging Type:";
-	}
+    protected String windowTitle() {
+        return "Select a Logging Type:";
+    }
 
-	private void exec( String[] args) throws Exception {
+    private void exec( String[] args) throws Exception {
 
-		super.setUp();
+        super.setUp();
 
-		selectionHolder = this.buildSelectionHolder( subjectHolder());
+        selectionHolder = this.buildSelectionHolder( subjectHolder());
 
-		comboBoxModel =
-			this.buildComboBoxModelAdapter( this.buildListHolder(), selectionHolder);
+        comboBoxModel =
+            this.buildComboBoxModelAdapter( this.buildListHolder(), selectionHolder);
 
-		this.openWindow();
-	}
+        this.openWindow();
+    }
 
-	private ComboBoxModel buildComboBoxModelAdapter( ListValueModel listHolder, PropertyValueModel selectionHolder) {
+    private ComboBoxModel buildComboBoxModelAdapter( ListValueModel listHolder, PropertyValueModel selectionHolder) {
 
-		return new ComboBoxModelAdapter( listHolder, selectionHolder);
-	}
+        return new ComboBoxModelAdapter( listHolder, selectionHolder);
+    }
 
-	protected Component buildPropertyTestingPanel() {
+    protected Component buildPropertyTestingPanel() {
 
-		JPanel propertyListPanel = new JPanel( new GridLayout( 1, 0));
-		propertyListPanel.add( this.buildComboBox());
-		propertyListPanel.add( this.buildComboBox());
-		return propertyListPanel;
-	}
+        JPanel propertyListPanel = new JPanel( new GridLayout( 1, 0));
+        propertyListPanel.add( this.buildComboBox());
+        propertyListPanel.add( this.buildComboBox());
+        return propertyListPanel;
+    }
 
-	private JComboBox buildComboBox() {
+    private JComboBox buildComboBox() {
 
-		JComboBox comboBox = new JComboBox( comboBoxModel);
-		comboBox.setRenderer( buildLoggingListCellRenderer());
-		return comboBox;
-	}
-	
-	protected void printModel() {
-		System.out.println( "subject.log( "+ subject().getLog().displayString() + " )");
-	}
+        JComboBox comboBox = new JComboBox( comboBoxModel);
+        comboBox.setRenderer( buildLoggingListCellRenderer());
+        return comboBox;
+    }
 
-	protected void resetProperty() {
+    protected void printModel() {
+        System.out.println( "subject.log( "+ subject().getLog().displayString() + " )");
+    }
 
-		subject().setDefaultLogging();
-	}
+    protected void resetProperty() {
 
-	private ListValueModel buildListHolder() {
+        subject().setDefaultLogging();
+    }
 
-		return new SimpleListValueModel( getLoggingTypeSelections());
-	}
-	
-	private ListCellRenderer buildLoggingListCellRenderer() {
+    private ListValueModel buildListHolder() {
 
-		return new SimpleListCellRenderer() {
+        return new SimpleListValueModel( getLoggingTypeSelections());
+    }
 
-			protected String buildText( Object value) {
-				return( value == null) ? "" : (( ComboBoxSelection)value).displayString();
-			}
-		};
-	}
+    private ListCellRenderer buildLoggingListCellRenderer() {
 
-	private PropertyValueModel buildSelectionHolder( ValueModel subjectHolder) {
+        return new SimpleListCellRenderer() {
 
-		return new PropertyAspectAdapter( subjectHolder, SessionAdapter.LOG_CONFIG_PROPERTY) {
-			
-			protected Object getValueFromSubject() {
-				LogAdapter log = (( SessionAdapter)subject).getLog();
-				return SCLoggingTypeUITest.this.getComboBoxSelectionFor( log);
-			}
-			protected void setValueOnSubject( Object value) {
-				(( ComboBoxSelection)value).setPropertyOn( subject());
+            protected String buildText( Object value) {
+                return( value == null) ? "" : (( ComboBoxSelection)value).displayString();
+            }
+        };
+    }
 
-			}
-		};
-	}
-	
-	private ComboBoxSelection getComboBoxSelectionFor( LogAdapter log) {
+    private PropertyValueModel buildSelectionHolder( ValueModel subjectHolder) {
 
-		if( log instanceof DefaultSessionLogAdapter) {
-			return getComboBoxSelectionNamed( STANDARD);
-		}
-		else if( log instanceof JavaLogAdapter) {
-			return getComboBoxSelectionNamed( JAVA);
-		}
-		return null;
-	}
-	
-	private ComboBoxSelection getComboBoxSelectionNamed( String displayString) {
+        return new PropertyAspectAdapter( subjectHolder, SessionAdapter.LOG_CONFIG_PROPERTY) {
 
-		for( Iterator i = getLoggingTypeSelections().iterator(); i.hasNext(); ) {
-			ComboBoxSelection item = ( ComboBoxSelection)i.next();
-				
-			if( item.displayString().equalsIgnoreCase( displayString))
-				return item;
-		}
-		throw new NoSuchElementException( displayString);
-	}
-	
-	protected List getLoggingTypeSelections() {
-		if( loggingTypeSelections == null) {
-			loggingTypeSelections = CollectionTools.list( buildLoggingTypes());
-		}
-		return loggingTypeSelections;
-	}
-	/**
-	 * Returns the possible values for the property logConfig.
-	 */
-	private Object[] buildLoggingTypes() {
+            protected Object getValueFromSubject() {
+                LogAdapter log = (( SessionAdapter)subject).getLog();
+                return SCLoggingTypeUITest.this.getComboBoxSelectionFor( log);
+            }
+            protected void setValueOnSubject( Object value) {
+                (( ComboBoxSelection)value).setPropertyOn( subject());
 
-		Object[] loggingTypes = { 
-			new ComboBoxSelection( STANDARD) {
-					public void setPropertyOn( Object session) {
-						(( SessionAdapter)session).setDefaultLogging();		
-					}	
-				},
-			new ComboBoxSelection( JAVA) {
-					public void setPropertyOn( Object session) {
-						(( SessionAdapter)session).setJavaLogging();		
-					}	
-				}
-			};
-		return loggingTypes;
-	}
+            }
+        };
+    }
+
+    private ComboBoxSelection getComboBoxSelectionFor( LogAdapter log) {
+
+        if( log instanceof DefaultSessionLogAdapter) {
+            return getComboBoxSelectionNamed( STANDARD);
+        }
+        else if( log instanceof JavaLogAdapter) {
+            return getComboBoxSelectionNamed( JAVA);
+        }
+        return null;
+    }
+
+    private ComboBoxSelection getComboBoxSelectionNamed( String displayString) {
+
+        for( Iterator i = getLoggingTypeSelections().iterator(); i.hasNext(); ) {
+            ComboBoxSelection item = ( ComboBoxSelection)i.next();
+
+            if( item.displayString().equalsIgnoreCase( displayString))
+                return item;
+        }
+        throw new NoSuchElementException( displayString);
+    }
+
+    protected List getLoggingTypeSelections() {
+        if( loggingTypeSelections == null) {
+            loggingTypeSelections = CollectionTools.list( buildLoggingTypes());
+        }
+        return loggingTypeSelections;
+    }
+    /**
+     * Returns the possible values for the property logConfig.
+     */
+    private Object[] buildLoggingTypes() {
+
+        Object[] loggingTypes = {
+            new ComboBoxSelection( STANDARD) {
+                    public void setPropertyOn( Object session) {
+                        (( SessionAdapter)session).setDefaultLogging();
+                    }
+                },
+            new ComboBoxSelection( JAVA) {
+                    public void setPropertyOn( Object session) {
+                        (( SessionAdapter)session).setJavaLogging();
+                    }
+                }
+            };
+        return loggingTypes;
+    }
 
 }

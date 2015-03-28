@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import java.lang.reflect.Method;
@@ -34,15 +34,15 @@ public class ProjectClassGeneratorUnicodeTest extends AutoVerifyTestCase {
     }
 
     protected void setup() throws Exception {
-        org.eclipse.persistence.sessions.Project initialProject = 
+        org.eclipse.persistence.sessions.Project initialProject =
             new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
         initialProject.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class).getMappingForAttributeName("firstName").setAttributeName("\u5E08\u592B");
-        ProjectClassGenerator generator = 
+        ProjectClassGenerator generator =
             new ProjectClassGenerator(initialProject, PROJECT_FILE, PROJECT_FILE + ".java");
         generator.generate();
 
         try {
-        	Object[] params = new Object[1];
+            Object[] params = new Object[1];
             String[] source = { PROJECT_FILE + ".java" };
             params[0] = source;
             // done reflectively to remove dependancy on tools jar
@@ -53,7 +53,7 @@ public class ProjectClassGeneratorUnicodeTest extends AutoVerifyTestCase {
            int result = ((Integer)method.invoke(null, params)).intValue();
            if (result != 0) {
                throw new TestErrorException("Project class generation compile failed. This could either be a legitimate compile " +
-                		"failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
+                        "failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
             }
             Class projectClass = Class.forName(PROJECT_FILE);
             unicodeProject = (org.eclipse.persistence.sessions.Project)projectClass.newInstance();
@@ -63,7 +63,7 @@ public class ProjectClassGeneratorUnicodeTest extends AutoVerifyTestCase {
     }
 
     public void test() {
-        unicodeMap = 
+        unicodeMap =
                 unicodeProject.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class).getMappingForAttributeName("\u5E08\u592B");
     }
 

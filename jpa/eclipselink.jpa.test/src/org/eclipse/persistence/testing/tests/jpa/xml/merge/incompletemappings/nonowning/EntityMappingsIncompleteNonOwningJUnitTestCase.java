@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.tests.jpa.xml.merge.incompletemappings.nonowning;
@@ -33,17 +33,17 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
     private static Integer customerId;
     private static Integer itemId;
     private static Integer orderId;
-    
+
     public EntityMappingsIncompleteNonOwningJUnitTestCase() {
         super();
     }
-    
+
     public EntityMappingsIncompleteNonOwningJUnitTestCase(String name) {
         super(name);
     }
-    
+
     public void setUp() {try{super.setUp();}catch(Exception x){}}
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite("Non-owning Model");
         suite.addTest(new EntityMappingsIncompleteNonOwningJUnitTestCase("testSetup"));
@@ -62,10 +62,10 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
         suite.addTest(new EntityMappingsIncompleteNonOwningJUnitTestCase("testDeleteOrder"));
         suite.addTest(new EntityMappingsIncompleteNonOwningJUnitTestCase("testDeleteCustomer"));
         suite.addTest(new EntityMappingsIncompleteNonOwningJUnitTestCase("testDeleteItem"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -74,7 +74,7 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
         new RelationshipsTableManager().replaceTables(session);
         clearCache();
     }
-    
+
     public void testCreateCustomer() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -86,7 +86,7 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
             billingAddress.setCustomer(customer);
             em.persist(customer);
             customerId = customer.getCustomerId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -94,9 +94,9 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
             closeEntityManager(em);
             throw e;
         }
-        closeEntityManager(em);        
+        closeEntityManager(em);
     }
-    
+
     public void testCreateItem() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -106,7 +106,7 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
             em.persist(pl);
             PartsList pl2 = new PartsList();
             em.persist(pl2);
-            
+
             java.util.ArrayList partsLists = new java.util.ArrayList();
             partsLists.add(pl);
             partsLists.add(pl2);
@@ -142,7 +142,7 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
             order.setItem(item);
             em.persist(order);
             orderId = order.getOrderId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -205,7 +205,7 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
         Customer customer = createEntityManager().find(Customer.class, customerId);
         assertTrue("Error reading Customer", customer.getCustomerId() == customerId);
     }
-    
+
     public void testReadItem() {
         Item item = createEntityManager().find(Item.class, itemId);
         assertTrue("Error reading Item", item.getItemId() == itemId);
@@ -245,7 +245,7 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
             em.persist(pl);
             java.util.ArrayList partsLists = new java.util.ArrayList();
             partsLists.add(pl);
-            
+
             Item item = em.find(Item.class, itemId);
             item.setDescription("A Widget");
             item.setImage(new byte[1280]);

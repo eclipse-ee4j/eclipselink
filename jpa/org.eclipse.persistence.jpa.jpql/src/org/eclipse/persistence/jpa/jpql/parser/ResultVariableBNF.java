@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,34 +22,34 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public final class ResultVariableBNF extends JPQLQueryBNF {
 
-	/**
-	 * The unique identifier of this BNF rule, which is the same as {@link InternalSelectExpressionBNF#ID}
-	 * in order to override it.
-	 */
-	public static final String ID = InternalSelectExpressionBNF.ID;
+    /**
+     * The unique identifier of this BNF rule, which is the same as {@link InternalSelectExpressionBNF#ID}
+     * in order to override it.
+     */
+    public static final String ID = InternalSelectExpressionBNF.ID;
 
-	/**
-	 * Creates a new <code>ResultVariableBNF</code>.
-	 */
-	public ResultVariableBNF() {
-		super(ID);
-	}
+    /**
+     * Creates a new <code>ResultVariableBNF</code>.
+     */
+    public ResultVariableBNF() {
+        super(ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initialize() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initialize() {
 
-		super.initialize();
+        super.initialize();
 
-		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(ResultVariableFactory.ID);
-		registerChild(SelectExpressionBNF.ID);
+        setFallbackBNFId(ID);
+        setFallbackExpressionFactoryId(ResultVariableFactory.ID);
+        registerChild(SelectExpressionBNF.ID);
 
-		// The ResultVariable's BNF is this one so it needs to be registered as a child of itself.
-		// This is required for validation to work properly. Basically, when checking if the select
-		// expression is valid, it checks its BNF with the non-compound children of this one
-		registerChild(ResultVariableBNF.ID);
-	}
+        // The ResultVariable's BNF is this one so it needs to be registered as a child of itself.
+        // This is required for validation to work properly. Basically, when checking if the select
+        // expression is valid, it checks its BNF with the non-compound children of this one
+        registerChild(ResultVariableBNF.ID);
+    }
 }

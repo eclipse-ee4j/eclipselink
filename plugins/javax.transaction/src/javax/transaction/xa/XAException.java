@@ -1,31 +1,31 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
 package javax.transaction.xa;
 
 /**
- * The XAException is thrown by the Resource Manager (RM) to inform the 
- * Transaction Manager of an error encountered by the involved 
+ * The XAException is thrown by the Resource Manager (RM) to inform the
+ * Transaction Manager of an error encountered by the involved
  * transaction.
  */
 public class XAException extends java.lang.Exception {
@@ -43,20 +43,20 @@ public class XAException extends java.lang.Exception {
      */
     public XAException()
     {
-    	super();
-    }    
-    
+        super();
+    }
+
     /**
      * Create an XAException with a given string.
      *
      * @param s The <code>String</code> object containing the exception
-     *		message.
+     *        message.
      */
     public XAException(String s)
     {
-    	super(s);
+        super(s);
     }
-    
+
     /**
      * Create an XAException with a given error code.
      *
@@ -64,8 +64,8 @@ public class XAException extends java.lang.Exception {
      */
     public XAException(int errcode)
     {
-    	super();
-    	errorCode = errcode;
+        super();
+        errorCode = errcode;
     }
 
     /**
@@ -140,7 +140,7 @@ public class XAException extends java.lang.Exception {
     public final static int XA_HEURRB = 6;
 
     /**
-     * The transaction branch has been heuristically committed and 
+     * The transaction branch has been heuristically committed and
      * rolled back.
      */
     public final static int XA_HEURMIX = 5;
@@ -195,5 +195,5 @@ public class XAException extends java.lang.Exception {
      */
     public final static int XAER_OUTSIDE = -9;
 
-   
+
 }

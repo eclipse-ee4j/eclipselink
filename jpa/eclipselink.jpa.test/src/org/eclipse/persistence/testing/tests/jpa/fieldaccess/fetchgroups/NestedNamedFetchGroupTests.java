@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
+ *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
@@ -47,25 +47,25 @@ public class NestedNamedFetchGroupTests extends BaseFetchGroupTests {
     public static junit.framework.Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("NestedNamedFetchGroupTests");
-        
+
         suite.addTest(new NestedNamedFetchGroupTests("testSetup"));
         suite.addTest(new NestedNamedFetchGroupTests("dynamicFetchGroup_EmployeeAddress"));
         suite.addTest(new NestedNamedFetchGroupTests("dynamicFetchGroup_Employee_NullAddress"));
         suite.addTest(new NestedNamedFetchGroupTests("dynamicFetchGroup_EmployeeAddressNullPhone"));
         suite.addTest(new NestedNamedFetchGroupTests("dynamicFetchGroup_EmployeeAddressEmptyPhone"));
         suite.addTest(new NestedNamedFetchGroupTests("dynamicHierarchicalFetchGroup"));
-        
+
         return suite;
     }
-    
+
     /*
-     * Set default fetch groups. 
-     * 
+     * Set default fetch groups.
+     *
      * @see PhoneCustomizer
      */
     public void setUp() {
         super.setUp();
-        
+
         try {
             (new PhoneCustomizer()).customize(phoneDescriptor);
             // reprepare read queries after all fetch groups set into all descriptors.

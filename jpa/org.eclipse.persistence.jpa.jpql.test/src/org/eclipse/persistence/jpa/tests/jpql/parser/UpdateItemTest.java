@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,72 +19,72 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 @SuppressWarnings("nls")
 public final class UpdateItemTest extends JPQLParserTest {
 
-	private JPQLQueryStringFormatter buildQueryFormatter_1() {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace("AVG", "avg");
-			}
-		};
-	}
+    private JPQLQueryStringFormatter buildQueryFormatter_1() {
+        return new JPQLQueryStringFormatter() {
+            public String format(String query) {
+                return query.replace("AVG", "avg");
+            }
+        };
+    }
 
-	@Test
-	public void test_JPQLQuery_01() {
+    @Test
+    public void test_JPQLQuery_01() {
 
-		String jpqlQuery = "UPDATE Employee e SET e.name = 'Pascal'";
+        String jpqlQuery = "UPDATE Employee e SET e.name = 'Pascal'";
 
-		UpdateStatementTester updateStatement = updateStatement(
-			update(
-				"Employee", "e",
-				set("e.name", string("'Pascal'"))
-			)
-		);
+        UpdateStatementTester updateStatement = updateStatement(
+            update(
+                "Employee", "e",
+                set("e.name", string("'Pascal'"))
+            )
+        );
 
-		testQuery(jpqlQuery, updateStatement);
-	}
+        testQuery(jpqlQuery, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_02() {
+    @Test
+    public void test_JPQLQuery_02() {
 
-		String jpqlQuery = "UPDATE Employee e SET e.name = 'Pascal', e.manager.salary = 100000";
+        String jpqlQuery = "UPDATE Employee e SET e.name = 'Pascal', e.manager.salary = 100000";
 
-		UpdateStatementTester updateStatement = updateStatement(
-			update(
-				"Employee", "e",
-				set("e.name", string("'Pascal'")),
-				set("e.manager.salary", numeric(100000))
-			)
-		);
+        UpdateStatementTester updateStatement = updateStatement(
+            update(
+                "Employee", "e",
+                set("e.name", string("'Pascal'")),
+                set("e.manager.salary", numeric(100000))
+            )
+        );
 
-		testQuery(jpqlQuery, updateStatement);
-	}
+        testQuery(jpqlQuery, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_03() {
+    @Test
+    public void test_JPQLQuery_03() {
 
-		String jpqlQuery = "UPDATE Employee SET AVG(2) = 'Pascal'";
+        String jpqlQuery = "UPDATE Employee SET AVG(2) = 'Pascal'";
 
-		UpdateStatementTester updateStatement = updateStatement(
-			update(
-				"Employee",
-				set(bad(avg(numeric(2))), string("'Pascal'"))
-			)
-		);
+        UpdateStatementTester updateStatement = updateStatement(
+            update(
+                "Employee",
+                set(bad(avg(numeric(2))), string("'Pascal'"))
+            )
+        );
 
-		testInvalidQuery(jpqlQuery, updateStatement);
-	}
+        testInvalidQuery(jpqlQuery, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_04() {
+    @Test
+    public void test_JPQLQuery_04() {
 
-		String jpqlQuery = "UPDATE Employee SET avg = 'Pascal'";
+        String jpqlQuery = "UPDATE Employee SET avg = 'Pascal'";
 
-		UpdateStatementTester updateStatement = updateStatement(
-			update(
-				"Employee",
-				set("{employee}.avg", string("'Pascal'"))
-			)
-		);
+        UpdateStatementTester updateStatement = updateStatement(
+            update(
+                "Employee",
+                set("{employee}.avg", string("'Pascal'"))
+            )
+        );
 
-		testInvalidQuery(jpqlQuery, updateStatement, buildQueryFormatter_1());
-	}
+        testInvalidQuery(jpqlQuery, updateStatement, buildQueryFormatter_1());
+    }
 }

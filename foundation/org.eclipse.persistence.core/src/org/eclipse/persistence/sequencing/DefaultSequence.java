@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sequencing;
 
 import java.util.Vector;
@@ -37,7 +37,7 @@ public class DefaultSequence extends Sequence {
     public DefaultSequence(String name) {
         super(name, 0);
     }
-    
+
     /**
      * Create a new sequence with the name and sequence pre-allocation size.
      */
@@ -48,7 +48,7 @@ public class DefaultSequence extends Sequence {
     public DefaultSequence(String name, int size, int initialValue) {
         super(name, size, initialValue);
     }
-    
+
     /**
      * INTERNAL:
      * Return the platform's default sequence.
@@ -104,7 +104,7 @@ public class DefaultSequence extends Sequence {
     public boolean shouldAlwaysOverrideExistingValue(String seqName) {
         return this.shouldAlwaysOverrideExistingValue || getDefaultSequence().shouldAlwaysOverrideExistingValue(seqName);
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether several sequencing values should be acquired at a time
@@ -188,7 +188,7 @@ public class DefaultSequence extends Sequence {
     public boolean isConnected() {
         return getDefaultSequence().isConnected();
     }
-    
+
     /**
      * INTERNAL:
      * Ignored, getDefaultSequence().getQualifier() used instead.

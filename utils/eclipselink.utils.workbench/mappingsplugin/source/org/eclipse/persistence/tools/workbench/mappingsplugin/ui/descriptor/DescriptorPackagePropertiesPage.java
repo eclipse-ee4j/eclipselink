@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -44,84 +44,84 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.AdaptableListCellRen
  * is selected simply lists the descriptors in a list box
  */
 final class DescriptorPackagePropertiesPage
-	extends TitledPropertiesPage
+    extends TitledPropertiesPage
 {
-	private ListModelAdapter descriptorListModel;
+    private ListModelAdapter descriptorListModel;
 
-	// this value is queried reflectively during plug-in initialization
-	private static final Class[] REQUIRED_RESOURCE_BUNDLES = new Class[] {
-		UiCommonBundle.class,
-		UiDescriptorBundle.class
-	};
+    // this value is queried reflectively during plug-in initialization
+    private static final Class[] REQUIRED_RESOURCE_BUNDLES = new Class[] {
+        UiCommonBundle.class,
+        UiDescriptorBundle.class
+    };
 
 
-	DescriptorPackagePropertiesPage(WorkbenchContext context) {
-		super(context);
-	}
+    DescriptorPackagePropertiesPage(WorkbenchContext context) {
+        super(context);
+    }
 
-	protected void initialize(PropertyValueModel nodeHolder) {
-		super.initialize(nodeHolder);
-		nodeHolder.addPropertyChangeListener(ValueModel.VALUE, this.buildNodeListener());
-		this.descriptorListModel = this.buildDescriptorListModel();
-	}
+    protected void initialize(PropertyValueModel nodeHolder) {
+        super.initialize(nodeHolder);
+        nodeHolder.addPropertyChangeListener(ValueModel.VALUE, this.buildNodeListener());
+        this.descriptorListModel = this.buildDescriptorListModel();
+    }
 
-	private PropertyChangeListener buildNodeListener() {
-		return new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent evt) {
-				DescriptorPackagePropertiesPage.this.nodeChanged();
-			}
-		};
-	}
+    private PropertyChangeListener buildNodeListener() {
+        return new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+                DescriptorPackagePropertiesPage.this.nodeChanged();
+            }
+        };
+    }
 
-	private ListModelAdapter buildDescriptorListModel() {
-		return new ListModelAdapter(this.buildDescriptorLVM());
-	}
+    private ListModelAdapter buildDescriptorListModel() {
+        return new ListModelAdapter(this.buildDescriptorLVM());
+    }
 
-	protected Component buildPage() {
-		JPanel page = new JPanel(new BorderLayout());
-		page.setBorder(new EmptyBorder(5, 5, 5, 5));
+    protected Component buildPage() {
+        JPanel page = new JPanel(new BorderLayout());
+        page.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-		JList descriptorListBox = SwingComponentFactory.buildList(this.descriptorListModel);
-		descriptorListBox.setBackground(UIManager.getColor("Panel.background"));
-		descriptorListBox.setSelectionBackground(UIManager.getColor("Panel.background"));
-		descriptorListBox.setCellRenderer(this.buildDescriptorListCellRenderer());
-		page.add(descriptorListBox, BorderLayout.CENTER);
+        JList descriptorListBox = SwingComponentFactory.buildList(this.descriptorListModel);
+        descriptorListBox.setBackground(UIManager.getColor("Panel.background"));
+        descriptorListBox.setSelectionBackground(UIManager.getColor("Panel.background"));
+        descriptorListBox.setCellRenderer(this.buildDescriptorListCellRenderer());
+        page.add(descriptorListBox, BorderLayout.CENTER);
 
-		return page;
-	}
-	
-	private ListCellRenderer buildDescriptorListCellRenderer() {
-		return new AdaptableListCellRenderer(
-				new DescriptorCellRendererAdapter(this.resourceRepository()) {
-					// no need for the package name
-					protected String buildNonNullValueText(Object value) {
-						return ((MWDescriptor) value).displayString();
-					}
-					public String toString() {
-						return "descriptor cell renderer";
-					}
-				}
-			);
-	}
+        return page;
+    }
 
-	/**
-	 * when the node changes, swap in a new list of descriptors
-	 */
-	void nodeChanged() {
-		this.descriptorListModel.setModel(this.buildDescriptorLVM());
-	}
+    private ListCellRenderer buildDescriptorListCellRenderer() {
+        return new AdaptableListCellRenderer(
+                new DescriptorCellRendererAdapter(this.resourceRepository()) {
+                    // no need for the package name
+                    protected String buildNonNullValueText(Object value) {
+                        return ((MWDescriptor) value).displayString();
+                    }
+                    public String toString() {
+                        return "descriptor cell renderer";
+                    }
+                }
+            );
+    }
 
-	private ListValueModel buildDescriptorLVM() {
-		return new TransformationListValueModelAdapter(this.buildDescriptorNodeLVM()) {
-			protected Object transformItem(Object item) {
-				return ((DescriptorNode) item).getDescriptor();
-			}
-		};
-	}
+    /**
+     * when the node changes, swap in a new list of descriptors
+     */
+    void nodeChanged() {
+        this.descriptorListModel.setModel(this.buildDescriptorLVM());
+    }
 
-	private ListValueModel buildDescriptorNodeLVM() {
-		ApplicationNode node = this.getNode();
-		return (node == null) ? NullListValueModel.instance() : node.getChildrenModel();
-	}
+    private ListValueModel buildDescriptorLVM() {
+        return new TransformationListValueModelAdapter(this.buildDescriptorNodeLVM()) {
+            protected Object transformItem(Object item) {
+                return ((DescriptorNode) item).getDescriptor();
+            }
+        };
+    }
+
+    private ListValueModel buildDescriptorNodeLVM() {
+        ApplicationNode node = this.getNode();
+        return (node == null) ? NullListValueModel.instance() : node.getChildrenModel();
+    }
 
 }

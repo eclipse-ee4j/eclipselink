@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.nondeferredwrites;
 
 import java.util.Vector;
@@ -99,7 +99,7 @@ public class EmployeeDescriptorEventListener implements DescriptorEventListener 
     }
 
     /**
-     * Implementers should define this method if they need or want to restrict 
+     * Implementers should define this method if they need or want to restrict
      * the calling of inherited events.
      */
     public boolean isOverriddenEvent(DescriptorEvent event, Vector eventManagers) {
@@ -114,10 +114,10 @@ public class EmployeeDescriptorEventListener implements DescriptorEventListener 
     }
 
     /**
-     * This event is raised before an object is updated regardless if the object 
-     * has any database changes. This event was created to support EJB 3.0 
-     * events. The object in this case will not have a row accessible from the 
-     * event. For objects that have database changes, an aboutToUpdate will also 
+     * This event is raised before an object is updated regardless if the object
+     * has any database changes. This event was created to support EJB 3.0
+     * events. The object in this case will not have a row accessible from the
+     * event. For objects that have database changes, an aboutToUpdate will also
      * be triggered.
      */
     public void preUpdateWithChanges(DescriptorEvent event) {

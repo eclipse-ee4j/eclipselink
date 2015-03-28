@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -50,14 +50,14 @@ public class ProjectXMLDatabaseTableNameTest extends AutoVerifyTestCase {
         XMLProjectWriter.write(TEMP_FILE, project1);
 
         Project project2 = XMLProjectReader.read(TEMP_FILE, getClass().getClassLoader());
-        m_tableNameAfterWrite = 
+        m_tableNameAfterWrite =
                 project2.getDescriptor(Address.class).getTable(m_tableNameBeforeWrite).getQualifiedName();
     }
 
     protected void verify() {
         if (!m_tableNameAfterWrite.equals(TABLE_NAME_QUALIFIER + "." + m_tableNameBeforeWrite)) {
-            throw new TestErrorException("The table name was incorrectly written out. Expected: " + 
-                                         TABLE_NAME_QUALIFIER + "." + m_tableNameBeforeWrite + ", wrote: " + 
+            throw new TestErrorException("The table name was incorrectly written out. Expected: " +
+                                         TABLE_NAME_QUALIFIER + "." + m_tableNameBeforeWrite + ", wrote: " +
                                          m_tableNameAfterWrite);
         }
     }

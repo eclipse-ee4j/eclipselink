@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.defineandgenerate;
 
@@ -30,18 +30,18 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 
 public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndGenerateTestCases {
-	
+
     public static final String URINAME = "http://www.example.org";
     public static final String COMPANY_TYPENAME = "Company";
     public static final String PO_TYPENAME = "PurchaseOrder";
     public static final String CUSTOMER_TYPENAME = "Customer";
     public static final String ADDRESS_TYPENAME = "USAddress";
     public static final String ITEM_TYPENAME = "Item";
-    
+
     //public static final String XML_PATH = "org/eclipse/persistence/testing/sdo/helper/xsdhelper/CompanyWithBidirectionalNS.xml";
     public static final String XML_PATH = "org/eclipse/persistence/testing/sdo/helper/xsdhelper/CompanyWithBidirectional.xml";
-    public static final String XSD_PATH = "org/eclipse/persistence/testing/sdo/schemas/CompanyWithBidirectional.xsd";    
-	
+    public static final String XSD_PATH = "org/eclipse/persistence/testing/sdo/schemas/CompanyWithBidirectional.xsd";
+
     protected DataObject root;
     protected ChangeSummary cs;
     protected Type stringType;
@@ -49,8 +49,8 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
     protected Type yearMonthDayType;
     protected Type decimalType;
     protected Type idType;
-    
-    
+
+
     public DefineAndGenerateBidirectionalTestCases(String name) {
         super(name);
     }
@@ -61,21 +61,21 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         dateType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATE);
         yearMonthDayType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.YEARMONTHDAY);
         decimalType = SDOConstants.SDO_DECIMAL;
-        idType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.ID);     
+        idType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.ID);
     }
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xsdhelper.defineandgenerate.DefineAndGenerateBidirectionalTestCases" };
         TestRunner.main(arguments);
     }
-    
+
     protected String getControlRootURI() {
         return URINAME;
     }
-    
+
     protected String getControlRootName() {
         return "company";
     }
-    
+
     public String getSchemaToDefine() {
         return XSD_PATH;
     }
@@ -88,40 +88,40 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         return getControlTypes();
     }
 
-	public static String getXSDString(String filename) {
-		try {
-			FileInputStream inStream = new FileInputStream(filename);
-			byte[] bytes = new byte[inStream.available()];
-			inStream.read(bytes);
-			return new String(bytes);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-    
+    public static String getXSDString(String filename) {
+        try {
+            FileInputStream inStream = new FileInputStream(filename);
+            byte[] bytes = new byte[inStream.available()];
+            inStream.read(bytes);
+            return new String(bytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * This function will define control types programmatically to compare to XSD definition
      * by using the standard spec SDODataObject generation method on page
-     * 
+     *
      * The existing getControlTypes() uses non-public Property constructors
      * @throws Exception
      */
     public void testDefineAndGenerateUsingSpecMethod() throws Exception {
-    	boolean useXSD = false;
-    	List types;
-    	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
-    	
+        boolean useXSD = false;
+        List types;
+        DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
+
         if(useXSD) {
            // InputStream is = getSchemaInputStream(getSchemaToDefine());
             //List types = xsdHelper.define(is, getSchemaLocation());
-        	types = xsdHelper.define(getXSDString(XSD_PATH));
+            types = xsdHelper.define(getXSDString(XSD_PATH));
         //compareGeneratedTypes(getControlTypesViaSpecMethod(), types);
         } else {
-        	registerTypes();
-        	types = getTypesToGenerateFrom();
+            registerTypes();
+            types = getTypesToGenerateFrom();
         }
-       
+
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         log(generatedSchema);
 
@@ -135,108 +135,108 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
 //        reader.close();
 
         try {
-        	root = createRootObject(true, types);//false, types);
+            root = createRootObject(true, types);//false, types);
         } catch (Exception e) {
-        	// SDOTestCase will currently throw a fail()
-        	fail(e.getMessage());
-        } 
-        
-    	int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
-    	//assertEquals(4, aRootsize);
-    	
-    	// get opposite properties
-    	
-    	// check that opposite bidirectional links resolve
-    	//DataObject porderDO = (DataObject)root.get("porder[1]");
+            // SDOTestCase will currently throw a fail()
+            fail(e.getMessage());
+        }
+
+        int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
+        //assertEquals(4, aRootsize);
+
+        // get opposite properties
+
+        // check that opposite bidirectional links resolve
+        //DataObject porderDO = (DataObject)root.get("porder[1]");
         assertTrue(writeXML(root, URINAME, COMPANY_TYPENAME, System.out));
-        
+
         //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);
     }
-  
+
     public DataObject createRootObject(boolean viaXML, List types) {
-    	DataObject aRoot = null;
-    	if(viaXML) {
-    		aRoot = loadXML(XML_PATH, true);
-    	} else {
-//    		<ns0:company xsi:type="CompanyType" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-//    		   <ns0:porder orderDate="1999-10-20">
-//    		      <ns0:poID>10</ns0:poID>
-//    		      <ns0:shipTo name="Alice Smith" country="US"/>
-//    		      <ns0:billTo name="Robert Smith" country="US"/>
-//    		      <ns0:item>6</ns0:item-->
-//    		   </ns0:porder>
-//    		</ns0:company>
+        DataObject aRoot = null;
+        if(viaXML) {
+            aRoot = loadXML(XML_PATH, true);
+        } else {
+//            <ns0:company xsi:type="CompanyType" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+//               <ns0:porder orderDate="1999-10-20">
+//                  <ns0:poID>10</ns0:poID>
+//                  <ns0:shipTo name="Alice Smith" country="US"/>
+//                  <ns0:billTo name="Robert Smith" country="US"/>
+//                  <ns0:item>6</ns0:item-->
+//               </ns0:porder>
+//            </ns0:company>
 
-    		DataObject cust1 = dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
-    		cust1.set("custID", 5);
-    		
-    		DataObject item1 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-    		item1.set("itemID", 3);
-    		item1.set("name", "item1-DF");    		
-    		DataObject item2 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-    		item2.set("itemID", 6);
-    		item2.set("name", "item2-DF");    		
-    		DataObject item3 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-    		item3.set("itemID", 7);
-    		item3.set("name", "item3-DF");    		
-    		
-    		DataObject billTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
-    		billTo.set("name", "bill");
-    		DataObject shipTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
-    		shipTo.set("name", "ship");
+            DataObject cust1 = dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
+            cust1.set("custID", 5);
 
-    		DataObject po1 = dataFactory.create(typeHelper.getType(URINAME, PO_TYPENAME));
-    		po1.set("poID", 10);
-    		po1.set("shipTo", shipTo);
-    		po1.set("billTo", billTo);
-    		po1.set("orderDate", "1999-10-20");
-    		
-    		// references to company/item
-    		List itemsRef = new ArrayList();
-    		itemsRef.add(item2);//6);
-    		po1.set("item", itemsRef); // unwrapping exception
-    		
+            DataObject item1 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            item1.set("itemID", 3);
+            item1.set("name", "item1-DF");
+            DataObject item2 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            item2.set("itemID", 6);
+            item2.set("name", "item2-DF");
+            DataObject item3 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            item3.set("itemID", 7);
+            item3.set("name", "item3-DF");
+
+            DataObject billTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
+            billTo.set("name", "bill");
+            DataObject shipTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
+            shipTo.set("name", "ship");
+
+            DataObject po1 = dataFactory.create(typeHelper.getType(URINAME, PO_TYPENAME));
+            po1.set("poID", 10);
+            po1.set("shipTo", shipTo);
+            po1.set("billTo", billTo);
+            po1.set("orderDate", "1999-10-20");
+
+            // references to company/item
+            List itemsRef = new ArrayList();
+            itemsRef.add(item2);//6);
+            po1.set("item", itemsRef); // unwrapping exception
+
             aRoot = dataFactory.create(typeHelper.getType(URINAME, COMPANY_TYPENAME));
             List<DataObject> customers = new ArrayList<DataObject>();
             customers.add(cust1);
             aRoot.set("cust", customers);
             // add purchaseOrders
-    		List pos = new ArrayList();
-    		pos.add(po1);
+            List pos = new ArrayList();
+            pos.add(po1);
             aRoot.set("porder", pos);
 
             // /company/porder/customer is bidirectional with /company/customer/purchaseOrder
             //po1.set("customer", cust1);
             // /company/customer/purchaseOrder is bidirectional with /company/porder/customer
-            //cust1.set("purchaseOrder", po1);            
-            
+            //cust1.set("purchaseOrder", po1);
+
             // add items (containment)
-    		List items = new ArrayList();
-    		items.add(item1);
-    		items.add(item2);
-    		items.add(item3);
-    		aRoot.set("item", items);
-    		
-            aRoot.set("name", "mycomp-DF");    		
-    	}
-    	
-    	return aRoot;
+            List items = new ArrayList();
+            items.add(item1);
+            items.add(item2);
+            items.add(item3);
+            aRoot.set("item", items);
+
+            aRoot.set("name", "mycomp-DF");
+        }
+
+        return aRoot;
     }
-    
+
     // this function is overridden above
     public void testDefineAndGenerate() {
     }
 
     private Type defineAndPostProcessUnidirectional(String containingPropertyLocalName, DataObject typeToDefine, //
-    		String idPropertyName, String containingPropertyName) {
-        setIDPropForReferenceProperties(typeToDefine, idPropertyName);        
-    	// define the current type
-    	Type aType = null;
-    	try {
-    		aType = typeHelper.define(typeToDefine);
-    	} catch (Exception e) {
-    		fail(e.getMessage());
-    	}
+            String idPropertyName, String containingPropertyName) {
+        setIDPropForReferenceProperties(typeToDefine, idPropertyName);
+        // define the current type
+        Type aType = null;
+        try {
+            aType = typeHelper.define(typeToDefine);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
 //        Property containingProperty = aType.getProperty(containingPropertyName);
 //        ((SDOProperty)containingProperty).setXsd(true);
 //        ((SDOProperty)containingProperty).setXsdLocalName(containingProperty.getContainingType().getName());//containingPropertyLocalName);
@@ -251,14 +251,14 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         ((SDOType)aType).setIDProp(aType.getProperty(idPropertyName));
         return aType;
     }
-*/    
+*/
     private Type registerAddressType() {
         DataObject addressType = dataFactory.create(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDOProperty prop = (SDOProperty)addressType.getType().getProperty("uri");
         addressType.set(prop, getControlRootURI());
         prop = (SDOProperty)addressType.getType().getProperty(SDOConstants.SDOXML_NAME);
         addressType.set(prop,  ADDRESS_TYPENAME);
-        
+
         addProperty(addressType, "name", stringType);
         addProperty(addressType, "street", stringType);
         addProperty(addressType, "city", stringType);
@@ -305,10 +305,10 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
     }
 
     private Type registerPurchaseOrderType(Type addressType, Type itemType, Type customerType) {
-    	/**
-    	 * instance properties available
-    	 * aliasName, name, many, containment, default, readOnly, type, opposite, nullable
-    	 */
+        /**
+         * instance properties available
+         * aliasName, name, many, containment, default, readOnly, type, opposite, nullable
+         */
         DataObject purchaseOrderType = dataFactory.create(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDOProperty prop = (SDOProperty)purchaseOrderType.getType().getProperty("uri");
         purchaseOrderType.set(prop, getControlRootURI());
@@ -347,12 +347,12 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
 
         String containingPropertyName = "item";
         Type aType = defineAndPostProcessUnidirectional(typeName, purchaseOrderType, idPropName, containingPropertyName);
-        
+
         //Type aType = typeHelper.define(purchaseOrderType);
         //SDOProperty itemProperty = (SDOProperty)aType.getProperty(containingPropertyName);
         //itemProperty.setXsd(true);
         //((SDOType)aType).setIDProp(aType.getProperty("poID"));
-        
+
         return aType;
     }
 
@@ -370,13 +370,13 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         //addProperty(customerType, "custName", stringType);
         DataObject custidProperty = addProperty(customerType, idPropName, stringType);
         //custidProperty.setBoolean("containment", true); // bug: we need to change from attribute to element
-        
+
         // Bidirectional Opposite IDREF (dont set opposite yet)
         DataObject poProp = addProperty(customerType, "purchaseOrder", purchaseOrderType);
         //poProp.set("opposite", poCustomerProperty);
         poProp.setBoolean("many", false);
         poProp.setBoolean("containment", false);
-        
+
         // post define processing
         String containingPropertyName = "purchaseOrder";
         Type aType = defineAndPostProcessUnidirectional(typeName, customerType, idPropName, containingPropertyName);
@@ -395,7 +395,7 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         //name.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         SDOProperty nameProp = (SDOProperty)companyType.getType().getProperty(SDOConstants.XMLELEMENT_PROPERTY_NAME);
         //name.set(SDOConstants.XMLELEMENT_PROPERTY_NAME, false);
-        //nameProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.FALSE);        
+        //nameProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.FALSE);
         DataObject custProp =  addProperty(companyType, "cust", customerType);
         custProp.setBoolean("containment", true);
         custProp.setBoolean("many", true);
@@ -408,7 +408,7 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
 
         return typeHelper.define(companyType);
     }
-    
+
 
     /**
      * See section 3.8.4 p.41
@@ -422,20 +422,20 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         Type poType = null;
         Type customerType = null;
         if(!createTogether) {
-        	poType = registerPurchaseOrderType(addressType, itemType, customerType);        	
-        	customerType = registerCustomerType(poType);
-        } else { 
-        	List<Type> types = registerPurchaseOrderAndCustomerTypes(addressType, itemType);    
-        	poType = types.get(0);
-        	customerType = types.get(1);
-    	}
+            poType = registerPurchaseOrderType(addressType, itemType, customerType);
+            customerType = registerCustomerType(poType);
+        } else {
+            List<Type> types = registerPurchaseOrderAndCustomerTypes(addressType, itemType);
+            poType = types.get(0);
+            customerType = types.get(1);
+        }
         // move before
         //SDOProperty poProperty = (SDOProperty)poType.getType().getProperty(SDOConstants.SDOXML_NAME);
         //DataObject customerProp = addProperty(purchaseOrderTypeType, "customer", customerType);
         //customerProp.setBoolean("containment", false);
         //((SDOType)aType).setIDProp(aType.getProperty(idPropertyName));
-        
-        // set Bidirectional Opposite properties after definition (IDProp is set) 
+
+        // set Bidirectional Opposite properties after definition (IDProp is set)
         // /company/porder/customer is bidirectional with /company/customer/purchaseOrder
         SDOProperty poCustomerBidirectionalProperty = (SDOProperty)poType.getProperty("customer");
         // /company/customer/purchaseOrder is bidirectional with /company/porder/customer
@@ -444,20 +444,20 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
 //        customerPOBidirectionalProperty.setOpposite(poCustomerBidirectionalProperty);
 
         // bidirectional needs poType defined here
-        Type companyType = registerCompanyType(poType, customerType, itemType);        
+        Type companyType = registerCompanyType(poType, customerType, itemType);
         // make Company a global type
         //((SDOTypeHelper)aHelperContext.getTypeHelper()).s
-    }    
+    }
 
     private List<Type> registerPurchaseOrderAndCustomerTypes(Type addressType, Type itemType) {
-    	/**
-    	 * instance properties available
-    	 * aliasName, name, many, containment, default, readOnly, type, opposite, nullable
-    	 * 
-    	 * Algorithm:
-    	 * 
-    	 */
-    	List<Type> types = new ArrayList<Type>();
+        /**
+         * instance properties available
+         * aliasName, name, many, containment, default, readOnly, type, opposite, nullable
+         *
+         * Algorithm:
+         *
+         */
+        List<Type> types = new ArrayList<Type>();
         DataObject purchaseOrderTypeDO = dataFactory.create(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDOProperty prop = (SDOProperty)purchaseOrderTypeDO.getType().getProperty("uri");
         purchaseOrderTypeDO.set(prop, getControlRootURI());
@@ -483,7 +483,7 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         addProperty(purchaseOrderTypeDO, "orderDate", yearMonthDayType);
 
         // Bidirectional Opposite IDREF to customer/po
-        // set Bidirectional Opposite properties after definition (IDProp is set) 
+        // set Bidirectional Opposite properties after definition (IDProp is set)
         // /company/porder/customer is bidirectional with /company/customer/purchaseOrder
         // /company/customer/purchaseOrder is bidirectional with /company/porder/customer
         Type customerType = null;
@@ -508,7 +508,7 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
 //        SDOProperty poCustomerProperty =  (SDOProperty)purchaseOrderType.getProperty("customer");
 //        poProp.setBoolean("many", false);
 //        poProp.setBoolean("containment", false);
-        
+
         types.add(typeHelper.define(customerTypeDO));
 
         // set opposites after definition
@@ -526,103 +526,103 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
     public List<Type> getControlTypes() {
         List<Type> types = new ArrayList<Type>();
         if(typeHelper.getType(URINAME, COMPANY_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, COMPANY_TYPENAME));
+            types.add(typeHelper.getType(URINAME, COMPANY_TYPENAME));
         }
         if(typeHelper.getType(URINAME, PO_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, PO_TYPENAME));
+            types.add(typeHelper.getType(URINAME, PO_TYPENAME));
         }
         if(typeHelper.getType(URINAME, CUSTOMER_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
+            types.add(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
         }
         if(typeHelper.getType(URINAME, ADDRESS_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
+            types.add(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
         }
         if(typeHelper.getType(URINAME, ITEM_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            types.add(typeHelper.getType(URINAME, ITEM_TYPENAME));
         }
-    	return types;
+        return types;
     }
 
     /*
     // use XSD to define and XML to load - working
     public void testDefineViaXSDandLoadViaXML() throws Exception {
-    	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
-       	List<Type> types = xsdHelper.define(getXSDString(XSD_PATH));
-       
+        DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
+           List<Type> types = xsdHelper.define(getXSDString(XSD_PATH));
+
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         log(generatedSchema);
         root = createRootObject(true, types);
-    	int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
-    	System.out.println("UC1: via XSD/XML: size: " + aRootsize);
-    	//assertEquals(4, aRootsize);    	
-    	// get opposite properties    	
-    	
-    	// check that opposite bidirectional links resolve
-    	//DataObject porderDO = (DataObject)root.get("porder[1]");
-    	System.out.println(root);
+        int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
+        System.out.println("UC1: via XSD/XML: size: " + aRootsize);
+        //assertEquals(4, aRootsize);
+        // get opposite properties
+
+        // check that opposite bidirectional links resolve
+        //DataObject porderDO = (DataObject)root.get("porder[1]");
+        System.out.println(root);
         assertTrue(writeXML(root, URINAME, COMPANY_TYPENAME, System.out));
-        //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);    	
+        //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);
     }
- 
+
     // use XSD to define and programmatic DataFactory to load -  not working
     public void testDefineViaXSDandLoadViaDataFactory() throws Exception {
-    	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
-       	List<Type> types = xsdHelper.define(getXSDString(XSD_PATH));
+        DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
+           List<Type> types = xsdHelper.define(getXSDString(XSD_PATH));
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         log(generatedSchema);
         root = createRootObject(false, types);
-    	int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
-    	System.out.println("UC2: via XSD/DF: size: " + aRootsize);
-    	//assertEquals(4, aRootsize);    	
-    	// get opposite properties    	
-    	
-    	// check that opposite bidirectional links resolve
-    	//DataObject porderDO = (DataObject)root.get("porder[1]");
-    	System.out.println(root);
+        int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
+        System.out.println("UC2: via XSD/DF: size: " + aRootsize);
+        //assertEquals(4, aRootsize);
+        // get opposite properties
+
+        // check that opposite bidirectional links resolve
+        //DataObject porderDO = (DataObject)root.get("porder[1]");
+        System.out.println(root);
         assertTrue(writeXML(root, URINAME, COMPANY_TYPENAME, System.out));
-        //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);    	
+        //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);
     }
 
     // use programmatic define(DataObject) to define and XML to load - not working
     public void testDefineViaDataObjectandLoadViaXML() throws Exception {
-    	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
-    	registerTypes();
-    	List<Type> types = getTypesToGenerateFrom();
+        DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
+        registerTypes();
+        List<Type> types = getTypesToGenerateFrom();
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         log(generatedSchema);
         root = createRootObject(true, types);
-    	int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
-    	System.out.println("UC3: via DO/XML: size: " + aRootsize);
-    	//assertEquals(4, aRootsize);    	
-    	// get opposite properties    	
-    	
-    	// check that opposite bidirectional links resolve
-    	//DataObject porderDO = (DataObject)root.get("porder[1]");
-    	System.out.println(root);
+        int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
+        System.out.println("UC3: via DO/XML: size: " + aRootsize);
+        //assertEquals(4, aRootsize);
+        // get opposite properties
+
+        // check that opposite bidirectional links resolve
+        //DataObject porderDO = (DataObject)root.get("porder[1]");
+        System.out.println(root);
         assertTrue(writeXML(root, URINAME, COMPANY_TYPENAME, System.out));
-        //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);    	
+        //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);
     }
 
     // use programmatic define(DataObject) and programmatic DataFactory to load - not working
     public void testDefineViaDataObjectandLoadViaDataFactory() throws Exception {
-    	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
-    	registerTypes();
-    	List<Type> types = getTypesToGenerateFrom();
-       
+        DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
+        registerTypes();
+        List<Type> types = getTypesToGenerateFrom();
+
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         log(generatedSchema);
         root = createRootObject(false, types);
-    	int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
-    	System.out.println("UC4: via DO/DF: size: " + aRootsize);
-    	//assertEquals(4, aRootsize);    	
-    	// get opposite properties    	
-    	
-    	// check that opposite bidirectional links resolve
-    	//DataObject porderDO = (DataObject)root.get("porder[1]");
-    	System.out.println(root);
+        int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
+        System.out.println("UC4: via DO/DF: size: " + aRootsize);
+        //assertEquals(4, aRootsize);
+        // get opposite properties
+
+        // check that opposite bidirectional links resolve
+        //DataObject porderDO = (DataObject)root.get("porder[1]");
+        System.out.println(root);
         assertTrue(writeXML(root, URINAME, COMPANY_TYPENAME, System.out));
-        //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);    	
+        //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);
     }
-  */  
+  */
 
 }

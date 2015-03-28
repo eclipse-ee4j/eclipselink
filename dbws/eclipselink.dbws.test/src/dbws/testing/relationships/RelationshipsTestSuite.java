@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -67,18 +67,18 @@ import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DEBUG;
 import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DROP;
 
 public class RelationshipsTestSuite {
-    
+
     private static final String TIMEZONE_OFFSET;
-    
+
     static {
         int offsetInMillis = TimeZone.getDefault().getRawOffset();
-        String offset = String.format("%02d:%02d", 
-                Math.abs(offsetInMillis / 3600000), 
+        String offset = String.format("%02d:%02d",
+                Math.abs(offsetInMillis / 3600000),
                 Math.abs((offsetInMillis / 60000) % 60)
         );
         TIMEZONE_OFFSET = (offsetInMillis >= 0 ? "+" : "-") + offset;
     }
-            
+
     static final String CREATE_DDL =
         "CREATE TABLE IF NOT EXISTS XR_ADDRESS (" +
         "            ADDRESS_ID NUMERIC(15) NOT NULL," +
@@ -193,14 +193,14 @@ public class RelationshipsTestSuite {
         "INSERT INTO XR_PHONE(AREA_CODE,EMP_ID,P_NUMBER,TYPE) values ('905',52,'5553691','ISDN')|" +
         "INSERT INTO XR_PHONE(AREA_CODE,EMP_ID,P_NUMBER,TYPE) values ('613',58,'2255943','Work Fax')|" +
         "INSERT INTO XR_PHONE(AREA_CODE,EMP_ID,P_NUMBER,TYPE) values ('613',53,'2258812','Work')|" ;
-        
+
     static final String DROP_DDL =
         "DROP TABLE XR_RESPONS|"  +
         "DROP TABLE XR_SALARY|"   +
         "DROP TABLE XR_PHONE|"    +
         "DROP TABLE XR_EMPLOYEE|" +
         "DROP TABLE XR_ADDRESS|"  ;
-            
+
     static final String RELATIONSHIPS_SCHEMA =
         "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<xsd:schema\n" +
@@ -818,7 +818,7 @@ public class RelationshipsTestSuite {
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSModel model = (DBWSModel)unmarshaller.unmarshal(new StringReader(RELATIONSHIPS_DBWS));
         xrService = factory.buildService(model);
-        
+
         if (ddlCreate) {
             try {
                 AllTests.runDdl(CREATE_DDL, ddlDebug);
@@ -841,7 +841,7 @@ public class RelationshipsTestSuite {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void getAllEmployees() {        
+    public void getAllEmployees() {
       Invocation invocation = new Invocation("getAllEmployees");
       Operation op = xrService.getOperation(invocation.getName());
       Object result = op.invoke(xrService, invocation);
@@ -855,10 +855,10 @@ public class RelationshipsTestSuite {
       XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
       marshaller.marshal(xrDynamicEntityCol, doc);
       Document controlDoc = xmlParser.parse(new StringReader(EMPLOYEE_COLLECTION_XML));
-      
+
       assertTrue(
         "control document: \n" + DBWSTestHelper.documentToString(controlDoc) +
-        "\n not same as XRService instance document: " + DBWSTestHelper.documentToString(doc), 
+        "\n not same as XRService instance document: " + DBWSTestHelper.documentToString(doc),
         comparer.isNodeEqual(controlDoc, doc)
       );
     }

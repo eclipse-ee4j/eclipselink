@@ -6,7 +6,7 @@
           "user-id":"jane.doe",
            "domain":"example.com"
            },
-	   {
+       {
             "user-id":"jdoe",
            "domain":"test.com"
            }
@@ -15,20 +15,20 @@
 
       "mailing-addresses":{
          "mailing-address":[
-	  {
+      {
            "street":"1 Any Street",
            "city":"Ottawa",
            "province":"Ontario",
            "postal-code":"A1B 2C3"
-          } ,	  
-	  {
+          } ,
+      {
            "street":"2 Autre Rue.",
            "city":"Gatineau",
            "province":"Quebec",
            "postal-code":"X1Y 2Z3"
           }
-	  ]
-	}
+      ]
+    }
 
 
      }

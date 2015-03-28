@@ -1,25 +1,25 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     05/24/2011-2.3 Guy Pelletier 
+ *     05/24/2011-2.3 Guy Pelletier
  *       - 345962: Join fetch query when using tenant discriminator column fails.
- *     06/30/2011-2.3.1 Guy Pelletier 
+ *     06/30/2011-2.3.1 Guy Pelletier
  *       - 341940: Add disable/enable allowing native queries
- *     02/08/2012-2.4 Guy Pelletier 
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls 
- *     02/06/2013-2.5 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     02/06/2013-2.5 Guy Pelletier
  *       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions;
 
 import java.util.List;
@@ -166,12 +166,12 @@ public class QueryException extends ValidationException {
     public final static int MAPPING_FOR_FIELDRESULT_NOT_FOUND = 6139;
     public final static int JOIN_EXPRESSIONS_NOT_APPLICABLE_ON_NON_OBJECT_REPORT_ITEM = 6140;
     public final static int CLASS_NOT_FOUND_WHILE_USING_QUERY_HINT = 6141;
-    public final static int QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP = 6142;    
-    public final static int QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP = 6143;  
-    public final static int QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS = 6144;  
+    public final static int QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP = 6142;
+    public final static int QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP = 6143;
+    public final static int QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS = 6144;
     public final static int DISTINCT_COUNT_ON_OUTER_JOINED_COMPOSITE_PK = 6145;
     public final static int QUERY_HINT_CONTAINED_INVALID_INTEGER_VALUE = 6146;
-    public final static int EXPRESSION_DOES_NOT_SUPPORT_PARTIAL_ATTRIBUTE_READING = 6147;    
+    public final static int EXPRESSION_DOES_NOT_SUPPORT_PARTIAL_ATTRIBUTE_READING = 6147;
     public final static int ADD_ARGS_NOT_SUPPORTED = 6148;
     public final static int UNNAMED_ARG_NOT_SUPPORTED = 6149;
     public final static int MAP_KEY_IS_NULL = 6150;
@@ -207,8 +207,8 @@ public class QueryException extends ValidationException {
     public final static int SOP_OBJECT_WRONG_VERSION = 6181;
     public final static int SOP_OBJECT_WRONG_PK = 6182;
     public final static int UNSUPPORTED_MAPPING_FOR_QUERYBYEXAMPLE = 6183;
-    
-    
+
+
     /**
      * INTERNAL:
      * Constructor.
@@ -235,7 +235,7 @@ public class QueryException extends ValidationException {
         this.query = query;
     }
 
-    
+
     public static QueryException additionalSizeQueryNotSpecified(DatabaseQuery query) {
         Object[] args = {  };
 
@@ -259,7 +259,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(ARGUMENT_SIZE_MISMATCH_IN_QUERY_AND_QUERY_DEFINITION);
         return queryException;
     }
-    
+
     public static QueryException missingContextPropertyForPropertyParameterExpression(DatabaseQuery query, String argumentName) {
         Object[] args = { argumentName };
 
@@ -267,22 +267,22 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(MISSING_CONTEXT_PROPERTY_FOR_PROPERTY_PARAMETER_EXPRESSION);
         return queryException;
     }
-    
+
     public static QueryException namedArgumentNotFoundInQueryParameters(String argumentName) {
         Object[] args = {argumentName};
-        
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, NAMED_ARGUMENT_NOT_FOUND_IN_QUERY_PARAMETERS, args));
         queryException.setErrorCode(NAMED_ARGUMENT_NOT_FOUND_IN_QUERY_PARAMETERS);
         return queryException;
     }
-    
+
     public static QueryException nativeSQLQueriesAreDisabled(DatabaseQuery query) {
-        Object[] args = {};        
+        Object[] args = {};
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, NATIVE_SQL_QUERIES_ARE_DISABLED, args), query);
         queryException.setErrorCode(NATIVE_SQL_QUERIES_ARE_DISABLED);
         return queryException;
     }
-    
+
     public static QueryException backupCloneIsDeleted(Object clone) {
         Object[] args = { clone, clone.getClass(), Integer.valueOf(System.identityHashCode(clone)), CR };
 
@@ -323,7 +323,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(BATCH_READING_NOT_SUPPORTED_WITH_CALL);
         return queryException;
     }
-    
+
     public static QueryException calledMethodThrewException(java.lang.reflect.Method aMethod, Object object, Exception ex) {
         Object[] args = { aMethod, object, object.getClass() };
 
@@ -340,7 +340,7 @@ public class QueryException extends ValidationException {
         validationException.setErrorCode(CANNOT_ACCESS_FIELD_ON_OBJECT);
         return validationException;
     }
-    
+
     public static ValidationException cannotAccessMethodOnObject(java.lang.reflect.Method aMethod, Object anObject) {
         Object[] args = { aMethod, anObject, anObject.getClass() };
 
@@ -490,11 +490,11 @@ public class QueryException extends ValidationException {
 
     public static QueryException discriminatorColumnNotSelected(String expectedColumn, String sqlResultSetMapping){
         Object[] args = { expectedColumn, sqlResultSetMapping };
-    
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, DISCRIMINATOR_COLUMN_NOT_SELECTED, args));
         queryException.setErrorCode(DISCRIMINATOR_COLUMN_NOT_SELECTED);
         return queryException;
-    }    
+    }
     /**
      * Oct 18, 2000 JED
      * Added this method and exception value
@@ -731,7 +731,7 @@ public class QueryException extends ValidationException {
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, MAPPING_FOR_FIELDRESULT_NOT_FOUND, args));
         queryException.setErrorCode(MAPPING_FOR_FIELDRESULT_NOT_FOUND);
         return queryException;
-    }  
+    }
 
     public static QueryException invalidQueryOnHistoricalSession(DatabaseQuery query) {
         Object[] args = {  };
@@ -756,7 +756,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(INVALID_TABLE_FOR_FIELD_IN_EXPRESSION);
         return queryException;
     }
-    
+
     public static QueryException invalidTypeExpression(Object expression) {
         Object[] args = { expression };
 
@@ -810,11 +810,11 @@ public class QueryException extends ValidationException {
         validationException.setErrorCode(MAP_KEY_IS_NULL);
         return validationException;
     }
-    
+
     public static ValidationException mapKeyNotComparable(Object anObject, Object aContainer) {
         String obj;
         String objType;
-        
+
         if (anObject == null) {
             obj = "null";
             objType = "NULL";
@@ -1030,7 +1030,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(REDIRECTION_CLASS_OR_METHOD_NOT_SET);
         return queryException;
     }
-    
+
     public static QueryException unableToSetRedirectorOnQueryFromHint(DatabaseQuery query, String hint, String redirectorClass, Exception ex) {
         Object[] args = {hint, redirectorClass  };
 
@@ -1326,7 +1326,7 @@ public class QueryException extends ValidationException {
 
     public static QueryException deleteAllQuerySpecifiesObjectsButNotSelectionCriteria(ClassDescriptor descriptor, DatabaseQuery query, String objects) {
         Object[] args = { descriptor.toString(), CR, objects };
-  
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, DELETE_ALL_QUERY_SPECIFIES_OBJECTS_BUT_NOT_SELECTION_CRITERIA, args), query);
         queryException.setErrorCode(DELETE_ALL_QUERY_SPECIFIES_OBJECTS_BUT_NOT_SELECTION_CRITERIA);
         return queryException;
@@ -1334,7 +1334,7 @@ public class QueryException extends ValidationException {
 
     public static QueryException updateAllQueryAddUpdateFieldIsNull(DatabaseQuery query) {
         Object[] args = {  };
-    
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, UPDATE_ALL_QUERY_ADD_UPDATE_FIELD_IS_NULL, args), query);
         queryException.setErrorCode(UPDATE_ALL_QUERY_ADD_UPDATE_FIELD_IS_NULL);
         return queryException;
@@ -1342,7 +1342,7 @@ public class QueryException extends ValidationException {
 
     public static QueryException updateAllQueryAddUpdateDoesNotDefineField(ClassDescriptor descriptor, DatabaseQuery query, String attributeNameOrExpression) {
         Object[] args = { descriptor.toString(), CR, attributeNameOrExpression };
-    
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, UPDATE_ALL_QUERY_ADD_UPDATE_DOES_NOT_DEFINE_FIELD, args), query);
         queryException.setErrorCode(UPDATE_ALL_QUERY_ADD_UPDATE_DOES_NOT_DEFINE_FIELD);
         return queryException;
@@ -1350,7 +1350,7 @@ public class QueryException extends ValidationException {
 
     public static QueryException updateAllQueryAddUpdateDefinesWrongField(ClassDescriptor descriptor, DatabaseQuery query, String attributeNameOrExpression, String wrongField) {
         Object[] args = { descriptor.toString(), CR, attributeNameOrExpression, wrongField };
-    
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, UPDATE_ALL_QUERY_ADD_UPDATE_DEFINES_WRONG_FIELD, args), query);
         queryException.setErrorCode(UPDATE_ALL_QUERY_ADD_UPDATE_DEFINES_WRONG_FIELD);
         return queryException;
@@ -1358,40 +1358,40 @@ public class QueryException extends ValidationException {
 
     public static QueryException tempTablesNotSupported(DatabaseQuery query, String platformClassName) {
         Object[] args = { platformClassName };
-    
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, TEMP_TABLES_NOT_SUPPORTED, args), query);
         queryException.setErrorCode(TEMP_TABLES_NOT_SUPPORTED);
         return queryException;
     }
-    
+
     public static QueryException classNotFoundWhileUsingQueryHint(DatabaseQuery query, Object hintValue, Exception exc) {
         Object[] args = { hintValue };
-    
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, CLASS_NOT_FOUND_WHILE_USING_QUERY_HINT, args), query);
         queryException.setErrorCode(CLASS_NOT_FOUND_WHILE_USING_QUERY_HINT);
         queryException.setInternalException(exc);
         return queryException;
     }
-    
+
     public static QueryException queryHintNavigatedIllegalRelationship(DatabaseQuery query, String hintName, Object hintValue, String relationship) {
         Object[] args = { hintName, hintValue, relationship };
-    
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP, args), query);
         queryException.setErrorCode(QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP);
         return queryException;
     }
-    
+
     public static QueryException queryHintNavigatedNonExistantRelationship(DatabaseQuery query, String hintName, Object hintValue, String relationship) {
         Object[] args = { hintName, hintValue, relationship };
-    
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP, args), query);
         queryException.setErrorCode(QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP);
         return queryException;
     }
-    
+
     public static QueryException queryHintDidNotContainEnoughTokens(DatabaseQuery query, String hintName, Object hintValue) {
         Object[] args = { hintName, hintValue };
-    
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS, args), query);
         queryException.setErrorCode(QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS);
         return queryException;
@@ -1400,10 +1400,10 @@ public class QueryException extends ValidationException {
     public static QueryException distinctCountOnOuterJoinedCompositePK(
         ClassDescriptor descr, DatabaseQuery query) {
         Object[] args = { descr.getJavaClass().getName(), descr.toString() };
-        
+
         QueryException queryException = new QueryException(
             ExceptionMessageGenerator.buildMessage(
-                QueryException.class, DISTINCT_COUNT_ON_OUTER_JOINED_COMPOSITE_PK, args), 
+                QueryException.class, DISTINCT_COUNT_ON_OUTER_JOINED_COMPOSITE_PK, args),
             query);
         queryException.setErrorCode(DISTINCT_COUNT_ON_OUTER_JOINED_COMPOSITE_PK);
         return queryException;
@@ -1411,16 +1411,16 @@ public class QueryException extends ValidationException {
 
     public static QueryException queryHintContainedInvalidIntegerValue(String hintName, Object hintValue, Exception e) {
         Object[] args = { hintName, hintValue};
-    
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, QUERY_HINT_CONTAINED_INVALID_INTEGER_VALUE, args),null,e);
         queryException.setErrorCode(QUERY_HINT_CONTAINED_INVALID_INTEGER_VALUE);
         return queryException;
     }
-    
-    
+
+
     public static QueryException expressionDoesNotSupportPartialAttributeReading(Expression expression) {
         Object[] args = {expression};
-    
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, EXPRESSION_DOES_NOT_SUPPORT_PARTIAL_ATTRIBUTE_READING, args));
         queryException.setErrorCode(EXPRESSION_DOES_NOT_SUPPORT_PARTIAL_ATTRIBUTE_READING);
         return queryException;
@@ -1429,7 +1429,7 @@ public class QueryException extends ValidationException {
     public static QueryException addArgumentsNotSupported(String argumentType) {
         Object[] args = { argumentType };
 
-        QueryException queryException = 
+        QueryException queryException =
             new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
                 ADD_ARGS_NOT_SUPPORTED, args));
         queryException.setErrorCode(ADD_ARGS_NOT_SUPPORTED);
@@ -1439,9 +1439,9 @@ public class QueryException extends ValidationException {
     public static QueryException unnamedArgumentsNotSupported() {
         Object[] args = { };
 
-        QueryException queryException = 
+        QueryException queryException =
             new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
-		UNNAMED_ARG_NOT_SUPPORTED, args));
+        UNNAMED_ARG_NOT_SUPPORTED, args));
         queryException.setErrorCode(UNNAMED_ARG_NOT_SUPPORTED);
         return queryException;
     }
@@ -1453,11 +1453,11 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(COLUMN_RESULT_NOT_FOUND);
         return queryException;
     }
-    
+
     public static QueryException compatibleTypeNotSet(DatabaseType type) {
         Object[] args = { type };
 
-        QueryException queryException = 
+        QueryException queryException =
             new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
                 COMPATIBLE_TYPE_NOT_SET, args));
         queryException.setErrorCode(COMPATIBLE_TYPE_NOT_SET);
@@ -1467,9 +1467,9 @@ public class QueryException extends ValidationException {
     public static QueryException typeNameNotSet(DatabaseType type) {
         Object[] args = { type };
 
-        QueryException queryException = 
+        QueryException queryException =
             new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
-            		TYPE_NAME_NOT_SET, args));
+                    TYPE_NAME_NOT_SET, args));
         queryException.setErrorCode(TYPE_NAME_NOT_SET);
         return queryException;
     }
@@ -1477,7 +1477,7 @@ public class QueryException extends ValidationException {
     public static QueryException errorInstantiatedClassForQueryHint(Exception exception, DatabaseQuery query, Class theClass, String hint) {
         Object[] args = { theClass, hint };
 
-        QueryException queryException = 
+        QueryException queryException =
             new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
                 ERROR_INSTANTIATING_CLASS_FOR_QUERY_HINT, args), query);
         queryException.setErrorCode(ERROR_INSTANTIATING_CLASS_FOR_QUERY_HINT);
@@ -1492,7 +1492,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(NO_RELATION_TABLE_IN_MANY_TO_MANY_QUERY_KEY);
         return queryException;
     }
-    
+
     public static QueryException exceptionWhileReadingMapKey(Object object, Exception ex) {
         Object[] args = { object, ex };
 
@@ -1501,7 +1501,7 @@ public class QueryException extends ValidationException {
         queryException.setInternalException(ex);
         return queryException;
     }
-    
+
     public static QueryException cannotAddElementWithoutKeyToMap(Object object) {
         Object[] args = { object };
 
@@ -1509,7 +1509,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(CANNOT_ADD_ELEMENT_WITHOUT_KEY_TO_MAP);
         return queryException;
     }
-    
+
     public static QueryException cannotUnwrapNonMapMembers(Object object) {
         Object[] args = { object };
 
@@ -1517,7 +1517,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(CANNOT_UNWRAP_NON_MAP_MEMBERS);
         return queryException;
     }
-    
+
     public static QueryException noMappingForMapEntryExpression(Expression baseExpression){
         Object[] args = { baseExpression };
 
@@ -1525,7 +1525,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(NO_MAPPING_FOR_MAP_ENTRY_EXPRESSION );
         return queryException;
     }
-    
+
     public static QueryException mapEntryExpressionForNonCollection(Expression baseExpression, DatabaseMapping mapping){
         Object[] args = { baseExpression, mapping };
 
@@ -1533,7 +1533,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(MAP_ENTRY_EXPRESSION_FOR_NON_COLLECTION  );
         return queryException;
     }
-    
+
     public static QueryException mapEntryExpressionForNonMap(Expression baseExpression, DatabaseMapping mapping){
         Object[] args = { baseExpression, mapping };
 
@@ -1549,7 +1549,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(LIST_ORDER_FIELD_WRONG_VALUE);
         return queryException;
     }
-    
+
     public static QueryException indexRequiresQueryKeyExpression(Expression expression) {
         Object[] args = { expression };
 
@@ -1573,7 +1573,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(BATCH_IN_REQUIRES_SINGLETON_PK);
         return queryException;
     }
-    
+
     public static QueryException couldNotFindCastDescriptor(Class castClass, Expression base) {
         Object[] args = { castClass, base };
 
@@ -1629,7 +1629,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(FAILOVER_FAILED);
         return queryException;
     }
-    
+
     public static QueryException resultSetAccessOptimizationIsNotPossible(DatabaseQuery query) {
         Object[] args = {};
 

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.indirection;
 
 import java.io.*;
@@ -94,14 +94,14 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
         return query;
     }
-    
+
     /**
      * INTERNAL: This method can be used when an Indirection Object is required
      * to be built from a provided ValueHolderInterface object. This may be used
      * for custom value holder types. Certain policies like the
      * TransparentIndirectionPolicy may wrap the valueholder in another object.
      */
-    
+
     public abstract Object buildIndirectObject(ValueHolderInterface valueHolder);
 
     /**
@@ -204,7 +204,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * or converting the valueHolder to another type.
      */
     public abstract Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session);
-    
+
     /**
      * INTERNAL:
      * Return the "real" attribute value, as opposed to any wrapper.
@@ -219,7 +219,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     public void instantiateObject(Object object, Object attribute) {
         getRealAttributeValueFromObject(object, attribute);
     }
-    
+
     /**
      * INTERNAL:
      * Reduce casting clutter....
@@ -234,10 +234,10 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * specified remote value holder.
      */
     public abstract Object getValueFromRemoteValueHolder(RemoteValueHolder remoteValueHolder);
-    
+
     /**
      * INTERNAL:
-     * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue 
+     * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue
      * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
      * This method is used to help determine if indirection has been triggered
      * @param attributeValue
@@ -247,7 +247,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     public boolean isAttributeValueFullyBuilt(Object attributeValue){
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Initialize the indirection policy (Do nothing by default)
@@ -261,7 +261,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     public boolean isWeavedObjectBasicIndirectionPolicy() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Iterate over the specified attribute value,
@@ -308,13 +308,13 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Return whether the specified object is instantiated.
      */
     public abstract boolean objectIsInstantiated(Object object);
-    
+
     /**
      * INTERNAL:
      * Return whether the specified object can be instantiated without database access.
      */
     public abstract boolean objectIsEasilyInstantiated(Object object);
-    
+
     /**
      * INTERNAL:
      * Return whether the specified object is instantiated, or if it has changes.
@@ -339,7 +339,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     public void setRealAttributeValueInObject(Object target, Object attributeValue) {
         this.mapping.setAttributeValueInObject(target, attributeValue);
     }
-    
+
     /**
      * INTERNAL:
      * Same functionality as setRealAttributeValueInObject(Object target, Object attributeValue) but allows
@@ -351,34 +351,34 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     public void setRealAttributeValueInObject(Object target, Object attributeValue, boolean allowChangeTracking) {
         setRealAttributeValueInObject(target, attributeValue);
     }
-    
+
     /**
      * INTERNAL:
      * set the source object into QueryBasedValueHolder.
      * Used only by transparent indirection.
      */
-    public void setSourceObject(Object sourceObject, Object attributeValue) {        
+    public void setSourceObject(Object sourceObject, Object attributeValue) {
     }
-    
+
     /**
      * ADVANCED:
      * This method will only change the behavior of TransparentIndirectionPolicy.
-     * 
+     *
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
      * database when you add and remove from them.  IndirectList defaults to this behavior. When
      * Set to true, the collection associated with this TransparentIndirection will be setup so as
      * not to instantiate for adds and removes.  The weakness of this setting for an IndirectSet is
      * that when the set is not instantiated, if a duplicate element is added, it will not be
      * detected until commit time.
-     * 
+     *
      */
     public void setUseLazyInstantiation(Boolean useLazyInstantiation) {
     }
-    
+
     /**
      * ADVANCED:
      * Returns false unless this is a transparent indirection policy
-     * 
+     *
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
      * database when you add and remove from them.  IndirectList defaults to this behavior. When
      * Set to true, the collection associated with this TransparentIndirection will be setup so as
@@ -405,7 +405,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     public boolean usesIndirection() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Return whether the indirection policy uses transparent indirection.
@@ -507,7 +507,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * method on the object and passing it the row and session.
      */
     public abstract Object valueFromMethod(Object object, AbstractRecord row, AbstractSession session);
-    
+
     /**
      * INTERNAL:
      * Return the value to be stored in the object's attribute.

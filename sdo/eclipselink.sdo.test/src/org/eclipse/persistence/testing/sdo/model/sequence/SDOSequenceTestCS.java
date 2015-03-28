@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.sequence;
 
 import commonj.sdo.ChangeSummary;
@@ -55,12 +55,12 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     public static final String ADDRESS_TYPENAME = "USAddress";
     public static final String ITEM_TYPENAME = "Item";
     public static final String PO_COMMENT_VALUE1 = "comment 1";
-    
+
     public static final String XML_PATH = "org/eclipse/persistence/testing/sdo/model/sequence/CompanyWithSequenceCS.xml";
-    public static final String XSD_PATH = "org/eclipse/persistence/testing/sdo/schemas/CompanyWithSequenceCS.xsd";    
-	
-	public static final int NO_MATCH_INDEX = -1;
-    
+    public static final String XSD_PATH = "org/eclipse/persistence/testing/sdo/schemas/CompanyWithSequenceCS.xsd";
+
+    public static final int NO_MATCH_INDEX = -1;
+
     protected DataObject root;
     protected ChangeSummary cs;
     protected Type stringType;
@@ -68,8 +68,8 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     protected Type yearMonthDayType;
     protected Type decimalType;
     protected Type idType;
-    
-    
+
+
     public SDOSequenceTestCS(String name) {
         super(name);
     }
@@ -80,22 +80,22 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         dateType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATE);
         yearMonthDayType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.YEARMONTHDAY);
         decimalType = SDOConstants.SDO_DECIMAL;
-        idType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.ID);     
+        idType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.ID);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.sequence.SDOSequenceTestCS" };
         TestRunner.main(arguments);
     }
-    
+
     protected String getControlRootURI() {
         return URINAME;
     }
-    
+
     protected String getControlRootName() {
         return "company";
     }
-    
+
     public String getSchemaToDefine() {
         return XSD_PATH;
     }
@@ -108,104 +108,104 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         return getControlTypes();
     }
 
-	public static String getXSDString(String filename) {
-		try {
-			FileInputStream inStream = new FileInputStream(filename);
-			byte[] bytes = new byte[inStream.available()];
-			inStream.read(bytes);
-			return new String(bytes);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-    
+    public static String getXSDString(String filename) {
+        try {
+            FileInputStream inStream = new FileInputStream(filename);
+            byte[] bytes = new byte[inStream.available()];
+            inStream.read(bytes);
+            return new String(bytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * This function will define control types programmatically to compare to XSD definition
      * by using the standard spec SDODataObject generation method on page
-     * 
+     *
      * The existing getControlTypes() uses non-public Property constructors
      * @throws Exception
      */
     public DataObject createRootObject(boolean viaXML, List types) {
-    	DataObject aRoot = null;
-    	if(viaXML) {
-    		aRoot = loadXML(XML_PATH, false);
-    	} else {
-    		DataObject cust1 = dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
-    		cust1.set("custID", 5);
-    		List emails = new ArrayList();
-    		emails.add("email1-DF@myCompany.com");
-    		emails.add("email2-DF@myCompany.com");
-    		cust1.set("email", emails);
-    		List phones = new ArrayList();
-    		phones.add("6135550001");
-    		cust1.set("phone", phones);
-    		
-    		DataObject item1 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-    		item1.set("itemID", 3);
-    		item1.set("name", "item1-DF");    		
-    		DataObject item2 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-    		item2.set("itemID", 6);
-    		item2.set("name", "item2-DF");    		
-    		DataObject item3 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-    		item3.set("itemID", 7);
-    		item3.set("name", "item3-DF");    		
-    		
-    		DataObject billTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
-    		billTo.set("name", "bill");
-    		DataObject shipTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
-    		shipTo.set("name", "ship");
+        DataObject aRoot = null;
+        if(viaXML) {
+            aRoot = loadXML(XML_PATH, false);
+        } else {
+            DataObject cust1 = dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
+            cust1.set("custID", 5);
+            List emails = new ArrayList();
+            emails.add("email1-DF@myCompany.com");
+            emails.add("email2-DF@myCompany.com");
+            cust1.set("email", emails);
+            List phones = new ArrayList();
+            phones.add("6135550001");
+            cust1.set("phone", phones);
 
-    		DataObject po1 = dataFactory.create(typeHelper.getType(URINAME, PO_TYPENAME));
-    		po1.set("poID", 10);
-    		po1.set("shipTo", shipTo);
-    		po1.set("billTo", billTo);
+            DataObject item1 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            item1.set("itemID", 3);
+            item1.set("name", "item1-DF");
+            DataObject item2 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            item2.set("itemID", 6);
+            item2.set("name", "item2-DF");
+            DataObject item3 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            item3.set("itemID", 7);
+            item3.set("name", "item3-DF");
 
-    		// set comments list
-    		List<String> comments = new ArrayList<String>();
-    		comments.add(PO_COMMENT_VALUE1);
-    		comments.add("comment 2");
+            DataObject billTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
+            billTo.set("name", "bill");
+            DataObject shipTo = dataFactory.create(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
+            shipTo.set("name", "ship");
+
+            DataObject po1 = dataFactory.create(typeHelper.getType(URINAME, PO_TYPENAME));
+            po1.set("poID", 10);
+            po1.set("shipTo", shipTo);
+            po1.set("billTo", billTo);
+
+            // set comments list
+            List<String> comments = new ArrayList<String>();
+            comments.add(PO_COMMENT_VALUE1);
+            comments.add("comment 2");
             po1.set("comment", comments);
-    		
-    		po1.set("orderDate", "1999-10-20");
-    		
-    		// references to company/item
-    		List<DataObject> itemsRef = new ArrayList<DataObject>();
-    		itemsRef.add(item2);//6);
-    		itemsRef.add(item3);//7);
-    		po1.set("item", itemsRef); // unwrapping exception
-    		
+
+            po1.set("orderDate", "1999-10-20");
+
+            // references to company/item
+            List<DataObject> itemsRef = new ArrayList<DataObject>();
+            itemsRef.add(item2);//6);
+            itemsRef.add(item3);//7);
+            po1.set("item", itemsRef); // unwrapping exception
+
             aRoot = dataFactory.create(typeHelper.getType(URINAME, COMPANY_TYPENAME));
             aRoot.set(CUSTOMER_PATH, cust1);
             //aRoot.set(propertyIndex, value)
             // add purchaseOrders
-    		List<DataObject> pos = new ArrayList<DataObject>();
-    		pos.add(po1);
+            List<DataObject> pos = new ArrayList<DataObject>();
+            pos.add(po1);
             aRoot.set(PO_PATH, pos);
 
             // add items (containment)
-    		List<DataObject> items = new ArrayList<DataObject>();
-    		items.add(item1);
-    		items.add(item2);
-    		items.add(item3);
-    		aRoot.set(ITEM_PATH, items);
-    		
+            List<DataObject> items = new ArrayList<DataObject>();
+            items.add(item1);
+            items.add(item2);
+            items.add(item3);
+            aRoot.set(ITEM_PATH, items);
+
             aRoot.set("name", "mycomp-DF");
-            
+
             SDOChangeSummary aChangeSummary = new SDOChangeSummary();
             // add changeSummary
             aRoot.set("myChangeSummary", aChangeSummary);
-    	}
-    	return aRoot;
+        }
+        return aRoot;
     }
 
-    
+
     private Type defineAndPostProcessUnidirectional(String containingPropertyLocalName, DataObject typeToDefine, //
-    		String idPropertyName, String containingPropertyName) {
-    	// define the current type
+            String idPropertyName, String containingPropertyName) {
+        // define the current type
         Type aType = typeHelper.define(typeToDefine);
-        // get the 
+        // get the
         Property containingProperty = aType.getProperty(containingPropertyName);
         ((SDOProperty)containingProperty).setXsd(true);
         ((SDOProperty)containingProperty).setXsdLocalName(containingProperty.getContainingType().getName());//containingPropertyLocalName);
@@ -223,14 +223,14 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         //((SDOType)aType).setIDProp(aType.getProperty(idPropertyName));
         return aType;
     }
-    
+
     private Type registerAddressType(boolean sequencedFlag) {
         DataObject addressType = dataFactory.create(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDOProperty prop = (SDOProperty)addressType.getType().getProperty("uri");
         addressType.set(prop, getControlRootURI());
         prop = (SDOProperty)addressType.getType().getProperty(SDOConstants.SDOXML_NAME);
         addressType.set(prop,  ADDRESS_TYPENAME);
-        
+
         addProperty(addressType, "name", stringType);
         addProperty(addressType, "street", stringType);
         addProperty(addressType, "city", stringType);
@@ -273,12 +273,12 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
 
     // sequenced
     private Type registerPurchaseOrderType(boolean sequencedFlag, Type addressType, Type itemType, Type customerType) {
-    	 // instance properties available
-    	 // aliasName, name, many, containment, default, readOnly, type, opposite, nullable
+         // instance properties available
+         // aliasName, name, many, containment, default, readOnly, type, opposite, nullable
         DataObject purchaseOrderTypeDO = dataFactory.create(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDOProperty prop = (SDOProperty)purchaseOrderTypeDO.getType().getProperty("uri");
         purchaseOrderTypeDO.set(prop, getControlRootURI());
-        purchaseOrderTypeDO.set("sequenced", sequencedFlag); 
+        purchaseOrderTypeDO.set("sequenced", sequencedFlag);
         prop = (SDOProperty)purchaseOrderTypeDO.getType().getProperty(SDOConstants.SDOXML_NAME);
         String typeName = PO_TYPENAME;
         String idPropName = "poID";
@@ -300,7 +300,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         addProperty(purchaseOrderTypeDO, "orderDate", yearMonthDayType);
 
         String containingPropertyName = ITEM_PATH;
-        Type aType = defineAndPostProcessUnidirectional(typeName, purchaseOrderTypeDO, idPropName, containingPropertyName);        
+        Type aType = defineAndPostProcessUnidirectional(typeName, purchaseOrderTypeDO, idPropName, containingPropertyName);
         return aType;
     }
 
@@ -312,7 +312,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         SDOProperty prop = (SDOProperty)companyType.getType().getProperty("uri");
         companyType.set(prop, getControlRootURI());
         companyType.set("sequenced", true);//false);//sequencedFlag); // sequenced is false by default
-        //companyType.set("sequenced", true);         
+        //companyType.set("sequenced", true);
         prop = (SDOProperty)companyType.getType().getProperty(SDOConstants.SDOXML_NAME);
         companyType.set(prop,  COMPANY_TYPENAME);
 
@@ -320,7 +320,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         //name.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         SDOProperty nameProp = (SDOProperty)companyType.getType().getProperty(SDOConstants.XMLELEMENT_PROPERTY_NAME);
         //name.set(SDOConstants.XMLELEMENT_PROPERTY_NAME, false);
-        //nameProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.FALSE);        
+        //nameProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.FALSE);
         DataObject custProp =  addProperty(companyType, CUSTOMER_PATH, customerType, true, false);
         DataObject poProp = addProperty(companyType, PO_PATH, purchaseOrderType, true, true);
         DataObject itemProp = addProperty(companyType, ITEM_PATH, itemType, true, true);
@@ -328,7 +328,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         // changeSummary property
         DataObject changeSumPropertyDO = addProperty(companyType, "myChangeSummary", changeSummaryType);
         changeSumPropertyDO.set("containment", false);
-        
+
         Type aType = typeHelper.define(companyType);
         return aType;
     }
@@ -339,9 +339,9 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         newProperty.set(prop, name);
         prop = (SDOProperty)newProperty.getType().getProperty("type");
         newProperty.set(prop, propType);
-        return newProperty;        
-    }    
-    
+        return newProperty;
+    }
+
     private Type registerChangeSummary() {
         DataObject csTypeDO = dataFactory.create(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDOProperty csProp = (SDOProperty)csTypeDO.getType().getProperty("uri");
@@ -356,7 +356,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         Type aType = typeHelper.define(csTypeDO);
         return aType;
     }
-    
+
     private Type registerCustomerType(boolean sequencedFlag, Type purchaseOrderType) {
         DataObject customerType = dataFactory.create(SDOConstants.SDO_URL, SDOConstants.TYPE);
         SDOProperty prop = (SDOProperty)customerType.getType().getProperty("uri");
@@ -372,123 +372,123 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
 
         DataObject custEmailProperty = addProperty(customerType, emailPropName, stringType);
         DataObject custPhoneProperty = addProperty(customerType, phonePropName, stringType);
-        
+
         DataObject custidProperty = addProperty(customerType, idPropName, stringType);
 //        DataObject poProp = addProperty(customerType, "purchaseOrder", purchaseOrderType, false, false);
         // post define processing
         String containingPropertyName = "purchaseOrder";
         //Type aType = defineAndPostProcessUnidirectional(typeName, customerType, idPropName, containingPropertyName);
-        Type aType = typeHelper.define(customerType);        
+        Type aType = typeHelper.define(customerType);
         return aType;
     }
-    
+
 
      // See section 3.8.4 p.41
      // We would like to create at least one test framework that uses the standard createDataObject spec
      // instead of creating Property objects - which uses a non-public public api
     public void registerTypes(boolean sequencedFlag) {
-    	// pass the sequenced flag to the typeHelper.define() calls so we can create without a sequence
+        // pass the sequenced flag to the typeHelper.define() calls so we can create without a sequence
         Type addressType = registerAddressType(sequencedFlag);
         Type itemType = registerItemType(sequencedFlag);
         Type customerType = null;
         Type poType = registerPurchaseOrderType(sequencedFlag, addressType, itemType, customerType);
         customerType = registerCustomerType(sequencedFlag, poType);
         Type csType = registerChangeSummary();
-        Type companyType = registerCompanyType(sequencedFlag, poType, customerType, itemType, csType);        
-    }    
+        Type companyType = registerCompanyType(sequencedFlag, poType, customerType, itemType, csType);
+    }
 
     public void registerTypes() {
-    	registerTypes(true);
+        registerTypes(true);
     }
     public List<Type> getControlTypes() {
         List<Type> types = new ArrayList<Type>();
         if(typeHelper.getType(URINAME, COMPANY_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, COMPANY_TYPENAME));
+            types.add(typeHelper.getType(URINAME, COMPANY_TYPENAME));
         }
         if(typeHelper.getType(URINAME, PO_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, PO_TYPENAME));
+            types.add(typeHelper.getType(URINAME, PO_TYPENAME));
         }
         if(typeHelper.getType(URINAME, CUSTOMER_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
+            types.add(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
         }
         if(typeHelper.getType(URINAME, ADDRESS_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
+            types.add(typeHelper.getType(URINAME, ADDRESS_TYPENAME));
         }
         if(typeHelper.getType(URINAME, ITEM_TYPENAME) != null) {
-        	types.add(typeHelper.getType(URINAME, ITEM_TYPENAME));
+            types.add(typeHelper.getType(URINAME, ITEM_TYPENAME));
         }
-    	return types;
+        return types;
     }
 
     public void setTypeSequenced(String typeName, boolean sequenced) {
-    	SDOType aType = (SDOType)typeHelper.getType(URINAME, typeName);
-    	aType.setSequenced(sequenced);
+        SDOType aType = (SDOType)typeHelper.getType(URINAME, typeName);
+        aType.setSequenced(sequenced);
     }
-    
+
     // use XSD to define and XML to load - sequenced Flag has affect only when defining via typeHelper
     public void defineAndLoadRoot(boolean defineViaXSD, boolean loadViaXML, boolean sequencedFlag) {
-        	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
-        	List<Type> types = null;
-        	if(defineViaXSD) {
-        		types = xsdHelper.define(getXSDString(XSD_PATH));
-        	} else {
-        		registerTypes(sequencedFlag);
-        		types = getControlTypes();
-        	}
-           
+            DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
+            List<Type> types = null;
+            if(defineViaXSD) {
+                types = xsdHelper.define(getXSDString(XSD_PATH));
+            } else {
+                registerTypes(sequencedFlag);
+                types = getControlTypes();
+            }
+
             String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
             //log(generatedSchema);
             root = createRootObject(loadViaXML, types);
-        	int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
-//        	if(!loadViaXML)  {
-//        		assertTrue(writeXML(root, URINAME, COMPANY_TYPENAME, System.out));
-//        	}
-        	assertEquals(10, aRootsize);
+            int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
+//            if(!loadViaXML)  {
+//                assertTrue(writeXML(root, URINAME, COMPANY_TYPENAME, System.out));
+//            }
+            assertEquals(10, aRootsize);
         }
 
     public void defineAndLoadRoot(boolean defineViaXSD, boolean loadViaXML) {
-    	defineAndLoadRoot(defineViaXSD, loadViaXML, true);
+        defineAndLoadRoot(defineViaXSD, loadViaXML, true);
     }
     public void defineAndLoadRoot() {
-    	defineAndLoadRoot(true, true);
+        defineAndLoadRoot(true, true);
     }
-    
-    
+
+
     private SDOSequence getSequence(DataObject aRoot, String sequencePath, int sequenceSize) {
-    	// get sequence DO
-    	DataObject dataObject = (DataObject)aRoot.get(sequencePath);
-    	assertNotNull(dataObject);
+        // get sequence DO
+        DataObject dataObject = (DataObject)aRoot.get(sequencePath);
+        assertNotNull(dataObject);
         assertTrue(dataObject.getType().isSequenced());
         // get sequence
         SDOSequence aSequence = (SDOSequence)dataObject.getSequence();
         // check sequence
         assertNotNull(aSequence);
         //assertEquals(sequenceSize, aSequence.size());
-        return aSequence;    	
+        return aSequence;
     }
-    
+
     public int getNthSequenceIndexFor(SDOSequence aSequence, String propertyName) {
-    	return getNthSequenceIndexFor(aSequence, propertyName, 1);    		   
+        return getNthSequenceIndexFor(aSequence, propertyName, 1);
     }
-    	 
+
     public int getNthSequenceIndexFor(SDOSequence aSequence, String propertyName, int matchNumber) {
-    	// search for the indexed position in the sequence that corresponds to propertyName
-    	int matchIndex = -1;
-    	int numberMatches = matchNumber;
-    	Property aProperty = null;
-    	// TODO: linear performance hit
-    	for(int i = 0, size = aSequence.size(); i < size; i++) {
-    		aProperty = aSequence.getProperty(i);
-    		// TODO: handle null property for unstructured text
-    		if(aProperty != null && aProperty.getName().equals(propertyName)) {
-    			// breakout of loop with this property
-    			matchIndex = i;
-    			if(--numberMatches < 1) {
-    				i = aSequence.size();
-    			}
-    		}
-    	}
-    	return matchIndex;
+        // search for the indexed position in the sequence that corresponds to propertyName
+        int matchIndex = -1;
+        int numberMatches = matchNumber;
+        Property aProperty = null;
+        // TODO: linear performance hit
+        for(int i = 0, size = aSequence.size(); i < size; i++) {
+            aProperty = aSequence.getProperty(i);
+            // TODO: handle null property for unstructured text
+            if(aProperty != null && aProperty.getName().equals(propertyName)) {
+                // breakout of loop with this property
+                matchIndex = i;
+                if(--numberMatches < 1) {
+                    i = aSequence.size();
+                }
+            }
+        }
+        return matchIndex;
     }
 
     /**
@@ -496,7 +496,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @param aCS
      */
     public Map verifyOldSequences(SDOChangeSummary aCS) {
-    	return aCS.getOldSequences();    
+        return aCS.getOldSequences();
     }
 
     /**
@@ -504,23 +504,23 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @param aCS
      */
     public Map verifyOriginalSequences(SDOChangeSummary aCS) {
-    	return aCS.getOriginalSequences();    
+        return aCS.getOriginalSequences();
     }
-    
+
     /**
      * ChangeSummary tests
      */
 
-    
+
     public void turnCSon(SDOChangeSummary aCS) {
         assertNotNull(aCS);
         aCS.endLogging();
         aCS.beginLogging();
     }
-    
+
     public void testAddTextUndoChanges() {
-    	// make a source object
-    	defineAndLoadRoot(false, false);
+        // make a source object
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         int sequenceSize = aSequence.size();
         DataObject poDO = (DataObject)root.get(PO_SEQUENCE_PATH);
@@ -535,38 +535,38 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         // turn on change summary
         SDOChangeSummary aCS = (SDOChangeSummary)root.getChangeSummary();
         turnCSon(aCS);
-        
+
         // change a sequence that is not tracked by the cs
-        aSequence.addText("random text2");        
-        
+        aSequence.addText("random text2");
+
         // verify change
        int newSequenceSize = aSequence.size();
        assertEquals(sequenceSize + 1, newSequenceSize);
-       
+
         // verify changeSummary not changed
        Map oldSequences = aCS.getOldSequences();
        Map originalSequences = aCS.getOriginalSequences();
        assertEquals(0, oldSequences.size());
        assertEquals(1, originalSequences.size());
-        
+
         // undo change (nop for untracked items)
        aCS.undoChanges();
-        
+
         // verify unchange (nop for untracked items)
        assertEquals(sequenceSize + 1, newSequenceSize);
-        
+
         // verify unChangeSummary (still no changes)
        assertEquals(0, oldSequences.size());
-       assertEquals(0, originalSequences.size());        
+       assertEquals(0, originalSequences.size());
     }
-    
+
     /**
      * Purpose:
      * Test that the sequence on a move is updated on both the source and target objects
      */
     public void testMoveToCopyAlsoRemovesSequenceSettingOnOriginal() {
-    	// make a source object
-    	defineAndLoadRoot(false, false);
+        // make a source object
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject poDO = (DataObject)root.get(PO_SEQUENCE_PATH);
         assertNotNull(poDO);
@@ -574,42 +574,42 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertNotNull(shipToDO);
 
         // make a copy so that we can move between trees
-    	DataObject rootCopy = copyHelper.copy(root);    	
-    	// check sequence was copied
+        DataObject rootCopy = copyHelper.copy(root);
+        // check sequence was copied
         SDOSequence aPOSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aPOSequenceCopy);
         int sequenceCopySizeBeforeDelete = aPOSequenceCopy.size();
-        
+
         // delete shipTo on target
         DataObject poDOCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
         assertNotNull(poDO);
         SDODataObject shipToCopy = (SDODataObject)poDOCopy.get("shipTo");
         assertNotNull(shipToCopy);
         shipToCopy.delete();
-        
+
         // verify that the sequence on the copy has been adjusted
         int sequenceCopySizeAfterDelete = aPOSequenceCopy.size();
         assertEquals(sequenceCopySizeBeforeDelete - 1, sequenceCopySizeAfterDelete);
         // verify that the object was deleted on the copy in prep for a move from the root to this copy
         assertNull(rootCopy.get(PO_SEQUENCE_PATH + "/shipTo"));
-        
-    	// get shipTo sequence
-    	int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
-    	assertTrue(shipToSequenceIndex > -1);
-    	DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
-    	assertNotNull(shipToObjectFromSetting);
-    	assertTrue(shipToObjectFromSetting == shipToDO);
+
+        // get shipTo sequence
+        int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
+        assertTrue(shipToSequenceIndex > -1);
+        DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
+        assertNotNull(shipToObjectFromSetting);
+        assertTrue(shipToObjectFromSetting == shipToDO);
 
         // turn on change summary
         SDOChangeSummary aCSroot = (SDOChangeSummary)root.getChangeSummary();
         turnCSon(aCSroot);
         SDOChangeSummary aCScopy = (SDOChangeSummary)rootCopy.getChangeSummary();
         turnCSon(aCScopy);
-    	
-    	// move shipTo from root to copyRoot
+
+        // move shipTo from root to copyRoot
         int sequenceSizeBeforeMove = aSequence.size();
         int sequenceCopySizeBeforeMove = aPOSequenceCopy.size();
-    	poDOCopy.set("shipTo", shipToDO);
+        poDOCopy.set("shipTo", shipToDO);
 
         // verify that the sequence on the copy has been increased and on the original has been decreased
         int sequenceCopySizeAfterMove = aPOSequenceCopy.size();
@@ -618,20 +618,20 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertEquals(sequenceSizeBeforeMove - 1, sequenceSizeAfterMove);
         // verify that the object was deleted on the copy in prep for a move from the root to this copy
         assertNull(root.get(PO_SEQUENCE_PATH + "/shipTo"));
-        
+
         // undoChanges
        // aCS.undoChanges();
-        
+
         // verify unchange
         // shipTo has moved back to the root from copyRoot
         //assertNull()
-        
+
         // verify unChangeSummary
-        
+
     }
-    
+
     public void testRemoveAllEmptyComplexManyReferenceViaListWrapper() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         int sequenceSizeBefore = aSequence.size();
         DataObject itemDO1 = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
@@ -640,390 +640,390 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertNotNull(itemDO1);
         assertNotNull(itemDO2);
         assertFalse(itemDO1 == itemDO2);
-    	
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-        
-    	// get item from sequence
-    	int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
-    	assertTrue(item2SequenceIndex > -1);
-    	DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
-    	assertNotNull(itemObjectFromSetting);
-    	assertTrue(itemObjectFromSetting == itemDO2);
-    	
-    	// create a list of items to remove
-    	List<DataObject> listToRemove = new ArrayList<DataObject>();
-    	//for(Iterator<DataObject> i = existingList.iterator(); i.hasNext();) {
-    		//listToRemove.add(i.next());	
-    	//}
-    	
-    	int sizeListToRemove = listToRemove.size();
 
-    	// remove entire list
-    	existingList.removeAll(listToRemove);
-    	assertEquals(sequenceSizeBefore - sizeListToRemove, aSequence.size());
-    	assertEquals(listSizeBefore - sizeListToRemove, existingList.size());
-    	
-    	// are we removed on the DataObject?
-    	//DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
-    	// TODO: verify delete or dont delete after a sequence.remove
-    	//assertTrue(item1ObjectFromAfterRemove == itemDO1);   
-    	//assertFalse(item1ObjectFromAfterRemove == itemDO2);   
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
+
+        // get item from sequence
+        int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
+        assertTrue(item2SequenceIndex > -1);
+        DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
+        assertNotNull(itemObjectFromSetting);
+        assertTrue(itemObjectFromSetting == itemDO2);
+
+        // create a list of items to remove
+        List<DataObject> listToRemove = new ArrayList<DataObject>();
+        //for(Iterator<DataObject> i = existingList.iterator(); i.hasNext();) {
+            //listToRemove.add(i.next());
+        //}
+
+        int sizeListToRemove = listToRemove.size();
+
+        // remove entire list
+        existingList.removeAll(listToRemove);
+        assertEquals(sequenceSizeBefore - sizeListToRemove, aSequence.size());
+        assertEquals(listSizeBefore - sizeListToRemove, existingList.size());
+
+        // are we removed on the DataObject?
+        //DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
+        // TODO: verify delete or dont delete after a sequence.remove
+        //assertTrue(item1ObjectFromAfterRemove == itemDO1);
+        //assertFalse(item1ObjectFromAfterRemove == itemDO2);
     }
-    
+
     public void verifyAddAllAtIndexComplexManyByListWrapperAddPropertyOnExistingList(int addIndex) {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[1]");
-    	assertNotNull(item3);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add list of items to existing list
-    	List<DataObject> aListToAdd = new ArrayList<DataObject>();
-    	aListToAdd.add(item3);
-    	// add to the end of the list
-    	existingList.addAll(addIndex,aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// verify that the list has increased on the do
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
 
-    	// verify that the sequence size has increased
-    	assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
-    	
-    	// get back new Setting value
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + aListToAdd.size() - 1);
-    	assertNotNull(item2Value);
-    	assertEquals(item2Value, aListToAdd.get(0));
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[1]");
+        assertNotNull(item3);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add list of items to existing list
+        List<DataObject> aListToAdd = new ArrayList<DataObject>();
+        aListToAdd.add(item3);
+        // add to the end of the list
+        existingList.addAll(addIndex,aListToAdd);
+
+        // verify that the list has increased on the do
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+
+        // verify that the sequence size has increased
+        assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
+
+        // get back new Setting value
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + aListToAdd.size() - 1);
+        assertNotNull(item2Value);
+        assertEquals(item2Value, aListToAdd.get(0));
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
     }
-    
+
     public void testAddAllAtIndex0ComplexManyByListWrapperAddPropertyOnExistingList() {
-    	verifyAddAllAtIndexComplexManyByListWrapperAddPropertyOnExistingList(0);
+        verifyAddAllAtIndexComplexManyByListWrapperAddPropertyOnExistingList(0);
     }
 
     public void testAddAllAtIndex1ComplexManyByListWrapperAddPropertyOnExistingList() {
-    	verifyAddAllAtIndexComplexManyByListWrapperAddPropertyOnExistingList(1);
+        verifyAddAllAtIndexComplexManyByListWrapperAddPropertyOnExistingList(1);
     }
     /*
     public void testRemoveSimpleManyBySequence() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)po.get("comment");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(PO_COMMENT_LIST_SIZE, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	
-    	Property aProperty = po.getInstanceProperty("comment");
-    	
-    	// add list of items to existing list
-    	//List<String> aListToAdd = new ArrayList<String>();
-    	//aListToAdd.add("comment 2");
-    	//aListToAdd.add("comment 3");    	
-    	
-    	// remove entire list of comments
-    	for(int i=0; i<listSizeBefore; i++) {
-    		//int indexOfSetting = aSequence.getIndex(aProperty, existingList.get(i));
-    		int indexOfSetting = getNthSequenceIndexFor(aSequence, aProperty.getName());
-        	// get original setting
-        	SDOSetting aSetting = (SDOSetting)aSequence.getSettings().get(indexOfSetting);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-        	aSequence.remove(indexOfSetting);
-        	
-        	assertFalse(aSetting == aSequence.getSettings().get(indexOfSetting));
-    	}
+        ListWrapper existingList = (ListWrapper)po.get("comment");
+        int listSizeBefore = existingList.size();
+        assertEquals(PO_COMMENT_LIST_SIZE, listSizeBefore);
 
-    	// verify that the list has decreased on the do
-    	int listSizeAfter = ((ListWrapper)po.get("comment")).size();
-    	assertEquals(0, listSizeAfter);
+        int indexToPlaceAtEnd = aSequence.size();
 
-    	// verify that the sequence size has decreased
-    	assertEquals(indexToPlaceAtEnd - listSizeBefore, aSequence.size());
-    	
-    	// verify that the sequence hash corresponding to the index to be removed is gone
-    	// check decreased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE - listSizeBefore, aSequence.size());
-    	
-    	// verify that DataObject has not changed for simple types
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
+        Property aProperty = po.getInstanceProperty("comment");
+
+        // add list of items to existing list
+        //List<String> aListToAdd = new ArrayList<String>();
+        //aListToAdd.add("comment 2");
+        //aListToAdd.add("comment 3");
+
+        // remove entire list of comments
+        for(int i=0; i<listSizeBefore; i++) {
+            //int indexOfSetting = aSequence.getIndex(aProperty, existingList.get(i));
+            int indexOfSetting = getNthSequenceIndexFor(aSequence, aProperty.getName());
+            // get original setting
+            SDOSetting aSetting = (SDOSetting)aSequence.getSettings().get(indexOfSetting);
+
+            aSequence.remove(indexOfSetting);
+
+            assertFalse(aSetting == aSequence.getSettings().get(indexOfSetting));
+        }
+
+        // verify that the list has decreased on the do
+        int listSizeAfter = ((ListWrapper)po.get("comment")).size();
+        assertEquals(0, listSizeAfter);
+
+        // verify that the sequence size has decreased
+        assertEquals(indexToPlaceAtEnd - listSizeBefore, aSequence.size());
+
+        // verify that the sequence hash corresponding to the index to be removed is gone
+        // check decreased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE - listSizeBefore, aSequence.size());
+
+        // verify that DataObject has not changed for simple types
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
     }
     */
     public void testClearSimpleManyByListWrapper() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)po.get("comment");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(PO_COMMENT_LIST_SIZE, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	
-    	Property itemProperty = po.getInstanceProperty("comment");
-    	
-    	// add list of items to existing list
-    	List<String> aListToAdd = new ArrayList<String>();
-    	aListToAdd.add("comment 2");
-    	aListToAdd.add("comment 3");
-    	
-    	existingList.clear();
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// verify that the list has decreased on the do
-    	int listSizeAfter = ((ListWrapper)po.get("comment")).size();
-    	assertEquals(0, listSizeAfter);
+        ListWrapper existingList = (ListWrapper)po.get("comment");
+        int listSizeBefore = existingList.size();
+        assertEquals(PO_COMMENT_LIST_SIZE, listSizeBefore);
 
-    	// verify that the sequence size has decreased
-    	assertEquals(indexToPlaceAtEnd - listSizeBefore, aSequence.size());
-    	
-    	// check decreased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE - listSizeBefore, aSequence.size());
-    	
-    	// verify that DataObject has not changed for simple types
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
+        int indexToPlaceAtEnd = aSequence.size();
+
+        Property itemProperty = po.getInstanceProperty("comment");
+
+        // add list of items to existing list
+        List<String> aListToAdd = new ArrayList<String>();
+        aListToAdd.add("comment 2");
+        aListToAdd.add("comment 3");
+
+        existingList.clear();
+
+        // verify that the list has decreased on the do
+        int listSizeAfter = ((ListWrapper)po.get("comment")).size();
+        assertEquals(0, listSizeAfter);
+
+        // verify that the sequence size has decreased
+        assertEquals(indexToPlaceAtEnd - listSizeBefore, aSequence.size());
+
+        // check decreased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE - listSizeBefore, aSequence.size());
+
+        // verify that DataObject has not changed for simple types
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
     }
-    
+
     public void testClearComplexManyReferenceByListWrapper() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[1]");
-    	assertNotNull(item3);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add list of items to existing list
-    	List<DataObject> aListToAdd = new ArrayList<DataObject>();
-    	aListToAdd.add(item3);
-    	aListToAdd.add(item3);
-    	
-    	existingList.clear();
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// verify that the list has decreased on the do
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore - aListToAdd.size(), listSizeAfter);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
 
-    	// verify that the sequence size has decreased
-    	assertEquals(indexToPlaceAtEnd - aListToAdd.size(), aSequence.size());
-    	
-    	// check decreased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE - aListToAdd.size(), aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd - aListToAdd.size(), treeSizeAfterAdd);
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[1]");
+        assertNotNull(item3);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add list of items to existing list
+        List<DataObject> aListToAdd = new ArrayList<DataObject>();
+        aListToAdd.add(item3);
+        aListToAdd.add(item3);
+
+        existingList.clear();
+
+        // verify that the list has decreased on the do
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore - aListToAdd.size(), listSizeAfter);
+
+        // verify that the sequence size has decreased
+        assertEquals(indexToPlaceAtEnd - aListToAdd.size(), aSequence.size());
+
+        // check decreased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE - aListToAdd.size(), aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd - aListToAdd.size(), treeSizeAfterAdd);
     }
-    
+
     // SDOSequence and SDODataObject bidirectional testing
     public void testDeleteAlsoRemovesSequenceSetting() {
-    	defineAndLoadRoot(false, false);
-    	// get sequence po
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        defineAndLoadRoot(false, false);
+        // get sequence po
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         DataObject shipToDO = (DataObject)po.get("shipTo");
         assertNotNull(shipToDO);
         SDOSequence aSequence = (SDOSequence)po.getSequence();
-    	assertNotNull(aSequence);
-    	// 4 instead of 5 because the one attribute property cannot be sequenced
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
-    	
-    	// get shipTo sequence
-    	int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
-    	assertTrue(shipToSequenceIndex > -1);
-    	DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
-    	assertNotNull(shipToObjectFromSetting);
-    	assertTrue(shipToObjectFromSetting == shipToDO);
-    	
-    	// delete po[1]/shipTo
-    	shipToDO.delete();
-    	
-    	// are we removed on the sequence?
-    	int shipToSequenceIndexAfterDelete = getNthSequenceIndexFor(aSequence, "shipTo");
-    	assertEquals(NO_MATCH_INDEX, shipToSequenceIndexAfterDelete);
-    	//DataObject shipToObjectFromSettingAfterDelete = (DataObject)aSequence.getValue(getSequenceIndexFor(aSequence, "shipTo"));
-    	//assertNull(shipToObjectFromSettingAfterDelete);    	
+        assertNotNull(aSequence);
+        // 4 instead of 5 because the one attribute property cannot be sequenced
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        // get shipTo sequence
+        int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
+        assertTrue(shipToSequenceIndex > -1);
+        DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
+        assertNotNull(shipToObjectFromSetting);
+        assertTrue(shipToObjectFromSetting == shipToDO);
+
+        // delete po[1]/shipTo
+        shipToDO.delete();
+
+        // are we removed on the sequence?
+        int shipToSequenceIndexAfterDelete = getNthSequenceIndexFor(aSequence, "shipTo");
+        assertEquals(NO_MATCH_INDEX, shipToSequenceIndexAfterDelete);
+        //DataObject shipToObjectFromSettingAfterDelete = (DataObject)aSequence.getValue(getSequenceIndexFor(aSequence, "shipTo"));
+        //assertNull(shipToObjectFromSettingAfterDelete);
     }
 
     public void testUnsetAlsoRemovesSequenceSetting() {
-    	defineAndLoadRoot(false, false);
-    	// get sequence po
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        defineAndLoadRoot(false, false);
+        // get sequence po
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         DataObject shipToDO = (DataObject)po.get("shipTo");
         assertNotNull(shipToDO);
         SDOSequence aSequence = (SDOSequence)po.getSequence();
-    	assertNotNull(aSequence);
-    	// 4 instead of 5 because the one attribute property cannot be sequenced
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
-    	
-    	// get shipTo sequence
-    	int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
-    	assertTrue(shipToSequenceIndex > -1);
-    	DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
-    	assertNotNull(shipToObjectFromSetting);
-    	assertTrue(shipToObjectFromSetting == shipToDO);
-    	
-    	// delete po[1]/shipTo
-    	po.unset("shipTo");
-    	
-    	// are we removed on the sequence?
-    	int shipToSequenceIndexAfterDelete = getNthSequenceIndexFor(aSequence, "shipTo");
-    	assertEquals(NO_MATCH_INDEX, shipToSequenceIndexAfterDelete);
+        assertNotNull(aSequence);
+        // 4 instead of 5 because the one attribute property cannot be sequenced
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        // get shipTo sequence
+        int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
+        assertTrue(shipToSequenceIndex > -1);
+        DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
+        assertNotNull(shipToObjectFromSetting);
+        assertTrue(shipToObjectFromSetting == shipToDO);
+
+        // delete po[1]/shipTo
+        po.unset("shipTo");
+
+        // are we removed on the sequence?
+        int shipToSequenceIndexAfterDelete = getNthSequenceIndexFor(aSequence, "shipTo");
+        assertEquals(NO_MATCH_INDEX, shipToSequenceIndexAfterDelete);
     }
 
     public void testDetachAlsoRemovesSequenceSetting() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject shipToDO = (DataObject)root.get(PO_SEQUENCE_PATH + "/shipTo");
         assertNotNull(shipToDO);
-    	
-    	// get shipTo sequence
-    	int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
-    	assertTrue(shipToSequenceIndex > -1);
-    	DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
-    	assertNotNull(shipToObjectFromSetting);
-    	assertTrue(shipToObjectFromSetting == shipToDO);
-    	
-    	// delete po[1]/shipTo
-    	shipToDO.detach();
-    	
-    	// are we removed on the sequence?
-    	int shipToSequenceIndexAfterDelete = getNthSequenceIndexFor(aSequence, "shipTo");
-    	assertEquals(NO_MATCH_INDEX, shipToSequenceIndexAfterDelete);
+
+        // get shipTo sequence
+        int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
+        assertTrue(shipToSequenceIndex > -1);
+        DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
+        assertNotNull(shipToObjectFromSetting);
+        assertTrue(shipToObjectFromSetting == shipToDO);
+
+        // delete po[1]/shipTo
+        shipToDO.detach();
+
+        // are we removed on the sequence?
+        int shipToSequenceIndexAfterDelete = getNthSequenceIndexFor(aSequence, "shipTo");
+        assertEquals(NO_MATCH_INDEX, shipToSequenceIndexAfterDelete);
     }
 
     public void testSetNullAlsoSetsSequenceSetting() {
-    	
+
     }
 
     // TODO: Issue resolution 20070403-1: is remove local to Sequence - no
     public void testRemoveDoesDeleteDataObjectPropertyValue() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject shipToDO = (DataObject)root.get(PO_SEQUENCE_PATH + "/shipTo");
         assertNotNull(shipToDO);
-    	
-    	// get shipTo sequence
-    	int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
-    	assertTrue(shipToSequenceIndex > -1);
-    	DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
-    	assertNotNull(shipToObjectFromSetting);
-    	assertTrue(shipToObjectFromSetting == shipToDO);
-    	
-    	// delete po[1]/shipTo from setting
-    	aSequence.remove(shipToSequenceIndex);
-    	
-    	// are we removed on the DataObject?
-    	DataObject shipToObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/shipTo");
-    	assertNull(shipToObjectFromAfterRemove);   
+
+        // get shipTo sequence
+        int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
+        assertTrue(shipToSequenceIndex > -1);
+        DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
+        assertNotNull(shipToObjectFromSetting);
+        assertTrue(shipToObjectFromSetting == shipToDO);
+
+        // delete po[1]/shipTo from setting
+        aSequence.remove(shipToSequenceIndex);
+
+        // are we removed on the DataObject?
+        DataObject shipToObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/shipTo");
+        assertNull(shipToObjectFromAfterRemove);
     }
 /*
     // TODO: tltest cannot pickup now SDOSequence function defs
     public void testRemoveIndexDoesDeleteDataObjectPropertyValue() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject shipToDO = (DataObject)root.get(PO_SEQUENCE_PATH + "/shipTo");
         assertNotNull(shipToDO);
-    	
-    	// get shipTo sequence
-    	int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
-    	assertTrue(shipToSequenceIndex > -1);
-    	DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
-    	assertNotNull(shipToObjectFromSetting);
-    	assertTrue(shipToObjectFromSetting == shipToDO);
-    	
-    	// delete po[0] from setting
-    	aSequence.remove(aSequence.getProperty(0).getName(), aSequence.getProperty(0).getType().getURI(),  true);
-    	
-    	// are we removed on the DataObject?
-    	Object shipToObjectFromAfterRemove = root.get(PO_SEQUENCE_PATH + "/poID");
-    	// TODO: verify delete or dont delete after a sequence.remove
-    	assertNull(shipToObjectFromAfterRemove);   
+
+        // get shipTo sequence
+        int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
+        assertTrue(shipToSequenceIndex > -1);
+        DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
+        assertNotNull(shipToObjectFromSetting);
+        assertTrue(shipToObjectFromSetting == shipToDO);
+
+        // delete po[0] from setting
+        aSequence.remove(aSequence.getProperty(0).getName(), aSequence.getProperty(0).getType().getURI(),  true);
+
+        // are we removed on the DataObject?
+        Object shipToObjectFromAfterRemove = root.get(PO_SEQUENCE_PATH + "/poID");
+        // TODO: verify delete or dont delete after a sequence.remove
+        assertNull(shipToObjectFromAfterRemove);
     }
     */
-    
+
     public void testRemoveIndex0ContainingSimpleSingleType() {
-    	
+
     }
     public void testRemoveIndex0ContainingComplexSingleType() {
-    	
+
     }
     public void testRemoveIndex0ContainingComplexManyType() {
-    	
+
     }
     public void testRemoveIndex0ContainingMultipleComplexManyType() {
-    	
+
     }
     public void testRemoveIndex0ContainingSimpleManyType() {
-    	
+
     }
     /**
      * SDOSequence specific unit tests
      */
 
     public void testSequenceConstructorWithNullDataObjectThrowsException() {
-		// create a non-standard sequence - a null DataObject is invalid    	
-    	boolean exceptionThrown = false;
-    	SDOSequence aSequence = null;
+        // create a non-standard sequence - a null DataObject is invalid
+        boolean exceptionThrown = false;
+        SDOSequence aSequence = null;
         int errorCode = -1;
-    	try {
-    		aSequence = new SDOSequence(null);
-    	} catch (SDOException e) {
-    		exceptionThrown = true;
-        	errorCode = e.getErrorCode();
-    	} finally {
-        	assertTrue(exceptionThrown);
-    		assertNull(aSequence);
+        try {
+            aSequence = new SDOSequence(null);
+        } catch (SDOException e) {
+            exceptionThrown = true;
+            errorCode = e.getErrorCode();
+        } finally {
+            assertTrue(exceptionThrown);
+            assertNull(aSequence);
             assertEquals(45021, errorCode);
-    	}
+        }
     }
-    
+
     /**
      * Returns the <code>Sequence</code> for this DataObject.
      * When getType().isSequencedType() == true,
@@ -1035,10 +1035,10 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @return the <code>Sequence</code> or null.
      */
     public void testSequenceReturnFrom_SDODataObject_getSequence() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
     }
-    
+
     /**
      * Returns the value of a <code>Sequence</code> property identified by the specified path.
      * @param path the path to a valid object and property.
@@ -1047,32 +1047,32 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @deprecated in 2.1.0.
      */
     public void test_SequenceReturnFrom_SDODataObject_getSequence_StringFails() {
-    	defineAndLoadRoot(false, false);
-    	assertNotNull(root);
-    	boolean exceptionThrown = false;
-    	SDOSequence aSequence = null;
+        defineAndLoadRoot(false, false);
+        assertNotNull(root);
+        boolean exceptionThrown = false;
+        SDOSequence aSequence = null;
         int errorCode = -1;
-    	try {
-    		aSequence = (SDOSequence)root.getSequence(PO_PATH);
-    	} catch (SDOException e) {
-    		exceptionThrown = true;
-        	errorCode = e.getErrorCode();
-    	} finally {
-        	assertTrue(exceptionThrown);
-    		assertNull(aSequence);
+        try {
+            aSequence = (SDOSequence)root.getSequence(PO_PATH);
+        } catch (SDOException e) {
+            exceptionThrown = true;
+            errorCode = e.getErrorCode();
+        } finally {
+            assertTrue(exceptionThrown);
+            assertNull(aSequence);
             assertEquals(45020, errorCode);
-    	}
+        }
     }
-    
+
     public void test_SequenceReturnFrom_SDODataObject_getSequence_StringPasses() {
-    	defineAndLoadRoot(false, false);
-    	assertNotNull(root);
+        defineAndLoadRoot(false, false);
+        assertNotNull(root);
         SDOSequence aSequence = (SDOSequence)root.getSequence(PO_SEQUENCE_PATH);
         // check sequence
         assertNotNull(aSequence);
         assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
     }
-    
+
     /**
      * Returns the value of a <code>Sequence</code> property identified by the specified property index.
      * @param propertyIndex the index of the property.
@@ -1081,79 +1081,79 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @deprecated in 2.1.0.
      */
     public void test_SequenceReturnFrom_SDODataObject_getSequence_index_type_complex_many() {
-    	defineAndLoadRoot(false, false);
-    	assertNotNull(root);
-    	// get property index of porder
-    	int propertyIndex = ((SDOProperty)root.getInstanceProperty(PO_PATH)).getIndexInType();
-    	// Expect a failure for a complex many property
-    	boolean exceptionThrown = false;
+        defineAndLoadRoot(false, false);
+        assertNotNull(root);
+        // get property index of porder
+        int propertyIndex = ((SDOProperty)root.getInstanceProperty(PO_PATH)).getIndexInType();
+        // Expect a failure for a complex many property
+        boolean exceptionThrown = false;
         int errorCode = -1;
-    	SDOSequence aSequence = null;
-    	try {
-    		aSequence = (SDOSequence)root.getSequence(propertyIndex);
-    	} catch (SDOException e) {
-    		exceptionThrown = true;
-        	errorCode = e.getErrorCode();
-    	} finally {
-        	assertTrue(exceptionThrown);
-    		assertNull(aSequence);
+        SDOSequence aSequence = null;
+        try {
+            aSequence = (SDOSequence)root.getSequence(propertyIndex);
+        } catch (SDOException e) {
+            exceptionThrown = true;
+            errorCode = e.getErrorCode();
+        } finally {
+            assertTrue(exceptionThrown);
+            assertNull(aSequence);
             assertEquals(45022, errorCode);
-    	}
+        }
     }
 
     public void test_SequenceReturnFrom_SDODataObject_getSequence_index_type_simple_many() {
-    	defineAndLoadRoot(false, false);
-    	assertNotNull(root);
-    	// get property index of porder
-    	int propertyIndex = ((SDOProperty)root.getInstanceProperty(PO_PATH)).getIndexInType();
-    	assertEquals(2, propertyIndex);
-    	// Expect a failure for a many property
-    	boolean exceptionThrown = false;
-    	SDOSequence aSequence = null;
+        defineAndLoadRoot(false, false);
+        assertNotNull(root);
+        // get property index of porder
+        int propertyIndex = ((SDOProperty)root.getInstanceProperty(PO_PATH)).getIndexInType();
+        assertEquals(2, propertyIndex);
+        // Expect a failure for a many property
+        boolean exceptionThrown = false;
+        SDOSequence aSequence = null;
         int errorCode = -1;
-    	try {
-    		aSequence = (SDOSequence)root.getSequence(propertyIndex);
-    	} catch (SDOException e) {
-    		exceptionThrown = true;
-        	errorCode = e.getErrorCode();
-    	} finally {
-        	assertTrue(exceptionThrown);
-    		assertNull(aSequence);
+        try {
+            aSequence = (SDOSequence)root.getSequence(propertyIndex);
+        } catch (SDOException e) {
+            exceptionThrown = true;
+            errorCode = e.getErrorCode();
+        } finally {
+            assertTrue(exceptionThrown);
+            assertNull(aSequence);
             assertEquals(45022, errorCode);
-    	}
-    	//verifySequenceIntegrity(aSequence, root.getInstanceProperty(PO_PATH));
+        }
+        //verifySequenceIntegrity(aSequence, root.getInstanceProperty(PO_PATH));
     }
 
     public void test_SequenceReturnFrom_SDODataObject_getSequence_index_type_simple_single() {
-    	defineAndLoadRoot(false, false);
-    	assertNotNull(root);
-    	// get property index of porder
-    	int propertyIndex = ((SDOProperty)root.getInstanceProperty(PO_PATH)).getIndexInType();
-    	// Expect a failure for a many property
-    	boolean exceptionThrown = false;
-    	SDOSequence aSequence = null;
+        defineAndLoadRoot(false, false);
+        assertNotNull(root);
+        // get property index of porder
+        int propertyIndex = ((SDOProperty)root.getInstanceProperty(PO_PATH)).getIndexInType();
+        // Expect a failure for a many property
+        boolean exceptionThrown = false;
+        SDOSequence aSequence = null;
         int errorCode = -1;
-    	try {
-    		aSequence = (SDOSequence)root.getSequence(propertyIndex);
-    	} catch (SDOException e) {
-    		exceptionThrown = true;
-        	errorCode = e.getErrorCode();
-    	} finally {
-        	assertTrue(exceptionThrown);
-    		assertNull(aSequence);
+        try {
+            aSequence = (SDOSequence)root.getSequence(propertyIndex);
+        } catch (SDOException e) {
+            exceptionThrown = true;
+            errorCode = e.getErrorCode();
+        } finally {
+            assertTrue(exceptionThrown);
+            assertNull(aSequence);
             assertEquals(45022, errorCode);
-    	}
-    	//verifySequenceIntegrity(aSequence, root.getInstanceProperty(PO_PATH));
+        }
+        //verifySequenceIntegrity(aSequence, root.getInstanceProperty(PO_PATH));
     }
 
     // TODO: NEED SINGLE COMPLEX WITH COMPLEX CHILDREN
     public void test_SequenceReturnFrom_SDODataObject_getSequence_index_type_complex_single() {
-    	defineAndLoadRoot(false, false);
-    	assertNotNull(root);
-    	// get property index of porder
-    	int propertyIndex = ((SDOProperty)root.getInstanceProperty(CUSTOMER_PATH)).getIndexInType();
+        defineAndLoadRoot(false, false);
+        assertNotNull(root);
+        // get property index of porder
+        int propertyIndex = ((SDOProperty)root.getInstanceProperty(CUSTOMER_PATH)).getIndexInType();
         SDOSequence aSequence = (SDOSequence)root.getSequence(propertyIndex);
-//    	verifySequenceIntegrity(aSequence, root.getInstanceProperty(CUSTOMER_PATH));
+//        verifySequenceIntegrity(aSequence, root.getInstanceProperty(CUSTOMER_PATH));
     }
 
     /**
@@ -1163,118 +1163,118 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @see #get(Property)
      * @deprecated in 2.1.0.
      */
-    public void test_SequenceReturnFrom_SDODataObject_getSequence_Property_type_single_many() { 
-    	defineAndLoadRoot(false, false);
-    	assertNotNull(root);
-    	// get property index of porder
-    	Property aPOProperty = root.getInstanceProperty(PO_PATH);
-    	// Expect a failure for a single many property
-    	SDOSequence aSequence = null;
-    	boolean exceptionThrown = false;
+    public void test_SequenceReturnFrom_SDODataObject_getSequence_Property_type_single_many() {
+        defineAndLoadRoot(false, false);
+        assertNotNull(root);
+        // get property index of porder
+        Property aPOProperty = root.getInstanceProperty(PO_PATH);
+        // Expect a failure for a single many property
+        SDOSequence aSequence = null;
+        boolean exceptionThrown = false;
         int errorCode = -1;
-    	try {
-        	aSequence = (SDOSequence)root.getSequence(aPOProperty);
-    	} catch (SDOException e) {
-    		exceptionThrown = true;
-        	errorCode = e.getErrorCode();
-    	} finally {
-        	assertTrue(exceptionThrown);
-    		assertNull(aSequence);
+        try {
+            aSequence = (SDOSequence)root.getSequence(aPOProperty);
+        } catch (SDOException e) {
+            exceptionThrown = true;
+            errorCode = e.getErrorCode();
+        } finally {
+            assertTrue(exceptionThrown);
+            assertNull(aSequence);
             assertEquals(45022, errorCode);
-    	}
+        }
     }
 
-    public void test_SequenceReturnFrom_SDODataObject_getSequence_Property_type_complex_many() { 
-    	defineAndLoadRoot(false, false);
-    	assertNotNull(root);
-    	// get property index of porder
-    	Property aPOProperty = root.getInstanceProperty(PO_PATH);
-    	// Expect a failure for a complex many property
-    	SDOSequence aSequence = null;
-    	boolean exceptionThrown = false;
+    public void test_SequenceReturnFrom_SDODataObject_getSequence_Property_type_complex_many() {
+        defineAndLoadRoot(false, false);
+        assertNotNull(root);
+        // get property index of porder
+        Property aPOProperty = root.getInstanceProperty(PO_PATH);
+        // Expect a failure for a complex many property
+        SDOSequence aSequence = null;
+        boolean exceptionThrown = false;
         int errorCode = -1;
-    	try {
-        	aSequence = (SDOSequence)root.getSequence(aPOProperty);
-    	} catch (SDOException e) {
-    		exceptionThrown = true;
-        	errorCode = e.getErrorCode();
-    	} finally {
-        	assertTrue(exceptionThrown);
-    		assertNull(aSequence);
+        try {
+            aSequence = (SDOSequence)root.getSequence(aPOProperty);
+        } catch (SDOException e) {
+            exceptionThrown = true;
+            errorCode = e.getErrorCode();
+        } finally {
+            assertTrue(exceptionThrown);
+            assertNull(aSequence);
             assertEquals(45022, errorCode);
-    	}
+        }
     }
 
-    public void test_SequenceReturnFrom_SDODataObject_getSequence_Property_type_simple_single() { 
-    	defineAndLoadRoot(false, false);
-    	assertNotNull(root);
-    	// get property index of porder
-    	Property aPOProperty = root.getInstanceProperty(PO_PATH);
-    	// Expect a failure for a simple single property
-    	SDOSequence aSequence = null;
-    	boolean exceptionThrown = false;
+    public void test_SequenceReturnFrom_SDODataObject_getSequence_Property_type_simple_single() {
+        defineAndLoadRoot(false, false);
+        assertNotNull(root);
+        // get property index of porder
+        Property aPOProperty = root.getInstanceProperty(PO_PATH);
+        // Expect a failure for a simple single property
+        SDOSequence aSequence = null;
+        boolean exceptionThrown = false;
         int errorCode = -1;
-    	try {
-        	aSequence = (SDOSequence)root.getSequence(aPOProperty);
-    	} catch (SDOException e) {
-    		exceptionThrown = true;
-        	errorCode = e.getErrorCode();
-    	} finally {
-        	assertTrue(exceptionThrown);
-    		assertNull(aSequence);
+        try {
+            aSequence = (SDOSequence)root.getSequence(aPOProperty);
+        } catch (SDOException e) {
+            exceptionThrown = true;
+            errorCode = e.getErrorCode();
+        } finally {
+            assertTrue(exceptionThrown);
+            assertNull(aSequence);
             assertEquals(45022, errorCode);
-    	}
+        }
     }
 
-    public void test_SequenceReturnFrom_SDODataObject_getSequence_Property_type_complex_single() { 
-    	defineAndLoadRoot(false, false);
-    	//setTypeSequenced(CUSTOMER_TYPENAME, true);
-    	assertNotNull(root);
-    	// get property index of porder
-    	Property aCustomerProperty = root.getInstanceProperty(CUSTOMER_PATH);
-    	// Expect no failure for a complex single property
-    	SDOSequence aSequence = null;
-    	boolean exceptionThrown = false;
+    public void test_SequenceReturnFrom_SDODataObject_getSequence_Property_type_complex_single() {
+        defineAndLoadRoot(false, false);
+        //setTypeSequenced(CUSTOMER_TYPENAME, true);
+        assertNotNull(root);
+        // get property index of porder
+        Property aCustomerProperty = root.getInstanceProperty(CUSTOMER_PATH);
+        // Expect no failure for a complex single property
+        SDOSequence aSequence = null;
+        boolean exceptionThrown = false;
         int errorCode = -1;
-    	try {
-        	aSequence = (SDOSequence)root.getSequence(aCustomerProperty);
-    	} catch (SDOException e) {
-    		exceptionThrown = true;
-        	errorCode = e.getErrorCode();
-    	} finally {
-        	assertFalse(exceptionThrown);
-    		assertNotNull(aSequence);
+        try {
+            aSequence = (SDOSequence)root.getSequence(aCustomerProperty);
+        } catch (SDOException e) {
+            exceptionThrown = true;
+            errorCode = e.getErrorCode();
+        } finally {
+            assertFalse(exceptionThrown);
+            assertNotNull(aSequence);
             //assertEquals(45022, errorCode);
-    	}
-   	}
-    
+        }
+       }
+
     private boolean verifySequenceIntegrity(SDOSequence aSequence, Property aProperty) {
-    	assertNotNull(aSequence);
-    	// verify that the # element properties (not attributes) are the same as in aProperty
-    	
-    	List<Property> sequencedProperties = new ArrayList<Property>();//InProperty;//aProperty.getInstanceProperties()
-    	for(Iterator i = aProperty.getInstanceProperties().iterator(); i.hasNext();) {
-    		Property currentProperty = (Property)i.next();
-    		if(currentProperty.getType().isSequenced()) {
-    			sequencedProperties.add(currentProperty);
-    		}    		
-    	}
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
-    	return true;
+        assertNotNull(aSequence);
+        // verify that the # element properties (not attributes) are the same as in aProperty
+
+        List<Property> sequencedProperties = new ArrayList<Property>();//InProperty;//aProperty.getInstanceProperties()
+        for(Iterator i = aProperty.getInstanceProperties().iterator(); i.hasNext();) {
+            Property currentProperty = (Property)i.next();
+            if(currentProperty.getType().isSequenced()) {
+                sequencedProperties.add(currentProperty);
+            }
+        }
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        return true;
     }
-   
+
     public void testSDOSequence_constructor() {
-    	// DataObject aDataObject) {
-    	// get po
-    	defineAndLoadRoot(false, false);
-    	// get sequence po
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        // DataObject aDataObject) {
+        // get po
+        defineAndLoadRoot(false, false);
+        // get sequence po
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
-    	
-    	SDOSequence aSequence = new SDOSequence((SDODataObject)po);
-    	// verify size
-    	assertEquals(0, aSequence.size());
+
+        SDOSequence aSequence = new SDOSequence((SDODataObject)po);
+        // verify size
+        assertEquals(0, aSequence.size());
     }
 
     /**
@@ -1287,7 +1287,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     // create an open content property
     public void test_booleanReturnFrom_add_String_Object_createOpenContentProperty() {
     }
-    
+
     /**
      * Adds a new entry with the specified property name and value
      * to the end of the entries.
@@ -1295,9 +1295,9 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @param value the value for the entry.
      */
     public void test_booleanReturnFrom_add_String_Object() {
-    	// String propertyName, Object value) {
+        // String propertyName, Object value) {
     }
-    
+
     /**
      * Adds a new entry with the specified property index and value
      * to the end of the entries.
@@ -1305,57 +1305,57 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @param value the value for the entry.
      */
     public void test_booleanReturnFrom_add_int_Object() {
-    	// int propertyIndex, Object value) {
-    	defineAndLoadRoot(false, false);
+        // int propertyIndex, Object value) {
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	assertNotNull(item2);
-    	
-    	// get "item" property index
-    	int propIndex = 0;
-    	for(Iterator i=po.getInstanceProperties().iterator(); i.hasNext();) {
-    		Property aProperty = (Property)i.next();
-    		if(aProperty != null && aProperty.getName().equals("item")) {
-    			break;
-    		} else {
-    			propIndex++;
-    		}
-    	}
-    	// add to sequence
-    	aSequence.add(propIndex, item2);
-    	// get back new Setting value
-    	//ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);    	
-    	assertNotNull(item2Value);
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_SIZE + 1, aSequence.size());
-    	
-    	// verify that the list has increased
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + 1, listSizeAfter);
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item2 = (DataObject)root.get("item[2]");
+        assertNotNull(item2);
+
+        // get "item" property index
+        int propIndex = 0;
+        for(Iterator i=po.getInstanceProperties().iterator(); i.hasNext();) {
+            Property aProperty = (Property)i.next();
+            if(aProperty != null && aProperty.getName().equals("item")) {
+                break;
+            } else {
+                propIndex++;
+            }
+        }
+        // add to sequence
+        aSequence.add(propIndex, item2);
+        // get back new Setting value
+        //ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(item2Value);
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_SIZE + 1, aSequence.size());
+
+        // verify that the list has increased
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + 1, listSizeAfter);
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
     }
 
     public void testAddListToSequence() {
-    	// a do.set(List) should populate the sequence
-    	
+        // a do.set(List) should populate the sequence
+
     }
-    
+
     /**
      * Adds a new entry with the specified property and value
      * to the end of the entries.
@@ -1363,42 +1363,42 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @param value the value for the entry.
      */
     public void test_booleanReturnFrom_add_Property_Object() {
-    	// Property property, Object value) {
-    	defineAndLoadRoot(false, false);
+        // Property property, Object value) {
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	assertNotNull(item2);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add to sequence
-    	aSequence.add(itemProperty, item2);
-    	// get back new Setting value
-    	//ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNotNull(item2Value);
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
-    	
-    	// verify that the list has increased
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + 1, listSizeAfter);
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item2 = (DataObject)root.get("item[2]");
+        assertNotNull(item2);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add to sequence
+        aSequence.add(itemProperty, item2);
+        // get back new Setting value
+        //ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(item2Value);
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+
+        // verify that the list has increased
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + 1, listSizeAfter);
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
     }
 
     /**
@@ -1407,59 +1407,59 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * The existing list will need to be null (not an empty ListWrapper)
      */
     public void test_booleanReturnFrom_add_Property_Object_WhereValuePassedIsSingleItemInEmptyList() {
-    	// Property property, Object value) {
-    	defineAndLoadRoot(false, false);
+        // Property property, Object value) {
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	assertNotNull(item2);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add to sequence
-    	aSequence.add(itemProperty, item2);   	
-    	
-    	
-    	
-    	
-    	// get back new Setting value
-    	//ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNotNull(item2Value);
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
-    	
-    	// verify that the list has increased
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + 1, listSizeAfter);
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item2 = (DataObject)root.get("item[2]");
+        assertNotNull(item2);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add to sequence
+        aSequence.add(itemProperty, item2);
+
+
+
+
+        // get back new Setting value
+        //ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(item2Value);
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+
+        // verify that the list has increased
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + 1, listSizeAfter);
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
     }
-    
+
     public void testAddMultipleValuesIntoSequence() {
     }
-/*    
+/*
     public List<SDOSetting> reflectiveGetList(Object receiver, String fieldName) {
-    	List<SDOSetting> instanceField = null;
+        List<SDOSetting> instanceField = null;
         try {
             Class cls = receiver.getClass();
             //Field field = cls.getField(fieldName);
-            Field field = cls.getDeclaredField(fieldName);            
+            Field field = cls.getDeclaredField(fieldName);
             // override default security settings for private field access from another class
-            field.setAccessible(true); 
+            field.setAccessible(true);
             instanceField = (List<SDOSetting>)field.get(receiver);
           } catch (Throwable e) {
              System.err.println(e);
@@ -1468,20 +1468,20 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     }
 
     public DataObject reflectiveGetDataObject(Object receiver, String fieldName) {
-    	DataObject instanceField = null;
+        DataObject instanceField = null;
         try {
             Class cls = receiver.getClass();
             //Field field = cls.getField(fieldName);
-            Field field = cls.getDeclaredField(fieldName);            
+            Field field = cls.getDeclaredField(fieldName);
             // override default security settings for private field access from another class
-            field.setAccessible(true); 
+            field.setAccessible(true);
             instanceField = (DataObject)field.get(receiver);
           } catch (Throwable e) {
              System.err.println(e);
           }
           return instanceField;
     }
-*/    
+*/
 /*    public boolean compareSequences(SDOSequence aSequence, SDOSequence aSequenceCopy, int size, boolean isDeep) {
         // the sequence may be a new object but may be the same if we compare a sequence to itself
         int sequenceSize = aSequence.size();
@@ -1501,90 +1501,90 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         Property copyProperty = null;
 
         for(int index = 0, size2 = aSequence.size(); index <  size2; index++) {
-        	originalSetting = originalSettingsList.get(index);
-        	copySetting = (SDOSetting)copySettingsList.get(index);
+            originalSetting = originalSettingsList.get(index);
+            copySetting = (SDOSetting)copySettingsList.get(index);
 
             // dataObject back pointer may be distinct
 //            DataObject originalDO = reflectiveGetDataObject(aSequence, "dataObject");
 //            DataObject copyDO = reflectiveGetDataObject(aSequenceCopy, "dataObject");
-        	
-        	// each setting may be a new object
-        	//assertFalse(originalSetting == copySetting);
+
+            // each setting may be a new object
+            //assertFalse(originalSetting == copySetting);
             // the property field on the setting must point to the same property instance as the original
-        	// check names before instances
+            // check names before instances
             originalProperty = originalSetting.getProperty();
             copyProperty = copySetting.getProperty();
-            
+
             // we must handle null properties that represent unstructured text
             // both null = unstructured
             // one null = invalid state (return not equal)
             // both !null = valid state (check equality)
-           	if((null == originalProperty && null != copyProperty) || (null != originalProperty && null == copyProperty)) {
-           		assertTrue(false);
+               if((null == originalProperty && null != copyProperty) || (null != originalProperty && null == copyProperty)) {
+                   assertTrue(false);
             }
-           	
-           	if(null != originalProperty) {
-           		assertEquals(originalProperty.getName(), copyProperty.getName());
-           		assertEquals(originalProperty.hashCode(), copyProperty.hashCode());
-           		// the value field on the setting must point the the deep copy value instance        	
-           		// the property field on the setting must point to the same property instance as the original
-           		if(originalProperty != copyProperty) {
-           			assertTrue(false);
-           		}
-           	}
-        	// for unstructuredText (null property) and simple dataTypes we check equality directly
-/*        	if(null != originalProperty && originalProperty.getType().isDataType()) {        		
-        		if(!originalSetting.getValue().equals(copySetting.getValue())) { // we can also use !.equals()
-        			assertTrue(false);
-        		}
-        	} else {
-        		// For complex types
-            	// we do not need to check deep equality on dataObjects twice here, just check instances
-        		// because the dataObject compare will iterate all the properties of each dataObject
-        		// only compare DataObjects when in a  deep equal
-                if (isDeep) {
-                	// there are no lists in settings
-                	Object originalValue = originalSetting.getValue();
-                	Object copyValue = copySetting.getValue();                	
-                	
-                	if(null != originalValue && null != copyValue) {
-                		if(originalProperty.isMany()) {
-                			List aList = (List)originalValue;
-                			List aListCopy = (List)copyValue;
-                			for(int i = 0, lsize = aList.size(); i< lsize; i++) {                				
-                				if(!equal((DataObject)aList.get(i), (DataObject)aListCopy.get(i))) {
-                					return false;
-                				}
-                			}
-                		} else {
-                			if(!equal((DataObject)originalValue, (DataObject)copyValue)) {
-                				return false;
-                			}
-                		}
-                	}
+
+               if(null != originalProperty) {
+                   assertEquals(originalProperty.getName(), copyProperty.getName());
+                   assertEquals(originalProperty.hashCode(), copyProperty.hashCode());
+                   // the value field on the setting must point the the deep copy value instance
+                   // the property field on the setting must point to the same property instance as the original
+                   if(originalProperty != copyProperty) {
+                       assertTrue(false);
+                   }
+               }
+            // for unstructuredText (null property) and simple dataTypes we check equality directly
+/*            if(null != originalProperty && originalProperty.getType().isDataType()) {
+                if(!originalSetting.getValue().equals(copySetting.getValue())) { // we can also use !.equals()
+                    assertTrue(false);
                 }
-        	}
+            } else {
+                // For complex types
+                // we do not need to check deep equality on dataObjects twice here, just check instances
+                // because the dataObject compare will iterate all the properties of each dataObject
+                // only compare DataObjects when in a  deep equal
+                if (isDeep) {
+                    // there are no lists in settings
+                    Object originalValue = originalSetting.getValue();
+                    Object copyValue = copySetting.getValue();
+
+                    if(null != originalValue && null != copyValue) {
+                        if(originalProperty.isMany()) {
+                            List aList = (List)originalValue;
+                            List aListCopy = (List)copyValue;
+                            for(int i = 0, lsize = aList.size(); i< lsize; i++) {
+                                if(!equal((DataObject)aList.get(i), (DataObject)aListCopy.get(i))) {
+                                    return false;
+                                }
+                            }
+                        } else {
+                            if(!equal((DataObject)originalValue, (DataObject)copyValue)) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
 *//*        }
         return true;
     }
-*/    
+*/
     public void testCopyDeepWithNoSequence() {
-    	
+
     }
-    
+
     public void testCopyShallowWithNoSequence() {
     }
 
     public void testCopyShallowWithDiffSequenceSimpleValue() {
     }
-    
+
     public void testCopyDeepComplexManySequence() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	// copy po
-    	DataObject rootCopy = (DataObject)copyHelper.copy(root);    	
-    	// check sequence was copied
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        // copy po
+        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        // check sequence was copied
         SDOSequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
         assertEquals(aSequence.size(), aSequenceCopy.size());
@@ -1592,43 +1592,43 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     }
 
     public void testCopyDeepComplexSingleSequence() {
-    	
+
     }
 
     public void testCopyDeepSimpleManySequence() {
-    	
+
     }
 
     public void testCopyDeepSimpleSingleSequence() {
-    	
+
     }
 
     public void testEqualShallowSimpleSingleSequence() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-        //aSequence.setValue(0, 5);        
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	// copy po
-    	DataObject poCopy = copyHelper.copyShallow(po);    	
-    	// check sequence was copied
+        //aSequence.setValue(0, 5);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        // copy po
+        DataObject poCopy = copyHelper.copyShallow(po);
+        // check sequence was copied
         SDOSequence aSequenceCopy = (SDOSequence)poCopy.getSequence();
         assertNotNull(aSequenceCopy);
         //compareSequences(aSequence, aSequenceCopy, PO_SEQUENCE_SIZE, false);
-        
+
         // test equalityHelper
-    	//DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
+        //DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
         boolean bEqual = equalityHelper.equalShallow(po, poCopy);
         assertTrue(bEqual);
     }
 
     public void testEqualShallowSimpleSingleSequenceDifferentValue() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-        //aSequence.setValue(0, 5);        
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	// copy po
-    	DataObject poCopy = copyHelper.copyShallow(po);    	
-    	// check sequence was copied
+        //aSequence.setValue(0, 5);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        // copy po
+        DataObject poCopy = copyHelper.copyShallow(po);
+        // check sequence was copied
         SDOSequence aSequenceCopy = (SDOSequence)poCopy.getSequence();
         assertNotNull(aSequenceCopy);
         //compareSequences(aSequence, aSequenceCopy, PO_SEQUENCE_SIZE, false);
@@ -1640,97 +1640,97 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         aSequenceCopy.setValue(0, 5);
 
         // test equalityHelper
-    	//DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
+        //DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
         bEqual = equalityHelper.equalShallow(po, poCopy);
         assertFalse(bEqual);
     }
-    
+
     public void testEqualShallowFailsSimpleSingleSequenceDifferentValueViaXSD() {
-    	//defineAndLoadRoot(true, false);
-    	defineAndLoadRoot(false, false);    	
+        //defineAndLoadRoot(true, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-        //aSequence.setValue(0, 5);        
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	// copy po
-    	DataObject poCopy = copyHelper.copyShallow(po);    	
-    	// check sequence was copied
+        //aSequence.setValue(0, 5);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        // copy po
+        DataObject poCopy = copyHelper.copyShallow(po);
+        // check sequence was copied
         SDOSequence aSequenceCopy = (SDOSequence)poCopy.getSequence();
         assertNotNull(aSequenceCopy);
         //compareSequences(aSequence, aSequenceCopy, PO_SEQUENCE_SIZE, false);
-        
+
         // modify copy sequence
         aSequenceCopy.setValue(0, 5);
         // test equalityHelper
-    	//DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
+        //DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
         boolean bEqual = equalityHelper.equalShallow(po, poCopy);
         assertFalse(bEqual);
     }
 
     public void testEqualShallowSimpleSingleSequenceDifferentUnstructuredTextValue() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-        aSequence.addText("text1");        
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	// copy po
-    	DataObject poCopy = copyHelper.copyShallow(po);    	
-    	// check sequence was copied
+        aSequence.addText("text1");
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        // copy po
+        DataObject poCopy = copyHelper.copyShallow(po);
+        // check sequence was copied
         SDOSequence aSequenceCopy = (SDOSequence)poCopy.getSequence();
         assertNotNull(aSequenceCopy);
         //compareSequences(aSequence, aSequenceCopy, PO_TREE_SIZE + 1, false);
-        
+
         // modify copy sequence
         aSequenceCopy.setValue(aSequenceCopy.size() -1, "text2");
         // test equalityHelper
-    	//DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
+        //DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
         boolean bEqual = equalityHelper.equalShallow(po, poCopy);
         assertFalse(bEqual);
     }
 
-    
+
     public void testDeepEqualWithNoSequence() {
-    	
+
     }
 
     public void testEqualShallowWithNoSequence() {
-    	
+
     }
-    
+
     public void testEqualDeepComplexManySequence() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	// copy po
-    	DataObject rootCopy = (DataObject)copyHelper.copy(root);    	
-    	// check sequence was copied
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        // copy po
+        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        // check sequence was copied
         SDOSequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
         //compareSequences(aSequence, aSequenceCopy, PO_SEQUENCE_SIZE, true);
-        
+
         // test equalityHelper
-    	DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
+        DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
         boolean bEqual = equalityHelper.equal(po, poCopy);
         assertTrue(bEqual);
     }
 
     public void testEqualDeepComplexManySequenceWithDifferentSequence2() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	// copy po
-    	DataObject rootCopy = (DataObject)copyHelper.copy(root);    	
-    	// check sequence was copied
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        // copy po
+        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        // check sequence was copied
         SDOSequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
         //compareSequences(aSequence, aSequenceCopy, PO_SEQUENCE_SIZE, true);
-        
+
         // modify copy sequence
         aSequenceCopy.setValue(0, null);
         // test equalityHelper
-    	DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
+        DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
         boolean bEqual = equalityHelper.equal(po, poCopy);
         assertFalse(bEqual);
     }
-    
+
     /*
 //  variant test cases that should cause equality failure
     testSequenceOnCopyHasDifferentOrder
@@ -1746,20 +1746,20 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     testSequenceOnOriginalHasDifferentPropertyAtIndex
     testSequenceOnOriginalHasDifferentValueAtIndex
 */
-    
+
     public void testEqualDeepTrueAfterIsSequencedSetToFalseAfterDefineViaNonSpecMethod() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         Sequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	// copy po
-    	DataObject rootCopy = (DataObject)copyHelper.copy(root);    	
-    	// check sequence was copied
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        // copy po
+        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        // check sequence was copied
         Sequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
         //compareSequences((SDOSequence)aSequence, (SDOSequence)aSequenceCopy, PO_SEQUENCE_SIZE, true);
-        
+
         // test equalityHelper
-    	DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
+        DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
         boolean bEqual = equalityHelper.equal(po, poCopy);
         assertTrue(bEqual);
 
@@ -1769,28 +1769,28 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         // WARNING: Users should not be doing this - however it is supported
         ((SDOType)poCopy.getType()).setSequenced(false);
         assertFalse(po.getType().isSequenced());
-        assertFalse(poCopy.getType().isSequenced());        
+        assertFalse(poCopy.getType().isSequenced());
         bEqual = equalityHelper.equal(po, poCopy);
         // sequences will not be compared
         assertTrue(bEqual);
     }
 
     public void testSequencesStillNullAfterIsSequencedSetToTrueOutOfSpec() {
-    	// create a dataObject with no sequence - the root
-    	defineAndLoadRoot(false, false);
+        // create a dataObject with no sequence - the root
+        defineAndLoadRoot(false, false);
         Sequence aSequence = root.getSequence();
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	// copy po
-    	DataObject rootCopy = copyHelper.copy(root);
-    	// verify we are using the same context
-    	//assertEquals(helperContext, ((SDOCopyHelper)copyHelper).getHelperContext())
-    	// check sequence was copied
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        // copy po
+        DataObject rootCopy = copyHelper.copy(root);
+        // verify we are using the same context
+        //assertEquals(helperContext, ((SDOCopyHelper)copyHelper).getHelperContext())
+        // check sequence was copied
         SDOSequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
         //compareSequences(aSequence, aSequenceCopy, PO_SEQUENCE_SIZE, true);
-        
+
         // test equalityHelper
-    	DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
+        DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
         boolean bEqual = equalityHelper.equal(po, poCopy);
         assertTrue(bEqual);
 
@@ -1800,62 +1800,62 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         // WARNING: Users should not be doing this - however it is supported
         ((SDOType)poCopy.getType()).setSequenced(false);
         assertFalse(po.getType().isSequenced());
-        assertFalse(poCopy.getType().isSequenced());        
+        assertFalse(poCopy.getType().isSequenced());
         bEqual = equalityHelper.equal(po, poCopy);
         // sequences will not be compared
         assertTrue(bEqual);
-    	
-    	// turn on isSequenced - not available via spec interface - do not use
-    	// copy
-    	
-    	// check equality
-    	
+
+        // turn on isSequenced - not available via spec interface - do not use
+        // copy
+
+        // check equality
+
     }
-    
+
     public void testEqualDeepComplexSingleSequence() {
-    	
+
     }
 
     public void testEqualDeepSimpleManySequence() {
-    	
+
     }
 
     public void testEqualDeepSimpleSingleSequence() {
-    	
+
     }
 
-    
+
 //  remove via sequence
     public void testRemoveSimpleSingleByIndex() {
-    	
+
     }
     public void testRemoveSimpleManyByIndex() {
-    	
+
     }
     public void testRemoveComplexSingleByIndex() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject shipToDO = (DataObject)root.get(PO_SEQUENCE_PATH + "/shipTo");
         assertNotNull(shipToDO);
-    	
-    	// get shipTo sequence
-    	int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
-    	assertTrue(shipToSequenceIndex > -1);
-    	DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
-    	assertNotNull(shipToObjectFromSetting);
-    	assertTrue(shipToObjectFromSetting == shipToDO);
-    	
-    	// delete po[1]/shipTo from setting
-    	aSequence.remove(shipToSequenceIndex);
-    	
-    	// are we removed on the DataObject?
-    	DataObject shipToObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/shipTo");
-    	// TODO: verify delete or dont delete after a sequence.remove
-    	assertNull(shipToObjectFromAfterRemove);   
+
+        // get shipTo sequence
+        int shipToSequenceIndex = getNthSequenceIndexFor(aSequence, "shipTo");
+        assertTrue(shipToSequenceIndex > -1);
+        DataObject shipToObjectFromSetting = (DataObject)aSequence.getValue(shipToSequenceIndex);
+        assertNotNull(shipToObjectFromSetting);
+        assertTrue(shipToObjectFromSetting == shipToDO);
+
+        // delete po[1]/shipTo from setting
+        aSequence.remove(shipToSequenceIndex);
+
+        // are we removed on the DataObject?
+        DataObject shipToObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/shipTo");
+        // TODO: verify delete or dont delete after a sequence.remove
+        assertNull(shipToObjectFromAfterRemove);
     }
-    
+
     public void testRemoveComplexManyByIndex() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         int sequenceSizeBefore = aSequence.size();
         DataObject itemDO1 = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
@@ -1864,27 +1864,27 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertNotNull(itemDO1);
         assertNotNull(itemDO2);
         assertFalse(itemDO1 == itemDO2);
-    	
-    	// get item from sequence
-    	int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
-    	assertTrue(item2SequenceIndex > -1);
-    	DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
-    	assertNotNull(itemObjectFromSetting);
-    	assertTrue(itemObjectFromSetting == itemDO2);
-    	
-    	// delete po[1]/item[2] from setting
-    	aSequence.remove(item2SequenceIndex);
-    	assertEquals(sequenceSizeBefore - 1, aSequence.size());
-    	
-    	// are we removed on the DataObject?
-    	DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
-    	// TODO: verify delete or dont delete after a sequence.remove
-    	assertTrue(item1ObjectFromAfterRemove == itemDO1);   
-    	assertFalse(item1ObjectFromAfterRemove == itemDO2);   
+
+        // get item from sequence
+        int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
+        assertTrue(item2SequenceIndex > -1);
+        DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
+        assertNotNull(itemObjectFromSetting);
+        assertTrue(itemObjectFromSetting == itemDO2);
+
+        // delete po[1]/item[2] from setting
+        aSequence.remove(item2SequenceIndex);
+        assertEquals(sequenceSizeBefore - 1, aSequence.size());
+
+        // are we removed on the DataObject?
+        DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
+        // TODO: verify delete or dont delete after a sequence.remove
+        assertTrue(item1ObjectFromAfterRemove == itemDO1);
+        assertFalse(item1ObjectFromAfterRemove == itemDO2);
     }
 
     public void testRemoveIndexComplexManyReferenceViaListWrapper() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         int sequenceSizeBefore = aSequence.size();
         DataObject itemDO1 = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
@@ -1893,43 +1893,43 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertNotNull(itemDO1);
         assertNotNull(itemDO2);
         assertFalse(itemDO1 == itemDO2);
-    	
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-        
-    	// get item from sequence
-    	int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
-    	assertTrue(item2SequenceIndex > -1);
-    	DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
-    	assertNotNull(itemObjectFromSetting);
-    	assertTrue(itemObjectFromSetting == itemDO2);
-    	
-    	// create a list of items to remove
-    	List<DataObject> listToRemove = new ArrayList<DataObject>();
-    	for(Iterator<DataObject> i = existingList.iterator(); i.hasNext();) {
-    		listToRemove.add(i.next());	
-    	}
-    	
-    	int sizeListToRemove = listToRemove.size();
 
-    	// remove entire list
-    	for(int i=0; i<listSizeBefore; i++) {
-    		existingList.remove(0);
-    	}
-    	assertEquals(sequenceSizeBefore - sizeListToRemove, aSequence.size());
-    	assertEquals(listSizeBefore - sizeListToRemove, existingList.size());
-    	
-    	// are we removed on the DataObject?
-    	//DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
-    	// TODO: verify delete or dont delete after a sequence.remove
-    	//assertTrue(item1ObjectFromAfterRemove == itemDO1);   
-    	//assertFalse(item1ObjectFromAfterRemove == itemDO2);   
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
+
+        // get item from sequence
+        int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
+        assertTrue(item2SequenceIndex > -1);
+        DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
+        assertNotNull(itemObjectFromSetting);
+        assertTrue(itemObjectFromSetting == itemDO2);
+
+        // create a list of items to remove
+        List<DataObject> listToRemove = new ArrayList<DataObject>();
+        for(Iterator<DataObject> i = existingList.iterator(); i.hasNext();) {
+            listToRemove.add(i.next());
+        }
+
+        int sizeListToRemove = listToRemove.size();
+
+        // remove entire list
+        for(int i=0; i<listSizeBefore; i++) {
+            existingList.remove(0);
+        }
+        assertEquals(sequenceSizeBefore - sizeListToRemove, aSequence.size());
+        assertEquals(listSizeBefore - sizeListToRemove, existingList.size());
+
+        // are we removed on the DataObject?
+        //DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
+        // TODO: verify delete or dont delete after a sequence.remove
+        //assertTrue(item1ObjectFromAfterRemove == itemDO1);
+        //assertFalse(item1ObjectFromAfterRemove == itemDO2);
     }
 
     public void testRemoveIndexFirstDuplicateComplexManyReferenceViaListWrapper() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         int sequenceSizeBefore = aSequence.size();
         DataObject itemDO1 = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
@@ -1938,39 +1938,39 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertNotNull(itemDO1);
         assertNotNull(itemDO2);
         assertFalse(itemDO1 == itemDO2);
-    	
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-        
-    	// get item from sequence
-    	int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
-    	assertTrue(item2SequenceIndex > -1);
-    	DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
-    	assertNotNull(itemObjectFromSetting);
-    	assertTrue(itemObjectFromSetting == itemDO2);
-    	
-    	// create a list of items to remove
-    	List<DataObject> listToRemove = new ArrayList<DataObject>();
-    	for(Iterator<DataObject> i = existingList.iterator(); i.hasNext();) {
-    		listToRemove.add(i.next());	
-    	}
-    	
-    	int sizeListToRemove = listToRemove.size();
 
-    	// remove entire list
-    	for(int i=0; i<listSizeBefore; i++) {
-    		existingList.remove(0);
-    	}
-    	assertEquals(sequenceSizeBefore - sizeListToRemove, aSequence.size());
-    	assertEquals(listSizeBefore - sizeListToRemove, existingList.size());
-    	
-    	// are we removed on the DataObject?
-    	//DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
-    	// TODO: verify delete or dont delete after a sequence.remove
-    	//assertTrue(item1ObjectFromAfterRemove == itemDO1);   
-    	//assertFalse(item1ObjectFromAfterRemove == itemDO2);   
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
+
+        // get item from sequence
+        int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
+        assertTrue(item2SequenceIndex > -1);
+        DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
+        assertNotNull(itemObjectFromSetting);
+        assertTrue(itemObjectFromSetting == itemDO2);
+
+        // create a list of items to remove
+        List<DataObject> listToRemove = new ArrayList<DataObject>();
+        for(Iterator<DataObject> i = existingList.iterator(); i.hasNext();) {
+            listToRemove.add(i.next());
+        }
+
+        int sizeListToRemove = listToRemove.size();
+
+        // remove entire list
+        for(int i=0; i<listSizeBefore; i++) {
+            existingList.remove(0);
+        }
+        assertEquals(sequenceSizeBefore - sizeListToRemove, aSequence.size());
+        assertEquals(listSizeBefore - sizeListToRemove, existingList.size());
+
+        // are we removed on the DataObject?
+        //DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
+        // TODO: verify delete or dont delete after a sequence.remove
+        //assertTrue(item1ObjectFromAfterRemove == itemDO1);
+        //assertFalse(item1ObjectFromAfterRemove == itemDO2);
     }
 
     /**
@@ -1978,7 +1978,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * containment dataobjects
      */
     public void testRemoveIndexFirstDuplicateComplexManyReferenceViaSequence() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         int sequenceSizeBefore = aSequence.size();
         DataObject itemDO1 = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
@@ -1987,46 +1987,46 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertNotNull(itemDO1);
         assertNotNull(itemDO2);
         assertFalse(itemDO1 == itemDO2);
-    	
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-        
-    	// get item from sequence
-    	int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
-    	assertTrue(item2SequenceIndex > -1);
-    	DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
-    	assertNotNull(itemObjectFromSetting);
-    	assertTrue(itemObjectFromSetting == itemDO2);
-    	
-    	// create a list of items to remove
-    	List<DataObject> listToRemove = new ArrayList<DataObject>();
-    	for(Iterator<DataObject> i = existingList.iterator(); i.hasNext();) {
-    		listToRemove.add(i.next());	
-    	}
-    	
-    	int sizeListToRemove = listToRemove.size();
 
-    	// q2: remove(itemDO@123 = index 2) from seq(itemDO@123, shipToDO@234, itemDO@123, itemDO@123) = seq(itemDO@123, shipToDO@234, itemDO@123) - 3rd item removed
-    	// invalid state - cannot reproduce
-    	
-    	// remove entire list
-    	for(int i=0; i<listSizeBefore; i++) {
-    		aSequence.remove(5);
-    	}
-    	assertEquals(sequenceSizeBefore - sizeListToRemove, aSequence.size());
-    	assertEquals(listSizeBefore - sizeListToRemove, existingList.size());
-    	
-    	// are we removed on the DataObject?
-    	//DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
-    	// TODO: verify delete or dont delete after a sequence.remove
-    	//assertTrue(item1ObjectFromAfterRemove == itemDO1);   
-    	//assertFalse(item1ObjectFromAfterRemove == itemDO2);   
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
+
+        // get item from sequence
+        int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
+        assertTrue(item2SequenceIndex > -1);
+        DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
+        assertNotNull(itemObjectFromSetting);
+        assertTrue(itemObjectFromSetting == itemDO2);
+
+        // create a list of items to remove
+        List<DataObject> listToRemove = new ArrayList<DataObject>();
+        for(Iterator<DataObject> i = existingList.iterator(); i.hasNext();) {
+            listToRemove.add(i.next());
+        }
+
+        int sizeListToRemove = listToRemove.size();
+
+        // q2: remove(itemDO@123 = index 2) from seq(itemDO@123, shipToDO@234, itemDO@123, itemDO@123) = seq(itemDO@123, shipToDO@234, itemDO@123) - 3rd item removed
+        // invalid state - cannot reproduce
+
+        // remove entire list
+        for(int i=0; i<listSizeBefore; i++) {
+            aSequence.remove(5);
+        }
+        assertEquals(sequenceSizeBefore - sizeListToRemove, aSequence.size());
+        assertEquals(listSizeBefore - sizeListToRemove, existingList.size());
+
+        // are we removed on the DataObject?
+        //DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
+        // TODO: verify delete or dont delete after a sequence.remove
+        //assertTrue(item1ObjectFromAfterRemove == itemDO1);
+        //assertFalse(item1ObjectFromAfterRemove == itemDO2);
     }
-    
+
     public void testRemoveAllComplexManyReferenceViaListWrapper() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         int sequenceSizeBefore = aSequence.size();
         DataObject itemDO1 = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
@@ -2035,41 +2035,41 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertNotNull(itemDO1);
         assertNotNull(itemDO2);
         assertFalse(itemDO1 == itemDO2);
-    	
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-        
-    	// get item from sequence
-    	int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
-    	assertTrue(item2SequenceIndex > -1);
-    	DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
-    	assertNotNull(itemObjectFromSetting);
-    	assertTrue(itemObjectFromSetting == itemDO2);
-    	
-    	// create a list of items to remove
-    	List<DataObject> listToRemove = new ArrayList<DataObject>();
-    	for(Iterator<DataObject> i = existingList.iterator(); i.hasNext();) {
-    		listToRemove.add(i.next());	
-    	}
-    	
-    	int sizeListToRemove = listToRemove.size();
 
-    	// remove entire list
-    	existingList.removeAll(listToRemove);
-    	assertEquals(sequenceSizeBefore - sizeListToRemove, aSequence.size());
-    	assertEquals(listSizeBefore - sizeListToRemove, existingList.size());
-    	
-    	// are we removed on the DataObject?
-    	//DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
-    	// TODO: verify delete or dont delete after a sequence.remove
-    	//assertTrue(item1ObjectFromAfterRemove == itemDO1);   
-    	//assertFalse(item1ObjectFromAfterRemove == itemDO2);   
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
+
+        // get item from sequence
+        int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
+        assertTrue(item2SequenceIndex > -1);
+        DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
+        assertNotNull(itemObjectFromSetting);
+        assertTrue(itemObjectFromSetting == itemDO2);
+
+        // create a list of items to remove
+        List<DataObject> listToRemove = new ArrayList<DataObject>();
+        for(Iterator<DataObject> i = existingList.iterator(); i.hasNext();) {
+            listToRemove.add(i.next());
+        }
+
+        int sizeListToRemove = listToRemove.size();
+
+        // remove entire list
+        existingList.removeAll(listToRemove);
+        assertEquals(sequenceSizeBefore - sizeListToRemove, aSequence.size());
+        assertEquals(listSizeBefore - sizeListToRemove, existingList.size());
+
+        // are we removed on the DataObject?
+        //DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
+        // TODO: verify delete or dont delete after a sequence.remove
+        //assertTrue(item1ObjectFromAfterRemove == itemDO1);
+        //assertFalse(item1ObjectFromAfterRemove == itemDO2);
     }
 
     public void testRemoveAllComplexManyViaListWrapper() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, "/", 5);
         int sequenceSizeBefore = aSequence.size();
         DataObject itemDO1 = (DataObject)root.get("item[1]");
@@ -2078,42 +2078,42 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertNotNull(itemDO1);
         assertNotNull(itemDO2);
         assertFalse(itemDO1 == itemDO2);
-    	
-    	//DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	ListWrapper existingList = (ListWrapper)root.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(3, listSizeBefore);
-        
-    	// get item from sequence
-    	int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
-    	assertTrue(item2SequenceIndex > -1);
-    	DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
-    	assertNotNull(itemObjectFromSetting);
-    	assertTrue(itemObjectFromSetting == itemDO2);
-    	
-    	// create a list of items to remove
-    	List<DataObject> listToRemove = new ArrayList<DataObject>();
-    	for(Iterator<DataObject> i = existingList.iterator(); i.hasNext();) {
-    		listToRemove.add(i.next());	
-    	}
-    	
-    	int sizeListToRemove = listToRemove.size();
 
-    	// remove entire list
-    	existingList.removeAll(listToRemove);
-    	assertEquals(sequenceSizeBefore - sizeListToRemove, aSequence.size());
-    	assertEquals(listSizeBefore - sizeListToRemove, existingList.size());
-    	
-    	// are we removed on the DataObject?
-    	//DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
-    	// TODO: verify delete or dont delete after a sequence.remove
-    	//assertTrue(item1ObjectFromAfterRemove == itemDO1);   
-    	//assertFalse(item1ObjectFromAfterRemove == itemDO2);
-    	assertEquals(0, existingList.size());
+        //DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        ListWrapper existingList = (ListWrapper)root.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(3, listSizeBefore);
+
+        // get item from sequence
+        int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
+        assertTrue(item2SequenceIndex > -1);
+        DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
+        assertNotNull(itemObjectFromSetting);
+        assertTrue(itemObjectFromSetting == itemDO2);
+
+        // create a list of items to remove
+        List<DataObject> listToRemove = new ArrayList<DataObject>();
+        for(Iterator<DataObject> i = existingList.iterator(); i.hasNext();) {
+            listToRemove.add(i.next());
+        }
+
+        int sizeListToRemove = listToRemove.size();
+
+        // remove entire list
+        existingList.removeAll(listToRemove);
+        assertEquals(sequenceSizeBefore - sizeListToRemove, aSequence.size());
+        assertEquals(listSizeBefore - sizeListToRemove, existingList.size());
+
+        // are we removed on the DataObject?
+        //DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
+        // TODO: verify delete or dont delete after a sequence.remove
+        //assertTrue(item1ObjectFromAfterRemove == itemDO1);
+        //assertFalse(item1ObjectFromAfterRemove == itemDO2);
+        assertEquals(0, existingList.size());
     }
-    
+
     public void testRemoveComplexManyReferenceViaListWrapperIndex() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         int sequenceSizeBefore = aSequence.size();
         DataObject itemDO1 = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
@@ -2122,32 +2122,32 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertNotNull(itemDO1);
         assertNotNull(itemDO2);
         assertFalse(itemDO1 == itemDO2);
-    	
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-        
-    	// get item from sequence
-    	int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
-    	assertTrue(item2SequenceIndex > -1);
-    	DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
-    	assertNotNull(itemObjectFromSetting);
-    	assertTrue(itemObjectFromSetting == itemDO2);
-    	
-    	// delete po[1]/item[2] from setting
-    	existingList.remove(1);
-    	assertEquals(sequenceSizeBefore - 1, aSequence.size());
-    	
-    	// are we removed on the DataObject?
-    	DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
-    	// TODO: verify delete or dont delete after a sequence.remove
-    	assertTrue(item1ObjectFromAfterRemove == itemDO1);   
-    	assertFalse(item1ObjectFromAfterRemove == itemDO2);   
+
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
+
+        // get item from sequence
+        int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
+        assertTrue(item2SequenceIndex > -1);
+        DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
+        assertNotNull(itemObjectFromSetting);
+        assertTrue(itemObjectFromSetting == itemDO2);
+
+        // delete po[1]/item[2] from setting
+        existingList.remove(1);
+        assertEquals(sequenceSizeBefore - 1, aSequence.size());
+
+        // are we removed on the DataObject?
+        DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
+        // TODO: verify delete or dont delete after a sequence.remove
+        assertTrue(item1ObjectFromAfterRemove == itemDO1);
+        assertFalse(item1ObjectFromAfterRemove == itemDO2);
     }
 
     public void testRemoveComplexManyReferenceViaListWrapperReference() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         int sequenceSizeBefore = aSequence.size();
         DataObject itemDO1 = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
@@ -2156,32 +2156,32 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertNotNull(itemDO1);
         assertNotNull(itemDO2);
         assertFalse(itemDO1 == itemDO2);
-    	
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-        
-    	// get item from sequence
-    	int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
-    	assertTrue(item2SequenceIndex > -1);
-    	DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
-    	assertNotNull(itemObjectFromSetting);
-    	assertTrue(itemObjectFromSetting == itemDO2);
-    	
-    	// delete po[1]/item[2] from setting
-    	existingList.remove(itemDO2);
-    	assertEquals(sequenceSizeBefore - 1, aSequence.size());
-    	
-    	// are we removed on the DataObject?
-    	DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
-    	// TODO: verify delete or dont delete after a sequence.remove
-    	assertTrue(item1ObjectFromAfterRemove == itemDO1);   
-    	assertFalse(item1ObjectFromAfterRemove == itemDO2);   
+
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
+
+        // get item from sequence
+        int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
+        assertTrue(item2SequenceIndex > -1);
+        DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
+        assertNotNull(itemObjectFromSetting);
+        assertTrue(itemObjectFromSetting == itemDO2);
+
+        // delete po[1]/item[2] from setting
+        existingList.remove(itemDO2);
+        assertEquals(sequenceSizeBefore - 1, aSequence.size());
+
+        // are we removed on the DataObject?
+        DataObject item1ObjectFromAfterRemove = (DataObject)root.get(PO_SEQUENCE_PATH + "/item[1]");
+        // TODO: verify delete or dont delete after a sequence.remove
+        assertTrue(item1ObjectFromAfterRemove == itemDO1);
+        assertFalse(item1ObjectFromAfterRemove == itemDO2);
     }
 
     public void testRemoveComplexManyViaListWrapperReference() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, "/", 5);
         int sequenceSizeBefore = aSequence.size();
         DataObject itemDO1 = (DataObject)root.get("item[1]");
@@ -2190,833 +2190,833 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertNotNull(itemDO1);
         assertNotNull(itemDO2);
         assertFalse(itemDO1 == itemDO2);
-    	
-    	ListWrapper existingList = (ListWrapper)root.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(3, listSizeBefore);
-        
-    	// get item from sequence
-    	int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
-    	assertTrue(item2SequenceIndex > -1);
-    	DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
-    	assertNotNull(itemObjectFromSetting);
-    	assertTrue(itemObjectFromSetting == itemDO2);
-    	
-    	// delete po[1]/item[2] from setting
-    	existingList.remove(itemDO2);
-    	assertEquals(sequenceSizeBefore - 1, aSequence.size());
-    	
-    	// are we removed on the DataObject?
-    	DataObject item1ObjectFromAfterRemove = (DataObject)root.get("item[1]");
-    	// TODO: verify delete or dont delete after a sequence.remove
-    	assertTrue(item1ObjectFromAfterRemove == itemDO1);   
-    	assertFalse(item1ObjectFromAfterRemove == itemDO2);   
+
+        ListWrapper existingList = (ListWrapper)root.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(3, listSizeBefore);
+
+        // get item from sequence
+        int item2SequenceIndex = getNthSequenceIndexFor(aSequence, "item", 2);
+        assertTrue(item2SequenceIndex > -1);
+        DataObject itemObjectFromSetting = (DataObject)aSequence.getValue(item2SequenceIndex);
+        assertNotNull(itemObjectFromSetting);
+        assertTrue(itemObjectFromSetting == itemDO2);
+
+        // delete po[1]/item[2] from setting
+        existingList.remove(itemDO2);
+        assertEquals(sequenceSizeBefore - 1, aSequence.size());
+
+        // are we removed on the DataObject?
+        DataObject item1ObjectFromAfterRemove = (DataObject)root.get("item[1]");
+        // TODO: verify delete or dont delete after a sequence.remove
+        assertTrue(item1ObjectFromAfterRemove == itemDO1);
+        assertFalse(item1ObjectFromAfterRemove == itemDO2);
     }
 
-    
+
     /**
      * Test operations involving deep complex types that contain complex children
      *
      */
     public void testRemoveNullComplexManyWithComplexChildrenViaListWrapperReference() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, "/", 5);
         int sequenceSizeBefore = aSequence.size();
-    	ListWrapper existingList = (ListWrapper)root.get("porder");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(1, listSizeBefore);
-    	existingList.remove(null);
-    	assertEquals(sequenceSizeBefore, aSequence.size());
+        ListWrapper existingList = (ListWrapper)root.get("porder");
+        int listSizeBefore = existingList.size();
+        assertEquals(1, listSizeBefore);
+        existingList.remove(null);
+        assertEquals(sequenceSizeBefore, aSequence.size());
     }
 
     public void testRemoveComplexManyWithComplexChildreViaListWrapperReference() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, "/", 5);
         int sequenceSizeBefore = aSequence.size();
-        DataObject po1 = (DataObject)root.get("porder[1]");        
+        DataObject po1 = (DataObject)root.get("porder[1]");
         assertNotNull(po1);
-    	
-    	ListWrapper existingList = (ListWrapper)root.get("porder");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(1, listSizeBefore);
 
-    	existingList.remove(po1);
-    	assertEquals(sequenceSizeBefore - 1, aSequence.size());
-    	
-    	// are we removed on the DataObject?
-    	ListWrapper existingList2 = (ListWrapper)root.get("porder");  // same instance of existingList
-    	int listSizeAfter = existingList2.size();
-    	assertEquals(0, listSizeAfter);
+        ListWrapper existingList = (ListWrapper)root.get("porder");
+        int listSizeBefore = existingList.size();
+        assertEquals(1, listSizeBefore);
+
+        existingList.remove(po1);
+        assertEquals(sequenceSizeBefore - 1, aSequence.size());
+
+        // are we removed on the DataObject?
+        ListWrapper existingList2 = (ListWrapper)root.get("porder");  // same instance of existingList
+        int listSizeAfter = existingList2.size();
+        assertEquals(0, listSizeAfter);
     }
-    
+
 //     remove via dataobject (same as detach)
     public void testUnsetSimpleSingleByIndex() {
-    	
+
     }
     public void testUnsetSimpleManyByIndex() {
-    	
+
     }
     public void testUnsetComplexSingleByIndex() {
-    	
+
     }
     public void testUnsetComplexManyByIndex() {
-    	
+
     }
 
     public void testDeleteSimpleSingleByProperty() {
-    	
+
     }
     public void testDeleteSimpleManyByProperty() {
-    	
+
     }
     public void testDeleteComplexSingleByProperty() {
-    	
+
     }
     public void testDeleteComplexManyByProperty() {
-    	
+
     }
 
     public void testDetachSimpleSingleByProperty() {
-    	
+
     }
     public void testDetachSimpleManyByProperty() {
-    	
+
     }
     public void testDetachComplexSingleByProperty() {
-    	
+
     }
     public void testDetachComplexManyByProperty() {
-    	
+
     }
 
 //     add via sequence
 
 //     add via dataobject
     public void testAddSimpleSingleByDataObjectSetProperty() {
-    	
+
     }
     public void testAddSimpleManyByDataObjectSetPropertyWithListOnEmptyList() {
-    	
+
     }
     public void testAddSimpleManyByDataObjectSetPropertyWithListOnExistingList() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("comment")).size();
-    	assertEquals(PO_COMMENT_LIST_SIZE, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	
-    	Property commentProperty = po.getInstanceProperty("comment");
-    	
-    	// add list of items to sequence
-    	List<String> aListToAdd = new ArrayList<String>();
-    	aListToAdd.add("comment 2");
-    	aListToAdd.add("comment 3");
-    	aSequence.add(indexToPlaceAtEnd, commentProperty, aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// get back new Setting value
-    	String comment2Value = (String)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNotNull(comment2Value);
-    	assertEquals(comment2Value, aListToAdd.get(0));
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence for simple type
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
-    	
-    	// verify that the list has increased
-    	int listSizeAfter = ((ListWrapper)po.get("comment")).size();
-    	assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
-    	
-    	// verify that DataObject has changed but not the # of dataObjects
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + 0, treeSizeAfterAdd);
+        int listSizeBefore = ((ListWrapper)po.get("comment")).size();
+        assertEquals(PO_COMMENT_LIST_SIZE, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size();
+
+        Property commentProperty = po.getInstanceProperty("comment");
+
+        // add list of items to sequence
+        List<String> aListToAdd = new ArrayList<String>();
+        aListToAdd.add("comment 2");
+        aListToAdd.add("comment 3");
+        aSequence.add(indexToPlaceAtEnd, commentProperty, aListToAdd);
+
+        // get back new Setting value
+        String comment2Value = (String)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(comment2Value);
+        assertEquals(comment2Value, aListToAdd.get(0));
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence for simple type
+        assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
+
+        // verify that the list has increased
+        int listSizeAfter = ((ListWrapper)po.get("comment")).size();
+        assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+
+        // verify that DataObject has changed but not the # of dataObjects
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + 0, treeSizeAfterAdd);
     }
 
     public void testAddComplexSingleByDataObjectSetProperty() {
     }
     public void testAddComplexManyByDataObjectSetPropertyWithListOnEmptyList() {
-    	
+
     }
-    
+
     public void testAddComplexManyByDataObjectSetPropertyWithListOnExistingList() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[1]");
-    	assertNotNull(item3);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add list of items to sequence
-    	List<DataObject> aListToAdd = new ArrayList<DataObject>();
-    	aListToAdd.add(item3);
-    	aSequence.add(indexToPlaceAtEnd, itemProperty, aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// get back new Setting value
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNotNull(item2Value);
-    	assertEquals(item2Value, aListToAdd.get(0));
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
-    	
-    	// verify that the list has increased
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[1]");
+        assertNotNull(item3);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add list of items to sequence
+        List<DataObject> aListToAdd = new ArrayList<DataObject>();
+        aListToAdd.add(item3);
+        aSequence.add(indexToPlaceAtEnd, itemProperty, aListToAdd);
+
+        // get back new Setting value
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(item2Value);
+        assertEquals(item2Value, aListToAdd.get(0));
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+
+        // verify that the list has increased
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
     }
-    
+
     public void testAddComplexManyByDataObjectSetPropertyWithSingleItemOnEmptyList() {
     }
-    
-    public void testAddComplexManyByDataObjectSetPropertyWithSingleItemOnExistingList() {
-    	defineAndLoadRoot(false, false);
-        SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[3]");
-    	assertNotNull(item3);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add to sequence
-    	aSequence.add(indexToPlaceAtEnd, itemProperty, item3);
-    	// get back new Setting value
-    	//ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNotNull(item2Value);
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
-    	
-    	// verify that the list has increased
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + 1, listSizeAfter);
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
+    public void testAddComplexManyByDataObjectSetPropertyWithSingleItemOnExistingList() {
+        defineAndLoadRoot(false, false);
+        SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[3]");
+        assertNotNull(item3);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add to sequence
+        aSequence.add(indexToPlaceAtEnd, itemProperty, item3);
+        // get back new Setting value
+        //ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(item2Value);
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+
+        // verify that the list has increased
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + 1, listSizeAfter);
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
     }
 
 //  add via ListWrapper
     public void testAddSimpleSingleByListWrapperAddProperty() {
-    	
+
     }
     public void testAddSimpleManyByListWrapperAddProperty() {
-    	
+
     }
     public void testAddComplexSingleByListWrapperAddProperty() {
-    	
+
     }
     public void testAddComplexManyByListWrapperAddPropertyOnEmptyList() {
-    	
+
     }
 
     public void testAddComplexManyByListWrapperAddPropertyOnExistingList() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[1]");
-    	assertNotNull(item3);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add list of items to existing list
-    	List<DataObject> aListToAdd = new ArrayList<DataObject>();
-    	aListToAdd.add(item3);
-    	aListToAdd.add(item3);
-    	for(Iterator i = aListToAdd.iterator(); i.hasNext();) {
-    		// add to the end of the list
-    		existingList.add(i.next());
-    	}
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// verify that the list has increased on the do
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
 
-    	// verify that the sequence size has increased
-    	assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
-    	
-    	// get back new Setting value
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + aListToAdd.size() - 1);
-    	assertNotNull(item2Value);
-    	assertEquals(item2Value, aListToAdd.get(0));
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[1]");
+        assertNotNull(item3);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add list of items to existing list
+        List<DataObject> aListToAdd = new ArrayList<DataObject>();
+        aListToAdd.add(item3);
+        aListToAdd.add(item3);
+        for(Iterator i = aListToAdd.iterator(); i.hasNext();) {
+            // add to the end of the list
+            existingList.add(i.next());
+        }
+
+        // verify that the list has increased on the do
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+
+        // verify that the sequence size has increased
+        assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
+
+        // get back new Setting value
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + aListToAdd.size() - 1);
+        assertNotNull(item2Value);
+        assertEquals(item2Value, aListToAdd.get(0));
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
     }
 
     public void testAddComplexManyByListWrapperAddAllPropertyOnExistingList() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[1]");
-    	assertNotNull(item3);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add list of items to existing list
-    	List<DataObject> aListToAdd = new ArrayList<DataObject>();
-    	aListToAdd.add(item3);
-    	aListToAdd.add(item3);
-    	// add to the end of the list
-    	existingList.addAll(aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// verify that the list has increased on the do
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
 
-    	// verify that the sequence size has increased
-    	assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
-    	
-    	// get back new Setting value
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + aListToAdd.size() - 1);
-    	assertNotNull(item2Value);
-    	assertEquals(item2Value, aListToAdd.get(0));
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[1]");
+        assertNotNull(item3);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add list of items to existing list
+        List<DataObject> aListToAdd = new ArrayList<DataObject>();
+        aListToAdd.add(item3);
+        aListToAdd.add(item3);
+        // add to the end of the list
+        existingList.addAll(aListToAdd);
+
+        // verify that the list has increased on the do
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+
+        // verify that the sequence size has increased
+        assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
+
+        // get back new Setting value
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + aListToAdd.size() - 1);
+        assertNotNull(item2Value);
+        assertEquals(item2Value, aListToAdd.get(0));
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
     }
-    
+
     public void testAddAllComplexManyNonContainmentByListWrapperAddAllPropertyOnExistingList() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[3]");
-    	assertNotNull(item3);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add list of items to existing list
-    	List<DataObject> aListToAdd = new ArrayList<DataObject>();
-    	aListToAdd.add(item3);
-    	// add to the end of the list
-    	existingList.addAll(aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// verify that the list has increased on the do
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
 
-    	// verify that the sequence size has increased
-    	assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
-    	
-    	// get back new Setting value
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + aListToAdd.size() - 1);
-    	assertNotNull(item2Value);
-    	assertEquals(item2Value, aListToAdd.get(0));
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[3]");
+        assertNotNull(item3);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add list of items to existing list
+        List<DataObject> aListToAdd = new ArrayList<DataObject>();
+        aListToAdd.add(item3);
+        // add to the end of the list
+        existingList.addAll(aListToAdd);
+
+        // verify that the list has increased on the do
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+
+        // verify that the sequence size has increased
+        assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
+
+        // get back new Setting value
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + aListToAdd.size() - 1);
+        assertNotNull(item2Value);
+        assertEquals(item2Value, aListToAdd.get(0));
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
     }
 /*
     public void testRemove1StOccurrenceComplexManyNonContainmentByListWrapperAddAllPropertyOnExistingList() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[3]");
-    	assertNotNull(item3);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add list of items to existing list
-    	List<DataObject> aListToAdd = new ArrayList<DataObject>();
-    	aListToAdd.add(item3);
-    	// add to the end of the list
-    	existingList.addAll(aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// verify that the list has increased on the do
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
 
-    	// verify that the sequence size has increased
-    	assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
-    	
-    	// get back new Setting value
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + aListToAdd.size() - 1);
-    	assertNotNull(item2Value);
-    	assertEquals(item2Value, aListToAdd.get(0));
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
-    	
-    	// get sequence object that will be removed
-    	SDOSetting aSetting5 = (SDOSetting)aSequence.getSettings().get(5);
-    	SDOSetting aSetting6 = (SDOSetting)aSequence.getSettings().get(6);
-    	// remove the first occurrence of the duplicated items in the sequence 
-    	existingList.remove(1);
-    	
-    	// check size
-    	assertEquals(indexToPlaceAtEnd, aSequence.size());
-    	
-    	// verify that the correct index in the sequence was removed based on the listWrapper index
-    	//assertEquals(aSetting6, aSequence.getSettings().get(5)); // 6 shifted into 5's place
-    	//assertFalse(aSetting5 == aSequence.getSettings().get(5)); // 5 is gone
-    	assertTrue(aSetting5 == aSequence.getSettings().get(5)); // 5 is still there    	
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[3]");
+        assertNotNull(item3);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add list of items to existing list
+        List<DataObject> aListToAdd = new ArrayList<DataObject>();
+        aListToAdd.add(item3);
+        // add to the end of the list
+        existingList.addAll(aListToAdd);
+
+        // verify that the list has increased on the do
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+
+        // verify that the sequence size has increased
+        assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
+
+        // get back new Setting value
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + aListToAdd.size() - 1);
+        assertNotNull(item2Value);
+        assertEquals(item2Value, aListToAdd.get(0));
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
+
+        // get sequence object that will be removed
+        SDOSetting aSetting5 = (SDOSetting)aSequence.getSettings().get(5);
+        SDOSetting aSetting6 = (SDOSetting)aSequence.getSettings().get(6);
+        // remove the first occurrence of the duplicated items in the sequence
+        existingList.remove(1);
+
+        // check size
+        assertEquals(indexToPlaceAtEnd, aSequence.size());
+
+        // verify that the correct index in the sequence was removed based on the listWrapper index
+        //assertEquals(aSetting6, aSequence.getSettings().get(5)); // 6 shifted into 5's place
+        //assertFalse(aSetting5 == aSequence.getSettings().get(5)); // 5 is gone
+        assertTrue(aSetting5 == aSequence.getSettings().get(5)); // 5 is still there
     }
 
     public void testRemove2ndOccurrenceComplexManyNonContainmentByListWrapperAddAllPropertyOnExistingList() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[3]");
-    	assertNotNull(item3);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add list of items to existing list
-    	List<DataObject> aListToAdd = new ArrayList<DataObject>();
-    	aListToAdd.add(item3);
-    	// add to the end of the list
-    	existingList.addAll(aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// verify that the list has increased on the do
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
 
-    	// verify that the sequence size has increased
-    	assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
-    	
-    	// get back new Setting value
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + aListToAdd.size() - 1);
-    	assertNotNull(item2Value);
-    	assertEquals(item2Value, aListToAdd.get(0));
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
-    	
-    	// get sequence object that will be removed
-    	SDOSetting aSetting5 = (SDOSetting)aSequence.getSettings().get(5);
-    	SDOSetting aSetting6 = (SDOSetting)aSequence.getSettings().get(6);
-    	// remove the first occurrence of the duplicated items in the sequence 
-    	existingList.remove(2);
-    	
-    	// check size
-    	assertEquals(indexToPlaceAtEnd, aSequence.size());
-    	
-    	// verify that the correct index in the sequence was removed based on the listWrapper index
-    	assertEquals(aSetting5, aSequence.getSettings().get(5)); // 6 shifted into 5's place
-    	assertFalse(aSetting6 == aSequence.getSettings().get(5)); // 5 is gone
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[3]");
+        assertNotNull(item3);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add list of items to existing list
+        List<DataObject> aListToAdd = new ArrayList<DataObject>();
+        aListToAdd.add(item3);
+        // add to the end of the list
+        existingList.addAll(aListToAdd);
+
+        // verify that the list has increased on the do
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+
+        // verify that the sequence size has increased
+        assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
+
+        // get back new Setting value
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + aListToAdd.size() - 1);
+        assertNotNull(item2Value);
+        assertEquals(item2Value, aListToAdd.get(0));
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + aListToAdd.size(), aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
+
+        // get sequence object that will be removed
+        SDOSetting aSetting5 = (SDOSetting)aSequence.getSettings().get(5);
+        SDOSetting aSetting6 = (SDOSetting)aSequence.getSettings().get(6);
+        // remove the first occurrence of the duplicated items in the sequence
+        existingList.remove(2);
+
+        // check size
+        assertEquals(indexToPlaceAtEnd, aSequence.size());
+
+        // verify that the correct index in the sequence was removed based on the listWrapper index
+        assertEquals(aSetting5, aSequence.getSettings().get(5)); // 6 shifted into 5's place
+        assertFalse(aSetting6 == aSequence.getSettings().get(5)); // 5 is gone
     }*/
 
     // TODO: Verify that existing duplicates will be removed before the new list is added - addAll same as set
     public void testAddAllDuplicatesComplexManyByListWrapperAddAllPropertyOnExistingList() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, "/", 5);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(root).size();
-    	assertEquals(10, treeSizeBeforeAdd);
-    	assertEquals(5, aSequence.size());
 
-    	ListWrapper existingList = (ListWrapper)root.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(3, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[3]");
-    	assertNotNull(item3);
-    	
-    	Property itemProperty = root.getInstanceProperty("item");
-    	
-    	// add list of items to existing list
-    	List<DataObject> aListToAdd = new ArrayList<DataObject>();
-    	aListToAdd.add(item3);
-    	aListToAdd.add(item3);
-    	aListToAdd.add(item3);
-    	// add to the end of the list
-    	existingList.addAll(aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(root).size();
+        assertEquals(10, treeSizeBeforeAdd);
+        assertEquals(5, aSequence.size());
 
-    	// verify that the list has increased on the do
-    	int listSizeAfter = ((ListWrapper)root.get("item")).size();
+        ListWrapper existingList = (ListWrapper)root.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(3, listSizeBefore);
 
-    	
-    	// TODO: We should not be removing the existing item?
-    	int newItems = aListToAdd.size() - 3;
-    	//assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
-    	assertEquals(listSizeBefore + newItems, listSizeAfter);
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[3]");
+        assertNotNull(item3);
 
-    	// verify that the sequence size has increased
-    	assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
-    	
-    	// get back new Setting value
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + newItems - 1);
-    	assertNotNull(item2Value);
-    	assertEquals(item2Value, aListToAdd.get(0));
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd - 1));
-    	// check increased size of sequence
-    	assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(root).size();
-    	assertEquals(treeSizeBeforeAdd + newItems, treeSizeAfterAdd);
-  	
+        Property itemProperty = root.getInstanceProperty("item");
+
+        // add list of items to existing list
+        List<DataObject> aListToAdd = new ArrayList<DataObject>();
+        aListToAdd.add(item3);
+        aListToAdd.add(item3);
+        aListToAdd.add(item3);
+        // add to the end of the list
+        existingList.addAll(aListToAdd);
+
+        // verify that the list has increased on the do
+        int listSizeAfter = ((ListWrapper)root.get("item")).size();
+
+
+        // TODO: We should not be removing the existing item?
+        int newItems = aListToAdd.size() - 3;
+        //assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+        assertEquals(listSizeBefore + newItems, listSizeAfter);
+
+        // verify that the sequence size has increased
+        assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
+
+        // get back new Setting value
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + newItems - 1);
+        assertNotNull(item2Value);
+        assertEquals(item2Value, aListToAdd.get(0));
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd - 1));
+        // check increased size of sequence
+        assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(root).size();
+        assertEquals(treeSizeBeforeAdd + newItems, treeSizeAfterAdd);
+
     }
 /*
     // TODO: Verify that existing duplicates will be removed before the new list is added - addAll same as set
     public void testRemove2ndOccurrenceSimpleManyByListWrapperAddAllPropertyOnExistingList() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)po.get("comment");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(PO_COMMENT_LIST_SIZE, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	Property commentProperty = po.getInstanceProperty("comment");
-    	
-    	// add list of items to existing list
-    	List<String> aListToAdd = new ArrayList<String>();
-    	aListToAdd.add(PO_COMMENT_VALUE1);
-    	aListToAdd.add(PO_COMMENT_VALUE1);
-    	aListToAdd.add(PO_COMMENT_VALUE1);
-    	// add to the end of the list
-    	existingList.addAll(aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// verify that the list has increased on the do
-    	int listSizeAfter = ((ListWrapper)po.get("comment")).size();
-    	
-    	// TODO: We should not be removing the existing item?
-    	int newItems = aListToAdd.size();
-    	//assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
-    	assertEquals(listSizeBefore + newItems, listSizeAfter);
+        ListWrapper existingList = (ListWrapper)po.get("comment");
+        int listSizeBefore = existingList.size();
+        assertEquals(PO_COMMENT_LIST_SIZE, listSizeBefore);
 
-    	// verify that the sequence size has increased
-    	assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
-    	
-    	// get back new Setting value
-    	String comment2Value = (String)aSequence.getValue(indexToPlaceAtEnd + newItems - 1);
-    	assertNotNull(comment2Value);
-    	assertEquals(comment2Value, aListToAdd.get(0));
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd - 1));
-    	// check increased size of sequence
-    	assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	// but dataObject node list is the same
-    	assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
-    	
-    	// get sequence object that will be removed
-    	SDOSetting aSetting7 = (SDOSetting)aSequence.getSettings().get(7);
-    	SDOSetting aSetting8 = (SDOSetting)aSequence.getSettings().get(8);
-    	SDOSetting aSetting9 = (SDOSetting)aSequence.getSettings().get(9);
-    	// remove the first occurrence of the duplicated items in the sequence 
-    	int aSequenceSizeBeforeRemove = aSequence.size();
-    	existingList.remove(2);
-    	
-    	// check size
-    	assertEquals(aSequenceSizeBeforeRemove - 1, aSequence.size());
-    	
-    	// verify that the correct index in the sequence was removed based on the listWrapper index
-    	assertEquals(aSetting8, aSequence.getSettings().get(7)); // 6 shifted into 5's place
-    	assertEquals(aSetting9, aSequence.getSettings().get(8)); // 6 shifted into 5's place
-    	assertFalse(aSetting7 == aSequence.getSettings().get(7)); // 5 is gone
-    	assertFalse(aSetting7 == aSequence.getSettings().get(8)); // 5 is gone
-    	//assertFalse(aSetting7 == aSequence.getSettings().get(9)); // 5 is gone
+        int indexToPlaceAtEnd = aSequence.size();
+        Property commentProperty = po.getInstanceProperty("comment");
+
+        // add list of items to existing list
+        List<String> aListToAdd = new ArrayList<String>();
+        aListToAdd.add(PO_COMMENT_VALUE1);
+        aListToAdd.add(PO_COMMENT_VALUE1);
+        aListToAdd.add(PO_COMMENT_VALUE1);
+        // add to the end of the list
+        existingList.addAll(aListToAdd);
+
+        // verify that the list has increased on the do
+        int listSizeAfter = ((ListWrapper)po.get("comment")).size();
+
+        // TODO: We should not be removing the existing item?
+        int newItems = aListToAdd.size();
+        //assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+        assertEquals(listSizeBefore + newItems, listSizeAfter);
+
+        // verify that the sequence size has increased
+        assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
+
+        // get back new Setting value
+        String comment2Value = (String)aSequence.getValue(indexToPlaceAtEnd + newItems - 1);
+        assertNotNull(comment2Value);
+        assertEquals(comment2Value, aListToAdd.get(0));
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd - 1));
+        // check increased size of sequence
+        assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        // but dataObject node list is the same
+        assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
+
+        // get sequence object that will be removed
+        SDOSetting aSetting7 = (SDOSetting)aSequence.getSettings().get(7);
+        SDOSetting aSetting8 = (SDOSetting)aSequence.getSettings().get(8);
+        SDOSetting aSetting9 = (SDOSetting)aSequence.getSettings().get(9);
+        // remove the first occurrence of the duplicated items in the sequence
+        int aSequenceSizeBeforeRemove = aSequence.size();
+        existingList.remove(2);
+
+        // check size
+        assertEquals(aSequenceSizeBeforeRemove - 1, aSequence.size());
+
+        // verify that the correct index in the sequence was removed based on the listWrapper index
+        assertEquals(aSetting8, aSequence.getSettings().get(7)); // 6 shifted into 5's place
+        assertEquals(aSetting9, aSequence.getSettings().get(8)); // 6 shifted into 5's place
+        assertFalse(aSetting7 == aSequence.getSettings().get(7)); // 5 is gone
+        assertFalse(aSetting7 == aSequence.getSettings().get(8)); // 5 is gone
+        //assertFalse(aSetting7 == aSequence.getSettings().get(9)); // 5 is gone
     }
         */
     // TODO: Verify that existing duplicates will be removed before the new list is added - addAll same as set
     public void testRemoveLastOccurrenceComplexManyByListWrapperAddAllPropertyOnExistingList() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, "/", 5);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(root).size();
-    	assertEquals(10, treeSizeBeforeAdd);
-    	assertEquals(5, aSequence.size());
 
-    	ListWrapper existingList = (ListWrapper)root.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(3, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[3]");
-    	assertNotNull(item3);
-    	
-    	Property itemProperty = root.getInstanceProperty("item");
-    	
-    	// add list of items to existing list
-    	List<DataObject> aListToAdd = new ArrayList<DataObject>();
-    	aListToAdd.add(item3);
-    	aListToAdd.add(item3);
-    	aListToAdd.add(item3);
-    	// add to the end of the list
-    	existingList.addAll(aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(root).size();
+        assertEquals(10, treeSizeBeforeAdd);
+        assertEquals(5, aSequence.size());
 
-    	// verify that the list has increased on the do
-    	int listSizeAfter = ((ListWrapper)root.get("item")).size();
+        ListWrapper existingList = (ListWrapper)root.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(3, listSizeBefore);
 
-    	
-    	// TODO: We should not be removing the existing item
-    	int newItems = aListToAdd.size() - 3;
-    	//assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
-    	assertEquals(listSizeBefore + newItems, listSizeAfter);
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[3]");
+        assertNotNull(item3);
 
-    	// verify that the sequence size has increased by 1
-    	assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
-    	
-    	// get back new Setting value
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + newItems - 1);
-    	assertNotNull(item2Value);
-    	assertEquals(item2Value, aListToAdd.get(0));
-    	// the following is no longer valid after we refactored addAll(do list) to not add duplicates
-/*    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(root).size();
-    	assertEquals(treeSizeBeforeAdd + newItems, treeSizeAfterAdd);
-    	
-    	// get sequence object that will be removed
-    	SDOSetting aSetting4 = (SDOSetting)aSequence.getSettings().get(4);
-    	SDOSetting aSetting5 = (SDOSetting)aSequence.getSettings().get(5);
-    	SDOSetting aSetting6 = (SDOSetting)aSequence.getSettings().get(6);
-    	// remove the first occurrence of the duplicated items in the sequence 
-    	int aSequenceSizeBeforeRemove = aSequence.size();
-    	existingList.remove(existingList.size() - 1);
-    	
-    	// check size
-    	assertEquals(aSequenceSizeBeforeRemove -1, aSequence.size());
-    	
-    	// verify that the correct index in the sequence was removed based on the listWrapper index
-    	assertEquals(aSetting4, aSequence.getSettings().get(4)); 
-    	assertEquals(aSetting5, aSequence.getSettings().get(5)); 
-    	assertFalse(aSetting6 == aSequence.getSettings().get(5)); 
+        Property itemProperty = root.getInstanceProperty("item");
+
+        // add list of items to existing list
+        List<DataObject> aListToAdd = new ArrayList<DataObject>();
+        aListToAdd.add(item3);
+        aListToAdd.add(item3);
+        aListToAdd.add(item3);
+        // add to the end of the list
+        existingList.addAll(aListToAdd);
+
+        // verify that the list has increased on the do
+        int listSizeAfter = ((ListWrapper)root.get("item")).size();
+
+
+        // TODO: We should not be removing the existing item
+        int newItems = aListToAdd.size() - 3;
+        //assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+        assertEquals(listSizeBefore + newItems, listSizeAfter);
+
+        // verify that the sequence size has increased by 1
+        assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
+
+        // get back new Setting value
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + newItems - 1);
+        assertNotNull(item2Value);
+        assertEquals(item2Value, aListToAdd.get(0));
+        // the following is no longer valid after we refactored addAll(do list) to not add duplicates
+/*        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(root).size();
+        assertEquals(treeSizeBeforeAdd + newItems, treeSizeAfterAdd);
+
+        // get sequence object that will be removed
+        SDOSetting aSetting4 = (SDOSetting)aSequence.getSettings().get(4);
+        SDOSetting aSetting5 = (SDOSetting)aSequence.getSettings().get(5);
+        SDOSetting aSetting6 = (SDOSetting)aSequence.getSettings().get(6);
+        // remove the first occurrence of the duplicated items in the sequence
+        int aSequenceSizeBeforeRemove = aSequence.size();
+        existingList.remove(existingList.size() - 1);
+
+        // check size
+        assertEquals(aSequenceSizeBeforeRemove -1, aSequence.size());
+
+        // verify that the correct index in the sequence was removed based on the listWrapper index
+        assertEquals(aSetting4, aSequence.getSettings().get(4));
+        assertEquals(aSetting5, aSequence.getSettings().get(5));
+        assertFalse(aSetting6 == aSequence.getSettings().get(5));
 */    }
 
     // Purpose is to verify that a remove(item) for duplicates removes the first occurrence of that item.
     /*
     public void testRemove1stOccurrenceSimpleManyByListWrapperAddAllPropertyOnExistingList() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)po.get("comment");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(PO_COMMENT_LIST_SIZE, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	Property commentProperty = po.getInstanceProperty("comment");
-    	
-    	// add list of items to existing list
-    	List<String> aListToAdd = new ArrayList<String>();
-    	aListToAdd.add(PO_COMMENT_VALUE1);
-    	aListToAdd.add(PO_COMMENT_VALUE1);
-    	aListToAdd.add(PO_COMMENT_VALUE1);
-    	// add to the end of the list
-    	existingList.addAll(aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// verify that the list has increased on the do
-    	int listSizeAfter = ((ListWrapper)po.get("comment")).size();
-    	
-    	// TODO: We should not be removing the existing item?
-    	int newItems = aListToAdd.size();
-    	//assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
-    	assertEquals(listSizeBefore + newItems, listSizeAfter);
+        ListWrapper existingList = (ListWrapper)po.get("comment");
+        int listSizeBefore = existingList.size();
+        assertEquals(PO_COMMENT_LIST_SIZE, listSizeBefore);
 
-    	// verify that the sequence size has increased
-    	assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
-    	
-    	// get back new Setting value
-    	String comment2Value = (String)aSequence.getValue(indexToPlaceAtEnd + newItems - 1);
-    	assertNotNull(comment2Value);
-    	assertEquals(comment2Value, aListToAdd.get(0));
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd - 1));
-    	// check increased size of sequence
-    	assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	// but dataObject node list is the same
-    	assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
-    	
-    	// get sequence object that will be removed
-    	SDOSetting aSetting7 = (SDOSetting)aSequence.getSettings().get(7);
-    	SDOSetting aSetting8 = (SDOSetting)aSequence.getSettings().get(8);
-    	SDOSetting aSetting9 = (SDOSetting)aSequence.getSettings().get(9);
-    	// remove the first occurrence of the duplicated items in the sequence 
-    	int aSequenceSizeBeforeRemove = aSequence.size();
-    	existingList.remove("comment 1");
-    	
-    	// check size
-    	assertEquals(aSequenceSizeBeforeRemove - 1, aSequence.size());
-    	
-    	// verify that the correct index in the sequence was removed based on the listWrapper index
-    	assertEquals(aSetting8, aSequence.getSettings().get(7)); // 6 shifted into 5's place
-    	assertEquals(aSetting9, aSequence.getSettings().get(8)); // 6 shifted into 5's place
-    	assertFalse(aSetting7 == aSequence.getSettings().get(7)); // 5 is gone
-    	assertFalse(aSetting7 == aSequence.getSettings().get(8)); // 5 is gone
-    	//assertFalse(aSetting7 == aSequence.getSettings().get(9)); // 5 is gone
+        int indexToPlaceAtEnd = aSequence.size();
+        Property commentProperty = po.getInstanceProperty("comment");
+
+        // add list of items to existing list
+        List<String> aListToAdd = new ArrayList<String>();
+        aListToAdd.add(PO_COMMENT_VALUE1);
+        aListToAdd.add(PO_COMMENT_VALUE1);
+        aListToAdd.add(PO_COMMENT_VALUE1);
+        // add to the end of the list
+        existingList.addAll(aListToAdd);
+
+        // verify that the list has increased on the do
+        int listSizeAfter = ((ListWrapper)po.get("comment")).size();
+
+        // TODO: We should not be removing the existing item?
+        int newItems = aListToAdd.size();
+        //assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+        assertEquals(listSizeBefore + newItems, listSizeAfter);
+
+        // verify that the sequence size has increased
+        assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
+
+        // get back new Setting value
+        String comment2Value = (String)aSequence.getValue(indexToPlaceAtEnd + newItems - 1);
+        assertNotNull(comment2Value);
+        assertEquals(comment2Value, aListToAdd.get(0));
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd - 1));
+        // check increased size of sequence
+        assertEquals(indexToPlaceAtEnd + newItems, aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        // but dataObject node list is the same
+        assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
+
+        // get sequence object that will be removed
+        SDOSetting aSetting7 = (SDOSetting)aSequence.getSettings().get(7);
+        SDOSetting aSetting8 = (SDOSetting)aSequence.getSettings().get(8);
+        SDOSetting aSetting9 = (SDOSetting)aSequence.getSettings().get(9);
+        // remove the first occurrence of the duplicated items in the sequence
+        int aSequenceSizeBeforeRemove = aSequence.size();
+        existingList.remove("comment 1");
+
+        // check size
+        assertEquals(aSequenceSizeBeforeRemove - 1, aSequence.size());
+
+        // verify that the correct index in the sequence was removed based on the listWrapper index
+        assertEquals(aSetting8, aSequence.getSettings().get(7)); // 6 shifted into 5's place
+        assertEquals(aSetting9, aSequence.getSettings().get(8)); // 6 shifted into 5's place
+        assertFalse(aSetting7 == aSequence.getSettings().get(7)); // 5 is gone
+        assertFalse(aSetting7 == aSequence.getSettings().get(8)); // 5 is gone
+        //assertFalse(aSetting7 == aSequence.getSettings().get(9)); // 5 is gone
     }
     */
     public void testAddAllComplexManyByListWrapperAddAllPropertyOnExistingList() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, "/", 5);
-    	//DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(root).size();
-    	assertEquals(10, treeSizeBeforeAdd);
-    	assertEquals(5, aSequence.size());
+        //DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)root.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(3, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[1]");
-    	assertNotNull(item3);
-    	
-    	Property itemProperty = root.getInstanceProperty("item");
-    	
-    	// add list of items to existing list
-    	List<DataObject> aListToAdd = new ArrayList<DataObject>();
-    	
-		DataObject item4 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-		item4.set("itemID", 4);
-		item4.set("name", "item4-DF");    		
-		DataObject item5 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
-		item5.set("itemID", 5);
-		item5.set("name", "item5-DF");    		
-    	aListToAdd.add(item4);
-    	aListToAdd.add(item5);
-    	// add to the end of the list
-    	existingList.addAll(aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(root).size();
+        assertEquals(10, treeSizeBeforeAdd);
+        assertEquals(5, aSequence.size());
 
-    	// verify that the list has increased on the do
-    	int listSizeAfter = ((ListWrapper)root.get("item")).size();
-    	assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+        ListWrapper existingList = (ListWrapper)root.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(3, listSizeBefore);
 
-    	// verify that the sequence size has increased
-    	assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
-    	
-    	// get back new Setting value
-    	for(int i=0; i< aListToAdd.size(); i++) {
-    		SDODataObject itemValue = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + i);    		
-    		assertNotNull(itemValue);
-    		assertEquals(itemValue, aListToAdd.get(i));
-    		assertNotNull(aSequence.getProperty(indexToPlaceAtEnd + i));
-    	}
-    	// check increased size of sequence
-    	assertEquals(5 + aListToAdd.size(), aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(root).size();
-    	assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[1]");
+        assertNotNull(item3);
+
+        Property itemProperty = root.getInstanceProperty("item");
+
+        // add list of items to existing list
+        List<DataObject> aListToAdd = new ArrayList<DataObject>();
+
+        DataObject item4 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+        item4.set("itemID", 4);
+        item4.set("name", "item4-DF");
+        DataObject item5 = dataFactory.create(typeHelper.getType(URINAME, ITEM_TYPENAME));
+        item5.set("itemID", 5);
+        item5.set("name", "item5-DF");
+        aListToAdd.add(item4);
+        aListToAdd.add(item5);
+        // add to the end of the list
+        existingList.addAll(aListToAdd);
+
+        // verify that the list has increased on the do
+        int listSizeAfter = ((ListWrapper)root.get("item")).size();
+        assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+
+        // verify that the sequence size has increased
+        assertEquals(indexToPlaceAtEnd + aListToAdd.size(), aSequence.size());
+
+        // get back new Setting value
+        for(int i=0; i< aListToAdd.size(); i++) {
+            SDODataObject itemValue = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd + i);
+            assertNotNull(itemValue);
+            assertEquals(itemValue, aListToAdd.get(i));
+            assertNotNull(aSequence.getProperty(indexToPlaceAtEnd + i));
+        }
+        // check increased size of sequence
+        assertEquals(5 + aListToAdd.size(), aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(root).size();
+        assertEquals(treeSizeBeforeAdd + aListToAdd.size(), treeSizeAfterAdd);
     }
-    
+
     /**
      * Adds a new entry with the specified property name and value
      * at the specified entry index.
@@ -3026,39 +3026,39 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * TODO: single and many versions required
      */
     public void test_voidReturnFrom_add_int_String_Object() {
-    	// int index, String propertyName, Object value) {
-    	defineAndLoadRoot(false, false);
+        // int index, String propertyName, Object value) {
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	assertNotNull(item2);
-    	// add to sequence
-    	aSequence.add(indexToPlaceAtEnd, "item", item2);
-    	// get back new Setting value
-    	//ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);    	
-    	assertNotNull(item2Value);
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
-    	
-    	// verify that the list has increased
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + 1, listSizeAfter);
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item2 = (DataObject)root.get("item[2]");
+        assertNotNull(item2);
+        // add to sequence
+        aSequence.add(indexToPlaceAtEnd, "item", item2);
+        // get back new Setting value
+        //ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(item2Value);
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+
+        // verify that the list has increased
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + 1, listSizeAfter);
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
     }
 
     /**
@@ -3070,52 +3070,52 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * TODO: single and many versions required
      */
     public void test_voidReturnFrom_add_int_int_Object() {
-    	// int index, int propertyIndex, Object value) {
-    	// int index, String propertyName, Object value) {
-    	defineAndLoadRoot(false, false);
-    	// detach shipTo
+        // int index, int propertyIndex, Object value) {
+        // int index, String propertyName, Object value) {
+        defineAndLoadRoot(false, false);
+        // detach shipTo
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	assertNotNull(item2);
-    	
-    	// get "item" property index
-    	int propIndex = 0;
-    	for(Iterator i=po.getInstanceProperties().iterator(); i.hasNext();) {
-    		Property aProperty = (Property)i.next();
-    		if(aProperty != null && aProperty.getName().equals("item")) {
-    			break;
-    		} else {
-    			propIndex++;
-    		}
-    	}
-    	// add to sequence
-    	aSequence.add(indexToPlaceAtEnd, propIndex, item2);
-    	// get back new Setting value
-    	//ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNotNull(item2Value);
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
-    	
-    	// verify that the list has increased
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + 1, listSizeAfter);
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item2 = (DataObject)root.get("item[2]");
+        assertNotNull(item2);
+
+        // get "item" property index
+        int propIndex = 0;
+        for(Iterator i=po.getInstanceProperties().iterator(); i.hasNext();) {
+            Property aProperty = (Property)i.next();
+            if(aProperty != null && aProperty.getName().equals("item")) {
+                break;
+            } else {
+                propIndex++;
+            }
+        }
+        // add to sequence
+        aSequence.add(indexToPlaceAtEnd, propIndex, item2);
+        // get back new Setting value
+        //ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(item2Value);
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+
+        // verify that the list has increased
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + 1, listSizeAfter);
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
     }
 
     /**
@@ -3126,143 +3126,143 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @param value the value for the entry.
      */
     public void test_voidReturnFrom_add_int_Property_Object() {
-    	// int index, Property property, Object value) {
-    	defineAndLoadRoot(false, false);
+        // int index, Property property, Object value) {
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	assertNotNull(item2);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add to sequence
-    	aSequence.add(indexToPlaceAtEnd, itemProperty, item2);
-    	// get back new Setting value
-    	//ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNotNull(item2Value);
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
-    	
-    	// verify that the list has increased
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + 1, listSizeAfter);
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item2 = (DataObject)root.get("item[2]");
+        assertNotNull(item2);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add to sequence
+        aSequence.add(indexToPlaceAtEnd, itemProperty, item2);
+        // get back new Setting value
+        //ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(item2Value);
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+
+        // verify that the list has increased
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + 1, listSizeAfter);
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
     }
 
     public void test_voidReturnFrom_add_int_Property_Object_outofbounds() {
-    	// int index, Property property, Object value) {
-    	defineAndLoadRoot(false, false);
-    	// detach shipTo
+        // int index, Property property, Object value) {
+        defineAndLoadRoot(false, false);
+        // detach shipTo
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	assertNotNull(item2);
-    	
-    	Property itemProperty = po.getInstanceProperty("item");
-    	
-    	// add to sequence
-    	try {
-    		aSequence.add(-1, itemProperty, item2);
-    	} catch (Exception e) {
-    		
-    	}
-    	
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item2 = (DataObject)root.get("item[2]");
+        assertNotNull(item2);
+
+        Property itemProperty = po.getInstanceProperty("item");
+
+        // add to sequence
+        try {
+            aSequence.add(-1, itemProperty, item2);
+        } catch (Exception e) {
+
+        }
+
       boolean exceptionThrown =false;
-    	// get back new Setting value
-    	ListWrapper item2Value = null;    	
-    	try {
-    		item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	} catch (SDOException e) {
-    		assertEquals(SDOException.INVALID_INDEX ,e.getErrorCode());
+        // get back new Setting value
+        ListWrapper item2Value = null;
+        try {
+            item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        } catch (SDOException e) {
+            assertEquals(SDOException.INVALID_INDEX ,e.getErrorCode());
         exceptionThrown = true;
-    	}
-    	assertNull(item2Value);    	
+        }
+        assertNull(item2Value);
       assertTrue(exceptionThrown);
-    	
-/*    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence didnt happen
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
-    	
-    	// verify that the list has not increased
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore, listSizeAfter);
-    	
-    	// verify that DataObject has not changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
+
+/*        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence didnt happen
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        // verify that the list has not increased
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore, listSizeAfter);
+
+        // verify that DataObject has not changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
 */    }
 
     public void test_voidReturnFrom_add_int_Property_Object_propertyIsAttribute() {
-    	// int index, Property property, Object value) {
-    	defineAndLoadRoot(false, false);
-    	// detach shipTo
+        // int index, Property property, Object value) {
+        defineAndLoadRoot(false, false);
+        // detach shipTo
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size();
-    	// object to add
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	assertNotNull(item2);
-    	
-    	Property orderDateProperty = po.getInstanceProperty("orderDate");
-    	
-    	// add to sequence
-    	try {
-    		aSequence.add(indexToPlaceAtEnd, orderDateProperty, "1999-10-19");
-    	} catch (Exception e) {
-    		
-    	}
-    	
-    	// get back new Setting value
-    	ListWrapper item2Value = null;
-    	
-    	try {
-    		item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	} catch (SDOException e) {
-    		assertEquals(SDOException.INVALID_INDEX ,e.getErrorCode());
-    	}
-    	assertNull(item2Value);    	
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size();
+        // object to add
+        DataObject item2 = (DataObject)root.get("item[2]");
+        assertNotNull(item2);
+
+        Property orderDateProperty = po.getInstanceProperty("orderDate");
+
+        // add to sequence
+        try {
+            aSequence.add(indexToPlaceAtEnd, orderDateProperty, "1999-10-19");
+        } catch (Exception e) {
+
+        }
+
+        // get back new Setting value
+        ListWrapper item2Value = null;
+
+        try {
+            item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        } catch (SDOException e) {
+            assertEquals(SDOException.INVALID_INDEX ,e.getErrorCode());
+        }
+        assertNull(item2Value);
    }
-    
-    
+
+
     /**
      * Removes the entry at the given entry index.
      * @param index the index of the entry.
      */
     public void test_voidReturnFrom_remove_int() {
-    	// int index) {
+        // int index) {
     }
 
     /**
@@ -3271,54 +3271,54 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @param fromIndex the index of the entry to move.
      */
     public void test_voidReturnFrom_move_int_int() {
-    	// int toIndex, int fromIndex) {
+        // int toIndex, int fromIndex) {
     }
 
     /**
     * @deprecated replaced by {@link #addText(String)} in 2.1.0
     */
     public void test_voidReturnFrom_add_String() {
-    	// String text) {
-    	defineAndLoadRoot(false, false);
+        // String text) {
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	int textIndexToPlaceAtEnd = aSequence.size();
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        int textIndexToPlaceAtEnd = aSequence.size();
 
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	
-    	aSequence.add("random text");
-    	Object addText = aSequence.getValue(textIndexToPlaceAtEnd);
-    	assertNotNull(addText);
-    	assertNull(aSequence.getProperty(textIndexToPlaceAtEnd));
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
 
-    	// verify that DataObject has not changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
+        aSequence.add("random text");
+        Object addText = aSequence.getValue(textIndexToPlaceAtEnd);
+        assertNotNull(addText);
+        assertNull(aSequence.getProperty(textIndexToPlaceAtEnd));
+        assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+
+        // verify that DataObject has not changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
     }
 
     /**
      * @deprecated replaced by {@link #addText(int, String)} in 2.1.0
      */
     public void test_voidReturnFrom_add_int_String() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	int textIndexToPlaceAtEnd = aSequence.size();
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	
-    	aSequence.add(textIndexToPlaceAtEnd, "random text");
-    	Object addText = aSequence.getValue(textIndexToPlaceAtEnd);
-    	assertNotNull(addText);
-    	assertNull(aSequence.getProperty(textIndexToPlaceAtEnd));
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
-    	
-    	// verify that DataObject has not changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        int textIndexToPlaceAtEnd = aSequence.size();
+
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+
+        aSequence.add(textIndexToPlaceAtEnd, "random text");
+        Object addText = aSequence.getValue(textIndexToPlaceAtEnd);
+        assertNotNull(addText);
+        assertNull(aSequence.getProperty(textIndexToPlaceAtEnd));
+        assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+
+        // verify that DataObject has not changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
     }
 
     /**
@@ -3326,23 +3326,23 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @param text value of the entry.
      */
     public void test_voidReturnFrom_addText_String() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	int textIndexToPlaceAtEnd = aSequence.size();
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	
-    	aSequence.addText("random text");
-    	Object addText = aSequence.getValue(textIndexToPlaceAtEnd);
-    	assertNotNull(addText);
-    	assertNull(aSequence.getProperty(textIndexToPlaceAtEnd));
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        int textIndexToPlaceAtEnd = aSequence.size();
 
-    	// verify that DataObject has not changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+
+        aSequence.addText("random text");
+        Object addText = aSequence.getValue(textIndexToPlaceAtEnd);
+        assertNotNull(addText);
+        assertNull(aSequence.getProperty(textIndexToPlaceAtEnd));
+        assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+
+        // verify that DataObject has not changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
     }
 
     /**
@@ -3351,23 +3351,23 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @param text value of the entry.
      */
     public void test_voidReturnFromAddText_int_String() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	int textIndexToPlaceAtEnd = aSequence.size();
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	
-    	aSequence.addText(textIndexToPlaceAtEnd, "random text");
-    	Object addText = aSequence.getValue(textIndexToPlaceAtEnd);
-    	assertNotNull(addText);
-    	assertNull(aSequence.getProperty(textIndexToPlaceAtEnd));
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
-    	
-    	// verify that DataObject has not changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        int textIndexToPlaceAtEnd = aSequence.size();
+
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+
+        aSequence.addText(textIndexToPlaceAtEnd, "random text");
+        Object addText = aSequence.getValue(textIndexToPlaceAtEnd);
+        assertNotNull(addText);
+        assertNull(aSequence.getProperty(textIndexToPlaceAtEnd));
+        assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+
+        // verify that DataObject has not changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd, treeSizeAfterAdd);
     }
 
     /**
@@ -3376,74 +3376,74 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @param value the new value for the entry.
      */
     public void test_addAll_complexMany() {
-    	// int index, Object value) {
-    	defineAndLoadRoot(false, false);
+        // int index, Object value) {
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	ListWrapper existingList = (ListWrapper)po.get("item");    	
-    	int listSizeBefore = existingList.size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int sequenceSizeBefore = aSequence.size();
-    	int indexToPlaceAtEnd = aSequence.size() - 1;
-    	// object to replace
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	assertNotNull(item2);
-    	
-    	// object to add
-    	DataObject item3 = (DataObject)root.get("item[1]");
-    	assertNotNull(item3);
-   	
-    	// add to sequence
-    	
-    	// TODO: TEST setting a many property using an item instead of a List of items
-    	    	
-    	// add the item to the current list
-    	// add list of items to existing list
-    	List<DataObject> aListToAdd = new ArrayList<DataObject>();
-    	aListToAdd.add(item3);
-    	// add to the end of the list
-    	existingList.addAll(aListToAdd);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	// verify that the list has increased on the do
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+        ListWrapper existingList = (ListWrapper)po.get("item");
+        int listSizeBefore = existingList.size();
+        assertEquals(2, listSizeBefore);
 
-    	// verify that the sequence size has increased
-    	assertEquals(sequenceSizeBefore + aListToAdd.size(), aSequence.size());
-    	
-    	// get back new Setting value
-    	SDODataObject item2Value = (SDODataObject)aSequence.getValue(aSequence.size() -1);
-    	assertNotNull(item2Value);
-    	assertEquals(item2Value, aListToAdd.get(0));
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check increased size of sequence
-    	assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
-    	
-    	// verify that DataObject has changed
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
+        int sequenceSizeBefore = aSequence.size();
+        int indexToPlaceAtEnd = aSequence.size() - 1;
+        // object to replace
+        DataObject item2 = (DataObject)root.get("item[2]");
+        assertNotNull(item2);
+
+        // object to add
+        DataObject item3 = (DataObject)root.get("item[1]");
+        assertNotNull(item3);
+
+        // add to sequence
+
+        // TODO: TEST setting a many property using an item instead of a List of items
+
+        // add the item to the current list
+        // add list of items to existing list
+        List<DataObject> aListToAdd = new ArrayList<DataObject>();
+        aListToAdd.add(item3);
+        // add to the end of the list
+        existingList.addAll(aListToAdd);
+
+        // verify that the list has increased on the do
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + aListToAdd.size(), listSizeAfter);
+
+        // verify that the sequence size has increased
+        assertEquals(sequenceSizeBefore + aListToAdd.size(), aSequence.size());
+
+        // get back new Setting value
+        SDODataObject item2Value = (SDODataObject)aSequence.getValue(aSequence.size() -1);
+        assertNotNull(item2Value);
+        assertEquals(item2Value, aListToAdd.get(0));
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check increased size of sequence
+        assertEquals(PO_SEQUENCE_TREE_SIZE + 1, aSequence.size());
+
+        // verify that DataObject has changed
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
     }
 
     public void test_setValue_singleComplex() {
-    	
+
     }
     public void test_setValue_manySimple() {
-    	
+
     }
     public void test_setValue_manyComplex() {
-    	
+
     }
 
     public void test_setValue_manyComplex_toNull_ThrowsUnsupportedOperationException() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	int indexToPlaceAtEnd = aSequence.size() - 1;
+        int indexToPlaceAtEnd = aSequence.size() - 1;
         boolean exceptionOccurred = false;
         // null value on non-nillable many property will throw exception
         try {
@@ -3455,102 +3455,102 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     }
 
     public void test_setValue_manyComplex_invalidIndexThrowsException() {
-    	// int index, String propertyName, Object value) {
-    	defineAndLoadRoot(false, false);
+        // int index, String propertyName, Object value) {
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size() - 1;
-    	// object to replace
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	
-    	assertNotNull(item2);
-/*   	
-    	// add the item to the current list
-    	ListWrapper existingList = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNotNull(existingList);
-    	existingList.add(item2);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	boolean exceptionThrown = false;
-    	try {
-    		aSequence.setValue(indexToPlaceAtEnd + 1, existingList);
-    	} catch (IndexOutOfBoundsException e) {
-    		exceptionThrown = true;
-    	} finally {
-        	assertTrue(exceptionThrown);
-    	}
-    	
-    	// get back modified Setting value
-    	ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNotNull(item2Value);
-    	assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
-    	// check no increase in size of sequence
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
-    	
-    	// verify that the list has increased
-    	int listSizeAfter = ((ListWrapper)po.get("item")).size();
-    	assertEquals(listSizeBefore + 1, listSizeAfter);
-    	
-    	// verify that DataObject has changed in size
-    	int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size() - 1;
+        // object to replace
+        DataObject item2 = (DataObject)root.get("item[2]");
+
+        assertNotNull(item2);
+/*
+        // add the item to the current list
+        ListWrapper existingList = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(existingList);
+        existingList.add(item2);
+
+        boolean exceptionThrown = false;
+        try {
+            aSequence.setValue(indexToPlaceAtEnd + 1, existingList);
+        } catch (IndexOutOfBoundsException e) {
+            exceptionThrown = true;
+        } finally {
+            assertTrue(exceptionThrown);
+        }
+
+        // get back modified Setting value
+        ListWrapper item2Value = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(item2Value);
+        assertNotNull(aSequence.getProperty(indexToPlaceAtEnd));
+        // check no increase in size of sequence
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+
+        // verify that the list has increased
+        int listSizeAfter = ((ListWrapper)po.get("item")).size();
+        assertEquals(listSizeBefore + 1, listSizeAfter);
+
+        // verify that DataObject has changed in size
+        int treeSizeAfterAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(treeSizeBeforeAdd + 1, treeSizeAfterAdd);
 */    }
-    
-    public void test_getValue_whereSettingIsNull() {
-    	registerCustomerType(true, null);
-		DataObject cust1 = (DataObject)dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
-		cust1.set("custID", 5);
-		List emails = new ArrayList();
-		emails.add("email1-DF@myCompany.com");
-		emails.add("email2-DF@myCompany.com");
-		cust1.set("email", emails);
-		List phones = new ArrayList();
-		phones.add("6135550001");
-		cust1.set("phone", phones);
 
-		// create a non-standard sequence
-    	SDOSequence aSequence = new SDOSequence((SDODataObject)cust1);
-    	// TODO: there is no way to get a null setting from a sequence
+    public void test_getValue_whereSettingIsNull() {
+        registerCustomerType(true, null);
+        DataObject cust1 = (DataObject)dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
+        cust1.set("custID", 5);
+        List emails = new ArrayList();
+        emails.add("email1-DF@myCompany.com");
+        emails.add("email2-DF@myCompany.com");
+        cust1.set("email", emails);
+        List phones = new ArrayList();
+        phones.add("6135550001");
+        cust1.set("phone", phones);
+
+        // create a non-standard sequence
+        SDOSequence aSequence = new SDOSequence((SDODataObject)cust1);
+        // TODO: there is no way to get a null setting from a sequence
     }
 
     public void test_getValue_whereIndexIsOutOfBounds() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size() - 1;
-    	// object to replace
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	
-    	assertNotNull(item2);
-/*   	
-    	// add the item to the current list
-    	ListWrapper existingList = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNotNull(existingList);
-    	existingList.add(item2);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	boolean exceptionThrown = false;
-    	try {
-    		aSequence.getValue(-1);
-    	} catch (IndexOutOfBoundsException e) {
-    		exceptionThrown = true;
-    	} finally {
-        	assertTrue(exceptionThrown);
-    	}
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size() - 1;
+        // object to replace
+        DataObject item2 = (DataObject)root.get("item[2]");
+
+        assertNotNull(item2);
+/*
+        // add the item to the current list
+        ListWrapper existingList = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(existingList);
+        existingList.add(item2);
+
+        boolean exceptionThrown = false;
+        try {
+            aSequence.getValue(-1);
+        } catch (IndexOutOfBoundsException e) {
+            exceptionThrown = true;
+        } finally {
+            assertTrue(exceptionThrown);
+        }
 */    }
 
     /**
@@ -3560,43 +3560,43 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @return the property or <code>null</code> for the given entry index.
      */
     public void test_PropertyReturnFrom_getProperty() {
-    	// int index) {
-    	defineAndLoadRoot(false, false);
+        // int index) {
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size() - 1;
-    	// object to replace
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	
-    	assertNotNull(item2);
-   	
-/*    	// add the item to the current list
-    	ListWrapper existingList = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNotNull(existingList);
-    	existingList.add(item2);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	boolean exceptionThrown = false;
-    	Property property1 = po.getInstanceProperty("item"); 
-    	Object property1Return = null;
-    	try {
-    		property1Return = aSequence.getProperty(indexToPlaceAtEnd);
-    	} catch (IndexOutOfBoundsException e) {
-    		exceptionThrown = true;
-    	} finally {
-        	assertFalse(exceptionThrown);
-    	}
-    	
-    	// verify property
-    	assertNotNull(property1Return);
-    	assertEquals(property1, property1Return);
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size() - 1;
+        // object to replace
+        DataObject item2 = (DataObject)root.get("item[2]");
+
+        assertNotNull(item2);
+
+/*        // add the item to the current list
+        ListWrapper existingList = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(existingList);
+        existingList.add(item2);
+
+        boolean exceptionThrown = false;
+        Property property1 = po.getInstanceProperty("item");
+        Object property1Return = null;
+        try {
+            property1Return = aSequence.getProperty(indexToPlaceAtEnd);
+        } catch (IndexOutOfBoundsException e) {
+            exceptionThrown = true;
+        } finally {
+            assertFalse(exceptionThrown);
+        }
+
+        // verify property
+        assertNotNull(property1Return);
+        assertEquals(property1, property1Return);
 */    }
 
     /**
@@ -3605,144 +3605,144 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * @return the value for the given entry index.
      */
     public void test_ObjectReturnFrom_getValue() {
-    	// int index) {
+        // int index) {
     }
-    
+
     public void test_getProperty_whereIndexIsOutOfBounds() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	
-    	int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
-    	assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
 
-    	int listSizeBefore = ((ListWrapper)po.get("item")).size();
-    	assertEquals(2, listSizeBefore);
-    	
-    	int indexToPlaceAtEnd = aSequence.size() - 1;
-    	// object to replace
-    	DataObject item2 = (DataObject)root.get("item[2]");
-    	
-    	assertNotNull(item2);
-   	
-/*    	// add the item to the current list
-    	ListWrapper existingList = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
-    	assertNotNull(existingList);
-    	existingList.add(item2);
+        int treeSizeBeforeAdd = preOrderTraversalDataObjectList(po).size();
+        assertEquals(PO_TREE_SIZE, treeSizeBeforeAdd);
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
 
-    	boolean exceptionThrown = false;
-    	try {
-    		aSequence.getProperty(-1);
-    	} catch (IndexOutOfBoundsException e) {
-    		exceptionThrown = true;
-    	} finally {
-        	assertTrue(exceptionThrown);
-    	}
+        int listSizeBefore = ((ListWrapper)po.get("item")).size();
+        assertEquals(2, listSizeBefore);
+
+        int indexToPlaceAtEnd = aSequence.size() - 1;
+        // object to replace
+        DataObject item2 = (DataObject)root.get("item[2]");
+
+        assertNotNull(item2);
+
+/*        // add the item to the current list
+        ListWrapper existingList = (ListWrapper)aSequence.getValue(indexToPlaceAtEnd);
+        assertNotNull(existingList);
+        existingList.add(item2);
+
+        boolean exceptionThrown = false;
+        try {
+            aSequence.getProperty(-1);
+        } catch (IndexOutOfBoundsException e) {
+            exceptionThrown = true;
+        } finally {
+            assertTrue(exceptionThrown);
+        }
 */    }
-    
+
     // get id
     public void test_getSequenceViaPropertyIndexFromSingleSimpleType() {
-    	
+
     }
 
     // get comment[1]
     public void test_getSequenceViaPropertyIndexFromManySimpleType() {
-    	
+
     }
 
-    // get 
+    // get
     public void test_getSequenceViaPropertyIndexFromSingleComplexType() {
-    	
+
     }
 
     // get porder[1]
     public void test_getSequenceViaPropertyIndexFromManyComplexType() {
-    	
+
     }
 
     public void testMoveSameIndex() {
-    	defineAndLoadRoot(false, false);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        defineAndLoadRoot(false, false);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         SDOSequence aSequence = (SDOSequence)po.getSequence();
 
         // move 2 sequenced objects
         Property beforeMoveProp1 = aSequence.getProperty(1);
         assertNotNull(beforeMoveProp1);
-        
+
         aSequence.move(1, 1);
-        
+
         Property afterMoveProp1 = aSequence.getProperty(1);
         assertTrue(beforeMoveProp1 == afterMoveProp1);
     }
 
-  
+
     public void testMoveSameIndexOutOfBoundsHigh() {
-    	defineAndLoadRoot(false, false);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        defineAndLoadRoot(false, false);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         SDOSequence aSequence = (SDOSequence)po.getSequence();
 
         // move 2 sequenced objects
         Property beforeMoveProp1 = aSequence.getProperty(1);
         assertNotNull(beforeMoveProp1);
-    	
-        	aSequence.move(99, 99);
-        
+
+            aSequence.move(99, 99);
+
         Property afterMoveProp1 = aSequence.getProperty(1);
         // verify the move did not take place
         assertTrue(beforeMoveProp1 == afterMoveProp1);
-    	
+
     }
 
     public void testMoveIndexFromOutOfBoundsHigh() {
-    	defineAndLoadRoot(false, false);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        defineAndLoadRoot(false, false);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         SDOSequence aSequence = (SDOSequence)po.getSequence();
 
         // move 2 sequenced objects
         Property beforeMoveProp1 = aSequence.getProperty(1);
         assertNotNull(beforeMoveProp1);
-    	boolean exceptionThrown = false;
+        boolean exceptionThrown = false;
         try {
-        	aSequence.move(99, 1);
+            aSequence.move(99, 1);
         } catch (SDOException e) {
         assertEquals(SDOException.INVALID_INDEX ,e.getErrorCode());
 
-        	// catch error
+            // catch error
           exceptionThrown = true;
         }
-        
+
         Property afterMoveProp1 = aSequence.getProperty(1);
         // verify the move did not take place
         assertTrue(beforeMoveProp1 == afterMoveProp1);
-    	assertTrue(exceptionThrown);
+        assertTrue(exceptionThrown);
     }
-    
+
     public void testMoveIndexToOutOfBoundsHigh() {
-    	defineAndLoadRoot(false, false);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        defineAndLoadRoot(false, false);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         SDOSequence aSequence = (SDOSequence)po.getSequence();
 
         // move 2 sequenced objects
         Property beforeMoveProp1 = aSequence.getProperty(1);
         assertNotNull(beforeMoveProp1);
-    	boolean exceptionThrown = false;
+        boolean exceptionThrown = false;
         try {
-        	aSequence.move(1, 99);
+            aSequence.move(1, 99);
         } catch (SDOException e) {
-        	// catch error
+            // catch error
           assertEquals(SDOException.INVALID_INDEX ,e.getErrorCode());
           exceptionThrown = true;
         }
-        
+
         Property afterMoveProp1 = aSequence.getProperty(1);
         // verify the move did not take place
         assertTrue(beforeMoveProp1 == afterMoveProp1);
@@ -3750,129 +3750,129 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     }
 
     public void testMoveIndexBothOutOfBoundsHigh() {
-    	defineAndLoadRoot(false, false);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        defineAndLoadRoot(false, false);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         SDOSequence aSequence = (SDOSequence)po.getSequence();
 
         // move 2 sequenced objects
         Property beforeMoveProp1 = aSequence.getProperty(1);
         assertNotNull(beforeMoveProp1);
-    	boolean exceptionThrown = false;
+        boolean exceptionThrown = false;
         try {
-        	aSequence.move(101, 99);
+            aSequence.move(101, 99);
         } catch (SDOException e) {
-        	// catch error
+            // catch error
           assertEquals(SDOException.INVALID_INDEX ,e.getErrorCode());
-    		exceptionThrown = true;
-        
+            exceptionThrown = true;
+
         }
-        
+
         Property afterMoveProp1 = aSequence.getProperty(1);
         // verify the move did not take place
         assertTrue(beforeMoveProp1 == afterMoveProp1);
-    	assertTrue(exceptionThrown);
+        assertTrue(exceptionThrown);
     }
 
     public void testMoveSameIndexOutOfBoundsLow() {
-    	defineAndLoadRoot(false, false);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        defineAndLoadRoot(false, false);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         SDOSequence aSequence = (SDOSequence)po.getSequence();
 
         // move 2 sequenced objects
         Property beforeMoveProp1 = aSequence.getProperty(1);
         assertNotNull(beforeMoveProp1);
-        	aSequence.move(-1, -1);
-        
+            aSequence.move(-1, -1);
+
         Property afterMoveProp1 = aSequence.getProperty(1);
         // verify the move did not take place
         assertTrue(beforeMoveProp1 == afterMoveProp1);
-    	
+
     }
 
     public void testMoveIndexFromOutOfBoundsLow() {
-    	defineAndLoadRoot(false, false);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        defineAndLoadRoot(false, false);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         SDOSequence aSequence = (SDOSequence)po.getSequence();
 
         // move 2 sequenced objects
         Property beforeMoveProp1 = aSequence.getProperty(1);
         assertNotNull(beforeMoveProp1);
-    	boolean exceptionThrown = false;
+        boolean exceptionThrown = false;
         try {
-        	aSequence.move(-1, 1);
+            aSequence.move(-1, 1);
         } catch (SDOException e) {
-        	assertEquals(SDOException.INVALID_INDEX ,e.getErrorCode());
+            assertEquals(SDOException.INVALID_INDEX ,e.getErrorCode());
           // catch error
-    		exceptionThrown = true;
+            exceptionThrown = true;
         }
-        
+
         Property afterMoveProp1 = aSequence.getProperty(1);
         // verify the move did not take place
         assertTrue(beforeMoveProp1 == afterMoveProp1);
-    	assertTrue(exceptionThrown);
+        assertTrue(exceptionThrown);
     }
-    
+
     public void testMoveIndexToOutOfBoundsLow() {
-    	defineAndLoadRoot(false, false);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        defineAndLoadRoot(false, false);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         SDOSequence aSequence = (SDOSequence)po.getSequence();
 
         // move 2 sequenced objects
         Property beforeMoveProp1 = aSequence.getProperty(1);
         assertNotNull(beforeMoveProp1);
-    	boolean exceptionThrown = false;
+        boolean exceptionThrown = false;
         try {
-        	aSequence.move(1, -1);
+            aSequence.move(1, -1);
         } catch (SDOException e) {
-        	// catch error
-    		exceptionThrown = true;
+            // catch error
+            exceptionThrown = true;
         assertEquals(SDOException.INVALID_INDEX ,e.getErrorCode());
         }
-        
+
         Property afterMoveProp1 = aSequence.getProperty(1);
         // verify the move did not take place
         assertTrue(beforeMoveProp1 == afterMoveProp1);
-    	assertTrue(exceptionThrown);
+        assertTrue(exceptionThrown);
     }
 
     public void testMoveIndexBothOutOfBoundsLow() {
-    	defineAndLoadRoot(false, false);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        defineAndLoadRoot(false, false);
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         SDOSequence aSequence = (SDOSequence)po.getSequence();
 
         // move 2 sequenced objects
         Property beforeMoveProp1 = aSequence.getProperty(1);
         assertNotNull(beforeMoveProp1);
-    	boolean exceptionThrown = false;
+        boolean exceptionThrown = false;
         try {
-        	aSequence.move(-1, -2);
+            aSequence.move(-1, -2);
         } catch (SDOException e) {
-        	// catch error
+            // catch error
           assertEquals(SDOException.INVALID_INDEX ,e.getErrorCode());
           exceptionThrown = true;
         }
-        
+
         Property afterMoveProp1 = aSequence.getProperty(1);
         // verify the move did not take place
         assertTrue(beforeMoveProp1 == afterMoveProp1);
-    	assertTrue(exceptionThrown);
+        assertTrue(exceptionThrown);
     }
-    
+
     public void testMoveIndex0toEnd() {
-    	defineAndLoadRoot(false, false);
-    	//SDOSequence aSequence = getSequence();
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        defineAndLoadRoot(false, false);
+        //SDOSequence aSequence = getSequence();
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         SDOSequence aSequence = (SDOSequence)po.getSequence();
 
@@ -3883,67 +3883,67 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         assertNotNull(beforeMoveProp0);
         assertNotNull(beforeMoveProp1);
         assertNotNull(beforeMoveProp3);
-        
+
         // 0,1,2,3 -> 1,2,3,0
         aSequence.move(3, 0);
-        
+
         Property afterMoveProp0 = aSequence.getProperty(0);
         //Property afterMoveProp0 = aSequence.getProperty(0);
         Property afterMoveProp3 = aSequence.getProperty(3);
         assertTrue(beforeMoveProp1 == afterMoveProp0);
         assertTrue(beforeMoveProp0 == afterMoveProp3);
     }
-    
+
     public void testMoveIndexEndto0() {
-    	
+
     }
     public void testMoveIndexAdjacent1to2() {
-    	
+
     }
     public void testMoveIndexAdjacent2to1() {
-    	
+
     }
 
     public void testToString() {
-    	// exercise the toString() method for code coverage
-    	defineAndLoadRoot(false, false);
-    	// get sequence po
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        // exercise the toString() method for code coverage
+        defineAndLoadRoot(false, false);
+        // get sequence po
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
         SDOSequence aSequence = (SDOSequence)po.getSequence();
-    	assertNotNull(aSequence);
-    	// 4 instead of 5 because the one attribute property cannot be sequenced
-    	assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
-    	String aString = aSequence.toString();
-    	assertNotNull(aString);
-    	// we could do some minimal string comparison
-    	
+        assertNotNull(aSequence);
+        // 4 instead of 5 because the one attribute property cannot be sequenced
+        assertEquals(PO_SEQUENCE_SIZE, aSequence.size());
+        String aString = aSequence.toString();
+        assertNotNull(aString);
+        // we could do some minimal string comparison
+
     }
-    
+
     public void testEqualDeepSameSequence() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         //compareSequences(aSequence, aSequence, PO_SEQUENCE_SIZE, true);
-    	// get sequence po
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        // get sequence po
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
-        
+
         // test equalityHelper
         boolean bEqual = equalityHelper.equal(po, po);
         assertTrue(bEqual);
     }
 
     public void testEqualShallowSameSequence() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         //compareSequences(aSequence, aSequence, PO_SEQUENCE_SIZE, true);
-    	// get sequence po
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        // get sequence po
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
-        
+
         // test equalityHelper
         boolean bEqual = equalityHelper.equalShallow(po, po);
         assertTrue(bEqual);
@@ -3951,31 +3951,31 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
 
     // Via a non-interface method the user is able to set sequenced=true after type definition - not supported
     public void testEqualShallowSameSequenceFlagTrueButSequenceIsNull() {
-    	defineAndLoadRoot(false, false);
+        defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         //compareSequences(aSequence, aSequence, PO_SEQUENCE_SIZE, true);
-    	// get sequence po
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	assertNotNull(po);
+        // get sequence po
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        assertNotNull(po);
         assertTrue(po.getType().isSequenced());
-        
+
         // test equalityHelper
         boolean bEqual = equalityHelper.equalShallow(po, po);
         assertTrue(bEqual);
-        
-/*        
-    	defineAndLoadRoot(false, false);
+
+/*
+        defineAndLoadRoot(false, false);
         Sequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
-    	DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
-    	// copy po
-    	DataObject rootCopy = (DataObject)copyHelper.copy(root);    	
-    	// check sequence was copied
+        DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
+        // copy po
+        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        // check sequence was copied
         Sequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
         //compareSequences((SDOSequence)aSequence, (SDOSequence)aSequenceCopy, PO_SEQUENCE_SIZE, true);
-        
+
         // test equalityHelper
-    	DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
+        DataObject poCopy = (DataObject)rootCopy.get(PO_SEQUENCE_PATH);
         boolean bEqual = equalityHelper.equal(po, poCopy);
         assertTrue(bEqual);
 
@@ -3985,65 +3985,65 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         // WARNING: Users should not be doing this - however it is supported
         ((SDOType)poCopy.getType()).setSequenced(false);
         assertFalse(po.getType().isSequenced());
-        assertFalse(poCopy.getType().isSequenced());        
+        assertFalse(poCopy.getType().isSequenced());
         bEqual = equalityHelper.equal(po, poCopy);
         // sequences will not be compared
         assertTrue(bEqual);
 */    }
-    
-    
-/*    
+
+
+/*
     // use XSD to define and XML to load - working
     public void testDefineViaXSDandLoadViaXML() throws Exception {
-    	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
-       	List<Type> types = xsdHelper.define(getXSDString(XSD_PATH));
-       
+        DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
+           List<Type> types = xsdHelper.define(getXSDString(XSD_PATH));
+
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         log(generatedSchema);
         root = createRootObject(true, types);
-    	int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
+        int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
         assertTrue(writeXML(root, URINAME, COMPANY_TYPENAME, System.out));
-        //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);    	
+        //assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);
     }
- 
-    
+
+
     // use XSD to define and programmatic DataFactory to load -  not working
     public void testDefineViaXSDandLoadViaDataFactory() throws Exception {
-    	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
-       	List<Type> types = xsdHelper.define(getXSDString(XSD_PATH));
+        DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
+           List<Type> types = xsdHelper.define(getXSDString(XSD_PATH));
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         log(generatedSchema);
         root = createRootObject(false, types);
-    	int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
-    	assertEquals(9, aRootsize);
+        int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
+        assertEquals(9, aRootsize);
         assertTrue(writeXML(root, URINAME, COMPANY_TYPENAME, System.out));
     }
 */
-/*    
+/*
     // use programmatic define(DataObject) to define and XML to load - not working
     public void testDefineViaDataObjectandLoadViaXML() throws Exception {
-    	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
-    	registerTypes();
-    	List<Type> types = getTypesToGenerateFrom();
+        DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
+        registerTypes();
+        List<Type> types = getTypesToGenerateFrom();
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         log(generatedSchema);
         root = createRootObject(true, types);
-    	int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
+        int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
         assertTrue(writeXML(root, URINAME, COMPANY_TYPENAME, System.out));
     }
 */
-/*    
+/*
     // use programmatic define(DataObject) and programmatic DataFactory to load
     public void testDefineViaDataObjectandLoadViaDataFactory() throws Exception {
-    	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
-    	registerTypes();
-    	List<Type> types = getTypesToGenerateFrom();
-       
+        DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
+        registerTypes();
+        List<Type> types = getTypesToGenerateFrom();
+
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         log(generatedSchema);
         root = createRootObject(false, types);
-    	int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
-    	assertEquals(9, aRootsize);
+        int aRootsize = preOrderTraversalDataObjectList((SDODataObject)root).size();
+        assertEquals(9, aRootsize);
         assertTrue(writeXML(root, URINAME, COMPANY_TYPENAME, System.out));
     }
 */

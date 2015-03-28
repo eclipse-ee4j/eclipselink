@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,12 +27,12 @@ public class MyPrefixMapper extends NamespacePrefixMapper {
         }
         return arg1;
     }
-    
+
     @Override
     public java.lang.String[] getPreDeclaredNamespaceUris() {
         return new String[] {"extraUri"};
     }
-    
+
     @Override
     public java.lang.String[] getPreDeclaredNamespaceUris2() {
         return new String[] {"newPrefix", "someuri", "xsi", javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "somePrefix", "my.uri"};

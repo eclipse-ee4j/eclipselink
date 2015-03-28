@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     14/05/2012-2.4 Guy Pelletier   
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.multitenant;
@@ -25,23 +25,23 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.MULTITENA
 
 /**
  * Object to hold onto tenant table discriminator metadata.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
  * - any metadata mapped from XML to this class must be initialized in the
  *   initXMLObject  method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.4
  */
 public class TenantTableDiscriminatorMetadata extends ORMetadata {
     protected final static TenantTableDiscriminatorType TYPE_DEFAULT = TenantTableDiscriminatorType.SUFFIX;
-    
+
     protected String m_type;
     protected String m_contextProperty;
 
@@ -52,7 +52,7 @@ public class TenantTableDiscriminatorMetadata extends ORMetadata {
     public TenantTableDiscriminatorMetadata() {
         super("<tenant-table-discriminator>");
     }
-    
+
     /**
      * INTERNAL:
      * Used for defaulting.
@@ -60,7 +60,7 @@ public class TenantTableDiscriminatorMetadata extends ORMetadata {
     public TenantTableDiscriminatorMetadata(MetadataAccessor accessor) {
         super(null, accessor);
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.
@@ -80,17 +80,17 @@ public class TenantTableDiscriminatorMetadata extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof TenantTableDiscriminatorMetadata) {
             TenantTableDiscriminatorMetadata tenantTableDiscriminator = (TenantTableDiscriminatorMetadata) objectToCompare;
-            
+
             if (! valuesMatch(m_contextProperty, tenantTableDiscriminator.getContextProperty())) {
                 return false;
             }
-            
+
             return valuesMatch(m_type, tenantTableDiscriminator.getType());
         }
-        
+
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -98,7 +98,7 @@ public class TenantTableDiscriminatorMetadata extends ORMetadata {
     public String getContextProperty() {
         return m_contextProperty;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -119,7 +119,7 @@ public class TenantTableDiscriminatorMetadata extends ORMetadata {
         } else {
             policy.setTenantTableDiscriminatorType(TenantTableDiscriminatorType.valueOf(m_type));
         }
-        
+
         // Set the context property name, defaulting where necessary and log a warning.
         if (m_contextProperty == null) {
             getLogger().logWarningMessage(MetadataLogger.TENANT_TABLE_DISCRIMINATOR_CONTEXT_PROPERTY, descriptor.getJavaClass(), MULTITENANT_PROPERTY_DEFAULT);
@@ -128,7 +128,7 @@ public class TenantTableDiscriminatorMetadata extends ORMetadata {
             policy.setContextProperty(m_contextProperty);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -136,7 +136,7 @@ public class TenantTableDiscriminatorMetadata extends ORMetadata {
     public void setContextProperty(String contextProperty) {
         m_contextProperty = contextProperty;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.partitioned;
 
 import java.io.Serializable;
@@ -56,57 +56,57 @@ public class Address implements Serializable {
         this.country = country;
         this.postalCode = postalCode;
     }
-    
-    public int getID() { 
-        return id; 
+
+    public int getID() {
+        return id;
     }
 
-    public void setID(int id) { 
-        this.id = id; 
+    public void setID(int id) {
+        this.id = id;
     }
 
-    public String getStreet() { 
-        return street; 
+    public String getStreet() {
+        return street;
     }
 
-    public void setStreet(String street) { 
-        this.street = street; 
+    public void setStreet(String street) {
+        this.street = street;
     }
 
-    public String getCity() { 
-        return city; 
+    public String getCity() {
+        return city;
     }
 
-    public void setCity(String city) { 
-        this.city = city; 
+    public void setCity(String city) {
+        this.city = city;
     }
 
-    public String getProvince() { 
-        return province; 
+    public String getProvince() {
+        return province;
     }
 
-    public void setProvince(String province) { 
-        this.province = province; 
+    public void setProvince(String province) {
+        this.province = province;
     }
 
-    public String getPostalCode() { 
-        return postalCode; 
+    public String getPostalCode() {
+        return postalCode;
     }
 
-    public void setPostalCode(String postalCode) { 
-        this.postalCode = postalCode; 
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
     }
 
-    public String getCountry() { 
-        return country; 
+    public String getCountry() {
+        return country;
     }
 
-    public void setCountry(String country) { 
+    public void setCountry(String country) {
         this.country = country;
     }
 
     public Integer getVersion() {
-        return version; 
+        return version;
     }
 
     public void setVersion(Integer version) {

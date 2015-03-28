@@ -13,12 +13,12 @@ import org.eclipse.persistence.queries.ReportQueryResult;
 public class TupleImpl implements Tuple, Serializable{
     protected List<? super Selection<?>> selections;
     protected ReportQueryResult rqr;
-    
+
     public TupleImpl(List<? super Selection<?>> selections,ReportQueryResult rqr){
         this.selections = selections;
         this.rqr = rqr;
     }
-    
+
     /**
      * Get the value of the specified result element.
      * @param resultElement  tuple result element
@@ -47,7 +47,7 @@ public class TupleImpl implements Tuple, Serializable{
      */
     public <X> X get(String alias, Class<X> type){
         Object result = this.get(alias);
-        if (type==null || !(result==null || type.isInstance(result))) { 
+        if (type==null || !(result==null || type.isInstance(result))) {
             throw new IllegalArgumentException( ExceptionLocalization.buildMessage(
                     "jpa_criteriaapi_invalid_result_type", new Object[]{alias, type, result}));
         }
@@ -85,13 +85,13 @@ public class TupleImpl implements Tuple, Serializable{
      */
     public <X> X get(int i, Class<X> type){
         Object result = this.get(i);
-        if (type==null || !(result==null || type.isInstance(result))) { 
+        if (type==null || !(result==null || type.isInstance(result))) {
             throw new IllegalArgumentException( ExceptionLocalization.buildMessage(
                     "jpa_criteriaapi_invalid_result_type", new Object[]{i, type, result}));
         }
         return (X) result;
     }
-    
+
 
     /**
      * Get the value of the element at the specified

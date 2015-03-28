@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -34,12 +34,12 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
  *  This is the complete state of a stream.
  */
 public class CharStreamState {
-	/** Index into the char stream of next lookahead char */
-	int p;
+    /** Index into the char stream of next lookahead char */
+    int p;
 
-	/** What line number is the scanner at before processing buffer[p]? */
-	int line;
-	
-	/** What char position 0..n-1 in line is scanner before processing buffer[p]? */
-	int charPositionInLine;
+    /** What line number is the scanner at before processing buffer[p]? */
+    int line;
+
+    /** What char position 0..n-1 in line is scanner before processing buffer[p]? */
+    int charPositionInLine;
 }

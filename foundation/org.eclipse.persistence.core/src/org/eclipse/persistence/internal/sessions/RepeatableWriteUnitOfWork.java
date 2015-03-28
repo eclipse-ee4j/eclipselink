@@ -1,20 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
         Gordon Yorke - VM managed entity detachment
- *     07/16/2009-2.0 Guy Pelletier 
+ *     07/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
- *     07/15/2011-2.2.1 Guy Pelletier 
+ *     07/15/2011-2.2.1 Guy Pelletier
  *       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.exceptions.DatabaseException; 
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -36,23 +36,23 @@ import org.eclipse.persistence.sessions.IdentityMapAccessor;
 
 
 public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
-    
+
     /** Used to store the final UnitOfWorkChangeSet for merge into the shared cache */
     protected UnitOfWorkChangeSet cumulativeUOWChangeSet;
-    
+
     /**
      * Used to determine if UnitOfWork should commit and rollback transactions.
      * This is used when an EntityTransaction is controlling the transaction.
      */
     protected boolean shouldTerminateTransaction;
-    
+
     /**
      * Used to determine if we should bypass any merge into the cache. This is
      * a JPA flag and is true when the cacheStoreMode property is set to BYPASS.
      * Otherwise, EclipseLink behaves as it usually would.
      */
     protected boolean shouldStoreBypassCache;
-    
+
     /**
      * The FlashClearCache mode to be used.
      * Initialized by setUnitOfWorkChangeSet method in case it's null;
@@ -61,12 +61,12 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * @see org.eclipse.persistence.config.FlushClearCache
      */
     protected transient String flushClearCache;
-    
-    /** 
+
+    /**
      * Track whether we are already in a flush().
      */
     protected boolean isWithinFlush;
-    
+
     /** Contains classes that should be invalidated in the shared cache on commit.
      * Used only in case fushClearCache == FlushClearCache.DropInvalidate:
      * clear method copies contents of updatedObjectsClasses to this set,
@@ -77,7 +77,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * Works together with flushClearCache.
      */
     protected transient Set<ClassDescriptor> classesToBeInvalidated;
-    
+
     /**
      * Alters the behaviour of the RWUOW commit to function like the UOW with respect to Entity lifecycle
      */
@@ -85,7 +85,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
     public RepeatableWriteUnitOfWork() {
     }
-    
+
     public RepeatableWriteUnitOfWork(org.eclipse.persistence.internal.sessions.AbstractSession parentSession, ReferenceMode referenceMode){
         super(parentSession, referenceMode);
         this.shouldTerminateTransaction = true;
@@ -93,7 +93,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         this.isWithinFlush = false;
         this.discoverUnregisteredNewObjectsWithoutPersist = false;
     }
-    
+
     /**
      * @return the discoverUnregisteredNewObjectsWithoutPersist
      */
@@ -115,7 +115,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     public void clear(boolean shouldClearCache) {
         super.clear(shouldClearCache);
-        if (this.cumulativeUOWChangeSet != null) {            
+        if (this.cumulativeUOWChangeSet != null) {
             if (this.flushClearCache == FlushClearCache.Drop) {
                 this.cumulativeUOWChangeSet = null;
                 this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
@@ -144,7 +144,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Call this method if the uow will no longer used for committing transactions:
@@ -162,7 +162,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
         super.clearForClose(shouldClearCache);
     }
-    
+
     /**
      * INTERNAL:
      * Return classes that should be invalidated in the shared cache on commit.
@@ -177,16 +177,16 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      public Set<ClassDescriptor> getClassesToBeInvalidated(){
         return classesToBeInvalidated;
     }
-     
-    /** 
+
+    /**
      * INTERNAL:
      * Get the final UnitOfWorkChangeSet for merge into the shared cache.
      */
     public UnitOfWorkChangeSet getCumulativeUOWChangeSet() {
         return cumulativeUOWChangeSet;
     }
-     
-    /** 
+
+    /**
      * INTERNAL:
      * Set the final UnitOfWorkChangeSet for merge into the shared cache.
      */
@@ -233,7 +233,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         }
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether clearForClose method should be called by release method.
@@ -241,7 +241,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     public boolean shouldClearForCloseOnRelease() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Returns true if the UOW should bypass any updated to the shared cache
@@ -254,11 +254,11 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
     /**
      * Check to see if the descriptor of a superclass can be used to describe this class
-     * 
+     *
      * By default, in JPA, classes must have specific descriptors to be considered entities
      * In this implementation, we check whether the inheritance policy has been configured to allow
      * superclass descriptors to describe subclasses that do not have a descriptor themselves
-     * 
+     *
      * @param Class
      * @return ClassDescriptor
      */
@@ -287,7 +287,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                                               // and set the transaction
                                               // flags appropriately
 
-        // Merge after commit	
+        // Merge after commit
         mergeChangesIntoParent();
     }
 
@@ -303,18 +303,18 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         }else{
             //Bug#438193 : Replace HashSet with IdentityHashSet below for cascadePersistErrors so that the comparison will be by reference and
             //not by equals() which invokes hashCode()
-            Set<Object> cascadePersistErrors = new IdentityHashSet(); 
-            for (Iterator clonesEnum = clones.keySet().iterator(); clonesEnum.hasNext(); ) {        
+            Set<Object> cascadePersistErrors = new IdentityHashSet();
+            for (Iterator clonesEnum = clones.keySet().iterator(); clonesEnum.hasNext(); ) {
                 discoverAndPersistUnregisteredNewObjects(clonesEnum.next(), false, newObjects, unregisteredExistingObjects, visitedObjects, cascadePersistErrors);
             }
-            // EL Bug 343925 - Throw IllegalStateException with all unregistered objects which 
+            // EL Bug 343925 - Throw IllegalStateException with all unregistered objects which
             // are not marked with CascadeType.PERSIST after iterating through all mappings.
             if (!cascadePersistErrors.isEmpty()) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("new_object_found_during_commit", cascadePersistErrors.toArray()));
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Has writeChanges() been attempted on this UnitOfWork?  It may have
@@ -363,7 +363,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         commitTransactionAfterWriteChanges(); // this method will commit the transaction
                                               // and set the transaction flags appropriately
     }
-    
+
     /**
      * INTERNAL: Merge the changes to all objects to the parent.
      */
@@ -373,19 +373,19 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             for(ClassDescriptor classToBeInvalidated : classesToBeInvalidated) {
                 IdentityMapAccessor accessor = this.getParentIdentityMapSession(classToBeInvalidated, false, true).getIdentityMapAccessor();
                 accessor.invalidateClass(classToBeInvalidated.getJavaClass(), false); // 312503: invalidate subtree rooted at classToBeInvalidated
-            }            
+            }
             this.classesToBeInvalidated = null;
         }
         super.mergeChangesIntoParent();
     }
-    
+
     /**
      * INTERNAL:
      * Merge the attributes of the clone into the unit of work copy.
      */
     public Object mergeCloneWithReferences(Object rmiClone, MergeManager manager) {
         Object mergedObject = super.mergeCloneWithReferences(rmiClone, manager);
-        
+
         //iterate over new objects, assign sequences and put in the identitymap
         Map  newObjects = manager.getMergedNewObjects();
         if (! newObjects.isEmpty()) {
@@ -401,7 +401,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 }
             }
         }
-        
+
         return mergedObject;
     }
 
@@ -426,7 +426,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
 
-        // 256277: stop any nested flushing - there should only be one level 
+        // 256277: stop any nested flushing - there should only be one level
         this.isWithinFlush = true; // set before calculateChanges as a PrePersist callback may contain a query that requires a pre flush()
 
         UnitOfWorkChangeSet changeSet = this.unitOfWorkChangeSet;
@@ -441,13 +441,13 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             calculateChanges(getCloneMapping(), changeSet, this.discoverUnregisteredNewObjectsWithoutPersist, true);
             hasChanges = hasChanges || (changeSet.hasChanges() || changeSet.hasForcedChanges());
         }
-        
+
         try {
             //bug 323370: flush out batch statements regardless of the changeSet having changes.
             if (!hasChanges) {
                 //flushing the batch mechanism
                 writesCompleted();
-                //return if there were no changes in the change set.  
+                //return if there were no changes in the change set.
                 log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
                 return;
             }
@@ -459,7 +459,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             setLifecycle(WriteChangesFailed);
             throw exception;
         } finally {
-            this.isWithinFlush = false;  // clear the flag in the case that we have changes          
+            this.isWithinFlush = false;  // clear the flag in the case that we have changes
         }
 
         if (this.cumulativeUOWChangeSet == null) {
@@ -514,14 +514,14 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
                 // Check if the new objects should be cached.
                 registerNewObjectInIdentityMap(newObject, newObject, descriptor);
-                
+
                 return;
             }
         }
         super.registerNotRegisteredNewObjectForPersist(newObject, descriptor);
     }
 
-    
+
     /**
      * INTERNAL:
      * This is internal to the uow, transactions should not be used explicitly in a uow.
@@ -541,7 +541,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     /**
      * INTERNAL:
      * This is internal to the uow, transactions should not be used explicitly in a uow.
-     * The uow shares its parents transactions.  Called in JTA this should not set the 
+     * The uow shares its parents transactions.  Called in JTA this should not set the
      * transaction to rollback.
      */
     protected void rollbackTransaction(boolean intendedToCommitTransaction) throws DatabaseException {
@@ -557,7 +557,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
         super.synchronizeAndResume();
     }
-    
+
     /**
      * INTERNAL:
      * Return if the object was deleted previously (in a flush).
@@ -565,12 +565,12 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     public boolean wasDeleted(Object original) {
         return getUnregisteredDeletedCloneForOriginal(original) != null;
     }
-    
+
     /**
      * INTERNAL:
      * To avoid putting the original object into the shared cache, and
-     * therefore, impede the 'detaching' of the original after commit, a clone 
-     * of the original should be registered not the actual original object. 
+     * therefore, impede the 'detaching' of the original after commit, a clone
+     * of the original should be registered not the actual original object.
      * This is a JPA override to traditional EclipseLink behavior.
      */
     @Override
@@ -584,17 +584,17 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
         // bug 2612602 create the working copy object.
         Object clone = builder.instantiateWorkingCopyClone(original, this);
-        
+
         Object newOriginal = original;
-            
+
         // Must put in the detached original to clone to resolve circular refs.
         getNewObjectsOriginalToClone().put(original, clone);
         getNewObjectsCloneToOriginal().put(clone, original);
         getNewObjectsCloneToMergeOriginal().put(clone, original);
-        
+
         // Must put in clone mapping.
         getCloneMapping().put(clone, clone);
-        
+
         if (isShallowClone) {
             builder.copyInto(original, clone, true);
         } else {
@@ -618,7 +618,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         //this is the second difference.  Assign a sequence just like JPA unless this RWUOW is set to old behaviour
         return clone;
     }
-    
+
     /**
      * INTERNAL:
      * Called only by UnitOfWorkIdentityMapAccessor.getAndCloneCacheKeyFromParent method.
@@ -654,11 +654,11 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     public void setShouldStoreByPassCache(boolean shouldStoreBypassCache) {
         this.shouldStoreBypassCache = shouldStoreBypassCache;
     }
-    
+
     public void setShouldTerminateTransaction(boolean shouldTerminateTransaction) {
         this.shouldTerminateTransaction = shouldTerminateTransaction;
     }
-    
+
     /**
      * INTERNAL:
      * Clears invalidation list.

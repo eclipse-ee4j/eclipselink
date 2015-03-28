@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -48,122 +48,122 @@ import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
  * Simple test class for playing around with the ClasspathPanel.
  */
 public class ClasspathPanelTest {
-	MWRelationalProject project;
+    MWRelationalProject project;
 
-	public static void main(String[] args) {
-		new ClasspathPanelTest().exec(args);
-	}
+    public static void main(String[] args) {
+        new ClasspathPanelTest().exec(args);
+    }
 
-	private ClasspathPanelTest() {
-		super();
-	}
+    private ClasspathPanelTest() {
+        super();
+    }
 
-	private void exec(String[] args) {
-		this.project = this.buildProject();
-		JFrame frame = new JFrame(this.getClass().getName());
-		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		frame.addWindowListener(this.buildWindowListener());
-		frame.getContentPane().add(this.buildMainPanel(), "Center");
-		frame.setSize(400, 400);
-		frame.setVisible(true);
-	}
+    private void exec(String[] args) {
+        this.project = this.buildProject();
+        JFrame frame = new JFrame(this.getClass().getName());
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(this.buildWindowListener());
+        frame.getContentPane().add(this.buildMainPanel(), "Center");
+        frame.setSize(400, 400);
+        frame.setVisible(true);
+    }
 
-	private MWRelationalProject buildProject() {
-		MWRelationalProject result = new MWRelationalProject(this.getClass().getName(), MappingsModelTestTools.buildSPIManager(), null);
-		Classpath cp = Classpath.javaClasspath();
-		Classpath.Entry[] entries = cp.getEntries();
-		for (int i = 0; i < entries.length; i++) {
-			result.getRepository().addClasspathEntry(entries[i].fileName());
-		}
-		return result;
-	}
+    private MWRelationalProject buildProject() {
+        MWRelationalProject result = new MWRelationalProject(this.getClass().getName(), MappingsModelTestTools.buildSPIManager(), null);
+        Classpath cp = Classpath.javaClasspath();
+        Classpath.Entry[] entries = cp.getEntries();
+        for (int i = 0; i < entries.length; i++) {
+            result.getRepository().addClasspathEntry(entries[i].fileName());
+        }
+        return result;
+    }
 
-	private WindowListener buildWindowListener() {
-		return new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				e.getWindow().setVisible(false);
-				System.out.println("classpath:");
-				for (Iterator stream = ClasspathPanelTest.this.project.getRepository().classpathEntries(); stream.hasNext(); ) {
-					System.out.print("\t");
-					System.out.print(stream.next());
-					System.out.println();
-				}
-				System.out.println("*****");
-				System.exit(0);
-			}
-		};
-	}
+    private WindowListener buildWindowListener() {
+        return new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                e.getWindow().setVisible(false);
+                System.out.println("classpath:");
+                for (Iterator stream = ClasspathPanelTest.this.project.getRepository().classpathEntries(); stream.hasNext(); ) {
+                    System.out.print("\t");
+                    System.out.print(stream.next());
+                    System.out.println();
+                }
+                System.out.println("*****");
+                System.exit(0);
+            }
+        };
+    }
 
-	private JPanel buildMainPanel() {
-		JPanel mainPanel = new JPanel(new BorderLayout());
-		mainPanel.add(this.buildClasspathPanel(), BorderLayout.CENTER);
-		mainPanel.add(this.buildBackdoorButton(), BorderLayout.SOUTH);
-		return mainPanel;
-	}
+    private JPanel buildMainPanel() {
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(this.buildClasspathPanel(), BorderLayout.CENTER);
+        mainPanel.add(this.buildBackdoorButton(), BorderLayout.SOUTH);
+        return mainPanel;
+    }
 
-	private ClasspathPanel buildClasspathPanel() {
-		return new ClasspathPanel(this.buildWorkbenchContext().getApplicationContext(), this.buildEntriesHolder(), buildLocationHolder());
-	}
+    private ClasspathPanel buildClasspathPanel() {
+        return new ClasspathPanel(this.buildWorkbenchContext().getApplicationContext(), this.buildEntriesHolder(), buildLocationHolder());
+    }
 
-	private WorkbenchContext buildWorkbenchContext() {
-		return new TestWorkbenchContext(MappingsPluginResourceBundle.class, "org.eclipse.persistence.tools.workbench.mappingsplugin.MappingsPluginIconResourceFileNameMap");
-	}
-	
-	private ListValueModel buildEntriesHolder() {
-		return new ListAspectAdapter(MWClassRepository.CLASSPATH_ENTRIES_LIST, this.project.getRepository()) {
-			protected ListIterator getValueFromSubject() {
-				return ((MWClassRepository) this.subject).classpathEntries();
-			}
-			protected int sizeFromSubject() {
-				return ((MWClassRepository) this.subject).classpathEntriesSize();
-			}
+    private WorkbenchContext buildWorkbenchContext() {
+        return new TestWorkbenchContext(MappingsPluginResourceBundle.class, "org.eclipse.persistence.tools.workbench.mappingsplugin.MappingsPluginIconResourceFileNameMap");
+    }
 
-			public void addItem(int index, Object item) {
-				((MWClassRepository) this.subject).addClasspathEntry(index, (String) item);
-			}
-			
-			public void addItems(int index, List items) {
-				((MWClassRepository) this.subject).addClasspathEntries(index, items);
-			}
-			
-			public Object removeItem(int index) {
-				return ((MWClassRepository) this.subject).removeClasspathEntry(index);
-			}
-			
-			public List removeItems(int index, int length) {
-				return ((MWClassRepository) this.subject).removeClasspathEntries(index, length);
-			}
-			
-			public Object replaceItem(int index, Object item) {
-				return ((MWClassRepository) this.subject).replaceClasspathEntry(index, (String) item);
-			}
-		};
-	}
-	
-	private PropertyValueModel buildLocationHolder() {
-		return new SimplePropertyValueModel(this.project.getSaveDirectory());
-	}
-	
-	private JButton buildBackdoorButton() {
-		return new JButton(this.buildBackdoorAction());
-	}
+    private ListValueModel buildEntriesHolder() {
+        return new ListAspectAdapter(MWClassRepository.CLASSPATH_ENTRIES_LIST, this.project.getRepository()) {
+            protected ListIterator getValueFromSubject() {
+                return ((MWClassRepository) this.subject).classpathEntries();
+            }
+            protected int sizeFromSubject() {
+                return ((MWClassRepository) this.subject).classpathEntriesSize();
+            }
 
-	private Action buildBackdoorAction() {
-		Action action = new AbstractAction("test backdoor") {
-			public void actionPerformed(ActionEvent event) {
-				ClasspathPanelTest.this.testBackdoor();
-			}
-		};
-		action.setEnabled(true);
-		return action;
-	}
+            public void addItem(int index, Object item) {
+                ((MWClassRepository) this.subject).addClasspathEntry(index, (String) item);
+            }
 
-	/**
-	 * Add an entry to the repository directly;
-	 * the UI should update appropriately.
-	 */
-	void testBackdoor() {
-		this.project.getRepository().addClasspathEntry(FileTools.CURRENT_WORKING_DIRECTORY_NAME);
-	}
+            public void addItems(int index, List items) {
+                ((MWClassRepository) this.subject).addClasspathEntries(index, items);
+            }
+
+            public Object removeItem(int index) {
+                return ((MWClassRepository) this.subject).removeClasspathEntry(index);
+            }
+
+            public List removeItems(int index, int length) {
+                return ((MWClassRepository) this.subject).removeClasspathEntries(index, length);
+            }
+
+            public Object replaceItem(int index, Object item) {
+                return ((MWClassRepository) this.subject).replaceClasspathEntry(index, (String) item);
+            }
+        };
+    }
+
+    private PropertyValueModel buildLocationHolder() {
+        return new SimplePropertyValueModel(this.project.getSaveDirectory());
+    }
+
+    private JButton buildBackdoorButton() {
+        return new JButton(this.buildBackdoorAction());
+    }
+
+    private Action buildBackdoorAction() {
+        Action action = new AbstractAction("test backdoor") {
+            public void actionPerformed(ActionEvent event) {
+                ClasspathPanelTest.this.testBackdoor();
+            }
+        };
+        action.setEnabled(true);
+        return action;
+    }
+
+    /**
+     * Add an entry to the repository directly;
+     * the UI should update appropriately.
+     */
+    void testBackdoor() {
+        this.project.getRepository().addClasspathEntry(FileTools.CURRENT_WORKING_DIRECTORY_NAME);
+    }
 
 }

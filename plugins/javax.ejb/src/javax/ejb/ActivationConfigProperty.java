@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,9 +54,9 @@ import java.lang.annotation.Target;
  * beans:
  * <ul>
  * <li> <code>acknowledgeMode</code>.  This property is used to specify
- * the JMS acknowledgement mode for the message delivery when bean-managed 
+ * the JMS acknowledgement mode for the message delivery when bean-managed
  * transaction demarcation is used.
- * Its values are <code>Auto_acknowledge</code> or <code>Dups_ok_acknowledge</code>.  
+ * Its values are <code>Auto_acknowledge</code> or <code>Dups_ok_acknowledge</code>.
  * If this property is not specified, JMS auto acknowledge semantics are assumed.
  *
  * <li> <code>messageSelector</code>.  This property is used to specify

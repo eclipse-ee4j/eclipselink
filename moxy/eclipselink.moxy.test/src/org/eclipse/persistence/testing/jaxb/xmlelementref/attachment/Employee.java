@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,10 +21,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="employee")
 public class Employee {
-    
+
     @XmlElementRef(name="fooA")
     public JAXBElement<byte[]> ref1;
-    
+
     @XmlElementRefs({@XmlElementRef(name="fooB"), @XmlElementRef(name="fooC")})
     public List<JAXBElement> ref2;
 
@@ -32,7 +32,7 @@ public class Employee {
         Employee emp = (Employee)obj;
         boolean equal = true;
         equal = equal && emp.ref1.getName().equals(ref1.getName()) && compareByteArrays(ref1.getValue(), emp.ref1.getValue());
-        
+
         for(int i = 0; i < ref2.size(); i++) {
             JAXBElement next1 = ref2.get(i);
             JAXBElement next2 = emp.ref2.get(i);
@@ -45,7 +45,7 @@ public class Employee {
         }
         return equal;
     }
-    
+
     private boolean compareByteArrays(byte[] a, byte[] b) {
         if(a == null && b== null){
             return true;
@@ -57,7 +57,7 @@ public class Employee {
         }
         return true;
     }
-    
+
     private boolean compareByteArrays(Byte[] a, Byte[] b) {
         for(int i = 0; i < a.length; i++) {
             if(!(a[i].byteValue() == b[i].byteValue())) {
@@ -65,5 +65,5 @@ public class Employee {
             }
         }
         return true;
-    }    
+    }
 }

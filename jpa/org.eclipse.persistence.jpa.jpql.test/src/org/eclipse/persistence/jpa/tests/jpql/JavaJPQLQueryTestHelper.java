@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,94 +45,94 @@ import org.eclipse.persistence.jpa.tests.jpql.tools.spi.java.JavaManagedTypeProv
  */
 public abstract class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
 
-	/**
-	 * The external forms of the ORM configurations mapped to the file name.
-	 */
-	private Map<String, IORMConfiguration> ormConfigurations;
+    /**
+     * The external forms of the ORM configurations mapped to the file name.
+     */
+    private Map<String, IORMConfiguration> ormConfigurations;
 
-	/**
-	 * The external form of the persistence unit.
-	 */
-	private JavaManagedTypeProvider persistenceUnit;
+    /**
+     * The external form of the persistence unit.
+     */
+    private JavaManagedTypeProvider persistenceUnit;
 
-	/**
-	 * Creates
-	 *
-	 * @return
-	 */
-	protected abstract IMappingBuilder<Member> buildMappingBuilder();
+    /**
+     * Creates
+     *
+     * @return
+     */
+    protected abstract IMappingBuilder<Member> buildMappingBuilder();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public IORMConfiguration getORMConfiguration(String ormXmlFileName) throws Exception {
+    /**
+     * {@inheritDoc}
+     */
+    public IORMConfiguration getORMConfiguration(String ormXmlFileName) throws Exception {
 
-		if (ormConfigurations == null) {
-			ormConfigurations = new HashMap<String, IORMConfiguration>();
-		}
+        if (ormConfigurations == null) {
+            ormConfigurations = new HashMap<String, IORMConfiguration>();
+        }
 
-		IORMConfiguration ormConfiguration = ormConfigurations.get(ormXmlFileName);
+        IORMConfiguration ormConfiguration = ormConfigurations.get(ormXmlFileName);
 
-		if (ormConfiguration == null) {
-			ormConfiguration = new JavaORMConfiguration(buildMappingBuilder(), ormXmlFileName);
-			ormConfigurations.put(ormXmlFileName, ormConfiguration);
-		}
+        if (ormConfiguration == null) {
+            ormConfiguration = new JavaORMConfiguration(buildMappingBuilder(), ormXmlFileName);
+            ormConfigurations.put(ormXmlFileName, ormConfiguration);
+        }
 
-		return ormConfiguration;
-	}
+        return ormConfiguration;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public IManagedTypeProvider getPersistenceUnit() throws Exception {
-		if (persistenceUnit == null) {
-			persistenceUnit = new JavaManagedTypeProvider(buildMappingBuilder());
-			initializeManagedTypeProvider();
-		}
-		return persistenceUnit;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public IManagedTypeProvider getPersistenceUnit() throws Exception {
+        if (persistenceUnit == null) {
+            persistenceUnit = new JavaManagedTypeProvider(buildMappingBuilder());
+            initializeManagedTypeProvider();
+        }
+        return persistenceUnit;
+    }
 
-	private void initializeManagedTypeProvider() {
-		persistenceUnit.addMappedSuperclass(AbstractProduct.class);
-		persistenceUnit.addEntity(Address.class);
-		persistenceUnit.addEntity(Alias.class);
-		persistenceUnit.addEntity(CodeAssist.class);
-		persistenceUnit.addEntity(Customer.class);
-		persistenceUnit.addEntity(Dept.class);
-		persistenceUnit.addEntity(Employee.class);
-		persistenceUnit.addEntity(Home.class);
-		persistenceUnit.addEntity(LargeProject.class);
-		persistenceUnit.addEntity(Order.class);
-		persistenceUnit.addEntity(Phone.class);
-		persistenceUnit.addEntity(Product.class);
-		persistenceUnit.addEntity(Project.class);
-		persistenceUnit.addEntity(SmallProject.class);
-		persistenceUnit.addEmbeddable(Employee.EmbeddedAddress.class);
-		persistenceUnit.addEmbeddable(ShelfLife.class);
-		persistenceUnit.addEmbeddable(ZipCode.class);
-	}
+    private void initializeManagedTypeProvider() {
+        persistenceUnit.addMappedSuperclass(AbstractProduct.class);
+        persistenceUnit.addEntity(Address.class);
+        persistenceUnit.addEntity(Alias.class);
+        persistenceUnit.addEntity(CodeAssist.class);
+        persistenceUnit.addEntity(Customer.class);
+        persistenceUnit.addEntity(Dept.class);
+        persistenceUnit.addEntity(Employee.class);
+        persistenceUnit.addEntity(Home.class);
+        persistenceUnit.addEntity(LargeProject.class);
+        persistenceUnit.addEntity(Order.class);
+        persistenceUnit.addEntity(Phone.class);
+        persistenceUnit.addEntity(Product.class);
+        persistenceUnit.addEntity(Project.class);
+        persistenceUnit.addEntity(SmallProject.class);
+        persistenceUnit.addEmbeddable(Employee.EmbeddedAddress.class);
+        persistenceUnit.addEmbeddable(ShelfLife.class);
+        persistenceUnit.addEmbeddable(ZipCode.class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setUp() throws Exception {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void setUp() throws Exception {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setUpBefore() throws Exception {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void setUpBefore() throws Exception {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void tearDown() throws Exception {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void tearDown() throws Exception {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void tearDownAfter() throws Exception {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void tearDownAfter() throws Exception {
+    }
 }

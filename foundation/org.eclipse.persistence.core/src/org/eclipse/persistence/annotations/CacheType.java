@@ -1,31 +1,31 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.annotations;
 
-/** 
+/**
  * The CacheType enum is used with the Cache annotation for a persistent class.
- * It defines the type of cache (IdentityMap) used for the class. By default the 
+ * It defines the type of cache (IdentityMap) used for the class. By default the
  * SOFT_WEAK cache type is used.
- * 
+ *
  * @see org.eclipse.persistence.annotations.Cache
  * @author Guy Pelletier
- * @since Oracle TopLink 11.1.1.0.0 
- */ 
+ * @since Oracle TopLink 11.1.1.0.0
+ */
 public enum CacheType {
     /**
      * Provides full caching and guaranteed identity. Caches all objects
-     * and does not remove them. 
-     * WARNING: This method may be memory intensive when many objects are 
+     * and does not remove them.
+     * WARNING: This method may be memory intensive when many objects are
      * read.  If used on a large data set it will eventually causes an out of memory error.
      */
     FULL,
@@ -44,7 +44,7 @@ public enum CacheType {
      * collection when memory is low and provides full caching and guaranteed identity.
      */
     SOFT,
-    
+
     /**
      * Similar to the WEAK identity map except that it maintains a
      * most-frequently-used sub-cache. The size of the sub-cache is
@@ -56,8 +56,8 @@ public enum CacheType {
     SOFT_WEAK,
 
     /**
-     * Identical to the soft cache weak (SOFT_WEAK) identity map except 
-     * that it uses hard references in the sub-cache. Use this identity 
+     * Identical to the soft cache weak (SOFT_WEAK) identity map except
+     * that it uses hard references in the sub-cache. Use this identity
      * map if soft references do not behave properly on your platform.
      */
     HARD_WEAK,
@@ -67,14 +67,14 @@ public enum CacheType {
      * specified by the application. Objects are removed from the cache
      * on a least-recently-used basis. This method allows object
      * identity for the most commonly used objects.
-     * WARNING: Furnishes caching and identity, but does not guarantee 
+     * WARNING: Furnishes caching and identity, but does not guarantee
      * identity.  This cache type is not recommend and should normally not be used,
      * except for objects that have no relationships to them.
      */
     CACHE,
 
     /**
-     * WARNING: Does not preserve object identity and does not cache 
+     * WARNING: Does not preserve object identity and does not cache
      * objects.  This cache type is not recommend and should normally not be used.
      * This cache type should not be used to disable caching, to properly disable
      * caching set the @Cache isolation attribute to ISOLATED.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -484,13 +484,13 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
                     xmlRootField = new XMLField();
                     wasXMLRoot = true;
                     XPathFragment frag = new XPathFragment();
-    
+
                     if ((((XMLRoot) element)).getNamespaceURI() != null) {
                         frag.setNamespaceURI(((XMLRoot) element).getNamespaceURI());
-                    } 
+                    }
                     frag.setXPath(((XMLRoot) element).getLocalName());
                     xmlRootField.setXPathFragment(frag);
-    
+
                     xmlRootField.setNamespaceResolver(record.getNamespaceResolver());
                     element = ((XMLRoot) element).getObject();
                 }
@@ -505,7 +505,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
                             xmlRootField.getXPathFragment().setXPath(prefix + XMLConstants.COLON + ((XMLRoot) originalObject).getLocalName());
                         }
                     }
-    
+
                     if (xmlRootField != null) {
                         XPathEngine.getInstance().create(xmlRootField, root, element, session);
                     } else {
@@ -517,7 +517,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
                     root.replaceChild(importedCopy, nextChild);
                 } else {
                     XMLDescriptor referenceDescriptor = (XMLDescriptor) session.getDescriptor(element.getClass());
-    
+
                     if (wasXMLRoot) {
                         if (((XMLRoot) originalObject).getNamespaceURI() != null) {
                             String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
@@ -531,7 +531,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
                             xmlRootField.getXPathFragment().setXPath(prefix + XMLConstants.COLON + ((XMLRoot) originalObject).getLocalName());
                         }
                     }
-    
+
                     DOMRecord nestedRecord = (DOMRecord) buildCompositeRow(element, session, referenceDescriptor, row, xmlRootField, element, wasXMLRoot);
                     if (nestedRecord != null) {
                         if (nestedRecord.getDOM() != nextChild) {
@@ -575,7 +575,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
                 frag.setNamespaceURI(((XMLRoot) element).getNamespaceURI());
             }
             frag.setLocalName(((XMLRoot) element).getLocalName());
-            
+
             xmlRootField.setXPathFragment(frag);
 
             xmlRootField.setNamespaceResolver(row.getNamespaceResolver());
@@ -642,13 +642,13 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
     }
 
     protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, XMLDescriptor referenceDescriptor, AbstractRecord parentRow, DatabaseField field, Object originalObject, boolean wasXMLRoot) {
-    	String defaultRootElementString = null;
-    	if(referenceDescriptor != null){
-	    	defaultRootElementString = referenceDescriptor.getDefaultRootElement();
-	    	if (!wasXMLRoot && defaultRootElementString == null) {
-	            throw XMLMarshalException.defaultRootElementNotSpecified((XMLDescriptor) descriptor);
-	        }
-    	}    
+        String defaultRootElementString = null;
+        if(referenceDescriptor != null){
+            defaultRootElementString = referenceDescriptor.getDefaultRootElement();
+            if (!wasXMLRoot && defaultRootElementString == null) {
+                throw XMLMarshalException.defaultRootElementNotSpecified((XMLDescriptor) descriptor);
+            }
+        }
 
         if ((field == null) && (referenceDescriptor != null) && (defaultRootElementString != null)) {
             field = referenceDescriptor.buildField(defaultRootElementString);
@@ -850,7 +850,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
 
     /**
      * INTERNAL
-     * Indicate whether by default an empty container should be set on the 
+     * Indicate whether by default an empty container should be set on the
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */

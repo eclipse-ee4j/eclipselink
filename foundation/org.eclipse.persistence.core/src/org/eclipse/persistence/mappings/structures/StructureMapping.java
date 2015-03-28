@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.structures;
 
 import org.eclipse.persistence.exceptions.*;
@@ -73,13 +73,13 @@ public class StructureMapping extends AbstractCompositeObjectMapping {
     public void setFieldName(String fieldName) {
         this.setField(new ObjectRelationalDatabaseField(fieldName));
     }
-    
+
     @Override
     protected Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord Record, WriteType writeType) {
         AbstractRecord nestedRow = this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session, writeType);
         return this.getReferenceDescriptor(attributeValue, session).buildFieldValueFromNestedRow(nestedRow, session);
     }
-    
+
     @Override
     protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManager, AbstractSession targetSession) {
         Object aggregateObject = objectBuilder.buildNewInstance();

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.tests.jpa.relationships;
 
@@ -29,18 +29,18 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.relationships.*;
 
 public class ExpressionJUnitTestSuite extends JUnitTestCase {
-        
+
     public ExpressionJUnitTestSuite() {
     }
-    
+
     public ExpressionJUnitTestSuite(String name) {
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("ExpressionJUnitTestSuite");
-        
+
         suite.addTest(new ExpressionJUnitTestSuite("testSetup"));
         suite.addTest(new ExpressionJUnitTestSuite("testLeftTrimWithTrimChar"));
         suite.addTest(new ExpressionJUnitTestSuite("testLeftTrimWithoutTrimChar"));
@@ -51,16 +51,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new ExpressionJUnitTestSuite("testLocateWithSingleArgument"));
         suite.addTest(new ExpressionJUnitTestSuite("testLocateWithDoubleArgument"));
         suite.addTest(new ExpressionJUnitTestSuite("testLocateWithDoubleArgument_Neg"));
-        
+
         return suite;
     }
-    
+
     public void testSetup() {
         clearCache();
-        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());        
+        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
     }
 
-    
+
     /*
      * leftTrim(string) feature test
      *   tests that leftTrim(trim_char) works.
@@ -76,7 +76,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         //customer4.setCity("Manotick");
         EntityManager em = createEntityManager();
         try{
-            
+
             beginTransaction(em);
             em.persist(c);
             commitTransaction(em);
@@ -165,7 +165,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
     }
-    
+
 
     /*
      * rightTrim(string) feature test
@@ -232,7 +232,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         c.setCity("Manotic ");
         EntityManager em = createEntityManager();
         try{
-            
+
             beginTransaction(em);
             em.persist(c);
             commitTransaction(em);
@@ -300,7 +300,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").trim("i").equal("tem");
-            
+
             ReadAllQuery r = new ReadAllQuery();
             r.setReferenceClass(Item.class);
             r.setSelectionCriteria(expression);
@@ -308,7 +308,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             assertTrue("Test error: No Items found",v.size()!=0 );
             Item returned = (Item)v.firstElement();
             assertTrue("Test error: No Items found","itemi".equals(returned.getName()) );
-            
+
         }catch(Exception e){
             em = createEntityManager();
             try{
@@ -332,7 +332,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      */
     public void testTrimWithoutTrimChar() throws Exception {
         Platform dbPlatform = getPlatform();
-        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() 
+        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL()
                 || dbPlatform.isInformix() || dbPlatform.isSQLAnywhere() || dbPlatform.isHSQL() || dbPlatform.isSymfoware())) {
             getServerSession().logMessage("Test testTrimWithoutTrimChar skipped for this platform");
             return;
@@ -403,7 +403,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").locate("t").equal(new Integer(2));
-            
+
             ReadAllQuery r = new ReadAllQuery();
             r.setReferenceClass(Item.class);
             r.setSelectionCriteria(expression);
@@ -411,7 +411,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             assertTrue("Test error: No Items found", v.size()!=0 );
             Item returned = (Item)v.firstElement();
             assertTrue("Test error: IncorrectItem found","itemi".equals(returned.getName()) );
-            
+
         }catch(Exception e){
             em = createEntityManager();
             try{
@@ -452,7 +452,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").locate("i", 2).equal(new Integer(5));
-            
+
             ReadAllQuery r = new ReadAllQuery();
             r.setReferenceClass(Item.class);
             r.setSelectionCriteria(expression);
@@ -460,7 +460,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             assertTrue("Test error: No Items found", v.size()!=0 );
             Item returned = (Item)v.firstElement();
             assertTrue("Test error: IncorrectItem found","itemi".equals(returned.getName()) );
-            
+
         }catch(Exception e){
             em = createEntityManager();
             try{
@@ -502,7 +502,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").locate("t", 4).equal(new Integer(0));
-            
+
             ReadAllQuery r = new ReadAllQuery();
             r.setReferenceClass(Item.class);
             r.setSelectionCriteria(expression);
@@ -510,7 +510,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             assertTrue("Test error: No Items found", v.size()!=0 );
             Item returned = (Item)v.firstElement();
             assertTrue("Test error: IncorrectItem found","itemi".equals(returned.getName()) );
-            
+
         }catch(Exception e){
             em = createEntityManager();
             try{

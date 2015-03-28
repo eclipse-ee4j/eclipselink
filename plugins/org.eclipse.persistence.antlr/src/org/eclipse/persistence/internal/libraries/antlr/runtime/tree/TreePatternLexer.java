@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -28,108 +28,108 @@
 package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
 public class TreePatternLexer {
-	public static final int EOF = -1;
-	public static final int BEGIN = 1;
-	public static final int END = 2;
-	public static final int ID = 3;
-	public static final int ARG = 4;
-	public static final int PERCENT = 5;
-	public static final int COLON = 6;
-	public static final int DOT = 7;
+    public static final int EOF = -1;
+    public static final int BEGIN = 1;
+    public static final int END = 2;
+    public static final int ID = 3;
+    public static final int ARG = 4;
+    public static final int PERCENT = 5;
+    public static final int COLON = 6;
+    public static final int DOT = 7;
 
-	/** The tree pattern to lex like "(A B C)" */
-	protected String pattern;
+    /** The tree pattern to lex like "(A B C)" */
+    protected String pattern;
 
-	/** Index into input string */
-	protected int p = -1;
+    /** Index into input string */
+    protected int p = -1;
 
-	/** Current char */
-	protected int c;
+    /** Current char */
+    protected int c;
 
-	/** How long is the pattern in char? */
-	protected int n;
+    /** How long is the pattern in char? */
+    protected int n;
 
-	/** Set when token type is ID or ARG (name mimics Java's StreamTokenizer) */
-	public StringBuffer sval = new StringBuffer();
+    /** Set when token type is ID or ARG (name mimics Java's StreamTokenizer) */
+    public StringBuffer sval = new StringBuffer();
 
-	public boolean error = false;
+    public boolean error = false;
 
-	public TreePatternLexer(String pattern) {
-		this.pattern = pattern;
-		this.n = pattern.length();
-		consume();
-	}
+    public TreePatternLexer(String pattern) {
+        this.pattern = pattern;
+        this.n = pattern.length();
+        consume();
+    }
 
-	public int nextToken() {
-		sval.setLength(0); // reset, but reuse buffer
-		while ( c != EOF ) {
-			if ( c==' ' || c=='\n' || c=='\r' || c=='\t' ) {
-				consume();
-				continue;
-			}
-			if ( (c>='a' && c<='z') || (c>='A' && c<='Z') || c=='_' ) {
-				sval.append((char)c);
-				consume();
-				while ( (c>='a' && c<='z') || (c>='A' && c<='Z') ||
-						(c>='0' && c<='9') || c=='_' )
-				{
-					sval.append((char)c);
-					consume();
-				}
-				return ID;
-			}
-			if ( c=='(' ) {
-				consume();
-				return BEGIN;
-			}
-			if ( c==')' ) {
-				consume();
-				return END;
-			}
-			if ( c=='%' ) {
-				consume();
-				return PERCENT;
-			}
-			if ( c==':' ) {
-				consume();
-				return COLON;
-			}
-			if ( c=='.' ) {
-				consume();
-				return DOT;
-			}
-			if ( c=='[' ) { // grab [x] as a string, returning x
-				consume();
-				while ( c!=']' ) {
-					if ( c=='\\' ) {
-						consume();
-						if ( c!=']' ) {
-							sval.append('\\');
-						}
-						sval.append((char)c);
-					}
-					else {
-						sval.append((char)c);
-					}
-					consume();
-				}
-				consume();
-				return ARG;
-			}
-			consume();
-			error = true;
-			return EOF;
-		}
-		return EOF;
-	}
+    public int nextToken() {
+        sval.setLength(0); // reset, but reuse buffer
+        while ( c != EOF ) {
+            if ( c==' ' || c=='\n' || c=='\r' || c=='\t' ) {
+                consume();
+                continue;
+            }
+            if ( (c>='a' && c<='z') || (c>='A' && c<='Z') || c=='_' ) {
+                sval.append((char)c);
+                consume();
+                while ( (c>='a' && c<='z') || (c>='A' && c<='Z') ||
+                        (c>='0' && c<='9') || c=='_' )
+                {
+                    sval.append((char)c);
+                    consume();
+                }
+                return ID;
+            }
+            if ( c=='(' ) {
+                consume();
+                return BEGIN;
+            }
+            if ( c==')' ) {
+                consume();
+                return END;
+            }
+            if ( c=='%' ) {
+                consume();
+                return PERCENT;
+            }
+            if ( c==':' ) {
+                consume();
+                return COLON;
+            }
+            if ( c=='.' ) {
+                consume();
+                return DOT;
+            }
+            if ( c=='[' ) { // grab [x] as a string, returning x
+                consume();
+                while ( c!=']' ) {
+                    if ( c=='\\' ) {
+                        consume();
+                        if ( c!=']' ) {
+                            sval.append('\\');
+                        }
+                        sval.append((char)c);
+                    }
+                    else {
+                        sval.append((char)c);
+                    }
+                    consume();
+                }
+                consume();
+                return ARG;
+            }
+            consume();
+            error = true;
+            return EOF;
+        }
+        return EOF;
+    }
 
-	protected void consume() {
-		p++;
-		if ( p>=n ) {
-			c = EOF;
-		}
-		else {
-			c = pattern.charAt(p);
-		}
-	}
+    protected void consume() {
+        p++;
+        if ( p>=n ) {
+            c = EOF;
+        }
+        else {
+            c = pattern.charAt(p);
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,22 +35,22 @@ import junit.framework.TestCase;
  * validation during Descriptor initialization.
  */
 public class SessionEventTestCases extends TestCase {
-    
+
     public SessionEventTestCases(String name) throws Exception {
         super(name);
     }
-    
+
     /**
      * InstantiationPolicy validation should fail due to recursive constructor calls.
      * Test expects an exception.
      */
     public void testInstantiationPolicyValidationFailure() {
         Class[] classesToBeBound = new Class[] { Subclass.class, Superclass.class };
-        
+
         // ensure instantiation policy validation is enabled during descriptor initialization
         SessionEventListener eventListener = new SessionEventListener();
         eventListener.setShouldValidateInstantiationPolicy(true);
-        
+
         try {
             setupContext(classesToBeBound, eventListener);
         } catch (Exception x) {
@@ -60,7 +60,7 @@ public class SessionEventTestCases extends TestCase {
     }
 
     /**
-     * Tests disabling of InstantiationPolicy validation during descriptor 
+     * Tests disabling of InstantiationPolicy validation during descriptor
      * initialization. Test should pass w/o any exceptions.
      */
     public void testInstantiationPolicyValidationDisabled() {
@@ -69,27 +69,27 @@ public class SessionEventTestCases extends TestCase {
         // disable instantiation policy validation during descriptor initialization
         SessionEventListener eventListener = new SessionEventListener();
         eventListener.setShouldValidateInstantiationPolicy(false);
-        
+
         try {
             setupContext(classesToBeBound, eventListener);
         } catch (Exception x) {
             fail("An unexpected exception occurred: [" + x.getMessage() + "]");
         }
     }
-    
+
     protected JAXBContext setupContext(Class[] classesToBeBound, SessionEventListener sel) throws Exception {
         javax.xml.bind.JAXBContext jaxbContext = null;
         XMLContext xmlContext = null;
         JaxbClassLoader loader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
         try {
             Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));
-                
+
             CoreProject proj = generator.generateProject();
 
             ConversionManager conversionManager = null;
             conversionManager = new ConversionManager();
             conversionManager.setLoader(loader);
-            
+
             proj.convertClassNamesToClasses(conversionManager.getLoader());
             for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext();) {
                 ClassDescriptor descriptor = descriptorIt.next();
@@ -97,7 +97,7 @@ public class SessionEventTestCases extends TestCase {
                     descriptor.setJavaClass(conversionManager.convertClassNameToClass(descriptor.getJavaClassName()));
                 }
             }
-            
+
             xmlContext = new XMLContext((Project)proj, loader, sel);
             jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, classesToBeBound);
         } catch (Exception ex) {

@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     06/03/2013-2.5.1 Guy Pelletier    
- *       - 402380: 3 jpa21/advanced tests failed on server with 
- *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
- ******************************************************************************/  
+ *     06/03/2013-2.5.1 Guy Pelletier
+ *       - 402380: 3 jpa21/advanced tests failed on server with
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.foundation;
 
 import java.util.*;
@@ -436,7 +436,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
         }
         converter.setObjectClassName(attributeElementClass);
     }
-    
+
     /**
      * ADVANCED:
      * Set the mapping's containerPolicy.
@@ -481,7 +481,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     public void useCollectionClass(Class concreteClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteClass));
     }
-    
+
     /**
      * INTERNAL:
      * Used to set the collection class by name.
@@ -557,7 +557,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
                     return buildClonePart(attributeValue, cacheKey, executionSession);
                 }
                 return result;
-                
+
             }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
                 return null;
             }
@@ -678,17 +678,17 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     public boolean isCollectionMapping() {
         return true;
     }
-    
+
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
 
         this.containerPolicy.convertClassNamesToClasses(classLoader);
-        
+
         // Convert and any Converter class names.
-        convertConverterClassNamesToClasses(valueConverter, classLoader);        
+        convertConverterClassNamesToClasses(valueConverter, classLoader);
     }
-    
+
     /**
      * INTERNAL:
      * Build and return the change record that results

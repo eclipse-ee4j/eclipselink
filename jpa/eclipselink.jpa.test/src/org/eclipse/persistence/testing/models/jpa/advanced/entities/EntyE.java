@@ -8,13 +8,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "ADV_ENTYE")
 public class EntyE {
-    
+
     @Id
     @GeneratedValue
     protected int id;
-    
+
     protected String name;
-    
+
     /**
      * @return the id
      */

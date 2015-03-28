@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 /**
  *  @version $Header: SchemaLocationResolverTestCases.java 24-jan-2007.08:28:33 dmahar Exp $
@@ -85,7 +85,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         return schemaLocationMap;
     }
 
-    // In the current version of the specification all types from the same namespace URI are 
+    // In the current version of the specification all types from the same namespace URI are
     // generated into the same schema.
     public void testExample1Current() throws Exception{
         // get schema types
@@ -94,7 +94,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         Type customerType = typeHelper.getType("my.uri", "CustomerType");
         Type addressType = typeHelper.getType("my.uri", "AddressType");
 
-        //DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());        
+        //DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
         // setup a list of types to pass to generate
         ArrayList types = new ArrayList();
         types.add(customerType);
@@ -109,22 +109,22 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         assertEquals(2, sizeAfter);
         String controlSchema = getSchema(getControlFileNameSchemaExample1());
 
-        //String controlSchema = getSchema(getControlFileNameSchema());        
+        //String controlSchema = getSchema(getControlFileNameSchema());
         log("EXPECTED: \n" + controlSchema);
         log("ACTUAL: \n" + generatedSchema);
         // TODO: failing
-        
+
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
+
         assertSchemaIdentical(getDocument(getControlFileNameSchemaExample1()), generatedSchemaDoc);
-        
+
     }
 
-    // In the current version of the specification if a Type is generated into the resulting XML schema 
-    // and was not included in the original List parameter then it is added to the list.  
+    // In the current version of the specification if a Type is generated into the resulting XML schema
+    // and was not included in the original List parameter then it is added to the list.
     // The result is that the size of the List parameter may grow as a result of the generate call.
     public void testExample2Current() throws Exception{
         // get schema types
@@ -145,20 +145,20 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
 
         log("EXPECTED: \n" + controlSchema);
         log("ACTUAL: \n" + generatedSchema);
-        
+
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
+
         assertSchemaIdentical(getDocument(getControlFileNameSchemaExample2()), generatedSchemaDoc);
     }
 
-    // When null is returned from the SchemaLocationResolver it indicates that the referenced Types 
-    // should be generated inline.  
+    // When null is returned from the SchemaLocationResolver it indicates that the referenced Types
+    // should be generated inline.
     // The result for this example is the same as Example 1 Current Specification
     // this example will exercise if (schemaLocation == null) in SDOSchemaGenerator.addTypeToListIfNeeded() twice
-    // TODO: 20060906 bidirectional/reference    
+    // TODO: 20060906 bidirectional/reference
     public void testExample3New() throws Exception{
         // get schema types
         defineTypesFromSchema();
@@ -185,14 +185,14 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         log("ACTUAL: \n" + generatedSchema);
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
+
         assertSchemaIdentical(getDocument(getControlFileNameSchema()), generatedSchemaDoc);
     }
 
-    // When null is returned from the SchemaLocationResolver it indicates that the referenced Types 
-    // should be generated inline.  
+    // When null is returned from the SchemaLocationResolver it indicates that the referenced Types
+    // should be generated inline.
     // The result for this example is the same as Example 2 Current Specification
     public void testExample4New() throws Exception{
         // get schema types
@@ -213,21 +213,21 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         assertEquals(2, sizeAfter);
         String controlSchema = getSchema(getControlFileNameSchemaExample4());
 
-        //String controlSchema = getSchema(getControlFileNameSchema());        
+        //String controlSchema = getSchema(getControlFileNameSchema());
         log("EXPECTED: \n" + controlSchema);
         log("ACTUAL: \n" + generatedSchema);
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
+
         assertSchemaIdentical(getDocument(getControlFileNameSchemaExample4()), generatedSchemaDoc);
     }
 
-    // When a non-null value is returned from the SchemaLocationResolver it indicates that the 
-    // referenced Type is defined in another XML Schema.  
-    // It is the responsibility of the XSDHelper to determine whether an import 
-    // (source and referenced Types have the same URI) or include 
+    // When a non-null value is returned from the SchemaLocationResolver it indicates that the
+    // referenced Type is defined in another XML Schema.
+    // It is the responsibility of the XSDHelper to determine whether an import
+    // (source and referenced Types have the same URI) or include
     // (source and referenced Types have a different URI) should be added to the XML Schema.
     public void testExample5New() throws Exception{
         // get schema types
@@ -248,20 +248,20 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         assertEquals(1, sizeAfter);
         String controlSchema = getSchema(getControlFileNameSchemaExample5());
 
-        //String controlSchema = getSchema(getControlFileNameSchema());        
+        //String controlSchema = getSchema(getControlFileNameSchema());
         log("EXPECTED: \n" + controlSchema);
         log("ACTUAL: \n" + generatedSchema);
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
+
         assertSchemaIdentical(getDocument(getControlFileNameSchemaExample5()), generatedSchemaDoc);
     }
 
-    // In the current spec when generate(List types) is called and additional types are generated inline 
-    // then the types list is modified to include those types.  
-    // This behavior will remain the same and additionally when an include is generated instead of 
+    // In the current spec when generate(List types) is called and additional types are generated inline
+    // then the types list is modified to include those types.
+    // This behavior will remain the same and additionally when an include is generated instead of
     // generating a type inline that type will be removed from the types List.
     public void testExample6New() throws Exception{
         // get schema types
@@ -284,15 +284,15 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         assertEquals(1, sizeAfter);
         String controlSchema = getSchema(getControlFileNameSchemaExample5());
 
-        //String controlSchema = getSchema(getControlFileNameSchema());        
+        //String controlSchema = getSchema(getControlFileNameSchema());
         log("EXPECTED: \n" + controlSchema);
         log("ACTUAL: \n" + generatedSchema);
         // TODO: below type address is still appearing
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
+
         assertSchemaIdentical(getDocument(getControlFileNameSchemaExample5()), generatedSchemaDoc);
     }
 
@@ -308,14 +308,14 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
 
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
+
         assertSchemaIdentical(getDocument(getControlFileNameSchema()), generatedSchemaDoc);
     }
 
     // Exception test cases
-    // see line100 of SDOSchemaGenerator 
+    // see line100 of SDOSchemaGenerator
     public void testNullTypesPassedToGenerate() {
         ArrayList types = new ArrayList();
         types.add(null);
@@ -327,7 +327,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         }
     }
 
-    // see line90 of SDOSchemaGenerator    
+    // see line90 of SDOSchemaGenerator
     public void testEmptyListPassedToGenerate() {
         ArrayList types = new ArrayList();
         String schema = null;
@@ -341,7 +341,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
     public List defineTypesFromSchema() {
         InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/schemas/customer.xsd");
 
-        //InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/customer.xsd");        
+        //InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/customer.xsd");
         return xsdHelper.define(is, null);
     }
 
@@ -349,7 +349,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         List types = new ArrayList();
         String uri = "my.uri";
 
-        //String uri = null;        
+        //String uri = null;
         Type stringType = typeHelper.getType("commonj.sdo", "String");
 
         //ADDRESS TYPE

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,10 +28,10 @@ import junit.textui.TestRunner;
 
 public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases{
 
-	public LoadAndSaveExceptionBug325353TestCases(String name) {
-		super(name);
-	}
-	
+    public LoadAndSaveExceptionBug325353TestCases(String name) {
+        super(name);
+    }
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveExceptionBug325353TestCases" };
         TestRunner.main(arguments);
@@ -90,123 +90,123 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         propDO.set("name", getControlRootName());
         propDO.set("type", customerSDOType);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
-	}
-    
-    protected void verifyAfterLoad(XMLDocument document) {    	
-    	xmlHelper = new SDOHelperContext().getXMLHelper();
+    }
+
+    protected void verifyAfterLoad(XMLDocument document) {
+        xmlHelper = new SDOHelperContext().getXMLHelper();
         assertNotNull(document);
         assertNotNull(document.getRootObject());
         assertNull(document.getRootObject().getContainer());
-    }    
-    
+    }
+
     public void testLoadFromAndSaveAfterDefineMultipleSchemas() throws Exception {
-    	try{
-    		super.testLoadFromAndSaveAfterDefineMultipleSchemas();
-    	}catch(SDOException sdoException){
-    		assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
-    		return;
-    	}
-    	fail("An SDOException should have been thrown.");
+        try{
+            super.testLoadFromAndSaveAfterDefineMultipleSchemas();
+        }catch(SDOException sdoException){
+            assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
+            return;
+        }
+        fail("An SDOException should have been thrown.");
     }
-    
+
     public void testLoadFromDomSourceWithURIAndOptionsSaveDataObjectToStreamResult() throws Exception {
-    	try{
-    		super.testLoadFromDomSourceWithURIAndOptionsSaveDataObjectToStreamResult();
-    	}catch(SDOException sdoException){
-    		assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
-    		return;
-    	}
-    	fail("An SDOException should have been thrown.");
+        try{
+            super.testLoadFromDomSourceWithURIAndOptionsSaveDataObjectToStreamResult();
+        }catch(SDOException sdoException){
+            assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
+            return;
+        }
+        fail("An SDOException should have been thrown.");
     }
-    
+
     public void testLoadFromFileReaderWithURIAndOptionsStreamSaveDataObjectToWriter() throws Exception {
-    	try{
-    		super.testLoadFromFileReaderWithURIAndOptionsStreamSaveDataObjectToWriter();
-    	}catch(SDOException sdoException){
-    		assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
-    		return;
-    	}
-    	fail("An SDOException should have been thrown.");
+        try{
+            super.testLoadFromFileReaderWithURIAndOptionsStreamSaveDataObjectToWriter();
+        }catch(SDOException sdoException){
+            assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
+            return;
+        }
+        fail("An SDOException should have been thrown.");
     }
-    
+
     public void testLoadFromInputStreamSaveDocumentToOutputStream() throws Exception {
-    	try{
-    		super.testLoadFromInputStreamSaveDocumentToOutputStream();
-    	}catch(SDOException sdoException){
-    		assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
-    		return;
-    	}
-    	fail("An SDOException should have been thrown.");
+        try{
+            super.testLoadFromInputStreamSaveDocumentToOutputStream();
+        }catch(SDOException sdoException){
+            assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
+            return;
+        }
+        fail("An SDOException should have been thrown.");
     }
-    
+
     public void testLoadFromInputStreamWithURIAndOptionsSaveDataObjectToOutputStream() throws Exception {
-    	try{
-    		super.testLoadFromInputStreamWithURIAndOptionsSaveDataObjectToOutputStream();
-    	}catch(SDOException sdoException){
-    		assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
-    		return;
-    	}
-    	fail("An SDOException should have been thrown.");
+        try{
+            super.testLoadFromInputStreamWithURIAndOptionsSaveDataObjectToOutputStream();
+        }catch(SDOException sdoException){
+            assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
+            return;
+        }
+        fail("An SDOException should have been thrown.");
     }
-    
+
     public void testLoadFromInputStreamWithURIAndOptionsSaveDataObjectToStreamResult() throws Exception {
-    	try{
-    		super.testLoadFromInputStreamWithURIAndOptionsSaveDataObjectToStreamResult();
-    	}catch(SDOException sdoException){
-    		assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
-    		return;
-    	}
-    	fail("An SDOException should have been thrown.");
+        try{
+            super.testLoadFromInputStreamWithURIAndOptionsSaveDataObjectToStreamResult();
+        }catch(SDOException sdoException){
+            assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
+            return;
+        }
+        fail("An SDOException should have been thrown.");
     }
-    
+
     public void testLoadFromSAXSourceWithURIAndOptionsSaveDataObjectToStreamResult() throws Exception {
-    	try{
-    		super.testLoadFromSAXSourceWithURIAndOptionsSaveDataObjectToStreamResult();
-    	}catch(SDOException sdoException){
-    		assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
-    		return;
-    	}
-    	fail("An SDOException should have been thrown.");
+        try{
+            super.testLoadFromSAXSourceWithURIAndOptionsSaveDataObjectToStreamResult();
+        }catch(SDOException sdoException){
+            assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
+            return;
+        }
+        fail("An SDOException should have been thrown.");
     }
-    
+
     public void testLoadFromStreamSourceWithURIAndOptionsSaveDataObjectToStreamResult() throws Exception {
-    	try{
-    		super.testLoadFromStreamSourceWithURIAndOptionsSaveDataObjectToStreamResult();
-    	}catch(SDOException sdoException){
-    		assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
-    		return;
-    	}
-    	fail("An SDOException should have been thrown.");
+        try{
+            super.testLoadFromStreamSourceWithURIAndOptionsSaveDataObjectToStreamResult();
+        }catch(SDOException sdoException){
+            assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
+            return;
+        }
+        fail("An SDOException should have been thrown.");
     }
-    
+
     public void testLoadFromStringSaveDocumentToWriter() throws Exception {
-    	try{
-    		super.testLoadFromStringSaveDocumentToWriter();
-    	}catch(SDOException sdoException){
-    		assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
-    		return;
-    	}
-    	fail("An SDOException should have been thrown.");
+        try{
+            super.testLoadFromStringSaveDocumentToWriter();
+        }catch(SDOException sdoException){
+            assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
+            return;
+        }
+        fail("An SDOException should have been thrown.");
     }
-    
+
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
-    	try{
-    		super.testNoSchemaLoadFromInputStreamSaveDataObjectToString();
-    	}catch(SDOException sdoException){
-    		assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
-    		return;
-    	}
-    	fail("An SDOException should have been thrown.");
+        try{
+            super.testNoSchemaLoadFromInputStreamSaveDataObjectToString();
+        }catch(SDOException sdoException){
+            assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
+            return;
+        }
+        fail("An SDOException should have been thrown.");
     }
-    
+
     public void testClassGenerationLoadAndSave() throws Exception {
-    	try{
-    		super.testClassGenerationLoadAndSave();
-    	}catch(SDOException sdoException){
-    		assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
-    		return;
-    	}
-    	fail("An SDOException should have been thrown.");
+        try{
+            super.testClassGenerationLoadAndSave();
+        }catch(SDOException sdoException){
+            assertEquals(SDOException.DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT, sdoException.getErrorCode());
+            return;
+        }
+        fail("An SDOException should have been thrown.");
     }
-    
+
 }

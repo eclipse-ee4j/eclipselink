@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,11 +26,11 @@ import org.eclipse.persistence.tools.workbench.utility.events.CollectionChangeEv
  * An adapter that allows us to make a CollectionValueModel
  * (or ListValueModel) behave like a read-only ListValueModel
  * that keeps its contents sorted and notifies listeners appropriately.
- * 
+ *
  * The comparator can be changed at any time; allowing the same
  * adapter to be used with different sort criteria (e.g. when the user
  * wants to sort a list of files first by name, then by date, then by size).
- * 
+ *
  * NB: Since we only listen to the wrapped collection when we have
  * listeners ourselves and we can only stay in synch with the wrapped
  * collection while we are listening to it, results to various methods
@@ -39,93 +39,93 @@ import org.eclipse.persistence.tools.workbench.utility.events.CollectionChangeEv
  * most likely, client objects will also be listeners.
  */
 public class SortedListValueModelAdapter
-	extends CollectionListValueModelAdapter
+    extends CollectionListValueModelAdapter
 {
-	/**
-	 * A comparator used for sorting the elements;
-	 * if it is null, we use "natural ordering".
-	 */
-	protected Comparator comparator;
+    /**
+     * A comparator used for sorting the elements;
+     * if it is null, we use "natural ordering".
+     */
+    protected Comparator comparator;
 
 
-	// ********** constructors **********
+    // ********** constructors **********
 
-	/**
-	 * Wrap the specified collection value model and sort its contents
-	 * using the specified comparator.
-	 */
-	public SortedListValueModelAdapter(CollectionValueModel collectionHolder, Comparator comparator) {
-		super(collectionHolder);
-		this.comparator = comparator;
-	}
+    /**
+     * Wrap the specified collection value model and sort its contents
+     * using the specified comparator.
+     */
+    public SortedListValueModelAdapter(CollectionValueModel collectionHolder, Comparator comparator) {
+        super(collectionHolder);
+        this.comparator = comparator;
+    }
 
-	/**
-	 * Wrap the specified collection value model and sort its contents
-	 * based on the elements' "natural ordering".
-	 */
-	public SortedListValueModelAdapter(CollectionValueModel collectionHolder) {
-		this(collectionHolder, null);
-	}
+    /**
+     * Wrap the specified collection value model and sort its contents
+     * based on the elements' "natural ordering".
+     */
+    public SortedListValueModelAdapter(CollectionValueModel collectionHolder) {
+        this(collectionHolder, null);
+    }
 
-	/**
-	 * Wrap the specified list value model and sort its contents
-	 * using the specified comparator.
-	 */
-	public SortedListValueModelAdapter(ListValueModel listHolder, Comparator comparator) {
-		this(new ListCollectionValueModelAdapter(listHolder), comparator);
-	}
+    /**
+     * Wrap the specified list value model and sort its contents
+     * using the specified comparator.
+     */
+    public SortedListValueModelAdapter(ListValueModel listHolder, Comparator comparator) {
+        this(new ListCollectionValueModelAdapter(listHolder), comparator);
+    }
 
-	/**
-	 * Wrap the specified list value model and sort its contents
-	 * based on the elements' "natural ordering".
-	 */
-	public SortedListValueModelAdapter(ListValueModel listHolder) {
-		this(listHolder, null);
-	}
-
-
-	// ********** accessors **********
-
-	public void setComparator(Comparator comparator) {
-		this.comparator = comparator;
-		this.sortList();
-	}
+    /**
+     * Wrap the specified list value model and sort its contents
+     * based on the elements' "natural ordering".
+     */
+    public SortedListValueModelAdapter(ListValueModel listHolder) {
+        this(listHolder, null);
+    }
 
 
-	// ********** behavior **********
+    // ********** accessors **********
 
-	/**
-	 * Sort the internal list before
-	 * sending out change notification.
-	 */
-	protected void postBuildList() {
-		super.postBuildList();
-		Collections.sort(this.list, this.comparator);
-	}
+    public void setComparator(Comparator comparator) {
+        this.comparator = comparator;
+        this.sortList();
+    }
 
-	/**
-	 * the list will need to be sorted after the item is added
-	 */
-	protected void itemsAdded(CollectionChangeEvent e) {
-		// first add the items and notify our listeners...
-		super.itemsAdded(e);
-		// ...then sort the list
-		this.sortList();
-	}
 
-	/**
-	 * sort the list and notify our listeners, if necessary;
-	 */
-	protected void sortList() {
-		// save the unsorted state of the sorted list so we can minimize the number of "replaced" items
-		ArrayList unsortedList = (ArrayList) this.list.clone();
-		Collections.sort(this.list, this.comparator);
-		Range diffRange = CollectionTools.identityDiffRange(unsortedList, this.list);
-		if (diffRange.size > 0) {
-			List unsortedItems = unsortedList.subList(diffRange.start, diffRange.end + 1);
-			List sortedItems = this.list.subList(diffRange.start, diffRange.end + 1);
-			this.fireItemsReplaced(VALUE, diffRange.start, sortedItems, unsortedItems);
-		}
-	}
+    // ********** behavior **********
+
+    /**
+     * Sort the internal list before
+     * sending out change notification.
+     */
+    protected void postBuildList() {
+        super.postBuildList();
+        Collections.sort(this.list, this.comparator);
+    }
+
+    /**
+     * the list will need to be sorted after the item is added
+     */
+    protected void itemsAdded(CollectionChangeEvent e) {
+        // first add the items and notify our listeners...
+        super.itemsAdded(e);
+        // ...then sort the list
+        this.sortList();
+    }
+
+    /**
+     * sort the list and notify our listeners, if necessary;
+     */
+    protected void sortList() {
+        // save the unsorted state of the sorted list so we can minimize the number of "replaced" items
+        ArrayList unsortedList = (ArrayList) this.list.clone();
+        Collections.sort(this.list, this.comparator);
+        Range diffRange = CollectionTools.identityDiffRange(unsortedList, this.list);
+        if (diffRange.size > 0) {
+            List unsortedItems = unsortedList.subList(diffRange.start, diffRange.end + 1);
+            List sortedItems = this.list.subList(diffRange.start, diffRange.end + 1);
+            this.fireItemsReplaced(VALUE, diffRange.start, sortedItems, unsortedItems);
+        }
+    }
 
 }

@@ -1,17 +1,17 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * Some parts Copyright (c) 2010 Mark Wolochuk
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Mark Wolochuk - Bug 321041 ConcurrentModificationException on getFromIdentityMap() fix
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.security.AccessController;
@@ -59,10 +59,10 @@ public class IdentityMapManager implements Serializable, Cloneable {
 
     /** A table of identity maps with the key being the query */
     protected Map<Object, IdentityMap> queryResults;
-    
+
     /** A map of class to list of queries that need to be invalidated when that class changes. */
     protected Map<Class, Set> queryResultsInvalidationsByClass;
-    
+
     /** A map of indexes on the cache. */
     protected Map<CacheIndex, IdentityMap> cacheIndexes;
 
@@ -81,9 +81,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /** PERF: Used to avoid readLock and profiler checks to improve performance. */
     protected boolean isCacheAccessPreCheckRequired;
 
-    protected IdentityMapManager() {        
+    protected IdentityMapManager() {
     }
-    
+
     public IdentityMapManager(AbstractSession session) {
         this.session = session;
         this.cacheMutex = new ConcurrencyManager();
@@ -319,7 +319,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         }
         return false;
     }
-    
+
     /**
      * INTERNAL: (Public to allow testing to access)
      * Return a new empty identity map to cache instances of the class.
@@ -330,7 +330,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             if (mode == ReferenceMode.FORCE_WEAK){
                 return new WeakUnitOfWorkIdentityMap(32, descriptor, this.session, true);
             } else if (mode == ReferenceMode.WEAK && descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()) {
-                return new WeakUnitOfWorkIdentityMap(32, descriptor, this.session, true);        
+                return new WeakUnitOfWorkIdentityMap(32, descriptor, this.session, true);
             } else {
                 return new UnitOfWorkIdentityMap(32, descriptor, this.session, true);
             }
@@ -343,7 +343,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             return buildNewIdentityMap(descriptor.getIdentityMapClass(), descriptor.getIdentityMapSize(), descriptor, this.session.isIsolatedClientSession());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return a new empty identity map of the class type.
@@ -391,7 +391,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             throw DescriptorException.invalidIdentityMap(descriptor, exception);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Clear the the lastAccessedIdentityMap and the lastAccessedIdentityMapClass
@@ -469,7 +469,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             invalidateQueryCache(superClass);
         }
     }
-    
+
     /**
      * Return true if an CacheKey with the primary key is in the map.
      * User API.
@@ -506,7 +506,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         Vector objects = null;
         try {
             if (selectionCriteria != null) {
-                // PERF: Avoid clone of expression.            
+                // PERF: Avoid clone of expression.
                 ExpressionBuilder builder = selectionCriteria.getBuilder();
                 if (builder != null && builder.getSession() == null) {
                     builder.setSession(this.session.getRootSession(null));
@@ -601,7 +601,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             }
             boolean isChildDescriptor = descriptor.isChildDescriptor();
             if (selectionCriteria != null) {
-                // PERF: Avoid clone of expression.            
+                // PERF: Avoid clone of expression.
                 ExpressionBuilder builder = selectionCriteria.getBuilder();
                 if (builder.getSession() == null) {
                     builder.setSession(this.session.getRootSession(null));
@@ -819,7 +819,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         this.session.startOperationProfile(SessionProfiler.Caching);
         try {
             if (selectionCriteria != null) {
-                // PERF: Avoid clone of expression.            
+                // PERF: Avoid clone of expression.
                 ExpressionBuilder builder = selectionCriteria.getBuilder();
                 if (builder.getSession() == null) {
                     builder.setSession(this.session.getRootSession(null));
@@ -844,9 +844,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     cacheKeys.add(key);
                 }
             }
-            
+
             Enumeration cacheEnum = copyKeyCollection ? cacheKeys.elements() : map.keys();
-            
+
             // cache the current time to avoid calculating it every time through the loop
             long currentTimeInMillis = System.currentTimeMillis();
             while (cacheEnum.hasMoreElements()) {
@@ -864,7 +864,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 // Must check for inheritance.
                 if ((object.getClass() == theClass) || (theClass.isInstance(object))) {
                     if (selectionCriteria == null) {
-                        // bug 2782991: if first found was deleted nothing returned. 
+                        // bug 2782991: if first found was deleted nothing returned.
                         if (!(conforming && unitOfWork.isObjectDeleted(object))) {
                             return object;
                         }
@@ -873,7 +873,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     //CR 3677 integration of a ValueHolderPolicy
                     try {
                         if (selectionCriteria.doesConform(object, this.session, (AbstractRecord)translationRow, valueHolderPolicy)) {
-                            // bug 2782991: if first found was deleted nothing returned. 
+                            // bug 2782991: if first found was deleted nothing returned.
                             if (!(conforming && unitOfWork.isObjectDeleted(object))) {
                                 return object;
                             }
@@ -881,7 +881,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     } catch (QueryException queryException) {
                         if (queryException.getErrorCode() == QueryException.MUST_INSTANTIATE_VALUEHOLDERS) {
                             if (valueHolderPolicy == InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED) {
-                                // bug 2782991: if first found was deleted nothing returned. 
+                                // bug 2782991: if first found was deleted nothing returned.
                                 if (!(conforming && unitOfWork.isObjectDeleted(object))) {
                                     return object;
                                 }
@@ -993,16 +993,16 @@ public class IdentityMapManager implements Serializable, Cloneable {
             }
         }
         this.lastAccessedIdentityMap = identityMap;
-            
+
         return identityMap;
     }
 
     protected Map<Class, IdentityMap> getIdentityMaps() {
         return identityMaps;
     }
-    
+
     /**
-     * Return an iterator of the classes in the identity map. 
+     * Return an iterator of the classes in the identity map.
      */
     public Iterator getIdentityMapClasses() {
         return getIdentityMaps().keySet().iterator();
@@ -1047,7 +1047,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     public CacheKey getCacheKeyByIndex(CacheIndex index, CacheId indexValues, boolean shouldCheckExpiry, ClassDescriptor descriptor) {
         if (this.cacheIndexes == null) {
             return null;
-        }       
+        }
         IdentityMap map = this.cacheIndexes.get(index);
         if (map == null) {
             return null;

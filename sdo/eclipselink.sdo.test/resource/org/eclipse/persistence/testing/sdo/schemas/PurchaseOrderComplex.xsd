@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://www.example.org" xmlns="http://www.example.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified"> 
+<xsd:schema targetNamespace="http://www.example.org" xmlns="http://www.example.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified">
    <xsd:complexType name="Items">
         <xsd:sequence>
-		<xsd:sequence>
-	  		<xsd:sequence>
-			            <xsd:element name="item" type="LineItemType" minOccurs="0" maxOccurs="unbounded"/>
- 		     	</xsd:sequence>
-		</xsd:sequence>
+        <xsd:sequence>
+              <xsd:sequence>
+                        <xsd:element name="item" type="LineItemType" minOccurs="0" maxOccurs="unbounded"/>
+                  </xsd:sequence>
+        </xsd:sequence>
         </xsd:sequence>
     </xsd:complexType>
    <xsd:complexType name="usAddressType">
@@ -31,14 +31,14 @@
    <xsd:complexType name="LineItemType">
       <xsd:sequence>
          <xsd:element name="productName" type="xsd:string" minOccurs="0"/>
-	 <xsd:choice>
-  	    <xsd:element name="USPrice" type="xsd:float" minOccurs="0"/>
-	       <xsd:sequence>
-		   <xsd:element name="CDNPrice" type="xsd:float" minOccurs="0"/>
-	     	   <xsd:element name="exchangeRate" type="xsd:float" minOccurs="0"/>
+     <xsd:choice>
+          <xsd:element name="USPrice" type="xsd:float" minOccurs="0"/>
+           <xsd:sequence>
+           <xsd:element name="CDNPrice" type="xsd:float" minOccurs="0"/>
+                <xsd:element name="exchangeRate" type="xsd:float" minOccurs="0"/>
                 </xsd:sequence>
-	    </xsd:choice>
-	 <xsd:element name="shipDate" type="xsd:date" minOccurs="0"/>
+        </xsd:choice>
+     <xsd:element name="shipDate" type="xsd:date" minOccurs="0"/>
          <xsd:element name="comment" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
       <xsd:attribute name="partNum" type="SKU"/>
@@ -61,33 +61,33 @@
          <xsd:element name="gender" type="gender" minOccurs="0"/>
          <xsd:element name="phoneNumber" minOccurs="0">
             <xsd:simpleType>
-	       <xsd:restriction base="xsd:string">
+           <xsd:restriction base="xsd:string">
                   <xsd:length value="10"/>
                </xsd:restriction>
             </xsd:simpleType>
-	    </xsd:element>
+        </xsd:element>
          </xsd:sequence>
          <xsd:attribute name="namePrefix">
-	    <xsd:simpleType>
-	       <xsd:restriction base="xsd:string">
-	          <xsd:enumeration value="Dr."/>
-		     <xsd:enumeration value="Mrs."/>
-		     <xsd:enumeration value="Mr."/>
-	          </xsd:restriction>
-	       </xsd:simpleType>
+        <xsd:simpleType>
+           <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="Dr."/>
+             <xsd:enumeration value="Mrs."/>
+             <xsd:enumeration value="Mr."/>
+              </xsd:restriction>
+           </xsd:simpleType>
         </xsd:attribute>
    </xsd:complexType>
    <xsd:complexType name="cdnAddressType">
       <xsd:complexContent>
          <xsd:extension base="AddressType">
             <xsd:sequence>
-	       <xsd:choice>	       
-	          <xsd:sequence>
-		     <xsd:element name="province" type="xsd:string" minOccurs="0"/>
-		  </xsd:sequence>
-	          <xsd:element name="territory" type="xsd:string" minOccurs="0"/>
-	       </xsd:choice>
-  	       <xsd:element name="postalcode" type="xsd:string" minOccurs="0"/>
+           <xsd:choice>
+              <xsd:sequence>
+             <xsd:element name="province" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+              <xsd:element name="territory" type="xsd:string" minOccurs="0"/>
+           </xsd:choice>
+             <xsd:element name="postalcode" type="xsd:string" minOccurs="0"/>
             </xsd:sequence>
          </xsd:extension>
       </xsd:complexContent>
@@ -96,7 +96,7 @@
       <xsd:complexContent>
          <xsd:extension base="cdnAddressType">
             <xsd:sequence>
-  	       <xsd:element name="deliveryInfo" type="xsd:string" minOccurs="0"/>
+             <xsd:element name="deliveryInfo" type="xsd:string" minOccurs="0"/>
             </xsd:sequence>
          </xsd:extension>
       </xsd:complexContent>
@@ -105,7 +105,7 @@
    <xsd:simpleType name="gender">
       <xsd:restriction base="xsd:string">
          <xsd:enumeration value="male"/>
-	 <xsd:enumeration value="female"/>
+     <xsd:enumeration value="female"/>
       </xsd:restriction>
    </xsd:simpleType>
    <xsd:simpleType name="quantityType">

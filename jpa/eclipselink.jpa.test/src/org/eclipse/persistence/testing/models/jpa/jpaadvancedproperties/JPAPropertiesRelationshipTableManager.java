@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties;
 
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -30,14 +30,14 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         addTableDefinition(buildSALESPERSONTable());
         addTableDefinition(buildCUSTOMER_CUSTOMERTable());
     }
-        
+
     public static TableCreator getCreator(){
         if (JPAPropertiesRelationshipTableManager.tableCreator == null){
             JPAPropertiesRelationshipTableManager.tableCreator = new JPAPropertiesRelationshipTableManager();
         }
         return JPAPropertiesRelationshipTableManager.tableCreator;
     }
-    
+
     public static TableDefinition buildCUSTOMERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_PROPS_CUSTOMER");
@@ -192,7 +192,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         fieldCUST_ID.setUnique(false);
         fieldCUST_ID.setShouldAllowNull(true);
         table.addField(fieldCUST_ID);
-        
+
         FieldDefinition fieldBILLED_CUST_ID = new FieldDefinition();
         fieldBILLED_CUST_ID.setName("BILLEDCUSTOMER_CUST_ID");
         fieldBILLED_CUST_ID.setTypeName("NUMERIC");
@@ -203,7 +203,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         fieldBILLED_CUST_ID.setUnique(false);
         fieldBILLED_CUST_ID.setShouldAllowNull(true);
         table.addField(fieldBILLED_CUST_ID);
-        
+
         FieldDefinition fieldSALESPERSON_ID = new FieldDefinition();
         fieldSALESPERSON_ID.setName("SALESPERSON_ID");
         fieldSALESPERSON_ID.setTypeName("NUMERIC");
@@ -214,7 +214,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         fieldSALESPERSON_ID.setUnique(false);
         fieldSALESPERSON_ID.setShouldAllowNull(true);
         table.addField(fieldSALESPERSON_ID);
-        
+
         FieldDefinition fieldITEM_ID = new FieldDefinition();
         fieldITEM_ID.setName("ITEM_ID");
         fieldITEM_ID.setTypeName("NUMERIC");
@@ -300,10 +300,10 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildSALESPERSONTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA_PROPS_SALESPERSON");        
+        table.setName("JPA_PROPS_SALESPERSON");
 
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -329,7 +329,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCUSTOMER_CUSTOMERTable() {
         TableDefinition table = new TableDefinition();
 
@@ -346,7 +346,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("JPA_PROPS_CUSTOMER.CUST_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("CC_C_ID");

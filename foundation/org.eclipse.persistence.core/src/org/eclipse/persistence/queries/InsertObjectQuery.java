@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -68,7 +68,7 @@ public class InsertObjectQuery extends WriteObjectQuery {
             redirectQuery(localRedirector, this, session, translationRow);
             return;
         }
-        
+
         // Check whether the object is already being committed,
         // if it is and it is new, then a shallow insert must be done.
         if (getSession().getCommitManager().isCommitInPreModify(getObject())) {
@@ -80,7 +80,7 @@ public class InsertObjectQuery extends WriteObjectQuery {
             getQueryMechanism().insertObjectForWrite();
         }
     }
-    
+
     /**
      * INTERNAL:
      * Perform an insert.
@@ -110,7 +110,7 @@ public class InsertObjectQuery extends WriteObjectQuery {
         }
         getQueryMechanism().prepareInsertObject();
     }
-        
+
     /**
      * INTERNAL:
      * Check to see if a custom query should be used for this query.
@@ -130,20 +130,20 @@ public class InsertObjectQuery extends WriteObjectQuery {
 
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Set the properties needed to be cascaded into the custom query.
      */
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
-        InsertObjectQuery customInsertQuery = (InsertObjectQuery)customQuery;        
+        InsertObjectQuery customInsertQuery = (InsertObjectQuery)customQuery;
         customInsertQuery.setObject(getObject());
         customInsertQuery.setObjectChangeSet(getObjectChangeSet());
         customInsertQuery.setCascadePolicy(getCascadePolicy());
         customInsertQuery.setShouldMaintainCache(shouldMaintainCache());
         customInsertQuery.setModifyRow(null);
     }
-    
+
     /**
      * PUBLIC:
      * Return if this is an insert object query.

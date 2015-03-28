@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,11 +52,11 @@ import static java.lang.annotation.RetentionPolicy.*;
  *
  * The after completion callback notifies a stateful session bean
  * instance that a transaction commit protocol has completed.
- * A completion status of true indicates that the transaction has 
+ * A completion status of true indicates that the transaction has
  * committed. A status of false indicates that a rollback has occurred.
  * <p>
  *
- * A bean must have at most one <code>AfterCompletion</code> method.  
+ * A bean must have at most one <code>AfterCompletion</code> method.
  * The signature of this method must observe the following rules:
  * <ul>
  * <li> The method must not be declared as <code>final</code> or <code>static</code>.
@@ -78,6 +78,6 @@ import static java.lang.annotation.RetentionPolicy.*;
  * @since EJB 3.1
  */
 
-@Target(METHOD) 
+@Target(METHOD)
 @Retention(RUNTIME)
 public @interface AfterCompletion {}

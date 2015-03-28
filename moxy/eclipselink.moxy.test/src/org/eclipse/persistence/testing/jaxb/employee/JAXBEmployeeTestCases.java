@@ -4,12 +4,12 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.employee;
 
 import java.io.ByteArrayInputStream;
@@ -33,15 +33,15 @@ import org.w3c.dom.Document;
 
 public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee.json";
-	private final static String JSON_RESOURCE_FORMATTED = "org/eclipse/persistence/testing/jaxb/employee/employee_formatted.json";
-	private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
-	private final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
-	private final static String CONTROL_RESPONSIBILITY3 = "Write Design Spec";
-	private final static String CONTROL_FIRST_NAME = "Bob";
-	private final static String CONTROL_LAST_NAME = "Smith";
-	private final static int CONTROL_ID = 10;
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee.json";
+    private final static String JSON_RESOURCE_FORMATTED = "org/eclipse/persistence/testing/jaxb/employee/employee_formatted.json";
+    private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
+    private final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
+    private final static String CONTROL_RESPONSIBILITY3 = "Write Design Spec";
+    private final static String CONTROL_FIRST_NAME = "Bob";
+    private final static String CONTROL_LAST_NAME = "Smith";
+    private final static int CONTROL_ID = 10;
 
     public JAXBEmployeeTestCases(String name) throws Exception {
         super(name);
@@ -66,55 +66,55 @@ public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
         responsibilities.add(CONTROL_RESPONSIBILITY2);
         responsibilities.add(CONTROL_RESPONSIBILITY3);
         responsibilities.add(10);
-        
+
         Employee employee = new Employee();
-		employee.firstName = CONTROL_FIRST_NAME;
-		employee.lastName = CONTROL_LAST_NAME;
-		Calendar cal = Calendar.getInstance();
-		cal.clear();
-		cal.set(2005,04,24,16,06,53);
-			
-		employee.birthday = cal;
-				
-		employee.id = CONTROL_ID;
-		
-		employee.responsibilities = responsibilities;
-		
-		employee.setBlah("Some String");
-              
+        employee.firstName = CONTROL_FIRST_NAME;
+        employee.lastName = CONTROL_LAST_NAME;
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(2005,04,24,16,06,53);
+
+        employee.birthday = cal;
+
+        employee.id = CONTROL_ID;
+
+        employee.responsibilities = responsibilities;
+
+        employee.setBlah("Some String");
+
         return employee;
     }
 
     public String getWriteControlJSONFormatted(){
-		return JSON_RESOURCE_FORMATTED;    	
+        return JSON_RESOURCE_FORMATTED;
     }
-    
+
     public boolean shouldRemoveWhitespaceFromControlDocJSON(){
-    	return false;
-    }  
+        return false;
+    }
 
     public void testRepeatedUnmarshals() throws Exception{
-	Unmarshaller u= jaxbContext.createUnmarshaller();
-	addXsiTypeToUnmarshaller(u);
-	unmarshalXML(u);
-	unmarshalJSON(u);
-	unmarshalJSON(u);
-    	unmarshalXML(u);            
-    	unmarshalJSON(u);
+    Unmarshaller u= jaxbContext.createUnmarshaller();
+    addXsiTypeToUnmarshaller(u);
+    unmarshalXML(u);
+    unmarshalJSON(u);
+    unmarshalJSON(u);
+        unmarshalXML(u);
+        unmarshalJSON(u);
 
     }
-    
+
     private void unmarshalXML(Unmarshaller u) throws Exception{
-    	u.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML );
-    	InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlDocumentLocation);
+        u.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML );
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlDocumentLocation);
         Object testObject = u.unmarshal(new StreamSource(inputStream));
 
         inputStream.close();
         xmlToObjectTest(testObject);
     }
-    
+
     private void unmarshalJSON(Unmarshaller u) throws Exception{
-    	 u.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON );
+         u.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON );
          InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
          Object testObject = u.unmarshal(new StreamSource(inputStream));
          inputStream.close();
@@ -122,34 +122,34 @@ public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
     }
 
     public void testRepeatedMarshals() throws Exception{
-	Marshaller m= jaxbContext.createMarshaller();
-	addXsiTypeToMarshaller(m);
-	marshalXML(m);
-	marshalJSON(m);
-	marshalJSON(m);
-	marshalXML(m);
-	marshalJSON(m);
+    Marshaller m= jaxbContext.createMarshaller();
+    addXsiTypeToMarshaller(m);
+    marshalXML(m);
+    marshalJSON(m);
+    marshalJSON(m);
+    marshalXML(m);
+    marshalJSON(m);
     }
 
     private void marshalXML(Marshaller m) throws Exception{
-    	m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML );
-    	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    	jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/xml");
+        m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML );
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/xml");
         jaxbMarshaller.marshal(getWriteControlObject(), stream);
         InputStream is = new ByteArrayInputStream(stream.toByteArray());         Document testDocument = parser.parse(is);
         stream.close();
         is.close();
 
-        objectToXMLDocumentTest(testDocument);     
-             
+        objectToXMLDocumentTest(testDocument);
+
     }
-    
+
     private void marshalJSON(Marshaller m) throws Exception{
-    	  m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON );
-    	  ByteArrayOutputStream os = new ByteArrayOutputStream();
+          m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON );
+          ByteArrayOutputStream os = new ByteArrayOutputStream();
           m.marshal(getWriteControlObject(), os);
           compareStringToControlFile("testJSONMarshalToOutputStream", new String(os.toByteArray()));
           os.close();
-      }      
-   
+      }
+
 }

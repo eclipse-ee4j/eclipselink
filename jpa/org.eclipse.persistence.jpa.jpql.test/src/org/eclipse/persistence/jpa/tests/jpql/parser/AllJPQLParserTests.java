@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,19 +26,19 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-	AllJPQLParserTests1_0.class,
-	AllJPQLParserTests2_0.class,
-	AllJPQLParserTests2_1.class,
-	AllEclipseLinkJPQLParserTests.class,
-	AllEclipseLinkJPQLParserTests2_1.class,
-	AllEclipseLinkJPQLParserTests2_4.class,
-	AllEclipseLinkJPQLParserTests2_5.class,
-	AllJPQLParserConcurrentTests.class
+    AllJPQLParserTests1_0.class,
+    AllJPQLParserTests2_0.class,
+    AllJPQLParserTests2_1.class,
+    AllEclipseLinkJPQLParserTests.class,
+    AllEclipseLinkJPQLParserTests2_1.class,
+    AllEclipseLinkJPQLParserTests2_4.class,
+    AllEclipseLinkJPQLParserTests2_5.class,
+    AllJPQLParserConcurrentTests.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllJPQLParserTests {
 
-	private AllJPQLParserTests() {
-		super();
-	}
+    private AllJPQLParserTests() {
+        super();
+    }
 }

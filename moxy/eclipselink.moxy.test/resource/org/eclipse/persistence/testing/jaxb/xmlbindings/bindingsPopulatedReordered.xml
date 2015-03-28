@@ -17,17 +17,17 @@
    </xml-enums>
    <java-types>
       <java-type name="myType" xml-accessor-order="ALPHABETICAL" xml-discriminator-node="descriminator node" xml-discriminator-value="discriminator value" xml-inline-binary-data="false" xml-transient="false">
-	     <xml-type factory-class="somepackage.someFactoryclass" factory-method="someMethod" name="someName" prop-order="p2 p1"/>
+         <xml-type factory-class="somepackage.someFactoryclass" factory-method="someMethod" name="someName" prop-order="p2 p1"/>
          <xml-root-element name="someRoot" namespace="someNamespace"/>
-	     <xml-class-extractor class="a.b.c.someClass"/>
-	     <xml-properties>
-	        <xml-property name="prop1" value="propValue" value-type="propValueType"/>
-   	     </xml-properties>
-	     <java-attributes>
-	        <xml-element java-attribute="theJavaAttributeValue" name="elementName"/>
-			<xml-element java-attribute="theJavaAttributeValue2" name="elementName2"/>
+         <xml-class-extractor class="a.b.c.someClass"/>
+         <xml-properties>
+            <xml-property name="prop1" value="propValue" value-type="propValueType"/>
+            </xml-properties>
+         <java-attributes>
+            <xml-element java-attribute="theJavaAttributeValue" name="elementName"/>
+            <xml-element java-attribute="theJavaAttributeValue2" name="elementName2"/>
             <xml-attribute container-type="someContainerType" java-attribute="javaAttribute" name="attributename1" namespace="somenamespace" read-only="true" required="true"/>
-	     </java-attributes>
-	  </java-type>
+         </java-attributes>
+      </java-type>
    </java-types>
 </xml-bindings>

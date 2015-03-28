@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration.ExpressionPersistence;
 
 import org.eclipse.persistence.testing.framework.TestSuite;
@@ -26,60 +26,60 @@ public class ExpressionPersistenceTestSuite extends TestSuite {
     }
 
     public void addTests() {
-        addTest(new ExpressionPersistenceTest("PersistenceTestAnyOfAllowingNoneEqual", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestAnyOfAllowingNoneEqual",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestAnyOfAllowingNoneEqualQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestAnyOfEqual", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestAnyOfEqual",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestAnyOfEqualQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestAnyOfEqual", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestAnyOfEqual",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestAnyOfEqualQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestAnyOfEqual", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestAnyOfEqual",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestAnyOfEqualQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetAllowingNullEqual", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetAllowingNullEqual",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetAllowingNullEqualQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetEqual", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetEqual",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetEqualQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetGreaterThan", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetGreaterThan",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetGreaterThanQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetGreaterThanEqual", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetGreaterThanEqual",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetGreaterThanEqualQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetIsNull", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetIsNull",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetIsNullQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetLessThan", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetLessThan",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetLessThanQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetLessThanEqual", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetLessThanEqual",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetLessThanEqualQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetLike", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetLike",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetLikeQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetNot", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetNot",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetNotQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetNotEqual", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetNotEqual",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetNotEqualQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetNotLike", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetNotLike",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetNotLikeQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetNotNull", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetNotNull",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetNotNullQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGetEqualIgnoringCase", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGetEqualIgnoringCase",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGetEqualIgnoringCaseQuery()));
-        addTest(new ExpressionPersistenceTest("PersistenceTestGreaterThanEqualDate", 
+        addTest(new ExpressionPersistenceTest("PersistenceTestGreaterThanEqualDate",
                                               EmployeeWorkbenchIntegrationSystem.buildPersistenceTestGreaterThanEqualDateQuery()));
 
         //special java types
-        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualCalendar", 
+        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualCalendar",
                                                           CMWorkbenchIntegrationSystem.buildPersistenceTestEqualCalendarQuery()));
-        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualSqlDate", 
+        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualSqlDate",
                                                           CMWorkbenchIntegrationSystem.buildPersistenceTestEqualSqlDateQuery()));
-        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualTime", 
+        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualTime",
                                                           CMWorkbenchIntegrationSystem.buildPersistenceTestEqualTimeQuery()));
         //There is a bug in ox to make Timestamp and util.Date fail
         //        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualTimestamp", CMWorkbenchIntegrationSystem.buildPersistenceTestEqualTimestampQuery()));
         //        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualJavaDate", CMWorkbenchIntegrationSystem.buildPersistenceTestEqualJavaDateQuery()));
-        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualBigDecimal", 
+        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualBigDecimal",
                                                           CMWorkbenchIntegrationSystem.buildPersistenceTestEqualBigDecimalQuery()));
-        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualBigInteger", 
+        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualBigInteger",
                                                           CMWorkbenchIntegrationSystem.buildPersistenceTestEqualBigIntegerQuery()));
-        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualPChar", 
+        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualPChar",
                                                           CMWorkbenchIntegrationSystem.buildPersistenceTestEqualPCharQuery()));
-        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualCharacter", 
+        addTest(new ExpressionPersistenceSpecialTypesTest("PersistenceTestEqualCharacter",
                                                           CMWorkbenchIntegrationSystem.buildPersistenceTestEqualCharacterQuery()));
 
         //Seem to have problem with Oracle database. Refer to ConversionManagerModel.ConversionManagerSystem

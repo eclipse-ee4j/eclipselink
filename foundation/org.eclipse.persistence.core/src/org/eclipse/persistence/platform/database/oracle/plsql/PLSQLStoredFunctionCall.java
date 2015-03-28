@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
@@ -35,24 +35,24 @@ public class PLSQLStoredFunctionCall extends PLSQLStoredProcedureCall {
         super();
         this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, OUT, JDBCTypes.VARCHAR_TYPE));
     }
-    
+
     public PLSQLStoredFunctionCall(DatabaseType databaseType) {
-        super();        
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        super();
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, OUT, dt));
     }
-    
+
     public PLSQLStoredFunctionCall(DatabaseType databaseType, int length) {
-        super();        
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        super();
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, OUT, dt, length));
     }
-    
+
     public PLSQLStoredFunctionCall(DatabaseType databaseType, int length, int scale) {
-        super();        
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        super();
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         this.arguments.add(new PLSQLargument("RESULT", this.originalIndex++, OUT, dt, length, scale));
     }
@@ -83,7 +83,7 @@ public class PLSQLStoredFunctionCall extends PLSQLStoredProcedureCall {
     public boolean isStoredFunctionCall() {
         return true;
     }
-    
+
     @Override
     public boolean isStoredPLSQLFunctionCall() {
         return true;

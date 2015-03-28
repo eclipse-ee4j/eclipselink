@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.Map;
@@ -83,7 +83,7 @@ public class IsolatedClientSession extends ClientSession {
 
     /**
      * INTERNAL:
-     * Returns the appropriate IdentityMap session for this descriptor.  Sessions can be 
+     * Returns the appropriate IdentityMap session for this descriptor.  Sessions can be
      * chained and each session can have its own Cache/IdentityMap.  Entities can be stored
      * at different levels based on Cache Isolation.  This method will return the correct Session
      * for a particular Entity class based on the Isolation Level and the attributes provided.
@@ -107,8 +107,8 @@ public class IsolatedClientSession extends ClientSession {
 
     /**
      * INTERNAL:
-     * For use within the merge process this method will get an object from the shared 
-     * cache using a readlock.  If a readlock is unavailable then the merge manager will be 
+     * For use within the merge process this method will get an object from the shared
+     * cache using a readlock.  If a readlock is unavailable then the merge manager will be
      * transitioned to deferred locks and a deferred lock will be used.
      */
     @Override
@@ -149,7 +149,7 @@ public class IsolatedClientSession extends ClientSession {
     @Override
     public boolean isIsolatedClientSession() {
         return true;
-    }    
+    }
 
     /**
      * PUBLIC:

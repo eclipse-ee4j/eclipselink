@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     John Vandale - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import java.io.File;
@@ -43,7 +43,7 @@ public class EventListenerCollectionTest extends org.eclipse.persistence.testing
 
         descriptor.getEventManager().addListener(new DescriptorEventAdapter());
     }
-    
+
     public void test() {
         XMLProjectWriter.write(FILENAME, project);
         project = XMLProjectReader.read(FILENAME, getClass().getClassLoader());
@@ -57,10 +57,10 @@ public class EventListenerCollectionTest extends org.eclipse.persistence.testing
 
         //test that the collection type is a NonSynchronizedVector
         if (!(listeners instanceof org.eclipse.persistence.internal.helper.NonSynchronizedVector)) {
-        	throwError("Descriptor from project XML with event listeners does not use NonSynchronizedVector for event listeners collection.");
+            throwError("Descriptor from project XML with event listeners does not use NonSynchronizedVector for event listeners collection.");
         }
     }
-    
+
     public void reset() {
         File file = new File(FILENAME);
         file.delete();

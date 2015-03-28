@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     12/02/2010-2.2 Guy Pelletier 
+ *     12/02/2010-2.2 Guy Pelletier
  *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
- *     01/25/2011-2.3 Guy Pelletier 
+ *     01/25/2011-2.3 Guy Pelletier
  *       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
 import java.io.Serializable;
@@ -50,49 +50,49 @@ public class Item implements java.io.Serializable {
     private Facade facade;
 
     public Item() {}
-    
+
     @Id
     @GeneratedValue(strategy=TABLE, generator="ITEM_TABLE_GENERATOR")
     @TableGenerator(
-            name="ITEM_TABLE_GENERATOR", 
-            table="CMP3_CUSTOMER_SEQ", 
-            pkColumnName="SEQ_NAME", 
+            name="ITEM_TABLE_GENERATOR",
+            table="CMP3_CUSTOMER_SEQ",
+            pkColumnName="SEQ_NAME",
             valueColumnName="SEQ_COUNT",
             pkColumnValue="ITEM_SEQ"
     )
     @Column(name="ID")
-    public Integer getItemId() { 
-        return itemId; 
+    public Integer getItemId() {
+        return itemId;
     }
 
-    public void setItemId(Integer id) { 
-        this.itemId = id; 
+    public void setItemId(Integer id) {
+        this.itemId = id;
     }
 
     @Version
     @Column(name="ITEM_VERSION")
-    protected int getVersion() { 
-        return version; 
+    protected int getVersion() {
+        return version;
     }
 
-    protected void setVersion(int version) { 
-        this.version = version; 
+    protected void setVersion(int version) {
+        this.version = version;
     }
 
-    public String getDescription() { 
-        return description; 
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescription(String desc) { 
-        this.description = desc; 
+    public void setDescription(String desc) {
+        this.description = desc;
     }
 
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
-        this.name = name; 
+        this.name = name;
     }
 
     // The @VariableOneToOne definition purposely left off to test defaulting.
@@ -122,17 +122,17 @@ public class Item implements java.io.Serializable {
     public void setDistributor(Distributor distributor) {
         this.distributor = distributor;
     }
-    
+
     // No entity implements this interface therefore it should not be mapped
     // as a variable one to one.
     public Facade getFacade() {
         return facade;
     }
-    
+
     public void setFacade(Facade facade) {
         this.facade = facade;
     }
-    
+
     // This should default to a basic mapping (and not a variable 1-1)
     public Serializable getTag() {
         return tag;

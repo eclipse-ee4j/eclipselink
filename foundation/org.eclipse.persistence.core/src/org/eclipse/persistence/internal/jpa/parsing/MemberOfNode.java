@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 /**
@@ -26,9 +26,9 @@ import org.eclipse.persistence.expressions.*;
 public class MemberOfNode extends BinaryOperatorNode {
     private boolean notIndicated = false;
 
-    //If we're dealing with a NOT, we store the expression for the left. 
-    //When we get to the one-to-many on the right, it will handle the noneOf using 
-    //the receiver stored in the context. 
+    //If we're dealing with a NOT, we store the expression for the left.
+    //When we get to the one-to-many on the right, it will handle the noneOf using
+    //the receiver stored in the context.
     //(i.e. secondLastRightExpression.noneOf(lastRightVariable, leftExpression)
     private Expression leftExpression = null;
 
@@ -68,7 +68,7 @@ public class MemberOfNode extends BinaryOperatorNode {
         TypeHelper typeHelper = context.getTypeHelper();
         setType(typeHelper.getBooleanType());
     }
-    
+
     public Expression generateExpression(GenerationContext context) {
         // Need to make sure one of the node is marked as a one to many
         if (getRight().isParameterNode()) {

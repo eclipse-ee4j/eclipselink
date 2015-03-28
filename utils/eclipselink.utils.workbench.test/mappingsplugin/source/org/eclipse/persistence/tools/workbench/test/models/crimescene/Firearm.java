@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -15,15 +15,15 @@ package org.eclipse.persistence.tools.workbench.test.models.crimescene;
 import java.util.Vector;
 
 public class Firearm extends Weapon {
-	private String caliber;
-	private String type;
-	private byte[] byteArray;
+    private String caliber;
+    private String type;
+    private byte[] byteArray;
 
 /**
  * Firearm constructor comment.
  */
 public Firearm() {
-	super();
+    super();
 }
 /**
  * Return this weapon's caliber
@@ -32,7 +32,7 @@ public Firearm() {
  * @return java.lang.String
  */
 public String getCaliber() {
-	return caliber;
+    return caliber;
 }
 /**
  * Return the type of this weapon
@@ -41,7 +41,7 @@ public String getCaliber() {
  * @return java.lang.String
  */
 public String getType() {
-	return type;
+    return type;
 }
 /**
  * Set the caliber of this weapon
@@ -50,7 +50,7 @@ public String getType() {
  * @param newValue java.lang.String
  */
 public void setCaliber(String newValue) {
-	this.caliber = newValue;
+    this.caliber = newValue;
 }
 /**
  * Set the type of this weapon
@@ -59,23 +59,23 @@ public void setCaliber(String newValue) {
  * @param newValue java.lang.String
  */
 public void setType(String newValue) {
-	this.type = newValue;
+    this.type = newValue;
 }
 
 public byte[] getByteArray() {
-	return this.byteArray;
+    return this.byteArray;
 }
 
 public void setByteArray(byte[] byteArray) {
-	this.byteArray = byteArray;
+    this.byteArray = byteArray;
 }
 
-	public static Vector types() {
-		Vector v = new Vector();
-		v.addElement("Pistol");
-		v.addElement("Rifle");
-		v.addElement("Shotgun");
-		v.addElement("Other");
-		return v;
-	}
+    public static Vector types() {
+        Vector v = new Vector();
+        v.addElement("Pistol");
+        v.addElement("Rifle");
+        v.addElement("Shotgun");
+        v.addElement("Other");
+        return v;
+    }
 }

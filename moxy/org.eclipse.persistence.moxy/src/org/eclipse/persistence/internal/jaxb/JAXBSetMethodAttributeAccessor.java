@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,16 +19,16 @@ import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * This accessor should be used when processing a class that uses method access,
- * and a has set method but no get method.  The get method is required during 
- * mapping initialization to determine the type of the set method's input 
+ * and a has set method but no get method.  The get method is required during
+ * mapping initialization to determine the type of the set method's input
  * parameter, and an exception will occur if none is present.  Using this
  * custom method accessor, the input parameter of the set method can be
  * set (as a string) and loaded (using the provided classloader) during
  * the initialization phase.
- * 
+ *
  * Two methods are overridden to avoid exceptions due to lack of a get
  * method:
- * 
+ *
  *   - initializeAttributes
  *   - getAttributeClass
  *
@@ -42,7 +42,7 @@ public class JAXBSetMethodAttributeAccessor extends MethodAttributeAccessor {
      * This constructor sets the set method input parameter type (as string) as
      * well as the classloader that will be used to load the associated class
      * during initialization.
-     * 
+     *
      * @param parameterTypeAsString
      * @param loader
      */

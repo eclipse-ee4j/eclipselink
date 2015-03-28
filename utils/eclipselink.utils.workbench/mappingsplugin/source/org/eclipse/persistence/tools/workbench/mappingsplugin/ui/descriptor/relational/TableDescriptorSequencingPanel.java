@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -62,301 +62,301 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.string.StringConverter;
 
 
-final class TableDescriptorSequencingPanel 
-	extends AbstractPanel 
+final class TableDescriptorSequencingPanel
+    extends AbstractPanel
 {
-	private PropertyValueModel relationalDescriptorHolder;
-	
-	private PropertyValueModel useSequencingHolder;
-	
-	private PropertyValueModel sequenceTableHolder;
-	
-	
-	TableDescriptorSequencingPanel(PropertyValueModel relationalDescriptorHolder, WorkbenchContextHolder contextHolder) {
-		super(contextHolder);
-		this.relationalDescriptorHolder = relationalDescriptorHolder;
-		this.useSequencingHolder = this.buildUseSequencingHolder();
-		this.sequenceTableHolder = this.buildSequenceTableHolder();
-		initializeLayout();
-	}
-	
-	private PropertyValueModel buildUseSequencingHolder() {
-		return new PropertyAspectAdapter(this.relationalDescriptorHolder, MWTableDescriptor.USES_SEQUENCING_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return Boolean.valueOf(((MWTableDescriptor) this.subject).usesSequencing());
-			}
+    private PropertyValueModel relationalDescriptorHolder;
 
-			protected void setValueOnSubject(Object value) {
-				((MWTableDescriptor) this.subject).setUsesSequencing(((Boolean) value).booleanValue());
-			}
-		};
-	}
-	
-	private PropertyValueModel buildSequenceTableHolder() {
-		PropertyValueModel propertyValueModel = new PropertyAspectAdapter(this.relationalDescriptorHolder, MWTableDescriptor.SEQUENCE_NUMBER_TABLE_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return ((MWTableDescriptor) this.subject).getSequenceNumberTable();
-			}
-			
-			protected void setValueOnSubject(Object value) {
-				((MWTableDescriptor) this.subject).setSequenceNumberTable((MWTable) value);
-			}
-		};
-		return new ValuePropertyPropertyValueModelAdapter(propertyValueModel, MWTable.QUALIFIED_NAME_PROPERTY);
-	}
-	
-	private void initializeLayout() {
-		GridBagConstraints constraints = new GridBagConstraints();
+    private PropertyValueModel useSequencingHolder;
 
-		GroupBox groupBox = new GroupBox(buildUseSequencingCheckBox(), buildSequencingPanel());
+    private PropertyValueModel sequenceTableHolder;
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 1;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.CENTER;
-		constraints.insets     = new Insets(0, 0, 0, 0);
-	
-		add(groupBox, constraints);
-	}
-	
-	protected JPanel buildSequencingPanel() {
-		GridBagConstraints constraints = new GridBagConstraints();
-		Vector components = new Vector();
 
-		Pane panel = new Pane(new GridBagLayout());
+    TableDescriptorSequencingPanel(PropertyValueModel relationalDescriptorHolder, WorkbenchContextHolder contextHolder) {
+        super(contextHolder);
+        this.relationalDescriptorHolder = relationalDescriptorHolder;
+        this.useSequencingHolder = this.buildUseSequencingHolder();
+        this.sequenceTableHolder = this.buildSequenceTableHolder();
+        initializeLayout();
+    }
 
-		JComponent sequenceNameWidgets = buildLabeledTextField(
-			"name",
-			this.buildSequencingNameTextFieldDocument(buildSequencingNameHolder())
-		);
+    private PropertyValueModel buildUseSequencingHolder() {
+        return new PropertyAspectAdapter(this.relationalDescriptorHolder, MWTableDescriptor.USES_SEQUENCING_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return Boolean.valueOf(((MWTableDescriptor) this.subject).usesSequencing());
+            }
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 0;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.CENTER;
-		constraints.insets     = new Insets(0, 0, 0, 0);
-	
-		panel.add(sequenceNameWidgets, constraints);
-		components.add(sequenceNameWidgets);
+            protected void setValueOnSubject(Object value) {
+                ((MWTableDescriptor) this.subject).setUsesSequencing(((Boolean) value).booleanValue());
+            }
+        };
+    }
 
-		// Sequence Table widgets
-		JComponent sequenceTableWidgets = buildLabeledComponent(
-			"table",
-			this.buildSequenceTableListChooser()
-		);
+    private PropertyValueModel buildSequenceTableHolder() {
+        PropertyValueModel propertyValueModel = new PropertyAspectAdapter(this.relationalDescriptorHolder, MWTableDescriptor.SEQUENCE_NUMBER_TABLE_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return ((MWTableDescriptor) this.subject).getSequenceNumberTable();
+            }
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 1;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.BOTH;
-		constraints.anchor     = GridBagConstraints.CENTER;
-		constraints.insets     = new Insets(5, 0, 0, 0);
-	
-		panel.add(sequenceTableWidgets, constraints);
-		components.add(sequenceTableWidgets);
+            protected void setValueOnSubject(Object value) {
+                ((MWTableDescriptor) this.subject).setSequenceNumberTable((MWTable) value);
+            }
+        };
+        return new ValuePropertyPropertyValueModelAdapter(propertyValueModel, MWTable.QUALIFIED_NAME_PROPERTY);
+    }
 
-		// Sequence Field widgets
-		JComponent sequenceFieldWidgets = buildLabeledComponent(
-			"field*",
-			this.buildSequenceColumnListChooser()
-		);
+    private void initializeLayout() {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 2;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.CENTER;
-		constraints.insets     = new Insets(5, 0, 0, 0);
-	
-		panel.add(sequenceFieldWidgets, constraints);
-		components.add(sequenceFieldWidgets);
+        GroupBox groupBox = new GroupBox(buildUseSequencingCheckBox(), buildSequencingPanel());
 
-		new ComponentEnabler(this.useSequencingHolder, components);
-		return panel;
-	}
+        constraints.gridx      = 0;
+        constraints.gridy      = 1;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.CENTER;
+        constraints.insets     = new Insets(0, 0, 0, 0);
 
-	// *********** use sequencing ***********
-	
-	private JCheckBox buildUseSequencingCheckBox() {
-		return buildCheckBox("useSequencing", new CheckBoxModelAdapter(this.useSequencingHolder));
-	}
-	
+        add(groupBox, constraints);
+    }
 
-	// *********** sequencing name ***********
-	
-	private PropertyValueModel buildSequencingNameHolder() {
-		return new PropertyAspectAdapter(this.relationalDescriptorHolder, MWTableDescriptor.SEQUENCE_NUMBER_NAME_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return ((MWTableDescriptor) this.subject).getSequenceNumberName();
-			}
+    protected JPanel buildSequencingPanel() {
+        GridBagConstraints constraints = new GridBagConstraints();
+        Vector components = new Vector();
 
-			protected void setValueOnSubject(Object value) {
-				((MWTableDescriptor) this.subject).setSequenceNumberName((String) value);
-			}
-		};
-	}
+        Pane panel = new Pane(new GridBagLayout());
 
-	private Document buildSequencingNameTextFieldDocument(PropertyValueModel sequencingNameHolder) {
-		return new DocumentAdapter(sequencingNameHolder);
-	}
-	
-	
-	// **************** sequence table ****************************************
-	
-	private ListChooser buildSequenceTableListChooser() {
-		ListChooser listChooser = 
-			new DefaultListChooser(
-				this.buildTableComboBoxModel(),
-				this.getWorkbenchContextHolder(),
+        JComponent sequenceNameWidgets = buildLabeledTextField(
+            "name",
+            this.buildSequencingNameTextFieldDocument(buildSequencingNameHolder())
+        );
+
+        constraints.gridx      = 0;
+        constraints.gridy      = 0;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.CENTER;
+        constraints.insets     = new Insets(0, 0, 0, 0);
+
+        panel.add(sequenceNameWidgets, constraints);
+        components.add(sequenceNameWidgets);
+
+        // Sequence Table widgets
+        JComponent sequenceTableWidgets = buildLabeledComponent(
+            "table",
+            this.buildSequenceTableListChooser()
+        );
+
+        constraints.gridx      = 0;
+        constraints.gridy      = 1;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.BOTH;
+        constraints.anchor     = GridBagConstraints.CENTER;
+        constraints.insets     = new Insets(5, 0, 0, 0);
+
+        panel.add(sequenceTableWidgets, constraints);
+        components.add(sequenceTableWidgets);
+
+        // Sequence Field widgets
+        JComponent sequenceFieldWidgets = buildLabeledComponent(
+            "field*",
+            this.buildSequenceColumnListChooser()
+        );
+
+        constraints.gridx      = 0;
+        constraints.gridy      = 2;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.CENTER;
+        constraints.insets     = new Insets(5, 0, 0, 0);
+
+        panel.add(sequenceFieldWidgets, constraints);
+        components.add(sequenceFieldWidgets);
+
+        new ComponentEnabler(this.useSequencingHolder, components);
+        return panel;
+    }
+
+    // *********** use sequencing ***********
+
+    private JCheckBox buildUseSequencingCheckBox() {
+        return buildCheckBox("useSequencing", new CheckBoxModelAdapter(this.useSequencingHolder));
+    }
+
+
+    // *********** sequencing name ***********
+
+    private PropertyValueModel buildSequencingNameHolder() {
+        return new PropertyAspectAdapter(this.relationalDescriptorHolder, MWTableDescriptor.SEQUENCE_NUMBER_NAME_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return ((MWTableDescriptor) this.subject).getSequenceNumberName();
+            }
+
+            protected void setValueOnSubject(Object value) {
+                ((MWTableDescriptor) this.subject).setSequenceNumberName((String) value);
+            }
+        };
+    }
+
+    private Document buildSequencingNameTextFieldDocument(PropertyValueModel sequencingNameHolder) {
+        return new DocumentAdapter(sequencingNameHolder);
+    }
+
+
+    // **************** sequence table ****************************************
+
+    private ListChooser buildSequenceTableListChooser() {
+        ListChooser listChooser =
+            new DefaultListChooser(
+                this.buildTableComboBoxModel(),
+                this.getWorkbenchContextHolder(),
                 RelationalProjectComponentFactory.buildTableNodeSelector(getWorkbenchContextHolder()),
-				this.buildSequenceTableChooserDialogBuilder()
-			);
-		listChooser.setRenderer(this.buildTableListRenderer());
-		
-		return listChooser;
-	}
-	
-		
-	private CachingComboBoxModel buildTableComboBoxModel() {
-		return new ExtendedComboBoxModel( 
-				new IndirectComboBoxModel(this.sequenceTableHolder, this.relationalDescriptorHolder) {
-					protected ListIterator listValueFromSubject(Object subject) {
-						return orderedTableChoices((MWRelationalDescriptor) subject);
-					}
-				}
-		);
-	}
-	
-	ListIterator orderedTableChoices(MWRelationalDescriptor descriptor) {
-		return CollectionTools.sort(descriptor.associatedTables(), buildTableComparator()).listIterator();
-	}
+                this.buildSequenceTableChooserDialogBuilder()
+            );
+        listChooser.setRenderer(this.buildTableListRenderer());
 
-	
-	private Comparator buildTableComparator() {
-		return new Comparator() {
-			public int compare(Object o1, Object o2) {
-				return ((MWTable) o1).getName().compareTo(((MWTable) o2).getName());
-			}
-		};
-	}
-	
-	private DefaultListChooserDialog.Builder buildSequenceTableChooserDialogBuilder() {
-		DefaultListChooserDialog.Builder builder = new DefaultListChooserDialog.Builder();
-		builder.setTitleKey("SEQUENCE_TABLE_LIST_BROWSER_DIALOG.title");
-		builder.setListBoxLabelKey("SEQUENCE_TABLE_LIST_BROWSER_DIALOG.listLabel");
-		builder.setStringConverter(this.buildTableStringConverter());
-		return builder;
-	}
-	
-	private StringConverter buildTableStringConverter() {
-		return new StringConverter() {
-			public String convertToString(Object o) {
-				return o == null ? "" : ((MWTable) o).getName();
-			}
-		};
-	}
-	
-	private ListCellRenderer buildTableListRenderer() {
-		return new AdaptableListCellRenderer(new TableCellRendererAdapter(this.resourceRepository()));
-	}
-	
-	
-	// **************** sequence column ****************************************
-	
-	private ListChooser buildSequenceColumnListChooser() {
-		ListChooser listChooser = 
-			new DefaultListChooser(
-				this.buildExtendedSequenceColumnComboBoxModel(),
-				this.getWorkbenchContextHolder(),
+        return listChooser;
+    }
+
+
+    private CachingComboBoxModel buildTableComboBoxModel() {
+        return new ExtendedComboBoxModel(
+                new IndirectComboBoxModel(this.sequenceTableHolder, this.relationalDescriptorHolder) {
+                    protected ListIterator listValueFromSubject(Object subject) {
+                        return orderedTableChoices((MWRelationalDescriptor) subject);
+                    }
+                }
+        );
+    }
+
+    ListIterator orderedTableChoices(MWRelationalDescriptor descriptor) {
+        return CollectionTools.sort(descriptor.associatedTables(), buildTableComparator()).listIterator();
+    }
+
+
+    private Comparator buildTableComparator() {
+        return new Comparator() {
+            public int compare(Object o1, Object o2) {
+                return ((MWTable) o1).getName().compareTo(((MWTable) o2).getName());
+            }
+        };
+    }
+
+    private DefaultListChooserDialog.Builder buildSequenceTableChooserDialogBuilder() {
+        DefaultListChooserDialog.Builder builder = new DefaultListChooserDialog.Builder();
+        builder.setTitleKey("SEQUENCE_TABLE_LIST_BROWSER_DIALOG.title");
+        builder.setListBoxLabelKey("SEQUENCE_TABLE_LIST_BROWSER_DIALOG.listLabel");
+        builder.setStringConverter(this.buildTableStringConverter());
+        return builder;
+    }
+
+    private StringConverter buildTableStringConverter() {
+        return new StringConverter() {
+            public String convertToString(Object o) {
+                return o == null ? "" : ((MWTable) o).getName();
+            }
+        };
+    }
+
+    private ListCellRenderer buildTableListRenderer() {
+        return new AdaptableListCellRenderer(new TableCellRendererAdapter(this.resourceRepository()));
+    }
+
+
+    // **************** sequence column ****************************************
+
+    private ListChooser buildSequenceColumnListChooser() {
+        ListChooser listChooser =
+            new DefaultListChooser(
+                this.buildExtendedSequenceColumnComboBoxModel(),
+                this.getWorkbenchContextHolder(),
                 RelationalMappingComponentFactory.buildColumnNodeSelector(getWorkbenchContextHolder()),
-				this.buildSequenceColumnChooserDialogBuilder()
-			);
-		listChooser.setRenderer(buildColumnListRenderer());	
-		
-		return listChooser;
-	}
-	
-	private ComboBoxModel buildExtendedSequenceColumnComboBoxModel() {
-		return new ExtendedComboBoxModel(this.buildSequenceColumnComboBoxModel());
-	}
-	
-	private ComboBoxModel buildSequenceColumnComboBoxModel() {
-		return new ComboBoxModelAdapter(this.buildSortedColumnsListHolder(), this.buildSequenceColumnAdapter());
-	}
-	
-	private ListValueModel buildSortedColumnsListHolder() {
-		return new SortedListValueModelAdapter(this.buildUpdatingColumnsListHolder(), this.buildColumnComparator());
-	}
-	
-	private ListValueModel buildUpdatingColumnsListHolder() {
-		return new ItemPropertyListValueModelAdapter(this.buildColumnsAdapter(), MWColumn.NAME_PROPERTY);
-	}
-	
-	private CollectionValueModel buildColumnsAdapter() {
-		return new CollectionAspectAdapter(this.sequenceTableHolder, MWTable.COLUMNS_COLLECTION) {
-			protected Iterator getValueFromSubject() {
-				return ((MWTable) this.subject).columns();
-			}
-			
-			protected int sizeFromSubject() {
-				return ((MWTable) this.subject).columnsSize();
-			}
-		};
-	}
-	
-	private Comparator buildColumnComparator() {
-		return new Comparator() {
-			public int compare(Object o1, Object o2) {
-				return ((MWColumn) o1).getName().compareTo(((MWColumn) o2).getName());
-			}
-		};
-	}
-	
-	private PropertyValueModel buildSequenceColumnAdapter() {
-		PropertyValueModel propertyValueModel = new PropertyAspectAdapter(this.relationalDescriptorHolder, MWTableDescriptor.SEQUENCE_NUMBER_COLUMN_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return ((MWTableDescriptor) this.subject).getSequenceNumberColumn();
-			}
+                this.buildSequenceColumnChooserDialogBuilder()
+            );
+        listChooser.setRenderer(buildColumnListRenderer());
 
-			protected void setValueOnSubject(Object value) {
-				((MWTableDescriptor) this.subject).setSequenceNumberColumn((MWColumn) value);
-			}
-		};
-		return new ValuePropertyPropertyValueModelAdapter(propertyValueModel, MWColumn.QUALIFIED_NAME_PROPERTY, MWColumn.DATABASE_TYPE_PROPERTY);
-	}
-	
-	private DefaultListChooserDialog.Builder buildSequenceColumnChooserDialogBuilder() {
-		DefaultListChooserDialog.Builder builder = new DefaultListChooserDialog.Builder();
-		builder.setTitleKey("SEQUENCE_FIELD_LIST_BROWSER_DIALOG.title");
-		builder.setListBoxLabelKey("SEQUENCE_FIELD_LIST_BROWSER_DIALOG.listLabel");
-		builder.setStringConverter(this.buildColumnStringConverter());
-		return builder;
-	}
+        return listChooser;
+    }
+
+    private ComboBoxModel buildExtendedSequenceColumnComboBoxModel() {
+        return new ExtendedComboBoxModel(this.buildSequenceColumnComboBoxModel());
+    }
+
+    private ComboBoxModel buildSequenceColumnComboBoxModel() {
+        return new ComboBoxModelAdapter(this.buildSortedColumnsListHolder(), this.buildSequenceColumnAdapter());
+    }
+
+    private ListValueModel buildSortedColumnsListHolder() {
+        return new SortedListValueModelAdapter(this.buildUpdatingColumnsListHolder(), this.buildColumnComparator());
+    }
+
+    private ListValueModel buildUpdatingColumnsListHolder() {
+        return new ItemPropertyListValueModelAdapter(this.buildColumnsAdapter(), MWColumn.NAME_PROPERTY);
+    }
+
+    private CollectionValueModel buildColumnsAdapter() {
+        return new CollectionAspectAdapter(this.sequenceTableHolder, MWTable.COLUMNS_COLLECTION) {
+            protected Iterator getValueFromSubject() {
+                return ((MWTable) this.subject).columns();
+            }
+
+            protected int sizeFromSubject() {
+                return ((MWTable) this.subject).columnsSize();
+            }
+        };
+    }
+
+    private Comparator buildColumnComparator() {
+        return new Comparator() {
+            public int compare(Object o1, Object o2) {
+                return ((MWColumn) o1).getName().compareTo(((MWColumn) o2).getName());
+            }
+        };
+    }
+
+    private PropertyValueModel buildSequenceColumnAdapter() {
+        PropertyValueModel propertyValueModel = new PropertyAspectAdapter(this.relationalDescriptorHolder, MWTableDescriptor.SEQUENCE_NUMBER_COLUMN_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return ((MWTableDescriptor) this.subject).getSequenceNumberColumn();
+            }
+
+            protected void setValueOnSubject(Object value) {
+                ((MWTableDescriptor) this.subject).setSequenceNumberColumn((MWColumn) value);
+            }
+        };
+        return new ValuePropertyPropertyValueModelAdapter(propertyValueModel, MWColumn.QUALIFIED_NAME_PROPERTY, MWColumn.DATABASE_TYPE_PROPERTY);
+    }
+
+    private DefaultListChooserDialog.Builder buildSequenceColumnChooserDialogBuilder() {
+        DefaultListChooserDialog.Builder builder = new DefaultListChooserDialog.Builder();
+        builder.setTitleKey("SEQUENCE_FIELD_LIST_BROWSER_DIALOG.title");
+        builder.setListBoxLabelKey("SEQUENCE_FIELD_LIST_BROWSER_DIALOG.listLabel");
+        builder.setStringConverter(this.buildColumnStringConverter());
+        return builder;
+    }
 
 
-	private StringConverter buildColumnStringConverter() {
-		return new StringConverter() {
-			public String convertToString(Object o) {
-				return o == null ? "" : ((MWColumn) o).getName();
-			}
-		};
-	}
-	
-	private ListCellRenderer buildColumnListRenderer() {
-		return new AdaptableListCellRenderer(new ColumnCellRendererAdapter(this.resourceRepository(), false));
-	}
+    private StringConverter buildColumnStringConverter() {
+        return new StringConverter() {
+            public String convertToString(Object o) {
+                return o == null ? "" : ((MWColumn) o).getName();
+            }
+        };
+    }
+
+    private ListCellRenderer buildColumnListRenderer() {
+        return new AdaptableListCellRenderer(new ColumnCellRendererAdapter(this.resourceRepository(), false));
+    }
 }

@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     12/18/2009-2.1 Guy Pelletier 
+ *     12/18/2009-2.1 Guy Pelletier
  *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
- *     01/05/2010-2.1 Guy Pelletier 
+ *     01/05/2010-2.1 Guy Pelletier
  *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.xml.inheritance;
 
 import java.util.Iterator;
@@ -46,7 +46,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.Defa
 import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
- 
+
 /**
  * JUnit test case(s) xml specified inheritance metadata.
  */
@@ -55,27 +55,27 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     private static Number boatId;
     private static Number sportsCarId;
     private String m_persistenceUnit;
-    
+
     public EntityMappingsInheritanceJUnitTestCase() {
         super();
     }
-    
+
     public EntityMappingsInheritanceJUnitTestCase(String name) {
         super(name);
     }
-    
+
     public EntityMappingsInheritanceJUnitTestCase(String name, String persistenceUnit) {
         super(name);
-        
+
         m_persistenceUnit = persistenceUnit;
     }
-    
+
     public static Test suite() {
         String ormTesting = TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING);
         final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-inheritance";
-        
+
         TestSuite suite = new TestSuite("Inheritance Model - " + persistenceUnit);
-        
+
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testSetup", persistenceUnit));
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testCreateFueledVehicle", persistenceUnit));
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testCreateBusFueledVehicle", persistenceUnit));
@@ -90,14 +90,14 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteFueledVehicle", persistenceUnit));
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteNonFueledVehicle", persistenceUnit));
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testPKJoinColumnAssociation", persistenceUnit));
-        
+
         if (persistenceUnit.equals("extended-inheritance")) {
             suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testAppleComputers", persistenceUnit));
         }
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -106,16 +106,16 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         new InheritanceTableCreator().replaceTables(session);
         clearCache(m_persistenceUnit);
     }
-    
+
     public void testAppleComputers() {
         EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
-        
+
         MacBook macBook1 = new MacBook();
         macBook1.setRam(2);
         MacBook macBook2 = new MacBook();
         macBook2.setRam(4);
-        
+
         MacBookPro macBookPro1 = new MacBookPro();
         macBookPro1.setRam(4);
         macBookPro1.setColor("Black");
@@ -128,58 +128,58 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         MacBookPro macBookPro4 = new MacBookPro();
         macBookPro4.setRam(8);
         macBookPro4.setColor("Blue");
-        
+
         try {
             em.persist(macBook1);
             em.persist(macBook2);
-            
+
             em.persist(macBookPro1);
             em.persist(macBookPro2);
             em.persist(macBookPro3);
             em.persist(macBookPro4);
-            
+
             commitTransaction(em);
         } catch (Exception exception ) {
             fail("Error persisting macbooks: " + exception.getMessage());
         } finally {
             closeEntityManager(em);
         }
-        
+
         clearCache(m_persistenceUnit);
         em = createEntityManager(m_persistenceUnit);
-        
+
         List macBooks = em.createNamedQuery("findAllXMLMacBooks").getResultList();
         assertTrue("The wrong number of mac books were returned: " + macBooks.size() + ", expected: 6", macBooks.size() == 6);
-        
+
         List macBookPros = em.createNamedQuery("findAllXMLMacBookPros").getResultList();
         assertTrue("The wrong number of mac book pros were returned: " + macBookPros.size() + ", expected: 4", macBookPros.size() == 4);
     }
-    
+
     public void testCreateBusFueledVehicle() {
         int prePersistBusCountBefore = 0;//Bus.PRE_PERSIST_COUNT;
         int postPersistBusCountBefore = 0;//Bus.POST_PERSIST_COUNT;
-        
+
         int preWriteBusNativeListenerCountBefore = BusNativeListener.PRE_WRITE_COUNT;
         int postWriteBusNativeListenerCountBefore = BusNativeListener.POST_WRITE_COUNT;
-        
+
         int prePersistBusListenerCountBefore = BusListener.PRE_PERSIST_COUNT;
         int postPersistBusListenerCountBefore = BusListener.POST_PERSIST_COUNT;
-        
+
         int prePersistBusListener2CountBefore = BusListener2.PRE_PERSIST_COUNT;
         int postPersistBusListener2CountBefore = BusListener2.POST_PERSIST_COUNT;
-        
+
         int prePersistDefaultListenerCountBefore = DefaultListener.PRE_PERSIST_COUNT;
         int postPersistDefaultListenerCountBefore = DefaultListener.POST_PERSIST_COUNT;
-        
-        EntityManager em = createEntityManager(m_persistenceUnit);        
+
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
-        
+
         Bus bus = new Bus();
         bus.setPassengerCapacity(new Integer(50));
         bus.setFuelCapacity(new Integer(175));
         bus.setDescription("OC Transpo Bus");
         bus.setFuelType("Diesel");
-            
+
         try {
             em.persist(bus);
             busId = bus.getId();
@@ -188,11 +188,11 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             throw ex;
         }
-        
+
         assertFalse("The PrePersist callback method on Bus was not called.", prePersistBusCountBefore == bus.pre_persist_count);
         assertFalse("The PostPersist callback method on Bus was not called.", postPersistBusCountBefore == bus.post_persist_count);
         assertFalse("The PreWrite callback method (native) on BusNativeListener was not called.", preWriteBusNativeListenerCountBefore == BusNativeListener.PRE_WRITE_COUNT);
@@ -214,12 +214,12 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         assertTrue("The PrePersist events were not fired in the correct order.", bus.getPrePersistCalledListenerAt(3) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener2.class);
         assertTrue("The PrePersist events were not fired in the correct order.", bus.getPrePersistCalledListenerAt(4) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener3.class);
         assertTrue("The PrePersist events were not fired in the correct order.", bus.getPrePersistCalledListenerAt(5) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener.class);
-        
+
         assertTrue("The PostPersist events were not fired in the correct order.", bus.getPostPersistCalledListenerAt(0) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener2.class);
         assertTrue("The PostPersist events were not fired in the correct order.", bus.getPostPersistCalledListenerAt(1) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener3.class);
         assertTrue("The PostPersist events were not fired in the correct order.", bus.getPostPersistCalledListenerAt(2) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener.class);
     }
-    
+
     public void testCreateFueledVehicle() {
         EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
@@ -439,25 +439,25 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
 
     public void testPKJoinColumnAssociation() {
         EntityManager em = createEntityManager(m_persistenceUnit);
-        
+
         beginTransaction(em);
         try {
             Boat boat = new Boat();
             boat.setModel("Sprint");
             boat.setPassengerCapacity(99);
             em.persist(boat);
-            
+
             Person person = new Person();
             person.setBoat(boat);
             person.setName("boat owner");
             em.persist(person);
-            
+
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             fail("Error on commit: " + e.getCause());
         } finally {
             closeEntityManager(em);

@@ -1,35 +1,35 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
 package javax.resource.spi.work;
 
 /**
- * This exception is thrown by a <code>WorkManager</code> to indicate 
- * that a submitted <code>Work</code> instance has been rejected. The 
+ * This exception is thrown by a <code>WorkManager</code> to indicate
+ * that a submitted <code>Work</code> instance has been rejected. The
  * rejection could be due to internal factors or start timeout expiration.
  *
- * <p>This could be thrown only before the execution of a 
- * <code>Work</code> instance starts (that is, before a 
+ * <p>This could be thrown only before the execution of a
+ * <code>Work</code> instance starts (that is, before a
  * thread has been allocated for <code>Work</code> execution).
 
  * <p>An associated error code indicates the nature of the error condition.
@@ -52,7 +52,7 @@ public class WorkRejectedException extends WorkException {
      * @param message the detail message.
      */
     public WorkRejectedException(String message) {
-	super(message);
+    super(message);
     }
 
     /**
@@ -61,7 +61,7 @@ public class WorkRejectedException extends WorkException {
      * @param cause a chained exception of type <code>Throwable</code>.
      */
     public WorkRejectedException(Throwable cause) {
-	super(cause);
+    super(cause);
     }
 
     /**
@@ -72,7 +72,7 @@ public class WorkRejectedException extends WorkException {
      * @param cause a chained exception of type <code>Throwable</code>.
      */
     public WorkRejectedException(String message, Throwable cause) {
-	super(message, cause);
+    super(message, cause);
     }
 
     /**
@@ -83,6 +83,6 @@ public class WorkRejectedException extends WorkException {
      * @param errorCode a string specifying the vendor specific error code.
      */
     public WorkRejectedException(String message, String errorCode) {
-	super(message, errorCode);
+    super(message, errorCode);
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,29 +27,29 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject;
 public abstract class AbstractSimpleSelectExpressionStateObjectBuilder extends AbstractScalarExpressionStateObjectBuilder<ISimpleSelectExpressionStateObjectBuilder>
                                                                        implements ISimpleSelectExpressionStateObjectBuilder {
 
-	/**
-	 * Creates a new <code>AbstractSimpleSelectExpressionStateObjectBuilder</code>.
-	 *
-	 * @param parent The select clause for which this builder can create a select expression
-	 */
-	protected AbstractSimpleSelectExpressionStateObjectBuilder(AbstractSelectClauseStateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>AbstractSimpleSelectExpressionStateObjectBuilder</code>.
+     *
+     * @param parent The select clause for which this builder can create a select expression
+     */
+    protected AbstractSimpleSelectExpressionStateObjectBuilder(AbstractSelectClauseStateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractSelectClauseStateObject getParent() {
-		return (AbstractSelectClauseStateObject) super.getParent();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractSelectClauseStateObject getParent() {
+        return (AbstractSelectClauseStateObject) super.getParent();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ISimpleSelectExpressionStateObjectBuilder variable(String variable) {
-		StateObject stateObject = buildIdentificationVariable(variable);
-		add(stateObject);
-		return this;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ISimpleSelectExpressionStateObjectBuilder variable(String variable) {
+        StateObject stateObject = buildIdentificationVariable(variable);
+        add(stateObject);
+        return this;
+    }
 }

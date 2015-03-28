@@ -1,23 +1,23 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     04/01/2011-2.3 Guy Pelletier 
+ *     04/01/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 2)
- *     08/18/2011-2.3.1 Guy Pelletier 
+ *     08/18/2011-2.3.1 Guy Pelletier
  *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
- *     09/09/2011-2.3.1 Guy Pelletier 
+ *     09/09/2011-2.3.1 Guy Pelletier
  *       - 356197: Add new VPD type to MultitenantType
  *     08/01/2012-2.5 Chris Delahunt
- *       - 371950: Metadata caching 
- ******************************************************************************/  
+ *       - 371950: Metadata caching
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.io.*;
@@ -82,13 +82,13 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     /** Allow for class extraction method to be specified. */
     protected String classExtractorName;
     protected transient ClassExtractor classExtractor;
-    
+
     protected ClassDescriptor descriptor;
     protected boolean shouldAlwaysUseOuterJoin = false;
 
     //CR 4005
     protected boolean useDescriptorsToValidateInheritedObjects = false;
-    
+
     /** Define if an outer join should be used to read subclasses. */
     protected boolean shouldOuterJoinSubclasses = false;
 
@@ -97,9 +97,9 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
 
     /** PERF: Cache root descriptor. */
     protected ClassDescriptor rootParentDescriptor;
-    
+
     protected boolean describesNonPersistentSubclasses = false;
-    
+
     /**
      * INTERNAL:
      * Create a new policy.
@@ -134,7 +134,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
 
     /**
      * INTERNAL:
-     * childrenTablesJoinExpressions, childrenTables, allTables and childrenJoinExpression 
+     * childrenTablesJoinExpressions, childrenTables, allTables and childrenJoinExpression
      * are created simultaneously and kept in sync.
      */
     protected void addChildTableJoinExpression(DatabaseTable table, Expression expression) {
@@ -351,7 +351,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
 
         return classFromValue(classFieldValue, session);
     }
-    
+
     /**
      * INTERNAL:
      * This method is used to turn the a raw database field value classFieldValue into a Class object.  Used to determine
@@ -402,7 +402,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
 
         return clone;
     }
-    
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this InheritancePolicy to actual class-based settings.
@@ -417,21 +417,21 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         while (keysEnum.hasNext()) {
             Object key = keysEnum.next();
             Object value = valuesEnum.next();
-            
+
             Class theClass = convertClassNameToClass((String) key, classLoader);
             classIndicatorMapping.put(theClass, value);
             classIndicatorMapping.put(value, theClass);
         }
-        
+
         // Initialize the parent class name.
         if (getParentClassName() != null){
             setParentClass(convertClassNameToClass(getParentClassName(), classLoader));
         }
-        
+
         // Initialize the class extractor name.
         if (classExtractorName != null) {
             Class classExtractorClass = convertClassNameToClass(classExtractorName, classLoader);
-            
+
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
@@ -445,7 +445,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             } catch (IllegalAccessException ex) {
                 throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(classExtractorName, ex);
             } catch (InstantiationException e) {
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(classExtractorName, e);   
+                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(classExtractorName, e);
             }
         }
     }
@@ -469,7 +469,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Set the descriptor to only read instance of itself when queried.
@@ -535,7 +535,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     public List<DatabaseTable> getChildrenTables() {
         return childrenTables;
     }
-    
+
     /**
      * INTERNAL:
      * join expression for each child table, keyed by the table
@@ -543,7 +543,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     public Map<DatabaseTable, Expression> getChildrenTablesJoinExpressions() {
         return childrenTablesJoinExpressions;
     }
-    
+
     /**
      * INTERNAL:
      * all expressions from childrenTablesJoinExpressions ANDed together
@@ -551,7 +551,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     public Expression getChildrenJoinExpression() {
         return childrenJoinExpression;
     }
-    
+
     /**
      * INTERNAL:
      * all tables for reference class plus childrenTables
@@ -563,7 +563,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             return allTables;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return all the immediate child descriptors.  Only descriptors from
@@ -589,12 +589,12 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * ADVANCED:
      * A class extraction method can be registered with the descriptor to override the default inheritance mechanism.
      * This allows for a user defined class indicator in place of providing an explicit class indicator field.
-     * The method registered must be a static method on the class which has that descriptor. The method must take a 
-     * Record as an argument (for example, a DatabaseRecord), and must return the class to use for that record. 
-     * This method will be used to decide which class to instantiate when reading from the database. 
+     * The method registered must be a static method on the class which has that descriptor. The method must take a
+     * Record as an argument (for example, a DatabaseRecord), and must return the class to use for that record.
+     * This method will be used to decide which class to instantiate when reading from the database.
      * It is the application's responsibility to populate any typing information in the database required
-     * to determine the class from the record. 
-     * If this method is used, then the class indicator field and mapping cannot be used, and in addition, 
+     * to determine the class from the record.
+     * If this method is used, then the class indicator field and mapping cannot be used, and in addition,
      * the descriptor's withAllSubclasses and onlyInstances expressions must also be setup correctly.
      *
      * @see #setWithAllSubclassesExpression(Expression)
@@ -617,7 +617,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * This method will be used to decide which class to instantiate when reading from the database.
      * It is the application's responsibility to populate any typing information in the database required
      * to determine the class from the row, such as usage of a direct or transformation mapping for the type fields.
-     * If this method is used then the class indicator field and mapping cannot be used, and in addition, 
+     * If this method is used then the class indicator field and mapping cannot be used, and in addition,
      * the descriptor's withAllSubclasses and onlyInstances expressions must also be setup correctly.
      *
      * @see #setWithAllSubclassesExpression(Expression)
@@ -636,7 +636,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * This method will be used to decide which class to instantiate when reading from the database.
      * It is the application's responsibility to populate any typing information in the database required
      * to determine the class from the row, such as usage of a direct or transformation mapping for the type fields.
-     * If this method is used then the class indicator field and mapping cannot be used, and in addition, 
+     * If this method is used then the class indicator field and mapping cannot be used, and in addition,
      * the descriptor's withAllSubclasses and onlyInstances expressions must also be setup correctly.
      *
      * @see #setWithAllSubclassesExpression(Expression)
@@ -651,13 +651,13 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Set the class extractor class name. At descriptor initialize time this
      * class will be converted to a Class and set as the ClassExtractor. This
      * method is called from JPA.
-     * 
+     *
      * @see #setClassExtractor setClassExtractor for more information on the ClassExtractor class.
      */
     public void setClassExtractorName(String classExtractorName) {
         this.classExtractorName = classExtractorName;
     }
-    
+
     /**
      * INTERNAL:
      * Return the class indicator associations for XML.
@@ -771,7 +771,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Determines whether the descriptors using this inheritance policy
      * should be used as descriptors for subclasses of the classes they
      * describe if those subclasses do not have their own descriptor
-     * 
+     *
      * e.g. If Employee.class has a descriptor and EmployeeSubClass does
      * not have a descriptor, if describesNonPersistenceSubclasses is true
      * Employee's descriptor will be used as the descriptor for Employee
@@ -779,7 +779,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     public boolean getDescribesNonPersistentSubclasses(){
         return describesNonPersistentSubclasses;
     }
-    
+
     /**
      * ADVANCED:
      * Return the 'only instances expression'.
@@ -1002,12 +1002,12 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                     cmpPolicy.internalSetUpdateAllFields(parentCMPPolicy.internalGetUpdateAllFields());
                 }
             }
-            
+
             // Inherit the native connection requirement.
             if (getParentDescriptor().isNativeConnectionRequired()) {
                 getDescriptor().setIsNativeConnectionRequired(true);
             }
-            
+
             if (getDescriptor().getPartitioningPolicy() == null) {
                 getDescriptor().setPartitioningPolicy(getParentDescriptor().getPartitioningPolicy());
             }
@@ -1086,16 +1086,16 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             getDescriptor().getOptimisticLockingPolicy().setDescriptor(getDescriptor());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Potentially override the cache invalidation behavior
      */
     protected void initializeCacheInvalidationPolicy() {
-        CacheInvalidationPolicy parentPolicyClone = (CacheInvalidationPolicy)getParentDescriptor().getCacheInvalidationPolicy().clone(); 
+        CacheInvalidationPolicy parentPolicyClone = (CacheInvalidationPolicy)getParentDescriptor().getCacheInvalidationPolicy().clone();
         getDescriptor().setCacheInvalidationPolicy(parentPolicyClone);
     }
-    
+
     /**
      * INTERNAL:
      * Initialize the expression to use for queries to the class and its subclasses.
@@ -1110,7 +1110,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Check if it is a child descriptor.
@@ -1118,18 +1118,18 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     public boolean isChildDescriptor() {
         return getParentClassName() != null;
     }
-    
+
     /**
      * INTERNAL:
      * Indicate whether a single table or joined inheritance strategy is being used.  Since we currently do
      * not support TABLE_PER_CLASS, indicating either joined/not joined is sufficient.
-     * 
+     *
      * @return isJoinedStrategy value
      */
     public boolean isJoinedStrategy() {
         return isJoinedStrategy;
     }
-    
+
     /**
      * INTERNAL:
      * Return whether or not is root parent descriptor
@@ -1158,7 +1158,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                     break;
                 }
                 parent = parent.getInheritancePolicy().getParentDescriptor();
-            }            
+            }
         }
     }
 
@@ -1171,13 +1171,13 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         // Make sure that parent is already preinitialized.
         if (isChildDescriptor()) {
             updateTables();
-            
+
             // Clone the multitenant policy and set on child descriptor.
             if (getParentDescriptor().hasMultitenantPolicy()) {
                 MultitenantPolicy clonedMultitenantPolicy = getParentDescriptor().getMultitenantPolicy().clone(getDescriptor());
                 getDescriptor().setMultitenantPolicy(clonedMultitenantPolicy);
             }
-            
+
             setClassIndicatorMapping(getParentDescriptor().getInheritancePolicy().getClassIndicatorMapping());
             setShouldUseClassNameAsIndicator(getParentDescriptor().getInheritancePolicy().shouldUseClassNameAsIndicator());
 
@@ -1211,7 +1211,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                 getDescriptor().setSequenceNumberName(getParentDescriptor().getSequenceNumberName());
             }
         } else {
-            // This must be done now before any other initialization occurs. 
+            // This must be done now before any other initialization occurs.
             getDescriptor().setInternalDefaultTable();
         }
 
@@ -1252,7 +1252,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     public void readSubclassesOnQueries() {
         setShouldReadSubclasses(true);
     }
-    
+
     /**
      * INTERNAL:
      * Used to initialize a remote descriptor.
@@ -1359,7 +1359,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             joinedMappingIndexes = new HashMap();
         }
         ClassDescriptor rootDescriptor = query.getDescriptor();
-        for (Class concreteClass : classes) {            
+        for (Class concreteClass : classes) {
             if (!uniqueClasses.contains(concreteClass)) {
                 continue;
             }
@@ -1391,7 +1391,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             concreteQuery.setDescriptor(concreteDescriptor);
             Vector concreteRows = ((ExpressionQueryMechanism)concreteQuery.getQueryMechanism()).selectAllRowsFromConcreteTable();
             rows = Helper.concatenateVectors(rows, concreteRows);
-            
+
             if (joinedMappingIndexes != null) {
                 // Need to set mapping index for each select, as each row size is different.
                 for (Map.Entry entry : concreteQuery.getJoinedAttributeManager().getJoinedMappingIndexes_().entrySet()) {
@@ -1532,12 +1532,12 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * ADVANCED:
      * A class extraction method can be registered with the descriptor to override the default inheritance mechanism.
      * This allows for a user defined class indicator in place of providing an explicit class indicator field.
-     * The method registered must be a static method on the class which has that descriptor. The method must take Record 
+     * The method registered must be a static method on the class which has that descriptor. The method must take Record
      * as an argument (for example, a DatabaseRecord), and must return the class to use for that record.
      * This method will be used to decide which class to instantiate when reading from the database.
      * It is the application's responsibility to populate any typing information in the database required
      * to determine the class from the record.
-     * If this method is used then the class indicator field and mapping cannot be used, and in addition, 
+     * If this method is used then the class indicator field and mapping cannot be used, and in addition,
      * the descriptor's withAllSubclasses and onlyInstances expressions must also be set up correctly.
      *
      * @see #setWithAllSubclassesExpression(Expression)
@@ -1629,21 +1629,21 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Determines whether the descriptors using this inheritance policy
      * should be used as descriptors for subclasses of the classes they
      * describe if those subclasses do not have their own descriptor
-     * 
+     *
      * e.g. If Employee.class has a descriptor and EmployeeSubClass does
      * not have a descriptor, if describesNonPersistenceSubclasses is true
      * Employee's descriptor will be used as the descriptor for Employee
-     * 
+     *
      * @param describesNonPersistentSubclasses
      */
     public void setDescribesNonPersistentSubclasses(boolean describesNonPersistentSubclasses){
         this.describesNonPersistentSubclasses = describesNonPersistentSubclasses;
     }
-    
+
     /**
      * INTERNAL:
      * Used to indicate a JOINED inheritance strategy.
-     * 
+     *
      */
     public void setJoinedStrategy() {
         isJoinedStrategy = true;
@@ -1759,9 +1759,9 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     /**
      * INTERNAL:
      * Used to indicate a SINGLE_TABLE inheritance strategy.  Since only JOINED and SINGLE_TABLE
-     * strategies are supported at this time (no support for TABLE_PER_CLASS) using a 
+     * strategies are supported at this time (no support for TABLE_PER_CLASS) using a
      * !isJoinedStrategy an an indicator for SINGLE_TABLE is sufficient.
-     * 
+     *
      */
     public void setSingleTableStrategy() {
         isJoinedStrategy = false;
@@ -1815,7 +1815,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         return this.shouldAlwaysUseOuterJoin;
     }
 
-    
+
     /**
      * PUBLIC:
      * Return if an outer join should be used to read subclasses.
@@ -1825,7 +1825,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     public boolean shouldOuterJoinSubclasses() {
         return shouldOuterJoinSubclasses;
     }
-            
+
     /**
      * PUBLIC:
      * Set if an outer join should be used to read subclasses.
@@ -1835,7 +1835,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     public void setShouldOuterJoinSubclasses(boolean shouldOuterJoinSubclasses) {
         this.shouldOuterJoinSubclasses = shouldOuterJoinSubclasses;
     }
-    
+
     /**
      * PUBLIC:
      * Return true if the descriptor use the classes full name as the indicator.
@@ -1857,7 +1857,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
 
     /**
      * INTERNAL:
-     * set the tables on the child descriptor 
+     * set the tables on the child descriptor
      * overridden in org.eclipse.persistence.internal.oxm.QNameInheritancePolicy
      */
     protected void updateTables(){
@@ -1866,12 +1866,12 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         Vector<DatabaseTable> parentTables = getParentDescriptor().getTables();
         Vector<DatabaseTable> uniqueTables = Helper.concatenateUniqueVectors(parentTables, childTables);
         getDescriptor().setTables(uniqueTables);
-        
+
         // After filtering out any duplicate tables, set the default table
         // if one is not already set. This must be done now before any other
-        // initialization occurs. In a joined strategy case, the default 
+        // initialization occurs. In a joined strategy case, the default
         // table will be at an index greater than 0. Which is where
-        // setDefaultTable() assumes it is. Therefore, we need to send the 
+        // setDefaultTable() assumes it is. Therefore, we need to send the
         // actual default table instead.
         if (childTables.isEmpty()) {
             getDescriptor().setInternalDefaultTable();
@@ -1879,8 +1879,8 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             getDescriptor().setInternalDefaultTable(uniqueTables.get(uniqueTables.indexOf(childTables.get(0))));
         }
     }
-    
-    
+
+
     /**
      * PUBLIC:
      * Set the descriptor to use the classes full name as the indicator.

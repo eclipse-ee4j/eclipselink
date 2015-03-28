@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.defineandgenerate;
 
 import commonj.sdo.Type;
@@ -363,7 +363,7 @@ public class IDREFTestCases extends XSDHelperDefineAndGenerateTestCases {
 
         return types;
     }
-    
+
     public void testWithError() throws Exception
     {
       String fileNameWithError = "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithIDREFNoTargetID.xsd";
@@ -372,7 +372,7 @@ public class IDREFTestCases extends XSDHelperDefineAndGenerateTestCases {
         List types = xsdHelper.define(is, getSchemaLocation());
       }catch(SDOException sdoException)
       {
-        assertTrue(sdoException.getErrorCode() == SDOException.NO_ID_SPECIFIED);        
+        assertTrue(sdoException.getErrorCode() == SDOException.NO_ID_SPECIFIED);
         return;
       }
       fail("An SDOException should have occurred.");

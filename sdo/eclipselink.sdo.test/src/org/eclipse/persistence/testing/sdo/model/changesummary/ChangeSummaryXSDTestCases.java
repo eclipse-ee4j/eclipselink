@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import java.io.FileInputStream;
@@ -36,12 +36,12 @@ import commonj.sdo.helper.XMLDocument;
 /**
  *
  * MODIFIED    (MM/DD/YY)
- *   dmahar      09/18/07 - 
- *   mfobrien    05/01/07 - 
- *   dmahar      04/10/07 - 
- *   mfobrien    03/16/07 - 
- *   dmahar      03/14/07 - 
- *   dmahar      03/14/07 - 
+ *   dmahar      09/18/07 -
+ *   mfobrien    05/01/07 -
+ *   dmahar      04/10/07 -
+ *   mfobrien    03/16/07 -
+ *   dmahar      03/14/07 -
+ *   dmahar      03/14/07 -
  *   mfobrien    02/14/07 - cs.undoChanges is the same as a detach/reset
  *                                           testDetachAndResetYardToSamePlace() mod assertEquals(0, shipToSettings.size()); from 1
  *
@@ -49,7 +49,7 @@ import commonj.sdo.helper.XMLDocument;
 public class ChangeSummaryXSDTestCases extends SDOTestCase {
     private DataObject rootObject;
     private ChangeSummary cs;
-    
+
     public static final String OPEN_CONTENT_NS_URI = "";
     public static final String OC_PROP1SimpleSingleNAME = "open1";
     public static final String OC_PROP1SimpleSingleVALUE = "open1-val";
@@ -57,11 +57,11 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
     public static final String OC_PROP2SimpleSingleVALUE = "open2-val";
     public static final String OC_PROP3DataObjectNAME = "open-do";
     public static final String OC_PROP3DataObjectVALUE = "open-do-val";
-    
+
     public static final String PROPERTY_NAME_PO_ITEMS = "items";
-    public static final String PROPERTY_NAME_PO_ITEMS_ITEM1 = "items/item[1]";    
-    public static final String PROPERTY_NAME_PO_SHIPTO = "shipTo";    
-    public static final String PROPERTY_NAME_PO_SHIPTO_PHONE2 = "shipTo/phone[2]";    
+    public static final String PROPERTY_NAME_PO_ITEMS_ITEM1 = "items/item[1]";
+    public static final String PROPERTY_NAME_PO_SHIPTO = "shipTo";
+    public static final String PROPERTY_NAME_PO_SHIPTO_PHONE2 = "shipTo/phone[2]";
 
     public ChangeSummaryXSDTestCases(String name) {
         super(name);
@@ -74,7 +74,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 
     public void setUp() {
         super.setUp();// watch setup redundancy
-        //define types from deep with cs 
+        //define types from deep with cs
         try {
             InputStream is = new FileInputStream("org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeepWithCS.xsd");
             xsdHelper.define(is, null);
@@ -98,8 +98,8 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
     public DataObject marshalUnmarshalObject(DataObject anObject) {
         DataObject copy = null;
         try {
-            String s = xmlHelper.save(anObject, "http://example.org",// this uri does not affect unmarshal 
-                                      "dataObject");// this name is overridden by the xsi:type            
+            String s = xmlHelper.save(anObject, "http://example.org",// this uri does not affect unmarshal
+                                      "dataObject");// this name is overridden by the xsi:type
             XMLDocument document = xmlHelper.load(s);
             copy = document.getRootObject();
         } catch (Exception e) {
@@ -109,7 +109,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         return copy;
     }
 
-    
+
     /**
      * Test multiple oc properties that were deleted and how they are returned to the DO after an undoChanges
      *
@@ -133,7 +133,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 
         SDOProperty openRootProperty = new SDOProperty(aHelperContext);
         openRootProperty.setName(OC_PROP1SimpleSingleNAME);
-        openRootProperty.setType(SDOConstants.SDO_STRING);        
+        openRootProperty.setType(SDOConstants.SDO_STRING);
         //aRootTypeOC.setOpen(true);
         ((SDOType)rootObject.getType()).setOpen(true);
         rootObject.set(openRootProperty, OC_PROP1SimpleSingleVALUE);
@@ -141,21 +141,21 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         // set an Open Content property and delete it
         SDOProperty openRootPropertyToBeDeleted = new SDOProperty(aHelperContext);
         openRootPropertyToBeDeleted.setName(OC_PROP2SimpleSingleNAME);
-        openRootPropertyToBeDeleted.setType(SDOConstants.SDO_STRING);        
+        openRootPropertyToBeDeleted.setType(SDOConstants.SDO_STRING);
         //aRootTypeOC.setOpen(true);
         rootObject.set(openRootPropertyToBeDeleted, OC_PROP2SimpleSingleVALUE);
 
         // set an Open Content property and delete it
         SDOProperty openRootPropertyToBeDeleted2 = new SDOProperty(aHelperContext);
         openRootPropertyToBeDeleted2.setName(OC_PROP2SimpleSingleNAME + "1");
-        openRootPropertyToBeDeleted2.setType(SDOConstants.SDO_STRING);        
+        openRootPropertyToBeDeleted2.setType(SDOConstants.SDO_STRING);
         //aRootTypeOC.setOpen(true);
         rootObject.set(openRootPropertyToBeDeleted2, OC_PROP2SimpleSingleVALUE + "1");
 
         // set an Open Content property and delete it
         SDOProperty openRootPropertyToBeDeleted3 = new SDOProperty(aHelperContext);
         openRootPropertyToBeDeleted3.setName(OC_PROP2SimpleSingleNAME + "2");
-        openRootPropertyToBeDeleted3.setType(SDOConstants.SDO_STRING);        
+        openRootPropertyToBeDeleted3.setType(SDOConstants.SDO_STRING);
         //aRootTypeOC.setOpen(true);
         rootObject.set(openRootPropertyToBeDeleted3, OC_PROP2SimpleSingleVALUE + "2");
 
@@ -165,7 +165,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertTrue(cs.isLogging());
 
         // do some changes
-        
+
         // delete an Open Content property
         rootObject.unset(openRootPropertyToBeDeleted);
         rootObject.unset(openRootPropertyToBeDeleted2);
@@ -173,7 +173,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         //ChangeSummary.Setting setting = cs.getOldValue(rootObject, openRootPropertyToBeDeleted);
         //assertEquals("openTest", setting.getValue());
 
-        
+
         SDODataObject items = (SDODataObject)rootObject.get(PROPERTY_NAME_PO_ITEMS);
 
         // detach isMany=false (to fill deletedList and modifiedList)
@@ -213,17 +213,17 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         //assertEquals(itemsOldValuesSize, cs2.getOldValues(items).size());
         // check shallow equality
         assertEquals(rootObject.getInstanceProperties().size(), copy.getInstanceProperties().size());
-        
+
         boolean isEqual = equalityHelper.equalShallow(rootObject, copy);
         assertTrue(isEqual);
 
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertTrue(equalityHelper.equal(rootObject, copy));
         assertTrue(equalityHelper.equalShallow(rootObject, copyOfCopy));
 
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertTrue(equalityHelper.equal(rootObject, copyOfCopy));
 
         // verify that all objects referenced in the copy changeSummary are from the copy not the original
@@ -263,27 +263,27 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertNotNull(phone2cInCreatedList);
         assertTrue(phone2c == phone2cInCreatedList); // test cs.createList iterator makes deep copies
         assertTrue(phone2c._getCurrentValueStore() == phone2cInCreatedList._getCurrentValueStore());
-        
+
         // get an oldSetting in order to enable caching to fill the hash map in the cs
         //Object oldValueItems2 = cs2.getOldValue(copy, copy.getInstanceProperty("items"));
-        // verify that we have oldSettings in the new copy        
+        // verify that we have oldSettings in the new copy
         //        assertNotNull(oldValueItems2);
         //        assertNotNull(((SDOSetting)oldValueItems2).getValue());
-        //    	assertNull(copy.get("items"));
+        //        assertNull(copy.get("items"));
         // deleted objects are 9
-        // verify that we have transferred the logged changes during the copy (we dont have to worry about nested changesummaries)        
+        // verify that we have transferred the logged changes during the copy (we dont have to worry about nested changesummaries)
         assertEquals(changedObjectsLength, cs2.getChangedDataObjects().size());
         preOrderList = preOrderTraversalDataObjectList(copy, false);
         numberOfDataObjectsInSubTree = preOrderList.size();
         // assume that for logging=true copies we should have oldContainer, oldContProperties
-        assertEquals(6, numberOfDataObjectsInSubTree);// 16 - 10 
+        assertEquals(6, numberOfDataObjectsInSubTree);// 16 - 10
         assertEquals(((SDOChangeSummary)cs).getOldContainer().size(),//
                      ((SDOChangeSummary)copy.getChangeSummary()).getOldContainer().size());
         assertEquals(((SDOChangeSummary)cs).getOldContainmentProperty().size(),//
                      ((SDOChangeSummary)copy.getChangeSummary()).getOldContainmentProperty().size());
 
         // no oldSetting for simple object
-        
+
         // verify oc props that were deleted are in oldSettings
         Property oc2cProp = openRootPropertyToBeDeleted;//(Property)copy.getOpenContentPropertiesMap().get(OC_PROP2SimpleSingleNAME);
         assertNotNull(oc2cProp);
@@ -298,19 +298,19 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertNotNull(ocUnsetList);
         Property oc2cProp_ocUnsetMap = ocUnsetList.get(0);
         assertNotNull(oc2cProp_ocUnsetMap);
-        // verify that we are pointing to the same global property        
+        // verify that we are pointing to the same global property
         assertEquals(oc2cProp_ocUnsetMap, openRootPropertyToBeDeleted);
         String oc2cValue_ocUnsetMap = oc2cProp_ocUnsetMap.getName();
         assertNotNull(oc2cValue_ocUnsetMap);
         assertSame(openRootPropertyToBeDeleted.getName(), oc2cValue_ocUnsetMap);
-        
+
         // verify oldContainer <key, value> are both deep copies
         // we an old setting first
         //DataObject anOldContainerValue = cs2.getOldContainer(items2);
         //assertTrue(copy == anOldContainerValue);
-        
-        
-        
+
+
+
         // perform an undo on the copy and compare to the undone original (not the undone copy)
         cs2.undoChanges();
         // verify that original was unaffected by undo on copy
@@ -339,7 +339,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         preOrderList = preOrderTraversalDataObjectList(copy, false);
         numberOfDataObjectsInSubTree = preOrderList.size();
         // assume that for logging=true copies we should have oldContainer, oldContProperties
-        assertEquals(14, numberOfDataObjectsInSubTree);// 16 - 10 
+        assertEquals(14, numberOfDataObjectsInSubTree);// 16 - 10
 
         // verify deep objects item[*] are distince between original and copy
         SDODataObject item1o = (SDODataObject)items.get("item[1]");
@@ -362,16 +362,16 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         // check shallow equality
         assertTrue(equalityHelper.equalShallow(rootObject, copy));
 
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertTrue(equalityHelper.equal(rootObject, copy));
 
         // verify equality and undo the copyOfCopy to ensure that the csCopyOfCopy has enough info to do an undo
         copyOfCopy.getChangeSummary().undoChanges();
         assertTrue(equalityHelper.equalShallow(rootObject, copyOfCopy));
 
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertTrue(equalityHelper.equal(rootObject, copyOfCopy));
         assertTrue(equalityHelper.equal(copy, copyOfCopy));
 
@@ -386,16 +386,16 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertNotNull (oc2cPropUndo);
         assertEquals(oc2cPropUndo, OC_PROP2SimpleSingleVALUE);
 
-       
+
         // test undo for oc - not implemented yet see #5928954
         // verify that deleted oc props were returned being set after an undo - do not used saved Property object -use getPath
         oc2cPropUndo = rootObject.get(openRootPropertyToBeDeleted.getName());
         assertNotNull(oc2cPropUndo);
         assertEquals(oc2cPropUndo, OC_PROP2SimpleSingleVALUE);
-        
+
         // verify oc Property is in valueStore
         String openRootPropertyToBeDeletedAfterUndo = (String)((SDODataObject)rootObject)._getCurrentValueStore()//
-        	.getOpenContentProperty(openRootPropertyToBeDeleted);
+            .getOpenContentProperty(openRootPropertyToBeDeleted);
         assertNotNull(openRootPropertyToBeDeletedAfterUndo);
         assertEquals(openRootPropertyToBeDeletedAfterUndo, OC_PROP2SimpleSingleVALUE);
 
@@ -403,14 +403,14 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         Object oc2cPropUndo2 = rootObject.get(openRootPropertyToBeDeleted2);
         assertNotNull (oc2cPropUndo2);
         assertEquals(oc2cPropUndo2, OC_PROP2SimpleSingleVALUE + "1");
-        
+
         oc2cPropUndo2 = rootObject.get(openRootPropertyToBeDeleted2.getName());
         assertNotNull(oc2cPropUndo2);
         assertEquals(oc2cPropUndo2, OC_PROP2SimpleSingleVALUE + "1");
-        
+
         // verify oc Property is in valueStore
         String openRootPropertyToBeDeletedAfterUndo2 = (String)((SDODataObject)rootObject)._getCurrentValueStore()//
-        	.getOpenContentProperty(openRootPropertyToBeDeleted2);
+            .getOpenContentProperty(openRootPropertyToBeDeleted2);
         assertNotNull(openRootPropertyToBeDeletedAfterUndo2);
         assertEquals(openRootPropertyToBeDeletedAfterUndo2, OC_PROP2SimpleSingleVALUE + "1");
 
@@ -418,21 +418,21 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         Object oc2cPropUndo3 = rootObject.get(openRootPropertyToBeDeleted3);
         assertNotNull (oc2cPropUndo3);
         assertEquals(oc2cPropUndo3, OC_PROP2SimpleSingleVALUE + "2");
-        
+
         oc2cPropUndo3 = rootObject.get(openRootPropertyToBeDeleted3.getName());
         assertNotNull(oc2cPropUndo3);
         assertEquals(oc2cPropUndo3, OC_PROP2SimpleSingleVALUE + "2");
-        
+
         // verify oc Property is in valueStore
         String openRootPropertyToBeDeletedAfterUndo3 = (String)((SDODataObject)rootObject)._getCurrentValueStore()//
-        	.getOpenContentProperty(openRootPropertyToBeDeleted3);
+            .getOpenContentProperty(openRootPropertyToBeDeleted3);
         assertNotNull(openRootPropertyToBeDeletedAfterUndo3);
         assertEquals(openRootPropertyToBeDeletedAfterUndo3, OC_PROP2SimpleSingleVALUE + "2");
-        
+
     }
-    
+
     public void testUndoWithLoggingOffDeepCopyObjectWithCSLoggingOnWithComboDeleteSingleCreateManyModifyRootChangesInTheDeepCopy() {
-    	
+
         List preOrderList = null;
         int numberOfDataObjectsInSubTree = 0;
 
@@ -451,7 +451,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 
         SDOProperty openRootProperty = new SDOProperty(aHelperContext);
         openRootProperty.setName(OC_PROP1SimpleSingleNAME);
-        openRootProperty.setType(SDOConstants.SDO_STRING);        
+        openRootProperty.setType(SDOConstants.SDO_STRING);
         //aRootTypeOC.setOpen(true);
         ((SDOType)rootObject.getType()).setOpen(true);
         rootObject.set(openRootProperty, OC_PROP1SimpleSingleVALUE);
@@ -459,23 +459,23 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         // set an Open Content property and delete it
         SDOProperty openRootPropertyToBeDeleted = new SDOProperty(aHelperContext);
         openRootPropertyToBeDeleted.setName(OC_PROP2SimpleSingleNAME);
-        openRootPropertyToBeDeleted.setType(SDOConstants.SDO_STRING);        
+        openRootPropertyToBeDeleted.setType(SDOConstants.SDO_STRING);
         //aRootTypeOC.setOpen(true);
         rootObject.set(openRootPropertyToBeDeleted, OC_PROP2SimpleSingleVALUE);
-        
+
         // verify logging is on
         // turn on logging
         cs.beginLogging();
         assertTrue(cs.isLogging());
 
         // do some changes
-        
+
         // delete an Open Content property
         rootObject.unset(openRootPropertyToBeDeleted);
         //ChangeSummary.Setting setting = cs.getOldValue(rootObject, openRootPropertyToBeDeleted);
         //assertEquals("openTest", setting.getValue());
 
-        
+
         SDODataObject items = (SDODataObject)rootObject.get(PROPERTY_NAME_PO_ITEMS);
 
         // detach isMany=false (to fill deletedList and modifiedList)
@@ -515,17 +515,17 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         //assertEquals(itemsOldValuesSize, cs2.getOldValues(items).size());
         // check shallow equality
         assertEquals(rootObject.getInstanceProperties().size(), copy.getInstanceProperties().size());
-        
+
         boolean isEqual = equalityHelper.equalShallow(rootObject, copy);
         assertTrue(isEqual);
 
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertTrue(equalityHelper.equal(rootObject, copy));
         assertTrue(equalityHelper.equalShallow(rootObject, copyOfCopy));
 
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertTrue(equalityHelper.equal(rootObject, copyOfCopy));
 
         // verify that all objects referenced in the copy changeSummary are from the copy not the original
@@ -565,27 +565,27 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertNotNull(phone2cInCreatedList);
         assertTrue(phone2c == phone2cInCreatedList); // test cs.createList iterator makes deep copies
         assertTrue(phone2c._getCurrentValueStore() == phone2cInCreatedList._getCurrentValueStore());
-        
+
         // get an oldSetting in order to enable caching to fill the hash map in the cs
         //Object oldValueItems2 = cs2.getOldValue(copy, copy.getInstanceProperty("items"));
-        // verify that we have oldSettings in the new copy        
+        // verify that we have oldSettings in the new copy
         //        assertNotNull(oldValueItems2);
         //        assertNotNull(((SDOSetting)oldValueItems2).getValue());
-        //    	assertNull(copy.get("items"));
+        //        assertNull(copy.get("items"));
         // deleted objects are 9
-        // verify that we have transferred the logged changes during the copy (we dont have to worry about nested changesummaries)        
+        // verify that we have transferred the logged changes during the copy (we dont have to worry about nested changesummaries)
         assertEquals(changedObjectsLength, cs2.getChangedDataObjects().size());
         preOrderList = preOrderTraversalDataObjectList((SDODataObject)copy, false);
         numberOfDataObjectsInSubTree = preOrderList.size();
         // assume that for logging=true copies we should have oldContainer, oldContProperties
-        assertEquals(6, numberOfDataObjectsInSubTree);// 16 - 10 
+        assertEquals(6, numberOfDataObjectsInSubTree);// 16 - 10
         assertEquals(((SDOChangeSummary)cs).getOldContainer().size(),//
                      ((SDOChangeSummary)copy.getChangeSummary()).getOldContainer().size());
         assertEquals(((SDOChangeSummary)cs).getOldContainmentProperty().size(),//
                      ((SDOChangeSummary)copy.getChangeSummary()).getOldContainmentProperty().size());
 
         // no oldSetting for simple object
-        
+
         // verify oc props that were deleted are in oldSettings
         Property oc2cProp = openRootPropertyToBeDeleted;//(Property)copy.getOpenContentPropertiesMap().get(OC_PROP2SimpleSingleNAME);
         assertNotNull(oc2cProp);
@@ -600,18 +600,18 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertNotNull(ocUnsetList);
         Property oc2cProp_ocUnsetMap = ocUnsetList.get(0);
         assertNotNull(oc2cProp_ocUnsetMap);
-        // verify that we are pointing to the same global property        
+        // verify that we are pointing to the same global property
         assertEquals(oc2cProp_ocUnsetMap, openRootPropertyToBeDeleted);
         String oc2cValue_ocUnsetMap = oc2cProp_ocUnsetMap.getName();
         assertNotNull(oc2cValue_ocUnsetMap);
         assertSame(openRootPropertyToBeDeleted.getName(), oc2cValue_ocUnsetMap);
 
         // turn off logging
-        cs.endLogging();        
+        cs.endLogging();
         //restart logging to clear cs (to reproduce that we used to clear CS on endLogging)
         assertFalse(cs.isLogging());
         cs.beginLogging();
-                
+
         // perform an undo on the copy and compare to the undone original (not the undone copy)
         cs2.undoChanges();
         // verify that original was unaffected by undo on copy
@@ -640,7 +640,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         preOrderList = preOrderTraversalDataObjectList(copy, false);
         numberOfDataObjectsInSubTree = preOrderList.size();
         // assume that for logging=true copies we should have oldContainer, oldContProperties
-        assertEquals(14, numberOfDataObjectsInSubTree);// 16 - 10 
+        assertEquals(14, numberOfDataObjectsInSubTree);// 16 - 10
 
 
         // verify listwrappers hashes are the same between two equal objects in the cs
@@ -656,16 +656,16 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         // check shallow equality
         assertFalse(equalityHelper.equalShallow(rootObject, copy));
 
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertFalse(equalityHelper.equal(rootObject, copy));
 
         // verify equality and undo the copyOfCopy to ensure that the csCopyOfCopy has enough info to do an undo
         copyOfCopy.getChangeSummary().undoChanges();
         assertFalse(equalityHelper.equalShallow(rootObject, copyOfCopy));
 
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertFalse(equalityHelper.equal(rootObject, copyOfCopy));
         assertTrue(equalityHelper.equal(copy, copyOfCopy));
 
@@ -680,22 +680,22 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertNull (oc2cPropUndo);
         //assertEquals(oc2cPropUndo, OC_PROP2SimpleSingleVALUE);
 
-       
+
         // test undo for oc - not implemented yet see #5928954
         // verify that deleted oc props were returned being set after an undo - do not used saved Property object -use getPath
         oc2cPropUndo = rootObject.get(openRootPropertyToBeDeleted.getName());
         assertNull(oc2cPropUndo);
         //assertEquals(oc2cPropUndo, OC_PROP2SimpleSingleVALUE);
-        
+
         // verify oc Property is in valueStore
         String openRootPropertyToBeDeletedAfterUndo = (String)((SDODataObject)rootObject)._getCurrentValueStore()//
-        	.getOpenContentProperty(openRootPropertyToBeDeleted);
+            .getOpenContentProperty(openRootPropertyToBeDeleted);
         assertNull(openRootPropertyToBeDeletedAfterUndo);
-        //assertEquals(openRootPropertyToBeDeletedAfterUndo, OC_PROP2SimpleSingleVALUE);        
+        //assertEquals(openRootPropertyToBeDeletedAfterUndo, OC_PROP2SimpleSingleVALUE);
     }
-    
+
     public void testDeepCopyObjectWithCSLoggingOnWithComboDeleteSingleCreateManyModifyRootChangesInTheDeepCopy() {
-    	
+
         List preOrderList = null;
         int numberOfDataObjectsInSubTree = 0;
 
@@ -714,7 +714,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 
         SDOProperty openRootProperty = new SDOProperty(aHelperContext);
         openRootProperty.setName(OC_PROP1SimpleSingleNAME);
-        openRootProperty.setType(SDOConstants.SDO_STRING);        
+        openRootProperty.setType(SDOConstants.SDO_STRING);
         //aRootTypeOC.setOpen(true);
         ((SDOType)rootObject.getType()).setOpen(true);
         rootObject.set(openRootProperty, OC_PROP1SimpleSingleVALUE);
@@ -722,23 +722,23 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         // set an Open Content property and delete it
         SDOProperty openRootPropertyToBeDeleted = new SDOProperty(aHelperContext);
         openRootPropertyToBeDeleted.setName(OC_PROP2SimpleSingleNAME);
-        openRootPropertyToBeDeleted.setType(SDOConstants.SDO_STRING);        
+        openRootPropertyToBeDeleted.setType(SDOConstants.SDO_STRING);
         //aRootTypeOC.setOpen(true);
         rootObject.set(openRootPropertyToBeDeleted, OC_PROP2SimpleSingleVALUE);
-        
+
         // verify logging is on
         // turn on logging
         cs.beginLogging();
         assertTrue(cs.isLogging());
 
         // do some changes
-        
+
         // delete an Open Content property
         rootObject.unset(openRootPropertyToBeDeleted);
         //ChangeSummary.Setting setting = cs.getOldValue(rootObject, openRootPropertyToBeDeleted);
         //assertEquals("openTest", setting.getValue());
 
-        
+
         SDODataObject items = (SDODataObject)rootObject.get(PROPERTY_NAME_PO_ITEMS);
 
         // detach isMany=false (to fill deletedList and modifiedList)
@@ -778,17 +778,17 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         //assertEquals(itemsOldValuesSize, cs2.getOldValues(items).size());
         // check shallow equality
         assertEquals(rootObject.getInstanceProperties().size(), copy.getInstanceProperties().size());
-        
+
         boolean isEqual = equalityHelper.equalShallow(rootObject, copy);
         assertTrue(isEqual);
 
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertTrue(equalityHelper.equal(rootObject, copy));
         assertTrue(equalityHelper.equalShallow(rootObject, copyOfCopy));
 
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertTrue(equalityHelper.equal(rootObject, copyOfCopy));
 
         // verify that all objects referenced in the copy changeSummary are from the copy not the original
@@ -828,27 +828,27 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertNotNull(phone2cInCreatedList);
         assertTrue(phone2c == phone2cInCreatedList); // test cs.createList iterator makes deep copies
         assertTrue(phone2c._getCurrentValueStore() == phone2cInCreatedList._getCurrentValueStore());
-        
+
         // get an oldSetting in order to enable caching to fill the hash map in the cs
         //Object oldValueItems2 = cs2.getOldValue(copy, copy.getInstanceProperty("items"));
-        // verify that we have oldSettings in the new copy        
+        // verify that we have oldSettings in the new copy
         //        assertNotNull(oldValueItems2);
         //        assertNotNull(((SDOSetting)oldValueItems2).getValue());
-        //    	assertNull(copy.get("items"));
+        //        assertNull(copy.get("items"));
         // deleted objects are 9
-        // verify that we have transferred the logged changes during the copy (we dont have to worry about nested changesummaries)        
+        // verify that we have transferred the logged changes during the copy (we dont have to worry about nested changesummaries)
         assertEquals(changedObjectsLength, cs2.getChangedDataObjects().size());
         preOrderList = preOrderTraversalDataObjectList(copy, false);
         numberOfDataObjectsInSubTree = preOrderList.size();
         // assume that for logging=true copies we should have oldContainer, oldContProperties
-        assertEquals(6, numberOfDataObjectsInSubTree);// 16 - 10 
+        assertEquals(6, numberOfDataObjectsInSubTree);// 16 - 10
         assertEquals(((SDOChangeSummary)cs).getOldContainer().size(),//
                      ((SDOChangeSummary)copy.getChangeSummary()).getOldContainer().size());
         assertEquals(((SDOChangeSummary)cs).getOldContainmentProperty().size(),//
                      ((SDOChangeSummary)copy.getChangeSummary()).getOldContainmentProperty().size());
 
         // no oldSetting for simple object
-        
+
         // verify oc props that were deleted are in oldSettings
         Property oc2cProp = openRootPropertyToBeDeleted;//(Property)copy.getOpenContentPropertiesMap().get(OC_PROP2SimpleSingleNAME);
         assertNotNull(oc2cProp);
@@ -863,19 +863,19 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertNotNull(ocUnsetList);
         Property oc2cProp_ocUnsetMap = ocUnsetList.get(0);
         assertNotNull(oc2cProp_ocUnsetMap);
-        // verify that we are pointing to the same global property        
+        // verify that we are pointing to the same global property
         assertEquals(oc2cProp_ocUnsetMap, openRootPropertyToBeDeleted);
         String oc2cValue_ocUnsetMap = oc2cProp_ocUnsetMap.getName();
         assertNotNull(oc2cValue_ocUnsetMap);
         assertSame(openRootPropertyToBeDeleted.getName(), oc2cValue_ocUnsetMap);
-        
+
         // verify oldContainer <key, value> are both deep copies
         // we an old setting first
         //DataObject anOldContainerValue = cs2.getOldContainer(items2);
         //assertTrue(copy == anOldContainerValue);
-        
-        
-        
+
+
+
         // perform an undo on the copy and compare to the undone original (not the undone copy)
         cs2.undoChanges();
         // verify that original was unaffected by undo on copy
@@ -904,7 +904,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         preOrderList = preOrderTraversalDataObjectList(copy, false);
         numberOfDataObjectsInSubTree = preOrderList.size();
         // assume that for logging=true copies we should have oldContainer, oldContProperties
-        assertEquals(14, numberOfDataObjectsInSubTree);// 16 - 10 
+        assertEquals(14, numberOfDataObjectsInSubTree);// 16 - 10
 
         // verify deep objects item[*] are distince between original and copy
         SDODataObject item1o = (SDODataObject)items.get("item[1]");
@@ -927,16 +927,16 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         // check shallow equality
         assertTrue(equalityHelper.equalShallow(rootObject, copy));
 
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertTrue(equalityHelper.equal(rootObject, copy));
 
         // verify equality and undo the copyOfCopy to ensure that the csCopyOfCopy has enough info to do an undo
         copyOfCopy.getChangeSummary().undoChanges();
         assertTrue(equalityHelper.equalShallow(rootObject, copyOfCopy));
 
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertTrue(equalityHelper.equal(rootObject, copyOfCopy));
         assertTrue(equalityHelper.equal(copy, copyOfCopy));
 
@@ -951,127 +951,127 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertNotNull (oc2cPropUndo);
         assertEquals(oc2cPropUndo, OC_PROP2SimpleSingleVALUE);
 
-       
+
         // test undo for oc - not implemented yet see #5928954
         // verify that deleted oc props were returned being set after an undo - do not used saved Property object -use getPath
         oc2cPropUndo = rootObject.get(openRootPropertyToBeDeleted.getName());
         assertNotNull(oc2cPropUndo);
         assertEquals(oc2cPropUndo, OC_PROP2SimpleSingleVALUE);
-        
+
         // verify oc Property is in valueStore
         String openRootPropertyToBeDeletedAfterUndo = (String)((SDODataObject)rootObject)._getCurrentValueStore()//
-        	.getOpenContentProperty(openRootPropertyToBeDeleted);
+            .getOpenContentProperty(openRootPropertyToBeDeleted);
         assertNotNull(openRootPropertyToBeDeletedAfterUndo);
         assertEquals(openRootPropertyToBeDeletedAfterUndo, OC_PROP2SimpleSingleVALUE);
-        
+
         // exercise printstring
         cs.toString();
     }
 
-    
+
     public void testDefineOpenContentPropDynamicallySpecP34() {
-		// Create a new Type and with an open content property set
-		DataObject myDataType = dataFactory.create("commonj.sdo", "Type");
-		myDataType.set("name", "MyType");
-		// SDOTypeHelperDelegate.openContentProperties Map is still null at this point
-		Property openContentProperty = typeHelper.getOpenContentProperty(
-				"commonj.sdo", "someProperty");
-		assertNull(openContentProperty);
-		// NPE here
-		//myDataType.set(openContentProperty, "test");
-		// Define the Type
-		Type definedType = typeHelper.define(myDataType);
-		// Retrieve the open content property
-		Object retrievedValue = definedType.get(openContentProperty);    	
+        // Create a new Type and with an open content property set
+        DataObject myDataType = dataFactory.create("commonj.sdo", "Type");
+        myDataType.set("name", "MyType");
+        // SDOTypeHelperDelegate.openContentProperties Map is still null at this point
+        Property openContentProperty = typeHelper.getOpenContentProperty(
+                "commonj.sdo", "someProperty");
+        assertNull(openContentProperty);
+        // NPE here
+        //myDataType.set(openContentProperty, "test");
+        // Define the Type
+        Type definedType = typeHelper.define(myDataType);
+        // Retrieve the open content property
+        Object retrievedValue = definedType.get(openContentProperty);
     }
 
     public void testDefineOpenContentPropDynamicallyLoggingOff() {
-		// turn on logging
-		assertFalse(cs.isLogging());
+        // turn on logging
+        assertFalse(cs.isLogging());
 
-		// verify oc property does not exist prior to dynamically creating it
-		Property openRootProperty =  rootObject.getInstanceProperty(OC_PROP1SimpleSingleNAME);
-		assertNull(openRootProperty);
-		
-		// create oc prop on the fly
-		((SDOType) rootObject.getType()).setOpen(true);
-		rootObject.set(OC_PROP1SimpleSingleNAME, OC_PROP1SimpleSingleVALUE);		
-		// get generated open content property
-		openRootProperty = rootObject.getInstanceProperty(OC_PROP1SimpleSingleNAME);
-		// check SDOTypeHelperDelegate.openContentProperties Map is set with this property
-		Property openRootPropertyFromTypeHelper = typeHelper.getOpenContentProperty(OPEN_CONTENT_NS_URI, OC_PROP1SimpleSingleNAME);
-		//assertNotNull(openRootPropertyFromTypeHelper);
+        // verify oc property does not exist prior to dynamically creating it
+        Property openRootProperty =  rootObject.getInstanceProperty(OC_PROP1SimpleSingleNAME);
+        assertNull(openRootProperty);
+
+        // create oc prop on the fly
+        ((SDOType) rootObject.getType()).setOpen(true);
+        rootObject.set(OC_PROP1SimpleSingleNAME, OC_PROP1SimpleSingleVALUE);
+        // get generated open content property
+        openRootProperty = rootObject.getInstanceProperty(OC_PROP1SimpleSingleNAME);
+        // check SDOTypeHelperDelegate.openContentProperties Map is set with this property
+        Property openRootPropertyFromTypeHelper = typeHelper.getOpenContentProperty(OPEN_CONTENT_NS_URI, OC_PROP1SimpleSingleNAME);
+        //assertNotNull(openRootPropertyFromTypeHelper);
     assertNull(openRootPropertyFromTypeHelper);
-		assertNotNull(openRootProperty);
-		//assertTrue(openRootProperty == openRootPropertyFromTypeHelper);
+        assertNotNull(openRootProperty);
+        //assertTrue(openRootProperty == openRootPropertyFromTypeHelper);
     }
 
     public void testDeepCopySettingForDynanicOpenContentSetAfterLoggingOn() {
-		// turn on logging
-		cs.beginLogging();
-		assertTrue(cs.isLogging());
+        // turn on logging
+        cs.beginLogging();
+        assertTrue(cs.isLogging());
 
-		// verify oc property does not exist prior to dynamically creating it
-		Property openRootProperty =  rootObject.getInstanceProperty(OC_PROP1SimpleSingleNAME);
-		assertNull(openRootProperty);
-		
-		// create oc prop on the fly
-		((SDOType) rootObject.getType()).setOpen(true);
-		rootObject.set(OC_PROP1SimpleSingleNAME, OC_PROP1SimpleSingleVALUE);		
-		// get generated open content property
-		openRootProperty = rootObject.getInstanceProperty(OC_PROP1SimpleSingleNAME);
-		// check SDOTypeHelperDelegate.openContentProperties Map is set with this property
-		Property openRootPropertyFromTypeHelper = typeHelper.getOpenContentProperty(//
-				OPEN_CONTENT_NS_URI, OC_PROP1SimpleSingleNAME);
-		//assertNotNull(openRootPropertyFromTypeHelper);
+        // verify oc property does not exist prior to dynamically creating it
+        Property openRootProperty =  rootObject.getInstanceProperty(OC_PROP1SimpleSingleNAME);
+        assertNull(openRootProperty);
+
+        // create oc prop on the fly
+        ((SDOType) rootObject.getType()).setOpen(true);
+        rootObject.set(OC_PROP1SimpleSingleNAME, OC_PROP1SimpleSingleVALUE);
+        // get generated open content property
+        openRootProperty = rootObject.getInstanceProperty(OC_PROP1SimpleSingleNAME);
+        // check SDOTypeHelperDelegate.openContentProperties Map is set with this property
+        Property openRootPropertyFromTypeHelper = typeHelper.getOpenContentProperty(//
+                OPEN_CONTENT_NS_URI, OC_PROP1SimpleSingleNAME);
+        //assertNotNull(openRootPropertyFromTypeHelper);
     assertNull(openRootPropertyFromTypeHelper);
-		assertNotNull(openRootProperty);
-		//assertTrue(openRootProperty == openRootPropertyFromTypeHelper);
+        assertNotNull(openRootProperty);
+        //assertTrue(openRootProperty == openRootPropertyFromTypeHelper);
 
-		// deep copy
-		DataObject dcopy = copyHelper.copy(rootObject);
-		assertTrue(equalityHelper.equal(rootObject, dcopy));
+        // deep copy
+        DataObject dcopy = copyHelper.copy(rootObject);
+        assertTrue(equalityHelper.equal(rootObject, dcopy));
 
-		// get original setting
-		ChangeSummary.Setting origSetting = rootObject.getChangeSummary().getOldValue(rootObject, openRootProperty);
-		assertNotNull(origSetting);
-		assertFalse(origSetting.isSet());
-		assertEquals(null, origSetting.getValue());
+        // get original setting
+        ChangeSummary.Setting origSetting = rootObject.getChangeSummary().getOldValue(rootObject, openRootProperty);
+        assertNotNull(origSetting);
+        assertFalse(origSetting.isSet());
+        assertEquals(null, origSetting.getValue());
 
-		// get copy of original setting
-		ChangeSummary.Setting copySetting = dcopy.getChangeSummary().getOldValue(dcopy, openRootProperty);
-		assertNotNull(copySetting);
-		// verify that isSet=false open content old values in the originalValueStores map are not copied over in cs.copy
-		assertFalse(copySetting.isSet());
-		assertEquals(null, copySetting.getValue());     	
+        // get copy of original setting
+        ChangeSummary.Setting copySetting = dcopy.getChangeSummary().getOldValue(dcopy, openRootProperty);
+        assertNotNull(copySetting);
+        // verify that isSet=false open content old values in the originalValueStores map are not copied over in cs.copy
+        assertFalse(copySetting.isSet());
+        assertEquals(null, copySetting.getValue());
     }
 
     public void testDeepCopySettingForOpenContentSetAfterLoggingOn() {
-		// turn on logging
-		cs.beginLogging();
-		assertTrue(cs.isLogging());
+        // turn on logging
+        cs.beginLogging();
+        assertTrue(cs.isLogging());
 
-		SDOProperty openRootProperty = new SDOProperty(aHelperContext);
-		openRootProperty.setName(OC_PROP1SimpleSingleNAME);
-		openRootProperty.setType(SDOConstants.SDO_STRING);
-		((SDOType) rootObject.getType()).setOpen(true);
-		rootObject.set(openRootProperty, OC_PROP1SimpleSingleVALUE);
+        SDOProperty openRootProperty = new SDOProperty(aHelperContext);
+        openRootProperty.setName(OC_PROP1SimpleSingleNAME);
+        openRootProperty.setType(SDOConstants.SDO_STRING);
+        ((SDOType) rootObject.getType()).setOpen(true);
+        rootObject.set(openRootProperty, OC_PROP1SimpleSingleVALUE);
 
-		DataObject deepCopy = copyHelper.copy(rootObject);
-		assertTrue(equalityHelper.equal(rootObject, deepCopy));
+        DataObject deepCopy = copyHelper.copy(rootObject);
+        assertTrue(equalityHelper.equal(rootObject, deepCopy));
 
-		commonj.sdo.ChangeSummary.Setting setting = rootObject.getChangeSummary().getOldValue(rootObject, openRootProperty);
-		assertNotNull(setting);
-		assertFalse(setting.isSet());
-		assertEquals(null, setting.getValue());
+        commonj.sdo.ChangeSummary.Setting setting = rootObject.getChangeSummary().getOldValue(rootObject, openRootProperty);
+        assertNotNull(setting);
+        assertFalse(setting.isSet());
+        assertEquals(null, setting.getValue());
 
-		commonj.sdo.ChangeSummary.Setting deepCopySetting = deepCopy.getChangeSummary().getOldValue(deepCopy, openRootProperty);
-		assertNotNull(deepCopySetting);
-		// verify that isSet=false open content old values in the originalValueStores map are not copied over in cs.copy
-		assertFalse(deepCopySetting.isSet());
-		assertEquals(null, deepCopySetting.getValue());     	
+        commonj.sdo.ChangeSummary.Setting deepCopySetting = deepCopy.getChangeSummary().getOldValue(deepCopy, openRootProperty);
+        assertNotNull(deepCopySetting);
+        // verify that isSet=false open content old values in the originalValueStores map are not copied over in cs.copy
+        assertFalse(deepCopySetting.isSet());
+        assertEquals(null, deepCopySetting.getValue());
     }
-    
+
 
     /**
      * Exercise cs.removeUnsetOCProperty()
@@ -1096,7 +1096,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         // set a simple-single Open Content property
         SDOProperty openRootProperty = new SDOProperty(aHelperContext);
         openRootProperty.setName(OC_PROP1SimpleSingleNAME);
-        openRootProperty.setType(SDOConstants.SDO_STRING);        
+        openRootProperty.setType(SDOConstants.SDO_STRING);
         //aRootTypeOC.setOpen(true);
         ((SDOType)rootObject.getType()).setOpen(true);
         rootObject.set(openRootProperty, OC_PROP1SimpleSingleVALUE);
@@ -1104,10 +1104,10 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         // set an Open Content property and delete it
         SDOProperty openRootPropertyToBeDeleted = new SDOProperty(aHelperContext);
         openRootPropertyToBeDeleted.setName(OC_PROP2SimpleSingleNAME);
-        openRootPropertyToBeDeleted.setType(SDOConstants.SDO_STRING);        
+        openRootPropertyToBeDeleted.setType(SDOConstants.SDO_STRING);
         //aRootTypeOC.setOpen(true);
         rootObject.set(openRootPropertyToBeDeleted, OC_PROP2SimpleSingleVALUE);
-        
+
         // turn on logging
         cs.beginLogging();
         assertTrue(cs.isLogging());
@@ -1119,7 +1119,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         rootObject.set(openRootPropertyToBeDeleted, OC_PROP2SimpleSingleVALUE);
         assertTrue(((SDOChangeSummary)cs).getUnsetOCPropertiesMap().isEmpty());
     }
-    
+
     /**
      * This test exercises bug 5913485: deepcopy is placed into cs.originalElements during a getOldValue()
      * SDOCopyHelper.copyChangeSummary()
@@ -1149,14 +1149,14 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         int changedObjectsLength = changedObjects.size();
 
 
-        
+
         // verify #5913485 will cause an undone copy to be !deep equal
         int itemsOldValuesSize = cs.getOldValues(items).size();// invoke usage of the reverseDeletedMap
         // take an object with CS on and deep copy it
         SDODataObject copy = (SDODataObject)copyHelper.copy(rootObject);
 
-        
-        
+
+
         // verify that logging is still on
         ChangeSummary cs2 = copy.getChangeSummary();
         // verify saved field lengths from above
@@ -1164,8 +1164,8 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         // check shallow equality
         boolean isEqual = equalityHelper.equalShallow(rootObject, copy);
         assertTrue(isEqual);
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertTrue(equalityHelper.equal(rootObject, copy));
         // verify rootDataObject
         assertEquals(copy, cs2.getRootObject());
@@ -1175,12 +1175,12 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         cs.undoChanges();
         // check shallow equality
         assertTrue(equalityHelper.equalShallow(rootObject, copy));
-        // check deep equal is unaffected (we should have a copy of the copy for List items 
-        //- ListWrapper.add(item) will remove the item from its original wrapper) 
+        // check deep equal is unaffected (we should have a copy of the copy for List items
+        //- ListWrapper.add(item) will remove the item from its original wrapper)
         assertTrue(equalityHelper.equal(rootObject, copy));
     }
 
-    
+
     //private void verifyCopyDistinctionFromOriginal(SDODataObject topObject, SDODataObject...childObjects ) {
     //}
     //private void verifyInternalListsAreSameInstancesThroughoutChangeSummary(SDODataObject topObject, ListWrapper...lists) {
@@ -1225,7 +1225,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         isEqual = aHelperContext.getEqualityHelper().equal(rootObject, rootObject2EQ);
         assertTrue(isEqual);
 
-        // 3. turn logging off on one 
+        // 3. turn logging off on one
         cs.endLogging();
         // check shallow equal
         isEqual = aHelperContext.getEqualityHelper().equalShallow(rootObject, rootObject2EQ);
@@ -1491,7 +1491,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         rootObject.unset(containmentProp);
 
         //        verifyShipToDetachedOrUnset(shipToDO, yardDO,//
-        //        		phoneList, phone1, phone2, containmentProp, oldStreet);
+        //                phoneList, phone1, phone2, containmentProp, oldStreet);
         assertNotNull(item1DO);
         assertNotNull(item2DO);
 
@@ -1511,7 +1511,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());// from 9
 
-        //writeXML(rootObject);// null objectValue in org.eclipse.persistence.internal.oxm.XMLAnyCollectionMappingNodeValue.marshal(XMLAnyCollectionMappingNodeValue.java:92) 
+        //writeXML(rootObject);// null objectValue in org.eclipse.persistence.internal.oxm.XMLAnyCollectionMappingNodeValue.marshal(XMLAnyCollectionMappingNodeValue.java:92)
     }
 
     // Test Scenarios:
@@ -1641,10 +1641,10 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         int endListSize = item2ProductDO.getList("price").size();
         assertEquals(3, endListSize);
 
-        assertCreated(newPrice, cs);// TODO: failure starts here  
+        assertCreated(newPrice, cs);// TODO: failure starts here
         assertModified(item2ProductDO, cs);
         assertUnchanged(item2ProductPrice1DO, cs);
-        assertUnchanged(item2ProductPrice2DO, cs);// TODO: failure starts here  
+        assertUnchanged(item2ProductPrice2DO, cs);// TODO: failure starts here
 
         assertEquals(2, cs.getChangedDataObjects().size());
 
@@ -1680,7 +1680,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 
         assertModified(item2ProductDO, cs);
         assertUnchanged(item2ProductPrice1DO, cs);
-        assertDetached(item2ProductPrice2DO, cs);// TODO: failure starts here        
+        assertDetached(item2ProductPrice2DO, cs);// TODO: failure starts here
 
         assertEquals(2, cs.getChangedDataObjects().size());
 
@@ -1716,7 +1716,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 
         assertModified(item2ProductDO, cs);
         assertUnchanged(item2ProductPrice1DO, cs);
-        assertDetached(item2ProductPrice2DO, cs);// TODO: failure starts here        
+        assertDetached(item2ProductPrice2DO, cs);// TODO: failure starts here
 
         assertEquals(2, cs.getChangedDataObjects().size());
 
@@ -1753,7 +1753,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 
         assertModified(item2ProductDO, cs);
         assertUnchanged(item2ProductPrice1DO, cs);
-        assertDetached(item2ProductPrice2DO, cs);// TODO: failure starts here        
+        assertDetached(item2ProductPrice2DO, cs);// TODO: failure starts here
 
         assertEquals(2, cs.getChangedDataObjects().size());
 
@@ -1812,7 +1812,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         */
         shipToDO.set("yard", yardDO); // the entry in deletedMap will be removed and isModified == false
         assertFalse(cs.isDeleted(yardDO));
-        
+
         yardDOSettings = cs.getOldValues(yardDO);  // will return an empty list since the oldValueStore entry was removed during set()
         List shipToSettings = cs.getOldValues(shipToDO);
         // see cs.getOldValue() does not return null when yardDO is !modified and !deleted (but !created as well) - (re)set
@@ -1823,51 +1823,51 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         if(1 < 0) {
             assertFalse(cs.isModified(shipToDO)); // this should be the correct assertion
             assertEquals(0, cs.getChangedDataObjects().size());//if we add new logic
-            // see cs.getOldValues() does not return and empty List when yardDO is !modified and !deleted (but !created as well) - (re)set        
+            // see cs.getOldValues() does not return and empty List when yardDO is !modified and !deleted (but !created as well) - (re)set
             assertEquals(0, yardDOSettings.size());// was 3 before we implemented undoChanges()
             //assertNotNull(lengthSetting);
             assertNull(lengthSetting);
         } else {
             assertTrue(cs.isModified(shipToDO)); // see bug# 5882923 - we should clear the setting here
             assertEquals(1, cs.getChangedDataObjects().size());//if we add new logic
-            // see cs.getOldValues() does not return and empty List when yardDO is !modified and !deleted (but !created as well) - (re)set        
+            // see cs.getOldValues() does not return and empty List when yardDO is !modified and !deleted (but !created as well) - (re)set
             assertEquals(0, yardDOSettings.size());// was 3 before we implemented undoChanges()
             assertNull(lengthSetting);
             //assertNull(lengthSetting);
         }
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         assertFalse(cs.isModified(yardDO));
 
         //assertEquals(1, cs.getChangedDataObjects().size());//just shipTo
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainer().size());
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
 
-        assertEquals(0, shipToSettings.size());// 20070214: modified from 1 
+        assertEquals(0, shipToSettings.size());// 20070214: modified from 1
 
         //assertEquals(length, lengthSetting.getValue());
         //writeXML(rootObject);
     }
 
     // same as above but using a real undoChanges() instead of a re(set)
-    // see bug# 5882923 
+    // see bug# 5882923
     // See SDO-225 Feb-15 2007 issue (option A - nothing in the cs, option B - track unset/reset)
     public void testDetachAndResetYardToSamePlaceUsingFullCSUndoChangesFunction() {
         DataObject shipToDO = rootObject.getDataObject("shipTo");
@@ -1901,10 +1901,10 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
 
         List shipToSettings = cs.getOldValues(shipToDO);
-        assertEquals(0, shipToSettings.size());// 20070214: modified from 1 
+        assertEquals(0, shipToSettings.size());// 20070214: modified from 1
 
         yardDOSettings = cs.getOldValues(yardDO);
-        // see cs.getOldValues() does not return and empty List when yardDO is !modified and !deleted (but !created as well) - (re)set        
+        // see cs.getOldValues() does not return and empty List when yardDO is !modified and !deleted (but !created as well) - (re)set
         assertEquals(0, yardDOSettings.size());// was 3 before we implemented undoChanges()
 
         // see cs.getOldValue() does not return null when yardDO is !modified and !deleted (but !created as well) - (re)set
@@ -1955,7 +1955,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         ((ListWrapper)item2ProductDO.get("price")).add(0, item2ProductPrice1DO);
 
         assertFalse(cs.isDeleted(item2ProductPrice1DO));
-        //assertUnchanged(cs.isModified(item2ProductDO)); //if we add new logic        
+        //assertUnchanged(cs.isModified(item2ProductDO)); //if we add new logic
         assertFalse(cs.isModified(item2ProductDO));
 
         assertFalse(cs.isModified(item2ProductPrice1DO));
@@ -2010,10 +2010,10 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertNotSame(item2ProductPrice1DO, item2ProductPrice1DO.getContainer());
         assertModified(item2ProductDO, cs);
         // TODO: fails
-        //assertModified(item2ProductPrice1DO, cs);// assertDeleted 
+        //assertModified(item2ProductPrice1DO, cs);// assertDeleted
         assertFalse(cs.isModified(item2ProductPrice1DO));
 
-        //assertEquals(0, cs.getChangedDataObjects().size());  //if we add new logic      
+        //assertEquals(0, cs.getChangedDataObjects().size());  //if we add new logic
         assertEquals(1, cs.getChangedDataObjects().size());
 
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainer().size());
@@ -2152,7 +2152,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainer().size());
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
-        // TODO: VERIFY 2 -> 3        
+        // TODO: VERIFY 2 -> 3
         List shipToSettings = cs.getOldValues(shipToDO);
         List billToSettings = cs.getOldValues(billToDO);
         assertEquals(1, billToSettings.size());
@@ -2325,23 +2325,23 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
     }
 
     private void verifyShipToDetachedOrUnset(//
-    	    DataObject shipToDO,//
-    	    DataObject yardDO,//
-    	    List phoneList,//
-    	    DataObject phone1,//
-    	    DataObject phone2,//
-    	    Property containmentProp,//
-    	    Object oldStreet) {
-    	verifyShipToDetachedOrUnset(//
-        	    shipToDO,//
-        	    yardDO,//
-        	    phoneList,//
-        	    phone1,//
-        	    phone2,//
-        	    containmentProp,//
-        	    oldStreet, false);
+            DataObject shipToDO,//
+            DataObject yardDO,//
+            List phoneList,//
+            DataObject phone1,//
+            DataObject phone2,//
+            Property containmentProp,//
+            Object oldStreet) {
+        verifyShipToDetachedOrUnset(//
+                shipToDO,//
+                yardDO,//
+                phoneList,//
+                phone1,//
+                phone2,//
+                containmentProp,//
+                oldStreet, false);
     }
-    
+
     private void verifyShipToDetachedOrUnset(//
     DataObject shipToDO,//
     DataObject yardDO,//
@@ -2355,25 +2355,25 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(1, cs.getOldValues(rootObject).size());
     }
 
-    
+
     private void verifyShipToDetachedOrUnsetBasic(//
-    	    DataObject shipToDO,//
-    	    DataObject yardDO,//
-    	    List phoneList,//
-    	    DataObject phone1,//
-    	    DataObject phone2,//
-    	    Property containmentProp,//
-    	    Object oldStreet) {
-    	verifyShipToDetachedOrUnsetBasic(//
-        	    shipToDO,//
-        	    yardDO,//
-        	    phoneList,//
-        	    phone1,//
-        	    phone2,//
-        	    containmentProp,//
-        	    oldStreet, false);
+            DataObject shipToDO,//
+            DataObject yardDO,//
+            List phoneList,//
+            DataObject phone1,//
+            DataObject phone2,//
+            Property containmentProp,//
+            Object oldStreet) {
+        verifyShipToDetachedOrUnsetBasic(//
+                shipToDO,//
+                yardDO,//
+                phoneList,//
+                phone1,//
+                phone2,//
+                containmentProp,//
+                oldStreet, false);
     }
-    
+
     private void verifyShipToDetachedOrUnsetBasic(//
     DataObject shipToDO,//
     DataObject yardDO,//
@@ -2389,9 +2389,9 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
 
         if(!fromDelete) {
-        	assertEquals("123 Maple Street", shipToDO.get("street"));
+            assertEquals("123 Maple Street", shipToDO.get("street"));
         } else {
-        	assertEquals(null, shipToDO.get("street"));
+            assertEquals(null, shipToDO.get("street"));
         }
         DataObject oldContainer = ((SDOChangeSummary)cs).getOldContainer(shipToDO);
         Property shipToProp = oldContainer.getInstanceProperty("shipTo");
@@ -2421,10 +2421,10 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 
         // verify that children of detached objects are not unset
         if(!fromDelete) {
-        	assertNotNull(newStreet);
+            assertNotNull(newStreet);
             assertEquals(oldStreet, newStreet);
         } else {
-        	assertNull(newStreet);
+            assertNull(newStreet);
         }
 
         assertEquals(1, cs.getOldValues(phone1).size());// 0
@@ -2519,7 +2519,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
     public void testUnsetSimpleIDSetToNullOnRoot() {
         SDOProperty idProperty = (SDOProperty) ((SDOType)rootObject.getType()).getDeclaredPropertiesMap().get("poId");
         idProperty.setNullable(true);
-        
+
         rootObject.set("poId", null);
         cs.beginLogging();
         rootObject.unset("poId");
@@ -2600,33 +2600,33 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         //lineItem.setList("comments", new ArrayList());
         cs.beginLogging();
 //        DataObject item = (DataObject)rootObject.getList("items").get(0);
-        
+
         assertUnchanged(lineItem, cs);
-        
+
         lineItem.getList("comment").add("a comment");
         lineItem.getList("comment").add("another comment");
-        
-        assertModified(lineItem, cs);
-        
-        cs.endLogging();
-        cs.beginLogging();
-        
-        assertUnchanged(lineItem, cs);
-        
-        lineItem.getList("comment").remove(1);
-        
+
         assertModified(lineItem, cs);
 
         cs.endLogging();
         cs.beginLogging();
-        
+
+        assertUnchanged(lineItem, cs);
+
+        lineItem.getList("comment").remove(1);
+
+        assertModified(lineItem, cs);
+
+        cs.endLogging();
+        cs.beginLogging();
+
         assertUnchanged(lineItem, cs);
 
         ArrayList newComments = new ArrayList();
         newComments.add("new comment 1");
         newComments.add("new comment 2");
         lineItem.getList("comment").addAll(newComments);
-        
+
         assertModified(lineItem, cs);
 
         cs.endLogging();
@@ -2660,7 +2660,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(yardSFsetting.getValue(), null);
 
         //TODO: uncomment this line.  Will fail unless Node Null policy stuff is fixed
-        //assertEquals(false, yardSFsetting.isSet());        
+        //assertEquals(false, yardSFsetting.isSet());
         ChangeSummary.Setting yardWidthsetting = cs.getOldValue(yardDO, widthProp);
         assertEquals("65", yardWidthsetting.getValue());
         assertEquals(true, yardWidthsetting.isSet());
@@ -2683,7 +2683,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(yardSFsetting.getValue(), null);
 
         //TODO: uncomment this line.  Will fail unless Node Null policy stuff is fixed
-        //assertEquals(false, yardSFsetting.isSet());        
+        //assertEquals(false, yardSFsetting.isSet());
         ChangeSummary.Setting yardWidthsetting = cs.getOldValue(yardDO, widthProp);
         assertEquals("65", yardWidthsetting.getValue());
         assertEquals(true, yardWidthsetting.isSet());

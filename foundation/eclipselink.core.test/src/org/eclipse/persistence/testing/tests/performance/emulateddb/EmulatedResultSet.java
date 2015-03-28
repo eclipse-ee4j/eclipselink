@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.performance.emulateddb;
 
 import java.sql.*;
@@ -37,8 +37,8 @@ public class EmulatedResultSet implements ResultSet {
      */
     public List getRows() {
         return rows;
-    }     
-     
+    }
+
     /**
      * Moves the cursor down one row from its current position.
      * A <code>ResultSet</code> cursor is initially positioned
@@ -2450,7 +2450,7 @@ public class EmulatedResultSet implements ResultSet {
     public int getHoldability()  throws SQLException {
         return 0;
     }
-    
+
     public Reader getNCharacterStream(int columnIndex)  throws SQLException {
         return null;
     }
@@ -2468,139 +2468,139 @@ public class EmulatedResultSet implements ResultSet {
     }
 
    public String getNString(int columnIndex)  throws SQLException {
-       return null;       
+       return null;
    }
 
    public String getNString(String columnLabel)  throws SQLException {
-       return null;       
+       return null;
    }
-   
+
    public RowId getRowId(int columnIndex)  throws SQLException {
        return null;
    }
-   
+
    public RowId getRowId(String columnLabel)  throws SQLException {
        return null;
    }
-   
+
    public SQLXML getSQLXML(int columnIndex)  throws SQLException {
        return null;
    }
-   
+
    public SQLXML getSQLXML(String columnLabel)  throws SQLException {
        return null;
    }
-   
+
    public boolean isClosed()  throws SQLException {
-       return false;       
-   }
-   
-   public void updateAsciiStream(int columnIndex, InputStream stream, long length)  throws SQLException {       
+       return false;
    }
 
-   public void updateAsciiStream(int columnIndex, InputStream stream)  throws SQLException {       
+   public void updateAsciiStream(int columnIndex, InputStream stream, long length)  throws SQLException {
    }
 
-   public void updateAsciiStream(String columnLabel, InputStream stream, long length)  throws SQLException {       
+   public void updateAsciiStream(int columnIndex, InputStream stream)  throws SQLException {
    }
 
-   public void updateAsciiStream(String columnLabel, InputStream stream)  throws SQLException {       
+   public void updateAsciiStream(String columnLabel, InputStream stream, long length)  throws SQLException {
    }
 
-   public void updateBlob(int columnIndex, InputStream stream, long length)  throws SQLException {       
+   public void updateAsciiStream(String columnLabel, InputStream stream)  throws SQLException {
    }
 
-   public void updateBlob(int columnIndex, InputStream stream)  throws SQLException {       
+   public void updateBlob(int columnIndex, InputStream stream, long length)  throws SQLException {
    }
 
-   public void updateBlob(String columnLabel, InputStream stream, long length)  throws SQLException {       
+   public void updateBlob(int columnIndex, InputStream stream)  throws SQLException {
    }
 
-   public void updateBlob(String columnLabel, InputStream stream)  throws SQLException {       
-   }
-      
-   public void updateBinaryStream(int columnIndex, InputStream stream, long length)  throws SQLException {       
+   public void updateBlob(String columnLabel, InputStream stream, long length)  throws SQLException {
    }
 
-   public void updateBinaryStream(int columnIndex, InputStream stream)  throws SQLException {       
+   public void updateBlob(String columnLabel, InputStream stream)  throws SQLException {
    }
 
-   public void updateBinaryStream(String columnLabel, InputStream stream, long length)  throws SQLException {       
+   public void updateBinaryStream(int columnIndex, InputStream stream, long length)  throws SQLException {
    }
 
-   public void updateBinaryStream(String columnLabel, InputStream stream)  throws SQLException {       
-   }
-   
-   public void updateCharacterStream(int columnIndex, Reader reader, long length)  throws SQLException {       
+   public void updateBinaryStream(int columnIndex, InputStream stream)  throws SQLException {
    }
 
-   public void updateCharacterStream(int columnIndex, Reader reader)  throws SQLException {       
+   public void updateBinaryStream(String columnLabel, InputStream stream, long length)  throws SQLException {
    }
 
-   public void updateCharacterStream(String columnLabel, Reader reader, long length)  throws SQLException {       
+   public void updateBinaryStream(String columnLabel, InputStream stream)  throws SQLException {
    }
 
-   public void updateCharacterStream(String columnLabel, Reader reader)  throws SQLException {       
-   }
-   
-   public void updateClob(int columnIndex, Reader reader, long length)  throws SQLException {       
+   public void updateCharacterStream(int columnIndex, Reader reader, long length)  throws SQLException {
    }
 
-   public void updateClob(int columnIndex, Reader reader)  throws SQLException {       
+   public void updateCharacterStream(int columnIndex, Reader reader)  throws SQLException {
    }
 
-   public void updateClob(String columnLabel, Reader reader, long length)  throws SQLException {       
+   public void updateCharacterStream(String columnLabel, Reader reader, long length)  throws SQLException {
    }
 
-   public void updateClob(String columnLabel, Reader reader)  throws SQLException {       
-   }
-   
-   public void updateNCharacterStream(int columnIndex, Reader reader, long length)  throws SQLException {       
+   public void updateCharacterStream(String columnLabel, Reader reader)  throws SQLException {
    }
 
-   public void updateNCharacterStream(int columnIndex, Reader reader)  throws SQLException {       
+   public void updateClob(int columnIndex, Reader reader, long length)  throws SQLException {
    }
 
-   public void updateNCharacterStream(String columnLabel, Reader reader, long length)  throws SQLException {       
+   public void updateClob(int columnIndex, Reader reader)  throws SQLException {
    }
 
-   public void updateNCharacterStream(String columnLabel, Reader reader)  throws SQLException {       
+   public void updateClob(String columnLabel, Reader reader, long length)  throws SQLException {
    }
 
-   public void updateNClob(int columnIndex, Reader reader, long length)  throws SQLException {       
+   public void updateClob(String columnLabel, Reader reader)  throws SQLException {
    }
 
-   public void updateNClob(int columnIndex, Reader reader)  throws SQLException {       
+   public void updateNCharacterStream(int columnIndex, Reader reader, long length)  throws SQLException {
    }
 
-   public void updateNClob(String columnLabel, Reader reader, long length)  throws SQLException {       
+   public void updateNCharacterStream(int columnIndex, Reader reader)  throws SQLException {
    }
 
-   public void updateNClob(String columnLabel, Reader reader)  throws SQLException {       
-   }
-  
-   public void updateNClob(int columnIndex, NClob nclob)  throws SQLException {       
+   public void updateNCharacterStream(String columnLabel, Reader reader, long length)  throws SQLException {
    }
 
-   public void updateNClob(String columnLabel, NClob nclob)  throws SQLException {       
-   }
-      
-   public void updateNString(int columnIndex, String nString)  throws SQLException {       
+   public void updateNCharacterStream(String columnLabel, Reader reader)  throws SQLException {
    }
 
-   public void updateNString(String columnLabel, String nString)  throws SQLException {       
+   public void updateNClob(int columnIndex, Reader reader, long length)  throws SQLException {
    }
 
-   public void updateSQLXML(String columnLabel, SQLXML sqlxml)  throws SQLException {      
+   public void updateNClob(int columnIndex, Reader reader)  throws SQLException {
    }
 
-   public void updateSQLXML(int columnIndex, SQLXML sqlxml)  throws SQLException {       
+   public void updateNClob(String columnLabel, Reader reader, long length)  throws SQLException {
    }
-   
-   public void updateRowId(int columnIndex, RowId rowid)  throws SQLException {       
+
+   public void updateNClob(String columnLabel, Reader reader)  throws SQLException {
    }
-   
-   public void updateRowId(String columnLabel, RowId rowid)  throws SQLException {       
+
+   public void updateNClob(int columnIndex, NClob nclob)  throws SQLException {
+   }
+
+   public void updateNClob(String columnLabel, NClob nclob)  throws SQLException {
+   }
+
+   public void updateNString(int columnIndex, String nString)  throws SQLException {
+   }
+
+   public void updateNString(String columnLabel, String nString)  throws SQLException {
+   }
+
+   public void updateSQLXML(String columnLabel, SQLXML sqlxml)  throws SQLException {
+   }
+
+   public void updateSQLXML(int columnIndex, SQLXML sqlxml)  throws SQLException {
+   }
+
+   public void updateRowId(int columnIndex, RowId rowid)  throws SQLException {
+   }
+
+   public void updateRowId(String columnLabel, RowId rowid)  throws SQLException {
    }
 
    public boolean isWrapperFor(Class<?> iFace) throws SQLException{

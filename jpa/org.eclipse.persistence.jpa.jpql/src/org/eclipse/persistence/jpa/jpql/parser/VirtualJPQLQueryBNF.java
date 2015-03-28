@@ -32,48 +32,48 @@ public final class VirtualJPQLQueryBNF extends JPQLQueryBNF {
 
     private static final Random r = new Random(System.currentTimeMillis());
 
-	/**
-	 * Creates a new <code>VirtualJPQLQueryBNF</code>.
-	 *
-	 * @param jpqlGrammar The {@link JPQLGrammar} to integrate this virtual query BNF
-	 * @exception NullPointerException If the given {@link JPQLGrammar} is <code>null</code>
-	 */
-	public VirtualJPQLQueryBNF(JPQLGrammar jpqlGrammar) {
-		super(String.valueOf(r.nextLong()));
-		initialize(jpqlGrammar);
-	}
+    /**
+     * Creates a new <code>VirtualJPQLQueryBNF</code>.
+     *
+     * @param jpqlGrammar The {@link JPQLGrammar} to integrate this virtual query BNF
+     * @exception NullPointerException If the given {@link JPQLGrammar} is <code>null</code>
+     */
+    public VirtualJPQLQueryBNF(JPQLGrammar jpqlGrammar) {
+        super(String.valueOf(r.nextLong()));
+        initialize(jpqlGrammar);
+    }
 
-	/**
-	 * Disposes this "virtual" query BNF.
-	 */
-	public void dispose() {
-		getExpressionRegistry().unregisterBNF(this);
-	}
+    /**
+     * Disposes this "virtual" query BNF.
+     */
+    public void dispose() {
+        getExpressionRegistry().unregisterBNF(this);
+    }
 
-	private void initialize(JPQLGrammar jpqlGrammar) {
-		ExpressionRegistry expressionRegistry = jpqlGrammar.getExpressionRegistry();
-		setExpressionRegistry(expressionRegistry);
-		expressionRegistry.registerBNF(this);
-	}
+    private void initialize(JPQLGrammar jpqlGrammar) {
+        ExpressionRegistry expressionRegistry = jpqlGrammar.getExpressionRegistry();
+        setExpressionRegistry(expressionRegistry);
+        expressionRegistry.registerBNF(this);
+    }
 
-	/**
-	 * Registers a unique identifier that will be used to create the {@link Expression} representing
-	 * this BNF rule.
-	 *
-	 * @param expressionFactoryId The unique identifier that is responsible to create the
-	 * {@link Expression} for this BNF rule
-	 */
-	public void registerFactory(String expressionFactoryId) {
-		registerExpressionFactory(expressionFactoryId);
-	}
+    /**
+     * Registers a unique identifier that will be used to create the {@link Expression} representing
+     * this BNF rule.
+     *
+     * @param expressionFactoryId The unique identifier that is responsible to create the
+     * {@link Expression} for this BNF rule
+     */
+    public void registerFactory(String expressionFactoryId) {
+        registerExpressionFactory(expressionFactoryId);
+    }
 
-	/**
-	 * Registers the unique identifier of the BNF rule as a child of this BNF rule.
-	 *
-	 * @param queryBNFId The unique identifier of the BNF rule
-	 * @exception NullPointerException The <code>queryBNFId</code> cannot be <code>null</code>
-	 */
-	public void registerQueryBNF(String queryBNFId) {
-		registerChild(queryBNFId);
-	}
+    /**
+     * Registers the unique identifier of the BNF rule as a child of this BNF rule.
+     *
+     * @param queryBNFId The unique identifier of the BNF rule
+     * @exception NullPointerException The <code>queryBNFId</code> cannot be <code>null</code>
+     */
+    public void registerQueryBNF(String queryBNFId) {
+        registerChild(queryBNFId);
+    }
 }

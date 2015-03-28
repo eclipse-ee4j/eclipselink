@@ -1,7 +1,7 @@
 <root>
    <employees>
       <employee>
-	     <name>Jane Doe</name>
+         <name>Jane Doe</name>
          <phone id="1"/>
       </employee>
    </employees>

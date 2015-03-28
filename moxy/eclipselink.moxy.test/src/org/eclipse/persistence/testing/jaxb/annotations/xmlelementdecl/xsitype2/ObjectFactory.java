@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,19 +20,19 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-	 public final static QName _FOO_QNAME = new QName("", "foo");
-	 public final static QName _BAR_QNAME = new QName("", "bar");
+     public final static QName _FOO_QNAME = new QName("", "foo");
+     public final static QName _BAR_QNAME = new QName("", "bar");
 
-	 public ObjectFactory() {
-	 }
-	
-	 @XmlElementDecl(namespace = "", name = "foo")
-	 public JAXBElement<Foo> createFoo(Foo value) {
-	     return new JAXBElement<Foo>(_FOO_QNAME, Foo.class, null, value);
-	 }
+     public ObjectFactory() {
+     }
 
-	 @XmlElementDecl(namespace = "", name = "bar")
-	 public JAXBElement<Bar> createBar(Bar value) {
-	     return new JAXBElement<Bar>(_BAR_QNAME, Bar.class, null, value);
-	 }
+     @XmlElementDecl(namespace = "", name = "foo")
+     public JAXBElement<Foo> createFoo(Foo value) {
+         return new JAXBElement<Foo>(_FOO_QNAME, Foo.class, null, value);
+     }
+
+     @XmlElementDecl(namespace = "", name = "bar")
+     public JAXBElement<Bar> createBar(Bar value) {
+         return new JAXBElement<Bar>(_BAR_QNAME, Bar.class, null, value);
+     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,18 +43,18 @@ public class XmlIdRefSelfTestCases extends JAXBWithJSONTestCases {
 
         AddressSelfSource adaptedAddress = new AddressSelfSource();
         adaptedAddress.address = address;
-        
+
         Customer customer = new Customer();
         customer.address = adaptedAddress;
         customer.phoneNumber = phoneNumber;
 
         return customer;
     }
-    
+
     public void testJSONSchemaGen() throws Exception{
         InputStream controlSchema = classLoader.getResourceAsStream(CONTROL_JSON_SCHEMA);
         super.generateJSONSchema(controlSchema);
-       
+
     }
 
 

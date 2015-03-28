@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,9 +46,9 @@ public class XmlAnyElementLaxSingleTestCases extends JAXBWithJSONTestCases {
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }
-    
+
     protected Object getControlObject() {
-    	EmployeeSingle employee = new EmployeeSingle();
+        EmployeeSingle employee = new EmployeeSingle();
         employee.name = "John Doe";
         employee.homeAddress  = new Address();
         employee.homeAddress.street = "123 Fake Street";
@@ -58,40 +58,40 @@ public class XmlAnyElementLaxSingleTestCases extends JAXBWithJSONTestCases {
         employee.element = new JAXBElement(new QName("newUri","mytag"), Object.class, null);
         return employee;
     }
-    
+
     public Object getReadControlObject() {
-    	EmployeeSingle employee = new EmployeeSingle();
+        EmployeeSingle employee = new EmployeeSingle();
         employee.name = "John Doe";
         employee.homeAddress  = new Address();
         employee.homeAddress.street = "123 Fake Street";
         employee.homeAddress.city = "Ottawa";
-        employee.homeAddress.country = "Canada";        
+        employee.homeAddress.country = "Canada";
         Element elem = parser.newDocument().createElementNS("newUri", "ns0:mytag");
         elem.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, "xsi:nil", "true");
         elem.setAttributeNS(XMLConstants.XMLNS_URL, "xmlns:xsi", XMLConstants.SCHEMA_INSTANCE_URL);
         elem.setAttributeNS(XMLConstants.XMLNS_URL, "xmlns:ns0", "newUri");
         employee.element = elem;
-        
-        
+
+
         return employee;
-        
-        
+
+
     }
 
     public Object getJSONReadControlObject() {
-    	EmployeeSingle employee = new EmployeeSingle();
+        EmployeeSingle employee = new EmployeeSingle();
         employee.name = "John Doe";
         employee.homeAddress  = new Address();
         employee.homeAddress.street = "123 Fake Street";
         employee.homeAddress.city = "Ottawa";
-        employee.homeAddress.country = "Canada";        
+        employee.homeAddress.country = "Canada";
         Element elem = parser.newDocument().createElementNS(null, "mytag");
         employee.element = elem;
-        
+
         return employee;
-        
-        
+
+
     }
-   
+
 
 }

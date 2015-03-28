@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,25 +32,25 @@ public class NullStringTestCases extends TypeMappingInfoWithJSONTestCases {
         super(name);
         init();
     }
-    
+
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
-        setControlJSON(JSON_RESOURCE);  
-        setTypeMappingInfos(getTypeMappingInfos()); 
+        setControlJSON(JSON_RESOURCE);
+        setTypeMappingInfos(getTypeMappingInfos());
     }
-    
+
     protected TypeMappingInfo[] getTypeMappingInfos()throws Exception {
         if(typeMappingInfos == null) {
             typeMappingInfos = new TypeMappingInfo[1];
             TypeMappingInfo tpi = new TypeMappingInfo();
-            tpi.setXmlTagName(new QName("","testTagname"));     
-            tpi.setElementScope(ElementScope.Global);       
-            tpi.setType(String.class);         
-            typeMappingInfos[0] = tpi;          
+            tpi.setXmlTagName(new QName("","testTagname"));
+            tpi.setElementScope(ElementScope.Global);
+            tpi.setType(String.class);
+            typeMappingInfos[0] = tpi;
         }
-        return typeMappingInfos;        
+        return typeMappingInfos;
     }
-        
+
     protected Object getControlObject() {
         QName qname = new QName("", "testTagname");
         JAXBElement jaxbElement = new JAXBElement(qname, String.class, null);
@@ -58,9 +58,9 @@ public class NullStringTestCases extends TypeMappingInfoWithJSONTestCases {
     }
 
 
-    public Map<String, InputStream> getControlSchemaFiles(){                       
+    public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/nullstring.xsd");
-        
+
         Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
         controlSchema.put("", instream);
         return controlSchema;

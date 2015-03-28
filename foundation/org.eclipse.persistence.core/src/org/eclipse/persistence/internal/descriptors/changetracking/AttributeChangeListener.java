@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors.changetracking;
 
 import java.beans.*;
@@ -124,7 +124,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
         DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(evt.getPropertyName());
         //Bug#4127952 Throw an exception indicating there is no mapping for the property name.
         if (mapping == null) {
-            throw ValidationException.wrongPropertyNameInChangeEvent(owner.getClass(), evt.getPropertyName());			
+            throw ValidationException.wrongPropertyNameInChangeEvent(owner.getClass(), evt.getPropertyName());
         }
         if (mapping instanceof AbstractDirectMapping || mapping instanceof AbstractTransformationMapping) {
             //If both newValue and oldValue are null, or newValue is not null and newValue equals oldValue, don't build ChangeRecord
@@ -140,7 +140,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
         }
         if (objectChangeSet == null) {//only null if new or if in a new UOW
             //add to tracker list to prevent GC of clone if using weak references
-        	//put it in here so that it only occurs on the 1st change for a particular UOW
+            //put it in here so that it only occurs on the 1st change for a particular UOW
             uow.addToChangeTrackedHardList(owner);
             objectChangeSet = getDescriptor().getObjectBuilder().createObjectChangeSet(owner, (UnitOfWorkChangeSet) uow.getUnitOfWorkChangeSet(), false, uow);
         }
@@ -153,7 +153,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
             throw ValidationException.wrongChangeEvent(evt.getClass());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Clear the changes in this listener

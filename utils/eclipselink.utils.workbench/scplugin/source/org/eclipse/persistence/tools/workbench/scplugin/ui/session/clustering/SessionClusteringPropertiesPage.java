@@ -1,7 +1,7 @@
 /*
  * @(#)SessionClusteringPropertiesPage.java
  *
- * Copyright 2004 by Oracle Corporation,
+ * Copyright 2004, 2015  by Oracle Corporation,
  * 500 Oracle Parkway, Redwood Shores, California, 94065, U.S.A.
  * All rights reserved.
  *
@@ -74,304 +74,304 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.ArrayIterator;
  */
 public final class SessionClusteringPropertiesPage extends ScrollablePropertiesPage
 {
-	/**
-	 * Creates a new <code>SessionClusteringPropertiesPage</code>.
-	 *
-	 * @param nodeHolder The holder of {@link SessionNode}
-	 */
-	public SessionClusteringPropertiesPage(PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder)
-	{
-		super(nodeHolder, contextHolder);
-	}
+    /**
+     * Creates a new <code>SessionClusteringPropertiesPage</code>.
+     *
+     * @param nodeHolder The holder of {@link SessionNode}
+     */
+    public SessionClusteringPropertiesPage(PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder)
+    {
+        super(nodeHolder, contextHolder);
+    }
 
-	/**
-	 * Creates the <code>CollectionValueModel</code> containing the actual items
-	 * to be shown in the Clustering combo box.
-	 *
-	 * @return The <code>CollectionValueModel</code> containing the items
-	 */
-	private CollectionValueModel buildClusteringCollectionHolder()
-	{
-		return new CollectionAspectAdapter(getSelectionHolder(), null)
-		{
-			protected Iterator getValueFromSubject()
-			{
-				return new ArrayIterator(new Object[] {Boolean.TRUE, Boolean.FALSE});
-			}
-		};
-	}
+    /**
+     * Creates the <code>CollectionValueModel</code> containing the actual items
+     * to be shown in the Clustering combo box.
+     *
+     * @return The <code>CollectionValueModel</code> containing the items
+     */
+    private CollectionValueModel buildClusteringCollectionHolder()
+    {
+        return new CollectionAspectAdapter(getSelectionHolder(), null)
+        {
+            protected Iterator getValueFromSubject()
+            {
+                return new ArrayIterator(new Object[] {Boolean.TRUE, Boolean.FALSE});
+            }
+        };
+    }
 
-	/**
-	 * Creates the <code>ComboBoxModel</code> that keeps the selected item in the
-	 * combo box in sync with the value in the model and vice versa.
-	 *
-	 * @return The model showing two choices: "Remote Command (True)" and "Cache
-	 * Synchronization (False)"
-	 */
-	private ComboBoxModel buildClusteringComboBoxAdapter()
-	{
-		return new ComboBoxModelAdapter(buildClusteringCollectionHolder(),
-												  buildClusteringTypeSelectionHolder());
-	}
+    /**
+     * Creates the <code>ComboBoxModel</code> that keeps the selected item in the
+     * combo box in sync with the value in the model and vice versa.
+     *
+     * @return The model showing two choices: "Remote Command (True)" and "Cache
+     * Synchronization (False)"
+     */
+    private ComboBoxModel buildClusteringComboBoxAdapter()
+    {
+        return new ComboBoxModelAdapter(buildClusteringCollectionHolder(),
+                                                  buildClusteringTypeSelectionHolder());
+    }
 
-	/**
-	 * Creates the decorator responsible to format the <code>Boolean</code>
-	 * values in the Clustering combo box.
-	 * 
-	 * @return {@link SessionClusteringPropertiesPage.BooleanLabelDecorator}
-	 */
-	private CellRendererAdapter buildClusteringLabelDecorator()
-	{
-		ResourceRepository resourceRepository = resourceRepository();
-		
-		return new BooleanCellRendererAdapter(resourceRepository.getString("REMOTE_COMMAND"), resourceRepository.getString("DEFAULT_CLUSTERING_TYPE"));
-	}
+    /**
+     * Creates the decorator responsible to format the <code>Boolean</code>
+     * values in the Clustering combo box.
+     *
+     * @return {@link SessionClusteringPropertiesPage.BooleanLabelDecorator}
+     */
+    private CellRendererAdapter buildClusteringLabelDecorator()
+    {
+        ResourceRepository resourceRepository = resourceRepository();
 
-	/**
-	 * Creates the <code>SwitcherPanel</code> ...
-	 *
-	 * @return A new <code>SwitcherPanel</code>
-	 */
-	private SwitcherPanel buildClusteringSwitcherPanel()
-	{
-		return new SwitcherPanel(buildClusteringTypeHolder(),
-										 buildClusteringTypeTransformer());
-	}
+        return new BooleanCellRendererAdapter(resourceRepository.getString("REMOTE_COMMAND"), resourceRepository.getString("DEFAULT_CLUSTERING_TYPE"));
+    }
 
-	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to handle the
-	 * Clustering Type property.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildClusteringTypeHolder()
-	{
-		String[] propertyNames = new String[]
-		{
-			SessionAdapter.REMOTE_COMMAND_MANAGER_CONFIG_PROPERTY,
-		};
+    /**
+     * Creates the <code>SwitcherPanel</code> ...
+     *
+     * @return A new <code>SwitcherPanel</code>
+     */
+    private SwitcherPanel buildClusteringSwitcherPanel()
+    {
+        return new SwitcherPanel(buildClusteringTypeHolder(),
+                                         buildClusteringTypeTransformer());
+    }
 
-		return new PropertyAspectAdapter(getSelectionHolder(), propertyNames)
-		{
-			protected Object getValueFromSubject()
-			{
-				SessionAdapter session = (SessionAdapter) subject;
+    /**
+     * Creates the <code>PropertyValueModel</code> responsible to handle the
+     * Clustering Type property.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    private PropertyValueModel buildClusteringTypeHolder()
+    {
+        String[] propertyNames = new String[]
+        {
+            SessionAdapter.REMOTE_COMMAND_MANAGER_CONFIG_PROPERTY,
+        };
 
-				if (session.hasRemoteCommandManager())
-					return session.getRemoteCommandManager();
+        return new PropertyAspectAdapter(getSelectionHolder(), propertyNames)
+        {
+            protected Object getValueFromSubject()
+            {
+                SessionAdapter session = (SessionAdapter) subject;
 
-				return null;
-			}
-		};
-	}
+                if (session.hasRemoteCommandManager())
+                    return session.getRemoteCommandManager();
 
-	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to listen to
-	 * changes made to the type of clustering to be used, which is either Remote
-	 * Command Manager or Cache Synchronization.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildClusteringTypeSelectionHolder()
-	{
-		String[] propertyNames = new String[]
-		{
-			SessionAdapter.REMOTE_COMMAND_MANAGER_CONFIG_PROPERTY,
-		};
+                return null;
+            }
+        };
+    }
 
-		return new PropertyAspectAdapter(getSelectionHolder(), propertyNames)
-		{
-			protected Object getValueFromSubject()
-			{
-				SessionAdapter adapter = (SessionAdapter) subject;
-				
-				if (adapter.hasNoClusteringService()) {
-					return Boolean.FALSE;
-				}
-				
-				return Boolean.valueOf(adapter.hasRemoteCommandManager());
-			}
+    /**
+     * Creates the <code>PropertyValueModel</code> responsible to listen to
+     * changes made to the type of clustering to be used, which is either Remote
+     * Command Manager or Cache Synchronization.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    private PropertyValueModel buildClusteringTypeSelectionHolder()
+    {
+        String[] propertyNames = new String[]
+        {
+            SessionAdapter.REMOTE_COMMAND_MANAGER_CONFIG_PROPERTY,
+        };
 
-			protected void setValueOnSubject(Object value)
-			{
-				SessionAdapter adapter = (SessionAdapter) subject;
-				
-				if (Boolean.TRUE.equals(value)) {
-					adapter.setClusteringToRemoteCommandManager();
-				} else {
-					adapter.setClusteringToNothing();
-				}
-			}
-		};
-	}
+        return new PropertyAspectAdapter(getSelectionHolder(), propertyNames)
+        {
+            protected Object getValueFromSubject()
+            {
+                SessionAdapter adapter = (SessionAdapter) subject;
 
-	/**
-	 * Creates the <code>Transformer</code> responsible to convert the Clustering
-	 * type into the corresponding <code>Component</code>.
-	 *
-	 * @return A new <code>Transformer</code>
-	 */
-	private Transformer buildClusteringTypeTransformer()
-	{
-		// Create the choices used to convert an object to a JComponent
-		final Object[] items = new Object[]
-		{
-			new RemoteCommandManagerChoice(),
-		};
+                if (adapter.hasNoClusteringService()) {
+                    return Boolean.FALSE;
+                }
 
-		return new Transformer()
-		{
-			public Object transform(Object value)
-			{
-				SessionAdapter session = (SessionAdapter) selection();
+                return Boolean.valueOf(adapter.hasRemoteCommandManager());
+            }
 
-				if ((value == null) || (session == null))
-					return null;
+            protected void setValueOnSubject(Object value)
+            {
+                SessionAdapter adapter = (SessionAdapter) subject;
 
-				Transformer choice;
-				choice = (Transformer) items[0];			
-				return choice.transform(value);
-			}
-		};
-	}
+                if (Boolean.TRUE.equals(value)) {
+                    adapter.setClusteringToRemoteCommandManager();
+                } else {
+                    adapter.setClusteringToNothing();
+                }
+            }
+        };
+    }
 
-	/**
-	 * Initializes the layout of the Clustering sub-panel.
-	 *
-	 * @return The container with all its widgets
-	 */
-	private JPanel buildInternalPage()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
+    /**
+     * Creates the <code>Transformer</code> responsible to convert the Clustering
+     * type into the corresponding <code>Component</code>.
+     *
+     * @return A new <code>Transformer</code>
+     */
+    private Transformer buildClusteringTypeTransformer()
+    {
+        // Create the choices used to convert an object to a JComponent
+        final Object[] items = new Object[]
+        {
+            new RemoteCommandManagerChoice(),
+        };
 
-		// Create the container
-		JPanel panel = new JPanel(new GridBagLayout());
+        return new Transformer()
+        {
+            public Object transform(Object value)
+            {
+                SessionAdapter session = (SessionAdapter) selection();
 
-		// Create Clustering label
-		JComponent clusteringWidgets = buildLabeledComboBox
-		(
-			"CLUSTERING_CLUSTERING_COMBO_BOX",
-			buildClusteringComboBoxAdapter(),
-			new AdaptableListCellRenderer(buildClusteringLabelDecorator())
-		);
-		clusteringWidgets.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+                if ((value == null) || (session == null))
+                    return null;
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 0;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.HORIZONTAL;
-		constraints.anchor      = GridBagConstraints.CENTER;
-		constraints.insets      = new Insets(0, 0, 0, 0);
+                Transformer choice;
+                choice = (Transformer) items[0];
+                return choice.transform(value);
+            }
+        };
+    }
 
-		panel.add(clusteringWidgets, constraints);
-		addHelpTopicId(clusteringWidgets, "session.clustering");
+    /**
+     * Initializes the layout of the Clustering sub-panel.
+     *
+     * @return The container with all its widgets
+     */
+    private JPanel buildInternalPage()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		// Create the sub-panel container
-		SwitcherPanel clusteringPaneContainer = buildClusteringSwitcherPanel();
+        // Create the container
+        JPanel panel = new JPanel(new GridBagLayout());
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 1;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 1;
-		constraints.fill        = GridBagConstraints.BOTH;
-		constraints.anchor      = GridBagConstraints.CENTER;
-		constraints.insets      = new Insets(0, 0, 0, 0);
+        // Create Clustering label
+        JComponent clusteringWidgets = buildLabeledComboBox
+        (
+            "CLUSTERING_CLUSTERING_COMBO_BOX",
+            buildClusteringComboBoxAdapter(),
+            new AdaptableListCellRenderer(buildClusteringLabelDecorator())
+        );
+        clusteringWidgets.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
 
-		panel.add(clusteringPaneContainer, constraints);
+        constraints.gridx       = 0;
+        constraints.gridy       = 0;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 1;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.HORIZONTAL;
+        constraints.anchor      = GridBagConstraints.CENTER;
+        constraints.insets      = new Insets(0, 0, 0, 0);
 
-		return panel;
-	}
+        panel.add(clusteringWidgets, constraints);
+        addHelpTopicId(clusteringWidgets, "session.clustering");
 
-	/**
-	 * Initializes the layout of this pane.
-	 *
-	 * @return The container with all its widgets
-	 */
-	protected Component buildPage()
-	{
+        // Create the sub-panel container
+        SwitcherPanel clusteringPaneContainer = buildClusteringSwitcherPanel();
 
-		GridBagConstraints constraints = new GridBagConstraints();
-		int offset = SwingTools.checkBoxIconWidth();
+        constraints.gridx       = 0;
+        constraints.gridy       = 1;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 1;
+        constraints.weighty     = 1;
+        constraints.fill        = GridBagConstraints.BOTH;
+        constraints.anchor      = GridBagConstraints.CENTER;
+        constraints.insets      = new Insets(0, 0, 0, 0);
 
-		// Create the container
-		JPanel panel = new JPanel(new GridBagLayout());
-		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        panel.add(clusteringPaneContainer, constraints);
 
-		// Create internal pane
-		
-		JPanel internalPane = buildInternalPage();
+        return panel;
+    }
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 1;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 1;
-		constraints.fill        = GridBagConstraints.BOTH;
-		constraints.anchor      = GridBagConstraints.LINE_START;
-		constraints.insets      = new Insets(0, offset, 0, 0);
+    /**
+     * Initializes the layout of this pane.
+     *
+     * @return The container with all its widgets
+     */
+    protected Component buildPage()
+    {
 
-		panel.add(internalPane, constraints);
+        GridBagConstraints constraints = new GridBagConstraints();
+        int offset = SwingTools.checkBoxIconWidth();
 
-		addHelpTopicId(this, "session.clustering");
-		return panel;
-	}
+        // Create the container
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-	/**
-	 * This is one of the choice for Clustering Service that is used by
-	 * {@link #buildClusteringTypeHolder()}.
-	 */
-	private class RemoteCommandManagerChoice implements Transformer
-	{
-		/**
-		 * The pane containing Remote Command Manager specific information.
-		 */
-		private RemoteCommandManagerPane pane;
+        // Create internal pane
 
-		/**
-		 * Creates the <code>PropertyValueModel</code> that will be the subject
-		 * holder for this pane. The subject will be a {@link RemoteCommandManagerAdapter}.
-		 *
-		 * @return A new <code>PropertyValueModel</code> listening for change of
-		 * Remote Command Manager.
-		 */
-		private PropertyValueModel buildRemoteCommandManagerHolder()
-		{
-			return new PropertyAspectAdapter(getSelectionHolder(), SessionAdapter.REMOTE_COMMAND_MANAGER_CONFIG_PROPERTY)
-			{
-				protected Object getValueFromSubject()
-				{
-					SessionAdapter adapter = (SessionAdapter) subject;
-					return adapter.getRemoteCommandManager();
-				}
-			};
-		}
+        JPanel internalPane = buildInternalPage();
 
-		/**
-		 * Based on the given object, requests the associated component.
-		 *
-		 * @param value The value used to retrieve a pane
-		 * @return {@link RemoteCommandManagerPane}
-		 */
-		public Object transform(Object value)
-		{
-			if (this.pane == null)
-			{
-				this.pane = new RemoteCommandManagerPane
-				(
-					buildRemoteCommandManagerHolder(),
-					getWorkbenchContextHolder()
-				);
+        constraints.gridx       = 0;
+        constraints.gridy       = 1;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 1;
+        constraints.weighty     = 1;
+        constraints.fill        = GridBagConstraints.BOTH;
+        constraints.anchor      = GridBagConstraints.LINE_START;
+        constraints.insets      = new Insets(0, offset, 0, 0);
 
-				addPaneForAlignment(this.pane);
-			}
+        panel.add(internalPane, constraints);
 
-			return this.pane;
-		}
-	}
+        addHelpTopicId(this, "session.clustering");
+        return panel;
+    }
+
+    /**
+     * This is one of the choice for Clustering Service that is used by
+     * {@link #buildClusteringTypeHolder()}.
+     */
+    private class RemoteCommandManagerChoice implements Transformer
+    {
+        /**
+         * The pane containing Remote Command Manager specific information.
+         */
+        private RemoteCommandManagerPane pane;
+
+        /**
+         * Creates the <code>PropertyValueModel</code> that will be the subject
+         * holder for this pane. The subject will be a {@link RemoteCommandManagerAdapter}.
+         *
+         * @return A new <code>PropertyValueModel</code> listening for change of
+         * Remote Command Manager.
+         */
+        private PropertyValueModel buildRemoteCommandManagerHolder()
+        {
+            return new PropertyAspectAdapter(getSelectionHolder(), SessionAdapter.REMOTE_COMMAND_MANAGER_CONFIG_PROPERTY)
+            {
+                protected Object getValueFromSubject()
+                {
+                    SessionAdapter adapter = (SessionAdapter) subject;
+                    return adapter.getRemoteCommandManager();
+                }
+            };
+        }
+
+        /**
+         * Based on the given object, requests the associated component.
+         *
+         * @param value The value used to retrieve a pane
+         * @return {@link RemoteCommandManagerPane}
+         */
+        public Object transform(Object value)
+        {
+            if (this.pane == null)
+            {
+                this.pane = new RemoteCommandManagerPane
+                (
+                    buildRemoteCommandManagerHolder(),
+                    getWorkbenchContextHolder()
+                );
+
+                addPaneForAlignment(this.pane);
+            }
+
+            return this.pane;
+        }
+    }
 }

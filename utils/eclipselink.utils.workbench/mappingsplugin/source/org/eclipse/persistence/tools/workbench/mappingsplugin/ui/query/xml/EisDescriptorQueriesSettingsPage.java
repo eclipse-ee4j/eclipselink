@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -29,22 +29,22 @@ public final class EisDescriptorQueriesSettingsPage
 extends ScrollablePropertiesPage
 {
 
-	public EisDescriptorQueriesSettingsPage(PropertyValueModel eisDescriptorNodeHolder, WorkbenchContextHolder contextHolder) {
-		super(eisDescriptorNodeHolder, contextHolder);
-	}
+    public EisDescriptorQueriesSettingsPage(PropertyValueModel eisDescriptorNodeHolder, WorkbenchContextHolder contextHolder) {
+        super(eisDescriptorNodeHolder, contextHolder);
+    }
 
-	protected void initialize(PropertyValueModel nodeHolder) {
-		super.initialize(nodeHolder);
-	}
+    protected void initialize(PropertyValueModel nodeHolder) {
+        super.initialize(nodeHolder);
+    }
 
 
-	protected Component buildPage() {
-		setName(resourceRepository().getString("SETTINGS_PANEL_NAME"));
+    protected Component buildPage() {
+        setName(resourceRepository().getString("SETTINGS_PANEL_NAME"));
 
-		JPanel mainPanel = new JPanel(new GridBagLayout());
-		GridBagConstraints constraints = new GridBagConstraints();
-		
-       
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+
+
         // Refreshing cache options - panel
         constraints.gridx      = 0;
         constraints.gridy      = 0;
@@ -56,14 +56,14 @@ extends ScrollablePropertiesPage
         constraints.anchor     = GridBagConstraints.PAGE_START;
         constraints.insets     = new Insets(5, 5, 5, 5);
         mainPanel.add(TransactionalDescriptorComponentFactory.buildRefreshCachePolicyPanel(getSelectionHolder(), getApplicationContext()), constraints);
-        
-        
-		addHelpTopicId(mainPanel, helpTopicId());
-		
-		return mainPanel;
-	}
 
-	public String helpTopicId() {
-		return "descriptor.eis.queries.settings";
-	}
+
+        addHelpTopicId(mainPanel, helpTopicId());
+
+        return mainPanel;
+    }
+
+    public String helpTopicId() {
+        return "descriptor.eis.queries.settings";
+    }
 }

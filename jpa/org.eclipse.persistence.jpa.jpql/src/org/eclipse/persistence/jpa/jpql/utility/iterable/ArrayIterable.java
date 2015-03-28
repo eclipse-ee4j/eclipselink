@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,52 +27,52 @@ import org.eclipse.persistence.jpa.jpql.utility.iterator.ArrayIterator;
  * @see <a href="http://git.eclipse.org/c/dali/webtools.dali.git/tree/common/plugins/org.eclipse.jpt.common.utility/src/org/eclipse/jpt/common/utility/internal/iterable/ArrayListIterable.java">ArrayListIterable</a>
  */
 public class ArrayIterable<E>
-	implements Iterable<E>
+    implements Iterable<E>
 {
-	final E[] array;
-	final int start;
-	final int length;
+    final E[] array;
+    final int start;
+    final int length;
 
-	/**
-	 * Construct an iterable for the specified array.
-	 */
-	public ArrayIterable(E... array) {
-		this(array, 0, array.length);
-	}
+    /**
+     * Construct an iterable for the specified array.
+     */
+    public ArrayIterable(E... array) {
+        this(array, 0, array.length);
+    }
 
-	/**
-	 * Construct an iterable for the specified array,
-	 * starting at the specified start index and continuing for
-	 * the rest of the array.
-	 */
-	public ArrayIterable(E[] array, int start) {
-		this(array, start, array.length - start);
-	}
+    /**
+     * Construct an iterable for the specified array,
+     * starting at the specified start index and continuing for
+     * the rest of the array.
+     */
+    public ArrayIterable(E[] array, int start) {
+        this(array, start, array.length - start);
+    }
 
-	/**
-	 * Construct an iterable for the specified array,
-	 * starting at the specified start index and continuing for
-	 * the specified length.
-	 */
-	public ArrayIterable(E[] array, int start, int length) {
-		super();
-		if ((start < 0) || (start > array.length)) {
-			throw new IllegalArgumentException("start: " + start); //$NON-NLS-1$
-		}
-		if ((length < 0) || (length > array.length - start)) {
-			throw new IllegalArgumentException("length: " + length); //$NON-NLS-1$
-		}
-		this.array = array;
-		this.start = start;
-		this.length = length;
-	}
+    /**
+     * Construct an iterable for the specified array,
+     * starting at the specified start index and continuing for
+     * the specified length.
+     */
+    public ArrayIterable(E[] array, int start, int length) {
+        super();
+        if ((start < 0) || (start > array.length)) {
+            throw new IllegalArgumentException("start: " + start); //$NON-NLS-1$
+        }
+        if ((length < 0) || (length > array.length - start)) {
+            throw new IllegalArgumentException("length: " + length); //$NON-NLS-1$
+        }
+        this.array = array;
+        this.start = start;
+        this.length = length;
+    }
 
-	public Iterator<E> iterator() {
-		return new ArrayIterator<E>(this.array, this.start, this.length);
-	}
+    public Iterator<E> iterator() {
+        return new ArrayIterator<E>(this.array, this.start, this.length);
+    }
 
-	@Override
-	public String toString() {
-		return Arrays.toString(this.array);
-	}
+    @Override
+    public String toString() {
+        return Arrays.toString(this.array);
+    }
 }

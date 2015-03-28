@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,17 +37,17 @@ public class UnspecifiedTestCases extends JAXBWithJSONTestCases {
     protected Object getControlObject() {
         return new Customer();
     }
-    
+
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/propertylevel/unspecified-access-oxm.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.propertylevel", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);      
-        
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
         return properties;
     }
-    
+
 
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.performance;
 
 import java.util.*;
@@ -29,8 +29,8 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
     protected boolean shouldUseEmulatedDB;
 
     // Can be used to ensure cached objects do not garbage collect.
-    protected List allObjects;    
-    
+    protected List allObjects;
+
     public PerformanceTest() {
         this.shouldCache = false;
         this.shouldUseParameterizedSQL = false;
@@ -66,7 +66,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
     public void setShouldUseEmulatedDB(boolean shouldUseEmulatedDB) {
         this.shouldUseEmulatedDB = shouldUseEmulatedDB;
     }
-    
+
     public boolean shouldBatch() {
         return shouldBatch;
     }
@@ -106,7 +106,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
             setupEmulatedDB();
         }
     }
-    
+
     /**
      * Swap the session to use an emulated session.
      * Load the employee data into the emulated DB.
@@ -119,7 +119,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
         String sql;
         Vector rows;
         ComplexQueryResult result;
-        
+
         // Load read all employees.
         ReadAllQuery readAllQuery = new ReadAllQuery(Employee.class);
         readAllQuery.setShouldIncludeData(true);
@@ -128,7 +128,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
         rows = (Vector)result.getData();
         sql = readAllQuery.getSQLString();
         connection.putRows(sql, rows);
-        
+
         // Load Bob query.
         Expression expression = new ExpressionBuilder().get("firstName").equal("Bob");
         ReadObjectQuery bobQuery = new ReadObjectQuery(Employee.class, expression);
@@ -138,7 +138,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
         rows.add(result.getData());
         sql = bobQuery.getSQLString();
         connection.putRows(sql, rows);
-        
+
         // Load read pk.
         Iterator iterator = employees.iterator();
         Employee employee = (Employee)iterator.next();
@@ -152,7 +152,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
         rows = new Vector();
         rows.add(((ComplexQueryResult)getSession().executeQuery(readObjectQuery)).getData());
         connection.putRows(sql, rows);
-        
+
         // Load sequence query.
         rows = new Vector();
         record = new DatabaseRecord();

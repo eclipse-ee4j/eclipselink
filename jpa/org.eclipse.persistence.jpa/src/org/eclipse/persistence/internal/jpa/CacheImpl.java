@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2008, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     12/04/2008 - 2.0 Darani Yallapragada 
+ *     12/04/2008 - 2.0 Darani Yallapragada
  *       - 248780: Initial contribution for JPA 2.0
- *     06/03/2010 - 2.1 Michael O'Brien 
+ *     06/03/2010 - 2.1 Michael O'Brien
  *       - 248780: Refactor Cache Implementation surrounding evict()
  *         Fix evict() to handle non-Entity classes
  *         Refactor to get IdentityMapAccessor state through EMF reference
@@ -19,7 +19,7 @@
  *         Handle no associated descriptor for Class parameter
  *         MappedSuperclasses passed to evict() cause implementing subclasses to be evicted
  *         Throw an IAE for Interfaces and Embeddable classes passed to evict()
- *     
+ *
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -74,8 +74,8 @@ public class CacheImpl implements JpaCache {
         // we can assume that all implementors of IdentityMapAccessor implement getCacheKeyforObject
         CacheKey key = ((org.eclipse.persistence.internal.sessions.IdentityMapAccessor)getAccessor())
             .getCacheKeyForObject(pk, cls, descriptor, false);
-        return key != null && key.getObject() != null && 
-            !descriptor.getCacheInvalidationPolicy().isInvalidated(key);    
+        return key != null && key.getObject() != null &&
+            !descriptor.getCacheInvalidationPolicy().isInvalidated(key);
     }
 
     /**
@@ -83,7 +83,7 @@ public class CacheImpl implements JpaCache {
      * This private method searches the map of descriptors for possible superclasses to the
      * passed in class parameter and invalidates only entities found in the cache.
      * If the class is not an Entity or MappedSuperclass (such as an Embeddable or plain java class)
-     *  - nothing will be evicted  
+     *  - nothing will be evicted
      * @param possibleSuperclass
      * @param id
      */
@@ -93,7 +93,7 @@ public class CacheImpl implements JpaCache {
             // In EclipseLink we need only remove the root descriptor that is assignable from this possibleSubclass because the recurse flag defaults to true in invalidateClass()
             // what if we have 2 roots (don't check for !candidateAssignableDescriptor.isChildDescriptor())
             if(!candidateAssignableDescriptor.isDescriptorTypeAggregate() && // a !Embeddable check and !EmbeddableCollection check
-               possibleSuperclass.isAssignableFrom(candidateAssignableDescriptor.getJavaClass())) { 
+               possibleSuperclass.isAssignableFrom(candidateAssignableDescriptor.getJavaClass())) {
                 // id will be null if this private function was called from evict(class)
                 if(null == id) {
                     // set the invalidationState to -1 in the cache of a type that can be assigned to the class parameter
@@ -110,7 +110,7 @@ public class CacheImpl implements JpaCache {
             }
         }
     }
-    
+
     /**
      * Sets an Object with the id and Class type to be invalid in the cache.
      * Remove the data for entities of the specified class (and its
@@ -118,7 +118,7 @@ public class CacheImpl implements JpaCache {
      * If the class is a MappedSuperclass then the first entity above in the inheritance hierarchy will be evicted
      *   along with all implementing subclasses
      * If the class is not an Entity or MappedSuperclass but is the root of an entity inheritance tree then
-     *   evict the subtree 
+     *   evict the subtree
      * If the class is not an Entity or MappedSuperclass but inherits from one then
      *   evict up to root descriptor
      * @see Cache#evict(Class, Object)
@@ -129,7 +129,7 @@ public class CacheImpl implements JpaCache {
     public void evict(Class classToEvict, Object id) {
         evict(classToEvict, id, false);
     }
-    
+
     /**
      * Sets an Object with the id and Class type to be invalid in the cache.
      * Remove the data for entities of the specified class (and its
@@ -137,7 +137,7 @@ public class CacheImpl implements JpaCache {
      * If the class is a MappedSuperclass then the first entity above in the inheritance hierarchy will be evicted
      *   along with all implementing subclasses
      * If the class is not an Entity or MappedSuperclass but is the root of an entity inheritance tree then
-     *   evict the subtree 
+     *   evict the subtree
      * If the class is not an Entity or MappedSuperclass but inherits from one then
      *   evict up to root descriptor
      * @see Cache#evict(Class, Object)
@@ -156,7 +156,7 @@ public class CacheImpl implements JpaCache {
          * - in this case nothing will be evicted.
          */
         ClassDescriptor aPossibleSuperclassDescriptor = getSession().getClassDescriptor(classToEvict);
-        // Do not recurse if the class to evict is below its' descriptor in the inheritance tree        
+        // Do not recurse if the class to evict is below its' descriptor in the inheritance tree
         if(null != aPossibleSuperclassDescriptor) {
             // Evict all Entity or MappedSuperclass classes
             if(null != id) {
@@ -182,15 +182,15 @@ public class CacheImpl implements JpaCache {
      * If the class is a MappedSuperclass then the first entity above in the inheritance hierarchy will be evicted
      *   along with all implementing subclasses
      * If the class is not an Entity or MappedSuperclass (such as an Embeddable or plain java class)
-     *  - nothing will be evicted  
-     * @see Cache#evict(Class) 
+     *  - nothing will be evicted
+     * @see Cache#evict(Class)
      * @param entityOrMappedSuperclassToEvict - Entity or MappedSuperclass Class
      */
     public void evict(Class entityOrMappedSuperclassToEvict) {
         // A null id means invalidate the class - possibly the entire tree or subtree
         evict(entityOrMappedSuperclassToEvict, null);
-    }    
-    
+    }
+
     /**
      * Sets all instances in the cache to be invalid.
      * @see Cache#evict(Object)
@@ -210,18 +210,18 @@ public class CacheImpl implements JpaCache {
         if(null == aDescriptor) {
             // No descriptor found, throw exception for Embeddable or non-persistable java class
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                    "cache_impl_class_has_no_descriptor_is_not_a_persistent_type", 
+                    "cache_impl_class_has_no_descriptor_is_not_a_persistent_type",
                     new Object[] {cls}));
         }
         // The policy is not set if the mapping is natively defined outside of JPA
         if(aDescriptor.hasCMPPolicy()) {
-            // we assume that the PK id parameter is correct and do not throw a cache_descriptor_has_no_cmppolicy_set_cannot_create_primary_key exception 
+            // we assume that the PK id parameter is correct and do not throw a cache_descriptor_has_no_cmppolicy_set_cannot_create_primary_key exception
             // The primaryKey may be the same object as the id parameter
             cacheKey = aDescriptor.getCMPPolicy().createPrimaryKeyFromId(id, getEntityManagerFactory().getDatabaseSession());
         }
         return cacheKey;
     }
-    
+
     /**
      * ADVANCED:
      * Resets the entire Object cache, and the Query cache.
@@ -334,8 +334,8 @@ public class CacheImpl implements JpaCache {
 
     /**
      * This can be used to help debugging an Object identity problem.
-     * An Object identity problem is when an Object in the cache references an 
-     * Object that is not in the cache. This method will validate that all cached 
+     * An Object identity problem is when an Object in the cache references an
+     * Object that is not in the cache. This method will validate that all cached
      * Objects are in a correct state.
      */
     public void validate() {
@@ -344,12 +344,12 @@ public class CacheImpl implements JpaCache {
     }
 
     /**
-     * Returns the Object from the cache map with the id 
+     * Returns the Object from the cache map with the id
      * and Class type.
      */
     public Object getObject(Class cls, Object id) {
         getEntityManagerFactory().verifyOpen();
-        Object cacheKey = createPrimaryKeyFromId(cls, id);        
+        Object cacheKey = createPrimaryKeyFromId(cls, id);
         return getAccessor().getFromIdentityMap(cacheKey, cls);
     }
 
@@ -404,7 +404,7 @@ public class CacheImpl implements JpaCache {
         getAccessor().invalidateObject(object);
     }
 
-    
+
     /**
      * Sets an Object to be invalid in the cache.
      * If true is passed, the object is also invalidated across cache coordination.
@@ -412,9 +412,9 @@ public class CacheImpl implements JpaCache {
      */
     public void evict(Object object, boolean invalidateInCluster) {
         getEntityManagerFactory().verifyOpen();
-        getAccessor().invalidateObject(object, invalidateInCluster);        
+        getAccessor().invalidateObject(object, invalidateInCluster);
     }
-    
+
     /**
      * INTERNAL:
      * Return the EntityManagerFactory associated with this CacheImpl.
@@ -423,7 +423,7 @@ public class CacheImpl implements JpaCache {
     protected EntityManagerFactoryDelegate getEntityManagerFactory() {
         return this.emf;
     }
-    
+
     /**
      * INTERNAL:
      * Return the Session associated with the EntityManagerFactory.
@@ -445,7 +445,7 @@ public class CacheImpl implements JpaCache {
     /**
      * This method will return the objects's Id.
      * If the descriptor associated with the domain object is null - an IllegalArgumentException is thrown.
-     * If the CMPPolicy associated with the domain object's descriptor is null 
+     * If the CMPPolicy associated with the domain object's descriptor is null
      * the Id will be determined using the ObjectBuilder on the descriptor - which may return
      * the Id stored in the weaved _persistence_primaryKey field.
      * @See {@link JpaCache#getId(Object)}
@@ -456,10 +456,10 @@ public class CacheImpl implements JpaCache {
         // Handle a null descriptor from a detached entity (closed EntityManager), or the entity exists in another session
         if(null == aDescriptor) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                    "cache_impl_object_has_no_descriptor_is_not_a_persistent_type", 
+                    "cache_impl_object_has_no_descriptor_is_not_a_persistent_type",
                     new Object[] {object}));
         }
-        
+
         // Handle a null CMPPolicy from a MappedSuperclass
         if(!aDescriptor.hasCMPPolicy()) {
             // the following code gets the key either from the weaved _persistence_primaryKey field or using valueFromObject() if not bytecode enhanced
@@ -469,7 +469,7 @@ public class CacheImpl implements JpaCache {
             return getEntityManagerFactory().getIdentifier(object);
         }
     }
-    
+
     public <T> T unwrap(Class<T> cls) {
         if (cls.equals(JpaCache.class)){
             return (T) this;

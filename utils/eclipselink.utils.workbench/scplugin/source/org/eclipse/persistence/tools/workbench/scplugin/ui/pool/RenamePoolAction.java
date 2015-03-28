@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,46 +27,46 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 public class RenamePoolAction extends AbstractEnablableFrameworkAction {
 
-	public RenamePoolAction( WorkbenchContext context) {
-		super( context);
-	}
+    public RenamePoolAction( WorkbenchContext context) {
+        super( context);
+    }
 
-	protected void initialize() {
-		super.initialize();
-		this.initializeText( "RENAME_POOL");
-		this.initializeMnemonic( "RENAME_POOL");
-		// no accelerator
-		this.initializeIcon( "RENAME");
-		this.initializeToolTipText( "RENAME_POOL.TOOL_TIP");
-	}
+    protected void initialize() {
+        super.initialize();
+        this.initializeText( "RENAME_POOL");
+        this.initializeMnemonic( "RENAME_POOL");
+        // no accelerator
+        this.initializeIcon( "RENAME");
+        this.initializeToolTipText( "RENAME_POOL.TOOL_TIP");
+    }
 
-	protected void execute( ApplicationNode selectedNode) {
+    protected void execute( ApplicationNode selectedNode) {
 
-		ConnectionPoolAdapter pool = ( ConnectionPoolAdapter)selectedNode.getValue();
-		ServerSessionAdapter session = ( ServerSessionAdapter)pool.getParent().getParent();
-		SimplePropertyValueModel stringHolder = new SimplePropertyValueModel();
-		stringHolder.setValue( pool.getName());
-		Collection existingNames = CollectionTools.collection( session.poolNames());
-		existingNames.add( ConnectionPoolAdapter.READ_CONNECTION_POOL_NAME);
+        ConnectionPoolAdapter pool = ( ConnectionPoolAdapter)selectedNode.getValue();
+        ServerSessionAdapter session = ( ServerSessionAdapter)pool.getParent().getParent();
+        SimplePropertyValueModel stringHolder = new SimplePropertyValueModel();
+        stringHolder.setValue( pool.getName());
+        Collection existingNames = CollectionTools.collection( session.poolNames());
+        existingNames.add( ConnectionPoolAdapter.READ_CONNECTION_POOL_NAME);
 
-		RenameDialog dialog = new RenameDialog( getWorkbenchContext(), stringHolder, existingNames);
-		dialog.show();
-		if( dialog.wasConfirmed()) {
+        RenameDialog dialog = new RenameDialog( getWorkbenchContext(), stringHolder, existingNames);
+        dialog.show();
+        if( dialog.wasConfirmed()) {
 
-			navigatorSelectionModel().pushExpansionState();
-			pool.setName(( String)stringHolder.getValue());
-			navigatorSelectionModel().popAndRestoreExpansionState();
-				
-			(( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( pool, navigatorSelectionModel());
-		}
-	}
+            navigatorSelectionModel().pushExpansionState();
+            pool.setName(( String)stringHolder.getValue());
+            navigatorSelectionModel().popAndRestoreExpansionState();
 
-	protected boolean shouldBeEnabled(ApplicationNode selectedNode) {
-		
-		ConnectionPoolAdapter pool = (ConnectionPoolAdapter) selectedNode.getValue();
+            (( AbstractApplicationNode)selectedNode.getProjectRoot()).selectDescendantNodeForValue( pool, navigatorSelectionModel());
+        }
+    }
 
-		return !pool.isWriteConnectionPool() &&
-				 !pool.isReadConnectionPool()  &&
-				 !pool.isSequenceConnectionPool();
-	}
+    protected boolean shouldBeEnabled(ApplicationNode selectedNode) {
+
+        ConnectionPoolAdapter pool = (ConnectionPoolAdapter) selectedNode.getValue();
+
+        return !pool.isWriteConnectionPool() &&
+                 !pool.isReadConnectionPool()  &&
+                 !pool.isSequenceConnectionPool();
+    }
 }

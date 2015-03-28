@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,53 +29,53 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
  * Tests XmlMimeType via eclipselink-oxm.xml
  *
  */
-public class XmlMimeTypeCases extends JAXBWithJSONTestCases {    
+public class XmlMimeTypeCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmimetype/att-types.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmimetype/att-types.json";
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public XmlMimeTypeCases(String name) throws Exception {
-        super(name);        
+        super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] { AttTypes.class });
         jaxbUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
-        
-        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");      
+
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
         MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
-        jaxbMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());        
+        jaxbMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
 
     }
-    
+
     public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmimetype/eclipselink-oxm.xml");
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype", new StreamSource(inputStream));
-	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-        
-        return properties;
-	}    
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmimetype/eclipselink-oxm.xml");
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
-	public void testSchemaGen() throws Exception{
-    	List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmimetype/schema.xsd");    	
-    	controlSchemas.add(is);    	
-    	
-    	super.testSchemaGen(controlSchemas);
- 
+        return properties;
     }
 
-	protected Object getControlObject() {
-		AttTypes attTypes = new AttTypes();
-		String s = "THISISATEXTSTRINGFORTHISDATAHANDLER";
-    	byte[] bytes = s.getBytes();
-		attTypes.b = bytes;	       
-		return attTypes;
-	}
-  
+    public void testSchemaGen() throws Exception{
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmimetype/schema.xsd");
+        controlSchemas.add(is);
+
+        super.testSchemaGen(controlSchemas);
+
+    }
+
+    protected Object getControlObject() {
+        AttTypes attTypes = new AttTypes();
+        String s = "THISISATEXTSTRINGFORTHISDATAHANDLER";
+        byte[] bytes = s.getBytes();
+        attTypes.b = bytes;
+        return attTypes;
+    }
+
 }

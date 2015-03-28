@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.io.*;
@@ -59,7 +59,7 @@ public class ReportQueryResult implements Serializable, Map {
 
     /** Id value if the retrievPKs flag was set on the ReportQuery. These can be used to get the actual object */
     protected Object primaryKey;
-    
+
     /** If an objectLevel distinct is used then generate unique key for this result */
     // GF_ISSUE_395
     protected StringBuffer key;
@@ -104,7 +104,7 @@ public class ReportQueryResult implements Serializable, Map {
                 Class[] constructorArgTypes = constructorItem.getConstructorArgTypes();
                 int numberOfArguments = constructorItem.getReportItems().size();
                 Object[] constructorArgs = new Object[numberOfArguments];
-                
+
                 for (int argumentIndex = 0; argumentIndex < numberOfArguments; argumentIndex++) {
                     ReportItem argumentItem = (ReportItem)constructorItem.getReportItems().get(argumentIndex);
                     Object result = processItem(query, row, toManyData, argumentItem);
@@ -148,7 +148,7 @@ public class ReportQueryResult implements Serializable, Map {
 
         setResults(results);
     }
-    
+
     /**
      * INTERNAL:
      * Return a value from an item and database row (converted from raw field values using the mapping).
@@ -174,7 +174,7 @@ public class ReportQueryResult implements Serializable, Map {
                 descriptor = mapping.getReferenceDescriptor();
             }
             if (mapping != null && (mapping.isAbstractColumnMapping() || mapping.isDirectCollectionMapping())) {
-                
+
                 if (itemIndex >= rowSize) {
                     throw QueryException.reportQueryResultSizeMismatch(itemIndex + 1, rowSize);
                 }
@@ -183,7 +183,7 @@ public class ReportQueryResult implements Serializable, Map {
                 if (row instanceof DatabaseRecord) {
                     value = row.getValues().get(itemIndex);
                 } else {
-                    value = row.get(mapping.getField());                    
+                    value = row.get(mapping.getField());
                 }
                 if (mapping.isAbstractColumnMapping()){
                     value = ((AbstractColumnMapping)mapping).getObjectValue(value, query.getSession());
@@ -217,10 +217,10 @@ public class ReportQueryResult implements Serializable, Map {
                     //TODO : Support prefrechedCacheKeys in report query
                     value = descriptor.getObjectBuilder().buildObject(query, subRow, joinManager);
                 }
-                
+
                 // this covers two possibilities
                 // 1. We want the actual Map.Entry from the table rather than the just the key
-                // 2. The map key is extracted from the owning object rather than built with 
+                // 2. The map key is extracted from the owning object rather than built with
                 // a specific mapping.  This could happen in a MapContainerPolicy
                 if (item.getAttributeExpression().isMapEntryExpression() && mapping.isCollectionMapping()){
                     Object rowKey = null;
@@ -304,7 +304,7 @@ public class ReportQueryResult implements Serializable, Map {
         return new EntrySet();
     }
 
-    
+
     /**
      * Defines the virtual entrySet.
      */
@@ -332,7 +332,7 @@ public class ReportQueryResult implements Serializable, Map {
             ReportQueryResult.this.clear();
         }
     }
-    
+
     /**
      * Entry class for implementing Map interface.
      */
@@ -379,7 +379,7 @@ public class ReportQueryResult implements Serializable, Map {
             return (object1 == null ? object2 == null : object1.equals(object2));
         }
     }
-    
+
     /**
      * Defines the virtual entrySet iterator.
      */
@@ -409,7 +409,7 @@ public class ReportQueryResult implements Serializable, Map {
             ReportQueryResult.this.remove(getNames().get(this.index));
         }
     }
-    
+
     /**
      * Defines the virtual keySet iterator.
      */
@@ -501,7 +501,7 @@ public class ReportQueryResult implements Serializable, Map {
         }
         return null;
     }
-     
+
     /**
      * PUBLIC:
      * Return the names of report items, provided to ReportQuery.
@@ -517,7 +517,7 @@ public class ReportQueryResult implements Serializable, Map {
     public Object getId() {
         return primaryKey;
     }
-    
+
     /**
      * PUBLIC:
      * Return the PKs for the corresponding object or null if not requested.
@@ -558,7 +558,7 @@ public class ReportQueryResult implements Serializable, Map {
     public Enumeration keys() {
         return new Vector(getNames()).elements();
     }
-    
+
     /**
      * PUBLIC:
      * Returns a set of the keys.
@@ -566,7 +566,7 @@ public class ReportQueryResult implements Serializable, Map {
     public Set keySet() {
         return new KeySet();
     }
-    
+
     /**
      * Defines the virtual keySet.
      */
@@ -685,7 +685,7 @@ public class ReportQueryResult implements Serializable, Map {
     public List toList(){
         return this.getResults();
     }
-    
+
     public String toString() {
         java.io.StringWriter writer = new java.io.StringWriter();
         writer.write("ReportQueryResult(");

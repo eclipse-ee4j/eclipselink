@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -61,26 +61,26 @@ public class CascadeDeletesJUnitTestSuite extends JUnitTestCase {
         new CascadeDeleteTableCreator().replaceTables(JUnitTestCase.getServerSession("cascade-deletes"));
         clearCache("cascade-deletes");
     }
-    
+
     public void testRemoveMachineState(){
         EntityManager em = createEntityManager("cascade-deletes");
         beginTransaction(em);
-        
+
         MachineState ms = new MachineState();
         ms.setId(1);
         ms.setThreads(new ArrayList<ThreadInfo>());
         ms.getThreads().add(new ThreadInfo(1, "main"));
-        
+
         em.persist(ms);
-        
+
         commitTransaction(em);
-        
+
         beginTransaction(em);
-        
+
         ms = em.find(MachineState.class, 1L);
-        
+
         em.remove(ms);
-        
+
         commitTransaction(em);
 
     }
@@ -139,8 +139,8 @@ public class CascadeDeletesJUnitTestSuite extends JUnitTestCase {
             em = createEntityManager("cascade-deletes");
             assertNull("private owned object was not deleted.", em.find(BranchB.class, subB.getId()));
             assertNotNull("child of PO object was deleted in error", em.find(LeafB.class, subB.getLeafBs().get(0).getId()));
-            
-            
+
+
 
         } catch (RuntimeException ex) {
             if (isTransactionActive(em)) {
@@ -164,7 +164,7 @@ public class CascadeDeletesJUnitTestSuite extends JUnitTestCase {
             BranchA subA = rootA.getBranchAs().get(0);
             subA.getLeafs().size();
             rootA.getBranchAs().remove(subA);
-            
+
             commitTransaction(em);
             closeEntityManager(em);
             clearCache("cascade-deletes");
@@ -173,7 +173,7 @@ public class CascadeDeletesJUnitTestSuite extends JUnitTestCase {
             for (LeafA leafA : subA.getLeafs()){
                 assertNull("child of PO object was deleted in error", em.find(LeafA.class, leafA.getId()));
             }
-            
+
 
         } catch (RuntimeException ex) {
             if (isTransactionActive(em)) {
@@ -245,8 +245,8 @@ public class CascadeDeletesJUnitTestSuite extends JUnitTestCase {
         allEntities.add(leafA);
         branchA.getSecondSet().add(leafA);
 
-        
-        
+
+
         leafA = new LeafA();
         em.persist(leafA);
         allEntities.add(leafA);
@@ -283,7 +283,7 @@ public class CascadeDeletesJUnitTestSuite extends JUnitTestCase {
         LeafB subbranchBLeafB = new LeafB();
         em.persist(subbranchBLeafB);
         subbranchB.getLeafBs().add(subbranchBLeafB);
-        
+
         branchB.getBranchBs().add(subbranchB);
         subbranchB = new BranchB();
         em.persist(subbranchB);
@@ -303,7 +303,7 @@ public class CascadeDeletesJUnitTestSuite extends JUnitTestCase {
         clearCache("cascade-deletes");
         return rootA;
     }
-    
+
     public void deleteTree() {
         EntityManager em = createEntityManager("cascade-deletes");
         beginTransaction(em);

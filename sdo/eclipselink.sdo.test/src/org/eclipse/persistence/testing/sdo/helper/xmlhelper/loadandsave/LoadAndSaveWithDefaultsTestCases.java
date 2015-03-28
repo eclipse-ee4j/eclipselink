@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
 import commonj.sdo.DataObject;
@@ -53,13 +53,13 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
     }
 
     protected void verifyAfterLoad(XMLDocument doc) {
-    	// TODO: the noSchema test will continue to fail until attributes are working with IsSetOptionalNodeNullPolicy
+        // TODO: the noSchema test will continue to fail until attributes are working with IsSetOptionalNodeNullPolicy
         super.verifyAfterLoad(doc);
         DataObject rootObject = doc.getRootObject();
         DataObject address = rootObject.getDataObject("shipTo");
         assertNotNull(address);
 
-        //city is not set to nillable and is not present in the doc this means we will call set(null)                
+        //city is not set to nillable and is not present in the doc this means we will call set(null)
         //IsSetOptionalNodeNull Policy will return the default
         assertEquals("Ottawa", address.get("city"));
         assertFalse(address.isSet("city"));
@@ -77,9 +77,9 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
             assertFalse(address.isSet("street"));
             assertEquals("Main Street", address.get("street"));
         }
-        
-        
-        //name is set to nillable and has xsi:nil=true in the doc                
+
+
+        //name is set to nillable and has xsi:nil=true in the doc
         assertTrue(address.isSet("name"));
         assertEquals(null, address.get("name"));
 
@@ -106,7 +106,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
             assertFalse(item2.isSet("CDNPrice"));
             assertEquals(15.0f, item2.get("CDNPrice"));
         }
-        address.unset("country");              
+        address.unset("country");
     }
 
     protected Type registerAddressType() {
@@ -117,9 +117,9 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         prop = (SDOProperty)addressType.getType().getProperty("name");
         addressType.set(prop, "AddressType");
         DataObject nameProp = addProperty(addressType, "name", stringType, false, false, true);
-        nameProp.set("nullable", true);  
-        nameProp.set("default", "MyAddress");  
-        
+        nameProp.set("nullable", true);
+        nameProp.set("default", "MyAddress");
+
         DataObject streetProp = addProperty(addressType, "street", stringType, false, false, true);
         //streetProp.set("nullable", true);  //dont set since this is an attribute
         streetProp.set("default", "Main Street");
@@ -157,7 +157,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         addProperty(itemType, "shipDate", dateType, false, false, true);
         return typeHelper.define(itemType);
     }
-    
+
     protected Type registerCustomerType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         DataObject customerType = dataFactory.create("commonj.sdo", "Type");
@@ -171,7 +171,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         addProperty(customerType, "namePrefix", registerNamePrefixType(),false, false, false);
         return typeHelper.define(customerType);
     }
-    
+
      protected Type registerCdnAddressType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         DataObject addressType = dataFactory.create("commonj.sdo", "Type");
@@ -188,7 +188,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         addProperty(addressType, "postalcode", stringType, false, false, true);
         return typeHelper.define(addressType);
     }
-    
+
      protected Type registerUSAddressType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type intType = typeHelper.getType("commonj.sdo", "Int");
@@ -205,7 +205,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         addProperty(addressType, "zip", intType, false, false, false);
         return typeHelper.define(addressType);
     }
-    
+
      protected Type registerCdnMailingAddressType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         DataObject addressType = dataFactory.create("commonj.sdo", "Type");
@@ -220,7 +220,7 @@ public class LoadAndSaveWithDefaultsTestCases extends LoadAndSavePurchaseOrderCo
         addProperty(addressType, "deliveryInfo", stringType, false, false, true);
         return typeHelper.define(addressType);
     }
-    
+
      protected void registerTypes() {
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type stringType = typeHelper.getType("commonj.sdo", "String");

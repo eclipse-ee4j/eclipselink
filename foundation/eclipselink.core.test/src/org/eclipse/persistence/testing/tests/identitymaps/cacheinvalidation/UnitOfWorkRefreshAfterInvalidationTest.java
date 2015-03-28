@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation;
 
 import java.util.*;
@@ -40,35 +40,35 @@ public class UnitOfWorkRefreshAfterInvalidationTest extends TestCase {
         super();
         setDescription("Test the refreshing of an object graph after invalidation");
     }
-    
+
     public void setup() {
         // for SQL tracker, do not bind
         this.oldBindingValue = getSession().getLogin().shouldBindAllParameters();
         getSession().getLogin().setShouldBindAllParameters(false);
 
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        
+
         // query for relevant insurance data
         this.holder = (PolicyHolder) getSession().readObject(PolicyHolder.example2());
         assertNotNull(holder);
-        
+
         // here's the key - invalidate all objects
         getSession().getIdentityMapAccessor().invalidateAll();
-        
+
         // setup UnitOfWork
         this.uow = getSession().acquireUnitOfWork();
 
         // create tracker object for query SQL
         this.sqlTracker = new QuerySQLTracker(getSession());
     }
-    
+
     public void test() {
         // read object
         PolicyHolder policyHolderRead = (PolicyHolder) this.uow.readObject(PolicyHolder.example2());
         // object read should not be null
         assertNotNull(policyHolderRead);
     }
-    
+
     public void verify() {
         // check for duplicates
         List statements = this.sqlTracker.getSqlStatements();
@@ -78,7 +78,7 @@ public class UnitOfWorkRefreshAfterInvalidationTest extends TestCase {
             // the statements collection should not contain any duplicates
             int occurrences = Helper.countOccurrencesOf(statement, statements);
             if (occurrences > 1) {
-                String errorText = "SQL statement executed " + occurrences + " times: [" + statement + "] (Expected 1)"; 
+                String errorText = "SQL statement executed " + occurrences + " times: [" + statement + "] (Expected 1)";
                 if (!errors.contains(errorText)) {
                     errors.add(errorText);
                 }
@@ -96,7 +96,7 @@ public class UnitOfWorkRefreshAfterInvalidationTest extends TestCase {
             throw new TestErrorException(buffer.toString());
         }
     }
-    
+
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         // reset parameter binding
@@ -108,5 +108,5 @@ public class UnitOfWorkRefreshAfterInvalidationTest extends TestCase {
         this.sqlTracker = null;
         this.holder = null;
     }
-    
+
 }

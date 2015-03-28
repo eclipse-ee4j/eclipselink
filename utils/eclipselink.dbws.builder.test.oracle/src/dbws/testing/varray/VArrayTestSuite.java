@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,8 +45,8 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class VArrayTestSuite extends DBWSTestSuite {
-	static final String VCARRAY_ALIAS = "Vcarray";
-	static final String VCARRAY_CLASSNAME = "varraytests.Vcarray_CollectionWrapper";
+    static final String VCARRAY_ALIAS = "Vcarray";
+    static final String VCARRAY_CLASSNAME = "varraytests.Vcarray_CollectionWrapper";
 
     static final String CREATE_VCARRAY_VARRAY =
         "CREATE OR REPLACE TYPE VCARRAY AS VARRAY(4) OF VARCHAR2(20)";
@@ -325,8 +325,8 @@ public class VArrayTestSuite extends DBWSTestSuite {
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(VARRAY_RESULT));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
-    }    
-    
+    }
+
     static String INPUT_XML =
         REGULAR_XML_HEADER +
         "<vcarrayType xmlns=\"urn:VArrayTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -404,14 +404,14 @@ public class VArrayTestSuite extends DBWSTestSuite {
 
     @Test
     public void validateJavaClassName() {
-    	Project orProject = builder.getOrProject();
-    	ClassDescriptor vcarrayORDesc = orProject.getDescriptorForAlias(VCARRAY_ALIAS);
-    	assertNotNull("No OR descriptor found for alias [" + VCARRAY_ALIAS + "]", vcarrayORDesc);
-    	assertEquals("Expected class name [" + VCARRAY_CLASSNAME + "] but was [" + vcarrayORDesc.getJavaClassName() + "]", vcarrayORDesc.getJavaClassName(), VCARRAY_CLASSNAME);
-    	
-    	Project oxProject = builder.getOxProject();
-    	ClassDescriptor vcarrayOXDesc = oxProject.getDescriptorForAlias(VCARRAY_ALIAS);
-    	assertNotNull("No OX descriptor found for alias [" + VCARRAY_ALIAS + "]", vcarrayOXDesc);
-    	assertEquals("Expected class name [" + VCARRAY_CLASSNAME + "] but was [" + vcarrayOXDesc.getJavaClassName() + "]", vcarrayOXDesc.getJavaClassName(), VCARRAY_CLASSNAME);
+        Project orProject = builder.getOrProject();
+        ClassDescriptor vcarrayORDesc = orProject.getDescriptorForAlias(VCARRAY_ALIAS);
+        assertNotNull("No OR descriptor found for alias [" + VCARRAY_ALIAS + "]", vcarrayORDesc);
+        assertEquals("Expected class name [" + VCARRAY_CLASSNAME + "] but was [" + vcarrayORDesc.getJavaClassName() + "]", vcarrayORDesc.getJavaClassName(), VCARRAY_CLASSNAME);
+
+        Project oxProject = builder.getOxProject();
+        ClassDescriptor vcarrayOXDesc = oxProject.getDescriptorForAlias(VCARRAY_ALIAS);
+        assertNotNull("No OX descriptor found for alias [" + VCARRAY_ALIAS + "]", vcarrayOXDesc);
+        assertEquals("Expected class name [" + VCARRAY_CLASSNAME + "] but was [" + vcarrayOXDesc.getJavaClassName() + "]", vcarrayOXDesc.getJavaClassName(), VCARRAY_CLASSNAME);
     }
 }

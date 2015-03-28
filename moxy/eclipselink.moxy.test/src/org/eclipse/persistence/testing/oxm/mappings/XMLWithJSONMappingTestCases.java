@@ -4,12 +4,12 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings;
 
 import java.io.BufferedReader;
@@ -34,16 +34,16 @@ import org.xml.sax.InputSource;
 public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
     private String controlJSONLocation;
     private String controlWriteJSONLocation;
-   
-    
+
+
     public XMLWithJSONMappingTestCases(String name) throws Exception {
         super(name);
     }
-			
+
     public void setControlJSON(String location) {
         this.controlJSONLocation = location;
     }
-    
+
     public void setControlJSONWrite(String location) {
         this.controlWriteJSONLocation = location;
     }
@@ -54,16 +54,16 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
         }
         return controlJSONLocation;
     }
-    
+
     protected boolean getNamespaceAware(){
-    	return false;
+        return false;
     }
-    
+
     protected String getAttributePrefix(){
-    	return null;
+        return null;
     }
     protected Map<String, String> getNamespaces(){
-	return null;
+    return null;
     }
 
     protected Map<String, String> getAdditionalNamsespaces() {
@@ -72,129 +72,129 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
 
     public void testJSONUnmarshalFromInputSource() throws Exception {
 
-	if(isUnmarshalTest() &&  !(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
+    if(isUnmarshalTest() &&  !(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
 
             InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
             InputSource inputSource = new InputSource(inputStream);
             xmlUnmarshaller.setMediaType(MediaType.APPLICATION_JSON);
             PrefixMapperNamespaceResolver nr =  null;
             if(getNamespaces() != null){
-            	NamespacePrefixMapper mapper = new MapNamespacePrefixMapper(getNamespaces());
-            	nr = new PrefixMapperNamespaceResolver(mapper, null);
-            	xmlUnmarshaller.setNamespaceResolver(nr);
+                NamespacePrefixMapper mapper = new MapNamespacePrefixMapper(getNamespaces());
+                nr = new PrefixMapperNamespaceResolver(mapper, null);
+                xmlUnmarshaller.setNamespaceResolver(nr);
             }
             Object testObject = xmlUnmarshaller.unmarshal(inputSource);
-            
-    	    inputStream.close();
-    	    
-    	    if ((getJSONReadControlObject() instanceof XMLRoot) && (testObject instanceof XMLRoot)) {
+
+            inputStream.close();
+
+            if ((getJSONReadControlObject() instanceof XMLRoot) && (testObject instanceof XMLRoot)) {
                 XMLRoot controlObj = (XMLRoot)getReadControlObject();
                 XMLRoot testObj = (XMLRoot)testObject;
                 compareXMLRootObjects(controlObj, testObj);
             } else {
                 assertEquals(getJSONReadControlObject(), testObject);
             }
-    	    
-    	}
+
+        }
     }
-    
+
     public Object getJSONReadControlObject(){
-    	return getReadControlObject();
+        return getReadControlObject();
     }
-    
+
     public void testJSONMarshalToOutputStream() throws Exception{
-    	if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
+        if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
 
-    	    xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
-    	    if(getNamespaces() != null){
-        	    xmlMarshaller.setNamespacePrefixMapper(new MapNamespacePrefixMapper(getNamespaces()));    	    
-    	    }    	    
+            xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            if(getNamespaces() != null){
+                xmlMarshaller.setNamespacePrefixMapper(new MapNamespacePrefixMapper(getNamespaces()));
+            }
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             try {
                 xmlMarshaller.marshal(getWriteControlObject(), os);
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
-            } 
+            }
             if(expectsMarshalException){
-            	fail("An exception should have occurred but didn't.");
-            	return;
+                fail("An exception should have occurred but didn't.");
+                return;
             }
             compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
             os.close();
-    	}
+        }
     }
 
-    public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{  
-    	if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
-    	    xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
-    	    if(getNamespaces() != null){
-        	    xmlMarshaller.setNamespacePrefixMapper(new MapNamespacePrefixMapper(getNamespaces()));    	    
-    	    }
-        	xmlMarshaller.setFormattedOutput(true);
+    public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{
+        if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
+            xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            if(getNamespaces() != null){
+                xmlMarshaller.setNamespacePrefixMapper(new MapNamespacePrefixMapper(getNamespaces()));
+            }
+            xmlMarshaller.setFormattedOutput(true);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             try {
                 xmlMarshaller.marshal(getWriteControlObject(), os);
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
-            } 
+            }
             if(expectsMarshalException){
-            	fail("An exception should have occurred but didn't.");
-            	return;
+                fail("An exception should have occurred but didn't.");
+                return;
             }
 
             compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
             os.close();
-    	}
+        }
     }
 
     public void testJSONMarshalToStringWriter() throws Exception{
-    	if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
+        if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
 
-    	    xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
-    	    if(getNamespaces() != null){
-        	    xmlMarshaller.setNamespacePrefixMapper(new MapNamespacePrefixMapper(getNamespaces()));    	    
-    	    }
+            xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            if(getNamespaces() != null){
+                xmlMarshaller.setNamespacePrefixMapper(new MapNamespacePrefixMapper(getNamespaces()));
+            }
             StringWriter sw = new StringWriter();
             try {
                 xmlMarshaller.marshal(getWriteControlObject(), sw);
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
-            } 
+            }
             if(expectsMarshalException){
-            	fail("An exception should have occurred but didn't.");
-            	return;
-            }            
-
-            compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
-    	}
-    }
-
-    public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
-    	if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
-
-    	    xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
-    	    if(getNamespaces() != null){
-        	    xmlMarshaller.setNamespacePrefixMapper(new MapNamespacePrefixMapper(getNamespaces()));    	    
-    	    }
-        	xmlMarshaller.setFormattedOutput(true);
-
-            StringWriter sw = new StringWriter();
-            try {
-                xmlMarshaller.marshal(getWriteControlObject(), sw);
-            } catch(Exception e) {
-                assertMarshalException(e);
+                fail("An exception should have occurred but didn't.");
                 return;
-            } 
-            if(expectsMarshalException){
-            	fail("An exception should have occurred but didn't.");
-            	return;
             }
 
             compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
-    	}
+        }
+    }
+
+    public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
+        if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
+
+            xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            if(getNamespaces() != null){
+                xmlMarshaller.setNamespacePrefixMapper(new MapNamespacePrefixMapper(getNamespaces()));
+            }
+            xmlMarshaller.setFormattedOutput(true);
+
+            StringWriter sw = new StringWriter();
+            try {
+                xmlMarshaller.marshal(getWriteControlObject(), sw);
+            } catch(Exception e) {
+                assertMarshalException(e);
+                return;
+            }
+            if(expectsMarshalException){
+                fail("An exception should have occurred but didn't.");
+                return;
+            }
+
+            compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
+        }
     }
 
     private void compareStrings(String test, String testString) {

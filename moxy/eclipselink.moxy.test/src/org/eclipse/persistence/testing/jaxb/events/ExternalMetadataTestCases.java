@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,7 +35,7 @@ public class ExternalMetadataTestCases extends RootWithCompositeObjectTestCases 
     public ExternalMetadataTestCases(String name) throws Exception {
         super(name);
     }
-    
+
     @Override
     public Map getProperties() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/events/employee-oxm.xml");
@@ -44,10 +44,10 @@ public class ExternalMetadataTestCases extends RootWithCompositeObjectTestCases 
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.events", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-        
+
         return properties;
     }
-    
+
     public void testObjectToOutputStream() throws Exception {
         Object objectToWrite = getWriteControlObject();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -71,30 +71,30 @@ public class ExternalMetadataTestCases extends RootWithCompositeObjectTestCases 
         stream.close();
         is.close();
 
-        objectToXMLDocumentTest(testDocument);     
-        
+        objectToXMLDocumentTest(testDocument);
+
         if(getProperties() != null){
              log("************test with JSON bindings*********");
              ByteArrayOutputStream stream2 = new ByteArrayOutputStream();
              JAXBContext jaxbContextFromJSONBindings = createJaxbContextFromJSONBindings();
              Marshaller jaxbMarshallerFromJSONBindings = jaxbContextFromJSONBindings.createMarshaller();
              jaxbMarshallerFromJSONBindings.setAttachmentMarshaller(jaxbMarshaller.getAttachmentMarshaller());
-             
-             
+
+
              jaxbMarshallerFromJSONBindings.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, jaxbMarshaller.getProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER));
-             
+
 
              //before marshalling object again, need to reset it's triggered events
              ((Employee)objectToWrite).triggeredEvents = new ArrayList();
-             jaxbMarshallerFromJSONBindings.marshal(objectToWrite, stream2);                         
+             jaxbMarshallerFromJSONBindings.marshal(objectToWrite, stream2);
              InputStream is2 = new ByteArrayInputStream(stream2.toByteArray());
              Document testDocument2 = parser.parse(is2);
              stream2.close();
              is2.close();
 
-             objectToXMLDocumentTest(testDocument2);     
+             objectToXMLDocumentTest(testDocument2);
         }
-    }    
+    }
 }
 
 

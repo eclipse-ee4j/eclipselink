@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -60,152 +60,152 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.CheckBoxModelAd
  */
 public class EisPoolLoginPropertiesPage extends ScrollablePropertiesPage
 {
-	/**
-	 * Creates a new <code>RdbmsPoolLoginPropertiesPage</code>.
-	 *
-	 * @param nodeHolder
-	 */
-	public EisPoolLoginPropertiesPage( PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder)
-	{
-		super(nodeHolder, contextHolder);
-		addHelpTopicId(this, "connectionPool.login.eis");
-	}
+    /**
+     * Creates a new <code>RdbmsPoolLoginPropertiesPage</code>.
+     *
+     * @param nodeHolder
+     */
+    public EisPoolLoginPropertiesPage( PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder)
+    {
+        super(nodeHolder, contextHolder);
+        addHelpTopicId(this, "connectionPool.login.eis");
+    }
 
-	private ButtonModel buildExternalConnectionPoolingCheckBoxModel()
-	{
-		return new CheckBoxModelAdapter(buildExternalConnectionPoolingHolder());
-	}
+    private ButtonModel buildExternalConnectionPoolingCheckBoxModel()
+    {
+        return new CheckBoxModelAdapter(buildExternalConnectionPoolingHolder());
+    }
 
-	private PropertyValueModel buildExternalConnectionPoolingHolder()
-	{
-		return new PropertyAspectAdapter(buildLoginHolder(), EISLoginAdapter.EXTERNAL_CONNECTION_POOLING_PROPERTY)
-		{
-			@Override
-			protected Object getValueFromSubject()
-			{
-				EISLoginAdapter adapter = (EISLoginAdapter) subject;
-				return adapter.usesExternalConnectionPooling();
-			}
+    private PropertyValueModel buildExternalConnectionPoolingHolder()
+    {
+        return new PropertyAspectAdapter(buildLoginHolder(), EISLoginAdapter.EXTERNAL_CONNECTION_POOLING_PROPERTY)
+        {
+            @Override
+            protected Object getValueFromSubject()
+            {
+                EISLoginAdapter adapter = (EISLoginAdapter) subject;
+                return adapter.usesExternalConnectionPooling();
+            }
 
-			@Override
-			protected void setValueOnSubject(Object value)
-			{
-				EISLoginAdapter adapter = (EISLoginAdapter) subject;
-				adapter.setExternalConnectionPooling((Boolean) value);
-			}
-		};
-	}
+            @Override
+            protected void setValueOnSubject(Object value)
+            {
+                EISLoginAdapter adapter = (EISLoginAdapter) subject;
+                adapter.setExternalConnectionPooling((Boolean) value);
+            }
+        };
+    }
 
-	private ButtonModel buildExternalTransactionControllerCheckBoxModel()
-	{
-		return new CheckBoxModelAdapter(buildExternalTransactionControllerHolder());
-	}
+    private ButtonModel buildExternalTransactionControllerCheckBoxModel()
+    {
+        return new CheckBoxModelAdapter(buildExternalTransactionControllerHolder());
+    }
 
-	private PropertyValueModel buildExternalTransactionControllerHolder()
-	{
-		return new PropertyAspectAdapter(buildLoginHolder(), EISLoginAdapter.EXTERNAL_TRANSACTION_CONTROLLER_PROPERTY)
-		{
-			@Override
-			protected Object getValueFromSubject()
-			{
-				EISLoginAdapter adapter = (EISLoginAdapter) subject;
-				return adapter.usesExternalTransactionController();
-			}
+    private PropertyValueModel buildExternalTransactionControllerHolder()
+    {
+        return new PropertyAspectAdapter(buildLoginHolder(), EISLoginAdapter.EXTERNAL_TRANSACTION_CONTROLLER_PROPERTY)
+        {
+            @Override
+            protected Object getValueFromSubject()
+            {
+                EISLoginAdapter adapter = (EISLoginAdapter) subject;
+                return adapter.usesExternalTransactionController();
+            }
 
-			@Override
-			protected void setValueOnSubject(Object value)
-			{
-				EISLoginAdapter adapter = (EISLoginAdapter) subject;
-				adapter.setUsesExternalTransactionController((Boolean) value);
-			}
-		};
-	}
+            @Override
+            protected void setValueOnSubject(Object value)
+            {
+                EISLoginAdapter adapter = (EISLoginAdapter) subject;
+                adapter.setUsesExternalTransactionController((Boolean) value);
+            }
+        };
+    }
 
-	/**
-	 * Creates the selection holder that will hold the user object to be edited
-	 * by this page.
-	 *
-	 * @return The <code>PropertyValueModel</code> containing the {@link EisLoginAdapter}
-	 * to be edited by the {@link EisLoginPane}
-	 */
-	protected PropertyValueModel buildLoginHolder()
-	{
-		return new PropertyAspectAdapter(getSelectionHolder(), ConnectionPoolAdapter.LOGIN_CONFIG_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
-				return pool.getLogin();
-			}
-		};
-	}
+    /**
+     * Creates the selection holder that will hold the user object to be edited
+     * by this page.
+     *
+     * @return The <code>PropertyValueModel</code> containing the {@link EisLoginAdapter}
+     * to be edited by the {@link EisLoginPane}
+     */
+    protected PropertyValueModel buildLoginHolder()
+    {
+        return new PropertyAspectAdapter(getSelectionHolder(), ConnectionPoolAdapter.LOGIN_CONFIG_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
+                return pool.getLogin();
+            }
+        };
+    }
 
-	/**
-	 * Initializes the layout of this pane.
-	 *
-	 * @return The container with all its widgets
-	 */
-	protected Component buildPage()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
+    /**
+     * Initializes the layout of this pane.
+     *
+     * @return The container with all its widgets
+     */
+    protected Component buildPage()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		// Create the container
-		JPanel panel = new JPanel(new GridBagLayout());
-		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        // Create the container
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-		// Login pane
-		EisLoginPane loginPane = new EisLoginPane(buildLoginHolder(), getWorkbenchContextHolder());
+        // Login pane
+        EisLoginPane loginPane = new EisLoginPane(buildLoginHolder(), getWorkbenchContextHolder());
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 0;
-		constraints.gridwidth   = 3;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.HORIZONTAL;
-		constraints.anchor      = GridBagConstraints.CENTER;
-		constraints.insets      = new Insets(0, 0, 0, 0);
+        constraints.gridx       = 0;
+        constraints.gridy       = 0;
+        constraints.gridwidth   = 3;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 1;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.HORIZONTAL;
+        constraints.anchor      = GridBagConstraints.CENTER;
+        constraints.insets      = new Insets(0, 0, 0, 0);
 
-		panel.add(loginPane, constraints);
-      
-		// External Connection Pooling check box
-		JCheckBox externalConnectionPoolingCheckBox = buildCheckBox
-		(
-			"RDBMS_POOL_LOGIN_PANE_EXTERNAL_CONNECTION_POOLING_CHECKBOX",
-			buildExternalConnectionPoolingCheckBoxModel()
-		);
+        panel.add(loginPane, constraints);
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 2;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.NONE;
-		constraints.anchor     = GridBagConstraints.LINE_START;
-		constraints.insets     = new Insets(5, 0, 0, 0);
+        // External Connection Pooling check box
+        JCheckBox externalConnectionPoolingCheckBox = buildCheckBox
+        (
+            "RDBMS_POOL_LOGIN_PANE_EXTERNAL_CONNECTION_POOLING_CHECKBOX",
+            buildExternalConnectionPoolingCheckBoxModel()
+        );
 
-		panel.add(externalConnectionPoolingCheckBox, constraints);
+        constraints.gridx      = 0;
+        constraints.gridy      = 2;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.NONE;
+        constraints.anchor     = GridBagConstraints.LINE_START;
+        constraints.insets     = new Insets(5, 0, 0, 0);
 
-		// External Transaction Controller check box
-		JCheckBox externalTransactionControllerCheckBox = buildCheckBox
-		(
-			"RDBMS_POOL_LOGIN_PANE_EXTERNAL_TRANSACTION_CONTROLLER_CHECKBOX",
-			buildExternalTransactionControllerCheckBoxModel()
-		);
+        panel.add(externalConnectionPoolingCheckBox, constraints);
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 3;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 1;
-		constraints.fill       = GridBagConstraints.NONE;
-		constraints.anchor     = GridBagConstraints.FIRST_LINE_START;
-		constraints.insets     = new Insets(0, 0, 0, 0);
+        // External Transaction Controller check box
+        JCheckBox externalTransactionControllerCheckBox = buildCheckBox
+        (
+            "RDBMS_POOL_LOGIN_PANE_EXTERNAL_TRANSACTION_CONTROLLER_CHECKBOX",
+            buildExternalTransactionControllerCheckBoxModel()
+        );
 
-		panel.add(externalTransactionControllerCheckBox, constraints);
+        constraints.gridx      = 0;
+        constraints.gridy      = 3;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 1;
+        constraints.fill       = GridBagConstraints.NONE;
+        constraints.anchor     = GridBagConstraints.FIRST_LINE_START;
+        constraints.insets     = new Insets(0, 0, 0, 0);
 
-		return panel;
-	}
+        panel.add(externalTransactionControllerCheckBox, constraints);
+
+        return panel;
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
 import java.io.FileReader;
@@ -73,16 +73,16 @@ public class SessionsXMLSchemaLoggingOptionsTest extends AutoVerifyTestCase {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSessionLoggingOptions.xml");
 
         // log in the session
-            employeeSession = (DatabaseSession)SessionManager.getManager().getSession(loader, "NullOptionsSession", getClass().getClassLoader(), true, false); // refresh the session  
+            employeeSession = (DatabaseSession)SessionManager.getManager().getSession(loader, "NullOptionsSession", getClass().getClassLoader(), true, false); // refresh the session
 
         // log in the session
-            employeeSession2 = (DatabaseSession)SessionManager.getManager().getSession(loader, "DefaultSession", getClass().getClassLoader(), true, false); // refresh the session  
+            employeeSession2 = (DatabaseSession)SessionManager.getManager().getSession(loader, "DefaultSession", getClass().getClassLoader(), true, false); // refresh the session
 
         // log in the session
-            employeeSession3 = (DatabaseSession)SessionManager.getManager().getSession(loader, "TrueSession", getClass().getClassLoader(), true, false); // refresh the session  
+            employeeSession3 = (DatabaseSession)SessionManager.getManager().getSession(loader, "TrueSession", getClass().getClassLoader(), true, false); // refresh the session
 
         // log in the session
-            employeeSession4 = (DatabaseSession)SessionManager.getManager().getSession(loader, "FalseSession", getClass().getClassLoader(), true, false); // refresh the session  
+            employeeSession4 = (DatabaseSession)SessionManager.getManager().getSession(loader, "FalseSession", getClass().getClassLoader(), true, false); // refresh the session
     }
 
     protected void verify() {

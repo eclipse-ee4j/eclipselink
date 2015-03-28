@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     14/05/2012-2.4 Guy Pelletier  
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.util.Enumeration;
@@ -65,7 +65,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         Iterator iterator = getSession().getProject().getDescriptors().values().iterator();
         while (iterator.hasNext()) {
             ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
-            checkCacheState.put(descriptor, 
+            checkCacheState.put(descriptor,
                                 new Integer(descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy()));
             if(descriptor.requiresInitialization((AbstractSession) getSession())) {
                 // identityMapClass is null for AggregateObject, AggregateMapping and Interface descriptors.
@@ -78,9 +78,9 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
     }
 
     public void test() {
-        this.objectToBeWritten = 
+        this.objectToBeWritten =
                 (PolicyHolder)(getSession().readAllObjects(org.eclipse.persistence.testing.models.insurance.PolicyHolder.class)).firstElement();
-        this.objectToBeWritten = 
+        this.objectToBeWritten =
                 (PolicyHolder)getSession().acquireUnitOfWork().registerObject(this.objectToBeWritten);
         this.objectToBeWritten.setAddress(null);
 
@@ -94,7 +94,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         Object objectFromDatabase = getSession().readObject(this.objectToBeWritten);
 
         if (!(compareObjects(this.objectToBeWritten, objectFromDatabase))) {
-            throw new TestErrorException("The object inserted into the database, '" + objectFromDatabase + 
+            throw new TestErrorException("The object inserted into the database, '" + objectFromDatabase +
                                          "' does not match the original, '" + this.objectToBeWritten + ".");
         }
     }

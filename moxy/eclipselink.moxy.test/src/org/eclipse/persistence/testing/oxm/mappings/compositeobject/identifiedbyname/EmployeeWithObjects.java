@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Denise Smith - April 21/2009 - 2.0 - Initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbyname;
 
 public class EmployeeWithObjects  {
@@ -18,7 +18,7 @@ public class EmployeeWithObjects  {
   private Object emailAddress;
   private Object mailingAddress;
   private Object salary;
-  
+
   public EmployeeWithObjects() {
     super();
   }
@@ -49,15 +49,15 @@ public class EmployeeWithObjects  {
 
   public String toString()
   {
-		String returnString =  "Employee: " + this.getID() + " ";
-		if(getMailingAddress() != null)
-			returnString += getMailingAddress().toString() + " ";
-		if(getEmailAddress() != null)
-			returnString += getEmailAddress().toString();    
-		if(getSalary() != null)
-			returnString += getSalary().toString();    
-		return returnString;
-  } 
+        String returnString =  "Employee: " + this.getID() + " ";
+        if(getMailingAddress() != null)
+            returnString += getMailingAddress().toString() + " ";
+        if(getEmailAddress() != null)
+            returnString += getEmailAddress().toString();
+        if(getSalary() != null)
+            returnString += getSalary().toString();
+        return returnString;
+  }
 
   public boolean equals(Object object)
   {
@@ -67,17 +67,17 @@ public class EmployeeWithObjects  {
     if((this.getID() == employeeObject.getID()) &&
       ((this.getEmailAddress()==null && employeeObject.getEmailAddress()==null) || (this.getEmailAddress().equals(employeeObject.getEmailAddress()))) &&
       ((this.getSalary()==null && employeeObject.getSalary()==null) || (this.getSalary().equals(employeeObject.getSalary()))) &&
-      ((this.getMailingAddress()==null && employeeObject.getMailingAddress()==null) ||(this.getMailingAddress().equals(employeeObject.getMailingAddress()))))    	
+      ((this.getMailingAddress()==null && employeeObject.getMailingAddress()==null) ||(this.getMailingAddress().equals(employeeObject.getMailingAddress()))))
           return true;
 
     return false;
   }
 
 public Object getSalary() {
-	return salary;
+    return salary;
 }
 
 public void setSalary(Object salary) {
-	this.salary = salary;
+    this.salary = salary;
 }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -32,7 +32,7 @@ public class TestCascadeMerge extends JPA1Base {
         /*
          * If X is a new entity instance, a new managed entity instance X' is created and the state of X is copied into the new
          * managed entity instance X'.
-         * 
+         *
          * For all entities Y referenced by relationships from X having the cascade element value cascade=MERGE or cascade=ALL,
          * Y is merged recursively as Y'. For all such Y referenced by X, X' is set to reference Y'. (Note that if X is managed
          * then X is the same object as X'.)
@@ -112,7 +112,7 @@ public class TestCascadeMerge extends JPA1Base {
         /*
          * If X is a detached entity, the state of X is copied onto a pre-existing managed entity instance X' of the same
          * identity or a new managed copy X' of X is created.
-         * 
+         *
          * For all entities Y referenced by relationships from X having the cascade element value cascade=MERGE or cascade=ALL,
          * Y is merged recursively as Y'. For all such Y referenced by X, X' is set to reference Y'. (Note that if X is managed
          * then X is the same object as X'.)
@@ -388,7 +388,7 @@ public class TestCascadeMerge extends JPA1Base {
          * If X is a managed entity, it is ignored by the merge operation, however, the merge operation is cascaded to entities
          * referenced by relationships from X if these relationships have been annotated with the cascade element value
          * cascade=MERGE or cascade=ALL annotation.
-         * 
+         *
          * For all entities Y referenced by relationships from X having the cascade element value cascade=MERGE or cascade=ALL,
          * Y is merged recursively as Y'. For all such Y referenced by X, X' is set to reference Y'. (Note that if X is managed
          * then X is the same object as X'.)

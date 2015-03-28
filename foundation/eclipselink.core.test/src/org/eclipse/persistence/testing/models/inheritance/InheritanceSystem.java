@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -241,7 +241,7 @@ public class InheritanceSystem extends TestSystem {
         //Added to test bug 6111278
 
         unitOfWork = session.acquireUnitOfWork();
-		Entomologist bugguy = new Entomologist();
+        Entomologist bugguy = new Entomologist();
         bugguy.setId((int)System.currentTimeMillis());
         bugguy.setName("Gary");
         bugguy = (Entomologist)unitOfWork.registerObject(bugguy);

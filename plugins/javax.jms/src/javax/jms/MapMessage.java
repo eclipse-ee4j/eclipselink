@@ -1,23 +1,23 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
@@ -27,32 +27,32 @@ package javax.jms;
 import java.util.Enumeration;
 
 /** A <CODE>MapMessage</CODE> object is used to send a set of name-value pairs.
-  * The names are <CODE>String</CODE> objects, and the values are primitive 
+  * The names are <CODE>String</CODE> objects, and the values are primitive
   * data types in the Java programming language. The names must have a value that
-  * is not null, and not an empty string. The entries can be accessed 
-  * sequentially or randomly by name. The order of the entries is undefined. 
+  * is not null, and not an empty string. The entries can be accessed
+  * sequentially or randomly by name. The order of the entries is undefined.
   * <CODE>MapMessage</CODE> inherits from the <CODE>Message</CODE> interface
   * and adds a message body that contains a Map.
   *
   * <P>The primitive types can be read or written explicitly using methods
   * for each type. They may also be read or written generically as objects.
-  * For instance, a call to <CODE>MapMessage.setInt("foo", 6)</CODE> is 
+  * For instance, a call to <CODE>MapMessage.setInt("foo", 6)</CODE> is
   * equivalent to <CODE>MapMessage.setObject("foo", new Integer(6))</CODE>.
   * Both forms are provided, because the explicit form is convenient for
   * static programming, and the object form is needed when types are not known
   * at compile time.
   *
-  * <P>When a client receives a <CODE>MapMessage</CODE>, it is in read-only 
-  * mode. If a client attempts to write to the message at this point, a 
-  * <CODE>MessageNotWriteableException</CODE> is thrown. If 
-  * <CODE>clearBody</CODE> is called, the message can now be both read from and 
+  * <P>When a client receives a <CODE>MapMessage</CODE>, it is in read-only
+  * mode. If a client attempts to write to the message at this point, a
+  * <CODE>MessageNotWriteableException</CODE> is thrown. If
+  * <CODE>clearBody</CODE> is called, the message can now be both read from and
   * written to.
   *
-  * <P><CODE>MapMessage</CODE> objects support the following conversion table. 
-  * The marked cases must be supported. The unmarked cases must throw a 
-  * <CODE>JMSException</CODE>. The <CODE>String</CODE>-to-primitive conversions 
-  * may throw a runtime exception if the primitive's <CODE>valueOf()</CODE> 
-  * method does not accept it as a valid <CODE>String</CODE> representation of 
+  * <P><CODE>MapMessage</CODE> objects support the following conversion table.
+  * The marked cases must be supported. The unmarked cases must throw a
+  * <CODE>JMSException</CODE>. The <CODE>String</CODE>-to-primitive conversions
+  * may throw a runtime exception if the primitive's <CODE>valueOf()</CODE>
+  * method does not accept it as a valid <CODE>String</CODE> representation of
   * the primitive.
   *
   * <P>A value written as the row type can be read as the column type.
@@ -74,9 +74,9 @@ import java.util.Enumeration;
   * </PRE>
   *
   * <P>Attempting to read a null value as a primitive type must be treated
-  * as calling the primitive's corresponding <code>valueOf(String)</code> 
-  * conversion method with a null value. Since <code>char</code> does not 
-  * support a <code>String</code> conversion, attempting to read a null value 
+  * as calling the primitive's corresponding <code>valueOf(String)</code>
+  * conversion method with a null value. Since <code>char</code> does not
+  * support a <code>String</code> conversion, attempting to read a null value
   * as a <code>char</code> must throw a <code>NullPointerException</code>.
   *
   * @version     1.1 February 2, 002
@@ -90,8 +90,8 @@ import java.util.Enumeration;
   * @see         javax.jms.StreamMessage
   * @see         javax.jms.TextMessage
   */
- 
-public interface MapMessage extends Message { 
+
+public interface MapMessage extends Message {
 
 
     /** Returns the <CODE>boolean</CODE> value with the specified name.
@@ -102,10 +102,10 @@ public interface MapMessage extends Message {
       *
       * @exception JMSException if the JMS provider fails to read the message
       *                         due to some internal error.
-      * @exception MessageFormatException if this type conversion is invalid.      
+      * @exception MessageFormatException if this type conversion is invalid.
       */
 
-    boolean 
+    boolean
     getBoolean(String name) throws JMSException;
 
 
@@ -118,9 +118,9 @@ public interface MapMessage extends Message {
       * @exception JMSException if the JMS provider fails to read the message
       *                         due to some internal error.
       * @exception MessageFormatException if this type conversion is invalid.
-      */ 
+      */
 
-    byte 
+    byte
     getByte(String name) throws JMSException;
 
 
@@ -132,10 +132,10 @@ public interface MapMessage extends Message {
       *
       * @exception JMSException if the JMS provider fails to read the message
       *                         due to some internal error.
-      * @exception MessageFormatException if this type conversion is invalid.      
-      */ 
+      * @exception MessageFormatException if this type conversion is invalid.
+      */
 
-    short 
+    short
     getShort(String name) throws JMSException;
 
 
@@ -147,10 +147,10 @@ public interface MapMessage extends Message {
       *
       * @exception JMSException if the JMS provider fails to read the message
       *                         due to some internal error.
-      * @exception MessageFormatException if this type conversion is invalid.     
-      */ 
+      * @exception MessageFormatException if this type conversion is invalid.
+      */
 
-    char 
+    char
     getChar(String name) throws JMSException;
 
 
@@ -162,10 +162,10 @@ public interface MapMessage extends Message {
       *
       * @exception JMSException if the JMS provider fails to read the message
       *                         due to some internal error.
-      * @exception MessageFormatException if this type conversion is invalid.      
-      */ 
+      * @exception MessageFormatException if this type conversion is invalid.
+      */
 
-    int 
+    int
     getInt(String name) throws JMSException;
 
 
@@ -177,10 +177,10 @@ public interface MapMessage extends Message {
       *
       * @exception JMSException if the JMS provider fails to read the message
       *                         due to some internal error.
-      * @exception MessageFormatException if this type conversion is invalid.      
-      */ 
+      * @exception MessageFormatException if this type conversion is invalid.
+      */
 
-    long 
+    long
     getLong(String name) throws JMSException;
 
 
@@ -192,10 +192,10 @@ public interface MapMessage extends Message {
       *
       * @exception JMSException if the JMS provider fails to read the message
       *                         due to some internal error.
-      * @exception MessageFormatException if this type conversion is invalid.     
-      */ 
+      * @exception MessageFormatException if this type conversion is invalid.
+      */
 
-    float 
+    float
     getFloat(String name) throws JMSException;
 
 
@@ -207,10 +207,10 @@ public interface MapMessage extends Message {
       *
       * @exception JMSException if the JMS provider fails to read the message
       *                         due to some internal error.
-      * @exception MessageFormatException if this type conversion is invalid.      
-      */ 
+      * @exception MessageFormatException if this type conversion is invalid.
+      */
 
-    double 
+    double
     getDouble(String name) throws JMSException;
 
 
@@ -218,15 +218,15 @@ public interface MapMessage extends Message {
       *
       * @param name the name of the <CODE>String</CODE>
       *
-      * @return the <CODE>String</CODE> value with the specified name; if there 
+      * @return the <CODE>String</CODE> value with the specified name; if there
       * is no item by this name, a null value is returned
       *
       * @exception JMSException if the JMS provider fails to read the message
       *                         due to some internal error.
-      * @exception MessageFormatException if this type conversion is invalid.      
-      */ 
+      * @exception MessageFormatException if this type conversion is invalid.
+      */
 
-    String 
+    String
     getString(String name) throws JMSException;
 
 
@@ -240,41 +240,41 @@ public interface MapMessage extends Message {
       *
       * @exception JMSException if the JMS provider fails to read the message
       *                         due to some internal error.
-      * @exception MessageFormatException if this type conversion is invalid.      
-      */ 
+      * @exception MessageFormatException if this type conversion is invalid.
+      */
 
-    byte[] 
+    byte[]
     getBytes(String name) throws JMSException;
 
 
     /** Returns the value of the object with the specified name.
       *
       * <P>This method can be used to return, in objectified format,
-      * an object in the Java programming language ("Java object") that had 
+      * an object in the Java programming language ("Java object") that had
       * been stored in the Map with the equivalent
       * <CODE>setObject</CODE> method call, or its equivalent primitive
       * <CODE>set<I>type</I></CODE> method.
       *
-      * <P>Note that byte values are returned as <CODE>byte[]</CODE>, not 
+      * <P>Note that byte values are returned as <CODE>byte[]</CODE>, not
       * <CODE>Byte[]</CODE>.
       *
       * @param name the name of the Java object
       *
-      * @return a copy of the Java object value with the specified name, in 
-      * objectified format (for example, if the object was set as an 
-      * <CODE>int</CODE>, an <CODE>Integer</CODE> is returned); if there is no 
+      * @return a copy of the Java object value with the specified name, in
+      * objectified format (for example, if the object was set as an
+      * <CODE>int</CODE>, an <CODE>Integer</CODE> is returned); if there is no
       * item by this name, a null value is returned
       *
       * @exception JMSException if the JMS provider fails to read the message
       *                         due to some internal error.
-      */ 
+      */
 
-    Object 
+    Object
     getObject(String name) throws JMSException;
 
 
 
-    /** Returns an <CODE>Enumeration</CODE> of all the names in the 
+    /** Returns an <CODE>Enumeration</CODE> of all the names in the
       * <CODE>MapMessage</CODE> object.
       *
       * @return an enumeration of all the names in this <CODE>MapMessage</CODE>
@@ -296,11 +296,11 @@ public interface MapMessage extends Message {
       *                         due to some internal error.
       * @exception IllegalArgumentException if the name is null or if the name is
       *                          an empty string.
-      * @exception MessageNotWriteableException if the message is in read-only 
+      * @exception MessageNotWriteableException if the message is in read-only
       *                                         mode.
       */
 
-    void 
+    void
     setBoolean(String name, boolean value) throws JMSException;
 
 
@@ -313,13 +313,13 @@ public interface MapMessage extends Message {
       *                         due to some internal error.
      * @exception IllegalArgumentException if the name is null or if the name is
       *                          an empty string.
-      * @exception MessageNotWriteableException if the message is in read-only 
+      * @exception MessageNotWriteableException if the message is in read-only
       *                                         mode.
-      */ 
+      */
 
-    void 
-    setByte(String name, byte value) 
-			throws JMSException;
+    void
+    setByte(String name, byte value)
+            throws JMSException;
 
 
     /** Sets a <CODE>short</CODE> value with the specified name into the Map.
@@ -331,13 +331,13 @@ public interface MapMessage extends Message {
       *                         due to some internal error.
        * @exception IllegalArgumentException if the name is null or if the name is
       *                          an empty string.
-      * @exception MessageNotWriteableException if the message is in read-only 
+      * @exception MessageNotWriteableException if the message is in read-only
       *                                         mode.
-      */ 
+      */
 
-    void 
-    setShort(String name, short value) 
-			throws JMSException;
+    void
+    setShort(String name, short value)
+            throws JMSException;
 
 
     /** Sets a Unicode character value with the specified name into the Map.
@@ -349,13 +349,13 @@ public interface MapMessage extends Message {
       *                         due to some internal error.
        * @exception IllegalArgumentException if the name is null or if the name is
       *                          an empty string.
-      * @exception MessageNotWriteableException if the message is in read-only 
+      * @exception MessageNotWriteableException if the message is in read-only
       *                                         mode.
-      */ 
+      */
 
-    void 
-    setChar(String name, char value) 
-			throws JMSException;
+    void
+    setChar(String name, char value)
+            throws JMSException;
 
 
     /** Sets an <CODE>int</CODE> value with the specified name into the Map.
@@ -367,13 +367,13 @@ public interface MapMessage extends Message {
       *                         due to some internal error.
       * @exception IllegalArgumentException if the name is null or if the name is
       *                          an empty string.
-      * @exception MessageNotWriteableException if the message is in read-only 
+      * @exception MessageNotWriteableException if the message is in read-only
       *                                         mode.
-      */ 
+      */
 
-    void 
-    setInt(String name, int value) 
-			throws JMSException;
+    void
+    setInt(String name, int value)
+            throws JMSException;
 
 
     /** Sets a <CODE>long</CODE> value with the specified name into the Map.
@@ -385,13 +385,13 @@ public interface MapMessage extends Message {
       *                         due to some internal error.
       * @exception IllegalArgumentException if the name is null or if the name is
       *                          an empty string.
-      * @exception MessageNotWriteableException if the message is in read-only 
+      * @exception MessageNotWriteableException if the message is in read-only
       *                                         mode.
-      */ 
+      */
 
-    void 
-    setLong(String name, long value) 
-			throws JMSException;
+    void
+    setLong(String name, long value)
+            throws JMSException;
 
 
     /** Sets a <CODE>float</CODE> value with the specified name into the Map.
@@ -403,13 +403,13 @@ public interface MapMessage extends Message {
       *                         due to some internal error.
        * @exception IllegalArgumentException if the name is null or if the name is
       *                          an empty string.
-      * @exception MessageNotWriteableException if the message is in read-only 
+      * @exception MessageNotWriteableException if the message is in read-only
       *                                         mode.
-      */ 
+      */
 
-    void 
-    setFloat(String name, float value) 
-			throws JMSException;
+    void
+    setFloat(String name, float value)
+            throws JMSException;
 
 
     /** Sets a <CODE>double</CODE> value with the specified name into the Map.
@@ -421,13 +421,13 @@ public interface MapMessage extends Message {
       *                         due to some internal error.
       * @exception IllegalArgumentException if the name is null or if the name is
       *                          an empty string.
-      * @exception MessageNotWriteableException if the message is in read-only 
+      * @exception MessageNotWriteableException if the message is in read-only
       *                                         mode.
-      */ 
+      */
 
-    void 
-    setDouble(String name, double value) 
-			throws JMSException;
+    void
+    setDouble(String name, double value)
+            throws JMSException;
 
 
     /** Sets a <CODE>String</CODE> value with the specified name into the Map.
@@ -439,13 +439,13 @@ public interface MapMessage extends Message {
       *                         due to some internal error.
       * @exception IllegalArgumentException if the name is null or if the name is
       *                          an empty string.
-      * @exception MessageNotWriteableException if the message is in read-only 
+      * @exception MessageNotWriteableException if the message is in read-only
       *                                         mode.
-      */ 
+      */
 
-    void 
-    setString(String name, String value) 
-			throws JMSException;
+    void
+    setString(String name, String value)
+            throws JMSException;
 
 
     /** Sets a byte array value with the specified name into the Map.
@@ -459,18 +459,18 @@ public interface MapMessage extends Message {
       *                         due to some internal error.
       * @exception NullPointerException if the name is null, or if the name is
       *                          an empty string.
-      * @exception MessageNotWriteableException if the message is in read-only 
+      * @exception MessageNotWriteableException if the message is in read-only
       *                                         mode.
-      */ 
+      */
 
     void
-    setBytes(String name, byte[] value) 
-			throws JMSException;
+    setBytes(String name, byte[] value)
+            throws JMSException;
 
 
-    /** Sets a portion of the byte array value with the specified name into the 
+    /** Sets a portion of the byte array value with the specified name into the
       * Map.
-      *  
+      *
       * @param name the name of the byte array
       * @param value the byte array value to set in the Map
       * @param offset the initial offset within the byte array
@@ -480,21 +480,21 @@ public interface MapMessage extends Message {
       *                         due to some internal error.
        * @exception IllegalArgumentException if the name is null or if the name is
       *                          an empty string.
-      * @exception MessageNotWriteableException if the message is in read-only 
+      * @exception MessageNotWriteableException if the message is in read-only
       *                                         mode.
-      */ 
- 
+      */
+
     void
-    setBytes(String name, byte[] value, 
-		 int offset, int length) 
-			throws JMSException;
+    setBytes(String name, byte[] value,
+         int offset, int length)
+            throws JMSException;
 
 
     /** Sets an object value with the specified name into the Map.
       *
       * <P>This method works only for the objectified primitive
-      * object types (<code>Integer</code>, <code>Double</code>, 
-      * <code>Long</code>&nbsp;...), <code>String</code> objects, and byte 
+      * object types (<code>Integer</code>, <code>Double</code>,
+      * <code>Long</code>&nbsp;...), <code>String</code> objects, and byte
       * arrays.
       *
       * @param name the name of the Java object
@@ -505,13 +505,13 @@ public interface MapMessage extends Message {
       * @exception IllegalArgumentException if the name is null or if the name is
       *                          an empty string.
       * @exception MessageFormatException if the object is invalid.
-      * @exception MessageNotWriteableException if the message is in read-only 
+      * @exception MessageNotWriteableException if the message is in read-only
       *                                         mode.
-      */ 
+      */
 
-    void 
-    setObject(String name, Object value) 
-			throws JMSException;
+    void
+    setObject(String name, Object value)
+            throws JMSException;
 
 
     /** Indicates whether an item exists in this <CODE>MapMessage</CODE> object.
@@ -520,10 +520,10 @@ public interface MapMessage extends Message {
       *
       * @return true if the item exists
       *
-      * @exception JMSException if the JMS provider fails to determine if the 
+      * @exception JMSException if the JMS provider fails to determine if the
       *                         item exists due to some internal error.
-      */ 
- 
+      */
+
     boolean
     itemExists(String name) throws JMSException;
 }

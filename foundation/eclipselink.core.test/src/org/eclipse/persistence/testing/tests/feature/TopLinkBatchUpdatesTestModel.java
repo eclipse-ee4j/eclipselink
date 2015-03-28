@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.testing.framework.*;
@@ -22,7 +22,7 @@ public class TopLinkBatchUpdatesTestModel extends TestModel {
     Boolean wasBatchWriting;
     Boolean wasJDBCBatchWriting;
     Boolean wasParameterBinding;
-    
+
     public TopLinkBatchUpdatesTestModel() {
         super();
     }
@@ -58,18 +58,18 @@ public class TopLinkBatchUpdatesTestModel extends TestModel {
         TestSuite suite = new TestSuite();
         suite.setName("BatchWriteTests");
         suite.addTest(new BatchWritingTest());
-        // Created for BUG# 214910 - Batch query timeout (Oracle 9.0.1+) 
-       	// The following 4 tests are expected to fail with an ORA-01013 user requested cancel of current operation (statement timeout)
-       	// Parameterized OraclePlatform|8 does not use the queryTimeout on the statement like 9|10 does
-       	suite.addTest(new QueryTimeoutBatchParameterizedDescriptorQueryManagerTest()); 
-        	
-       	suite.addTest(new QueryTimeoutBatchDynamicDescriptorQueryManagerTest());
-       	suite.addTest(new QueryTimeoutBatchParameterizedDatabaseQueryTest());        
-       	suite.addTest(new QueryTimeoutBatchDynamicDatabaseQueryTest());
-       	// Variant test cases for code coverage
-       	// Don't throw an exception/warning when a data query uses a parent reference query timeout
-       	suite.addTest(new QueryTimeoutBatchDynamicDataModifyDatabaseQueryParentRefExceptionTest());
-                
+        // Created for BUG# 214910 - Batch query timeout (Oracle 9.0.1+)
+           // The following 4 tests are expected to fail with an ORA-01013 user requested cancel of current operation (statement timeout)
+           // Parameterized OraclePlatform|8 does not use the queryTimeout on the statement like 9|10 does
+           suite.addTest(new QueryTimeoutBatchParameterizedDescriptorQueryManagerTest());
+
+           suite.addTest(new QueryTimeoutBatchDynamicDescriptorQueryManagerTest());
+           suite.addTest(new QueryTimeoutBatchParameterizedDatabaseQueryTest());
+           suite.addTest(new QueryTimeoutBatchDynamicDatabaseQueryTest());
+           // Variant test cases for code coverage
+           // Don't throw an exception/warning when a data query uses a parent reference query timeout
+           suite.addTest(new QueryTimeoutBatchDynamicDataModifyDatabaseQueryParentRefExceptionTest());
+
         addTest(EmployeeBasicTestModel.getReadObjectTestSuite());
         addTest(EmployeeBasicTestModel.getReadAllTestSuite());
         addTest(EmployeeBasicTestModel.getUpdateObjectTestSuite());

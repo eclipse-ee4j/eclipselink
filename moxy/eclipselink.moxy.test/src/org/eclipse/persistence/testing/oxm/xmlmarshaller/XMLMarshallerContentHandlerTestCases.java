@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -49,29 +49,29 @@ public class XMLMarshallerContentHandlerTestCases extends OXTestCase {
                         throw new NullPointerException();
                     }
                 }
-            
+
                 public void startDocument() throws SAXException {}
-                
+
                 public void skippedEntity(String name) throws SAXException {}
-                
+
                 public void setDocumentLocator(Locator locator) {}
-                
+
                 public void processingInstruction(String target, String data) throws SAXException {}
-                
+
                 public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
-                
+
                 public void endPrefixMapping(String prefix) throws SAXException {}
-                
+
                 public void endElement(String uri, String localName, String qName) throws SAXException {
                     if(uri == null) {
                         throw new NullPointerException();
                     }
                 }
-                
+
                 public void endDocument() throws SAXException {}
- 
+
                 public void characters(char[] ch, int start, int length) throws SAXException {}
-            }); 
+            });
         } catch(Exception ex) {
             fail("Exception caught when marshalling to content handler " + ex.getMessage());
         }

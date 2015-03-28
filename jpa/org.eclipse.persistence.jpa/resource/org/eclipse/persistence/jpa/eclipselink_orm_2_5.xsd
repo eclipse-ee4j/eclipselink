@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- ******************************************************************************************************************************* -->
-<!-- Copyright (c) 1998, 2010 Oracle. All rights reserved.                                                                           -->
+<!-- Copyright (c) 1998, 2015 Oracle. All rights reserved.                                                                           -->
 <!-- This program and the accompanying materials are made available under the                                                        -->
-<!-- terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0                                                --> 
+<!-- terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0                                                -->
 <!-- which accompanies this distribution.                                                                                            -->
 <!-- The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html                                            -->
-<!-- and the Eclipse Distribution License is available at                                                                            --> 
+<!-- and the Eclipse Distribution License is available at                                                                            -->
 <!-- http://www.eclipse.org/org/documents/edl-v10.php.                                                                               -->
 <!--                                                                                                                                 -->
 <!-- Contributors:                                                                                                                   -->
@@ -25,15 +25,15 @@
 <!--     03/23/2011-2.3 Guy Pelletier                                                                                                -->
 <!--       - 337323: Multi-tenant with shared schema support (part 1)                                                                -->
 <!--     02/13/2013-2.5 Guy Pelletier                                                                                                -->
-<!--       - 397772: JPA 2.1 Entity Graph Support (XML support)                                                                      -->     
+<!--       - 397772: JPA 2.1 Entity Graph Support (XML support)                                                                      -->
 <!-- ******************************************************************************************************************************* -->
 
 <!-- Java Persistence API object-relational mapping file schema -->
-<xsd:schema targetNamespace="http://www.eclipse.org/eclipselink/xsds/persistence/orm" 
-  xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm" 
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-  elementFormDefault="qualified" 
-  attributeFormDefault="unqualified" 
+<xsd:schema targetNamespace="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
+  xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified"
   version="2.5">
 
   <xsd:annotation>
@@ -41,7 +41,7 @@
       @(#)eclipselink_orm_2_5.xsd 2.5  June 28 2011
     </xsd:documentation>
   </xsd:annotation>
-  
+
   <xsd:annotation>
      <xsd:documentation><![CDATA[
 
@@ -58,7 +58,7 @@
 
        <entity-mappings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm 
+       xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm
        eclipselink_orm_2_5.xsd
        version="2.5">
        ...
@@ -70,13 +70,13 @@
   <!-- **************************************************** -->
 
   <xsd:complexType name="emptyType"/>
-  
+
   <xsd:simpleType name="versionType">
     <xsd:restriction base="xsd:token">
       <xsd:pattern value="[0-9]+(\.[0-9]+)*"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
+
   <xsd:simpleType name="supported-versions-type">
     <xsd:restriction base="orm:versionType">
       <xsd:enumeration value="2.0"/>
@@ -86,7 +86,7 @@
       <xsd:enumeration value="2.4"/>
       <xsd:enumeration value="2.5"/>
     </xsd:restriction>
-  </xsd:simpleType> 
+  </xsd:simpleType>
 
   <!-- **************************************************** -->
 
@@ -99,7 +99,7 @@
     <xsd:attribute name="get-method" type="xsd:string" use="required"/>
     <xsd:attribute name="set-method" type="xsd:string" use="required"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="additional-criteria">
@@ -107,29 +107,29 @@
       <xsd:documentation>
 
         /**
-         * An additional criteria can be specified at the Entity or MappedSuperclass 
-         * level. When specified at the mapped superclass level, it applies to all 
-         * inheriting entities unless those entities define their own additional 
-         * criteria, at which point the additional criteria from the mapped superclass 
-         * is ignored.  
+         * An additional criteria can be specified at the Entity or MappedSuperclass
+         * level. When specified at the mapped superclass level, it applies to all
+         * inheriting entities unless those entities define their own additional
+         * criteria, at which point the additional criteria from the mapped superclass
+         * is ignored.
          *
-         * The additional criteria supports any valid JPQL string and must use 'this' 
+         * The additional criteria supports any valid JPQL string and must use 'this'
          * as an alias to form your additional criteria. E.G.,
-         * 
+         *
          * @Entity
          * @AdditionalCriteria("this.nut.size = :NUT_SIZE and this.nut.color = :NUT_COLOR")
          * public class Bolt {...}
-         * 
-         * Additional criteria parameters are also accepted and are set through 
-         * properties on the entity manager factory, or on an entity manager. When set 
+         *
+         * Additional criteria parameters are also accepted and are set through
+         * properties on the entity manager factory, or on an entity manager. When set
          * on the entity manager, the properties must be set before any query execution
          * and should not be changed for the life span of that entity manager.
-         * 
-         * Properties set on the entity manager will override those similarly named 
+         *
+         * Properties set on the entity manager will override those similarly named
          * properties set on the entity manager factory.
          *
          * Additional criteria is not supported with any native queries.
-         * 
+         *
          * @author Guy Pelletier
          * @since EclipseLink 2.2
          */
@@ -148,25 +148,25 @@
         <xsd:element name="criteria" type="xsd:string"/>
     </xsd:sequence>
   </xsd:complexType>
-      
+
   <!-- **************************************************** -->
-  
+
   <xsd:complexType name="cache">
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
-         * The Cache annotation is used to set an 
-         * org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy 
-         * which sets objects in EclipseLink's identity maps to be invalid 
-         * following given rules. By default in EclipseLink, objects do not 
-         * expire in the cache. Several different policies are available to 
+        /**
+         * The Cache annotation is used to set an
+         * org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy
+         * which sets objects in EclipseLink's identity maps to be invalid
+         * following given rules. By default in EclipseLink, objects do not
+         * expire in the cache. Several different policies are available to
          * allow objects to expire.
-         * 
+         *
          * @see org.eclipse.persistence.annotations.CacheType
-         * 
-         * A Cache anotation may be defined on an Entity or MappedSuperclass. 
-         * In the case of inheritance, a Cache annotation should only be defined 
+         *
+         * A Cache anotation may be defined on an Entity or MappedSuperclass.
+         * In the case of inheritance, a Cache annotation should only be defined
          * on the root of the inheritance hierarchy.
          */
         @Target({TYPE})
@@ -174,12 +174,12 @@
         public @interface Cache {
           /**
            * (Optional) The type of cache to use.
-           */ 
+           */
           CacheType type() default SOFT_WEAK;
 
           /**
            * (Optional) The size of cache to use.
-           */ 
+           */
           int size() default 100;
 
          /**
@@ -187,10 +187,10 @@
           * or only a per EntityManager isolated cache.
           * The default is shared.
           * @deprecated  As of Eclipselink 2.2.  See the attribute 'isolation'
-          */ 
+          */
           @Deprecated
           boolean shared() default true;
-    
+
          /**
           * (Optional) Controls the level of caching this Entity will use.
           * The default is CacheIsolationType.SHARED which has EclipseLink
@@ -200,49 +200,49 @@
           CacheIsolationType isolation() default SHARED;
 
           /**
-           * (Optional) Expire cached instance after a fix period of time (ms). 
-           * Queries executed against the cache after this will be forced back 
+           * (Optional) Expire cached instance after a fix period of time (ms).
+           * Queries executed against the cache after this will be forced back
            * to the database for a refreshed copy
-           */ 
+           */
           int expiry() default -1; // minus one is no expiry.
 
           /**
-           * (Optional) Expire cached instance a specific time of day. Queries 
-           * executed against the cache after this will be forced back to the 
+           * (Optional) Expire cached instance a specific time of day. Queries
+           * executed against the cache after this will be forced back to the
            * database for a refreshed copy
-           */ 
+           */
           TimeOfDay expiryTimeOfDay() default @TimeOfDay(specified=false);
 
           /**
-           * (Optional) Force all queries that go to the database to always 
+           * (Optional) Force all queries that go to the database to always
            * refresh the cache.
-           */ 
+           */
           boolean alwaysRefresh() default false;
 
           /**
            * (Optional) For all queries that go to the database, refresh the
-           * cache only if the data received from the database by a query is 
-           * newer than the data in the cache (as determined by the optimistic 
+           * cache only if the data received from the database by a query is
+           * newer than the data in the cache (as determined by the optimistic
            * locking field)
-           */ 
+           */
           boolean refreshOnlyIfNewer() default false;
 
           /**
-           * (Optional) Setting to true will force all queries to bypass the 
-           * cache for hits but still resolve against the cache for identity. 
+           * (Optional) Setting to true will force all queries to bypass the
+           * cache for hits but still resolve against the cache for identity.
            * This forces all queries to hit the database.
-           */ 
+           */
           boolean disableHits() default false;
 
           /**
            * (Optional) The cache coordination mode.
-           */ 
+           */
           CacheCoordinationType coordinationType() default SEND_OBJECT_CHANGES;
-          
+
           /**
            * (Optional) The database change notification mode.
            * Note that database event listener must also be configured for the persistence unit/session.
-           */ 
+           */
           DatabaseChangeNotificationType databaseChangeNotificationType() default DatabaseChangeNotificationType.INVALIDATE;
         }
 
@@ -263,7 +263,7 @@
     <xsd:attribute name="database-change-notification-type" type="orm:database-change-notification-type"/>
   </xsd:complexType>
 
-  <!-- **************************************************** --> 
+  <!-- **************************************************** -->
 
   <xsd:complexType name="cache-interceptor">
     <xsd:annotation>
@@ -285,18 +285,18 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
-         * The CacheType enum is used with the Cache annotation for a 
-         * persistent class. It defines the type of IdentityMap/Cache used for 
+        /**
+         * The CacheType enum is used with the Cache annotation for a
+         * persistent class. It defines the type of IdentityMap/Cache used for
          * the class. By default the SOFT_WEAK cache type is used.
-         * 
-         * @see org.eclipse.persistence.annotations.Cache 
+         *
+         * @see org.eclipse.persistence.annotations.Cache
          */
         public enum CacheType {
           /**
            * Provides full caching and guaranteed identity. Caches all objects
-           * and does not remove them. 
-           * WARNING: This method may be memory intensive when many objects are 
+           * and does not remove them.
+           * WARNING: This method may be memory intensive when many objects are
            * read.
            */
           FULL,
@@ -327,8 +327,8 @@
           SOFT_WEAK,
 
           /**
-           * Identical to the soft cache weak (SOFT_WEAK) identity map except 
-           * that it uses hard references in the sub-cache. Use this identity 
+           * Identical to the soft cache weak (SOFT_WEAK) identity map except
+           * that it uses hard references in the sub-cache. Use this identity
            * map if soft references do not behave properly on your platform.
            */
           HARD_WEAK,
@@ -338,13 +338,13 @@
            * specified by the application. Objects are removed from the cache
            * on a least-recently-used basis. This method allows object
            * identity for the most commonly used objects.
-           * WARNING: Furnishes caching and identity, but does not guarantee 
+           * WARNING: Furnishes caching and identity, but does not guarantee
            * identity.
            */
           CACHE,
 
           /**
-           * WARNING: Does not preserve object identity and does not cache 
+           * WARNING: Does not preserve object identity and does not cache
            * objects.
            */
           NONE
@@ -364,7 +364,7 @@
   </xsd:simpleType>
 
   <!-- **************************************************** -->
-  
+
   <xsd:simpleType name="cache-isolation-type">
     <xsd:annotation>
       <xsd:documentation>
@@ -375,16 +375,16 @@
          * @since EclipseLink 2.2
          */
         public enum CacheIsolationType {
-        
+
          /**
           * Entity instances will be cached within the EntityManagerFactory/ServerSession level.
           * Any user queries for shared cache instances (ie Read-Only query hint) will return an Entity
-          * instance that may be shared by multiple clients. 
-          * 
+          * instance that may be shared by multiple clients.
+          *
           * This setting is the default isolation level.
           */
          SHARED,
-    
+
          /**
           * Entity state information will be cached in the shared cache but Entity
           * instances will not be shared. Any user queries for shared cache instances
@@ -393,7 +393,7 @@
           * state change.
           */
          PROTECTED,
-    
+
          /**
           * The Entity and its data is not stored in the shared cache but is
           * <i>isolated</i> to the Persistence Context/UnitOfWork or
@@ -402,7 +402,7 @@
           * a particular Entity.
           */
          ISOLATED;
-        
+
         }
       </xsd:documentation>
     </xsd:annotation>
@@ -413,17 +413,17 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-  <!-- **************************************************** -->  
+  <!-- **************************************************** -->
 
   <xsd:simpleType name="cache-coordination-type">
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
+        /**
          * An enum that is used within the Cache annotation.
-         * 
-         * @see org.eclipse.persistence.annotations.Cache 
-         */ 
+         *
+         * @see org.eclipse.persistence.annotations.Cache
+         */
         public enum CacheCoordinationType {
           /**
            * Sends a list of changed objects including data about the changes.
@@ -432,8 +432,8 @@
           SEND_OBJECT_CHANGES,
 
           /**
-           * Sends a list of the identities of the objects that have changed. 
-           * The receiving cache invalidates the objects (rather than changing 
+           * Sends a list of the identities of the objects that have changed.
+           * The receiving cache invalidates the objects (rather than changing
            * any of the data)
            */
           INVALIDATE_CHANGED_OBJECTS,
@@ -465,13 +465,13 @@
   <xsd:simpleType name="database-change-notification-type">
     <xsd:annotation>
       <xsd:documentation>
-      
+
         /**
          * Configures what type of database change notification an entity/descriptor should use.
          * This is only relevant if the persistence unit/session has been configured with a DatabaseEventListener,
          * such as the OracleChangeNotificationListener that receives database change events.
          * This allows for the EclipseLink cache to be invalidated or updated from database changes.
-         * 
+         *
          * @see Cache#databaseChangeNotificationType()
          * @see org.eclipse.persistence.descriptors.CachePolicy#setDatabaseChangeNotificationType(DatabaseChangeNotificationType)
          * @author James Sutherland
@@ -482,7 +482,7 @@
              * No database change events will be processed.
              */
             NONE,
-        
+
             /**
              * Invalidates the EclipseLink cache when a database change event is received for an object.
              * This requires a DatabaseEventListener to be configured with the persistence unit or session.
@@ -502,26 +502,26 @@
   </xsd:simpleType>
 
   <!-- **************************************************** -->
-  
+
   <xsd:complexType name="change-tracking">
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
-         * The ChangeTracking annotation is used to specify the 
-         * org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy 
-         * which computes changes sets for EclipseLink's UnitOfWork commit 
+        /**
+         * The ChangeTracking annotation is used to specify the
+         * org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy
+         * which computes changes sets for EclipseLink's UnitOfWork commit
          * process. An ObjectChangePolicy is stored on an Entity's descriptor.
          *
-         * A ChangeTracking annotation may be specified on an Entity, 
+         * A ChangeTracking annotation may be specified on an Entity,
          * MappedSuperclass or Embeddable.
-         */ 
+         */
         @Target({TYPE})
         @Retention(RUNTIME)
         public @interface ChangeTracking {
           /**
            * (Optional) The type of change tracking to use.
-           */ 
+           */
           ChangeTrackingType value() default AUTO;
         }
 
@@ -536,30 +536,30 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
-         * An enum that is used within the ChangeTracking annotation. 
-         */ 
+        /**
+         * An enum that is used within the ChangeTracking annotation.
+         */
         public enum ChangeTrackingType {
           /**
            * An ATTRIBUTE change tracking type allows change tracking at the
            * attribute level of an object. Objects with changed attributes will
-           * be processed in the commit process to include any changes in the 
+           * be processed in the commit process to include any changes in the
            * results of the commit. Unchanged objects will be ignored.
            */
           ATTRIBUTE,
 
           /**
-           * An OBJECT change tracking policy allows an object to calculate for 
-           * itself whether it has changed. Changed objects will be processed in 
-           * the commit process to include any changes in the results of the 
+           * An OBJECT change tracking policy allows an object to calculate for
+           * itself whether it has changed. Changed objects will be processed in
+           * the commit process to include any changes in the results of the
            * commit. Unchanged objects will be ignored.
            */
           OBJECT,
 
           /**
            * A DEFERRED change tracking policy defers all change detection to
-           * the UnitOfWork's change detection process. Essentially, the 
-           * calculateChanges() method will run for all objects in a UnitOfWork. 
+           * the UnitOfWork's change detection process. Essentially, the
+           * calculateChanges() method will run for all objects in a UnitOfWork.
            * This is the default ObjectChangePolicy
            */
           DEFERRED,
@@ -586,24 +586,24 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
-         * The Customizer annotation is used to specify a class that implements 
-         * the org.eclipse.persistence.config.DescriptorCustomizer 
-         * interface and is to run against an enetity's class descriptor after all 
+        /**
+         * The Customizer annotation is used to specify a class that implements
+         * the org.eclipse.persistence.config.DescriptorCustomizer
+         * interface and is to run against an enetity's class descriptor after all
          * metadata processing has been completed.
          *
-         * The Customizer annotation may be defined on an Entity, MappedSuperclass 
-         * or Embeddable class. In the case of inheritance, a Customizer is not 
-         * inherited from its parent classes. 
-         */ 
+         * The Customizer annotation may be defined on an Entity, MappedSuperclass
+         * or Embeddable class. In the case of inheritance, a Customizer is not
+         * inherited from its parent classes.
+         */
         @Target({TYPE})
         @Retention(RUNTIME)
         public @interface Customizer {
           /**
-           * (Required) Defines the name of the descriptor customizer class that 
+           * (Required) Defines the name of the descriptor customizer class that
            * should be applied for the related entity or embeddable class.
            */
-          Class value(); 
+          Class value();
         }
 
       </xsd:documentation>
@@ -617,9 +617,9 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
+        /**
          * An enum that is used within the StoredProcedureParameter annotation.
-         * It is used to specify the direction of the stored procedure 
+         * It is used to specify the direction of the stored procedure
          * parameters of a named stored procedure query.
          */
         public enum Direction {
@@ -653,7 +653,7 @@
       <xsd:enumeration value="OUT_CURSOR"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:simpleType name="parameter-mode">
@@ -685,7 +685,7 @@
         1. The persistence-unit-metadata element contains metadata
         for the entire persistence unit. It is undefined if this element
         occurs in multiple mapping files within the same persistence unit.
-        
+
         2. The package, schema, catalog and access elements apply to all of
         the entity, mapped-superclass and embeddable elements defined in
         the same file in which they occur.
@@ -694,9 +694,9 @@
         named-native-query and sql-result-set-mapping elements are global
         to the persistence unit. It is undefined to have more than one
         sequence-generator or table-generator of the same name in the same
-        or different mapping files in a persistence unit. It is also 
+        or different mapping files in a persistence unit. It is also
         undefined to have more than one named-query, named-native-query, or
-        result-set-mapping of the same name in the same or different mapping 
+        result-set-mapping of the same name in the same or different mapping
         files in a persistence unit.
 
         4. The entity, mapped-superclass and embeddable elements each define
@@ -758,10 +758,10 @@
     <xsd:annotation>
       <xsd:documentation>
         /**
-         * The ExistenceChecking annotation is used to specify the type of 
+         * The ExistenceChecking annotation is used to specify the type of
          * checking EclipseLink should use when updating entities.
-         * 
-         * An existence-checking specification is supported on an Entity or 
+         *
+         * An existence-checking specification is supported on an Entity or
          * MappedSuperclass annotation.
          */
         public @interface ExistenceChecking {
@@ -774,7 +774,7 @@
         }
 
         /**
-         * Assume that if the objects primary key does not include null and 
+         * Assume that if the objects primary key does not include null and
          * it is in the cache, then it must exist.
          */
         CHECK_CACHE,
@@ -785,28 +785,28 @@
         CHECK_DATABASE,
 
         /**
-         * Assume that if the objects primary key does not include null then 
-         * it must exist. This may be used if the application guarantees or 
+         * Assume that if the objects primary key does not include null then
+         * it must exist. This may be used if the application guarantees or
          * does not care about the existence check.
          */
         ASSUME_EXISTENCE,
 
         /**
-         * Assume that the object does not exist. This may be used if the 
-         * application guarantees or does not care about the existence check.  
+         * Assume that the object does not exist. This may be used if the
+         * application guarantees or does not care about the existence check.
          * This will always force an insert to be called.
          */
         ASSUME_NON_EXISTENCE
 
       </xsd:documentation>
-    </xsd:annotation>    
+    </xsd:annotation>
     <xsd:restriction base="xsd:token">
       <xsd:enumeration value="CHECK_CACHE"/>
       <xsd:enumeration value="CHECK_DATABASE"/>
       <xsd:enumeration value="ASSUME_EXISTENCE"/>
       <xsd:enumeration value="ASSUME_NON_EXISTENCE"/>
     </xsd:restriction>
-  </xsd:simpleType> 
+  </xsd:simpleType>
 
   <!-- **************************************************** -->
 
@@ -814,11 +814,11 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        Metadata that applies to the persistence unit and not just to 
-        the mapping file in which it is contained. 
+        Metadata that applies to the persistence unit and not just to
+        the mapping file in which it is contained.
 
         If the xml-mapping-metadata-complete element is specified,
-        the complete set of mapping metadata for the persistence unit 
+        the complete set of mapping metadata for the persistence unit
         is contained in the XML mapping files for the persistence unit.
 
       </xsd:documentation>
@@ -827,8 +827,8 @@
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="xml-mapping-metadata-complete" type="orm:emptyType"
                    minOccurs="0"/>
-      <xsd:element name="exclude-default-mappings" type="orm:emptyType" minOccurs="0"/>             
-      <xsd:element name="persistence-unit-defaults" 
+      <xsd:element name="exclude-default-mappings" type="orm:emptyType" minOccurs="0"/>
+      <xsd:element name="persistence-unit-defaults"
                    type="orm:persistence-unit-defaults"
                    minOccurs="0"/>
     </xsd:sequence>
@@ -840,15 +840,15 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        These defaults are applied to the persistence unit as a whole 
-        unless they are overridden by local annotation or XML 
-        element settings. 
-        
+        These defaults are applied to the persistence unit as a whole
+        unless they are overridden by local annotation or XML
+        element settings.
+
         schema - Used as the schema for all tables, secondary tables, join
-            tables, collection tables, sequence generators, and table 
+            tables, collection tables, sequence generators, and table
             generators that apply to the persistence unit
         catalog - Used as the catalog for all tables, secondary tables, join
-            tables, collection tables, sequence generators, and table 
+            tables, collection tables, sequence generators, and table
             generators that apply to the persistence unit
         delimited-identifiers - Used to treat database identifiers as
             delimited identifiers.
@@ -856,8 +856,8 @@
             the persistence unit
         cascade-persist - Adds cascade-persist to the set of cascade options
             in all entity relationships of the persistence unit
-        entity-listeners - List of default entity listeners to be invoked 
-            on each entity in the persistence unit. 
+        entity-listeners - List of default entity listeners to be invoked
+            on each entity in the persistence unit.
 
       </xsd:documentation>
     </xsd:annotation>
@@ -867,15 +867,15 @@
                      minOccurs="0"/>
         <xsd:element name="catalog" type="xsd:string"
                      minOccurs="0"/>
-        <xsd:element name="delimited-identifiers" type="orm:emptyType" 
+        <xsd:element name="delimited-identifiers" type="orm:emptyType"
                      minOccurs="0"/>
         <xsd:element name="access" type="orm:access-type"
                      minOccurs="0"/>
-        <xsd:element name="access-methods" type="orm:access-methods" 
+        <xsd:element name="access-methods" type="orm:access-methods"
                      minOccurs="0"/>
-        <xsd:element name="cascade-persist" type="orm:emptyType" 
+        <xsd:element name="cascade-persist" type="orm:emptyType"
                      minOccurs="0"/>
-        <xsd:element name="tenant-discriminator-column" type="orm:tenant-discriminator-column" 
+        <xsd:element name="tenant-discriminator-column" type="orm:tenant-discriminator-column"
                      minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="entity-listeners" type="orm:entity-listeners"
                      minOccurs="0"/>
@@ -890,10 +890,10 @@
 
         Defines the settings and mappings for an entity. Is allowed to be
         sparsely populated and used in conjunction with the annotations.
-        Alternatively, the metadata-complete attribute can be used to 
+        Alternatively, the metadata-complete attribute can be used to
         indicate that no annotations on the entity class (and its fields
-        or properties) are to be processed. If this is the case then 
-        the defaulting rules for the entity and its subelements will 
+        or properties) are to be processed. If this is the case then
+        the defaulting rules for the entity and its subelements will
         be recursively applied.
 
         @Target(TYPE) @Retention(RUNTIME)
@@ -1007,9 +1007,9 @@
       <xsd:element name="partitioned" type="xsd:string" minOccurs="0"/>
     </xsd:sequence>
   </xsd:group>
-      
+
   <!-- **************************************************** -->
-    
+
   <xsd:simpleType name="access-type">
     <xsd:annotation>
       <xsd:documentation>
@@ -1138,7 +1138,7 @@
       <xsd:choice minOccurs="0">
         <xsd:element name="lob" type="orm:lob"/>
         <xsd:element name="temporal" type="orm:temporal"/>
-        <xsd:element name="enumerated" type="orm:enumerated"/>  
+        <xsd:element name="enumerated" type="orm:enumerated"/>
         <xsd:element name="convert" type="orm:convert"/>
       </xsd:choice>
       <xsd:choice minOccurs="0">
@@ -1174,17 +1174,17 @@
         @Retention(RUNTIME)
         public @interface BasicCollection {
           /**
-           * (Optional) Defines whether the value of the field or property 
-           * should be lazily loaded or must be eagerly fetched. The EAGER 
-           * strategy is a requirement on the persistence provider runtime that 
-           * the value must be eagerly fetched. The LAZY strategy is a hint to 
-           * the persistence provider runtime. If not specified, defaults to 
+           * (Optional) Defines whether the value of the field or property
+           * should be lazily loaded or must be eagerly fetched. The EAGER
+           * strategy is a requirement on the persistence provider runtime that
+           * the value must be eagerly fetched. The LAZY strategy is a hint to
+           * the persistence provider runtime. If not specified, defaults to
            * LAZY.
            */
-          FetchType fetch() default LAZY; 
- 
+          FetchType fetch() default LAZY;
+
           /**
-           * (Optional) The name of the value column that holds the direct 
+           * (Optional) The name of the value column that holds the direct
            * collection data. Defaults to the property or field name.
            */
           Column valueColumn() default @Column;
@@ -1224,38 +1224,38 @@
         @Retention(RUNTIME)
         public @interface BasicMap {
           /**
-           * (Optional) Defines whether the value of the field or property 
-           * should be lazily loaded or must be eagerly fetched. The EAGER 
-           * strategy is a requirement on the persistence provider runtime that 
-           * the value must be eagerly fetched. The LAZY strategy is a hint to 
-           * the persistence provider runtime. If not specified, defaults to 
+           * (Optional) Defines whether the value of the field or property
+           * should be lazily loaded or must be eagerly fetched. The EAGER
+           * strategy is a requirement on the persistence provider runtime that
+           * the value must be eagerly fetched. The LAZY strategy is a hint to
+           * the persistence provider runtime. If not specified, defaults to
            * LAZY.
            */
           FetchType fetch() default LAZY;
 
           /**
-           * (Optional) The name of the data column that holds the direct map 
+           * (Optional) The name of the data column that holds the direct map
            * key. If the name on te key column is "", the name will default to:
            * the name of the property or field; "_KEY".
            */
           Column keyColumn() default @Column;
 
           /**
-           * (Optional) Specify the key converter. Default is equivalent to 
-           * specifying @Convert("none"), meaning no converter will be added to 
+           * (Optional) Specify the key converter. Default is equivalent to
+           * specifying @Convert("none"), meaning no converter will be added to
            * the direct map key.
            */
           Convert keyConverter() default @Convert;
 
           /**
-           * (Optional) The name of the data column that holds the direct 
+           * (Optional) The name of the data column that holds the direct
            * collection data. Defaults to the property or field name.
            */
           Column valueColumn() default @Column;
 
           /**
-           * (Optional) Specify the value converter. Default is equivalent to 
-           * specifying @Convert("none"), meaning no converter will be added to 
+           * (Optional) Specify the value converter. Default is equivalent to
+           * specifying @Convert("none"), meaning no converter will be added to
            * the value column mapping.
            */
           Convert valueConverter() default @Convert;
@@ -1265,7 +1265,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="key-column" type="orm:column" minOccurs="0"/>
-      <xsd:element name="key-converter" type="xsd:string" minOccurs="0"/>    
+      <xsd:element name="key-converter" type="xsd:string" minOccurs="0"/>
       <xsd:element name="value-column" type="orm:column" minOccurs="0"/>
       <xsd:element name="value-converter" type="xsd:string" minOccurs="0"/>
       <xsd:choice minOccurs="0" maxOccurs="2">
@@ -1274,7 +1274,7 @@
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
         <xsd:element name="serialized-converter" type="orm:serialized-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
-      </xsd:choice>    
+      </xsd:choice>
       <xsd:element name="collection-table" type="orm:eclipselink-collection-table" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
@@ -1320,81 +1320,81 @@
       <xsd:documentation>
 
         /**
-         * A ClassExtractor allows for a user defined class indicator in place of 
+         * A ClassExtractor allows for a user defined class indicator in place of
          * providing a discriminator column. The class has the following restrictions:
 
-         *  - It must extend the org.eclipse.persistence.descriptors.ClassExtractor 
-         *    class and implement the extractClassFromRow(Record, Session) method. 
-         *  - That method must take a database row (a Record/Map) as an argument and 
-         *    must return the class to use for that row. 
-         * 
-         * This method will be used to decide which class to instantiate when reading 
-         * from the database. It is the application's responsibility to populate any 
-         * typing information in the database required to determine the class from the 
+         *  - It must extend the org.eclipse.persistence.descriptors.ClassExtractor
+         *    class and implement the extractClassFromRow(Record, Session) method.
+         *  - That method must take a database row (a Record/Map) as an argument and
+         *    must return the class to use for that row.
+         *
+         * This method will be used to decide which class to instantiate when reading
+         * from the database. It is the application's responsibility to populate any
+         * typing information in the database required to determine the class from the
          * row.
-         * 
+         *
          * The ClassExtractor must only be set on the root of an entity class or
-         * sub-hierarchy in which a different inheritance strategy is applied. The 
-         * ClassExtractor can only be used with the SINGLE_TABLE and JOINED inheritance 
+         * sub-hierarchy in which a different inheritance strategy is applied. The
+         * ClassExtractor can only be used with the SINGLE_TABLE and JOINED inheritance
          * strategies.
-         * 
-         * If a ClassExtractor is used then a DiscriminatorColumn cannot be used. A 
+         *
+         * If a ClassExtractor is used then a DiscriminatorColumn cannot be used. A
          * ClassExtractor also cannot be used on either the root or its subclasses.
-         * 
-         * In addition, for more complex configurations using a ClassExtractor and a 
-         * SINGLE_TABLE strategy, the descriptor's withAllSubclasses and onlyInstances 
+         *
+         * In addition, for more complex configurations using a ClassExtractor and a
+         * SINGLE_TABLE strategy, the descriptor's withAllSubclasses and onlyInstances
          * expressions should be set through the ClassExtractor's initialize method.
          *
          * @see org.eclipse.persistence.descriptors.InheritancePolicy.setWithAllSubclassesExpression(Expression)
          * @see org.eclipse.persistence.descriptors.InheritancePolicy.setOnlyInstancesExpression(Expression)
-         * 
+         *
          * @author Guy Pelletier
-         * @since EclipseLink 2.1 
-         */ 
+         * @since EclipseLink 2.1
+         */
         @Target({TYPE})
         @Retention(RUNTIME)
         public @interface ClassExtractor {
             /**
-             * (Required) Defines the name of the class extractor that should be 
+             * (Required) Defines the name of the class extractor that should be
              * applied to this entity's descriptor.
              */
-            Class value(); 
+            Class value();
         }
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="clone-copy-policy">
     <xsd:annotation>
       <xsd:documentation>
         /**
-         * A CloneCopyPolicy is used to set an 
-         * org.eclipse.persistence.descriptors.copying.CloneCopyPolicy on an 
-         * Entity. A CloneCopyPolicy must specify at one or both of the "method" 
-         * or "workingCopyMethod". "workingCopyMethod" is used to clone objects 
-         * that will be returned to the user as they are registered in 
-         * EclipseLink's transactional mechanism, the UnitOfWork. "method" will 
-         * be used for the clone that is used for comparison in conjunction with 
+         * A CloneCopyPolicy is used to set an
+         * org.eclipse.persistence.descriptors.copying.CloneCopyPolicy on an
+         * Entity. A CloneCopyPolicy must specify at one or both of the "method"
+         * or "workingCopyMethod". "workingCopyMethod" is used to clone objects
+         * that will be returned to the user as they are registered in
+         * EclipseLink's transactional mechanism, the UnitOfWork. "method" will
+         * be used for the clone that is used for comparison in conjunction with
          * EclipseLink's DeferredChangeDetectionPolicy
-         *  
+         *
          * A CloneCopyPolicy should be specified on an Entity, MappedSuperclass
          * or Embeddable.
-         * 
+         *
          * Example:
          * @Entity
          * @CloneCopyPolicy(method="myCloneMethod")
-         * 
+         *
          * or:
-         * 
+         *
          * @Entity
          * @CloneCopyPolicy(method="myCloneMethod", workingCopyMethod="myWorkingCopyCloneMethod")
-         * 
+         *
          * or:
-         * 
+         *
          * @Entity
          * @CloneCopyPolicy(workingCopyMethodName="myWorkingCopyClone")
          */
@@ -1402,8 +1402,8 @@
 
             /**
              * (Optional)
-             * Either method or workingCopyMethod must be specified this defines 
-             * a method that will be used to create a clone that will be used 
+             * Either method or workingCopyMethod must be specified this defines
+             * a method that will be used to create a clone that will be used
              * for comparison by
              * EclipseLink's DeferredChangeDetectionPolicy
              */
@@ -1412,8 +1412,8 @@
             /**
              * (Optional)
              * Either method or workingCopyMethod must be specified
-             * this defines a method that will be used to create a clone that 
-             * will be used to create the object returned when registering an 
+             * this defines a method that will be used to create a clone that
+             * will be used to create the object returned when registering an
              * Object in an EclipseLink UnitOfWork
              */
             String workingCopyMethod();
@@ -1467,43 +1467,43 @@
         @Retention(RUNTIME)
         public @interface CollectionTable {
           /**
-           * (Optional) The name of the collection table. If it is not 
-           * specified, it is defaulted to the concatenation of the following: 
-           * the name of the source entity; "_" ; the name of the relationship 
+           * (Optional) The name of the collection table. If it is not
+           * specified, it is defaulted to the concatenation of the following:
+           * the name of the source entity; "_" ; the name of the relationship
            * property or field of the source entity.
            */
-          String name() default ""; 
+          String name() default "";
 
           /**
-           * (Optional) The catalog of the table. It defaults to the persistence 
+           * (Optional) The catalog of the table. It defaults to the persistence
            * unit default catalog.
            */
-          String catalog() default ""; 
+          String catalog() default "";
 
           /**
-           * (Optional) The schema of the table. It defaults to the persistence 
+           * (Optional) The schema of the table. It defaults to the persistence
            * unit default schema.
            */
-          String schema() default ""; 
+          String schema() default "";
 
           /**
-           * (Optional) Used to specify a primary key column that is used as a 
-           * foreign key to join to another table. If the source entity uses a 
-           * composite primary key, a primary key join column must be specified 
-           * for each field of the composite primary key. In a single primary 
-           * key case, a primary key join column may optionally be specified. 
+           * (Optional) Used to specify a primary key column that is used as a
+           * foreign key to join to another table. If the source entity uses a
+           * composite primary key, a primary key join column must be specified
+           * for each field of the composite primary key. In a single primary
+           * key case, a primary key join column may optionally be specified.
            * Defaulting will apply otherwise as follows:
-           * name, the same name as the primary key column of the primary table 
-           * of the source entity. referencedColumnName, the same name of 
+           * name, the same name as the primary key column of the primary table
+           * of the source entity. referencedColumnName, the same name of
            * primary key column of the primary table of the source entity.
            */
-          PrimaryKeyJoinColumn[] primaryKeyJoinColumns() default {}; 
- 
+          PrimaryKeyJoinColumn[] primaryKeyJoinColumns() default {};
+
           /**
-           * (Optional) Unique constraints that are to be placed on the table. 
+           * (Optional) Unique constraints that are to be placed on the table.
            * These are only used if table generation is in effect.
            */
-          UniqueConstraint[] uniqueConstraints() default {}; 
+          UniqueConstraint[] uniqueConstraints() default {};
        }
 
       </xsd:documentation>
@@ -1589,12 +1589,12 @@
         at the entity-mappings level. If a name is provided then it is treated
         as a named eclipselink converter. Otherwise it is treated as a JPA
         converter class.
-        
+
         @Target({TYPE, METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface Converter {
           /**
-           * (Required) Name this converter. The name should be unique across 
+           * (Required) Name this converter. The name should be unique across
            * the whole persistence unit.
            */
           String name();
@@ -1603,9 +1603,9 @@
            * (Required) The converter class to be used. This class must implement
            * the org.eclipse.persistence.mappings.converters.Converter interface.
            */
-          Class converterClass(); 
+          Class converterClass();
         }
-        
+
         @Target({TYPE}) @Retention(RUNTIME)
         public @interface Converter {
             boolean autoApply() default false;
@@ -1620,7 +1620,7 @@
     <xsd:attribute name="class" type="xsd:string" use="required"/>
     <xsd:attribute name="auto-apply" type="xsd:boolean"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="converter">
@@ -1631,7 +1631,7 @@
         @Retention(RUNTIME)
         public @interface Converter {
           /**
-           * (Required) Name this converter. The name should be unique across 
+           * (Required) Name this converter. The name should be unique across
            * the whole persistence unit.
            */
           String name();
@@ -1640,7 +1640,7 @@
            * (Required) The converter class to be used. This class must implement
            * the org.eclipse.persistence.mappings.converters.Converter interface.
            */
-          Class converterClass(); 
+          Class converterClass();
         }
 
       </xsd:documentation>
@@ -1654,19 +1654,19 @@
   <xsd:complexType name="partitioning">
     <xsd:annotation>
       <xsd:documentation>
-      
-            /** 
+
+            /**
              * A Partitioning is used to partition the data for a class across multiple difference databases
              * or across a database cluster such as Oracle RAC.
              * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
              * This annotation configures a custom PartitioningPolicy.
-             * 
+             *
              * If multiple partitions are used to process a single transaction, JTA should be used for proper XA transaction support.
-             * 
+             *
              * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
              * Partition policies are globally named to allow reuse,
              * the partitioning policy must also be set using the @Partitioned annotation to be used.
-             * 
+             *
              * @see Partitioned
              * @see org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy
              * @author James Sutherland
@@ -1676,7 +1676,7 @@
             @Retention(RUNTIME)
             public @interface Partitioning {
                 String name();
-                
+
                 /**
                  * (Required) Full package.class name of a subclass of PartitioningPolicy.
                  */
@@ -1688,32 +1688,32 @@
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="hash-partitioning">
     <xsd:annotation>
       <xsd:documentation>
-      
-            /** 
+
+            /**
              * HashPartitioning partitions access to a database cluster by the hash of a field value from the object,
              * such as the object's location, or tenant.
              * The hash indexes into the list of connection pools.
              * All write or read request for object's with that hash value are sent to the server.
              * If a query does not include the field as a parameter, then it can either be sent
              * to all server's and unioned, or left to the sesion's default behavior.
-             * 
+             *
              * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
-             * 
+             *
              * @see org.eclipse.persistence.descriptors.partitioning.HashPartitioningPolicy
              * @author James Sutherland
              * @since EclipseLink 2.2
-             */ 
+             */
             @Target({TYPE, METHOD, FIELD})
             @Retention(RUNTIME)
             public @interface HashPartitioning {
                 String name();
-                
+
                 /**
                  * The database column or query parameter to partition queries by.
                  * This is the table column name, not the class attribute name.
@@ -1722,12 +1722,12 @@
                  * If a query does not contain the field the query will not be partitioned.
                  */
                 Column partitionColumn();
-            
+
                 /**
                  * List of connection pool names to partition across.
                  */
                 String[] connectionPools();
-                        
+
                 /**
                  * Defines if queries that do not contain the partition field should be sent
                  * to every database and have the result unioned.
@@ -1744,37 +1744,37 @@
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="union-unpartitionable-queries" type="xsd:boolean"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="range-partitioning">
     <xsd:annotation>
       <xsd:documentation>
-      
-        /** 
+
+        /**
          * RangePartitioningPolicy partitions access to a database cluster by a field value from the object,
          * such as the object's id, location, or tenant.
          * Each server is assigned a range of values.
          * All write or read request for object's with that value are sent to the server.
          * If a query does not include the field as a parameter, then it can either be sent
          * to all server's and unioned, or left to the sesion's default behavior.
-         * 
+         *
          * If multiple partitions are used to process a single transaction, JTA should be used for proper XA transaction support.
-         * 
+         *
          * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
          * Partition policies are globally named to allow reuse,
          * the partitioning policy must also be set using the @Partitioned annotation to be used.
-         * 
+         *
          * @see Partitioned
          * @see org.eclipse.persistence.descriptors.partitioning.RangePartitioningPolicy
          * @author James Sutherland
          * @since EclipseLink 2.2
-         */ 
+         */
         @Target({TYPE, METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface RangePartitioning {
             String name();
-            
+
             /**
              * The database column or query parameter to partition queries by.
              * This is the table column name, not the class attribute name.
@@ -1783,18 +1783,18 @@
              * If a query does not contain the field the query will not be partitioned.
              */
             Column partitionColumn();
-            
+
             /**
              * (Required) List of connection pool names to load balance across.
              */
             RangePartition[] partitions();
-            
+
             /**
              * Defines if queries that do not contain the partition field should be sent
              * to every database and have the result unioned.
              */
             boolean unionUnpartitionableQueries() default false;
-            
+
             /** The type of the start and end values. */
             Class partitionValueType() default String.class;
         }
@@ -1809,23 +1809,23 @@
     <xsd:attribute name="union-unpartitionable-queries" type="xsd:boolean"/>
     <xsd:attribute name="partition-value-type" type="xsd:string"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="range-partition">
     <xsd:annotation>
       <xsd:documentation>
-      
-        /** 
+
+        /**
          * Represent a specific range partition.
          * Values = startValue and = endValue will be routed to the connection pool.
-         * 
+         *
          * @see RangePartitioningPolicy
          * @see org.eclipse.persistence.descriptors.partitioning.RangePartitioningPolicy
          * @see org.eclipse.persistence.descriptors.partitioning.RangePartition
          * @author James Sutherland
          * @since EclipseLink 2.2
-         */ 
+         */
         @Target({TYPE, METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface RangePartition {
@@ -1843,32 +1843,32 @@
     <xsd:attribute name="end-value" type="xsd:string"/>
     <xsd:attribute name="connection-pool" type="xsd:string" use="required"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="value-partitioning">
     <xsd:annotation>
       <xsd:documentation>
-      
-        /** 
+
+        /**
          * ValuePartitioning partitions access to a database cluster by a field value from the object,
          * such as the object's location, or tenant.
          * Each value is assigned a specific server.
          * All write or read request for object's with that value are sent to the server.
          * If a query does not include the field as a parameter, then it can either be sent
          * to all server's and unioned, or left to the sesion's default behavior.
-         * 
+         *
          * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
-         * 
+         *
          * @see org.eclipse.persistence.descriptors.partitioning.ValuePartitioningPolicy
          * @author James Sutherland
          * @since EclipseLink 2.2
-         */ 
+         */
         @Target({TYPE, METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface ValuePartitioning {
             String name();
-            
+
             /**
              * The database column or query parameter to partition queries by.
              * This is the table column name, not the class attribute name.
@@ -1877,16 +1877,16 @@
              * If a query does not contain the field the query will not be partitioned.
              */
             Column partitionColumn();
-            
+
             /** Store the value partitions. Each partition maps a value to a connectionPool. */
             ValuePartition[] partitions();
-    
+
             /** The type of the start and end values. */
             Class partitionValueType() default String.class;
-            
+
             /** The default connection pool is used for any unmapped values. */
             String defaultConnectionPool();
-                
+
             /**
              * Defines if queries that do not contain the partition field should be sent
              * to every database and have the result unioned.
@@ -1905,29 +1905,29 @@
     <xsd:attribute name="default-connection-pool" type="xsd:string"/>
     <xsd:attribute name="partition-value-type" type="xsd:string"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="value-partition">
     <xsd:annotation>
       <xsd:documentation>
-      
-        /** 
+
+        /**
          * Represent a specific value partition.
          * The value will be routed to the connection pool.
-         * 
+         *
          * @see ValuePartitioningPolicy
          * @see org.eclipse.persistence.descriptors.partitioning.ValuePartitioningPolicy
          * @see org.eclipse.persistence.descriptors.partitioning.ValuePartition
          * @author James Sutherland
          * @since EclipseLink 2.2
-         */ 
+         */
         @Target({TYPE, METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface ValuePartition {
             /** The String representation of the range start value. */
             String value() default "";
-            
+
             /** The connection pool to route queries to for this value. */
             String connectionPool();
         }
@@ -1937,35 +1937,35 @@
     <xsd:attribute name="value" type="xsd:string" use="required"/>
     <xsd:attribute name="connection-pool" type="xsd:string" use="required"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="round-robin-partitioning">
     <xsd:annotation>
       <xsd:documentation>
-      
-            /** 
+
+            /**
              * RoundRobinPartitioning sends requests in a round robin fashion to the set of connection pools.
              * It is for load-balancing read queries across a cluster of database machines.
              * It requires that the full database be replicated on each machine, so does not support partitioning.
              * The data should either be read-only, or writes should be replicated on the database.
-             * 
+             *
              * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
-             * 
+             *
              * @see org.eclipse.persistence.descriptors.partitioning.RoundRobinPolicy
              * @author James Sutherland
              * @since EclipseLink 2.2
-             */ 
+             */
             @Target({TYPE, METHOD, FIELD})
             @Retention(RUNTIME)
             public @interface RoundRobinPartitioning {
                 String name();
-                
+
                 /**
                  * (Required) List of connection pool names to load balance across.
                  */
                 String[] connectionPools();
-                
+
                 /**
                  * This allows for a set of database to be written to and kept in synch,
                  * and have reads load-balanced across the databases.
@@ -1981,29 +1981,29 @@
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="replicate-writes" type="xsd:boolean"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="replication-partitioning">
     <xsd:annotation>
       <xsd:documentation>
-      
-            /** 
+
+            /**
              * ReplicationPartitioning sends requests to a set of connection pools.
              * It is for replicating data across a cluster of database machines.
              * Only modification queries are replicated.
-             * 
+             *
              * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
-             * 
+             *
              * @see org.eclipse.persistence.descriptors.partitioning.ReplicationPolicy
              * @author James Sutherland
              * @since EclipseLink 2.2
-             */ 
+             */
             @Target({TYPE, METHOD, FIELD})
             @Retention(RUNTIME)
             public @interface ReplicationPartitioning {
                 String name();
-                
+
                 /**
                  * (Required) List of connection pool names to load balance across.
                  */
@@ -2017,34 +2017,34 @@
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="union-partitioning">
     <xsd:annotation>
       <xsd:documentation>
-      
-            /** 
+
+            /**
              * UnionPartitioning sends queries to all connection pools and unions the results.
              * This is for queries or relationships that span partitions when partitioning is used,
              * such as on a ManyToMany cross partition relationship.
-             * 
+             *
              * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
-             * 
+             *
              * @see org.eclipse.persistence.descriptors.partitioning.UnionPartitioningPolicy
              * @author James Sutherland
              * @since EclipseLink 2.2
-             */ 
+             */
             @Target({TYPE, METHOD, FIELD})
             @Retention(RUNTIME)
             public @interface UnionPartitioning {
                 String name();
-                
+
                 /**
                  * (Required) List of connection pool names to load balance across.
                  */
                 String[] connectionPools();
-                
+
                 /**
                  * Defines if write queries should be replicated.
                  * Writes are normally not replicated when unioning,
@@ -2061,27 +2061,27 @@
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="replicate-writes" type="xsd:boolean"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="pinned-partitioning">
     <xsd:annotation>
       <xsd:documentation>
-      
-        /** 
+
+        /**
          * PinnedPartitioning pins requests to a single connection pool.
-         * 
+         *
          * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
-         * 
+         *
          * @see org.eclipse.persistence.descriptors.partitioning.PinnedPartitioningPolicy
          * @author James Sutherland
          * @since EclipseLink 2.2
-         */ 
+         */
         @Target({TYPE, METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface PinnedPartitioning {
             String name();
-            
+
             /**
              * The connection pool name to pin queries to.
              */
@@ -2093,7 +2093,7 @@
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="connection-pool" type="xsd:string" use="required"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="column-result">
@@ -2128,7 +2128,7 @@
       <xsd:enumeration value="PROVIDER_DEFAULT"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="constructor-result">
@@ -2171,22 +2171,22 @@
     <xsd:attribute name="attribute-name" type="xsd:string"/>
     <xsd:attribute name="disable-conversion" type="xsd:boolean"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
-  
+
   <xsd:complexType name="copy-policy">
     <xsd:annotation>
       <xsd:documentation>
         /**
-         * A CopyPolicy is used to set a 
+         * A CopyPolicy is used to set a
          * org.eclipse.persistence.descriptors.copying.CopyPolicy on an Entity.
-         * It is required that a class that implements 
-         * org.eclipse.persistence.descriptors.copying.CopyPolicy be specified 
+         * It is required that a class that implements
+         * org.eclipse.persistence.descriptors.copying.CopyPolicy be specified
          * as the argument.
-         * 
-         * A CopyPolicy should be specified on an Entity, MappedSuperclass or 
+         *
+         * A CopyPolicy should be specified on an Entity, MappedSuperclass or
          * Embeddable.
-         * 
+         *
          * For instance:
          * @Entity
          * @CopyPolicy("example.MyCopyPolicy")
@@ -2195,7 +2195,7 @@
 
         /*
         * (Required)
-        * This defines the class of the copy policy. It must specify a class 
+        * This defines the class of the copy policy. It must specify a class
         * that implements org.eclipse.persistence.descriptors.copying.CopyPolicy
         */
         Class value();
@@ -2234,19 +2234,19 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
+        /**
          * A DiscriminatorClass is used within a VariableOneToOne annotation.
-         */ 
-        @Target({}) 
+         */
+        @Target({})
         @Retention(RUNTIME)
         public @interface DiscriminatorClass {
           /**
-           * (Required) The discriminator to be stored on the database. 
+           * (Required) The discriminator to be stored on the database.
            */
           String discriminator();
 
           /**
-           * (Required) The class to the instantiated with the given 
+           * (Required) The class to the instantiated with the given
            * discriminator.
            */
           Class value();
@@ -2344,7 +2344,7 @@
         <xsd:sequence>
           <xsd:element name="attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
           <xsd:element name="association-override" type="orm:association-override" minOccurs="0" maxOccurs="unbounded"/>
-          <xsd:element name="convert" type="orm:convert" minOccurs="0" maxOccurs="unbounded"/>   
+          <xsd:element name="convert" type="orm:convert" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
       </xsd:choice>
       <xsd:choice minOccurs="0" maxOccurs="2">
@@ -2374,14 +2374,14 @@
     <xsd:attribute name="attribute-type" type="xsd:string"/>
     <xsd:attribute name="composite-member" type="xsd:string"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="array">
     <xsd:annotation>
       <xsd:documentation>
-        
-        /** 
+
+        /**
          * Array types are extended object-relational data-types supported by some databases.
          * Array types are user define types in the database such as VARRAY types on Oracle.
          * Arrays can contains basic types (VARCHAR) or other Struct types, and can be stored in
@@ -2389,7 +2389,7 @@
          * This annotation can be defined on a collection attribute that is
          * persisted to an Array type.  The collection can be of basic types, or embeddable
          * class mapped using a Struct.
-         * 
+         *
          * @see org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor
          * @see org.eclipse.persistence.mappings.structures.ArrayMapping
          * @see org.eclipse.persistence.mappings.structures.ObjectArrayMapping
@@ -2408,7 +2408,7 @@
              * generics.
              */
             Class targetClass() default void.class;
-            
+
             /**
              * (Required) The database name of the database array structure type.
              */
@@ -2448,11 +2448,11 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        Defines the settings and mappings for embeddable objects. Is 
-        allowed to be sparsely populated and used in conjunction with 
-        the annotations. Alternatively, the metadata-complete attribute 
-        can be used to indicate that no annotations are to be processed 
-        in the class. If this is the case then the defaulting rules will 
+        Defines the settings and mappings for embeddable objects. Is
+        allowed to be sparsely populated and used in conjunction with
+        the annotations. Alternatively, the metadata-complete attribute
+        can be used to indicate that no annotations are to be processed
+        in the class. If this is the case then the defaulting rules will
         be recursively applied.
 
         @Target({TYPE}) @Retention(RUNTIME)
@@ -2478,7 +2478,7 @@
       <xsd:element name="oracle-object" type="orm:oracle-object" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="oracle-array" type="orm:oracle-array" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="plsql-record" type="orm:plsql-record" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="plsql-table" type="orm:plsql-table" minOccurs="0" maxOccurs="unbounded"/>      
+      <xsd:element name="plsql-table" type="orm:plsql-table" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="association-override" type="orm:association-override" minOccurs="0" maxOccurs="unbounded"/>
@@ -2527,7 +2527,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="attribute-override" type="orm:attribute-override" 
+      <xsd:element name="attribute-override" type="orm:attribute-override"
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
@@ -2551,7 +2551,7 @@
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="pre-persist" type="orm:pre-persist" minOccurs="0"/>
-      <xsd:element name="post-persist" type="orm:post-persist" 
+      <xsd:element name="post-persist" type="orm:post-persist"
                    minOccurs="0"/>
       <xsd:element name="pre-remove" type="orm:pre-remove" minOccurs="0"/>
       <xsd:element name="post-remove" type="orm:post-remove" minOccurs="0"/>
@@ -2576,7 +2576,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="entity-listener" type="orm:entity-listener" 
+      <xsd:element name="entity-listener" type="orm:entity-listener"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -2597,7 +2597,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="field-result" type="orm:field-result" 
+      <xsd:element name="field-result" type="orm:field-result"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="entity-class" type="xsd:string" use="required"/>
@@ -2651,14 +2651,14 @@
           /**
            * (Required) The fetch attribute name.
            */
-          String name(); 
+          String name();
         }
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="fetch-group">
@@ -2671,13 +2671,13 @@
           /**
            * (Required) The fetch group name.
            */
-          String name(); 
+          String name();
 
           /**
            * (Optional) Indicates whether all relationship attributes
            * specified in the fetch group should be loaded.
            */
-          boolean load() default true; 
+          boolean load() default true;
 
           /**
            * (Required) The list of attributes to fetch.
@@ -2742,9 +2742,9 @@
 
           // Note that the elements that embed the use of the annotation
           // default this use as @ForeignKey(PROVIDER_DEFAULT).
-          
+
         }
-        
+
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
@@ -2754,9 +2754,9 @@
     <xsd:attribute name="constraint-mode" type="orm:constraint-mode"/>
     <xsd:attribute name="foreign-key-definition" type="xsd:string"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
-  
+
   <xsd:complexType name="generated-value">
     <xsd:annotation>
       <xsd:documentation>
@@ -2822,11 +2822,11 @@
         <xsd:element name="serialized-converter" type="orm:serialized-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
-      <xsd:element name="table-generator" type="orm:table-generator" 
+      <xsd:element name="table-generator" type="orm:table-generator"
                    minOccurs="0"/>
       <xsd:element name="sequence-generator" type="orm:sequence-generator"
                    minOccurs="0"/>
-      <xsd:element name="uuid-generator" type="orm:uuid-generator" 
+      <xsd:element name="uuid-generator" type="orm:uuid-generator"
                    minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
@@ -2859,17 +2859,17 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
+        /**
          * The IdValidation enum determines the type value that are valid for an Id.
          * By default null is not allowed, and 0 is not allow for singleton ids of long or int type.
          * The default value is ZERO for singleton ids, and NULL for composite ids.
          * This can be set using the @PrimaryKey annotation, or ClassDescriptor API.
-         * 
+         *
          * @see PrimaryKey
          * @see org.eclipse.persistence.descriptors.ClassDescriptor#setIdValidation(IdValidation)
          * @author James Sutherland
-         * @since EclipseLink 1.0 
-         */ 
+         * @since EclipseLink 1.0
+         */
         public enum IdValidation {
             /**
              * Only null is not allowed as an id value, 0 is allowed.
@@ -2898,16 +2898,16 @@
   </xsd:simpleType>
 
   <!-- **************************************************** -->
-  
+
   <xsd:simpleType name="cache-key-type">
     <xsd:annotation>
       <xsd:documentation>
-            
+
             /**
              * Configures what type of Id value is used to store the object in the cache.
              * This can either be the basic Id value for simple singleton Ids,
              * or an optimized CacheKey type.
-             * 
+             *
              * @see PrimaryKey#cacheKeyType()
              * @see ClassDescriptor#setCacheKeyType(CacheKeyType)
              * @author James Sutherland
@@ -2919,13 +2919,13 @@
                  * This is the default for simple singleton Ids.
                  */
                 ID_VALUE,
-            
+
                 /**
                  * Optimized cache key type that allows composite and complex values.
                  * This is the default for composite or complex Ids.
                  */
                 CACHE_ID,
-            
+
                 /**
                  * The cache key type is automatically configured depending on what is optimal for the class.
                  */
@@ -2941,7 +2941,7 @@
       <xsd:enumeration value="AUTO"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="inheritance">
@@ -2982,18 +2982,18 @@
     <xsd:annotation>
       <xsd:documentation>
         /**
-         * An InstantiationCopyPolicy is used to set an 
-         * org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy 
-         * on an Entity. InstantiationCopyPolicy is the default CopyPolicy in 
-         * EclipseLink and therefore this configuration option is only used to 
+         * An InstantiationCopyPolicy is used to set an
+         * org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy
+         * on an Entity. InstantiationCopyPolicy is the default CopyPolicy in
+         * EclipseLink and therefore this configuration option is only used to
          * override other types of copy policies
-         * 
-         * An InstantiationCopyPolicy should be specified on an Entity, 
+         *
+         * An InstantiationCopyPolicy should be specified on an Entity,
          * MappedSuperclass or Embeddable.
-         * 
+         *
          * Example:
          * @Entity
-         * @InstantiationCopyPolicy 
+         * @InstantiationCopyPolicy
          */
         public @interface InstantiationCopyPolicy {
         }
@@ -3071,21 +3071,21 @@
                  * The original query's selection criteria is joined with the batch query.
                  */
                 JOIN,
-            
+
                 /**
                  * This uses an SQL EXISTS and a sub-select in the batch query instead of a join.
                  * This has the advantage of not requiring an SQL DISTINCT which can have issues
                  * with LOBs, or may be more efficient for some types of queries or on some databases.
                  */
                 EXISTS,
-            
+
                 /**
                  * This uses an SQL IN clause in the batch query passing in the source object Ids.
                  * This has the advantage of only selecting the objects not already contained in the cache,
                  * and can work better with cursors, or if joins cannot be used.
                  * This may only work for singleton Ids on some databases.
                  */
-                IN    
+                IN
             }
 
       </xsd:documentation>
@@ -3096,7 +3096,7 @@
       <xsd:enumeration value="IN"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="join-table">
@@ -3201,7 +3201,7 @@
             <xsd:choice minOccurs="0" maxOccurs="unbounded">
                 <xsd:element name="map-key-attribute-override" type="orm:attribute-override"/>
                 <xsd:element name="map-key-convert" type="orm:convert"/>
-                <xsd:element name="map-key-association-override" type="orm:association-override"/>            
+                <xsd:element name="map-key-association-override" type="orm:association-override"/>
             </xsd:choice>
           </xsd:choice>
           <xsd:choice>
@@ -3258,7 +3258,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:choice>       
+      <xsd:choice>
         <xsd:sequence>
           <xsd:element name="primary-key-join-column" type="orm:primary-key-join-column" minOccurs="0" maxOccurs="unbounded"/>
           <xsd:element name="primary-key-foreign-key" type="orm:foreign-key" minOccurs="0"/>
@@ -3389,11 +3389,11 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        Defines the settings and mappings for a mapped superclass. Is 
-        allowed to be sparsely populated and used in conjunction with 
-        the annotations. Alternatively, the metadata-complete attribute 
-        can be used to indicate that no annotations are to be processed 
-        If this is the case then the defaulting rules will be recursively 
+        Defines the settings and mappings for a mapped superclass. Is
+        allowed to be sparsely populated and used in conjunction with
+        the annotations. Alternatively, the metadata-complete attribute
+        can be used to indicate that no annotations are to be processed
+        If this is the case then the defaulting rules will be recursively
         applied.
 
         @Target(TYPE) @Retention(RUNTIME)
@@ -3424,37 +3424,37 @@
       <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="clone-copy-policy" type="orm:clone-copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="serialized-object" type="orm:serialized-object" minOccurs="0" maxOccurs="1"/>
-      <xsd:element name="sequence-generator" type="orm:sequence-generator" 
+      <xsd:element name="sequence-generator" type="orm:sequence-generator"
                    minOccurs="0"/>
-      <xsd:element name="table-generator" type="orm:table-generator" 
+      <xsd:element name="table-generator" type="orm:table-generator"
                    minOccurs="0"/>
-      <xsd:element name="uuid-generator" type="orm:uuid-generator" 
+      <xsd:element name="uuid-generator" type="orm:uuid-generator"
                    minOccurs="0"/>
       <xsd:group ref="orm:partitioning-group"/>
-      <xsd:element name="named-query" type="orm:named-query" 
+      <xsd:element name="named-query" type="orm:named-query"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="named-native-query" type="orm:named-native-query" 
+      <xsd:element name="named-native-query" type="orm:named-native-query"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/> 
-      <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>            
+      <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="oracle-object" type="orm:oracle-object" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="oracle-array" type="orm:oracle-array" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="plsql-record" type="orm:plsql-record" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="plsql-table" type="orm:plsql-table" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="sql-result-set-mapping" 
-                   type="orm:sql-result-set-mapping" 
+      <xsd:element name="sql-result-set-mapping"
+                   type="orm:sql-result-set-mapping"
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="query-redirectors" type="orm:query-redirectors" minOccurs="0" maxOccurs="1"/>
-      <xsd:element name="exclude-default-listeners" type="orm:emptyType" 
+      <xsd:element name="exclude-default-listeners" type="orm:emptyType"
                    minOccurs="0"/>
-      <xsd:element name="exclude-superclass-listeners" type="orm:emptyType" 
+      <xsd:element name="exclude-superclass-listeners" type="orm:emptyType"
                    minOccurs="0"/>
-      <xsd:element name="entity-listeners" type="orm:entity-listeners" 
+      <xsd:element name="entity-listeners" type="orm:entity-listeners"
                    minOccurs="0"/>
       <xsd:element name="pre-persist" type="orm:pre-persist" minOccurs="0"/>
-      <xsd:element name="post-persist" type="orm:post-persist" 
+      <xsd:element name="post-persist" type="orm:post-persist"
                    minOccurs="0"/>
       <xsd:element name="pre-remove" type="orm:pre-remove" minOccurs="0"/>
       <xsd:element name="post-remove" type="orm:post-remove" minOccurs="0"/>
@@ -3462,9 +3462,9 @@
       <xsd:element name="post-update" type="orm:post-update" minOccurs="0"/>
       <xsd:element name="post-load" type="orm:post-load" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="attribute-override" type="orm:attribute-override" 
+      <xsd:element name="attribute-override" type="orm:attribute-override"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="association-override" 
+      <xsd:element name="association-override"
                    type="orm:association-override"
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="attributes" type="orm:attributes" minOccurs="0"/>
@@ -3484,8 +3484,8 @@
   <xsd:complexType name="multitenant">
     <xsd:annotation>
       <xsd:documentation>
- 
-        @Target({TYPE}) 
+
+        @Target({TYPE})
         @Retention(RUNTIME)
         public @interface Multitenant {
             /**
@@ -3493,7 +3493,7 @@
              */
             MultitenantType value() default MultitenantType.SINGLE_TABLE;
         }
- 
+
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
@@ -3507,33 +3507,33 @@
   </xsd:complexType>
 
   <!-- **************************************************** -->
-  
+
   <xsd:simpleType name="multitenant-type">
     <xsd:annotation>
       <xsd:documentation>
 
         public enum MultitenantType {
             /**
-             * Specifies that table(s) the entity maps to includes rows for multiple 
-             * tenants. The tenant discriminator column(s) are used with application 
+             * Specifies that table(s) the entity maps to includes rows for multiple
+             * tenants. The tenant discriminator column(s) are used with application
              * context values to limit what a persistence context can access.
              */
-            SINGLE_TABLE, 
+            SINGLE_TABLE,
 
-            /** 
+            /**
              * Specifies that different tables are used for each tenant. The
              * tenant table discriminator describes how the table is uniquely
              * identified, that is, using a suffix/prefix or a separate schema.
-             * 
+             *
              * @since 2.4
              */
             TABLE_PER_TENANT,
-            
+
             /**
              * Specifies that the DB will handle the tenant filtering on all SELECT,
              * UPDATE and DELETE queries. Using this type assumes that the platform
              * used with your persistence unit does indeed support VPD.
-             * 
+             *
              * @since 2.3.1
              */
             VPD
@@ -3547,7 +3547,7 @@
       <xsd:enumeration value="TABLE_PER_TENANT"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="named-attribute-node">
@@ -3560,7 +3560,7 @@
           String subgraph() default "";
           String keySubgraph() default "";
         }
- 
+
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -3586,16 +3586,16 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="named-attribute-node" 
-                   type="orm:named-attribute-node" 
+      <xsd:element name="named-attribute-node"
+                   type="orm:named-attribute-node"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
-      <xsd:element name="subgraph" 
-                   type="orm:named-subgraph" 
+      <xsd:element name="subgraph"
+                   type="orm:named-subgraph"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
-      <xsd:element name="subclass-subgraph" 
-                   type="orm:named-subgraph" 
+      <xsd:element name="subclass-subgraph"
+                   type="orm:named-subgraph"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
     </xsd:sequence>
@@ -3623,7 +3623,7 @@
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="query" type="xsd:string"/>
-      <xsd:element name="hint" type="orm:query-hint" 
+      <xsd:element name="hint" type="orm:query-hint"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -3651,7 +3651,7 @@
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="query" type="xsd:string"/>
       <xsd:element name="lock-mode" type="orm:lock-mode-type" minOccurs="0"/>
-      <xsd:element name="hint" type="orm:query-hint" 
+      <xsd:element name="hint" type="orm:query-hint"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -3663,12 +3663,12 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
-         * A NamedStoredProcedureQuery annotation allows the definition of 
+        /**
+         * A NamedStoredProcedureQuery annotation allows the definition of
          * queries that call stored procedures as named queries.
          * A NamedStoredProcedureQuery annotation may be defined on an Entity or
-         * MappedSuperclass. 
-         */ 
+         * MappedSuperclass.
+         */
         @Target({TYPE})
         @Retention(RUNTIME)
         public @interface NamedStoredProcedureQuery {
@@ -3700,7 +3700,7 @@
            * @see resultSetMappings
            */
           String resultSetMapping() default "";
-    
+
           /**
            * (Optional) The names of the SQLResultMappings.
            */
@@ -3713,26 +3713,26 @@
 
           /**
            * (Optional) Defines if stored procedure returns a result set.
-           * This is only relevant on databases that support returning result sets 
+           * This is only relevant on databases that support returning result sets
            * from stored procedures.
            */
           boolean returnsResultSet() default false;
-    
+
           /**
            * (Optional) Defines if the stored procedure returns multiple result sets.
-           * This is only relevant on databases that support multiple result sets from 
+           * This is only relevant on databases that support multiple result sets from
            * stored procedures.
            */
           boolean multipleResultSets() default false;
-    
+
           /**
-           * (Optional) Defines if the stored procedure should be called by index or 
-           * by name. By index requires that the StoredProcedureParameter are defined 
-           * in the same order as the procedure on the database. By name requires the 
+           * (Optional) Defines if the stored procedure should be called by index or
+           * by name. By index requires that the StoredProcedureParameter are defined
+           * in the same order as the procedure on the database. By name requires the
            * database platform support naming procedure parameters.
            */
           boolean callByIndex() default false;
-    
+
           /**
            * (Optional) Defines arguments to the stored procedure.
            */
@@ -3758,7 +3758,7 @@
     <xsd:attribute name="multiple-result-sets" type="xsd:boolean"/>
     <xsd:attribute name="call-by-index" type="xsd:boolean"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="named-subgraph">
@@ -3775,27 +3775,27 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="named-attribute-node" 
-                   type="orm:named-attribute-node" 
+      <xsd:element name="named-attribute-node"
+                   type="orm:named-attribute-node"
                    minOccurs="0"
                    maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="class" type="xsd:string"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="named-stored-function-query">
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
-         * A NamedStoredFunctionQuery annotation allows the definition of 
+        /**
+         * A NamedStoredFunctionQuery annotation allows the definition of
          * queries that call stored function as named queries.
          * A NamedStoredFunctionQuery annotation may be defined on an Entity or
-         * MappedSuperclass. 
-         */ 
+         * MappedSuperclass.
+         */
         @Target({TYPE})
         @Retention(RUNTIME)
         public @interface NamedStoredFunctionQuery {
@@ -3818,19 +3818,19 @@
            * (Required) The name of the stored procedure.
            */
           String functionName();
-          
+
           /**
            * (Optional) Defines if the stored procedure should be called by index or by name.
            * By index requires that the StoredProcedureParameter are defined in the same order as the procedure on the database.
            * By name requires the database platform support naming procedure parameters.
            */
           boolean callByIndex() default false;
-    
+
           /**
            * (Optional) Defines arguments to the stored procedure.
            */
           StoredProcedureParameter[] parameters() default {};
-          
+
           /**
            * (Required) Defines return of the stored function.
            */
@@ -3851,23 +3851,23 @@
   </xsd:complexType>
 
   <!-- **************************************************** -->
-  
+
   <xsd:complexType name="named-plsql-stored-function-query">
     <xsd:annotation>
       <xsd:documentation>
 
-            /** 
-             * A NamedPLSQLStoredFunctionQuery annotation allows the definition of queries that 
+            /**
+             * A NamedPLSQLStoredFunctionQuery annotation allows the definition of queries that
              * call PLSQL stored functions as named queries.
              * The PLSQL support adds support for complex PLSQL types such as RECORD and TABLE types,
              * that are not accessible from JDBC.
-             * 
+             *
              * A NamedPLSQLStoredFunctionQuery annotation may be defined on an Entity or
              * MappedSuperclass.
-             * 
+             *
              * @author James Sutherland
              * @since EclipseLink 2.3
-             */ 
+             */
             @Target({TYPE})
             @Retention(RUNTIME)
             public @interface NamedPLSQLStoredFunctionQuery {
@@ -3875,27 +3875,27 @@
                  * (Required) Unique name that references this stored procedure query.
                  */
                 String name();
-            
+
                 /**
                  * (Optional) Query hints.
                  */
                 QueryHint[] hints() default {};
-            
+
                 /**
                  * (Optional) The name of the SQLResultMapping.
                  */
                 String resultSetMapping() default "";
-            
+
                 /**
                  * (Required) The name of the stored procedure.
                  */
                 String functionName();
-                
+
                 /**
                  * (Optional) Defines the parameters to the stored procedure.
                  */
                 PLSQLParameter[] parameters() default {};
-                
+
                 /**
                  * (Required) Defines the return value of the stored function.
                  */
@@ -3911,27 +3911,27 @@
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="result-set-mapping" type="xsd:string"/>
-    <xsd:attribute name="function-name" type="xsd:string" use="required"/>    
+    <xsd:attribute name="function-name" type="xsd:string" use="required"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
-  
+
   <xsd:complexType name="named-plsql-stored-procedure-query">
     <xsd:annotation>
       <xsd:documentation>
 
-            /** 
-             * A PLSQLNamedStoredProcedureQuery annotation allows the definition of queries that 
+            /**
+             * A PLSQLNamedStoredProcedureQuery annotation allows the definition of queries that
              * call PLSQL stored procedures as named queries.
              * The PLSQL support adds support for complex PLSQL types such as RECORD and TABLE types,
              * that are not accessible from JDBC.
-             * 
+             *
              * A PLSQLNamedStoredProcedureQuery annotation may be defined on an Entity or
              * MappedSuperclass.
-             * 
+             *
              * @author James Sutherland
              * @since EclipseLink 2.3
-             */ 
+             */
             @Target({TYPE})
             @Retention(RUNTIME)
             public @interface NamedPLSQLStoredProcedureQuery {
@@ -3939,27 +3939,27 @@
                  * (Required) Unique name that references this stored procedure query.
                  */
                 String name();
-            
+
                 /**
                  * (Optional) Query hints.
                  */
                 QueryHint[] hints() default {};
-            
+
                 /**
                  * (Optional) Refers to the class of the result.
                  */
                 Class resultClass() default void.class;
-            
+
                 /**
                  * (Optional) The name of the SQLResultMapping.
                  */
                 String resultSetMapping() default "";
-            
+
                 /**
                  * (Required) The name of the stored procedure.
                  */
                 String procedureName();
-                
+
                 /**
                  * (Optional) Defines the parameters to the stored procedure.
                  */
@@ -3977,40 +3977,40 @@
     <xsd:attribute name="result-set-mapping" type="xsd:string"/>
     <xsd:attribute name="procedure-name" type="xsd:string" use="required"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
-  
+
   <xsd:complexType name="oracle-object">
     <xsd:annotation>
       <xsd:documentation>
-		/** 
-		 * An OracleObject annotation is used to define an Oracle database OBJECT type.
-		 * This type can be used within PLSQL procedure calls.
-		 * 
-		 * @see NamedPLSQLStoredProcedureQuery
-		 * @author David McCann
-		 * @since EclipseLink 2.5
-		 */
-		@Target({TYPE})
-		@Retention(RUNTIME)
-		public @interface OracleObject {
-		
-		    /**
-		     * (Required) The name of the OBJECT type in the database.
-		     */
-		    String name();
-		    
-		    /**
-		     * (Optional) The Java class to map the OBJECT type to.
-		     * This class must be mapped using a @Struct annotation.
-		     */
-		    Class javaType() default void.class;
-		    
-		    /**
-		     * (Required) Defines the fields in the record type.
-		     */
-		    PLSQLParameter[] fields();
-		}
+        /**
+         * An OracleObject annotation is used to define an Oracle database OBJECT type.
+         * This type can be used within PLSQL procedure calls.
+         *
+         * @see NamedPLSQLStoredProcedureQuery
+         * @author David McCann
+         * @since EclipseLink 2.5
+         */
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface OracleObject {
+
+            /**
+             * (Required) The name of the OBJECT type in the database.
+             */
+            String name();
+
+            /**
+             * (Optional) The Java class to map the OBJECT type to.
+             * This class must be mapped using a @Struct annotation.
+             */
+            Class javaType() default void.class;
+
+            /**
+             * (Required) Defines the fields in the record type.
+             */
+            PLSQLParameter[] fields();
+        }
 
       </xsd:documentation>
     </xsd:annotation>
@@ -4020,55 +4020,55 @@
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="java-type" type="xsd:string"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
-  
+
   <xsd:complexType name="oracle-array">
     <xsd:annotation>
       <xsd:documentation>
-       /** 
+       /**
         * An OracleArray annotation is used to define an Oracle database VARRAY type.
         * This type can be used within PLSQL procedure calls.
-        * 
+        *
         * @see NamedPLSQLStoredProcedureQuery
         * @author David McCann
         * @since EclipseLink 2.5
-        */ 
+        */
         @Target({TYPE})
-		@Retention(RUNTIME)
-		public @interface OracleArray {
-		    /**
-		     * (Required) The name of the VARRAY type in the database.
-		     */
-		    String name();
-		
-		    /**
-		     * (Optional) The name of the database type this VARRAY holds onto.
-		     */
-		    String nestedType() default "VARCHAR_TYPE";
-		    
-		    /**
-		     * (Optional) The Java Collection class to map the VARRAY to.
-		     * This can be any valid Collection implementation.
-		     */
-		    Class javaType() default ArrayList.class;
-		}
+        @Retention(RUNTIME)
+        public @interface OracleArray {
+            /**
+             * (Required) The name of the VARRAY type in the database.
+             */
+            String name();
+
+            /**
+             * (Optional) The name of the database type this VARRAY holds onto.
+             */
+            String nestedType() default "VARCHAR_TYPE";
+
+            /**
+             * (Optional) The Java Collection class to map the VARRAY to.
+             * This can be any valid Collection implementation.
+             */
+            Class javaType() default ArrayList.class;
+        }
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="java-type" type="xsd:string"/>
     <xsd:attribute name="nested-type" type="xsd:string"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
   <xsd:complexType name="plsql-record">
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
+        /**
          * A PLSQLRecord annotation is used to define a database PLSQL RECORD type.
          * This type can be used within PLSQL procedure calls.
-         * 
+         *
          * @see NamedPLSQLStoredProcedureQuery
          * @author James Sutherland
          * @since EclipseLink 2.3
@@ -4076,24 +4076,24 @@
         @Target({TYPE})
         @Retention(RUNTIME)
         public @interface PLSQLRecord {
-        
+
             /**
              * (Required) The name of the record type in the database.
              */
             String name();
-        
+
             /**
              * (Required) The name of the database OBJECT TYPE that mirrors the record's structure.
              * The record will be converted to/from this type so it can be passed through JDBC.
              */
             String compatibleType();
-            
+
             /**
              * (Optional) The Java class to map the object-type to.
              * This class must be mapped using a @Struct annotation.
              */
             Class javaType() default void.class;
-            
+
             /**
              * (Required) Defines the fields in the record type.
              */
@@ -4109,57 +4109,57 @@
     <xsd:attribute name="compatible-type" type="xsd:string"/>
     <xsd:attribute name="java-type" type="xsd:string"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
-  
+
   <xsd:complexType name="plsql-table">
     <xsd:annotation>
       <xsd:documentation>
 
-		/** 
-		 * A PLSQLTable annotation is used to define a database PLSQL TABLE type.
-		 * This type can be used within PLSQL procedure calls.
-		 * 
-		 * @see NamedPLSQLStoredProcedureQuery
-		 * @author James Sutherland
-		 * @since EclipseLink 2.3
-		 */ 
-		@Target({TYPE})
-		@Retention(RUNTIME)
-		public @interface PLSQLTable {
-		
-		    /**
-		     * (Required) The name of the record type in the database.
-		     */
-		    String name();
-		
-		    /**
-		     * (Required) The name of the database VARRAY type that mirrors the table's structure.
-		     * The table will be converted to/from this type so it can be passed through JDBC.
-		     */
-		    String compatibleType();
-		
-		    /**
-		     * (Required) The name of the database OBJECT TYPE or VARRAY type that mirrors the record's structure.
-		     * The record will be converted to/from this type so it can be passed through JDBC.
-		     */
-		    String nestedType() default "VARCHAR_TYPE";
-		    
-		    /**
-		     * (Optional) The Java Collection class to map the varray to.
-		     * This can be any valid Collection implementation.
-		     */
-		    Class javaType() default ArrayList.class;
-		    
-		    /**
-		     * (Optional) Indicates a non-associative (nested) table.
-		     * This method would typically be used when generating a constructor for the 
-		     * collection in PL/SQL (as the constructors for associative arrays (Varray) 
-		     * and a non-associative (nested) tables differ).
-		     */
-		    boolean isNestedTable() default false;
+        /**
+         * A PLSQLTable annotation is used to define a database PLSQL TABLE type.
+         * This type can be used within PLSQL procedure calls.
+         *
+         * @see NamedPLSQLStoredProcedureQuery
+         * @author James Sutherland
+         * @since EclipseLink 2.3
+         */
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface PLSQLTable {
+
+            /**
+             * (Required) The name of the record type in the database.
+             */
+            String name();
+
+            /**
+             * (Required) The name of the database VARRAY type that mirrors the table's structure.
+             * The table will be converted to/from this type so it can be passed through JDBC.
+             */
+            String compatibleType();
+
+            /**
+             * (Required) The name of the database OBJECT TYPE or VARRAY type that mirrors the record's structure.
+             * The record will be converted to/from this type so it can be passed through JDBC.
+             */
+            String nestedType() default "VARCHAR_TYPE";
+
+            /**
+             * (Optional) The Java Collection class to map the varray to.
+             * This can be any valid Collection implementation.
+             */
+            Class javaType() default ArrayList.class;
+
+            /**
+             * (Optional) Indicates a non-associative (nested) table.
+             * This method would typically be used when generating a constructor for the
+             * collection in PL/SQL (as the constructors for associative arrays (Varray)
+             * and a non-associative (nested) tables differ).
+             */
+            boolean isNestedTable() default false;
         }
-        
+
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -4168,7 +4168,7 @@
     <xsd:attribute name="nested-type" type="xsd:string"/>
     <xsd:attribute name="nested-table" type="xsd:boolean"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="object-type-converter">
@@ -4193,19 +4193,19 @@
 
           /**
            * (Optional) Specify the type stored on the entity. The
-           * default is inferred from the type of the persistent 
+           * default is inferred from the type of the persistent
            * field or property.
            */
           Class objectType() default void.class;
 
           /**
-           * (Required) Specify the conversion values to be used 
+           * (Required) Specify the conversion values to be used
            * with the object converter.
            */
           ConversionValue[] conversionValues();
 
            /**
-            * (Optional) Specify a default object value. Used for 
+            * (Optional) Specify a default object value. Used for
             * legacy data if the data value is missing.
             */
            String defaultObjectValue() default "";
@@ -4358,14 +4358,14 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
-         * An optimistic-locking element is used to specify the type of 
-         * optimistic locking EclipseLink should use when updating or deleting 
+        /**
+         * An optimistic-locking element is used to specify the type of
+         * optimistic locking EclipseLink should use when updating or deleting
          * entities. An optimistic-locking specification is supported on
          * an entity or mapped-superclass.
-         * 
+         *
          * It is used in conjunction with the optimistic-locking-type.
-         */ 
+         */
         @Target({TYPE})
         @Retention(RUNTIME)
         public @interface OptimisticLocking {
@@ -4375,14 +4375,14 @@
           OptimisticLockingType type() default VERSION_COLUMN;
 
           /**
-           * (Optional) For an optimistic locking policy of type 
-           * SELECTED_COLUMNS, this annotation member becomes a (Required) 
+           * (Optional) For an optimistic locking policy of type
+           * SELECTED_COLUMNS, this annotation member becomes a (Required)
            * field.
            */
           Column[] selectedColumns() default {};
 
           /**
-           * (Optional) Specify where the optimistic locking policy should 
+           * (Optional) Specify where the optimistic locking policy should
            * cascade lock. Currently only supported with VERSION_COLUMN locking.
            */
           boolean cascade() default false;
@@ -4391,7 +4391,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="selected-column" type="orm:column" minOccurs="0" maxOccurs="unbounded"/>    
+      <xsd:element name="selected-column" type="orm:column" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="type" type="orm:optimistic-locking-type"/>
     <xsd:attribute name="cascade" type="xsd:boolean"/>
@@ -4403,8 +4403,8 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
-         * A simple type that is used within an optimistic-locking 
+        /**
+         * A simple type that is used within an optimistic-locking
          * specification to specify the type of optimistic-locking that
          * EclipseLink should use when updating or deleting entities.
          */
@@ -4449,7 +4449,7 @@
       <xsd:enumeration value="SELECTED_COLUMNS"/>
       <xsd:enumeration value="VERSION_COLUMN"/>
     </xsd:restriction>
-  </xsd:simpleType>  
+  </xsd:simpleType>
 
   <!-- **************************************************** -->
 
@@ -4642,7 +4642,7 @@
          *  The PrimaryKey annotation allows advanced configuration of the Id.
          *  A validation policy can be given that allows specifying if zero is a valid id value.
          *  The set of primary key columns can also be specified precisely.
-         * 
+         *
          * @author James Sutherland
          * @since EclipseLink 1.1
          */
@@ -4653,14 +4653,14 @@
            * (Optional) Configures what id validation is done.
            * By default 0 is not a valid id value, this can be used to allow 0 id values.
            */
-          IdValidation validation() default IdValidation.ZERO; 
+          IdValidation validation() default IdValidation.ZERO;
 
           /**
            * (Optional) Configures what cache key type is used to store the object in the cache.
            * By default the type is determined by what type is optimal for the class.
            */
           CacheKeyType cacheKeyType() default CacheKeyType.AUTO;
-    
+
           /**
            * (Optional) Used to specify the primary key columns directly.
            * This can be used instead of @Id if the primary key includes a non basic field,
@@ -4710,22 +4710,22 @@
         public @interface Property {
           /**
            * Property name.
-           */ 
+           */
           String name();
 
           /**
            * String representation of Property value,
            * converted to an instance of valueType.
-           */ 
+           */
           String value();
 
           /**
            * Property value type.
            * The value converted to valueType by ConversionManager.
-           * If specified must be a simple type that could be handled by 
-           * ConversionManager: 
-           * numerical, boolean, temporal.  
-           */ 
+           * If specified must be a simple type that could be handled by
+           * ConversionManager:
+           * numerical, boolean, temporal.
+           */
           Class valueType() default String.class;
         }
 
@@ -4742,7 +4742,7 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        @Target({}) @Retention(RUNTIME) 
+        @Target({}) @Retention(RUNTIME)
         public @interface QueryHint {
           String name();
           String value();
@@ -4765,17 +4765,17 @@
 
         @Target({TYPE}) @Retention(RUNTIME)
         public @interface QueryRedirectors {
-    
+
             /**
              * This AllQueries Query Redirector will be applied to any executing object query
-             * that does not have a more precise redirector (like the 
+             * that does not have a more precise redirector (like the
              * ReadObjectQuery Redirector) or a redirector set directly on the query.
              * Query redirectors allow the user to intercept query execution preventing
              * it or alternately performing some side effect like auditing.
-             * 
+             *
              */
             Class allQueries() default void.class;
-    
+
             /**
              * A Default ReadAll Query Redirector will be applied to any executing
              * ReadAllQuery that does not have a redirector set directly on the query.
@@ -4784,7 +4784,7 @@
              * For users executing a JPA Query through the getResultList() API this is the redirector that will be invoked
              */
             Class readAll() default void.class;
-    
+
             /**
              * A Default ReadObject Query Redirector will be applied to any executing
              * ReadObjectQuery that does not have a redirector set directly on the query.
@@ -4793,7 +4793,7 @@
              * For users executing a JPA Query through the getSingleResult() API or EntityManager.find() this is the redirector that will be invoked
              */
             Class readObject() default void.class;
-    
+
             /**
              * A Default ReportQuery Redirector will be applied to any executing
              * ReportQuery that does not have a redirector set directly on the query.
@@ -4802,16 +4802,16 @@
              * For users executing a JPA Query that contains agregate functions or selects multiple entities this is the redirector that will be invoked
              */
             Class report() default void.class;
-    
+
             /**
              * A Default Update Query Redirector will be applied to any executing
              * UpdateObjectQuery or UpdateAllQuery that does not have a redirector set directly on the query.
              * In EclipseLink an UpdateObjectQuery is executed whenever flushing changes to the datasource.
              * Query redirectors allow the user to intercept query execution preventing
              * it or alternately performing some side effect like auditing.
-             */ 
+             */
             Class update() default void.class;
-    
+
             /**
              * A Default Insert Query Redirector will be applied to any executing
              * InsertObjectQuery that does not have a redirector set directly on the query.
@@ -4820,7 +4820,7 @@
              * it or alternately performing some side effect like auditing.
              */
             Class insert() default void.class;
-    
+
             /**
              * A Default Delete Object Query Redirector will be applied to any executing
              * DeleteObjectQuery or DeleteAllQuery that does not have a redirector set directly on the query.
@@ -4829,7 +4829,7 @@
              */
             Class delete() default void.class;
         }
-        
+
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="all-queries" type="xsd:string"/>
@@ -4849,35 +4849,35 @@
 
         /**
          * Annotation for org.eclipse.persistence.mappings.TransformationMapping.
-         * Unless the TransformationMapping is write-only, it should have a 
-         * ReadTransformer, it defines transformation of database column(s) 
+         * Unless the TransformationMapping is write-only, it should have a
+         * ReadTransformer, it defines transformation of database column(s)
          * value(s)into attribute value.
          *
-         * Also unless it's a read-only mapping, either WriteTransformer 
-         * annotation or WriteTransformers annotation should be specified. Each 
-         * WriteTransformer defines transformation of the attribute value to a 
-         * single database column value (column is specified in the 
+         * Also unless it's a read-only mapping, either WriteTransformer
+         * annotation or WriteTransformers annotation should be specified. Each
+         * WriteTransformer defines transformation of the attribute value to a
+         * single database column value (column is specified in the
          * WriteTransformer).
          */
         @Target({METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface ReadTransformer {
             /**
-             * User-defined class that must implement the 
-             * org.eclipse.persistence.mappings.transformers.AttributeTransformer 
-             * interface. The class will be instantiated, its 
-             * buildAttributeValue will be used to create the value to be 
+             * User-defined class that must implement the
+             * org.eclipse.persistence.mappings.transformers.AttributeTransformer
+             * interface. The class will be instantiated, its
+             * buildAttributeValue will be used to create the value to be
              * assigned to the attribute.
              * Either transformerClass or method must be specified, but not both.
-             */ 
+             */
             Class transformerClass() default void.class;
 
             /**
-             * The mapped class must have a method with this name which returns 
-             * a value to be assigned to the attribute (not assigns the value to 
-             * the attribute). Either transformerClass or method must be 
+             * The mapped class must have a method with this name which returns
+             * a value to be assigned to the attribute (not assigns the value to
+             * the attribute). Either transformerClass or method must be
              * specified, but not both.
-             */ 
+             */
             String method() default "";
         }
 
@@ -4892,14 +4892,14 @@
   <xsd:complexType name="return-insert">
     <xsd:annotation>
       <xsd:documentation>
-      
+
         @Target({METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface ReturnInsert {
             /**
-             * A ReturnInsert annotation allows for INSERT operations to return 
-             * values back into the object being written. This allows for table 
-             * default values, trigger or stored procedures computed values to 
+             * A ReturnInsert annotation allows for INSERT operations to return
+             * values back into the object being written. This allows for table
+             * default values, trigger or stored procedures computed values to
              * be set back into the object.
              */
             boolean returnOnly() default false;
@@ -4909,7 +4909,7 @@
     </xsd:annotation>
     <xsd:attribute name="return-only" type="xsd:boolean"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="secondary-table">
@@ -4977,20 +4977,20 @@
     <xsd:annotation>
       <xsd:documentation>
 
-		@Target({TYPE})
-		@Retention(RUNTIME)
-		public @interface SerializedObject {
-		    /**
-		     * The Class that implements org.eclipse.persistence.descriptors.SerializedObjectPolicy interface.
-		     * This class must be specified. 
-		     */ 
-		    Class value();
-		    
-		    /**
-		     * (Optional) The column that holds the serialized object. By default it's a BLOB column named "SOP" in entity's main table. 
-		     */
-		    Column column() default @Column(name="SOP");
-		}
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface SerializedObject {
+            /**
+             * The Class that implements org.eclipse.persistence.descriptors.SerializedObjectPolicy interface.
+             * This class must be specified.
+             */
+            Class value();
+
+            /**
+             * (Optional) The column that holds the serialized object. By default it's a BLOB column named "SOP" in entity's main table.
+             */
+            Column column() default @Column(name="SOP");
+        }
 
       </xsd:documentation>
     </xsd:annotation>
@@ -5018,11 +5018,11 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
-      <xsd:element name="entity-result" type="orm:entity-result" 
+      <xsd:element name="entity-result" type="orm:entity-result"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="constructor-result" type="orm:constructor-result" 
+      <xsd:element name="constructor-result" type="orm:constructor-result"
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="column-result" type="orm:column-result" 
+      <xsd:element name="column-result" type="orm:column-result"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -5034,10 +5034,10 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
-         * A StoredProcedureParameter annotation is used within a 
-         * NamedStoredProcedureQuery annotation. 
-         */ 
+        /**
+         * A StoredProcedureParameter annotation is used within a
+         * NamedStoredProcedureQuery annotation.
+         */
         @Target({})
         @Retention(RUNTIME)
         public @interface StoredProcedureParameter {
@@ -5047,7 +5047,7 @@
            * @see mode()
            */
           Direction direction() default IN;
-          
+
           /**
            * (Optional) The direction of the stored procedure parameter.
            */
@@ -5062,26 +5062,26 @@
            * (Required) The query parameter name.
            */
           String queryParameter();
-    
+
           /**
            * (Optional) Define if the parameter is required, or optional and defaulted by the procedure.
            */
           boolean optional() default false;
 
           /**
-           * (Optional) The type of Java class desired back from the procedure, 
+           * (Optional) The type of Java class desired back from the procedure,
            * this is dependent on the type returned from the procedure.
            */
           Class type() default void.class;
 
           /**
-           * (Optional) The JDBC type code, this dependent on the type returned 
+           * (Optional) The JDBC type code, this dependent on the type returned
            * from the procedure.
            */
           int jdbcType() default -1;
 
           /**
-           * (Optional) The JDBC type name, this may be required for ARRAY or 
+           * (Optional) The JDBC type name, this may be required for ARRAY or
            * STRUCT types.
            */
           String jdbcTypeName() default "";
@@ -5109,15 +5109,15 @@
     <xsd:annotation>
       <xsd:documentation>
 
-            /** 
-             * A PLSQLParameter annotation is used within a 
+            /**
+             * A PLSQLParameter annotation is used within a
              * NamedPLSQLStoredProcedureQuery or PLSQLRecord annotation.
-             * 
+             *
              * @see NamedPLSQLStoredProcedureQuery
              * @see PLSQLRecord
              * @author James Sutherland
              * @since EclipseLink 2.3
-             */ 
+             */
             @Target({})
             @Retention(RUNTIME)
             public @interface PLSQLParameter {
@@ -5125,22 +5125,22 @@
                  * (Optional) The direction of the stored procedure parameter.
                  */
                 Direction direction() default IN;
-            
+
                 /**
                  * (Required) Stored procedure parameter name.
                  */
                 String name() default "";
-            
+
                 /**
                  * (Optional) The query parameter name.
                  */
                 String queryParameter();
-                
+
                 /**
                  * (Optional) Define if the parameter is required, or optional and defaulted by the procedure.
                  */
                 boolean optional() default false;
-                
+
                 /**
                  * (Optional) The database data-type for the paramter.
                  * This either one of the type constants defined in OraclePLSQLTypes, or JDBCTypes,
@@ -5150,17 +5150,17 @@
                  * @see JDBCTypes
                  */
                 String databaseType() default "VARCHAR";
-                
+
                 /**
                  * (Optional) The max length of the field value.
                  */
                 int length() default 255;
-                
+
                 /**
                  * (Optional) If a numeric, the max scale value.
                  */
                 int scale() default 0;
-            
+
                 /**
                  * (Optional) If a numeric, the max precision value.
                  */
@@ -5178,7 +5178,7 @@
     <xsd:attribute name="scale" type="xsd:integer"/>
     <xsd:attribute name="precision" type="xsd:integer"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="struct-converter">
@@ -5189,17 +5189,17 @@
         @Retention(RUNTIME)
         public @interface StructConverter {
           /**
-           * (Required) Name this converter. The name should be unique across 
+           * (Required) Name this converter. The name should be unique across
            * the whole persistence unit.
            */
           String name();
 
           /**
-           * (Required) The converter class to be used. This class must 
-           * implement the EclipseLink interface 
+           * (Required) The converter class to be used. This class must
+           * implement the EclipseLink interface
            * org.eclipse.persistence.mappings.converters.Converter
            */
-          String converter(); 
+          String converter();
         }
 
       </xsd:documentation>
@@ -5207,21 +5207,21 @@
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="converter" type="xsd:string" use="required"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="struct">
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
+        /**
          * Struct types are extended object-relational data-types supported by some databases.
          * Struct types are user define types in the database such as OBJECT types on Oracle.
          * Structs can normally contains Arrays (VARRAY) or other Struct types, and can be stored in
          * a column or a table.
          * This annotation define a class to map to a database Struct type.
          * The class should normally be an Embeddable, but could also be an Entity if stored in a object table.
-         * 
+         *
          * @see org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor
          * @see org.eclipse.persistence.mappings.structures.StructureMapping
          * @author James Sutherland
@@ -5234,11 +5234,11 @@
              * (Required) The database name of the database structure type.
              */
             String name();
-        
+
             /**
              * (Optional) Defines the order of the fields contained in the database structure type.
              */
-            String[] fields() default {}; 
+            String[] fields() default {};
         }
 
       </xsd:documentation>
@@ -5255,14 +5255,14 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
+        /**
          * Struct types are extended object-relational data-types supported by some databases.
          * Struct types are user define types in the database such as OBJECT types on Oracle.
          * Structs can normally contains Arrays (VARRAY) or other Struct types, and can be stored in
          * a column or a table.
          * This annotation can be defined on a field/method to define an StructureMapping to an embedded Struct type.
          * The target Embeddable must be mapped using the Struct annotation.
-         * 
+         *
          * @see Struct
          * @see org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor
          * @see org.eclipse.persistence.mappings.structures.StructureMapping
@@ -5311,7 +5311,7 @@
     <xsd:attribute name="schema" type="xsd:string"/>
     <xsd:attribute name="creation-suffix" type="xsd:string" />
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="index">
@@ -5334,39 +5334,39 @@
     <xsd:attribute name="column-list" type="xsd:string" use="required"/>
     <xsd:attribute name="unique" type="xsd:boolean"/>
   </xsd:complexType>
-  
-  
+
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="eclipselink-index">
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
+        /**
          * Allow a database INDEX to be define when generating DDL.
          * The @Index can be defined on a Entity class, or on an attribute.
          * The column is defaulted when defined on a attribute.
-         * 
+         *
          * @author James Sutherland
          * @since EclipseLink 2.2
-         */ 
+         */
         @Target({METHOD, FIELD, TYPE})
         @Retention(RUNTIME)
         public @interface Index {
             /** The name of the INDEX, defaults to INDEX_(table-name) */
             String name() default "";
-    
+
             /** The schema of the INDEX */
             String schema() default "";
-            
+
             /** The catalog of the INDEX */
             String catalog() default "";
-            
+
             /** The table to define the index on, defaults to entities primary table. */
             String table() default "";
-            
+
             boolean unique() default false;
-            
+
             /**
              * Specify the set of columns to define the index on.
              * Not required when annotated on a field/method.
@@ -5385,14 +5385,14 @@
     <xsd:attribute name="table" type="xsd:string"/>
     <xsd:attribute name="unique" type="xsd:boolean"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="cache-index">
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
+        /**
          * Allow a cache index to be define.
          * A cache index allow singleResult queries to obtain a cache hit when querying on the indexed fields.
          * resultList queries cannot obtain cache hits, as it is unknown if all of the objects are in memory,
@@ -5401,19 +5401,19 @@
          * Cache indexes are only relevant when caching is enabled.
          * The @CacheIndex can be defined on a Entity class, or on an attribute.
          * The column is defaulted when defined on a attribute.
-         * 
+         *
          * @author James Sutherland
          * @since EclipseLink 2.4
-         */ 
+         */
         @Target({METHOD, FIELD, TYPE})
         @Retention(RUNTIME)
-        public @interface CacheIndex {    
+        public @interface CacheIndex {
             /**
              * Specify the set of columns to define the index on.
              * Not required when annotated on a field/method.
              */
             String[] columnNames() default {};
-    
+
             /**
              * Specify if the indexed field is updateable.
              * If updateable the object will be re-indexed on each update/refresh.
@@ -5424,12 +5424,12 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="column-name" type="xsd:string" 
+      <xsd:element name="column-name" type="xsd:string"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="updateable" type="xsd:boolean"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="table-generator">
@@ -5469,7 +5469,7 @@
     <xsd:attribute name="initial-value" type="xsd:int"/>
     <xsd:attribute name="allocation-size" type="xsd:int"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="uuid-generator">
@@ -5522,13 +5522,13 @@
         <xsd:enumeration value="TIMESTAMP"/>
      </xsd:restriction>
   </xsd:simpleType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="tenant-discriminator-column">
     <xsd:annotation>
       <xsd:documentation>
-        @Target({}) 
+        @Target({})
         @Retention(RUNTIME)
         public @interface TenantDiscriminatorColumn {
             /**
@@ -5537,7 +5537,7 @@
             String name() default "TENANT_ID";
 
             /**
-             * (Optional) The name of the context property to apply to the 
+             * (Optional) The name of the context property to apply to the
              * tenant discriminator column.
              */
             String contextProperty() default "eclipselink.tenant-id";
@@ -5569,10 +5569,10 @@
             String table() default "";
 
             /**
-             * Specifies that the tenant discriminator column is part of the primary 
+             * Specifies that the tenant discriminator column is part of the primary
              * key of the tables.
              */
-            boolean primaryKey() default false; 
+            boolean primaryKey() default false;
         }
 
       </xsd:documentation>
@@ -5591,15 +5591,15 @@
   <xsd:complexType name="tenant-table-discriminator">
     <xsd:annotation>
       <xsd:documentation>
-        @Target({}) 
+        @Target({})
         @Retention(RUNTIME)
         public @interface TenantDiscriminatorColumn {
             /**
-             * (Optional) The name of the context property to apply to as 
+             * (Optional) The name of the context property to apply to as
              * tenant table discriminator. Default is "eclipselink-tenant.id"
              */
             String contextProperty() default PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT;
-    
+
             /**
              * (Optional) The type of tenant table discriminator to use with the tables
              * of the persistence unit.
@@ -5613,7 +5613,7 @@
     <xsd:attribute name="context-property" type="xsd:string"/>
     <xsd:attribute name="type" type="orm:tenant-table-discriminator-type"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:simpleType name="tenant-table-discriminator-type">
@@ -5630,8 +5630,8 @@
       <xsd:enumeration value="PREFIX"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
-  <!-- **************************************************** -->  
+
+  <!-- **************************************************** -->
 
   <xsd:complexType name="time-of-day">
     <xsd:annotation>
@@ -5642,27 +5642,27 @@
         public @interface TimeOfDay {
           /**
            * (Optional) Hour of the day.
-           */ 
+           */
           int hour() default 0;
 
           /**
            * (Optional) Minute of the day.
-           */ 
+           */
           int minute() default 0;
 
           /**
            * (Optional) Second of the day.
-           */ 
+           */
           int second() default 0;
 
           /**
            * (Optional) Millisecond of the day.
-           */ 
+           */
           int millisecond() default 0;
 
           /**
            * Internal use. Do not modify.
-           */ 
+           */
           boolean specified() default true;
         }
 
@@ -5681,30 +5681,30 @@
       <xsd:documentation>
 
         /**
-         * Transformation is an optional annotation for 
+         * Transformation is an optional annotation for
          * org.eclipse.persistence.mappings.TransformationMapping.
-         * TransformationMapping allows to map an attribute to one or more 
+         * TransformationMapping allows to map an attribute to one or more
          * database columns.
-         * 
-         * Transformation annotation is an optional part of 
-         * TransformationMapping definition. Unless the TransformationMapping is 
-         * write-only, it should have a ReadTransformer, it defines 
+         *
+         * Transformation annotation is an optional part of
+         * TransformationMapping definition. Unless the TransformationMapping is
+         * write-only, it should have a ReadTransformer, it defines
          * transformation of database column(s) value(s)into attribute value.
-         * Also unless it's a read-only mapping, either WriteTransformer 
-         * annotation or WriteTransformers annotation should be specified. Each 
-         * WriteTransformer defines transformation of the attribute value to a 
-         * single database column value (column is specified in the 
-         * WriteTransformer). 
-         */ 
+         * Also unless it's a read-only mapping, either WriteTransformer
+         * annotation or WriteTransformers annotation should be specified. Each
+         * WriteTransformer defines transformation of the attribute value to a
+         * single database column value (column is specified in the
+         * WriteTransformer).
+         */
         @Target({METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface Transformation {
             /**
-             * (Optional) Defines whether the value of the field or property 
-             * should be lazily loaded or must be eagerly fetched. The EAGER 
-             * strategy is a requirement on the persistence provider runtime 
-             * that the value must be eagerly fetched. The LAZY strategy is a 
-             * hint to the persistence provider runtime. If not specified, 
+             * (Optional) Defines whether the value of the field or property
+             * should be lazily loaded or must be eagerly fetched. The EAGER
+             * strategy is a requirement on the persistence provider runtime
+             * that the value must be eagerly fetched. The LAZY strategy is a
+             * hint to the persistence provider runtime. If not specified,
              * defaults to EAGER.
              */
             FetchType fetch() default EAGER;
@@ -5764,14 +5764,14 @@
 
           /**
            * (Optional) Specify the type stored on the database. The
-           * default is inferred from the type of the persistence field 
+           * default is inferred from the type of the persistence field
            * or property.
            */
           Class dataType() default void.class;
 
           /**
            * (Optional) Specify the type stored on the entity. The
-           * default is inferred from the type of the persistent field 
+           * default is inferred from the type of the persistent field
            * or property.
            */
           Class objectType() default void.class;
@@ -5790,43 +5790,43 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        /** 
+        /**
          * A SerializedConverter is used to serialize an object's value into a database binary, character, or XML field.
          * This annotation allows a named converter that can be used in mappings.
-         * 
-         * A converter must be be uniquely identified by name and can be defined at 
-         * the class level and can be specified within an Entity, 
+         *
+         * A converter must be be uniquely identified by name and can be defined at
+         * the class level and can be specified within an Entity,
          * MappedSuperclass and Embeddable class.
-         * 
-         * The usage of a SerializedConverter is always specified via the Converter annotation and 
+         *
+         * The usage of a SerializedConverter is always specified via the Converter annotation and
          * is supported on a Basic, or ElementCollection mapping.
-         * 
+         *
          * @see org.eclipse.persistence.annotations.Serialize
          * @see org.eclipse.persistence.sessions.serializers.Serializer
          * @author James Sutherland
-         * @since EclipseLink 2.6 
-         */ 
+         * @since EclipseLink 2.6
+         */
         @Target({TYPE, METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface SerializedConverter {
             /**
-             * (Required) Name this converter. The name should be unique across the 
+             * (Required) Name this converter. The name should be unique across the
              * whole persistence unit.
              */
             String name();
-            
+
             /**
              * Allows a package name to be passed to the serializer.
-             * This is used by some serializers such as XML, JSON to initialize the 
+             * This is used by some serializers such as XML, JSON to initialize the
              * JAXB context from the classes in the package or a jaxb.index file.
              */
             String serializerPackage() default "";
-        
+
             /**
              * The serializer class to be used. This class must implement the
              * org.eclipse.persistence.sessions.serializers.Serializer interface.
              */
-            Class serializerClass() default JavaSerializer.class; 
+            Class serializerClass() default JavaSerializer.class;
         }
 
       </xsd:documentation>
@@ -5835,7 +5835,7 @@
     <xsd:attribute name="serializer-class" type="xsd:string"/>
     <xsd:attribute name="serializer-package" type="xsd:string"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="unique-constraint">
@@ -5851,7 +5851,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="column-name" type="xsd:string" 
+      <xsd:element name="column-name" type="xsd:string"
                    maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
@@ -5862,67 +5862,67 @@
   <xsd:complexType name="variable-one-to-one">
     <xsd:annotation>
       <xsd:documentation>
-        /** 
-         * Variable one to one mappings are used to represent a pointer 
-         * references between a java object and an implementer of an interface. 
-         * This mapping is usually represented by a single pointer (stored in an 
-         * instance variable) between the source and target objects. In the 
-         * relational database tables, these mappings are normally implemented 
+        /**
+         * Variable one to one mappings are used to represent a pointer
+         * references between a java object and an implementer of an interface.
+         * This mapping is usually represented by a single pointer (stored in an
+         * instance variable) between the source and target objects. In the
+         * relational database tables, these mappings are normally implemented
          * using a foreign key and a type code.
-         * 
-         * A VariableOneToOne can be specified within an Entity, 
-         * MappedSuperclass and Embeddable class. 
-         */ 
-        @Target({METHOD, FIELD}) 
+         *
+         * A VariableOneToOne can be specified within an Entity,
+         * MappedSuperclass and Embeddable class.
+         */
+        @Target({METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface VariableOneToOne {
           /**
-           * (Optional) The interface class that is the target of the 
-           * association. If not specified it will be inferred from the type 
+           * (Optional) The interface class that is the target of the
+           * association. If not specified it will be inferred from the type
            * of the object being referenced.
            */
           Class targetInterface() default void.class;
 
           /**
-           * (Optional) The operations that must be cascaded to the target of 
+           * (Optional) The operations that must be cascaded to the target of
            * the association.
            */
           CascadeType[] cascade() default {};
 
           /**
-           * (Optional) Defines whether the value of the field or property 
-           * should be lazily loaded or must be eagerly fetched. The EAGER 
-           * strategy is a requirement on the persistence provider runtime 
-           * that the value must be eagerly fetched. The LAZY strategy is a 
-           * hint to the persistence provider runtime. If not specified, 
+           * (Optional) Defines whether the value of the field or property
+           * should be lazily loaded or must be eagerly fetched. The EAGER
+           * strategy is a requirement on the persistence provider runtime
+           * that the value must be eagerly fetched. The LAZY strategy is a
+           * hint to the persistence provider runtime. If not specified,
            * defaults to EAGER.
            */
           FetchType fetch() default EAGER;
 
           /**
-           * (Optional) Whether the association is optional. If set to false 
+           * (Optional) Whether the association is optional. If set to false
            * then a non-null relationship must always exist.
            */
           boolean optional() default true;
 
           /**
-           * (Optional) The discriminator column will hold the type 
-           * indicators. If the DiscriminatorColumn is not specified, the name 
-           * of the discriminator column defaults to "DTYPE" and the 
+           * (Optional) The discriminator column will hold the type
+           * indicators. If the DiscriminatorColumn is not specified, the name
+           * of the discriminator column defaults to "DTYPE" and the
            * discriminator type to STRING.
            */
           DiscriminatorColumn discriminatorColumn() default @DiscriminatorColumn;
 
           /**
-           * (Optional) The list of discriminator types that can be used with 
-           * this VariableOneToOne. If none are specified then those entities 
-           * within the persistence unit that implement the target interface 
-           * will be added to the list of types. The discriminator type will 
+           * (Optional) The list of discriminator types that can be used with
+           * this VariableOneToOne. If none are specified then those entities
+           * within the persistence unit that implement the target interface
+           * will be added to the list of types. The discriminator type will
            * default as follows:
            *  - If DiscriminatorColumn type is STRING: Entity.name()
-           *  - If DiscriminatorColumn type is CHAR: First letter of the 
+           *  - If DiscriminatorColumn type is CHAR: First letter of the
            *    Entity class
-           *  - If DiscriminatorColumn type is INTEGER: The next integer after 
+           *  - If DiscriminatorColumn type is INTEGER: The next integer after
            *    the highest integer explicitly added.
            */
           DiscriminatorClass[] discriminatorClasses() default {};
@@ -5991,53 +5991,53 @@
 
         /**
          * Annotation for org.eclipse.persistence.mappings.TransformationMapping.
-         * WriteTransformer defines transformation of the attribute value to a 
-         * single database column value (column is specified in the 
+         * WriteTransformer defines transformation of the attribute value to a
+         * single database column value (column is specified in the
          * WriteTransformer).
-         *  
-         * A single WriteTransformer may be specified directly on the method or 
-         * attribute. Multiple WriteTransformers should be wrapped into 
-         * WriteTransformers annotation. No WriteTransformers specified for 
-         * read-only mapping. Unless the TransformationMapping is write-only, it 
-         * should have a ReadTransformer, it defines transformation of database 
+         *
+         * A single WriteTransformer may be specified directly on the method or
+         * attribute. Multiple WriteTransformers should be wrapped into
+         * WriteTransformers annotation. No WriteTransformers specified for
+         * read-only mapping. Unless the TransformationMapping is write-only, it
+         * should have a ReadTransformer, it defines transformation of database
          * column(s) value(s)into attribute value.
-         */ 
+         */
         @Target({METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface WriteTransformer {
             /**
-             * User-defined class that must implement the 
-             * org.eclipse.persistence.mappings.transformers.FieldTransformer 
-             * interface. The class will be instantiated, its buildFieldValue 
-             * will be used to create the value to be written into the database 
-             * column. Note that for ddl generation and returning to be 
-             * supported the method buildFieldValue in the class should be 
-             * defined to return the relevant Java type, not just Object as 
+             * User-defined class that must implement the
+             * org.eclipse.persistence.mappings.transformers.FieldTransformer
+             * interface. The class will be instantiated, its buildFieldValue
+             * will be used to create the value to be written into the database
+             * column. Note that for ddl generation and returning to be
+             * supported the method buildFieldValue in the class should be
+             * defined to return the relevant Java type, not just Object as
              * defined in the interface, for instance:
              * public Time buildFieldValue(Object instance, String fieldName, Session session).
              * Either transformerClass or method must be specified, but not both.
-             */ 
+             */
             Class transformerClass() default void.class;
 
             /**
-             * The mapped class must have a method with this name which returns 
+             * The mapped class must have a method with this name which returns
              * a value to be written into the database column.
-             * Note that for ddl generation and returning to be supported the 
-             * method should be defined to return a particular type, not just 
+             * Note that for ddl generation and returning to be supported the
+             * method should be defined to return a particular type, not just
              * Object, for instance:
              * public Time getStartTime().
-             * The method may require a Transient annotation to avoid being 
+             * The method may require a Transient annotation to avoid being
              * mapped as Basic by default.
              * Either transformerClass or method must be specified, but not both.
-             */ 
+             */
             String method() default "";
 
             /**
              * Specify here the column into which the value should be written.
-             * The only case when this could be skipped is if a single 
-             * WriteTransformer annotates an attribute - the attribute's name 
+             * The only case when this could be skipped is if a single
+             * WriteTransformer annotates an attribute - the attribute's name
              * will be used as a column name.
-             */ 
+             */
             Column column() default @Column;
         }
 
@@ -6051,7 +6051,7 @@
   </xsd:complexType>
 
   <!-- **************************************************** -->
-   
+
   <xsd:complexType name="batch-fetch">
     <xsd:annotation>
       <xsd:documentation>
@@ -6059,9 +6059,9 @@
          * A BatchFetch annotation can be used on any relationship mapping,
          * (OneToOne, ManyToOne, OneToMany, ManyToMany, ElementCollection, BasicCollection, BasicMap).
          * It allows the related objects to be batch read in a single query.
-         * Batch fetching can also be set at the query level, and it is 
+         * Batch fetching can also be set at the query level, and it is
          * normally recommended to do so as all queries may not require batching.
-         * 
+         *
          * @author James Sutherland
          * @since EclipseLink 2.1
          */
@@ -6072,9 +6072,9 @@
              * (Optional) The type of batch-fetch to use.
              * Either JOIN, EXISTS or IN.
              * JOIN is the default.
-             */ 
+             */
             BatchFetchType value() default BatchFetchType.JOIN;
-            
+
             /**
              * Define the default batch fetch size.
              * This is only used for IN type batch reading and defines
@@ -6094,29 +6094,29 @@
   <xsd:complexType name="no-sql">
     <xsd:annotation>
       <xsd:documentation>
-      
-        /** 
+
+        /**
          * An NoSQL (No SQL, or Not Only SQL) database is any non-relational data source.
          * This can include:
-         * 
+         *
          * NoSQL databases such as Oracle NoSQL, MongoDB, etc.
          * XML databases
          * Distributed cache stores such as Oracle Coherence
          * Object databases
          * Legacy databases, gateways and transaction system such as VSAM, ADA, CICS, IMS, MQSeries, Tuxedo, etc.
          * ERP systems, such as SAP
-         * 
+         *
          * EclipseLink allows NoSQL data to be mapped to objects, and accessed through JPA and EclipseLink's APIs.
-         * 
+         *
          * Entity and Embeddable objects can be used to map NoSQL data.
          * Most NoSQL data is hierarchical in form so usage of embeddable objects is common.
          * Some NoSQL adaptors support XML data, so NoSQL mapped objects can use XML mappings when
          * mapping to XML.
-         * 
+         *
          * EclipseLink support NoSQL data access through the JavaEE Connector Architecture.
          * A JCA adaptor is required to map NoSQL data, this may be provided by EclipseLink,
          * provided by a third party such as Attunity, or custom built.
-         * 
+         *
          * @see org.eclipse.persistence.eis.EISDescriptor
          * @author James Sutherland
          * @since EclipseLink 2.4
@@ -6128,11 +6128,11 @@
              * (Required) The database name of the database structure type.
              */
             String dataType() default "";
-        
+
             /**
              * (Optional) Defines the order of the fields contained in the database structure type.
              */
-            DataFormatType dataFormat() default DataFormatType.XML; 
+            DataFormatType dataFormat() default DataFormatType.XML;
         }
 
       </xsd:documentation>
@@ -6140,16 +6140,16 @@
     <xsd:attribute name="data-type" type="xsd:string"/>
     <xsd:attribute name="data-format" type="orm:data-format-type"/>
   </xsd:complexType>
-  
+
   <!-- **************************************************** -->
 
   <xsd:simpleType name="data-format-type">
     <xsd:annotation>
       <xsd:documentation>
-      
+
         /**
          * Used to configure the data format type for an EIS descriptor.
-         * 
+         *
          * @see NoSql
          * @see org.eclipse.persistence.eis.EISDescriptor#setDataFormat(String)
          * @author James Sutherland
@@ -6161,16 +6161,16 @@
              * This is the default data format.
              */
             XML,
-            
+
             /**
              * JCA IndexedRecords are used, objects data is decomposed into an array of field values.
              */
             INDEXED,
-        
+
             /**
              * JCA MappedRecords are used, objects data is decomposed into a Map of key/value pairs.
              */
-            MAPPED    
+            MAPPED
         }
 
       </xsd:documentation>
@@ -6181,23 +6181,23 @@
         <xsd:enumeration value="MAPPED"/>
      </xsd:restriction>
   </xsd:simpleType>
-  
+
   <!-- **************************************************** -->
-  
+
   <xsd:complexType name="field">
     <xsd:annotation>
       <xsd:documentation>
-      
-        /** 
+
+        /**
          * Define a structured data type's field name for an object mapped to NoSql data.
          * This is a generic form of the @Column annotation, which is not specific to relational databases.
          * It can be use to map EIS and NoSQL data.
-         * 
+         *
          * @see NoSql
          * @author James Sutherland
          * @since EclipseLink 2.4
          */
-        @Target({METHOD, FIELD}) 
+        @Target({METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface Field {
             /**
@@ -6212,16 +6212,16 @@
   </xsd:complexType>
 
   <!-- **************************************************** -->
-    
+
   <xsd:complexType name="join-field">
     <xsd:annotation>
       <xsd:documentation>
-      
-        /** 
+
+        /**
          * Define a structured data type's foreign key field for an object mapped to NoSql data.
          * This is a generic form of the @JoinColumn annotation, which is not specific to relational databases.
          * It can be use to map EIS and NoSQL data.
-         * 
+         *
          * @see NoSql
          * @author James Sutherland
          * @since EclipseLink 2.4
@@ -6233,7 +6233,7 @@
              * (Optional) The name of the foreign key/id reference field in the source record.
              */
             String name() default "";
-            
+
             /**
              * (Optional) The name of the id field in the target record.
              */
@@ -6247,7 +6247,7 @@
   </xsd:complexType>
 
   <!-- **************************************************** -->
-  
+
 </xsd:schema>
 
 

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -67,28 +67,28 @@ public class MappingTestModel extends TestModel {
         suite.addTest(new AdditionalJoinExpressionTest());
 
         PopulationManager manager = PopulationManager.getDefaultManager();
-        suite.addTest(new MultipleTableReadObjectTest(manager.getObject(Employee1.class, "example1"), 
+        suite.addTest(new MultipleTableReadObjectTest(manager.getObject(Employee1.class, "example1"),
                                                       "amendEmployee1WithJoinWithInsert"));
-        suite.addTest(new MultipleTableReadObjectTest(manager.getObject(Employee1.class, "example1"), 
+        suite.addTest(new MultipleTableReadObjectTest(manager.getObject(Employee1.class, "example1"),
                                                       "amendEmployee1WithFKInfo"));
-        suite.addTest(new MultipleTableReadObjectTest(manager.getObject(Employee1.class, "example1"), 
+        suite.addTest(new MultipleTableReadObjectTest(manager.getObject(Employee1.class, "example1"),
                                                       "amendEmployee1WithJoinOnly"));
 
-        suite.addTest(new MultipleTableInsertObjectTest(manager.getObject(Employee1.class, "example2"), 
+        suite.addTest(new MultipleTableInsertObjectTest(manager.getObject(Employee1.class, "example2"),
                                                         "amendEmployee1WithJoinWithInsert"));
-        suite.addTest(new MultipleTableInsertObjectTest(manager.getObject(Employee1.class, "example2"), 
+        suite.addTest(new MultipleTableInsertObjectTest(manager.getObject(Employee1.class, "example2"),
                                                         "amendEmployee1WithFKInfo"));
 
         suite.addTest(new MultipleTableReadAllTest(Employee1.class, 2, "amendEmployee1WithJoinWithInsert"));
         suite.addTest(new MultipleTableReadAllTest(Employee1.class, 2, "amendEmployee1WithJoinOnly"));
         suite.addTest(new MultipleTableReadAllTest(Employee1.class, 2, "amendEmployee1WithFKInfo"));
 
-        // The delete with join info would not work because of the lack of PK info.	
-        suite.addTest(new MultipleTableDeleteObjectTest(manager.getObject(Employee1.class, "example3"), 
+        // The delete with join info would not work because of the lack of PK info.
+        suite.addTest(new MultipleTableDeleteObjectTest(manager.getObject(Employee1.class, "example3"),
                                                         "amendEmployee1WithFKInfo"));
 
-        // The update with join info would not work because of the lack of PK info.	
-        suite.addTest(new MultipleTableWriteObjectTest(manager.getObject(Employee1.class, "example3"), 
+        // The update with join info would not work because of the lack of PK info.
+        suite.addTest(new MultipleTableWriteObjectTest(manager.getObject(Employee1.class, "example3"),
                                                        "amendEmployee1WithFKInfo"));
 
         // Add tests for multiple table with fk from secondary table to primary table.

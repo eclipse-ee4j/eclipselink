@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/05/2009 Andrei Ilitchev 
+ *     05/05/2009 Andrei Ilitchev
  *       - JPA 2.0 - OrderedList support.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.orderedlist;
 
 import java.util.ArrayList;
@@ -53,11 +53,11 @@ public class Employee implements ChangeTracker {
 
     /** Direct-collection mapping, employee stores its collection of plain Strings in an intermediate table. */
     public List<String> responsibilitiesList;
-    
+
     /** One-to-many mapping, employee references its collection of children arranged by age.
      * This relationship uses transparent indirection */
     public Vector<Child> children;
-    
+
     int salary;
 
     public PropertyChangeListener listener;
@@ -100,11 +100,11 @@ public class Employee implements ChangeTracker {
         this.firstName = firstName;
         this.lastName = lastName;
     }
-    
+
     public Employee(String firstName) {
         this(firstName, "");
     }
-    
+
     /**
      * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
      */
@@ -177,7 +177,7 @@ public class Employee implements ChangeTracker {
     public BigDecimal getId() {
         return id;
     }
-    
+
     public String getFirstName() {
         return firstName;
     }

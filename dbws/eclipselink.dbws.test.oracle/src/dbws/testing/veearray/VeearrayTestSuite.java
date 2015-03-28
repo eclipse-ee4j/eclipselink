@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -81,7 +81,7 @@ import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
 
 public class VeearrayTestSuite {
 
-    static final String CREATE_DDL = 
+    static final String CREATE_DDL =
         "CREATE TYPE XR_VEE_ARRAY_PHONE AS OBJECT (" +
         "    AREACODE VARCHAR2(3)," +
         "    PHONENUMBER VARCHAR2(20)," +
@@ -120,7 +120,7 @@ public class VeearrayTestSuite {
         "DROP PROCEDURE GET_VEE_ARRAY_EMP|" +
         "DROP PROCEDURE GET_VEE_ARRAY_EMPS|" +
         "DROP PROCEDURE UPDATE_VEE_ARRAY_PHS|" ;
-       
+
     static final String DATABASE_USERNAME_KEY = "db.user";
     static final String DATABASE_PASSWORD_KEY = "db.pwd";
     static final String DATABASE_URL_KEY = "db.url";
@@ -436,7 +436,7 @@ public class VeearrayTestSuite {
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSModel model = (DBWSModel)unmarshaller.unmarshal(new StringReader(VEEARRAY_XRMODEL));
         xrService = factory.buildService(model);
-        
+
         if (ddlCreate) {
             try {
                 AllTests.runDdl(CREATE_DDL, ddlDebug);
@@ -538,7 +538,7 @@ public class VeearrayTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(VALUE_1_XML));
         assertTrue("control document not same as XRService instance document",
             comparer.isNodeEqual(controlDoc, doc));
-        
+
         // validate update
         invocation = new Invocation("getVeeArrayEmployee");
         invocation.setParameter("X", 2);

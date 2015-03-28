@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.profiler;
 
 import java.io.StringWriter;
@@ -35,18 +35,18 @@ public class QueryMonitor {
     public static final Map<String, Number> cacheMisses = new ConcurrentHashMap<String, Number>();
     public static long dumpTime = System.currentTimeMillis();
     public static Boolean shouldMonitor;
-    
+
     public static boolean shouldMonitor() {
         if (shouldMonitor == null) {
             shouldMonitor = Boolean.FALSE;
             String property = System.getProperty("org.eclipse.persistence.querymonitor");
             if ((property != null) && (property.toUpperCase().equals("TRUE"))) {
-                shouldMonitor = Boolean.TRUE;                
+                shouldMonitor = Boolean.TRUE;
             }
         }
         return shouldMonitor.booleanValue();
     }
-    
+
     public static void checkDumpTime() {
         if ((System.currentTimeMillis() - dumpTime) > 100000) {
             dumpTime = System.currentTimeMillis();
@@ -90,9 +90,9 @@ public class QueryMonitor {
             hits = Integer.valueOf(0);
         }
         hits = Integer.valueOf(hits.intValue() + 1);
-        cacheHits.put(name, hits);        
+        cacheHits.put(name, hits);
     }
-    
+
     public static void incrementReadObjectMisses(ReadObjectQuery query) {
         checkDumpTime();
         String name = query.getReferenceClass().getName() + "-findByPrimaryKey";
@@ -103,7 +103,7 @@ public class QueryMonitor {
         misses = Integer.valueOf(misses.intValue() + 1);
         cacheMisses.put(name, misses);
     }
-    
+
     public static void incrementReadAllHits(ReadAllQuery query) {
         checkDumpTime();
         String name = query.getReferenceClass().getName();
@@ -117,9 +117,9 @@ public class QueryMonitor {
             hits = Integer.valueOf(0);
         }
         hits = Integer.valueOf(hits.intValue() + 1);
-        cacheHits.put(name, hits);        
+        cacheHits.put(name, hits);
     }
-    
+
     public static void incrementReadAllMisses(ReadAllQuery query) {
         checkDumpTime();
         String name = query.getReferenceClass().getName();
@@ -135,7 +135,7 @@ public class QueryMonitor {
         misses = Integer.valueOf(misses.intValue() + 1);
         cacheMisses.put(name, misses);
     }
-    
+
     public static void incrementInsert(WriteObjectQuery query) {
         checkDumpTime();
         String name = query.getReferenceClass().getName() + "-insert";
@@ -146,7 +146,7 @@ public class QueryMonitor {
         misses = Integer.valueOf(misses.intValue() + 1);
         cacheMisses.put(name, misses);
     }
-    
+
     public static void incrementUpdate(WriteObjectQuery query) {
         checkDumpTime();
         String name = query.getReferenceClass().getName() + "-update";
@@ -157,7 +157,7 @@ public class QueryMonitor {
         misses = Integer.valueOf(misses.intValue() + 1);
         cacheMisses.put(name, misses);
     }
-    
+
     public static void incrementDelete(DeleteObjectQuery query) {
         checkDumpTime();
         String name = query.getReferenceClass().getName() + "-delete";

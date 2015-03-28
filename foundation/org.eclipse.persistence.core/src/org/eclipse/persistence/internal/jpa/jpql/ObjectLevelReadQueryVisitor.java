@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,15 +25,15 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
  */
 final class ObjectLevelReadQueryVisitor extends AbstractObjectLevelReadQueryVisitor {
 
-	/**
-	 * Creates a new <code>ObjectLevelReadQueryVisitor</code>.
-	 *
-	 * @param queryContext The context used to query information about the application metadata and
-	 * cached information
-	 * @param query The {@link ObjectLevelReadQuery} to populate by using this visitor to visit the
-	 * parsed tree representation of the JPQL query
-	 */
-	ObjectLevelReadQueryVisitor(JPQLQueryContext queryContext, ObjectLevelReadQuery query) {
-		super(queryContext, query);
-	}
+    /**
+     * Creates a new <code>ObjectLevelReadQueryVisitor</code>.
+     *
+     * @param queryContext The context used to query information about the application metadata and
+     * cached information
+     * @param query The {@link ObjectLevelReadQuery} to populate by using this visitor to visit the
+     * parsed tree representation of the JPQL query
+     */
+    ObjectLevelReadQueryVisitor(JPQLQueryContext queryContext, ObjectLevelReadQuery query) {
+        super(queryContext, query);
+    }
 }

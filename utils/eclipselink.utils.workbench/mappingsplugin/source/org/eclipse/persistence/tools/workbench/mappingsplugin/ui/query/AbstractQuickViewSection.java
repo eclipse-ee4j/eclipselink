@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -20,41 +20,41 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.query.QuickView
 
 public abstract class AbstractQuickViewSection implements QuickViewSection
 {
-	private final String accessibleNameKey;
-	private final String displayStringKey;
+    private final String accessibleNameKey;
+    private final String displayStringKey;
 
-	private ResourceRepository resourceRepository;
-	
-	protected AbstractQuickViewSection(ResourceRepository resourceRepository,
-									String displayStringKey,
-	                                String accessibleNameKey) {
-		super();
-		this.resourceRepository = resourceRepository;
-		this.displayStringKey  = displayStringKey;
-		this.accessibleNameKey = accessibleNameKey;
-	}
+    private ResourceRepository resourceRepository;
 
-	public String accessibleName() {
-		return this.resourceRepository.getString(this.accessibleNameKey);
-	}
+    protected AbstractQuickViewSection(ResourceRepository resourceRepository,
+                                    String displayStringKey,
+                                    String accessibleNameKey) {
+        super();
+        this.resourceRepository = resourceRepository;
+        this.displayStringKey  = displayStringKey;
+        this.accessibleNameKey = accessibleNameKey;
+    }
 
-	public String displayString() {
-		return this.resourceRepository.getString(this.displayStringKey);
-	}
+    public String accessibleName() {
+        return this.resourceRepository.getString(this.accessibleNameKey);
+    }
 
-	public Object getValue() {
-		return null;
-	}
+    public String displayString() {
+        return this.resourceRepository.getString(this.displayStringKey);
+    }
 
-	public Icon icon() {
-		return null; // TODO
-	}
+    public Object getValue() {
+        return null;
+    }
 
-	public final boolean isRemovable() {
-		return false; // For now a section is not removable
-	}
+    public Icon icon() {
+        return null; // TODO
+    }
 
-	public final void remove() {
-		throw new UnsupportedOperationException("A IQuickViewSection cannot be removed");
-	}
+    public final boolean isRemovable() {
+        return false; // For now a section is not removable
+    }
+
+    public final void remove() {
+        throw new UnsupportedOperationException("A IQuickViewSection cannot be removed");
+    }
 }

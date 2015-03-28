@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,7 @@
 
 package javax.ejb;
 
-/**  
+/**
  * A NoSuchEJBException is thrown if an attempt is made to invoke
  * a business method on a stateful session or singleton object that no longer exists.
  *
@@ -52,22 +52,22 @@ public class NoSuchEJBException extends EJBException {
 
     /**
      * Constructs a NoSuchEJBException with no detail message.
-     */  
+     */
     public NoSuchEJBException() {
     }
 
     /**
      * Constructs a NoSuchEJBException with the specified
      * detail message.
-     */  
+     */
     public NoSuchEJBException(String message) {
         super(message);
     }
 
     /**
      * Constructs a NoSuchEJBException with the specified
-     * detail message and a nested exception. 
-     */  
+     * detail message and a nested exception.
+     */
     public NoSuchEJBException(String message, Exception ex) {
         super(message, ex);
     }

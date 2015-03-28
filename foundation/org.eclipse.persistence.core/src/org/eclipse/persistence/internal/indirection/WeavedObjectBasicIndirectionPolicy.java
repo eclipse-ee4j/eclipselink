@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.indirection;
 
 import java.beans.PropertyChangeListener;
@@ -32,14 +32,14 @@ import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 /**
  * A WeavedObjectBasicIndirectionPolicy is used by OneToOne mappings that are LAZY through weaving
  * and which use Property(method) access.
- * 
+ *
  * It extends BasicIndirection by providing the capability of calling the set method that was initially
  * mapped in addition to the set method for the weaved valueholder in order to coordinate the value of the
  * underlying property with the value stored in the valueholder
- * 
+ *
  * @author Tom Ware
  */
-public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {  
+public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
     /** Name of the initial set method. */
     protected String setMethodName = null;
     /** Lazily initialized set method based on the set method name. */
@@ -50,15 +50,15 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
     protected boolean hasUsedMethodAccess;
     /** Stores the actual type of the mapping if different from the reference type.  Used for set method invocation*/
     protected String actualTypeClassName = null;
-    
+
     public WeavedObjectBasicIndirectionPolicy(String getMethodName, String setMethodName, String actualTypeClassName, boolean hasUsedMethodAccess) {
         super();
         this.setMethodName = setMethodName;
         this.getMethodName = getMethodName;
         this.hasUsedMethodAccess = hasUsedMethodAccess;
         this.actualTypeClassName = actualTypeClassName;
-    }    
-    
+    }
+
 
     public String getActualTypeClassName() {
         return actualTypeClassName;
@@ -84,7 +84,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
     /**
      * This method will lazily initialize the set method
      * Lazy initialization occurs to that we are not required to have a handle on
-     * the actual class that we are using until runtime.  This helps to satisfy the 
+     * the actual class that we are using until runtime.  This helps to satisfy the
      * weaving requirement that demands that we avoid loading domain classes into
      * the main class loader until after weaving occurs.
      */
@@ -113,17 +113,17 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
                     Method getMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), getGetMethodName(), new Class[0]);
                     parameterTypes[0] = getMethod.getReturnType();
                     setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);
-                } catch (NoSuchMethodException e2) {                
-                    // As a last ditch effort, change the parameter type to Object.class. 
+                } catch (NoSuchMethodException e2) {
+                    // As a last ditch effort, change the parameter type to Object.class.
                     // If the model uses generics:
                     //   public T getStuntDouble()
                     //   public void setStuntDouble(T)
                     // The weaved methods will be:
-                    //   public Object getStuntDouble() and 
+                    //   public Object getStuntDouble() and
                     //   public void setStuntDouble(Object)
                     try {
                         parameterTypes[0] = Object.class;
-                        setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);    
+                        setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);
                     } catch (NoSuchMethodException e3) {
                         // Throw the original exception.
                         throw DescriptorException.errorAccessingSetMethodOfEntity(sourceMapping.getDescriptor().getJavaClass(), setMethodName, sourceMapping.getDescriptor(), e);
@@ -134,7 +134,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
         return setMethod;
     }
 
-    
+
     /**
      * Coordinate the valueholder for this mapping with the underlying property by calling the
      * initial setter method.
@@ -143,7 +143,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
         setRealAttributeValueInObject(object, value);
         ((WeavedAttributeValueHolderInterface)attributeValue).setIsCoordinatedWithProperty(true);
     }
-    
+
     /**
      * Set the value of the appropriate attribute of target to attributeValue.
      * In this case, place the value inside the target's ValueHolder.
@@ -196,7 +196,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
             }
         }
     }
-    
+
     public String getGetMethodName() {
         return this.getMethodName;
     }
@@ -204,11 +204,11 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
     public String getSetMethodName() {
         return this.setMethodName;
     }
-    
+
     public boolean hasUsedMethodAccess() {
         return this.hasUsedMethodAccess;
     }
-    
+
     public boolean isWeavedObjectBasicIndirectionPolicy() {
         return true;
     }

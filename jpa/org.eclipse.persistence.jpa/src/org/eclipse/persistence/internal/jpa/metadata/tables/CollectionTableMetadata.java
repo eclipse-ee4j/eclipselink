@@ -1,23 +1,23 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/16/2008-1.0M8 Guy Pelletier 
+ *     05/16/2008-1.0M8 Guy Pelletier
  *       - 218084: Implement metadata merging functionality between mapping file
- *     04/27/2010-2.1 Guy Pelletier 
+ *     04/27/2010-2.1 Guy Pelletier
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     11/19/2012-2.5 Guy Pelletier 
+ *     11/19/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- ******************************************************************************/    
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
 import java.util.ArrayList;
@@ -32,23 +32,23 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 /**
  * INTERNAL:
- * Object to hold onto a collection table metadata in an EclipseLink 
+ * Object to hold onto a collection table metadata in an EclipseLink
  * database table.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author Guy Pelletier
  * @since TopLink 11g
  */
 public class CollectionTableMetadata extends RelationalTableMetadata {
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
-    
+
     /**
      * INTERNAL:
      * Used for XML loading.
@@ -56,7 +56,7 @@ public class CollectionTableMetadata extends RelationalTableMetadata {
     public CollectionTableMetadata() {
         super("<collection-table>");
     }
-    
+
     /**
      * INTERNAL:
      * Used for defaulting.
@@ -64,21 +64,21 @@ public class CollectionTableMetadata extends RelationalTableMetadata {
     public CollectionTableMetadata(MetadataAccessor accessor) {
         super(null, accessor);
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.
      */
     public CollectionTableMetadata(MetadataAnnotation collectionTable, MetadataAccessor accessor) {
         super(collectionTable, accessor);
-        
+
         if (collectionTable != null) {
             for (Object primaryKeyJoinColumn : collectionTable.getAttributeArray("primaryKeyJoinColumns")) {
                 m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation) primaryKeyJoinColumn, accessor));
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -86,13 +86,13 @@ public class CollectionTableMetadata extends RelationalTableMetadata {
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare)&& objectToCompare instanceof CollectionTableMetadata) {
             CollectionTableMetadata collectionTable = (CollectionTableMetadata) objectToCompare;
-            
+
             return valuesMatch(m_primaryKeyJoinColumns, collectionTable.getPrimaryKeyJoinColumns());
         }
-        
+
         return false;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -100,7 +100,7 @@ public class CollectionTableMetadata extends RelationalTableMetadata {
     public String getCatalogContext() {
         return MetadataLogger.COLLECTION_TABLE_CATALOG;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -108,14 +108,14 @@ public class CollectionTableMetadata extends RelationalTableMetadata {
     public String getNameContext() {
         return MetadataLogger.COLLECTION_TABLE_NAME;
     }
-    
+
     /**
      * INTERNAL:
      */
     public List<PrimaryKeyJoinColumnMetadata> getPrimaryKeyJoinColumns() {
         return m_primaryKeyJoinColumns;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -123,18 +123,18 @@ public class CollectionTableMetadata extends RelationalTableMetadata {
     public String getSchemaContext() {
         return MetadataLogger.COLLECTION_TABLE_SCHEMA;
     }
-    
+
     /**
      * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
-        
+
         // Initialize lists of ORMetadata objects.
         initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
     }
-    
+
     /**
      * INTERNAL:
      */

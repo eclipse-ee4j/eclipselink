@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -42,33 +42,33 @@ public class MyAttachmentUnmarshaller implements XMLAttachmentUnmarshaller {
     public static final String ATTACHMENT_TEST_ID = "c_id0";
     public boolean getAttachmentAsDataHandlerWasCalled;
 
-	public HashMap attachments;
+    public HashMap attachments;
 
-    
+
     public MyAttachmentUnmarshaller() {
         getAttachmentAsDataHandlerWasCalled = false;
         attachments = new HashMap();
     }
-    
+
     public byte[] getAttachmentAsByteArray(String cid) {
-    	Object obj = attachments.get(cid);
-    	if(obj instanceof byte[]){
-    		return (byte[])obj;
-    	}
-    	
+        Object obj = attachments.get(cid);
+        if(obj instanceof byte[]){
+            return (byte[])obj;
+        }
+
         try {
-			return ((String)((DataHandler)obj).getContent()).getBytes();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
+            return ((String)((DataHandler)obj).getContent()).getBytes();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
 
     }
 
     public DataHandler getAttachmentAsDataHandler(String cid) {
         this.getAttachmentAsDataHandlerWasCalled = true;
-        Object obj = attachments.get(cid);        
+        Object obj = attachments.get(cid);
         if (obj instanceof DataHandler) {
             return (DataHandler)obj;
         }
@@ -79,7 +79,7 @@ public class MyAttachmentUnmarshaller implements XMLAttachmentUnmarshaller {
         // force attachment usage
         return true;
     }
-    
+
     public boolean getAttachmentAsDataHandlerWasCalled() {
         return this.getAttachmentAsDataHandlerWasCalled;
     }

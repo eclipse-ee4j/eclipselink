@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.sql.Date;
@@ -30,7 +30,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
     public Integer[] empIDs = new Integer[3];
     public Integer[] projIDs = new Integer[2];
     public HashMap persistedItems = new HashMap(4);
-    
+
     public void setup (){
         super.setup();
 
@@ -38,7 +38,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
         empClone1.setAddress(ModelExamples.addressExample1());
         empClone1.addPhoneNumber(ModelExamples.phoneExample1());
         empClone1.addPhoneNumber(ModelExamples.phoneExample9());
-        
+
         Employee empClone2 = ModelExamples.employeeExample2();
         empClone2.setAddress(ModelExamples.addressExample2());
         empClone2.addPhoneNumber(ModelExamples.phoneExample2());
@@ -51,7 +51,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
 
         empClone1.addManagedEmployee(empClone2);
         empClone1.addManagedEmployee(empClone3);
-        Project projClone1 = ModelExamples.projectExample1(); 
+        Project projClone1 = ModelExamples.projectExample1();
         Project projClone2 = ModelExamples.projectExample2();
 
         projClone1.setTeamLeader(empClone1);
@@ -75,18 +75,18 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
             throw new TestException("Unable to setup Test" + ex);
         }
         ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        
+
         empIDs[0] = empClone1.getId();
         empIDs[1] = empClone2.getId();
         empIDs[2] = empClone3.getId();
-        
+
         projIDs[0] = projClone1.getId();
         projIDs[1] = projClone2.getId();
-       
+
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        
+
     }
-        
+
     public void test(){
         try {
             beginTransaction();
@@ -156,7 +156,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
             rollbackTransaction();
             throw new TestErrorException("Exception thrown durring assignment of a phone to an employee" + ex);
         }
-    
+
         try {
             beginTransaction();
             Collection employees = getEntityManager().createQuery("SELECT OBJECT(employee) FROM Employee employee").getResultList();
@@ -181,7 +181,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
             rollbackTransaction();
             throw new TestErrorException("Exception thrown durring employee raises" + ex);
         }
-    }    
+    }
 
     public void verify(){
         Employee employee = (Employee)persistedItems.get("after flush Employee 0");
@@ -196,7 +196,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
         if (!employee.getManager().getId().equals(empIDs[2])){
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Manager not Updated");
         }
-        
+
         employee = (Employee)persistedItems.get("after flush Employee 2");
         if ( employee.getManagedEmployees().size() <= 0) {
             throw new TestErrorException("Employee ID :" + empIDs[2] + " Managed Employees not Updated");
@@ -210,7 +210,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
         if (employee.getPeriod().getEndDate().getTime() >= System.currentTimeMillis()){
             throw new TestErrorException("Employee ID :" + empIDs[2] + " EndDate not Updated");
         }
-        
+
         employee = (Employee)persistedItems.get("after flush Employees 0 with raise");
         if (employee.getSalary() <= 15000){
             throw new TestErrorException("Employee ID :" + empIDs[0] + " Salary Not Updated");
@@ -222,6 +222,6 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
         employee = (Employee)persistedItems.get("after flush Employees 2 with raise");
         if (employee.getSalary() != 0){
             throw new TestErrorException("Employee ID :" + empIDs[2] + " Salary Not updated");
-        }              
+        }
     }
 }

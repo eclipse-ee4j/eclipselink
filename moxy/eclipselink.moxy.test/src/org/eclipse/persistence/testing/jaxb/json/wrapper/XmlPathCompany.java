@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,7 +29,7 @@ public class XmlPathCompany {
 
     @XmlPath("employees/employee")
     public List<XmlPathEmployee> employees = new ArrayList<XmlPathEmployee>();
-    
+
     @XmlPath("phone-numbers/phone-number")
     public List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
 
@@ -38,7 +38,7 @@ public class XmlPathCompany {
         if(null == obj || obj.getClass() != this.getClass()) {
             return false;
         }
-        
+
         XmlPathCompany test = (XmlPathCompany) obj;
         if(!equals(strings, test.strings)) {
             return false;
@@ -55,7 +55,7 @@ public class XmlPathCompany {
     private boolean equals(List<?> control, List<?> test) {
         if(control == test) {
             return true;
-        } 
+        }
         if(null == control || null == test) {
             return false;
         }

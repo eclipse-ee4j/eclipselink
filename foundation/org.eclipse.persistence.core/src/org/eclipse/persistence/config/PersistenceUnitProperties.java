@@ -31,9 +31,9 @@
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  *     11/04/2014 - Rick Curtis
  *       - 450010 : Add java se test bucket
- *     01/13/2015 - Rick Curtis  
+ *     01/13/2015 - Rick Curtis
  *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
- *     02/19/2015 - Rick Curtis  
+ *     02/19/2015 - Rick Curtis
  *       - 458877 : Add national character support
  ******************************************************************************/
 package org.eclipse.persistence.config;
@@ -1696,7 +1696,7 @@ public class PersistenceUnitProperties {
      * <b> Example : </b> To change the value of
      * DatabasePlatform.shouldBindLiterals via configuration, provide the
      * following :<br><br>
-     * 
+     *
      * {@code
      *  <property name="eclipselink.target-database-properties" value="shouldBindLiterals=true"/>}
      * @see TargetDatabase
@@ -2170,7 +2170,7 @@ public class PersistenceUnitProperties {
 
     /**
      * When the "<code>eclipselink.ddlgen-terminate-statements</code>" property
-     * is set to true and a DDL script is being generated, the value of 
+     * is set to true and a DDL script is being generated, the value of
      * {@link DatabasePlatform#getStoredProcedureTerminationToken()} is appended to the end of each statement.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
@@ -3642,7 +3642,7 @@ public class PersistenceUnitProperties {
      * Default value is {@code ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault = false;}
      *
      * @see org.eclipse.persistence.internal.sessions.AbstractSession#setShouldOptimizeResultSetAccess(boolean)
-	 * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setIsResultSetAccessOptimizedQuery(boolean)
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setIsResultSetAccessOptimizedQuery(boolean)
      */
     public static final String JDBC_RESULT_SET_ACCESS_OPTIMIZATION = "eclipselink.jdbc.result-set-access-optimization";
 

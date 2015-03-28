@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -43,14 +43,14 @@ import org.eclipse.persistence.sessions.Project;
 public class TestProject extends Project {
     NamespaceResolver nsr;
     boolean setSchemaContext, setDefaultRootElement;
-    
+
     public TestProject() {
         nsr = new NamespaceResolver();
         setSchemaContext = true;
         setDefaultRootElement = true;
         addDescriptors();
     }
-    
+
     public TestProject(boolean setSchemaContext, boolean setDefaultRootElement) {
         nsr = new NamespaceResolver();
         this.setSchemaContext = setSchemaContext;
@@ -72,13 +72,13 @@ public class TestProject extends Project {
         this.setDefaultRootElement = setDefaultRootElement;
         addDescriptors();
     }
-    
+
     private void addDescriptors() {
         addDescriptor(getEmployeeDescriptor());
         addDescriptor(getAddressDescriptor());
         addDescriptor(getPhoneNumberDescriptor());
     }
-    
+
     private XMLDescriptor getEmployeeDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Employee.class);
@@ -125,7 +125,7 @@ public class TestProject extends Project {
         XMLAnyCollectionMapping acMapping = new XMLAnyCollectionMapping();
         acMapping.setAttributeName("stuff");
         descriptor.addMapping(acMapping);
-        
+
         // Enable Choice testing when Bug 269880 has been fixed
         // create choice mapping - choice
         XMLChoiceObjectMapping choiceMapping = new XMLChoiceObjectMapping();
@@ -134,7 +134,7 @@ public class TestProject extends Project {
         choiceMapping.addChoiceElement("secondAddress", Address.class);
         choiceMapping.addChoiceElement("age/text()", Integer.class);
         //descriptor.addMapping(choiceMapping);
-        
+
         // Enable ChoiceCollection testing when Bug 269880 has been fixed
         // create choices mapping
         XMLChoiceCollectionMapping choiceCMapping = new XMLChoiceCollectionMapping();
@@ -143,7 +143,7 @@ public class TestProject extends Project {
         choiceCMapping.addChoiceElement("alternateAddress", Address.class);
         choiceCMapping.addChoiceElement("codename/text()", String.class);
         //descriptor.addMapping(choiceCMapping);
-        
+
         // create billingAddress mapping
         XMLObjectReferenceMapping orMapping = new XMLObjectReferenceMapping();
         orMapping.setAttributeName("billingAddress");
@@ -151,7 +151,7 @@ public class TestProject extends Project {
         orMapping.addSourceToTargetKeyFieldAssociation("@bill-address-id", "@aid");
         orMapping.addSourceToTargetKeyFieldAssociation("bill-address-city/text()", "city/text()");
         descriptor.addMapping(orMapping);
-        
+
         // create data mapping
         XMLBinaryDataMapping dataMapping = new XMLBinaryDataMapping();
         dataMapping.setAttributeName("data");
@@ -162,7 +162,7 @@ public class TestProject extends Project {
         dataMapping.setSwaRef(true);
         dataMapping.setMimeType("application/binary");
         descriptor.addMapping(dataMapping);
-      
+
         // create bytes mapping
         XMLBinaryDataCollectionMapping bytesMapping = new XMLBinaryDataCollectionMapping();
         bytesMapping.setAttributeName("bytes");
@@ -179,7 +179,7 @@ public class TestProject extends Project {
         urlMapping.setAttributeName("aUrl");
         urlMapping.setXPath("aUrl/text()");
         descriptor.addMapping(urlMapping);
-        
+
         return descriptor;
     }
 

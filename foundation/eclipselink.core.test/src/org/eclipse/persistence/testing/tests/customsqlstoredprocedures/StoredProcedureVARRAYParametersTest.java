@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
 import java.sql.Struct;
@@ -27,108 +27,108 @@ import org.eclipse.persistence.testing.models.insurance.Phone;
 
 /**
  * This tests using Vectors in stored procedures (through storedprocedurecalls or custom sql) for
- * ARRAY objects using IN, OUT and INOUT parameter types.  Also verifies that if no conversion 
- * is specified for a Struct object, a Struct will be returned.  
+ * ARRAY objects using IN, OUT and INOUT parameter types.  Also verifies that if no conversion
+ * is specified for a Struct object, a Struct will be returned.
  */
 public class StoredProcedureVARRAYParametersTest extends StoredProcedureObjectRelationalParameters {
-    
+
     Vector phoneNumbers, childrenNames = null;
-    
+
     public StoredProcedureVARRAYParametersTest() {
         super();
     }
-    
+
     public StoredProcedureVARRAYParametersTest(boolean useCustomSQL) {
         super(useCustomSQL);
     }
-    
+
     public void setup() {
         super.setup();
     }
-    
+
     public void test() {
         Vector args = new Vector();
 
         childrenNames = new Vector();
         childrenNames.add("Mary");
         childrenNames.add("Sue");
-        
+
         phoneNumbers= new Vector();
         phoneNumbers.add(Phone.example2());
         phoneNumbers.add(Phone.example3());
-        
-        
+
+
         args.addElement(policyHolderIdToUse);//ssn
         args.addElement(null);//occupation
         args.addElement(null);//sex
         args.addElement("Peter");//firstName
         args.addElement(null);//birthDate
         args.addElement("Griffin");//lastName
-        
+
         args.addElement(originalAddress);//address
         args.addElement(childrenNames);//childrenNames
         args.addElement(phoneNumbers);//phones
-        
+
         //testing that an exception is not thrown, using IN parameters exclusively
         result = getSession().executeQuery(getInsertQuery(), args);
-         
+
         //using OUT parameters exclusively, verifying policyHolder was created
         Vector args2 = new Vector();
         args2.addElement(policyHolderIdToUse);//ssn
         results2 = (Vector)getSession().executeQuery(getReadQuery(), args2);
-         
+
         //using IN OUT parameters exclusively, deleting a policyholder
         results3 = (Vector)getSession().executeQuery(getDeleteQuery(), args);
     }
-    
+
     public void verify() {
         if ((results2.size()!=1) &&(results3.size()!=1)){
             throw new TestErrorException("Collections returned did not contain expected number of results");
-        }   
+        }
         //check that a Struct was returned for address
         Object addressOut = ((DatabaseRecord)results2.get(0)).get("address");
         if ((addressOut==null)||(! (addressOut instanceof Struct))){
             throw new TestErrorException("Address returned by SProc_Read_PHolders was null or not a Struct :"+addressOut);
         }
-        //This is an Address instance instead of struct since it picks up the address class from the value passed in. 
+        //This is an Address instance instead of struct since it picks up the address class from the value passed in.
         Address addressInOut = ((Address)((DatabaseRecord)results3.get(0)).get("address"));
         if ((addressInOut==null)|| !originalAddress.getStreet().equals(addressInOut.getStreet())){
             throw new TestErrorException("Address in did not equal the address returned out by SProc_Delete_PHolders "+addressInOut);
         }
 
         Vector childrenRead = ((Vector)((DatabaseRecord)results2.get(0)).get("childrenNames"));
-        if ( (childrenNames.size() != childrenRead.size()) && 
+        if ( (childrenNames.size() != childrenRead.size()) &&
                 (!childrenNames.get(0).equals(childrenRead.get(0))) ){
             throw new TestErrorException("First Child's Name did not match what was returned out by SProc_Read_PHolders");
         }
         childrenRead = ((Vector)((DatabaseRecord)results3.get(0)).get("childrenNames"));
-        if ( (childrenNames.size() != childrenRead.size()) && 
+        if ( (childrenNames.size() != childrenRead.size()) &&
                 (!childrenNames.get(0).equals(childrenRead.get(0))) ){
             throw new TestErrorException("First Child's Name did not match what was returned out by SProc_Delete_PHolders");
         }
-        
+
         Vector phonesRead = ((Vector)((DatabaseRecord)results2.get(0)).get("phones"));
-        if ( (phoneNumbers.size() != phonesRead.size()) && 
+        if ( (phoneNumbers.size() != phonesRead.size()) &&
                 (!phoneNumbers.get(0).equals(childrenRead.get(0))) ){
             throw new TestErrorException("First phone did not match what was returned out by SProc_Read_PHolders");
         }
-        
+
         phonesRead = ((Vector)((DatabaseRecord)results3.get(0)).get("phones"));
-        if ( (phoneNumbers.size() != phonesRead.size()) && 
+        if ( (phoneNumbers.size() != phonesRead.size()) &&
                 (!phoneNumbers.get(0).equals(phonesRead.get(0))) ){
             throw new TestErrorException("First phone did not match what was returned out by SProc_Delete_PHolders");
         }
     }
-    
-    
+
+
     public DatabaseCall getInsertCall(){
         DatabaseCall call = null;
-        
+
         ObjectRelationalDatabaseField ordf = new ObjectRelationalDatabaseField("");
         ordf.setSqlType(Types.STRUCT);
         ordf.setSqlTypeName("PHONE_TYPE");
         ordf.setType(Phone.class);
-        
+
         if (useCustomSQL){
             String sqlString = "BEGIN SProc_Insert_PHolders(#ssn, #occupation, #sex, "+
                 "#firstName, #birthDate, #lastName, #address, #childrenNames, #phones); END;";
@@ -151,8 +151,8 @@ public class StoredProcedureVARRAYParametersTest extends StoredProcedureObjectRe
             spcall.addUnamedArgument("sex", Character.class);
             spcall.addUnamedArgument("firstName", String.class);
             spcall.addUnamedArgument("birthDate", java.sql.Date.class);
-            spcall.addUnamedArgument("lastName", String.class);        
-            
+            spcall.addUnamedArgument("lastName", String.class);
+
             spcall.addUnamedArgument("address", Types.STRUCT, "ADDRESS_TYPE");//Address.class
             spcall.addUnamedArgument("childrenNames", Types.ARRAY, "NAMELIST_TYPE");
             spcall.addUnamedArgument("phones", Types.ARRAY, "PHONELIST_TYPE", ordf);
@@ -160,7 +160,7 @@ public class StoredProcedureVARRAYParametersTest extends StoredProcedureObjectRe
         }
         return call;
     }
-    
+
     public DatabaseCall getReadCall(){
         DatabaseCall call = null;
         ObjectRelationalDatabaseField ordf = new ObjectRelationalDatabaseField("");
@@ -172,7 +172,7 @@ public class StoredProcedureVARRAYParametersTest extends StoredProcedureObjectRe
                 "###firstName, ###birthDate, ###lastName, ###address, ###childrenNames, ###phones); END;";
             SQLCall sqlcall = new SQLCall(sqlString);
             sqlcall.setCustomSQLArgumentType("ssn", Long.class);
-            sqlcall.setCustomSQLArgumentType("occupation", String.class); 
+            sqlcall.setCustomSQLArgumentType("occupation", String.class);
             sqlcall.setCustomSQLArgumentType("sex", Character.class);
             sqlcall.setCustomSQLArgumentType("firstName", String.class);
             sqlcall.setCustomSQLArgumentType("birthDate", java.sql.Date.class);
@@ -197,20 +197,20 @@ public class StoredProcedureVARRAYParametersTest extends StoredProcedureObjectRe
         }
         return call;
     }
-    
+
     public DatabaseCall getDeleteCall(){
         DatabaseCall call = null;
         ObjectRelationalDatabaseField ordf = new ObjectRelationalDatabaseField("");
         ordf.setSqlType(Types.STRUCT);
         ordf.setSqlTypeName("PHONE_TYPE");
         ordf.setType(Phone.class);
-        
+
         if (useCustomSQL){
             String sqlString = "BEGIN SProc_Delete_PHolders(####ssn, ####occupation, ####sex, "+
                 "####firstName, ####birthDate, ####lastName, ####address, ####childrenNames, ####phones); END;";
             SQLCall sqlcall = new SQLCall(sqlString);
             sqlcall.setCustomSQLArgumentType("ssn", Long.class);
-            sqlcall.setCustomSQLArgumentType("occupation", String.class); 
+            sqlcall.setCustomSQLArgumentType("occupation", String.class);
             sqlcall.setCustomSQLArgumentType("sex", Character.class);
             sqlcall.setCustomSQLArgumentType("firstName", String.class);
             sqlcall.setCustomSQLArgumentType("birthDate", java.sql.Date.class);

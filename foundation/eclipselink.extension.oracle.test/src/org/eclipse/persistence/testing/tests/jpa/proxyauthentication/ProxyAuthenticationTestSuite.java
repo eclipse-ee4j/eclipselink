@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/28/2008-1.0M8 Andrei Ilitchev. 
+ *     05/28/2008-1.0M8 Andrei Ilitchev.
  *       - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.proxyauthentication;
 
 import java.sql.SQLException;
@@ -57,7 +57,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
     boolean shoulUseExclusiveIsolatedSession;
     // datasource created in external connection pooling case.
     OracleDataSource dataSource;
-    
+
     // writeUser is set by an event risen by ModifyQuery.
     private static String writeUser;
     public static class Listener extends SessionEventAdapter {
@@ -70,16 +70,16 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
     static String readQueryString;
     static String writeQueryString;
     static {
-        // Used to return the schema name used by reading connection. 
+        // Used to return the schema name used by reading connection.
         readQueryString = "SELECT SYS_CONTEXT ('USERENV', 'CURRENT_SCHEMA') FROM DUAL";
-        
+
         // Used to return (through event) the schema name used by writing connection.
         writeQueryString = "BEGIN SELECT SYS_CONTEXT ('USERENV', 'CURRENT_SCHEMA') INTO ###OUT FROM DUAL; END;";
     }
-    
+
     // Contains a non-empty string in case of an error after the test is complete.
     String errorMsg = "";
-    
+
     // Before setup is attempted contains null; after that contains an empty string in case of success, error message otherwise.
     // If setup has failed then all the tests fail with this message.
     static String setupErrorMsg;
@@ -91,7 +91,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
     public ProxyAuthenticationTestSuite(String name) {
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite("Proxy Authentication JPA Test Suite");
 
@@ -114,10 +114,10 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         suite.addTest(new ProxyAuthenticationTestSuite("testInternalPool_EMFProxyProperties_EMCancelProxyProperties_ExclusiveIsolated"));
         suite.addTest(new ProxyAuthenticationTestSuite("testExternalPool_EMFProxyProperties_EMCancelProxyProperties"));
         suite.addTest(new ProxyAuthenticationTestSuite("testExternalPool_EMFProxyProperties_EMCancelProxyProperties_ExclusiveIsolated"));
-        
+
         return suite;
     }
-    
+
     public void setUp() {
         // runs for the first time - setup user names and properties used by the tests.
         if(setupErrorMsg == null) {
@@ -145,7 +145,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
             initializeFactoryProperties();
         }
     }
-    
+
     public void tearDown() {
         // clean-up
         if(setupErrorMsg.length() > 0) {
@@ -168,7 +168,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     // create a data source using the supplied connection string
     void createDataSource(String connectionString) {
         try {
@@ -184,9 +184,9 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
             throw new RuntimeException("Failed to create OracleDataSource with " + connectionString + ".\n", ex);
         }
     }
-    
+
     /**
-     * 
+     *
      */
     public void testInternalPool_EMFProxyProperties() {
         internalTest(false, ProxyAuthenticationUsersAndProperties.proxyProperties, false, null);
@@ -200,9 +200,9 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
     public void testExternalPool_EMFProxyProperties_ExclusiveIsolated() {
         internalTest(true, ProxyAuthenticationUsersAndProperties.proxyProperties, true, null);
     }
-    
+
     /**
-     * 
+     *
      */
     public void testInternalPool_EMProxyProperties() {
         internalTest(false, null, false, ProxyAuthenticationUsersAndProperties.proxyProperties);
@@ -216,9 +216,9 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
     public void testExternalPool_EMProxyProperties_ExclusiveIsolated() {
         internalTest(true, null, true, ProxyAuthenticationUsersAndProperties.proxyProperties);
     }
-    
+
     /**
-     * 
+     *
      */
     public void testInternalPool_EMFProxyProperties_EMProxyProperties() {
         internalTest(false, ProxyAuthenticationUsersAndProperties.proxyProperties, false, ProxyAuthenticationUsersAndProperties.proxyProperties2);
@@ -232,9 +232,9 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
     public void testExternalPool_EMFProxyProperties_EMProxyProperties_ExclusiveIsolated() {
         internalTest(true, ProxyAuthenticationUsersAndProperties.proxyProperties, true, ProxyAuthenticationUsersAndProperties.proxyProperties2);
     }
-    
+
     /**
-     * 
+     *
      */
     public void testInternalPool_EMFProxyProperties_EMCancelProxyProperties() {
         internalTest(false, ProxyAuthenticationUsersAndProperties.proxyProperties, false, ProxyAuthenticationUsersAndProperties.cancelProxyProperties);
@@ -248,58 +248,58 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
     public void testExternalPool_EMFProxyProperties_EMCancelProxyProperties_ExclusiveIsolated() {
         internalTest(true, ProxyAuthenticationUsersAndProperties.proxyProperties, true, ProxyAuthenticationUsersAndProperties.cancelProxyProperties);
     }
-    
+
     void initializeFactoryProperties() {
         // copy the original factory properties.
         factoryProperties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
-        
+
         // these properties used only in internal connection pool case.
         // the pool using just one connection would cause deadlock in case of a connection leak - good for the test.
         factoryProperties.put(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MIN, "1");
         factoryProperties.put(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MAX, "1");
         factoryProperties.put(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN, "1");
         factoryProperties.put(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MAX, "1");
-        
+
         // set them into factoryProperties. Note that this works in external connection pooling case, too (at least with OracleDataSource).
         factoryProperties.put(PersistenceUnitProperties.JDBC_USER, ProxyAuthenticationUsersAndProperties.connectionUser);
         factoryProperties.put(PersistenceUnitProperties.JDBC_PASSWORD, ProxyAuthenticationUsersAndProperties.connectionPassword);
-        
-        // add listener that handles output parameter event through which writeUser is obtained. 
+
+        // add listener that handles output parameter event through which writeUser is obtained.
         factoryProperties.put(PersistenceUnitProperties.SESSION_EVENT_LISTENER_CLASS, Listener.class.getName());
     }
-    
+
     void internalTest(boolean shouldUseExternalConnectionPooling, Map serverSessionProxyProperties, boolean shoulUseExclusiveIsolatedSession, Map clientSessionProxyProperties) {
         if(shouldUseExternalConnectionPooling) {
             // create data source and add it to factoryProperties
             createDataSource((String)factoryProperties.get(PersistenceUnitProperties.JDBC_URL));
             factoryProperties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, dataSource);
         }
-        
+
         if(shoulUseExclusiveIsolatedSession) {
             factoryProperties.put(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Isolated);
         }
-        
+
         // EMFactory uses proxyProperties
         if(serverSessionProxyProperties != null) {
             factoryProperties.putAll(serverSessionProxyProperties);
         }
         EntityManagerFactory factory = this.getEntityManagerFactory(factoryProperties);
         ServerSession ss = ((JpaEntityManagerFactory)factory).getServerSession();
-        
+
         if(shoulUseExclusiveIsolatedSession) {
             ss.getDefaultConnectionPolicy().setExclusiveMode(ConnectionPolicy.ExclusiveMode.Always);
         }
-        
+
         String expectedMainSessionUser = ProxyAuthenticationUsersAndProperties.connectionUser;
         if(serverSessionProxyProperties != null) {
             expectedMainSessionUser = getExpectedUserName(serverSessionProxyProperties);
         }
-        // in case no proxy properties specified on the ClientSession it uses the same use as the ServerSession. 
+        // in case no proxy properties specified on the ClientSession it uses the same use as the ServerSession.
         String expectedClientSessionUser = expectedMainSessionUser;
         if(clientSessionProxyProperties != null) {
             expectedClientSessionUser = getExpectedUserName(clientSessionProxyProperties);
         }
-        
+
         // The second ClientSession created without proxy properties.
         EntityManager em1 = factory.createEntityManager();
         boolean isExclusiveIsolated = ((UnitOfWorkImpl)((org.eclipse.persistence.internal.jpa.EntityManagerImpl)em1).getActiveSession()).getParent() instanceof ExclusiveIsolatedClientSession;
@@ -317,7 +317,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         rollbackTransaction(em1);
         verifyUser("ClientSession1 after transaction read", getReadUser(em1), expectedMainSessionUser);
         em1.close();
-        
+
         // The second ClientSession created with proxy properties.
         EntityManager em2 = factory.createEntityManager(clientSessionProxyProperties);
         if(shoulUseExclusiveIsolatedSession) {
@@ -347,7 +347,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         rollbackTransaction(em3);
         verifyUser("ClientSession3 after transaction read", getReadUser(em3), expectedMainSessionUser);
         em3.close();
-        
+
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
@@ -378,7 +378,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
             return (String)proxyProperties.get(OracleConnection.PROXY_USER_NAME);
         }
     }
-    
+
     void verifyUser(String msg, String user, String expectedUser) {
         if(!user.equalsIgnoreCase(expectedUser)) {
             errorMsg += msg + " through wrong user " + user + " - " + expectedUser + " was expected \n";

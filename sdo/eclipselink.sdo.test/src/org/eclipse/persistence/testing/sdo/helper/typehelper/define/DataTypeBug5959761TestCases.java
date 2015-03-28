@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.typehelper.define;
 
 import commonj.sdo.DataObject;
@@ -56,21 +56,21 @@ public class DataTypeBug5959761TestCases extends SDOTestCase {
         rootPropDO.set(xmlDataTypeProperty, timeStampType);
         rootPropDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         Type rootType = typeHelper.define(rootTypeDO);
-        
+
         DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", "Root");
         propDO.set("type", rootType);
         typeHelper.defineOpenContentProperty("http://sdo.sample.service/types/", propDO);
-        
+
         FileInputStream xmlFile = new FileInputStream(getXmlFileNameToLoad());
         XMLDocument document = xmlHelper.load(xmlFile);
         DataObject root = document.getRootObject();
-        
+
         Object value = root.get("hireDate");
         assertNotNull(value);
         assertEquals(java.sql.Timestamp.class, value.getClass());
     }
-    
+
     private String getXmlFileNameToLoad(){
       return ("./org/eclipse/persistence/testing/sdo/helper/typehelper/timestamp.xml");
     }

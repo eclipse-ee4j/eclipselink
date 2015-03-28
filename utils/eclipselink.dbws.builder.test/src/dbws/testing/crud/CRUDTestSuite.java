@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -221,7 +221,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
         Vector<XRDynamicEntity> result3 = (Vector<XRDynamicEntity>)op2.invoke(xrService, invocation2);
         assertTrue("Create failed:  wrong number of employees", result3.size() == 3);
     }
-    
+
     public static final String CRUD1_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<crud_tableType xmlns=\"urn:crud\">" +

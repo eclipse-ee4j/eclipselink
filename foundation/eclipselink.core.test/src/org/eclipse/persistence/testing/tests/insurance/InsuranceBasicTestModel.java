@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.insurance;
 
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -153,7 +153,7 @@ public class InsuranceBasicTestModel extends TestModel {
 
         return suite;
     }
-    
+
     public static class RemovePrivatelyOwnedTestCase extends TestCase {
         public RemovePrivatelyOwnedTestCase() {
             setName("RemovePrivatelyOwnedTestCase");
@@ -165,16 +165,16 @@ public class InsuranceBasicTestModel extends TestModel {
             uow.registerObject(policy);
             uow.commit();
             long policyNumber = policy.getPolicyNumber();
-            
+
             int nClaims = policy.getClaims().size();
-            
+
             // test
             uow = getSession().acquireUnitOfWork();
             BicyclePolicy policyClone = (BicyclePolicy)uow.registerObject(policy);
-            Claim claimToRemove = (Claim)policyClone.getClaims().get(0); 
+            Claim claimToRemove = (Claim)policyClone.getClaims().get(0);
             policyClone.getClaims().remove(claimToRemove);
             uow.commit();
-            
+
             // verify cache
             ReadObjectQuery query = new ReadObjectQuery(claimToRemove);
             query.shouldCheckCacheOnly();
@@ -185,12 +185,12 @@ public class InsuranceBasicTestModel extends TestModel {
             Claim claimToRemoveDb = (Claim)getSession().readObject(claimToRemove);
             policy = (BicyclePolicy)getSession().readObject(policy);
             int nClaimsNewDb = policy.getClaims().size();
-                        
+
             // clean up
             uow = getSession().acquireUnitOfWork();
             uow.deleteObject(policy);
             uow.commit();
-            
+
             String errorMsg = "";
             if (nClaims == nClaimsNewCache) {
                 errorMsg += "Cache: claim has not been removed from policy; ";

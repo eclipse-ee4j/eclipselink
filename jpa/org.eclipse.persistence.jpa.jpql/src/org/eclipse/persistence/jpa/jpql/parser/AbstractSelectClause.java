@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,251 +40,251 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public abstract class AbstractSelectClause extends AbstractExpression {
 
-	/**
-	 * The actual <b>DISTINCT</b> identifier found in the string representation of the JPQL query.
-	 */
-	private String distinctIdentifier;
+    /**
+     * The actual <b>DISTINCT</b> identifier found in the string representation of the JPQL query.
+     */
+    private String distinctIdentifier;
 
-	/**
-	 * Determines whether a whitespace was parsed after the <b>DISTINCT</b>.
-	 */
-	private boolean hasSpaceAfterDistinct;
+    /**
+     * Determines whether a whitespace was parsed after the <b>DISTINCT</b>.
+     */
+    private boolean hasSpaceAfterDistinct;
 
-	/**
-	 * Determines whether a whitespace was parsed after the <b>SELECT</b>.
-	 */
-	private boolean hasSpaceAfterSelect;
+    /**
+     * Determines whether a whitespace was parsed after the <b>SELECT</b>.
+     */
+    private boolean hasSpaceAfterSelect;
 
-	/**
-	 * The actual identifier found in the string representation of the JPQL query.
-	 */
-	private String identifier;
+    /**
+     * The actual identifier found in the string representation of the JPQL query.
+     */
+    private String identifier;
 
-	/**
-	 * The actual expression of this select clause.
-	 */
-	private AbstractExpression selectExpression;
+    /**
+     * The actual expression of this select clause.
+     */
+    private AbstractExpression selectExpression;
 
-	/**
-	 * Creates a new <code>SelectClause</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	protected AbstractSelectClause(AbstractExpression parent) {
-		super(parent, SELECT);
-	}
+    /**
+     * Creates a new <code>SelectClause</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    protected AbstractSelectClause(AbstractExpression parent) {
+        super(parent, SELECT);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void acceptChildren(ExpressionVisitor visitor) {
-		getSelectExpression().accept(visitor);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void acceptChildren(ExpressionVisitor visitor) {
+        getSelectExpression().accept(visitor);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addChildrenTo(Collection<Expression> children) {
-		children.add(getSelectExpression());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addChildrenTo(Collection<Expression> children) {
+        children.add(getSelectExpression());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addOrderedChildrenTo(List<Expression> children) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addOrderedChildrenTo(List<Expression> children) {
 
-		// 'SELECT'
-		children.add(buildStringExpression(SELECT));
+        // 'SELECT'
+        children.add(buildStringExpression(SELECT));
 
-		if (hasSpaceAfterSelect) {
-			children.add(buildStringExpression(SPACE));
-		}
+        if (hasSpaceAfterSelect) {
+            children.add(buildStringExpression(SPACE));
+        }
 
-		// 'DISTINCT'
-		if (distinctIdentifier != null) {
-			children.add(buildStringExpression(DISTINCT));
-		}
+        // 'DISTINCT'
+        if (distinctIdentifier != null) {
+            children.add(buildStringExpression(DISTINCT));
+        }
 
-		if (hasSpaceAfterDistinct) {
-			children.add(buildStringExpression(SPACE));
-		}
+        if (hasSpaceAfterDistinct) {
+            children.add(buildStringExpression(SPACE));
+        }
 
-		// Select expression
-		if (selectExpression != null) {
-			children.add(selectExpression);
-		}
-	}
+        // Select expression
+        if (selectExpression != null) {
+            children.add(selectExpression);
+        }
+    }
 
-	/**
-	 * Creates a new {@link CollectionExpression} that will wrap the single select item.
-	 *
-	 * @return The single select item represented by a temporary collection
-	 */
-	public CollectionExpression buildCollectionExpression() {
+    /**
+     * Creates a new {@link CollectionExpression} that will wrap the single select item.
+     *
+     * @return The single select item represented by a temporary collection
+     */
+    public CollectionExpression buildCollectionExpression() {
 
-		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
-		children.add((AbstractExpression) getSelectExpression());
+        List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+        children.add((AbstractExpression) getSelectExpression());
 
-		List<Boolean> commas = new ArrayList<Boolean>(1);
-		commas.add(Boolean.FALSE);
+        List<Boolean> commas = new ArrayList<Boolean>(1);
+        commas.add(Boolean.FALSE);
 
-		List<Boolean> spaces = new ArrayList<Boolean>(1);
-		spaces.add(Boolean.FALSE);
+        List<Boolean> spaces = new ArrayList<Boolean>(1);
+        spaces.add(Boolean.FALSE);
 
-		return new CollectionExpression(this, children, commas, spaces, true);
-	}
+        return new CollectionExpression(this, children, commas, spaces, true);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPQLQueryBNF findQueryBNF(Expression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JPQLQueryBNF findQueryBNF(Expression expression) {
 
-		if ((selectExpression != null) && selectExpression.isAncestor(expression)) {
-			return getQueryBNF(getSelectItemQueryBNFId());
-		}
+        if ((selectExpression != null) && selectExpression.isAncestor(expression)) {
+            return getQueryBNF(getSelectItemQueryBNFId());
+        }
 
-		return super.findQueryBNF(expression);
-	}
+        return super.findQueryBNF(expression);
+    }
 
-	/**
-	 * Returns the actual <b>DISTINCT</b> identifier found in the string representation of the JPQL
-	 * query, which has the actual case that was used.
-	 *
-	 * @return The <b>DISTINCT</b> identifier that was actually parsed, or an empty string if it was
-	 * not parsed
-	 * @since 2.4
-	 */
-	public final String getActualDistinctIdentifier() {
-		return distinctIdentifier;
-	}
+    /**
+     * Returns the actual <b>DISTINCT</b> identifier found in the string representation of the JPQL
+     * query, which has the actual case that was used.
+     *
+     * @return The <b>DISTINCT</b> identifier that was actually parsed, or an empty string if it was
+     * not parsed
+     * @since 2.4
+     */
+    public final String getActualDistinctIdentifier() {
+        return distinctIdentifier;
+    }
 
-	/**
-	 * Returns the actual <b>SELECT</b> identifier found in the string representation of the JPQL
-	 * query, which has the actual case that was used.
-	 *
-	 * @return The <b>SELECT</b> identifier that was actually parsed
-	 */
-	public final String getActualIdentifier() {
-		return identifier;
-	}
+    /**
+     * Returns the actual <b>SELECT</b> identifier found in the string representation of the JPQL
+     * query, which has the actual case that was used.
+     *
+     * @return The <b>SELECT</b> identifier that was actually parsed
+     */
+    public final String getActualIdentifier() {
+        return identifier;
+    }
 
-	/**
-	 * Returns the {@link Expression} representing the select items.
-	 *
-	 * @return The expression representing the select items
-	 */
-	public final Expression getSelectExpression() {
-		if (selectExpression == null) {
-			selectExpression = buildNullExpression();
-		}
-		return selectExpression;
-	}
+    /**
+     * Returns the {@link Expression} representing the select items.
+     *
+     * @return The expression representing the select items
+     */
+    public final Expression getSelectExpression() {
+        if (selectExpression == null) {
+            selectExpression = buildNullExpression();
+        }
+        return selectExpression;
+    }
 
-	/**
-	 * Returns the unique identifier of the {@link JPQLQueryBNF} for the list of select items to parse.
-	 *
-	 * @return The ID of the query BNF for the list of select items to parse
-	 */
-	public abstract String getSelectItemQueryBNFId();
+    /**
+     * Returns the unique identifier of the {@link JPQLQueryBNF} for the list of select items to parse.
+     *
+     * @return The ID of the query BNF for the list of select items to parse
+     */
+    public abstract String getSelectItemQueryBNFId();
 
-	/**
-	 * Determines whether the identifier <b>DISTINCT</b> was parsed or not.
-	 *
-	 * @return <code>true</code> if the identifier <b>DISTINCT</b> was parsed;
-	 * <code>false</code> otherwise
-	 */
-	public final boolean hasDistinct() {
-		return distinctIdentifier != null;
-	}
+    /**
+     * Determines whether the identifier <b>DISTINCT</b> was parsed or not.
+     *
+     * @return <code>true</code> if the identifier <b>DISTINCT</b> was parsed;
+     * <code>false</code> otherwise
+     */
+    public final boolean hasDistinct() {
+        return distinctIdentifier != null;
+    }
 
-	/**
-	 * Determines whether the list of select items was parsed.
-	 *
-	 * @return <code>true</code> the list of select items was parsed;
-	 * <code>false</code> otherwise
-	 */
-	public final boolean hasSelectExpression() {
-		return selectExpression != null &&
-		      !selectExpression.isNull();
-	}
+    /**
+     * Determines whether the list of select items was parsed.
+     *
+     * @return <code>true</code> the list of select items was parsed;
+     * <code>false</code> otherwise
+     */
+    public final boolean hasSelectExpression() {
+        return selectExpression != null &&
+              !selectExpression.isNull();
+    }
 
-	/**
-	 * Determines whether a whitespace was parsed after <b>DISTINCT</b>.
-	 *
-	 * @return <code>true</code> if there was a whitespace after <b>DISTINCT</b>;
-	 * <code>false</code> otherwise
-	 */
-	public final boolean hasSpaceAfterDistinct() {
-		return hasSpaceAfterDistinct;
-	}
+    /**
+     * Determines whether a whitespace was parsed after <b>DISTINCT</b>.
+     *
+     * @return <code>true</code> if there was a whitespace after <b>DISTINCT</b>;
+     * <code>false</code> otherwise
+     */
+    public final boolean hasSpaceAfterDistinct() {
+        return hasSpaceAfterDistinct;
+    }
 
-	/**
-	 * Determines whether a whitespace was parsed after <b>SELECT</b>.
-	 *
-	 * @return <code>true</code> if there was a whitespace after <b>SELECT</b>;
-	 * <code>false</code> otherwise
-	 */
-	public final boolean hasSpaceAfterSelect() {
-		return hasSpaceAfterSelect;
-	}
+    /**
+     * Determines whether a whitespace was parsed after <b>SELECT</b>.
+     *
+     * @return <code>true</code> if there was a whitespace after <b>SELECT</b>;
+     * <code>false</code> otherwise
+     */
+    public final boolean hasSpaceAfterSelect() {
+        return hasSpaceAfterSelect;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void parse(WordParser wordParser, boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse(WordParser wordParser, boolean tolerant) {
 
-		// Parse 'SELECT'
-		identifier = wordParser.moveForward(SELECT);
+        // Parse 'SELECT'
+        identifier = wordParser.moveForward(SELECT);
 
-		hasSpaceAfterSelect = wordParser.skipLeadingWhitespace() > 0;
+        hasSpaceAfterSelect = wordParser.skipLeadingWhitespace() > 0;
 
-		// Parse 'DISTINCT'
-		if (wordParser.startsWithIdentifier(DISTINCT)) {
-			distinctIdentifier = wordParser.moveForward(DISTINCT);
-			hasSpaceAfterDistinct = wordParser.skipLeadingWhitespace() > 0;
-		}
+        // Parse 'DISTINCT'
+        if (wordParser.startsWithIdentifier(DISTINCT)) {
+            distinctIdentifier = wordParser.moveForward(DISTINCT);
+            hasSpaceAfterDistinct = wordParser.skipLeadingWhitespace() > 0;
+        }
 
-		// Parse the select expression
-		selectExpression = parse(wordParser, getSelectItemQueryBNFId(), tolerant);
-	}
+        // Parse the select expression
+        selectExpression = parse(wordParser, getSelectItemQueryBNFId(), tolerant);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean shouldSkipLiteral(AbstractExpression expression) {
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean shouldSkipLiteral(AbstractExpression expression) {
+        return false;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toParsedText(StringBuilder writer, boolean actual) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toParsedText(StringBuilder writer, boolean actual) {
 
-		// 'SELECT'
-		writer.append(actual ? identifier : SELECT);
+        // 'SELECT'
+        writer.append(actual ? identifier : SELECT);
 
-		if (hasSpaceAfterSelect) {
-			writer.append(SPACE);
-		}
+        if (hasSpaceAfterSelect) {
+            writer.append(SPACE);
+        }
 
-		// 'DISTINCT'
-		if (distinctIdentifier != null) {
-			writer.append(actual ? distinctIdentifier : DISTINCT);
-		}
+        // 'DISTINCT'
+        if (distinctIdentifier != null) {
+            writer.append(actual ? distinctIdentifier : DISTINCT);
+        }
 
-		if (hasSpaceAfterDistinct) {
-			writer.append(SPACE);
-		}
+        if (hasSpaceAfterDistinct) {
+            writer.append(SPACE);
+        }
 
-		// Select expression
-		if (selectExpression != null) {
-			selectExpression.toParsedText(writer, actual);
-		}
-	}
+        // Select expression
+        if (selectExpression != null) {
+            selectExpression.toParsedText(writer, actual);
+        }
+    }
 }

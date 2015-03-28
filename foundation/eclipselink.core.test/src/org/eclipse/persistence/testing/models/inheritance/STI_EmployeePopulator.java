@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.inheritance;
 
 
@@ -855,14 +855,14 @@ public class STI_EmployeePopulator {
         return smallProject;
     }
 
-    public void persistExample(Session session) {        
-        Vector allObjects = new Vector();        
-        UnitOfWork unitOfWork = session.acquireUnitOfWork();        
+    public void persistExample(Session session) {
+        Vector allObjects = new Vector();
+        UnitOfWork unitOfWork = session.acquireUnitOfWork();
         PopulationManager.getDefaultManager().addAllObjectsForClass(STI_Employee.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(STI_SmallProject.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(STI_LargeProject.class, allObjects);
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
-        
+
     }
 }

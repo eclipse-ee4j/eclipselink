@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class MongoInteraction implements Interaction {
 
     /** Store the connection the interaction was created from. */
     protected MongoConnection connection;
-    
+
     /**
      * Default constructor.
      */
@@ -83,7 +83,7 @@ public class MongoInteraction implements Interaction {
                 WriteResult result = collection.update(translation, object, mongoSpec.isUpsert(), mongoSpec.isMulti());
                 return result.getN() > 0;
             } else {
-                throw new ResourceException("Invalid operation: " + operation);                
+                throw new ResourceException("Invalid operation: " + operation);
             }
         } catch (Exception exception) {
             ResourceException resourceException = new ResourceException(exception.toString());
@@ -109,7 +109,7 @@ public class MongoInteraction implements Interaction {
         String collectionName = mongoSpec.getCollection();
         if (operation == null) {
             ResourceException resourceException = new ResourceException("Mongo operation must be set");
-            throw resourceException;            
+            throw resourceException;
         }
         if (operation == MongoOperation.EVAL) {
             Object result = this.connection.getDB().eval(mongoSpec.getCode());
@@ -117,7 +117,7 @@ public class MongoInteraction implements Interaction {
         }
         if (collectionName == null) {
             ResourceException resourceException = new ResourceException("DB Collection name must be set");
-            throw resourceException;            
+            throw resourceException;
         }
         try {
             DBCollection collection = this.connection.getDB().getCollection(collectionName);
@@ -176,7 +176,7 @@ public class MongoInteraction implements Interaction {
                 }
 
             } else {
-                throw new ResourceException("Invalid operation: " + operation);                
+                throw new ResourceException("Invalid operation: " + operation);
             }
         } catch (Exception exception) {
             ResourceException resourceException = new ResourceException(exception.toString());
@@ -185,7 +185,7 @@ public class MongoInteraction implements Interaction {
         }
         return null;
     }
-    
+
     /**
      * Build the Mongo DBObject from the Map record.
      */
@@ -194,14 +194,14 @@ public class MongoInteraction implements Interaction {
         for (Iterator iterator = record.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             if (entry.getValue() instanceof MongoRecord) {
-                object.put((String)entry.getKey(), buildDBObject((MongoRecord)entry.getValue()));             
+                object.put((String)entry.getKey(), buildDBObject((MongoRecord)entry.getValue()));
             } else {
                 object.put((String)entry.getKey(), entry.getValue());
             }
         }
         return object;
     }
-    
+
     /**
      * Build the Map record from the Mongo DBObject.
      */
@@ -214,12 +214,12 @@ public class MongoInteraction implements Interaction {
                 for (Iterator valuesIterator = ((BasicDBList)entry.getValue()).iterator(); valuesIterator.hasNext(); ) {
                     Object value = valuesIterator.next();
                     if (value instanceof DBObject) {
-                        values.add(buildRecordFromDBObject((DBObject)value));                        
+                        values.add(buildRecordFromDBObject((DBObject)value));
                     } else {
                         values.add(value);
                     }
                 }
-                record.put((String)entry.getKey(), values);                
+                record.put((String)entry.getKey(), values);
             } else if (entry.getValue() instanceof DBObject) {
                 MongoRecord nestedRecord = buildRecordFromDBObject((DBObject)entry.getValue());
                 record.put((String)entry.getKey(), nestedRecord);
@@ -229,7 +229,7 @@ public class MongoInteraction implements Interaction {
         }
         return record;
     }
-    
+
     public Connection getConnection() {
         return connection;
     }

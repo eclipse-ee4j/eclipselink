@@ -11,6 +11,6 @@
     },
     "subClassObject":{
         "someValue":"subclassValue",
-	"extraString":"extra"
+    "extraString":"extra"
     }
 }}

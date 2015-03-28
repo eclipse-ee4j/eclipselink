@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings;
 
 import java.io.ByteArrayInputStream;
@@ -61,7 +61,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 public abstract class XMLMappingTestCases extends OXTestCase {
-  
+
     protected Document controlDocument;
     protected Document writeControlDocument;
     protected XMLMarshaller xmlMarshaller;
@@ -73,9 +73,9 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     protected String controlDocumentLocation;
     protected String writeControlDocumentLocation;
     protected boolean expectsMarshalException;
-        
+
     private boolean shouldRemoveEmptyTextNodesFromControlDoc = true;
-    
+
     public XMLMappingTestCases(String name) throws Exception {
         super(name);
         setupParser();
@@ -231,7 +231,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
             XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(xmlStreamReader);
             Object testObject = xmlUnmarshaller.unmarshal(staxReader, inputSource);
-            
+
             instream.close();
             xmlToObjectTest(testObject);
         }
@@ -245,7 +245,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
             XMLEventReaderInputSource inputSource = new XMLEventReaderInputSource(xmlEventReader);
             Object testObject = xmlUnmarshaller.unmarshal(staxReader, inputSource);
-            
+
             instream.close();
             xmlToObjectTest(testObject);
         }
@@ -314,11 +314,11 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        } 
+        }
         if(expectsMarshalException){
-    		fail("An exception should have occurred but didn't.");
-    		return;
-    	}
+            fail("An exception should have occurred but didn't.");
+            return;
+        }
         int sizeAfter = getNamespaceResolverSize(desc);
         assertEquals(sizeBefore, sizeAfter);
         objectToXMLDocumentTest(testDocument);
@@ -344,11 +344,11 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        } 
+        }
         if(expectsMarshalException){
-    		fail("An exception should have occurred but didn't.");
-    		return;
-    	}
+            fail("An exception should have occurred but didn't.");
+            return;
+        }
 
         int sizeAfter = getNamespaceResolverSize(desc);
 
@@ -385,11 +385,11 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        } 
+        }
         if(expectsMarshalException){
-    		fail("An exception should have occurred but didn't.");
-    		return;
-    	}
+            fail("An exception should have occurred but didn't.");
+            return;
+        }
 
 
         StringReader reader = new StringReader(writer.toString());
@@ -423,18 +423,18 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             return;
         }
         if(expectsMarshalException){
-    		fail("An exception should have occurred but didn't.");
-    		return;
-    	}
+            fail("An exception should have occurred but didn't.");
+            return;
+        }
         int sizeAfter = getNamespaceResolverSize(desc);
 
         assertEquals(sizeBefore, sizeAfter);
-    
+
         InputStream is = new ByteArrayInputStream(stream.toByteArray());
         Document testDocument = parser.parse(is);
         stream.close();
         is.close();
-        
+
         objectToXMLDocumentTest(testDocument);
     }
 
@@ -453,20 +453,20 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         int sizeBefore = getNamespaceResolverSize(desc);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        
+
         try {
             xmlMarshaller.setEncoding("US-ASCII");
             xmlMarshaller.marshal(objectToWrite, stream);
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        } 
+        }
         if(expectsMarshalException){
-    		fail("An exception should have occurred but didn't.");
-    		return;
-    	}
+            fail("An exception should have occurred but didn't.");
+            return;
+        }
 
-       
+
         int sizeAfter = getNamespaceResolverSize(desc);
 
         assertEquals(sizeBefore, sizeAfter);
@@ -475,10 +475,10 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         Document testDocument = parser.parse(is);
         stream.close();
         is.close();
-        
+
         objectToXMLDocumentTest(testDocument);
     }
-    
+
     public void testObjectToXMLStreamWriter() throws Exception {
         if(XML_OUTPUT_FACTORY != null && staxResultClass != null) {
             StringWriter writer = new StringWriter();
@@ -491,7 +491,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             if (objectToWrite instanceof XMLRoot) {
                 XMLRoot xmlRoot = (XMLRoot) objectToWrite;
                 if(null != xmlRoot.getObject()) {
-                    desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());                    
+                    desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
                 }
             } else {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
@@ -505,11 +505,11 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
-            } 
+            }
             if(expectsMarshalException){
-        		fail("An exception should have occurred but didn't.");
-        		return;
-        	}
+                fail("An exception should have occurred but didn't.");
+                return;
+            }
 
 
             streamWriter.flush();
@@ -523,7 +523,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             objectToXMLDocumentTest(testDocument);
         }
     }
-    
+
     public void testObjectToXMLEventWriter() throws Exception {
         if(XML_OUTPUT_FACTORY != null && staxResultClass != null) {
             StringWriter writer = new StringWriter();
@@ -536,7 +536,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             if (objectToWrite instanceof XMLRoot) {
                 XMLRoot xmlRoot = (XMLRoot) objectToWrite;
                 if(null != xmlRoot.getObject()) {
-                    desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());                    
+                    desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
                 }
             } else {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
@@ -550,11 +550,11 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
-            } 
+            }
             if(expectsMarshalException){
-        		fail("An exception should have occurred but didn't.");
-        		return;
-        	}
+                fail("An exception should have occurred but didn't.");
+                return;
+            }
 
 
             eventWriter.flush();
@@ -568,7 +568,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             objectToXMLDocumentTest(testDocument);
         }
     }
-    
+
     protected int getNamespaceResolverSize(XMLDescriptor desc){
        int size = -1;
         if (desc != null) {
@@ -588,7 +588,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         XMLDescriptor desc = null;
         if (objectToWrite instanceof XMLRoot) {
             XMLRoot xmlRoot = (XMLRoot) objectToWrite;
-            if(null != xmlRoot.getObject()) {            
+            if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }
         } else {
@@ -601,11 +601,11 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        } 
+        }
         if(expectsMarshalException){
-    		fail("An exception should have occurred but didn't.");
-    		return;
-    	}
+            fail("An exception should have occurred but didn't.");
+            return;
+        }
 
 
         int sizeAfter = getNamespaceResolverSize(desc);
@@ -683,7 +683,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         public ValidatorHandler newValidatorHandler() {
             return validatorHandler;
         }
-        
+
     }
 
     private static class FakeValidatorHandler extends ValidatorHandler {

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -56,28 +56,28 @@ import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
  * @see org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator
  * @see JUnitDomainObjectComparer
  */
- 
+
 public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 {
     static JUnitDomainObjectComparer comparer;        //the global comparer object used in all tests
-    
+
     public JUnitJPQLValidationTestSuite()
     {
         super();
     }
-  
+
     public JUnitJPQLValidationTestSuite(String name)
     {
         super(name);
     }
-  
+
     //This method is run at the end of EVERY test case method
     public void tearDown()
     {
         clearCache();
     }
     //This suite contains all tests contained in this class
-    public static Test suite() 
+    public static Test suite()
     {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLValidationTestSuite");
@@ -97,7 +97,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLValidationTestSuite("noAliasWithWHEREAndParameterExceptionTest"));
         //suite.addTest(new JUnitJPQLValidationTestSuite("unknownAbstractSchemaTypeTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("multipleDeclarationOfIdentificationVariable"));
-        suite.addTest(new JUnitJPQLValidationTestSuite("aliasResolutionException"));  
+        suite.addTest(new JUnitJPQLValidationTestSuite("aliasResolutionException"));
         suite.addTest(new JUnitJPQLValidationTestSuite("illegalArgumentExceptionTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("createNamedQueryThrowsIllegalArgumentExceptionTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("flushTxExceptionTest"));
@@ -119,7 +119,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidCollectionNavigation"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testUnknownAttribute"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testUnknownEnumConstant"));
-        suite.addTest(new JUnitJPQLValidationTestSuite("testCommitRollbackException"));                
+        suite.addTest(new JUnitJPQLValidationTestSuite("testCommitRollbackException"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testParameterPositionValidation"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testParameterPositionValidation2"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testParameterTypeValidation"));
@@ -134,10 +134,10 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLValidationTestSuite("invalidColumnExpressionTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("invalidFunctionExpressionTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("invalidOperatorExpressionTest"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -145,52 +145,52 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         clearCache();
         //get session to start setup
         DatabaseSession session = JUnitTestCase.getServerSession();
-        
+
         //create a new EmployeePopulator
         EmployeePopulator employeePopulator = new EmployeePopulator();
-        
+
         new AdvancedTableCreator().replaceTables(session);
-        
+
         //initialize the global comparer object
         comparer = new JUnitDomainObjectComparer();
-        
+
         //set the session for the comparer to use
-        comparer.setSession((AbstractSession)session.getActiveSession());              
-        
+        comparer.setSession((AbstractSession)session.getActiveSession());
+
         //Populate the tables
         employeePopulator.buildExamples();
-        
+
         //Persist the examples in the database
         employeePopulator.persistExample(session);
     }
-    
-    public void ensureInvalid(String jpql) 
+
+    public void ensureInvalid(String jpql)
     {
         try {
-            createEntityManager().createQuery(jpql).getResultList();                
+            createEntityManager().createQuery(jpql).getResultList();
             fail("Illegal Argument Exception must be thrown");
-        } catch (IllegalArgumentException ex) {     
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);            
-        }                   
+        } catch (IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
     }
-    
+
     public void illegalArgumentExceptionTest() {
         ensureInvalid("SELECT FROM EMPLOYEE emp");
     }
-    
-    
+
+
     public void generalExceptionTest() {
         ensureInvalid("SELECT FROM EMPLOYEE emp");
     }
-    
+
     public void recognitionExceptionTest() {
         ensureInvalid("SELECT OBJECT(emp) FROW Employee emp");
     }
-    
+
     public void invalidCharTest() {
         ensureInvalid("Select !e from Employee e where ! e = e");
     }
-    
+
     public void invalidOnClauseTest() {
         if (!isHermesParser()) {
             warning("invalidOnClauseTest only works with Hermes");
@@ -203,7 +203,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         ensureInvalid("Select e from Employee e case");
         ensureInvalid("Select e from Employee e select");
     }
-    
+
     public void invalidSQLExpressionTest() {
         if (!isHermesParser()) {
             warning("invalidSQLExpressionTest only works with Hermes");
@@ -214,7 +214,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         ensureInvalid("Select e from Employee e where sql()");
         ensureInvalid("Select e from Employee e where sql(')");
     }
-    
+
     public void invalidColumnExpressionTest() {
         if (!isHermesParser()) {
             warning("invalidColumnExpressionTest only works with Hermes");
@@ -228,7 +228,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         ensureInvalid("Select e from Employee e where column('foo', e.id, e.id)");
         ensureInvalid("Select e from Employee e where column('foo', 5)");
     }
-    
+
     public void invalidOperatorExpressionTest() {
         if (!isHermesParser()) {
             warning("invalidColumnExpressionTest only works with Hermes");
@@ -239,7 +239,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         ensureInvalid("Select e from Employee e where operator()");
         ensureInvalid("Select e from Employee e where operator(')");
     }
-    
+
     public void invalidFunctionExpressionTest() {
         if (!isHermesParser()) {
             warning("invalidFunctionExpressionTest only works with Hermes");
@@ -250,135 +250,135 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         ensureInvalid("Select e from Employee e where function()");
         ensureInvalid("Select e from Employee e where function(')");
     }
-    
+
    public void missingSelectExceptionTest() {
        ensureInvalid("OBJECT(emp) FROM Employee emp");
    }
-   
-   
+
+
    public void malformedJPQLExceptionTest1()
    {
-        
+
         String ejbqlString =  "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName == \"F";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
             fail("Recognition Exception must be thrown");
-        }        
-        
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }    
+        }
    }
-   
+
    public void malformedJPQLExceptionTest2()
    {
-        
+
         String ejbqlString =  "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" AND 1";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
             fail("Recognition Exception must be thrown");
-        }        
-        
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }    
+        }
    }
-    
+
     public void malformedJPQLExceptionTest3()
     {
-        
+
         String ejbqlString =  "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" OR \"Freda\"";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Recognition Exception must be thrown");    
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Recognition Exception must be thrown");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
+        }
     }
-    
+
     public void malformedJPQLExceptionTest4()
     {
-        
+
         String ejbqlString =  "SLEECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" OR \"Freda\"";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Recognition Exception must be thrown");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Recognition Exception must be thrown");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
-    
+        }
+
     }
 
     public void malformedJPQLExceptionTest5()
     {
-        
+
         String ejbqlString =  "SELECT c FORM Customer c";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword FORM");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword FORM");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
+        }
 
         ejbqlString =  "SELECT COUNT(c FROM Customer c";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword FROM");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword FROM");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
-    
+        }
+
         ejbqlString =  "SELECT c* FROM Customer c";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword *");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword *");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
+        }
     }
-    
+
     public void malformedJPQLExceptionTest6()
     {
-        
+
         /*String ejbqlString =  "SELECT c FROM Customer c WHERE c.name LIKE 1";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword 1");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword 1");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertEquals(JPQLException.unexpectedToken, ((JPQLException) ex.getCause()).getErrorCode());
@@ -386,143 +386,143 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }*/
 
         String ejbqlString =  "SELECT c FROM Customer c WHERE c.name is not nall";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword nall");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword nall");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
+        }
 
         ejbqlString =  "SELECT c FROM Customer c WHERE c.name is net null";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword net");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword net");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
+        }
 
         ejbqlString =  "SELECT c FROM Customer c WHERE c.name is EMPYT";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword EMPYT");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword EMPYT");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
+        }
 
         ejbqlString =  "SELECT c FROM Customer c WHERE c.name in 3.5";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword 3.5");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword 3.5");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
+        }
 
         ejbqlString =  "SELECT c FROM Customer c WHERE c.name MEMBER 6";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword 6");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword 6");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
+        }
 
         ejbqlString =  "SELECT c FROM Customer c WHERE c.name NOT BETEEN 6 and 7";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword BETEEN");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword BETEEN");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
-    
+        }
+
     }
 
     public void malformedJPQLExceptionTest7()
     {
-        
+
         String ejbqlString =  "SELECT e FROM";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Expected unexpected end of query exception.");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Expected unexpected end of query exception.");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
-    
+        }
+
     }
 
     //gf1166  Wrap ANTLRException inside JPQLException
     public void malformedJPQLExceptionTest8()
     {
-        
+
         String ejbqlString =  "SELECT e FROM";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Expected unexpected end of query exception.");       
-        }        
-        
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Expected unexpected end of query exception.");
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
-    
+        }
+
     }
 
     public void noAliasWithWHEREAndParameterExceptionTest()
     {
-        
+
         String ejbqlString =  "FROM Employee WHERE firstName = ?1";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
             fail("Recognition Exception must be thrown");
-        }        
-        
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }         
+        }
     }
 
     public void aliasResolutionException()
     {
         String ejbqlString = null;
-        
+
         try {
             // invalid identification variable in WHERE clause
             ejbqlString = "SELECT employee FROM Employee employee WHERE emp.firstName = 'Fred'";
@@ -557,34 +557,34 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     public void unknownAbstractSchemaTypeTest()
     {
         String ejbqlString =  " SELECT OBJECT(i) FROM Integer i WHERE i.city = \"Ottawa\"";
-        
-        try 
+
+        try
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
             fail("Missing exception for query using unknown abstract schema type");
-        }        
-        
+        }
+
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }   
+        }
     }
 
     public void multipleDeclarationOfIdentificationVariable()
     {
         String ejbqlString;
         List result;
-        
-        try 
+
+        try
         {
             ejbqlString = "SELECT o FROM Order o, Customer o";
             result = createEntityManager().createQuery(ejbqlString).getResultList();
             fail("Multiple declaration of identification variable must be thrown");
-        }        
+        }
         catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }   
+        }
 
         if (isHermesParser()) {
             // This should be valid now.
@@ -605,7 +605,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
         fail("Failed to throw expected IllegalArgumentException, when incorrect parameter name is used");
     }
-   
+
     public void testParameterPositionValidation(){
         EntityManager em = this.createEntityManager();
         Query query = em.createQuery("Select e from Employee e where e.firstName like ?1 ");
@@ -704,7 +704,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             query.getResultList();
         }
     }
-    
+
     public void testNonExistentOrderByAlias() {
         EntityManager em = this.createEntityManager();
         try {
@@ -745,7 +745,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
         }
         try {
-            String jpql = 
+            String jpql =
                 "SELECT e FROM Employee e WHERE e.phoneNumbers.type = 'Work'";
             em.createQuery(jpql).getResultList();
             fail("Failed to throw expected IllegalArgumentException for a query " +
@@ -786,7 +786,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
         closeEntityManager(em);
     }
-    
+
     public void testUnknownAttribute() {
         EntityManager em = this.createEntityManager();
         try {
@@ -828,21 +828,21 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             // Multi-persistece-unit not work on server.
             return;
         }
-        EntityManager firstEm = createEntityManager();        
+        EntityManager firstEm = createEntityManager();
         EntityManager secondEm = createAlternateEntityManager();
-        
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ";   
-       
-        secondEm.getTransaction().begin();    
+
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ";
+
+        secondEm.getTransaction().begin();
         try{
-            firstEm.getTransaction().begin();        
+            firstEm.getTransaction().begin();
             try{
-                Employee firstEmployee = (Employee) firstEm.createQuery(ejbqlString).getSingleResult();                
-                firstEmployee.setLastName("test");      
-                     
-                Employee secondEmployee = (Employee) secondEm.createQuery(ejbqlString).getSingleResult();       
+                Employee firstEmployee = (Employee) firstEm.createQuery(ejbqlString).getSingleResult();
+                firstEmployee.setLastName("test");
+
+                Employee secondEmployee = (Employee) secondEm.createQuery(ejbqlString).getSingleResult();
                 secondEmployee.setLastName("test");
-                
+
                 firstEm.flush();
                 firstEm.getTransaction().commit();
             }catch (RuntimeException ex){
@@ -854,7 +854,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             }
             secondEm.flush();
             fail("javax.persistence.OptimisticLockException must be thrown during flush");
-        } catch (PersistenceException e) {            
+        } catch (PersistenceException e) {
             if (secondEm.getTransaction().isActive()){
                 secondEm.getTransaction().rollback();
             }
@@ -862,37 +862,37 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             undoEmployeeChanges();
             if (isKnownMySQLIssue(e.getCause())) {
                 warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
-            } else {         
+            } else {
                 Assert.assertTrue(e instanceof javax.persistence.OptimisticLockException);
             }
-        }                        
+        }
     }
 
-    
-     /* For this test you need to add a persistence unit named default1 in the persistence.xml file 
-       in essentials_testmodels.jar */   
+
+     /* For this test you need to add a persistence unit named default1 in the persistence.xml file
+       in essentials_testmodels.jar */
     public void commitOptimisticLockExceptionTest()
     {
           if (isOnServer()) {
             // Multi-persistece-unit not work on server.
             return;
         }
-        EntityManager firstEm = createEntityManager();        
+        EntityManager firstEm = createEntityManager();
         EntityManager secondEm = createAlternateEntityManager();
-        
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ";   
-       
-       secondEm.getTransaction().begin();    
+
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ";
+
+       secondEm.getTransaction().begin();
        try{
-            firstEm.getTransaction().begin();        
+            firstEm.getTransaction().begin();
             try{
-        
-                Employee firstEmployee = (Employee) firstEm.createQuery(ejbqlString).getSingleResult();                
-                firstEmployee.setLastName("test");      
-                     
-                Employee secondEmployee = (Employee) secondEm.createQuery(ejbqlString).getSingleResult();       
+
+                Employee firstEmployee = (Employee) firstEm.createQuery(ejbqlString).getSingleResult();
+                firstEmployee.setLastName("test");
+
+                Employee secondEmployee = (Employee) secondEm.createQuery(ejbqlString).getSingleResult();
                 secondEmployee.setLastName("test");
-                
+
                 firstEm.getTransaction().commit();
             }catch (RuntimeException ex){
                 if (firstEm.getTransaction().isActive()){
@@ -901,8 +901,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
                 firstEm.close();
                 throw ex;
             }
-            secondEm.getTransaction().commit();  
-        } catch (Exception e){          
+            secondEm.getTransaction().commit();
+        } catch (Exception e){
             if (secondEm.getTransaction().isActive()){
                 secondEm.getTransaction().rollback();
             }
@@ -910,30 +910,30 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             undoEmployeeChanges();
             if (isKnownMySQLIssue(e.getCause())) {
                 warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
-            } else {         
-                Assert.assertTrue("Exception not instance of opt Lock exception: " + e.getCause(), e.getCause() instanceof javax.persistence.OptimisticLockException);            
+            } else {
+                Assert.assertTrue("Exception not instance of opt Lock exception: " + e.getCause(), e.getCause() instanceof javax.persistence.OptimisticLockException);
             }
             return;
-        }    
+        }
         fail("javax.persistence.OptimisticLockException must be thrown during commit");
     }
-    
-    public void JTAOptimisticLockExceptionTest() 
+
+    public void JTAOptimisticLockExceptionTest()
     {
-        // This test is skipped for Symfoware as Symfoware does not support SQL generated by this test. 
-        // Bug 381302 In Symfoware, a base table name to be updated cannot be identical to 
-        // table name in from clause in query or subquery specification or to table name 
+        // This test is skipped for Symfoware as Symfoware does not support SQL generated by this test.
+        // Bug 381302 In Symfoware, a base table name to be updated cannot be identical to
+        // table name in from clause in query or subquery specification or to table name
         // referenced by view table identified by table name.
-        if ( JUnitTestCase.getServerSession().getPlatform().isSymfoware() ) { 
+        if ( JUnitTestCase.getServerSession().getPlatform().isSymfoware() ) {
             return;
         }
-        
+
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
             try {
-                     
-                Employee emp = (Employee) em.createQuery("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ").getSingleResult();       
+
+                Employee emp = (Employee) em.createQuery("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ").getSingleResult();
                 em.createQuery("Update Employee set lastName = 'test-bad' WHERE firstName='Bob' ").executeUpdate();
                 emp.setLastName("test");
                 commitTransaction(em);
@@ -953,13 +953,13 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             clearCache();
         }
     }
-    
+
     /**
      * This method is a temporary solution to avoid failures in our nightly testing.
      * This allows a warning to be printed when MySQL fails with a specific error.
-     * This is a known error in the MySQL db, and this method will be removed 
+     * This is a known error in the MySQL db, and this method will be removed
      * when this error is resolved.
-     * 
+     *
      * @param exception
      * @return true if this exception is a specific known MySQL failure
      */
@@ -968,8 +968,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         if (exception == null) {
             return false;
         }
-        
-        if (!(exception instanceof javax.persistence.OptimisticLockException) && 
+
+        if (!(exception instanceof javax.persistence.OptimisticLockException) &&
                 JUnitTestCase.getServerSession().getPlatform().isMySQL()) {
             while(e1 != null) {
                 if (e1 instanceof EOFException) {
@@ -981,28 +981,28 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
         return false;
     }
-    
+
     public void flushTxExceptionTest()
     {
-        try 
+        try
         {
-            createEntityManager().flush();    
+            createEntityManager().flush();
         }
         catch (TransactionRequiredException e) {
             // ok.
         }
     }
-    
+
     public void testExecuteUpdateTxException()
     {
         boolean testPass=false;
         String ejbqlString = "DELETE FROM Employee e WHERE e.lastName=\"doesNotExist\"";
-        
+
         EntityManager em = createEntityManager();
-        try 
+        try
         {
             Object result = em.createQuery(ejbqlString).executeUpdate();
-            
+
             //rollback for clean-up if above call does not fail, otherwise this may affect other tests
             if(!isTransactionActive(em)){
                 beginTransaction(em);
@@ -1010,7 +1010,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             rollbackTransaction(em);
         }
         catch (TransactionRequiredException e)
-        {                   
+        {
             testPass = true;
         }
         finally
@@ -1020,64 +1020,64 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         Assert.assertTrue("TransactionRequiredException is expected", testPass);
     }
 
-    public void createNamedQueryThrowsIllegalArgumentExceptionTest() 
+    public void createNamedQueryThrowsIllegalArgumentExceptionTest()
     {
-        try 
+        try
         {
             List result = createEntityManager().createNamedQuery("test").getResultList();
         }
         catch (IllegalArgumentException e) {
             // ok.
-        }       
-    } 
-    
+        }
+    }
+
     public void noResultExceptionTest()
     {
         String ejbqlString = "SELECT OBJECT (emp) FROM Employee emp WHERE emp.lastName=\"doestNotExist\" ";
-        
-        try 
+
+        try
         {
             Object result = createEntityManager().createQuery(ejbqlString).getSingleResult();
         }
         catch (Exception e)
-        {               
+        {
             Assert.assertTrue(e instanceof NoResultException);
         }
-    }   
-    
+    }
+
     public void testGetSingleResultOnUpdate()
     {
         boolean testPass=false;
         String ejbqlString = "UPDATE Employee e SET e.salary = (e.salary + 1000) WHERE e.lastName='Chanley' ";
-        
-        try 
+
+        try
         {
-            Object result = createEntityManager().createQuery(ejbqlString).getSingleResult(); 
+            Object result = createEntityManager().createQuery(ejbqlString).getSingleResult();
         }
         catch (IllegalStateException e)
-        {                   
+        {
             testPass = true;
-        }        
+        }
         Assert.assertTrue(testPass);
     }
-    
-    
+
+
     public void testGetSingleResultOnDelete()
     {
         boolean testPass=false;
         String ejbqlString = "DELETE FROM Employee e WHERE e.lastName='Chanley' ";
-        
-        try 
+
+        try
         {
-            Object result = createEntityManager().createQuery(ejbqlString).getSingleResult(); 
+            Object result = createEntityManager().createQuery(ejbqlString).getSingleResult();
         }
         catch (IllegalStateException e)
-        {            
+        {
             testPass = true;
         }
         Assert.assertTrue(testPass);
     }
-    
+
     public void testExecuteUpdateOnSelect()
     {
         boolean testPass=false;
@@ -1088,8 +1088,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             beginTransaction(em);
             em.createQuery(ejbqlString).executeUpdate();
             commitTransaction(em);
-        } catch (IllegalStateException e) {            
-            testPass = true; 
+        } catch (IllegalStateException e) {
+            testPass = true;
         } finally {
             closeEntityManagerAndTransaction(em);
         }
@@ -1097,7 +1097,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     }
 
 
-    public void testCommitRollbackException() 
+    public void testCommitRollbackException()
     {
         if (isOnServer()) {
             // Cannot create parallel entity managers in the server.
@@ -1109,13 +1109,13 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         String defaultFieldName = "";
         beginTransaction(em);
         try{
-            Employee emp = (Employee) em.createQuery(ejbqlString).getSingleResult();        
+            Employee emp = (Employee) em.createQuery(ejbqlString).getSingleResult();
             idMapping = (DirectToFieldMapping) (((EntityManagerImpl)em.getDelegate()).getServerSession()).getClassDescriptor(Employee.class).getMappingForAttributeName("id");
             defaultFieldName = idMapping.getFieldName();
             idMapping.setFieldName("fake_id");
             emp.setId(323);
             commitTransaction(em);
-        } catch (Exception e) {          
+        } catch (Exception e) {
             if(isTransactionActive(em)){
                 rollbackTransaction(em);
                 closeEntityManager(em);
@@ -1135,34 +1135,34 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             }
         }
     }
-    
+
     //fix for bugID 4670705
-    public void testEjbqlCaseSensitivity() 
+    public void testEjbqlCaseSensitivity()
     {
         boolean testPass = true;
-        EntityManager em = createEntityManager();        
-        String ejbqlString = "SELECT OBJECT (E) FROM Employee e";        
-        
+        EntityManager em = createEntityManager();
+        String ejbqlString = "SELECT OBJECT (E) FROM Employee e";
+
         try {
             List result = em.createQuery(ejbqlString).getResultList();
-        } catch (Exception e) {     
-            testPass = false; 
-        }              
-        Assert.assertTrue(testPass);        
+        } catch (Exception e) {
+            testPass = false;
+        }
+        Assert.assertTrue(testPass);
     }
-    
+
     //this test resets the last name of the employee Bob that is changed in some tests
-    public void undoEmployeeChanges() 
+    public void undoEmployeeChanges()
     {
-        EntityManager em = createEntityManager();       
-           
+        EntityManager em = createEntityManager();
+
         beginTransaction(em);
         try{
             String ejbqlString = "SELECT OBJECT (emp) FROM Employee emp WHERE emp.firstName ='Bob' ";
-        
+
             Employee emp = (Employee) em.createQuery(ejbqlString).getSingleResult();
             emp.setLastName("Smith");
-        
+
             em.flush();
             commitTransaction(em);
         } catch (RuntimeException e) {
@@ -1176,8 +1176,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     public void testEjbqlUnsupportJoinArgument() {
         String ejbqlString;
         List result;
-        
-        try 
+
+        try
         {
             ejbqlString = "SELECT e.firstName FROM Employee e JOIN e.period ep";
             result = createEntityManager().createQuery(ejbqlString).getResultList();
@@ -1185,9 +1185,9 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         } catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }   
-        
-        try 
+        }
+
+        try
         {
             ejbqlString = "SELECT e.firstName FROM Employee e JOIN FETCH e.period";
             result = createEntityManager().createQuery(ejbqlString).getResultList();
@@ -1195,7 +1195,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         } catch(IllegalArgumentException ex)
         {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }   
+        }
     }
 
     public void testInvalidSetClause() {
@@ -1205,7 +1205,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         try {
             ejbqlString = "UPDATE Employee e SET e.projects = NULL";
             em.createQuery(ejbqlString).executeUpdate();
-            fail ("Failed to throw expected IllegalArgumentException for query " + 
+            fail ("Failed to throw expected IllegalArgumentException for query " +
                     " updating a collection valued relationship.");
         } catch(IllegalArgumentException ex) {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
@@ -1213,16 +1213,16 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             closeEntityManagerAndTransaction(em);
         }
 
-        //above exception would have marked the transaction for rollback, 
+        //above exception would have marked the transaction for rollback,
         //so the test needs to start a new one
         em = createEntityManager();
         beginTransaction(em);
 
-        try 
+        try
         {
             ejbqlString = "UPDATE Employee e SET e.department.name = 'CHANGED'";
             em.createQuery(ejbqlString).executeUpdate();
-            fail ("Failed to throw expected IllegalArgumentException for query " + 
+            fail ("Failed to throw expected IllegalArgumentException for query " +
                     " updating a sate field of a related instance.");
         } catch(IllegalArgumentException ex) {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
@@ -1236,16 +1236,16 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             String jpql = "SELECT COUNT(DISTINCT p) FROM Employee e LEFT JOIN e.phoneNumbers p GROUP BY e.lastName";
             createEntityManager().createQuery(jpql).getResultList();
             if (!((DatabasePlatform)getPlatform()).supportsCountDistinctWithMultipleFields()) {
-                fail ("Failed to throw expected IllegalArgumentException for query " + 
+                fail ("Failed to throw expected IllegalArgumentException for query " +
                       " having a COUNT DISTINCT on a joined variable with a composite primary key.");
             }
         } catch(IllegalArgumentException ex) {
             Assert.assertTrue(ex.getCause() instanceof JPQLException);
         } catch(QueryException ex) {
             // OK
-        }   
+        }
     }
-    
+
     public static EntityManager createAlternateEntityManager() {
         return Persistence.createEntityManagerFactory("default1", JUnitTestCaseHelper.getDatabaseProperties()).createEntityManager();
     }

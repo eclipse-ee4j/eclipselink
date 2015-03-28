@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.rs.util.PreLoginMappingAdapter;
  * Makes the Link class available in our Dynamic JAXB context.  This class is used to describe
  * non-private owned relationships and is not available by default because it is used in a mapping
  * that is added at preLogin.
- * 
+ *
  * @see PreLoginMappingAdapter
  * @author tware
  *
@@ -34,7 +34,7 @@ import org.eclipse.persistence.jpa.rs.util.PreLoginMappingAdapter;
 public class LinkMetadataSource implements MetadataSource {
 
     private XmlBindings xmlBindings;
-    
+
     public LinkMetadataSource(){
         xmlBindings = new XmlBindings();
         xmlBindings.setPackageName(Link.class.getPackage().getName());
@@ -47,7 +47,7 @@ public class LinkMetadataSource implements MetadataSource {
         javaType.setXmlRootElement(new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement());
         javaTypes.getJavaType().add(javaType);
     }
-    
+
     public XmlBindings getXmlBindings(Map<String, ?> properties, ClassLoader classLoader) {
         return this.xmlBindings;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,7 +44,7 @@ public abstract class CoreMapping<
 
     /**
      * PUBLIC:
-     * Return the name of the attribute set in the mapping. 
+     * Return the name of the attribute set in the mapping.
      */
     public abstract String getAttributeName();
 
@@ -91,7 +91,7 @@ public abstract class CoreMapping<
      * Related mapping should implement this method to return true.
      */
     public abstract boolean isAbstractCompositeCollectionMapping();
-    
+
     /**
      * INTERNAL:
      * Related mapping should implement this method to return true.
@@ -116,13 +116,13 @@ public abstract class CoreMapping<
      */
     public abstract boolean isCollectionMapping();
 
-    
+
     /**
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
     public abstract boolean isDirectToFieldMapping();
-    
+
     /**
      * INTERNAL:
      * Returns true if mapping is read only else false.
@@ -173,7 +173,7 @@ public abstract class CoreMapping<
      * Set the descriptor to which this mapping belongs
      */
     public abstract void setDescriptor(DESCRIPTOR descriptor);
-    
+
     /**
      * INTERNAL:
      * Set the mapping's field collection.
@@ -187,5 +187,5 @@ public abstract class CoreMapping<
      * Return the Value from the object.
      */
     public abstract Object valueFromObject(Object anObject, FIELD field, ABSTRACT_SESSION session);
- 
+
 }

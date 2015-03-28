@@ -3,15 +3,15 @@
    <mywrapper>
       <thinga>
          <thingName>thinga</thingName>
-	     <thingValue>thingavalue</thingValue>
+         <thingValue>thingavalue</thingValue>
       </thinga>
       <thingb>
          <thingName>thingb</thingName>
-   	  <thingValue>thingbvalue</thingValue>
+         <thingValue>thingbvalue</thingValue>
       </thingb>
       <thingc>
          <thingName>thingc</thingName>
-	     <thingValue>thingcvalue</thingValue>
+         <thingValue>thingcvalue</thingValue>
       </thingc>
    </mywrapper>
 </root>

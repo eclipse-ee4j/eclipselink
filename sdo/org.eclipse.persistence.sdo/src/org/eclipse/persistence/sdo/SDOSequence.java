@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -359,7 +359,7 @@ public class SDOSequence implements Sequence {
 
     /**
      * INTERNAL:
-     * 
+     *
      * @param setting
      */
     public void addValueToSettings(Setting setting) {
@@ -368,7 +368,7 @@ public class SDOSequence implements Sequence {
 
     /**
      * INTERNAL:
-     * 
+     *
      * @param setting
      */
     public void removeValueToSettings(Setting setting) {
@@ -512,7 +512,7 @@ public class SDOSequence implements Sequence {
     /**
      * INTERNAL: Add a setting to the list at the specified index. The owning
      * DataObject will not be made aware of this addition.
-     * 
+     *
      * @param index
      *            the index at which to add the new Setting in the Settings list
      * @param property
@@ -593,7 +593,7 @@ public class SDOSequence implements Sequence {
     /**
      * INTERNAL: Convenience method that returns the index of the Setting
      * associated with a given property in the Settings list
-     * 
+     *
      * @param property
      * @return index of the Setting associated with a given property in the
      *         Settings list or -1 if not found
@@ -616,7 +616,7 @@ public class SDOSequence implements Sequence {
      * [A, 1, C, 2, B, D], and we are looking for the letter B, this method will
      * return 2. Although B is at index 4 of the Settings list, it is at index 2
      * of the list of "letters" - [A, C, B, D].
-     * 
+     *
      * @param property
      * @return index of the value's Setting in the list relative to a given
      *         property or -1 if not found.
@@ -638,7 +638,7 @@ public class SDOSequence implements Sequence {
 
     /**
      * INTERNAL: Get the root Setting for a given Setting.
-     * 
+     *
      * @param setting
      * @return the root Setting or this Setting if it is a root
      */

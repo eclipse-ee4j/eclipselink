@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.feature;
 
 import java.util.*;
@@ -268,15 +268,15 @@ public class EmployeeProjectForDatabaseChecking extends org.eclipse.persistence.
         onetoonemapping1.addForeignKeyFieldName("EMPLOYEE.MANAGER_ID", "EMPLOYEE.EMP_ID");
         descriptor.addMapping(onetoonemapping1);
 
-	// SECTION: TRANSFORMATIONMAPPING
-	org.eclipse.persistence.mappings.TransformationMapping transformationmapping = new org.eclipse.persistence.mappings.TransformationMapping();
-	transformationmapping.setAttributeName("normalHours");
-	transformationmapping.setIsReadOnly(false);
-	transformationmapping.setUsesIndirection(false);
-	transformationmapping.setAttributeTransformation("buildNormalHours");
-	transformationmapping.addFieldTransformation("EMPLOYEE.END_TIME", "getEndTime");
-	transformationmapping.addFieldTransformation("EMPLOYEE.START_TIME", "getStartTime");
-	descriptor.addMapping(transformationmapping);
+    // SECTION: TRANSFORMATIONMAPPING
+    org.eclipse.persistence.mappings.TransformationMapping transformationmapping = new org.eclipse.persistence.mappings.TransformationMapping();
+    transformationmapping.setAttributeName("normalHours");
+    transformationmapping.setIsReadOnly(false);
+    transformationmapping.setUsesIndirection(false);
+    transformationmapping.setAttributeTransformation("buildNormalHours");
+    transformationmapping.addFieldTransformation("EMPLOYEE.END_TIME", "getEndTime");
+    transformationmapping.addFieldTransformation("EMPLOYEE.START_TIME", "getStartTime");
+    descriptor.addMapping(transformationmapping);
         addDescriptor(descriptor);
     }
 

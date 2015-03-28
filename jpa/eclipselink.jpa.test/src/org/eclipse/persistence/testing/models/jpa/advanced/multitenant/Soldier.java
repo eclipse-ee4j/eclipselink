@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     06/1/2011-2.3 Guy Pelletier 
+ *     06/1/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 9)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
 import java.util.Collection;
@@ -40,22 +40,22 @@ public class Soldier extends Mafioso {
     public void addContract(Contract contract) {
         contracts.add(contract);
     }
-    
+
     @ManyToOne
     public Capo getCapo(){
         return capo;
     }
-    
+
     @ManyToMany(cascade=ALL, mappedBy="soldiers")
-    public Collection<Contract> getContracts() { 
-        return contracts; 
+    public Collection<Contract> getContracts() {
+        return contracts;
     }
 
     @Override
     public boolean isBoss() {
         return false;
     }
-    
+
     @Override
     public boolean isUnderboss() {
         return false;
@@ -70,11 +70,11 @@ public class Soldier extends Mafioso {
     public boolean isSoldier() {
         return true;
     }
-    
+
     public void setCapo(Capo capo){
         this.capo = capo;
     }
-    
+
     public void setContracts(Collection<Contract> contracts) {
         this.contracts = contracts;
     }

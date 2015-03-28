@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,26 +35,26 @@ public class XsiTypeTestCases extends JAXBWithJSONTestCases {
 
     @Override
     protected JAXBElement<Object> getControlObject() {
-    	ExampleType exampleType = new ExampleType();
-    	
-    	Element elem = parser.newDocument().createElement("Content");
-    	exampleType.content = elem;
-    	
+        ExampleType exampleType = new ExampleType();
+
+        Element elem = parser.newDocument().createElement("Content");
+        exampleType.content = elem;
+
         JAXBElement<Object> root = new JAXBElement<Object>(ObjectFactory._SomeElement_QNAME, Object.class, exampleType);
         return root;
     }
     /*
     public void testRi() throws Exception{
-    	JAXBContext riContext = JAXBContext.newInstance(new Class[]{ObjectFactory.class, ExampleType.class});
-    	InputStream is = getClass().getClassLoader().getResourceAsStream(XML_RESOURCE);
-    	Object unmarshalled = riContext.createUnmarshaller().unmarshal(is);
-    	System.out.println(unmarshalled.getClass());
-    	xmlToObjectTest(unmarshalled);
-    	
-    	Marshaller m = riContext.createMarshaller();
-    	m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    	m.marshal(unmarshalled, System.out);
-    	m.marshal(getControlObject(), System.out);
+        JAXBContext riContext = JAXBContext.newInstance(new Class[]{ObjectFactory.class, ExampleType.class});
+        InputStream is = getClass().getClassLoader().getResourceAsStream(XML_RESOURCE);
+        Object unmarshalled = riContext.createUnmarshaller().unmarshal(is);
+        System.out.println(unmarshalled.getClass());
+        xmlToObjectTest(unmarshalled);
+
+        Marshaller m = riContext.createMarshaller();
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        m.marshal(unmarshalled, System.out);
+        m.marshal(getControlObject(), System.out);
     }
 */
 }

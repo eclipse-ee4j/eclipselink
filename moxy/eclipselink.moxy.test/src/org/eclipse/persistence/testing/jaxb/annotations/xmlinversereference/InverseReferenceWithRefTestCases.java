@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,20 +26,20 @@ public class InverseReferenceWithRefTestCases extends JAXBWithJSONTestCases {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
-    
+
     public Object getControlObject() {
         Parent parent = new Parent();
         parent.children = new ArrayList<Child>();
-        
+
         Child child = new Child();
         child.parent = parent;
         parent.children.add(child);
-        
+
         child = new ChildSubclass();
         child.parent = parent;
         parent.children.add(child);
-        
+
         return parent;
-        
+
     }
 }

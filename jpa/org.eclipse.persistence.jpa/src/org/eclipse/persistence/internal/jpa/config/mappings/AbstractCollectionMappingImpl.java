@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -42,7 +42,7 @@ import org.eclipse.persistence.jpa.config.Temporal;
 
 /**
  * JPA scripting API implementation.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.5.1
  */
@@ -51,13 +51,13 @@ public class AbstractCollectionMappingImpl<T extends CollectionAccessor, R> exte
 
     public AbstractCollectionMappingImpl(T t) {
         super(t);
-        
+
         getMetadata().setMapKeyAssociationOverrides(new ArrayList<AssociationOverrideMetadata>());
         getMetadata().setMapKeyAttributeOverrides(new ArrayList<AttributeOverrideMetadata>());
         getMetadata().setMapKeyConverts(new ArrayList<ConvertMetadata>());
         getMetadata().setMapKeyJoinColumns(new ArrayList<JoinColumnMetadata>());
     }
-    
+
     public AssociationOverride addMapKeyAssociationOverride() {
         AssociationOverrideImpl associationOverride = new AssociationOverrideImpl();
         getMetadata().getMapKeyAssociationOverrides().add(associationOverride.getMetadata());
@@ -69,7 +69,7 @@ public class AbstractCollectionMappingImpl<T extends CollectionAccessor, R> exte
         getMetadata().getMapKeyAttributeOverrides().add(attributeOverride.getMetadata());
         return attributeOverride;
     }
-    
+
     /**
      * This covers the JPA 2.1 use case where multiple converts can be added.
      */
@@ -78,18 +78,18 @@ public class AbstractCollectionMappingImpl<T extends CollectionAccessor, R> exte
         getMetadata().getMapKeyConverts().add(convert.getMetadata());
         return convert;
     }
-    
+
     public JoinColumn addMapKeyJoinColumn() {
         JoinColumnImpl joinColumn = new JoinColumnImpl();
         getMetadata().getMapKeyJoinColumns().add(joinColumn.getMetadata());
         return joinColumn;
     }
-    
+
     public R setDeleteAll(Boolean deleteAll) {
         getMetadata().setDeleteAll(deleteAll);
         return (R) this;
     }
-    
+
     public MapKey setMapKey() {
         MapKeyImpl mapKey = new MapKeyImpl();
         getMetadata().setMapKey(mapKey.getMetadata());
@@ -100,13 +100,13 @@ public class AbstractCollectionMappingImpl<T extends CollectionAccessor, R> exte
         getMetadata().setMapKeyClassName(mapKeyClass);
         return (R) this;
     }
-    
+
     public Column setMapKeyColumn() {
         ColumnImpl column = new ColumnImpl();
         getMetadata().setMapKeyColumn(column.getMetadata());
         return column;
     }
-    
+
     /**
      * This covers the EclipseLink Convert, single TEXT convert element.
      */
@@ -116,25 +116,25 @@ public class AbstractCollectionMappingImpl<T extends CollectionAccessor, R> exte
         getMetadata().getMapKeyConverts().add(convert);
         return (R) this;
     }
-    
+
     public Enumerated setMapKeyEnumerated() {
         EnumeratedImpl enumerated = new EnumeratedImpl();
         getMetadata().setMapKeyEnumerated(enumerated.getMetadata());
         return enumerated;
     }
-    
+
     public ForeignKey setMapKeyForeignKey() {
         ForeignKeyImpl foreignKey = new ForeignKeyImpl();
         getMetadata().setMapKeyForeignKey(foreignKey.getMetadata());
         return foreignKey;
     }
-    
+
     public Temporal setMapKeyTemporal() {
         TemporalImpl temporal = new TemporalImpl();
         getMetadata().setMapKeyTemporal(temporal.getMetadata());
         return temporal;
     }
-    
+
     public R setOrderBy(String orderBy) {
         OrderByMetadata metadata = new OrderByMetadata();
         metadata.setValue(orderBy);
@@ -147,5 +147,5 @@ public class AbstractCollectionMappingImpl<T extends CollectionAccessor, R> exte
         getMetadata().setOrderColumn(column.getMetadata());
         return column;
     }
-        
+
 }

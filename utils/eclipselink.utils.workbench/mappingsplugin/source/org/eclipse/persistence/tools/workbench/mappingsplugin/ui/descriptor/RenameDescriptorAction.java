@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -29,67 +29,67 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.FilteringIterat
 
 final class RenameDescriptorAction extends AbstractFrameworkAction {
 
-	RenameDescriptorAction(WorkbenchContext context) {
-		super(context.buildExpandedResourceRepositoryContext(UiDescriptorBundle.class));
-	}
-	
-	protected void initialize() {
-		super.initialize();
-		this.setIcon(EMPTY_ICON);
-		this.initializeTextAndMnemonic("RENAME_DESCRIPTOR_ACTION");
-		this.initializeToolTipText("RENAME_DESCRIPTOR_ACTION.toolTipText");
-	}
+    RenameDescriptorAction(WorkbenchContext context) {
+        super(context.buildExpandedResourceRepositoryContext(UiDescriptorBundle.class));
+    }
 
-	protected void execute(final ApplicationNode selectedNode) {
-		// if the descriptor's package changes, the node's path will change;
-		// so hold the descriptor and search for its node after the rename is complete
-		MWDescriptor descriptor = (MWDescriptor) selectedNode.getValue();
-		ApplicationNode projectNode = selectedNode.getProjectRoot();
-		this.navigatorSelectionModel().pushExpansionState();
-		this.promptToRenameDescriptor(selectedNode);
-		this.navigatorSelectionModel().popAndRestoreExpansionState();
-		this.navigatorSelectionModel().setSelectedNode(projectNode.descendantNodeForValue(descriptor));
-	}
+    protected void initialize() {
+        super.initialize();
+        this.setIcon(EMPTY_ICON);
+        this.initializeTextAndMnemonic("RENAME_DESCRIPTOR_ACTION");
+        this.initializeToolTipText("RENAME_DESCRIPTOR_ACTION.toolTipText");
+    }
 
-	private void promptToRenameDescriptor(ApplicationNode selectedNode) {
-		MWDescriptor descriptor = (MWDescriptor) selectedNode.getValue();
-		MWProject project = descriptor.getProject();
+    protected void execute(final ApplicationNode selectedNode) {
+        // if the descriptor's package changes, the node's path will change;
+        // so hold the descriptor and search for its node after the rename is complete
+        MWDescriptor descriptor = (MWDescriptor) selectedNode.getValue();
+        ApplicationNode projectNode = selectedNode.getProjectRoot();
+        this.navigatorSelectionModel().pushExpansionState();
+        this.promptToRenameDescriptor(selectedNode);
+        this.navigatorSelectionModel().popAndRestoreExpansionState();
+        this.navigatorSelectionModel().setSelectedNode(projectNode.descendantNodeForValue(descriptor));
+    }
 
-		NewClassNameDialog dialog = this.buildNewClassNameDialog(project, selectedNode, descriptor.getName());
-		dialog.setTitle(this.resourceRepository().getString("RENAME_CLASS_DIALOG_TITLE"));
-		dialog.setAllowExistingType(false);
-		dialog.setVisible(true);
-		
-		if (dialog.wasCanceled()) {
-			return;
-		}
+    private void promptToRenameDescriptor(ApplicationNode selectedNode) {
+        MWDescriptor descriptor = (MWDescriptor) selectedNode.getValue();
+        MWProject project = descriptor.getProject();
 
-		String typeName = dialog.className();
-		descriptor.getMWClass().setName(typeName);
-		descriptor.setName(typeName);
-	}
+        NewClassNameDialog dialog = this.buildNewClassNameDialog(project, selectedNode, descriptor.getName());
+        dialog.setTitle(this.resourceRepository().getString("RENAME_CLASS_DIALOG_TITLE"));
+        dialog.setAllowExistingType(false);
+        dialog.setVisible(true);
 
-	private NewClassNameDialog buildNewClassNameDialog(MWProject project, ApplicationNode selectedNode, String typeName) {
-		return new NewClassNameDialog(
-			this.buildPackageNames(project),
-			this.buildPackageName(selectedNode),
-			ClassTools.shortNameForClassNamed(typeName),
-			project,
-			this.getWorkbenchContext()
-		);
-	}
+        if (dialog.wasCanceled()) {
+            return;
+        }
 
-	private Collection buildPackageNames(MWProject project) {
-		Iterator packageNames = new FilteringIterator(project.packageNames()) {
-			protected boolean accept(Object packageName) {
-				return ((String) packageName).length() > 0;
-			}
-		};
-		return CollectionTools.collection(packageNames);
-	}
+        String typeName = dialog.className();
+        descriptor.getMWClass().setName(typeName);
+        descriptor.setName(typeName);
+    }
 
-	private String buildPackageName(ApplicationNode selectedNode) {
-		return ((MappingsApplicationNode) selectedNode).candidatePackageName();
-	}
+    private NewClassNameDialog buildNewClassNameDialog(MWProject project, ApplicationNode selectedNode, String typeName) {
+        return new NewClassNameDialog(
+            this.buildPackageNames(project),
+            this.buildPackageName(selectedNode),
+            ClassTools.shortNameForClassNamed(typeName),
+            project,
+            this.getWorkbenchContext()
+        );
+    }
+
+    private Collection buildPackageNames(MWProject project) {
+        Iterator packageNames = new FilteringIterator(project.packageNames()) {
+            protected boolean accept(Object packageName) {
+                return ((String) packageName).length() > 0;
+            }
+        };
+        return CollectionTools.collection(packageNames);
+    }
+
+    private String buildPackageName(ApplicationNode selectedNode) {
+        return ((MappingsApplicationNode) selectedNode).candidatePackageName();
+    }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -318,7 +318,7 @@ public class SDOException extends EclipseLinkException {
 
     /**
      * INTERNAL:
-     * Exception trying to call a method with a null input parameter 
+     * Exception trying to call a method with a null input parameter
      */
     public static SDOException cannotPerformOperationWithNullInputParameter(String operation, String parameter) {
         Object[] args = { operation, parameter };
@@ -326,7 +326,7 @@ public class SDOException extends EclipseLinkException {
         exception.setErrorCode(CANNOT_PERFORM_OP_WITH_NULL_PARAM);
         return exception;
     }
-    
+
     /**
      * INTERNAL: Exception trying to call a method with a null input parameter
      */
@@ -677,7 +677,7 @@ public class SDOException extends EclipseLinkException {
          exception.setErrorCode(SDO_JAXB_ERROR_CREATING_JAXB_UNMARSHALLER);
          return exception;
      }
-     
+
      public static SDOException errorResolvingSchema(Exception nestedException) {
          Object[] args = {};
          SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, ERROR_RESOLVING_ENTITY, args));
@@ -685,13 +685,13 @@ public class SDOException extends EclipseLinkException {
          exception.setInternalException(nestedException);
          return exception;
      }
-     
+
      public static SDOException unableToMapDataHandlerDueToMissingDependency(String propertyName, String typeName) {
          Object[] args = {propertyName, typeName};
          SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, MISSING_DEPENDENCY_FOR_BINARY_MAPPING, args));
          exception.setErrorCode(MISSING_DEPENDENCY_FOR_BINARY_MAPPING);
          return exception;
-     }     
+     }
 
      public static SDOException attemptToResetApplicationResolver() {
          Object[] args = {};
@@ -699,7 +699,7 @@ public class SDOException extends EclipseLinkException {
          exception.setErrorCode(ATTEMPT_TO_RESET_APP_RESOLVER);
          return exception;
      }
-     
+
      /**
       * INTERNAL:
       * Exception trying to marshal a dataobject from a different HelperContext

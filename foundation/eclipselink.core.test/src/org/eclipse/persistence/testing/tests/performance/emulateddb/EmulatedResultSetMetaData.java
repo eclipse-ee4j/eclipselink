@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.performance.emulateddb;
 
 import java.sql.*;
@@ -23,11 +23,11 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class EmulatedResultSetMetaData implements ResultSetMetaData {
 
     protected EmulatedResultSet resultSet;
-    
+
     public EmulatedResultSetMetaData(EmulatedResultSet resultSet) {
         this.resultSet = resultSet;
     }
-    
+
     /**
      * Returns the number of columns in this <code>ResultSet</code> object.
      *
@@ -61,7 +61,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      */
     public boolean isCaseSensitive(int column) {
         return true;
-    }	
+    }
 
     /**
      * Indicates whether the designated column can be used in a where clause.
@@ -86,7 +86,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
     }
 
     /**
-     * Indicates the nullability of values in the designated column.		
+     * Indicates the nullability of values in the designated column.
      *
      * @param column the first column is 1, the second is 2, ...
      * @return the nullability status of the given column; one of <code>columnNoNulls</code>,
@@ -174,10 +174,10 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      */
     public int getScale(int column) {
         return 0;
-    }	
+    }
 
     /**
-     * Gets the designated column's table name. 
+     * Gets the designated column's table name.
      *
      * @param column the first column is 1, the second is 2, ...
      * @return table name or "" if not applicable
@@ -246,7 +246,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
     }
 
     /**
-     * Indicates whether a write on the designated column will definitely succeed.	
+     * Indicates whether a write on the designated column will definitely succeed.
      *
      * @param column the first column is 1, the second is 2, ...
      * @return <code>true</code> if so; <code>false</code> otherwise
@@ -259,15 +259,15 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
     //--------------------------JDBC 2.0-----------------------------------
 
     /**
-     * <p>Returns the fully-qualified name of the Java class whose instances 
+     * <p>Returns the fully-qualified name of the Java class whose instances
      * are manufactured if the method <code>ResultSet.getObject</code>
-     * is called to retrieve a value 
+     * is called to retrieve a value
      * from the column.  <code>ResultSet.getObject</code> may return a subclass of the
      * class returned by this method.
      *
      * @param column the first column is 1, the second is 2, ...
      * @return the fully-qualified name of the class in the Java programming
-     *         language that would be used by the method 
+     *         language that would be used by the method
      * <code>ResultSet.getObject</code> to retrieve the value in the specified
      * column. This is the class name used for custom mapping.
      * @exception SQLException if a database access error occurs
@@ -276,7 +276,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
     public String getColumnClassName(int column) {
         return "";
     }
-    
+
     public boolean isWrapperFor(Class<?> iFace) throws SQLException{
         return false;
     }
@@ -284,5 +284,5 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
     public <T>T unwrap(Class<T> iFace)  throws SQLException {
         return iFace.cast(this);
     }
-    
+
 }

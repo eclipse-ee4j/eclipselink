@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -36,24 +36,24 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.RadioButtonMode
  * @version 10.1.3
  */
 final class TableLockingPolicyPropertiesPage
-										extends	 AbstractLockingPolicyPropertiesPage
+                                        extends     AbstractLockingPolicyPropertiesPage
 {
 
-	private PropertyValueModel optimisticLockingPolicyTypeModel;
-	
-	TableLockingPolicyPropertiesPage(PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder) {
-		super(nodeHolder, contextHolder);
-	}
+    private PropertyValueModel optimisticLockingPolicyTypeModel;
 
-	protected void initialize(PropertyValueModel nodeHolder) {
-		super.initialize(nodeHolder);
-		this.optimisticLockingPolicyTypeModel = buildOptimisticLockingPolicyTypeValueHolder();
-	}
-	
-	protected Component buildPage() {
-		JPanel mainPanel = new JPanel(new GridBagLayout());
-		mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		GridBagConstraints constraints = new GridBagConstraints();
+    TableLockingPolicyPropertiesPage(PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder) {
+        super(nodeHolder, contextHolder);
+    }
+
+    protected void initialize(PropertyValueModel nodeHolder) {
+        super.initialize(nodeHolder);
+        this.optimisticLockingPolicyTypeModel = buildOptimisticLockingPolicyTypeValueHolder();
+    }
+
+    protected Component buildPage() {
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        GridBagConstraints constraints = new GridBagConstraints();
 
         JRadioButton noneRadioButton = buildUseNoneButton();
         constraints.gridx           = 0;
@@ -67,171 +67,171 @@ final class TableLockingPolicyPropertiesPage
         constraints.insets      = new Insets(0, 5, 0, 0);
         mainPanel.add(noneRadioButton, constraints);
         addHelpTopicId(noneRadioButton, getHelpTopicId() + ".none");
-      
-		JPanel optimisticLockingPanel = buildOptimisticLockingPanel();
 
-		// Create the panel
-		GroupBox optimisticBox = new GroupBox(buildUseOptimisticButton(), optimisticLockingPanel);
-		constraints.gridx			= 0;
-		constraints.gridy			= 1;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 0;
-		constraints.fill			= GridBagConstraints.HORIZONTAL;
-		constraints.anchor		= GridBagConstraints.FIRST_LINE_START;
-		constraints.insets		= new Insets(0, 0, 0, 0);
+        JPanel optimisticLockingPanel = buildOptimisticLockingPanel();
 
-		addHelpTopicId(optimisticLockingPanel, getHelpTopicId() + ".optimistic");
+        // Create the panel
+        GroupBox optimisticBox = new GroupBox(buildUseOptimisticButton(), optimisticLockingPanel);
+        constraints.gridx            = 0;
+        constraints.gridy            = 1;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 0;
+        constraints.fill            = GridBagConstraints.HORIZONTAL;
+        constraints.anchor        = GridBagConstraints.FIRST_LINE_START;
+        constraints.insets        = new Insets(0, 0, 0, 0);
 
-		mainPanel.add(optimisticBox, constraints);
+        addHelpTopicId(optimisticLockingPanel, getHelpTopicId() + ".optimistic");
 
-		JPanel pessimisticLockingPanel = buildPessimisticLockingPanel();
-		buildPessimisticLockingPanelEnabler(pessimisticLockingPanel.getComponents());
+        mainPanel.add(optimisticBox, constraints);
 
-		JRadioButton pessimisticButton = buildUsePessimisticButton();
-		GroupBox pessimisticBox = new GroupBox(pessimisticButton, pessimisticLockingPanel);
+        JPanel pessimisticLockingPanel = buildPessimisticLockingPanel();
+        buildPessimisticLockingPanelEnabler(pessimisticLockingPanel.getComponents());
 
-		constraints.gridx			= 0;
-		constraints.gridy			= 2;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 1;
-		constraints.fill			= GridBagConstraints.HORIZONTAL;
-		constraints.anchor		= GridBagConstraints.FIRST_LINE_START;
-		constraints.insets		= new Insets(5, 0, 0, 0);
+        JRadioButton pessimisticButton = buildUsePessimisticButton();
+        GroupBox pessimisticBox = new GroupBox(pessimisticButton, pessimisticLockingPanel);
 
-		addHelpTopicId(pessimisticLockingPanel, getHelpTopicId() + ".pessimistic");
+        constraints.gridx            = 0;
+        constraints.gridy            = 2;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 1;
+        constraints.fill            = GridBagConstraints.HORIZONTAL;
+        constraints.anchor        = GridBagConstraints.FIRST_LINE_START;
+        constraints.insets        = new Insets(5, 0, 0, 0);
 
-		mainPanel.add(pessimisticBox, constraints);
+        addHelpTopicId(pessimisticLockingPanel, getHelpTopicId() + ".pessimistic");
 
-		addHelpTopicId(mainPanel, getHelpTopicId());
+        mainPanel.add(pessimisticBox, constraints);
 
-		return mainPanel;
-	}
+        addHelpTopicId(mainPanel, getHelpTopicId());
 
-
-	private JPanel buildOptimisticFieldsLockingPanel() {
-		return new ColumnsLockingPanel(getLockingPolicyHolder(), getWorkbenchContextHolder());
-	}
-
-	// --- Optimistic Locking Type ---
-	
-	private JRadioButton buildOptimisticFieldsLockingTypeButton()
-	{
-		return buildRadioButton(
-					"LOCKING_POLICY_OPTIMISTIC_FIELDS",
-					new RadioButtonModelAdapter(
-						this.optimisticLockingPolicyTypeModel,
-						MWTableDescriptorLockingPolicy.OPTIMISTIC_COLUMNS_LOCKING_TYPE
-					)
-				);
-	}
-	
-	private JPanel buildOptimisticLockingPanel()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
-		JPanel panel = new JPanel(new GridBagLayout());
-
-		// By Version pane
-		JPanel versionLockingPanel = buildOptimisticVersionLockingPanel();
-		JRadioButton optimisticVersionLockingTypeButton = buildOptimisticVersionLockingTypeButton();
-
-		GroupBox versionLockingBox = new GroupBox(optimisticVersionLockingTypeButton, versionLockingPanel);
-
-		constraints.gridx			= 0;
-		constraints.gridy			= 0;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 0;
-		constraints.fill			= GridBagConstraints.HORIZONTAL;
-		constraints.anchor		= GridBagConstraints.FIRST_LINE_START;
-		constraints.insets		= new Insets(0, 0, 0, 0);
-
-		addHelpTopicId(versionLockingPanel, getHelpTopicId() + ".version");
-		panel.add(versionLockingBox, constraints);
-
-		// By Fields pane
-		JPanel fieldsLockingPanel = buildOptimisticFieldsLockingPanel();
-		JRadioButton optimisticFieldsLockingTypeButton = buildOptimisticFieldsLockingTypeButton();
-
-		GroupBox fieldsLockingBox = new GroupBox(optimisticFieldsLockingTypeButton, fieldsLockingPanel);
-
-		constraints.gridx			= 0;
-		constraints.gridy			= 1;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 0;
-		constraints.fill			= GridBagConstraints.HORIZONTAL;
-		constraints.anchor		= GridBagConstraints.FIRST_LINE_START;
-		constraints.insets		= new Insets(5, 0, 0, 0);
-
-		addHelpTopicId(fieldsLockingPanel, getHelpTopicId() + ".fields");
-		panel.add(fieldsLockingBox, constraints);
-	
-		buildOptimisticTypeRadioButtonEnabler(new Component[] { optimisticVersionLockingTypeButton, optimisticFieldsLockingTypeButton});
-
-		return panel;
-	}
-
-	private ComponentEnabler buildOptimisticTypeRadioButtonEnabler(Component[] components)
-	{
-		PropertyValueModel booleanHolder = new TransformationPropertyValueModel(getLockingPolicyTypeHolder())
-		{
-			protected Object transform(Object value)
-			{
-				if (value == null)
-					return null;
-				
-				return Boolean.valueOf(MWLockingPolicy.OPTIMISTIC_LOCKING == value);
-			}
-		};
-		return new ComponentEnabler(booleanHolder, components);
-	}
-	
-	private JPanel buildOptimisticVersionLockingPanel() {
-		return new TableVersionLockingPanel(getLockingPolicyHolder(), getWorkbenchContextHolder());
-	}
-
-	// --- Version Locking --- 
+        return mainPanel;
+    }
 
 
-	
-	private JRadioButton buildOptimisticVersionLockingTypeButton()
-	{
-		return buildRadioButton(
-					"LOCKING_POLICY_OPTIMISTIC_VERSION",
-					new RadioButtonModelAdapter(
-							this.optimisticLockingPolicyTypeModel, 
-						MWTableDescriptorLockingPolicy.OPTIMISTIC_VERSION_LOCKING_TYPE
-					)
-				);
-	}
+    private JPanel buildOptimisticFieldsLockingPanel() {
+        return new ColumnsLockingPanel(getLockingPolicyHolder(), getWorkbenchContextHolder());
+    }
 
-	private PropertyValueModel buildOptimisticLockingPolicyTypeValueHolder() {
-		return new PropertyAspectAdapter(getLockingPolicyHolder(),
-					MWTableDescriptorLockingPolicy.OPTIMISTIC_LOCKING_TYPE_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return ((MWTableDescriptorLockingPolicy) subject).getOptimisticLockingType();
-			}
+    // --- Optimistic Locking Type ---
 
-			protected void setValueOnSubject(Object value) {
-				((MWTableDescriptorLockingPolicy) subject).setOptimisticLockingType((String) value);
-			}
-		};
-	}
+    private JRadioButton buildOptimisticFieldsLockingTypeButton()
+    {
+        return buildRadioButton(
+                    "LOCKING_POLICY_OPTIMISTIC_FIELDS",
+                    new RadioButtonModelAdapter(
+                        this.optimisticLockingPolicyTypeModel,
+                        MWTableDescriptorLockingPolicy.OPTIMISTIC_COLUMNS_LOCKING_TYPE
+                    )
+                );
+    }
+
+    private JPanel buildOptimisticLockingPanel()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        // By Version pane
+        JPanel versionLockingPanel = buildOptimisticVersionLockingPanel();
+        JRadioButton optimisticVersionLockingTypeButton = buildOptimisticVersionLockingTypeButton();
+
+        GroupBox versionLockingBox = new GroupBox(optimisticVersionLockingTypeButton, versionLockingPanel);
+
+        constraints.gridx            = 0;
+        constraints.gridy            = 0;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 0;
+        constraints.fill            = GridBagConstraints.HORIZONTAL;
+        constraints.anchor        = GridBagConstraints.FIRST_LINE_START;
+        constraints.insets        = new Insets(0, 0, 0, 0);
+
+        addHelpTopicId(versionLockingPanel, getHelpTopicId() + ".version");
+        panel.add(versionLockingBox, constraints);
+
+        // By Fields pane
+        JPanel fieldsLockingPanel = buildOptimisticFieldsLockingPanel();
+        JRadioButton optimisticFieldsLockingTypeButton = buildOptimisticFieldsLockingTypeButton();
+
+        GroupBox fieldsLockingBox = new GroupBox(optimisticFieldsLockingTypeButton, fieldsLockingPanel);
+
+        constraints.gridx            = 0;
+        constraints.gridy            = 1;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 0;
+        constraints.fill            = GridBagConstraints.HORIZONTAL;
+        constraints.anchor        = GridBagConstraints.FIRST_LINE_START;
+        constraints.insets        = new Insets(5, 0, 0, 0);
+
+        addHelpTopicId(fieldsLockingPanel, getHelpTopicId() + ".fields");
+        panel.add(fieldsLockingBox, constraints);
+
+        buildOptimisticTypeRadioButtonEnabler(new Component[] { optimisticVersionLockingTypeButton, optimisticFieldsLockingTypeButton});
+
+        return panel;
+    }
+
+    private ComponentEnabler buildOptimisticTypeRadioButtonEnabler(Component[] components)
+    {
+        PropertyValueModel booleanHolder = new TransformationPropertyValueModel(getLockingPolicyTypeHolder())
+        {
+            protected Object transform(Object value)
+            {
+                if (value == null)
+                    return null;
+
+                return Boolean.valueOf(MWLockingPolicy.OPTIMISTIC_LOCKING == value);
+            }
+        };
+        return new ComponentEnabler(booleanHolder, components);
+    }
+
+    private JPanel buildOptimisticVersionLockingPanel() {
+        return new TableVersionLockingPanel(getLockingPolicyHolder(), getWorkbenchContextHolder());
+    }
+
+    // --- Version Locking ---
 
 
-	// --- Field Locking --- 
 
-	
-	protected String getHelpTopicId()
-	{
-		return "descriptor.relational.locking";
-	}
+    private JRadioButton buildOptimisticVersionLockingTypeButton()
+    {
+        return buildRadioButton(
+                    "LOCKING_POLICY_OPTIMISTIC_VERSION",
+                    new RadioButtonModelAdapter(
+                            this.optimisticLockingPolicyTypeModel,
+                        MWTableDescriptorLockingPolicy.OPTIMISTIC_VERSION_LOCKING_TYPE
+                    )
+                );
+    }
+
+    private PropertyValueModel buildOptimisticLockingPolicyTypeValueHolder() {
+        return new PropertyAspectAdapter(getLockingPolicyHolder(),
+                    MWTableDescriptorLockingPolicy.OPTIMISTIC_LOCKING_TYPE_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return ((MWTableDescriptorLockingPolicy) subject).getOptimisticLockingType();
+            }
+
+            protected void setValueOnSubject(Object value) {
+                ((MWTableDescriptorLockingPolicy) subject).setOptimisticLockingType((String) value);
+            }
+        };
+    }
+
+
+    // --- Field Locking ---
+
+
+    protected String getHelpTopicId()
+    {
+        return "descriptor.relational.locking";
+    }
 
 
 }

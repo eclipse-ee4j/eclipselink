@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,10 +15,10 @@ package org.eclipse.persistence.testing.jaxb.typevariable;
 import java.util.ArrayList;
 
 public class ExtendedList10<A extends Number, E extends ExtendedList8Interface, C extends Number > extends ArrayList<E> {
-	
-	public  ExtendedList10(){
-	}
-	
+
+    public  ExtendedList10(){
+    }
+
     @Override
     public boolean equals(Object o) {
         if(null == o || o.getClass() != this.getClass()) {

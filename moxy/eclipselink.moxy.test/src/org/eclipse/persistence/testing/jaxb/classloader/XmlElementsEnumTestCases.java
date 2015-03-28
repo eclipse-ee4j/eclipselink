@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,16 +23,16 @@ import junit.framework.TestCase;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
 public class XmlElementsEnumTestCases extends TestCase {
-    
+
     public void testCreateContext() throws Exception {
         Class[] classes = new Class[1];
-        
-        URL[] urls = new URL[1];    
+
+        URL[] urls = new URL[1];
         urls[0] = Thread.currentThread().getContextClassLoader().getResource("./org/eclipse/persistence/testing/jaxb/classloader/enum.jar");
         URLClassLoader classLoader = new URLClassLoader(urls);
 
         Class classAClass = classLoader.loadClass("org.eclipse.persistence.testing.jaxb.classloader.Root");
-        
+
         classes[0] = classAClass;
         JAXBContext ctx = JAXBContextFactory.createContext(classes, null, classLoader);
 

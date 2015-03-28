@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     17/10/2008-1.1  Michael O'Brien 
+ *     17/10/2008-1.1  Michael O'Brien
  *       - 251005: The default JNDI InitialContextFactory is modified from
  *       OC4J: oracle.j2ee.rmi.RMIInitialContextFactory to
  *       WebLogic: weblogic.jndi.WLInitialContextFactory
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.coordination;
 
 import java.util.Hashtable;
@@ -64,7 +64,7 @@ public abstract class TransportManager {
 
     /** Security util that is used to decrypt and encrypt password */
     protected SecurableObjectHolder securableObjectHolder;
-    
+
     public static final boolean DEFAULT_REMOVE_CONNECTION_ON_ERROR_MODE = true;
 
     /** Valid values for naming service type */
@@ -107,7 +107,7 @@ public abstract class TransportManager {
      * connect back ('handshake') to the service from which this remote connection came.
      */
     public void connectBackToRemote(RemoteConnection connection) throws Exception {
-        ConnectToHostCommand command = new ConnectToHostCommand();        
+        ConnectToHostCommand command = new ConnectToHostCommand();
         command.setServiceId(rcm.getServiceId());
         connection.executeCommand(command);
     }
@@ -167,16 +167,16 @@ public abstract class TransportManager {
 
     /**
      * PUBLIC:
-     * Return the password used as the value to the SECURITY_CREDENTIALS key in 
+     * Return the password used as the value to the SECURITY_CREDENTIALS key in
      * the cached context properties.
      */
     public String getPassword() {
         return decrypt(getEncryptedPassword());
     }
-    
+
     /**
      * PUBLIC:
-     * Return the encrypted (assumed) password used as the value to the 
+     * Return the encrypted (assumed) password used as the value to the
      * SECURITY_CREDENTIALS key in the cached context properties.
      */
     public String getEncryptedPassword() {
@@ -379,7 +379,7 @@ public abstract class TransportManager {
      */
     public void setEncryptionClassName(String encryptionClassName) {
         SecurableObjectHolder oldHolder = securableObjectHolder;
-        
+
         // re-initialize encryption mechanism
         securableObjectHolder = new SecurableObjectHolder();
         securableObjectHolder.setEncryptionClassName(encryptionClassName);
@@ -394,10 +394,10 @@ public abstract class TransportManager {
      * INTERNAL:
      * @return true if a non null password has been set.
      */
-    protected boolean hasPassword() { 
+    protected boolean hasPassword() {
         return getRemoteContextProperties().containsKey(Context.SECURITY_CREDENTIALS) && getRemoteContextProperties().get(Context.SECURITY_CREDENTIALS) != null;
     }
-    
+
     /**
      * INTERNAL:
      * Initialize default properties.
@@ -446,7 +446,7 @@ public abstract class TransportManager {
         rcm.logDebug("context_props_for_remote_lookup", args);
 
         if (hasPassword()) {
-            // decrypt password just before looking up context. Calling 
+            // decrypt password just before looking up context. Calling
             // getPassword() will decrypt it.
             remoteProperties.put(Context.SECURITY_CREDENTIALS, getPassword());
         }
@@ -458,7 +458,7 @@ public abstract class TransportManager {
      * ADVANCED:
      * Factory of new DiscoveryManager for different transports.  The RemoteCommandManger uses this method to create its DicscoveryManager.
      * Sub-class of TransportManager should return special discovery if required.  The default is discovery type is DiscoveryManager;
-     * If this method returns null then during initialization RemoteCommandManager 
+     * If this method returns null then during initialization RemoteCommandManager
      * calls createConnections method.
      */
     public DiscoveryManager createDiscoveryManager() {
@@ -480,11 +480,11 @@ public abstract class TransportManager {
      * This method is invoked internally by TopLink when the RCM is shutdown and should not be invoked by user's application.
      */
     public abstract void removeLocalConnection();
-    
+
     /**
      * Generic API to allow config to be set.
      */
     public void setConfig(String config) {
-        
+
     }
 }

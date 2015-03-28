@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     dminsky - added writeFields API overriding behavior from Expression
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -37,7 +37,7 @@ public class LiteralExpression extends Expression {
         value = newValue;
         localBase = baseExpression;
     }
-    
+
     /**
      * INTERNAL:
      * Return if the expression is equal to the other.
@@ -53,7 +53,7 @@ public class LiteralExpression extends Expression {
         LiteralExpression expression = (LiteralExpression) object;
         return ((getValue() == expression.getValue()) || ((getValue() != null) && getValue().equals(expression.getValue())));
     }
-        
+
     /**
      * INTERNAL:
      * Compute a consistent hash-code for the expression.
@@ -126,7 +126,7 @@ public class LiteralExpression extends Expression {
         result.setLocalBase(getLocalBase().rebuildOn(newBase));
         return result;
     }
-    
+
     /**
      * INTERNAL:
      * Search the tree for any expressions (like SubSelectExpressions) that have been
@@ -187,5 +187,5 @@ public class LiteralExpression extends Expression {
         newFields.addElement(new DatabaseField(getValue()));
         printSQL(printer);
     }
-    
+
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -44,7 +44,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(EmfRunner.class)
 public class TestPessimisticLocking {
-    @Emf(createTables = DDLGen.DROP_CREATE, classes = { LockingDog.class, }, properties = { 
+    @Emf(createTables = DDLGen.DROP_CREATE, classes = { LockingDog.class, }, properties = {
             @Property(name = "eclipselink.cache.shared.default", value = "false") })
     private EntityManagerFactory emf;
 
@@ -189,8 +189,8 @@ public class TestPessimisticLocking {
     /**
      * This test verifies that aggregate queries will not fail with locking
      * set.
-     * 
-     * @see 
+     *
+     * @see
      *      org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite
      *      .testQueryPESSIMISTIC_FORCE_INCREMENTLock()
      */
@@ -212,8 +212,8 @@ public class TestPessimisticLocking {
     /**
      * This test verifies that queries that return non-Entity results will not
      * fail up with locking set.
-     * 
-     * @see 
+     *
+     * @see
      *      org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite
      *      .testQueryPESSIMISTIC_FORCE_INCREMENTLock()
      */

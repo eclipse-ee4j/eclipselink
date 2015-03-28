@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,8 +22,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 
 /**
- * Makes the LinkV2 class available in our Dynamic JAXB context.  
- * 
+ * Makes the LinkV2 class available in our Dynamic JAXB context.
+ *
  * @author gonural
  *
  */

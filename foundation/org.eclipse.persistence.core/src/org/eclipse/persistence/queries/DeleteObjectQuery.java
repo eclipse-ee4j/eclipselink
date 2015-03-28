@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.Set;
@@ -39,10 +39,10 @@ import org.eclipse.persistence.tools.profiler.QueryMonitor;
 public class DeleteObjectQuery extends ObjectLevelModifyQuery {
     /** PERF: By default only the translation row is used for deletes, the full row can be requested for custom deletes. */
     protected boolean isFullRowRequired = false;
-    
+
     /** Indicates whether the query should use optimistic locking. */
     protected boolean usesOptimisticLocking;
-    
+
     public DeleteObjectQuery() {
         super();
     }
@@ -62,7 +62,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      * Return if the full row is required by the delete query.
      * This can be set on custom delete queries if more than the objects primary key and version is required.
      */
-    public boolean isFullRowRequired() 
+    public boolean isFullRowRequired()
     {
         return isFullRowRequired;
     }
@@ -72,11 +72,11 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      * Set if the full row is required by the delete query.
      * This can be set on custom delete queries if more than the objects primary key and version is required.
      */
-    public void setIsFullRowRequired(boolean isFullRowRequired) 
+    public void setIsFullRowRequired(boolean isFullRowRequired)
     {
         this.isFullRowRequired = isFullRowRequired;
     }
-    
+
     /**
      * INTERNAL:
      * Check to see if a custom query should be used for this query.
@@ -196,15 +196,15 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
                     }
                 }
             }
-            
-            // CR#2660080 missing aboutToDelete event.		
+
+            // CR#2660080 missing aboutToDelete event.
             // PERF: Avoid events if no listeners.
             if (eventManager.hasAnyEventListeners()) {
                 DescriptorEvent event = new DescriptorEvent(DescriptorEventManager.AboutToDeleteEvent, this);
                 event.setRecord(getModifyRow());
                 eventManager.executeEvent(event);
             }
-            
+
             if (QueryMonitor.shouldMonitor()) {
                 QueryMonitor.incrementDelete(this);
             }
@@ -289,7 +289,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
         }
         super.setObject(object);
     }
-    
+
     /**
      * INTERNAL:
      * Determines whether the query should use optimistic locking with the passed object.
@@ -310,15 +310,15 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
             return false;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Indicating whether the query should use optimistic locking.
      */
     public boolean usesOptimisticLocking() {
-        return this.usesOptimisticLocking; 
+        return this.usesOptimisticLocking;
     }
-    
+
     /**
      * INTERNAL:
      * Prepare the receiver for execution in a session.
@@ -363,7 +363,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
             }
         }
 
-        // Add the write lock field if required		
+        // Add the write lock field if required
         if (this.usesOptimisticLocking) {
             this.descriptor.getOptimisticLockingPolicy().addLockValuesToTranslationRow(this);
         }

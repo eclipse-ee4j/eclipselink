@@ -33,213 +33,213 @@ import org.eclipse.persistence.jpa.jpql.utility.iterable.SnapshotCloneListIterab
 public abstract class AbstractListHolderStateObject<T extends StateObject> extends AbstractStateObject
                                                                            implements ListHolderStateObject<T> {
 
-	/**
-	 * The list of children owned by this one.
-	 */
-	private List<T> items;
+    /**
+     * The list of children owned by this one.
+     */
+    private List<T> items;
 
-	/**
-	 * Creates a new <code>AbstractListHolderStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	protected AbstractListHolderStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>AbstractListHolderStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    protected AbstractListHolderStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>AbstractListHolderStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param items The list of {@link StateObject StateObjects} to add as children to this one
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	protected AbstractListHolderStateObject(StateObject parent, List<? extends T> items) {
-		super(parent);
+    /**
+     * Creates a new <code>AbstractListHolderStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param items The list of {@link StateObject StateObjects} to add as children to this one
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    protected AbstractListHolderStateObject(StateObject parent, List<? extends T> items) {
+        super(parent);
                 if (this.items == null) {
                     this.items = new ArrayList<T>();
                 }
-		this.items.addAll(items);
-		parent(items);
-	}
+        this.items.addAll(items);
+        parent(items);
+    }
 
-	/**
-	 * Creates a new <code>AbstractListHolderStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param items The list of {@link StateObject StateObjects} to add as children to this one
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	protected AbstractListHolderStateObject(StateObject parent, T... items) {
-		super(parent);
-		Collections.addAll(this.items, parent(items));
-	}
+    /**
+     * Creates a new <code>AbstractListHolderStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param items The list of {@link StateObject StateObjects} to add as children to this one
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    protected AbstractListHolderStateObject(StateObject parent, T... items) {
+        super(parent);
+        Collections.addAll(this.items, parent(items));
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addChildren(List<StateObject> children) {
-		super.addChildren(children);
-		children.addAll(items);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addChildren(List<StateObject> children) {
+        super.addChildren(children);
+        children.addAll(items);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public <S extends T> S addItem(S item) {
-		getChangeSupport().addItem(this, this.items, listName(), parent(item));
-		return item;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public <S extends T> S addItem(S item) {
+        getChangeSupport().addItem(this, this.items, listName(), parent(item));
+        return item;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void addItems(List<? extends T> items) {
-		getChangeSupport().addItems(this, this.items, listName(), parent(items));
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void addItems(List<? extends T> items) {
+        getChangeSupport().addItems(this, this.items, listName(), parent(items));
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void addListChangeListener(String listName, IListChangeListener<T> listener) {
-		getChangeSupport().addListChangeListener(listName, listener);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void addListChangeListener(String listName, IListChangeListener<T> listener) {
+        getChangeSupport().addListChangeListener(listName, listener);
+    }
 
-	/**
-	 * Determines whether the children of this {@link StateObject} are equivalent to the children
-	 * of the given one, i.e. the information of the {@link StateObject StateObjects} is the same.
-	 *
-	 * @param stateObject The {@link StateObject} to compare its children to this one's children
-	 * @return <code>true</code> if both have equivalent children; <code>false</code> otherwise
-	 */
-	protected boolean areChildrenEquivalent(AbstractListHolderStateObject<? extends StateObject> stateObject) {
+    /**
+     * Determines whether the children of this {@link StateObject} are equivalent to the children
+     * of the given one, i.e. the information of the {@link StateObject StateObjects} is the same.
+     *
+     * @param stateObject The {@link StateObject} to compare its children to this one's children
+     * @return <code>true</code> if both have equivalent children; <code>false</code> otherwise
+     */
+    protected boolean areChildrenEquivalent(AbstractListHolderStateObject<? extends StateObject> stateObject) {
 
-		int size = itemsSize();
+        int size = itemsSize();
 
-		if (size != stateObject.itemsSize()) {
-			return false;
-		}
+        if (size != stateObject.itemsSize()) {
+            return false;
+        }
 
-		for (int index = size; --index >= 0; ) {
+        for (int index = size; --index >= 0; ) {
 
-			StateObject child1 = getItem(index);
-			StateObject child2 = stateObject.getItem(index);
+            StateObject child1 = getItem(index);
+            StateObject child2 = stateObject.getItem(index);
 
-			if (!child1.isEquivalent(child2)) {
-				return false;
-			}
-		}
+            if (!child1.isEquivalent(child2)) {
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean canMoveDown(T stateObject) {
-		return getChangeSupport().canMoveDown(items, stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public boolean canMoveDown(T stateObject) {
+        return getChangeSupport().canMoveDown(items, stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean canMoveUp(T stateObject) {
-		return getChangeSupport().canMoveUp(items, stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public boolean canMoveUp(T stateObject) {
+        return getChangeSupport().canMoveUp(items, stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public T getItem(int index) {
-		return items.get(index);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public T getItem(int index) {
+        return items.get(index);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean hasItems() {
-		return !items.isEmpty();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public boolean hasItems() {
+        return !items.isEmpty();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initialize() {
-		super.initialize();
-		items = new ArrayList<T>();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initialize() {
+        super.initialize();
+        items = new ArrayList<T>();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ListIterable<? extends T> items() {
-		return new SnapshotCloneListIterable<T>(items);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ListIterable<? extends T> items() {
+        return new SnapshotCloneListIterable<T>(items);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public int itemsSize() {
-		return items.size();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public int itemsSize() {
+        return items.size();
+    }
 
-	/**
-	 * Returns the name that is uniquely identifying the list.
-	 *
-	 * @return The unique name identifying the list
-	 */
-	protected abstract String listName();
+    /**
+     * Returns the name that is uniquely identifying the list.
+     *
+     * @return The unique name identifying the list
+     */
+    protected abstract String listName();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public T moveDown(T item) {
-		getChangeSupport().moveDown(this, items, listName(), item);
-		return item;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public T moveDown(T item) {
+        getChangeSupport().moveDown(this, items, listName(), item);
+        return item;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public T moveUp(T item) {
-		getChangeSupport().moveUp(this, items, listName(), item);
-		return item;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public T moveUp(T item) {
+        getChangeSupport().moveUp(this, items, listName(), item);
+        return item;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void removeItem(T stateObject) {
-		getChangeSupport().removeItem(this, items, listName(), stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void removeItem(T stateObject) {
+        getChangeSupport().removeItem(this, items, listName(), stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void removeItems(Collection<T> items) {
-		getChangeSupport().removeItems(this, this.items, listName(), items);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void removeItems(Collection<T> items) {
+        getChangeSupport().removeItems(this, this.items, listName(), items);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void removeListChangeListener(String listName, IListChangeListener<T> listener) {
-		getChangeSupport().removeListChangeListener(listName, listener);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void removeListChangeListener(String listName, IListChangeListener<T> listener) {
+        getChangeSupport().removeListChangeListener(listName, listener);
+    }
 
-	/**
-	 * Adds to the given writer a crude string representation of the children of this one.
-	 *
-	 * @param writer The writer used to print out the string representation
-	 * @param useComma Determines whether a comma should be added after each item, except after the
-	 * last one
-	 * @throws IOException This should never happens, only required because {@link Appendable} is
-	 * used instead of {@link StringBuilder} for instance
-	 */
-	protected void toStringItems(Appendable writer, boolean useComma) throws IOException {
-		toStringItems(writer, items, useComma);
-	}
+    /**
+     * Adds to the given writer a crude string representation of the children of this one.
+     *
+     * @param writer The writer used to print out the string representation
+     * @param useComma Determines whether a comma should be added after each item, except after the
+     * last one
+     * @throws IOException This should never happens, only required because {@link Appendable} is
+     * used instead of {@link StringBuilder} for instance
+     */
+    protected void toStringItems(Appendable writer, boolean useComma) throws IOException {
+        toStringItems(writer, items, useComma);
+    }
 }

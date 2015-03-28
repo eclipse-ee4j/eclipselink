@@ -10,4 +10,4 @@ Implementation-Vendor: Oracle
 Release-Designation: 10g release 3
 Library-Designation: Workbench
 Main-Class: org.eclipse.persistence.workbench.Main
- 
+

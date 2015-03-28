@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.xml.relationships;
 
 import javax.persistence.EntityManager;
@@ -47,23 +47,23 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
     private static Integer itemId;
     private static Integer extendedItemId;
     private static Integer orderId;
-    
+
     private String m_persistenceUnit;
-    
+
     public EntityMappingsRelationshipsJUnitTestCase() {
         super();
     }
-    
+
     public EntityMappingsRelationshipsJUnitTestCase(String name) {
         super(name);
     }
-    
+
     public EntityMappingsRelationshipsJUnitTestCase(String name, String persistenceUnit) {
         super(name);
-        
+
         m_persistenceUnit = persistenceUnit;
     }
-    
+
     public static Test suite() {
         String ormTesting = TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING);
         final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-relationships";
@@ -88,7 +88,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
 
         if (persistenceUnit.equals("extended-relationships")) {
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testExcludeDefaultMappings", persistenceUnit));
-            suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateExtendedItem", persistenceUnit)); 
+            suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateExtendedItem", persistenceUnit));
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testModifyExtendedItem", persistenceUnit));
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testVerifyExtendedItem", persistenceUnit));
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCopyPolicy", persistenceUnit));
@@ -98,14 +98,14 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         } else {
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testOne2OneRelationTables", persistenceUnit));
         }
-        
+
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteOrder", persistenceUnit));
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteCustomer", persistenceUnit));
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteItem", persistenceUnit));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -114,7 +114,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         new RelationshipsTableManager().replaceTables(session);
         clearCache(m_persistenceUnit);
     }
-    
+
     public void testCreateCustomer() {
         EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
@@ -124,7 +124,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             customer.setCity("Austin");
             em.persist(customer);
             customerId = customer.getCustomerId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -132,10 +132,10 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     public void testCreateItem() {
         EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
@@ -146,7 +146,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             item.setImage(new byte[1024]);
             em.persist(item);
             itemId = item.getItemId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -154,7 +154,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-    
+
         closeEntityManager(em);
     }
 
@@ -171,7 +171,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             order.setItem(item);
             em.persist(order);
             orderId = order.getOrderId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -179,7 +179,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
 
@@ -242,7 +242,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         assertTrue("Error executing named native query 'findAllSQLXMLCustomers'", customer != null);
         closeEntityManager(em);
     }
-    
+
     public void testNamedQueryOnCustomer() {
         EntityManager em = createEntityManager(m_persistenceUnit);
         Customer customer = (Customer)em.createNamedQuery("findAllXMLCustomers").getSingleResult();
@@ -274,7 +274,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         assertTrue("Error reading Customer", customer.getCustomerId().equals(customerId));
         closeEntityManager(em);
     }
-    
+
     public void testReadItem() {
         EntityManager em = createEntityManager(m_persistenceUnit);
         Item item = em.find(Item.class, itemId);
@@ -354,7 +354,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         assertTrue("Error updating Customer", (newCustomer.getOrders().iterator().next()).getQuantity() == 100);
         closeEntityManager(em);
     }
-    
+
     public void testExcludeDefaultMappings() {
         ClassDescriptor descriptor = getServerSession(m_persistenceUnit).getDescriptor(Mattel.class);
         assertNull("The 'ignoredBasic' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredBasic"));
@@ -362,42 +362,42 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         assertNull("The 'ignoredVariableOneToOne' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredVariableOneToOne"));
         assertNull("The 'ignoredOneToMany' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredOneToMany"));
     }
-    
+
     /**
      * Create a new item that has a variable one to one to a manufacturer.
      */
     public void testCreateExtendedItem() {
         EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
-        
+
         try {
             Item item = new Item();
             item.setName("Synergizer2000");
             item.setDescription("Every kid must have one ... ");
-            
+
             // Manufacturer does not cascade persist
             Mattel mattel = new Mattel();
             mattel.setName("Mattel Inc.");
-            
+
             // CEO will cascade persist
             CEO mattelCEO = new CEO();
             mattelCEO.setName("Mr. Mattel");
             mattel.setCeo(mattelCEO);
-            
+
             em.persist(mattel);
             item.setManufacturer(mattel);
-            
+
             // Distributor will cascade persist
             Namco namco = new Namco();
             namco.setName("Namco Games");
-            
+
             // CEO will cascade persist
             CEO namcoCEO = new CEO();
             namcoCEO.setName("Mr. Namco");
             namco.setCeo(namcoCEO);
-            
+
             item.setDistributor(namco);
-            
+
             em.persist(item);
             extendedItemId = item.getItemId();
             commitTransaction(em);
@@ -405,29 +405,29 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Read an item, verify it contents, modify it and commit.
      */
     public void testModifyExtendedItem() {
         EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
-        
+
         try {
             Item item = em.find(Item.class, extendedItemId);
             item.setName("Willy Waller");
             item.setDescription("For adults only!");
-            
+
             assertTrue("The manufacturer was not persisted", item.getManufacturer() != null);
             assertTrue("The manufacturer of the item was incorrect", item.getManufacturer().getName().equals("Mattel Inc."));
-            
+
             Lego lego = new Lego();
             lego.setName("The LEGO Group");
             em.persist(lego);
@@ -435,51 +435,51 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
 
             assertTrue("The distributor was not persisted", item.getDistributor() != null);
             assertTrue("The distributor of the item was incorrect", item.getDistributor().getName().equals("Namco Games"));
-                    
+
             MegaBrands megaBrands = new MegaBrands();
             megaBrands.setName("MegaBrands Inc.");
             em.persist(megaBrands);
             item.setDistributor(megaBrands);
-            
+
             em.merge(item); // no op really ...
-            
+
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Verify the final contents of item.
      */
     public void testVerifyExtendedItem() {
         EntityManager em = createEntityManager(m_persistenceUnit);
         Item item = em.find(Item.class, extendedItemId);
-        
+
         assertTrue("The manufacturer was not persisted", item.getManufacturer() != null);
         assertTrue("The manufacturer of the item was incorrect [" + item.getManufacturer().getName() + "]", item.getManufacturer().getName().equals("The LEGO Group"));
 
         assertTrue("The distributor was not persisted", item.getDistributor() != null);
         assertTrue("The distributor of the item was incorrect [" + item.getDistributor().getName() + "]", item.getDistributor().getName().equals("MegaBrands Inc."));
-        
+
         closeEntityManager(em);
     }
-    
+
     public void testInstantiationCopyPolicy(){
         assertTrue("The InstantiationCopyPolicy was not properly set.", getServerSession(m_persistenceUnit).getDescriptor(Item.class).getCopyPolicy() instanceof InstantiationCopyPolicy);
     }
-    
+
     public void testCopyPolicy(){
         assertTrue("The CopyPolicy was not properly set.", getServerSession(m_persistenceUnit).getDescriptor(Order.class).getCopyPolicy() instanceof TestInstantiationCopyPolicy);
     }
-    
+
     public void testCloneCopyPolicy(){
         CopyPolicy copyPolicy = getServerSession(m_persistenceUnit).getDescriptor(Namco.class).getCopyPolicy();
         assertTrue("The CloneCopyPolicy was not properly set.", copyPolicy  instanceof CloneCopyPolicy);
@@ -487,7 +487,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         assertTrue("The workingCopyMethod on CloneCopyPolicy was not properly set.", ((CloneCopyPolicy)copyPolicy).getWorkingCopyMethodName().equals("cloneWorkingCopyNamco"));
     }
 
-	/**
+    /**
      * This tests a couple scenarios:
      * - 1-M mapped by a M-1 using a JoinTable
      * - 1-1 mapped using a JoinTable (uni-directional)
@@ -496,7 +496,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
     public void testOne2OneRelationTables() {
         EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
-        
+
         Order order1 = new Order();
         Order order2 = new Order();
         Auditor auditor = new Auditor();
@@ -507,14 +507,14 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             order1.setOrderLabel(order1Label);
             order1.setOrderCard(order1Card);
             em.persist(order1);
-            
+
             OrderCard order2Card = new OrderCard();
             OrderLabel order2Label = new OrderLabel();
             order2Label.setDescription("I describe order 2");
             order2.setOrderLabel(order2Label);
             order2.setOrderCard(order2Card);
             em.persist(order2);
-                
+
             auditor.setName("Guillaume");
             auditor.addOrder(order1);
             auditor.addOrder(order2);
@@ -525,25 +525,25 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             throw e;
         }
-        
+
         closeEntityManager(em);
 
-        
+
         clearCache(m_persistenceUnit);
         em = createEntityManager(m_persistenceUnit);
-        
+
         Auditor refreshedAuditor = em.find(Auditor.class, auditor.getId());
         Order refreshedOrder1 = em.find(Order.class, order1.getOrderId());
         Order refreshedOrder2 = em.find(Order.class, order2.getOrderId());
-        
+
         assertTrue("Auditor read back did not match the original", getServerSession(m_persistenceUnit).compareObjects(auditor, refreshedAuditor));
         assertTrue("Order1 read back did not match the original", getServerSession(m_persistenceUnit).compareObjects(order1, refreshedOrder1));
         assertTrue("Order2 read back did not match the original", getServerSession(m_persistenceUnit).compareObjects(order2, refreshedOrder2));
-        
+
         closeEntityManager(em);
     }
 }

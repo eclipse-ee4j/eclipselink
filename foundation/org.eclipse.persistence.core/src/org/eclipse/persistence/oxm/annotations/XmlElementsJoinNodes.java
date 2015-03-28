@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -21,17 +21,17 @@ import java.lang.annotation.Target;
 
 /**
  * XmlElementsJoinNodes is used in conjunction with {@code XmlElements} in order to specify the key references for the
- * targets of the XmlElements annotation. There must be one XmlJoinNodes for each XmlElement This is similar to using {@code XmlIDREF} 
- * with {@code XmlElements} but allows customisation of the xpath for the source keys and allows for composite key 
+ * targets of the XmlElements annotation. There must be one XmlJoinNodes for each XmlElement This is similar to using {@code XmlIDREF}
+ * with {@code XmlElements} but allows customisation of the xpath for the source keys and allows for composite key
  * relationships.
- * 
+ *
  * <p><b>Example:</b></p>
  * <pre>
  * &#64;XmlRootElement
  * public class Client {
- *   
+ *
  *   ...
- *   
+ *
  *   &#64;XmlElements({
  *       &#64;XmlElement(name="mail", type=Address.class),
  *       &#64;XmlElement(name="phone", type=PhoneNumber.class)
@@ -48,13 +48,13 @@ import java.lang.annotation.Target;
  *   })
  *   public Object preferredContactMethod;
  * </pre>
- *   
+ *
  *   @see XmlJoinNodes
  *   @see XmlJoinNode
  *   @see javax.xml.bind.annotation.XmlElements XmlElements
  *   @see XmlKey
  */
-@Target({METHOD, FIELD}) 
+@Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface XmlElementsJoinNodes {
     XmlJoinNodes[] value();

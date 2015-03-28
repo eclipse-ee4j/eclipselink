@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
@@ -47,9 +47,9 @@ import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
 public class ComicsPopulateAndQueryTestSuite {
 
-    public static final String PACKAGE_PATH = 
+    public static final String PACKAGE_PATH =
         ComicsPopulateAndQueryTestSuite.class.getPackage().getName().replace('.', '/');
-    
+
     // test fixtures
     static DatabaseSession session = null;
     static DynamicHelper dynamicHelper = null;
@@ -103,10 +103,10 @@ public class ComicsPopulateAndQueryTestSuite {
             }
         }
     }
-    
+
     @Test
     public void countComics() {
-        ReportQuery countQuery = new ReportQuery(dynamicHelper.getType("Publisher").getJavaClass(), 
+        ReportQuery countQuery = new ReportQuery(dynamicHelper.getType("Publisher").getJavaClass(),
             new ExpressionBuilder());
         countQuery.addCount();
         countQuery.setShouldReturnSingleValue(true);
@@ -138,7 +138,7 @@ public class ComicsPopulateAndQueryTestSuite {
         }
     }
 
-    protected Map<Integer, DynamicEntity> loadIssues(Session server, URL fileURL, 
+    protected Map<Integer, DynamicEntity> loadIssues(Session server, URL fileURL,
         Map<Integer, DynamicEntity> titles) {
         DynamicType type = dynamicHelper.getType("Issue");
         Map<Integer, DynamicEntity> issues = new HashMap<Integer, DynamicEntity>();
@@ -221,7 +221,7 @@ public class ComicsPopulateAndQueryTestSuite {
         return publisher;
     }
 
-    protected Map<Integer, DynamicEntity> loadTitles(Session server, URL fileURL, 
+    protected Map<Integer, DynamicEntity> loadTitles(Session server, URL fileURL,
         Map<Integer, DynamicEntity> publishers) {
         DynamicType type = dynamicHelper.getType("Title");
         Map<Integer, DynamicEntity> titles = new HashMap<Integer, DynamicEntity>();

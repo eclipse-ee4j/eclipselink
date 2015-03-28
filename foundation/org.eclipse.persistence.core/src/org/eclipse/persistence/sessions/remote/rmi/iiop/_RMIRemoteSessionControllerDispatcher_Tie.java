@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.remote.rmi.iiop;
 
 
@@ -360,10 +360,10 @@ public class _RMIRemoteSessionControllerDispatcher_Tie extends ObjectImpl implem
         try {
             java.io.ObjectOutputStream objectOut = new java.io.ObjectOutputStream(byteOut);
             objectOut.writeObject(transporter);
-            //		objectOut.writeBoolean(wasOperationSuccessful);
-            //		objectOut.writeObject(query);
-            //		objectOut.writeObject(object);
-            //		objectOut.writeObject(objectDescriptors);
+            //        objectOut.writeBoolean(wasOperationSuccessful);
+            //        objectOut.writeObject(query);
+            //        objectOut.writeObject(object);
+            //        objectOut.writeObject(objectDescriptors);
             objectOut.flush();
             stream.write_ulong(byteOut.size());
             stream.write_octet_array(byteOut.toByteArray(), 0, byteOut.size());

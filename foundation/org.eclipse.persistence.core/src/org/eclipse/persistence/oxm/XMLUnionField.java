@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -98,7 +98,7 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
                 schemaTypes = new ArrayList();
             }
 
-            // don't add things twice - for now the MW adds only some types... 
+            // don't add things twice - for now the MW adds only some types...
             // once they add all types this can be removed
             if (!contains(schemaTypes, value)) {
                 schemaTypes.add(value);
@@ -162,10 +162,10 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
         }else if (isTypedTextField()) {
             ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
             return getXMLType(value.getClass(), conversionManager);
-        } 
-        return getSingleValueToWriteForUnion(value, session);       
+        }
+        return getSingleValueToWriteForUnion(value, session);
     }
-    
+
     protected QName getSingleValueToWriteForUnion(Object value, CoreAbstractSession session) {
         ArrayList schemaTypes = getSchemaTypes();
         QName schemaType = null;
@@ -187,8 +187,8 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
         }
         return schemaType;
     }
-    
-    
+
+
     /**
     * INTERNAL:
     */
@@ -199,15 +199,15 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
             QName nextQName = (QName) schemaTypes.get(i);
             try {
                 if (nextQName != null) {
-                	
-                	if(XMLConstants.QNAME_QNAME.equals(nextQName)){
-                		xmlConversionManager.buildQNameFromString((String)value, record);        		                		
-                		break;
-                	}else{
+
+                    if(XMLConstants.QNAME_QNAME.equals(nextQName)){
+                        xmlConversionManager.buildQNameFromString((String)value, record);
+                        break;
+                    }else{
                         Class javaClass = getJavaClass(nextQName, xmlConversionManager);
                         convertedValue = xmlConversionManager.convertObject(value, javaClass, nextQName);
                         break;
-                	}                	                                        
+                    }
                 }
             } catch (ConversionException ce) {
                 if (i == (schemaTypes.size() - 1)) {
@@ -237,10 +237,10 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
     @Override
     public Class getJavaClass(QName qname, ConversionManager conversionManager) {
         if (userXMLTypes != null) {
-        	Class theClass = (Class) userXMLTypes.get(qname);
-        	if(theClass != null){
-        		return theClass;
-        	}            
+            Class theClass = (Class) userXMLTypes.get(qname);
+            if(theClass != null){
+                return theClass;
+            }
         }
         Class javaClass = conversionManager.javaType(qname);
         return XMLConversionManager.getObjectClass(javaClass);

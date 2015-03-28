@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -237,13 +237,13 @@ public class ShadowDDLGenerationTestSuite {
             " does not match expected shadow DDL", numRecordCreateDDL,
             EXPECTED_NUMRECORD_CREATE_SHADOWDDL);
         assertEquals("generated drop shadow DDL for " + SHADOWDDLTEST_RECORD_TYPE +
-        	" does not match expected shadow DDL", numRecordDropDDL, EXPECTED_NUMRECORD_DROP_SHADOWDDL);
+            " does not match expected shadow DDL", numRecordDropDDL, EXPECTED_NUMRECORD_DROP_SHADOWDDL);
         assertEquals("generated create shadow DDL for " + SHADOWDDLTEST_TABLE_TYPE +
-        	" does not match expected shadow DDL", numTblCreateDDL, EXPECTED_NUMTBL_CREATE_SHADOWDDL);
+            " does not match expected shadow DDL", numTblCreateDDL, EXPECTED_NUMTBL_CREATE_SHADOWDDL);
         assertEquals("generated drop shadow DDL for " + SHADOWDDLTEST_TABLE_TYPE +
-        	" does not match expected shadow DDL", numTblDropDDL, EXPECTED_NUMTBL_DROP_SHADOWDDL);
+            " does not match expected shadow DDL", numTblDropDDL, EXPECTED_NUMTBL_DROP_SHADOWDDL);
         assertEquals("generated create shadow DDL for " + SHADOWDDLTEST_TABLE_TYPE2 +
-        	" does not match expected shadow DDL", numTbl2CreateDDL, EXPECTED_NUMTBL2_CREATE_SHADOWDDL);
+            " does not match expected shadow DDL", numTbl2CreateDDL, EXPECTED_NUMTBL2_CREATE_SHADOWDDL);
         assertEquals("generated drop shadow DDL for " + SHADOWDDLTEST_TABLE_TYPE2 +
             " does not match expected shadow DDL", numTbl2DropDDL, EXPECTED_NUMTBL2_DROP_SHADOWDDL);
         assertEquals("generated create shadow DDL for " + SHADOWDDLTEST_TABLE_TYPE3 +

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,11 +41,11 @@ import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive
 public class JBossPackager extends WarPackager {
     // For JBoss AS 7
     static final String deploymentDescriptorFileName = "jboss-deployment-structure.xml";
-    
+
     // JBoss AS 7 utilizes module dependencies - we need the EclipseLink module
-    static final String deploymentDescriptorXml = 
+    static final String deploymentDescriptorXml =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<jboss-deployment-structure>\n" + 
+        "<jboss-deployment-structure>\n" +
         "   <deployment>\n" +
         "      <dependencies>\n" +
         "         <module name=\"org.eclipse.persistence\" />\n" +
@@ -62,7 +62,7 @@ public class JBossPackager extends WarPackager {
     protected JBossPackager(Archiver archiver, String packagerLabel, ArchiveUse useJavaArchive) {
         super(archiver, packagerLabel, useJavaArchive);
     }
-    
+
     /**
      * Write the deployment descriptor contents to the provided OutputStream.
      */
@@ -96,7 +96,7 @@ public class JBossPackager extends WarPackager {
     public String getDeploymentDescriptorFileName() {
         return deploymentDescriptorFileName;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder) {

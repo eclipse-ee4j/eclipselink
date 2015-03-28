@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -52,39 +52,39 @@ public class Root {
     }
 
  public boolean equals(Object obj){
-	 Root compareObject = ((Root)obj);
+     Root compareObject = ((Root)obj);
 
-	 return compareJAXBElementObjects((JAXBElement)this.any, (JAXBElement)compareObject.any);
+     return compareJAXBElementObjects((JAXBElement)this.any, (JAXBElement)compareObject.any);
  }
 
  public boolean compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
-	 if(!controlObj.getName().getLocalPart().equals(testObj.getName().getLocalPart())){
-		 return false;
-	 }
-	 if(!controlObj.getName().getNamespaceURI().equals(testObj.getName().getNamespaceURI())){
-		 return false;
-	 }
-	 if(!controlObj.getDeclaredType().equals(testObj.getDeclaredType())){
-		 return false;
-	 }
- 
+     if(!controlObj.getName().getLocalPart().equals(testObj.getName().getLocalPart())){
+         return false;
+     }
+     if(!controlObj.getName().getNamespaceURI().equals(testObj.getName().getNamespaceURI())){
+         return false;
+     }
+     if(!controlObj.getDeclaredType().equals(testObj.getDeclaredType())){
+         return false;
+     }
+
      Object controlValue = controlObj.getValue();
      Object testValue = testObj.getValue();
 
      if(controlValue == null) {
-     	if(testValue == null){
-     		return true;
-     	}
-     	return false;
+         if(testValue == null){
+             return true;
+         }
+         return false;
      }else{
-     	if(testValue == null){
-     		return false;	
-     	}
+         if(testValue == null){
+             return false;
+         }
      }
-     
-   
+
+
      if(!controlValue.equals(testValue)){
-    	 return false;
+         return false;
      }
      return true;
  }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -33,67 +33,67 @@ import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
  */
 public class ModelLoadTests extends TestCase {
 
-	private TopLinkSessionsAdapter topLinkSessions;
-	private String path;
+    private TopLinkSessionsAdapter topLinkSessions;
+    private String path;
 
-	public ModelLoadTests( String name) {
-		super( name);
-	}
-	
-	protected void setUp() throws Exception {
+    public ModelLoadTests( String name) {
+        super( name);
+    }
 
-	}
-	
-	protected void tearDown() throws Exception {
-		TestTools.clear(this);
-		super.tearDown();
-	}
+    protected void setUp() throws Exception {
 
-	public void testCreatingTopLinkSessionsAdapter() throws Exception {
+    }
 
-		// First read - DatabaseSession
-		File file = FileTools.resourceFile("/SessionsXMLTestModel/XMLSchemaSessions.xml", getClass());
-		path = file.getPath();
+    protected void tearDown() throws Exception {
+        TestTools.clear(this);
+        super.tearDown();
+    }
 
-		topLinkSessions = new TopLinkSessionsAdapter( path, false);
-		topLinkSessions.toString();
-	
-		DatabaseSessionConfig session = ( DatabaseSessionConfig)topLinkSessions.sessionConfigNamed( "SC-EmployeeTest");
-		assertNotNull( session);
-		
-		this.validateDatabaseSession( session);
+    public void testCreatingTopLinkSessionsAdapter() throws Exception {
 
-		// Second read - DatabaseSession
-		path = FileTools.resourceFile("/SessionsXMLTestModel/XMLSchemaSessions.xml", getClass()).getPath();
+        // First read - DatabaseSession
+        File file = FileTools.resourceFile("/SessionsXMLTestModel/XMLSchemaSessions.xml", getClass());
+        path = file.getPath();
 
-		topLinkSessions = new TopLinkSessionsAdapter( path, false);
-		topLinkSessions.toString();
-	
-		session = ( DatabaseSessionConfig)topLinkSessions.sessionConfigNamed( "SC-EmployeeTest");
-		assertNotNull( session);
-		this.validateDatabaseSession( session);
-	}
-		
-	private void validateDatabaseSession( DatabaseSessionConfig session) {
+        topLinkSessions = new TopLinkSessionsAdapter( path, false);
+        topLinkSessions.toString();
 
-//		assertEquals( session.getRemoteCommandManagerConfig().getCommandsConfig().getCacheSync(), false);
+        DatabaseSessionConfig session = ( DatabaseSessionConfig)topLinkSessions.sessionConfigNamed( "SC-EmployeeTest");
+        assertNotNull( session);
 
-		LogConfig log = session.getLogConfig();
-		String logFile = (( DefaultSessionLogConfig)log).getFilename(); 
-		assertEquals( "EmployeeSessions.log", logFile);
+        this.validateDatabaseSession( session);
 
-		String sessionName = session.getName();
-		assertEquals( "SC-EmployeeTest", sessionName);
+        // Second read - DatabaseSession
+        path = FileTools.resourceFile("/SessionsXMLTestModel/XMLSchemaSessions.xml", getClass()).getPath();
+
+        topLinkSessions = new TopLinkSessionsAdapter( path, false);
+        topLinkSessions.toString();
+
+        session = ( DatabaseSessionConfig)topLinkSessions.sessionConfigNamed( "SC-EmployeeTest");
+        assertNotNull( session);
+        this.validateDatabaseSession( session);
+    }
+
+    private void validateDatabaseSession( DatabaseSessionConfig session) {
+
+//        assertEquals( session.getRemoteCommandManagerConfig().getCommandsConfig().getCacheSync(), false);
+
+        LogConfig log = session.getLogConfig();
+        String logFile = (( DefaultSessionLogConfig)log).getFilename();
+        assertEquals( "EmployeeSessions.log", logFile);
+
+        String sessionName = session.getName();
+        assertEquals( "SC-EmployeeTest", sessionName);
 // @deprecated
-//		assertNotNull( session.getProjectClass());
-//		assertNotNull( session.getProjectXML());
-			
-		LoginConfig login = session.getLoginConfig();
-		String driverName = (( DatabaseLoginConfig)login).getDriverClass();
-		assertEquals( "oracle.jdbc.driver.OracleDriver", driverName);
-	}
-	
-	public static Test suite() {
-		return new TestSuite( ModelLoadTests.class);
-	}
+//        assertNotNull( session.getProjectClass());
+//        assertNotNull( session.getProjectXML());
+
+        LoginConfig login = session.getLoginConfig();
+        String driverName = (( DatabaseLoginConfig)login).getDriverClass();
+        assertEquals( "oracle.jdbc.driver.OracleDriver", driverName);
+    }
+
+    public static Test suite() {
+        return new TestSuite( ModelLoadTests.class);
+    }
 }

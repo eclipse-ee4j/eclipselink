@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -40,14 +40,14 @@ public class TreeRewriter extends TreeParser {
 
     protected TokenStream originalTokenStream;
     protected TreeAdaptor originalAdaptor;
-    
+
     public TreeRewriter(TreeNodeStream input) {
         this(input, new RecognizerSharedState());
     }
     public TreeRewriter(TreeNodeStream input, RecognizerSharedState state) {
         super(input, state);
         originalAdaptor = input.getTreeAdaptor();
-        originalTokenStream = input.getTokenStream();        
+        originalTokenStream = input.getTokenStream();
     }
 
     public Object applyOnce(Object t, fptr whichRule) {
@@ -107,7 +107,7 @@ public class TreeRewriter extends TreeParser {
     fptr topdown_fptr = new fptr() {
         public Object rule() throws RecognitionException { return topdown(); }
     };
-    
+
     fptr bottomup_ftpr = new fptr() {
         public Object rule() throws RecognitionException { return bottomup(); }
     };

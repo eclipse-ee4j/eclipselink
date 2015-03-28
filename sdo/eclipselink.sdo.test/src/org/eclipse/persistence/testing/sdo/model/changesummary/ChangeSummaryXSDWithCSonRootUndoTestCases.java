@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import junit.textui.TestRunner;
@@ -48,12 +48,12 @@ public class ChangeSummaryXSDWithCSonRootUndoTestCases extends ChangeSummaryXSDW
                                                                                                                             DataObject item2ProductPrice1DO,//
                                                                                                                             DataObject item2ProductPrice2DO,//
                                                                                                                             Property itemsProperty,//
-                                                                                                                            DataObject originalRootDO,//        	
+                                                                                                                            DataObject originalRootDO,//
                                                                                                                             DataObject itemsDOtoSet,//
                                                                                                                             ValueStore aCurrentValueStoreAfterLoggingFirstOn) {
         // get items property - to speed debugging
         itemsProperty = rootObject.getInstanceProperty("items");
-        // take the full DataObject and remove the complex single that we would like to set    	
+        // take the full DataObject and remove the complex single that we would like to set
         itemsDOtoSet = rootObject.getDataObject(itemsProperty);
         // verify logging is off
         assertFalse(cs.isLogging());
@@ -145,7 +145,7 @@ public class ChangeSummaryXSDWithCSonRootUndoTestCases extends ChangeSummaryXSDW
                                                                                                                            DataObject item2ProductPrice1DO,//
                                                                                                                            DataObject item2ProductPrice2DO,//
                                                                                                                            Property itemsProperty,//
-                                                                                                                           DataObject originalRootDO,//        	
+                                                                                                                           DataObject originalRootDO,//
                                                                                                                            DataObject itemsDOtoSet,//
                                                                                                                            ValueStore aCurrentValueStoreAfterLoggingFirstOn,//
                                                                                                                            boolean isDeleted) {
@@ -190,7 +190,7 @@ public class ChangeSummaryXSDWithCSonRootUndoTestCases extends ChangeSummaryXSDW
         // get items property - to speed debugging
         Property itemsProperty = rootObject.getInstanceProperty("items");
 
-        // take the full DataObject and remove the complex single that we would like to set    	
+        // take the full DataObject and remove the complex single that we would like to set
         DataObject itemsDOtoSet = rootObject.getDataObject(itemsProperty);
 
         // verify logging is off
@@ -234,7 +234,7 @@ public class ChangeSummaryXSDWithCSonRootUndoTestCases extends ChangeSummaryXSDW
                                                                                                                    rootObject.getDataObject("items/item[2]/product/price[1]"),//
                                                                                                                    rootObject.getDataObject("items/item[2]/product/price[2]"),//
                                                                                                                    itemsProperty,//
-                                                                                                                   originalRootDO,//        	
+                                                                                                                   originalRootDO,//
                                                                                                                    itemsDOtoSet,//
                                                                                                                    aCurrentValueStoreAfterLoggingFirstOn, false);
     }
@@ -243,7 +243,7 @@ public class ChangeSummaryXSDWithCSonRootUndoTestCases extends ChangeSummaryXSDW
         // get items property - to speed debugging
         Property itemsProperty = rootObject.getInstanceProperty("items");
 
-        // take the full DataObject and remove the complex single that we would like to set    	
+        // take the full DataObject and remove the complex single that we would like to set
         DataObject itemsDOtoSet = rootObject.getDataObject(itemsProperty);
 
         // verify logging is off
@@ -284,7 +284,7 @@ public class ChangeSummaryXSDWithCSonRootUndoTestCases extends ChangeSummaryXSDW
                                                                                                                    rootObject.getDataObject("items/item[2]/product/price[1]"),//
                                                                                                                    rootObject.getDataObject("items/item[2]/product/price[2]"),//
                                                                                                                    itemsProperty,//
-                                                                                                                   originalRootDO,//        	
+                                                                                                                   originalRootDO,//
                                                                                                                    itemsDOtoSet,//
                                                                                                                    aCurrentValueStoreAfterLoggingFirstOn, false);
     }
@@ -306,7 +306,7 @@ public class ChangeSummaryXSDWithCSonRootUndoTestCases extends ChangeSummaryXSDW
         DataObject item2ProductPrice1DO = item2ProductDO.getDataObject("price[1]");
         DataObject item2ProductPrice2DO = item2ProductDO.getDataObject("price[2]");
 
-        // take the full DataObject and remove the complex single that we would like to set    	
+        // take the full DataObject and remove the complex single that we would like to set
         DataObject itemsDOtoSet = rootObject.getDataObject(itemsProperty);
 
         // verify logging is off
@@ -350,7 +350,7 @@ public class ChangeSummaryXSDWithCSonRootUndoTestCases extends ChangeSummaryXSDW
                                                                                                                    item2ProductPrice1DO,//
                                                                                                                    item2ProductPrice2DO,//
                                                                                                                    itemsProperty,//
-                                                                                                                   originalRootDO,//        	
+                                                                                                                   originalRootDO,//
                                                                                                                    itemsDOtoSet,//
                                                                                                                    aCurrentValueStoreAfterLoggingFirstOn, true);
     }

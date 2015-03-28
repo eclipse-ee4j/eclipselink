@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.eis.cobol;
 
 import java.util.*;
@@ -157,7 +157,7 @@ public class CobolTestModel extends org.eclipse.persistence.testing.framework.Te
     }
 
     public static String getSimpleCopyBookString() {
-        return "01  emp-record." + Helper.cr() + "04  emp-ssn                   pic 9(12) comp-3." + Helper.cr() + "04  emp-name." + Helper.cr() + "06  emp-name-last       pic x(15)." + Helper.cr() + "06  emp-name-first      pic x(15)." + Helper.cr() + "06  emp-name-mi         pic x." + Helper.cr() + "04  emp-addr." + Helper.cr() + "06  emp-addr-street." + Helper.cr() + "08	emp-addr-street-no	pic 9(5)." + Helper.cr() + "08	emp-addr-street-name	pic x(15)." + Helper.cr() + "06  emp-addr-st         pic x(2)." + Helper.cr() + "06  emp-addr-zip        pic x(9).";
+        return "01  emp-record." + Helper.cr() + "04  emp-ssn                   pic 9(12) comp-3." + Helper.cr() + "04  emp-name." + Helper.cr() + "06  emp-name-last       pic x(15)." + Helper.cr() + "06  emp-name-first      pic x(15)." + Helper.cr() + "06  emp-name-mi         pic x." + Helper.cr() + "04  emp-addr." + Helper.cr() + "06  emp-addr-street." + Helper.cr() + "08    emp-addr-street-no    pic 9(5)." + Helper.cr() + "08    emp-addr-street-name    pic x(15)." + Helper.cr() + "06  emp-addr-st         pic x(2)." + Helper.cr() + "06  emp-addr-zip        pic x(9).";
     }
 
     public static String getDeepNestedCopyBookString() {
@@ -165,7 +165,7 @@ public class CobolTestModel extends org.eclipse.persistence.testing.framework.Te
     }
 
     public static String getMultipleRecordString() {
-        return Helper.cr() + Helper.cr() + Helper.cr() + Helper.cr() + Helper.cr() + "     *sldkfjaweitwoieawoeirgfa;e" + Helper.cr() + "     sherdfgkjhdsfglkjsdhfguheriuh" + Helper.cr() + Helper.cr() + "01 emp-time." + Helper.cr() + "05 time-hour			pic 99." + Helper.cr() + "05 time-minute			pic xx." + Helper.cr() + "05 time-second			pic xx." + Helper.cr() + Helper.cr() + "*********************" + "**************************" + Helper.cr() + Helper.cr() + Helper.cr() + "01 MEMBER-TABLE." + Helper.cr() + Helper.cr() + "05 CLUB-NAME PIC X(20)." + Helper.cr() + Helper.cr() + "05 NUM-MEMBERS PIC 9(5)." + Helper.cr() + Helper.cr() + "05 MEMBERS." + Helper.cr() + Helper.cr() + "10  MEM-NAME    PIC X(20)." + Helper.cr() + Helper.cr() + "10  MEM-NUM     PIC 9(15)." + Helper.cr() + Helper.cr() + Helper.cr() + Helper.cr() + "PROCEDURE DIVISION." + Helper.cr() + getSimpleCopyBookString();
+        return Helper.cr() + Helper.cr() + Helper.cr() + Helper.cr() + Helper.cr() + "     *sldkfjaweitwoieawoeirgfa;e" + Helper.cr() + "     sherdfgkjhdsfglkjsdhfguheriuh" + Helper.cr() + Helper.cr() + "01 emp-time." + Helper.cr() + "05 time-hour            pic 99." + Helper.cr() + "05 time-minute            pic xx." + Helper.cr() + "05 time-second            pic xx." + Helper.cr() + Helper.cr() + "*********************" + "**************************" + Helper.cr() + Helper.cr() + Helper.cr() + "01 MEMBER-TABLE." + Helper.cr() + Helper.cr() + "05 CLUB-NAME PIC X(20)." + Helper.cr() + Helper.cr() + "05 NUM-MEMBERS PIC 9(5)." + Helper.cr() + Helper.cr() + "05 MEMBERS." + Helper.cr() + Helper.cr() + "10  MEM-NAME    PIC X(20)." + Helper.cr() + Helper.cr() + "10  MEM-NUM     PIC 9(15)." + Helper.cr() + Helper.cr() + Helper.cr() + Helper.cr() + "PROCEDURE DIVISION." + Helper.cr() + getSimpleCopyBookString();
     }
 
     public static String getOccursDependsCopyBookString() {
@@ -173,7 +173,7 @@ public class CobolTestModel extends org.eclipse.persistence.testing.framework.Te
     }
 
     public static String getRedefinesCopyBookString() {
-        return "01  emp-record." + Helper.cr() + "04  emp-ssn                   pic 9(12) comp-3." + Helper.cr() + "04  emp-ssn-int redefines emp-ssn    pic 9(12) comp." + Helper.cr() + "04  emp-addr." + Helper.cr() + "06  emp-addr-street." + Helper.cr() + "08	emp-addr-street-no	pic 9(5)." + Helper.cr() + "08	emp-addr-street-name	pic x(5)." + Helper.cr() + "06  emp-addr-rr redefines  emp-addr-street." + Helper.cr() + "08   	emp-addr-rr-no		pic 9(15)." + Helper.cr() + "08	emp-addr-rr-box		pic 9(5)." + Helper.cr() + "06  emp-addr-zip        pic x(9).";
+        return "01  emp-record." + Helper.cr() + "04  emp-ssn                   pic 9(12) comp-3." + Helper.cr() + "04  emp-ssn-int redefines emp-ssn    pic 9(12) comp." + Helper.cr() + "04  emp-addr." + Helper.cr() + "06  emp-addr-street." + Helper.cr() + "08    emp-addr-street-no    pic 9(5)." + Helper.cr() + "08    emp-addr-street-name    pic x(5)." + Helper.cr() + "06  emp-addr-rr redefines  emp-addr-street." + Helper.cr() + "08       emp-addr-rr-no        pic 9(15)." + Helper.cr() + "08    emp-addr-rr-box        pic 9(5)." + Helper.cr() + "06  emp-addr-zip        pic x(9).";
     }
 
     public static String getComplexPicStatementCopyBookString() {

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -24,41 +24,41 @@ import org.eclipse.persistence.tools.workbench.ant.typedefs.IgnoreErrorSet;
  * Base Ant task for TopLink Workbench projects.
  */
 public abstract class MappingsTask extends ProjectTask {
-    
-	private String projectFile;
+
+    private String projectFile;
     private Vector ignoreErrorSets;
     private String property;
-    
+
     protected boolean failonerror;
-    
-	protected MappingsTask() {
-	    super();
-	}
-		
-	protected void initialize() {
-	    super.initialize();
-	    
-	    this.projectFile = "";
-	    this.ignoreErrorSets = new Vector();
-	    this.failonerror = true;
-	    this.property = null;
-	}
+
+    protected MappingsTask() {
+        super();
+    }
+
+    protected void initialize() {
+        super.initialize();
+
+        this.projectFile = "";
+        this.ignoreErrorSets = new Vector();
+        this.failonerror = true;
+        this.property = null;
+    }
 
     protected String getProjectFile() {
         return this.projectFile;
     }
- 
+
     public void setProjectFile( String projectFile) {
         this.projectFile = projectFile;
-	}    
-    
-	protected void preExecute() throws BuildException {
-	    super.preExecute();
-	    
+    }
+
+    protected void preExecute() throws BuildException {
+        super.preExecute();
+
         if( this.projectFile.length() == 0) {
             throw new BuildException( this.stringRepository.getString( "notDefined", "ProjectFile"));
         }
-	}
+    }
     /**
      * Adds TopLink Workbench project error to ignore.
      */
@@ -82,14 +82,14 @@ public abstract class MappingsTask extends ProjectTask {
         Vector ignoreErrors = new Vector();
         for( Iterator i = this.ignoreErrorSets.iterator(); i.hasNext(); ) {
             IgnoreErrorSet ignoreErrorSet = ( IgnoreErrorSet)i.next();
-            
+
             Vector ignoreErrorCodes = ignoreErrorSet.getIgnoreErrorCodes( getProject());
 
             ignoreErrors.addAll( ignoreErrorCodes);
         }
         return ignoreErrors;
     }
-    
+
     protected String getProperty() {
         return this.property;
     }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors.copying;
 
 import java.lang.reflect.*;
@@ -27,15 +27,15 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
  * <p><b>Purpose</b>: Allows a clone of an object to be created with a method that returns
- * the cloned object.  
- *  
+ * the cloned object.
+ *
  * It is possible to define methods for two types of clones
- * 
+ *
  * 1. methodName can be set to define the method EclipseLink uses to clone objects for it's
  * own internal use.  The objects created by this method will not be visible to the user, and
  * instead used as a basis for comparison when a DeferredChangeDetectionPolicy used.  This method will
  * also be in place of the workingCopyMethod if it is not provided
- * 
+ *
  * 2. workingCopyMethod this method is used to create the clone that is returned to the user when an
  * Object is registered in a UnitOfWork
  */
@@ -106,7 +106,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
             } else {
                 return PrivilegedAccessHelper.invokeMethod(this.getWorkingCopyMethod(), domainObject, new Object[0]);
             }
-        
+
         } catch (IllegalAccessException exception) {
             throw DescriptorException.illegalAccessWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), exception);
         } catch (InvocationTargetException exception) {

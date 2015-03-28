@@ -19,7 +19,7 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.oxm.XMLContext;
 
 public abstract class CoreObjectBuilder<
-    ABSTRACT_RECORD extends CoreAbstractRecord, 
+    ABSTRACT_RECORD extends CoreAbstractRecord,
     ABSTRACT_SESSION extends CoreAbstractSession,
     FIELD extends CoreField,
     MAPPING extends CoreMapping> {

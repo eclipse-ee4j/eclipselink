@@ -2,7 +2,7 @@
 <entity-mappings version="1.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd">
     <description>Merge of XML and Annotations Inherited Test Model Instance Document</description>
     <table-generator name="MERGE_BEER_TABLE_GENERATOR" table="CMP3_MERGE_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="BEER_SEQ"/>
-    
+
     <named-native-query name="findAnyMergeSQLBeerConsumer" result-class="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.BeerConsumer">
         <query>SELECT * FROM CMP3_MERGE_CONSUMER</query>
         <hint name="cascadeLevel" value="1"/>
@@ -32,7 +32,7 @@
             <transient name="transientString"/>
         </attributes>
     </mapped-superclass>
-    
+
     <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.Beer" metadata-complete="true" access="FIELD">
         <!-- All annotations should be ignored due to the metadata-complete tag in mapped-superclass -->
         <exclude-default-listeners/>
@@ -41,7 +41,7 @@
             <entity-listener class="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.BeerListener">
                 <post-persist method-name="postPersist"/>
             </entity-listener>
-        </entity-listeners>    
+        </entity-listeners>
         <attributes>
             <version name="version"/>
             <many-to-one name="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.BeerConsumer">
@@ -50,12 +50,12 @@
             <embedded name="embeddedSerialNumber"/>
         </attributes>
     </mapped-superclass>
-    
+
     <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.ParentTelephoneNumber" access="PROPERTY">
         <!-- Testing the id-class XML element, source has no annotations -->
         <id-class class="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.TelephoneNumberPK"/>
     </mapped-superclass>
-    
+
     <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.WorkPeriod" access="FIELD">
         <!-- This superclass is completely defined in XML, source has no annotations -->
         <attributes>
@@ -69,5 +69,5 @@
             </basic>
         </attributes>
     </mapped-superclass>
-    
+
 </entity-mappings>

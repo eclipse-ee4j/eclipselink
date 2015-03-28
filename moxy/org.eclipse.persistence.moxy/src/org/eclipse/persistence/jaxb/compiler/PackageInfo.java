@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,7 +23,7 @@ import org.eclipse.persistence.oxm.XMLNameTransformer;
 
 /**
  * INTERNAL:
- * Represents the the package level annotations from a specific package. 
+ * Represents the the package level annotations from a specific package.
  * @author mmacivor
  *
  */
@@ -36,9 +36,9 @@ public class PackageInfo {
     private AccessorFactoryWrapper accessorFactory;
 
     public PackageInfo() {
-    	packageLevelAdaptersByClass = new HashMap<String, JavaClass>();
+        packageLevelAdaptersByClass = new HashMap<String, JavaClass>();
     }
-    
+
     public HashMap<String, JavaClass> getPackageLevelAdaptersByClass() {
         return packageLevelAdaptersByClass;
     }
@@ -47,7 +47,7 @@ public class PackageInfo {
         HashMap<String, JavaClass> packageLevelAdaptersByClass) {
         this.packageLevelAdaptersByClass = packageLevelAdaptersByClass;
     }
-	
+
     public void setAccessType(XmlAccessType accessType) {
         this.accessType = accessType;
     }
@@ -72,19 +72,19 @@ public class PackageInfo {
     public NamespaceInfo getNamespaceInfo() {
         return namespaceInfo;
     }
-    
+
     public String getNamespace() {
         return namespaceInfo.getNamespace();
     }
-    
+
     public void setNamespace(String ns) {
         this.namespaceInfo.setNamespace(ns);
     }
-    
+
     public boolean isAttributeFormQualified() {
         return this.namespaceInfo.isAttributeFormQualified();
     }
-    
+
     public void setAttributeFormQualified(boolean b) {
         this.namespaceInfo.setAttributeFormQualified(b);
     }
@@ -92,19 +92,19 @@ public class PackageInfo {
     public boolean isElementFormQualified() {
         return this.namespaceInfo.isElementFormQualified();
     }
-    
+
     public void setElementFormQualified(boolean b) {
         this.namespaceInfo.setElementFormQualified(b);
     }
-    
+
     public NamespaceResolver getNamespaceResolver() {
         return this.namespaceInfo.getNamespaceResolver();
     }
-    
+
     public void setNamespaceResolver(NamespaceResolver resolver) {
         this.namespaceInfo.setNamespaceResolver(resolver);
     }
-    
+
     public String getLocation() {
         return this.namespaceInfo.getLocation();
     }
@@ -119,8 +119,8 @@ public class PackageInfo {
 
     public void setAccessorFactory(AccessorFactoryWrapper accessorFactory) {
         this.accessorFactory = accessorFactory;
-    }    
-    
-    
+    }
+
+
 
 }

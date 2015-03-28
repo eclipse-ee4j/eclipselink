@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle, SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle, SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,11 +28,11 @@ import org.eclipse.persistence.testing.framework.server.ServerPlatform;
 /**
  * This is the superclass for all TopLink JUnit tests Provides convenience methods for transactional access as well as to access
  * login information and to create any sessions required for setup.
- * 
+ *
  * Assumes the existence of a test.properties file on the classpath that defines the following properties:
- * 
+ *
  * db.platform db.user db.pwd db.url db.driver
- * 
+ *
  * If you are using the TestingBrowser, these properties come from the login panel instead. If you are running the test in JEE
  * the properties come from the server config. This class should be used for all EntityManager operations to allow tests to be
  * run in the server.

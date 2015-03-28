@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,11 +40,11 @@ public class EmployeeNoXmlElement {
     public String data2;
     public Double salary;
     public String privateData;
-    public String characterData; 
-    
+    public String characterData;
+
 
     String someString;
-    
+
     String aString;
 
     @javax.xml.bind.annotation.XmlTransient
@@ -55,50 +55,50 @@ public class EmployeeNoXmlElement {
     public boolean wasGetCalled;
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
-       
-    String getProject() { 
+
+    String getProject() {
         wasGetCalled = true;
-        return projectName; 
+        return projectName;
     }
-    
+
     void setProject(String name) {
         wasSetCalled = true;
-        projectName = name; 
+        projectName = name;
     }
-    @XmlIsSetNullPolicy(xsiNilRepresentsNull = true, emptyNodeRepresentsNull= false, 
-            nullRepresentationForXml=XmlMarshalNullRepresentation.XSI_NIL, 
+    @XmlIsSetNullPolicy(xsiNilRepresentsNull = true, emptyNodeRepresentsNull= false,
+            nullRepresentationForXml=XmlMarshalNullRepresentation.XSI_NIL,
             isSetMethodName="isSetSomeString",
-            isSetParameters={@XmlParameter(value="false", type=Boolean.class)})           
-    public String getSomeString() { 
-        return someString; 
+            isSetParameters={@XmlParameter(value="false", type=Boolean.class)})
+    public String getSomeString() {
+        return someString;
     }
-    
+
     public void setSomeString(String str) {
         isSomeStringSet = true;
-        someString = str; 
+        someString = str;
     }
-    
+
     @XmlTransient
     public boolean isSetSomeString(Boolean ignoredParam) {
         return isSomeStringSet;
     }
-    
+
     @XmlElement(name="a-string")
     @XmlNullPolicy(isSetPerformedForAbsentNode=true, xsiNilRepresentsNull = false, emptyNodeRepresentsNull = false, nullRepresentationForXml = XmlMarshalNullRepresentation.EMPTY_NODE)
-    public String getAString() { 
-        return aString; 
+    public String getAString() {
+        return aString;
     }
-    
+
     void setAString(String str) {
         isAStringSet = true;
-        aString = str; 
+        aString = str;
     }
-    
+
     @XmlTransient
     boolean isSetAString() {
         return isAStringSet;
     }
-    
+
     public boolean equals(Object obj) {
         EmployeeNoXmlElement empObj;
         try {
@@ -110,10 +110,10 @@ public class EmployeeNoXmlElement {
         if (someString == null && empObj.someString != null) {
             return false;
         }
-        
-        return (empId == empObj.empId && 
-                firstName.equals(empObj.firstName) && 
-                lastName.equals(empObj.lastName) && 
+
+        return (empId == empObj.empId &&
+                firstName.equals(empObj.firstName) &&
+                lastName.equals(empObj.lastName) &&
                 data1.equals(empObj.data1) &&
                 data2.equals(empObj.data2) &&
                 salary.equals(empObj.salary) &&

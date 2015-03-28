@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.xmlmarshaller;
 
 import java.io.StringWriter;
@@ -42,7 +42,7 @@ public class XMLContextConstructorUsingXMLSessionConfigLoader extends OXTestCase
     public XMLContextConstructorUsingXMLSessionConfigLoader(String name) {
         super(name);
     }
-    
+
     public void setUp()
     {
       SessionManager.setManager(new SessionManager());
@@ -65,7 +65,7 @@ public class XMLContextConstructorUsingXMLSessionConfigLoader extends OXTestCase
 
     }
 
-    // purpose: test constructor without arguement of classloader to allow input of 
+    // purpose: test constructor without arguement of classloader to allow input of
     // resource path.
     public void testMultipleSessionNamesWithoutLoader() {
         String sessionName = SESSION_NAME + ":" + SESSION_NAME2;
@@ -82,7 +82,7 @@ public class XMLContextConstructorUsingXMLSessionConfigLoader extends OXTestCase
         marshaller.marshal(new Car(), writer2);
 
     }
-    
+
     public void testMultipleSessionNamesWithNullResource() {
         String sessionName = SESSION_NAME + ":" + SESSION_NAME2;
         //XMLSessionConfigLoader loader = new XMLSessionConfigLoader(XML_RESOURCE);

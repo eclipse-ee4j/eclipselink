@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,9 +32,9 @@ public class WithoutXmlRootElementJAXBElementTestCases extends JSONMarshalUnmars
 
     @Override
     public Class getUnmarshalClass(){
-    	return WithoutXmlRootElementRoot.class;
+        return WithoutXmlRootElementRoot.class;
     }
-    
+
     @Override
     protected Collection<JAXBElement<WithoutXmlRootElementRoot>> getControlObject() {
         List<JAXBElement<WithoutXmlRootElementRoot>> list = new ArrayList<JAXBElement<WithoutXmlRootElementRoot>>(2);
@@ -52,14 +52,14 @@ public class WithoutXmlRootElementJAXBElementTestCases extends JSONMarshalUnmars
         list.add(jbe2);
 
         return list;
-       
+
     }
 
     @Override
-	public Object getReadControlObject() {
-    	JAXBElement elem = new JAXBElement(new QName(""),WithoutXmlRootElementRoot.class, getControlObject() );
-    	
-    	return elem;
+    public Object getReadControlObject() {
+        JAXBElement elem = new JAXBElement(new QName(""),WithoutXmlRootElementRoot.class, getControlObject() );
+
+        return elem;
     }
-  
+
 }

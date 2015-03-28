@@ -18,5 +18,5 @@ public class NonPersistedSubclassOfChestProtector extends ChestProtector {
     public void setNonPersistentPrimitive(long nonPersistentPrimitive) {
         this.nonPersistentPrimitive = nonPersistentPrimitive;
     }
-    
+
 }

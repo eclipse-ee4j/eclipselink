@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork.transactionisolation;
 
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -60,8 +60,8 @@ public class TransactionIsolationNoNewObjectsTest extends AutoVerifyTestCase {
 
         try {
             Employee newCloneInParallelUow = (Employee)parallelUow.readObject(newClone);
-            strongAssert(newCloneInParallelUow != null, 
-                         "As the parallel Uow shares the same write connection, should " + 
+            strongAssert(newCloneInParallelUow != null,
+                         "As the parallel Uow shares the same write connection, should " +
                          "be able to see parallel objects.");
         } finally {
             parallelUow.release();
@@ -71,8 +71,8 @@ public class TransactionIsolationNoNewObjectsTest extends AutoVerifyTestCase {
         cacheQuery.checkCacheOnly();
         Employee original = (Employee)getSession().executeQuery(cacheQuery);
 
-        strongAssert(original == null, 
-                     "Reading back a new object from the write connection should " + "not have cached objects in the shared cache. " + 
+        strongAssert(original == null,
+                     "Reading back a new object from the write connection should " + "not have cached objects in the shared cache. " +
                      original);
     }
 }

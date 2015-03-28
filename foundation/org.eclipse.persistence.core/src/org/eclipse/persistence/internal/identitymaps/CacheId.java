@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.io.*;
@@ -19,7 +19,7 @@ import org.eclipse.persistence.internal.helper.*;
 
 /**
  * Defines a wrapper for a primary key (Id) to use as a key in the cache.
- * 
+ *
  * @since EclipseLink 2.1
  * @author James Sutherland
  */
@@ -31,13 +31,13 @@ public class CacheId implements Serializable, Comparable<CacheId> {
 
     /** Cached hashcode. */
     protected int hash;
-    
+
     /** Indicates whether at least one element of primaryKey is array. */
     protected boolean hasArray;
 
-    public CacheId() {        
+    public CacheId() {
     }
-    
+
     public CacheId(Object[] primaryKey) {
         this.primaryKey = primaryKey;
         this.hash = computeHash(primaryKey);
@@ -51,7 +51,7 @@ public class CacheId implements Serializable, Comparable<CacheId> {
         this.primaryKey = primaryKey;
         this.hash = computeHash(primaryKey);
     }
-    
+
     /**
      * Append the value to the end of the primary key values.
      */
@@ -61,7 +61,7 @@ public class CacheId implements Serializable, Comparable<CacheId> {
         array[this.primaryKey.length] = value;
         setPrimaryKey(array);
     }
-    
+
     /**
      * Set the value in the primary key values.
      */
@@ -69,7 +69,7 @@ public class CacheId implements Serializable, Comparable<CacheId> {
         this.primaryKey[index] = value;
         setPrimaryKey(this.primaryKey);
     }
-    
+
     /**
      * Pre-compute the hash to optimize hash calls.
      */
@@ -118,7 +118,7 @@ public class CacheId implements Serializable, Comparable<CacheId> {
     public int hashCode() {
         return this.hash;
     }
-    
+
     /**
      * Determine if the receiver is equal to anObject.
      * If anObject is a CacheKey, do further comparison, otherwise, return false.
@@ -242,7 +242,7 @@ public class CacheId implements Serializable, Comparable<CacheId> {
     public boolean hasArray() {
         return this.hasArray;
     }
-    
+
     public String toString() {
         return "[" + Arrays.asList(this.primaryKey) + ": " + this.hash + "]";
     }

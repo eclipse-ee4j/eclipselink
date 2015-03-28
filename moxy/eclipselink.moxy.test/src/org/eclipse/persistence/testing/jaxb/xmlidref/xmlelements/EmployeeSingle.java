@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,21 +27,21 @@ public class EmployeeSingle {
     @XmlID
     @XmlAttribute(name="id")
     public String id;
-    
+
     @XmlElement(name="name")
     public String name;
-    
+
     @XmlIDREF
     @XmlElements({@XmlElement(name="address-id", type=AddressSingle.class), @XmlElement(name="phone-id", type=PhoneSingle.class)})
     public Object addressOrPhone;
-    
+
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof EmployeeSingle)) {
             return false;
         }
         EmployeeSingle emp = (EmployeeSingle) obj;
-        
-        return addressOrPhone.equals(emp.addressOrPhone); 
+
+        return addressOrPhone.equals(emp.addressOrPhone);
    }
 }
 

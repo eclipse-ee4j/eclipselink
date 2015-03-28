@@ -1,22 +1,22 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/28/2008-1.0M8 Andrei Ilitchev 
+ *     05/28/2008-1.0M8 Andrei Ilitchev
  *        - 224964: Provide support for Proxy Authentication through JPA.
- *        Added a new constructor that takes Properties. 
- *     14/05/2012-2.4 Guy Pelletier   
+ *        Added a new constructor that takes Properties.
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- *     08/11/2012-2.5 Guy Pelletier  
+ *     08/11/2012-2.5 Guy Pelletier
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.server;
 
 import java.util.*;
@@ -69,7 +69,7 @@ public class ClientSession extends AbstractSession {
     public ClientSession(ServerSession parent, ConnectionPolicy connectionPolicy) {
         this(parent, connectionPolicy, null);
     }
-    
+
     public ClientSession(ServerSession parent, ConnectionPolicy connectionPolicy, Map properties) {
         super();
         // If we have table per tenant descriptors let's clone the project so
@@ -80,7 +80,7 @@ public class ClientSession extends AbstractSession {
         } else {
             this.project = parent.getProject();
         }
-        
+
         if (connectionPolicy.isUserDefinedConnection()) {
             // PERF: project only requires clone if login is different
             this.setProject(getProject().clone());
@@ -115,11 +115,11 @@ public class ClientSession extends AbstractSession {
         this.shouldOptimizeResultSetAccess = parent.shouldOptimizeResultSetAccess();
         this.properties = properties;
         this.multitenantContextProperties = parent.getMultitenantContextProperties();
-        
+
         if (this.eventManager != null) {
             this.eventManager.postAcquireClientSession();
         }
-        
+
         // Copy down the table per tenant queries from the parent. These queries
         // must be cloned per client session.
         if (parent.hasTablePerTenantQueries()) {
@@ -132,13 +132,13 @@ public class ClientSession extends AbstractSession {
         if (parent.hasTablePerTenantDescriptors()) {
             this.descriptors = new HashMap<Class, ClassDescriptor>();
             this.descriptors.putAll(parent.getDescriptors());
-            
+
             for (ClassDescriptor descriptor : parent.getTablePerTenantDescriptors()) {
                 ClassDescriptor clonedDescriptor = (ClassDescriptor) descriptor.clone();
                 addTablePerTenantDescriptor(clonedDescriptor);
                 this.descriptors.put(clonedDescriptor.getJavaClass(), clonedDescriptor);
-            }  
-            
+            }
+
             if (hasProperties()) {
                 for (Object propertyName : properties.keySet()) {
                     updateTablePerTenantDescriptors((String) propertyName, properties.get(propertyName));
@@ -147,7 +147,7 @@ public class ClientSession extends AbstractSession {
         } else {
             this.descriptors = parent.getDescriptors();
         }
-        
+
         incrementProfile(SessionProfiler.ClientSessionCreated);
     }
 
@@ -177,7 +177,7 @@ public class ClientSession extends AbstractSession {
      */
     @Override
     public void basicCommitTransaction() {
-        //Only release connection when transaction succeeds.  
+        //Only release connection when transaction succeeds.
         //If not, connection will be released in rollback.
         super.basicCommitTransaction();
 
@@ -265,7 +265,7 @@ public class ClientSession extends AbstractSession {
                 Collection<Accessor> accessors = getAccessors(call, translationRow, query);
                 if (accessors != null && !accessors.isEmpty()) {
                     query.setAccessors(accessors);
-                    // the session has been already released and this query is likely instantiates a ValueHolder - 
+                    // the session has been already released and this query is likely instantiates a ValueHolder -
                     // release exclusive connection immediately after the query is executed, otherwise it may never be released.
                     shouldReleaseConnection = !this.isActive;
                 }
@@ -275,7 +275,7 @@ public class ClientSession extends AbstractSession {
             // If the connection has not yet been acquired then do it here.
             if (!hasWriteConnection()) {
                 this.parent.acquireClientConnection(this);
-                // The session has been already released and this query is likely instantiates a ValueHolder - 
+                // The session has been already released and this query is likely instantiates a ValueHolder -
                 // release exclusive connection immediately after the query is executed, otherwise it may never be released.
                 shouldReleaseConnection = !this.isActive;
                 query.setAccessors(getAccessors());
@@ -285,7 +285,7 @@ public class ClientSession extends AbstractSession {
                     Accessor defaultWriteConnection = this.writeConnections.get(this.connectionPolicy.getPoolName());
                     if (defaultWriteConnection == null) {
                         // No default connection yet, must acquire it.
-                        this.parent.acquireClientConnection(this);                        
+                        this.parent.acquireClientConnection(this);
                     }
                     if (this.writeConnections.size() == 1) {
                         // Connection is the default, just use it.
@@ -293,7 +293,7 @@ public class ClientSession extends AbstractSession {
                     } else {
                         List<Accessor> accessors = new ArrayList(1);
                         accessors.add(defaultWriteConnection);
-                        query.setAccessors(accessors);                        
+                        query.setAccessors(accessors);
                     }
                 } else {
                     query.setAccessors(getAccessors());
@@ -312,7 +312,7 @@ public class ClientSession extends AbstractSession {
                 // Note that connection could be release only if it has been acquired by the same query,
                 // that allows to execute other queries from postAcquireConnection / preReleaseConnection events
                 // without wiping out connection set by the original query or causing stack overflow, see
-                // bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception 
+                // bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception
                 if (shouldReleaseConnection && hasWriteConnection()) {
                     try {
                         this.parent.releaseClientSession(this);
@@ -404,7 +404,7 @@ public class ClientSession extends AbstractSession {
     public ConnectionPolicy getConnectionPolicy() {
         return connectionPolicy;
     }
-    
+
     /**
      * ADVANCED:
      * Return all registered descriptors.
@@ -421,7 +421,7 @@ public class ClientSession extends AbstractSession {
 
     /**
      * INTERNAL:
-     * Returns the appropriate IdentityMap session for this descriptor.  Sessions can be 
+     * Returns the appropriate IdentityMap session for this descriptor.  Sessions can be
      * chained and each session can have its own Cache/IdentityMap.  Entities can be stored
      * at different levels based on Cache Isolation.  This method will return the correct Session
      * for a particular Entity class based on the Isolation Level and the attributes provided.
@@ -440,7 +440,7 @@ public class ClientSession extends AbstractSession {
         // the Server identity map but executed here using the write connection.
         return this.parent.getParentIdentityMapSession(descriptor, canReturnSelf, terminalOnly);
     }
-    
+
     /**
      * Search for and return the user defined property from this client session, if it not found then search for the property
      * from parent.
@@ -662,12 +662,12 @@ public class ClientSession extends AbstractSession {
         if (!this.isActive) {
             return;
         }
-        if (this.eventManager != null) { 
+        if (this.eventManager != null) {
             this.eventManager.preReleaseClientSession();
         }
 
         //removed is Lazy check as we should always release the connection once
-        //the client session has been released.  It is also required for the 
+        //the client session has been released.  It is also required for the
         //behavior of a subclass ExclusiveIsolatedClientSession
         if (hasWriteConnection()) {
             this.parent.releaseClientSession(this);
@@ -676,12 +676,12 @@ public class ClientSession extends AbstractSession {
         // we are not inactive until the connection is  released
         this.isActive = false;
         log(SessionLog.FINER, SessionLog.CONNECTION, "client_released");
-        if (this.eventManager != null) { 
+        if (this.eventManager != null) {
             this.eventManager.postReleaseClientSession();
         }
         incrementProfile(SessionProfiler.ClientSessionReleased);
     }
-    
+
     /**
      * INTERNAL:
      * A query execution failed due to an invalid query.
@@ -748,7 +748,7 @@ public class ClientSession extends AbstractSession {
         }
         return getWriteConnections().get(poolName);
     }
-    
+
     /**
      * INTERNAL:
      * A begin transaction failed.
@@ -801,7 +801,7 @@ public class ClientSession extends AbstractSession {
         }
         return exceptionToThrow;
     }
-    
+
     /**
      * INTERNAL:
      * Set the connection to be used for database modification.
@@ -847,7 +847,7 @@ public class ClientSession extends AbstractSession {
         writer.write(")");
         return writer.toString();
     }
-    
+
     /**
      * INTERNAL:
      * Return the manager that allows this processor to receive or propagate commands from/to TopLink cluster
@@ -887,7 +887,7 @@ public class ClientSession extends AbstractSession {
      * INTERNAL:
      * This method is called in case externalConnectionPooling is used.
      * If returns true, accessor used by the session keeps its
-     * connection open until released by the session. 
+     * connection open until released by the session.
      */
     @Override
     public boolean isExclusiveConnectionRequired() {

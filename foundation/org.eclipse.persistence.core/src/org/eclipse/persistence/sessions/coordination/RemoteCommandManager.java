@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.coordination;
 
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
@@ -95,10 +95,10 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
 
     /** Uniquely identifies ServerPlatform in the cluster */
     protected ServerPlatform serverPlatform;
-    
+
     /** Set the Serializer to use for serialization of commands. */
     protected Serializer serializer;
-    
+
     //** Indicates whether RCM is active. In case there's discoveryManager it mirrors discoveryManager.isDiscoveryStopped()
     protected boolean isStopped = true;
 
@@ -142,7 +142,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
                 String ipAddress = InetAddress.getLocalHost().getHostAddress();
                 replaceLocalHostIPAddress(ipAddress);
             } catch (Exception ex) {
-                // catch different exceptions that are due to security or IP address of a host could not be determined. 
+                // catch different exceptions that are due to security or IP address of a host could not be determined.
                 // i.e. java.lang.SecurityException or java.net.UnknownHostException
                 throw RemoteCommandManagerException.errorDiscoveringLocalHostIPAddress(ex);
             }
@@ -168,7 +168,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     public boolean isStopped() {
         return isStopped;
     }
-    
+
     /**
      * PUBLIC:
      * Shut down the remote command manager. This will also trigger the
@@ -179,10 +179,10 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     public void shutdown() {
         Object[] args = { this.getServiceId() };
         logDebug("stopping_rcm", args);
-        
+
         if(discoveryManager != null) {
             discoveryManager.stopDiscovery();
-    
+
             // use a new Discovery thread with same settings as the previous one.
             DiscoveryManager newDmgr = transportManager.createDiscoveryManager();
             newDmgr.shallowCopy(discoveryManager);
@@ -220,10 +220,10 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
                 logWarning("missing_converter", args);
                 return;
             }
-    
+
             // Set our service id on the command to indicate that it came from us
             newCommand.setServiceId(getServiceId());
-    
+
             // PERF: Support plugable serialization.
             Serializer serializer = getSerializer();
             byte[] commandBytes = null;
@@ -232,20 +232,20 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
                 try {
                     commandBytes = (byte[])serializer.serialize(command, (AbstractSession)getCommandProcessor());
                 } finally {
-                    this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordinationSerialize);            
+                    this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordinationSerialize);
                 }
             }
-    
+
             // Propagate the command (synchronously or asynchronously)
             propagator = new CommandPropagator(this, newCommand, commandBytes);
-    
+
             if (shouldPropagateAsynchronously()) {
                 propagator.asynchronousPropagateCommand();
             } else {
                 propagator.synchronousPropagateCommand();
             }
         } finally {
-            this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordination);            
+            this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordination);
         }
     }
 
@@ -263,7 +263,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
             }
             command = (Command)serializer.deserialize(commandBytes, (AbstractSession)getCommandProcessor());
         } finally {
-            this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordinationSerialize);            
+            this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordinationSerialize);
         }
         processCommandFromRemoteConnection(command);
     }
@@ -275,7 +275,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     public void processCommandFromRemoteConnection(Command command) {
         Object[] args = { command.getClass().getName(), command.getServiceId() };
         logDebug("received_remote_command", args);
-        
+
         this.commandProcessor.incrementProfile(SessionProfiler.RcmReceived);
         this.commandProcessor.startOperationProfile(SessionProfiler.CacheCoordination);
         try {
@@ -285,19 +285,19 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
                 ((RCMCommand)command).executeWithRCM(this);
                 return;
             }
-    
+
             // Convert command if neccessary
             Object newCommand = command;
             if (commandConverter != null) {
                 logDebug("converting_to_user_command", args);
                 newCommand = commandConverter.convertToUserCommand(command);
             }
-    
+
             // process command with command processor
             logDebug("processing_remote_command", args);
             this.commandProcessor.processCommand(newCommand);
         } finally {
-            this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordination);            
+            this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordination);
         }
         this.commandProcessor.incrementProfile(SessionProfiler.RemoteChangeSet);
     }

@@ -1,23 +1,23 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     06/16/2009-2.0 Guy Pelletier 
+ *     06/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
- *     07/16/2009-2.0 Guy Pelletier 
+ *     07/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
- *     06/09/2010-2.0.3 Guy Pelletier 
+ *     06/09/2010-2.0.3 Guy Pelletier
  *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
  *     06/19/2014-2.6: - Tomas Kraus (Oracle)
  *       - Fixed PU name and registered this suite in FullRegressionTestSuite
  *       - 437578: Tests to verify @Cacheable inheritance in JPA 2.1
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
 import junit.framework.*;
@@ -32,20 +32,20 @@ import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreato
 public class CacheableModelJunitTestEnableSelective extends CacheableModelJunitTest {
 
     private static final String PU_NAME = "ENABLE_SELECTIVE";
-    
+
     public CacheableModelJunitTestEnableSelective() {
         super();
     }
-    
+
     public CacheableModelJunitTestEnableSelective(String name) {
         super(name);
         setPuName(PU_NAME);
     }
-    
+
     public void setUp() {
         clearCache(PU_NAME);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("CacheableModelJunitTestEnableSelective");
@@ -58,7 +58,7 @@ public class CacheableModelJunitTestEnableSelective extends CacheableModelJunitT
         }
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -66,7 +66,7 @@ public class CacheableModelJunitTestEnableSelective extends CacheableModelJunitT
         new CacheableTableCreator().replaceTables(JUnitTestCase.getServerSession(PU_NAME));
         clearCache(PU_NAME);
     }
-    
+
     /**
      * Convenience method.
      */

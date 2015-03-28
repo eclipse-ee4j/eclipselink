@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     14/05/2012-2.4 Guy Pelletier   
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/
 package org.eclipse.persistence.oxm;
@@ -90,7 +90,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     private boolean lazilyInitialized = false;
     private AttributeAccessor locationAccessor = null;
     private boolean hasReferenceMappings = false;
-    
+
 
     /**
      * PUBLIC:
@@ -117,7 +117,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         this.derivesIdMappings = Collections.EMPTY_MAP;
         this.additionalWritableMapKeyFields = Collections.EMPTY_LIST;
 
-        // Policies        
+        // Policies
         this.objectBuilder = new TreeObjectBuilder(this);
 
         this.shouldOrderMappings = false;
@@ -137,7 +137,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         }
         return getTables().firstElement().getName();
     }
-    
+
     /**
      * PUBLIC:
      * Return if unmapped information from the XML document should be maintained for this
@@ -187,7 +187,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
             int index = getTableNames().indexOf(newDefaultRootElement);
             if (index == 0) {
                 return;
-            } 
+            }
             DatabaseTable databaseTable = new DatabaseTable();
             databaseTable.setUseDelimiters(false);
             databaseTable.setName(newDefaultRootElement);
@@ -271,7 +271,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     public boolean isXMLDescriptor() {
         return true;
     }
-    
+
     /**
      * If true, the descriptor may be lazily initialized.  This is useful if the
      * descriptor may not get used.
@@ -281,7 +281,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     }
 
     /**
-     * Specify in the descriptor may be lazily initialized.  The default is 
+     * Specify in the descriptor may be lazily initialized.  The default is
      * false.
      */
     public void setLazilyInitialized(boolean shouldLazyInitiailize) {
@@ -321,7 +321,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         if (fieldValue instanceof XMLRecord) {
             return (XMLRecord) fieldValue;
         }
-        
+
         // BUG#2667762 - If the tag was empty this could be a string of whitespace.
         if (!(fieldValue instanceof Vector)) {
             return getObjectBuilder().createRecord(null);
@@ -351,7 +351,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         }
         return (Vector) fieldValue;
     }
-    
+
     /**
      * Return a new direct/basic mapping for this type of descriptor.
      */
@@ -359,7 +359,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     public AbstractDirectMapping newDirectMapping() {
         return new XMLDirectMapping();
     }
-    
+
     /**
      * Return a new aggregate/embedded mapping for this type of descriptor.
      */
@@ -367,7 +367,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     public AggregateMapping newAggregateMapping() {
         return new XMLCompositeObjectMapping();
     }
-    
+
     /**
      * Return a new aggregate collection/element collection mapping for this type of descriptor.
      */
@@ -375,7 +375,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     public DatabaseMapping newAggregateCollectionMapping() {
         return new XMLCompositeCollectionMapping();
     }
-    
+
     /**
      * Return a new direct collection/element collection mapping for this type of descriptor.
      */
@@ -568,7 +568,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
 
         getCachePolicy().useNoIdentityMap();
         getQueryManager().getDoesExistQuery().setExistencePolicy(DoesExistQuery.CheckDatabase);
- 
+
         validateBeforeInitialization(session);
 
         preInitializeInheritancePolicy(session);
@@ -582,7 +582,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         getCachePolicy().assignDefaultValues(session);
     }
 
-    
+
     @Override
     protected void preInitializeInheritancePolicy(AbstractSession session) throws DescriptorException {
         super.preInitializeInheritancePolicy(session);
@@ -693,17 +693,17 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
             defaultRootElementField.initialize();
         }
         if(schemaReference != null && schemaReference.getSchemaContext() != null && (schemaReference.getType() == XMLSchemaReference.COMPLEX_TYPE || schemaReference.getType() == XMLSchemaReference.SIMPLE_TYPE) && getDefaultRootElementType() == null){
-        	
-        	if(hasInheritance() && isChildDescriptor()){
-        		XMLField parentField = ((XMLDescriptor)getInheritancePolicy().getParentDescriptor()).getDefaultRootElementField();
-        		//if this descriptor has a root element field different than it's parent set the leaf element type of the default root field
-        		if(parentField == null || (parentField !=null && defaultRootElementField !=null && !defaultRootElementField.getXPathFragment().equals(parentField.getXPathFragment()))){
-        			setDefaultRootElementType(schemaReference.getSchemaContextAsQName(getNamespaceResolver()));
-        		}
-        	}else{
-        		setDefaultRootElementType(schemaReference.getSchemaContextAsQName(getNamespaceResolver()));
-        	}
-       
+
+            if(hasInheritance() && isChildDescriptor()){
+                XMLField parentField = ((XMLDescriptor)getInheritancePolicy().getParentDescriptor()).getDefaultRootElementField();
+                //if this descriptor has a root element field different than it's parent set the leaf element type of the default root field
+                if(parentField == null || (parentField !=null && defaultRootElementField !=null && !defaultRootElementField.getXPathFragment().equals(parentField.getXPathFragment()))){
+                    setDefaultRootElementType(schemaReference.getSchemaContextAsQName(getNamespaceResolver()));
+                }
+            }else{
+                setDefaultRootElementType(schemaReference.getSchemaContextAsQName(getNamespaceResolver()));
+            }
+
         }
 
         if(null != primaryKeyFields) {
@@ -841,7 +841,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
             xmlRoot.setNoNamespaceSchemaLocation(unmarshalRecord.getNoNamespaceSchemaLocation());
             xmlRoot.setNil(unmarshalRecord.isNil());
             setDeclaredTypeOnXMLRoot(xmlRoot, elementNamespaceUri, elementLocalName, unmarshalRecord.isNamespaceAware(), unmarshalRecord.getUnmarshaller());
-            
+
             return xmlRoot;
         }
         return unmarshalRecord.getCurrentObject();
@@ -865,15 +865,15 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean forceWrap, boolean isNamespaceAware, XMLUnmarshaller xmlUnmarshaller) {
 
         if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix, isNamespaceAware)) {
-            // if the DOMRecord element != descriptor's default 
+            // if the DOMRecord element != descriptor's default
             // root element, create an Root, populate and return it
             Root xmlRoot = new XMLRoot();
             xmlRoot.setLocalName(elementLocalName);
             xmlRoot.setNamespaceURI(elementNamespaceUri);
             xmlRoot.setObject(object);
-            
+
             setDeclaredTypeOnXMLRoot(xmlRoot, elementNamespaceUri, elementLocalName, isNamespaceAware, xmlUnmarshaller);
-            
+
             return xmlRoot;
         }
         return object;
@@ -885,14 +885,14 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      */
     public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, String encoding, String version, boolean forceWrap, boolean isNamespaceAware, XMLUnmarshaller unmarshaller) {
         if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix, isNamespaceAware)) {
-            // if the DOMRecord element != descriptor's default 
+            // if the DOMRecord element != descriptor's default
             // root element, create an XMLRoot, populate and return it
             Root xmlRoot = new XMLRoot();
             xmlRoot.setLocalName(elementLocalName);
             xmlRoot.setNamespaceURI(elementNamespaceUri);
             xmlRoot.setObject(object);
             xmlRoot.setEncoding(encoding);
-            xmlRoot.setVersion(version);  
+            xmlRoot.setVersion(version);
             setDeclaredTypeOnXMLRoot(xmlRoot, elementNamespaceUri, elementLocalName, isNamespaceAware, unmarshaller);
 
             return xmlRoot;
@@ -900,15 +900,15 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         return object;
 
     }
-    
+
     private void setDeclaredTypeOnXMLRoot(Root xmlRoot, String elementNamespaceUri, String elementLocalName, boolean isNamespaceAware, Unmarshaller unmarshaller){
-    	XPathQName xpathQName = new XPathQName(elementNamespaceUri, elementLocalName, isNamespaceAware);
-    	Descriptor desc = unmarshaller.getContext().getDescriptor(xpathQName);
-    	if(desc != null){
-    		xmlRoot.setDeclaredType(desc.getJavaClass());
-    	}
+        XPathQName xpathQName = new XPathQName(elementNamespaceUri, elementLocalName, isNamespaceAware);
+        Descriptor desc = unmarshaller.getContext().getDescriptor(xpathQName);
+        if(desc != null){
+            xmlRoot.setDeclaredType(desc.getJavaClass());
+        }
     }
-    
+
     /**
      * INTERNAL:
      * @return
@@ -919,18 +919,18 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         }
         XMLField defaultRootField = getDefaultRootElementField();
 
-        // if the descriptor's default root element is null, we want to 
-        // create/return an XMLRoot - otherwise, we need to compare the 
+        // if the descriptor's default root element is null, we want to
+        // create/return an XMLRoot - otherwise, we need to compare the
         // default root element vs. the root element in the instance doc.
         if (defaultRootField != null) {
             // resolve namespace prefix if one exists
             String defaultRootName = defaultRootField.getXPathFragment().getLocalName();
             String defaultRootNamespaceUri = defaultRootField.getXPathFragment().getNamespaceURI();
-            // if the DOMRecord element == descriptor's default 
+            // if the DOMRecord element == descriptor's default
             // root element, return the object as per usual
 
             if(isNamespaceAware){
-            	if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.length() == 0)) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.length() == 0)) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri
+                if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.length() == 0)) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.length() == 0)) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri
                         .equals(elementNamespaceUri))))
                         && (defaultRootName.equals(elementLocalName))) {
                     return false;
@@ -957,7 +957,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
             return false;
         }
         if(getDefaultRootElementField() != null && newDefaultRootElement.equals(getDefaultRootElementField().getName())){
-        	return false;
+            return false;
         }
         // create the root element xml field based on default root element name
         setDefaultRootElementField(new XMLField(newDefaultRootElement));
@@ -1001,13 +1001,13 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         this.sequencedObject = isSequenced;
     }
 
-	public boolean isWrapper() {
-		return isWrapper;
-	}
+    public boolean isWrapper() {
+        return isWrapper;
+    }
 
-	public void setIsWrapper(boolean value) {
-		this.isWrapper = value;
-	}
+    public void setIsWrapper(boolean value) {
+        this.isWrapper = value;
+    }
 
     public boolean isResultAlwaysXMLRoot() {
         return resultAlwaysXMLRoot;
@@ -1016,7 +1016,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     public void setResultAlwaysXMLRoot(boolean resultAlwaysXMLRoot) {
         this.resultAlwaysXMLRoot = resultAlwaysXMLRoot;
     }
-    
+
     /**
      * INTERNAL:
      * Returns true if any of the mappings on this descriptor are key-based reference
@@ -1037,7 +1037,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         if(null == typedField) {
             DatabaseMapping selfMapping = objectBuilder.getMappingForField(new XMLField("."));
             if(null != selfMapping) {
-                return selfMapping.getReferenceDescriptor().getTypedField(field); 
+                return selfMapping.getReferenceDescriptor().getTypedField(field);
             }
         }
         return typedField;
@@ -1062,7 +1062,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
                         if(mapping.isCollectionMapping()) {
                             if(mapping.getContainerPolicy().isListPolicy()) {
                                 if(stringTokenizer.hasMoreElements()) {
-                                    return ((XMLDescriptor) mapping.getReferenceDescriptor()).getTypedField(stringTokenizer); 
+                                    return ((XMLDescriptor) mapping.getReferenceDescriptor()).getTypedField(stringTokenizer);
                                 } else {
                                     return mapping.getField();
                                 }
@@ -1097,14 +1097,14 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     public void setLocationAccessor(AttributeAccessor value) {
         this.locationAccessor = value;
     }
-    
-    
+
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this Descriptor to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){

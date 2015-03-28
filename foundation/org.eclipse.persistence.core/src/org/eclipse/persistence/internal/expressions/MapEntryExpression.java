@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.BufferedWriter;
@@ -34,18 +34,18 @@ import org.eclipse.persistence.queries.ReadQuery;
 public class MapEntryExpression extends QueryKeyExpression {
 
     protected boolean returnMapEntry = false;
-    
+
     public MapEntryExpression(Expression base) {
         this();
         this.baseExpression = base;
     }
-    
+
     public MapEntryExpression() {
         this.shouldQueryToManyRelationship = true;
         this.hasQueryKey = true;
         this.hasMapping = false;
     }
-    
+
     /**
      * INTERNAL:
      * Find the alias for a given table.  A TableEntry is a place holder and its base expression holds
@@ -55,14 +55,14 @@ public class MapEntryExpression extends QueryKeyExpression {
     public DatabaseTable aliasForTable(DatabaseTable table) {
         return ((DataExpression)getBaseExpression()).aliasForTable(table);
     }
-    
+
     /**
      * Set this expression to represent a Map.Entry rather than the Map's key
      */
     public void returnMapEntry(){
         returnMapEntry = true;
     }
-    
+
     /**
      * INTERNAL:
      * This expression is built on a different base than the one we want. Rebuild it and
@@ -72,7 +72,7 @@ public class MapEntryExpression extends QueryKeyExpression {
     public Expression rebuildOn(Expression newBase) {
         Expression newLocalBase = getBaseExpression().rebuildOn(newBase);
         Expression result = null;
-        
+
         if (returnMapEntry){
             result = newLocalBase.mapEntry();
         } else {
@@ -82,7 +82,7 @@ public class MapEntryExpression extends QueryKeyExpression {
         result.setSelectIfOrderedBy(selectIfOrderedBy());
         return result;
     }
-    
+
     /**
      * INTERNAL:
      * A special version of rebuildOn where the newBase need not be a new
@@ -107,7 +107,7 @@ public class MapEntryExpression extends QueryKeyExpression {
         result.setSelectIfOrderedBy(selectIfOrderedBy());
         return result;
     }
-    
+
     /**
      * INTERNAL:
      * Used for debug printing.
@@ -120,7 +120,7 @@ public class MapEntryExpression extends QueryKeyExpression {
             return "MapKey";
         }
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -131,7 +131,7 @@ public class MapEntryExpression extends QueryKeyExpression {
         }
         return super.existingDerivedTable(table);
     }
-    
+
     /**
      * Exclude any tables defined by base.
      */
@@ -165,7 +165,7 @@ public class MapEntryExpression extends QueryKeyExpression {
         }
         return descriptor;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -177,7 +177,7 @@ public class MapEntryExpression extends QueryKeyExpression {
         DatabaseField field = getInterfaceContainerPolicy().getDirectKeyField(getMapping());
         return field;
     }
-    
+
     /**
      * INTERNAL:
      * Return all the fields
@@ -231,7 +231,7 @@ public class MapEntryExpression extends QueryKeyExpression {
         if (!hasQueryKey) {
             return null;
         }
-        
+
         InterfaceContainerPolicy cp = getInterfaceContainerPolicy();
         if (queryKey == null) {
             if (returnMapEntry){
@@ -260,7 +260,7 @@ public class MapEntryExpression extends QueryKeyExpression {
         }
         return isAttributeExpression.booleanValue();
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -286,7 +286,7 @@ public class MapEntryExpression extends QueryKeyExpression {
         }
         return cp;
     }
-    
+
     /**
      * INTERNAL:
      * Mapping criteria will be provided by the base expression
@@ -300,7 +300,7 @@ public class MapEntryExpression extends QueryKeyExpression {
         return returnMapEntry;
     }
 
-    
+
     /**
      * Do any required validation for this node. Throw an exception if it's incorrect.
      */
@@ -317,7 +317,7 @@ public class MapEntryExpression extends QueryKeyExpression {
             throw QueryException.mapEntryExpressionForNonMap(getBaseExpression(), getMapping());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used to print a debug form of the expression tree.

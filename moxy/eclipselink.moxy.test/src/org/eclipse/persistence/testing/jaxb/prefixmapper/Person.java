@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,14 +18,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name="person", namespace="someuri")
 @XmlType(name="person-type", namespace="someuri")
 public class Person {
-    
+
     public String firstName;
     public String lastName;
     public String address;
-    
+
     public boolean equals(Object obj) {
         Person p = (Person)obj;
-        
+
         return p.firstName.equals(firstName) && p.lastName.equals(lastName) && p.address.equals(address);
     }
 

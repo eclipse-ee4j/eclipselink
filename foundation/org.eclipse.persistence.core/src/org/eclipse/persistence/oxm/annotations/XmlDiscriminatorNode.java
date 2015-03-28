@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,13 +18,13 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * The XmlDiscriminatorNode annotation is used to specify the class 
+ * The XmlDiscriminatorNode annotation is used to specify the class
  * indicator field name when using inheritance.
  */
-@Target({TYPE}) 
+@Target({TYPE})
 @Retention(RUNTIME)
 public @interface XmlDiscriminatorNode {
-    
+
     /**
      * (Required) Indicates the the class indicator field name.
      */

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
@@ -41,14 +41,14 @@ import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createSession;
 
 /**
- * 
+ *
  * @author dclarke
  * @since EclipseLink 1.2
  */
 public class EntityTypeFromDescriptor {
 
     static final String TABLE_NAME = "MY_ENTITY";
-    
+
     @AfterClass
     public static void tearDown() {
         DatabaseSession ds = createSession();
@@ -56,7 +56,7 @@ public class EntityTypeFromDescriptor {
         ds.executeNonSelectingSQL("DROP TABLE " + TABLE_NAME);
         ds.logout();
     }
-    
+
     @Test
     public void entityTypeFromDescriptor() throws Exception {
         DatabaseSession session = createSession();
@@ -66,7 +66,7 @@ public class EntityTypeFromDescriptor {
         ClassDescriptor descriptor = buildMyEntityDescriptor();
         assertFalse(descriptor.isAggregateDescriptor());
 
-        DynamicType entityType = 
+        DynamicType entityType =
             (DynamicType)new DynamicTypeBuilder(dcl, descriptor, null).getType();
         MyEntity.DPM.setType(entityType);
 
@@ -102,7 +102,7 @@ public class EntityTypeFromDescriptor {
             session.login();
         }
         catch (IntegrityException ie) {
-            assertEquals(descriptor.getMappings().size(), 
+            assertEquals(descriptor.getMappings().size(),
                 ie.getIntegrityChecker().getCaughtExceptions().size());
 
             // Verify NoSuchField errors for each mapping

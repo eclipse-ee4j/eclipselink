@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -31,29 +31,29 @@ import org.eclipse.persistence.testing.models.inheritance.Teacher;
  * For EL bug 378512 - use original object from nested uow for registration in parent uow
  */
 public class NestedUnitOfWorkMergeIntoParentTest extends TestCase {
-    
+
     protected static final int numberOfTimesToRepeatTest = 10;
-    
+
     public NestedUnitOfWorkMergeIntoParentTest() {
         super();
         setDescription("Use original object from nested uow for registration in parent uow");
     }
-    
+
     public void test() {
         for (int runNumber = 0; runNumber < numberOfTimesToRepeatTest; runNumber++) {
             UnitOfWork unitOfWork = getSession().acquireUnitOfWork();
             UnitOfWork nestedUnitOfWork = unitOfWork.acquireUnitOfWork();
-            
+
             Teacher teacher = new Teacher();
             teacher.setName("Mrs. Crabapple");
-            
+
             Apple apple = new Apple();
             apple.setQuality("high");
             apple.setTeacher(teacher);
-            
+
             nestedUnitOfWork.registerObject(teacher);
             nestedUnitOfWork.registerObject(apple);
-            
+
             int numberOfPearsToInsert = 10;
             List<Pear> pearsList = new ArrayList<Pear>(numberOfPearsToInsert);
             for (int pearNumber = 0; pearNumber < numberOfPearsToInsert; pearNumber++) {
@@ -62,25 +62,25 @@ public class NestedUnitOfWorkMergeIntoParentTest extends TestCase {
                 pear.setQuality("medium");
                 nestedUnitOfWork.registerObject(pear);
             }
-            
+
             nestedUnitOfWork.commit();
             unitOfWork.commit();
-            
+
             Teacher teacherRead = (Teacher)getSession().readObject(
-                    Teacher.class, 
+                    Teacher.class,
                     new ExpressionBuilder().get("id").equal(teacher.getId()));
             assertNotNull("Teacher should not be null", teacherRead);
             assertFalse("Teacher id should not be zero", teacherRead.getId() == 0l);
-            
+
             Apple appleRead = (Apple)getSession().readObject(
-                    Apple.class, 
+                    Apple.class,
                     new ExpressionBuilder().get("id").equal(apple.getId()));
             assertNotNull("Apple read should not be null", appleRead);
             assertFalse("Apple id should not be zero", appleRead.getId() == 0l);
             assertNotNull("Teacher referenced by Apple should not be null", appleRead.getTeacher());
-            assertEquals("Teacher read should have same pk as the teacher referenced by apple", 
+            assertEquals("Teacher read should have same pk as the teacher referenced by apple",
                     teacherRead.getId(), appleRead.getTeacher().getId());
-            
+
             for (Pear pearInList : pearsList) {
                 Pear pearRead = (Pear)getSession().readObject(
                     Pear.class,

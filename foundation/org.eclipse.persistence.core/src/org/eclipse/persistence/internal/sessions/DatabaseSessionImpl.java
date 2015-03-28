@@ -1,27 +1,27 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     14/05/2012-2.4 Guy Pelletier  
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- *     22/05/2012-2.4 Guy Pelletier  
+ *     22/05/2012-2.4 Guy Pelletier
  *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
- *     31/05/2012-2.4 Guy Pelletier  
+ *     31/05/2012-2.4 Guy Pelletier
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
- *     12/24/2012-2.5 Guy Pelletier 
+ *     12/24/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/11/2013-2.5 Guy Pelletier 
+ *     01/11/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
  *     03/19/2015 - Rick Curtis
  *       - 462586 : Add national character support for z/OS.
- *       ******************************************************************************/  
+ *       ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.sql.Connection;
@@ -97,7 +97,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Used to store the server platform that handles server-specific functionality for Oc4j, WLS,  etc.
      */
     protected ServerPlatform serverPlatform;
-    
+
     /**
      * Stores the tuner used to tune the configuration of this session.
      */
@@ -114,9 +114,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Indicate if this session is logged in.
      */
 
-    //Bug#3440544 Used to stop the attempt to login more than once. 
+    //Bug#3440544 Used to stop the attempt to login more than once.
     protected volatile boolean isLoggedIn;
-    
+
     /**
      * INTERNAL:
      * Set the SequencingHome object used by the session.
@@ -145,14 +145,14 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     public boolean isLoggedIn() {
         return isLoggedIn;
     }
-    
+
     /**
      * Return the database event listener, this allows database events to invalidate the cache.
      */
     public DatabaseEventListener getDatabaseEventListener() {
         return databaseEventListener;
     }
-    
+
     /**
      * PUBLIC:
      * Set the database event listener, this allows database events to invalidate the cache.
@@ -160,10 +160,10 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     public void setDatabaseEventListener(DatabaseEventListener databaseEventListener) {
         this.databaseEventListener = databaseEventListener;
     }
-    
+
     /**
      * INTERNAL:
-     * Issue any pre connect and post connect without an actual connection to 
+     * Issue any pre connect and post connect without an actual connection to
      * the database. Descriptors are initialized in postConnectDatasource and
      * are used in DDL generation. This will look to set the schema platform
      * via the JPA 2.1 properties or through a detection on the connection
@@ -174,26 +174,26 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         setOrDetectDatasource(false);
         postConnectDatasource();
     }
-    
+
     /**
      * INTERNAL:
-     * Will set the platform from specified schema generation properties or 
+     * Will set the platform from specified schema generation properties or
      * by detecting it through the connection (if one is available).
      * Any connection that is open for detection is closed before this method
      * returns.
-     * 
+     *
      * @param throwException - set to true if the caller cares to throw exceptions, false to swallow them.
      */
     protected void setOrDetectDatasource(boolean throwException) {
         // Try to set the platform from JPA 2.1 schema properties first before attempting a detection.
         if (getProperties().containsKey(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME)) {
             String vendorNameAndVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME);
-            
+
             String majorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION);
             if (majorVersion != null) {
                 vendorNameAndVersion += majorVersion;
             }
-            
+
             String minorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION);
             if (minorVersion != null) {
                 vendorNameAndVersion += minorVersion;
@@ -202,7 +202,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             getLogin().setPlatformClassName(DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog()));
         } else {
             Connection conn = null;
-            
+
             try {
                 conn = (Connection) getReadLogin().connectToDatasource(null, this);
                 // null out the cached platform because the platform on the login will be changed by the following line of code
@@ -223,7 +223,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                         throw classNotFound;
                     }
                 }
-                
+
                 getLogin().getPlatform().setDriverName(conn.getMetaData().getDriverName());
             } catch (SQLException ex) {
                 if (throwException) {
@@ -250,7 +250,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             }
         }
     }
-    
+
     /**
      * PUBLIC:
      * Return  SequencingControl which used for sequencing setup and
@@ -391,17 +391,17 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * PUBLIC:
      * Add the sequence to the session.
      * Allows to add a new sequence to the session even if the session is connected.
-     * If the session is connected then the sequence is added only 
+     * If the session is connected then the sequence is added only
      * if there is no sequence with the same name already in use.
-     * Call this method before addDescriptor(s) if need to add new descriptor 
+     * Call this method before addDescriptor(s) if need to add new descriptor
      * with a new non-default sequence to connected session.
      *
      * @see #addSequences(Collection)
      */
     public void addSequence(Sequence sequence) {
-        getProject().getLogin().getDatasourcePlatform().addSequence(sequence, this.getSequencingHome().isConnected());        
+        getProject().getLogin().getDatasourcePlatform().addSequence(sequence, this.getSequencingHome().isConnected());
     }
-    
+
     /**
      * INTERNAL:
      * Connect the session only.
@@ -572,7 +572,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         initializeDescriptors((Map)((HashMap)getDescriptors()).clone(), true);
         // Initialize serializer
         if (this.serializer != null) {
-        	this.serializer.initialize(null, null, this);
+            this.serializer.initialize(null, null, this);
         }
         // Initialize partitioning policies.
         for (PartitioningPolicy policy : getProject().getPartitioningPolicies().values()) {
@@ -586,7 +586,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         // Process JPA named queries and add as session queries,
         // this must be done after descriptor init as requires to parse the JPQL.
         processJPAQueries();
-        
+
         // Configure default query cache for all named queries.
         QueryResultsCachePolicy defaultQueryCachePolicy = getProject().getDefaultQueryResultsCachePolicy();
         if (defaultQueryCachePolicy != null) {
@@ -633,7 +633,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * If shouldInitializeSequencing parameter is false then
      *   if sequencing has been already connected, then it stays connected:
      *     only the new sequences used by the passed descriptors are initialized;
-     *   otherwise, if sequencing has NOT been connected then it is connected 
+     *   otherwise, if sequencing has NOT been connected then it is connected
      *     (just like in shouldInitializeSequencing==true case);
      *   disconnected (if has been connected), then connected.
      */
@@ -646,7 +646,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         } else {
             addDescriptorsToSequencing(descriptors);
         }
-        
+
         try {
             // First initialize basic properties (things that do not depend on anything else)
             Iterator iterator = descriptors.iterator();
@@ -662,7 +662,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                         // to be cloned and initialized per client session.
                         addTablePerTenantDescriptor(descriptor);
                     }
-                    
+
                     //check if inheritance is involved in aggregate relationship, and let the parent know the child descriptor
                     if (descriptor.isDescriptorTypeAggregate() && descriptor.isChildDescriptor()) {
                         descriptor.initializeAggregateInheritancePolicy(session);
@@ -734,7 +734,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     protected Login getReadLogin(){
         return getDatasourceLogin();
     }
-    
+
     /**
      * PUBLIC:
      * Connect to the database using the predefined login.
@@ -764,7 +764,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         connect();
         postConnectDatasource();
     }
-    
+
     /**
      * INTERNAL:
      * This method includes all of the code that is issued before the datasource
@@ -790,7 +790,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             //setup the external transaction controller
             getServerPlatform().initializeExternalTransactionController();
             log(SessionLog.INFO, null, "topLink_version", DatasourceLogin.getVersion());
-            if (getServerPlatform().getServerNameAndVersion() != null && 
+            if (getServerPlatform().getServerNameAndVersion() != null &&
                     !getServerPlatform().getServerNameAndVersion().equals(ServerPlatformBase.DEFAULT_SERVER_NAME_AND_VERSION)) {
                 log(SessionLog.INFO, null, "application_server_name_and_version", getServerPlatform().getServerNameAndVersion());
             }
@@ -806,17 +806,17 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     protected void postConnectDatasource(){
         if (!hasBroker()) {
             initializeDescriptors();
-            
+
             //added to process ejbQL query strings
             if (getCommandManager() != null) {
                 getCommandManager().initialize();
             }
         }
-        
+
         // Once the descriptors are initialized we can check if there are
         // multitenant entities and if this session (emf) is shared or not. If
-        // not shared, all multitenant properties must be available and set by 
-        // the user at this point for us to validate (meaning they must be set 
+        // not shared, all multitenant properties must be available and set by
+        // the user at this point for us to validate (meaning they must be set
         // in a persitence.xml or passed into the create EMF call).
         if (getProperties().containsKey(PersistenceUnitProperties.MULTITENANT_SHARED_EMF)) {
             String value = (String) getProperties().get(PersistenceUnitProperties.MULTITENANT_SHARED_EMF);
@@ -826,14 +826,14 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                         throw ValidationException.multitenantContextPropertyForNonSharedEMFNotSpecified(property);
                     }
                 }
-                
+
                 // Once the properties are validated we can allow ddl generation to happen (if needed).
                 project.setAllowTablePerMultitenantDDLGeneration(true);
             }
         }
-        
+
         log(SessionLog.INFO, SessionLog.CONNECTION, "login_successful", this.getName());
-        // postLogin event should not be risen before descriptors have been initialized 
+        // postLogin event should not be risen before descriptors have been initialized
         if (!hasBroker()) {
             postLogin();
         }
@@ -841,7 +841,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         initializeConnectedTime();
         this.isLoggedIn = true;
         this.platform = null;
-        
+
         if (!hasBroker()) {
             //register the MBean
             getServerPlatform().registerMBean();
@@ -858,7 +858,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         if ((getDatasourcePlatform() instanceof DatabasePlatform) && getPlatform().getBatchWritingMechanism() != null) {
             getPlatform().getBatchWritingMechanism().initialize(this);
         }
-        
+
     }
 
     /**
@@ -870,7 +870,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             this.eventManager.postLogin(this);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Connect to the database using the given user name and password.
@@ -907,27 +907,27 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         if (this.eventManager != null) {
             this.eventManager.preLogout(this);
         }
-        
+
         cleanUpEntityListenerInjectionManager();
-        
+
         // Reset cached data, as may be invalid later on.
         this.lastDescriptorAccessed = null;
 
         if (isInTransaction()) {
             throw DatabaseException.logoutWhileTransactionInProgress();
         }
-        
+
         if (getAccessor() == null) {
             return;
         }
-        
+
         if (this.databaseEventListener != null) {
             this.databaseEventListener.remove(this);
         }
-        
+
         // We're logging out so turn off change propagation.
         setShouldPropagateChanges(false);
-        
+
         if (!hasBroker()) {
             if (getCommandManager() != null) {
                 getCommandManager().shutdown();
@@ -936,7 +936,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             // Unregister the JMX MBean before logout to avoid a javax.naming.NameNotFoundException
             getServerPlatform().shutdown();
         }
-        
+
         disconnect();
         getIdentityMapAccessor().initializeIdentityMaps();
         this.isLoggedIn = false;
@@ -944,7 +944,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             this.eventManager.postLogout(this);
         }
         log(SessionLog.INFO, SessionLog.CONNECTION, "logout_successful", this.getName());
-	   
+
     }
 
     /**
@@ -996,7 +996,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             writeObject(objectsEnum.nextElement());
         }
     }
-    
+
     /**
      * INTERNAL:
      * A query execution failed due to an invalid query.
@@ -1031,14 +1031,14 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         }
         return executionSession.executeQuery(query, row, retryCount);
     }
-    
+
     /**
      * Return the tuner used to tune the configuration of this session.
      */
     public SessionTuner getTuner() {
         return tuner;
     }
-    
+
     /**
      * Set the tuner used to tune the configuration of this session.
      */

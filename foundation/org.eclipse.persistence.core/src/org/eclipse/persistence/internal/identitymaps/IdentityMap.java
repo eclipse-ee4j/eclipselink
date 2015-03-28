@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Gordon Yorke - Part of the Cache Interceptor feature. (ER 219683)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.Enumeration;
@@ -29,7 +29,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  * This interface can be used if implementing custom identity maps that are radically
  * different than the stock IdentityMaps otherwise simply extending the appropriate
  * IdentityMap implementation is the best approach.
- * 
+ *
  * @see CacheKey
  * @since EclipseLink 1.0M7
  */
@@ -42,13 +42,13 @@ public interface IdentityMap extends Cloneable{
      * Other threads will get deferred locks, all threads will wait until all other threads are complete before releasing their locks.
      */
     public CacheKey acquireDeferredLock(Object primaryKey, boolean isCacheCheckComplete);
-    
+
     /**
      * Acquire an active lock on the object.
      * This is used by reading (when using indirection or no relationships) and by merge.
      */
     public CacheKey acquireLock(Object primaryKey, boolean forMerge, boolean isCacheCheckComplete);
-    
+
     /**
      * Acquire an active lock on the object, if not already locked.
      * This is used by merge for missing existing objects.
@@ -74,7 +74,7 @@ public interface IdentityMap extends Cloneable{
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.
      */
     public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey);
-    
+
     /**
      * Clone the map and all of the CacheKeys.
      * This is used by UnitOfWork commitAndResumeOnFailure to avoid corrupting the cache during a failed commit.
@@ -87,7 +87,7 @@ public interface IdentityMap extends Cloneable{
      */
     public void collectLocks(HashMap threadList);
 
-    
+
     /**
      * Return true if an CacheKey with the primary key is in the map.
      * User API.
@@ -142,12 +142,12 @@ public interface IdentityMap extends Cloneable{
      * Return the class that this is the map for.
      */
     public Class getDescriptorClass();
-    
+
     /**
      * Return the descriptor that this is the map for.
      */
     public ClassDescriptor getDescriptor();
-    
+
     /**
      * @return The maxSize for the IdentityMap (NOTE: some subclasses may use this differently).
      */
@@ -170,7 +170,7 @@ public interface IdentityMap extends Cloneable{
      * this is used for EJB2.
      */
     public Object getWrapper(Object primaryKey);
-    
+
     /**
      * Get the write lock value from the cache key associated to the primarykey.
      * User API.
@@ -188,7 +188,7 @@ public interface IdentityMap extends Cloneable{
      * @param checkReadLocks - true if readLocks should be checked, false otherwise.
      */
     public Enumeration keys(boolean checkReadLocks);
-    
+
     /**
      * Notify the cache that a lazy relationship has been triggered in the object
      * and the cache may need to be updated
@@ -230,7 +230,7 @@ public interface IdentityMap extends Cloneable{
      * the case of the CacheIdentityMap.
      */
     public void updateMaxSize(int maxSize);
-    
+
     /**
      * Set the descriptor that this is the map for.
      */
@@ -241,7 +241,7 @@ public interface IdentityMap extends Cloneable{
      * this is used for EJB2.
      */
     public void setWrapper(Object primaryKey, Object wrapper);
-    
+
     /**
      * Update the write lock value of the CacheKey associated with the given primaryKey.
      * This is used by UpdateObjectQuery, and is also an advanced (very) user API.

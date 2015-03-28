@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -19,26 +19,26 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWMethod;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWMethodCodeGenPolicy;
 
 
-final class BasicClassCodeGenPolicy 
-	extends AbstractClassCodeGenPolicy
+final class BasicClassCodeGenPolicy
+    extends AbstractClassCodeGenPolicy
 {
-	private MWClass mwClass;
-	
-	BasicClassCodeGenPolicy(MWClass mwClass, ApplicationContext context) {
-		super(context);
-		this.mwClass = mwClass;
-	}
-	
-	protected MWClass getMWClass() {
-		return this.mwClass;
-	}
-	
-	public MWMethodCodeGenPolicy getMethodCodeGenPolicy(MWMethod method) {
-		return new MWDefaultMethodCodeGenPolicy(method, this);
-	}
-	
-	public void addAccessorCodeGenPolicy(MWMethod method, MWMethodCodeGenPolicy methodCodeGenPolicy) {
-		throw new UnsupportedOperationException();
-	}
+    private MWClass mwClass;
+
+    BasicClassCodeGenPolicy(MWClass mwClass, ApplicationContext context) {
+        super(context);
+        this.mwClass = mwClass;
+    }
+
+    protected MWClass getMWClass() {
+        return this.mwClass;
+    }
+
+    public MWMethodCodeGenPolicy getMethodCodeGenPolicy(MWMethod method) {
+        return new MWDefaultMethodCodeGenPolicy(method, this);
+    }
+
+    public void addAccessorCodeGenPolicy(MWMethod method, MWMethodCodeGenPolicy methodCodeGenPolicy) {
+        throw new UnsupportedOperationException();
+    }
 
 }

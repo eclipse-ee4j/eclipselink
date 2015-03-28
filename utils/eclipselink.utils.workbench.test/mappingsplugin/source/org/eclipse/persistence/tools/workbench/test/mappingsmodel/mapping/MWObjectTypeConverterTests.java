@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -25,39 +25,39 @@ import org.eclipse.persistence.tools.workbench.test.models.projects.CrimeScenePr
 
 public class MWObjectTypeConverterTests extends ModelProblemsTestCase {
 
-	public MWObjectTypeConverterTests(String name) {
-		super(name);
-	}
-		
-	public static Test suite() {
-		return new TestSuite(MWObjectTypeConverterTests.class);
-	}
-	
-	//TODO see MWObjectTypeConverterMapping for why this is commented out
-//	public void testDatabaseTypeMatchesFieldTypesProblem() {
-//	
-//		String errorName = "029";
-//		
-//		checkMappingsForFalseFailures( errorName, MWDirectToFieldMapping.class );
-//	
-//		CrimeSceneProject csp = new CrimeSceneProject();
-//		MWDirectToFieldMapping mapping = csp.getGenderMappingInPerson();
-//		MWObjectTypeConverter objectTypeConverter = (MWObjectTypeConverter) mapping.getConverter();
-//		objectTypeConverter.setDataType(csp.getProject().typeFor(Integer.class));
-//		
-//		assertTrue("The mapping should have the problem: " + errorName, hasProblem(errorName, mapping));
-//	}
-	
-	public void testObjectTypeMappingsHaveBeenSpecifiedProblem() {
-		String errorName = ProblemConstants.MAPPING_VALUE_PAIRS_NOT_SPECIFIED;
-		
-		checkMappingsForFalseFailures( errorName, MWDirectToFieldMapping.class );
-	
-		CrimeSceneProject csp = new CrimeSceneProject();
-		MWDirectToFieldMapping mapping = csp.getGenderMappingInPerson();
-		MWObjectTypeConverter objectTypeConverter = (MWObjectTypeConverter) mapping.getConverter();
-		objectTypeConverter.clearValuePairs();
-		
-		assertTrue("The mapping should have the problem: " + errorName, hasProblem(errorName, mapping));
-	}
+    public MWObjectTypeConverterTests(String name) {
+        super(name);
+    }
+
+    public static Test suite() {
+        return new TestSuite(MWObjectTypeConverterTests.class);
+    }
+
+    //TODO see MWObjectTypeConverterMapping for why this is commented out
+//    public void testDatabaseTypeMatchesFieldTypesProblem() {
+//
+//        String errorName = "029";
+//
+//        checkMappingsForFalseFailures( errorName, MWDirectToFieldMapping.class );
+//
+//        CrimeSceneProject csp = new CrimeSceneProject();
+//        MWDirectToFieldMapping mapping = csp.getGenderMappingInPerson();
+//        MWObjectTypeConverter objectTypeConverter = (MWObjectTypeConverter) mapping.getConverter();
+//        objectTypeConverter.setDataType(csp.getProject().typeFor(Integer.class));
+//
+//        assertTrue("The mapping should have the problem: " + errorName, hasProblem(errorName, mapping));
+//    }
+
+    public void testObjectTypeMappingsHaveBeenSpecifiedProblem() {
+        String errorName = ProblemConstants.MAPPING_VALUE_PAIRS_NOT_SPECIFIED;
+
+        checkMappingsForFalseFailures( errorName, MWDirectToFieldMapping.class );
+
+        CrimeSceneProject csp = new CrimeSceneProject();
+        MWDirectToFieldMapping mapping = csp.getGenderMappingInPerson();
+        MWObjectTypeConverter objectTypeConverter = (MWObjectTypeConverter) mapping.getConverter();
+        objectTypeConverter.clearValuePairs();
+
+        assertTrue("The mapping should have the problem: " + errorName, hasProblem(errorName, mapping));
+    }
 }

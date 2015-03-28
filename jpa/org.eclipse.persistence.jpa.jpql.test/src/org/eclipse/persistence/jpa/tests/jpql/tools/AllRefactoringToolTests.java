@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,18 +25,18 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-	AllRefactoringToolTest1_0.class,
-	AllRefactoringToolTest2_0.class,
-	AllRefactoringToolTest2_1.class,
+    AllRefactoringToolTest1_0.class,
+    AllRefactoringToolTest2_0.class,
+    AllRefactoringToolTest2_1.class,
 
-	AllBasicRefactoringToolTest1_0.class,
-	AllBasicRefactoringToolTest2_0.class,
-	AllBasicRefactoringToolTest2_1.class,
+    AllBasicRefactoringToolTest1_0.class,
+    AllBasicRefactoringToolTest2_0.class,
+    AllBasicRefactoringToolTest2_1.class,
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllRefactoringToolTests {
 
-	private AllRefactoringToolTests() {
-		super();
-	}
+    private AllRefactoringToolTests() {
+        super();
+    }
 }

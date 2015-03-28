@@ -1,20 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     James Sutherland - Update to HSQL 1.8.1 and LRG
- *     11/04/2010-2.2 Michael O'Brien 
+ *     11/04/2010-2.2 Michael O'Brien
  *       - 319592: HSQL 2.0.0 requires VARCHAR length specified
- *     09/14/2011-2.3.1 Guy Pelletier 
+ *     09/14/2011-2.3.1 Guy Pelletier
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
 import java.io.StringWriter;
@@ -35,7 +35,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  * <p><b>Purpose</b>: Provides HSQL specific behavior.
- * 
+ *
  * Support HSQL functionality as of 1.8.1.
  * <p>Includes:
  * <ul>
@@ -76,10 +76,10 @@ public class HSQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("LONGVARCHAR", false));
         // 319592: HSQL 2.0.0 requires VARCHAR length specified
         fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR",DEFAULT_VARCHAR_SIZE));
-        
+
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("LONGVARBINARY", false));
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("LONGVARCHAR", false));
-        
+
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
@@ -100,7 +100,7 @@ public class HSQLPlatform extends DatabasePlatform {
         addOperator(toNumberOperator());
         addOperator(trimOperator());
     }
-    
+
     /**
      * INTERNAL:
      * Use CONVERT function for toNumber.
@@ -117,7 +117,7 @@ public class HSQLPlatform extends DatabasePlatform {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Use TRIM(FROM ?) function for trim.
@@ -178,7 +178,7 @@ public class HSQLPlatform extends DatabasePlatform {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     @Override
     public boolean isHSQL() {
         return true;
@@ -221,7 +221,7 @@ public class HSQLPlatform extends DatabasePlatform {
     public boolean isDynamicSQLRequiredForFunctions() {
         return true;
     }
-    
+
     /**
      * JDBC escape syntax for outer joins is not supported (not required).
      */
@@ -229,7 +229,7 @@ public class HSQLPlatform extends DatabasePlatform {
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
     }
-    
+
     /**
      * Does not allow nesting outer joins, i.e. each join must be followed by the ON clause.
      */
@@ -252,7 +252,7 @@ public class HSQLPlatform extends DatabasePlatform {
     public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
         return new ValueReadQuery(new StringBuilder(20 + seqName.length()).append("CALL NEXT VALUE FOR ").append(seqName).toString());
     }
-    
+
     @Override
     public boolean supportsGlobalTempTables() {
         return true;
@@ -270,13 +270,13 @@ public class HSQLPlatform extends DatabasePlatform {
      */
      public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
                                                      Collection pkFields,
-                                                     Collection assignedFields) throws IOException 
+                                                     Collection assignedFields) throws IOException
     {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);
         writer.write(tableName);
         writer.write(" SET ");
-        
+
         String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
         boolean isFirst = true;
         Iterator itFields = assignedFields.iterator();
@@ -296,7 +296,7 @@ public class HSQLPlatform extends DatabasePlatform {
             writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
             writer.write(")");
         }
-        
+
         writer.write(" WHERE EXISTS(SELECT ");
         writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited(this));
         writer.write(" FROM ");
@@ -309,10 +309,10 @@ public class HSQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * Use the JDBC maxResults and firstResultIndex setting to compute a value to use when
      * limiting the results of a query in SQL.  These limits tend to be used in two ways.
-     * 
+     *
      * 1. MaxRows is the index of the last row to be returned (like JDBC maxResults)
      * 2. MaxRows is the number of rows to be returned
-     * 
+     *
      * HSQL uses case #2 and therefore the maxResults has to be altered based on the firstResultIndex.
      */
     @Override
@@ -358,7 +358,7 @@ public class HSQLPlatform extends DatabasePlatform {
         }
         return this.timestampQuery;
     }
-    
+
     /**
      * INTERNAL:
      * HSQL requires START WITH first.

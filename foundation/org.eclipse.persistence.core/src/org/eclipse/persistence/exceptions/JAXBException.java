@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -241,8 +241,8 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(NON_EXISTENT_PROPERTY_IN_PROP_ORDER);
         return exception;
     }
-    
-    public static JAXBException missingPropertyInPropOrder(String fieldName) {        
+
+    public static JAXBException missingPropertyInPropOrder(String fieldName) {
         Object[] args = { fieldName, "" };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, MISSING_PROPERTY_IN_PROP_ORDER, args));
         exception.setErrorCode(MISSING_PROPERTY_IN_PROP_ORDER);
@@ -1052,7 +1052,7 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(EXCEPTION_DURING_SCHEMA_GEN);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
      * Cause: An exception occurred marshalling json
@@ -1063,7 +1063,7 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(JSON_VALUE_WRAPPER_REQUIRED);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
      * Cause: An exception occured while trying to instantiate an instance of the
@@ -1075,49 +1075,49 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(ERROR_INSTANTIATING_ACCESSOR_FACTORY);
         return validationException;
     }
-    
+
     public static JAXBException invalidAccessorFactory(Object accessorFactoryClass, Exception nestedException) {
         Object[] args = {accessorFactoryClass};
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_ACCESSOR_FACTORY, args), nestedException);
         validationException.setErrorCode(INVALID_ACCESSOR_FACTORY);
         return validationException;
     }
-    
+
     public static JAXBException errorCreatingFieldAccessor(Object accessorFactory, Exception nestedException) {
         Object[] args = {accessorFactory};
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ERROR_CREATING_FIELD_ACCESSOR, args), nestedException);
         validationException.setErrorCode(ERROR_CREATING_FIELD_ACCESSOR);
         return validationException;
     }
-    
+
     public static JAXBException errorCreatingPropertyAccessor(Object accessorFactory, Exception nestedException) {
         Object[] args = {accessorFactory};
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ERROR_CREATING_PROPERTY_ACCESSOR, args), nestedException);
         validationException.setErrorCode(ERROR_CREATING_PROPERTY_ACCESSOR);
         return validationException;
     }
-    
+
     public static JAXBException errorInvokingAccessor(Object accessor, String method, Exception nestedException) {
         Object[] args = {method, accessor};
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ERROR_INVOKING_ACCESSOR, args), nestedException);
         validationException.setErrorCode(ERROR_INVOKING_ACCESSOR);
         return validationException;
     }
-    
+
     public static JAXBException invalidEnumValue(Object value, String theClassName, Exception nestedException) {
         Object[] args = {value, theClassName};
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_ENUM_VALUE, args), nestedException);
         validationException.setErrorCode(INVALID_ENUM_VALUE);
         return validationException;
     }
-    
+
     public static JAXBException invalidInterface(String interfaceName) {
         Object[] args = {interfaceName};
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_INTERFACE, args));
         validationException.setErrorCode(INVALID_INTERFACE);
         return validationException;
     }
-    
+
     public static JAXBException invalidValueForObjectGraph(Object value) {
         Object[] args = {value};
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class,  INVALID_VALUE_FOR_OBJECT_GRAPH, args));
@@ -1138,21 +1138,21 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(MULTIPLE_XMLELEMREF);
         return validationException;
     }
-    
+
     public static JAXBException unknownTypeForVariableNode(String className) {
         Object[] args = { className };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, UNKNOWN_TYPE_FOR_VARIABLE_MAPPING, args));
         validationException.setErrorCode(UNKNOWN_TYPE_FOR_VARIABLE_MAPPING);
         return validationException;
     }
-    
+
     public static JAXBException unknownPropertyForVariableNode(String propertyName, String className) {
         Object[] args = { propertyName, className };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, UNKNOWN_PROPERTY_FOR_VARIABLE_MAPPING, args));
         validationException.setErrorCode(UNKNOWN_PROPERTY_FOR_VARIABLE_MAPPING);
         return validationException;
     }
-    
+
     public static JAXBException invalidTypeForVariableNode(String attribute, String type, String className) {
         Object[] args = { attribute, type, className };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_TYPE_FOR_VARIABLE_MAPPING, args));

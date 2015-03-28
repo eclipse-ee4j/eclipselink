@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.simpletypes.documentpreservation;
 
 
@@ -165,11 +165,11 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
 
     public void testObjectToOutputStream() throws Exception {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    	XMLMarshaller marshaller = getXMLContext().createMarshaller();
+        XMLMarshaller marshaller = getXMLContext().createMarshaller();
         marshaller.setFormattedOutput(false);
         marshaller.marshal(getWriteControlObject(), stream);
 
-        ByteArrayInputStream is = new ByteArrayInputStream(stream.toByteArray());        
+        ByteArrayInputStream is = new ByteArrayInputStream(stream.toByteArray());
         Document testDocument = parser.parse(is);
         objectToXMLDocumentTest(testDocument);
     }
@@ -180,14 +180,14 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
         marshaller.setEncoding("US-ASCII");
         marshaller.marshal(getWriteControlObject(), stream);
 
-        ByteArrayInputStream is = new ByteArrayInputStream(stream.toByteArray());        
+        ByteArrayInputStream is = new ByteArrayInputStream(stream.toByteArray());
         Document testDocument = parser.parse(is);
         objectToXMLDocumentTest(testDocument);
     }
-    
+
     public void testObjectToXMLStreamWriter() throws Exception {
-    }    
-    
+    }
+
     public void testObjectToXMLEventWriter() throws Exception {
     }
 
@@ -206,9 +206,9 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
 
         xmlToObjectTest(xmlUnmarshallerHandler.getResult());
     }
-    
+
     public void testObjectToContentHandler() throws Exception {
         // DO NOTHING BECAUSE CONTENT HANDLER CAN NOT READ COMMENTS
     }
-    
+
 }

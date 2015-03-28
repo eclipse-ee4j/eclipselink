@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.List;
@@ -53,12 +53,12 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyC;
  * @see org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator
  * @see JUnitDomainObjectComparer
  */
- 
+
 //This test suite demonstrates the bug 4616218, waiting for bug fix
 public class JUnitJPQLUnitTestSuite extends JUnitTestCase
-{ 
-  static JUnitDomainObjectComparer comparer; 
-  
+{
+  static JUnitDomainObjectComparer comparer;
+
   public JUnitJPQLUnitTestSuite()
   {
       super();
@@ -68,22 +68,22 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
   {
       super(name);
   }
-  
+
   //This method is run at the end of EVERY test case method
   public void tearDown()
   {
       clearCache();
   }
-  
+
   //This suite contains all tests contained in this class
-  public static Test suite() 
+  public static Test suite()
   {
     TestSuite suite = new TestSuite();
     suite.setName("JUnitJPQLUnitTestSuite");
-    suite.addTest(new JUnitJPQLUnitTestSuite("testSetup"));   
+    suite.addTest(new JUnitJPQLUnitTestSuite("testSetup"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testSelectPhoneNumberAreaCode"));
-    suite.addTest(new JUnitJPQLUnitTestSuite("testSelectPhoneNumberAreaCodeWithEmployee"));   
-    suite.addTest(new JUnitJPQLUnitTestSuite("testSelectPhoneNumberNumberWithEmployeeWithExplicitJoin"));   
+    suite.addTest(new JUnitJPQLUnitTestSuite("testSelectPhoneNumberAreaCodeWithEmployee"));
+    suite.addTest(new JUnitJPQLUnitTestSuite("testSelectPhoneNumberNumberWithEmployeeWithExplicitJoin"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testSelectPhoneNumberNumberWithEmployeeWithFirstNameFirst"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testSelectEmployeeWithSameParameterUsedMultipleTimes"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testOuterJoinOnOneToOne"));
@@ -103,10 +103,10 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         // JPA 2.0 Tests
         suite.addTest(new JUnitJPQLUnitTestSuite("testResetFirstResultOnQuery"));
     }
-    
+
     return suite;
   }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -114,32 +114,32 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         clearCache();
         //get session to start setup
         DatabaseSession session = JUnitTestCase.getServerSession();
-        
+
         //create a new EmployeePopulator
         EmployeePopulator employeePopulator = new EmployeePopulator();
-        
+
         new AdvancedTableCreator().replaceTables(session);
-        
+
         //initialize the global comparer object
         comparer = new JUnitDomainObjectComparer();
-        
+
         //set the session for the comparer to use
-        comparer.setSession((AbstractSession)session.getActiveSession());              
-        
+        comparer.setSession((AbstractSession)session.getActiveSession());
+
         //Populate the tables
         employeePopulator.buildExamples();
-        
+
         //Persist the examples in the database
         employeePopulator.persistExample(session);
     }
-    
+
     public Vector getAttributeFromAll(String attributeName, Vector objects, Class referenceClass){
-    
+
         EntityManager em = createEntityManager();
-        
+
         ClassDescriptor descriptor = getServerSession().getClassDescriptor(referenceClass);
         DirectToFieldMapping mapping = (DirectToFieldMapping)descriptor.getMappingForAttributeName(attributeName);
-        
+
         Vector attributes = new Vector();
         Object currentObject;
         for(int i = 0; i < objects.size(); i++) {
@@ -154,14 +154,14 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         }
         return attributes;
     }
-    
+
     public void testFirstResultOnNamedQuery(){
         EntityManager em = createEntityManager();
         clearCache();
 
         Query query = em.createNamedQuery("findAllEmployeesByFirstName");
         List initialList = query.setParameter("firstname", "Nancy").setFirstResult(0).getResultList();
-        
+
         List secondList = query.setParameter("firstname", "Nancy").setFirstResult(1).getResultList();
 
         Iterator i = initialList.iterator();
@@ -173,7 +173,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             assertTrue("Employee with incorrect name returned on second query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
         }
     }
-    
+
     public void testResetFirstResultOnQuery() {
         // bug 362804 - firstResult in EJBQueryImpl cannot be reset to 0
         EntityManager em = createEntityManager();
@@ -181,29 +181,29 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
 
         Query query = em.createQuery("SELECT e FROM Employee e");
         assertEquals("Query's firstResult should be zero", 0, query.getFirstResult());
-        
+
         List controlList = query.getResultList();
         List shortenedResults = query.setFirstResult(2).getResultList();
         assertEquals("Full list should be shorter than the control results list", (controlList.size() - 2), shortenedResults.size());
-        
+
         query.setFirstResult(0);
         assertEquals("Query's firstResult should have been reset to zero", 0, query.getFirstResult());
-        
+
         List fullResults = query.getResultList();
         assertEquals("Full list should be the same as the control results list", controlList.size(), fullResults.size());
-        
+
         List shortenedResults2 = query.setFirstResult(3).getResultList();
         assertEquals("Full list should be shorter than the control results list #2", (controlList.size() - 3), shortenedResults2.size());
-        
+
         query.setFirstResult(0);
         assertEquals("Query's firstResult should have been reset to zero", 0, query.getFirstResult());
     }
-    
+
     public void testOuterJoinOnOneToOne(){
         EntityManager em = createEntityManager();
         clearCache();
         beginTransaction(em);
-        int initialSize = em.createQuery("SELECT e from Employee e JOIN e.address a").getResultList().size(); 
+        int initialSize = em.createQuery("SELECT e from Employee e JOIN e.address a").getResultList().size();
         Employee emp = new Employee();
         emp.setFirstName("Steve");
         emp.setLastName("Harp");
@@ -221,7 +221,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         try{
             resultList = em.createQuery("SELECT p FROM Project p").getResultList();
         } catch (Exception exception){
-            fail("Exception caught while executing polymorphic query.  This may mean that outer join is not working correctly on your database platfrom: " + exception.toString());            
+            fail("Exception caught while executing polymorphic query.  This may mean that outer join is not working correctly on your database platfrom: " + exception.toString());
         }
         assertTrue("Incorrect number of projects returned.", resultList.size() == 15);
     }
@@ -229,28 +229,28 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
   //This test case demonstrates the bug 4616218
   public void testSelectPhoneNumberAreaCode()
   {
-        
+
         ExpressionBuilder employeeBuilder = new ExpressionBuilder();
         Expression phones = employeeBuilder.anyOf("phoneNumbers");
         Expression whereClause = phones.get("areaCode").equal("613");
-            
+
         ReportQuery rq = new ReportQuery();
         rq.setSelectionCriteria(whereClause);
         rq.addAttribute("areaCode", new ExpressionBuilder().anyOf("phoneNumbers").get("areaCode"));
-        rq.setReferenceClass(Employee.class);    
+        rq.setReferenceClass(Employee.class);
         rq.dontUseDistinct(); // distinct no longer used on joins in JPQL for gf bug 1395
         EntityManager em = createEntityManager();
         Vector expectedResult = getAttributeFromAll("areaCode", (Vector)getServerSession().executeQuery(rq),Employee.class);
-        
+
         clearCache();
-        
-        List result = em.createQuery("SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
-            "WHERE phone.areaCode = \"613\"").getResultList();                     
-      
-        Assert.assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));        
+
+        List result = em.createQuery("SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " +
+            "WHERE phone.areaCode = \"613\"").getResultList();
+
+        Assert.assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));
   }
-  
-  
+
+
     public void testSelectPhoneNumberAreaCodeWithEmployee()
     {
         EntityManager em = createEntityManager();
@@ -258,7 +258,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         Expression exp = employees.get("firstName").equal("Bob");
         exp = exp.and(employees.get("lastName").equal("Smith"));
         Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
-    
+
         PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
         String areaCode = phone.getAreaCode();
         String firstName = emp.getFirstName();
@@ -267,27 +267,27 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         Expression phones = employeeBuilder.anyOf("phoneNumbers");
         Expression whereClause = phones.get("areaCode").equal(areaCode).and(
         phones.get("owner").get("firstName").equal(firstName));
-            
+
         ReportQuery rq = new ReportQuery();
         rq.setSelectionCriteria(whereClause);
         rq.addAttribute("areaCode", phones.get("areaCode"));
         rq.setReferenceClass(Employee.class);
         rq.dontMaintainCache();
-        
-        Vector expectedResult = getAttributeFromAll("areaCode", (Vector)getServerSession().executeQuery(rq),Employee.class);       
-        
+
+        Vector expectedResult = getAttributeFromAll("areaCode", (Vector)getServerSession().executeQuery(rq),Employee.class);
+
         clearCache();
-    
+
         String ejbqlString;
-        ejbqlString = "SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
-            "WHERE phone.areaCode = \"" + areaCode + "\" AND phone.owner.firstName = \"" + firstName + "\"";    
-        
-        List result = em.createQuery(ejbqlString).getResultList();                     
-        
+        ejbqlString = "SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " +
+            "WHERE phone.areaCode = \"" + areaCode + "\" AND phone.owner.firstName = \"" + firstName + "\"";
+
+        List result = em.createQuery(ejbqlString).getResultList();
+
         Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
-        
+
     }
-    
+
     public void testSelectPhoneNumberNumberWithEmployeeWithExplicitJoin()
     {
         EntityManager em = createEntityManager();
@@ -295,37 +295,37 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         Expression exp = employees.get("firstName").equal("Bob");
         exp = exp.and(employees.get("lastName").equal("Smith"));
         Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
-    
+
         PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
         String areaCode = phone.getAreaCode();
         String firstName = emp.getFirstName();
-        
+
         ExpressionBuilder employeeBuilder = new ExpressionBuilder(Employee.class);
         Expression phones = employeeBuilder.anyOf("phoneNumbers");
         Expression whereClause = phones.get("areaCode").equal(areaCode).and(
             phones.get("owner").get("id").equal(employeeBuilder.get("id")).and(
                 employeeBuilder.get("firstName").equal(firstName)));
 
-        
+
         ReportQuery rq = new ReportQuery();
         rq.addAttribute("number", new ExpressionBuilder().anyOf("phoneNumbers").get("number"));
         rq.setSelectionCriteria(whereClause);
         rq.setReferenceClass(Employee.class);
-        
+
         Vector expectedResult = getAttributeFromAll("number", (Vector)getServerSession().executeQuery(rq),Employee.class);
-        
-        clearCache();        
-    
+
+        clearCache();
+
         String ejbqlString;
-        ejbqlString = "SELECT phone.number FROM Employee employee, IN (employee.phoneNumbers) phone " + 
+        ejbqlString = "SELECT phone.number FROM Employee employee, IN (employee.phoneNumbers) phone " +
             "WHERE phone.areaCode = \"" + areaCode + "\" AND (phone.owner.id = employee.id AND employee.firstName = \"" + firstName + "\")";
-    
-        List result = em.createQuery(ejbqlString).getResultList();                     
-        
+
+        List result = em.createQuery(ejbqlString).getResultList();
+
         Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
-        
+
     }
-    
+
     public void testSelectPhoneNumberNumberWithEmployeeWithFirstNameFirst()
     {
         EntityManager em = createEntityManager();
@@ -333,48 +333,48 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         Expression exp = employees.get("firstName").equal("Bob");
         exp = exp.and(employees.get("lastName").equal("Smith"));
         Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
-    
+
         PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
         String areaCode = phone.getAreaCode();
         String firstName = emp.getFirstName();
-        
+
         ExpressionBuilder employeeBuilder = new ExpressionBuilder();
         Expression phones = employeeBuilder.anyOf("phoneNumbers");
         Expression whereClause = phones.get("owner").get("firstName").equal(firstName).and(
                 phones.get("areaCode").equal(areaCode));
-        
+
         ReportQuery rq = new ReportQuery();
         rq.setSelectionCriteria(whereClause);
         rq.addAttribute("number", phones.get("number"));
         rq.setReferenceClass(Employee.class);
-        
-        Vector expectedResult = getAttributeFromAll("number", (Vector)getServerSession().executeQuery(rq),Employee.class);    
-        
+
+        Vector expectedResult = getAttributeFromAll("number", (Vector)getServerSession().executeQuery(rq),Employee.class);
+
         clearCache();
-        
+
         String ejbqlString;
-        ejbqlString = "SELECT phone.number FROM Employee employee, IN(employee.phoneNumbers) phone " + 
+        ejbqlString = "SELECT phone.number FROM Employee employee, IN(employee.phoneNumbers) phone " +
             "WHERE phone.owner.firstName = \"" + firstName + "\" AND phone.areaCode = \"" + areaCode + "\"";
-            
-        List result = em.createQuery(ejbqlString).getResultList();                     
-        
+
+        List result = em.createQuery(ejbqlString).getResultList();
+
         Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
-        
+
     }
 
     public void testSelectEmployeeWithSameParameterUsedMultipleTimes() {
         Exception exception = null;
-        
+
         try {
             String ejbqlString = "SELECT emp FROM Employee emp WHERE emp.id > :param1 OR :param1 IS null";
             createEntityManager().createQuery(ejbqlString).setParameter("param1", new Integer(1)).getResultList();
         } catch (Exception e) {
             exception = e;
         }
-        
+
         Assert.assertNull("Exception was caught.", exception);
     }
-    
+
     /**
      * Prior to the fix for GF 2333, the query in this test would a Null PK exception
      *
@@ -388,10 +388,10 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             logThrowable(exception);
             exception = e;
         }
-        
+
         Assert.assertNull("Exception was caught.", exception);
     }
-    
+
     /**
      * Tests fix for bug6070214 that using Oracle Rownum pagination with non-unique columns
      * throws an SQl exception.
@@ -413,7 +413,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         Assert.assertNull("Exception was caught: " + exception, exception);
         Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
     }
-    
+
     /**
      * Tests fix for bug6070214 that using Oracle Rownum pagination with group by
      * throws an SQl exception.
@@ -435,7 +435,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         Assert.assertNull("Exception was caught.", exception);
         Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
     }
-    
+
     /**
      * Tests fix for bug 253258 that using filtering using MaxResults/FirstResult returns
      * the correct number of results on an inheritance root class.
@@ -457,7 +457,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         Assert.assertNull("Exception was caught.", exception);
         Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
     }
-    
+
     /**
      * Prior to the fix for GF 2333, the query in this test would generate an invalid query key exception
      *
@@ -471,10 +471,10 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             logThrowable(e);
             exception = e;
         }
-        
+
         Assert.assertNull("Exception was caught.", exception);
     }
-    
+
     /*
      * For GF3233, Distinct process fail with NPE when relationship has NULL-valued target.
      */
@@ -492,7 +492,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             rollbackTransaction(em);
         }
     }
-    
+
     /*
      * Testcase For ELBug#331352
      * To do Null Object Comparison with OneToOne relationship without Foreign Key.
@@ -504,44 +504,44 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             EntyC c1 = new EntyC();
             c1.setName("East");
             em.persist(c1);
-            
+
             EntyC c2 = new EntyC();
             c2.setName("West");
             em.persist(c2);
-            
+
             EntyC c3 = new EntyC();
             c3.setName("North");
             em.persist(c3);
-            
+
             EntyC c4 = new EntyC();
             c4.setName("South");
             em.persist(c4);
-            
+
             EntyA a1 = new EntyA();
             a1.setName("Left");
             a1.setEntyC(c1);
             em.persist(a1);
-            
+
             EntyA a2 = new EntyA();
             a2.setName("Center");
             a2.setEntyC(c2);
             em.persist(a2);
-            
+
             EntyA a3 = new EntyA();
             a3.setName("Right");
             a3.setEntyC(c3);
             em.persist(a3);
-            
+
             em.flush();
-            
+
             String values = c1.getId() + ", " + c2.getId() + ", " + c4.getId();
-            
+
             // Testcase for "is not null"
             String jpqlString = "SELECT c FROM EntyC c WHERE c.id IN (" + values + ") AND c.entyA IS NOT NULL";
             List<EntyC> result = em.createQuery(jpqlString).getResultList();
             assertEquals("Incorrect result found with \"is not null\" object comparison and source without foreign key dependency to its target in One To One Mapping",
                     2, result.size());
-            
+
             // Testcase for "is null". Need to use LEFT OUTER JOIN.
             jpqlString = "SELECT c FROM EntyC c LEFT OUTER JOIN c.entyA a WHERE c.id IN (" + values + ") AND a IS NULL";
             result = em.createQuery(jpqlString).getResultList();
@@ -553,7 +553,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             }
             closeEntityManager(em);
         }
-    }   
+    }
 
     /**
      * Testcase For ELBug#13942918 (Oracle BugBase)
@@ -596,19 +596,19 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
      * The state field path 'dn.jpsentry' cannot be resolved to a collection type
      */
     public void testCollectionMappingInWhereClause_2() {
-   	 EntityManager em = createEntityManager();
-   	 beginTransaction(em);
-   	 try {
-   		 Query query = em.createQuery("Select e from Employee e where e.phoneNumbers.areaCode = '613'");
-   		 query.getResultList();
-   		 fail("Failed to throw expected IllegalArgumentException for a query " +
-   		      "navigating a collection valued association field in the SELECT clause.");
-   	 }
-   	 catch (Exception e) {
-   		 // That's what we want
-   	 }
-   	 finally {
-   		 rollbackTransaction(em);
-   	 }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createQuery("Select e from Employee e where e.phoneNumbers.areaCode = '613'");
+            query.getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query " +
+                 "navigating a collection valued association field in the SELECT clause.");
+        }
+        catch (Exception e) {
+            // That's what we want
+        }
+        finally {
+            rollbackTransaction(em);
+        }
     }
 }

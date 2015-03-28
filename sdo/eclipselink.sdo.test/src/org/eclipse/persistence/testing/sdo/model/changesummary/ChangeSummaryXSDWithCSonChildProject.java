@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import java.io.FileInputStream;
@@ -46,11 +46,11 @@ public class ChangeSummaryXSDWithCSonChildProject extends SDOTestCase {
     protected ChangeSummary stock1CS2;
     protected ChangeSummary stock2CS2;
     protected ChangeSummary stock3CS2;
-    
+
     public static final String URINAME = "http://www.example.org";
     public static final String TYPENAME = "corporation";
-    
-    
+
+
 
     public ChangeSummaryXSDWithCSonChildProject(String name) {
         super(name);
@@ -58,7 +58,7 @@ public class ChangeSummaryXSDWithCSonChildProject extends SDOTestCase {
 
     public void setUp() {
         super.setUp();// watch setup redundancy
-        //define types from deep with cs 
+        //define types from deep with cs
         try {
             InputStream is = new FileInputStream("org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeepWithCSonChild.xsd");
             List types = xsdHelper.define(is, null);
@@ -76,15 +76,15 @@ public class ChangeSummaryXSDWithCSonChildProject extends SDOTestCase {
             // see bug #5878605: SDO: COPYHELPER.COPY() LOGS CS CHANGES - SHOULD SUSPEND LOGGING DURING COPY
             // turn off logging before deep copy as a workaround
             salesPO1CS.endLogging();
-            salesPO2CS.endLogging();            
+            salesPO2CS.endLogging();
             developmentPO1CS.endLogging();
             //developmentPO2CS.endLogging();
             stock1CS.endLogging();
             stock2CS.endLogging();
-            stock3CS.endLogging();            
-            
+            stock3CS.endLogging();
+
             rootObject2 = copyHelper.copy(rootObject);
-            
+
             salesPO1CS2 = rootObject2.getDataObject("sales/purchaseOrder[1]").getChangeSummary();
             salesPO2CS2 = rootObject2.getDataObject("sales/purchaseOrder[2]").getChangeSummary();
             developmentPO1CS2 = rootObject.getDataObject("development/purchaseOrder[1]").getChangeSummary();
@@ -95,21 +95,21 @@ public class ChangeSummaryXSDWithCSonChildProject extends SDOTestCase {
 
             // make sure all logs are off
             salesPO1CS.endLogging();
-            salesPO2CS.endLogging();            
+            salesPO2CS.endLogging();
             developmentPO1CS.endLogging();
             //developmentPO2CS.endLogging();
             stock1CS.endLogging();
             stock2CS.endLogging();
             stock3CS.endLogging();
-            
+
             salesPO1CS2.endLogging();
-            salesPO2CS2.endLogging();            
+            salesPO2CS2.endLogging();
             developmentPO1CS2.endLogging();
             //developmentPO2CS2.endLogging();
             stock1CS2.endLogging();
             stock2CS2.endLogging();
             stock3CS2.endLogging();
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             fail("An error occurred loading the xsd");
@@ -149,7 +149,7 @@ public class ChangeSummaryXSDWithCSonChildProject extends SDOTestCase {
         assertEquals(yardSFsetting.getValue(), null);
 
         //TODO: uncomment this line.  Will fail unless Node Null policy stuff is fixed
-        //assertEquals(false, yardSFsetting.isSet());        
+        //assertEquals(false, yardSFsetting.isSet());
         ChangeSummary.Setting yardWidthsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, widthProp);
         assertEquals("65", yardWidthsetting.getValue());
         assertEquals(true, yardWidthsetting.isSet());
@@ -172,7 +172,7 @@ public class ChangeSummaryXSDWithCSonChildProject extends SDOTestCase {
         assertEquals(yardSFsetting.getValue(), null);
 
         //TODO: uncomment this line.  Will fail unless Node Null policy stuff is fixed
-        //assertEquals(false, yardSFsetting.isSet());        
+        //assertEquals(false, yardSFsetting.isSet());
         ChangeSummary.Setting yardWidthsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, widthProp);
         assertEquals("65", yardWidthsetting.getValue());
         assertEquals(true, yardWidthsetting.isSet());

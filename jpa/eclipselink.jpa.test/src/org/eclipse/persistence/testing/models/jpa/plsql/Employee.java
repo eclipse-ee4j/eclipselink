@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -69,9 +69,9 @@ import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLRecord;
                     @PLSQLParameter(name = "P_CITY", direction=Direction.OUT, databaseType = "VARCHAR_TYPE")
         }),
         @NamedPLSQLStoredProcedureQuery(name = "TEST_ORACLE_TYPES", procedureName = "FAKE_PACK.OBJECT_TEST",
-        	parameters = {
-        		@PLSQLParameter(name = "P_IN",  direction=Direction.IN,  databaseType = "VARRAY_NUMERO_UNO"),
-        		@PLSQLParameter(name = "P_OUT", direction=Direction.OUT, databaseType = "OBJECT_NUMERO_DOS")
+            parameters = {
+                @PLSQLParameter(name = "P_IN",  direction=Direction.IN,  databaseType = "VARRAY_NUMERO_UNO"),
+                @PLSQLParameter(name = "P_OUT", direction=Direction.OUT, databaseType = "OBJECT_NUMERO_DOS")
         })
 })
 @NamedPLSQLStoredFunctionQuery(name = "PLSQL_SIMPLE_IN_FUNC", functionName = "PLSQL_SIMPLE_IN_FUNC",
@@ -99,26 +99,26 @@ import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLRecord;
         }
 )
 @OracleArrays( {
-	@OracleArray(name="VARRAY_NUMERO_UNO", nestedType="VARCHAR"),
-	@OracleArray(name="VARRAY_NUMERO_DOS", nestedType="NUMBER")
+    @OracleArray(name="VARRAY_NUMERO_UNO", nestedType="VARCHAR"),
+    @OracleArray(name="VARRAY_NUMERO_DOS", nestedType="NUMBER")
 })
 @OracleObjects({
-	@OracleObject(name="OBJECT_NUMERO_UNO", 
-			fields={
-				@PLSQLParameter(name="OO_FLD1", databaseType="VARCHAR_TYPE"),
-				@PLSQLParameter(name="OO_FLD2", databaseType="NUMERIC_TYPE")
-			}
-	),
-	@OracleObject(name="OBJECT_NUMERO_DOS", 
-		fields={
-			@PLSQLParameter(name="OO_FLD1", databaseType="NUMERIC_TYPE"),
-			@PLSQLParameter(name="OO_FLD2", databaseType="NUMERIC_TYPE")
-		}
-	)
+    @OracleObject(name="OBJECT_NUMERO_UNO",
+            fields={
+                @PLSQLParameter(name="OO_FLD1", databaseType="VARCHAR_TYPE"),
+                @PLSQLParameter(name="OO_FLD2", databaseType="NUMERIC_TYPE")
+            }
+    ),
+    @OracleObject(name="OBJECT_NUMERO_DOS",
+        fields={
+            @PLSQLParameter(name="OO_FLD1", databaseType="NUMERIC_TYPE"),
+            @PLSQLParameter(name="OO_FLD2", databaseType="NUMERIC_TYPE")
+        }
+    )
 })
 /**
  * Used to test simple PLSQL record types.
- * 
+ *
  * @author James
  */
 @Entity

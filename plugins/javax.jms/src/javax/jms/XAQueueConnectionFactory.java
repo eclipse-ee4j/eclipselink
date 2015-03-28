@@ -1,23 +1,23 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
@@ -27,12 +27,12 @@ package javax.jms;
 /** An <CODE>XAQueueConnectionFactory</CODE> provides the same create options as
   * a <CODE>QueueConnectionFactory</CODE> (optional).
   *
-  * <P>The <CODE>XATopicConnectionFactory</CODE> interface is optional.  JMS providers 
-  * are not required to support this interface. This interface is for 
-  * use by JMS providers to support transactional environments. 
+  * <P>The <CODE>XATopicConnectionFactory</CODE> interface is optional.  JMS providers
+  * are not required to support this interface. This interface is for
+  * use by JMS providers to support transactional environments.
   * Client programs are strongly encouraged to use the transactional support
   * available in their environment, rather than use these XA
-  * interfaces directly. 
+  * interfaces directly.
   *
   * @version     1.1 - 8 April 2002
   * @author      Mark Hapner
@@ -43,43 +43,43 @@ package javax.jms;
   * @see         javax.jms.XAConnectionFactory
   */
 
-public interface XAQueueConnectionFactory 
+public interface XAQueueConnectionFactory
        extends XAConnectionFactory, QueueConnectionFactory {
 
     /** Creates an XA queue connection with the default user identity.
-      * The connection is created in stopped mode. No messages 
+      * The connection is created in stopped mode. No messages
       * will be delivered until the <code>Connection.start</code> method
       * is explicitly called.
       *
       * @return a newly created XA queue connection
       *
-      * @exception JMSException if the JMS provider fails to create an XA queue 
+      * @exception JMSException if the JMS provider fails to create an XA queue
       *                         connection due to some internal error.
-      * @exception JMSSecurityException  if client authentication fails due to 
+      * @exception JMSSecurityException  if client authentication fails due to
       *                         an invalid user name or password.
-       */ 
+       */
 
     XAQueueConnection
     createXAQueueConnection() throws JMSException;
 
 
     /** Creates an XA queue connection with the specified user identity.
-      * The connection is created in stopped mode. No messages 
+      * The connection is created in stopped mode. No messages
       * will be delivered until the <code>Connection.start</code> method
       * is explicitly called.
-      *  
+      *
       * @param userName the caller's user name
       * @param password the caller's password
-      *  
+      *
       * @return a newly created XA queue connection
       *
-      * @exception JMSException if the JMS provider fails to create an XA queue 
+      * @exception JMSException if the JMS provider fails to create an XA queue
       *                         connection due to some internal error.
-      * @exception JMSSecurityException  if client authentication fails due to 
+      * @exception JMSSecurityException  if client authentication fails due to
       *                         an invalid user name or password.
-      */ 
+      */
 
     XAQueueConnection
-    createXAQueueConnection(String userName, String password) 
-					     throws JMSException;
+    createXAQueueConnection(String userName, String password)
+                         throws JMSException;
 }

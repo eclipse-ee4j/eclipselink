@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.spatial.jgeometry.wrapped;
 
 import junit.extensions.TestSetup;
@@ -35,7 +35,7 @@ public class UpdateTests extends WrappedSpatialTestCase {
     public UpdateTests(String name){
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("UpdateTests");
@@ -56,11 +56,11 @@ public class UpdateTests extends WrappedSpatialTestCase {
             }
         };
     }
- 
+
     public void testUpdateSingleToNull() throws Exception {
         UnitOfWork uow = session.acquireUnitOfWork();
 
-        WrappedSpatial ws = 
+        WrappedSpatial ws =
             (WrappedSpatial)uow.readObject(WrappedSpatial.class, new ExpressionBuilder().get("geometry").notNull());
         assertNotNull("No WrappedSpatial instances found", ws);
 
@@ -92,7 +92,7 @@ public class UpdateTests extends WrappedSpatialTestCase {
     public void testReplaceExisting() {
         UnitOfWork uow = session.acquireUnitOfWork();
 
-        WrappedSpatial ws = 
+        WrappedSpatial ws =
             (WrappedSpatial)uow.readObject(WrappedSpatial.class, new ExpressionBuilder().get("id").equal(1001));
         assertNotNull("No WrappedSpatial instances found", ws);
 

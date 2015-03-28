@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
+ *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
@@ -31,12 +31,12 @@ import org.junit.Test;
 
 /**
  * Simple tests to verify the functionality of single level FetchGroup usage
- * 
+ *
  * @author dclarke
  * @since EclipseLink 2.1
  */
 public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
-    
+
     public SimpleDefaultFetchGroupTests() {
         super();
     }
@@ -48,7 +48,7 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
     public static junit.framework.Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("SimpleDefaultFetchGroupTests");
-        
+
         suite.addTest(new SimpleDefaultFetchGroupTests("testSetup"));
         suite.addTest(new SimpleDefaultFetchGroupTests("findDefaultFetchGroup"));
         suite.addTest(new SimpleDefaultFetchGroupTests("singleResultDefaultFetchGroup"));
@@ -65,19 +65,19 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new SimpleDefaultFetchGroupTests("joinFetchEmployeeAddressWithDynamicFetchGroup"));
         suite.addTest(new SimpleDefaultFetchGroupTests("joinFetchEmployeeAddressPhoneWithDynamicFetchGroup"));
         suite.addTest(new SimpleDefaultFetchGroupTests("joinFetchEmployeeAddressPhoneWithDynamicFetchGroup_AddressInFetchGroup"));
-        
+
         return suite;
     }
-    
+
     /**
-     * Set default fetch groups. 
-     * 
+     * Set default fetch groups.
+     *
      * @see EmployeeCustomizer
      * @see PhoneCustomizer
      */
     public void setUp() {
         super.setUp();
-        
+
         try {
             (new EmployeeCustomizer()).customize(employeeDescriptor);
             (new PhoneCustomizer()).customize(phoneDescriptor);
@@ -97,7 +97,7 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
         assertConfig(phoneDescriptor, defaultPhoneFG, 0);
 
     }
-    
+
     @Test
     public void findDefaultFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
@@ -260,11 +260,11 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
             Employee emp = (Employee)query.getSingleResult();
             int nSql = 2;
             if(!addAddressToFetchGroup) {
-                // An extra sql to read employee's Address - 
+                // An extra sql to read employee's Address -
                 // because address attribute is not in the fetch group the Address object was not built
                 // by join fetch - though the db row for address was read in.
                 //
-                // yet another extra sql generated when the whole employee object is read when address is set. 
+                // yet another extra sql generated when the whole employee object is read when address is set.
                 nSql = nSql + 2;
             }
 
@@ -272,7 +272,7 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
             if(addAddressToFetchGroup) {
                 assertFetched(emp, fg);
             } else {
-                // the whole object has been instantiated when address has been set 
+                // the whole object has been instantiated when address has been set
                 assertNoFetchGroup(emp);
             }
 
@@ -421,7 +421,7 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
             //Use q query since find will only use default fetch group
             //Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
             //query.setParameter("ID", minimumEmployeeId(em));
-            
+
             //Complex where clause used to avoid triggering employees and their departments:
             //   Don't include employees who are managers themselves - otherwise if first selected as employee, then as e.manager the full read will be triggered;
             //   Don't include managers with departments - because there is no fetch group on e.manager its (non-null) department will trigger an extra sql
@@ -645,7 +645,7 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
                 if(addAddressToFetchGroup) {
                     assertFetched(emp, fetchGroup);
                 } else {
-                    // the whole object has been instantiated when address has been set 
+                    // the whole object has been instantiated when address has been set
                     assertNoFetchGroup(emp);
                 }
         }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -54,238 +54,238 @@ import org.eclipse.persistence.exceptions.SessionLoaderException;
 
 public final class SCPlugin implements Plugin {
 
-	/** Manager responsible to load the class repository information for a sessions.xml. */
-	private SCSessionsPropertiesManager propertiesManager;
+    /** Manager responsible to load the class repository information for a sessions.xml. */
+    private SCSessionsPropertiesManager propertiesManager;
 
-	/** cache of properties pages, key by node-determined value */
-	private Map propertiesPageCache;
+    /** cache of properties pages, key by node-determined value */
+    private Map propertiesPageCache;
 
-	private static final String SC_PREFERENCES_NODE = "sc";
+    private static final String SC_PREFERENCES_NODE = "sc";
 
-	public static final String DATA_SOURCE_TYPE_PREFERENCE  = "data source type";
-	public static final String DEFAULT_CLASSPATH_PREFERENCE = "default classpath";
-	public static final String NEW_NAME_BROKER_PREFERENCE   = "new name.broker";
-	public static final String NEW_NAME_POOL_PREFERENCE     = "new name.pool";
-	public static final String NEW_NAME_SESSION_PREFERENCE  = "new name.session";
-	public static final String DATABASE_PLATFORM_PREFERENCE = "platform.database";
-	public static final String EIS_PLATFORM_PREFERENCE      = "platform.eis";
-	public static final String SERVER_PLATFORM_PREFERENCE   = "platform.server";
-	public static final String NEW_NAME_SESSIONS_CONFIGURATION_PREFERENCE = "new name.sessions configuration";
+    public static final String DATA_SOURCE_TYPE_PREFERENCE  = "data source type";
+    public static final String DEFAULT_CLASSPATH_PREFERENCE = "default classpath";
+    public static final String NEW_NAME_BROKER_PREFERENCE   = "new name.broker";
+    public static final String NEW_NAME_POOL_PREFERENCE     = "new name.pool";
+    public static final String NEW_NAME_SESSION_PREFERENCE  = "new name.session";
+    public static final String DATABASE_PLATFORM_PREFERENCE = "platform.database";
+    public static final String EIS_PLATFORM_PREFERENCE      = "platform.eis";
+    public static final String SERVER_PLATFORM_PREFERENCE   = "platform.server";
+    public static final String NEW_NAME_SESSIONS_CONFIGURATION_PREFERENCE = "new name.sessions configuration";
 
-	public static final String DATABASE_PLATFORM_PREFERENCE_DEFAULT = "Oracle11";
-	public static final String EIS_PLATFORM_PREFERENCE_DEFAULT      = "AQPlatform";
-	public static final String SERVER_PLATFORM_PREFERENCE_DEFAULT   = "WebLogic_10_Platform";
+    public static final String DATABASE_PLATFORM_PREFERENCE_DEFAULT = "Oracle11";
+    public static final String EIS_PLATFORM_PREFERENCE_DEFAULT      = "AQPlatform";
+    public static final String SERVER_PLATFORM_PREFERENCE_DEFAULT   = "WebLogic_10_Platform";
 
-	public static final String DATA_SOURCE_TYPE_PREFERENCE_EIS_CHOICE = "eis";
-	public static final String DATA_SOURCE_TYPE_PREFERENCE_RELATIONAL_CHOICE = "relational";
-	public static final String DATA_SOURCE_TYPE_PREFERENCE_XML_CHOICE = "xml";
+    public static final String DATA_SOURCE_TYPE_PREFERENCE_EIS_CHOICE = "eis";
+    public static final String DATA_SOURCE_TYPE_PREFERENCE_RELATIONAL_CHOICE = "relational";
+    public static final String DATA_SOURCE_TYPE_PREFERENCE_XML_CHOICE = "xml";
 
-	// ********** constructor **********
-	public SCPlugin() {
-		super();
-		initialize();
-	}
+    // ********** constructor **********
+    public SCPlugin() {
+        super();
+        initialize();
+    }
 
-	// ********** Initialization **********
+    // ********** Initialization **********
 
-	private void initialize() {
-		this.propertiesPageCache = new HashMap();
-	}
+    private void initialize() {
+        this.propertiesPageCache = new HashMap();
+    }
 
-	// ********** Plugin implementation **********
-	public JMenuItem[] buildNewMenuItems(WorkbenchContext context) {
-		return new JMenuItem[] {buildNewConfigurationMenuItem(context)};
-	}
+    // ********** Plugin implementation **********
+    public JMenuItem[] buildNewMenuItems(WorkbenchContext context) {
+        return new JMenuItem[] {buildNewConfigurationMenuItem(context)};
+    }
 
-	public JMenuItem[] buildMigrateMenuItems(WorkbenchContext context) {
-		return new JMenuItem[0];
-	}
+    public JMenuItem[] buildMigrateMenuItems(WorkbenchContext context) {
+        return new JMenuItem[0];
+    }
 
-	public ApplicationNode open(File file, WorkbenchContext context) throws UnsupportedFileException, OpenException {
-		if ( ! FileTools.extension(file).equalsIgnoreCase(".xml")) {
-			throw new UnsupportedFileException();
-		}
+    public ApplicationNode open(File file, WorkbenchContext context) throws UnsupportedFileException, OpenException {
+        if ( ! FileTools.extension(file).equalsIgnoreCase(".xml")) {
+            throw new UnsupportedFileException();
+        }
 
-		WorkbenchContext scContext = wrap( context);
+        WorkbenchContext scContext = wrap( context);
 
-		try {
-			SCSessionsProperties properties = this.getSessionsProperties( scContext.getApplicationContext(), file);
-			TopLinkSessionsAdapter topLinkSessions = new TopLinkSessionsAdapter( properties, scContext.getApplicationContext().getPreferences(), false);
-			return new ProjectNode(topLinkSessions, scContext.getApplicationContext().getNodeManager().getRootNode(), this, scContext.getApplicationContext());
-		} catch (Throwable t) {
-			throw new OpenException(t);
-		}
-	}
+        try {
+            SCSessionsProperties properties = this.getSessionsProperties( scContext.getApplicationContext(), file);
+            TopLinkSessionsAdapter topLinkSessions = new TopLinkSessionsAdapter( properties, scContext.getApplicationContext().getPreferences(), false);
+            return new ProjectNode(topLinkSessions, scContext.getApplicationContext().getNodeManager().getRootNode(), this, scContext.getApplicationContext());
+        } catch (Throwable t) {
+            throw new OpenException(t);
+        }
+    }
 
-	public ComponentContainerDescription buildToolBarDescription(WorkbenchContext context) {
+    public ComponentContainerDescription buildToolBarDescription(WorkbenchContext context) {
 
-		return new ToolBarButtonGroupDescription();
-	}
+        return new ToolBarButtonGroupDescription();
+    }
 
-	public ComponentContainerDescription buildMenuDescription(WorkbenchContext context) {
+    public ComponentContainerDescription buildMenuDescription(WorkbenchContext context) {
 
-		return new MenuGroupDescription();
-	}
+        return new MenuGroupDescription();
+    }
 
-	public PreferencesNode[] buildPreferencesNodes(PreferencesContext context) {
+    public PreferencesNode[] buildPreferencesNodes(PreferencesContext context) {
 
-		return new PreferencesNode[] {new SCPreferencesNode((PreferencesContext) this.wrap(context))};
-	}
+        return new PreferencesNode[] {new SCPreferencesNode((PreferencesContext) this.wrap(context))};
+    }
 
-	// ********** queries **********
+    // ********** queries **********
 
-	/**
-	 * Returns the next untitled file name for a sessions.xml, the name will be
-	 * "Sessions1.xml", then "Sessions2.xml" and so on.
-	 *
-	 * @return A non-fully qualified file name with this format SesssionX.xml
-	 * where X is the next number of untitled sessions.xml that was created
-	 */
-	public File nextUntitledFile( ApplicationContext context) {
+    /**
+     * Returns the next untitled file name for a sessions.xml, the name will be
+     * "Sessions1.xml", then "Sessions2.xml" and so on.
+     *
+     * @return A non-fully qualified file name with this format SesssionX.xml
+     * where X is the next number of untitled sessions.xml that was created
+     */
+    public File nextUntitledFile( ApplicationContext context) {
 
-		return getPropertiesManager(context).nextUntitledSessionsFile();
-	}
+        return getPropertiesManager(context).nextUntitledSessionsFile();
+    }
 
-	// ********** behavior **********
+    // ********** behavior **********
 
-	public void showWarning( WorkbenchContext context,
-									 String message,
-									 Throwable exception) {
+    public void showWarning( WorkbenchContext context,
+                                     String message,
+                                     Throwable exception) {
 
-		StringBuffer exceptionBuffer = new StringBuffer();
-		String exceptionMessage = exception.getLocalizedMessage();
+        StringBuffer exceptionBuffer = new StringBuffer();
+        String exceptionMessage = exception.getLocalizedMessage();
 
-		// First start with the exception message
-		if( exceptionMessage != null) {
-			exceptionBuffer.append(exception.getLocalizedMessage());
-		}
+        // First start with the exception message
+        if( exceptionMessage != null) {
+            exceptionBuffer.append(exception.getLocalizedMessage());
+        }
 
-		// Remove new line at the beginning of the exception message (TopLink does that)
-		if (exceptionBuffer.toString().startsWith(StringTools.CR)) {
-			exceptionBuffer.replace(0, StringTools.CR.length(), "");
-		}
+        // Remove new line at the beginning of the exception message (TopLink does that)
+        if (exceptionBuffer.toString().startsWith(StringTools.CR)) {
+            exceptionBuffer.replace(0, StringTools.CR.length(), "");
+        }
 
-		// For this type of exception, show all the causes
-		if( exception instanceof SessionLoaderException) {
-			SessionLoaderException loaderException = (SessionLoaderException) exception;
+        // For this type of exception, show all the causes
+        if( exception instanceof SessionLoaderException) {
+            SessionLoaderException loaderException = (SessionLoaderException) exception;
 
-			Vector exceptions = loaderException.getExceptionList();
+            Vector exceptions = loaderException.getExceptionList();
 
-			if (exceptions != null) {
-				for (Iterator iter = loaderException.getExceptionList().iterator(); iter.hasNext(); ) {
-					Throwable topLinkException = (Throwable) iter.next();
-					exceptionBuffer.append(StringTools.CR);
-					exceptionBuffer.append("***");
-					exceptionBuffer.append(topLinkException.getLocalizedMessage());
-				}
-			}
-		}
+            if (exceptions != null) {
+                for (Iterator iter = loaderException.getExceptionList().iterator(); iter.hasNext(); ) {
+                    Throwable topLinkException = (Throwable) iter.next();
+                    exceptionBuffer.append(StringTools.CR);
+                    exceptionBuffer.append("***");
+                    exceptionBuffer.append(topLinkException.getLocalizedMessage());
+                }
+            }
+        }
 
-		// The exception has no message, show the stack trace
-		if( exceptionBuffer.length() == 0) {
-			StringWriter writer = new StringWriter();
-			PrintWriter printWriter = new PrintWriter(writer);
-			exception.printStackTrace(printWriter);
-			exceptionBuffer.append(writer.toString());
-		}
+        // The exception has no message, show the stack trace
+        if( exceptionBuffer.length() == 0) {
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(writer);
+            exception.printStackTrace(printWriter);
+            exceptionBuffer.append(writer.toString());
+        }
 
-		JOptionPane.showMessageDialog(context.getCurrentWindow(),
-												buildErrorPaneArea(message, exceptionBuffer.toString()),
-												context.getApplicationContext().getApplication().getShortProductName(),
-												JOptionPane.OK_OPTION);
-	}
+        JOptionPane.showMessageDialog(context.getCurrentWindow(),
+                                                buildErrorPaneArea(message, exceptionBuffer.toString()),
+                                                context.getApplicationContext().getApplication().getShortProductName(),
+                                                JOptionPane.OK_OPTION);
+    }
 
-	private Component buildErrorPaneArea(String message, String exception)
-	{
-		JPanel pane = new JPanel(new BorderLayout(0, 1));
+    private Component buildErrorPaneArea(String message, String exception)
+    {
+        JPanel pane = new JPanel(new BorderLayout(0, 1));
 
-		LabelArea label = new LabelArea(message);
-		pane.add(label, BorderLayout.PAGE_START);
+        LabelArea label = new LabelArea(message);
+        pane.add(label, BorderLayout.PAGE_START);
 
-		JTextArea textArea = new JTextArea(exception);
-		textArea.setFont(label.getFont());
-		textArea.setTabSize(2);
-		pane.add(new JScrollPane(textArea), BorderLayout.CENTER);
+        JTextArea textArea = new JTextArea(exception);
+        textArea.setFont(label.getFont());
+        textArea.setTabSize(2);
+        pane.add(new JScrollPane(textArea), BorderLayout.CENTER);
 
-		pane.setPreferredSize(new Dimension(350, Math.min(pane.getPreferredSize().height + 50, 150)));
+        pane.setPreferredSize(new Dimension(350, Math.min(pane.getPreferredSize().height + 50, 150)));
 
-		return pane;
-	}
+        return pane;
+    }
 
-	private JMenuItem buildNewConfigurationMenuItem( WorkbenchContext context) {
-		
-		return new JMenuItem( new AddNewSessionsAction(this.wrap( context), this));
-	}
+    private JMenuItem buildNewConfigurationMenuItem( WorkbenchContext context) {
 
-	private WorkbenchContext wrap(WorkbenchContext context) {
-		return context.buildExpandedApplicationContextWorkbenchContext(wrap(context.getApplicationContext()));
-	}
+        return new JMenuItem( new AddNewSessionsAction(this.wrap( context), this));
+    }
 
-	private ApplicationContext wrap( ApplicationContext context) {
-		ApplicationContext expandedContext = context.buildExpandedResourceRepositoryContext( SCPluginResourceBundle.class, new SCPluginIconResourceFileNameMap());
-		expandedContext = expandedContext.buildExpandedResourceRepositoryContext( SCProblemsResourceBundle.class);
-		return expandedContext.buildRedirectedPreferencesContext(SC_PREFERENCES_NODE);
-	}
+    private WorkbenchContext wrap(WorkbenchContext context) {
+        return context.buildExpandedApplicationContextWorkbenchContext(wrap(context.getApplicationContext()));
+    }
 
-	// ********** properties page cache **********
+    private ApplicationContext wrap( ApplicationContext context) {
+        ApplicationContext expandedContext = context.buildExpandedResourceRepositoryContext( SCPluginResourceBundle.class, new SCPluginIconResourceFileNameMap());
+        expandedContext = expandedContext.buildExpandedResourceRepositoryContext( SCProblemsResourceBundle.class);
+        return expandedContext.buildRedirectedPreferencesContext(SC_PREFERENCES_NODE);
+    }
 
-	/**
-	 * Return the properties page for the specified key.
-	 * If the requested page is in the cache remove it and
-	 * return it, otherwise return null.
-	 */
-	public Component getPropertiesPage(Object key) {
-		return (Component) this.propertiesPageCache.remove(key);
-	}
+    // ********** properties page cache **********
 
-	/**
-	 * Put the specified properties page back into the cache,
-	 * using the specified key. For now, replace the existing
-	 * properties page, allowing it to be garbage-collected.
-	 */
-	public void releasePropertiesPage(Object key, Component propertiesPage) {
-		this.propertiesPageCache.put(key, propertiesPage);
-	}
+    /**
+     * Return the properties page for the specified key.
+     * If the requested page is in the cache remove it and
+     * return it, otherwise return null.
+     */
+    public Component getPropertiesPage(Object key) {
+        return (Component) this.propertiesPageCache.remove(key);
+    }
 
-	// ********* sessions.xml classpath *******
+    /**
+     * Put the specified properties page back into the cache,
+     * using the specified key. For now, replace the existing
+     * properties page, allowing it to be garbage-collected.
+     */
+    public void releasePropertiesPage(Object key, Component propertiesPage) {
+        this.propertiesPageCache.put(key, propertiesPage);
+    }
 
-	/**
-	 * Retrieves the object containing the classpath information for any
-	 * sessions.xml that was opened.
-	 *
-	 * @return The object containing the collection of sessions.xml where their
-	 * classpath is stored, <code>null</code> is never returned
-	 */
-	private SCSessionsPropertiesManager getPropertiesManager(ApplicationContext context)
-	{
-		if (this.propertiesManager == null)
-			this.propertiesManager = loadSessionsProperties(context);
+    // ********* sessions.xml classpath *******
 
-		return this.propertiesManager;
-	}
+    /**
+     * Retrieves the object containing the classpath information for any
+     * sessions.xml that was opened.
+     *
+     * @return The object containing the collection of sessions.xml where their
+     * classpath is stored, <code>null</code> is never returned
+     */
+    private SCSessionsPropertiesManager getPropertiesManager(ApplicationContext context)
+    {
+        if (this.propertiesManager == null)
+            this.propertiesManager = loadSessionsProperties(context);
 
-	/**
-	 * Retrieves the object containing the classpath information for the desired
-	 * sessions.xml specified with the given path.
-	 *
-	 * @return The object containing the classpath information for the desired
-	 * sessions.xml, <code>null</code> is never returned
-	 */
-	public SCSessionsProperties getSessionsProperties(ApplicationContext context,
-																	  File path)
-	{
-		return getPropertiesManager(context).getSessionsProperties(path);
-	}
+        return this.propertiesManager;
+    }
 
-	/**
-	 * Loads the information contained in the file sc.xml that is located in the
-	 * application config directory.
-	 *
-	 * @return The collection of sessions.xml where their classpath is stored
-	 */
-	private SCSessionsPropertiesManager loadSessionsProperties(ApplicationContext context)
-	{
-		Preferences preferences = context.getPreferences();
-		return new SCSessionsPropertiesManager(preferences);
-	}
+    /**
+     * Retrieves the object containing the classpath information for the desired
+     * sessions.xml specified with the given path.
+     *
+     * @return The object containing the classpath information for the desired
+     * sessions.xml, <code>null</code> is never returned
+     */
+    public SCSessionsProperties getSessionsProperties(ApplicationContext context,
+                                                                      File path)
+    {
+        return getPropertiesManager(context).getSessionsProperties(path);
+    }
+
+    /**
+     * Loads the information contained in the file sc.xml that is located in the
+     * application config directory.
+     *
+     * @return The collection of sessions.xml where their classpath is stored
+     */
+    private SCSessionsPropertiesManager loadSessionsProperties(ApplicationContext context)
+    {
+        Preferences preferences = context.getPreferences();
+        return new SCSessionsPropertiesManager(preferences);
+    }
 }

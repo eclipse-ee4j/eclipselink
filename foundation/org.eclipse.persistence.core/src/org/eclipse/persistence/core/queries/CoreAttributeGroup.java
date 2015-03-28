@@ -34,7 +34,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 /**
  * INTERNAL
  * <b>Purpose</b>: A generic super class for AttributeGroup and other subclasses
- * 
+ *
  * @see org.eclipse.persistence.queries.AttributeGroup
 
  * @author Matt MacIvor
@@ -55,7 +55,7 @@ public class CoreAttributeGroup<
      * groups the name has no functional value.
      */
     protected String name;
-    
+
     /**
      * The name of the class represented by this AttrbuteGroup.  Used to specify overriding
      * groups for subclasses.
@@ -66,35 +66,35 @@ public class CoreAttributeGroup<
      * groups for subclasses.
      */
     protected Class type;
-    
+
     /**
      * To add inheritance support the two following attrbutes are used to create a model of the inheritance tree
      * This attribute points to the parent AttributeGroup of this attribute group.
      */
     protected CoreAttributeGroup superClassGroup;
-    
+
     /**
      * This attribute references the immediate subclass groups for this attributeGroup.  This is not required but acts
      * as a means to support adding inheritance branches into the an established tree.
      */
     protected transient Set<CoreAttributeGroup> subClasses;
-    
-    /** 
+
+    /**
      * This attribute is used to store all of the classes in this hierarchy keyed by type.  It is used to find the correct graph
      * for polymorphic groups.
      */
     protected Map<Object, CoreAttributeGroup> allsubclasses;
-    
+
     /**
      * Specified attributes in the group mapped to their AttributeItems
      */
     protected Map<String, ATTRIBUTE_ITEM> items;
-    
+
     /**
      * Marks this AttributeGroup as having been validated by the builder and does not require further validation
      */
     protected boolean isValidated;
-    
+
     public CoreAttributeGroup(String name) {
         this.name = name;
     }
@@ -107,9 +107,9 @@ public class CoreAttributeGroup<
         this(name);
         this.typeName = type;
         this.isValidated = isValidated;
-        
+
     }
-    
+
     /**
      * INTERNAL:
      * This constructer is to only be used by EclipseLink internally
@@ -120,9 +120,9 @@ public class CoreAttributeGroup<
         this(name);
         this.type = type;
         this.isValidated = isValidated;
-        
+
     }
-    
+
     public CoreAttributeGroup() {
         this("");
     }
@@ -136,7 +136,7 @@ public class CoreAttributeGroup<
      *    group.addAttribute("firstName");<br>
      *    group.addAttribute("manager.address");
      * </code>
-     * 
+     *
      * @param attributeNameOrPath
      *            A simple attribute, array or attributes forming a path
      */
@@ -156,7 +156,7 @@ public class CoreAttributeGroup<
         CoreAttributeItem item = getItem(CoreAttributeConverter.convert(attributeNameOrPath), true);
         item.addGroups(groups);
     }
-    
+
     /**
      * Add a basic attribute or nested attribute with each String representing
      * an attribute on the path to what needs to be included in the
@@ -166,10 +166,10 @@ public class CoreAttributeGroup<
      *    group.addAttribute("firstName", group1);<br>
      *    group.addAttribute("manager.address", group2);
      * </code>
-     * 
+     *
      * Note that existing group corresponding to attributeNameOrPath
-     * will be overridden with the passed group. 
-     * 
+     * will be overridden with the passed group.
+     *
      * @param attributeNameOrPath
      *            A simple attribute, array or attributes forming a path
      * @param group - an AttributeGroup to be added.
@@ -188,10 +188,10 @@ public class CoreAttributeGroup<
      *    group.addAttribute("firstName", group1);<br>
      *    group.addAttribute("manager.address", group2);
      * </code>
-     * 
+     *
      * Note that existing group corresponding to attributeNameOrPath will be
      * overridden with the passed group.
-     * 
+     *
      * @param attributeNameOrPath
      *            A simple attribute, array or attributes forming a path to a
      *            Map key
@@ -211,18 +211,18 @@ public class CoreAttributeGroup<
             addAttribute(attr);
         }
     }
-    
+
     public CoreAttributeGroup clone() {
        Map<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>> cloneMap = new IdentityHashMap<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>>();
        return clone(cloneMap);
     }
-    
+
     /**
      * INTERNAL:
      *    This method is used internally in the clone processing.
      * @param cloneMap
      * @return
-     */    
+     */
     public CoreAttributeGroup clone(Map<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>> cloneMap){
         CoreAttributeGroup clone = cloneMap.get(this);
         if (clone != null) {
@@ -310,7 +310,7 @@ public class CoreAttributeGroup<
      * Convert all the class-name-based settings in this Descriptor to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         if (this.type == null){
@@ -348,7 +348,7 @@ public class CoreAttributeGroup<
             }
         }
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this != obj) {
@@ -422,7 +422,7 @@ public class CoreAttributeGroup<
 
     public Set<String> getAttributeNames() {
         Set<String> attributes = new HashSet<String>();
-        
+
         if (this.superClassGroup != null && this.superClassGroup != this){
             attributes.addAll(this.superClassGroup.getAttributeNames());
         }
@@ -448,18 +448,18 @@ public class CoreAttributeGroup<
     /**
      * INTERNAL:
      * Lookup the {@link org.eclipse.persistence.internal.queries.AttributeItem AttributeItem} for the provided attribute name or path.
-     * 
+     *
      * @return item or null
      * @throws IllegalArgumentException if name is not valid attribute name or path
      */
     public ATTRIBUTE_ITEM getItem(String attributeNameOrPath) {
         return getItem(CoreAttributeConverter.convert(attributeNameOrPath), false);
     }
-    
+
     /**
      * Locate the AttributeGroup where the leaf attribute in the path should be
      * applied to.
-     * 
+     *
      * @param create
      *            indicates if intermediate AttributeGroup required within the
      *            specified path should be created as needed. When checking the
@@ -540,7 +540,7 @@ public class CoreAttributeGroup<
     public String getTypeName() {
         return typeName;
     }
-    
+
     /**
      * Indicates whether this group is part of an inheritance hierarchy
      */
@@ -554,7 +554,7 @@ public class CoreAttributeGroup<
     public boolean hasItems() {
         return this.items != null && !this.items.isEmpty();
     }
-    
+
     /**
      * INTERNAL:
      * This method will insert the group into the entity hierarchy just below this AttributeGroup.
@@ -579,7 +579,7 @@ public class CoreAttributeGroup<
         }
         this.subClasses.add(group);
     }
-    
+
     /**
      * INTERNAL:
      * Only LoadGroups allow concurrency.
@@ -587,12 +587,12 @@ public class CoreAttributeGroup<
     public boolean isConcurrent() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      *    This method is used internally when converting to a copy group.
      * @return
-     */    
+     */
     public boolean isCopyGroup() {
         return false;
     }
@@ -604,7 +604,7 @@ public class CoreAttributeGroup<
     public boolean isLoadGroup() {
         return false;
     }
-    
+
     /**
      * Return true if this AttributeGroup is a super-set of the passed in
      * AttributeGroup.
@@ -665,7 +665,7 @@ public class CoreAttributeGroup<
                                 return true;
                             }
                             for (Object next : item.getKeyGroups().values()){
-                                CoreAttributeGroup element = (CoreAttributeGroup)next; 
+                                CoreAttributeGroup element = (CoreAttributeGroup)next;
                                 CoreAttributeGroup otherElement = (CoreAttributeGroup)otherItemEntry.getValue().getKeyGroups().get(element.getType());
                                 if (!element.isSupersetOf(otherElement)) {
                                     return false;
@@ -696,14 +696,14 @@ public class CoreAttributeGroup<
     public boolean isValidated() {
         return isValidated;
     }
-    
+
     /**
      * Subclass may create different types.
      */
     protected CoreAttributeGroup newGroup(String name, CoreAttributeGroup parent) {
         return new CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>(name);
     }
-    
+
     /**
      * Subclass may create different types.
      */
@@ -720,10 +720,10 @@ public class CoreAttributeGroup<
             item.getParent().getItems().remove(item.getAttributeName());
         }
     }
-    
+
     /**
      * INTERNAL:
-     * 
+     *
      */
     public void setAllSubclasses(Map<Object, CoreAttributeGroup> subclasses){
         this.allsubclasses = subclasses;
@@ -736,7 +736,7 @@ public class CoreAttributeGroup<
             this.addAttribute((String) it.next());
         }
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }

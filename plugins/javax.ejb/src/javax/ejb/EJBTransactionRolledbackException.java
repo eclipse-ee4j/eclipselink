@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,7 @@
 
 package javax.ejb;
 
-/** 
+/**
  * This exception is thrown to a remote client to indicate that the
  * transaction associated with processing of the request has been
  * rolled back, or marked to roll back. Thus the requested operation
@@ -55,22 +55,22 @@ public class EJBTransactionRolledbackException extends EJBException {
 
     /**
      * Constructs an EJBTransactionRolledbackException with no detail message.
-     */  
+     */
     public EJBTransactionRolledbackException() {
     }
 
     /**
      * Constructs an EJBTransactionRolledbackException with the specified
      * detailed message.
-     */  
+     */
     public EJBTransactionRolledbackException(String message) {
         super(message);
     }
 
     /**
      * Constructs an EJBTransactionRolledbackException with the specified
-     * detail message and a nested exception. 
-     */  
+     * detail message and a nested exception.
+     */
     public EJBTransactionRolledbackException(String message, Exception ex) {
         super(message, ex);
     }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import junit.textui.TestRunner;
@@ -19,7 +19,7 @@ public class ChangeSummaryBeginLoggingEndLoggingCombiningTests extends ChangeSum
     public ChangeSummaryBeginLoggingEndLoggingCombiningTests(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.changesummary.ChangeSummaryBeginLoggingEndLoggingCombiningTests" };
         TestRunner.main(arguments);
@@ -62,7 +62,7 @@ public class ChangeSummaryBeginLoggingEndLoggingCombiningTests extends ChangeSum
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
@@ -87,7 +87,7 @@ public class ChangeSummaryBeginLoggingEndLoggingCombiningTests extends ChangeSum
         assertUnchanged(dataObjectC, changeSummaryC);
         assertUnchanged(dataObjectD, changeSummaryC);
 
-        // oldSettings 
+        // oldSettings
         checkOldSettingsSizeTree("0201", changeSummaryB, root, dataObjectB, dataObjectC, dataObjectD);// 0000
         checkOldSettingsSizeTree("0000", changeSummaryC, root, dataObjectB, dataObjectC, dataObjectD);
 
@@ -100,7 +100,7 @@ public class ChangeSummaryBeginLoggingEndLoggingCombiningTests extends ChangeSum
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
@@ -138,7 +138,7 @@ public class ChangeSummaryBeginLoggingEndLoggingCombiningTests extends ChangeSum
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
@@ -147,10 +147,10 @@ public class ChangeSummaryBeginLoggingEndLoggingCombiningTests extends ChangeSum
                           dataObjectC, root,// C is in csC scope
                           dataObjectD, null);// D is inside csB scope
 
-        // two ChangeSummary log off now.           
+        // two ChangeSummary log off now.
         changeSummaryB.endLogging();
         changeSummaryC.endLogging();
-        
+
              assertEquals(2, changeSummaryB.getChangedDataObjects().size());
         assertEquals(2, changeSummaryC.getChangedDataObjects().size());
 
@@ -177,13 +177,13 @@ public class ChangeSummaryBeginLoggingEndLoggingCombiningTests extends ChangeSum
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, root,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB
                           dataObjectC, null,// C is not in csB scope
                           dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
                           root, null,// root is above csB and csC
                           dataObjectB, null,// B is not in csC scope
                           dataObjectC, root,// C is in csC scope
-                          dataObjectD, null);// D is inside csB scope      
+                          dataObjectD, null);// D is inside csB scope
     }
 }

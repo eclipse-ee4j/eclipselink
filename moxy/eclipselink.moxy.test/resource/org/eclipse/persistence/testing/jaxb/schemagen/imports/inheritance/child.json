@@ -1,4 +1,4 @@
-{"ns0.childRoot":{ 
+{"ns0.childRoot":{
     "parentThing":"parentValue",
     "childThing":"childValue"
 }}

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.platform.database.oracle;
 
 import java.io.StringWriter;
@@ -37,7 +37,7 @@ public class TIMESTAMPHelper {
     }
 
     /**
-     * Build a calendar from TIMESTAMPTZWrapper. 
+     * Build a calendar from TIMESTAMPTZWrapper.
      */
     public static Calendar buildCalendar(TIMESTAMPTZWrapper timestampTZ) throws SQLException{
         Timestamp ts = timestampTZ.getTimestamp();
@@ -57,7 +57,7 @@ public class TIMESTAMPHelper {
     }
 
    /**
-    * Build a calendar from TIMESTAMPLTZWrapper. 
+    * Build a calendar from TIMESTAMPLTZWrapper.
     */
     public static Calendar buildCalendar(TIMESTAMPLTZWrapper timestampLTZ) throws SQLException{
         Calendar gCal;
@@ -67,7 +67,7 @@ public class TIMESTAMPHelper {
             gCal = Calendar.getInstance();
         }
 
-        //This is the only way to set time in Calendar.  Passing Timestamp directly to the new 
+        //This is the only way to set time in Calendar.  Passing Timestamp directly to the new
         //calendar does not work because the GMT time is wrong.
         if(timestampLTZ.isLtzTimestampInGmt()) {
             gCal.setTimeInMillis(timestampLTZ.getTimestamp().getTime());
@@ -85,8 +85,8 @@ public class TIMESTAMPHelper {
 
     /**
      * Build a calendar string based on the calendar fields.
-     * If the daylight savings time should be printed and the zone is in daylight savings time, 
-     * print the short representation of daylight savings from the calendar's timezone data. 
+     * If the daylight savings time should be printed and the zone is in daylight savings time,
+     * print the short representation of daylight savings from the calendar's timezone data.
      */
     public static String printCalendar(Calendar calendar) {
         if (calendar == null) {
@@ -96,7 +96,7 @@ public class TIMESTAMPHelper {
         writer.write(Helper.printCalendar(calendar, false));
         writer.write(" ");
         writer.write(calendar.getTimeZone().getID());
-        // If we should print daylight savings and the zone is reported to be using daylight time, 
+        // If we should print daylight savings and the zone is reported to be using daylight time,
         // write the short representation of the daylight time in the writer.
         if (shouldAppendDaylightTime(calendar)) {
             writer.write(" ");
@@ -104,7 +104,7 @@ public class TIMESTAMPHelper {
         }
         return writer.toString();
     }
-    
+
     /**
      * Return true if the calendar supports and is in daylight time
      * (according to its timezone), false otherwise

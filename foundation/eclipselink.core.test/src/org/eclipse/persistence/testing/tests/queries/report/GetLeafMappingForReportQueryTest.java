@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries.report;
 
 import org.eclipse.persistence.internal.queries.ReportItem;
@@ -39,18 +39,18 @@ public class GetLeafMappingForReportQueryTest extends ReportQueryTestCase {
         /* The expression is too complicated to easily extract what we expect back,
          * and we are not really testing that.
             ReadAllQuery query = new ReadAllQuery(Employee.class);
-        
+
             ExpressionBuilder builder = new ExpressionBuilder();
-        
+
             Expression expression =
                 builder.anyOf("projects").
                             get("teamLeader").
                                 anyOf("phoneNumbers").
                                     get("id").greaterThan(0);
-        
+
             query.setSelectionCriteria(expression);
             Vector employees = (Vector)getSession().executeQuery(query);
-        
+
             for (Enumeration e = employees.elements(); e.hasMoreElements(); ) {
                 Employee employee = (Employee) e.nextElement();
                 Object[] result = new Object[1];
@@ -82,14 +82,14 @@ protected void setup()  throws Exception {
 
         ClassDescriptor descriptor = getSession().getClassDescriptor(Address.class);
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("id");
-	
-	if (! (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession)) {
-		// Avoid check in remote because mapping is serialized, not ==.
-		if (item.getMapping() != mapping) {
-			throw new TestErrorException(
-				"The mapping was not set correctly on the ReportItem: " + item.getMapping());
-		}
-	}
+
+    if (! (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession)) {
+        // Avoid check in remote because mapping is serialized, not ==.
+        if (item.getMapping() != mapping) {
+            throw new TestErrorException(
+                "The mapping was not set correctly on the ReportItem: " + item.getMapping());
+        }
+    }
 }
 
 }

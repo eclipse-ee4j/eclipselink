@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -25,7 +25,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
     public SDODataObjectGetBooleanConversionTest(String name) {
         super(name);
     }
-    
+
       public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetBooleanConversionTest" };
         TestRunner.main(arguments);
@@ -35,8 +35,8 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
     public void testGetBooleanConversionFromDefinedBooleanProperty() {
         // dataObject's type add boolean property
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
-        property.setType(SDOConstants.SDO_BOOLEAN);                      
-      
+        property.setType(SDOConstants.SDO_BOOLEAN);
+
         boolean b = true;
 
         dataObject.setBoolean(property, b);// add it to instance list
@@ -46,9 +46,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
 
     //2. purpose: getBoolean with Undefined Boolean Property
     public void testGetBooleanConversionFromUnDefinedBooleanProperty() {
-        SDOProperty property = new SDOProperty(aHelperContext); 
-          property.setName(PROPERTY_NAME);    
-        property.setType(SDOConstants.SDO_BOOLEAN);    
+        SDOProperty property = new SDOProperty(aHelperContext);
+          property.setName(PROPERTY_NAME);
+        property.setType(SDOConstants.SDO_BOOLEAN);
 
         try {
             dataObject.getBoolean(property);
@@ -63,7 +63,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         property.setType(SDOConstants.SDO_BYTE);
         byte theValue = 0;
         dataObject.set(property, theValue);
-        try {            
+        try {
             boolean value = dataObject.getBoolean(property);
             boolean controlValue = false;
             assertEquals(controlValue, value);
@@ -76,8 +76,8 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
     public void testGetBooleanFromCharacter() {
         // dataObject's type add boolean property
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
-        property.setType(SDOConstants.SDO_CHARACTER);    
-        
+        property.setType(SDOConstants.SDO_CHARACTER);
+
         Character b = new Character('1');
 
         dataObject.setChar(property, b.charValue());// add it to instance list
@@ -98,7 +98,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
     //5. purpose: getBoolean with Double Property
     public void testGetBooleanFromDouble() {
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
-        property.setType(SDOConstants.SDO_DOUBLE);    
+        property.setType(SDOConstants.SDO_DOUBLE);
 
         Double b = new Double(0);
 
@@ -119,8 +119,8 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
 
     //6. purpose: getBoolean with float Property
     public void testGetBooleanFromFloat() {
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));        
-        property.setType(SDOConstants.SDO_FLOAT);        
+        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
+        property.setType(SDOConstants.SDO_FLOAT);
 
         Float b = new Float(1.20);
 
@@ -141,9 +141,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
 
     //7. purpose: getBooleab with int Property
     public void testGetBooleanFromInt() {
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));                
+        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_INT);
-        
+
         Integer b = new Integer(0);
 
         dataObject.setInt(property, b.intValue());// add it to instance list
@@ -163,9 +163,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
 
     //8. purpose: getBoolea with long Property
     public void testGetBooleanFromLong() {
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));                
+        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_LONG);
-        
+
         Double b = new Double(0);
 
         dataObject.setDouble(property, b.doubleValue());// add it to instance list
@@ -185,9 +185,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
 
     //9. purpose: getBytes with short Property
     public void testGetBooleanFromShort() {
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));                
+        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_SHORT);
-        
+
         short s = 12;
         Short b = new Short(s);
 
@@ -221,8 +221,8 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
 
     //11. purpose: getDouble with Undefined string Property
     public void testGetBooleanConversionFromUnDefinedStringProperty() {
-        SDOProperty property = new SDOProperty(aHelperContext); 
-        property.setName(PROPERTY_NAME);    
+        SDOProperty property = new SDOProperty(aHelperContext);
+        property.setName(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_STRING);
 
         try {
@@ -235,7 +235,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
     //12. purpose: getBoolean with bytes property
     public void testGetBooleanFromBytes() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
-        property.setType(SDOConstants.SDO_BYTES);        
+        property.setType(SDOConstants.SDO_BYTES);
         dataObject.set(property, new byte[]{10, 100});
         try {
             dataObject.getBoolean(property);
@@ -263,10 +263,10 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
     public void testGetBooleanFromInteger() {
       SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INTEGER);
-        
+
         BigInteger theValue = new BigInteger("0");
         dataObject.set(property, theValue);
-        try {            
+        try {
             boolean value = dataObject.getBoolean(property);
             boolean controlValue = false;
             assertEquals(controlValue, value);
@@ -278,7 +278,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
     //22. purpose: getBoolean with date property
     public void testGetBooleanFromDate() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
-        property.setType(SDOConstants.SDO_DATE);        
+        property.setType(SDOConstants.SDO_DATE);
         dataObject.set(property, Calendar.getInstance().getTime());
         try {
             dataObject.getBoolean(property);
@@ -300,9 +300,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionFromDefinedBooleanObjectProperty() {
         // dataObject's type add boolean property
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));                
+        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_BOOLEANOBJECT);
-        
+
         boolean b = true;
 
         dataObject.setBoolean(property, b);// add it to instance list
@@ -311,8 +311,8 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
     }
 
     public void testGetBooleanFromByteObject() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);        
-        property.setType(SDOConstants.SDO_BYTEOBJECT);        
+        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        property.setType(SDOConstants.SDO_BYTEOBJECT);
         Byte theValue = new Byte("10");
         dataObject.set(property, theValue);
         try {
@@ -326,10 +326,10 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
 
     //4. purpose: getBoolean with character property
     public void testGetBooleanFromCharacterObject() {
-        // dataObject's type add boolean property        
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);        
+        // dataObject's type add boolean property
+        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
-                
+
         Character b = new Character('1');
 
         dataObject.setChar(property, b.charValue());// add it to instance list
@@ -349,9 +349,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
 
     //5. purpose: getBoolean with Double Property
     public void testGetBooleanFromDoubleObject() {
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));        
+        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_DOUBLEOBJECT);
-        
+
         Double b = new Double(0);
 
         dataObject.setDouble(property, b.doubleValue());// add it to instance list
@@ -370,9 +370,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
     }
 
     public void testGetBooleanFromFloatObject() {
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));                
+        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_FLOATOBJECT);
-        
+
         Float b = new Float(1.20);
 
         dataObject.setFloat(property, b.floatValue());// add it to instance list
@@ -392,7 +392,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
 
     //7. purpose: getBooleab with int Property
     public void testGetBooleanFromIntObject() {
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));                
+        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_INTOBJECT);
 
         Integer b = new Integer(0);
@@ -413,9 +413,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
     }
 
     public void testGetBooleanFromShortObject() {
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));                
+        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_SHORTOBJECT);
-        
+
         short s = 12;
         Short b = new Short(s);
 
@@ -436,9 +436,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
 
     //purpose: test throw conversion exception caused by 't'
     public void testGetBooleanFromCharacterT() {
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));        
+        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
-        
+
         Character b = new Character('t');
 
         dataObject.setChar(property, b.charValue());// add it to instance list
@@ -455,9 +455,9 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
 
     //purpose: test throw conversion exception caused by 'F'
     public void testGetBooleanFromCharacterF() {
-        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));        
+        SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
-        
+
         Character b = new Character('f');
 
         dataObject.setChar(property, b.charValue());// add it to instance list

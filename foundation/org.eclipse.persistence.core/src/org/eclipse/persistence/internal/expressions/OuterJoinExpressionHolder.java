@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     11/06/2013-2.5.1 Chris Delahunt  
+ *     11/06/2013-2.5.1 Chris Delahunt
  *       - 374771 : TREAT support
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.IOException;
@@ -53,10 +53,10 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
     boolean isMapKeyHolder;
 
     Expression outerJoinedMappingCriteria;
-    
+
     // table join expressions keyed by the tables
     Map<DatabaseTable, Expression> outerJoinedAdditionalJoinCriteria;
-    // used in case no corresponding outerJoinExpression is provided - 
+    // used in case no corresponding outerJoinExpression is provided -
     // only multi-table inheritance should be outer joined
     ClassDescriptor descriptor;
 
@@ -86,7 +86,7 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
     protected void process(boolean usesHistory) {
         process(usesHistory, false);
     }
-    
+
     protected void process(boolean usesHistory, boolean isMapKeyHolder) {
         this.isMapKeyHolder = isMapKeyHolder;
         if (this.joinExpression instanceof QueryKeyExpression) {
@@ -112,12 +112,12 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
             this.sourceTable = ((ObjectExpression)this.joinExpression.getJoinSource()).getDescriptor().getTables().get(0);
             this.sourceAlias = this.joinExpression.getJoinSource().aliasForTable(this.sourceTable);
             this.targetTable = this.joinExpression.getDescriptor().getTables().get(0);
-            this.targetAlias = this.joinExpression.aliasForTable(this.targetTable);                
+            this.targetAlias = this.joinExpression.aliasForTable(this.targetTable);
         } else {
             // absence of join expression means that this holder used for multitable inheritance:
             //   ReadAllQuery query = new ReadAllQuery(Project.class);
             //   query.setShouldOuterJoinSubclasses(true);
-            // will produce: 
+            // will produce:
             //   SELECT ... FROM PROJECT t0 LEFT OUTER JOIN LPROJECT t1 ON (t1.PROJ_ID = t0.PROJ_ID)
             sourceTable = descriptor.getTables().get(0);
             targetTable = descriptor.getInheritancePolicy().getChildrenTables().get(0);
@@ -136,7 +136,7 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
             }
             List targetTables = descriptor.getTables();
             int nDescriptorTables = targetTables.size();
-            hasInheritance = descriptor.hasInheritance(); 
+            hasInheritance = descriptor.hasInheritance();
             if(hasInheritance) {
                 targetTables = descriptor.getInheritancePolicy().getAllTables();
             }

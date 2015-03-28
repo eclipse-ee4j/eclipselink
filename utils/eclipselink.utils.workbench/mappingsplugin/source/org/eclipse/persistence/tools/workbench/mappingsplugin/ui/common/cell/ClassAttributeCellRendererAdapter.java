@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,22 +26,22 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClassAttribu
 public class ClassAttributeCellRendererAdapter extends NoneSelectedCellRendererAdapter {
 
 
-	public ClassAttributeCellRendererAdapter(ResourceRepository repository) {
-		super(repository);
-	}
-	
-	protected String buildNonNullValueText(Object value) {
-		return ((MWClassAttribute) value).nameWithShortType();
-	}
-			
+    public ClassAttributeCellRendererAdapter(ResourceRepository repository) {
+        super(repository);
+    }
+
+    protected String buildNonNullValueText(Object value) {
+        return ((MWClassAttribute) value).nameWithShortType();
+    }
+
     protected Icon buildNonNullValueIcon(Object value) {
-		if (((MWClassAttribute) value).getModifier().isPackage())
-			return resourceRepository().getIcon("field.default");
-		else if (((MWClassAttribute) value).getModifier().isPublic())
-			return resourceRepository().getIcon("field.public");
-		else if (((MWClassAttribute) value).getModifier().isProtected())
-			return resourceRepository().getIcon("field.protected");
-		else// if (((MWClassAttribute) value).getModifier().isPrivate())
-			return resourceRepository().getIcon("field.private");
-	}
+        if (((MWClassAttribute) value).getModifier().isPackage())
+            return resourceRepository().getIcon("field.default");
+        else if (((MWClassAttribute) value).getModifier().isPublic())
+            return resourceRepository().getIcon("field.public");
+        else if (((MWClassAttribute) value).getModifier().isProtected())
+            return resourceRepository().getIcon("field.protected");
+        else// if (((MWClassAttribute) value).getModifier().isPrivate())
+            return resourceRepository().getIcon("field.private");
+    }
 }

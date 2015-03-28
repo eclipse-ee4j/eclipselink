@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.aggregate;
 
 import java.util.Collection;
@@ -28,28 +28,28 @@ import org.eclipse.persistence.testing.models.aggregate.GolfClubShaft;
  * EL Bug 326977
  */
 public class QueryKeyInAggregateTest extends TestCase {
-    
+
     protected boolean conforming;
     protected Exception exception;
     protected Collection results;
     protected GolfClub originalClub;
     protected GolfClub originalClub2;
-    
+
     public QueryKeyInAggregateTest(boolean shouldConform) {
         super();
         this.conforming = shouldConform;
         setName(getName() + " conforming: " + shouldConform);
         setDescription("Test querying on a manual QueryKey defined in an aggregate object");
     }
-    
+
     public void setup() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        
+
         originalClub = (GolfClub)uow.registerObject(new GolfClub());
         GolfClubShaft shaft = new GolfClubShaft();
         shaft.setStiffnessRating("LX");
         originalClub.setShaft(shaft);
-        
+
         originalClub2 = (GolfClub)uow.registerObject(new GolfClub());
         GolfClubShaft shaft2 = new GolfClubShaft();
         shaft2.setStiffnessRating("LX");
@@ -58,10 +58,10 @@ public class QueryKeyInAggregateTest extends TestCase {
 
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
-    
+
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        
+
         if (conforming) {
             // create an object to be included in the conforming query
             GolfClub uncommittedClub = (GolfClub)uow.registerObject(new GolfClub());
@@ -69,17 +69,17 @@ public class QueryKeyInAggregateTest extends TestCase {
             shaft.setStiffnessRating("LX");
             uncommittedClub.setShaft(shaft);
         }
-        
+
         ReadAllQuery query = new ReadAllQuery(GolfClub.class);
         ExpressionBuilder builder = query.getExpressionBuilder();
         // using manual 'flexibility' query key
         Expression expression = builder.get("shaft").get("flexibility").equal("LX");
         query.setSelectionCriteria(expression);
-        
+
         if (conforming) {
             query.conformResultsInUnitOfWork();
         }
-        
+
         try {
             results = (Collection<GolfClub>) uow.executeQuery(query);
         } catch (Exception e) {
@@ -89,14 +89,14 @@ public class QueryKeyInAggregateTest extends TestCase {
         }
 
     }
-    
+
     public void verify() {
         if (exception != null) {
             throwError("An exception occurred whilst executing the query: " + exception);
         } else if (results == null || results.isEmpty()) {
             throwError("The query results were null or empty: " + results);
-        } 
-        
+        }
+
         int expectedSize;
         if (conforming) {
             expectedSize = 3;
@@ -107,7 +107,7 @@ public class QueryKeyInAggregateTest extends TestCase {
             throwError("Incorrect results size: " + results.size() + " " + results);
         }
     }
-    
+
     public void reset() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteObject(originalClub);

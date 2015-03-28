@@ -1,24 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/27/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     10/09/2012-2.5 Guy Pelletier 
+ *     10/09/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     02/13/2013-2.5 Guy Pelletier 
+ *     02/13/2013-2.5 Guy Pelletier
  *       - 397772: JPA 2.1 Entity Graph Support (XML support)
- *     06/20/2014-2.5.2 Rick Curtis 
+ *     06/20/2014-2.5.2 Rick Curtis
  *       - 437760: AttributeOverride with no column name defined doesn't work.
- ******************************************************************************/   
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
 import java.io.Serializable;
@@ -125,7 +125,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
         procedureName="Read_Using_Sys_Cursor",
         parameters = {
             @StoredProcedureParameter(mode=IN, name="f_name_v", type=String.class),
-            @StoredProcedureParameter(mode=REF_CURSOR, name="p_recordset", type=void.class)    
+            @StoredProcedureParameter(mode=REF_CURSOR, name="p_recordset", type=void.class)
         }
     )
 })
@@ -138,7 +138,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
     ),
     @SqlResultSetMapping(
         name = "EmployeeConstructorResultSetMapping",
-        classes = { 
+        classes = {
             @ConstructorResult(
                 targetClass = EmployeeDetails.class,
                 columns = {
@@ -182,42 +182,42 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
 public class Employee implements Serializable, Cloneable {
     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
     public enum Gender { Female, Male }
-    
+
     private Long salary;
     private Long previousSalary;
-    
+
     private Integer id;
     private Integer version;
-    
+
     private Gender gender;
     private EmployeeStatus status;
-    
+
     private String lastName;
     private String firstName;
-    
+
     private Address m_address;
     private Department department;
     private Employee manager;
     private EmploymentPeriod period;
-    
+
     private Collection<Project> projects;
     private Collection<String> responsibilities;
     private Collection<PhoneNumber> m_phoneNumbers;
     private Collection<Employee> managedEmployees;
-    
+
     public Employee () {
         this.m_phoneNumbers = new Vector<PhoneNumber>();
         this.projects = new Vector<Project>();
         this.managedEmployees = new Vector<Employee>();
         this.responsibilities = new Vector<String>();
     }
-    
+
     public Employee(String firstName, String lastName){
         this();
         this.firstName = firstName;
         this.lastName = lastName;
     }
-    
+
     public void addManagedEmployee(Employee emp) {
         getManagedEmployees().add(emp);
         emp.setManager(this);
@@ -231,11 +231,11 @@ public class Employee implements Serializable, Cloneable {
     public void addProject(Project theProject) {
         getProjects().add(theProject);
     }
-    
+
     public void addResponsibility(String responsibility) {
         getResponsibilities().add(responsibility);
-    }    
-    
+    }
+
     public Employee clone() {
         Employee clone = null;
         try {
@@ -248,59 +248,59 @@ public class Employee implements Serializable, Cloneable {
         clone.responsibilities = new Vector(this.responsibilities);
         return clone;
     }
-    
+
     @ManyToOne(cascade={PERSIST, MERGE}, fetch=LAZY)
     @JoinColumn(name="ADDR_ID")
-    public Address getAddress() { 
-        return m_address; 
+    public Address getAddress() {
+        return m_address;
     }
-    
+
     @ManyToOne(fetch=EAGER)
     @JoinColumn(name="DEPT_ID")
-    public Department getDepartment() { 
-        return department; 
+    public Department getDepartment() {
+        return department;
     }
-    
+
     @Column(name="F_NAME")
-    public String getFirstName() { 
-        return firstName; 
+    public String getFirstName() {
+        return firstName;
     }
-    
+
     @Convert("sex")
-    public Gender getGender() { 
-        return gender; 
+    public Gender getGender() {
+        return gender;
     }
-    
+
     @Id
     @GeneratedValue(strategy=TABLE, generator="EMPLOYEE_TABLE_GENERATOR")
     @TableGenerator(
-        name="EMPLOYEE_TABLE_GENERATOR", 
-        table="JPA21_EMPLOYEE_SEQ", 
-        pkColumnName="SEQ_NAME", 
+        name="EMPLOYEE_TABLE_GENERATOR",
+        table="JPA21_EMPLOYEE_SEQ",
+        pkColumnName="SEQ_NAME",
         valueColumnName="SEQ_COUNT",
         pkColumnValue="EMPLOYEE_SEQ",
         initialValue=50
     )
     @Column(name="EMP_ID", length=21)
-	public Integer getId() { 
-        return id; 
+    public Integer getId() {
+        return id;
     }
-    
+
     @Column(name="L_NAME")
-    public String getLastName() { 
-        return lastName; 
+    public String getLastName() {
+        return lastName;
     }
 
     @OneToMany(cascade=ALL, mappedBy="manager")
-    public Collection<Employee> getManagedEmployees() { 
-        return managedEmployees; 
+    public Collection<Employee> getManagedEmployees() {
+        return managedEmployees;
     }
-    
+
     @ManyToOne(cascade=PERSIST, fetch=LAZY)
-    public Employee getManager() { 
-        return manager; 
+    public Employee getManager() {
+        return manager;
     }
-    
+
     @Embedded
     @AttributeOverrides({
         // This should use the spec defined column name, not the column name defined in the EmploymentPeriod
@@ -310,28 +310,28 @@ public class Employee implements Serializable, Cloneable {
     public EmploymentPeriod getPeriod() {
         return period;
     }
-    
+
     @OneToMany(cascade=ALL, mappedBy="owner", orphanRemoval=true)
-    public Collection<PhoneNumber> getPhoneNumbers() { 
-        return m_phoneNumbers; 
+    public Collection<PhoneNumber> getPhoneNumbers() {
+        return m_phoneNumbers;
     }
 
     @Column(table="JPA21_SALARY")
     @javax.persistence.Convert(disableConversion=true)
-    public Long getPreviousSalary() { 
-        return previousSalary; 
+    public Long getPreviousSalary() {
+        return previousSalary;
     }
-    
+
     @ManyToMany(cascade={PERSIST, MERGE})
     @JoinTable(
         name="JPA21_EMP_PROJ",
         joinColumns=@JoinColumn(name="EMPLOYEES_EMP_ID", referencedColumnName="EMP_ID"),
         inverseJoinColumns=@JoinColumn(name="PROJECTS_PROJ_ID", referencedColumnName="PROJ_ID")
     )
-    public Collection<Project> getProjects() { 
-        return projects; 
+    public Collection<Project> getProjects() {
+        return projects;
     }
-    
+
     @ElementCollection(targetClass=String.class)
     @Column(name="DESCRIPTION")
     @CollectionTable(
@@ -343,8 +343,8 @@ public class Employee implements Serializable, Cloneable {
     }
 
     @Column(table="JPA21_SALARY")
-    public Long getSalary() { 
-        return salary; 
+    public Long getSalary() {
+        return salary;
     }
 
     @Enumerated
@@ -352,28 +352,28 @@ public class Employee implements Serializable, Cloneable {
     public EmployeeStatus getStatus() {
         return status;
     }
-    
+
     @Version
     @Column(name="VERSION")
     public Integer getVersion() {
-        return version; 
+        return version;
     }
 
     public boolean isFemale() {
         return gender.equals(Gender.Female);
     }
-    
+
     public boolean isMale() {
         return gender.equals(Gender.Male);
     }
-    
+
     public void removeManagedEmployee(Employee emp) {
         getManagedEmployees().remove(emp);
     }
 
     public void removePhoneNumber(PhoneNumber phone) {
-        // Note that getPhoneNumbers() will not have a phone number identical to 
-        // "phone", (because it's serialized) and this will take advantage of 
+        // Note that getPhoneNumbers() will not have a phone number identical to
+        // "phone", (because it's serialized) and this will take advantage of
         // equals() in PhoneNumber to remove properly
         getPhoneNumbers().remove(phone);
     }
@@ -381,15 +381,15 @@ public class Employee implements Serializable, Cloneable {
     public void removeProject(Project theProject) {
         getProjects().remove(theProject);
     }
-    
+
     public void removeResponsibility(String responsibility) {
         getResponsibilities().remove(responsibility);
     }
-    
+
     public void setAddress(Address address) {
         this.m_address = address;
     }
-    
+
     public void setDepartment(Department department) {
         this.department = department;
     }
@@ -397,39 +397,39 @@ public class Employee implements Serializable, Cloneable {
     public void setFemale() {
         this.gender = Gender.Female;
     }
-       
-    public void setFirstName(String name) { 
-        this.firstName = name; 
+
+    public void setFirstName(String name) {
+        this.firstName = name;
     }
-    
-    public void setGender(Gender gender) { 
-        this.gender = gender; 
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
-    
-    public void setId(Integer id) { 
-        this.id = id; 
+
+    public void setId(Integer id) {
+        this.id = id;
     }
-    
-    public void setLastName(String name) { 
-        this.lastName = name; 
+
+    public void setLastName(String name) {
+        this.lastName = name;
     }
-    
+
     public void setMale() {
         this.gender = Gender.Male;
     }
-    
+
     public void setManagedEmployees(Collection<Employee> managedEmployees) {
         this.managedEmployees = managedEmployees;
     }
-    
+
     public void setManagerField(Employee manager) {
         this.manager = manager;
     }
-    
+
     public void setManager(Employee manager) {
         this.manager = manager;
     }
-    
+
     public void setPeriod(EmploymentPeriod period) {
         this.period = period;
     }
@@ -437,31 +437,31 @@ public class Employee implements Serializable, Cloneable {
     public void setPhoneNumbers(Collection<PhoneNumber> phoneNumbers) {
         this.m_phoneNumbers = phoneNumbers;
     }
-    
-    public void setPreviousSalary(Long previousSalary) { 
-        this.previousSalary = previousSalary; 
+
+    public void setPreviousSalary(Long previousSalary) {
+        this.previousSalary = previousSalary;
     }
-    
+
     public void setProjects(Collection<Project> projects) {
         this.projects = projects;
     }
-    
+
     public void setResponsibilities(Collection<String> responsibilities) {
         this.responsibilities = responsibilities;
     }
-    
-    public void setSalary(Long salary) { 
-        this.salary = salary; 
+
+    public void setSalary(Long salary) {
+        this.salary = salary;
     }
 
     public void setStatus(EmployeeStatus status) {
         this.status = status;
     }
-    
+
     public void setVersion(Integer version) {
         this.version = version;
     }
-    
+
     public String toString() {
         return "Employee: " + getId();
     }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     14/12/2012 -2.5 Gordon Yorke 
- ******************************************************************************/  
+ *     14/12/2012 -2.5 Gordon Yorke
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.List;
@@ -33,39 +33,39 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;
 
     public EntityManagerFactoryTestSuite() {}
-    
+
     public EntityManagerFactoryTestSuite(String name) {
         super(name);
         setPuName("MulitPU-1");
     }
-    
+
     public void setUp () {
         m_reset = true;
         super.setUp();
         clearCache();
     }
-    
+
     public void tearDown () {
         if (m_reset) {
             m_reset = false;
         }
-        
+
         super.tearDown();
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("EntityManagerFactoryTestSuite");
-        
+
         suite.addTest(new EntityManagerFactoryTestSuite("testSetup"));
-        
-        // These tests call stored procedures that return a result set. 
+
+        // These tests call stored procedures that return a result set.
         suite.addTest(new EntityManagerFactoryTestSuite("testAddNamedQuery"));
         suite.addTest(new EntityManagerFactoryTestSuite("testGetPersistenceUnitUtilOnCloseEMF"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -76,7 +76,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         employeePopulator.persistExample(getPersistenceUnitServerSession());
         clearCache();
     }
-    
+
     public void testAddNamedQuery(){
         EntityManager em = createEntityManager();
         EntityManagerFactory factory = em.getEntityManagerFactory();
@@ -89,7 +89,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         factory.addNamedQuery("Select_Employee_by_first_name", query);
         closeEntityManager(em);
         em = createEntityManager();
-        
+
         Query namedQuery = em.createNamedQuery("Select_Employee_by_first_name");
         assertFalse("Named query retains parameter values from original query", namedQuery.isBound(namedQuery.getParameter("p1")));
         namedQuery.setParameter("p1", name);
@@ -105,7 +105,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         factory.addNamedQuery("Select_Employee_by_first_name", query);
         closeEntityManager(em);
         em = createEntityManager();
-        
+
         namedQuery = em.createNamedQuery("Select_Employee_by_first_name");
         assertFalse("Named query retains parameter values from original query", namedQuery.isBound(namedQuery.getParameter("p1")));
         namedQuery.setParameter("p1", name);
@@ -120,7 +120,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         factory.addNamedQuery("Select_Employee_by_first_name", query);
         closeEntityManager(em);
         em = createEntityManager();
-        
+
         namedQuery = em.createNamedQuery("Select_Employee_by_first_name");
         assertTrue("LockMode not retained", namedQuery.getLockMode().equals(LockModeType.OPTIMISTIC_FORCE_INCREMENT));
         assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
@@ -135,7 +135,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         factory.addNamedQuery("Select_Employee_NATIVE", query);
         closeEntityManager(em);
         em = createEntityManager();
-        
+
         namedQuery = em.createNamedQuery("Select_Employee_NATIVE");
         assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
         query = em.createNativeQuery("SELECT EMP_ID FROM CMP3_EMPLOYEE", Employee.class);
@@ -143,11 +143,11 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         factory.addNamedQuery("Select_Employee_NATIVE", query);
         closeEntityManager(em);
         em = createEntityManager();
-        
+
         namedQuery = em.createNamedQuery("Select_Employee_NATIVE");
         assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
     }
-    
+
     public void testGetPersistenceUnitUtilOnCloseEMF(){
         EntityManagerFactory emf = getEntityManagerFactory();
         closeEntityManagerFactory();
@@ -161,5 +161,5 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
     public String getPersistenceUnitName() {
        return "MulitPU-1";
     }
-    
+
 }

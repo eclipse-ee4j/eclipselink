@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,38 +21,38 @@ import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
 @XmlRootElement(name="employee")
 public class Employee {
     private String name;
-    
+
     private String age;
-    
+
     private String address;
-    
+
     @XmlElement(name="name")
     @XmlNullPolicy(nullRepresentationForXml = XmlMarshalNullRepresentation.ABSENT_NODE)
     public String getName() {
 
         return name;
     }
-    
+
     public void setName(String theName) {
         this.name = theName;
     }
-    
+
     public String getAge() {
         return age;
     }
-    
+
     public void setAge(String theAge) {
         this.age = theAge;
     }
-    
+
     public String getAddress() {
         return address;
     }
-    
+
     public void setAddress(String addr) {
         this.address = addr;
     }
-    
+
     public int hashCode() {
         int hash = 7;
         if(name != null) {

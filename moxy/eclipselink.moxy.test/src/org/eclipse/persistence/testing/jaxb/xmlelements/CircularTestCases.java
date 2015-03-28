@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,43 +19,43 @@ import java.util.List;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class CircularTestCases extends JAXBWithJSONTestCases{
-	 private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/root.xml";
-	 private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/root.json";
-	 private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/root.xsd";
+     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/root.xml";
+     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/root.json";
+     private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/root.xsd";
      private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/root_schema.json";
-	  
-	 public CircularTestCases(String name) throws Exception {
-	        super(name);
-	        setControlDocument(XML_RESOURCE);   
-	        setControlJSON(JSON_RESOURCE);
-	        Class[] classes = new Class[1];
-	        classes[0] = Root.class;	        
-	        setClasses(classes);
-	    }
-	 
-	 protected Object getControlObject() {
-		 Root theRoot = new Root();
-		 theRoot.name = "aName";
-		 
-		 Root theRoot2 = new Root();
-		 theRoot2.name = "childName";
-		 theRoot.children = new ArrayList<Object>();
-		 theRoot.children.add(theRoot2);
-		 theRoot.children.add("someString");
-		 return theRoot;
-	 }
-	 
-	 public void testSchemaGeneration() throws Exception{
-		 List<InputStream> controlSchemas = new ArrayList<InputStream>();
-		 controlSchemas.add(getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE));
-		 super.testSchemaGen(controlSchemas);
-	 }
-	 
-	    
-	 public void testJSONSchemaGen() throws Exception{
-	     InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
-	     super.generateJSONSchema(controlSchema);
-	    
-	 }
+
+     public CircularTestCases(String name) throws Exception {
+            super(name);
+            setControlDocument(XML_RESOURCE);
+            setControlJSON(JSON_RESOURCE);
+            Class[] classes = new Class[1];
+            classes[0] = Root.class;
+            setClasses(classes);
+        }
+
+     protected Object getControlObject() {
+         Root theRoot = new Root();
+         theRoot.name = "aName";
+
+         Root theRoot2 = new Root();
+         theRoot2.name = "childName";
+         theRoot.children = new ArrayList<Object>();
+         theRoot.children.add(theRoot2);
+         theRoot.children.add("someString");
+         return theRoot;
+     }
+
+     public void testSchemaGeneration() throws Exception{
+         List<InputStream> controlSchemas = new ArrayList<InputStream>();
+         controlSchemas.add(getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE));
+         super.testSchemaGen(controlSchemas);
+     }
+
+
+     public void testJSONSchemaGen() throws Exception{
+         InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+         super.generateJSONSchema(controlSchema);
+
+     }
 
 }

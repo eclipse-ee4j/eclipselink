@@ -4,7 +4,7 @@
    <element name="root">
       <complexType>
          <sequence>
-            <element name="data" type="ns0:Data"/>            
+            <element name="data" type="ns0:Data"/>
          </sequence>
       </complexType>
    </element>

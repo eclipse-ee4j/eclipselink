@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,29 +30,29 @@ import org.w3c.dom.Element;
 
 public class XmlAnyElementBaseTestCases extends JAXBWithJSONTestCases{
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/employee-default-ns.xml";
-	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/employee-default-ns.json";
-	
-	public XmlAnyElementBaseTestCases(String name) throws Exception{
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/employee-default-ns.json";
+
+    public XmlAnyElementBaseTestCases(String name) throws Exception{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{Employee.class});
-        
-    }  
-	
-	  public Map getProperties(){
-			InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/eclipselink-oxm.xml");
 
-			HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-		    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement", new StreamSource(inputStream));
-		    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-		    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-	        
-	        return properties;
-		}
-	  
-	  protected Object getControlObject() {
-		  Employee ctrlEmp = new Employee();
+    }
+
+      public Map getProperties(){
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/eclipselink-oxm.xml");
+
+            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement", new StreamSource(inputStream));
+            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+            return properties;
+        }
+
+      protected Object getControlObject() {
+          Employee ctrlEmp = new Employee();
           ctrlEmp.a = 1;
           ctrlEmp.b = "3";
           Element elt = null;
@@ -65,45 +65,45 @@ public class XmlAnyElementBaseTestCases extends JAXBWithJSONTestCases{
           }
           ctrlEmp.stuff = elt;
           return ctrlEmp;
-	  }
-	  
-	  public void testLaxFalse() throws JAXBException {
-	        // setup the control Employee
-	        Element empElt = null;
-	        try {
-	            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-	            Element aElt = doc.createElement("a");
-	            aElt.appendChild(doc.createTextNode("666"));
-	            Element bElt = doc.createElement("b");
-	            bElt.appendChild(doc.createTextNode("999"));
-	            empElt = doc.createElement("employee");
-	            empElt.appendChild(aElt);
-	            empElt.appendChild(bElt);
-	        } catch (ParserConfigurationException e1) {
-	            e1.printStackTrace();
-	        }
-	        Employee ctrlEmp = new Employee();
-	        ctrlEmp.a = 1;
-	        ctrlEmp.b = "3";
-	        ctrlEmp.stuff = empElt;
+      }
 
-	        // test unmarshal	        
-	        try {
-	            String src = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/employee-with-employee.xml";
-	            Employee emp = (Employee) jaxbUnmarshaller.unmarshal(getControlDocument(src));
-	            assertNotNull("The Employee object is null after unmarshal.", emp);
-	            assertEquals(ctrlEmp, emp);
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            fail("An unexpected exception occurred unmarshalling the document.");
-	        }
-	    }
-	  
-	    protected Document getControlDocument(String xmlResource) throws Exception {
-	        InputStream inputStream = ClassLoader.getSystemResourceAsStream(xmlResource);
-	        Document document = parser.parse(inputStream);
-	        OXTestCase.removeEmptyTextNodes(document);
-	        return document;
-	    }
-	
+      public void testLaxFalse() throws JAXBException {
+            // setup the control Employee
+            Element empElt = null;
+            try {
+                Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+                Element aElt = doc.createElement("a");
+                aElt.appendChild(doc.createTextNode("666"));
+                Element bElt = doc.createElement("b");
+                bElt.appendChild(doc.createTextNode("999"));
+                empElt = doc.createElement("employee");
+                empElt.appendChild(aElt);
+                empElt.appendChild(bElt);
+            } catch (ParserConfigurationException e1) {
+                e1.printStackTrace();
+            }
+            Employee ctrlEmp = new Employee();
+            ctrlEmp.a = 1;
+            ctrlEmp.b = "3";
+            ctrlEmp.stuff = empElt;
+
+            // test unmarshal
+            try {
+                String src = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/employee-with-employee.xml";
+                Employee emp = (Employee) jaxbUnmarshaller.unmarshal(getControlDocument(src));
+                assertNotNull("The Employee object is null after unmarshal.", emp);
+                assertEquals(ctrlEmp, emp);
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail("An unexpected exception occurred unmarshalling the document.");
+            }
+        }
+
+        protected Document getControlDocument(String xmlResource) throws Exception {
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(xmlResource);
+            Document document = parser.parse(inputStream);
+            OXTestCase.removeEmptyTextNodes(document);
+            return document;
+        }
+
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.proxyindirection;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
@@ -560,13 +560,13 @@ public class ProxyIndirectionTableCreator extends org.eclipse.persistence.tools.
         tabledefinition.addField(field1);
         addTableDefinition(tabledefinition);
     }
-    
+
     protected void buildComputerTable()
     {
         TableDefinition definition = new TableDefinition();
-    
+
         definition.setName("PROXY_COMPUTER");
-    
+
         definition.addPrimaryKeyField("ID", Integer.class, 15);
         definition.addField("DESCRIP", String.class, 30);
         definition.addField("SERL_NO", String.class, 30);
@@ -577,9 +577,9 @@ public class ProxyIndirectionTableCreator extends org.eclipse.persistence.tools.
     protected void buildDesktopComputerTable()
     {
         TableDefinition definition = new TableDefinition();
-    
+
         definition.setName("PROXY_DESKTOP");
-    
+
         definition.addPrimaryKeyField("ID", Integer.class, 15);
         definition.addField("MONITOR_SIZE", Integer.class, 15);
         addTableDefinition(definition);

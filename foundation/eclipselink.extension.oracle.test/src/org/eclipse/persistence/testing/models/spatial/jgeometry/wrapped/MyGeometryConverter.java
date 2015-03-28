@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped;
 
 import java.sql.Connection;
@@ -55,23 +55,23 @@ public class MyGeometryConverter implements StructConverter {
         Object[] structValues = ((STRUCT)struct).getAttributes();
 
         int id = ((Number)structValues[0]).intValue();
-        JGeometry jgeom = 
+        JGeometry jgeom =
             (JGeometry)getJGeometryConverter().convertToObject((STRUCT)structValues[1]);
         return new MyGeometry(id, jgeom);
     }
 
-    public Struct convertToStruct(Object geometry, 
+    public Struct convertToStruct(Object geometry,
                                   Connection connection) throws SQLException {
         if (geometry == null) {
             return null;
         }
         MyGeometry myGeometry = (MyGeometry)geometry;
 
-        STRUCT geomSTRUCT = 
-            (STRUCT)getJGeometryConverter().convertToStruct(myGeometry.getGeometry(), 
+        STRUCT geomSTRUCT =
+            (STRUCT)getJGeometryConverter().convertToStruct(myGeometry.getGeometry(),
                                                             connection);
 
-        return new STRUCT(getStructDescriptor(connection), connection, 
+        return new STRUCT(getStructDescriptor(connection), connection,
                           new Object[] { myGeometry.getId(), geomSTRUCT });
     }
 
@@ -79,7 +79,7 @@ public class MyGeometryConverter implements StructConverter {
         if (this.structDescriptor == null) {
 
             try {
-                this.structDescriptor = 
+                this.structDescriptor =
                         new oracle.sql.StructDescriptor(MY_GEOMETRY_TYPE, con);
             } catch (SQLException e) {
                 throw new TestProblemException("A problem was detected when using MyGeometryConverter", e);

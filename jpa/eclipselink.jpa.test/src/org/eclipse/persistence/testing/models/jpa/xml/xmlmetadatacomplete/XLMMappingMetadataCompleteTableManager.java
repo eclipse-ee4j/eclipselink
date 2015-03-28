@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corporation and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2014, 2015  IBM Corporation and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -18,13 +18,13 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
-public class XLMMappingMetadataCompleteTableManager extends TableCreator {    
+public class XLMMappingMetadataCompleteTableManager extends TableCreator {
     public XLMMappingMetadataCompleteTableManager() {
         setName("XMLMappingMetadataComplete");
         addTableDefinition(buildXMLOnlyEntityTable());
         addTableDefinition(buildAnoOnlyEntityTable());
     }
-    
+
     public static TableDefinition buildXMLOnlyEntityTable() {
         TableDefinition table = new TableDefinition();
 
@@ -39,7 +39,7 @@ public class XLMMappingMetadataCompleteTableManager extends TableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldSTRDATA = new FieldDefinition();
         fieldSTRDATA.setName("STRDATA");
         fieldSTRDATA.setTypeName("VARCHAR2");
@@ -50,10 +50,10 @@ public class XLMMappingMetadataCompleteTableManager extends TableCreator {
         fieldSTRDATA.setUnique(false);
         fieldSTRDATA.setShouldAllowNull(true);
         table.addField(fieldSTRDATA);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildAnoOnlyEntityTable() {
         TableDefinition table = new TableDefinition();
 
@@ -68,7 +68,7 @@ public class XLMMappingMetadataCompleteTableManager extends TableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldSTRDATA = new FieldDefinition();
         fieldSTRDATA.setName("STRDATA");
         fieldSTRDATA.setTypeName("VARCHAR2");
@@ -79,7 +79,7 @@ public class XLMMappingMetadataCompleteTableManager extends TableCreator {
         fieldSTRDATA.setUnique(false);
         fieldSTRDATA.setShouldAllowNull(true);
         table.addField(fieldSTRDATA);
-    
+
         return table;
     }
 }

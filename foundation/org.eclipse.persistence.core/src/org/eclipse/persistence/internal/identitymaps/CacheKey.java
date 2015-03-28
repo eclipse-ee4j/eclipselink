@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
 import org.eclipse.persistence.exceptions.ConcurrencyException;
@@ -33,7 +33,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     protected Object key;
 
     protected Object object;
-    
+
     //used to store a reference to the map this cachekey is in in cases where the
     //cache key is to be removed, prevents us from having to track down the owning
     //map
@@ -50,7 +50,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
 
     /** This attribute is the system time in milli seconds that the object was last refreshed on */
 
-    //CR #4365 
+    //CR #4365
     // CR #2698903 - fix for the previous fix. No longer using millis.
     protected long lastUpdatedQueryId;
 
@@ -60,29 +60,29 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /** The following constants are used for the invalidationState variable */
     public static final int CHECK_INVALIDATION_POLICY = 0;
     public static final int CACHE_KEY_INVALID = -1;
-    
+
     public static final int MAX_WAIT_TRIES = 10000;
 
     /** The read time stores the millisecond value of the last time the object help by
     this cache key was confirmed as up to date. */
     protected long readTime = 0;
-    
+
     /**
      * Stores if this CacheKey instance is a wrapper for the underlying CacheKey.  CacheKey wrappers
      * may be used with cache interceptors.
      */
     protected boolean isWrapper = false;
-    
+
     /**
      * Stores retrieved FK values for relationships that are not stored in the Entity
      */
     protected AbstractRecord protectedForeignKeys;
-    
+
     /**
      * Set to true if this CacheKey comes from an IsolatedClientSession, or DatabaseSessionImpl.
      */
     protected boolean isIsolated;
-        
+
     /**
      * The ID of the database transaction that last wrote the object.
      * This is used for database change notification.
@@ -96,7 +96,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      */
     protected CacheKey(){
     }
-    
+
     public CacheKey(Object primaryKey) {
         this.key = primaryKey;
     }
@@ -209,9 +209,9 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         }
         super.acquireDeferredLock();
     }
-    
+
     public void acquireLock(ObjectBuildingQuery query){
-        
+
         // PERF: Only use deferred locking if required.
         // CR#3876308 If joining is used, deferred locks are still required.
         if (query.requiresDeferredLocks()) {
@@ -254,7 +254,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         }
         super.checkReadLock();
     }
-        
+
     /**
      * Check the deferred lock on the cache key object.
      * This can be called to ensure the cache key has a valid built object.
@@ -266,7 +266,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         }
         super.checkDeferredLock();
     }
-    
+
     /**
      * Acquire the read lock on the cache key object.
      */
@@ -363,7 +363,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     public IdentityMap getOwningMap(){
         return this.mapOwner;
     }
-    
+
     /**
      * INTERNAL:
      * Return the current value of the Read Time variable
@@ -379,7 +379,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     public Object getWrapper() {
         return wrapper;
     }
-    
+
     /**
      * If a Wrapper subclasses this CacheKey this method will be used to unwrap the cache key.
      * @return
@@ -413,7 +413,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     public boolean isWrapper(){
         return this.isWrapper;
     }
-    
+
     /**
      * INTERNAL:
      * Return the FK cache
@@ -424,7 +424,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         }
         return this.protectedForeignKeys;
     }
-    
+
     /**
      * INTERNAL:
      * Return the value of the invalidationState Variable
@@ -477,7 +477,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         }
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Set the value of the invalidationState Variable
@@ -511,7 +511,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     public void setOwningMap(IdentityMap map){
         this.mapOwner = map;
     }
-    
+
     public void setProtectedForeignKeys(AbstractRecord protectedForeignKeys) {
         this.protectedForeignKeys = protectedForeignKeys;
     }
@@ -561,7 +561,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     public void setIsWrapper(boolean isWrapper) {
         this.isWrapper = isWrapper;
     }
-    
+
     public Object getTransactionId() {
         return transactionId;
     }
@@ -569,7 +569,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     public void setTransactionId(Object transactionId) {
         this.transactionId = transactionId;
     }
-    
+
     public synchronized Object waitForObject(){
         try {
             int count = 0;

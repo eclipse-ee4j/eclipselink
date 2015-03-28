@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,7 +37,7 @@ public class SDOConstants {
     public static final String SDOJAVA_URL = "commonj.sdo/java";
 
     /** namespace for custom unique properties */
- 
+
     public static final String ORACLE_SDO_URL = "org.eclipse.persistence.sdo";
     public static final String MIMETYPE_URL = "http://www.w3.org/2005/05/xmlmime";
 

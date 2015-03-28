@@ -2,6 +2,6 @@
 <sdo:dataObject xsi:type="ns0:Team" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <ns0:manager>
    <myChangeSummary logging="true"/>
-   </ns0:manager>   
+   </ns0:manager>
 </sdo:dataObject>
 

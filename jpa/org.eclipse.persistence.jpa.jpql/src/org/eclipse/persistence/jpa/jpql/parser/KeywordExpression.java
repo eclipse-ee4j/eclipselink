@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,80 +27,80 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class KeywordExpression extends AbstractExpression {
 
-	/**
-	 * The actual identifier found in the string representation of the JPQL query.
-	 */
-	private String identifier;
+    /**
+     * The actual identifier found in the string representation of the JPQL query.
+     */
+    private String identifier;
 
-	/**
-	 * Creates a new <code>KeywordExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param identifier The identifier represented by this expression
-	 */
-	public KeywordExpression(AbstractExpression parent, String identifier) {
-		super(parent, identifier);
-	}
+    /**
+     * Creates a new <code>KeywordExpression</code>.
+     *
+     * @param parent The parent of this expression
+     * @param identifier The identifier represented by this expression
+     */
+    public KeywordExpression(AbstractExpression parent, String identifier) {
+        super(parent, identifier);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void acceptChildren(ExpressionVisitor visitor) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void acceptChildren(ExpressionVisitor visitor) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addOrderedChildrenTo(List<Expression> children) {
-		children.add(buildStringExpression(getText()));
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addOrderedChildrenTo(List<Expression> children) {
+        children.add(buildStringExpression(getText()));
+    }
 
-	/**
-	 * Returns the actual identifier found in the string representation of the JPQL query, which has
-	 * the actual case that was used.
-	 *
-	 * @return The identifier that was actually parsed
-	 */
-	public String getActualIdentifier() {
-		return identifier;
-	}
+    /**
+     * Returns the actual identifier found in the string representation of the JPQL query, which has
+     * the actual case that was used.
+     *
+     * @return The identifier that was actually parsed
+     */
+    public String getActualIdentifier() {
+        return identifier;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(BooleanLiteralBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(BooleanLiteralBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getText() {
-		return super.getText();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getText() {
+        return super.getText();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void parse(WordParser wordParser, boolean tolerant) {
-		identifier = wordParser.moveForward(getText());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse(WordParser wordParser, boolean tolerant) {
+        identifier = wordParser.moveForward(getText());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toParsedText(StringBuilder writer, boolean actual) {
-		writer.append(actual ? identifier : getText());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toParsedText(StringBuilder writer, boolean actual) {
+        writer.append(actual ? identifier : getText());
+    }
 }

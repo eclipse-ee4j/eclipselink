@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,39 +30,39 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class OnClause extends AbstractConditionalClause {
 
-	/**
-	 * Creates a new <code>OnClause</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public OnClause(AbstractExpression parent) {
-		super(parent, ON);
-	}
+    /**
+     * Creates a new <code>OnClause</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public OnClause(AbstractExpression parent) {
+        super(parent, ON);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(OnClauseBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(OnClauseBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-		return word.equalsIgnoreCase(LEFT)  ||
-		       word.equalsIgnoreCase(OUTER) ||
-		       word.equalsIgnoreCase(FETCH) ||
-		       word.equalsIgnoreCase(INNER) ||
-		       word.equalsIgnoreCase(JOIN)  ||
-		       super.isParsingComplete(wordParser, word, expression);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+        return word.equalsIgnoreCase(LEFT)  ||
+               word.equalsIgnoreCase(OUTER) ||
+               word.equalsIgnoreCase(FETCH) ||
+               word.equalsIgnoreCase(INNER) ||
+               word.equalsIgnoreCase(JOIN)  ||
+               super.isParsingComplete(wordParser, word, expression);
+    }
 }

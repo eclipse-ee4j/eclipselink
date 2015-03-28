@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.structures;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -28,17 +28,17 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 
 /**
  * Defines a StructureMapping metadata.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
  * - any metadata mapped from XML to this class must be initialized in the
  *   initXMLObject method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author James Sutherland
  * @since EclipseLink 2.3
  */
@@ -56,18 +56,18 @@ public class StructureAccessor extends MappingAccessor {
     public StructureAccessor() {
         super("<structure>");
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.
      */
     public StructureAccessor(MetadataAnnotation embedded, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(embedded, accessibleObject, classAccessor);
-        
+
         // Set the column metadata if one if present.
         m_column = new ColumnMetadata(getAnnotation(JPA_COLUMN), this);
     }
-    
+
     /**
      * INTERNAL:
      * Used for xml merging.
@@ -76,10 +76,10 @@ public class StructureAccessor extends MappingAccessor {
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && (objectToCompare instanceof StructureAccessor)) {
             StructureAccessor accessor = (StructureAccessor) objectToCompare;
-                        
+
             return valuesMatch(m_column, accessor.getColumn());
         }
-        
+
         return false;
     }
 
@@ -90,26 +90,26 @@ public class StructureAccessor extends MappingAccessor {
     public ColumnMetadata getColumn() {
         return m_column;
     }
-   
+
     /**
      * INTERNAL:
-     * If a target class is specified in metadata, it will be set as the 
+     * If a target class is specified in metadata, it will be set as the
      * reference class, otherwise we will use the raw class.
      */
     @Override
     public MetadataClass getReferenceClass() {
         if (m_referenceClass == null) {
             m_referenceClass = getTargetClass();
-        
+
             if (m_referenceClass == null) {
                 // Get the reference class from the accessible object.
                 m_referenceClass = super.getReferenceClass();
-            } 
+            }
         }
-        
+
         return m_referenceClass;
     }
-    
+
     /**
      * INTERNAL:
      * Return the target class for this accessor.
@@ -141,17 +141,17 @@ public class StructureAccessor extends MappingAccessor {
             initXMLObject(m_column, accessibleObject);
         }
     }
-    
+
     /**
      * INTERNAL:
-     * Must return true as an embedded is referenced and needs to be correctly 
+     * Must return true as an embedded is referenced and needs to be correctly
      * initialized.
      */
     @Override
     public boolean isEmbedded() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Build and structure mapping and add it to the descriptor.
@@ -160,25 +160,25 @@ public class StructureAccessor extends MappingAccessor {
     public void process() {
         StructureMapping mapping = new StructureMapping();
         setMapping(mapping);
-        
+
         // Process the @Column or column element if there is one.
         // A number of methods depend on this field so it must be
         // initialized before any further processing can take place.
         m_field = new ObjectRelationalDatabaseField(getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN));
-                
+
         mapping.setField(m_field);
         mapping.setIsReadOnly(m_field.isReadOnly());
-        
+
         mapping.setReferenceClassName(getReferenceClassName());
-        mapping.setAttributeName(getAttributeName());    
-        
+        mapping.setAttributeName(getAttributeName());
+
         // Will check for PROPERTY access
         setAccessorMethods(mapping);
-                
+
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -186,7 +186,7 @@ public class StructureAccessor extends MappingAccessor {
     public void setColumn(ColumnMetadata column) {
         m_column = column;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.

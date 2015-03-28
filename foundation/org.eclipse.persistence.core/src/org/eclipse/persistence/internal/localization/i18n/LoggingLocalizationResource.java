@@ -1,51 +1,51 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     07/16/2009-2.0 Guy Pelletier 
+ *     07/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
- *     06/30/2010-2.1.1 Michael O'Brien 
+ *     06/30/2010-2.1.1 Michael O'Brien
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     10/28/2010-2.2 Guy Pelletier 
+ *     10/28/2010-2.2 Guy Pelletier
  *       - 3223850: Primary key metadata issues
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     04/05/2011-2.3 Guy Pelletier 
+ *     04/05/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 3)
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 8)
  *     07/11/2011-2.4 Guy Pelletier
- *       - 343632: Can't map a compound constraint because of exception: 
- *                 The reference column name [y] mapped on the element [field x] 
+ *       - 343632: Can't map a compound constraint because of exception:
+ *                 The reference column name [y] mapped on the element [field x]
  *                 does not correspond to a valid field on the mapping reference
- *     14/05/2012-2.4 Guy Pelletier  
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- *     11/28/2012-2.5 Guy Pelletier 
+ *     11/28/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     01/24/2013-2.5 Guy Pelletier 
+ *     01/24/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     02/04/2013-2.5 Guy Pelletier 
+ *     02/04/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     02/13/2013-2.5 Guy Pelletier 
+ *     02/13/2013-2.5 Guy Pelletier
  *       - 397772: JPA 2.1 Entity Graph Support (XML support)
- *     09/24/2014-2.6 Rick Curtis 
+ *     09/24/2014-2.6 Rick Curtis
  *       - 443762 : Misc message cleanup.
  *     12/18/2014-2.6 Rick Curtis
  *       - 454189 : Misc message cleanup.#2
  *     01/05/2015 Rick Curtis
  *       - 455683: Automatically detect target server
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
@@ -56,26 +56,26 @@ import java.util.ListResourceBundle;
  * @author Shannon Chen
  * @since TOPLink/Java 5.0
  *
- * Internal change on 2006/04/24: 
+ * Internal change on 2006/04/24:
  *
  * Message id is added for iAS 11 logging compliance.
  * Every message added into this file needs the message id entry as well.
- * Logs by AbstractSessionLog.getLog().log() when the level is below CONFIG=4 (FINE, FINER, FINEST, ALL) 
- * should be moved to TraceLocalizationResource. 
- * 
+ * Logs by AbstractSessionLog.getLog().log() when the level is below CONFIG=4 (FINE, FINER, FINEST, ALL)
+ * should be moved to TraceLocalizationResource.
+ *
  */
 public class LoggingLocalizationResource extends ListResourceBundle {
-    
+
     /**
-     * Note: Each entry has 2 parts, a MSGID and TOP-NNNNN key at the 
-     * bottom of the file must match the id and string message entry in the 
+     * Note: Each entry has 2 parts, a MSGID and TOP-NNNNN key at the
+     * bottom of the file must match the id and string message entry in the
      * 1st section at the top of this file for enumeration integrity.
      */
     static final Object[][] contents = {
         { "topLink_version", "EclipseLink, version: {0}" },
         { "application_server_name_and_version", "Server: {0}" },
         { "login_successful", "{0} login successful" },
-        { "logout_successful", "{0} logout successful" },     
+        { "logout_successful", "{0} logout successful" },
 
         { "connected_user_database_driver", "Connected: {0}{6}User: {1}{6}Database: {2}  Version: {3}{6}Driver: {4}  Version: {5}" },
         { "connected_user_database", "Connected: {3}{4}User: {0}{3}{4}Database: {1}  Version: {2}" },
@@ -84,7 +84,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "disconnect", "disconnect" },
         { "reconnecting", "reconnecting({0})" },
         { "connected_sdk", "Connected: SDK" },
-        
+
         { "no_session_found", "Could not find the session with the name [{0}] in the session.xml file [{1}]" },
 
         { "identitymap_for", "{0}{1} for: {2}" },
@@ -98,7 +98,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "deleting_object", "The remove operation has been performed on: {0}"},
         { "register_new_for_persist", "PERSIST operation called on: {0}." },
         { "all_registered_clones", "All Registered Clones:" },
-        { "new_objects", "New Objects:" },        
+        { "new_objects", "New Objects:" },
 
         { "failed_to_propogate_to", "CacheSynchronization : Failed to propagate to {0}.  {1}" },
         { "exception_thrown_when_attempting_to_shutdown_cache_synch", "Exception thrown when attempting to shutdown cache synch: {0}" },
@@ -107,7 +107,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "retreived_unknown_message_type", "Retreived unknown message type: {0} from topic: {1}; ignoring" },
         { "retreived_null_message", "Retreived null message from topic: {0}; ignoring" },
         { "received_unexpected_message_type", "Received unexpected message type: {0} from topic: {1}; ignoring" },
-        { "problem_adding_remote_connection", "Problem adding remote connection: {0}" },        
+        { "problem_adding_remote_connection", "Problem adding remote connection: {0}" },
 
         { "error_in_codegen", "Error during generation of concrete bean class." },
         { "error_during_PersistenceManager_setup_for_bean", "Error during PersistenceManager setup for bean: {0}" },
@@ -127,14 +127,14 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "failed_to_find_mbean_server", "Failed to find MBean Server: {0}" },
         { "problem_while_registering", "Problem while registering: {0}" },
         { "objectchangepolicy_turned_off", "Change tracking turned off for: {0}" },
-        { "External_transaction_controller_not_defined_by_server_platform", "The DatabaseSession has an external transaction controller defined " + "by something other than the ServerPlatform. EclipseLink will permit the " + "override of the external transaction controller, but we recommend " + "you consider the alternative of subclassing " + "org.eclipse.persistence.platform.server.ServerPlatformBase " + "and override getExternalTransactionControllerClass()." },        
+        { "External_transaction_controller_not_defined_by_server_platform", "The DatabaseSession has an external transaction controller defined " + "by something other than the ServerPlatform. EclipseLink will permit the " + "override of the external transaction controller, but we recommend " + "you consider the alternative of subclassing " + "org.eclipse.persistence.platform.server.ServerPlatformBase " + "and override getExternalTransactionControllerClass()." },
 
         { "extra_cmp_field", "There is an abstract getter and/or setter defined on the [{0}] " + "abstract bean class but the corresponding cmp field [{1}] " + "is not declared in the ejb-jar.xml." },
         { "extra_ejb_select", "There is an abstract ejbSelect defined on the [{0}] " + "abstract bean class but the corresponding ejbSelect [{1}{2}] " + "entry is not declared in the ejb-jar.xml." },
         { "extra_finder", "There is a finder defined on the [{0}] " + "home interface(s) but the corresponding finder [{1}{2}] " + "entry is not declared in the ejb-jar.xml." },
-        { "cmp_and_cmr_field", "The ejb-jar.xml entry for [{0}] contains both a <cmp-field> and <cmr-field> entry for the attribute [{1}].  The <cmp-field> entry will be ignored." },        
+        { "cmp_and_cmr_field", "The ejb-jar.xml entry for [{0}] contains both a <cmp-field> and <cmr-field> entry for the attribute [{1}].  The <cmp-field> entry will be ignored." },
 
-        { "toplink_cmp_bean_name_xml_deprecated", "Support for toplink-cmp-bean_name.xml is deprecated." + "Please refer to the documentation for the use of toplink-ejb-jar.xml" },        
+        { "toplink_cmp_bean_name_xml_deprecated", "Support for toplink-cmp-bean_name.xml is deprecated." + "Please refer to the documentation for the use of toplink-ejb-jar.xml" },
 
         { "drop_connection_on_error", "Warning: Dropping remote command connection to {0} on error {1}" },
         { "received_corrupt_announcement", "Warning: Discovery manager could not process service announcement due to {0} - ignoring announcement" },
@@ -143,7 +143,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "exception_thrown_when_attempting_to_close_connection", "Warning: exception thrown when attempting to close connection" },
         { "error_executing_remote_command", "{0} command failed due to: {1}" },
         { "problem_adding_connection", "Could not add remote connection from {0} due to error: {1}" },
-        { "problem_reconnect_to_jms", "Could not reconnect to JMS Topic name {0} due to error: {1}" },        
+        { "problem_reconnect_to_jms", "Could not reconnect to JMS Topic name {0} due to error: {1}" },
 
         { "toplink_severe", "[EL Severe]: " },
         { "toplink_warning", "[EL Warning]: " },
@@ -153,7 +153,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "toplink_finer", "[EL Finer]: " },
         { "toplink_finest", "[EL Finest]: " },
         { "toplink", "[EL]: " },
-        { "an_error_occured_initializing_dms_listener", "Exception thrown when initializing DMS embedded listener and the SPY Servlet" },       
+        { "an_error_occured_initializing_dms_listener", "Exception thrown when initializing DMS embedded listener and the SPY Servlet" },
 
         { "input_minimum_arguments", "The command line input arguments must at least include -s, -a or -x, and -o." },
         { "src_pm_name_first_argument", "You must specify the source PM name at the first input argument as either: -sOc4j-native or -sWeblogic." },
@@ -224,7 +224,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "toplink_ejb_jar_in_jar", "toplink-ejb-jar.xml is included in jar({0}) file, no migration therefore will be performed for this jar." },
         { "jta_cannot_be_disabled_in_cmp", "When using Container Managed Persistence (CMP), JTA cannot be disabled. EclipseLink will act as if JTA is enabled." },
         { "descriptor_named_query_cannot_be_added", "Cannot add a descriptor named query whose name conflict with an existing query. Query To Be Added: [{0}] is named: [{1}] with arguments [{2}]." },
-        { "metadata_access_type", "The access type for the persistent class [{1}] is set to [{0}]." },        
+        { "metadata_access_type", "The access type for the persistent class [{1}] is set to [{0}]." },
         { "metadata_default_alias", "The alias name for the entity class [{0}] is being defaulted to: {1}." },
         { "metadata_default_map_key_attribute_name", "The map key attribute name for the mapping element [{0}] is being defaulted to: {1}." },
         { "metadata_default_table_name", "The table name for entity [{0}] is being defaulted to: {1}." },
@@ -281,7 +281,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_default_element_collection_reference_class", "The target class (reference) class for the element collection mapping element [{0}] is being defaulted to: {1}." },
 
         { "metadata_warning_override_annotation_with_xml", "Ignoring the annotation [{0}] from [{1}] since an XML element was defined in the mapping file [{2}]." },
-        { "metadata_warning_override_named_annotation_with_xml", "Ignoring the annotation [{0}] from [{2}] since an XML element with the same name [{1}] was defined in the mapping file [{3}]" },        
+        { "metadata_warning_override_named_annotation_with_xml", "Ignoring the annotation [{0}] from [{2}] since an XML element with the same name [{1}] was defined in the mapping file [{3}]" },
         { "metadata_warning_override_xml_with_eclipselink_xml", "Ignoring the element [{0}] from [{1}] defined in the mapping file [{2}] since this element was defined in the eclipselink-orm mapping file [{3}]" },
         { "metadata_warning_override_named_xml_with_eclipselink_xml", "Ignoring the element [{0}] named [{1}] defined in the mapping file [{2}] since an element with the same name was defined in the eclipselink-orm mapping file [{3}]" },
 
@@ -295,18 +295,18 @@ public class LoggingLocalizationResource extends ListResourceBundle {
 
         { "metadata_warning_ignore_cacheable_false", "Ignoring the explicit cacheable=false set for the entity class [{0}] since a caching type of ALL has been specified in the persistence.xml file." },
         { "metadata_warning_ignore_cacheable_true", "Ignoring the explicit cacheable=true set for the entity class [{0}] since a caching type of NONE has been specified in the persistence.xml file." },
-        
-        { "metadata_warning_ignore_mapped_superclass_additional_criteria", "Ignoring the additional criteria metadata on the mapped superclass [{1}] for the entity class [{0}] since additional criteria metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." }, 
+
+        { "metadata_warning_ignore_mapped_superclass_additional_criteria", "Ignoring the additional criteria metadata on the mapped superclass [{1}] for the entity class [{0}] since additional criteria metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_attribute_override", "Ignoring the attribute override named [{0}] on the element [{1}] of the mapped superclass [{2}] since an attribute override with the same name has been specified on the entity class [{3}]." },
         { "metadata_warning_ignore_association_override", "Ignoring the association override named [{0}] on the element [{1}] of the mapped superclass [{2}] since an association override with the same name has been specified on the entity class [{3}]." },
-        
+
         { "metadata_warning_ignore_inheritance_subclass_cache", "Ignoring the cache metadata on the inheritance subclass [{0}]. Cache metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_subclass_cache_interceptor", "Ignoring the cache interceptor metadata on the inheritance subclass [{0}]. Cache interceptor metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_subclass_default_redirectors", "Ignoring the default redirector metadata on the inheritance subclass [{0}]. Default redirector metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_subclass_read_only", "Ignoring the read only setting on the inheritance subclass [{0}]. A read only setting should only be specified on the root of the inheritance hierarchy and can not be overridden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_tenant_discriminator_column", "Ignoring the tenant discriminator column setting on the inheritance subclass [{0}]. Tenant discriminator column(s) should only be specified on the root of the inheritance hierarchy and can not be overridden and/or specified in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_tenant_table_discriminator", "Ignoring the tenant table discriminator setting on the inheritance subclass [{0}]. The tenant table discriminator should only be specified on the root of the inheritance hierarchy and can not be overridden and/or specified in an inheritance subclass." },
-       
+
         { "metadata_warning_ignore_mapped_superclass_association_override", "Ignoring the association override named [{0}] defined on the mapped superclass [{1}] for the entity [{2}] since an association override with the same name was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_attribute_override", "Ignoring the attribute override named [{0}] defined on the mapped superclass [{1}] for the entity [{2}] since an attribute override override with the same name was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_copy_policy", "Ignoring the copy policy metadata on the mapped superclass [{1}] for the entity class [{0}] since copy policy metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
@@ -319,16 +319,16 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_mapped_superclass_customizer", "Ignoring the customizer on the mapped superclass [{1}] for the entity class [{0}] since customizer metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_id_class", "Ignoring the id class on the mapped superclass [{1}] for the entity class [{0}] since an id class was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_read_only", "Ignoring the read only setting on the mapped superclass [{1}] for the entity class [{0}] since read only metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
-        { "metadata_warning_ignore_mapped_superclass_fetch_group", "Ignoring the fetch group named [{2}] on the mapped superclass [{1}] for the entity class [{0}] since a fetch group with the same name was previously discovered for that entity (either on the entity itself or another mapped-superclass)." }, 
+        { "metadata_warning_ignore_mapped_superclass_fetch_group", "Ignoring the fetch group named [{2}] on the mapped superclass [{1}] for the entity class [{0}] since a fetch group with the same name was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_existence_checking", "Ignoring the existence checking setting on the mapped superclass [{1}] for the entity class [{0}] since existence checking metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_primary_key", "Ignoring the primary key setting on the mapped superclass [{1}] for the entity class [{0}] since primary key metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_multitenant", "Ignoring the multitenant setting on the mapped superclass [{1}] for the entity class [{0}] since multitenant metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
-        { "metadata_warning_ignore_mapped_superclass_annotation", "Ignoring the metadata [{0}] setting on the mapped superclass [{1}] for the entity class [{2}] since the metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },                               
-        { "metadata_warning_ignore_lazy", "Reverting the lazy setting on the OneToOne or ManyToOne attribute [{0}] for the entity class [{1}] since weaving was not enabled or did not occur." },                               
+        { "metadata_warning_ignore_mapped_superclass_annotation", "Ignoring the metadata [{0}] setting on the mapped superclass [{1}] for the entity class [{2}] since the metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
+        { "metadata_warning_ignore_lazy", "Reverting the lazy setting on the OneToOne or ManyToOne attribute [{0}] for the entity class [{1}] since weaving was not enabled or did not occur." },
 
         { "metadata_warning_ignore_fetch_group", "Ignoring the fetch groups specified on class [{0}] for the entity [{1}] since weaving is not enabled and the entity class does not implement the FetchGroupTracker interface." },
         { "metadata_warning_ignore_mapping_metadata", "Ignoring the javax.persistence metadata applied to the attribute [{0}] from class [{1}]. javax.persistence metadata is ignored on fields or properties that are transient, static or abstract." },
-        
+
         { "metadata_warning_multiple_id_fields_without_id_class", "You have specified multiple ids for the entity class [{0}] without specifying an @IdClass. By doing this you may lose the ability to find by identity, distributed cache support etc. Note: You may however use EntityManager find operations by passing a list of primary key fields. Else, you will have to use JPQL queries to read your entities. For other id options see @PrimaryKey." },
         { "metadata_warning_inverse_access_type_mapping_override", "Overriding the {2} mapping attribute [{1}] with the {4} mapping attribute [{3}] from class [{0}]. To avoid this warning you should mark the attribute [{1}] as transient."},
         { "metadata_warning_partitioned_not_set", "@Partitioning found on the element {1} of class {0}, but no @Partitioned.  The @Partitioned annotation must be used to set the partitioning policy, @Partitioning just defines the policy, but does not set it."},
@@ -338,18 +338,18 @@ public class LoggingLocalizationResource extends ListResourceBundle {
             "java.util.Set, java.util.List, or java.util.Map.  This type is supported with eager loading; using lazy loading with this collection type requires additional configuration and an IndirectContainer implementation " +
             "that extends [{2}] or setting the mapping to use basic indirection and the type to be ValueholderInterface." },
         { "metadata_warning_integer_discriminator_could_not_be_built", "Class [{0}] specifies discriminatorType=INTEGER and uses [{1}] as the discriminatorValue.  That value cannot be converted to an integer.  We will attempt to use this value in String format." },
-                
-        { "annotation_warning_ignore_annotation", "Ignoring the annotation [{0}] on the element [{1}] because of an XML metadata-complete setting of true for this class." },        
+
+        { "annotation_warning_ignore_annotation", "Ignoring the annotation [{0}] on the element [{1}] because of an XML metadata-complete setting of true for this class." },
         { "annotation_warning_ignore_private_owned", "Ignoring @PrivateOwned on element [{1}] within entity class [{0}]. A @PrivateOwned can only be used with a @OneToOne, @OneToMany and @VariableOneToOne. Also note, private ownership is implied with a @BasicCollection and @BasicMap." },
         { "annotation_warning_ignore_return_insert", "Ignoring the @ReturnInsert on the element [{0}]. A @ReturnInsert is only supported with a basic mapping." },
         { "annotation_warning_ignore_return_update", "Ignoring the @ReturnUpdate on the element [{0}]. A @ReturnUpdate is only supported with a basic mapping." },
-        
+
         { "weaver_null_project", "Weaver session''s project cannot be null"},
-        { "weaver_disable_by_system_property", "Weaving disabled by system property {0}"},        
+        { "weaver_disable_by_system_property", "Weaving disabled by system property {0}"},
         { "weaver_not_overwriting", "Weaver is not overwriting class {0} because it has not been set to overwrite."},
         { "weaver_could_not_write", "Weaver encountered an exception while trying to write class {0} to the file system.  The exception was: {1}"},
         { "exception_while_weaving", "Weaver encountered an exception while trying to weave class {0}.  The exception was: {1}"},
-        
+
         { "weaver_class_not_in_project", "Weaver found a class that is not part of the project: {0}."},
         { "weaver_processing_class", "Weaver processing class: {0}."},
         { "cannot_weave_changetracking", "Class {0} could not be weaved for change tracking as it is not supported by its mappings."},
@@ -370,7 +370,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         // B5112171: XML AnyObject and AnyCollection throw NPE on null document root element
         { "exception_loading_entity_class", "An exception while trying to initialize persistence.  {1} occurred while trying to load entity class: {0}."},
         { "marshal_warning_null_document_root_element", "{0}: The undefined document root element of a referenced object [{1}] is ignored during marshalling with an any collection|object mapping." },
-    
+
         { "update_all_query_cannot_use_binding_on_this_platform", "UpdateAllQuery cannot use binding on this database platform. Changed query setting to execute without binding." },
 
         { "broadcast_exception_thrown_when_attempting_to_close_connection", "Warning: {0}: attempt to close connection caused exception {1}" },
@@ -382,12 +382,12 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "broadcast_listening_sleep_on_error", "Warning: {0}: Exception {1} was thrown. The thread will sleep for {2} milliseconds before resuming listening." },
         { "dbPlatformHelper_defaultingPlatform", "Not able to detect platform for vendor name [{0}]. Defaulting to [{1}]. The database dialect used may not match with the database you are using. Please explicitly provide a platform using property \"eclipselink.target-database\"."},
         { "dbPlatformHelper_noMappingFound", "Can not load resource [{0}] that loads mapping from vendor name to database platform. Autodetection of database platform will not work."},
-        
+
         { "sessions_xml_path_where_session_load_from", "The session info is loaded from [{0}]."},
         { "resource_local_persistence_init_info_ignores_jta_data_source", "PersistenceUnitInfo {0} has transactionType RESOURCE_LOCAL and therefore jtaDataSource will be ignored"},
         { "deprecated_property", "property {1} is deprecated, property {0} should be used instead."},
         { "persistence_unit_processor_error_loading_class", "{0}: {1} was thrown on attempt of PersistenceLoadProcessor to load class {2}. The class is ignored."},
-        
+
         { "attempted_to_open_url_as_jar", "{1} was thrown on attempt to open {0} as a jar."},
         { "attempted_to_open_url_as_directory", "{1} was thrown on attempt to open {0} as a directory."},
         { "attempted_to_open_entry_in_url_as_jar", "{2} was thrown on attempt to open {0} as a jar and access entry: {1}."},
@@ -395,34 +395,34 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "invalid_datasource_property_value", "{1} is not a valid object to be passed in for property {0}.  Valid values are String or instances of javax.sql.DataSource."},
         { "invalid_property_value", "{1} is not a valid object to be passed in for property {0}."},
         // class name is preceeded by "class" - we need to hardcode the full package name
-        { "sdo_type_generation_modified_function_naming_format_to", "{0}: Generated Type [{1}] java get/set method name changed to [{2}] to follow class naming conventions."},                                            
-        { "sdo_type_generation_modified_class_naming_format_to", "{0}: Generated Type [{1}] java class name changed to [{2}] to follow class naming conventions."},                                            
-        { "sdo_type_generation_warning_class_name_violates_java_spec", "{0}: Generated Type [{1}] conflicts with Java specification naming rules for [{2}] and should be renamed."},                                           
-        { "sdo_type_generation_warning_class_name_violates_sdo_spec", "{0}: Generated Type [{1}] conflicts with SDO specification naming rules for [{2}] and should be renamed."},                                            
-        
+        { "sdo_type_generation_modified_function_naming_format_to", "{0}: Generated Type [{1}] java get/set method name changed to [{2}] to follow class naming conventions."},
+        { "sdo_type_generation_modified_class_naming_format_to", "{0}: Generated Type [{1}] java class name changed to [{2}] to follow class naming conventions."},
+        { "sdo_type_generation_warning_class_name_violates_java_spec", "{0}: Generated Type [{1}] conflicts with Java specification naming rules for [{2}] and should be renamed."},
+        { "sdo_type_generation_warning_class_name_violates_sdo_spec", "{0}: Generated Type [{1}] conflicts with SDO specification naming rules for [{2}] and should be renamed."},
+
         { "sdo_classgenerator_exception", "{2} A [{0}] Exception occurred - message is [{1}]"},
         { "query_has_both_join_attributes_and_partial_attributes", "{0} named {1} has both join attributes and partial attributes. These two technologies were not designed to work together, result may be unpredictible."},
         { "sdo_missing_schemaLocation", "Referenced schema with uri {0} could not be processed because no schemaLocation attribute was specified."},
         { "sdo_invalid_schemaLocation", "Could not create schemaLocation [{0}] for import with uri [{1}]."},
         { "sdo_error_processing_referenced_schema", "An {0} occurred processing referenced schema with uri {1} with schemaLocation {2}."},
         { "ox_turn_global_logging_off", " {0} Turning global session logging off."},
-        { "ox_lowering_global_logging_from_default_info_to_warning", " {0} Lowering global logging from default INFO to WARNING level."},        
+        { "ox_lowering_global_logging_from_default_info_to_warning", " {0} Lowering global logging from default INFO to WARNING level."},
         { "ox_turn_session_logging_off", " {0} Turning session logging off."},
         { "ox_lowering_session_logging_from_default_info_to_warning", " {0} Lowering session logging from default INFO to WARNING level."},
-        
+
         { "cannot_get_server_name_and_version", "Cannot get server name and version because of the following exception.  {0}"},
         { "communication_failure_attempting_query_retry", "Communication failure detected when attempting to perform read query outside of a transaction. Attempting to retry query. Error was: {0}."},
         { "communication_failure_attempting_begintransaction_retry", "Communication failure detected when attempting to create transaction on database.  Attempting to retry begin transaction. Error was: {0}."},
         { "persistence_unit_processor_error_loading_class_weaving_disabled", "The classLoader [{0}]: for PersistenceLoadProcessor [{1}] failed to load class [{2}]. Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},
-        { "persistence_unit_processor_null_temp_classloader", "The classLoader for PersistenceLoadProcessor [{0}] is null. Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},        
+        { "persistence_unit_processor_null_temp_classloader", "The classLoader for PersistenceLoadProcessor [{0}] is null. Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},
         { "persistence_unit_processor_npe_temp_classloader", "The classLoader [{0}] for PersistenceLoadProcessor [{1}] is causing a NPE on loadClass. Switching classLoader to [{2}].  Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},
-        { "persistence_unit_processor_jboss_temp_classloader_bypassed", "The temporary classLoader for PersistenceLoadProcessor [{0}] is not available.  Switching classLoader to [{1}].  Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},        
-        { "persistence_unit_processor_sap_temp_classloader_bypassed", "The temporary classLoader for PersistenceLoadProcessor [{0}] is not available.  Switching classLoader to [{1}].  Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},        
-        { "persistence_unit_processor_error_in_class_forname_weaving_disabled", "The classLoader [{0}]: failed to load class [{1}]. Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},        
+        { "persistence_unit_processor_jboss_temp_classloader_bypassed", "The temporary classLoader for PersistenceLoadProcessor [{0}] is not available.  Switching classLoader to [{1}].  Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},
+        { "persistence_unit_processor_sap_temp_classloader_bypassed", "The temporary classLoader for PersistenceLoadProcessor [{0}] is not available.  Switching classLoader to [{1}].  Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},
+        { "persistence_unit_processor_error_in_class_forname_weaving_disabled", "The classLoader [{0}]: failed to load class [{1}]. Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},
         { "entity_manager_sets_property_while_context_is_active", "Property {0} is set into EntityManager when active persistence context already exists, it will be processed and take effect only when a new active persistence context is created. To create a new active persistence context the existing one should be removed - that could be done by calling clear method on the EntityManager."},
         { "osgi_initializer_failed", "Construction of environment specific OSGi initializer, [{0}] failed with message: [{1}]."},
         { "osgi_initializer", "Using OSGi initializer: [{0}]."},
-        { "entity_manager_ignores_nonjta_data_source", "Persistence unit uses JTA, therefore the EntityManager ignores non jta data source. "},        
+        { "entity_manager_ignores_nonjta_data_source", "Persistence unit uses JTA, therefore the EntityManager ignores non jta data source. "},
         { "entity_manager_ignores_jta_data_source", "Persistence unit does not use JTA, therefore the EntityManager ignores jta data source. "},
         { "problem_registering_mbean", "Problem while registering MBean: {0}" },
         { "problem_unregistering_mbean", "Problem while unregistering MBean: {0}" },
@@ -438,8 +438,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_print_cache_key_value", "Key [{0}] => Value [{1}]" },
         { "jmx_mbean_runtime_services_no_classes_in_session", "No Classes in session." },
         { "jmx_mbean_runtime_services_statement_cache_cleared", "Statement cache cleared." },
-        { "jmx_mbean_runtime_services_no_connection_pools_available", "No Connection Pools Available." },        
-        { "jmx_mbean_runtime_services_failed_toget_initial_context", "Failed to get InitialContext for MBean registration: {0}" },        
+        { "jmx_mbean_runtime_services_no_connection_pools_available", "No Connection Pools Available." },
+        { "jmx_mbean_runtime_services_failed_toget_initial_context", "Failed to get InitialContext for MBean registration: {0}" },
         { "jmx_mbean_runtime_services_mbeanserver_lookup_failed", "Failed to get InitialContext for MBean registration: {0}" },
         { "jmx_mbean_runtime_services_threadpool_initialize_failed", "Failed to initialize MBean threadPoolRuntime: {0}" },
         { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed", "Version of WebLogic does not support executeThreadRuntime - using ClassLoader: {0}" },
@@ -458,19 +458,19 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances", "Multiple JMX MBeanServer instances [{0}] exist, we will use the server at index [{1}] : [{2}]." },
         { "jmx_mbean_runtime_services_registration_mbeanserver_print", "JMX MBeanServer instance found: [{0}], # of beans: [{1}], domain: [{2}] at index: [{3}]." },
         { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver", "JMX MBeanServer in use: [{0}] from index [{1}] " },
-        { "metamodel_print_type_header", "Printed list of Metamodel [{0}] Types to follow:"},        
+        { "metamodel_print_type_header", "Printed list of Metamodel [{0}] Types to follow:"},
         { "metamodel_print_type_value", "Metamodel Type: [{0}]}"},
         { "named_argument_not_found_in_query_parameters", "Missing Query parameter for named argument: {0} \"null\" will be substituted." },
-        { "jmx_unregistered_mbean", "Unregistered MBean [{0}] from MBeanServer [{1}]." },        
-        { "jmx_unable_to_unregister_mbean", "Unable to unregister MBean [{0}] because the MBeanServer is null. Verify that your ServerPlatform is JMX enabled." },        
+        { "jmx_unregistered_mbean", "Unregistered MBean [{0}] from MBeanServer [{1}]." },
+        { "jmx_unable_to_unregister_mbean", "Unable to unregister MBean [{0}] because the MBeanServer is null. Verify that your ServerPlatform is JMX enabled." },
         // 338837:
-        { "metamodel_type_collection_empty", "The collection of metamodel types is empty. Model classes may not have been found during entity search for Java SE and some Java EE container managed persistence units.  Please verify that your entity classes are referenced in persistence.xml using either <class> elements or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element" },      
+        { "metamodel_type_collection_empty", "The collection of metamodel types is empty. Model classes may not have been found during entity search for Java SE and some Java EE container managed persistence units.  Please verify that your entity classes are referenced in persistence.xml using either <class> elements or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element" },
         { "metamodel_type_collection_empty_during_lookup", "The collection of metamodel [{1}] types is empty. Model classes may not have been found during entity search for Java SE and some Java EE container managed persistence units.  Please verify that your entity classes are referenced in persistence.xml using either <class> elements or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element.  The lookup on [{0}] will return null." },
         { "jpars_could_not_find_session_bean", "A call is being made to a session bean with JNDI Name: [{0}].  That bean can not be found."},
         { "jpars_could_not_find_persistence_context", "A JPA-RS call is requesting persistence context: [{0}].  That persistence context is not found."},
         { "jpars_could_not_find_class_in_persistence_unit", "Type: [{0}] cannot be found in persistence unit: [{1}]."},
         { "jpars_could_bootstrap_persistence_context", "Persistence Context: [{0}] could not be bootstrapped."},
-        { "entity_not_available_during_merge", "Max tries exceeded.  Unable to find value of locked cacheKey.  Class [{0}] ID:[{1}] This Thread: [{2}] Owning Thread:[{3}]"},        
+        { "entity_not_available_during_merge", "Max tries exceeded.  Unable to find value of locked cacheKey.  Class [{0}] ID:[{1}] This Thread: [{2}] Owning Thread:[{3}]"},
         { "ddl_generation_unknown_property_value", "Unknown {0} value provided [{1}] for the persistence unit [{2}]. Valid options are: [{3}]" },
         // SOP:
         { "sop_object_deserialze_failed", "Failed to deserialize sopObject from [{0}] in [{1}]"},
@@ -481,214 +481,214 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "removing_unique_constraint", "Removing UNIQUE constraint definition from [{0}] because it is also a primary key."},
         { "session_manager_no_partition", "No partition instance associated with current SessionManager instance."},
         // MESSAGES end
-        
-        
+
+
         /**
          * Note: Each key above must have a corresponding .MSGID and TOP-NNNNN key below for enumeration integrity
          */
-        
-        
-        
+
+
+
         // KEYS start
         // newly added for message id
         // The corresponding key mapping for a key:message mapping above is added below only if I18N is required - or was missed
-        {"oracle.core.ojdl.logging.MessageIdSuffixResourceBundle" ,"oracle.core.ojdl.logging.MessageIdSuffixResourceBundle"},  
-        {"topLink_version.MSGID" ,"TOP-50001"}, 
-        {"application_server_name_and_version.MSGID" ,"TOP-50002"}, 
-        {"login_successful.MSGID" ,"TOP-50003"}, 
-        {"logout_successful.MSGID" ,"TOP-50004"},         
-        
-        {"connected_user_database_driver.MSGID" ,"TOP-50005"}, 
-        {"connected_user_database.MSGID" ,"TOP-50006"}, 
-        {"JDBC_driver_does_not_support_meta_data.MSGID" ,"TOP-50007"}, 
-        {"connecting.MSGID" ,"TOP-50008"}, 
-        {"disconnect.MSGID" ,"TOP-50009"}, 
-        {"reconnecting.MSGID" ,"TOP-50010"}, 
-        {"connected_sdk.MSGID" ,"TOP-50011"}, 
-        
-        {"no_session_found.MSGID" ,"TOP-50012"}, 
-        
-        {"identitymap_for.MSGID" ,"TOP-50013"}, 
-        {"includes.MSGID" ,"TOP-50014"}, 
-        {"key_object_null.MSGID" ,"TOP-50015"}, 
-        {"key_identity_hash_code_object.MSGID" ,"TOP-50016"}, 
-        {"elements.MSGID" ,"TOP-50017"}, 
-        {"unitofwork_identity_hashcode.MSGID" ,"TOP-50018"}, 
-        {"deleted_objects.MSGID" ,"TOP-50019"}, 
-        {"deleting_object.MSGID" ,"TOP-50020"}, 
-        {"register_new_for_persist.MSGID" ,"TOP-50021"}, 
-        {"all_registered_clones.MSGID" ,"TOP-50022"}, 
-        {"new_objects.MSGID" ,"TOP-50023"},         
-        
-        {"failed_to_propogate_to.MSGID" ,"TOP-50024"}, 
-        {"exception_thrown_when_attempting_to_shutdown_cache_synch.MSGID" ,"TOP-50025"}, 
-        {"corrupted_session_announcement.MSGID" ,"TOP-50026"}, 
-        {"exception_thrown_when_attempting_to_close_listening_topic_connection.MSGID" ,"TOP-50027"}, 
-        {"retreived_unknown_message_type.MSGID" ,"TOP-50028"}, 
-        {"retreived_null_message.MSGID" ,"TOP-50029"}, 
-        {"received_unexpected_message_type.MSGID" ,"TOP-50030"}, 
-        {"problem_adding_remote_connection.MSGID" ,"TOP-50031"},         
-        
-        {"error_in_codegen.MSGID" ,"TOP-50032"}, 
-        {"error_during_PersistenceManager_setup_for_bean.MSGID" ,"TOP-50033"}, 
-        {"error_in_create.MSGID" ,"TOP-50034"}, 
-        {"error_executing_ejbHome.MSGID" ,"TOP-50035"}, 
-        {"error_in_remove.MSGID" ,"TOP-50036"}, 
-        {"table_existed_during_creation.MSGID" ,"TOP-50037"}, 
-        {"an_error_occured_trying_to_undeploy_bean.MSGID" ,"TOP-50038"}, 
-        {"an_error_occured_executing_findByPrimaryKey.MSGID" ,"TOP-50039"}, 
-        {"an_error_occured_preparing_bean.MSGID" ,"TOP-50040"}, 
-        {"an_error_executing_finder.MSGID" ,"TOP-50041"}, 
-        {"an_error_executing_ejbSelect.MSGID" ,"TOP-50042"}, 
-        {"ejbSelect2.MSGID" ,"TOP-50043"}, 
-        {"error_getting_transaction_status.MSGID" ,"TOP-50044"}, 
-        {"removeEJB_return.MSGID" ,"TOP-50045"}, 
-        {"multiple_ds_not_supported.MSGID" ,"TOP-50046"}, 
-        {"failed_to_find_mbean_server.MSGID" ,"TOP-50047"}, 
-        {"problem_while_registering.MSGID" ,"TOP-50048"}, 
-        {"objectchangepolicy_turned_off.MSGID" ,"TOP-50049"}, 
-        {"External_transaction_controller_not_defined_by_server_platform.MSGID" ,"TOP-50050"},         
-        
-        {"extra_cmp_field.MSGID" ,"TOP-50051"}, 
-        {"extra_ejb_select.MSGID" ,"TOP-50052"}, 
-        {"extra_finder.MSGID" ,"TOP-50053"}, 
-        {"cmp_and_cmr_field.MSGID" ,"TOP-50054"},         
-        
-        {"toplink_cmp_bean_name_xml_deprecated.MSGID" ,"TOP-50055"}, 
-                
-        {"drop_connection_on_error.MSGID" ,"TOP-50056"}, 
-        {"received_corrupt_announcement.MSGID" ,"TOP-50057"}, 
-        {"missing_converter.MSGID" ,"TOP-50058"}, 
-        {"failed_command_propagation.MSGID" ,"TOP-50059"}, 
-        {"exception_thrown_when_attempting_to_close_connection.MSGID" ,"TOP-50060"}, 
-        {"error_executing_remote_command.MSGID" ,"TOP-50061"}, 
-        {"problem_adding_connection.MSGID" ,"TOP-50062"}, 
-        {"problem_reconnect_to_jms.MSGID" ,"TOP-50063"},         
-        
-        {"toplink_severe.MSGID" ,"TOP-50064"}, 
-        {"toplink_warning.MSGID" ,"TOP-50065"}, 
-        {"toplink_info.MSGID" ,"TOP-50066"}, 
-        {"toplink_config.MSGID" ,"TOP-50067"}, 
-        {"toplink_fine.MSGID" ,"TOP-50068"}, 
-        {"toplink_finer.MSGID" ,"TOP-50069"}, 
-        {"toplink_finest.MSGID" ,"TOP-50070"}, 
-        {"toplink.MSGID" ,"TOP-50071"}, 
-        {"an_error_occured_initializing_dms_listener.MSGID" ,"TOP-50072"},         
-        
-        {"input_minimum_arguments.MSGID" ,"TOP-50073"}, 
-        {"src_pm_name_first_argument.MSGID" ,"TOP-50074"}, 
-        {"oc4j_native_migration_start.MSGID" ,"TOP-50075"}, 
-        {"validate_ejb_jar.MSGID" ,"TOP-50076"}, 
-        {"weblogic_native_migration_start.MSGID" ,"TOP-50077"}, 
-        {"must_define_migration_output_dir.MSGID" ,"TOP-50078"}, 
-        {"migration_output_dir_not_valid.MSGID" ,"TOP-50079"}, 
-        {"migration_input_dir_not_valid.MSGID" ,"TOP-50080"}, 
-        {"input_and_output_dir_be_different.MSGID" ,"TOP-50081"}, 
-        {"input_archive_format_not_supported.MSGID" ,"TOP-50082"}, 
-        {"archive_not_found_in_input.MSGID" ,"TOP-50083"}, 
-        {"input_not_both_archive_and_xml.MSGID" ,"TOP-50084"}, 
-        {"input_at_least_either_archive_or_xml.MSGID" ,"TOP-50085"}, 
-        {"ejb_jar_xml_not_found_in_input.MSGID" ,"TOP-50086"}, 
-        {"orion_ejb_jar_xml_not_found_in_input.MSGID" ,"TOP-50087"}, 
-        {"weblogic_ejb_jar_xml_not_found_in_input.MSGID" ,"TOP-50088"}, 
-        {"toplink_ejb_jar_xml_found_in_input.MSGID" ,"TOP-50089"}, 
-        {"migration_successful.MSGID" ,"TOP-50090"}, 
-        {"migration_failed.MSGID" ,"TOP-50091"}, 
-        {"mw_project_generated_and_under.MSGID" ,"TOP-50092"}, 
-        {"log_file_under_output_dir.MSGID" ,"TOP-50093"}, 
-        {"parse_ejb_jar_with_validation_fails.MSGID" ,"TOP-50094"}, 
-        {"jar_entry_not_migratable.MSGID" ,"TOP-50095"}, 
-        {"jar_entry_has_been_migrated.MSGID" ,"TOP-50096"}, 
-        {"no_jar_entry_migratable_in_ear.MSGID" ,"TOP-50097"}, 
-        {"invalid_command_line_argument.MSGID" ,"TOP-50098"}, 
-        {"column_size_not_migrated.MSGID" ,"TOP-50099"}, 
-        {"associate_using_third_table_not_migrated.MSGID" ,"TOP-50100"}, 
-        {"delay_updates_until_commit_not_supported.MSGID" ,"TOP-50101"}, 
-        {"do_select_before_insert_not_supported.MSGID" ,"TOP-50102"}, 
-        {"no_exclusive_write_access_not_supported.MSGID" ,"TOP-50103"}, 
-        {"force_update_not_supported.MSGID" ,"TOP-50104"}, 
-        {"isolation_level_not_supported.MSGID" ,"TOP-50105"}, 
-        {"force_update_not_supported.MSGID" ,"TOP-50106"}, 
-        {"max_instance_not_supported.MSGID" ,"TOP-50107"}, 
-        {"max_tx_retries_not_supported.MSGID" ,"TOP-50108"}, 
-        {"min_instance_not_supported.MSGID" ,"TOP-50109"}, 
-        {"update_all_fields_not_supported.MSGID" ,"TOP-50110"}, 
-        {"validity_timeout_not_supported.MSGID" ,"TOP-50111"}, 
-        {"call_timeout_not_migrated.MSGID" ,"TOP-50112"}, 
-        {"optimistic_locking_not_supported.MSGID" ,"TOP-50113"}, 
-        {"old_pessimistic_locking_not_supported.MSGID" ,"TOP-50114"}, 
-        {"locking_mode_not_valid.MSGID" ,"TOP-50115"}, 
-        {"verifiy_columns_read_locking_not_supported.MSGID" ,"TOP-50116"}, 
-        {"verifiy_rows_read_locking_not_supported.MSGID" ,"TOP-50117"}, 
-        {"one_to_one_join_outer_migrated.MSGID" ,"TOP-50118"}, 
-        {"bacth_update_not_supported.MSGID" ,"TOP-50119"}, 
-        {"data_sync_on_ejb_create_not_supported.MSGID" ,"TOP-50120"}, 
-        {"weblogic_ql_not_supported.MSGID" ,"TOP-50121"}, 
-        {"input_orione_ejb_jar_augmented.MSGID" ,"TOP-50122"}, 
-        {"template_orion_ejb_jar_created.MSGID" ,"TOP-50123"}, 
-        {"create_default_dbms_tables_not_supported.MSGID" ,"TOP-50124"}, 
-        {"default_dbms_tables_ddl_not_supported.MSGID" ,"TOP-50125"}, 
-        {"enable_batch_operations_as_true_not_supported.MSGID" ,"TOP-50126"}, 
-        {"validate_db_schema_with_not_supported.MSGID" ,"TOP-50127"}, 
-        {"automatic_key_generation_not_supported.MSGID" ,"TOP-50128"}, 
-        {"check_exist_on_method_as_true_not_supported.MSGID" ,"TOP-50129"}, 
-        {"delay_database_insert_until_ejb_create_not_supported.MSGID" ,"TOP-50130"}, 
-        {"delay_database_insert_until_ejb_post_create_not_supported.MSGID" ,"TOP-50131"}, 
-        {"field_group_not_supported.MSGID" ,"TOP-50132"}, 
-        {"relationship_cacheing_not_supported.MSGID" ,"TOP-50133"}, 
+        {"oracle.core.ojdl.logging.MessageIdSuffixResourceBundle" ,"oracle.core.ojdl.logging.MessageIdSuffixResourceBundle"},
+        {"topLink_version.MSGID" ,"TOP-50001"},
+        {"application_server_name_and_version.MSGID" ,"TOP-50002"},
+        {"login_successful.MSGID" ,"TOP-50003"},
+        {"logout_successful.MSGID" ,"TOP-50004"},
+
+        {"connected_user_database_driver.MSGID" ,"TOP-50005"},
+        {"connected_user_database.MSGID" ,"TOP-50006"},
+        {"JDBC_driver_does_not_support_meta_data.MSGID" ,"TOP-50007"},
+        {"connecting.MSGID" ,"TOP-50008"},
+        {"disconnect.MSGID" ,"TOP-50009"},
+        {"reconnecting.MSGID" ,"TOP-50010"},
+        {"connected_sdk.MSGID" ,"TOP-50011"},
+
+        {"no_session_found.MSGID" ,"TOP-50012"},
+
+        {"identitymap_for.MSGID" ,"TOP-50013"},
+        {"includes.MSGID" ,"TOP-50014"},
+        {"key_object_null.MSGID" ,"TOP-50015"},
+        {"key_identity_hash_code_object.MSGID" ,"TOP-50016"},
+        {"elements.MSGID" ,"TOP-50017"},
+        {"unitofwork_identity_hashcode.MSGID" ,"TOP-50018"},
+        {"deleted_objects.MSGID" ,"TOP-50019"},
+        {"deleting_object.MSGID" ,"TOP-50020"},
+        {"register_new_for_persist.MSGID" ,"TOP-50021"},
+        {"all_registered_clones.MSGID" ,"TOP-50022"},
+        {"new_objects.MSGID" ,"TOP-50023"},
+
+        {"failed_to_propogate_to.MSGID" ,"TOP-50024"},
+        {"exception_thrown_when_attempting_to_shutdown_cache_synch.MSGID" ,"TOP-50025"},
+        {"corrupted_session_announcement.MSGID" ,"TOP-50026"},
+        {"exception_thrown_when_attempting_to_close_listening_topic_connection.MSGID" ,"TOP-50027"},
+        {"retreived_unknown_message_type.MSGID" ,"TOP-50028"},
+        {"retreived_null_message.MSGID" ,"TOP-50029"},
+        {"received_unexpected_message_type.MSGID" ,"TOP-50030"},
+        {"problem_adding_remote_connection.MSGID" ,"TOP-50031"},
+
+        {"error_in_codegen.MSGID" ,"TOP-50032"},
+        {"error_during_PersistenceManager_setup_for_bean.MSGID" ,"TOP-50033"},
+        {"error_in_create.MSGID" ,"TOP-50034"},
+        {"error_executing_ejbHome.MSGID" ,"TOP-50035"},
+        {"error_in_remove.MSGID" ,"TOP-50036"},
+        {"table_existed_during_creation.MSGID" ,"TOP-50037"},
+        {"an_error_occured_trying_to_undeploy_bean.MSGID" ,"TOP-50038"},
+        {"an_error_occured_executing_findByPrimaryKey.MSGID" ,"TOP-50039"},
+        {"an_error_occured_preparing_bean.MSGID" ,"TOP-50040"},
+        {"an_error_executing_finder.MSGID" ,"TOP-50041"},
+        {"an_error_executing_ejbSelect.MSGID" ,"TOP-50042"},
+        {"ejbSelect2.MSGID" ,"TOP-50043"},
+        {"error_getting_transaction_status.MSGID" ,"TOP-50044"},
+        {"removeEJB_return.MSGID" ,"TOP-50045"},
+        {"multiple_ds_not_supported.MSGID" ,"TOP-50046"},
+        {"failed_to_find_mbean_server.MSGID" ,"TOP-50047"},
+        {"problem_while_registering.MSGID" ,"TOP-50048"},
+        {"objectchangepolicy_turned_off.MSGID" ,"TOP-50049"},
+        {"External_transaction_controller_not_defined_by_server_platform.MSGID" ,"TOP-50050"},
+
+        {"extra_cmp_field.MSGID" ,"TOP-50051"},
+        {"extra_ejb_select.MSGID" ,"TOP-50052"},
+        {"extra_finder.MSGID" ,"TOP-50053"},
+        {"cmp_and_cmr_field.MSGID" ,"TOP-50054"},
+
+        {"toplink_cmp_bean_name_xml_deprecated.MSGID" ,"TOP-50055"},
+
+        {"drop_connection_on_error.MSGID" ,"TOP-50056"},
+        {"received_corrupt_announcement.MSGID" ,"TOP-50057"},
+        {"missing_converter.MSGID" ,"TOP-50058"},
+        {"failed_command_propagation.MSGID" ,"TOP-50059"},
+        {"exception_thrown_when_attempting_to_close_connection.MSGID" ,"TOP-50060"},
+        {"error_executing_remote_command.MSGID" ,"TOP-50061"},
+        {"problem_adding_connection.MSGID" ,"TOP-50062"},
+        {"problem_reconnect_to_jms.MSGID" ,"TOP-50063"},
+
+        {"toplink_severe.MSGID" ,"TOP-50064"},
+        {"toplink_warning.MSGID" ,"TOP-50065"},
+        {"toplink_info.MSGID" ,"TOP-50066"},
+        {"toplink_config.MSGID" ,"TOP-50067"},
+        {"toplink_fine.MSGID" ,"TOP-50068"},
+        {"toplink_finer.MSGID" ,"TOP-50069"},
+        {"toplink_finest.MSGID" ,"TOP-50070"},
+        {"toplink.MSGID" ,"TOP-50071"},
+        {"an_error_occured_initializing_dms_listener.MSGID" ,"TOP-50072"},
+
+        {"input_minimum_arguments.MSGID" ,"TOP-50073"},
+        {"src_pm_name_first_argument.MSGID" ,"TOP-50074"},
+        {"oc4j_native_migration_start.MSGID" ,"TOP-50075"},
+        {"validate_ejb_jar.MSGID" ,"TOP-50076"},
+        {"weblogic_native_migration_start.MSGID" ,"TOP-50077"},
+        {"must_define_migration_output_dir.MSGID" ,"TOP-50078"},
+        {"migration_output_dir_not_valid.MSGID" ,"TOP-50079"},
+        {"migration_input_dir_not_valid.MSGID" ,"TOP-50080"},
+        {"input_and_output_dir_be_different.MSGID" ,"TOP-50081"},
+        {"input_archive_format_not_supported.MSGID" ,"TOP-50082"},
+        {"archive_not_found_in_input.MSGID" ,"TOP-50083"},
+        {"input_not_both_archive_and_xml.MSGID" ,"TOP-50084"},
+        {"input_at_least_either_archive_or_xml.MSGID" ,"TOP-50085"},
+        {"ejb_jar_xml_not_found_in_input.MSGID" ,"TOP-50086"},
+        {"orion_ejb_jar_xml_not_found_in_input.MSGID" ,"TOP-50087"},
+        {"weblogic_ejb_jar_xml_not_found_in_input.MSGID" ,"TOP-50088"},
+        {"toplink_ejb_jar_xml_found_in_input.MSGID" ,"TOP-50089"},
+        {"migration_successful.MSGID" ,"TOP-50090"},
+        {"migration_failed.MSGID" ,"TOP-50091"},
+        {"mw_project_generated_and_under.MSGID" ,"TOP-50092"},
+        {"log_file_under_output_dir.MSGID" ,"TOP-50093"},
+        {"parse_ejb_jar_with_validation_fails.MSGID" ,"TOP-50094"},
+        {"jar_entry_not_migratable.MSGID" ,"TOP-50095"},
+        {"jar_entry_has_been_migrated.MSGID" ,"TOP-50096"},
+        {"no_jar_entry_migratable_in_ear.MSGID" ,"TOP-50097"},
+        {"invalid_command_line_argument.MSGID" ,"TOP-50098"},
+        {"column_size_not_migrated.MSGID" ,"TOP-50099"},
+        {"associate_using_third_table_not_migrated.MSGID" ,"TOP-50100"},
+        {"delay_updates_until_commit_not_supported.MSGID" ,"TOP-50101"},
+        {"do_select_before_insert_not_supported.MSGID" ,"TOP-50102"},
+        {"no_exclusive_write_access_not_supported.MSGID" ,"TOP-50103"},
+        {"force_update_not_supported.MSGID" ,"TOP-50104"},
+        {"isolation_level_not_supported.MSGID" ,"TOP-50105"},
+        {"force_update_not_supported.MSGID" ,"TOP-50106"},
+        {"max_instance_not_supported.MSGID" ,"TOP-50107"},
+        {"max_tx_retries_not_supported.MSGID" ,"TOP-50108"},
+        {"min_instance_not_supported.MSGID" ,"TOP-50109"},
+        {"update_all_fields_not_supported.MSGID" ,"TOP-50110"},
+        {"validity_timeout_not_supported.MSGID" ,"TOP-50111"},
+        {"call_timeout_not_migrated.MSGID" ,"TOP-50112"},
+        {"optimistic_locking_not_supported.MSGID" ,"TOP-50113"},
+        {"old_pessimistic_locking_not_supported.MSGID" ,"TOP-50114"},
+        {"locking_mode_not_valid.MSGID" ,"TOP-50115"},
+        {"verifiy_columns_read_locking_not_supported.MSGID" ,"TOP-50116"},
+        {"verifiy_rows_read_locking_not_supported.MSGID" ,"TOP-50117"},
+        {"one_to_one_join_outer_migrated.MSGID" ,"TOP-50118"},
+        {"bacth_update_not_supported.MSGID" ,"TOP-50119"},
+        {"data_sync_on_ejb_create_not_supported.MSGID" ,"TOP-50120"},
+        {"weblogic_ql_not_supported.MSGID" ,"TOP-50121"},
+        {"input_orione_ejb_jar_augmented.MSGID" ,"TOP-50122"},
+        {"template_orion_ejb_jar_created.MSGID" ,"TOP-50123"},
+        {"create_default_dbms_tables_not_supported.MSGID" ,"TOP-50124"},
+        {"default_dbms_tables_ddl_not_supported.MSGID" ,"TOP-50125"},
+        {"enable_batch_operations_as_true_not_supported.MSGID" ,"TOP-50126"},
+        {"validate_db_schema_with_not_supported.MSGID" ,"TOP-50127"},
+        {"automatic_key_generation_not_supported.MSGID" ,"TOP-50128"},
+        {"check_exist_on_method_as_true_not_supported.MSGID" ,"TOP-50129"},
+        {"delay_database_insert_until_ejb_create_not_supported.MSGID" ,"TOP-50130"},
+        {"delay_database_insert_until_ejb_post_create_not_supported.MSGID" ,"TOP-50131"},
+        {"field_group_not_supported.MSGID" ,"TOP-50132"},
+        {"relationship_cacheing_not_supported.MSGID" ,"TOP-50133"},
         {"weblogic_query_not_supported.MSGID" ,"TOP-50134"},  // unused
-        {"sequence_cachekey_improper_format.MSGID" ,"TOP-50135"}, 
-        {"dir_cleaned_for_mw_files.MSGID" ,"TOP-50136"}, 
-        {"mapping_not_supported_by_mw.MSGID" ,"TOP-50137"}, 
-        {"toplink_ejb_jar_in_jar.MSGID" ,"TOP-50138"}, 
-        {"migration_tool_usage.MSGID" ,"TOP-50139"}, 
-        {"migration_tool_usage_example.MSGID" ,"TOP-50140"}, 
-        {"jta_cannot_be_disabled_in_cmp.MSGID" ,"TOP-50141"}, 
-        
-        {"annotation_default_alias.MSGID" ,"TOP-50142"}, 
-        {"annotation_default_one_to_one_mapping.MSGID" ,"TOP-50143"}, 
-        {"annotation_default_one_to_many_mapping.MSGID" ,"TOP-50144"}, 
-        {"annotation_default_column.MSGID" ,"TOP-50145"}, 
-        {"annotation_default_pk_column.MSGID" ,"TOP-50146"}, 
-        {"annotation_default_fk_column.MSGID" ,"TOP-50147"}, 
-        {"annotation_default_table_name.MSGID" ,"TOP-50148"}, 
-        {"annotation_default_source_pk_column.MSGID" ,"TOP-50149"}, 
-        {"annotation_default_source_fk_column.MSGID" ,"TOP-50150"}, 
-        {"annotation_default_target_pk_column.MSGID" ,"TOP-50151"}, 
-        {"annotation_default_target_fk_column.MSGID" ,"TOP-50152"}, 
-        {"annotation_default_inheritance_pk_column.MSGID" ,"TOP-50153"}, 
-        {"annotation_default_inheritance_fk_column.MSGID" ,"TOP-50154"}, 
-        {"annotation_default_association_table_name.MSGID" ,"TOP-50155"}, 
-        {"annotation_default_secondary_table_pk_column.MSGID" ,"TOP-50156"}, 
-        {"annotation_default_secondary_table_fk_column.MSGID" ,"TOP-50157"}, 
-        {"annotation_default_one_to_one_reference_class.MSGID" ,"TOP-50158"}, 
-        {"annotation_default_one_to_many_reference_class.MSGID" ,"TOP-50159"}, 
-        {"annotation_default_many_to_one_reference_class.MSGID" ,"TOP-50160"}, 
-        {"annotation_default_many_to_many_reference_class.MSGID" ,"TOP-50161"}, 
-        
-        {"annotation_warning_ignore_mapping.MSGID" ,"TOP-50162"}, 
-        {"annotation_warning_ignore_primary_key.MSGID" ,"TOP-50163"}, 
-        {"annotation_warning_ignore_embedded_id.MSGID" ,"TOP-50164"}, 
-        {"annotation_warning_ignore_id_class.MSGID" ,"TOP-50165"}, 
-        {"annotation_warning_ignore_version_locking.MSGID" ,"TOP-50166"}, 
-        {"annotation_warning_ignore_table.MSGID" ,"TOP-50167"}, 
-        {"annotation_warning_ignore_secondary_table.MSGID" ,"TOP-50168"}, 
-        {"annotation_warning_ignore_inheritance.MSGID" ,"TOP-50169"}, 
-        {"annotation_warning_ignore_get_method.MSGID" ,"TOP-50170"}, 
-        {"annotation_warning_ignore_query.MSGID" ,"TOP-50171"}, 
-        
-        {"weaver_null_project.MSGID" ,"TOP-50172"}, 
-        {"weaver_disable_by_system_property.MSGID" ,"TOP-50173"}, 
-        {"weaver_valueholders_disabled_missing_field.MSGID" ,"TOP-50174"}, 
-        {"weaver_change_tracking_disabled_missing_field.MSGID" ,"TOP-50175"}, 
-        {"weaver_change_tracking_disabled_not_supported.MSGID" ,"TOP-50176"}, 
-        
-        {"field_type_set_to_java_lang_string.MSGID" ,"TOP-50177"}, 
-        {"relational_descriptor_support_only.MSGID" ,"TOP-50178"}, 
-        {"default_tables_already_existed.MSGID" ,"TOP-50179"}, 
-        
-        {"config_factory.MSGID" ,"TOP-50180"}, 
-        {"class_list_created_by.MSGID" ,"TOP-50181"}, 
+        {"sequence_cachekey_improper_format.MSGID" ,"TOP-50135"},
+        {"dir_cleaned_for_mw_files.MSGID" ,"TOP-50136"},
+        {"mapping_not_supported_by_mw.MSGID" ,"TOP-50137"},
+        {"toplink_ejb_jar_in_jar.MSGID" ,"TOP-50138"},
+        {"migration_tool_usage.MSGID" ,"TOP-50139"},
+        {"migration_tool_usage_example.MSGID" ,"TOP-50140"},
+        {"jta_cannot_be_disabled_in_cmp.MSGID" ,"TOP-50141"},
+
+        {"annotation_default_alias.MSGID" ,"TOP-50142"},
+        {"annotation_default_one_to_one_mapping.MSGID" ,"TOP-50143"},
+        {"annotation_default_one_to_many_mapping.MSGID" ,"TOP-50144"},
+        {"annotation_default_column.MSGID" ,"TOP-50145"},
+        {"annotation_default_pk_column.MSGID" ,"TOP-50146"},
+        {"annotation_default_fk_column.MSGID" ,"TOP-50147"},
+        {"annotation_default_table_name.MSGID" ,"TOP-50148"},
+        {"annotation_default_source_pk_column.MSGID" ,"TOP-50149"},
+        {"annotation_default_source_fk_column.MSGID" ,"TOP-50150"},
+        {"annotation_default_target_pk_column.MSGID" ,"TOP-50151"},
+        {"annotation_default_target_fk_column.MSGID" ,"TOP-50152"},
+        {"annotation_default_inheritance_pk_column.MSGID" ,"TOP-50153"},
+        {"annotation_default_inheritance_fk_column.MSGID" ,"TOP-50154"},
+        {"annotation_default_association_table_name.MSGID" ,"TOP-50155"},
+        {"annotation_default_secondary_table_pk_column.MSGID" ,"TOP-50156"},
+        {"annotation_default_secondary_table_fk_column.MSGID" ,"TOP-50157"},
+        {"annotation_default_one_to_one_reference_class.MSGID" ,"TOP-50158"},
+        {"annotation_default_one_to_many_reference_class.MSGID" ,"TOP-50159"},
+        {"annotation_default_many_to_one_reference_class.MSGID" ,"TOP-50160"},
+        {"annotation_default_many_to_many_reference_class.MSGID" ,"TOP-50161"},
+
+        {"annotation_warning_ignore_mapping.MSGID" ,"TOP-50162"},
+        {"annotation_warning_ignore_primary_key.MSGID" ,"TOP-50163"},
+        {"annotation_warning_ignore_embedded_id.MSGID" ,"TOP-50164"},
+        {"annotation_warning_ignore_id_class.MSGID" ,"TOP-50165"},
+        {"annotation_warning_ignore_version_locking.MSGID" ,"TOP-50166"},
+        {"annotation_warning_ignore_table.MSGID" ,"TOP-50167"},
+        {"annotation_warning_ignore_secondary_table.MSGID" ,"TOP-50168"},
+        {"annotation_warning_ignore_inheritance.MSGID" ,"TOP-50169"},
+        {"annotation_warning_ignore_get_method.MSGID" ,"TOP-50170"},
+        {"annotation_warning_ignore_query.MSGID" ,"TOP-50171"},
+
+        {"weaver_null_project.MSGID" ,"TOP-50172"},
+        {"weaver_disable_by_system_property.MSGID" ,"TOP-50173"},
+        {"weaver_valueholders_disabled_missing_field.MSGID" ,"TOP-50174"},
+        {"weaver_change_tracking_disabled_missing_field.MSGID" ,"TOP-50175"},
+        {"weaver_change_tracking_disabled_not_supported.MSGID" ,"TOP-50176"},
+
+        {"field_type_set_to_java_lang_string.MSGID" ,"TOP-50177"},
+        {"relational_descriptor_support_only.MSGID" ,"TOP-50178"},
+        {"default_tables_already_existed.MSGID" ,"TOP-50179"},
+
+        {"config_factory.MSGID" ,"TOP-50180"},
+        {"class_list_created_by.MSGID" ,"TOP-50181"},
 
         {"cannot_unwrap_connection.MSGID" ,"TOP-50182"},
         {"marshal_warning_null_document_root_element.MSGID", "TOP-50183" },
@@ -700,13 +700,13 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "broadcast_remote_command_wrong_type.MSGID", "TOP-50188" },
         { "broadcast_ignored_command_while_closing_connection.MSGID", "TOP-50189"},
         { "broadcast_listening_sleep_on_error.MSGID", "TOP-50190"},
-        { "sdo_type_generation_modified_function_naming_format_to.MSGID", "TOP-50191"},                                            
-        { "sdo_type_generation_modified_class_naming_format_to.MSGID", "TOP-50192"},                                            
-        { "sdo_type_generation_warning_class_name_violates_java_spec.MSGID", "TOP-50193"},                                           
-        { "sdo_type_generation_warning_class_name_violates_sdo_spec.MSGID", "TOP-50194"},                                            
-        
+        { "sdo_type_generation_modified_function_naming_format_to.MSGID", "TOP-50191"},
+        { "sdo_type_generation_modified_class_naming_format_to.MSGID", "TOP-50192"},
+        { "sdo_type_generation_warning_class_name_violates_java_spec.MSGID", "TOP-50193"},
+        { "sdo_type_generation_warning_class_name_violates_sdo_spec.MSGID", "TOP-50194"},
+
         { "sdo_classgenerator_exception.MSGID", "TOP-50195"},
-        { "query_has_both_join_attributes_and_partial_attributes.MSGID", "TOP-50196"},        
+        { "query_has_both_join_attributes_and_partial_attributes.MSGID", "TOP-50196"},
         { "sdo_missing_schemaLocation.MSGID", "TOP-50197"},
         { "sdo_error_processing_referenced_schema.MSGID", "TOP-50198"},
         { "ox_turn_global_logging_off.MSGID", "TOP-50199"},
@@ -723,13 +723,13 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "entity_manager_sets_property_while_context_is_active.MSGID", "TOP-50210"},
         { "osgi_initializer_failed.MSGID", "TOP-50211"},
         { "osgi_initializer.MSGID", "TOP-50212"},
-        { "entity_manager_ignores_nonjta_data_source.MSGID", "TOP-50213"},        
+        { "entity_manager_ignores_nonjta_data_source.MSGID", "TOP-50213"},
         { "entity_manager_ignores_jta_data_source.MSGID", "TOP-50214"},
         { "problem_registering_mbean.MSGID", "TOP-50215}" },
         { "problem_unregistering_mbean.MSGID", "TOP-50216" },
         { "session_key_for_mbean_name_is_null.MSGID", "TOP-50217" },
         // Implemented by WebLogicRuntimeServices
-        { "jmx_mbean_runtime_services_pool_name.MSGID", "TOP-50218" },        
+        { "jmx_mbean_runtime_services_pool_name.MSGID", "TOP-50218" },
         { "jmx_mbean_runtime_services_identity_map_non_existent.MSGID", "TOP-50219"},
         { "jmx_mbean_runtime_services_identity_map_empty.MSGID", "TOP-50220"},
         { "jmx_mbean_runtime_services_identity_map_class.MSGID", "TOP-50221"},
@@ -740,10 +740,10 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_no_classes_in_session.MSGID", "TOP-50226"},
         { "jmx_mbean_runtime_services_statement_cache_cleared.MSGID", "TOP-50227"},
         { "jmx_mbean_runtime_services_no_connection_pools_available.MSGID", "TOP-50228"},
-        { "jmx_mbean_runtime_services_failed_toget_initial_context.MSGID", "TOP-50229"},        
+        { "jmx_mbean_runtime_services_failed_toget_initial_context.MSGID", "TOP-50229"},
         { "jmx_mbean_runtime_services_mbeanserver_lookup_failed.MSGID", "TOP-50230"},
         { "jmx_mbean_runtime_services_threadpool_initialize_failed.MSGID", "TOP-50231"},
-        { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed.MSGID", "TOP-50232"},        
+        { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed.MSGID", "TOP-50232"},
         { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending.MSGID", "TOP-50233"},
         { "query_has_joined_attribute_outside_fetch_group.MSGID", "TOP-50234"},
         // JAXB Metadata Logging Messages
@@ -756,31 +756,31 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jaxb_metadata_warning_invalid_type_level_xml_java_type_adapter.MSGID", "TOP-50241"},
         { "jaxb_metadata_warning_invalid_property_level_xml_java_type_adapter.MSGID", "TOP-50242"},
         { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances.MSGID", "TOP-50242" },
-        { "jmx_mbean_runtime_services_registration_mbeanserver_print.MSGID", "TOP-50243" },        
+        { "jmx_mbean_runtime_services_registration_mbeanserver_print.MSGID", "TOP-50243" },
         { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver.MSGID", "TOP-50244" },
-        { "metamodel_print_type_header.MSGID", "TOP-50245"},        
+        { "metamodel_print_type_header.MSGID", "TOP-50245"},
         { "metamodel_print_type_value.MSGID", "TOP-50246"},
         { "named_argument_not_found_in_query_parameters.MSGID", "TOP-50247" },
         { "jmx_unregistered_mbean.MSGID", "TOP-50248" },
         { "jmx_unable_to_unregister_mbean.MSGID", "TOP-50249" },
         // 338837:
-        { "metamodel_type_collection_empty.MSGID", "TOP-50250" },                                            
-        { "metamodel_type_collection_empty_during_lookup.MSGID", "TOP-50251" },        
+        { "metamodel_type_collection_empty.MSGID", "TOP-50250" },
+        { "metamodel_type_collection_empty_during_lookup.MSGID", "TOP-50251" },
         { "entity_not_available_during_merge.MSGID", "TOP-50247"},
-        
+
         { "unknown_ddl_generation_property.MSGID", "TOP-50252" },
         // 282751
         { "removing_unique_constraint.MSGID", "TOP-50253"},
         { "session_manager_no_partition.MSGID", "TOP-50254"},
-        
+
         /**
-         * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 
+         * Note: Each MSGID and TOP-NNNNN key above must have a corresponding
          * id and string message entry in the 1st section at the top of this file.
          */
         {"detect_server_platform","Detected server platform: {0}."}
-        
-    }; 
-     
+
+    };
+
     /**
      * Return the lookup table.
      */

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,80 +28,80 @@ import org.eclipse.persistence.tools.workbench.utility.filters.Filter;
 
 public interface MWRelationalDescriptor extends MWNode {
 
-	boolean isTableDescriptor();	
-	boolean isInterfaceDescriptor();
-	boolean isAggregateDescriptor();	
-	
-	
-	// ************* Morphing Support ***********
-		
-	MWAggregateDescriptor asMWAggregateDescriptor();
-	MWTableDescriptor asMWTableDescriptor() throws InterfaceDescriptorCreationException;
-	MWInterfaceDescriptor asMWInterfaceDescriptor() throws InterfaceDescriptorCreationException;
-	
-	void initializeFromMWAggregateDescriptor(MWAggregateDescriptor oldDescriptor);	
-	void initializeFromMWRelationalClassDescriptor(MWRelationalClassDescriptor oldDescriptor);	
-	void initializeFromMWTableDescriptor(MWTableDescriptor oldDescriptor);
-	void initializeFromMWInterfaceDescriptor(MWInterfaceDescriptor oldDescriptor);
+    boolean isTableDescriptor();
+    boolean isInterfaceDescriptor();
+    boolean isAggregateDescriptor();
 
 
-	// ************* Query Keys ***********
-	
-	Iterator allQueryKeys();	
-	Iterator allQueryKeyNames();	
-	MWQueryKey queryKeyNamed(String name);
-	Iterator allQueryKeysIncludingInherited();	
-	MWQueryKey queryKeyNamedIncludingInherited(String name);
-		
-	// ************* InterfaceDesc and Var 1-1 mapping ***********
-	
-	Iterator implementors();
+    // ************* Morphing Support ***********
+
+    MWAggregateDescriptor asMWAggregateDescriptor();
+    MWTableDescriptor asMWTableDescriptor() throws InterfaceDescriptorCreationException;
+    MWInterfaceDescriptor asMWInterfaceDescriptor() throws InterfaceDescriptorCreationException;
+
+    void initializeFromMWAggregateDescriptor(MWAggregateDescriptor oldDescriptor);
+    void initializeFromMWRelationalClassDescriptor(MWRelationalClassDescriptor oldDescriptor);
+    void initializeFromMWTableDescriptor(MWTableDescriptor oldDescriptor);
+    void initializeFromMWInterfaceDescriptor(MWInterfaceDescriptor oldDescriptor);
 
 
-	// ************* Expression support ***********
-	
-	void notifyExpressionsToRecalculateQueryables();
-	
-	List getQueryables(Filter queryableFilter);
-		
-	
-	// ************* Tables ***********
+    // ************* Query Keys ***********
 
-	Iterator associatedTables();	
-	int associatedTablesSize();
-	
-	Iterator associatedTablesIncludingInherited();
-	int associatedTablesIncludingInheritedSize();
-	
-	MWTable getPrimaryTable();
-	
-	/**
-	 * In certain situations we support "candidate" tables,
-	 * ie when mapping reference mappings within aggregate descriptors
-	 * Candidate tables are not supported when mapping direct mappings, or other situations
-	 * where the user should not be able to select a field from within an aggregate descriptor.
-	 * Then associatedTables should be called, aggregate descs will return a nullIterator
-	 */
-	Iterator candidateTables();	
-	int candidateTablesSize();
-	
-	Iterator candidateTablesIncludingInherited();
-	int candidateTablesIncludingInheritedSize();
+    Iterator allQueryKeys();
+    Iterator allQueryKeyNames();
+    MWQueryKey queryKeyNamed(String name);
+    Iterator allQueryKeysIncludingInherited();
+    MWQueryKey queryKeyNamedIncludingInherited(String name);
 
-	// ************* Aggregate Mapping ***********
-	
-	Collection buildAggregateFieldNameGenerators();
+    // ************* InterfaceDesc and Var 1-1 mapping ***********
+
+    Iterator implementors();
 
 
-	
-	//These really belong in a MWDescriptor interface, but i don't think we need that yet
-	MWClass getMWClass();	
-	boolean isActive();
-	void setActive(boolean active);		
-	String getName();
-	Iterator mappingsIncludingInherited();
-	Iterator mappings();	
-	int mappingsSize();
-	MWMapping mappingNamed(String name);	
+    // ************* Expression support ***********
+
+    void notifyExpressionsToRecalculateQueryables();
+
+    List getQueryables(Filter queryableFilter);
+
+
+    // ************* Tables ***********
+
+    Iterator associatedTables();
+    int associatedTablesSize();
+
+    Iterator associatedTablesIncludingInherited();
+    int associatedTablesIncludingInheritedSize();
+
+    MWTable getPrimaryTable();
+
+    /**
+     * In certain situations we support "candidate" tables,
+     * ie when mapping reference mappings within aggregate descriptors
+     * Candidate tables are not supported when mapping direct mappings, or other situations
+     * where the user should not be able to select a field from within an aggregate descriptor.
+     * Then associatedTables should be called, aggregate descs will return a nullIterator
+     */
+    Iterator candidateTables();
+    int candidateTablesSize();
+
+    Iterator candidateTablesIncludingInherited();
+    int candidateTablesIncludingInheritedSize();
+
+    // ************* Aggregate Mapping ***********
+
+    Collection buildAggregateFieldNameGenerators();
+
+
+
+    //These really belong in a MWDescriptor interface, but i don't think we need that yet
+    MWClass getMWClass();
+    boolean isActive();
+    void setActive(boolean active);
+    String getName();
+    Iterator mappingsIncludingInherited();
+    Iterator mappings();
+    int mappingsSize();
+    MWMapping mappingNamed(String name);
 
 }

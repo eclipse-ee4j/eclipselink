@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,42 +26,42 @@ import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
  */
 public class UnknownExpressionStateObject extends SimpleStateObject {
 
-	/**
-	 * Creates a new <code>UnknownExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param text The unknown expression
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public UnknownExpressionStateObject(StateObject parent, String text) {
-		super(parent, text);
-	}
+    /**
+     * Creates a new <code>UnknownExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param text The unknown expression
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public UnknownExpressionStateObject(StateObject parent, String text) {
+        super(parent, text);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public UnknownExpression getExpression() {
-		return (UnknownExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UnknownExpression getExpression() {
+        return (UnknownExpression) super.getExpression();
+    }
 
 
-	/**
-	 * Keeps a reference of the {@link UnknownExpression parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link UnknownExpression parsed object} representing an unknown
-	 * expression
-	 */
-	public void setExpression(UnknownExpression expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link UnknownExpression parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link UnknownExpression parsed object} representing an unknown
+     * expression
+     */
+    public void setExpression(UnknownExpression expression) {
+        super.setExpression(expression);
+    }
 }

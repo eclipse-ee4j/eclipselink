@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,52 +29,52 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  */
 final class TableDeclaration extends Declaration {
 
-	/**
-	 * Creates a new <code>TableDeclaration</code>.
-	 *
-	 * @param queryContext The context used to query information about the application metadata and
-	 * cached information
-	 */
-	TableDeclaration(JPQLQueryContext queryContext) {
-		super(queryContext);
-	}
+    /**
+     * Creates a new <code>TableDeclaration</code>.
+     *
+     * @param queryContext The context used to query information about the application metadata and
+     * cached information
+     */
+    TableDeclaration(JPQLQueryContext queryContext) {
+        super(queryContext);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	Expression buildQueryExpression() {
-		TableVariableDeclaration declaration = (TableVariableDeclaration) getBaseExpression();
-		String tableName = queryContext.literal(declaration.getTableExpression(), LiteralType.STRING_LITERAL);
-		tableName = ExpressionTools.unquote(tableName);
-		return queryContext.getBaseExpression().getTable(tableName);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    Expression buildQueryExpression() {
+        TableVariableDeclaration declaration = (TableVariableDeclaration) getBaseExpression();
+        String tableName = queryContext.literal(declaration.getTableExpression(), LiteralType.STRING_LITERAL);
+        tableName = ExpressionTools.unquote(tableName);
+        return queryContext.getBaseExpression().getTable(tableName);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Type getType() {
-		return Type.TABLE;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Type getType() {
+        return Type.TABLE;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	ClassDescriptor resolveDescriptor() {
-		// A TableExpression does not resolve to a descriptor,
-		// it maps directly to a database table
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    ClassDescriptor resolveDescriptor() {
+        // A TableExpression does not resolve to a descriptor,
+        // it maps directly to a database table
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	DatabaseMapping resolveMapping() {
-		// A TableExpression does not resolve to a mapping,
-		// it maps directly to a database table
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    DatabaseMapping resolveMapping() {
+        // A TableExpression does not resolve to a mapping,
+        // it maps directly to a database table
+        return null;
+    }
 }

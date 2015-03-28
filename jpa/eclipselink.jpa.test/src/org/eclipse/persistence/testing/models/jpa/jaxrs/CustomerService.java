@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,46 +35,46 @@ import javax.ws.rs.core.MediaType;
 @Path("/customer_war")
 public class CustomerService {
 
-	@PersistenceContext(unitName = "jaxrs")
-	EntityManager entityManager;
+    @PersistenceContext(unitName = "jaxrs")
+    EntityManager entityManager;
 
-	@POST
-	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void create(Customer customer) {
-		entityManager.persist(customer);
-	}
+    @POST
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public void create(Customer customer) {
+        entityManager.persist(customer);
+    }
 
-	@GET
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("{id}")
-	public Customer read(@PathParam("id") long id) {
-		return entityManager.find(Customer.class, id);
-	}
+    @GET
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Path("{id}")
+    public Customer read(@PathParam("id") long id) {
+        return entityManager.find(Customer.class, id);
+    }
 
-	@PUT
-	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void update(Customer customer) {
-		entityManager.merge(customer);
-	}
+    @PUT
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public void update(Customer customer) {
+        entityManager.merge(customer);
+    }
 
-	@DELETE
-	@Path("{id}")
-	public void delete(@PathParam("id") long id) {
-		Customer customer = entityManager.find(Customer.class, id);
-		if (null != customer) {
-			entityManager.remove(customer);
-		}
-	}
+    @DELETE
+    @Path("{id}")
+    public void delete(@PathParam("id") long id) {
+        Customer customer = entityManager.find(Customer.class, id);
+        if (null != customer) {
+            entityManager.remove(customer);
+        }
+    }
 
-	@SuppressWarnings("unchecked")
-	@GET
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("findCustomerByCity/{city}")
-	public List<Customer> findCustomerByCity(@PathParam("city") String city) {
-		Query query = entityManager.createNamedQuery("findCustomerByCity");
-		//query.setParameter("city", "Ottawa");
-		query.setParameter("city", city);
-		return query.getResultList();
-	}
+    @SuppressWarnings("unchecked")
+    @GET
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Path("findCustomerByCity/{city}")
+    public List<Customer> findCustomerByCity(@PathParam("city") String city) {
+        Query query = entityManager.createNamedQuery("findCustomerByCity");
+        //query.setParameter("city", "Ottawa");
+        query.setParameter("city", city);
+        return query.getResultList();
+    }
 
 }

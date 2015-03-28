@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.sequenced;
 
 import java.util.List;
@@ -19,9 +19,9 @@ import org.eclipse.persistence.oxm.sequenced.Setting;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 
 public class Comparer {
-    
+
     private static final XMLComparer xmlComparer = new XMLComparer();
-        
+
     public static boolean equals(Object control, Object test) {
         if(null == control) {
             return control == test;
@@ -54,14 +54,14 @@ public class Comparer {
         }
         return true;
     }
-    
+
     public static boolean equals(Setting control, Setting test) {
         if(!Comparer.equals(control.getName(), test.getName())) {
             return false;
         }
         if(!Comparer.equals(control.getNamespaceURI(), test.getNamespaceURI())) {
             return false;
-        } 
+        }
         try {
             if(!Comparer.equals((List<Setting>) control.getChildren(), (List<Setting>)test.getChildren())) {
                 return false;
@@ -74,15 +74,15 @@ public class Comparer {
         }
         return true;
     }
-    
+
     public static boolean equals(XMLRoot control, XMLRoot test) {
         if(!Comparer.equals(control.getLocalName(), test.getLocalName())) {
             return false;
         }
         if(!Comparer.equals(control.getNamespaceURI(), test.getNamespaceURI())) {
             return false;
-        } 
+        }
         return equals(control.getObject(), test.getObject());
     }
-    
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,56 +50,56 @@ public class XMLGregorianCalendarObjectTestCases extends JAXBWithJSONTestCases{
     }
 
     public XMLGregorianCalendarObjectTestCases(String name) throws Exception {
-		super(name);
-		setClasses(new Class[] {XMLGregorianCalendarHolder.class});
-	}
+        super(name);
+        setClasses(new Class[] {XMLGregorianCalendarHolder.class});
+    }
 
-	@Override
-	protected Object getControlObject() {
-		XMLGregorianCalendarHolder holder = new XMLGregorianCalendarHolder();
-		DatatypeFactory factory;
-		try {
-			factory = DatatypeFactory.newInstance();
-			Calendar calendar = Calendar.getInstance();
-			calendar.clear();
-		    XMLGregorianCalendar cal = factory.newXMLGregorianCalendarDate(1977, 02, 13, DatatypeConstants.FIELD_UNDEFINED);
-		    XMLGregorianCalendar cal2 = factory.newXMLGregorianCalendarDate(1982, 5, 30, DatatypeConstants.FIELD_UNDEFINED);
-		    XMLGregorianCalendar cal3 = factory.newXMLGregorianCalendarTime(9, 30, 05, DatatypeConstants.FIELD_UNDEFINED);
-		    XMLGregorianCalendar cal4 = factory.newXMLGregorianCalendar(1985, 9, 23, 10, 33, 05, 1, DatatypeConstants.FIELD_UNDEFINED);
-		    XMLGregorianCalendar cal5 = factory.newXMLGregorianCalendar(1977, 02, 13, 8, 30, 2, 0, DatatypeConstants.FIELD_UNDEFINED);
-		    XMLGregorianCalendar cal6 = factory.newXMLGregorianCalendar(1977, 02, 13, 8, 30, 2, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED);
-		    
-		    holder.thing = cal;
-		    holder.things = new ArrayList();
-		    holder.things.add(cal);
-		    holder.things.add(cal2);
-		    holder.things.add(cal3);
-		    holder.things.add(cal4);
-		    holder.things.add(cal5);
-		    holder.things.add(cal6);
-		    
-		    calendar.set(Calendar.MONTH, Calendar.FEBRUARY);
-		    calendar.set(Calendar.DAY_OF_MONTH, 20);
-		    calendar.set(Calendar.YEAR, 2013);
-		    calendar.set(Calendar.HOUR_OF_DAY, 10);
-		    calendar.set(Calendar.MINUTE, 29);
-		    calendar.set(Calendar.SECOND, 58);
-		    holder.things.add(calendar.getTime());
-		    
-		    holder.gregCal= cal4;
-		    holder.gregCalTime = cal3;
-		} catch (DatatypeConfigurationException e) {
-			e.printStackTrace();
-			fail();
-		}
-		return holder;
-	}
+    @Override
+    protected Object getControlObject() {
+        XMLGregorianCalendarHolder holder = new XMLGregorianCalendarHolder();
+        DatatypeFactory factory;
+        try {
+            factory = DatatypeFactory.newInstance();
+            Calendar calendar = Calendar.getInstance();
+            calendar.clear();
+            XMLGregorianCalendar cal = factory.newXMLGregorianCalendarDate(1977, 02, 13, DatatypeConstants.FIELD_UNDEFINED);
+            XMLGregorianCalendar cal2 = factory.newXMLGregorianCalendarDate(1982, 5, 30, DatatypeConstants.FIELD_UNDEFINED);
+            XMLGregorianCalendar cal3 = factory.newXMLGregorianCalendarTime(9, 30, 05, DatatypeConstants.FIELD_UNDEFINED);
+            XMLGregorianCalendar cal4 = factory.newXMLGregorianCalendar(1985, 9, 23, 10, 33, 05, 1, DatatypeConstants.FIELD_UNDEFINED);
+            XMLGregorianCalendar cal5 = factory.newXMLGregorianCalendar(1977, 02, 13, 8, 30, 2, 0, DatatypeConstants.FIELD_UNDEFINED);
+            XMLGregorianCalendar cal6 = factory.newXMLGregorianCalendar(1977, 02, 13, 8, 30, 2, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED);
 
-	public boolean isUnmarshalTest() {
+            holder.thing = cal;
+            holder.things = new ArrayList();
+            holder.things.add(cal);
+            holder.things.add(cal2);
+            holder.things.add(cal3);
+            holder.things.add(cal4);
+            holder.things.add(cal5);
+            holder.things.add(cal6);
+
+            calendar.set(Calendar.MONTH, Calendar.FEBRUARY);
+            calendar.set(Calendar.DAY_OF_MONTH, 20);
+            calendar.set(Calendar.YEAR, 2013);
+            calendar.set(Calendar.HOUR_OF_DAY, 10);
+            calendar.set(Calendar.MINUTE, 29);
+            calendar.set(Calendar.SECOND, 58);
+            holder.things.add(calendar.getTime());
+
+            holder.gregCal= cal4;
+            holder.gregCalTime = cal3;
+        } catch (DatatypeConfigurationException e) {
+            e.printStackTrace();
+            fail();
+        }
+        return holder;
+    }
+
+    public boolean isUnmarshalTest() {
         return false;
     }
 
-	@Override
+    @Override
     protected String getControlJSONDocumentContent() {
         return "{\"root\":{\n" +
                 "   \"thing\":{\n" +
@@ -137,7 +137,7 @@ public class XMLGregorianCalendarObjectTestCases extends JAXBWithJSONTestCases{
                 "}}";
     }
 
-	@Override
+    @Override
     protected Document getControlDocument() {
         StringReader reader = new StringReader(CONTROL_XML_DOCUMENT);
         InputSource is = new InputSource(reader);
@@ -149,22 +149,22 @@ public class XMLGregorianCalendarObjectTestCases extends JAXBWithJSONTestCases{
         }
         return doc;
     }
-    
-	@Override
-	public Object getReadControlObject() {
-		XMLGregorianCalendarHolder holder = (XMLGregorianCalendarHolder)getControlObject();
-		Date removed = (Date)holder.things.remove(6);
-		DatatypeFactory factory;		
-		try {		 
-			factory = DatatypeFactory.newInstance();					
+
+    @Override
+    public Object getReadControlObject() {
+        XMLGregorianCalendarHolder holder = (XMLGregorianCalendarHolder)getControlObject();
+        Date removed = (Date)holder.things.remove(6);
+        DatatypeFactory factory;
+        try {
+            factory = DatatypeFactory.newInstance();
             XMLGregorianCalendar xmlGrelCal = factory.newXMLGregorianCalendar("2013-02-20T10:29:58-05:00");
-		    holder.things.add(xmlGrelCal);
-		} catch (DatatypeConfigurationException e) {			
-			e.printStackTrace();
-			fail();
-		}
-		return holder;
-	}
+            holder.things.add(xmlGrelCal);
+        } catch (DatatypeConfigurationException e) {
+            e.printStackTrace();
+            fail();
+        }
+        return holder;
+    }
 }
 
 

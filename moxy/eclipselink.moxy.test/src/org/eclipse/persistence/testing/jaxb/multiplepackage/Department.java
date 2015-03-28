@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,27 +18,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.eclipse.persistence.testing.jaxb.xmlelement.EmployeeNamespace;
 
 @XmlRootElement(name="dept", namespace="somenamespace")
-public class Department 
+public class Department
 {
-	@XmlElement(name="id")
-	public int id;
-	
-	public EmployeeNamespace emp;
+    @XmlElement(name="id")
+    public int id;
 
-	public String toString()
-	{
-		return "Dept: " + id;
-	}
+    public EmployeeNamespace emp;
 
-	public boolean equals(Object object) {
-		Department dept = ((Department)object);
-		if(dept.id != this.id){
-			return false;
-		}
-		if(!emp.equals(dept.emp)){
-			return false;
-		}
-		return true;
-	}
+    public String toString()
+    {
+        return "Dept: " + id;
+    }
+
+    public boolean equals(Object object) {
+        Department dept = ((Department)object);
+        if(dept.id != this.id){
+            return false;
+        }
+        if(!emp.equals(dept.emp)){
+            return false;
+        }
+        return true;
+    }
 
 }

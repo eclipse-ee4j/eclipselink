@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,14 +27,14 @@ import org.w3c.dom.Document;
 
 /**
  * Tests XmlCompositeCollectionMappings via eclipselink-oxm.xml
- * 
+ *
  */
 public class CompositeCollecitonMappingTestCases extends JAXBWithJSONTestCases {
-	
-	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xml";
-	private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/write-employee.xml";
-	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.json";
-	private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/write-employee.json";
+
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xml";
+    private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/write-employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.json";
+    private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/write-employee.json";
     private static final int HOME_ID = 67;
     private static final String HOME_RO_STRING = "some garbage text";
     private static final String HOME_CITY = "Kanata";
@@ -56,12 +56,12 @@ public class CompositeCollecitonMappingTestCases extends JAXBWithJSONTestCases {
     private static final String WO_STREET = "463 Bayview Dr.";
     private static final String WO_PROVINCE = "ON";
     private static final String WO_POSTAL = "K0A3M0";
-        
+
     private Employee writeCtrlObject;
 
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public CompositeCollecitonMappingTestCases(String name) throws Exception{
@@ -72,21 +72,21 @@ public class CompositeCollecitonMappingTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
     }
-    
-    public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee-oxm.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection", new StreamSource(inputStream));
-	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-		        
+    public Map getProperties(){
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee-oxm.xml");
+
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
         return properties;
-	}
-      
+    }
+
     /**
      * Create the control Employee object for reading.
-     * 
+     *
      */
     public Object getControlObject() {
         // setup Addresses
@@ -97,7 +97,7 @@ public class CompositeCollecitonMappingTestCases extends JAXBWithJSONTestCases {
         hAddress.street = HOME_STREET;
         hAddress.province = HOME_PROVINCE;
         hAddress.postalCode = HOME_POSTAL;
-        
+
         Address wAddress = new Address();
         wAddress.id = WORK_ID;
         wAddress.city = WORK_CITY;
@@ -107,8 +107,8 @@ public class CompositeCollecitonMappingTestCases extends JAXBWithJSONTestCases {
 
         List<Address> adds = new ArrayList<Address>();
         adds.add(hAddress);
-        adds.add(wAddress);              
-       
+        adds.add(wAddress);
+
         // setup read-only Address list
         Address roAddress = new Address();
         roAddress.id = RO_ID;
@@ -119,27 +119,27 @@ public class CompositeCollecitonMappingTestCases extends JAXBWithJSONTestCases {
 
         List<Address> roAdds = new ArrayList<Address>();
         roAdds.add(roAddress);
-        
+
         Employee emp = new Employee();
         emp.id = 101;
         emp.addresses = adds;
         emp.readOnlyAddressList = roAdds;
-        
+
         return emp;
     }
-    
+
     /**
      * Create the control Employee object for writing.
-     * 
+     *
      * For null policy test of ABSENT_NODE we will add some null addresses.
-     * 
+     *
      */
     public Object getWriteControlObject() {
-    	if(writeCtrlObject == null){
+        if(writeCtrlObject == null){
             Employee emp = (Employee)getReadControlObject();
             emp.addresses.add(null);
-            emp.addresses.add(null);            
-            
+            emp.addresses.add(null);
+
          // setup write-only Address list
             Address woAddress = new Address();
             woAddress.id = WO_ID;
@@ -147,58 +147,58 @@ public class CompositeCollecitonMappingTestCases extends JAXBWithJSONTestCases {
             woAddress.street = WO_STREET;
             woAddress.province = WO_PROVINCE;
             woAddress.postalCode = WO_POSTAL;
-            
+
             List<Address> woAdds = new ArrayList<Address>();
             woAdds.add(woAddress);
             emp.writeOnlyAddressList = woAdds;
             writeCtrlObject = emp;
-    	}
+        }
         return writeCtrlObject;
     }
-    
+
     public void xmlToObjectTest(Object testObject) throws Exception {
-    	super.xmlToObjectTest(testObject);
-   	    assertTrue("Accessor method was not called as expected", ((Employee)testObject).wasSetCalled);   	    	   
+        super.xmlToObjectTest(testObject);
+           assertTrue("Accessor method was not called as expected", ((Employee)testObject).wasSetCalled);
     }
 
     public void testRoundTrip() throws Exception{
-    	//doesn't apply since read and write only mappings are present    	
+        //doesn't apply since read and write only mappings are present
     }
-    
+
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Accessor method was not called as expected", writeCtrlObject.wasGetCalled);
     }
 
     public void testSchemaGen() throws Exception{
-    	List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xsd");
-    	InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/contacts.xsd");
-    	controlSchemas.add(is);
-    	controlSchemas.add(is2);
-    	super.testSchemaGen(controlSchemas);
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xsd");
+        InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/contacts.xsd");
+        controlSchemas.add(is);
+        controlSchemas.add(is2);
+        super.testSchemaGen(controlSchemas);
     }
-    
+
     public void testInstanceDocValidation() throws Exception {
-    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xsd");        
-        StreamSource schemaSource = new StreamSource(schema); 
-                
+        InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xsd");
+        StreamSource schemaSource = new StreamSource(schema);
+
         MyMapStreamSchemaOutputResolver outputResolver = new MyMapStreamSchemaOutputResolver();
         getJAXBContext().generateSchema(outputResolver);
-        
+
         InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xml");
-        String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver );        
+        String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver );
         assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
     }
-    
+
     public void testWriteInstanceDocValidation() throws Exception {
-    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xsd");        
-        StreamSource schemaSource = new StreamSource(schema); 
-        
+        InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xsd");
+        StreamSource schemaSource = new StreamSource(schema);
+
         MyMapStreamSchemaOutputResolver outputResolver = new MyMapStreamSchemaOutputResolver();
         getJAXBContext().generateSchema(outputResolver);
-        
-        InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/write-employee.xml");        
+
+        InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/write-employee.xml");
         String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver);
         assertTrue("Instance doc validation (write-employee) failed unxepectedly: " + result, result == null);
     }

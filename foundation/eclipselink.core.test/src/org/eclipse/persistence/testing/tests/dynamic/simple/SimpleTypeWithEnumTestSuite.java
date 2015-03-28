@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
@@ -66,7 +66,7 @@ public class SimpleTypeWithEnumTestSuite {
     public static void setUp() {
         session = createSession();
         dynamicHelper = new DynamicHelper(session);
-        DynamicClassLoader dcl = dynamicHelper.getDynamicClassLoader(); 
+        DynamicClassLoader dcl = dynamicHelper.getDynamicClassLoader();
         Class<?> javaType = dcl.createDynamicClass("simple.Simple");
         DynamicTypeBuilder typeBuilder = new DynamicTypeBuilder(javaType, null, "SIMPLE_TYPE");
         typeBuilder.setPrimaryKeyFields("SID");
@@ -75,7 +75,7 @@ public class SimpleTypeWithEnumTestSuite {
         typeBuilder.addDirectMapping("value2", boolean.class, "VAL_2");
         typeBuilder.addDirectMapping("value3", Calendar.class, "VAL_3");
         typeBuilder.addDirectMapping("value4", Character.class, "VAL_4");
-        DynamicEnumBuilder enumBuilder = typeBuilder.addEnum("color", 
+        DynamicEnumBuilder enumBuilder = typeBuilder.addEnum("color",
             "simple.SimpleEnum", "COLOR", dcl);
         enumBuilder.addEnumLiteral("RED");
         enumBuilder.addEnumLiteral("GREEN");
@@ -159,7 +159,7 @@ public class SimpleTypeWithEnumTestSuite {
     protected void assertDefaultValues(DynamicEntity simpleInstance) {
         assertNotNull(simpleInstance);
 
-        assertEquals("id not default value", 
+        assertEquals("id not default value",
             0, simpleInstance.<Integer>get("id").intValue());
         assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
         assertEquals("value2 not default value on new instance",

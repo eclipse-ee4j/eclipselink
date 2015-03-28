@@ -50,7 +50,7 @@ public class LoadAndSaveBase64AttachmentTestCases extends LoadAndSaveTestCases {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/EmployeeWithBase64Attachment.xml");
     }
 
-    protected String getNoSchemaControlFileName() {     
+    protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/EmployeeWithBase64Attachment.xml");
     }
 
@@ -61,7 +61,7 @@ public class LoadAndSaveBase64AttachmentTestCases extends LoadAndSaveTestCases {
     protected String getControlRootName() {
         return "employeeType";
     }
-    
+
     protected String getRootInterfaceName() {
         return "EmployeeType";
     }
@@ -83,7 +83,7 @@ public class LoadAndSaveBase64AttachmentTestCases extends LoadAndSaveTestCases {
         addProperty(customerType, "name", stringType, false, false, true);
 
         // create a photo property
-        DataObject photoProp = addProperty(customerType, "photo", bytesType, true, true, true);        
+        DataObject photoProp = addProperty(customerType, "photo", bytesType, true, true, true);
 
         // now define the Customer type so that customers can be made
          Type customerSDOType = typeHelper.define(customerType);
@@ -108,7 +108,7 @@ public class LoadAndSaveBase64AttachmentTestCases extends LoadAndSaveTestCases {
         saveOptions.set(SDOConstants.ATTACHMENT_MARSHALLER_OPTION, new AttachmentMarshallerImpl(OPTIONS_CONTROL_ID));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         xmlHelper.save(document, outputStream, saveOptions);
-    
+
         compareXML(OPTIONS_CONTROL_FILE_NAME, outputStream.toString());
     }
 

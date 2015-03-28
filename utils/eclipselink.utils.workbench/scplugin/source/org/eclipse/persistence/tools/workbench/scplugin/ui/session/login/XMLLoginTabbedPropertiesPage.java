@@ -1,7 +1,7 @@
 /*
  * @(#)SessionLoginPropertiesPage.java
  *
- * Copyright 2004 by Oracle Corporation,
+ * Copyright 2004, 2015  by Oracle Corporation,
  * 500 Oracle Parkway, Redwood Shores, California, 94065, U.S.A.
  * All rights reserved.
  *
@@ -22,38 +22,38 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 
 public class XMLLoginTabbedPropertiesPage extends TabbedPropertiesPage {
 
-	public XMLLoginTabbedPropertiesPage( PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder) {
-		super( nodeHolder, contextHolder);
-	}
+    public XMLLoginTabbedPropertiesPage( PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder) {
+        super( nodeHolder, contextHolder);
+    }
 
-	protected Component buildOptionsPropertiesPage() {
-		return new XMLOptionsPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
-	}
+    protected Component buildOptionsPropertiesPage() {
+        return new XMLOptionsPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
+    }
 
-	protected String buildOptionsPropertiesPageTitle() {
-		return "LOGIN_OPTIONS_TAB_TITLE";
-	}
+    protected String buildOptionsPropertiesPageTitle() {
+        return "LOGIN_OPTIONS_TAB_TITLE";
+    }
 
-	protected Component buildSequencingPropertiesPage() {
-		return new SequencingPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
-	}
+    protected Component buildSequencingPropertiesPage() {
+        return new SequencingPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
+    }
 
-	protected String buildSequencingPropertiesPageTitle() {
-		return "LOGIN_SEQUENCING_TAB_TITLE";
-	}
+    protected String buildSequencingPropertiesPageTitle() {
+        return "LOGIN_SEQUENCING_TAB_TITLE";
+    }
 
-	protected Component buildTitlePanel() {
-		return new JComponent() { };
-	}
+    protected Component buildTitlePanel() {
+        return new JComponent() { };
+    }
 
-	protected JTabbedPane buildTabbedPane()
-	{
-		JTabbedPane tabbedPane = super.buildTabbedPane();
-		tabbedPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		return tabbedPane;
-	}
+    protected JTabbedPane buildTabbedPane()
+    {
+        JTabbedPane tabbedPane = super.buildTabbedPane();
+        tabbedPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        return tabbedPane;
+    }
 
-	protected void initializeTabs() {
-		addTab( buildOptionsPropertiesPage(), buildOptionsPropertiesPageTitle());
-	}
+    protected void initializeTabs() {
+        addTab( buildOptionsPropertiesPage(), buildOptionsPropertiesPageTitle());
+    }
 }

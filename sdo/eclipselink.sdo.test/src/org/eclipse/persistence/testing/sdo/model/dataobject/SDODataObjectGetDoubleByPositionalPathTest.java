@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import java.math.BigDecimal;
@@ -40,7 +40,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -48,7 +48,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
     public void testGetDoubleConversionFromDefinedByteProperty() {
         // dataObject's type add boolean property
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BYTE);
-      
+
 
         byte by = 12;
         double delta = 0.0;
@@ -59,11 +59,11 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
     }
 
     //3. purpose: getDouble with Undefined Byte Property
-    public void testGetDoubleConversionFromUnDefinedProperty() {        
+    public void testGetDoubleConversionFromUnDefinedProperty() {
         try {
             dataObject_a.getDouble(UNDEFINED_PATH);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -76,7 +76,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -196,7 +196,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         this.assertEquals((double)lg, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
-   
+
     //13. purpose: getDouble with Defined short Property
     public void testGetDoubleConversionFromDefinedShortProperty() {
         // dataObject's type add short property
@@ -222,7 +222,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         this.assertEquals(s_d.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
-   
+
 
     //17. purpose: getDouble with bytes property
     public void testGetDoubleFromBytes() {
@@ -233,7 +233,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -250,11 +250,11 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         this.assertEquals(bd.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
-   
+
     //20. purpose: getDouble with Defined integer Property
     public void testGetDoubleConversionFromDefinedIntegerProperty() {
         // dataObject's type add int property
-        
+
         // !!    OX PRO BIGINTEGER TO DOUBLE !!
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_INTEGER);
 
@@ -274,7 +274,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         try {
             dataObject_a.getDouble(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -284,7 +284,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
             String p = null;
             dataObject_a.getDouble(p);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 }

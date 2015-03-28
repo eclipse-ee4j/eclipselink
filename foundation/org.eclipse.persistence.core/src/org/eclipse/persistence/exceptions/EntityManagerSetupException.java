@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions;
 
 import org.eclipse.persistence.exceptions.i18n.*;
@@ -39,15 +39,15 @@ public class EntityManagerSetupException extends EclipseLinkException {
     public static final int WRONG_WEAVING_PROPERTY_VALUE = 28022;
     public static final int METHOD_INVOCATION_FAILED = 28023;
     public static final int CANNOT_ACCESS_METHOD_ON_OBJECT=28024;
-    public static final int NO_TEMPORARY_CLASSLOADER_AVAILABLE=28025;    
-    public static final int CREATE_CONTAINER_EMF_NOT_SUPPORTED_IN_OSGI=28026;  
-    public static final int COULD_NOT_FIND_PERSISTENCE_UNIT_BUNDLE=28027;  
+    public static final int NO_TEMPORARY_CLASSLOADER_AVAILABLE=28025;
+    public static final int CREATE_CONTAINER_EMF_NOT_SUPPORTED_IN_OSGI=28026;
+    public static final int COULD_NOT_FIND_PERSISTENCE_UNIT_BUNDLE=28027;
     public static final int FAILED_TO_INSTANTIATE_PROPERTY = 28028;
     public static final int COMPOSITE_INCOMPATIBLE_WITH_SESSIONS_XML = 28029;
     public static final int COMPOSITE_MEMBER_CANNOT_BE_USED_STANDALONE = 28030;
     public static final int MISSING_PROPERTY = 28031;
     public static final int FAILED_TO_INSTANTIATE_TEMP_CLASSLOADER = 28032;
-    
+
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -94,9 +94,9 @@ public class EntityManagerSetupException extends EclipseLinkException {
 
         EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, SESSION_REMOVED_DURING_DEPLOYMENT, args));
         setupException.setErrorCode(SESSION_REMOVED_DURING_DEPLOYMENT);
-        return setupException;	
+        return setupException;
     }
-    
+
     public static EntityManagerSetupException sessionXMLValidationException(String sessionName, String xmlFileName, ValidationException exception) {
         Object[] args = { sessionName, xmlFileName };
 
@@ -160,7 +160,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
         setupException.setErrorCode(FAILED_TO_INSTANTIATE_PROPERTY);
         return setupException;
     }
-    
+
     public static EntityManagerSetupException classNotFoundWhileProcessingAnnotations(String className, Exception exception) {
         Object[] args = { className };
 
@@ -168,7 +168,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
         setupException.setErrorCode(CLASS_NOT_FOUND_WHILE_PROCESSING_ANNOTATIONS);
         return setupException;
     }
-    
+
     public static EntityManagerSetupException jtaPersistenceUnitInfoMissingJtaDataSource(String persistenceUnitInfoName) {
         Object[] args = { persistenceUnitInfoName };
 
@@ -176,7 +176,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
         setupException.setErrorCode(JTA_PERSISTENCE_UNIT_INFO_MISSING_JTA_DATA_SOURCE);
         return setupException;
     }
-    
+
     public static EntityManagerSetupException wrongPropertyValueType(String value, String expectedType, String propertyName) {
         Object[] args = { value, expectedType, propertyName };
 
@@ -184,7 +184,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
         setupException.setErrorCode(WRONG_PROPERTY_VALUE_TYPE);
         return setupException;
     }
-    
+
     public static EntityManagerSetupException cannotDeployWithoutPredeploy(String persistenceUnitName, String state, Exception exception) {
         Object[] args = { persistenceUnitName, state };
 
@@ -240,7 +240,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
         setupException.setErrorCode(DEPLOY_FAILED);
         return setupException;
     }
-    
+
     public static EntityManagerSetupException sessionLoadedFromSessionsXMLMustBeServerSession(String sessionName,String sessionsXML, Object session) {
         Object[] args = { sessionName,sessionsXML,session.getClass() };
 
@@ -256,7 +256,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
         setupException.setErrorCode(ATTEMPTED_LOAD_SESSION_WITHOUT_NAME_PROVIDED);
         return setupException;
     }
-    
+
     public static EntityManagerSetupException wrongWeavingPropertyValue() {
         Object[] args = { };
 
@@ -264,7 +264,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
         setupException.setErrorCode(WRONG_WEAVING_PROPERTY_VALUE);
         return setupException;
     }
-    
+
     public static EntityManagerSetupException methodInvocationFailed(java.lang.reflect.Method aMethod, Object anObject, Exception ex) {
         Object[] args = {aMethod, anObject, anObject.getClass() };
 
@@ -272,7 +272,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
         setupException.setErrorCode(METHOD_INVOCATION_FAILED);
         return setupException;
     }
-    
+
     public static EntityManagerSetupException cannotAccessMethodOnObject(java.lang.reflect.Method aMethod, Object anObject) {
         Object[] args = {aMethod, anObject, anObject.getClass() };
 
@@ -294,7 +294,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
         setupException.setErrorCode(NO_TEMPORARY_CLASSLOADER_AVAILABLE);
         return setupException;
     }
-    
+
     /**
      * INTERNAL:
      * Our OSGI persistence provider does not support a JavaEE-type deployment
@@ -306,7 +306,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
         setupException.setErrorCode(CREATE_CONTAINER_EMF_NOT_SUPPORTED_IN_OSGI);
         return setupException;
     }
-    
+
     /**
      * INTERNAL:
      * An OSGi application is trying to instantiate a persistence unit for which a bundle does not exist

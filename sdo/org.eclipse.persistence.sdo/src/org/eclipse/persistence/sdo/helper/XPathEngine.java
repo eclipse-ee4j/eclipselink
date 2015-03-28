@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
 import java.util.Date;
@@ -69,8 +69,8 @@ public class XPathEngine {
      * @param path      the String representation of path based access
      * @param caller    the DataObject that pass path information in
      */
-    public void unset(String path, DataObject caller) {        
-        processPath(path, null, caller, false, UNSET);        
+    public void unset(String path, DataObject caller) {
+        processPath(path, null, caller, false, UNSET);
     }
 
     /**Set a property's value through the path base access.
@@ -78,7 +78,7 @@ public class XPathEngine {
      * @param path      the String representation of path based access
      * @param value     the value to be set as the target property's value
      * @param caller    the DataObject that pass path information in
-     * @param convertValue     boolean used for set if we should convert the value 
+     * @param convertValue     boolean used for set if we should convert the value
      */
     public void set(String path, Object value, DataObject caller, boolean convertValue) {
         processPath(path, value, caller, convertValue, SET);
@@ -121,7 +121,7 @@ public class XPathEngine {
         }
         return getValueForFragment(path, caller);
     }
-    
+
         /**extract wanted fragment from the string representation of path and pass processed result to
      * method setIsSetUnSet for further operation.
      *
@@ -143,7 +143,7 @@ public class XPathEngine {
             frag = path;
             return setIsSetUnSet(frag, path, caller, value, lastSlashIndex, convertValue, _case);
         }
-    }  
+    }
 
     /**According to the requirement, correspondingly perform isset, unset or set function.
      *
@@ -176,9 +176,9 @@ public class XPathEngine {
             lastDataObject = caller;
         }
         Property lastProperty = lastDataObject.getInstanceProperty(lastPropertyName);// get property of this dataobject
-        
+
         switch (_case) {
-        case SET:                        
+        case SET:
             if (lastProperty == null) {
                 lastProperty = ((SDODataObject)lastDataObject).defineOpenContentProperty(lastPropertyName, value);
             }if(lastProperty != null){
@@ -187,12 +187,12 @@ public class XPathEngine {
             return false;
         case ISSET:
             if(lastProperty == null){
-             return false; 
+             return false;
             }
             return isSet(lastProperty, lastDataObject);
         case UNSET:
             if(lastProperty == null){
-             return false; 
+             return false;
             }
             unSet(lastProperty, lastDataObject, numInLastProperty);
             return false;
@@ -233,13 +233,13 @@ public class XPathEngine {
      * @param lastDataObject    the DataObject, owner of the queried property
      * @param numInLastProperty the index number in the value list of the above property
      * @param value             the value to be set as the target property's value
-     * @param convertValue     boolean used for set if we should convert the value 
+     * @param convertValue     boolean used for set if we should convert the value
      */
     private void set(Property lastProperty, DataObject lastDataObject, int numInLastProperty, Object value, boolean convertValue) {
         if (numInLastProperty == -1) {
             if (lastDataObject != null) {
                 if(convertValue){
-                  DataHelper dataHelper = ((SDODataObject)lastDataObject).getType().getHelperContext().getDataHelper(); 
+                  DataHelper dataHelper = ((SDODataObject)lastDataObject).getType().getHelperContext().getDataHelper();
                   value = dataHelper.convert(lastProperty, value);
                 }
                 lastDataObject.set(lastProperty, value);
@@ -250,10 +250,10 @@ public class XPathEngine {
             List objects = lastDataObject.getList(lastProperty);
 
             if (convertValue) {
-                DataHelper dataHelper = ((SDODataObject)lastDataObject).getType().getHelperContext().getDataHelper(); 
+                DataHelper dataHelper = ((SDODataObject)lastDataObject).getType().getHelperContext().getDataHelper();
                 value =  dataHelper.convert(lastProperty.getType(), value);
             }
-            
+
             Sequence seq = lastDataObject.getSequence();
             if (seq != null) {
                 seq.setValue(numInLastProperty, value);
@@ -369,7 +369,7 @@ public class XPathEngine {
     private DataObject getDataObjectFromQuery(String frag, int openBracketIndex, int closeBracketIndex, int equalsignIndex, DataObject caller, String callerProperty) {
         try {
             // trim off any whitespace for property names
-            String propertyNameOfQryDataObject = frag.substring(openBracketIndex + 1, equalsignIndex + openBracketIndex).trim();            
+            String propertyNameOfQryDataObject = frag.substring(openBracketIndex + 1, equalsignIndex + openBracketIndex).trim();
             List objects = caller.getList(caller.getInstanceProperty(callerProperty));
             String query = frag.substring(equalsignIndex + openBracketIndex + 1, closeBracketIndex);
             String value = null;
@@ -397,7 +397,7 @@ public class XPathEngine {
                   } catch (ConversionException e) {
                       //do nothing, skip
                   }
-  
+
                   if (!p.isMany()) {
                       actualValue = cur.get(p);
                       if (actualValue.equals(queryValue)) {
@@ -406,7 +406,7 @@ public class XPathEngine {
                   } else {// case p is many type
                       List values = cur.getList(p);
                       Iterator iterValues = values.iterator();
-  
+
                       while (iterValues.hasNext()) {
                           actualValue = iterValues.next();
                           if (actualValue.equals(queryValue)) {
@@ -439,11 +439,11 @@ public class XPathEngine {
         if (prop == null){
           return null;
         }
-        
+
         if (prop.isMany() && position > -1) {
             return caller.getList(prop).get(position);
         } else {
-            return caller.get(prop);        	
+            return caller.get(prop);
         }
     }
 

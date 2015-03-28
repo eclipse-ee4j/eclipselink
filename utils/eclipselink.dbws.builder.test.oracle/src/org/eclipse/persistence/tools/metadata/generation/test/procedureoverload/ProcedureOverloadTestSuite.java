@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -66,7 +66,7 @@ public class ProcedureOverloadTestSuite {
             "\nFUNCTION F1 RETURN VARCHAR;" +
             "\nFUNCTION F1(U IN VARCHAR) RETURN VARCHAR;" +
         "\nEND PACKAGEX;";
-    
+
     static final String DROP_PACKAGE =
         "DROP PACKAGE PACKAGEX";
 
@@ -77,12 +77,12 @@ public class ProcedureOverloadTestSuite {
     @SuppressWarnings("rawtypes")
     static List dbProcedures;
     static DatabaseTypeBuilder dbTypeBuilder;
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @BeforeClass
     public static void setUp() throws ClassNotFoundException, SQLException {
         AllTests.setUp();
-        
+
         String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
         if ("true".equalsIgnoreCase(ddlCreateProp)) {
             ddlCreate = true;
@@ -104,9 +104,9 @@ public class ProcedureOverloadTestSuite {
         procedurePatterns.add("P1");
         procedurePatterns.add("P1_1");
         procedurePatterns.add("P1_2");
-        procedurePatterns.add("F1");        
-        procedurePatterns.add("F1_1");            
-        
+        procedurePatterns.add("F1");
+        procedurePatterns.add("F1_1");
+
         // use DatabaseTypeBuilder to generate a list of PackageTypes
         dbTypeBuilder = new DatabaseTypeBuilder();
         dbProcedures = new ArrayList();
@@ -132,7 +132,7 @@ public class ProcedureOverloadTestSuite {
             runDdl(conn, DROP_PACKAGE, ddlDebug);
         }
     }
-    
+
     @Test
     @SuppressWarnings({ "unchecked" })
     public void testProcedureOverload() {
@@ -157,12 +157,12 @@ public class ProcedureOverloadTestSuite {
         removeEmptyTextNodes(controlDoc);
         assertTrue("Metadata comparison failed.  Expected:\n" + documentToString(controlDoc) + "\nActual\n" + documentToString(testDoc), comparer.isNodeEqual(controlDoc, testDoc));
     }
-    
+
     static final String procedureMetadata =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
             "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-            "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+            "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
             "   <orm:named-plsql-stored-procedure-query name=\"P1\" procedure-name=\"PACKAGEX.P1\">\n" +
             "     <orm:parameter direction=\"OUT\" name=\"T\" database-type=\"VARCHAR_TYPE\"/>\n" +
             "  </orm:named-plsql-stored-procedure-query>\n" +

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.nativeapitest;
 
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -17,18 +17,18 @@ import org.eclipse.persistence.tools.schemaframework.*;
 public class NativeAPITestTableCreator extends TableCreator {
     public NativeAPITestTableCreator() {
         setName("NativeAPITestProject");
-    
+
         addTableDefinition(buildADDRESSTable());
         addTableDefinition(buildDEPTTable());
         addTableDefinition(buildDEPT_EMPTable());
         addTableDefinition(buildEMPLOYEETable());
         addTableDefinition(buildPHONENUMBERTable());
     }
-    
+
     public static TableDefinition buildADDRESSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("NAT_ADDRESS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ADDRESS_ID");
         fieldID.setTypeName("NUMERIC");
@@ -39,7 +39,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldSTREET = new FieldDefinition();
         fieldSTREET.setName("STREET");
         fieldSTREET.setTypeName("VARCHAR2");
@@ -50,7 +50,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldSTREET.setUnique(false);
         fieldSTREET.setShouldAllowNull(true);
         table.addField(fieldSTREET);
-    
+
         FieldDefinition fieldCITY = new FieldDefinition();
         fieldCITY.setName("CITY");
         fieldCITY.setTypeName("VARCHAR2");
@@ -61,7 +61,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldCITY.setUnique(false);
         fieldCITY.setShouldAllowNull(true);
         table.addField(fieldCITY);
-    
+
         FieldDefinition fieldPROVINCE = new FieldDefinition();
         fieldPROVINCE.setName("PROVINCE");
         fieldPROVINCE.setTypeName("VARCHAR2");
@@ -72,7 +72,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldPROVINCE.setUnique(false);
         fieldPROVINCE.setShouldAllowNull(true);
         table.addField(fieldPROVINCE);
-    
+
         FieldDefinition fieldPOSTALCODE = new FieldDefinition();
         fieldPOSTALCODE.setName("P_CODE");
         fieldPOSTALCODE.setTypeName("VARCHAR2");
@@ -83,7 +83,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldPOSTALCODE.setUnique(false);
         fieldPOSTALCODE.setShouldAllowNull(true);
         table.addField(fieldPOSTALCODE);
-    
+
         FieldDefinition fieldCOUNTRY = new FieldDefinition();
         fieldCOUNTRY.setName("COUNTRY");
         fieldCOUNTRY.setTypeName("VARCHAR2");
@@ -94,14 +94,14 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldCOUNTRY.setUnique(false);
         fieldCOUNTRY.setShouldAllowNull(true);
         table.addField(fieldCOUNTRY);
-    
+
         return table;
     }
-    
+
      public static TableDefinition buildDEPTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("NAT_DEPT");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -112,7 +112,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR2");
@@ -123,10 +123,10 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildDEPT_EMPTable() {
         TableDefinition table = new TableDefinition();
         table.setName("NAT_DEPT_NAT_EMPLOYEE");
@@ -141,7 +141,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("NAT_DEPT.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldEMP = new FieldDefinition();
         fieldEMP.setName("MANAGERS_EMP_ID");
         fieldEMP.setTypeName("NUMERIC");
@@ -152,14 +152,14 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldEMP.setIsIdentity(false);
         fieldEMP.setForeignKeyFieldName("NAT_EMPLOYEE.EMP_ID");
         table.addField(fieldEMP);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildEMPLOYEETable() {
         TableDefinition table = new TableDefinition();
         table.setName("NAT_EMPLOYEE");
-    
+
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
         field.setTypeName("NUMERIC");
@@ -169,7 +169,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("F_NAME");
         field1.setTypeName("VARCHAR");
@@ -179,7 +179,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("L_NAME");
         field2.setTypeName("VARCHAR");
@@ -189,7 +189,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         table.addField(field2);
-    
+
         FieldDefinition fieldGender = new FieldDefinition();
         fieldGender.setName("GENDER");
         fieldGender.setTypeName("VARCHAR");
@@ -199,7 +199,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldGender.setUnique(false);
         fieldGender.setIsIdentity(false);
         table.addField(fieldGender);
-    
+
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("START_DATE");
         field3.setTypeName("DATE");
@@ -209,7 +209,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("END_DATE");
         field4.setTypeName("DATE");
@@ -219,7 +219,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         field4.setUnique(false);
         field4.setIsIdentity(false);
         table.addField(field4);
-    
+
         FieldDefinition field8 = new FieldDefinition();
         field8.setName("ADDR_ID");
         field8.setTypeName("NUMERIC");
@@ -230,7 +230,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         field8.setIsIdentity(false);
         field8.setForeignKeyFieldName("NAT_ADDRESS.ADDRESS_ID");
         table.addField(field8);
-    
+
         FieldDefinition field9 = new FieldDefinition();
         field9.setName("MANAGER_EMP_ID");
         field9.setTypeName("NUMERIC");
@@ -241,7 +241,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         field9.setIsIdentity(false);
         field9.setForeignKeyFieldName("NAT_EMPLOYEE.EMP_ID");
         table.addField(field9);
-    
+
         FieldDefinition field10 = new FieldDefinition();
         field10.setName("VERSION");
         field10.setTypeName("NUMERIC");
@@ -251,7 +251,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         field10.setUnique(false);
         field10.setIsIdentity(false);
         table.addField(field10);
-        
+
         FieldDefinition fieldDEPT = new FieldDefinition();
         fieldDEPT.setName("DEPT_ID");
         fieldDEPT.setTypeName("NUMERIC");
@@ -262,7 +262,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldDEPT.setIsIdentity(false);
         fieldDEPT.setForeignKeyFieldName("NAT_DEPT.ID");
         table.addField(fieldDEPT);
-        
+
         FieldDefinition fieldStatus = new FieldDefinition();
         fieldStatus.setName("STATUS");
         fieldStatus.setTypeName("NUMERIC");
@@ -272,7 +272,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldStatus.setIsIdentity(false);
         fieldStatus.setShouldAllowNull(true);
         table.addField(fieldStatus);
-    
+
         FieldDefinition fieldPayScale = new FieldDefinition();
         fieldPayScale.setName("PAY_SCALE");
         fieldPayScale.setTypeName("VARCHAR");
@@ -282,7 +282,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldPayScale.setIsIdentity(false);
         fieldPayScale.setShouldAllowNull(true);
         table.addField(fieldPayScale);
-        
+
         FieldDefinition fieldRoomNumber = new FieldDefinition();
         fieldRoomNumber.setName("ROOM_NUM");
         fieldRoomNumber.setTypeName("NUMBER");
@@ -293,7 +293,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldRoomNumber.setUnique(false);
         fieldRoomNumber.setShouldAllowNull(true);
         table.addField(fieldRoomNumber);
-        
+
         // SECTION: FIELD
         FieldDefinition fieldFormerCompany = new FieldDefinition();
         fieldFormerCompany.setName("FORMER_COMPANY");
@@ -304,7 +304,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldFormerCompany.setUnique(false );
         fieldFormerCompany.setIsIdentity(false );
         table.addField(fieldFormerCompany);
-    
+
         // SECTION: FIELD
         FieldDefinition fieldFormerStartDate = new FieldDefinition();
         fieldFormerStartDate.setName("FORMER_START_DATE");
@@ -315,7 +315,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldFormerStartDate.setUnique(false );
         fieldFormerStartDate.setIsIdentity(false );
         table.addField(fieldFormerStartDate);
-    
+
         // SECTION: FIELD
         FieldDefinition fieldFormerEndDate = new FieldDefinition();
         fieldFormerEndDate.setName("FORMER_END_DATE");
@@ -326,10 +326,10 @@ public class NativeAPITestTableCreator extends TableCreator {
         fieldFormerEndDate.setUnique(false );
         fieldFormerEndDate.setIsIdentity(false );
         table.addField(fieldFormerEndDate);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildPHONENUMBERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("NAT_PHONENUMBER");
@@ -345,7 +345,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         field.setIsIdentity(false );
         field.setForeignKeyFieldName("NAT_EMPLOYEE.EMP_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("TYPE");
@@ -356,7 +356,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         // SECTION: FIELD
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("AREA_CODE");
@@ -367,7 +367,7 @@ public class NativeAPITestTableCreator extends TableCreator {
         field2.setUnique(false );
         field2.setIsIdentity(false );
         table.addField(field2);
-    
+
         // SECTION: FIELD
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("NUMB");
@@ -378,8 +378,8 @@ public class NativeAPITestTableCreator extends TableCreator {
         field3.setUnique(false );
         field3.setIsIdentity(false );
         table.addField(field3);
-    
+
         return table;
     }
-    
+
 }

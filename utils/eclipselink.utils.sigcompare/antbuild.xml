@@ -55,7 +55,7 @@
             <fileset dir="." file="${sig-compare.jar}"/>
         </delete>
     </target>
- 
+
 
     <!-- compile -->
     <target name="compile" description="compile sig compare Util">
@@ -75,10 +75,10 @@
                target="${javac.version}"
                deprecation="${javac.deprecation}"
                classpathref="sigcompare.compile.path"
-               failonerror="true"> 
+               failonerror="true">
         </javac>
     </target>
-        
+
     <!-- package -->
     <target name="package" description="jar the util">
         <jar jarfile="./${sig-compare.jar}">

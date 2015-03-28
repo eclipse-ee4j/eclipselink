@@ -6,7 +6,7 @@
         <xsd:simpleType name='my-int'>
              <xsd:list itemType='xsd:int' />
         </xsd:simpleType>
-        
+
         <xsd:complexType name='testComplexType'>
           <xsd:sequence>
             <xsd:element name='testElement' type='my-int'/>

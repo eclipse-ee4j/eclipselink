@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,49 +27,49 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  */
 final class SubqueryDeclaration extends Declaration {
 
-	/**
-	 * Creates a new <code>SubqueryDeclaration</code>.
-	 *
-	 * @param queryContext The context used to query information about the application metadata and
-	 * cached information
-	 */
-	public SubqueryDeclaration(JPQLQueryContext queryContext) {
-		super(queryContext);
-	}
+    /**
+     * Creates a new <code>SubqueryDeclaration</code>.
+     *
+     * @param queryContext The context used to query information about the application metadata and
+     * cached information
+     */
+    public SubqueryDeclaration(JPQLQueryContext queryContext) {
+        super(queryContext);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	Expression buildQueryExpression() {
-		RangeVariableDeclaration declaration = (RangeVariableDeclaration) getBaseExpression();
-		Expression expressoin = queryContext.buildExpression(declaration.getRootObject());
-		return queryContext.getBaseExpression().getAlias(expressoin);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    Expression buildQueryExpression() {
+        RangeVariableDeclaration declaration = (RangeVariableDeclaration) getBaseExpression();
+        Expression expressoin = queryContext.buildExpression(declaration.getRootObject());
+        return queryContext.getBaseExpression().getAlias(expressoin);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Type getType() {
-		return Type.SUBQUERY;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Type getType() {
+        return Type.SUBQUERY;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	ClassDescriptor resolveDescriptor() {
-		// A subquery used as a declaration does not have a descriptor
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    ClassDescriptor resolveDescriptor() {
+        // A subquery used as a declaration does not have a descriptor
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	DatabaseMapping resolveMapping() {
-		// Does not resolve to a mapping
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    DatabaseMapping resolveMapping() {
+        // Does not resolve to a mapping
+        return null;
+    }
 }

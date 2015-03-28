@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,88 +54,88 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class ComparisonExpression extends CompoundExpression {
 
-	/**
-	 * Creates a new <code>ComparisonExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param identifier The comparator identifier
-	 */
-	public ComparisonExpression(AbstractExpression parent, String identifier) {
-		super(parent, identifier);
-	}
+    /**
+     * Creates a new <code>ComparisonExpression</code>.
+     *
+     * @param parent The parent of this expression
+     * @param identifier The comparator identifier
+     */
+    public ComparisonExpression(AbstractExpression parent, String identifier) {
+        super(parent, identifier);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * Returns the comparison operator, which is either {@literal '=', '>', '>=', '<', '<=' or '<>'}.
-	 *
-	 * @return The operator comparing the two expressions
-	 */
-	public String getComparisonOperator() {
-		return getText();
-	}
+    /**
+     * Returns the comparison operator, which is either {@literal '=', '>', '>=', '<', '<=' or '<>'}.
+     *
+     * @return The operator comparing the two expressions
+     */
+    public String getComparisonOperator() {
+        return getText();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getLeftExpressionQueryBNFId() {
-		return ComparisonExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getLeftExpressionQueryBNFId() {
+        return ComparisonExpressionBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(ComparisonExpressionBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(ComparisonExpressionBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getRightExpressionQueryBNFId() {
-		return ComparisonExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getRightExpressionQueryBNFId() {
+        return ComparisonExpressionBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
-		// TODO: This should be handled differently since it has the knowledge of parent expression
-		return wordParser.character() == RIGHT_PARENTHESIS ||
+        // TODO: This should be handled differently since it has the knowledge of parent expression
+        return wordParser.character() == RIGHT_PARENTHESIS ||
 
-		       // This happens when parsing a logical expression
-		       word.equalsIgnoreCase(OR)  ||
-		       word.equalsIgnoreCase(AND) ||
+               // This happens when parsing a logical expression
+               word.equalsIgnoreCase(OR)  ||
+               word.equalsIgnoreCase(AND) ||
 
-		       // This happens when parsing a conditional expression in a CASE expression
-		       word.equalsIgnoreCase(WHEN) ||
-		       word.equalsIgnoreCase(THEN) ||
-		       word.equalsIgnoreCase(ELSE) ||
-		       word.equalsIgnoreCase(END)  ||
+               // This happens when parsing a conditional expression in a CASE expression
+               word.equalsIgnoreCase(WHEN) ||
+               word.equalsIgnoreCase(THEN) ||
+               word.equalsIgnoreCase(ELSE) ||
+               word.equalsIgnoreCase(END)  ||
 
-		       // This happens when parsing a conditional expression in a join condition
-		       word.equalsIgnoreCase(LEFT)  ||
-		       word.equalsIgnoreCase(OUTER) ||
-		       word.equalsIgnoreCase(INNER) ||
-		       word.equalsIgnoreCase(JOIN)  ||
+               // This happens when parsing a conditional expression in a join condition
+               word.equalsIgnoreCase(LEFT)  ||
+               word.equalsIgnoreCase(OUTER) ||
+               word.equalsIgnoreCase(INNER) ||
+               word.equalsIgnoreCase(JOIN)  ||
 
-		       super.isParsingComplete(wordParser, word, expression);
-	}
+               super.isParsingComplete(wordParser, word, expression);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return getText();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String parseIdentifier(WordParser wordParser) {
+        return getText();
+    }
 }

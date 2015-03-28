@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2007, Oracle. All rights reserved.
+ * Copyright (c) 2006, 2015, Oracle. All rights reserved.
  *
  * This software is the proprietary information of Oracle Corporation.
  * Use is subject to license terms.
@@ -19,40 +19,40 @@ import org.eclipse.persistence.tools.workbench.utility.Transformer;
  */
 public final class NullTransformer implements Transformer
 {
-	/**
-	 * The singleton instance of this <code>NullTransformer</code>.
-	 */
-	private static Transformer INSTANCE;
+    /**
+     * The singleton instance of this <code>NullTransformer</code>.
+     */
+    private static Transformer INSTANCE;
 
-	/**
-	 * Creates a new <code>NullTransformer</code>.
-	 */
-	private NullTransformer()
-	{
-		super();
-	}
+    /**
+     * Creates a new <code>NullTransformer</code>.
+     */
+    private NullTransformer()
+    {
+        super();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 */
-	public Object transform(Object object)
-	{
-		return object;
-	}
+    /*
+     * (non-Javadoc)
+     */
+    public Object transform(Object object)
+    {
+        return object;
+    }
 
-	/**
-	 * Returns the singleton instance of this <code>NullTransformer</code>.
-	 *
-	 * @return The singleton instance of this <code>NullTransformer</code>
-	 */
-	@SuppressWarnings("unchecked")
-	public static synchronized Transformer instance()
-	{
-		if (INSTANCE == null)
-		{
-			INSTANCE = new NullTransformer();
-		}
+    /**
+     * Returns the singleton instance of this <code>NullTransformer</code>.
+     *
+     * @return The singleton instance of this <code>NullTransformer</code>
+     */
+    @SuppressWarnings("unchecked")
+    public static synchronized Transformer instance()
+    {
+        if (INSTANCE == null)
+        {
+            INSTANCE = new NullTransformer();
+        }
 
-		return (Transformer) INSTANCE;
-	}
+        return (Transformer) INSTANCE;
+    }
 }

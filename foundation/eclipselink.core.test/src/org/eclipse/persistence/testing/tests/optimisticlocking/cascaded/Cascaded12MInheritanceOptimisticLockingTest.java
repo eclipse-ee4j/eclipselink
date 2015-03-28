@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.optimisticlocking.Toy;
 
 /**
  * EclipseLink Bug 247104
- * 
+ *
  * Ensure cascaded optimistic locking is properly cascaded in inheritance
  *
  */
@@ -33,13 +33,13 @@ public class Cascaded12MInheritanceOptimisticLockingTest extends AutoVerifyTestC
     private Cat cat = null;
     private int catVersion = 0;
     private int toyVersion = 0;
-    
-    public void reset()  {  
+
+    public void reset()  {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
-    public void setup()  {   
+    public void setup()  {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         getAbstractSession().beginTransaction();
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -60,7 +60,7 @@ public class Cascaded12MInheritanceOptimisticLockingTest extends AutoVerifyTestC
         toyVersion = toy.getVersion();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
-    
+
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         cat = (Cat)uow.readObject(cat);
@@ -68,12 +68,12 @@ public class Cascaded12MInheritanceOptimisticLockingTest extends AutoVerifyTestC
         toy.setName("Red Ball");
         uow.commit();
     }
-    
+
     public void verify(){
         cat = (Cat)getSession().refreshObject(cat);
         if (cat.getVersion() <= catVersion){
             throw new TestErrorException("Version of owner was not updated through cascading.");
         }
     }
-    
+
 }

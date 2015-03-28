@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -39,15 +39,15 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 @Entity(name="Buyer")
 @Table(
     name="CMP3_FA_BUYER",
-    uniqueConstraints = { 
+    uniqueConstraints = {
         @UniqueConstraint(columnNames={"BUYER_ID", "BUYER_NAME"}),
         @UniqueConstraint(columnNames={"BUYER_ID", "DESCRIP"})
     }
 )
 @Inheritance(strategy=JOINED)
 @NamedQuery(
-	name="findFieldAccessBuyerByName",
-	query="SELECT OBJECT(buyer) FROM Buyer buyer WHERE buyer.name = :name"
+    name="findFieldAccessBuyerByName",
+    query="SELECT OBJECT(buyer) FROM Buyer buyer WHERE buyer.name = :name"
 )
 @OptimisticLocking(
     type=SELECTED_COLUMNS,
@@ -56,36 +56,36 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 )
 public class Buyer implements Serializable {
     public enum Weekdays { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
-    
-    // Testing for bug 264962 (should be ignored since it is transient 
+
+    // Testing for bug 264962 (should be ignored since it is transient
     // and not cause an exception)
     @OneToOne
     transient Buyer coBuyer;
-    
-	@Transient
+
+    @Transient
     public int pre_update_count = 0;
-	@Transient
+    @Transient
     public int post_update_count = 0;
-	@Transient
+    @Transient
     public int pre_remove_count = 0;
-	@Transient
+    @Transient
     public int post_remove_count = 0;
-	@Transient
+    @Transient
     public int pre_persist_count = 0;
-	@Transient
+    @Transient
     public int post_persist_count = 0;
-	@Transient
+    @Transient
     public int post_load_count = 0;
 
-	@Id
+    @Id
     @GeneratedValue(strategy=SEQUENCE, generator="FA_BUYER_SEQ_GENERATOR")
     @SequenceGenerator(name="FA_BUYER_SEQ_GENERATOR", sequenceName="BUYER_SEQ", allocationSize=10)
-    @Column(name="BUYER_ID")    
+    @Column(name="BUYER_ID")
     private Integer id;
-	@Version
+    @Version
     @Column(name="VERSION")
     private int version;
-	@Column(name="BUYER_NAME")
+    @Column(name="BUYER_NAME")
     private String name;
     @Column(name="DESCRIP")
     private String description;
@@ -97,10 +97,10 @@ public class Buyer implements Serializable {
         )
     })
     private String gender;
-	@Column(name="BUY_DAYS")
+    @Column(name="BUY_DAYS")
     private EnumSet<Weekdays> buyingDays;
-    
-	@BasicMap(
+
+    @BasicMap(
         fetch=EAGER,
         keyColumn=@Column(name="CARD"),
         keyConverter=@Convert("CreditCard"),
@@ -127,23 +127,23 @@ public class Buyer implements Serializable {
     public Buyer() {
         creditCards = new HashMap<String, Long>();
     }
-    
+
     public void addAmex(long number) {
         getCreditCards().put(AMEX, new Long(number));
     }
-    
+
     public void addDinersClub(long number) {
         getCreditCards().put(DINERS, new Long(number));
     }
-    
+
     public void addMastercard(long number) {
         getCreditCards().put(MASTERCARD, new Long(number));
     }
-    
+
     public void addVisa(long number) {
         getCreditCards().put(VISA, new Long(number));
     }
-    
+
     public boolean buysSaturdayToSunday() {
         if (buyingDays == null) {
             return false;
@@ -151,47 +151,47 @@ public class Buyer implements Serializable {
             return buyingDays.equals(EnumSet.of(Weekdays.SATURDAY, Weekdays.SUNDAY));
         }
     }
-    
+
     public String displayString() {
         StringBuffer sbuff = new StringBuffer();
         sbuff.append("Buyer ").append(getId()).append(": ").append(getName()).append(", ").append(getDescription());
         return sbuff.toString();
     }
-    
-    // No BasicCollection mapping, this should get serialized    
+
+    // No BasicCollection mapping, this should get serialized
     public EnumSet<Weekdays> getBuyingDays() {
         return buyingDays;
     }
-    
+
     // Default the collection table CREDITCARDS
     public Map<String, Long> getCreditCards() {
         return creditCards;
     }
-    
-    public String getDescription() { 
-        return description; 
+
+    public String getDescription() {
+        return description;
     }
-    
+
     public String getGender() {
         return gender;
     }
-        
-    public Integer getId() { 
-        return id; 
+
+    public Integer getId() {
+        return id;
     }
-    
-    public String getName() { 
-        return name; 
-    }    
-    
-    public int getVersion() { 
-        return version; 
+
+    public String getName() {
+        return name;
     }
-    
+
+    public int getVersion() {
+        return version;
+    }
+
     public boolean hasAmex(long number) {
         return hasCard(creditCards.get(AMEX), number);
     }
-    
+
     private boolean hasCard(Long cardNumber, long number) {
         if (cardNumber == null) {
             return false;
@@ -199,91 +199,91 @@ public class Buyer implements Serializable {
             return cardNumber.longValue() == number;
         }
     }
-    
+
     public boolean hasDinersClub(long number) {
         return hasCard(creditCards.get(DINERS), number);
     }
-    
+
     public boolean hasMastercard(long number) {
         return hasCard(creditCards.get(MASTERCARD), number);
     }
-    
+
     public boolean hasVisa(long number) {
         return hasCard(creditCards.get(VISA), number);
     }
-   
+
     public boolean isFemale() {
         return gender.equals("Female");
     }
-    
+
     public boolean isMale() {
         return gender.equals("Male");
     }
-        
+
     @PostLoad
     public void postLoad() {
         ++post_load_count;
     }
-        
+
     @PostPersist
     public void postPersist() {
         ++post_persist_count;
     }
-    
+
     @PostRemove
     public void postRemove() {
         ++post_remove_count;
-    }    
-    
+    }
+
     @PostUpdate
     public void postUpdate() {
         ++post_update_count;
-    }    
-    
+    }
+
     @PreRemove
     public void preRemove() {
         ++pre_remove_count;
     }
-        
+
     @PrePersist
     public void prePersist() {
         ++pre_persist_count;
     }
-    
+
     @PreUpdate
     public void preUpdate() {
         ++pre_update_count;
     }
-    
+
     public void setBuyingDays(EnumSet<Weekdays> buyingDays) {
         this.buyingDays = buyingDays;
     }
-    
+
     protected void setCreditCards(Map<String, Long> creditCards) {
         this.creditCards = creditCards;
-    }    
-    
-    public void setDescription(String description) { 
-        this.description = description; 
     }
-    
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public void setGender(String gender) {
         this.gender = gender;
     }
-    
-    public void setId(Integer id) { 
-        this.id = id; 
+
+    public void setId(Integer id) {
+        this.id = id;
     }
-    
-    public void setName(String name) { 
-        this.name = name; 
+
+    public void setName(String name) {
+        this.name = name;
     }
-    
+
     public void setSaturdayToSundayBuyingDays() {
         this.buyingDays = EnumSet.of(Weekdays.SATURDAY, Weekdays.SUNDAY);
     }
-    
-    public void setVersion(int version) { 
-        this.version = version; 
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

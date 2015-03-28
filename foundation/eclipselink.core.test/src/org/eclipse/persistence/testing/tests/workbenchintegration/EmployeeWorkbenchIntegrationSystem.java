@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import java.sql.Date;
@@ -42,9 +42,9 @@ import org.eclipse.persistence.testing.models.employee.relational.EmployeeProjec
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 
 /**
- *  This test system uses the Employee test system to test the integration 
- *  between the Mapping Workbench and the Foundation Library. To do this, it 
- *  writes our test project to an XML file and then reads the XML file and runs 
+ *  This test system uses the Employee test system to test the integration
+ *  between the Mapping Workbench and the Foundation Library. To do this, it
+ *  writes our test project to an XML file and then reads the XML file and runs
  *  the employee tests on it.
  *  @author Tom Ware
  */
@@ -55,13 +55,13 @@ public class EmployeeWorkbenchIntegrationSystem extends EmployeeSystem {
     public static int QUERY_MANAGER_TIMEOUT = 250;
 
     private Project initialProject;
-    
+
     /**
      * Override the constructor for employee system to allow us to read and write XML
      */
     public EmployeeWorkbenchIntegrationSystem() {
         super();
-        
+
         buildInitialProject();
         buildProject();
     }
@@ -73,15 +73,15 @@ public class EmployeeWorkbenchIntegrationSystem extends EmployeeSystem {
     public org.eclipse.persistence.sessions.Project getInitialProject() {
         return initialProject;
     }
-    
+
     protected void buildInitialProject() {
         initialProject = new EmployeeProject();
         Map<Class, ClassDescriptor> descriptors = initialProject.getDescriptors();
-        
+
         // Amend the employee descriptor
         ClassDescriptor employeeDescriptor = descriptors.get(Employee.class);
         DescriptorQueryManager queryManager = employeeDescriptor.getQueryManager();
-        
+
         queryManager.addQuery("PersistenceTestGetEqual", buildPersistenceTestGetEqualQuery());
         queryManager.addQuery("PersistenceTestAnyOfEqual", buildPersistenceTestAnyOfEqualQuery());
         queryManager.addQuery("PersistenceTestGetAllowingNullEqual", buildPersistenceTestGetAllowingNullEqualQuery());
@@ -116,7 +116,7 @@ public class EmployeeWorkbenchIntegrationSystem extends EmployeeSystem {
         queryManager.addQuery("AddOrderingReadAllQuery", buildAddOrderingReportQueryTest());
         queryManager.addQuery("AddBatchReadReadAllQuery", buildAddBatchReadReportQueryTest());
 
-        // Query options        
+        // Query options
         buildMemoryQueryReturnConfirmedQuery(queryManager);
         buildMemoryQueryThrowExceptionQuery(queryManager);
         buildMemoryQueryReturnNotConfirmedQuery(queryManager);
@@ -130,7 +130,7 @@ public class EmployeeWorkbenchIntegrationSystem extends EmployeeSystem {
         buildDoNotUseDistinctQuery(queryManager);
         buildShouldPrepareQuery(queryManager);
         buildReadOnlyQuery(queryManager);
-        
+
         // Amend the project descriptor
         ClassDescriptor projectDescriptor = descriptors.get(org.eclipse.persistence.testing.models.employee.domain.Project.class);
         // Postgres throws an error if you try to set the timeout.
@@ -139,7 +139,7 @@ public class EmployeeWorkbenchIntegrationSystem extends EmployeeSystem {
         }
         projectDescriptor.setCacheSynchronizationType(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES); // Setting added for validation only - no tests currently run against this setting - Bug 3599101
         projectDescriptor.setCacheInvalidationPolicy(new NoExpiryCacheInvalidationPolicy()); // Setting added for validation only - no tests currently run against this setting - Bug 3599101
-    
+
         // Query options
         buildJoinSubclassesQuery(projectDescriptor.getQueryManager());
 
@@ -147,16 +147,16 @@ public class EmployeeWorkbenchIntegrationSystem extends EmployeeSystem {
         employeeDescriptor.setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy(10000000));
         descriptors.get(Address.class).setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy(10000000));
         descriptors.get(PhoneNumber.class).setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy(10000000));
-        
+
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.add(Calendar.HOUR_OF_DAY, 2);
-        descriptors.get(LargeProject.class).setCacheInvalidationPolicy(new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY), 
-                                                                                                                                               calendar.get(Calendar.MINUTE), 
-                                                                                                                                               calendar.get(Calendar.SECOND), 
+        descriptors.get(LargeProject.class).setCacheInvalidationPolicy(new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY),
+                                                                                                                                               calendar.get(Calendar.MINUTE),
+                                                                                                                                               calendar.get(Calendar.SECOND),
                                                                                                                                                calendar.get(Calendar.MILLISECOND)));
-        descriptors.get(SmallProject.class).setCacheInvalidationPolicy(new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY), 
-                                                                                                                                               calendar.get(Calendar.MINUTE), 
-                                                                                                                                               calendar.get(Calendar.SECOND), 
+        descriptors.get(SmallProject.class).setCacheInvalidationPolicy(new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY),
+                                                                                                                                               calendar.get(Calendar.MINUTE),
+                                                                                                                                               calendar.get(Calendar.SECOND),
                                                                                                                                                calendar.get(Calendar.MILLISECOND)));
     }
 

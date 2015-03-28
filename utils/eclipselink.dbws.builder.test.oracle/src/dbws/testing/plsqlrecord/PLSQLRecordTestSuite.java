@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -49,7 +49,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
     static final String NRECORD_TYPE = "TYPE PACKAGE1_NRECORD";
     static final String MRECORD_TYPE = "TYPE PACKAGE1_MRECORD";
     static final String EMPREC_TYPE = "TYPE EMP_RECORD_PACKAGE_EMPREC";
-    
+
     static final String CREATE_EMPTYPE_TABLE =
         "CREATE TABLE EMPTYPEX (" +
             "\nEMPNO NUMERIC(4) NOT NULL," +
@@ -93,7 +93,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
          "END EMP_RECORD_PACKAGE;";
     static final String DROP_EMP_RECORD_PACKAGE_BODY =
         "DROP PACKAGE BODY EMP_RECORD_PACKAGE";
-    
+
     static final String CREATE_PACKAGE1_PACKAGE =
         "CREATE OR REPLACE PACKAGE PACKAGE1 AS" +
             "\nTYPE MTAB1 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
@@ -140,7 +140,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
                 "\nRETURN NEWREC;" +
             "\nEND GETRECWITHTABLE2;" +
         "\nEND PACKAGE1;";
-    
+
     static final String DROP_PACKAGE1_PACKAGE =
         "DROP PACKAGE PACKAGE1";
     static final String DROP_PACKAGE1_PACKAGE_BODY =
@@ -268,7 +268,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
 
     /**
      * Execute the DDL in the provided list containing the given DDL string.
-     * 
+     *
      */
     protected static void executeDDLForString(List<String> ddls, String ddlString) {
         for (int i = 0; i < ddls.size(); i++) {
@@ -279,7 +279,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
             }
         }
     }
-          
+
     @AfterClass
     public static void tearDown() {
         if (ddlDrop) {
@@ -289,7 +289,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_EMP_RECORD_PACKAGE, ddlDebug);
             runDdl(conn, DROP_EMPTYPE_TABLE, ddlDebug);
 
-            // drop shadow type ddl 
+            // drop shadow type ddl
             for (String ddl : builder.getTypeDropDDL()) {
                 // may need to strip off trailing ';'
                 try {

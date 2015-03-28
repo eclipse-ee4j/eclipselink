@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,13 +21,13 @@ import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests inline binary.
- * 
+ *
  */
 public class InlineBinaryBuilderTestSuite extends DBWSTestSuite {
-	static final String PROJECT_NAME = "inlinebinary"; 
-	static final String BUILDER_FILE = stageDir + "/dbws-builder-inlinebinary.xml";
-	static final String WSDL_LOC = "http://" + host + ":" + port + "/inlinebinary/inlinebinary?wsdl"; 
-	
+    static final String PROJECT_NAME = "inlinebinary";
+    static final String BUILDER_FILE = stageDir + "/dbws-builder-inlinebinary.xml";
+    static final String WSDL_LOC = "http://" + host + ":" + port + "/inlinebinary/inlinebinary?wsdl";
+
     public static final String CREATE_TABLE =
         "CREATE TABLE INLINEBINARY (" +
             "ID NUMBER NOT NULL," +
@@ -52,7 +52,7 @@ public class InlineBinaryBuilderTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_TABLE, ddlDebug);
         }
     }
-    
+
     @AfterClass
     public static void tearDown() {
         if (ddlDrop) {
@@ -64,7 +64,7 @@ public class InlineBinaryBuilderTestSuite extends DBWSTestSuite {
     public void testBuild() {
         DBWSTestSuite.testBuild(PROJECT_NAME, BUILDER_FILE);
     }
-    
+
     static final String BUILDER_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
@@ -79,7 +79,7 @@ public class InlineBinaryBuilderTestSuite extends DBWSTestSuite {
             "<property name=\"dataSource\">" + datasource + "</property>\n" +
             "<property name=\"wsdlLocationURI\">" + WSDL_LOC + "</property>\n" +
           "</properties>\n" +
-          "<table \n" + 
+          "<table \n" +
             "tableNamePattern=\"INLINEBINARY\">\n" +
           "</table>\n" +
         "</dbws-builder>";

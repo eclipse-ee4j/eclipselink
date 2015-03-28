@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, Oracle. All rights reserved.
+ * Copyright (c) 2006, 2015 , Oracle. All rights reserved.
  *
  * This software is the proprietary information of Oracle Corporation.
  * Use is subject to license terms.
@@ -19,11 +19,11 @@ import java.awt.Dialog;
  */
 public interface PostExecution<T extends Dialog>
 {
-	/**
-	 * Notifies this post exection the dialog that was launched into a different
-	 * UI thread has been disposed.
-	 *
-	 * @param dialog The dialog that was launched into a different thread
-	 */
-	public void execute(T dialog);
+    /**
+     * Notifies this post exection the dialog that was launched into a different
+     * UI thread has been disposed.
+     *
+     * @param dialog The dialog that was launched into a different thread
+     */
+    public void execute(T dialog);
 }

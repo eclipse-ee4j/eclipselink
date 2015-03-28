@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,23 +43,23 @@ public class XmlTypeTestCases extends JAXBWithJSONTestCases {
     protected Object getControlObject() {
         return Employee.buildEmployee();
     }
-    
+
     public void testSchemaGen() throws Exception {
-    	List controlSchemas = new ArrayList();    	
-    	controlSchemas.add(getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE));    	
-    	super.testSchemaGen(controlSchemas);
+        List controlSchemas = new ArrayList();
+        controlSchemas.add(getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE));
+        super.testSchemaGen(controlSchemas);
     }
-    
+
     public void testBuiltInTypeSchemaGen() throws Exception {
-      
-    	JAXBContext jctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { EmploymentPeriod.class, MyDate.class}, null);
-    	MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
-    	jctx.generateSchema(outputResolver);
+
+        JAXBContext jctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { EmploymentPeriod.class, MyDate.class}, null);
+        MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
+        jctx.generateSchema(outputResolver);
 
         List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
-        List controlSchemas = new ArrayList();    	
-    	controlSchemas.add(getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE_1));
-        
-    	compareSchemas(controlSchemas, generatedSchemas);
+        List controlSchemas = new ArrayList();
+        controlSchemas.add(getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE_1));
+
+        compareSchemas(controlSchemas, generatedSchemas);
      }
 }

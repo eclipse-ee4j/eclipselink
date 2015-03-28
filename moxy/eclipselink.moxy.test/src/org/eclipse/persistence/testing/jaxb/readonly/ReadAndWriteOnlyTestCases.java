@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,7 +21,7 @@ public class ReadAndWriteOnlyTestCases extends JAXBWithJSONTestCases {
     public static final String WRITE_CONTROL_DOC = "org/eclipse/persistence/testing/jaxb/readonly/writecontrol.xml";
     public static final String JSON_READ_CONTROL_DOC = "org/eclipse/persistence/testing/jaxb/readonly/readcontrol.json";
     public static final String JSON_WRITE_CONTROL_DOC = "org/eclipse/persistence/testing/jaxb/readonly/writecontrol.json";
-    
+
     public ReadAndWriteOnlyTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {RootObject.class});
@@ -35,7 +35,7 @@ public class ReadAndWriteOnlyTestCases extends JAXBWithJSONTestCases {
     protected Object getControlObject() {
         return null;
     }
-    
+
     @Override
     public Object getReadControlObject() {
         RootObject obj = new RootObject();
@@ -43,7 +43,7 @@ public class ReadAndWriteOnlyTestCases extends JAXBWithJSONTestCases {
         obj.setReadOnlyStringArray(new String[]{"string1", "string2", "string3"});
         return obj;
     }
-    
+
     @Override
     public Object getWriteControlObject() {
         RootObject obj = new RootObject();
@@ -51,8 +51,8 @@ public class ReadAndWriteOnlyTestCases extends JAXBWithJSONTestCases {
         obj.writeOnlyStringArray = new String[]{"string1", "string2", "string3"};
         return obj;
     }
-    
+
     @Override
     public void testRoundTrip() throws Exception{
-    }    
+    }
 }

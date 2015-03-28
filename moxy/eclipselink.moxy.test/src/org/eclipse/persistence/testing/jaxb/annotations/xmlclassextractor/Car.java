@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,11 +21,11 @@ public class Car extends Vehicle {
     public int numberOfDoors;
     @XmlElement(name="miles-per-gallon")
     public int milesPerGallon;
-       
+
    public boolean equals(Object theVehicle) {
-        
+
         if (!(theVehicle instanceof Car)){
-        	return false;
+            return false;
         }
         boolean isEqual = super.equals(theVehicle);
         if (isEqual) {

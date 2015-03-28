@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -29,44 +29,44 @@ import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
  * The section that manages the query parameters list.
  */
 public final class ParametersQuickViewSection extends AbstractQuickViewSection {
-	private ValueModel queryHolder;
+    private ValueModel queryHolder;
 
-	private QueriesPropertiesPage queriesPropertiesPage;
+    private QueriesPropertiesPage queriesPropertiesPage;
 
-	public ParametersQuickViewSection(QueriesPropertiesPage page, ResourceRepository resourceRepository, ValueModel queryHolder) {
-		super(resourceRepository, "QUICK_VIEW_PARAMETERS_LABEL", "QUICK_VIEW_PARAMETERS_ACCESSIBLE");
-		this.queryHolder = queryHolder;
-		this.queriesPropertiesPage = page;
-	}
+    public ParametersQuickViewSection(QueriesPropertiesPage page, ResourceRepository resourceRepository, ValueModel queryHolder) {
+        super(resourceRepository, "QUICK_VIEW_PARAMETERS_LABEL", "QUICK_VIEW_PARAMETERS_ACCESSIBLE");
+        this.queryHolder = queryHolder;
+        this.queriesPropertiesPage = page;
+    }
 
-	public ListValueModel buildItemsHolder() {
-		return new TransformationListValueModelAdapter(buildListValueModel()) {
-			protected Object transformItem(Object item) {
-				return ParametersQuickViewSection.this.queriesPropertiesPage.buildQueryParameterQuickViewItem((MWQueryItem) item);
-			}
-		};
-	}
+    public ListValueModel buildItemsHolder() {
+        return new TransformationListValueModelAdapter(buildListValueModel()) {
+            protected Object transformItem(Object item) {
+                return ParametersQuickViewSection.this.queriesPropertiesPage.buildQueryParameterQuickViewItem((MWQueryItem) item);
+            }
+        };
+    }
 
-	private ListValueModel buildListValueModel() {
-		return new ItemPropertyListValueModelAdapter(
-						buildParameterListHolder(),
-						MWQueryParameter.NAME_PROPERTY,
-						MWQueryParameter.TYPE_PROPERTY);
-	}
+    private ListValueModel buildListValueModel() {
+        return new ItemPropertyListValueModelAdapter(
+                        buildParameterListHolder(),
+                        MWQueryParameter.NAME_PROPERTY,
+                        MWQueryParameter.TYPE_PROPERTY);
+    }
 
-	private ListValueModel buildParameterListHolder() {
-		return new ListAspectAdapter(this.queryHolder, MWAbstractQuery.PARAMETERS_LIST) {
-			protected ListIterator getValueFromSubject() {
-				return ((MWAbstractQuery) this.subject).parameters();
-			}
+    private ListValueModel buildParameterListHolder() {
+        return new ListAspectAdapter(this.queryHolder, MWAbstractQuery.PARAMETERS_LIST) {
+            protected ListIterator getValueFromSubject() {
+                return ((MWAbstractQuery) this.subject).parameters();
+            }
 
-			protected int sizeFromSubject() {
-				return ((MWAbstractQuery) this.subject).parametersSize();
-			}
-		};
-	}
+            protected int sizeFromSubject() {
+                return ((MWAbstractQuery) this.subject).parametersSize();
+            }
+        };
+    }
 
-	public void select() {
-		this.queriesPropertiesPage.selectGeneralPanel();
-	}
+    public void select() {
+        this.queriesPropertiesPage.selectGeneralPanel();
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
 import java.util.Properties;
@@ -52,7 +52,7 @@ public interface Login extends CoreLogin<Platform> {
      * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
      * If that is the case and the application is experiencing a performance impact from the health check then
      * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
-     * retry queries in the case of database failure. 
+     * retry queries in the case of database failure.
      */
     public boolean isConnectionHealthValidatedOnError();
 
@@ -150,27 +150,27 @@ public interface Login extends CoreLogin<Platform> {
      * cache updates.
      */
     public boolean shouldSynchronizeWrites();
-    
+
     /**
      * INTERNAL:
      * Used for Cache Isolation.  Causes EclipseLink to lock at the object level on
      * cache updates and cache access.
      */
     public boolean shouldSynchronizeObjectLevelReadWrite();
-    
+
     /**
      * INTERNAL:
      * Used for Cache Isolation.  Causes EclipseLink to lock at the object level on
      * cache updates and cache access, based on database transaction.
      */
     public boolean shouldSynchronizeObjectLevelReadWriteDatabase();
-    
+
     /**
      * INTERNAL:
      * Used for cache isolation.
      */
     public boolean shouldSynchronizedReadOnWrite();
-    
+
     /**
      * PUBLIC:
      * The properties are additional, driver-specific, connection information
@@ -179,7 +179,7 @@ public interface Login extends CoreLogin<Platform> {
      * setting the "password" property directly. Use the method DatabaseLogin.setPassword(String).
      */
     public Object getProperty(String name);
-    
+
     /**
      * PUBLIC:
      * The properties are additional, driver-specific, connection information

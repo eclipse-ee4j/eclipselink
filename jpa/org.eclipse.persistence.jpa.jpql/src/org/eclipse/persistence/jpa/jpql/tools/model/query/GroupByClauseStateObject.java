@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,107 +35,107 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 @SuppressWarnings({"nls", "unused"}) // unused used for the import statement: see bug 330740
 public class GroupByClauseStateObject extends AbstractListHolderStateObject<StateObject> {
 
-	/**
-	 * Notify the list of {@link StateObject StateObjects} representing the <code><b>GROUP BY</b></code>
-	 * items.
-	 */
-	public static final String GROUP_BY_ITEMS_LIST = "groupByItems";
+    /**
+     * Notify the list of {@link StateObject StateObjects} representing the <code><b>GROUP BY</b></code>
+     * items.
+     */
+    public static final String GROUP_BY_ITEMS_LIST = "groupByItems";
 
-	/**
-	 * Creates a new <code>GroupByClauseStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public GroupByClauseStateObject(AbstractSelectStatementStateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>GroupByClauseStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public GroupByClauseStateObject(AbstractSelectStatementStateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * Adds the given path as a select item, which can either be an identification variable or a
-	 * state-field path expression.
-	 *
-	 * @param path Either an identification variable or a state-field path expression
-	 * @return The {@link StateObject} encapsulating the given path
-	 */
-	public StateObject addGroupByItem(String path) {
-		StateObject stateObject = buildStateObject(path, GroupByItemBNF.ID);
-		addItem(stateObject);
-		return stateObject;
-	}
+    /**
+     * Adds the given path as a select item, which can either be an identification variable or a
+     * state-field path expression.
+     *
+     * @param path Either an identification variable or a state-field path expression
+     * @return The {@link StateObject} encapsulating the given path
+     */
+    public StateObject addGroupByItem(String path) {
+        StateObject stateObject = buildStateObject(path, GroupByItemBNF.ID);
+        addItem(stateObject);
+        return stateObject;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public GroupByClause getExpression() {
-		return (GroupByClause) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GroupByClause getExpression() {
+        return (GroupByClause) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public AbstractSelectStatementStateObject getParent() {
-		return (AbstractSelectStatementStateObject) super.getParent();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AbstractSelectStatementStateObject getParent() {
+        return (AbstractSelectStatementStateObject) super.getParent();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isEquivalent(StateObject stateObject) {
-		return super.isEquivalent(stateObject) &&
-		       areChildrenEquivalent((GroupByClauseStateObject) stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEquivalent(StateObject stateObject) {
+        return super.isEquivalent(stateObject) &&
+               areChildrenEquivalent((GroupByClauseStateObject) stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String listName() {
-		return GROUP_BY_ITEMS_LIST;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String listName() {
+        return GROUP_BY_ITEMS_LIST;
+    }
 
-	/**
-	 * Parses the given JPQL fragment, which will represent the group by items. The fragment cannot
-	 * start with the <code><b>GROUP BY</b></code>.
-	 *
-	 * @param jpqlFragment The string representation of the group by items
-	 */
-	public void parse(String jpqlFragment) {
-		List<StateObject> stateObjects = buildStateObjects(jpqlFragment, GroupByItemBNF.ID);
-		addItems(stateObjects);
-	}
+    /**
+     * Parses the given JPQL fragment, which will represent the group by items. The fragment cannot
+     * start with the <code><b>GROUP BY</b></code>.
+     *
+     * @param jpqlFragment The string representation of the group by items
+     */
+    public void parse(String jpqlFragment) {
+        List<StateObject> stateObjects = buildStateObjects(jpqlFragment, GroupByItemBNF.ID);
+        addItems(stateObjects);
+    }
 
-	/**
-	 * Keeps a reference of the {@link GroupByClause parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link GroupByClause parsed object} representing a <code><b>GROUP
-	 * BY</b></code> clause
-	 */
-	public void setExpression(GroupByClause expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link GroupByClause parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link GroupByClause parsed object} representing a <code><b>GROUP
+     * BY</b></code> clause
+     */
+    public void setExpression(GroupByClause expression) {
+        super.setExpression(expression);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toTextInternal(Appendable writer) throws IOException {
-		writer.append(GROUP_BY);
-		if (hasItems()) {
-			writer.append(SPACE);
-			toStringItems(writer, true);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toTextInternal(Appendable writer) throws IOException {
+        writer.append(GROUP_BY);
+        if (hasItems()) {
+            writer.append(SPACE);
+            toStringItems(writer, true);
+        }
+    }
 }

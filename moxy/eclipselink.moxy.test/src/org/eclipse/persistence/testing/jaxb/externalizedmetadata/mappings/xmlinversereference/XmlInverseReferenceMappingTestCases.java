@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -51,7 +51,7 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
     private static final String CONTROL_PHONE_NUM_1 = "613-123-4567";
     private static final String CONTROL_PHONE_ID_2 = "a456";
     private static final String CONTROL_PHONE_NUM_2 = "613-234-5678";
-    
+
     public XmlInverseReferenceMappingTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
@@ -63,7 +63,7 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         Employee employee = new Employee();
         employee.id = CONTROL_ID;
         employee.name = CONTROL_NAME;
-        
+
         Address address = new Address();
         address.id = CONTROL_ADD_ID_1;
         address.street = CONTROL_ADD_STREET_1;
@@ -72,23 +72,23 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         address.zip = CONTROL_ADD_ZIP_1;
         address.emp = new Vector<Object>();
         address.emp.add(employee);
-        
+
         employee.address = address;
-        
+
         employee.phones = new ArrayList();
-        
+
         PhoneNumber num = new PhoneNumber();
         num.id = CONTROL_PHONE_ID_1;
         num.number = CONTROL_PHONE_NUM_1;
         num.emp = employee;
         employee.phones.add(num);
-        
+
         num = new PhoneNumber();
         num.id = CONTROL_PHONE_ID_2;
         num.number = CONTROL_PHONE_NUM_2;
         num.emp = employee;
         employee.phones.add(num);
-        
+
         Root root = new Root();
         root.employee = employee;
         return root;
@@ -101,7 +101,7 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         Employee employee = new Employee();
         employee.id = CONTROL_ID;
         employee.name = CONTROL_NAME;
-        
+
         Address address = new Address();
         address.id = CONTROL_ADD_ID_1;
         address.street = CONTROL_ADD_STREET_1;
@@ -111,9 +111,9 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         address.emp = new Vector<Object>();
         address.emp.add(employee);
         rootAddresses.add(address);
-        
+
         employee.address = address;
-        
+
         address = new Address();
         address.id = CONTROL_ADD_ID_2;
         address.street = CONTROL_ADD_STREET_2;
@@ -122,47 +122,47 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         address.zip = CONTROL_ADD_ZIP_2;
         rootAddresses.add(address);
         employee.phones = new ArrayList();
-        
+
         PhoneNumber num = new PhoneNumber();
         num.id = CONTROL_PHONE_ID_1;
         num.number = CONTROL_PHONE_NUM_1;
         num.emp = employee;
         employee.phones.add(num);
         rootPhones.add(num);
-        
+
         num = new PhoneNumber();
         num.id = CONTROL_PHONE_ID_2;
         num.number = CONTROL_PHONE_NUM_2;
         num.emp = employee;
         employee.phones.add(num);
         rootPhones.add(num);
-        
+
         Root root = new Root();
         root.employee = employee;
         root.addresses = rootAddresses;
         root.phoneNumbers = rootPhones;
         return root;
     }
-    
-    public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root-oxm.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference", new StreamSource(inputStream));
-	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-        
+    public Map getProperties(){
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root-oxm.xml");
+
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
         return properties;
-	}
-    
-    public void testSchemaGen() throws Exception{
-    	List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root.xsd");
-    	controlSchemas.add(is);
-    	super.testSchemaGen(controlSchemas);
     }
 
-    public void testAddressContainerType() {    	
+    public void testSchemaGen() throws Exception{
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root.xsd");
+        controlSchemas.add(is);
+        super.testSchemaGen(controlSchemas);
+    }
+
+    public void testAddressContainerType() {
         XMLDescriptor xDesc = xmlContext.getDescriptor(new QName("address"));
         assertNotNull("No descriptor was generated for Address.", xDesc);
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("emp");

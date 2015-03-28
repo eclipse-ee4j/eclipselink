@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.spatial.jgeometry;
 
 import java.util.List;
@@ -35,14 +35,14 @@ import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.Spatial;
  * criteria.
  */
 public class NamedQueryTests extends SimpleSpatialTestCase {
-    
+
     private static final String SESSION_QUERY_NAME = "simple-jgeometry-session-query";
     private static final String DESCRIPTOR_QUERY_NAME = "simple-jgeometry-descriptor-query";
-    
+
     public NamedQueryTests(String name){
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("NamedQueryTests");
@@ -99,16 +99,16 @@ public class NamedQueryTests extends SimpleSpatialTestCase {
     }
 
     public void executeNamedSessionQuery() throws Exception {
-        String sql = 
-            "select GID, GEOMETRY from SIMPLE_SPATIAL where mdsys.sdo_relate(geometry, " + 
-            "mdsys.sdo_geometry(3,null,null, mdsys.sdo_elem_info_array(1,3,3),  " + 
-            "mdsys.sdo_ordinate_array(1,1, 20, 20)), " + 
+        String sql =
+            "select GID, GEOMETRY from SIMPLE_SPATIAL where mdsys.sdo_relate(geometry, " +
+            "mdsys.sdo_geometry(3,null,null, mdsys.sdo_elem_info_array(1,3,3),  " +
+            "mdsys.sdo_ordinate_array(1,1, 20, 20)), " +
             "'MASK=ANYINTERACT QUERYTYPE=WINDOW') = 'TRUE' ORDER BY GID";
         SQLReader reader = new SQLReader(session, sql);
         double[] points = new double[] { 1, 1, 1, 20, 10, 20, 20, 1, 1, 1 };
         JGeometry rectangle = JGeometry.createLinearPolygon(points, 2, 0);
 
-        List<Spatial> results = 
+        List<Spatial> results =
             (List<Spatial>)session.executeQuery(SESSION_QUERY_NAME, rectangle);
 
         String compareResult = reader.compare(results);
@@ -135,19 +135,19 @@ public class NamedQueryTests extends SimpleSpatialTestCase {
     }
 
     public void executeDescriptorNamedQuery() throws Exception {
-        String sql = 
-            "select GID, GEOMETRY from SIMPLE_SPATIAL where " + "mdsys.sdo_within_distance(geometry, " + 
-            "mdsys.sdo_geometry(3,null,null, " + 
-            "mdsys.sdo_elem_info_array(1,3,4), " + 
-            "mdsys.sdo_ordinate_array(-10,0, 0, 10, 10, 0)), " + 
+        String sql =
+            "select GID, GEOMETRY from SIMPLE_SPATIAL where " + "mdsys.sdo_within_distance(geometry, " +
+            "mdsys.sdo_geometry(3,null,null, " +
+            "mdsys.sdo_elem_info_array(1,3,4), " +
+            "mdsys.sdo_ordinate_array(-10,0, 0, 10, 10, 0)), " +
             "'DISTANCE=10') = 'TRUE' ORDER BY GID";
 
         SQLReader reader = new SQLReader(session, sql);
 
         JGeometry circle = JGeometry.createCircle(-10, 0, 0, 10, 10, 0, 0);
 
-        List<Spatial> results = 
-            (List<Spatial>)session.executeQuery(DESCRIPTOR_QUERY_NAME, 
+        List<Spatial> results =
+            (List<Spatial>)session.executeQuery(DESCRIPTOR_QUERY_NAME,
                                        SimpleSpatial.class, circle);
 
         String compareResult = reader.compare(results);
@@ -157,20 +157,20 @@ public class NamedQueryTests extends SimpleSpatialTestCase {
 
     public void testDescriptorNamedQueryNoBinding() throws Exception {
         getSession().getLogin().getPlatform().setShouldBindAllParameters(false);
-        
+
         executeDescriptorNamedQuery();
     }
 
     public void testDescriptorNamedQueryBindAllParameter() throws Exception {
         getSession().getLogin().getPlatform().setShouldBindAllParameters(true);
-        
+
         executeDescriptorNamedQuery();
     }
 
     public void testDescriptorNamedQueryBindQueryParameter() throws Exception {
         getSession().getLogin().getPlatform().setShouldBindAllParameters(false);
         getSession().getClassDescriptor(SimpleSpatial.class).getDescriptorQueryManager().getQuery(DESCRIPTOR_QUERY_NAME).bindAllParameters();
-        
+
         executeDescriptorNamedQuery();
     }
 }

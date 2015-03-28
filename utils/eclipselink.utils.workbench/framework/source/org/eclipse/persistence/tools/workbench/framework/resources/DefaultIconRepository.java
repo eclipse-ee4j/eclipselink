@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -30,108 +30,108 @@ import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
  */
 public class DefaultIconRepository implements IconRepository {
 
-	/**
-	 * The the names of the resource files containing
-	 * the actual icons. Keyed by icon key.
-	 */
-	private IconResourceFileNameMap resourceFileNames;
+    /**
+     * The the names of the resource files containing
+     * the actual icons. Keyed by icon key.
+     */
+    private IconResourceFileNameMap resourceFileNames;
 
-	/**
-	 * Cache the icons as they are requested, so we don't have
-	 * to fetch them from the files every time. Keyed by icon key.
-	 */
-	private final Map cache;
-
-
-	// ********** constructors **********
-
-	/**
-	 * Use this constructor when constructing an instance of a
-	 * subclass that overrides #getResourceFileNames()
-	 */
-	public DefaultIconRepository() {
-		this(IconResourceFileNameMap.NULL_INSTANCE);
-	}
-
-	public DefaultIconRepository(IconResourceFileNameMap resourceFileNames) {
-		super();
-		if (resourceFileNames == null) {
-			throw new NullPointerException();
-		}
-		this.resourceFileNames = resourceFileNames;
-		this.cache = new HashMap();
-	}
+    /**
+     * Cache the icons as they are requested, so we don't have
+     * to fetch them from the files every time. Keyed by icon key.
+     */
+    private final Map cache;
 
 
-	// ********** IconRepository implementation **********
+    // ********** constructors **********
 
- 	/**
-	 * @see IconRepository#hasIcon(String)
-	 */
-	public boolean hasIcon(String key) {
-		return (key == null) ||
-				this.cache.containsKey(key) ||
-				this.canLoadIcon(key);
-	}
+    /**
+     * Use this constructor when constructing an instance of a
+     * subclass that overrides #getResourceFileNames()
+     */
+    public DefaultIconRepository() {
+        this(IconResourceFileNameMap.NULL_INSTANCE);
+    }
 
-	/**
-	 * @see IconRepository#getIcon(String)
-	 */
-	public synchronized Icon getIcon(String key) {
-		// allow clients to request a "non-icon"
-		if (key == null) {
-			return null;
-		}
-		// first check the cache
-		Icon icon = (Icon) this.cache.get(key);
-		if (icon != null) {
-			return icon;
-		}
-		// load the icon from a file and cache it
-		icon = this.loadIcon(key);
-		this.cache.put(key, icon);
-		return icon;
-	}
+    public DefaultIconRepository(IconResourceFileNameMap resourceFileNames) {
+        super();
+        if (resourceFileNames == null) {
+            throw new NullPointerException();
+        }
+        this.resourceFileNames = resourceFileNames;
+        this.cache = new HashMap();
+    }
 
 
-	// ********** internal methods **********
+    // ********** IconRepository implementation **********
 
-	/**
-	 * Load and return the icon corresponding to the specified key.
-	 * This method will be called, on demand, once for each key.
-	 */
-	protected Icon loadIcon(String key) {
-		String resourceFileName = this.getResourceFileNames().getResourceFileName(key);
+     /**
+     * @see IconRepository#hasIcon(String)
+     */
+    public boolean hasIcon(String key) {
+        return (key == null) ||
+                this.cache.containsKey(key) ||
+                this.canLoadIcon(key);
+    }
 
-		URL url = this.getClass().getClassLoader().getResource(resourceFileName);
-		if (url == null) {
-			throw new MissingIconException("Missing icon file: " + key + " => " + resourceFileName, key);
-		}
+    /**
+     * @see IconRepository#getIcon(String)
+     */
+    public synchronized Icon getIcon(String key) {
+        // allow clients to request a "non-icon"
+        if (key == null) {
+            return null;
+        }
+        // first check the cache
+        Icon icon = (Icon) this.cache.get(key);
+        if (icon != null) {
+            return icon;
+        }
+        // load the icon from a file and cache it
+        icon = this.loadIcon(key);
+        this.cache.put(key, icon);
+        return icon;
+    }
 
-		return new ImageIcon(url);
-	}
 
-	/**
-	 * Return whether the icon corresponding to the specified key
-	 * can be loaded.
-	 */
-	protected boolean canLoadIcon(String key) {
-		String resourceFileName;
-		if (this.getResourceFileNames().hasResourceFileName(key)) {
-			resourceFileName = this.getResourceFileNames().getResourceFileName(key);
-		} else {
-			return false;
-		}
+    // ********** internal methods **********
 
-		return this.getClass().getClassLoader().getResource(resourceFileName) != null;
-	}
+    /**
+     * Load and return the icon corresponding to the specified key.
+     * This method will be called, on demand, once for each key.
+     */
+    protected Icon loadIcon(String key) {
+        String resourceFileName = this.getResourceFileNames().getResourceFileName(key);
 
-	protected IconResourceFileNameMap getResourceFileNames() {
-		return this.resourceFileNames;
-	}
+        URL url = this.getClass().getClassLoader().getResource(resourceFileName);
+        if (url == null) {
+            throw new MissingIconException("Missing icon file: " + key + " => " + resourceFileName, key);
+        }
 
-	public String toString() {
-		return StringTools.buildToStringFor(this);
-	}
+        return new ImageIcon(url);
+    }
+
+    /**
+     * Return whether the icon corresponding to the specified key
+     * can be loaded.
+     */
+    protected boolean canLoadIcon(String key) {
+        String resourceFileName;
+        if (this.getResourceFileNames().hasResourceFileName(key)) {
+            resourceFileName = this.getResourceFileNames().getResourceFileName(key);
+        } else {
+            return false;
+        }
+
+        return this.getClass().getClassLoader().getResource(resourceFileName) != null;
+    }
+
+    protected IconResourceFileNameMap getResourceFileNames() {
+        return this.resourceFileNames;
+    }
+
+    public String toString() {
+        return StringTools.buildToStringFor(this);
+    }
 
 }

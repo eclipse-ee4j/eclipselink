@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -42,7 +42,7 @@ import org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml.Employee;
 
 /**
  * Tests schema generation from a Class[].
- * 
+ *
  */
 public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
     MySchemaOutputResolver outputResolver;
@@ -51,14 +51,14 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public ClassArraySchemaGenTestCases(String name) throws Exception {
         super(name);
         shouldGenerateSchema = true;
     }
-    
+
     /**
      * Generate the schema for these tests once only.  If generation fails, it will do so
      * for each test (meaning all tests will result in a generation failure).  If generation
@@ -89,7 +89,7 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests basic schema generation from deployment xml.
-     * 
+     *
      */
     public void testSchemaGenFromClassArray() throws Exception {
         generateSchema();
@@ -99,7 +99,7 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests user-set additional global element generation (Employee).
-     * 
+     *
      * @throws Exception
      */
     public void testSchemaGenFromClassArrayWithElements() throws Exception {
@@ -118,7 +118,7 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests user-set additional global element generation (String)
-     * 
+     *
      * @throws Exception
      */
     public void testSchemaGenFromClassArrayWithStringElement() throws Exception {
@@ -129,7 +129,7 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests user-set additional global element generation (int)
-     * 
+     *
      * @throws Exception
      */
     public void testSchemaGenFromClassArrayWithIntElement() throws Exception {

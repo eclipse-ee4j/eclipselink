@@ -108,7 +108,7 @@ public class Util {
     public static final String EMPTY_STR = "";
     public static final char COLON_CHAR = ':';
     public static final char SLASH_CHAR = '/';
-    
+
     /**
      * Convert a SQL name to a valid XML name. Because not all characters that
      * are valid in a SQL name is valid in an XML name, they need to be escaped
@@ -426,7 +426,7 @@ public class Util {
         return clz;
     }
 
-	public static final QName SXF_QNAME = new QName("", DEFAULT_SIMPLE_XML_FORMAT_TAG);
+    public static final QName SXF_QNAME = new QName("", DEFAULT_SIMPLE_XML_FORMAT_TAG);
 
     public static final Map<QName, Class<?>> SCHEMA_2_CLASS;
     static {
@@ -462,20 +462,20 @@ public class Util {
             put(UNSIGNED_SHORT_QNAME, INTEGER);
         }};
     }
-    
+
     /**
      * Return the type name to be used for a given JDBC type.  This will
-     * typically be used when setting the SQL type and type name on a 
-     * stored function/procedure argument.  Currently, the only case 
+     * typically be used when setting the SQL type and type name on a
+     * stored function/procedure argument.  Currently, the only case
      * we need to handle in this manner is oracle.xdb.XMLType - here
      * we may set 2007 (OPAQUE) or 2009 (SQLXML).
-     * 
+     *
      * In the future this method may be required to return more types.
      */
     public static String getTypeNameForJDBCType(int jdbcType) {
         String typeName = null;
         switch (jdbcType) {
-        case OPAQUE: 
+        case OPAQUE:
         case Types.SQLXML:
             typeName = XMLTYPE_STR;
             break;
@@ -484,13 +484,13 @@ public class Util {
         }
         return typeName;
     }
-    
+
     public static int getJDBCTypeForTypeName(String typeName) {
         int typeCode = -1;
         if (typeName.equals(XMLTYPE_STR)) {
             // we currently use oracle.sql.OPAQUE for XMLType
             typeCode = OPAQUE;
         }
-        return typeCode;                
+        return typeCode;
     }
 }

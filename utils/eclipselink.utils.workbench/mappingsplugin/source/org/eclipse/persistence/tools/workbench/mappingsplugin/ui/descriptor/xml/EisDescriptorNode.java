@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -41,112 +41,112 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.mapping.xml.UiM
 import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.mapping.xml.XmlMappingSelectionActionsPolicy;
 
 
-abstract class EisDescriptorNode extends XmlDescriptorNode 
-{	
-	
-	protected EisDescriptorNode(MWEisDescriptor descriptor, DescriptorPackageNode parentNode) {
-		super(descriptor, parentNode);
-	}
+abstract class EisDescriptorNode extends XmlDescriptorNode
+{
 
-	protected XmlMappingSelectionActionsPolicy buildMappingSelectionActionsPolicy() {
-		return new EisMappingSelectionActionsPolicy(getMappingsPlugin());
-	}
-	
-	protected MappingNode buildMappingNode(MWMapping mapping) {
-		if (mapping instanceof MWEisOneToOneMapping) {
-			return new EisOneToOneMappingNode(
-				(MWEisOneToOneMapping) mapping, 
-				buildMappingSelectionActionsPolicy(), 
-				this
-			);
-		}
-		else if (mapping instanceof MWEisOneToManyMapping) {
-			return new EisOneToManyMappingNode(
-				(MWEisOneToManyMapping) mapping, 
-				buildMappingSelectionActionsPolicy(), 
-				this
-			);
-		}
-		else if (mapping instanceof MWXmlDirectCollectionMapping) {
-			return new EisDirectCollectionMappingNode(
-				(MWXmlDirectCollectionMapping) mapping, 
-				buildMappingSelectionActionsPolicy(), 
-				this
-			);
-		}
-		else if (mapping instanceof MWXmlDirectMapping) {
-			return new EisDirectMappingNode(
-				(MWXmlDirectMapping) mapping, 
-				buildMappingSelectionActionsPolicy(), 
-				this
-			);
-		}
+    protected EisDescriptorNode(MWEisDescriptor descriptor, DescriptorPackageNode parentNode) {
+        super(descriptor, parentNode);
+    }
 
-		return super.buildMappingNode(mapping);
-	}
+    protected XmlMappingSelectionActionsPolicy buildMappingSelectionActionsPolicy() {
+        return new EisMappingSelectionActionsPolicy(getMappingsPlugin());
+    }
 
-	public String mappingHelpTopicPrefix() {
-		return "mapping.eis";
-	}
+    protected MappingNode buildMappingNode(MWMapping mapping) {
+        if (mapping instanceof MWEisOneToOneMapping) {
+            return new EisOneToOneMappingNode(
+                (MWEisOneToOneMapping) mapping,
+                buildMappingSelectionActionsPolicy(),
+                this
+            );
+        }
+        else if (mapping instanceof MWEisOneToManyMapping) {
+            return new EisOneToManyMappingNode(
+                (MWEisOneToManyMapping) mapping,
+                buildMappingSelectionActionsPolicy(),
+                this
+            );
+        }
+        else if (mapping instanceof MWXmlDirectCollectionMapping) {
+            return new EisDirectCollectionMappingNode(
+                (MWXmlDirectCollectionMapping) mapping,
+                buildMappingSelectionActionsPolicy(),
+                this
+            );
+        }
+        else if (mapping instanceof MWXmlDirectMapping) {
+            return new EisDirectMappingNode(
+                (MWXmlDirectMapping) mapping,
+                buildMappingSelectionActionsPolicy(),
+                this
+            );
+        }
 
-	public Class propertiesPageClassForCompositeCollectionMapping() {
-		return EisCompositeCollectionMappingPropertiesPage.class;
-	}
-	
-	@Override
-	public Class propertiesPageClassForCompositeObjectMapping() {
-		return EisCompositeObjectMappingPropertiesPage.class;
-	}
+        return super.buildMappingNode(mapping);
+    }
 
-	public Class propertiesPageClassForTransformationMapping() {
-		return EisTransformationMappingPropertiesPage.class;
-	}
+    public String mappingHelpTopicPrefix() {
+        return "mapping.eis";
+    }
 
-	protected boolean supportsDescriptorMorphing() {
-		return true;
-	}
-	
-	protected MenuGroupDescription buildDescriptorTypeMenuGroupDescription(WorkbenchContext workbenchContext) {
-		MenuGroupDescription typeDesc = new MenuGroupDescription();
-		typeDesc.add(this.getEisRootDescriptorAction(workbenchContext));
-		typeDesc.add(this.getEisCompositeDescriptorAction(workbenchContext));
-		return typeDesc;
-	}
-	
-	public GroupContainerDescription buildToolBarDescription(WorkbenchContext workbenchContext)
-	{
-		WorkbenchContext wrappedContext = buildLocalWorkbenchContext(workbenchContext);
+    public Class propertiesPageClassForCompositeCollectionMapping() {
+        return EisCompositeCollectionMappingPropertiesPage.class;
+    }
 
-		GroupContainerDescription desc = super.buildToolBarDescription(workbenchContext);
-		ToolBarButtonGroupDescription eisDescTypeGroup = new ToolBarButtonGroupDescription();
-		eisDescTypeGroup.add(getEisRootDescriptorAction(wrappedContext));
-		eisDescTypeGroup.add(getEisCompositeDescriptorAction(wrappedContext));
-		desc.add(eisDescTypeGroup);
-		
-		return desc;
-	}
-	
-	private ToggleFrameworkAction getEisRootDescriptorAction(WorkbenchContext workbenchContext)
-	{
-		return new EisRootDescriptorAction(workbenchContext);
-	}
-	
-	private ToggleFrameworkAction getEisCompositeDescriptorAction(WorkbenchContext workbenchContext)
-	{
-		return new EisCompositeDescriptorAction(workbenchContext);
-	}
-	
-	protected MappingNode buildUnmappedMappingNode(MWClassAttribute attribute) {
-		ApplicationContext ctx2 = this.getApplicationContext().buildExpandedResourceRepositoryContext(UiMappingXmlBundle.class);
-		return new UnmappedMappingNode(attribute, ctx2, new EisMappingSelectionActionsPolicy(getMappingsPlugin()), this);
-	}
-	
-	
-	public boolean isRootDescriptor() {
-		return false;
-	}
-	
-	public boolean isCompositeDescriptor() {
-		return false;
-	}
+    @Override
+    public Class propertiesPageClassForCompositeObjectMapping() {
+        return EisCompositeObjectMappingPropertiesPage.class;
+    }
+
+    public Class propertiesPageClassForTransformationMapping() {
+        return EisTransformationMappingPropertiesPage.class;
+    }
+
+    protected boolean supportsDescriptorMorphing() {
+        return true;
+    }
+
+    protected MenuGroupDescription buildDescriptorTypeMenuGroupDescription(WorkbenchContext workbenchContext) {
+        MenuGroupDescription typeDesc = new MenuGroupDescription();
+        typeDesc.add(this.getEisRootDescriptorAction(workbenchContext));
+        typeDesc.add(this.getEisCompositeDescriptorAction(workbenchContext));
+        return typeDesc;
+    }
+
+    public GroupContainerDescription buildToolBarDescription(WorkbenchContext workbenchContext)
+    {
+        WorkbenchContext wrappedContext = buildLocalWorkbenchContext(workbenchContext);
+
+        GroupContainerDescription desc = super.buildToolBarDescription(workbenchContext);
+        ToolBarButtonGroupDescription eisDescTypeGroup = new ToolBarButtonGroupDescription();
+        eisDescTypeGroup.add(getEisRootDescriptorAction(wrappedContext));
+        eisDescTypeGroup.add(getEisCompositeDescriptorAction(wrappedContext));
+        desc.add(eisDescTypeGroup);
+
+        return desc;
+    }
+
+    private ToggleFrameworkAction getEisRootDescriptorAction(WorkbenchContext workbenchContext)
+    {
+        return new EisRootDescriptorAction(workbenchContext);
+    }
+
+    private ToggleFrameworkAction getEisCompositeDescriptorAction(WorkbenchContext workbenchContext)
+    {
+        return new EisCompositeDescriptorAction(workbenchContext);
+    }
+
+    protected MappingNode buildUnmappedMappingNode(MWClassAttribute attribute) {
+        ApplicationContext ctx2 = this.getApplicationContext().buildExpandedResourceRepositoryContext(UiMappingXmlBundle.class);
+        return new UnmappedMappingNode(attribute, ctx2, new EisMappingSelectionActionsPolicy(getMappingsPlugin()), this);
+    }
+
+
+    public boolean isRootDescriptor() {
+        return false;
+    }
+
+    public boolean isCompositeDescriptor() {
+        return false;
+    }
 }

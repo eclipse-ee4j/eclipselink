@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.collections.map;
 
 import java.util.*;
@@ -46,7 +46,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
     public MapCollectionsProject() {
         applyPROJECT();
         applyLOGIN();
-        
+
         buildAggregateAggregateMapHolderDescriptor();
         buildAggregateDirectMapHolderDescriptor();
         buildAggregateEntityMapHolderDescriptor();
@@ -54,13 +54,13 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         buildAggregateEntityU1MMapHolderDescriptor();
         buildAggregateMapKeyDescriptor();
         buildAggregateMapValueDescriptor();
-        
+
         buildDirectAggregateMapHolderDescriptor();
         buildDirectEntityMapHolderDescriptor();
         buildDirectEntity1MMapHolderDescriptor();
         buildDirectEntityU1MMapHolderDescriptor();
         buildDirectDirectMapHolderDescriptor();
-        
+
         buildEntityMapValueDescriptor();
         buildEntityEntityMapHolderDescriptor();
         buildEntityEntity1MMapHolderDescriptor();
@@ -68,7 +68,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         buildEntityMapKeyDescriptor();
         buildEntityDirectMapHolderDescriptor();
         buildEntityAggregateMapHolderDescriptor();
-        
+
         buildDEOTMValueDescriptor();
         buildAEOTMValueDescriptor();
         buildEEOTMValueDescriptor();
@@ -92,8 +92,8 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
     protected void applyPROJECT() {
         setName("Collections");
     }
-    
-    
+
+
     protected void buildAEOTMValueDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -117,7 +117,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         directtofieldmapping.setSetMethodName("setId");
         directtofieldmapping.setFieldName("AE_OM_ENT_MAP_VALUE.ID");
         descriptor.addMapping(directtofieldmapping);
-        
+
         OneToOneMapping holderMapping = new OneToOneMapping();
         holderMapping.setAttributeName("holder");
         holderMapping.setReferenceClass(AggregateEntity1MMapHolder.class);
@@ -129,7 +129,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildAggregateAggregateMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -165,7 +165,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         aggregatecollectionmapping.setReferenceClass(AggregateMapKey.class);
         aggregatecollectionmapping.addTargetForeignKeyFieldName("AGG_AGG_MAP_REL.HOLDER_ID", "AGG_AGG_MAP_HOLDER.ID");
         aggregatecollectionmapping.addFieldNameTranslation("AGG_AGG_MAP_REL.MAP_VALUE", "key->DIRECT");
-        
+
         AggregateObjectMapping keyMapping = new AggregateObjectMapping();
         keyMapping.setReferenceClass(AggregateMapKey.class);
         keyMapping.addFieldNameTranslation("AGG_AGG_MAP_REL.MAP_KEY", "key->DIRECT");
@@ -180,7 +180,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildAggregateDirectMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -206,7 +206,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         directtofieldmapping.setSetMethodName("setId");
         directtofieldmapping.setFieldName("AGG_DIR_MAP_HOLDER.ID");
         descriptor.addMapping(directtofieldmapping);
-        
+
         DirectMapMapping directMapMapping = new DirectMapMapping();
         directMapMapping.setAttributeName("aggregateToDirectMap");
         directMapMapping.setGetMethodName("getAggregateToDirectMap");
@@ -226,12 +226,12 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(directMapMapping);
         directMapMapping.setContainerPolicy(policy);
-        
+
         descriptor.addMapping(directMapMapping);
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildAggregateEntityMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -267,12 +267,12 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         mapMapping.setSetMethodName("setAggregateToEntityMap");
         mapMapping.addSourceRelationKeyFieldName("AGG_ENT_MAP_REL.HOLDER_ID", "AGG_ENT_MAP_HOLDER.ID");
         mapMapping.addTargetRelationKeyFieldName("AGG_ENT_MAP_REL.VALUE_ID", "ENT_MAP_VALUE.ID");
-        
+
         AggregateObjectMapping keyMapping = new AggregateObjectMapping();
         keyMapping.setReferenceClass(AggregateMapKey.class);
         keyMapping.addFieldNameTranslation("AGG_ENT_MAP_REL.MAP_KEY", "key->DIRECT");
         keyMapping.setDescriptor(descriptor);
-        
+
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
@@ -282,8 +282,8 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
 
         addDescriptor(descriptor);
     }
-    
-    
+
+
     protected void buildAggregateEntity1MMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -317,12 +317,12 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         mapMapping.setGetMethodName("getAggregateToEntityMap");
         mapMapping.setSetMethodName("setAggregateToEntityMap");
         mapMapping.addTargetForeignKeyFieldName("AE_OM_ENT_MAP_VALUE.HOLDER_ID", "AGG_ENT_1M_MAP_HOLDER.ID");
-        
+
         AggregateObjectMapping keyMapping = new AggregateObjectMapping();
         keyMapping.setReferenceClass(AggregateMapKey.class);
         keyMapping.addFieldNameTranslation("AE_OM_ENT_MAP_VALUE.MAP_KEY", "key->DIRECT");
         keyMapping.setDescriptor(descriptor);
-        
+
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
@@ -332,7 +332,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildAggregateEntityU1MMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -366,22 +366,22 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         mapMapping.setGetMethodName("getAggregateToEntityMap");
         mapMapping.setSetMethodName("setAggregateToEntityMap");
         mapMapping.addTargetForeignKeyFieldName("ENT_MAP_VALUE.HOLDER_ID", "AGG_ENT_U1M_MAP_HOLDER.ID");
-        
+
         AggregateObjectMapping keyMapping = new AggregateObjectMapping();
         keyMapping.setReferenceClass(AggregateMapKey.class);
         keyMapping.addFieldNameTranslation("ENT_MAP_VALUE.MAP_KEY_1", "key->DIRECT");
         keyMapping.setDescriptor(descriptor);
-        
+
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
-        
+
         descriptor.addMapping(mapMapping);
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildAggregateMapKeyDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.descriptorIsAggregateCollection();
@@ -399,11 +399,11 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildAggregateMapValueDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.descriptorIsAggregateCollection();
-        
+
         descriptor.setJavaClass(AggregateMapValue.class);
 
         // Descriptor Properties.
@@ -418,7 +418,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildDEOTMValueDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -442,7 +442,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         directtofieldmapping.setSetMethodName("setId");
         directtofieldmapping.setFieldName("DE_OM_ENT_MAP_VALUE.ID");
         descriptor.addMapping(directtofieldmapping);
-        
+
         OneToOneMapping holderMapping = new OneToOneMapping();
         holderMapping.setAttributeName("holder");
         holderMapping.setReferenceClass(DirectEntity1MMapHolder.class);
@@ -454,7 +454,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildDirectAggregateMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -490,12 +490,12 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         aggregatecollectionmapping.setReferenceClass(AggregateMapValue.class);
         aggregatecollectionmapping.addTargetForeignKeyFieldName("DIR_AGG_MAP_REL.HOLDER_ID", "DIR_AGG_MAP_HOLDER.ID");
         aggregatecollectionmapping.addFieldNameTranslation("DIR_AGG_MAP_REL.MAP_VALUE", "value->DIRECT");
-        
+
         org.eclipse.persistence.mappings.DirectToFieldMapping keyMapping = new org.eclipse.persistence.mappings.DirectToFieldMapping();
         keyMapping.setFieldName("DIR_AGG_MAP_REL.MAP_KEY");
         keyMapping.setAttributeClassification(Integer.class);
         keyMapping.setDescriptor(descriptor);
-        
+
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(aggregatecollectionmapping);
@@ -505,7 +505,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildDirectDirectMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -531,7 +531,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         directtofieldmapping.setSetMethodName("setId");
         directtofieldmapping.setFieldName("DIR_DIR_MAP_HOLDER.ID");
         descriptor.addMapping(directtofieldmapping);
-        
+
         DirectMapMapping directMapMapping = new DirectMapMapping();
         directMapMapping.setAttributeName("directToDirectMap");
         directMapMapping.setReferenceTableName("DIR_DIR_MAP_REL");
@@ -544,17 +544,17 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         keyMapping.setFieldName("DIR_DIR_MAP_REL.MAP_KEY");
         keyMapping.setAttributeClassification(Integer.class);
         keyMapping.setDescriptor(descriptor);
-        
+
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(directMapMapping);
         directMapMapping.setContainerPolicy(policy);
-        
+
         descriptor.addMapping(directMapMapping);
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildDirectEntityMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -590,17 +590,17 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         mapMapping.setSetMethodName("setDirectToEntityMap");
         mapMapping.addSourceRelationKeyFieldName("DIR_ENT_MAP_REL.HOLDER_ID", "DIR_ENT_MAP_HOLDER.ID");
         mapMapping.addTargetRelationKeyFieldName("DIR_ENT_MAP_REL.VALUE_ID", "ENT_MAP_VALUE.ID");
-        
+
         org.eclipse.persistence.mappings.DirectToFieldMapping keyMapping = new org.eclipse.persistence.mappings.DirectToFieldMapping();
         keyMapping.setFieldName("DIR_ENT_MAP_REL.MAP_KEY");
         keyMapping.setAttributeClassification(Integer.class);
         keyMapping.setDescriptor(descriptor);
-        
+
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
-        
+
         descriptor.addMapping(mapMapping);
 
         addDescriptor(descriptor);
@@ -644,17 +644,17 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         keyMapping.setFieldName("DE_OM_ENT_MAP_VALUE.MAP_KEY");
         keyMapping.setAttributeClassification(Integer.class);
         keyMapping.setDescriptor(descriptor);
-        
+
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
-        
+
         descriptor.addMapping(mapMapping);
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildDirectEntityU1MMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -688,22 +688,22 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         mapMapping.setGetMethodName("getDirectToEntityMap");
         mapMapping.setSetMethodName("setDirectToEntityMap");
         mapMapping.addTargetForeignKeyFieldName("ENT_MAP_VALUE.HOLDER_ID", "DIR_ENT_U1M_MAP_HOLDER.ID");
-        
+
         org.eclipse.persistence.mappings.DirectToFieldMapping keyMapping = new org.eclipse.persistence.mappings.DirectToFieldMapping();
         keyMapping.setFieldName("ENT_MAP_VALUE.MAP_KEY");
         keyMapping.setAttributeClassification(Integer.class);
         keyMapping.setDescriptor(descriptor);
-        
+
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
-        
+
         descriptor.addMapping(mapMapping);
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildEEOTMValueDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -727,7 +727,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         directtofieldmapping.setSetMethodName("setId");
         directtofieldmapping.setFieldName("EE_OM_ENT_MAP_VALUE.ID");
         descriptor.addMapping(directtofieldmapping);
-        
+
         OneToOneMapping holderMapping = new OneToOneMapping();
         holderMapping.setAttributeName("holder");
         holderMapping.setReferenceClass(EntityEntity1MMapHolder.class);
@@ -739,7 +739,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildEntityAggregateMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -775,7 +775,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         aggregatecollectionmapping.setReferenceClass(AggregateMapValue.class);
         aggregatecollectionmapping.addTargetForeignKeyFieldName("ENT_AGG_MAP_REL.HOLDER_ID", "ENT_AGG_MAP_HOLDER.ID");
         aggregatecollectionmapping.addFieldNameTranslation("ENT_AGG_MAP_REL.MAP_VALUE", "value->DIRECT");
-        
+
         org.eclipse.persistence.mappings.OneToOneMapping keyMapping = new org.eclipse.persistence.mappings.OneToOneMapping();
         keyMapping.setReferenceClass(EntityMapKey.class);
         keyMapping.addForeignKeyFieldName("ENT_AGG_MAP_REL.KEY_ID", "ENT_MAP_KEY.ID");
@@ -791,7 +791,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildEntityDirectMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -827,23 +827,23 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         directMapMapping.addReferenceKeyFieldName("ENT_DIR_MAP_REL.HOLDER_ID", "ENT_DIR_MAP_HOLDER.ID");
         directMapMapping.setDirectFieldClassification(Integer.class);
         directMapMapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
-        
+
         org.eclipse.persistence.mappings.OneToOneMapping keyMapping = new org.eclipse.persistence.mappings.OneToOneMapping();
         keyMapping.setReferenceClass(EntityMapKey.class);
         keyMapping.addForeignKeyFieldName("ENT_DIR_MAP_REL.KEY_ID", "ENT_MAP_KEY.ID");
         keyMapping.dontUseIndirection();
         keyMapping.setDescriptor(descriptor);
-        
+
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(directMapMapping);
         directMapMapping.setContainerPolicy(policy);
-        
+
         descriptor.addMapping(directMapMapping);
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildEntityEntityMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -880,13 +880,13 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         mapMapping.setSetMethodName("setEntityToEntityMap");
         mapMapping.addSourceRelationKeyFieldName("ENT_ENT_MAP_REL.HOLDER_ID", "ENT_ENT_MAP_HOLDER.ID");
         mapMapping.addTargetRelationKeyFieldName("ENT_ENT_MAP_REL.VALUE_ID", "ENT_MAP_VALUE.ID");
-        
+
         org.eclipse.persistence.mappings.OneToOneMapping keyMapping = new org.eclipse.persistence.mappings.OneToOneMapping();
         keyMapping.setReferenceClass(EntityMapKey.class);
         keyMapping.addForeignKeyFieldName("ENT_ENT_MAP_REL.KEY_ID", "ENT_MAP_KEY.ID");
         keyMapping.dontUseIndirection();
         keyMapping.setDescriptor(descriptor);
-        
+
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
@@ -896,7 +896,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildEntityEntity1MMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -930,13 +930,13 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         mapMapping.setGetMethodName("getEntityToEntityMap");
         mapMapping.setSetMethodName("setEntityToEntityMap");
         mapMapping.addTargetForeignKeyFieldName("EE_OM_ENT_MAP_VALUE.HOLDER_ID", "ENT_ENT_1M_MAP_HOLDER.ID");
-        
+
         org.eclipse.persistence.mappings.OneToOneMapping keyMapping = new org.eclipse.persistence.mappings.OneToOneMapping();
         keyMapping.setReferenceClass(EntityMapKey.class);
         keyMapping.dontUseIndirection();
         keyMapping.addForeignKeyFieldName("EE_OM_ENT_MAP_VALUE.KEY_ID", "ENT_MAP_KEY.ID");
         keyMapping.setDescriptor(descriptor);
-        
+
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(IndirectMap.class);
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
@@ -947,7 +947,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         addDescriptor(descriptor);
     }
 
-    
+
     protected void buildEntityEntityU1MMapHolderDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -981,7 +981,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         mapMapping.setGetMethodName("getEntityToEntityMap");
         mapMapping.setSetMethodName("setEntityToEntityMap");
         mapMapping.addTargetForeignKeyFieldName("ENT_MAP_VALUE.HOLDER_ID", "ENT_ENT_U1M_MAP_HOLDER.ID");
-        
+
         org.eclipse.persistence.mappings.OneToOneMapping keyMapping = new org.eclipse.persistence.mappings.OneToOneMapping();
         keyMapping.setReferenceClass(EntityMapKey.class);
         keyMapping.addForeignKeyFieldName("ENT_MAP_VALUE.KEY_ID", "ENT_MAP_KEY.ID");
@@ -992,12 +992,12 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         policy.setKeyMapping(keyMapping);
         policy.setValueMapping(mapMapping);
         mapMapping.setContainerPolicy(policy);
-        
+
         descriptor.addMapping(mapMapping);
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildEntityMapKeyDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(EntityMapKey.class);
@@ -1022,7 +1022,7 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         directtofieldmapping.setSetMethodName("setId");
         directtofieldmapping.setFieldName("ENT_MAP_KEY.ID");
         descriptor.addMapping(directtofieldmapping);
-        
+
         directtofieldmapping = new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping.setAttributeName("data");
         directtofieldmapping.setIsReadOnly(false);
@@ -1030,10 +1030,10 @@ public class MapCollectionsProject extends org.eclipse.persistence.sessions.Proj
         directtofieldmapping.setSetMethodName("setData");
         directtofieldmapping.setFieldName("ENT_MAP_KEY.DATA");
         descriptor.addMapping(directtofieldmapping);
-   
+
         addDescriptor(descriptor);
     }
-    
+
     protected void buildEntityMapValueDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 

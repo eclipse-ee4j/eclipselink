@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries.optimization;
 
 import java.util.*;
@@ -27,7 +27,7 @@ public class NestedOneToManyBatchReadAllTest extends ReadAllTest {
     }
 
     public void reset() {
-        org.eclipse.persistence.mappings.OneToManyMapping mapping = 
+        org.eclipse.persistence.mappings.OneToManyMapping mapping =
             (OneToManyMapping)getSession().getDescriptor(Restaurant.class).getMappingForAttributeName("menus");
         ((ReadAllQuery)mapping.getSelectionQuery()).getBatchReadAttributeExpressions().clear();
 
@@ -37,7 +37,7 @@ public class NestedOneToManyBatchReadAllTest extends ReadAllTest {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         // Change the default query for menus to batch read menuItems
-        org.eclipse.persistence.mappings.OneToManyMapping mapping = 
+        org.eclipse.persistence.mappings.OneToManyMapping mapping =
             (OneToManyMapping)getSession().getDescriptor(Restaurant.class).getMappingForAttributeName("menus");
         ((ReadAllQuery)mapping.getSelectionQuery()).addBatchReadAttribute("items");
 
@@ -56,11 +56,11 @@ public class NestedOneToManyBatchReadAllTest extends ReadAllTest {
     public void verify() {
 
         // Check the identity map and count that all the MenuItems got read in.
-        org.eclipse.persistence.internal.identitymaps.IdentityMap menuItemIM = 
+        org.eclipse.persistence.internal.identitymaps.IdentityMap menuItemIM =
             ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getIdentityMap(MenuItem.class);
         if (menuItemIM.getSize() != getOriginalObjectsSize()) {
-            throw new TestErrorException("The number of menuItems read into the cache (" + menuItemIM.getSize() + 
-                                         ") does not match the number in the database (" + 
+            throw new TestErrorException("The number of menuItems read into the cache (" + menuItemIM.getSize() +
+                                         ") does not match the number in the database (" +
                                          getOriginalObjectsSize() + ").");
         }
     }

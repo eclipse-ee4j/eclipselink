@@ -6,7 +6,7 @@
 
         <!-- mapping files that are packaged in xml-only-model-tests.jar. -->
         <mapping-file>META-INF/advanced-entity-mappings.xml</mapping-file>
-        <!-- inheritance-entity-mappings.xml is packaged as META-INF/orm.xml 
+        <!-- inheritance-entity-mappings.xml is packaged as META-INF/orm.xml
              to test default listeners are added only once (GF #589) as well as
              to test that we can read orm.xml from referenced jar(GF #1131)
              See build.xml for more details.
@@ -30,7 +30,7 @@
         <!-- this is here for testing purposes GF #588, do not remove. -->
         <class>org.eclipse.persistence.testing.models.jpa.xml.inherited.Beer</class>
         <!--exclude-unlisted-classes>false</exclude-unlisted-classes-->
-        
+
         <properties>
             <!-- JDBC properties will be given by test.properties file in runtime -->
             <property name="eclipselink.session-name" value="default-session"/>
@@ -62,7 +62,7 @@
             <property name="eclipselink.weaving.eager" value="true"/>
             <property name="eclipselink.weaving.internal" value="false"/-->
             <property name="eclipselink.orm.validate.schema" value="true"/>
-			<property name="NAME" value="Montreal%"/>
+            <property name="NAME" value="Montreal%"/>
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
@@ -170,7 +170,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
     </persistence-unit>
-    
+
     <persistence-unit name="UNSPECIFIED">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
@@ -191,7 +191,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>UNSPECIFIED</shared-cache-mode>
     </persistence-unit>
-    
+
     <!-- following persistence unit is for CASE_SENSITIVITY testing-->
     <persistence-unit name="MulitPU-1">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>

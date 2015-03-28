@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
 
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class StaticWeaveJAROutputHandler extends AbstractStaticWeaveOutputHandle
     public StaticWeaveJAROutputHandler(JarOutputStream outputStreamHolder){
         super.outputStreamHolder=outputStreamHolder;
     }
-    
+
     /**
      * Add directory entry into outputstream.
      * @param dirPath
@@ -41,7 +41,7 @@ public class StaticWeaveJAROutputHandler extends AbstractStaticWeaveOutputHandle
         // no need to specifically add a directory entry.  directories will be created
         // as files are added
     }
-    
+
     /**
      * Write entry bytes into target, this method is usually called if class has been tranformed
      * @param targetEntry
@@ -55,14 +55,14 @@ public class StaticWeaveJAROutputHandler extends AbstractStaticWeaveOutputHandle
         }
         outputStreamHolder.closeEntry();
     }
-    
+
     /**
      * Write entry into target, this method usually copy original class into target.
      * @param jis
      * @param entry
      * @throws IOException
      */
-    public void addEntry(InputStream jis,JarEntry entry) throws IOException,URISyntaxException {    
+    public void addEntry(InputStream jis,JarEntry entry) throws IOException,URISyntaxException {
         outputStreamHolder.putNextEntry(entry);
         if(!entry.isDirectory()){
            readwriteStreams(jis,outputStreamHolder);

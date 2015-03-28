@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,7 +33,7 @@ public class NonSynchronizedVector extends Vector {
     public static NonSynchronizedVector newInstance(Collection c) {
         return new NonSynchronizedVector(c);
     }
-    
+
     public NonSynchronizedVector(int initialCapacity, int capacityIncrement) {
         super(initialCapacity, capacityIncrement);
     }
@@ -98,11 +98,11 @@ public class NonSynchronizedVector extends Vector {
     public int capacity() {
         return elementData.length;
     }
-    
+
     public Object clone() {
         return new NonSynchronizedVector(this);
     }
-    
+
     public int size() {
         return elementCount;
     }
@@ -114,11 +114,11 @@ public class NonSynchronizedVector extends Vector {
     public Enumeration elements() {
         return new Enumeration() {
             int count = 0;
-    
+
             public boolean hasMoreElements() {
                 return count < elementCount;
             }
-    
+
             public Object nextElement() {
                 if (count < elementCount) {
                     return elementData[count++];
@@ -183,7 +183,7 @@ public class NonSynchronizedVector extends Vector {
 
     public void setElementAt(Object obj, int index) {
         if (index >= elementCount) {
-            throw new ArrayIndexOutOfBoundsException(index + " >= " + 
+            throw new ArrayIndexOutOfBoundsException(index + " >= " +
                                  elementCount);
         }
         elementData[index] = obj;
@@ -192,7 +192,7 @@ public class NonSynchronizedVector extends Vector {
     public void removeElementAt(int index) {
         modCount++;
         if (index >= elementCount) {
-            throw new ArrayIndexOutOfBoundsException(index + " >= " + 
+            throw new ArrayIndexOutOfBoundsException(index + " >= " +
                                  elementCount);
         } else if (index < 0) {
             throw new ArrayIndexOutOfBoundsException(index);
@@ -238,7 +238,7 @@ public class NonSynchronizedVector extends Vector {
         // Let gc do its work
         for (int i = 0; i < elementCount; i++)
             elementData[i] = null;
-    
+
         elementCount = 0;
     }
 
@@ -271,7 +271,7 @@ public class NonSynchronizedVector extends Vector {
     public Object set(int index, Object element) {
         if (index >= elementCount)
             throw new ArrayIndexOutOfBoundsException(index);
-    
+
         Object oldValue = elementData[index];
         elementData[index] = element;
         return oldValue;
@@ -289,13 +289,13 @@ public class NonSynchronizedVector extends Vector {
         if (index >= elementCount)
             throw new ArrayIndexOutOfBoundsException(index);
         Object oldValue = elementData[index];
-    
+
         int numMoved = elementCount - index - 1;
         if (numMoved > 0)
             System.arraycopy(elementData, index+1, elementData, index,
                      numMoved);
         elementData[--elementCount] = null; // Let gc do its work
-    
+
         return oldValue;
     }
 
@@ -304,7 +304,7 @@ public class NonSynchronizedVector extends Vector {
         while (e.hasNext())
             if(!contains(e.next()))
                 return false;
-    
+
         return true;
     }
 
@@ -346,16 +346,16 @@ public class NonSynchronizedVector extends Vector {
         modCount++;
         if (index < 0 || index > elementCount)
             throw new ArrayIndexOutOfBoundsException(index);
-    
+
             Object[] a = c.toArray();
         int numNew = a.length;
         ensureCapacityHelper(elementCount + numNew);
-    
+
         int numMoved = elementCount - index;
         if (numMoved > 0)
             System.arraycopy(elementData, index, elementData, index + numNew,
                      numMoved);
-    
+
             System.arraycopy(a, 0, elementData, index, numNew);
         elementCount += numNew;
         return numNew != 0;
@@ -377,7 +377,7 @@ public class NonSynchronizedVector extends Vector {
             Object right = list.get(index);
             if ((left != right) && ((left == null) || (right == null) || (!left.equals(right)))) {
                 return false;
-            }            
+            }
         }
         return true;
     }
@@ -411,7 +411,7 @@ public class NonSynchronizedVector extends Vector {
         int numMoved = elementCount - toIndex;
             System.arraycopy(elementData, toIndex, elementData, fromIndex,
                              numMoved);
-    
+
         // Let gc do its work
         int newElementCount = elementCount - (toIndex-fromIndex);
         while (elementCount != newElementCount)
@@ -423,7 +423,7 @@ public class NonSynchronizedVector extends Vector {
     {
         s.defaultWriteObject();
     }
-    
+
     public List subList(int fromIndex, int toIndex) {
         return new NonSynchronizedSubVector(this, fromIndex, toIndex);
     }

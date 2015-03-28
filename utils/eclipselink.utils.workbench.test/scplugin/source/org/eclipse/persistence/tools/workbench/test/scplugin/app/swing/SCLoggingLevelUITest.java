@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -37,91 +37,91 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  */
 public class SCLoggingLevelUITest extends SCSessionUITest {
 
-	private PropertyValueModel selectionHolder;
-	private ComboBoxModel comboBoxModel;
-	private PropertyValueModel logHolder;
-	
-	public static void main( String[] args) throws Exception {
-		new SCLoggingLevelUITest().exec( args);
-	}
+    private PropertyValueModel selectionHolder;
+    private ComboBoxModel comboBoxModel;
+    private PropertyValueModel logHolder;
 
-	private SCLoggingLevelUITest() {
-		super();
-	}
+    public static void main( String[] args) throws Exception {
+        new SCLoggingLevelUITest().exec( args);
+    }
 
-	protected String windowTitle() {
-		return "Select a Logging Level:";
-	}
+    private SCLoggingLevelUITest() {
+        super();
+    }
 
-	private void exec( String[] args) throws Exception {
+    protected String windowTitle() {
+        return "Select a Logging Level:";
+    }
 
-		super.setUp();
+    private void exec( String[] args) throws Exception {
 
-		logHolder = new SimplePropertyValueModel( subject().getLog());
-		
-		selectionHolder = this.buildSelectionHolder( logHolder);
+        super.setUp();
 
-		comboBoxModel =
-			this.buildComboBoxModelAdapter( this.buildListHolder(), selectionHolder);
+        logHolder = new SimplePropertyValueModel( subject().getLog());
 
-		this.openWindow();
-	}
+        selectionHolder = this.buildSelectionHolder( logHolder);
 
-	private ComboBoxModel buildComboBoxModelAdapter( ListValueModel listHolder, PropertyValueModel selectionHolder) {
+        comboBoxModel =
+            this.buildComboBoxModelAdapter( this.buildListHolder(), selectionHolder);
 
-		return new ComboBoxModelAdapter( listHolder, selectionHolder);
-	}
+        this.openWindow();
+    }
 
-	protected Component buildPropertyTestingPanel() {
+    private ComboBoxModel buildComboBoxModelAdapter( ListValueModel listHolder, PropertyValueModel selectionHolder) {
 
-		JPanel propertyListPanel = new JPanel( new GridLayout( 1, 0));
-		propertyListPanel.add( this.buildComboBox());
-		propertyListPanel.add( this.buildComboBox());
-		return propertyListPanel;
-	}
+        return new ComboBoxModelAdapter( listHolder, selectionHolder);
+    }
 
-	private JComboBox buildComboBox() {
+    protected Component buildPropertyTestingPanel() {
 
-		JComboBox comboBox = new JComboBox( comboBoxModel);
-		return comboBox;
-	}
+        JPanel propertyListPanel = new JPanel( new GridLayout( 1, 0));
+        propertyListPanel.add( this.buildComboBox());
+        propertyListPanel.add( this.buildComboBox());
+        return propertyListPanel;
+    }
 
-	protected void printModel() {
-		LogAdapter log = subject().getLog();
-		String level = ( log instanceof  DefaultSessionLogAdapter) ?
-				(( DefaultSessionLogAdapter)log).getLogLevel() : "";
+    private JComboBox buildComboBox() {
 
-		System.out.println( "subject.log( "+ level + " )");
-	}
+        JComboBox comboBox = new JComboBox( comboBoxModel);
+        return comboBox;
+    }
 
-	protected void resetProperty() {
+    protected void printModel() {
+        LogAdapter log = subject().getLog();
+        String level = ( log instanceof  DefaultSessionLogAdapter) ?
+                (( DefaultSessionLogAdapter)log).getLogLevel() : "";
 
-		(( DefaultSessionLogAdapter)subject().getLog()).setLogLevel( DefaultSessionLogAdapter.INFO_LOG_LEVEL);
-	}
-	protected void clearModel() {
-		logHolder.setValue( null);
-	}
-	protected void restoreModel() {
-		logHolder.setValue( subject().getLog());
-	}
+        System.out.println( "subject.log( "+ level + " )");
+    }
 
-	private ListValueModel buildListHolder() {
+    protected void resetProperty() {
 
-		return new SimpleListValueModel( CollectionTools.list( 
-			DefaultSessionLogAdapter.VALID_LOG_LEVEL));
-	}
+        (( DefaultSessionLogAdapter)subject().getLog()).setLogLevel( DefaultSessionLogAdapter.INFO_LOG_LEVEL);
+    }
+    protected void clearModel() {
+        logHolder.setValue( null);
+    }
+    protected void restoreModel() {
+        logHolder.setValue( subject().getLog());
+    }
 
-	private PropertyValueModel buildSelectionHolder( ValueModel subjectHolder) {
+    private ListValueModel buildListHolder() {
 
-		return new PropertyAspectAdapter( subjectHolder, DefaultSessionLogAdapter.LOG_LEVEL_PROPERTY) {
-		
-			protected Object getValueFromSubject() {
-				return (( DefaultSessionLogAdapter)subject).getLogLevel();
-			}
-			protected void setValueOnSubject( Object value) {
-					(( DefaultSessionLogAdapter)subject).setLogLevel(( String)value);
-			}
-		};
-	}
+        return new SimpleListValueModel( CollectionTools.list(
+            DefaultSessionLogAdapter.VALID_LOG_LEVEL));
+    }
+
+    private PropertyValueModel buildSelectionHolder( ValueModel subjectHolder) {
+
+        return new PropertyAspectAdapter( subjectHolder, DefaultSessionLogAdapter.LOG_LEVEL_PROPERTY) {
+
+            protected Object getValueFromSubject() {
+                return (( DefaultSessionLogAdapter)subject).getLogLevel();
+            }
+            protected void setValueOnSubject( Object value) {
+                    (( DefaultSessionLogAdapter)subject).setLogLevel(( String)value);
+            }
+        };
+    }
 
 }

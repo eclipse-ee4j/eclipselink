@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
 import commonj.sdo.Type;
@@ -84,8 +84,8 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         cityProp.setContainment(true);
         cityProp.setContainingType(addrType);
         addrType.getDeclaredProperties().add(cityProp);
-        
-        
+
+
         SDOProperty base64Prop = new SDOProperty(aHelperContext);
         base64Prop.setName("base64Test");
         base64Prop.setType(SDOConstants.SDO_BYTES);
@@ -101,8 +101,8 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         countryProp.setName("country");
         countryProp.setType(stringType);
         countryProp.setXsdLocalName("country");
-        countryProp.setXsd(true);        
-        countryProp.setDefault("US");        
+        countryProp.setXsd(true);
+        countryProp.setDefault("US");
         countryProp.setContainingType(addrType);
         addrType.getDeclaredProperties().add(countryProp);
 
@@ -132,7 +132,7 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         zipProp.setXsdLocalName("zip");
         zipProp.setXsd(true);
         zipProp.setType(intType);
-        
+
         zipProp.setContainingType(usAddressType);
         usAddressType.getDeclaredProperties().add(zipProp);
 
@@ -188,12 +188,12 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         ArrayList cdnMailingbaseTypes = new ArrayList();
         cdnMailingbaseTypes.add(cdnAddressType);
         cdnMailingAddressType.setBaseTypes(cdnbaseTypes);
-        
+
         SDOProperty deliveryProp = new SDOProperty(aHelperContext);
         deliveryProp.setName("deliveryInfo");
         deliveryProp.setXsdLocalName("deliveryInfo");
         deliveryProp.setType(stringType);
-        deliveryProp.setXsd(true);        
+        deliveryProp.setXsd(true);
         deliveryProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         deliveryProp.setContainment(true);
         deliveryProp.setContainingType(cdnMailingAddressType);
@@ -266,7 +266,7 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         partNumProp.setName("partNum");
         partNumProp.setXsdLocalName("partNum");
         partNumProp.setType(SKUType);
-        partNumProp.setXsd(true);        
+        partNumProp.setXsd(true);
         partNumProp.setContainingType(itemType);
         itemType.getDeclaredProperties().add(partNumProp);
 
@@ -274,7 +274,7 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         quantityProp.setName("quantity");
         quantityProp.setType(quantityType);
         quantityProp.setXsd(true);
-        quantityProp.setXsdLocalName("quantity");              
+        quantityProp.setXsdLocalName("quantity");
         quantityProp.setContainingType(itemType);
         itemType.getDeclaredProperties().add(quantityProp);
 
@@ -374,7 +374,7 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         genderProp.setName("gender");
         genderProp.setXsdLocalName("gender");
         genderProp.setType(genderType);
-        //genderProp.setType(stringType);             
+        //genderProp.setType(stringType);
         genderProp.setXsd(true);
         //genderProp.setElement(true);
         genderProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
@@ -387,7 +387,7 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         //TODO or string type??
         namePrefixProp.setXsdLocalName("namePrefix");
         namePrefixProp.setType(namePrefixType);
-        namePrefixProp.setXsd(true);        
+        namePrefixProp.setXsd(true);
         namePrefixProp.setContainingType(customerType);
         customerType.getDeclaredProperties().add(namePrefixProp);
 
@@ -444,7 +444,7 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         itemsProp.setName("items");
         itemsProp.setXsdLocalName("items");
         itemsProp.setContainment(true);
-        //itemsProp.setElement(true);      
+        //itemsProp.setElement(true);
         itemsProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         itemsProp.setXsd(true);
         itemsProp.setContainingType(POtype);
@@ -457,7 +457,7 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         customerProp.setXsd(true);
         customerProp.setContainingType(POtype);
         customerProp.setContainment(true);
-        //customerProp.setElement(true);      
+        //customerProp.setElement(true);
         customerProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
 
         SDOProperty poIdProp = new SDOProperty(aHelperContext);
@@ -465,14 +465,14 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         poIdProp.setXsdLocalName("poId");
         poIdProp.setType(stringType);
         poIdProp.setXsd(true);
-        poIdProp.setContainingType(POtype);        
+        poIdProp.setContainingType(POtype);
 
         SDOProperty orderDateProp = new SDOProperty(aHelperContext);
         orderDateProp.setName("orderDate");
         orderDateProp.setXsdLocalName("orderDate");
         orderDateProp.setType(yearMonthDayType);
         orderDateProp.setXsd(true);
-        orderDateProp.setContainingType(POtype);        
+        orderDateProp.setContainingType(POtype);
 
         POtype.getDeclaredProperties().add(shipToProp);
         POtype.getDeclaredProperties().add(billToProp);
@@ -486,17 +486,17 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         types.add(SKUType);
         types.add(cdnAddressType);
         types.add(POtype);
-        types.add(itemsType);        
+        types.add(itemsType);
         types.add(cdnMailingAddressType);
         types.add(genderType);
-        types.add(namePrefixType);        
+        types.add(namePrefixType);
         types.add(quantityType);
         types.add(phoneType);
-        types.add(usAddressType);        
-        types.add(customerType);        
+        types.add(usAddressType);
+        types.add(customerType);
         types.add(itemType);
         types.add(addrType);
-        
+
         return types;
 
     }

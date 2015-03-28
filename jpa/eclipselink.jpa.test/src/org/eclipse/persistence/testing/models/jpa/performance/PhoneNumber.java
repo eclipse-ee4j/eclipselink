@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.performance;
 
 import java.io.*;
@@ -26,7 +26,7 @@ public class PhoneNumber implements Serializable {
 
     /** Sequence id, added for Hibernate as it has issues with composite ids and caching. */
     protected long id;
-    
+
     /** Holds values such as Home, Work, Cellular, Pager, Fax, etc.  Since the combination of the Employee's ID and
     the type field are what makes the entry in the database unique the type fields must be unique within an
     Employee's Vector of PhoneNumbers.*/
@@ -49,16 +49,16 @@ public class PhoneNumber implements Serializable {
         this.number = theNumber;
     }
 
-/*	public void readExternal(PofReader in) throws IOException {
-		this.id = in.readLong(0);
-		this.type = in.readString(1);
-		this.areaCode = in.readString(2);
+/*    public void readExternal(PofReader in) throws IOException {
+        this.id = in.readLong(0);
+        this.type = in.readString(1);
+        this.areaCode = in.readString(2);
     }
- 
-	public void writeExternal(PofWriter out) throws IOException {
-		out.writeLong(0, this.id);
-		out.writeString(1, this.type);
-		out.writeString(2, this.areaCode);
+
+    public void writeExternal(PofWriter out) throws IOException {
+        out.writeLong(0, this.id);
+        out.writeString(1, this.type);
+        out.writeString(2, this.areaCode);
     }*/
 
     public String getAreaCode() {
@@ -76,7 +76,7 @@ public class PhoneNumber implements Serializable {
     public String getType() {
         return type;
     }
-    
+
     public long getId() {
         return id;
     }
@@ -96,7 +96,7 @@ public class PhoneNumber implements Serializable {
     public void setType(String type) {
         this.type = type;
     }
-    
+
     public void setId(long id) {
         this.id = id;
     }
@@ -125,7 +125,7 @@ public class PhoneNumber implements Serializable {
             return false;
         }
     }
-    
+
     /**
      * Print the phone.
      * Example: Phone[Work]: (613) 225-8812

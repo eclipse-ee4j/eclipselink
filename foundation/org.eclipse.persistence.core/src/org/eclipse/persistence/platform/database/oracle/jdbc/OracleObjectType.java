@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -32,7 +32,7 @@ public class OracleObjectType extends ComplexDatabaseType implements Cloneable {
 
     protected int lastFieldIdx;
     protected Map<String, DatabaseType> fields =  new LinkedHashMap<String, DatabaseType>();
-    
+
     public int getLastFieldIndex() {
         return lastFieldIdx;
     }
@@ -47,12 +47,12 @@ public class OracleObjectType extends ComplexDatabaseType implements Cloneable {
     public void setFields(Map<String, DatabaseType> fields) {
         this.fields = fields;
     }
-    
+
     @Override
     public boolean isJDBCType() {
         return true;
     }
-    
+
     @Override
     public boolean isComplexDatabaseType() {
         return true;
@@ -62,11 +62,11 @@ public class OracleObjectType extends ComplexDatabaseType implements Cloneable {
     public boolean isStruct() {
         return true;
     }
-    
+
     public int getSqlCode() {
         return Types.STRUCT;
     }
-    
+
     /**
      * Oracle STRUCT types don't have a compatible type like PL/SQL
      * types do, so we will use the type name
@@ -75,7 +75,7 @@ public class OracleObjectType extends ComplexDatabaseType implements Cloneable {
     public String getCompatibleType() {
         return typeName;
     }
-    
+
     /**
      * Oracle STRUCT types don't have a compatible type like PL/SQL
      * types do, so we will use the type name
@@ -86,7 +86,7 @@ public class OracleObjectType extends ComplexDatabaseType implements Cloneable {
     }
 
     public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
-    	// no-op
+        // no-op
     }
 
     public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
@@ -103,7 +103,7 @@ public class OracleObjectType extends ComplexDatabaseType implements Cloneable {
         sb.append(";");
         sb.append(NL);
     }
-    
+
     public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
         // Validate.
         if ((getTypeName() == null) || getTypeName().equals("")) {

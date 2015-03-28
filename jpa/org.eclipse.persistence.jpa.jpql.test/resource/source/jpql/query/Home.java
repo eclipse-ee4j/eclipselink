@@ -9,7 +9,7 @@ import javax.persistence.Id;
 @SuppressWarnings("unused")
 public class Home implements Serializable {
 
-	private List<Phone> phones;
-	@Id
-	private String city;
+    private List<Phone> phones;
+    @Id
+    private String city;
 }

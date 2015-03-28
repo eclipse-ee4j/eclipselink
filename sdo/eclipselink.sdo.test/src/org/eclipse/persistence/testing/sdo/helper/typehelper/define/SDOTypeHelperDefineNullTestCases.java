@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.typehelper.define;
 
 import commonj.sdo.DataObject;
@@ -44,7 +44,7 @@ public class SDOTypeHelperDefineNullTestCases extends SDOTestCase {
         fail("An IllegalArgumentException should have occurred but didn't ");
     }
 
-    public void testDefineNullURI() {        
+    public void testDefineNullURI() {
         DataObject dataObject = dataFactory.create("commonj.sdo", "Type");
         SDOProperty prop = (SDOProperty)dataObject.getType().getProperty("name");
         dataObject.set(prop, "Customer");
@@ -98,14 +98,14 @@ public class SDOTypeHelperDefineNullTestCases extends SDOTestCase {
         prop = (SDOProperty)purchaseOrderTypeType.getType().getProperty("name");
         purchaseOrderTypeType.set(prop, "PurchaseOrderType");
 
-        // create a orderDateProperty 
+        // create a orderDateProperty
         addProperty(purchaseOrderTypeType, "orderDate", null);
         try {
             typeHelper.define(purchaseOrderTypeType);
-        } catch (SDOException e) {                        
+        } catch (SDOException e) {
             assertEquals(e.getErrorCode(), SDOException.NO_TYPE_SPECIFIED_FOR_PROPERTY);
             return;
-        }catch (Exception e) {                                  
+        }catch (Exception e) {
         }
         fail("An exception should have been thrown but wasn't");
     }

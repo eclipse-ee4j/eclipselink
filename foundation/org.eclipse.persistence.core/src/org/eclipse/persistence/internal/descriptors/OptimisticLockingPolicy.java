@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
 
 import java.io.Serializable;
@@ -82,7 +82,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *    doesn't work for fields locking.
      *    It degenerates into useless pattern: "if the original locking value is unchanged
      *    then the object hasn't been changed".
-     *    
+     *
      * Use compareWriteLockValues method only if this method returns true.
      */
     public boolean supportsWriteLockValuesComparison();
@@ -111,11 +111,11 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
 
     /**
      * ADVANCED:
-     * returns the LockOnChange mode for this policy.  This mode specifies if a 
+     * returns the LockOnChange mode for this policy.  This mode specifies if a
      * Optimistic Write lock should be enforced on this entity when a set of mappings are changed.
      */
     public LockOnChange getLockOnChangeMode();
-    
+
     /**
      * INTERNAL:
      * Return the value that should be stored in the identity map.
@@ -170,13 +170,13 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      * #see this method in VersionLockingPolicy
      */
     public void initializeProperties();
-    
+
     /**
      * INTERNAL:
      * Return true if the lock value is stored in the cache.
      */
     public boolean isStoredInCache();
-    
+
     /**
      * INTERNAL:
      * Specify if the policy cascade locks.
@@ -224,10 +224,10 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      * provide a way to set the descriptor for this policy
      */
     public void setDescriptor(ClassDescriptor descriptor);
-    
+
     /**
      * ADVANCED:
-     * Sets the LockOnChange mode for this policy.  This mode specifies if a 
+     * Sets the LockOnChange mode for this policy.  This mode specifies if a
      * Optimistic Write lock should be enforced on this entity when set of mappings are changed.
      */
     public void setLockOnChangeMode(LockOnChange lockOnChangeMode);
@@ -250,7 +250,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      * #see this method in VersionLockingPolicy
      */
     public void updateRowAndObjectForUpdate(ObjectLevelModifyQuery query, Object object);
-    
+
     /**
      * INTERNAL:
      * Returns true if the policy has been set to set an optimistic read lock when a owning mapping changes.
@@ -266,7 +266,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
     public void validateDelete(int rowCount, Object object, DeleteObjectQuery query);
 
     public void validateUpdate(int rowCount, Object object, WriteObjectQuery query);
-    
+
     /**
      * Advanced:
      * <p>

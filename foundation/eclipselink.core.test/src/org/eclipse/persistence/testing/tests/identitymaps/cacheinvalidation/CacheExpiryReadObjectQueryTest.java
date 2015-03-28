@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation;
 
 import org.eclipse.persistence.queries.*;
@@ -55,18 +55,18 @@ public class CacheExpiryReadObjectQueryTest extends CacheExpiryTest {
             getAbstractSession().getIdentityMapAccessor().invalidateObject(mutatedEmployee);
         }
 
-        // Reread the employee.  If the employee expired, we will get an employee with the original 
+        // Reread the employee.  If the employee expired, we will get an employee with the original
         // name.  Otherwise we will get an employee with the mutated name.
         queriedEmployee = (Employee)getSession().executeQuery(query);
     }
 
     public void verify() {
         if (shouldExpire && !firstName.equals(queriedEmployee.getFirstName())) {
-            throw new TestErrorException("Expiring Read Object Query did not properly expire.  Please ensure this system is not running " + 
+            throw new TestErrorException("Expiring Read Object Query did not properly expire.  Please ensure this system is not running " +
                                          "with a heavy load prior to filing a bug since the cache expiry tests rely to a certain degree on timing.");
 
         } else if (!shouldExpire && firstName.equals(queriedEmployee.getFirstName())) {
-            throw new TestErrorException("Non-Expiring Read Object Query did not properly cache results.  Please ensure this system is not running " + 
+            throw new TestErrorException("Non-Expiring Read Object Query did not properly cache results.  Please ensure this system is not running " +
                                          "with a heavy load prior to filing a bug since the cache expiry tests rely to a certain degree on timing.");
 
         }

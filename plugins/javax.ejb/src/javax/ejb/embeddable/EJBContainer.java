@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,8 +52,8 @@ import javax.naming.Context;
 import javax.ejb.EJBException;
 import javax.ejb.spi.EJBContainerProvider;
 
-/** 
-  * Used to execute an EJB application in an embeddable container.  
+/**
+  * Used to execute an EJB application in an embeddable container.
   *
   * @since EJB 3.1
   */
@@ -72,7 +72,7 @@ public abstract class EJBContainer {
      *  <li> a single module name String from the JVM classpath
      *  <li> a String[] array of module names from the JVM classpath
      *  <li>  a java.io.File representing an ejb-jar or exploded ejb-jar directory
-     *  <li> a java.io.File array, each element of which represents an ejb-jar 
+     *  <li> a java.io.File array, each element of which represents an ejb-jar
      *        or exploded ejb-jar directory
      * </ul>
      */
@@ -90,7 +90,7 @@ public abstract class EJBContainer {
     public static final String APP_NAME = "javax.ejb.embeddable.appName";
 
     /**
-     * Create and initialize an embeddable EJB container.  JVM classpath is 
+     * Create and initialize an embeddable EJB container.  JVM classpath is
      * searched for all ejb-jars or exploded ejb-jars in directory format.
      *
      * @return EJBContainer instance
@@ -98,7 +98,7 @@ public abstract class EJBContainer {
      * @exception javax.ejb.EJBException  Thrown if the container or application
      * could not be successfully initialized.
      */
-    public static EJBContainer createEJBContainer() { 
+    public static EJBContainer createEJBContainer() {
         return createEJBContainer(null);
     }
 
@@ -134,7 +134,7 @@ public abstract class EJBContainer {
                 // The provider is eligible but encountered problems
                 throw e;
             } catch (Throwable t) {
-                // ignore but remember the message in case all fail: 
+                // ignore but remember the message in case all fail:
                 // according to Spec the provider must return null from
                 // createEJBContainer(), if not the right provider.
                 // But non-compliant provider may throw exception
@@ -159,13 +159,13 @@ public abstract class EJBContainer {
     /**
      * Shutdown an embeddable EJBContainer instance.  Embeddable applications
      * should always call <code>close()</code> in order to free up the resources
-     * associated with the embeddable container.   
+     * associated with the embeddable container.
      */
-    abstract public void close(); 
+    abstract public void close();
 
     //Private variables
     private static final String newLine = "\r\n";
-    private static final ServiceLoader<EJBContainerProvider> providers = 
+    private static final ServiceLoader<EJBContainerProvider> providers =
             ServiceLoader.load(EJBContainerProvider.class);
 
     /**
@@ -182,7 +182,7 @@ public abstract class EJBContainer {
      *
      * @throws EJBException
      */
-    private static void reportError(Map<?,?> properties, Map<String, String> errors, 
+    private static void reportError(Map<?,?> properties, Map<String, String> errors,
             Set<String> returnedNull) throws EJBException {
         StringBuffer message = new StringBuffer(
                 "No EJBContainer provider available");

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,8 +23,8 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
  * INTERNAL
- * <b>Purpose</b>: Generic superclass for AttributeItem. 
- * 
+ * <b>Purpose</b>: Generic superclass for AttributeItem.
+ *
  * @author matt macivor
  * @since EclipseLink 2.5
  */
@@ -35,18 +35,18 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
     protected ATTRIBUTE_GROUP parent;
 
     protected ATTRIBUTE_GROUP group;
-    
+
     protected ATTRIBUTE_GROUP keyGroup;
 
     protected Map<Object, ATTRIBUTE_GROUP> subGroups;
-    
+
     protected Map<Object, ATTRIBUTE_GROUP> keyGroups;
 
 //    private transient DatabaseMapping mapping;
 
-    protected CoreAttributeItem() {        
+    protected CoreAttributeItem() {
     }
-    
+
     public CoreAttributeItem(ATTRIBUTE_GROUP parent, String attributeName) {
         this.parent = parent;
         this.attributeName = attributeName;
@@ -61,7 +61,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
             addSubGroup(group);
         }
     }
-    
+
     public void addKeyGroup(ATTRIBUTE_GROUP keyGroup) {
         if (keyGroup != null){
             if (this.keyGroups == null){
@@ -92,7 +92,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         for (ATTRIBUTE_GROUP group : keyGroups){
             this.addKeyGroup(group);
         }
-    } 
+    }
 
     public void addSubGroup(ATTRIBUTE_GROUP group) {
         if (group != null){
@@ -119,7 +119,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
             }
         }
     }
-    
+
     public CoreAttributeItem<ATTRIBUTE_GROUP> clone(Map<ATTRIBUTE_GROUP, ATTRIBUTE_GROUP> cloneMap, ATTRIBUTE_GROUP parentClone){
         CoreAttributeItem clone = null;
         try {
@@ -150,13 +150,13 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         }
         return clone;
     }
-    
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this Descriptor to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Map<Object, ATTRIBUTE_GROUP> newMap = new HashMap<Object, ATTRIBUTE_GROUP>();
@@ -171,7 +171,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
             }
         }
         this.subGroups = newMap;
-        
+
         newMap = new HashMap<Object, ATTRIBUTE_GROUP>();
         if (this.keyGroups != null){
             for (ATTRIBUTE_GROUP entry : this.keyGroups.values()){
@@ -192,7 +192,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
                 group.insertSubClass(this.keyGroup);
                 this.keyGroup = group;
             }
-            
+
         }
     }
 
@@ -207,7 +207,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
             } catch (ClassCastException cce) {
                 return false;
             }
-            
+
             if(this.subGroups != null) {
                 if (anotherItem.subGroups == null){
                     return false;
@@ -225,7 +225,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
             } else if (anotherItem.subGroups != null){
                 return false;
             }
-            
+
             if(this.keyGroups != null) {
                 if (anotherItem.keyGroups == null){
                     return false;
@@ -246,7 +246,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         }
         return true;
     }
-    
+
     public String getAttributeName() {
         return this.attributeName;
     }
@@ -329,17 +329,17 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         }
         return false;
     }
-    
+
     public void setRootGroup(ATTRIBUTE_GROUP group) {
         this.group = group;
         this.addSubGroup(group);
     }
 
-    public String toString() {        
+    public String toString() {
         return getClass().getSimpleName() + "(" + getAttributeName() + ")" + (this.subGroups!=null ? " => " + this.subGroups.toString() : "") + (this.keyGroups!=null ? " => " + this.keyGroups.toString() : "");
     }
 
-    public String toStringNoClassName() {        
+    public String toStringNoClassName() {
         return getAttributeName() + (this.subGroups!=null ? " => " + this.subGroups.toString() : "")+ (this.keyGroups!=null ? " => " + this.keyGroups.toString() : "");
     }
 }

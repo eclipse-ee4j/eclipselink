@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import java.util.Comparator;
@@ -32,8 +32,8 @@ import org.eclipse.persistence.internal.queries.SortedCollectionContainerPolicy;
 
 
 /*
- * Note, this test not intent to verify the function for the sorted collectionMapping. 
- * it just test whether sorted collection mapping with specified comparator 
+ * Note, this test not intent to verify the function for the sorted collectionMapping.
+ * it just test whether sorted collection mapping with specified comparator
  * can be written to or read from project.xml correctly.
  */
 public class ProjectXMLSortedCollectionMapping extends TestCase {
@@ -55,10 +55,10 @@ public class ProjectXMLSortedCollectionMapping extends TestCase {
     public void test() {
         try{
             Project writeToProject = new EmployeeProject();
-            
+
             ClassDescriptor descriptorToModify = writeToProject.getDescriptors().get(Employee.class);
             DatabaseMapping mappingToModify = descriptorToModify.getMappingForAttributeName("projects");
-    
+
             if (mappingToModify.isForeignReferenceMapping()) {
                 if (((ForeignReferenceMapping)mappingToModify).isCollectionMapping()) {
                     CollectionMapping collectionMapping = (CollectionMapping)(((ForeignReferenceMapping)mappingToModify));
@@ -67,7 +67,7 @@ public class ProjectXMLSortedCollectionMapping extends TestCase {
             }else{
                 throw new Exception("The test must have sorted collection mapping specified in the class descriptor in order to test.");
             }
-            
+
             // Write out the project with changes and read back in again.
             XMLProjectWriter.write(TEMP_FILE, writeToProject);
             readBackProject = XMLProjectReader.read(TEMP_FILE, getClass().getClassLoader());
@@ -97,11 +97,11 @@ public class ProjectXMLSortedCollectionMapping extends TestCase {
             throw new TestErrorException("The container policy expect to set as SortedCollectionContainerPolicy.");
         }
     }
-    
+
     public Class getComparator(){
         return ProjectXMLSortedCollectionMapping.ProjectComparator.class;
     }
-    
+
     public static class ProjectComparator implements Comparator{
         public int compare(Object object1, Object object2) {
             if ((object1.getClass() != Project.class) || (object2.getClass() != Project.class)) {

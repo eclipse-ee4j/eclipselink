@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,10 +22,10 @@ public class HexRoot {
 
     @XmlSchemaType(name="hexBinary")
     public byte[] bytes;
-    
+
     public boolean equals(Object obj) {
         HexRoot r = (HexRoot)obj;
-        
+
         return new String(this.bytes).equals(new String(r.bytes));
     }
 

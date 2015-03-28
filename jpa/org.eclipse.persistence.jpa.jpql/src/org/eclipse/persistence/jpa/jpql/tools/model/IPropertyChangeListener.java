@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,10 +24,10 @@ package org.eclipse.persistence.jpa.jpql.tools.model;
  */
 public interface IPropertyChangeListener<T> {
 
-	/**
-	 * Notifies this listener that a certain property has changed.
-	 *
-	 * @param e The {@link IPropertyChangeEvent} object containing the information of the change
-	 */
-	void propertyChanged(IPropertyChangeEvent<T> e);
+    /**
+     * Notifies this listener that a certain property has changed.
+     *
+     * @param e The {@link IPropertyChangeEvent} object containing the information of the change
+     */
+    void propertyChanged(IPropertyChangeEvent<T> e);
 }

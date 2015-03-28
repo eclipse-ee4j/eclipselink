@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -25,54 +25,54 @@ import org.eclipse.persistence.tools.workbench.utility.io.NullWriter;
 
 
 public class NullWriterTests extends TestCase {
-	private Writer nullWriter;
+    private Writer nullWriter;
 
-	public static Test suite() {
-		return new TestSuite(NullWriterTests.class);
-	}
-	
-	public NullWriterTests(String name) {
-		super(name);
-	}
+    public static Test suite() {
+        return new TestSuite(NullWriterTests.class);
+    }
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.nullWriter = NullWriter.instance();
-	}
+    public NullWriterTests(String name) {
+        super(name);
+    }
 
-	protected void tearDown() throws Exception {
-		TestTools.clear(this);
-		super.tearDown();
-	}
+    protected void setUp() throws Exception {
+        super.setUp();
+        this.nullWriter = NullWriter.instance();
+    }
 
-	public void testWriteCharArrayIntInt() throws IOException {
-		this.nullWriter.write(new char[10], 2, 5);
-	}
+    protected void tearDown() throws Exception {
+        TestTools.clear(this);
+        super.tearDown();
+    }
 
-	public void testFlush() throws IOException {
-		this.nullWriter.flush();
-	}
+    public void testWriteCharArrayIntInt() throws IOException {
+        this.nullWriter.write(new char[10], 2, 5);
+    }
 
-	public void testClose() throws IOException {
-		this.nullWriter.close();
-	}
+    public void testFlush() throws IOException {
+        this.nullWriter.flush();
+    }
 
-	public void testWriteCharArray() throws IOException {
-		char[] charArray = new char[10];
-		Arrays.fill(charArray, 'a');
-		this.nullWriter.write(charArray);
-	}
+    public void testClose() throws IOException {
+        this.nullWriter.close();
+    }
 
-	public void testWriteInt() throws IOException {
-		this.nullWriter.write(10);
-	}
+    public void testWriteCharArray() throws IOException {
+        char[] charArray = new char[10];
+        Arrays.fill(charArray, 'a');
+        this.nullWriter.write(charArray);
+    }
 
-	public void testWriteStringIntInt() throws IOException {
-		this.nullWriter.write("0123456789", 2, 5);
-	}
+    public void testWriteInt() throws IOException {
+        this.nullWriter.write(10);
+    }
 
-	public void testWriteString() throws IOException {
-		this.nullWriter.write("0123456789");
-	}
+    public void testWriteStringIntInt() throws IOException {
+        this.nullWriter.write("0123456789", 2, 5);
+    }
+
+    public void testWriteString() throws IOException {
+        this.nullWriter.write("0123456789");
+    }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -256,10 +256,10 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
 
     /**
      * Indicates if one or more database tables were discovered.
-     * 
+     *
      */
     public boolean hasTables() {
-    	return dbTables.size() != 0;
+        return dbTables.size() != 0;
     }
 
     public void buildProcedureOperation(ProcedureOperationModel procedureOperationModel) {
@@ -593,7 +593,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                         indexInfo.close();
                     }
                     catch (SQLException sqlException) {
-                    	// ignore
+                        // ignore
                     }
                 }
                 tablesInfo.close();
@@ -767,10 +767,10 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
     }
 
     static DatabaseMetaData getDatabaseMetaData(Connection connection) {
-    	if (connection == null) {
+        if (connection == null) {
             // without a connection we cannot retrieve the metadata
             throw new IllegalStateException("Connection is null - cannot retrieve JDBC metadata");
-    	}
+        }
         DatabaseMetaData databaseMetaData = null;
         try {
             databaseMetaData = connection.getMetaData();

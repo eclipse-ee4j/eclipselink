@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -19,34 +19,34 @@ import javax.swing.Icon;
  */
 public interface DisplayableAdapter {
 
-	/**
-	 * Return the specified object's display string.
-	 * @see Displayable#displayString()
-	 */
-	String displayString(Object object);
+    /**
+     * Return the specified object's display string.
+     * @see Displayable#displayString()
+     */
+    String displayString(Object object);
 
-	/**
-	 * Return the specified object's icon.
-	 * @see Displayable#icon()
-	 */
-	Icon icon(Object object);
+    /**
+     * Return the specified object's icon.
+     * @see Displayable#icon()
+     */
+    Icon icon(Object object);
 
 
-	/**
-	 * Simple implementation of the interface that uses the object's
-	 * #toString() for its display string and returns null for the icon.
-	 */
-	DisplayableAdapter DEFAULT_INSTANCE = 
-		new DisplayableAdapter() {
+    /**
+     * Simple implementation of the interface that uses the object's
+     * #toString() for its display string and returns null for the icon.
+     */
+    DisplayableAdapter DEFAULT_INSTANCE =
+        new DisplayableAdapter() {
 
-			public String displayString(Object object) {
-				return String.valueOf(object);
-			}
+            public String displayString(Object object) {
+                return String.valueOf(object);
+            }
 
-			public Icon icon(Object object) {
-				return null;
-			}
+            public Icon icon(Object object) {
+                return null;
+            }
 
-		};
+        };
 
 }

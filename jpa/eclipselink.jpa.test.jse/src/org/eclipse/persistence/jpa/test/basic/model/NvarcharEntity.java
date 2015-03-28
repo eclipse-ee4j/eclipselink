@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/19/2015 - Rick Curtis  
+ *     02/19/2015 - Rick Curtis
  *       - 458877 : Add national character support
  *****************************************************************************/
 package org.eclipse.persistence.jpa.test.basic.model;

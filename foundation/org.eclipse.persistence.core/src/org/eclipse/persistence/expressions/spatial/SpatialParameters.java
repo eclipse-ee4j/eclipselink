@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.expressions.spatial;
 
 import java.io.StringWriter;
@@ -17,20 +17,20 @@ import java.io.StringWriter;
 /**
  * PUBLIC:
  * A utility class used to set parameters on spatial operators within TopLink's
- * expression framework. This class allows the aptial operator parameters to be 
+ * expression framework. This class allows the aptial operator parameters to be
  * passed in directly as a string or to be programatically configured using the
  * attributes defined and the enum types. Each spatial operator offers different
  * parameter arguments and values. This class does not enforce these rules but
  * instead leaves it to the caller to decide what values they want included.
  * <p>
- * When providing the parameter string through setParams or the constructor none 
+ * When providing the parameter string through setParams or the constructor none
  * of the other values will be used. Instead the string as provided will be used.
  * <p>
- * Creating an instance of SpatialParameters without configuring it and passing 
- * it into the SpatialExpressionFactory call is equivalent to passing in null. 
+ * Creating an instance of SpatialParameters without configuring it and passing
+ * it into the SpatialExpressionFactory call is equivalent to passing in null.
  * The resulting SQL will have NULL writen out for the parameters argument to the
  * spatial operator.
- * 
+ *
  * @since Oracle TopLink 11.1.1.0.0
  */
 public class SpatialParameters {
@@ -51,7 +51,7 @@ public class SpatialParameters {
 
     public SpatialParameters() {
     }
-    
+
     public SpatialParameters(String params) {
         setParams(params);
     }
@@ -182,7 +182,7 @@ public class SpatialParameters {
         if (getParams() != null) {
             return getParams();
         }
-        
+
         StringWriter writer = new StringWriter();
         boolean hasParams = false;
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,13 +46,13 @@ import java.security.Principal;
 import javax.transaction.UserTransaction;
 
 /**
- * The EJBContext interface provides an instance with access to the 
- * container-provided runtime context of an enterprise bean instance. 
+ * The EJBContext interface provides an instance with access to the
+ * container-provided runtime context of an enterprise bean instance.
  *
- * <p> This interface is extended by the <code>SessionContext</code>, 
+ * <p> This interface is extended by the <code>SessionContext</code>,
  * <code>EntityContext</code>, and <code>MessageDrivenContext</code> interfaces
  * to provide additional methods specific to the enterprise interface bean type.
- * 
+ *
  * @see SessionContext
  * @see MessageDrivenContext
  * @see EntityContext
@@ -66,7 +66,7 @@ public interface EJBContext
      *
      * @return The enterprise bean's remote home interface.
      *
-     * @exception java.lang.IllegalStateException if the enterprise bean 
+     * @exception java.lang.IllegalStateException if the enterprise bean
      * does not have a remote home interface.
      */
     EJBHome getEJBHome() throws IllegalStateException;
@@ -76,7 +76,7 @@ public interface EJBContext
      *
      * @return The enterprise bean's local home interface.
      *
-     * @exception java.lang.IllegalStateException if the enterprise bean 
+     * @exception java.lang.IllegalStateException if the enterprise bean
      * does not have a local home interface.
      *
      * @since EJB 2.0
@@ -85,9 +85,9 @@ public interface EJBContext
 
     /**
      * Obtain the enterprise bean's environment properties.
-     * 
-     * <p><b>Note:</b> If the enterprise bean has no environment properties 
-     * this method returns an empty <code>java.util.Properties</code> object. 
+     *
+     * <p><b>Note:</b> If the enterprise bean has no environment properties
+     * this method returns an empty <code>java.util.Properties</code> object.
      * This method never returns <code>null</code>.
      *
      * @return The environment properties for the enterprise bean.
@@ -110,10 +110,10 @@ public interface EJBContext
      */
     Identity getCallerIdentity();
 
- 
+
     /**
      * Obtain the <code>java.security.Principal</code> that identifies the caller.
-     * 
+     *
      * @return The <code>Principal</code> object that identifies the caller. This
      *    method never returns <code>null</code>.
      *
@@ -138,19 +138,19 @@ public interface EJBContext
      */
     boolean isCallerInRole(Identity role);
 
-    /**  
+    /**
      * Test if the caller has a given security role.
-     *   
+     *
      * @param roleName The name of the security role. The role must be one of
      *    the security roles that is defined in the deployment descriptor.
-     *   
+     *
      * @return True if the caller has the specified role.
      *
      * @exception IllegalStateException The Container throws the exception
      *    if the instance is not allowed to call this method.
      *
      * @since EJB 1.1
-     */  
+     */
     boolean isCallerInRole(String roleName) throws IllegalStateException;
 
     /**
@@ -159,7 +159,7 @@ public interface EJBContext
      * Only enterprise beans with bean-managed transactions are allowed to
      * to use the <code>UserTransaction</code> interface. As entity beans must always use
      * container-managed transactions, only session beans or message-driven
-     * beans with bean-managed transactions are allowed to invoke this method. 
+     * beans with bean-managed transactions are allowed to invoke this method.
      *
      * @return The <code>UserTransaction</code> interface that the enterprise bean
      *    instance can use for transaction demarcation.
@@ -220,13 +220,13 @@ public interface EJBContext
      * <code>"java:comp/env/"</code>.
      *
      * For example, assuming an enterprise bean defines an <code>ejb-local-ref</code>
-     * with <code>ejb-ref-name</code> <code>"ejb/BarRef"</code> the following two 
+     * with <code>ejb-ref-name</code> <code>"ejb/BarRef"</code> the following two
      * calls to <code> EJBContext.lookup</code> are equivalent :
      *
      *  <code>ejbContext.lookup("ejb/BarRef")</code>;
      *  <code>ejbContext.lookup("java:comp/env/ejb/BarRef")</code>;
      *
-     * @param name Name of the entry 
+     * @param name Name of the entry
      *
      * @exception IllegalArgumentException The Container throws the exception
      *    if the given name does not match an entry within the component's

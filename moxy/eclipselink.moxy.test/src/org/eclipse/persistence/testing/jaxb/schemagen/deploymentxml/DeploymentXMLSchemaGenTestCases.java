@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,10 +46,10 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
     boolean shouldGenerateSchema;
     static String PATH="org/eclipse/persistence/testing/jaxb/schemagen/deploymentxml/";
     static String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml";
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public DeploymentXMLSchemaGenTestCases(String name) throws Exception {
@@ -86,7 +86,7 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests basic schema generation from deployment xml.
-     * 
+     *
      */
     public void testSchemaGenFromProjectXml() throws Exception {
         generateSchema();
@@ -96,7 +96,7 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests user-set additional global element generation (Employee).
-     * 
+     *
      * @throws Exception
      */
     public void testSchemaGenFromProjectXmlWithElements() throws Exception {
@@ -115,7 +115,7 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests user-set additional global element generation (String)
-     * 
+     *
      * @throws Exception
      */
     public void testSchemaGenFromProjectXmlWithStringElement() throws Exception {
@@ -126,7 +126,7 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
 
     /**
      * Tests user-set additional global element generation (int)
-     * 
+     *
      * @throws Exception
      */
     public void testSchemaGenFromProjectXmlWithIntElement() throws Exception {

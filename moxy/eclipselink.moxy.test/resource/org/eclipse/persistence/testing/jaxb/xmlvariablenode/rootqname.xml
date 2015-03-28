@@ -2,14 +2,14 @@
    <name>theRootName</name>
    <thingQNamea>
       <thingName>thinga</thingName>
-	  <thingValue>thingavalue</thingValue>
+      <thingValue>thingavalue</thingValue>
    </thingQNamea>
    <thingQNameb>
       <thingName>thingb</thingName>
-	  <thingValue>thingbvalue</thingValue>
+      <thingValue>thingbvalue</thingValue>
    </thingQNameb>
    <thingQNamec>
       <thingName>thingc</thingName>
-	  <thingValue>thingcvalue</thingValue>
+      <thingValue>thingcvalue</thingValue>
    </thingQNamec>
 </root>

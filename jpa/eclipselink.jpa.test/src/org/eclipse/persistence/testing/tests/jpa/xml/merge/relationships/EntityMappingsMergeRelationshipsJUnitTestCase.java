@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/23/2008-1.1 Guy Pelletier 
+ *     09/23/2008-1.1 Guy Pelletier
  *       - 241651: JPA 2.0 Access Type support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.xml.merge.relationships;
 
 import javax.persistence.EntityManager;
@@ -38,26 +38,26 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
     private static Integer customerId;
     private static Integer itemId;
     private static Integer orderId;
-    
+
     public EntityMappingsMergeRelationshipsJUnitTestCase() {
         super();
     }
-    
+
     public EntityMappingsMergeRelationshipsJUnitTestCase(String name) {
         super(name);
     }
-    
+
     public void setUp() {try{super.setUp();}catch(Exception x){}}
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite("Relationships Model");
-        
+
         // These tests will verify some merging rules.
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testSetup"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testCustomerOrdersMapping"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testOrderCustomerMapping"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testItemNameMapping"));
-        
+
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testCreateCustomer"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testCreateItem"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testCreateOrder"));
@@ -77,10 +77,10 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testDeleteOrder"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testDeleteCustomer"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testDeleteItem"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -89,7 +89,7 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
         new RelationshipsTableManager().replaceTables(session);
         clearCache();
     }
-    
+
     /**
      * Verifies the merging of Customer's one to many mapping 'orders'.
      */
@@ -97,14 +97,14 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
         ServerSession session = JUnitTestCase.getServerSession();
         ClassDescriptor descriptor = session.getDescriptor(Customer.class);
         ForeignReferenceMapping mapping = (ForeignReferenceMapping) descriptor.getMappingForAttributeName("orders");
-        
+
         assertTrue("Orders mapping on Customer is not set to cascade persist.", mapping.isCascadePersist());
         assertTrue("Orders mapping on Customer is not set to cascade remove.", mapping.isCascadeRemove());
         assertFalse("Orders mapping on Customer is set to cascade refresh.", mapping.isCascadeRefresh());
         assertFalse("Orders mapping on Customer is set to cascade merge.", mapping.isCascadeMerge());
         assertFalse("Orders mapping on Customer is set to private owned.", mapping.isPrivateOwned());
     }
-    
+
     /**
      * Verifies the merging of Order's many to one mapping 'customer'.
      */
@@ -116,7 +116,7 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
             assertTrue("Customer mapping on Order is not set to LAZY loading.", mapping.usesIndirection());
         }
     }
-    
+
     /**
      * Verifies the merging of Item's basic mapping 'name'.
      */
@@ -124,10 +124,10 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
         ServerSession session = JUnitTestCase.getServerSession();
         ClassDescriptor descriptor = session.getDescriptor(Item.class);
         DirectToFieldMapping mapping = (DirectToFieldMapping) descriptor.getMappingForAttributeName("name");
-        
+
         assertFalse("Customer mapping on Order is not set to LAZY loading.", mapping.isMutable());
     }
-    
+
     public void testCreateCustomer() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -137,7 +137,7 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
             customer.setCity("Austin");
             em.persist(customer);
             customerId = customer.getCustomerId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -145,9 +145,9 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
             closeEntityManager(em);
             throw e;
         }
-        closeEntityManager(em);        
+        closeEntityManager(em);
     }
-    
+
     public void testCreateItem() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -157,7 +157,7 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
             em.persist(pl);
             PartsList pl2 = new PartsList();
             em.persist(pl2);
-            
+
             java.util.ArrayList partsLists = new java.util.ArrayList();
             partsLists.add(pl);
             partsLists.add(pl2);
@@ -194,7 +194,7 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
             order.setItem(item);
             em.persist(order);
             orderId = order.getOrderId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -276,7 +276,7 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
         Customer customer = createEntityManager().find(Customer.class, customerId);
         assertTrue("Error reading Customer", customer.getCustomerId() == customerId);
     }
-    
+
     public void testReadItem() {
         Item item = createEntityManager().find(Item.class, itemId);
         assertTrue("Error reading Item", item.getItemId() == itemId);
@@ -316,7 +316,7 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
             em.persist(pl);
             java.util.ArrayList partsLists = new java.util.ArrayList();
             partsLists.add(pl);
-            
+
             Item item = em.find(Item.class, itemId);
             item.setDescription("A Widget");
             item.setImage(new byte[1280]);

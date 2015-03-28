@@ -2,7 +2,7 @@
             xmlns="http://www.example.org"
             targetNamespace="http://www.example.org"
             elementFormDefault="unqualified"
-            attributeFormDefault="unqualified"> 
+            attributeFormDefault="unqualified">
 
      <xsd:element name="purchaseOrder" type="PurchaseOrderType"/>
      <xsd:element name="globalTest" type="xsd:string"/>
@@ -18,7 +18,7 @@
             <xsd:any minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
-    
+
     <xsd:complexType name="USAddressType">
       <xsd:complexContent>
          <xsd:extension base="AddressType">
@@ -36,7 +36,7 @@
             <xsd:element name="productName" type="xsd:string"/>
             <xsd:element name="quantity" type="xsd:int"/>
             <xsd:element name="USPrice" type="xsd:float"/>
-	    <xsd:element name="shipDate" type="xsd:date"/>
+        <xsd:element name="shipDate" type="xsd:date"/>
             <xsd:element name="comment" type="xsd:string"/>
         </xsd:all>
     </xsd:complexType>

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.aggregate;
 
 import java.util.*;
@@ -21,7 +21,7 @@ public class Aggregate {
     protected List<Relative> relatives;
     protected StepChild stepChild;
     protected Cousin cousin;
-    
+
     public Aggregate() {
         super();
         nicknames = new ArrayList<String>();
@@ -52,7 +52,7 @@ public class Aggregate {
     public List<String> getNicknames() {
         return nicknames;
     }
-    
+
     public void setNicknames(List<String> nicknames) {
         this.nicknames = nicknames;
     }
@@ -68,9 +68,9 @@ public class Aggregate {
     public void setRelatives(List<Relative> relatives) {
         this.relatives = relatives;
     }
-    
+
     public void addNickname(String nickname) {
         getNicknames().add(nickname);
     }
-    
+
 }

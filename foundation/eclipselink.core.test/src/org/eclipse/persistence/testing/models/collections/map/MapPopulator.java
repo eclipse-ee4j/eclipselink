@@ -5,11 +5,11 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 public class MapPopulator {
 
     protected PopulationManager populationManager;
-    
+
     public MapPopulator(){
         this.populationManager = PopulationManager.getDefaultManager();
     }
-    
+
     /**
      * Call all of the example methods in this system to guarantee that all our objects
      * are registered in the population manager
@@ -48,46 +48,46 @@ public class MapPopulator {
         registerObject(getEntityEntityMapHolder(), "00014");
         registerObject(getEntityEntityU1MMapHolder(), "0015");
     }
-    
+
     protected boolean containsObject(Class domainClass, String identifier) {
         return populationManager.containsObject(domainClass, identifier);
     }
-    
+
     protected Object getObject(Class domainClass, String identifier) {
         return populationManager.getObject(domainClass, identifier);
     }
-    
+
     public Object registerObject(Object object, String identifier){
         if (containsObject(object.getClass(), identifier)) {
             return getObject(object.getClass(), identifier);
         }
         return populationManager.registerObject(object, identifier);
     }
-    
+
     public EntityEntityU1MMapHolder getEntityEntityU1MMapHolder(){
         EntityEntityU1MMapHolder holder = new EntityEntityU1MMapHolder();
         EntityMapValue value = getEntityMapValue11();
         EntityMapKey key = getEntityMapKey9();
         holder.addEntityToEntityMapItem(key, value);
-        
+
         EntityMapValue value2 = getEntityMapValue12();
         key = getEntityMapKey10();
         holder.addEntityToEntityMapItem(key, value2);
         return holder;
     }
-    
+
     public EntityEntityMapHolder getEntityEntityMapHolder(){
         EntityEntityMapHolder holder = new EntityEntityMapHolder();
         EntityMapValue value = getEntityMapValue5();
         EntityMapKey key = getEntityMapKey7();
         holder.addEntityToEntityMapItem(key, value);
-        
+
         EntityMapValue value2 = getEntityMapValue6();
         key = getEntityMapKey8();
         holder.addEntityToEntityMapItem(key, value2);
         return holder;
     }
-    
+
     public AggregateAggregateMapHolder getAggregateAggregateMapHolder(){
         AggregateAggregateMapHolder holder = new AggregateAggregateMapHolder();
         AggregateMapKey value = getAggregateMapKey1();
@@ -98,7 +98,7 @@ public class MapPopulator {
         holder.addAggregateToAggregateMapItem(key, value2);
         return holder;
     }
-    
+
     public AggregateDirectMapHolder getAggregateDirectMapHolder(){
         AggregateDirectMapHolder holder = new AggregateDirectMapHolder();
         AggregateMapKey mapKey = getAggregateMapKey1();
@@ -107,7 +107,7 @@ public class MapPopulator {
         holder.addAggregateToDirectMapItem(mapKey2, new Integer(2));
         return holder;
     }
-    
+
     public AggregateEntity1MMapHolder getAggregateEntity1MMapHolder(){
         AggregateEntity1MMapHolder holder = new AggregateEntity1MMapHolder();
         AEOTMMapValue value = getAEOTMMapValue1();
@@ -121,7 +121,7 @@ public class MapPopulator {
         holder.addAggregateToEntityMapItem(key, value2);
         return holder;
     }
-    
+
     public AggregateEntityMapHolder getAggregateEntityMapHolder(){
         AggregateEntityMapHolder holder = new AggregateEntityMapHolder();
         EntityMapValue value = getEntityMapValue9();
@@ -133,7 +133,7 @@ public class MapPopulator {
         holder.addAggregateToEntityMapItem(key, value2);
         return holder;
     }
-    
+
     public AggregateEntityU1MMapHolder getAggregateEntityU1MMapHolder(){
         AggregateEntityU1MMapHolder holder = new AggregateEntityU1MMapHolder();
         EntityMapValue value = getEntityMapValue7();
@@ -145,7 +145,7 @@ public class MapPopulator {
         holder.addAggregateToEntityMapItem(key, value2);
         return holder;
     }
-    
+
     public DirectAggregateMapHolder getDirectAggregateMapHolder(){
         DirectAggregateMapHolder holder = new DirectAggregateMapHolder();
         AggregateMapValue value = getAggregateMapValue1();
@@ -154,26 +154,26 @@ public class MapPopulator {
         holder.addDirectToAggregateMapItem(new Integer(2), value);
         return holder;
     }
-    
+
     public DirectDirectMapHolder getDirectDirectMapHolder(){
         DirectDirectMapHolder holder = new DirectDirectMapHolder();
         holder.addDirectToDirectMapItem(new Integer(1), new Integer(1));
         holder.addDirectToDirectMapItem(new Integer(2), new Integer(2));
         return holder;
     }
-    
+
     public DirectEntity1MMapHolder getDirectEntity1MMapHolder(){
         DirectEntity1MMapHolder initialHolder = new DirectEntity1MMapHolder();
         DEOTMMapValue value = getDEOTMMapValue1();
         value.getHolder().setValue(initialHolder);
         initialHolder.addDirectToEntityMapItem(new Integer(11), value);
-        
+
         DEOTMMapValue value2 = getDEOTMMapValue2();
         value2.getHolder().setValue(initialHolder);
         initialHolder.addDirectToEntityMapItem(new Integer(22), value2);
         return initialHolder;
     }
-    
+
     public DirectEntityMapHolder getDirectEntityMapHolder(){
         DirectEntityMapHolder holder = new DirectEntityMapHolder();
         EntityMapValue value = getEntityMapValue1();
@@ -183,7 +183,7 @@ public class MapPopulator {
         holder.addDirectToEntityMapItem(new Integer(22), value2);
         return holder;
     }
-    
+
     public DirectEntityU1MMapHolder getDirectEntityU1MMapHolder(){
         DirectEntityU1MMapHolder holder = new DirectEntityU1MMapHolder();
         EntityMapValue value = getEntityMapValue3();
@@ -204,7 +204,7 @@ public class MapPopulator {
         holder.addEntityToAggregateMapItem(key, value2);
         return holder;
     }
-    
+
     public EntityDirectMapHolder getEntityDirectMapHolder(){
         EntityDirectMapHolder holder = new EntityDirectMapHolder();
         EntityMapKey mapKey = getEntityMapKey3();
@@ -213,14 +213,14 @@ public class MapPopulator {
         holder.addEntityDirectMapItem(mapKey2, new Integer(2));
         return holder;
     }
-    
+
     public EntityEntity1MMapHolder getEntityEntity1MMapHolder(){
         EntityEntity1MMapHolder holder = new EntityEntity1MMapHolder();
         EEOTMMapValue value = getEEOTMMapValue1();
         value.getHolder().setValue(holder);
         EntityMapKey key = getEntityMapKey5();
         holder.addEntityToEntityMapItem(key, value);
-        
+
         EEOTMMapValue value2 = getEEOTMMapValue2();
         value2.getHolder().setValue(holder);
         key = getEntityMapKey6();
@@ -233,115 +233,115 @@ public class MapPopulator {
         value.setId(11);
         return value;
     }
-    
+
     public AEOTMMapValue getAEOTMMapValue2(){
         AEOTMMapValue value = new AEOTMMapValue();
         value.setId(22);
         return value;
     }
-    
+
     public AggregateMapKey getAggregateMapKey1(){
         AggregateMapKey key = new AggregateMapKey();
         key.setKey(11);
         return key;
     }
-    
+
     public AggregateMapKey getAggregateMapKey11(){
         AggregateMapKey key = new AggregateMapKey();
         key.setKey(11);
         return key;
     }
-    
+
     public AggregateMapKey getAggregateMapKey2(){
         AggregateMapKey key = new AggregateMapKey();
         key.setKey(22);
         return key;
     }
-    
+
     public AggregateMapKey getAggregateMapKey22(){
         AggregateMapKey key = new AggregateMapKey();
         key.setKey(22);
         return key;
     }
-    
+
     public AggregateMapValue getAggregateMapValue1(){
         AggregateMapValue value = new AggregateMapValue();
         value.setValue(1);
         return value;
     }
-    
+
     public AggregateMapValue getAggregateMapValue2(){
         AggregateMapValue value = new AggregateMapValue();
         value.setValue(2);
         return value;
     }
-    
+
     public DEOTMMapValue getDEOTMMapValue1(){
         DEOTMMapValue value = new DEOTMMapValue();
         value.setId(11);
         return value;
     }
-    
+
     public DEOTMMapValue getDEOTMMapValue2(){
         DEOTMMapValue value = new DEOTMMapValue();
         value.setId(22);
         return value;
     }
-    
+
     public EEOTMMapValue getEEOTMMapValue1(){
         EEOTMMapValue value2 = new EEOTMMapValue();
         value2.setId(11);
         return value2;
     }
-    
+
     public EEOTMMapValue getEEOTMMapValue2(){
         EEOTMMapValue value2 = new EEOTMMapValue();
         value2.setId(22);
         return value2;
     }
-    
+
     public EntityMapKey getEntityMapKey1(){
         EntityMapKey key = new EntityMapKey();
         key.setId(111);
         key.setData("111");
         return key;
     }
-    
+
     public EntityMapKey getEntityMapKey2(){
         EntityMapKey key = new EntityMapKey();
         key.setId(222);
         key.setData("222");
         return key;
     }
-    
+
     public EntityMapKey getEntityMapKey3(){
         EntityMapKey key = new EntityMapKey();
         key.setId(333);
         key.setData("data3");
         return key;
     }
-    
+
     public EntityMapKey getEntityMapKey4(){
         EntityMapKey key = new EntityMapKey();
         key.setId(444);
         key.setData("data4");
         return key;
     }
-    
+
     public EntityMapKey getEntityMapKey5(){
         EntityMapKey key = new EntityMapKey();
         key.setId(555);
         key.setData("data5");
         return key;
     }
-    
+
     public EntityMapKey getEntityMapKey6(){
         EntityMapKey key = new EntityMapKey();
         key.setId(666);
         key.setData("data6");
         return key;
     }
-    
+
     public EntityMapKey getEntityMapKey7(){
         EntityMapKey key = new EntityMapKey();
         key.setId(777);
@@ -366,73 +366,73 @@ public class MapPopulator {
         key.setData("data10");
         return key;
     }
-    
+
     public EntityMapValue getEntityMapValue1(){
         EntityMapValue value = new EntityMapValue();
         value.setId(111);
         return value;
     }
-    
+
     public EntityMapValue getEntityMapValue2(){
         EntityMapValue value = new EntityMapValue();
         value.setId(222);
         return value;
     }
-    
+
     public EntityMapValue getEntityMapValue3(){
         EntityMapValue value = new EntityMapValue();
         value.setId(333);
         return value;
     }
-    
+
     public EntityMapValue getEntityMapValue4(){
         EntityMapValue value = new EntityMapValue();
         value.setId(444);
         return value;
     }
-    
+
     public EntityMapValue getEntityMapValue5(){
         EntityMapValue value = new EntityMapValue();
         value.setId(555);
         return value;
     }
-    
+
     public EntityMapValue getEntityMapValue6(){
         EntityMapValue value = new EntityMapValue();
         value.setId(666);
         return value;
     }
-    
+
     public EntityMapValue getEntityMapValue7(){
         EntityMapValue value = new EntityMapValue();
         value.setId(777);
         return value;
     }
-    
+
     public EntityMapValue getEntityMapValue8(){
         EntityMapValue value = new EntityMapValue();
         value.setId(888);
         return value;
     }
-    
+
     public EntityMapValue getEntityMapValue9(){
         EntityMapValue value = new EntityMapValue();
         value.setId(999);
         return value;
     }
-    
+
     public EntityMapValue getEntityMapValue10(){
         EntityMapValue value = new EntityMapValue();
         value.setId(1000);
         return value;
     }
-    
+
     public EntityMapValue getEntityMapValue11(){
         EntityMapValue value = new EntityMapValue();
         value.setId(1001);
         return value;
     }
-    
+
     public EntityMapValue getEntityMapValue12(){
         EntityMapValue value = new EntityMapValue();
         value.setId(1002);

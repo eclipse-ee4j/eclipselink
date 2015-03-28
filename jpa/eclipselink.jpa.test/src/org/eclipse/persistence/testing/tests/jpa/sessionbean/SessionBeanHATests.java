@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     etang - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
  package org.eclipse.persistence.testing.tests.jpa.sessionbean;
 
 import java.sql.Date;
@@ -38,11 +38,11 @@ import org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService;
 
 /**
  * EJB 3 SessionBean tests using EclipseLink JPA
- * These tests can only be run in Oracle High Availability environment -  
+ * These tests can only be run in Oracle High Availability environment -
  * a WebLogic server configured with Multi Data Sources to connect to Oracle RAC database, the test steps are:
  * 1. Only run testSetup() with JTA to insert a certain amount of objects like defined below 2514
  * 2. Test Read using JTA and NonJTA
- * 2.1 JTA:    Repeat 300 times, swap/crash 5 times RAC DB, you will get java.sql.SQLRecoverableException: No more data to read from 
+ * 2.1 JTA:    Repeat 300 times, swap/crash 5 times RAC DB, you will get java.sql.SQLRecoverableException: No more data to read from
  *             socket immediately when shutdown happended in middle of transaction during read query
  * 2.2 NonJTA: repeat 121 times, swap or crash RAC DB 5 times, you will get "No more data to read from socket" exception, but tests continue
  * 3. Test Update only using JTA
@@ -67,7 +67,7 @@ public class SessionBeanHATests extends JUnitTestCase {
         super(name);
         this.shouldRunTestOnServer = shouldRunTestOnServer;
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite("SessionBeanHATests");
         //suite.addTest(new SessionBeanHATests("testSetup", true));
@@ -78,7 +78,7 @@ public class SessionBeanHATests extends JUnitTestCase {
         //suite.addTest(new SessionBeanHATests("testFindAllMultipleThread", true));
         return suite;
     }
-    
+
     public void testSetup() throws Exception {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("sessionbean"));
         for (int i = 1; i <= jtaCount; i++)
@@ -150,7 +150,7 @@ public class SessionBeanHATests extends JUnitTestCase {
         employee.getAddress().setCity("Nepean");
         employee.setManager(manager);
         int id = getEmployeeService().insert(employee);
-        
+
         //int repeatTimes = 500;
         int repeatTimes = 60;
         int exceptTimes = 0;
@@ -159,7 +159,7 @@ public class SessionBeanHATests extends JUnitTestCase {
             try {
                 System.out.println("===Update iteration " + i);
                 employee = getEmployeeService().findById(id);
-                
+
                 employee.setFirstName("Small Romantic Moon Over The Lake");
                 employee.setLastName("Big White Horse who gallops the grass");
 
@@ -247,7 +247,7 @@ public class SessionBeanHATests extends JUnitTestCase {
                 }
             }
         }
-        
+
     }
 
     public EmployeeService getEmployeeService() throws Exception {
@@ -285,16 +285,16 @@ public class SessionBeanHATests extends JUnitTestCase {
             Thread.currentThread().sleep(3000);
 
             boolean finished = true;
-            for (int i = 0; i < helperRunnable.length; i++) 
+            for (int i = 0; i < helperRunnable.length; i++)
             {
                 finished = finished && helperRunnable[i].finished;
             }
             if (finished) break;
         }
-    
+
         // verify if all FindAllConcurrentlyThread's are succeeded
         for (int i = 0; i < helperRunnable.length; i++) {
-            if (!helperRunnable[i].succeeded) 
+            if (!helperRunnable[i].succeeded)
                 fail("RAC failure caused some other exception: "+helperRunnable[i].relatedException);
         }
     }

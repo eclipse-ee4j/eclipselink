@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.sequencing;
 
 import org.eclipse.persistence.sessions.*;
@@ -34,8 +34,8 @@ public class SequenceTestSystem extends TestSystem {
     public void createTables(DatabaseSession session) {
         SchemaManager schemaManager = new SchemaManager(session);
 
-	schemaManager.replaceObject(SeqTestClass1.tableDefinition());
-	schemaManager.replaceObject(SeqTestClass2.tableDefinition());
+    schemaManager.replaceObject(SeqTestClass1.tableDefinition());
+    schemaManager.replaceObject(SeqTestClass2.tableDefinition());
         schemaManager.createSequences();
     }
 
@@ -45,11 +45,11 @@ public class SequenceTestSystem extends TestSystem {
         boolean isSqlServer = session.getLogin().getPlatform().isSQLServer();
         if (isOracle || isSqlServer) {
             PopulationManager manager = PopulationManager.getDefaultManager();
-        manager.registerObject(SequenceTestData.example1(), "SequenceTestDataExample1");	
-        manager.registerObject(SequenceTestData.example2(), "SequenceTestDataExample2");	
-        manager.registerObject(SequenceTestData.example3(), "SequenceTestDataExample3");	
-        manager.registerObject(SequenceTestData.example4(), "SequenceTestDataExample4");	
-        manager.registerObject(SequenceTestData.example5(), "SequenceTestDataExample5");	
+        manager.registerObject(SequenceTestData.example1(), "SequenceTestDataExample1");
+        manager.registerObject(SequenceTestData.example2(), "SequenceTestDataExample2");
+        manager.registerObject(SequenceTestData.example3(), "SequenceTestDataExample3");
+        manager.registerObject(SequenceTestData.example4(), "SequenceTestDataExample4");
+        manager.registerObject(SequenceTestData.example5(), "SequenceTestDataExample5");
         manager.registerObject(SequenceTestData.example6(), "SequenceTestDataExample6");
 
             UnitOfWork uow = session.acquireUnitOfWork();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,26 +23,26 @@ package org.eclipse.persistence.jpa.jpql.parser;
 @SuppressWarnings("nls")
 public final class BadExpressionBNF extends JPQLQueryBNF {
 
-	/**
-	 * The unique identifier of this BNF rule.
-	 */
-	public static final String ID = "bad";
+    /**
+     * The unique identifier of this BNF rule.
+     */
+    public static final String ID = "bad";
 
-	/**
-	 * Creates a new <code>BadExpressionBNF</code>.
-	 */
-	public BadExpressionBNF() {
-		super(ID);
-	}
+    /**
+     * Creates a new <code>BadExpressionBNF</code>.
+     */
+    public BadExpressionBNF() {
+        super(ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initialize() {
-		super.initialize();
-		setHandleCollection(true);
-		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initialize() {
+        super.initialize();
+        setHandleCollection(true);
+        setFallbackBNFId(ID);
+        setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
+    }
 }

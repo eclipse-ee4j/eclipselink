@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import org.eclipse.persistence.sessions.Project;
@@ -18,8 +18,8 @@ import org.eclipse.persistence.testing.models.collections.Location;
 
 
 /*
- * Note, this test not intent to verify the function for the sorted collectionMapping. 
- * it just test whether sorted collection mapping with specified comparator 
+ * Note, this test not intent to verify the function for the sorted collectionMapping.
+ * it just test whether sorted collection mapping with specified comparator
  * can be written to or read from project.xml correctly.
  */
 public class ProjectXMLSortedCollectionMappingWithInvalidComparatorTest extends ProjectXMLSortedCollectionMapping {
@@ -36,11 +36,11 @@ public class ProjectXMLSortedCollectionMappingWithInvalidComparatorTest extends 
             throw new TestErrorException("ValidationException is expected to be caught for this test case");
         }
     }
-    
+
     public Class getComparator(){
         return ProjectXMLSortedCollectionMappingWithInvalidComparatorTest.ProjectComparator.class;
     }
-    
+
     public static class ProjectComparator{
         public int compare(Object object1, Object object2) {
             if ((object1.getClass() != Project.class) || (object2.getClass() != Project.class)) {

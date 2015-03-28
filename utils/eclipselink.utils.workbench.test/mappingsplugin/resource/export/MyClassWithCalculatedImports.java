@@ -20,17 +20,17 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 
 public class MyClassWithCalculatedImports extends MySuperclass implements Serializable, MyInterface {
 
-	public TypeSpecifiedByName a_attributeSpecifiedByName;
-	public Vector b_attributeSpecifiedByType;
-	public String c_attributeWithJavaLangType;
-	protected AnotherTypeInTheSamePackage d_attributeWithTypeInSamePackage;
-	protected TypeInRepeatedPackage e_attributeWithTypeInRepeatedPackage;
-	protected Object f_attributeWithInitialValue = new String();
-	private ClassInThirdPackage g_attributeWithTypeInThirdPackage;
-	private ValueHolderInterface h_anAttributeWithIndirectionInitialValue = new ValueHolder();
-	private mypackage.AmbiguousType i_attributeWithAmbiguousType;
-	private myotherpackage.AmbiguousType j_attributeWithAmbiguousType;
-	private int k_attributeWithPrimitiveType;
+    public TypeSpecifiedByName a_attributeSpecifiedByName;
+    public Vector b_attributeSpecifiedByType;
+    public String c_attributeWithJavaLangType;
+    protected AnotherTypeInTheSamePackage d_attributeWithTypeInSamePackage;
+    protected TypeInRepeatedPackage e_attributeWithTypeInRepeatedPackage;
+    protected Object f_attributeWithInitialValue = new String();
+    private ClassInThirdPackage g_attributeWithTypeInThirdPackage;
+    private ValueHolderInterface h_anAttributeWithIndirectionInitialValue = new ValueHolder();
+    private mypackage.AmbiguousType i_attributeWithAmbiguousType;
+    private myotherpackage.AmbiguousType j_attributeWithAmbiguousType;
+    private int k_attributeWithPrimitiveType;
 
 public MyClassWithCalculatedImports() {
 }
@@ -48,8 +48,8 @@ protected Vector d_methodWithReturnType() {
 }
 
 protected List e_methodWithMethodBody() {
-	List myList = (List) c_methodWithReturnType();
-	return myList;
+    List myList = (List) c_methodWithReturnType();
+    return myList;
 }
 
 protected MyClassWithCalculatedImports f_methodWithThisClassAsReturnType() {

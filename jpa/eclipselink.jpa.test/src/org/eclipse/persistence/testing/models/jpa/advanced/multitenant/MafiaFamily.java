@@ -1,24 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1
- *     04/05/2011-2.3 Guy Pelletier 
+ *     04/05/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 3)
- *     06/1/2011-2.3 Guy Pelletier 
+ *     06/1/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 9)
- *     06/30/2011-2.3.1 Guy Pelletier 
+ *     06/30/2011-2.3.1 Guy Pelletier
  *       - 341940: Add disable/enable allowing native queries
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
 import java.util.Collection;
@@ -59,7 +59,7 @@ import static javax.persistence.CascadeType.ALL;
 @TenantDiscriminatorColumn(name="TENANT_ID", contextProperty="tenant.id", primaryKey=true)
 @NamedQueries({
     @NamedQuery(
-     name="findAllMafiaFamilies", 
+     name="findAllMafiaFamilies",
      query="SELECT s from MafiaFamily s"),
     @NamedQuery(
      name="DeleteAllMafiaFamilies",
@@ -84,26 +84,26 @@ public class MafiaFamily implements Serializable {
         mafiosos.add(mafioso);
         mafioso.setFamily(this);
     }
-    
+
     public void addTag(String tag) {
         tags.add(tag);
     }
-    
+
     @Id
     @GeneratedValue
     @Column(name="ID")
-    public int getId() { 
-        return id; 
+    public int getId() {
+        return id;
     }
 
     @OneToMany(cascade=ALL, mappedBy="family")
-    public Collection<Mafioso> getMafiosos() { 
-        return mafiosos; 
+    public Collection<Mafioso> getMafiosos() {
+        return mafiosos;
     }
-    
+
     @Basic
-    public String getName() { 
-        return name; 
+    public String getName() {
+        return name;
     }
 
     @ElementCollection
@@ -113,36 +113,36 @@ public class MafiaFamily implements Serializable {
           @JoinColumn(name="FAMILY_ID", referencedColumnName="ID")
       })
     @Column(name="TAG")
-    public Collection<String> getTags() { 
-        return tags; 
+    public Collection<String> getTags() {
+        return tags;
     }
-    
+
     @Basic
     @Column(name="REVENUE", table="JPA_FAMILY_REVENUE")
-    public Double getRevenue() { 
-        return revenue; 
+    public Double getRevenue() {
+        return revenue;
     }
-    
-    public void setId(int id) { 
-        this.id = id; 
+
+    public void setId(int id) {
+        this.id = id;
     }
-    
+
     public void setMafiosos(Collection<Mafioso> mafiosos) {
         this.mafiosos = mafiosos;
     }
-    
-    public void setName(String name) { 
-        this.name = name; 
+
+    public void setName(String name) {
+        this.name = name;
     }
-    
-    public void setRevenue(Double revenue) { 
-        this.revenue = revenue; 
+
+    public void setRevenue(Double revenue) {
+        this.revenue = revenue;
     }
-    
-    public void setTags(Collection<String> tags) { 
-        this.tags = tags; 
+
+    public void setTags(Collection<String> tags) {
+        this.tags = tags;
     }
-    
+
     public String toString() {
         return "MafiaFamily[" + getId() + "] : " + name;
     }

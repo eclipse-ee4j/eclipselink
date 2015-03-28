@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
@@ -37,13 +37,13 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
 
     /** PERF: Store the descriptor to allow lastAccessed cache lookup optimization. */
     protected transient ClassDescriptor descriptor;
-    
+
     /** Is this identity map within an IsolatedClientSession */
     protected boolean isIsolated;
-    
+
     /** Session that the map is on */
     protected AbstractSession session;
-    
+
     public AbstractIdentityMap(){
     }
 
@@ -206,7 +206,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
         }
         return cacheKey;
     }
-    
+
     /**
      * Add all locked CacheKeys to the map grouped by thread.
      * Used to print all the locks in the identity map.
@@ -313,11 +313,11 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     public CacheKey getCacheKeyForLock(Object primaryKey) {
         return getCacheKey(primaryKey, true);
     }
-    
+
     /**
      * Return the CacheKey (with object) matching the searchKey.
      * If the CacheKey is missing then put the searchKey in the map.
-     * The searchKey should have already been locked. 
+     * The searchKey should have already been locked.
      */
     protected abstract CacheKey putCacheKeyIfAbsent(CacheKey cacheKey);
 
@@ -442,14 +442,14 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     public void updateMaxSize(int maxSize) {
         setMaxSize(maxSize);
     }
-    
+
     /**
      * Return the class that this is the map for.
      */
     public ClassDescriptor getDescriptor() {
         return descriptor;
     }
-    
+
     /**
      * Return the class that this is the map for.
      */
@@ -459,7 +459,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
         }
         return descriptor.getJavaClass();
     }
-    
+
     /**
      * Set the descriptor that this is the map for.
      */

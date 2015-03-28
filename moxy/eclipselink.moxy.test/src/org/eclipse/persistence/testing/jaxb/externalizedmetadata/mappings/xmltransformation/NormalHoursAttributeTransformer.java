@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,7 +19,7 @@ import org.eclipse.persistence.sessions.Session;
 
 public class NormalHoursAttributeTransformer implements AttributeTransformer {
     public void initialize(AbstractTransformationMapping mapping) {}
-    
+
     public Object buildAttributeValue(Record record, Object instance, Session session) {
         String[] hours = new String[2];
         hours[0] = (String) record.get("normal-hours/start-time/text()");

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.conversion;
 
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
@@ -77,7 +77,7 @@ public class ConversionManagerTestModelWithoutBinding extends TestModel {
         this.originalStatementCachingState = this.getSession().getLogin().getPlatform().shouldCacheAllStatements();
         this.getSession().getLogin().getPlatform().setShouldBindAllParameters(false);
         this.getSession().getLogin().getPlatform().setShouldCacheAllStatements(false);
-        
+
         addForcedRequiredSystem(new ConversionManagerSystem());
     }
 
@@ -108,9 +108,9 @@ public class ConversionManagerTestModelWithoutBinding extends TestModel {
         suite.setName("ConversionManagerInsertObjectTestSuite");
         suite.setDescription("This suite tests the insertion of each object in the conversion manager model.");
 
-	suite.addTest(new InsertObjectTest(ConversionDataObject.example1()));
-	suite.addTest(new InsertObjectTest(ConversionDataObject.example2()));
-	suite.addTest(new InsertObjectTest(ConversionDataObject.example3()));
+    suite.addTest(new InsertObjectTest(ConversionDataObject.example1()));
+    suite.addTest(new InsertObjectTest(ConversionDataObject.example2()));
+    suite.addTest(new InsertObjectTest(ConversionDataObject.example3()));
 
         return suite;
     }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,8 +48,8 @@ import static java.lang.annotation.RetentionPolicy.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Specifies the amount of time in a given time unit that a concurrent 
- * access attempt should block before timing out.  
+ * Specifies the amount of time in a given time unit that a concurrent
+ * access attempt should block before timing out.
  * <p>
  * This annotation may be applied to a stateful session bean or to a
  * singleton session bean that uses container managed concurrency.
@@ -58,7 +58,7 @@ import java.util.concurrent.TimeUnit;
  * stateful session object and the container is required to serialize
  * such concurrent requests.  The <code>AccessTimeout</code>
  * annotation is used to specify the amount of time a stateful session
- * bean request should block in the case that the bean instance 
+ * bean request should block in the case that the bean instance
  * is already processing a different request.  Use of the
  * <code>AccessTimeout</code> annotation with a value of 0 specifies
  * to the container that concurrent client requests to a stateful
@@ -74,7 +74,7 @@ import java.util.concurrent.TimeUnit;
  * eligible for concurrency locks.  The <code>AccessTimeout</code> annotation can
  * be specified on the singleton session bean class or on an eligible
  * method of the class.  If <code>AccessTimeout</code> is specified on
- * both a class and on a method of that class, the method-level annotation 
+ * both a class and on a method of that class, the method-level annotation
  * takes precedence for the given method.
  * <p>
  * The semantics of the <code>value</code> element are as follows:
@@ -89,7 +89,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @since EJB 3.1
  */
-@Target({METHOD, TYPE}) 
+@Target({METHOD, TYPE})
 @Retention(RUNTIME)
 public @interface AccessTimeout {
 

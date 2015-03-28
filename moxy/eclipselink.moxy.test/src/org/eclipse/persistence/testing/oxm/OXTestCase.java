@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -304,7 +304,7 @@ public abstract class OXTestCase extends XMLTestCase {
     }
 
     /**
-     * Return the Platform to be used based on the "platformType" 
+     * Return the Platform to be used based on the "platformType"
      * System property
      *
      * @see Platform
@@ -321,7 +321,7 @@ public abstract class OXTestCase extends XMLTestCase {
     }
 
     /**
-     * Return the Metadata type based on the "metadataType" 
+     * Return the Metadata type based on the "metadataType"
      * System property
      *
      * @see Metadata

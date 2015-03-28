@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,33 +45,33 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class ObjectTypeTestSuite extends DBWSTestSuite {
-	static final String EMP_TYPE_ALIAS = "Dbws_emp_type";
-	static final String EMP_TYPE_CLASSNAME = "objecttypetests.Dbws_emp_type";
-	static final String PHONE_TYPE_ALIAS = "Dbws_phone_type";
-	static final String PHONE_TYPE_CLASSNAME = "objecttypetests.Dbws_phone_type";
+    static final String EMP_TYPE_ALIAS = "Dbws_emp_type";
+    static final String EMP_TYPE_CLASSNAME = "objecttypetests.Dbws_emp_type";
+    static final String PHONE_TYPE_ALIAS = "Dbws_phone_type";
+    static final String PHONE_TYPE_CLASSNAME = "objecttypetests.Dbws_phone_type";
 
-	//==============================================================================
-	static final String CREATE_MYTYPE = 
+    //==============================================================================
+    static final String CREATE_MYTYPE =
         "CREATE OR REPLACE TYPE MYTYPE_1 AS OBJECT (" +
             "\nid INTEGER," +
             "\nname VARCHAR2(30)" +
         "\n)";
-    
-	static final String CREATE_MYTYPE_ARRAY = 
-	    "CREATE OR REPLACE TYPE MYTYPE_1_ARRAY AS VARRAY(10) OF MYTYPE_1;";
 
-    static final String CREATE_MYTYPE_PKG = 
-	    "CREATE OR REPLACE PACKAGE USERTYPEINOUT AS" + 
+    static final String CREATE_MYTYPE_ARRAY =
+        "CREATE OR REPLACE TYPE MYTYPE_1_ARRAY AS VARRAY(10) OF MYTYPE_1;";
+
+    static final String CREATE_MYTYPE_PKG =
+        "CREATE OR REPLACE PACKAGE USERTYPEINOUT AS" +
             "\nPROCEDURE TEST_IN_AND_OUT(P1 IN MYTYPE_1, P2 OUT MYTYPE_1);" +
             "\nPROCEDURE TEST_OUT(P1 OUT MYTYPE_1);" +
             "\nPROCEDURE TEST_IN(P1 IN MYTYPE_1);" +
             "\nPROCEDURE TEST_INOUT(P1 IN OUT MYTYPE_1);" +
             "\nFUNCTION ECHO_MYTYPE_1_ARRAY(P1 MYTYPE_1_ARRAY) RETURN MYTYPE_1_ARRAY;" +
             "\nPROCEDURE TEST_MULTI_IN_AND_OUT(P1 IN MYTYPE_1, P2 IN VARCHAR2, P3 IN INTEGER, P4 OUT MYTYPE_1);" +
-	    "\nEND USERTYPEINOUT;";
-	
-	static final String CREATE_MYTYPE_PKG_BODY = 
-	    "CREATE OR REPLACE PACKAGE BODY USERTYPEINOUT AS" +
+        "\nEND USERTYPEINOUT;";
+
+    static final String CREATE_MYTYPE_PKG_BODY =
+        "CREATE OR REPLACE PACKAGE BODY USERTYPEINOUT AS" +
             "\nPROCEDURE TEST_IN_AND_OUT(P1 IN MYTYPE_1, P2 OUT MYTYPE_1) AS" +
             "\nBEGIN" +
                 "\nP2 := P1;" +
@@ -89,16 +89,16 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                 "\nNULL;" +
             "\nEND TEST_INOUT; " +
             "\nFUNCTION ECHO_MYTYPE_1_ARRAY(P1 MYTYPE_1_ARRAY) RETURN MYTYPE_1_ARRAY AS" +
-            "\nBEGIN" + 
+            "\nBEGIN" +
                 "\nRETURN P1;" +
             "\nEND ECHO_MYTYPE_1_ARRAY;" +
             "\nPROCEDURE TEST_MULTI_IN_AND_OUT(P1 IN MYTYPE_1, P2 IN VARCHAR2, P3 IN INTEGER, P4 OUT MYTYPE_1) AS" +
             "\nBEGIN" +
                 "\nP4 := MYTYPE_1(P1.id + P3, concat(P1.name, P2));" +
             "\nEND TEST_MULTI_IN_AND_OUT; " +
-	    "\nEND USERTYPEINOUT;";
-    //==============================================================================	
-	
+        "\nEND USERTYPEINOUT;";
+    //==============================================================================
+
     static final String CREATE_PHONE_TYPE =
         "CREATE OR REPLACE TYPE DBWS_PHONE_TYPE AS OBJECT (" +
             "\nHOME VARCHAR2(20)," +
@@ -212,9 +212,9 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                 stmt.executeBatch();
             }
             catch (SQLException e) {
-            	if (ddlDebug) {
-            		e.printStackTrace();
-            	}
+                if (ddlDebug) {
+                    e.printStackTrace();
+                }
             }
         }
         DBWS_BUILDER_XML_USERNAME =
@@ -406,23 +406,23 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
 
     @Test
     public void validateJavaClassName() {
-    	Project orProject = builder.getOrProject();
-    	ClassDescriptor empORDesc = orProject.getDescriptorForAlias(EMP_TYPE_ALIAS);
-    	assertNotNull("No OR descriptor found for alias [" + EMP_TYPE_ALIAS + "]", empORDesc);
-    	assertEquals("Expected class name [" + EMP_TYPE_CLASSNAME + "] but was [" + empORDesc.getJavaClassName() + "]", empORDesc.getJavaClassName(), EMP_TYPE_CLASSNAME);
-    	ClassDescriptor phoneORDesc = orProject.getDescriptorForAlias(PHONE_TYPE_ALIAS);
-    	assertNotNull("No OR descriptor found for alias [" + PHONE_TYPE_ALIAS + "]", phoneORDesc);
-    	assertEquals("Expected class name [" + PHONE_TYPE_CLASSNAME + "] but was [" + phoneORDesc.getJavaClassName() + "]", phoneORDesc.getJavaClassName(), PHONE_TYPE_CLASSNAME);
-    	
-    	Project oxProject = builder.getOxProject();
-    	ClassDescriptor empOXDesc = oxProject.getDescriptorForAlias(EMP_TYPE_ALIAS);
-    	assertNotNull("No OX descriptor found for alias [" + EMP_TYPE_ALIAS + "]", empOXDesc);
-    	assertEquals("Expected class name [" + EMP_TYPE_CLASSNAME + "] but was [" + empOXDesc.getJavaClassName() + "]", empOXDesc.getJavaClassName(), EMP_TYPE_CLASSNAME);
-    	ClassDescriptor phoneOXDesc = oxProject.getDescriptorForAlias(PHONE_TYPE_ALIAS);
-    	assertNotNull("No OX descriptor found for alias [" + PHONE_TYPE_ALIAS + "]", phoneOXDesc);
-    	assertEquals("Expected class name [" + PHONE_TYPE_CLASSNAME + "] but was [" + phoneOXDesc.getJavaClassName() + "]", phoneOXDesc.getJavaClassName(), PHONE_TYPE_CLASSNAME);
+        Project orProject = builder.getOrProject();
+        ClassDescriptor empORDesc = orProject.getDescriptorForAlias(EMP_TYPE_ALIAS);
+        assertNotNull("No OR descriptor found for alias [" + EMP_TYPE_ALIAS + "]", empORDesc);
+        assertEquals("Expected class name [" + EMP_TYPE_CLASSNAME + "] but was [" + empORDesc.getJavaClassName() + "]", empORDesc.getJavaClassName(), EMP_TYPE_CLASSNAME);
+        ClassDescriptor phoneORDesc = orProject.getDescriptorForAlias(PHONE_TYPE_ALIAS);
+        assertNotNull("No OR descriptor found for alias [" + PHONE_TYPE_ALIAS + "]", phoneORDesc);
+        assertEquals("Expected class name [" + PHONE_TYPE_CLASSNAME + "] but was [" + phoneORDesc.getJavaClassName() + "]", phoneORDesc.getJavaClassName(), PHONE_TYPE_CLASSNAME);
+
+        Project oxProject = builder.getOxProject();
+        ClassDescriptor empOXDesc = oxProject.getDescriptorForAlias(EMP_TYPE_ALIAS);
+        assertNotNull("No OX descriptor found for alias [" + EMP_TYPE_ALIAS + "]", empOXDesc);
+        assertEquals("Expected class name [" + EMP_TYPE_CLASSNAME + "] but was [" + empOXDesc.getJavaClassName() + "]", empOXDesc.getJavaClassName(), EMP_TYPE_CLASSNAME);
+        ClassDescriptor phoneOXDesc = oxProject.getDescriptorForAlias(PHONE_TYPE_ALIAS);
+        assertNotNull("No OX descriptor found for alias [" + PHONE_TYPE_ALIAS + "]", phoneOXDesc);
+        assertEquals("Expected class name [" + PHONE_TYPE_CLASSNAME + "] but was [" + phoneOXDesc.getJavaClassName() + "]", phoneOXDesc.getJavaClassName(), PHONE_TYPE_CLASSNAME);
     }
-    
+
     @Test
     public void inTypeTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -490,7 +490,7 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
             "<id>66</id>" +
             "<name>Steve French</name>" +
         "</mytype_1Type>";
-    
+
     @Test
     public void arrayEchoTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();

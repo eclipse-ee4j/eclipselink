@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,10 +32,10 @@ public class VariableNode extends Node implements AliasableNode {
 
     /** */
     private String variableName;
-    
+
     /** */
     private String canonicalName;
-    
+
     /** if this represents a type constant, this value will be populated by validate **/
     private Object classConstant = null;
 
@@ -96,8 +96,8 @@ public class VariableNode extends Node implements AliasableNode {
      * FETCH nodes of the current variable and adds them as part of the
      * ReportQuery item.
      */
-    private void addAttributeWithFetchJoins(ReportQuery reportQuery, 
-                                            Expression expression, 
+    private void addAttributeWithFetchJoins(ReportQuery reportQuery,
+                                            Expression expression,
                                             GenerationContext context) {
         String name = getCanonicalVariableName();
         List fetchJoinNodes = context.getParseTreeContext().getFetchJoins(name);
@@ -119,7 +119,7 @@ public class VariableNode extends Node implements AliasableNode {
      * joined attributes. This method is called in case of a non ReportQuery
      * instance.
      */
-    private void addFetchJoins(ObjectLevelReadQuery theQuery, 
+    private void addFetchJoins(ObjectLevelReadQuery theQuery,
                                GenerationContext context) {
         String name = getCanonicalVariableName();
         List fetchJoinNodes = context.getParseTreeContext().getFetchJoins(name);
@@ -131,8 +131,8 @@ public class VariableNode extends Node implements AliasableNode {
         }
     }
 
-    /** 
-     * INTERNAL 
+    /**
+     * INTERNAL
      * This node represent an unqualified field access in the case the method
      * is called and the variableName is not defined as identification variable.
      * The method returns a DotNode representing a qualified field access with
@@ -184,7 +184,7 @@ public class VariableNode extends Node implements AliasableNode {
     public Expression generateExpression(GenerationContext generationContext) {
         Expression myExpression = null;
         String name = getCanonicalVariableName();
-        
+
         //is there a cached Expression?
         myExpression = generationContext.expressionFor(name);
         if (myExpression != null) {
@@ -219,7 +219,7 @@ public class VariableNode extends Node implements AliasableNode {
         //than their alias names. - JGL
         if (nodeForAlias == null) {
             throw JPQLException.aliasResolutionException(
-                context.getParseTreeContext().getQueryInfo(), 
+                context.getParseTreeContext().getQueryInfo(),
                 getLine(), getColumn(), getVariableName());
         }
 
@@ -283,7 +283,7 @@ public class VariableNode extends Node implements AliasableNode {
     public String getAsString() {
         return getVariableName();
     }
-    
+
     public Object getTypeForMapKey(ParseTreeContext context){
         String name = getCanonicalVariableName();
         if (context.isRangeVariable(name)) {
@@ -299,7 +299,7 @@ public class VariableNode extends Node implements AliasableNode {
         }
     }
 
-    
+
     public boolean isAliasableNode(){
         return true;
     }

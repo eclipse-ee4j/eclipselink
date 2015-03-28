@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.util.Enumeration;
@@ -87,15 +87,15 @@ public class MergeUnitOfWorkTest extends org.eclipse.persistence.testing.framewo
      */
     protected void compareForProperMerge(Employee employeeBeforeMerge, Employee employeeAfterMerge) {
         if (employeeBeforeMerge.getAddress() == employeeAfterMerge.getAddress()) {
-            throw new TestErrorException("The object '" + employeeAfterMerge + 
+            throw new TestErrorException("The object '" + employeeAfterMerge +
                                          "'Was not merged properly. It is still referencing cloned address instead of original address");
         }
         if (employeeBeforeMerge.getPeriod() == employeeAfterMerge.getPeriod()) {
-            throw new TestErrorException("The object '" + employeeAfterMerge + 
+            throw new TestErrorException("The object '" + employeeAfterMerge +
                                          "'Was not merged properly. It is still referencing cloned Period instead of original Period");
         }
         if (employeeBeforeMerge.getNormalHours() == employeeAfterMerge.getNormalHours()) {
-            throw new TestErrorException("The object '" + employeeAfterMerge + 
+            throw new TestErrorException("The object '" + employeeAfterMerge +
                                          "'Was not merged properly. It is still referencing cloned NormalHours instead of original NormalHours");
         }
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,20 +34,20 @@ public class BinaryDataSelfDataHandlerTestCases extends XMLMappingTestCases{// X
        // setControlJSON(JSON_RESOURCE);
         Project p = new BinaryDataSelfProject();
         p.getDescriptor(Employee.class).getMappingForAttributeName("photo").setIsReadOnly(true);
-        
+
         ((XMLBinaryDataMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("data")).setShouldInlineBinaryData(false);
         ((XMLBinaryDataMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("photo")).setShouldInlineBinaryData(false);
-        
-        
+
+
         setProject(p);
     }
-    
+
     public void setUp() throws Exception {
-    	super.setUp();
-    	MyAttachmentUnmarshaller handler = new MyAttachmentUnmarshaller();
-    	DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
-    	handler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
-    	xmlUnmarshaller.setAttachmentUnmarshaller(handler);
+        super.setUp();
+        MyAttachmentUnmarshaller handler = new MyAttachmentUnmarshaller();
+        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
+        handler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+        xmlUnmarshaller.setAttachmentUnmarshaller(handler);
     }
 
     @Override
@@ -60,26 +60,26 @@ public class BinaryDataSelfDataHandlerTestCases extends XMLMappingTestCases{// X
 
     protected Object getControlObject() {
         Employee emp = new Employee(123);
-        
-        emp.setData(new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text"));        
+
+        emp.setData(new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text"));
         return emp;
     }
-    
+
     public Object getReadControlObject() {
         Employee emp = new Employee(123);
-        
+
         String s = "THISISATEXTSTRINGFORTHISDATAHANDLER";
-       
+
         emp.setData(new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text"));
         emp.setPhoto(s.getBytes());
-        
+
         return emp;
     }
-    
+
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertNotNull(this.attachmentMarshaller.getLocalName());
     }
-    
-    
+
+
 }

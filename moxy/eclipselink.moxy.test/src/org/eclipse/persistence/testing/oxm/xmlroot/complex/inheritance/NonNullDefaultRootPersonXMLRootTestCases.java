@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.xmlroot.complex.inheritance;
 
 import java.io.InputStream;
@@ -36,10 +36,10 @@ public class NonNullDefaultRootPersonXMLRootTestCases extends XMLMappingTestCase
     protected final static int CONTROL_ID = 15;
     protected final static String CONTROL_ELEMENT_NAME = "oxm:blah";
     protected final static String CONTROL_NAMESPACE_URI = "test";
-    
+
     public NonNullDefaultRootPersonXMLRootTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(getXMLResource());        
+        setControlDocument(getXMLResource());
         setProject(getTopLinkProject());
     }
 
@@ -49,52 +49,52 @@ public class NonNullDefaultRootPersonXMLRootTestCases extends XMLMappingTestCase
         ((XMLDescriptor)p.getDescriptor(Employee.class)).setDefaultRootElement("oxm:pRoot");
         return p;
     }
-    
+
      public String getXMLResource() {
         return XML_RESOURCE;
     }
 
     protected Object getControlObject() {
         Person p = new Person();
-        p.setName(CONTROL_PERSON_NAME);  
-        
+        p.setName(CONTROL_PERSON_NAME);
+
         XMLRoot xmlRoot = new XMLRoot();
         xmlRoot.setObject(p);
         xmlRoot.setLocalName("oxm:blah");
         xmlRoot.setNamespaceURI(CONTROL_NAMESPACE_URI);
         return xmlRoot;
     }
-    
+
      public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.xmlroot.complex.inheritance.NonNullDefaultRootPersonXMLRootTestCases" };
-      
+
         TestRunner.main(arguments);
     }
     /*
     public void testObjectToXMLStringWriter() throws Exception {
       super.testObjectToXMLStringWriter();
     }
-    
+
       public void testObjectToXMLStringWriter() throws Exception {
         StringWriter writer = new StringWriter();
         xmlMarshaller.marshal(getWriteControlObject(), writer);
        // System.out.println("#################");
         System.out.println(writer.toString());
-        
+
         StringReader reader = new StringReader(writer.toString());
-        
-        
+
+
        // System.out.println("#################");
         InputSource inputSource = new InputSource(reader);
-        
-        
+
+
         Document testDocument = parser.parse(inputSource);
         writer.close();
         reader.close();
 
         objectToXMLDocumentTest(testDocument);
     }
-    
+
      // Unmarshal tests
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(getXMLResource());
@@ -133,7 +133,7 @@ public class NonNullDefaultRootPersonXMLRootTestCases extends XMLMappingTestCase
             this.assertEquals(getReadControlObject(), testObject);
         }
     }
-    
+
       // DOES NOT APPLY
     public void testUnmarshallerHandler() throws Exception {
     }
@@ -141,7 +141,7 @@ public class NonNullDefaultRootPersonXMLRootTestCases extends XMLMappingTestCase
     public void testMyTest() throws Exception {
         Person person= new Person();
         person.setName(CONTROL_PERSON_NAME);
-        
+
         Employee emp = new Employee();
         emp.setName(CONTROL_PERSON_NAME);
         emp.setEmpId(CONTROL_ID);
@@ -150,7 +150,7 @@ public class NonNullDefaultRootPersonXMLRootTestCases extends XMLMappingTestCase
         pxmlRoot.setRootElementName("blah");
         //pxmlRoot.setRootElementURI(CONTROL_NAMESPACE_URI);
         pxmlRoot.setObject(person);
-        
+
         XMLRoot exmlRoot = new XMLRoot();
         exmlRoot.setRootElementName("blah");
         //exmlRoot.setRootElementURI(CONTROL_NAMESPACE_URI);
@@ -161,21 +161,21 @@ public class NonNullDefaultRootPersonXMLRootTestCases extends XMLMappingTestCase
         //exmlRoot.setRootElementURI("test");
         Object objectToWrite = exmlRoot;
         //Object objectToWrite = person;
-        
+
          StringWriter writer = new StringWriter();
         xmlMarshaller.marshal(objectToWrite, writer);
         System.out.println("#################Marshal");
         System.out.println(writer.toString());
         System.out.println("#################Marshal");
-        
+
     }
      public void testMyTest2() throws Exception {
      System.out.println("################# UNMARSHAL");
      String resource = "org/eclipse/persistence/testing/oxm/xmlroot/complex/inheritance/employee.xml";
      InputStream instream = ClassLoader.getSystemResourceAsStream(resource);
         Object testObject = xmlUnmarshaller.unmarshal(instream);
-        instream.close();     
-     
+        instream.close();
+
      System.out.println("################# UNMARSHAL");
      }*/
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -20,122 +20,122 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * This type was created in VisualAge.
  */
 public class Promoter {
-	public Number id;
-	public String name;
-	public ValueHolderInterface phoneNumbers;
+    public Number id;
+    public String name;
+    public ValueHolderInterface phoneNumbers;
 /**
  * Promoter constructor comment.
  */
 public Promoter() {
-	super();
+    super();
 }
 // Movie descriptor
 
 public static ClassDescriptor descriptor() {
-	ClassDescriptor descriptor = new ClassDescriptor();
+    ClassDescriptor descriptor = new ClassDescriptor();
 
-	descriptor.setJavaClass(Promoter.class);
-	descriptor.setTableName("RO_PROMO");
-	descriptor.addPrimaryKeyFieldName("PROMO_ID");
-	descriptor.setSequenceNumberName("PROMO_SEQ");
-	descriptor.setSequenceNumberFieldName("PROMO_ID");
- 
-	descriptor.addDirectMapping("id", "PROMO_ID");
-	descriptor.addDirectMapping("name", "NAME");
+    descriptor.setJavaClass(Promoter.class);
+    descriptor.setTableName("RO_PROMO");
+    descriptor.addPrimaryKeyFieldName("PROMO_ID");
+    descriptor.setSequenceNumberName("PROMO_SEQ");
+    descriptor.setSequenceNumberFieldName("PROMO_ID");
+
+    descriptor.addDirectMapping("id", "PROMO_ID");
+    descriptor.addDirectMapping("name", "NAME");
 /*
-	// The promoter operates in a collection of countries.
-	org.eclipse.persistence.mappings.OneToManyMapping phoneNumbersMapping = new org.eclipse.persistence.mappings.OneToManyMapping() ;
-	phoneNumbersMapping.setAttributeName("phoneNumbers");
-	phoneNumbersMapping.setReferenceClass(PhoneNumber.class);
-	phoneNumbersMapping.setTargetForeignKeyFieldName("PROMO_ID");
-	phoneNumbersMapping.privateOwnedRelationship();
-//	phoneNumbersMapping.dontUseIndirection();
-	descriptor.addMapping(phoneNumbersMapping);
+    // The promoter operates in a collection of countries.
+    org.eclipse.persistence.mappings.OneToManyMapping phoneNumbersMapping = new org.eclipse.persistence.mappings.OneToManyMapping() ;
+    phoneNumbersMapping.setAttributeName("phoneNumbers");
+    phoneNumbersMapping.setReferenceClass(PhoneNumber.class);
+    phoneNumbersMapping.setTargetForeignKeyFieldName("PROMO_ID");
+    phoneNumbersMapping.privateOwnedRelationship();
+//    phoneNumbersMapping.dontUseIndirection();
+    descriptor.addMapping(phoneNumbersMapping);
 */
- 
 
-	return descriptor;
+
+    return descriptor;
 }
 /**
  * This method was created in VisualAge.
  */
 public static Promoter example1() {
-	Promoter example = new Promoter();
-	example.setName("Promoter 1");
+    Promoter example = new Promoter();
+    example.setName("Promoter 1");
 
-	// Add phone numbers.
-/*	Vector numbers = new Vector();
-	numbers.addElement(PhoneNumber.example1(example));
-	numbers.addElement(PhoneNumber.example2(example));
-	example.phoneNumbers = new ValueHolder() ;
-	example.phoneNumbers.setValue(numbers);
+    // Add phone numbers.
+/*    Vector numbers = new Vector();
+    numbers.addElement(PhoneNumber.example1(example));
+    numbers.addElement(PhoneNumber.example2(example));
+    example.phoneNumbers = new ValueHolder() ;
+    example.phoneNumbers.setValue(numbers);
 */
-	return example;
+    return example;
 }
 /**
  * This method was created in VisualAge.
  */
 public static Promoter example2() {
-	Promoter example = new Promoter();
-	example.setName("Promoter 2");
+    Promoter example = new Promoter();
+    example.setName("Promoter 2");
 
-	return example;
+    return example;
 }
 /**
  * This method was created in VisualAge.
  */
 public static Promoter example3() {
-	Promoter example = new Promoter();
-	example.setName("Promoter 3");
+    Promoter example = new Promoter();
+    example.setName("Promoter 3");
 
-	return example;
+    return example;
 }
 /**
  * This method was created in VisualAge.
  */
 public static Promoter example4() {
-	Promoter example = new Promoter();
-	example.setName("Promoter 4");
+    Promoter example = new Promoter();
+    example.setName("Promoter 4");
 
-	return example;
+    return example;
 }
 /**
  * This method was created in VisualAge.
  */
 public static Promoter example5() {
-	Promoter example = new Promoter();
-	example.setName("Promoter 5");
+    Promoter example = new Promoter();
+    example.setName("Promoter 5");
 
-	return example;
+    return example;
 }
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
  */
 public String getName() {
-	return name;
+    return name;
 }
 /**
  * This method was created in VisualAge.
  * @param newValue java.lang.String
  */
 public void setName(String newValue) {
-	this.name = newValue;
+    this.name = newValue;
 }
 // Promoter table definition
 
 public static TableDefinition tableDefinition() {
-	TableDefinition definition = new TableDefinition();
+    TableDefinition definition = new TableDefinition();
 
-	definition.setName("RO_PROMO");
+    definition.setName("RO_PROMO");
 
-	definition.addIdentityField("PROMO_ID", java.math.BigDecimal.class, 15);
-	definition.addField("NAME", String.class, 50);
+    definition.addIdentityField("PROMO_ID", java.math.BigDecimal.class, 15);
+    definition.addField("NAME", String.class, 50);
 
-	return definition;
+    return definition;
 }
 @Override
 public String toString() {
-	return org.eclipse.persistence.internal.helper.Helper.getShortClassName(getClass()) + "(" + getName() + ") ";
+    return org.eclipse.persistence.internal.helper.Helper.getShortClassName(getClass()) + "(" + getName() + ") ";
 }
 }

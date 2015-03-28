@@ -1,24 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Jun 29, 2009-1.0M6 Chris Delahunt 
+ *     Jun 29, 2009-1.0M6 Chris Delahunt
  *       - TODO Bug#: Bug Description
- *     07/05/2010-2.1.1 Michael O'Brien 
+ *     07/05/2010-2.1.1 Michael O'Brien
  *       - 321716: modelgen and jpa versions of duplicate code in both copies of
  *       JUnitCriteriaSimpleTestSuite must be kept in sync (to avoid only failing on WebSphere under Derby)
  *       (ideally there should be only one copy of the code - the other suite should reference or subclass for changes)
  *       see
  *       org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.simpleModTest():1796
  *       org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.simpleModTest():1766
- *       - 321902: this copied code should be renamed, merged or subclassed off the original       
- ******************************************************************************/  
+ *       - 321902: this copied code should be renamed, merged or subclassed off the original
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.criteria;
 
 
@@ -232,7 +232,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         comparer = new JUnitDomainObjectComparer();
 
         //set the session for the comparer to use
-        comparer.setSession((AbstractSession)session.getActiveSession());              
+        comparer.setSession((AbstractSession)session.getActiveSession());
 
         //Populate the tables
         employeePopulator.buildExamples();
@@ -249,16 +249,16 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
      * Tests 1=1 returns correct result.
      */
     public void testParameterEqualsParameter() throws Exception {
-        DatabasePlatform databasePlatform = JUnitTestCase.getServerSession().getPlatform(); 
+        DatabasePlatform databasePlatform = JUnitTestCase.getServerSession().getPlatform();
 
         if (databasePlatform.isSymfoware()) {
-            getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, " 
+            getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, "
                     + "Symfoware doesn't allow dynamic parameters on both sides of the equals operator at the same time. (bug 304897)");
             return;
         }
 
         if (databasePlatform.isMaxDB()) {
-            getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, " 
+            getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, "
                     + "MaxDB doesn't allow dynamic parameters on both sides of the equals operator at the same time. (bug 326962)");
             return;
         }
@@ -268,7 +268,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         try {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             //"SELECT e FROM Employee e"
-            Query query = em.createQuery(qb.createQuery(Employee.class));            
+            Query query = em.createQuery(qb.createQuery(Employee.class));
             List<Employee> emps = query.getResultList();
 
             Assert.assertNotNull(emps);
@@ -289,7 +289,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        }    
+        }
     }
 
 
@@ -303,7 +303,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         try {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             //"SELECT e FROM Employee e"
-            Query query = em.createQuery(qb.createQuery(Employee.class));            
+            Query query = em.createQuery(qb.createQuery(Employee.class));
             List<Employee> emps = query.getResultList();
 
             Assert.assertNotNull(emps);
@@ -326,12 +326,12 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        }    
+        }
     }
 
     //GF Bug#404
     //1.  Fetch join now works with LAZY.  The fix is to trigger the value holder during object registration.  The test is to serialize
-    //the results and deserialize it, then call getPhoneNumbers().size().  It used to throw an exception because the value holder 
+    //the results and deserialize it, then call getPhoneNumbers().size().  It used to throw an exception because the value holder
     //wasn't triggered and the data was in a transient attribute that was lost during serialization
     //2.  Test both scenarios of using the cache and bypassing the cache
     public void simpleJoinFetchTest() throws Exception {
@@ -344,7 +344,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     }
 
 
-    //bug#6130550:  
+    //bug#6130550:
     // tests that Fetch join works when returning objects that may already have been loaded in the em/uow (without the joined relationships)
     // Builds on simpleJoinFetchTest
     public void simpleJoinFetchTest2() throws Exception {
@@ -440,7 +440,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         root.fetch("phoneNumbers", JoinType.LEFT);
         List result = em.createQuery(cq).getResultList();
         // This used to throw IndexOutOfBoundsException due to ObjectLevelReadQuery.prepareFromQuery not copying joinAttributes:
-        // in ObjectBuildingQuery.triggerJoinExpressions there were joinExpressionAttributes but not joinAttributes. 
+        // in ObjectBuildingQuery.triggerJoinExpressions there were joinExpressionAttributes but not joinAttributes.
         result = em.createQuery(cq).getResultList();
     }
 
@@ -631,7 +631,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             partTwo = expectedResult.getFirstName().substring(1, 2);
             partThree = expectedResult.getFirstName().substring(2);
 
-            //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = CONCAT(\"" + partOne + "\", CONCAT(\"" + partTwo 
+            //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = CONCAT(\"" + partOne + "\", CONCAT(\"" + partTwo
             //      + "\", \"" + partThree + "\") )"
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
@@ -936,14 +936,14 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
             PhoneNumber empPhoneNumbers = (PhoneNumber)((Vector)expectedResult.getPhoneNumbers()).firstElement();
 
-            //"SelecT OBJECT(emp) from Employee emp, in (emp.phoneNumbers) phone " + "Where phone.areaCode = \"" + empPhoneNumbers.getAreaCode() + "\"" 
+            //"SelecT OBJECT(emp) from Employee emp, in (emp.phoneNumbers) phone " + "Where phone.areaCode = \"" + empPhoneNumbers.getAreaCode() + "\""
             //      + "AND emp.firstName = \"" + expectedResult.getFirstName() + "\"" + "AND emp.lastName = \"" + expectedResult.getLastName() + "\""
 
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = cq.from(Employee.class);
             Join phone = root.join("phoneNumbers");
-            Predicate firstAnd = qb.and( qb.equal(phone.get("areaCode"), empPhoneNumbers.getAreaCode()), 
+            Predicate firstAnd = qb.and( qb.equal(phone.get("areaCode"), empPhoneNumbers.getAreaCode()),
                     qb.equal(root.get("firstName"), expectedResult.getFirstName()));
             cq.where( qb.and(firstAnd, qb.equal(root.get("lastName"), expectedResult.getLastName())) );
             Employee result = em.createQuery(cq).getSingleResult();
@@ -1755,7 +1755,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         List result = null;
         beginTransaction(em);
-        try {		
+        try {
             result = em.createQuery(cq).getResultList();
         } finally {
             rollbackTransaction(em);
@@ -1800,7 +1800,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         List result = null;
 
         beginTransaction(em);
-        try {			
+        try {
             result = em.createQuery(cq).getResultList();
         } finally {
             rollbackTransaction(em);
@@ -1887,7 +1887,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
     }
 
-    // 321716: merged into copy in modegen test    
+    // 321716: merged into copy in modegen test
     public void simpleModTest() {
         EntityManager em = createEntityManager();
 
@@ -1928,7 +1928,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
             result = em.createQuery(cq).getResultList();
 
-            Assert.assertTrue("Simple Mod test(2) failed", comparer.compareObjects(result, expectedResult)); 
+            Assert.assertTrue("Simple Mod test(2) failed", comparer.compareObjects(result, expectedResult));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -2147,8 +2147,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Expression selectionCriteria = new ExpressionBuilder(Address.class).equal(employeeBuilder.get("address")).and(employeeBuilder.get("lastName").like("%Way%"));
         query.setSelectionCriteria(selectionCriteria);
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
-        	query.setShouldUseSerializedObjectPolicy(false);
+            // distinct is incompatible with blob in selection clause on Oracle
+            query.setShouldUseSerializedObjectPolicy(false);
         }
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
 
@@ -2275,8 +2275,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         query.setSelectionCriteria(selectionCriteria);
         query.setReferenceClass(Employee.class);
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
-        	query.dontUseDistinct();
+            // distinct is incompatible with blob in selection clause on Oracle
+            query.dontUseDistinct();
         }
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
@@ -2300,8 +2300,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Query jpqlQuery = em.createQuery(cq);
             jpqlQuery.setMaxResults(10);
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
-        	jpqlQuery.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+            // distinct is incompatible with blob in selection clause on Oracle
+            jpqlQuery.setHint(QueryHints.SERIALIZED_OBJECT, "false");
         }
             List result = jpqlQuery.getResultList();
 
@@ -2354,7 +2354,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         uow.commit();
 
         Assert.assertTrue("Select simple member of with parameter test failed", comparer.compareObjects(result, expectedResult));
-        
+
         clearCache();
     }
 
@@ -2370,25 +2370,25 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         boolean shouldCleanUp = false;
         PhoneNumber phone;
-        if (emp.getPhoneNumbers().isEmpty()) {        
+        if (emp.getPhoneNumbers().isEmpty()) {
             phone = new PhoneNumber();
             phone.setAreaCode("613");
             phone.setNumber("1234567");
-            phone.setType("cell");    
-    
+            phone.setType("cell");
+
             Server serverSession = JUnitTestCase.getServerSession();
             Session clientSession = serverSession.acquireClientSession();
             UnitOfWork uow = clientSession.acquireUnitOfWork();
             emp = (Employee)uow.readObject(emp);
             PhoneNumber phoneClone = (PhoneNumber)uow.registerObject(phone);
             emp.addPhoneNumber(phoneClone);
-	        if (usesSOP()) {
-	        	// In SOP is used then the phone is never read back (it's saved in sopObject), 
-	        	// therefore its ownerId (mapped as read only) is never set.
-	        	// If phone.ownerId is not set, then the next query (that takes phone as a parameter) would return all the employees,
-	        	// it supposed to return all the employees minus emp.
-	        	phoneClone.setId(emp.getId());
-	        }
+            if (usesSOP()) {
+                // In SOP is used then the phone is never read back (it's saved in sopObject),
+                // therefore its ownerId (mapped as read only) is never set.
+                // If phone.ownerId is not set, then the next query (that takes phone as a parameter) would return all the employees,
+                // it supposed to return all the employees minus emp.
+                phoneClone.setId(emp.getId());
+            }
             uow.commit();
             phone = emp.getPhoneNumbers().iterator().next();
             shouldCleanUp = true;
@@ -2404,7 +2404,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         List result = null;
         beginTransaction(em);
-        try {        
+        try {
             result = em.createQuery(cq).setParameter("1", phone).getResultList();
         } finally {
             rollbackTransaction(em);
@@ -2596,7 +2596,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        }        
+        }
     }
 
     public void simpleCoalesceInSelectTest(){
@@ -2622,7 +2622,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        }  
+        }
     }
 
     public void caseConditionInWhereTest(){
@@ -2646,7 +2646,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        } 
+        }
     }
 
     public void caseConditionInSelectTest(){
@@ -2672,7 +2672,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        } 
+        }
     }
 
     public void simpleCaseInWhereTest(){
@@ -2701,7 +2701,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        } 
+        }
     }
 
     public void simpleCaseInSelectTest(){
@@ -3060,7 +3060,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Object unexpectedResult = qb.tuple(item);
             this.fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.tuple(). Result returned:"+unexpectedResult);
         } catch (IllegalArgumentException iae) {}
-        
+
         try {
             //verify array throws an exception when passed a tuple
             Object unexpectedResult = qb.array(item);
@@ -3068,7 +3068,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         } catch (IllegalArgumentException iae) {}
         closeEntityManager(em);
     }
-    
+
     //366206 - CriteriaBuilder.array(Selection)
     public void testCriteriaBuilderArrayValidation() {
         EntityManager em = createEntityManager();
@@ -3090,7 +3090,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Object unexpectedResult = qb.tuple(item);
             this.fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.tuple(). Result returned:"+unexpectedResult);
         } catch (IllegalArgumentException iae) {}
-        
+
         try {
             //verify array throws an exception when passed an array
             Object unexpectedResult = qb.array(item);
@@ -3148,13 +3148,13 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         closeEntityManager(em);
     }
 
-    //366386 - IllegalArgumentException for duplicated aliases 
+    //366386 - IllegalArgumentException for duplicated aliases
     public void testCompoundSelectionAliasValidation() {
         EntityManager em = createEntityManager();
 
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
-        Root<Employee> emp = criteria.from(Employee.class);  
+        Root<Employee> emp = criteria.from(Employee.class);
         Selection[] s = {emp.get("lastName").alias("duplicateAlias"), emp.get("firstName").alias("duplicateAlias")};
 
         try {

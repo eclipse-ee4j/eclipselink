@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -471,7 +471,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
 
     /**
      * INTERNAL
-     * Indicate whether by default an empty container should be set on the 
+     * Indicate whether by default an empty container should be set on the
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */

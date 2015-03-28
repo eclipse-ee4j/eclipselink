@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,59 +27,59 @@ import org.eclipse.persistence.tools.workbench.utility.HashBag;
 
 
 public class ReadOnlyCollectionValueModelTests extends TestCase {
-	private CollectionValueModel collectionHolder;
-	private static Collection collection;
+    private CollectionValueModel collectionHolder;
+    private static Collection collection;
 
-	public static Test suite() {
-		return new TestSuite(ReadOnlyCollectionValueModelTests.class);
-	}
-	
-	public ReadOnlyCollectionValueModelTests(String name) {
-		super(name);
-	}
+    public static Test suite() {
+        return new TestSuite(ReadOnlyCollectionValueModelTests.class);
+    }
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.collectionHolder = this.buildCollectionHolder();
-	}
+    public ReadOnlyCollectionValueModelTests(String name) {
+        super(name);
+    }
 
-	private CollectionValueModel buildCollectionHolder() {
-		return new AbstractReadOnlyCollectionValueModel() {
-			public Object getValue() {
-				return ReadOnlyCollectionValueModelTests.collection();
-			}
-		};
-	}
+    protected void setUp() throws Exception {
+        super.setUp();
+        this.collectionHolder = this.buildCollectionHolder();
+    }
 
-	static Iterator collection() {
-		return getCollection().iterator();
-	}
+    private CollectionValueModel buildCollectionHolder() {
+        return new AbstractReadOnlyCollectionValueModel() {
+            public Object getValue() {
+                return ReadOnlyCollectionValueModelTests.collection();
+            }
+        };
+    }
 
-	private static Collection getCollection() {
-		if (collection == null) {
-			collection = buildCollection();
-		}
-		return collection;
-	}
+    static Iterator collection() {
+        return getCollection().iterator();
+    }
 
-	private static Collection buildCollection() {
-		Collection result = new HashBag();
-		result.add("foo");
-		result.add("bar");
-		return result;
-	}
+    private static Collection getCollection() {
+        if (collection == null) {
+            collection = buildCollection();
+        }
+        return collection;
+    }
 
-	protected void tearDown() throws Exception {
-		TestTools.clear(this);
-		super.tearDown();
-	}
+    private static Collection buildCollection() {
+        Collection result = new HashBag();
+        result.add("foo");
+        result.add("bar");
+        return result;
+    }
 
-	public void testGetValue() {
-		assertEquals(buildCollection(), CollectionTools.bag((Iterator) this.collectionHolder.getValue()));
-	}
+    protected void tearDown() throws Exception {
+        TestTools.clear(this);
+        super.tearDown();
+    }
 
-	public void testSize() {
-		assertEquals(buildCollection().size(), this.collectionHolder.size());
-	}
+    public void testGetValue() {
+        assertEquals(buildCollection(), CollectionTools.bag((Iterator) this.collectionHolder.getValue()));
+    }
+
+    public void testSize() {
+        assertEquals(buildCollection().size(), this.collectionHolder.size());
+    }
 
 }

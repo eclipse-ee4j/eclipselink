@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.simultaneous;
 
 import java.io.*;
@@ -180,7 +180,7 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
             testThreadListener[i] = new SynchronizedTesterImpl();
 
             test[i].setExecutor(testExecutorWithClientSession[i]);
-                 
+
             // That's a personal thread for the test
             testThread[i] = new SynchronizedTestExecutor(testExecutorWithClientSession[i], test[i], testThreadListener[i]);
             testThread[i].setName("Test Thread " + i);
@@ -195,7 +195,7 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
 
     // In order for MultithreadTestCase to run, it needs
     // a ServerSession to be returned by TestExecutor.getSession().
-    // This method takes a session originally held by TestExecutor 
+    // This method takes a session originally held by TestExecutor
     // (typically DatabaseSession) - and returns the ServerSession
     // which should be set as a Session into TestExecutor.
     // The possible variants:
@@ -209,7 +209,7 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
     static public Session setupNewSession(Session originalSession, boolean useSequenceConnectionPool) {
         // Note that because ServerSession.isDatabaseSession() returns true
         // it is important to call isServerSession() before
-        // isDatabaseSession() is called 
+        // isDatabaseSession() is called
         if (originalSession.isServerSession()) {
             return originalSession;
         } else if (originalSession.isDatabaseSession()) {
@@ -224,7 +224,7 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
             if (useSequenceConnectionPool) {
                 serverSession.getSequencingControl().setShouldUseSeparateConnection(true);
             } else {
-                serverSession.getSequencingControl().setShouldUseSeparateConnection(false);                
+                serverSession.getSequencingControl().setShouldUseSeparateConnection(false);
             }
             serverSession.login();
 
@@ -304,7 +304,7 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
     static public void resetOriginalSession(Session originalSession, Session newSession) {
         // Note that because ServerSession.isDatabaseSession() returns true
         // it is important to call isServerSession() before
-        // isDatabaseSession() is called 
+        // isDatabaseSession() is called
         if (originalSession.isServerSession()) {
             // Assuming that originalSession == newSession
             // (see setNewSession(..))

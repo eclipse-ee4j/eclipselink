@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
 
 import java.util.ArrayList;
@@ -48,10 +48,10 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
     private DocumentPreservationPolicy docPresPolicy;
     protected Object currentObject;
     protected AbstractSession session;
-    
+
     protected boolean hasCustomNamespaceMapper;
     protected boolean equalNamespaceResolvers = false;
-    
+
     private AbstractMarshalRecord<AbstractSession, DatabaseField, XMLMarshaller, NamespaceResolver> abstractMarshalRecord;
 
     /**
@@ -83,13 +83,13 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
     public Object put(String key, Object value) {
         return put(new XMLField(key), value);
     }
-    
-    
+
+
     /**
      * Marshal an attribute for the give namespaceURI, localName, preifx and value
      * @param namespaceURI
      * @param localName
-     * @param prefix     
+     * @param prefix
      * @param value
      */
     public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value){
@@ -99,12 +99,12 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
         }
         attribute(namespaceURI, localName, qualifiedName, value);
     }
-       
+
     /**
      * Marshal an attribute for the give namespaceURI, localName, qualifiedName and value
      * @param namespaceURI
      * @param localName
-     * @param qName     
+     * @param qName
      * @param value
      */
     public void attribute(String namespaceURI, String localName, String qName, String value){
@@ -113,23 +113,23 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
         xmlField.getLastXPathFragment().setNamespaceURI(namespaceURI);
         add(xmlField, value);
     }
-    
+
     /**
      * Marshal a namespace declaration for the given prefix and url
      * @param prefix
      * @param namespaceURI
      */
     public void namespaceDeclaration(String prefix, String namespaceURI){
-        
+
         String existingPrefix = getNamespaceResolver().resolveNamespaceURI(namespaceURI);
-        if(existingPrefix == null || (existingPrefix != null && !existingPrefix.equals(XMLConstants.EMPTY_STRING) && !existingPrefix.equals(prefix))){        
+        if(existingPrefix == null || (existingPrefix != null && !existingPrefix.equals(XMLConstants.EMPTY_STRING) && !existingPrefix.equals(prefix))){
             XMLField xmlField = new XMLField("@" + javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + prefix);
             xmlField.setNamespaceResolver(getNamespaceResolver());
             xmlField.getXPathFragment().setNamespaceURI(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
             add(xmlField, namespaceURI);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Get the local name of the context root element.
@@ -184,7 +184,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
             return new XMLField(databaseField.getName());
         }
     }
-    
+
     protected List<XMLField> convertToXMLField(List<DatabaseField> databaseFields) {
         ArrayList<XMLField> xmlFields = new ArrayList(databaseFields.size());
         for(DatabaseField next:databaseFields) {
@@ -251,7 +251,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
     public void setDocPresPolicy(DocumentPreservationPolicy policy) {
         this.docPresPolicy = policy;
     }
-    
+
     public DocumentPreservationPolicy getDocPresPolicy() {
         return docPresPolicy;
     }
@@ -306,7 +306,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
     public void setLeafElementType(QName leafElementType) {
         abstractMarshalRecord.setLeafElementType(leafElementType);
     }
-    
+
     public void setNamespaceResolver(NamespaceResolver nr) {
         abstractMarshalRecord.setNamespaceResolver(nr);
     }
@@ -340,7 +340,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
     public void setXOPPackage(boolean isXOPPackage) {
         abstractMarshalRecord.setXOPPackage(isXOPPackage);
     }
-    
+
     /**
      * INTERNAL:
      * Determine if namespaces will be considered during marshal/unmarshal operations.
@@ -348,20 +348,20 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
      */
     @Override
     public boolean isNamespaceAware() {
-    	return abstractMarshalRecord.isNamespaceAware();
+        return abstractMarshalRecord.isNamespaceAware();
     }
-    
+
     /**
      * INTERNAL:
-	 * The character used to separate the prefix and uri portions when namespaces are present 
+     * The character used to separate the prefix and uri portions when namespaces are present
      * @since 2.4
-     */    
+     */
     public char getNamespaceSeparator(){
-    	return XMLConstants.COLON;
+        return XMLConstants.COLON;
     }
-	
+
     public boolean hasCustomNamespaceMapper() {
-    	return hasCustomNamespaceMapper;    	
+        return hasCustomNamespaceMapper;
     }
 
     public void setCustomNamespaceMapper(boolean customNamespaceMapper) {

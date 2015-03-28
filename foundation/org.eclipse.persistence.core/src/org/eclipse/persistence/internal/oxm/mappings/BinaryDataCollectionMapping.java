@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,14 +45,14 @@ public interface BinaryDataCollectionMapping<
      */
     public String getMimeType();
 
-    public String getMimeType(Object object); 
-    
+    public String getMimeType(Object object);
+
     public MIME_TYPE_POLICY getMimeTypePolicy();
 
     public AbstractNullPolicy getNullPolicy();
-    
+
     public boolean isSwaRef();
-    
+
     public boolean isWriteOnly();
 
     /**
@@ -69,17 +69,17 @@ public interface BinaryDataCollectionMapping<
      * Set the field in the mapping.
      * This can be used for advanced field types, such as XML nodes, or to set the field type.
      */
-    public void setField(FIELD theField);    
-    
-    public void setIsWriteOnly(boolean b);           
-    	
+    public void setField(FIELD theField);
+
+    public void setIsWriteOnly(boolean b);
+
 
     /**
      * Allow implementer to set the MimeTypePolicy class FixedMimeTypePolicy or AttributeMimeTypePolicy (dynamic)
      * @param aPolicy MimeTypePolicy
      */
     public void setMimeTypePolicy(MIME_TYPE_POLICY aPolicy);
-           
+
     /**
      * Set the AbstractNullPolicy on the mapping<br>
      * The default policy is NullPolicy.<br>
@@ -87,17 +87,17 @@ public interface BinaryDataCollectionMapping<
      * @param aNullPolicy
      */
     public void setNullPolicy(AbstractNullPolicy aNullPolicy);
-    
-    public void setShouldInlineBinaryData(boolean b);    
-    
-    public void setSwaRef(boolean swaRef);    
+
+    public void setShouldInlineBinaryData(boolean b);
+
+    public void setSwaRef(boolean swaRef);
     /**
      * Set the converter on the mapping.
      * A converter can be used to convert between the direct collection's object value and database value.
      */
-    public void setValueConverter(CONVERTER valueConverter);       
-        
+    public void setValueConverter(CONVERTER valueConverter);
+
     public boolean shouldInlineBinaryData();
-    
+
     public void useCollectionClassName(String concreteContainerClassName);
 }

@@ -17,7 +17,7 @@
                 </xml-element-ref>
             </java-attributes>
         </java-type>
-        
+
         <java-type name="mynamespace.Phone">
             <xml-root-element name="phone"/>
             <java-attributes>

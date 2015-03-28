@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
 import java.util.ArrayList;
@@ -57,18 +57,18 @@ public class LoadAndSaveIDRefTestCases extends LoadAndSaveTestCases {
     protected String getControlRootName() {
         return "company";
     }
-    
+
      protected String getRootInterfaceName() {
         return "Company";
     }
 
      // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
      protected List<String> getPackages() {
-         List<String> packages = new ArrayList<String>();       
+         List<String> packages = new ArrayList<String>();
          packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
          return packages;
      }
-     
+
     private Type registerAddressType() {
 
         /****ADDRESS TYPE*****/
@@ -92,18 +92,18 @@ public class LoadAndSaveIDRefTestCases extends LoadAndSaveTestCases {
     }
 
     private Type defineAndPostProcessUnidirectional(String containingPropertyLocalName, DataObject typeToDefine, //
-    		String idPropertyName, String containingPropertyName) {
+            String idPropertyName, String containingPropertyName) {
         setIDPropForReferenceProperties(typeToDefine, idPropertyName);
         // define the current type
-    	Type aType = null;
-    	try {
-    		aType = typeHelper.define(typeToDefine);
-    	} catch (Exception e) {
-    		fail(e.getMessage());
-    	}
+        Type aType = null;
+        try {
+            aType = typeHelper.define(typeToDefine);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
         return aType;
     }
-    
+
     private Type registerItemType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
 
@@ -114,9 +114,9 @@ public class LoadAndSaveIDRefTestCases extends LoadAndSaveTestCases {
         itemType.set(prop, "Item");
         //TODO: anyuri type?
         addProperty(itemType, "itemID", stringType);
-        
+
         addProperty(itemType, "name", stringType);
-        String containingPropertyName = "purchaseOrder";        
+        String containingPropertyName = "purchaseOrder";
         // set unidirectional reference id
         Type aType = defineAndPostProcessUnidirectional("Item", itemType, "itemID", containingPropertyName);
 
@@ -152,11 +152,11 @@ public class LoadAndSaveIDRefTestCases extends LoadAndSaveTestCases {
         addProperty(customerType, "custID", stringType);
         // set unidirectional reference id
         setIDPropForReferenceProperties(customerType, "custID");
-        
+
         //Property poProp = addProperty(customerType, "purchaseOrder", purchaseOrderTypeType, false, false, true);
         //poProp.set("opposite",oppositeProp);
-        
-        //addProperty(customerType, "purchaseOrder", purchaseOrderTypeType);      
+
+        //addProperty(customerType, "purchaseOrder", purchaseOrderTypeType);
         return customerType;
         //return typeHelper.define(customerType);
     }
@@ -174,25 +174,25 @@ public class LoadAndSaveIDRefTestCases extends LoadAndSaveTestCases {
         prop = (SDOProperty)purchaseOrderTypeType.getType().getProperty("name");
         purchaseOrderTypeType.set(prop, "PurchaseOrder");
         addProperty(purchaseOrderTypeType, "poID", stringType,false, false,true);
-        DataObject shipToProp = addProperty(purchaseOrderTypeType, "shipTo", addressType,true, false, true);        
-        DataObject billToProp = addProperty(purchaseOrderTypeType, "billTo", addressType,true, false, true);        
-        DataObject itemProp = addProperty(purchaseOrderTypeType, "item", itemType,false,true,true);    
-        
+        DataObject shipToProp = addProperty(purchaseOrderTypeType, "shipTo", addressType,true, false, true);
+        DataObject billToProp = addProperty(purchaseOrderTypeType, "billTo", addressType,true, false, true);
+        DataObject itemProp = addProperty(purchaseOrderTypeType, "item", itemType,false,true,true);
+
         addProperty(purchaseOrderTypeType, "comment", stringType);
         addProperty(purchaseOrderTypeType, "orderDate", dateType);
         // set unidirectional reference id
         setIDPropForReferenceProperties(purchaseOrderTypeType, "poID");
         DataObject customerTypeDO = getCustomerTypeDO(purchaseOrderTypeType);
-        
-        
+
+
         DataObject customerProp = addProperty(purchaseOrderTypeType, "customer", customerTypeDO,false, false, false);
         DataObject poProp = addProperty(customerTypeDO, "purchaseOrder", purchaseOrderTypeType,false, false, true);
         customerProp.set("opposite", poProp);
         poProp.set("opposite", customerProp);
-        
+
         Type POType = typeHelper.define(purchaseOrderTypeType);
         Type custType = typeHelper.define(customerTypeDO);
-        Type companyType = registerCompanyType(POType, custType);        
+        Type companyType = registerCompanyType(POType, custType);
 
         DataObject propDO = dataFactory.create(propertyType);
         propDO.set("name", getControlRootName());
@@ -202,22 +202,22 @@ public class LoadAndSaveIDRefTestCases extends LoadAndSaveTestCases {
            propDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
     }
-    
+
     public void verifyAfterLoad(XMLDocument doc)
     {
       super.verifyAfterLoad(doc);
-      
+
       Type customerType = typeHelper.getType(getControlRootURI(),"Customer");
       Type poType = typeHelper.getType(getControlRootURI(),"PurchaseOrder");
       assertNotNull(customerType);
       assertNotNull(poType);
-      
+
       Property custProp = poType.getProperty("customer");
       Property poProp = customerType.getProperty("purchaseOrder");
       assertNotNull(custProp);
       assertNotNull(poProp);
       /*assertNotNull(custProp.getOpposite());
-      assertNotNull(poProp.getOpposite());      
+      assertNotNull(poProp.getOpposite());
       assertTrue(custProp == poProp.getOpposite());
       assertTrue(poProp == custProp.getOpposite());*/
     }

@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -42,46 +42,46 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime.misc;
  *  When runtime can be 1.5, I'll make this generic.
  */
 public class IntArray {
-	public static final int INITIAL_SIZE = 10;
-	public int[] data;
-	protected int p = -1;
+    public static final int INITIAL_SIZE = 10;
+    public int[] data;
+    protected int p = -1;
 
-	public void add(int v) {
-		ensureCapacity(p+1);
-		data[++p] = v;
-	}
+    public void add(int v) {
+        ensureCapacity(p+1);
+        data[++p] = v;
+    }
 
-	public void push(int v) {
-		add(v);
-	}
+    public void push(int v) {
+        add(v);
+    }
 
-	public int pop() {
-		int v = data[p];
-		p--;
-		return v;
-	}
+    public int pop() {
+        int v = data[p];
+        p--;
+        return v;
+    }
 
-	/** This only tracks elements added via push/add. */
-	public int size() {
-		return p;
-	}
+    /** This only tracks elements added via push/add. */
+    public int size() {
+        return p;
+    }
 
     public void clear() {
         p = -1;
     }
 
     public void ensureCapacity(int index) {
-		if ( data==null ) {
-			data = new int[INITIAL_SIZE];
-		}
-		else if ( (index+1)>=data.length ) {
-			int newSize = data.length*2;
-			if ( index>newSize ) {
-				newSize = index+1;
-			}
-			int[] newData = new int[newSize];
-			System.arraycopy(data, 0, newData, 0, data.length);
-			data = newData;
-		}
-	}
+        if ( data==null ) {
+            data = new int[INITIAL_SIZE];
+        }
+        else if ( (index+1)>=data.length ) {
+            int newSize = data.length*2;
+            if ( index>newSize ) {
+                newSize = index+1;
+            }
+            int[] newData = new int[newSize];
+            System.arraycopy(data, 0, newData, 0, data.length);
+            data = newData;
+        }
+    }
 }

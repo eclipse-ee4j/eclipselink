@@ -1,9 +1,9 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the terms
 * of the Eclipse Public License v1.0 and Eclipse Distribution License v1.0
 * which accompanies this distribution.
-* 
+*
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
 * and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -36,20 +36,20 @@ import commonj.sdo.Property;
 import commonj.sdo.helper.XMLDocument;
 
 public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
-    
-	public SDOXMLHelperDatatypeTestCase(String name) {
+
+    public SDOXMLHelperDatatypeTestCase(String name) {
         super(name);
     }
 
-	// === METHODS TO OVERRIDE ==========================
-	
+    // === METHODS TO OVERRIDE ==========================
+
     protected abstract Class getDatatypeJavaClass();
-    
-    protected abstract SDOType getValueType();    
-    
+
+    protected abstract SDOType getValueType();
+
     protected abstract String getSchemaNameForUserDefinedType();
-    
-    protected abstract String getSchemaNameForBuiltinType();    
+
+    protected abstract String getSchemaNameForBuiltinType();
 
     protected abstract String getControlFileName();
 
@@ -57,12 +57,12 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
 
     protected abstract String getControlRootName();
 
-	// ==================================================
-    
+    // ==================================================
+
     protected String getSchemaLocation() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/";
     }
-    
+
     protected String getControlWriteFileName() {
         return getControlFileName();
     }
@@ -85,7 +85,7 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
             assertXMLIdentical(getDocument(controlFileName), testDocument);
         }
     }
-    
+
     protected String getControlString(String fileName) {
         try {
             FileInputStream inputStream = new FileInputStream(fileName);
@@ -100,22 +100,22 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
     }
 
     protected void verifyAfterLoad(XMLDocument document) {
-    	assertNotNull(document);
+        assertNotNull(document);
         assertNotNull(((SDOXMLDocument) document).getObject());
-    }    
+    }
 
-	protected void defineTypesFromDataObjects() {
+    protected void defineTypesFromDataObjects() {
         SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
-        
+
         DataObject newProperty = dataFactory.create(propertyType);
         newProperty.set("name", getControlRootName());
         newProperty.set("type", getValueType());
-        
+
         typeHelper.defineOpenContentProperty(getControlRootURI(), newProperty);
-	}    
-    
+    }
+
     // === TEST METHODS =================================
-    
+
     public void testRootObjectInstanceClassForUserDefinedType() throws Exception {
         xsdHelper.define(getSchema(getSchemaNameForUserDefinedType()));
 
@@ -141,57 +141,57 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
     }
 
     public void testLoadAndSaveForUserDefinedType() throws Exception {
-    	xsdHelper.define(getSchema(getSchemaNameForUserDefinedType()));
-    	
+        xsdHelper.define(getSchema(getSchemaNameForUserDefinedType()));
+
         FileInputStream inputStream = new FileInputStream(getControlFileName());
         XMLDocument document = xmlHelper.load(inputStream, null, null);
         verifyAfterLoad(document);
-        
+
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
         ((SDOXMLHelper) xmlHelper).save(document, result, null);
-        
+
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);
-        
+
         compareXML(getControlWriteFileName(), result.getOutputStream().toString());
     }
- 
-	public void testLoadAndSaveForBuiltinType() throws Exception {
-    	xsdHelper.define(getSchema(getSchemaNameForBuiltinType()));
-    	
+
+    public void testLoadAndSaveForBuiltinType() throws Exception {
+        xsdHelper.define(getSchema(getSchemaNameForBuiltinType()));
+
         FileInputStream inputStream = new FileInputStream(getControlFileName());
         XMLDocument document = xmlHelper.load(inputStream, null, null);
         verifyAfterLoad(document);
-        
+
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
         ((SDOXMLHelper) xmlHelper).save(document, result, null);
-        
+
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);
-        
+
         compareXML(getControlWriteFileName(), result.getOutputStream().toString());
     }
-	
+
     public void testLoadAndSaveTypesFromDataObject() throws Exception {
-    	defineTypesFromDataObjects();
-    	
+        defineTypesFromDataObjects();
+
         FileInputStream inputStream = new FileInputStream(getControlFileName());
         XMLDocument document = xmlHelper.load(inputStream, null, null);
         verifyAfterLoad(document);
-        
+
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
         ((SDOXMLHelper) xmlHelper).save(document, result, null);
-        
+
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);
-        
-        compareXML(getControlWriteFileName(), result.getOutputStream().toString());    	
+
+        compareXML(getControlWriteFileName(), result.getOutputStream().toString());
     }
-    
+
 }

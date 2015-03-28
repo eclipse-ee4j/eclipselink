@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,7 +11,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     egwin  - Changed buildNumber to buildDate. Added buildRevision,
  *              buildType, getBuildDate(), getBuildRevision(), getBuildType(),
- *              getVersionString(), printVersionString(), and main()  
+ *              getVersionString(), printVersionString(), and main()
  ******************************************************************************/
 package org.eclipse.persistence;
 
@@ -43,7 +43,7 @@ public class Version {
     private static final String buildRevision = "@BUILD_REVISION@";
     // Typically SNAPSHOT, Milestone name (M1,M2,etc), or RELEASE
     private static final String buildType = "@BUILD_TYPE@";
- 
+
     /** Version numbers separator. */
     private static final char SEPARATOR = '.';
 
@@ -99,7 +99,7 @@ public class Version {
     public static String getBuildNumber() {
         return getBuildDate();
     }
-    
+
     public static String getBuildDate() {
         return buildDate;
     }
@@ -222,7 +222,7 @@ public class Version {
     }
 
     public static void printVersion ( ) {
-        System.out.println( getVersionString() );          
+        System.out.println( getVersionString() );
     }
 
     public static void main ( String[] args ) {

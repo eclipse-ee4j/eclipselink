@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.sessionconsole;
 
 import java.util.*;
@@ -34,10 +34,10 @@ public class ProfileBrowserPanel extends JPanel {
     private JCheckBox ivjQualifyClassNameCheckbox = null;
     IvjEventHandler ivjEventHandler = new IvjEventHandler();
 
-    class IvjEventHandler implements java.awt.event.ActionListener, 
+    class IvjEventHandler implements java.awt.event.ActionListener,
                                      java.awt.event.ItemListener {
         public void actionPerformed(java.awt.event.ActionEvent e) {
-            if (e.getSource() == 
+            if (e.getSource() ==
                 ProfileBrowserPanel.this.getQualifyClassNameCheckbox())
                 connEtoC1(e);
         }
@@ -57,7 +57,7 @@ public class ProfileBrowserPanel extends JPanel {
         super(layout);
     }
 
-    public ProfileBrowserPanel(java.awt.LayoutManager layout, 
+    public ProfileBrowserPanel(java.awt.LayoutManager layout,
                                boolean isDoubleBuffered) {
         super(layout, isDoubleBuffered);
     }
@@ -101,18 +101,18 @@ public class ProfileBrowserPanel extends JPanel {
                 summary.setDomainClass(domainClass);
                 summaries.put(domainClass, summary);
             }
-            summary.setTotalTime(summary.getTotalTime() + 
+            summary.setTotalTime(summary.getTotalTime() +
                                  profile.getTotalTime());
-            summary.setLocalTime(summary.getLocalTime() + 
+            summary.setLocalTime(summary.getLocalTime() +
                                  profile.getLocalTime());
-            summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() + 
+            summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() +
                                                  profile.getNumberOfInstancesEffected());
-            for (Enumeration operationNames = 
-                 profile.getOperationTimings().keys(); 
+            for (Enumeration operationNames =
+                 profile.getOperationTimings().keys();
                  operationNames.hasMoreElements(); ) {
                 String name = (String)operationNames.nextElement();
                 Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime = 
+                long profileTime =
                     ((Long)profile.getOperationTimings().get(name)).longValue();
                 long newTime;
                 if (oldTime == null) {
@@ -125,7 +125,7 @@ public class ProfileBrowserPanel extends JPanel {
         }
 
         Vector summary = new Vector();
-        for (Enumeration profilesEnum = summaries.elements(); 
+        for (Enumeration profilesEnum = summaries.elements();
              profilesEnum.hasMoreElements(); ) {
             summary.addElement(profilesEnum.nextElement());
         }
@@ -152,18 +152,18 @@ public class ProfileBrowserPanel extends JPanel {
                 summary.setQueryClass(queryType);
                 summaries.put(queryType, summary);
             }
-            summary.setTotalTime(summary.getTotalTime() + 
+            summary.setTotalTime(summary.getTotalTime() +
                                  profile.getTotalTime());
-            summary.setLocalTime(summary.getLocalTime() + 
+            summary.setLocalTime(summary.getLocalTime() +
                                  profile.getLocalTime());
-            summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() + 
+            summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() +
                                                  profile.getNumberOfInstancesEffected());
-            for (Enumeration operationNames = 
-                 profile.getOperationTimings().keys(); 
+            for (Enumeration operationNames =
+                 profile.getOperationTimings().keys();
                  operationNames.hasMoreElements(); ) {
                 String name = (String)operationNames.nextElement();
                 Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime = 
+                long profileTime =
                     ((Long)profile.getOperationTimings().get(name)).longValue();
                 long newTime;
                 if (oldTime == null) {
@@ -176,7 +176,7 @@ public class ProfileBrowserPanel extends JPanel {
         }
 
         Vector summary = new Vector();
-        for (Enumeration profilesEnum = summaries.elements(); 
+        for (Enumeration profilesEnum = summaries.elements();
              profilesEnum.hasMoreElements(); ) {
             summary.addElement(profilesEnum.nextElement());
         }
@@ -215,18 +215,18 @@ public class ProfileBrowserPanel extends JPanel {
                 summary.setDomainClass(queryClass);
                 summaryByQuery.put(queryClass, summary);
             }
-            summary.setTotalTime(summary.getTotalTime() + 
+            summary.setTotalTime(summary.getTotalTime() +
                                  profile.getTotalTime());
-            summary.setLocalTime(summary.getLocalTime() + 
+            summary.setLocalTime(summary.getLocalTime() +
                                  profile.getLocalTime());
-            summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() + 
+            summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() +
                                                  profile.getNumberOfInstancesEffected());
-            for (Enumeration operationNames = 
-                 profile.getOperationTimings().keys(); 
+            for (Enumeration operationNames =
+                 profile.getOperationTimings().keys();
                  operationNames.hasMoreElements(); ) {
                 String name = (String)operationNames.nextElement();
                 Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime = 
+                long profileTime =
                     ((Long)profile.getOperationTimings().get(name)).longValue();
                 long newTime;
                 if (oldTime == null) {
@@ -239,10 +239,10 @@ public class ProfileBrowserPanel extends JPanel {
         }
 
         Vector summary = new Vector();
-        for (Enumeration profilesEnum = summaries.elements(); 
+        for (Enumeration profilesEnum = summaries.elements();
              profilesEnum.hasMoreElements(); ) {
-            for (Enumeration byQueryEnum = 
-                 ((Hashtable)profilesEnum.nextElement()).elements(); 
+            for (Enumeration byQueryEnum =
+                 ((Hashtable)profilesEnum.nextElement()).elements();
                  byQueryEnum.hasMoreElements(); ) {
                 summary.addElement(byQueryEnum.nextElement());
             }
@@ -432,34 +432,34 @@ public class ProfileBrowserPanel extends JPanel {
             setBackground(java.awt.SystemColor.control);
             setSize(808, 522);
 
-            java.awt.GridBagConstraints constraintsProfileScrollPane = 
+            java.awt.GridBagConstraints constraintsProfileScrollPane =
                 new java.awt.GridBagConstraints();
             constraintsProfileScrollPane.gridx = 0;
             constraintsProfileScrollPane.gridy = 2;
             constraintsProfileScrollPane.gridwidth = 6;
-            constraintsProfileScrollPane.fill = 
+            constraintsProfileScrollPane.fill =
                     java.awt.GridBagConstraints.BOTH;
             constraintsProfileScrollPane.weightx = 1.0;
             constraintsProfileScrollPane.weighty = 1.0;
             add(getProfileScrollPane(), constraintsProfileScrollPane);
 
-            java.awt.GridBagConstraints constraintsQualifyClassNameCheckbox = 
+            java.awt.GridBagConstraints constraintsQualifyClassNameCheckbox =
                 new java.awt.GridBagConstraints();
             constraintsQualifyClassNameCheckbox.gridx = 0;
             constraintsQualifyClassNameCheckbox.gridy = 1;
-            constraintsQualifyClassNameCheckbox.insets = 
+            constraintsQualifyClassNameCheckbox.insets =
                     new java.awt.Insets(0, 0, 2, 0);
-            add(getQualifyClassNameCheckbox(), 
+            add(getQualifyClassNameCheckbox(),
                 constraintsQualifyClassNameCheckbox);
 
-            java.awt.GridBagConstraints constraintsGroupByLabel = 
+            java.awt.GridBagConstraints constraintsGroupByLabel =
                 new java.awt.GridBagConstraints();
             constraintsGroupByLabel.gridx = 0;
             constraintsGroupByLabel.gridy = 0;
             constraintsGroupByLabel.anchor = java.awt.GridBagConstraints.WEST;
             add(getGroupByLabel(), constraintsGroupByLabel);
 
-            java.awt.GridBagConstraints constraintsGroupByChoice = 
+            java.awt.GridBagConstraints constraintsGroupByChoice =
                 new java.awt.GridBagConstraints();
             constraintsGroupByChoice.gridx = 5;
             constraintsGroupByChoice.gridy = 0;
@@ -513,53 +513,53 @@ public class ProfileBrowserPanel extends JPanel {
                 if (getQualifyClassNameCheckbox().getModel().isSelected()) {
                     items[1] = profile.getDomainClass().getName();
                 } else {
-                    items[1] = 
+                    items[1] =
                             Helper.getShortClassName(profile.getDomainClass());
                 }
             }
             items[2] = new Long(profile.getTotalTime()).toString();
             items[3] = new Long(profile.getLocalTime()).toString();
-            items[4] = 
+            items[4] =
                     new Long(profile.getNumberOfInstancesEffected()).toString();
             items[5] = new Long(profile.getObjectsPerSecond()).toString();
             if (profile.getOperationTimings().containsKey(SessionProfiler.SqlPrepare)) {
-                items[6] = 
+                items[6] =
                         profile.getOperationTimings().get(SessionProfiler.SqlPrepare).toString();
             } else {
                 items[6] = "";
             }
             if (profile.getOperationTimings().containsKey(SessionProfiler.StatementExecute)) {
-                items[7] = 
+                items[7] =
                         profile.getOperationTimings().get(SessionProfiler.StatementExecute).toString();
             } else {
                 items[7] = "";
             }
             if (profile.getOperationTimings().containsKey(SessionProfiler.RowFetch)) {
-                items[8] = 
+                items[8] =
                         profile.getOperationTimings().get(SessionProfiler.RowFetch).toString();
             } else {
                 items[8] = "";
             }
             if (profile.getOperationTimings().containsKey(SessionProfiler.Caching)) {
-                items[9] = 
+                items[9] =
                         profile.getOperationTimings().get(SessionProfiler.Caching).toString();
             } else {
                 items[9] = "";
             }
             if (profile.getOperationTimings().containsKey(SessionProfiler.ObjectBuilding)) {
-                items[10] = 
+                items[10] =
                         profile.getOperationTimings().get(SessionProfiler.ObjectBuilding).toString();
             } else {
                 items[10] = "";
             }
             if (profile.getOperationTimings().containsKey(SessionProfiler.QueryPreparation)) {
-                items[11] = 
+                items[11] =
                         profile.getOperationTimings().get(SessionProfiler.QueryPreparation).toString();
             } else {
                 items[11] = "";
             }
             if (profile.getOperationTimings().containsKey(SessionProfiler.SqlGeneration)) {
-                items[12] = 
+                items[12] =
                         profile.getOperationTimings().get(SessionProfiler.SqlGeneration).toString();
             } else {
                 items[12] = "";

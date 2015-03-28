@@ -1,8 +1,8 @@
 <!--  Copy of OrderBookingPO.xsd with PurchaseOrder type removed, while Contact type was removed from the original -->
-<schema xmlns="http://www.w3.org/2001/XMLSchema" 
-	targetNamespace="http://www.globalcompany.com/ns/order" 
-	xmlns:po="http://www.globalcompany.com/ns/order" 
-	elementFormDefault="qualified">
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.globalcompany.com/ns/order"
+    xmlns:po="http://www.globalcompany.com/ns/order"
+    elementFormDefault="qualified">
   <annotation>
     <documentation xml:lang="en">Order Booking schema for GlobalCompany.com. Copyright 2005 GlobalCompany.com. All rights reserved.</documentation>
   </annotation>

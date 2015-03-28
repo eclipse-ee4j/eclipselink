@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -42,13 +42,13 @@ import org.xml.sax.ext.LexicalHandler;
 
 public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalRecord <XMLMarshaller> {
 
-    protected T position;    
+    protected T position;
     protected CharacterEscapeHandler characterEscapeHandler;
     protected String attributePrefix;
     protected boolean isRootArray;
     protected static final String NULL="null";
     protected boolean isLastEventStart;
-    
+
     /**
      * INTERNAL:
      */
@@ -61,135 +61,135 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         }
         characterEscapeHandler = marshaller.getCharacterEscapeHandler();
     }
-       
+
     public void forceValueWrapper(){
         setComplex(position, true);
         isLastEventStart = false;
     }
-    
+
     @Override
-    public void startDocument(String encoding, String version) {      
+    public void startDocument(String encoding, String version) {
         if(isRootArray){
             if(position == null){
                 startCollection();
             }
             position.setEmptyCollection(false);
-            
+
             position = createNewLevel(false, position);
-            
+
             isLastEventStart = true;
-        }else{            
-            startRootObject();            
+        }else{
+            startRootObject();
         }
     }
-    
+
     protected T createNewLevel(boolean collection, T parentLevel){
-        return (T)new Level(collection, position);        
+        return (T)new Level(collection, position);
     }
-   
+
     protected void startRootObject(){
-        position = createNewLevel(false, null);        
+        position = createNewLevel(false, null);
     }
-    
-    
-    @Override    
+
+
+    @Override
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
         if(position != null){
-            T newLevel = createNewLevel(false, position);            
-            
-            if(isLastEventStart){                              
+            T newLevel = createNewLevel(false, position);
+
+            if(isLastEventStart){
                 //this means 2 startevents in a row so the last this is a complex object
                 setComplex(position, true);
             }
-                      
+
             String keyName = getKeyName(xPathFragment);
-           
+
             if(position.isCollection && position.isEmptyCollection() ){
-                position.setKeyName(keyName);                
+                position.setKeyName(keyName);
                 startEmptyCollection();
             }else{
-                newLevel.setKeyName(keyName);    
+                newLevel.setKeyName(keyName);
             }
-            position = newLevel;   
+            position = newLevel;
             isLastEventStart = true;
         }
-    }     
-    
+    }
+
     protected void startEmptyCollection(){}
-    
+
     /**
-     * Handle marshal of an empty collection.  
+     * Handle marshal of an empty collection.
      * @param xPathFragment
      * @param namespaceResolver
      * @param openGrouping if grouping elements should be marshalled for empty collections
      * @return
-     */    
+     */
     public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
 
          if(marshaller.isMarshalEmptyCollections()){
              super.emptyCollection(xPathFragment, namespaceResolver, true);
-             
+
              if (null != xPathFragment) {
-                 
+
                  if(xPathFragment.isSelfFragment() || xPathFragment.nameIsText()){
                      String keyName = position.getKeyName();
                      setComplex(position, false);
                      writeEmptyCollection((T)position.parentLevel, keyName);
-                 }else{ 
-                     if(isLastEventStart){                         
+                 }else{
+                     if(isLastEventStart){
                          setComplex(position, true);
-                     }                 
+                     }
                      String keyName =  getKeyName(xPathFragment);
                      if(keyName != null){
                          writeEmptyCollection(position, keyName);
                      }
                  }
-                 isLastEventStart = false;   
+                 isLastEventStart = false;
              }
-                  
+
              return true;
          }else{
              return super.emptyCollection(xPathFragment, namespaceResolver, openGrouping);
          }
     }
-      
+
     protected abstract void writeEmptyCollection(T level, String keyName);
-    
+
     @Override
     public void endDocument() {
         if(position != null){
-            finishLevel();          
+            finishLevel();
         }
     }
-    
+
     protected void finishLevel(){
-        position = (T)position.parentLevel; 
+        position = (T)position.parentLevel;
     }
-    
+
     public void startCollection() {
         if(position == null){
-             isRootArray = true;              
+             isRootArray = true;
              position = createNewLevel(true, null);
-             startRootLevelCollection();             
-        } else {            
+             startRootLevelCollection();
+        } else {
             if(isLastEventStart){
-                setComplex((T)position, true);           
-            }            
-            position = createNewLevel(true, position); 
-        }      
+                setComplex((T)position, true);
+            }
+            position = createNewLevel(true, position);
+        }
         isLastEventStart = false;
     }
-    
+
     protected void setComplex(T level, boolean complex){
         level.setComplex(complex);
     }
-    
+
     protected abstract void startRootLevelCollection();
-    
+
     protected String getKeyName(XPathFragment xPathFragment){
-        String keyName = xPathFragment.getLocalName(); 
-       
+        String keyName = xPathFragment.getLocalName();
+
         if(isNamespaceAware()){
             if(xPathFragment.getNamespaceURI() != null){
                 String prefix = null;
@@ -199,17 +199,17 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
                     prefix = namespaceResolver.resolveNamespaceURI(xPathFragment.getNamespaceURI());
                 }
                 if(prefix != null && !prefix.equals(Constants.EMPTY_STRING)){
-                    keyName = prefix + getNamespaceSeparator() +  keyName;                           
+                    keyName = prefix + getNamespaceSeparator() +  keyName;
                 }
             }
-        } 
+        }
         if(xPathFragment.isAttribute() && attributePrefix != null){
             keyName = attributePrefix + keyName;
         }
 
         return keyName;
     }
-   
+
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
         if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI() == javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI){
             return;
@@ -219,7 +219,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         characters(schemaType, value, null, false, true);
         endElement(xPathFragment, namespaceResolver);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -228,18 +228,18 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         if(treeObjectBuilder != null){
             addXsiTypeAndClassIndicatorIfRequired(descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
             treeObjectBuilder.marshalAttributes(this, object, session);
-        }         
+        }
      }
-    
+
     /**
      * INTERNAL:
-     * The character used to separate the prefix and uri portions when namespaces are present 
+     * The character used to separate the prefix and uri portions when namespaces are present
      * @since 2.4
      */
-    public char getNamespaceSeparator(){        
+    public char getNamespaceSeparator(){
         return marshaller.getNamespaceSeparator();
     }
-    
+
     /**
      * INTERNAL:
      * The optional fragment used to wrap the text() mappings
@@ -248,18 +248,18 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
     public XPathFragment getTextWrapperFragment() {
         return textWrapperFragment;
     }
-    
+
     @Override
     public boolean isWrapperAsCollectionName() {
         return marshaller.isWrapperAsCollectionName();
     }
-    
+
     @Override
     public void element(XPathFragment frag) {
         isLastEventStart = false;
     }
-    
-   
+
+
     @Override
     public void attribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver, String value) {
         attribute(xPathFragment, namespaceResolver, value, null);
@@ -276,22 +276,22 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         characters(null, value, null, false, true);
 
         endElement(xPathFragment, namespaceResolver);
-        
+
     }
 
     @Override
-    public void closeStartElement() {}   
-    
+    public void closeStartElement() {}
+
     @Override
     public void characters(String value) {
         writeValue(value, null, false);
     }
 
     @Override
-    public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){          
+    public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){
         characters(schemaType, value, mimeType, isCDATA, false);
      }
-    
+
     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA, boolean isAttribute){
         if(mimeType != null) {
             if(value instanceof List){
@@ -300,12 +300,12 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
 
             value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(value, marshaller, mimeType).getData();
            }
-        }         
+        }
         if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
             String convertedValue = getStringForQName((QName)value);
             writeValue(convertedValue, null, isAttribute);
-        } 
-        else if(value.getClass() == String.class){          
+        }
+        else if(value.getClass() == String.class){
             //if schemaType is set and it's a numeric or boolean type don't treat as a string
             if(schemaType != null && isNumericOrBooleanType(schemaType)){
                 ConversionManager conversionManager = getConversionManager();
@@ -315,7 +315,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
             }else if(isCDATA){
                 cdata((String)value);
             }else{
-                writeValue((String)value, null, isAttribute);                
+                writeValue((String)value, null, isAttribute);
             }
        }else{
            Class<?> theClass = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).javaType(schemaType);
@@ -335,12 +335,12 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
                String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
                cdata(convertedValue);
            }else{
-               writeValue(value, schemaType, isAttribute);           
+               writeValue(value, schemaType, isAttribute);
            }
-       }        
+       }
     }
-    
-    
+
+
     private boolean isNumericOrBooleanType(QName schemaType){
         if(schemaType == null){
             return false;
@@ -365,10 +365,10 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
             return true;
         }
         return false;
-    }        
-    
+    }
+
    public void writeValue(Object value, QName schemaType, boolean isAttribute) {
-        
+
         if (characterEscapeHandler != null && value instanceof String) {
             try {
                 StringWriter stringWriter = new StringWriter();
@@ -378,25 +378,25 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
                 throw XMLMarshalException.marshalException(e);
             }
         }
-        
-        boolean textWrapperOpened = false;                       
+
+        boolean textWrapperOpened = false;
         if(!isLastEventStart){
              openStartElement(textWrapperFragment, namespaceResolver);
              textWrapperOpened = true;
         }
-      
+
         T currentLevel = position;
         String keyName = position.getKeyName();
-        if(!position.isComplex){           
-            currentLevel = (T)position.parentLevel;         
+        if(!position.isComplex){
+            currentLevel = (T)position.parentLevel;
         }
         addValue(currentLevel, keyName, value, schemaType);
         isLastEventStart = false;
-        if(textWrapperOpened){    
+        if(textWrapperOpened){
              endElement(textWrapperFragment, namespaceResolver);
-        }    
+        }
     }
-   
+
    @Override
    public void endElement(XPathFragment xPathFragment,NamespaceResolver namespaceResolver) {
        if(position != null){
@@ -407,31 +407,31 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
                finishLevel();
            }else{
                position = (T) position.parentLevel;
-           }            
-           isLastEventStart = false;          
+           }
+           isLastEventStart = false;
        }
    }
-   
-   private void addValue(T currentLevel, String keyName, Object value, QName schemaType){        
+
+   private void addValue(T currentLevel, String keyName, Object value, QName schemaType){
        if(currentLevel.isCollection()){
            addValueToArray(currentLevel, value, schemaType);
-           currentLevel.setEmptyCollection(false);            
-       } else {            
-           addValueToObject(currentLevel, keyName, value, schemaType);            
+           currentLevel.setEmptyCollection(false);
+       } else {
+           addValueToObject(currentLevel, keyName, value, schemaType);
        }
    }
    protected abstract void addValueToObject(T currentLevel, String keyName, Object value, QName schemaType);
 
    protected abstract void addValueToArray(T currentLevel,  Object value, QName schemaType);
-   
+
     @Override
     public void cdata(String value) {
-        characters(value);        
+        characters(value);
     }
 
     @Override
     public void node(Node node, NamespaceResolver resolver, String uri, String name) {
-       
+
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attr = (Attr) node;
             String resolverPfx = null;
@@ -455,7 +455,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         } else {
             try {
                 JsonRecordContentHandler wrcHandler = new JsonRecordContentHandler();
-                
+
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(wrcHandler);
                 xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
@@ -464,16 +464,16 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
                 throw XMLMarshalException.marshalException(sex);
             }
         }
-        
-    }        
-    
+
+    }
+
     protected String getStringForQName(QName qName){
         if(null == qName) {
             return null;
         }
         CoreConversionManager xmlConversionManager = getSession().getDatasourcePlatform().getConversionManager();
 
-        return (String) xmlConversionManager.convertObject(qName, String.class);       
+        return (String) xmlConversionManager.convertObject(qName, String.class);
     }
 
     /**
@@ -484,10 +484,10 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
 
      public void namespaceDeclaration(String prefix, String namespaceURI){
      }
-     
+
      public void defaultNamespaceDeclaration(String defaultNamespace){
      }
-     
+
     /**
      * INTERNAL:
      */
@@ -503,8 +503,8 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
      * INTERNAL:
      */
      public void nilSimple(NamespaceResolver namespaceResolver){
-         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);         
-         characters(NULL);        
+         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
+         characters(NULL);
          closeStartGroupingElements(groupingFragment);
      }
 
@@ -515,7 +515,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
      public void emptySimple(NamespaceResolver namespaceResolver){
          nilSimple(namespaceResolver);
      }
-     
+
      public void emptyAttribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          openStartElement(xPathFragment, namespaceResolver);
@@ -534,9 +534,9 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
          openStartElement(xPathFragment, namespaceResolver);
          endElement(xPathFragment, namespaceResolver);
      }
-    
-    
-     
+
+
+
      /**
       * This class will typically be used in conjunction with an XMLFragmentReader.
       * The XMLFragmentReader will walk a given XMLFragment node and report events
@@ -561,8 +561,8 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
          public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
              XPathFragment xPathFragment = new XPathFragment(localName);
              xPathFragment.setNamespaceURI(namespaceURI);
-             
-             JsonRecord.this.endElement(xPathFragment, namespaceResolver);        
+
+             JsonRecord.this.endElement(xPathFragment, namespaceResolver);
          }
 
          public void startPrefixMapping(String prefix, String uri) throws SAXException {
@@ -573,8 +573,8 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
              characters(characters);
          }
 
-         public void characters(CharSequence characters) throws SAXException {           
-             JsonRecord.this.characters(characters.toString());      
+         public void characters(CharSequence characters) throws SAXException {
+             JsonRecord.this.characters(characters.toString());
          }
 
          // --------------------- LEXICALHANDLER METHODS --------------------- //
@@ -598,15 +598,15 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
              }
          }
 
-         protected void writeComment(char[] chars, int start, int length) {        
+         protected void writeComment(char[] chars, int start, int length) {
          }
-        
+
          protected void writeCharacters(char[] chars, int start, int length) {
              try {
                  characters(chars, start, length);
              } catch (SAXException e) {
                  throw XMLMarshalException.marshalException(e);
-             }           
+             }
          }
          // --------------- SATISFY CONTENTHANDLER INTERFACE --------------- //
          public void endPrefixMapping(String prefix) throws SAXException {}
@@ -627,19 +627,19 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
 
      }
 
-     
+
      /**
      * Instances of this class are used to maintain state about the current
      * level of the JSON message being marshalled.
      */
     protected static class Level {
-        
+
         protected boolean isCollection;
         protected boolean emptyCollection;
-        protected String keyName;        
+        protected String keyName;
         protected boolean isComplex;
         protected Level parentLevel;
-        
+
         public Level(boolean isCollection, Level parentLevel) {
             setCollection(isCollection);
             emptyCollection = true;
@@ -651,7 +651,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         }
 
         public void setCollection(boolean isCollection) {
-            this.isCollection = isCollection;           
+            this.isCollection = isCollection;
         }
 
         public String getKeyName() {
@@ -660,7 +660,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
 
         public void setKeyName(String keyName) {
             this.keyName = keyName;
-        }      
+        }
 
         public boolean isEmptyCollection() {
             return emptyCollection;
@@ -674,7 +674,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         }
 
         public void setComplex(boolean isComplex) {
-            this.isComplex = isComplex;           
+            this.isComplex = isComplex;
         }
 
     }

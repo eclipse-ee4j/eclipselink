@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/19/2015 - Rick Curtis  
+ *     02/19/2015 - Rick Curtis
  *       - 458877 : Add national character support
  *****************************************************************************/
 package org.eclipse.persistence.jpa.test.basic;
@@ -36,7 +36,7 @@ public class TestNVarChar {
             @Property(name = "eclipselink.target-database-properties",
                     value = "UseNationalCharacterVaryingTypeForString=true"), })
     private EntityManagerFactory emf;
-    
+
     final String latinChars = new String("\u0274\u0275");
 
     @Test
@@ -60,7 +60,7 @@ public class TestNVarChar {
             em.close();
         }
     }
-    
+
     @Test
     public void testNoUnicodePersist() {
         EntityManager em = emf.createEntityManager();
@@ -82,7 +82,7 @@ public class TestNVarChar {
             em.close();
         }
     }
-    
+
     @Test
     public void testJPQL() {
         // Latin characters

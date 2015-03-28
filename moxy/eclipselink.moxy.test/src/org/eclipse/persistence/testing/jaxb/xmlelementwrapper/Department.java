@@ -11,28 +11,28 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Department
-{ 
+{
     @XmlElement(namespace = "http://www.somenamespace.org/")
     public String name;
-    
+
     @XmlElementWrapper(name = "employees", namespace = "http://www.somenamespace.org/")
     @XmlElement(name = "employee",  namespace = "http://www.somenamespace.org/")
     public Employee[] employees;
-    
+
     /**
      * Assumes the contents of the array is relevant, but not ordering.
-     * 
+     *
      */
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Department)) {
             return false;
         }
         Department dept = (Department) obj;
-        
+
         if (dept.employees == null && employees == null) {
             return true;
         }
-        
+
         if (dept.employees == null && employees != null) {
             return false;
         }
@@ -49,7 +49,7 @@ public class Department
                 if (dept.employees[j].equals(employees[i])) {
                     foundMatch = true;
                 }
-            }   
+            }
             if (!foundMatch) {
                 return false;
             }
@@ -61,5 +61,5 @@ public class Department
     public String toString() {
         return "Department [employees=" + Arrays.toString(employees) + ", name=" + name + "]";
     }
-} 
+}
 

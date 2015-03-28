@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.factories.model.transport.naming;
 
 import java.util.Vector;
@@ -27,11 +27,11 @@ public class JNDINamingServiceConfig {
     private Vector m_propertyConfigs;
 
     public JNDINamingServiceConfig() {
-        // Without setting the encryption class name the object holder will 
+        // Without setting the encryption class name the object holder will
         // default to JCE.
         m_securableObjectHolder = new SecurableObjectHolder();
     }
-    
+
     public void setURL(String url) {
         m_url = url;
     }
@@ -84,7 +84,7 @@ public class JNDINamingServiceConfig {
         } else if (encryptedPassword.length() == 0) {
             m_encryptedPassword = new char[0];
         } else {
-            // If the decrypted password is the same as the encrypted one then 
+            // If the decrypted password is the same as the encrypted one then
             // it was not encrypted so make sure to store the encrypted password.
             if (encryptedPassword.equals(m_securableObjectHolder.getSecurableObject().decryptPassword(encryptedPassword))) {
                 m_encryptedPassword = m_securableObjectHolder.getSecurableObject().encryptPassword(encryptedPassword).toCharArray();

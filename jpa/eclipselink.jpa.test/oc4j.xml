@@ -1,9 +1,9 @@
 <!--/*******************************************************************************
-* This program and the accompanying materials are made available under the 
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
-* which accompanies this distribution. 
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at 
+* and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 *   Ant naming conventions:
@@ -20,7 +20,7 @@
 *     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatenated
-*     e.g. 'runpathref'  
+*     e.g. 'runpathref'
 *   - multi-word tasks (taskdef) names are concatenated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
@@ -50,7 +50,7 @@
     <property name="eclipselink.lib" value="../../${eclipselink.jar}"/>
 
     <!--
-        This target is to install OC4J server at ${oc4j.home}. 
+        This target is to install OC4J server at ${oc4j.home}.
         Before calling this target, you need to obtain Oracle OC4J standalone zip - oc4j.extended.zip and put it at ${extension.oracle.lib.external}
     -->
     <target name="oc4j-install">

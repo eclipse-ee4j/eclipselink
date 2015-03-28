@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.nls.japanese;
 
 import org.eclipse.persistence.testing.framework.*;
@@ -41,33 +41,33 @@ public class NLSMappingWorkbenchIntegrationTestModel extends TestModel {
         addTest(NLSEmployeeBasicTestModel.getInsertObjectTestSuite());
         addTest(NLSEmployeeBasicTestModel.getDeleteObjectTestSuite());
         addTest(NLSEmployeeBasicTestModel.getReadAllTestSuite());
-        /*	
-	// Inheritance Tests
-	addTest(InheritanceTestModel.getDuplicateFieldTestSuite());	
-	addTest(InheritanceTestModel.getReadObjectTestSuite());
-	addTest(InheritanceTestModel.getReadAllTestSuite());
-	addTest(InheritanceTestModel.getDeleteObjectTestSuite());
-	addTest(InheritanceTestModel.getInsertObjectTestSuite());
-	addTest(InheritanceTestModel.getUpdateObjectTestSuite());
-	addTest(InheritanceTestModel.getUnitOfWorkTestSuite());
-	addTest(InheritanceTestModel.getUnitOfWorkCommitResumeTestSuite());
-	addTest(InheritanceTestModel.getDeepInheritanceTestSuite());
-	addTest(InheritanceTestModel.getTranslatedKeyInheritanceTestSuite());
-	
-	// Aggregate Tests
-	addTest(AggregateTestModel.getReadObjectTestSuite());
-	addTest(AggregateTestModel.getUpdateObjectTestSuite());	
-	addTest(AggregateTestModel.getReadAllTestSuite());
-	addTest(AggregateTestModel.getDeleteObjectTestSuite());
-	addTest(AggregateTestModel.getInsertObjectTestSuite());
-	addTest(AggregateTestModel.getUnitOfWorkTestSuite());
-	addTest(AggregateTestModel.getUnitOfWorkCommitResumeTestSuite());
-	addTest(AggregateTestModel.getCheckForNullUnitOfWorkTestSuite());
-	addTest(AggregateTestModel.getMergingUnitOfWorkTestSuite());
-	addTest(AggregateTestModel.getDescriptorPropertiesTestSuite());
-	addTest(AggregateTestModel.getEventTestSuite());
-	addTest(AggregateTestModel.getNestedAggregateTestSuite());
-	addTest(AggregateTestModel.getAggregateInheritanceTestSuite());
+        /*
+    // Inheritance Tests
+    addTest(InheritanceTestModel.getDuplicateFieldTestSuite());
+    addTest(InheritanceTestModel.getReadObjectTestSuite());
+    addTest(InheritanceTestModel.getReadAllTestSuite());
+    addTest(InheritanceTestModel.getDeleteObjectTestSuite());
+    addTest(InheritanceTestModel.getInsertObjectTestSuite());
+    addTest(InheritanceTestModel.getUpdateObjectTestSuite());
+    addTest(InheritanceTestModel.getUnitOfWorkTestSuite());
+    addTest(InheritanceTestModel.getUnitOfWorkCommitResumeTestSuite());
+    addTest(InheritanceTestModel.getDeepInheritanceTestSuite());
+    addTest(InheritanceTestModel.getTranslatedKeyInheritanceTestSuite());
+
+    // Aggregate Tests
+    addTest(AggregateTestModel.getReadObjectTestSuite());
+    addTest(AggregateTestModel.getUpdateObjectTestSuite());
+    addTest(AggregateTestModel.getReadAllTestSuite());
+    addTest(AggregateTestModel.getDeleteObjectTestSuite());
+    addTest(AggregateTestModel.getInsertObjectTestSuite());
+    addTest(AggregateTestModel.getUnitOfWorkTestSuite());
+    addTest(AggregateTestModel.getUnitOfWorkCommitResumeTestSuite());
+    addTest(AggregateTestModel.getCheckForNullUnitOfWorkTestSuite());
+    addTest(AggregateTestModel.getMergingUnitOfWorkTestSuite());
+    addTest(AggregateTestModel.getDescriptorPropertiesTestSuite());
+    addTest(AggregateTestModel.getEventTestSuite());
+    addTest(AggregateTestModel.getNestedAggregateTestSuite());
+    addTest(AggregateTestModel.getAggregateInheritanceTestSuite());
 */
         //UTF-8 support -was not in tl904: March 14, 2003
         //addTest(getUTF8TestSuite());
@@ -78,16 +78,16 @@ public class NLSMappingWorkbenchIntegrationTestModel extends TestModel {
 
     }
     /*
- //this was not in tl904: March 14, 2003	
+ //this was not in tl904: March 14, 2003
 public static TestSuite getUTF8TestSuite()
 {
-	TestSuite suite = new TestSuite();
-	suite.setName("UTF8TestSuite");
-	suite.setDescription("Contains tests to test only UTF-8 is supported.");
-	
-	suite.addTest(new ProjectXMLUTF8EncodingTest());
-	suite.addTest(new ProjectXMLUTF16EncodingTest());
-	return suite;	
+    TestSuite suite = new TestSuite();
+    suite.setName("UTF8TestSuite");
+    suite.setDescription("Contains tests to test only UTF-8 is supported.");
+
+    suite.addTest(new ProjectXMLUTF8EncodingTest());
+    suite.addTest(new ProjectXMLUTF16EncodingTest());
+    return suite;
 }
 */
 

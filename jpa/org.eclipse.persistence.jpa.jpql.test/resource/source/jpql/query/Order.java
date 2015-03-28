@@ -24,9 +24,9 @@ import javax.persistence.NamedQuery;
 @SuppressWarnings("unused")
 public class Order {
 
-	private BigInteger price;
-	private BigDecimal realPrice;
-	private double totalPrice;
-	@Id private int id;
-	private String number;
+    private BigInteger price;
+    private BigDecimal realPrice;
+    private double totalPrice;
+    @Id private int id;
+    private String number;
 }

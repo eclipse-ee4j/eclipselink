@@ -4,12 +4,12 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Denise Smith -  July 9, 2009 Initial test
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.singleobject;
 
 import java.io.InputStream;
@@ -31,50 +31,50 @@ import org.xml.sax.XMLReader;
 
 public class JAXBSingleObjectIntegerXsiTestCases extends JAXBWithJSONTestCases {
 
-	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectXsiType.xml";
-	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectXsiType.json";
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectXsiType.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectXsiType.json";
 
-	public JAXBSingleObjectIntegerXsiTestCases(String name) throws Exception {
-		super(name);
-		init();
-	}
+    public JAXBSingleObjectIntegerXsiTestCases(String name) throws Exception {
+        super(name);
+        init();
+    }
 
-	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-	
-		Class[] classes = new Class[1];
-		classes[0] = Object.class;
-		setClasses(classes);
+    public void init() throws Exception {
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 
-		Map<String, String> namespaces = new HashMap<String, String>();
+        Class[] classes = new Class[1];
+        classes[0] = Object.class;
+        setClasses(classes);
+
+        Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
         namespaces.put("rootNamespace", "ns0");
         getJSONUnmarshaller().setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
         getJSONMarshaller().setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
-	}
+    }
 
-	public void testSchemaGen() throws Exception {
-		MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-		getJAXBContext().generateSchema(outputResolver);
-		
-		assertEquals("A Schema was generated but should not have been", 0, outputResolver.getSchemaFiles().size()); 
-	}
-	
-	public List<InputStream> getControlSchemaFiles() {
-		//not applicable for this test since we override testSchemaGen
-		return null;  		
-	}
+    public void testSchemaGen() throws Exception {
+        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+        getJAXBContext().generateSchema(outputResolver);
+
+        assertEquals("A Schema was generated but should not have been", 0, outputResolver.getSchemaFiles().size());
+    }
+
+    public List<InputStream> getControlSchemaFiles() {
+        //not applicable for this test since we override testSchemaGen
+        return null;
+    }
     public Object getWriteControlObject() {
         return getControlObject();
     }
 
-	protected Object getControlObject() {		
-		Integer testInteger = 25;		
-		QName qname = new QName("rootNamespace", "root");				
-		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, testInteger);
-		return jaxbElement;
-	}
+    protected Object getControlObject() {
+        Integer testInteger = 25;
+        QName qname = new QName("rootNamespace", "root");
+        JAXBElement jaxbElement = new JAXBElement(qname, Object.class, testInteger);
+        return jaxbElement;
+    }
 
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
@@ -85,14 +85,14 @@ public class JAXBSingleObjectIntegerXsiTestCases extends JAXBWithJSONTestCases {
             xmlToObjectTest(testObject);
         }
     }
-    
+
     public void testXMLToObjectFromURL() throws Exception {
         java.net.URL url = ClassLoader.getSystemResource(resourceName);
         Object testObject = jaxbUnmarshaller.unmarshal(url);
         xmlToObjectTest(testObject);
     }
-    
-    
+
+
     public void testUnmarshallerHandler() throws Exception {
         SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
         saxParserFactory.setNamespaceAware(true);
@@ -109,13 +109,13 @@ public class JAXBSingleObjectIntegerXsiTestCases extends JAXBWithJSONTestCases {
         xmlToObjectTest(jaxbUnmarshallerHandler.getResult());
     }
 
-    
+
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         Object testObject = jaxbUnmarshaller.unmarshal(instream);
         instream.close();
         xmlToObjectTest(testObject);
     }
-	
+
 
 }

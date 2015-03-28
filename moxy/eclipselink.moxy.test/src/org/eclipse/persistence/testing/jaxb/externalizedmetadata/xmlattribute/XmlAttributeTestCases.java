@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,15 +33,15 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
  *
  */
 public class XmlAttributeTestCases extends JAXBWithJSONTestCases {
-	
+
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlattribute/employee.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlattribute/employee.json";
     private static final String XML_RESOURCE_INVALID = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlattribute/employee-invalid.xml";
 
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public XmlAttributeTestCases(String name) throws Exception{
@@ -50,48 +50,48 @@ public class XmlAttributeTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{Employee.class});
     }
-    
-    public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlattribute/eclipselink-oxm.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattribute", new StreamSource(inputStream));
-	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-        
+    public Map getProperties(){
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlattribute/eclipselink-oxm.xml");
+
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattribute", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
         return properties;
-	}
-    
-    
-    public void testSchemaGen() throws Exception{
-    	List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlattribute/schema.xsd");
-    	
-    	controlSchemas.add(is);
-    	
-    	super.testSchemaGen(controlSchemas);
-    	
-    	
     }
- 
+
+
+    public void testSchemaGen() throws Exception{
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlattribute/schema.xsd");
+
+        controlSchemas.add(is);
+
+        super.testSchemaGen(controlSchemas);
+
+
+    }
+
 
     /**
      * Tests @XmlAttribute override via eclipselink-oxm.xml.  The id attribute
      * is set to 'required' in the xml file, but the instance document does
      * not have an id attribute.
-     * 
+     *
      * Negative test.
      */
     public void testXmlAttributeOverrideInvalid() {
-    	InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlattribute/schema.xsd");
-    	
-    	String result =super.validateAgainstSchema(ClassLoader.getSystemResourceAsStream(XML_RESOURCE_INVALID), new StreamSource(is2));
+        InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlattribute/schema.xsd");
+
+        String result =super.validateAgainstSchema(ClassLoader.getSystemResourceAsStream(XML_RESOURCE_INVALID), new StreamSource(is2));
         assertTrue("Schema validation passed unxepectedly", result != null);
     }
-  
+
     /**
      * Test setting the container class via container-type attribute.
-     * 
+     *
      * Positive test.
      */
     public void testContainerType() {
@@ -103,17 +103,17 @@ public class XmlAttributeTestCases extends JAXBWithJSONTestCases {
         assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 
-	@Override
-	protected Object getControlObject() {
-		Employee emp = new Employee();
-		emp.id = 66;
-		emp.firstName = "Joe";
-		emp.lastName = "Oracle";
-		List thingsList = new ArrayList();
-		thingsList.add("thinga");
-		thingsList.add("thingb");
-		emp.things = thingsList;
-		
-		return emp;
-	}
+    @Override
+    protected Object getControlObject() {
+        Employee emp = new Employee();
+        emp.id = 66;
+        emp.firstName = "Joe";
+        emp.lastName = "Oracle";
+        List thingsList = new ArrayList();
+        thingsList.add("thinga");
+        thingsList.add("thingb");
+        emp.things = thingsList;
+
+        return emp;
+    }
 }

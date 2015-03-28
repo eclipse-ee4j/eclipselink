@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,72 +44,72 @@ import org.eclipse.persistence.jpa.jpql.tools.resolver.ResolverBuilder;
  */
 public class EclipseLinkJPQLQueryContext extends JPQLQueryContext {
 
-	/**
-	 * Creates a new <code>EclipseLinkJPQLQueryContext</code>.
-	 *
-	 * @param jpqlGrammar The grammar that defines how to parse a JPQL query
-	 */
-	public EclipseLinkJPQLQueryContext(JPQLGrammar jpqlGrammar) {
-		super(jpqlGrammar);
-	}
+    /**
+     * Creates a new <code>EclipseLinkJPQLQueryContext</code>.
+     *
+     * @param jpqlGrammar The grammar that defines how to parse a JPQL query
+     */
+    public EclipseLinkJPQLQueryContext(JPQLGrammar jpqlGrammar) {
+        super(jpqlGrammar);
+    }
 
-	/**
-	 * Creates a new <code>EclipseLinkJPQLQueryContext</code>.
-	 *
-	 * @param parent The parent context
-	 * @param currentQuery The parsed tree representation of the subquery
-	 */
-	protected EclipseLinkJPQLQueryContext(JPQLQueryContext parent, Expression currentQuery) {
-		super(parent, currentQuery);
-	}
+    /**
+     * Creates a new <code>EclipseLinkJPQLQueryContext</code>.
+     *
+     * @param parent The parent context
+     * @param currentQuery The parsed tree representation of the subquery
+     */
+    protected EclipseLinkJPQLQueryContext(JPQLQueryContext parent, Expression currentQuery) {
+        super(parent, currentQuery);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DeclarationResolver buildDeclarationResolver(DeclarationResolver parent) {
-		return new EclipseLinkDeclarationResolver(parent, this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected DeclarationResolver buildDeclarationResolver(DeclarationResolver parent) {
+        return new EclipseLinkDeclarationResolver(parent, this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLQueryContext buildJPQLQueryContext(JPQLQueryContext currentContext,
-	                                                 Expression currentQuery) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLQueryContext buildJPQLQueryContext(JPQLQueryContext currentContext,
+                                                     Expression currentQuery) {
 
-		return new EclipseLinkJPQLQueryContext(currentContext, currentQuery);
-	}
+        return new EclipseLinkJPQLQueryContext(currentContext, currentQuery);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected LiteralVisitor buildLiteralVisitor() {
-		return new EclipseLinkLiteralVisitor();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected LiteralVisitor buildLiteralVisitor() {
+        return new EclipseLinkLiteralVisitor();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected EclipseLinkParameterTypeVisitor buildParameterTypeVisitor() {
-		return new EclipseLinkParameterTypeVisitor(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EclipseLinkParameterTypeVisitor buildParameterTypeVisitor() {
+        return new EclipseLinkParameterTypeVisitor(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ResolverBuilder buildResolverBuilder() {
-		return new EclipseLinkResolverBuilder(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ResolverBuilder buildResolverBuilder() {
+        return new EclipseLinkResolverBuilder(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public EclipseLinkJPQLQueryContext getParent() {
-		return (EclipseLinkJPQLQueryContext) super.getParent();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EclipseLinkJPQLQueryContext getParent() {
+        return (EclipseLinkJPQLQueryContext) super.getParent();
+    }
 }

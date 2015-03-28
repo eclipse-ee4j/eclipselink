@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -52,7 +52,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
 
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public XmlJoinNodeTestCases(String name) throws Exception{
@@ -64,17 +64,17 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         namespaces.put("http://www.example.com", "x");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
-    
+
     protected Marshaller getJSONMarshaller() throws Exception{
-    	Marshaller m = jaxbContext.createMarshaller();
-    	Map<String, String> namespaces = new HashMap<String, String>();
+        Marshaller m = jaxbContext.createMarshaller();
+        Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("http://www.example.com", "x");
         m.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
         m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-    	return m;
+        return m;
     }
-    
-  
+
+
     /**
      * Return the control Company object.
      */
@@ -94,32 +94,32 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         return new Company(empList, addList);
     }
 
-    
-    public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream(OXM_DOC);
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-        
-        return properties;
-	}    
 
-	public void testSchemaGen() throws Exception{
-    	List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream(XSD_DOC);    	
-    	InputStream is2 = ClassLoader.getSystemResourceAsStream(WORK_ADD_XSD_DOC);;    	
-    	controlSchemas.add(is);    	
-    	
-    	controlSchemas.add(is2);
-    	
-    	super.testSchemaGen(controlSchemas);    
+    public Map getProperties(){
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(OXM_DOC);
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+        return properties;
+    }
+
+    public void testSchemaGen() throws Exception{
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream(XSD_DOC);
+        InputStream is2 = ClassLoader.getSystemResourceAsStream(WORK_ADD_XSD_DOC);;
+        controlSchemas.add(is);
+
+        controlSchemas.add(is2);
+
+        super.testSchemaGen(controlSchemas);
     }
 
     /**
-     * Verifies that the xml-key entries were processed and set on 
+     * Verifies that the xml-key entries were processed and set on
      * the Address descriptor.
-     * 
+     *
      * Positive test.
      */
     public void testPrimaryKeysWereSet() {
@@ -129,47 +129,47 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         assertTrue("Expected primary key field [@id] for Address, but was [" + pkFields.elementAt(0) + "]", pkFields.elementAt(0).equals("@id"));
         assertTrue("Expected primary key field [city/text()] for Address, but was [" + pkFields.elementAt(1) + "]", pkFields.elementAt(1).equals("city/text()"));
     }
-   
+
 
     /**
      * Tests that an exception is thrown if XmlJoinNode is set on an invalid Property,
      * as in the case where the Property type is String.
-     * 
+     *
      * Negative test.
      */
     public void testInvalidXmlJoinNode() {
         boolean exception = false;
-        try {        	
-        	InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_OXM_DOC);
+        try {
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_OXM_DOC);
 
-    		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-    	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-    	    Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
-    	    invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-          
+            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
+            Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
+            invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
             JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
         } catch (JAXBException e) {
             exception = true;
         }
         assertTrue("The excepted exception was not thrown.", exception);
     }
-    
+
     /**
      * Tests that an exception is thrown if a target XmlPath is invalid.
-     * 
+     *
      * Negative test.
      */
     public void testInvalidTargetXPath() {
         try {
-        	InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_XPATH_OXM_DOC);
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_XPATH_OXM_DOC);
 
-    		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-    	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-    	    Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
-    	    invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-          
+            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
+            Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
+            invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
             JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
-            	
+
         } catch (JAXBException e) {
             return;
         } catch (Exception ex) {
@@ -177,25 +177,25 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         }
         fail("The expected JAXBException was not thrown.");
     }
-    
+
     /**
      * Tests that an exception is thrown if the target class has no XmlID or
      * XmlKey properties.
-     * 
+     *
      * Negative test.
      */
     public void testTargetWithNoKey() {
         try {
 
-        	InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_TARGET_OXM_DOC);
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_TARGET_OXM_DOC);
 
-    		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-    	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-    	    Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
-    	    invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-          
+            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
+            Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
+            invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
             JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
-      
+
         } catch (JAXBException e) {
             return;
         } catch (Exception ex) {
@@ -207,16 +207,16 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
     public void testContainerType() {
         JAXBContext jCtx = null;
         try {
-           	InputStream inputStream = ClassLoader.getSystemResourceAsStream(OXM_DOC_V2);
+               InputStream inputStream = ClassLoader.getSystemResourceAsStream(OXM_DOC_V2);
 
-    		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-    	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-    	    Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
-    	    invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-          
-    	    jCtx = (JAXBContext)JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
-      
-             	
+            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
+            Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
+            invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+            jCtx = (JAXBContext)JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
+
+
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("An exception occurred while creating the JAXBContext.");
@@ -228,7 +228,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         assertTrue("Expected an XMLCollectionReferenceMapping for attribute [employees], but was [" + mapping.toString() +"].", mapping instanceof XMLCollectionReferenceMapping);
         assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCollectionReferenceMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCollectionReferenceMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
-    
+
 
 
 }

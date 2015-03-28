@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -64,7 +64,7 @@ public class TableTypeTestSuite {
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
-    
+
     @SuppressWarnings("rawtypes")
     static List dbTables;
     static DatabaseTypeBuilder dbTypeBuilder;
@@ -72,7 +72,7 @@ public class TableTypeTestSuite {
     @BeforeClass
     public static void setUp() throws ClassNotFoundException, SQLException {
         AllTests.setUp();
-        
+
         String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
         if ("true".equalsIgnoreCase(ddlCreateProp)) {
             ddlCreate = true;
@@ -88,7 +88,7 @@ public class TableTypeTestSuite {
         if (ddlCreate) {
             runDdl(conn, CREATE_TABLETYPE_TABLE, ddlDebug);
         }
-        
+
         // use DatabaseTypeBuilder to generate a list of TableTypes
         dbTypeBuilder = new DatabaseTypeBuilder();
         try {
@@ -104,7 +104,7 @@ public class TableTypeTestSuite {
             runDdl(conn, DROP_TABLETYPE_TABLE, ddlDebug);
         }
     }
-    
+
     @Test
     @SuppressWarnings({ "unchecked" })
     public void testJPATableMetadata() {
@@ -134,7 +134,7 @@ public class TableTypeTestSuite {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
         "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
         "   <orm:entity class=\"metadatagen.Tabletype\" access=\"VIRTUAL\">\n" +
         "      <orm:table name=\"TABLETYPE\"/>\n" +
         "      <orm:attributes>\n" +
@@ -180,7 +180,7 @@ public class TableTypeTestSuite {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
         "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
         "   <orm:entity class=\"metadatagen.Tabletype\" access=\"VIRTUAL\">\n" +
         "      <orm:table name=\"TABLETYPE\"/>\n" +
         "      <orm:named-native-query name=\"findByPrimaryKey_TabletypeType\">\n" +

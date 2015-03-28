@@ -1,29 +1,29 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     01/28/2009-2.0 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier
  *       - 248293: JPA 2.0 Element Collections (part 1)
- *     02/25/2009-2.0 Guy Pelletier 
+ *     02/25/2009-2.0 Guy Pelletier
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     11/06/2009-2.0 Guy Pelletier 
+ *     11/06/2009-2.0 Guy Pelletier
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
- *     03/08/2010-2.1 Guy Pelletier 
+ *     03/08/2010-2.1 Guy Pelletier
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     03/29/2010-2.1 Guy Pelletier 
+ *     03/29/2010-2.1 Guy Pelletier
  *       - 267217: Add Named Access Type to EclipseLink-ORM
- *     06/16/2010-2.2 Guy Pelletier 
+ *     06/16/2010-2.2 Guy Pelletier
  *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -52,12 +52,12 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
 // 3        addTableDefinition(buildRESPONSTable());
         addTableDefinition(buildSALARYTable());
 /*        addTableDefinition(buildWOMANTable());
-        
+
         // Tables used only in extended test model
         addTableDefinition(buildLONERTable());
         addTableDefinition(buildLONERCHARACTERISTICSTable());
         addTableDefinition(buildCONFIDANTTable());
-        
+
         addTableDefinition(buildSHOVELTable());
         addTableDefinition(buildSHOVELDIGGERTable());
         addTableDefinition(buildSHOVELOWNERTable());
@@ -68,17 +68,17 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         addTableDefinition(buildVIOLATIONCODETable());
         addTableDefinition(buildVIOLATIONCODESTable());
 
-		addTableDefinition(buildSTUDENTTable());
+        addTableDefinition(buildSTUDENTTable());
         addTableDefinition(buildSCHOOLTable());
         addTableDefinition(buildBOLTTable());
         addTableDefinition(buildNUTTable());*/
     }
-    
+
     public static TableDefinition buildEMPLOYEETable() {
         TableDefinition table = new TableDefinition();
         // SECTION: TABLE
         table.setName("XML_MBR2_EMPLOYEE");
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field.setName("EMP_ID");
@@ -89,7 +89,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field.setUnique(false );
         field.setIsIdentity(true );
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("F_NAME");
@@ -100,7 +100,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("L_NAME");
@@ -111,7 +111,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field2.setUnique(false );
         field2.setIsIdentity(false );
         table.addField(field2);
-        
+
         org.eclipse.persistence.tools.schemaframework.FieldDefinition sin = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         sin.setName("SIN");
         sin.setTypeName("VARCHAR");
@@ -121,7 +121,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         sin.setUnique(false );
         sin.setIsIdentity(false );
         table.addField(sin);
-    
+
         FieldDefinition fieldGender = new FieldDefinition();
         fieldGender.setName("GENDER");
         fieldGender.setTypeName("VARCHAR");
@@ -131,7 +131,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         fieldGender.setUnique(false);
         fieldGender.setIsIdentity(false);
         table.addField(fieldGender);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("START_DATE");
@@ -142,7 +142,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field3.setUnique(false );
         field3.setIsIdentity(false );
         table.addField(field3);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field4 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field4.setName("END_DATE");
@@ -153,7 +153,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field4.setUnique(false );
         field4.setIsIdentity(false );
         table.addField(field4);
-    
+
         FieldDefinition field5 = new FieldDefinition();
         field5.setName("START_TIME");
         field5.setTypeName("TIME");
@@ -205,7 +205,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field8.setIsIdentity(false );
 //        field8.setForeignKeyFieldName("XML_MBR1_ADDRESS.ADDRESS_ID");
         table.addField(field8);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field9 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field9.setName("MANAGER_EMP_ID");
@@ -217,7 +217,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field9.setIsIdentity(false );
         field9.setForeignKeyFieldName("XML_MBR2_EMPLOYEE.EMP_ID");
         table.addField(field9);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field10 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field10.setName("VERSION");
@@ -228,7 +228,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         field10.setUnique(false );
         field10.setIsIdentity(false );
         table.addField(field10);
-        
+
         FieldDefinition fieldPayScale = new FieldDefinition();
         fieldPayScale.setName("PAY_SCALE");
         fieldPayScale.setTypeName("VARCHAR");
@@ -238,7 +238,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
         fieldPayScale.setIsIdentity(false);
         fieldPayScale.setShouldAllowNull(true);
         table.addField(fieldPayScale);
-        
+
         return table;
     }
 

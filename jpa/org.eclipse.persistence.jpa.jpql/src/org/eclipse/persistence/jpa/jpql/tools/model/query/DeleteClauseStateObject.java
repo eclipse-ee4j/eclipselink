@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,56 +33,56 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public class DeleteClauseStateObject extends AbstractModifyClauseStateObject {
 
-	/**
-	 * Creates a new <code>DeleteClauseStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public DeleteClauseStateObject(DeleteStatementStateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>DeleteClauseStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public DeleteClauseStateObject(DeleteStatementStateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public DeleteClause getExpression() {
-		return (DeleteClause) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DeleteClause getExpression() {
+        return (DeleteClause) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getIdentifier() {
-		return DELETE_FROM;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdentifier() {
+        return DELETE_FROM;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public DeleteStatementStateObject getParent() {
-		return (DeleteStatementStateObject) super.getParent();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DeleteStatementStateObject getParent() {
+        return (DeleteStatementStateObject) super.getParent();
+    }
 
-	/**
-	 * Keeps a reference of the {@link DeleteClause parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link DeleteClause parsed object} representing a <code><b>DELETE</b></code>
-	 * clause
-	 */
-	public void setExpression(DeleteClause expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link DeleteClause parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link DeleteClause parsed object} representing a <code><b>DELETE</b></code>
+     * clause
+     */
+    public void setExpression(DeleteClause expression) {
+        super.setExpression(expression);
+    }
 }

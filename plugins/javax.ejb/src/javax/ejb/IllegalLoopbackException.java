@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,7 @@ package javax.ejb;
 /**
  * This exception indicates that an attempt was made to perform an
  * illegal loopback invocation.   One possible cause is a loopback
- * call to a singleton bean's container-managed concurrency <code>Lock(WRITE)</code> 
+ * call to a singleton bean's container-managed concurrency <code>Lock(WRITE)</code>
  * method where the current thread does not already hold a <code>WRITE</code> lock.
  *
  * @since EJB 3.1

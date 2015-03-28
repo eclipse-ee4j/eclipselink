@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,61 +30,61 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
  */
 final class UpdateQueryVisitor extends AbstractModifyAllQueryBuilder {
 
-	/**
-	 * Creates a new <code>UpdateQueryBuilder</code>.
-	 *
-	 * @param queryContext The context used to query information about the application metadata and
-	 * cached information
-	 * @param query The {@link UpdateAllQuery} to populate by using this visitor to visit the parsed
-	 * tree representation of the JPQL query
-	 */
-	UpdateQueryVisitor(JPQLQueryContext queryContext, UpdateAllQuery query) {
-		super(queryContext, query);
-	}
+    /**
+     * Creates a new <code>UpdateQueryBuilder</code>.
+     *
+     * @param queryContext The context used to query information about the application metadata and
+     * cached information
+     * @param query The {@link UpdateAllQuery} to populate by using this visitor to visit the parsed
+     * tree representation of the JPQL query
+     */
+    UpdateQueryVisitor(JPQLQueryContext queryContext, UpdateAllQuery query) {
+        super(queryContext, query);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(CollectionExpression expression) {
-		expression.acceptChildren(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void visit(CollectionExpression expression) {
+        expression.acceptChildren(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(UpdateClause expression) {
-		expression.getRangeVariableDeclaration().accept(this);
-		expression.getUpdateItems().accept(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void visit(UpdateClause expression) {
+        expression.getRangeVariableDeclaration().accept(this);
+        expression.getUpdateItems().accept(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(UpdateItem expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void visit(UpdateItem expression) {
 
-		// Create the Expression for the state field path expression
-		Expression leftExpression = queryContext.buildExpression(expression.getStateFieldPathExpression());
+        // Create the Expression for the state field path expression
+        Expression leftExpression = queryContext.buildExpression(expression.getStateFieldPathExpression());
 
-		// Create the Expression for the new value
-		Expression rightExpression = queryContext.buildExpression(expression.getNewValue());
+        // Create the Expression for the new value
+        Expression rightExpression = queryContext.buildExpression(expression.getNewValue());
 
-		// Add the expressions to the query
-		((UpdateAllQuery) query).addUpdate(leftExpression, rightExpression);
-	}
+        // Add the expressions to the query
+        ((UpdateAllQuery) query).addUpdate(leftExpression, rightExpression);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(UpdateStatement expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void visit(UpdateStatement expression) {
 
-		expression.getUpdateClause().accept(this);
+        expression.getUpdateClause().accept(this);
 
-		if (expression.hasWhereClause()) {
-			expression.getWhereClause().accept(this);
-		}
-	}
+        if (expression.hasWhereClause()) {
+            expression.getWhereClause().accept(this);
+        }
+    }
 }

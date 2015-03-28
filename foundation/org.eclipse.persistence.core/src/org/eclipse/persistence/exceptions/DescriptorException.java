@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     08/23/2010-2.2 Michael O'Brien 
+ *     08/23/2010-2.2 Michael O'Brien
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions;
 
 import org.eclipse.persistence.mappings.*;
@@ -286,7 +286,7 @@ public class DescriptorException extends ValidationException {
         exception.setErrorCode(ADDITIONAL_CRITERIA_NOT_SUPPORTED_WITH_INHERITANCE_VIEWS);
         return exception;
     }
-    
+
     public static DescriptorException attemptToRegisterDeadIndirection(Object object, DatabaseMapping mapping) {
         Object[] args = { object };
 
@@ -403,15 +403,15 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
-    
+
     public static DescriptorException errorAccessingSetMethodOfEntity(Class aClass, String methodName, ClassDescriptor descriptor, Exception underlying) {
         Object[] args = { aClass, methodName };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INTERNAL_ERROR_SET_METHOD, args), descriptor, underlying);
         return exception;
     }
-    
-    
+
+
     public static DescriptorException errorOccuredInAmendmentMethod(Class amendmentClass, String method, Exception exception, ClassDescriptor descriptor) {
         Object[] args = { amendmentClass, method };
 
@@ -1298,7 +1298,7 @@ public class DescriptorException extends ValidationException {
         descriptorException.setErrorCode(NULL_POINTER_WHILE_GETTING_VALUE_THRU_METHOD_ACCESSOR_IN_MODULE_ORDER_BREAKS_WEAVING);
         return descriptorException;
     }
-    
+
     public static DescriptorException nullPointerWhileMethodInstantiation(String methodName, ClassDescriptor descriptor, Exception exception) {
         Object[] args = { methodName };
 
@@ -1978,7 +1978,7 @@ public class DescriptorException extends ValidationException {
         descriptorException.setErrorCode(INSERT_ORDER_CHILD_BEFORE_PARENT);
         return descriptorException;
     }
-    
+
     public static DescriptorException cannotSetConverterForNonDirectMapping(ClassDescriptor descriptor, DatabaseMapping mapping, String keyConverterClassName) {
         Object[] args = { mapping, keyConverterClassName };
 
@@ -2021,7 +2021,7 @@ public class DescriptorException extends ValidationException {
 
     public static DescriptorException multipleTargetForeignKeyTables(ClassDescriptor descriptor, DatabaseMapping mapping, Collection tables) {
         Object[] args = { mapping, tables };
-    
+
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, MULTIPLE_TARGET_FOREIGN_KEY_TABLES, args), descriptor);
         descriptorException.setErrorCode(MULTIPLE_TARGET_FOREIGN_KEY_TABLES);
         return descriptorException;
@@ -2029,7 +2029,7 @@ public class DescriptorException extends ValidationException {
 
     public static DescriptorException oneToOneMappingConflict(ClassDescriptor descriptor, DatabaseMapping mapping) {
         Object[] args = { mapping };
-    
+
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, ONE_TO_ONE_MAPPING_CONFLICT, args), descriptor);
         descriptorException.setErrorCode(ONE_TO_ONE_MAPPING_CONFLICT);
         return descriptorException;
@@ -2051,7 +2051,7 @@ public class DescriptorException extends ValidationException {
         descriptorException.setErrorCode(CANNOT_USE_ID_VALUE_FOR_COMPOSITE_ID);
         return descriptorException;
     }
-    
+
     public static DescriptorException invalidXpathForXMLDirectMapping(DatabaseMapping mapping) {
         Object[] args = {};
 
@@ -2059,7 +2059,7 @@ public class DescriptorException extends ValidationException {
         descriptorException.setErrorCode(INVALID_XPATH_FOR_DIRECT_MAPPING);
         return descriptorException;
     }
-    
+
     public static DescriptorException missingPartitioningPolicy(String name, ClassDescriptor descriptor, DatabaseMapping mapping) {
         Object[] args = { name };
 
@@ -2078,7 +2078,7 @@ public class DescriptorException extends ValidationException {
         descriptorException.setErrorCode(SERIALIZED_OBJECT_POLICY_FIELD_NOT_SET);
         return descriptorException;
     }
-    
+
     public static DescriptorException exceptionAccessingPrimaryKeyInstance(ClassDescriptor descriptor, Exception underlying) {
         Object[] args = { };
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, EXCEPTION_ACCESSING_PRIMARY_KEY_INSTANCE, args), descriptor, underlying);

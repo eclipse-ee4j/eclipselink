@@ -235,7 +235,7 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
      * -creates EM, 2 entities and persists them reaching default schema
      * -switches DB context to another schema
      * -creates EM, 2 entities and persists them reaching second schema
-     * 
+     *
      * sequencing in 2nd schema should start from the beginning,
      * not from some state in the 1st schema; both should grow by 1
      */

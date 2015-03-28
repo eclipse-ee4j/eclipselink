@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
 import java.io.*;
@@ -32,7 +32,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
     /** Stores the name of the attribute */
     protected String attributeName;
     protected boolean isWriteOnly = false;
-    protected boolean isReadOnly = false; 
+    protected boolean isReadOnly = false;
 
     /**
      * INTERNAL:
@@ -77,7 +77,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
             throw DescriptorException.attributeNameNotSpecified();
         }
     }
-    
+
     /**
      * Returns true if this attribute accessor has been initialized and now stores a reference to the
      * class's attribute.  An attribute accessor can become uninitialized on serialization.
@@ -93,19 +93,19 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
     public boolean isMapValueAttributeAccessor(){
         return false;
     }
-    
+
     public boolean isMethodAttributeAccessor() {
         return false;
     }
-    
+
     public boolean isValuesAccessor() {
-    	return false;
+        return false;
     }
-    
+
     public boolean isVirtualAttributeAccessor(){
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * @return
@@ -113,7 +113,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
     public boolean isWriteOnly() {
         return isWriteOnly;
     }
-    
+
     /**
      * INTERNAL:
      * @param aBoolean
@@ -121,7 +121,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
     public void setIsWriteOnly(boolean aBoolean) {
         this.isWriteOnly = aBoolean;
     }
-    
+
     /**
      * INTERNAL
      * @return

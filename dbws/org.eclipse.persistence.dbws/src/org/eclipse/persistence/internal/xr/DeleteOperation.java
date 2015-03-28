@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,7 +58,7 @@ public class DeleteOperation extends Operation {
     /**
      * Return the findByPrimaryKey query that this DeleteOperation
      * will use to acquire the object to delete.
-     * 
+     *
      */
     public String getFindByPKQuery() {
         // provide backward compatibility
@@ -67,16 +67,16 @@ public class DeleteOperation extends Operation {
         }
         return findByPKQuery;
     }
-    
+
     /**
      * Set the findByPrimaryKey query that this DeleteOperation
      * will use to acquire the object to delete.
-     * 
+     *
      */
     public void setFindByPKQuery(String findByPKQuery) {
         this.findByPKQuery = findByPKQuery;
     }
-    
+
     @Override
     public void validate(XRServiceAdapter xrService) {
         super.validate(xrService);
@@ -103,7 +103,7 @@ public class DeleteOperation extends Operation {
     @Override
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
         DatabaseQuery query = classDescriptor.getQueryManager().getQuery(getFindByPKQuery());
-                
+
         // a named query created via ORM metadata processing needs initialization
         if (query instanceof JPAQuery) {
             query = ((JPAQuery) query).processSQLQuery(xrService.getORSession().getActiveSession());

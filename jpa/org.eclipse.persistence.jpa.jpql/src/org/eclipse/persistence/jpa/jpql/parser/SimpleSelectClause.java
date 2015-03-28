@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,34 +27,34 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public final class SimpleSelectClause extends AbstractSelectClause {
 
-	/**
-	 * Creates a new <code>SimpleSelectClause</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public SimpleSelectClause(AbstractExpression parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>SimpleSelectClause</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public SimpleSelectClause(AbstractExpression parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(SimpleSelectClauseBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(SimpleSelectClauseBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getSelectItemQueryBNFId() {
-		return InternalSimpleSelectExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSelectItemQueryBNFId() {
+        return InternalSimpleSelectExpressionBNF.ID;
+    }
 }

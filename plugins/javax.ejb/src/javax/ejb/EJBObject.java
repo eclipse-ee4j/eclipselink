@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -64,19 +64,19 @@ import java.rmi.RemoteException;
  */
 public interface EJBObject extends java.rmi.Remote {
     /**
-     * Obtain the enterprise bean's remote home interface. The remote home 
+     * Obtain the enterprise bean's remote home interface. The remote home
      * interface defines the enterprise bean's create, finder, remove,
      * and home business methods.
-     * 
+     *
      * @return A reference to the enterprise bean's home interface.
      *
      * @exception RemoteException Thrown when the method failed due to a
      *    system-level failure.
      */
-    public EJBHome getEJBHome() throws RemoteException; 
+    public EJBHome getEJBHome() throws RemoteException;
 
     /**
-     * Obtain the primary key of the EJB object. 
+     * Obtain the primary key of the EJB object.
      *
      * <p> This method can be called on an entity bean. An attempt to invoke
      * this method on a session bean will result in RemoteException.
@@ -96,7 +96,7 @@ public interface EJBObject extends java.rmi.Remote {
      *
      * @exception RemoveException The enterprise bean or the container
      *    does not allow destruction of the object.
-     */ 
+     */
     public void remove() throws RemoteException, RemoveException;
 
     /**
@@ -123,4 +123,4 @@ public interface EJBObject extends java.rmi.Remote {
      *    system-level failure.
      */
     boolean isIdentical(EJBObject obj) throws RemoteException;
-} 
+}

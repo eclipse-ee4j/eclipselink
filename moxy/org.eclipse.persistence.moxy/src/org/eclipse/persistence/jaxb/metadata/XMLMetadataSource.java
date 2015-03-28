@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -131,7 +131,7 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
 
     /**
      * The XML bindings metadata will be loaded from a Node.
-     */    
+     */
     public XMLMetadataSource(Node xmlBindings) {
         if(xmlBindings == null) {
             throw new IllegalArgumentException();
@@ -148,7 +148,7 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
         }
         xmlBindingsSource = new SAXSource(xmlBindings);
     }
-    
+
     /**
      * XML bindings metatdata will be loaded either as a URL or as a classpath reference
      */
@@ -180,7 +180,7 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
                 URL url = classLoader.getResource(xmlBindingsLocation);
                 if(url == null) {
                     // throw exception
-                    throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation(xmlBindingsLocation);  
+                    throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation(xmlBindingsLocation);
                 }
                 return (XmlBindings) unmarshaller.unmarshal(url);
             }

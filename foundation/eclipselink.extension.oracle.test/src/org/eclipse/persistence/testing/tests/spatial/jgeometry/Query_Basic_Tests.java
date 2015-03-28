@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.spatial.jgeometry;
 
 import java.util.List;
@@ -35,11 +35,11 @@ import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.Spatial;
  * criteria.
  */
 public class Query_Basic_Tests extends SimpleSpatialTestCase {
-    
+
     public Query_Basic_Tests(String name){
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("Query_Basic_Tests");
@@ -60,7 +60,7 @@ public class Query_Basic_Tests extends SimpleSpatialTestCase {
             }
         };
     }
-       
+
     public void testReadAll() throws Exception {
         String sql = "select GID, GEOMETRY from SIMPLE_SPATIAL ORDER BY GID";
         SQLReader reader = new SQLReader(session, sql);
@@ -68,7 +68,7 @@ public class Query_Basic_Tests extends SimpleSpatialTestCase {
         ReadAllQuery raq = new ReadAllQuery(SimpleSpatial.class);
         raq.addAscendingOrdering("id");
 
-        List<Spatial> results = 
+        List<Spatial> results =
             (List<Spatial>)session.executeQuery(raq);
 
         String compareResult = reader.compare(results);
@@ -84,7 +84,7 @@ public class Query_Basic_Tests extends SimpleSpatialTestCase {
         ExpressionBuilder eb = roq.getExpressionBuilder();
         roq.setSelectionCriteria(eb.get("geometry").notNull());
 
-        List<SimpleSpatial> results = 
+        List<SimpleSpatial> results =
             (List<SimpleSpatial>)session.executeQuery(roq);
 
         assertNotNull(results);
@@ -106,23 +106,23 @@ public class Query_Basic_Tests extends SimpleSpatialTestCase {
         ReadAllQuery raq = new ReadAllQuery(SimpleSpatial.class);
         ExpressionBuilder eb = raq.getExpressionBuilder();
 
-        JGeometry comparison = 
-            JGeometry.createMultiPoint(new Object[] { new double[] { 5, 6 }, 
-                                                      new double[] { 7, 8 } }, 
+        JGeometry comparison =
+            JGeometry.createMultiPoint(new Object[] { new double[] { 5, 6 },
+                                                      new double[] { 7, 8 } },
                                        2, 0);
 
         Vector args = new Vector(2);
         args.add(new BindCallCustomParameter(comparison));
         args.add("DISTANCE=10");
 
-        Expression criteria = 
+        Expression criteria =
             eb.get("geometry").performOperator(op, args).equal("TRUE");
 
         raq.setSelectionCriteria(criteria);
 
         session.executeQuery(raq);
     }
-    
+
 
 
 }

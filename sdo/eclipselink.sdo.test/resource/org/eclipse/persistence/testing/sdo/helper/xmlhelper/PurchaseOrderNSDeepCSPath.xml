@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ns0:purchaseOrder orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<ns0:myChangeSummary logging="true" xmlns:sdo="commonj.sdo">
-	</ns0:myChangeSummary>
+    <ns0:myChangeSummary logging="true" xmlns:sdo="commonj.sdo">
+    </ns0:myChangeSummary>
    <ns0:shipTo country="US">
       <ns0:phone>
          <ns0:number>6135554444</ns0:number>
@@ -29,27 +29,27 @@
          <ns0:productName>Lawnmower</ns0:productName>
          <ns0:quantity>1</ns0:quantity>
          <ns0:USPrice>148.95</ns0:USPrice>
-		 <!-- levels2 = null fails assertTrue here -->
-		 <ns0:levels2>
-			<ns0:level2>
-			</ns0:level2>
-			<ns0:level2>
-				<ns0:comment2>comment 1</ns0:comment2>
-			</ns0:level2>
-		 </ns0:levels2>
+         <!-- levels2 = null fails assertTrue here -->
+         <ns0:levels2>
+            <ns0:level2>
+            </ns0:level2>
+            <ns0:level2>
+                <ns0:comment2>comment 1</ns0:comment2>
+            </ns0:level2>
+         </ns0:levels2>
          <ns0:comment>Confirm this is electric2</ns0:comment>
       </ns0:item>
       <ns0:item partNum="926-AA">
          <ns0:productName>Baby Monitor</ns0:productName>
          <ns0:quantity>1</ns0:quantity>
          <ns0:USPrice>39.99</ns0:USPrice>
-		 <ns0:levels2>
-			<ns0:level2>
-			</ns0:level2>
-			<ns0:level2>
-				<ns0:comment2>comment 2</ns0:comment2>
-			</ns0:level2>
-		 </ns0:levels2>
+         <ns0:levels2>
+            <ns0:level2>
+            </ns0:level2>
+            <ns0:level2>
+                <ns0:comment2>comment 2</ns0:comment2>
+            </ns0:level2>
+         </ns0:levels2>
          <ns0:shipDate>1999-05-21</ns0:shipDate>
       </ns0:item>
    </ns0:items>

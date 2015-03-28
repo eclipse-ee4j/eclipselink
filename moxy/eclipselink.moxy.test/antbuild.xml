@@ -90,7 +90,7 @@
     <property name="javax.el-api.lib"   value="${extensions.depend.dir}/${javax.el-api.jar}"/>
     <property name="javax.el.lib"   value="${extensions.depend.dir}/${javax.el.jar}"/>
     <property name="classmate.lib"   value="${extensions.depend.dir}/${classmate.jar}"/>
-	<property name="jmockit.lib"    value="${extensions.depend.dir}/${jmockit.jar}"/>
+    <property name="jmockit.lib"    value="${extensions.depend.dir}/${jmockit.jar}"/>
 
     <condition property="validate.jar.exists">
         <and>
@@ -122,7 +122,7 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${asm.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
-	<pathelement path="${jmockit.lib}"/>
+    <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
@@ -150,7 +150,7 @@
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
-	<pathelement path="${jmockit.lib}"/>
+    <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${validation-impl.lib}"/>
         <pathelement path="${jboss-logging.lib}"/>
@@ -169,7 +169,7 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
-	<pathelement path="${jmockit.lib}"/>
+    <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
@@ -188,14 +188,14 @@
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
-	<pathelement path="${jmockit.lib}"/>
+    <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
     </path>
 
     <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
     <path id="jaxb.compile.against.jar.path">
         <path refid="xml.parser.path"/>
-	<pathelement path="${jmockit.lib}"/>
+    <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
@@ -216,7 +216,7 @@
     </path>
     <path id="jaxb.run.against.jar.path">
         <path refid="xml.parser.path"/>
-	<pathelement path="${jmockit.lib}"/>
+    <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
@@ -242,7 +242,7 @@
     <path id="oxm.compile.against.jar.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
-	<pathelement path="${jmockit.lib}"/>
+    <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
@@ -256,7 +256,7 @@
     </path>
     <path id="oxm.run.against.jar.path">
         <path refid="xml.parser.path"/>
-	<pathelement path="${jmockit.lib}"/>
+    <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
@@ -292,7 +292,7 @@
         <!-- fail message="Cannot find MOXY: '${moxytest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar'." unless="moxy.bundle.exist"/ -->
         <compile_moxy_tests subcomponent="oxm" compilepathref="oxm.compile.path"/>
         <compile_moxy_tests subcomponent="jaxb" compilepathref="jaxb.compile.path"/>
-	<compile_moxy_tests subcomponent="moxy" compilepathref="jaxb.compile.path"/>
+    <compile_moxy_tests subcomponent="moxy" compilepathref="jaxb.compile.path"/>
     </target>
     <target name="compile-tests-against-jar" depends="clean" description="build moxy test classes against eclipselink.jar">
         <echo message="Compiling OXM tests..."/>
@@ -300,8 +300,8 @@
         <echo message=""/>
         <echo message="Compiling JAXB tests..."/>
         <compile_moxy_tests subcomponent="jaxb" compilepathref="jaxb.compile.against.jar.path"/>
-	<echo message="Compiling MOXy unit tests..."/>
-	<compile_moxy_tests subcomponent="moxy" compilepathref="jaxb.compile.against.jar.path"/>
+    <echo message="Compiling MOXy unit tests..."/>
+    <compile_moxy_tests subcomponent="moxy" compilepathref="jaxb.compile.against.jar.path"/>
     </target>
 
     <!-- Build & Run targets -->
@@ -456,7 +456,7 @@
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
                 <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>-->
                 <jvmarg value="-ea"/>
-		<jvmarg value="-javaagent:${jmockit.lib}"/>
+        <jvmarg value="-javaagent:${jmockit.lib}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>
@@ -481,20 +481,20 @@
                         <include name="org/eclipse/persistence/testing/jaxb/dynamic/DynamicJAXBTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/json/JSONTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/rs/RESTfulTestSuite.java"/>
-			<include name="org/eclipse/persistence/testing/moxy/unit/**/*TestCase.java"/>
+            <include name="org/eclipse/persistence/testing/moxy/unit/**/*TestCase.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
-		<test name="org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyTestCase" todir="${report.dir}/jaxb">
+        <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyTestCase" todir="${report.dir}/jaxb">
                     <formatter type="xml"/>
                 </test>
-		<test name="org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyNotSetTestCase" todir="${report.dir}/jaxb">
+        <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyNotSetTestCase" todir="${report.dir}/jaxb">
                     <formatter type="xml"/>
                 </test>
-		<test name="org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyNotSetTestCase" todir="${report.dir}/jaxb">
+        <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyNotSetTestCase" todir="${report.dir}/jaxb">
                     <formatter type="xml"/>
                 </test>
-		<test name="org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyTestCase" todir="${report.dir}/jaxb">
+        <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyTestCase" todir="${report.dir}/jaxb">
                     <formatter type="xml"/>
                 </test>
                 <classpath>

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.optimisticlocking.cascaded;
 
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -17,18 +17,18 @@ import org.eclipse.persistence.tools.schemaframework.*;
 public class BarTableCreator extends TableCreator {
     public BarTableCreator() {
         setName("Bar");
-        
+
         addTableDefinition(buildAWARDTable());
         addTableDefinition(buildBARTable());
         addTableDefinition(buildBARTENDERTable());
         addTableDefinition(buildLICENSETable());
         addTableDefinition(buildQUALIFICATIONTable());
     }
-    
+
      protected TableDefinition buildAWARDTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CASCADE_AWARD");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
         field.setTypeName("NUMERIC");
@@ -38,7 +38,7 @@ public class BarTableCreator extends TableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("DESCRIPTION");
         field1.setTypeName("VARCHAR");
@@ -48,7 +48,7 @@ public class BarTableCreator extends TableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-        
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("QUALIFICATION_ID");
         field2.setTypeName("NUMERIC");
@@ -59,10 +59,10 @@ public class BarTableCreator extends TableCreator {
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CASCADE_QUALIFICATION.ID");
         table.addField(field2);
-        
+
         return table;
     }
-    
+
     protected TableDefinition buildBARTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CASCADE_BAR");
@@ -107,14 +107,14 @@ public class BarTableCreator extends TableCreator {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-        
+
         return table;
     }
-    
+
     protected TableDefinition buildBARTENDERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CASCADE_BARTENDER");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
         field.setTypeName("NUMERIC");
@@ -124,7 +124,7 @@ public class BarTableCreator extends TableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("F_NAME");
         field1.setTypeName("VARCHAR");
@@ -134,7 +134,7 @@ public class BarTableCreator extends TableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("L_NAME");
         field2.setTypeName("VARCHAR");
@@ -144,7 +144,7 @@ public class BarTableCreator extends TableCreator {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         table.addField(field2);
-        
+
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("BAR_ID");
         field3.setTypeName("NUMERIC");
@@ -155,7 +155,7 @@ public class BarTableCreator extends TableCreator {
         field3.setIsIdentity(false);
         field3.setForeignKeyFieldName("CASCADE_BAR.ID");
         table.addField(field3);
-        
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("QUALIFICATION_ID");
         field4.setTypeName("NUMERIC");
@@ -167,14 +167,14 @@ public class BarTableCreator extends TableCreator {
         field4.setForeignKeyFieldName("CASCADE_QUALIFICATION.ID");
         table.addField(field4);
 
-        
+
         return table;
     }
-    
+
     protected TableDefinition buildLICENSETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CASCADE_LICENSE");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
         field.setTypeName("NUMERIC");
@@ -194,10 +194,10 @@ public class BarTableCreator extends TableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-        
+
         return table;
     }
-    
+
      protected TableDefinition buildQUALIFICATIONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CASCADE_QUALIFICATION");
@@ -231,7 +231,7 @@ public class BarTableCreator extends TableCreator {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         table.addField(field2);
-        
+
         return table;
     }
 }

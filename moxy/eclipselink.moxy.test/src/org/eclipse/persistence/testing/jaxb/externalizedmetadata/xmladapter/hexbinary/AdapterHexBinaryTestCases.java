@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,38 +26,38 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class AdapterHexBinaryTestCases extends JAXBWithJSONTestCases{
 
-	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/hexbinary.xml";
-	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/hexbinary.json";
-        	 
-	
-	public AdapterHexBinaryTestCases(String name) throws Exception {
-		super(name);
-		setClasses(new Class[]{Customer.class});
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-	}
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/hexbinary.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/hexbinary.json";
 
-	protected Object getControlObject() {
+
+    public AdapterHexBinaryTestCases(String name) throws Exception {
+        super(name);
+        setClasses(new Class[]{Customer.class});
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+    }
+
+    protected Object getControlObject() {
         byte[] bytes = new byte[] {30,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4};
-	    Customer customer = new Customer();
-	    customer.hexBytes = bytes;
-	    customer.base64Bytes = bytes;
-	    return customer;
-	}
-	
+        Customer customer = new Customer();
+        customer.hexBytes = bytes;
+        customer.base64Bytes = bytes;
+        return customer;
+    }
+
     public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/hexbinary-oxm.xml");
-		HashMap<String, Source> properties = new HashMap<String, Source>();
-	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new StreamSource(inputStream));		
-         
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/hexbinary-oxm.xml");
+        HashMap<String, Source> properties = new HashMap<String, Source>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new StreamSource(inputStream));
+
         return properties;
-	}
-    
+    }
+
     public void testSchemaGen() throws Exception {
-    	List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/schema.xsd");
-    	controlSchemas.add(is);
-    	super.testSchemaGen(controlSchemas);
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/schema.xsd");
+        controlSchemas.add(is);
+        super.testSchemaGen(controlSchemas);
     }
 
 }

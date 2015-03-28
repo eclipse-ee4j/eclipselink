@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
 import commonj.sdo.Type;
@@ -25,7 +25,7 @@ public class PurchaseOrderDefineTestCases extends XSDHelperDefineTestCases {
     public PurchaseOrderDefineTestCases(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         TestRunner.run(PurchaseOrderDefineTestCases.class);
     }
@@ -53,7 +53,7 @@ public class PurchaseOrderDefineTestCases extends XSDHelperDefineTestCases {
         USaddrType.setInstanceClassName(javaPackage + "." + "USAddress");
         USaddrType.setXsdLocalName("USAddress");
         SDOProperty addrNameProp = new SDOProperty(aHelperContext);
-        
+
         addrNameProp.setName("name");
         addrNameProp.setXsdLocalName("name");
         addrNameProp.setXsd(true);
@@ -108,7 +108,7 @@ public class PurchaseOrderDefineTestCases extends XSDHelperDefineTestCases {
         USaddrType.getDeclaredProperties().add(countryProp);
 
         /****QUANTITY TYPE*****/
-        SDOType quantityType = new SDOType(uri, "quantityType");        
+        SDOType quantityType = new SDOType(uri, "quantityType");
         quantityType.setXsd(true);
         quantityType.setXsdLocalName("quantityType");
         quantityType.setDataType(true);

@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
+ *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fetchgroups;
 
@@ -55,7 +55,7 @@ import org.junit.Test;
 /**
  * Simple tests to verify the functionality of {@link FetchGroup} when the
  * entities are detached through serialization.
- * 
+ *
  * @author dclarke
  * @since EclipseLink 2.1
  */
@@ -72,7 +72,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     public static junit.framework.Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("SimpleSerializeFetchGroupTests");
-        
+
         suite.addTest(new SimpleSerializeFetchGroupTests("testSetup"));
         suite.addTest(new SimpleSerializeFetchGroupTests("verifyWriteReplaceOnFetchGroup"));
         suite.addTest(new SimpleSerializeFetchGroupTests("verifyAddAttributeInDetachedEntityFetchGroup"));
@@ -103,7 +103,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadeAllParts"));
             suite.addTest(new SimpleSerializeFetchGroupTests("copyEmbedded"));
         }
-        
+
         return suite;
     }
 
@@ -380,7 +380,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     }
 
     /**
-     * 
+     *
      */
     @Test
     public void resultListEmptyFetchGroup() throws Exception {
@@ -449,7 +449,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     }
 
     /**
-     * 
+     *
      */
     @Test
     public void resultListPeriodFetchGroup() throws Exception {
@@ -532,7 +532,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             //   Don't include employees who are managers themselves - otherwise if first selected as employee, then as e.manager the full read will be triggered;
             //   Don't include managers with departments - because there is no fetch group on e.manager its (non-null) department will trigger an extra sql
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.manager IS NOT NULL AND NOT EXISTS(SELECT e2 FROM Employee e2 WHERE e2.manager = e) AND e.manager.department IS NULL");
-            
+
             FetchGroup managerFG = new FetchGroup();
             managerFG.addAttribute("manager");
 
@@ -545,7 +545,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
             assertFetched(emp, managerFG);
             assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            
+
             // manager (if not null) hasn't been instantiated yet.
             int nSqlToAdd = 0;
             if (emp.getManager() != null) {
@@ -553,7 +553,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 // additional sql to select the manager
                 nSqlToAdd++;
             }
-            
+
             assertEquals(1 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
             emp.getLastName();
@@ -606,11 +606,11 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
             assertFetched(emp, managerFG);
             assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            
+
             // manager has been already instantiated by the query.
             emp.getManager();
             assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            
+
             // instantiates the whiole object
             emp.getLastName();
 
@@ -795,10 +795,10 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         if(newSalary == 0) {
             newSalary = 100;
         }
-        
+
         em = createEntityManager();
         beginTransaction(em);
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = "+id);        
+        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = "+id);
         FetchGroup fetchGroup = new FetchGroup("names");
         fetchGroup.addAttribute("firstName");
         fetchGroup.addAttribute("lastName");
@@ -808,32 +808,32 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         fetchGroup.setShouldLoad(true);
         query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
         Employee emp = (Employee)query.getSingleResult();
-        
+
         Employee empSerialized;
         Employee empDeserialized;
         Employee empMerged;
         try {
             empSerialized = serialize(emp);
-            
+
             assertFetched(empSerialized, fetchGroup);
             empSerialized.setFirstName("newFirstName");
             empSerialized.setLastName("newLastName");
-            
+
             // salary is not in the original fetchGroup
             empSerialized.setSalary(newSalary);
             FetchGroup extendedFetchGroup = fetchGroup.clone();
             extendedFetchGroup.addAttribute("salary");
             assertFetched(empSerialized, extendedFetchGroup);
-            
+
             empSerialized.getAddress().setCountry("newCountry");
             assertFetched(empSerialized.getAddress(), fetchGroup.getGroup("address"));
             // address.city is not in the original fetchGroup
             empSerialized.getAddress().setCity("newCity");
             extendedFetchGroup.addAttribute("address.city");
             assertFetched(empSerialized.getAddress(), extendedFetchGroup.getGroup("address"));
-            
+
             // phoneNumbers.number is not in the original fetchGroup
-            extendedFetchGroup.addAttribute("phoneNumbers.number");            
+            extendedFetchGroup.addAttribute("phoneNumbers.number");
             for(PhoneNumber phone : empSerialized.getPhoneNumbers()) {
                 phone.setAreaCode("000");
                 assertFetched(phone, fetchGroup.getGroup("phoneNumbers"));
@@ -850,7 +850,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             }
 
             empMerged = em.merge(empDeserialized);
-    
+
             // verify merged in em
             assertEquals("newFirstName", empMerged.getFirstName());
             assertEquals("newLastName", empMerged.getLastName());
@@ -861,7 +861,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 assertEquals("000", phone.getAreaCode());
                 assertEquals("0000000", phone.getNumber());
             }
-            
+
             // verify that the attributes outside of the fetch group not nullified.
             assertEquals(empOriginal.getGender(), empMerged.getGender());
             if(empOriginal.getDepartment() != null) {
@@ -874,13 +874,13 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             assertEquals(empOriginal.getPayScale(), empMerged.getPayScale());
             assertEquals(empOriginal.getStartTime(), empMerged.getStartTime());
             assertEquals(empOriginal.getEndTime(), empMerged.getEndTime());
-            commitTransaction(em);                
+            commitTransaction(em);
         } finally {
             if(isTransactionActive(em)) {
-               rollbackTransaction(em); 
+               rollbackTransaction(em);
             }
         }
-        
+
         // verify merged in the shared cache - clear em cache, query using cache only.
         em.clear();
         Map<String, Object> hints = new HashMap<String, Object>(2);
@@ -896,7 +896,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             assertEquals("000", phone.getAreaCode());
             assertEquals("0000000", phone.getNumber());
         }
-    
+
         // verify merged in shared the db - clear both em and shared caches.
         // Must read through the old EntityManager - the changes haven't been committed in the db.
         clearCache();
@@ -911,7 +911,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             assertEquals("000", phone.getAreaCode());
             assertEquals("0000000", phone.getNumber());
         }
-    
+
         // clean up
         beginTransaction(em);
         try {
@@ -928,7 +928,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             commitTransaction(em);
         } finally {
             if(isTransactionActive(em)) {
-                rollbackTransaction(em); 
+                rollbackTransaction(em);
              }
             closeEntityManager(em);
         }
@@ -944,15 +944,15 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         if(newSalary == 0) {
             newSalary = 100;
         }
-        
+
         em = createEntityManager();
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = "+id);        
+        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = "+id);
         FetchGroup fetchGroup = new FetchGroup("names");
         fetchGroup.addAttribute("firstName");
         fetchGroup.addAttribute("lastName");
         query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
         Employee emp = (Employee)query.getSingleResult();
-        
+
         Employee empSerialized;
         Employee empDeserialized;
         Employee empMerged;
@@ -969,13 +969,13 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             assertEquals("newFirstName", empMerged.getFirstName());
             assertEquals("newLastName", empMerged.getLastName());
             assertEquals(newSalary, empMerged.getSalary());
-            commitTransaction(em);                
+            commitTransaction(em);
         } finally {
             if(isTransactionActive(em)) {
-               rollbackTransaction(em); 
+               rollbackTransaction(em);
             }
         }
-        
+
         // verify merged in the shared cache - clear em cache, query using cache only.
         em.clear();
         HashMap hints = new HashMap(2);
@@ -1003,19 +1003,19 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             commitTransaction(em);
         } finally {
             if(isTransactionActive(em)) {
-                rollbackTransaction(em); 
+                rollbackTransaction(em);
              }
             closeEntityManager(em);
         }
     }*/
-    
+
     public void partialMerge() throws Exception {
         EntityManager em = createEntityManager();
-        // Search for an Employee with an Address and Phone Numbers 
+        // Search for an Employee with an Address and Phone Numbers
         try {
             beginTransaction(em);
             TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.address IS NOT NULL AND e.id IN (SELECT MIN(p.id) FROM PhoneNumber p)", Employee.class);
-            
+
             // Load only its names and phone Numbers
             FetchGroup fetchGroup = new FetchGroup();
             fetchGroup.addAttribute("firstName");
@@ -1026,14 +1026,14 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             phonesFG.removeAttribute("status");
             phonesFG.setShouldLoad(true);
             fetchGroup.addAttribute("phoneNumbers", phonesFG);
-            
+
             // Make sure the FetchGroup also forces the relationships to be loaded
             fetchGroup.setShouldLoad(true);
             query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
-            
+
             Employee emp = query.getSingleResult();
 
-            // Detach Employee through Serialization 
+            // Detach Employee through Serialization
             Employee detachedEmp = (Employee)serialize(emp);
 
             // Modify the detached Employee inverting the names, adding a phone number, and setting the salary
@@ -1042,7 +1042,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             detachedEmp.addPhoneNumber(new PhoneNumber("TEST", "999", "999999"));
             // NOte that salary was not part of the original FetchGroupdetachedEmp.setSalary(1);
             detachedEmp.setSalary(1);
-            
+
             // Merge the detached employee
             em.merge(detachedEmp);
             // Flush the changes to the database
@@ -1062,28 +1062,28 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             Employee emp = query.getSingleResult();
             assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
             System.out.println(">>> Employee retrieved");
-            
+
             // Copy only its names and phone Numbers
             AttributeGroup group = new CopyGroup();
             group.addAttribute("firstName");
             group.addAttribute("lastName");
             group.addAttribute("address");
-            
+
             Employee empCopy = (Employee) em.unwrap(JpaEntityManager.class).copy(emp, group);
             assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
             System.out.println(">>> Employee copied");
-            
+
             // Modify the detached Employee inverting the names, adding a phone number, and setting the salary
             empCopy.setFirstName(emp.getLastName());
             empCopy.setLastName(emp.getFirstName());
-            
+
             // Note that salary was not part of the original FetchGroup
             //empCopy.setSalary(1);
-            
+
             // Merge the detached employee
             em.merge(empCopy);
             System.out.println(">>> Sparse merge complete");
-            
+
             // Flush the changes to the database
             em.flush();
             System.out.println(">>> Flush complete");
@@ -1092,7 +1092,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             closeEntityManager(em);
         }
     }
-    
+
     public void copyGroupMerge2() {
         // Search for an Employee with an Address and Phone Numbers
         EntityManager em = createEntityManager();
@@ -1103,43 +1103,43 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             List<Employee> employees = query.getResultList();
             assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
             System.out.println(">>> Employees retrieved");
-            
+
             // Copy only its names and phone Numbers
             AttributeGroup group = new CopyGroup();
             group.addAttribute("firstName");
             group.addAttribute("lastName");
             group.addAttribute("address");
-            
+
             List<Employee> employeesCopy = (List<Employee>) em.unwrap(JpaEntityManager.class).copy(employees, group);
             assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
             System.out.println(">>> Employees copied");
-            
+
             for(Employee empCopy : employeesCopy) {
                 // Modify the detached Employee inverting the names, adding a phone number, and setting the salary
                 String firstName = empCopy.getFirstName();
                 String lastName = empCopy.getLastName();
                 empCopy.setFirstName(lastName);
                 empCopy.setLastName(firstName);
-            
+
                 // Note that salary was not part of the original FetchGroup
-                //empCopy.setSalary(1);        
-                
+                //empCopy.setSalary(1);
+
                 // Merge the detached employee
                 em.merge(empCopy);
             }
             System.out.println(">>> Sparse merge complete");
-            
+
             // Flush the changes to the database
             em.flush();
             System.out.println(">>> Flush complete");
-            
+
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
     }
 
-    
+
     @Test
     public void copyWithPk() {
         copyWithOrWithoutPk(false, false);
@@ -1172,7 +1172,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             group.setShouldResetVersion(true);
         }
         group.cascadeTree(); // Copy only the attributes specified
-        // note that 
+        // note that
         // default value shouldResetPrimaryKey==false causes pk to copied, too;
         // default value shouldResetVersion==false causes version to be copied, too.
         group.addAttribute("firstName");
@@ -1195,7 +1195,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 address.setShouldResetVersion(true);
             }
             group.addAttribute("address", address);
-        
+
             // copy group contains all the attributes defined in PhoneNumber class
             CopyGroup phones = phoneDescriptor.getFetchGroupManager().createFullFetchGroup().toCopyGroup();
             if(noPk) {
@@ -1211,7 +1211,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             group.addAttribute("phoneNumbers", phones);
         } else {
             // implicitly created sub CopyGroups address and phoneNumbers will have the same shouldReset flags values as their master CopyGroup.
-            
+
             group.addAttribute("address.country");
             group.addAttribute("address.province");
             group.addAttribute("address.street");
@@ -1229,13 +1229,13 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             group.addAttribute("phoneNumbers.areaCode");
             group.addAttribute("phoneNumbers.number");
         }
-        
+
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
             Employee emp = minimumEmployee(em);
             Employee empCopy = (Employee) em.unwrap(JpaEntityManager.class).copy(emp, group);
-            
+
             if(noPk) {
                 assertNoFetchGroup(empCopy);
                 assertNoFetchGroup(empCopy.getAddress());
@@ -1250,17 +1250,17 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 employeeDescriptor.getFetchGroupManager().prepareAndVerify(fetchGroup);
                 // copyEmp, its address and phones each should have an EntityFetchGroup corresponding to the respective copyGroup.
                 assertFetched(empCopy, fetchGroup);
-                
-                EntityFetchGroup addressEntityFetchGroup = addressDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup.getGroup("address")); 
-                if(addressEntityFetchGroup == null) { 
+
+                EntityFetchGroup addressEntityFetchGroup = addressDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup.getGroup("address"));
+                if(addressEntityFetchGroup == null) {
                     assertNoFetchGroup(empCopy.getAddress());
                 } else {
                     assertFetched(empCopy.getAddress(), addressEntityFetchGroup);
                 }
 
-                EntityFetchGroup phonesEntityFetchGroup = phoneDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup.getGroup("phoneNumbers")); 
+                EntityFetchGroup phonesEntityFetchGroup = phoneDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup.getGroup("phoneNumbers"));
                 for(PhoneNumber phoneCopy : empCopy.getPhoneNumbers()) {
-                    if(phonesEntityFetchGroup == null) { 
+                    if(phonesEntityFetchGroup == null) {
                         assertNoFetchGroup(phoneCopy);
                     } else {
                         assertFetched(phoneCopy, phonesEntityFetchGroup);
@@ -1284,22 +1284,22 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 }
                 em.merge(empCopy);
             }
-    
+
             // Insert a new row into Employee, Salary, Address, and a row for each Phone
-            int nExpectedInsertsOrUpdates = 3 + empCopy.getPhoneNumbers().size(); 
+            int nExpectedInsertsOrUpdates = 3 + empCopy.getPhoneNumbers().size();
             int nExpectedInserts, nExpectedUpdates;
             if(noPk) {
-                nExpectedInserts = nExpectedInsertsOrUpdates; 
+                nExpectedInserts = nExpectedInsertsOrUpdates;
                 // table sequence might have been updated
                 nExpectedUpdates = getQuerySQLTracker(em).getTotalSQLUPDATECalls();
             } else {
-                nExpectedInserts = 0; 
+                nExpectedInserts = 0;
                 nExpectedUpdates = nExpectedInsertsOrUpdates;
             }
-            
+
             // Flush the changes to the database
             em.flush();
-            
+
             assertEquals(nExpectedInserts, getQuerySQLTracker(em).getTotalSQLINSERTCalls());
             assertEquals(nExpectedUpdates, getQuerySQLTracker(em).getTotalSQLUPDATECalls());
         } finally {
@@ -1313,7 +1313,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     public void copyNoCascade() {
         copyCascade(CopyGroup.NO_CASCADE);
     }
-    
+
     @Test
     public void copyCascadePrivateParts() {
         copyCascade(CopyGroup.CASCADE_PRIVATE_PARTS);
@@ -1323,7 +1323,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     public void copyCascadeAllParts() {
         copyCascade(CopyGroup.CASCADE_ALL_PARTS);
     }
-    
+
     void copyCascade(int cascadeDepth) {
         EntityManager em = createEntityManager();
         try {
@@ -1343,7 +1343,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 fail("Invalid cascadeDepth = " + cascadeDepth);
             }
             group.setShouldResetPrimaryKey(true);
-            
+
             List<Employee> employeesCopy;
             if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
                 // In this case the objects should be copied one by one - each one using a new CopyGroup.
@@ -1359,10 +1359,10 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 // In this case all objects should be copied using a single CopyGroup.
                 // That ensures identities of the copies:
                 // for instance if several employees referenced the same project,
-                // then all copies of these employees will reference the single copy of the project. 
+                // then all copies of these employees will reference the single copy of the project.
                 employeesCopy = (List)em.unwrap(JpaEntityManager.class).copy(employees, group);
             }
-            
+
             // IdentityHashSets will be used to verify copy identities
             IdentityHashSet originalEmployees = new IdentityHashSet();
             IdentityHashSet copyEmployees = new IdentityHashSet();
@@ -1372,7 +1372,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             IdentityHashSet copyProjects = new IdentityHashSet();
             IdentityHashSet originalPhones = new IdentityHashSet();
             IdentityHashSet copyPhones = new IdentityHashSet();
-            
+
             int size = employees.size();
             for(int i=0; i < size; i++) {
                 Employee emp = employees.get(i);
@@ -1418,7 +1418,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                         assertFalse("project has not been copied", same);
                     }
                 }
-            
+
                 for(Employee managedEmp : emp.getManagedEmployees()) {
                     originalEmployees.add(managedEmp);
                     same = false;
@@ -1435,7 +1435,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                         assertFalse("managedEmployee has not been copied", same);
                     }
                 }
-                
+
                 if(emp.getManager() == null) {
                     assertTrue("emp.getManager() == null, but empCopy.getManager() != null", empCopy.getManager() == null);
                 } else {
@@ -1467,7 +1467,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                     }
                 }
             }
-            
+
             assertTrue("copyEmployees.size() == " + copyEmployees.size() + "; was expected " + originalEmployees.size(), originalEmployees.size() == copyEmployees.size());
             assertTrue("copyAddresses.size() == " + copyAddresses.size() + "; was expected " + originalAddresses.size(), originalAddresses.size() == copyAddresses.size());
             assertTrue("copyProjects.size() == " + copyProjects.size() + "; was expected " + originalProjects.size(), originalProjects.size() == copyProjects.size());
@@ -1478,7 +1478,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             }
         }
     }
-    
+
     @Test
     public void attrAndVHContainSameObjectAfterGetRealAttributeValue() throws Exception {
         String errorMsg = "";
@@ -1488,20 +1488,20 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
              Query query = em.createQuery("SELECT e FROM Employee e WHERE e.address IS NOT NULL and e.manager IS NOT NULL");
              List<Employee> employees = query.getResultList();
-             
+
              OneToOneMapping addressMapping = (OneToOneMapping)employeeDescriptor.getMappingForAttributeName("address");
              OneToOneMapping managerMapping = (OneToOneMapping)employeeDescriptor.getMappingForAttributeName("manager");
 
              InstanceVariableAttributeAccessor addressAccessor = new InstanceVariableAttributeAccessor();
              addressAccessor.setAttributeName("m_address");
              addressAccessor.initializeAttributes(Employee.class);
-             
+
              InstanceVariableAttributeAccessor managerAccessor = new InstanceVariableAttributeAccessor();
              managerAccessor.setAttributeName("manager");
              managerAccessor.initializeAttributes(Employee.class);
-             
+
              AbstractSession session = (AbstractSession)((EntityManagerImpl)em.getDelegate()).getActiveSession();
-             
+
              for(Employee emp : employees) {
                  String localErrorMsg = "";
                  Address addressVH = (Address)addressMapping.getRealAttributeValueFromObject(emp, session);
@@ -1530,7 +1530,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             fail(errorMsg);
         }
     }
-    
+
     @Test
     public void copyEmbedded() {
         Employee emp = new Employee();
@@ -1538,14 +1538,14 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
         CopyGroup group = new CopyGroup();
         group.addAttribute("period");
-        
+
         EntityManager em = createEntityManager();
         Employee empCopy = (Employee) em.unwrap(ServerSession.class).copy(emp, group);
-        
+
         assertTrue("!emp.getPeriod().equals(empCopy.getPeriod())", emp.getPeriod().equals(empCopy.getPeriod()));
         assertHasFetchGroup(empCopy);
     }
-    
+
     private <T> T serialize(Serializable entity) throws IOException, ClassNotFoundException {
         byte[] bytes = SerializationHelper.serialize(entity);
         ObjectInputStream inStream = new ObjectInputStream(new ByteArrayInputStream(bytes));

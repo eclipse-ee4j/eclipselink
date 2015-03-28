@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.aggregate;
 
 import org.eclipse.persistence.sessions.*;
@@ -32,7 +32,7 @@ public class AggregateVersionOpimisticLockingTest extends TestCase {
 
     public AggregateVersionOpimisticLockingTest() {
         super();
-        setDescription("Test to ensure that inserting objects with the optimistic locking " + 
+        setDescription("Test to ensure that inserting objects with the optimistic locking " +
                        " version in an aggregate works when inserting in a UnitOfWork");
     }
 
@@ -79,18 +79,18 @@ public class AggregateVersionOpimisticLockingTest extends TestCase {
 
     public void verify() {
         if (insertException != null) {
-            throw new TestErrorException("An exception was thrown when trying to insert an object " + 
-                                         "with it's optimistic locking version stored in an aggregate: " + 
+            throw new TestErrorException("An exception was thrown when trying to insert an object " +
+                                         "with it's optimistic locking version stored in an aggregate: " +
                                          insertException.toString());
         }
         if (updateException != null) {
-            throw new TestErrorException("An exception was thrown when trying to update an object " + 
-                                         "with it's optimistic locking version stored in an aggregate: " + 
+            throw new TestErrorException("An exception was thrown when trying to update an object " +
+                                         "with it's optimistic locking version stored in an aggregate: " +
                                          updateException.toString());
         }
         if (forceUpdateException != null) {
-            throw new TestErrorException("An exception was thrown when trying to use an optimistic read lock on  an object " + 
-                                         "with it's optimistic locking version stored in an aggregate: " + 
+            throw new TestErrorException("An exception was thrown when trying to use an optimistic read lock on  an object " +
+                                         "with it's optimistic locking version stored in an aggregate: " +
                                          forceUpdateException.toString());
         }
 

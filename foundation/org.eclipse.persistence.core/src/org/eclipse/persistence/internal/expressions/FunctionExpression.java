@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -46,7 +46,7 @@ public class FunctionExpression extends BaseExpression {
         this.children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
         this.resultType = null;
     }
-    
+
     /**
      * INTERNAL:
      * Return if the expression is equal to the other.
@@ -65,7 +65,7 @@ public class FunctionExpression extends BaseExpression {
             return false;
         }
         List children = getChildren();
-        List otherChildren = expression.getChildren();        
+        List otherChildren = expression.getChildren();
         int size = children.size();
         if (size != otherChildren.size()) {
             return false;
@@ -77,7 +77,7 @@ public class FunctionExpression extends BaseExpression {
         }
         return true;
     }
-        
+
     /**
      * INTERNAL:
      * Compute a consistent hash-code for the expression.
@@ -88,7 +88,7 @@ public class FunctionExpression extends BaseExpression {
         if (this.operator != null) {
             hashCode = hashCode + this.operator.hashCode();
         }
-        List children = getChildren();     
+        List children = getChildren();
         int size = children.size();
         for (int index = 0; index < size; index++) {
             hashCode = hashCode + children.get(index).hashCode();
@@ -143,9 +143,9 @@ public class FunctionExpression extends BaseExpression {
         setOperator(anOperator);
         return this;
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * added for Trim support.  TRIM([trim_character FROM] string_primary)
      */
     public Expression createWithBaseLast(Expression base, Object singleArgument, ExpressionOperator anOperator) {
@@ -202,7 +202,7 @@ public class FunctionExpression extends BaseExpression {
      */
     public boolean doesConform(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         int selector = this.operator.getSelector();
-        
+
         // Must check for NOT and negate entire base expression.
         if (selector == ExpressionOperator.Not) {
             return !getBaseExpression().doesConform(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
@@ -210,7 +210,7 @@ public class FunctionExpression extends BaseExpression {
 
         // Conform between or in function.
         if ((selector == ExpressionOperator.Between) || (selector == ExpressionOperator.NotBetween)
-                || (selector == ExpressionOperator.In) || (selector == ExpressionOperator.NotIn) 
+                || (selector == ExpressionOperator.In) || (selector == ExpressionOperator.NotIn)
                 || (selector == ExpressionOperator.Like) || (selector == ExpressionOperator.Regexp)
                 || (selector == ExpressionOperator.NotLike)) {
             // Extract the value from the left side.
@@ -227,7 +227,7 @@ public class FunctionExpression extends BaseExpression {
                 } else {
                     valueFromRight = child;
                 }
-                //If valueFromRight is a Vector, then there is only one child other than the base, e.g. valueFromRight is a collection of constants.  
+                //If valueFromRight is a Vector, then there is only one child other than the base, e.g. valueFromRight is a collection of constants.
                 //Then it should be the vector to be compared with.  Don't add it to another collection.
                 if (valueFromRight instanceof Vector) {
                     rightValue = (Vector)valueFromRight;
@@ -308,7 +308,7 @@ public class FunctionExpression extends BaseExpression {
         }
         return platformOperator;
     }
-    
+
     public Class getResultType() {
         return resultType;
     }
@@ -316,7 +316,7 @@ public class FunctionExpression extends BaseExpression {
     public boolean hasResultType() {
         return resultType != null;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -350,7 +350,7 @@ public class FunctionExpression extends BaseExpression {
 
         Expression base = getBaseExpression();
         //bug 384641 - check that directCollections are not treated as object comparisons
-        return (base.isObjectExpression() && (!((ObjectExpression)base).isAttribute()) && 
+        return (base.isObjectExpression() && (!((ObjectExpression)base).isAttribute()) &&
                 !((ObjectExpression)base).isDirectCollection() );
     }
 
@@ -380,13 +380,13 @@ public class FunctionExpression extends BaseExpression {
         if (this.children.isEmpty()) {
             return this;
         }
-        
+
         // Ensure session has been set.
         ExpressionBuilder builder = getBuilder();
         if ((builder != null) && (builder.getSession() == null)) {
             builder.setSession(normalizer.getSession().getRootSession(null));
         }
-        
+
         if (this.operator.getSelector() == ExpressionOperator.Count) {
             // Attempting to count an Entity and not an attribute.  Need to augment this expression.
             // This is normally normalized in ReportQuery, but can get to here in a having clause.
@@ -451,11 +451,11 @@ public class FunctionExpression extends BaseExpression {
                 // For composite ids an exists and subselect is used.
                 SubSelectExpression subSelectExp = (SubSelectExpression)this.children.get(1);
                 ReportQuery subQuery = subSelectExp.getSubQuery();
-                
+
                 // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
                 subQuery.getItems().clear();
                 subQuery.addItem("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
-                
+
                 Expression subSelectCriteria = subQuery.getSelectionCriteria();
                 ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();
                 Expression newExp;
@@ -477,7 +477,7 @@ public class FunctionExpression extends BaseExpression {
                 // Check for sub-select, need to replace sub-selects on object to select its id.
                 ReportQuery query = ((SubSelectExpression)right).getSubQuery();
                 if (query.getItems().size() != 1) {
-                    throw QueryException.invalidExpression(this);                    
+                    throw QueryException.invalidExpression(this);
                 }
                 ReportItem item = query.getItems().get(0);
                 item.setAttributeExpression(item.getAttributeExpression().getField(targetFields.get(0)));
@@ -491,7 +491,7 @@ public class FunctionExpression extends BaseExpression {
             return this;
         }
         // else isNull/notNull
-        
+
         Expression foreignKeyJoin = null;
         if (base.getMapping() == null) {
             // Is an expression builder, transform to a null primary key expression.
@@ -537,7 +537,7 @@ public class FunctionExpression extends BaseExpression {
                 }
             }
             if (allParams) {
-                printer.getCall().setUsesBinding(false);                
+                printer.getCall().setUsesBinding(false);
             }
         }
         ExpressionOperator realOperator;
@@ -592,7 +592,7 @@ public class FunctionExpression extends BaseExpression {
     public void setOperator(ExpressionOperator theOperator) {
         operator = theOperator;
     }
-    
+
     public void setResultType(Class resultType) {
         this.resultType = resultType;
     }
@@ -688,7 +688,7 @@ public class FunctionExpression extends BaseExpression {
                 // Clone the field since we will change its type.
                 field = field.clone();
             }
-            
+
             // If the result type is set, use it.
             field.setSqlType(DatabaseField.NULL_SQL_TYPE);
             //we also cache the JDBC type now so reset it as well.
@@ -701,7 +701,7 @@ public class FunctionExpression extends BaseExpression {
                 int selector = this.operator.getSelector();
                 if (selector != ExpressionOperator.Maximum && selector != ExpressionOperator.Minimum) {
                     field.setType(null);
-                }   
+                }
             }
 
             newFields.addElement(field);
@@ -726,7 +726,7 @@ public class FunctionExpression extends BaseExpression {
             baseExpression.toString(writer, indent);
         }
     }
-    
+
     /**
      * INTERNAL:
      * JPQL allows count([distinct] e), where e can be an object, not just a single field,
@@ -784,7 +784,7 @@ public class FunctionExpression extends BaseExpression {
                     newDescriptor = session.getDescriptor(((ExpressionBuilder)baseExp).getQueryClass());
                 }
             }
-            
+
             if (newDescriptor != null) {
                 // At this point we are committed to rewriting the query.
                 if ((newDescriptor.getPrimaryKeyFields().size() == 1) || !distinctUsed) {
@@ -796,7 +796,7 @@ public class FunctionExpression extends BaseExpression {
                     }
                     setBaseExpression(countArg);
                     getChildren().set(0, countArg);
-                } else if (((DatabasePlatform)session.getPlatform(newDescriptor.getJavaClass())).supportsCountDistinctWithMultipleFields()) {                            
+                } else if (((DatabasePlatform)session.getPlatform(newDescriptor.getJavaClass())).supportsCountDistinctWithMultipleFields()) {
                     // case 3, is database allows multiple fields, then just print them
                     // treat COUNT(distinct entity) as COUNT(distinct entity.pk1, entity.pk2)
                     List args = new ArrayList(newDescriptor.getPrimaryKeyFields().size());
@@ -808,7 +808,7 @@ public class FunctionExpression extends BaseExpression {
                             args.add(baseExp.getField(field));
                         }
                     }
-                    
+
                     ExpressionOperator anOperator = new ExpressionOperator();
                     anOperator.setType(ExpressionOperator.FunctionOperator);
                     Vector v = NonSynchronizedVector.newInstance(args.size());
@@ -821,7 +821,7 @@ public class FunctionExpression extends BaseExpression {
                     anOperator.bePrefix();
                     anOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
                     Expression distinctFunction = anOperator.expressionForArguments(firstField, args);
-                    
+
                     setBaseExpression(distinctFunction);
                     getChildren().set(0, distinctFunction);
                 } else if (!outerJoin && (query != null)) {
@@ -831,7 +831,7 @@ public class FunctionExpression extends BaseExpression {
                     // TODO, this doesn't really work for most cases (joins, other things selected, group by),
                     // this should probably be removed and throw an error,
                     // or changed to just concat all the pks together.
-                    
+
                     // If this is a subselect baseExp is yet uncloned,
                     // and will miss out if moved now from items into a selection criteria.
                     if (clonedExpressions != null) {
@@ -841,15 +841,15 @@ public class FunctionExpression extends BaseExpression {
                             baseExp = baseExp.rebuildOn(query.getExpressionBuilder());
                         }
                     }
-                    
+
                     // Now the reference class of the query needs to be reversed.
                     // See the bug description for an explanation.
                     ExpressionBuilder countBuilder = baseExp.getBuilder();
                     ExpressionBuilder outerBuilder ;
-                    
+
                     ReportQuery subSelect = new ReportQuery(query.getReferenceClass(), countBuilder);
                     query.getSession().getPlatform().retrieveFirstPrimaryKeyOrOne(subSelect);
-                    
+
                     // Make sure the outerBuilder does not appear on the left of the subselect.
                     // Putting a builder on the left is desirable to trigger an optimization.
                     if (query.getSelectionCriteria() != null) {
@@ -868,7 +868,7 @@ public class FunctionExpression extends BaseExpression {
                     query.setReferenceClass(newDescriptor.getJavaClass());
                     query.changeDescriptor(session);
                 } else {
-                    // case 4: composite PK, DISTINCT, outer join => 
+                    // case 4: composite PK, DISTINCT, outer join =>
                     // not supported, throw exception
                     DatabaseQuery reportQuery = query;
                     if (query == null) {
@@ -894,7 +894,7 @@ public class FunctionExpression extends BaseExpression {
         if (!(expression.isQueryKeyExpression())) {
             return null;
         }
-        
+
         QueryKeyExpression qkExpression = (QueryKeyExpression)expression;
         Expression baseExpression = qkExpression.getBaseExpression();
 

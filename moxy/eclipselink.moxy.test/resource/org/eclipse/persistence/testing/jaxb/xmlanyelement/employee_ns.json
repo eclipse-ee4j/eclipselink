@@ -7,18 +7,18 @@
        },
      "address":[{
           "street":"222 Fake Street",
-	  "city":"Toronto",
-	  "country":"Canada"
+      "city":"Toronto",
+      "country":"Canada"
      },
      {
           "street":"222 Fake Street",
-	  "city":"Toronto",
-	  "country":"Canada"
+      "city":"Toronto",
+      "country":"Canada"
      }
      ],
     "ns1.simple-element":["123"],
     "qname-element":["myns:localname"],
     "ns2.complex-element":[{
        "child":"value"
-      }]     
+      }]
  }}

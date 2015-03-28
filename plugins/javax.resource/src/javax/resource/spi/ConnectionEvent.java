@@ -1,23 +1,23 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
@@ -26,21 +26,21 @@ package javax.resource.spi;
 import javax.resource.ResourceException;
 import java.util.EventObject;
 
-/** The ConnectionEvent class provides information about the source of 
- *  a connection related event.A ConnectionEvent instance contains the 
- *  following information: 
+/** The ConnectionEvent class provides information about the source of
+ *  a connection related event.A ConnectionEvent instance contains the
+ *  following information:
  *  <UL>
  *    <LI>Type of the connection event
  *    <LI>ManagedConnection instance that generated the connection event.
  *        A ManagedConnection instance is returned from the method
  *        ConnectionEvent.getSource.
- *    <LI>Connection handle associated with the ManagedConnection instance; 
- *        required for the CONNECTION_CLOSED event and optional for the 
+ *    <LI>Connection handle associated with the ManagedConnection instance;
+ *        required for the CONNECTION_CLOSED event and optional for the
  *        other event types.
- *    <LI>Optionally, an exception indicating the connection related error. 
+ *    <LI>Optionally, an exception indicating the connection related error.
  *        Note that exception is used for CONNECTION_ERROR_OCCURRED.
  *  </UL>
- * 
+ *
  *  <p>This class defines following types of event notifications:
  *  <UL>
  *     <LI>CONNECTION_CLOSED
@@ -57,7 +57,7 @@ import java.util.EventObject;
 
 public class ConnectionEvent extends java.util.EventObject {
 
-  /** Event notification that an application component has closed the 
+  /** Event notification that an application component has closed the
    *  connection
   **/
   public static final int CONNECTION_CLOSED = 1;
@@ -77,7 +77,7 @@ public class ConnectionEvent extends java.util.EventObject {
   **/
   public static final int LOCAL_TRANSACTION_ROLLEDBACK = 4;
 
-  /** Event notification that an error occurred on the connection. 
+  /** Event notification that an error occurred on the connection.
    *  This event indicates that the ManagedConnection instance is
    *  now invalid and unusable.
   **/
@@ -95,8 +95,8 @@ public class ConnectionEvent extends java.util.EventObject {
   **/
   protected int id;
 
-  private Object connectionHandle;    
-  
+  private Object connectionHandle;
+
   /**
    * Construct a ConnectionEvent object. Exception defaults to null.
    *
@@ -105,7 +105,7 @@ public class ConnectionEvent extends java.util.EventObject {
    * @param    eid         type of the Connection event
    */
   public ConnectionEvent(ManagedConnection source, int eid) {
-    super(source);         
+    super(source);
     this.id = eid;
   }
 
@@ -118,8 +118,8 @@ public class ConnectionEvent extends java.util.EventObject {
    * @param    eid         type of the Connection event
    */
   public ConnectionEvent(ManagedConnection source, int eid,
-			 Exception exception) {
-    super(source);  
+             Exception exception) {
+    super(source);
     this.exception = exception;
     this.id = eid;
   }
@@ -140,7 +140,7 @@ public class ConnectionEvent extends java.util.EventObject {
     this.connectionHandle = connectionHandle;
   }
 
- 
+
   /**
    * Get the exception. May be null.
    *
@@ -157,7 +157,7 @@ public class ConnectionEvent extends java.util.EventObject {
   int getId() {
     return id;
   }
-} 
+}
 
 
 

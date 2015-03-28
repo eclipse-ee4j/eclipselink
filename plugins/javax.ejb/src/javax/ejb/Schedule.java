@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,9 +46,9 @@ import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * Schedule a timer for automatic creation with a timeout schedule based 
+ * Schedule a timer for automatic creation with a timeout schedule based
  * on a cron-like time expression.  The annotated method is
- * used as the timeout callback method. 
+ * used as the timeout callback method.
  * <p>
  * All elements of this annotation are optional.  If none are specified
  * a persistent timer will be created with callbacks occuring every day
@@ -57,7 +57,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * <p>
  * There are seven elements that constitute a schedule specification which are
  * listed below.  In addition, the <code>timezone</code> element may be used
- * to specify a non-default time zone in whose context the schedule 
+ * to specify a non-default time zone in whose context the schedule
  * specification is to be evaluated; the <code>persistent</code> element
  * may be used to specify a non-persistent timer, and the <code>info</code>
  * element may be used to specify additional information that may be retrieved
@@ -67,7 +67,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * follows:
  * <p>
  * <ul>
- * <li> second : one or more seconds within a minute 
+ * <li> second : one or more seconds within a minute
  * <p> Allowable values: [0,59]
  * <p>
  * <li> minute : one or more minutes within an hour
@@ -77,11 +77,11 @@ import static java.lang.annotation.RetentionPolicy.*;
  * <p> Allowable values : [0,23]
  * <p>
  * <li> dayOfMonth : one or more days within a month
- * <p> Allowable values: 
+ * <p> Allowable values:
  * <ul>
- * <li> [1,31] 
- * <li> [-7, -1] 
- * <li> "Last" 
+ * <li> [1,31]
+ * <li> [-7, -1]
+ * <li> "Last"
  * <li> {"1st", "2nd", "3rd", "4th", "5th", "Last"} {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}
  * </ul>
  * <p> "Last" means the last day of the month
@@ -90,7 +90,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * <p>
  * <li> month : one or more months within a year
  * <p> Allowable values :
- * <p> 
+ * <p>
  * <ul>
  * <li> [1,12]
  * <li> {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", Dec"}
@@ -100,14 +100,14 @@ import static java.lang.annotation.RetentionPolicy.*;
  * <p> Allowable values :
  * <p>
  * <ul>
- * <li> [0,7] 
+ * <li> [0,7]
  * <li> {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}
  * </ul>
  * <p> "0" and "7" both refer to Sunday
  * <p>
  * <li> year : a particular calendar year
  * <p> Allowable values : a four-digit calendar year
- * 
+ *
  * <p>
  * </ul>
  * <p>
@@ -115,9 +115,9 @@ import static java.lang.annotation.RetentionPolicy.*;
  * Each element supports values expressed in one of the following forms
  * <p>
  * <ul>
- * <li> Single Value.  This constrains the attribute to only one of 
+ * <li> Single Value.  This constrains the attribute to only one of
  * its possible values.
- * <pre> 
+ * <pre>
  * Example: second = "10"
  * Example: month = "Sep"</pre>
  * <p>
@@ -125,7 +125,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * <pre>
  * Example: second = "*"
  * Example: dayOfWeek = "*"</pre>
- * 
+ *
  * <li> List.  This constrains the attribute to two or more allowable values
  * or ranges, with a comma used as a separator character within the string.
  * Each item in the list must be a single value or range.  List items cannot
@@ -136,7 +136,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * Example: minute = "0-10,30,40"</pre>
  *
  * <li> Range.  This constrains the attribute to an inclusive range of values,
- * with a dash separating both ends of the range.  Each side of the range 
+ * with a dash separating both ends of the range.  Each side of the range
  * must be a single attribute value.  Members of a range cannot be lists,
  * wild cards, ranges, or increments.  If <code>x</code> is larger than
  * <code>y</code> in a range <code>"x-y"</code>, the range is equivalent
@@ -150,7 +150,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * Example: second = "1-10"
  * Example: dayOfWeek = "Fri-Mon"
  * Example: dayOfMonth = "27-3" (Equivalent to "27-Last , 1-3")</pre>
- * 
+ *
  * <li> Increments.  The forward slash constrains an attribute based on a
  * starting point and an interval, and is used to specify every <code>N</code>
  * seconds, minutes, or hours within the minute, hour, or day, respectively.
@@ -163,13 +163,13 @@ import static java.lang.annotation.RetentionPolicy.*;
  * and <code>hour</code> elements.  For the <code>second</code> and
  * <code>minute</code> elements, <code>x</code> and <code>y</code> must
  * each be in the range <code>[0,59]</code>.  For the <code>hour</code>
- * element, <code>x</code> and <code>y</code> must each be in the range 
+ * element, <code>x</code> and <code>y</code> must each be in the range
  * <code>[0,23]</code>.
  * <p>
  * <pre>
  * Example: minute = "&#8727;/5" (Every five minutes within the hour)</pre>
- * This is equivalent to: 
- * <code>minute = "0,5,10,15,20,25,30,35,40,45,50,55"</code>  
+ * This is equivalent to:
+ * <code>minute = "0,5,10,15,20,25,30,35,40,45,50,55"</code>
  * <p>
  * <pre>
  * Example: second = "30/10" (Every 10 seconds within the minute, starting at second 30) </pre>
@@ -180,7 +180,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * <p>
  * <pre>
  * Example : ( minute = "&#8727;/14", hour="1,2")</pre>
- * <p>  This is equivalent to: <code>(minute = "0,14,28,42,56", hour = "1,2")</code>  
+ * <p>  This is equivalent to: <code>(minute = "0,14,28,42,56", hour = "1,2")</code>
  *  (Every 14 minutes within the hour, for the hours of 1 and 2 a.m.)
  * </ul>
  *
@@ -189,19 +189,19 @@ import static java.lang.annotation.RetentionPolicy.*;
  * <ul>
  * <li> If the <code>dayOfMonth</code> element has a non-wildcard value and
  * the <code>dayOfWeek</code> element has a non-wildcard value, then any
- * day matching either the <code>dayOfMonth</code> value or the 
+ * day matching either the <code>dayOfMonth</code> value or the
  * <code>dayOfWeek</code> value will be considered to apply.
  * <li> Whitespace is ignored, except for string constants and numeric values.
  * <li> All string constants (e.g., <code>"Sun"</code>, <code>"Jan"</code>,
  * <code>"1st"</code>, etc.) are case insensitive.
  * </ul>
  * <p>
- * Schedule-based timer times are evaluated in the context of the default 
- * time zone associated with the container in which the application is 
+ * Schedule-based timer times are evaluated in the context of the default
+ * time zone associated with the container in which the application is
  * executing. A schedule-based timer may optionally override this default
- * and associate itself with a specific time zone. If the schedule-based 
- * timer is associated with a specific time zone, all its times are 
- * evaluated in the context of that time zone, regardless of the default 
+ * and associate itself with a specific time zone. If the schedule-based
+ * timer is associated with a specific time zone, all its times are
+ * evaluated in the context of that time zone, regardless of the default
  * time zone in which the container is executing.
  * <p>
  * The timeout callback method to which the <code>Schedule</code> annotation is applied
@@ -213,13 +213,13 @@ import static java.lang.annotation.RetentionPolicy.*;
  * void &#060;METHOD&#062;(Timer timer)
  * </pre>
  *
- * A timeout callback method can have public, private, protected, or 
- * package level access. A timeout callback method must not be declared as 
+ * A timeout callback method can have public, private, protected, or
+ * package level access. A timeout callback method must not be declared as
  * final or static. Timeout callback methods must not throw application exceptions.
  *
  * @since EJB 3.1
  */
-@Target(METHOD) 
+@Target(METHOD)
 @Retention(RUNTIME)
 public @interface Schedule {
 
@@ -242,7 +242,7 @@ public @interface Schedule {
      * Specifies one or more days within a month.
      */
     String dayOfMonth() default "*";
- 
+
     /**
      * Specifies one or more months within a year.
      */
@@ -260,12 +260,12 @@ public @interface Schedule {
 
     /**
      * Specifies the time zone within which the schedule is evaluated.
-     * Time zones are specified as an ID string.  The set of required 
+     * Time zones are specified as an ID string.  The set of required
      * time zone IDs is defined by the Zone Name(TZ) column of the public
-     * domain zoneinfo database.  
+     * domain zoneinfo database.
      * <p>
      * If a timezone is not specified, the schedule is evaluated in the context
-     * of the default timezone associated with the contianer in which the 
+     * of the default timezone associated with the contianer in which the
      * application is executing.
      */
     String timezone() default "";

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.tests.jpa.criteria;
 
@@ -101,17 +101,17 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITELock"));
         //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
         //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_READ_TIMEOUTLock"));
-        //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITE_TIMEOUTLock"));        
+        //suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITE_TIMEOUTLock"));
         suite.addTest(new AdvancedQueryTestSuite("testObjectResultType"));
         //suite.addTest(new AdvancedQueryTestSuite("testNativeResultType"));
         suite.addTest(new AdvancedQueryTestSuite("testCursors"));
         //suite.addTest(new AdvancedQueryTestSuite("testFetchGroups"));
         //suite.addTest(new AdvancedQueryTestSuite("testMultipleNamedJoinFetchs"));
         //suite.addTest(new AdvancedQueryTestSuite("testNativeQueryTransactions"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -130,7 +130,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         //Persist the examples in the database
         employeePopulator.persistExample(session);
     }
-    
+
     /**
      * Test that a cache hit will occur on a primary key query.
      */
@@ -139,7 +139,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
@@ -226,7 +226,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             cursor.nextElement();
             cursor.size();
             cursor.close();
-            
+
             // Test cursor result API.
             JpaQuery jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             jpaQuery.setHint(QueryHints.CURSOR, true);
@@ -234,7 +234,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             cursor.nextElement();
             cursor.size();
             cursor.close();
-            
+
             // Test scrollable cursor.
             jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             jpaQuery.setHint(QueryHints.SCROLLABLE_CURSOR, true);
@@ -248,7 +248,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             ScrollableCursor scrollableCursor = (ScrollableCursor)jpaQuery.getResultCursor();
             scrollableCursor.next();
             scrollableCursor.close();
-            
+
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -262,11 +262,11 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
-            
+
             CriteriaBuilder qb = em.getCriteriaBuilder();
             // Test multi object, as an array.
             CriteriaQuery<?> cq = qb.createQuery(Object[].class);
@@ -285,7 +285,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if ((arrayResult.length != 3) || (arrayResult[0] != employee) || (arrayResult[1] != employee.getAddress()) || (!arrayResult[2].equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);
             }
-            
+
             // Test single object, as an array.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
@@ -304,7 +304,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if ((arrayResult.length != 1) || (!arrayResult[0].equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);
             }
-            
+
             // Test multi object, as a Map.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
@@ -323,7 +323,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if ((mapResult.size() != 3) ||(mapResult.get("employee") != employee) || (mapResult.get("address") != employee.getAddress()) || (!mapResult.get("id").equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
-            
+
             // Test single object, as a Map.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
@@ -342,7 +342,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if ((mapResult.size() != 1) || (!mapResult.get("id").equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
-            
+
             // Test single object, as an array.
             cq = qb.createQuery(Employee.class);
             from = cq.from(Employee.class);
@@ -356,7 +356,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (arrayResult[0] != employee) {
                 fail("Array result not correct: " + arrayResult);
             }
-            
+
             // Test single object, as value.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
@@ -374,7 +374,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (! valueResult.equals(employee.getId())) {
                 fail("Value result not correct: " + valueResult);
             }
-            
+
             // Test multi object, as value.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
@@ -388,7 +388,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (! valueResult.equals(employee.getId())) {
                 fail("Value result not correct: " + valueResult);
             }
-            
+
             // Test single object, as attribute.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
@@ -420,7 +420,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
@@ -459,7 +459,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
@@ -526,7 +526,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test that a cache hit will occur on a query when the object is not in the unit of work/em.
      */

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional;
@@ -25,11 +25,11 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         addTableDefinition(buildEMP_PHONETable());
         addTableDefinition(buildLARGEPROJECTTable());
         addTableDefinition(buildPHONENUMBERTable());
-		addTableDefinition(buildPROJECTTable());
+        addTableDefinition(buildPROJECTTable());
         addTableDefinition(buildPROJECT_EMPTable());
         addTableDefinition(buildSALARYTable());
     }
-    
+
     public static TableDefinition buildADDRESSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_UNI_ADDRESS");
@@ -107,7 +107,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         TableDefinition table = new TableDefinition();
         // SECTION: TABLE
         table.setName("CMP3_XML_UNI_EMPLOYEE");
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field.setName("EMP_ID");
@@ -118,7 +118,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field.setUnique(false );
         field.setIsIdentity(true );
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("F_NAME");
@@ -129,7 +129,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("L_NAME");
@@ -140,7 +140,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field2.setUnique(false );
         field2.setIsIdentity(false );
         table.addField(field2);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("START_DATE");
@@ -151,7 +151,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field3.setUnique(false );
         field3.setIsIdentity(false );
         table.addField(field3);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field4 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field4.setName("END_DATE");
@@ -162,7 +162,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field4.setUnique(false );
         field4.setIsIdentity(false );
         table.addField(field4);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field8 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field8.setName("ADDR_ID");
@@ -174,7 +174,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field8.setIsIdentity(false );
         field8.setForeignKeyFieldName("CMP3_XML_UNI_ADDRESS.ADDRESS_ID");
         table.addField(field8);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field9 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field9.setName("MANAGER_EMP_ID");
@@ -186,7 +186,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field9.setIsIdentity(false );
         field9.setForeignKeyFieldName("CMP3_XML_UNI_EMPLOYEE.EMP_ID");
         table.addField(field9);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field10 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field10.setName("VERSION");
@@ -245,7 +245,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field.setIsIdentity(false );
         field.setForeignKeyFieldName("CMP3_XML_UNI_EMPLOYEE.EMP_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("PHONE_ID");
@@ -275,7 +275,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field.setIsIdentity(false );
         field.setForeignKeyFieldName("CMP3_XML_UNI_PROJECT.PROJ_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("BUDGET");
@@ -286,7 +286,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         return table;
     }
 
@@ -304,7 +304,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field.setUnique(false );
         field.setIsIdentity(false );
         table.addField(field);
-    
+
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
@@ -316,7 +316,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("AREA_CODE");
@@ -327,7 +327,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field2.setUnique(false );
         field2.setIsIdentity(false );
         table.addField(field2);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("NUMB");
@@ -357,7 +357,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field.setUnique(false );
         field.setIsIdentity(true );
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("PROJ_TYPE");
@@ -368,7 +368,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("PROJ_NAME");
@@ -379,7 +379,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field2.setUnique(false );
         field2.setIsIdentity(false );
         table.addField(field2);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("DESCRIP");
@@ -390,7 +390,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field3.setUnique(false );
         field3.setIsIdentity(false );
         table.addField(field3);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field4 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field4.setName("LEADER_ID");
@@ -402,7 +402,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field4.setIsIdentity(false );
         field4.setForeignKeyFieldName("CMP3_XML_UNI_EMPLOYEE.EMP_ID");
         table.addField(field4);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field5 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field5.setName("VERSION");
@@ -433,7 +433,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field.setIsIdentity(false );
         field.setForeignKeyFieldName("CMP3_XML_UNI_EMPLOYEE.EMP_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("PROJ_ID");

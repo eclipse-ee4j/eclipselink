@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,100 +46,100 @@ import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 public class EclipseLinkStateObjectBuilder extends BasicStateObjectBuilder
                                            implements EclipseLinkExpressionVisitor {
 
-	/**
-	 * Creates a new <code>EclipseLinkStateObjectBuilder</code>.
-	 */
-	public EclipseLinkStateObjectBuilder() {
-		super();
-	}
+    /**
+     * Creates a new <code>EclipseLinkStateObjectBuilder</code>.
+     */
+    public EclipseLinkStateObjectBuilder() {
+        super();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected LiteralVisitor buildLiteralVisitor() {
-		return new EclipseLinkLiteralVisitor();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected LiteralVisitor buildLiteralVisitor() {
+        return new EclipseLinkLiteralVisitor();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(AsOfClause expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(AsOfClause expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(CastExpression expression) {
-		// TODO
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(CastExpression expression) {
+        // TODO
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(ConnectByClause expression) {
-		// TODO
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(ConnectByClause expression) {
+        // TODO
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(DatabaseType expression) {
-		// TODO
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(DatabaseType expression) {
+        // TODO
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(ExtractExpression expression) {
-		// TODO
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(ExtractExpression expression) {
+        // TODO
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(HierarchicalQueryClause expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(HierarchicalQueryClause expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(OrderSiblingsByClause expression) {
-		// TODO
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(OrderSiblingsByClause expression) {
+        // TODO
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(RegexpExpression expression) {
-		// TODO
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(RegexpExpression expression) {
+        // TODO
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(StartWithClause expression) {
-		// TODO
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(StartWithClause expression) {
+        // TODO
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TableExpression expression) {
-		// TODO
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(TableExpression expression) {
+        // TODO
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TableVariableDeclaration expression) {
-		// TODO
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(TableVariableDeclaration expression) {
+        // TODO
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(UnionClause expression) {
-		// TODO
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(UnionClause expression) {
+        // TODO
+    }
 }

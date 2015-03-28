@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,21 +53,21 @@ public class FieldRoot {
     public void setC(byte[] c) {
         this.c = c;
     }
-    
+
     public boolean equals(Object obj){
-    	if(obj instanceof FieldRoot){
-    	    FieldRoot fr = ((FieldRoot)obj);
-    		if(!Arrays.equals(a, fr.getA())){
-    			return false;
-    		}
-    		if(!Arrays.equals(b, fr.getB())){
-    			return false;
-    		}
-    		if(!Arrays.equals(c, fr.getC())){
-    			return false;
-    		}
-    		return true;
-    	}
+        if(obj instanceof FieldRoot){
+            FieldRoot fr = ((FieldRoot)obj);
+            if(!Arrays.equals(a, fr.getA())){
+                return false;
+            }
+            if(!Arrays.equals(b, fr.getB())){
+                return false;
+            }
+            if(!Arrays.equals(c, fr.getC())){
+                return false;
+            }
+            return true;
+        }
         return false;
     }
 

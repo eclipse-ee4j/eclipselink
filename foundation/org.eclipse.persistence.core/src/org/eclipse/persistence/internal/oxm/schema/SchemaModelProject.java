@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -246,7 +246,7 @@ public class SchemaModelProject extends Project {
         anyAttributeMapping.setAttributeName("anyAttribute");
         anyAttributeMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "anyAttribute");
         descriptor.addMapping(anyAttributeMapping);
-        
+
         XMLAnyAttributeMapping attributesMapMapping = new XMLAnyAttributeMapping();
         attributesMapMapping.setAttributeName("attributesMap");
         attributesMapMapping.setGetMethodName("getAttributesMap");
@@ -465,7 +465,7 @@ public class SchemaModelProject extends Project {
         minExclusiveMapping.setGetMethodName("getMinExclusive");
         minExclusiveMapping.setXPath(Constants.SCHEMA_PREFIX + ":minExclusive/@value");
         descriptor.addMapping(minExclusiveMapping);
-        
+
         XMLDirectMapping maxExclusiveMapping = new XMLDirectMapping();
         maxExclusiveMapping.setAttributeName("maxExclusive");
         maxExclusiveMapping.setSetMethodName("setMaxExclusive");
@@ -566,7 +566,7 @@ public class SchemaModelProject extends Project {
         XMLAnyCollectionMapping orderedAttributesMapping = new XMLAnyCollectionMapping();
         orderedAttributesMapping.setAttributeName("orderedAttributes");
         descriptor.addMapping(orderedAttributesMapping);
-        
+
         XMLCompositeObjectMapping anyAttributeMapping = new XMLCompositeObjectMapping();
         anyAttributeMapping.setReferenceClass(AnyAttribute.class);
         anyAttributeMapping.setAttributeName("anyAttribute");
@@ -596,7 +596,7 @@ public class SchemaModelProject extends Project {
         formMapping.setAttributeName("form");
         formMapping.setXPath("@form");
         descriptor.addMapping(formMapping);
-        
+
         XMLDirectMapping refMapping = new XMLDirectMapping();
         refMapping.setAttributeName("ref");
         refMapping.setXPath("@ref");
@@ -705,7 +705,7 @@ public class SchemaModelProject extends Project {
         descriptor.setJavaClass(All.class);
         descriptor.setNamespaceResolver(namespaceResolver);
         descriptor.setDefaultRootElement(Constants.SCHEMA_PREFIX + ":all");
-        //				descriptor.getInheritancePolicy().setParentClass(TypeDefParticle.class);
+        //                descriptor.getInheritancePolicy().setParentClass(TypeDefParticle.class);
         XMLDirectMapping minOccursMapping = new XMLDirectMapping();
         minOccursMapping.setAttributeName("minOccurs");
         minOccursMapping.setXPath("@minOccurs");
@@ -733,7 +733,7 @@ public class SchemaModelProject extends Project {
         descriptor.setJavaClass(Sequence.class);
         descriptor.setNamespaceResolver(namespaceResolver);
         descriptor.setDefaultRootElement(Constants.SCHEMA_PREFIX + ":sequence");
-        //		descriptor.getInheritancePolicy().setParentClass(TypeDefParticle.class);
+        //        descriptor.getInheritancePolicy().setParentClass(TypeDefParticle.class);
         XMLDirectMapping minOccursMapping = new XMLDirectMapping();
         minOccursMapping.setAttributeName("minOccurs");
         minOccursMapping.setXPath("@minOccurs");
@@ -765,7 +765,7 @@ public class SchemaModelProject extends Project {
         processContentsMapping.setAttributeName("processContents");
         processContentsMapping.setXPath("@processContents");
         descriptor.addMapping(processContentsMapping);
-        
+
         XMLDirectMapping namespaceMapping = new XMLDirectMapping();
         namespaceMapping.setAttributeName("namespace");
         namespaceMapping.setXPath("@namespace");
@@ -806,7 +806,7 @@ public class SchemaModelProject extends Project {
         formMapping.setAttributeName("form");
         formMapping.setXPath("@form");
         descriptor.addMapping(formMapping);
-        
+
         XMLDirectMapping useMapping = new XMLDirectMapping();
         useMapping.setAttributeName("use");
         useMapping.setXPath("@use");
@@ -861,7 +861,7 @@ public class SchemaModelProject extends Project {
         processContentsMapping.setAttributeName("processContents");
         processContentsMapping.setXPath("@processContents");
         descriptor.addMapping(processContentsMapping);
-        
+
         XMLDirectMapping namespaceMapping = new XMLDirectMapping();
         namespaceMapping.setAttributeName("namespace");
         namespaceMapping.setXPath("@namespace");

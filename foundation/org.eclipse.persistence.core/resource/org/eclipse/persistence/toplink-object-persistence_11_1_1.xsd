@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!--
 ******************************************************************************
- Copyright (c) 1998, 2010 Oracle. All rights reserved.
- This program and the accompanying materials are made available under the 
- terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- which accompanies this distribution. 
+ Copyright (c) 1998, 2015 Oracle. All rights reserved.
+ This program and the accompanying materials are made available under the
+ terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ which accompanies this distribution.
  The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- and the Eclipse Distribution License is available at 
+ and the Eclipse Distribution License is available at
  http://www.eclipse.org/org/documents/edl-v10.php.
 
  Contributors:
@@ -216,9 +216,9 @@
         </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="toplink:datasource-login">
-		<xsd:sequence>
-			<xsd:element name="equal-namespace-resolvers" type="xsd:boolean" default="true" minOccurs="0"/>
-		</xsd:sequence>
+        <xsd:sequence>
+            <xsd:element name="equal-namespace-resolvers" type="xsd:boolean" default="true" minOccurs="0"/>
+        </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -1117,11 +1117,11 @@
         </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="toplink:abstract-direct-mapping">
-		<xsd:sequence>
+        <xsd:sequence>
                     <xsd:element name="is-cdata" type="xsd:boolean" minOccurs="0"/>
-		<xsd:element name="null-policy" type="toplink:abstract-null-policy" minOccurs="0"/>			
-		</xsd:sequence>
-	    </xsd:extension>
+        <xsd:element name="null-policy" type="toplink:abstract-null-policy" minOccurs="0"/>
+        </xsd:sequence>
+        </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
     <xsd:complexType name="eis-direct-mapping">
@@ -2556,7 +2556,7 @@
             <xsd:extension base="toplink:expression">
                 <xsd:sequence>
                     <xsd:element name="field" type="opm:field"/>
-		    <xsd:element name="base" type="toplink:expression"/>
+            <xsd:element name="base" type="toplink:expression"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
@@ -2662,11 +2662,11 @@
          <xsd:complexContent>
              <xsd:extension base="toplink:stored-procedure-call">
                  <xsd:sequence>
-		     <xsd:element name="stored-function-result" type="toplink:procedure-output-argument" minOccurs="1">
-			 <xsd:annotation>
-			 <xsd:documentation>The return value of the stored-function.</xsd:documentation>
-			 </xsd:annotation>
-		     </xsd:element>
+             <xsd:element name="stored-function-result" type="toplink:procedure-output-argument" minOccurs="1">
+             <xsd:annotation>
+             <xsd:documentation>The return value of the stored-function.</xsd:documentation>
+             </xsd:annotation>
+             </xsd:element>
                  </xsd:sequence>
              </xsd:extension>
          </xsd:complexContent>
@@ -2686,17 +2686,17 @@
                     <xsd:documentation>The query name of the argument. This is the name of the argument as define in the query.</xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
-	    <xsd:element name="procedure-argument-type" type="xsd:string" minOccurs="0">
+        <xsd:element name="procedure-argument-type" type="xsd:string" minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>The fully qualified name of the argument class type.</xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
-	    <xsd:element name="procedure-argument-sqltype" type="xsd:int" minOccurs="0">
+        <xsd:element name="procedure-argument-sqltype" type="xsd:int" minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>The JDBC int type of the argument, as defined in java.jdbc.Types</xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
-	    <xsd:element name="procedure-argument-sqltype-name" type="xsd:string" minOccurs="0">
+        <xsd:element name="procedure-argument-sqltype-name" type="xsd:string" minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>The name of the type if procedure-argument-sqltype is STRUCT or ARRAY</xsd:documentation>
                 </xsd:annotation>
@@ -2792,7 +2792,7 @@
           <xsd:attribute name="type-name" type="xsd:string"/>
         </xsd:extension>
       </xsd:complexContent>
-    </xsd:complexType>  
+    </xsd:complexType>
     <xsd:complexType name="plsql-record">
       <xsd:complexContent>
         <xsd:extension base="toplink:plsql-procedure-argument-type">
@@ -2817,7 +2817,7 @@
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
-    </xsd:complexType>  
+    </xsd:complexType>
     <xsd:complexType name="eis-class-mapping-descriptor">
         <xsd:annotation>
             <xsd:documentation>Defines a class mapping to an EIS record data structure.</xsd:documentation>
@@ -3165,7 +3165,7 @@
                             <xsd:documentation>Defines the collection type to use for the relationship.</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
-		    <xsd:element name="uses-single-node" type="xsd:boolean"/>
+            <xsd:element name="uses-single-node" type="xsd:boolean"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
@@ -3177,14 +3177,14 @@
         <xsd:complexContent>
             <xsd:extension base="toplink:aggregate-object-mapping">
                 <xsd:sequence>
-	            <xsd:element name="source-to-target-key-field-association" type="opm:foreign-key" minOccurs="0"/>
-	            <xsd:element name="source-to-target-key-fields" minOccurs="0">
+                <xsd:element name="source-to-target-key-field-association" type="opm:foreign-key" minOccurs="0"/>
+                <xsd:element name="source-to-target-key-fields" minOccurs="0">
                         <xsd:complexType>
                             <xsd:sequence>
                                 <xsd:element name="field" type="opm:field" minOccurs="0" maxOccurs="unbounded"/>
                             </xsd:sequence>
                         </xsd:complexType>
-		    </xsd:element>
+            </xsd:element>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
@@ -3195,10 +3195,10 @@
         </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="toplink:abstract-composite-direct-collection-mapping">
-		<xsd:sequence>
-			<xsd:element name="is-cdata" type="xsd:boolean" minOccurs="0"/>
-		</xsd:sequence>
-	    </xsd:extension>
+        <xsd:sequence>
+            <xsd:element name="is-cdata" type="xsd:boolean" minOccurs="0"/>
+        </xsd:sequence>
+        </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
     <xsd:complexType name="eis-composite-direct-collection-mapping">
@@ -3262,10 +3262,10 @@
         </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="toplink:abstract-composite-object-mapping">
-		<xsd:sequence>
-		    <xsd:element name="null-policy" type="toplink:abstract-null-policy" minOccurs="0"/>
-   		</xsd:sequence>
-	    </xsd:extension>
+        <xsd:sequence>
+            <xsd:element name="null-policy" type="toplink:abstract-null-policy" minOccurs="0"/>
+           </xsd:sequence>
+        </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
     <xsd:complexType name="eis-composite-object-mapping">
@@ -3288,11 +3288,11 @@
                             <xsd:documentation>The name of the element the descriptor maps to.</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
-		    <xsd:element name="default-root-element-field" type="toplink:node" minOccurs="0">
-			<xsd:annotation>
-				<xsd:documentation>The XMLField representing the default root element of the descriptor.</xsd:documentation>
-			</xsd:annotation>
-		    </xsd:element>
+            <xsd:element name="default-root-element-field" type="toplink:node" minOccurs="0">
+            <xsd:annotation>
+                <xsd:documentation>The XMLField representing the default root element of the descriptor.</xsd:documentation>
+            </xsd:annotation>
+            </xsd:element>
                     <xsd:element name="should-preserve-document" type="xsd:boolean" minOccurs="0">
                         <xsd:annotation>
                             <xsd:documentation>Indicates if nodes should be cached to preserve unmapped data</xsd:documentation>
@@ -3322,23 +3322,23 @@
                     <xsd:element name="field" type="opm:field" minOccurs="0"/>
                     <xsd:element name="container" type="toplink:container-policy" minOccurs="0"/>
                     <xsd:element name="use-xml-root" type="xsd:boolean" default="false" minOccurs="0"/>
-		    <xsd:element name="keep-as-element-policy" type="xsd:string" minOccurs="0"/>
-		</xsd:sequence>
+            <xsd:element name="keep-as-element-policy" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
     <xsd:complexType name="xml-any-attribute-mapping">
-		<xsd:annotation>
-			<xsd:documentation>Defines a mapping of a collection to an xs:any declaration or xs:anyType element</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="opm:attribute-mapping">
-				<xsd:sequence>
-					<xsd:element name="field" type="opm:field" minOccurs="0"/>
-					<xsd:element name="container" type="toplink:container-policy" minOccurs="0"/>
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
+        <xsd:annotation>
+            <xsd:documentation>Defines a mapping of a collection to an xs:any declaration or xs:anyType element</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="opm:attribute-mapping">
+                <xsd:sequence>
+                    <xsd:element name="field" type="opm:field" minOccurs="0"/>
+                    <xsd:element name="container" type="toplink:container-policy" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
     <xsd:complexType name="xml-any-object-mapping">
         <xsd:annotation>
@@ -3377,8 +3377,8 @@
             <xsd:extension base="toplink:xml-direct-mapping">
                 <xsd:sequence>
                     <xsd:element name="is-swa-ref" type="xsd:boolean" minOccurs="0"/>
-		    <xsd:element name="mime-type" type="xsd:string" minOccurs="0"/>
-		    <xsd:element name="should-inline-data" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="mime-type" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="should-inline-data" type="xsd:boolean" minOccurs="0"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
@@ -3449,11 +3449,11 @@
                     </xsd:element>
                     <xsd:element name="xml-to-java-conversion-pair" type="toplink:xml-conversion-pair" minOccurs="0" maxOccurs="unbounded"/>
                     <xsd:element name="java-to-xml-conversion-pair" type="toplink:xml-conversion-pair" minOccurs="0" maxOccurs="unbounded"/>
-		    <xsd:element name="leaf-element-type" type="xsd:string" minOccurs="0">                            
-			<xsd:annotation>
-			    <xsd:documentation>Indicates the elements type.</xsd:documentation>
-			</xsd:annotation>
-		    </xsd:element>
+            <xsd:element name="leaf-element-type" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+                <xsd:documentation>Indicates the elements type.</xsd:documentation>
+            </xsd:annotation>
+            </xsd:element>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
@@ -3495,7 +3495,7 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-	        <xsd:element name="default-namespace-uri" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="default-namespace-uri" type="xsd:string" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
     </xsd:complexType>
     <xsd:complexType name="namespace">
@@ -3749,44 +3749,44 @@
         </xsd:complexContent>
     </xsd:complexType>
     <xsd:complexType name="abstract-null-policy">
-	<xsd:annotation>
-	    <xsd:documentation>Defines the Null Policy in use for this relationship currently a choice of [NullPolicy and IsSetNullPolicy].</xsd:documentation>
-	</xsd:annotation>
-	<xsd:sequence>
-    		<xsd:element name="xsi-nil-represents-null" type="xsd:boolean" default="false" minOccurs="0" />
-		<xsd:element name="empty-node-represents-null" type="xsd:boolean" default="false" minOccurs="0" />
-    		<xsd:element name="null-representation-for-xml" type="toplink:marshal-null-representation" minOccurs="0"/>
-	</xsd:sequence>
+    <xsd:annotation>
+        <xsd:documentation>Defines the Null Policy in use for this relationship currently a choice of [NullPolicy and IsSetNullPolicy].</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+            <xsd:element name="xsi-nil-represents-null" type="xsd:boolean" default="false" minOccurs="0" />
+        <xsd:element name="empty-node-represents-null" type="xsd:boolean" default="false" minOccurs="0" />
+            <xsd:element name="null-representation-for-xml" type="toplink:marshal-null-representation" minOccurs="0"/>
+    </xsd:sequence>
     </xsd:complexType>
-	<xsd:complexType name="null-policy">
-   		<xsd:complexContent>
-   			<xsd:extension base="toplink:abstract-null-policy">
-				<xsd:sequence>
-					<xsd:element name="is-set-performed-for-absent-node" type="xsd:boolean" default="true" minOccurs="0" />
-				</xsd:sequence>
-   			</xsd:extension>
-   		</xsd:complexContent>
-   	</xsd:complexType>
+    <xsd:complexType name="null-policy">
+           <xsd:complexContent>
+               <xsd:extension base="toplink:abstract-null-policy">
+                <xsd:sequence>
+                    <xsd:element name="is-set-performed-for-absent-node" type="xsd:boolean" default="true" minOccurs="0" />
+                </xsd:sequence>
+               </xsd:extension>
+           </xsd:complexContent>
+       </xsd:complexType>
 
-	<xsd:complexType name="is-set-null-policy">
-   		<xsd:complexContent>
-   			<xsd:extension base="toplink:abstract-null-policy">
-   				<xsd:sequence>
-   					<xsd:element name="is-set-method-name" type="xsd:string" minOccurs="0" />
-   					<xsd:element name="is-set-parameter-type" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
-   					<xsd:element name="is-set-parameter" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
-				</xsd:sequence>
-   			</xsd:extension>
-   		</xsd:complexContent>
-   	</xsd:complexType>
-   	<xsd:simpleType name="marshal-null-representation">
-   		<xsd:annotation>
-   			<xsd:documentation>Write null, no tag(default) or an empty tag.</xsd:documentation>
-   		</xsd:annotation>
-   		<xsd:restriction base="xsd:string">
-   			<xsd:enumeration value="XSI_NIL" />
-   			<xsd:enumeration value="ABSENT_NODE" />
-   			<xsd:enumeration value="EMPTY_NODE" />
-   		</xsd:restriction>
-   	</xsd:simpleType>
+    <xsd:complexType name="is-set-null-policy">
+           <xsd:complexContent>
+               <xsd:extension base="toplink:abstract-null-policy">
+                   <xsd:sequence>
+                       <xsd:element name="is-set-method-name" type="xsd:string" minOccurs="0" />
+                       <xsd:element name="is-set-parameter-type" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+                       <xsd:element name="is-set-parameter" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+                </xsd:sequence>
+               </xsd:extension>
+           </xsd:complexContent>
+       </xsd:complexType>
+       <xsd:simpleType name="marshal-null-representation">
+           <xsd:annotation>
+               <xsd:documentation>Write null, no tag(default) or an empty tag.</xsd:documentation>
+           </xsd:annotation>
+           <xsd:restriction base="xsd:string">
+               <xsd:enumeration value="XSI_NIL" />
+               <xsd:enumeration value="ABSENT_NODE" />
+               <xsd:enumeration value="EMPTY_NODE" />
+           </xsd:restriction>
+       </xsd:simpleType>
 </xsd:schema>

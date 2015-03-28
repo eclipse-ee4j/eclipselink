@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
- ******************************************************************************/  
+ *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.util.HashMap;
@@ -56,35 +56,35 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
  * @since TopLink 10.1.3.
  */
 public class FetchGroupManager implements Cloneable, java.io.Serializable {
-    //The group map is keyed by the group name, valued by the fetch group object. 
+    //The group map is keyed by the group name, valued by the fetch group object.
     private Map<String, FetchGroup> fetchGroups = null;
 
     // EntityFetchGroups mapped by their AttributeNames Sets.
     private transient Map<Set<String>, EntityFetchGroup> entityFetchGroups = new ConcurrentHashMap();
-    
+
     //default fetch group
     private FetchGroup defaultFetchGroup;
     private EntityFetchGroup defaultEntityFetchGroup;
 
     // full fetch group - contains all attributes, none of them nested.
     private FetchGroup fullFetchGroup;
-    
+
     // minimal fetch group - contains primary key attribute(s) and version.
     private FetchGroup minimalFetchGroup;
-    
+
     // identity fetch group - contains primary key attribute(s) only.
     private EntityFetchGroup idEntityFetchGroup;
-    
+
     // non relational fetch group - contains intersection of non-relational attributes
     // and defaultEntityFetchGroup.
     private EntityFetchGroup nonReferenceEntityFetchGroup;
-    
+
     //ref to the descriptor
     private ClassDescriptor descriptor;
-    
+
     // indicates whether defaultFetchGroup should be copied from the parent if not set.
     private boolean shouldUseInheritedDefaultFetchGroup = true;
-    
+
     /**
      * Constructor
      */
@@ -148,7 +148,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
 
     /**
      * PUBLIC:
-     * Indicates whether the passed fetch group is minimal. 
+     * Indicates whether the passed fetch group is minimal.
      */
     public boolean isMinimalFetchGroup(FetchGroup fetchGroup) {
         return this.minimalFetchGroup.equals(fetchGroup);
@@ -170,7 +170,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
     public EntityFetchGroup getNonReferenceEntityFetchGroup() {
         return this.nonReferenceEntityFetchGroup;
     }
-    
+
     /**
      * INTERNAL:
      * Returns EntityFetchGroup corresponding to non relational attributes
@@ -193,7 +193,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
             for(DatabaseMapping mapping : descriptor.getObjectBuilder().getPrimaryKeyMappings()) {
                 String name = mapping.getAttributeName();
                 if(!nonReferenceFetchGroup.containsAttribute(name)) {
-                    nonReferenceFetchGroup.addAttribute(name); 
+                    nonReferenceFetchGroup.addAttribute(name);
                 }
             }
         } else {
@@ -202,7 +202,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
                     String name = mapping.getAttributeName();
                     if(!nonReferenceFetchGroup.containsAttribute(name)) {
                         // always add foreign reference pk
-                        nonReferenceFetchGroup.addAttribute(name); 
+                        nonReferenceFetchGroup.addAttribute(name);
                     }
                 }
             }
@@ -211,13 +211,13 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
             String lockAttribute = descriptor.getObjectBuilder().getLockAttribute();
             if(lockAttribute != null) {
                 if(!nonReferenceFetchGroup.containsAttribute(lockAttribute)) {
-                    nonReferenceFetchGroup.addAttribute(lockAttribute); 
+                    nonReferenceFetchGroup.addAttribute(lockAttribute);
                 }
             }
         }
         return getEntityFetchGroup(nonReferenceFetchGroup);
     }
-    
+
     /**
      * INTERNAL:
      * Add primary key and version attributes to the passed fetch group.
@@ -234,7 +234,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
             }
         }
     }
-    
+
     /**
      * PUBLIC:
      * Add primary key and version attributes to the passed fetch group
@@ -246,7 +246,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
     public void prepareAndVerify(FetchGroup fetchGroup) {
         prepareAndVerifyInternal(fetchGroup, "");
     }
-    
+
     /**
      * INTERNAL:
      * Add primary key and version attributes to the passed fetch group
@@ -255,7 +255,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      */
     protected void prepareAndVerifyInternal(FetchGroup fetchGroup, String attributePrefix) {
         addMinimalFetchGroup(fetchGroup);
-        ObjectBuilder builder = this.descriptor.getObjectBuilder(); 
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
         if (fetchGroup.isValidated()){
             return;
         }
@@ -295,7 +295,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
                            // no reference descriptor found
                            throw ValidationException.fetchGroupHasWrongReferenceAttribute(fetchGroup, name);
                        }
-                       
+
                    } else {
                        // no reference mapping found
                        throw ValidationException.fetchGroupHasWrongReferenceAttribute(fetchGroup, name);
@@ -307,7 +307,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
             }
         }
     }
-    
+
     /**
      * PUBLIC:
      * Returns clone of the default fetch group.
@@ -339,7 +339,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      * Returns entity fetch group corresponding to the passed set of attributes.
      */
     public EntityFetchGroup getEntityFetchGroup(Set<String> attributeNames) {
-        if(attributeNames == null || attributeNames.isEmpty()) { 
+        if(attributeNames == null || attributeNames.isEmpty()) {
             return null;
         }
         EntityFetchGroup entityFetchGroup = this.entityFetchGroups.get(attributeNames);
@@ -351,10 +351,10 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
             }
             this.entityFetchGroups.put(entityFetchGroup.getAttributeNames(), entityFetchGroup);
         }
-        
+
         return entityFetchGroup;
     }
-    
+
     /**
      * INTERNAL:
      * Returns entity fetch group corresponding to the passed fetch group.
@@ -366,13 +366,13 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
             return fetchGroup.getEntityFetchGroup(this);
         }
     }
-    
+
     /**
      * Return a pre-defined named fetch group.
-     * 
+     *
      * Lookup the FetchGroup to use given a name taking into
      * consideration descriptor inheritance to ensure parent descriptors are
-     * searched for named FetchGroups. 
+     * searched for named FetchGroups.
      */
     public FetchGroup getFetchGroup(String groupName) {
         FetchGroup fg =  this.fetchGroups.get(groupName);
@@ -490,7 +490,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
         if (fetchGroupInTarg != null) {
             FetchGroup fetchGroupInSrc = ((FetchGroupTracker)cachedObject)._persistence_getFetchGroup();
 
-            //should write if target's fetch group is not a superset of that of the source, 
+            //should write if target's fetch group is not a superset of that of the source,
             //or if refresh is required, should always write (either refresh or revert) data from the cache to the clones.
             return !fetchGroupInTarg.isSupersetOf(fetchGroupInSrc) || ((FetchGroupTracker) cachedObject)._persistence_shouldRefreshFetchGroup();
         }
@@ -559,7 +559,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
                     //there might be cases when reverting/refreshing clone is needed.
                     mapping.getReferenceDescriptor().getFetchGroupManager().writePartialIntoClones(attributeValue, cloneAttrbute, backupAttribute, uow);
                 }
-            } 
+            }
         }
     }
 
@@ -696,7 +696,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
         }
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Return FetchGroup held by the object.
@@ -713,7 +713,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
         }
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Set fetch group into the object.
@@ -738,7 +738,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
                     tracker._persistence_setSession(null);
                 }
             }
-        }        
+        }
     }
 
     /**
@@ -756,7 +756,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
         FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
         if (fetchGroup == null) {
             return true;
-        }        
+        }
         return fetchGroup.containsAttributeInternal(attributeName);
     }
 
@@ -781,7 +781,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
     public boolean hasFetchGroup(String groupName) {
         return getFetchGroups().containsKey(groupName);
     }
-    
+
     /**
      * INTERNAL: Initialize the fetch groups. XXX-dclarke: added support for
      * reinit the query manager's queries if they exist
@@ -815,7 +815,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
             // insert the copied idEntityFetchGroup into the map
             this.entityFetchGroups.put(this.idEntityFetchGroup.getAttributeNames(), this.idEntityFetchGroup);
         } else {
-            // currently minimalFetchGroup contains only PrimaryKey - that's what idEntityFetchGroup will consist of. 
+            // currently minimalFetchGroup contains only PrimaryKey - that's what idEntityFetchGroup will consist of.
             this.idEntityFetchGroup = getEntityFetchGroup(this.minimalFetchGroup);
         }
         if(this.descriptor.usesOptimisticLocking()) {
@@ -831,9 +831,9 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
         // Now minimalFetchGroup contains PrimaryKey plus locking field - getEntityFetchGroup call ensures
         // that corresponding EntityFetchGroup is cached in entityFetchGroups map.
         // Note that the new EntityFetchGroup is not created if there is no locking field.
-        getEntityFetchGroup(this.minimalFetchGroup);        
+        getEntityFetchGroup(this.minimalFetchGroup);
     }
-    
+
     /**
      * INTERNAL:
      * postInitialize called for inheritance children first.
@@ -855,7 +855,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
                 getEntityFetchGroup(fetchGroup);
             }
         }
-        
+
         if(this.defaultFetchGroup == null) {
             // Look up default fetch group set by user on parent descriptors
             if(this.descriptor.isChildDescriptor() && this.shouldUseInheritedDefaultFetchGroup) {
@@ -871,7 +871,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
                     current = parent;
                 }
             }
-            
+
             FetchGroup defaultCandidate = new FetchGroup();
             boolean hasLazy = false;
             for (DatabaseMapping mapping : getDescriptor().getMappings()) {
@@ -891,7 +891,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
         }
         initNonReferenceEntityFetchGroup();
     }
-    
+
     protected void initNonReferenceEntityFetchGroup() {
         FetchGroup nonReferenceFetchGroup = new FetchGroup();
         for (DatabaseMapping mapping : getDescriptor().getMappings()) {
@@ -905,7 +905,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
         this.addMinimalFetchGroup(nonReferenceFetchGroup);
         this.nonReferenceEntityFetchGroup = getEntityFetchGroup(nonReferenceFetchGroup);
     }
-    
+
     /**
      * INTERNAL:
      * Clone the fetch group manager.
@@ -917,7 +917,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
             throw new InternalError(exception.toString());
         }
     }
-    
+
     /**
      * PUBLIC:
      * Set whether defaultFetchGroup should be copied from the parent if not set.
@@ -925,7 +925,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
     public void setShouldUseInheritedDefaultFetchGroup(boolean shouldUseInheritedDefaultFetchGroup) {
         this.shouldUseInheritedDefaultFetchGroup = shouldUseInheritedDefaultFetchGroup;
     }
-    
+
     /**
      * PUBLIC:
      * Indicates whether defaultFetchGroup should be copied from the parent if not set.

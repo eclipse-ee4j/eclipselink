@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,7 +43,7 @@ public interface ChoiceObjectMapping<
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
     public void addChoiceElement(List<XML_FIELD> srcFields, String elementTypeName, List<XML_FIELD> tgtFields);
-    	
+
     public void addChoiceElement(String srcXpath, String elementTypeName, String tgtXpath);
 
     public void addChoiceElement(XML_FIELD field, String elementTypeName);
@@ -55,7 +55,7 @@ public interface ChoiceObjectMapping<
     public Map<Class, XML_MAPPING> getChoiceElementMappingsByClass();
 
     public List<XMLChoiceFieldToClassAssociation> getChoiceFieldToClassAssociations();
-    
+
     public Map<String, XML_FIELD> getClassNameToFieldMappings();
 
     public Map<Class, XML_FIELD> getClassToFieldMappings();
@@ -63,20 +63,20 @@ public interface ChoiceObjectMapping<
     public Map<Class, List<XML_FIELD>> getClassToSourceFieldsMappings();
 
     public CONVERTER getConverter();
-    
+
     public CONVERTER getConverter(XML_FIELD field);
-    
+
     public List<FIELD> getFields();
 
     public Map<XML_FIELD, Class> getFieldToClassMappings();
 
     public Object getFieldValue(Object object, CoreAbstractSession session, AbstractMarshalRecord marshalRecord);
-    
+
     /**
      * Set the converter on the mapping.
      * A converter can be used to convert between the object's value and database value of the attribute.
      */
     public void setConverter(CONVERTER converter);
-    
+
     public void setIsWriteOnly(boolean b);
 }

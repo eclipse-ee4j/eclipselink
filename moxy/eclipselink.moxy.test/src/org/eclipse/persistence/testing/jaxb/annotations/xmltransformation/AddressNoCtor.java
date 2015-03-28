@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,16 +13,16 @@
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransformation;
 
 public class AddressNoCtor {
-	public String street;
-	public String city;
-		
-	public AddressNoCtor(String street, String city){
-		this.street = street;
-		this.city = city;
-	}
-	
+    public String street;
+    public String city;
+
+    public AddressNoCtor(String street, String city){
+        this.street = street;
+        this.city = city;
+    }
+
     public boolean equals(Object obj) {
-    	AddressNoCtor addr = (AddressNoCtor)obj;
+        AddressNoCtor addr = (AddressNoCtor)obj;
         return addr.street.equals(this.street) && addr.city.equals(this.city);
     }
 }

@@ -1,6 +1,6 @@
 /***
  * ASM XML Adapter
- * Copyright (c) 2004-2011, Eugene Kuleshov
+ * Copyright (c) 2004, 2015 Eugene Kuleshov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,10 +51,10 @@ import org.xml.sax.helpers.DefaultHandler;
  * A {@link org.xml.sax.ContentHandler ContentHandler} that transforms XML
  * document into Java class file. This class can be feeded by any kind of SAX
  * 2.0 event producers, e.g. XML parser, XSLT or XPath engines, or custom code.
- * 
+ *
  * @see org.eclipse.persistence.internal.libraries.asm.xml.SAXClassAdapter
  * @see org.eclipse.persistence.internal.libraries.asm.xml.Processor
- * 
+ *
  * @author Eugene Kuleshov
  */
 public class ASMContentHandler extends DefaultHandler implements Opcodes {
@@ -326,7 +326,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
 
     /**
      * Constructs a new {@link ASMContentHandler ASMContentHandler} object.
-     * 
+     *
      * @param cv
      *            class visitor that will be called to reconstruct the classfile
      *            using the XML stream.
@@ -337,7 +337,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
 
     /**
      * Process notification of the start of an XML element being reached.
-     * 
+     *
      * @param ns
      *            - The Namespace URI, or the empty string if the element has no
      *            Namespace URI or if Namespace processing is not being
@@ -378,7 +378,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
 
     /**
      * Process notification of the end of an XML element being reached.
-     * 
+     *
      * @param ns
      *            - The Namespace URI, or the empty string if the element has no
      *            Namespace URI or if Namespace processing is not being
@@ -389,7 +389,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
      * @param qName
      *            - The qualified XML 1.0 name (with prefix), or the empty
      *            string if qualified names are not available.
-     * 
+     *
      * @exception SAXException
      *                if a parsing error is to be reported
      */
@@ -418,7 +418,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * Return the top object on the stack without removing it. If there are no
      * objects on the stack, return <code>null</code>.
-     * 
+     *
      * @return the top object on the stack without removing it.
      */
     final Object peek() {
@@ -429,7 +429,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     /**
      * Pop the top object off of the stack, and return it. If there are no
      * objects on the stack, return <code>null</code>.
-     * 
+     *
      * @return the top object off of the stack.
      */
     final Object pop() {
@@ -439,7 +439,7 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
 
     /**
      * Push a new object onto the top of the object stack.
-     * 
+     *
      * @param object
      *            The new object
      */

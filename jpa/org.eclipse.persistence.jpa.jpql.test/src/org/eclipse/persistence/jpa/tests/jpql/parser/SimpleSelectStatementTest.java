@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,44 +19,44 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 @SuppressWarnings("nls")
 public final class SimpleSelectStatementTest extends JPQLParserTest {
 
-	@Test
-	public void test_JPQLQuery_01() {
+    @Test
+    public void test_JPQLQuery_01() {
 
-		String query = "SELECT e FROM Employee e WHERE (SELECT e.age FROM Employee e) > 10";
+        String query = "SELECT e FROM Employee e WHERE (SELECT e.age FROM Employee e) > 10";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(
-					sub(subquery(subSelect(path("e.age")), subFrom("Employee", "e")))
-				.greaterThan(
-					numeric(10)
-				)
-			)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(
+                    sub(subquery(subSelect(path("e.age")), subFrom("Employee", "e")))
+                .greaterThan(
+                    numeric(10)
+                )
+            )
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_02() {
+    @Test
+    public void test_JPQLQuery_02() {
 
-		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT ";
+        String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT ";
 
-		SimpleSelectClauseTester subSelectClause = subSelect(nullExpression());
-		subSelectClause.hasSpaceAfterSelect = true;
+        SimpleSelectClauseTester subSelectClause = subSelect(nullExpression());
+        subSelectClause.hasSpaceAfterSelect = true;
 
-		SimpleSelectStatementTester subquery = subquery(subSelectClause, nullExpression());
+        SimpleSelectStatementTester subquery = subquery(subSelectClause, nullExpression());
 
-		ExistsExpressionTester existsExpression = exists(subquery);
-		existsExpression.hasRightParenthesis = false;
+        ExistsExpressionTester existsExpression = exists(subquery);
+        existsExpression.hasRightParenthesis = false;
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			where(existsExpression)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            where(existsExpression)
+        );
 
-		testInvalidQuery(query, selectStatement);
-	}
+        testInvalidQuery(query, selectStatement);
+    }
 }

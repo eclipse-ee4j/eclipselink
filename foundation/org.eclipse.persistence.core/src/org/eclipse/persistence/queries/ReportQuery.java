@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.*;
@@ -49,7 +49,7 @@ public class ReportQuery extends ReadAllQuery {
 
     /** Default, returns ReportQueryResult objects. */
     public static final int ShouldReturnReportResult = 0;
-    
+
     /** Simplifies the result by only returning the first result. */
     public static final int ShouldReturnSingleResult = 1;
 
@@ -59,10 +59,10 @@ public class ReportQuery extends ReadAllQuery {
     /** Simplifies the result by only returning the single attribute(as opposed to wrapping in a
     ReportQueryResult). */
     public static final int ShouldReturnSingleAttribute = 3;
-    
+
     /** For EJB 3 support returns results without using the ReportQueryResult */
     public static final int ShouldReturnWithoutReportQueryResult = 4;
-    
+
     /** For EJB 3 support returns results as an Object array. */
     public static final int ShouldReturnArray = 5;
 
@@ -73,11 +73,11 @@ public class ReportQuery extends ReadAllQuery {
     public static final int FULL_PRIMARY_KEY = 2;
     public static final int FIRST_PRIMARY_KEY = 1;
     public static final int NO_PRIMARY_KEY = 0;
-    
+
     //GF_ISSUE_395
     protected static final Boolean RESULT_IGNORED = Boolean.TRUE;
     //end GF_ISSUE
-    
+
     /** Flag indicating whether the primary key values should also be retrieved for the reference class. */
     protected int shouldRetrievePrimaryKeys;
 
@@ -89,7 +89,7 @@ public class ReportQuery extends ReadAllQuery {
 
     /** Expressions representing fields to be used in the GROUP BY clause. */
     protected List<Expression> groupByExpressions;
-    
+
     /** Expression representing the HAVING clause. */
     protected Expression havingExpression;
 
@@ -97,15 +97,15 @@ public class ReportQuery extends ReadAllQuery {
      ** Simplifies the result by only returning the first result, first value, or all attribute values
      */
     protected int returnChoice;
-    
+
     /** flag to allow items to be added to the last ConstructorReportItem **/
     protected boolean addToConstructorItem;
-    
+
     /* GF_ISSUE_395 this attribute stores a set of unique keys that identity results.
      * Used when distinct has been set on the query.  For use in TCK
      */
     protected Set<Object> returnedKeys;
-    
+
     /**
      * INTERNAL:
      * The builder should be provided.
@@ -186,7 +186,7 @@ public class ReportQuery extends ReadAllQuery {
     public void addAverage(String itemName) {
         addAverage(itemName, getExpressionBuilder().get(itemName));
     }
-    
+
     /**
      * PUBLIC:
      * Add the average value of the attribute to be included in the result and
@@ -207,7 +207,7 @@ public class ReportQuery extends ReadAllQuery {
     public void addAverage(String itemName, Expression attributeExpression) {
         addItem(itemName, attributeExpression.average());
     }
-    
+
     /**
      * PUBLIC:
      * Add the average value of the attribute to be included in the result and
@@ -218,9 +218,9 @@ public class ReportQuery extends ReadAllQuery {
     public void addAverage(String itemName, Expression attributeExpression, Class resultType) {
         addItem(itemName, attributeExpression.average(), resultType);
     }
-    
+
     /**
-     * PUBLIC: 
+     * PUBLIC:
      * Add a ConstructorReportItem to this query's set of return values.
      * @param item used to specify a class constructor and values to pass in from this query
      * @see ConstructorReportItem
@@ -259,7 +259,7 @@ public class ReportQuery extends ReadAllQuery {
     public void addCount(String attributeName) {
         addCount(attributeName, getExpressionBuilder().get(attributeName));
     }
-    
+
     /**
      * PUBLIC:
      * Include the number of rows returned by the query in the result, where attributeExpression is not null.
@@ -299,7 +299,7 @@ public class ReportQuery extends ReadAllQuery {
     public void addCount(String itemName, Expression attributeExpression) {
         addItem(itemName, attributeExpression.count());
     }
-    
+
     /**
      * PUBLIC:
      * Include the number of rows returned by the query in the result, where attributeExpression
@@ -362,7 +362,7 @@ public class ReportQuery extends ReadAllQuery {
         //Bug2804042 Must un-prepare if prepared as the SQL may change.
         setIsPrepared(false);
     }
-    
+
     /**
      * PUBLIC:
      * Add the expression to the query to be used in the HAVING clause.
@@ -374,7 +374,7 @@ public class ReportQuery extends ReadAllQuery {
         havingExpression = expression;
         setIsPrepared(false);
     }
-    
+
     /**
      * INTERNAL:
      * Method used to abstract addToConstructorItem behavour from the public addItem methods
@@ -401,7 +401,7 @@ public class ReportQuery extends ReadAllQuery {
         //Bug2804042 Must un-prepare if prepared as the SQL may change.
         setIsPrepared(false);
     }
-    
+
     /**
      * ADVANCED:
      * Add the expression value to be included in the result.
@@ -414,7 +414,7 @@ public class ReportQuery extends ReadAllQuery {
         }
         addItem(item);
     }
-    
+
     /**
      * INTERNAL:
      * Add the expression value to be included in the result.
@@ -549,10 +549,10 @@ public class ReportQuery extends ReadAllQuery {
     public void addVariance(String itemName, Expression attributeExpression) {
         addItem(itemName, attributeExpression.variance());
     }
-    
+
     /**
      * PUBLIC: Call a constructor for the given class with the results of this query.
-     * @param constructorClass 
+     * @param constructorClass
      */
     public ConstructorReportItem beginAddingConstructorArguments(Class constructorClass){
         ConstructorReportItem citem = new ConstructorReportItem(constructorClass.getName());
@@ -566,7 +566,7 @@ public class ReportQuery extends ReadAllQuery {
     }
     /**
      * PUBLIC: Call a constructor for the given class with the results of this query.
-     * @param constructorClass 
+     * @param constructorClass
      * @param constructorArgTypes - sets the argument types to be passed to the constructor.
      */
     public ConstructorReportItem beginAddingConstructorArguments(Class constructorClass, Class[] constructorArgTypes){
@@ -671,7 +671,7 @@ public class ReportQuery extends ReadAllQuery {
             return null;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Check to see if a custom query should be used for this query.
@@ -705,7 +705,7 @@ public class ReportQuery extends ReadAllQuery {
         if (this.groupByExpressions != null) {
             cloneQuery.groupByExpressions = new ArrayList<Expression>(this.groupByExpressions);
         }
-        
+
         return cloneQuery;
     }
 
@@ -806,10 +806,10 @@ public class ReportQuery extends ReadAllQuery {
             this.returnChoice = 0;
         }
     }
-    
+
     /**
      * PUBLIC:
-     * Used in conjunction with beginAddingConstructorArguments to signal that expressions should no longer be 
+     * Used in conjunction with beginAddingConstructorArguments to signal that expressions should no longer be
      * be added to the collection used in the constructor.
      */
     public void endAddingToConstructorItem(){
@@ -880,7 +880,7 @@ public class ReportQuery extends ReadAllQuery {
     public boolean hasGroupByExpressions() {
         return (this.groupByExpressions != null) && (!this.groupByExpressions.isEmpty());
     }
-    
+
     /**
      * INTERNAL:
      * Set the group bys.
@@ -888,7 +888,7 @@ public class ReportQuery extends ReadAllQuery {
     public void setGroupByExpressions(List<Expression> groupByExpressions) {
         this.groupByExpressions = groupByExpressions;
     }
-    
+
     /**
      * INTERNAL:
      * Return the Having expression.
@@ -953,7 +953,7 @@ public class ReportQuery extends ReadAllQuery {
         }
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Set the ReportQueryItems defining the attributes to be read.
@@ -964,7 +964,7 @@ public class ReportQuery extends ReadAllQuery {
 
     /**
      * INTERNAL:
-     * Sets a javax.persistence.LockModeType to used with this queries execution. 
+     * Sets a javax.persistence.LockModeType to used with this queries execution.
      * The valid types are:
      *  - WRITE
      *  - READ
@@ -974,8 +974,8 @@ public class ReportQuery extends ReadAllQuery {
      *  - PESSIMISTIC_FORCE_INCREMENT
      *  - NONE
      * Setting a null type will do nothing.
-     * @return returns a failure flag indicating that we were UNABLE to set the 
-     * lock mode because of validation. Callers to this method should check the 
+     * @return returns a failure flag indicating that we were UNABLE to set the
+     * lock mode because of validation. Callers to this method should check the
      * return value and throw the necessary exception.
      */
     @Override
@@ -984,15 +984,15 @@ public class ReportQuery extends ReadAllQuery {
             if (super.setLockModeType(lockModeType, session)) {
                 return true;
             } else {
-                // When a lock mode is used, we must validate that our report items 
-                // all have a version locking policy if the lock is set to anything 
+                // When a lock mode is used, we must validate that our report items
+                // all have a version locking policy if the lock is set to anything
                 // but PESSIMISTIC and NONE. Validate only those report items that
                 // are expression builders (ignoring the others)
                 if (! lockModeType.equals(PESSIMISTIC_READ) && ! lockModeType.equals(PESSIMISTIC_WRITE) && ! lockModeType.equals(NONE)) {
                     for (ReportItem reportItem : getItems()) {
                         if (reportItem.getAttributeExpression() != null && reportItem.getAttributeExpression().isExpressionBuilder()) {
                             OptimisticLockingPolicy lockingPolicy = reportItem.getDescriptor().getOptimisticLockingPolicy();
-                        
+
                             if (lockingPolicy == null || !(lockingPolicy instanceof VersionLockingPolicy)) {
                                 return true;
                             }
@@ -1001,10 +1001,10 @@ public class ReportQuery extends ReadAllQuery {
                 }
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Clear the ReportQueryItems
@@ -1027,7 +1027,7 @@ public class ReportQuery extends ReadAllQuery {
         }
         return this.names;
     }
-    
+
     /**
      * INTERNAL:
      * Set the item names.
@@ -1075,7 +1075,7 @@ public class ReportQuery extends ReadAllQuery {
         super.prepare();
 
     }
-            
+
     /**
      * INTERNAL:
      * ReportQuery doesn't support fetch groups.
@@ -1086,7 +1086,7 @@ public class ReportQuery extends ReadAllQuery {
             throw QueryException.fetchGroupNotSupportOnReportQuery();
         }
     }
-    
+
     /**
      * INTERNAL:
      * Prepare the query from the prepared query.
@@ -1109,7 +1109,7 @@ public class ReportQuery extends ReadAllQuery {
             this.shouldRetrievePrimaryKeys = reportQuery.shouldRetrievePrimaryKeys;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return if the query is equal to the other.
@@ -1172,7 +1172,7 @@ public class ReportQuery extends ReadAllQuery {
     protected void prepareObjectAttributeCount(Map clonedExpressions) {
         prepareObjectAttributeCount(getItems(), clonedExpressions);
     }
-    
+
     /**
      * JPQL allows count([distinct] e), where e can be an object, not just a single field,
      * however the database only allows a single field, so object needs to be translated to a single field.
@@ -1244,7 +1244,7 @@ public class ReportQuery extends ReadAllQuery {
         setSession(null);
         setTranslationRow(null);
     }
-    
+
     /**
      * INTERNAL:
      * replace the value holders in the specified result object(s)
@@ -1412,7 +1412,7 @@ public class ReportQuery extends ReadAllQuery {
             dontReturnWithoutReportQueryResult();
         }
     }
-    
+
     /**
      * PUBLIC:
      * Return if the query results should contain the primary keys or each associated object.

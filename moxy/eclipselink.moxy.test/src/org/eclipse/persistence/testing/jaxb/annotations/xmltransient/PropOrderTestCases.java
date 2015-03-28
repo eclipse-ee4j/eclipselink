@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,14 +20,14 @@ import junit.framework.TestCase;
 
 /**
  * <p>Ensure that a "transient property not allowed in propOrder" exception is not thrown for the following case:</p>
- * 
+ *
  * <ul>
  * <li>@XmlAccessorType(XmlAccessType.FIELD)</li>
  * <li>shipTo property specified in propOrder</li>
  * <li>shipTo field is marked @XmlTransient</li>
  * <li>getShipTo() method is marked as @XmlElement (thereby overriding the transient property)
  * </ul>
- * 
+ *
  */
 public class PropOrderTestCases extends TestCase {
 

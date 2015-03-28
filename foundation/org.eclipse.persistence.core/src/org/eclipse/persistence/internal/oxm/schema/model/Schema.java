@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.schema.model;
 
 import java.util.ArrayList;
@@ -161,9 +161,9 @@ public class Schema {
 
     public void setAttributesMap(Map attributesMap) {
         this.attributesMap = attributesMap;
-        Iterator<Entry> iter = attributesMap.entrySet().iterator();       
+        Iterator<Entry> iter = attributesMap.entrySet().iterator();
         while (iter.hasNext()) {
-        	Entry nextEntry = iter.next();
+            Entry nextEntry = iter.next();
             QName key = (QName)nextEntry.getKey();
             if (key.getNamespaceURI().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI)) {
                 String value = (String)nextEntry.getValue();
@@ -222,7 +222,7 @@ public class Schema {
              while (iter.hasNext() && (globalAttributeGroup == null)) {
                 Schema importedSchema = ((Import)iter.next()).getSchema();
                 globalAttributeGroup = importedSchema.getAttributeGroup(uri, localName);
-            }                    
+            }
         }
         return globalAttributeGroup;
     }
@@ -249,13 +249,13 @@ public class Schema {
     }
 
     protected Group getGroupFromReferencedSchemas(String uri, String localName) {
-        Group globalGroup = null;        
+        Group globalGroup = null;
         Iterator iter = getIncludes().iterator();
         while (iter.hasNext() && (globalGroup == null)) {
             Schema includedSchema = ((Include)iter.next()).getSchema();
             globalGroup = includedSchema.getGroup(uri, localName);
         }
-        if (globalGroup == null) {            
+        if (globalGroup == null) {
             iter = getImports().iterator();
             while (iter.hasNext() && (globalGroup == null)) {
                 Schema importedSchema = ((Import)iter.next()).getSchema();
@@ -266,9 +266,9 @@ public class Schema {
     }
 
     /**
-     * Return the Result for this Schema.  This will typically be set 
+     * Return the Result for this Schema.  This will typically be set
      * after a call to SchemaOutputResolver.createOutput().
-     * 
+     *
      * @return the Result for this instance, or null if not set
      */
     public Result getResult() {
@@ -278,40 +278,40 @@ public class Schema {
     /**
      * Set the Result for this Schema.  This method will typically be
      * called after a call to SchemaOutputResolver.createOutput().
-     * 
+     *
      * @param result
      */
     public void setResult(Result result) {
         this.result = result;
     }
-    
+
     /**
      * Indicates if a Result has been set for this Schema.
-     *  
+     *
      * @return true if a Result has been set, false otherwise
      */
     public boolean hasResult() {
         return getResult() != null;
     }
-    
+
     /**
      * Indicates if this Schema has a Result, and that Result has
      * a non-null systemID.
-     * 
-     * @return true if this Schema has a non-null Result has a 
+     *
+     * @return true if this Schema has a non-null Result has a
      *         non-null systemID.
      */
     public boolean hasSystemId() {
         return getSystemId() != null;
     }
-    
+
     /**
-     * Get the SystemId for this Schema.  This value will typically be 
+     * Get the SystemId for this Schema.  This value will typically be
      * used as the schemaLocation in an import statement.
-     * 
+     *
      * @return the systemID set on this Schema's Result object if both
-     *         the Result and the Result's systemID are non-null, 
-     *         otherwise null 
+     *         the Result and the Result's systemID are non-null,
+     *         otherwise null
      */
     public String getSystemId() {
         if (hasResult()) {

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.mapping;
 
 import java.util.*;
@@ -45,9 +45,9 @@ public class Employee1 implements Serializable {
      * Amend the Employee1 descriptor with a join expression to join the multiple tables in the database.
      */
     public static void amendEmployee1WithFKInfo(ClassDescriptor descriptor) {
-        // Setup the join from the address table to the country employee table to the address table by specifying the FK info to 
+        // Setup the join from the address table to the country employee table to the address table by specifying the FK info to
         // the descriptor.
-        // Set the foreign key info from the address table to the country table. 
+        // Set the foreign key info from the address table to the country table.
         descriptor.addForeignKeyFieldNameForMultipleTable("MUL_EMP.ADDR_ID", "MUL_ADDR.ADDR_ID");
         descriptor.addForeignKeyFieldNameForMultipleTable("MUL_ADDR.CNTRY_ID", "MUL_CTRY.CNTRY_ID");
     }
@@ -69,7 +69,7 @@ public class Employee1 implements Serializable {
     public static void amendEmployee1WithJoinOnly(DatabaseSessionImpl aSession) {
         ClassDescriptor descriptor = new LegacyTestProject().getDescriptors().get(Employee1.class);
 
-        // Setup the join from the employee table to the address table using a custom join expression and 
+        // Setup the join from the employee table to the address table using a custom join expression and
         // specifying the table insert order.
         ExpressionBuilder builder = new ExpressionBuilder();
         descriptor.getQueryManager().setMultipleTableJoinExpression(builder.getField("MUL_EMP.ADDR_ID").equal(builder.getField("MUL_ADDR.ADDR_ID")).and(builder.getField("MUL_ADDR.CNTRY_ID").equal(builder.getField("MUL_CTRY.CNTRY_ID"))));
@@ -83,7 +83,7 @@ public class Employee1 implements Serializable {
      * Amend the Employee1 descriptor with a join expression to join the multiple tables in the database.
      */
     public static void amendEmployee1WithJoinWithInsert(ClassDescriptor descriptor) {
-        // Setup the join from the employee table to the address table using a custom join expression and 
+        // Setup the join from the employee table to the address table using a custom join expression and
         // specifying the table insert order.
         ExpressionBuilder builder = new ExpressionBuilder();
         descriptor.getQueryManager().setMultipleTableJoinExpression(builder.getField("MUL_EMP.ADDR_ID").equal(builder.getField("MUL_ADDR.ADDR_ID")).and(builder.getField("MUL_ADDR.CNTRY_ID").equal(builder.getField("MUL_CTRY.CNTRY_ID"))));

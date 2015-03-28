@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,8 +20,8 @@ public class AdapterWithElementsTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/choice.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/choice.json";
-    
-	public AdapterWithElementsTestCases(String name) throws Exception {
+
+    public AdapterWithElementsTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -34,7 +34,7 @@ public class AdapterWithElementsTestCases extends JAXBWithJSONTestCases {
         foo.singleChoice = new BarA();
 
         foo.collectionChoice = new ArrayList<Object>();
-        
+
         foo.collectionChoice.add(new BarB());
         foo.collectionChoice.add("test string");
         BarC barC = new BarC();
@@ -42,8 +42,8 @@ public class AdapterWithElementsTestCases extends JAXBWithJSONTestCases {
         barC.b = "b";
         foo.collectionChoice.add(barC);
         foo.collectionChoice.add(new Integer(123));
-        
+
         return foo;
     }
-    
+
 }

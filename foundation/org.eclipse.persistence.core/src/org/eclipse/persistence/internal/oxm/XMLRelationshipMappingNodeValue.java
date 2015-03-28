@@ -4,12 +4,12 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import java.lang.reflect.Modifier;
@@ -85,10 +85,10 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             }
         }
         ObjectBuilder targetObjectBuilder = (ObjectBuilder)xmlDescriptor.getObjectBuilder();
-        
+
         CoreAttributeGroup group = unmarshalRecord.getUnmarshalAttributeGroup();
         CoreAttributeGroup nestedGroup = null;
-        if(group == XMLRecord.DEFAULT_ATTRIBUTE_GROUP) { 
+        if(group == XMLRecord.DEFAULT_ATTRIBUTE_GROUP) {
             nestedGroup = group;
         }
         if(nestedGroup == null) {
@@ -115,23 +115,23 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
     }
 
     protected Descriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, Mapping mapping, UnmarshalKeepAsElementPolicy policy) {
-    	Descriptor returnDescriptor = null;
+        Descriptor returnDescriptor = null;
         //try xsi:type
         if(atts != null){
             Context xmlContext = unmarshalRecord.getUnmarshaller().getContext();
             String schemaType = null;
-            if(unmarshalRecord.isNamespaceAware()){                
-            	schemaType = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE);
+            if(unmarshalRecord.isNamespaceAware()){
+                schemaType = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE);
             }else{
-            	schemaType = atts.getValue(Constants.EMPTY_STRING, Constants.SCHEMA_TYPE_ATTRIBUTE);
+                schemaType = atts.getValue(Constants.EMPTY_STRING, Constants.SCHEMA_TYPE_ATTRIBUTE);
             }
-            
-            
+
+
             if(schemaType != null){
                 schemaType = schemaType.trim();
-                if(schemaType.length() > 0) {                       
+                if(schemaType.length() > 0) {
                     XPathFragment frag = new XPathFragment(schemaType, unmarshalRecord.getNamespaceSeparator(), unmarshalRecord.isNamespaceAware());
-                    
+
                     QName qname = null;
                     if (frag.hasNamespace()) {
                         String prefix = frag.getPrefix();
@@ -175,7 +175,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         if (descriptor.getNamespaceResolver() != null) {
             xsiPrefix = descriptor.getNamespaceResolver().resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         } else {
-            xsiPrefix = Constants.SCHEMA_INSTANCE_PREFIX;            
+            xsiPrefix = Constants.SCHEMA_INSTANCE_PREFIX;
             marshalRecord.namespaceDeclaration(xsiPrefix,  javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
 
         }
@@ -260,7 +260,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 if(qname.equals(Constants.QNAME_QNAME)) {
                     value = conversionManager.buildQNameFromString((String)value, unmarshalRecord);
                 } else {
-                	Class theClass = getClassForQName(qname, conversionManager);
+                    Class theClass = getClassForQName(qname, conversionManager);
                     if (theClass != null) {
                         value = conversionManager.convertObject(value, theClass, qname);
                     }
@@ -272,13 +272,13 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
     }
 
     protected Class getClassForQName(QName qname, ConversionManager conversionManager){
-    	CoreField field = getMapping().getField();
-    	if(field != null){
-    		return ((Field)field).getJavaClass(qname, conversionManager);
-    	}
-    	return conversionManager.javaType(qname);
+        CoreField field = getMapping().getField();
+        if(field != null){
+            return ((Field)field).getJavaClass(qname, conversionManager);
+        }
+        return conversionManager.javaType(qname);
     }
 
-    
+
     protected abstract void setOrAddAttributeValue(UnmarshalRecord unmarshalRecord, Object value, XPathFragment xPathFragment, Object collection);
 }

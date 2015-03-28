@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -25,16 +25,16 @@ import javax.xml.bind.annotation.XmlType;
 import org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.RootKeepAsElement;
 import org.w3c.dom.Element;
 
-public class Doc {    
+public class Doc {
     protected List<Elem> elem;
-    
+
     protected List<Object> elem1;
 
     public Doc(){
-    	elem = new ArrayList<Elem>();
-    	elem1 = new ArrayList<Object>();
+        elem = new ArrayList<Elem>();
+        elem1 = new ArrayList<Object>();
     }
-    
+
     public List<Elem> getElem() {
         return elem;
     }
@@ -56,54 +56,54 @@ public class Doc {
             Doc anotherDoc = (Doc) object;
             if (elem == null && anotherDoc.getElem() != null) {
                 return false;
-            } 
+            }
             if (elem != null && anotherDoc.getElem() == null) {
                 return false;
-            } 
+            }
             if (elem1 == null && anotherDoc.getElem1() != null) {
                 return false;
-            } 
+            }
             if (elem1 != null && anotherDoc.getElem1() == null) {
                 return false;
             }
-         
+
             List<Object>  obj1 = elem1;
             List<Object>  obj2 = anotherDoc.getElem1();
-            
+
             if(obj1.size() != obj2.size()){
-            	return false;
+                return false;
             }
-            
+
             for(int i=0;i<obj1.size(); i++){
-            	Object firstObject = obj1.get(i);
-            	Object secondObject =obj2.get(i);
-	            if ((firstObject instanceof Element) && (secondObject instanceof Element)) {
-	                Element elem1 = (Element )firstObject;
-	                Element elem2 = (Element) secondObject;
-	                
-	                if (!(elem1.getLocalName().equals(elem2.getLocalName()))) {
-	                    return false;
-	                }
-	            } else if(firstObject.getClass().equals(secondObject.getClass())) {
-	                return firstObject.equals(secondObject);
-	            } else{
-	            	return false;
-	            }
+                Object firstObject = obj1.get(i);
+                Object secondObject =obj2.get(i);
+                if ((firstObject instanceof Element) && (secondObject instanceof Element)) {
+                    Element elem1 = (Element )firstObject;
+                    Element elem2 = (Element) secondObject;
+
+                    if (!(elem1.getLocalName().equals(elem2.getLocalName()))) {
+                        return false;
+                    }
+                } else if(firstObject.getClass().equals(secondObject.getClass())) {
+                    return firstObject.equals(secondObject);
+                } else{
+                    return false;
+                }
             }
-                    
+
             List<Elem>  elemList = elem;
             List<Elem>  elem1List = anotherDoc.getElem();
-            
+
             if(elemList.size() != elem1List.size()){
-            	return false;
+                return false;
             }
-            
+
             for(int i=0;i<elemList.size(); i++){
-            	Elem firstObject = elemList.get(i);
-            	Elem secondObject =elem1List.get(i);
-	            if (!firstObject.equals(secondObject)) {
-	                return false;
-	            }
+                Elem firstObject = elemList.get(i);
+                Elem secondObject =elem1List.get(i);
+                if (!firstObject.equals(secondObject)) {
+                    return false;
+                }
             }
             // Passed all equality tests
             return true;
@@ -111,5 +111,5 @@ public class Doc {
             return false;
         }
     }
-    
+
 }

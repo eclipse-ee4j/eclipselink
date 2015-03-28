@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -79,20 +79,20 @@ import org.eclipse.persistence.sessions.Project;
 
 /**
  * INTERNAL:
- *  <p><b>Purpose:</b>Generate one or more EclipseLink Schema model objects based 
- *  on a given list of XMLDescriptors. 
+ *  <p><b>Purpose:</b>Generate one or more EclipseLink Schema model objects based
+ *  on a given list of XMLDescriptors.
  *  <p><b>Responsibilities:</b><ul>
  *  <li>Return a Map of generated EclipseLink Schema objects based on a given list of XMLDescriptors</li>
  *  </ul>
- *  <p> This class will create and populate one or more EclipseLink schema model Schema objects for a 
- *  given list of EclipseLink XMLDescriptors.  
- *  
+ *  <p> This class will create and populate one or more EclipseLink schema model Schema objects for a
+ *  given list of EclipseLink XMLDescriptors.
+ *
  *  @see Schema
  *  @see XMLDescriptor
  */
 public class SchemaModelGenerator {
     protected static final String SCHEMA_FILE_NAME = "schema";
-    protected static final String SCHEMA_FILE_EXT = ".xsd";     
+    protected static final String SCHEMA_FILE_EXT = ".xsd";
     protected static final String TEXT = "text()";
     protected static final String ID = "ID";
     protected static final String IDREF = "IDREF";
@@ -104,9 +104,9 @@ public class SchemaModelGenerator {
      * The default constructor.
      */
     public SchemaModelGenerator(ConversionManager conversionManager) {
-    	this(conversionManager, false);
+        this(conversionManager, false);
     }
-    
+
     /**
      * This constructor should be used with a value of 'true' when the schemaLocation
      * attribute of the import for swaRef should be swaref.xsd.  This is useful when
@@ -116,21 +116,21 @@ public class SchemaModelGenerator {
      */
     public SchemaModelGenerator(ConversionManager conversionManager, boolean customSwaRefSchema) {
         this.conversionManager = conversionManager;
-    	if (customSwaRefSchema) {
-    		SWAREF_LOCATION = Constants.SWA_REF.toLowerCase() + SCHEMA_FILE_EXT;
-    	} else {
-    		SWAREF_LOCATION = Constants.SWAREF_XSD;
-    	}
+        if (customSwaRefSchema) {
+            SWAREF_LOCATION = Constants.SWA_REF.toLowerCase() + SCHEMA_FILE_EXT;
+        } else {
+            SWAREF_LOCATION = Constants.SWAREF_XSD;
+        }
     }
-    
+
     /**
      * Generates a Map of EclipseLink schema model Schema objects for a given list of XMLDescriptors.
-     * The descriptors are assumed to have been initialized.  One Schema  object will be generated 
+     * The descriptors are assumed to have been initialized.  One Schema  object will be generated
      * per namespace.
-     * 
+     *
      * @param descriptorsToProcess list of XMLDescriptors which will be used to generate Schema objects
      * @param properties holds a namespace to Properties map containing schema settings, such as elementFormDefault
-     * @param additionalGlobalElements a map of QName-Type entries identifying additional global elements to be added  
+     * @param additionalGlobalElements a map of QName-Type entries identifying additional global elements to be added
      * @return a map of namespaces to EclipseLink schema model Schema objects
      * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
      * @see Schema
@@ -146,23 +146,23 @@ public class SchemaModelGenerator {
                     Class tClass = (Class) type;
                     String nsKey = qname.getNamespaceURI();
                     Schema schema = schemaForNamespace.get(nsKey);
-                    
+
                     QName typeAsQName = conversionManager.schemaType(tClass);
                     if (typeAsQName == null) {
                         // not a built in type - need to get the type via schema reference
-                    	Descriptor desc = getDescriptorByClass(tClass, descriptorsToProcess);
+                        Descriptor desc = getDescriptorByClass(tClass, descriptorsToProcess);
                         if (desc == null) {
                             // at this point we can't determine the element type, so don't add anything
                             continue;
                         }
-                        // if the schema is null generate a new one and create an import 
+                        // if the schema is null generate a new one and create an import
                         if (schema == null) {
                             schema = buildNewSchema(nsKey, new org.eclipse.persistence.oxm.NamespaceResolver(), schemaForNamespace.size(), properties);
                             schemaForNamespace.put(nsKey, schema);
                             typeAsQName = desc.getSchemaReference().getSchemaContextAsQName();
-                            
+
                             Schema schemaForUri = schemaForNamespace.get(typeAsQName.getNamespaceURI());
-                            
+
                             if (!importExists(schema, schemaForUri.getTargetNamespace())) {
                                 Import newImport = new Import();
                                 newImport.setNamespace(schemaForUri.getTargetNamespace());
@@ -186,14 +186,14 @@ public class SchemaModelGenerator {
         }
         return schemaForNamespace;
     }
-    
+
     /**
      * Generates a Map of EclipseLink schema model Schema objects for a given list of XMLDescriptors.
-     * The descriptors are assumed to have been initialized.  One Schema  object will be generated 
+     * The descriptors are assumed to have been initialized.  One Schema  object will be generated
      * per namespace.
-     * 
+     *
      * @param descriptorsToProcess list of XMLDescriptors which will be used to generate Schema objects
-     * @param properties holds a namespace to Properties map containing schema settings, such as elementFormDefault 
+     * @param properties holds a namespace to Properties map containing schema settings, such as elementFormDefault
      * @return a map of namespaces to EclipseLink schema model Schema objects
      * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
      * @see Schema
@@ -229,15 +229,15 @@ public class SchemaModelGenerator {
         // return the generated schema(s)
         return schemaForNamespace;
     }
-    
+
     /**
      * Generates a Map of EclipseLink schema model Schema objects for a given list of XMLDescriptors.
-     * The descriptors are assumed to have been initialized.  One Schema  object will be generated 
+     * The descriptors are assumed to have been initialized.  One Schema  object will be generated
      * per namespace.
-     * 
+     *
      * @param descriptorsToProcess list of XMLDescriptors which will be used to generate Schema objects
-     * @param properties holds a namespace to Properties map containing schema settings, such as elementFormDefault 
-     * @param additionalGlobalElements a map of QName-Type entries identifying additional global elements to be added  
+     * @param properties holds a namespace to Properties map containing schema settings, such as elementFormDefault
+     * @param additionalGlobalElements a map of QName-Type entries identifying additional global elements to be added
      * @return a map of namespaces to EclipseLink schema model Schema objects
      * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
      * @see Schema
@@ -265,14 +265,14 @@ public class SchemaModelGenerator {
         }
         return schemas;
     }
-    
+
     /**
      * Generates a Map of EclipseLink schema model Schema objects for a given list of XMLDescriptors.
-     * The descriptors are assumed to have been initialized.  One Schema  object will be generated 
+     * The descriptors are assumed to have been initialized.  One Schema  object will be generated
      * per namespace.
-     * 
+     *
      * @param descriptorsToProcess list of XMLDescriptors which will be used to generate Schema objects
-     * @param properties holds a namespace to Properties map containing schema settings, such as elementFormDefault 
+     * @param properties holds a namespace to Properties map containing schema settings, such as elementFormDefault
      * @return a map of namespaces to EclipseLink schema model Schema objects
      * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
      * @see Schema
@@ -280,11 +280,11 @@ public class SchemaModelGenerator {
     public Map<String, Schema> generateSchemas(List<Descriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, SchemaModelOutputResolver outputResolver) throws DescriptorException {
         return generateSchemas(descriptorsToProcess, properties, outputResolver, null);
     }
-    
+
     /**
-     * Process a given descriptor.  Global complex types will be generated for based on 
-     * schema context, and global elements based on default root element. 
-     * 
+     * Process a given descriptor.  Global complex types will be generated for based on
+     * schema context, and global elements based on default root element.
+     *
      * @param desc
      * @param schemaForNamespace
      * @param workingSchema
@@ -292,9 +292,9 @@ public class SchemaModelGenerator {
      * @param descriptors
      */
     protected void processDescriptor(Descriptor desc, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
-    	// determine if a simple type (or complex type with simple content) or complex type is required
-    	boolean simple = isSimple(desc);
-    	
+        // determine if a simple type (or complex type with simple content) or complex type is required
+        boolean simple = isSimple(desc);
+
         XMLSchemaReference schemaRef = desc.getSchemaReference();
         if (schemaRef != null) {
             if (schemaRef.getType() == org.eclipse.persistence.platform.xml.XMLSchemaReference.COMPLEX_TYPE) {
@@ -309,11 +309,11 @@ public class SchemaModelGenerator {
                 String localName = getDefaultRootElementAsQName(desc, table.getName()).getLocalPart();
                 // don't overwrite existing top level elements
                 if (workingSchema.getTopLevelElements().get(localName) != null) {
-                	continue;
+                    continue;
                 }
                 Element topLevelElement = new Element();
                 topLevelElement.setName(localName);
-    
+
                 QName qname = schemaRef.getSchemaContextAsQName(workingSchema.getNamespaceResolver());
                 String elementType = qname.getLocalPart();
                 String elementTypeUri = qname.getNamespaceURI();
@@ -321,12 +321,12 @@ public class SchemaModelGenerator {
                 if (elementTypePrefix != null) {
                     elementType = elementTypePrefix + Constants.COLON + elementType;
                 }
-                
+
                 topLevelElement.setType(elementType);
                 workingSchema.addTopLevelElement(topLevelElement);
             }
         } else {
-            // here we have a descriptor that does not have a schema reference set, but since 
+            // here we have a descriptor that does not have a schema reference set, but since
             // there is a default root element set we need to generate a global element
             for (DatabaseTable table :  (Vector<DatabaseTable>)desc.getTables()) {
                 String localName = getDefaultRootElementAsQName(desc, table.getName()).getLocalPart();
@@ -335,13 +335,13 @@ public class SchemaModelGenerator {
                     Element topLevelElement = new Element();
                     topLevelElement.setName(localName);
                     if (simple) {
-                    	if (isComplexTypeWithSimpleContentRequired(desc)) {
-                    		topLevelElement.setComplexType(buildComplexTypeWithSimpleContent(desc, schemaForNamespace, workingSchema, properties, descriptors));
-                    	} else {
-                    		topLevelElement.setSimpleType(buildSimpleType(desc, workingSchema, false));
-                    	}
+                        if (isComplexTypeWithSimpleContentRequired(desc)) {
+                            topLevelElement.setComplexType(buildComplexTypeWithSimpleContent(desc, schemaForNamespace, workingSchema, properties, descriptors));
+                        } else {
+                            topLevelElement.setSimpleType(buildSimpleType(desc, workingSchema, false));
+                        }
                     } else {
-                    	topLevelElement.setComplexType(buildComplexType(true, desc, schemaForNamespace, workingSchema, properties, descriptors));
+                        topLevelElement.setComplexType(buildComplexType(true, desc, schemaForNamespace, workingSchema, properties, descriptors));
                     }
                     workingSchema.addTopLevelElement(topLevelElement);
                 }
@@ -350,9 +350,9 @@ public class SchemaModelGenerator {
     }
 
     /**
-     * Return the Schema for a given namespace.  If one doesn't exist, a new one will 
+     * Return the Schema for a given namespace.  If one doesn't exist, a new one will
      * be created and returned.
-     * 
+     *
      * @param uri
      * @param nr
      * @param schemaForNamespace
@@ -368,10 +368,10 @@ public class SchemaModelGenerator {
         }
         return schema;
     }
-    
+
     /**
      * Create and return an Element for a given XMLDescriptor.
-     * 
+     *
      * @param desc
      * @param schemaForNamespace
      * @param workingSchema
@@ -384,32 +384,32 @@ public class SchemaModelGenerator {
         Element element = new Element();
         element.setName(desc.getSchemaReference().getSchemaContextAsQName(workingSchema.getNamespaceResolver()).getLocalPart());
         if (simple) {
-        	if (isComplexTypeWithSimpleContentRequired(desc)) {
-        		element.setComplexType(buildComplexTypeWithSimpleContent(desc, schemaForNamespace, workingSchema, properties, descriptors));
-        	} else {
-        		element.setSimpleType(buildSimpleType(desc, workingSchema, false));
-        	}
+            if (isComplexTypeWithSimpleContentRequired(desc)) {
+                element.setComplexType(buildComplexTypeWithSimpleContent(desc, schemaForNamespace, workingSchema, properties, descriptors));
+            } else {
+                element.setSimpleType(buildSimpleType(desc, workingSchema, false));
+            }
         } else {
-        	element.setComplexType(buildComplexType(true, desc, schemaForNamespace, workingSchema, properties, descriptors));
+            element.setComplexType(buildComplexType(true, desc, schemaForNamespace, workingSchema, properties, descriptors));
         }
-        
+
         return element;
     }
-    
+
     /**
      * Create and return a SimpleType for a given XMLDescriptor.
-     * 
+     *
      * @param desc
      * @param workingSchema
      * @return
      */
     protected SimpleType buildSimpleType(Descriptor desc, Schema workingSchema, boolean global) {
         SimpleType st;
-    	if (global) {
-    		st = buildNewSimpleType(desc.getSchemaReference().getSchemaContextAsQName(workingSchema.getNamespaceResolver()).getLocalPart());
-    	} else {
-    		st = new SimpleType();
-    	}
+        if (global) {
+            st = buildNewSimpleType(desc.getSchemaReference().getSchemaContextAsQName(workingSchema.getNamespaceResolver()).getLocalPart());
+        } else {
+            st = new SimpleType();
+        }
 
         CoreMapping mapping = (CoreMapping)desc.getMappings().get(0);
         QName qname = conversionManager.schemaType(mapping.getAttributeClassification());
@@ -432,7 +432,7 @@ public class SchemaModelGenerator {
 
     /**
      * Create and return a SimpleType with name set to the given name.
-     * 
+     *
      * @param name
      * @return
      */
@@ -445,7 +445,7 @@ public class SchemaModelGenerator {
     /**
      * Create and return a ComplexType for a given XMLDescriptor.  Assumes that the descriptor has a schema context
      * set.
-     * 
+     *
      * @param anonymous
      * @param desc
      * @param schemaForNamespace
@@ -482,9 +482,9 @@ public class SchemaModelGenerator {
     }
 
     /**
-     * Create and return a ComplexType containing simple content for a given XMLDescriptor.  Assumes 
+     * Create and return a ComplexType containing simple content for a given XMLDescriptor.  Assumes
      * that the descriptor has a schema context set.
-     * 
+     *
      * @param desc
      * @param schemaForNamespace
      * @param workingSchema
@@ -497,25 +497,25 @@ public class SchemaModelGenerator {
         SimpleContent sc = new SimpleContent();
         Extension extension = new Extension();
         sc.setExtension(extension);
-    	ct.setSimpleContent(sc);
+        ct.setSimpleContent(sc);
         for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
-        	Field xFld = (Field) mapping.getField();
-        	if (xFld.getXPath().equals(TEXT)) {
-        		extension.setBaseType(getSchemaTypeForDirectMapping((DirectMapping) mapping, workingSchema));
-        	} else if (xFld.getXPathFragment().isAttribute()) {
+            Field xFld = (Field) mapping.getField();
+            if (xFld.getXPath().equals(TEXT)) {
+                extension.setBaseType(getSchemaTypeForDirectMapping((DirectMapping) mapping, workingSchema));
+            } else if (xFld.getXPathFragment().isAttribute()) {
                 String schemaTypeString = getSchemaTypeForDirectMapping((DirectMapping) mapping, workingSchema);
                 Attribute attr = buildAttribute((DirectMapping) mapping, schemaTypeString);
                 extension.getOrderedAttributes().add(attr);
-        	}
+            }
         }
         return ct;
     }
-    
+
     /**
      * Return the schema type for a given mapping's xmlfield.  If the field does not have a schema type
      * set, the attribute classification will be used if non-null.  Otherwise, ClassConstants.STRING
      * will be returned.
-     * 
+     *
      * @param mapping
      * @param workingSchema
      * @return
@@ -528,7 +528,7 @@ public class SchemaModelGenerator {
      * Return the schema type for a given xmlfield.  If the field does not have a schema type set,
      * the attribute classification will be used if non-null.  Otherwise, ClassConstants.STRING
      * will be returned.
-     * 
+     *
      * @param xmlField
      * @param attrClass
      * @param workingSchema
@@ -556,7 +556,7 @@ public class SchemaModelGenerator {
     /**
      * Return the descriptor from the list whose java class name matches
      * javaClassName.  If none exists null will be returned.
-     * 
+     *
      * @param javaClassName
      * @param descriptors
      * @return
@@ -569,11 +569,11 @@ public class SchemaModelGenerator {
         }
         return null;
     }
-    
+
     /**
      * Return the descriptor from the list whose java class matches
      * javaClass.  If none exists null will be returned.
-     * 
+     *
      * @param javaClass
      * @param descriptors
      * @return
@@ -590,7 +590,7 @@ public class SchemaModelGenerator {
     /**
      * Adds an Any to a given sequence.  If isCollection is true, maxOccurs will
      * be set to unbounded.
-     * 
+     *
      * @param seq
      * @param isCollection
      * @see Any
@@ -604,20 +604,20 @@ public class SchemaModelGenerator {
             any.setMaxOccurs(Occurs.UNBOUNDED);
         }
         seq.addAny(any);
-    }    
-    
+    }
+
     /**
      * Process a given XMLBinaryDataMapping.
-     * 
+     *
      * @param mapping
      * @param seq
      * @param ct
      * @param workingSchema
      */
     protected void processXMLBinaryDataMapping(BinaryDataMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
-    	Field xmlField = (Field) mapping.getField();
+        Field xmlField = (Field) mapping.getField();
         XPathFragment frag = xmlField.getXPathFragment();
-        
+
         String schemaTypeString;
         if (mapping.isSwaRef()) {
             schemaTypeString = getSchemaTypeString(Constants.SWA_REF_QNAME, workingSchema);
@@ -628,7 +628,7 @@ public class SchemaModelGenerator {
         } else {
             schemaTypeString = getSchemaTypeString(Constants.BASE_64_BINARY_QNAME, workingSchema);
         }
-        
+
         seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
         frag = getTargetXPathFragment(frag);
 
@@ -654,23 +654,23 @@ public class SchemaModelGenerator {
 
     /**
      * Process a given XMLBinaryDataCollectionMapping.
-     * 
+     *
      * @param mapping
      * @param seq
      * @param ct
      * @param workingSchema
      */
     protected void processXMLBinaryDataCollectionMapping(BinaryDataCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
-    	Field xmlField = (Field) mapping.getField();
+        Field xmlField = (Field) mapping.getField();
         XPathFragment frag = xmlField.getXPathFragment();
-        
+
         String schemaTypeString;
         if (mapping.isSwaRef()) {
             schemaTypeString = getSchemaTypeString(Constants.SWA_REF_QNAME, workingSchema);
         } else {
             schemaTypeString = getSchemaTypeString(Constants.BASE_64_BINARY_QNAME, workingSchema);
         }
-        
+
         seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
         frag = getTargetXPathFragment(frag);
 
@@ -697,15 +697,15 @@ public class SchemaModelGenerator {
 
     /**
      * Process a given XMLDirectMapping.
-     * 
+     *
      * @param mapping
      * @param seq
      * @param ct
      * @param workingSchema
      */
     protected void processXMLDirectMapping(DirectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
-    	Field xmlField = (Field) mapping.getField();
-        
+        Field xmlField = (Field) mapping.getField();
+
         XPathFragment frag = xmlField.getXPathFragment();
         if (frag.isSelfFragment()) {
             // do nothing;
@@ -761,18 +761,18 @@ public class SchemaModelGenerator {
 
     /**
      * Process a given XMLCompositeDirectCollectionMapping.
-     * 
+     *
      * @param mapping
      * @param seq
      * @param ct
      * @param workingSchema
      */
     protected void processXMLCompositeDirectCollectionMapping(DirectCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
-    	Field xmlField = ((Field) (mapping).getField());
+        Field xmlField = ((Field) (mapping).getField());
 
         XPathFragment frag = xmlField.getXPathFragment();
         seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
-    	frag = getTargetXPathFragment(frag);
+        frag = getTargetXPathFragment(frag);
 
         String schemaTypeString = getSchemaTypeForElement(xmlField, mapping.getAttributeElementClass(), workingSchema);
         Element element = null;
@@ -796,7 +796,7 @@ public class SchemaModelGenerator {
                 element = buildElement(frag, schemaTypeString, Occurs.ZERO, Occurs.UNBOUNDED);
             }
         }
-        
+
         if (mapping.getNullPolicy().isNullRepresentedByXsiNil()) {
             element.setNillable(true);
         }
@@ -809,10 +809,10 @@ public class SchemaModelGenerator {
     }
 
     /**
-     * Process a given XML composite mapping - either an XMLCompositeObjectMapping, or an 
-     * XMLCompositeCollectionMapping.  For XMLCompositeDirectCollectionMappings the 
+     * Process a given XML composite mapping - either an XMLCompositeObjectMapping, or an
+     * XMLCompositeCollectionMapping.  For XMLCompositeDirectCollectionMappings the
      * processXMLCompositeDirectCollectionMapping method should be used.
-     * 
+     *
      * @param mapping
      * @param seq
      * @param ct
@@ -823,21 +823,21 @@ public class SchemaModelGenerator {
      * @param collection
      */
     protected void processXMLCompositeMapping(CompositeObjectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean collection) {
-    	Field xmlField = (Field) mapping.getField();
-        
+        Field xmlField = (Field) mapping.getField();
+
         String refClassName = mapping.getReferenceClassName();
         Descriptor refDesc = getDescriptorByName(refClassName, descriptors);
         if (refDesc == null) {
             throw DescriptorException.descriptorIsMissing(refClassName, (DatabaseMapping)mapping);
         }
-        
+
         XPathFragment frag = xmlField.getXPathFragment();
-    	seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
-    	frag = getTargetXPathFragment(frag);
-    	
+        seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
+        frag = getTargetXPathFragment(frag);
+
         Element element = buildElement(frag, null, Occurs.ZERO, (collection ? Occurs.UNBOUNDED : null));
         ComplexType ctype = null;
-        
+
         // if the reference descriptor's schema context is null we need to generate an anonymous complex type
         if (refDesc.getSchemaReference() == null) {
             ctype = buildComplexType(true, refDesc, schemaForNamespace, workingSchema, properties, descriptors);
@@ -847,17 +847,17 @@ public class SchemaModelGenerator {
 
         if (frag.getNamespaceURI() != null) {
             // may need to add a global element
-        	element = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, element, ctype, refDesc);
+            element = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, element, ctype, refDesc);
         } else if (ctype != null) {
-        	// set an anonymous complex type
+            // set an anonymous complex type
             element.setComplexType(ctype);
         }
-        
+
         boolean isNillable = false;
         if (!collection) {
             isNillable = ((CompositeObjectMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();
         } else {
-            isNillable = ((CompositeCollectionMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();            
+            isNillable = ((CompositeCollectionMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();
         }
         element.setNillable(isNillable);
 
@@ -870,7 +870,7 @@ public class SchemaModelGenerator {
 
     /**
      * Process a given XMLChoiceCollectionMapping.
-     * 
+     *
      * @param mapping
      * @param seq
      * @param ct
@@ -880,13 +880,13 @@ public class SchemaModelGenerator {
      * @param descriptors
      */
     protected void processXMLChoiceCollectionMapping(ChoiceCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
-        Map<Field, Class> fieldToClassMap = mapping.getFieldToClassMappings(); 
+        Map<Field, Class> fieldToClassMap = mapping.getFieldToClassMappings();
         List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList = mapping.getChoiceFieldToClassAssociations();
         processChoiceMapping(fieldToClassMap, choiceFieldToClassList, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, true);
     }
-    
+
     /**
-     * 
+     *
      * @param mapping
      * @param seq
      * @param ct
@@ -896,14 +896,14 @@ public class SchemaModelGenerator {
      * @param descriptors
      */
     protected void processXMLChoiceObjectMapping(ChoiceObjectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
-        Map<Field, Class> fieldToClassMap =mapping.getFieldToClassMappings(); 
+        Map<Field, Class> fieldToClassMap =mapping.getFieldToClassMappings();
         List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList = mapping.getChoiceFieldToClassAssociations();
         processChoiceMapping(fieldToClassMap, choiceFieldToClassList, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, false);
     }
 
     /**
      * Process a given XMLChoiceMapping.
-     * 
+     *
      * @param fieldToClassMap
      * @param choiceFieldToClassList
      * @param seq
@@ -920,11 +920,11 @@ public class SchemaModelGenerator {
             theChoice.setMaxOccurs(Occurs.UNBOUNDED);
         }
         for (XMLChoiceFieldToClassAssociation next : choiceFieldToClassList) {
-        	Field field = next.getXmlField();
+            Field field = next.getXmlField();
             Element element = buildElement(field.getXPathFragment().getShortName(), Occurs.ZERO, null);
-            
+
             QName schemaTypeQName = field.getSchemaType();
-            if (schemaTypeQName != null) { 
+            if (schemaTypeQName != null) {
                 element.setType(getSchemaTypeString(schemaTypeQName, workingSchema));
             } else {
                 element = processReferenceDescriptor(element, getDescriptorByClass(fieldToClassMap.get(field), descriptors), schemaForNamespace, workingSchema, properties, descriptors, field, false);
@@ -935,10 +935,10 @@ public class SchemaModelGenerator {
     }
 
     /**
-     * Process a given XMLObjectReferenceMapping.  In the case of an XMLCollectionReferenceMapping, 
-     * i.e. the isCollection flag is set to true, maxOccurs will be set to 'unbounded' on any 
-     * source elements 
-     * 
+     * Process a given XMLObjectReferenceMapping.  In the case of an XMLCollectionReferenceMapping,
+     * i.e. the isCollection flag is set to true, maxOccurs will be set to 'unbounded' on any
+     * source elements
+     *
      * @param mapping
      * @param seq
      * @param ct
@@ -951,7 +951,7 @@ public class SchemaModelGenerator {
     protected void processXMLObjectReferenceMapping(ObjectReferenceMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean isCollection) {
         String tgtClassName = mapping.getReferenceClassName();
         Descriptor tgtDesc = getDescriptorByName(tgtClassName, descriptors);
-        if (tgtDesc == null) {        	
+        if (tgtDesc == null) {
             throw DescriptorException.descriptorIsMissing(tgtClassName, (DatabaseMapping)mapping);
         }
 
@@ -959,14 +959,14 @@ public class SchemaModelGenerator {
         String schemaTypeString = null;
         Map<Field, Field> associations = mapping.getSourceToTargetKeyFieldAssociations();
         for (Entry<Field, Field> entry : associations.entrySet()) {
-        	Field tgtField = entry.getValue();
+            Field tgtField = entry.getValue();
             Vector mappings = tgtDesc.getMappings();
             // Until IDREF support is added, we want the source type to be that of the target
             //schemaTypeString = Constants.SCHEMA_PREFIX + COLON + IDREF;
             for (Enumeration mappingsNum = mappings.elements(); mappingsNum.hasMoreElements();) {
                 Mapping nextMapping = (Mapping)mappingsNum.nextElement();
                 if (nextMapping.getField() != null && nextMapping.getField() instanceof Field) {
-                	Field xFld = (Field) nextMapping.getField();
+                    Field xFld = (Field) nextMapping.getField();
                     if (xFld == tgtField) {
                         schemaTypeString = getSchemaTypeForElement(tgtField, nextMapping.getAttributeClassification(), workingSchema);
                     }
@@ -975,7 +975,7 @@ public class SchemaModelGenerator {
             if (schemaTypeString == null) {
                 schemaTypeString = getSchemaTypeString(Constants.STRING_QNAME, workingSchema);
             }
-            
+
             XPathFragment frag = entry.getKey().getXPathFragment();
             if (frag.isAttribute()) {
                 Attribute attr = buildAttribute(frag, schemaTypeString);
@@ -989,10 +989,10 @@ public class SchemaModelGenerator {
             }
         }
     }
-    
+
     /**
      * Process a given mapping.
-     * 
+     *
      * @param mapping
      * @param seq
      * @param ct
@@ -1037,7 +1037,7 @@ public class SchemaModelGenerator {
      * This method will generate a global element if required (based in URI and elementFormDefault) and
      * set a reference to it on a given element accordingly.  This method will typically be used for
      * direct mappings.
-     * 
+     *
      * @param frag
      * @param schemaForNamespace
      * @param workingSchema
@@ -1047,7 +1047,7 @@ public class SchemaModelGenerator {
      * @return
      */
     protected Element handleFragNamespace(XPathFragment frag, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, Element element, String schemaTypeString) {
-    	String fragUri = frag.getNamespaceURI();
+        String fragUri = frag.getNamespaceURI();
         // may need to add a global element
         Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
         String targetNS = workingSchema.getTargetNamespace();
@@ -1061,16 +1061,16 @@ public class SchemaModelGenerator {
             element = new Element();
             element.setRef(frag.getShortName());
         } else {
-        	element = buildElement(frag, schemaTypeString, Occurs.ZERO, null);
+            element = buildElement(frag, schemaTypeString, Occurs.ZERO, null);
         }
         return element;
     }
-    
+
     /**
      * This method will generate a global element if required (based in URI and elementFormDefault) and
-     * set a reference to it on a given element accordingly, or set an anonymous complex type on a given 
+     * set a reference to it on a given element accordingly, or set an anonymous complex type on a given
      * element.  This method will typically be used by composite mappings.
-     * 
+     *
      * @param frag
      * @param schemaForNamespace
      * @param workingSchema
@@ -1080,13 +1080,13 @@ public class SchemaModelGenerator {
      * @param refDesc
      */
     protected Element handleFragNamespace(XPathFragment frag, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, Element element, ComplexType ctype, Descriptor refDesc) {
-    	String fragUri = frag.getNamespaceURI();
+        String fragUri = frag.getNamespaceURI();
         // may need to add a global element
-    	Element globalElement = null; 
-    	Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
+        Element globalElement = null;
+        Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
         String targetNS = workingSchema.getTargetNamespace();
         if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
-        	globalElement = (Element) s.getTopLevelElements().get(frag.getLocalName());
+            globalElement = (Element) s.getTopLevelElements().get(frag.getLocalName());
             if (globalElement == null) {
                 globalElement = new Element();
                 globalElement.setName(frag.getLocalName());
@@ -1101,74 +1101,74 @@ public class SchemaModelGenerator {
             element.setMaxOccurs(Occurs.UNBOUNDED);
             element.setRef(frag.getShortName());
         }
-        
+
         if (globalElement == null && ctype != null) {
             element.setComplexType(ctype);
-        }        
+        }
         return element;
     }
-    
+
     /**
-     * Return the last fragment before text() in the XPath that a given XPathFragment 
+     * Return the last fragment before text() in the XPath that a given XPathFragment
      * is part of.
-     * 
+     *
      * @param frag
      * @return
      */
     protected XPathFragment getTargetXPathFragment(XPathFragment frag) {
-    	if (frag.isAttribute() || frag.isSelfFragment()) {
-    		return frag;
-    	}
-    	while (frag.getNextFragment() != null && !frag.getNextFragment().nameIsText()) {
+        if (frag.isAttribute() || frag.isSelfFragment()) {
+            return frag;
+        }
+        while (frag.getNextFragment() != null && !frag.getNextFragment().nameIsText()) {
             frag = frag.getNextFragment();
             if (frag.getNextFragment() == null || frag.getNextFragment().nameIsText()) {
-            	break;
-    		}
-    	}
-    	return frag;
+                break;
+            }
+        }
+        return frag;
     }
-    
+
     /**
-     * This method will build element/complexType/sequence components for a given XPath, 
-     * and return the sequence that the target element of the mapping should be added 
-     * to. For example, if the XPath was "contact-info/address/street/text()", street 
+     * This method will build element/complexType/sequence components for a given XPath,
+     * and return the sequence that the target element of the mapping should be added
+     * to. For example, if the XPath was "contact-info/address/street/text()", street
      * would be the target.  This method defers processing of the target path element
-     * to the calling method, allowing for differences in handling, such as direct 
+     * to the calling method, allowing for differences in handling, such as direct
      * mappings versus composite mappings, etc.
-     * 
+     *
      * @param frag
      * @param seq
      * @return
      */
     protected Sequence buildSchemaComponentsForXPath(XPathFragment frag, Sequence seq, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
-		// the mapping will handle processing of the target fragment; return the sequence it will be added to 
-    	if (frag.getNextFragment() == null || frag.getNextFragment().nameIsText()) {
-			return seq;
-		}
+        // the mapping will handle processing of the target fragment; return the sequence it will be added to
+        if (frag.getNextFragment() == null || frag.getNextFragment().nameIsText()) {
+            return seq;
+        }
 
-		Sequence currentSequence = seq;
-		
-		// if the current element exists, use it; otherwise create a new one
-		Element currentElement = elementExistsInSequence(frag.getLocalName(), frag.getShortName(), currentSequence);
-		boolean currentElementExists = (currentElement != null);
-		if (currentElement == null) {
+        Sequence currentSequence = seq;
+
+        // if the current element exists, use it; otherwise create a new one
+        Element currentElement = elementExistsInSequence(frag.getLocalName(), frag.getShortName(), currentSequence);
+        boolean currentElementExists = (currentElement != null);
+        if (currentElement == null) {
             currentElement = new Element();
-        	// don't set the element name yet, as it may end up being a ref
+            // don't set the element name yet, as it may end up being a ref
             ComplexType cType = new ComplexType();
             Sequence sequence = new Sequence();
             cType.setSequence(sequence);
             currentElement.setComplexType(cType);
-		}
-		
-    	Element globalElement = null;
-    	String fragUri = frag.getNamespaceURI();
-    	if (fragUri != null) {
+        }
+
+        Element globalElement = null;
+        String fragUri = frag.getNamespaceURI();
+        if (fragUri != null) {
             Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
             String targetNS = workingSchema.getTargetNamespace();
             if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
                 // must generate a global element are create a reference to it
-        		// if the global element exists, use it; otherwise create a new one
-            	globalElement = (Element) s.getTopLevelElements().get(frag.getLocalName());
+                // if the global element exists, use it; otherwise create a new one
+                globalElement = (Element) s.getTopLevelElements().get(frag.getLocalName());
                 if (globalElement == null) {
                     globalElement = new Element();
                     globalElement.setName(frag.getLocalName());
@@ -1180,37 +1180,37 @@ public class SchemaModelGenerator {
                 }
                 // if the current element doesn't exist set a ref and add it to the sequence
                 if (!currentElementExists) {
-                	// ref won't have a complex type                	
-	                currentElement.setComplexType(null);
-	                currentElement.setRef(frag.getShortName());
-	                currentSequence.addElement(currentElement);
-	                currentElementExists = true;
+                    // ref won't have a complex type
+                    currentElement.setComplexType(null);
+                    currentElement.setRef(frag.getShortName());
+                    currentSequence.addElement(currentElement);
+                    currentElementExists = true;
                 }
-                // make the global element current 
-            	currentElement = globalElement;
+                // make the global element current
+                currentElement = globalElement;
             }
-    	}
-    	// if we didn't process a global element, and the current element isn't already in the sequence, add it 
-    	if (!currentElementExists && globalElement == null) {
-    		currentElement.setName(frag.getLocalName());
+        }
+        // if we didn't process a global element, and the current element isn't already in the sequence, add it
+        if (!currentElementExists && globalElement == null) {
+            currentElement.setName(frag.getLocalName());
             currentSequence.addElement(currentElement);
-    	}
-    	// set the correct sequence to use/return
-    	currentSequence = currentElement.getComplexType().getSequence();
+        }
+        // set the correct sequence to use/return
+        currentSequence = currentElement.getComplexType().getSequence();
 
         // don't process the last element in the path - let the calling mapping process it
         frag = frag.getNextFragment();
         if (frag.getNextFragment() != null && !frag.getNextFragment().nameIsText()) {
-        	Element childElt = buildElement(frag, null, Occurs.ZERO, null);             
-        	currentSequence.addElement(childElt);
+            Element childElt = buildElement(frag, null, Occurs.ZERO, null);
+            currentSequence.addElement(childElt);
         }
         // call back into this method to process the next path element
-    	return buildSchemaComponentsForXPath(frag, currentSequence, schemaForNamespace, workingSchema, properties);
+        return buildSchemaComponentsForXPath(frag, currentSequence, schemaForNamespace, workingSchema, properties);
     }
-    
+
     /**
      * Build and return an Attribute for a given XMLDirectMapping.
-     * 
+     *
      * @param mapping
      * @param schemaType
      * @return
@@ -1225,7 +1225,7 @@ public class SchemaModelGenerator {
 
     /**
      * Build and return an Attribute for a given XPathFragment.
-     * 
+     *
      * @param mapping
      * @param schemaType
      * @return
@@ -1239,7 +1239,7 @@ public class SchemaModelGenerator {
 
     /**
      * Build and return an Element for a given XPathFragment.
-     * 
+     *
      * @param frag
      * @param schemaType
      * @param minOccurs
@@ -1260,7 +1260,7 @@ public class SchemaModelGenerator {
     /**
      * Build and return an Element based on a given name, minOccurs and
      * maxOccurs.
-     * 
+     *
      * @param name
      * @param minOccurs
      * @param maxOccurs
@@ -1278,7 +1278,7 @@ public class SchemaModelGenerator {
      * Indicates if two namespaces are equal.  The result is TRUE if the two URI strings are
      * equal according to the equals() method, if one is null and the other is "", or
      * both are null.
-     *  
+     *
      * @param uri
      * @param defaultNS
      * @return
@@ -1289,11 +1289,11 @@ public class SchemaModelGenerator {
         }
         return ((ns1.equals(ns2)) || (ns1.equals(Constants.EMPTY_STRING) && ns2 == null));
     }
-    
+
     /**
-     * Return the schema type as a string for a given QName and Schema.  The schema's 
-     * namespace resolver will be used to determine the prefix (if any) to use. 
-     * 
+     * Return the schema type as a string for a given QName and Schema.  The schema's
+     * namespace resolver will be used to determine the prefix (if any) to use.
+     *
      * @param schemaType
      * @param workingSchema
      * @return
@@ -1322,7 +1322,7 @@ public class SchemaModelGenerator {
 
     /**
      * Adds each namespace in the given resolver to the schema.
-     * 
+     *
      * @param nr
      * @param workingSchema
      */
@@ -1339,7 +1339,7 @@ public class SchemaModelGenerator {
      * Create and return a new schema for the given namespace.  ElementFormDefault and
      * AttributeFormDefault can be set via SchemaModelGeneratorProperties object.  The
      * namespace resolver's default namespace will be set if non-null.
-     * 
+     *
      * @param uri
      * @param nr
      * @param schemaCount
@@ -1390,7 +1390,7 @@ public class SchemaModelGenerator {
 
     /**
      * Determines if a given schema contains an import for a given schema name.
-     * 
+     *
      * @param schema
      * @param schemaName
      * @return
@@ -1409,7 +1409,7 @@ public class SchemaModelGenerator {
      * Return a QName representation of a qualified table name (aka default root element).  The
      * given descriptor's namespace resolver will be used to determine the correct prefix - if
      * any - to be used.
-     * 
+     *
      * @param desc
      * @param qualifiedTableName
      * @return
@@ -1434,9 +1434,9 @@ public class SchemaModelGenerator {
         }
         return qName;
     }
-    
+
     /**
-     *  
+     *
      * @param element
      * @param refDesc
      * @param schemaForNamespace
@@ -1449,13 +1449,13 @@ public class SchemaModelGenerator {
      */
     protected Element processReferenceDescriptor(Element element, Descriptor refDesc, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, Field field, boolean isCollection) {
         ComplexType ctype = null;
-        
+
         if (refDesc.getSchemaReference() == null) {
             ctype = buildComplexType(true, refDesc, schemaForNamespace, workingSchema, properties, descriptors);
         } else {
             element.setType(getSchemaTypeString(refDesc.getSchemaReference().getSchemaContextAsQName(workingSchema.getNamespaceResolver()), workingSchema));
         }
-       
+
         XPathFragment frag = field.getXPathFragment();
         String fragUri = frag.getNamespaceURI();
         if (fragUri != null) {
@@ -1492,7 +1492,7 @@ public class SchemaModelGenerator {
      * Convenience method for determining if an element already exists in a given
      * sequence.  If an element exists whose name is equal to 'elementName' true
      * is returned.  False otherwise.
-     * 
+     *
      * @param elementName
      * @param seq
      * @return
@@ -1519,48 +1519,48 @@ public class SchemaModelGenerator {
         }
         return null;
     }
-    
+
     /**
      * Determines if a given descriptor contains a direct mapping to "text()" indicating a
-     * simple mapping.  In this case, a simple type or complex type with simple content 
+     * simple mapping.  In this case, a simple type or complex type with simple content
      * will be generated
-     * 
+     *
      * @param desc
      * @return
      */
     protected boolean isSimple(Descriptor desc) {
-    	boolean isSimple = false;
+        boolean isSimple = false;
         for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
-        	if (mapping.isDirectToFieldMapping()) {
-        		Field xFld = (Field) mapping.getField();
-            	if (xFld.getXPath().equals(TEXT)) {
-            		isSimple = true;
-            		break;
-            	}
-        	} else {
-        		break;
-        	}
+            if (mapping.isDirectToFieldMapping()) {
+                Field xFld = (Field) mapping.getField();
+                if (xFld.getXPath().equals(TEXT)) {
+                    isSimple = true;
+                    break;
+                }
+            } else {
+                break;
+            }
         }
         return isSimple;
     }
-    
+
     /**
      * Indicates if a complex type with simple content is to be generated. This is true when
-     * the given descriptor has more than one mapping.  It is assumed that isSimple(desc) 
-     * will return true for the given descriptor, and that the descriptor will contain at most 
-     * one direct with a 'text()' xpath, and any additional mappings are attribute mappings.   
-     * 
+     * the given descriptor has more than one mapping.  It is assumed that isSimple(desc)
+     * will return true for the given descriptor, and that the descriptor will contain at most
+     * one direct with a 'text()' xpath, and any additional mappings are attribute mappings.
+     *
      * @param desc
      * @return
      */
     protected boolean isComplexTypeWithSimpleContentRequired(Descriptor desc) {
-    	return desc.getMappings().size() > 1 ? true : false;  
+        return desc.getMappings().size() > 1 ? true : false;
     }
 
     /**
      * Process information contained within an EnumTypeConverter.  This will generate a simple
      * type containing enumeration info.
-     * 
+     *
      * @param schemaTypeString
      * @param frag
      * @param mapping
@@ -1577,7 +1577,7 @@ public class SchemaModelGenerator {
         } else {
             elem = buildElement(frag, schemaTypeString, Occurs.ZERO, null);
         }
-        
+
         Collection<String> fieldValues = ((EnumTypeConverter) converter).getAttributeToFieldValues().values();
         ArrayList facets = new ArrayList();
         for (String field : fieldValues) {
@@ -1597,10 +1597,10 @@ public class SchemaModelGenerator {
             seq.addElement(elem);
         }
     }
-    
+
     /**
      * Indicates if a given fragment is a primary key.
-     *  
+     *
      * @param frag
      * @param mapping
      * @return

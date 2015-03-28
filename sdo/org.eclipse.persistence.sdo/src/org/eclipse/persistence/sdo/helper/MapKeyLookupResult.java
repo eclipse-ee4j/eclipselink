@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,9 +15,9 @@ package org.eclipse.persistence.sdo.helper;
 /**
  * Class for wrapping cache key lookup results.  The result of a key lookup will
  * be an application name and class loader, or a class loader.
- * 
+ *
  * Note that all instances of this class are expected to have a loader set.
- *  
+ *
  */
 public class MapKeyLookupResult {
     private String applicationName;
@@ -25,7 +25,7 @@ public class MapKeyLookupResult {
 
     /**
      * This constructor should be used when caching on class loader.
-     * 
+     *
      * @param classLoader
      */
     public MapKeyLookupResult(ClassLoader classLoader) {
@@ -37,7 +37,7 @@ public class MapKeyLookupResult {
      * This constructor should be used when caching on application name.  The loader
      * will be used to determine if a redeploy has occurred, i.e. same application
      * name but different class loaders.
-     * 
+     *
      * @param applicationName
      * @param classLoader
      */
@@ -48,7 +48,7 @@ public class MapKeyLookupResult {
 
     /**
      * Return the applicationName value.
-     * 
+     *
      * @return
      */
     public String getApplicationName() {
@@ -57,7 +57,7 @@ public class MapKeyLookupResult {
 
     /**
      * Return the loader value.
-     * 
+     *
      * @return
      */
     public ClassLoader getLoader() {

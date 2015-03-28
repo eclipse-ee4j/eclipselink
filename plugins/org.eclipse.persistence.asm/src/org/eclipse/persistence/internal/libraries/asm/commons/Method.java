@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * A named method descriptor.
- * 
+ *
  * @author Juozas Baliuka
  * @author Chris Nokleberg
  * @author Eric Bruneton
@@ -73,7 +73,7 @@ public class Method {
 
     /**
      * Creates a new {@link Method}.
-     * 
+     *
      * @param name
      *            the method's name.
      * @param desc
@@ -86,7 +86,7 @@ public class Method {
 
     /**
      * Creates a new {@link Method}.
-     * 
+     *
      * @param name
      *            the method's name.
      * @param returnType
@@ -101,7 +101,7 @@ public class Method {
 
     /**
      * Creates a new {@link Method}.
-     * 
+     *
      * @param m
      *            a java.lang.reflect method descriptor
      * @return a {@link Method} corresponding to the given Java method
@@ -113,7 +113,7 @@ public class Method {
 
     /**
      * Creates a new {@link Method}.
-     * 
+     *
      * @param c
      *            a java.lang.reflect constructor descriptor
      * @return a {@link Method} corresponding to the given Java constructor
@@ -126,7 +126,7 @@ public class Method {
     /**
      * Returns a {@link Method} corresponding to the given Java method
      * declaration.
-     * 
+     *
      * @param method
      *            a Java method declaration, without argument names, of the form
      *            "returnType name (argumentType1, ... argumentTypeN)", where
@@ -147,7 +147,7 @@ public class Method {
     /**
      * Returns a {@link Method} corresponding to the given Java method
      * declaration.
-     * 
+     *
      * @param method
      *            a Java method declaration, without argument names, of the form
      *            "returnType name (argumentType1, ... argumentTypeN)", where
@@ -227,7 +227,7 @@ public class Method {
 
     /**
      * Returns the name of the method described by this object.
-     * 
+     *
      * @return the name of the method described by this object.
      */
     public String getName() {
@@ -236,7 +236,7 @@ public class Method {
 
     /**
      * Returns the descriptor of the method described by this object.
-     * 
+     *
      * @return the descriptor of the method described by this object.
      */
     public String getDescriptor() {
@@ -245,7 +245,7 @@ public class Method {
 
     /**
      * Returns the return type of the method described by this object.
-     * 
+     *
      * @return the return type of the method described by this object.
      */
     public Type getReturnType() {
@@ -254,7 +254,7 @@ public class Method {
 
     /**
      * Returns the argument types of the method described by this object.
-     * 
+     *
      * @return the argument types of the method described by this object.
      */
     public Type[] getArgumentTypes() {

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -35,21 +35,21 @@ public final class MWXmlCollectionReferenceMapping extends MWAbstractXmlReferenc
 
     // **************** Constructors ******************************************
 
-	/**
-	 * Default constructor, TopLink use only.
-	 */
-	private MWXmlCollectionReferenceMapping() {
-		super();
-	}
+    /**
+     * Default constructor, TopLink use only.
+     */
+    private MWXmlCollectionReferenceMapping() {
+        super();
+    }
 
-	MWXmlCollectionReferenceMapping(MWXmlDescriptor parent, MWClassAttribute attribute, String name) {
-		super(parent, attribute, name);
-	}
+    MWXmlCollectionReferenceMapping(MWXmlDescriptor parent, MWClassAttribute attribute, String name) {
+        super(parent, attribute, name);
+    }
 
     @Override
-	protected void initialize(MWClassAttribute attribute, String name) {
+    protected void initialize(MWClassAttribute attribute, String name) {
         super.initialize(attribute, name);
-        
+
         if (attribute.isAssignableToList()) {
             this.containerPolicy = new MWListContainerPolicy(this);
         }
@@ -64,44 +64,44 @@ public final class MWXmlCollectionReferenceMapping extends MWAbstractXmlReferenc
         }
     }
 
-	@Override
-	protected void addChildrenTo(List children) {
-		super.addChildrenTo(children);
-		children.add(this.containerPolicy);
-	}
+    @Override
+    protected void addChildrenTo(List children) {
+        super.addChildrenTo(children);
+        children.add(this.containerPolicy);
+    }
 
-	// **************** Morphing **********************************************
-	
-	public MWXmlCollectionReferenceMapping asMWXmlCollectionReferenceMapping() {
-		return this;
-	}
+    // **************** Morphing **********************************************
 
-	@Override
-	protected void initializeOn(MWMapping newMapping) {
-		newMapping.initializeFromMWXmlCollectionReferenceMapping(this);
-	}
+    public MWXmlCollectionReferenceMapping asMWXmlCollectionReferenceMapping() {
+        return this;
+    }
 
-	// **************** Runtime Conversion ************************************
-	
-	@Override
-	public DatabaseMapping buildRuntimeMapping() {
-		return new XMLCollectionReferenceMapping();
-	}
-	
-	@Override
-	public DatabaseMapping runtimeMapping() {
-		XMLCollectionReferenceMapping mapping = (XMLCollectionReferenceMapping) super.runtimeMapping();
+    @Override
+    protected void initializeOn(MWMapping newMapping) {
+        newMapping.initializeFromMWXmlCollectionReferenceMapping(this);
+    }
+
+    // **************** Runtime Conversion ************************************
+
+    @Override
+    public DatabaseMapping buildRuntimeMapping() {
+        return new XMLCollectionReferenceMapping();
+    }
+
+    @Override
+    public DatabaseMapping runtimeMapping() {
+        XMLCollectionReferenceMapping mapping = (XMLCollectionReferenceMapping) super.runtimeMapping();
         mapping.setContainerPolicy(getContainerPolicy().runtimeContainerPolicy());
-		return mapping;
-	}
+        return mapping;
+    }
 
-	// **************** TopLink methods ***************************************
-	@SuppressWarnings("deprecation")
-	public static XMLDescriptor buildDescriptor() {	
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.setJavaClass(MWXmlCollectionReferenceMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractXmlReferenceMapping.class);
-		
+    // **************** TopLink methods ***************************************
+    @SuppressWarnings("deprecation")
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MWXmlCollectionReferenceMapping.class);
+        descriptor.getInheritancePolicy().setParentClass(MWAbstractXmlReferenceMapping.class);
+
         XMLCompositeObjectMapping containerPolicyMapping = new XMLCompositeObjectMapping();
         containerPolicyMapping.setAttributeName("containerPolicy");
         containerPolicyMapping.setReferenceClass(MWContainerPolicy.MWContainerPolicyRoot.class);
@@ -110,18 +110,18 @@ public final class MWXmlCollectionReferenceMapping extends MWAbstractXmlReferenc
         containerPolicyMapping.setXPath("container-policy");
         descriptor.addMapping(containerPolicyMapping);
 
-        return descriptor;	
-	}
-		
-	@Override
-	public boolean sourceFieldMayUseCollectionXpath() {
-		return true;
-	}
-	
+        return descriptor;
+    }
+
+    @Override
+    public boolean sourceFieldMayUseCollectionXpath() {
+        return true;
+    }
+
     private MWContainerPolicy getContainerPolicyForToplink() {
         return this.containerPolicy;
     }
-    
+
     private void setContainerPolicyForToplink(MWContainerPolicy containerPolicy) {
         this.containerPolicy = containerPolicy;
     }
@@ -129,7 +129,7 @@ public final class MWXmlCollectionReferenceMapping extends MWAbstractXmlReferenc
     public MWContainerPolicy getContainerPolicy() {
         return this.containerPolicy;
     }
-    
+
     private void setContainerPolicy(MWContainerPolicy containerPolicy) {
         Object oldValue = this.containerPolicy;
         this.containerPolicy = containerPolicy;
@@ -144,7 +144,7 @@ public final class MWXmlCollectionReferenceMapping extends MWAbstractXmlReferenc
         this.setContainerPolicy(containerPolicy);
         return containerPolicy;
     }
-    
+
     public MWListContainerPolicy setListContainerPolicy() {
         if (this.containerPolicy instanceof MWListContainerPolicy) {
             return (MWListContainerPolicy) this.containerPolicy;
@@ -153,7 +153,7 @@ public final class MWXmlCollectionReferenceMapping extends MWAbstractXmlReferenc
         this.setContainerPolicy(containerPolicy);
         return containerPolicy;
     }
-    
+
     public MWSetContainerPolicy setSetContainerPolicy() {
         if (this.containerPolicy instanceof MWSetContainerPolicy) {
             return (MWSetContainerPolicy) this.containerPolicy;
@@ -164,6 +164,6 @@ public final class MWXmlCollectionReferenceMapping extends MWAbstractXmlReferenc
     }
 
     public boolean usesTransparentIndirection() {
-     	return false;
+         return false;
     }
 }

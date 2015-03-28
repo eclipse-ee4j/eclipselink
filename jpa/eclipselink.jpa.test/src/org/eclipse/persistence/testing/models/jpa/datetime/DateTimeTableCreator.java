@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     07/07/2014-2.5.3 Rick Curtis 
+ *     07/07/2014-2.5.3 Rick Curtis
  *       - 375101: Date and Calendar should not require @Temporal.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.datetime;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -93,11 +93,11 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildDateTimeSelfTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_DATE_TIME_CMP3_DATE_TIME");
-    
+
         FieldDefinition field0 = new FieldDefinition();
         field0.setName("DateTime_DT_ID");
         field0.setTypeName("NUMERIC");
@@ -107,7 +107,7 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         field0.setUnique(false);
         field0.setIsIdentity(false);
         table.addField(field0);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("UNISELFMAP_DT_ID");
         field1.setTypeName("NUMERIC");
@@ -117,7 +117,7 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-        
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("UNISELFMAP_KEY");
         field2.setTypeName("TIMESTAMP");
@@ -126,7 +126,7 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         table.addField(field2);
-    
+
         return table;
     }
 

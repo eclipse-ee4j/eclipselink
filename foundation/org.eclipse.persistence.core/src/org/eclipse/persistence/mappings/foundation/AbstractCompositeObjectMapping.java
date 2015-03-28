@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *      *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.foundation;
 
 import java.util.*;
@@ -44,7 +44,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
 
     /** Allows user defined conversion between the object attribute value and the database value. */
     protected Converter converter;
-    
+
     /**
      * Default constructor.
      */
@@ -69,7 +69,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
             builder.cascadePerformRemove(objectReferenced, uow, visitedObjects);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
@@ -81,7 +81,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
             builder.cascadeRegisterNewForCreate(objectReferenced, uow, visitedObjects);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
@@ -107,7 +107,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
         fields.addElement(this.getField());
         return fields;
     }
-    
+
     /**
      * PUBLIC:
      * Return the converter on the mapping.
@@ -150,7 +150,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
         if (getField() == null) {
             throw DescriptorException.fieldNameNotSetInMapping(this);
         }
-        
+
         setField(getDescriptor().buildField(getField()));
         setFields(collectFields());
         // initialize the converter - if necessary
@@ -172,7 +172,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
             throw exception;
         }
     }
-    
+
     /**
      * PUBLIC:
      * Set the converter on the mapping.
@@ -181,7 +181,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
     public void setConverter(Converter converter) {
         this.converter = converter;
     }
-    
+
     /**
      * The aggregate object is held in a single field.
      */
@@ -230,7 +230,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
                     return buildClonePart(cached, executionSession.getIdentityMapAccessor().getFromIdentityMap(cacheKey.getKey(), referenceClass), cacheKey, attributeValue, refreshCascade, executionSession);
                 }
                 return result;
-                
+
             } else if (!this.isCacheable && !isTargetProtected && (cacheKey != null)) {
                 return null;
             }

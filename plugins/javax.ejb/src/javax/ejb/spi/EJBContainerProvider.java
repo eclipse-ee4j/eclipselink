@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,7 +57,7 @@ public interface EJBContainerProvider {
      * suitable embeddable container implementation.  An embeddable
      * container provider may deem itself as appropriate for the
      * embeddable application if any of the following are true :
-     * 
+     *
      * <ul>
      * <li>
      *   The <code>javax.ejb.embeddable.provider</code> property was

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,49 +54,49 @@ public interface BinaryDataMapping<
      * @return String the XPath String associated with this Mapping
      */
     public String getXPath();
-    
+
     public boolean isSwaRef();
-    
+
     /**
      * Some databases do not properly support all of the base data types. For these databases,
      * the base data type must be explicitly specified in the mapping to tell EclipseLink to force
      * the instance variable value to that data type
      */
     public void setAttributeClassification(Class attributeClassification);
-    
+
     /**
      * INTERNAL:
      * Set the name of the class for MW usage.
      */
     public void setAttributeClassificationName(String attributeClassificationName);
-    
+
     /**
      * Set the converter on the mapping.
      * A converter can be used to convert between the object's value and database value of the attribute.
      */
     public void setConverter(CONVERTER converter);
-    
+
     /**
      * ADVANCED:
      * Set the field in the mapping.
      * This can be used for advanced field types, such as XML nodes, or to set the field type.
      */
     public void setField(FIELD theField);
-    
+
     public void setIsWriteOnly(boolean b);
-    
+
     /**
      * Force mapping to set default FixedMimeTypePolicy using the MimeType string as argument
      * @param mimeTypeString
      */
     public void setMimeType(String mimeTypeString);
-    
+
     /**
      * Allow implementer to set the MimeTypePolicy class FixedMimeTypePolicy or AttributeMimeTypePolicy (dynamic)
      * @param aPolicy MimeTypePolicy
      */
     public void setMimeTypePolicy(MIME_TYPE_POLICY aPolicy);
-    
+
     /**
      * Set the AbstractNullPolicy on the mapping<br>
      * The default policy is NullPolicy.<br>
@@ -104,18 +104,18 @@ public interface BinaryDataMapping<
      * @param aNullPolicy
      */
     public void setNullPolicy(AbstractNullPolicy aNullPolicy);
-    
-    
+
+
     public void setShouldInlineBinaryData(boolean b);
-    
+
 
     public void setSwaRef(boolean swaRef);
-    
+
     /**
      * Set the Mapping field name attribute to the given XPath String
      * @param xpathString String
      */
     public void setXPath(String xpathString);
-    
+
     public boolean shouldInlineBinaryData();
 }

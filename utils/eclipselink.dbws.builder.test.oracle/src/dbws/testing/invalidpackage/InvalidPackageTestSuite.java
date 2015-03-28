@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,11 +29,11 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class InvalidPackageTestSuite extends DBWSTestSuite {
-	private static String USER = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
-	private static String WARNING_MSG_1 = "WARNING: No packages were found matching the following:  [" + USER + ".A_NON_EXISTENT_PACKAGE]";
-	private static String WARNING_MSG_2 = "WARNING: No procedures were found matching the following:  [A_NON_EXISTENT_PACKAGE.CREATE_EMP]";
-			
-	@BeforeClass
+    private static String USER = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+    private static String WARNING_MSG_1 = "WARNING: No packages were found matching the following:  [" + USER + ".A_NON_EXISTENT_PACKAGE]";
+    private static String WARNING_MSG_2 = "WARNING: No procedures were found matching the following:  [A_NON_EXISTENT_PACKAGE.CREATE_EMP]";
+
+    @BeforeClass
     public static void setUp() throws WSDLException {
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -54,21 +54,21 @@ public class InvalidPackageTestSuite extends DBWSTestSuite {
                   "</property>" +
               "</properties>" +
               "<plsql-procedure " +
-		          "name=\"Bah\" " +
-		          "catalogPattern=\"A_NON_EXISTENT_PACKAGE\" " +
-		          "procedurePattern=\"CREATE_EMP\" " +
-		      "/>" +
+                  "name=\"Bah\" " +
+                  "catalogPattern=\"A_NON_EXISTENT_PACKAGE\" " +
+                  "procedurePattern=\"CREATE_EMP\" " +
+              "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".", true, false);
     }
 
-	@Test
+    @Test
     public void testWarningLogs() {
-		assertTrue("No WARNINGs logged", dbwsLogger.hasWarnings());
-		List<String> warnings = dbwsLogger.getWarnings();
-		assertTrue("Expected [2] WARNINGs, but was [" + warnings.size() + "]", warnings.size() == 2);
-		assertTrue("Expected WARNING message '" + WARNING_MSG_1 + "', but was '" + warnings.get(0) + "'", WARNING_MSG_1.equalsIgnoreCase(warnings.get(0)));   
-		assertTrue("Expected WARNING message '" + WARNING_MSG_2 + "', but was '" + warnings.get(1) + "'", WARNING_MSG_2.equalsIgnoreCase(warnings.get(1)));   
+        assertTrue("No WARNINGs logged", dbwsLogger.hasWarnings());
+        List<String> warnings = dbwsLogger.getWarnings();
+        assertTrue("Expected [2] WARNINGs, but was [" + warnings.size() + "]", warnings.size() == 2);
+        assertTrue("Expected WARNING message '" + WARNING_MSG_1 + "', but was '" + warnings.get(0) + "'", WARNING_MSG_1.equalsIgnoreCase(warnings.get(0)));
+        assertTrue("Expected WARNING message '" + WARNING_MSG_2 + "', but was '" + warnings.get(1) + "'", WARNING_MSG_2.equalsIgnoreCase(warnings.get(1)));
     }
 }

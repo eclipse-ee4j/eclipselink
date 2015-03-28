@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection;
 
 import java.util.Vector;
@@ -46,7 +46,7 @@ public class AnyObjectAndAnyCollectionUC16NoDefaultRootComplexChildrenTestCases 
         p.addDescriptor(buildRootDescriptor(//
         firstMappingIsAnyCollection,//
         firstMappingXPathSet,//
-        secondMappingIsAnyCollection,//    		
+        secondMappingIsAnyCollection,//
         secondMappingXPathSet));
 
         p.addDescriptor(buildAddressDescriptor());
@@ -57,7 +57,7 @@ public class AnyObjectAndAnyCollectionUC16NoDefaultRootComplexChildrenTestCases 
     }
 
     public Object getControlObject() {
-        //<customer><contact-method><address>Ottawa</address><address>Montreal</address><phone>5551111</phone>joe@example.com<address>Ottawa</address><address>Montreal</address><phone>5551111</phone>joe@example.com</contact-method></customer>F    	
+        //<customer><contact-method><address>Ottawa</address><address>Montreal</address><phone>5551111</phone>joe@example.com<address>Ottawa</address><address>Montreal</address><phone>5551111</phone>joe@example.com</contact-method></customer>F
         Customer customer = new Customer();
         Address anAddress1 = new Address();
         Address anAddress2 = new Address();
@@ -114,8 +114,8 @@ public class AnyObjectAndAnyCollectionUC16NoDefaultRootComplexChildrenTestCases 
     protected ClassDescriptor buildRootDescriptor(//
     boolean firstMappingIsAnyCollection,//
     boolean firstMappingXPathSet,//
-    boolean secondMappingIsAnyCollection,//    		
-    boolean secondMappingXPathSet) {//    		
+    boolean secondMappingIsAnyCollection,//
+    boolean secondMappingXPathSet) {//
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Customer.class);
         descriptor.setDefaultRootElement("customer");

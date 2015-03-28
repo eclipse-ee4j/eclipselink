@@ -1,18 +1,18 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Markus Karg - allow arguments to be specified multiple times in argumentIndices
- *     05/07/2009-1.1.1 Dave Brosius 
+ *     05/07/2009-1.1.1 Dave Brosius
  *       - 263904: [PATCH] ExpressionOperator doesn't compare arrays correctly
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.expressions;
 
 import java.security.AccessController;
@@ -83,7 +83,7 @@ public class ExpressionOperator implements Serializable {
     public static final int Exists = 86;
     public static final int NotExists = 88;
     public static final int LikeEscape = 89;
-    public static final int NotLikeEscape = 134; 
+    public static final int NotLikeEscape = 134;
     public static final int Decode = 105;
     public static final int Case = 117;
     public static final int NullIf = 131;
@@ -100,7 +100,7 @@ public class ExpressionOperator implements Serializable {
     public static final int StandardDeviation = 24;
     public static final int Variance = 25;
     public static final int Distinct = 87;
-    
+
     public static final int As = 148;
 
     /** Union operators */
@@ -110,7 +110,7 @@ public class ExpressionOperator implements Serializable {
     public static final int IntersectAll = 145;
     public static final int Except = 146;
     public static final int ExceptAll = 147;
-    
+
     /** Ordering operators */
     public static final int Ascending = 26;
     public static final int Descending = 27;
@@ -238,7 +238,7 @@ public class ExpressionOperator implements Serializable {
     public static final int GetStringVal = 109;
     public static final int GetNumberVal = 110;
     public static final int IsFragment = 111;
-    
+
     // Spatial
     public static final int SDO_WITHIN_DISTANCE = 124;
     public static final int SDO_RELATE = 125;
@@ -283,7 +283,7 @@ public class ExpressionOperator implements Serializable {
     public void setIsBindingSupported(boolean isBindingSupported) {
         this.isBindingSupported = isBindingSupported;
     }
-    
+
     /**
      * INTERNAL:
      * Return if the operator is equal to the other.
@@ -310,7 +310,7 @@ public class ExpressionOperator implements Serializable {
     public int hashCode() {
         return getSelector();
     }
-    
+
     /**
      * INTERNAL:
      * Build operator.
@@ -584,7 +584,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setTerminationStrings(new String[]{" ELSE ", " END"});
         return exOperator;
     }
-    
+
 
     /**
      * INTERNAL:
@@ -654,7 +654,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setTerminationString(" )");
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Build operator.
@@ -745,7 +745,7 @@ public class ExpressionOperator implements Serializable {
         operator.javaStrings = javaStrings == null ? null : Helper.copyStringArray(javaStrings);
         operator.isBindingSupported = isBindingSupported;
     }
-    
+
     /**
      * INTERNAL:
      * Build operator.
@@ -1206,7 +1206,7 @@ public class ExpressionOperator implements Serializable {
     public static Map<Integer, ExpressionOperator> getAllOperators() {
         return allOperators;
     }
-    
+
     public static Map<String, Integer> getPlatformOperatorSelectors() {
         return platformOperatorSelectors;
     }
@@ -1263,7 +1263,7 @@ public class ExpressionOperator implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     /**
      * ADVANCED:
      * Return the type of function.
@@ -1304,10 +1304,10 @@ public class ExpressionOperator implements Serializable {
     public static ExpressionOperator in() {
         return simpleRelation(In, "IN");
     }
-    
+
     /**
      * INTERNAL:
-     * Create the IN operator taking a subquery. 
+     * Create the IN operator taking a subquery.
      * Note, the subquery itself comes with parenethesis, so the IN operator
      * should not add any parenethesis.
      */
@@ -1407,7 +1407,7 @@ public class ExpressionOperator implements Serializable {
     public static Map getPlatformOperatorNames() {
         return platformOperatorNames;
     }
-    
+
     /**
      * INTERNAL:
      * Initialize a mapping to the platform operator names for usage with exceptions.
@@ -1513,7 +1513,7 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put(Integer.valueOf(ExceptAll), "EXCEPT ALL");
         return platformOperatorNames;
     }
-    
+
     /**
      * INTERNAL:
      * Initialize a mapping to the platform operator names for usage with exceptions.
@@ -2131,7 +2131,7 @@ public class ExpressionOperator implements Serializable {
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
         return result;
     }
-    
+
     /**
      * INTERNAL:
      * Build operator.
@@ -2175,14 +2175,14 @@ public class ExpressionOperator implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         if (argumentIndices == null) {
             argumentIndices = new int[items.size()];
             for (int i = 0; i < argumentIndices.length; i++){
-                argumentIndices[i] = i; 
+                argumentIndices[i] = i;
             }
         }
-        
+
         for (final int index : argumentIndices) {
             Expression item = (Expression)items.elementAt(index);
             if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
@@ -2405,7 +2405,7 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * ADVANCED: Set the array of indexes to use when building the SQL function.
-     * 
+     *
      * The index of the array is the position in the printout, from left to right, starting with zero.
      * The value of the array entry is the number of the argument to print at that particular output position.
      * So each argument can be used zero, one or many times.
@@ -2711,7 +2711,7 @@ public class ExpressionOperator implements Serializable {
         operator.setIsBindingSupported(false);
         return operator;
     }
-    
+
     /**
      * INTERNAL:
      * Build operator.
@@ -2719,7 +2719,7 @@ public class ExpressionOperator implements Serializable {
     public static ExpressionOperator substringSingleArg() {
         return simpleTwoArgumentFunction(SubstringSingleArg, "SUBSTR");
     }
-    
+
     /**
      * INTERNAL:
      * Create the SUM operator.
@@ -2882,7 +2882,7 @@ public class ExpressionOperator implements Serializable {
      * Build the Sybase equivalent to Locate with a start index.
      * Sybase does not define this, so this gets a little complex...
      */
-    public static ExpressionOperator sybaseLocate2Operator() {        
+    public static ExpressionOperator sybaseLocate2Operator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Locate2);
         result.setType(ExpressionOperator.FunctionOperator);
@@ -3025,7 +3025,7 @@ public class ExpressionOperator implements Serializable {
     public static ExpressionOperator trim() {
         return simpleFunction(Trim, "TRIM");
     }
-    
+
     /**
      * INTERNAL:
      * Build Trim operator.
@@ -3117,7 +3117,7 @@ public class ExpressionOperator implements Serializable {
     public static ExpressionOperator variance() {
         return simpleAggregate(Variance, "VARIANCE", "variance");
     }
-    
+
     /**
      * INTERNAL:
      * Create the ANY operator.
@@ -3131,7 +3131,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Create the SOME operator.
@@ -3145,7 +3145,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Create the ALL operator.
@@ -3159,7 +3159,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Create the UNION operator.
@@ -3173,7 +3173,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Create the UNION ALL operator.
@@ -3187,7 +3187,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Create the INTERSECT operator.
@@ -3201,7 +3201,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Create the INTERSECT ALL operator.
@@ -3215,7 +3215,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Create the EXCEPT operator.
@@ -3229,7 +3229,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Create the EXCEPT ALL operator.
@@ -3243,7 +3243,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether operator has selector Any or Some

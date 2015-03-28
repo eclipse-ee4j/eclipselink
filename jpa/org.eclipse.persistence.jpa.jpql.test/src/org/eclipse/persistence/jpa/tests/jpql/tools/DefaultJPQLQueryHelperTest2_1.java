@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,42 +31,42 @@ import static org.junit.Assert.*;
 @SuppressWarnings("nls")
 public final class DefaultJPQLQueryHelperTest2_1 extends AbstractJPQLQueryHelperTest {
 
-	protected IEntity entity(String entityName) throws Exception {
-		IEntity entity = getPersistenceUnit().getEntityNamed(entityName);
-		assertNotNull("The entity " + entityName + " could not be found", entity);
-		return entity;
-	}
+    protected IEntity entity(String entityName) throws Exception {
+        IEntity entity = getPersistenceUnit().getEntityNamed(entityName);
+        assertNotNull("The entity " + entityName + " could not be found", entity);
+        return entity;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected IQuery namedQuery(String entityName, String queryName) throws Exception {
-		IEntity entity = entity(entityName);
-		IQuery namedQuery = entity.getNamedQuery(queryName);
-		assertNotNull("The named query " + queryName + " could not be found on " + entityName, namedQuery);
-		return namedQuery;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected IQuery namedQuery(String entityName, String queryName) throws Exception {
+        IEntity entity = entity(entityName);
+        IQuery namedQuery = entity.getNamedQuery(queryName);
+        assertNotNull("The named query " + queryName + " could not be found on " + entityName, namedQuery);
+        return namedQuery;
+    }
 
-	@Test
-	public void test_ResultType_Treat_1() throws Exception {
+    @Test
+    public void test_ResultType_Treat_1() throws Exception {
 
-		// SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate
-		// FROM Product p
-		IQuery namedQuery = namedQuery("Product", "product.treat");
+        // SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate
+        // FROM Product p
+        IQuery namedQuery = namedQuery("Product", "product.treat");
 
-		AbstractJPQLQueryHelper helper = buildQueryHelper(namedQuery);
-		IType type = helper.getResultType();
+        AbstractJPQLQueryHelper helper = buildQueryHelper(namedQuery);
+        IType type = helper.getResultType();
 
-		assertNotNull(
-			"The type of TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate should have been found",
-			type
-		);
+        assertNotNull(
+            "The type of TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate should have been found",
+            type
+        );
 
-		assertEquals(
-			"The wrong type for TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate was retrieved",
-			getType(namedQuery, Date.class),
-			type
-		);
-	}
+        assertEquals(
+            "The wrong type for TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate was retrieved",
+            getType(namedQuery, Date.class),
+            type
+        );
+    }
 }

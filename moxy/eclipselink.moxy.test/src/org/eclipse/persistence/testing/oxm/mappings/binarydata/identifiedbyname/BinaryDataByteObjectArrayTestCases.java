@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Denise Smith - December 15, 2009
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname;
 
 import java.util.Vector;
@@ -24,47 +24,47 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttac
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 
 public class BinaryDataByteObjectArrayTestCases extends XMLWithJSONMappingTestCases{
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameXOPonNSR.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameXOPonNSR.json";
-	private MyAttachmentUnmarshaller attachmentUnmarshaller;
-	    
-	public BinaryDataByteObjectArrayTestCases(String name) throws Exception {
-		super(name);
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-	    NamespaceResolver namespaceResolver = new NamespaceResolver();
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameXOPonNSR.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameXOPonNSR.json";
+    private MyAttachmentUnmarshaller attachmentUnmarshaller;
 
-	    // NSR must be not be empty
-	    Vector namespaces = new Vector();
-	    namespaces.add(new Namespace(MyAttachmentUnmarshaller.XOP_NAMESPACE_PREFIX,//
-	                                 MyAttachmentUnmarshaller.XOP_NAMESPACE_URL));
-	    namespaceResolver.setNamespaces(namespaces);
-	    setProject(new BinaryDataByteObjectArrayProject(namespaceResolver));		
-	}
+    public BinaryDataByteObjectArrayTestCases(String name) throws Exception {
+        super(name);
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        NamespaceResolver namespaceResolver = new NamespaceResolver();
 
-	 protected Object getControlObject() {
-	        EmployeeWithByteObjectArray emp = EmployeeWithByteObjectArray.example1();
-	        String s = "THISISATEXTSTRINGFORTHISDATAHANDLER";
-	        byte[] bytes = s.getBytes();
+        // NSR must be not be empty
+        Vector namespaces = new Vector();
+        namespaces.add(new Namespace(MyAttachmentUnmarshaller.XOP_NAMESPACE_PREFIX,//
+                                     MyAttachmentUnmarshaller.XOP_NAMESPACE_URL));
+        namespaceResolver.setNamespaces(namespaces);
+        setProject(new BinaryDataByteObjectArrayProject(namespaceResolver));
+    }
 
-	        Byte[] objectBytes = new Byte[bytes.length];
-	        for (int index = 0; index < bytes.length; index++) {
-	            objectBytes[index] = new Byte(bytes[index]);
-	        }
-	        emp.setPhoto(objectBytes);
-	        emp.setData(new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text"));
-	        return emp;
-	    }
+     protected Object getControlObject() {
+            EmployeeWithByteObjectArray emp = EmployeeWithByteObjectArray.example1();
+            String s = "THISISATEXTSTRINGFORTHISDATAHANDLER";
+            byte[] bytes = s.getBytes();
 
-	  public void setUp() throws Exception {
-	        super.setUp();
-	        attachmentUnmarshaller = new MyAttachmentUnmarshaller();
-	        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
+            Byte[] objectBytes = new Byte[bytes.length];
+            for (int index = 0; index < bytes.length; index++) {
+                objectBytes[index] = new Byte(bytes[index]);
+            }
+            emp.setPhoto(objectBytes);
+            emp.setData(new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text"));
+            return emp;
+        }
 
-	        attachmentUnmarshaller.attachments.put(attachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
-	        xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
-	        
-	    }
+      public void setUp() throws Exception {
+            super.setUp();
+            attachmentUnmarshaller = new MyAttachmentUnmarshaller();
+            DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
+
+            attachmentUnmarshaller.attachments.put(attachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+            xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
+
+        }
 
     @Override
     protected XMLMarshaller createMarshaller() {
@@ -74,9 +74,9 @@ public class BinaryDataByteObjectArrayTestCases extends XMLWithJSONMappingTestCa
     }
 
         public void xmlToObjectTest(Object testObject) throws Exception {
-	        super.xmlToObjectTest(testObject);
-	        
-	        assertTrue(attachmentUnmarshaller.getAttachmentAsDataHandlerWasCalled());
-	    }
-	 
+            super.xmlToObjectTest(testObject);
+
+            assertTrue(attachmentUnmarshaller.getAttachmentAsDataHandlerWasCalled());
+        }
+
 }

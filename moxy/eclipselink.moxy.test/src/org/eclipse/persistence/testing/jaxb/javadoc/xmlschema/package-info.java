@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,10 +11,10 @@
  *     Praba Vijayaratnam - 2.3 - initial implementation
  ******************************************************************************/
 @XmlSchema(
-		elementFormDefault = XmlNsForm.UNQUALIFIED,
-	      namespace = "http://www.example.com/MYPO1"
+        elementFormDefault = XmlNsForm.UNQUALIFIED,
+          namespace = "http://www.example.com/MYPO1"
 )
-		
+
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlschema;
 
 import javax.xml.bind.annotation.*;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,25 +18,25 @@ import org.eclipse.persistence.sessions.Session;
 
 public class MyConverter implements Converter {
 
-	public static boolean HIT_CONVERTER;
-	
-	public MyConverter(){		
-	}
-	
-	 public Object convertDataValueToObjectValue(Object fieldValue, Session session) {		 
-		 HIT_CONVERTER = true;	 
-		 return fieldValue;	
-	 }
+    public static boolean HIT_CONVERTER;
 
-	public Object convertObjectValueToDataValue(Object objectValue,Session session) {
-		return objectValue;
-	}
+    public MyConverter(){
+    }
 
-	public void initialize(DatabaseMapping mapping, Session session) {	
-	}
+     public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
+         HIT_CONVERTER = true;
+         return fieldValue;
+     }
 
-	public boolean isMutable() {
-		return false;
-	}
+    public Object convertObjectValueToDataValue(Object objectValue,Session session) {
+        return objectValue;
+    }
+
+    public void initialize(DatabaseMapping mapping, Session session) {
+    }
+
+    public boolean isMutable() {
+        return false;
+    }
 
 }

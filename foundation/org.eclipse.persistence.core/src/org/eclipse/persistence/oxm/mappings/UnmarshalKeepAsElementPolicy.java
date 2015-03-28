@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings;
 /**
  * <p><b>Purpose:</b> Used in conjunction with XMLAnyObject/CollectionMapping and XMLCompositeObject/CollectionMapping
@@ -20,7 +20,7 @@ package org.eclipse.persistence.oxm.mappings;
  * mapping in question will be a kept as an element. Those with a known type will be processed normally.</td>
  * <tr><td>KEEP_NONE_AS_ELEMENT</td><td>No xml shall be brought into the object as an element. Elements with unknown
  * types will be ignored</td></tr></table>
- * 
+ *
  */
 
 public enum UnmarshalKeepAsElementPolicy implements org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolicy {

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.changesummary.open;
 
 import commonj.sdo.ChangeSummary;
@@ -45,8 +45,8 @@ public class ChangeSummaryCreateOpenContentTestCases extends ChangeSummaryRootLo
 
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
-        
-        
+
+
         ChangeSummary teamCS = document.getRootObject().getChangeSummary();
         assertNotNull(teamCS);
         DataObject manager = document.getRootObject().getDataObject("manager");
@@ -66,21 +66,21 @@ public class ChangeSummaryCreateOpenContentTestCases extends ChangeSummaryRootLo
         DataObject yard = (DataObject)yards.get(0);
         assertNotNull(yard);
         assertCreated(yard, teamCS);
-        
+
         DataObject theYardDefined = manager.getDataObject("theYardDefined");
         //assertEquals(1, yards.size());
         //DataObject yard = (DataObject)yards.get(0);
         assertNotNull(theYardDefined);
-        assertCreated(theYardDefined, teamCS);        
-        
+        assertCreated(theYardDefined, teamCS);
+
         List theYardUndefinedList = manager.getList("theYardUndefined");
         assertEquals(1, theYardUndefinedList.size());
-        DataObject theYardUndefined = (DataObject)theYardUndefinedList.get(0);                
+        DataObject theYardUndefined = (DataObject)theYardUndefinedList.get(0);
         assertNotNull(theYardUndefined);
         assertCreated(theYardUndefined, teamCS);
-        
+
         assertNull(xsdHelper.getGlobalProperty("http://www.example.org","theYardUndefined",true));
         assertNull(xsdHelper.getGlobalProperty("http://www.example.org","theYardUndefined",false));
-        
+
     }
 }

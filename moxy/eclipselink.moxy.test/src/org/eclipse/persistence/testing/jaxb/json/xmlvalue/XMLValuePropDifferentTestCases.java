@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,21 +22,21 @@ public class XMLValuePropDifferentTestCases extends XMLValuePropTestCases {
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/xmlvalue/personUnmarshal.json";
     private final static String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/xmlvalue/personMarshal.json";
 
-	public XMLValuePropDifferentTestCases(String name) throws Exception {
-		super(name);
-		setClasses(new Class[]{Person.class});
-		setControlJSON(JSON_RESOURCE);
-		setWriteControlJSON(JSON_WRITE_RESOURCE);		
-	}
+    public XMLValuePropDifferentTestCases(String name) throws Exception {
+        super(name);
+        setClasses(new Class[]{Person.class});
+        setControlJSON(JSON_RESOURCE);
+        setWriteControlJSON(JSON_WRITE_RESOURCE);
+    }
 
-	public void setUp() throws Exception{
-		super.setUp();
-		jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "marshalWrapper");
-		jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "unmarshalWrapper");
-	}
-	
-	//public Map getProperties(){
-	//	return null;
-	//}
-	
+    public void setUp() throws Exception{
+        super.setUp();
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "marshalWrapper");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "unmarshalWrapper");
+    }
+
+    //public Map getProperties(){
+    //    return null;
+    //}
+
 }

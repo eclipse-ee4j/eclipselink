@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -36,120 +36,120 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
  *  are triggered.
  */
 public class DebugTreeNodeStream implements TreeNodeStream {
-	protected DebugEventListener dbg;
-	protected TreeAdaptor adaptor;
-	protected TreeNodeStream input;
-	protected boolean initialStreamState = true;
+    protected DebugEventListener dbg;
+    protected TreeAdaptor adaptor;
+    protected TreeNodeStream input;
+    protected boolean initialStreamState = true;
 
-	/** Track the last mark() call result value for use in rewind(). */
-	protected int lastMarker;
+    /** Track the last mark() call result value for use in rewind(). */
+    protected int lastMarker;
 
-	public DebugTreeNodeStream(TreeNodeStream input,
-							   DebugEventListener dbg)
-	{
-		this.input = input;
-		this.adaptor = input.getTreeAdaptor();
-		this.input.setUniqueNavigationNodes(true);
-		setDebugListener(dbg);
-	}
+    public DebugTreeNodeStream(TreeNodeStream input,
+                               DebugEventListener dbg)
+    {
+        this.input = input;
+        this.adaptor = input.getTreeAdaptor();
+        this.input.setUniqueNavigationNodes(true);
+        setDebugListener(dbg);
+    }
 
-	public void setDebugListener(DebugEventListener dbg) {
-		this.dbg = dbg;
-	}
+    public void setDebugListener(DebugEventListener dbg) {
+        this.dbg = dbg;
+    }
 
-	public TreeAdaptor getTreeAdaptor() {
-		return adaptor;
-	}
+    public TreeAdaptor getTreeAdaptor() {
+        return adaptor;
+    }
 
-	public void consume() {
-		Object node = input.LT(1);
-		input.consume();
-		dbg.consumeNode(node);
-	}
+    public void consume() {
+        Object node = input.LT(1);
+        input.consume();
+        dbg.consumeNode(node);
+    }
 
-	public Object get(int i) {
-		return input.get(i);
-	}
+    public Object get(int i) {
+        return input.get(i);
+    }
 
-	public Object LT(int i) {
-		Object node = input.LT(i);
-		int ID = adaptor.getUniqueID(node);
-		String text = adaptor.getText(node);
-		int type = adaptor.getType(node);
-		dbg.LT(i, node);
-		return node;
-	}
+    public Object LT(int i) {
+        Object node = input.LT(i);
+        int ID = adaptor.getUniqueID(node);
+        String text = adaptor.getText(node);
+        int type = adaptor.getType(node);
+        dbg.LT(i, node);
+        return node;
+    }
 
-	public int LA(int i) {
-		Object node = input.LT(i);
-		int ID = adaptor.getUniqueID(node);
-		String text = adaptor.getText(node);
-		int type = adaptor.getType(node);
-		dbg.LT(i, node);
-		return type;
-	}
+    public int LA(int i) {
+        Object node = input.LT(i);
+        int ID = adaptor.getUniqueID(node);
+        String text = adaptor.getText(node);
+        int type = adaptor.getType(node);
+        dbg.LT(i, node);
+        return type;
+    }
 
-	public int mark() {
-		lastMarker = input.mark();
-		dbg.mark(lastMarker);
-		return lastMarker;
-	}
+    public int mark() {
+        lastMarker = input.mark();
+        dbg.mark(lastMarker);
+        return lastMarker;
+    }
 
-	public int index() {
-		return input.index();
-	}
+    public int index() {
+        return input.index();
+    }
 
-	public void rewind(int marker) {
-		dbg.rewind(marker);
-		input.rewind(marker);
-	}
+    public void rewind(int marker) {
+        dbg.rewind(marker);
+        input.rewind(marker);
+    }
 
-	public void rewind() {
-		dbg.rewind();
-		input.rewind(lastMarker);
-	}
+    public void rewind() {
+        dbg.rewind();
+        input.rewind(lastMarker);
+    }
 
-	public void release(int marker) {
-	}
+    public void release(int marker) {
+    }
 
-	public void seek(int index) {
-		// TODO: implement seek in dbg interface
-		// db.seek(index);
-		input.seek(index);
-	}
+    public void seek(int index) {
+        // TODO: implement seek in dbg interface
+        // db.seek(index);
+        input.seek(index);
+    }
 
-	public int size() {
-		return input.size();
-	}
+    public int size() {
+        return input.size();
+    }
 
     public void reset() { ; }
 
     public Object getTreeSource() {
-		return input;
-	}
+        return input;
+    }
 
-	public String getSourceName() {
-		return getTokenStream().getSourceName();
-	}
+    public String getSourceName() {
+        return getTokenStream().getSourceName();
+    }
 
-	public TokenStream getTokenStream() {
-		return input.getTokenStream();
-	}
+    public TokenStream getTokenStream() {
+        return input.getTokenStream();
+    }
 
-	/** It is normally this object that instructs the node stream to
-	 *  create unique nav nodes, but to satisfy interface, we have to
-	 *  define it.  It might be better to ignore the parameter but
-	 *  there might be a use for it later, so I'll leave.
-	 */
-	public void setUniqueNavigationNodes(boolean uniqueNavigationNodes) {
-		input.setUniqueNavigationNodes(uniqueNavigationNodes);
-	}
+    /** It is normally this object that instructs the node stream to
+     *  create unique nav nodes, but to satisfy interface, we have to
+     *  define it.  It might be better to ignore the parameter but
+     *  there might be a use for it later, so I'll leave.
+     */
+    public void setUniqueNavigationNodes(boolean uniqueNavigationNodes) {
+        input.setUniqueNavigationNodes(uniqueNavigationNodes);
+    }
 
-	public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t) {
-		input.replaceChildren(parent, startChildIndex, stopChildIndex, t);
-	}
+    public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t) {
+        input.replaceChildren(parent, startChildIndex, stopChildIndex, t);
+    }
 
-	public String toString(Object start, Object stop) {
-		return input.toString(start,stop);
-	}
+    public String toString(Object start, Object stop) {
+        return input.toString(start,stop);
+    }
 }

@@ -56,7 +56,7 @@ import org.eclipse.persistence.testing.oxm.xmlconversionmanager.NumberTestCases;
 
 public class JSONTestSuite extends TestSuite {
     public static Test suite() {
-	  TestSuite suite = new TestSuite("JSONTestSuite");
+      TestSuite suite = new TestSuite("JSONTestSuite");
           suite.addTestSuite(JSONAttributePrefixOnContextTestCases.class);
           suite.addTestSuite(JSONAttributePrefixEmptyStringTestCases.class);
           suite.addTestSuite(JSONAttributePrefixOnMarshallerTestCases.class);
@@ -97,6 +97,6 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(JsonUnmappedTestCases.class);
 
           return suite;
-	}
+    }
 }
-	
+

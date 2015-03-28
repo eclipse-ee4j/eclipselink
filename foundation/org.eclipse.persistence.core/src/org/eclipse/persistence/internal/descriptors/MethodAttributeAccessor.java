@@ -1,21 +1,21 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     08/23/2010-2.2 Michael O'Brien 
+ *     08/23/2010-2.2 Michael O'Brien
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
  *                       Note: SDO overrides this class so an override of getMethodReturnType
  *                       will also need an override in SDO.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
 
 import java.lang.reflect.*;
@@ -42,7 +42,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     protected String getMethodName;
     protected transient Method setMethod;
     protected transient Method getMethod;
-    
+
     /**
      * Return the return type of the method accessor.
      */
@@ -60,7 +60,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
         return getAttributeValueFromObject(anObject, (Object[]) null);
     }
-    
+
     /**
      * Gets the value of an instance variable in the object.
      */
@@ -79,7 +79,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
                 }
             } else {
                 // PERF: Direct-var access.
-                return this.getMethod.invoke(anObject, parameters);    
+                return this.getMethod.invoke(anObject, parameters);
             }
         } catch (IllegalArgumentException exception) {
             throw DescriptorException.illegalArgumentWhileGettingValueThruMethodAccessor(getGetMethodName(), anObject.getClass().getName(), exception);
@@ -116,8 +116,8 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      */
     // Note: SDO overrides this method and will handle a null GetMethod
     public Class getGetMethodReturnType() throws DescriptorException {
-        // 323403: If the getMethod is missing - check for "_persistence_*_vh" to see if weaving was expected 
-        if(null == getGetMethod() && null != getGetMethodName() 
+        // 323403: If the getMethod is missing - check for "_persistence_*_vh" to see if weaving was expected
+        if(null == getGetMethod() && null != getGetMethodName()
             && (getGetMethodName().indexOf(Helper.PERSISTENCE_FIELDNAME_PREFIX) > -1)) {
             // warn before a possible NPE on accessing a weaved method that does not exist
             AbstractSessionLog.getLog().log(SessionLog.FINEST, "no_weaved_vh_method_found_verify_weaving_and_module_order",
@@ -155,7 +155,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     public Class getSetMethodParameterType() {
         return getSetMethodParameterType(0);
     }
-    
+
     protected Class getSetMethodParameterType(int index) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
@@ -169,10 +169,10 @@ public class MethodAttributeAccessor extends AttributeAccessor {
         }
     }
 
-    protected Class[] getSetMethodParameterTypes() { 
+    protected Class[] getSetMethodParameterTypes() {
         return new Class[] {getGetMethodReturnType()};
     }
-    
+
     /**
      * Set get and set method after creating these methods by using
      * get and set method names
@@ -180,7 +180,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     public void initializeAttributes(Class theJavaClass) throws DescriptorException {
         initializeAttributes(theJavaClass, (Class[]) null);
     }
-    
+
     /**
      * Set get and set method after creating these methods by using
      * get and set method names
@@ -191,7 +191,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
         }
         try {
             setGetMethod(Helper.getDeclaredMethod(theJavaClass, getGetMethodName(), getParameterTypes));
-            
+
             // The parameter type for the set method must always be the return type of the get method.
             if(!isWriteOnly()) {
                 setSetMethod(Helper.getDeclaredMethod(theJavaClass, getSetMethodName(), getSetMethodParameterTypes()));
@@ -225,7 +225,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
         setAttributeValueInObject(domainObject, attributeValue, new Object[] {attributeValue});
     }
-    
+
     /**
      * Sets the value of the instance variable in the object to the value.
      */
@@ -300,7 +300,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
                     }
                 } else {
                     // Some JVM's throw this exception for some very odd reason
-                    // See 
+                    // See
                     throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), attributeValue, exception);
                 }
             } catch (IllegalAccessException accessException) {

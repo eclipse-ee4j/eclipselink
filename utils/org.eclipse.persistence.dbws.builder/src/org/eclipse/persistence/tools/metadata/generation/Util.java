@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -83,15 +83,15 @@ public class Util {
     public static final String NATURAL_TYPE_STR = "Natural";
     public static final String POSITIVE_TYPE_STR = "Positive";
     public static final String SIGNTYPE_TYPE_STR = "SignType";
-    
+
     public static final String SYS_XMLTYPE_STR = "SYS.XMLTYPE";
     public static final String XMLTYPE_STR = "XMLTYPE";
     public static final String _TYPE_STR = "_TYPE";
-    
+
     public static final String COMMA = ",";
     public static final String SINGLE_SPACE = " ";
     public static final String COMMA_SPACE_STR = COMMA + SINGLE_SPACE;
-    
+
     // for CRUD operations
     public static final String ALL_QUERYNAME = "findAll";
     public static final String PK_QUERYNAME = "findByPrimaryKey";
@@ -124,7 +124,7 @@ public class Util {
 
     // JDK class names
     static final String ARRAYLIST_CLS_STR = "java.util.ArrayList";
-    
+
     // direction types
     static final String IN_STR = "IN";
     static final String INOUT_STR = "IN_OUT";
@@ -135,17 +135,17 @@ public class Util {
 
     // misc
     public static final String DOT = ".";
-    public static final String PERCENT = "%";  
+    public static final String PERCENT = "%";
     public static final String UNDERSCORE = "_";
 
     public static final String ITEMS_FLD_STR = "items";
     public static final String ITEMS_COL_STR = "ITEMS";
-    
+
     public static final int OPAQUE = 2007;
-    
+
     /**
-     * Returns a unqualified entity class name based on a given table or type name. 
-     * The returned string will contain an upper case first char, with the 
+     * Returns a unqualified entity class name based on a given table or type name.
+     * The returned string will contain an upper case first char, with the
      * remaining chars in lower case format.
      */
     public static String getUnqualifiedEntityName(String tableName) {
@@ -155,8 +155,8 @@ public class Util {
     }
 
     /**
-     * Returns a entity class name based on a given table or type name. The returned 
-     * string will contain an upper case first char, with the remaining chars in 
+     * Returns a entity class name based on a given table or type name. The returned
+     * string will contain an upper case first char, with the remaining chars in
      * lower case format.  The packageName will be prepended to the Entity name
      * if non-null.
      */
@@ -164,7 +164,7 @@ public class Util {
         String entityName = getUnqualifiedEntityName(tableName);
         return packageName == null ? entityName : packageName + DOT + entityName;
     }
-    
+
     /**
      * Return the JDBC type name for a given type String.
      */
@@ -172,7 +172,7 @@ public class Util {
         // this is inefficient and should be rewritten such that checking is done once only
         return getJDBCTypeNameFromType(getJDBCTypeFromTypeName(typeName));
     }
-    
+
     /**
      * Return the JDBC type (as int) for a given type name.
      */
@@ -182,7 +182,7 @@ public class Util {
         }
         if (typeName.equals(VARCHAR_STR) || typeName.equals(VARCHAR2_STR)) {
             return Types.VARCHAR;
-        }        
+        }
         if (typeName.equals(NVARCHAR_STR) || typeName.equals(NVARCHAR2_STR)) {
             return Types.NVARCHAR;
         }
@@ -191,7 +191,7 @@ public class Util {
         }
         if (typeName.equals(TIME_STR)) {
             return Types.TIME;
-        } 
+        }
         if (typeName.equals(TIMESTAMP_STR)) {
             return Types.TIMESTAMP;
         }
@@ -203,7 +203,7 @@ public class Util {
         }
         if (typeName.equals(CHAR_STR)) {
             return Types.CHAR;
-        } 
+        }
         if (typeName.equals(NCHAR_STR)) {
             return Types.NCHAR;
         }
@@ -229,7 +229,7 @@ public class Util {
         if (typeName.equals(NCLOB_STR)) {
             return Types.NCLOB;
         }
-        if (typeName.equals(RAW_STR) || 
+        if (typeName.equals(RAW_STR) ||
                 typeName.equals(LONGRAW_STR)) {
             return Types.LONGVARBINARY;
         }
@@ -339,7 +339,7 @@ public class Util {
         }
         return typeName;
     }
-        
+
     /**
      * Return the Class name for a given type name using the provided DatabasePlatform.
      * Object.class.getName() will be returned if the DatabasePlatform returns null.
@@ -347,7 +347,7 @@ public class Util {
     public static String getClassNameFromJDBCTypeName(String typeName, DatabasePlatform databasePlatform) {
         return getClassFromJDBCTypeName(typeName, databasePlatform).getName();
     }
-    
+
     /**
      * Return the Class for a given type name using the provided DatabasePlatform.  Object.class will
      * be returned if the DatabasePlatform returns null.
@@ -359,7 +359,7 @@ public class Util {
         }
         return clz;
     }
-    
+
     /**
      * Alter the given type name if required.
      */
@@ -368,17 +368,17 @@ public class Util {
             if (typeName.equals(XMLTYPE_STR)) {
                 typeName = XMLType.name();
             } else {
-                // OR Metadata doesn't handle VARCHAR2 
+                // OR Metadata doesn't handle VARCHAR2
                 if (typeName.equals(VARCHAR2_STR)) {
                     typeName = VARCHAR_STR;
-                } 
+                }
                 // for BOOLEAN we want to wrap the type in a PLSQLrecord (in ORMetadata.getDatabaseTypeEnum) to
                 // force the appropriate conversion method in PLSQLStoredProcedureCall (declare block, etc)
                 if (!typeName.equals(BOOLEAN_STR)) {
                     typeName = typeName.concat(_TYPE_STR);
                 }
             }
-        } else { 
+        } else {
             String oPLSQLTypeName = getOraclePLSQLTypeForName(typeName);
             if (oPLSQLTypeName != null) {
                 typeName = oPLSQLTypeName;
@@ -386,10 +386,10 @@ public class Util {
         }
         return typeName;
     }
-    
+
     /**
      * Returns a Java class name based on a given qualified name.  If the name has
-     * a package prepended to it, the the returned string  will be  in the format 
+     * a package prepended to it, the the returned string  will be  in the format
      * 'packagename.Name', otherwise the format will be 'Name'.   For  example,  given
      * the name 'test.EMPLOYEE', the  method would return  the string 'test.Employee'.
      *
@@ -406,7 +406,7 @@ public class Util {
         String rest = typeName.toLowerCase().substring(1);
         return packageName + DOT + first + rest;
     }
-    
+
     /**
      * Returns a Java class name based on a given name and package.  The returned
      * string  will be  in the format  'packagename.Name'.   For  example,  given
@@ -419,10 +419,10 @@ public class Util {
         String rest = name.toLowerCase().substring(1);
         return packageName == null || packageName.length() == 0 ? first + rest : packageName.toLowerCase() + DOT + first + rest;
     }
-    
+
     /**
      * Return a qualified type name for the given DatabaseType. If the type is a
-     * PLSQLType or a PLSQLCursor, and there is a package name available on the 
+     * PLSQLType or a PLSQLCursor, and there is a package name available on the
      * type's parent, a string will be returned in the format 'package.typename'.
      * Otherwise the type name will be returned.
      */
@@ -432,30 +432,30 @@ public class Util {
             // for %ROWTYPE we build a record with no package name - need to check for null
             return packageName != null ? packageName + DOT + dbType.getTypeName() : dbType.getTypeName();
         }
-        
+
         if (dbType.isPLSQLCursorType()) {
             // handle cursor
             PLSQLCursorType cursor = ((PLSQLCursorType) dbType);
             return cursor.getParentType().getPackageName() + DOT + cursor.getCursorName();
         }
-        
+
         return dbType.getTypeName();
     }
-    
+
     /**
      * Return a qualified compatible type name for the given DatabaseType. If the type is a
-     * PLSQLType, and there is a package name available on the type's parent, a string will 
-     * be returned in the format 'package_typename'. Otherwise the type name will be 
+     * PLSQLType, and there is a package name available on the type's parent, a string will
+     * be returned in the format 'package_typename'. Otherwise the type name will be
      * returned. A compatible type is the JDBC type equivalent of a PL/SQL type.
      */
     public static String getQualifiedCompatibleTypeName(DatabaseType dbType) {
         String packageName = null;
-        
+
         if (dbType.isPLSQLType()) {
             PLSQLType plsqlType = (PLSQLType) dbType;
             packageName = plsqlType.getParentType().getPackageName();
         }
-        
+
         return packageName != null ? packageName + UNDERSCORE + dbType.getTypeName() : dbType.getTypeName();
     }
 
@@ -472,12 +472,12 @@ public class Util {
             || argTypeName.equals("POSITIVE")
             || argTypeName.equals("SIGNTYPE");
     }
-    
+
     /**
      * Return the Oracle PL/SQL name for a given PL/SQL scalar type.
      */
     public static String getOraclePLSQLTypeForName(String typeName) {
-        if (typeName.equals(BINARY_INTEGER_STR)) 
+        if (typeName.equals(BINARY_INTEGER_STR))
             return BINARY_INTEGER_TYPE_STR;
         if (typeName.equals(BOOLEAN_STR))
             return PLS_BOOLEAN_TYPE_STR;
@@ -491,10 +491,10 @@ public class Util {
             return SIGNTYPE_TYPE_STR;
         return null;
     }
-    
+
     /**
      * Return the attribute-type name for a given FieldType.
-     * 
+     *
      * For CHAR sized type, java.lang.Character will be returned.
      * For CHAR non-sized type, java.lang.String will be returned.
      * For non-CHAR type, the database platform will be used to get the type name.
@@ -522,7 +522,7 @@ public class Util {
         }
         return attributeType;
     }
-    
+
     /**
      * Return the type name to be used for a given database type.  The given
      * DatabaseType's typeName attribute is typically returned, however, in
@@ -540,12 +540,12 @@ public class Util {
         }
         return typeName;
     }
-    
+
     /**
      * Convenience method that detects multiple procedures with the same procedure
      * name, and updates the overload value on the relevant ProcedureTypes
      * accordingly.
-     * 
+     *
      * The first ProcedureType will have an overload value of 0, the second 1,
      * and so on.
      */

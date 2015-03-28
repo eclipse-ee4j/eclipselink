@@ -10,21 +10,21 @@ import javax.persistence.TemporalType;
 @Entity
 public class LargeProject extends Project {
 
-	@Basic
-	private String category;
+    @Basic
+    private String category;
 
-	@Basic
-	@Temporal(TemporalType.DATE)
-	private Date endDate;
+    @Basic
+    @Temporal(TemporalType.DATE)
+    private Date endDate;
 
-	@OneToOne
-	private Project parent;
+    @OneToOne
+    private Project parent;
 
-	@Basic
-	@Temporal(TemporalType.DATE)
-	private Date startDate;
+    @Basic
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
 
-	public LargeProject() {
-		super();
-	}
+    public LargeProject() {
+        super();
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.eis.mappings;
 
 import java.util.Enumeration;
@@ -35,12 +35,12 @@ import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.queries.*;
 
 /**
- * <p>An EIS one-to-one mapping is a reference mapping that represents the relationship between 
- * a single source object and a single mapped persistent Java object.  The source object usually 
- * contains a foreign key (pointer) to the target object (key on source); alternatively, the target 
- * object may contain a foreign key to the source object (key on target).  Because both the source 
- * and target objects use interactions, they must both be configured as root object types.  
- * 
+ * <p>An EIS one-to-one mapping is a reference mapping that represents the relationship between
+ * a single source object and a single mapped persistent Java object.  The source object usually
+ * contains a foreign key (pointer) to the target object (key on source); alternatively, the target
+ * object may contain a foreign key to the source object (key on target).  Because both the source
+ * and target objects use interactions, they must both be configured as root object types.
+ *
  * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Record Type</th>
@@ -48,7 +48,7 @@ import org.eclipse.persistence.queries.*;
  * </tr>
  * <tr>
  * <td headers="c1">Indexed</td>
- * <td headers="c2">Ordered collection of record elements.  The indexed record EIS format 
+ * <td headers="c2">Ordered collection of record elements.  The indexed record EIS format
  * enables Java class attribute values to be retrieved by position or index.</td>
  * </tr>
  * <tr>
@@ -61,11 +61,11 @@ import org.eclipse.persistence.queries.*;
  * <td headers="c2">Record/Map representation of an XML DOM element.</td>
  * </tr>
  * </table>
- * 
+ *
  * @see org.eclipse.persistence.eis.EISDescriptor#useIndexedRecordFormat
  * @see org.eclipse.persistence.eis.EISDescriptor#useMappedRecordFormat
  * @see org.eclipse.persistence.eis.EISDescriptor#useXMLRecordFormat
- * 
+ *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
 public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMapping {
@@ -154,7 +154,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
             clone.getForeignKeyFields().addElement(fieldClone);
         }
 
-        //get clones from set for source hashtable.  If they do not exist, create a new one.		
+        //get clones from set for source hashtable.  If they do not exist, create a new one.
         Iterator sourceKeyIterator = getSourceToTargetKeyFields().keySet().iterator();
         while (sourceKeyIterator.hasNext()) {
             DatabaseField sourceField = (DatabaseField)sourceKeyIterator.next();
@@ -174,7 +174,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
             clone.getSourceToTargetKeyFields().put(sourceClone, targetClone);
         }
 
-        //get clones from set for target hashtable.  If they do not exist, create a new one.						
+        //get clones from set for target hashtable.  If they do not exist, create a new one.
         Iterator targetKeyIterator = getTargetToSourceKeyFields().keySet().iterator();
         while (targetKeyIterator.hasNext()) {
             DatabaseField targetField = (DatabaseField)targetKeyIterator.next();
@@ -491,7 +491,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * PUBLIC: Verify delete is used during delete and update outside of a unit
      * of work only. It checks for the previous value of the target object
      * through joining the source and target tables.
-     * 
+     *
      * @return TRUE if verify delete has been enabled
      */
     public boolean shouldVerifyDelete() {
@@ -500,7 +500,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
 
     /**
      * INTERNAL: Gets the foreign key fields.
-     * 
+     *
      * @return The mapping from source to target key fields
      */
     public Map<DatabaseField, DatabaseField> getSourceToTargetKeyFields() {
@@ -509,7 +509,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
 
     /**
      * INTERNAL: Gets the target foreign key fields.
-     * 
+     *
      * @return The mapping from target to source key fields
      */
     public Map<DatabaseField, DatabaseField> getTargetToSourceKeyFields() {
@@ -518,7 +518,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
 
     /**
      * INTERNAL: Set the source keys to target keys fields association.
-     * 
+     *
      * @param sourceToTargetKeyFields
      *            The mapping from source keys to target keys
      */
@@ -528,7 +528,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
 
     /**
      * INTERNAL: Set the target keys to source keys fields association.
-     * 
+     *
      * @param targetToSourceKeyFields
      *            The mapping from target keys to source keys
      */

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.nosql.adapters.nosql;
 
 import java.util.ArrayList;
@@ -90,7 +90,7 @@ public class OracleNoSQLInteraction implements Interaction {
                     if ((values != null) && (!values.isEmpty())) {
                         if (values.size() == 1) {
                             byte[] bytes = values.values().iterator().next().getValue().toByteArray();
-                            output.put(entry.getKey(), convertBytes(bytes));                            
+                            output.put(entry.getKey(), convertBytes(bytes));
                         } else {
                             OracleNoSQLRecord nestedRecord = new OracleNoSQLRecord();
                             for (Map.Entry<Key, ValueVersion> nestedEntry : values.entrySet()) {
@@ -99,7 +99,7 @@ public class OracleNoSQLInteraction implements Interaction {
                                 // Nest each minor path.
                                 List<String> minorPaths = nestedEntry.getKey().getMinorPath();
                                 if (minorPaths.isEmpty()) {
-                                    output.put(entry.getKey(), convertBytes(bytes));                                    
+                                    output.put(entry.getKey(), convertBytes(bytes));
                                 } else {
                                     for (int index = 0; index < (minorPaths.size() - 1); index++) {
                                         String path = minorPaths.get(index);
@@ -216,7 +216,7 @@ public class OracleNoSQLInteraction implements Interaction {
     protected List createMajorKey(Object key) {
         List majorKeys = null;
         if (key instanceof List) {
-            majorKeys = (List)key;                        
+            majorKeys = (List)key;
         } else {
             majorKeys = new ArrayList<String>();
             String keyString = key.toString();
@@ -237,7 +237,7 @@ public class OracleNoSQLInteraction implements Interaction {
         }
         return majorKeys;
     }
-    
+
     /**
      * Put the value at the major and minor keys.
      * If a nested record, then put each nested value as minor keys.
@@ -250,7 +250,7 @@ public class OracleNoSQLInteraction implements Interaction {
                 List<String> nestedMinorKeys = new ArrayList<String>(minorKeys);
                 nestedMinorKeys.add(nestedEntry.getKey().toString());
                 putValues(nestedEntry.getValue(), majorKeys, nestedMinorKeys, spec, operations);
-            }            
+            }
         } else if (element instanceof OracleNoSQLRecord) {
             // Append nested record using minor keys.
             for (Map.Entry nestedEntry : (Set<Map.Entry>)((OracleNoSQLRecord)element).entrySet()) {
@@ -272,7 +272,7 @@ public class OracleNoSQLInteraction implements Interaction {
             }
         }
     }
-    
+
     /**
      * Create the NoSQL Value from the data's bytes.
      */
@@ -287,7 +287,7 @@ public class OracleNoSQLInteraction implements Interaction {
         }
         return Value.createValue((byte[])data);
     }
-    
+
     /**
      * Allow processing of the raw bytes.
      */

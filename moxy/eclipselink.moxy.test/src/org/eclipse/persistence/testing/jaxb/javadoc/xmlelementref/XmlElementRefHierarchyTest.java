@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Praba Vijayaratnam - 2.3 - initial implementation
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlelementref;
 
 //Example 1
@@ -24,7 +24,7 @@ public class XmlElementRefHierarchyTest extends JAXBWithJSONTestCases {
 
     public XmlElementRefHierarchyTest(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);    
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[4];
         classes[3] = Task.class;
@@ -35,14 +35,14 @@ public class XmlElementRefHierarchyTest extends JAXBWithJSONTestCases {
     }
 
     protected Object getControlObject() {
-    	Target target = new Target();
-    	target.tasks = new ArrayList();
-    	JarTask jarTask = new JarTask();
-    	jarTask.name = new String("first jar task");
-    	target.tasks.add(jarTask);
-    	JavacTask javacTask = new JavacTask();
-    	javacTask.name = "first javac task"; 
-    	target.tasks.add(javacTask);
+        Target target = new Target();
+        target.tasks = new ArrayList();
+        JarTask jarTask = new JarTask();
+        jarTask.name = new String("first jar task");
+        target.tasks.add(jarTask);
+        JavacTask javacTask = new JavacTask();
+        javacTask.name = "first javac task";
+        target.tasks.add(javacTask);
         return target;
     }
 }

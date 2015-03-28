@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.sessionconsole;
 
 import javax.swing.*;
@@ -41,7 +41,7 @@ public class LoginEditorDialog extends JDialog {
         super(owner, title);
     }
 
-    public LoginEditorDialog(java.awt.Frame owner, String title, 
+    public LoginEditorDialog(java.awt.Frame owner, String title,
                              boolean modal) {
         super(owner, title, modal);
     }
@@ -54,7 +54,7 @@ public class LoginEditorDialog extends JDialog {
      * Center a component in the middle of the screen.
      */
     public static void centerComponent(java.awt.Component component) {
-        java.awt.Dimension screenSize = 
+        java.awt.Dimension screenSize =
             java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         java.awt.Dimension size = component.getSize();
 
@@ -64,7 +64,7 @@ public class LoginEditorDialog extends JDialog {
         size.height = size.height / 2;
         size.width = size.width / 2;
 
-        component.setLocation(screenSize.width - size.width, 
+        component.setLocation(screenSize.width - size.width,
                               screenSize.height - size.height);
     }
 
@@ -130,7 +130,7 @@ public class LoginEditorDialog extends JDialog {
     private LoginEditorPanel getLoginEditorPanel1() {
         if (ivjLoginEditorPanel1 == null) {
             try {
-                ivjLoginEditorPanel1 = 
+                ivjLoginEditorPanel1 =
                         new org.eclipse.persistence.tools.sessionconsole.LoginEditorPanel();
                 ivjLoginEditorPanel1.setName("LoginEditorPanel1");
                 // user code begin {1}
@@ -156,18 +156,18 @@ public class LoginEditorDialog extends JDialog {
                 ivjMainPanel.setLayout(new java.awt.GridBagLayout());
                 ivjMainPanel.setBackground(java.awt.SystemColor.control);
 
-                java.awt.GridBagConstraints constraintsLoginEditorPanel1 = 
+                java.awt.GridBagConstraints constraintsLoginEditorPanel1 =
                     new java.awt.GridBagConstraints();
                 constraintsLoginEditorPanel1.gridx = 0;
                 constraintsLoginEditorPanel1.gridy = 0;
-                constraintsLoginEditorPanel1.fill = 
+                constraintsLoginEditorPanel1.fill =
                         java.awt.GridBagConstraints.BOTH;
                 constraintsLoginEditorPanel1.weightx = 1.0;
                 constraintsLoginEditorPanel1.weighty = 1.0;
-                getMainPanel().add(getLoginEditorPanel1(), 
+                getMainPanel().add(getLoginEditorPanel1(),
                                    constraintsLoginEditorPanel1);
 
-                java.awt.GridBagConstraints constraintsOKButton = 
+                java.awt.GridBagConstraints constraintsOKButton =
                     new java.awt.GridBagConstraints();
                 constraintsOKButton.gridx = 0;
                 constraintsOKButton.gridy = 0;
@@ -176,16 +176,16 @@ public class LoginEditorDialog extends JDialog {
                 constraintsOKButton.insets = new java.awt.Insets(0, 2, 2, 0);
                 getMainPanel().add(getOKButton(), constraintsOKButton);
 
-                java.awt.GridBagConstraints constraintsCancelButton = 
+                java.awt.GridBagConstraints constraintsCancelButton =
                     new java.awt.GridBagConstraints();
                 constraintsCancelButton.gridx = 0;
                 constraintsCancelButton.gridy = 0;
                 constraintsCancelButton.gridheight = 2;
-                constraintsCancelButton.fill = 
+                constraintsCancelButton.fill =
                         java.awt.GridBagConstraints.VERTICAL;
-                constraintsCancelButton.anchor = 
+                constraintsCancelButton.anchor =
                         java.awt.GridBagConstraints.EAST;
-                constraintsCancelButton.insets = 
+                constraintsCancelButton.insets =
                         new java.awt.Insets(0, 0, 2, 2);
                 getMainPanel().add(getCancelButton(), constraintsCancelButton);
                 // user code begin {1}
@@ -262,7 +262,7 @@ public class LoginEditorDialog extends JDialog {
         // user code end
     }
 
-    public static DatabaseLogin launch(java.awt.Frame parent, 
+    public static DatabaseLogin launch(java.awt.Frame parent,
                                        DatabaseLogin login) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.coordination.rmi;
 
 import java.io.IOException;
@@ -76,8 +76,8 @@ public class RMITransportManager extends TransportManager {
         try {
             Context context = getRemoteHostContext(hostURL);
 
-            //Use JNDI lookup(), rather than the RMI version, 
-            //AND replace the Java remote interface cast with a call to javax.rmi.PortableRemoteObject.narrow(): 
+            //Use JNDI lookup(), rather than the RMI version,
+            //AND replace the Java remote interface cast with a call to javax.rmi.PortableRemoteObject.narrow():
             if (this.isRMIOverIIOP()) {
                 return new RMIRemoteConnection((RMIRemoteCommandConnection)PortableRemoteObject.narrow(context.lookup(remoteObjectIdentifier), RMIRemoteCommandConnection.class));
             } else {
@@ -258,7 +258,7 @@ public class RMITransportManager extends TransportManager {
                     try {
                         UnicastRemoteObject.unexportObject(commandConnection, true);
                     } catch (NoSuchObjectException nso) {
-                        // if the object isn't exported, ignore this exception since cleanup is being performed 
+                        // if the object isn't exported, ignore this exception since cleanup is being performed
                     }
                 }
                 this.localConnection = null;

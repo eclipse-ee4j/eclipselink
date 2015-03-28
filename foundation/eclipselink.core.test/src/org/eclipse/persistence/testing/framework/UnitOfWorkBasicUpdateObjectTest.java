@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import org.eclipse.persistence.sessions.*;
@@ -21,7 +21,7 @@ import org.eclipse.persistence.sessions.*;
  * Should originalObject contain no changes to the original object from the
  * database (a TRIVIAL UPDATE), find and mutate a direct to field mapping before
  * writing the object to the database.  If originalObject is different from but
- * has the same primary key as an object on the database, do not mutate the 
+ * has the same primary key as an object on the database, do not mutate the
  * object as it has already been changed (a NON-TRIVIAL UPDATE).
  * <p>
  * <b>Responsibilities</b>:
@@ -55,11 +55,11 @@ public class UnitOfWorkBasicUpdateObjectTest extends WriteObjectTest {
      */
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        Object cloneObjectToBeWritten = 
+        Object cloneObjectToBeWritten =
             uow.registerObject(this.objectToBeWritten);
         if (testShouldMutate())
         {
-            cloneObjectToBeWritten = 
+            cloneObjectToBeWritten =
                 this.findAndMutateDirectToFieldMappingInObject(
                     cloneObjectToBeWritten, true);
         }

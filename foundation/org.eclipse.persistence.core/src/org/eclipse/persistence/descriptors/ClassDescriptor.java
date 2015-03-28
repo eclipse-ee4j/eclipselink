@@ -1,38 +1,38 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     stardif - updates for Cascaded locking and inheritance
- *     02/20/2009-1.1 Guy Pelletier 
+ *     02/20/2009-1.1 Guy Pelletier
  *       - 259829: TABLE_PER_CLASS with abstract classes does not work
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     04/01/2011-2.3 Guy Pelletier 
+ *     04/01/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 2)
- *     04/05/2011-2.3 Guy Pelletier 
+ *     04/05/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 3)
- *     04/21/2011-2.3 Guy Pelletier 
+ *     04/21/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 5)
- *     09/09/2011-2.3.1 Guy Pelletier 
+ *     09/09/2011-2.3.1 Guy Pelletier
  *       - 356197: Add new VPD type to MultitenantType
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- *     14/05/2012-2.4 Guy Pelletier  
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- *     30/05/2012-2.4 Guy Pelletier    
+ *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
- *     06/25/2014-2.5.2 Rick Curtis 
+ *     06/25/2014-2.5.2 Rick Curtis
  *       - 438177: Support M2M map with jointable
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.security.AccessController;
@@ -113,7 +113,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected transient List<DatabaseField> selectionFields;
     protected transient List<DatabaseField> allSelectionFields;
     protected Vector<DatabaseMapping> mappings;
-    
+
     //Used to track which other classes reference this class in cases where
     // the referencing classes need to be notified of something.
     protected Set<ClassDescriptor> referencingClasses;
@@ -163,7 +163,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected Map properties;
     /** Allow the user to defined un-converted properties which will be initialized at runtime. */
     protected Map<String, List<String>> unconvertedProperties;
-    
+
     protected transient int initializationStage;
     protected transient int interfaceInitializationStage;
     /** The following are the [initializationStage] states the descriptor passes through during the initialization. */
@@ -172,14 +172,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected static final int INITIALIZED = 2; // this state represents a fully initialized descriptor
     protected static final int POST_INITIALIZED = 3; // however this value is used by the public function isFullyInitialized()
     protected static final int ERROR = -1;
-    
+
     protected int descriptorType;
     /** Define valid descriptor types. */
     protected static final int NORMAL = 0;
     protected static final int INTERFACE = 1;
     protected static final int AGGREGATE = 2;
     protected static final int AGGREGATE_COLLECTION = 3;
-    
+
     protected boolean shouldOrderMappings;
     protected CacheInvalidationPolicy cacheInvalidationPolicy = null;
 
@@ -190,7 +190,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     /** PERF: Compute and store if the primary key is simple (direct-mapped) to allow fast extraction. */
     protected boolean hasSimplePrimaryKey = false;
-    
+
     /**
      * Defines if any mapping reference a field in a secondary table.
      * This is used to disable deferring multiple table writes.
@@ -212,19 +212,19 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     /** INTERNAL: Backdoor for using changes sets for new objects. */
     public static boolean shouldUseFullChangeSetsForNewObjects = false;
-    
+
     /** Allow connection unwrapping to be configured. */
     protected boolean isNativeConnectionRequired;
 
     /** Allow zero primary key validation to be configured. */
     protected IdValidation idValidation;
-    
+
     /** Allow zero primary key validation to be configured per field. */
     protected List<IdValidation> primaryKeyIdValidations;
-    
+
     // JPA 2.0 Derived identities - map of mappings that act as derived ids
     protected Map<String, DatabaseMapping> derivesIdMappings;
-        
+
     //Added for default Redirectors
     protected QueryRedirector defaultQueryRedirector;
     protected QueryRedirector defaultReadAllQueryRedirector;
@@ -233,7 +233,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected QueryRedirector defaultUpdateObjectQueryRedirector;
     protected QueryRedirector defaultInsertObjectQueryRedirector;
     protected QueryRedirector defaultDeleteObjectQueryRedirector;
-    
+
     //Added for default Redirectors
     protected String defaultQueryRedirectorClassName;
     protected String defaultReadAllQueryRedirectorClassName;
@@ -242,44 +242,44 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected String defaultUpdateObjectQueryRedirectorClassName;
     protected String defaultInsertObjectQueryRedirectorClassName;
     protected String defaultDeleteObjectQueryRedirectorClassName;
-    
+
     /** Store the Sequence used for the descriptor. */
-    protected Sequence sequence; 
-    
+    protected Sequence sequence;
+
     /** Mappings that require postCalculateChanges method to be called */
     protected List<DatabaseMapping> mappingsPostCalculateChanges;
     /** Mappings that require postCalculateChangesOnDeleted method to be called */
     protected List<DatabaseMapping> mappingsPostCalculateChangesOnDeleted;
-    
+
     /** used by aggregate descriptors to hold additional fields needed when they are stored in an AggregatateCollection
-     *  These fields are generally foreign key fields that are required in addition to the fields in the descriptor's 
+     *  These fields are generally foreign key fields that are required in addition to the fields in the descriptor's
      *  mappings to uniquely identify the Aggregate*/
     protected transient List<DatabaseField> additionalAggregateCollectionKeyFields;
-    
+
     /** stores a list of mappings that require preDelete as a group prior to the delete individually */
     protected List<DatabaseMapping> preDeleteMappings;
-    
+
     /** stores fields that are written by Map key mappings so they can be checked for multiple writable mappings */
     protected transient List<DatabaseField> additionalWritableMapKeyFields;
-    
+
     /** whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates */
     protected boolean hasRelationships = false;
-    
+
     /** Stores a set of FK fields that will be cached to later retrieve noncacheable mappings */
     protected Set<DatabaseField> foreignKeyValuesForCaching;
-    
+
     /** caches if this descriptor has any non cacheable mappings */
     protected boolean hasNoncacheableMappings = false;
-    
+
     /** This flag stores whether this descriptor is using Property access based on JPA semantics.  It is used to modify
      * the behavior of our weaving functionality as it pertains to adding annotations to fields
      */
     protected boolean weavingUsesPropertyAccess = false;
-    
+
     /** A list of methods that are used by virtual mappings.  This list is used to control weaving of methods
      * used for virtual access*/
     protected List<VirtualAttributeMethodInfo> virtualAttributeMethods = null;
-    
+
     /**
      * A list of AttributeAccessors in order of access from root to leaf to arrive at current AggregateDescriptor.
      * Only application for Aggregate Descriptors.
@@ -320,13 +320,13 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         this.shouldAcquireCascadedLocks = false;
         this.hasSimplePrimaryKey = false;
         this.derivesIdMappings = new HashMap(5);
-        
+
         this.referencingClasses = new HashSet<ClassDescriptor>();
 
         // Policies
         this.objectBuilder = new ObjectBuilder(this);
         this.cachePolicy = new CachePolicy();
-        
+
         this.additionalWritableMapKeyFields = new ArrayList(2);
         this.foreignKeyValuesForCaching = new HashSet<DatabaseField>();
     }
@@ -343,7 +343,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         queryKey.setName(queryKeyName);
         addQueryKey(queryKey);
     }
-    
+
     /**
      * INTERNAL:
      * Add the cascade locking policy to all children that have a relationship to this descriptor
@@ -352,7 +352,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public void addCascadeLockingPolicy(CascadeLockingPolicy policy) {
         getCascadeLockingPolicies().add(policy);
-        // 232608: propagate later version changes up to the locking policy on a parent branch by setting the policy on all children here            
+        // 232608: propagate later version changes up to the locking policy on a parent branch by setting the policy on all children here
         if (hasInheritance()) {
             // InOrder traverse the entire [deep] tree, not just the next level
             for (ClassDescriptor parent : getInheritancePolicy().getAllChildDescriptors()) {
@@ -364,7 +364,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         // do not propagate an extra locking policy to other mappings, if this descriptor already
         // has a cascaded optimistic locking policy that will be cascaded
         if (!this.cascadedLockingInitialized) {
-            // never cascade locking until descriptor is initialized 
+            // never cascade locking until descriptor is initialized
             if (isInitialized(INITIALIZED)) {
                 // Set cascade locking policies on privately owned children mappings.
                 for (DatabaseMapping mapping : getMappings()) {
@@ -374,7 +374,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
         }
     }
-    
+
     /**
      * ADVANCED:
      * EclipseLink automatically orders database access through the foreign key information provided in 1:1 and 1:m mappings.
@@ -385,7 +385,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void addConstraintDependencies(Class dependencies) {
         addConstraintDependency(dependencies);
     }
-    
+
     /**
      * ADVANCED:
      * EclipseLink automatically orders database access through the foreign key information provided in 1:1 and 1:m mappings.
@@ -396,35 +396,35 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void addConstraintDependency(Class dependencies) {
         getConstraintDependencies().add(dependencies);
     }
-    
+
     /**
      * Return a new direct/basic mapping for this type of descriptor.
      */
     public AbstractDirectMapping newDirectMapping() {
         return new DirectToFieldMapping();
     }
-    
+
     /**
      * Return a new aggregate/embedded mapping for this type of descriptor.
      */
     public AggregateMapping newAggregateMapping() {
         return new AggregateObjectMapping();
     }
-    
+
     /**
      * Return a new aggregate collection/element collection mapping for this type of descriptor.
      */
     public DatabaseMapping newAggregateCollectionMapping() {
         return new AggregateCollectionMapping();
     }
-    
+
     /**
      * Return a new direct collection/element collection mapping for this type of descriptor.
      */
     public DatabaseMapping newDirectCollectionMapping() {
         return new DirectCollectionMapping();
     }
-    
+
     /**
      * Return a new one to one mapping for this type of descriptor.
      */
@@ -433,35 +433,35 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         mapping.setIsOneToOneRelationship(true);
         return mapping;
     }
-    
+
     /**
      * Return a new many to one mapping for this type of descriptor.
      */
     public ObjectReferenceMapping newManyToOneMapping() {
         return new ManyToOneMapping();
     }
-    
+
     /**
      * Return a new one to many mapping for this type of descriptor.
      */
     public CollectionMapping newOneToManyMapping() {
         return new OneToManyMapping();
     }
-    
+
     /**
      * Return a new one to many mapping for this type of descriptor.
      */
     public CollectionMapping newUnidirectionalOneToManyMapping() {
         return new UnidirectionalOneToManyMapping();
     }
-    
+
     /**
      * Return a new one to many mapping for this type of descriptor.
      */
     public CollectionMapping newManyToManyMapping() {
         return new ManyToManyMapping();
     }
-    
+
     /**
      * PUBLIC:
      * Add a direct to field mapping to the receiver. The new mapping specifies that
@@ -511,30 +511,30 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         queryKey.setField(field);
         getQueryKeys().put(queryKeyName, queryKey);
     }
-    
+
     /**
      * PUBLIC:
-     * This protocol can be used to associate multiple tables with foreign key 
-     * information. Use this method to associate secondary tables to a 
+     * This protocol can be used to associate multiple tables with foreign key
+     * information. Use this method to associate secondary tables to a
      * primary table. Specify the source foreign key field to the target
-     * primary key field. The join criteria will be generated based on the 
+     * primary key field. The join criteria will be generated based on the
      * fields provided. Unless the customary insert order is specified by the user
      * (using setMultipleTableInsertOrder method)
-     * the (automatically generated) table insert order will ensure that 
+     * the (automatically generated) table insert order will ensure that
      * insert into target table happens before insert into the source table
      * (there may be a foreign key constraint in the database that requires
      * target table to be inserted before the source table).
      */
-    public void addForeignKeyFieldNameForMultipleTable(String sourceForeignKeyFieldName, String targetPrimaryKeyFieldName) throws DescriptorException {  
+    public void addForeignKeyFieldNameForMultipleTable(String sourceForeignKeyFieldName, String targetPrimaryKeyFieldName) throws DescriptorException {
         addForeignKeyFieldForMultipleTable(new DatabaseField(sourceForeignKeyFieldName), new DatabaseField(targetPrimaryKeyFieldName));
     }
-    
+
     /**
      * PUBLIC:
-     * This protocol can be used to associate multiple tables with foreign key 
-     * information. Use this method to associate secondary tables to a 
+     * This protocol can be used to associate multiple tables with foreign key
+     * information. Use this method to associate secondary tables to a
      * primary table. Specify the source foreign key field to the target
-     * primary key field. The join criteria will be generated based on the 
+     * primary key field. The join criteria will be generated based on the
      * fields provided.
      */
     public void addForeignKeyFieldForMultipleTable(DatabaseField sourceForeignKeyField, DatabaseField targetPrimaryKeyField) throws DescriptorException {
@@ -572,7 +572,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             throw DescriptorException.invalidMappingType(mapping);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Specify the primary key field of the descriptors table.
@@ -612,7 +612,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void addTable(DatabaseTable table) {
         getTables().add(table);
     }
-    
+
     /**
      * PUBLIC:
      * Specify the table name for the class of objects the receiver describes.
@@ -622,7 +622,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void addTableName(String tableName) {
         addTable(new DatabaseTable(tableName));
     }
-    
+
     /**
      * PUBLIC:
      * Add an unconverted property (to be initialiazed at runtime)
@@ -787,7 +787,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         getCachePolicy().assignDefaultValues(session);
     }
-    
+
     /**
      * INTERNAL:
      * Return the selection criteria used to IN batch fetching.
@@ -861,7 +861,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public DatabaseField buildField(DatabaseField field) {
         return buildField(field, null);
     }
-    
+
     public DatabaseField buildField(DatabaseField field, DatabaseTable relationTable) {
         DatabaseField builtField = getObjectBuilder().getFieldsMap().get(field);
         if (builtField == null) {
@@ -1014,7 +1014,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Create multiple table insert order.
      * If its a child descriptor then insert order starts
      * with the same insert order as in the parent.
-     * Non-inherited tables ordered to adhere to 
+     * Non-inherited tables ordered to adhere to
      * multipleTableForeignKeys:
      * the target table (the key in multipleTableForeignKeys map)
      * should stand in insert order before any of the source tables
@@ -1025,7 +1025,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (isChildDescriptor()) {
             nParentTables = getInheritancePolicy().getParentDescriptor().getTables().size();
             setMultipleTableInsertOrder(new ArrayList(getInheritancePolicy().getParentDescriptor().getMultipleTableInsertOrder()));
-            
+
             if(nParentTables == getTables().size()) {
                 // all the tables mapped by the parent - nothing to do.
                 return;
@@ -1045,9 +1045,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
             return;
         }
-        
+
         verifyMultipleTablesForeignKeysTables();
-        
+
         // tableComparison[i][j] indicates the order between i and j tables:
         // -1 i table before j table;
         // +1 i table after j table;
@@ -1055,7 +1055,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         int[][] tableComparison = createTableComparison(getTables(), nParentTables);
 
         // Now create insert order of the tables:
-        // getTables.get(i) table should be 
+        // getTables.get(i) table should be
         //  before getTable.get(j) in insert order if tableComparison[i][j]==-1;
         //  after getTable.get(j) in insert order if tableComparison[i][j]== 1;
         //  doesn't matter if tableComparison[i][j]== 0.
@@ -1067,7 +1067,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Verify multiple table insert order provided by the user.
      * If its a child descriptor then insert order starts
      * with the same insert order as in the parent.
-     * Non-inherited tables ordered to adhere to 
+     * Non-inherited tables ordered to adhere to
      * multipleTableForeignKeys:
      * the target table (the key in multipleTableForeignKeys map)
      * should stand in insert order before any of the source tables
@@ -1081,13 +1081,13 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             if(nParentTables + getMultipleTableInsertOrder().size() == getTables().size()) {
                 // the user specified insert order only for the tables directly mapped by the descriptor,
                 // the inherited tables order must be the same as in parent descriptor
-                List<DatabaseTable> childMultipleTableInsertOrder = getMultipleTableInsertOrder(); 
+                List<DatabaseTable> childMultipleTableInsertOrder = getMultipleTableInsertOrder();
                 setMultipleTableInsertOrder(new ArrayList(getInheritancePolicy().getParentDescriptor().getMultipleTableInsertOrder()));
                 getMultipleTableInsertOrder().addAll(childMultipleTableInsertOrder);
             }
-            
+
         }
-        
+
         if (getMultipleTableInsertOrder().size() != getTables().size()) {
             throw DescriptorException.multipleTableInsertOrderMismatch(this);
         }
@@ -1101,9 +1101,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             // nothing to do
             return;
         }
-        
+
         verifyMultipleTablesForeignKeysTables();
-        
+
         // tableComparison[i][j] indicates the order between i and j tables:
         // -1 i table before j table;
         // +1 i table after j table;
@@ -1118,7 +1118,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Verify that the tables specified in multipleTablesForeignKeysTables are valid.
@@ -1140,7 +1140,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * This helper method creates a matrix that contains insertion order comparison for the tables.
@@ -1155,13 +1155,13 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         int[][] tableComparison = new int[nTables - nStart][nTables - nStart];
 
         Iterator<Map.Entry<DatabaseTable, Set<DatabaseTable>>> itTargetTables = getMultipleTableForeignKeys().entrySet().iterator();
-        // loop through all pairs of target and source tables and insert either +1 or -1 into tableComparison for each pair.  
+        // loop through all pairs of target and source tables and insert either +1 or -1 into tableComparison for each pair.
         while(itTargetTables.hasNext()) {
             Map.Entry<DatabaseTable, Set<DatabaseTable>> entry = itTargetTables.next();
             DatabaseTable targetTable = entry.getKey();
             int targetIndex = tables.indexOf(targetTable) - nStart;
             if(targetIndex >= 0) {
-                Set<DatabaseTable> sourceTables = entry.getValue(); 
+                Set<DatabaseTable> sourceTables = entry.getValue();
                 Iterator<DatabaseTable> itSourceTables = sourceTables.iterator();
                 while(itSourceTables.hasNext()) {
                     DatabaseTable sourceTable = itSourceTables.next();
@@ -1182,11 +1182,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         return tableComparison;
     }
-    
+
     /**
      * INTERNAL:
-     * This helper method creates multipleTableInsertOrderFromComparison using comparison matrix 
-     * created by createTableComparison(getTables()) method call. 
+     * This helper method creates multipleTableInsertOrderFromComparison using comparison matrix
+     * created by createTableComparison(getTables()) method call.
      */
     protected void createMultipleTableInsertOrderFromComparison(int[][] tableComparison, int nStart) {
         int nTables = getTables().size();
@@ -1203,7 +1203,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             throw DescriptorException.insertOrderCyclicalDependencyBetweenThreeOrMoreTables(this);
         }
     }
-    
+
     /**
      * INTERNAL:
      * This helper method recursively puts indexes from 0 to nTables-1 into tableOrder according to tableComparison 2 dim array.
@@ -1249,7 +1249,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         return bOk;
     }
-    
+
     /**
      * INTERNAL:
      * Clones the descriptor
@@ -1263,7 +1263,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         } catch (Exception exception) {
             ;
         }
-        
+
 
         Vector mappingsVector = NonSynchronizedVector.newInstance();
 
@@ -1276,7 +1276,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             mappingsVector.addElement(mapping);
         }
         clonedDescriptor.setMappings(mappingsVector);
-        
+
         Map queryKeys = new HashMap(getQueryKeys().size() + 2);
 
         // All the query keys
@@ -1308,7 +1308,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (clonedDescriptor.hasSerializedObjectPolicy()) {
             clonedDescriptor.setSerializedObjectPolicy(getSerializedObjectPolicy().clone());
         }
-        
+
         // The returning policy
         if (clonedDescriptor.hasReturningPolicy()) {
             clonedDescriptor.setReturningPolicy((ReturningPolicy)getReturningPolicy().clone());
@@ -1347,25 +1347,25 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         //bug 5171059 clone change tracking policies as well
         clonedDescriptor.setObjectChangePolicy(this.getObjectChangePolicyInternal());
-        
+
         // Clone the tables
         Vector<DatabaseTable> tables = NonSynchronizedVector.newInstance(3);
         for (DatabaseTable table : getTables()) {
             tables.add(table.clone());
         }
         clonedDescriptor.setTables(tables);
-        
+
         // Clone the default table
         if (getDefaultTable() != null) {
             clonedDescriptor.setDefaultTable(getDefaultTable().clone());
         }
-        
+
         // Clone the CMPPolicy
         if (getCMPPolicy() != null) {
             clonedDescriptor.setCMPPolicy(getCMPPolicy().clone());
             clonedDescriptor.getCMPPolicy().setDescriptor(clonedDescriptor);
         }
-        
+
         // Clone the sequence number field.
         if (getSequenceNumberField() != null) {
             clonedDescriptor.setSequenceNumberField(getSequenceNumberField().clone());
@@ -1375,7 +1375,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (hasMultitenantPolicy()) {
             clonedDescriptor.setMultitenantPolicy(getMultitenantPolicy().clone(clonedDescriptor));
         }
-        
+
         return clonedDescriptor;
     }
 
@@ -1384,7 +1384,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Convert all the class-name-based settings in this Descriptor to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Class redirectorClass = null;
@@ -1418,7 +1418,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                     }
                 } else {
                     amendmentClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getAmendmentClassName(), true, classLoader);
-                }            
+                }
             } catch (ClassNotFoundException exc){
                 throw ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), exc);
             }
@@ -1449,11 +1449,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             } catch (IllegalAccessException ex){
                 throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), ex);
             } catch (InstantiationException e){
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), e);   
+                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), e);
             }
             setCopyPolicy(newCopyPolicy);
         }
-        
+
         if (this.serializedObjectPolicy != null && this.serializedObjectPolicy instanceof SerializedObjectPolicyWrapper) {
             String serializedObjectPolicyClassName = ((SerializedObjectPolicyWrapper)this.serializedObjectPolicy).getSerializedObjectPolicyClassName();
             Class serializedObjectPolicyClass = null;
@@ -1479,7 +1479,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             } catch (IllegalAccessException ex){
                 throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, ex);
             } catch (InstantiationException e){
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, e);   
+                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, e);
             }
             newSerializedObjectPolicy.setField(this.serializedObjectPolicy.getField());
             setSerializedObjectPolicy(newSerializedObjectPolicy);
@@ -1677,14 +1677,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if(this.cachePolicy != null) {
             this.cachePolicy.convertClassNamesToClasses(classLoader);
         }
-        
+
         if (hasUnconvertedProperties()) {
             for (String propertyName : getUnconvertedProperties().keySet()) {
                 List<String> valuePair = getUnconvertedProperties().get(propertyName);
                 String value = valuePair.get(0);
                 String valueTypeName = valuePair.get(1);
                 Class valueType = String.class;
-                
+
                 if (valueTypeName != null) {
                     // Have to initialize the valueType now
                     try {
@@ -1896,7 +1896,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     /**
      * INTERNAL:
      * additionalAggregateCollectionKeyFields are used by aggregate descriptors to hold additional fields needed when they are stored in an AggregatateCollection
-     * These fields are generally foreign key fields that are required in addition to the fields in the descriptor's 
+     * These fields are generally foreign key fields that are required in addition to the fields in the descriptor's
      *  mappings to uniquely identify the Aggregate
      * @return
      */
@@ -1906,7 +1906,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         return additionalAggregateCollectionKeyFields;
     }
-    
+
     /**
      * INTERNAL:
      * This is used to map the primary key field names in a multiple table descriptor.
@@ -1948,7 +1948,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     /**
      * INTERNAL:
-     * Return all the fields which include all child class fields. 
+     * Return all the fields which include all child class fields.
      * By default it is initialized to the fields for the current descriptor.
      */
     public Vector<DatabaseField> getAllFields() {
@@ -1957,7 +1957,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     /**
      * INTERNAL:
-     * Return all selection fields which include all child class fields. 
+     * Return all selection fields which include all child class fields.
      * By default it is initialized to selection fields for the current descriptor.
      */
     public List<DatabaseField> getAllSelectionFields() {
@@ -1966,7 +1966,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     /**
      * INTERNAL:
-     * Return all selection fields which include all child class fields. 
+     * Return all selection fields which include all child class fields.
      * By default it is initialized to selection fields for the current descriptor.
      */
     public List<DatabaseField> getAllSelectionFields(ObjectLevelReadQuery query) {
@@ -2015,7 +2015,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         return accessorTree;
     }
 
-    
+
     /**
      * PUBLIC:
      * Return this objects ObjectChangePolicy.
@@ -2028,7 +2028,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         return changePolicy;
     }
-    
+
     /**
      * INTERNAL:
      * Return this objects ObjectChangePolicy and do not lazy initialize
@@ -2044,7 +2044,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public HistoryPolicy getHistoryPolicy() {
         return historyPolicy;
     }
-    
+
     /**
      * PUBLIC:
      * Return the descriptor's partitioning policy.
@@ -2052,7 +2052,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public PartitioningPolicy getPartitioningPolicy() {
         return partitioningPolicy;
     }
-    
+
     /**
      * PUBLIC:
      * Set the descriptor's partitioning policy.
@@ -2063,7 +2063,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy) {
         this.partitioningPolicy = partitioningPolicy;
     }
-    
+
     /**
      * PUBLIC:
      * Return the name of the descriptor's partitioning policy.
@@ -2075,7 +2075,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public String getPartitioningPolicyName() {
         return partitioningPolicyName;
     }
-    
+
     /**
      * PUBLIC:
      * Set the name of the descriptor's partitioning policy.
@@ -2094,28 +2094,28 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Advanced users could use this interceptor to audit, profile or log cache access.  This Interceptor
      * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
      * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
-     * 
+     *
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
     public Class getCacheInterceptorClass() {
         return getCachePolicy().getCacheInterceptorClass();
     }
-    
+
     /**
      * A CacheInterceptor is an adaptor that when overridden and assigned to a Descriptor all interaction
      * between EclipseLink and the internal cache for that class will pass through the Interceptor.
      * Advanced users could use this interceptor to audit, profile or log cache access.  This Interceptor
      * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
      * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
-     * 
+     *
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
     public String getCacheInterceptorClassName() {
         return getCachePolicy().getCacheInterceptorClassName();
     }
-    
+
     /**
      * PUBLIC:
      * Return the CacheInvalidationPolicy for this descriptor
@@ -2178,7 +2178,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         return copyPolicy;
     }
-    
+
     /**
      * INTERNAL:
      * Returns the name of a Class that implements CopyPolicy
@@ -2488,7 +2488,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public Map<DatabaseTable, Set<DatabaseTable>> getMultipleTableForeignKeys() {
         if (multipleTableForeignKeys == null) {
-            multipleTableForeignKeys = new HashMap(5); 
+            multipleTableForeignKeys = new HashMap(5);
         }
         return multipleTableForeignKeys;
     }
@@ -2527,7 +2527,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         return associations;
     }
-    
+
     /**
      * INTERNAL:
      * Retun the multitenant policy
@@ -2668,7 +2668,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public Class getRemoteIdentityMapClass() {
         return getCachePolicy().getRemoteIdentityMapClass();
     }
-    
+
     /**
      * PUBLIC:
      * This method returns the root descriptor for for this descriptor's class heirarchy.
@@ -2740,12 +2740,12 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public DatabaseTable getTable(String tableName) throws DescriptorException {
         if (hasTablePerMultitenantPolicy()) {
             DatabaseTable table =  ((TablePerMultitenantPolicy) getMultitenantPolicy()).getTable(tableName);
-            
+
             if (table != null) {
                 return table;
             }
         }
-        
+
         if (getTables().isEmpty()) {
             return null;// Assume aggregate descriptor.
         }
@@ -2801,16 +2801,16 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     /**
      * PUBLIC:
      * Returns the TablePerClassPolicy.
-     * The table per class policy allows JPA users to configure the 
-     * TABLE_PER_CLASS inheritance strategy. Calling this on a descriptor that 
-     * does not use table per class will cause problems, 
+     * The table per class policy allows JPA users to configure the
+     * TABLE_PER_CLASS inheritance strategy. Calling this on a descriptor that
+     * does not use table per class will cause problems,
      * #hasTablePerClassPolicy() must always first be called.
      * @see #setTablePerClassPolicy
      */
     public TablePerClassPolicy getTablePerClassPolicy() {
         return (TablePerClassPolicy) interfacePolicy;
     }
-    
+
     /**
      * INTERNAL:
      * Return all the tables.
@@ -2879,8 +2879,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     /**
      * INTERNAL:
-     * returns true if users have designated one or more mappings as IDs. Used 
-     * for CMP3Policy primary key class processing. 
+     * returns true if users have designated one or more mappings as IDs. Used
+     * for CMP3Policy primary key class processing.
      */
     public boolean hasDerivedId() {
         return ! derivesIdMappings.isEmpty();
@@ -2889,7 +2889,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     /**
      * INTERNAL:
      * returns true if a DescriptorEventManager has been set.
-     */ 
+     */
     @Override
     public boolean hasEventManager() {
         return null != eventManager;
@@ -2899,7 +2899,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * INTERNAL:
      * Return if this descriptor is involved in inheritance, (is child or parent).
      * Note: If this class is part of table per class inheritance strategy this
-     * method will return false. 
+     * method will return false.
      * @see #hasTablePerClassPolicy()
      */
     @Override
@@ -2914,7 +2914,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean hasInterfacePolicy() {
         return (interfacePolicy != null);
     }
-    
+
     /**
      * INTERNAL:
      * Check if descriptor has multiple tables
@@ -2945,8 +2945,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
         }
         return false;
-    }        
-    
+    }
+
     /**
      * @return the hasNoncacheableMappings
      */
@@ -2986,7 +2986,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     /**
      * INTERNAL:
-     *  return whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates 
+     *  return whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates
      * @return
      */
     public boolean hasRelationships() {
@@ -2995,7 +2995,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     /**
      * INTERNAL:
-     * This method returns true if this descriptor has either a ForeignReferenceMapping to 
+     * This method returns true if this descriptor has either a ForeignReferenceMapping to
      * an object aside from the one described by descriptor or more than one ForeignReferenceMapping
      * to descriptor.  (i.e. It determines if there is any mapping aside from a backpointer to a mapping
      * defined in descriptor)
@@ -3022,7 +3022,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Return if this descriptor has Returning policy.
@@ -3037,14 +3037,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean hasSerializedObjectPolicy() {
         return this.serializedObjectPolicy != null;
     }
-    
+
     /**
      * INTERNAL:
      */
     public SerializedObjectPolicy getSerializedObjectPolicy() {
         return this.serializedObjectPolicy;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -3054,7 +3054,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             serializedObjectPolicy.setDescriptor(this);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return if a wrapper policy is used.
@@ -3075,10 +3075,10 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         setInitializationStage(INITIALIZED);
-        
+
         // make sure that parent mappings are initialized?
         if (isChildDescriptor()) {
-            ClassDescriptor parentDescriptor = getInheritancePolicy().getParentDescriptor(); 
+            ClassDescriptor parentDescriptor = getInheritancePolicy().getParentDescriptor();
             parentDescriptor.initialize(session);
             getCachePolicy().initializeFromParent(parentDescriptor.getCachePolicy(), this,
                     parentDescriptor, session);
@@ -3136,8 +3136,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                     referencedDescriptor.referencingClasses.add(this);
                 }
             }
-            // If this descriptor uses a cascaded version optimistic locking 
-            // or has cascade locking policies set then prepare check the 
+            // If this descriptor uses a cascaded version optimistic locking
+            // or has cascade locking policies set then prepare check the
             // mappings.
             if (initializeCascadeLocking) {
                 prepareCascadeLockingPolicy(mapping);
@@ -3147,14 +3147,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             if (mapping.derivesId()) {
                 this.derivesIdMappings.put(mapping.getAttributeName(), mapping);
             }
-            
+
             // Add all the fields in the mapping to myself.
             Helper.addAllUniqueToVector(getFields(), mapping.getFields());
         }
         if (initializeCascadeLocking) {
             this.cascadedLockingInitialized = true;
         }
-        
+
         if (hasMappingsPostCalculateChangesOnDeleted()) {
             session.getProject().setHasMappingsPostCalculateChangesOnDeleted(true);
         }
@@ -3186,7 +3186,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
             setPartitioningPolicy(policy);
         }
-        
+
         // If this descriptor has inheritance then it needs to be initialized before all fields is set.
         if (hasInheritance()) {
             getInheritancePolicy().initialize(session);
@@ -3231,18 +3231,18 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
             setMappings(mappings);
         }
-        
+
         // Initialize the allFields to its fields, this can be done now because the fields have been computed.
         setAllFields((Vector)getFields().clone());
 
         getObjectBuilder().initialize(session);
-        
+
         // Initialize the multitenant policy only after the mappings have been
         // initialized.
         if (hasMultitenantPolicy()) {
             getMultitenantPolicy().initialize(session);
         }
-        
+
         if (shouldOrderMappings()) {
             // PERF: Ensure direct primary key mappings are first.
             for (int index = getObjectBuilder().getPrimaryKeyMappings().size() - 1; index >= 0; index--) {
@@ -3299,7 +3299,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (hasFetchGroupManager()) {
             getFetchGroupManager().initialize(session);
         }
-                
+
         // By default if change policy is not configured set to attribute change tracking if weaved.
         if ((getObjectChangePolicyInternal() == null) && (ChangeTracker.class.isAssignableFrom(getJavaClass()))) {
             // Only auto init if this class "itself" was weaved for change tracking, i.e. not just a superclass.
@@ -3314,7 +3314,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         // 3934266 move validation to the policy allowing for this to be done in the sub policies.
         getObjectChangePolicy().initialize(session, this);
-        
+
         // Setup default redirectors.  Any redirector that is not set will get assigned the
         // default redirector.
         if (this.defaultReadAllQueryRedirector == null){
@@ -3334,7 +3334,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             this.defaultUpdateObjectQueryRedirector = this.defaultQueryRedirector;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Initialize the query manager specific to the descriptor type.
@@ -3367,7 +3367,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (queryManager.hasUpdateQuery()) {
             // Do not prepare to update by default to allow minimal update.
             queryManager.getUpdateQuery().setModifyRow(getObjectBuilder().buildTemplateUpdateRow(session));
-        }        
+        }
     }
 
     /**
@@ -3545,7 +3545,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean isAbstract() {
         return java.lang.reflect.Modifier.isAbstract(getJavaClass().getModifiers());
     }
-    
+
     /**
      * PUBLIC:
      * Return true if this descriptor is an aggregate collection descriptor
@@ -3626,7 +3626,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean isDescriptorTypeNormal(){
         return this.descriptorType == NORMAL;
     }
-    
+
     /**
      * INTERNAL:
      * Check if the descriptor is finished initialization.
@@ -3731,7 +3731,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean shouldUseFullChangeSetsForNewObjects() {
         return getCachePolicy().getCacheSynchronizationType() == CachePolicy.SEND_NEW_OBJECTS_WITH_CHANGES || shouldUseFullChangeSetsForNewObjects;
     }
-    
+
     /**
      * PUBLIC:
      * This method is the equivalent of calling {@link #setShouldOnlyRefreshCacheIfNewerVersion} with an argument of <CODE>true</CODE>:
@@ -3767,7 +3767,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (getHistoryPolicy() != null) {
             session.getProject().setHasGenericHistorySupport(true);
         }
-        
+
         // Avoid repetitive initialization (this does not solve loops)
         if (isInitialized(POST_INITIALIZED) || isInvalid()) {
             return;
@@ -3812,7 +3812,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             if (mapping.isLockableMapping()){
                 getLockableMappings().add(mapping);
             }
-            
+
 
         }
 
@@ -3874,14 +3874,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                     field.setIndex(sopFieldIndex);
                 }
             }
-        }        
-        
-        // EL Bug 426500 - When a mapping has built its selection criteria early with partially 
+        }
+
+        // EL Bug 426500 - When a mapping has built its selection criteria early with partially
         // initialized fields, post-initialize any source and target Expression fields.
         for (DatabaseMapping mapping : getMappings()) {
             mapping.postInitializeSourceAndTargetExpressions();
         }
-        
+
         // Set cache key type.
         if (getCachePolicy().getCacheKeyType() == null || (getCachePolicy().getCacheKeyType() == CacheKeyType.AUTO)) {
             if ((getPrimaryKeyFields().size() > 1) || getObjectBuilder().isXMLObjectBuilder()) {
@@ -3894,7 +3894,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                     getCachePolicy().setCacheKeyType(CacheKeyType.ID_VALUE);
                 }
             } else {
-                getCachePolicy().setCacheKeyType(CacheKeyType.CACHE_ID);                
+                getCachePolicy().setCacheKeyType(CacheKeyType.CACHE_ID);
             }
         } else if ((getCachePolicy().getCacheKeyType() == CacheKeyType.ID_VALUE) && (getPrimaryKeyFields().size() > 1)) {
             session.getIntegrityChecker().handleError(DescriptorException.cannotUseIdValueForCompositeId(this));
@@ -3904,14 +3904,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         getObjectBuilder().postInitialize(session);
         getQueryManager().postInitialize(session);
-        
+
         // Post initialize the multitenant policy after the query manager.
         if (hasMultitenantPolicy()) {
             getMultitenantPolicy().postInitialize(session);
         }
-        
+
         getCachePolicy().postInitialize(this, session);
-        
+
         validateAfterInitialization(session);
 
         checkDatabase(session);
@@ -3945,7 +3945,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             return;
         }
         setInitializationStage(PREINITIALIZED);
-                
+
         assignDefaultValues(session);
 
         if (this.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables && !session.getPlatform().supportsDeleteOnCascade()) {
@@ -3989,7 +3989,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 }
             }
         }
-        
+
         // 4924665 Check for spaces in table names, and add the appropriate quote character
         Iterator tables = this.getTables().iterator();
         while(tables.hasNext()) {
@@ -3999,7 +3999,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 next.setUseDelimiters(true);
             }
         }
-        
+
         // Allow mapping pre init, must be done before validate.
         for (DatabaseMapping mapping : getMappings()) {
             try {
@@ -4012,7 +4012,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         validateBeforeInitialization(session);
 
         preInitializeInheritancePolicy(session);
-        
+
         // Make sure that parent is already preinitialized
         if (hasInheritance()) {
             // The default table will be set in this call once the duplicate
@@ -4022,15 +4022,15 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             // This must be done now, after validate, before init anything else.
             setInternalDefaultTable();
         }
-        
-        // Once the table and mapping information has been settled, we'll need 
-        // to set tenant id fields on the descriptor for each table. These are 
-        // at least used for DDL generation. Doesn't seem to interfere or 
+
+        // Once the table and mapping information has been settled, we'll need
+        // to set tenant id fields on the descriptor for each table. These are
+        // at least used for DDL generation. Doesn't seem to interfere or
         // duplicate anything else we have done to support tenant id fields.
         if (hasMultitenantPolicy()) {
             getMultitenantPolicy().preInitialize(session);
         }
-        
+
         verifyTableQualifiers(session.getDatasourcePlatform());
         initializeProperties(session);
         if (!isAggregateDescriptor()) {
@@ -4053,7 +4053,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected void prepareCascadeLockingPolicy(DatabaseMapping mapping) {
         if (mapping.isPrivateOwned() && mapping.isForeignReferenceMapping()) {
             if (mapping.isCascadedLockingSupported()) {
-                // Even if the mapping says it is supported in general, there 
+                // Even if the mapping says it is supported in general, there
                 // may be conditions where it is not. Need the following checks.
                 if (((ForeignReferenceMapping)mapping).hasCustomSelectionQuery()) {
                     throw ValidationException.unsupportedCascadeLockingMappingWithCustomQuery(mapping);
@@ -4096,7 +4096,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         setInterfaceInitializationStage(PREINITIALIZED);
 
         assignDefaultValues(session);
-        
+
         if (isInterfaceChildDescriptor()) {
             for (Iterator<Class> interfaces = getInterfacePolicy().getParentInterfaces().iterator();
                      interfaces.hasNext();) {
@@ -4143,7 +4143,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         getObjectBuilder().initializeJoinedAttributes();
         if (hasInheritance()) {
             for (ClassDescriptor child : getInheritancePolicy().getChildDescriptors()) {
-                child.reInitializeJoinedAttributes(); 
+                child.reInitializeJoinedAttributes();
             }
         }
     }
@@ -4165,7 +4165,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (!getCachePolicy().shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
             session.getProject().setHasNonIsolatedUOWClasses(true);
         }
-        
+
         for (DatabaseMapping mapping : getMappings()) {
             mapping.remoteInitialization(session);
         }
@@ -4202,19 +4202,19 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (isDescriptorTypeAggregate() || isDescriptorForInterface()) {
             return false;
         }
-        
-        // If we have a table per tenant policy then check for our tenant 
+
+        // If we have a table per tenant policy then check for our tenant
         // context property. If it is available from the session, set it and
         // return true to initialize. Otherwise do not initialize the
         // descriptor (it will be initialized per client session).
         if (hasTablePerMultitenantPolicy()) {
             return ((TablePerMultitenantPolicy) getMultitenantPolicy()).shouldInitialize(session);
         }
-        
+
         // By default it should be initialized.
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Validate that the descriptor was defined correctly.
@@ -4224,7 +4224,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         // This has to be done after, because read subclasses must be initialized.
         if ( (hasInheritance() && (getInheritancePolicy().shouldReadSubclasses() || isAbstract())) || hasTablePerClassPolicy() && isAbstract() ) {
             // Avoid building a new instance if the inheritance class is abstract.
-            // There is an empty statement here, and this was done if anything for the 
+            // There is an empty statement here, and this was done if anything for the
             // readability sake of the statement logic.
         } else if (session.getIntegrityChecker().shouldCheckInstantiationPolicy()) {
             getInstantiationPolicy().buildNewInstance();
@@ -4288,7 +4288,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * INTERNAL:
      * Eclipselink needs additionalTablePKFields entries to be associated with tables other than the main (getTables.get(0)) one.
      * Also in case of two non-main tables additionalTablePKFields entry should be associated with the one
-     * father down insert order. 
+     * father down insert order.
      */
     protected void toggleAdditionalTablePrimaryKeyFields() {
         if(additionalTablePrimaryKeyFields == null) {
@@ -4311,18 +4311,18 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
         }
 
-        // cache the original map in a new variable 
+        // cache the original map in a new variable
         Map<DatabaseTable, Map<DatabaseField, DatabaseField>> additionalTablePrimaryKeyFieldsOld = additionalTablePrimaryKeyFields;
         // nullify the original map variable - it will be re-created from scratch
         additionalTablePrimaryKeyFields = null;
         Iterator<Map.Entry<DatabaseTable, Map<DatabaseField, DatabaseField>>> itTable = additionalTablePrimaryKeyFieldsOld.entrySet().iterator();
-        // loop through the cached original map and add all its entries (either toggled or unchanged) to the re-created map 
+        // loop through the cached original map and add all its entries (either toggled or unchanged) to the re-created map
         while(itTable.hasNext()) {
             Map.Entry<DatabaseTable, Map<DatabaseField, DatabaseField>> entryTable = itTable.next();
             DatabaseTable sourceTable = entryTable.getKey();
             boolean isSourceProcessed = getTables().indexOf(sourceTable) < nProcessedTables;
             int sourceInsertOrderIndex = getMultipleTableInsertOrder().indexOf(sourceTable);
-            Map<DatabaseField, DatabaseField> targetTableAdditionalPKFields = entryTable.getValue(); 
+            Map<DatabaseField, DatabaseField> targetTableAdditionalPKFields = entryTable.getValue();
             Iterator<Map.Entry<DatabaseField, DatabaseField>> itField = targetTableAdditionalPKFields.entrySet().iterator();
             while(itField.hasNext()) {
                 Map.Entry<DatabaseField, DatabaseField> entryField = itField.next();
@@ -4468,7 +4468,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void setCacheInterceptorClassName(String cacheInterceptorClassName) {
         getCachePolicy().setCacheInterceptorClassName(cacheInterceptorClassName);
     }
-    
+
     /**
      * PUBLIC:
      * Set the Cache Invalidation Policy for this descriptor.
@@ -4501,7 +4501,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             policy.setDescriptor(this);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Sets the name of a Class that implements CopyPolicy
@@ -4511,7 +4511,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void setCopyPolicyClassName(String className) {
         copyPolicyClassName = className;
     }
-    
+
     /**
      * INTERNAL:
      * The descriptors default table can be configured if the first table is not desired.
@@ -4561,7 +4561,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
     }
 
-  
+
     /**
      * INTERNAL:
      * Set the event manager for the descriptor.  The event manager is responsible
@@ -4591,14 +4591,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void setFields(Vector<DatabaseField> fields) {
         this.fields = fields;
     }
-    
+
     /**
      * INTERNAL:
      * This method is used by the  XML Deployment ClassDescriptor to read and write these mappings
      */
     public void setForeignKeyFieldNamesForMultipleTable(Vector associations) throws DescriptorException {
         Enumeration foreignKeys = associations.elements();
-        
+
         while (foreignKeys.hasMoreElements()) {
             Association association = (Association) foreignKeys.nextElement();
             addForeignKeyFieldNameForMultipleTable((String) association.getKey(), (String) association.getValue());
@@ -4689,7 +4689,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             interfacePolicy.setDescriptor(this);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Set the default table if one if not already set. This method will
@@ -4700,7 +4700,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             setDefaultTable(extractDefaultTable());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Set the default table if one if not already set. This method will set
@@ -4719,7 +4719,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * This is the best method for disabling caching.
      * Note: Calling this method with true will also set the cacheSynchronizationType to DO_NOT_SEND_CHANGES
      * since isolated objects cannot be sent by  cache synchronization.
-     * 
+     *
      * @deprecated as of EclipseLink 2.2
      * @see #setCacheIsolation(CacheIsolationType)
      */
@@ -4755,7 +4755,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * PUBLIC:
      * Controls how the Entity instances and data will be cached.  See the CacheIsolationType for details on the options.
      * To disable all second level caching simply set CacheIsolationType.ISOLATED.  Note that setting the isolation
-     * will automatically set the corresponding cacheSynchronizationType.   
+     * will automatically set the corresponding cacheSynchronizationType.
      * ISOLATED = DO_NOT_SEND_CHANGES, PROTECTED and SHARED = SEND_OBJECT_CHANGES
      */
     public void setCacheIsolation(CacheIsolationType isolationType) {
@@ -4770,7 +4770,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean shouldIsolateObjectsInUnitOfWork() {
         return getCachePolicy().shouldIsolateObjectsInUnitOfWork();
     }
-          
+
     /**
      * INTERNAL:
      * Return if the unit of work should by-pass the IsolatedSession cache.
@@ -4780,7 +4780,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean shouldIsolateProtectedObjectsInUnitOfWork() {
         return getCachePolicy().shouldIsolateProtectedObjectsInUnitOfWork();
     }
-          
+
     /**
      * INTERNAL:
      * Return if the unit of work should by-pass the session cache after an early transaction.
@@ -4788,7 +4788,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean shouldIsolateObjectsInUnitOfWorkEarlyTransaction() {
         return getCachePolicy().shouldIsolateObjectsInUnitOfWorkEarlyTransaction();
     }
-              
+
     /**
      * INTERNAL:
      * Return if the unit of work should use the session cache after an early transaction.
@@ -4796,7 +4796,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean shouldUseSessionCacheInUnitOfWorkEarlyTransaction() {
         return getCachePolicy().shouldUseSessionCacheInUnitOfWorkEarlyTransaction();
     }
-    
+
     /**
      * INTERNAL:
      * Used to store un-converted properties, which are subsequenctly converted
@@ -4806,10 +4806,10 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (unconvertedProperties == null) {
             unconvertedProperties = new HashMap<String, List<String>>(5);
         }
-        
+
         return unconvertedProperties;
     }
-    
+
     /**
      * ADVANCED:
      * Return the unit of work cache isolation setting.
@@ -4819,14 +4819,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public int getUnitOfWorkCacheIsolationLevel() {
         return getCachePolicy().getUnitOfWorkCacheIsolationLevel();
     }
-    
+
     /**
      * ADVANCED:
      * This setting configures how the session cache will be used in a unit of work.
      * Most of the options only apply to a unit of work in an early transaction,
      * such as a unit of work that was flushed (writeChanges), issued a modify query, or acquired a pessimistic lock.
      * <p> USE_SESSION_CACHE_AFTER_TRANSACTION - Objects built from new data accessed after a unit of work early transaction are stored in the session cache.
-     * This options is the most efficient as it allows the cache to be used after an early transaction. 
+     * This options is the most efficient as it allows the cache to be used after an early transaction.
      * This should only be used if it is known that this class is not modified in the transaction,
      * otherwise this could cause uncommitted data to be loaded into the session cache.
      * ISOLATE_NEW_DATA_AFTER_TRANSACTION - Default (when using caching): Objects built from new data accessed after a unit of work early transaction are only stored in the unit of work.
@@ -4847,7 +4847,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     /**
      * INTERNAL:
-     * set whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates 
+     * set whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates
      * @param hasRelationships
      */
     public void setHasRelationships(boolean hasRelationships) {
@@ -4951,7 +4951,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void setMultitenantPolicy(MultitenantPolicy multitenantPolicy) {
         this.multitenantPolicy = multitenantPolicy;
     }
-    
+
     /**
      * ADVANCED:
      * Return if delete cascading has been set on the database for the descriptor's
@@ -4970,7 +4970,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void setIsCascadeOnDeleteSetOnDatabaseOnSecondaryTables(boolean isCascadeOnDeleteSetOnDatabaseOnSecondaryTables) {
         this.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables = isCascadeOnDeleteSetOnDatabaseOnSecondaryTables;
     }
-    
+
     /**
      * INTERNAL:
      * Set the ObjectBuilder.
@@ -5330,7 +5330,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             interfacePolicy.setDescriptor(this);
         }
     }
-    
+
     /**
      * PUBLIC: Set the table Qualifier for this descriptor.  This table creator will be used for
      * all tables in this descriptor
@@ -5464,7 +5464,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean hasTablePerClassPolicy() {
         return hasInterfacePolicy() && interfacePolicy.isTablePerClassPolicy();
     }
-    
+
     /**
      * INTERNAL:
      * PERF: Set if the primary key is simple (direct-mapped) to allow fast extraction.
@@ -5498,12 +5498,12 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor should using an additional join expresison.
      */
     public boolean shouldUseAdditionalJoinExpression() {
-        // Return true, if the query manager has an additional join expression 
-        // and this descriptor is not part of an inheritance hierarchy using a 
+        // Return true, if the query manager has an additional join expression
+        // and this descriptor is not part of an inheritance hierarchy using a
         // view (CR#3701077)
         return ((getQueryManager().getAdditionalJoinExpression() != null) && ! (hasInheritance() && getInheritancePolicy().hasView()));
     }
-    
+
     /**
      * PUBLIC:
      * Return true if this descriptor is using CacheIdentityMap
@@ -5519,7 +5519,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean shouldUseFullIdentityMap() {
         return (getIdentityMapClass() == ClassConstants.FullIdentityMap_Class);
     }
-    
+
     /**
      * PUBLIC:
      * Return true if this descriptor is using SoftIdentityMap
@@ -5527,7 +5527,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean shouldUseSoftIdentityMap() {
         return (getIdentityMapClass() == ClassConstants.SoftIdentityMap_Class);
     }
-    
+
     /**
      * PUBLIC:
      * Return true if this descriptor is using SoftIdentityMap
@@ -5647,16 +5647,16 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (lockingPolicy != null && (lockingPolicy instanceof FieldsLockingPolicy)) {
             return false;
         }
-        Vector mappings = getMappings();        
+        Vector mappings = getMappings();
         for (Iterator iterator = mappings.iterator(); iterator.hasNext();) {
-            DatabaseMapping mapping = (DatabaseMapping)iterator.next();               
+            DatabaseMapping mapping = (DatabaseMapping)iterator.next();
             if (!mapping.isChangeTrackingSupported(project) ) {
                 return false;
             }
         }
-        return true; 
+        return true;
     }
-    
+
     /**
      * PUBLIC:
      * Returns a brief string representation of the receiver.
@@ -5854,7 +5854,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void useHardCacheWeakIdentityMap() {
         getCachePolicy().useHardCacheWeakIdentityMap();
     }
-    
+
     /**
      * PUBLIC:
      * Set the class of identity map to be the soft identity map.
@@ -5865,7 +5865,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void useSoftIdentityMap() {
         getCachePolicy().useSoftIdentityMap();
     }
-    
+
     /**
      * PUBLIC:
      * Set the class of identity map to be the soft identity map.
@@ -6006,7 +6006,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean usesOptimisticLocking() {
         return (optimisticLockingPolicy != null);
     }
-    
+
     /**
      * PUBLIC:
      * Return true if the receiver uses version optimistic locking.
@@ -6132,7 +6132,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     /**
      * ADVANCED:
-     * Return the cmp descriptor that holds cmp specific information.  
+     * Return the cmp descriptor that holds cmp specific information.
      * A null return will mean that the descriptor does not represent an Entity,
      * however it may still represent a MappedSuperclass.
      * It will be null if it is not being used.
@@ -6301,7 +6301,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     /**
      * ADVANCED:
      * Return what types are allowed in each primary key field (id).
-     */    
+     */
     public List<IdValidation> getPrimaryKeyIdValidations() {
         return primaryKeyIdValidations;
     }
@@ -6336,7 +6336,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * ReadObjectQuery Redirector) or a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultQueryRedirector() {
@@ -6349,7 +6349,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * ReadObjectQuery Redirector) or a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultQueryRedirector(QueryRedirector defaultRedirector) {
@@ -6361,7 +6361,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * ReadAllQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultReadAllQueryRedirector() {
@@ -6373,7 +6373,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * ReadAllQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultReadAllQueryRedirector(
@@ -6386,7 +6386,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * ReadObjectQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultReadObjectQueryRedirector() {
@@ -6398,7 +6398,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * ReadObjectQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultReadObjectQueryRedirector(
@@ -6411,7 +6411,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * ReportQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultReportQueryRedirector() {
@@ -6423,7 +6423,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * ReportQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultReportQueryRedirector(
@@ -6436,7 +6436,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * UpdateObjectQuery or UpdateAllQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultUpdateObjectQueryRedirector() {
@@ -6448,7 +6448,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * UpdateObjectQuery or UpdateAllQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultUpdateObjectQueryRedirector(QueryRedirector defaultUpdateQueryRedirector) {
@@ -6460,7 +6460,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * InsertObjectQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultInsertObjectQueryRedirector() {
@@ -6472,7 +6472,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * InsertObjectQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultInsertObjectQueryRedirector(QueryRedirector defaultInsertQueryRedirector) {
@@ -6484,7 +6484,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * DeleteObjectQuery or DeleteAllQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultDeleteObjectQueryRedirector() {
@@ -6496,7 +6496,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * DeleteObjectQuery or DeleteAllQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultDeleteObjectQueryRedirector(QueryRedirector defaultDeleteObjectQueryRedirector) {
@@ -6509,7 +6509,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * ReadObjectQuery Redirector) or a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultQueryRedirectorClassName(String defaultQueryRedirectorClassName) {
@@ -6521,7 +6521,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * ReadAllQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query exection preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultReadAllQueryRedirectorClassName(String defaultReadAllQueryRedirectorClassName) {
@@ -6533,7 +6533,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * ReadObjectQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultReadObjectQueryRedirectorClassName(
@@ -6546,7 +6546,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * ReportQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
    public void setDefaultReportQueryRedirectorClassName(
@@ -6559,7 +6559,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     * UpdateObjectQuery or UpdateAllQuery that does not have a redirector set directly on the query.
     * Query redirectors allow the user to intercept query execution preventing
     * it or alternately performing some side effect like auditing.
-    * 
+    *
     * @see org.eclipse.persistence.queries.QueryRedirector
     */
     public void setDefaultUpdateObjectQueryRedirectorClassName(
@@ -6572,7 +6572,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * InsertObjectQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query exection preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultInsertObjectQueryRedirectorClassName(
@@ -6585,14 +6585,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * DeleteObjectQuery or DeleteAllQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query exection preventing
      * it or alternately performing some side effect like auditing.
-     * 
+     *
      * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultDeleteObjectQueryRedirectorClassName(
             String defaultDeleteObjectQueryRedirectorClassName) {
         this.defaultDeleteObjectQueryRedirectorClassName = defaultDeleteObjectQueryRedirectorClassName;
     }
-    
+
     /**
      * Return the descriptor's sequence.
      * This is normally set when the descriptor is initialized.
@@ -6600,7 +6600,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public Sequence getSequence() {
         return sequence;
     }
-    
+
     /**
      * Set the descriptor's sequence.
      * This is normally set when the descriptor is initialized.
@@ -6609,8 +6609,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         this.sequence = sequence;
     }
 
-    /** 
-     * Mappings that require postCalculateChanges method to be called 
+    /**
+     * Mappings that require postCalculateChanges method to be called
      */
     public List<DatabaseMapping> getMappingsPostCalculateChanges() {
         if(mappingsPostCalculateChanges == null) {
@@ -6619,22 +6619,22 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         return mappingsPostCalculateChanges;
     }
 
-    /** 
-     * Are there any mappings that require postCalculateChanges method to be called. 
+    /**
+     * Are there any mappings that require postCalculateChanges method to be called.
      */
     public boolean hasMappingsPostCalculateChanges() {
         return mappingsPostCalculateChanges != null;
     }
 
-    /** 
-     * Add a mapping to the list of mappings that require postCalculateChanges method to be called. 
+    /**
+     * Add a mapping to the list of mappings that require postCalculateChanges method to be called.
      */
     public void addMappingsPostCalculateChanges(DatabaseMapping mapping) {
         getMappingsPostCalculateChanges().add(mapping);
     }
 
-    /** 
-     * Mappings that require mappingsPostCalculateChangesOnDeleted method to be called 
+    /**
+     * Mappings that require mappingsPostCalculateChangesOnDeleted method to be called
      */
     public List<DatabaseMapping> getMappingsPostCalculateChangesOnDeleted() {
         if (mappingsPostCalculateChangesOnDeleted == null) {
@@ -6643,15 +6643,15 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         return mappingsPostCalculateChangesOnDeleted;
     }
 
-    /** 
-     * Are there any mappings that require mappingsPostCalculateChangesOnDeleted method to be called. 
+    /**
+     * Are there any mappings that require mappingsPostCalculateChangesOnDeleted method to be called.
      */
     public boolean hasMappingsPostCalculateChangesOnDeleted() {
         return mappingsPostCalculateChangesOnDeleted != null;
     }
 
-    /** 
-     * Add a mapping to the list of mappings that require mappingsPostCalculateChangesOnDeleted method to be called. 
+    /**
+     * Add a mapping to the list of mappings that require mappingsPostCalculateChangesOnDeleted method to be called.
      */
     public void addMappingsPostCalculateChangesOnDeleted(DatabaseMapping mapping) {
         getMappingsPostCalculateChangesOnDeleted().add(mapping);
@@ -6664,7 +6664,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean hasMultipleTableConstraintDependecy() {
         return hasMultipleTableConstraintDependecy;
     }
-    
+
     /**
      * Return true if the descriptor has a multitenant policy
      */
@@ -6687,7 +6687,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean hasUnconvertedProperties() {
         return unconvertedProperties != null;
     }
-    
+
     /**
      * Set if any mapping reference a field in a secondary table.
      * This is used to disable deferring multiple table writes.
@@ -6695,7 +6695,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void setHasMultipleTableConstraintDependecy(boolean hasMultipleTableConstraintDependecy) {
         this.hasMultipleTableConstraintDependecy = hasMultipleTableConstraintDependecy;
     }
-    
+
     /**
      * INTERNAL:
      * Return whether this descriptor uses property access. This information is used to
@@ -6704,7 +6704,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public boolean usesPropertyAccessForWeaving(){
         return weavingUsesPropertyAccess;
     }
-    
+
 
     /**
      * INTERNAL:
@@ -6715,7 +6715,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         weavingUsesPropertyAccess = true;
     }
 
-    /** 
+    /**
      * INTERNAL:
      * Return the list of virtual methods sets for this Entity.
      * This list is used to control which methods are weaved
@@ -6725,9 +6725,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             this.virtualAttributeMethods = new ArrayList<VirtualAttributeMethodInfo>();
         }
         return this.virtualAttributeMethods;
-    }    
+    }
 
-    /** 
+    /**
      * INTERNAL:
      * Set the list of methods used my mappings with virtual access
      * this list is used to determine which methods to weave
@@ -6735,15 +6735,15 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void setVirtualAttributeMethods(List<VirtualAttributeMethodInfo> virtualAttributeMethods) {
         this.virtualAttributeMethods = virtualAttributeMethods;
     }
-    
-    /** 
+
+    /**
      * INTERNAL:
      * Indicates whether descriptor has at least one target foreign key mapping
      */
     public boolean hasTargetForeignKeyMapping(AbstractSession session) {
         for (DatabaseMapping mapping: getMappings()) {
-            if (mapping.isCollectionMapping() || 
-                    (mapping.isObjectReferenceMapping() && !((ObjectReferenceMapping)mapping).isForeignKeyRelationship()) || 
+            if (mapping.isCollectionMapping() ||
+                    (mapping.isObjectReferenceMapping() && !((ObjectReferenceMapping)mapping).isForeignKeyRelationship()) ||
                     mapping.isAbstractCompositeDirectCollectionMapping()) {
                 return true;
             } else if (mapping.isAggregateObjectMapping()) {
@@ -6759,7 +6759,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         return false;
     }
-    
+
     @Override
     public AttributeGroup getAttributeGroup(String name) {
         return super.getAttributeGroup(name);

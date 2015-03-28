@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,53 +27,53 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 @SuppressWarnings("nls")
 public class EclipseLinkJPQLParserTests2_1 extends JPQLParserTest {
 
-	@Test
-	public void test_Query_001() {
+    @Test
+    public void test_Query_001() {
 
-		String jpqlQuery = "Select e from Employee e order by e.age + 2";
+        String jpqlQuery = "Select e from Employee e order by e.age + 2";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			orderBy(
-				orderByItem(path("e.age").add(numeric(2)))
-			)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            orderBy(
+                orderByItem(path("e.age").add(numeric(2)))
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_Query_002() {
+    @Test
+    public void test_Query_002() {
 
-		String jpqlQuery = "Select e from Employee e order by SUBSTRING(e.age, 1) + 2";
+        String jpqlQuery = "Select e from Employee e order by SUBSTRING(e.age, 1) + 2";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			orderBy(
-				orderByItem(
-					substring(path("e.age"), numeric(1)).add(numeric(2))
-				)
-			)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            orderBy(
+                orderByItem(
+                    substring(path("e.age"), numeric(1)).add(numeric(2))
+                )
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_Query_003() {
+    @Test
+    public void test_Query_003() {
 
-		String jpqlQuery = "Select e from Employee e order by e.age + 2 ASC";
+        String jpqlQuery = "Select e from Employee e order by e.age + 2 ASC";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			orderBy(
-				orderByItemAsc(path("e.age").add(numeric(2)))
-			)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            orderBy(
+                orderByItemAsc(path("e.age").add(numeric(2)))
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 }

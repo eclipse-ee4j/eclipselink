@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework.ui;
 
 import java.awt.*;
@@ -630,7 +630,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
                 constraintsRunFastCheckBox.anchor = GridBagConstraints.WEST;
                 constraintsRunFastCheckBox.insets = new Insets(0, 2, 0, 0);
                 getTestPanel().add(getRunFastCheckBox(), constraintsRunFastCheckBox);
-                
+
                 GridBagConstraints constraintsLogOnlyErrorsCheckBox = new GridBagConstraints();
                 constraintsLogOnlyErrorsCheckBox.gridx = 0;
                 constraintsLogOnlyErrorsCheckBox.gridy = 9;
@@ -676,14 +676,14 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
                 constraintsRunModelProgressBar.fill = GridBagConstraints.HORIZONTAL;
                 constraintsRunModelProgressBar.insets = new Insets(0, 2, 0, 2);
                 getTestPanel().add(getRunModelProgressBar(), constraintsRunModelProgressBar);
-                
+
                 GridBagConstraints constraintsErrorsLabel = new GridBagConstraints();
                 constraintsErrorsLabel.gridx = 0;
                 constraintsErrorsLabel.gridy = 2;
                 constraintsErrorsLabel.anchor = GridBagConstraints.WEST;
                 constraintsErrorsLabel.insets = new Insets(0, 7, 0, 2);
                 getTestPanel().add(getErrorsLabel(), constraintsErrorsLabel);
-                
+
                 GridBagConstraints constraintsErrorsProgressBar = new GridBagConstraints();
                 constraintsErrorsProgressBar.gridx = 1;
                 constraintsErrorsProgressBar.gridy = 2;
@@ -862,7 +862,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
      */
     private void handleException(Throwable exception) {
         try {
-            getExecutor().getLog().write("--------- UNCAUGHT EXCEPTION ---------" + 
+            getExecutor().getLog().write("--------- UNCAUGHT EXCEPTION ---------" +
                                          org.eclipse.persistence.internal.helper.Helper.cr());
             exception.printStackTrace(new PrintWriter(getExecutor().getLog()));
             getExecutor().getLog().flush();
@@ -1032,7 +1032,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
         if(getExecutor().getSession().getLogin().getConnector() instanceof DefaultConnector) {
             LoadBuildSystem.loadBuild.loginChoice = login.getConnectionString();
         }
-        LoadBuildSystem.loadBuild.databaseLogin = 
+        LoadBuildSystem.loadBuild.databaseLogin =
                 getSessionInspectorPanel().getSession().getProject().getLogin();
     }
 
@@ -1056,7 +1056,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
      */
     public void notifyException(Throwable exception) {
         try {
-            getExecutor().getLog().write("--------- UNCAUGHT EXCEPTION ---------" + 
+            getExecutor().getLog().write("--------- UNCAUGHT EXCEPTION ---------" +
                                          org.eclipse.persistence.internal.helper.Helper.cr());
             exception.printStackTrace(new PrintWriter(getExecutor().getLog()));
             getExecutor().getLog().flush();
@@ -1149,7 +1149,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
         getLoginChoice().addItem("HSQL");
         getLoginChoice().addItem("H2");
         getLoginChoice().addItem("PostgreSQL");
-        getLoginChoice().addItem("Informix IDS 11.1");        
+        getLoginChoice().addItem("Informix IDS 11.1");
         getLoginChoice().addItem("Sybase (JConnect)");
         getLoginChoice().addItem("Sybase (DataDirect)");
         getLoginChoice().addItem("MySQL (Connector/J) - COREDEV1");
@@ -1219,7 +1219,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             properties.put(PersistenceUnitProperties.JDBC_USER, getExecutor().getSession().getDatasourceLogin().getUserName());
             properties.put(PersistenceUnitProperties.JDBC_PASSWORD, getExecutor().getSession().getDatasourceLogin().getPassword());
             properties.put(PersistenceUnitProperties.LOGGING_LEVEL, getExecutor().getSession().getSessionLog().getLevelString());
-            
+
             for(Map map : org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper.puPropertiesMap.values()) {
                 if (map.containsKey(PersistenceUnitProperties.LOGGING_LEVEL)) {
                     map.put(PersistenceUnitProperties.LOGGING_LEVEL, getExecutor().getSession().getSessionLog().getLevelString());
@@ -1397,12 +1397,12 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             getErrorsProgressBar().setMaximum(getErrorsProgressBar().getMaximum() * 2);
         }
     }
-    
+
     /**
      * Move the progress bar.
      */
     public void endTest(junit.framework.Test test) {
-        getRunModelProgressBar().setValue(getRunModelProgressBar().getValue() + 1);        
+        getRunModelProgressBar().setValue(getRunModelProgressBar().getValue() + 1);
         if (test instanceof TestEntity) {
             TestEntity testEntity = (TestEntity)test;
             if ((testEntity instanceof TestCase) && (((TestCase)testEntity).getTestResult().hasFailed())) {
@@ -1416,7 +1416,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             }
             if (testEntity.getContainer() == getCurrentRun()) {
                 getRunProgressBar().setMaximum(((TestCollection)testEntity.getContainer()).getTests().size());
-                getRunProgressBar().setValue(getRunProgressBar().getValue() + 1);                
+                getRunProgressBar().setValue(getRunProgressBar().getValue() + 1);
             }
         }
         // Reset the session inspectors session as test model reset builds clean session.

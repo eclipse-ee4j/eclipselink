@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke, mnorman - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
- *     14/05/2012-2.4 Guy Pelletier  
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/
 package org.eclipse.persistence.dynamic;
@@ -44,14 +44,14 @@ import org.eclipse.persistence.tools.schemaframework.DynamicSchemaManager;
  * references to the dynamic types it must use entity names. This helper
  * provides simplified access to methods that would typically require the static
  * classes.
- * 
+ *
  * @author dclarke, mnorman
  * @since EclipseLink 1.2
  */
 public class DynamicHelper {
 
     protected DatabaseSession session;
-    protected Map<String, ClassDescriptor> fqClassnameToDescriptor = 
+    protected Map<String, ClassDescriptor> fqClassnameToDescriptor =
         new HashMap<String, ClassDescriptor>();
 
     public DynamicHelper(DatabaseSession session) {
@@ -92,7 +92,7 @@ public class DynamicHelper {
 
     /**
      * Provide access to the entity's type.
-     * 
+     *
      * @param entity
      * @return
      * @throws ClassCastException
@@ -104,7 +104,7 @@ public class DynamicHelper {
 
     /**
      * Remove a dynamic type from the system.
-     * 
+     *
      * This implementation assumes that the dynamic type has no relationships to
      * it and that it is not involved in an inheritance relationship. If there
      * are concurrent processes using this type when it is removed some
@@ -129,7 +129,7 @@ public class DynamicHelper {
     }
 
     /**
-     * 
+     *
      */
     public DynamicEntity newDynamicEntity(String typeName) {
         DynamicType type = getType(typeName);

@@ -4,7 +4,7 @@
    <lastname>Smith</lastname>
    <ADDRESS>
       <id>20</id>
-	  <cityname>Ottawa</cityname>
+      <cityname>Ottawa</cityname>
    </ADDRESS>
    <responsibilities>
       <responsibility xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>

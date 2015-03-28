@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.math.BigDecimal;
@@ -60,7 +60,7 @@ public class ConcurrentReadOnUpdateWithEarlyTransTest extends TestCase {
         ConcurrentPerson person = (ConcurrentPerson)uow.readObject(ConcurrentPerson.class);
         originalReference = person.getAddress();
         uow.beginEarlyTransaction();
-        ConcurrentAddress addressClone = 
+        ConcurrentAddress addressClone =
             (ConcurrentAddress)uow.readObject(ConcurrentReadOnUpdateWithEarlyTransTest.readAddress);
         person.setAddress(addressClone);
         //begin multi threading
@@ -84,14 +84,14 @@ public class ConcurrentReadOnUpdateWithEarlyTransTest extends TestCase {
                 public void run() {
                     threadId.set("Reader");
                     synchronized (ConcurrentReadOnUpdateWithEarlyTransTest.readAddress) {
-                        ConcurrentReadOnUpdateWithEarlyTransTest.whosWaiting = 
+                        ConcurrentReadOnUpdateWithEarlyTransTest.whosWaiting =
                                 ConcurrentReadOnUpdateWithEarlyTransTest.READER;
                         try {
                             ConcurrentReadOnUpdateWithEarlyTransTest.readAddress.wait(30000);
                         } catch (InterruptedException ex) {
                         }
                     }
-                    readObject = 
+                    readObject =
                             (ConcurrentAddress)getSession().readObject(ConcurrentReadOnUpdateWithEarlyTransTest.readAddress);
                     synchronized (ConcurrentReadOnUpdateWithEarlyTransTest.readAddress) {
                         ConcurrentReadOnUpdateWithEarlyTransTest.readAddress.notifyAll(); //wake writer

@@ -30,48 +30,48 @@
    <ns0:comment>yet another comment</ns0:comment>
    <ns0:items>
       <ns0:item partNum="872-AA">
-		 <ns0:product>
+         <ns0:product>
             <ns0:productName>Lawnmower</ns0:productName>
-			<ns0:price>
-	            <ns0:dollarAmount>148.95</ns0:dollarAmount>		
-	            <ns0:currency>US</ns0:currency>		
-			</ns0:price>
-			<ns0:price>
-	            <ns0:dollarAmount>175.95</ns0:dollarAmount>		
-	            <ns0:currency>CDN</ns0:currency>		
-			</ns0:price>
-		 </ns0:product>
+            <ns0:price>
+                <ns0:dollarAmount>148.95</ns0:dollarAmount>
+                <ns0:currency>US</ns0:currency>
+            </ns0:price>
+            <ns0:price>
+                <ns0:dollarAmount>175.95</ns0:dollarAmount>
+                <ns0:currency>CDN</ns0:currency>
+            </ns0:price>
+         </ns0:product>
          <ns0:quantity>1</ns0:quantity>
          <ns0:comment>Confirm this is electric2</ns0:comment>
          <ns0:comment>And make it snappy</ns0:comment>
       </ns0:item>
       <ns0:item partNum="926-AA">
-	     <ns0:product>
+         <ns0:product>
             <ns0:productName>Baby Monitor</ns0:productName>
-			<ns0:price>
-				<ns0:dollarAmount>39.95</ns0:dollarAmount>		
-				<ns0:currency>US</ns0:currency>		
-			</ns0:price>
-			<ns0:price>
-				<ns0:dollarAmount>45.95</ns0:dollarAmount>		
-				<ns0:currency>CDN</ns0:currency>		
-			</ns0:price>
-		 </ns0:product>
+            <ns0:price>
+                <ns0:dollarAmount>39.95</ns0:dollarAmount>
+                <ns0:currency>US</ns0:currency>
+            </ns0:price>
+            <ns0:price>
+                <ns0:dollarAmount>45.95</ns0:dollarAmount>
+                <ns0:currency>CDN</ns0:currency>
+            </ns0:price>
+         </ns0:product>
          <ns0:quantity>1</ns0:quantity>
          <ns0:shipDate>1999-05-21</ns0:shipDate>
       </ns0:item>
       <ns0:item partNum="999-ZZ">
-		 <ns0:product>
+         <ns0:product>
             <ns0:productName>New Part</ns0:productName>
-			<ns0:price>
-	            <ns0:dollarAmount>100.01</ns0:dollarAmount>		
-	            <ns0:currency>EU</ns0:currency>		
-			</ns0:price>
-			<ns0:price>
-	            <ns0:dollarAmount>100.02</ns0:dollarAmount>		
-	            <ns0:currency>US</ns0:currency>		
-			</ns0:price>
-		 </ns0:product>
+            <ns0:price>
+                <ns0:dollarAmount>100.01</ns0:dollarAmount>
+                <ns0:currency>EU</ns0:currency>
+            </ns0:price>
+            <ns0:price>
+                <ns0:dollarAmount>100.02</ns0:dollarAmount>
+                <ns0:currency>US</ns0:currency>
+            </ns0:price>
+         </ns0:product>
          <ns0:quantity>2</ns0:quantity>
          <ns0:comment>Item3 comment1</ns0:comment>
          <ns0:comment>Item3 comment2</ns0:comment>

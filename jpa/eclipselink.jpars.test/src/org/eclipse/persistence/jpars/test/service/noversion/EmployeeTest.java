@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -78,13 +78,13 @@ public class EmployeeTest extends BaseJparsTest {
         for (PhoneNumber ph:phoneNumbers){
             ph.setEmployee(employee);
         }
-        
+
         em.persist(employee);
-        
+
         Expertise expertise = new Expertise();
         expertise.setSubject("REST");
         em.persist(expertise);
-        
+
         Employee manager = new Employee();
         manager.setId(121);
         manager.setFirstName("Bill");
@@ -113,7 +113,7 @@ public class EmployeeTest extends BaseJparsTest {
                 assertTrue("Unmarshalled employee first name is incorrect.", "John".equals(firstName));
             }
         }
-        
+
         assertTrue("Incorrectly marshallet Set of Expertise Areas", mgr.getExpertiseAreas().size() == 1);
 
         em.getTransaction().begin();
@@ -156,7 +156,7 @@ public class EmployeeTest extends BaseJparsTest {
         }
 
         em.persist(employee);
-        
+
         Expertise expertise = new Expertise();
         expertise.setSubject("REST");
         em.persist(expertise);
@@ -170,7 +170,7 @@ public class EmployeeTest extends BaseJparsTest {
         managedEmployees.add(employee);
         manager.setManagedEmployees(managedEmployees);
         employee.setManager(manager);
-        
+
         expertise.setEmployee(manager);
         manager.getExpertiseAreas().add(expertise);
         em.persist(manager);

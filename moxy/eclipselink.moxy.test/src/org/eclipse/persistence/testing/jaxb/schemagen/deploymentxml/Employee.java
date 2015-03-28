@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -20,34 +20,34 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="employee")
 public class Employee  {
 
-	private String firstName;
-	private String lastName;
+    private String firstName;
+    private String lastName;
 
-	public Employee() {
-	}
+    public Employee() {
+    }
 
-	@XmlElement(name="first-name")
-	public String getFirstName() {
-		return firstName;
-	}
+    @XmlElement(name="first-name")
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	@XmlElement(name="last-name")
-	public String getLastName() {
-		return lastName;
-	}
+    @XmlElement(name="last-name")
+    public String getLastName() {
+        return lastName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	public String toString() {
-		return  "Employee[" 
-			+ "\n\tName: " + lastName + ", " + firstName 
-			+ "]";
-	}
+    public String toString() {
+        return  "Employee["
+            + "\n\tName: " + lastName + ", " + firstName
+            + "]";
+    }
 
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.*;
@@ -113,7 +113,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
             if (unitOfWork.isAfterWriteChangesButBeforeCommit()) {
                 throw ValidationException.illegalOperationForUnitOfWorkLifecycle(unitOfWork.getLifecycle(), "executeQuery(DeleteAllQuery)");
             }
-    
+
             // This must be broken, see comment.
             if (!unitOfWork.getCommitManager().isActive()) {
                 return unitOfWork.getParent().executeQuery(this, translationRow);
@@ -140,11 +140,11 @@ public class DeleteAllQuery extends ModifyAllQuery {
                 // DeleteAllQuery has objects so it *must* have selectionCriteria, too
                 throw QueryException.deleteAllQuerySpecifiesObjectsButNotSelectionCriteria(getDescriptor(), this, this.objects.toString());
             }
-            
+
             // Optimistic lock check not required because objects are deleted individually in that case.
             try {
                 this.session.beginTransaction();
-    
+
                 // Need to run pre-delete selector if available.
                 // PERF: Avoid events if no listeners.
                 if (this.descriptor.getEventManager().hasAnyEventListeners()) {
@@ -162,7 +162,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
                 } else {
                     result = this.queryMechanism.deleteAll();
                 }
-    
+
                 // Need to run post-delete selector if available.
                 // PERF: Avoid events if no listeners.
                 if (this.descriptor.getEventManager().hasAnyEventListeners()) {
@@ -174,7 +174,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
                         this.descriptor.getEventManager().executeEvent(event);
                     }
                 }
-    
+
                 if (shouldMaintainCache()) {
                     // remove from the cache.
                     for (Object deleted : this.objects) {
@@ -187,9 +187,9 @@ public class DeleteAllQuery extends ModifyAllQuery {
                         }
                     }
                 }
-    
+
                 this.session.commitTransaction();
-    
+
             } catch (RuntimeException exception) {
                 this.session.rollbackTransaction();
                 throw exception;
@@ -202,7 +202,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
             }
             mergeChangesIntoSharedCache();
         }
-        
+
         return result;
     }
 
@@ -232,7 +232,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
         if (objects == null) {
             return null;
         }
-        
+
         return descriptor.getDefaultDeleteObjectQueryRedirector();
     }
 

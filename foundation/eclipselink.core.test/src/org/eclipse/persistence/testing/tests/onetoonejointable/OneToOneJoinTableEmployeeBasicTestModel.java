@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     07/16/2009 Andrei Ilitchev 
+ *     07/16/2009 Andrei Ilitchev
  *       - Bug 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.onetoonejointable;
 
 import java.util.List;
@@ -193,11 +193,11 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
         suite.addTest(new ReadObjectTest(manager.getObject(employeeClass, "0005")));
         Employee employee = (Employee)manager.getObject(employeeClass, "0001");
 
-		suite.addTest(new ReadObjectCallTest(employeeClass, new SQLCall("SELECT t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER FROM OTOJT_EMPLOYEE t0, OTOJT_SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID AND t0.F_NAME = '"+employee.getFirstName()+"' AND t0.L_NAME = '"+employee.getLastName()+"'")));
+        suite.addTest(new ReadObjectCallTest(employeeClass, new SQLCall("SELECT t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER FROM OTOJT_EMPLOYEE t0, OTOJT_SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID AND t0.F_NAME = '"+employee.getFirstName()+"' AND t0.L_NAME = '"+employee.getLastName()+"'")));
         employee = (Employee)manager.getObject(employeeClass, "0002");
-		suite.addTest(new ReadObjectCallTest(employeeClass, new SQLCall("SELECT  t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER FROM OTOJT_EMPLOYEE t0, OTOJT_SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID AND t0.F_NAME = '"+employee.getFirstName()+"' AND t0.L_NAME = '"+employee.getLastName()+"'")));
+        suite.addTest(new ReadObjectCallTest(employeeClass, new SQLCall("SELECT  t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER FROM OTOJT_EMPLOYEE t0, OTOJT_SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID AND t0.F_NAME = '"+employee.getFirstName()+"' AND t0.L_NAME = '"+employee.getLastName()+"'")));
         employee = (Employee)manager.getObject(employeeClass, "0003");
-		suite.addTest(new ReadObjectCallTest(employeeClass, new SQLCall("SELECT  t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER FROM OTOJT_EMPLOYEE t0, OTOJT_SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID AND t0.F_NAME = '"+employee.getFirstName()+"' AND t0.L_NAME = '"+employee.getLastName()+"'")));
+        suite.addTest(new ReadObjectCallTest(employeeClass, new SQLCall("SELECT  t0.VERSION, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.EMP_ID, t0.GENDER FROM OTOJT_EMPLOYEE t0, OTOJT_SALARY t1 WHERE t1.EMP_ID = t0.EMP_ID AND t0.F_NAME = '"+employee.getFirstName()+"' AND t0.L_NAME = '"+employee.getLastName()+"'")));
 
         Project project = (Project)manager.getObject(largeProjectClass, "0001");
         ReadObjectTest test = new ReadObjectTest(project);
@@ -254,7 +254,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
 
         return suite;
     }
-    
+
     static class ManyToManyReadOnlyMappingUpdateTest extends ComplexUpdateTest {
         ManyToManyReadOnlyMappingUpdateTest() {
             super();
@@ -270,7 +270,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
                     break;
                 }
             }
-            
+
             super.setup();
         }
         // remove all employees
@@ -286,7 +286,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             }
         }
     }
-    
+
     static class AddRemoveTest extends TestCase {
         Employee employee;
         Address address1, address2;
@@ -300,7 +300,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
         public void setup() {
             useAddress = true;
             useProjects = true;
-            
+
         }
         public void test() {
             employee = new Employee();
@@ -312,7 +312,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             if(useProjects) {
                 project1 = new SmallProject("project1");
             }
-            
+
             // insert employee with address/project
             UnitOfWork uow = getSession().acquireUnitOfWork();
             Employee employeeClone = (Employee)uow.registerObject(employee);
@@ -325,7 +325,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
                 employeeClone.addProject(project1Clone);
             }
             uow.commit();
-            
+
             // remove address/project from employee
             uow = getSession().acquireUnitOfWork();
             employeeClone = (Employee)uow.registerObject(employee);
@@ -336,7 +336,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
                 employeeClone.removeProject(employeeClone.getProjects().get(0));
             }
             uow.commit();
-            
+
             // set address/project into employee
             uow = getSession().acquireUnitOfWork();
             employeeClone = (Employee)uow.registerObject(employee);
@@ -349,7 +349,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
                 employeeClone.addProject(project1Clone);
             }
             uow.commit();
-            
+
             // override address/project in employee
             uow = getSession().acquireUnitOfWork();
             employeeClone = (Employee)uow.registerObject(employee);
@@ -365,7 +365,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
                 employeeClone.addProject(project2Clone);
             }
             uow.commit();
-            
+
             // delete employee
             uow = getSession().acquireUnitOfWork();
             uow.deleteObject(employee);
@@ -409,9 +409,9 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             ReadAllQuery query = new ReadAllQuery();
             query.setReferenceClass(Employee.class);
             setSelectionCriteria(query);
-            
+
             ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-            
+
             Expression address = query.getExpressionBuilder().getAllowingNull("address");
             query.addJoinedAttribute(address);
             Expression projectLed = query.getExpressionBuilder().getAllowingNull("projectLed");
@@ -462,8 +462,8 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
                 throw new TestProblemException("No Employees were read");
             }
             // need to instantiate only a single Address to trigger sql that reads data from the db for all.
-            // still need to trigger all the indirections - but (except the first one) they are not accessing the db 
-            // (the data is already cached in the value holders).  
+            // still need to trigger all the indirections - but (except the first one) they are not accessing the db
+            // (the data is already cached in the value holders).
             printDebug("Trigger batch reading results");
             boolean isConnected = true;
             for(int i=0; i < employees.size(); i++) {
@@ -486,12 +486,12 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
             // execute control query
             List controlEmployees = (List)getSession().executeQuery(controlQuery);
-            // instantiate all value holders that the batch query expected to instantiate            
+            // instantiate all value holders that the batch query expected to instantiate
             printDebug("Trigger control results");
             for(int i=0; i < controlEmployees.size(); i++) {
                 Address address = ((Employee)controlEmployees.get(i)).getAddress();
             }
-            
+
             // compare results
             String errorMsg = JoinedAttributeTestHelper.compareCollections(employees, controlEmployees, getSession().getClassDescriptor(Employee.class), ((AbstractSession)getSession()));
             if(errorMsg.length() > 0) {
@@ -533,27 +533,27 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
         }
         private void addMultipleAndsTest() {
             ExpressionBuilder builder = new ExpressionBuilder();
-    
+
             //this is a bug, wrong generated SQL like... ADDRESS.ADDRESS_ID = EMPLOYEE.ADDR_ID...
             //however, it should be ... ADDRESS.ADDRESS_ID = 0...
             Expression expression = builder.get("address").equal(new Address()).and(builder.get("lastName").notEqual("foopoyp"));
-    
+
             ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
             test.setExpression(expression);
             test.setName("MultipleAndsExpressionTest");
             test.setDescription("Test object equality with object will null primary key");
             addTest(test);
         }
-    
+
         private void addMultipleAndsTest2() {
             //there is a bug, generated SQL looks like ... (ADDRESS.ADDRESS_ID = 123456)) AND (ADDRESS.ADDRESS_ID = EMPLOYEE.ADDR_ID)...
             //should be: ...EMPLOYEE.ADDR_ID = 123456...  no join needed!
             ExpressionBuilder builder = new ExpressionBuilder();
             Address a = new Address();
             a.setId(new java.math.BigDecimal(123456));
-    
+
             Expression expression = builder.get("address").equal(a).and(builder.get("id").greaterThan(800));
-    
+
             ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
             test.setQuery(new ReadAllQuery(Employee.class, expression));
             test.getQuery().addAscendingOrdering("id");
@@ -562,14 +562,14 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             test.setDescription("Test multiple ands with object equality");
             addTest(test);
         }
-    
+
         private void addMultipleAndsTest3() {
             //there is a bug, generated wrong SQL looks like ...  FROM ADDRESS t3, SALARY t2, EMPLOYEE t1 WHERE (((((t1.EMP_ID > '800') AND ) AND (t1.EMP_ID = t2.EMP_ID)) AND (t3.ADDRESS_ID = 123456))...
             ExpressionBuilder builder = new ExpressionBuilder();
-    
+
             Address a = new Address();
             a.setId(new java.math.BigDecimal(123456));
-    
+
             Expression expression = builder.get("id").greaterThan(800).and(builder.get("address").equal(a));
             ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
             test.setQuery(new ReadAllQuery(Employee.class, expression));
@@ -579,50 +579,50 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             test.setDescription("Test multiple ands with object equality");
             addTest(test);
         }
-    
+
         private void addMultipleAndsTest4() {
             // This tests the case of a tree where the top-level AND should print, even though
             // both branches underneath it are partly suppressed.
             ExpressionBuilder builder = new ExpressionBuilder();
             Address address1 = new Address();
             address1.setId(new java.math.BigDecimal(999999876));
-    
+
             Address address2 = new Address();
             address2.setId(new java.math.BigDecimal(999999877));
-    
+
             Expression expression1 = builder.get("address").equal(address1).or(builder.get("lastName").equal("Smith"));
             Expression expression2 = builder.get("address").equal(address2).or(builder.get("firstName").equal("Bob"));
-    
+
             ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 1);
             test.setExpression(expression1.and(expression2));
             test.setName("MultipleAndsExpressionTest4");
             test.setDescription("Test multiple booleans with supression in each branch");
             addTest(test);
         }
-    
+
         private void addMultipleAndsTest5() {
             ExpressionBuilder builder = new ExpressionBuilder();
-    
+
             //this is a bug, Ill-formed expression in query, attempting to print an object reference into a
             //SQL statement for Query Key address{DatabaseTable(t1)=DatabaseTable(ADDRESS)}
             //however, it should be ... EMPLOYEE.ADDRESS_ID = 0 (null)...
             Expression expression = builder.get("address").equal(null).and(builder.get("lastName").notEqual("foopoyp"));
-    
+
             ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
             test.setExpression(expression);
             test.setName("MultipleAndsExpressionTest5");
             test.setDescription("Test multiple ands expression");
             addTest(test);
         }
-    
+
         private void addMultipleAndsTest6() {
             ExpressionBuilder builder = new ExpressionBuilder();
-    
+
             //this is a bug, Ill-formed expression in query, attempting to print an object reference into a
             //SQL statement for Query Key address{DatabaseTable(t1)=DatabaseTable(ADDRESS)}
             //however, it should be ... EMPLOYEE.ADDRESS_ID = 0 (null)...
             Expression expression = builder.get("address").isNull().and(builder.get("lastName").notEqual("foopoyp"));
-    
+
             ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
             test.setExpression(expression);
             test.setName("MultipleAndsExpressionTest6");
@@ -645,7 +645,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             test.setDescription("Test = expression does not create an extra unneccessary join");
             addTest(test);
         }
-        
+
         /**
          *  @bug 2612185 Support ReportItems,OrderBy Expressions from Parallel Builders.
          *  Find all managers of employees who have a spouse at work and a family
@@ -743,7 +743,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             getQuery().addBatchReadAttribute("responsibilitiesList");
             getQuery().addBatchReadAttribute("projects");
         }
-        
+
         protected void testBatchAttributes() {
             Vector result = (Vector) this.objectsFromDatabase;
             List children = ((Employee) result.elementAt(0)).getChildren();

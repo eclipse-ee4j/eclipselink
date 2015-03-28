@@ -13,13 +13,13 @@
                 <xml-element java-attribute="name" type="java.lang.String"/>
             </java-attributes>
         </java-type>
-        
+
         <java-type name="Customer">
             <java-attributes>
                 <xml-element java-attribute="custID" type="java.lang.Integer"/>
             </java-attributes>
         </java-type>
-        
+
         <java-type name="Employee">
             <java-attributes>
                 <xml-element java-attribute="empID" type="java.lang.String"/>

@@ -1,0 +1,24 @@
+* text=auto
+*.bnd text eol=lf
+*.cmd text eol=crlf
+*.g text eol=lf
+*.html text eol=lf
+*.java text eol=lf diff=java
+*.md text eol=lf
+*.MF text eol=lf
+*.mf text eol=lf
+*.mwp text eol=lf
+*.oxm text eol=lf
+*.properties text eol=lf
+*.sh text eol=lf
+*.txt text eol=lf
+*.xml text eol=lf
+*.xsd text eol=lf
+
+*.zip binary
+*.jar binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.class binary

@@ -1,24 +1,24 @@
 {
- "order" : 
-  { 
+ "order" :
+  {
    "items":{"item":[]},
-   "customer" : { 
+   "customer" : {
       "id" : 0,
-      "firstName" : "Jane", 
-      "lastName" : "Smith", 
+      "firstName" : "Jane",
+      "lastName" : "Smith",
       "contact":{
-      "address" : 
-         { 
-         "street" : "Main Street", 
+      "address" :
+         {
+         "street" : "Main Street",
          "city" : "Ottawa",
          "coords" : [ 0.0, 0.0 ]
-         } 
-	 }
-	 , 
+         }
+     }
+     ,
         "phoneNumbers":[],
        "firstTimeCustomer" : false,
        "orderNumbers":[]
-   } , 
+   } ,
    "id" : 1
-   } 
+   }
 }

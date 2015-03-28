@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     12/12/2008-1.1 Guy Pelletier 
+ *     12/12/2008-1.1 Guy Pelletier
  *       - 249860: Implement table per class inheritance support.
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import static javax.persistence.GenerationType.TABLE;
@@ -41,14 +41,14 @@ public class ContractedPersonel {
     @Id
     @GeneratedValue(strategy=TABLE, generator="PERSONEL_TABLE_GENERATOR")
     @TableGenerator(
-        name="PERSONEL_TABLE_GENERATOR", 
-        table="CMP3_PERSONEL_SEQ", 
-        pkColumnName="SEQ_NAME", 
+        name="PERSONEL_TABLE_GENERATOR",
+        table="CMP3_PERSONEL_SEQ",
+        pkColumnName="SEQ_NAME",
         valueColumnName="SEQ_COUNT",
         pkColumnValue="PERSONEL_SEQ")
     private Integer id;
     private String name;
-    
+
     @ManyToMany
     @JoinTable(
         name="TPC_PERSONEL_CLUB",
@@ -67,11 +67,11 @@ public class ContractedPersonel {
 
     @Version
     private Integer version;
-    
+
     public Integer getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -79,15 +79,15 @@ public class ContractedPersonel {
     public List<SocialClub> getSocialClubs() {
         return socialClubs;
     }
-    
+
     public Integer getVersion() {
         return version;
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -95,11 +95,11 @@ public class ContractedPersonel {
     public void setSocialClubs(List<SocialClub> socialClubs) {
         this.socialClubs = socialClubs;
     }
-    
+
     public void setVersion(Integer version) {
         this.version = version;
     }
-    
+
     public List<String> getNicknames() {
         return nicknames;
     }

@@ -4,10 +4,10 @@
    "lastName":"Smith",
    "birthday":"2005-05-24T16:06:53",
    "responsibilities":{
-      "responsibility":[{"xsi.type":"xsd.string","value":"Fix Bugs"}, 
-			{"xsi.type":"xsd.string","value":"Write JAXB2.0 Prototype"}, 
-			{"xsi.type":"xsd.string","value":"Write Design Spec"}
-			]    
+      "responsibility":[{"xsi.type":"xsd.string","value":"Fix Bugs"},
+            {"xsi.type":"xsd.string","value":"Write JAXB2.0 Prototype"},
+            {"xsi.type":"xsd.string","value":"Write Design Spec"}
+            ]
     }
 }}
 

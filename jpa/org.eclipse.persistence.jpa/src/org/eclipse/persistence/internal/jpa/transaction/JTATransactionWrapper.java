@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.transaction;
 
 import javax.persistence.EntityTransaction;
@@ -28,15 +28,15 @@ import org.eclipse.persistence.exceptions.TransactionException;
  * JTA transaction wrapper.
  * Allows the EntityManager to transparently use JTA vs local transactions.
  */
-public class JTATransactionWrapper extends TransactionWrapperImpl implements TransactionWrapper{ 
+public class JTATransactionWrapper extends TransactionWrapperImpl implements TransactionWrapper{
 
      //This is a quick reference for the external Transaction Controller
     protected AbstractTransactionController txnController;
-    
+
     //flag that allows lazy initialization of the persistence context while still registering
     // with the transaction for after completion.
     private boolean isJoined = false;
-    
+
     public JTATransactionWrapper(EntityManagerImpl entityManager) {
         super(entityManager);
         this.txnController = (AbstractTransactionController)entityManager.getDatabaseSession().getExternalTransactionController();
@@ -64,7 +64,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
         this.localUOW.release();
         this.localUOW = null;
     }
-    
+
     /**
      *  An ENtityTransaction cannot be used at the same time as a JTA transaction
      *  throw an exception
@@ -72,7 +72,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
     public EntityTransaction getTransaction(){
       throw new IllegalStateException(TransactionException.entityTransactionWithJTANotAllowed().getMessage());
     }
-      
+
     /**
     * INTERNAL:
     * Mark the current transaction so that the only possible
@@ -85,7 +85,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
             txnController.markTransactionForRollback();
         }
     }
-    
+
     protected void throwUserTransactionException() {
         throw TransactionException.entityTransactionWithJTANotAllowed();
     }
@@ -102,7 +102,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
         //until we get an active context
         return isJoined;
     }
-    
+
     public void registerIfRequired(UnitOfWorkImpl uow){
         //EM already validated that there is a JTA transaction.
         if (this.entityManager.hasActivePersistenceContext()) {
@@ -110,7 +110,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
             uow.registerWithTransactionIfRequired();
         } else if (!isJoined) {
 
-//        JPA 3.2.4 
+//        JPA 3.2.4
 //                In general, a persistence context will be synchronized to the database as described below. However, a
 //                persistence context of type SynchronizationType.UNSYNCHRONIZED or an application-managed
 //                persistence context that has been created outside the scope of the current transaction will only be
@@ -131,10 +131,10 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
             Object txn = checkForTransaction(true);
 //            duplicating what is done in
 //            TransactionController.registerSynchronizationListener(this, this.parent);
-//            This will need to change if javax.transaction dependencies are to be removed from JPA. See TransactionImpl 
+//            This will need to change if javax.transaction dependencies are to be removed from JPA. See TransactionImpl
             try {
                 ((Transaction)txn).registerSynchronization(new Synchronization() {
-                    
+
                     public void beforeCompletion() {}
                     public void afterCompletion(int status) {
                         //let the wrapper know the listener is no longer registered to an active transaction
@@ -147,7 +147,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
             isJoined = true;
         }
     }
-    
+
 
 
 }

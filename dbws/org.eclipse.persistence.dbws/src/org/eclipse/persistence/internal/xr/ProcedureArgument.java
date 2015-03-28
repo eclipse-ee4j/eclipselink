@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,7 +24,7 @@ public class ProcedureArgument {
     protected String parameterName;
     protected String name;
     protected String complexTypeName;
-    protected Integer jdbcType = null;   
+    protected Integer jdbcType = null;
 
     public String getParameterName() {
         return parameterName;
@@ -53,10 +53,10 @@ public class ProcedureArgument {
     public boolean isJdbcTypeSet() {
         return jdbcType != null;
     }
-    
+
     /**
      * Indicates the JDBC type code to be set on the call.
-     * 
+     *
      */
     public int getJdbcType() {
         return jdbcType;

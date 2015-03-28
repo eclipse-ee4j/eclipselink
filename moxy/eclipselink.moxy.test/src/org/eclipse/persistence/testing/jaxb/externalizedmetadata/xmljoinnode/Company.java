@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,29 +17,29 @@ import java.util.List;
 public class Company {
     public List<Object> employees;
     public List<Address> buildingAddresses;
-    
+
     public Company() {}
     public Company(List<Object> employees, List<Address> buildingAddresses) {
         this.employees = employees;
         this.buildingAddresses = buildingAddresses;
     }
-    
+
     public boolean equals(Object obj){
-    	if(obj instanceof Company){
-    		Company compObj = (Company)obj;
-    		if(employees.size() != compObj.employees.size() || buildingAddresses.size() != compObj.buildingAddresses.size()){
-    			return false;
-    		}
-    		return employees.containsAll(compObj.employees) 
-    		      && compObj.employees.containsAll(employees)
-    		      && buildingAddresses. containsAll(compObj.buildingAddresses)
-    		      && compObj.buildingAddresses.containsAll(buildingAddresses);
-    		//if(employees.containsAll(compObj.employees) && compObj.employees.containsAll()){
-    			 
-    		//}
-    		
-    		//return true;
-    	}
-    	return false;
+        if(obj instanceof Company){
+            Company compObj = (Company)obj;
+            if(employees.size() != compObj.employees.size() || buildingAddresses.size() != compObj.buildingAddresses.size()){
+                return false;
+            }
+            return employees.containsAll(compObj.employees)
+                  && compObj.employees.containsAll(employees)
+                  && buildingAddresses. containsAll(compObj.buildingAddresses)
+                  && compObj.buildingAddresses.containsAll(buildingAddresses);
+            //if(employees.containsAll(compObj.employees) && compObj.employees.containsAll()){
+
+            //}
+
+            //return true;
+        }
+        return false;
     }
 }

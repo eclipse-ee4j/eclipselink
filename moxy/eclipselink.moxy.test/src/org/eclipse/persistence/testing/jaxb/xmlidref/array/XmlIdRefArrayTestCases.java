@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *    Denise Smith - February 5, 2013
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlidref.array;
 
 import java.io.InputStream;
@@ -55,10 +55,10 @@ public class XmlIdRefArrayTestCases  extends JAXBWithJSONTestCases {
     }
 
     protected Object getControlObject() {
-    	EmployeeArray employee = new EmployeeArray();
+        EmployeeArray employee = new EmployeeArray();
         employee.id = CONTROL_ID;
         employee.name = CONTROL_NAME;
-        
+
         AddressArray address = new AddressArray();
         address.id = CONTROL_ADD_ID_1;
         address.street = CONTROL_ADD_STREET_1;
@@ -67,23 +67,23 @@ public class XmlIdRefArrayTestCases  extends JAXBWithJSONTestCases {
         address.zip = CONTROL_ADD_ZIP_1;
         address.emp = new Vector<EmployeeArray>();
         address.emp.add(employee);
-        
+
         employee.address = address;
-        
-        employee.phones = new PhoneNumberArray[2]; 
-        
+
+        employee.phones = new PhoneNumberArray[2];
+
         PhoneNumberArray num = new PhoneNumberArray();
         num.id = CONTROL_PHONE_ID_1;
         num.number = CONTROL_PHONE_NUM_1;
         num.emp = employee;
         employee.phones[0] = num;
-        
+
         num = new PhoneNumberArray();
         num.id = CONTROL_PHONE_ID_2;
         num.number = CONTROL_PHONE_NUM_2;
         num.emp = employee;
         employee.phones[1] = num;
-        
+
         RootArray root = new RootArray();
         root.employee = employee;
         return root;
@@ -96,7 +96,7 @@ public class XmlIdRefArrayTestCases  extends JAXBWithJSONTestCases {
         EmployeeArray employee = new EmployeeArray();
         employee.id = CONTROL_ID;
         employee.name = CONTROL_NAME;
-        
+
         AddressArray  address = new AddressArray();
         address.id = CONTROL_ADD_ID_1;
         address.street = CONTROL_ADD_STREET_1;
@@ -106,9 +106,9 @@ public class XmlIdRefArrayTestCases  extends JAXBWithJSONTestCases {
         address.emp = new Vector<EmployeeArray>();
         address.emp.add(employee);
         rootAddresses.add(address);
-        
+
         employee.address = address;
-        
+
         address = new AddressArray();
         address.id = CONTROL_ADD_ID_2;
         address.street = CONTROL_ADD_STREET_2;
@@ -117,33 +117,33 @@ public class XmlIdRefArrayTestCases  extends JAXBWithJSONTestCases {
         address.zip = CONTROL_ADD_ZIP_2;
         rootAddresses.add(address);
         employee.phones = new PhoneNumberArray[2];
-        
+
         PhoneNumberArray num = new PhoneNumberArray();
         num.id = CONTROL_PHONE_ID_1;
         num.number = CONTROL_PHONE_NUM_1;
         num.emp = employee;
         employee.phones[0] =num;
         rootPhones.add(num);
-        
+
         num = new PhoneNumberArray();
         num.id = CONTROL_PHONE_ID_2;
         num.number = CONTROL_PHONE_NUM_2;
         num.emp = employee;
         employee.phones[1] =num;
         rootPhones.add(num);
-        
+
         RootArray root = new RootArray();
         root.employee = employee;
         root.addresses = rootAddresses;
         root.phoneNumbers = rootPhones;
         return root;
     }
-    
+
     public void testSchemaGen() throws Exception {
         List<InputStream> controlSchemas = new ArrayList<InputStream>();
         controlSchemas.add(ClassLoader.getSystemResourceAsStream(XSD_RESOURCE));
-        
+
         this.testSchemaGen(controlSchemas);
-        
+
     }
 }

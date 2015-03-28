@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,7 +21,7 @@ public class SubstitutionEnglishTestCases extends JAXBWithJSONTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/substitution/instance-en.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/substitution/instance-en.json";
-    
+
     public SubstitutionEnglishTestCases(String name) throws Exception {
         super(name);
         Class[] classes = new Class[2];

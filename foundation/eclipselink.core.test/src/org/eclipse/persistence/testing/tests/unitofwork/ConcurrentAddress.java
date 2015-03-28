@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.io.Serializable;
@@ -82,7 +82,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
                         }
 
                         // verify that we are not currently holding an active lock on the system.  Which would result in a deadlock
-                        if (((AbstractSession)ConcurrentRefreshOnCloneTest.session).getIdentityMapAccessorInstance().getIdentityMapManager().getCacheMutex().getActiveThread() != 
+                        if (((AbstractSession)ConcurrentRefreshOnCloneTest.session).getIdentityMapAccessorInstance().getIdentityMapManager().getCacheMutex().getActiveThread() !=
                             Thread.currentThread()) {
                             ConcurrentRefreshOnCloneTest.cloneWaiting = true;
                             ConcurrentRefreshOnCloneTest.lock.wait(30000);
@@ -113,7 +113,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
 
     public String getProvince() {
         //used in the Lock on clone test
-        if ((ConcurrentAddress.RUNNING_TEST == ConcurrentAddress.LOCK_ON_CLONE_TEST) || 
+        if ((ConcurrentAddress.RUNNING_TEST == ConcurrentAddress.LOCK_ON_CLONE_TEST) ||
             (ConcurrentAddress.RUNNING_TEST == ConcurrentAddress.LOCK_ON_CLONE_DEADLOCK)) {
             if (!isForBackup) {
                 synchronized (this) {
@@ -152,7 +152,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
                 if (ConcurrentReadOnUpdateWithEarlyTransTest.threadId.get().equals("Writer")) {
                     synchronized (ConcurrentReadOnUpdateWithEarlyTransTest.readAddress) {
                         ConcurrentReadOnUpdateWithEarlyTransTest.readAddress.notify(); // wake up reader.
-                        ConcurrentReadOnUpdateWithEarlyTransTest.whosWaiting = 
+                        ConcurrentReadOnUpdateWithEarlyTransTest.whosWaiting =
                                 ConcurrentReadOnUpdateWithEarlyTransTest.WRITER;
                         ConcurrentReadOnUpdateWithEarlyTransTest.readAddress.wait(30000);
                     }
@@ -206,14 +206,14 @@ public class ConcurrentAddress implements Serializable, Cloneable {
     }
 
     public static TableDefinition tableDefinition() {
-        org.eclipse.persistence.tools.schemaframework.TableDefinition tabledefinition = 
+        org.eclipse.persistence.tools.schemaframework.TableDefinition tabledefinition =
             new org.eclipse.persistence.tools.schemaframework.TableDefinition();
 
         // SECTION: TABLE
         tabledefinition.setName("CONCURRENT_ADDRESS");
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = 
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field =
             new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field.setName("ADDRESS_ID");
         field.setTypeName("NUMERIC");
@@ -225,7 +225,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         tabledefinition.addField(field);
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = 
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 =
             new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("P_CODE");
         field1.setTypeName("VARCHAR");
@@ -237,7 +237,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         tabledefinition.addField(field1);
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = 
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 =
             new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("CITY");
         field2.setTypeName("VARCHAR");
@@ -249,7 +249,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         tabledefinition.addField(field2);
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = 
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 =
             new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("PROVINCE");
         field3.setTypeName("VARCHAR");
@@ -261,7 +261,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         tabledefinition.addField(field3);
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field4 = 
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field4 =
             new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field4.setName("STREET");
         field4.setTypeName("VARCHAR");
@@ -273,7 +273,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         tabledefinition.addField(field4);
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field5 = 
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field5 =
             new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field5.setName("COUNTRY");
         field5.setTypeName("VARCHAR");

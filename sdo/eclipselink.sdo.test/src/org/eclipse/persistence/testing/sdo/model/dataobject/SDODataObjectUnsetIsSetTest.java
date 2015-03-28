@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -74,8 +74,8 @@ public class SDODataObjectUnsetIsSetTest extends SDODataObjectTestCases {
         this.assertTrue(dataObject.isSet(test));
     }
 
-    //purpose: if property has been set to default value, iset() return true. 
-    //SDO Specification 2.1: 
+    //purpose: if property has been set to default value, iset() return true.
+    //SDO Specification 2.1:
     //"Any call to set() without a call to unset() will cause isSet() to return true, regardless of the value being set. "(Page 16)
     public void testIsSetWithSetDefinedPropertyAsDefault_SingleValue() {
         Property test = dataObject.getInstanceProperty(DEFINED_PROPERTY_NAME);
@@ -139,7 +139,7 @@ public class SDODataObjectUnsetIsSetTest extends SDODataObjectTestCases {
             assertEquals(SDOException.CANNOT_PERFORM_OPERATION_ON_NULL_ARGUMENT ,e.getErrorCode());
             return;
         }
-        fail("an SDOException should have occurred.");    
+        fail("an SDOException should have occurred.");
     }
 
     //purpose: set undefined property should cause exception
@@ -164,8 +164,8 @@ public class SDODataObjectUnsetIsSetTest extends SDODataObjectTestCases {
     }
 
     //bug 5770518
-    public void testUnsetUndefinedByPath() {        
-        dataObject.unset("nonExistant");  
+    public void testUnsetUndefinedByPath() {
+        dataObject.unset("nonExistant");
         //nothing should happen ie: no exception
     }
 

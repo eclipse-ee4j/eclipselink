@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -30,70 +30,70 @@ import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContex
  * part of the SelectionMenu
  */
 final class WorkbenchCloseAction
-	extends AbstractFrameworkAction
+    extends AbstractFrameworkAction
 {
-	/** we need access to the node manager's internal api */
-	private FrameworkNodeManager nodeManager;
-	private TreeSelectionListener treeSelectionListener;
-	private WindowListener windowListener;
+    /** we need access to the node manager's internal api */
+    private FrameworkNodeManager nodeManager;
+    private TreeSelectionListener treeSelectionListener;
+    private WindowListener windowListener;
 
 
-	WorkbenchCloseAction(WorkbenchContext context, FrameworkNodeManager nodeManager) {
-		super(context);
-		this.nodeManager = nodeManager;
-	}
+    WorkbenchCloseAction(WorkbenchContext context, FrameworkNodeManager nodeManager) {
+        super(context);
+        this.nodeManager = nodeManager;
+    }
 
-	protected void initialize() {
-		super.initialize();
-		this.initializeTextAndMnemonic("file.close");
-		this.initializeIcon("file.close");
-		this.initializeToolTipText("file.close.toolTipText");
-		this.initializeAccelerator("file.close.ACCELERATOR");
+    protected void initialize() {
+        super.initialize();
+        this.initializeTextAndMnemonic("file.close");
+        this.initializeIcon("file.close");
+        this.initializeToolTipText("file.close.toolTipText");
+        this.initializeAccelerator("file.close.ACCELERATOR");
 
-		this.treeSelectionListener = buildTreeSelectionListener();
-		this.windowListener = buildWorkbenchWindowListener();
-		
-		this.currentWindow().addWindowListener(this.windowListener);
-		this.navigatorSelectionModel().addTreeSelectionListener(this.treeSelectionListener);
-		
-		this.updateEnabledState();
-	}
+        this.treeSelectionListener = buildTreeSelectionListener();
+        this.windowListener = buildWorkbenchWindowListener();
 
-	private TreeSelectionListener buildTreeSelectionListener() {
-		return new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
-				synchronized (WorkbenchCloseAction.this) {
-					WorkbenchCloseAction.this.update();
-				}
-			}
-		};
-	}
+        this.currentWindow().addWindowListener(this.windowListener);
+        this.navigatorSelectionModel().addTreeSelectionListener(this.treeSelectionListener);
 
-	private WindowListener buildWorkbenchWindowListener() {
-		return new WindowAdapter() {
-			public void windowClosed(WindowEvent e) {
-				WorkbenchCloseAction.this.workbenchWindowClosed();
-			}
-		};
-	}
+        this.updateEnabledState();
+    }
 
-	void update() {
-		this.updateEnabledState();
-	}
-	
-	private void updateEnabledState() {
-		this.setEnabled(this.selectedProjectNodes().length > 0);
-	}
-	
-	protected void execute() {
-		this.nodeManager.close(this.selectedProjectNodes(), this.getWorkbenchContext());
-	}
-	
-	void workbenchWindowClosed() {
-		this.navigatorSelectionModel().removeTreeSelectionListener(this.treeSelectionListener);
-		// stop listening to the window, or, for some odd reason,
-		// we will receive the WINDOW_CLOSED event twice...
-		this.currentWindow().removeWindowListener(this.windowListener);
-	}
+    private TreeSelectionListener buildTreeSelectionListener() {
+        return new TreeSelectionListener() {
+            public void valueChanged(TreeSelectionEvent e) {
+                synchronized (WorkbenchCloseAction.this) {
+                    WorkbenchCloseAction.this.update();
+                }
+            }
+        };
+    }
+
+    private WindowListener buildWorkbenchWindowListener() {
+        return new WindowAdapter() {
+            public void windowClosed(WindowEvent e) {
+                WorkbenchCloseAction.this.workbenchWindowClosed();
+            }
+        };
+    }
+
+    void update() {
+        this.updateEnabledState();
+    }
+
+    private void updateEnabledState() {
+        this.setEnabled(this.selectedProjectNodes().length > 0);
+    }
+
+    protected void execute() {
+        this.nodeManager.close(this.selectedProjectNodes(), this.getWorkbenchContext());
+    }
+
+    void workbenchWindowClosed() {
+        this.navigatorSelectionModel().removeTreeSelectionListener(this.treeSelectionListener);
+        // stop listening to the window, or, for some odd reason,
+        // we will receive the WINDOW_CLOSED event twice...
+        this.currentWindow().removeWindowListener(this.windowListener);
+    }
 
 }

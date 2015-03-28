@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,26 +15,26 @@
 import org.eclipse.persistence.testing.jaxb.employee.Employee;
 
 public class ClassB {
-	public String classBVariable;
+    public String classBVariable;
 
-	public String getClassBVariable() {
-		return classBVariable;
-	}
+    public String getClassBVariable() {
+        return classBVariable;
+    }
 
-	public void setClassBVariable(String classBVariable) {
-		this.classBVariable = classBVariable;
-	}
-	
-	public boolean equals(Object object) {
-		ClassB classBObject = ((ClassB)object);
-		
-		if(classBObject.getClassBVariable()== null && this.getClassBVariable() ==null){
-			return true;
-		}
-		
-		if(classBObject.getClassBVariable().equals(this.getClassBVariable())){
-			return true;
-		}
-		return false;
-	}
+    public void setClassBVariable(String classBVariable) {
+        this.classBVariable = classBVariable;
+    }
+
+    public boolean equals(Object object) {
+        ClassB classBObject = ((ClassB)object);
+
+        if(classBObject.getClassBVariable()== null && this.getClassBVariable() ==null){
+            return true;
+        }
+
+        if(classBObject.getClassBVariable().equals(this.getClassBVariable())){
+            return true;
+        }
+        return false;
+    }
 }

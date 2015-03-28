@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -33,86 +33,86 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.CellRendererAdapter;
 
 abstract class AbstractGenerateTablesFromDescriptorsAction extends AbstractFrameworkAction {
 
-	AbstractGenerateTablesFromDescriptorsAction(WorkbenchContext context) {
-		super(context);
-	}
+    AbstractGenerateTablesFromDescriptorsAction(WorkbenchContext context) {
+        super(context);
+    }
 
-	protected void generateTablesFromDescriptors(Collection descriptors) {
-		ApplicationNode selectedNode = selectedNodes()[0];
-		MWProject project = (MWProject) selectedNode.getProjectRoot().getValue();
-		boolean projectDirty = project.isDirtyBranch();
-		int result = notifyClassDefinitionMayChange(projectDirty);
+    protected void generateTablesFromDescriptors(Collection descriptors) {
+        ApplicationNode selectedNode = selectedNodes()[0];
+        MWProject project = (MWProject) selectedNode.getProjectRoot().getValue();
+        boolean projectDirty = project.isDirtyBranch();
+        int result = notifyClassDefinitionMayChange(projectDirty);
 
-		if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
-			return;
-		}
-		
-		if (!projectDirty && result == JOptionPane.NO_OPTION) {
-			return;
-		}
+        if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
+            return;
+        }
 
-		if ((result == JOptionPane.YES_OPTION) && projectDirty) {
-			selectedNode.save(null, getWorkbenchContext());
-		}
+        if (!projectDirty && result == JOptionPane.NO_OPTION) {
+            return;
+        }
 
-		TableGenerator generator = new TableGenerator(getWorkbenchContext());
-		StatusDialog.Status status = generator.generateTablesFromDescriptors(descriptors);
-		showResult(status);
-	}
+        if ((result == JOptionPane.YES_OPTION) && projectDirty) {
+            selectedNode.save(null, getWorkbenchContext());
+        }
 
-	private int notifyClassDefinitionMayChange(boolean projectDirty) {
-		String messageKey;
-		if (projectDirty)
-			messageKey = "AUTO_GENERATING_TABLE_DEFINITIONS_STATUS_MESSAGE_SAVE";
-		else
-			messageKey = "AUTO_GENERATING_TABLE_DEFINITIONS_STATUS_MESSAGE";
+        TableGenerator generator = new TableGenerator(getWorkbenchContext());
+        StatusDialog.Status status = generator.generateTablesFromDescriptors(descriptors);
+        showResult(status);
+    }
 
-		LabelArea label = new LabelArea(resourceRepository().getString(messageKey));
+    private int notifyClassDefinitionMayChange(boolean projectDirty) {
+        String messageKey;
+        if (projectDirty)
+            messageKey = "AUTO_GENERATING_TABLE_DEFINITIONS_STATUS_MESSAGE_SAVE";
+        else
+            messageKey = "AUTO_GENERATING_TABLE_DEFINITIONS_STATUS_MESSAGE";
 
-		return JOptionPane.showConfirmDialog(
-			currentWindow(), 
-			label,
-			application().getShortProductName(),
-			projectDirty ? JOptionPane.YES_NO_CANCEL_OPTION : JOptionPane.YES_NO_OPTION,
-			JOptionPane.INFORMATION_MESSAGE
-		);
-	}
+        LabelArea label = new LabelArea(resourceRepository().getString(messageKey));
 
-	private void showResult(StatusDialog.Status status) {
-		StatusDialog dialog = new StatusDialog(
-			getWorkbenchContext(),
-			Collections.singletonList(status),
-			"AUTO_GENERATING_TABLE_DEFINITIONS_STATUS_DIALOG_TITLE")
-		{
-			protected CellRendererAdapter buildNodeRenderer(Object value) {
-				if (value instanceof MWProject) {
-					return new ProjectCellRendererAdapter(resourceRepository());
-				}
+        return JOptionPane.showConfirmDialog(
+            currentWindow(),
+            label,
+            application().getShortProductName(),
+            projectDirty ? JOptionPane.YES_NO_CANCEL_OPTION : JOptionPane.YES_NO_OPTION,
+            JOptionPane.INFORMATION_MESSAGE
+        );
+    }
 
-				if (value instanceof MWDescriptor) {
-					return new DescriptorCellRendererAdapter(resourceRepository());
-				}
+    private void showResult(StatusDialog.Status status) {
+        StatusDialog dialog = new StatusDialog(
+            getWorkbenchContext(),
+            Collections.singletonList(status),
+            "AUTO_GENERATING_TABLE_DEFINITIONS_STATUS_DIALOG_TITLE")
+        {
+            protected CellRendererAdapter buildNodeRenderer(Object value) {
+                if (value instanceof MWProject) {
+                    return new ProjectCellRendererAdapter(resourceRepository());
+                }
 
-				if (value instanceof MWError) {
-					return new MWErrorCellRendererAdapter() {
-						public Icon buildIcon(Object value) {
-							MWError error = (MWError) value;
+                if (value instanceof MWDescriptor) {
+                    return new DescriptorCellRendererAdapter(resourceRepository());
+                }
 
-							if (error.getErrorId().endsWith("ASSUMPTION"))
-								return resourceRepository().getIcon("ignore");
+                if (value instanceof MWError) {
+                    return new MWErrorCellRendererAdapter() {
+                        public Icon buildIcon(Object value) {
+                            MWError error = (MWError) value;
 
-							if (error.getErrorId().endsWith("URGENT"))
-								return resourceRepository().getIcon("urgent");
+                            if (error.getErrorId().endsWith("ASSUMPTION"))
+                                return resourceRepository().getIcon("ignore");
 
-							return super.buildIcon(value);
-						}
-					};
-				}
+                            if (error.getErrorId().endsWith("URGENT"))
+                                return resourceRepository().getIcon("urgent");
 
-				return super.buildNodeRenderer(value);
-			}
-		};
+                            return super.buildIcon(value);
+                        }
+                    };
+                }
 
-		dialog.setVisible(true);
-	}
+                return super.buildNodeRenderer(value);
+            }
+        };
+
+        dialog.setVisible(true);
+    }
 }

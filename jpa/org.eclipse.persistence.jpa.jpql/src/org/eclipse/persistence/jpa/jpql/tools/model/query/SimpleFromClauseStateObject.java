@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,130 +35,130 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
  */
 public class SimpleFromClauseStateObject extends AbstractFromClauseStateObject {
 
-	/**
-	 * Creates a new <code>SimpleFromClauseStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SimpleFromClauseStateObject(SimpleSelectStatementStateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>SimpleFromClauseStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SimpleFromClauseStateObject(SimpleSelectStatementStateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * Adds a new derived collection declaration to the <code><b>FROM</b></code> clause.
-	 *
-	 * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
-	 * declaration
-	 */
-	public CollectionMemberDeclarationStateObject addDerivedCollectionDeclaration() {
-		CollectionMemberDeclarationStateObject stateObject = new CollectionMemberDeclarationStateObject(this);
-		addItem(stateObject);
-		return stateObject;
-	}
+    /**
+     * Adds a new derived collection declaration to the <code><b>FROM</b></code> clause.
+     *
+     * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
+     * declaration
+     */
+    public CollectionMemberDeclarationStateObject addDerivedCollectionDeclaration() {
+        CollectionMemberDeclarationStateObject stateObject = new CollectionMemberDeclarationStateObject(this);
+        addItem(stateObject);
+        return stateObject;
+    }
 
-	/**
-	 * Adds a new derived collection declaration to the <code><b>FROM</b></code> clause.
-	 *
-	 * @param collectionValuedPath The collection-valued path expression
-	 * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
-	 * declaration
-	 */
-	public CollectionMemberDeclarationStateObject addDerivedCollectionDeclaration(String collectionValuedPath) {
+    /**
+     * Adds a new derived collection declaration to the <code><b>FROM</b></code> clause.
+     *
+     * @param collectionValuedPath The collection-valued path expression
+     * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
+     * declaration
+     */
+    public CollectionMemberDeclarationStateObject addDerivedCollectionDeclaration(String collectionValuedPath) {
 
-		CollectionMemberDeclarationStateObject stateObject = new CollectionMemberDeclarationStateObject(
-			this,
-			collectionValuedPath
-		);
+        CollectionMemberDeclarationStateObject stateObject = new CollectionMemberDeclarationStateObject(
+            this,
+            collectionValuedPath
+        );
 
-		addItem(stateObject);
-		return stateObject;
-	}
+        addItem(stateObject);
+        return stateObject;
+    }
 
-	/**
-	 * Adds a new derived identification variable declaration to the <code><b>FROM</b></code> clause.
-	 *
-	 * @return The {@link DerivedPathIdentificationVariableDeclarationStateObject} representing the
-	 * path declaration
-	 */
-	public DerivedPathIdentificationVariableDeclarationStateObject addDerivedPathDeclaration() {
-		DerivedPathIdentificationVariableDeclarationStateObject stateObject = new DerivedPathIdentificationVariableDeclarationStateObject(this);
-		addItem(stateObject);
-		return stateObject;
-	}
+    /**
+     * Adds a new derived identification variable declaration to the <code><b>FROM</b></code> clause.
+     *
+     * @return The {@link DerivedPathIdentificationVariableDeclarationStateObject} representing the
+     * path declaration
+     */
+    public DerivedPathIdentificationVariableDeclarationStateObject addDerivedPathDeclaration() {
+        DerivedPathIdentificationVariableDeclarationStateObject stateObject = new DerivedPathIdentificationVariableDeclarationStateObject(this);
+        addItem(stateObject);
+        return stateObject;
+    }
 
-	/**
-	 * Adds a new derived identification variable declaration to the <code><b>FROM</b></code> clause.
-	 *
-	 * @param path Either the derived singled-valued object field or the collection-valued path expression
-	 * @param identificationVariable The identification variable defining the given path
-	 * @return The {@link DerivedPathIdentificationVariableDeclarationStateObject} representing the
-	 * path declaration
-	 */
-	public DerivedPathIdentificationVariableDeclarationStateObject addDerivedPathDeclaration(String path,
-	                                                                                         String identificationVariable) {
+    /**
+     * Adds a new derived identification variable declaration to the <code><b>FROM</b></code> clause.
+     *
+     * @param path Either the derived singled-valued object field or the collection-valued path expression
+     * @param identificationVariable The identification variable defining the given path
+     * @return The {@link DerivedPathIdentificationVariableDeclarationStateObject} representing the
+     * path declaration
+     */
+    public DerivedPathIdentificationVariableDeclarationStateObject addDerivedPathDeclaration(String path,
+                                                                                             String identificationVariable) {
 
-		DerivedPathIdentificationVariableDeclarationStateObject stateObject = new DerivedPathIdentificationVariableDeclarationStateObject(
-			this,
-			path,
-			identificationVariable
-		);
+        DerivedPathIdentificationVariableDeclarationStateObject stateObject = new DerivedPathIdentificationVariableDeclarationStateObject(
+            this,
+            path,
+            identificationVariable
+        );
 
-		addItem(stateObject);
-		return stateObject;
-	}
+        addItem(stateObject);
+        return stateObject;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String declarationBNF() {
-		return InternalSimpleFromClauseBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String declarationBNF() {
+        return InternalSimpleFromClauseBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public IManagedType findManagedType(StateObject stateObject) {
-		IManagedType managedType = getManagedType(stateObject);
-		if (managedType == null) {
-			managedType = getParent().getParent().getDeclaration().findManagedType(stateObject);
-		}
-		return managedType;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public IManagedType findManagedType(StateObject stateObject) {
+        IManagedType managedType = getManagedType(stateObject);
+        if (managedType == null) {
+            managedType = getParent().getParent().getDeclaration().findManagedType(stateObject);
+        }
+        return managedType;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SimpleFromClause getExpression() {
-		return (SimpleFromClause) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SimpleFromClause getExpression() {
+        return (SimpleFromClause) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SimpleSelectStatementStateObject getParent() {
-		return (SimpleSelectStatementStateObject) super.getParent();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SimpleSelectStatementStateObject getParent() {
+        return (SimpleSelectStatementStateObject) super.getParent();
+    }
 
-	/**
-	 * Keeps a reference of the {@link SimpleFromClause parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link SimpleFromClause parsed object} representing a subquery
-	 * <code><b>FROM</b></code> clause
-	 */
-	public void setExpression(SimpleFromClause expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link SimpleFromClause parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link SimpleFromClause parsed object} representing a subquery
+     * <code><b>FROM</b></code> clause
+     */
+    public void setExpression(SimpleFromClause expression) {
+        super.setExpression(expression);
+    }
 }

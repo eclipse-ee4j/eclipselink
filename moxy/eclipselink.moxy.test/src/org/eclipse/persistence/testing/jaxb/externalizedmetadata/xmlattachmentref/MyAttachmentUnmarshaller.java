@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,19 +28,19 @@ public class MyAttachmentUnmarshaller extends AttachmentUnmarshaller {
     public MyAttachmentUnmarshaller() {
         getAttachmentAsDataHandlerWasCalled = false;
     }
-    
+
     public byte[] getAttachmentAsByteArray(String cid) {
-    	Object obj = MyAttachmentMarshaller.attachments.get(cid);
-    	if(obj instanceof byte[]){
-    		return (byte[])obj;
-    	}
-    	
+        Object obj = MyAttachmentMarshaller.attachments.get(cid);
+        if(obj instanceof byte[]){
+            return (byte[])obj;
+        }
+
         try {
-			return ((String)((DataHandler)obj).getContent()).getBytes();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+            return ((String)((DataHandler)obj).getContent()).getBytes();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public DataHandler getAttachmentAsDataHandler(String cid) {
@@ -56,7 +56,7 @@ public class MyAttachmentUnmarshaller extends AttachmentUnmarshaller {
         // force attachment usage
         return true;
     }
-    
+
     public boolean getAttachmentAsDataHandlerWasCalled() {
         return this.getAttachmentAsDataHandlerWasCalled;
     }

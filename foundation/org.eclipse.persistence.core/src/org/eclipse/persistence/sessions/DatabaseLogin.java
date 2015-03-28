@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
 import java.io.*;
@@ -69,16 +69,16 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /** Stores the value for the number of time EclipseLink will attempt to reconnect the connection on a comm failure
      *  in the case EclipseLink is attempting to retry a query.  EclipseLink will retry a read query outside of a transaction
-     *  if EclipseLink can determine that a communication error occurred with the database.  
+     *  if EclipseLink can determine that a communication error occurred with the database.
      */
     protected int queryRetryAttemptCount;
-    
+
     /** Stores the number of milliseconds that EclipseLink will wait between attempts to reconnect a DatabaseConnection
      *  in the case EclipseLink is attempting to retry a query.  EclipseLink will retry a read query outside of a transaction
      *  if EclipseLink can determine that a communication error occurred with the database.
      */
     protected int delayBetweenConnectionAttempts;
-    
+
     /**
      * On an SQL Exception EclipseLink will ping the database to determine
      * if the connection used can continue to be used for queries.  This should have no impact on applications
@@ -90,7 +90,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * Setting to true or false overrides this.
      */
     protected Boolean connectionHealthValidatedOnError;
-    
+
     /**
      * PUBLIC:
      * Create a new login.
@@ -127,7 +127,7 @@ public class DatabaseLogin extends DatasourceLogin {
     public void addStructConverter(StructConverter converter){
         getPlatform().addStructConverter(converter);
     }
-    
+
     /**
      * PUBLIC:
      * Bind all arguments to any SQL statement.
@@ -243,7 +243,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * Used for table creation. Most databases do not create an index automatically for
      * foreign key columns.  Normally it is recommended to index foreign key columns.
      * This allows for foreign key indexes to be configured, by default foreign keys are not indexed.
-     * 
+     *
      * @return whether an index should be created explicitly for foreign key constraints
      */
     public boolean shouldCreateIndicesOnForeignKeys() {
@@ -324,7 +324,7 @@ public class DatabaseLogin extends DatasourceLogin {
     public String getDataSourceName() throws ValidationException {
         return getDatabaseURL();
     }
-    
+
     /**
      * PUBLIC:
      * Return the datasource platform specific information.
@@ -395,11 +395,11 @@ public class DatabaseLogin extends DatasourceLogin {
     public String getPingSQL(){
         return getPlatform().getPingSQL();
     }
-    
+
 
     /**
      * PUBLIC:
-     * Return the number of attempts EclipseLink should make to re-connect to a database and re-execute 
+     * Return the number of attempts EclipseLink should make to re-connect to a database and re-execute
      * a query after a query has failed because of a communication issue.
      * EclipseLink will only attempt to reconnect when EclipseLink can determine that a communication failure occurred
      * on a read query executed outside of a transaction.  By default EclipseLink will attempt to retry the
@@ -470,10 +470,10 @@ public class DatabaseLogin extends DatasourceLogin {
     }
 
     /**
-     * PUBLIC: 
+     * PUBLIC:
      * Get the String used on all table creation statements generated from the DefaultTableGenerator
      * with a session using this project (DDL generation).  This value will be appended to CreationSuffix strings
-     * stored on the DatabaseTable or TableDefinition.  
+     * stored on the DatabaseTable or TableDefinition.
      */
     public String getTableCreationSuffix(){
         return getPlatform().getTableCreationSuffix();
@@ -777,7 +777,7 @@ public class DatabaseLogin extends DatasourceLogin {
         getDefaultConnector().setDatabaseURL(databaseURL);
     }
 
-    
+
     /**
      * PUBLIC:
      * The data source name is required if connecting through ODBC (JDBC-ODBC, etc.).
@@ -798,10 +798,10 @@ public class DatabaseLogin extends DatasourceLogin {
     public void setPingSQL(String pingSQL){
         getPlatform().setPingSQL(pingSQL);
     }
-    
+
     /**
      * PUBLIC:
-     * Set the number of attempts EclipseLink should make to re-connect to a database and re-execute 
+     * Set the number of attempts EclipseLink should make to re-connect to a database and re-execute
      * a query after a query has failed because of a communication issue.
      * EclipseLink will only attempt to reconnect when EclipseLink can determine that a communication failure occurred
      * on a read query executed outside of a transaction.  By default EclipseLink will attempt to retry the
@@ -940,10 +940,10 @@ public class DatabaseLogin extends DatasourceLogin {
     }
 
     /**
-     * PUBLIC: 
+     * PUBLIC:
      * Get the String used on all table creation statements generated from the DefaultTableGenerator
      * with a session using this project (DDL generation).  This value will be appended to CreationSuffix strings
-     * stored on the DatabaseTable or TableDefinition.  
+     * stored on the DatabaseTable or TableDefinition.
      * ie setTableCreationSuffix("engine=InnoDB");
      */
     public void setTableCreationSuffix(String tableCreationSuffix){
@@ -1032,7 +1032,7 @@ public class DatabaseLogin extends DatasourceLogin {
     public void setUsesStringBinding(boolean usesStringBindingSize) {
         getPlatform().setUsesStringBinding(usesStringBindingSize);
     }
-    
+
     /**
      * PUBLIC:
      * Return callback.
@@ -1345,7 +1345,7 @@ public class DatabaseLogin extends DatasourceLogin {
     public void useDirectDriverConnect() {
         setConnector(new DirectConnector());
     }
-    
+
     /**
      * PUBLIC:
      * Specify the J2EE DataSource name to connect to.
@@ -1356,7 +1356,7 @@ public class DatabaseLogin extends DatasourceLogin {
         setConnector(new JNDIConnector(dataSource));
         useExternalConnectionPooling();
     }
-    
+
     /**
      * PUBLIC:
      * Specify the J2EE JTA enabled DataSource name to connect to.
@@ -1557,7 +1557,7 @@ public class DatabaseLogin extends DatasourceLogin {
      */
     public void useNativeSequencing() {
         if(!shouldUseNativeSequencing()) {
-            getPlatform().setDefaultSequence(new NativeSequence(getPlatform().getDefaultSequence().getName(), 
+            getPlatform().setDefaultSequence(new NativeSequence(getPlatform().getDefaultSequence().getName(),
                     getPlatform().getDefaultSequence().getPreallocationSize(),
                     getPlatform().getDefaultSequence().getInitialValue()));
         }
@@ -1815,7 +1815,7 @@ public class DatabaseLogin extends DatasourceLogin {
         setDriverClassName("weblogic.jdbc.t3.Driver");
         setDriverURLHeader("jdbc:weblogic:t3:");
     }
-    /** 
+    /**
      * PUBLIC:
      * Returns the number of milliseconds that EclipseLink will wait between attempts to reconnect a DatabaseConnection
      * in the case EclipseLink is attempting to retry a query, the default is 5000.  EclipseLink will retry a read query outside of a transaction
@@ -1825,7 +1825,7 @@ public class DatabaseLogin extends DatasourceLogin {
         return delayBetweenConnectionAttempts;
     }
 
-    /** 
+    /**
      * PUBLIC:
      * Stores the number of milliseconds that EclipseLink will wait between attempts to reconnect a DatabaseConnection
      * in the case EclipseLink is attempting to retry a query.  EclipseLink will retry a read query outside of a transaction
@@ -1860,7 +1860,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
      * If that is the case and the application is experiencing a performance impact from the health check then
      * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
-     * retry queries in the case of database failure. 
+     * retry queries in the case of database failure.
      * By default (null) connection health is validate if the query does not have a timeout, and there is a ping string.
      * Setting to true or false overrides this.
      */
@@ -1878,7 +1878,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
      * If that is the case and the application is experiencing a performance impact from the health check then
      * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
-     * retry queries in the case of database failure. 
+     * retry queries in the case of database failure.
      * By default (null) connection health is validate if the query does not have a timeout, and there is a ping string.
      * Setting to true or false overrides this.
      */

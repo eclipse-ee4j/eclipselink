@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -61,93 +61,93 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IQuery;
  */
 public class DefaultJPQLQueryHelper extends AbstractJPQLQueryHelper {
 
-	/**
-	 * Creates a new <code>DefaultJPQLQueryHelper</code>.
-	 *
-	 * @param jpqlGrammar The {@link JPQLGrammar} that will determine how to parse JPQL queries
-	 */
-	public DefaultJPQLQueryHelper(JPQLGrammar jpqlGrammar) {
-		super(jpqlGrammar);
-	}
+    /**
+     * Creates a new <code>DefaultJPQLQueryHelper</code>.
+     *
+     * @param jpqlGrammar The {@link JPQLGrammar} that will determine how to parse JPQL queries
+     */
+    public DefaultJPQLQueryHelper(JPQLGrammar jpqlGrammar) {
+        super(jpqlGrammar);
+    }
 
-	/**
-	 * Creates a new <code>JPQLQueryHelper</code>.
-	 *
-	 * @param queryContext The context used to query information about the JPQL query
-	 */
-	public DefaultJPQLQueryHelper(JPQLQueryContext queryContext) {
-		super(queryContext);
-	}
+    /**
+     * Creates a new <code>JPQLQueryHelper</code>.
+     *
+     * @param queryContext The context used to query information about the JPQL query
+     */
+    public DefaultJPQLQueryHelper(JPQLQueryContext queryContext) {
+        super(queryContext);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public BasicRefactoringTool buildBasicRefactoringTool() {
-		return new DefaultBasicRefactoringTool(
-			getQuery().getExpression(),
-			getGrammar(),
-			getProvider()
-		);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BasicRefactoringTool buildBasicRefactoringTool() {
+        return new DefaultBasicRefactoringTool(
+            getQuery().getExpression(),
+            getGrammar(),
+            getProvider()
+        );
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractContentAssistVisitor buildContentAssistVisitor(JPQLQueryContext queryContext) {
-		return new DefaultContentAssistVisitor(queryContext);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractContentAssistVisitor buildContentAssistVisitor(JPQLQueryContext queryContext) {
+        return new DefaultContentAssistVisitor(queryContext);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DefaultGrammarValidator buildGrammarValidator(JPQLGrammar jpqlGrammar) {
-		return new DefaultGrammarValidator(jpqlGrammar);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected DefaultGrammarValidator buildGrammarValidator(JPQLGrammar jpqlGrammar) {
+        return new DefaultGrammarValidator(jpqlGrammar);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLQueryContext buildJPQLQueryContext(JPQLGrammar jpqlGrammar) {
-		return new DefaultJPQLQueryContext(jpqlGrammar);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLQueryContext buildJPQLQueryContext(JPQLGrammar jpqlGrammar) {
+        return new DefaultJPQLQueryContext(jpqlGrammar);
+    }
 
-	/**
-	 * Creates the right {@link IJPQLQueryBuilder} based on the JPQL grammar.
-	 *
-	 * @return A new concrete instance of {@link IJPQLQueryBuilder}
-	 */
-	protected IJPQLQueryBuilder buildQueryBuilder() {
-		switch (getGrammar().getJPAVersion()) {
-			case VERSION_1_0: return new JPQLQueryBuilder1_0();
-			case VERSION_2_0: return new JPQLQueryBuilder2_0();
-			default:          return new JPQLQueryBuilder2_1();
-		}
-	}
+    /**
+     * Creates the right {@link IJPQLQueryBuilder} based on the JPQL grammar.
+     *
+     * @return A new concrete instance of {@link IJPQLQueryBuilder}
+     */
+    protected IJPQLQueryBuilder buildQueryBuilder() {
+        switch (getGrammar().getJPAVersion()) {
+            case VERSION_1_0: return new JPQLQueryBuilder1_0();
+            case VERSION_2_0: return new JPQLQueryBuilder2_0();
+            default:          return new JPQLQueryBuilder2_1();
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public RefactoringTool buildRefactoringTool() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RefactoringTool buildRefactoringTool() {
 
-		IQuery query = getQuery();
+        IQuery query = getQuery();
 
-		return new DefaultRefactoringTool(
-			query.getProvider(),
-			buildQueryBuilder(),
-			query.getExpression()
-		);
-	}
+        return new DefaultRefactoringTool(
+            query.getProvider(),
+            buildQueryBuilder(),
+            query.getExpression()
+        );
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DefaultSemanticValidator buildSemanticValidator(JPQLQueryContext queryContext) {
-		return new DefaultSemanticValidator(queryContext);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected DefaultSemanticValidator buildSemanticValidator(JPQLQueryContext queryContext) {
+        return new DefaultSemanticValidator(queryContext);
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.types;
 
 import java.util.*;
@@ -185,7 +185,7 @@ public class StringTester extends TypeTester {
                 throw new TestWarningException("Trailing blanks were removed");
             }
 
-            // Databases which remove leading blanks			
+            // Databases which remove leading blanks
             if ((getVarString().length() > 0) && (getVarString().charAt(0) == ' ') && getVarString().trim().equals(((StringTester)testCase.getObjectFromDatabase()).getVarString())) {
                 throw new TestWarningException("Leading blanks were removed");
             }
@@ -195,7 +195,7 @@ public class StringTester extends TypeTester {
                 throw new TestWarningException("The string was truncated.");
             }
 
-            // Char fields always are trimmed (by us)		
+            // Char fields always are trimmed (by us)
             if ((getFixedString().length() > 0) && (getFixedString().charAt(getFixedString().length() - 1) == ' ') && getFixedString().trim().equals(((StringTester)testCase.getObjectFromDatabase()).getFixedString())) {
                 throw new TestWarningException("Trailing blanks were removed from char field.");
             }

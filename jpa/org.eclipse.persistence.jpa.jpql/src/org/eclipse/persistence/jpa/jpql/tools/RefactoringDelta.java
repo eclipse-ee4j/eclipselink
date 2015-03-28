@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,32 +32,32 @@ package org.eclipse.persistence.jpa.jpql.tools;
  */
 public interface RefactoringDelta {
 
-	/**
-	 * Applies the changes to the JPQL query and returns the refactoring operations. The list of {@link
-	 * TextEdit} will be cleared.
-	 */
-	String applyChanges();
+    /**
+     * Applies the changes to the JPQL query and returns the refactoring operations. The list of {@link
+     * TextEdit} will be cleared.
+     */
+    String applyChanges();
 
-	/**
-	 * Determines whether at least one {@link TextEdit} was added.
-	 *
-	 * @return <code>true</code> if there is at least one {@link TextEdit}; <code>false</code> otherwise
-	 */
-	boolean hasTextEdits();
+    /**
+     * Determines whether at least one {@link TextEdit} was added.
+     *
+     * @return <code>true</code> if there is at least one {@link TextEdit}; <code>false</code> otherwise
+     */
+    boolean hasTextEdits();
 
-	/**
-	 * Returns the number of {@link TextEdit} objects that have been added.
-	 *
-	 * @return The count of {@link TextEdit} objects
-	 */
-	int size();
+    /**
+     * Returns the number of {@link TextEdit} objects that have been added.
+     *
+     * @return The count of {@link TextEdit} objects
+     */
+    int size();
 
-	/**
-	 * Returns the collection of {@link TextEdit} objects that have been added during one or several
-	 * refactoring operations. The collection has been ordered where the {@link TextEdit}'s offset
-	 * are in reverse order, i.e. from the biggest to the smallest values.
-	 *
-	 * @return The ordered collection of {@link TextEdit} objects
-	 */
-	Iterable<TextEdit> textEdits();
+    /**
+     * Returns the collection of {@link TextEdit} objects that have been added during one or several
+     * refactoring operations. The collection has been ordered where the {@link TextEdit}'s offset
+     * are in reverse order, i.e. from the biggest to the smallest values.
+     *
+     * @return The ordered collection of {@link TextEdit} objects
+     */
+    Iterable<TextEdit> textEdits();
 }

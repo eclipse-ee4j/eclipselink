@@ -58,9 +58,9 @@
                 <column name="CONSUMER_IQ"/>
             </basic>
             <many-to-many name="committees">
-                <!--  
+                <!--
                     Expert beer consumer will use the join table as is here, whereas, novice
-                    beer consumer will provide an association override.    
+                    beer consumer will provide an association override.
                 -->
                 <join-table name="XML_EBC_COMMITTEE">
                     <join-column name="XML_EBC_ID" referenced-column-name="ID"/>
@@ -88,8 +88,8 @@
             </element-collection>
             <embedded name="accredidation">
                 <!--
-                    Expert beer consumer will use these overrides, whereas, novice beer 
-                    consumer will override them by defining class level overrides. 
+                    Expert beer consumer will use these overrides, whereas, novice beer
+                    consumer will override them by defining class level overrides.
                  -->
                  <attribute-override name="details">
                     <column name="ACCREDIDATION"/>
@@ -337,9 +337,9 @@
                 </map-key-attribute-override>
                 <column name="DETAILS"/>
                 <collection-table name="XML_EBC_CELEBRATIONS">
-                    <join-column name="XML_EBC_ID"/>            
-                </collection-table>    
-            </element-collection>    
+                    <join-column name="XML_EBC_ID"/>
+                </collection-table>
+            </element-collection>
         </attributes>
     </entity>
     <entity name="XML_COMMITTEE" class="Committee" access="PROPERTY">
@@ -428,8 +428,8 @@
     <embeddable class="Accredidation">
         <attributes>
             <basic name="details">
-                <!-- 
-                    Expert beer consumer will use the attribute override from the 
+                <!--
+                    Expert beer consumer will use the attribute override from the
                     accredidation mapping from RatedBeerConsumer, whereas, novice beer
                     consumer will provide a class level attribute override to override
                     the above mentioned attribute override.
@@ -440,12 +440,12 @@
             </basic>
             <one-to-many name="officials">
                 <!--
-                    Expert beer consumer will use the association overrides from the 
+                    Expert beer consumer will use the association overrides from the
                     accredidation mapping from RatedBeerConsumer, whereas, novice beer
                     consumer will provide a class level association override to override
                     the above mentioned association override.
                     If these overrides are not picked up, this join column will be picked up
-                    and errors will occur.            
+                    and errors will occur.
                  -->
                 <join-column name="BOGUS_JOIN_COLUMN_NAME"/>
                 <cascade>
@@ -454,13 +454,13 @@
                 </cascade>
             </one-to-many>
             <many-to-many name="witnesses">
-                <!-- 
-                    Expert beer consumer will use the association overrides from the 
+                <!--
+                    Expert beer consumer will use the association overrides from the
                     accredidation mapping from RatedBeerConsumer, whereas, novice beer
                     consumer will provide a class level association override to override
                     the above mentioned association override.
                     If these overrides are not picked up, the join table will default
-                    and errors will occur.            
+                    and errors will occur.
                  -->
                  <join-table name="BOGUS_JOIN_TABLE_NAME"/>
                  <cascade>

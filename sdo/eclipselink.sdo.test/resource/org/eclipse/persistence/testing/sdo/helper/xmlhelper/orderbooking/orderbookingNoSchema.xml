@@ -26,4 +26,4 @@
          <ns0:OrderComments>This order was issued from the SOA Retail Client.</ns0:OrderComments>
       </ns0:OrderInfo>
    </ns0:PurchaseOrder>
-</ns2:SOAOrderBookingProcessRequest> 
+</ns2:SOAOrderBookingProcessRequest>

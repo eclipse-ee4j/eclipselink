@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     10/27/2010-2.2 Guy Pelletier 
+ *     10/27/2010-2.2 Guy Pelletier
  *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
@@ -35,6 +35,6 @@ public class Loot implements Serializable {
     @AttributeOverrides ({
         @AttributeOverride(name="quantity.value", column=@Column(name="QTY_VALUE")),
         @AttributeOverride(name="cost.value", column=@Column(name="COST_VALUE"))
-    })    
+    })
     public Bag bag;
 }

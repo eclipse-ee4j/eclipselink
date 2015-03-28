@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -19,103 +19,103 @@ import java.util.ListIterator;
 import java.util.Stack;
 
 public class MyList<T> implements java.util.List<T>{
-	private List internalList;
-	
-	public MyList(){
-		internalList = new Stack();
-	}
-	
-	public boolean add(Object e) {
-		return internalList.add(e);
-	}
+    private List internalList;
 
-	public void add(int index, Object element) {
-		internalList.add(index, element);		
-	}
+    public MyList(){
+        internalList = new Stack();
+    }
 
-	public boolean addAll(Collection c) {
-		return internalList.addAll(c);
-	}
+    public boolean add(Object e) {
+        return internalList.add(e);
+    }
 
-	public boolean addAll(int index, Collection c) {
-		return internalList.addAll(index, c); 		
-	}
+    public void add(int index, Object element) {
+        internalList.add(index, element);
+    }
 
-	public void clear() {
-		internalList.clear();
-	}
+    public boolean addAll(Collection c) {
+        return internalList.addAll(c);
+    }
 
-	public boolean contains(Object o) {
-		return internalList.contains(o);
-	}
+    public boolean addAll(int index, Collection c) {
+        return internalList.addAll(index, c);
+    }
 
-	public boolean containsAll(Collection c) {
-		return internalList.containsAll(c);
-	}
+    public void clear() {
+        internalList.clear();
+    }
 
-	public T get(int index) {
-		return (T) internalList.get(index);
-	}
+    public boolean contains(Object o) {
+        return internalList.contains(o);
+    }
 
-	public int indexOf(Object o) {
-		return internalList.indexOf(o);
+    public boolean containsAll(Collection c) {
+        return internalList.containsAll(c);
+    }
 
-	}
+    public T get(int index) {
+        return (T) internalList.get(index);
+    }
 
-	public boolean isEmpty() {
-		return internalList.isEmpty();
-	}
+    public int indexOf(Object o) {
+        return internalList.indexOf(o);
 
-	public Iterator iterator() {
-		return internalList.iterator();
-	}
+    }
 
-	public int lastIndexOf(Object o) {
-		return internalList.lastIndexOf(o);
-	}
+    public boolean isEmpty() {
+        return internalList.isEmpty();
+    }
 
-	public ListIterator listIterator() {
-		return internalList.listIterator();
-	}
+    public Iterator iterator() {
+        return internalList.iterator();
+    }
 
-	public ListIterator listIterator(int index) {
-		return internalList.listIterator(index);
-	}
+    public int lastIndexOf(Object o) {
+        return internalList.lastIndexOf(o);
+    }
 
-	public boolean remove(Object o) {
-		return internalList.remove(o);
-	}
+    public ListIterator listIterator() {
+        return internalList.listIterator();
+    }
 
-	public T remove(int index) {
-		return (T) internalList.remove(index);
-	}
+    public ListIterator listIterator(int index) {
+        return internalList.listIterator(index);
+    }
 
-	public boolean removeAll(Collection c) {
-		return internalList.removeAll(c);
-	}
+    public boolean remove(Object o) {
+        return internalList.remove(o);
+    }
 
-	public boolean retainAll(Collection c) {
-		return internalList.retainAll(c);
-	}
+    public T remove(int index) {
+        return (T) internalList.remove(index);
+    }
 
-	public Object set(int index, Object element) {
-		return internalList.set(index, element);
-	}
+    public boolean removeAll(Collection c) {
+        return internalList.removeAll(c);
+    }
 
-	public int size() {
-		return internalList.size();
-	}
+    public boolean retainAll(Collection c) {
+        return internalList.retainAll(c);
+    }
 
-	public List subList(int fromIndex, int toIndex) {
-		return internalList.subList(fromIndex, toIndex);
-	}
+    public Object set(int index, Object element) {
+        return internalList.set(index, element);
+    }
 
-	public Object[] toArray() {
-		return internalList.toArray();
-	}
+    public int size() {
+        return internalList.size();
+    }
 
-	public Object[] toArray(Object[] a) {
-		return internalList.toArray(a);
-	}
+    public List subList(int fromIndex, int toIndex) {
+        return internalList.subList(fromIndex, toIndex);
+    }
+
+    public Object[] toArray() {
+        return internalList.toArray();
+    }
+
+    public Object[] toArray(Object[] a) {
+        return internalList.toArray(a);
+    }
 
 }

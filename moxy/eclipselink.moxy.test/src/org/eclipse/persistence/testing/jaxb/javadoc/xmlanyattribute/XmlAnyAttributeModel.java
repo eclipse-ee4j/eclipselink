@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,28 +22,28 @@ import javax.xml.namespace.QName;
 @XmlRootElement
 public class XmlAnyAttributeModel {
 
-	@XmlAnyAttribute
-	public Map<QName,Object> any;
-	public String title;
+    @XmlAnyAttribute
+    public Map<QName,Object> any;
+    public String title;
 
-	    public Map<QName,Object> getAny(){
-	        if( any == null ){
-	            any = new HashMap<QName,Object>();
-	        }
-	        return any;
-	    }
-	    
-	    @XmlElement
-	    public String getTitle(){
-	        return title;
-	    }
-	    public void setTitle( String value ){
-	        title = value;
-	    }
+        public Map<QName,Object> getAny(){
+            if( any == null ){
+                any = new HashMap<QName,Object>();
+            }
+            return any;
+        }
 
-     	public boolean equals(Object object) {
-     		XmlAnyAttributeModel x = ((XmlAnyAttributeModel)object);
-    		//return x.getTitle().equals(this.getTitle());
-     		return x.getAny().equals(this.getAny()) && x.getTitle().equals(this.getTitle());
-    	}
+        @XmlElement
+        public String getTitle(){
+            return title;
+        }
+        public void setTitle( String value ){
+            title = value;
+        }
+
+         public boolean equals(Object object) {
+             XmlAnyAttributeModel x = ((XmlAnyAttributeModel)object);
+            //return x.getTitle().equals(this.getTitle());
+             return x.getAny().equals(this.getAny()) && x.getTitle().equals(this.getTitle());
+        }
 }

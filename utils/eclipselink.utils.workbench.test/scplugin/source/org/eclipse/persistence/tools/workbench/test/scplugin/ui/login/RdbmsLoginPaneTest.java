@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -23,96 +23,96 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 
 public class RdbmsLoginPaneTest extends AbstractLoginPaneTest
 {
-	public RdbmsLoginPaneTest(SCAbstractPanelTest parentTest,
-									  PropertyValueModel nodeHolder,
-									  DatabaseLoginAdapter selection)
-	{
-		super(parentTest, nodeHolder, selection);
-	}
+    public RdbmsLoginPaneTest(SCAbstractPanelTest parentTest,
+                                      PropertyValueModel nodeHolder,
+                                      DatabaseLoginAdapter selection)
+    {
+        super(parentTest, nodeHolder, selection);
+    }
 
-	protected void _testComponentEntryDatabaseDriver() throws Exception
-	{
-		DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
-		login.setDatabaseDriverAsDriverManager();
-		login.setDriverClassName("something");
-		login.setConnectionURL("something");
+    protected void _testComponentEntryDatabaseDriver() throws Exception
+    {
+        DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
+        login.setDatabaseDriverAsDriverManager();
+        login.setDriverClassName("something");
+        login.setConnectionURL("something");
 
-		simulateMnemonic("CONNECTION_RDBMS_DATABASE_DRIVER_COMBO_BOX");
-		simulateKey(KeyEvent.VK_DOWN);
+        simulateMnemonic("CONNECTION_RDBMS_DATABASE_DRIVER_COMBO_BOX");
+        simulateKey(KeyEvent.VK_DOWN);
 
-		assertNull(login.getDriverClassName());
-		assertNull(login.getConnectionURL());
-	}
+        assertNull(login.getDriverClassName());
+        assertNull(login.getConnectionURL());
+    }
 
-	protected void _testComponentEntryDataSourceName() throws Exception
-	{
-		DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
-		login.setDatabaseDriverAsDataSource();
+    protected void _testComponentEntryDataSourceName() throws Exception
+    {
+        DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
+        login.setDatabaseDriverAsDataSource();
 
-		simulateMnemonic("CONNECTION_RDBMS_DATA_SOURCE_FIELD");
-		simulateTextInput("My Data Source");
+        simulateMnemonic("CONNECTION_RDBMS_DATA_SOURCE_FIELD");
+        simulateTextInput("My Data Source");
 
-		assertEquals("My Data Source", login.getDataSourceName());
-	}
+        assertEquals("My Data Source", login.getDataSourceName());
+    }
 
-	protected void _testComponentEntryDriverClass() throws Exception
-	{
-		DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
-		login.setDatabaseDriverAsDriverManager();
+    protected void _testComponentEntryDriverClass() throws Exception
+    {
+        DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
+        login.setDatabaseDriverAsDriverManager();
 
-		simulateMnemonic("CONNECTION_RDBMS_DRIVER_CLASS_COMBO_BOX");
-		simulateComboBoxTextInput("oracle.jdbc.driver.OracleDriver");
+        simulateMnemonic("CONNECTION_RDBMS_DRIVER_CLASS_COMBO_BOX");
+        simulateComboBoxTextInput("oracle.jdbc.driver.OracleDriver");
 
-		assertEquals("oracle.jdbc.driver.OracleDriver", login.getDriverClassName());
-	}
+        assertEquals("oracle.jdbc.driver.OracleDriver", login.getDriverClassName());
+    }
 
-	protected void _testComponentEntryDriverURL() throws Exception
-	{
-		DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
-		login.setDatabaseDriverAsDriverManager();
+    protected void _testComponentEntryDriverURL() throws Exception
+    {
+        DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
+        login.setDatabaseDriverAsDriverManager();
 
-		simulateMnemonic("CONNECTION_RDBMS_DRIVER_URL_COMBO_BOX");
-		simulateComboBoxTextInput("jdbc:oracle:thin:_tltest-2k:1521:anuj");
+        simulateMnemonic("CONNECTION_RDBMS_DRIVER_URL_COMBO_BOX");
+        simulateComboBoxTextInput("jdbc:oracle:thin:_tltest-2k:1521:anuj");
 
-		assertEquals("jdbc:oracle:thin:_tltest-2k:1521:anuj", login.getConnectionURL());
-	}
+        assertEquals("jdbc:oracle:thin:_tltest-2k:1521:anuj", login.getConnectionURL());
+    }
 
-	protected void _testFocusTransferDatabaseDriver() throws Exception
-	{
-		testFocusTransferByMnemonic("CONNECTION_RDBMS_DATABASE_DRIVER_COMBO_BOX", COMPONENT_COMBO_BOX);
-	}
+    protected void _testFocusTransferDatabaseDriver() throws Exception
+    {
+        testFocusTransferByMnemonic("CONNECTION_RDBMS_DATABASE_DRIVER_COMBO_BOX", COMPONENT_COMBO_BOX);
+    }
 
-	protected void _testFocusTransferDataSourceName() throws Exception
-	{
-		DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
-		login.setDatabaseDriverAsDataSource();
+    protected void _testFocusTransferDataSourceName() throws Exception
+    {
+        DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
+        login.setDatabaseDriverAsDataSource();
 
-		testFocusTransferByMnemonic("CONNECTION_RDBMS_DATA_SOURCE_FIELD", COMPONENT_TEXT_FIELD);
-	}
+        testFocusTransferByMnemonic("CONNECTION_RDBMS_DATA_SOURCE_FIELD", COMPONENT_TEXT_FIELD);
+    }
 
-	protected void _testFocusTransferDriverClass() throws Exception
-	{
-		DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
-		login.setDatabaseDriverAsDriverManager();
+    protected void _testFocusTransferDriverClass() throws Exception
+    {
+        DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
+        login.setDatabaseDriverAsDriverManager();
 
-		testFocusTransferByMnemonic("CONNECTION_RDBMS_DRIVER_CLASS_COMBO_BOX", COMPONENT_COMBO_BOX);
-	}
+        testFocusTransferByMnemonic("CONNECTION_RDBMS_DRIVER_CLASS_COMBO_BOX", COMPONENT_COMBO_BOX);
+    }
 
-	protected void _testFocusTransferDriverURL() throws Exception
-	{
-		DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
-		login.setDatabaseDriverAsDriverManager();
+    protected void _testFocusTransferDriverURL() throws Exception
+    {
+        DatabaseLoginAdapter login = (DatabaseLoginAdapter) getSelection();
+        login.setDatabaseDriverAsDriverManager();
 
-		testFocusTransferByMnemonic("CONNECTION_RDBMS_DRIVER_URL_COMBO_BOX", COMPONENT_COMBO_BOX);
-	}
+        testFocusTransferByMnemonic("CONNECTION_RDBMS_DRIVER_URL_COMBO_BOX", COMPONENT_COMBO_BOX);
+    }
 
-	protected JComponent buildPane() throws Exception
-	{
-		throw new IllegalAccessException();
-	}
+    protected JComponent buildPane() throws Exception
+    {
+        throw new IllegalAccessException();
+    }
 
-	protected String windowTitle()
-	{
-		return "RDBMS Login Pane";
-	}
+    protected String windowTitle()
+    {
+        return "RDBMS Login Pane";
+    }
 }

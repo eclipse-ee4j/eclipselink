@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland (Oracle) - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors.partitioning;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * @since EclipseLink 2.2
  */
 public class RoundRobinPartitioningPolicy extends ReplicationPartitioningPolicy {
-    
+
     protected volatile int currentIndex = 0;
 
     protected boolean replicateWrites = false;
@@ -41,7 +41,7 @@ public class RoundRobinPartitioningPolicy extends ReplicationPartitioningPolicy 
     public RoundRobinPartitioningPolicy() {
         super();
     }
-    
+
     public RoundRobinPartitioningPolicy(boolean replicateWrites) {
         super();
         this.replicateWrites = replicateWrites;
@@ -54,7 +54,7 @@ public class RoundRobinPartitioningPolicy extends ReplicationPartitioningPolicy 
     public RoundRobinPartitioningPolicy(List<String> pools) {
         super(pools);
     }
-        
+
     /**
      * PUBLIC:
      * Return if write queries should be replicated.
@@ -64,7 +64,7 @@ public class RoundRobinPartitioningPolicy extends ReplicationPartitioningPolicy 
     public boolean getReplicateWrites() {
         return replicateWrites;
     }
-    
+
     /**
      * PUBLIC:
      * Set if write queries should be replicated.
@@ -110,7 +110,7 @@ public class RoundRobinPartitioningPolicy extends ReplicationPartitioningPolicy 
         }
         return accessors;
     }
-    
+
     /**
      * INTERNAL:
      * Return the next pool index to use.
@@ -143,5 +143,5 @@ public class RoundRobinPartitioningPolicy extends ReplicationPartitioningPolicy 
         }
         return accessor;
     }
-    
+
 }

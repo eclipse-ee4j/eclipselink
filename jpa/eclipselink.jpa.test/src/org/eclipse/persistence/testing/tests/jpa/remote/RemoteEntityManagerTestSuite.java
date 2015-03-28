@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     27/07/2010 - 2.1.1 Sabine Heider 
+ *     27/07/2010 - 2.1.1 Sabine Heider
  *          304650: fix left over entity data interfering with testSetRollbackOnly
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.remote;
 
 import java.util.ArrayList;
@@ -30,20 +30,20 @@ import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityMana
  * Test the EntityManager API using a remote EntityManager.
  */
 public class RemoteEntityManagerTestSuite extends EntityManagerJUnitTestSuite {
-        
+
     public RemoteEntityManagerTestSuite() {
         super();
     }
-    
+
     public RemoteEntityManagerTestSuite(String name) {
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("RemoteEntityManagerTestSuite");
         suite.addTest(new RemoteEntityManagerTestSuite("testSetup"));
-        
+
         List<String> tests = new ArrayList<String>();
         tests.add("testWeaving");
         tests.add("testClearEntityManagerWithoutPersistenceContext");
@@ -176,7 +176,7 @@ public class RemoteEntityManagerTestSuite extends EntityManagerJUnitTestSuite {
 
         return suite;
     }
-    
+
     @Override
     public String getPersistenceUnitName() {
         return "remote";
@@ -188,7 +188,7 @@ public class RemoteEntityManagerTestSuite extends EntityManagerJUnitTestSuite {
         properties.put(PersistenceUnitProperties.LOGGING_LEVEL, super.getPersistenceProperties().get(PersistenceUnitProperties.LOGGING_LEVEL));
         return properties;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -196,5 +196,5 @@ public class RemoteEntityManagerTestSuite extends EntityManagerJUnitTestSuite {
         createEntityManager("remote-server").close();
         super.testSetup();
     }
-    
+
 }

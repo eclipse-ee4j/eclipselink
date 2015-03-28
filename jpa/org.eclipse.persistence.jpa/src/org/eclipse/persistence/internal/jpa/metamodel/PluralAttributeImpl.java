@@ -1,23 +1,23 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors: 
- *     03/19/2009-2.0  dclarke  - initial API start    
+ * Contributors:
+ *     03/19/2009-2.0  dclarke  - initial API start
  *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  *    08/19/2009-2.0  mobrien - Extend Collection support
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_59:_20090818:_PluralAttribute.elementType_not_set_for_non-lazy_instantiated_Collection_Attribute
- *     06/14/2010-2.1  mobrien - 314906: getJavaType should return the 
+ *     06/14/2010-2.1  mobrien - 314906: getJavaType should return the
  *       collection javaType C in <X,C,V) of <X, List<V>, V> instead off the elementType V
- *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation         
+ *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -35,24 +35,24 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 
 /**
  * <p>
- * <b>Purpose</b>: Provides the implementation for the PluralAttribute interface 
+ * <b>Purpose</b>: Provides the implementation for the PluralAttribute interface
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
- * <b>Description</b>: 
- * Instances of the type PluralAttribute represent 
+ * <b>Description</b>:
+ * Instances of the type PluralAttribute represent
  * persistent collection-valued attributes.
- * 
+ *
  * @see javax.persistence.metamodel.PluralAttribute
- * 
+ *
  * @since EclipseLink 1.2 - JPA 2.0
- * 
+ *
  * @param <X> The type the represented collection belongs to
  * @param <C> The type of the represented collection
  * @param <V> The element type of the represented collection
- *  
- */ 
+ *
+ */
 public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> implements PluralAttribute<X, C, V> {
-    
+
     /** The type representing this collection type **/
     private Type<V> elementType;
 
@@ -64,9 +64,9 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
      * @param validationEnabled
      */
     protected PluralAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
-        super(managedType, mapping);        
-        // 1) Check the mapping type first        
-        // 2) Get the type set on the policy        
+        super(managedType, mapping);
+        // 1) Check the mapping type first
+        // 2) Get the type set on the policy
         ClassDescriptor elementDesc = mapping.getContainerPolicy().getElementDescriptor();
 
         // Set the element type on this attribute (the value parameter for a MapAttribute)
@@ -77,7 +77,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
             // See CollectionContainerPolicy
             Class attributeClass = null;
             // TODO: handle AggregateCollectionMapping and verify isAbstractDirectMapping
-            if(mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping() 
+            if(mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping()
                     || mapping.isDirectCollectionMapping()) {
                 /**
                  * The Map Value parameter was set during metadata processing in DirectCollectionMapping.convertClassNamesToClasses() for example.
@@ -92,8 +92,8 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
                  * See design issue 65 - we need a way to parse the signature of the declaration on the java class - if it exists.
                  * http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_65:_20090827:_Handle_DirectCollection_elementType_retrieval_in_the_absence_of_a_generic_type
                  * Example:
-                 *  
-                 * Collection<String> basicCollection; 
+                 *
+                 * Collection<String> basicCollection;
                  *  @BasicCollection
                  *  Collection getBasicCollection()
                  */
@@ -102,7 +102,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
                     //attributeClass = managedType.getTypeClassFromAttributeOrMethodLevelAccessor(mapping);
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_unable_to_determine_element_type_in_absence_of_generic_parameters", this);
                 }
-            } else if(mapping.isMapKeyMapping()) {                   
+            } else if(mapping.isMapKeyMapping()) {
                 ContainerPolicy policy = mapping.getContainerPolicy();
                 if (policy.isMapPolicy()) {
                     MapContainerPolicy mapPolicy = (MapContainerPolicy) mapping.getContainerPolicy();
@@ -122,9 +122,9 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
             // TODO: refactor exception handling
             if (null == attributeClass && validationEnabled) {
                 attributeClass = Object.class;
-                AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);                    
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);
             }
-            this.elementType = (Type<V>)getMetamodel().getType(attributeClass);            
+            this.elementType = (Type<V>)getMetamodel().getType(attributeClass);
         }
     }
 
@@ -132,7 +132,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
      * Return the Java type of the represented object.
      * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
      * the Java element type is returned. If the bindable type is
-     * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>, 
+     * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>,
      * the Java type of the
      * represented entity or attribute is returned.
      * @return Java type
@@ -141,15 +141,15 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
         // For PLURAL_ATTRIBUTE - return the java element type
         return elementType.getJavaType();
     }
-    
+
     /**
      *  Return the bindable type of the represented object.
      *  @return bindable type
-     */ 
+     */
     public BindableType getBindableType() {
-    	return Bindable.BindableType.PLURAL_ATTRIBUTE;
+        return Bindable.BindableType.PLURAL_ATTRIBUTE;
     }
-    
+
     /**
      * INTERNAL:
      * Return the mapping associated with this PluralAttribute.
@@ -166,14 +166,14 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
     public abstract CollectionType getCollectionType();
 
     /**
-     * Return the type representing the element type of the 
+     * Return the type representing the element type of the
      * collection.
      * @return element type
      */
     public Type<V> getElementType() {
         return this.elementType;
     }
-    
+
     @Override
     public boolean isPlural() {
         return true;

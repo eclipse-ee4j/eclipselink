@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,9 +25,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -55,8 +55,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -72,25 +72,25 @@ public class XmlRegistry {
 
     /**
      * Gets the value of the xmlElementDecl property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the xmlElementDecl property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getXmlElementDecl().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link XmlRegistry.XmlElementDecl }
-     * 
-     * 
+     *
+     *
      */
     public List<XmlRegistry.XmlElementDecl> getXmlElementDecl() {
         if (xmlElementDecl == null) {
@@ -101,11 +101,11 @@ public class XmlRegistry {
 
     /**
      * Gets the value of the name property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getName() {
         return name;
@@ -113,11 +113,11 @@ public class XmlRegistry {
 
     /**
      * Sets the value of the name property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setName(String value) {
         this.name = value;
@@ -126,9 +126,9 @@ public class XmlRegistry {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -145,8 +145,8 @@ public class XmlRegistry {
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
@@ -171,11 +171,11 @@ public class XmlRegistry {
 
         /**
          * Gets the value of the javaMethod property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getJavaMethod() {
             return javaMethod;
@@ -183,11 +183,11 @@ public class XmlRegistry {
 
         /**
          * Sets the value of the javaMethod property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setJavaMethod(String value) {
             this.javaMethod = value;
@@ -195,11 +195,11 @@ public class XmlRegistry {
 
         /**
          * Gets the value of the name property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getName() {
             return name;
@@ -207,11 +207,11 @@ public class XmlRegistry {
 
         /**
          * Sets the value of the name property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setName(String value) {
             this.name = value;
@@ -219,11 +219,11 @@ public class XmlRegistry {
 
         /**
          * Gets the value of the defaultValue property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getDefaultValue() {
             if (defaultValue == null) {
@@ -235,11 +235,11 @@ public class XmlRegistry {
 
         /**
          * Sets the value of the defaultValue property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setDefaultValue(String value) {
             this.defaultValue = value;
@@ -247,11 +247,11 @@ public class XmlRegistry {
 
         /**
          * Gets the value of the namespace property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getNamespace() {
             if (namespace == null) {
@@ -263,11 +263,11 @@ public class XmlRegistry {
 
         /**
          * Sets the value of the namespace property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setNamespace(String value) {
             this.namespace = value;
@@ -275,11 +275,11 @@ public class XmlRegistry {
 
         /**
          * Gets the value of the scope property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getScope() {
             if (scope == null) {
@@ -291,11 +291,11 @@ public class XmlRegistry {
 
         /**
          * Sets the value of the scope property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setScope(String value) {
             this.scope = value;
@@ -303,11 +303,11 @@ public class XmlRegistry {
 
         /**
          * Gets the value of the substitutionHeadName property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getSubstitutionHeadName() {
             if (substitutionHeadName == null) {
@@ -319,11 +319,11 @@ public class XmlRegistry {
 
         /**
          * Sets the value of the substitutionHeadName property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setSubstitutionHeadName(String value) {
             this.substitutionHeadName = value;
@@ -331,11 +331,11 @@ public class XmlRegistry {
 
         /**
          * Gets the value of the substitutionHeadNamespace property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getSubstitutionHeadNamespace() {
             if (substitutionHeadNamespace == null) {
@@ -347,11 +347,11 @@ public class XmlRegistry {
 
         /**
          * Sets the value of the substitutionHeadNamespace property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setSubstitutionHeadNamespace(String value) {
             this.substitutionHeadNamespace = value;
@@ -359,11 +359,11 @@ public class XmlRegistry {
 
         /**
          * Gets the value of the type property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getType() {
             if (type == null) {
@@ -375,11 +375,11 @@ public class XmlRegistry {
 
         /**
          * Sets the value of the type property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setType(String value) {
             this.type = value;

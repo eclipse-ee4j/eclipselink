@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.*;
@@ -21,31 +21,31 @@ import org.eclipse.persistence.expressions.*;
 /**
  * PUBLIC:
  * A Query Class used to perform a bulk update using TopLink's expression framework.
- * This class is provided to help optimize performance. It can be used in place 
- * of reading in all the objects to be changed and issuing single updates per 
- * instance. With this approach a single SQL UPDATE statement can be issued and 
- * then, based on the Expression provided, any objects in the cache that are 
- * effected by the update can be invalidated. 
+ * This class is provided to help optimize performance. It can be used in place
+ * of reading in all the objects to be changed and issuing single updates per
+ * instance. With this approach a single SQL UPDATE statement can be issued and
+ * then, based on the Expression provided, any objects in the cache that are
+ * effected by the update can be invalidated.
  * <p>
  * Notes: <ul>
  * <li>By default, if a UOW is being used, this query will be deferred until the UOW commits.
- * <li>UpdateAllQuery does not support foreign key updates 
+ * <li>UpdateAllQuery does not support foreign key updates
  * unless the relationship is 1-1 (without back pointers.)</ul>
- * <p> 
+ * <p>
  * <b>Example of Usage:</b> Adding an area code. <br>
- * <code> 
+ * <code>
  * UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);   <br>
  * updateQuery.setSelectionCriteria(eb.get("areaCode").isNull());     <br>
  * updateQuery.addUpdate(eb.get("areaCode"), "613");                  <br>
- * </code> 
- * 
+ * </code>
+ *
  * @author Guy Pelletier
  * @since  March 1, 2004
  */
 public class UpdateAllQuery extends ModifyAllQuery {
 
     protected HashMap m_updateClauses;
-    
+
     /**
      * PUBLIC:
      * Constructs a default update all query.
@@ -75,8 +75,8 @@ public class UpdateAllQuery extends ModifyAllQuery {
 
     /**
      * PUBLIC:
-     * Constructs an update all query for the Class type specified and the given 
-     * ExpressionBuilder. This sets the default builder which is used for all associated 
+     * Constructs an update all query for the Class type specified and the given
+     * ExpressionBuilder. This sets the default builder which is used for all associated
      * expressions in the query.<br>
      * @param referenceClass Class type to be considered
      * @param expressionBuilder ExpressionBuilder
@@ -98,7 +98,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
 
     /**
      * PUBLIC:
-     * Adds the update (SET) clause to the query. Uses default ExpressionBuilder. 
+     * Adds the update (SET) clause to the query. Uses default ExpressionBuilder.
      * @param attributeName String, the name of the attribute
      * @param value Object, the new value
      */
@@ -109,7 +109,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
     /**
      * PUBLIC:
      * Adds the update (SET) clause to the query. This method ensures that
-     * the builder has the session and reference class set for both given Expressions. 
+     * the builder has the session and reference class set for both given Expressions.
      * Uses default ExpressionBuilder.
      * @param field Expression, representation of a database query 'where' clause that describes the field
      * @param value Expression, representation of a database query 'where' clause that describes the new value
@@ -127,7 +127,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
     public void addUpdate(String attributeName, Expression value) {
         addUpdateInternal(attributeName, value);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -220,7 +220,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
         if ((getUpdateClauses() == null || getUpdateClauses().isEmpty()) && isExpressionQuery()) {
             throw QueryException.updateStatementsNotSpecified();
         }
-        
+
         getQueryMechanism().prepareUpdateAll();
     }
     /**
@@ -261,4 +261,4 @@ public class UpdateAllQuery extends ModifyAllQuery {
         }
     }
 }
-    
+

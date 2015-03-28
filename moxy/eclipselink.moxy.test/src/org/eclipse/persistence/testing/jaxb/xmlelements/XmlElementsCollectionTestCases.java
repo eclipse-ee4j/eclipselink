@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelements;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class XmlElementsCollectionTestCases extends JAXBWithJSONTestCases {
 
     public XmlElementsCollectionTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);   
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = EmployeeCollection.class;
@@ -48,9 +48,9 @@ public class XmlElementsCollectionTestCases extends JAXBWithJSONTestCases {
         employee.choice = choices;
         return employee;
     }
-    
+
     protected Object getJSONReadControlObject() {
-    	  EmployeeCollection employee = new EmployeeCollection();
+          EmployeeCollection employee = new EmployeeCollection();
           employee.id = CONTROL_ID;
           ArrayList choices = new ArrayList();
           choices.add(new Integer(12));
@@ -60,7 +60,7 @@ public class XmlElementsCollectionTestCases extends JAXBWithJSONTestCases {
           Address addr = new Address();
           addr.city = "Ottawa";
           addr.street = "123 Fake Street";
-          choices.add(addr);          
+          choices.add(addr);
           employee.choice = choices;
           return employee;
     }

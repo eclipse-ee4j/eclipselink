@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -30,49 +30,49 @@ import org.xml.sax.InputSource;
  */
 public class SimpleDocumentDateTestCases extends JAXBWithJSONTestCases {
 
-	    public SimpleDocumentDateTestCases(String name) throws Exception {
-	        super(name);
-	        Class[] classes = new Class[1];
-	        classes[0] = DateObjectFactory.class;
-	        setClasses(classes);
-	    }
+        public SimpleDocumentDateTestCases(String name) throws Exception {
+            super(name);
+            Class[] classes = new Class[1];
+            classes[0] = DateObjectFactory.class;
+            setClasses(classes);
+        }
 
-	    @Override
-	    protected String getControlJSONDocumentContent() {
-	        return "{\"dateroot\":\"2013-02-20T00:00:00"+TIMEZONE_OFFSET+"\"}";
-	    }
+        @Override
+        protected String getControlJSONDocumentContent() {
+            return "{\"dateroot\":\"2013-02-20T00:00:00"+TIMEZONE_OFFSET+"\"}";
+        }
 
-	    public boolean isUnmarshalTest() {
-	         return false;
-	    }
+        public boolean isUnmarshalTest() {
+             return false;
+        }
 
-	    @Override
-	    protected Document getControlDocument() {
-	        String contents = "<ns0:dateroot xmlns:ns0=\"myns\">2013-02-20T00:00:00"+TIMEZONE_OFFSET+"</ns0:dateroot>";
+        @Override
+        protected Document getControlDocument() {
+            String contents = "<ns0:dateroot xmlns:ns0=\"myns\">2013-02-20T00:00:00"+TIMEZONE_OFFSET+"</ns0:dateroot>";
 
-	        StringReader reader = new StringReader(contents);
-	        InputSource is = new InputSource(reader);
-	        Document doc = null;
-	        try {
-	            doc = parser.parse(is);
-	        } catch (Exception e) {
-	            fail("An error occurred setting up the control document");
-	        }
-	        return doc;
-	    }
+            StringReader reader = new StringReader(contents);
+            InputSource is = new InputSource(reader);
+            Document doc = null;
+            try {
+                doc = parser.parse(is);
+            } catch (Exception e) {
+                fail("An error occurred setting up the control document");
+            }
+            return doc;
+        }
 
-	    protected Object getControlObject() {
-		JAXBElement value = new DateObjectFactory().createDateRoot();
+        protected Object getControlObject() {
+        JAXBElement value = new DateObjectFactory().createDateRoot();
 
-		Calendar cal = Calendar.getInstance();
-		cal.clear();
-		cal.set(Calendar.YEAR, 2013);
-		cal.set(Calendar.MONTH, Calendar.FEBRUARY);
-		cal.set(Calendar.DAY_OF_MONTH, 20);
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 2013);
+        cal.set(Calendar.MONTH, Calendar.FEBRUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 20);
 
-		Date date = cal.getTime();
-		value.setValue(date);
+        Date date = cal.getTime();
+        value.setValue(date);
 
-		return value;
-	    }
+        return value;
+        }
 }

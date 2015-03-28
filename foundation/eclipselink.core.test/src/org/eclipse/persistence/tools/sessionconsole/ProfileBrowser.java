@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.sessionconsole;
 
 import java.util.*;
@@ -62,7 +62,7 @@ public class ProfileBrowser extends JFrame {
      * Center a component in the middle of the screen.
      */
     public static void centerComponent(java.awt.Component component) {
-        java.awt.Dimension screenSize = 
+        java.awt.Dimension screenSize =
             java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         java.awt.Dimension size = component.getSize();
 
@@ -72,7 +72,7 @@ public class ProfileBrowser extends JFrame {
         size.height = size.height / 2;
         size.width = size.width / 2;
 
-        component.setLocation(screenSize.width - size.width, 
+        component.setLocation(screenSize.width - size.width,
                               screenSize.height - size.height);
     }
 
@@ -90,17 +90,17 @@ public class ProfileBrowser extends JFrame {
                 ivjMainPanel.setLayout(new java.awt.GridBagLayout());
                 ivjMainPanel.setBackground(java.awt.SystemColor.control);
 
-                java.awt.GridBagConstraints constraintsProfileBrowserPanel = 
+                java.awt.GridBagConstraints constraintsProfileBrowserPanel =
                     new java.awt.GridBagConstraints();
                 constraintsProfileBrowserPanel.gridx = 1;
                 constraintsProfileBrowserPanel.gridy = 1;
-                constraintsProfileBrowserPanel.fill = 
+                constraintsProfileBrowserPanel.fill =
                         java.awt.GridBagConstraints.BOTH;
                 constraintsProfileBrowserPanel.weightx = 1.0;
                 constraintsProfileBrowserPanel.weighty = 1.0;
-                constraintsProfileBrowserPanel.insets = 
+                constraintsProfileBrowserPanel.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getMainPanel().add(getProfileBrowserPanel(), 
+                getMainPanel().add(getProfileBrowserPanel(),
                                    constraintsProfileBrowserPanel);
                 // user code begin {1}
                 // user code end
@@ -122,7 +122,7 @@ public class ProfileBrowser extends JFrame {
     ProfileBrowserPanel getProfileBrowserPanel() {
         if (ivjProfileBrowserPanel == null) {
             try {
-                ivjProfileBrowserPanel = 
+                ivjProfileBrowserPanel =
                         new org.eclipse.persistence.tools.sessionconsole.ProfileBrowserPanel();
                 ivjProfileBrowserPanel.setName("ProfileBrowserPanel");
                 // user code begin {1}

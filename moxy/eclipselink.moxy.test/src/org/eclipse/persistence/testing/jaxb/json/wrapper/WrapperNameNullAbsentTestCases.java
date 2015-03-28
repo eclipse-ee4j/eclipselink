@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,11 +45,11 @@ public class WrapperNameNullAbsentTestCases extends JSONMarshalUnmarshalTestCase
         company.strings = null;
 
         company.phoneNumbers = null;
-        
+
         Employee employee1 = new Employee();
         employee1.phoneNumbers = null;
          company.employees.add(employee1);
-        
+
         Employee employee2 = new Employee();
         employee2.phoneNumbers = null;
         company.employees.add(employee2);
@@ -57,14 +57,14 @@ public class WrapperNameNullAbsentTestCases extends JSONMarshalUnmarshalTestCase
         return new JAXBElement<Company>(new QName(""), Company.class, company);
     }
 
-    
+
     @Override
     public Object getReadControlObject() {
         Company company = new Company();
-        
+
         Employee employee1 = new Employee();
         company.employees.add(employee1);
-        
+
         Employee employee2 = new Employee();
         company.employees.add(employee2);
 

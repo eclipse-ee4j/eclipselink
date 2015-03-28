@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -75,17 +75,17 @@ public class XMLBinaryDataHelper {
     }
 
     public Object convertObject(Object obj, Class classification, CoreAbstractSession session, CoreContainerPolicy cp) {
-    	if( obj instanceof List && cp != null){
-    		List theList = (List)obj;
-    		Object container = cp.containerInstance(theList.size());
-    		for(int i=0; i<theList.size(); i++){
-    			Object next = theList.get(i);
-    			cp.addInto(convertSingleObject(next, classification, session), container, session);
-    		}
-    		return container;
-    	}
-    	return convertSingleObject(obj, classification, session);
-        
+        if( obj instanceof List && cp != null){
+            List theList = (List)obj;
+            Object container = cp.containerInstance(theList.size());
+            for(int i=0; i<theList.size(); i++){
+                Object next = theList.get(i);
+                cp.addInto(convertSingleObject(next, classification, session), container, session);
+            }
+            return container;
+        }
+        return convertSingleObject(obj, classification, session);
+
     }
     public Object convertSingleObject(Object obj, Class classification, CoreAbstractSession session) {
         if (classification == DATA_HANDLER) {
@@ -110,22 +110,22 @@ public class XMLBinaryDataHelper {
 
         return new EncodedData(output.toByteArray(), handler.getContentType());
     }
-    
+
     public List<byte[]> getBytesListForBinaryValues(List attributeValue, Marshaller marshaller, String mimeType){
-		List returnList = new ArrayList(attributeValue.size());
-		for(int i=0;i<attributeValue.size(); i++){
-			Object next = attributeValue.get(i);
-			EncodedData nextEncodedData = getBytesForSingleBinaryValue(next, marshaller, mimeType); 
-			returnList.add(nextEncodedData.getData());
-		}
-		return returnList;
+        List returnList = new ArrayList(attributeValue.size());
+        for(int i=0;i<attributeValue.size(); i++){
+            Object next = attributeValue.get(i);
+            EncodedData nextEncodedData = getBytesForSingleBinaryValue(next, marshaller, mimeType);
+            returnList.add(nextEncodedData.getData());
+        }
+        return returnList;
     }
 
     public EncodedData getBytesForBinaryValue(Object attributeValue, Marshaller marshaller, String mimeType) {
-    	return getBytesForSingleBinaryValue(attributeValue, marshaller, mimeType);
-    	
+        return getBytesForSingleBinaryValue(attributeValue, marshaller, mimeType);
+
     }
-    
+
     public EncodedData getBytesForSingleBinaryValue(Object attributeValue, Marshaller marshaller, String mimeType) {
 
         if (attributeValue instanceof DataHandler) {
@@ -140,7 +140,7 @@ public class XMLBinaryDataHelper {
             return new EncodedData((byte[]) attributeValue, mimeType);
         } else if (attributeValue.getClass() == CoreClassConstants.ABYTE) {
             return getBytesFromByteObjectArray((Byte[]) attributeValue, mimeType);
-        } 
+        }
 
         return new EncodedData(new byte[0], null);
     }
@@ -387,7 +387,7 @@ public class XMLBinaryDataHelper {
         }
         if(obj.getClass() == CoreClassConstants.STRING) {
             return new StreamSource(new StringReader((String)obj));
-        }        
+        }
         if (obj instanceof DataHandler) {
             try {
                 InputStream object = ((DataHandler)obj).getInputStream();

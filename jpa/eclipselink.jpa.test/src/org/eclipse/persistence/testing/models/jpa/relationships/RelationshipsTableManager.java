@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     12/02/2010-2.2 Guy Pelletier 
+ *     12/02/2010-2.2 Guy Pelletier
  *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
- *     01/25/2011-2.3 Guy Pelletier 
+ *     01/25/2011-2.3 Guy Pelletier
  *       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
- *     06/25/2014-2.5.2 Rick Curtis 
+ *     06/25/2014-2.5.2 Rick Curtis
  *       - 438177: Test M2M map
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -49,30 +49,30 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         addTableDefinition(buildCMP3_ENTITYCTable());
         addTableDefinition(buildCMP3_ENTITYDTable());
         addTableDefinition(buildCMP3_UNIDIR_ENTITYC_ENTITYDTable());
-        
+
         addTableDefinition(buildMATTELTable());
         addTableDefinition(buildLEGOTable());
         addTableDefinition(buildMEGABRANDSTable());
         addTableDefinition(buildNAMCOTable());
-        
+
         addTableDefinition(buildServiceCallTable());
         addTableDefinition(buildCustomerServiceRepTable());
         addTableDefinition(buildCustRepTable());
-        
+
         addTableDefinition(buildMtoMEntityATable());
         addTableDefinition(buildMtoMEntityBTable());
         addTableDefinition(buildMtoMEntityJoinTable());
         addTableDefinition(buildMtoMEntityDefaultJoinTable());
-        
+
     }
-        
+
     public static TableCreator getCreator(){
         if (RelationshipsTableManager.tableCreator == null){
             RelationshipsTableManager.tableCreator = new RelationshipsTableManager();
         }
         return RelationshipsTableManager.tableCreator;
     }
-    
+
     public static TableDefinition buildORDER_AUDITORTable() {
         TableDefinition table = new TableDefinition();
 
@@ -88,7 +88,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldORDERID.setIsIdentity(false);
         fieldORDERID.setForeignKeyFieldName("CMP3_ORDER.ORDER_ID");
         table.addField(fieldORDERID);
-        
+
         FieldDefinition fieldAUDITORID = new FieldDefinition();
         fieldAUDITORID.setName("AUDITOR_ID");
         fieldAUDITORID.setTypeName("NUMERIC");
@@ -99,10 +99,10 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldAUDITORID.setIsIdentity(false);
         fieldAUDITORID.setForeignKeyFieldName("JPA_AUDITOR.ID");
         table.addField(fieldAUDITORID);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildORDER_ORDERCARDTable() {
         TableDefinition table = new TableDefinition();
 
@@ -118,7 +118,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldORDERID.setIsIdentity(false);
         fieldORDERID.setForeignKeyFieldName("CMP3_ORDER.ORDER_ID");
         table.addField(fieldORDERID);
-        
+
         FieldDefinition fieldAUDITORID = new FieldDefinition();
         fieldAUDITORID.setName("OrderCard_ID");
         fieldAUDITORID.setTypeName("NUMERIC");
@@ -129,10 +129,10 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldAUDITORID.setIsIdentity(false);
         fieldAUDITORID.setForeignKeyFieldName("JPA_ORDER_CARD.ID");
         table.addField(fieldAUDITORID);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildORDER_ORDERLABELTable() {
         TableDefinition table = new TableDefinition();
 
@@ -148,7 +148,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldORDERID.setIsIdentity(false);
         fieldORDERID.setForeignKeyFieldName("CMP3_ORDER.ORDER_ID");
         table.addField(fieldORDERID);
-        
+
         FieldDefinition fieldAUDITORID = new FieldDefinition();
         fieldAUDITORID.setName("ORDER_LABEL_ID");
         fieldAUDITORID.setTypeName("NUMERIC");
@@ -159,10 +159,10 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldAUDITORID.setIsIdentity(false);
         fieldAUDITORID.setForeignKeyFieldName("JPA_ORDER_LABEL.ID");
         table.addField(fieldAUDITORID);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildORDERCARDTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_ORDER_CARD");
@@ -180,7 +180,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildORDERLABELTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_ORDER_LABEL");
@@ -209,7 +209,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildAUDITORTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_AUDITOR");
@@ -238,7 +238,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCMP3_CUSTOMERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CUSTOMER");
@@ -386,7 +386,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldDTYPE.setUnique(false);
         fieldDTYPE.setShouldAllowNull(true);
         table.addField(fieldDTYPE);
-        
+
         FieldDefinition fieldMANUFACTURER_ID = new FieldDefinition();
         fieldMANUFACTURER_ID.setName("MANUFACTURER_ID");
         fieldMANUFACTURER_ID.setTypeName("NUMBER");
@@ -397,7 +397,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldMANUFACTURER_ID.setUnique(false);
         fieldMANUFACTURER_ID.setShouldAllowNull(true);
         table.addField(fieldMANUFACTURER_ID);
-        
+
         FieldDefinition fieldDISTRIBUTOR_TYPE = new FieldDefinition();
         fieldDISTRIBUTOR_TYPE.setName("DISTRIBUTOR_TYPE");
         fieldDISTRIBUTOR_TYPE.setTypeName("VARCHAR2");
@@ -408,7 +408,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldDISTRIBUTOR_TYPE.setUnique(false);
         fieldDISTRIBUTOR_TYPE.setShouldAllowNull(true);
         table.addField(fieldDISTRIBUTOR_TYPE);
-        
+
         FieldDefinition fieldDISTRIBUTOR_ID = new FieldDefinition();
         fieldDISTRIBUTOR_ID.setName("DISTRIBUTOR_ID");
         fieldDISTRIBUTOR_ID.setTypeName("NUMBER");
@@ -419,17 +419,17 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldDISTRIBUTOR_ID.setUnique(false);
         fieldDISTRIBUTOR_ID.setShouldAllowNull(true);
         table.addField(fieldDISTRIBUTOR_ID);
-        
+
         FieldDefinition fieldFACADE = new FieldDefinition();
         fieldFACADE.setName("FACADE");
         fieldFACADE.setTypeName("BLOB");
         table.addField(fieldFACADE);
-        
+
         FieldDefinition fieldTAG = new FieldDefinition();
         fieldTAG.setName("TAG");
         fieldTAG.setTypeName("BLOB");
         table.addField(fieldTAG);
-        
+
         return table;
     }
 
@@ -448,10 +448,10 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldCUST_ID.setShouldAllowNull(true);
         fieldCUST_ID.setForeignKeyFieldName("CMP3_CUSTOMER.CUST_ID");
         table.addField(fieldCUST_ID);
-        
+
         FieldDefinition fieldBILLED_CUST_ID = new FieldDefinition();
         fieldBILLED_CUST_ID.setName("BILLEDCUSTOMER_CUST_ID");
-		//fieldBILLED_CUST_ID.setName("BILLCUST_CUST_ID");
+        //fieldBILLED_CUST_ID.setName("BILLCUST_CUST_ID");
         fieldBILLED_CUST_ID.setTypeName("NUMBER");
         fieldBILLED_CUST_ID.setSize(15);
         fieldBILLED_CUST_ID.setSubSize(0);
@@ -461,7 +461,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldBILLED_CUST_ID.setShouldAllowNull(true);
         fieldBILLED_CUST_ID.setForeignKeyFieldName("CMP3_CUSTOMER.CUST_ID");
         table.addField(fieldBILLED_CUST_ID);
-        
+
         FieldDefinition fieldSALESPERSON_ID = new FieldDefinition();
         fieldSALESPERSON_ID.setName("SALESPERSON_ID");
         fieldSALESPERSON_ID.setTypeName("NUMBER");
@@ -472,7 +472,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldSALESPERSON_ID.setUnique(false);
         fieldSALESPERSON_ID.setShouldAllowNull(true);
         table.addField(fieldSALESPERSON_ID);
-        
+
         FieldDefinition fieldITEM_ID = new FieldDefinition();
         fieldITEM_ID.setName("ITEM_ID");
         fieldITEM_ID.setTypeName("NUMBER");
@@ -530,10 +530,10 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
        return table;
     }
-    
+
     public static TableDefinition buildCMP3_SALESPERSONTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_SALESPERSON");        
+        table.setName("CMP3_SALESPERSON");
 
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -559,7 +559,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCUSTOMER_CUSTOMERTable() {
         TableDefinition table = new TableDefinition();
 
@@ -576,7 +576,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("CMP3_CUSTOMER.CUST_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("CCustomers_CUST_ID");
@@ -591,7 +591,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCUSTOMER_CUSTOMER2Table() {
         TableDefinition table = new TableDefinition();
 
@@ -607,7 +607,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(false);
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("CCustomers2_CUST_ID");
@@ -621,13 +621,13 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         table.addForeignKeyConstraint(new ForeignKeyConstraint("CMP3CUST2_CID", "Customer_CUST_ID", "CUST_ID", "CMP3_CUSTOMER"));
         table.addForeignKeyConstraint(new ForeignKeyConstraint("CMP3CCUST2_CID", "CCustomers2_CUST_ID", "CUST_ID", "CMP3_CUSTOMER"));
-        
+
         return table;
     }
 
     public static TableDefinition buildCMP3_ENTITYATable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_ENTITYA");        
+        table.setName("CMP3_ENTITYA");
 
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -653,10 +653,10 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCMP3_ENTITYBTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_ENTITYB");        
+        table.setName("CMP3_ENTITYB");
 
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -682,7 +682,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCMP3_ENTITYA_ENTITYBTable() {
         TableDefinition table = new TableDefinition();
 
@@ -699,7 +699,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("CMP3_ENTITYA.ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("ENTITYB_ID");
@@ -714,10 +714,10 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCMP3_ENTITYCTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_ENTITYC");        
+        table.setName("CMP3_ENTITYC");
 
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -743,10 +743,10 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCMP3_ENTITYDTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_ENTITYD");        
+        table.setName("CMP3_ENTITYD");
 
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -772,7 +772,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCMP3_UNIDIR_ENTITYC_ENTITYDTable() {
         TableDefinition table = new TableDefinition();
 
@@ -789,7 +789,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("CMP3_ENTITYC.ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("ENTITYD_ID");
@@ -804,7 +804,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildLEGOTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_LEGO");
@@ -833,7 +833,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildMATTELTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MATTEL");
@@ -862,7 +862,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildMEGABRANDSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MEGABRANDS");
@@ -891,7 +891,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildNAMCOTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_NAMCO");
@@ -920,8 +920,8 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
-    
+
+
     public static TableDefinition buildServiceCallTable(){
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_SERVICE_CALL");
@@ -950,7 +950,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static  TableDefinition buildCustomerServiceRepTable(){
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CUSTOMER_SERVICE_REP");
@@ -979,7 +979,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static  TableDefinition buildCustRepTable(){
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CUST_REP");
@@ -1005,7 +1005,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldREP_ID.setUnique(false);
         fieldREP_ID.setShouldAllowNull(false);
         table.addField(fieldREP_ID);
-        
+
         FieldDefinition fieldCALL_ID = new FieldDefinition();
         fieldCALL_ID.setName("CSInteractions_KEY");
         fieldCALL_ID.setTypeName("NUMBER");
@@ -1019,7 +1019,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static  TableDefinition buildMtoMEntityATable(){
         TableDefinition table = new TableDefinition();
         table.setName("MTOMENTITYA");
@@ -1048,7 +1048,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static  TableDefinition buildMtoMEntityBTable(){
         TableDefinition table = new TableDefinition();
         table.setName("MTOMENTITYB");
@@ -1077,7 +1077,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static  TableDefinition buildMtoMEntityJoinTable(){
         TableDefinition table = new TableDefinition();
         table.setName("MM_MNMK_JT");
@@ -1103,7 +1103,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldMtoMEntityB_ID.setUnique(false);
         fieldMtoMEntityB_ID.setShouldAllowNull(false);
         table.addField(fieldMtoMEntityB_ID);
-        
+
         FieldDefinition fieldMtoMEntityB_Key_ID = new FieldDefinition();
         fieldMtoMEntityB_Key_ID.setName("EntityB_Key");
         fieldMtoMEntityB_Key_ID.setTypeName("NUMBER");
@@ -1117,7 +1117,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static  TableDefinition buildMtoMEntityDefaultJoinTable(){
         TableDefinition table = new TableDefinition();
         table.setName("MTOMENTITYA_MTOMENTITYB");
@@ -1143,7 +1143,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldMtoMEntityB_ID.setUnique(false);
         fieldMtoMEntityB_ID.setShouldAllowNull(false);
         table.addField(fieldMtoMEntityB_ID);
-        
+
         FieldDefinition fieldMtoMEntityB_Key_ID = new FieldDefinition();
         fieldMtoMEntityB_Key_ID.setName("entityBDefault_Key");
         fieldMtoMEntityB_Key_ID.setTypeName("NUMBER");

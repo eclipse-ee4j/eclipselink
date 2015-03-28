@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,11 +38,11 @@ public class NameTransformerExceptionTestCases extends OXTestCase{
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/nametransformerupper.xml";
     protected DocumentBuilder parser;
     public NameTransformerExceptionTestCases(String name) throws Exception {
-        super(name);		
+        super(name);
     }
-	
+
     public void setUp() throws Exception {
-    	 try {
+         try {
              DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
              builderFactory.setNamespaceAware(true);
              builderFactory.setIgnoringElementContentWhitespace(true);
@@ -51,97 +51,97 @@ public class NameTransformerExceptionTestCases extends OXTestCase{
              e.printStackTrace();
              fail("An exception occurred during setup");
          }
-      
-    } 
-	
+
+    }
+
     public void testExceptionDuringTransform(){
-    	 Type[] types = new Type[1];
+         Type[] types = new Type[1];
          types[0] = Employee.class;
          try{
              JAXBContext jaxbContext = JAXBContextFactory.createContext(types, getPropertiesWithException(), Thread.currentThread().getContextClassLoader());
          } catch (javax.xml.bind.JAXBException e) {
-//        	 e.printStackTrace();
+//             e.printStackTrace();
 
-		Exception linkedException = (Exception) e.getLinkedException();
-		Exception nestedExcpetion = (Exception) e.getCause();
-         	assertTrue(nestedExcpetion instanceof JAXBException);
-         
- 		    assertEquals(JAXBException.EXCEPTION_DURING_NAME_TRANSFORMATION,((JAXBException)nestedExcpetion).getErrorCode());
- 			return;
- 		} catch (Exception e) {			
- 		    fail("A JAXBException should have occurred but didn't");
- 		}
- 		fail("A JAXBException should have occurred but didn't");
+        Exception linkedException = (Exception) e.getLinkedException();
+        Exception nestedExcpetion = (Exception) e.getCause();
+             assertTrue(nestedExcpetion instanceof JAXBException);
+
+             assertEquals(JAXBException.EXCEPTION_DURING_NAME_TRANSFORMATION,((JAXBException)nestedExcpetion).getErrorCode());
+             return;
+         } catch (Exception e) {
+             fail("A JAXBException should have occurred but didn't");
+         }
+         fail("A JAXBException should have occurred but didn't");
     }
-    
+
     public void testInvalidNameTransformer(){
         Type[] types = new Type[1];
         types[0] = Employee.class;
-        try{            
+        try{
             JAXBContext jaxbContext = JAXBContextFactory.createContext(types, getProperties(), Thread.currentThread().getContextClassLoader());
-        } catch (javax.xml.bind.JAXBException e) {		
-        	Exception linkedException = (Exception) e.getLinkedException();
-        	Exception nestedExcpetion = (Exception) e.getCause();
-        	assertTrue(nestedExcpetion instanceof JAXBException);
-        
-		    assertEquals(JAXBException.EXCEPTION_WITH_NAME_TRANSFORMER_CLASS,((JAXBException)nestedExcpetion).getErrorCode());
-			return;
-		} catch (Exception e) {			
-		    fail("A JAXBException should have occurred but didn't");
-		}
-		fail("A JAXBException should have occurred but didn't");
+        } catch (javax.xml.bind.JAXBException e) {
+            Exception linkedException = (Exception) e.getLinkedException();
+            Exception nestedExcpetion = (Exception) e.getCause();
+            assertTrue(nestedExcpetion instanceof JAXBException);
+
+            assertEquals(JAXBException.EXCEPTION_WITH_NAME_TRANSFORMER_CLASS,((JAXBException)nestedExcpetion).getErrorCode());
+            return;
+        } catch (Exception e) {
+            fail("A JAXBException should have occurred but didn't");
+        }
+        fail("A JAXBException should have occurred but didn't");
     }
-    
+
     protected Map getProperties() {
-		
-        Map overrides = new HashMap();		
-        String overridesString = 
+
+        Map overrides = new HashMap();
+        String overridesString =
         "<?xml version='1.0' encoding='UTF-8'?>" +
         "<xml-bindings xmlns='http://www.eclipse.org/eclipselink/xsds/persistence/oxm' xml-name-transformer='org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.MyNonExistentTransformer'>" +
         "<xml-schema namespace='myuri' />" +
         "<java-types/>" +
         "</xml-bindings>";
-		
+
         DOMSource src = null;
-        try {		      
+        try {
             Document doc = parser.parse(new ByteArrayInputStream(overridesString.getBytes()));
             src = new DOMSource(doc.getDocumentElement());
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        fail("An error occurred during setup");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An error occurred during setup");
         }
-		    
+
         overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer", src);
 
         Map props = new HashMap();
         props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
         return props;
-    }	
-    
+    }
+
 protected Map getPropertiesWithException() throws Exception{
-		
-        Map overrides = new HashMap();		
-        String overridesString = 
+
+        Map overrides = new HashMap();
+        String overridesString =
         "<?xml version='1.0' encoding='UTF-8'?>" +
         "<xml-bindings xmlns='http://www.eclipse.org/eclipselink/xsds/persistence/oxm' xml-name-transformer='org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.TransformerWithException'>" +
         "<xml-schema namespace='myuri' />" +
         "<java-types/>" +
         "</xml-bindings>";
-		
+
         DOMSource src = null;
-        try {		      
+        try {
             Document doc = parser.parse(new ByteArrayInputStream(overridesString.getBytes()));
             src = new DOMSource(doc.getDocumentElement());
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        fail("An error occurred during setup");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An error occurred during setup");
         }
-		    
+
         overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer", src);
 
         Map props = new HashMap();
         props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
         return props;
-    }	
-    
+    }
+
 }

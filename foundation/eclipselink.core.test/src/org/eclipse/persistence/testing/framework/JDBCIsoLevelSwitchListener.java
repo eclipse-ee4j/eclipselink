@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2010 SAP All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2010, 2015  SAP All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,15 +28,15 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
  * That causes a few tests to hang, or fail with an error message saying that the table is locked
  * (depending on a setting on the database side): these tests begin transaction, update a row,
  * then (before the transaction has been committed) attempt to read the row through another connection.
- * 
+ *
  * To allow these reads to go through (and read the uncommitted data) connection isolation level
  * should be temporary switched to READ_UNCOMMITTED.
- * 
+ *
  * This class switches the acquired connection to READ_UNCOMMITTED and then sets back the original
  * isolation level before connection is released.
- * 
+ *
  * Note that for the above scenario only read connections require level READ_UNCOMMITTED.
- * 
+ *
  * @author agoerler
  */
 class JDBCIsoLevelSwitchListener extends SessionEventAdapter {

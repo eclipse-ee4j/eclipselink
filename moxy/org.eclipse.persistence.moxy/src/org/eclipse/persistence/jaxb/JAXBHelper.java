@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,7 +35,7 @@ public class JAXBHelper {
      * Return the EclipseLink implementation of JAXBContext. The given JAXBContext is assumed to be
      * an instance of {@link org.eclipse.persistence.jaxb.JAXBContext}. If not, an exception will be
      * thrown.
-     * 
+     *
      * @param jaxbContext
      * @return
      * @throws IllegalArgumentException
@@ -53,7 +53,7 @@ public class JAXBHelper {
      * Return the EclipseLink implementation of Unmarshaller. The given Unmarshaller is assumed to
      * be an instance of {@link org.eclipse.persistence.jaxb.JAXBUnmarshaller}. If not, an exception
      * will be thrown.
-     * 
+     *
      * @param jaxbUnmarshaller
      * @return
      * @throws IllegalArgumentException
@@ -71,7 +71,7 @@ public class JAXBHelper {
      * Return the EclipseLink implementation of Marshaller. The given Marshaller is assumed to be an
      * instance of {@link org.eclipse.persistence.jaxb.JAXBMarshaller}. If not, an exception will be
      * thrown.
-     * 
+     *
      * @param jaxbMarshaller
      * @return
      * @throws IllegalArgumentException
@@ -89,7 +89,7 @@ public class JAXBHelper {
      * Return the EclipseLink implementation of Binder. The given Binder is assumed to be an
      * instance of {@link org.eclipse.persistence.jaxb.JAXBBinder}. If not, an exception will be
      * thrown.
-     * 
+     *
      * @param jaxbBinder
      * @return
      * @throws IllegalArgumentException
@@ -108,7 +108,7 @@ public class JAXBHelper {
      * JAXBContext's underlying XMLContext. Assumes that the given JAXBContext is an instance of
      * EclipseLink JAXBContext, and clazz is one of org.eclipse.persistence.jaxb.JAXBContext or
      * org.eclipse.persistence.oxm.XMLContext.
-     * 
+     *
      * @param <T>
      * @param jaxbContext
      * @param clazz
@@ -139,7 +139,7 @@ public class JAXBHelper {
      * JAXBUnmarshaller's underlying XMLUnmarshaller. Assumes that the given Unmarshaller is an
      * instance of EclipseLink JAXBUnmarshaller, and clazz is one of
      * org.eclipse.persistence.jaxb.JAXBUnmarshaller or org.eclipse.persistence.oxm.XMLUnmarshaller.
-     * 
+     *
      * @param <T>
      * @param jaxbUnmarshaller
      * @param clazz
@@ -170,7 +170,7 @@ public class JAXBHelper {
      * JAXBMarshaller's underlying XMLMarshaller. Assumes that the given Marshaller is an instance
      * of EclipseLink JAXBMarshaller, and clazz is one of
      * org.eclipse.persistence.jaxb.JAXBMarshaller or org.eclipse.persistence.oxm.XMLMarshaller.
-     * 
+     *
      * @param <T>
      * @param jaxbMarshaller
      * @param clazz
@@ -201,7 +201,7 @@ public class JAXBHelper {
      * JAXBBinder's underlying XMLBinder. Assumes that the given Binder is an instance of
      * EclipseLink JAXBBinderr, and clazz is one of org.eclipse.persistence.jaxb.JAXBinder or
      * org.eclipse.persistence.oxm.XMLBinder.
-     * 
+     *
      * @param <T>
      * @param jaxbBinder
      * @param clazz

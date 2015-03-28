@@ -1,29 +1,29 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     12/24/2012-2.5 Guy Pelletier 
+ *     12/24/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/08/2013-2.5 Guy Pelletier 
+ *     01/08/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/11/2013-2.5 Guy Pelletier 
+ *     01/11/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/16/2013-2.5 Guy Pelletier 
+ *     01/16/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/24/2013-2.5 Guy Pelletier 
+ *     01/24/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     02/04/2013-2.5 Guy Pelletier 
+ *     02/04/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     02/19/2013-2.5 Guy Pelletier 
+ *     02/19/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
 import java.security.AccessController;
@@ -48,9 +48,9 @@ import org.eclipse.persistence.tools.schemaframework.SchemaManager;
  * The default constructor can be used to build the provider by reflection, after which it can
  * be used to create EntityManagerFactories
  */
-public class EntityManagerFactoryProvider { 
+public class EntityManagerFactoryProvider {
     public static final HashMap<String, EntityManagerSetupImpl> emSetupImpls = new HashMap<String, EntityManagerSetupImpl>();
-    
+
     // TEMPORARY - WILL BE REMOVED.
     // Used to warn users about deprecated property name and suggest the valid name.
     // TEMPORARY the old property names will be translated to the new ones and processed.
@@ -95,20 +95,20 @@ public class EntityManagerFactoryProvider {
         }
         emSetupImpls.put(name, setup);
     }
-    
+
     /**
-     * Calls the appropriate create,replace or alter SchemaManager api.  
+     * Calls the appropriate create,replace or alter SchemaManager api.
      * @param mgr
      * @param ddlType - ddl operation to be performed
      */
-    protected static void generateDefaultTables(SchemaManager mgr, TableCreationType ddlType) {          
+    protected static void generateDefaultTables(SchemaManager mgr, TableCreationType ddlType) {
         if (ddlType == null || ddlType == TableCreationType.CREATE) {
-            mgr.createDefaultTables(true); 
+            mgr.createDefaultTables(true);
         } else if (ddlType == TableCreationType.DROP) {
             mgr.dropDefaultTables();
         } else if  (ddlType == TableCreationType.DROP_AND_CREATE) {
-            mgr.replaceDefaultTables(true, false, true); 
-        } else if (ddlType == TableCreationType.EXTEND) { 
+            mgr.replaceDefaultTables(true, false, true);
+        } else if (ddlType == TableCreationType.EXTEND) {
             mgr.extendDefaultTables(true);
         }
     }
@@ -132,20 +132,20 @@ public class EntityManagerFactoryProvider {
                 value = System.getProperty(propertyKey);
             }
         }
-        
+
         return value;
     }
-    
+
     /**
      * Check the provided map for an object with the given key.  If that object is not available, check the
      * System properties.  If it is not available from either location, return the default value.
-     * @param propertyKey 
-     * @param map 
-     * @param defaultValue 
-     * @return 
+     * @param propertyKey
+     * @param map
+     * @param defaultValue
+     * @return
      */
     public static String getConfigPropertyAsString(String propertyKey, Map overrides, String defaultValue){
-    	String value = getConfigPropertyAsString(propertyKey, overrides);
+        String value = getConfigPropertyAsString(propertyKey, overrides);
         if (value == null){
             value = defaultValue;
         }
@@ -155,11 +155,11 @@ public class EntityManagerFactoryProvider {
     protected static String getConfigPropertyAsStringLogDebug(String propertyKey, Map overrides, AbstractSession session) {
         return (String)getConfigPropertyLogDebug(propertyKey, overrides, session);
     }
-    
+
     protected static String getConfigPropertyAsStringLogDebug(String propertyKey, Map overrides, AbstractSession session, boolean useSystemAsDefault) {
         return (String)getConfigPropertyLogDebug(propertyKey, overrides, session, useSystemAsDefault);
     }
-    
+
     protected static String getConfigPropertyAsStringLogDebug(String propertyKey, Map overrides, String defaultValue, AbstractSession session){
         String value = getConfigPropertyAsStringLogDebug(propertyKey, overrides, session);
         if (value == null){
@@ -168,11 +168,11 @@ public class EntityManagerFactoryProvider {
         }
         return value;
     }
-    
+
     protected static Object getConfigPropertyLogDebug(String propertyKey, Map overrides, AbstractSession session){
         return getConfigPropertyLogDebug(propertyKey, overrides, session, true);
     }
-    
+
     protected static Object getConfigPropertyLogDebug(String propertyKey, Map overrides, AbstractSession session, boolean useSystemAsDefault){
         Object value = null;
         if (overrides != null){
@@ -187,23 +187,23 @@ public class EntityManagerFactoryProvider {
         }
         if ((value != null) && (session !=  null)) {
             if (session.shouldLog(SessionLog.FINEST, SessionLog.PROPERTIES)) {
-                String overrideValue = PersistenceUnitProperties.getOverriddenLogStringForProperty(propertyKey);;           
+                String overrideValue = PersistenceUnitProperties.getOverriddenLogStringForProperty(propertyKey);;
                 Object logValue = (overrideValue == null) ? value : overrideValue;
                 session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyKey, logValue});
             }
         }
-        
+
         return value;
     }
-    
+
     public static boolean hasConfigProperty(String propertyKey, Map overrides) {
         return getConfigProperty(propertyKey, overrides) != null;
     }
-    
+
     protected static Object getConfigProperty(String propertyKey, Map overrides){
         return getConfigProperty(propertyKey, overrides, true);
     }
-    
+
     protected static Object getConfigProperty(String propertyKey, Map overrides, boolean useSystemAsDefault){
         Object value = null;
         if (overrides != null){
@@ -216,30 +216,30 @@ public class EntityManagerFactoryProvider {
                 value = System.getProperty(propertyKey);
             }
         }
-        
+
         return value;
     }
-    
+
     protected static Object getConfigProperty(String propertyKey, Map overrides, Object defaultObj){
         Object obj = getConfigProperty(propertyKey, overrides);
         return (obj == null) ? defaultObj : obj;
     }
-    
+
     /**
-     * Return the setup class for a given entity manager name 
-     * @param emName 
+     * Return the setup class for a given entity manager name
+     * @param emName
      */
     public static EntityManagerSetupImpl getEntityManagerSetupImpl(String emName){
-    	if (emName == null){
-    		return emSetupImpls.get("");
-    	}
+        if (emName == null){
+            return emSetupImpls.get("");
+        }
         return emSetupImpls.get(emName);
     }
 
     public static Map<String, EntityManagerSetupImpl>getEmSetupImpls(){
         return emSetupImpls;
     }
-    
+
     /**
      * Logs in to given session. If user has not specified  <code>TARGET_DATABASE</code>
      * the platform would be auto detected
@@ -248,16 +248,16 @@ public class EntityManagerFactoryProvider {
      */
     protected static void login(DatabaseSessionImpl session, Map properties, boolean requiresConnection) {
         String databaseGenerationAction = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION, properties);
-        
-        // Avoid an actual connection if we don't need one. If the user provides 
-        // us with a user name and password we will connect. At minimum if they 
+
+        // Avoid an actual connection if we don't need one. If the user provides
+        // us with a user name and password we will connect. At minimum if they
         // provide the platform we'll generate the DDL as if we had connected.
         if ((databaseGenerationAction == null || databaseGenerationAction.equals(PersistenceUnitProperties.SCHEMA_GENERATION_NONE_ACTION)) && ! requiresConnection) {
             session.setDatasourceAndInitialize();
         } else {
             String eclipselinkPlatform = (String)properties.get(PersistenceUnitProperties.TARGET_DATABASE);
             if (eclipselinkPlatform == null || eclipselinkPlatform.equals(TargetDatabase.Auto) || session.isBroker()) {
-                // if user has not specified a database platform, try to detect. 
+                // if user has not specified a database platform, try to detect.
                 // Will also look for jpa 2.1 schema properties.
                 session.loginAndDetectDatasource();
             } else {
@@ -265,12 +265,12 @@ public class EntityManagerFactoryProvider {
             }
         }
     }
-    
+
     /**
      * Merge the properties from the source object into the target object.  If the property
      * exists in both objects, use the one from the target
-     * @param target 
-     * @param source 
+     * @param target
+     * @param source
      * @return the target object
      */
     public static Map mergeMaps(Map target, Map source){
@@ -284,11 +284,11 @@ public class EntityManagerFactoryProvider {
         }
         return map;
     }
-    
+
     /**
-     * Copies source into target, removes from target all keysToBeRemoved. 
-     * @param source 
-     * @param keysToBeRemoved 
+     * Copies source into target, removes from target all keysToBeRemoved.
+     * @param source
+     * @param keysToBeRemoved
      * @return the target object
      */
     public static Map removeSpecifiedProperties(Map source, Collection keysToBeRemoved){
@@ -302,11 +302,11 @@ public class EntityManagerFactoryProvider {
         }
         return target;
     }
-    
+
     /**
-     * target contains the entries from source with keysToBeKept. 
-     * @param source 
-     * @param keysToBeKept 
+     * target contains the entries from source with keysToBeKept.
+     * @param source
+     * @param keysToBeKept
      * @return the target object
      */
     public static Map keepSpecifiedProperties(Map source, Collection keysToBeKept){
@@ -323,13 +323,13 @@ public class EntityManagerFactoryProvider {
         }
         return target;
     }
-    
+
     /**
      * target is a array of two Maps
      * the first one contains specified properties;
-     * the second all the rest. 
-     * @param source 
-     * @param keysToBeKept 
+     * the second all the rest.
+     * @param source
+     * @param keysToBeKept
      * @return the target object
      */
     public static Map[] splitSpecifiedProperties(Map source, Collection keysToBeKept){
@@ -349,15 +349,15 @@ public class EntityManagerFactoryProvider {
         }
         return target;
     }
-    
+
     /**
-     * Source Map is divided between Map[] in target.  
-     * Target's i-th member contains all source's Map.Entries 
+     * Source Map is divided between Map[] in target.
+     * Target's i-th member contains all source's Map.Entries
      * keys for which are in keys[i] Collection.
      * Target's size equals keys' size + 1:
      * all the source's Map.Entries not found in any of keys Collections
      * go into the last target's map.
-     * @param source 
+     * @param source
      * @param keys is array of Maps of size n
      * @return the target object is array of Maps of size n+1
      */
@@ -384,7 +384,7 @@ public class EntityManagerFactoryProvider {
         }
         return target;
     }
-    
+
     /**
      * This is a TEMPORARY method that will be removed.
      * DON'T USE THIS METHOD - for internal use only.
@@ -402,10 +402,10 @@ public class EntityManagerFactoryProvider {
             }
         }
     }
-    
+
     protected static void warnOldProperties(Map m, AbstractSession session) {
-    	for(int i=0; i < oldPropertyNames.length; i++) {
-    		Object value = m.get(oldPropertyNames[i][1]);
+        for(int i=0; i < oldPropertyNames.length; i++) {
+            Object value = m.get(oldPropertyNames[i][1]);
             if(value != null) {
                 session.log(SessionLog.INFO, SessionLog.TRANSACTION, "deprecated_property", oldPropertyNames[i]);
             }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.transparentindirection.IndirectMap
  */
 public class MapPolicyIndirectionTest extends ProjectClassGeneratorResultFileTest {
     public MapPolicyIndirectionTest() {
-        super(new IndirectMapProject(), 
+        super(new IndirectMapProject(),
               ".useMapClass(org.eclipse.persistence.testing.models.directmap.IndirectMapSubclass.class, \"getKey\"");
         setDescription("Test project class generation for Map Container Policy with indirection.");
     }
@@ -31,11 +31,11 @@ public class MapPolicyIndirectionTest extends ProjectClassGeneratorResultFileTes
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        ClassDescriptor descriptorToModify = 
+        ClassDescriptor descriptorToModify =
             project.getDescriptors().get(((IndirectMapProject)project).orderClass());
 
         ((org.eclipse.persistence.mappings.CollectionMapping)descriptorToModify.getMappingForAttributeName("salesReps")).useTransparentMap("getKey");
-        ((org.eclipse.persistence.mappings.CollectionMapping)descriptorToModify.getMappingForAttributeName("salesReps")).useMapClass(org.eclipse.persistence.testing.models.directmap.IndirectMapSubclass.class, 
+        ((org.eclipse.persistence.mappings.CollectionMapping)descriptorToModify.getMappingForAttributeName("salesReps")).useMapClass(org.eclipse.persistence.testing.models.directmap.IndirectMapSubclass.class,
                                                                                                                             "getKey");
     }
 }

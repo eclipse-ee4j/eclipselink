@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     ailitchev - Uni-directional OneToMany
- *     07/19/2011-2.2.1 Guy Pelletier 
+ *     07/19/2011-2.2.1 Guy Pelletier
  *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
 import java.util.Iterator;
@@ -48,13 +48,13 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     /**
      * Indicates whether target's optimistic locking value should be incremented on
-     * target being added to / removed from a source. 
+     * target being added to / removed from a source.
      **/
     protected boolean shouldIncrementTargetLockValueOnAddOrRemoveTarget;
 
     /**
      * Indicates whether target's optimistic locking value should be incremented on
-     * the source deletion. 
+     * the source deletion.
      * Note that if the flag is set to true then the indirection will be triggered on
      * source delete - in order to verify all targets' versions.
      **/
@@ -69,7 +69,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         this.shouldIncrementTargetLockValueOnAddOrRemoveTarget = true;
         this.shouldIncrementTargetLockValueOnDeleteSource = true;
     }
-    
+
 
     /**
      * INTERNAL:
@@ -88,7 +88,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
        }
        return keyRow;
    }
-    
+
     /**
      * INTERNAL:
      * This method is used to create a change record from comparing two collections
@@ -144,7 +144,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     public boolean isUnidirectionalOneToManyMapping() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Initialize the mapping.
@@ -160,7 +160,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             }
         }
     }
-    
+
     /**
      * Initialize the type of the target foreign key, as it will be null as it is not mapped in the target.
      */
@@ -173,11 +173,11 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             DatabaseField sourcePrimaryKey = sourceKeys.next();
             if (targetForeignKey.getType() == null) {
                 DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForField(sourcePrimaryKey);
-                // If we have a mapping, set the type, otherwise at this point 
+                // If we have a mapping, set the type, otherwise at this point
                 // there is not much more we can do. This case will likely hit
                 // when we have a UnidirectionalOneToManyMapping on an aggregate
-                // outside of JPA. Within JPA, in most cases, the metadata 
-                // processing should set the type on the targetForeignKey for us. 
+                // outside of JPA. Within JPA, in most cases, the metadata
+                // processing should set the type on the targetForeignKey for us.
                 // Bug 278263 has been entered to revisit this code.
                 if (mapping != null) {
                     targetForeignKey.setType(mapping.getFieldClassification(sourcePrimaryKey));
@@ -211,7 +211,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         }
 
     }
-    
+
     /**
      * Prepare a cascade locking policy.
      */
@@ -241,7 +241,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         // in the mapping is privately owned then the target will be deleted - no need to modify target version.
         it = collectionChangeRecord.getRemoveObjectList().values().iterator();
         while(it.hasNext()) {
-            ObjectChangeSet change = (ObjectChangeSet)it.next(); 
+            ObjectChangeSet change = (ObjectChangeSet)it.next();
             if (!isPrivateOwned()){
                 if(!change.hasChanges()) {
                     change.setShouldModifyVersionField(Boolean.TRUE);
@@ -290,7 +290,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         int size = this.targetForeignKeyFields.size();
         for (int i=0; i < size; i++) {
             mappingBatchQuery.addAdditionalField(this.targetForeignKeyFields.get(i));
-        }        
+        }
     }
 
     /**
@@ -318,14 +318,14 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     @Override
     public void recordPrivateOwnedRemovals(Object object, UnitOfWorkImpl uow) {
         //need private owned check for this mapping as this method is called for any mapping
-        // that also registers a postCalculateChanges() method.  Most mappings only register the 
+        // that also registers a postCalculateChanges() method.  Most mappings only register the
         // postCalculateChanges if they are privately owned.  This Mapping is a special case an
         // always registers a postCalculateChanges mapping when the target has OPT locking.
         if (isPrivateOwned){
             super.recordPrivateOwnedRemovals(object, uow);
         }
     }
-    
+
     /**
      * INTERNAL:
      * UnidirectionalOneToManyMapping performs some events after INSERT/UPDATE to maintain the keys
@@ -366,17 +366,17 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     /**
      * PUBLIC:
      * Indicates whether target's optimistic locking value should be incremented on
-     * the source deletion (default value is true). 
+     * the source deletion (default value is true).
      **/
     public boolean shouldIncrementTargetLockValueOnDeleteSource() {
         return shouldIncrementTargetLockValueOnDeleteSource;
     }
-    
+
     /**
      * INTERNAL
      * Target foreign key of the removed object should be modified (set to null).
      */
     protected boolean shouldRemoveTargetQueryModifyTargetForeignKey() {
         return true;
-    }    
+    }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -83,7 +83,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
         isAny = mapping.isAny();
         initializeNodeValue();
     }
-    
+
     public boolean isOwningNode(XPathFragment xPathFragment) {
         if(isMixedNodeValue) {
             if(xPathFragment.nameIsText()) {
@@ -117,7 +117,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
         for(Class nextClass:((Map<Class, Mapping>)this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass()).keySet()) {
             //Create node values for any classes that aren't already processed
             if(!(classes.contains(nextClass))) {
-		Field field = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);
+        Field field = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);
                 NodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceCollectionMapping, xmlField, (Mapping) xmlChoiceCollectionMapping.getChoiceElementMappingsByClass().get(nextClass));
                 List<FieldNodeValue> newFieldToNodeValuesList = new ArrayList<FieldNodeValue>();
                 newFieldToNodeValuesList.add(new FieldNodeValue(field, nodeValue));
@@ -145,16 +145,16 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
             }
         }
         if(isAny){
-        	anyNodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceCollectionMapping, null, xmlChoiceCollectionMapping.getAnyMapping());
+            anyNodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceCollectionMapping, null, xmlChoiceCollectionMapping.getAnyMapping());
         }
-        	
+
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if(xmlChoiceCollectionMapping.isReadOnly()) {
             return false;
         }
-        
+
         Object value = xmlChoiceCollectionMapping.getAttributeValueFromObject(object);
         if(value == null) {
             AbstractNullPolicy wrapperNP = xmlChoiceCollectionMapping.getWrapperNullPolicy();
@@ -173,74 +173,74 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             }
         } else {
-        	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlChoiceCollectionMapping.getWrapperNullPolicy() != null);
+            return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlChoiceCollectionMapping.getWrapperNullPolicy() != null);
         }
-        
+
         if(marshalRecord.getMarshaller().isApplicationJSON()){
-        	List<NodeValue> nodeValues = new ArrayList();
+            List<NodeValue> nodeValues = new ArrayList();
             List<List> values = new ArrayList<List>();
-            
+
             NodeValue mixedNodeValue = null;
             List mixedValues = null;
-            
-            //sort the elements. Results will be a list of nodevalues and a corresponding list of 
+
+            //sort the elements. Results will be a list of nodevalues and a corresponding list of
             //collections associated with those nodevalues
-            while(cp.hasNext(iterator)) {        	    
-        	    Object nextValue = xmlChoiceCollectionMapping.convertObjectValueToDataValue(cp.next(iterator, session), session, marshalRecord.getMarshaller());
-		        NodeValue nodeValue = getNodeValueForValue(nextValue);
-		        
-		        if(nodeValue != null){
-		        	if(nodeValue == this){
-		        		mixedNodeValue = this;
-		        		if(mixedValues == null){
-		        			mixedValues = new ArrayList();
-		        		}
-		        		mixedValues.add(nextValue);
-		        	}else{
-			            int index = nodeValues.indexOf(nodeValue);
-	        	        if(index > -1){
-	        	    	    values.get(index).add(nextValue);
-	        	        }else{        	        	
-		        	    	nodeValues.add(nodeValue);
-		        	    	List valuesList = new ArrayList();
-		        	    	valuesList.add(nextValue);
-		        	    	values.add(valuesList);        	        	
-	        	        }
-		        	}
-		        }        	  
+            while(cp.hasNext(iterator)) {
+                Object nextValue = xmlChoiceCollectionMapping.convertObjectValueToDataValue(cp.next(iterator, session), session, marshalRecord.getMarshaller());
+                NodeValue nodeValue = getNodeValueForValue(nextValue);
+
+                if(nodeValue != null){
+                    if(nodeValue == this){
+                        mixedNodeValue = this;
+                        if(mixedValues == null){
+                            mixedValues = new ArrayList();
+                        }
+                        mixedValues.add(nextValue);
+                    }else{
+                        int index = nodeValues.indexOf(nodeValue);
+                        if(index > -1){
+                            values.get(index).add(nextValue);
+                        }else{
+                            nodeValues.add(nodeValue);
+                            List valuesList = new ArrayList();
+                            valuesList.add(nextValue);
+                            values.add(valuesList);
+                        }
+                    }
+                }
             }
             //always write out mixed values last so we can determine if the textWrapper key needs to be written.
             if(mixedNodeValue != null){
-            	nodeValues.add(mixedNodeValue);
-            	values.add(mixedValues);
+                nodeValues.add(mixedNodeValue);
+                values.add(mixedValues);
             }
-            
+
             for(int i =0;i < nodeValues.size(); i++){
-            	NodeValue associatedNodeValue = nodeValues.get(i);            	
-            	List listValue = values.get(i);            	
-            	
-            	XPathFragment frag = null;
+                NodeValue associatedNodeValue = nodeValues.get(i);
+                List listValue = values.get(i);
+
+                XPathFragment frag = null;
                 if(associatedNodeValue == this){
-                	frag = marshalRecord.getTextWrapperFragment();
-                }else{            	
-            	   frag = associatedNodeValue.getXPathNode().getXPathFragment();
-            	   if(frag != null){
-            		   frag = getOwningFragment(associatedNodeValue, frag);
-            		   associatedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementMarshalNodeValue(); 
-            	   }
+                    frag = marshalRecord.getTextWrapperFragment();
+                }else{
+                   frag = associatedNodeValue.getXPathNode().getXPathFragment();
+                   if(frag != null){
+                       frag = getOwningFragment(associatedNodeValue, frag);
+                       associatedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementMarshalNodeValue();
+                   }
                 }
                 if(frag != null || associatedNodeValue.isAnyMappingNodeValue()){
                     int valueSize = listValue.size();
                     marshalRecord.startCollection();
- 
-                    for(int j=0;j<valueSize; j++){              	          
-                    	marshalSingleValueWithNodeValue(frag, marshalRecord, object, listValue.get(j), session, namespaceResolver, ObjectMarshalContext.getInstance(), associatedNodeValue);
+
+                    for(int j=0;j<valueSize; j++){
+                        marshalSingleValueWithNodeValue(frag, marshalRecord, object, listValue.get(j), session, namespaceResolver, ObjectMarshalContext.getInstance(), associatedNodeValue);
                     }
-                    marshalRecord.endCollection();                    
-                }    
-            }                   
-        }        
-        else{        
+                    marshalRecord.endCollection();
+                }
+            }
+        }
+        else{
             while(cp.hasNext(iterator)) {
                 Object nextValue = cp.next(iterator, session);
                 marshalSingleValue(xPathFragment, marshalRecord, object, nextValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
@@ -249,94 +249,94 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
         return true;
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {        
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         value = xmlChoiceCollectionMapping.convertObjectValueToDataValue(value, session, marshalRecord.getMarshaller());
         if(value !=null && value.getClass() == CoreClassConstants.STRING && this.xmlChoiceCollectionMapping.isMixedContent()) {
-    		marshalMixedContent(marshalRecord, (String)value);
-	        return true;
-    	}
-        NodeValue associatedNodeValue = getNodeValueForValue(value);     
+            marshalMixedContent(marshalRecord, (String)value);
+            return true;
+        }
+        NodeValue associatedNodeValue = getNodeValueForValue(value);
         if(associatedNodeValue != null) {
-        	if(associatedNodeValue.isAnyMappingNodeValue()){
-        		//NodeValue unwrappedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementMarshalNodeValue();
-        		return marshalSingleValueWithNodeValue(null, marshalRecord, object, value, session, namespaceResolver, marshalContext, associatedNodeValue); 
-        	}
-        	else{
-        	//Find the correct fragment
-        	XPathFragment frag = associatedNodeValue.getXPathNode().getXPathFragment();
-    		if(frag != null){
-    		    frag = getOwningFragment(associatedNodeValue, frag);
-        	    NodeValue unwrappedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementMarshalNodeValue();
-        	    return marshalSingleValueWithNodeValue(frag, marshalRecord, object, value, session, namespaceResolver, marshalContext, unwrappedNodeValue);
-    		}
-        	}
+            if(associatedNodeValue.isAnyMappingNodeValue()){
+                //NodeValue unwrappedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementMarshalNodeValue();
+                return marshalSingleValueWithNodeValue(null, marshalRecord, object, value, session, namespaceResolver, marshalContext, associatedNodeValue);
+            }
+            else{
+            //Find the correct fragment
+            XPathFragment frag = associatedNodeValue.getXPathNode().getXPathFragment();
+            if(frag != null){
+                frag = getOwningFragment(associatedNodeValue, frag);
+                NodeValue unwrappedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementMarshalNodeValue();
+                return marshalSingleValueWithNodeValue(frag, marshalRecord, object, value, session, namespaceResolver, marshalContext, unwrappedNodeValue);
+            }
+            }
         }
         return true;
     }
 
-    private boolean marshalSingleValueWithNodeValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, NodeValue unwrappedNodeValue) {        
-    	
-    	if(unwrappedNodeValue != null){
-    	    unwrappedNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
-    	}    	   
-    	return true;
+    private boolean marshalSingleValueWithNodeValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, NodeValue unwrappedNodeValue) {
+
+        if(unwrappedNodeValue != null){
+            unwrappedNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
+        }
+        return true;
     }
 
     private NodeValue getNodeValueForValue(Object value){
-    	if(value == null){
-    		Iterator<NodeValue> nodeValues= fieldToNodeValues.values().iterator();
-    		while(nodeValues.hasNext()) {
-    			
-    		    XMLChoiceCollectionMappingUnmarshalNodeValue unmarshalNodeValue = (XMLChoiceCollectionMappingUnmarshalNodeValue)nodeValues.next();    		    
-    		    NodeValue nextNodeValue = unmarshalNodeValue.getChoiceElementMarshalNodeValue();    		    
-    		    
-    		    if(nextNodeValue instanceof MappingNodeValue){
-	        		Mapping nextMapping = ((MappingNodeValue)nextNodeValue).getMapping();
-	        		if(nextMapping.isAbstractCompositeCollectionMapping()){
-	        			if(((CompositeCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
-	        				return unmarshalNodeValue;	        				
-	        			}
-	        		}else if(nextMapping.isAbstractCompositeDirectCollectionMapping()){
-	        			if(((DirectCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
-	        				return unmarshalNodeValue;
-	        			}
-	        		}else if(nextMapping instanceof BinaryDataCollectionMapping){
-	        			if(((BinaryDataCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
-	        				return unmarshalNodeValue;
-	        			}
-	        		}
-    		    }
-        		
-        	}
-    		return null;
-    	}
-    	
-    	Field associatedField = null;
-    	NodeValue nodeValue = null;
-    	if(value instanceof Root) {
-    		Root rootValue = (Root)value;
-    		String localName = rootValue.getLocalName();
-    		String namespaceUri = rootValue.getNamespaceURI();
-    		Object fieldValue = rootValue.getObject();
-    		associatedField = getFieldForName(localName, namespaceUri);
-    		if(associatedField == null) {
-    		    if(xmlChoiceCollectionMapping.isAny()) {
-    		        return this.anyNodeValue;
-    		    }
-    		    Class theClass = fieldValue.getClass();
-    		    while(associatedField == null) {
+        if(value == null){
+            Iterator<NodeValue> nodeValues= fieldToNodeValues.values().iterator();
+            while(nodeValues.hasNext()) {
+
+                XMLChoiceCollectionMappingUnmarshalNodeValue unmarshalNodeValue = (XMLChoiceCollectionMappingUnmarshalNodeValue)nodeValues.next();
+                NodeValue nextNodeValue = unmarshalNodeValue.getChoiceElementMarshalNodeValue();
+
+                if(nextNodeValue instanceof MappingNodeValue){
+                    Mapping nextMapping = ((MappingNodeValue)nextNodeValue).getMapping();
+                    if(nextMapping.isAbstractCompositeCollectionMapping()){
+                        if(((CompositeCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
+                            return unmarshalNodeValue;
+                        }
+                    }else if(nextMapping.isAbstractCompositeDirectCollectionMapping()){
+                        if(((DirectCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
+                            return unmarshalNodeValue;
+                        }
+                    }else if(nextMapping instanceof BinaryDataCollectionMapping){
+                        if(((BinaryDataCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
+                            return unmarshalNodeValue;
+                        }
+                    }
+                }
+
+            }
+            return null;
+        }
+
+        Field associatedField = null;
+        NodeValue nodeValue = null;
+        if(value instanceof Root) {
+            Root rootValue = (Root)value;
+            String localName = rootValue.getLocalName();
+            String namespaceUri = rootValue.getNamespaceURI();
+            Object fieldValue = rootValue.getObject();
+            associatedField = getFieldForName(localName, namespaceUri);
+            if(associatedField == null) {
+                if(xmlChoiceCollectionMapping.isAny()) {
+                    return this.anyNodeValue;
+                }
+                Class theClass = fieldValue.getClass();
+                while(associatedField == null) {
                     associatedField = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
                     if(theClass.getSuperclass() != null) {
                         theClass = theClass.getSuperclass();
                     } else {
                         break;
                     }
-    		    }
-    		}
-    		if(associatedField != null) {
-    		    nodeValue = this.fieldToNodeValues.get(associatedField);
-    		}
-    	} else {
+                }
+            }
+            if(associatedField != null) {
+                nodeValue = this.fieldToNodeValues.get(associatedField);
+            }
+        } else {
             Class theClass = value.getClass();
             while(associatedField == null) {
                 associatedField = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
@@ -365,76 +365,76 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
                     break;
                 }
             }
-    	}
-    	if(associatedField == null) {
-    	    //check the field associations
-    	    List<Field> sourceFields = null;
-    	    Class theClass = value.getClass();
-    	    while(theClass != null) {
-    	        sourceFields = (List<Field>) xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(theClass);
-    	        if(sourceFields != null) {
-    	            break;
-    	        }
-    	        theClass = theClass.getSuperclass();
-    	    }
-    	    if(sourceFields != null) {
-    	        associatedField = sourceFields.get(0);
-    	        nodeValue = fieldToNodeValues.get(associatedField);
-    	    }
-    	}
-    	if(nodeValue != null){
-    		return nodeValue;
-    	}
-    	if(associatedField != null) {
-    	    return fieldToNodeValues.get(associatedField);
-    	}
-    	if (xmlChoiceCollectionMapping.isMixedContent() && value instanceof String){
-    		//use this as a placeholder for the nodevalue for mixedcontent
-    		return this;
-    	}
-    	if (xmlChoiceCollectionMapping.isAny()){
-    		return anyNodeValue;
-    	}
-    	return null;
+        }
+        if(associatedField == null) {
+            //check the field associations
+            List<Field> sourceFields = null;
+            Class theClass = value.getClass();
+            while(theClass != null) {
+                sourceFields = (List<Field>) xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(theClass);
+                if(sourceFields != null) {
+                    break;
+                }
+                theClass = theClass.getSuperclass();
+            }
+            if(sourceFields != null) {
+                associatedField = sourceFields.get(0);
+                nodeValue = fieldToNodeValues.get(associatedField);
+            }
+        }
+        if(nodeValue != null){
+            return nodeValue;
+        }
+        if(associatedField != null) {
+            return fieldToNodeValues.get(associatedField);
+        }
+        if (xmlChoiceCollectionMapping.isMixedContent() && value instanceof String){
+            //use this as a placeholder for the nodevalue for mixedcontent
+            return this;
+        }
+        if (xmlChoiceCollectionMapping.isAny()){
+            return anyNodeValue;
+        }
+        return null;
     }
-    
-    
+
+
     private XPathFragment getOwningFragment(NodeValue nodeValue, XPathFragment frag){
-    	while(frag != null) {
-   	        if(nodeValue.isOwningNode(frag)) {
-   	        	return frag;
-   	        }
-   	        frag = frag.getNextFragment();            
-   		}   
-    	return null;
-    }   
-    
+        while(frag != null) {
+               if(nodeValue.isOwningNode(frag)) {
+                   return frag;
+               }
+               frag = frag.getNextFragment();
+           }
+        return null;
+    }
+
     private void marshalMixedContent(MarshalRecord record, String value) {
         record.characters(value);
     }
 
     private Field getFieldForName(String localName, String namespaceUri) {
-    	Iterator<Field> fields = fieldToNodeValues.keySet().iterator(); 
-    	while(fields.hasNext()) {
-    		Field nextField = fields.next();
-    		if(nextField != null){
-    		XPathFragment fragment = nextField.getXPathFragment();
-    		while(fragment != null && (!fragment.nameIsText())) {
-    			if(fragment.getNextFragment() == null || fragment.getHasText()) {
-    				if(fragment.getLocalName().equals(localName)) {
-    					String fragUri = fragment.getNamespaceURI();
-    					if((namespaceUri == null && fragUri == null) || (namespaceUri != null && fragUri != null && namespaceUri.equals(fragUri))) {
-    						return nextField;
-    					}
-    				}
-    			}
-    			fragment = fragment.getNextFragment();
-    		}
-    		}
-    	}
-    	return null;
+        Iterator<Field> fields = fieldToNodeValues.keySet().iterator();
+        while(fields.hasNext()) {
+            Field nextField = fields.next();
+            if(nextField != null){
+            XPathFragment fragment = nextField.getXPathFragment();
+            while(fragment != null && (!fragment.nameIsText())) {
+                if(fragment.getNextFragment() == null || fragment.getHasText()) {
+                    if(fragment.getLocalName().equals(localName)) {
+                        String fragUri = fragment.getNamespaceURI();
+                        if((namespaceUri == null && fragUri == null) || (namespaceUri != null && fragUri != null && namespaceUri.equals(fragUri))) {
+                            return nextField;
+                        }
+                    }
+                }
+                fragment = fragment.getNextFragment();
+            }
+            }
+        }
+        return null;
     }
-    
+
     public Collection<NodeValue> getAllNodeValues() {
         return this.fieldToNodeValues.values();
     }
@@ -442,7 +442,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
     public boolean isMarshalNodeValue() {
         return true;
     }
-    
+
     public boolean isUnmarshalNodeValue() {
         return false;
     }
@@ -463,14 +463,14 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
     public CoreContainerPolicy getContainerPolicy() {
         return xmlChoiceCollectionMapping.getContainerPolicy();
     }
-    
+
     public boolean isContainerValue() {
         return true;
-    }  
-    
+    }
+
     public ChoiceCollectionMapping getMapping() {
         return xmlChoiceCollectionMapping;
-    }    
+    }
 
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
@@ -487,26 +487,26 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
     /**
      * INTERNAL:
      * Return true if this is the node value representing mixed content.
-     */    
+     */
     public boolean isMixedContentNodeValue() {
         return this.isMixedNodeValue;
     }
-    
+
     /**
      *  INTERNAL:
-     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
-     */  
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     */
     public void setIndex(int index){
-    	this.index = index;
+        this.index = index;
     }
-    
+
     /**
      * INTERNAL:
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
-     * Set during TreeObjectBuilder initialization 
+     * Set during TreeObjectBuilder initialization
      */
     public int getIndex(){
-    	return index;
+        return index;
     }
 
     /**
@@ -518,7 +518,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
     public boolean isDefaultEmptyContainer() {
         return getMapping().isDefaultEmptyContainer();
     }
-    
+
     @Override
     public void setXPathNode(XPathNode xPathNode) {
         super.setXPathNode(xPathNode);

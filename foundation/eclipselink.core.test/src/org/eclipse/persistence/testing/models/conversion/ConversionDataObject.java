@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.conversion;
 
 import java.util.*;
@@ -62,7 +62,7 @@ public class ConversionDataObject {
     // ====================================
     // Type Conversion Mapping Variables
     // ====================================
-    //	public int intToChar;
+    //    public int intToChar;
     public long timestamp2Long;
     public Date dateToTimestamp;// Only mapped with DB2.  Used for nano-second test
     public int intToFloat;
@@ -72,7 +72,7 @@ public class ConversionDataObject {
     public int intToString;
     public int intToByte;
 
-    //	public float floatToChar;
+    //    public float floatToChar;
     public float floatToInt;
     public float floatToLong;
     public float floatToDouble;
@@ -117,7 +117,7 @@ public class ConversionDataObject {
         example.aTimestamp = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1903, 3, 3, 3, 3, 3, 0);
         example.aString = new String("Conversion Managaer Test Example 1");
 
-        //	example.intToChar = 111;
+        //    example.intToChar = 111;
         example.timestamp2Long = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1990, 1, 1, 0, 0, 0, 0).getTime();
         example.dateToTimestamp = new java.util.Date(System.currentTimeMillis());
         example.intToFloat = 111;
@@ -127,7 +127,7 @@ public class ConversionDataObject {
         example.intToString = 111;
         example.intToByte = 11;
 
-        //	example.floatToChar = 111;
+        //    example.floatToChar = 111;
         example.floatToInt = 111;
         example.floatToLong = 111;
         example.floatToDouble = 111;
@@ -176,7 +176,7 @@ public class ConversionDataObject {
         example.aTimestamp = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1906, 6, 6, 6, 6, 6, 0);
         example.aString = new String("Conversion Managaer Test Example 2");
 
-        //	example.intToChar = 222;
+        //    example.intToChar = 222;
         example.timestamp2Long = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1999, 9, 9, 0, 0, 0, 0).getTime();
         example.intToFloat = 222;
         example.intToLong = 222;
@@ -185,7 +185,7 @@ public class ConversionDataObject {
         example.intToString = 222;
         example.intToByte = 22;
 
-        //	example.floatToChar = 222;
+        //    example.floatToChar = 222;
         example.floatToInt = 222;
         example.floatToLong = 222;
         example.floatToDouble = 222;
@@ -234,7 +234,7 @@ public class ConversionDataObject {
         example.aTimestamp = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1909, 9, 9, 9, 9, 9, 0);
         example.aString = new String("Conversion Managaer Test Example 3");
 
-        //	example.intToChar = 333;
+        //    example.intToChar = 333;
         example.timestamp2Long = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1990, 1, 1, 0, 0, 0, 0).getTime();
         example.intToFloat = 333;
         example.intToLong = 333;
@@ -243,7 +243,7 @@ public class ConversionDataObject {
         example.intToString = 333;
         example.intToByte = 33;
 
-        //	example.floatToChar = 333;
+        //    example.floatToChar = 333;
         example.floatToInt = 333;
         example.floatToLong = 333;
         example.floatToDouble = 333;
@@ -296,7 +296,7 @@ public class ConversionDataObject {
         definition.addField("A_PDOUBLE", Double.class);
         definition.addField("A_PBYTE", Byte.class);
 
-        // The A_PBYTE_A field will be added after a plaftorm check in 
+        // The A_PBYTE_A field will be added after a plaftorm check in
         // ConversionManagerSystem.createTables()
         definition.addField("A_PSHORT", Short.class);
 
@@ -325,7 +325,7 @@ public class ConversionDataObject {
 
         definition.addField("A_STRING", String.class, 50);
 
-        //	definition.addField("INT2CHR", Character.class);
+        //    definition.addField("INT2CHR", Character.class);
         definition.addField("TIMESP2LNG", java.sql.Timestamp.class);
         definition.addField("DATE2TIMESTAMP", java.sql.Timestamp.class);
         definition.addField("INT2FLT", Float.class);
@@ -335,7 +335,7 @@ public class ConversionDataObject {
         definition.addField("INT2STR", String.class);
         definition.addField("INT2BYTE", Byte.class);
 
-        //	definition.addField("FLT2CHR", Character.class);
+        //    definition.addField("FLT2CHR", Character.class);
         definition.addField("FLT2INT", Integer.class);
         definition.addField("FLT2LNG", Long.class);
         definition.addField("FLT2DBL", Double.class);

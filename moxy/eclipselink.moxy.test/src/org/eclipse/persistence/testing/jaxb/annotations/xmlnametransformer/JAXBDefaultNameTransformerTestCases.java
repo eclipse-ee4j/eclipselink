@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,18 +26,18 @@ import org.xml.sax.InputSource;
 
 public class JAXBDefaultNameTransformerTestCases extends JAXBWithJSONTestCases {
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlnametransformer/employeeDefault.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlnametransformer/employeeDefault.json";
-	private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
-	private final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
-	private final static String CONTROL_RESPONSIBILITY3 = "Write Design Spec";
-	private final static String CONTROL_FIRST_NAME = "Bob";
-	private final static String CONTROL_LAST_NAME = "Smith";
-	private final static int CONTROL_ID = 10;
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlnametransformer/employeeDefault.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlnametransformer/employeeDefault.json";
+    private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
+    private final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
+    private final static String CONTROL_RESPONSIBILITY3 = "Write Design Spec";
+    private final static String CONTROL_FIRST_NAME = "Bob";
+    private final static String CONTROL_LAST_NAME = "Smith";
+    private final static int CONTROL_ID = 10;
 
     public JAXBDefaultNameTransformerTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = Employee.class;
@@ -59,24 +59,24 @@ public class JAXBDefaultNameTransformerTestCases extends JAXBWithJSONTestCases {
         responsibilities.add(CONTROL_RESPONSIBILITY3);
 
         Employee employee = new Employee();
-		employee.firstName = CONTROL_FIRST_NAME;
-		employee.lastName = CONTROL_LAST_NAME;
-		Calendar cal = Calendar.getInstance();
-		cal.clear();
-		cal.set(2005,04,24,16,06,53);
-			
-		employee.birthday = cal;
-				
-		employee.id = CONTROL_ID;
-		
-		employee.responsibilities = responsibilities;
-		
-		employee.setBlah("Some String");
-              	
-		Address addr = new Address();
-		addr.id = 10;
-		addr.cityName = "Ottawa";
-		employee.address = addr;
+        employee.firstName = CONTROL_FIRST_NAME;
+        employee.lastName = CONTROL_LAST_NAME;
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(2005,04,24,16,06,53);
+
+        employee.birthday = cal;
+
+        employee.id = CONTROL_ID;
+
+        employee.responsibilities = responsibilities;
+
+        employee.setBlah("Some String");
+
+        Address addr = new Address();
+        addr.id = 10;
+        addr.cityName = "Ottawa";
+        employee.address = addr;
 
         return employee;
     }

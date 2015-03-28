@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,24 +23,24 @@ public class XmlPathWithXmlAttributeTestCases extends JAXBWithJSONTestCases{
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlpath/xmlpathandxmlattribute.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlpath/xmlpathandxmlattribute.json";
 
-	public XmlPathWithXmlAttributeTestCases(String name) throws Exception {
-		super(name);
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-		setClasses(new Class[]{TestObjectToAttributeWithXmlAttribute.class});
-	}
+    public XmlPathWithXmlAttributeTestCases(String name) throws Exception {
+        super(name);
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setClasses(new Class[]{TestObjectToAttributeWithXmlAttribute.class});
+    }
 
-	@Override
-	protected Object getControlObject() {
-		TestObjectToAttributeWithXmlAttribute obj = new TestObjectToAttributeWithXmlAttribute();
-		obj.theFlag = true;
-  		return obj;
-	}
-	
-	public void testSchemaGen() throws Exception{
-	   	List<InputStream> controlSchemas = new ArrayList<InputStream>();
-	   	InputStream is = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlpath/xmlpathandxmlattribute.xsd");
-	   	controlSchemas.add(is);
-	   	super.testSchemaGen(controlSchemas);
-	}
+    @Override
+    protected Object getControlObject() {
+        TestObjectToAttributeWithXmlAttribute obj = new TestObjectToAttributeWithXmlAttribute();
+        obj.theFlag = true;
+          return obj;
+    }
+
+    public void testSchemaGen() throws Exception{
+           List<InputStream> controlSchemas = new ArrayList<InputStream>();
+           InputStream is = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlpath/xmlpathandxmlattribute.xsd");
+           controlSchemas.add(is);
+           super.testSchemaGen(controlSchemas);
+    }
 }

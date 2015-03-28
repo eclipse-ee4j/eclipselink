@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 
@@ -65,15 +65,15 @@ public class GenerationContext {
 
     public Expression expressionFor(String aliasName) {
         Expression exp = (Expression) expressions.get(aliasName);
-        
+
         if (exp == null && (! expressions.isEmpty()) && isSelectGenerationContext()) {
             GenerationContext outerContext = ((SelectGenerationContext) this).getOuterContext();
-            
+
             if (outerContext != null) {
                 return outerContext.expressionFor(aliasName);
             }
         }
-       
+
         return exp;
     }
 
@@ -97,14 +97,14 @@ public class GenerationContext {
         baseQueryClass = newBaseQueryClass;
     }
 
-    /** 
+    /**
      * Caches the specified expression under the variable name for the base
      * query class.
      */
     public void setBaseExpression(String variable, Expression expr) {
         // Store the expression for faster access
         baseExpression = expr;
-        
+
         // Store it into the cache
         addExpression(expr, variable);
     }
@@ -127,13 +127,13 @@ public class GenerationContext {
     }
 
     //Answer true if we need to use parallel expressions
-    //This will be the case if a 1:1 is SELECTed in the EJBQL. 
+    //This will be the case if a 1:1 is SELECTed in the EJBQL.
     public boolean useParallelExpressions() {
         return false;
     }
 
     //Answer true if we want VariableNodes to check if they're
-    //SELECTed first, to determine how to instantiate the ExpressionBuilder 
+    //SELECTed first, to determine how to instantiate the ExpressionBuilder
     public boolean shouldCheckSelectNodeBeforeResolving() {
         return false;
     }
@@ -155,7 +155,7 @@ public class GenerationContext {
     public boolean isSelectGenerationContext() {
         return false;
     }
-    
+
     //Answer true if we should use outer joins in our get() (vs getAllowingNull())
     public boolean shouldUseOuterJoins() {
         return false;

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class SelectNode extends QueryNode {
     private List identifiers = new ArrayList();
 
     private boolean distinct = false;
-    
+
     public SelectNode() {
     }
 
@@ -64,7 +64,7 @@ public class SelectNode extends QueryNode {
     public void setSelectExpressions(List exprs) {
         selectExpressions = exprs;
     }
-    
+
     public List getIdentifiers() {
         return identifiers;
     }
@@ -84,9 +84,9 @@ public class SelectNode extends QueryNode {
      * Returns a DatabaseQuery instance representing the owning
      * ParseTree. This implementation returns a ReadAllQuery for simple SELECT
      * queries and a ReportQuery otherwise.
-     */ 
+     */
     public DatabaseQuery createDatabaseQuery(ParseTreeContext context) {
-        
+
         // TODO: This optimization needs to be revisited because it causes GlassFish issues: 2084 and 2171
         // These issues have been solve in GlassFish by always generating a ReportQuery
         // The same fix has not been made in Oracle TopLink because it disables some advanced JPA Query Hints
@@ -100,7 +100,7 @@ public class SelectNode extends QueryNode {
         return query;
     }
 
-    /** 
+    /**
      * Returns true if the SELECT clause consists of a single expression
      * returning the base identification variable of the query and if the base
      * variable is defined as a range variable w/o FETCH JOINs.
@@ -110,7 +110,7 @@ public class SelectNode extends QueryNode {
             // multiple expressions in the select clause => ReportQuery
             return false;
         }
-        
+
         Node node = getFirstSelectExpressionNode();
         if (!node.isVariableNode()) {
             // Does not select an identification variable (e.g. projection or
@@ -118,7 +118,7 @@ public class SelectNode extends QueryNode {
             return false;
         }
         String variable = ((VariableNode)node).getCanonicalVariableName();
-        
+
         // Note, the base variable in ParseTreeContext is not yet set =>
         // calculate it
         String baseVariable = getParseTree().getFromNode().getFirstVariable();
@@ -132,7 +132,7 @@ public class SelectNode extends QueryNode {
         if (getParseTree().hasGroupBy() || getParseTree().hasHaving()) {
             return false;
         }
-        
+
         // Use ReadAllQuery if the variable of the SELECT clause expression is
         // the base variable
         return baseVariable.equals(variable);
@@ -177,7 +177,7 @@ public class SelectNode extends QueryNode {
                     ((AliasableNode)node).setAlias(alias);
                 }
             }
-            node.applyToQuery(readQuery, context); 
+            node.applyToQuery(readQuery, context);
             selectContext.dontUseOuterJoins();
         }
 
@@ -198,7 +198,7 @@ public class SelectNode extends QueryNode {
         }
         return false;
     }
-    
+
     /**
      * Answer true if there is a one-to-one relationship selected.
      * This includes a chain of relationships.
@@ -217,7 +217,7 @@ public class SelectNode extends QueryNode {
             // delegate to aggregate expression
             return hasOneToOneSelected(node.getLeft(), context);
         }
-         
+
         if (node.isVariableNode()){
             return !nodeRefersToObject(node, context);
         }
@@ -232,7 +232,7 @@ public class SelectNode extends QueryNode {
             }
             return false;
         }
-      
+
         // check whether it is a direct-to-field mapping
         return !selectingDirectToField(node, context);
     }
@@ -265,7 +265,7 @@ public class SelectNode extends QueryNode {
         for (Iterator i = selectExpressions.iterator(); i.hasNext();) {
             Node node = (Node)i.next();
             //Make sure we've SELECted a VariableNode
-            if (node.isVariableNode() && 
+            if (node.isVariableNode() &&
                 ((VariableNode)node).getCanonicalVariableName().equals(variableName)) {
                 return true;
             }
@@ -280,7 +280,7 @@ public class SelectNode extends QueryNode {
     /**
      * Check the select expression nodes for a path expression starting with a
      * unqualified field access and if so, replace it by a qualified field
-     * access. 
+     * access.
      */
     public Node qualifyAttributeAccess(ParseTreeContext context) {
         for (int i = 0; i < selectExpressions.size(); i++) {
@@ -306,7 +306,7 @@ public class SelectNode extends QueryNode {
     public Class resolveClass(GenerationContext context) {
         return getReferenceClass(context);
     }
-    
+
     /**
      * Return a EclipseLink expression generated using the left node.
      */
@@ -321,7 +321,7 @@ public class SelectNode extends QueryNode {
     public Class getReferenceClass(GenerationContext context) {
         return getClassOfFirstVariable(context);
     }
-    
+
     private Class getClassOfFirstVariable(GenerationContext context) {
         Class clazz = null;
         String variable = getParseTree().getFromNode().getFirstVariable();
@@ -346,7 +346,7 @@ public class SelectNode extends QueryNode {
     public boolean isVariableInINClauseSelected(GenerationContext context) {
         for (Iterator i = selectExpressions.iterator(); i.hasNext();) {
             Node node = (Node)i.next();
-        
+
             if (node.isVariableNode()) {
                 String variableNameForLeft = ((VariableNode)node).getCanonicalVariableName();
                 if (!context.getParseTreeContext().isRangeVariable(variableNameForLeft)) {
@@ -384,7 +384,7 @@ public class SelectNode extends QueryNode {
         TypeHelper typeHelper = context.getParseTreeContext().getTypeHelper();
         Node path = node.getLeft();
         AttributeNode attribute = (AttributeNode)node.getRight();
-        return typeHelper.isRelationship(path.getType(), 
+        return typeHelper.isRelationship(path.getType(),
                                          attribute.getAttributeName());
     }
 
@@ -395,22 +395,22 @@ public class SelectNode extends QueryNode {
      */
     private boolean selectingDirectToField(Node node, GenerationContext context) {
 
-        if ((node == null) || !node.isDotNode()) {     
+        if ((node == null) || !node.isDotNode()) {
             return false;
         }
         return ((DotNode)node).endsWithDirectToField(context);
     }
 
-    /** 
+    /**
      * Returns the first select expression node.
      */
     private Node getFirstSelectExpressionNode() {
-        return selectExpressions.size() > 0 ? 
+        return selectExpressions.size() > 0 ?
             (Node)selectExpressions.get(0) : null;
     }
 
     private boolean isSingleSelectExpression() {
         return selectExpressions.size() == 1;
-    }    
-    
+    }
+
 }

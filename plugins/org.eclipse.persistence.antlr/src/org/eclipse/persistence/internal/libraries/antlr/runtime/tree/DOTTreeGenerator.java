@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -52,156 +52,156 @@ import java.util.HashMap;
  */
 public class DOTTreeGenerator {
 
-	public static StringTemplate _treeST =
-		new StringTemplate(
-			"digraph {\n\n" +
-			"\tordering=out;\n" +
-			"\tranksep=.4;\n" +
-			"\tbgcolor=\"lightgrey\"; node [shape=box, fixedsize=false, fontsize=12, fontname=\"Helvetica-bold\", fontcolor=\"blue\"\n" +
-			"\t\twidth=.25, height=.25, color=\"black\", fillcolor=\"white\", style=\"filled, solid, bold\"];\n" +
-			"\tedge [arrowsize=.5, color=\"black\", style=\"bold\"]\n\n" +
-			"  $nodes$\n" +
-			"  $edges$\n" +
-			"}\n");
+    public static StringTemplate _treeST =
+        new StringTemplate(
+            "digraph {\n\n" +
+            "\tordering=out;\n" +
+            "\tranksep=.4;\n" +
+            "\tbgcolor=\"lightgrey\"; node [shape=box, fixedsize=false, fontsize=12, fontname=\"Helvetica-bold\", fontcolor=\"blue\"\n" +
+            "\t\twidth=.25, height=.25, color=\"black\", fillcolor=\"white\", style=\"filled, solid, bold\"];\n" +
+            "\tedge [arrowsize=.5, color=\"black\", style=\"bold\"]\n\n" +
+            "  $nodes$\n" +
+            "  $edges$\n" +
+            "}\n");
 
-	public static StringTemplate _nodeST =
-			new StringTemplate("$name$ [label=\"$text$\"];\n");
+    public static StringTemplate _nodeST =
+            new StringTemplate("$name$ [label=\"$text$\"];\n");
 
-	public static StringTemplate _edgeST =
-			new StringTemplate("$parent$ -> $child$ // \"$parentText$\" -> \"$childText$\"\n");
+    public static StringTemplate _edgeST =
+            new StringTemplate("$parent$ -> $child$ // \"$parentText$\" -> \"$childText$\"\n");
 
-	/** Track node to number mapping so we can get proper node name back */
-	HashMap nodeToNumberMap = new HashMap();
+    /** Track node to number mapping so we can get proper node name back */
+    HashMap nodeToNumberMap = new HashMap();
 
-	/** Track node number so we can get unique node names */
-	int nodeNumber = 0;
+    /** Track node number so we can get unique node names */
+    int nodeNumber = 0;
 
-	public StringTemplate toDOT(Object tree,
-								TreeAdaptor adaptor,
-								StringTemplate _treeST,
-								StringTemplate _edgeST)
-	{
-		StringTemplate treeST = _treeST.getInstanceOf();
-		nodeNumber = 0;
-		toDOTDefineNodes(tree, adaptor, treeST);
-		nodeNumber = 0;
-		toDOTDefineEdges(tree, adaptor, treeST);
-		/*
-		if ( adaptor.getChildCount(tree)==0 ) {
+    public StringTemplate toDOT(Object tree,
+                                TreeAdaptor adaptor,
+                                StringTemplate _treeST,
+                                StringTemplate _edgeST)
+    {
+        StringTemplate treeST = _treeST.getInstanceOf();
+        nodeNumber = 0;
+        toDOTDefineNodes(tree, adaptor, treeST);
+        nodeNumber = 0;
+        toDOTDefineEdges(tree, adaptor, treeST);
+        /*
+        if ( adaptor.getChildCount(tree)==0 ) {
             // single node, don't do edge.
             treeST.setAttribute("nodes", adaptor.getText(tree));
         }
         */
-		return treeST;
-	}
+        return treeST;
+    }
 
-	public StringTemplate toDOT(Object tree,
-								TreeAdaptor adaptor)
-	{
-		return toDOT(tree, adaptor, _treeST, _edgeST);
-	}
+    public StringTemplate toDOT(Object tree,
+                                TreeAdaptor adaptor)
+    {
+        return toDOT(tree, adaptor, _treeST, _edgeST);
+    }
 
-	/** Generate DOT (graphviz) for a whole tree not just a node.
-	 *  For example, 3+4*5 should generate:
-	 *
-	 * digraph {
-	 *   node [shape=plaintext, fixedsize=true, fontsize=11, fontname="Courier",
-	 *         width=.4, height=.2];
-	 *   edge [arrowsize=.7]
-	 *   "+"->3
-	 *   "+"->"*"
-	 *   "*"->4
-	 *   "*"->5
-	 * }
-	 *
-	 * Return the ST not a string in case people want to alter.
-	 *
-	 * Takes a Tree interface object.
-	 */
-	public StringTemplate toDOT(Tree tree) {
-		return toDOT(tree, new CommonTreeAdaptor());
-	}
+    /** Generate DOT (graphviz) for a whole tree not just a node.
+     *  For example, 3+4*5 should generate:
+     *
+     * digraph {
+     *   node [shape=plaintext, fixedsize=true, fontsize=11, fontname="Courier",
+     *         width=.4, height=.2];
+     *   edge [arrowsize=.7]
+     *   "+"->3
+     *   "+"->"*"
+     *   "*"->4
+     *   "*"->5
+     * }
+     *
+     * Return the ST not a string in case people want to alter.
+     *
+     * Takes a Tree interface object.
+     */
+    public StringTemplate toDOT(Tree tree) {
+        return toDOT(tree, new CommonTreeAdaptor());
+    }
 
-	protected void toDOTDefineNodes(Object tree,
-									TreeAdaptor adaptor,
-									StringTemplate treeST)
-	{
-		if ( tree==null ) {
-			return;
-		}
-		int n = adaptor.getChildCount(tree);
-		if ( n==0 ) {
-			// must have already dumped as child from previous
-			// invocation; do nothing
-			return;
-		}
+    protected void toDOTDefineNodes(Object tree,
+                                    TreeAdaptor adaptor,
+                                    StringTemplate treeST)
+    {
+        if ( tree==null ) {
+            return;
+        }
+        int n = adaptor.getChildCount(tree);
+        if ( n==0 ) {
+            // must have already dumped as child from previous
+            // invocation; do nothing
+            return;
+        }
 
-		// define parent node
-		StringTemplate parentNodeST = getNodeST(adaptor, tree);
-		treeST.setAttribute("nodes", parentNodeST);
+        // define parent node
+        StringTemplate parentNodeST = getNodeST(adaptor, tree);
+        treeST.setAttribute("nodes", parentNodeST);
 
-		// for each child, do a "<unique-name> [label=text]" node def
-		for (int i = 0; i < n; i++) {
-			Object child = adaptor.getChild(tree, i);
-			StringTemplate nodeST = getNodeST(adaptor, child);
-			treeST.setAttribute("nodes", nodeST);
-			toDOTDefineNodes(child, adaptor, treeST);
-		}
-	}
+        // for each child, do a "<unique-name> [label=text]" node def
+        for (int i = 0; i < n; i++) {
+            Object child = adaptor.getChild(tree, i);
+            StringTemplate nodeST = getNodeST(adaptor, child);
+            treeST.setAttribute("nodes", nodeST);
+            toDOTDefineNodes(child, adaptor, treeST);
+        }
+    }
 
-	protected void toDOTDefineEdges(Object tree,
-									TreeAdaptor adaptor,
-									StringTemplate treeST)
-	{
-		if ( tree==null ) {
-			return;
-		}
-		int n = adaptor.getChildCount(tree);
-		if ( n==0 ) {
-			// must have already dumped as child from previous
-			// invocation; do nothing
-			return;
-		}
+    protected void toDOTDefineEdges(Object tree,
+                                    TreeAdaptor adaptor,
+                                    StringTemplate treeST)
+    {
+        if ( tree==null ) {
+            return;
+        }
+        int n = adaptor.getChildCount(tree);
+        if ( n==0 ) {
+            // must have already dumped as child from previous
+            // invocation; do nothing
+            return;
+        }
 
-		String parentName = "n"+getNodeNumber(tree);
+        String parentName = "n"+getNodeNumber(tree);
 
-		// for each child, do a parent -> child edge using unique node names
-		String parentText = adaptor.getText(tree);
-		for (int i = 0; i < n; i++) {
-			Object child = adaptor.getChild(tree, i);
-			String childText = adaptor.getText(child);
-			String childName = "n"+getNodeNumber(child);
-			StringTemplate edgeST = _edgeST.getInstanceOf();
-			edgeST.setAttribute("parent", parentName);
-			edgeST.setAttribute("child", childName);
-			edgeST.setAttribute("parentText", fixString(parentText));
-			edgeST.setAttribute("childText", fixString(childText));
-			treeST.setAttribute("edges", edgeST);
-			toDOTDefineEdges(child, adaptor, treeST);
-		}
-	}
+        // for each child, do a parent -> child edge using unique node names
+        String parentText = adaptor.getText(tree);
+        for (int i = 0; i < n; i++) {
+            Object child = adaptor.getChild(tree, i);
+            String childText = adaptor.getText(child);
+            String childName = "n"+getNodeNumber(child);
+            StringTemplate edgeST = _edgeST.getInstanceOf();
+            edgeST.setAttribute("parent", parentName);
+            edgeST.setAttribute("child", childName);
+            edgeST.setAttribute("parentText", fixString(parentText));
+            edgeST.setAttribute("childText", fixString(childText));
+            treeST.setAttribute("edges", edgeST);
+            toDOTDefineEdges(child, adaptor, treeST);
+        }
+    }
 
-	protected StringTemplate getNodeST(TreeAdaptor adaptor, Object t) {
-		String text = adaptor.getText(t);
-		StringTemplate nodeST = _nodeST.getInstanceOf();
-		String uniqueName = "n"+getNodeNumber(t);
-		nodeST.setAttribute("name", uniqueName);
+    protected StringTemplate getNodeST(TreeAdaptor adaptor, Object t) {
+        String text = adaptor.getText(t);
+        StringTemplate nodeST = _nodeST.getInstanceOf();
+        String uniqueName = "n"+getNodeNumber(t);
+        nodeST.setAttribute("name", uniqueName);
 
-		nodeST.setAttribute("text", fixString(text));
-		return nodeST;
-	}
+        nodeST.setAttribute("text", fixString(text));
+        return nodeST;
+    }
 
-	protected int getNodeNumber(Object t) {
-		Integer nI = (Integer)nodeToNumberMap.get(t);
-		if ( nI!=null ) {
-			return nI.intValue();
-		}
-		else {
-			nodeToNumberMap.put(t, new Integer(nodeNumber));
-			nodeNumber++;
-			return nodeNumber-1;
-		}
-	}
+    protected int getNodeNumber(Object t) {
+        Integer nI = (Integer)nodeToNumberMap.get(t);
+        if ( nI!=null ) {
+            return nI.intValue();
+        }
+        else {
+            nodeToNumberMap.put(t, new Integer(nodeNumber));
+            nodeNumber++;
+            return nodeNumber-1;
+        }
+    }
 
     protected String fixString(String in)
     {

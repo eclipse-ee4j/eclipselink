@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,7 +37,7 @@ public class XmlElementsIdRefInterfaceTestCases extends JAXBWithJSONTestCases {
 
     public XmlElementsIdRefInterfaceTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[1];        
+        Class[] classes = new Class[1];
         //classes[1] = EmployeeWithElementsInterface.class;
         classes[0] = RootWithEmployeeInterfaces.class;
         //classes[3] = PhoneNumber.class;
@@ -47,8 +47,8 @@ public class XmlElementsIdRefInterfaceTestCases extends JAXBWithJSONTestCases {
     }
 
     protected Object getJSONReadControlObject() {
-    
-    	 EmployeeWithElementsInterfaces employee = new EmployeeWithElementsInterfaces();
+
+         EmployeeWithElementsInterfaces employee = new EmployeeWithElementsInterfaces();
          employee.id = CONTROL_ID;
          employee.name = CONTROL_NAME;
 
@@ -56,7 +56,7 @@ public class XmlElementsIdRefInterfaceTestCases extends JAXBWithJSONTestCases {
          root.employee = employee;
          root.addresses = new ArrayList<AddressInterfaces>();
          root.phoneNumbers = new ArrayList<PhoneNumberInterfaces>();
-         
+
          AddressInterfaces address = new AddressInterfaces();
          address.id = CONTROL_ADD_ID_1;
          address.street = CONTROL_ADD_STREET_1;
@@ -66,33 +66,33 @@ public class XmlElementsIdRefInterfaceTestCases extends JAXBWithJSONTestCases {
          address.emp = new Vector<EmployeeWithElementsInterfaces>();
          address.emp.add(employee);
          root.addresses.add(address);
-         
+
          employee.addressOrPhone = new ArrayList<ContactInfo>();
          //employee.address = address;
-         
+
          //employee.phones = new ArrayList();
-         
+
          PhoneNumberInterfaces num = new PhoneNumberInterfaces();
          num.id = CONTROL_PHONE_ID_1;
          num.number = CONTROL_PHONE_NUM_1;
          num.emp = employee;
          employee.addressOrPhone.add(num);
          root.phoneNumbers.add(num);
-         
+
          num = new PhoneNumberInterfaces();
          num.id = CONTROL_PHONE_ID_2;
          num.number = CONTROL_PHONE_NUM_2;
          num.emp = employee;
          employee.addressOrPhone.add(num);
-         
+
          employee.addressOrPhone.add(address);
-         
-        
+
+
          root.phoneNumbers.add(num);
-         
+
          return root;
     }
-    
+
     protected Object getControlObject() {
         EmployeeWithElementsInterfaces employee = new EmployeeWithElementsInterfaces();
         employee.id = CONTROL_ID;
@@ -102,7 +102,7 @@ public class XmlElementsIdRefInterfaceTestCases extends JAXBWithJSONTestCases {
         root.employee = employee;
         root.addresses = new ArrayList<AddressInterfaces>();
         root.phoneNumbers = new ArrayList<PhoneNumberInterfaces>();
-        
+
         AddressInterfaces address = new AddressInterfaces();
         address.id = CONTROL_ADD_ID_1;
         address.street = CONTROL_ADD_STREET_1;
@@ -112,37 +112,37 @@ public class XmlElementsIdRefInterfaceTestCases extends JAXBWithJSONTestCases {
         address.emp = new Vector<EmployeeWithElementsInterfaces>();
         address.emp.add(employee);
         root.addresses.add(address);
-        
+
         employee.addressOrPhone = new ArrayList<ContactInfo>();
         //employee.address = address;
-        
+
         //employee.phones = new ArrayList();
-        
+
         PhoneNumberInterfaces num = new PhoneNumberInterfaces();
         num.id = CONTROL_PHONE_ID_1;
         num.number = CONTROL_PHONE_NUM_1;
         num.emp = employee;
         employee.addressOrPhone.add(num);
         root.phoneNumbers.add(num);
-        
+
         employee.addressOrPhone.add(address);
-        
+
         num = new PhoneNumberInterfaces();
         num.id = CONTROL_PHONE_ID_2;
         num.number = CONTROL_PHONE_NUM_2;
         num.emp = employee;
         employee.addressOrPhone.add(num);
         root.phoneNumbers.add(num);
-        
+
         return root;
     }
 
-    
+
     public void testSchemaGen() throws Exception {
         List<InputStream> controlSchemas = new ArrayList<InputStream>();
         controlSchemas.add(ClassLoader.getSystemResourceAsStream(XSD_RESOURCE));
-        
+
         this.testSchemaGen(controlSchemas);
-        
+
     }
 }

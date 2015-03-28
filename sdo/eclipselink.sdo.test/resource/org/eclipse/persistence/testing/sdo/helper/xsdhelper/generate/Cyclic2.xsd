@@ -3,7 +3,7 @@
    <xsd:import schemaLocation="Cyclic1.xsd" namespace="my.uri"/>
    <xsd:complexType name="USAddress">
       <xsd:sequence>
-	<xsd:element name="thePhone" type="ns0:PhoneType"/>
+    <xsd:element name="thePhone" type="ns0:PhoneType"/>
       </xsd:sequence>
       <xsd:attribute name="street" type="xsd:string"/>
       <xsd:attribute name="city" type="xsd:string"/>

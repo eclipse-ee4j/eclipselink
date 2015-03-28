@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.eis.mappings;
 
 import java.util.ArrayList;
@@ -46,12 +46,12 @@ import org.eclipse.persistence.queries.*;
 import org.w3c.dom.Element;
 
 /**
- * <p>An EIS one-to-many mapping is a reference mapping that represents the relationship between 
- * a single source object and a collection of mapped persistent Java objects.  The source object usually 
- * contains a foreign key (pointer) to the target objects (key on source); alternatively, the target 
- * objects may contain a foreign key to the source object (key on target).  Because both the source 
- * and target objects use interactions, they must all be configured as root object types.  
- * 
+ * <p>An EIS one-to-many mapping is a reference mapping that represents the relationship between
+ * a single source object and a collection of mapped persistent Java objects.  The source object usually
+ * contains a foreign key (pointer) to the target objects (key on source); alternatively, the target
+ * objects may contain a foreign key to the source object (key on target).  Because both the source
+ * and target objects use interactions, they must all be configured as root object types.
+ *
  * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Record Type</th>
@@ -59,7 +59,7 @@ import org.w3c.dom.Element;
  * </tr>
  * <tr>
  * <td headers="c1">Indexed</td>
- * <td headers="c2">Ordered collection of record elements.  The indexed record EIS format 
+ * <td headers="c2">Ordered collection of record elements.  The indexed record EIS format
  * enables Java class attribute values to be retreived by position or index.</td>
  * </tr>
  * <tr>
@@ -72,11 +72,11 @@ import org.w3c.dom.Element;
  * <td headers="c2">Record/Map representation of an XML DOM element.</td>
  * </tr>
  * </table>
- * 
+ *
  * @see org.eclipse.persistence.eis.EISDescriptor#useIndexedRecordFormat
  * @see org.eclipse.persistence.eis.EISDescriptor#useMappedRecordFormat
  * @see org.eclipse.persistence.eis.EISDescriptor#useXMLRecordFormat
- * 
+ *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
 public class EISOneToManyMapping extends CollectionMapping implements EISMapping {
@@ -296,7 +296,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         }
 
         this.initializeSourceForeignKeysToTargetKeys();
-        
+
         if (shouldInitializeSelectionCriteria()) {
             initializeSelectionCriteria(session);
         }
@@ -360,7 +360,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             this.getDeleteAllQuery().setSelectionCriteria(this.getSelectionCriteria());
         }
     }
-    
+
     /**
      * Fix field names for XML data descriptors.
      * Since fields are fixed to use text() by default in descriptor, ensure the correct non text field is used here.
@@ -488,7 +488,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             // UnitOfWork
             writeChanges(query.getObjectChangeSet(), query);
         } else {
-            // OLD COMMIT    
+            // OLD COMMIT
             compareObjectsAndWrite(query);
         }
     }
@@ -644,7 +644,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             // UnitOfWork
             writeChanges(query.getObjectChangeSet(), query);
         } else {
-            // OLD COMMIT    
+            // OLD COMMIT
             compareObjectsAndWrite(query);
         }
     }
@@ -834,7 +834,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         }
         return super.compareObjects(object1, object2, session);
     }
-    
+
     /**
      * INTERNAL:
      * If the mapping has a foreign key, it is order, so must use a different merge.
@@ -847,7 +847,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         }
         super.mergeChangesIntoObject(target, chgRecord, source, mergeManager, targetSession);
     }
-    
+
     /**
      * INTERNAL:
      * If the mapping has a foreign key, it is order, so must use a different merge.
@@ -860,7 +860,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         }
         super.mergeIntoObject(target, isTargetUnInitialized, source, mergeManager, targetSession);
     }
-        
+
     /**
      * ADVANCED:
      * This method is used to have an object add to a collection once the changeSet is applied
@@ -912,7 +912,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
     }
 
     /**
-     * Build and return a database row that contains a foreign key for the specified reference 
+     * Build and return a database row that contains a foreign key for the specified reference
      * object.  This will be stored in the nested row(s).
      */
     protected AbstractRecord extractKeyRowFromReferenceObject(Object object, AbstractSession session, AbstractRecord parentRecord) {
@@ -965,7 +965,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         if (((EISDescriptor) this.getDescriptor()).isXMLFormat()) {
             ((XMLRecord) row).setSession(executionSession);
         }
-        
+
         ReadQuery targetQuery = getSelectionQuery();
         if (!this.isForeignKeyRelationship) {
             // if the source query is cascading then the target query must use the same settings
@@ -1075,7 +1075,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
 
         AbstractRecord referenceRow = this.getIndirectionPolicy().extractReferenceRow(this.getAttributeValueFromObject(object));
         if (referenceRow != null) {
-            // the reference objects have not been instantiated - use the value from the original row				
+            // the reference objects have not been instantiated - use the value from the original row
             if (getForeignKeyGroupingElement() != null) {
                 row.put(this.getForeignKeyGroupingElement(), referenceRow.getValues(this.getForeignKeyGroupingElement()));
             } else if (getSourceForeignKeyFields().size() > 0) {
@@ -1148,7 +1148,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         }
         writeFromObjectIntoRow(object, row, session, WriteType.UPDATE);
     }
-    
+
     /**
      * INTERNAL:
      * This row is built for shallow insert which happens in case of bidirectional inserts.

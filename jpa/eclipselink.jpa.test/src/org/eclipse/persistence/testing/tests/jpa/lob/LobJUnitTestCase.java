@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -51,10 +51,10 @@ public class LobJUnitTestCase extends JUnitTestCase {
         suite.addTest(new LobJUnitTestCase("testUpdate"));
         suite.addTest(new LobJUnitTestCase("testDelete"));
         suite.addTest(new LobJUnitTestCase("testMerge"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -62,7 +62,7 @@ public class LobJUnitTestCase extends JUnitTestCase {
         new LobTableCreator().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
     }
-    
+
     public void testCreate() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -169,20 +169,20 @@ public class LobJUnitTestCase extends JUnitTestCase {
             em.persist(image);
             commitTransaction(em);
             closeEntityManager(em);
-            
+
             image.getCustomAttribute1().setSomeValue(2l);
             em = createEntityManager();
             beginTransaction(em);
             em.merge(image);
             commitTransaction(em);
-            
+
             em.clear();
             clearCache();
-            
+
             beginTransaction(em);
             image = em.find(Image.class, 5001);
             assertTrue("Image.customAttribute1 not correctly updated.", image.getCustomAttribute1().getSomeValue() == 2l);
-            
+
             em.remove(image);
             commitTransaction(em);
             clearCache();
@@ -195,7 +195,7 @@ public class LobJUnitTestCase extends JUnitTestCase {
         }
         closeEntityManager(em);
     }
-    
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(LobJUnitTestCase.suite());
     }

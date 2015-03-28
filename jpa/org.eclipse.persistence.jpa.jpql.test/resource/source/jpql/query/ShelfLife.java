@@ -8,14 +8,14 @@ import javax.persistence.TemporalType;
 @Embeddable
 public class ShelfLife {
 
-	@Temporal(TemporalType.DATE)
-	private Date soldDate;
+    @Temporal(TemporalType.DATE)
+    private Date soldDate;
 
-	public Date getSoldDate() {
-		return soldDate;
-	}
+    public Date getSoldDate() {
+        return soldDate;
+    }
 
-	public void setSoldDate(Date soldDate) {
-		this.soldDate = soldDate;
-	}
+    public void setSoldDate(Date soldDate) {
+        this.soldDate = soldDate;
+    }
 }

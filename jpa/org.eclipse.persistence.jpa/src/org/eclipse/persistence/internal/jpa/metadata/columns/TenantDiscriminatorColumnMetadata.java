@@ -1,22 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     04/01/2011-2.3 Guy Pelletier 
+ *     04/01/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 2)
- *     04/05/2011-2.3 Guy Pelletier 
+ *     04/05/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 3)
- *     09/09/2011-2.3.1 Guy Pelletier 
- *       - 356197: Add new VPD type to MultitenantType 
- *     11/10/2011-2.4 Guy Pelletier 
+ *     09/09/2011-2.3.1 Guy Pelletier
+ *       - 356197: Add new VPD type to MultitenantType
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
@@ -33,25 +33,25 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.MULTITENA
 
 /**
  * Object to hold onto tenant discriminator metadata.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.3
  */
 public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetadata {
     public static final String NAME_DEFAULT = "TENANT_ID";
-    
+
     private Boolean m_primaryKey;
     private String m_table;
     private String m_contextProperty;
-    
+
     /**
      * INTERNAL:
      * Used for XML loading.
@@ -59,7 +59,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
     public TenantDiscriminatorColumnMetadata() {
         super("<tenant-discriminator-column>");
     }
-    
+
     /**
      * INTERNAL:
      * Used for defaulting.
@@ -67,19 +67,19 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
     public TenantDiscriminatorColumnMetadata(MetadataAccessor accessor) {
         super(accessor);
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.
      */
     public TenantDiscriminatorColumnMetadata(MetadataAnnotation tenantDiscriminator, MetadataAccessor accessor) {
         super(tenantDiscriminator, accessor);
-        
+
         m_table = tenantDiscriminator.getAttributeString("table");
         m_primaryKey = tenantDiscriminator.getAttributeBooleanDefaultFalse("primaryKey");
         m_contextProperty = tenantDiscriminator.getAttributeString("contextProperty");
     }
-    
+
     /**
      * INTERNAL:
      * Required ORMetadata method used for XML merging.
@@ -88,18 +88,18 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && objectToCompare instanceof TenantDiscriminatorColumnMetadata) {
             TenantDiscriminatorColumnMetadata tenantDiscriminator = (TenantDiscriminatorColumnMetadata) objectToCompare;
-            
+
             if (! valuesMatch(m_primaryKey, tenantDiscriminator.getPrimaryKey())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_contextProperty, tenantDiscriminator.getContextProperty())) {
                 return false;
             }
-            
+
             return valuesMatch(m_table, tenantDiscriminator.getTable());
         }
-        
+
         return false;
     }
 
@@ -110,7 +110,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
     public String getContextProperty() {
         return m_contextProperty;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -118,18 +118,18 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
     public DatabaseField getDatabaseField() {
         // Initialize the DatabaseField with values and defaults.
         DatabaseField field = super.getDatabaseField();
-        
+
         // If the table is specified use it.
         if (m_table != null) {
             field.setTableName(m_table);
         }
-        
+
         // Set the primary key setting
         field.setPrimaryKey(m_primaryKey == null ? false : m_primaryKey.booleanValue());
-        
+
         return field;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -137,7 +137,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
     public Boolean getPrimaryKey() {
         return m_primaryKey;
      }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -151,16 +151,16 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
      */
     public void process(MetadataDescriptor descriptor, SingleTableMultitenantPolicy policy) {
         DatabaseField tenantDiscriminatorField = getDatabaseField();
-            
-        // Set the field name. This will take care of any any delimited 
+
+        // Set the field name. This will take care of any any delimited
         // identifiers and casing defaults etc.
         setFieldName(tenantDiscriminatorField, NAME_DEFAULT, MetadataLogger.TENANT_DISCRIMINATOR_COLUMN);
-    
+
         // Set a default table if one isn't specified.
         if (! tenantDiscriminatorField.hasTableName()) {
             tenantDiscriminatorField.setTable(descriptor.getPrimaryTable());
         }
-            
+
         // Set the property name, defaulting where necessary and log a warning.
         if (m_contextProperty == null) {
             getLogger().logWarningMessage(MetadataLogger.TENANT_DISCRIMINATOR_CONTEXT_PROPERTY, getAccessibleObject(), tenantDiscriminatorField, MULTITENANT_PROPERTY_DEFAULT);
@@ -168,16 +168,16 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
         }
 
         policy.addTenantDiscriminatorField(m_contextProperty, tenantDiscriminatorField);
-        
-        // Add a multitenant id accessor to the descriptor (to be processed 
-        // later) other mappings may need to look it up hence need to create a 
+
+        // Add a multitenant id accessor to the descriptor (to be processed
+        // later) other mappings may need to look it up hence need to create a
         // new mapping accessor.
         if (tenantDiscriminatorField.isPrimaryKey()) {
             MultitenantIdAccessor idAccessor = new MultitenantIdAccessor(m_contextProperty, tenantDiscriminatorField, getAccessibleObject(), descriptor.getClassAccessor());
             descriptor.addMappingAccessor(idAccessor);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -185,14 +185,14 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
     public void setContextProperty(String contextProperty) {
         m_contextProperty = contextProperty;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
     public void setPrimaryKey(Boolean primaryKey) {
         m_primaryKey = primaryKey;
-    }    
+    }
 
     /**
      * INTERNAL:

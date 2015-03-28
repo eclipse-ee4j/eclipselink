@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2015  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,11 +20,11 @@ public class NonELPrefixMapperTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/prefixmapper/employee.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/prefixmapper/employee.json";
-    
+
     public NonELPrefixMapperTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Employee.class, Person.class});
-        jaxbMarshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NonELPrefixMapperImpl());        
+        jaxbMarshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NonELPrefixMapperImpl());
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, new NamespacePrefixMapperWrapper(new NonELPrefixMapperImpl()));
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -37,7 +37,7 @@ public class NonELPrefixMapperTestCases extends JAXBWithJSONTestCases {
         emp.lastName = "Doe";
         emp.address = "123 Fake Street";
         emp.employeeId = 4321;
-        
+
         emp.manager = new Employee();
         emp.manager.firstName = "Bob";
         emp.manager.lastName = "Jones";

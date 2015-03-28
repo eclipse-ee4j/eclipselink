@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,52 +28,52 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.WhenClauseStateObject;
 public abstract class AbstractCaseExpressionStateObjectBuilder extends AbstractConditionalExpressionStateObjectBuilder<ICaseExpressionStateObjectBuilder>
                                                                implements ICaseExpressionStateObjectBuilder {
 
-	/**
-	 * Keeps track of the actual {@link CaseExpressionStateObject} since it is needed when creating
-	 * new {@link WhenClauseStateObject} due to strongly typed parent.
-	 */
-	private CaseExpressionStateObject caseExpressionStateObject;
+    /**
+     * Keeps track of the actual {@link CaseExpressionStateObject} since it is needed when creating
+     * new {@link WhenClauseStateObject} due to strongly typed parent.
+     */
+    private CaseExpressionStateObject caseExpressionStateObject;
 
-	/**
-	 * Creates a new <code>AbstractCaseExpressionStateObjectBuilder</code>.
-	 *
-	 * @param parent The parent of the <code><b>CASE</b></code> expression to build, which is only
-	 * required when a JPQL fragment needs to be parsed
-	 */
-	protected AbstractCaseExpressionStateObjectBuilder(StateObject parent) {
-		super(parent);
-		caseExpressionStateObject = new CaseExpressionStateObject(parent);
-	}
+    /**
+     * Creates a new <code>AbstractCaseExpressionStateObjectBuilder</code>.
+     *
+     * @param parent The parent of the <code><b>CASE</b></code> expression to build, which is only
+     * required when a JPQL fragment needs to be parsed
+     */
+    protected AbstractCaseExpressionStateObjectBuilder(StateObject parent) {
+        super(parent);
+        caseExpressionStateObject = new CaseExpressionStateObject(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public CaseExpressionStateObject buildStateObject() {
-		caseExpressionStateObject.setElse(pop());
-		if (hasStateObjects()) {
-			caseExpressionStateObject.setCaseOperand(pop());
-		}
-		return caseExpressionStateObject;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public CaseExpressionStateObject buildStateObject() {
+        caseExpressionStateObject.setElse(pop());
+        if (hasStateObjects()) {
+            caseExpressionStateObject.setCaseOperand(pop());
+        }
+        return caseExpressionStateObject;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ICaseExpressionStateObjectBuilder when(ICaseExpressionStateObjectBuilder when,
-	                                              ICaseExpressionStateObjectBuilder then) {
+    /**
+     * {@inheritDoc}
+     */
+    public ICaseExpressionStateObjectBuilder when(ICaseExpressionStateObjectBuilder when,
+                                                  ICaseExpressionStateObjectBuilder then) {
 
-		checkBuilders(when, then);
+        checkBuilders(when, then);
 
-		StateObject thenStateObject = pop();
-		StateObject whenStateObject = pop();
+        StateObject thenStateObject = pop();
+        StateObject whenStateObject = pop();
 
-		WhenClauseStateObject stateObject = new WhenClauseStateObject(
-			caseExpressionStateObject,
-			whenStateObject,
-			thenStateObject
-		);
+        WhenClauseStateObject stateObject = new WhenClauseStateObject(
+            caseExpressionStateObject,
+            whenStateObject,
+            thenStateObject
+        );
 
-		caseExpressionStateObject.addItem(stateObject);
-		return this;
-	}
+        caseExpressionStateObject.addItem(stateObject);
+        return this;
+    }
 }

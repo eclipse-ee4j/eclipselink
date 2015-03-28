@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 /*
    DESCRIPTION
     Perform copy/equality junit test operations on DataObjects.
@@ -204,7 +204,7 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         super.setUp();
         SDOType changeSummaryType = (SDOType) aHelperContext.getTypeHelper().getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
 
-        // first we set up root data object       
+        // first we set up root data object
         DataObject rootTypeDO = defineType(rootTypeUri, rootTypeName);
         rootType = (SDOType)typeHelper.define(rootTypeDO);
 
@@ -226,7 +226,7 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
 
         rootProperty3 = new SDOProperty(aHelperContext);// root's property3
         rootProperty3.setName("rootproperty3-notdatatype");
-        rootProperty3.setContainment(true);// containment property        
+        rootProperty3.setContainment(true);// containment property
         DataObject rootProperty3_typeDO = defineType("notDataTypeUri1", "notDataType1");
         SDOType rootProperty3_type = (SDOType)typeHelper.define(rootProperty3_typeDO);
 
@@ -319,7 +319,7 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
 
         containedDataObject = (SDODataObject)dataFactory.create(containedType);
 
-        // then, we create one dataobject as root's non containment property' value        
+        // then, we create one dataobject as root's non containment property' value
         containedType1 = new SDOType(containedType1Uri, containedType1Name);
         qname = new QName(containedType1Uri, containedType1Name);
         ((SDOTypeHelper)typeHelper).getTypesHashMap().put(qname, containedType1);
@@ -334,14 +334,14 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         contained1Property1_type.setDataType(false);// not datatype
         contained1Property1.setType(contained1Property1_type);
         // TODO: 20060906 bidirectional
-        // bidirectional to containedByContainedDataObject        
+        // bidirectional to containedByContainedDataObject
         // Note: the property parameter is null so this set will have no effect until the 2nd set later
         contained1Property1.setOpposite(containedByContainedProperty1);
 
         containedType1.addDeclaredProperty(contained1Property1);
 
         containedDataObject1 = (SDODataObject)dataFactory.create(containedType1);
-        // finally, we create a dataobject contained by containedDataObject        
+        // finally, we create a dataobject contained by containedDataObject
         containedByContainedType = new SDOType(containedBycontainedType1Uri, containedByContainedTypeName);
 
         qname = new QName(containedBycontainedType1Uri, containedByContainedTypeName);
@@ -395,7 +395,7 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         root.set(rootProperty3, containedDataObject1);// child: containedDataObject1
         root.set(rootProperty4, objects);
         containedDataObject.set(containedProperty1, "test1");
-        // child: containedByContainedDataObject        
+        // child: containedByContainedDataObject
         containedDataObject.set(containedProperty2, containedByContainedDataObject);
         // set opposite property
         containedDataObject1.set(contained1Property1, containedByContainedDataObject);
@@ -438,12 +438,12 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
               contained1Property3.setOpposite(containedByContainedProperty3);
         */
         // UC 4: mixed containment=true/containment=false bidirectional opposite set
-        // (work at home relationship)        
+        // (work at home relationship)
         // root -> home -> address
         // root -> work -> address
         // home/address -> noncontainment to -> work
         // work -> containment to -> home/address
-        rootUC4Type = new SDOType(rootUC4TypeUri, rootUC4TypeName);// root's type        
+        rootUC4Type = new SDOType(rootUC4TypeUri, rootUC4TypeName);// root's type
         qname = new QName(rootUC4TypeUri, rootUC4TypeName);
         ((SDOTypeHelper)typeHelper).getTypesHashMap().put(qname, rootUC4Type);
 
@@ -474,7 +474,7 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         rootWork.setName(rootWorkName);
         // non containment so that a containment opposite can be set to this node
         rootWork.setContainment(false);//true);// containment property
-        //rootWork.setContainment(true);// containment property        
+        //rootWork.setContainment(true);// containment property
         SDOType rootWork_type = new SDOType(rootWorkUri, rootWorkName);
         qname = new QName(rootWorkUri, rootWorkName);
         ((SDOTypeHelper)typeHelper).getTypesHashMap().put(qname, rootWork_type);
@@ -496,7 +496,7 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         workAddress.setName(workAddressName);
         // one opposite property can be true
         workAddress.setContainment(false);//true);// containment property
-        //workAddress.setContainment(true);// containment property        
+        //workAddress.setContainment(true);// containment property
         SDOType workAddress_type = new SDOType(workAddressUri, workAddressName);
         qname = new QName(workAddressUri, workAddressName);
         ((SDOTypeHelper)typeHelper).getTypesHashMap().put(qname, workAddress_type);
@@ -524,7 +524,7 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
 
         rootUC4.set(rootHome, homeObject);
         rootUC4.set(rootWork, workObject);
-        // child:         
+        // child:
         homeObject.set(homeAddress, addressObject);
         // set opposite property
         addressObject.set(addressWork, workObject);
@@ -533,12 +533,12 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
 
         // many case
         // UC 4: mixed containment=true/containment=false bidirectional opposite set
-        // (work at home relationship)        
+        // (work at home relationship)
         // root -> home -> address
         // root -> work -> address
         // home/address -> noncontainment to -> work
         // work -> containment to -> home/address
-        rootUC4Typem = new SDOType(rootUC4TypeUrim, rootUC4TypeName);// root's type        
+        rootUC4Typem = new SDOType(rootUC4TypeUrim, rootUC4TypeName);// root's type
         qname = new QName(rootUC4TypeUrim, rootUC4TypeName);
         ((SDOTypeHelper)typeHelper).getTypesHashMap().put(qname, rootUC4Typem);
 
@@ -590,7 +590,7 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         workAddressm.setName(workAddressName);
         // one opposite property can be true
         workAddressm.setContainment(false);//true);// containment property
-        //workAddress.setContainment(true);// containment property        
+        //workAddress.setContainment(true);// containment property
         SDOType workAddress_typem = new SDOType(workAddressUri, workAddressName);
         qname = new QName(workAddressUri, workAddressName);
         ((SDOTypeHelper)typeHelper).getTypesHashMap().put(qname, workAddress_typem);
@@ -622,7 +622,7 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         workList.add(workObjectm);
         rootUC4m.set(rootWorkm, workList);
         //rootUC4m.set(rootWorkm, workObjectm);
-        // child:         
+        // child:
         homeObjectm.set(homeAddressm, addressObjectm);
         // set opposite property
         addressObjectm.set(addressWorkm, workList);//workObjectm);
@@ -630,12 +630,12 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         workObjectm.set(workAddressm, addressObjectm);
 
         // UC 1b: unidirectional outside the copytree
-        // (work at home relationship)        
+        // (work at home relationship)
         // root -> home -> address
         // root -> work -> address
         // home/address -> noncontainment to -> work
-        // 
-        rootUCUniOutsideType = new SDOType(rootUCUniOutsideTypeUri, rootUCUniOutsideTypeName);// root's type        
+        //
+        rootUCUniOutsideType = new SDOType(rootUCUniOutsideTypeUri, rootUCUniOutsideTypeName);// root's type
         qname = new QName(rootUCUniOutsideTypeUri, rootUCUniOutsideTypeName);
         ((SDOTypeHelper)typeHelper).getTypesHashMap().put(qname, rootUCUniOutsideType);
 
@@ -713,7 +713,7 @@ public class SDOCopyEqualityHelperTestCases extends SDOTestCase {
         //workAddressUCUniOutside.setOpposite(addressWorkUCUniOutside);
         rootUCUniOutside.set(rootHomeUCUniOutside, homeObjectUCUniOutside);
         rootUCUniOutside.set(rootWorkUCUniOutside, workObjectUCUniOutside);
-        // child:         
+        // child:
         homeObjectUCUniOutside.set(homeAddressUCUniOutside, addressObjectUCUniOutside);
         // set opposite property
         addressObjectUCUniOutside.set(addressWorkUCUniOutside, workObjectUCUniOutside);

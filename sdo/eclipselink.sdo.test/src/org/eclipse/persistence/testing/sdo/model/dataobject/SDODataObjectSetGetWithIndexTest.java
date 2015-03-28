@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -21,7 +21,7 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
     public SDODataObjectSetGetWithIndexTest(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectSetGetWithIndexTest" };
         TestRunner.main(arguments);
@@ -54,7 +54,7 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
     // !!  inside !!
     public void testGetWithUnDefinedProperty_openDataObject() {
         try {
-            dataObject.get(UNDEFINED_PROPERTY_INDEX);// get undefined Property value               
+            dataObject.get(UNDEFINED_PROPERTY_INDEX);// get undefined Property value
         } catch (SDOException e) {
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
             return;
@@ -69,7 +69,7 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
     // tset after set, it is in the list, and value is what we want
     public void testSetGetWithUnDefinedProperty_openDataObject() {
         try {
-            dataObject.set(UNDEFINED_PROPERTY_INDEX, CONTROL_STRING_1);// set undefined Property value       
+            dataObject.set(UNDEFINED_PROPERTY_INDEX, CONTROL_STRING_1);// set undefined Property value
          } catch (SDOException e) {
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
             return;
@@ -93,7 +93,7 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
     //purpose: IllegalArgumentException can be thrown for undefined Property when set.
     public void testSetPropertyInvalidIndex_WithDataObject_Not_Open() {
         try {
-            dataObject_Not_Open.set(UNDEFINED_PROPERTY_INDEX, CONTROL_STRING_1);// set undefined Property value   
+            dataObject_Not_Open.set(UNDEFINED_PROPERTY_INDEX, CONTROL_STRING_1);// set undefined Property value
          } catch (SDOException e) {
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
             return;
@@ -105,7 +105,7 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
     //purpose: IllegalArgumentException can be thrown for undefined Property when get.
     public void testGetInvalidPropertyIndex_WithDataObject_Not_Open() {
         try {
-            dataObject_Not_Open.get(UNDEFINED_PROPERTY_INDEX);// get undefined Property value                   
+            dataObject_Not_Open.get(UNDEFINED_PROPERTY_INDEX);// get undefined Property value
         } catch (SDOException e) {
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
             return;
@@ -117,7 +117,7 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
     //purpose: IllegalArgumentException can be thrown for valid Property index when set.
     public void testSetValidPropertyINdex_WithDataObject_Not_Open() {
         try {
-            dataObject_Not_Open.set(DEFINED_PROPERTY_INDEX, CONTROL_STRING_1);// set defined Property value   
+            dataObject_Not_Open.set(DEFINED_PROPERTY_INDEX, CONTROL_STRING_1);// set defined Property value
         } catch (SDOException e) {
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
             return;
@@ -135,7 +135,7 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
         this.assertTrue(dataObject_WithReadOnlyProperty.getInstanceProperty(DEFINED_PROPERTY_READONLY_NAME).isReadOnly());
 
         try {
-            dataObject_WithReadOnlyProperty.set(DEFINED_PROPERTY_READONLY_INDEX, CONTROL_STRING_1);// set undefined Property value  
+            dataObject_WithReadOnlyProperty.set(DEFINED_PROPERTY_READONLY_INDEX, CONTROL_STRING_1);// set undefined Property value
             fail("An UnsupportedOperationException should have been thrown.");
         } catch (UnsupportedOperationException e) {
         }
@@ -154,7 +154,7 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
     //purpose: test get with index -1
     public void testGetWith_MINUS_ONE() {
         try {
-            dataObject_Not_Open.get(MINUS_ONE);// get undefined Property value       
+            dataObject_Not_Open.get(MINUS_ONE);// get undefined Property value
             fail("An IllegalArgumentException should have been thrown.");
         } catch (SDOException e) {
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
@@ -168,7 +168,7 @@ public class SDODataObjectSetGetWithIndexTest extends SDODataObjectTestCases {
     public void testSetWith_MINUS_ONE() {
         try {
             SDOProperty NUll = null;
-            dataObject_Not_Open.set(MINUS_ONE, CONTROL_STRING_1);// set undefined Property value  
+            dataObject_Not_Open.set(MINUS_ONE, CONTROL_STRING_1);// set undefined Property value
         } catch (SDOException e) {
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
             return;

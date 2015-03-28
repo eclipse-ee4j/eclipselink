@@ -26,34 +26,34 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
  * We should also NOT process those listed in the jaxb.index (in this case ClassC)
  */
 public class JAXBContextByClassArrayWithIndexTestCases extends JAXBWithJSONTestCases{
-	 protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextwithjaxbindex.xml";
-	 protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextwithjaxbindex.json";
+     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextwithjaxbindex.xml";
+     protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextwithjaxbindex.json";
 
-		public JAXBContextByClassArrayWithIndexTestCases(String name) throws Exception {
-			super(name);
-		}
-		
-		public void setUp() throws Exception {
-			setControlDocument(XML_RESOURCE);
-	        setControlJSON(JSON_RESOURCE);
-		    super.setUp();
-		    Class[] classes = new Class[]{ClassA.class};
-		    setTypes(classes);
-		    initXsiType();
-		}
+        public JAXBContextByClassArrayWithIndexTestCases(String name) throws Exception {
+            super(name);
+        }
 
-		protected Object getControlObject() {
-			ClassA classA = new ClassA();
-			classA.setTheValue("someValue");
-			
+        public void setUp() throws Exception {
+            setControlDocument(XML_RESOURCE);
+            setControlJSON(JSON_RESOURCE);
+            super.setUp();
+            Class[] classes = new Class[]{ClassA.class};
+            setTypes(classes);
+            initXsiType();
+        }
 
-			return classA;
-		}
+        protected Object getControlObject() {
+            ClassA classA = new ClassA();
+            classA.setTheValue("someValue");
 
-		public void testSchemaGen() throws Exception{
-			InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbyclassarray.xsd");		
-	    	List<InputStream> controlSchemas = new ArrayList<InputStream>();    	
-	    	controlSchemas.add(controlInputStream);		
-			this.testSchemaGen(controlSchemas);
-		}
+
+            return classA;
+        }
+
+        public void testSchemaGen() throws Exception{
+            InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbyclassarray.xsd");
+            List<InputStream> controlSchemas = new ArrayList<InputStream>();
+            controlSchemas.add(controlInputStream);
+            this.testSchemaGen(controlSchemas);
+        }
 }

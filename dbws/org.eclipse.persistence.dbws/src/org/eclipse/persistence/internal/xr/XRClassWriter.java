@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,7 +38,7 @@ import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTIO
  * <p>
  * <b>INTERNAL:</b> XRClassWriter uses ASM to dynamically generate subclasses of
  * {@link XRDynamicEntity}
- * 
+ *
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
@@ -57,7 +57,7 @@ public class XRClassWriter extends DynamicClassWriter {
      * public static XRDynamicPropertiesManager DPM = new
      * XRDynamicPropertiesManager(); public Foo() { super(); } public
      * XRDynamicPropertiesManager fetchPropertiesManager() { return DPM; } }
-     * 
+     *
      * later on, the DPM field is populated: XRDynamicEntity newInstance =
      * fooClz.newInstance(); XRDynamicPropertiesManager dpm =
      * newInstance.getPropertiesManager(); Set<String> propertyNames = new

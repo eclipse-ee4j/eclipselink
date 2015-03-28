@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     @author  mobrien
  *     @since   EclipseLink 1.0 enh# 235168
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.services;
 
 import java.util.ArrayList;
@@ -86,11 +86,11 @@ public abstract class RuntimeServices {
     private SessionLog deployedSessionLog;
 
     public String objectName;
-    
+
     protected static final String EclipseLink_Product_Name = "EclipseLink";
     /** Short name for the server platform - Must override in subclass */
     protected static String PLATFORM_NAME = "Server";
-        
+
     /**
      *  Default Constructor
      */
@@ -118,7 +118,7 @@ public abstract class RuntimeServices {
     public String getSessionName() {
         return getSession().getName();
     }
-    
+
     /**
      * This method is used to determine if logging is turned on
      */
@@ -437,7 +437,7 @@ public abstract class RuntimeServices {
             return 0;
         }
     }
-    
+
     /**
      *    This method is used to change DMS sensor weight.
      */
@@ -446,7 +446,7 @@ public abstract class RuntimeServices {
             getSession().getProfiler().setProfileWeight(weight);
         }
     }
-    
+
     /**
      *    This method is used to initialize the identity maps specified by className.
      * @param className the fully qualified classnames identifying the identity map to initialize
@@ -576,7 +576,7 @@ public abstract class RuntimeServices {
         public void setUseNoProfiling() {
             getSession().setProfiler(null);
         }
-       
+
        /**
         *        This method answers true if EclipseLink Performance Profiling is on.
         */
@@ -672,7 +672,7 @@ public abstract class RuntimeServices {
                 return SessionLog.FINEST;
             }
             return SessionLog.OFF;
-        }        
+        }
      /**
       *  INTERNAL:
       *  Define the deployment time data associated with logging and profiling
@@ -686,7 +686,7 @@ public abstract class RuntimeServices {
              this.deployedSessionProfileWeight = session.getProfiler().getProfileWeight();
          }
      }
-     
+
      public int getDeployedSessionProfileWeight() {
          return deployedSessionProfileWeight;
      }
@@ -698,17 +698,17 @@ public abstract class RuntimeServices {
      public String getObjectName() {
          return objectName;
      }
-     
+
      /**
       * Return whether this session is an EclipseLink JPA session.
       * The absence of this function or a value of false will signify that the session
-      * belongs to a provider other than EclipseLink.  
+      * belongs to a provider other than EclipseLink.
       * @return
       */
      public boolean isJPASession() {
          return true;
-     } 
-    
+     }
+
      /**
       * Answer the type of the EclipseLink session this MBean represents.
       * Types include: "ServerSession", "DatabaseSession", "SessionBroker"
@@ -721,8 +721,8 @@ public abstract class RuntimeServices {
       * Provide an instance of 2 Dimensional Array simulating tabular format information about all
       * classes in the session whose class names match the provided filter.
       *
-      * The 2 Dimensional array contains each item with values being row object array. Each row object array 
-      * represents EclipseLink class details info with respect to below attributes:  
+      * The 2 Dimensional array contains each item with values being row object array. Each row object array
+      * represents EclipseLink class details info with respect to below attributes:
       * ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
       *
       */
@@ -731,17 +731,17 @@ public abstract class RuntimeServices {
             return  tabularDataTo2DArray(buildClassSummaryDetailsUsingFilter(filter),new String[] {
                 "Class Name", "Parent Class Name", "Cache Type", "Configured Size", "Current Size" });
          } catch (Exception exception) {
-             AbstractSessionLog.getLog().log(SessionLog.SEVERE, "jmx_enabled_platform_mbean_runtime_exception", PLATFORM_NAME, exception); 
+             AbstractSessionLog.getLog().log(SessionLog.SEVERE, "jmx_enabled_platform_mbean_runtime_exception", PLATFORM_NAME, exception);
          }
          return null;
      }
-     
+
      /**
       * PUBLIC: Provide an instance of 2 Dimensional Array simulating tabular format information about all
       * classes in the session.
       *
-      * The 2 Dimensional array contains each item with values being row object array. Each row object array 
-      * represents EclipseLink class details info with respect to below attributes:  
+      * The 2 Dimensional array contains each item with values being row object array. Each row object array
+      * represents EclipseLink class details info with respect to below attributes:
       * ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
       *
       */
@@ -761,7 +761,7 @@ public abstract class RuntimeServices {
       * This uses the mappedClass from the CMPPolicy.
       *
       * @return java.util.Vector
-      */     
+      */
      private Vector getMappedClassNames() {
          Map alreadyAdded = new HashMap();
          Vector mappedClassNames = new Vector();
@@ -839,7 +839,7 @@ public abstract class RuntimeServices {
      }
 
 
-     
+
      /**
       * INTERNAL:
       * getCacheTypeFor: Give a more UI-friendly version of the cache type
@@ -873,8 +873,8 @@ public abstract class RuntimeServices {
              .getServerPlatform().getModuleName();
      }
 
-     
-     /** 
+
+     /**
       * getApplicationName(): Answer the name of the module (EAR name) that this session is associated with.
       * Answer "unknown" if there is no application name available.
       * Default behavior is to return "unknown" - we override this behavior here for all platform implementors of JMXEnabledPlatform
@@ -992,8 +992,8 @@ public abstract class RuntimeServices {
              return;
          }
          ((DatabaseAccessor)getSession().getAccessor()).clearStatementCache(getSession());
-         ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_statement_cache_cleared");        
-         
+         ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_statement_cache_cleared");
+
      }
 
      /**
@@ -1008,8 +1008,8 @@ public abstract class RuntimeServices {
                  ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_pool_name", poolName);
              }
          } else {
-             ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_connection_pools_available");            
-             
+             ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_connection_pools_available");
+
          }
      }
 
@@ -1052,7 +1052,7 @@ public abstract class RuntimeServices {
          Vector classes = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
          int index;
          if (classes.isEmpty()) {
-             ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_classes_in_session");            
+             ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_classes_in_session");
              return;
          }
 
@@ -1087,7 +1087,7 @@ public abstract class RuntimeServices {
          while (objects.hasMoreElements()) {
              cacheKey = (CacheKey)objects.nextElement();
              if(null != cacheKey && null != cacheKey.getKey() && null != cacheKey.getObject()) {
-                 ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_print_cache_key_value", 
+                 ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_print_cache_key_value",
                      cacheKey.getKey().toString(), cacheKey.getObject().toString());
              }
          }
@@ -1112,7 +1112,7 @@ public abstract class RuntimeServices {
              registeredClassName = (String)classesRegistered.elementAt(index);
              registeredClass = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(registeredClassName, ClassConstants.CLASS);
              IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(registeredClass);
-             ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_class", 
+             ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_class",
                      registeredClassName, map.getClass());
          }
      }
@@ -1193,7 +1193,7 @@ public abstract class RuntimeServices {
      }
 
      /**
-     * Return the log type, either "EclipseLink",  "Java" or the simple name of the logging class used.  
+     * Return the log type, either "EclipseLink",  "Java" or the simple name of the logging class used.
      *
      * @return the log type
      */
@@ -1286,7 +1286,7 @@ public abstract class RuntimeServices {
          Class registeredClass;
 
          if (classesRegistered.isEmpty()) {
-             ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");            
+             ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");
          }
 
          //get each identity map, and invalidate
@@ -1339,7 +1339,7 @@ public abstract class RuntimeServices {
      }
 
      /**
-      * 
+      *
      * INTERNAL:
       * Convert the TabularData to a two-dimensional array
       * @param tdata the TabularData to be converted
@@ -1366,7 +1366,7 @@ public abstract class RuntimeServices {
          }
          return data;
      }
-     
+
      /**
       *  INTERNAL:
       *  Define the session that this instance is providing runtime services for
@@ -1377,7 +1377,7 @@ public abstract class RuntimeServices {
          this.session = newSession;
          this.updateDeploymentTimeData();
      }
-     
+
      /**
       * INTERNAL:
       * Answer the CompositeType describing the CompositeData that we return for
@@ -1387,9 +1387,9 @@ public abstract class RuntimeServices {
       * @return javax.management.openmbean.CompositeType
       */
      private CompositeType buildCompositeTypeForClassSummaryDetails() throws OpenDataException {
-         return new CompositeType("Class Details", "Details of class for Class Summary", new String[] { 
-                 "Class Name", "Parent Class Name", "Cache Type", "Configured Size", "Current Size" }, new String[] { 
-                 "Class Name", "Parent Class Name", "Cache Type", "Configured Size", "Current Size" }, new OpenType[] { 
+         return new CompositeType("Class Details", "Details of class for Class Summary", new String[] {
+                 "Class Name", "Parent Class Name", "Cache Type", "Configured Size", "Current Size" }, new String[] {
+                 "Class Name", "Parent Class Name", "Cache Type", "Configured Size", "Current Size" }, new OpenType[] {
                  SimpleType.STRING, SimpleType.STRING, SimpleType.STRING, SimpleType.STRING, SimpleType.STRING });
      }
 
@@ -1401,7 +1401,7 @@ public abstract class RuntimeServices {
       * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
       * convert class attribute to JMX required open type, it has:-
       *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
-      *    2. convert methods.  
+      *    2. convert methods.
       *
       * @param filter A comma separated list of strings to match against.
       * @return A ArrayList of instance of ClassSummaryDetail containing class information for the class names that match the filter.
@@ -1413,7 +1413,7 @@ public abstract class RuntimeServices {
       * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
       * convert class attribute to JMX required open type, it has:-
       *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
-      *    2. convert methods.  
+      *    2. convert methods.
       *
       * @param filter A comma separated list of strings to match against.
       * @return A ArrayList of instance of ClassSummaryDetail containing class information for the class names that match the filter.
@@ -1440,7 +1440,7 @@ public abstract class RuntimeServices {
              }
              return classSummaryDetails;
          } catch (Exception openTypeException) {
-             AbstractSessionLog.getLog().log(SessionLog.SEVERE, "jmx_enabled_platform_mbean_runtime_exception", PLATFORM_NAME, openTypeException);            
+             AbstractSessionLog.getLog().log(SessionLog.SEVERE, "jmx_enabled_platform_mbean_runtime_exception", PLATFORM_NAME, openTypeException);
              openTypeException.printStackTrace();
          }
 
@@ -1455,14 +1455,14 @@ public abstract class RuntimeServices {
       * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
       * convert class attribute to JMX required open type, it has:-
       *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
-      *    2. convert methods.  
+      *    2. convert methods.
       *
       * @return A List of instance of ClassSummaryDetail objects containing class information for the class names that match the filter.
       */
      public List <ClassSummaryDetailBase> getClassSummaryDetailsArray() {
-         try {            
+         try {
              Vector mappedClassNames = getMappedClassNames();
-             List classSummaryDetails = new ArrayList<ClassSummaryDetailBase>();            
+             List classSummaryDetails = new ArrayList<ClassSummaryDetailBase>();
              // Check if there aren't any classes mapped
              if (mappedClassNames.size() == 0) {
                  return null;
@@ -1483,7 +1483,7 @@ public abstract class RuntimeServices {
          // wait to get requirements from EM
          return null;
      }
-     
+
      /**
       * INTERNAL:
       * Answer the TabularType describing the TabularData that we return from
@@ -1529,13 +1529,13 @@ public abstract class RuntimeServices {
          String configuredSize = "";
          String currentSize = "";
          String parentClassName = "";
-         
+
          // Aggregate descriptors do not have an IdentityMap
          if (!descriptor.isAggregateDescriptor()) {
              IdentityMap identityMap = getSession().getIdentityMapAccessorInstance().getIdentityMap(descriptor);
              cacheType = getCacheTypeFor(identityMap.getClass());
              configuredSize = String.valueOf(identityMap.getMaxSize());
-             //show the current size, including subclasses 
+             //show the current size, including subclasses
              currentSize = String.valueOf(identityMap.getSize(mappedClass, true));
          }
 
@@ -1603,10 +1603,10 @@ public abstract class RuntimeServices {
 
          // wait to get requirements from EM
          return null;
-     }    
-     
+     }
+
      /**
-      * INTERNAL: 
+      * INTERNAL:
       * Provide an instance of TabularData containing information about all
       * classes in the session.
       *
@@ -1642,5 +1642,5 @@ public abstract class RuntimeServices {
 
          // wait to get requirements from EM
          return null;
-     }        
+     }
 }

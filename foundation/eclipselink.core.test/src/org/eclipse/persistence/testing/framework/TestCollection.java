@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import java.io.*;
@@ -26,7 +26,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
 
     /** Store the name to allow serialization, for some reason JUnit name does not serialize. */
     private String name;
-    
+
     /** Stores all the tests */
     private Vector tests;
 
@@ -85,17 +85,17 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
             setName(getName());
         }
     }
-    
+
     /**
      * Reset the JUnit name in case serialization looses it.
      */
     public String getName() {
         if (super.getName() == null) {
-            setName(this.name); 
+            setName(this.name);
         }
         return super.getName();
     }
-    
+
     /**
      * Store the test name locally to ensure it can serialize.
      */
@@ -263,7 +263,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     public Vector getTests() {
         return tests;
     }
-    
+
     /**
      * Counts the number of test cases that will be run by this test.
      * If the tests have not been added yet just return 1.
@@ -350,14 +350,14 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     public void logResult(Writer log) {
         logResult(log, false, false);
     }
-    
+
     /**
      * Logs the result summary of the suite on the print stream.
      */
     public void logResult(Writer log, boolean logOnlyErrors) {
         logResult(log, logOnlyErrors, false);
     }
-    
+
     /**
      * Logs the result summary of the suite on the print stream.
      */
@@ -380,7 +380,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
                     if (!(testEntity instanceof TestCase) || !(testEntity.getReport().hasPassed() || ((TestResult)testEntity.getReport()).hasWarning())) {
                         testEntity.logRegressionResult(log);
                     }
-                } else {                    
+                } else {
                     if ((!(testEntity instanceof TestCase)) || testEntity.getReport().shouldLogResult()) {
                         if (!logOnlyErrors || !(testEntity instanceof TestCollection) || !testEntity.getReport().hasPassed()) {
                             testEntity.logResult(log, logOnlyErrors);
@@ -398,8 +398,8 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
         } else {
             getSummary().logResult(log);
         }
-    }    
-    
+    }
+
     /**
      * Compute the reuslt summary.
      */

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,13 +26,13 @@ public class EmptyElementObjectRoot {
     Object xsiInteger;
 
     Object xsiBoolean;
-    
+
     List<Object> items = new ArrayList<Object>();
 
     @Override
     public boolean equals(Object object) {
         EmptyElementObjectRoot root = (EmptyElementObjectRoot) object;
-        
+
         if(!xsiString.equals(root.xsiString)) {
             return false;
         }

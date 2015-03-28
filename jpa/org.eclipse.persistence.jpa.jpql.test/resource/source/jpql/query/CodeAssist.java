@@ -12,16 +12,16 @@ import javax.persistence.OneToMany;
 @Entity
 public class CodeAssist {
 
-	@Basic
-	private String name;
-	@Id
-	private long id;
-	@ManyToOne
-	private Employee manager;
-	@ManyToMany
-	private Collection<Employee> employees;
-	@OneToMany
-	private Map<Customer, String> customerMap;
-	@OneToMany
-	private Map<Customer, Address> customerMapAddress;
+    @Basic
+    private String name;
+    @Id
+    private long id;
+    @ManyToOne
+    private Employee manager;
+    @ManyToMany
+    private Collection<Employee> employees;
+    @OneToMany
+    private Map<Customer, String> customerMap;
+    @OneToMany
+    private Map<Customer, Address> customerMapAddress;
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -187,7 +187,7 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
         Document testXSD = xmlParser.parse(new StringReader(DBWS_SCHEMA_STREAM.toString()));
         removeEmptyTextNodes(testXSD);
         assertTrue("Control XSD not same as instance document.\n Expected:\n" + documentToString(controlXSD) + "\nActual:\n" + documentToString(testXSD), comparer.isNodeEqual(controlXSD, testXSD));
-        
+
         DataHandler dataHandler = attachmentHandler.getAttachments().get("cid:ref1");
         ByteArrayInputStream bais = (ByteArrayInputStream)dataHandler.getInputStream();
         byte[] ref = new byte[bais.available()];
@@ -252,13 +252,13 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
 
     static final String WSDL =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-    	"<wsdl:definitions name=\"attachedbinaryService\" targetNamespace=\"urn:attachedbinaryService\" xmlns:ns1=\"urn:attachedbinary\" xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\" xmlns:tns=\"urn:attachedbinaryService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\">" +
-    	"<wsdl:types>" +
-		"<xsd:schema elementFormDefault=\"qualified\" targetNamespace=\"urn:attachedbinaryService\" xmlns:ref=\"http://ws-i.org/profiles/basic/1.1/xsd\" xmlns:tns=\"urn:attachedbinaryService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><xsd:import namespace=\"urn:attachedbinary\" schemaLocation=\"eclipselink-dbws-schema.xsd\"/><xsd:import namespace=\"http://ws-i.org/profiles/basic/1.1/xsd\" schemaLocation=\"swaref.xsd\"/><xsd:complexType name=\"findAll_AttachedbinaryTypeResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"findByPrimaryKey_AttachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"id\" type=\"xsd:decimal\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"getBLOBByIdResponseType\"><xsd:sequence><xsd:element name=\"result\" type=\"ref:swaRef\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"findByPrimaryKey_AttachedbinaryTypeResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element minOccurs=\"0\" ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"update_AttachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"theInstance\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"getBLOBByIdRequestType\"><xsd:sequence><xsd:element name=\"pk\" type=\"xsd:decimal\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"create_AttachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"theInstance\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"findAll_AttachedbinaryTypeRequestType\"/><xsd:complexType name=\"delete_AttachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"id\" type=\"xsd:decimal\"/></xsd:sequence></xsd:complexType><xsd:element name=\"findByPrimaryKey_AttachedbinaryTypeResponse\" type=\"tns:findByPrimaryKey_AttachedbinaryTypeResponseType\"/><xsd:element name=\"findByPrimaryKey_AttachedbinaryType\" type=\"tns:findByPrimaryKey_AttachedbinaryTypeRequestType\"/><xsd:element name=\"create_AttachedbinaryType\" type=\"tns:create_AttachedbinaryTypeRequestType\"/><xsd:element name=\"findAll_AttachedbinaryTypeResponse\" type=\"tns:findAll_AttachedbinaryTypeResponseType\"/><xsd:element name=\"findAll_AttachedbinaryType\" type=\"tns:findAll_AttachedbinaryTypeRequestType\"/><xsd:element name=\"delete_AttachedbinaryType\" type=\"tns:delete_AttachedbinaryTypeRequestType\"/><xsd:element name=\"FaultType\"><xsd:complexType><xsd:sequence><xsd:element name=\"faultCode\" type=\"xsd:string\"/><xsd:element name=\"faultString\" type=\"xsd:string\"/></xsd:sequence></xsd:complexType></xsd:element><xsd:element name=\"getBLOBById\" type=\"tns:getBLOBByIdRequestType\"/><xsd:element name=\"EmptyResponse\"><xsd:complexType/></xsd:element><xsd:element name=\"update_AttachedbinaryType\" type=\"tns:update_AttachedbinaryTypeRequestType\"/><xsd:element name=\"getBLOBByIdResponse\" type=\"tns:getBLOBByIdResponseType\"/></xsd:schema>" +
-    	"</wsdl:types>" +
-	"<wsdl:message name=\"create_AttachedbinaryTypeRequest\">" +
-		"<wsdl:part name=\"create_AttachedbinaryTypeRequest\" element=\"tns:create_AttachedbinaryType\">" +
-    		"</wsdl:part>" +
+        "<wsdl:definitions name=\"attachedbinaryService\" targetNamespace=\"urn:attachedbinaryService\" xmlns:ns1=\"urn:attachedbinary\" xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\" xmlns:tns=\"urn:attachedbinaryService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\">" +
+        "<wsdl:types>" +
+        "<xsd:schema elementFormDefault=\"qualified\" targetNamespace=\"urn:attachedbinaryService\" xmlns:ref=\"http://ws-i.org/profiles/basic/1.1/xsd\" xmlns:tns=\"urn:attachedbinaryService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><xsd:import namespace=\"urn:attachedbinary\" schemaLocation=\"eclipselink-dbws-schema.xsd\"/><xsd:import namespace=\"http://ws-i.org/profiles/basic/1.1/xsd\" schemaLocation=\"swaref.xsd\"/><xsd:complexType name=\"findAll_AttachedbinaryTypeResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"findByPrimaryKey_AttachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"id\" type=\"xsd:decimal\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"getBLOBByIdResponseType\"><xsd:sequence><xsd:element name=\"result\" type=\"ref:swaRef\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"findByPrimaryKey_AttachedbinaryTypeResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element minOccurs=\"0\" ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"update_AttachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"theInstance\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"getBLOBByIdRequestType\"><xsd:sequence><xsd:element name=\"pk\" type=\"xsd:decimal\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"create_AttachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"theInstance\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"findAll_AttachedbinaryTypeRequestType\"/><xsd:complexType name=\"delete_AttachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"id\" type=\"xsd:decimal\"/></xsd:sequence></xsd:complexType><xsd:element name=\"findByPrimaryKey_AttachedbinaryTypeResponse\" type=\"tns:findByPrimaryKey_AttachedbinaryTypeResponseType\"/><xsd:element name=\"findByPrimaryKey_AttachedbinaryType\" type=\"tns:findByPrimaryKey_AttachedbinaryTypeRequestType\"/><xsd:element name=\"create_AttachedbinaryType\" type=\"tns:create_AttachedbinaryTypeRequestType\"/><xsd:element name=\"findAll_AttachedbinaryTypeResponse\" type=\"tns:findAll_AttachedbinaryTypeResponseType\"/><xsd:element name=\"findAll_AttachedbinaryType\" type=\"tns:findAll_AttachedbinaryTypeRequestType\"/><xsd:element name=\"delete_AttachedbinaryType\" type=\"tns:delete_AttachedbinaryTypeRequestType\"/><xsd:element name=\"FaultType\"><xsd:complexType><xsd:sequence><xsd:element name=\"faultCode\" type=\"xsd:string\"/><xsd:element name=\"faultString\" type=\"xsd:string\"/></xsd:sequence></xsd:complexType></xsd:element><xsd:element name=\"getBLOBById\" type=\"tns:getBLOBByIdRequestType\"/><xsd:element name=\"EmptyResponse\"><xsd:complexType/></xsd:element><xsd:element name=\"update_AttachedbinaryType\" type=\"tns:update_AttachedbinaryTypeRequestType\"/><xsd:element name=\"getBLOBByIdResponse\" type=\"tns:getBLOBByIdResponseType\"/></xsd:schema>" +
+        "</wsdl:types>" +
+    "<wsdl:message name=\"create_AttachedbinaryTypeRequest\">" +
+        "<wsdl:part name=\"create_AttachedbinaryTypeRequest\" element=\"tns:create_AttachedbinaryType\">" +
+            "</wsdl:part>" +
         "</wsdl:message>" +
       "<wsdl:message name=\"getBLOBByIdRequest\">" +
         "<wsdl:part name=\"getBLOBByIdRequest\" element=\"tns:getBLOBById\">" +
@@ -418,16 +418,16 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
     "</wsdl:definitions>";
 
     static final String XSD =
-    	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-    	"<xsd:schema xmlns:ref=\"http://ws-i.org/profiles/basic/1.1/xsd\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xmime=\"http://www.w3.org/2005/05/xmlmime\" targetNamespace=\"urn:attachedbinary\" xmlns=\"urn:attachedbinary\" elementFormDefault=\"qualified\">" +
-    		"<xsd:import schemaLocation=\"swaref.xsd\" namespace=\"http://ws-i.org/profiles/basic/1.1/xsd\"/>" +
-    		"<xsd:complexType name=\"attachedbinaryType\">" +
-    			"<xsd:sequence>" +
-    				"<xsd:element name=\"id\" type=\"xsd:decimal\"/>" +
-    				"<xsd:element name=\"name\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>" +
-    				"<xsd:element name=\"b\" type=\"ref:swaRef\" minOccurs=\"0\" nillable=\"true\" xmime:expectedContentTypes=\"application/octet-stream\"/>" +
-    			"</xsd:sequence>" +
-    		"</xsd:complexType>" +
-    		"<xsd:element name=\"attachedbinaryType\" type=\"attachedbinaryType\"/>" +
-    	"</xsd:schema>";
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<xsd:schema xmlns:ref=\"http://ws-i.org/profiles/basic/1.1/xsd\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xmime=\"http://www.w3.org/2005/05/xmlmime\" targetNamespace=\"urn:attachedbinary\" xmlns=\"urn:attachedbinary\" elementFormDefault=\"qualified\">" +
+            "<xsd:import schemaLocation=\"swaref.xsd\" namespace=\"http://ws-i.org/profiles/basic/1.1/xsd\"/>" +
+            "<xsd:complexType name=\"attachedbinaryType\">" +
+                "<xsd:sequence>" +
+                    "<xsd:element name=\"id\" type=\"xsd:decimal\"/>" +
+                    "<xsd:element name=\"name\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>" +
+                    "<xsd:element name=\"b\" type=\"ref:swaRef\" minOccurs=\"0\" nillable=\"true\" xmime:expectedContentTypes=\"application/octet-stream\"/>" +
+                "</xsd:sequence>" +
+            "</xsd:complexType>" +
+            "<xsd:element name=\"attachedbinaryType\" type=\"attachedbinaryType\"/>" +
+        "</xsd:schema>";
 }

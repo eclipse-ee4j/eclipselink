@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,7 +32,7 @@ public interface DBWSBuilderHelper {
      * Builds a list of type instances based on procedure/function arguments.
      */
     public List<CompositeDatabaseType> buildTypesList(List<OperationModel> operations);
-    
+
     public void buildSchema(NamingConventionTransformer nct);
 
     public void buildSessionsXML(OutputStream dbwsSessionsStream);
@@ -40,13 +40,13 @@ public interface DBWSBuilderHelper {
     public void buildDBWSModel(NamingConventionTransformer nct, OutputStream dbwsServiceStream);
 
     public void buildProcedureOperation(ProcedureOperationModel procedureOperationModel);
-    
+
     public void writeAttachmentSchema(OutputStream swarefStream);
 
     public void buildWSDL(OutputStream wsdlStream, NamingConventionTransformer nct) throws WSDLException;
 
     public void writeWebXML(OutputStream webXmlStream);
-    
+
     /**
      * Write the (optional) deployment descriptor to the given OutputStream.
      */

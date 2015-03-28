@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.oxm.record.XMLReader;
 
 /**
  * INTERNAL:
- * <p><b>Purpose</b>: This is how the XML Fragment Collection Mapping is handled 
+ * <p><b>Purpose</b>: This is how the XML Fragment Collection Mapping is handled
  * when used with the TreeObjectBuilder.</p>
  * @author  mmacivor
  */
@@ -50,7 +50,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return xPathFragment.getNextFragment() == null;
     }
-    
+
     public void setNullValue(Object object, CoreSession session) {
         Object value = xmlFragmentMapping.getObjectValue(null, session);
         xmlFragmentMapping.setAttributeValueInObject(object, value);
@@ -59,9 +59,9 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
     public boolean isNullCapableValue() {
         return true;
     }
-    
+
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
-        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());   
+        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
@@ -121,7 +121,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         }
         return true;
     }
-    
+
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         unmarshalRecord.removeNullCapableValue(this);
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
@@ -139,7 +139,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
                 for(Entry<String, String> next:((Map<String, String>) unmarshalRecord.getPrefixesForFragment()).entrySet()) {
                     builder.startPrefixMapping(next.getKey(), next.getValue());
                 }
-            }            
+            }
             builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
             XMLReader xmlReader = unmarshalRecord.getXMLReader();
             xmlReader.setContentHandler(builder);
@@ -149,7 +149,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         }
         return true;
     }
-    
+
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         unmarshalRecord.removeNullCapableValue(this);
         XPathFragment lastFrag = ((Field)xmlFragmentMapping.getField()).getLastXPathFragment();
@@ -176,7 +176,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         }
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         Object attributeValue = builder.buildAttributeNode(namespaceURI, localName, value);
-        xmlFragmentMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), attributeValue);       
+        xmlFragmentMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), attributeValue);
     }
 
     public FragmentMapping getMapping() {

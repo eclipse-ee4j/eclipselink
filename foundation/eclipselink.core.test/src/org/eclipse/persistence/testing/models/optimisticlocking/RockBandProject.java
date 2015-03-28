@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.optimisticlocking;
 
 import java.util.*;
@@ -102,11 +102,11 @@ public class RockBandProject extends org.eclipse.persistence.sessions.Project {
         descriptor.setIdentityMapSize(100);
         descriptor.getInheritancePolicy().setShouldReadSubclasses(true);
 
-	Vector v = new Vector();
-	v.addElement("MUSICALINSTRUMENT.L_FIELD");
-	v.addElement("DRUMKIT.KIT_SIZE");
-	descriptor.useSelectedFieldsLocking(v);
-    
+    Vector v = new Vector();
+    v.addElement("MUSICALINSTRUMENT.L_FIELD");
+    v.addElement("DRUMKIT.KIT_SIZE");
+    descriptor.useSelectedFieldsLocking(v);
+
         // SECTION: COPY POLICY
         descriptor.createCopyPolicy("constructor");
 
@@ -190,9 +190,9 @@ public class RockBandProject extends org.eclipse.persistence.sessions.Project {
         descriptor.getInheritancePolicy().setShouldReadSubclasses(true);
         descriptor.getInheritancePolicy().setClassIndicatorFieldName("SUBCLASS");
         descriptor.getInheritancePolicy().setShouldUseClassNameAsIndicator(true);
-	Vector v = new Vector();
-	v.addElement("MUSICALINSTRUMENT.L_FIELD");
-	descriptor.useSelectedFieldsLocking(v);
+    Vector v = new Vector();
+    v.addElement("MUSICALINSTRUMENT.L_FIELD");
+    descriptor.useSelectedFieldsLocking(v);
 
         // SECTION: COPY POLICY
         descriptor.createCopyPolicy("constructor");
@@ -255,7 +255,7 @@ public class RockBandProject extends org.eclipse.persistence.sessions.Project {
         descriptor.getInheritancePolicy().setShouldReadSubclasses(true);
         descriptor.getInheritancePolicy().setClassIndicatorFieldName("SUBCLASS");
         descriptor.getInheritancePolicy().setShouldUseClassNameAsIndicator(true);
-	descriptor.useAllFieldsLocking();
+    descriptor.useAllFieldsLocking();
 
         // SECTION: COPY POLICY
         descriptor.createCopyPolicy("constructor");
@@ -310,7 +310,7 @@ public class RockBandProject extends org.eclipse.persistence.sessions.Project {
         descriptor.setSequenceNumberFieldName("ID");
         descriptor.setExistenceChecking("Check cache");
         descriptor.setIdentityMapSize(100);
-	descriptor.useChangedFieldsLocking();
+    descriptor.useChangedFieldsLocking();
 
         // SECTION: COPY POLICY
         descriptor.createCopyPolicy("constructor");

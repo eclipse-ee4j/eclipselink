@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -36,103 +36,103 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.SingleElementIt
 
 
 final class ReadOnlyFileDialog extends AbstractDialog {
-	private Vector files;
-	private boolean saveAsWasPressed;
+    private Vector files;
+    private boolean saveAsWasPressed;
 
 
-	ReadOnlyFileDialog(WorkbenchContext context, Collection files) {
-		super(context);
-		this.files = (Vector) CollectionTools.sort(new Vector(files));
-	}
+    ReadOnlyFileDialog(WorkbenchContext context, Collection files) {
+        super(context);
+        this.files = (Vector) CollectionTools.sort(new Vector(files));
+    }
 
-	protected String helpTopicId() {
-		return "dialog.readOnly";
-	}
+    protected String helpTopicId() {
+        return "dialog.readOnly";
+    }
 
-	protected void initialize() {
-		super.initialize();
-		this.setTitle(this.resourceRepository().getString("versionControlAssistance.title"));
-	}
+    protected void initialize() {
+        super.initialize();
+        this.setTitle(this.resourceRepository().getString("versionControlAssistance.title"));
+    }
 
-	protected Component buildMainPanel() {
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints constraints = new GridBagConstraints();
- 
-		JTextArea descriptionLabel = new JTextArea(this.resourceRepository().getString("versionControlAssistance.message"), 0, 50);
-		descriptionLabel.setLineWrap(true);
-		descriptionLabel.setWrapStyleWord(true);
-		descriptionLabel.setBackground(this.getBackground());
-		descriptionLabel.setFont(this.getFont());
-		constraints.gridy = 1;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 0;
-		constraints.weighty = 0;
-		constraints.anchor = 21;
-		constraints.fill = 0;
-		constraints.insets = new Insets(2, 2, 2, 2);
-		panel.add(descriptionLabel, constraints);
+    protected Component buildMainPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		JList fileListBox = SwingComponentFactory.buildList(this.files);
+        JTextArea descriptionLabel = new JTextArea(this.resourceRepository().getString("versionControlAssistance.message"), 0, 50);
+        descriptionLabel.setLineWrap(true);
+        descriptionLabel.setWrapStyleWord(true);
+        descriptionLabel.setBackground(this.getBackground());
+        descriptionLabel.setFont(this.getFont());
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 0;
+        constraints.weighty = 0;
+        constraints.anchor = 21;
+        constraints.fill = 0;
+        constraints.insets = new Insets(2, 2, 2, 2);
+        panel.add(descriptionLabel, constraints);
 
-		JLabel title = new JLabel(this.resourceRepository().getString("readOnlyFiles"));
-		constraints.gridx = 0;
-		constraints.gridy = 2;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 1.0D;
-		constraints.weighty = 0.0D;
-		constraints.anchor = 21;
-		constraints.fill = 0;
-		constraints.insets = new Insets(2, 2, 2, 2);
-		panel.add(title, constraints);
+        JList fileListBox = SwingComponentFactory.buildList(this.files);
 
-		constraints.gridx = 0;
-		constraints.gridy = 3;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 2;
-		constraints.weightx = 1.0D;
-		constraints.weighty = 1.0D;
-		constraints.anchor = 18;
-		constraints.fill = 1;
-		constraints.insets = new Insets(2, 2, 2, 2);
-		panel.add(new JScrollPane(fileListBox), constraints);
+        JLabel title = new JLabel(this.resourceRepository().getString("readOnlyFiles"));
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1.0D;
+        constraints.weighty = 0.0D;
+        constraints.anchor = 21;
+        constraints.fill = 0;
+        constraints.insets = new Insets(2, 2, 2, 2);
+        panel.add(title, constraints);
 
-		return panel;
-	}
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 2;
+        constraints.weightx = 1.0D;
+        constraints.weighty = 1.0D;
+        constraints.anchor = 18;
+        constraints.fill = 1;
+        constraints.insets = new Insets(2, 2, 2, 2);
+        panel.add(new JScrollPane(fileListBox), constraints);
 
-	protected String buildOKText() {
-		return this.resourceRepository().getString("save");
-	}
+        return panel;
+    }
 
-	protected Iterator buildCustomActions() {
-		return new SingleElementIterator(this.buildSaveAsAction());
-	}
+    protected String buildOKText() {
+        return this.resourceRepository().getString("save");
+    }
 
-	private Action buildSaveAsAction() {
-		return new AbstractFrameworkAction(this.getWorkbenchContext()) {
-			protected void initialize() {
-				this.initializeTextAndMnemonic("saveAs");
-			}
-			protected void execute() {
-				ReadOnlyFileDialog.this.saveAsPressed();
-			}
-		};
-	}
+    protected Iterator buildCustomActions() {
+        return new SingleElementIterator(this.buildSaveAsAction());
+    }
 
-	void saveAsPressed() {
-		if (this.preConfirm()) {
-			this.saveAsWasPressed = true;
-			this.dispose();
-		}
-	}
+    private Action buildSaveAsAction() {
+        return new AbstractFrameworkAction(this.getWorkbenchContext()) {
+            protected void initialize() {
+                this.initializeTextAndMnemonic("saveAs");
+            }
+            protected void execute() {
+                ReadOnlyFileDialog.this.saveAsPressed();
+            }
+        };
+    }
 
-	boolean saveAsWasPressed() {
-		return this.saveAsWasPressed;
-	}
+    void saveAsPressed() {
+        if (this.preConfirm()) {
+            this.saveAsWasPressed = true;
+            this.dispose();
+        }
+    }
 
-	boolean saveWasPressed() {
-		return this.wasConfirmed();
-	}
+    boolean saveAsWasPressed() {
+        return this.saveAsWasPressed;
+    }
+
+    boolean saveWasPressed() {
+        return this.wasConfirmed();
+    }
 
 }

@@ -5,6 +5,6 @@
       <event-listener-classes/>
       <session-customizer-class>org.eclipse.persistence.dynamic.DynamicHelper$SessionCustomizer</session-customizer-class>
       <primary-project xsi:type="xml">dynamic-comics-map.xml</primary-project>
-	  <login xsi:type="database-login" />
+      <login xsi:type="database-login" />
    </session>
 </sessions>

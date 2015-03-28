@@ -3,8 +3,8 @@
     "xml-schemaBBIDS":{
         "namespace":"file",
         "xml-ns":{
-	   "prefix":"ns0",
-	   "namespace-uri":"file"
-	   }
+       "prefix":"ns0",
+       "namespace-uri":"file"
+       }
       },
 }

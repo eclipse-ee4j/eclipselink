@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,56 +21,56 @@ package org.eclipse.persistence.oxm;
  *     theCallBackName({"person":{"id":10,"name":"Bob"}});
  */
 public class JSONWithPadding<T> {
-	private T rootObject;
+    private T rootObject;
     private String callbackName;
-    
+
     public static final String DEFAULT_CALLBACK_NAME = "callback";
-    
+
     public JSONWithPadding(){
-    	this.callbackName = DEFAULT_CALLBACK_NAME;
+        this.callbackName = DEFAULT_CALLBACK_NAME;
     }
-    
-    public JSONWithPadding(T rootObject){	
-		this(rootObject, DEFAULT_CALLBACK_NAME);
-	}
-    
-	public JSONWithPadding(T rootObject, String callbackName){
-		this.rootObject = rootObject;
-		setCallbackName(callbackName);
-	}
-	
-	/**
-	 * The Object that will be marshalled
-	 * @return
-	 */
+
+    public JSONWithPadding(T rootObject){
+        this(rootObject, DEFAULT_CALLBACK_NAME);
+    }
+
+    public JSONWithPadding(T rootObject, String callbackName){
+        this.rootObject = rootObject;
+        setCallbackName(callbackName);
+    }
+
+    /**
+     * The Object that will be marshalled
+     * @return
+     */
     public T getObject() {
-		return rootObject;
-	}
+        return rootObject;
+    }
 
     /**
      * The Object to be marshalled
      * @param rootObject
      */
-	public void setObject(T rootObject) {
-		this.rootObject = rootObject;
-	}
+    public void setObject(T rootObject) {
+        this.rootObject = rootObject;
+    }
 
-	/**
-	 * The callback name that should me marshalled with the object
-	 * @return
-	 */
-	public String getCallbackName() {
-		return callbackName;
-	}
+    /**
+     * The callback name that should me marshalled with the object
+     * @return
+     */
+    public String getCallbackName() {
+        return callbackName;
+    }
 
-	/**
-	 * The callback name that should me marshalled with the object
-	 */
-	public void setCallbackName(String callbackName) {
-		if(callbackName == null){
-			this.callbackName = DEFAULT_CALLBACK_NAME;
-		}else{
-		    this.callbackName = callbackName;
-		}
-	}	
+    /**
+     * The callback name that should me marshalled with the object
+     */
+    public void setCallbackName(String callbackName) {
+        if(callbackName == null){
+            this.callbackName = DEFAULT_CALLBACK_NAME;
+        }else{
+            this.callbackName = callbackName;
+        }
+    }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -31,53 +31,53 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.CellRendererAdapter;
  */
 public abstract class AbstractDisplayableTranslatorAdapter implements DisplayableAdapter
 {
-	/**
-	 * Reuse the <code>CellRendererAdapter</code> since the two interface are not
-	 * compatible (for now!).
-	 */
-	private final CellRendererAdapter adapter;
+    /**
+     * Reuse the <code>CellRendererAdapter</code> since the two interface are not
+     * compatible (for now!).
+     */
+    private final CellRendererAdapter adapter;
 
-	/**
-	 * Creates a new <code>SessionDisplayableAdater</code>.
-	 *
-	 * @param repository The repository used to retrieve localized string and the
-	 * icon that decorates <code>ApplicationNode</code>
-	 */
-	public AbstractDisplayableTranslatorAdapter(CellRendererAdapter adapter)
-	{
-		super();
-		this.adapter = adapter;
-	}
+    /**
+     * Creates a new <code>SessionDisplayableAdater</code>.
+     *
+     * @param repository The repository used to retrieve localized string and the
+     * icon that decorates <code>ApplicationNode</code>
+     */
+    public AbstractDisplayableTranslatorAdapter(CellRendererAdapter adapter)
+    {
+        super();
+        this.adapter = adapter;
+    }
 
-	/**
-	 * Returns a string that can be used to identify the object in a textual UI
-	 * setting (typically the object's name).
-	 *
-	 * @param value The object to be represented by a string
-	 * @return A string representation of the given object
-	 */
-	public String displayString(Object value)
-	{
-		if (value == null)
-			return null;
+    /**
+     * Returns a string that can be used to identify the object in a textual UI
+     * setting (typically the object's name).
+     *
+     * @param value The object to be represented by a string
+     * @return A string representation of the given object
+     */
+    public String displayString(Object value)
+    {
+        if (value == null)
+            return null;
 
-		ApplicationNode node = (ApplicationNode) value;
-		return this.adapter.buildText(node.getValue());
-	}
+        ApplicationNode node = (ApplicationNode) value;
+        return this.adapter.buildText(node.getValue());
+    }
 
-	/**
-	 * Returns an icon that can be used to identify the object in a UI component
-	 * that supports icons.
-	 *
-	 * @param value The object to be represented by an icon, if one is required
-	 * @return An icon representing the given object or <code>null</code>
-	 */
-	public Icon icon(Object value)
-	{
-		if (value == null)
-			return null;
+    /**
+     * Returns an icon that can be used to identify the object in a UI component
+     * that supports icons.
+     *
+     * @param value The object to be represented by an icon, if one is required
+     * @return An icon representing the given object or <code>null</code>
+     */
+    public Icon icon(Object value)
+    {
+        if (value == null)
+            return null;
 
-		ApplicationNode node = (ApplicationNode) value;
-		return this.adapter.buildIcon(node.getValue());
-	}
+        ApplicationNode node = (ApplicationNode) value;
+        return this.adapter.buildIcon(node.getValue());
+    }
 }

@@ -1,20 +1,20 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/13/2009-2.0  mobrien - 294765: MapKey keyType DirectToField processing 
- *       should return attributeClassification class in getMapKeyTargetType when 
+ *     11/13/2009-2.0  mobrien - 294765: MapKey keyType DirectToField processing
+ *       should return attributeClassification class in getMapKeyTargetType when
  *       accessor.attributeField is null in the absence of a MapKey annotation
- *     02/19/2015 - Rick Curtis  
+ *     02/19/2015 - Rick Curtis
  *       - 458877 : Add national character support
- *****************************************************************************/  
+ *****************************************************************************/
 package org.eclipse.persistence.mappings.foundation;
 
 import java.security.AccessController;
@@ -68,17 +68,17 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     /** To specify the conversion type */
     protected transient Class attributeClassification;
     protected String attributeClassificationName;
-    
+
     /** PERF: Also store object class of attribute in case of primitive. */
     protected transient Class attributeObjectClassification;
 
     /** Support specification of the value to use for null. */
     protected transient Object nullValue;
-    
+
     protected DatabaseTable keyTableForMapKey = null;
-    
+
     protected String fieldClassificationClassName = null;
-    
+
     /** PERF: Avoid default null value conversion check if not default null value set in conversion manager. */
     protected boolean bypassDefaultNullValueCheck;
 
@@ -103,7 +103,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      */
     public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
         if (selectionQuery.isObjectLevelReadQuery()){
-            ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(getField()));        
+            ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(getField()));
         } else if (selectionQuery.isDataReadQuery()){
             ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getField(getField()));
         }
@@ -124,7 +124,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
 
     /**
      * INTERNAL:
-     * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted 
+     * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted
      * objects list if necessary
      *
      * This method is used for removal of private owned relationships
@@ -161,7 +161,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             this.isMutable = Boolean.FALSE;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Clone the attribute from the clone and assign it to the backup.
@@ -179,7 +179,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public ChangeRecord buildChangeRecord(Object clone, ObjectChangeSet owner, AbstractSession session) {
         return internalBuildChangeRecord(getAttributeValueFromObject(clone), null, owner);
     }
-    
+
     /**
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
@@ -188,7 +188,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         buildCloneValue(original, clone, cloningSession);
     }
-    
+
     /**
      * INTERNAL:
      * Extract value from the row and set the attribute to this value in the
@@ -218,7 +218,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         attributeValue = buildCloneValue(attributeValue, session);
         setAttributeValueInObject(clone, attributeValue);
     }
-    
+
     /**
      * INTERNAL:
      * Clone the actual value represented by this mapping.  Do set the cloned value into the object.
@@ -257,7 +257,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         }
         return newAttributeValue;
     }
-    
+
     /**
      * INTERNAL:
      * Copy of the attribute of the object.
@@ -274,7 +274,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public Object buildElementClone(Object attributeValue, Object parent, CacheKey cacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache){
         return buildCloneValue(attributeValue, cloningSession);
     }
-    
+
     /**
      * INTERNAL:
      * In case Query By Example is used, this method builds and returns an expression that
@@ -311,7 +311,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         query.setContainerPolicy(containerPolicy);
         return query;
     }
-    
+
     /**
      * INTERNAL:
      * Cascade discover and persist new objects during commit to the map key.
@@ -320,7 +320,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
     }
-    
+
     /**
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade.
@@ -329,7 +329,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
     }
-    
+
     /**
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade.
@@ -338,7 +338,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
     }
-    
+
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade.
@@ -389,11 +389,11 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         }
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
-     * 
+     *
      * This method is used for removal of private owned relationships
      * DirectMappings are dealt with in their parent delete, so this is a no-op.
      */
@@ -408,9 +408,9 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         Object firstValue = getAttributeValueFromObject(firstObject);
         Object secondValue = getAttributeValueFromObject(secondObject);
-        return compareObjectValues(firstValue, secondValue, session);        
+        return compareObjectValues(firstValue, secondValue, session);
     }
-    
+
     /**
      * INTERNAL:
      * Compare the attribute values.
@@ -445,10 +445,10 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         if (firstValue.equals(secondValue)) {
             return true;
         }
-        
+
         return Helper.comparePotentialArrays(firstValue, secondValue);
     }
-    
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this mapping to actual class-based settings
@@ -457,7 +457,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        
+
         if (getAttributeClassificationName() != null) {
             Class attributeClass = null;
             try{
@@ -495,14 +495,14 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
                 // Catches IllegalAccessException and InstantiationException
                 throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationClassName, e);
             }
-            
+
             setFieldClassification(fieldClassification);
         }
     }
-    
+
     /**
      * INTERNAL:
-     * Creates the Array of simple types used to recreate this map.  
+     * Creates the Array of simple types used to recreate this map.
      */
     public Object createSerializableMapKeyInfo(Object key, AbstractSession session){
         return key; // DirectToFields are already simple types.
@@ -510,7 +510,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
 
     /**
      * INTERNAL:
-     * Create an instance of the Key object from the key information extracted from the map.  
+     * Create an instance of the Key object from the key information extracted from the map.
      * This may return the value directly in case of a simple key or will be used as the FK to load a related entity.
      */
     public List<Object> createMapComponentsFromSerializableKeyInfo(Object[] keyInfo, AbstractSession session){
@@ -519,7 +519,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
 
     /**
      * INTERNAL:
-     * Create an instance of the Key object from the key information extracted from the map.  
+     * Create an instance of the Key object from the key information extracted from the map.
      * This key object may be a shallow stub of the actual object if the key is an Entity type.
      */
     public Object createStubbedMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session){
@@ -543,7 +543,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManger, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected) {
         return createMapComponentFromRow(dbRow, query, parentCacheKey, session, isTargetProtected);
     }
-    
+
     /**
      * INTERNAL:
      * Create a query key that links to the map key.
@@ -553,7 +553,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         queryKey.setField(getField());
         return queryKey;
     }
-    
+
     /**
      * INTERNAL:
      * Extract the fields for the Map key from the object to use in a query.
@@ -577,7 +577,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         tables.add(getField().getTable());
         return tables;
     }
-    
+
     /**
      * PUBLIC:
      * Some databases do not properly support all of the base data types. For these databases,
@@ -617,7 +617,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         } else {
             // PERF: Avoid conversion check when not required.
             if ((attributeValue == null) || (attributeValue.getClass() != this.attributeObjectClassification)) {
-                if ((attributeValue != null) || !this.bypassDefaultNullValueCheck) {                    
+                if ((attributeValue != null) || !this.bypassDefaultNullValueCheck) {
                     try {
                         attributeValue = session.getDatasourcePlatform().convertObject(attributeValue, this.attributeClassification);
                     } catch (ConversionException e) {
@@ -651,7 +651,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         } else {
             // PERF: Avoid conversion check when not required.
             if (attributeValue == null) {
-                if (!this.bypassDefaultNullValueCheck) {                    
+                if (!this.bypassDefaultNullValueCheck) {
                     try {
                         attributeValue = session.getDatasourcePlatform().convertObject(null, this.attributeClassification);
                     } catch (ConversionException e) {
@@ -728,12 +728,12 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public void setFieldClassification(Class fieldType) {
         getField().setType(fieldType);
     }
-    
+
     /**
      * INTERNAL:
      * Set the name of the class that will be used for setFieldClassification and deploy time
      * Used internally by JPA deployment.
-     * 
+     *
      * @see #setFieldClassification(Class fieldType)
      * @param className
      */
@@ -802,7 +802,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey(){
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Return the fields that make up the identity of the mapped object.  For mappings with
@@ -812,7 +812,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public List<DatabaseField> getIdentityFieldsForMapKey(){
         return getAllFieldsForMapKey();
     }
-    
+
     /**
      * INTERNAL:
      * Get all the fields for the map key.
@@ -822,7 +822,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         fields.add(getField());
         return fields;
     }
-    
+
     /**
      * INTERNAL:
      * Return the query that is used when this mapping is part of a joined relationship
@@ -831,7 +831,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public ObjectLevelReadQuery getNestedJoinQuery(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session){
         return null;
     }
-    
+
     /**
      * PUBLIC:
      * Allow for the value used for null to be specified.
@@ -842,7 +842,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public Object getNullValue() {
         return nullValue;
     }
-    
+
     /**
      * INTERNAL:
      * Return the selection criteria necessary to select the target object when this mapping
@@ -852,7 +852,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public Expression getAdditionalSelectionCriteriaForMapKey(){
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * If required, get the targetVersion of the source object from the merge manager.
@@ -861,7 +861,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession){
        return object;
     }
-    
+
     /**
      * INTERNAL:
      * Return the class this key mapping maps or the descriptor for it
@@ -878,7 +878,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         }
         return aClass;
     }
-    
+
     /**
      * INTERNAL:
      * Return the weight of the mapping, used to sort mappings to ensure that
@@ -888,7 +888,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public Integer getWeight() {
         return this.weight;
     }
-    
+
     /**
      * INTERNAL:
      * Once descriptors are serialized to the remote session. All its mappings and reference descriptors are traversed. Usually
@@ -905,7 +905,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             this.attributeObjectClassification = Helper.getObjectClass(this.attributeClassification);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Initialize the attribute classification.
@@ -918,7 +918,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             this.attributeClassification = getAttributeAccessor().getAttributeClass();
         }
         this.attributeObjectClassification = Helper.getObjectClass(this.attributeClassification);
-        
+
         // Initialize isMutable if not specified, default is false (assumes not mutable).
         if (this.isMutable == null) {
             if (hasConverter()) {
@@ -933,12 +933,12 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
                 setIsMutable(session.getProject().getDefaultTemporalMutable());
             }
         }
-        
+
         Map nullValues = session.getPlatform(this.descriptor.getJavaClass()).getConversionManager().getDefaultNullValues();
         bypassDefaultNullValueCheck = (!this.attributeClassification.isPrimitive()) &&
                 ((nullValues == null) || (!nullValues.containsKey(this.attributeClassification)));
     }
-    
+
     /**
      * INTERNAL:
      * The mapping is initialized with the given session.
@@ -947,17 +947,17 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        
+
         if (getField() == null) {
             session.getIntegrityChecker().handleError(DescriptorException.fieldNameNotSetInMapping(this));
         }
-        
-        // Before potentially swapping out the field with an already built one, 
-        // set the JPA insertable and updatable flags based on the settings from 
-        // this mappings field. This must be done now. The reason for this code 
-        // is to cover the case where multiple mappings map to the same field. 
-        // One of those mappings must be write only, therefore, depending on the 
-        // initialization order we do not want to set the writable mapping as 
+
+        // Before potentially swapping out the field with an already built one,
+        // set the JPA insertable and updatable flags based on the settings from
+        // this mappings field. This must be done now. The reason for this code
+        // is to cover the case where multiple mappings map to the same field.
+        // One of those mappings must be write only, therefore, depending on the
+        // initialization order we do not want to set the writable mapping as
         // non insertable and non updatable.
         isInsertable = getField().isInsertable();
         isUpdatable = getField().isUpdatable();
@@ -972,13 +972,13 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         if (hasConverter()) {
             getConverter().initialize(this, session);
         }
-        
+
         // Must unwrap Struct types on WLS.
         if (getField().getSqlType() == java.sql.Types.STRUCT) {
             getDescriptor().setIsNativeConnectionRequired(true);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Build a change record.
@@ -1009,7 +1009,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             iterator.iteratePrimitiveForMapping(element, this);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Merge changes from the source to the target object.
@@ -1043,7 +1043,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         }
     }
 
-    
+
     /**
      * INTERNAL:
      * Making any mapping changes necessary to use a the mapping as a map key prior to initializing the mapping.
@@ -1051,7 +1051,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public void preinitializeMapKey(DatabaseTable table) throws DescriptorException {
         this.keyTableForMapKey = table;
     }
-    
+
     /**
      * INTERNAL:
      * Making any mapping changes necessary to use a the mapping as a map key after initializing the mapping.
@@ -1061,7 +1061,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             getField().setType(getFieldClassification(getField()));
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return whether this mapping requires extra queries to update the rows if it is
@@ -1071,7 +1071,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public boolean requiresDataModificationEventsForMapKey(){
         return !isReadOnly() && isUpdatable();
     }
-    
+
     /**
      * PUBLIC:
      * Some databases do not properly support all of the base data types. For these databases,
@@ -1132,7 +1132,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public boolean isChangeTrackingSupported(Project project) {
         return !isMutable();
     }
-    
+
     /**
      * INTERNAL:
      * Return if this mapping requires its attribute value to be cloned.
@@ -1145,11 +1145,11 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     /**
      * INTERNAL:
      * Allow the key mapping to unwrap the object.
-     */    
+     */
     public Object unwrapKey(Object key, AbstractSession session){
         return key;
     }
-    
+
     /**
      * INTERNAL:
      * Allow for subclasses to perform validation.
@@ -1168,7 +1168,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public Object wrapKey(Object key, AbstractSession session){
         return key;
     }
-    
+
     /**
      * INTERNAL:
      * Get the value from the object for this mapping.
@@ -1255,7 +1255,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      */
     @Override
     public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session, WriteType writeType) {
-        if (isReadOnly() || 
+        if (isReadOnly() ||
            (writeType.equals(WriteType.INSERT) && ! isInsertable()) ||
            (writeType.equals(WriteType.UPDATE) && ! isUpdatable())) {
            return;
@@ -1264,10 +1264,10 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         if (this.isPrimaryKeyMapping && !changeRecord.getOwner().isNew()) {
            throw ValidationException.primaryKeyUpdateDisallowed(changeRecord.getOwner().getClassName(), changeRecord.getAttribute());
         }
-        
+
         Object attributeValue = ((DirectToFieldChangeRecord)changeRecord).getNewValue();
         Object fieldValue = getFieldValue(attributeValue, session);
-        
+
         // EL Bug 319759 - if a field is null, then the update call cache should not be used
         if (fieldValue == null) {
             row.setNullValueInFields(true);
@@ -1282,7 +1282,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      */
     @Override
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
-        if (isReadOnly() || 
+        if (isReadOnly() ||
             (writeType.equals(WriteType.INSERT) && ! isInsertable()) ||
             (writeType.equals(WriteType.UPDATE) && ! isUpdatable())) {
             return;
@@ -1290,7 +1290,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
 
         Object attributeValue = getAttributeValueFromObject(object);
         Object fieldValue = getFieldValue(attributeValue, session);
-        
+
         // EL Bug 319759 - if a field is null, then the update call cache should not be used
         if (fieldValue == null) {
             row.setNullValueInFields(true);
@@ -1298,7 +1298,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
 
         writeValueIntoRow(row, getField(), fieldValue);
     }
-    
+
     /**
      * INTERNAL:
      * Write the attribute value from the object to the row for update.
@@ -1313,7 +1313,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
 
         super.writeFromObjectIntoRowForUpdate(query, databaseRow);
     }
-    
+
     /**
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
@@ -1324,7 +1324,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             databaseRow.add(getField(), null);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Write fields needed for update into the template for with null values.
@@ -1333,7 +1333,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     @Override
     public void writeUpdateFieldsIntoRow(AbstractRecord databaseRow, AbstractSession session) {
         if (isUpdatable() && ! isReadOnly()) {
-            databaseRow.add(getField(), null);    
+            databaseRow.add(getField(), null);
         }
     }
 }

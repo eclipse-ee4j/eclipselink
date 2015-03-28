@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,9 +38,9 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
  * define a query. This is the superclass of both the CriteriaQuery and the
  * SubQuery.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria CriteriaQuery
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
@@ -68,7 +68,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * Specify the expressions that are used to form groups over
      * the query results.
      * Replaces the previous specified grouping expressions, if any.
-     * If no grouping expressions are specified, any previously 
+     * If no grouping expressions are specified, any previously
      * added grouping expressions are simply removed.
      * @param grouping  list of zero or more grouping expressions
      * @return the modified query
@@ -84,7 +84,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * results. Replaces the previous specified grouping expressions, if any. If
      * no grouping expressions are specified, any previously added grouping
      * expressions are simply removed.
-     * 
+     *
      * @param grouping
      *            zero or more grouping expressions
      * @return the modified query
@@ -100,7 +100,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
     /**
      * Specify a restriction over the groups of the query. Replaces the previous
      * having restriction(s), if any.
-     * 
+     *
      * @param restriction
      *            a simple or compound boolean expression
      * @return the modified query
@@ -120,7 +120,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * conjunction of the specified restriction predicates. Replaces the
      * previously added restriction(s), if any. If no restrictions are
      * specified, any previously added restrictions are simply removed.
-     * 
+     *
      * @param restrictions
      *            zero or more restriction predicates
      * @return the modified query
@@ -144,7 +144,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * duplicates to be retained. If distinct has not been specified, duplicate
      * results must be retained. This method only overrides the return type of
      * the corresponding AbstractQuery method.
-     * 
+     *
      * @param distinct
      *            boolean value specifying whether duplicate results must be
      *            eliminated from the query result or whether they must be
@@ -178,7 +178,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
     /**
      * Return the predicate that corresponds to the restriction(s) over the
      * grouping items.
-     * 
+     *
      * @return having clause predicate
      */
     public Predicate getGroupRestriction(){
@@ -187,7 +187,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
 
     /**
      * Return the query roots.
-     * 
+     *
      * @return the set of query roots
      */
     public Set<Root<?>> getRoots(){
@@ -202,7 +202,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
 
     /**
      * Return whether duplicate query results must be eliminated or retained.
-     * 
+     *
      * @return boolean indicating whether duplicate query results must be
      *         eliminated
      */
@@ -225,7 +225,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
     /**
      * Add a query root corresponding to the given entity, forming a Cartesian
      * product with any existing roots.
-     * 
+     *
      * @param entity
      *            metamodel entity representing the entity of type X
      * @return query root corresponding to the given entity
@@ -237,7 +237,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
     /**
      * Add a query root corresponding to the given entity, forming a Cartesian
      * product with any existing roots.
-     * 
+     *
      * @param entityClass
      *            the entity class
      * @return query root corresponding to the given entity
@@ -252,7 +252,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * boolean expression. Replaces the previously added restriction(s), if any.
      * This method only overrides the return type of the corresponding
      * AbstractQuery method.
-     * 
+     *
      * @param restriction
      *            a simple or compound boolean expression
      * @return the modified query
@@ -268,7 +268,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * specified, any previously added restrictions are simply removed. This
      * method only overrides the return type of the corresponding AbstractQuery
      * method.
-     * 
+     *
      * @param restrictions
      *            zero or more restriction predicates
      * @return the modified query

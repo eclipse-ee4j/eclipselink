@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -28,7 +28,7 @@ public class SDODataObjectGetStringConversion extends SDODataObjectConversionTes
     public SDODataObjectGetStringConversion(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetStringConversion" };
         TestRunner.main(arguments);
@@ -37,7 +37,7 @@ public class SDODataObjectGetStringConversion extends SDODataObjectConversionTes
 
     //1. purpose: getString with Defined boolean Property
     public void testGetStringConversionFromDefinedBoolean() {
-        // dataObject's type add int property                
+        // dataObject's type add int property
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_BOOLEAN);
 
@@ -63,7 +63,7 @@ public class SDODataObjectGetStringConversion extends SDODataObjectConversionTes
 
     //3. purpose: getString with Defined Byte Property
     public void testGetStringConversionFromDefinedByteProperty() {
-        // dataObject's type add boolean property                
+        // dataObject's type add boolean property
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_BYTE);
 
@@ -90,7 +90,7 @@ public class SDODataObjectGetStringConversion extends SDODataObjectConversionTes
 
     //4. purpose: getString with Defined character Property
     public void testGetStringConversionFromDefinedCharacterProperty() {
-        // dataObject's type add int property        
+        // dataObject's type add int property
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_STRING);
 
@@ -273,12 +273,12 @@ public class SDODataObjectGetStringConversion extends SDODataObjectConversionTes
     public void testGetStringFromBytes() {
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_BYTES);
-             
+
         byte[] bytes = new byte[]{10, 100};
         dataObject.set(property, bytes);
-      
+
         try {
-            String value = dataObject.getString(property);           
+            String value = dataObject.getString(property);
             assertEquals("0A64", value);
         } catch (ClassCastException e) {
         }

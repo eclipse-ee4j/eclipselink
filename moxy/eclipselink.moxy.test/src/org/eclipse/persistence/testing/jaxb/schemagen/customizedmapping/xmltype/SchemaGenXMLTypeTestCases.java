@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,14 +26,14 @@ import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestCases;
 
 /**
- * Schema generation tests - based on the JAXB 2.0 TCK: 
- *     java2schema/CustomizedMapping/classes/XMLRootElement 
+ * Schema generation tests - based on the JAXB 2.0 TCK:
+ *     java2schema/CustomizedMapping/classes/XMLRootElement
  */
 public class SchemaGenXMLTypeTestCases extends SchemaGenTestCases {
 
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public SchemaGenXMLTypeTestCases(String name) throws Exception {
@@ -79,7 +79,7 @@ public class SchemaGenXMLTypeTestCases extends SchemaGenTestCases {
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
             Validator validator = theSchema.newValidator();
-            StreamSource ss = new StreamSource(new File(src)); 
+            StreamSource ss = new StreamSource(new File(src));
             validator.validate(ss);
         } catch (Exception ex) {
             exception = true;

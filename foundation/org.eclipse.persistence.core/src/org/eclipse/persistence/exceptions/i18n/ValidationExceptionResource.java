@@ -1,41 +1,41 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     04/05/2011-2.3 Guy Pelletier 
+ *     04/05/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 3)
- *     04/21/2011-2.3 Guy Pelletier 
+ *     04/21/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 5)
- *     06/30/2011-2.3.1 Guy Pelletier 
+ *     06/30/2011-2.3.1 Guy Pelletier
  *       - 341940: Add disable/enable allowing native queries
  *     07/11/2011-2.4 Guy Pelletier
- *       - 343632: Can't map a compound constraint because of exception: 
- *                 The reference column name [y] mapped on the element [field x] 
+ *       - 343632: Can't map a compound constraint because of exception:
+ *                 The reference column name [y] mapped on the element [field x]
  *                 does not correspond to a valid field on the mapping reference
- *     09/09/2011-2.3.1 Guy Pelletier 
+ *     09/09/2011-2.3.1 Guy Pelletier
  *       - 356197: Add new VPD type to MultitenantType
- *     22/05/2012-2.4 Guy Pelletier  
+ *     22/05/2012-2.4 Guy Pelletier
  *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
- *     10/09/2012-2.5 Guy Pelletier 
+ *     10/09/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     10/25/2012-2.5 Guy Pelletier 
+ *     10/25/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     10/30/2012-2.5 Guy Pelletier 
+ *     10/30/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     11/28/2012-2.5 Guy Pelletier 
+ *     11/28/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     09/24/2014-2.6 Rick Curtis 
+ *     09/24/2014-2.6 Rick Curtis
  *       - 443762 : Misc message cleanup.
  *     12/18/2014-2.6 Rick Curtis
  *       - 454189 : Misc message cleanup.#2
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
@@ -241,9 +241,9 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7227", "The listener class [{0}] has multiple lifecycle callback methods for the same lifecycle event ([{1}] and [{2}])."},
                                            { "7228", "The Callback method [{1}] on the listener class [{0}] has an incorrect signature. It should not have any parameters."},
                                            { "7229", "The Callback method [{3}] on the entity listener class [{2}] has an incorrect signature. The method must take 1 parameter which must be assignable from the entity class. Here, the parameter class [{1}] is not assignable from the entity class [{0}]."},
-                                           { "7231", "Cannot persist detached object [{0}]. {3}Class> {1} Primary Key> {2}"}, 
+                                           { "7231", "Cannot persist detached object [{0}]. {3}Class> {1} Primary Key> {2}"},
                                            { "7232", "The entity class [{0}] contains multiple @Id declarations, but does not define any <id> elements in the entity mappings instance document.  Please ensure that if there are multiple @Id declarations for a given entity class, the corresponding <entity> definition contains an <id> element for each."},
-                                           { "7233", "Mapping metadata cannot be applied to properties/methods that take arguments. The attribute [{0}] from class [{1}] is in violation of this restriction. Ensure the method has no arguments if it is mapped with annotations or in an XML mapping file." },                                           
+                                           { "7233", "Mapping metadata cannot be applied to properties/methods that take arguments. The attribute [{0}] from class [{1}] is in violation of this restriction. Ensure the method has no arguments if it is mapped with annotations or in an XML mapping file." },
                                            { "7234", "DDL generation requires that the class transformer, used with the transformation mapping of attribute [{1}] from the descriptor [{0}], specify a specific return type for its [{2}] method (and not Object). DDL generation requires this specific return type so that it may generate the correct field type." },
                                            { "7235", "The class transformer used with the transformation mapping of attribute [{1}] from the descriptor [{0}] does not implement the [{2}] method. This method is part of the FieldTransformer interface and must be implemented. Note also, when implemented, its return type should also be an explicit type (and not Object) when using DDL generation." },
                                            { "7237", "Entity name must be unique in a persistence unit. Entity name [{0}] is used for the entity classes [{1}] and [{2}]."},
@@ -357,9 +357,9 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7354", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a map key convert specification." },
                                            { "7355", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert using an attribute name specification. An attribute name should only be specified to traverse an Embedded mapping type." },
                                            { "7356", "Procedure: [{1}] cannot be executed because {0} does not currently support multiple out parameters"},
-                                           
+
  };
-    
+
     /**
      * Return the lookup table.
      */

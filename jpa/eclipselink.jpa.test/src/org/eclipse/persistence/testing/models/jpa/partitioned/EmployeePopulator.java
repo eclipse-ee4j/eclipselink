@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     03/03/2010 - 2.1 Michael O'Brien  
+ *     03/03/2010 - 2.1 Michael O'Brien
  *       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.partitioned;
 
 import java.util.*;
@@ -28,8 +28,8 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
  * This is not the recommended way to create new objects in your application,
  * this is just the easiest way to create interconnected new example objects from code.
  * Normally in your application the objects will be defined as part of a transactional and user interactive process.
- * 
- * Be careful in changing any of the examples (names, projects etc) as they may 
+ *
+ * Be careful in changing any of the examples (names, projects etc) as they may
  * be used and relied on in testing.
  */
 public class EmployeePopulator {
@@ -178,19 +178,19 @@ public class EmployeePopulator {
         address.setCountry("Canada");
         return address;
     }
-    
+
     public Department basicDepartmentExample1() {
         Department department = new Department();
         department.setName("Department 1");
         return department;
     }
-    
+
     public Department basicDepartmentExample2() {
         Department department = new Department();
         department.setName("Department 2");
         return department;
     }
-    
+
     public Department basicDepartmentExample3() {
         Department department = new Department();
         department.setName("Department 3");
@@ -273,7 +273,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee basicEmployeeExample13() {
         Employee employee = createEmployee();
 
@@ -291,7 +291,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
      public Employee basicEmployeeExample14() {
         Employee employee = createEmployee();
 
@@ -299,27 +299,27 @@ public class EmployeePopulator {
             employee.setFirstName("SquareRoot");
             employee.setLastName("TestCase2");
             employee.setAddress(addressExample1());
- 
+
             employee.addPhoneNumber(phoneNumberExample1());
             employee.addResponsibility("Attend technology conferences");
             employee.addResponsibility("Review design specifications");
             employee.addResponsibility("Critique coding styles");
             employee.setLocation("Toronto");
-            
+
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
 
         return employee;
     }
-    
+
     public Employee basicEmployeeExample15() {
         Employee employee = createEmployee();
 
         try {
             employee.setFirstName("No Phone Number");
             employee.setLastName("Test case");
-            employee.setAddress(addressExample1());         
+            employee.setAddress(addressExample1());
             employee.addResponsibility("Find ways to make the days go by faster");
             employee.setLocation("Toronto");
         } catch (Exception exception) {
@@ -328,7 +328,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee basicEmployeeExample2() {
         Employee employee = createEmployee();
 
@@ -770,20 +770,20 @@ public class EmployeePopulator {
         smallProjectExample9();
         smallProjectExample10();
     }
-        
-    public void persistExample(EntityManager em) {        
-        List allObjects = new ArrayList();  
-        
+
+    public void persistExample(EntityManager em) {
+        List allObjects = new ArrayList();
+
         buildExamples();
         this.populationManager.addAllObjectsForClass(Employee.class, allObjects);
         this.populationManager.addAllObjectsForClass(SmallProject.class, allObjects);
         this.populationManager.addAllObjectsForClass(LargeProject.class, allObjects);
-        
+
         for (Object object : allObjects) {
             em.persist(object);
         }
     }
-    
+
     protected boolean containsObject(Class domainClass, String identifier) {
         return this.populationManager.containsObject(domainClass, identifier);
     }
@@ -922,7 +922,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee employeeExample13() {
         if (containsObject(Employee.class, "0013")) {
             return (Employee)getObject(Employee.class, "0013");
@@ -930,10 +930,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample13();
         registerObject(Employee.class, employee, "0013");
-        
+
         return employee;
     }
-    
+
      public Employee employeeExample14() {
         if (containsObject(Employee.class, "0014")) {
             return (Employee)getObject(Employee.class, "0014");
@@ -941,10 +941,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample14();
         registerObject(Employee.class, employee, "0014");
-        
+
         return employee;
     }
-    
+
     public Employee employeeExample15() {
         if (containsObject(Employee.class, "0015")) {
             return (Employee)getObject(Employee.class, "0015");
@@ -952,10 +952,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample15();
         registerObject(Employee.class, employee, "0015");
-        
+
         return employee;
     }
-    
+
     public Employee employeeExample2() {
         if (containsObject(Employee.class, "0002")) {
             return (Employee)getObject(Employee.class, "0002");
@@ -1024,7 +1024,7 @@ public class EmployeePopulator {
             employee.addProject(smallProjectExample4());
             employee.addProject(largeProjectExample1());
             employee.addProject(largeProjectExample3());
-            
+
             employee.setDepartment(departmentExample2());
 
         } catch (Exception exception) {

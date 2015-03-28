@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -40,17 +40,17 @@ public class SelfMappingTestCases extends XMLMappingTestCases {
         lines.addressLine2 = "Apt 514";
         lines.addressLine3 = "P.O. Box 123123";
         lines.addressLine4 = "Suite 1234";
-        
+
         Address address = new Address();
         address.addressLines = lines;
-        
+
         address.attentionOfName = "Jane Doe";
         address.careOfName = "n/a";
         address.city = "Malibu";
         address.state = "CA";
         address.countryCode = "USA";
         address.postalCode = "90914-2938";
-        
+
         return address;
     }
 

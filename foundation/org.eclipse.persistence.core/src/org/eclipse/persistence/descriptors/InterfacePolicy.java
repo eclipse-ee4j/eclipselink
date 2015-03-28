@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
@@ -194,7 +194,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
         }
         this.parentInterfaces = newParentInterfaces;
     }
-    
+
     /**
      * INTERNAL:
      * Set the vector to store parent interfaces.
@@ -217,7 +217,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
     public boolean isTablePerClassPolicy() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Select all objects for a concrete descriptor.
@@ -226,7 +226,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
         ReadAllQuery concreteQuery = (ReadAllQuery)prepareQuery(query);
         return query.getSession().executeQuery(concreteQuery, query.getTranslationRow());
     }
-    
+
     /**
      * INTERNAL:
      * Select all objects for a concrete descriptor.
@@ -247,7 +247,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
             concreteQuery.setQueryResultsCachePolicy(null);
             concreteQuery.getExpressionBuilder().setQueryClassAndDescriptor(javaClass, this.descriptor);
 
-            // Update the selection criteria if needed as well and don't lose 
+            // Update the selection criteria if needed as well and don't lose
             // the translation row.
             if (concreteQuery.getQueryMechanism().getSelectionCriteria() != null) {
                 //make sure query builder is used for the selection criteria as deepClone will create
@@ -261,7 +261,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
                     if (field instanceof Expression) {
                         rebuiltFields.add(((Expression)field).rebuildOn(concreteQuery.getExpressionBuilder()));
                     } else {
-                        rebuiltFields.add(field);                        
+                        rebuiltFields.add(field);
                     }
                 }
                 concreteQuery.setAdditionalFields(rebuiltFields);
@@ -282,10 +282,10 @@ public class InterfacePolicy implements Serializable, Cloneable {
             concreteQuery.setIsExecutionClone(true);
             concreteQuery.setTranslationRow(query.getTranslationRow());
         }
-        
+
         return concreteQuery;
     }
-    
+
     /**
      * INTERNAL:
      * Select all objects for an interface descriptor.
@@ -309,16 +309,16 @@ public class InterfacePolicy implements Serializable, Cloneable {
 
         return objects;
     }
-    
+
     /**
      * INTERNAL:
      * Select one object of any concrete subclass.
-     */     
+     */
     protected Object selectOneObject(ReadObjectQuery query) throws DescriptorException {
-        ReadObjectQuery concreteQuery = (ReadObjectQuery)prepareQuery(query);        
+        ReadObjectQuery concreteQuery = (ReadObjectQuery)prepareQuery(query);
         return query.getSession().executeQuery(concreteQuery, concreteQuery.getTranslationRow());
     }
-    
+
     /**
      * INTERNAL:
      * Select one object of any concrete subclass.

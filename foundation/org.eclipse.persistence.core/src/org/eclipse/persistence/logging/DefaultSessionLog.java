@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -40,10 +40,10 @@ import org.eclipse.persistence.internal.helper.Helper;
  * <li>the exact time (to milliseconds) that the log entry occurred
  * <li>the stack trace to the exception
  * </ul>
- * 
+ *
  * @see SessionLog
  * @see AbstractSessionLog
- * 
+ *
  * @author Big Country
  */
 public class DefaultSessionLog extends AbstractSessionLog implements Serializable {
@@ -99,7 +99,7 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
      * Check if a message of the given level would actually be logged by the
      * logger with name space built from the given session and category.
      * <p>
-     * 
+     *
      * @return true if the given message level will be logged for the given
      *         category
      */
@@ -143,7 +143,7 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
                     getWriter().write(Helper.cr());
                     getWriter().flush();
                 }
-                
+
                 if (entry.hasException()) {
                     if (shouldLogExceptionStackTrace()) {
                         entry.getException().printStackTrace(new PrintWriter(getWriter()));
@@ -152,7 +152,7 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
                     }
                     getWriter().write(Helper.cr());
                     getWriter().flush();
-                } 
+                }
             } catch (IOException exception) {
                 throw ValidationException.logIOError(exception);
             }

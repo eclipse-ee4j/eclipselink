@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,32 +27,32 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class InExpressionFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link InExpressionFactory}.
-	 */
-	public static final String ID = Expression.IN;
+    /**
+     * The unique identifier of this {@link InExpressionFactory}.
+     */
+    public static final String ID = Expression.IN;
 
-	/**
-	 * Creates a new <code>InExpressionFactory</code>.
-	 */
-	public InExpressionFactory() {
-		super(ID, Expression.IN,
-		          Expression.NOT_IN);
-	}
+    /**
+     * Creates a new <code>InExpressionFactory</code>.
+     */
+    public InExpressionFactory() {
+        super(ID, Expression.IN,
+                  Expression.NOT_IN);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		expression = new InExpression(parent, expression);
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        expression = new InExpression(parent, expression);
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

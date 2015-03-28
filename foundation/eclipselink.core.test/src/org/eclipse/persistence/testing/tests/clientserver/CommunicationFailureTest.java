@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,7 +28,7 @@ public class CommunicationFailureTest extends AutoVerifyTestCase {
 
     protected Accessor non_txn_read;
     protected org.eclipse.persistence.sessions.server.Server serverSession;
-    
+
     public CommunicationFailureTest() {
         this.setDescription("Tests that TopLink is correctly handling Accessors that experience exceptions.");
     }
@@ -62,13 +62,13 @@ public class CommunicationFailureTest extends AutoVerifyTestCase {
     public void reset() {
         this.serverSession.logout();
     }
-    
+
     public class QueryExecuteListener extends SessionEventAdapter{
         protected CommunicationFailureTest test;
         public QueryExecuteListener(CommunicationFailureTest test){
             this.test = test;
         }
-        
+
         /**
          * PUBLIC:
          * This event is raised before the execution of every query against the session.
@@ -79,7 +79,7 @@ public class CommunicationFailureTest extends AutoVerifyTestCase {
             event.getQuery().getAccessor().closeConnection();
         }
 
-        
-        
+
+
     }
 }

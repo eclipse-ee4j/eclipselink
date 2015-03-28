@@ -1,6 +1,6 @@
-<xsd:schema 
-   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-   xmlns="www.example.org/customer" 
+<xsd:schema
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   xmlns="www.example.org/customer"
    targetNamespace="www.example.org/customer"
    elementFormDefault="qualified">
 

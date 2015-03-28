@@ -2,51 +2,51 @@
    "things"[
       {
          "xsi.type":"nonNegativeInteger",
-	 "value":10
+     "value":10
       },
       {
          "xsi.type":"positiveInteger",
-	 "value":10
+     "value":10
       },
       {
          "xsi.type":"nonPositiveInteger",
-	 "value":-10
+     "value":-10
       },
       {
          "xsi.type":"unsignedLong",
-	 "value":10
+     "value":10
       },
       {
          "xsi.type":"gMonth",
-	 "value":"--10--"
+     "value":"--10--"
       },
       {
          "xsi.type":"gDay",
-	 "value":"---10"
+     "value":"---10"
       },
     {
          "xsi.type":"gMonthDay",
-	 "value":"--10-10"
+     "value":"--10-10"
       },
        {
          "xsi.type":"gYear",
-	 "value":"2013"
+     "value":"2013"
       },
         {
          "xsi.type":"gYearMonth",
-	 "value":"2013-10"
+     "value":"2013-10"
       },
       {
          "xsi.type":"duration",
-	 "value":"PT130S"
+     "value":"PT130S"
       },
       {
          "xsi.type":"normalizedstring",
-	 "value":"this is a test"
+     "value":"this is a test"
       },
       {
          "xsi.type":"base64Binary",
-	 "value":"YWJj"
+     "value":"YWJj"
       }
    ]
 }}

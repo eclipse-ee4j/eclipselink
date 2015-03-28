@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -196,7 +196,7 @@ import org.eclipse.persistence.sessions.Session;
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
 public class XMLDirectMapping extends AbstractDirectMapping implements XMLMapping, DirectMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, Session, XMLUnmarshaller, XMLRecord>, XMLNillableMapping {
-   
+
     AbstractNullPolicy nullPolicy;
     public boolean isCDATA;
     private boolean isWriteOnly;
@@ -245,7 +245,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * @param xpathString String
      */
     public void setXPath(String xpathString) {
-        if ((xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {        	
+        if ((xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {
             xpathString += '/' + XMLConstants.TEXT;
         }
         setField(new XMLField(xpathString));
@@ -254,7 +254,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         super.initialize(session);
         ((XMLField)getField()).setIsCDATA(this.isCDATA());
         String xpathString = ((XMLField)getField()).getXPath();
-        if (this.isAbstractDirectMapping() && (xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {            
+        if (this.isAbstractDirectMapping() && (xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {
             throw DescriptorException.invalidXpathForXMLDirectMapping(this);
         }
     }
@@ -264,7 +264,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * Allows for subclasses to convert the attribute value.
      */
     public Object getAttributeValue(Object fieldValue, AbstractSession session, AbstractUnmarshalRecord record) {
-    	// Unmarshal DOM
+        // Unmarshal DOM
         // If attribute is empty string representing (null) then return the nullValue
         boolean isNullRepresentedByEmptyNode = nullPolicy.isNullRepresentedByEmptyNode();
         boolean isNullRepresentedByXsiNil = nullPolicy.isNullRepresentedByXsiNil();
@@ -291,7 +291,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
             attributeValue = null;
         }
 
-        // Allow for user defined conversion to the object value.       
+        // Allow for user defined conversion to the object value.
         if (converter != null) {
             attributeValue = convertDataValueToObjectValue(attributeValue, session, (XMLUnmarshaller) record.getUnmarshaller());
         } else {
@@ -317,7 +317,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * Process any converter if defined, and check for null values.
      */
     public Object getFieldValue(Object attributeValue, CoreAbstractSession session, AbstractMarshalRecord record) {
-    	// Marshal
+        // Marshal
         // PERF: This method is a major performance code point,
         // so has been micro optimized and uses direct variable access.
         Object fieldValue = attributeValue;
@@ -326,23 +326,23 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
             return null;
         }
 
-        // Allow for user defined conversion to the object value.       
+        // Allow for user defined conversion to the object value.
         fieldValue = convertObjectValueToDataValue(fieldValue, (AbstractSession) session, (XMLMarshaller) record.getMarshaller());
-   
+
         if (fieldValue != null) {
-        	 Class fieldClassification = getFieldClassification(field);
+             Class fieldClassification = getFieldClassification(field);
              // PERF: Avoid conversion if not required.
-        	 if(fieldClassification != fieldValue.getClass()){
-        		 try {
+             if(fieldClassification != fieldValue.getClass()){
+                 try {
                      fieldValue = session.getPlatform(descriptor.getJavaClass()).convertObject(fieldValue, fieldClassification);
                  } catch (ConversionException exception) {
                      throw ConversionException.couldNotBeConverted(this, descriptor, exception);
                  }
-        	 }
+             }
         }
         return fieldValue;
     }
-    
+
     /**
      * Get the XPath String
      * @return String the XPath String associated with this Mapping
@@ -375,11 +375,11 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         }
         writeSingleValue(getAttributeValueFromObject(object), object, (XMLRecord)row, session);
     }
-    
+
     protected void writeValueIntoRow(AbstractRecord row, DatabaseField aField, Object fieldValue) {
             row.put(getField(), fieldValue);
     }
-    
+
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
         Object fieldValue = getFieldValue(value, session, row);
         if(fieldValue == null && getNullPolicy() != null) {
@@ -388,7 +388,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
             writeValueIntoRow(row, getField(), fieldValue);
         }
     }
-    
+
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         // PERF: Direct variable access.
         if(isWriteOnly()) {
@@ -396,7 +396,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         }
         try {
             if(value == XMLRecord.noEntry) {
-                return;                    
+                return;
             }
             if (value != null && value instanceof String) {
                 if(isCollapsingStringValues) {
@@ -411,19 +411,19 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
             throw exception;
         }
     }
-    
+
     public void setIsCDATA(boolean CDATA) {
         isCDATA = CDATA;
     }
-    
+
     public boolean isCDATA() {
         return isCDATA;
     }
-    
+
     public boolean isWriteOnly() {
         return this.isWriteOnly;
     }
-    
+
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
@@ -438,46 +438,46 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
-    
-    
+
+
     /**
-     * PUBLIC: 
+     * PUBLIC:
      * Returns true if this mapping is normalizing string values on unmarshal before setting
-     * them in the object. Normalize replaces any CR, LF or Tab characters with a 
-     * single space character. 
+     * them in the object. Normalize replaces any CR, LF or Tab characters with a
+     * single space character.
      */
     public boolean isNormalizingStringValues() {
         return this.isNormalizingStringValues;
     }
-    
+
     /**
      * PUBLIC:
      * Indicates that this mapping should normalize all string values before setting them
-     * in the object on unmarshal. Normalize replaces any CR, LF or Tab characters with a 
-     * single space character. 
+     * in the object on unmarshal. Normalize replaces any CR, LF or Tab characters with a
+     * single space character.
      * @param normalize
      */
     public void setNormalizingStringValues(boolean normalize) {
         this.isNormalizingStringValues = normalize;
     }
-    
-    
+
+
     /**
      * PUBLIC:
      * Indicates that this mapping should collapse all string values before setting them
      * in the object on unmarshal. Collapse removes leading and trailing whitespaces, and replaces
-     * any sequence of whitepsace characters with a single space. 
+     * any sequence of whitepsace characters with a single space.
      * @param collapse
      */
     public void setCollapsingStringValues(boolean collapse) {
         this.isCollapsingStringValues = collapse;
     }
-    
+
     /**
      * PUBLIC:
      * Returns true if this mapping should collapse all string values before setting them
      * in the object on unmarshal. Collapse removes leading and trailing whitespaces, and replaces
-     * any sequence of whitepsace characters with a single space. 
+     * any sequence of whitepsace characters with a single space.
      */
     public boolean isCollapsingStringValues() {
         return this.isCollapsingStringValues;
@@ -485,8 +485,8 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
 
     /**
      * PUBLIC:
-     * Returns true if this mapping's value should be marshalled, in the case that 
-     * it is equal to the default null value. 
+     * Returns true if this mapping's value should be marshalled, in the case that
+     * it is equal to the default null value.
      */
     public boolean isNullValueMarshalled() {
         return this.isNullValueMarshalled;
@@ -494,8 +494,8 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
 
     /**
      * PUBLIC:
-     * Set whether this mapping's value should be marshalled, in the case that 
-     * it is equal to the default null value. 
+     * Set whether this mapping's value should be marshalled, in the case that
+     * it is equal to the default null value.
      */
     public void setNullValueMarshalled(boolean value) {
         this.isNullValueMarshalled = value;

@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     08/15/2008-1.0.1 Chris Delahunt 
+ *     08/15/2008-1.0.1 Chris Delahunt
  *       - 237545: List attribute types on OneToMany using @OrderBy does not work with attribute change tracking
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
     public ListContainerPolicy(Class containerClass) {
         super(containerClass);
     }
-    
+
     /**
      * INTERNAL:
      * Construct a new policy for the specified class name.
@@ -67,7 +67,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
     public ListContainerPolicy(String containerClassName) {
         super(containerClassName);
     }
-    
+
     /**
      * INTERNAL:
      * Returns the element at the specified position in this list.
@@ -109,10 +109,10 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
     public boolean isListPolicy() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
-     * Returns the index in this list of the first occurrence of the specified element, 
+     * Returns the index in this list of the first occurrence of the specified element,
      * or -1 if this list does not contain this element
      * The session may be required to unwrap for the wrapper policy.
      */
@@ -137,7 +137,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
     /**
      * This method is used to bridge the behavior between Attribute Change Tracking and
      * deferred change tracking with respect to adding the same instance multiple times.
-     * Each ContainerPolicy type will implement specific behavior for the collection 
+     * Each ContainerPolicy type will implement specific behavior for the collection
      * type it is wrapping.  These methods are only valid for collections containing object references
      */
     @Override
@@ -152,11 +152,11 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
             }
         }
     }
-    
+
     /**
      * This method is used to bridge the behavior between Attribute Change Tracking and
      * deferred change tracking with respect to adding the same instance multiple times.
-     * Each ContainerPolicy type will implement specific behavior for the collection 
+     * Each ContainerPolicy type will implement specific behavior for the collection
      * type it is wrapping.  These methods are only valid for collections containing object references
      */
     @Override
@@ -180,7 +180,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
     @Override
     public void updateChangeRecordForSelfMerge(ChangeRecord changeRecord, Object source, Object target, ForeignReferenceMapping mapping, UnitOfWorkChangeSet parentUOWChangeSet, UnitOfWorkImpl unitOfWork){
         Map<ObjectChangeSet, ObjectChangeSet> list = ((CollectionChangeRecord)changeRecord).getAddObjectList();
-        
+
         ObjectChangeSet sourceSet = parentUOWChangeSet.getCloneToObjectChangeSet().get(source);
         if (list.containsKey(sourceSet)){
             ObjectChangeSet targetSet = ((UnitOfWorkChangeSet)unitOfWork.getUnitOfWorkChangeSet()).findOrCreateLocalObjectChangeSet(target, mapping.getReferenceDescriptor(), unitOfWork.isCloneNewObject(target));
@@ -199,7 +199,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
             ++index;
         }
     }
-    
+
 
     /**
      * INTERNAL:
@@ -207,11 +207,11 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
      * may be available if the relationship has been cached.
      */
     public Object valueFromPKList(Object[] pks, AbstractRecord foreignKeys, ForeignReferenceMapping mapping, AbstractSession session){
-        
+
         Object result = containerInstance(pks.length);
         Map<Object, Object> fromCache = session.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(pks, elementDescriptor);
 
-        
+
         List foreignKeyValues = new ArrayList(pks.length - fromCache.size());
         for (int index = 0; index < pks.length; ++index){
             //it is a map so the keys are in the list but we do not need them in this case
@@ -241,7 +241,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
             arguments.add(foreignKeyValues);
             if (pkCount > 1000){
                 int index = 0;
-                
+
                 while ( index+1000 < pkCount ) { // some databases only support ins < 1000 entries
                     List pkList = new ArrayList();
                     pkList.addAll(foreignKeyValues.subList(index, index+1000));

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
 import java.util.ArrayList;
@@ -35,18 +35,18 @@ public class LoadAndSaveEmptyElementTestCases extends LoadAndSaveTestCases {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/empty/input.xml");
     }
 
-    protected String getControlWriteFileName() {    	
+    protected String getControlWriteFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/empty/output.xml");
     }
 
     protected String getNoSchemaControlWriteFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/empty/output.xml");
     }
-    
+
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/empty/input.xml");
     }
- 
+
     protected String getControlRootURI() {
         return "namespace1";
     }
@@ -58,31 +58,31 @@ public class LoadAndSaveEmptyElementTestCases extends LoadAndSaveTestCases {
     protected String getRootInterfaceName() {
         return "RootType";
     }
-    
+
     protected void verifyAfterLoad (XMLDocument document) {
         super.verifyAfterLoad(document);
         DataObject rootDO = document.getRootObject();
         assertNull(rootDO.get("nillableEmptyString"));
         assertFalse(rootDO.isSet("nillableEmptyString"));
-        
+
         assertNull(rootDO.get("nillableNilString"));
         assertTrue(rootDO.isSet("nillableNilString"));
-        
+
         assertNull(rootDO.get("nonnillableEmptyString"));
         assertTrue(rootDO.isSet("nonnillableEmptyString"));
-        
+
         assertNull(rootDO.get("nonnillableNilString"));
         assertTrue(rootDO.isSet("nonnillableNilString"));
-        
+
         assertNull(rootDO.get("nillableEmptyDecimal"));
         assertFalse(rootDO.isSet("nillableEmptyDecimal"));
-        
+
         assertNull(rootDO.get("nillableNilDecimal"));
         assertTrue(rootDO.isSet("nillableNilDecimal"));
-        
+
         assertNull(rootDO.get("nonnillableEmptyDecimal"));
         assertTrue(rootDO.isSet("nonnillableEmptyDecimal"));
-        
+
         assertNull(rootDO.get("nonnillableNilDecimal"));
         assertTrue(rootDO.isSet("nonnillableNilDecimal"));
      }
@@ -106,25 +106,25 @@ public class LoadAndSaveEmptyElementTestCases extends LoadAndSaveTestCases {
 
         DataObject prop = addProperty(rootType, "nillableEmptyString", stringType, false, false, true);
         prop.setBoolean("nullable", true);
-        
+
         prop = addProperty(rootType, "nillableNilString", stringType, false, false, true);
         prop.setBoolean("nullable", true);
-        
+
         addProperty(rootType, "nonnillableEmptyString", stringType, false, false, true);
-        
+
         addProperty(rootType, "nonnillableNilString", stringType, false, false, true);
-        
+
         prop = addProperty(rootType, "nillableEmptyDecimal", decimalType, false, false, true);
         prop.setBoolean("nullable", true);
-        
+
         prop = addProperty(rootType, "nillableNilDecimal", decimalType, false, false, true);
         prop.setBoolean("nullable", true);
-        
+
         addProperty(rootType, "nonnillableEmptyDecimal", decimalType, false, false, true);
-        
+
         addProperty(rootType, "nonnillableNilDecimal", decimalType, false, false, true);
-        
-        
+
+
         // now define the Customer type so that customers can be made
         Type rootSDOType = typeHelper.define(rootType);
 

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork.transactionisolation;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -86,27 +86,27 @@ public class TransactionIsolationRefreshTest extends AutoVerifyTestCase {
         clone = (Employee)unitOfWork.executeQuery(refreshQuery);
 
         // first verify that we did not touch the original...
-        strongAssert(employee.getFirstName() == "budd", 
+        strongAssert(employee.getFirstName() == "budd",
                      "Should not have refreshed the original (direct to field)");
-        strongAssert(employee.getAddress() == dummyAddress, 
+        strongAssert(employee.getAddress() == dummyAddress,
                      "Should not have refreshed the original (private one to one)");
-        strongAssert(employee.getProjects().elementAt(0) == dummyProject, 
+        strongAssert(employee.getProjects().elementAt(0) == dummyProject,
                      "Should not have refreshed the originial (many to many)");
-        strongAssert(employee.getPeriod().getEndDate() == null, 
+        strongAssert(employee.getPeriod().getEndDate() == null,
                      "Should not have refreshed the originial (aggregate)");
-        strongAssert(employee.getManager() == dummyManager, 
+        strongAssert(employee.getManager() == dummyManager,
                      "Should not have refreshed the originial (one to one)");
 
         // Now verify that we correctly refreshed the clone.
         strongAssert(!clone.getFirstName().equals("budd"), "Did not refresh the clone (direct to field)");
-        strongAssert(!clone.getAddress().getCity().equals("El Paso"), 
+        strongAssert(!clone.getAddress().getCity().equals("El Paso"),
                      "Did not refresh the clone (private one to one)");
-        strongAssert(clone.getProjects().size() != 1 || 
-                    !(clone.getProjects().elementAt(0) instanceof SmallProject) || 
-                    !((SmallProject)clone.getProjects().elementAt(0)).getName().equals("survive"), 
+        strongAssert(clone.getProjects().size() != 1 ||
+                    !(clone.getProjects().elementAt(0) instanceof SmallProject) ||
+                    !((SmallProject)clone.getProjects().elementAt(0)).getName().equals("survive"),
                      "Did not refresh the clone (many to many)");
         strongAssert(clone.getPeriod().getEndDate() != null, "Did not refresh the clone (aggregate)");
-        strongAssert((clone.getManager() == null) || !clone.getManager().getFirstName().equals("Bill"), 
+        strongAssert((clone.getManager() == null) || !clone.getManager().getFirstName().equals("Bill"),
                      "Did not refresh the clone (one to one)");
     }
 }

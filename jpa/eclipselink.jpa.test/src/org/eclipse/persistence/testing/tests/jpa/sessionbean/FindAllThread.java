@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     etang - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
  package org.eclipse.persistence.testing.tests.jpa.sessionbean;
 
 import java.util.Iterator;
@@ -25,12 +25,12 @@ import org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService;
 
 /**
  * EJB 3 SessionBean tests using EclipseLink JPA
- * These tests can only be run in Oracle High Availability environment -  
+ * These tests can only be run in Oracle High Availability environment -
  * a WebLogic server configured with Multi Data Sources to connect to Oracle RAC database
  * They read/write entity bean repeatly for 300 times, in the meantime, RAC database failures can be simulated,
  * to ensure no exceptions would be caused the RAC database failures.
  */
-public class FindAllThread implements Runnable 
+public class FindAllThread implements Runnable
 {
     public int threadNumber;
     public boolean succeeded = true;
@@ -67,7 +67,7 @@ public class FindAllThread implements Runnable
         }
         return service;
     }
-        
+
     public void run()
     {
         int repeatTimes = 300;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,22 +23,22 @@ import org.eclipse.persistence.oxm.annotations.XmlNamedObjectGraph;
 @XmlRootElement
 @XmlNamedObjectGraph(
         name = "simple",
-        attributeNodes = { 
-            @XmlNamedAttributeNode(value="contactInfo", subgraph="simple") 
+        attributeNodes = {
+            @XmlNamedAttributeNode(value="contactInfo", subgraph="simple")
         }
-        
+
     )
 public class Employee {
     private List<ContactInfo> contactInfo = new ArrayList<ContactInfo>();
-    
+
     public List<ContactInfo> getContactInfo() {
         return contactInfo;
     }
- 
+
     public void setContactInfo(List<ContactInfo> contactInfo) {
         this.contactInfo = contactInfo;
     }
-    
+
     public boolean equals(Object obj) {
         Employee e = (Employee)obj;
         return e.getContactInfo().equals(getContactInfo());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,34 +20,34 @@ import org.eclipse.persistence.testing.jaxb.multiplepackage.packageb.ClassB;
 
 public class MultiplePackageInfoTestCases extends JAXBWithJSONTestCases {
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/multiplepackage/root.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/multiplepackage/root.json";
-	
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/multiplepackage/root.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/multiplepackage/root.json";
+
     public MultiplePackageInfoTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);  
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[3];
         classes[0] = ClassA.class;
         classes[1] = ClassB.class;
         classes[2] = Root.class;
-        
+
         jaxbContext = JAXBContextFactory.createContext(classes, null);
-        xmlContext =((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext(); 
+        xmlContext =((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
         setProject(xmlContext.getSession(0).getProject());
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     }
 
     protected Object getControlObject() {
-    	Root myRoot = new Root();
-    	
-    	ClassA classA = new ClassA();
-    	classA.id = 10;
-        
-    	ClassB classB = new ClassB();
-        classB.id = 20;        
-        
+        Root myRoot = new Root();
+
+        ClassA classA = new ClassA();
+        classA.id = 10;
+
+        ClassB classB = new ClassB();
+        classB.id = 20;
+
         myRoot.theClassA = classA;
         myRoot.theClassB = classB;
         return myRoot;

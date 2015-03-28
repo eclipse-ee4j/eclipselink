@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,48 +32,48 @@ package org.eclipse.persistence.jpa.jpql;
  */
 public enum LiteralType {
 
-	/**
-	 * Retrieves the abstract schema name only.
-	 */
-	ABSTRACT_SCHEMA_NAME,
+    /**
+     * Retrieves the abstract schema name only.
+     */
+    ABSTRACT_SCHEMA_NAME,
 
-	/**
-	 * Retrieves the entity type name only.
-	 */
-	ENTITY_TYPE,
+    /**
+     * Retrieves the entity type name only.
+     */
+    ENTITY_TYPE,
 
-	/**
-	 * Retrieves an identification variable name only.
-	 */
-	IDENTIFICATION_VARIABLE,
+    /**
+     * Retrieves an identification variable name only.
+     */
+    IDENTIFICATION_VARIABLE,
 
-	/**
-	 * Retrieves the input parameter value.
-	 */
-	INPUT_PARAMETER,
+    /**
+     * Retrieves the input parameter value.
+     */
+    INPUT_PARAMETER,
 
-	/**
-	 * Retrieves the entire state field path or collection-valued path expression.
-	 */
-	PATH_EXPRESSION_ALL_PATH,
+    /**
+     * Retrieves the entire state field path or collection-valued path expression.
+     */
+    PATH_EXPRESSION_ALL_PATH,
 
-	/**
-	 * Retrieves the identification variable name of a path expression.
-	 */
-	PATH_EXPRESSION_IDENTIFICATION_VARIABLE,
+    /**
+     * Retrieves the identification variable name of a path expression.
+     */
+    PATH_EXPRESSION_IDENTIFICATION_VARIABLE,
 
-	/**
-	 * Retrieves the last path of a state field path or collection-valued path expression.
-	 */
-	PATH_EXPRESSION_LAST_PATH,
+    /**
+     * Retrieves the last path of a state field path or collection-valued path expression.
+     */
+    PATH_EXPRESSION_LAST_PATH,
 
-	/**
-	 * Retrieves the result variable.
-	 */
-	RESULT_VARIABLE,
+    /**
+     * Retrieves the result variable.
+     */
+    RESULT_VARIABLE,
 
-	/**
-	 * Retrieves the string literal only.
-	 */
-	STRING_LITERAL;
+    /**
+     * Retrieves the string literal only.
+     */
+    STRING_LITERAL;
 }

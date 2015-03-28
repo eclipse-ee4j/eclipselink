@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject.xpathengine;
 
 import commonj.sdo.DataObject;
@@ -48,7 +48,7 @@ public class XPathHelperTestCases extends SDOTestCase {
             fail("An error occurred loading the xsd");
         }
     }
-    
+
     public void testGetContainer() {
         List returnValue = xpathHelper.evaluate("items", rootObject);
         assertTrue(returnValue != null);
@@ -58,7 +58,7 @@ public class XPathHelperTestCases extends SDOTestCase {
         DataObject cdo = (DataObject) containerValue.get(0);
         assertEquals(rootObject, cdo);
     }
-    
+
     public void testGetAllItems() {
         List returnValue = xpathHelper.evaluate("items/item/", rootObject);
         assertTrue(returnValue != null && returnValue.size() == 4);
@@ -87,21 +87,21 @@ public class XPathHelperTestCases extends SDOTestCase {
         pName = (String) returnValue.get(0);
         assertEquals("Baby Monitor", pName);
     }
-    
+
     public void testGetCustomerName() {
         List returnValue = xpathHelper.evaluate("customer/name", rootObject);
         assertTrue(returnValue != null && returnValue.size() == 1);
         String name = (String) returnValue.get(0);
         assertEquals("Sally", name);
     }
-    
+
     public void testGetNamePrefixWithoutAt() {
         List returnValue = xpathHelper.evaluate("customer/namePrefix", rootObject);
         assertTrue(returnValue != null && returnValue.size() == 1);
         String name = (String) returnValue.get(0);
         assertEquals("Dr.", name);
     }
-    
+
     public void testGetNamePrefixWithAt() {
         List returnValue = xpathHelper.evaluate("customer/@namePrefix", rootObject);
         assertTrue(returnValue != null && returnValue.size() == 1);
@@ -125,7 +125,7 @@ public class XPathHelperTestCases extends SDOTestCase {
         compareToList.add("23");
         assertTrue(returnValue.containsAll(compareToList));
     }
-    
+
     public void testGetAllPOComments() {
         List returnValue = xpathHelper.evaluate("comment", rootObject);
         assertTrue(returnValue != null && returnValue.size() == 2);
@@ -177,7 +177,7 @@ public class XPathHelperTestCases extends SDOTestCase {
         String pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
     }
-    
+
     public void testGetPartsListFromSecondItemViaBracket() {
         List returnValue = xpathHelper.evaluate("items/item[2]/partsList/partNumber", rootObject);
         assertTrue(returnValue != null && returnValue.size() != 0);
@@ -236,7 +236,7 @@ public class XPathHelperTestCases extends SDOTestCase {
         compareToList.add("6");
         assertTrue(returnValue.containsAll(compareToList));
     }
-    
+
     public void testNestedParentExpression() {
         List returnValue = xpathHelper.evaluate("items/item[1]/partsList/../partsList/partNumber/", rootObject);
         assertTrue(returnValue != null && returnValue.size() != 0);
@@ -249,7 +249,7 @@ public class XPathHelperTestCases extends SDOTestCase {
         compareToList.add("6");
         assertTrue(returnValue.containsAll(compareToList));
     }
-    
+
     public void testInvalidNSPrefixExpression() {
         List returnValue = xpathHelper.evaluate("ns0:items/item[2]/partsList/partNumber/", rootObject);
         assertTrue(returnValue == null || returnValue.size() == 0);
@@ -265,7 +265,7 @@ public class XPathHelperTestCases extends SDOTestCase {
         String pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
     }
-        
+
     public void testBrokenExpression() {
         List returnValue = xpathHelper.evaluate("items//>item[name=-!james]", rootObject);
         assertTrue(returnValue == null || returnValue.size() == 0);
@@ -283,7 +283,7 @@ public class XPathHelperTestCases extends SDOTestCase {
         String pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
     }
-    
+
     public void testGetPartsListFromSecondItemViaDot() {
         List returnValue = xpathHelper.evaluate("items/item.1/partsList/partNumber", rootObject);
         assertTrue(returnValue != null && returnValue.size() != 0);

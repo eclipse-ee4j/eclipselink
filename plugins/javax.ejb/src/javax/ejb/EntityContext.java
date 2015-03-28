@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,12 +44,12 @@ import java.util.*;
 import java.security.Identity;
 
 /**
- * The EntityContext interface provides an instance with access to the 
- * container-provided runtime context of an entity bean instance. 
- * The container passes the EntityContext interface to an entity 
- * bean instance after the instance has been created. 
+ * The EntityContext interface provides an instance with access to the
+ * container-provided runtime context of an entity bean instance.
+ * The container passes the EntityContext interface to an entity
+ * bean instance after the instance has been created.
  *
- * <p> The EntityContext interface remains associated with the instance for 
+ * <p> The EntityContext interface remains associated with the instance for
  * the lifetime of the instance. Note that the information that the instance
  * obtains using the EntityContext interface (such as the result of the
  * getPrimaryKey() method) may change, as the container assigns the instance
@@ -60,7 +60,7 @@ import java.security.Identity;
 public interface EntityContext extends EJBContext
 {
     /**
-     * Obtain a reference to the EJB local object that is currently 
+     * Obtain a reference to the EJB local object that is currently
      * associated with the instance.
      *
      * <p> An instance of an entity bean can call this method only
@@ -83,7 +83,7 @@ public interface EntityContext extends EJBContext
     EJBLocalObject getEJBLocalObject() throws IllegalStateException;
 
     /**
-     * Obtain a reference to the EJB object that is currently associated with 
+     * Obtain a reference to the EJB object that is currently associated with
      * the instance.
      *
      * <p> An instance of an entity bean can call this method only

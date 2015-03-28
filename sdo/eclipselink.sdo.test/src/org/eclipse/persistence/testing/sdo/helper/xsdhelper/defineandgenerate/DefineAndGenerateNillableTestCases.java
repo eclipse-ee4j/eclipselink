@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.defineandgenerate;
 
 import commonj.sdo.Type;
@@ -45,14 +45,14 @@ public class DefineAndGenerateNillableTestCases extends XSDHelperDefineAndGenera
 
         Type intType = typeHelper.getType("commonj.sdo", "Int");
 
-        //DataObject customerTypeDO = defineType(uri, "CustomerType");        
+        //DataObject customerTypeDO = defineType(uri, "CustomerType");
         SDOType customerSDOType = new SDOType(uri, "CustomerType");
         customerSDOType.setInstanceClassName(NON_DEFAULT_JAVA_PACKAGE_NAME + ".CustomerType");
         SDOProperty prop = new SDOProperty(aHelperContext);
         prop.setName("myAttr");
         prop.setType(intType);
         //prop.setAttribute(true);
-        //prop.setElement(false);      
+        //prop.setElement(false);
         prop.setXsd(true);
         prop.setDefault(new Integer(0));
         prop.setXsdLocalName("myAttr");
@@ -94,7 +94,7 @@ public class DefineAndGenerateNillableTestCases extends XSDHelperDefineAndGenera
         //prop4.setAttribute(false);
         prop4.setXsd(true);
         prop4.setDefault(new Integer(0));
-        
+
         prop4.setContainment(true);
         //prop4.setElement(true);
         prop4.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);

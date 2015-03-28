@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -35,43 +35,43 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
  *  sensitive to updates to debug interface.
  */
 public class BlankDebugEventListener implements DebugEventListener {
-	public void enterRule(String grammarFileName, String ruleName) {}
-	public void exitRule(String grammarFileName, String ruleName) {}
-	public void enterAlt(int alt) {}
-	public void enterSubRule(int decisionNumber) {}
-	public void exitSubRule(int decisionNumber) {}
-	public void enterDecision(int decisionNumber) {}
-	public void exitDecision(int decisionNumber) {}
-	public void location(int line, int pos) {}
-	public void consumeToken(Token token) {}
-	public void consumeHiddenToken(Token token) {}
-	public void LT(int i, Token t) {}
-	public void mark(int i) {}
-	public void rewind(int i) {}
-	public void rewind() {}
-	public void beginBacktrack(int level) {}
-	public void endBacktrack(int level, boolean successful) {}
-	public void recognitionException(RecognitionException e) {}
-	public void beginResync() {}
-	public void endResync() {}
-	public void semanticPredicate(boolean result, String predicate) {}
-	public void commence() {}
-	public void terminate() {}
+    public void enterRule(String grammarFileName, String ruleName) {}
+    public void exitRule(String grammarFileName, String ruleName) {}
+    public void enterAlt(int alt) {}
+    public void enterSubRule(int decisionNumber) {}
+    public void exitSubRule(int decisionNumber) {}
+    public void enterDecision(int decisionNumber) {}
+    public void exitDecision(int decisionNumber) {}
+    public void location(int line, int pos) {}
+    public void consumeToken(Token token) {}
+    public void consumeHiddenToken(Token token) {}
+    public void LT(int i, Token t) {}
+    public void mark(int i) {}
+    public void rewind(int i) {}
+    public void rewind() {}
+    public void beginBacktrack(int level) {}
+    public void endBacktrack(int level, boolean successful) {}
+    public void recognitionException(RecognitionException e) {}
+    public void beginResync() {}
+    public void endResync() {}
+    public void semanticPredicate(boolean result, String predicate) {}
+    public void commence() {}
+    public void terminate() {}
 
-	// Tree parsing stuff
+    // Tree parsing stuff
 
-	public void consumeNode(Object t) {}
-	public void LT(int i, Object t) {}
+    public void consumeNode(Object t) {}
+    public void LT(int i, Object t) {}
 
-	// AST Stuff
+    // AST Stuff
 
-	public void nilNode(Object t) {}
-	public void errorNode(Object t) {}
-	public void createNode(Object t) {}
-	public void createNode(Object node, Token token) {}
-	public void becomeRoot(Object newRoot, Object oldRoot) {}
-	public void addChild(Object root, Object child) {}
-	public void setTokenBoundaries(Object t, int tokenStartIndex, int tokenStopIndex) {}
+    public void nilNode(Object t) {}
+    public void errorNode(Object t) {}
+    public void createNode(Object t) {}
+    public void createNode(Object node, Token token) {}
+    public void becomeRoot(Object newRoot, Object oldRoot) {}
+    public void addChild(Object root, Object child) {}
+    public void setTokenBoundaries(Object t, int tokenStartIndex, int tokenStopIndex) {}
 }
 
 

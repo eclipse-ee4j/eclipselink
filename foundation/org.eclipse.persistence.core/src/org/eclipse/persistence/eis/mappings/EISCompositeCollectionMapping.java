@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.eis.mappings;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -28,10 +28,10 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
 /**
- * <p>EIS Composite Collection Mappings map a java.util.Map or java.util.Collection of Java objects 
+ * <p>EIS Composite Collection Mappings map a java.util.Map or java.util.Collection of Java objects
  * to an EIS record in a privately owned, one-to-many relationship according to its descriptor's
  * record type.
- * 
+ *
  * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Record Type</th>
@@ -39,7 +39,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * </tr>
  * <tr>
  * <td headers="c1">Indexed</td>
- * <td headers="c2">Ordered collection of record elements.  The indexed record EIS format 
+ * <td headers="c2">Ordered collection of record elements.  The indexed record EIS format
  * enables Java class attribute values to be retrieved by position or index.</td>
  * </tr>
  * <tr>
@@ -52,11 +52,11 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * <td headers="c2">Record/Map representation of an XML DOM element.</td>
  * </tr>
  * </table>
- * 
+ *
  * @see org.eclipse.persistence.eis.EISDescriptor#useIndexedRecordFormat
  * @see org.eclipse.persistence.eis.EISDescriptor#useMappedRecordFormat
  * @see org.eclipse.persistence.eis.EISDescriptor#useXMLRecordFormat
- * 
+ *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
 public class EISCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements EISMapping {
@@ -85,7 +85,7 @@ public class EISCompositeCollectionMapping extends AbstractCompositeCollectionMa
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * The mapping is initialized with the given session. This mapping is fully initialized

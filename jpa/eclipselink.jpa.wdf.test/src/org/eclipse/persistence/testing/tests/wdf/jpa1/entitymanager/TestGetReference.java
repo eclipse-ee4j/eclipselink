@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -275,8 +275,8 @@ public class TestGetReference extends JPA1Base {
      * implementation, newAddress may be "hollow" > emp.setAddress(newAddress); > em.flush(); > > In which state is newAddress
      * upon flush? Is the entity > manager required to assert the existence of newAddress upon > flush? Again, this would
      * pervert the idea of lazy loading. > > Should we specifiy that checks on flush should not apply to > "hollow" entities?
-     * 
-     * 
+     *
+     *
      * The getReference API comment states that the existence assertion is not expected until the state of the entity is first
      * accessed, so no assertion should be expected in this case. However, we might want to ensure it is in the spec text, not
      * just a comment, and we might also want to qualify that the assertion may only occur when accessing non-identifier state.

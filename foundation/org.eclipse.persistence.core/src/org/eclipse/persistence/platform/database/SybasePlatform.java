@@ -1,25 +1,25 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/14/2011-2.3.1 Guy Pelletier 
+ *     09/14/2011-2.3.1 Guy Pelletier
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  *     02/02/2015-2.6.0 Rick Curtis
  *       - 458204: Fix stored procedure termination character.
- *     02/19/2015 - Rick Curtis  
+ *     02/19/2015 - Rick Curtis
  *       - 458877 : Add national character support
  *     02/23/2015-2.6 Dalia Abo Sheasha
  *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
  *     03/18/2015-2.6.0 Jody Grassel
  *       - 462511 : Update to SybasePlatform to support pessimistic locking
- *****************************************************************************/  
+ *****************************************************************************/
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
@@ -55,13 +55,13 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         this.pingSQL = "SELECT 1";
         this.storedProcedureTerminationToken = "\ngo";
     }
-    
+
     @Override
     public void initializeConnectionData(Connection connection) throws SQLException {
         DatabaseMetaData dmd = connection.getMetaData();
         this.driverSupportsNationalCharacterVarying = Helper.compareVersions(dmd.getDriverVersion(), "7.0.0") >= 0;
     }
-    
+
     protected Map getTypeStrings() {
         if (typeStrings == null) {
             initializeTypeStrings();
@@ -116,7 +116,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
             return super.getJDBCType(javaType);
         }
     }
-    
+
     /**
      * If using native SQL then print a byte[] as '0xFF...'
      */
@@ -255,8 +255,8 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("IMAGE", false));
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("TEXT", false));
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("IMAGE", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));        
-        
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));
+
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATETIME", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("DATETIME", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME", false));
@@ -400,7 +400,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * If the driver is known to be the DataDirec driver, and the value is not set, then set to true and return.
      */
     public boolean useJDBCStoredProcedureSyntax() {
-    
+
         if (useJDBCStoredProcedureSyntax == null) {
             useJDBCStoredProcedureSyntax = this.driverName != null && this.driverName.equals("Sybase");
         }
@@ -435,9 +435,9 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         super.initializePlatformOperators();
         addOperator(operatorOuterJoin());
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Today, "GETDATE"));
-        // GETDATE returns both date and time. It is not the perfect match for 
+        // GETDATE returns both date and time. It is not the perfect match for
         // ExpressionOperator.currentDate and ExpressionOperator.currentTime
-        // However, there is no known function on sql server that returns just 
+        // However, there is no known function on sql server that returns just
         // the date or just the time.
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.CurrentDate, "GETDATE"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.CurrentTime, "GETDATE"));
@@ -498,7 +498,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Use RTRIM(LTRIM(?)) function for trim.
@@ -515,7 +515,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Build Trim operator.
@@ -541,7 +541,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     public boolean isOutputAllowWithResultSet() {
         return false;
     }
-    
+
     @Override
     public boolean isSybase() {
         return true;
@@ -718,7 +718,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         result.bePrefix();
         return result;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether the platform supports identity.
@@ -738,7 +738,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     public boolean supportsDeleteOnCascade() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -746,14 +746,14 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     public boolean supportsGlobalTempTables() {
         return true;
     }
-     
+
     /**
      * INTERNAL:
      */
     @Override
     protected String getCreateTempTableSqlPrefix() {
         return "CREATE TABLE ";
-    }          
+    }
 
     /**
      * INTERNAL:
@@ -761,7 +761,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     @Override
     public DatabaseTable getTempTableForTable(DatabaseTable table) {
         return new DatabaseTable("#" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters(), getStartDelimiter(), getEndDelimiter());
-    }          
+    }
 
     /**
      * INTERNAL:
@@ -769,7 +769,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
                                                     Collection pkFields,
-                                                    Collection assignedFields) throws IOException 
+                                                    Collection assignedFields) throws IOException
     {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);
@@ -781,5 +781,5 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         writer.write(", ");
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, tableName, tempTableName, pkFields, this);
-    }          
+    }
 }

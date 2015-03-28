@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,66 +25,66 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
  */
 public final class NumericTypeComparator implements Comparator<IType> {
 
-	/**
-	 * The helper that gives access to the most common {@link IType types}.
-	 */
-	private final TypeHelper typeHelper;
+    /**
+     * The helper that gives access to the most common {@link IType types}.
+     */
+    private final TypeHelper typeHelper;
 
-	/**
-	 * Creates a new <code>NumericTypeComparator</code>.
-	 *
-	 * @param typeHelper The helper that gives access to the most common {@link IType types}
-	 */
-	public NumericTypeComparator(TypeHelper typeHelper) {
-		super();
-		this.typeHelper = typeHelper;
-	}
+    /**
+     * Creates a new <code>NumericTypeComparator</code>.
+     *
+     * @param typeHelper The helper that gives access to the most common {@link IType types}
+     */
+    public NumericTypeComparator(TypeHelper typeHelper) {
+        super();
+        this.typeHelper = typeHelper;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public int compare(IType type1, IType type2) {
+    /**
+     * {@inheritDoc}
+     */
+    public int compare(IType type1, IType type2) {
 
-		// Same type
-		if (type1.equals(type2)) {
-			return 0;
-		}
+        // Same type
+        if (type1.equals(type2)) {
+            return 0;
+        }
 
-		// Object type
-		IType type = typeHelper.objectType();
-		if (type1.equals(type)) return -1;
-		if (type2.equals(type)) return  1;
+        // Object type
+        IType type = typeHelper.objectType();
+        if (type1.equals(type)) return -1;
+        if (type2.equals(type)) return  1;
 
-		// Double
-		type = typeHelper.doubleType();
-		if (type1.equals(type)) return -1;
-		if (type2.equals(type)) return  1;
+        // Double
+        type = typeHelper.doubleType();
+        if (type1.equals(type)) return -1;
+        if (type2.equals(type)) return  1;
 
-		// Float
-		type = typeHelper.floatType();
-		if (type1.equals(type)) return -1;
-		if (type2.equals(type)) return  1;
+        // Float
+        type = typeHelper.floatType();
+        if (type1.equals(type)) return -1;
+        if (type2.equals(type)) return  1;
 
-		// BigDecimal
-		type = typeHelper.bigDecimal();
-		if (type1.equals(type)) return -1;
-		if (type2.equals(type)) return  1;
+        // BigDecimal
+        type = typeHelper.bigDecimal();
+        if (type1.equals(type)) return -1;
+        if (type2.equals(type)) return  1;
 
-		// BigInteger
-		type = typeHelper.bigInteger();
-		if (type1.equals(type)) return -1;
-		if (type2.equals(type)) return  1;
+        // BigInteger
+        type = typeHelper.bigInteger();
+        if (type1.equals(type)) return -1;
+        if (type2.equals(type)) return  1;
 
-		// Long
-		type = typeHelper.longType();
-		if (type1.equals(type)) return -1;
-		if (type2.equals(type)) return  1;
+        // Long
+        type = typeHelper.longType();
+        if (type1.equals(type)) return -1;
+        if (type2.equals(type)) return  1;
 
-		// Integer
-		type = typeHelper.integerType();
-		if (type1.equals(type)) return -1;
-		if (type2.equals(type)) return  1;
+        // Integer
+        type = typeHelper.integerType();
+        if (type1.equals(type)) return -1;
+        if (type2.equals(type)) return  1;
 
-		return 1;
-	}
+        return 1;
+    }
 }

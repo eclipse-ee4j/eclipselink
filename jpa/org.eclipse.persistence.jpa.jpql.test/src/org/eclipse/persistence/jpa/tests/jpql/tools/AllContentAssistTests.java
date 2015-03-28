@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,61 +36,61 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 public final class AllContentAssistTests {
 
-	private AllContentAssistTests() {
-		super();
-	}
+    private AllContentAssistTests() {
+        super();
+    }
 
-	@SuiteClasses({
-		DefaultContentAssistTest.class,
-		DefaultContentAssistExtensionTest.class,
-		DefaultDefaultContentAssistExtensionTest.class
-	})
-	@RunWith(JPQLTestRunner.class)
-	public static class AllDefaultContentAssistTests {
+    @SuiteClasses({
+        DefaultContentAssistTest.class,
+        DefaultContentAssistExtensionTest.class,
+        DefaultDefaultContentAssistExtensionTest.class
+    })
+    @RunWith(JPQLTestRunner.class)
+    public static class AllDefaultContentAssistTests {
 
-		private AllDefaultContentAssistTests() {
-			super();
-		}
+        private AllDefaultContentAssistTests() {
+            super();
+        }
 
-		private static JPQLQueryContext buildJPQLQueryContext2_0() {
-			return new DefaultJPQLQueryContext(JPQLGrammar2_0.instance());
-		}
+        private static JPQLQueryContext buildJPQLQueryContext2_0() {
+            return new DefaultJPQLQueryContext(JPQLGrammar2_0.instance());
+        }
 
-		private static JPQLQueryContext buildJPQLQueryContext2_1() {
-			return new DefaultJPQLQueryContext(JPQLGrammar2_1.instance());
-		}
+        private static JPQLQueryContext buildJPQLQueryContext2_1() {
+            return new DefaultJPQLQueryContext(JPQLGrammar2_1.instance());
+        }
 
-		@JPQLQueryHelperTestHelper
-		static AbstractJPQLQueryHelper[] buildJPQLQueryHelpers() {
-			return new AbstractJPQLQueryHelper[] {
-				new DefaultJPQLQueryHelper(buildJPQLQueryContext2_0()),
-				new DefaultJPQLQueryHelper(buildJPQLQueryContext2_1())
-			};
-		}
-	}
+        @JPQLQueryHelperTestHelper
+        static AbstractJPQLQueryHelper[] buildJPQLQueryHelpers() {
+            return new AbstractJPQLQueryHelper[] {
+                new DefaultJPQLQueryHelper(buildJPQLQueryContext2_0()),
+                new DefaultJPQLQueryHelper(buildJPQLQueryContext2_1())
+            };
+        }
+    }
 
-	@SuiteClasses({
-		EclipseLinkContentAssistTest2_4.class,
-		EclipseLinkContentAssistTest2_5.class,
-		EclipseLinkContentAssistExtensionTest.class,
-		EclipseLinkEclipseLinkContentAssistExtensionTest.class
-	})
-	@RunWith(JPQLTestRunner.class)
-	public static class AllEclipseLinkContentAssistTests {
+    @SuiteClasses({
+        EclipseLinkContentAssistTest2_4.class,
+        EclipseLinkContentAssistTest2_5.class,
+        EclipseLinkContentAssistExtensionTest.class,
+        EclipseLinkEclipseLinkContentAssistExtensionTest.class
+    })
+    @RunWith(JPQLTestRunner.class)
+    public static class AllEclipseLinkContentAssistTests {
 
-		private AllEclipseLinkContentAssistTests() {
-			super();
-		}
+        private AllEclipseLinkContentAssistTests() {
+            super();
+        }
 
-		private static JPQLQueryContext buildJPQLQueryContext() {
-			return new EclipseLinkJPQLQueryContext(DefaultEclipseLinkJPQLGrammar.instance());
-		}
+        private static JPQLQueryContext buildJPQLQueryContext() {
+            return new EclipseLinkJPQLQueryContext(DefaultEclipseLinkJPQLGrammar.instance());
+        }
 
-		@JPQLQueryHelperTestHelper
-		static AbstractJPQLQueryHelper[] buildJPQLQueryHelpers() {
-			return new AbstractJPQLQueryHelper[] {
-				new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext())
-			};
-		}
-	}
+        @JPQLQueryHelperTestHelper
+        static AbstractJPQLQueryHelper[] buildJPQLQueryHelpers() {
+            return new AbstractJPQLQueryHelper[] {
+                new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext())
+            };
+        }
+    }
 }

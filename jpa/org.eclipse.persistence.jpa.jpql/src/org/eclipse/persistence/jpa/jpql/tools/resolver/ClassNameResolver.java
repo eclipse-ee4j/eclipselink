@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,43 +25,43 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration;
  */
 public class ClassNameResolver extends Resolver {
 
-	/**
-	 * The fully qualified name of the type.
-	 */
-	private final String className;
+    /**
+     * The fully qualified name of the type.
+     */
+    private final String className;
 
-	/**
-	 * Creates a new <code>ClassNameResolver</code>.
-	 *
-	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
-	 * @param className The fully qualified name of the type
-	 */
-	public ClassNameResolver(Resolver parent, String className) {
-		super(parent);
-		this.className = className;
-	}
+    /**
+     * Creates a new <code>ClassNameResolver</code>.
+     *
+     * @param parent The parent {@link Resolver}, which is never <code>null</code>
+     * @param className The fully qualified name of the type
+     */
+    public ClassNameResolver(Resolver parent, String className) {
+        super(parent);
+        this.className = className;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected IType buildType() {
-		return getType(className);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected IType buildType() {
+        return getType(className);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ITypeDeclaration buildTypeDeclaration() {
-		return getType().getTypeDeclaration();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ITypeDeclaration buildTypeDeclaration() {
+        return getType().getTypeDeclaration();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return className;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return className;
+    }
 }

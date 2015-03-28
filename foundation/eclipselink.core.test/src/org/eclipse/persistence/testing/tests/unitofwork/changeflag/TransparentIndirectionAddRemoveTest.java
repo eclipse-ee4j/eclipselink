@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork.changeflag;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -28,7 +28,7 @@ import org.eclipse.persistence.testing.models.relationshipmaintenance.SalesPerso
 public class TransparentIndirectionAddRemoveTest extends TransactionalTestCase {
 
     private Boolean lazyInstantiationForSalesPeople = null;
-    
+
     public TransparentIndirectionAddRemoveTest() {
         setDescription("Test the add/remove optimization of indirect collections with change tracking.");
     }
@@ -38,7 +38,7 @@ public class TransparentIndirectionAddRemoveTest extends TransactionalTestCase {
         lazyInstantiationForSalesPeople = mapping.shouldUseLazyInstantiationForIndirectCollection();
         mapping.setUseLazyInstantiationForIndirectCollection(true);
     }
-    
+
     public void test() {
         testAddRemove();
         testSetUnset();
@@ -46,7 +46,7 @@ public class TransparentIndirectionAddRemoveTest extends TransactionalTestCase {
 
     public void testAddRemove() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        FieldOffice office = 
+        FieldOffice office =
             (FieldOffice)uow.readObject(FieldOffice.class, new ExpressionBuilder().get("location").get("city").equal("Toronto"));
 
         SalesPerson person = new SalesPerson();
@@ -92,7 +92,7 @@ public class TransparentIndirectionAddRemoveTest extends TransactionalTestCase {
 
     public void testSetUnset() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        FieldOffice office = 
+        FieldOffice office =
             (FieldOffice)uow.readObject(FieldOffice.class, new ExpressionBuilder().get("location").get("city").equal("Toronto"));
 
         SalesPerson person = new SalesPerson();
@@ -135,10 +135,10 @@ public class TransparentIndirectionAddRemoveTest extends TransactionalTestCase {
             throwError("Person not removed in cache.");
         }
     }
-    
+
     public void reset(){
         CollectionMapping mapping = (CollectionMapping)getSession().getClassDescriptor(FieldOffice.class).getMappingForAttributeName("salespeople");
         mapping.setUseLazyInstantiationForIndirectCollection(lazyInstantiationForSalesPeople);
     }
-    
+
 }

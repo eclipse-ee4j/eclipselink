@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 *******************************************************************************
- Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ Copyright (c) 1998, 2015 Oracle. All rights reserved.
  This program and the accompanying materials are made available under the
  terms of the Eclipse Public License v1.0, which accompanies this distribution
  and is available at http://www.eclipse.org/legal/epl-v10.html.
@@ -11,9 +11,9 @@
      tware - update version number to 2.0
      pkrogh- update version number to 2.1
      agoerler - add Net weaver support
-*****************************************************************************/  
+*****************************************************************************/
 -->
-<!-- 
+<!--
 
 XML Schema definition for the Eclipse Persistence Services Project Session Configuration file. Instances
 of this file are typically located as: 'META-INF/sessions.xml'
@@ -800,26 +800,26 @@ of this file are typically located as: 'META-INF/sessions.xml'
                             <xsd:group ref="struct-converters" />
                         </xsd:complexType>
                     </xsd:element>
-					<xsd:element name="connection-health-validated-on-error" type="xsd:boolean" minOccurs="0">
-						<xsd:annotation>
-							<xsd:documentation>If true will cause EclipseLink to ping database to determine if an SQLException was cause by a communication failure</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element name="query-retry-attempt-count" type="xsd:integer" minOccurs="0">
-						<xsd:annotation>
-							<xsd:documentation>Configure the number of attempts EclipseLink will make if EclipseLink is attempting to retry a query.</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element name="delay-between-reconnect-attempts" type="xsd:integer" minOccurs="0">
-						<xsd:annotation>
-							<xsd:documentation>Configure the time in miliseconds that EclipseLink will wait between attempts to reconnect if EclipseLink is attempting to retry a query.</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element name="ping-sql" type="xsd:string" minOccurs="0">
-						<xsd:annotation>
-							<xsd:documentation>Override the platform specific SQL that EclipseLink will issue to a connection to determine if the connection is still live.</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
+                    <xsd:element name="connection-health-validated-on-error" type="xsd:boolean" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>If true will cause EclipseLink to ping database to determine if an SQLException was cause by a communication failure</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="query-retry-attempt-count" type="xsd:integer" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>Configure the number of attempts EclipseLink will make if EclipseLink is attempting to retry a query.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="delay-between-reconnect-attempts" type="xsd:integer" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>Configure the time in miliseconds that EclipseLink will wait between attempts to reconnect if EclipseLink is attempting to retry a query.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="ping-sql" type="xsd:string" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>Override the platform specific SQL that EclipseLink will issue to a connection to determine if the connection is still live.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
@@ -859,25 +859,25 @@ of this file are typically located as: 'META-INF/sessions.xml'
         </xsd:complexContent>
     </xsd:complexType>
     <xsd:complexType name="xml-login">
-    	<xsd:annotation>
-    		<xsd:documentation>
-    			Defines login and platform type to be used
-    		</xsd:documentation>
-    	</xsd:annotation>
-    	<xsd:complexContent>
-    		<xsd:extension base="login">
-    			<xsd:sequence>
-    				<xsd:element name="equal-namespace-resolvers"
-    					type="xsd:boolean" maxOccurs="1" minOccurs="0">
-    				</xsd:element>
-    				<xsd:element name="document-preservation-policy"
-    					maxOccurs="1" minOccurs="0"
-    					type="document-preservation-policy">
+        <xsd:annotation>
+            <xsd:documentation>
+                Defines login and platform type to be used
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="login">
+                <xsd:sequence>
+                    <xsd:element name="equal-namespace-resolvers"
+                        type="xsd:boolean" maxOccurs="1" minOccurs="0">
+                    </xsd:element>
+                    <xsd:element name="document-preservation-policy"
+                        maxOccurs="1" minOccurs="0"
+                        type="document-preservation-policy">
 
-    				</xsd:element>
-    			</xsd:sequence>
-    		</xsd:extension>
-    	</xsd:complexContent>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
     <xsd:complexType name="connection-pool">
         <xsd:annotation>
@@ -1291,7 +1291,7 @@ of this file are typically located as: 'META-INF/sessions.xml'
                     <xsd:documentation>
                         This element is an optional element of
                         jndi-naming-service. It determines whether the
-                        URL for naming service should be changed. 
+                        URL for naming service should be changed.
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
@@ -1312,7 +1312,7 @@ of this file are typically located as: 'META-INF/sessions.xml'
                         This element is an optional element of
                         jndi-naming-service. It determines whether the
                         initial context factory class for naming service
-                        should be changed. 
+                        should be changed.
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
@@ -1505,99 +1505,99 @@ of this file are typically located as: 'META-INF/sessions.xml'
 
     <xsd:complexType name="document-preservation-policy">
         <xsd:annotation>
-        	<xsd:documentation>
-        		This element specifies which document preservation
-        		strategy will be used.
-        	</xsd:documentation>
+            <xsd:documentation>
+                This element specifies which document preservation
+                strategy will be used.
+            </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
-    		<xsd:element name="node-ordering-policy"
-    			type="node-ordering-policy" maxOccurs="1" minOccurs="0">
-    		</xsd:element>
-    	</xsd:sequence>
+            <xsd:element name="node-ordering-policy"
+                type="node-ordering-policy" maxOccurs="1" minOccurs="0">
+            </xsd:element>
+        </xsd:sequence>
     </xsd:complexType>
 
     <xsd:complexType name="node-ordering-policy">
-    	<xsd:annotation>
-    		<xsd:documentation>
-    			This element specifies which node ordering strategy will
-    			be used.
-    		</xsd:documentation>
-    	</xsd:annotation></xsd:complexType>
+        <xsd:annotation>
+            <xsd:documentation>
+                This element specifies which node ordering strategy will
+                be used.
+            </xsd:documentation>
+        </xsd:annotation></xsd:complexType>
 
     <xsd:complexType
-    	name="descriptor-level-document-preservation-policy">
+        name="descriptor-level-document-preservation-policy">
         <xsd:annotation>
-        	<xsd:documentation>
-        		An implementation of DocumentPreservation Policy that
-        		accesses the session cache to store Objects and their
-        		associated nodes.
-        	</xsd:documentation>
+            <xsd:documentation>
+                An implementation of DocumentPreservation Policy that
+                accesses the session cache to store Objects and their
+                associated nodes.
+            </xsd:documentation>
         </xsd:annotation>
         <xsd:complexContent>
-    		<xsd:extension base="document-preservation-policy"></xsd:extension>
-    	</xsd:complexContent>
+            <xsd:extension base="document-preservation-policy"></xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
 
     <xsd:complexType name="no-document-preservation-policy">
         <xsd:annotation>
-        	<xsd:documentation>
-        		A DocumentPreservationPolicy to indicate that no
-        		document preservation work should be done.
-        	</xsd:documentation>
+            <xsd:documentation>
+                A DocumentPreservationPolicy to indicate that no
+                document preservation work should be done.
+            </xsd:documentation>
         </xsd:annotation>
         <xsd:complexContent>
-    		<xsd:extension base="document-preservation-policy"></xsd:extension>
-    	</xsd:complexContent>
+            <xsd:extension base="document-preservation-policy"></xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
 
     <xsd:complexType name="xml-binder-policy">
         <xsd:annotation>
-        	<xsd:documentation>
-        		An implementation of DocumentPreservationPolicy that
-        		maintains bidirectional relationships between Java
-        		Objects and the XMLNodes they originated from.
-        	</xsd:documentation>
+            <xsd:documentation>
+                An implementation of DocumentPreservationPolicy that
+                maintains bidirectional relationships between Java
+                Objects and the XMLNodes they originated from.
+            </xsd:documentation>
         </xsd:annotation>
         <xsd:complexContent>
-    		<xsd:extension base="document-preservation-policy"></xsd:extension>
-    	</xsd:complexContent>
+            <xsd:extension base="document-preservation-policy"></xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
 
     <xsd:complexType name="append-new-elements-ordering-policy">
         <xsd:annotation>
-        	<xsd:documentation>
-        		An implementation of NodeOrderingPolicy that simply
-        		appends the new child element to the parent.
-        	</xsd:documentation>
+            <xsd:documentation>
+                An implementation of NodeOrderingPolicy that simply
+                appends the new child element to the parent.
+            </xsd:documentation>
         </xsd:annotation>
         <xsd:complexContent>
-    		<xsd:extension base="node-ordering-policy"></xsd:extension>
-    	</xsd:complexContent>
+            <xsd:extension base="node-ordering-policy"></xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
 
     <xsd:complexType name="ignore-new-elements-ordering-policy">
         <xsd:annotation>
-        	<xsd:documentation>
-        		An implementation of NodeOrderingPolicy that ignores any
-        		new elements when updating a cached document.
-        	</xsd:documentation>
+            <xsd:documentation>
+                An implementation of NodeOrderingPolicy that ignores any
+                new elements when updating a cached document.
+            </xsd:documentation>
         </xsd:annotation>
         <xsd:complexContent>
-    		<xsd:extension base="node-ordering-policy"></xsd:extension>
-    	</xsd:complexContent>
+            <xsd:extension base="node-ordering-policy"></xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
 
     <xsd:complexType name="relative-position-ordering-policy">
         <xsd:annotation>
-        	<xsd:documentation>
-        		An implementation of NodeOrderingPolicy that adds new
-        		elements to an XML Document based on the last updated
-        		sibling in their context.
-        	</xsd:documentation>
+            <xsd:documentation>
+                An implementation of NodeOrderingPolicy that adds new
+                elements to an XML Document based on the last updated
+                sibling in their context.
+            </xsd:documentation>
         </xsd:annotation>
         <xsd:complexContent>
-    		<xsd:extension base="node-ordering-policy"></xsd:extension>
-    	</xsd:complexContent>
+            <xsd:extension base="node-ordering-policy"></xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
 </xsd:schema>

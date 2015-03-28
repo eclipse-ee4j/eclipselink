@@ -1,26 +1,26 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     06/20/2008-1.0 Guy Pelletier 
+ *     06/20/2008-1.0 Guy Pelletier
  *       - 232975: Failure when attribute type is generic
- *     09/23/2008-1.1 Guy Pelletier 
+ *     09/23/2008-1.1 Guy Pelletier
  *       - 241651: JPA 2.0 Access Type support
- *     01/28/2009-2.0 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier
  *       - 248293: JPA 2.0 Element Collections (part 1)
- *     02/25/2009-2.0 Guy Pelletier 
+ *     02/25/2009-2.0 Guy Pelletier
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     06/02/2009-2.0 Guy Pelletier 
+ *     06/02/2009-2.0 Guy Pelletier
  *       - 278768: JPA 2.0 Association Override Join Table
- *     06/09/2009-2.0 Guy Pelletier 
+ *     06/09/2009-2.0 Guy Pelletier
  *       - 249037: JPA 2.0 persisting list item index
- *     04/09/2012-2.4 Guy Pelletier 
+ *     04/09/2012-2.4 Guy Pelletier
  *       - 374377: OrderBy with ElementCollection doesn't work
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
@@ -66,12 +66,12 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
     @Column(name="ACCLAIM")
     @OrderBy("ASC")
     private Collection<X> acclaims;
-    
+
     // Let the key column default. Should default to AWARDS_KEY
     // A keyColumn specification is tested in org.eclipse.persistence.testing.models.jpa.advanced.Buyer
     @BasicMap(valueColumn=@Column(name="AWARD_CODE"))
     private Map<Y, Z> awards;
-    
+
     // An element collection representing a direct collection mapping.
     @ElementCollection
     @Column(name="DESIGNATION")
@@ -80,7 +80,7 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
     // CollectionTable will default in this case, Entity name + "_" + attribute name
     // JoinColumns will default in this case which are different from BasicCollection collection table default
     private List<String> designations;
-    
+
     // An element collection representing an aggregate collection mapping.
     @ElementCollection
     // CollectionTable will default
@@ -91,9 +91,9 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
     @AttributeOverride(name="description", column=@Column(name="DESCRIP"))
     @OrderColumn(name="ORDER_COLUMN")
     private List<Record> records;
-    
+
     @Embedded
-    // Expert beer consumer will use these overrides, whereas, novice beer 
+    // Expert beer consumer will use these overrides, whereas, novice beer
     // consumer will override them by defining class level overrides.
     @AttributeOverride(name="details", column=@Column(name="ACCREDIDATION"))
     @AssociationOverrides({
@@ -103,10 +103,10 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
         @AssociationOverride(name="officials", joinColumns=@JoinColumn(name="FK_EBC_ID"))
     })
     private Accredidation accredidation;
-    
+
     @Transient
     private int iq;
-    
+
     // Expert beer consumer will use the join table as is here, whereas, novice
     // beer consumer will provide an association override.
     @ManyToMany(cascade=ALL)
@@ -117,24 +117,24 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
     )
     @OrderColumn(name="ORDER_COLUMN")
     private List<Committee> committees;
-    
+
     protected RatedBeerConsumer() {
         super();
         acclaims = new Vector<X>();
         awards = new Hashtable<Y, Z>();
         designations = new ArrayList<String>();
         records = new ArrayList<Record>();
-        committees = new ArrayList<Committee>(); 
+        committees = new ArrayList<Committee>();
     }
-    
+
     public Collection<X> getAcclaims() {
         return acclaims;
     }
-    
+
     public Accredidation getAccredidation() {
         return accredidation;
     }
-    
+
     public Map<Y, Z> getAwards() {
         return awards;
     }
@@ -142,30 +142,30 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
     public List<Committee> getCommittees() {
         return committees;
     }
-    
+
     public List<String> getDesignations() {
         return designations;
     }
-    
+
     @Basic
     @Column(name="CONSUMER_IQ")
     @Access(PROPERTY)
     public int getIQ() {
         return iq;
     }
-    
+
     public List<Record> getRecords() {
         return records;
     }
-    
+
     public void setAcclaims(Collection<X> acclaims) {
         this.acclaims = acclaims;
     }
-    
+
     public void setAccredidation(Accredidation accredidation) {
         this.accredidation = accredidation;
     }
-    
+
     public void setAwards(Map<Y, Z> awards) {
         this.awards = awards;
     }
@@ -173,11 +173,11 @@ public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
     public void setCommittees(List<Committee> committees) {
         this.committees = committees;
     }
-    
+
     public void setDesignations(List<String> designations) {
         this.designations = designations;
     }
-    
+
     public void setIQ(int iq) {
         this.iq = iq;
     }

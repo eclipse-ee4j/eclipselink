@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,23 +26,23 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 @SuppressWarnings("nls")
 public final class ColumnExpressionTest extends AbstractFunctionExpressionTest {
 
-	@Override
-	protected String functionName(int index) {
-		switch (index) {
-			case 0:  return "'EMP_ID'";
-			case 1:  return "'NAME";
-			case 2:  return "''";
-			default: return "'FIRST_NAME'";
-		}
-	}
+    @Override
+    protected String functionName(int index) {
+        switch (index) {
+            case 0:  return "'EMP_ID'";
+            case 1:  return "'NAME";
+            case 2:  return "''";
+            default: return "'FIRST_NAME'";
+        }
+    }
 
-	@Override
-	protected String identifier(int index) {
-		return Expression.COLUMN;
-	}
+    @Override
+    protected String identifier(int index) {
+        return Expression.COLUMN;
+    }
 
-	@Override
-	protected boolean isExpression_14_Bad() {
-		return true;
-	}
+    @Override
+    protected boolean isExpression_14_Bad() {
+        return true;
+    }
 }

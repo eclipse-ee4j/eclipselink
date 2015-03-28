@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     06/30/2011-2.3.1 Guy Pelletier 
- *       - 341940: Add disable/enable allowing native queries 
- ******************************************************************************/  
+ *     06/30/2011-2.3.1 Guy Pelletier
+ *       - 341940: Add disable/enable allowing native queries
+ ******************************************************************************/
 package org.eclipse.persistence.sequencing;
 
 import java.util.Vector;
@@ -43,14 +43,14 @@ public class QuerySequence extends StandardSequence {
     public QuerySequence() {
         super();
     }
-    
+
     /**
      * Create a new sequence with the name.
      */
     public QuerySequence(String name) {
         super(name);
     }
-    
+
     /**
      * Create a new sequence with the name and sequence pre-allocation size.
      */
@@ -61,7 +61,7 @@ public class QuerySequence extends StandardSequence {
     public QuerySequence(String name, int size, int initialValue) {
         super(name, size, initialValue);
     }
-    
+
     public QuerySequence(boolean shouldAcquireValueAfterInsert, boolean shouldUseTransaction) {
         super();
         setShouldAcquireValueAfterInsert(shouldAcquireValueAfterInsert);
@@ -79,13 +79,13 @@ public class QuerySequence extends StandardSequence {
         setShouldAcquireValueAfterInsert(shouldAcquireValueAfterInsert);
         setShouldUseTransaction(shouldUseTransaction);
     }
-    
-    public QuerySequence(String name, int size, int initialValue, 
+
+    public QuerySequence(String name, int size, int initialValue,
             boolean shouldAcquireValueAfterInsert, boolean shouldUseTransaction) {
         super(name, size, initialValue);
         setShouldAcquireValueAfterInsert(shouldAcquireValueAfterInsert);
         setShouldUseTransaction(shouldUseTransaction);
-    }    
+    }
 
     public boolean equals(Object obj) {
         if (obj instanceof QuerySequence && super.equals(obj)) {

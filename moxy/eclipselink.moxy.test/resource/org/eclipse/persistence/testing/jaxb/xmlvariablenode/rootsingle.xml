@@ -2,6 +2,6 @@
    <name>theRootName</name>
    <thinga>
       <thingName>thinga</thingName>
-	  <thingValue>thingavalue</thingValue>
+      <thingValue>thingavalue</thingValue>
    </thinga>
 </root>

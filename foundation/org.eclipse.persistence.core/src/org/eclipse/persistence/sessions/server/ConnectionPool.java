@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.server;
 
 import java.util.*;
@@ -28,7 +28,7 @@ import org.eclipse.persistence.logging.SessionLog;
  */
 public class ConnectionPool {
     protected static final String MONITOR_HEADER = "Info:ConnectionPool:";
-    
+
     protected boolean isConnected;
     protected int maxNumberOfConnections;
     protected int minNumberOfConnections;
@@ -92,7 +92,7 @@ public class ConnectionPool {
         this.failoverConnectionPools = new ArrayList<String>();
         resetConnections();
     }
-    
+
     /**
      * INTERNAL:
      * The connection pool is dead fail over to the fail-over pool.
@@ -116,9 +116,9 @@ public class ConnectionPool {
                 }
             }
             throw QueryException.failoverFailed(this.name);
-        }        
+        }
     }
-    
+
     /**
      * INTERNAL:
      * Wait until a connection is available and allocate the connection for the client.
@@ -242,7 +242,7 @@ public class ConnectionPool {
     public Login getLogin() {
         return login;
     }
-    
+
     /**
      * PUBLIC:
      * Return the maximum number of connections allowed.
@@ -368,9 +368,9 @@ public class ConnectionPool {
      * This method is called to indicate that all available connections should be checked.
      */
     public void setCheckConnections() {
-        this.checkConnections = true; 
+        this.checkConnections = true;
     }
-    
+
     /**
      *  INTERNAL:
      *  Set this list of connections available
@@ -413,7 +413,7 @@ public class ConnectionPool {
     public int getInitialNumberOfConnections() {
         return initialNumberOfConnections;
     }
-    
+
     /**
      * PUBLIC:
      * Set the initial number of connections allowed.
@@ -516,7 +516,7 @@ public class ConnectionPool {
         Object[] args = { Integer.valueOf(getMinNumberOfConnections()), Integer.valueOf(getMaxNumberOfConnections()) };
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("min_max", args);
     }
-    
+
     /**
      * PUBLIC:
      * Return the time in milliseconds to wait for a available connection.
@@ -527,7 +527,7 @@ public class ConnectionPool {
     public int getWaitTimeout() {
         return waitTimeout;
     }
-    
+
     /**
      * PUBLIC:
      * Set the time in milliseconds to wait for an available connection.
@@ -538,7 +538,7 @@ public class ConnectionPool {
     public void setWaitTimeout(int waitTimeout) {
         this.waitTimeout = waitTimeout;
     }
-    
+
     /**
      * ADVANCED:
      * Return if the connection pool's database is down, and failover should be used.

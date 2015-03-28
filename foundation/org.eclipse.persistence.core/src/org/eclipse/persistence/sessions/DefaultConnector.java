@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
@@ -45,7 +45,7 @@ public class DefaultConnector implements Connector {
 
     /** Save whether we have switched to direct connect (sql.Driver.connect()) mode */
     private boolean connectDirectly = false;
-    
+
     /**
      * PUBLIC:
      * Construct a Connector with default settings
@@ -84,14 +84,14 @@ public class DefaultConnector implements Connector {
         if (this.driverClassName != null && this.driverClass == null) {
              this.loadDriverClass(session);
         }
-         
+
         String connectionString = this.getConnectionString();
         // verify if connection URL is not null and empty
         if(connectionString == null || connectionString.trim().equals("")) {
             throw DatabaseException.unableToAcquireConnectionFromDriverException(
                     this.driverClassName, null, connectionString);
         }
-        
+
         SQLException driverManagerException = null;
         if (this.shouldUseDriverManager(properties, session)) {
             try {
@@ -104,54 +104,54 @@ public class DefaultConnector implements Connector {
                 }
             }
         }
-        
+
         if (this.driverClass == null) {
             throw DatabaseException.sqlException(driverManagerException, (org.eclipse.persistence.internal.sessions.AbstractSession) session, true);
         }
-        
-        // try driver class directly 
+
+        // try driver class directly
         // Save secondary exception state and don't clear original exception
-		boolean wrongDriverExceptionOccurred = false;
-		try {
-			// A return of null indicates wrong type of driver, an SQLException means connection problems
-			Connection directConnection = this.directConnect(properties);
-			if (null == directConnection) {
-			    // This connection failed specifically because of a wrong or unknown driver
-			    if (null != driverManagerException) {
-					wrongDriverExceptionOccurred = true;
-					// Nest root exception
-					throw DatabaseException.unableToAcquireConnectionFromDriverException(driverManagerException,
-							getDriverClassName(), properties.getProperty("user"), getDatabaseURL());
-				} else {
-					throw DatabaseException.unableToAcquireConnectionFromDriverException(
-							getDriverClassName(), driverClass.getCanonicalName(), getDatabaseURL());
-				}
-			} else {
-				if (null != driverManagerException) {
-					// If this connection succeeded where the previous DriverManager connection failed - save state and continue
-					connectDirectly = true;
-				}
-			}
-			return directConnection;
-		} catch (DatabaseException directConnectException) {
-			if (driverManagerException != null && !wrongDriverExceptionOccurred) {
+        boolean wrongDriverExceptionOccurred = false;
+        try {
+            // A return of null indicates wrong type of driver, an SQLException means connection problems
+            Connection directConnection = this.directConnect(properties);
+            if (null == directConnection) {
+                // This connection failed specifically because of a wrong or unknown driver
+                if (null != driverManagerException) {
+                    wrongDriverExceptionOccurred = true;
+                    // Nest root exception
+                    throw DatabaseException.unableToAcquireConnectionFromDriverException(driverManagerException,
+                            getDriverClassName(), properties.getProperty("user"), getDatabaseURL());
+                } else {
+                    throw DatabaseException.unableToAcquireConnectionFromDriverException(
+                            getDriverClassName(), driverClass.getCanonicalName(), getDatabaseURL());
+                }
+            } else {
+                if (null != driverManagerException) {
+                    // If this connection succeeded where the previous DriverManager connection failed - save state and continue
+                    connectDirectly = true;
+                }
+            }
+            return directConnection;
+        } catch (DatabaseException directConnectException) {
+            if (driverManagerException != null && !wrongDriverExceptionOccurred) {
                 throw DatabaseException.sqlException(driverManagerException, (AbstractSession) session, true);
             } else {
                 throw directConnectException;
             }
         }
     }
-        
+
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Indicates whether DriverManager should be used.
-     * @return boolean 
+     * @return boolean
      */
      public boolean shouldUseDriverManager(Properties properties, Session session) {
          return  !connectDirectly && ((session == null) || session.getServerPlatform().shouldUseDriverManager());
      }
-     
+
     /**
      * INTERNAL:
      * Connect directly - without using DriverManager. Return the Connection.

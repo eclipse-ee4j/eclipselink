@@ -7,28 +7,28 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWQueryManage
 
 public final class MWCustomReadAllQuery extends MWAbstractCustomQuery {
 
-	//TopLink use only
-	private MWCustomReadAllQuery() {
-		super();
-	}
+    //TopLink use only
+    private MWCustomReadAllQuery() {
+        super();
+    }
 
-	MWCustomReadAllQuery(MWQueryManager queryManager) {
-		super(queryManager);
-	}
-	
-	// ******************* Static Methods *******************
+    MWCustomReadAllQuery(MWQueryManager queryManager) {
+        super(queryManager);
+    }
 
-	public static XMLDescriptor buildDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
+    // ******************* Static Methods *******************
 
-		descriptor.setJavaClass(MWCustomReadAllQuery.class);
-		descriptor.getDescriptorInheritancePolicy().setParentClass(MWAbstractCustomQuery.class);
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
 
-		return descriptor;
-	}
+        descriptor.setJavaClass(MWCustomReadAllQuery.class);
+        descriptor.getDescriptorInheritancePolicy().setParentClass(MWAbstractCustomQuery.class);
 
-	@Override
-	protected DatabaseQuery buildRuntimeQuery() {
-		return new ReadAllQuery();
-	}
+        return descriptor;
+    }
+
+    @Override
+    protected DatabaseQuery buildRuntimeQuery() {
+        return new ReadAllQuery();
+    }
 }

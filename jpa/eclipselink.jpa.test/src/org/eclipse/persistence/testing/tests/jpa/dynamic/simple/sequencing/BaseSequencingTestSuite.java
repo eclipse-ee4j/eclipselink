@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
@@ -45,11 +45,11 @@ public abstract class BaseSequencingTestSuite  {
     static final String TABLE_NAME = "SIMPLE_TABLE_SEQ";
     public static final String SEQ_TABLE_NAME = "TEST_SEQ";
     static final String ENTITY_TYPE = "Simple";
-    
+
     //test fixtures
     static EntityManagerFactory emf;
     static JPADynamicHelper helper;
-    
+
     @Test
     public void verifyConfig() throws Exception {
         Server session = JpaHelper.getServerSession(emf);
@@ -85,7 +85,7 @@ public abstract class BaseSequencingTestSuite  {
         DynamicTypeImpl simpleType = (DynamicTypeImpl)helper.getType(ENTITY_TYPE);
         DynamicEntity simpleInstance1 = createSimpleInstance(1);
         DynamicEntity simpleInstance2 = createSimpleInstance(2);
-        int simpleCount = 
+        int simpleCount =
             ((Number)em.createQuery("SELECT COUNT(o) FROM " + ENTITY_TYPE + " o").getSingleResult()).intValue();
         assertEquals(2, simpleCount);
         IdentityMapAccessor cache = helper.getSession().getIdentityMapAccessor();
@@ -117,5 +117,5 @@ public abstract class BaseSequencingTestSuite  {
         em.close();
         return simpleInstance;
     }
-    
+
 }

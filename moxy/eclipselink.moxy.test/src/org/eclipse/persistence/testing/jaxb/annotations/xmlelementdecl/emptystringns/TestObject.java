@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,24 +20,24 @@ import javax.xml.bind.annotation.XmlType;
 
 public class TestObject {
    private Object theValue;
-   
+
    public Object getTheValue() {
-	return theValue;
+    return theValue;
    }
 
    public void setTheValue(Object theValue) {
-	this.theValue = theValue;
+    this.theValue = theValue;
    }
 
 public boolean equals(Object o){
-	   if(o instanceof TestObject){
-		   if(theValue == null){
-			   return ((TestObject)o).theValue == null;
-		   }else{
-			 return theValue.equals(((TestObject)o).theValue);
-		   }
-	   }
-	   return false;
+       if(o instanceof TestObject){
+           if(theValue == null){
+               return ((TestObject)o).theValue == null;
+           }else{
+             return theValue.equals(((TestObject)o).theValue);
+           }
+       }
+       return false;
    }
-   
+
 }

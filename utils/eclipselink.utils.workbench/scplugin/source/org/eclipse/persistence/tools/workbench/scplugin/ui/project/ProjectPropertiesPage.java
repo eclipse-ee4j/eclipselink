@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -99,340 +99,340 @@ import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
  */
 public final class ProjectPropertiesPage extends TitledPropertiesPage
 {
-	/**
-	 * Creates a new <code>ProjectPropertiesPage</code>.
-	 *
-	 * @param node The user object of this page
-	 */
-	public ProjectPropertiesPage(WorkbenchContext context)
-	{
-		super(context);
-	}
+    /**
+     * Creates a new <code>ProjectPropertiesPage</code>.
+     *
+     * @param node The user object of this page
+     */
+    public ProjectPropertiesPage(WorkbenchContext context)
+    {
+        super(context);
+    }
 
-	/**
-	 * Creates a new <code>ActionListener</code> that will trigger a save as on
-	 * <code>ProjectNode</code> in order to change the location.
-	 *
-	 * @return A new <code>ActionListener</code>
-	 */
-	private ActionListener buildChangeLocationAction()
-	{
-		return new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				ProjectNode node = (ProjectNode) getNode();
-				node.saveAs(null, getWorkbenchContext());
-			}
-		};
-	}
+    /**
+     * Creates a new <code>ActionListener</code> that will trigger a save as on
+     * <code>ProjectNode</code> in order to change the location.
+     *
+     * @return A new <code>ActionListener</code>
+     */
+    private ActionListener buildChangeLocationAction()
+    {
+        return new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                ProjectNode node = (ProjectNode) getNode();
+                node.saveAs(null, getWorkbenchContext());
+            }
+        };
+    }
 
-	/**
-	 * Creates a new <code>PropertyValueModel</code> responsible to handle
-	 * {@link ClassRepository}.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildClasspathHolder()
-	{
-		return new TransformationPropertyValueModel(getSelectionHolder())
-		{
-			protected Object transform(Object value)
-			{
-				SCAdapter adapter = (SCAdapter) value;
-				return (value == null) ? null : adapter.getClassRepository();
-			}
-		};
-	}
+    /**
+     * Creates a new <code>PropertyValueModel</code> responsible to handle
+     * {@link ClassRepository}.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    private PropertyValueModel buildClasspathHolder()
+    {
+        return new TransformationPropertyValueModel(getSelectionHolder())
+        {
+            protected Object transform(Object value)
+            {
+                SCAdapter adapter = (SCAdapter) value;
+                return (value == null) ? null : adapter.getClassRepository();
+            }
+        };
+    }
 
-	/**
-	 * Creates the <code>ListValueModel</code> responsible to handle changes made
-	 * to the list of classpath entries.
-	 *
-	 * @return {@link ClasspathListAdapter}
-	 */
-	private ListValueModel buildClasspathListAdapter()
-	{
-		return new ClasspathListAdapter();
-	}
+    /**
+     * Creates the <code>ListValueModel</code> responsible to handle changes made
+     * to the list of classpath entries.
+     *
+     * @return {@link ClasspathListAdapter}
+     */
+    private ListValueModel buildClasspathListAdapter()
+    {
+        return new ClasspathListAdapter();
+    }
 
-	protected TopLinkSessionsAdapter getProject()
-	{
-		return (TopLinkSessionsAdapter) this.getSelectionHolder().getValue();
-	}
+    protected TopLinkSessionsAdapter getProject()
+    {
+        return (TopLinkSessionsAdapter) this.getSelectionHolder().getValue();
+    }
 
-	private ClasspathPanel.DefaultClasspathDirectoryHolder buildCurrentDirectoryHolder()
-	{
-		return new ClasspathPanel.DefaultClasspathDirectoryHolder()
-		{
-			public File getDefaultClasspathDirectory()
-			{
-				File projectSaveLocation = getProject().getSaveDirectory();
+    private ClasspathPanel.DefaultClasspathDirectoryHolder buildCurrentDirectoryHolder()
+    {
+        return new ClasspathPanel.DefaultClasspathDirectoryHolder()
+        {
+            public File getDefaultClasspathDirectory()
+            {
+                File projectSaveLocation = getProject().getSaveDirectory();
 
-				if (projectSaveLocation != null)
-				{
-					return projectSaveLocation;
-				}
+                if (projectSaveLocation != null)
+                {
+                    return projectSaveLocation;
+                }
 
-				String savedLocation = preferences().get(ClasspathPanel.MOST_RECENT_CLASSPATH_DIRECTORY_PREFERENCE, null);
+                String savedLocation = preferences().get(ClasspathPanel.MOST_RECENT_CLASSPATH_DIRECTORY_PREFERENCE, null);
 
-				if (savedLocation != null)
-				{
-					return new File(savedLocation);
-				}
+                if (savedLocation != null)
+                {
+                    return new File(savedLocation);
+                }
 
-				return FileTools.userHomeDirectory();
-			}
+                return FileTools.userHomeDirectory();
+            }
 
-			public void setDefaultClasspathDirectory(File defaultClasspathDirectory)
-			{
-				File projectSaveLocation = getProject().getSaveDirectory();
+            public void setDefaultClasspathDirectory(File defaultClasspathDirectory)
+            {
+                File projectSaveLocation = getProject().getSaveDirectory();
 
-				// Do not persist the user home
-				if (defaultClasspathDirectory.equals(FileTools.userHomeDirectory()))
-				{
-					defaultClasspathDirectory = null;
-				}
+                // Do not persist the user home
+                if (defaultClasspathDirectory.equals(FileTools.userHomeDirectory()))
+                {
+                    defaultClasspathDirectory = null;
+                }
 
-				// Do not persist the project save location
-				else if ((projectSaveLocation != null) && projectSaveLocation.equals(defaultClasspathDirectory))
-				{
-					defaultClasspathDirectory = null;
-				}
+                // Do not persist the project save location
+                else if ((projectSaveLocation != null) && projectSaveLocation.equals(defaultClasspathDirectory))
+                {
+                    defaultClasspathDirectory = null;
+                }
 
-				// Persist the new location or simply clear it
-				if (defaultClasspathDirectory != null)
-				{
-					preferences().put(ClasspathPanel.MOST_RECENT_CLASSPATH_DIRECTORY_PREFERENCE, defaultClasspathDirectory.getPath());
-				}
-				else
-				{
-					preferences().remove(ClasspathPanel.MOST_RECENT_CLASSPATH_DIRECTORY_PREFERENCE);
-				}
-			}
-		};
-	}
+                // Persist the new location or simply clear it
+                if (defaultClasspathDirectory != null)
+                {
+                    preferences().put(ClasspathPanel.MOST_RECENT_CLASSPATH_DIRECTORY_PREFERENCE, defaultClasspathDirectory.getPath());
+                }
+                else
+                {
+                    preferences().remove(ClasspathPanel.MOST_RECENT_CLASSPATH_DIRECTORY_PREFERENCE);
+                }
+            }
+        };
+    }
 
-	protected DisplayableAdapter buildDisplayableAdapter()
-	{
-		return new ProjectDisplayableTranslatorAdapter(resourceRepository());
-	}
+    protected DisplayableAdapter buildDisplayableAdapter()
+    {
+        return new ProjectDisplayableTranslatorAdapter(resourceRepository());
+    }
 
-	/**
-	 * Creates the <code>DocumentAdapter</code> that keeps the value from the
-	 * text field in sync with the sessions.xml file name and vice versa.
-	 *
-	 * @return A new <code>DocumentAdapter</code>
-	 */
-	private Document buildLocationDocumentAdapter()
-	{
-		TransformationPropertyValueModel transformation = new TransformationPropertyValueModel(buildLocationHolder())
-		{
-			protected Object transform(Object value)
-			{
-				File file = (File) value;
+    /**
+     * Creates the <code>DocumentAdapter</code> that keeps the value from the
+     * text field in sync with the sessions.xml file name and vice versa.
+     *
+     * @return A new <code>DocumentAdapter</code>
+     */
+    private Document buildLocationDocumentAdapter()
+    {
+        TransformationPropertyValueModel transformation = new TransformationPropertyValueModel(buildLocationHolder())
+        {
+            protected Object transform(Object value)
+            {
+                File file = (File) value;
 
-				if (file == null)
-					return null;
+                if (file == null)
+                    return null;
 
-				File location = file.getParentFile();
+                File location = file.getParentFile();
 
-				if (location == null)
-					return null;
+                if (location == null)
+                    return null;
 
-				return FileTools.canonicalFile(location).getPath();
-			}
-		};
+                return FileTools.canonicalFile(location).getPath();
+            }
+        };
 
-		return new DocumentAdapter(transformation);
-	}
+        return new DocumentAdapter(transformation);
+    }
 
-	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to handle the
-	 * sessions.xml location property.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildLocationHolder()
-	{
-		return new PropertyAspectAdapter(getSelectionHolder(), TopLinkSessionsAdapter.SAVE_PATH_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				TopLinkSessionsAdapter adapter = (TopLinkSessionsAdapter) subject;
-				return adapter.getPath();
-			}
-		};
-	}
+    /**
+     * Creates the <code>PropertyValueModel</code> responsible to handle the
+     * sessions.xml location property.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    private PropertyValueModel buildLocationHolder()
+    {
+        return new PropertyAspectAdapter(getSelectionHolder(), TopLinkSessionsAdapter.SAVE_PATH_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                TopLinkSessionsAdapter adapter = (TopLinkSessionsAdapter) subject;
+                return adapter.getPath();
+            }
+        };
+    }
 
-	/**
-	 * Creates the pane that will contains the widgets of this page.
-	 *
-	 * @return The fully initialized pane
-	 */
-	protected Component buildPage()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
-		Insets borderInsets = BorderFactory.createTitledBorder("m").getBorderInsets(this);
+    /**
+     * Creates the pane that will contains the widgets of this page.
+     *
+     * @return The fully initialized pane
+     */
+    protected Component buildPage()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
+        Insets borderInsets = BorderFactory.createTitledBorder("m").getBorderInsets(this);
 
-		// Create the container
-		JPanel panel = new JPanel(new GridBagLayout());
-		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        // Create the container
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-		// Project Save Location label
-		JLabel projectSaveLocationLabel = buildLabel("PROJECT_LOCATION_FIELD");
+        // Project Save Location label
+        JLabel projectSaveLocationLabel = buildLabel("PROJECT_LOCATION_FIELD");
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 0;
-		constraints.gridwidth  = 2;
-		constraints.gridheight = 1;
-		constraints.weightx    = 0;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.NONE;
-		constraints.anchor     = GridBagConstraints.LINE_START;
-		constraints.insets     = new Insets(0, borderInsets.left + 5, 0, 0);
+        constraints.gridx      = 0;
+        constraints.gridy      = 0;
+        constraints.gridwidth  = 2;
+        constraints.gridheight = 1;
+        constraints.weightx    = 0;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.NONE;
+        constraints.anchor     = GridBagConstraints.LINE_START;
+        constraints.insets     = new Insets(0, borderInsets.left + 5, 0, 0);
 
-		panel.add(projectSaveLocationLabel, constraints);
-		addHelpTopicId(projectSaveLocationLabel, "scproject.location");
+        panel.add(projectSaveLocationLabel, constraints);
+        addHelpTopicId(projectSaveLocationLabel, "scproject.location");
 
-		// Project Save Location widgets
-		JTextField locationField = new JTextField(buildLocationDocumentAdapter(), null, 1);
-		locationField.setEditable(false);
+        // Project Save Location widgets
+        JTextField locationField = new JTextField(buildLocationDocumentAdapter(), null, 1);
+        locationField.setEditable(false);
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 1;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.CENTER;
-		constraints.insets     = new Insets(1, borderInsets.left + 5, 0, 0);
+        constraints.gridx      = 0;
+        constraints.gridy      = 1;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.CENTER;
+        constraints.insets     = new Insets(1, borderInsets.left + 5, 0, 0);
 
-		panel.add(locationField, constraints);
-		addHelpTopicId(locationField, "scproject.location");
-		projectSaveLocationLabel.setLabelFor(locationField);
+        panel.add(locationField, constraints);
+        addHelpTopicId(locationField, "scproject.location");
+        projectSaveLocationLabel.setLabelFor(locationField);
 
-		// Project Save Location browse button
-		JButton changeLocationButton = buildButton("PROJECT_LOCATION_BROWSE_BUTTON");
-		changeLocationButton.addActionListener(buildChangeLocationAction());
+        // Project Save Location browse button
+        JButton changeLocationButton = buildButton("PROJECT_LOCATION_BROWSE_BUTTON");
+        changeLocationButton.addActionListener(buildChangeLocationAction());
 
-		constraints.gridx      = 1;
-		constraints.gridy      = 1;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 0;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.NONE;
-		constraints.anchor     = GridBagConstraints.CENTER;
-		constraints.insets     = new Insets(1, 5, 0, borderInsets.right + 5);
+        constraints.gridx      = 1;
+        constraints.gridy      = 1;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 0;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.NONE;
+        constraints.anchor     = GridBagConstraints.CENTER;
+        constraints.insets     = new Insets(1, 5, 0, borderInsets.right + 5);
 
-		panel.add(changeLocationButton, constraints);
-		addHelpTopicId(changeLocationButton, "scproject.location");
-		addAlignRight(changeLocationButton);
+        panel.add(changeLocationButton, constraints);
+        addHelpTopicId(changeLocationButton, "scproject.location");
+        addAlignRight(changeLocationButton);
 
-		// Create the classpath panel
-		ClasspathPanel classpathPanel = new ClasspathPanel
-		(
-			getApplicationContext(),
-			buildClasspathListAdapter(),
-			buildRootFileHolder(),
-			true
-		);
-		classpathPanel.setDefaultClasspathDirectoryHolder(buildCurrentDirectoryHolder());
+        // Create the classpath panel
+        ClasspathPanel classpathPanel = new ClasspathPanel
+        (
+            getApplicationContext(),
+            buildClasspathListAdapter(),
+            buildRootFileHolder(),
+            true
+        );
+        classpathPanel.setDefaultClasspathDirectoryHolder(buildCurrentDirectoryHolder());
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 2;
-		constraints.gridwidth  = 2;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0.5;
-		constraints.fill       = GridBagConstraints.BOTH;
-		constraints.anchor     = GridBagConstraints.CENTER;
-		constraints.insets     = new Insets(5, 0, 0, 0);
+        constraints.gridx      = 0;
+        constraints.gridy      = 2;
+        constraints.gridwidth  = 2;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0.5;
+        constraints.fill       = GridBagConstraints.BOTH;
+        constraints.anchor     = GridBagConstraints.CENTER;
+        constraints.insets     = new Insets(5, 0, 0, 0);
 
-		panel.add(classpathPanel, constraints);
-		addPaneForAlignment(classpathPanel);
-		addHelpTopicId(classpathPanel, "scproject.classpath");
+        panel.add(classpathPanel, constraints);
+        addPaneForAlignment(classpathPanel);
+        addHelpTopicId(classpathPanel, "scproject.classpath");
 
-		// Create the Sessions list panel
-		SessionsListPane sessionListPane = new SessionsListPane(getSelectionHolder(), getWorkbenchContextHolder());
+        // Create the Sessions list panel
+        SessionsListPane sessionListPane = new SessionsListPane(getSelectionHolder(), getWorkbenchContextHolder());
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 3;
-		constraints.gridwidth  = 2;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0.5;
-		constraints.fill       = GridBagConstraints.BOTH;
-		constraints.anchor     = GridBagConstraints.CENTER;
-		constraints.insets     = new Insets(5, 0, 0, 0);
+        constraints.gridx      = 0;
+        constraints.gridy      = 3;
+        constraints.gridwidth  = 2;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0.5;
+        constraints.fill       = GridBagConstraints.BOTH;
+        constraints.anchor     = GridBagConstraints.CENTER;
+        constraints.insets     = new Insets(5, 0, 0, 0);
 
-		panel.add(sessionListPane, constraints);
-		addPaneForAlignment(sessionListPane);
-		addHelpTopicId(sessionListPane, "scproject.sessions");
+        panel.add(sessionListPane, constraints);
+        addPaneForAlignment(sessionListPane);
+        addHelpTopicId(sessionListPane, "scproject.sessions");
 
-		addHelpTopicId(panel, "scproject");
-		return panel;
-	}
+        addHelpTopicId(panel, "scproject");
+        return panel;
+    }
 
-	private ValueModel buildRootFileHolder()
-	{
-		return new SimplePropertyValueModel(getSelectionHolder())
-		{
-			public Object getValue()
-			{
-				ValueModel projectHolder = (ValueModel) super.getValue();
-				TopLinkSessionsAdapter sessions = (TopLinkSessionsAdapter) projectHolder.getValue();
+    private ValueModel buildRootFileHolder()
+    {
+        return new SimplePropertyValueModel(getSelectionHolder())
+        {
+            public Object getValue()
+            {
+                ValueModel projectHolder = (ValueModel) super.getValue();
+                TopLinkSessionsAdapter sessions = (TopLinkSessionsAdapter) projectHolder.getValue();
 
-//				if (sessions == null)
-					return null;
+//                if (sessions == null)
+                    return null;
 
-//				return sessions.getSaveDirectory();
-			}
-		};
-	}
+//                return sessions.getSaveDirectory();
+            }
+        };
+    }
 
-	/**
-	 * The adapter responsible to manage the list of classpath entries.
-	 *
-	 * @see ClassRepository
-	 */
-	private class ClasspathListAdapter extends ListAspectAdapter
-	{
-		private ClasspathListAdapter()
-		{
-			super(buildClasspathHolder(), ClassRepository.CLASSPATH_ENTRIES_LIST);
-		}
+    /**
+     * The adapter responsible to manage the list of classpath entries.
+     *
+     * @see ClassRepository
+     */
+    private class ClasspathListAdapter extends ListAspectAdapter
+    {
+        private ClasspathListAdapter()
+        {
+            super(buildClasspathHolder(), ClassRepository.CLASSPATH_ENTRIES_LIST);
+        }
 
-		public void addItem(int index, Object item)
-		{
-			ClassRepository classpath = (ClassRepository) subject;
-			classpath.addClasspathEntry(index, (String) item);
-		}
+        public void addItem(int index, Object item)
+        {
+            ClassRepository classpath = (ClassRepository) subject;
+            classpath.addClasspathEntry(index, (String) item);
+        }
 
-		public Object getItem(int index)
-		{
-			ClassRepository classpath = (ClassRepository) subject;
-			return classpath.getClasspathEntry(index);
-		}
+        public Object getItem(int index)
+        {
+            ClassRepository classpath = (ClassRepository) subject;
+            return classpath.getClasspathEntry(index);
+        }
 
-		protected ListIterator getValueFromSubject()
-		{
-			ClassRepository classpath = (ClassRepository) subject;
-			return classpath.classpathEntries();
-		}
+        protected ListIterator getValueFromSubject()
+        {
+            ClassRepository classpath = (ClassRepository) subject;
+            return classpath.classpathEntries();
+        }
 
-		public Object removeItem(int index)
-		{
-			ClassRepository classpath = (ClassRepository) subject;
-			return classpath.removeClasspathEntry(index);
-		}
+        public Object removeItem(int index)
+        {
+            ClassRepository classpath = (ClassRepository) subject;
+            return classpath.removeClasspathEntry(index);
+        }
 
-		public Object replaceItem(int index, Object item)
-		{
-			ClassRepository classpath = (ClassRepository) subject;
-			return classpath.replaceClasspathEntry(index, (String) item);
-		}
-	}
+        public Object replaceItem(int index, Object item)
+        {
+            ClassRepository classpath = (ClassRepository) subject;
+            return classpath.replaceClasspathEntry(index, (String) item);
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,27 +29,27 @@ import com.sun.istack.Builder;
 public class XMLBinderTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/binder/xmlanyelement/input.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/binder/xmlanyelement/input.json";
-    
+
     public XMLBinderTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);      
-		setControlJSON(JSON_RESOURCE);
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{Input.class});
     }
 
     public void testXMLBinder() throws Exception{
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         Document document = parser.parse(instream);
-         
+
         Binder<Node> binder = jaxbContext.createBinder(Node.class);
         Object testObject =  binder.unmarshal(document);
-        
+
         xmlToObjectTest(testObject);
-        
-        Node updated = binder.updateXML(testObject); 
-        
-        Document doc = parser.newDocument();        
-        Node imported = doc.importNode(updated, true);        
+
+        Node updated = binder.updateXML(testObject);
+
+        Document doc = parser.newDocument();
+        Node imported = doc.importNode(updated, true);
         doc.appendChild(imported);
         objectToXMLDocumentTest(doc);
 
@@ -66,5 +66,5 @@ public class XMLBinderTestCases extends JAXBWithJSONTestCases {
         input.elements[0] = newElement;
         return input;
     }
-  
+
 }

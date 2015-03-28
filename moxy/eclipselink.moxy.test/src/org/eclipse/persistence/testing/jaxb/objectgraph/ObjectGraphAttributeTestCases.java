@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,19 +32,19 @@ public class ObjectGraphAttributeTestCases extends JAXBWithJSONTestCases {
         super(name);
         this.setClasses(new Class[]{Customer.class, Address.class, PhoneNumber.class});
         setControlDocument(XML_RESOURCE);
-        setControlJSON(JSON_RESOURCE);   
+        setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        
+
         ObjectGraph graph = ((JAXBContext)jaxbContext).createObjectGraph(Customer.class);
         graph.addAttributeNodes("lastName");
         graph.addAttributeNodes("age");
         graph.addAttributeNodes("phoneNumbers");
         Subgraph subGraph = graph.addSubgraph("address", Address.class);
         subGraph.addAttributeNodes("country");
-        
+
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.OBJECT_GRAPH, graph);
-        jaxbMarshaller.setProperty(MarshallerProperties.OBJECT_GRAPH, graph);        
+        jaxbMarshaller.setProperty(MarshallerProperties.OBJECT_GRAPH, graph);
     }
 
     @Override
@@ -59,15 +59,15 @@ public class ObjectGraphAttributeTestCases extends JAXBWithJSONTestCases {
         pn.areaCode = "613";
         pn.number = "123-4567";
         cust.phoneNumbers.add(pn);
-        
+
         pn = new PhoneNumber();
         pn.areaCode = "613";
         pn.number = "345-6789";
         cust.phoneNumbers.add(pn);
-       
+
         return cust;
     }
-    
+
     @Override
     public Object getWriteControlObject() {
         Customer cust = new Customer();
@@ -84,7 +84,7 @@ public class ObjectGraphAttributeTestCases extends JAXBWithJSONTestCases {
         pn.areaCode = "613";
         pn.number = "123-4567";
         cust.phoneNumbers.add(pn);
-        
+
         pn = new PhoneNumber();
         pn.areaCode = "613";
         pn.number = "345-6789";

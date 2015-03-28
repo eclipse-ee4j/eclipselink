@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,70 +32,70 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.UpdateItemStateObject;
 @SuppressWarnings("nls")
 public final class EclipseLinkJPQLQueryBuilder extends AbstractJPQLQueryBuilder {
 
-	/**
-	 * The {@link JPQLGrammar} that will be used to parse JPQL queries, which has EclipseLink support.
-	 */
-	private final JPQLGrammar jpqlGrammar;
+    /**
+     * The {@link JPQLGrammar} that will be used to parse JPQL queries, which has EclipseLink support.
+     */
+    private final JPQLGrammar jpqlGrammar;
 
-	/**
-	 * Creates a new <code>EclipseLinkJPQLQueryBuilder</code>.
-	 *
-	 * @param jpqlGrammar The {@link JPQLGrammar} that will be used to parse JPQL queries, which has
-	 * EclipseLink support
-	 */
-	public EclipseLinkJPQLQueryBuilder(JPQLGrammar jpqlGrammar) {
-		super();
-		this.jpqlGrammar = jpqlGrammar;
-	}
+    /**
+     * Creates a new <code>EclipseLinkJPQLQueryBuilder</code>.
+     *
+     * @param jpqlGrammar The {@link JPQLGrammar} that will be used to parse JPQL queries, which has
+     * EclipseLink support
+     */
+    public EclipseLinkJPQLQueryBuilder(JPQLGrammar jpqlGrammar) {
+        super();
+        this.jpqlGrammar = jpqlGrammar;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected EclipseLinkStateObjectBuilder buildStateObjectBuilder() {
-		return new EclipseLinkStateObjectBuilder();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EclipseLinkStateObjectBuilder buildStateObjectBuilder() {
+        return new EclipseLinkStateObjectBuilder();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public IConditionalExpressionStateObjectBuilder buildStateObjectBuilder(AbstractConditionalClauseStateObject stateObject) {
-		return new EclipseLinkConditionalStateObjectBuilder(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public IConditionalExpressionStateObjectBuilder buildStateObjectBuilder(AbstractConditionalClauseStateObject stateObject) {
+        return new EclipseLinkConditionalStateObjectBuilder(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public EclipseLinkSelectExpressionStateObjectBuilder buildStateObjectBuilder(SelectClauseStateObject stateObject) {
-		return new EclipseLinkSelectExpressionStateObjectBuilder(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public EclipseLinkSelectExpressionStateObjectBuilder buildStateObjectBuilder(SelectClauseStateObject stateObject) {
+        return new EclipseLinkSelectExpressionStateObjectBuilder(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public EclipseLinkSimpleSelectExpressionStateObjectBuilder buildStateObjectBuilder(SimpleSelectClauseStateObject stateObject) {
-		return new EclipseLinkSimpleSelectExpressionStateObjectBuilder(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public EclipseLinkSimpleSelectExpressionStateObjectBuilder buildStateObjectBuilder(SimpleSelectClauseStateObject stateObject) {
+        return new EclipseLinkSimpleSelectExpressionStateObjectBuilder(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public INewValueStateObjectBuilder buildStateObjectBuilder(UpdateItemStateObject stateObject) {
-		return new DefaultNewValueStateObjectBuilder(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public INewValueStateObjectBuilder buildStateObjectBuilder(UpdateItemStateObject stateObject) {
+        return new DefaultNewValueStateObjectBuilder(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLGrammar getGrammar() {
-		return jpqlGrammar;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLGrammar getGrammar() {
+        return jpqlGrammar;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return "EclipseLinkJPQLQueryBuilder using " + jpqlGrammar.toString();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "EclipseLinkJPQLQueryBuilder using " + jpqlGrammar.toString();
+    }
 }

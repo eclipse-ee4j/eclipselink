@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.libraries.asm.TypeReference;
 
 /**
  * A node that represents a type annotationn.
- * 
+ *
  * @author Eric Bruneton
  */
 public class TypeAnnotationNode extends AnnotationNode {
@@ -56,7 +56,7 @@ public class TypeAnnotationNode extends AnnotationNode {
      * Constructs a new {@link AnnotationNode}. <i>Subclasses must not use this
      * constructor</i>. Instead, they must use the
      * {@link #TypeAnnotationNode(int, int, TypePath, String)} version.
-     * 
+     *
      * @param typeRef
      *            a reference to the annotated type. See {@link TypeReference}.
      * @param typePath
@@ -78,7 +78,7 @@ public class TypeAnnotationNode extends AnnotationNode {
 
     /**
      * Constructs a new {@link AnnotationNode}.
-     * 
+     *
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
      *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.

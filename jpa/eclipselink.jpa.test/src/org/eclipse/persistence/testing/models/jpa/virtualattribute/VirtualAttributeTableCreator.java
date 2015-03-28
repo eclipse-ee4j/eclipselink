@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.models.jpa.virtualattribute;
 
@@ -24,7 +24,7 @@ public class VirtualAttributeTableCreator extends org.eclipse.persistence.tools.
         addTableDefinition(buildOOVIRTUALATTRIBUTETable());
         //addTableDefinition(buildVIRTUAL_SEQTable());
     }
-    
+
     public static TableDefinition buildVIRTUALATTRIBUTETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_VIRTUAL");
@@ -58,7 +58,7 @@ public class VirtualAttributeTableCreator extends org.eclipse.persistence.tools.
         TableDefinition table = new TableDefinition();
         // SECTION: TABLE
         table.setName("O_O_VIRTUAL");
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field.setName("O_O_VIRTUALID");
@@ -69,7 +69,7 @@ public class VirtualAttributeTableCreator extends org.eclipse.persistence.tools.
         field.setUnique(false );
         field.setIsIdentity(true );
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field8 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field8.setName("VIRTUAL_ID");
@@ -81,10 +81,10 @@ public class VirtualAttributeTableCreator extends org.eclipse.persistence.tools.
         field8.setIsIdentity(false );
         field8.setForeignKeyFieldName("CMP3_VIRTUAL.CMP3_VIRTUALID");
         table.addField(field8);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildVIRTUAL_SEQTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_VIRTUAL_SEQ");
@@ -113,5 +113,5 @@ public class VirtualAttributeTableCreator extends org.eclipse.persistence.tools.
 
         return table;
     }
-    
+
 }

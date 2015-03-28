@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- *     11/29/2012-2.5 Guy Pelletier 
+ *     11/29/2012-2.5 Guy Pelletier
  *       - 395406: Fix nightly static weave test errors
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
@@ -100,7 +100,7 @@ public class TransformerFactory {
     /**
      * INTERNAL:
      * Look higher in the hierarchy for the mappings listed in the unMappedAttribute list.
-     * 
+     *
      * We assume that if a mapping exists, the attribute must either be mapped from the owning
      * class or from a superclass.
      */
@@ -109,7 +109,7 @@ public class TransformerFactory {
         if (superClz == null || superClz.isObject()){
             return;
         }
-        
+
         ClassDescriptor mappedSuperclassDescriptor = ((AbstractSession) session).getMappedSuperclass(superClz.getName());
         if (mappedSuperclassDescriptor == null) {
             ClassDescriptor descriptor = findDescriptor(session.getProject(), clz.getSuperclass().getName());
@@ -117,19 +117,19 @@ public class TransformerFactory {
                 return;
             }
         }
-        
+
         boolean weaveValueHolders = canWeaveValueHolders(superClz, unMappedAttributes);
 
         List stillUnMappedMappings = null;
         ClassDetails superClassDetails = createClassDetails(superClz, weaveValueHolders, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
         superClassDetails.setIsMappedSuperClass(true);
-        
+
         if (mappedSuperclassDescriptor != null && ! mappedSuperclassDescriptor.usesPropertyAccessForWeaving()) {
             superClassDetails.useAttributeAccess();
         } else if (!initialDescriptor.usesPropertyAccessForWeaving()){
             superClassDetails.useAttributeAccess();
         }
-        
+
         if (!classDetailsMap.containsKey(superClassDetails.getClassName())){
             stillUnMappedMappings = storeAttributeMappings(superClz, superClassDetails, unMappedAttributes, weaveValueHolders);
             classDetailsMap.put(superClassDetails.getClassName() ,superClassDetails);
@@ -159,7 +159,7 @@ public class TransformerFactory {
 
                     boolean weaveValueHoldersForClass = weaveLazy && canWeaveValueHolders(metaClass, descriptor.getMappings());
                     boolean weaveChangeTrackingForClass = canChangeTrackingBeEnabled(descriptor, metaClass, weaveChangeTracking);
-                    
+
                     ClassDetails classDetails = createClassDetails(metaClass, weaveValueHoldersForClass, weaveChangeTrackingForClass, weaveFetchGroups, weaveInternal, weaveRest);
                     if (descriptor.isDescriptorTypeAggregate()) {
                         classDetails.setIsEmbedable(true);
@@ -168,7 +168,7 @@ public class TransformerFactory {
                     if (!descriptor.usesPropertyAccessForWeaving()){
                         classDetails.useAttributeAccess();
                     }
-                    
+
                     classDetails.getVirtualAccessMethods().addAll(descriptor.getVirtualAttributeMethods());
 
                     List unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
@@ -236,7 +236,7 @@ public class TransformerFactory {
         for (int i = 0; i < interfaces.length; i++) {
             Class c = interfaces[i];
             if (c.getName().equals(PersistenceWeavedChangeTracking.class.getName())){
-                return true;                
+                return true;
             }
         }
         return false;
@@ -247,7 +247,7 @@ public class TransformerFactory {
      */
     protected boolean canWeaveValueHolders(MetadataClass clz, List mappings) {
         // we intend to change to fetch=LAZY 1:1 attributes to ValueHolders
-        boolean weaveValueHolders = false; 
+        boolean weaveValueHolders = false;
         for (Iterator iterator = mappings.iterator(); iterator.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)iterator.next();
             String attributeName = mapping.getAttributeName();
@@ -301,15 +301,15 @@ public class TransformerFactory {
     /**
      * Return if the class contains the field.
      */
-    protected boolean hasFieldInClass(MetadataClass metadataClass, String attributeName) {       
+    protected boolean hasFieldInClass(MetadataClass metadataClass, String attributeName) {
         return metadataClass.getField(attributeName) != null;
     }
-    
+
     /**
      * Return the class which is the source of the attribute.
      * i.e. the class that defines the attribute in its class file.
      */
-    private MetadataClass getAttributeDeclaringClass(MetadataClass metadataClass, String attributeName) {       
+    private MetadataClass getAttributeDeclaringClass(MetadataClass metadataClass, String attributeName) {
         MetadataField field = metadataClass.getField(attributeName);
         return field.getDeclaringClass();
     }
@@ -318,7 +318,7 @@ public class TransformerFactory {
      * Use the database mapping for an attribute to find it's type.  The type returned will either be
      * the field type of the field in the object or the type returned by the getter method.
      */
-    private MetadataClass getAttributeTypeFromClass(MetadataClass metadataClass, String attributeName, DatabaseMapping mapping, boolean checkSuperclass){       
+    private MetadataClass getAttributeTypeFromClass(MetadataClass metadataClass, String attributeName, DatabaseMapping mapping, boolean checkSuperclass){
         String getterMethod = mapping.getGetMethodName();
         if (mapping.isAbstractDirectMapping() && mapping.getAttributeAccessor().isVirtualAttributeAccessor()){
             return metadataClass.getMetadataClass(((AbstractDirectMapping)mapping).getAttributeClassificationName());
@@ -340,10 +340,10 @@ public class TransformerFactory {
     /**
      *  INTERNAL:
      *  Store a set of attribute mappings on the given ClassDetails that correspond to the given class.
-     *  Return the list of mappings that is not specifically found on the given class.  These attributes will 
+     *  Return the list of mappings that is not specifically found on the given class.  These attributes will
      *  be found on MappedSuperclasses.
      */
-    protected List storeAttributeMappings(MetadataClass metadataClass, ClassDetails classDetails, List mappings, boolean weaveValueHolders) {      
+    protected List storeAttributeMappings(MetadataClass metadataClass, ClassDetails classDetails, List mappings, boolean weaveValueHolders) {
         List unMappedAttributes = new ArrayList();
         Map<String, AttributeDetails> attributesMap = new HashMap<String, AttributeDetails>();
         Map<String, AttributeDetails> settersMap = new HashMap<String, AttributeDetails>();
@@ -351,12 +351,12 @@ public class TransformerFactory {
 
         for (Iterator iterator = mappings.iterator(); iterator.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)iterator.next();
-            
+
             // Can't weave something that isn't really there and not going to be there.
             if (mapping.isMultitenantPrimaryKeyMapping()) {
                 continue;
             }
-            
+
             String attribute = mapping.getAttributeName();
             AttributeDetails attributeDetails = new AttributeDetails(attribute, mapping);
 
@@ -386,7 +386,7 @@ public class TransformerFactory {
                 if (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping) mapping).requiresTransientWeavedFields()) {
                     attributeDetails.setWeaveTransientFieldValueHolders();
                 }
-                
+
                 // If the property has a matching field, then weave it instead (unless internal weaving is disabled).
                 if (this.weaveInternal) {
                     attributeDetails.setHasField(hasFieldInClass(metadataClass, attribute));
@@ -434,7 +434,7 @@ public class TransformerFactory {
                 attributeDetails.setReferenceClassName(typeClass.getName());
                 attributeDetails.setReferenceClassType(Type.getType(typeClass.getTypeName()));
             }
-            attributesMap.put(attribute, attributeDetails);    
+            attributesMap.put(attribute, attributeDetails);
         }
         classDetails.setAttributesMap(attributesMap);
         classDetails.setGetterMethodToAttributeDetails(gettersMap);

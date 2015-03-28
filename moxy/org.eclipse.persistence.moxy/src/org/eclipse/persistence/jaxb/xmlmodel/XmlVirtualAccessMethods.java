@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,9 +20,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
@@ -51,11 +51,11 @@ public class XmlVirtualAccessMethods {
 
     /**
      * Gets the value of the getMethod property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getGetMethod() {
         if (getMethod == null) {
@@ -67,11 +67,11 @@ public class XmlVirtualAccessMethods {
 
     /**
      * Sets the value of the getMethod property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setGetMethod(String value) {
         this.getMethod = value;
@@ -79,11 +79,11 @@ public class XmlVirtualAccessMethods {
 
     /**
      * Gets the value of the setMethod property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getSetMethod() {
         if (setMethod == null) {
@@ -95,11 +95,11 @@ public class XmlVirtualAccessMethods {
 
     /**
      * Sets the value of the setMethod property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setSetMethod(String value) {
         this.setMethod = value;
@@ -107,11 +107,11 @@ public class XmlVirtualAccessMethods {
 
     /**
      * Gets the value of the schema property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlVirtualAccessMethodsSchema }
-     *     
+     *
      */
     public XmlVirtualAccessMethodsSchema getSchema() {
         if (schema == null) {
@@ -123,11 +123,11 @@ public class XmlVirtualAccessMethods {
 
     /**
      * Sets the value of the schema property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlVirtualAccessMethodsSchema }
-     *     
+     *
      */
     public void setSchema(XmlVirtualAccessMethodsSchema value) {
         this.schema = value;

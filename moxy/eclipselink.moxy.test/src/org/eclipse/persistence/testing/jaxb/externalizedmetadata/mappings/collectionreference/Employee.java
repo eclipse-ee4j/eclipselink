@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,27 +41,27 @@ public class Employee {
         } catch (ClassCastException e) {
             return false;
         }
-        
+
         if (workAddresses == null) {
             return theObj.workAddresses == null;
         }
-        
-        if (theObj.workAddresses == null) { 
-            return false; 
+
+        if (theObj.workAddresses == null) {
+            return false;
         }
-        
+
         if (workAddresses.size() != theObj.workAddresses.size()) {
             return false;
         }
-        
+
         for (Address add : workAddresses) {
             if (!addExistsInList(add, theObj.workAddresses)) {
                 return false;
             }
         }
         return true;
-    }   
-    
+    }
+
     private boolean addExistsInList(Address add, List<Address> addList) {
         for (Address listAdd : addList) {
             if (listAdd.equals(add)) {

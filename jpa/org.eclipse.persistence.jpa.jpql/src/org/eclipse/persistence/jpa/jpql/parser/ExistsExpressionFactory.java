@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,31 +27,31 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class ExistsExpressionFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link ExistsExpressionFactory}.
-	 */
-	public static final String ID = Expression.EXISTS;
+    /**
+     * The unique identifier of this {@link ExistsExpressionFactory}.
+     */
+    public static final String ID = Expression.EXISTS;
 
-	/**
-	 * Creates a new <code>ExistsExpressionFactory</code>.
-	 */
-	public ExistsExpressionFactory() {
-		super(ID, Expression.EXISTS);
-	}
+    /**
+     * Creates a new <code>ExistsExpressionFactory</code>.
+     */
+    public ExistsExpressionFactory() {
+        super(ID, Expression.EXISTS);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		expression = new ExistsExpression(parent);
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        expression = new ExistsExpression(parent);
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
@@ -49,7 +49,7 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
     public void setUp() {
         super.setUp();
         try {
-            String xsdString = getXSDString("org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderNSDeepCSPath.xsd");            
+            String xsdString = getXSDString("org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderNSDeepCSPath.xsd");
             // Generate a list of sdo types based on the purchaseOrder.xsd and print
             // out info about them
             xsdHelper.define(xsdString);
@@ -144,7 +144,7 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
 
     public void testGetPathFromAncestorFromContainedToParent() {
         SDODataObject target = (SDODataObject)aRoot5.get("items");
-        SDODataObject aSibling = (SDODataObject)aRoot5.get("items/item[2]");        
+        SDODataObject aSibling = (SDODataObject)aRoot5.get("items/item[2]");
         String aPath =   ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aSibling, target,(SDOChangeSummary)aSibling.getChangeSummary());
         assertNotNull(aPath);
         assertEquals("ns0:item[2]", aPath);
@@ -164,14 +164,14 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         assertEquals(SDOConstants.EMPTY_STRING, aPath);
     }
 
-    public void testGetPathFromAncestorFromRootToCurrentObject() {      
+    public void testGetPathFromAncestorFromRootToCurrentObject() {
         String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aRoot5,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());
         assertNotNull(aPath);
         assertEquals(SDOConstants.EMPTY_STRING, aPath);
     }
 
     public void testGetPathFromAncestorFromRootToSibling() {
-        SDODataObject anItem = (SDODataObject)aRoot5.get("items/item[2]");        
+        SDODataObject anItem = (SDODataObject)aRoot5.get("items/item[2]");
         String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aRoot5,anItem,(SDOChangeSummary)aRoot5.getChangeSummary());
         assertEquals(SDOConstants.SDO_XPATH_INVALID_PATH, aPath);
     }
@@ -179,7 +179,7 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
     // path would need to go up to common ancestor and back down to sibling - null for now
     public void testGetPathFromAncestorFromChildToSibling() {
         SDODataObject anItem = (SDODataObject)aRoot5.get("items/item[2]");
-        SDODataObject aSibling = (SDODataObject)aRoot5.get("shipTo");        
+        SDODataObject aSibling = (SDODataObject)aRoot5.get("shipTo");
         String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aSibling,(SDOChangeSummary)anItem.getChangeSummary());
         assertEquals(SDOConstants.SDO_XPATH_INVALID_PATH, aPath);
     }
@@ -193,7 +193,7 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         assertFalse(aCS.isLogging());
 
         // delete source object
-        aSibling.delete();        
+        aSibling.delete();
         String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aSibling,target,(SDOChangeSummary)target.getChangeSummary());
         assertEquals(SDOConstants.SDO_XPATH_INVALID_PATH, aPath);
     }
@@ -207,7 +207,7 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         assertFalse(aCS.isLogging());
 
         // delete source object, useXPathFormat
-        anItem.delete();        
+        anItem.delete();
         String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());
         assertNull(aPath);
 
@@ -225,14 +225,14 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         assertFalse(aCS.isLogging());
 
         // delete source object
-        anItem.delete();        
+        anItem.delete();
         String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,anItem,(SDOChangeSummary)anItem.getChangeSummary());
         assertNotNull(aPath);
         assertEquals(SDOConstants.EMPTY_STRING, aPath);
     }
 
     public void testGetPathFromAncestorDeletedFromRootToCurrentObjectLoggingOff() {
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aRoot5,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());    
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aRoot5,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());
 
         // get changeSummary
         SDOChangeSummary aCS = (SDOChangeSummary)aRoot5.getChangeSummary();
@@ -245,8 +245,8 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
     }
 
     public void testGetPathFromAncestorDeletedFromRootToSiblingLoggingOff() {
-        SDODataObject anItem = (SDODataObject)aRoot5.get("items/item[2]");       
-       String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aRoot5,anItem,(SDOChangeSummary)aRoot5.getChangeSummary());    
+        SDODataObject anItem = (SDODataObject)aRoot5.get("items/item[2]");
+       String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aRoot5,anItem,(SDOChangeSummary)aRoot5.getChangeSummary());
 
         // get changeSummary
         SDOChangeSummary aCS = (SDOChangeSummary)aRoot5.getChangeSummary();
@@ -267,7 +267,7 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         aCS.beginLogging();
         // delete source object
         aSibling.delete();
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aSibling,target,(SDOChangeSummary)target.getChangeSummary());    
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aSibling,target,(SDOChangeSummary)target.getChangeSummary());
         assertNotNull(aPath);
         // TODO: no storage of deleted indexed postition - defaults to size() = start of list for now
         // see SDODataObject: index = ((SDODataObject)parent).getList(aChild).size();
@@ -284,7 +284,7 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         // modifydelete source object
         ((SDODataObject)aRoot5.get("billTo")).set("name", "new name");
 
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)anItem.getChangeSummary());    
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)anItem.getChangeSummary());
         assertNotNull(aPath);
         assertEquals("ns0:billTo", aPath);
     }
@@ -299,11 +299,11 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         // delete source object
         ((SDODataObject)aRoot5.get("billTo")).detach();
 
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());    
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());
         assertNotNull(aPath);
         assertEquals("ns0:billTo", aPath);
     }
-    
+
     // verify that we do not get an infinite loop if we pass in the target's changeSummary
     public void testGetPathFromAncestorDeletedFromChildToAncestorListWrapperLoggingOn() {
         SDODataObject anItem = (SDODataObject)aRoot5.get("items/item[2]");
@@ -315,8 +315,8 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         // delete source object
         SDODataObject deletedObject = ((SDODataObject)aRoot5.get("items"));
         deletedObject.delete();
-        
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());    
+
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());
 
         assertNotNull(aPath);
         // TODO: no storage of deleted indexed postition - defaults to size() = start of list for now
@@ -336,7 +336,7 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         //SDODataObject deletedObject = ((SDODataObject)aRoot5.get("items"));
         anItem.delete();//detach();
 
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());    
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());
 
         //SDODataObject anItemFromPath = (SDODataObject)aRoot5.get(aPath);
         //System.out.println("testGetPathFromAncestorDeletedFromChildToRootLoggingOn: " + aPath);
@@ -357,7 +357,7 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         SDODataObject deletedObjectParent = ((SDODataObject)aRoot5.get("billTo"));
         deletedObjectParent.delete();//detach();
 
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());    
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());
 
         //SDODataObject anItemFromPath = (SDODataObject)aRoot5.get(aPath);
         //System.out.println("testGetPathFromAncestorDeletedFromChildToRootLoggingOn: " + aPath);
@@ -379,7 +379,7 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         //SDODataObject deletedObject = ((SDODataObject)aRoot5.get("items"));
         anItem.delete();//detach();
 
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());    
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());
 
         assertNotNull(aPath);
         // TODO: no storage of deleted indexed postition - defaults to size() = start of list for now
@@ -401,7 +401,7 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         anItem.detach();
 
         //String aPath = anItem.getPathFromAncestor(aCS, aRoot5, useXPathFormat);
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());    
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());
 
         //SDODataObject anItemFromPath = (SDODataObject)aRoot5.get(aPath);
         assertNotNull(aPath);
@@ -420,14 +420,14 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
         // delete source object
         anItem.delete();
 
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,anItem,(SDOChangeSummary)anItem.getChangeSummary());    
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(anItem,anItem,(SDOChangeSummary)anItem.getChangeSummary());
 
         assertNotNull(aPath);
         assertEquals(SDOConstants.EMPTY_STRING, aPath);
     }
 
-    public void testGetXPathFromAncestorDeletedFromRootToCurrentObjectLoggingOn() {        
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aRoot5,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());    
+    public void testGetXPathFromAncestorDeletedFromRootToCurrentObjectLoggingOn() {
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aRoot5,aRoot5,(SDOChangeSummary)aRoot5.getChangeSummary());
 
         // start logging
         SDOChangeSummary aCS = (SDOChangeSummary)aRoot5.getChangeSummary();
@@ -440,8 +440,8 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
     }
 
     public void testGetPathFromAncestorDeletedFromRootToSiblingLoggingOn() {
-        SDODataObject anItem = (SDODataObject)aRoot5.get("items/item[2]");        
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aRoot5,anItem,(SDOChangeSummary)aRoot5.getChangeSummary());    
+        SDODataObject anItem = (SDODataObject)aRoot5.get("items/item[2]");
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aRoot5,anItem,(SDOChangeSummary)aRoot5.getChangeSummary());
 
         // start logging
         SDOChangeSummary aCS = (SDOChangeSummary)aRoot5.getChangeSummary();
@@ -454,8 +454,8 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
 
     public void testGetXPathFromAncestorFromContainedToParent() {
         SDODataObject target = (SDODataObject)aRoot5.get("items");
-        SDODataObject aSibling = (SDODataObject)aRoot5.get("items/item[2]");        
-        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aSibling,target,(SDOChangeSummary)aSibling.getChangeSummary());    
+        SDODataObject aSibling = (SDODataObject)aRoot5.get("items/item[2]");
+        String aPath =  ((SDOMarshalListener)((SDOXMLHelper)xmlHelper).getXmlMarshaller().getMarshalListener()).getPathFromAncestor(aSibling,target,(SDOChangeSummary)aSibling.getChangeSummary());
         assertNotNull(aPath);
         assertEquals("ns0:item[2]", aPath);
     }

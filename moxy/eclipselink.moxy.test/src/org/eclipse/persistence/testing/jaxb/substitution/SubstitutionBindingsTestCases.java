@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,7 @@ public class SubstitutionBindingsTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/substitution/instance-bindings.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/substitution/instance.json";
     private final static String XML_BINDINGS = "org/eclipse/persistence/testing/jaxb/substitution/xml-bindings.xml";
-    
+
     public SubstitutionBindingsTestCases(String name) throws Exception {
         super(name);
         Class[] classes = new Class[2];
@@ -55,7 +55,7 @@ public class SubstitutionBindingsTestCases extends JAXBWithJSONTestCases {
 
     @Override
     protected Map getProperties() {
-    	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream iStream = classLoader.getResourceAsStream(XML_BINDINGS);
 
         Map<String, Object> properties = new HashMap<String, Object>();

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import org.eclipse.persistence.exceptions.*;
@@ -23,7 +23,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  *  INTERNAL:
  *  Used by function operators in deployment xml generation to accomodate custom functions.
  *  There is no more validation on read because any custom function has to be accepted.
- *  The custom function is assumed to be a normal prefix function.  The first element in the 
+ *  The custom function is assumed to be a normal prefix function.  The first element in the
  *  databaseStrings of the operator is in the format of databaseString(, e.g. AVG(.  "(" will
  *  be removed on write and attached back on read.
  */
@@ -43,7 +43,7 @@ public class ExpressionOperatorConverter extends ObjectTypeConverter  {
                 //Custom function.  Remove "(".
                 if (((ExpressionOperator)attributeValue).getDatabaseStrings() != null) {
                     String databaseString = ((ExpressionOperator)attributeValue).getDatabaseStrings()[0];
-                    fieldValue = databaseString.substring(0, databaseString.length()-1);                    
+                    fieldValue = databaseString.substring(0, databaseString.length()-1);
                 } else {
                     throw DescriptorException.noAttributeValueConversionToFieldValueProvided(attributeValue, getMapping());
                 }

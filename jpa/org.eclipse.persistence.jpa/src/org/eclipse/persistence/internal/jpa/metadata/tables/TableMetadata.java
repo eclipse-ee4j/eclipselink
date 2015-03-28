@@ -1,27 +1,27 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/16/2008-1.0M8 Guy Pelletier 
+ *     05/16/2008-1.0M8 Guy Pelletier
  *       - 218084: Implement metadata merging functionality between mapping file
- *     11/06/2009-2.0 Guy Pelletier 
+ *     11/06/2009-2.0 Guy Pelletier
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 8)
- *     11/19/2012-2.5 Guy Pelletier 
+ *     11/19/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     11/22/2012-2.5 Guy Pelletier 
+ *     11/22/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
 import java.util.ArrayList;
@@ -40,24 +40,24 @@ import org.eclipse.persistence.internal.helper.Helper;
 /**
  * INTERNAL:
  * Object to hold onto table metadata in a TopLink database table.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class TableMetadata extends ORMetadata {
     private DatabaseTable m_databaseTable = new DatabaseTable();
-    
+
     private List<IndexMetadata> m_indexes = new ArrayList<IndexMetadata>();
     private List<UniqueConstraintMetadata> m_uniqueConstraints = new ArrayList<UniqueConstraintMetadata>();
-    
+
     private String m_name;
     private String m_schema;
     private String m_catalog;
@@ -77,22 +77,22 @@ public class TableMetadata extends ORMetadata {
      */
     public TableMetadata(MetadataAnnotation table, MetadataAccessor accessor) {
         super(table, accessor);
-        
+
         if (table != null) {
-            m_name = table.getAttributeString("name"); 
-            m_schema = table.getAttributeString("schema"); 
+            m_name = table.getAttributeString("name");
+            m_schema = table.getAttributeString("schema");
             m_catalog = table.getAttributeString("catalog");
 
             for (Object uniqueConstraint : table.getAttributeArray("uniqueConstraints")) {
                 m_uniqueConstraints.add(new UniqueConstraintMetadata((MetadataAnnotation) uniqueConstraint, accessor));
             }
-            
+
             for (Object index : table.getAttributeArray("indexes")) {
                 m_indexes.add(new IndexMetadata((MetadataAnnotation) index, accessor));
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for XML loading.
@@ -108,7 +108,7 @@ public class TableMetadata extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof TableMetadata) {
             TableMetadata table = (TableMetadata) objectToCompare;
-            
+
             if (! valuesMatch(m_name, table.getName())) {
                 return false;
             }
@@ -124,14 +124,14 @@ public class TableMetadata extends ORMetadata {
             if (! valuesMatch(m_creationSuffix, table.getCreationSuffix())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_indexes, table.getIndexes())) {
                 return false;
             }
 
             return valuesMatch(m_uniqueConstraints, table.getUniqueConstraints());
         }
-        
+
         return false;
     }
 
@@ -164,7 +164,7 @@ public class TableMetadata extends ORMetadata {
     public DatabaseTable getDatabaseTable() {
         return m_databaseTable;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -172,7 +172,7 @@ public class TableMetadata extends ORMetadata {
     public List<IndexMetadata> getIndexes() {
         return m_indexes;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -210,14 +210,14 @@ public class TableMetadata extends ORMetadata {
     public List<UniqueConstraintMetadata> getUniqueConstraints() {
         return m_uniqueConstraints;
     }
-    
+
     /**
      * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
-        
+
         // Initialize lists of ORMetadata objects.
         initXMLObjects(m_indexes, accessibleObject);
         initXMLObjects(m_uniqueConstraints, accessibleObject);
@@ -230,7 +230,7 @@ public class TableMetadata extends ORMetadata {
     public void processCreationSuffix() {
         m_databaseTable.setCreationSuffix(m_creationSuffix);
     }
-    
+
     /**
      * INTERNAL:
      * Process the index metadata for this table.
@@ -240,7 +240,7 @@ public class TableMetadata extends ORMetadata {
             index.process(m_databaseTable);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Process any foreign key metadata for this table.
@@ -248,7 +248,7 @@ public class TableMetadata extends ORMetadata {
     public void processForeignKey() {
         // Does nothing at this level. Subclasses must override as needed.
     }
-    
+
     /**
      * INTERNAL:
      * Add the unique constraints to the database table.
@@ -267,7 +267,7 @@ public class TableMetadata extends ORMetadata {
      * INTERNAL:
      */
     public void setFullyQualifiedTableName(String fullyQualifiedTableName) {
-        m_databaseTable.setPossiblyQualifiedName(fullyQualifiedTableName, Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());  
+        m_databaseTable.setPossiblyQualifiedName(fullyQualifiedTableName, Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
     }
 
     /**
@@ -292,7 +292,7 @@ public class TableMetadata extends ORMetadata {
     public void setDatabaseTable(DatabaseTable databaseTable) {
         m_databaseTable = databaseTable;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -300,7 +300,7 @@ public class TableMetadata extends ORMetadata {
     public void setIndexes(List<IndexMetadata> indexes) {
         m_indexes = indexes;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.

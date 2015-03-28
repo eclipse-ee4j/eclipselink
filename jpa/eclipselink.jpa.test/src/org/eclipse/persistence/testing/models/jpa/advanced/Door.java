@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -40,7 +40,7 @@ public class Door implements Serializable, Cloneable {
     private int id;
     private int width;
     private int height;
-    
+
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private Room room;
 
@@ -75,10 +75,10 @@ public class Door implements Serializable, Cloneable {
     public void setRoom(Room room) {
         this.room = room;
     }
-    
+
     @Transient
     public Date getSaleDate() {
-        
+
         Calendar cal = Calendar.getInstance();
         cal.setTime(getWarrantyDate());
         int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -86,7 +86,7 @@ public class Door implements Serializable, Cloneable {
         int year = cal.get(Calendar.YEAR) - 1;
         return Helper.dateFromYearMonthDate(year, month, day);
     }
-    
+
     public void setSaleDate(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -95,23 +95,23 @@ public class Door implements Serializable, Cloneable {
         int year = cal.get(Calendar.YEAR) + 1;
         setWarrantyDate(Helper.dateFromYearMonthDate(year, month, day));
     }
-    
+
 
     // Bug#391251 : Test for @Column annotation given outside @WriteTransformer annotation
     @Mutable(false)
     @ReadTransformer(method="calcWarrantyDate")
     @WriteTransformer(method="getSaleDate")
     @Column(name="SALE_DATE")
-    private Date WarrantyDate; 
-    
+    private Date WarrantyDate;
+
     public Date getWarrantyDate() {
         return this.WarrantyDate;
     }
-    
+
     public void setWarrantyDate(Date date) {
         this.WarrantyDate = date;
     }
-        
+
     public Date calcWarrantyDate(Record row, Session session) {
         Date date = (Date) ( session.getDatasourcePlatform().convertObject(row.get("SALE_DATE"), java.sql.Date.class ));
         Calendar cal = Calendar.getInstance();
@@ -134,7 +134,7 @@ public class Door implements Serializable, Cloneable {
         try {
             Field f = this.getClass().getDeclaredField("room");
             f.setAccessible(true);
-            
+
             return f.get(this) == null;
         } catch (Exception ex) {
             return false;

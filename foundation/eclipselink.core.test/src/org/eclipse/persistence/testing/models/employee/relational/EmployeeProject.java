@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.employee.relational;
 
 import org.eclipse.persistence.sessions.*;
@@ -105,22 +105,22 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
 
         return descriptor;
     }
-    
+
     public ClassDescriptor buildChildDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.employee.domain.Child.class);
         descriptor.addTableName("CHILD");
         descriptor.addPrimaryKeyFieldName("CHILD.CHILD_ID");
-        
+
         descriptor.useSoftCacheWeakIdentityMap();
         descriptor.setIdentityMapSize(50);
         descriptor.setSequenceNumberFieldName("CHILD.CHILD_ID");
         descriptor.setSequenceNumberName("CHILD_SEQ");
         descriptor.setAlias("Child");
-        
+
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
-        
+
         // Mappings.
         DirectToFieldMapping firstNameMapping = new DirectToFieldMapping();
         firstNameMapping.setAttributeName("firstName");
@@ -138,7 +138,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         lastNameMapping.setFieldName("L_NAME");
         lastNameMapping.setNullValue("");
         descriptor.addMapping(lastNameMapping);
-        
+
         DirectToFieldMapping genderMapping = new DirectToFieldMapping();
         genderMapping.setAttributeName("gender");
         genderMapping.setFieldName("GENDER");
@@ -147,21 +147,21 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         genderMappingConverter.addConversionValue("M", "Male");
         genderMapping.setConverter(genderMappingConverter);
         descriptor.addMapping(genderMapping);
-        
+
         DirectToFieldMapping birthdayMapping = new DirectToFieldMapping();
         birthdayMapping.setAttributeName("birthday");
         birthdayMapping.setFieldName("BIRTHDAY");
         descriptor.addMapping(birthdayMapping);
-        
+
         OneToOneMapping managerMapping = new OneToOneMapping();
         managerMapping.setAttributeName("parent");
         managerMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         managerMapping.dontUseIndirection();
         managerMapping.addForeignKeyFieldName("CHILD.PARENT_EMP_ID", "EMPLOYEE.EMP_ID");
         descriptor.addMapping(managerMapping);
-        
-        
-        return descriptor;        
+
+
+        return descriptor;
     }
 
     public ClassDescriptor buildEmployeeDescriptor() {
@@ -171,8 +171,8 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         descriptor.addTableName("SALARY");
         descriptor.addPrimaryKeyFieldName("EMPLOYEE.EMP_ID");
 
-	// Interface Properties.
-	descriptor.getInterfacePolicy().addParentInterface(org.eclipse.persistence.testing.models.employee.interfaces.Employee.class);
+    // Interface Properties.
+    descriptor.getInterfacePolicy().addParentInterface(org.eclipse.persistence.testing.models.employee.interfaces.Employee.class);
         // Descriptor Properties.
         descriptor.useSoftCacheWeakIdentityMap();
         descriptor.setIdentityMapSize(100);
@@ -188,7 +188,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
-        // Named Queries.	
+        // Named Queries.
         // Event Manager.
         // Mappings.
         DirectToFieldMapping firstNameMapping = new DirectToFieldMapping();
@@ -222,14 +222,14 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         genderMapping.setConverter(genderMappingConverter);
         descriptor.addMapping(genderMapping);
 
-	TransformationMapping normalHoursMapping = new TransformationMapping();
-	normalHoursMapping.setAttributeName("normalHours");
-	normalHoursMapping.setAttributeTransformation("buildNormalHours");
-	normalHoursMapping.addFieldTransformation("EMPLOYEE.START_TIME", "getStartTime");
-	normalHoursMapping.addFieldTransformation("EMPLOYEE.END_TIME", "getEndTime");
-	normalHoursMapping.setIsMutable(true);
-	descriptor.addMapping(normalHoursMapping);
-	
+    TransformationMapping normalHoursMapping = new TransformationMapping();
+    normalHoursMapping.setAttributeName("normalHours");
+    normalHoursMapping.setAttributeTransformation("buildNormalHours");
+    normalHoursMapping.addFieldTransformation("EMPLOYEE.START_TIME", "getStartTime");
+    normalHoursMapping.addFieldTransformation("EMPLOYEE.END_TIME", "getEndTime");
+    normalHoursMapping.setIsMutable(true);
+    descriptor.addMapping(normalHoursMapping);
+
         AggregateObjectMapping periodMapping = new AggregateObjectMapping();
         periodMapping.setAttributeName("period");
         periodMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
@@ -254,7 +254,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         addressMapping.addForeignKeyFieldName("EMPLOYEE.ADDR_ID", "ADDRESS.ADDRESS_ID");
         descriptor.addMapping(addressMapping);
 
-        //Joel:EJBQLTesting 
+        //Joel:EJBQLTesting
         OneToOneMapping managerMapping = new OneToOneMapping();
         managerMapping.setAttributeName("manager");
         managerMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
@@ -268,7 +268,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         managedEmployeesMapping.useBasicIndirection();
         managedEmployeesMapping.addTargetForeignKeyFieldName("EMPLOYEE.MANAGER_ID", "EMPLOYEE.EMP_ID");
         descriptor.addMapping(managedEmployeesMapping);
-        
+
         OneToManyMapping childrenMapping = new OneToManyMapping();
         childrenMapping.setAttributeName("children");
         childrenMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Child.class);
@@ -333,9 +333,9 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.testing.models.employee.domain.Project.class);
         descriptor.getInheritancePolicy().dontReadSubclassesOnQueries();
 
-	// Interface Properties.
-	descriptor.getInterfacePolicy().addParentInterface(org.eclipse.persistence.testing.models.employee.interfaces.LargeProject.class);
-	
+    // Interface Properties.
+    descriptor.getInterfacePolicy().addParentInterface(org.eclipse.persistence.testing.models.employee.interfaces.LargeProject.class);
+
         // Descriptor Properties.
         descriptor.setAlias("LargeProject");
 
@@ -343,7 +343,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
-        // Named Queries.	
+        // Named Queries.
         // Event Manager.
         // Mappings.
         DirectToFieldMapping budgetMapping = new DirectToFieldMapping();
@@ -435,9 +435,9 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class, "S");
         descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.LargeProject.class, "L");
 
-	// Interface Properties.
-	descriptor.getInterfacePolicy().addParentInterface(org.eclipse.persistence.testing.models.employee.interfaces.Project.class);
-	
+    // Interface Properties.
+    descriptor.getInterfacePolicy().addParentInterface(org.eclipse.persistence.testing.models.employee.interfaces.Project.class);
+
         // Descriptor Properties.
         descriptor.useSoftCacheWeakIdentityMap();
         descriptor.setIdentityMapSize(100);
@@ -452,7 +452,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
-        // Named Queries.	
+        // Named Queries.
         // Event Manager.
         // Mappings.
         DirectToFieldMapping descriptionMapping = new DirectToFieldMapping();
@@ -491,9 +491,9 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.testing.models.employee.domain.Project.class);
         descriptor.getInheritancePolicy().dontReadSubclassesOnQueries();
 
-	// Interface Properties.
-	descriptor.getInterfacePolicy().addParentInterface(org.eclipse.persistence.testing.models.employee.interfaces.SmallProject.class);
-	
+    // Interface Properties.
+    descriptor.getInterfacePolicy().addParentInterface(org.eclipse.persistence.testing.models.employee.interfaces.SmallProject.class);
+
         // Descriptor Properties.
         descriptor.setAlias("SmallProject");
 
@@ -501,7 +501,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
-        // Named Queries.	
+        // Named Queries.
         // Event Manager.
         return descriptor;
     }

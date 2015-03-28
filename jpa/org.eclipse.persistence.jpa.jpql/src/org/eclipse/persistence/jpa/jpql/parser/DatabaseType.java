@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,53 +30,53 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class DatabaseType extends AbstractDoubleEncapsulatedExpression {
 
-	/**
-	 * Creates a new <code>DatabaseType</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param databaseType The database type
-	 */
-	public DatabaseType(AbstractExpression parent, String databaseType) {
-		super(parent, databaseType);
-	}
+    /**
+     * Creates a new <code>DatabaseType</code>.
+     *
+     * @param parent The parent of this expression
+     * @param databaseType The database type
+     */
+    public DatabaseType(AbstractExpression parent, String databaseType) {
+        super(parent, databaseType);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		acceptUnknownVisitor(visitor);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        acceptUnknownVisitor(visitor);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(DatabaseTypeQueryBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(DatabaseTypeQueryBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isSecondExpressionOptional() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isSecondExpressionOptional() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String parameterExpressionBNF(int index) {
-		return NumericLiteralBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String parameterExpressionBNF(int index) {
+        return NumericLiteralBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean shouldParseRightParenthesis(WordParser wordParser, boolean tolerant) {
-		// If the database type uses parenthesis, then this expression will own the right
-		// parenthesis,otherwise its parent expression should own it
-		return hasLeftParenthesis() || hasFirstExpression() || hasComma() || hasSecondExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean shouldParseRightParenthesis(WordParser wordParser, boolean tolerant) {
+        // If the database type uses parenthesis, then this expression will own the right
+        // parenthesis,otherwise its parent expression should own it
+        return hasLeftParenthesis() || hasFirstExpression() || hasComma() || hasSecondExpression();
+    }
 }

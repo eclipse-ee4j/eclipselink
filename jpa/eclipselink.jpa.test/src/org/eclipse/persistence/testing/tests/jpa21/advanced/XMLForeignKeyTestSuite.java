@@ -1,22 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     11/19/2012-2.5 Guy Pelletier 
+ *     11/19/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     11/22/2012-2.5 Guy Pelletier 
+ *     11/22/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
- *     12/07/2012-2.5 Guy Pelletier 
+ *     12/07/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     01/23/2013-2.5 Guy Pelletier 
+ *     01/23/2013-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.Date;
@@ -57,12 +57,12 @@ import junit.framework.Test;
 
 public class XMLForeignKeyTestSuite extends JUnitTestCase {
     public XMLForeignKeyTestSuite() {}
-    
+
     public XMLForeignKeyTestSuite(String name) {
         super(name);
         setPuName("MulitPU-3");
     }
-    
+
     protected void assertForeignKeyConstraint(String name, String definition, DatabaseTable table) {
         assertTrue("No foreign key constraints were found on table [" + table.getName()+ "]", table.hasForeignKeyConstraints());
         ForeignKeyConstraint constraint = table.getForeignKeyConstraint(name);
@@ -70,7 +70,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
         assertFalse("The foreign key definition for the constraint named [" + name + "] on table [" + table + "] was null.", constraint.getForeignKeyDefinition() == null);
         assertTrue("The foreign key definition for the constraint named [" + name + "] on table [" + table + "] was set as [" + constraint.getForeignKeyDefinition() + " ], but was expecting [" + definition + " ]", constraint.getForeignKeyDefinition().equals(definition));
     }
-    
+
     /**
      * Return the the persistence unit name for this test suite.
      */
@@ -78,85 +78,85 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
     public String getPersistenceUnitName() {
         return "MulitPU-3";
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("XMLForeignKeyTestSuite");
-        
+
         suite.addTest(new XMLForeignKeyTestSuite("testInheritancePrimaryKeyForeignKey"));
         suite.addTest(new XMLForeignKeyTestSuite("testCollectionTableForeignKey"));
         suite.addTest(new XMLForeignKeyTestSuite("testJoinTableForeignKeys"));
         suite.addTest(new XMLForeignKeyTestSuite("testMapKeyForeignKey"));
         suite.addTest(new XMLForeignKeyTestSuite("testManyToOneForeignKey"));
         suite.addTest(new XMLForeignKeyTestSuite("testElementCollectionForeignKeys"));
-        
+
         suite.addTest(new XMLForeignKeyTestSuite("testReadAndWriteDDLObjects"));
-        
+
         return suite;
     }
-    
+
     /**
-     * Tests an inheritance primary key foreign key setting. 
+     * Tests an inheritance primary key foreign key setting.
      */
     public void testInheritancePrimaryKeyForeignKey() {
         ClassDescriptor sprinterDescriptor = getPersistenceUnitServerSession().getDescriptor(Sprinter.class);
         DatabaseTable table = sprinterDescriptor.getTable("JPA21_XML_DDL_SPRINTER");
-        
+
         assertForeignKeyConstraint("XML_Sprinter_Foreign_Key", "FOREIGN KEY (SPRINTER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)", table);
     }
-    
+
     /**
-     * Tests an inheritance primary key foreign key setting. 
+     * Tests an inheritance primary key foreign key setting.
      */
     public void testCollectionTableForeignKey() {
         ClassDescriptor runnerDescriptor = getPersistenceUnitServerSession().getDescriptor(Runner.class);
         DirectCollectionMapping mapping = (DirectCollectionMapping) runnerDescriptor.getMappingForAttributeName("personalBests");
         DatabaseTable table = mapping.getReferenceTable();
-        
+
         assertForeignKeyConstraint("XML_Runner_PBS_Foreign_Key", "FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)", table);
     }
-    
+
     /**
-     * Tests a join table foreign key settings. 
+     * Tests a join table foreign key settings.
      */
     public void testJoinTableForeignKeys() {
         ClassDescriptor runnerDescriptor = getPersistenceUnitServerSession().getDescriptor(Runner.class);
         ManyToManyMapping mapping = (ManyToManyMapping) runnerDescriptor.getMappingForAttributeName("races");
         DatabaseTable table = mapping.getRelationTable();
-        
+
         assertForeignKeyConstraint("XMLRunners_Races_Foreign_Key", "FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)", table);
         assertForeignKeyConstraint("XMLRunners_Races_Inverse_Foreign_Key", "FOREIGN KEY (RACE_ID) REFERENCES JPA21_XML_DDL_RACE (ID)", table);
     }
-    
+
     /**
-     * Tests a map key foreign key setting. 
+     * Tests a map key foreign key setting.
      */
     public void testMapKeyForeignKey() {
         ClassDescriptor runnerDescriptor = getPersistenceUnitServerSession().getDescriptor(Runner.class);
         OneToManyMapping mapping = (OneToManyMapping) runnerDescriptor.getMappingForAttributeName("shoes");
         OneToOneMapping keyMapping = (OneToOneMapping) ((MappedKeyMapContainerPolicy) mapping.getContainerPolicy()).getKeyMapping();
         DatabaseTable table = keyMapping.getForeignKeyFields().get(0).getTable();
-        
+
         assertForeignKeyConstraint("XMLRunner_ShoeTag_Foreign_Key", "FOREIGN KEY (TAG_ID) REFERENCES JPA21_XML_DDL_SHOE_TAG (ID)", table);
     }
-    
+
     /**
-     * Tests a many to one foreign key setting. 
+     * Tests a many to one foreign key setting.
      */
     public void testManyToOneForeignKey() {
         ClassDescriptor shoeDescriptor = getPersistenceUnitServerSession().getDescriptor(Shoe.class);
         OneToOneMapping mapping = (OneToOneMapping) shoeDescriptor.getMappingForAttributeName("runner");
         DatabaseTable table = mapping.getForeignKeyFields().get(0).getTable();
-        
+
         assertForeignKeyConstraint("XMLShoes_Runner_Foreign_Key", "FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)", table);
-        
+
         ClassDescriptor organizerDescriptor = getPersistenceUnitServerSession().getDescriptor(Organizer.class);
         mapping = (OneToOneMapping) organizerDescriptor.getMappingForAttributeName("race");
         table = mapping.getForeignKeyFields().get(0).getTable();
-        
+
         assertForeignKeyConstraint("XMLOrganizer_Race_Foreign_Key", "FOREIGN KEY (RACE_ID) REFERENCES JPA21_XML_DDL_RACE (ID)", table);
     }
-    
+
     /**
      * Tests an element collection foreign key settings.
      */
@@ -165,31 +165,31 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
         DirectMapMapping mapping = (DirectMapMapping) runnerDescriptor.getMappingForAttributeName("endorsements");
         OneToOneMapping keyMapping = (OneToOneMapping) ((MappedKeyMapContainerPolicy) mapping.getContainerPolicy()).getKeyMapping();
         DatabaseTable table = mapping.getReferenceTable();
-        
+
         assertForeignKeyConstraint("XMLEndorsements_Foreign_Key", "FOREIGN KEY (ATHLETE_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)", table);
-        
+
         table = keyMapping.getForeignKeyFields().get(0).getTable();
-        
+
         assertForeignKeyConstraint("XMLEndorsements_Key_Foreign_Key", "FOREIGN KEY (ENDORSER_ID) REFERENCES JPA_XML_DDL_ENDORSER (ID)", table);
-        
+
         mapping = (DirectMapMapping) runnerDescriptor.getMappingForAttributeName("accomplishments");
         table = mapping.getReferenceTable();
-        
+
         assertForeignKeyConstraint("XMLAccomplistments_Foreign_Key", "FOREIGN KEY (ATHLETE_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)", table);
     }
-    
+
     /**
-     * Test copied from xml Converter test suite. Will write and read the 
+     * Test copied from xml Converter test suite. Will write and read the
      * objects back and at the same time test their converters as well.
      */
     public void testReadAndWriteDDLObjects() {
         // Load scripts for this PU are built for MySql
         if (getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-                
+
             try {
                 beginTransaction(em);
-                
+
                 Runner runner = new Runner();
                 runner.setAge(53);
                 runner.setIsFemale();
@@ -205,30 +205,30 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
                 runnerStatus.setRunningStatus(RunningStatus.D);
                 runnerInfo.setStatus(runnerStatus);
                 runner.setInfo(runnerInfo);
-                
+
                 Race race = new Race();
                 race.setName("The Ultimate Marathon");
                 race.addRunner(runner);
-                
+
                 Organizer organizer = new Organizer();
                 organizer.setName("Joe Organ");
                 organizer.setRace(race);
-                
+
                 Responsibility responsibility = new Responsibility();
                 responsibility.setUniqueIdentifier(new Long(System.currentTimeMillis()));
                 responsibility.setDescription("Raise funds");
-                
+
                 race.addOrganizer(organizer, responsibility);
-                
+
                 em.persist(race);
                 em.persist(organizer);
                 em.persist(runner);
                 commitTransaction(em);
-                    
+
                 // Clear the cache
                 em.clear();
                 clearCache();
-        
+
                 Runner runnerRefreshed = em.find(Runner.class, runner.getId());
                 assertTrue("The age conversion did not work.", runnerRefreshed.getAge() == 52);
                 assertTrue("The embeddable health conversion did not work.", runnerRefreshed.getInfo().getHealth().equals(Health.HEALTHY));
@@ -239,15 +239,15 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
                 assertTrue("Distance (map key) conversion did not work.", runnerRefreshed.getPersonalBests().keySet().contains("5K"));
                 assertTrue("Time (map value) conversion did not work.", runnerRefreshed.getPersonalBests().values().contains("47:34.0"));
                 assertTrue("Time (map value) conversion did not work.", runnerRefreshed.getPersonalBests().values().contains("26:41.0"));
-                
+
                 Race raceRefreshed = em.find(Race.class, race.getId());
                 Map<Responsibility, Organizer> organizers = raceRefreshed.getOrganizers();
                 assertFalse("No race organizers returned.", organizers.isEmpty());
                 assertTrue("More than one race organizer returned.", organizers.size() == 1);
-                
+
                 Responsibility resp = organizers.keySet().iterator().next();
                 assertTrue("Responsibility was not uppercased by the converter", resp.getDescription().equals("RAISE FUNDS"));
-                
+
                 for (String accomplishment : runnerRefreshed.getAccomplishments().keySet()) {
                     assertTrue("Accomplishment (map key) conversion did not work.", accomplishment.endsWith("!!!"));
                 }
@@ -255,7 +255,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
-                    
+
                 throw e;
             } finally {
                 closeEntityManager(em);

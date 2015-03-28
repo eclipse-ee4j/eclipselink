@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -30,13 +30,13 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  *
  */
 public class MetamodelTest extends JUnitTestCase {
-    
+
     public static final String PERSISTENCE_UNIT_NAME = "metamodel1";
     /** Cache the EMF on the test suite - for performance - to save 20 sec per test case */
     public EntityManagerFactory entityManagerFactory = null;
     /** Create tables only once - for performance */
     public boolean isDatabaseSchemaCreated = false;
-    
+
     public MetamodelTest() {
         super();
     }
@@ -59,25 +59,25 @@ public class MetamodelTest extends JUnitTestCase {
             isDatabaseSchemaCreated = true;
         }
     }
-    
-    
+
+
     public EntityManagerFactory initialize() {
         return initialize(false);
     }
-    
+
     public void resetEntityManagerFactory() {
         try {
             if(null != entityManagerFactory && entityManagerFactory.isOpen()) {
                 entityManagerFactory.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();            
+            e.printStackTrace();
         } finally {
             entityManagerFactory = null;
         }
-        
+
     }
-    
+
     public EntityManagerFactory initialize(boolean overrideEMFCachingForTesting) {
         try {
             if(null == entityManagerFactory || overrideEMFCachingForTesting || !entityManagerFactory.isOpen()) {
@@ -88,7 +88,7 @@ public class MetamodelTest extends JUnitTestCase {
         }
         return entityManagerFactory;
     }
-    
+
     public void cleanup(EntityManager em) {
         // close JPA
         try {

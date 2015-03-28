@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *    Denise Smith - 2.5 
+ *    Denise Smith - 2.5
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
@@ -18,10 +18,10 @@ import javax.xml.namespace.QName;
  * <p>Root is used to hold an Object along with the corresponding QName and some other related information.
  * Typically this is used when the object is marshalled/unmarshalled to a QName other than
  * the defaultRootElement set on the Descriptor.</p>
- * 
- * <p>Root objects can be returned from Unmarshaller unmarshal operations and 
+ *
+ * <p>Root objects can be returned from Unmarshaller unmarshal operations and
  * can be given to Marshaller.marshal operations.  They may also be in values
- * returned by AnyCollectionMappings and AnyObjectMappings.</p>  
+ * returned by AnyCollectionMappings and AnyObjectMappings.</p>
  */
 public class Root {
     protected Object rootObject;
@@ -51,7 +51,7 @@ public class Root {
      * @return the local name
      */
     public String getLocalName() {
-    	return localName;
+        return localName;
     }
 
     /**
@@ -60,13 +60,13 @@ public class Root {
      * @return the namespace uri
      */
     public String getNamespaceURI() {
-    	return namespaceUri;
+        return namespaceUri;
     }
 
     /**
      * Sets the object associated with this XMLRoot.  This may be null.
      *
-     * @param rootObject The object to associate with this XMLRoot. 
+     * @param rootObject The object to associate with this XMLRoot.
      */
     public void setObject(Object rootObject) {
         this.rootObject = rootObject;
@@ -74,7 +74,7 @@ public class Root {
 
     /**
      * Set the element name.  This method will parse the qualified
-     * name in an attempt to set the localName fields.  ie: this could be 
+     * name in an attempt to set the localName fields.  ie: this could be
      * set to "someLocalName" or "somePrefix:someLocalName"
      *
      * @param name the new local name
@@ -84,12 +84,12 @@ public class Root {
             this.localName = Constants.EMPTY_STRING;
             return;
         }
-    	int colonIdx = name.indexOf(Constants.COLON);
-    	if(colonIdx > -1){
+        int colonIdx = name.indexOf(Constants.COLON);
+        if(colonIdx > -1){
             this.localName = name.substring(colonIdx +1);
-    	}else{
-    	    this.localName = name;
-    	}
+        }else{
+            this.localName = name;
+        }
     }
 
     /**
@@ -98,11 +98,11 @@ public class Root {
      * @param rootElementUri the new namespace uri
      */
     public void setNamespaceURI(String rootElementUri) {
-    	if(rootElementUri != null && rootElementUri.length() ==0){
+        if(rootElementUri != null && rootElementUri.length() ==0){
             this.namespaceUri = null;
-    	}else{
-       	    this.namespaceUri = rootElementUri;
-    	}
+        }else{
+               this.namespaceUri = rootElementUri;
+        }
     }
     /**
      * Gets the encoding which will be set on the XMLRoot during unmarshal.
@@ -132,7 +132,7 @@ public class Root {
     }
 
     /**
-     * Sets the version. 
+     * Sets the version.
      *
      * @param version the new version
      */
@@ -193,7 +193,7 @@ public class Root {
     public QName getSchemaType() {
         return schemaType;
     }
-    
+
     /**
      * Sets the declared type.  This may be different than the getObject().getClass(), for example,
      * in the case where inheritance is used the declared type may be the super class and the actual
@@ -204,7 +204,7 @@ public class Root {
     public void setDeclaredType(Class type) {
         this.declaredType = type;
     }
-    
+
     /**
      * Gets the declared type.  This may be different than the getObject().getClass(), for example,
      * in the case where inheritance is used the declared type may be the super class and the actual
@@ -230,7 +230,7 @@ public class Root {
      * Sets that this XMLRoot object is nil.  If setNil(true) is explicitly called then isNil() will
      * return true even if rootObject is not null.
      *
-     * @param nil 
+     * @param nil
      */
     public void setNil(boolean nil) {
         this.nil = nil;

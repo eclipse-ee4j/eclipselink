@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries.report;
 
 import java.util.*;
@@ -33,8 +33,8 @@ public class Scenario1_7d extends ReportQueryTestCase {
         for (Enumeration e = employees.elements(); e.hasMoreElements(); ) {
             Employee emp = (Employee)e.nextElement();
             Object[] result = new Object[0];
-            addResult(result, 
-                      getSession().getDescriptor(Employee.class).getObjectBuilder().extractPrimaryKeyFromObject(emp, 
+            addResult(result,
+                      getSession().getDescriptor(Employee.class).getObjectBuilder().extractPrimaryKeyFromObject(emp,
                                                                                                                 getAbstractSession()));
         }
     }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -24,79 +24,79 @@ import javax.swing.SwingConstants;
 
 /**
  * Asynchronously display a copyright and image.
- * 
+ *
  * Usage:
- * 	SplashScreen ss = new SplashScreen("- 2001...", icon);
- * 	ss.start();
- * 	...initialize stuff...
- * 	ss.stop();
+ *     SplashScreen ss = new SplashScreen("- 2001...", icon);
+ *     ss.start();
+ *     ...initialize stuff...
+ *     ss.stop();
  */
 public final class SplashScreen
-	extends JWindow
-	implements Runnable
+    extends JWindow
+    implements Runnable
 {
-	private Thread thread;
-	private int timeout;
+    private Thread thread;
+    private int timeout;
 
-	// ********** constructor/initialization **********
+    // ********** constructor/initialization **********
 
-	public SplashScreen(Frame owner, String copyright, Icon image, int timeout) {
-		super(owner);
-		this.timeout = timeout;
-		this.initialize(copyright, image);
-	}
+    public SplashScreen(Frame owner, String copyright, Icon image, int timeout) {
+        super(owner);
+        this.timeout = timeout;
+        this.initialize(copyright, image);
+    }
 
-	/**
-	 * no timeout
-	 */
-	public SplashScreen(Frame owner, String copyright, Icon image) {
-		this(owner, copyright, image, 0);
-	}
-	
-	/**
-	 * no copyright
-	 */
-	public SplashScreen(Frame owner, Icon image) {
-		this(owner, "", image);
-	}
+    /**
+     * no timeout
+     */
+    public SplashScreen(Frame owner, String copyright, Icon image) {
+        this(owner, copyright, image, 0);
+    }
 
-	private void initialize(String copyright, Icon image) {
-		// copyright - probably always displayed left-to-right, to match the image
-		JLabel copyrightLabel = new JLabel(copyright, SwingConstants.LEFT);
-		copyrightLabel.setFont(new Font("dialog", Font.PLAIN, 12));
-		int copyrightWidth = copyrightLabel.getPreferredSize().width;
-		int copyrightHeight = copyrightLabel.getPreferredSize().height;
+    /**
+     * no copyright
+     */
+    public SplashScreen(Frame owner, Icon image) {
+        this(owner, "", image);
+    }
 
-		// image
-		JLabel imageLabel = new JLabel(image);
-		int imageWidth = image.getIconWidth();
-		int imageHeight = image.getIconHeight();
-		imageLabel.setBounds(0, 0, imageWidth, imageHeight);
+    private void initialize(String copyright, Icon image) {
+        // copyright - probably always displayed left-to-right, to match the image
+        JLabel copyrightLabel = new JLabel(copyright, SwingConstants.LEFT);
+        copyrightLabel.setFont(new Font("dialog", Font.PLAIN, 12));
+        int copyrightWidth = copyrightLabel.getPreferredSize().width;
+        int copyrightHeight = copyrightLabel.getPreferredSize().height;
 
-		// place the copyright near the bottom left hand corner
-		copyrightLabel.setBounds(10, imageHeight - 26, copyrightWidth, copyrightHeight);
+        // image
+        JLabel imageLabel = new JLabel(image);
+        int imageWidth = image.getIconWidth();
+        int imageHeight = image.getIconHeight();
+        imageLabel.setBounds(0, 0, imageWidth, imageHeight);
 
-		// add the components in the right order
-		this.getContentPane().add(copyrightLabel);
-		this.getContentPane().add(imageLabel);
+        // place the copyright near the bottom left hand corner
+        copyrightLabel.setBounds(10, imageHeight - 26, copyrightWidth, copyrightHeight);
 
-		// center the image on the screen
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int positionX = (screenSize.width - imageWidth) / 2;
-		int positionY = (screenSize.height - imageHeight) / 2;
+        // add the components in the right order
+        this.getContentPane().add(copyrightLabel);
+        this.getContentPane().add(imageLabel);
 
-		this.setBounds(positionX, positionY, imageWidth, imageHeight);
-	}
+        // center the image on the screen
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int positionX = (screenSize.width - imageWidth) / 2;
+        int positionY = (screenSize.height - imageHeight) / 2;
+
+        this.setBounds(positionX, positionY, imageWidth, imageHeight);
+    }
 
 
-	// ********** Runnable implementation **********
+    // ********** Runnable implementation **********
 
-	/**
-	 * Display the splash screen and wait for a timeout.
-	 */
-	public void run() {
+    /**
+     * Display the splash screen and wait for a timeout.
+     */
+    public void run() {
         setVisible(true);
-       
+
         synchronized(this) {
             try {
                 wait(timeout);
@@ -109,29 +109,29 @@ public final class SplashScreen
     }
 
 
-	// ********** public API **********
+    // ********** public API **********
 
-	/**
-	 * Start the thread that will display the splash screen.
-	 */
-	public synchronized void start() {
-		if (this.thread != null) {
-			throw new IllegalStateException("splash screen is already started");
-		}
-		this.thread = new Thread(this, "Splash Screen");
-		this.thread.start();
-	}
+    /**
+     * Start the thread that will display the splash screen.
+     */
+    public synchronized void start() {
+        if (this.thread != null) {
+            throw new IllegalStateException("splash screen is already started");
+        }
+        this.thread = new Thread(this, "Splash Screen");
+        this.thread.start();
+    }
 
-	/**
-	 * Hide the splash screen by interrupting the thread.
-	 */
-	public synchronized void stop() {
-		if (this.thread == null) {
-			throw new IllegalStateException("splash screen is not started");
-		}
-		if (this.thread.isAlive()) {
-			this.thread.interrupt();
-		}
-	}
+    /**
+     * Hide the splash screen by interrupting the thread.
+     */
+    public synchronized void stop() {
+        if (this.thread == null) {
+            throw new IllegalStateException("splash screen is not started");
+        }
+        if (this.thread.isAlive()) {
+            this.thread.interrupt();
+        }
+    }
 
 }

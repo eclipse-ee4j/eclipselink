@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -23,48 +23,48 @@ import org.eclipse.persistence.tools.workbench.uitools.app.TreeNodeValueModel;
 
 public class SCTestNodeManager implements NodeManager {
 
-	private ArrayList projectNodes;
-	
-	public SCTestNodeManager( ApplicationNode projectNode) {
-		super();
-		initialize( projectNode);
-	}
+    private ArrayList projectNodes;
 
-	public void initialize( ApplicationNode projectNode) {
-		
-		this.projectNodes = new ArrayList( 5);
-		this.addProjectNode( projectNode);
-	}
+    public SCTestNodeManager( ApplicationNode projectNode) {
+        super();
+        initialize( projectNode);
+    }
 
-	public void addProjectNode( ApplicationNode node) {
+    public void initialize( ApplicationNode projectNode) {
 
-		int i = this.projectNodes.size();
-		
-		this.projectNodes.add( i, node);
-	}
+        this.projectNodes = new ArrayList( 5);
+        this.addProjectNode( projectNode);
+    }
 
-	public ApplicationNode[] projectNodesFor( Plugin plugin) {
+    public void addProjectNode( ApplicationNode node) {
 
-		return (ApplicationNode[]) this.projectNodes.toArray(new ApplicationNode[this.projectNodes.size()]);
-	}
+        int i = this.projectNodes.size();
 
-	public TreeNodeValueModel getRootNode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        this.projectNodes.add( i, node);
+    }
 
-	public NavigatorSelectionModel getTreeSelectionModel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public boolean save(ApplicationNode node, WorkbenchContext workbenchContext) {
-		return false;
-	}
+    public ApplicationNode[] projectNodesFor( Plugin plugin) {
+
+        return (ApplicationNode[]) this.projectNodes.toArray(new ApplicationNode[this.projectNodes.size()]);
+    }
+
+    public TreeNodeValueModel getRootNode() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public NavigatorSelectionModel getTreeSelectionModel() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean save(ApplicationNode node, WorkbenchContext workbenchContext) {
+        return false;
+    }
 
 
-	public void removeProjectNode(ApplicationNode node) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void removeProjectNode(ApplicationNode node) {
+        // TODO Auto-generated method stub
+
+    }
 }

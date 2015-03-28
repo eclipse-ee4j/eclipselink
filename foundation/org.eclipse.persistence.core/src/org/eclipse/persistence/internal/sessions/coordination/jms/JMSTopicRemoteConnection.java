@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     cdelahun - Bug 214534: added JMS Cache Coordination for publishing only
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.coordination.jms;
 
 import java.io.Serializable;
@@ -45,18 +45,18 @@ import javax.jms.Message;
  * allow JMSTopicRemoteConnection to ignore messages that it has itself published.
  * Unfortunately J2EE doesn't allow that:
  * J2EE spec. (J2EE.6.6 in v1.4) states:
- *   "The following methods may only be used by application components executing 
+ *   "The following methods may only be used by application components executing
  *     in the application client container: javax.jms.Session method setMessageListener ...
  *   Application components in the web and EJB containers must not attempt to create more than one
  *     active (not closed) Session object per connection."
- * Because of these restrictions 
+ * Because of these restrictions
  * a) two JMSTopicRemoteConnection are required - one for publishing (external) and another one for listening (local);
  * b) listening should be done using subscriber.receive() in an infinite loop in a separate thread,
  * that's why the class implements Runnable interface.
  * c) publishing connection (external) could be used concurrently to send messages, so it cannot use the same publisher/session/topicConnection
  *   Instead, it will store the TopicConnectionFactory and use it to create connections when executeCommandInternal is called (much like
  *   DatabaseAccessor when an external pool is used)
- * 
+ *
  * @author Steven Vo
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
@@ -65,17 +65,17 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
     protected Topic topic;
     // indicates whether it's a local connection.
     protected boolean isLocal;
-    
+
     // not used by External (publishing) connection unless it is set to reuse the JMSTopicPublisher
     private TopicPublisher publisher;
     protected TopicConnection topicConnection;
     protected TopicSession topicSession;
-    
+
     // Used only by local (listening) connection
     protected TopicSubscriber subscriber;
-    
-    
-    // Used only by local (listening) connection and 
+
+
+    // Used only by local (listening) connection and
     // only in case shouldRemoveConnectionOnError==false.
     // Time to wait after error receiving jms message:
     // wait to avoid a busy thread throwing barrage of exceptions
@@ -110,14 +110,14 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 this.topicSession = topicConnection.createTopicSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
                 this.setPublisher(topicSession.createPublisher(topic));
                 rcm.logDebug("broadcast_connection_created", getInfo());
-            } //else bug214534: it's an external connection, with TopicConnections, sessions and publishers created as needed 
+            } //else bug214534: it's an external connection, with TopicConnections, sessions and publishers created as needed
         } catch (JMSException ex) {
             rcm.logDebug("failed_to_create_broadcast_connection", getInfo());
             close();
             throw ex;
         }
     }
-    
+
     /**
      * Creates local connections that do not use a TopicConnection or TopicSession,
      * useful only for processing already received JMS messages
@@ -137,7 +137,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
     public boolean isLocal() {
         return isLocal;
     }
-        
+
     /**
      * INTERNAL:
      * Execute the remote command. The result of execution is returned.
@@ -162,23 +162,23 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 ((BytesMessage)message).writeBytes((byte[])command);
             } else {
                 message = publishingSession.createObjectMessage();
-                ((ObjectMessage)message).setObject((Serializable)command);                
+                ((ObjectMessage)message).setObject((Serializable)command);
             }
-                
+
             Object[] debugInfo = null;
             if (rcm.shouldLogDebugMessage()) {
                 // null passed because JMSMessageId is not yet created.
                 debugInfo = logDebugBeforePublish(null);
             }
-                
+
             topicPublisher.publish(message);
-                
+
             // debug logging is on
             if (debugInfo != null) {
                 // now messageId has been created - let's use it.
                 logDebugAfterPublish(debugInfo, message.getJMSMessageID());
             }
-            
+
             return null;
         } finally {
             //only need to close the topicConnection, not the session or publisher, and only if it was created in this method.
@@ -243,7 +243,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
             failDeserializeMessage(messageId, exception);
             return;
         }
-        
+
         processReceivedObject(object, messageId);
     }
 
@@ -262,12 +262,12 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
     /**
      * INTERNAL:
      * This method is called by close method.
-     * This method usually 
+     * This method usually
      * (but not always see comment to areAllResourcesFreedOnClose method)
      * frees all the resources.
      */
     protected void closeInternal() throws JMSException {
-        //this method should be a no-op now that external connections open/close TopicConnection when needed.  Close on Local 
+        //this method should be a no-op now that external connections open/close TopicConnection when needed.  Close on Local
         //connections will eventually cause topicConnection.close() in their listening thread, so it should not be called here
         if(areAllResourcesFreedOnClose() && topicConnection!=null) {
             // There is no need to close the sessions, producers, and consumers of a closed TopicConnection.
@@ -362,7 +362,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 }
             }
         }
-        
+
         // Out of the loop - that means close method has been called.
         rcm.logDebug("broadcast_connection_stop_listening", getInfo());
         if(isClosing()) {
@@ -377,7 +377,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 state = STATE_CLOSED;
             }
         }
-        
+
         if(shouldReconnect && !tm.getRemoteCommandManager().isStopped()) {
             try {
                 tm.createLocalConnection();
@@ -406,14 +406,14 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
      */
     protected boolean shouldCheckServiceId() {
         return true;
-    }    
-    
+    }
+
     /**
      * INTERNAL:
      * set the TopicPublisher to be used when this RemoteConnection executes a command.
      * Setting the TopicPublisher avoids having it obtained on each executeCommandInternal
      * call.  Passing in a publisher requires a TopicSession to also be set.  These will
-     * not be closed until the external RemoteConnection is closed, and then only if the 
+     * not be closed until the external RemoteConnection is closed, and then only if the
      * TopicConnection is also set.
      */
     public void setPublisher(TopicPublisher publisher) {
@@ -423,11 +423,11 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
     public TopicPublisher getPublisher() {
         return publisher;
     }
-    
+
     /**
      * INTERNAL:
-     * set the TopicSubscriber on a local RemoteConnection for reading JMS messages when 
-     * this runnable connection is started in a thread.  If setting this, a TopicConnection 
+     * set the TopicSubscriber on a local RemoteConnection for reading JMS messages when
+     * this runnable connection is started in a thread.  If setting this, a TopicConnection
      * is also required to be set, in order for it to be closed when the thread completes.
      * This is only to be used when using the JMSTopicRemoteConnection(rcm) constructor.
      */
@@ -438,14 +438,14 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
     public TopicSubscriber getSubscriber() {
         return subscriber;
     }
-    
+
     /**
      * INTERNAL:
-     * set the TopicSession to be used when this RemoteConnection executes a command if 
-     * the publisher is also set.  Setting the TopicSession and Publisher avoids having 
-     * them obtained on each executeCommandInternal call.  Passing in a TopicSession 
-     * requires a TopicPublisher to also be set.  These will not be closed until the 
-     * external RemoteConnection is closed, and then only if the TopicConnection is also 
+     * set the TopicSession to be used when this RemoteConnection executes a command if
+     * the publisher is also set.  Setting the TopicSession and Publisher avoids having
+     * them obtained on each executeCommandInternal call.  Passing in a TopicSession
+     * requires a TopicPublisher to also be set.  These will not be closed until the
+     * external RemoteConnection is closed, and then only if the TopicConnection is also
      * set.
      */
     public void setTopicSession(TopicSession topicSession) {
@@ -455,46 +455,46 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
     public TopicSession getTopicSession() {
         return topicSession;
     }
-    
+
     /**
      * INTERNAL:
-     * Set the TopicConnectionFactory, which is used if the publisher is not set to 
+     * Set the TopicConnectionFactory, which is used if the publisher is not set to
      * obtain the TopicConnection, TopicSession and TopicPublisher
      */
     public void setTopicConnectionFactory(TopicConnectionFactory topicConnectionFactory){
         this.topicConnectionFactory = topicConnectionFactory;
     }
-    
+
     public TopicConnection getTopicConnectionFactory() {
         return topicConnection;
     }
-    
+
     /**
      * INTERNAL:
      * Set the TopicConnection. If this is set, a Publisher and TopicSession must also
-     * be set, or a new TopicConnection will be obtained on each executeCommandInternal 
+     * be set, or a new TopicConnection will be obtained on each executeCommandInternal
      * call.  This TopicConnection is only used on close, as closing the TopicConnection
      * also closes any open TopicSessions and Publishers obtained from it.
      */
     public void setTopicConnection(TopicConnection topicConnection){
         this.topicConnection = topicConnection;
     }
-    
+
     public TopicConnection getTopicConnection() {
         return topicConnection;
     }
-    
+
     /**
      * INTERNAL:
-     * Set the Topic.  The Topic is required with the TopicConnectionFactory to obtain connections 
+     * Set the Topic.  The Topic is required with the TopicConnectionFactory to obtain connections
      * if the TopicPublisher is not set.
-     * 
-     * @see 
+     *
+     * @see
      */
     public void setTopic(Topic topic){
         this.topic = topic;
     }
-    
+
     public Topic getTopic() {
         return topic;
     }

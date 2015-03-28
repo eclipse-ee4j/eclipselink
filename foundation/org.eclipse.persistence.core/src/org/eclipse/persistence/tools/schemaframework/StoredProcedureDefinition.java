@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform. 
- ******************************************************************************/  
+ *     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
+ ******************************************************************************/
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.IOException;
@@ -169,12 +169,12 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
             printReturn(writer, session);
             writer.write(platform.getProcedureAsString());
             writer.write("\n");
-            
+
             if (platform.shouldPrintStoredProcedureVariablesAfterBeginString()) {
                 writer.write(platform.getProcedureBeginString());
                 writer.write("\n");
             }
-            
+
             if (!getVariables().isEmpty()) {
                 writer.write("DECLARE\n");
             }
@@ -189,7 +189,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
                 writer.write(platform.getBatchDelimiterString());
                 writer.write("\n");
             }
-            
+
             if (!platform.shouldPrintStoredProcedureVariablesAfterBeginString()) {
                 writer.write(platform.getProcedureBeginString());
                 writer.write("\n");

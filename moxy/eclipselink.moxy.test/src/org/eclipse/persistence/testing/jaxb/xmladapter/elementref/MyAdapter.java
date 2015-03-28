@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,10 +19,10 @@ public class MyAdapter extends XmlAdapter<AbstractAdd, String> {
     private static String INVOICE = "invoiceAdd";
     private static String SALES_TEXT = "Sales Order Text";
     private static String INVOICE_TEXT = "Invoice Text";
-    
+
     public MyAdapter() {
     }
-    
+
     @Override
     public String unmarshal(AbstractAdd v) throws Exception {
         if (v instanceof SalesOrderAdd) {
@@ -35,7 +35,7 @@ public class MyAdapter extends XmlAdapter<AbstractAdd, String> {
     public AbstractAdd marshal(String v) throws Exception {
         if (SALES.equals(v)) {
             return new SalesOrderAdd(SALES_TEXT);
-        } 
+        }
         return new InvoiceAdd(INVOICE_TEXT);
     }
 }

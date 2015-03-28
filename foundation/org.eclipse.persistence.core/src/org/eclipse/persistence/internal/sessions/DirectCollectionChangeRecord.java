@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
@@ -33,7 +33,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
      * of that value in the database not just one.
      */
     protected HashMap commitAddMap;
-    
+
     /**
      * Used only in case listOrderField != null in the mapping.
      * Maps each object which has been added or removed or which order in the list has changed
@@ -42,10 +42,10 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
     protected Map changedIndexes;
     protected int oldSize;
     protected int newSize;
-    
+
     protected boolean isFirstToAddAlreadyInCollection;
     protected boolean isFirstToRemoveAlreadyOutCollection;
-    
+
     protected boolean isFirstToAdd = true;
     protected boolean isFirstToRemove = true;
 
@@ -53,7 +53,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
      * Indicates whether IndirectList's order has been repaired.
      */
     protected boolean orderHasBeenRepaired;
-    
+
     /**
      * This default constructor.
      */
@@ -122,7 +122,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         }
         getCommitAddMap().put(key, Integer.valueOf(addValue + commitValue));
     }
-    
+
     /**
      * This method takes a hashtable of primitive objects and adds them to the remove list.
      * Each reference in the hashtable lists the number of this object that needs to be removed from the
@@ -138,7 +138,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
             addRemoveChange(object, (Integer)additions.get(object));
         }
     }
-    
+
     /**
      * This method takes a single remove change and integrates it with this changeset.
      */
@@ -169,7 +169,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
             if(this.isFirstToRemoveAlreadyOutCollection) {
                 return;
             }
-        }   
+        }
         int removeValue = count.intValue();
         int commitValue = 0;
         if (getCommitAddMap().containsKey(key)){
@@ -341,7 +341,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
 
         if(this.changedIndexes != null) {
             if(((DirectCollectionChangeRecord)mergeFromRecord).getChangedIndexes() != null) {
-                Iterator<Map.Entry<Object, Set[]>> itEntries = ((DirectCollectionChangeRecord)mergeFromRecord).getChangedIndexes().entrySet().iterator();  
+                Iterator<Map.Entry<Object, Set[]>> itEntries = ((DirectCollectionChangeRecord)mergeFromRecord).getChangedIndexes().entrySet().iterator();
                 while(itEntries.hasNext()) {
                     Map.Entry<Object, Set[]> entry = itEntries.next();
                     Object obj = entry.getValue();
@@ -349,7 +349,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
                     if(this.changedIndexes.containsKey(obj)) {
                         // we assuming that these are two consecutive change records:
                         // oldIndexes[1] should be equal to newIndexes[0]
-                        ((Set[])(this.changedIndexes.get(obj)))[1] = indexes[1];  
+                        ((Set[])(this.changedIndexes.get(obj)))[1] = indexes[1];
                     } else {
                         this.changedIndexes.put(obj, indexes);
                     }
@@ -371,16 +371,16 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         //nothing for this record type to do as it does not reference any changesets
     }
-    
+
     public static class NULL {
         // This is a placeholder for null instances.
         public NULL(){
-        }        
+        }
         public boolean equals(Object object){
             return object instanceof NULL;
-        }        
+        }
     }
-    
+
     public void setFirstToAddAlreadyInCollection(boolean flag) {
         this.isFirstToAddAlreadyInCollection = flag;
     }
@@ -394,7 +394,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
     public boolean isFirstToRemoveAlreadyOutCollection() {
         return this.isFirstToRemoveAlreadyOutCollection;
     }
-    
+
     public void setChangedIndexes(Map changedIndexes) {
         this.changedIndexes = changedIndexes;
     }
@@ -442,14 +442,14 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
            }
        }
    }
-   
+
   public void setOrderHasBeenRepaired(boolean hasBeenRepaired) {
        this.orderHasBeenRepaired = hasBeenRepaired;
    }
    public boolean orderHasBeenRepaired() {
        return this.orderHasBeenRepaired;
    }
-   
+
    /**
     * Clears info about added / removed objects set by change tracker.
     */

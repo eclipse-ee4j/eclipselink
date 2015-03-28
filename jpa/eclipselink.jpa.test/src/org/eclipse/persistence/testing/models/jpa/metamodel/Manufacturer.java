@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
- ******************************************************************************/  
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
 import static javax.persistence.CascadeType.ALL;
@@ -49,7 +49,7 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     // 322166 test case
     @BasicCollection(valueColumn=@Column(name="PARAM"))
     private Collection<String> paramCollection;
-    
+
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="manufacturer")
     private Set<Computer> computers = new HashSet<Computer>();
@@ -57,7 +57,7 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="employer")
     private List<HardwareDesigner> hardwareDesigners = new ArrayList<HardwareDesigner>();
-    
+
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     //@OneToMany(cascade=ALL, mappedBy="manufacturer")
     //private Collection<SoftwareDesigner> softwareDesigners = new HashSet<SoftwareDesigner>();
@@ -65,90 +65,90 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="mappedEmployer")
     private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();
-    
+
     // The following MapAttribute use cases are referenced in Design Issue 63
     // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_63:_20090824:_Add_Map_support_for_.40MapKey_to_MapAttribute
     // UC 1a: Generics KV set, no @MapKey present, PK is singular field
     @OneToMany(cascade=ALL, mappedBy="mappedEmployerUC1a")
     private Map<String, HardwareDesigner> hardwareDesignersMapUC1a;
-    
+
     // UC 2: Generics KV set, @MapKey is present
     @OneToMany(cascade=ALL, mappedBy="mappedEmployerUC2")
     @MapKey(name="name")
     private Map<String, HardwareDesigner> hardwareDesignersMapUC2;
-    
+
     // UC 4: No Generics KV set, @MapKey is present
     @OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC4")
     @MapKey(name="name")
     private Map hardwareDesignersMapUC4;
-    
+
     // UC 6: No Generics KV set, no targetEntity set, @MapKey is *(set/unset)
     // INVALID
     //@OneToMany(cascade=ALL, mappedBy="mappedEmployerUC6")
     //private Map hardwareDesignersMapUC6;
-    
+
     // UC 7: Generics KV set, targetEntity is also set, @MapKey is *(set/unset)
     // Same as UC1a - that is missing the @MapKey
     @OneToMany(targetEntity=HardwareDesigner.class, cascade=ALL, mappedBy="mappedEmployerUC7")
     private Map<String, HardwareDesigner> hardwareDesignersMapUC7;
-    
+
     // UC8: no targetEntity, MapKey uses name default
     @OneToMany(cascade=ALL, mappedBy="mappedEmployerUC8")
     @MapKey // name attribute will default to "id"
     private Map<Integer, HardwareDesigner> hardwareDesignersMapUC8;
-    
+
     // UC9: no targetEntity, no MapKey, but generics are set (MapKey has an IdClass with an Embeddable)
     @OneToMany(cascade=CascadeType.ALL, mappedBy="mappedManufacturerUC9")
     private Map<Board, Enclosure> enclosureByBoardMapUC9;
-    
-    // UC12:  mapKey defined via generics and is a java class defined as an IdClass on the element(value) class 
-    
+
+    // UC12:  mapKey defined via generics and is a java class defined as an IdClass on the element(value) class
+
     // Define Uppercase Object non-java.lang Basic types
     //private Object anObject; // Not supported in JPA
     private Boolean aBooleanObject;
     private Byte aByteObject;
-    private Short aShortObject;    
+    private Short aShortObject;
     private Integer anIntegerObject;
     private Long aLongObject;
-    private BigInteger aBigIntegerObject;    
-    private BigDecimal aBigDecimalObject;    
+    private BigInteger aBigIntegerObject;
+    private BigDecimal aBigDecimalObject;
     private Float aFloatObject;
     private Double aDoubleObject;
     private Character aCharacterObject;
     //private Enum anEnum;
-    
-    
+
+
     // Define lowercase primitive non-java.lang un-boxed Basic types
     private boolean aBoolean;
     private byte aByte;
-    private short aShort;    
+    private short aShort;
     private int anInt;
     private long aLong;
     private float aFloat;
     private double aDouble;
     private char aChar;
     //public enum anEnum { one, two, three};
-    
+
     // Define static types
-    
+
     public Manufacturer() {
     }
 
-    public int getVersion() { 
-        return version; 
+    public int getVersion() {
+        return version;
     }
-    
+
     protected void setVersion(int version) {
         this.version = version;
     }
 
 
-    public Collection<Computer> getComputers() { 
-        return computers; 
+    public Collection<Computer> getComputers() {
+        return computers;
     }
-    
-    public void setComputers(Set<Computer> newValue) { 
-        this.computers = newValue; 
+
+    public void setComputers(Set<Computer> newValue) {
+        this.computers = newValue;
     }
 
     public void addComputer(Computer aComputer) {
@@ -405,7 +405,7 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     public void setaBigDecimal(BigDecimal aBigDecimalObject) {
         this.aBigDecimalObject = aBigDecimalObject;
     }
-    
+
     public Map<Board, Enclosure> getEnclosureByBoardMapUC9() {
         return enclosureByBoardMapUC9;
     }

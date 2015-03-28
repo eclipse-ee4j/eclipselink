@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland (Oracle) - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors.partitioning;
 
 import java.util.List;
@@ -45,13 +45,13 @@ public abstract class PartitioningPolicy implements java.io.Serializable {
      * Allow for the persist call to assign the partition.
      */
     public void partitionPersist(AbstractSession session, Object object, ClassDescriptor descriptor) { }
-    
+
     /**
      * INTERNAL:
      * Initialize the policy.
      */
     public void initialize(AbstractSession session) { }
-    
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings to actual class-based
@@ -59,7 +59,7 @@ public abstract class PartitioningPolicy implements java.io.Serializable {
      * with class names to a project with classes.
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) { }
-    
+
     /**
      * INTERNAL:
      * Return an accessor from the pool.
@@ -74,7 +74,7 @@ public abstract class PartitioningPolicy implements java.io.Serializable {
         }
         return pool.acquireConnection();
     }
-    
+
     /**
      * INTERNAL:
      * Return an accessor from the pool for the session.

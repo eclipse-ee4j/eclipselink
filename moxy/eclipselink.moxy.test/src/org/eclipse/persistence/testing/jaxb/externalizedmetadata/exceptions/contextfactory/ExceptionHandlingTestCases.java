@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,23 +31,23 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
  *
  */
 public class ExceptionHandlingTestCases extends OXTestCase {
-	
+
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.contextfactory";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/exceptions/contextfactory/";
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public ExceptionHandlingTestCases(String name) {
         super(name);
     }
-    
+
     /**
      * Tests an invalid parameter type by setting a Key of type Class as opposed
      * to String.
-     * 
+     *
      * Negative test.
      */
     public void testInvalidMapParameterTypeBadKey() {
@@ -67,7 +67,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
 
     /**
      * Tests an invalid parameter type by setting a null Key.
-     * 
+     *
      * Negative test.
      */
     public void testInvalidMapParameterTypeNullKey() {
@@ -86,9 +86,9 @@ public class ExceptionHandlingTestCases extends OXTestCase {
     }
 
     /**
-     * Tests an invalid parameter type by setting Map<String, Class> instead 
+     * Tests an invalid parameter type by setting Map<String, Class> instead
      * of Map<String, Source>.
-     * 
+     *
      * Negative test.
      */
     public void testInvalidParameterTypeBadValue() {
@@ -99,7 +99,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
 
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
-        } catch (JAXBException e) {        	
+        } catch (JAXBException e) {
             return;
         } catch (Exception x) {
         }
@@ -108,7 +108,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
 
     /**
      * Tests setting the metadata Source in the Map to null.
-     * 
+     *
      * Negative test.
      */
     public void testInvalidMapParameterTypeNullValue() {
@@ -129,7 +129,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
     /**
      * Tests associating something other than Map<String, Source> with the key
      * 'eclipselink-oxm-xml' in the properties map.
-     *  
+     *
      * Negative test.
      */
     public void testInvalidParameterTypeBadOxmXmlValue() {
@@ -148,7 +148,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
 
     /**
      * Tests declaration of a non-existent class via eclipselink-oxm.xml
-     * 
+     *
      * Negative test.
      */
     public void testInvalidClassName() {
@@ -157,7 +157,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
-        
+
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
@@ -174,7 +174,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
 
     /**
      * Tests invalid eclipselink-oxm.xml exception handling.
-     * 
+     *
      * Negative test.
      */
     public void testInvalidMetadataFile() {
@@ -183,60 +183,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
-        
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
-        try {
-            JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
-        } catch (JAXBException e) {
-            return;
-        } catch (Exception x) {
-        	x.printStackTrace();
-        }
-        fail("The expected JAXBException was not thrown.");
-    }
-    
-    /**
-     * Tests declaration of a non-existent package
-     * 
-     * Negative test.
-     */
-    public void testInvalidPackageAsKey() {
-    	String validPath = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/";
-    	String contextPath = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory";
-    	String metadataFile = validPath + "eclipselink-oxm.xml";
-        InputStream iStream = getClass().getClassLoader().getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put("java.util", new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        try {
-            JAXBContext ctx = JAXBContextFactory.createContext(contextPath, getClass().getClassLoader(), properties);  
-        } catch (javax.xml.bind.JAXBException e) {
-        	assertTrue(e.getLinkedException() instanceof JAXBException);
-        	assertEquals(JAXBException.JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE, ((JAXBException)e.getLinkedException()).getErrorCode());
-        	return;        	
-		}
-        fail("The expected JAXBException was not thrown.");
-    }
-    
-    /**
-     * Tests declaration of a non-existent class via eclipselink-oxm.xml
-     * 
-     * Negative test.
-     */
-    public void testInvalidLocation() {
-        String metadataFile = PATH + "eclipselink_doesnt_exist-oxm.xml";
-        InputStream iStream = getClass().getClassLoader().getResourceAsStream(metadataFile);
-              
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
@@ -251,15 +198,68 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         }
         fail("The expected JAXBException was not thrown.");
     }
-    
+
+    /**
+     * Tests declaration of a non-existent package
+     *
+     * Negative test.
+     */
+    public void testInvalidPackageAsKey() {
+        String validPath = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/";
+        String contextPath = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory";
+        String metadataFile = validPath + "eclipselink-oxm.xml";
+        InputStream iStream = getClass().getClassLoader().getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("java.util", new StreamSource(iStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+        try {
+            JAXBContext ctx = JAXBContextFactory.createContext(contextPath, getClass().getClassLoader(), properties);
+        } catch (javax.xml.bind.JAXBException e) {
+            assertTrue(e.getLinkedException() instanceof JAXBException);
+            assertEquals(JAXBException.JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE, ((JAXBException)e.getLinkedException()).getErrorCode());
+            return;
+        }
+        fail("The expected JAXBException was not thrown.");
+    }
+
     /**
      * Tests declaration of a non-existent class via eclipselink-oxm.xml
-     * 
+     *
+     * Negative test.
+     */
+    public void testInvalidLocation() {
+        String metadataFile = PATH + "eclipselink_doesnt_exist-oxm.xml";
+        InputStream iStream = getClass().getClassLoader().getResourceAsStream(metadataFile);
+
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+        try {
+            JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
+        } catch (JAXBException e) {
+            return;
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+        fail("The expected JAXBException was not thrown.");
+    }
+
+    /**
+     * Tests declaration of a non-existent class via eclipselink-oxm.xml
+     *
      * Negative test.
      */
     public void testInvalidLocation2() {
         String metadataFile = PATH + "eclipselink_doesnt_exist-oxm.xml";
-              
+
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(metadataFile));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();

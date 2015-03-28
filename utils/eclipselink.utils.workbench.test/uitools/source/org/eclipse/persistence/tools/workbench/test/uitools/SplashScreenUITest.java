@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,22 +26,22 @@ import org.eclipse.persistence.tools.workbench.uitools.SplashScreen;
  */
 public class SplashScreenUITest {
 
-	public static void main(String[] args) throws Exception {
-		new SplashScreenUITest().exec(args);
-	}
+    public static void main(String[] args) throws Exception {
+        new SplashScreenUITest().exec(args);
+    }
 
-	public SplashScreenUITest() {
-		super();
-	}
+    public SplashScreenUITest() {
+        super();
+    }
 
-	public void exec(String[] args) throws Exception {
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		Icon image = new ImageIcon(this.getClass().getResource("/test.splash.screen.gif"));
-		SplashScreen ss = new SplashScreen(new Frame(), image);
-		ss.start();
-		JOptionPane.showMessageDialog(ss, "Press OK to close the splash screen.");
-		ss.stop();
-		System.exit(0);
-	}
+    public void exec(String[] args) throws Exception {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        Icon image = new ImageIcon(this.getClass().getResource("/test.splash.screen.gif"));
+        SplashScreen ss = new SplashScreen(new Frame(), image);
+        ss.start();
+        JOptionPane.showMessageDialog(ss, "Press OK to close the splash screen.");
+        ss.stop();
+        System.exit(0);
+    }
 
 }

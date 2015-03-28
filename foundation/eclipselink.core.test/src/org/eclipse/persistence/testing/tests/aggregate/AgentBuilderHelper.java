@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     ailitchev - jpa 2.0 element collections support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.aggregate;
 
 import java.util.List;
@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.models.aggregate.House;
  * allows the same AggregateCollection class to be used by several classes.
  * Class Builder is exactly the same as class Agent -
  * this is the helper that makes easier to update the tests designed to use Agent
- * to use Builder, too. 
+ * to use Builder, too.
  */
 public class AgentBuilderHelper {
 
@@ -80,7 +80,7 @@ public class AgentBuilderHelper {
         } else {
             throw new TestProblemException("Class " + cls + " can't be used here - must be either Agent or Builder");
         }
-    }    
+    }
 
     public static void setLastName(Object object, String lastName) {
         Class cls = object.getClass();
@@ -91,8 +91,8 @@ public class AgentBuilderHelper {
         } else {
             throw new TestProblemException("Class " + cls + " can't be used here - must be either Agent or Builder");
         }
-    }    
-    
+    }
+
     public static String getFirstName(Object object) {
         Class cls = object.getClass();
         if(Agent.class.equals(cls)) {
@@ -102,7 +102,7 @@ public class AgentBuilderHelper {
         } else {
             throw new TestProblemException("Class " + cls + " can't be used here - must be either Agent or Builder");
         }
-    }    
+    }
 
     public static void setFirstName(Object object, String firstName) {
         Class cls = object.getClass();
@@ -113,8 +113,8 @@ public class AgentBuilderHelper {
         } else {
             throw new TestProblemException("Class " + cls + " can't be used here - must be either Agent or Builder");
         }
-    }    
-    
+    }
+
     public static void addCustomer(Object object, Customer customer) {
         Class cls = object.getClass();
         if(Agent.class.equals(cls)) {

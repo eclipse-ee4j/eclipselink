@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 /**
@@ -20,7 +20,7 @@ public class ObjectReferenceChangeRecord extends ChangeRecord implements org.ecl
 
     /** This is the object change set that the attribute points to. */
     protected ObjectChangeSet newValue;
-    
+
     /** A reference to the old value must also be stored.  This is only required for the commit and must never be serialized. */
     protected transient Object oldValue;
 
@@ -71,7 +71,7 @@ public class ObjectReferenceChangeRecord extends ChangeRecord implements org.ecl
     public void setNewValue(ObjectChangeSet newValue) {
         this.newValue = newValue;
     }
-    
+
     /**
      * Return the old value of the object reference.
      * This is used during the commit for private-owned references.
@@ -79,7 +79,7 @@ public class ObjectReferenceChangeRecord extends ChangeRecord implements org.ecl
     public Object getOldValue() {
         return oldValue;
     }
-    
+
     /**
      * Set the old value of the object reference.
      * This is used during the commit for private-owned references.

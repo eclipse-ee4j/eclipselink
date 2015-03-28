@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.security;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -32,13 +32,13 @@ public class SecurityWhileInitializingCopyPolicyTest extends ExceptionTestSaveSe
         super.setup();
         expectedException = DescriptorException.securityWhileInitializingCopyPolicy("dummy_Method", new RelationalDescriptor(), new Exception());
 
-        //need superclass == null    
+        //need superclass == null
         getTestDescriptor().setCopyPolicy(new CloneCopyPolicy());
         policy = (CloneCopyPolicy) getTestDescriptor().getCopyPolicy();
         if (Policy.class.getName().equals(getTestClass().getName())) {
             //need not getMethodName() == null
             policy.setMethodName("dummy_Method"); //this method does exist in above class
-            //need NoSuchMethod thrown from     		this.setMethod(Helper.getDeclaredMethod(this.getDescriptor().getJavaClass(), this.getMethodName(), new Class[0]));
+            //need NoSuchMethod thrown from             this.setMethod(Helper.getDeclaredMethod(this.getDescriptor().getJavaClass(), this.getMethodName(), new Class[0]));
         } else {
             policy.setWorkingCopyMethodName("working_dummy_Method");
         }
@@ -51,7 +51,7 @@ public class SecurityWhileInitializingCopyPolicyTest extends ExceptionTestSaveSe
             caughtException = exception;
         }
     }
-    
+
     static class Policy {
         public void dummy_Method() {
             //do nothing security manager will cause error to occur

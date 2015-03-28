@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.indirection;
 
 import java.util.*;
@@ -47,7 +47,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
 
     /** PERF: Cache the mappings container policy. */
     protected ContainerPolicy containerPolicy;
-    
+
     /**
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
      * database when you add and remove from them.  IndirectList defaults to this behavior. When
@@ -133,7 +133,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * for custom value holder types. Certain policies like the
      * TransparentIndirectionPolicy may wrap the valueholder in another object.
      */
-    
+
     public Object buildIndirectObject(ValueHolderInterface valueHolder){
         return buildIndirectContainer(valueHolder);
     }
@@ -201,7 +201,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                 // PERF: If building from rows inside uow, there is no original,
                 // so just use the already built indirect collection.
                 indirectContainer.setValueHolder(uowValueHolder);
-                container = indirectContainer;              
+                container = indirectContainer;
             }
         }
         if (cloningSession.isUnitOfWork()){
@@ -377,7 +377,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         // PERF: do not instantiate - this.getContainerPolicy().sizeFor(object);// forgive me for this hack: but we have to do something to trigger the database read
         return attribute;
     }
-    
+
     /**
      * INTERNAL:
      * Trigger the instantiation of the value.
@@ -388,7 +388,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
 
     /**
      * INTERNAL:
-     * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue 
+     * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue
      * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
      * This method is used to help determine if indirection has been triggered
      * @param attributeValue
@@ -415,7 +415,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     public Boolean getUseLazyInstantiation() {
         return useLazyInstantiation;
     }
-    
+
     /**
      * INTERNAL:
      * Extract and return the appropriate value from the
@@ -451,12 +451,12 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         */
         super.setRealAttributeValueInObject(target, attributeValue);
     }
-    
+
     /**
      * INTERNAL:
      * set the source object into QueryBasedValueHolder.
      */
-    public void setSourceObject(Object sourceObject, Object attributeValue) {        
+    public void setSourceObject(Object sourceObject, Object attributeValue) {
         if( attributeValue instanceof IndirectContainer) {
             ValueHolderInterface valueHolder = ((IndirectContainer)attributeValue).getValueHolder();
             if (valueHolder instanceof QueryBasedValueHolder) {
@@ -464,7 +464,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
             }
         }
     }
-    
+
     /**
      * ADVANCED:
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
@@ -478,7 +478,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     public void setUseLazyInstantiation(Boolean useLazyInstantiation) {
         this.useLazyInstantiation = useLazyInstantiation;
     }
-    
+
     /**
      * ADVANCED:
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
@@ -492,7 +492,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     public Boolean shouldUseLazyInstantiation() {
         return useLazyInstantiation;
     }
-    
+
     /**
      * INTERNAL:
      * Iterate over the specified attribute value.
@@ -541,7 +541,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
             return true;// it must be a "real" collection
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return whether the specified object can be instantiated without database access.
@@ -555,7 +555,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         }
         return true;
     }
-        
+
     /**
      * INTERNAL:
      * Return whether the specified object is instantiated, or if it has changes.
@@ -719,7 +719,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, AbstractSession session) {
         return this.buildIndirectContainer(new QueryBasedValueHolder(query, row, session));
     }
-    
+
     /**
      * INTERNAL:
      * A combination of valueFromQuery and valueFromRow(object).

@@ -56,7 +56,7 @@ public class ListOfStringArrayTestCases extends JAXBListOfObjectsTestCases {
         stringArray2[1] = "B";
         stringArray2[2] = "C";
         listOfStringArray.add(stringArray2);
-        
+
         QName qname = new QName("root");
         return new JAXBElement(qname, Object.class, listOfStringArray);
     }

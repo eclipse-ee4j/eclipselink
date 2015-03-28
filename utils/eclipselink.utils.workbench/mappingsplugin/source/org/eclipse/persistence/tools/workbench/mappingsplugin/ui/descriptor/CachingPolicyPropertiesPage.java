@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -62,28 +62,28 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
 {
     private PropertyValueModel cachingPolicyHolder;
     private PropertyValueModel nonNullCachingPolicyHolder;
-    
+
     private PropertyValueModel projectDefaultCachingPolicyHolder;
-    
+
     CachingPolicyPropertiesPage(PropertyValueModel valueModel,
-                                         WorkbenchContextHolder contextHolder) 
+                                         WorkbenchContextHolder contextHolder)
     {
         super(valueModel, contextHolder);
     }
-    
+
     protected String getHelpTopicId() {
         return "descriptor.identity";
     }
-    
+
     protected void initialize(PropertyValueModel selectionNodeHolder) {
         super.initialize(selectionNodeHolder);
         this.cachingPolicyHolder = buildCachingPolicyHolder();
         this.nonNullCachingPolicyHolder = buildNonNullCachingPolicyHolder();
-       
+
         this.projectDefaultCachingPolicyHolder = buildProjectDefaultCachingPolicyHolder();
 
     }
-    
+
     private PropertyValueModel buildNonNullCachingPolicyHolder() {
         return new FilteringPropertyValueModel(this.cachingPolicyHolder) {
             protected boolean accept(Object value) {
@@ -91,15 +91,15 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             }
         };
     }
-    
+
     private PropertyValueModel buildCachingPolicyHolder() {
         return new PropertyAspectAdapter(buildTransactionalPolicyHolder()) {
             protected Object getValueFromSubject() {
                 return ((MWTransactionalPolicy) this.subject).getCachingPolicy();
             }
-        }; 
+        };
     }
-  
+
     private PropertyValueModel buildTransactionalPolicyHolder() {
         return new PropertyAspectAdapter(getSelectionHolder()) {
             protected Object getValueFromSubject() {
@@ -107,7 +107,7 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             }
         };
     }
-    
+
     private PropertyValueModel buildProjectDefaultCachingPolicyHolder() {
         return new PropertyAspectAdapter(this.nonNullCachingPolicyHolder) {
             protected Object getValueFromSubject() {
@@ -115,20 +115,20 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             }
         };
     }
-    
+
     protected Component buildPage() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-        
+
         PropertyValueModel projectCachingTypeHolder =  buildProjectDefaultCachingTypeHolder();
 
-        final JComponent cacheTypeComboBox = 
+        final JComponent cacheTypeComboBox =
                 buildLabeledComboBox(
                         "CACHING_POLICY_CACHE_TYPE_CHOOSER",
                         new ComboBoxModelAdapter(buildCacheTypeCollectionHolder(), buildCacheTypeHolder()),
                         buildCacheTypeOptionRenderer(projectCachingTypeHolder)
                 );
-        
+
         new ComponentEnabler(buildCacheTypeHolderBooleanModel(), cacheTypeComboBox);
 
         constraints.gridx      = 0;
@@ -143,15 +143,15 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
         panel.add(cacheTypeComboBox, constraints);
         helpManager().addTopicID(cacheTypeComboBox, "descriptor.cacheType");
         projectCachingTypeHolder.addPropertyChangeListener(
-                ValueModel.VALUE, 
+                ValueModel.VALUE,
                 buildProjectDefaultListener((JComboBox) cacheTypeComboBox.getComponent(1)));
-        
-        
+
+
         //cache size
         PropertyValueModel descriptorCacheSizeHolder = buildCacheSizeHolder();
         final SpinnerNumberModel descriptorCacheSizeModel =
             new NumberSpinnerModelAdapter(
-                    descriptorCacheSizeHolder, 
+                    descriptorCacheSizeHolder,
                     0,     // Minimum value
                     99999, // Maximum value
                     1      // Step size
@@ -176,7 +176,7 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
 
         final JSpinner cacheSizeSpinner = (JSpinner) cacheSizeWidgets.getComponent(1);
 
-        
+
         // Default Cache Size check box
         JCheckBox defaultCacheSizeCheckBox = buildCheckBox(
             "CACHING_POLICY_CACHE_SIZE_DEFAULT_CHECKBOX",
@@ -196,9 +196,9 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
         panel.add(defaultCacheSizeCheckBox, constraints);
         helpManager().addTopicID(defaultCacheSizeCheckBox, "descriptor.cacheSize.default");
         PropertyValueModel projectCacheSizeHolder = buildProjectCacheSizeHolder();
-        final SpinnerNumberModel projectCacheSizeModel = 
+        final SpinnerNumberModel projectCacheSizeModel =
             new NumberSpinnerModelAdapter(
-                projectCacheSizeHolder, 
+                projectCacheSizeHolder,
                 0,     // Minimum value
                 99999, // Maximum value
                 1      // Step size
@@ -215,11 +215,11 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
         });
 
         new ComponentEnabler(buildCacheSizeHolderBooleanModel(), new Component[] {cacheSizeWidgets, defaultCacheSizeCheckBox});
-       
+
         //cache isolation
         final PropertyValueModel cacheIsolationHolder = buildCacheIsolationHolder();
         final PropertyValueModel projectCachingIsolationHolder =  buildProjectDefaultCacheIsolationHolder();
-        final JComponent cacheIsolationComboBox = 
+        final JComponent cacheIsolationComboBox =
             buildLabeledComboBox(
                     "CACHING_POLICY_CACHE_ISOLATION_CHOOSER",
                     new ComboBoxModelAdapter(buildCacheIsolationCollectionHolder(), cacheIsolationHolder),
@@ -237,12 +237,12 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
         panel.add(cacheIsolationComboBox, constraints);
         helpManager().addTopicID(cacheIsolationComboBox, "descriptor.cacheIsolation");
         projectCachingIsolationHolder.addPropertyChangeListener(
-                ValueModel.VALUE, 
+                ValueModel.VALUE,
                 buildProjectDefaultListener((JComboBox) cacheIsolationComboBox.getComponent(1)));
-        
+
         //cache coordination
         PropertyValueModel projectCachingCoordinationHolder =  buildProjectDefaultCacheCoordinationHolder();
-        final JComponent cacheCoordinationComboBox = 
+        final JComponent cacheCoordinationComboBox =
             buildLabeledComboBox(
                     "CACHING_POLICY_CACHE_COORDINATION_CHOOSER",
                     new ComboBoxModelAdapter(buildCacheCoordinationCollectionHolder(), buildCacheCoordinationHolder()),
@@ -260,7 +260,7 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
         panel.add(cacheCoordinationComboBox, constraints);
         helpManager().addTopicID(cacheCoordinationComboBox, "descriptor.cacheCoord");
        projectCachingCoordinationHolder.addPropertyChangeListener(
-                ValueModel.VALUE, 
+                ValueModel.VALUE,
                 buildProjectDefaultListener((JComboBox) cacheCoordinationComboBox.getComponent(1)));
         cacheIsolationHolder.addPropertyChangeListener(
                 ValueModel.VALUE,
@@ -268,10 +268,10 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
         projectCachingIsolationHolder.addPropertyChangeListener(
                 ValueModel.VALUE,
                 buildUpdateCacheCoordinationComboBox((JComboBox) cacheCoordinationComboBox.getComponent(1), cacheIsolationHolder, projectCachingIsolationHolder));
-        
-  
+
+
         //expiry
-         CacheExpiryPanel cacheExpiryPanel = 
+         CacheExpiryPanel cacheExpiryPanel =
              new CacheExpiryPanel(
                      getApplicationContext(),
                      this.nonNullCachingPolicyHolder,
@@ -289,11 +289,11 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
         constraints.insets     = new Insets(10, 5, 5, 5);
 
         panel.add(cacheExpiryPanel, constraints);
-       
-       
+
+
         //existence checking
         PropertyValueModel projectCachingExistenceCheckingHolder =  buildProjectDefaultExistenceCheckingHolder();
-        final JComponent existenceCheckingComboBox = 
+        final JComponent existenceCheckingComboBox =
             buildLabeledComboBox(
                     "CACHING_POLICY_EXISTENCE_CHECKING_CHOOSER",
                     new ComboBoxModelAdapter(buildExistenceCheckingCollectionHolder(), buildExistenceCheckingHolder()),
@@ -309,60 +309,60 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
         constraints.anchor     = GridBagConstraints.FIRST_LINE_START;
         constraints.insets     = new Insets(5, 5, 0, 5);
         panel.add(existenceCheckingComboBox, constraints);
-		  addHelpTopicId(existenceCheckingComboBox, "descriptor.identity.existenceCheck");
+          addHelpTopicId(existenceCheckingComboBox, "descriptor.identity.existenceCheck");
         projectCachingExistenceCheckingHolder.addPropertyChangeListener(
-                ValueModel.VALUE, 
+                ValueModel.VALUE,
                 buildProjectDefaultListener((JComboBox) existenceCheckingComboBox.getComponent(1)));
- 
-        
-		  addHelpTopicId(panel, getHelpTopicId());
-        return panel;      
+
+
+          addHelpTopicId(panel, getHelpTopicId());
+        return panel;
     }
-    
+
     private ValueModel buildCacheTypeHolderBooleanModel() {
-		PropertyValueModel cacheTypeHolderModel = new PropertyAspectAdapter(this.cachingPolicyHolder, MWDescriptorCachingPolicy.CACHE_TYPE_HOLDER_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return ((MWDescriptorCachingPolicy) this.subject).getCacheTypeHolder();
-			}
-		};
-		return new TransformationPropertyValueModel(cacheTypeHolderModel) {
-			protected Object transform(Object value) {
-				if (value == null) {
-					return Boolean.FALSE;
-				}
-				return Boolean.valueOf(((CacheTypeHolder) value).typeCanBeSet());
-			}
-		};
+        PropertyValueModel cacheTypeHolderModel = new PropertyAspectAdapter(this.cachingPolicyHolder, MWDescriptorCachingPolicy.CACHE_TYPE_HOLDER_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return ((MWDescriptorCachingPolicy) this.subject).getCacheTypeHolder();
+            }
+        };
+        return new TransformationPropertyValueModel(cacheTypeHolderModel) {
+            protected Object transform(Object value) {
+                if (value == null) {
+                    return Boolean.FALSE;
+                }
+                return Boolean.valueOf(((CacheTypeHolder) value).typeCanBeSet());
+            }
+        };
     }
-    
+
     private ValueModel buildCacheSizeHolderBooleanModel() {
-		PropertyValueModel cacheSizeHolderModel = new PropertyAspectAdapter(this.cachingPolicyHolder, MWDescriptorCachingPolicy.CACHE_SIZE_HOLDER_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return ((MWDescriptorCachingPolicy) this.subject).getCacheSizeHolder();
-			}
-		};
-		return new TransformationPropertyValueModel(cacheSizeHolderModel) {
-			protected Object transform(Object value) {
-				if (value == null) {
-					return Boolean.FALSE;
-				}
-				return Boolean.valueOf(((CacheSizeHolder) value).sizeCanBeSet());
-			}
-		};
+        PropertyValueModel cacheSizeHolderModel = new PropertyAspectAdapter(this.cachingPolicyHolder, MWDescriptorCachingPolicy.CACHE_SIZE_HOLDER_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return ((MWDescriptorCachingPolicy) this.subject).getCacheSizeHolder();
+            }
+        };
+        return new TransformationPropertyValueModel(cacheSizeHolderModel) {
+            protected Object transform(Object value) {
+                if (value == null) {
+                    return Boolean.FALSE;
+                }
+                return Boolean.valueOf(((CacheSizeHolder) value).sizeCanBeSet());
+            }
+        };
     }
 
     private PropertyChangeListener buildProjectDefaultListener(final JComboBox comboBox) {
-       return new PropertyChangeListener(){ 
+       return new PropertyChangeListener(){
            public void propertyChange(PropertyChangeEvent evt) {
-               //repainting the comboBox because the rendering changes when 
+               //repainting the comboBox because the rendering changes when
                //the project value is changed.
-               comboBox.repaint();           
+               comboBox.repaint();
            }
        };
     }
-    
+
     private PropertyChangeListener buildUpdateCacheCoordinationComboBox(final JComboBox comboBox, final PropertyValueModel cacheIsolationHolder, final PropertyValueModel projectCachingIsolationHolder) {
-       return new PropertyChangeListener() {                
+       return new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
                 CacheIsolationOption option = (CacheIsolationOption) cacheIsolationHolder.getValue();
                 if (option != null) {
@@ -379,29 +379,29 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
                         comboBox.setEnabled(true);
                     }
                 }
-            }                
+            }
         };
     }
-    
+
     // **************** Cache Type ***************
-    
+
     private PropertyValueModel buildCacheTypeHolder() {
         return new PropertyAspectAdapter(
-        		this.nonNullCachingPolicyHolder, 
-        		MWCachingPolicy.CACHE_TYPE_PROPERTY, 
-        		MWDescriptorCachingPolicy.CACHE_TYPE_HOLDER_PROPERTY, 
-        		MWDescriptorCachingPolicy.DESCRIPTOR_INHERITANCE_PROPERTY) 
+                this.nonNullCachingPolicyHolder,
+                MWCachingPolicy.CACHE_TYPE_PROPERTY,
+                MWDescriptorCachingPolicy.CACHE_TYPE_HOLDER_PROPERTY,
+                MWDescriptorCachingPolicy.DESCRIPTOR_INHERITANCE_PROPERTY)
         {
             protected Object getValueFromSubject() {
-            	return ((MWCachingPolicy) this.subject).getCacheType();
+                return ((MWCachingPolicy) this.subject).getCacheType();
             }
-            
+
             protected void setValueOnSubject(Object value) {
                 ((MWCachingPolicy) this.subject).setCacheType((CacheTypeOption) value);
             }
         };
     }
-    
+
     private ListValueModel buildCacheTypeCollectionHolder() {
         return new AbstractReadOnlyListValueModel() {
             public Object getValue() {
@@ -409,7 +409,7 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             }
         };
     }
-    
+
     private ListCellRenderer buildCacheTypeOptionRenderer(final PropertyValueModel projectCacheTypeHolder) {
         return new SimpleListCellRenderer() {
             protected String buildText(Object value) {
@@ -426,68 +426,68 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             }
         };
     }
-    
+
     private PropertyValueModel buildProjectDefaultCachingTypeHolder() {
         return new PropertyAspectAdapter(this.projectDefaultCachingPolicyHolder, MWCachingPolicy.CACHE_TYPE_PROPERTY) {
             protected Object getValueFromSubject() {
                 return ((MWCachingPolicy) this.subject).getCacheType();
             }
         };
-    }   
-    
+    }
+
     // **************** Cache Size ***************
-    
+
     private PropertyValueModel buildCacheSizeHolder() {
         return new PropertyAspectAdapter(
-        		this.nonNullCachingPolicyHolder, 
-        		MWCachingPolicy.CACHE_SIZE_PROPERTY,
-        		MWDescriptorCachingPolicy.CACHE_TYPE_HOLDER_PROPERTY, 
-        		MWDescriptorCachingPolicy.DESCRIPTOR_INHERITANCE_PROPERTY)
+                this.nonNullCachingPolicyHolder,
+                MWCachingPolicy.CACHE_SIZE_PROPERTY,
+                MWDescriptorCachingPolicy.CACHE_TYPE_HOLDER_PROPERTY,
+                MWDescriptorCachingPolicy.DESCRIPTOR_INHERITANCE_PROPERTY)
         {
             protected Object getValueFromSubject() {
-            	return new Integer(((MWCachingPolicy) this.subject).getCacheSize());
+                return new Integer(((MWCachingPolicy) this.subject).getCacheSize());
             }
-            
+
             protected void setValueOnSubject(Object value) {
                 ((MWCachingPolicy) this.subject).setCacheSize(((Integer) value).intValue());
             }
         };
     }
-    
+
     private PropertyValueModel buildProjectCacheSizeHolder() {
         return new PropertyAspectAdapter(this.projectDefaultCachingPolicyHolder, MWCachingPolicy.CACHE_SIZE_PROPERTY) {
             protected Object getValueFromSubject() {
                 return new Integer(((MWCachingPolicy) this.subject).getCacheSize());
             }
             protected void setValueOnSubject(Object value) {
-                if (((Integer) value).intValue() !=  ((MWDescriptorCachingPolicy) cachingPolicyHolder.getValue()).getProject().getDefaultsPolicy().getCachingPolicy().getCacheSize()) {                         
+                if (((Integer) value).intValue() !=  ((MWDescriptorCachingPolicy) cachingPolicyHolder.getValue()).getProject().getDefaultsPolicy().getCachingPolicy().getCacheSize()) {
                     ((MWDescriptorCachingPolicy) cachingPolicyHolder.getValue()).setDontUseProjectDefaultCacheSize(((Integer) value).intValue());
                 }
             }
         };
     }
-    
+
     private CheckBoxModelAdapter buildDefaultCacheSizeCheckBoxAdapter() {
         return new CheckBoxModelAdapter(buildDefaultCacheSizeHolder());
     }
-    
+
     private PropertyValueModel buildDefaultCacheSizeHolder() {
         return new PropertyAspectAdapter(
-        		this.nonNullCachingPolicyHolder, 
-        		MWDescriptorCachingPolicy.USE_PROJECT_DEFAULT_CACHE_SIZE_PROPERTY,
-           		MWDescriptorCachingPolicy.CACHE_SIZE_HOLDER_PROPERTY, 
-        		MWDescriptorCachingPolicy.DESCRIPTOR_INHERITANCE_PROPERTY) 
+                this.nonNullCachingPolicyHolder,
+                MWDescriptorCachingPolicy.USE_PROJECT_DEFAULT_CACHE_SIZE_PROPERTY,
+                   MWDescriptorCachingPolicy.CACHE_SIZE_HOLDER_PROPERTY,
+                MWDescriptorCachingPolicy.DESCRIPTOR_INHERITANCE_PROPERTY)
         {
             protected Object getValueFromSubject() {
-            	return Boolean.valueOf(((MWDescriptorCachingPolicy) this.subject).getCacheSizeHolder().usesProjectDefaultCacheSize());
+                return Boolean.valueOf(((MWDescriptorCachingPolicy) this.subject).getCacheSizeHolder().usesProjectDefaultCacheSize());
             }
-            
+
             protected void setValueOnSubject(Object value) {
                 ((MWDescriptorCachingPolicy) this.subject).setUseProjectDefaultCacheSize(((Boolean) value).booleanValue());
             }
-        };        
+        };
     }
-    
+
     // **************** Cache Isolation ***************
 
     private PropertyValueModel buildCacheIsolationHolder() {
@@ -495,13 +495,13 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             protected Object getValueFromSubject() {
                 return ((MWCachingPolicy) this.subject).getCacheIsolation();
             }
-            
+
             protected void setValueOnSubject(Object value) {
                 ((MWCachingPolicy) this.subject).setCacheIsolation((CacheIsolationOption) value);
             }
         };
     }
-    
+
     private ListValueModel buildCacheIsolationCollectionHolder() {
         return new AbstractReadOnlyListValueModel() {
             public Object getValue() {
@@ -509,7 +509,7 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             }
         };
     }
-    
+
     private ListCellRenderer buildCacheIsolationOptionRenderer(final PropertyValueModel projectCacheIsolationHolder) {
         return new SimpleListCellRenderer() {
             protected String buildText(Object value) {
@@ -526,16 +526,16 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             }
         };
     }
-    
+
     private PropertyValueModel buildProjectDefaultCacheIsolationHolder() {
         return new PropertyAspectAdapter(this.projectDefaultCachingPolicyHolder, MWCachingPolicy.CACHE_ISOLATION_PROPERTY) {
             protected Object getValueFromSubject() {
                 return ((MWCachingPolicy) this.subject).getCacheIsolation();
             }
         };
-    } 
-  
-    
+    }
+
+
     // **************** Cache Coordination ***************
 
     private PropertyValueModel buildCacheCoordinationHolder() {
@@ -543,21 +543,21 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             protected Object getValueFromSubject() {
                 return ((MWCachingPolicy) this.subject).getCacheCoordination();
             }
-            
+
             protected void setValueOnSubject(Object value) {
                 ((MWCachingPolicy) this.subject).setCacheCoordination((CacheCoordinationOption) value);
             }
         };
     }
-    
+
     private ListValueModel buildCacheCoordinationCollectionHolder() {
         return new AbstractReadOnlyListValueModel() {
             public Object getValue() {
                 return MWDescriptorCachingPolicy.cacheCoordinationOptions().toplinkOptions();
             }
-        };  
+        };
     }
-    
+
     private ListCellRenderer buildCacheCoordinationOptionRenderer(final PropertyValueModel projectCacheCoordinationHolder) {
         return new SimpleListCellRenderer() {
             protected String buildText(Object value) {
@@ -574,16 +574,16 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             }
         };
     }
-    
+
     private PropertyValueModel buildProjectDefaultCacheCoordinationHolder() {
         return new PropertyAspectAdapter(this.projectDefaultCachingPolicyHolder, MWCachingPolicy.CACHE_COORDINATION_PROPERTY) {
             protected Object getValueFromSubject() {
                 return ((MWCachingPolicy) this.subject).getCacheCoordination();
             }
         };
-    } 
+    }
 
-    
+
     // **************** Existence Checking ***************
 
     private PropertyValueModel buildExistenceCheckingHolder() {
@@ -591,21 +591,21 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             protected Object getValueFromSubject() {
                 return ((MWCachingPolicy) this.subject).getExistenceChecking();
             }
-            
+
             protected void setValueOnSubject(Object value) {
                 ((MWCachingPolicy) this.subject).setExistenceChecking((ExistenceCheckingOption) value);
             }
         };
     }
-    
+
     private ListValueModel buildExistenceCheckingCollectionHolder() {
         return new AbstractReadOnlyListValueModel() {
             public Object getValue() {
                 return MWDescriptorCachingPolicy.existenceCheckingOptions().toplinkOptions();
             }
-        };  
+        };
     }
-    
+
     private ListCellRenderer buildExistenceCheckingOptionRenderer(final PropertyValueModel projectExistenceCheckingHolder) {
         return new SimpleListCellRenderer() {
             protected String buildText(Object value) {
@@ -622,7 +622,7 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             }
         };
     }
-    
+
     private PropertyValueModel buildProjectDefaultExistenceCheckingHolder() {
         return new PropertyAspectAdapter(this.projectDefaultCachingPolicyHolder, MWCachingPolicy.EXISTENCE_CHECKING_PROPERTY) {
             protected Object getValueFromSubject() {
@@ -630,7 +630,7 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
             }
         };
     }
-    
+
     private MWDescriptor rootDescriptor() {
         return ((MWMappingDescriptor) getSelectionHolder().getValue()).getInheritancePolicy().getRootDescriptor();
     }

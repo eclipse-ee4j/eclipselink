@@ -4,14 +4,14 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     tware - 1.0RC1 - refactor for OSGi
- *     zhao jianyong - Bug 324627 - JarList stream is not explicitly closed after use in JavaSECMPInitializer 
- ******************************************************************************/  
+ *     zhao jianyong - Bug 324627 - JarList stream is not explicitly closed after use in JavaSECMPInitializer
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
 import java.net.URL;
@@ -169,7 +169,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
             return currentLoader;
         }
         URL[] urlPath = ((URLClassLoader)currentLoader).getURLs();
-        
+
         ClassLoader tempLoader = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
@@ -189,7 +189,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
 
         return tempLoader;
     }
-    
+
     /**
      * INTERNAL:
      * Should be called only by the agent. (when weaving classes)
@@ -200,7 +200,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
         globalInstrumentation = instrumentation;
         getJavaSECMPInitializerFromAgent();
     }
-    
+
     /**
      * Usually JavaSECMPInitializer is initialized from agent during premain
      * to ensure that the classes to be weaved haven't been loaded before initialization.
@@ -209,13 +209,13 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * in java options -javaagent with parameter "main":  (note: a separate eclipselink-agent.jar is no longer required)
      *   -javaagent:c:\trunk\eclipselink.jar=main
      * that causes instrumentation to be cached during premain and postpones initialization until main.
-     * With initialization done in main (during the first createEntityManagerFactory call) 
+     * With initialization done in main (during the first createEntityManagerFactory call)
      * there's a danger of the classes to be weaved being already loaded.
      * In that situation initializeFromMain should be called before any classes are loaded.
      * The sure-to-work method would be to create a new runnable class with a main method
-     * consisting of just two lines: calling initializeFromMain 
+     * consisting of just two lines: calling initializeFromMain
      * followed by reflective call to the main method of the original runnable class.
-     * The same could be achieved by calling PersistenceProvider.createEntityManagerFactory method instead 
+     * The same could be achieved by calling PersistenceProvider.createEntityManagerFactory method instead
      * of JavaSECMPInitializer.initializeFromMain method,
      * however initializeFromMain might be more convenient because it
      * doesn't require a persistence unit name.
@@ -258,7 +258,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
             AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_globalInstrumentation_is_null", null, true);
         }
     }
-    
+
     /**
      * Indicates whether puName uniquely defines the persistence unit.
      * usesAgent means that it is a stand alone SE case.
@@ -269,21 +269,21 @@ public class JavaSECMPInitializer extends JPAInitializer {
     public boolean isPersistenceUnitUniquelyDefinedByName() {
         return usesAgent;
     }
-    
+
     /**
      * Indicates whether initialization has already occurred.
      */
     public static boolean isInitialized() {
         return isInitialized;
     }
-    
+
     /**
      * Indicates whether Java agent and globalInstrumentation was used.
      */
     public static boolean usesAgent() {
         return usesAgent;
     }
-    
+
     /**
      * Indicates whether initialPuInfos and initialEmSetupImpls are used.
      */
@@ -291,7 +291,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
     protected boolean keepAllPredeployedPersistenceUnits() {
         return usesAgent;
     }
-    
+
     /*********************************/
     /***** Temporary Classloader *****/
     /*********************************/
@@ -300,7 +300,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * domain classes so we can examine them for annotations.  After they are loaded we will throw this
      * class loader away.  Transformers can then be registered on the real class loader to allow
      * weaving to occur.
-     * 
+     *
      * It selectively loads classes based on the list of classnames it is instantiated with.  Classes
      * not on that list are allowed to be loaded by the parent.
      */
@@ -308,7 +308,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
         Collection classNames;
         boolean shouldOverrideLoadClassForCollectionMembers;
 
-        //added to resolved gf #589 - without this, the orm.xml url would be returned twice 
+        //added to resolved gf #589 - without this, the orm.xml url would be returned twice
         public Enumeration<URL> getResources(String name) throws java.io.IOException {
             return this.getParent().getResources(name);
         }

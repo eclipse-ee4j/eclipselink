@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - initial impl
- *     09/14/2011-2.3.1 Guy Pelletier 
+ *     09/14/2011-2.3.1 Guy Pelletier
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  ******************************************************************************/
 package org.eclipse.persistence.platform.database;
@@ -31,7 +31,7 @@ public class FirebirdPlatform extends DatabasePlatform {
         super();
         setPingSQL("SELECT 1 FROM RDB$DATABASE");
     }
-    
+
     @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping = super.buildFieldTypes();
@@ -46,23 +46,23 @@ public class FirebirdPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("NUMERIC", 18).setLimits(18, -18, 18));
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMERIC", 18).setLimits(18, -18, 18));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMERIC", 38).setLimits(18, -18, 18));
-        
+
         fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("VARCHAR", 1));
-        
+
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB"));
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("VARCHAR", 32000));
         fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BLOB"));
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("VARCHAR", 32000));
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB"));
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("VARCHAR", 32000));
-        
+
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.util.Calendar.class, new FieldTypeDefinition("TIMESTAMP", false));
         fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition("TIMESTAMP", false));
-        
+
         return fieldTypeMapping;
     }
 
@@ -74,7 +74,7 @@ public class FirebirdPlatform extends DatabasePlatform {
     public int getMaxForeignKeyNameSize() {
         return 24;
     }
-    
+
     /**
      * INTERNAL:
      * returns the maximum number of characters that can be used in a unique key
@@ -84,7 +84,7 @@ public class FirebirdPlatform extends DatabasePlatform {
     public int getMaxUniqueKeyNameSize() {
         return 24;
     }
-    
+
     @Override
     public ValueReadQuery getTimestampQuery() {
         if (this.timestampQuery == null) {
@@ -93,12 +93,12 @@ public class FirebirdPlatform extends DatabasePlatform {
         }
         return this.timestampQuery;
     }
-    
+
     @Override
     public boolean isAlterSequenceObjectSupported() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Returns sql used to create sequence object in the database.
@@ -108,7 +108,7 @@ public class FirebirdPlatform extends DatabasePlatform {
         writer.write(fullSeqName);
         return writer;
     }
- 
+
     /**
      * INTERNAL:
      * Returns sql used to delete sequence object from the database.
@@ -222,7 +222,7 @@ public class FirebirdPlatform extends DatabasePlatform {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Build FB equivalent to LTRIM(string_exp).
@@ -242,7 +242,7 @@ public class FirebirdPlatform extends DatabasePlatform {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Build FB equivalent to LTRIM(string_exp).
@@ -262,7 +262,7 @@ public class FirebirdPlatform extends DatabasePlatform {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     /**
      * INTERNAL:
      * Build FB equivalent to RTRIM(string_exp, character).
@@ -323,7 +323,7 @@ public class FirebirdPlatform extends DatabasePlatform {
     public boolean isFirebird() {
         return true;
     }
-    
+
     /**
      * Print the pagination SQL using FB syntax " ROWS {@literal <max> TO <first>}".
      */

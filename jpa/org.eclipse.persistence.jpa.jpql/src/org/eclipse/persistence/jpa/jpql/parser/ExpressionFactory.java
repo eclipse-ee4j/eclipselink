@@ -32,168 +32,168 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 @SuppressWarnings("nls")
 public abstract class ExpressionFactory implements Comparable<ExpressionFactory> {
 
-	/**
-	 * The {@link ExpressionRegistry} with which this {@link ExpressionFactory} was registered.
-	 */
-	private ExpressionRegistry expressionRegistry;
+    /**
+     * The {@link ExpressionRegistry} with which this {@link ExpressionFactory} was registered.
+     */
+    private ExpressionRegistry expressionRegistry;
 
-	/**
-	 * The unique identifier of this {@link ExpressionFactory}.
-	 */
-	private final String id;
+    /**
+     * The unique identifier of this {@link ExpressionFactory}.
+     */
+    private final String id;
 
-	/**
-	 * The JPQL identifiers handled by this factory.
-	 */
-	private String[] identifiers;
+    /**
+     * The JPQL identifiers handled by this factory.
+     */
+    private String[] identifiers;
 
-	/**
-	 * Creates a new <code>ExpressionFactory</code>.
-	 *
-	 * @param id The unique identifier of this <code>ExpressionFactory</code>
-	 * @param identifiers The JPQL identifiers handled by this factory
-	 * @exception NullPointerException The given unique identifier cannot be <code>null</code> or
-	 * the list of JPQL identifiers was <code>null</code>
-	 */
-	protected ExpressionFactory(String id, String... identifiers) {
-		super();
-		this.id = id;
-		this.identifiers = identifiers;
-	}
+    /**
+     * Creates a new <code>ExpressionFactory</code>.
+     *
+     * @param id The unique identifier of this <code>ExpressionFactory</code>
+     * @param identifiers The JPQL identifiers handled by this factory
+     * @exception NullPointerException The given unique identifier cannot be <code>null</code> or
+     * the list of JPQL identifiers was <code>null</code>
+     */
+    protected ExpressionFactory(String id, String... identifiers) {
+        super();
+        this.id = id;
+        this.identifiers = identifiers;
+    }
 
-	/**
-	 * Adds the given JPQL identifier to this factory.
-	 *
-	 * @param identifier The JPQL identifier this factory will parse
-	 */
-	void addIdentifier(String identifier) {
+    /**
+     * Adds the given JPQL identifier to this factory.
+     *
+     * @param identifier The JPQL identifier this factory will parse
+     */
+    void addIdentifier(String identifier) {
 
-		String[] newIdentifiers = new String[identifiers.length + 1];
-		newIdentifiers[identifiers.length] = identifier;
-		System.arraycopy(identifiers, 0, newIdentifiers, 0, identifiers.length);
+        String[] newIdentifiers = new String[identifiers.length + 1];
+        newIdentifiers[identifiers.length] = identifier;
+        System.arraycopy(identifiers, 0, newIdentifiers, 0, identifiers.length);
 
-		identifiers = newIdentifiers;
-	}
+        identifiers = newIdentifiers;
+    }
 
-	/**
-	 * Adds the given JPQL identifiers to this factory.
-	 *
-	 * @param identifier The JPQL identifiers this factory will parse
-	 */
-	void addIdentifiers(String... identifiers) {
+    /**
+     * Adds the given JPQL identifiers to this factory.
+     *
+     * @param identifier The JPQL identifiers this factory will parse
+     */
+    void addIdentifiers(String... identifiers) {
 
-		int originalLength = this.identifiers.length;
+        int originalLength = this.identifiers.length;
 
-		String[] newIdentifiers = new String[this.identifiers.length + identifiers.length];
-		System.arraycopy(this.identifiers, 0, newIdentifiers, 0, this.identifiers.length);
-		System.arraycopy(identifiers, 0, newIdentifiers, originalLength, identifiers.length);
+        String[] newIdentifiers = new String[this.identifiers.length + identifiers.length];
+        System.arraycopy(this.identifiers, 0, newIdentifiers, 0, this.identifiers.length);
+        System.arraycopy(identifiers, 0, newIdentifiers, originalLength, identifiers.length);
 
-		this.identifiers = newIdentifiers;
-	}
+        this.identifiers = newIdentifiers;
+    }
 
-	/**
-	 * Creates a new {@link Expression}.
-	 *
-	 * @param parent The parent {@link AbstractExpression}
-	 * @param wordParser The text to parse based on the current position of the cursor
-	 * @param word The current word being parsed
-	 * @param queryBNF The BNF grammar that was used to identifier this factory to be capable to
-	 * parse a portion of the query
-	 * @param expression During the parsing, it is possible the first part of an expression was
-	 * parsed which needs to be used as a sub-expression of the newly created expression
-	 * @return A new {@link AbstractExpression} representing the portion or the totality of the
-	 * text held by {@link WordParser} starting at the cursor position
-	 */
-	protected abstract AbstractExpression buildExpression(AbstractExpression parent,
-	                                                      WordParser wordParser,
-	                                                      String word,
-	                                                      JPQLQueryBNF queryBNF,
-	                                                      AbstractExpression expression,
-	                                                      boolean tolerant);
+    /**
+     * Creates a new {@link Expression}.
+     *
+     * @param parent The parent {@link AbstractExpression}
+     * @param wordParser The text to parse based on the current position of the cursor
+     * @param word The current word being parsed
+     * @param queryBNF The BNF grammar that was used to identifier this factory to be capable to
+     * parse a portion of the query
+     * @param expression During the parsing, it is possible the first part of an expression was
+     * parsed which needs to be used as a sub-expression of the newly created expression
+     * @return A new {@link AbstractExpression} representing the portion or the totality of the
+     * text held by {@link WordParser} starting at the cursor position
+     */
+    protected abstract AbstractExpression buildExpression(AbstractExpression parent,
+                                                          WordParser wordParser,
+                                                          String word,
+                                                          JPQLQueryBNF queryBNF,
+                                                          AbstractExpression expression,
+                                                          boolean tolerant);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public final int compareTo(ExpressionFactory expressionFactory) {
-		return id.compareTo(expressionFactory.getId());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public final int compareTo(ExpressionFactory expressionFactory) {
+        return id.compareTo(expressionFactory.getId());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final boolean equals(Object object) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean equals(Object object) {
                 if (object == null) {
                     return false;
                 }
-		if (this == object) {
-			return true;
-		}
+        if (this == object) {
+            return true;
+        }
 
-		ExpressionFactory factory = (ExpressionFactory) object;
-		return id.equals(factory.id);
-	}
+        ExpressionFactory factory = (ExpressionFactory) object;
+        return id.equals(factory.id);
+    }
 
-	/**
-	 * Returns the registry containing the {@link JPQLQueryBNF JPQLQueryBNFs} and the {@link
-	 * org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory ExpressionFactories} that are used
-	 * to properly parse a JPQL query.
-	 *
-	 * @return The registry containing the information related to the JPQL grammar
-	 */
-	public final ExpressionRegistry getExpressionRegistry() {
-		return expressionRegistry;
-	}
+    /**
+     * Returns the registry containing the {@link JPQLQueryBNF JPQLQueryBNFs} and the {@link
+     * org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory ExpressionFactories} that are used
+     * to properly parse a JPQL query.
+     *
+     * @return The registry containing the information related to the JPQL grammar
+     */
+    public final ExpressionRegistry getExpressionRegistry() {
+        return expressionRegistry;
+    }
 
-	/**
-	 * Returns the unique identifier of this <code>ExpressionFactory</code>.
-	 *
-	 * @return The identifier used to register this {@link ExpressionFactory} with {@link
-	 * ExpressionRegistry}
-	 */
-	public final String getId() {
-		return id;
-	}
+    /**
+     * Returns the unique identifier of this <code>ExpressionFactory</code>.
+     *
+     * @return The identifier used to register this {@link ExpressionFactory} with {@link
+     * ExpressionRegistry}
+     */
+    public final String getId() {
+        return id;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final int hashCode() {
-		return id.hashCode();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final int hashCode() {
+        return id.hashCode();
+    }
 
-	/**
-	 * Returns the JPQL identifiers handled by this factory.
-	 *
-	 * @return The list of JPQL identifiers this factory knows how to parse
-	 */
-	public final String[] identifiers() {
-		return identifiers;
-	}
+    /**
+     * Returns the JPQL identifiers handled by this factory.
+     *
+     * @return The list of JPQL identifiers this factory knows how to parse
+     */
+    public final String[] identifiers() {
+        return identifiers;
+    }
 
-	/**
-	 * Sets the backpointer to the {@link ExpressionRegistry} with which this {@link JPQLQueryBNF}
-	 * was registered.
-	 *
-	 * @param expressionRegistry The registry for a given JPQL grammar
-	 */
-	final void setExpressionRegistry(ExpressionRegistry expressionRegistry) {
-		this.expressionRegistry = expressionRegistry;
-	}
+    /**
+     * Sets the backpointer to the {@link ExpressionRegistry} with which this {@link JPQLQueryBNF}
+     * was registered.
+     *
+     * @param expressionRegistry The registry for a given JPQL grammar
+     */
+    final void setExpressionRegistry(ExpressionRegistry expressionRegistry) {
+        this.expressionRegistry = expressionRegistry;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(getClass().getSimpleName());
-		sb.append("(id=");
-		sb.append(id);
-		sb.append(", identifiers=");
-		sb.append(Arrays.toString(identifiers));
-		sb.append(")");
-		return sb.toString();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append("(id=");
+        sb.append(id);
+        sb.append(", identifiers=");
+        sb.append(Arrays.toString(identifiers));
+        sb.append(")");
+        return sb.toString();
+    }
 }

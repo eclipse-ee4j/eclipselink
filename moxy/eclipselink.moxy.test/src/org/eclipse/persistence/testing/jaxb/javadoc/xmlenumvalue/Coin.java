@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,23 +17,23 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
 
 
-	@XmlType(name="coin-enum")
+    @XmlType(name="coin-enum")
     @XmlEnum(Integer.class)
-    public enum Coin { 
+    public enum Coin {
         @XmlEnumValue("1") PENNY(1),
         @XmlEnumValue("5") NICKEL(5),
         @XmlEnumValue("10") DIME(10),
         @XmlEnumValue("25") QUARTER(25);
 
-	    private final int value;
+        private final int value;
 
-	
-		Coin(int v){
-			value = v;
-		}
 
-		public Integer value(){
-			return value;
-		}
+        Coin(int v){
+            value = v;
+        }
+
+        public Integer value(){
+            return value;
+        }
 
      }

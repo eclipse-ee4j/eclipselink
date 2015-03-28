@@ -9,7 +9,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jpa.rs.exceptions.ErrorResponse;
 
 /**
- * Makes the ErrorResponse class available to JAXB context. 
+ * Makes the ErrorResponse class available to JAXB context.
  *
  */
 public class ErrorResponseMetadataSource implements MetadataSource {

@@ -8,11 +8,11 @@ import javax.persistence.Id;
 
 @Entity
 public class ConcurrencyB implements Serializable {
-    
+
     protected int id;
-    
+
     protected String name;
-    
+
     /**
      * @return the id
      */

@@ -1,22 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     10/25/2012-2.5 Guy Pelletier 
+ *     10/25/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     11/22/2012-2.5 Guy Pelletier 
+ *     11/22/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
- *     11/28/2012-2.5 Guy Pelletier 
+ *     11/28/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     01/23/2013-2.5 Guy Pelletier 
+ *     01/23/2013-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.Date;
@@ -41,12 +41,12 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.xml.RunnerStatus;
 
 public class XMLConverterTestSuite extends JUnitTestCase {
     public XMLConverterTestSuite() {}
-    
+
     public XMLConverterTestSuite(String name) {
         super(name);
         setPuName("MulitPU-4");
     }
-    
+
     /**
      * Return the the persistence unit name for this test suite.
      */
@@ -54,25 +54,25 @@ public class XMLConverterTestSuite extends JUnitTestCase {
     public String getPersistenceUnitName() {
         return "MulitPU-4";
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("XMLConverterTestSuite");
-        
+
         suite.addTest(new XMLConverterTestSuite("testXMLConverters"));
-        
+
         return suite;
     }
-    
+
     /**
      * Test that converters are set.
      */
     public void testXMLConverters() {
         EntityManager em = createEntityManager();
-            
+
         try {
             beginTransaction(em);
-            
+
             Runner runner = new Runner();
             runner.setAge(53);
             runner.setIsFemale();
@@ -88,30 +88,30 @@ public class XMLConverterTestSuite extends JUnitTestCase {
             runnerStatus.setRunningStatus(RunningStatus.D);
             runnerInfo.setStatus(runnerStatus);
             runner.setInfo(runnerInfo);
-            
+
             Race race = new Race();
             race.setName("The Ultimate Marathon");
             race.addRunner(runner);
-            
+
             Organizer organizer = new Organizer();
             organizer.setName("Joe Organ");
             organizer.setRace(race);
-            
+
             Responsibility responsibility = new Responsibility();
             responsibility.setUniqueIdentifier(new Long(System.currentTimeMillis()));
             responsibility.setDescription("Raise funds");
-            
+
             race.addOrganizer(organizer, responsibility);
-            
+
             em.persist(race);
             em.persist(organizer);
             em.persist(runner);
             commitTransaction(em);
-                
+
             // Clear the cache
             em.clear();
             clearCache();
-    
+
             Runner runnerRefreshed = em.find(Runner.class, runner.getId());
             assertTrue("The age conversion did not work.", runnerRefreshed.getAge() == 52);
             assertTrue("The embeddable health conversion did not work.", runnerRefreshed.getInfo().getHealth().equals(Health.HEALTHY));
@@ -122,15 +122,15 @@ public class XMLConverterTestSuite extends JUnitTestCase {
             assertTrue("Distance (map key) conversion did not work.", runnerRefreshed.getPersonalBests().keySet().contains("5K"));
             assertTrue("Time (map value) conversion did not work.", runnerRefreshed.getPersonalBests().values().contains("47:34.0"));
             assertTrue("Time (map value) conversion did not work.", runnerRefreshed.getPersonalBests().values().contains("26:41.0"));
-            
+
             Race raceRefreshed = em.find(Race.class, race.getId());
             Map<Responsibility, Organizer> organizers = raceRefreshed.getOrganizers();
             assertFalse("No race organizers returned.", organizers.isEmpty());
             assertTrue("More than one race organizer returned.", organizers.size() == 1);
-            
+
             Responsibility resp = organizers.keySet().iterator().next();
             assertTrue("Responsibility was not uppercased by the converter", resp.getDescription().equals("RAISE FUNDS"));
-            
+
             for (String accomplishment : runnerRefreshed.getAccomplishments().keySet()) {
                 assertTrue("Accomplishment (map key) conversion did not work.", accomplishment.endsWith("!!!"));
             }
@@ -138,7 +138,7 @@ public class XMLConverterTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-                
+
             throw e;
         } finally {
             closeEntityManager(em);

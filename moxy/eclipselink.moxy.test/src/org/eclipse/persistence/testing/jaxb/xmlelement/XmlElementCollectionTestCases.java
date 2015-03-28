@@ -4,12 +4,12 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelement;
 
 import java.util.ArrayList;
@@ -18,8 +18,8 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlElementCollectionTestCases extends JAXBWithJSONTestCases {
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/employee_collection.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/employee_collection.json";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/employee_collection.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/employee_collection.json";
 
     public XmlElementCollectionTestCases(String name) throws Exception {
         super(name);
@@ -33,11 +33,11 @@ public class XmlElementCollectionTestCases extends JAXBWithJSONTestCases {
 
     protected Object getControlObject() {
         EmployeeCollection employee = new EmployeeCollection();
-		ArrayList ids = new ArrayList();
-		ids.add("123");
-		ids.add("456");
-		ids.add("789");
-		employee.ids = ids;
+        ArrayList ids = new ArrayList();
+        ids.add("123");
+        ids.add("456");
+        ids.add("789");
+        employee.ids = ids;
         return employee;
     }
 }

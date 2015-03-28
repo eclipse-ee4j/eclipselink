@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     07/16/2009-2.0 Guy Pelletier 
+ *     07/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.exceptions.*;
@@ -39,7 +39,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
 
     protected Class referenceClass;
     protected String referenceClassName;
-    
+
     /** Number of modified objects */
     protected transient Integer result;
 
@@ -48,10 +48,10 @@ public abstract class ModifyAllQuery extends ModifyQuery {
 
     /** Provide a default builder so that it's easier to be consistent */
     protected ExpressionBuilder defaultBuilder;
-    
+
     /** Indicates whether the query was prepared so that it will execute using temp storage */
     protected boolean isPreparedUsingTempStorage;
-    
+
     /**
      * PUBLIC:
      */
@@ -111,7 +111,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
     @Override
     protected void clonedQueryExecutionComplete(DatabaseQuery query, AbstractSession session) {
         super.clonedQueryExecutionComplete(query, session);
-        
+
         if (session.isUnitOfWork()) {
             ((UnitOfWorkImpl)session).storeModifyAllQuery(query);
         }
@@ -135,7 +135,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
             throw ValidationException.nestedUOWNotSupportedForModifyAllQuery();
         }
 
-        //Bug4607551  For UpdateAllQuery, if deferred, add the original query with a translation row to the deferredUpdateAllQueries for execution.  
+        //Bug4607551  For UpdateAllQuery, if deferred, add the original query with a translation row to the deferredUpdateAllQueries for execution.
         //No action for non-deferred.  Later on the clones of all the UpdateAllQuery's will be added to modifyAllQueries for validation.
         if(shouldDeferExecutionInUOW()) {
             unitOfWork.storeDeferredModifyAllQuery(this, translationRow);
@@ -170,7 +170,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
 
         return defaultBuilder;
     }
-    
+
     /**
      * INTERNAL
      * Sets the default expression builder for this query.
@@ -216,7 +216,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
 
     /**
      * INTERNAL:
-     * After execution we need to merge the changes into the shared cache, 
+     * After execution we need to merge the changes into the shared cache,
      * unless the query has been tagged to bypass on the store.
      */
     public void mergeChangesIntoSharedCache() {
@@ -252,7 +252,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
     public void setReferenceClassName(String className) {
         referenceClassName = className;
     }
-    
+
     /**
      * PUBLIC:
      * Set a flag indicating whether execution should be deferred in UOW until commit.
@@ -260,7 +260,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
     public void setShouldDeferExecutionInUOW(boolean shouldDeferExecutionInUOW) {
         this.shouldDeferExecutionInUOW = shouldDeferExecutionInUOW;
     }
-    
+
     /**
      * PUBLIC:
      * Indicates whether execution should be deferred in UOW until commit.
@@ -268,7 +268,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
     public boolean shouldDeferExecutionInUOW() {
         return shouldDeferExecutionInUOW;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -288,7 +288,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
             defaultBuilder = new ExpressionBuilder();
         }
     }
-    
+
     /**
      * INTERNAL:
      * Initialize the expression builder which should be used for this query. If

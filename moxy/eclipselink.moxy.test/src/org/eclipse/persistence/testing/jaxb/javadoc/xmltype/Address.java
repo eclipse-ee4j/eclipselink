@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,38 +17,38 @@ import javax.xml.bind.annotation.*;
 @XmlType(propOrder={"street", "city" , "state", "name" })
 @XmlRootElement
 public class Address {
-    
+
     public String name, street, city, state;
-    
+
     String getName() {
-    	return name;
-    	}    
+        return name;
+        }
     void setName(String n) {
-    	this.name = n;
-    	}
+        this.name = n;
+        }
 
     String getStreet() {
-    	return street;
-	}
+        return street;
+    }
     void setStreet(String str) {
-    	this.street = str;
-	}
+        this.street = str;
+    }
 
     String getCity() {
-    	return city;
-	} 
+        return city;
+    }
     void setCity(String c) {
-    	this.city = c;
-	}
+        this.city = c;
+    }
 
     String getState() {
-    	return state;
-	}    
+        return state;
+    }
     void setState(String s) {
-    	this.state = s;
-	}
-    
-    
+        this.state = s;
+    }
+
+
     public boolean equals(Object obj) {
         Address addr = (Address)obj;
         return name.equals(addr.name) && city.equals(addr.city) && street.equals(addr.street) && state.equals(addr.state);

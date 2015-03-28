@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,62 +30,62 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration;
  */
 public class CollectionEquivalentResolver extends Resolver {
 
-	/**
-	 * The list of {@link Resolver resolvers} that were created for each of the encapsulated
-	 * expressions.
-	 */
-	private List<Resolver> resolvers;
+    /**
+     * The list of {@link Resolver resolvers} that were created for each of the encapsulated
+     * expressions.
+     */
+    private List<Resolver> resolvers;
 
-	/**
-	 * Creates a new <code>CollectionEquivalentResolver</code>.
-	 *
-	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
-	 * @param resolvers The list of {@link Resolver resolvers} that were created for each of
-	 * the encapsulated expressions
-	 */
-	public CollectionEquivalentResolver(Resolver parent, List<Resolver> resolvers) {
-		super(parent);
-		this.resolvers = resolvers;
-	}
+    /**
+     * Creates a new <code>CollectionEquivalentResolver</code>.
+     *
+     * @param parent The parent {@link Resolver}, which is never <code>null</code>
+     * @param resolvers The list of {@link Resolver resolvers} that were created for each of
+     * the encapsulated expressions
+     */
+    public CollectionEquivalentResolver(Resolver parent, List<Resolver> resolvers) {
+        super(parent);
+        this.resolvers = resolvers;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected IType buildType() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected IType buildType() {
 
-		TypeHelper helper = getTypeHelper();
-		IType unknownType = helper.unknownType();
-		IType type = null;
+        TypeHelper helper = getTypeHelper();
+        IType unknownType = helper.unknownType();
+        IType type = null;
 
-		for (int index = 0, count = resolvers.size(); index < count; index++) {
-			IType anotherType = resolvers.get(index).getType();
+        for (int index = 0, count = resolvers.size(); index < count; index++) {
+            IType anotherType = resolvers.get(index).getType();
 
-			if (anotherType == unknownType) {
-				continue;
-			}
+            if (anotherType == unknownType) {
+                continue;
+            }
 
-			if (type == null) {
-				type = anotherType;
-			}
-			// Two types are not the same, then the type is Object
-			else if (!type.equals(anotherType)) {
-				return helper.objectType();
-			}
-		}
+            if (type == null) {
+                type = anotherType;
+            }
+            // Two types are not the same, then the type is Object
+            else if (!type.equals(anotherType)) {
+                return helper.objectType();
+            }
+        }
 
-		if (type == null) {
-			type = unknownType;
-		}
+        if (type == null) {
+            type = unknownType;
+        }
 
-		return type;
-	}
+        return type;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ITypeDeclaration buildTypeDeclaration() {
-		return getType().getTypeDeclaration();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ITypeDeclaration buildTypeDeclaration() {
+        return getType().getTypeDeclaration();
+    }
 }

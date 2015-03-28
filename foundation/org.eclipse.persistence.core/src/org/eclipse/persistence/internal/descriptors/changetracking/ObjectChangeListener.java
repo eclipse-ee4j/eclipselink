@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors.changetracking;
 
 import java.beans.*;
@@ -29,7 +29,7 @@ public class ObjectChangeListener implements PropertyChangeListener, Serializabl
     // when EclipseLink merges events should be ignored that are not issued by EclipseLink
     // ie when EclipseLink call setters.
     protected boolean ignoreEvents = false;
-    
+
     // this is used to treat ignoreEvents as a nestable call. In numerous
     // places EclipseLink will disable events, do some work and re-enable. Within
     // that work there may be other disable/enable pairs. This flag will allow EclipseLink
@@ -55,7 +55,7 @@ public class ObjectChangeListener implements PropertyChangeListener, Serializabl
         ++ignoreDepth;
         this.ignoreEvents = true;
     }
-    
+
     /**
      * INTERNAL:
      * This method will set this listener to ignore events not issues by EclipseLink
@@ -66,7 +66,7 @@ public class ObjectChangeListener implements PropertyChangeListener, Serializabl
             this.ignoreEvents = false;
         }
     }
-    
+
     /**
      * PUBLIC:
      * This method turns marks the object as changed.

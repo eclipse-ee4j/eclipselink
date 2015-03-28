@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork.changeflag;
 
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
@@ -41,7 +41,7 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 /**
  * This model tests reading/writing/deleting through using the employee demo.
  * This model is set up to test the use of multiple ChangeTracking policies.  It uses
- * the employee demo test framework to ensure everything works as it did before when 
+ * the employee demo test framework to ensure everything works as it did before when
  * these change policies are used.  It also makes use of several of the tests from the UnitOfWork
  * model to ensure that the actual updates function correctly.
  * @author Edwin Tang
@@ -114,7 +114,7 @@ public class EmployeeHybridChangeTrackingTestModel extends EmployeeChangeFlagBas
         test.usesUnitOfWork = true;
         suite.addTest(test);
 
-        //The test below should work, 
+        //The test below should work,
         //once AttributeChangeTrackingPolicy supports for aggregate, aggregate collection and direct collection.
         //suite.addTest(new NestedUnitOfWorkTest(employee));
         //suite.addTest(new NestedUnitOfWorkMultipleCommitTest(employee));
@@ -125,7 +125,7 @@ public class EmployeeHybridChangeTrackingTestModel extends EmployeeChangeFlagBas
         //suite.addTest(new UnitOfWorkCommitAndResume(employee));
         suite.addTest(new UnitOfWorkRevertTest(employee));
         suite.addTest(new ChangeFlagTest());
-        //The test below should work, 
+        //The test below should work,
         //once AttributeChangeTrackingPolicy supports for aggregate, aggregate collection and direct collection.
         //suite.addTest(new ChangeEventTest());
         suite.addTest(new NestedUOWWithAttributeChangeTrackingTest(employee));

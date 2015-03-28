@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,7 +16,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 
 /**
  * INTERNAL
- * A abstraction of attribute accessor capturing behavior common to all 
+ * A abstraction of attribute accessor capturing behavior common to all
  * persistence types.
  */
 public interface CoreAttributeAccessor {
@@ -43,7 +43,7 @@ public interface CoreAttributeAccessor {
     public void initializeAttributes(Class descriptorClass) throws DescriptorException;
 
     public boolean isInstanceVariableAttributeAccessor();
-    
+
     public boolean isMethodAttributeAccessor();
 
     /**
@@ -51,18 +51,18 @@ public interface CoreAttributeAccessor {
      * @return
      */
     public boolean isWriteOnly();
-    
+
     /**
      * Set the attribute value into the object.
      */
     public void setAttributeValueInObject(Object object, Object value);
-    
+
     /**
      * INTERNAL
      * @param aBoolean
      */
     public void setIsReadOnly(boolean aBoolean);
-    
+
     public void setIsWriteOnly(boolean aBoolean);
 
 }

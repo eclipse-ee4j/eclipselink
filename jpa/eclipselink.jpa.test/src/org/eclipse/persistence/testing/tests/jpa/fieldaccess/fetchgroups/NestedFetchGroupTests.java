@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
- *     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE 
+ *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
+ *     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
@@ -58,7 +58,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
     public static junit.framework.Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("NestedFetchGroupTests");
-        
+
         suite.addTest(new NestedFetchGroupTests("testSetup"));
         suite.addTest(new NestedFetchGroupTests("dynamicFetchGroup_EmployeeAddress"));
         suite.addTest(new NestedFetchGroupTests("dynamicFetchGroup_Employee_NullAddress"));
@@ -76,17 +76,17 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new NestedFetchGroupTests("simpleNestedFetchGroupWithBatch"));
         suite.addTest(new NestedFetchGroupTests("simpleLoadGroup"));
         suite.addTest(new NestedFetchGroupTests("simpleFetchGroupLoadWithBatch"));
-        
+
         return suite;
     }
-    
+
     public void setUp() {
         super.setUp();
-        
+
         defaultPhoneFG = new FetchGroup();
         defaultPhoneFG.addAttribute("number");
         phoneDescriptor.getFetchGroupManager().setDefaultFetchGroup(defaultPhoneFG);
-        
+
         reprepareReadQueries(phoneDescriptor);
         reprepareReadQueries(employeeDescriptor);
 
@@ -320,10 +320,10 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void dynamicFetchGroup_EmployeeAddressEmptyPhone() {
-        
+
     }
     public void dynamicFetchGroup_EmployeeAddressEmptyPhoneLoad() {
-    
+
     }
     void internal_dynamicFetchGroup_EmployeeAddressEmptyPhone(boolean shouldLoad) {
         EntityManager em = createEntityManager("fieldaccess");
@@ -343,7 +343,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             FetchGroup ownerId = new FetchGroup();
             ownerId.addAttribute("owner.id");
             fg.addAttribute("phoneNumbers", ownerId);
-            
+
             if(shouldLoad) {
                 fg.setShouldLoad(true);
             }
@@ -355,7 +355,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
 
             assertNotNull(emps);
             assertEquals(1 + (shouldLoad ? 0 : (emps.size() * 2)), getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            
+
             for (Employee emp : emps) {
                 FetchGroupTracker tracker = (FetchGroupTracker) emp;
 
@@ -469,29 +469,29 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             fg.addAttribute("manager.salary");
             fg.addAttribute("manager.manager");
             query.setHint(QueryHints.FETCH_GROUP, fg);
-            
+
             // applied to the selected Employee who is not a manager of some other selected Employee
-            FetchGroup employeeFG = new EntityFetchGroup(new String[]{"id", "version", "firstName", "lastName", "manager"}); 
+            FetchGroup employeeFG = new EntityFetchGroup(new String[]{"id", "version", "firstName", "lastName", "manager"});
             // applied to the manager of a selected Employee who is not selected as an Employee
             FetchGroup managerFG = new EntityFetchGroup(new String[]{"id", "version", "firstName", "salary", "manager"});
             // applied to the object which is both selected as an Employee and the manager of another selected Employee
-            FetchGroup employeeManagerFG = employeeDescriptor.getFetchGroupManager().flatUnionFetchGroups(employeeFG, managerFG, false); 
-            
+            FetchGroup employeeManagerFG = employeeDescriptor.getFetchGroupManager().flatUnionFetchGroups(employeeFG, managerFG, false);
+
             // used in useCopy case only
             FetchGroup employeeManagerManagerFG = null;
             if(useCopy) {
-                employeeManagerManagerFG = employeeDescriptor.getFetchGroupManager().flatUnionFetchGroups(new EntityFetchGroup("manager"), employeeDescriptor.getFetchGroupManager().getNonReferenceEntityFetchGroup(), false); 
+                employeeManagerManagerFG = employeeDescriptor.getFetchGroupManager().flatUnionFetchGroups(new EntityFetchGroup("manager"), employeeDescriptor.getFetchGroupManager().getNonReferenceEntityFetchGroup(), false);
             }
-            
+
             /*
              * These are the first names of Employees involved; --> means "managed by".
              * All the employees here are returned by the query except Jill and Sarah-loo (they got no manager).
-             * 
+             *
              * Sarah ------>Bob -------> John ----> Jim-bob ---> Jill ---> null
              * Charles -----^   Marius ----^
-             * 
+             *
              * Nancy ------> Sarah-loo ---> null
-             * 
+             *
              * Sarah, Charles, Nancy should have employeeFG;
              * Sarah-loo - managerFG;
              * Bob, Marius - employeeManagerFG;
@@ -500,15 +500,15 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
              * The result for all three of them is the same:
              *   in read case (useCopy == false) it should be null (no fetch group), because defaultFetchGroup is null;
              *   in copy case (useCopy == true) it should be a union of "manager" and all non relational attributes (NonReferenceEntityFetchGroup).
-             * That's how leaf reference attribute is treated: 
+             * That's how leaf reference attribute is treated:
              *   default fetch group for read;
              *   NonReferenceEntityFetchGroup (see FetchGroupManager) for copy.
              * In this test defaultFetchGroup (null) / NonReferenceEntityFetchGroup comes from {manager},
              *   in useCopy == true case additional manager comes from another fetch group (they all contain manager).
              */
-            
+
             List<Employee> emps = query.getResultList();
-            
+
             if(useCopy) {
                 /*for(Employee emp : emps) {
                     int idHashCode =  System.identityHashCode(emp);
@@ -520,7 +520,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             // Sets of managed Employees keyed by their manager
             Map<Employee, Set<Employee>> managedEmployeesByManager = new IdentityHashMap();
             for (Employee emp : emps) {
-                Employee manager = emp.getManager(); 
+                Employee manager = emp.getManager();
                 Set<Employee> managedEmployees = managedEmployeesByManager.get(manager);
                 if(managedEmployees == null) {
                     managedEmployees = new IdentityHashSet();
@@ -536,7 +536,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                     // employee is NOT a manager of any of the selected employees:
                     assertFetched(emp, employeeFG);
 
-                    Set<Employee> managedByManagerEmployees = managedEmployeesByManager.get(manager); 
+                    Set<Employee> managedByManagerEmployees = managedEmployeesByManager.get(manager);
                     // indicates whether one of manager's managed employees is a manager itself
                     boolean isManagersManager = false;
                     for(Employee managedEmp : managedByManagerEmployees) {
@@ -558,7 +558,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                             // for at least one of the selected employees manager is manager's manager:
                             //   someSelectedEmp.getManager().getManager() == manager
                             // That means for someSelectedEmp emp is defined by {manager.manager} FetchGroup's item,
-                            // which means no fetch group should be used. 
+                            // which means no fetch group should be used.
                             assertNoFetchGroup(manager);
                         }
                     } else {
@@ -581,7 +581,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                             break;
                         }
                     }
-                    
+
                     if(isManagersManager) {
                         if(useCopy) {
                             // for at least one of the selected employees manager is manager's manager:
@@ -595,14 +595,14 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                             // for at least one of the selected employees emp is manager's manager:
                             //   someSelectedEmp.getManager().getManager() == emp
                             // That means for someSelectedEmp emp is defined by {manager.manager} FetchGroup's item,
-                            // which means no fetch group should be used. 
+                            // which means no fetch group should be used.
                             assertNoFetchGroup(emp);
                         }
                     } else {
                         // it's selected employee, manager of some selected employee, but not manager's manager
                         assertFetched(emp, employeeManagerFG);
                     }
-                    
+
                     if(useCopy) {
                         // for at least one of the selected employees manager is manager's manager:
                         //   someSelectedEmp.getManager().getManager() == manager
@@ -615,7 +615,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                         // for at least one of the selected employees manager is manager's manager:
                         //   someSelectedEmp.getManager().getManager() == manager
                         // That means for someSelectedEmp emp.getManager() is defined by {manager.manager} FetchGroup's item,
-                        // which means no fetch group should be used. 
+                        // which means no fetch group should be used.
                         assertNoFetchGroup(manager);
                     }
                 }
@@ -627,7 +627,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             closeEntityManager(em);
         }
     }
-    
+
    @Test
    public void managerDoubleNestedFetchGroupWithJoinFetch() {
        managerNestedFetchGroupWithJoinFetch(true);
@@ -664,7 +664,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             int nSql;
             if(isDouble) {
                 // In this case the number of generated sqls is unpredictable.
-                // Additional sql generated for every object that 
+                // Additional sql generated for every object that
                 // has been first fetched as manager.manager
                 // and then is selected as an employee - getting its manger
                 // performed without fetch group therefore triggering reading of the whole object
@@ -673,21 +673,21 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                 assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
                 nSql = 1;
             }
-            
+
             Employee emp = employees.get(0);
             assertFetched(emp, managerFG);
-            
+
             // manager (if not null) is instantiated by the fetch group, before emp.getManager call.
             Employee manager = emp.getManager();
             assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
             assertFetched(manager, managerFG);
-            
+
             // instantiates the whole object
             emp.getLastName();
             nSql++;
             assertNoFetchGroup(emp);
             assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            
+
             assertFetched(manager, managerFG);
             // instantiates the whole object
             manager.getLastName();
@@ -730,14 +730,14 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             Query query = em.createQuery("SELECT e FROM Employee e WHERE NOT EXISTS(SELECT p.id FROM Project p WHERE p.teamLeader = e) AND NOT EXISTS(SELECT e2.id FROM Employee e2 WHERE e2.manager = e)");
             FetchGroup employeeFG = new FetchGroup("employee");
             employeeFG.addAttribute("lastName");
-            
+
             employeeFG.addAttribute("address.country");
             employeeFG.addAttribute("address.city");
             query.setHint(QueryHints.LEFT_FETCH, "e.address");
-            
+
             employeeFG.addAttribute("phoneNumbers");
             query.setHint(QueryHints.LEFT_FETCH, "e.phoneNumbers");
-            
+
             employeeFG.addAttribute("projects.name");
 
             employeeFG.addAttribute("projects.teamLeader.firstName");
@@ -747,7 +747,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             employeeFG.addAttribute("projects.teamLeader.phoneNumbers.type");
             employeeFG.addAttribute("projects.teamLeader.phoneNumbers.areaCode");
             query.setHint(QueryHints.LEFT_FETCH, "e.projects.teamLeader.phoneNumbers");
-            
+
             employeeFG.addAttribute("manager.firstName");
             //employeeFG.addAttribute("manager.address.street");
             //employeeFG.addAttribute("manager.address.postalCode");
@@ -758,15 +758,15 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
 
             // department attribute defined with JoinFetchType.OUTER
             employeeFG.addAttribute("department.name");
-            
+
             query.setHint(QueryHints.FETCH_GROUP, employeeFG);
 
             List<Employee> employees = query.getResultList();
             assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            
+
             for(Employee emp :employees) {
                 assertFetched(emp, employeeFG);
-                
+
                 Address address = emp.getAddress();
                 if(address != null) {
                     assertFetched(address, employeeFG.getGroup("address"));
@@ -775,7 +775,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                 for (PhoneNumber phone : emp.getPhoneNumbers()) {
                     assertFetched(phone, defaultPhoneFG);
                 }
-                
+
                 for (Project project : emp.getProjects()) {
                     assertFetched(project, employeeFG.getGroup("projects"));
                     Employee teamLeader = project.getTeamLeader();
@@ -786,7 +786,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                         }
                     }
                 }
-                
+
                 Employee manager = emp.getManager();
                 if(manager != null) {
                     assertFetched(manager, employeeFG.getGroup("manager"));
@@ -794,7 +794,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                         assertFetched(phone, employeeFG.getGroup("manager.phoneNumbers"));
                     }
                 }
-                
+
                 Department department = emp.getDepartment();
                 if(department != null) {
                     assertFetched(department, employeeFG.getGroup("department"));
@@ -817,7 +817,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
         query.setHint(QueryHints.LEFT_FETCH, "e.phoneNumbers");
 
         List<Employee> employees = query.getResultList();
-        
+
         for(Employee emp : employees) {
             assertNoFetchGroup(emp);
             for (PhoneNumber phone : emp.getPhoneNumbers()) {
@@ -838,7 +838,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
         query.setHint(QueryHints.FETCH_GROUP, fg);
         query.setHint(QueryHints.LEFT_FETCH, "e.address");
 
-        List<Employee> employees = query.getResultList();        
+        List<Employee> employees = query.getResultList();
     }
 
    @Test
@@ -856,12 +856,12 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             employeeFG.addAttribute("lastName");
             employeeFG.addAttribute("address.country");
             employeeFG.addAttribute("address.city");
-            
+
             FetchGroup phonesFG = defaultPhoneFG.clone();
             // to preclude PhoneNumber from triggering owner's full read
             phonesFG.addAttribute("owner.id");
             employeeFG.addAttribute("phoneNumbers", phonesFG);
-            
+
             FetchGroup projectsFG = new FetchGroup("projects");
             projectsFG.addAttribute("name");
             projectsFG.addAttribute("name");
@@ -871,11 +871,11 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             employeeFG.addAttribute("projects", projectsFG);
 
             query.setHint(QueryHints.FETCH_GROUP, employeeFG);
-            
+
             query.setHint(QueryHints.BATCH, "e.address");
             query.setHint(QueryHints.BATCH, "e.phoneNumbers");
             query.setHint(QueryHints.BATCH, "e.projects");
-            
+
             // A single sql will be used to read all Project subclasses.
             query.setHint(QueryHints.INHERITANCE_OUTER_JOIN, "true");
 
@@ -885,7 +885,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             // Address, PhoneNumbers and Projects are already loaded because
             // employeeFG.shouldLoad is set to true.
             assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            
+
             // verify fetch groups
             for(Employee emp : employees) {
                 assertFetched(emp, employeeFG);
@@ -898,7 +898,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                 for (PhoneNumber phone : emp.getPhoneNumbers()) {
                          assertFetched(phone, phonesFG);
                 }
-                
+
                 for (Project project : emp.getProjects()) {
                          assertFetched(project, projectsFG);
                 }
@@ -920,7 +920,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                     phone.getAreaCode();
                     assertNoFetchGroup(phone);
                 }
-                
+
                 for (Project project : emp.getProjects()) {
                     project.getDescription();
                     assertNoFetchGroup(project);
@@ -933,7 +933,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             closeEntityManager(em);
         }
    }
-   
+
    @Test
     public void simpleLoadGroup() {
         EntityManager em = createEntityManager("fieldaccess");
@@ -943,7 +943,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
              Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
              query.setParameter("GENDER", Gender.Female);
              List<Employee> employees = query.getResultList();
-             
+
              LoadGroup group = new LoadGroup();
              group.addAttribute("address");
              group.addAttribute("phoneNumbers");
@@ -952,7 +952,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
              session.load(employees, group, session.getClassDescriptor(Employee.class), false);
 
              int numSelectBefore = getQuerySQLTracker(em).getTotalSQLSELECTCalls();
-             
+
              // All indirections specified in the plan should have been already triggered.
              for(Employee emp : employees) {
                  emp.getAddress();
@@ -961,7 +961,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                      emp.getManager().getProjects().size();
                  }
              }
-             
+
              int numSelectAfter = getQuerySQLTracker(em).getTotalSQLSELECTCalls();
              assertEquals(numSelectBefore, numSelectAfter);
         } finally {
@@ -971,9 +971,9 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             closeEntityManager(em);
         }
     }
-   
+
    @Test
-   // Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE 
+   // Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE
     public void simpleFetchGroupLoadWithBatch() {
         EntityManager em = createEntityManager("fieldaccess");
         try {
@@ -986,7 +986,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
              employeeGroup.addAttribute("firstName");
              employeeGroup.addAttribute("lastName");
              employeeGroup.addAttribute("projects", projectGroup);
-                          
+
              Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
              query.setParameter("GENDER", Gender.Female);
              query.setHint(QueryHints.FETCH_GROUP, employeeGroup);
@@ -995,12 +995,12 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
              List<Employee> employees = query.getResultList();
 
              int numSelectBefore = getQuerySQLTracker(em).getTotalSQLSELECTCalls();
-             
+
              // All indirections specified in the plan should have been already triggered.
              for (Employee e : employees) {
                  e.getProjects().size();
              }
-             
+
              int numSelectAfter = getQuerySQLTracker(em).getTotalSQLSELECTCalls();
              assertEquals(numSelectBefore, numSelectAfter);
         } finally {

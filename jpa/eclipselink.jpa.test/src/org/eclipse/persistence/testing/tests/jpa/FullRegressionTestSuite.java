@@ -15,9 +15,9 @@
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  *     03/23/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     06/25/2014-2.5.2 Rick Curtis 
+ *     06/25/2014-2.5.2 Rick Curtis
  *       - 438177: Test M2M map
- *     08/11/2014-2.5 Rick Curtis 
+ *     08/11/2014-2.5 Rick Curtis
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  *     08/18/2014-2.5 Jody Grassel (IBM Corporation)
  *       - 440802: xml-mapping-metadata-complete does not exclude @Entity annotated entities
@@ -340,7 +340,7 @@ public class FullRegressionTestSuite extends TestSuite {
 
         // XML Mapping Metadata Complete
         fullSuite.addTest(XMLMappingMetadataCompleteJunitTestCase.suite());
-        
+
         return fullSuite;
     }
 }

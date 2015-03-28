@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - test for bug 262157
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.simultaneous;
 
 import java.math.BigDecimal;
@@ -37,10 +37,10 @@ public class ConcurrentReadOneToOneInheritanceTest extends AutoVerifyTestCase{
     protected BigDecimal personId = null;
     protected BigDecimal projectId = null;
     protected ConcurrentPerson person = null;
-    
+
     protected boolean deadlockDetected = false;
-    
-    public void setup(){     
+
+    public void setup(){
         deadlockDetected = false;
         UnitOfWork uow = getSession().acquireUnitOfWork();
         person = new ConcurrentPerson();
@@ -57,7 +57,7 @@ public class ConcurrentReadOneToOneInheritanceTest extends AutoVerifyTestCase{
         personId = person.id;
         projectId = project.getId();
     }
-    
+
     public void test(){
         ConcurrentPerson.RUNNING_TEST = ConcurrentPerson.ONE_TO_ONE_INHERITANCE;
         Thread thread1 = new Thread(new PersonReader(getSession().acquireUnitOfWork(), personId));
@@ -75,16 +75,16 @@ public class ConcurrentReadOneToOneInheritanceTest extends AutoVerifyTestCase{
                 deadlockDetected = true;
             }
         } catch (InterruptedException ex) {
-            
+
         }
     }
-    
+
     public void verify(){
         if (deadlockDetected){
             throw new TestErrorException("Deadlock detected when reading a bidirectional 1-1 with Inheritance.");
         }
     }
-    
+
     public void reset(){
         ConcurrentPerson.RUNNING_TEST = ConcurrentPerson.NONE;
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -93,30 +93,30 @@ public class ConcurrentReadOneToOneInheritanceTest extends AutoVerifyTestCase{
         uow.commit();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
-    
+
     public class PersonReader implements Runnable{
         private UnitOfWork uow;
         private BigDecimal id;
-        
+
         public PersonReader(UnitOfWork uow, BigDecimal id){
             this.uow = uow;
             this.id = id;
         }
-        
+
         public void run(){
             uow.readObject(ConcurrentPerson.class, (new ExpressionBuilder()).get("id").equal(id));
         }
     }
-    
+
     public class LargeProjectReader implements Runnable{
         private UnitOfWork uow;
         private BigDecimal id;
-        
+
         public LargeProjectReader(UnitOfWork uow, BigDecimal id){
             this.uow = uow;
             this.id = id;
         }
-        
+
         public void run(){
             uow.readObject(ConcurrentLargeProject.class, (new ExpressionBuilder()).get("id").equal(id));
         }

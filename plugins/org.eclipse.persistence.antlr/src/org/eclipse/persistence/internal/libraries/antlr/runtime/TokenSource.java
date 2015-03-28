@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -41,14 +41,14 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
  *  errors and keep going, looking for a valid token.
  */
 public interface TokenSource {
-	/** Return a Token object from your input stream (usually a CharStream).
-	 *  Do not fail/return upon lexing error; keep chewing on the characters
-	 *  until you get a good one; errors are not passed through to the parser.
-	 */
-	public Token nextToken();
+    /** Return a Token object from your input stream (usually a CharStream).
+     *  Do not fail/return upon lexing error; keep chewing on the characters
+     *  until you get a good one; errors are not passed through to the parser.
+     */
+    public Token nextToken();
 
-	/** Where are you getting tokens from? normally the implication will simply
-	 *  ask lexers input stream.
-	 */
-	public String getSourceName();
+    /** Where are you getting tokens from? normally the implication will simply
+     *  ask lexers input stream.
+     */
+    public String getSourceName();
 }

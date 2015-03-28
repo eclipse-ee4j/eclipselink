@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,19 +22,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Root {
     @XmlElement(name="employee")
     public EmployeeWithElements employee;
-    
+
     @XmlElement(name="address")
     public Collection<Address> addresses;
-    
+
     @XmlElement(name="phone-number")
     public Collection<PhoneNumber> phoneNumbers;
-    
+
     /**
-     * For the purpose of ID/IDREF  tests, equality will be performed 
-     * on the Root's Employee - more specifically, the address(es) 
-     * attribute will be compared to ensure that the correct target 
+     * For the purpose of ID/IDREF  tests, equality will be performed
+     * on the Root's Employee - more specifically, the address(es)
+     * attribute will be compared to ensure that the correct target
      * Address(es) was returned based on the key(s).
-     * 
+     *
      * @param obj a Root containing an Employee whose Address(es) will
      * be checked to verify correctness.
      */
@@ -42,7 +42,7 @@ public class Root {
         if (!(obj instanceof Root)) {
             return false;
         }
-        
+
         Root tgtRoot = (Root) obj;
         return tgtRoot.employee.equals(this.employee);
     }

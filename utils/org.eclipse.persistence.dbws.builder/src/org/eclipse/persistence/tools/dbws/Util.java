@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -159,7 +159,7 @@ public class Util {
     public static final String SINGLE_SPACE = " ";
     public static final String PERCENT = "%";
     public static final String UNDERSCORE = "_";
-    
+
     public static final String BUILDING_QUERYOP_FOR = "Building QueryOperation for ";
     public static final String APP_OCTET_STREAM = "application/octet-stream";
     public static final String TYPE_STR = "Type";
@@ -221,7 +221,7 @@ public class Util {
     public static final String NATURAL_TYPE_STR = "Natural";
     public static final String POSITIVE_TYPE_STR = "Positive";
     public static final String SIGNTYPE_TYPE_STR = "SignType";
-    
+
     public static final String SYS_XMLTYPE_STR = "SYS.XMLTYPE";
     public static final String XMLTYPE_STR = "XMLTYPE";
     public static final String _TYPE_STR = "_TYPE";
@@ -523,7 +523,7 @@ public class Util {
 
     /**
      * Returns the class name associated with a given JDBC/SQL type code.
-     * 
+     *
      */
     public static String getClassNameForType(int jdbcType) {
         String typeName = ClassConstants.STRING.getName();
@@ -586,7 +586,7 @@ public class Util {
         }
         return typeName;
     }
-    
+
     /**
      * Return a DatabaseType instance for a given JDCBType.  If applicable, precision
      * and scale values will be applied.  The default type instance will be
@@ -670,7 +670,7 @@ public class Util {
         }
         return STRING;
     }
-    
+
     /*
       <?xml version="1.0" encoding="UTF-8"?>
       <xsd:schema
@@ -735,10 +735,10 @@ public class Util {
         String rest = name.toLowerCase().substring(1);
         return projectName.toLowerCase() + DOT + first + rest;
     }
-    
+
     /**
      * Returns an alias (typically used as a descriptor alias) based on a given
-     * table or type name.  The returned string will contain an upper case 
+     * table or type name.  The returned string will contain an upper case
      * first char, with the remaining chars in lower case format.
      */
     public static String getGeneratedAlias(String tableName) {
@@ -747,7 +747,7 @@ public class Util {
         return first.concat(rest);
     }
 
-    /**     
+    /**
      * Returns a Java class name based on a given name and project.  The  returned
      * string  will be  in the format  'projectname.Name_CollectionWrapper'.   For
      * example, given the name 'EMPLOYEE' and projectName 'TEST', the method would
@@ -790,7 +790,7 @@ public class Util {
         XMLDescriptor xdesc = new XMLDescriptor();
         xdesc.setAlias(tableAlias);
         xdesc.setJavaClassName(generatedJavaClassName);
-        
+
         NamespaceResolver nr = new NamespaceResolver();
         nr.setDefaultNamespaceURI(targetNamespace);
         xdesc.setNamespaceResolver(nr);
@@ -802,13 +802,13 @@ public class Util {
         xdesc.setSchemaReference(schemaReference);
         return xdesc;
     }
-    
+
     public static QName buildCustomQName(String typeString, DBWSBuilder builder) {
-        // for %TYPE and %ROWTYPE we'll need to replace the '%' with '_' 
+        // for %TYPE and %ROWTYPE we'll need to replace the '%' with '_'
         if (typeString.contains(PERCENT)) {
             typeString = typeString.replace(PERCENT, UNDERSCORE);
         }
-        
+
         QName qName = null;
         String nsURI = null;
         String prefix = null;
@@ -866,7 +866,7 @@ public class Util {
 
     /**
      * Indicates if a given DatabaseType is considered 'complex', i.e.
-     * is one of PLSQLRecordType, PLSQLCollectionType, VArrayType, 
+     * is one of PLSQLRecordType, PLSQLCollectionType, VArrayType,
      * ObjectType, or NestedTableType
      */
     public static boolean isTypeComplex(DatabaseType dbType) {
@@ -877,7 +877,7 @@ public class Util {
                 || dbType.isBlobType()
                 || dbType.isObjectTableType();
     }
-    
+
     /**
      * Indicates if a given ArgumentType is considered 'complex', i.e. it has
      * a data type that is one of PLSQLRecordType, PLSQLCollectionType,
@@ -930,7 +930,7 @@ public class Util {
      * Return the Oracle PL/SQL name for a given PL/SQL scalar type.
      */
     public static String getOraclePLSQLTypeForName(String typeName) {
-        if (typeName.equals(BINARY_INTEGER_STR)) 
+        if (typeName.equals(BINARY_INTEGER_STR))
             return BINARY_INTEGER_TYPE_STR;
         if (typeName.equals(BOOLEAN_STR))
             return PLS_BOOLEAN_TYPE_STR;
@@ -944,7 +944,7 @@ public class Util {
             return SIGNTYPE_TYPE_STR;
         return null;
     }
-     
+
     /**
      * Indicates if a given ProcedureType contains one or more arguments that
      * are considered 'complex', i.e. PLSQLRecordType, PLSQLCollectionType,
@@ -1032,9 +1032,9 @@ public class Util {
         }
         return false;
     }
-    
+
     /**
-     * Indicates if a given List<ArgumentType> contains a PL/SQL Cursor 
+     * Indicates if a given List<ArgumentType> contains a PL/SQL Cursor
      * type.
      */
     public static boolean hasPLSQLCursorArg(List<ArgumentType> arguments) {
@@ -1045,12 +1045,12 @@ public class Util {
         }
         return false;
     }
-    
+
     /**
      * Convenience method used to determine if the java class and/or java type name
      * should be set on a given procedure argument.  This will typically be used
      * when calling addNamedInOutputArgument on a stored procedure call.
-     * 
+     *
      */
     public static boolean shouldSetJavaType(String typeName) {
         if (typeName.equals(ClassConstants.STRING.getName())) {

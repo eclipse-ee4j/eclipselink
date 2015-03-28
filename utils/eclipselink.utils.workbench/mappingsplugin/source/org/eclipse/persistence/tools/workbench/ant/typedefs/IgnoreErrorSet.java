@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -43,7 +43,7 @@ public class IgnoreErrorSet extends MappingsType implements Cloneable {
 
     protected void initialize() {
         super.initialize();
-        
+
         this.ignoreErrors = new Vector();
     }
     /**
@@ -57,18 +57,18 @@ public class IgnoreErrorSet extends MappingsType implements Cloneable {
         }
         this.ignoreErrors.add( ignoreError);
     }
-    
+
     public boolean contains( IgnoreError ignoreError) {
         String code = ignoreError.getCode();
-        
+
         for( Iterator i = this.ignoreErrors.iterator(); i.hasNext(); ) {
             IgnoreError error = ( IgnoreError)i.next();
-            if( code.equals( error.getCode())) 
-                return true;            
+            if( code.equals( error.getCode()))
+                return true;
         }
         return false;
-    } 
-    
+    }
+
     public Vector getIgnoreErrors( Project project) {
         if( isReference()) {
             return getRef( project).getIgnoreErrors( project);
@@ -77,8 +77,8 @@ public class IgnoreErrorSet extends MappingsType implements Cloneable {
         ignoreErrors.addAll( this.ignoreErrors);
         return ignoreErrors;
     }
-    
-    
+
+
     public Vector getIgnoreErrorCodes( Project project) {
         if( isReference()) {
             return getRef( project).getIgnoreErrorCodes( project);
@@ -106,7 +106,7 @@ public class IgnoreErrorSet extends MappingsType implements Cloneable {
         Object anObject = getRefid().getReferencedObject( project);
         if( anObject instanceof IgnoreErrorSet) {
             return ( IgnoreErrorSet)anObject;
-        } 
+        }
         else {
             throw new BuildException( this.stringRepository.getString( "notNotAIgnoreErrorSet", getRefid().getRefId()));
         }
@@ -125,20 +125,20 @@ public class IgnoreErrorSet extends MappingsType implements Cloneable {
         }
         super.setRefid( r);
     }
-	
-	private static final String CR = System.getProperty("line.separator");
-	public void toString( StringBuffer sb) {
-		super.toString( sb);
-		
-		sb.append(" [").append(CR);
-		for( Iterator i = this.ignoreErrors.iterator(); i.hasNext(); ) {
-		    IgnoreError ignoreError = ( IgnoreError)i.next();
-			sb.append( "\t\t");
-			ignoreError.toString( sb);
-			if( i.hasNext()) {
-				sb.append( ",").append(CR);
-			}
-		}
-		sb.append(" ] ");
-	}
+
+    private static final String CR = System.getProperty("line.separator");
+    public void toString( StringBuffer sb) {
+        super.toString( sb);
+
+        sb.append(" [").append(CR);
+        for( Iterator i = this.ignoreErrors.iterator(); i.hasNext(); ) {
+            IgnoreError ignoreError = ( IgnoreError)i.next();
+            sb.append( "\t\t");
+            ignoreError.toString( sb);
+            if( i.hasNext()) {
+                sb.append( ",").append(CR);
+            }
+        }
+        sb.append(" ] ");
+    }
 }

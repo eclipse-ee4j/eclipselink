@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -68,7 +68,7 @@ import org.eclipse.persistence.jpa.config.UuidGenerator;
 
 /**
  * JPA scripting API implementation.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.5.1
  */
@@ -77,7 +77,7 @@ public abstract class AbstractMappedClassImpl<T extends MappedSuperclassAccessor
 
     public AbstractMappedClassImpl(T t) {
         super(t);
-        
+
         getMetadata().setCacheIndexes(new ArrayList<CacheIndexMetadata>());
         getMetadata().setEntityListeners(new ArrayList<EntityListenerMetadata>());
         getMetadata().setFetchGroups(new ArrayList<FetchGroupMetadata>());
@@ -86,28 +86,28 @@ public abstract class AbstractMappedClassImpl<T extends MappedSuperclassAccessor
         getMetadata().setNamedStoredFunctionQueries(new ArrayList<NamedStoredFunctionQueryMetadata>());
         getMetadata().setNamedStoredProcedureQueries(new ArrayList<NamedStoredProcedureQueryMetadata>());
         getMetadata().setNamedPLSQLStoredFunctionQueries(new ArrayList<NamedPLSQLStoredFunctionQueryMetadata>());
-        getMetadata().setNamedPLSQLStoredProcedureQueries(new ArrayList<NamedPLSQLStoredProcedureQueryMetadata>());        
+        getMetadata().setNamedPLSQLStoredProcedureQueries(new ArrayList<NamedPLSQLStoredProcedureQueryMetadata>());
         getMetadata().setSqlResultSetMappings(new ArrayList<SQLResultSetMappingMetadata>());
     }
-    
+
     public CacheIndex addCacheIndex() {
         CacheIndexImpl cacheIndex = new CacheIndexImpl();
         getMetadata().getCacheIndexes().add(cacheIndex.getMetadata());
         return cacheIndex;
     }
-    
+
     public EntityListener addEntityListener() {
         EntityListenerImpl listener = new EntityListenerImpl();
         getMetadata().getEntityListeners().add(listener.getMetadata());
         return listener;
     }
-    
+
     public FetchGroup addFetchGroup() {
         FetchGroupImpl fetchGroup = new FetchGroupImpl();
         getMetadata().getFetchGroups().add(fetchGroup.getMetadata());
         return fetchGroup;
     }
-    
+
     public NamedNativeQuery addNamedNativeQuery() {
         NamedNativeQueryImpl query = new NamedNativeQueryImpl();
         getMetadata().getNamedNativeQueries().add(query.getMetadata());
@@ -125,7 +125,7 @@ public abstract class AbstractMappedClassImpl<T extends MappedSuperclassAccessor
         getMetadata().getNamedPLSQLStoredProcedureQueries().add(query.getMetadata());
         return query;
     }
-    
+
     public NamedQuery addNamedQuery() {
         NamedQueryImpl namedQuery = new NamedQueryImpl();
         getMetadata().getNamedQueries().add(namedQuery.getMetadata());
@@ -143,19 +143,19 @@ public abstract class AbstractMappedClassImpl<T extends MappedSuperclassAccessor
         getMetadata().getNamedStoredProcedureQueries().add(query.getMetadata());
         return query;
     }
-    
+
     public SqlResultSetMapping addSqlResultSetMapping() {
         SqlResultSetMappingImpl sqlResultSetMapping = new SqlResultSetMappingImpl();
         getMetadata().getSqlResultSetMappings().add(sqlResultSetMapping.getMetadata());
         return sqlResultSetMapping;
     }
-    
+
     public AdditionalCriteria setAdditionalCriteria() {
         AdditionalCriteriaImpl additionalCriteria = new AdditionalCriteriaImpl();
         getMetadata().setAdditionalCriteria(additionalCriteria.getMetadata());
         return additionalCriteria;
     }
-    
+
     public Cache setCache() {
         CacheImpl cache = new CacheImpl();
         getMetadata().setCache(cache.getMetadata());
@@ -166,13 +166,13 @@ public abstract class AbstractMappedClassImpl<T extends MappedSuperclassAccessor
         getMetadata().setCacheable(cacheable);
         return (R) this;
     }
-    
+
     public CacheInterceptor setCacheInterceptor() {
         CacheInterceptorImpl cacheInterceptor = new CacheInterceptorImpl();
         getMetadata().setCacheInterceptor(cacheInterceptor.getMetadata());
         return cacheInterceptor;
     }
-    
+
     public R setExcludeDefaultListeners(Boolean excludeDefaultListeners) {
         getMetadata().setExcludeDefaultListeners(excludeDefaultListeners);
         return (R) this;
@@ -182,29 +182,29 @@ public abstract class AbstractMappedClassImpl<T extends MappedSuperclassAccessor
         getMetadata().setExcludeSuperclassListeners(excludeSuperclassListeners);
         return (R) this;
     }
-    
+
     public R setExistenceChecking(String existenceChecking) {
         getMetadata().setExistenceChecking(existenceChecking);
         return (R) this;
     }
-    
+
     public R setIdClass(String idClass) {
         getMetadata().setIdClassName(idClass);
         return (R) this;
     }
-    
+
     public Multitenant setMultitenant() {
         MultitenantImpl multitenant = new MultitenantImpl();
         getMetadata().setMultitenant(multitenant.getMetadata());
         return multitenant;
     }
-    
+
     public OptimisticLocking setOptimisticLocking() {
         OptimisticLockingImpl optimisticLocking = new OptimisticLockingImpl();
         getMetadata().setOptimisticLocking(optimisticLocking.getMetadata());
         return optimisticLocking;
     }
-    
+
     public R setPostLoad(String methodName) {
         getMetadata().setPostLoad(methodName);
         return (R) this;
@@ -239,19 +239,19 @@ public abstract class AbstractMappedClassImpl<T extends MappedSuperclassAccessor
         getMetadata().setPreUpdate(methodName);
         return (R) this;
     }
-    
+
     public PrimaryKey setPrimaryKey() {
         PrimaryKeyImpl primaryKey = new PrimaryKeyImpl();
         getMetadata().setPrimaryKey(primaryKey.getMetadata());
         return primaryKey;
     }
-    
+
     public QueryRedirectors setQueryRedirectors() {
         QueryRedirectorsImpl queryRedirectors = new QueryRedirectorsImpl();
         getMetadata().setQueryRedirectors(queryRedirectors.getMetadata());
         return queryRedirectors;
     }
-    
+
     public R setReadOnly(Boolean readOnly) {
         getMetadata().setReadOnly(readOnly);
         return (R) this;
@@ -262,7 +262,7 @@ public abstract class AbstractMappedClassImpl<T extends MappedSuperclassAccessor
         getMetadata().setSequenceGenerator(sequenceGenerator.getMetadata());
         return sequenceGenerator;
     }
-    
+
     public TableGenerator setTableGenerator() {
         TableGeneratorImpl tableGenerator = new TableGeneratorImpl();
         getMetadata().setTableGenerator(tableGenerator.getMetadata());

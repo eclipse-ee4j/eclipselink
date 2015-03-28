@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.optimisticlocking;
 
 import java.util.Iterator;
@@ -33,13 +33,13 @@ public class UpdateNullManyToManyValueTest extends SwitchableOptimisticLockingPo
 
     protected GamesConsole original;
     protected GamesConsole original2;
-    
+
     public UpdateNullManyToManyValueTest(Class optimisticLockingPolicyClass) {
         super(optimisticLockingPolicyClass);
         addClassToModify(Gamer.class);
         addClassToModify(GamesConsole.class);
     }
-    
+
     public void setup() {
         super.setup();
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -47,19 +47,19 @@ public class UpdateNullManyToManyValueTest extends SwitchableOptimisticLockingPo
         original.setCamera(new Camera("eye", "black"));
         original.setPsu(new PowerSupplyUnit("0-123-456-789"));
         // no gamers
-        
+
         original2 = new GamesConsole();
         original2.setName("Segone");
-        
+
         uow.registerObject(original);
         uow.registerObject(original2);
         uow.commit();
     }
-    
+
     public void test() throws TestException {
         try {
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-            
+
             readObjectAndAddIntoCollection(new Gamer("testy", null), false);
             updateFirstObject();
             readObjectAndAddIntoCollection(new Gamer("t4h_fury", "pwner"), false);
@@ -82,7 +82,7 @@ public class UpdateNullManyToManyValueTest extends SwitchableOptimisticLockingPo
             readObjectAndAddIntoCollection(new Gamer("14_fury", "pwner"), true);
             updateFirstObject();
             readObjectAndAddIntoCollection(null, true);
-            
+
             // delete the objects
             deleteObject(original);
             deleteObject(original2);
@@ -91,16 +91,16 @@ public class UpdateNullManyToManyValueTest extends SwitchableOptimisticLockingPo
             this.tlException.printStackTrace();
         }
     }
-      
+
     public void readObjectAndAddIntoCollection(Gamer newGamer, boolean removeAll) {
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        
+
         GamesConsole clone = (GamesConsole) uow.readObject(
-                GamesConsole.class, 
+                GamesConsole.class,
             new ExpressionBuilder().get("id").equal(this.original.getId()));
-        
+
         assertNotNull("The object returned should be not null", clone);
-        
+
         if (removeAll == true) {
             Iterator<Gamer> gamers = new ArrayList(clone.getGamers()).iterator();
             while (gamers.hasNext()) {
@@ -109,37 +109,37 @@ public class UpdateNullManyToManyValueTest extends SwitchableOptimisticLockingPo
                 clone.removeGamer(g);
             }
         }
-        
+
         if (newGamer != null) {
             clone.addGamer(newGamer);
         }
-        
+
         uow.commit();
     }
 
     public void updateFirstObject() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        
+
         GamesConsole clone = (GamesConsole) uow.readObject(
-                GamesConsole.class, 
+                GamesConsole.class,
             new ExpressionBuilder().get("id").equal(this.original.getId()));
-        
+
         assertNotNull("The object returned should be not null", clone);
-        
+
         if (!clone.getGamers().isEmpty()) {
             Gamer g = clone.getGamers().get(0);
             g.setDescription(null);
             g.setName(null);
         }
-        
+
         uow.commit();
     }
-    
+
     public void reset() {
         super.reset();
         this.original = null;
         this.original2 = null;
     }
-    
+
 }
 

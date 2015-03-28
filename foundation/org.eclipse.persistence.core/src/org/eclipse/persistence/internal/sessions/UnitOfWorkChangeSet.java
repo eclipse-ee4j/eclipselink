@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
@@ -43,23 +43,23 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /** This attribute is set to true if a changeSet with changes has been added */
     protected boolean hasChanges;
     protected boolean hasForcedChanges;
-    
+
     /**
-     * Flag set when calling commitToDatabaseWithPreBuiltChangeSet 
+     * Flag set when calling commitToDatabaseWithPreBuiltChangeSet
      * so we are aware the UOW does not contain the changes from this change set.
      */
     protected boolean isChangeSetFromOutsideUOW;
 
     /** Stores unit of work before it is serialized. */
     protected transient AbstractSession session;
-    
+
     /**
      * INTERNAL:
      * Create a ChangeSet
      */
     public UnitOfWorkChangeSet() {
     }
-    
+
     /**
      * INTERNAL:
      * Create a ChangeSet
@@ -96,7 +96,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
             this.addDeletedObject(object, session);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Add the Deleted object to the changeSet.
@@ -115,51 +115,51 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
 
     /**
      * INTERNAL:
-     * Add to the changes for 'object' object to this changeSet. This method 
+     * Add to the changes for 'object' object to this changeSet. This method
      * will not add to the lists that are used for identity lookups.
      * The passed change set *must* either have changes or forced changes.
      * @see addObjectChangeSetForIdentity()
-     * @param forceToNewObjectList - Any pre commit actions should pass in true 
-     * since new objects have extra-handling. Anything post commit, pass in 
+     * @param forceToNewObjectList - Any pre commit actions should pass in true
+     * since new objects have extra-handling. Anything post commit, pass in
      * false.
      */
     public void addObjectChangeSet(ObjectChangeSet objectChanges, AbstractSession session, boolean forceToNewObjectList) {
         if (objectChanges != null) {
              if (objectChanges.isNew() && forceToNewObjectList) {
-                // Add it to the new list (unless there is no force, that is, 
-                // we are in a post commit and we can trust the cache key then) 
-                // so we do not loose it as it may not have a valid primary key 
+                // Add it to the new list (unless there is no force, that is,
+                // we are in a post commit and we can trust the cache key then)
+                // so we do not loose it as it may not have a valid primary key
                 // it will be moved to the standard list once it is inserted.
                 addNewObjectChangeSet(objectChanges, session);
                 getAllChangeSets().put(objectChanges, objectChanges);
             } else {
-                // If this object change set has changes or forced changes then 
-                // record this. Must be done for each change set added because 
-                // some may not contain 'real' changes.  This is the case for 
-                // opt. read lock and forceUdpate.  Keep the flags separate 
-                // because we don't want to cache sync. a change set with no 
+                // If this object change set has changes or forced changes then
+                // record this. Must be done for each change set added because
+                // some may not contain 'real' changes.  This is the case for
+                // opt. read lock and forceUdpate.  Keep the flags separate
+                // because we don't want to cache sync. a change set with no
                 // 'real' changes.
                 boolean objectChangeSetHasChanges = objectChanges.hasChanges();
                 if (objectChangeSetHasChanges) {
                     this.setHasChanges(true);
                     this.hasForcedChanges = this.hasForcedChanges || objectChanges.hasForcedChanges();
                 } else {
-                    // Object change set doesn't have changes so it has to have 
+                    // Object change set doesn't have changes so it has to have
                     // forced changes.
                     this.hasForcedChanges = true;
                 }
 
                 if (!objectChanges.isAggregate()) {
                     if (objectChangeSetHasChanges) {
-                        // Each time I create a changeSet it is added to this 
-                        // list and when I compute a changeSet for this object 
-                        // I again add it to these lists so that before this 
-                        // UOWChangeSet is Serialized there is a copy of every 
-                        // changeSet which has changes affecting cache in 
+                        // Each time I create a changeSet it is added to this
+                        // list and when I compute a changeSet for this object
+                        // I again add it to these lists so that before this
+                        // UOWChangeSet is Serialized there is a copy of every
+                        // changeSet which has changes affecting cache in
                         // allChangeSets.
                         getAllChangeSets().put(objectChanges, objectChanges);
                     }
-         
+
                     if (objectChanges.getId() != null) {
                         Map<ObjectChangeSet, ObjectChangeSet> map = getObjectChanges().get(objectChanges.getClassType());
 
@@ -175,7 +175,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Add to the changes for 'object' object to this changeSet.  This method will not
@@ -234,7 +234,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
         }
         return localChangeSet;
     }
-    
+
     /**
      * INTERNAL"
      * This method is used during the merge process to either find the existing ChangeSet or create a new one.
@@ -242,9 +242,9 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     public ObjectChangeSet findOrCreateLocalObjectChangeSet(Object entityClone, ClassDescriptor descriptor, boolean isNew){
         ObjectChangeSet changes = (ObjectChangeSet)this.getObjectChangeSetForClone(entityClone);
         if (changes == null) {
-        	if (descriptor.hasInheritance() && descriptor.getJavaClass() != entityClone.getClass()) {
-    			descriptor = descriptor.getInheritancePolicy().getSubclassDescriptor(entityClone.getClass());
-        	}
+            if (descriptor.hasInheritance() && descriptor.getJavaClass() != entityClone.getClass()) {
+                descriptor = descriptor.getInheritancePolicy().getSubclassDescriptor(entityClone.getClass());
+            }
             if (descriptor.isAggregateDescriptor()) {
                 changes = new AggregateObjectChangeSet(CacheId.EMPTY, descriptor, entityClone, this, isNew);
             } else {
@@ -462,7 +462,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     public boolean hasDeletedObjects() {
         return (this.deletedObjects != null) && (!this.deletedObjects.isEmpty());
     }
-    
+
     /**
      * INTERNAL:
      * Set whether the Unit Of Work change Set has changes
@@ -583,7 +583,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     public void setIsChangeSetFromOutsideUOW(boolean isChangeSetFromOutsideUOW){
         this.isChangeSetFromOutsideUOW = isChangeSetFromOutsideUOW;
     }
-    
+
     /**
      * INTERNAL:
      * Get the internal flag that tells that this change set was built outside this
@@ -592,7 +592,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     public boolean isChangeSetFromOutsideUOW(){
         return isChangeSetFromOutsideUOW;
     }
-    
+
     /**
      * INTERNAL:
      * This method is used to set the map for cloneToObject reference.

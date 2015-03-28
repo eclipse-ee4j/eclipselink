@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.distributedservers;
 
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -20,11 +20,11 @@ import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
 
 /**
- *	<b>Purpose</b>: To define system behavior.
- *	<p><b>Responsibilities</b>:	<ul>
- *	<li> Login and return an initialize database session.
- *	<li> Create and populate the database.
- *	</ul>
+ *    <b>Purpose</b>: To define system behavior.
+ *    <p><b>Responsibilities</b>:    <ul>
+ *    <li> Login and return an initialize database session.
+ *    <li> Create and populate the database.
+ *    </ul>
  */
 public class
 
@@ -91,8 +91,8 @@ DistributedSystem extends TestSystem {
     }
 
     /**
-     *	This method will instantiate all of the example instances and insert them into the database
-     *	using the given session. 
+     *    This method will instantiate all of the example instances and insert them into the database
+     *    using the given session.
      */
     public void populate(DatabaseSession session) {
         UnitOfWork unitOfWork = session.acquireUnitOfWork();

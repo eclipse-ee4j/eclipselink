@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -36,257 +36,257 @@ import java.util.ArrayList;
 /** Broadcast debug events to multiple listeners.  Lets you debug and still
  *  use the event mechanism to build parse trees etc...  Not thread-safe.
  *  Don't add events in one thread while parser fires events in another.
- * 
+ *
  *  @see also DebugEventRepeater
  */
 public class DebugEventHub implements DebugEventListener {
-	protected List listeners = new ArrayList();
+    protected List listeners = new ArrayList();
 
-	public DebugEventHub(DebugEventListener listener) {
-		listeners.add(listener);
-	}
+    public DebugEventHub(DebugEventListener listener) {
+        listeners.add(listener);
+    }
 
-	public DebugEventHub(DebugEventListener a, DebugEventListener b) {
-		listeners.add(a);
-		listeners.add(b);
-	}
+    public DebugEventHub(DebugEventListener a, DebugEventListener b) {
+        listeners.add(a);
+        listeners.add(b);
+    }
 
-	/** Add another listener to broadcast events too.  Not thread-safe.
-	 *  Don't add events in one thread while parser fires events in another.
-	 */
-	public void addListener(DebugEventListener listener) {
-		listeners.add(listener);
-	}
-	
-	/* To avoid a mess like this:
-		public void enterRule(final String ruleName) {
-			broadcast(new Code(){
-				public void exec(DebugEventListener listener) {listener.enterRule(ruleName);}}
-				);
-		}
-		I am dup'ing the for-loop in each.  Where are Java closures!? blech!
-	 */
+    /** Add another listener to broadcast events too.  Not thread-safe.
+     *  Don't add events in one thread while parser fires events in another.
+     */
+    public void addListener(DebugEventListener listener) {
+        listeners.add(listener);
+    }
 
-	public void enterRule(String grammarFileName, String ruleName) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.enterRule(grammarFileName,ruleName);
-		}
-	}
+    /* To avoid a mess like this:
+        public void enterRule(final String ruleName) {
+            broadcast(new Code(){
+                public void exec(DebugEventListener listener) {listener.enterRule(ruleName);}}
+                );
+        }
+        I am dup'ing the for-loop in each.  Where are Java closures!? blech!
+     */
 
-	public void exitRule(String grammarFileName, String ruleName) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.exitRule(grammarFileName, ruleName);
-		}
-	}
+    public void enterRule(String grammarFileName, String ruleName) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.enterRule(grammarFileName,ruleName);
+        }
+    }
 
-	public void enterAlt(int alt) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.enterAlt(alt);
-		}
-	}
+    public void exitRule(String grammarFileName, String ruleName) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.exitRule(grammarFileName, ruleName);
+        }
+    }
 
-	public void enterSubRule(int decisionNumber) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.enterSubRule(decisionNumber);
-		}
-	}
+    public void enterAlt(int alt) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.enterAlt(alt);
+        }
+    }
 
-	public void exitSubRule(int decisionNumber) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.exitSubRule(decisionNumber);
-		}
-	}
+    public void enterSubRule(int decisionNumber) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.enterSubRule(decisionNumber);
+        }
+    }
 
-	public void enterDecision(int decisionNumber) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.enterDecision(decisionNumber);
-		}
-	}
+    public void exitSubRule(int decisionNumber) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.exitSubRule(decisionNumber);
+        }
+    }
 
-	public void exitDecision(int decisionNumber) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.exitDecision(decisionNumber);
-		}
-	}
+    public void enterDecision(int decisionNumber) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.enterDecision(decisionNumber);
+        }
+    }
 
-	public void location(int line, int pos) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.location(line, pos);
-		}
-	}
+    public void exitDecision(int decisionNumber) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.exitDecision(decisionNumber);
+        }
+    }
 
-	public void consumeToken(Token token) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.consumeToken(token);
-		}
-	}
+    public void location(int line, int pos) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.location(line, pos);
+        }
+    }
 
-	public void consumeHiddenToken(Token token) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.consumeHiddenToken(token);
-		}
-	}
+    public void consumeToken(Token token) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.consumeToken(token);
+        }
+    }
 
-	public void LT(int index, Token t) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.LT(index, t);
-		}
-	}
+    public void consumeHiddenToken(Token token) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.consumeHiddenToken(token);
+        }
+    }
 
-	public void mark(int index) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.mark(index);
-		}
-	}
+    public void LT(int index, Token t) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.LT(index, t);
+        }
+    }
 
-	public void rewind(int index) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.rewind(index);
-		}
-	}
+    public void mark(int index) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.mark(index);
+        }
+    }
 
-	public void rewind() {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.rewind();
-		}
-	}
+    public void rewind(int index) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.rewind(index);
+        }
+    }
 
-	public void beginBacktrack(int level) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.beginBacktrack(level);
-		}
-	}
+    public void rewind() {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.rewind();
+        }
+    }
 
-	public void endBacktrack(int level, boolean successful) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.endBacktrack(level, successful);
-		}
-	}
+    public void beginBacktrack(int level) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.beginBacktrack(level);
+        }
+    }
 
-	public void recognitionException(RecognitionException e) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.recognitionException(e);
-		}
-	}
+    public void endBacktrack(int level, boolean successful) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.endBacktrack(level, successful);
+        }
+    }
 
-	public void beginResync() {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.beginResync();
-		}
-	}
+    public void recognitionException(RecognitionException e) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.recognitionException(e);
+        }
+    }
 
-	public void endResync() {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.endResync();
-		}
-	}
+    public void beginResync() {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.beginResync();
+        }
+    }
 
-	public void semanticPredicate(boolean result, String predicate) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.semanticPredicate(result, predicate);
-		}
-	}
+    public void endResync() {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.endResync();
+        }
+    }
 
-	public void commence() {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.commence();
-		}
-	}
+    public void semanticPredicate(boolean result, String predicate) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.semanticPredicate(result, predicate);
+        }
+    }
 
-	public void terminate() {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.terminate();
-		}
-	}
+    public void commence() {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.commence();
+        }
+    }
 
-
-	// Tree parsing stuff
-
-	public void consumeNode(Object t) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.consumeNode(t);
-		}
-	}
-
-	public void LT(int index, Object t) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.LT(index, t);
-		}
-	}
+    public void terminate() {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.terminate();
+        }
+    }
 
 
-	// AST Stuff
+    // Tree parsing stuff
 
-	public void nilNode(Object t) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.nilNode(t);
-		}
-	}
+    public void consumeNode(Object t) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.consumeNode(t);
+        }
+    }
 
-	public void errorNode(Object t) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.errorNode(t);
-		}
-	}
+    public void LT(int index, Object t) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.LT(index, t);
+        }
+    }
 
-	public void createNode(Object t) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.createNode(t);
-		}
-	}
 
-	public void createNode(Object node, Token token) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.createNode(node, token);
-		}
-	}
+    // AST Stuff
 
-	public void becomeRoot(Object newRoot, Object oldRoot) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.becomeRoot(newRoot, oldRoot);
-		}
-	}
+    public void nilNode(Object t) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.nilNode(t);
+        }
+    }
 
-	public void addChild(Object root, Object child) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.addChild(root, child);
-		}
-	}
+    public void errorNode(Object t) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.errorNode(t);
+        }
+    }
 
-	public void setTokenBoundaries(Object t, int tokenStartIndex, int tokenStopIndex) {
-		for (int i = 0; i < listeners.size(); i++) {
-			DebugEventListener listener = (DebugEventListener)listeners.get(i);
-			listener.setTokenBoundaries(t, tokenStartIndex, tokenStopIndex);
-		}
-	}
+    public void createNode(Object t) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.createNode(t);
+        }
+    }
+
+    public void createNode(Object node, Token token) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.createNode(node, token);
+        }
+    }
+
+    public void becomeRoot(Object newRoot, Object oldRoot) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.becomeRoot(newRoot, oldRoot);
+        }
+    }
+
+    public void addChild(Object root, Object child) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.addChild(root, child);
+        }
+    }
+
+    public void setTokenBoundaries(Object t, int tokenStartIndex, int tokenStopIndex) {
+        for (int i = 0; i < listeners.size(); i++) {
+            DebugEventListener listener = (DebugEventListener)listeners.get(i);
+            listener.setTokenBoundaries(t, tokenStartIndex, tokenStopIndex);
+        }
+    }
 }

@@ -9,28 +9,28 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWQueryManage
 
 public final class MWDeleteQuery extends MWAbstractCustomQuery {
 
-	private MWDeleteQuery() {
-		super();
-	}
+    private MWDeleteQuery() {
+        super();
+    }
 
-	MWDeleteQuery(MWQueryManager queryManager) {
-		super(queryManager);
-	}
+    MWDeleteQuery(MWQueryManager queryManager) {
+        super(queryManager);
+    }
 
-	// ******************* Static Methods *******************
+    // ******************* Static Methods *******************
 
-	public static XMLDescriptor buildDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
 
-		descriptor.setJavaClass(MWDeleteQuery.class);
-		descriptor.getDescriptorInheritancePolicy().setParentClass(MWAbstractCustomQuery.class);
+        descriptor.setJavaClass(MWDeleteQuery.class);
+        descriptor.getDescriptorInheritancePolicy().setParentClass(MWAbstractCustomQuery.class);
 
-		return descriptor;
-	}
-	
-	@Override
-	protected DatabaseQuery buildRuntimeQuery() {
-		return new DeleteObjectQuery();
-	}
+        return descriptor;
+    }
+
+    @Override
+    protected DatabaseQuery buildRuntimeQuery() {
+        return new DeleteObjectQuery();
+    }
 
 }

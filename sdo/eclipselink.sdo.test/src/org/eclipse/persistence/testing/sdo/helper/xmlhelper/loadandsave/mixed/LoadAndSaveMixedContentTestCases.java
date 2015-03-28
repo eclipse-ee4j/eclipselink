@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.mixed;
 
 import commonj.sdo.DataObject;
@@ -53,7 +53,7 @@ public class LoadAndSaveMixedContentTestCases extends LoadAndSaveTestCases {
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/mixed/Employee.xml");
     }
-    
+
     protected String getPath() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/mixed/");
     }
@@ -77,17 +77,17 @@ public class LoadAndSaveMixedContentTestCases extends LoadAndSaveTestCases {
     protected String getRootInterfaceName() {
         return "EmployeeType";
     }
-    
+
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
         return packages;
     }
-    
+
     public void testLoadAndSaveMixedComplexType() throws Exception {
         try {
-            FileInputStream is = new FileInputStream(getPath() + getSchemaName());           
+            FileInputStream is = new FileInputStream(getPath() + getSchemaName());
             List types = xsdHelper.define(getSchema(is, getSchemaLocation() + getSchemaName()));
             FileReader reader = new FileReader(getControlFileName());
             XMLDocument document = xmlHelper.load(reader, null, null);
@@ -158,13 +158,13 @@ public class LoadAndSaveMixedContentTestCases extends LoadAndSaveTestCases {
         addProperty(empTypeDO, "id", stringType, false, false, true);
         addProperty(empTypeDO, "name", stringType, false, false, true);
         empTypeDO.set("sequenced", true);
-        
+
         Type empType = typeHelper.define(empTypeDO);
-        
+
         DataObject empPropDO = dataFactory.create(propertyType);
         empPropDO.set("name", getControlRootName());
         empPropDO.set("type", empType);
-        
+
         typeHelper.defineOpenContentProperty("http://www.example.org", empPropDO);
     }
 }

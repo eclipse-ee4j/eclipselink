@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sequencing;
 
 import org.eclipse.persistence.queries.*;
@@ -33,23 +33,23 @@ public class NativeSequence extends QuerySequence {
      * false indicates that sequence objects should be used - if the platform supports sequence objects.
      */
     protected boolean shouldUseIdentityIfPlatformSupports = true;
-    
+
     /**
      * Allow sequencing to be delegated to another sequence if native sequencing is not supported.
      */
     protected QuerySequence delegateSequence;
-    
+
     public NativeSequence() {
         super();
         setShouldSkipUpdate(true);
     }
-    
+
     public NativeSequence(boolean shouldUseIdentityIfPlatformSupports) {
         super();
         setShouldSkipUpdate(true);
         setShouldUseIdentityIfPlatformSupports(shouldUseIdentityIfPlatformSupports);
     }
-    
+
     /**
      * Create a new sequence with the name.
      */
@@ -57,13 +57,13 @@ public class NativeSequence extends QuerySequence {
         super(name);
         setShouldSkipUpdate(true);
     }
-    
+
     public NativeSequence(String name, boolean shouldUseIdentityIfPlatformSupports) {
         super(name);
         setShouldSkipUpdate(true);
         setShouldUseIdentityIfPlatformSupports(shouldUseIdentityIfPlatformSupports);
     }
-    
+
     /**
      * Create a new sequence with the name and sequence pre-allocation size.
      */
@@ -81,13 +81,13 @@ public class NativeSequence extends QuerySequence {
     public NativeSequence(String name, int size, int initialValue) {
         super(name, size, initialValue);
         setShouldSkipUpdate(true);
-    }    
+    }
 
     public NativeSequence(String name, int size, int initialValue, boolean shouldUseIdentityIfPlatformSupports) {
         super(name, size, initialValue);
         setShouldSkipUpdate(true);
         setShouldUseIdentityIfPlatformSupports(shouldUseIdentityIfPlatformSupports);
-    }    
+    }
 
     public boolean isNative() {
         if (this.delegateSequence != null) {
@@ -95,11 +95,11 @@ public class NativeSequence extends QuerySequence {
         }
         return true;
     }
-    
+
     public void setShouldUseIdentityIfPlatformSupports(boolean shouldUseIdentityIfPlatformSupports) {
         this.shouldUseIdentityIfPlatformSupports = shouldUseIdentityIfPlatformSupports;
     }
-    
+
     public boolean shouldUseIdentityIfPlatformSupports() {
         return shouldUseIdentityIfPlatformSupports;
     }

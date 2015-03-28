@@ -4,29 +4,29 @@
         "name":"Joe Black",
         "homeAddress":{
             "primary-key":{
-	      "aid":"ha123"
-	     },
-	    "city":"Woodlawn"
+          "aid":"ha123"
+         },
+        "city":"Woodlawn"
         }
     }],
     "address":[
-        { 
+        {
           "primary-key":{
-	      "aid":"wa111"
-	     },
+          "aid":"wa111"
+         },
           "city":"Ottawa"
-	},
-	 { 
+    },
+     {
           "primary-key":{
-	      "aid":"wa112"
-	     },
+          "aid":"wa112"
+         },
           "city":"Kanata"
-	},
-	 { 
+    },
+     {
           "primary-key":{
-	      "aid":"wa113"
-	     },
+          "aid":"wa113"
+         },
           "city":"Orleans"
-	}
+    }
     ]
 }}

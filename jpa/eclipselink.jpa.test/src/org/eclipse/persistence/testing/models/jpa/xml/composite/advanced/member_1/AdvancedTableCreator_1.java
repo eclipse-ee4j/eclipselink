@@ -1,29 +1,29 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     01/28/2009-2.0 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier
  *       - 248293: JPA 2.0 Element Collections (part 1)
- *     02/25/2009-2.0 Guy Pelletier 
+ *     02/25/2009-2.0 Guy Pelletier
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     11/06/2009-2.0 Guy Pelletier 
+ *     11/06/2009-2.0 Guy Pelletier
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
- *     03/08/2010-2.1 Guy Pelletier 
+ *     03/08/2010-2.1 Guy Pelletier
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     03/29/2010-2.1 Guy Pelletier 
+ *     03/29/2010-2.1 Guy Pelletier
  *       - 267217: Add Named Access Type to EclipseLink-ORM
- *     06/16/2010-2.2 Guy Pelletier 
+ *     06/16/2010-2.2 Guy Pelletier
  *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -52,12 +52,12 @@ public class AdvancedTableCreator_1 extends TogglingFastTableCreator {
 // 3        addTableDefinition(buildRESPONSTable());
 // 2        addTableDefinition(buildSALARYTable());
 /*        addTableDefinition(buildWOMANTable());
-        
+
         // Tables used only in extended test model
         addTableDefinition(buildLONERTable());
         addTableDefinition(buildLONERCHARACTERISTICSTable());
         addTableDefinition(buildCONFIDANTTable());
-        
+
         addTableDefinition(buildSHOVELTable());
         addTableDefinition(buildSHOVELDIGGERTable());
         addTableDefinition(buildSHOVELOWNERTable());
@@ -68,12 +68,12 @@ public class AdvancedTableCreator_1 extends TogglingFastTableCreator {
         addTableDefinition(buildVIOLATIONCODETable());
         addTableDefinition(buildVIOLATIONCODESTable());
 
-		addTableDefinition(buildSTUDENTTable());
+        addTableDefinition(buildSTUDENTTable());
         addTableDefinition(buildSCHOOLTable());
         addTableDefinition(buildBOLTTable());
         addTableDefinition(buildNUTTable());*/
     }
-    
+
     public static TableDefinition buildADDRESSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_MBR1_ADDRESS");
@@ -143,7 +143,7 @@ public class AdvancedTableCreator_1 extends TogglingFastTableCreator {
         fieldCOUNTRY.setUnique(false);
         fieldCOUNTRY.setShouldAllowNull(true);
         table.addField(fieldCOUNTRY);
-        
+
         FieldDefinition fieldType = new FieldDefinition();
         fieldType.setName("TYPE");
         fieldType.setTypeName("VARCHAR2");
@@ -171,7 +171,7 @@ public class AdvancedTableCreator_1 extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field0 = new FieldDefinition();
         field0.setName("FK_DEALER_ID");
         field0.setTypeName("NUMERIC");
@@ -182,7 +182,7 @@ public class AdvancedTableCreator_1 extends TogglingFastTableCreator {
         field0.setIsIdentity(false);
 //        field0.setForeignKeyFieldName("XML_MBR3_DEALER.DEALER_ID");
         table.addField(field0);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("F_NAME");
         field1.setTypeName("VARCHAR");
@@ -192,7 +192,7 @@ public class AdvancedTableCreator_1 extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("L_NAME");
         field2.setTypeName("VARCHAR");
@@ -202,7 +202,7 @@ public class AdvancedTableCreator_1 extends TogglingFastTableCreator {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         table.addField(field2);
-        
+
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("BUDGET");
         field3.setTypeName("NUMERIC");
@@ -212,7 +212,7 @@ public class AdvancedTableCreator_1 extends TogglingFastTableCreator {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-        
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("VERSION");
         field4.setTypeName("NUMERIC");
@@ -222,7 +222,7 @@ public class AdvancedTableCreator_1 extends TogglingFastTableCreator {
         field4.setUnique(false);
         field4.setIsIdentity(false);
         table.addField(field4);
-        
+
         return table;
     }
 }

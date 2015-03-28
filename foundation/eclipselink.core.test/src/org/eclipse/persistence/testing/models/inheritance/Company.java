@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.inheritance;
 
 import java.util.*;
@@ -39,13 +39,13 @@ public class Company implements Serializable {
 
         company.setName("TOP");
         company.getVehicles().setValue(vehicle);
-        
+
         Vector worker = new Vector();
         worker.addElement(CompanyWorker.example1(company));
         worker.addElement(CompanyWorker.example4(company));
         worker.addElement(CompanyWorker.example5(company));
         company.getWorkers().setValue(worker);
-        
+
         return company;
     }
 
@@ -61,11 +61,11 @@ public class Company implements Serializable {
 
         company.setName("ABC");
         company.getVehicles().setValue(vehicle);
-        
+
         Vector worker = new Vector();
         worker.addElement(CompanyWorker.example2(company));
         company.getWorkers().setValue(worker);
-        
+
         return company;
     }
 
@@ -81,18 +81,18 @@ public class Company implements Serializable {
 
         company.setName("XYZ");
         company.getVehicles().setValue(vehicle);
-        
+
         Vector worker = new Vector();
         worker.addElement(CompanyWorker.example3(company));
         company.getWorkers().setValue(worker);
-        
+
         return company;
     }
 
     public ValueHolderInterface getWorkers() {
         return workers;
     }
-    
+
     public ValueHolderInterface getVehicles() {
         return vehicles;
     }

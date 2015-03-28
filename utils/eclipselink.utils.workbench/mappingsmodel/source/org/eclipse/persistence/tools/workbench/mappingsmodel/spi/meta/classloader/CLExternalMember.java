@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -24,79 +24,79 @@ import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
  * and CLExternalMethod.
  */
 abstract class CLExternalMember
-	implements ExternalMember
+    implements ExternalMember
 {
 
-	/** The wrapped member. */
-	final Member member;	// private-protected
+    /** The wrapped member. */
+    final Member member;    // private-protected
 
-	/** The external class that declares the member. */
-	final CLExternalClass declaringClass;	// private-protected
-
-
-	// ********** Constructors **********
-
-	/**
-	 * Useful constructor.
-	 */
-	CLExternalMember(Member member, CLExternalClass declaringClass) {	// private-protected
-		super();
-		this.member = member;
-		this.declaringClass = declaringClass;
-	}
+    /** The external class that declares the member. */
+    final CLExternalClass declaringClass;    // private-protected
 
 
-	// ********** ExternalMember implementation **********
+    // ********** Constructors **********
 
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMember#getDeclaringClass()
-	 */
-	public ExternalClassDescription getDeclaringClass() {
-		return this.classDescriptionFor(this.member.getDeclaringClass());
-	}
-
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMember#getModifiers()
-	 */
-	public int getModifiers() {
-		return this.member.getModifiers();
-	}
-
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMember#getName()
-	 */
-	public String getName() {
-		return this.member.getName();
-	}
-
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMember#isSynthetic()
-	 * This is just a best guess at which members are synthetic.
-	 */
-	public boolean isSynthetic() {
-		return this.getName().startsWith("class$");
-	}
+    /**
+     * Useful constructor.
+     */
+    CLExternalMember(Member member, CLExternalClass declaringClass) {    // private-protected
+        super();
+        this.member = member;
+        this.declaringClass = declaringClass;
+    }
 
 
-	// ********** standard methods **********
+    // ********** ExternalMember implementation **********
 
-	public String toString() {
-		return StringTools.buildToStringFor(this, this.getName());
-	}
+    /**
+     * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMember#getDeclaringClass()
+     */
+    public ExternalClassDescription getDeclaringClass() {
+        return this.classDescriptionFor(this.member.getDeclaringClass());
+    }
+
+    /**
+     * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMember#getModifiers()
+     */
+    public int getModifiers() {
+        return this.member.getModifiers();
+    }
+
+    /**
+     * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMember#getName()
+     */
+    public String getName() {
+        return this.member.getName();
+    }
+
+    /**
+     * @see org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalMember#isSynthetic()
+     * This is just a best guess at which members are synthetic.
+     */
+    public boolean isSynthetic() {
+        return this.getName().startsWith("class$");
+    }
 
 
-	// ********** private-protected methods **********
+    // ********** standard methods **********
 
-	ExternalClassDescription classDescriptionFor(Class javaClass) {	// private-protected
-		return this.declaringClass.classDescriptionFor(javaClass);
-	}
+    public String toString() {
+        return StringTools.buildToStringFor(this, this.getName());
+    }
 
-	ExternalClassDescription[] buildClassDescriptionArray(Class[] classes) {	// private-protected
-		ExternalClassDescription[] externalClassDescriptions = new ExternalClassDescription[classes.length];
-		for (int i = classes.length; i-- > 0; ) {
-			externalClassDescriptions[i] = this.classDescriptionFor(classes[i]);
-		}
-		return externalClassDescriptions;
-	}
+
+    // ********** private-protected methods **********
+
+    ExternalClassDescription classDescriptionFor(Class javaClass) {    // private-protected
+        return this.declaringClass.classDescriptionFor(javaClass);
+    }
+
+    ExternalClassDescription[] buildClassDescriptionArray(Class[] classes) {    // private-protected
+        ExternalClassDescription[] externalClassDescriptions = new ExternalClassDescription[classes.length];
+        for (int i = classes.length; i-- > 0; ) {
+            externalClassDescriptions[i] = this.classDescriptionFor(classes[i]);
+        }
+        return externalClassDescriptions;
+    }
 
 }

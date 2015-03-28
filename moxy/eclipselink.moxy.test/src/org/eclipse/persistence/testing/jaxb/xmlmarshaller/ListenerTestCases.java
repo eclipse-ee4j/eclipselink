@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -72,7 +72,7 @@ public class ListenerTestCases extends TestCase {
     private void testMarshalListenerElementDecl(JAXBElement<ListenerElementDeclObject> jaxbElement, Marshaller marshaller, ListenerMarshal listener) throws Exception {
         List<MarshalEvent> events = listener.getEvents();
         assertEquals(6, events.size());
-        
+
         assertEquals(true, events.get(0).isBeforeEvent());
         assertSame(jaxbElement, events.get(0).getSource());
 
@@ -98,7 +98,7 @@ public class ListenerTestCases extends TestCase {
 
     public void testMarshalListenerElementDecl_ContentHandler() throws Exception {
         JAXBElement<ListenerElementDeclObject> jaxbElement = getControlJAXBElement();
-        
+
         Marshaller marshaller = jc.createMarshaller();
         ListenerMarshal listener = new ListenerMarshal();
         marshaller.setListener(listener);
@@ -109,11 +109,11 @@ public class ListenerTestCases extends TestCase {
 
     public void testMarshalListenerElementDecl_Node() throws Exception {
         JAXBElement<ListenerElementDeclObject> jaxbElement = getControlJAXBElement();
-        
+
         Marshaller marshaller = jc.createMarshaller();
         ListenerMarshal listener = new ListenerMarshal();
         marshaller.setListener(listener);
-        
+
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.newDocument();
@@ -124,7 +124,7 @@ public class ListenerTestCases extends TestCase {
 
     public void testMarshalListenerElementDecl_OutputStream() throws Exception {
         JAXBElement<ListenerElementDeclObject> jaxbElement = getControlJAXBElement();
-        
+
         Marshaller marshaller = jc.createMarshaller();
         ListenerMarshal listener = new ListenerMarshal();
         marshaller.setListener(listener);
@@ -135,7 +135,7 @@ public class ListenerTestCases extends TestCase {
 
     public void testMarshalListenerElementDecl_Writer() throws Exception {
         JAXBElement<ListenerElementDeclObject> jaxbElement = getControlJAXBElement();
-        
+
         Marshaller marshaller = jc.createMarshaller();
         ListenerMarshal listener = new ListenerMarshal();
         marshaller.setListener(listener);
@@ -146,7 +146,7 @@ public class ListenerTestCases extends TestCase {
 
     public void testMarshalListenerElementDecl_XMLEventWriter() throws Exception {
         JAXBElement<ListenerElementDeclObject> jaxbElement = getControlJAXBElement();
-        
+
         Marshaller marshaller = jc.createMarshaller();
         ListenerMarshal listener = new ListenerMarshal();
         marshaller.setListener(listener);
@@ -161,7 +161,7 @@ public class ListenerTestCases extends TestCase {
 
     public void testMarshalListenerElementDecl_XMLStreamWriter() throws Exception {
         JAXBElement<ListenerElementDeclObject> jaxbElement = getControlJAXBElement();
-        
+
         Marshaller marshaller = jc.createMarshaller();
         ListenerMarshal listener = new ListenerMarshal();
         marshaller.setListener(listener);
@@ -197,7 +197,7 @@ public class ListenerTestCases extends TestCase {
 
     public void testMarshalListenerRootObject_ContentHandler() throws Exception {
         ListenerRootObject rootObject = getControlRootObject();
-        
+
         Marshaller marshaller = jc.createMarshaller();
         ListenerMarshal listener = new ListenerMarshal();
         marshaller.setListener(listener);
@@ -208,11 +208,11 @@ public class ListenerTestCases extends TestCase {
 
     public void testMarshalListenerRootObject_Node() throws Exception {
         ListenerRootObject rootObject = getControlRootObject();
-        
+
         Marshaller marshaller = jc.createMarshaller();
         ListenerMarshal listener = new ListenerMarshal();
         marshaller.setListener(listener);
-        
+
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.newDocument();
@@ -223,7 +223,7 @@ public class ListenerTestCases extends TestCase {
 
     public void testMarshalListenerRootObject_OuputStream() throws Exception {
         ListenerRootObject rootObject = getControlRootObject();
-        
+
         Marshaller marshaller = jc.createMarshaller();
         ListenerMarshal listener = new ListenerMarshal();
         marshaller.setListener(listener);
@@ -234,7 +234,7 @@ public class ListenerTestCases extends TestCase {
 
     public void testMarshalListenerRootObject_Writer() throws Exception {
         ListenerRootObject rootObject = getControlRootObject();
-        
+
         Marshaller marshaller = jc.createMarshaller();
         ListenerMarshal listener = new ListenerMarshal();
         marshaller.setListener(listener);
@@ -245,11 +245,11 @@ public class ListenerTestCases extends TestCase {
 
     public void testMarshalListenerRootObject_XMLEventWriter() throws Exception {
         ListenerRootObject rootObject = getControlRootObject();
-        
+
         Marshaller marshaller = jc.createMarshaller();
         ListenerMarshal listener = new ListenerMarshal();
         marshaller.setListener(listener);
-        
+
         XMLOutputFactory xof = XMLOutputFactory.newFactory();
         XMLEventWriter xew = xof.createXMLEventWriter(new StringWriter());
         marshaller.marshal(rootObject, xew);
@@ -260,11 +260,11 @@ public class ListenerTestCases extends TestCase {
 
     public void testMarshalListenerRootObject_XMLStreamWriter() throws Exception {
         ListenerRootObject rootObject = getControlRootObject();
-        
+
         Marshaller marshaller = jc.createMarshaller();
         ListenerMarshal listener = new ListenerMarshal();
         marshaller.setListener(listener);
-        
+
         XMLOutputFactory xof = XMLOutputFactory.newFactory();
         XMLStreamWriter xsw = xof.createXMLStreamWriter(new StringWriter());
         marshaller.marshal(rootObject, xsw);
@@ -272,7 +272,7 @@ public class ListenerTestCases extends TestCase {
 
         testMarshalListenerRootObject(rootObject, marshaller, listener);
     }
- 
+
     private void testUnmarshalListenerElementDecl(JAXBElement<ListenerElementDeclObject> jaxbElement, Unmarshaller unmarshaller, ListenerUnmarshal listener) throws Exception {
         List<UnmarshalEvent> events = listener.getEvents();
         assertEquals(6, events.size());
@@ -317,7 +317,7 @@ public class ListenerTestCases extends TestCase {
         ListenerUnmarshal listener = new ListenerUnmarshal();
         unmarshaller.setListener(listener);
         JAXBElement<ListenerElementDeclObject> jaxbElement = (JAXBElement<ListenerElementDeclObject>) unmarshaller.unmarshal(xml);
-        
+
         testUnmarshalListenerElementDecl(jaxbElement, unmarshaller, listener);
     }
 
@@ -331,7 +331,7 @@ public class ListenerTestCases extends TestCase {
         ListenerUnmarshal listener = new ListenerUnmarshal();
         unmarshaller.setListener(listener);
         JAXBElement<ListenerElementDeclObject> jaxbElement = (JAXBElement<ListenerElementDeclObject>) unmarshaller.unmarshal(document);
-        
+
         testUnmarshalListenerElementDecl(jaxbElement, unmarshaller, listener);
     }
 
@@ -342,7 +342,7 @@ public class ListenerTestCases extends TestCase {
         ListenerUnmarshal listener = new ListenerUnmarshal();
         unmarshaller.setListener(listener);
         JAXBElement<ListenerElementDeclObject> jaxbElement = (JAXBElement<ListenerElementDeclObject>) unmarshaller.unmarshal(xml);
-        
+
         testUnmarshalListenerElementDecl(jaxbElement, unmarshaller, listener);
     }
 
@@ -354,7 +354,7 @@ public class ListenerTestCases extends TestCase {
         ListenerUnmarshal listener = new ListenerUnmarshal();
         unmarshaller.setListener(listener);
         JAXBElement<ListenerElementDeclObject> jaxbElement = (JAXBElement<ListenerElementDeclObject>) unmarshaller.unmarshal(source);
-        
+
         testUnmarshalListenerElementDecl(jaxbElement, unmarshaller, listener);
     }
 
@@ -362,11 +362,11 @@ public class ListenerTestCases extends TestCase {
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         ListenerUnmarshal listener = new ListenerUnmarshal();
         unmarshaller.setListener(listener);
-        
+
         XMLInputFactory xif = XMLInputFactory.newFactory();
         XMLEventReader xew = xif.createXMLEventReader(new StringReader(ELEMENT_DECL_XML));
         JAXBElement<ListenerElementDeclObject> jaxbElement = (JAXBElement<ListenerElementDeclObject>) unmarshaller.unmarshal(xew);
-        
+
         testUnmarshalListenerElementDecl(jaxbElement, unmarshaller, listener);
     }
 
@@ -374,11 +374,11 @@ public class ListenerTestCases extends TestCase {
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         ListenerUnmarshal listener = new ListenerUnmarshal();
         unmarshaller.setListener(listener);
-        
+
         XMLInputFactory xif = XMLInputFactory.newFactory();
         XMLStreamReader xew = xif.createXMLStreamReader(new StringReader(ELEMENT_DECL_XML));
         JAXBElement<ListenerElementDeclObject> jaxbElement = (JAXBElement<ListenerElementDeclObject>) unmarshaller.unmarshal(xew);
-        
+
         testUnmarshalListenerElementDecl(jaxbElement, unmarshaller, listener);
     }
 */
@@ -418,7 +418,7 @@ public class ListenerTestCases extends TestCase {
         ListenerUnmarshal listener = new ListenerUnmarshal();
         unmarshaller.setListener(listener);
         ListenerRootObject rootObject = (ListenerRootObject) unmarshaller.unmarshal(xml);
-        
+
         testUnmarshalListenerRootObject(rootObject, unmarshaller, listener);
     }
 
@@ -432,7 +432,7 @@ public class ListenerTestCases extends TestCase {
         ListenerUnmarshal listener = new ListenerUnmarshal();
         unmarshaller.setListener(listener);
         ListenerRootObject rootObject = (ListenerRootObject) unmarshaller.unmarshal(document);
-        
+
         testUnmarshalListenerRootObject(rootObject, unmarshaller, listener);
     }
 
@@ -443,7 +443,7 @@ public class ListenerTestCases extends TestCase {
         ListenerUnmarshal listener = new ListenerUnmarshal();
         unmarshaller.setListener(listener);
         ListenerRootObject rootObject = (ListenerRootObject) unmarshaller.unmarshal(xml);
-        
+
         testUnmarshalListenerRootObject(rootObject, unmarshaller, listener);
     }
 
@@ -454,7 +454,7 @@ public class ListenerTestCases extends TestCase {
         ListenerUnmarshal listener = new ListenerUnmarshal();
         unmarshaller.setListener(listener);
         ListenerRootObject rootObject = (ListenerRootObject) unmarshaller.unmarshal(source);
-        
+
         testUnmarshalListenerRootObject(rootObject, unmarshaller, listener);
     }
 
@@ -466,7 +466,7 @@ public class ListenerTestCases extends TestCase {
         XMLInputFactory xif = XMLInputFactory.newFactory();
         XMLEventReader xew = xif.createXMLEventReader(new StringReader(ROOT_XML));
         ListenerRootObject rootObject = (ListenerRootObject) unmarshaller.unmarshal(xew);
-        
+
         testUnmarshalListenerRootObject(rootObject, unmarshaller, listener);
     }
 
@@ -478,7 +478,7 @@ public class ListenerTestCases extends TestCase {
         XMLInputFactory xif = XMLInputFactory.newFactory();
         XMLStreamReader xsw = xif.createXMLStreamReader(new StringReader(ROOT_XML));
         ListenerRootObject rootObject = (ListenerRootObject) unmarshaller.unmarshal(xsw);
-        
+
         testUnmarshalListenerRootObject(rootObject, unmarshaller, listener);
     }
 
@@ -534,7 +534,7 @@ public class ListenerTestCases extends TestCase {
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         ListenerUnmarshal listener = new ListenerUnmarshal();
         unmarshaller.setListener(listener);
-        
+
         XMLInputFactory xif = XMLInputFactory.newFactory();
         XMLEventReader xer = xif.createXMLEventReader(new StringReader(ROOT_XML));
         JAXBElement<ListenerRootObject> jaxbElement = unmarshaller.unmarshal(xer, ListenerRootObject.class);
@@ -546,7 +546,7 @@ public class ListenerTestCases extends TestCase {
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         ListenerUnmarshal listener = new ListenerUnmarshal();
         unmarshaller.setListener(listener);
-        
+
         XMLInputFactory xif = XMLInputFactory.newFactory();
         XMLStreamReader xsr = xif.createXMLStreamReader(new StringReader(ROOT_XML));
         JAXBElement<ListenerRootObject> jaxbElement = unmarshaller.unmarshal(xsr, ListenerRootObject.class);
@@ -554,18 +554,18 @@ public class ListenerTestCases extends TestCase {
         testUnmarshalListenerRootObjectAsJAXBElement(jaxbElement, unmarshaller, listener);
     }
 */
-    
+
     public void testClassCallbacksForBinder() throws Exception {
-    	Binder binder = jc.createBinder();
-    	
-    	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        Binder binder = jc.createBinder();
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(new InputSource(new StringReader(ROOT_XML)));
-        
+
         //marshal and unmarshal
         ListenerRootObject root = (ListenerRootObject) binder.unmarshal(doc);
         binder.marshal(root, db.newDocument());
-        
+
         // just tests the fact that they are called
         assertNotNull(root.afterMarshalMarshaller);
         assertNotNull(root.beforeMarshalMarshaller);

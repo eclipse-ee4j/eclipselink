@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.aggregate;
 
 import java.util.*;
@@ -134,7 +134,7 @@ public class AggregateProject extends org.eclipse.persistence.sessions.Project {
         onetoonemapping.setUsesIndirection(true);
         onetoonemapping.setReferenceClass(org.eclipse.persistence.testing.models.aggregate.Address.class);
         onetoonemapping.setIsPrivateOwned(true);
-        // added for bug 5478648 - D.Minsky 
+        // added for bug 5478648 - D.Minsky
         onetoonemapping.setUsesBatchReading(true);
         onetoonemapping.addForeignKeyFieldName("AGG_EMP.EM_ADD", "AGG_ADD.ID");
         descriptor.addMapping(onetoonemapping);
@@ -869,7 +869,7 @@ public class AggregateProject extends org.eclipse.persistence.sessions.Project {
 
         // Query keys.
         descriptor.addDirectQueryKey("flexibility", "QUERY_KEY flexibility");
-        
+
         // Query manager.
         //Named Queries
         // Event manager.
@@ -927,7 +927,7 @@ public class AggregateProject extends org.eclipse.persistence.sessions.Project {
         aggregatecollectionmapping.setAttributeName("sellingPoints");
         aggregatecollectionmapping.setIsReadOnly(false);
         aggregatecollectionmapping.setUsesIndirection(false);
-		aggregatecollectionmapping.useBatchReading();
+        aggregatecollectionmapping.useBatchReading();
         aggregatecollectionmapping.setGetMethodName("getSellingPoints");
         aggregatecollectionmapping.setSetMethodName("setSellingPoints");
         aggregatecollectionmapping.setReferenceClass(org.eclipse.persistence.testing.models.aggregate.SellingPoint.class);
@@ -1024,7 +1024,7 @@ public class AggregateProject extends org.eclipse.persistence.sessions.Project {
         descriptor.addMapping(transformationmapping);
         addDescriptor(descriptor);
     }
-    
+
     /**
      * The field types must be set in an amendment as the XML format does not support types.
      */

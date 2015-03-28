@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,20 +41,20 @@ public class XmlValueSimpleContentTest extends JAXBWithJSONTestCases {
     }
 
     protected Object getControlObject() {
-    	InternationalPrice p = new InternationalPrice();
+        InternationalPrice p = new InternationalPrice();
         p.setPrice(123.99);
         p.currency = "CANADIAN DOLLAR";
         return p;
     }
-    
+
     public void testJSONNoValuePropException() throws Exception{
-    	jaxbMarshaller = jaxbContext.createMarshaller();
-    	jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-    	
-    	StringWriter sw = new StringWriter();
-    	jaxbMarshaller.marshal(getControlObject(), sw);
-    	
-    	compareStringToControlFile("**testJSONMarshalToStringWriter**", sw.toString(), JSON_RESOURCE_DEFAULT);
-    	    	
+        jaxbMarshaller = jaxbContext.createMarshaller();
+        jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+
+        StringWriter sw = new StringWriter();
+        jaxbMarshaller.marshal(getControlObject(), sw);
+
+        compareStringToControlFile("**testJSONMarshalToStringWriter**", sw.toString(), JSON_RESOURCE_DEFAULT);
+
     }
 }

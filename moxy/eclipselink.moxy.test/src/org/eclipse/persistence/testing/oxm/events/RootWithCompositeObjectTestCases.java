@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.events;
 
 import java.util.ArrayList;
@@ -40,18 +40,18 @@ public class RootWithCompositeObjectTestCases extends XMLMappingTestCases {
         expectedMarshalEvents.add(MarshalListenerImpl.ADDRESS_BEFORE_MARSHAL);
         expectedMarshalEvents.add(MarshalListenerImpl.ADDRESS_AFTER_MARSHAL);
         expectedMarshalEvents.add(MarshalListenerImpl.EMPLOYEE_AFTER_MARSHAL);
-        
+
         expectedUnmarshalEvents = new ArrayList();
         expectedUnmarshalEvents.add(UnmarshalListenerImpl.EMPLOYEE_BEFORE_UNMARSHAL);
         expectedUnmarshalEvents.add(UnmarshalListenerImpl.ADDRESS_BEFORE_UNMARSHAL);
         expectedUnmarshalEvents.add(UnmarshalListenerImpl.ADDRESS_AFTER_UNMARSHAL);
         expectedUnmarshalEvents.add(UnmarshalListenerImpl.EMPLOYEE_AFTER_UNMARSHAL);
     }
-    
+
     public void setUp() throws Exception {
         super.setUp();
         unmarshalListener = new UnmarshalListenerImpl();
-        
+
         this.xmlUnmarshaller.setUnmarshalListener(unmarshalListener);
     }
 
@@ -67,7 +67,7 @@ public class RootWithCompositeObjectTestCases extends XMLMappingTestCases {
         super.xmlToObjectTest(testObject);
         assertTrue("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents.equals(unmarshalListener.events));
     }
-    
+
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Expected sequence of Marshal events not found", expectedMarshalEvents.equals(listener.events));

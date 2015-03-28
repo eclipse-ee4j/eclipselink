@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.mapping;
 
 import java.util.Vector;
@@ -38,7 +38,7 @@ import org.eclipse.persistence.testing.models.mapping.Shipment;
 public class MappingProject extends Project {
     public MappingProject() {
         setName("ComplexMappingSystem");
-        
+
         buildAddressDescriptor();
         buildCompanyCardDescriptor();
         buildComputerDescriptor();
@@ -72,7 +72,7 @@ public class MappingProject extends Project {
         descriptor.createCopyPolicy("constructor");
 
         descriptor.useWeakIdentityMap();
-        
+
         // SECTION: INSTANTIATION POLICY
         descriptor.createInstantiationPolicy("constructor");
 
@@ -100,14 +100,14 @@ public class MappingProject extends Project {
         onetoonemapping.addTargetForeignKeyFieldName("MAP_EMP.A_ID", "MAP_ADD.A_ID");
         descriptor.addMapping(onetoonemapping);
 
-		// SECTION: TRANSFORMATIONMAPPING
-		TransformationMapping transformationmapping = new TransformationMapping();
-		transformationmapping.setAttributeName("province");
-		transformationmapping.setIsReadOnly(false);
-		transformationmapping.setUsesIndirection(false);
-		transformationmapping.setAttributeTransformation("getProvinceFromRow");
-		transformationmapping.addFieldTransformation("MAP_ADD.PROVINCE", "getProvinceFromObject");
-		descriptor.addMapping(transformationmapping);
+        // SECTION: TRANSFORMATIONMAPPING
+        TransformationMapping transformationmapping = new TransformationMapping();
+        transformationmapping.setAttributeName("province");
+        transformationmapping.setIsReadOnly(false);
+        transformationmapping.setUsesIndirection(false);
+        transformationmapping.setAttributeTransformation("getProvinceFromRow");
+        transformationmapping.addFieldTransformation("MAP_ADD.PROVINCE", "getProvinceFromObject");
+        descriptor.addMapping(transformationmapping);
         addDescriptor(descriptor);
     }
 
@@ -332,9 +332,9 @@ public class MappingProject extends Project {
 
         // SECTION: COPY POLICY
         descriptor.createCopyPolicy("constructor");
-        
+
         descriptor.useSoftIdentityMap();
-        
+
         // SECTION: INSTANTIATION POLICY
         descriptor.createInstantiationPolicy("constructor");
 
@@ -527,7 +527,7 @@ public class MappingProject extends Project {
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildHardwareDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -577,7 +577,7 @@ public class MappingProject extends Project {
         onetoonemapping.addForeignKeyFieldName("MAP_HRW.EMP_FNAME", "MAP_EMP.FNAME");
         onetoonemapping.addForeignKeyFieldName("MAP_HRW.EMP_LNAME", "MAP_EMP.LNAME");
         descriptor.addMapping(onetoonemapping);
-        
+
         addDescriptor(descriptor);
     }
 
@@ -661,7 +661,7 @@ public class MappingProject extends Project {
         descriptor.createCopyPolicy("constructor");
 
         descriptor.useHardCacheWeakIdentityMap();
-        
+
         // SECTION: INSTANTIATION POLICY
         descriptor.createInstantiationPolicy("constructor");
 
@@ -725,7 +725,7 @@ public class MappingProject extends Project {
 
         addDescriptor(descriptor);
     }
-    
+
     protected void buildShipmentDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -790,18 +790,18 @@ public class MappingProject extends Project {
         descriptor.addMapping(manytomanymapping);
         addDescriptor(descriptor);
     }
-    
+
     public void buildPeripheralDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(Peripheral.class);
         descriptor.addTableName("MAP_PERIPHERAL");
         descriptor.addPrimaryKeyFieldName("MAP_PERIPHERAL.ID");
-        
+
         // ClassDescriptor Properties.
         descriptor.setAlias("Peripheral");
         descriptor.setAmendmentClass(Peripheral.class);
         descriptor.setAmendmentMethodName("addToDescriptor");
-        
+
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
@@ -814,19 +814,19 @@ public class MappingProject extends Project {
         validMappingConverter.addConversionValue(new Character('Y'), new java.lang.Boolean("true"));
         validMapping.setConverter(validMappingConverter);
         descriptor.addMapping(validMapping);
-        
+
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
         idMapping.setAttributeName("id");
         idMapping.setFieldName("MAP_PERIPHERAL.ID");
         descriptor.addMapping(idMapping);
-        
+
         DirectToFieldMapping nameMapping = new DirectToFieldMapping();
         nameMapping.setAttributeName("name");
         nameMapping.setFieldName("MAP_PERIPHERAL.NAME");
         descriptor.addMapping(nameMapping);
-        
+
         descriptor.applyAmendmentMethod();
-        
+
         addDescriptor(descriptor);
     }
 }

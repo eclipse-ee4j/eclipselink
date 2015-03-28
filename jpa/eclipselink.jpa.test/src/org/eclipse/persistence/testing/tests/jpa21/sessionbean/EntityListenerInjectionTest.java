@@ -21,20 +21,20 @@ import static junit.framework.Assert.assertTrue;
 public class EntityListenerInjectionTest extends JUnitTestCase {
 
     protected EntityListenerTest entityListenerTest;
-    
+
     public EntityListenerInjectionTest(){
         super();
     }
-    
+
     public EntityListenerInjectionTest(String name){
         super(name);
     }
-    
+
     public EntityListenerInjectionTest(String name, boolean shouldRunTestOnServer){
         super(name);
         this.shouldRunTestOnServer = shouldRunTestOnServer;
     }
-    
+
     private static final String[] LOOKUP_STRINGS = new String[] {
 
     // WLS
@@ -69,7 +69,7 @@ public class EntityListenerInjectionTest extends JUnitTestCase {
 
         throw new RuntimeException("EmployeeService bean could not be looked up under any of the following names:\n" + Arrays.asList(LOOKUP_STRINGS));
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite("SessionBeanTests");
         suite.addTest(new EntityListenerInjectionTest("testInjection", true));
@@ -77,10 +77,10 @@ public class EntityListenerInjectionTest extends JUnitTestCase {
 
         return suite;
     }
-    
+
     public void testInjection() {
         new EntityListenerTableCreator().replaceTables(JUnitTestCase.getServerSession("jpa21-sessionbean"));
-        
+
         try{
             assertTrue("Injection was not triggered.", getEntityListenerTest().triggerInjection());
         } catch (Exception e){
@@ -88,7 +88,7 @@ public class EntityListenerInjectionTest extends JUnitTestCase {
             fail("Exception thrown testing injection " + e);
         }
     }
-    
+
     public void testPreDestroy(){
         try{
             assertTrue("Predestroyo was not triggered.", getEntityListenerTest().triggerPreDestroy());

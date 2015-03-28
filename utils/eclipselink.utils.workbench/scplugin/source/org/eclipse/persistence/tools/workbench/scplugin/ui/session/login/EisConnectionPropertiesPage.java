@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -77,246 +77,246 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  */
 public class EisConnectionPropertiesPage extends AbstractLoginPropertiesPage
 {
-	/**
-	 * Creates a new <code>RdbmsConnectionPropertiesPage</code>.
-	 *
-	 * @param nodeHolder The holder of {@link org.eclipse.persistence.tools.workbench.scplugin.ui.session.DatabaseSessionNode DatabaseSessionNode}
-	 */
-	public EisConnectionPropertiesPage(PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder)
-	{
-		super(nodeHolder, contextHolder);
-	}
+    /**
+     * Creates a new <code>RdbmsConnectionPropertiesPage</code>.
+     *
+     * @param nodeHolder The holder of {@link org.eclipse.persistence.tools.workbench.scplugin.ui.session.DatabaseSessionNode DatabaseSessionNode}
+     */
+    public EisConnectionPropertiesPage(PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder)
+    {
+        super(nodeHolder, contextHolder);
+    }
 
-	/**
-	 * Creates the <code>Comparator</code> responsible to compare to EIS Platform
-	 * class name.
-	 *
-	 * @return A new <code>Comparator</code>
-	 */
-	private Comparator buildEisPlatformNameCompator()
-	{
-		return new Comparator()
-		{
-			public int compare(Object object1, Object object2)
-			{
-				String shortClassName1 = ((String) object1).replaceFirst( "Platform", "");
+    /**
+     * Creates the <code>Comparator</code> responsible to compare to EIS Platform
+     * class name.
+     *
+     * @return A new <code>Comparator</code>
+     */
+    private Comparator buildEisPlatformNameCompator()
+    {
+        return new Comparator()
+        {
+            public int compare(Object object1, Object object2)
+            {
+                String shortClassName1 = ((String) object1).replaceFirst( "Platform", "");
 
-				String shortClassName2 = ((String) object2).replaceFirst( "Platform", "");
-			
-				return shortClassName1.compareTo(shortClassName2);
-			}
-		};
-	}
+                String shortClassName2 = ((String) object2).replaceFirst( "Platform", "");
 
-	/**
-	 * Initializes the layout of this pane.
-	 *
-	 * @return The container with all its widgets
-	 */
-	protected Component buildPage()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
+                return shortClassName1.compareTo(shortClassName2);
+            }
+        };
+    }
 
-		// Create the container
-		JPanel panel = new JPanel(new GridBagLayout());
-		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    /**
+     * Initializes the layout of this pane.
+     *
+     * @return The container with all its widgets
+     */
+    protected Component buildPage()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		// Platform label
-		JLabel platformLabel = buildLabel("CONNECTION_EIS_PLATFORM_FIELD");
+        // Create the container
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-		constraints.gridx			= 0;
-		constraints.gridy			= 0;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 0;
-		constraints.weighty		= 0;
-		constraints.fill			= GridBagConstraints.NONE;
-		constraints.anchor		= GridBagConstraints.LINE_START;
-		constraints.insets		= new Insets(0, 0, 0, 0);
+        // Platform label
+        JLabel platformLabel = buildLabel("CONNECTION_EIS_PLATFORM_FIELD");
 
-		panel.add(platformLabel, constraints);
-		addAlignLeft(platformLabel);
-		helpManager().addTopicID(platformLabel, "session.login.database.connection.platform");
+        constraints.gridx            = 0;
+        constraints.gridy            = 0;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 0;
+        constraints.weighty        = 0;
+        constraints.fill            = GridBagConstraints.NONE;
+        constraints.anchor        = GridBagConstraints.LINE_START;
+        constraints.insets        = new Insets(0, 0, 0, 0);
 
-		// Platform combo box
-		JComboBox platformComboBox = new JComboBox(buildPlatformComboAdapter());
-		platformComboBox.setName("CONNECTION_EIS_PLATFORM_FIELD");
-		platformComboBox.setRenderer(buildPlatformLabelDecorator());
+        panel.add(platformLabel, constraints);
+        addAlignLeft(platformLabel);
+        helpManager().addTopicID(platformLabel, "session.login.database.connection.platform");
 
-		constraints.gridx			= 1;
-		constraints.gridy			= 0;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 0;
-		constraints.fill			= GridBagConstraints.HORIZONTAL;
-		constraints.anchor		= GridBagConstraints.CENTER;
-		constraints.insets		= new Insets(0, 5, 0, 0);
+        // Platform combo box
+        JComboBox platformComboBox = new JComboBox(buildPlatformComboAdapter());
+        platformComboBox.setName("CONNECTION_EIS_PLATFORM_FIELD");
+        platformComboBox.setRenderer(buildPlatformLabelDecorator());
 
-		panel.add(platformComboBox, constraints);
-		platformLabel.setLabelFor(platformComboBox);
-		helpManager().addTopicID(platformComboBox, "session.login.database.connection.platform");
+        constraints.gridx            = 1;
+        constraints.gridy            = 0;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 0;
+        constraints.fill            = GridBagConstraints.HORIZONTAL;
+        constraints.anchor        = GridBagConstraints.CENTER;
+        constraints.insets        = new Insets(0, 5, 0, 0);
 
-		// Spacer
-		Spacer spacer = new Spacer();
+        panel.add(platformComboBox, constraints);
+        platformLabel.setLabelFor(platformComboBox);
+        helpManager().addTopicID(platformComboBox, "session.login.database.connection.platform");
 
-		constraints.gridx			= 2;
-		constraints.gridy			= 0;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 0;
-		constraints.weighty		= 0;
-		constraints.fill			= GridBagConstraints.NONE;
-		constraints.anchor		= GridBagConstraints.CENTER;
-		constraints.insets		= new Insets(0, 5, 0, 0);
+        // Spacer
+        Spacer spacer = new Spacer();
 
-		panel.add(spacer, constraints);
-		addAlignRight(spacer);
+        constraints.gridx            = 2;
+        constraints.gridy            = 0;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 0;
+        constraints.weighty        = 0;
+        constraints.fill            = GridBagConstraints.NONE;
+        constraints.anchor        = GridBagConstraints.CENTER;
+        constraints.insets        = new Insets(0, 5, 0, 0);
 
-		// Login pane
-		EisLoginPane loginPane = new EisLoginPane(getSelectionHolder(), getWorkbenchContextHolder());
+        panel.add(spacer, constraints);
+        addAlignRight(spacer);
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 1;
-		constraints.gridwidth   = 3;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.HORIZONTAL;
-		constraints.anchor      = GridBagConstraints.CENTER;
-		constraints.insets      = new Insets(5, 0, 0, 0);
+        // Login pane
+        EisLoginPane loginPane = new EisLoginPane(getSelectionHolder(), getWorkbenchContextHolder());
 
-		panel.add(loginPane, constraints);
-		addPaneForAlignment(loginPane);
+        constraints.gridx       = 0;
+        constraints.gridy       = 1;
+        constraints.gridwidth   = 3;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 1;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.HORIZONTAL;
+        constraints.anchor      = GridBagConstraints.CENTER;
+        constraints.insets      = new Insets(5, 0, 0, 0);
 
-		// External Transaction Controller check box
-		LoginExternalOptionsPane optionsPane = new LoginExternalOptionsPane(getSelectionHolder(), getApplicationContext());
+        panel.add(loginPane, constraints);
+        addPaneForAlignment(loginPane);
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 3;
-		constraints.gridwidth   = 3;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 0;
-		constraints.weighty     = 1;
-		constraints.fill        = GridBagConstraints.NONE;
-		constraints.anchor      = GridBagConstraints.FIRST_LINE_START;
-		constraints.insets      = new Insets(5, 0, 0, 0);
+        // External Transaction Controller check box
+        LoginExternalOptionsPane optionsPane = new LoginExternalOptionsPane(getSelectionHolder(), getApplicationContext());
 
-		panel.add(optionsPane, constraints);
-		helpManager().addTopicID(optionsPane, "session.login.externalPool");
+        constraints.gridx       = 0;
+        constraints.gridy       = 3;
+        constraints.gridwidth   = 3;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 0;
+        constraints.weighty     = 1;
+        constraints.fill        = GridBagConstraints.NONE;
+        constraints.anchor      = GridBagConstraints.FIRST_LINE_START;
+        constraints.insets      = new Insets(5, 0, 0, 0);
 
-		return panel;
-	}
+        panel.add(optionsPane, constraints);
+        helpManager().addTopicID(optionsPane, "session.login.externalPool");
 
-	/**
-	 * Creates the <code>CollectionValueModel</code> containing all the items to
-	 * be shown in the EI Platform combo box.
-	 *
-	 * @return A new <code>CollectionValueModel</code>
-	 */
-	private CollectionValueModel buildPlatformCollectionHolder()
-	{
-		Collection platforms = CollectionTools.sortedSet(EisPlatformManager.instance().platformShortNames());
-		return new ReadOnlyCollectionValueModel(platforms);
-	}
+        return panel;
+    }
 
-	/**
-	 * Creates the <code>ComboBoxModel</code> that keeps the selected value from
-	 * the combo box in sync with the Platform Class value in the model and vice
-	 * versa.
-	 *
-	 * @return A new <code>ComboBoxModel</code>
-	 */
-	private ComboBoxModel buildPlatformComboAdapter()
-	{
-		return new ComboBoxModelAdapter(buildPlatformListHolder(),
-												  buildPlatformHolder());
-	}
+    /**
+     * Creates the <code>CollectionValueModel</code> containing all the items to
+     * be shown in the EI Platform combo box.
+     *
+     * @return A new <code>CollectionValueModel</code>
+     */
+    private CollectionValueModel buildPlatformCollectionHolder()
+    {
+        Collection platforms = CollectionTools.sortedSet(EisPlatformManager.instance().platformShortNames());
+        return new ReadOnlyCollectionValueModel(platforms);
+    }
 
-	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to handle the
-	 * Platform Class property.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildPlatformHolder()
-	{
-		PropertyAspectAdapter adapter = new PropertyAspectAdapter(getSelectionHolder(), EISLoginAdapter.PLATFORM_CLASS_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				EISLoginAdapter login = (EISLoginAdapter) subject;
-				return login.getPlatformClass();
-			}
+    /**
+     * Creates the <code>ComboBoxModel</code> that keeps the selected value from
+     * the combo box in sync with the Platform Class value in the model and vice
+     * versa.
+     *
+     * @return A new <code>ComboBoxModel</code>
+     */
+    private ComboBoxModel buildPlatformComboAdapter()
+    {
+        return new ComboBoxModelAdapter(buildPlatformListHolder(),
+                                                  buildPlatformHolder());
+    }
 
-			protected void setValueOnSubject(Object value)
-			{
-				EISLoginAdapter adapter = (EISLoginAdapter) subject;
-				adapter.setPlatformClass((String) value);
-			}
-		};
+    /**
+     * Creates the <code>PropertyValueModel</code> responsible to handle the
+     * Platform Class property.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    private PropertyValueModel buildPlatformHolder()
+    {
+        PropertyAspectAdapter adapter = new PropertyAspectAdapter(getSelectionHolder(), EISLoginAdapter.PLATFORM_CLASS_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                EISLoginAdapter login = (EISLoginAdapter) subject;
+                return login.getPlatformClass();
+            }
 
-		return new TransformationPropertyValueModel(adapter)
-		{
-			protected Object reverseTransform(Object value)
-			{
-				if (value == null)
-					return null;
+            protected void setValueOnSubject(Object value)
+            {
+                EISLoginAdapter adapter = (EISLoginAdapter) subject;
+                adapter.setPlatformClass((String) value);
+            }
+        };
 
-				return EisPlatformManager.instance().getRuntimePlatformClassNameForClass(( String)value);
-			}
+        return new TransformationPropertyValueModel(adapter)
+        {
+            protected Object reverseTransform(Object value)
+            {
+                if (value == null)
+                    return null;
 
-			protected Object transform(Object value)
-			{
-				if (value == null)
-					return null;
+                return EisPlatformManager.instance().getRuntimePlatformClassNameForClass(( String)value);
+            }
 
-				return ClassTools.shortNameForClassNamed((String) value);
-			}
-		};
-	}
+            protected Object transform(Object value)
+            {
+                if (value == null)
+                    return null;
 
-	/**
-	 * Creates the decorator responsible to format the class name (String) values
-	 * in the Platform combo box.
-	 * 
-	 * @return A new <code>ListCellRenderer</code>
-	 */
-	private ListCellRenderer buildPlatformLabelDecorator()
-	{
-		return new SimpleListCellRenderer()
-		{
-			protected String buildText(Object cellValue)
-			{
-				if (((String) cellValue).equals("AQPlatform"))
-				{
-					return EisPlatformManager.AQ_ID;
-				}
-				else if (((String)cellValue).equals("JMSPlatform"))
-				{
-					return EisPlatformManager.JMS_ID;
-				}
-				else if (((String)cellValue).equals("MQPlatform"))
-				{
-					return EisPlatformManager.MQ_ID;
-				} 
-				else 
-				{
-					return EisPlatformManager.XML_ID;
-				}
-			}
-		};
-	}
+                return ClassTools.shortNameForClassNamed((String) value);
+            }
+        };
+    }
 
-	/**
-	 * Creates the <code>ListValueModel</code> containing all the items to
-	 * be shown in the Database Platform combo box.
-	 *
-	 * @return A new <code>ListValueModel</code>
-	 */
-	private ListValueModel buildPlatformListHolder()
-	{
-		return new SortedListValueModelAdapter(buildPlatformCollectionHolder(),
-															buildEisPlatformNameCompator());
-	}
+    /**
+     * Creates the decorator responsible to format the class name (String) values
+     * in the Platform combo box.
+     *
+     * @return A new <code>ListCellRenderer</code>
+     */
+    private ListCellRenderer buildPlatformLabelDecorator()
+    {
+        return new SimpleListCellRenderer()
+        {
+            protected String buildText(Object cellValue)
+            {
+                if (((String) cellValue).equals("AQPlatform"))
+                {
+                    return EisPlatformManager.AQ_ID;
+                }
+                else if (((String)cellValue).equals("JMSPlatform"))
+                {
+                    return EisPlatformManager.JMS_ID;
+                }
+                else if (((String)cellValue).equals("MQPlatform"))
+                {
+                    return EisPlatformManager.MQ_ID;
+                }
+                else
+                {
+                    return EisPlatformManager.XML_ID;
+                }
+            }
+        };
+    }
+
+    /**
+     * Creates the <code>ListValueModel</code> containing all the items to
+     * be shown in the Database Platform combo box.
+     *
+     * @return A new <code>ListValueModel</code>
+     */
+    private ListValueModel buildPlatformListHolder()
+    {
+        return new SortedListValueModelAdapter(buildPlatformCollectionHolder(),
+                                                            buildEisPlatformNameCompator());
+    }
 }

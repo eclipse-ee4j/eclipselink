@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import java.util.*;
@@ -33,7 +33,7 @@ import org.eclipse.persistence.tools.schemaframework.*;
 public class TestSystem {
     protected DatabaseLogin login;
     public Project project;
-    
+
     public Map<String, String> properties;
 
     /**
@@ -42,7 +42,7 @@ public class TestSystem {
     public void addDescriptors(DatabaseSession session) {
         session.addDescriptors(buildDescriptors());
     }
-        
+
     /**
      * Return all descriptor for the system.
      * This can be used so that subclasses do not have to add descriptors themselves.
@@ -50,7 +50,7 @@ public class TestSystem {
     public Vector buildDescriptors() {
         return new Vector();
     }
-    
+
     /**
      * Return all tables for the system.
      * This can be used so that subclasses do not have to create the tables themselves.
@@ -116,7 +116,7 @@ public class TestSystem {
      * Load the default login from the test.properties file.
      * This file must be on the classpath, or system property set.
      */
-    public void loadLoginFromProperties() {        
+    public void loadLoginFromProperties() {
         this.properties = JUnitTestCaseHelper.getDatabaseProperties();
         login = new DatabaseLogin();
         login.setDriverClassName(this.properties.get(PersistenceUnitProperties.JDBC_DRIVER));
@@ -378,12 +378,12 @@ public class TestSystem {
         dbLogin.setDriverClassName("com.informix.jdbc.IfxDriver");
         dbLogin.setDriverURLHeader("jdbc:informix-sqli://");
         dbLogin.setDatabaseURL("tlsvrdb6.ca.oracle.com:9088/toplink:INFORMIXSERVER=informix");
-        dbLogin.setUserName("informix"); 
+        dbLogin.setUserName("informix");
         //set the encrypted password will enable toplink to use the plain text password as is
         dbLogin.setEncryptedPassword("password");
         setLogin(dbLogin);
     }
-    
+
     /**
      * This is a generic configuration, would should test this occationally to test generic drivers.
      * A "JDBC" ODBC entry must be setup, however table creation will fail for most databases, I think
@@ -477,7 +477,7 @@ public class TestSystem {
         login.useSybase();
         login.setDriverClassName("com.oracle.ias.jdbc.sybase.SybaseDriver");
         login.setDriverURLHeader("jdbc:oracle:sybase://");
-        login.setDatabaseURL("ottvm031.ca.oracle.com:5000/qa2"); 
+        login.setDatabaseURL("ottvm031.ca.oracle.com:5000/qa2");
         login.setUserName("qa2");
         //set the encrypted password will enable toplink to use the plain text password as is
         login.setEncryptedPassword("password");
@@ -491,16 +491,16 @@ public class TestSystem {
      * Creator: Edwin Tang
      */
     public void useOracleThin(String databaseURL, String userName, String password) {
-    	DatabasePlatform platform = null;
-    	try{
-    		Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
-    		platform = (DatabasePlatform)platformClass.newInstance();
-    	} catch (Exception e){
-    		platform = new org.eclipse.persistence.platform.database.OraclePlatform();
-    	}
+        DatabasePlatform platform = null;
+        try{
+            Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
+            platform = (DatabasePlatform)platformClass.newInstance();
+        } catch (Exception e){
+            platform = new org.eclipse.persistence.platform.database.OraclePlatform();
+        }
         DatabaseLogin login = new DatabaseLogin(platform);
 
-    	login.useOracleThinJDBCDriver();
+        login.useOracleThinJDBCDriver();
         login.setDatabaseURL(databaseURL);
         login.setUserName(userName);
         //set the encrypted password will enable toplink to use the plain text password as is
@@ -515,13 +515,13 @@ public class TestSystem {
      * Creator: Praba Vijayaratnam
      */
     public void useOracle8Thin(String databaseURL, String userName, String password) {
-    	DatabasePlatform platform = null;
-    	try{
-    		Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
-    		platform = (DatabasePlatform)platformClass.newInstance();
-    	} catch (Exception e){
-    		platform = new org.eclipse.persistence.platform.database.OraclePlatform();
-    	}
+        DatabasePlatform platform = null;
+        try{
+            Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
+            platform = (DatabasePlatform)platformClass.newInstance();
+        } catch (Exception e){
+            platform = new org.eclipse.persistence.platform.database.OraclePlatform();
+        }
         DatabaseLogin login = new DatabaseLogin(platform);
         login.useOracleThinJDBCDriver();
         login.setDatabaseURL(databaseURL);
@@ -626,7 +626,7 @@ public class TestSystem {
     public void useTimesTen(String userName) {
         DatabaseLogin login = new DatabaseLogin();
         try {
-			login.usePlatform((org.eclipse.persistence.internal.databaseaccess.DatabasePlatform)Class.forName("org.eclipse.persistence.platform.database.TimesTenPlatform").newInstance());
+            login.usePlatform((org.eclipse.persistence.internal.databaseaccess.DatabasePlatform)Class.forName("org.eclipse.persistence.platform.database.TimesTenPlatform").newInstance());
         } catch (Exception e) {}
         login.setDriverClassName("com.timesten.jdbc.TimesTenDriver");
         login.setDriverURLHeader("jdbc:timesten:client:");

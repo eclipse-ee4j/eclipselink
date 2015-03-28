@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,7 @@ import java.rmi.RemoteException;
  * defines the methods that allow a remote client to create, find, and
  * remove EJB objects.
  *
- * <p> The remote home interface is defined by the enterprise bean provider and 
+ * <p> The remote home interface is defined by the enterprise bean provider and
  * implemented by the enterprise bean container.
  * <p>
  * Enterprise beans written to the EJB 3.0 and later APIs do not require
@@ -99,16 +99,16 @@ public interface EJBHome extends java.rmi.Remote {
     EJBMetaData getEJBMetaData() throws RemoteException;
 
     /**
-     * Obtain a handle for the remote home object. The handle can be used at 
-     * later time to re-obtain a reference to the remote home object, possibly 
+     * Obtain a handle for the remote home object. The handle can be used at
+     * later time to re-obtain a reference to the remote home object, possibly
      * in a different Java Virtual Machine.
      *
      * @return A handle for the remote home object.
      *
      * @exception RemoteException Thrown when the method failed due to a
-     *    system-level failure. 
+     *    system-level failure.
      *
-     * @since EJB 1.1    
+     * @since EJB 1.1
      */
     HomeHandle getHomeHandle() throws RemoteException;
 }

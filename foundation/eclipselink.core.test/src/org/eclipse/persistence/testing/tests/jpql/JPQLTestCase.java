@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpql;
 
 import java.util.*;
@@ -105,9 +105,9 @@ public class JPQLTestCase extends TransactionalTestCase {
      * @return
      */
     public Employee getEmployeeWithRequiredNameLength(int minFirstNameLength, String testName) {
-    	return getEmployeeWithRequiredNameLength(getSomeEmployees(), minFirstNameLength, testName);
+        return getEmployeeWithRequiredNameLength(getSomeEmployees(), minFirstNameLength, testName);
     }
-    
+
     /**
      * Return the first employee that has a long enough name for the test.
      * If no match is found throw a warning exception.
@@ -119,10 +119,10 @@ public class JPQLTestCase extends TransactionalTestCase {
      */
     public Employee getEmployeeWithRequiredNameLength(Vector vectorOfEmployees, int minFirstNameLength, String testName) {
         Employee empMatch = null;
-        Vector<Employee> employees = vectorOfEmployees;        
+        Vector<Employee> employees = vectorOfEmployees;
         String firstName;
         StringBuffer partialFirstName;
-        
+
         // Loop through the collection of employees to find one that matches our test requirements
         for(int i=0; i<employees.size();i++) {
             empMatch = employees.get(i);
@@ -133,15 +133,15 @@ public class JPQLTestCase extends TransactionalTestCase {
                 i = employees.size();
             }
         }
-        
+
         // If we could not find a proper employee for testing - throw a warning
         if(null == empMatch) {
-        	throw new RuntimeException(testName + " Setup Failed: unable to find an Employee with firstName size of at least  " + minFirstNameLength);
+            throw new RuntimeException(testName + " Setup Failed: unable to find an Employee with firstName size of at least  " + minFirstNameLength);
         } else {
-        	return empMatch;
+            return empMatch;
         }
     }
-    
+
     public void setup() {
         if (!isPlatformSupported(getSession().getLogin().getPlatform())) {
             throw new TestWarningException("This EJBQL is not supported on this platform.");
@@ -158,7 +158,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         executeEJBQLQuery();
     }
 
-    //lowest level execute that can be subclassed if required	
+    //lowest level execute that can be subclassed if required
     public void executeEJBQLQuery() throws Exception {
         if (hasArguments()) {
             addArgumentNamesToQuery();

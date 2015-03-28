@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/06/2009-2.0 Guy Pelletier 
+ *     11/06/2009-2.0 Guy Pelletier
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import java.io.Serializable;
@@ -22,7 +22,7 @@ import javax.persistence.UniqueConstraint;
 import javax.persistence.Column;
 
 /**
- * Unique constraints test model. Unique constraints are given by metadata annotations. 
+ * Unique constraints test model. Unique constraints are given by metadata annotations.
  */
 @Entity
 @Table(name="DDL_UCENTITY1", uniqueConstraints = {
@@ -33,7 +33,7 @@ public class UniqueConstraintsEntity1 implements Serializable {
 
     @Id
     private Integer id;
-    
+
     @Column(unique=true, nullable=false)
     private Integer column1;
     @Column(nullable=false)
@@ -85,7 +85,7 @@ public class UniqueConstraintsEntity1 implements Serializable {
     public void setColumn32(Integer column32) {
         this.column32 = column32;
     }
-    
+
     public void setColumns(Integer col1, Integer col2, Integer col31, Integer col32) {
         setColumn1(col1);
         setColumn2(col2);

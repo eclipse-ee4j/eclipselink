@@ -13,7 +13,7 @@ import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
- * Test indirection functionality when setting an indirect container's 
+ * Test indirection functionality when setting an indirect container's
  * valueholder to a new ValueHolder.
  * Bug 345495
  */
@@ -21,13 +21,13 @@ public class NullDelegateInValueHolderTest extends TestCase {
 
     protected Class indirectCollectionClass;
     protected AbstractOrder testOrder;
-    
+
     public NullDelegateInValueHolderTest(Class indirectCollectionClass) {
         super();
         this.indirectCollectionClass = indirectCollectionClass;
         setDescription("NullDelegateInValueHolderTest: " + Helper.getShortClassName(this.indirectCollectionClass));
     }
-    
+
     public void setup() {
         String customerName = "ACME, Inc.";
         if (indirectCollectionClass.equals(IndirectList.class)) {
@@ -41,7 +41,7 @@ public class NullDelegateInValueHolderTest extends TestCase {
         ClassDescriptor descriptor = getSession().getDescriptor(testOrder);
         ForeignReferenceMapping mapping = (ForeignReferenceMapping) descriptor.getMappingForAttributeName("salesReps");
         IndirectionPolicy policy = mapping.getIndirectionPolicy();
-        
+
         // replace indirect container's valueholder with a new ValueHolder instance
         mapping.setAttributeValueInObject(testOrder, policy.buildIndirectObject(new ValueHolder()));
     }

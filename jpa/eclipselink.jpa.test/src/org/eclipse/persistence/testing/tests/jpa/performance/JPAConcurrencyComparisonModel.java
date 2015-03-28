@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - initial impl
- ******************************************************************************/  
+ ******************************************************************************/
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import java.util.HashMap;
@@ -113,9 +113,9 @@ public class JPAConcurrencyComparisonModel extends TestModel {
         suite.addTest(new JPAComplexUpdateEmployeeConcurrencyComparisonTest());
         suite.addTest(new JPAAddPhoneConcurrencyComparisonTest());
 
-        return suite;        
+        return suite;
     }
-    
+
     /**
      * Create/populate database.
      */
@@ -130,7 +130,7 @@ public class JPAConcurrencyComparisonModel extends TestModel {
             datasource.setPassword(getSession().getLogin().getPassword());
             datasource.setConnectionCachingEnabled(true);
             java.util.Properties properties = new java.util.Properties();
-            properties.setProperty("MinLimit", "5"); 
+            properties.setProperty("MinLimit", "5");
             properties.setProperty("MaxLimit", "100");
             properties.setProperty("InitialLimit", "1");
             properties.setProperty("MaxStatementsLimit", "50");
@@ -140,7 +140,7 @@ public class JPAConcurrencyComparisonModel extends TestModel {
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }*/
-        
+
         setupProvider();
         getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
         System.out.println(getExecutor().getEntityManagerFactory().getClass().toString());
@@ -155,7 +155,7 @@ public class JPAConcurrencyComparisonModel extends TestModel {
             // Create using DatabaseSession if not EclipseLink JPA.
             new EmployeeTableCreator().replaceTables(getDatabaseSession());
         }
-        
+
         manager.getTransaction().begin();
 
         for (int j = 0; j < 100; j++) {
@@ -189,12 +189,12 @@ public class JPAConcurrencyComparisonModel extends TestModel {
             project.setName("Tracker");
             manager.persist(project);
         }
-        
+
         manager.getTransaction().commit();
         manager.close();
         EmulatedDriver.emulate = true;
     }
-    
+
     /**
      * Setup the JPA provider.
      */
@@ -210,13 +210,13 @@ public class JPAConcurrencyComparisonModel extends TestModel {
         Map properties = getPersistenceProperties();
         getExecutor().setEntityManagerFactory(provider.createEntityManagerFactory("performance", properties));
     }
-    
+
     /**
      * Build the persistence properties.
      */
-    public Map getPersistenceProperties() {    
+    public Map getPersistenceProperties() {
         Map properties = new HashMap();
-        
+
         // For DataSource testing.
         //properties.put("javax.persistence.nonJtaDataSource", "datasource");
 
@@ -250,5 +250,5 @@ public class JPAConcurrencyComparisonModel extends TestModel {
         // This line should be commented out when comparing against Hibernate as they do not have statement caching support.
         properties.put("eclipselink.jdbc.cache-statements", "true");
         return properties;
-    }    
+    }
 }

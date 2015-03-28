@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,11 +22,11 @@ public class SubClass extends SpecialMap<String, String> {
     public String getMyProperty() {
         return super.get("myProperty");
     }
-    
+
     public void setMyProperty(String value) {
         super.put("myProperty", value);
     }
-    
+
     public boolean equals(Object subClass) {
         return getMyProperty().equals(((SubClass)subClass).getMyProperty());
     }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.factories;
 
 // javase imports
@@ -63,7 +63,7 @@ public class XMLProjectReader {
     public static final String SCHEMA_DIR = "org/eclipse/persistence/";
     public static final String OPM_SCHEMA = "object-persistence_1_0.xsd";
     public static final String ECLIPSELINK_SCHEMA = "eclipselink_persistence_map_2.3.xsd";
-    public static final String ECLIPSELINK_1_0_SCHEMA = "eclipselink_persistence_map_1.0.xsd";    
+    public static final String ECLIPSELINK_1_0_SCHEMA = "eclipselink_persistence_map_1.0.xsd";
     public static final String TOPLINK_11_SCHEMA = "toplink-object-persistence_11_1_1.xsd";
     public static final String TOPLINK_10_SCHEMA = "toplink-object-persistence_10_1_3.xsd";
 
@@ -123,7 +123,7 @@ public class XMLProjectReader {
             }
             String schema = null;
             if (shouldUseSchemaValidation()) {
-            	schema = SCHEMA_DIR + ECLIPSELINK_SCHEMA;
+                schema = SCHEMA_DIR + ECLIPSELINK_SCHEMA;
             }
             // Assume the format is OPM parse the document with OPM validation on.
             XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
@@ -170,19 +170,19 @@ public class XMLProjectReader {
             if (version.indexOf("10.1.3") != -1) {
                 return read1013Format(document, classLoader);
             } else if (version.indexOf("11.1.1") != -1) {
-               	return read1111Format(document, classLoader);
+                   return read1111Format(document, classLoader);
             }
             if (version.indexOf("TopLink") != -1) {
                 //default to read 11.1.1
-            	return read1111Format(document, classLoader);
+                return read1111Format(document, classLoader);
             }
         }
 
-        
+
         if (project == null) {
             project = new EclipseLinkObjectPersistenceRuntimeXMLProject();
         }
-        // bug261072: clone the project since readObjectPersistenceRuntimeFormat will change its datasourceLogin and Classloader 
+        // bug261072: clone the project since readObjectPersistenceRuntimeFormat will change its datasourceLogin and Classloader
         return readObjectPersistenceRuntimeFormat(document, classLoader, project.clone());
     }
 
@@ -200,7 +200,7 @@ public class XMLProjectReader {
         }
         return parser;
     }
-    
+
     /**
      * PUBLIC:
      * Read the EclipseLink project deployment XML from the file or resource name.
@@ -209,7 +209,7 @@ public class XMLProjectReader {
      * Note the file must be the deployment XML, not the Mapping Workbench project file.
      */
     public static Project read(String fileOrResourceName, ClassLoader classLoader) {
-    	if (fileOrResourceName.toLowerCase().indexOf(".mwp") != -1) {
+        if (fileOrResourceName.toLowerCase().indexOf(".mwp") != -1) {
             throw ValidationException.invalidFileName(fileOrResourceName);
         }
         InputStream fileStream = null;
@@ -268,7 +268,7 @@ public class XMLProjectReader {
         Project opmProject = new ObjectPersistenceRuntimeXMLProject_11_1_1();
         return readObjectPersistenceRuntimeFormat(document, classLoader, opmProject);
     }
-    
+
     /**
      * Read a project in the format of an ObjectPersistenceRuntimeXMLProject.
      * This could include a TopLink 11.1.1 project or a TopLink 10.1.3 project
@@ -298,7 +298,7 @@ public class XMLProjectReader {
         }
         return project;
     }
-    
+
     /**
      * PUBLIC:
      * Read the EclipseLink project deployment XML from the reader on the file.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,70 +26,70 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
  */
 public final class SubExpression extends AbstractSingleEncapsulatedExpression {
 
-	/**
-	 * The {@link JPQLQueryBNF} coming from the parent that is used to parse the next portion of the query.
-	 */
-	private JPQLQueryBNF queryBNF;
+    /**
+     * The {@link JPQLQueryBNF} coming from the parent that is used to parse the next portion of the query.
+     */
+    private JPQLQueryBNF queryBNF;
 
-	/**
-	 * Creates a new <code>SubExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param queryBNF The BNF coming from the parent that is used to parse the next portion of the query
-	 */
-	public SubExpression(AbstractExpression parent, JPQLQueryBNF queryBNF) {
-		super(parent, ExpressionTools.EMPTY_STRING);
-		this.queryBNF = queryBNF;
-	}
+    /**
+     * Creates a new <code>SubExpression</code>.
+     *
+     * @param parent The parent of this expression
+     * @param queryBNF The BNF coming from the parent that is used to parse the next portion of the query
+     */
+    public SubExpression(AbstractExpression parent, JPQLQueryBNF queryBNF) {
+        super(parent, ExpressionTools.EMPTY_STRING);
+        this.queryBNF = queryBNF;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean areLogicalIdentifiersSupported() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean areLogicalIdentifiersSupported() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getEncapsulatedExpressionQueryBNFId() {
-		return queryBNF.getId();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getEncapsulatedExpressionQueryBNFId() {
+        return queryBNF.getId();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPQLQueryBNF findQueryBNF(Expression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JPQLQueryBNF findQueryBNF(Expression expression) {
 
-		if (hasExpression() && (getExpression().isAncestor(expression))) {
-			return queryBNF;
-		}
+        if (hasExpression() && (getExpression().isAncestor(expression))) {
+            return queryBNF;
+        }
 
-		return getParent().findQueryBNF(expression);
-	}
+        return getParent().findQueryBNF(expression);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return queryBNF;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return queryBNF;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean handleCollection(JPQLQueryBNF queryBNF) {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean handleCollection(JPQLQueryBNF queryBNF) {
+        return true;
+    }
 }

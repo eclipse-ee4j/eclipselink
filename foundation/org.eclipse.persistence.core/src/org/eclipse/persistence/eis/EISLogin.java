@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.eis;
 
 import javax.resource.cci.*;
@@ -19,22 +19,22 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Session;
 
 /**
- * <p>An <code>EISLogin</code> defines connection information and datasource 
- * properties.  There are three ways to connect to an EIS datasource through 
+ * <p>An <code>EISLogin</code> defines connection information and datasource
+ * properties.  There are three ways to connect to an EIS datasource through
  * EclipseLink EIS:
  * <ul>
- * <li>Provide a JNDI name to the ConnectionFactory and use the default 
+ * <li>Provide a JNDI name to the ConnectionFactory and use the default
  * getConnection
- * <li>Provide a JNDI name to the ConnectionFactory and a driver specific 
+ * <li>Provide a JNDI name to the ConnectionFactory and a driver specific
  * ConnectionSpec to pass to the getConnection
- * <li>Connect in a non-managed way directly to the driver specific 
+ * <li>Connect in a non-managed way directly to the driver specific
  * ConnectionFactory
  * </ul>
- *  
- * <p> A <code>EISConnectionSpec</code> must be provided to define how to 
+ *
+ * <p> A <code>EISConnectionSpec</code> must be provided to define how to
  * connect to the EIS adapter.
  *
- * <p> The EIS platform can be used to provide datasource/driver specific 
+ * <p> The EIS platform can be used to provide datasource/driver specific
  * behavior such as InteractionSpec and Record conversion.
  *
  * @see EISConnectionSpec
@@ -79,7 +79,7 @@ public class EISLogin extends DatasourceLogin {
      */
     public void setPassword(String password) {
         // Avoid encryption
-        // Bug 4117441 - Secure programming practices, store password in char[]        
+        // Bug 4117441 - Secure programming practices, store password in char[]
         if (password != null) {
             setProperty("password", password.toCharArray());
         } else {

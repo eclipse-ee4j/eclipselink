@@ -17,7 +17,7 @@
     <entity class="CKeyEntityC"/>
     <entity class="MachineState"/>
     <entity class="UniqueConstraintsEntity1"/>
-    
+
     <entity class="UniqueConstraintsEntity2">
         <table name="DDL_UCENTITY2">
             <unique-constraint>
@@ -42,16 +42,16 @@
         </index>
     </entity>
     <entity class="Currency">
-		<attributes>
-			<id name="id">
-				<generated-value />
-			</id>
-		</attributes>
-	</entity>
-	<embeddable class="Money">
-		<attributes>
-			<many-to-one name="currency"></many-to-one>
-		</attributes>
-	</embeddable>
+        <attributes>
+            <id name="id">
+                <generated-value />
+            </id>
+        </attributes>
+    </entity>
+    <embeddable class="Money">
+        <attributes>
+            <many-to-one name="currency"></many-to-one>
+        </attributes>
+    </embeddable>
     <embeddable class="ThreadInfo"/>
 </entity-mappings>

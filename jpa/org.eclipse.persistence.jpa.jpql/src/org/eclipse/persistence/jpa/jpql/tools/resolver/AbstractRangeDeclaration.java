@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,47 +30,47 @@ import org.eclipse.persistence.jpa.jpql.parser.Join;
  */
 public abstract class AbstractRangeDeclaration extends Declaration {
 
-	/**
-	 * The list of <b>JOIN</b> expressions that are declared in the same declaration than the range
-	 * variable declaration represented by this declaration.
-	 */
-	protected List<Join> joins;
+    /**
+     * The list of <b>JOIN</b> expressions that are declared in the same declaration than the range
+     * variable declaration represented by this declaration.
+     */
+    protected List<Join> joins;
 
-	/**
-	 * Creates a new <code>AbstractRangeDeclaration</code>.
-	 */
-	public AbstractRangeDeclaration() {
-		super();
-	}
+    /**
+     * Creates a new <code>AbstractRangeDeclaration</code>.
+     */
+    public AbstractRangeDeclaration() {
+        super();
+    }
 
-	/**
-	 * Adds the given {@link Join}.
-	 *
-	 * @param join The {@link Join} that is declared in the range variable declaration
-	 */
-	protected void addJoin(Join join) {
-		if (joins == null) {
-			joins = new LinkedList<Join>();
-		}
-		joins.add(join);
-	}
+    /**
+     * Adds the given {@link Join}.
+     *
+     * @param join The {@link Join} that is declared in the range variable declaration
+     */
+    protected void addJoin(Join join) {
+        if (joins == null) {
+            joins = new LinkedList<Join>();
+        }
+        joins.add(join);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Join> getJoins() {
-		if (joins == null) {
-			return Collections.emptyList();
-		}
-		return joins;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Join> getJoins() {
+        if (joins == null) {
+            return Collections.emptyList();
+        }
+        return joins;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasJoins() {
-		return (joins != null);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasJoins() {
+        return (joins != null);
+    }
 }

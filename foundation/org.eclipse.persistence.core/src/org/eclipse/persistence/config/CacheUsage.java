@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.config;
 
 /**
@@ -18,22 +18,22 @@ package org.eclipse.persistence.config;
  * By default for JPA queries the cache is not checked before accessing the database,
  * but is used after accessing the database to avoid re-building the objects and avoid
  * accessing the database for relationships.
- * 
+ *
  * Cache usage can also be used for modify Update-All and Delete-All queries.
  * For modify-all queries it effects how the cache is updated, either NoCache or Invalidate.
  * By default modify-all queries invalidate the cache.
- * 
+ *
  * The class contains all the valid values for QueryHints.CACHE_USAGE query hint.
- * 
+ *
  * <p>JPA Query Hint Usage:
- * 
+ *
  * <p><code>query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);</code>
- * <p>or 
+ * <p>or
  * <p><code>@QueryHint(name=QueryHints.CACHE_USAGE, value=CacheUsage.CheckCacheOnly)</code>
- * 
+ *
  * <p>Hint values are case-insensitive.
  * "" could be used instead of default value CacheUsage.DEFAULT.
- * 
+ *
  * @see QueryHints
  */
 public class CacheUsage {
@@ -80,6 +80,6 @@ public class CacheUsage {
      * Configures a modify-all query to invalidate the cache.
      */
     public static final String  Invalidate = "Invalidate";
- 
+
     public static final String DEFAULT = UseEntityDefault;
 }

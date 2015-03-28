@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -181,7 +181,7 @@ public class TestPersist extends JPA1Base {
             env.beginTransaction(em);
             em.persist(dep);
             env.commitTransactionAndClear(em);
-            
+
             env.beginTransaction(em);
             dep = em.find(Department.class, new Integer(id1));
             em.remove(dep);
@@ -193,11 +193,11 @@ public class TestPersist extends JPA1Base {
             // now, the entity should be managed again
             dep.setName("REINVIGORATED");
             env.commitTransactionAndClear(em);
-            
+
             dep = em.find(Department.class, new Integer(id1));
             verify(dep != null, "department not found");
             verify("REINVIGORATED".equals(dep.getName()), "department has wrong name: " + dep.getName());
-            
+
             // 2. persist a new department, remove it and call persist
             env.beginTransaction(em);
             final int id2 = (flushBeforePersist ? 100 : 0) + 22;
@@ -210,7 +210,7 @@ public class TestPersist extends JPA1Base {
             em.persist(dep);
             dep.setName("REINVIGORATED");
             env.commitTransactionAndClear(em);
-            
+
             dep = em.find(Department.class, new Integer(id2));
             verify(dep != null, "department not found");
             verify("REINVIGORATED".equals(dep.getName()), "department has wrong name: " + dep.getName());
@@ -242,7 +242,7 @@ public class TestPersist extends JPA1Base {
     @Test
     public void testPersistDetached() throws SQLException {
         /*
-         * <li>If X is a detached object, the EntityExistsException may be thrown when the persist operation is invoked, 
+         * <li>If X is a detached object, the EntityExistsException may be thrown when the persist operation is invoked,
          * or the EntityExistsException or another PersistenceException may be thrown at flush or commit time.</li>
          */
         final JPAEnvironment env = getEnvironment();
@@ -511,7 +511,7 @@ public class TestPersist extends JPA1Base {
             env.beginTransaction(em);
             em.persist(timestamp);
             env.commitTransaction(em);
-            
+
             env.beginTransaction(em);
             final Long id1 = timestamp.getId();
             timestamp = em.find(Timestamp.class, id1);
@@ -519,18 +519,18 @@ public class TestPersist extends JPA1Base {
             if (removeExecuted) {
                 em.flush();
             }
-            
+
             em.persist(timestamp);
-            
+
             env.commitTransactionAndClear(em);
             final Long id2 = timestamp.getId();
-            
+
             Assert.assertFalse(id2.equals(id1));
-            
+
             Assert.assertNull(em.find(Timestamp.class, id1));
             Assert.assertNotNull(em.find(Timestamp.class, id1));
 
-            
+
         } finally {
             closeEntityManager(em);
         }

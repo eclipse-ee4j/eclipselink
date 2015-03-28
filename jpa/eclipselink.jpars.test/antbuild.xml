@@ -299,7 +299,7 @@
         <run_jpars_tests testclass="${test.class}" runpathref="jparstest.run.path"/>
     </target>
 
-	<target name="test-javaee" depends="create-war" description="run jpars tests">
+    <target name="test-javaee" depends="create-war" description="run jpars tests">
         <property name="SERVER_URL" value="http://localhost:7001"/>
         <property name="JPARS_VERSION" value="v1.0"/>
         <echo message="Server url is ${SERVER_URL}"/>
@@ -362,12 +362,12 @@
         <delete dir="stage" includeEmptyDirs="true" failonerror="false"/>
     </target>
 
-	<!-- Application server handling tasks-->
-	<target name="server-install">
+    <!-- Application server handling tasks-->
+    <target name="server-install">
         <ant antfile="${jparstest.basedir}/${server.name}.xml" target="${server.name}-install" inheritRefs="true"/>
     </target>
 
-	<target name="server-start" depends="detect-os">
+    <target name="server-start" depends="detect-os">
         <ant antfile="${jparstest.basedir}/${server.name}.xml" target="${server.name}-start" inheritRefs="true"/>
     </target>
 

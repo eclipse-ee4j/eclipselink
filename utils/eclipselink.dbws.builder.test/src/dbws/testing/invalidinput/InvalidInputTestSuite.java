@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,10 +29,10 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class InvalidInputTestSuite extends DBWSTestSuite {
-	private static String WARNING_MSG_1 = "WARNING: No tables were found matching the following:  [%.TABLETYPE_INVALID]";
-	private static String WARNING_MSG_2 = "WARNING: No procedures were found matching the following:  [CREATE_SOMETHING]";
+    private static String WARNING_MSG_1 = "WARNING: No tables were found matching the following:  [%.TABLETYPE_INVALID]";
+    private static String WARNING_MSG_2 = "WARNING: No procedures were found matching the following:  [CREATE_SOMETHING]";
 
-	@BeforeClass
+    @BeforeClass
     public static void setUp() throws WSDLException {
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -53,13 +53,13 @@ public class InvalidInputTestSuite extends DBWSTestSuite {
                   "</property>" +
               "</properties>" +
               "<procedure " +
-		          "name=\"Blah\" " +
-		          "procedurePattern=\"CREATE_SOMETHING\" " +
-		      "/>" +
+                  "name=\"Blah\" " +
+                  "procedurePattern=\"CREATE_SOMETHING\" " +
+              "/>" +
               "<table " +
-	              "schemaPattern=\"%\" " +
-	              "tableNamePattern=\"TABLETYPE_INVALID\" " +
-	          "/>" +
+                  "schemaPattern=\"%\" " +
+                  "tableNamePattern=\"TABLETYPE_INVALID\" " +
+              "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".", true);
@@ -67,10 +67,10 @@ public class InvalidInputTestSuite extends DBWSTestSuite {
 
     @Test
     public void testWarningLogs() {
-		assertTrue("No WARNINGs logged", dbwsLogger.hasWarnings());
-		List<String> warnings = dbwsLogger.getWarnings();
-		assertTrue("Expected [2] WARNING, but was [" + warnings.size() + "]", warnings.size() == 2);
-		assertTrue("Expected WARNING message '" + WARNING_MSG_1 + "', but was '" + warnings.get(0) + "'", WARNING_MSG_1.equals(warnings.get(0)));   
-		assertTrue("Expected WARNING message '" + WARNING_MSG_2 + "', but was '" + warnings.get(1) + "'", WARNING_MSG_2.equals(warnings.get(1)));   
+        assertTrue("No WARNINGs logged", dbwsLogger.hasWarnings());
+        List<String> warnings = dbwsLogger.getWarnings();
+        assertTrue("Expected [2] WARNING, but was [" + warnings.size() + "]", warnings.size() == 2);
+        assertTrue("Expected WARNING message '" + WARNING_MSG_1 + "', but was '" + warnings.get(0) + "'", WARNING_MSG_1.equals(warnings.get(0)));
+        assertTrue("Expected WARNING message '" + WARNING_MSG_2 + "', but was '" + warnings.get(1) + "'", WARNING_MSG_2.equals(warnings.get(1)));
     }
 }

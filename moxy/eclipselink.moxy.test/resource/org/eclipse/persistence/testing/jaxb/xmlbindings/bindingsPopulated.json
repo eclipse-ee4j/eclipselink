@@ -19,7 +19,7 @@
             "name" : "someSchemaType2",
             "namespace" : "someSchemaTypeNamespace2",
             "type" : "someSchemaType2"
-	 } ]
+     } ]
       },
       "xml-java-type-adapters" : {
          "xml-java-type-adapter" : [ {
@@ -79,15 +79,15 @@
                   "java-attribute" : "theJavaAttributeValue2",
                   "name" : "elementName2"
                }
-	       ],
+           ],
                "xml-attribute": [ {
-	          "java-attribute":"javaAttribute",
-		  "name":"attributename1",
-		  "namespace":"somenamespace",
-		  "required":true,
-		  "read-only":true,
-		  "container-type":"someContainerType"
-		} ]
+              "java-attribute":"javaAttribute",
+          "name":"attributename1",
+          "namespace":"somenamespace",
+          "required":true,
+          "read-only":true,
+          "container-type":"someContainerType"
+        } ]
             }
          } ]
       }

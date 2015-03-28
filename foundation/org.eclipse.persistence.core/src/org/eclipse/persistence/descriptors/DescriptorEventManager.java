@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.lang.reflect.*;
@@ -27,10 +27,10 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
- * <p><b>Purpose</b>: The event manager allows for a descriptor to specify that 
- * an object should be notified when a EclipseLink event occurs.  It also determines 
- * how the object will be notified. To specify an event a method name can be 
- * registered to be called on the object when the event occurs. Events can be 
+ * <p><b>Purpose</b>: The event manager allows for a descriptor to specify that
+ * an object should be notified when a EclipseLink event occurs.  It also determines
+ * how the object will be notified. To specify an event a method name can be
+ * registered to be called on the object when the event occurs. Events can be
  * used to extend the EclipseLink reading and writing behavior.
  * <p>
  * These events include:
@@ -52,7 +52,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     protected Vector eventSelectors;
     protected transient Vector eventMethods;
     protected transient Vector eventListeners;
-    
+
     // EJB 3.0 support for event listeners.
     protected transient Vector defaultEventListeners;
     protected transient Vector entityListenerEventListeners;
@@ -61,11 +61,11 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * Listeners that are fired after all other listeners are fired
      */
     protected transient List<DescriptorEventListener>  internalListeners = new ArrayList<DescriptorEventListener>();
-    
+
     // EJB 3.0 support - cache our parent event managers.
     protected transient Vector entityEventManagers;
     protected transient Vector entityListenerEventManagers;
-    
+
     // EJB 3.0 support for event listener configuration flags.
     protected boolean excludeDefaultListeners;
     protected boolean excludeSuperclassListeners;
@@ -92,7 +92,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     // CR#2660080 was missing aboutToDelete
     public static final int AboutToDeleteEvent = 14;
-    
+
     // EJB 3.0 events
     public static final int PrePersistEvent = 15;
     public static final int PreRemoveEvent = 16;
@@ -123,10 +123,10 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     public void addDefaultEventListener(DescriptorEventListener listener) {
         getDefaultEventListeners().addElement(listener);
     }
-    
+
     /**
      * PUBLIC:
-     * EJB 3.0 support for lifecycle callback events defined on an entity 
+     * EJB 3.0 support for lifecycle callback events defined on an entity
      * listener class.
      */
     public void addEntityListenerEventListener(DescriptorEventListener listener) {
@@ -135,7 +135,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * Listener objects can be registered with the event manager to be notified 
+     * Listener objects can be registered with the event manager to be notified
      * when an event occurs on any instance of the descriptor's class.
      */
     public void addListener(DescriptorEventListener listener) {
@@ -162,7 +162,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     public void addEntityListenerHolder(SerializableDescriptorEventHolder holder) {
         this.getDescriptorEventHolders().add(holder);
     }
-    
+
     /**
      * INTERNAL:
      * Clone the manager and its private parts.
@@ -184,9 +184,9 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * INTERNAL:
-     * This method was added to allow JPA project caching so that DescriptorEventListeners could be 
+     * This method was added to allow JPA project caching so that DescriptorEventListeners could be
      * serialized and re-added to the EventManager using a SerializableDescriptorEventHolder.
-     * @param classLoader 
+     * @param classLoader
      */
     public void processDescriptorEventHolders(AbstractSession session, ClassLoader classLoader) {
         if (this.descriptorEventHolders != null) {
@@ -198,7 +198,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * INTERNAL:
-     * EJB 3.0 support. Returns true if this event manager should exclude the 
+     * EJB 3.0 support. Returns true if this event manager should exclude the
      * invocation of the default listeners for this descriptor.
      */
     public boolean excludeDefaultListeners() {
@@ -207,14 +207,14 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * INTERNAL:
-     * EJB 3.0 support. Returns true is this event manager should exclude the 
-     * invocation of the listeners defined by the entity listener classes for 
+     * EJB 3.0 support. Returns true is this event manager should exclude the
+     * invocation of the listeners defined by the entity listener classes for
      * the superclasses of this descriptor.
      */
     public boolean excludeSuperclassListeners() {
         return excludeSuperclassListeners;
     }
-    
+
     /**
      * INTERNAL:
      * Execute the given selector with the event as argument.
@@ -270,8 +270,8 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     }
 
     /**
-     * Find the method corresponding to the event selector. The method MUST take 
-     * DescriptorEvent as argument, Session is also supported as argument for 
+     * Find the method corresponding to the event selector. The method MUST take
+     * DescriptorEvent as argument, Session is also supported as argument for
      * backward compatibility.
      */
     protected Method findMethod(int selector) throws DescriptorException {
@@ -290,7 +290,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * INTERNAL:
-     * bug 251180 - Missing method org.eclipse.persistence.descriptors.DescriptorEventManager#setAboutToDeleteSelector 
+     * bug 251180 - Missing method org.eclipse.persistence.descriptors.DescriptorEventManager#setAboutToDeleteSelector
      */
     public String getAboutToDeleteSelector() {
         return (String)getEventSelectors().elementAt(AboutToDeleteEvent);
@@ -318,10 +318,10 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         if (defaultEventListeners == null) {
             defaultEventListeners = new NonSynchronizedVector();
         }
-        
+
         return defaultEventListeners;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -331,7 +331,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * INTERNAL:
-     * used by JPA project caching to store DescriptorEventListener representations that can build the underlying 
+     * used by JPA project caching to store DescriptorEventListener representations that can build the underlying
      * DescriptorEventListener and add it to the EventManager.
      */
     public java.util.List<SerializableDescriptorEventHolder> getDescriptorEventHolders() {
@@ -343,7 +343,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * INTERNAL:
-     * used by JPA project caching to store DescriptorEventListener representations that can build the underlying 
+     * used by JPA project caching to store DescriptorEventListener representations that can build the underlying
      * DescriptorEventListener and add it to the EventManager.
      */
     public void setDescriptorEventHolders(java.util.List<SerializableDescriptorEventHolder> descriptorEventHolders) {
@@ -357,7 +357,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     public DescriptorEventListener getEntityEventListener() {
         return entityEventListener;
     }
-    
+
     /**
      * INTERNAL:
      * EJB 3.0 support. Returns the entity listener event listeners.
@@ -366,10 +366,10 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         if (entityListenerEventListeners == null) {
             entityListenerEventListeners = new Vector();
         }
-        
+
         return entityListenerEventListeners;
     }
-    
+
     /**
      * PUBLIC:
      * Returns the Listener objects that have been added.
@@ -523,16 +523,16 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * If nothing is listening to event they can be avoided.
      */
     public boolean hasAnyEventListeners() {
-        // Check listeners in case of collection added to directly as occurs 
-        // for aggregates that have a clone of the event manager but not the 
+        // Check listeners in case of collection added to directly as occurs
+        // for aggregates that have a clone of the event manager but not the
         // listeners.
         return hasAnyEventListeners || hasAnyListeners();
-    }   
-    
+    }
+
     protected boolean hasAnyListeners() {
         return (eventListeners != null) && (!eventListeners.isEmpty());
     }
-    
+
     /**
      * INTERNAL:
      * This method will return true, if this event manager has default listeners
@@ -542,28 +542,28 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     public boolean hasDefaultEventListeners() {
         return defaultEventListeners != null && ! defaultEventListeners.isEmpty() && ! excludeDefaultListeners;
     }
-    
-    /** 
+
+    /**
      * INTERNAL:
-     * EJB 3.0 support. Return true if this event manager has any entity event 
+     * EJB 3.0 support. Return true if this event manager has any entity event
      * listeners.
      */
     public boolean hasEntityEventListener() {
         return entityEventListener != null;
     }
-    
-    /** 
+
+    /**
      * INTERNAL:
-     * Internal event support.  Return true if this event manager has any internal 
+     * Internal event support.  Return true if this event manager has any internal
      * listener event listeners.
      */
     public boolean hasInternalEventListeners() {
         return internalListeners != null && internalListeners.size() > 0;
     }
 
-    /** 
+    /**
      * INTERNAL:
-     * EJB 3.0 support. Return true if this event manager has any entity 
+     * EJB 3.0 support. Return true if this event manager has any entity
      * listener event listeners.
      */
     public boolean hasEntityListenerEventListeners() {
@@ -581,7 +581,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         if (hasEntityEventListener() || hasEntityListenerEventListeners() || hasDefaultEventListeners() || hasInternalEventListeners()) {
             setHasAnyEventListeners(true);
         }
-        
+
         // Initialize if events are required at all.
         if (hasAnyListeners() || DescriptorEventListener.class.isAssignableFrom(getDescriptor().getJavaClass())) {
             setHasAnyEventListeners(true);
@@ -599,7 +599,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         if (getDescriptor().isChildDescriptor()) {
             DescriptorEventManager parentEventManager = getDescriptor().getInheritancePolicy().getParentDescriptor().getEventManager();
             if (parentEventManager.hasAnyEventListeners()) {
-                setHasAnyEventListeners(true);                
+                setHasAnyEventListeners(true);
             }
 
             for (int index = 0; index < NumberOfEvents; index++) {
@@ -608,50 +608,50 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
                     getEventSelectors().set(index, parentEventManager.getEventSelectors().get(index));
                     getEventMethods().set(index, parentEventManager.getEventMethods().get(index));
                 }
-            }            
+            }
         }
     }
-    
+
     /**
      * INTERNAL:
-     * EJB 3.0 support. Builds our chains of descriptor event managers that will 
+     * EJB 3.0 support. Builds our chains of descriptor event managers that will
      * need to be notified. The chains are cache so we only need to build them
      * once.
      */
     protected void initializeEJB30EventManagers() {
         entityEventManagers = new NonSynchronizedVector();
         entityListenerEventManagers = new NonSynchronizedVector();
-             
+
         if (hasEntityEventListener()) {
             entityEventManagers.add(this);
         }
-        
+
         if (hasEntityListenerEventListeners()) {
             entityListenerEventManagers.add(this);
         }
-        
-        ClassDescriptor currentDescriptor = getDescriptor();     
+
+        ClassDescriptor currentDescriptor = getDescriptor();
         boolean excludeEntityListeners = excludeSuperclassListeners();
-            
+
         while (currentDescriptor.isChildDescriptor()) {
             currentDescriptor = currentDescriptor.getInheritancePolicy().getParentDescriptor();
-            
+
             DescriptorEventManager eventManager = currentDescriptor.getEventManager();
-            
+
             if (eventManager.hasEntityEventListener()) {
                 entityEventManagers.add(eventManager);
             }
-            
+
             if (eventManager.hasEntityListenerEventListeners()) {
                 if (!excludeEntityListeners) {
                     entityListenerEventManagers.add(eventManager);
                 }
             }
-            
+
             excludeEntityListeners = eventManager.excludeSuperclassListeners();
         }
     }
-    
+
     /**
      * INTERNAL:
      * Notify the EJB 3.0 event listeners.
@@ -668,7 +668,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         // Step 2 - Notify the Entity Listener's first, top -> down.
         for (int index = entityListenerEventManagers.size() - 1; index >= 0; index--) {
             Vector entityListenerEventListeners = ((DescriptorEventManager) entityListenerEventManagers.get(index)).getEntityListenerEventListeners();
-                 
+
             for (int i = 0; i < entityListenerEventListeners.size(); i++) {
                 DescriptorEventListener listener = (DescriptorEventListener) entityListenerEventListeners.get(i);
                 notifyListener(listener, event);
@@ -692,7 +692,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Big ugly case statement to notify listeners.
@@ -797,26 +797,26 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     public void removeListener(DescriptorEventListener listener) {
         getEventListeners().removeElement(listener);
     }
-    
+
     /**
      * PUBLIC:
-     * A method can be registered to be called when an object's row it about to 
+     * A method can be registered to be called when an object's row it about to
      * be inserted. This uses the optional event argument of the DatabaseRow.
-     * This is different from pre/postInsert because it occurs after the row has 
-     * already been built. This event can be used to modify the row before 
+     * This is different from pre/postInsert because it occurs after the row has
+     * already been built. This event can be used to modify the row before
      * insert, such as adding a user inserted by.
      */
-    //bug 251180: Missing method org.eclipse.persistence.descriptors.DescriptorEventManager#setAboutToDeleteSelector 
+    //bug 251180: Missing method org.eclipse.persistence.descriptors.DescriptorEventManager#setAboutToDeleteSelector
     public void setAboutToDeleteSelector(String aboutToDeleteSelector) {
         getEventSelectors().setElementAt(aboutToDeleteSelector, AboutToDeleteEvent);
     }
 
     /**
      * PUBLIC:
-     * A method can be registered to be called when an object's row it about to 
+     * A method can be registered to be called when an object's row it about to
      * be inserted. This uses the optional event argument of the DatabaseRow.
-     * This is different from pre/postInsert because it occurs after the row has 
-     * already been built. This event can be used to modify the row before 
+     * This is different from pre/postInsert because it occurs after the row has
+     * already been built. This event can be used to modify the row before
      * insert, such as adding a user inserted by.
      */
     public void setAboutToInsertSelector(String aboutToInsertSelector) {
@@ -825,11 +825,11 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called when an object's row it about to 
+     * A method can be registered to be called when an object's row it about to
      * be updated. This uses the optional event argument of the DatabaseRow.
-     * This is different from pre/postUpdate because it occurs after the row has 
-     * already been built, and it ONLY called if the update is required (changed 
-     * within a unit of work), as the other occur ALWAYS. This event can be used 
+     * This is different from pre/postUpdate because it occurs after the row has
+     * already been built, and it ONLY called if the update is required (changed
+     * within a unit of work), as the other occur ALWAYS. This event can be used
      * to modify the row before insert, such as adding a user inserted by.
      */
     public void setAboutToUpdateSelector(String aboutToUpdateSelector) {
@@ -843,7 +843,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     public void setDescriptor(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
     }
-    
+
     /**
      * PUBLIC:
      * EJB 3.0 support for lifecycle callback events defined on an entity class.
@@ -863,11 +863,11 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     protected void setEventSelectors(Vector eventSelectors) {
         this.eventSelectors = eventSelectors;
     }
-    
+
     /**
      * INTERNAL:
-     * EJB 3.0 support. Default listeners apply to all entities in a persistence 
-     * unit. Set this flag to true to exclude the invocation of the default 
+     * EJB 3.0 support. Default listeners apply to all entities in a persistence
+     * unit. Set this flag to true to exclude the invocation of the default
      * listeners for this descriptor.
      */
     public void setExcludeDefaultListeners(boolean excludeDefaultListeners) {
@@ -876,16 +876,16 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * INTERNAL:
-     * EJB 3.0 support. If multiple entity classes in an inheritance hierarchy 
-     * define entity listeners, the listeners defined for a superclass are 
-     * invoked before the listeners defined for its subclasses. Set this flag 
-     * to true to exclude the invocation of the listeners defined by the entity 
+     * EJB 3.0 support. If multiple entity classes in an inheritance hierarchy
+     * define entity listeners, the listeners defined for a superclass are
+     * invoked before the listeners defined for its subclasses. Set this flag
+     * to true to exclude the invocation of the listeners defined by the entity
      * listener classes for the superclasses of this descriptor.
      */
     public void setExcludeSuperclassListeners(boolean excludeSuperclassListeners) {
         this.excludeSuperclassListeners = excludeSuperclassListeners;
     }
-    
+
     /**
      * INTERNAL:
      * Set if the event manager has any event listeners, or event methods.
@@ -897,10 +897,10 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object that has just been 
-     * built from the database. This uses the optional event argument for the 
-     * DatabaseRow. This event can be used to correctly initialize an object's 
-     * non-persistent attributes or to perform complex optimizations or 
+     * A method can be registered to be called on a object that has just been
+     * built from the database. This uses the optional event argument for the
+     * DatabaseRow. This event can be used to correctly initialize an object's
+     * non-persistent attributes or to perform complex optimizations or
      * mappings. This event is called whenever an object is built.
      */
     public void setPostBuildSelector(String postBuildSelector) {
@@ -909,9 +909,9 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object that has just been 
-     * cloned into a unit of work. This uses the optional event argument for the 
-     * original object (the source object is the clone). This event can be used 
+     * A method can be registered to be called on a object that has just been
+     * cloned into a unit of work. This uses the optional event argument for the
+     * original object (the source object is the clone). This event can be used
      * to correctly initialize an object's non-persistent attributes.
      */
     public void setPostCloneSelector(String postCloneSelector) {
@@ -920,8 +920,8 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object that has just been 
-     * deleted from the database. This event can notify/remove any dependents 
+     * A method can be registered to be called on a object that has just been
+     * deleted from the database. This event can notify/remove any dependents
      * on the object.
      */
     public void setPostDeleteSelector(String postDeleteSelector) {
@@ -930,9 +930,9 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object that has just been 
-     * inserted into the database. This event can be used to notify any 
-     * dependent on the object, or to update information not accessible until 
+     * A method can be registered to be called on a object that has just been
+     * inserted into the database. This event can be used to notify any
+     * dependent on the object, or to update information not accessible until
      * the object has been inserted.
      */
     public void setPostInsertSelector(String postInsertSelector) {
@@ -941,10 +941,10 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object that has just been 
-     * merge from a unit of work. This uses the optional event argument of the 
-     * original object which is the object being merged from, the source object 
-     * is the object being merged into. This event can be used to correctly 
+     * A method can be registered to be called on a object that has just been
+     * merge from a unit of work. This uses the optional event argument of the
+     * original object which is the object being merged from, the source object
+     * is the object being merged into. This event can be used to correctly
      * initialize an object's non-persistent attributes.
      */
     public void setPostMergeSelector(String postMergeSelector) {
@@ -953,10 +953,10 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object that has just been 
-     * refreshed from the database. This uses the optional event argument of 
-     * the DatabaseRow. This event can be used to correctly initialize an 
-     * object's non-persistent attributes or to perform complex optimizations or 
+     * A method can be registered to be called on a object that has just been
+     * refreshed from the database. This uses the optional event argument of
+     * the DatabaseRow. This event can be used to correctly initialize an
+     * object's non-persistent attributes or to perform complex optimizations or
      * mappings. This event is only called on refreshes of existing objects.
      */
     public void setPostRefreshSelector(String postRefreshSelector) {
@@ -965,7 +965,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object that has just been 
+     * A method can be registered to be called on a object that has just been
      * updated into the database.
      */
     public void setPostUpdateSelector(String postUpdateSelector) {
@@ -974,12 +974,12 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object that has just been 
-     * written to the database. This event is raised on any registered object 
-     * in a unit of work, even if it has not changed, refer to the 
-     * "aboutToUpdate" selector if it is required for the event to be raised 
-     * only when the object has been changed. This will be called on all inserts 
-     * and updates, after the "postInsert/Update" event has been raised. This 
+     * A method can be registered to be called on a object that has just been
+     * written to the database. This event is raised on any registered object
+     * in a unit of work, even if it has not changed, refer to the
+     * "aboutToUpdate" selector if it is required for the event to be raised
+     * only when the object has been changed. This will be called on all inserts
+     * and updates, after the "postInsert/Update" event has been raised. This
      * event can be used to notify any dependent on the object.
      */
     public void setPostWriteSelector(String postWriteSelector) {
@@ -988,8 +988,8 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object that is going to be 
-     * deleted from the database. This event can notify/remove any dependents 
+     * A method can be registered to be called on a object that is going to be
+     * deleted from the database. This event can notify/remove any dependents
      * on the object.
      */
     public void setPreDeleteSelector(String preDeleteSelector) {
@@ -998,18 +998,18 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object that is going to be 
-     * inserted into the database. This event can be used to notify any 
-     * dependent on the object or acquire the object's id through a custom 
+     * A method can be registered to be called on a object that is going to be
+     * inserted into the database. This event can be used to notify any
+     * dependent on the object or acquire the object's id through a custom
      * mechanism.
      */
     public void setPreInsertSelector(String preInsertSelector) {
         getEventSelectors().setElementAt(preInsertSelector, PreInsertEvent);
     }
-    
+
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object when that object has 
+     * A method can be registered to be called on a object when that object has
      * the create operation applied to it.
      */
     public void setPrePersistSelector(String prePersistSelector) {
@@ -1018,7 +1018,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object when that object has 
+     * A method can be registered to be called on a object when that object has
      * the remove operation applied to it.
      */
     public void setPreRemoveSelector(String preRemoveSelector) {
@@ -1027,11 +1027,11 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object that is going to be 
-     * updated into the database. This event is raised on any registered object 
-     * in a unit of work, even if it has not changed, refer to the 
-     * "aboutToUpdate" selector if it is required for the event to be raised 
-     * only when the object has been changed. This event can be used to notify 
+     * A method can be registered to be called on a object that is going to be
+     * updated into the database. This event is raised on any registered object
+     * in a unit of work, even if it has not changed, refer to the
+     * "aboutToUpdate" selector if it is required for the event to be raised
+     * only when the object has been changed. This event can be used to notify
      * any dependent on the object.
      */
     public void setPreUpdateSelector(String preUpdateSelector) {
@@ -1040,12 +1040,12 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /**
      * PUBLIC:
-     * A method can be registered to be called on a object that is going to be 
-     * written to the database. This event is raised on any registered object 
-     * in a unit of work, even if it has not changed, refer to the 
-     * "aboutToUpdate" selector if it is required for the event to be raised 
-     * only when the object has been changed. This will be called on all inserts 
-     * and updates, before the "preInsert/Update" event has been raised. This 
+     * A method can be registered to be called on a object that is going to be
+     * written to the database. This event is raised on any registered object
+     * in a unit of work, even if it has not changed, refer to the
+     * "aboutToUpdate" selector if it is required for the event to be raised
+     * only when the object has been changed. This will be called on all inserts
+     * and updates, before the "preInsert/Update" event has been raised. This
      * event can be used to notify any dependent on the object.
      */
     public void setPreWriteSelector(String preWriteSelector) {

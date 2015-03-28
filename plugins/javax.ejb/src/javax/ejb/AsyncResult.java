@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,7 +52,7 @@ import java.util.concurrent.*;
   * <p>
   * Note that this object is not passed to the client.  It is
   * merely a convenience for providing the result value to the container.
-  * Therefore, none of its instance methods should be called by the 
+  * Therefore, none of its instance methods should be called by the
   * application.
   *
   * @since EJB 3.1
@@ -71,7 +71,7 @@ public final class AsyncResult<V> implements Future<V> {
      */
     public boolean cancel(boolean mayInterruptIfRunning) {
         throw new java.lang.IllegalStateException
-	    ("Object does not represent an acutal Future");
+        ("Object does not represent an acutal Future");
     }
 
     /**
@@ -79,7 +79,7 @@ public final class AsyncResult<V> implements Future<V> {
      */
     public boolean isCancelled() {
         throw new java.lang.IllegalStateException
-	    ("Object does not represent an acutal Future");
+        ("Object does not represent an acutal Future");
     }
 
     /**
@@ -87,23 +87,23 @@ public final class AsyncResult<V> implements Future<V> {
      */
     public boolean isDone() {
         throw new java.lang.IllegalStateException
-	    ("Object does not represent an acutal Future");
+        ("Object does not represent an acutal Future");
     }
 
     /**
      * This method should not be called.  See Class-level comments.
      */
     public V get() throws InterruptedException, ExecutionException {
-	    return resultValue;
+        return resultValue;
     }
 
     /**
      * This method should not be called.  See Class-level comments.
      */
-    public V get(long timeout, TimeUnit unit) 
-	throws InterruptedException, ExecutionException, TimeoutException {
-	throw new java.lang.IllegalStateException
-	    ("Object does not represent an acutal Future");
+    public V get(long timeout, TimeUnit unit)
+    throws InterruptedException, ExecutionException, TimeoutException {
+    throw new java.lang.IllegalStateException
+        ("Object does not represent an acutal Future");
     }
 
 }

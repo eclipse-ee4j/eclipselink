@@ -11,11 +11,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Root {
 
-	@XmlElementRef(name="foo")
-	protected JAXBElement<String> foo;
-	
-	@XmlElementRef(name="bar")
-	protected JAXBElement<String> bar;
+    @XmlElementRef(name="foo")
+    protected JAXBElement<String> foo;
+
+    @XmlElementRef(name="bar")
+    protected JAXBElement<String> bar;
 
     @Override
     public boolean equals(Object obj) {
@@ -24,7 +24,7 @@ public class Root {
         Root r = (Root) obj;
         return isEqual(foo, r.foo) && isEqual(bar, r.bar);
     }
-	
+
     private boolean isEqual(JAXBElement<?> e1, JAXBElement<?> e2) {
         if (e1 != null && e2 != null) {
             boolean result =  e1.getName().equals(e2.getName()) &&

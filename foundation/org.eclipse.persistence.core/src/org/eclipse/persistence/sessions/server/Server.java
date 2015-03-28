@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.server;
 
 import org.eclipse.persistence.sessions.*;
@@ -33,7 +33,7 @@ import org.eclipse.persistence.exceptions.*;
  *    <li> Brokering client sessions.
  *    <li> Requiring the UnitOfWork to be used for modification.
  * </ul>
- * 
+ *
  * @see Server
  * @see ClientSession
  * @see UnitOfWork
@@ -176,7 +176,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * A separate read connection pool can be used to dedicate a pool of connections only for reading.
      * It can also be used to use a non-JTA DataSource for reading to avoid JTA overhead,
      * or to use a different user login for reading.
-     * 
+     *
      * @see #getReadConnectionPool
      * @see #setReadConnectionPool(ConnectionPool)
      * @see #useReadConnectionPool
@@ -193,7 +193,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * A separate read connection pool can be used to dedicate a pool of connections only for reading.
      * It can also be used to use a non-JTA DataSource for reading to avoid JTA overhead,
      * or to use a different user login for reading.
-     * 
+     *
      * @see #getReadConnectionPool
      * @see #setReadConnectionPool(ConnectionPool)
      * @see #useReadConnectionPool
@@ -207,7 +207,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * <p>
      * This type of connection pool will be created and configured automatically if
      * an external connection pooling is used.
-     * 
+     *
      * @see #getReadConnectionPool
      * @see #setReadConnectionPool(ConnectionPool)
      * @see #useReadConnectionPool
@@ -240,7 +240,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * @see #useExclusiveReadConnectionPool
      */
     public void useReadConnectionPool(int minNumberOfConnections, int maxNumberOfConnections);
-    
+
     /**
      * PUBLIC:
      * Sets the read connection pool to be a separate shared <code>ConnectionPool</code>

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.IOException;
@@ -37,7 +37,7 @@ import org.eclipse.persistence.logging.SessionLog;
  */
 public class FieldDefinition implements Serializable, Cloneable {
     protected String name;
-    /** 
+    /**
      * Java type class for the field.
      * Particular database type is generated based on platform from this.
      */
@@ -46,16 +46,16 @@ public class FieldDefinition implements Serializable, Cloneable {
      * Generic database type name for the field, which can be used instead of the Java class 'type'.
      * This is translated to a particular database type based on platform.
      */
-    protected String typeName; 
+    protected String typeName;
     /**
-     * DatabaseField stores the field name with case and delimiting information. 
-     * Used if the field needs to be found in the table metadata, for extending tables.  
-     * if null, name is used for comparison to determine if this field already exists.  
+     * DatabaseField stores the field name with case and delimiting information.
+     * Used if the field needs to be found in the table metadata, for extending tables.
+     * if null, name is used for comparison to determine if this field already exists.
      */
     protected DatabaseField field;
-    /** 
-     * Database-specific complete type definition like "VARCHAR2(50) UNIQUE NOT NULL".  
-     * If this is given, other additional type constraint fields(size, unique, null) are meaningless.  
+    /**
+     * Database-specific complete type definition like "VARCHAR2(50) UNIQUE NOT NULL".
+     * If this is given, other additional type constraint fields(size, unique, null) are meaningless.
      */
     protected String typeDefinition;
     protected int size;
@@ -300,8 +300,8 @@ public class FieldDefinition implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return the type definition of the field.
-     * This is database-specific complete type definition like "VARCHAR2(50) UNIQUE NOT NULL".  
-     * If this is given, other additional type constraint fields(size, unique, null) are meaningless.  
+     * This is database-specific complete type definition like "VARCHAR2(50) UNIQUE NOT NULL".
+     * If this is given, other additional type constraint fields(size, unique, null) are meaningless.
      */
     public String getTypeDefinition() {
         return typeDefinition;
@@ -391,7 +391,7 @@ public class FieldDefinition implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Set the DatabaseField that is associated to this FieldDefinition object.
-     * The databaesField is used when extending tables to see if this field already exists.  
+     * The databaesField is used when extending tables to see if this field already exists.
      */
     public void setDatabaseField(DatabaseField field) {
         this.field = field;
@@ -444,8 +444,8 @@ public class FieldDefinition implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Set the type definition of the field.
-     * This is database-specific complete type definition like "VARCHAR2(50) UNIQUE NOT NULL".  
-     * If this is given, other additional type constraint fields(size, unique, null) are meaningless.  
+     * This is database-specific complete type definition like "VARCHAR2(50) UNIQUE NOT NULL".
+     * If this is given, other additional type constraint fields(size, unique, null) are meaningless.
      */
     public void setTypeDefinition(String typeDefinition) {
         this.typeDefinition = typeDefinition;

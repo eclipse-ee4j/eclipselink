@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,20 +15,20 @@ package org.eclipse.persistence.testing.jaxb.employee;
 import javax.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Employee_B 
+public class Employee_B
 {
-    
+
     public static final int uid = 1234567;
-    
+
     @XmlAttribute(name="id")
     public int id;
 
     public String firstName;
 
     public String lastName;
-    
+
     private transient String blah;
-    
+
     public java.util.Calendar birthday;
 
     @XmlTransient
@@ -37,7 +37,7 @@ public class Employee_B
     @XmlElement(name="responsibility", nillable=true)
     @XmlElementWrapper(name="responsibilities")
     public java.util.Collection<String> responsibilities;
-    
+
     public String get() {
         return null;
     }
@@ -53,7 +53,7 @@ public class Employee_B
     {
         return "EMPLOYEE: " + id +" " + firstName +" " + lastName +" " + birthday;
     }
-    
+
     public boolean equals(Object object) {
          Employee_B emp = ((Employee_B)object);
         if((emp.id != this.id) ||(!(emp.firstName.equals(this.firstName))) || (!(emp.lastName.equals(this.lastName))) ||(emp.age != this.age))
@@ -84,7 +84,7 @@ public class Employee_B
         //need to compare responsibilities
         return true;
     }
-    
+
     public void setBlah(String blah) {
         this.blah = blah;
     }

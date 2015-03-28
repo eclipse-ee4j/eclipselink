@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
@@ -55,9 +55,9 @@ public interface DatabaseSession extends Session {
      * PUBLIC:
      * Add the sequence to the session.
      * Allows to add a new sequence to the session even if the session is connected.
-     * If the session is connected then the sequence is added only 
+     * If the session is connected then the sequence is added only
      * if there is no sequence with the same name already in use.
-     * Call this method before addDescriptor(s) if need to add new descriptor 
+     * Call this method before addDescriptor(s) if need to add new descriptor
      * with a new non-default sequence to connected session.
      *
      * @see #addDescriptor
@@ -188,7 +188,7 @@ public interface DatabaseSession extends Session {
      * customization including management of sequencing preallocation.
      */
     public SequencingControl getSequencingControl();
-        
+
     /**
      * PUBLIC:
      * Connect to the database using the predefined login.
@@ -372,12 +372,12 @@ public interface DatabaseSession extends Session {
      * @see #updateObject(Object)
      */
     public Object writeObject(Object domainObject) throws DatabaseException, OptimisticLockException;
-    
+
     /**
      * Return the database event listener, this allows database events to invalidate the cache.
      */
     public DatabaseEventListener getDatabaseEventListener();
-    
+
     /**
      * PUBLIC:
      * Set the database event listener, this allows database events to invalidate the cache.

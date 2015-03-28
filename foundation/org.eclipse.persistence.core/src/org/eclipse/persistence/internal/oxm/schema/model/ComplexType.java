@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.schema.model;
 
 import java.util.ArrayList;
@@ -28,15 +28,15 @@ public final class ComplexType implements TypeDefParticleOwner {
     private Choice choice;
     private Sequence sequence;
     private All all;
-    private Element owner;    
-    //simple content or complex content or typedef and attrDecls    
+    private Element owner;
+    //simple content or complex content or typedef and attrDecls
     private ComplexContent complexContent;
     private SimpleContent simpleContent;
     private Map attributesMap;
     private Annotation annotation;
     private java.util.List orderedAttributes;
 
-    public ComplexType() {        
+    public ComplexType() {
         orderedAttributes = new ArrayList();
         attributesMap = new HashMap();
     }
@@ -64,7 +64,7 @@ public final class ComplexType implements TypeDefParticleOwner {
     public boolean isAbstractValue() {
         return abstractValue;
     }
-   
+
 
     public void setAnyAttribute(AnyAttribute anyAttribute) {
         this.anyAttribute = anyAttribute;
@@ -179,7 +179,7 @@ public final class ComplexType implements TypeDefParticleOwner {
     public Annotation getAnnotation() {
         return annotation;
     }
-  
+
     public void setOrderedAttributes(java.util.List orderedAttributes) {
         this.orderedAttributes = orderedAttributes;
     }

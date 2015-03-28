@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, Oracle. All rights reserved.
+ * Copyright (c) 2008, 2015 Oracle. All rights reserved.
  *
  * This software is the proprietary information of Oracle Corporation.
  * Use is subject to license terms.
@@ -14,14 +14,14 @@ package org.eclipse.persistence.tools.workbench.scplugin.model;
  */
 public enum SequenceType
 {
-	DEFAULT,
+    DEFAULT,
 
-	/**
-	 * Designates the database sequence mechanism is used.
-	 */
-	NATIVE,
+    /**
+     * Designates the database sequence mechanism is used.
+     */
+    NATIVE,
 
-	TABLE,
-	UNARY_TABLE,
-	XML_FILE
+    TABLE,
+    UNARY_TABLE,
+    XML_FILE
 }

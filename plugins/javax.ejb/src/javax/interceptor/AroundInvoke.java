@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,32 +48,32 @@ import java.lang.annotation.Retention;
 
 /**
  * <p>Defines an interceptor method that interposes on business methods.
- * May be applied to any non-final, non-static method with a single 
+ * May be applied to any non-final, non-static method with a single
  * parameter of type {@link javax.interceptor.InvocationContext} and
- * return type {@link java.lang.Object} of the target class 
+ * return type {@link java.lang.Object} of the target class
  * (or superclass) or of any interceptor class.</p>
- * 
+ *
  * <pre>
  * &#064;AroundInvoke
  * public Object intercept(InvocationContext ctx) throws Exception { ... }
  * </pre>
- * 
- * <p>A class must not declare more than one <tt>AroundInvoke</tt> 
+ *
+ * <p>A class must not declare more than one <tt>AroundInvoke</tt>
  * method.</p>
- * 
- * <p>An <tt>AroundInvoke</tt> method can invoke any component or 
+ *
+ * <p>An <tt>AroundInvoke</tt> method can invoke any component or
  * resource that the method it is intercepting can invoke.</p>
- * 
- * <p><tt>AroundInvoke</tt> method invocations occur within the same 
- * transaction and security context as the method on which they are 
+ *
+ * <p><tt>AroundInvoke</tt> method invocations occur within the same
+ * transaction and security context as the method on which they are
  * interposing.</p>
- * 
- * <p><tt>AroundInvoke</tt> methods may throw any exceptions that are 
- * allowed by the throws clause of the method on which they are 
- * interposing. They may catch and suppress exceptions and recover 
+ *
+ * <p><tt>AroundInvoke</tt> methods may throw any exceptions that are
+ * allowed by the throws clause of the method on which they are
+ * interposing. They may catch and suppress exceptions and recover
  * by calling {@link javax.interceptor.InvocationContext#proceed()}.</p>
  *
- * @since Interceptors 1.0 
+ * @since Interceptors 1.0
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

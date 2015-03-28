@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,188 +38,188 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class DateTime extends AbstractExpression {
 
-	/**
-	 * The actual identifier found in the string representation of the JPQL query.
-	 */
-	private String identifier;
+    /**
+     * The actual identifier found in the string representation of the JPQL query.
+     */
+    private String identifier;
 
-	/**
-	 * Creates a new <code>DateTime</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public DateTime(AbstractExpression parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>DateTime</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public DateTime(AbstractExpression parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void acceptChildren(ExpressionVisitor visitor) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void acceptChildren(ExpressionVisitor visitor) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addOrderedChildrenTo(List<Expression> children) {
-		children.add(buildStringExpression(getText()));
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addOrderedChildrenTo(List<Expression> children) {
+        children.add(buildStringExpression(getText()));
+    }
 
-	/**
-	 * Returns the actual identifier found in the string representation of the JPQL query, which has
-	 * the actual case that was used.
-	 *
-	 * @return The identifier that was actually parsed
-	 */
-	public String getActualIdentifier() {
-		return identifier;
-	}
+    /**
+     * Returns the actual identifier found in the string representation of the JPQL query, which has
+     * the actual case that was used.
+     *
+     * @return The identifier that was actually parsed
+     */
+    public String getActualIdentifier() {
+        return identifier;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(FunctionsReturningDatetimeBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(FunctionsReturningDatetimeBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getText() {
-		return super.getText();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getText() {
+        return super.getText();
+    }
 
-	/**
-	 * Determines whether this {@link DateTime} represents the JPQL identifier
-	 * {@link Expression#CURRENT_DATE CURRENT_DATE}.
-	 *
-	 * @return <code>true</code> if this {@link Expression} represents
-	 * {@link Expression#CURRENT_DATE CURRENT_DATE}; <code>false</code> otherwise
-	 */
-	public boolean isCurrentDate() {
-		return getText() == CURRENT_DATE;
-	}
+    /**
+     * Determines whether this {@link DateTime} represents the JPQL identifier
+     * {@link Expression#CURRENT_DATE CURRENT_DATE}.
+     *
+     * @return <code>true</code> if this {@link Expression} represents
+     * {@link Expression#CURRENT_DATE CURRENT_DATE}; <code>false</code> otherwise
+     */
+    public boolean isCurrentDate() {
+        return getText() == CURRENT_DATE;
+    }
 
-	/**
-	 * Determines whether this {@link DateTime} represents the JPQL identifier
-	 * {@link Expression#CURRENT_TIME CURRENT_TIME}.
-	 *
-	 * @return <code>true</code> if this {@link Expression} represents
-	 * {@link Expression#CURRENT_TIME CURRENT_TIME}; <code>false</code> otherwise
-	 */
-	public boolean isCurrentTime() {
-		return getText() == CURRENT_TIME;
-	}
+    /**
+     * Determines whether this {@link DateTime} represents the JPQL identifier
+     * {@link Expression#CURRENT_TIME CURRENT_TIME}.
+     *
+     * @return <code>true</code> if this {@link Expression} represents
+     * {@link Expression#CURRENT_TIME CURRENT_TIME}; <code>false</code> otherwise
+     */
+    public boolean isCurrentTime() {
+        return getText() == CURRENT_TIME;
+    }
 
-	/**
-	 * Determines whether this {@link DateTime} represents the JPQL identifier
-	 * {@link Expression#CURRENT_TIMESTAMP CURRENT_TIMESTAMP}.
-	 *
-	 * @return <code>true</code> if this {@link Expression} represents
-	 * {@link Expression#CURRENT_TIMESTAMP CURRENT_TIMESTAMP}; <code>false</code>
-	 * otherwise
-	 */
-	public boolean isCurrentTimestamp() {
-		return getText() == CURRENT_TIMESTAMP;
-	}
+    /**
+     * Determines whether this {@link DateTime} represents the JPQL identifier
+     * {@link Expression#CURRENT_TIMESTAMP CURRENT_TIMESTAMP}.
+     *
+     * @return <code>true</code> if this {@link Expression} represents
+     * {@link Expression#CURRENT_TIMESTAMP CURRENT_TIMESTAMP}; <code>false</code>
+     * otherwise
+     */
+    public boolean isCurrentTimestamp() {
+        return getText() == CURRENT_TIMESTAMP;
+    }
 
-	/**
-	 * Determines whether this {@link DateTime} represents the JDBC escape syntax for date, time,
-	 * timestamp formats.
-	 *
-	 * @return <code>true</code> if this {@link Expression} represents a JDBC escape syntax;
-	 * <code>false</code> otherwise
-	 */
-	public boolean isJDBCDate() {
-		return getText().charAt(0) == LEFT_CURLY_BRACKET;
-	}
+    /**
+     * Determines whether this {@link DateTime} represents the JDBC escape syntax for date, time,
+     * timestamp formats.
+     *
+     * @return <code>true</code> if this {@link Expression} represents a JDBC escape syntax;
+     * <code>false</code> otherwise
+     */
+    public boolean isJDBCDate() {
+        return getText().charAt(0) == LEFT_CURLY_BRACKET;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void parse(WordParser wordParser, boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse(WordParser wordParser, boolean tolerant) {
 
-		// JDBC escape format for date/time/timestamp
-		if (wordParser.startsWith(LEFT_CURLY_BRACKET)) {
-			parseJDBCEscapeFormat(wordParser);
-		}
-		// JPQL identifiers
-		else {
-			String identifier = parseIdentifier(wordParser);
-			setText(identifier);
-			this.identifier = wordParser.moveForward(identifier);
-		}
-	}
+        // JDBC escape format for date/time/timestamp
+        if (wordParser.startsWith(LEFT_CURLY_BRACKET)) {
+            parseJDBCEscapeFormat(wordParser);
+        }
+        // JPQL identifiers
+        else {
+            String identifier = parseIdentifier(wordParser);
+            setText(identifier);
+            this.identifier = wordParser.moveForward(identifier);
+        }
+    }
 
-	private String parseIdentifier(WordParser wordParser) {
+    private String parseIdentifier(WordParser wordParser) {
 
-		int position = wordParser.position();
-		char character = wordParser.character(position + 8);
+        int position = wordParser.position();
+        char character = wordParser.character(position + 8);
 
-		if (character == 'd' || character == 'D') {
-			return CURRENT_DATE;
-		}
+        if (character == 'd' || character == 'D') {
+            return CURRENT_DATE;
+        }
 
-		character = wordParser.character(position + 12);
+        character = wordParser.character(position + 12);
 
-		if (character == 's' || character == 'S') {
-			return CURRENT_TIMESTAMP;
-		}
+        if (character == 's' || character == 'S') {
+            return CURRENT_TIMESTAMP;
+        }
 
-		return CURRENT_TIME;
-	}
+        return CURRENT_TIME;
+    }
 
-	private void parseJDBCEscapeFormat(WordParser wordParser) {
+    private void parseJDBCEscapeFormat(WordParser wordParser) {
 
-		int startIndex = wordParser.position();
-		int stopIndex  = startIndex + 1;
+        int startIndex = wordParser.position();
+        int stopIndex  = startIndex + 1;
 
-		for (int index = startIndex + 1, length = wordParser.length(); index < length; index++) {
-			char character = wordParser.character(index);
+        for (int index = startIndex + 1, length = wordParser.length(); index < length; index++) {
+            char character = wordParser.character(index);
 
-			if (character == RIGHT_CURLY_BRACKET) {
-				stopIndex = index + 1;
-				break;
-			}
+            if (character == RIGHT_CURLY_BRACKET) {
+                stopIndex = index + 1;
+                break;
+            }
 
-			stopIndex++;
-		}
+            stopIndex++;
+        }
 
-		setText(wordParser.substring(startIndex, stopIndex));
-		wordParser.moveForward(stopIndex - startIndex);
-	}
+        setText(wordParser.substring(startIndex, stopIndex));
+        wordParser.moveForward(stopIndex - startIndex);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toActualText() {
-		return getText();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toActualText() {
+        return getText();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toParsedText() {
-		return getText();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toParsedText() {
+        return getText();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toParsedText(StringBuilder writer, boolean actual) {
-		writer.append(actual && !isJDBCDate() ? identifier : getText());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toParsedText(StringBuilder writer, boolean actual) {
+        writer.append(actual && !isJDBCDate() ? identifier : getText());
+    }
 }

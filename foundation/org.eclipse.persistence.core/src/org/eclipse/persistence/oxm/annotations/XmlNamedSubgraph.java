@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,7 +23,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <code>XmlNamedObjectGraph</code>.  The <code>XmlNamedSubgraph</code> is
  * only referenced from within an XmlNamedObjectGraph and can not be
  * referenced independently.  It is referenced by its <code>name</code>
- * from an <code>XmlNamedAttributeNode</code> element of the 
+ * from an <code>XmlNamedAttributeNode</code> element of the
  * <code>XmlNamedObjectGraph</code>.
  *
  * @see XmlNamedObjectGraph
@@ -38,13 +38,13 @@ public @interface XmlNamedSubgraph {
     * required: the name of the subgraph
     */
    String name();
- 
+
    /**
-    * optional: only required for inheritance or with ChoiceMappings 
+    * optional: only required for inheritance or with ChoiceMappings
     * to specify which of the possible targets this subgraph is to be
     * applied to. */
    Class type() default Object.class;
- 
+
    /**
     * The list of properties to include in this graph
     */

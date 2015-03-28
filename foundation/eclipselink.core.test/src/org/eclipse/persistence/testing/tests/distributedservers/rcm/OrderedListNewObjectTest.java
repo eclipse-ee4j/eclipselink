@@ -18,10 +18,10 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         cacheSyncConfigValues.put(ListHolder.class, new Integer(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
         cacheSyncConfigValues.put(ListItem.class, new Integer(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
     }
-    
+
     public void setup(){
         super.setup();
-        
+
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ListHolder holder = new ListHolder();
         holder = (ListHolder)uow.registerObject(holder);
@@ -32,14 +32,14 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         item.setHolder(holder);
         uow.commit();
     }
-    
+
     public void test(){
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);
-        
+
         // put our ListHolder in the cache
         ListHolder holder = (ListHolder)server.getDistributedSession().readObject(ListHolder.class);
         holder.getItems().size();
-        
+
         // remove the objects, this should updabe both caches
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = (ListHolder)uow.readObject(ListHolder.class);
@@ -48,7 +48,7 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         uow.deleteObject(item);
         uow.deleteObject(holder);
         uow.commit();
-        
+
         // add a new object.  these changes should be sent
         uow = getSession().acquireUnitOfWork();
         holder = new ListHolder();
@@ -60,7 +60,7 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         item.setHolder(holder);
         uow.commit();
     }
-    
+
     public void verify(){
         // ensure the changes are propgated
         try{
@@ -73,7 +73,7 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
             throw new TestErrorException("Incorrect number of items");
         }
     }
-    
+
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ListHolder holder = (ListHolder)uow.readObject(ListHolder.class);
@@ -85,5 +85,5 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         uow.commit();
         super.reset();
     }
-    
+
 }

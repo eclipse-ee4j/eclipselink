@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     24 April 2013-2.5.1 ailitche
  *       SerializedObjectPolicy initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
 
 import java.util.List;
@@ -24,18 +24,18 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 /**
  * It's a transition class that holds SerializedObjectPolicy class name
  * and field obtained from matadata before it can be instantiated.
- * 
+ *
  * @author Andrei Ilitchev
  * @since EclipseLink 2.5.1
  */
 public class SerializedObjectPolicyWrapper extends AbstractSerializedObjectPolicy {
     protected String serializedObjectPolicyClassName;
-    
+
     public SerializedObjectPolicyWrapper(String serializedObjectPolicyClassName) {
         super();
         this.serializedObjectPolicyClassName = serializedObjectPolicyClassName;
     }
-    
+
     public String getSerializedObjectPolicyClassName() {
         return this.serializedObjectPolicyClassName;
     }

@@ -6,8 +6,8 @@
             <xml-element-decl java-method="createRootDate" namespace="" name="date" scope="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.Root" />
         </xml-registry>
     </xml-registries>
-	<java-types>
-		<java-type name="Root" xml-accessor-type="FIELD">
+    <java-types>
+        <java-type name="Root" xml-accessor-type="FIELD">
             <xml-type name="" prop-order="dateOrTime" />
             <xml-root-element name="root" />
             <java-attributes>
@@ -16,6 +16,6 @@
                     <xml-element-ref name="time" type="javax.xml.bind.JAXBElement" />
                 </xml-element-refs>
             </java-attributes>
-		</java-type>
-	</java-types>
+        </java-type>
+    </java-types>
 </xml-bindings>

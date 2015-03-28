@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -52,18 +52,18 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
 /**
  * TopLink OXM version of a 1-M mapping.  A list of source-target key field
- * associations is used to link the source xpaths to their related target 
- * xpaths, and hence their primary key (unique identifier) values used when 
+ * associations is used to link the source xpaths to their related target
+ * xpaths, and hence their primary key (unique identifier) values used when
  * (un)marshalling.
- * 
+ *
  * It is important to note that each target xpath is assumed to be set as a primary
  * key field on the target (reference) class descriptor - this is necessary in order
  * to locate the correct target object instance in the session cache when resolving
  * mapping references.
- * 
+ *
  * The usesSingleNode flag should be set to true if the keys are to be written out in space-separated
  * lists.
- * 
+ *
  * @see XMLObjectReferenceMapping
  * @see ContainerMapping
  */
@@ -96,7 +96,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         this.field = field;
     }
 
-    
+
     /**
      * Get the XPath String
      * @return String the XPath String associated with this Mapping
@@ -113,18 +113,18 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         this.setField(new XMLField(xpathString));
     }
 
-    /**    
+    /**
      * INTERNAL:
      * Retrieve the target object's primary key value that is mapped to a given
      * source xpath (in the source-target key field association list).
-     * 
+     *
      * @param targetObject - the reference class instance that holds the required pk value
      * @param xmlFld
      * @param session
      * @return null if the target object is null, the reference class is null, or
      * a primary key field name does not exist on the reference descriptor that
-     * matches the target field name - otherwise, return the associated primary 
-     * key value   
+     * matches the target field name - otherwise, return the associated primary
+     * key value
      */
     public Object buildFieldValue(Object targetObject, XMLField xmlFld, AbstractSession session) {
         if (targetObject == null) {
@@ -236,7 +236,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                     if (pks == null){
                         pks = new CacheId(new Object[0]);
                         primaryKeyMap.put(tgtXPath, pks);
-                    }                    
+                    }
                 }
             } else {
                 Object value = xmlConversionManager.convertObject(object, type);
@@ -277,41 +277,41 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
 
     /**
      * INTERNAL:
-     * Extract the primary key values from the row, then create an 
-     * org.eclipse.persistence.internal.oxm.Reference instance and stored it 
+     * Extract the primary key values from the row, then create an
+     * org.eclipse.persistence.internal.oxm.Reference instance and stored it
      * on the session's org.eclipse.persistence.internal.oxm.ReferenceResolver.
      */
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
-    	  ContainerPolicy cp = getContainerPolicy();                
-          
+          ContainerPolicy cp = getContainerPolicy();
+
           Object container = null;
-          
+
           if (reuseContainer) {
               Object currentObject = ((XMLRecord) databaseRow).getCurrentObject();
               container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
-              
-          } 
+
+          }
           if(container == null){
-          	container = cp.containerInstance();
+              container = cp.containerInstance();
           }
           return readFromRowIntoObject(databaseRow, joinManager, targetObject, parentCacheKey, sourceQuery, executionSession, isTargetProtected, container);
-    	
+
     }
 
     /**
      * INTERNAL:
-     * Extract the primary key values from the row, then create an 
-     * org.eclipse.persistence.internal.oxm.Reference instance and stored it 
+     * Extract the primary key values from the row, then create an
+     * org.eclipse.persistence.internal.oxm.Reference instance and stored it
      * on the session's org.eclipse.persistence.internal.oxm.ReferenceResolver.
      */
-    
+
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected, Object container) throws DatabaseException {
         ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(getReferenceClass());
-        
+
         if(container == null){
-        	readFromRowIntoObject(databaseRow, joinManager, targetObject, parentCacheKey, sourceQuery, executionSession, isTargetProtected);
+            readFromRowIntoObject(databaseRow, joinManager, targetObject, parentCacheKey, sourceQuery, executionSession, isTargetProtected);
         }
-        
+
         // for each source xmlField, get the value from the row and store
         for (Iterator fieldIt = getFields().iterator(); fieldIt.hasNext();) {
             XMLField fld = (XMLField) fieldIt.next();
@@ -321,7 +321,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                 return container;
             }
             // fix for bug# 5687430
-            // need to get the actual type of the target (i.e. int, String, etc.) 
+            // need to get the actual type of the target (i.e. int, String, etc.)
             // and use the converted value when checking the cache.
             for (Iterator valIt = ((Vector) fieldValue).iterator(); valIt.hasNext();) {
                 Object nextValue = valIt.next();
@@ -332,7 +332,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         return null;
     }
 
-    
+
     /**
      * ADVANCED:
      * Set the mapping's containerPolicy.
@@ -408,7 +408,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
 
     /**
      * INTERNAL:
-     * For the purpose of XMLCollectionReferenceMappings, 'usesSingleNode' 
+     * For the purpose of XMLCollectionReferenceMappings, 'usesSingleNode'
      * refers to the fact that the source key xpath fields should all be written as
      * space-separated lists. Would be used for mapping to an IDREFS field in a schema
      */
@@ -496,18 +496,18 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
     }
 
     /**
-     * Return true if the original container on the object should be used if 
+     * Return true if the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public boolean getReuseContainer() {
         return reuseContainer;
     }
 
     /**
-     * Specify whether the original container on the object should be used if 
+     * Specify whether the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
-     * create the container. 
+     * create the container.
      */
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
@@ -525,7 +525,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
 
     /**
      * INTERNAL
-     * Indicate whether by default an empty container should be set on the 
+     * Indicate whether by default an empty container should be set on the
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */

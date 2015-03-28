@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/23/2008-1.1 Guy Pelletier 
+ *     09/23/2008-1.1 Guy Pelletier
  *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/
 
@@ -49,7 +49,7 @@ public class ModelExamples  {
         emp.setSalary(1000);
         return emp;
     }
-    
+
     public static Employee employeeExample3(){
         Employee emp = new Employee();
         emp.setGivenName("Lacy");
@@ -60,7 +60,7 @@ public class ModelExamples  {
         emp.setSalary(2);
         return emp;
     }
-    
+
     public static Employee employeeExample4(){
         Employee emp = new Employee();
         emp.setGivenName("Ralf");
@@ -71,14 +71,14 @@ public class ModelExamples  {
         emp.setSalary(100);
         return emp;
     }
-    
+
     public static Project projectExample1(){
         Project project = new Project();
         project.setDescription("To undertake and evaluate the effecency of the companies farmers.");
         project.setName("Farmer effecency evaluations");
         return project;
     }
-    
+
     public static Project projectExample2(){
         LargeProject project = new LargeProject();
         project.setDescription("To assess the changing demographics of the feline world");
@@ -131,7 +131,7 @@ public class ModelExamples  {
         address.setStreet("324 Bay Street");
         return address;
     }
-    
+
     public static PhoneNumber phoneExample1(){
         return new PhoneNumber("Work", "613", "6544545");
     }

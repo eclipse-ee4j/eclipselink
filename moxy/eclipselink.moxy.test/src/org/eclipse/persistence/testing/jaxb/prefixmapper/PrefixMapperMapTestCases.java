@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,9 +33,9 @@ public class PrefixMapperMapTestCases extends JAXBWithJSONTestCases {
         map.put("extraUri", "ns0");
         map.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
         map.put("my.uri", "somePrefix");
-        
+
         jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, map);
-        
+
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, map);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -48,7 +48,7 @@ public class PrefixMapperMapTestCases extends JAXBWithJSONTestCases {
         emp.lastName = "Doe";
         emp.address = "123 Fake Street";
         emp.employeeId = 4321;
-        
+
         emp.manager = new Employee();
         emp.manager.firstName = "Bob";
         emp.manager.lastName = "Jones";

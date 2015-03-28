@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke, mnorman - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *
  ******************************************************************************/
@@ -33,7 +33,7 @@ import org.eclipse.persistence.sessions.Session;
  * {@link DynamicClassWriter}. A DynamicClassLoader requires a parent or
  * delegate class-loader which is provided to the constructor. This delegate
  * class loader handles the lookup and storage of all created classes.
- * 
+ *
  * @author dclarke, mnorman
  * @since EclipseLink 1.2
  */
@@ -103,11 +103,11 @@ public class DynamicClassLoader extends ClassLoader {
         }
         addClass(className);
     }
-    
+
     /**
      * Register a class to be dynamically created using the default
      * {@link DynamicClassWriter}.
-     * 
+     *
      * @see #addClass(String, EclipseLinkClassWriter)
      */
     public void addClass(String className) {
@@ -117,7 +117,7 @@ public class DynamicClassLoader extends ClassLoader {
     /**
      * Register a class to be dynamically created using a copy of default
      * {@link DynamicClassWriter} but specifying a different parent class.
-     * 
+     *
      * @see #addClass(String, EclipseLinkClassWriter)
      */
     public void addClass(String className, Class<?> parentClass) {
@@ -134,7 +134,7 @@ public class DynamicClassLoader extends ClassLoader {
      * not compatible a {@link DynamicException} will be thrown. If the
      * duplicate request contains a compatible writer then the second request is
      * ignored as the class may already have been generated.
-     * 
+     *
      * @see #findClass(String)
      */
     public void addClass(String className, EclipseLinkClassWriter writer) throws DynamicException {
@@ -153,7 +153,7 @@ public class DynamicClassLoader extends ClassLoader {
     /**
      * Create a dynamic class registering a writer and then forcing the provided
      * class name to be loaded.
-     * 
+     *
      */
     public Class<?> createDynamicClass(String className, DynamicClassWriter writer) {
         addClass(className, writer);
@@ -178,7 +178,7 @@ public class DynamicClassLoader extends ClassLoader {
     /**
      * Create a new dynamic entity type for the specified name assuming the use
      * of the default writer and its default parent class.
-     * 
+     *
      * @see #createDynamicClass(String, DynamicClassWriter)
      */
     public Class<?> createDynamicClass(String className) {
@@ -188,7 +188,7 @@ public class DynamicClassLoader extends ClassLoader {
     /**
      * Create a new dynamic entity type for the specified name with the
      * specified parent class.
-     * 
+     *
      * @see #createDynamicClass(String, DynamicClassWriter)
      */
     public Class<?> createDynamicClass(String className, Class<?> parentClass) {
@@ -229,7 +229,7 @@ public class DynamicClassLoader extends ClassLoader {
     /**
      * Converts an array of bytes into an instance of class <tt>Class</tt>.
      * Before the <tt>Class</tt> can be used it must be resolved.
-     * 
+     *
      * @param name
      * @param b
      * @throws ClassFormatError
@@ -242,7 +242,7 @@ public class DynamicClassLoader extends ClassLoader {
      * Lookup the DynamicConversionManager for the given session. If the
      * existing ConversionManager is not an instance of DynamicConversionManager
      * then create a new one and replace the existing one.
-     * 
+     *
      * @param session
      * @return
      */

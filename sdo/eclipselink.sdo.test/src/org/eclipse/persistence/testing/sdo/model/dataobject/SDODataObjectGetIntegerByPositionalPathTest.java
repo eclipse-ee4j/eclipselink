@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import java.math.BigDecimal;
@@ -34,7 +34,7 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
     //1. purpose: getBigInteger with boolean property
     public void testGetIntegerFromBoolean() {
         SDOProperty prop =((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
-        prop.setType(SDOConstants.SDO_BOOLEAN);      
+        prop.setType(SDOConstants.SDO_BOOLEAN);
         dataObject_c.set(prop, true);
 
         try {
@@ -45,9 +45,9 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
     }
 
     //2. purpose: getBigInteger with byte property
-    public void testGetIntegerFromByte() {        
+    public void testGetIntegerFromByte() {
         SDOProperty prop =((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
-        prop.setType(SDOConstants.SDO_BYTE);      
+        prop.setType(SDOConstants.SDO_BYTE);
         byte theByte = 10;
         dataObject_c.set(prop, theByte);
 
@@ -62,15 +62,15 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
 
     //3. purpose: getBigInteger with character property
     public void testGetIntegerFromCharacter() {
-          
+
         SDOProperty prop =((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
-        prop.setType(SDOConstants.SDO_CHARACTER);      
+        prop.setType(SDOConstants.SDO_CHARACTER);
         dataObject_c.set(prop, 'e');
 
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -89,12 +89,12 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
 
     //6. purpose: getBigInteger with Undefined Double Property
     public void testGetIntegerConversionFromUnDefinedProperty() {
-    
+
 
         try {
             dataObject_a.getBigInteger(UNDEFINED_PATH);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -111,7 +111,7 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
         this.assertEquals(bd, dataObject_a.getBigInteger(property));
     }
 
-   
+
     //9. purpose: getBigInteger with Defined int Property
     public void testGetIntegerConversionFromDefinedIntProperty() {
         // dataObject's type add int property
@@ -143,7 +143,7 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_SHORT);
 
         try {
-            BigInteger value = dataObject_a.getBigInteger(propertyPath_a_b_c);            
+            BigInteger value = dataObject_a.getBigInteger(propertyPath_a_b_c);
             assertEquals(new BigInteger("0"), value); // 6151874: default used to be null
             //TODO: conversion not supported by sdo spec but is supported by TopLink
         } catch (ClassCastException e) {
@@ -180,7 +180,7 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
         this.assertEquals(bin, dataObject_a.getBigInteger(propertyPath_a_b_c));
     }*/
 
-   
+
     //18. purpose: getBigInteger with Defined Decimal Property
     public void testGetIntegerConversionFromDefinedDecimalProperty() {
         // dataObject's type add int property
@@ -269,17 +269,17 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
 
     }*/
 
-  
+
     //22. purpose: getBigInteger with date property
     public void testGetIntegerFromDate() {
 
         SDOProperty prop =((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
-        prop.setType(SDOConstants.SDO_DATE);      
+        prop.setType(SDOConstants.SDO_DATE);
         dataObject_c.set(prop, Calendar.getInstance().getTime());
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -289,7 +289,7 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
             String p = null;
             dataObject_a.getBigInteger(p);
         } catch (ClassCastException e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 }

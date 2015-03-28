@@ -198,7 +198,7 @@
 
     <!-- Check oracle extension dependencies helper target -->
     <target name="check.oracle.dependencies">
-        <!-- Locate libraries in oracle.extensions.depend.dir first and extensions.depend.dir second --> 
+        <!-- Locate libraries in oracle.extensions.depend.dir first and extensions.depend.dir second -->
         <condition property="file.ojdbc.jar" value="${oracle.extensions.depend.dir}/${ojdbc.jar}"
                                              else="${extensions.depend.dir}/${ojdbc.jar}">
             <available file="${oracle.extensions.depend.dir}/${ojdbc.jar}"/>

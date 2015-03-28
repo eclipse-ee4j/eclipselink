@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,27 +26,27 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public final class ObjectExpression extends EncapsulatedIdentificationVariableExpression {
 
-	/**
-	 * Creates a new <code>ObjectExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public ObjectExpression(AbstractExpression parent) {
-		super(parent, OBJECT);
-	}
+    /**
+     * Creates a new <code>ObjectExpression</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public ObjectExpression(AbstractExpression parent) {
+        super(parent, OBJECT);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(ObjectExpressionBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(ObjectExpressionBNF.ID);
+    }
 }

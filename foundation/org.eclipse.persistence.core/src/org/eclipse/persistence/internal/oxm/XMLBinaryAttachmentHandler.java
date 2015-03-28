@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -31,7 +31,7 @@ import org.xml.sax.SAXException;
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>This class is a content handler that specifically handles the "Include" element in an mtom style
- * attachment. 
+ * attachment.
  * @author  mmacivor
  */
 
@@ -42,7 +42,7 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.internal
     XMLConverterMapping converter;
     NodeValue nodeValue;
     boolean isCollection = false;
-    
+
     private static final String INCLUDE_ELEMENT_NAME = "Include";
     private static final String HREF_ATTRIBUTE_NAME = "href";
 
@@ -54,23 +54,23 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.internal
         this.converter = converter;
         this.isCollection = isCollection;
     }
-    
+
     @Override
     public void characters(char[] ch, int offset, int length) throws SAXException {
         //we don't care about characters here. Probably a whitespace
     }
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-    	
-    	if(INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName)) {
-    		if(record.isNamespaceAware()){
-    			if(Constants.XOP_URL.equals(namespaceURI)){
-    				this.c_id = atts.getValue(Constants.EMPTY_STRING, HREF_ATTRIBUTE_NAME);
-    			}
-    		}else{
-    			this.c_id = atts.getValue(Constants.EMPTY_STRING, HREF_ATTRIBUTE_NAME);	
-    		}
-        } else if(c_id == null ){        	
+
+        if(INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName)) {
+            if(record.isNamespaceAware()){
+                if(Constants.XOP_URL.equals(namespaceURI)){
+                    this.c_id = atts.getValue(Constants.EMPTY_STRING, HREF_ATTRIBUTE_NAME);
+                }
+            }else{
+                this.c_id = atts.getValue(Constants.EMPTY_STRING, HREF_ATTRIBUTE_NAME);
+            }
+        } else if(c_id == null ){
             //Return control to the UnmarshalRecord
             XMLReader xmlReader = record.getXMLReader();
             xmlReader.setContentHandler(record);
@@ -81,22 +81,22 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.internal
 
     @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        	Field xmlField = null;
-    	    if(isCollection) {
+            Field xmlField = null;
+            if(isCollection) {
                 xmlField = (Field)((BinaryDataCollectionMapping)mapping).getField();
               } else {
                 xmlField = (Field)((BinaryDataMapping)mapping).getField();
             }
-    	    if(INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName)) {
-    	    	if(record.isNamespaceAware() && !Constants.XOP_URL.equals(namespaceURI)){
-    	    		return;
-    	    	}
+            if(INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName)) {
+                if(record.isNamespaceAware() && !Constants.XOP_URL.equals(namespaceURI)){
+                    return;
+                }
                 //Get the attachment and set it in the object.
                 XMLAttachmentUnmarshaller attachmentUnmarshaller = record.getUnmarshaller().getAttachmentUnmarshaller();
                 Object data = null;
                 Class attributeClassification = null;
                 if(isCollection) {
-            	    attributeClassification = ((BinaryDataCollectionMapping)mapping).getAttributeElementClass();
+                    attributeClassification = ((BinaryDataCollectionMapping)mapping).getAttributeElementClass();
                 } else {
                     attributeClassification = mapping.getAttributeClassification();
                 }
@@ -112,7 +112,7 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.internal
                 }
                 CoreContainerPolicy cp = null;
                 if(isCollection){
-                	cp = mapping.getContainerPolicy();
+                    cp = mapping.getContainerPolicy();
                 }
                 data = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(data, mapping.getAttributeClassification(), record.getSession(), cp);
                 data = converter.convertDataValueToObjectValue(data, record.getSession(), unmarshaller);
@@ -149,9 +149,9 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.internal
     }
 
     public Object getObjectValueFromDataHandler(DataHandler handler, Class cls) {
-    	CoreContainerPolicy cp = null;
+        CoreContainerPolicy cp = null;
         if(isCollection){
-        	cp = mapping.getContainerPolicy();
+            cp = mapping.getContainerPolicy();
         }
         return XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(handler, cls, record.getSession(), cp);
     }

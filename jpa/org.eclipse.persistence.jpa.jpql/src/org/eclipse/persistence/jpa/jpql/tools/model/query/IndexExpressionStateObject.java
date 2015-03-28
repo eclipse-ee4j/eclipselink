@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,59 +31,59 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public class IndexExpressionStateObject extends EncapsulatedIdentificationVariableExpressionStateObject {
 
-	/**
-	 * Creates a new <code>IndexExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public IndexExpressionStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>IndexExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public IndexExpressionStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>IndexExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param identificationVariable The name of the identification variable
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public IndexExpressionStateObject(StateObject parent, String identificationVariable) {
-		super(parent, identificationVariable);
-	}
+    /**
+     * Creates a new <code>IndexExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param identificationVariable The name of the identification variable
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public IndexExpressionStateObject(StateObject parent, String identificationVariable) {
+        super(parent, identificationVariable);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public IndexExpression getExpression() {
-		return (IndexExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IndexExpression getExpression() {
+        return (IndexExpression) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getIdentifier() {
-		return INDEX;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdentifier() {
+        return INDEX;
+    }
 
-	/**
-	 * Keeps a reference of the {@link IndexExpression parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link IndexExpression parsed object} representing an <code><b>INDEX</b></code>
-	 * expression
-	 */
-	public void setExpression(IndexExpression expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link IndexExpression parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link IndexExpression parsed object} representing an <code><b>INDEX</b></code>
+     * expression
+     */
+    public void setExpression(IndexExpression expression) {
+        super.setExpression(expression);
+    }
 }

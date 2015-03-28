@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,7 +60,7 @@ public class ObjectTableTypeTestSuite {
         "\n)";
     static final String CREATE_PHONE_TYPE_TABLE =
         "CREATE OR REPLACE TYPE DBWS_PHONE_TYPE_TABLE AS TABLE OF DBWS_PHONE_TYPE";
-    
+
     static final String CREATE_GET_PHONETYPE_TABLE_PROC =
         "CREATE OR REPLACE PROCEDURE GET_PHONETYPE_TABLE(PTABLE OUT DBWS_PHONE_TYPE_TABLE) AS" +
         "\nBEGIN" +
@@ -70,22 +70,22 @@ public class ObjectTableTypeTestSuite {
             "\nPTABLE.EXTEND();" +
             "\nPTABLE(PTABLE.COUNT) := DBWS_PHONE_TYPE('613.288.0000', '613.585.2222');" +
         "\nEND GET_PHONETYPE_TABLE;";
-    
+
     static final String DROP_GET_PHOETYPE_TABLE_PROC =
         "DROP PROCEDURE GET_PHONETYPE_TABLE";
     static final String DROP_PHONE_TYPE_TABLE =
         "DROP TYPE DBWS_PHONE_TYPE_TABLE FORCE";
     static final String DROP_PHONE_TYPE =
         "DROP TYPE DBWS_PHONE_TYPE FORCE";
-    
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
-    
+
     @SuppressWarnings("rawtypes")
     static List dbProcedures;
     static DatabaseTypeBuilder dbTypeBuilder;
-    
+
     @BeforeClass
     public static void setUp() throws ClassNotFoundException, SQLException{
         AllTests.setUp();
@@ -107,7 +107,7 @@ public class ObjectTableTypeTestSuite {
             runDdl(conn, CREATE_PHONE_TYPE_TABLE, ddlDebug);
             runDdl(conn, CREATE_GET_PHONETYPE_TABLE_PROC, ddlDebug);
         }
-        
+
         // use DatabaseTypeBuilder to generate a list of ProcedureTypes
         dbTypeBuilder = new DatabaseTypeBuilder();
         try {
@@ -125,7 +125,7 @@ public class ObjectTableTypeTestSuite {
             runDdl(conn, DROP_PHONE_TYPE, ddlDebug);
         }
     }
-    
+
     @Test
     @SuppressWarnings({ "unchecked" })
     public void testJPAObjectTableMetadata() {
@@ -155,7 +155,7 @@ public class ObjectTableTypeTestSuite {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
         "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
         "   <orm:named-stored-procedure-query name=\"GET_PHONETYPE_TABLE\" procedure-name=\"GET_PHONETYPE_TABLE\" returns-result-set=\"false\">\n" +
         "      <orm:parameter mode=\"OUT\" name=\"PTABLE\" type=\"metadatagen.Dbws_phone_type_table\" class=\"metadatagen.Dbws_phone_type_table\" jdbc-type=\"2003\" jdbc-type-name=\"DBWS_PHONE_TYPE_TABLE\"/>\n" +
         "   </orm:named-stored-procedure-query>\n" +

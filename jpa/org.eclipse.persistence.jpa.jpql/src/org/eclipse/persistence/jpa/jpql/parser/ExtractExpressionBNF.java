@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,25 +26,25 @@ package org.eclipse.persistence.jpa.jpql.parser;
 @SuppressWarnings("nls")
 public final class ExtractExpressionBNF extends JPQLQueryBNF {
 
-	/**
-	 * The unique identifier of this BNF rule.
-	 */
-	public static final String ID = "extract_expression";
+    /**
+     * The unique identifier of this BNF rule.
+     */
+    public static final String ID = "extract_expression";
 
-	/**
-	 * Creates a new <code>ExtractExpressionBNF</code>.
-	 */
-	public ExtractExpressionBNF() {
-		super(ID);
-	}
+    /**
+     * Creates a new <code>ExtractExpressionBNF</code>.
+     */
+    public ExtractExpressionBNF() {
+        super(ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initialize() {
-		super.initialize();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initialize() {
+        super.initialize();
 
-		registerExpressionFactory(ExtractExpressionFactory.ID);
-	}
+        registerExpressionFactory(ExtractExpressionFactory.ID);
+    }
 }

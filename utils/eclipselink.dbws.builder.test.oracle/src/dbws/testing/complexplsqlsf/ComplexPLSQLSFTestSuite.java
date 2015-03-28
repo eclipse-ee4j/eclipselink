@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -86,18 +86,18 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         "CREATE OR REPLACE PACKAGE COMPLEXPKG2 AS" +
             "\nTYPE TAB1 IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;" +
             "\nTYPE SIMPLERECORD IS RECORD (" +
-	            "\nSR1 VARCHAR2(20)," +
-	            "\nSR2 VARCHAR2(20)" +
-	        "\n);" +
+                "\nSR1 VARCHAR2(20)," +
+                "\nSR2 VARCHAR2(20)" +
+            "\n);" +
             "\nTYPE COMPLEXRECORD IS RECORD (" +
-	            "\nCR1 NUMBER," +
-	            "\nCR2 A_CONTACT2_TYPE," +
-	            "\nCR3 VARCHAR2ARRAY," +
-	            "\nCR4 A_PHONE2_TYPE_TABLE" +
-	        "\n);" +
+                "\nCR1 NUMBER," +
+                "\nCR2 A_CONTACT2_TYPE," +
+                "\nCR3 VARCHAR2ARRAY," +
+                "\nCR4 A_PHONE2_TYPE_TABLE" +
+            "\n);" +
             "\nTYPE MORECOMPLEXRECORD IS RECORD (" +
-	            "\nMCR1 A_PHONE2_TYPE_VARRAY" +
-	        "\n);" +
+                "\nMCR1 A_PHONE2_TYPE_VARRAY" +
+            "\n);" +
             "\nFUNCTION TABLETOVARRAY(OLDTAB IN TAB1) RETURN VARCHAR2ARRAY;" +
             "\nFUNCTION TABLESTOVARRAY(OLDTAB IN TAB1, OLDTAB2 IN TAB1) RETURN VARCHAR2ARRAY;" +
             "\nFUNCTION VARRAYTOTABLE(OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1;" +
@@ -115,7 +115,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "\nFUNCTION PLSQLTOPHONETYPETABLE(OLDREC IN SIMPLERECORD, OLDTAB IN TAB1) RETURN A_PHONE2_TYPE_TABLE;" +
             "\nFUNCTION PHONETYPETABLETOPLSQL(APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN SIMPLERECORD;" +
             "\nFUNCTION CREATECUSTOMER RETURN A_CUSTOMER2_TYPE;" +
-			"\nFUNCTION CREATE_COMPLEXRECORD(ACONTACT IN A_CONTACT2_TYPE, ANUMBER IN NUMBER, AVARRAY IN VARCHAR2ARRAY, APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN COMPLEXRECORD;" +
+            "\nFUNCTION CREATE_COMPLEXRECORD(ACONTACT IN A_CONTACT2_TYPE, ANUMBER IN NUMBER, AVARRAY IN VARCHAR2ARRAY, APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN COMPLEXRECORD;" +
             "\nFUNCTION CREATE_PHONETYPEVARRAY(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN A_PHONE2_TYPE_VARRAY;" +
             "\nFUNCTION CREATE_MORECOMPLEXRECORD(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN MORECOMPLEXRECORD;" +
         "\nEND COMPLEXPKG2;";
@@ -171,14 +171,14 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
                 "\nRETURN NEWTAB;" +
             "\nEND VARRAYSTOTABLE;" +
             "\nFUNCTION PHONETOTABLE(APHONE IN A_PHONE2_TYPE) RETURN TAB1 AS" +
-            "\nNEWTAB TAB1;" + 
+            "\nNEWTAB TAB1;" +
             "\nBEGIN" +
                 "\nNEWTAB(1) := APHONE.HOME;" +
                 "\nNEWTAB(2) := APHONE.CELL;" +
                 "\nRETURN NEWTAB;" +
             "\nEND PHONETOTABLE;" +
             "\nFUNCTION PHONEANDVARRAYTOTABLE(APHONE IN A_PHONE2_TYPE, OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1 AS" +
-            "\nNEWTAB TAB1;" + 
+            "\nNEWTAB TAB1;" +
             "\nBEGIN" +
                 "\nNEWTAB(1) := APHONE.HOME;" +
                 "\nNEWTAB(2) := APHONE.CELL;" +
@@ -190,13 +190,13 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "\nAPHONE A_PHONE2_TYPE;" +
             "\nBEGIN" +
                 "\nAPHONE := A_PHONE2_TYPE(OLDTAB(1), OLDTAB(2));" +
-                "\nRETURN APHONE;" + 
+                "\nRETURN APHONE;" +
             "\nEND TABLETOPHONE;" +
             "\nFUNCTION TABLEANDVARRAYTOPHONE(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN A_PHONE2_TYPE AS" +
             "\nAPHONE A_PHONE2_TYPE;" +
             "\nBEGIN" +
                 "\nAPHONE := A_PHONE2_TYPE(OLDTAB(1), OLDVARRAY(1));" +
-                "\nRETURN APHONE;" + 
+                "\nRETURN APHONE;" +
             "\nEND TABLEANDVARRAYTOPHONE;" +
             "\nFUNCTION TABLEANDVARRAYTOVARRAY(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN VARCHAR2ARRAY AS" +
             "\nNEWVARRAY VARCHAR2ARRAY;" +
@@ -214,10 +214,10 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
                 "\nNEWVARRAY(5) := OLDVARRAY(2);" +
                 "\nNEWVARRAY.EXTEND;" +
                 "\nNEWVARRAY(6) := OLDVARRAY(3);" +
-                "\nRETURN NEWVARRAY;" + 
+                "\nRETURN NEWVARRAY;" +
             "\nEND TABLEANDVARRAYTOVARRAY;" +
             "\nFUNCTION TABLEANDVARRAYTOTABLE(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1 AS" +
-            "\nNEWTAB TAB1;" + 
+            "\nNEWTAB TAB1;" +
             "\nBEGIN" +
                 "\nNEWTAB(1) := OLDTAB(1);" +
                 "\nNEWTAB(2) := OLDTAB(2);" +
@@ -245,11 +245,11 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "\nEND RECORDTOPHONE;" +
             "\nFUNCTION VARRAYTORECORD(OLDVARRAY IN VARCHAR2ARRAY) RETURN SIMPLERECORD AS" +
             "\nNEWREC SIMPLERECORD;" +
-	        "\nBEGIN" +
+            "\nBEGIN" +
                 "\nNEWREC.SR1 := OLDVARRAY(1);" +
                 "\nNEWREC.SR2 := OLDVARRAY(2);" +
                 "\nRETURN NEWREC;" +
-	        "\nEND VARRAYTORECORD;" +
+            "\nEND VARRAYTORECORD;" +
             "\nFUNCTION PHONETORECORD(APHONE IN A_PHONE2_TYPE) RETURN SIMPLERECORD AS" +
             "\nNEWREC SIMPLERECORD;" +
             "\nBEGIN" +
@@ -284,45 +284,45 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "\nEND PHONETYPETABLETOPLSQL;" +
             "\nFUNCTION CREATECUSTOMER RETURN A_CUSTOMER2_TYPE AS" +
             "\nACONTACT A_CONTACT2_TYPE;" +
-			"\nACUSTOMER A_CUSTOMER2_TYPE;" +
-			"\nNEWVARRAY VARCHAR2ARRAY;" +
-			"\nBEGIN" +
-	            "\nNEWVARRAY := VARCHAR2ARRAY();" +
-	            "\nNEWVARRAY.EXTEND;" +
-	            "\nNEWVARRAY(1) := 'John';" +
-	            "\nNEWVARRAY.EXTEND;" +
-	            "\nNEWVARRAY(2) := 'Q';" +
-	            "\nNEWVARRAY.EXTEND;" +
-	            "\nNEWVARRAY(3) := 'Oracle';" +
-				"\nACONTACT := A_CONTACT2_TYPE('1234 Somewhere St, Ottawa, ON', A_PHONE2_TYPE('(613)555-1234', '(613)555-4321'));" +
-			    "\nACUSTOMER := A_CUSTOMER2_TYPE(NEWVARRAY, 41, ACONTACT);" +
-				"\nRETURN ACUSTOMER;" +
-			"\nEND CREATECUSTOMER;" +
-			"\nFUNCTION CREATE_COMPLEXRECORD(ACONTACT IN A_CONTACT2_TYPE, ANUMBER IN NUMBER, AVARRAY IN VARCHAR2ARRAY, APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN COMPLEXRECORD AS" +
-			"\nACOMPLEXREC COMPLEXRECORD;" +
-			"\nBEGIN" +
-			    "\nACOMPLEXREC.CR1 := ANUMBER;" +
-			    "\nACOMPLEXREC.CR2 := ACONTACT;" +
-			    "\nACOMPLEXREC.CR3 := AVARRAY;" +
-			    "\nACOMPLEXREC.CR4 := APHONETYPETABLE;" +
-			    "\nRETURN ACOMPLEXREC;" +
-			"\nEND CREATE_COMPLEXRECORD;" +
-            "\nFUNCTION CREATE_PHONETYPEVARRAY(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN A_PHONE2_TYPE_VARRAY AS" +
-			"\nPHONETYPEARRAY A_PHONE2_TYPE_VARRAY;" +
+            "\nACUSTOMER A_CUSTOMER2_TYPE;" +
+            "\nNEWVARRAY VARCHAR2ARRAY;" +
             "\nBEGIN" +
-		        "\nPHONETYPEARRAY := A_PHONE2_TYPE_VARRAY();" +
-		        "\nPHONETYPEARRAY.EXTEND;" +
-		        "\nPHONETYPEARRAY(1) := APHONETYPE1;" +
-		        "\nPHONETYPEARRAY.EXTEND;" +
-		        "\nPHONETYPEARRAY(2) := APHONETYPE2;" +
-		        "\nRETURN PHONETYPEARRAY;" +
-			"\nEND CREATE_PHONETYPEVARRAY;" +
+                "\nNEWVARRAY := VARCHAR2ARRAY();" +
+                "\nNEWVARRAY.EXTEND;" +
+                "\nNEWVARRAY(1) := 'John';" +
+                "\nNEWVARRAY.EXTEND;" +
+                "\nNEWVARRAY(2) := 'Q';" +
+                "\nNEWVARRAY.EXTEND;" +
+                "\nNEWVARRAY(3) := 'Oracle';" +
+                "\nACONTACT := A_CONTACT2_TYPE('1234 Somewhere St, Ottawa, ON', A_PHONE2_TYPE('(613)555-1234', '(613)555-4321'));" +
+                "\nACUSTOMER := A_CUSTOMER2_TYPE(NEWVARRAY, 41, ACONTACT);" +
+                "\nRETURN ACUSTOMER;" +
+            "\nEND CREATECUSTOMER;" +
+            "\nFUNCTION CREATE_COMPLEXRECORD(ACONTACT IN A_CONTACT2_TYPE, ANUMBER IN NUMBER, AVARRAY IN VARCHAR2ARRAY, APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN COMPLEXRECORD AS" +
+            "\nACOMPLEXREC COMPLEXRECORD;" +
+            "\nBEGIN" +
+                "\nACOMPLEXREC.CR1 := ANUMBER;" +
+                "\nACOMPLEXREC.CR2 := ACONTACT;" +
+                "\nACOMPLEXREC.CR3 := AVARRAY;" +
+                "\nACOMPLEXREC.CR4 := APHONETYPETABLE;" +
+                "\nRETURN ACOMPLEXREC;" +
+            "\nEND CREATE_COMPLEXRECORD;" +
+            "\nFUNCTION CREATE_PHONETYPEVARRAY(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN A_PHONE2_TYPE_VARRAY AS" +
+            "\nPHONETYPEARRAY A_PHONE2_TYPE_VARRAY;" +
+            "\nBEGIN" +
+                "\nPHONETYPEARRAY := A_PHONE2_TYPE_VARRAY();" +
+                "\nPHONETYPEARRAY.EXTEND;" +
+                "\nPHONETYPEARRAY(1) := APHONETYPE1;" +
+                "\nPHONETYPEARRAY.EXTEND;" +
+                "\nPHONETYPEARRAY(2) := APHONETYPE2;" +
+                "\nRETURN PHONETYPEARRAY;" +
+            "\nEND CREATE_PHONETYPEVARRAY;" +
             "\nFUNCTION CREATE_MORECOMPLEXRECORD(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN MORECOMPLEXRECORD AS" +
             "\nMORECOMPLEXREC MORECOMPLEXRECORD;" +
             "\nBEGIN" +
                 "\nMORECOMPLEXREC.MCR1 := CREATE_PHONETYPEVARRAY(APHONETYPE1, APHONETYPE2);" +
                 "\nRETURN MORECOMPLEXREC;" +
-			"\nEND CREATE_MORECOMPLEXRECORD;" +
+            "\nEND CREATE_MORECOMPLEXRECORD;" +
         "\nEND COMPLEXPKG2;";
     static final String DROP_COMPLEXPKG2_PACKAGE =
         "DROP PACKAGE COMPLEXPKG2";
@@ -338,13 +338,13 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         "DROP TYPE VARCHAR2ARRAY";
     static final String DROP_A_PHONE2_TYPE =
         "DROP TYPE A_PHONE2_TYPE";
-    static final String DROP_A_CUSTOMER2_TYPE = 
+    static final String DROP_A_CUSTOMER2_TYPE =
         "DROP TYPE A_CUSTOMER2_TYPE";
-    static final String DROP_A_CONTACT2_TYPE = 
+    static final String DROP_A_CONTACT2_TYPE =
         "DROP TYPE A_CONTACT2_TYPE";
-    static final String DROP_A_PHONE2_TYPE_TABLE = 
+    static final String DROP_A_PHONE2_TYPE_TABLE =
         "DROP TYPE A_PHONE2_TYPE_TABLE";
-    static final String DROP_A_PHONE2_TYPE_VARRAY = 
+    static final String DROP_A_PHONE2_TYPE_VARRAY =
         "DROP TYPE A_PHONE2_TYPE_VARRAY";
     static final String DROP_COMPLEXPKG2_MORECOMPLEXRECORD_TYPE =
         "DROP TYPE COMPLEXPKG2_MORECOMPLEXRECORD";
@@ -376,17 +376,18 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             ddlDebug = true;
         }
         if (ddlCreate) {
-           	runDdl(conn, CREATE_VARCHAR2ARRAY_VARRAY, ddlDebug);
-        	runDdl(conn, CREATE_A_PHONE2_TYPE, ddlDebug);        	runDdl(conn, CREATE_A_PHONE2_TYPE_TABLE, ddlDebug);
-        	runDdl(conn, CREATE_A_PHONE2_TYPE_VARRAY, ddlDebug);
-        	runDdl(conn, CREATE_A_CONTACT2_TYPE, ddlDebug);
-        	runDdl(conn, CREATE_A_CUSTOMER2_TYPE, ddlDebug);
-        	runDdl(conn, CREATE_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
-        	runDdl(conn, CREATE_COMPLEXPKG2_COMPLEXRECORD_TYPE, ddlDebug);
-        	runDdl(conn, CREATE_COMPLEXPKG2_MORECOMPLEXRECORD_TYPE, ddlDebug);
-        	runDdl(conn, CREATE_COMPLEXPKG2_TAB1_TYPE, ddlDebug);
-        	runDdl(conn, CREATE_COMPLEXPKG2_PACKAGE, ddlDebug);
-        	runDdl(conn, CREATE_COMPLEXPKG2_BODY, ddlDebug);
+               runDdl(conn, CREATE_VARCHAR2ARRAY_VARRAY, ddlDebug);
+            runDdl(conn, CREATE_A_PHONE2_TYPE, ddlDebug);
+            runDdl(conn, CREATE_A_PHONE2_TYPE_TABLE, ddlDebug);
+            runDdl(conn, CREATE_A_PHONE2_TYPE_VARRAY, ddlDebug);
+            runDdl(conn, CREATE_A_CONTACT2_TYPE, ddlDebug);
+            runDdl(conn, CREATE_A_CUSTOMER2_TYPE, ddlDebug);
+            runDdl(conn, CREATE_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
+            runDdl(conn, CREATE_COMPLEXPKG2_COMPLEXRECORD_TYPE, ddlDebug);
+            runDdl(conn, CREATE_COMPLEXPKG2_MORECOMPLEXRECORD_TYPE, ddlDebug);
+            runDdl(conn, CREATE_COMPLEXPKG2_TAB1_TYPE, ddlDebug);
+            runDdl(conn, CREATE_COMPLEXPKG2_PACKAGE, ddlDebug);
+            runDdl(conn, CREATE_COMPLEXPKG2_BODY, ddlDebug);
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -457,55 +458,55 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
                   "procedurePattern=\"TABLEANDVARRAYTOTABLE\" " +
               "/>" +
               "<plsql-procedure " +
-	              "name=\"RecordToVArrayTest\" " +
-	              "catalogPattern=\"COMPLEXPKG2\" " +
-	              "procedurePattern=\"RECORDTOVARRAY\" " +
-	          "/>" +
-	          "<plsql-procedure " +
-	              "name=\"RecordToPhoneTest\" " +
-	              "catalogPattern=\"COMPLEXPKG2\" " +
-	              "procedurePattern=\"RECORDTOPHONE\" " +
-	          "/>" +
+                  "name=\"RecordToVArrayTest\" " +
+                  "catalogPattern=\"COMPLEXPKG2\" " +
+                  "procedurePattern=\"RECORDTOVARRAY\" " +
+              "/>" +
               "<plsql-procedure " +
-	              "name=\"VArrayToRecordTest\" " +
-	              "catalogPattern=\"COMPLEXPKG2\" " +
-	              "procedurePattern=\"VARRAYTORECORD\" " +
-	          "/>" +
-	          "<plsql-procedure " +
-	              "name=\"PhoneToRecordTest\" " +
-	              "catalogPattern=\"COMPLEXPKG2\" " +
-	              "procedurePattern=\"PHONETORECORD\" " +
-	          "/>" +
+                  "name=\"RecordToPhoneTest\" " +
+                  "catalogPattern=\"COMPLEXPKG2\" " +
+                  "procedurePattern=\"RECORDTOPHONE\" " +
+              "/>" +
               "<plsql-procedure " +
-	              "name=\"PLSQLToPhoneTypeTableTest\" " +
-	              "catalogPattern=\"COMPLEXPKG2\" " +
-	              "procedurePattern=\"PLSQLTOPHONETYPETABLE\" " +
-	          "/>" +
-	          "<plsql-procedure " +
-	              "name=\"PhoneTypeTableToPLSQLTest\" " +
-	              "catalogPattern=\"COMPLEXPKG2\" " +
-	              "procedurePattern=\"PHONETYPETABLETOPLSQL\" " +
-	          "/>" +
+                  "name=\"VArrayToRecordTest\" " +
+                  "catalogPattern=\"COMPLEXPKG2\" " +
+                  "procedurePattern=\"VARRAYTORECORD\" " +
+              "/>" +
               "<plsql-procedure " +
-		          "name=\"CreateCustomerTest\" " +
-		          "catalogPattern=\"COMPLEXPKG2\" " +
-		          "procedurePattern=\"CREATECUSTOMER\" " +
-		      "/>" +
+                  "name=\"PhoneToRecordTest\" " +
+                  "catalogPattern=\"COMPLEXPKG2\" " +
+                  "procedurePattern=\"PHONETORECORD\" " +
+              "/>" +
               "<plsql-procedure " +
-		          "name=\"CreateComplexRecordTest\" " +
-		          "catalogPattern=\"COMPLEXPKG2\" " +
-		          "procedurePattern=\"CREATE_COMPLEXRECORD\" " +
-		      "/>" +
+                  "name=\"PLSQLToPhoneTypeTableTest\" " +
+                  "catalogPattern=\"COMPLEXPKG2\" " +
+                  "procedurePattern=\"PLSQLTOPHONETYPETABLE\" " +
+              "/>" +
               "<plsql-procedure " +
-		          "name=\"CreatePhoneTypeVArrayTest\" " +
-		          "catalogPattern=\"COMPLEXPKG2\" " +
-		          "procedurePattern=\"CREATE_PHONETYPEVARRAY\" " +
-		      "/>" +
+                  "name=\"PhoneTypeTableToPLSQLTest\" " +
+                  "catalogPattern=\"COMPLEXPKG2\" " +
+                  "procedurePattern=\"PHONETYPETABLETOPLSQL\" " +
+              "/>" +
               "<plsql-procedure " +
-		          "name=\"CreateMoreComplexRecordTest\" " +
-		          "catalogPattern=\"COMPLEXPKG2\" " +
-		          "procedurePattern=\"CREATE_MORECOMPLEXRECORD\" " +
-		      "/>" +
+                  "name=\"CreateCustomerTest\" " +
+                  "catalogPattern=\"COMPLEXPKG2\" " +
+                  "procedurePattern=\"CREATECUSTOMER\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"CreateComplexRecordTest\" " +
+                  "catalogPattern=\"COMPLEXPKG2\" " +
+                  "procedurePattern=\"CREATE_COMPLEXRECORD\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"CreatePhoneTypeVArrayTest\" " +
+                  "catalogPattern=\"COMPLEXPKG2\" " +
+                  "procedurePattern=\"CREATE_PHONETYPEVARRAY\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"CreateMoreComplexRecordTest\" " +
+                  "catalogPattern=\"COMPLEXPKG2\" " +
+                  "procedurePattern=\"CREATE_MORECOMPLEXRECORD\" " +
+              "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -514,18 +515,18 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
     @AfterClass
     public static void tearDown() {
         if (ddlDrop) {
-        	runDdl(conn, DROP_COMPLEXPKG2_PACKAGE_BODY, ddlDebug);
-        	runDdl(conn, DROP_COMPLEXPKG2_PACKAGE, ddlDebug);
-        	runDdl(conn, DROP_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
-        	runDdl(conn, DROP_COMPLEXPKG2_COMPLEXRECORD_TYPE, ddlDebug);
+            runDdl(conn, DROP_COMPLEXPKG2_PACKAGE_BODY, ddlDebug);
+            runDdl(conn, DROP_COMPLEXPKG2_PACKAGE, ddlDebug);
+            runDdl(conn, DROP_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
+            runDdl(conn, DROP_COMPLEXPKG2_COMPLEXRECORD_TYPE, ddlDebug);
             runDdl(conn, DROP_COMPLEXPKG2_MORECOMPLEXRECORD_TYPE, ddlDebug);
             runDdl(conn, DROP_A_CUSTOMER2_TYPE, ddlDebug);
             runDdl(conn, DROP_A_CONTACT2_TYPE, ddlDebug);
-        	runDdl(conn, DROP_A_PHONE2_TYPE_VARRAY, ddlDebug);
+            runDdl(conn, DROP_A_PHONE2_TYPE_VARRAY, ddlDebug);
             runDdl(conn, DROP_A_PHONE2_TYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_A_PHONE2_TYPE, ddlDebug);
-        	runDdl(conn, DROP_COMPLEXPKG2_TAB1_TYPE, ddlDebug);
-        	runDdl(conn, DROP_VARCHAR2ARRAY_TYPE, ddlDebug);
+            runDdl(conn, DROP_COMPLEXPKG2_TAB1_TYPE, ddlDebug);
+            runDdl(conn, DROP_VARCHAR2ARRAY_TYPE, ddlDebug);
         }
     }
 
@@ -682,7 +683,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(VARRAY3_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void tableAndVArrayToTableTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -700,7 +701,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(TABLE3_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void recordToVArrayTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -732,7 +733,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(APHONE2_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void varrayToRecordTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -901,7 +902,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
           "<item>(613)111-2222</item>" +
           "<item>(613)222-3333</item>" +
         "</complexpkg2_tab1Type>";
-    
+
     public static final String PHONE_VARRAY_XML =
         STANDALONE_XML_HEADER +
         "<varchar2arrayType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -950,7 +951,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
           "<home>(613)111-2222</home>" +
           "<cell>(613)222-3333</cell>" +
         "</a_phone2_typeType>";
-    
+
     public static final String APHONE2_XML =
         STANDALONE_XML_HEADER +
         "<a_phone2_typeType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -961,45 +962,45 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         STANDALONE_XML_HEADER +
         "<a_phone2_type_varrayType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>" +
-          	"<home>(613)111-2222</home>" +
-          	"<cell>(613)222-3333</cell>" +
+              "<home>(613)111-2222</home>" +
+              "<cell>(613)222-3333</cell>" +
           "</item>" +
           "<item>" +
-          	"<home>(613)111-2222</home>" +
-          	"<cell>(613)333-4444</cell>" +
+              "<home>(613)111-2222</home>" +
+              "<cell>(613)333-4444</cell>" +
           "</item>" +
         "</a_phone2_type_varrayType>";
     public static final String SIMPLE_RECORD_XML =
-	    STANDALONE_XML_HEADER +
-	    "<complexpkg2_simplerecordType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	      "<sr1>(613)333-4444</sr1>" +
-	      "<sr2>(613)444-5555</sr2>" +
-	    "</complexpkg2_simplerecordType>";
+        STANDALONE_XML_HEADER +
+        "<complexpkg2_simplerecordType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<sr1>(613)333-4444</sr1>" +
+          "<sr2>(613)444-5555</sr2>" +
+        "</complexpkg2_simplerecordType>";
     public static final String SIMPLE_RECORD2_XML =
-	    STANDALONE_XML_HEADER +
-	    "<complexpkg2_simplerecordType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	      "<sr1>(613)111-2222</sr1>" +
-	      "<sr2>(613)333-4444</sr2>" +
-	    "</complexpkg2_simplerecordType>";
-    public static final String PHONE_TYPE_TABLE_XML = 
-    	STANDALONE_XML_HEADER +
-    	"<a_phone2_type_tableType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-    	  "<item>" +
-    	    "<home>(613)333-4444</home>" +
-    	    "<cell>(613)444-5555</cell>" +
-    	  "</item>" +
-    	  "<item>" +
-    	    "<home>(613)111-2222</home>" +
-    	    "<cell>(613)222-3333</cell>" +
-    	  "</item>" +
-    	"</a_phone2_type_tableType>";
-    public static final String CUSTOMER_TYPE_XML = 
+        STANDALONE_XML_HEADER +
+        "<complexpkg2_simplerecordType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<sr1>(613)111-2222</sr1>" +
+          "<sr2>(613)333-4444</sr2>" +
+        "</complexpkg2_simplerecordType>";
+    public static final String PHONE_TYPE_TABLE_XML =
+        STANDALONE_XML_HEADER +
+        "<a_phone2_type_tableType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<item>" +
+            "<home>(613)333-4444</home>" +
+            "<cell>(613)444-5555</cell>" +
+          "</item>" +
+          "<item>" +
+            "<home>(613)111-2222</home>" +
+            "<cell>(613)222-3333</cell>" +
+          "</item>" +
+        "</a_phone2_type_tableType>";
+    public static final String CUSTOMER_TYPE_XML =
         STANDALONE_XML_HEADER +
         "<a_customer2_typeType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<name>John</name>" +
           "<name>Q</name>" +
           "<name>Oracle</name>" +
-          "<age>41</age>" + 
+          "<age>41</age>" +
           "<contact>" +
             "<address>1234 Somewhere St, Ottawa, ON</address>" +
             "<phone>" +
@@ -1008,16 +1009,16 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "</phone>" +
           "</contact>" +
         "</a_customer2_typeType>";
-    public static final String CONTACT_TYPE_XML = 
+    public static final String CONTACT_TYPE_XML =
         STANDALONE_XML_HEADER +
         "<a_contact2_typeType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-	        "<address>1234 Somewhere St, Ottawa, ON</address>" +
-	        "<phone>" +
-	          "<home>(613)555-1234</home>" +
-	          "<cell>(613)555-4321</cell>" +
-	        "</phone>" +
+            "<address>1234 Somewhere St, Ottawa, ON</address>" +
+            "<phone>" +
+              "<home>(613)555-1234</home>" +
+              "<cell>(613)555-4321</cell>" +
+            "</phone>" +
         "</a_contact2_typeType>";
-    public static final String COMPLEX_RECORD_XML = 
+    public static final String COMPLEX_RECORD_XML =
         STANDALONE_XML_HEADER +
         "<complexpkg2_complexrecordType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<cr1>66</cr1>" +
@@ -1044,18 +1045,18 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "</item>" +
           "</cr4>" +
         "</complexpkg2_complexrecordType>";
-    
-    public static final String MORECOMPLEX_RECORD_XML = 
+
+    public static final String MORECOMPLEX_RECORD_XML =
         STANDALONE_XML_HEADER +
         "<complexpkg2_morecomplexrecordType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<mcr1>" +
               "<item>" +
-              	"<home>(613)111-2222</home>" +
+                  "<home>(613)111-2222</home>" +
                 "<cell>(613)222-3333</cell>" +
               "</item>" +
               "<item>" +
-              	"<home>(613)111-2222</home>" +
-              	"<cell>(613)333-4444</cell>" +
+                  "<home>(613)111-2222</home>" +
+                  "<cell>(613)333-4444</cell>" +
               "</item>" +
             "</mcr1>" +
         "</complexpkg2_morecomplexrecordType>";

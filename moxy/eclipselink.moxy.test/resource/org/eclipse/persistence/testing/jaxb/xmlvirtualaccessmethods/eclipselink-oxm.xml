@@ -36,7 +36,7 @@
                 <xml-element java-attribute="hex" type="[B">
                     <xml-schema-type name="hexBinary" />
                 </xml-element>
-                <!-- 
+                <!--
                 <xml-element java-attribute="bigByteArray" type="[Ljava.lang.Byte;"/>
                 -->
                 <xml-element java-attribute="myStringArray" type="[Ljava.lang.String;"/>

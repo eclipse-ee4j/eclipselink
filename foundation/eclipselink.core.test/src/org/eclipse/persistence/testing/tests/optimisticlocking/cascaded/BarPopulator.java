@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.optimisticlocking.cascaded;
 
 import java.util.*;
@@ -27,91 +27,91 @@ public class BarPopulator {
         award.setDescription("1997 - Most tips collected.");
         return award;
     }
-    
+
     public Award awardExample2() {
         Award award = new Award();
         award.setDescription("1998 - Most tips collected.");
         return award;
     }
-    
+
     public Award awardExample3() {
         Award award = new Award();
         award.setDescription("1999 - Most tips collected.");
         return award;
     }
-    
+
     public Award awardExample4() {
         Award award = new Award();
         award.setDescription("2000 - Most tips collected.");
         return award;
     }
-    
+
     public Award awardExample5() {
         Award award = new Award();
         award.setDescription("2001 - Most tips collected.");
         return award;
     }
-    
+
     public Award awardExample6() {
         Award award = new Award();
         award.setDescription("2002 - Most tips collected.");
         return award;
     }
-    
+
     public Award awardExample7() {
         Award award = new Award();
         award.setDescription("2003 - Most tips collected.");
         return award;
     }
-    
+
     public Award awardExample8() {
         Award award = new Award();
         award.setDescription("2004 - Most tips collected.");
         return award;
     }
-    
+
     public Award awardExample9() {
         Award award = new Award();
         award.setDescription("2005 - Most tips collected.");
         return award;
     }
-    
+
     public Award awardExample10() {
         Award award = new Award();
         award.setDescription("2000 - Golden hand award.");
         return award;
     }
-    
+
     public Award awardExample11() {
         Award award = new Award();
         award.setDescription("2001 - Golden hand award.");
         return award;
     }
-    
+
     public Award awardExample12() {
         Award award = new Award();
         award.setDescription("2002 - Golden hand award.");
         return award;
     }
-    
+
     public Award awardExample13() {
         Award award = new Award();
         award.setDescription("2003 - Golden hand award.");
         return award;
     }
-    
+
     public Award awardExample14() {
         Award award = new Award();
         award.setDescription("2004 - Golden hand award.");
         return award;
     }
-    
+
     public Award awardExample15() {
         Award award = new Award();
         award.setDescription("2005 - Golden hand award.");
         return award;
     }
-    
+
     public Bar barExample1() {
         if (containsObject(Bar.class, "0001")) {
             return (Bar) getObject(Bar.class, "0001");
@@ -126,7 +126,7 @@ public class BarPopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        
+
         registerObject(Bar.class, bar, "0001");
         return bar;
     }
@@ -146,7 +146,7 @@ public class BarPopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        
+
         registerObject(Bar.class, bar, "0002");
         return bar;
     }
@@ -166,7 +166,7 @@ public class BarPopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        
+
         registerObject(Bar.class, bar, "0003");
         return bar;
     }
@@ -188,11 +188,11 @@ public class BarPopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        
+
         registerObject(Bar.class, bar, "0004");
         return bar;
     }
-    
+
     public Bartender bartenderExample1() {
         Bartender bartender = new Bartender();
         bartender.setFirstName("Jason");
@@ -224,7 +224,7 @@ public class BarPopulator {
         bartender.setQualification(qualificationExample4());
         return bartender;
     }
-    
+
     public Bartender bartenderExample5() {
         Bartender bartender = new Bartender();
         bartender.setFirstName("Dale");
@@ -232,7 +232,7 @@ public class BarPopulator {
         bartender.setQualification(qualificationExample5());
         return bartender;
     }
-    
+
     public Bartender bartenderExample6() {
         Bartender bartender = new Bartender();
         bartender.setFirstName("Cuong");
@@ -240,7 +240,7 @@ public class BarPopulator {
         bartender.setQualification(qualificationExample6());
         return bartender;
     }
-    
+
     public Bartender bartenderExample7() {
         Bartender bartender = new Bartender();
         bartender.setFirstName("David");
@@ -248,7 +248,7 @@ public class BarPopulator {
         bartender.setQualification(qualificationExample7());
         return bartender;
     }
-    
+
     public void buildExamples() {
         PopulationManager.getDefaultManager().getRegisteredObjects().remove(Bar.class);
 
@@ -279,25 +279,25 @@ public class BarPopulator {
         license.setLicenseClass("A");
         return license;
     }
-    
+
     public License licenseExample2() {
         License license = new License();
         license.setLicenseClass("B");
         return license;
     }
-    
+
     public License licenseExample3() {
         License license = new License();
         license.setLicenseClass("C");
         return license;
     }
-    
+
     public License licenseExample4() {
         License license = new License();
         license.setLicenseClass("D");
         return license;
     }
-    
+
     public Qualification qualificationExample1() {
         Qualification qualification = new Qualification();
         qualification.setYearsOfExperience(1);
@@ -305,7 +305,7 @@ public class BarPopulator {
         qualification.addAward(awardExample8());
         return qualification;
     }
-    
+
     public Qualification qualificationExample2() {
         Qualification qualification = new Qualification();
         qualification.setYearsOfExperience(2);
@@ -313,7 +313,7 @@ public class BarPopulator {
         qualification.addAward(awardExample9());
         return qualification;
     }
-    
+
     public Qualification qualificationExample3() {
         Qualification qualification = new Qualification();
         qualification.setYearsOfExperience(3);
@@ -321,7 +321,7 @@ public class BarPopulator {
         qualification.addAward(awardExample10());
         return qualification;
     }
-    
+
     public Qualification qualificationExample4() {
         Qualification qualification = new Qualification();
         qualification.setYearsOfExperience(4);
@@ -329,16 +329,16 @@ public class BarPopulator {
         qualification.addAward(awardExample11());
         return qualification;
     }
-    
+
     public Qualification qualificationExample5() {
         Qualification qualification = new Qualification();
         qualification.setYearsOfExperience(5);
         qualification.addAward(awardExample5());
         qualification.addAward(awardExample12());
-        
+
         return qualification;
     }
-    
+
     public Qualification qualificationExample6() {
         Qualification qualification = new Qualification();
         qualification.setYearsOfExperience(6);
@@ -346,7 +346,7 @@ public class BarPopulator {
         qualification.addAward(awardExample13());
         return qualification;
     }
-    
+
     public Qualification qualificationExample7() {
         Qualification qualification = new Qualification();
         qualification.setYearsOfExperience(7);
@@ -355,7 +355,7 @@ public class BarPopulator {
         qualification.addAward(awardExample15());
         return qualification;
     }
-    
+
     protected void registerObject(Class domainClass, Object domainObject, String identifier) {
         populationManager.registerObject(domainClass, domainObject, identifier);
     }

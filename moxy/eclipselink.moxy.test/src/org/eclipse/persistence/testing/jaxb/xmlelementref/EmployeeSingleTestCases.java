@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -18,11 +18,11 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class EmployeeSingleTestCases  extends JAXBWithJSONTestCases {
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/employee-single.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/employee-single.json";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/employee-single.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/employee-single.json";
 
-	public EmployeeSingleTestCases(String name) throws Exception {
-		super(name);
+    public EmployeeSingleTestCases(String name) throws Exception {
+        super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
@@ -31,9 +31,9 @@ public class EmployeeSingleTestCases  extends JAXBWithJSONTestCases {
     }
 
     protected Object getControlObject() {
-    	EmployeeSingle employee = new EmployeeSingle();
-	    employee.intRoot = new JAXBElement(new QName("myns", "integer-root"), Integer.class, new Integer(21));
-	    return employee;
-	 }
+        EmployeeSingle employee = new EmployeeSingle();
+        employee.intRoot = new JAXBElement(new QName("myns", "integer-root"), Integer.class, new Integer(21));
+        return employee;
+     }
 
 }

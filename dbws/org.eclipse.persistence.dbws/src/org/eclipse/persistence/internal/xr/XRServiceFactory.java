@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -190,7 +190,7 @@ public class XRServiceFactory  {
     static final String DEFAULT_PROJECT_NAME = "org.eclipse.persistence.sessions.Project";
     static final String COLLECTION_WRAPPER_STR = UNDERSCORE_STR + org.eclipse.persistence.internal.xr.Util.COLLECTION_WRAPPER_STR;
     static final String SIMPLE_XML_FORMAT_STR = "simple-xml-format";
-    
+
     public XRServiceFactory() {
         super();
     }
@@ -247,29 +247,29 @@ public class XRServiceFactory  {
         xrService.schema = schema;
         xrService.schemaNamespace = targetNamespace;
     }
-    
+
     /**
      * <p>INTERNAL:
-     * Create a Project using ORM metadata.  The given classloader is expected 
+     * Create a Project using ORM metadata.  The given classloader is expected
      * to successfully load 'META-INF/eclipselink-dbws-or.xml'.
      */
-    protected Project loadORMetadata(XRDynamicClassLoader xrdecl, ServerSession session) {        
+    protected Project loadORMetadata(XRDynamicClassLoader xrdecl, ServerSession session) {
         Project orProject = null;
         String searchPath = null;
         InputStream inStream = null;
-        
+
         // try "META-INF/" and "/META-INF/"
         for (String prefix : META_INF_PATHS) {
             searchPath = prefix + Util.DBWS_OR_XML;
             inStream = xrdecl.getResourceAsStream(searchPath);
-            if (inStream != null) {    
+            if (inStream != null) {
                 break;
             }
         }
 
         try {
             if (inStream != null) {
-                MetadataProcessor processor = new MetadataProcessor(new XRPersistenceUnitInfo(xrdecl), 
+                MetadataProcessor processor = new MetadataProcessor(new XRPersistenceUnitInfo(xrdecl),
                         session, xrdecl, false, true, false, false, false, null, null);
                 processor.setMetadataSource(new JPAMetadataSource(xrdecl, new InputStreamReader(inStream)));
                 PersistenceUnitProcessor.processORMetadata(processor, true, PersistenceUnitProcessor.Mode.ALL);
@@ -282,17 +282,17 @@ public class XRServiceFactory  {
         }
         return orProject;
     }
-    
+
     /**
      * <p>INTERNAL:
-     * Create a Project using OXM metadata.  The given classloader is expected 
+     * Create a Project using OXM metadata.  The given classloader is expected
      * to successfully load 'META-INF/eclipselink-dbws-ox.xml'.
      */
     protected Project loadOXMetadata(ClassLoader xrdecl) {
         Project oxProject = null;
         InputStream inStream = null;
         String searchPath = null;
-        
+
         // try "META-INF/" and "/META-INF/"
         for (String prefix : META_INF_PATHS) {
             searchPath = prefix + Util.DBWS_OX_XML;
@@ -307,7 +307,7 @@ public class XRServiceFactory  {
             try {
                 JAXBContext jc = JAXBContext.newInstance(XmlBindingsModel.class);
                 Unmarshaller unmarshaller = jc.createUnmarshaller();
-                
+
                 JAXBElement<XmlBindingsModel> jaxbElt = unmarshaller.unmarshal(xml, XmlBindingsModel.class);
                 XmlBindingsModel model = jaxbElt.getValue();
                 if (model.getBindingsList() != null) {
@@ -320,7 +320,7 @@ public class XRServiceFactory  {
                 /* could be legacy project, or none set, so ignore */
                 return null;
             }
-            
+
             if (metadataMap != null) {
                 Map<String, Map<String, OXMMetadataSource>> properties = new HashMap<String, Map<String, OXMMetadataSource>>();
                 properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
@@ -332,32 +332,32 @@ public class XRServiceFactory  {
                     throw new DBWSException(OXM_PROCESSING_EX, e);
                 }
             }
-        }       
-        return oxProject; 
+        }
+        return oxProject;
     }
-    
+
     /**
      * <p>INTERNAL:
-     * 
+     *
      * Perform any post-load descriptor modifications, such as altering attribute classification
      * on a given mapping, or converting class names to classes.  In addition, JAXB and JPA
      * Embeddables will have the descriptor alias set to the class name (w/o package), which
-     * will contain an upper case first character, meaning that the OR/OX descriptors will 
-     * have to be aligned in some cases. 
+     * will contain an upper case first character, meaning that the OR/OX descriptors will
+     * have to be aligned in some cases.
      */
     protected static void prepareDescriptors(Project oxProject, Project orProject, XRDynamicClassLoader xrdcl) {
-    	// step one:  remove default dummy alias descriptor (i.e. alias = "")
+        // step one:  remove default dummy alias descriptor (i.e. alias = "")
         if (orProject.getAliasDescriptors() != null) {
-        	orProject.getAliasDescriptors().remove("");
+            orProject.getAliasDescriptors().remove("");
         }
 
-    	// step two:  align OR/OX alias names, handle JAXB DataHandler issue, and convert OR class names to classes
+        // step two:  align OR/OX alias names, handle JAXB DataHandler issue, and convert OR class names to classes
         if (oxProject.getAliasDescriptors() != null) {
             for (Object alias : oxProject.getAliasDescriptors().keySet()) {
                 if (alias.equals(SIMPLE_XML_FORMAT_STR)) {
                     continue;
                 }
-                // workaround for JAXB validation:  JAXB expects a DataHandler in the 
+                // workaround for JAXB validation:  JAXB expects a DataHandler in the
                 // object model for SwaRef, whereas we want to work with a byte[]
                 XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(alias);
                 for (DatabaseMapping mapping : xdesc.getMappings()) {
@@ -372,32 +372,32 @@ public class XRServiceFactory  {
                     // step three:  align OR alias and ordered descriptors (alias names and mappings)
                     ClassDescriptor orderedDescriptor = getDescriptorForClassName(orProject, odesc.getJavaClassName());
                     if (orderedDescriptor != null) {
-                    	orderedDescriptor.setAlias(alias.toString());
-                    	//orderedDescriptor.setJavaClass(odesc.getJavaClass());
-                    	orderedDescriptor.setJavaClassName(odesc.getJavaClassName());
-                    	// need to convert class names to classes such that reference classes, etc are setup
-                    	orderedDescriptor.convertClassNamesToClasses(xrdcl);
-                    	// replace the incomplete descriptor in the alias map with this one
-                    	orProject.addAlias(orderedDescriptor.getAlias(), orderedDescriptor);
+                        orderedDescriptor.setAlias(alias.toString());
+                        //orderedDescriptor.setJavaClass(odesc.getJavaClass());
+                        orderedDescriptor.setJavaClassName(odesc.getJavaClassName());
+                        // need to convert class names to classes such that reference classes, etc are setup
+                        orderedDescriptor.convertClassNamesToClasses(xrdcl);
+                        // replace the incomplete descriptor in the alias map with this one
+                        orProject.addAlias(orderedDescriptor.getAlias(), orderedDescriptor);
                     }
                 }
             }
-        }   	
+        }
     }
-    
+
     /**
      * Returns a ClassDescriptor from the given project with the matching javaClassName,
      * or null if not found.
      */
     protected static ClassDescriptor getDescriptorForClassName(Project project, String javaClassName) {
-    	for (ClassDescriptor cd : project.getOrderedDescriptors()) {
-    		if (cd != null && cd.getJavaClassName().equals(javaClassName)) {
-    			return cd;
-    		}
-    	}
-    	return null;
+        for (ClassDescriptor cd : project.getOrderedDescriptors()) {
+            if (cd != null && cd.getJavaClassName().equals(javaClassName)) {
+                return cd;
+            }
+        }
+        return null;
     }
-    
+
     /**
      * <p>INTERNAL:
      */
@@ -423,7 +423,7 @@ public class XRServiceFactory  {
         if (!found) {
             throw DBWSException.couldNotLocateFile(DBWS_SESSIONS_XML);
         }
-        
+
         // make sure the OR/OX sessions were loaded successfully
         Map sessions = sessionManager.getSessions();
         String orSessionKey = xrService.name + DASH_STR + DBWS_OR_SESSION_NAME_SUFFIX;
@@ -436,21 +436,21 @@ public class XRServiceFactory  {
         }
         xrService.orSession = (Session) sessions.get(orSessionKey);
         xrService.oxSession = (Session) sessions.get(oxSessionKey);
-        
+
         // load OX project via xml-bindings
         Project oxProject = null;
         if ((oxProject = loadOXMetadata(projectLoader)) == null) {
             // at this point we may have a legacy deployment XML project, or none set
             oxProject = xrService.oxSession.getProject();
             // check to see if it's a default Project
-            if (oxProject.getName().length() == 0) {                
+            if (oxProject.getName().length() == 0) {
                 // default to SimpleXMLFormat
                 oxProject = new SimpleXMLFormatProject();
             }
         }
         ((XMLLogin) oxProject.getDatasourceLogin()).setPlatformClassName(DOM_PLATFORM_CLASSNAME);
         ((XMLLogin) oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
-        
+
         // load OR project via entity-mappings
         Project orProject = null;
         if ((orProject = loadORMetadata(projectLoader, (ServerSession) xrService.orSession)) == null) {
@@ -458,10 +458,10 @@ public class XRServiceFactory  {
             orProject = xrService.orSession.getProject();
             updateFindQueryNames(orProject);
         }
-        
+
         prepareDescriptors(oxProject, orProject, projectLoader);
         ProjectHelper.fixOROXAccessors(orProject, oxProject);
-        
+
         xrService.xmlContext = new XMLContext(oxProject);
         xrService.oxSession = xrService.xmlContext.getSession(0);
     }
@@ -583,7 +583,7 @@ public class XRServiceFactory  {
 
     /**
      * <p>INTERNAL:
-     * 
+     *
      * Legacy projects have 'findAll' and 'findByPrimaryKey' queries, whereas we now
      * expect these to have the descriptor alias appended (preceded with underscore),
      * + 'Type'.  For example, if we have an Employee descriptor, the find queries
@@ -608,18 +608,18 @@ public class XRServiceFactory  {
     // Made static final for performance reasons.
     /**
      * <p>INTERNAL:
-     * 
+     *
      * Implementation of MetadataSource to allow passing XmlBindings
      * to the DynamicJAXBContextFactory
      *
      */
     public static final class OXMMetadataSource implements MetadataSource {
         XmlBindings xmlbindings;
-        
+
         public OXMMetadataSource(XmlBindings bindings) {
             xmlbindings = bindings;
         }
-        
+
         @Override
         public XmlBindings getXmlBindings(Map<String, ?> properties, ClassLoader classLoader) {
             return xmlbindings;
@@ -629,7 +629,7 @@ public class XRServiceFactory  {
     // Made static final for performance reasons.
     /**
      * <p>INTERNAL:
-     * 
+     *
      * Implementation of MetadataSource to allow passing JPA metadata to the
      * MetadataProcessor.
      *
@@ -637,27 +637,27 @@ public class XRServiceFactory  {
     public static final class JPAMetadataSource implements org.eclipse.persistence.jpa.metadata.MetadataSource {
         XRDynamicClassLoader xrdecl;
         Reader reader;
-        
+
         public JPAMetadataSource(XRDynamicClassLoader loader, Reader reader) {
             xrdecl = loader;
             this.reader = reader;
         }
-        
+
         @Override
         public Map<String, Object> getPropertyOverrides(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
             return null;
         }
-        
+
         @Override
-        public XMLEntityMappings getEntityMappings(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {            
+        public XMLEntityMappings getEntityMappings(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
             return XMLEntityMappingsReader.read(ORM_MAPPINGS_STR, reader, xrdecl, null);
         }
-    }                  
+    }
 
     // Made static final for performance reasons.
     /**
      * <p>INTERNAL:
-     * 
+     *
      * PersistenceUnitInfo implementation to allow creation of a MetadataProcessor
      * instance.  Other than an XRDynamicClassLoader instance, all methods return
      * null, empty lists, etc.

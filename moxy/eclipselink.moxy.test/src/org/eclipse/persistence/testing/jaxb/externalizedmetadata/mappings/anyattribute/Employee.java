@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,25 +48,25 @@ public class Employee {
 
         Map thisStuff = this.stuff;
         Map otherStuff = empObj.stuff;
-            
+
         if (thisStuff == null) {
-            return (otherStuff == null || otherStuff.size() == 0); 
-        } 
+            return (otherStuff == null || otherStuff.size() == 0);
+        }
 
         if (otherStuff == null) {
-            return (thisStuff.size() == 0); 
-        } 
+            return (thisStuff.size() == 0);
+        }
 
         if (thisStuff.size() != otherStuff.size()) {
             return false;
         }
-        
+
         Iterator values1 = thisStuff.keySet().iterator();
         while(values1.hasNext()) {
             Object key1 = values1.next();
             Object value1 = thisStuff.get(key1);
             Object value2 = otherStuff.get(key1);
-            
+
             if (!(value1.equals(value2))) {
                 return false;
             }

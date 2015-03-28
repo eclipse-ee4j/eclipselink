@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -40,49 +40,49 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionExcep
  *  @see DebugEventHub
  */
 public class DebugEventRepeater implements DebugEventListener {
-	protected DebugEventListener listener;
+    protected DebugEventListener listener;
 
-	public DebugEventRepeater(DebugEventListener listener) {
-		this.listener = listener;
-	}
-	
-	public void enterRule(String grammarFileName, String ruleName) { listener.enterRule(grammarFileName, ruleName); }
-	public void exitRule(String grammarFileName, String ruleName) { listener.exitRule(grammarFileName, ruleName); }
-	public void enterAlt(int alt) { listener.enterAlt(alt); }
-	public void enterSubRule(int decisionNumber) { listener.enterSubRule(decisionNumber); }
-	public void exitSubRule(int decisionNumber) { listener.exitSubRule(decisionNumber); }
-	public void enterDecision(int decisionNumber) { listener.enterDecision(decisionNumber); }
-	public void exitDecision(int decisionNumber) { listener.exitDecision(decisionNumber); }
-	public void location(int line, int pos) { listener.location(line, pos); }
-	public void consumeToken(Token token) { listener.consumeToken(token); }
-	public void consumeHiddenToken(Token token) { listener.consumeHiddenToken(token); }
-	public void LT(int i, Token t) { listener.LT(i, t); }
-	public void mark(int i) { listener.mark(i); }
-	public void rewind(int i) { listener.rewind(i); }
-	public void rewind() { listener.rewind(); }
-	public void beginBacktrack(int level) { listener.beginBacktrack(level); }
-	public void endBacktrack(int level, boolean successful) { listener.endBacktrack(level, successful); }
-	public void recognitionException(RecognitionException e) { listener.recognitionException(e); }
-	public void beginResync() { listener.beginResync(); }
-	public void endResync() { listener.endResync(); }
-	public void semanticPredicate(boolean result, String predicate) { listener.semanticPredicate(result, predicate); }
-	public void commence() { listener.commence(); }
-	public void terminate() { listener.terminate(); }
+    public DebugEventRepeater(DebugEventListener listener) {
+        this.listener = listener;
+    }
 
-	// Tree parsing stuff
+    public void enterRule(String grammarFileName, String ruleName) { listener.enterRule(grammarFileName, ruleName); }
+    public void exitRule(String grammarFileName, String ruleName) { listener.exitRule(grammarFileName, ruleName); }
+    public void enterAlt(int alt) { listener.enterAlt(alt); }
+    public void enterSubRule(int decisionNumber) { listener.enterSubRule(decisionNumber); }
+    public void exitSubRule(int decisionNumber) { listener.exitSubRule(decisionNumber); }
+    public void enterDecision(int decisionNumber) { listener.enterDecision(decisionNumber); }
+    public void exitDecision(int decisionNumber) { listener.exitDecision(decisionNumber); }
+    public void location(int line, int pos) { listener.location(line, pos); }
+    public void consumeToken(Token token) { listener.consumeToken(token); }
+    public void consumeHiddenToken(Token token) { listener.consumeHiddenToken(token); }
+    public void LT(int i, Token t) { listener.LT(i, t); }
+    public void mark(int i) { listener.mark(i); }
+    public void rewind(int i) { listener.rewind(i); }
+    public void rewind() { listener.rewind(); }
+    public void beginBacktrack(int level) { listener.beginBacktrack(level); }
+    public void endBacktrack(int level, boolean successful) { listener.endBacktrack(level, successful); }
+    public void recognitionException(RecognitionException e) { listener.recognitionException(e); }
+    public void beginResync() { listener.beginResync(); }
+    public void endResync() { listener.endResync(); }
+    public void semanticPredicate(boolean result, String predicate) { listener.semanticPredicate(result, predicate); }
+    public void commence() { listener.commence(); }
+    public void terminate() { listener.terminate(); }
 
-	public void consumeNode(Object t) { listener.consumeNode(t); }
-	public void LT(int i, Object t) { listener.LT(i, t); }
+    // Tree parsing stuff
 
-	// AST Stuff
+    public void consumeNode(Object t) { listener.consumeNode(t); }
+    public void LT(int i, Object t) { listener.LT(i, t); }
 
-	public void nilNode(Object t) { listener.nilNode(t); }
-	public void errorNode(Object t) { listener.errorNode(t); }
-	public void createNode(Object t) { listener.createNode(t); }
-	public void createNode(Object node, Token token) { listener.createNode(node, token); }
-	public void becomeRoot(Object newRoot, Object oldRoot) { listener.becomeRoot(newRoot, oldRoot); }
-	public void addChild(Object root, Object child) { listener.addChild(root, child); }
-	public void setTokenBoundaries(Object t, int tokenStartIndex, int tokenStopIndex) {
-		listener.setTokenBoundaries(t, tokenStartIndex, tokenStopIndex);
-	}
+    // AST Stuff
+
+    public void nilNode(Object t) { listener.nilNode(t); }
+    public void errorNode(Object t) { listener.errorNode(t); }
+    public void createNode(Object t) { listener.createNode(t); }
+    public void createNode(Object node, Token token) { listener.createNode(node, token); }
+    public void becomeRoot(Object newRoot, Object oldRoot) { listener.becomeRoot(newRoot, oldRoot); }
+    public void addChild(Object root, Object child) { listener.addChild(root, child); }
+    public void setTokenBoundaries(Object t, int tokenStartIndex, int tokenStopIndex) {
+        listener.setTokenBoundaries(t, tokenStartIndex, tokenStopIndex);
+    }
 }

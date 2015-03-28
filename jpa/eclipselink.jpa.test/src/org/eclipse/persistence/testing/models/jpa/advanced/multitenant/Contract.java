@@ -1,20 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     04/21/2011-2.3 Guy Pelletier 
+ *     04/21/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 5)
- *     06/1/2011-2.3 Guy Pelletier 
+ *     06/1/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 9)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
 import java.util.Collection;
@@ -76,7 +76,7 @@ public class Contract {
         soldiers.add(soldier);
         soldier.addContract(this);
     }
-    
+
     @Column(name="DESCRIP")
     public String getDescription() {
         return description;
@@ -85,8 +85,8 @@ public class Contract {
     @Id
     @Column(name="ID")
     @GeneratedValue
-    public int getId() { 
-        return id; 
+    public int getId() {
+        return id;
     }
 
     @ManyToMany(cascade=ALL)
@@ -95,36 +95,36 @@ public class Contract {
         joinColumns=@JoinColumn(name="CONTRACT_ID"),
         inverseJoinColumns=@JoinColumn(name="SOLDIER_ID")
     )
-    public Collection<Soldier> getSoldiers() { 
-        return soldiers; 
+    public Collection<Soldier> getSoldiers() {
+        return soldiers;
     }
-    
+
     @Column(name="TENANT_ID", insertable=false, updatable=false)
     public String getTenantId() {
         return tenantId;
     }
-    
+
     @Version
     public Integer getVersion() {
-        return version; 
+        return version;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    public void setId(int id) { 
-        this.id = id; 
+
+    public void setId(int id) {
+        this.id = id;
     }
-    
+
     public void setSoldiers(Collection<Soldier> soldiers) {
         this.soldiers = soldiers;
     }
-    
+
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
     }
-    
+
     public void setVersion(Integer version) {
         this.version = version;
     }

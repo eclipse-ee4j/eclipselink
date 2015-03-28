@@ -20,15 +20,15 @@
          <productName>Lawnmower</productName>
          <USPrice>148.95</USPrice>
          <comment>Confirm this is electric</comment>
-	     <specialOrder>true</specialOrder>
-		 <partsList>
-		     <partNumber>1</partNumber>
-		     <partNumber>2</partNumber>
-		     <partNumber>3</partNumber>
-		     <partNumber>4</partNumber>
-		     <partNumber>5</partNumber>
-		     <partNumber>6</partNumber>
-		 </partsList>
+         <specialOrder>true</specialOrder>
+         <partsList>
+             <partNumber>1</partNumber>
+             <partNumber>2</partNumber>
+             <partNumber>3</partNumber>
+             <partNumber>4</partNumber>
+             <partNumber>5</partNumber>
+             <partNumber>6</partNumber>
+         </partsList>
       </item>
       <item partNum="926-AA" quantity="1">
          <productName>Baby Monitor</productName>
@@ -37,27 +37,27 @@
          <shipDate>1999-05-21</shipDate>
          <comment>This item requires batteries</comment>
          <comment>Also runs on AC</comment>
-	     <specialOrder>false</specialOrder>
-		 <partsList>
-		     <partNumber>1</partNumber>
-		     <partNumber>8</partNumber>
-		     <partNumber>9</partNumber>
-		     <partNumber>23</partNumber>
-		 </partsList>
+         <specialOrder>false</specialOrder>
+         <partsList>
+             <partNumber>1</partNumber>
+             <partNumber>8</partNumber>
+             <partNumber>9</partNumber>
+             <partNumber>23</partNumber>
+         </partsList>
       </item>
       <item partNum="32-AQ" quantity="5">
          <productName>Battery</productName>
          <CDNPrice>2.98</CDNPrice>
          <exchangeRate>1.3</exchangeRate>
          <shipDate>2007-06-01</shipDate>
-	     <specialOrder>false</specialOrder>
+         <specialOrder>false</specialOrder>
       </item>
       <item partNum="555" quantity="3">
          <productName>Rake</productName>
          <CDNPrice>12.98</CDNPrice>
          <exchangeRate>1.3</exchangeRate>
          <shipDate>2007-01-31</shipDate>
-	     <specialOrder>true</specialOrder>
+         <specialOrder>true</specialOrder>
       </item>
    </items>
    <customer namePrefix="Dr.">

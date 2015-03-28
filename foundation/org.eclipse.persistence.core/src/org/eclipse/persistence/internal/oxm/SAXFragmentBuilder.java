@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.Iterator;
@@ -100,7 +100,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         if (null != namespaceDeclarations) {
             Iterator namespaces = namespaceDeclarations.entrySet().iterator();
             while (namespaces.hasNext()) {
-            	Map.Entry entry = (Map.Entry)namespaces.next();
+                Map.Entry entry = (Map.Entry)namespaces.next();
                 addNamespaceDeclaration(element, (String)entry.getKey(), (String)entry.getValue());
             }
             namespaceDeclarations = null;
@@ -138,9 +138,9 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             }
 
             while(owningRecord.isSelfRecord() && owningRecord.getParentRecord() != null){
-            	owningRecord = owningRecord.getParentRecord();
+                owningRecord = owningRecord.getParentRecord();
             }
-            
+
             //just the doc left in the stack. Finish this off.
             owningRecord.getXMLReader().setContentHandler(owningRecord);
             owningRecord.endElement(namespaceURI, localName, qName);
@@ -150,17 +150,17 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         }
     }
 
-    
-    
-    public void endSelfElement(String namespaceURI, String localName, String qName) throws SAXException {        
-    	
-    	if (super.nodes.size() == 2) {
+
+
+    public void endSelfElement(String namespaceURI, String localName, String qName) throws SAXException {
+
+        if (super.nodes.size() == 2) {
             Element endedElement = (Element)nodes.get(nodes.size() -1);
             if (stringBuffer.length() > 0) {
                 Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
                 endedElement.appendChild(text);
                 stringBuffer.reset();
-            }         
+            }
         } else {
             super.endElement(namespaceURI, localName, qName);
         }
@@ -197,13 +197,13 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         }
         return null;
 
-    } 
-    
+    }
+
     /**
      * Adds a namespace declaration to the parent element if the textValue represents a
      * prefixed qualified name. The determination of a qname is based on the existance of a
-     * colon character and the ability to resolve the characters before the colon to a 
-     * namespace uri. 
+     * colon character and the ability to resolve the characters before the colon to a
+     * namespace uri.
      * @param textValue
      * @param parentNode
      */

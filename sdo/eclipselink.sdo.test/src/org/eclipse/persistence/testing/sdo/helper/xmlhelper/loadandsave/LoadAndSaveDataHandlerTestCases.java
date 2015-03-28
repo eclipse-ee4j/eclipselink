@@ -37,12 +37,12 @@ public class LoadAndSaveDataHandlerTestCases extends LoadAndSaveTestCases {
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/schemas/";
     }
-    
+
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/EmployeeWithDataHandler.xml");
     }
 
-    protected String getNoSchemaControlFileName() {     
+    protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/EmployeeWithDataHandler.xml");
     }
 
@@ -53,7 +53,7 @@ public class LoadAndSaveDataHandlerTestCases extends LoadAndSaveTestCases {
     protected String getControlRootName() {
         return "employeeType";
     }
-    
+
     protected String getRootInterfaceName() {
         return "EmployeeType";
     }
@@ -68,11 +68,11 @@ public class LoadAndSaveDataHandlerTestCases extends LoadAndSaveTestCases {
             return null;
         }
     }
-    
+
     protected void generateClasses(String tmpDirName) throws Exception{
         URL url = new URL(getSchemaLocation() + getSchemaName());
         InputStream is = url.openStream();
-        
+
         SDOClassGenerator classGenerator = new SDOClassGenerator(aHelperContext);
 
         DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
@@ -80,7 +80,7 @@ public class LoadAndSaveDataHandlerTestCases extends LoadAndSaveTestCases {
         StreamSource ss = new StreamSource(is);
         classGenerator.generate(ss, tmpDirName, schemaResolver);
     }
-    
+
     public void registerTypes() {
         SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
         SDOType bytesType = (SDOType) typeHelper.getType("commonj.sdo", "Bytes");
@@ -98,7 +98,7 @@ public class LoadAndSaveDataHandlerTestCases extends LoadAndSaveTestCases {
         addProperty(customerType, "name", stringType, false, false, true);
 
         // create a photo property
-        DataObject photoProp = addProperty(customerType, "photo", bytesType, true, true, true);        
+        DataObject photoProp = addProperty(customerType, "photo", bytesType, true, true, true);
 
         // now define the Customer type so that customers can be made
          Type customerSDOType = typeHelper.define(customerType);

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -44,46 +44,46 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
  */
 public final class SessionBrokerSessionsPropertiesPage extends ScrollablePropertiesPage
 {
-	/**
-	 * Creates a new <code>SessionBrokerSessionsPropertiesPage</code>.
-	 *
-	 * @param nodeHolder The holder of {@link SessionBrokerAdapter}
-	 * @param contextHolder
-	 */
-	SessionBrokerSessionsPropertiesPage(PropertyValueModel nodeHolder,
-													WorkbenchContextHolder contextHolder)
-	{
-		super(nodeHolder, contextHolder);
-		addHelpTopicId(this, "session.broker.general.sessions");
-	}
+    /**
+     * Creates a new <code>SessionBrokerSessionsPropertiesPage</code>.
+     *
+     * @param nodeHolder The holder of {@link SessionBrokerAdapter}
+     * @param contextHolder
+     */
+    SessionBrokerSessionsPropertiesPage(PropertyValueModel nodeHolder,
+                                                    WorkbenchContextHolder contextHolder)
+    {
+        super(nodeHolder, contextHolder);
+        addHelpTopicId(this, "session.broker.general.sessions");
+    }
 
-	/**
-	 * Initializes the content of this page.
-	 *
-	 * @return The fully initialized container with all its widgets
-	 */
-	protected Component buildPage()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
+    /**
+     * Initializes the content of this page.
+     *
+     * @return The fully initialized container with all its widgets
+     */
+    protected Component buildPage()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		// Create the container
-		JPanel panel = new JPanel(new GridBagLayout());
+        // Create the container
+        JPanel panel = new JPanel(new GridBagLayout());
 
-		// Sessions list panel
-		SessionsListPane sessionListPane = new SessionsListPane(getSelectionHolder(), getWorkbenchContextHolder());
+        // Sessions list panel
+        SessionsListPane sessionListPane = new SessionsListPane(getSelectionHolder(), getWorkbenchContextHolder());
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 2;
-		constraints.gridwidth  = 3;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 1;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.PAGE_START;
-		constraints.insets     = new Insets(5, 5, 5, 5);
+        constraints.gridx      = 0;
+        constraints.gridy      = 2;
+        constraints.gridwidth  = 3;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 1;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.PAGE_START;
+        constraints.insets     = new Insets(5, 5, 5, 5);
 
-		panel.add(sessionListPane, constraints);
+        panel.add(sessionListPane, constraints);
 
-		return panel;
-	}
+        return panel;
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.util.*;
@@ -60,7 +60,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
 
         // Revived these tests as they were commented out with no reason given.
         addTest(new MergeUnitOfWorkTest(PopulationManager.getDefaultManager().getObject(Employee.class, "0001")));
-        addTest(new RegisterationUnitOfWorkTest(PopulationManager.getDefaultManager().getObject(Employee.class, 
+        addTest(new RegisterationUnitOfWorkTest(PopulationManager.getDefaultManager().getObject(Employee.class,
                                                                                                 "0001")));
         //addTest(new UnitOfWorkConformExceptionTest()); - Test removed as conforming exceptions moved to query level setting and no longer supported correctly.
         addTest(buildRefreshDeletedObjectTest());
@@ -71,13 +71,13 @@ public class UnitOfWorkTestSuite extends TestSuite {
         addTest(new CloneAttributeIfMutableTest());
 
         addSRGTests();
-        
+
         addTest(buildRefReadOnlyTest());
-        
+
         addTest(new BuildCloneFromRowOneToOneTest());
-        
+
         addTest(buildCacheIndexTest());
-        
+
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
@@ -164,7 +164,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
         //CR#3216
         addTest(new UnitOfWorkDeleteNoValidationTest());
 
-        //CR 4094 
+        //CR 4094
         addTest(new GetIdentityMapFromUOWForREADONLYClassTest());
         //code coverage testing
         addTest(new UnitOfWorkCommitToDatabaseTest());
@@ -213,12 +213,12 @@ public class UnitOfWorkTestSuite extends TestSuite {
         addTest(new CollectionMappingMergeObjectTest());
         addTest(new ExceptionsRaisedUnitOfWorkTest());
 
-        //bug 4736360    
+        //bug 4736360
         addTest(new NestedUOWWithNewObjectRegisteredTwiceTest());
-        
+
         addTest(new NestedUnitOfWorkReadOnlyClassTest());
     }
-    
+
     /**
      * Test issue of loss of identity causing loop in cloning with invalidation.
      */
@@ -251,7 +251,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
         test.setDescription("Test issue of loss of identity causing loop in cloning with invalidation.");
         return test;
     }
-    
+
     /**
      * Tests saving a new object with a reference to a read-only object.
      */
@@ -282,7 +282,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
         test.setDescription("Tests saving a new object with a reference to a read-only object.");
         return test;
     }
-    
+
     /**
      * Tests saving a new object with a reference to a read-only object.
      */
@@ -340,7 +340,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
                     if (counter.getSqlStatements().size() > 0) {
                         throwError("Query should have hit cache.");
                     }
-                    
+
                 } finally {
                     counter.remove();
                 }
@@ -349,6 +349,6 @@ public class UnitOfWorkTestSuite extends TestSuite {
         test.setName("CacheIndexTest");
         test.setDescription("Tests cache indexes with new and changed objects.");
         return test;
-    }    
-    
+    }
+
 }

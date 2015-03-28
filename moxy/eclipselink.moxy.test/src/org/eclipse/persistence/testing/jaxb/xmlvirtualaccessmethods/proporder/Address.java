@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,7 +23,7 @@ public class Address {
     public void setStreet(String street) {
         this.street = street;
     }
-    
+
     public boolean equals(Object obj) {
         return street.equals(((Address)obj).getStreet());
     }

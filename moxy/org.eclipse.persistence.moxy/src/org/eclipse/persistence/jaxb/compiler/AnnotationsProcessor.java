@@ -222,7 +222,7 @@ public final class AnnotationsProcessor {
 
     private List<JavaClass> typeInfoClasses;
     private Map<String, PackageInfo> packageToPackageInfoMappings;
-	private HashMap<String, XmlNillableInfo> packageToXmlNillableInfoMappings;
+    private HashMap<String, XmlNillableInfo> packageToXmlNillableInfoMappings;
     private Map<String, MarshalCallback> marshalCallbacks;
     private Map<String, QName> userDefinedSchemaTypes;
     private Map<String, TypeInfo> typeInfos;
@@ -565,7 +565,7 @@ public final class AnnotationsProcessor {
                 info.setXmlTransient(true);
             }
 
-			// handle @XmlElementNillable
+            // handle @XmlElementNillable
             processXmlElementNillable(javaClass, info);
 
             // handle @XmlExtensible
@@ -651,7 +651,7 @@ public final class AnnotationsProcessor {
         return typeInfos;
     }
 
-	private void processXmlElementNillable(JavaClass javaClass, TypeInfo info) {
+    private void processXmlElementNillable(JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(javaClass, XmlElementNillable.class)) {
             XmlElementNillable xmlElementNillable = (XmlElementNillable) helper.getAnnotation(javaClass, XmlElementNillable.class);
             info.setXmlElementNillable(xmlElementNillable.nillable());
@@ -906,7 +906,7 @@ public final class AnnotationsProcessor {
     }
 
     /*
-	* Get virtual property and XmlID information from parent and set it on info if available
+    * Get virtual property and XmlID information from parent and set it on info if available
      */
     public void processPropertiesSuperClass(JavaClass cls, TypeInfo info) {
         JavaClass superClass = cls.getSuperclass();
@@ -1694,7 +1694,7 @@ public final class AnnotationsProcessor {
      */
     private void processXmlElement(Property property, TypeInfo info) {
 
-	    if (helper.isAnnotationPresent(property.getElement(), XmlElementNillable.class)) {
+        if (helper.isAnnotationPresent(property.getElement(), XmlElementNillable.class)) {
             XmlElementNillable elementNillable = (XmlElementNillable) helper.getAnnotation(property.getElement(), XmlElementNillable.class);
             property.setNillable(elementNillable.nillable());
         } else if (info.isXmlElementNillable()) {
@@ -2031,8 +2031,8 @@ public final class AnnotationsProcessor {
     }
 
     /*
-	* Create a new Property Object and process the annotations that are common
-	* to fields and methods
+    * Create a new Property Object and process the annotations that are common
+    * to fields and methods
      */
     Property buildNewProperty(TypeInfo info, JavaClass cls, JavaHasAnnotations javaHasAnnotations, String propertyName, JavaClass ptype) {
         Property property = null;
@@ -2922,7 +2922,7 @@ public final class AnnotationsProcessor {
         }
     }
 
-	private boolean existsExternaMappingWithPackageXmlNullPolicy(JavaClass cls) {
+    private boolean existsExternaMappingWithPackageXmlNullPolicy(JavaClass cls) {
 
         if (null == packageToXmlNillableInfoMappings || !packageToXmlNillableInfoMappings.containsKey(cls.getPackageName())) {
             return false;
@@ -4623,7 +4623,7 @@ public final class AnnotationsProcessor {
             //@Override
             //public void setItem(Object array) {
             //    Float[] floatArray = (Float[])array;
-            //	adaptedValue =   (Collection<T>) Arrays.asList(floatArray);
+            //    adaptedValue =   (Collection<T>) Arrays.asList(floatArray);
             //}
             mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setItem", "(Ljava/lang/Object;)V", null, null);
             mv.visitCode();

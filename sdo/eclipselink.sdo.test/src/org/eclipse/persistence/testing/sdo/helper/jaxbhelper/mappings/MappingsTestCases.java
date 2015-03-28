@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -42,7 +42,7 @@ public class MappingsTestCases extends SDOTestCase {
         XMLContext xmlContext = new XMLContext(project);
         JAXBContext jaxbContext = new JAXBContext(xmlContext);
         jaxbHelperContext = new JAXBHelperContext(jaxbContext);
-        
+
         InputStream xsd = Thread.currentThread().getContextClassLoader().getResourceAsStream(XML_SCHEMA);
         jaxbHelperContext.getXSDHelper().define(xsd, null);
     }
@@ -70,7 +70,7 @@ public class MappingsTestCases extends SDOTestCase {
         List simpleList = root.getSimpleList();
         assertEquals(2, simpleList.size());
         assertTrue(simpleList.contains("FOO"));
-        assertTrue(simpleList.contains("BAR"));        
+        assertTrue(simpleList.contains("BAR"));
 
         DataObject child1DO = rootDO.getDataObject("child1");
         assertNotNull(child1DO);

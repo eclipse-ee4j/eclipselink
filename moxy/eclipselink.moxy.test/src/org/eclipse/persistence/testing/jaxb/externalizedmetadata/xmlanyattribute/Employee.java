@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,12 +18,12 @@ import javax.xml.namespace.QName;
 public class Employee {
     public int a;
     public String b;
-    
+
     public java.util.Map<QName, Object> stuff;
 
     @javax.xml.bind.annotation.XmlAnyAttribute
     public java.util.Map<QName, Object> stuffs;
-    
+
     public boolean equals(Object obj) {
         Employee eObj;
         try {
@@ -31,11 +31,11 @@ public class Employee {
         } catch (ClassCastException cce) {
             return false;
         }
-        
+
         if (this.a != eObj.a) { return false; }
         if (!this.b.equals(eObj.b)) { return false; }
         if (this.stuff.size() != eObj.stuff.size()) { return false; }
-        
+
         for (QName key : this.stuff.keySet()) {
             if (!eObj.stuff.containsKey(key)) {
                 return false;

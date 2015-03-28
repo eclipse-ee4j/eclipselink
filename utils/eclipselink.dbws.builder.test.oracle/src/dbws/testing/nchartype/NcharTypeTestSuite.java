@@ -153,7 +153,7 @@ public class NcharTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_TYPE, ddlDebug);
         }
     }
-    
+
     @Test
     public void findByJobTest() {
         Invocation invocation = new Invocation("FindByJobTest");

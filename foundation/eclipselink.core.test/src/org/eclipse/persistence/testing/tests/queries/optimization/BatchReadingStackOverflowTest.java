@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries.optimization;
 
 import java.util.Vector;
@@ -31,12 +31,12 @@ public class BatchReadingStackOverflowTest extends TestCase {
     Employee emp_1;
     ForeignReferenceMapping mappingToDisableBatchReadInReset;
     BatchFetchType batchType;
-    
+
     public BatchReadingStackOverflowTest(BatchFetchType batchType) {
         this.batchType = batchType;
         setName(getName() + batchType);
     }
-    
+
     protected void setup() throws Throwable {
         if ((batchType == BatchFetchType.IN) && !getSession().getPlatform().isOracle()) {
             throwWarning("Nested arrays not supported on this database");
@@ -94,21 +94,21 @@ public class BatchReadingStackOverflowTest extends TestCase {
 
         // Begin transaction here and rollback it in reset.
         ((AbstractSession)getSession()).beginTransaction();
-        
+
         // write the objects into the db, merge them into session's cache.
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.registerObject(emp_1);
         uow.commit();
-        
+
         // now invalidate all the created objects in the session's cache
         getSession().getIdentityMapAccessor().invalidateObject(emp_1);
         getSession().getIdentityMapAccessor().invalidateObject(emp_1_1);
         getSession().getIdentityMapAccessor().invalidateObject(emp_1_2);
         getSession().getIdentityMapAccessor().invalidateObject(emp_1_1_1);
         getSession().getIdentityMapAccessor().invalidateObject(emp_1_2_1);
-        
+
     }
-    
+
     protected void test() throws Throwable {
         // query to read emp_1
         ReadObjectQuery query = new ReadObjectQuery(Employee.class);
@@ -121,7 +121,7 @@ public class BatchReadingStackOverflowTest extends TestCase {
         empRead.getManagedEmployees().size();
         query = null;
     }
-    
+
     public void reset() throws Throwable {
         if(((AbstractSession)getSession()).isInTransaction()) {
             ((AbstractSession)getSession()).rollbackTransaction();

@@ -3,7 +3,7 @@
    <childPrefix:child childPrefix:href="this is the href">
       <childPrefix:id>theId</childPrefix:id>
       <otherPrefix:otherThing>
-	     <otherPrefix:thing>the other thing</otherPrefix:thing>
+         <otherPrefix:thing>the other thing</otherPrefix:thing>
        </otherPrefix:otherThing>
    </childPrefix:child>
 </test:root>

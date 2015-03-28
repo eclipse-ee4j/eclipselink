@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * <p>Tests the following:</p>
- * 
+ *
  * <ul>
  * <li>Ensure that having both a field and method annotated with @XmlTransient does not throw a duplicate property error.</li>
  * <li>Ensure that the property that is maintained is the one that matches the XmlAccessType (in this case, the method).</li>
@@ -50,7 +50,7 @@ public class DoubleTransientTestCases extends JAXBWithJSONTestCases {
 
     @Override
     protected Map getProperties() {
-    	InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS);
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS);
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.annotations.xmltransient", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();

@@ -3,5 +3,5 @@
      "attributeFormDefault":"qualified",
      "complexType":[{
          "name":"testComplexType"
-	 }]
+     }]
 }}

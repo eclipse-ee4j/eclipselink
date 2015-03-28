@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,142 +26,142 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 @SuppressWarnings("nls")
 public final class OrderSiblingsByClauseTest extends JPQLParserTest {
 
-	@Test
-	public void test_JPQLQuery_01() {
+    @Test
+    public void test_JPQLQuery_01() {
 
-		String jpqlQuery = "SELECT e FROM Employee e ORDER SIBLINGS BY";
+        String jpqlQuery = "SELECT e FROM Employee e ORDER SIBLINGS BY";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from(
-				"Employee", "e",
-				orderSiblingsBy(nullExpression())
-			)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from(
+                "Employee", "e",
+                orderSiblingsBy(nullExpression())
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_02() {
+    @Test
+    public void test_JPQLQuery_02() {
 
-		String jpqlQuery = "SELECT e FROM Employee e ORDER SIBLINGS BY ";
+        String jpqlQuery = "SELECT e FROM Employee e ORDER SIBLINGS BY ";
 
-		OrderSiblingsByClauseTester orderSiblingsBy = orderSiblingsBy(nullExpression());
-		orderSiblingsBy.hasSpaceAfterIdentifier = true;
+        OrderSiblingsByClauseTester orderSiblingsBy = orderSiblingsBy(nullExpression());
+        orderSiblingsBy.hasSpaceAfterIdentifier = true;
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from(
-				"Employee", "e",
-				orderSiblingsBy
-			)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from(
+                "Employee", "e",
+                orderSiblingsBy
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_03() {
+    @Test
+    public void test_JPQLQuery_03() {
 
-		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY e.employee ORDER SIBLINGS BY e.name";
+        String jpqlQuery = "SELECT e FROM Employee e CONNECT BY e.employee ORDER SIBLINGS BY e.name";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from(
-				"Employee", "e",
-				connectBy(collectionPath("e.employee")),
-				orderSiblingsBy(orderByItem("e.name"))
-			)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from(
+                "Employee", "e",
+                connectBy(collectionPath("e.employee")),
+                orderSiblingsBy(orderByItem("e.name"))
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_04() {
+    @Test
+    public void test_JPQLQuery_04() {
 
-		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY e.employee ORDER SIBLINGS BY e.name ASC";
+        String jpqlQuery = "SELECT e FROM Employee e CONNECT BY e.employee ORDER SIBLINGS BY e.name ASC";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from(
-				"Employee", "e",
-				connectBy(collectionPath("e.employee")),
-				orderSiblingsBy(orderByItemAsc("e.name"))
-			)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from(
+                "Employee", "e",
+                connectBy(collectionPath("e.employee")),
+                orderSiblingsBy(orderByItemAsc("e.name"))
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_05() {
+    @Test
+    public void test_JPQLQuery_05() {
 
-		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY e.employee ORDER SIBLINGS BY e.name DESC";
+        String jpqlQuery = "SELECT e FROM Employee e CONNECT BY e.employee ORDER SIBLINGS BY e.name DESC";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from(
-				"Employee", "e",
-				connectBy(collectionPath("e.employee")),
-				orderSiblingsBy(orderByItemDesc("e.name"))
-			)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from(
+                "Employee", "e",
+                connectBy(collectionPath("e.employee")),
+                orderSiblingsBy(orderByItemDesc("e.name"))
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_06() {
+    @Test
+    public void test_JPQLQuery_06() {
 
-		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY e.employee ORDER SIBLINGS BY e.firstName, e.lastName";
+        String jpqlQuery = "SELECT e FROM Employee e CONNECT BY e.employee ORDER SIBLINGS BY e.firstName, e.lastName";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from(
-				"Employee", "e",
-				connectBy(collectionPath("e.employee")),
-				orderSiblingsBy(orderByItem("e.firstName"), orderByItem("e.lastName"))
-			)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from(
+                "Employee", "e",
+                connectBy(collectionPath("e.employee")),
+                orderSiblingsBy(orderByItem("e.firstName"), orderByItem("e.lastName"))
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_07() {
+    @Test
+    public void test_JPQLQuery_07() {
 
-		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY e.employee ORDER SIBLINGS BY";
+        String jpqlQuery = "SELECT e FROM Employee e CONNECT BY e.employee ORDER SIBLINGS BY";
 
-		OrderSiblingsByClauseTester orderSiblingsBy = orderSiblingsBy(nullExpression());
-		orderSiblingsBy.hasSpaceAfterIdentifier = false;
+        OrderSiblingsByClauseTester orderSiblingsBy = orderSiblingsBy(nullExpression());
+        orderSiblingsBy.hasSpaceAfterIdentifier = false;
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from(
-				"Employee", "e",
-				connectBy(collectionPath("e.employee")),
-				orderSiblingsBy
-			)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from(
+                "Employee", "e",
+                connectBy(collectionPath("e.employee")),
+                orderSiblingsBy
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_08() {
+    @Test
+    public void test_JPQLQuery_08() {
 
-		String jpqlQuery = "SELECT e FROM Employee e ORDER SIBLINGS BY e.name";
+        String jpqlQuery = "SELECT e FROM Employee e ORDER SIBLINGS BY e.name";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(variable("e")),
-			from(
-				"Employee", "e",
-				orderSiblingsBy(orderByItem("e.name"))
-			)
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(variable("e")),
+            from(
+                "Employee", "e",
+                orderSiblingsBy(orderByItem("e.name"))
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 }

@@ -12,55 +12,55 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Employee {
-	
-	@XmlElementRef(name = "address")
-	public JAXBElement<Address> address;
-	
-	@XmlElementRef(name = "task")
-	public List<JAXBElement<Task>> tasks;
-	
-	static class Task {
-		@XmlAttribute
-		Integer id;
-		
-		@Override
-		public boolean equals(Object obj) {
-			if (!(obj instanceof Task)) {
-				return false;
-			}
-			Task t = (Task) obj;
-			return t.id.equals(this.id);
-		}
-	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Employee)) {
-			return false;
-		}
-		Employee e = (Employee) obj;
-		if (!isEqual(e.address, this.address)) {
-			return false;
-		}
-		if (e.tasks.size() == this.tasks.size()) {
-			Iterator<JAXBElement<Task>> i = this.tasks.iterator();
-			Iterator<JAXBElement<Task>> j = e.tasks.iterator(); 
-			while (i.hasNext()) {
-				if (!isEqual(i.next(), j.next())) {
-					return false;
-				}
-			}
-		} else {
-			return false;
-		}
-		return true;
-	}
-	
-	private boolean isEqual(JAXBElement<?> e1, JAXBElement<?> e2) {
-		return e1.getName().equals(e2.getName()) && 
-				e1.getDeclaredType().equals(e2.getDeclaredType()) &&
-				(e1.isNil() == e2.isNil()) &&
-				e1.getValue().equals(e2.getValue());
-	}
-	
+    @XmlElementRef(name = "address")
+    public JAXBElement<Address> address;
+
+    @XmlElementRef(name = "task")
+    public List<JAXBElement<Task>> tasks;
+
+    static class Task {
+        @XmlAttribute
+        Integer id;
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Task)) {
+                return false;
+            }
+            Task t = (Task) obj;
+            return t.id.equals(this.id);
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Employee)) {
+            return false;
+        }
+        Employee e = (Employee) obj;
+        if (!isEqual(e.address, this.address)) {
+            return false;
+        }
+        if (e.tasks.size() == this.tasks.size()) {
+            Iterator<JAXBElement<Task>> i = this.tasks.iterator();
+            Iterator<JAXBElement<Task>> j = e.tasks.iterator();
+            while (i.hasNext()) {
+                if (!isEqual(i.next(), j.next())) {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isEqual(JAXBElement<?> e1, JAXBElement<?> e2) {
+        return e1.getName().equals(e2.getName()) &&
+                e1.getDeclaredType().equals(e2.getDeclaredType()) &&
+                (e1.isNil() == e2.isNil()) &&
+                e1.getValue().equals(e2.getValue());
+    }
+
 }

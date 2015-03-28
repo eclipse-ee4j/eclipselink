@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -46,7 +46,7 @@ public class Employee implements Serializable {
     @Column(name = "EMP_ID")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
-    
+
     @Version
     private long version;
 
@@ -73,7 +73,7 @@ public class Employee implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "ADDR_ID")
     private Address address;
-    
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "P2_EMP_JOB", joinColumns = @JoinColumn(name = "EMP_ID"), inverseJoinColumns = @JoinColumn(name = "TITLE_ID"))
     private JobTitle jobTitle;
@@ -150,7 +150,7 @@ public class Employee implements Serializable {
     public void setVersion(long version) {
         this.version = version;
     }
-    
+
     public List<Degree> getDegrees() {
         return degrees;
     }
@@ -282,7 +282,7 @@ public class Employee implements Serializable {
     public void removeResponsibility(String responsibility) {
         getResponsibilities().remove(responsibility);
     }
-    
+
     public Map<String, EmailAddress> getEmailAddresses() {
         return emailAddresses;
     }
@@ -306,7 +306,7 @@ public class Employee implements Serializable {
     public EmailAddress getEmailAddress(String type) {
         return getEmailAddresses().get(type);
     }
-    
+
     public JobTitle getJobTitle() {
         return jobTitle;
     }

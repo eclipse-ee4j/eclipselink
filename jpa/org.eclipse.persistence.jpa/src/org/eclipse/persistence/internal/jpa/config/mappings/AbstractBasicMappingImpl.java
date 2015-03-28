@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -33,13 +33,13 @@ import org.eclipse.persistence.jpa.config.UuidGenerator;
 
 /**
  * JPA scripting API implementation.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.5.1
  */
 @SuppressWarnings("unchecked")
 public class AbstractBasicMappingImpl<T extends BasicAccessor, R> extends AbstractDirectMappingImpl<T, R> {
-    
+
     public AbstractBasicMappingImpl(T t) {
         super(t);
     }
@@ -95,13 +95,13 @@ public class AbstractBasicMappingImpl<T extends BasicAccessor, R> extends Abstra
         getMetadata().setSequenceGenerator(sequenceGenerator.getMetadata());
         return sequenceGenerator;
     }
-    
+
     public TableGenerator setTableGenerator() {
         TableGeneratorImpl tableGenerator = new TableGeneratorImpl();
         getMetadata().setTableGenerator(tableGenerator.getMetadata());
         return tableGenerator;
     }
-    
+
     public UuidGenerator setUuidGenerator() {
         UuidGeneratorImpl uuidGenerator = new UuidGeneratorImpl();
         getMetadata().setUuidGenerator(uuidGenerator.getMetadata());

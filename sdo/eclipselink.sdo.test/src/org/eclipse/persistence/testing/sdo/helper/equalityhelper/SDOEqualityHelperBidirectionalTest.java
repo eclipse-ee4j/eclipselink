@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 /*
    DESCRIPTION
     Test equality helper using bidirectional properties
@@ -84,8 +84,8 @@ public class SDOEqualityHelperBidirectionalTest extends SDOCopyEqualityHelperTes
 
     // compare opposite properties are equal after a copy
     public void testDeepEqualWithABidirectionaDataObjectToItself() {
-        // Objective: 
-        //  Primary: Verify that opposite properties 
+        // Objective:
+        //  Primary: Verify that opposite properties
         //  Secondary: Verify that opposite properties are maintained during deep copy
         DataObject deepCopy = copyHelper.copy(root);
         SDOProperty oppositePropertySrc = contained1Property1;

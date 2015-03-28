@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     07/16/2009 Andrei Ilitchev 
+ *     07/16/2009 Andrei Ilitchev
  *       - Bug 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.onetoonejointable;
 
 import org.eclipse.persistence.sessions.*;
@@ -84,22 +84,22 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
 
         return descriptor;
     }
-    
+
     public ClassDescriptor buildChildDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(Child.class);
         descriptor.addTableName("OTOJT_CHILD");
         descriptor.addPrimaryKeyFieldName("OTOJT_CHILD.CHILD_ID");
-        
+
         descriptor.useSoftCacheWeakIdentityMap();
         descriptor.setIdentityMapSize(50);
         descriptor.setSequenceNumberFieldName("OTOJT_CHILD.CHILD_ID");
         descriptor.setSequenceNumberName("OTOJT_CHILD_SEQ");
         descriptor.setAlias("OTOJT_Child");
-        
+
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
-        
+
         // Mappings.
         DirectToFieldMapping firstNameMapping = new DirectToFieldMapping();
         firstNameMapping.setAttributeName("firstName");
@@ -117,7 +117,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         lastNameMapping.setFieldName("L_NAME");
         lastNameMapping.setNullValue("");
         descriptor.addMapping(lastNameMapping);
-        
+
         DirectToFieldMapping genderMapping = new DirectToFieldMapping();
         genderMapping.setAttributeName("gender");
         genderMapping.setFieldName("GENDER");
@@ -126,12 +126,12 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         genderMappingConverter.addConversionValue("M", "Male");
         genderMapping.setConverter(genderMappingConverter);
         descriptor.addMapping(genderMapping);
-        
+
         DirectToFieldMapping birthdayMapping = new DirectToFieldMapping();
         birthdayMapping.setAttributeName("birthday");
         birthdayMapping.setFieldName("BIRTHDAY");
         descriptor.addMapping(birthdayMapping);
-        
+
         OneToOneMapping parentMapping = new OneToOneMapping();
         parentMapping.setAttributeName("parent");
         parentMapping.setReferenceClass(Employee.class);
@@ -143,9 +143,9 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
 //        parentMapping.addForeignKeyFieldName("OTOJT_CHILD.PARENT_EMP_ID", "OTOJT_EMPLOYEE.EMP_ID");
         parentMapping.readOnly();
         descriptor.addMapping(parentMapping);
-        
-        
-        return descriptor;        
+
+
+        return descriptor;
     }
 
     public ClassDescriptor buildEmployeeDescriptor() {
@@ -169,7 +169,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
-        // Named Queries.	
+        // Named Queries.
         // Event Manager.
         // Mappings.
         DirectToFieldMapping firstNameMapping = new DirectToFieldMapping();
@@ -223,7 +223,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         addressMapping.getRelationTableMechanism().addTargetRelationKeyFieldName("OTOJT_EMP_ADDRESS.ADDR_ID", "OTOJT_ADDRESS.ADDRESS_ID");
         descriptor.addMapping(addressMapping);
 
-        //Joel:EJBQLTesting 
+        //Joel:EJBQLTesting
         OneToOneMapping managerMapping = new OneToOneMapping();
         managerMapping.setAttributeName("manager");
         managerMapping.setReferenceClass(Employee.class);
@@ -246,7 +246,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         managedEmployeesMapping.addTargetRelationKeyFieldName("OTOJT_EMP_MANAGER.EMP_ID", "OTOJT_EMPLOYEE.EMP_ID");
         managedEmployeesMapping.readOnly();
         descriptor.addMapping(managedEmployeesMapping);
-        
+
 //        OneToManyMapping childrenMapping = new OneToManyMapping();
         ManyToManyMapping childrenMapping = new ManyToManyMapping();
         childrenMapping.setAttributeName("children");
@@ -299,7 +299,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
-        // Named Queries.	
+        // Named Queries.
         // Event Manager.
         // Mappings.
         DirectToFieldMapping budgetMapping = new DirectToFieldMapping();
@@ -340,7 +340,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
-        // Named Queries.	
+        // Named Queries.
         // Event Manager.
         // Mappings.
         DirectToFieldMapping descriptionMapping = new DirectToFieldMapping();
@@ -400,7 +400,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
-        // Named Queries.	
+        // Named Queries.
         // Event Manager.
         return descriptor;
     }

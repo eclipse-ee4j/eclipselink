@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -71,253 +71,253 @@ import org.eclipse.persistence.tools.workbench.utility.Transformer;
  */
 abstract class AbstractReadPoolLoginPropertiesPage extends ScrollablePropertiesPage
 {
-	private JComponent loginPane;
+    private JComponent loginPane;
 
-	/**
-	 * Creates a new <code>RdbmsReadPoolLoginPropertiesPage</code>.
-	 *
-	 * @param nodeHolder The holder of {@link PoolNode}
-	 * @param contextHolder
-	 */
-	AbstractReadPoolLoginPropertiesPage(PropertyValueModel nodeHolder,
-													WorkbenchContextHolder contextHolder)
-	{
-		super(nodeHolder, contextHolder);
-	}
+    /**
+     * Creates a new <code>RdbmsReadPoolLoginPropertiesPage</code>.
+     *
+     * @param nodeHolder The holder of {@link PoolNode}
+     * @param contextHolder
+     */
+    AbstractReadPoolLoginPropertiesPage(PropertyValueModel nodeHolder,
+                                                    WorkbenchContextHolder contextHolder)
+    {
+        super(nodeHolder, contextHolder);
+    }
 
-	private PropertyValueModel buildEnableStateHolder()
-	{
-		// Holder of the ServerSessionAdapter
-		ValueModel sessionHolder = new PropertyAspectAdapter(getSelectionHolder(), "")
-		{
-			@Override
-			protected Object getValueFromSubject()
-			{
-				// Pool->PoolsAdapter->ServerSessionAdapter
-				ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
-				return pool.getParent().getParent();
-			}
-		};
+    private PropertyValueModel buildEnableStateHolder()
+    {
+        // Holder of the ServerSessionAdapter
+        ValueModel sessionHolder = new PropertyAspectAdapter(getSelectionHolder(), "")
+        {
+            @Override
+            protected Object getValueFromSubject()
+            {
+                // Pool->PoolsAdapter->ServerSessionAdapter
+                ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
+                return pool.getParent().getParent();
+            }
+        };
 
-		// Holder of the LoginAdapter, just in case it changes
-		ValueModel loginHolder = new PropertyAspectAdapter(sessionHolder, ServerSessionAdapter.LOGIN_CONFIG_PROPERTY)
-		{
-			@Override
-			protected Object getValueFromSubject()
-			{
-				ServerSessionAdapter session = (ServerSessionAdapter) subject;
-				return session.getLogin();
-			}
-		};
+        // Holder of the LoginAdapter, just in case it changes
+        ValueModel loginHolder = new PropertyAspectAdapter(sessionHolder, ServerSessionAdapter.LOGIN_CONFIG_PROPERTY)
+        {
+            @Override
+            protected Object getValueFromSubject()
+            {
+                ServerSessionAdapter session = (ServerSessionAdapter) subject;
+                return session.getLogin();
+            }
+        };
 
-		// Holder of the LoginAdapter's property: External Connection Pooling
-		PropertyAspectAdapter booleanHolder = new PropertyAspectAdapter(loginHolder, DatabaseSessionAdapter.EXTERNAL_CONNECTION_POOLING_PROPERTY)
-		{
-			@Override
-			protected Object getValueFromSubject()
-			{
-				LoginAdapter login = (LoginAdapter) subject;
-				DatabaseSessionAdapter session = (DatabaseSessionAdapter) login.getParent();
-				return session.usesExternalConnectionPooling();
-			}
-		};
+        // Holder of the LoginAdapter's property: External Connection Pooling
+        PropertyAspectAdapter booleanHolder = new PropertyAspectAdapter(loginHolder, DatabaseSessionAdapter.EXTERNAL_CONNECTION_POOLING_PROPERTY)
+        {
+            @Override
+            protected Object getValueFromSubject()
+            {
+                LoginAdapter login = (LoginAdapter) subject;
+                DatabaseSessionAdapter session = (DatabaseSessionAdapter) login.getParent();
+                return session.usesExternalConnectionPooling();
+            }
+        };
 
-		// Convert the boolean from true to false and vice versa
-		return new TransformationPropertyValueModel(booleanHolder)
-		{
-			@Override
-			protected Object transform(Object value)
-			{
-				// Reverse the value
-				return Boolean.valueOf(Boolean.FALSE.equals(value));
-			}
-		};
-	}
+        // Convert the boolean from true to false and vice versa
+        return new TransformationPropertyValueModel(booleanHolder)
+        {
+            @Override
+            protected Object transform(Object value)
+            {
+                // Reverse the value
+                return Boolean.valueOf(Boolean.FALSE.equals(value));
+            }
+        };
+    }
 
-	private ButtonModel buildExclusiveConnectionsCheckBoxAdapter()
-	{
-		return new CheckBoxModelAdapter(buildExclusiveConnectionsHolder());
-	}
+    private ButtonModel buildExclusiveConnectionsCheckBoxAdapter()
+    {
+        return new CheckBoxModelAdapter(buildExclusiveConnectionsHolder());
+    }
 
-	private PropertyValueModel buildExclusiveConnectionsHolder()
-	{
-		return new PropertyAspectAdapter(getSelectionHolder(), ReadConnectionPoolAdapter.EXCLUSIVE_PROPERTY)
-		{
-			@Override
-			protected Object getValueFromSubject()
-			{
-				ReadConnectionPoolAdapter pool = (ReadConnectionPoolAdapter) subject;
-				return pool.isExclusive();
-			}
+    private PropertyValueModel buildExclusiveConnectionsHolder()
+    {
+        return new PropertyAspectAdapter(getSelectionHolder(), ReadConnectionPoolAdapter.EXCLUSIVE_PROPERTY)
+        {
+            @Override
+            protected Object getValueFromSubject()
+            {
+                ReadConnectionPoolAdapter pool = (ReadConnectionPoolAdapter) subject;
+                return pool.isExclusive();
+            }
 
-			@Override
-			protected void setValueOnSubject(Object value)
-			{
-				ReadConnectionPoolAdapter pool = (ReadConnectionPoolAdapter) subject;
-				pool.setExclusive((Boolean) value);
-			}
-		};
-	}
+            @Override
+            protected void setValueOnSubject(Object value)
+            {
+                ReadConnectionPoolAdapter pool = (ReadConnectionPoolAdapter) subject;
+                pool.setExclusive((Boolean) value);
+            }
+        };
+    }
 
-	protected final PropertyValueModel buildLoginHolder()
-	{
-		String[] propertyNames =
-		{
-			ConnectionPoolAdapter.LOGIN_CONFIG_PROPERTY,
-			ReadConnectionPoolAdapter.USE_NON_TRANSACTIONAL_READ_LOGIN_PROPERTY
-		};
+    protected final PropertyValueModel buildLoginHolder()
+    {
+        String[] propertyNames =
+        {
+            ConnectionPoolAdapter.LOGIN_CONFIG_PROPERTY,
+            ReadConnectionPoolAdapter.USE_NON_TRANSACTIONAL_READ_LOGIN_PROPERTY
+        };
 
-		return new PropertyAspectAdapter(getSelectionHolder(), propertyNames)
-		{
-			protected Object getValueFromSubject()
-			{
-				ReadConnectionPoolAdapter pool = (ReadConnectionPoolAdapter) subject;
-				return pool.usesNonTransactionalReadLogin() ? pool.getLogin() : null;
-			}
-		};
-	}
+        return new PropertyAspectAdapter(getSelectionHolder(), propertyNames)
+        {
+            protected Object getValueFromSubject()
+            {
+                ReadConnectionPoolAdapter pool = (ReadConnectionPoolAdapter) subject;
+                return pool.usesNonTransactionalReadLogin() ? pool.getLogin() : null;
+            }
+        };
+    }
 
-	/**
-	 * Creates the pane that will show the login information.
-	 *
-	 * @return The login pane
-	 */
-	protected abstract JComponent buildLoginPane();
+    /**
+     * Creates the pane that will show the login information.
+     *
+     * @return The login pane
+     */
+    protected abstract JComponent buildLoginPane();
 
-	private Transformer buildLoginPaneTransformer()
-	{
-		return new Transformer()
-		{
-			public Object transform(Object value)
-			{
-				if ((value != null) && (Boolean) value)
-				{
-					return loginPane;
-				}
+    private Transformer buildLoginPaneTransformer()
+    {
+        return new Transformer()
+        {
+            public Object transform(Object value)
+            {
+                if ((value != null) && (Boolean) value)
+                {
+                    return loginPane;
+                }
 
-				return null;
-			}
-		};
-	}
-	
-	@Override
-	protected final Component buildPage()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
-		int offset = SwingTools.checkBoxIconWidth();
+                return null;
+            }
+        };
+    }
 
-		// Create the container
-		JPanel panel = new JPanel(new GridBagLayout());
-		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    @Override
+    protected final Component buildPage()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
+        int offset = SwingTools.checkBoxIconWidth();
 
-		// Exclusive Connections check box
-		JCheckBox exclusiveCheckBox = buildCheckBox
-		(
-			"CONNECTION_READ_EXCLUSIVE_CONNECTIONS_CHECK_BOX",
-			buildExclusiveConnectionsCheckBoxAdapter()
-		);
+        // Create the container
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 0;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 0;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.NONE;
-		constraints.anchor      = GridBagConstraints.LINE_START;
-		constraints.insets      = new Insets(0, 0, 0, 0);
+        // Exclusive Connections check box
+        JCheckBox exclusiveCheckBox = buildCheckBox
+        (
+            "CONNECTION_READ_EXCLUSIVE_CONNECTIONS_CHECK_BOX",
+            buildExclusiveConnectionsCheckBoxAdapter()
+        );
 
-		panel.add(exclusiveCheckBox, constraints);
-		helpManager().addTopicID(exclusiveCheckBox, "connectionPool.exclusiveTransactions");
+        constraints.gridx       = 0;
+        constraints.gridy       = 0;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 0;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.NONE;
+        constraints.anchor      = GridBagConstraints.LINE_START;
+        constraints.insets      = new Insets(0, 0, 0, 0);
 
-		// Use Non Transactional Read Login check box
-		JCheckBox nonTransactionalReadLoginCheckBox = buildCheckBox
-		(
-			"CONNECTION_READ_USE_NON_TRANSACTIONAL_READ_LOGIN_CHECK_BOX",
-			buildUseNonTransactionalReadLoginCheckBoxAdapter()
-		);
+        panel.add(exclusiveCheckBox, constraints);
+        helpManager().addTopicID(exclusiveCheckBox, "connectionPool.exclusiveTransactions");
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 3;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 0;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.NONE;
-		constraints.anchor      = GridBagConstraints.LINE_START;
-		constraints.insets      = new Insets(0, 0, 5, 0);
+        // Use Non Transactional Read Login check box
+        JCheckBox nonTransactionalReadLoginCheckBox = buildCheckBox
+        (
+            "CONNECTION_READ_USE_NON_TRANSACTIONAL_READ_LOGIN_CHECK_BOX",
+            buildUseNonTransactionalReadLoginCheckBoxAdapter()
+        );
 
-		panel.add(nonTransactionalReadLoginCheckBox, constraints);
-		helpManager().addTopicID(nonTransactionalReadLoginCheckBox, "connectionPool.nonTransactional");
+        constraints.gridx       = 0;
+        constraints.gridy       = 3;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 0;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.NONE;
+        constraints.anchor      = GridBagConstraints.LINE_START;
+        constraints.insets      = new Insets(0, 0, 5, 0);
 
-		// Login pane
-		loginPane = buildLoginPane();
+        panel.add(nonTransactionalReadLoginCheckBox, constraints);
+        helpManager().addTopicID(nonTransactionalReadLoginCheckBox, "connectionPool.nonTransactional");
 
-		SwitcherPanel switcherPane = new SwitcherPanel
-		(
-			buildUseNonTransactionalReadLoginHolder(),
-			buildLoginPaneTransformer()
-		);
+        // Login pane
+        loginPane = buildLoginPane();
 
-		loginPane.setName("CONNECTION_READ_LOGIN_PANE");
+        SwitcherPanel switcherPane = new SwitcherPanel
+        (
+            buildUseNonTransactionalReadLoginHolder(),
+            buildLoginPaneTransformer()
+        );
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 4;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 1;
-		constraints.fill        = GridBagConstraints.HORIZONTAL;
-		constraints.anchor      = GridBagConstraints.PAGE_START;
-		constraints.insets      = new Insets(0, offset, 0, 0);
+        loginPane.setName("CONNECTION_READ_LOGIN_PANE");
 
-		panel.add(switcherPane, constraints);
-		helpManager().addTopicID(loginPane, "session.login.database.connection");
+        constraints.gridx       = 0;
+        constraints.gridy       = 4;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 1;
+        constraints.weighty     = 1;
+        constraints.fill        = GridBagConstraints.HORIZONTAL;
+        constraints.anchor      = GridBagConstraints.PAGE_START;
+        constraints.insets      = new Insets(0, offset, 0, 0);
 
-		// Create the object responsible to keep the enable state of the components
-		// in sync with the Session's property External Connection Pooling
-		installExclusiveConnectionsEnabler(exclusiveCheckBox);
+        panel.add(switcherPane, constraints);
+        helpManager().addTopicID(loginPane, "session.login.database.connection");
 
-		return panel;
-	}
+        // Create the object responsible to keep the enable state of the components
+        // in sync with the Session's property External Connection Pooling
+        installExclusiveConnectionsEnabler(exclusiveCheckBox);
 
-	/**
-	 * Creates the <code>ButtonModel</code> responsible to handle enabled state
-	 * of Use Non-Transactional Read Login check box.
-	 * 
-	 * @return A new <code>ButtonModel</code>
-	 */
-	private ButtonModel buildUseNonTransactionalReadLoginCheckBoxAdapter()
-	{
-		return new CheckBoxModelAdapter(buildUseNonTransactionalReadLoginHolder());
-	}
+        return panel;
+    }
 
-	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to handle the
-	 * Use Non-Transactional Read Login.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildUseNonTransactionalReadLoginHolder()
-	{
-		return new PropertyAspectAdapter(getSelectionHolder(), ReadConnectionPoolAdapter.USE_NON_TRANSACTIONAL_READ_LOGIN_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				ReadConnectionPoolAdapter pool = (ReadConnectionPoolAdapter) subject;
-				return Boolean.valueOf(pool.usesNonTransactionalReadLogin());
-			}
+    /**
+     * Creates the <code>ButtonModel</code> responsible to handle enabled state
+     * of Use Non-Transactional Read Login check box.
+     *
+     * @return A new <code>ButtonModel</code>
+     */
+    private ButtonModel buildUseNonTransactionalReadLoginCheckBoxAdapter()
+    {
+        return new CheckBoxModelAdapter(buildUseNonTransactionalReadLoginHolder());
+    }
 
-			protected void setValueOnSubject(Object value)
-			{
-				ReadConnectionPoolAdapter pool = (ReadConnectionPoolAdapter) subject;
-				pool.setUseNonTransactionalReadLogin(Boolean.TRUE.equals(value));
-			}
-		};
-	}
+    /**
+     * Creates the <code>PropertyValueModel</code> responsible to handle the
+     * Use Non-Transactional Read Login.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    private PropertyValueModel buildUseNonTransactionalReadLoginHolder()
+    {
+        return new PropertyAspectAdapter(getSelectionHolder(), ReadConnectionPoolAdapter.USE_NON_TRANSACTIONAL_READ_LOGIN_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                ReadConnectionPoolAdapter pool = (ReadConnectionPoolAdapter) subject;
+                return Boolean.valueOf(pool.usesNonTransactionalReadLogin());
+            }
 
-	private ComponentEnabler installExclusiveConnectionsEnabler(JComponent component)
-	{
-		return new ComponentEnabler(buildEnableStateHolder(), component);
-	}
+            protected void setValueOnSubject(Object value)
+            {
+                ReadConnectionPoolAdapter pool = (ReadConnectionPoolAdapter) subject;
+                pool.setUseNonTransactionalReadLogin(Boolean.TRUE.equals(value));
+            }
+        };
+    }
+
+    private ComponentEnabler installExclusiveConnectionsEnabler(JComponent component)
+    {
+        return new ComponentEnabler(buildEnableStateHolder(), component);
+    }
 }

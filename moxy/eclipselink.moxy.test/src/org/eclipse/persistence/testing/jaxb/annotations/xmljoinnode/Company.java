@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,18 +23,18 @@ public class Company {
     public List<Employee> employees;
     @XmlElement(name="business-address")
     public List<Address> buildingAddresses;
-    
+
     public Company() {}
     public Company(List<Employee> employees, List<Address> buildingAddresses) {
         this.employees = employees;
         this.buildingAddresses = buildingAddresses;
     }
-    
+
     /**
-     * This method only verifies that the Employees are equal. The list of Addresses 
-     * instances is simply checked for size equality. This is because the purpose 
+     * This method only verifies that the Employees are equal. The list of Addresses
+     * instances is simply checked for size equality. This is because the purpose
      * of this suite is to make sure that the Employee(s) have their Address(es)
-     * populated correctly through XmlJoinNode. 
+     * populated correctly through XmlJoinNode.
      */
     public boolean equals(Object obj) {
         Company co;
@@ -78,7 +78,7 @@ public class Company {
             if (buildingAddresses.size() != co.buildingAddresses.size()) {
                 return false;
             }
-        }        
+        }
         return true;
     }
 }

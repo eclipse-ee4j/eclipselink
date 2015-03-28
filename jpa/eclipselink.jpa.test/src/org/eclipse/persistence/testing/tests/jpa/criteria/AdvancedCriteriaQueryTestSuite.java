@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.tests.jpa.criteria;
 
@@ -167,10 +167,10 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testFromToExpression"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testUnusedJoinDoesNotAffectOtherJoins"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testUnusedJoinDoesNotAffectFetchJoin"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -189,13 +189,13 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         //Persist the examples in the database
         employeePopulator.persistExample(session);
     }
-    
 
-    
+
+
     public void testAlternateSelection() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        try {        
+        try {
             em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporting'").getResultList();
             Metamodel mm = em.getMetamodel();
             CriteriaBuilder qbuilder = em.getCriteriaBuilder();
@@ -209,7 +209,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Test that a cache hit will occur on a primary key query.
      */
@@ -246,7 +246,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     public void testSharedWhere() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -271,7 +271,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        }		
+        }
     }
 
     public void testSimple(){
@@ -287,13 +287,13 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testGroupByHaving(){
         EntityManager em = createEntityManager();
-        
+
         em.createQuery("Select e.address, count(e) from Employee e group by e.address having count(e.address) < 3").getResultList();
         beginTransaction(em);
-        try {        
+        try {
             Metamodel mm = em.getMetamodel();
             CriteriaBuilder qbuilder = em.getCriteriaBuilder();
             CriteriaQuery<Object> cquery = qbuilder.createQuery();
@@ -323,7 +323,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        }        
+        }
     }
 
     public void testInSubQuery(){
@@ -345,9 +345,9 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        } 
+        }
     }
-        
+
     public void testInCollectionEntity(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -363,7 +363,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        } 
+        }
     }
     public void testInCollectionPrimitives(){
         EntityManager em = createEntityManager();
@@ -380,7 +380,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        } 
+        }
     }
 
     /*
@@ -402,7 +402,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             assertFalse("testInParameterCollection failed: No Employees were returned", result.isEmpty());
         } finally {
             closeEntityManagerAndTransaction(em);
-        } 
+        }
     }
     public void testInlineInParameter(){
         EntityManager em = createEntityManager();
@@ -419,7 +419,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        } 
+        }
     }
 
     public void testIsEmpty(){
@@ -440,7 +440,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testNeg(){
         if (getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testNeg skipped for this platform, "
@@ -487,7 +487,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
     public void testNullRestrictionGetRestriction() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        try {        
+        try {
             Metamodel mm = em.getMetamodel();
             CriteriaBuilder qbuilder = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
@@ -501,7 +501,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
     }
 
     public void testIsMember(){
-        
+
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
@@ -515,18 +515,18 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             assertFalse("No Employees were returned", result.isEmpty());
             for (Employee e : result){
                 assertTrue("Employee Found without Responcibilities", e.getResponsibilities().contains("Sort files"));
-            
+
             }
         }finally {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
-        
+
     }
 
-    
+
     public void testIsMemberEntity(){
-        
+
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
@@ -544,13 +544,13 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
                     areacode = areacode || p.getAreaCode().equals("416");
                 }
                 assertTrue("No PhoneNumbers with '416'area code", areacode);
-            
+
             }
         }finally {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
-        
+
     }
 
     public void testVerySimpleJoin(){
@@ -562,9 +562,9 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
             root.join("phoneNumbers");
             if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-            	// distinct is incompatible with blob in selection clause on Oracle
+                // distinct is incompatible with blob in selection clause on Oracle
             } else {
-            	cq.distinct(true);
+                cq.distinct(true);
             }
             TypedQuery<Employee> tq = em.createQuery(cq);
             List<Employee> result = tq.getResultList();
@@ -662,7 +662,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testWhereNotConjunction(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -678,7 +678,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testJoinDistinct(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -688,11 +688,11 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         Root<Employee> customer = cquery.from(Employee.class);
         Fetch<Employee, Project> o = customer.fetch("phoneNumbers", JoinType.LEFT);
         cquery.where(customer.get("address").get("city").in("Ottawa", "Halifax"));
-    	cquery.select(customer).distinct(true);
+        cquery.select(customer).distinct(true);
         TypedQuery<Employee> tquery = em.createQuery(cquery);
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
-        	tquery.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+            // distinct is incompatible with blob in selection clause on Oracle
+            tquery.setHint(QueryHints.SERIALIZED_OBJECT, "false");
         }
         List<Employee> result = tquery.getResultList();
         assertFalse ("No results found", result.isEmpty());
@@ -704,7 +704,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         }
 
     }
-    
+
     public void testWhereConjunctionAndDisjunction(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -720,7 +720,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testWhereDisjunctionAndConjunction(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -736,7 +736,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testWhereConjunctionOrDisjunction(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -752,7 +752,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testWhereUsingAndWithPredicates(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -764,7 +764,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             TypedQuery<Employee> tq = em.createQuery(cq);
             List<Employee> result = tq.getResultList();
             assertFalse("Employees were not returned for 'true and lastName='Smith' '", result.isEmpty());
-            
+
             cq = em.getCriteriaBuilder().createQuery(Employee.class);
             qb = em.getCriteriaBuilder();
             root = cq.from(em.getMetamodel().entity(Employee.class));
@@ -777,7 +777,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testWhereUsingOrWithPredicates(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -789,7 +789,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             TypedQuery<Employee> tq = em.createQuery(cq);
             List<Employee> result = tq.getResultList();
             assertFalse("Employees were not returned for 'false or lastName='Smith' '", result.isEmpty());
-            
+
             cq = em.getCriteriaBuilder().createQuery(Employee.class);
             qb = em.getCriteriaBuilder();
             root = cq.from(em.getMetamodel().entity(Employee.class));
@@ -857,10 +857,10 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
-        
+
     }
 
-    
+
     public void testSize(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -881,7 +881,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void testSome(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -904,15 +904,15 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
           Root<PhoneNumber> order = sq.from(PhoneNumber.class);
 
            // Create SubQuery
-           sq.select(order.<String>get("type")).              
+           sq.select(order.<String>get("type")).
       where(qbuilder.equal(order.get("areaCode"), "613"));
 
-        // Create Main Query with SubQuery         
+        // Create Main Query with SubQuery
       cquery.where(qbuilder.equal(orders.<String>get("type"), qbuilder.some(sq)));
       if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-      	// distinct is incompatible with blob in selection clause on Oracle
+          // distinct is incompatible with blob in selection clause on Oracle
       } else {
-    	  cquery.distinct(true);
+          cquery.distinct(true);
       }
       em.createQuery(cquery).getResultList();
 
@@ -931,7 +931,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             Root<Employee> customer = cquery.from(Employee.class);
             Join<Employee, Dealer> o = customer.join("dealers");
             if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-            	// distinct is incompatible with blob in selection clause on Oracle
+                // distinct is incompatible with blob in selection clause on Oracle
                 cquery.select(customer);
             } else {
                 cquery.select(customer).distinct(true);
@@ -965,7 +965,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     protected static Set<Integer> getIds(Collection<Employee> employees) {
         Set<Integer> ids = new HashSet<Integer>(employees.size());
         for (Employee emp : employees) {
@@ -980,7 +980,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             fail("jpql: " + jpqlIds + "; criteria: " + criteriaIds);
         }
     }
-    
+
     public void testSubqueryExists() {
         EntityManager em = createEntityManager();
         List<Employee> jpqlEmployees;
@@ -1175,7 +1175,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         try {
             jpqlEmployees = em.createQuery("SELECT e FROM Employee e join e.projects ep WHERE EXISTS (SELECT p FROM Project p WHERE ep = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
             em.clear();
-            
+
             CriteriaBuilder builder = em.getCriteriaBuilder();
             CriteriaQuery<Employee> mainQuery = builder.createQuery(Employee.class);
             Subquery<Object> subQuery1 = mainQuery.subquery(Object.class);
@@ -1183,17 +1183,17 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
 
             Root<Employee> mainEmployee = mainQuery.from(Employee.class);
             mainQuery.select(mainEmployee);
-            
+
             Root<Project> sub1Project = subQuery1.from(Project.class);
             Join<Employee, Project> mainEmployeeProjects = mainEmployee.join("projects");
 
             Root<Employee> sub2Employee = subQuery2.from(Employee.class);
             Join<Employee, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
-            
+
             subQuery2.where(builder.equal(sub2Employee, sub1ProjectTeamLeader));
             subQuery1.where(builder.and(builder.exists(subQuery2), builder.equal(sub1Project, mainEmployeeProjects)));
             mainQuery.where(builder.exists(subQuery1));
-            
+
             TypedQuery<Employee> tquery = em.createQuery(mainQuery);
             criteriaEmployees = tquery.getResultList();
         } finally {
@@ -1222,27 +1222,27 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         try {
             jpqlEmployees = em.createQuery("SELECT e FROM Employee e join e.projects ep WHERE e.gender = org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender.Male AND EXISTS (SELECT p FROM Project p WHERE 'Sales Reporting' <> p.name AND ep = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
             em.clear();
-            
+
             CriteriaBuilder builder = em.getCriteriaBuilder();
             CriteriaQuery<Employee> mainQuery = builder.createQuery(Employee.class);
             Subquery<Object> subQuery1 = mainQuery.subquery(Object.class);
             Subquery<Object> subQuery2 = subQuery1.subquery(Object.class);
-            
+
             Root<Employee> mainEmployee = mainQuery.from(Employee.class);
             mainQuery.select(mainEmployee);
-            
+
             Root<Project> sub1Project = subQuery1.from(Project.class);
             Join<Employee, Project> mainEmployeeProjects = mainEmployee.join("projects");
 
             Root<Employee> sub2Employee = subQuery2.from(Employee.class);
             Join<Employee, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
-                        
+
             subQuery2.where(builder.equal(sub2Employee, sub1ProjectTeamLeader));
             Predicate notSalesReporting = builder.not(builder.equal(builder.literal("Sales Reporting"), sub1Project.get("name")));
             subQuery1.where(builder.and(notSalesReporting, builder.and(builder.exists(subQuery2), builder.equal(sub1Project, mainEmployeeProjects))));
             Predicate isMale = builder.equal(mainEmployee.get("gender"), Employee.Gender.Male);
             mainQuery.where(builder.and(isMale, builder.exists(subQuery1)));
-            
+
             TypedQuery<Employee> tquery = em.createQuery(mainQuery);
             criteriaEmployees = tquery.getResultList();
         } finally {
@@ -1274,27 +1274,27 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         try {
             jpqlEmployees = em.createQuery("SELECT e FROM Employee e join e.projects ep WHERE EXISTS (SELECT p FROM Project p WHERE ep = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
             em.clear();
-            
+
             CriteriaBuilder builder = em.getCriteriaBuilder();
             CriteriaQuery<Employee> mainQuery = builder.createQuery(Employee.class);
             Subquery<Object> subQuery1 = mainQuery.subquery(Object.class);
             Subquery<Object> subQuery2 = subQuery1.subquery(Object.class);
-            
+
             Root<Employee> mainEmployee = mainQuery.from(Employee.class);
             mainQuery.select(mainEmployee);
-            
+
             Root<Project> sub1Project = subQuery1.from(Project.class);
             Join<Employee, Project> mainEmployeeProjects = mainEmployee.join("projects");
 
             Root<Employee> sub2Employee = subQuery2.from(Employee.class);
             Join<Employee, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
-            
+
             subQuery2.where(builder.equal(sub2Employee, sub1ProjectTeamLeader));
             Predicate oneEqualsOne = builder.equal(builder.literal(1), builder.literal(1));
             subQuery1.where(builder.and(oneEqualsOne, builder.and(builder.exists(subQuery2), builder.equal(sub1Project, mainEmployeeProjects))));
             Predicate twoEqualsTwo = builder.equal(builder.literal(2), builder.literal(2));
             mainQuery.where(builder.and(twoEqualsTwo, builder.exists(subQuery1)));
-            
+
             TypedQuery<Employee> tquery = em.createQuery(mainQuery);
             criteriaEmployees = tquery.getResultList();
         } finally {
@@ -1332,7 +1332,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             cursor.nextElement();
             cursor.size();
             cursor.close();
-            
+
             // Test cursor result API.
             JpaQuery jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             jpaQuery.setHint(QueryHints.CURSOR, true);
@@ -1340,7 +1340,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             cursor.nextElement();
             cursor.size();
             cursor.close();
-            
+
             // Test scrollable cursor.
             jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             jpaQuery.setHint(QueryHints.SCROLLABLE_CURSOR, true);
@@ -1354,7 +1354,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             ScrollableCursor scrollableCursor = (ScrollableCursor)jpaQuery.getResultCursor();
             scrollableCursor.next();
             scrollableCursor.close();
-            
+
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -1368,11 +1368,11 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
-            
+
             CriteriaBuilder qb = em.getCriteriaBuilder();
             // Test multi object, as an array.
             CriteriaQuery<?> cq = qb.createQuery(Object[].class);
@@ -1392,7 +1392,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             if ((arrayResult.length != 3) || (arrayResult[0] != employee) || (arrayResult[1] != employee.getAddress()) || (!arrayResult[2].equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);
             }
-            
+
             // Test single object, as an array.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
@@ -1411,7 +1411,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             if ((arrayResult.length != 1) || (!arrayResult[0].equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);
             }
-            
+
             // Test multi object, as a Map.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
@@ -1430,7 +1430,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             if ((mapResult.size() != 3) ||(mapResult.get("employee") != employee) || (mapResult.get("address") != employee.getAddress()) || (!mapResult.get("id").equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
-            
+
             // Test single object, as a Map.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
@@ -1449,7 +1449,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             if ((mapResult.size() != 1) || (!mapResult.get("id").equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
-            
+
             // Test single object, as an array.
             cq = qb.createQuery(Employee.class);
             from = cq.from(Employee.class);
@@ -1463,7 +1463,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             if (arrayResult[0] != employee) {
                 fail("Array result not correct: " + arrayResult);
             }
-            
+
             // Test single object, as value.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
@@ -1481,7 +1481,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             if (! valueResult.equals(employee.getId())) {
                 fail("Value result not correct: " + valueResult);
             }
-            
+
             // Test multi object, as value.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
@@ -1495,7 +1495,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             if (! valueResult.equals(employee.getId())) {
                 fail("Value result not correct: " + valueResult);
             }
-            
+
             // Test single object, as attribute.
             cq = qb.createQuery(Object[].class);
             from = cq.from(Employee.class);
@@ -1527,7 +1527,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
@@ -1557,7 +1557,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     public void testQueryHintFetch(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -1593,7 +1593,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
-        
+
     }
 
     public void testProd(){
@@ -1625,7 +1625,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
@@ -1692,7 +1692,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test that a cache hit will occur on a query when the object is not in the unit of work/em.
      */
@@ -1755,7 +1755,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
 
     /**
      * bug 413892: tests that unused inner join expressions from root.get("manager") do not affect explicit out joins
-     * created from root.join("manager").   
+     * created from root.join("manager").
      */
     public void testUnusedJoinDoesNotAffectOtherJoins() {
         EntityManager em = createEntityManager();
@@ -1780,7 +1780,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
 
     /**
      * bug 413892: tests that unused inner join expressions from root.get("manager") do not affect explicit outer joins
-     * created from root.fetch("manager").   
+     * created from root.fetch("manager").
      */
     public void testUnusedJoinDoesNotAffectFetchJoin() {
         EntityManager em = createEntityManager();

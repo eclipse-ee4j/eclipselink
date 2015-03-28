@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import org.eclipse.persistence.queries.*;
@@ -70,7 +70,7 @@ public class JPQLParseTree extends ParseTree {
         populateReadQueryInternal(readQuery, innerContext);
         return innerContext;
     }
-    
+
     /**
      * Add all of the relevant query settings from an EJBQLParseTree to the given
      * database query.
@@ -94,7 +94,7 @@ public class JPQLParseTree extends ParseTree {
         }
     }
 
-    private void populateReadQueryInternal(ObjectLevelReadQuery objectQuery, 
+    private void populateReadQueryInternal(ObjectLevelReadQuery objectQuery,
                                            GenerationContext generationContext) {
         // Get the reference class if it does not exist.  This is done
         // for dynamic queries in EJBQL 3.0
@@ -105,39 +105,39 @@ public class JPQLParseTree extends ParseTree {
 
         // Initialize the base expression in the generation context
         initBaseExpression(objectQuery, generationContext);
-        
+
         // Validate parse tree
         validate(generationContext.getSession(), getClassLoader());
 
         // Apply the query node to the query (this will be a SelectNode for a read query)
         applyQueryNodeToQuery(objectQuery, generationContext);
-        
+
         // Verify the SELECT is valid (valid alias, etc)
         verifySelect(objectQuery, generationContext);
-        
+
         // This is what it's all about...
         setSelectionCriteriaForQuery(objectQuery, generationContext);
-        
+
         // Add any ordering
         addOrderingToQuery(objectQuery, generationContext);
 
         // Add any grouping
         addGroupingToQuery(objectQuery, generationContext);
-        
+
         // Add having
         addHavingToQuery(objectQuery, generationContext);
-        
+
         // Add non fetch joined variables
         addNonFetchJoinAttributes(objectQuery, generationContext);
     }
 
-    private void populateModifyQueryInternal(ModifyAllQuery query, 
+    private void populateModifyQueryInternal(ModifyAllQuery query,
                                              GenerationContext generationContext) {
         if (query.getReferenceClass() == null) {
             // Adjust the reference class if necessary
             adjustReferenceClassForQuery(query, generationContext);
         }
-        query.setSession(generationContext.getSession());            
+        query.setSession(generationContext.getSession());
 
         // Initialize the base expression in the generation context
         initBaseExpression(query, generationContext);
@@ -147,7 +147,7 @@ public class JPQLParseTree extends ParseTree {
 
         // Apply the query node to the query
         applyQueryNodeToQuery(query, generationContext);
-        
+
         setSelectionCriteriaForQuery(query, generationContext);
     }
 

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import org.eclipse.persistence.queries.*;
@@ -39,12 +39,12 @@ public abstract class ModifyNode extends QueryNode {
      */
     public void validate(ParseTreeContext context) {
         // If defined use the abstractSchemaIdentifier as the base variable,
-        // otherwise use the abstractSchemaName 
+        // otherwise use the abstractSchemaName
         String baseVariable = getCanonicalAbstractSchemaIdentifier();
         context.setBaseVariable(baseVariable);
         super.validate(context);
     }
-    
+
     /**
      * INTERNAL
      */
@@ -82,9 +82,9 @@ public abstract class ModifyNode extends QueryNode {
 
     /**
      * INTERNAL:
-     * Returns the canonical name of abstract schema identifier. 
+     * Returns the canonical name of abstract schema identifier.
      * If the identifier is not specified(unqualified attribute scenario),
-     * the canonical name of abstract schema is returned. 
+     * the canonical name of abstract schema is returned.
      */
     public String getCanonicalAbstractSchemaIdentifier() {
         String variable = abstractSchemaIdentifier != null ?
@@ -101,13 +101,13 @@ public abstract class ModifyNode extends QueryNode {
         ClassDescriptor descriptor = context.getSession().getDescriptorForAlias(alias);
         if (descriptor == null) {
             throw JPQLException.entityTypeNotFound2(
-                context.getParseTreeContext().getQueryInfo(), 
+                context.getParseTreeContext().getQueryInfo(),
                 getLine(), getColumn(), alias);
         }
         Class theClass = descriptor.getJavaClass();
         if (theClass == null) {
             throw JPQLException.resolutionClassNotFoundException2(
-                context.getParseTreeContext().getQueryInfo(), 
+                context.getParseTreeContext().getQueryInfo(),
                 getLine(), getColumn(), alias);
         }
         return theClass;

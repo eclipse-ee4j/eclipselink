@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.composite.advanced;
 
 import java.util.HashMap;
@@ -50,7 +50,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             num = numberOfCalls.intValue();
         }
         sessionCalls.put(sessionName, new Integer(num + 1));
-        
+
         //**temp
         session.getEventManager().addListener(new AcquireReleaseListener());
 
@@ -62,7 +62,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             }
         });
     }
-    
+
     public void customize(ClassDescriptor descriptor) {
         String javaClassName = descriptor.getJavaClass().getName();
         Integer numberOfCalls = (Integer)descriptorCalls.get(javaClassName);
@@ -71,10 +71,10 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             num = numberOfCalls.intValue();
         }
         descriptorCalls.put(javaClassName, new Integer(num + 1));
-        
+
         addCustomQueryKeys(descriptor);
     }
-    
+
     public static Map getSessionCalls() {
         return sessionCalls;
     }
@@ -82,7 +82,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
     public static Map getDescriptorCalls() {
         return descriptorCalls;
     }
-    
+
     public static int getNumberOfCallsForSession(String sessionName) {
         Integer numberOfCalls = (Integer)sessionCalls.get(sessionName);
         if(numberOfCalls == null) {
@@ -100,10 +100,10 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             return numberOfCalls.intValue();
         }
     }
-    
+
     protected void addCustomQueryKeys(ClassDescriptor descriptor) {
         ExpressionBuilder builder;
-        
+
         // add QueryKeys to Employee descriptor
         if(descriptor.getJavaClass().equals(Employee.class)) {
             // Employee's Address (same as address attribute).
@@ -115,8 +115,8 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                     builder.getField("MBR1_ADDRESS.ADDRESS_ID").equal(
                     builder.getParameter("MBR2_EMPLOYEE.ADDR_ID")));
             descriptor.addQueryKey(queryKey);
-            
-            // Projects led by Employee. 
+
+            // Projects led by Employee.
             OneToManyQueryKey managedProjectsQueryKey = new OneToManyQueryKey();
             managedProjectsQueryKey.setName("managedProjects");
             managedProjectsQueryKey.setReferenceClass(Project.class);
@@ -125,8 +125,8 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                     builder.getField("MBR3_PROJECT.LEADER_ID").equal(
                     builder.getParameter("MBR2_EMPLOYEE.EMP_ID")));
             descriptor.addQueryKey(managedProjectsQueryKey);
-    
-            // LargeProjects led by Employee. 
+
+            // LargeProjects led by Employee.
             OneToManyQueryKey managedLargeProjectsQueryKey = new OneToManyQueryKey();
             managedLargeProjectsQueryKey.setName("managedLargeProjects");
             managedLargeProjectsQueryKey.setReferenceClass(LargeProject.class);
@@ -135,7 +135,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                     builder.getField("MBR3_PROJECT.LEADER_ID").equal(
                     builder.getParameter("MBR2_EMPLOYEE.EMP_ID")));
             descriptor.addQueryKey(managedLargeProjectsQueryKey);
-    
+
             // Employee's Projects (same as projects attribute).
             ManyToManyQueryKey projectsQueryKey = new ManyToManyQueryKey();
             projectsQueryKey.setName("projectsQK");
@@ -147,7 +147,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                     builder.getTable("MBR3_EMP_PROJ").getField("PROJECTS_PROJ_ID").equal(
                     builder.getField("MBR3_PROJECT.PROJ_ID")))));
             descriptor.addQueryKey(projectsQueryKey);
-    
+
             // Employee's LargeProjects.
             ManyToManyQueryKey largeProjectsQueryKey = new ManyToManyQueryKey();
             largeProjectsQueryKey.setName("largeProjects");
@@ -159,7 +159,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                     builder.getTable("MBR3_EMP_PROJ").getField("PROJECTS_PROJ_ID").equal(
                     builder.getField("MBR3_PROJECT.PROJ_ID")))));
             descriptor.addQueryKey(largeProjectsQueryKey);
-    
+
             // Employee's responsibilities (same as responsibilities) - can't make this work so far.
             DirectCollectionQueryKey responsibilitiesQueryKey = new DirectCollectionQueryKey();
             responsibilitiesQueryKey.setName("responsibilitiesQK");
@@ -169,7 +169,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                     builder.getField("MBR1_RESPONS.EMP_ID").equal(
                     builder.getParameter("MBR2_EMPLOYEE.EMP_ID"))));
             descriptor.addQueryKey(responsibilitiesQueryKey);
-            
+
         } else if(descriptor.getJavaClass().equals(Address.class)) {
             // Employee that references Address
             OneToOneQueryKey ownerQueryKey = new OneToOneQueryKey();
@@ -180,7 +180,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                     builder.getField("MBR2_EMPLOYEE.ADDR_ID").equal(
                     builder.getParameter("MBR1_ADDRESS.ADDRESS_ID")));
             descriptor.addQueryKey(ownerQueryKey);
-            
+
         } else  if(descriptor.getJavaClass().equals(Project.class)) {
             // Project's employees.
             ManyToManyQueryKey employesQueryKey = new ManyToManyQueryKey();

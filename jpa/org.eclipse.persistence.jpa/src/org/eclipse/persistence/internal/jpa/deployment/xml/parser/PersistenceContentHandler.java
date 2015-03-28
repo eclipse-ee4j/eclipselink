@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     06/16/2009-2.0 Guy Pelletier 
+ *     06/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment.xml.parser;
 
 import java.util.Vector;
@@ -40,7 +40,7 @@ public class PersistenceContentHandler implements ContentHandler {
     private static final String ELEMENT_VALIDATION_MODE = "validation-mode";
     private static final String ELEMENT_PROPERTY = "property";
     private static final String ATTRIBUTE_NAME = "name";
-    private static final String ATTRIBUTE_VALUE = "value";  
+    private static final String ATTRIBUTE_VALUE = "value";
     private static final String ATTRIBUTE_TRANSACTION_TYPE = "transaction-type";
 
     private SEPersistenceUnitInfo persistenceUnitInfo;
@@ -129,13 +129,13 @@ public class PersistenceContentHandler implements ContentHandler {
                 return;
             } else if (ELEMENT_JTA_DATA_SOURCE.equals(localName)) {
                 persistenceUnitInfo.setJtaDataSource(
-                    // Create a dummy DataSource that will 
+                    // Create a dummy DataSource that will
                     // throw an exception on access
                     new DataSourceImpl(string, null, null, null));
                 return;
             } else if (ELEMENT_NON_JTA_DATA_SOURCE.equals(localName)) {
                 persistenceUnitInfo.setNonJtaDataSource(
-                    // Create a dummy DataSource that will 
+                    // Create a dummy DataSource that will
                     // throw an exception on access
                     new DataSourceImpl(string, null, null, null));
                 return;
@@ -165,7 +165,7 @@ public class PersistenceContentHandler implements ContentHandler {
                     persistenceUnits.add(persistenceUnitInfo);
                     persistenceUnitInfo = null;
                 }
-            } 
+            }
         }
     }
 

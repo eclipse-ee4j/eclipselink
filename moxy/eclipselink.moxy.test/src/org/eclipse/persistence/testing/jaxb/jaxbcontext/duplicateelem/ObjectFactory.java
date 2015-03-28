@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,14 +23,14 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-	@XmlElementDecl(namespace= "aa", name="root")
-	public JAXBElement<String> createRoot() {
-		return new JAXBElement<String>(new QName("root"), String.class, "");
-	}
-	
-	@XmlElementDecl(namespace= "aa",name="root")
-	public JAXBElement<BigDecimal> createRootBD() {
-		return new JAXBElement<BigDecimal>(new QName("root"), BigDecimal.class, new BigDecimal(""));
-	}
-	
+    @XmlElementDecl(namespace= "aa", name="root")
+    public JAXBElement<String> createRoot() {
+        return new JAXBElement<String>(new QName("root"), String.class, "");
+    }
+
+    @XmlElementDecl(namespace= "aa",name="root")
+    public JAXBElement<BigDecimal> createRootBD() {
+        return new JAXBElement<BigDecimal>(new QName("root"), BigDecimal.class, new BigDecimal(""));
+    }
+
 }

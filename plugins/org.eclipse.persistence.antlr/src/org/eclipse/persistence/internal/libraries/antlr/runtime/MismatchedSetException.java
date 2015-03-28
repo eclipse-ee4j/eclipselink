@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -28,17 +28,17 @@
 package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 public class MismatchedSetException extends RecognitionException {
-	public BitSet expecting;
+    public BitSet expecting;
 
-	/** Used for remote debugger deserialization */
-	public MismatchedSetException() {;}
+    /** Used for remote debugger deserialization */
+    public MismatchedSetException() {;}
 
-	public MismatchedSetException(BitSet expecting, IntStream input) {
-		super(input);
-		this.expecting = expecting;
-	}
+    public MismatchedSetException(BitSet expecting, IntStream input) {
+        super(input);
+        this.expecting = expecting;
+    }
 
-	public String toString() {
-		return "MismatchedSetException("+getUnexpectedType()+"!="+expecting+")";
-	}
+    public String toString() {
+        return "MismatchedSetException("+getUnexpectedType()+"!="+expecting+")";
+    }
 }

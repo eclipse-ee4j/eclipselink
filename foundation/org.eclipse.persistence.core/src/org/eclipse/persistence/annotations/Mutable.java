@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.annotations;
 
 import java.lang.annotation.Retention;
@@ -29,7 +29,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * For serialized types, by default they are assumed to be mutable, if they are not mutable this annoation can be set to false.
  * Mutable basic mappings affect the overhead of change tracking, attribute change tracking can only be weaved with non-mutable mappings.
  */
- 
+
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface Mutable {

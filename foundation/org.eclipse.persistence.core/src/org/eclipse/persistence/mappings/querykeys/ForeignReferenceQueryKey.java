@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.querykeys;
 
 import java.security.AccessController;
@@ -48,7 +48,7 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * INTERNAL:
      * Convert all the class-name-based settings in this project to actual class-based
      * settings
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Class referenceClass = null;
@@ -85,7 +85,7 @@ public class ForeignReferenceQueryKey extends QueryKey {
     public Class getReferenceClass() {
         return referenceClass;
     }
-    
+
     /**
      * PUBLIC:
      * Return the reference class name of the relationship.
@@ -126,22 +126,22 @@ public class ForeignReferenceQueryKey extends QueryKey {
     public void setReferenceClass(Class referenceClass) {
         this.referenceClass = referenceClass;
     }
-    
+
     /**
      * PUBLIC:
      * Set the reference class name for this relationship
      * This is used when projects are built without using classes
-     * @param referenceClassName 
+     * @param referenceClassName
      */
     public void setReferenceClassName(String referenceClassName) {
         this.referenceClassName = referenceClassName;
     }
-    
+
     /**
      * PUBLIC:
      * Returns the source table.
      */
-    public DatabaseTable getSourceTable() { 
+    public DatabaseTable getSourceTable() {
         // TODO: Should extract the target table from joinCriteria (if it's not null),
         // like ManyToManyQueryKey.getRelationTable does.
         return this.descriptor.getTables().firstElement();
@@ -151,7 +151,7 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * PUBLIC:
      * Returns the reference table.
      */
-    public DatabaseTable getReferenceTable(ClassDescriptor desc) { 
+    public DatabaseTable getReferenceTable(ClassDescriptor desc) {
         // TODO: This won't work for direct collection.
         // Should extract the target table from joinCriteria (if it's not null),
         // like ManyToManyQueryKey.getRelationTable does.
@@ -184,11 +184,11 @@ public class ForeignReferenceQueryKey extends QueryKey {
                 }
             }
         };
-        
+
         expIterator.setResult(new HashSet());
         expIterator.iterateOn(this.joinCriteria);
         HashSet<DatabaseTable> tables = (HashSet)expIterator.getResult();
-        
+
         DatabaseTable relationTable = null;
         Iterator<DatabaseTable> it = tables.iterator();
         while(it.hasNext()) {

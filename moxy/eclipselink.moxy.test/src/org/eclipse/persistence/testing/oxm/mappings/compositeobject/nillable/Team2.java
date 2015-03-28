@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -14,12 +14,12 @@ package org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable;
 
 public class Team2 {
     public static final int DEFAULT_ID = 123;
-    
+
     // Factory method
     public static Team2 getInstance() {
         return new Team2(DEFAULT_ID, new Employee2(), "Eng");
     }
-    
+
     private int id;
     private Employee2 manager;
     private String name;
@@ -27,7 +27,7 @@ public class Team2 {
     private boolean isSetManager = false;
 
     public Team2() {
-        super();        
+        super();
     }
 
     public Team2(int id) {
@@ -78,8 +78,8 @@ public class Team2 {
     }
 
     public Employee2 getManager() {
-		return manager;
-	}
+        return manager;
+    }
 
     public String getName() {
         return name;
@@ -91,23 +91,23 @@ public class Team2 {
 
     public void setId(int id) {
         this.id = id;
-    } 
+    }
 
     public void setManager(Employee2 manager) {
-	    // no unset for now
-	    isSetManager = true;
-		this.manager = manager;
-	}
+        // no unset for now
+        isSetManager = true;
+        this.manager = manager;
+    }
 
-	public void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
     public String toString() {
-    	StringBuffer aBuffer = new StringBuffer();
-    	aBuffer.append("Team(id=");
-    	aBuffer.append(getId());
-    	aBuffer.append(", manager=");
+        StringBuffer aBuffer = new StringBuffer();
+        aBuffer.append("Team(id=");
+        aBuffer.append(getId());
+        aBuffer.append(", manager=");
         aBuffer.append(getManager());
         aBuffer.append(", isSetManager=");
         aBuffer.append(isSetManager());

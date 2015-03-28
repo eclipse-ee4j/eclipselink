@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,7 +29,7 @@ public class MyAttachmentMarshaller extends AttachmentMarshaller {
 
     // SATISFY INTERFACE IMPLEMENTATION
     public String addSwaRefAttachment(DataHandler data) { return DATA_ID; }
-    public String addSwaRefAttachment(byte[] data, int offset, int length) { return BYTES_ID; } 
+    public String addSwaRefAttachment(byte[] data, int offset, int length) { return BYTES_ID; }
     public String addMtomAttachment(byte[] bytes, int start, int offset, String mimeType, String elemtnName, String namespaceURI) {
         String id = BYTES_ID;
         count++;

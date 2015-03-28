@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -35,9 +35,9 @@ public class SDODataObjectGetCharacterWithIndexConversionTest extends SDODataObj
     public void testGetCharacterFromBoolean() {
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_BOOLEAN);
-        
+
         dataObject.set(property, false);
-        try {            
+        try {
             char value = dataObject.getChar(PROPERTY_INDEX);
             char controlValue = 1;
             assertEquals(controlValue, value);
@@ -52,8 +52,8 @@ public class SDODataObjectGetCharacterWithIndexConversionTest extends SDODataObj
         property.setType(SDOConstants.SDO_BYTE);
         byte theValue = 2;
         dataObject.set(property,theValue);
-        try {            
-            char value = dataObject.getChar(PROPERTY_INDEX);            
+        try {
+            char value = dataObject.getChar(PROPERTY_INDEX);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -84,7 +84,7 @@ public class SDODataObjectGetCharacterWithIndexConversionTest extends SDODataObj
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
             return;
         }
-        fail("an SDOException should have occurred.");    
+        fail("an SDOException should have occurred.");
     }
 
     //5. purpose: getChar with Double Property
@@ -94,7 +94,7 @@ public class SDODataObjectGetCharacterWithIndexConversionTest extends SDODataObj
         double theValue = 10;
         dataObject.set(property, theValue);
         try {
-            char value = dataObject.getChar(PROPERTY_INDEX);            
+            char value = dataObject.getChar(PROPERTY_INDEX);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -109,7 +109,7 @@ public class SDODataObjectGetCharacterWithIndexConversionTest extends SDODataObj
         float theValue = 10;
         dataObject.set(property, theValue);
         try {
-            char value = dataObject.getChar(PROPERTY_INDEX);            
+            char value = dataObject.getChar(PROPERTY_INDEX);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -124,7 +124,7 @@ public class SDODataObjectGetCharacterWithIndexConversionTest extends SDODataObj
         int theValue = 10;
         dataObject.set(property, theValue);
         try {
-            char value = dataObject.getChar(PROPERTY_INDEX);            
+            char value = dataObject.getChar(PROPERTY_INDEX);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -139,7 +139,7 @@ public class SDODataObjectGetCharacterWithIndexConversionTest extends SDODataObj
         long theValue = 10;
         dataObject.set(property, theValue);
         try {
-            char value = dataObject.getChar(PROPERTY_INDEX);            
+            char value = dataObject.getChar(PROPERTY_INDEX);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -153,8 +153,8 @@ public class SDODataObjectGetCharacterWithIndexConversionTest extends SDODataObj
         property.setType(SDOConstants.SDO_SHORT);
         short theValue = 10;
         dataObject.set(property, theValue);
-        try {            
-            char value = dataObject.getChar(PROPERTY_INDEX);            
+        try {
+            char value = dataObject.getChar(PROPERTY_INDEX);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -195,8 +195,8 @@ public class SDODataObjectGetCharacterWithIndexConversionTest extends SDODataObj
         property.setType(SDOConstants.SDO_DECIMAL);
         BigDecimal theValue = new BigDecimal(10);
         dataObject.set(property, theValue);
-        try {            
-            char value = dataObject.getChar(PROPERTY_INDEX);            
+        try {
+            char value = dataObject.getChar(PROPERTY_INDEX);
             char controlValue = (char)theValue.byteValue();
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -211,7 +211,7 @@ public class SDODataObjectGetCharacterWithIndexConversionTest extends SDODataObj
         BigInteger theValue = new BigInteger("10");
         dataObject.set(property, theValue);
         try {
-            char value = dataObject.getChar(PROPERTY_INDEX);            
+            char value = dataObject.getChar(PROPERTY_INDEX);
             char controlValue = (char)theValue.byteValue();
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -240,6 +240,6 @@ public class SDODataObjectGetCharacterWithIndexConversionTest extends SDODataObj
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
             return;
         }
-        fail("an SDOException should have occurred.");                
+        fail("an SDOException should have occurred.");
     }
 }

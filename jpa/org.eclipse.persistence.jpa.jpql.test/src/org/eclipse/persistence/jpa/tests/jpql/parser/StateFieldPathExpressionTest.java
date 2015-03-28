@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,42 +19,42 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 @SuppressWarnings("nls")
 public final class StateFieldPathExpressionTest extends JPQLParserTest {
 
-	@Test
-	public void test_JPQLQuery_01() {
+    @Test
+    public void test_JPQLQuery_01() {
 
-		String query = "SELECT SUM(e.manager.name) FROM Employee e";
+        String query = "SELECT SUM(e.manager.name) FROM Employee e";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(sum("e.manager.name")),
-			from("Employee", "e")
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(sum("e.manager.name")),
+            from("Employee", "e")
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_02() {
+    @Test
+    public void test_JPQLQuery_02() {
 
-		String query = "SELECT SUM(e.manager.) FROM Employee e";
+        String query = "SELECT SUM(e.manager.) FROM Employee e";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(sum("e.manager.")),
-			from("Employee", "e")
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(sum("e.manager.")),
+            from("Employee", "e")
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_03() {
+    @Test
+    public void test_JPQLQuery_03() {
 
-		String query = "SELECT c.creditCard.creditCompany.address.city FROM Customer c";
+        String query = "SELECT c.creditCard.creditCompany.address.city FROM Customer c";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(path("c.creditCard.creditCompany.address.city")),
-			from("Customer", "c")
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(path("c.creditCard.creditCompany.address.city")),
+            from("Customer", "c")
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 }

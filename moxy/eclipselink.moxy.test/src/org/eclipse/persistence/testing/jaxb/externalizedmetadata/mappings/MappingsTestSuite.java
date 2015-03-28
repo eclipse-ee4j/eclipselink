@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -61,13 +61,13 @@ public class MappingsTestSuite extends TestSuite {
         suite.addTestSuite(AnyAttributeWriteOnlyMappingTestCases.class);
         suite.addTestSuite(AnyAttributeSubTypeMappingTestCases.class);
         suite.addTestSuite(AnyCollectionMappingTestCases.class);
-        suite.addTestSuite(AnyCollectionReadOnlyMappingTestCases.class); 
+        suite.addTestSuite(AnyCollectionReadOnlyMappingTestCases.class);
         suite.addTestSuite(AnyCollectionWriteOnlyMappingTestCases.class);
         suite.addTestSuite(AnyObjectMappingTestCases.class);
         suite.addTestSuite(AnyObjectReadOnlyMappingTestCases.class);
         suite.addTestSuite(AnyObjectWriteOnlyMappingTestCases.class);
         suite.addTestSuite(BinaryDataMappingTestCases.class);
-        suite.addTestSuite(BinaryDataCollectionMappingTestCases.class);        
+        suite.addTestSuite(BinaryDataCollectionMappingTestCases.class);
         suite.addTestSuite(ChoiceMappingEmployeeTestCases.class);
         suite.addTestSuite(ChoiceMappingWithJoinNodesTestCases.class);
         suite.addTestSuite(ChoiceCollectionMappingTestCases.class);
@@ -91,7 +91,7 @@ public class MappingsTestSuite extends TestSuite {
         suite.addTestSuite(JAXBContextTransformationMappingTestCases.class);
         return suite;
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.MappingsTestSuite" };
         junit.textui.TestRunner.main(arguments);

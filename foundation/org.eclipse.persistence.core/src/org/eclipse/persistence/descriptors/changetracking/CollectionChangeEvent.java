@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors.changetracking;
 
 import java.beans.PropertyChangeEvent;
@@ -33,7 +33,7 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
      * Change type is either add or remove
      */
     protected int changeType;
-    
+
     /**
      * INTERNAL:
      * index is the location of the change in the collection
@@ -46,10 +46,10 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
      *   oldValue = list.set(i, newValue);
      *   raiseRemoveEvent(i, oldValue, true);
      *   raiseAddEvent(i, newValue, true);
-     * This flag indicates whether the event was raised by set operation on the list. 
+     * This flag indicates whether the event was raised by set operation on the list.
      */
     protected boolean isSet;
-    
+
     /**
      * INTERNAL:
      * This flag will indicate if the object has already been removed or added to the collection before raising an event.
@@ -61,28 +61,28 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
      * PUBLIC:
      * Create a CollectionChangeEvent for an object based on the property name, old value, new value
      * and change type (add or remove)
-     * 
+     *
      * @deprecated as of EclipseLink 2.3
      */
     public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType) {
         this(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, (Integer)null, false, true);
     }
-    
+
     /**
      * PUBLIC:
      * Create a CollectionChangeEvent for an object based on the property name, old value, new value,
      * change type (add or remove) and change applied.
-     * 
+     *
      */
     public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, boolean isChangeApplied) {
         this(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, (Integer)null, false, isChangeApplied);
     }
-   
+
     /**
      * PUBLIC:
-     * Create a CollectionChangeEvent for an object based on the property name, old value, new value, 
+     * Create a CollectionChangeEvent for an object based on the property name, old value, new value,
      * change type (add or remove) and the index where the object is/was in the collection (list)
-     * 
+     *
      * @deprecated as of EclipseLink 2.3
      */
     public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index) {
@@ -91,10 +91,10 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
 
     /**
      * PUBLIC:
-     * Create a CollectionChangeEvent for an object based on the property name, old value, new value, 
+     * Create a CollectionChangeEvent for an object based on the property name, old value, new value,
      * change type (add or remove) and the index where the object is/was in the collection (list),
-     * flag indicating whether the change (addition or removal) is part of a single set operation on a list. 
-     * 
+     * flag indicating whether the change (addition or removal) is part of a single set operation on a list.
+     *
      * @deprecated as of EclipseLink 2.3
      */
     public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index, boolean isSet) {
@@ -103,10 +103,10 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
 
     /**
      * PUBLIC:
-     * Create a CollectionChangeEvent for an object based on the property name, old value, new value, 
+     * Create a CollectionChangeEvent for an object based on the property name, old value, new value,
      * change type (add or remove) and the index where the object is/was in the collection (list),
      * flag indicating whether the change (addition or removal) is part of a single set operation on a list,
-     * flag indicating whether the object has already been added or removed from the collection. 
+     * flag indicating whether the object has already been added or removed from the collection.
      */
     public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index, boolean isSet, boolean isChangeApplied) {
         super(collectionOwner, propertyName, collectionChanged, elementChanged);
@@ -123,7 +123,7 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
     public int getChangeType() {
         return changeType;
     }
-    
+
     /**
      * INTERNAL:
      * Return whether the event was raised by set operation on the list.
@@ -131,7 +131,7 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
     public boolean isSet() {
         return isSet;
     }
-    
+
     /**
      * INTERNAL:
      * Return the index of the change in the collection
@@ -147,7 +147,7 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
     public void setIndex(Integer index) {
         this.index = index;
     }
-    
+
     /**
      * INTERNAL:
      * Return the value indicating if the object has been already added or removed from the collection.

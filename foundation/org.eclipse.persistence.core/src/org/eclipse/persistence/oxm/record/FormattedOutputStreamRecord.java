@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *      Denise Smith - November 2, 2009
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
 
 import java.io.ByteArrayOutputStream;
@@ -64,7 +64,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
 
     private byte[] tab() {
         if (tab == null) {
-            String sTab = getMarshaller().getIndentString(); 
+            String sTab = getMarshaller().getIndentString();
             // Escape the tab using writeValue
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             writeValue(sTab, true, false, baos);
@@ -202,7 +202,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
             } else {
                 attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
-                if (attr.getNamespaceURI() != null) {                    
+                if (attr.getNamespaceURI() != null) {
                     namespaceDeclaration(attr.getPrefix(),  attr.getNamespaceURI());
                 }
             }

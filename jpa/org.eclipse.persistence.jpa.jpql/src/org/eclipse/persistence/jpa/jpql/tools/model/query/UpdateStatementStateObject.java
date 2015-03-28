@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,92 +30,92 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
  */
 public class UpdateStatementStateObject extends AbstractModifyStatementStateObject {
 
-	/**
-	 * Creates a new <code>UpdateStatementStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public UpdateStatementStateObject(JPQLQueryStateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>UpdateStatementStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public UpdateStatementStateObject(JPQLQueryStateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * Adds a new item to the <code><b>UPDATE</b></code> clause.
-	 *
-	 * @param path The path of the value to update
-	 * @return The newly added {@link UpdateItemStateObject}
-	 */
-	public UpdateItemStateObject addItem(String path) {
-		return getModifyClause().addItem(path);
-	}
+    /**
+     * Adds a new item to the <code><b>UPDATE</b></code> clause.
+     *
+     * @param path The path of the value to update
+     * @return The newly added {@link UpdateItemStateObject}
+     */
+    public UpdateItemStateObject addItem(String path) {
+        return getModifyClause().addItem(path);
+    }
 
-	/**
-	 * Adds a new item to the <code><b>UPDATE</b></code> clause.
-	 *
-	 * @param path The path of the value to update
-	 * @param newValue The {@link StateObject} representation of the new value
-	 * @return The newly added {@link UpdateItemStateObject}
-	 */
-	public UpdateItemStateObject addItem(String path, StateObject newValue) {
-		return getModifyClause().addItem(path, newValue);
-	}
+    /**
+     * Adds a new item to the <code><b>UPDATE</b></code> clause.
+     *
+     * @param path The path of the value to update
+     * @param newValue The {@link StateObject} representation of the new value
+     * @return The newly added {@link UpdateItemStateObject}
+     */
+    public UpdateItemStateObject addItem(String path, StateObject newValue) {
+        return getModifyClause().addItem(path, newValue);
+    }
 
-	/**
-	 * Adds a new item to the <code><b>UPDATE</b></code> clause.
-	 *
-	 * @param path The path of the value to update
-	 * @param newValue The string representation of the new value to parse and to convert into a
-	 * {@link StateObject} representation
-	 * @return The newly added {@link UpdateItemStateObject}
-	 */
-	public UpdateItemStateObject addItem(String path, String newValue) {
-		return getModifyClause().addItem(path, newValue);
-	}
+    /**
+     * Adds a new item to the <code><b>UPDATE</b></code> clause.
+     *
+     * @param path The path of the value to update
+     * @param newValue The string representation of the new value to parse and to convert into a
+     * {@link StateObject} representation
+     * @return The newly added {@link UpdateItemStateObject}
+     */
+    public UpdateItemStateObject addItem(String path, String newValue) {
+        return getModifyClause().addItem(path, newValue);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractModifyClauseStateObject buildModifyClause() {
-		return new UpdateClauseStateObject(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractModifyClauseStateObject buildModifyClause() {
+        return new UpdateClauseStateObject(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public UpdateStatement getExpression() {
-		return (UpdateStatement) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UpdateStatement getExpression() {
+        return (UpdateStatement) super.getExpression();
+    }
 
-	/**
-	 * Returns the state object representing the <code><b>UPDATE</b></code> clause.
-	 *
-	 * @return The state object representing the <code><b>UPDATE</b></code> clause, which is never
-	 * <code>null</code>
-	 */
-	@Override
-	public UpdateClauseStateObject getModifyClause() {
-		return (UpdateClauseStateObject) super.getModifyClause();
-	}
+    /**
+     * Returns the state object representing the <code><b>UPDATE</b></code> clause.
+     *
+     * @return The state object representing the <code><b>UPDATE</b></code> clause, which is never
+     * <code>null</code>
+     */
+    @Override
+    public UpdateClauseStateObject getModifyClause() {
+        return (UpdateClauseStateObject) super.getModifyClause();
+    }
 
-	/**
-	 * Keeps a reference of the {@link UpdateStatement parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link UpdateStatement parsed object} representing an <code><b>UpdateStatement</b></code>
-	 * statement
-	 */
-	public void setExpression(UpdateStatement expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link UpdateStatement parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link UpdateStatement parsed object} representing an <code><b>UpdateStatement</b></code>
+     * statement
+     */
+    public void setExpression(UpdateStatement expression) {
+        super.setExpression(expression);
+    }
 }

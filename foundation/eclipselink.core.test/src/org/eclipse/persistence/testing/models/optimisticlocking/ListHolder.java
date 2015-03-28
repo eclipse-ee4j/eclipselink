@@ -14,11 +14,11 @@ public class ListHolder {
     private String description;
     private int version;
     private List<ListItem> items;
-    
+
     public ListHolder(){
         items = new ArrayList<ListItem>();
     }
-    
+
     public int getId() {
         return id;
     }
@@ -43,7 +43,7 @@ public class ListHolder {
     public void setItems(List<ListItem> items) {
         this.items = items;
     }
-    
+
     public static RelationalDescriptor descriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
@@ -60,7 +60,7 @@ public class ListHolder {
         descriptor.setSequenceNumberFieldName("ID");
         descriptor.setExistenceChecking("Check cache");
         descriptor.setIdentityMapSize(100);
-        
+
         VersionLockingPolicy lockingPolicy = new VersionLockingPolicy();
         lockingPolicy.setWriteLockFieldName("OL_HOLDER.VERSION");
         lockingPolicy.setIsStoredInCache(false);
@@ -78,20 +78,20 @@ public class ListHolder {
         directtofieldmapping.setIsReadOnly(false);
         directtofieldmapping.setFieldName("OL_HOLDER.ID");
         descriptor.addMapping(directtofieldmapping);
-        
+
         // SECTION: DIRECTTOFIELDMAPPING
         org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping1 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping1.setAttributeName("version");
         directtofieldmapping1.setIsReadOnly(false);
         directtofieldmapping1.setFieldName("OL_HOLDER.VERSION");
         descriptor.addMapping(directtofieldmapping1);
-        
+
         org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping2 = new org.eclipse.persistence.mappings.DirectToFieldMapping();
         directtofieldmapping2.setAttributeName("description");
         directtofieldmapping2.setIsReadOnly(false);
         directtofieldmapping2.setFieldName("OL_HOLDER.DESCR");
         descriptor.addMapping(directtofieldmapping2);
-        
+
         // SECTION: ONETOMANYMAPPING
         org.eclipse.persistence.mappings.OneToManyMapping onetomanymapping = new org.eclipse.persistence.mappings.OneToManyMapping();
         onetomanymapping.setAttributeName("items");
@@ -104,14 +104,14 @@ public class ListHolder {
 
         return descriptor;
     }
-    
+
     public static TableDefinition tableDefinition() {
         TableDefinition definition = new TableDefinition();
 
         definition.setName("OL_HOLDER");
 
         definition.addIdentityField("ID", java.math.BigDecimal.class, 15);
-        
+
         definition.addField("VERSION", Integer.class, 30);
         definition.addField("DESCR", java.lang.String.class);
 

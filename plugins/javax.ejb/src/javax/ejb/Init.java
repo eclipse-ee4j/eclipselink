@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,7 +60,7 @@ import java.lang.annotation.Retention;
  * <p>
  * An <code>Init</code> method is only required to be specified for
  * stateful session beans that provide a <code>RemoteHome</code> or
- * <code>LocalHome</code> interface. 
+ * <code>LocalHome</code> interface.
  *
  * <p> The name of the adapted <code>create&#060;METHOD&#062;</code>
  * method of the home or local home interface must be specified if the

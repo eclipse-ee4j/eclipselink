@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
 
 /**
  * INTERNAL:
- * <p><b>Purpose</b>: This is how the XML Fragment Collection Mapping is handled 
+ * <p><b>Purpose</b>: This is how the XML Fragment Collection Mapping is handled
  * when used with the TreeObjectBuilder.</p>
  * @author  mmacivor
  */
@@ -70,7 +70,7 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
         }
         return true;
     }
-    
+
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         builder.setOwningRecord(unmarshalRecord);
@@ -87,7 +87,7 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
                 for(Entry<String, String> next:((Map<String, String>) unmarshalRecord.getPrefixesForFragment()).entrySet()) {
                     builder.startPrefixMapping(next.getKey(), next.getValue());
                 }
-            }            
+            }
             builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
             XMLReader xmlReader = unmarshalRecord.getXMLReader();
             xmlReader.setContentHandler(builder);
@@ -97,9 +97,9 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
         }
         return true;
     }
-    
+
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-    	SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
+        SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         Object value = builder.getNodes().remove(builder.getNodes().size() -1);
         unmarshalRecord.addAttributeValue(this, value);
     }
@@ -134,22 +134,22 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
     }
-    
+
     /**
      *  INTERNAL:
-     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
-     */  
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     */
     public void setIndex(int index){
-    	this.index = index;
+        this.index = index;
     }
-    
+
     /**
      * INTERNAL:
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
-     * Set during TreeObjectBuilder initialization 
+     * Set during TreeObjectBuilder initialization
      */
     public int getIndex(){
-    	return index;
+        return index;
     }
 
     /**

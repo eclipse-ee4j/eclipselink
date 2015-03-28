@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,166 +18,166 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class NullIfExpressionTest extends JPQLParserTest {
-	private JPQLQueryStringFormatter buildFormatter_9() {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace(",)", ", )");
-			}
-		};
-	}
+    private JPQLQueryStringFormatter buildFormatter_9() {
+        return new JPQLQueryStringFormatter() {
+            public String format(String query) {
+                return query.replace(",)", ", )");
+            }
+        };
+    }
 
-	@Test
-	public void test_JPQLQuery_1() {
-		String query = "SELECT NULLIF('JPQL', 4 + e.age) FROM Employee e";
+    @Test
+    public void test_JPQLQuery_1() {
+        String query = "SELECT NULLIF('JPQL', 4 + e.age) FROM Employee e";
 
-		ExpressionTester selectStatement = selectStatement
-		(
-			select(nullIf(string("'JPQL'"), numeric(4).add(path("e.age")))),
-			from("Employee", "e")
-		);
+        ExpressionTester selectStatement = selectStatement
+        (
+            select(nullIf(string("'JPQL'"), numeric(4).add(path("e.age")))),
+            from("Employee", "e")
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_2() {
-		String query = "SELECT NULLIF() FROM Employee e";
+    @Test
+    public void test_JPQLQuery_2() {
+        String query = "SELECT NULLIF() FROM Employee e";
 
-		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
-		nullIf.hasComma = false;
-		nullIf.hasSpaceAfterComma = false;
+        NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
+        nullIf.hasComma = false;
+        nullIf.hasSpaceAfterComma = false;
 
-		ExpressionTester selectStatement = selectStatement
-		(
-			select(nullIf),
-			from("Employee", "e")
-		);
+        ExpressionTester selectStatement = selectStatement
+        (
+            select(nullIf),
+            from("Employee", "e")
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_3() {
-		String query = "SELECT NULLIF(,) FROM Employee e";
+    @Test
+    public void test_JPQLQuery_3() {
+        String query = "SELECT NULLIF(,) FROM Employee e";
 
-		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
-		nullIf.hasComma = true;
-		nullIf.hasSpaceAfterComma = false;
+        NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
+        nullIf.hasComma = true;
+        nullIf.hasSpaceAfterComma = false;
 
-		ExpressionTester selectStatement = selectStatement
-		(
-			select(nullIf),
-			from("Employee", "e")
-		);
+        ExpressionTester selectStatement = selectStatement
+        (
+            select(nullIf),
+            from("Employee", "e")
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_4() {
-		String query = "SELECT NULLIF FROM Employee e";
+    @Test
+    public void test_JPQLQuery_4() {
+        String query = "SELECT NULLIF FROM Employee e";
 
-		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
-		nullIf.hasLeftParenthesis = false;
-		nullIf.hasComma = false;
-		nullIf.hasSpaceAfterComma = false;
-		nullIf.hasRightParenthesis = false;
+        NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
+        nullIf.hasLeftParenthesis = false;
+        nullIf.hasComma = false;
+        nullIf.hasSpaceAfterComma = false;
+        nullIf.hasRightParenthesis = false;
 
-		ExpressionTester selectStatement = selectStatement
-		(
-			select(nullIf),
-			from("Employee", "e")
-		);
+        ExpressionTester selectStatement = selectStatement
+        (
+            select(nullIf),
+            from("Employee", "e")
+        );
 
-		testInvalidQuery(query, selectStatement);
-	}
+        testInvalidQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_5() {
-		String query = "SELECT NULLIF( FROM Employee e";
+    @Test
+    public void test_JPQLQuery_5() {
+        String query = "SELECT NULLIF( FROM Employee e";
 
-		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
-		nullIf.hasLeftParenthesis = true;
-		nullIf.hasComma = false;
-		nullIf.hasSpaceAfterComma = false;
-		nullIf.hasRightParenthesis = false;
+        NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
+        nullIf.hasLeftParenthesis = true;
+        nullIf.hasComma = false;
+        nullIf.hasSpaceAfterComma = false;
+        nullIf.hasRightParenthesis = false;
 
-		ExpressionTester selectStatement = selectStatement
-		(
-			select(nullIf),
-			from("Employee", "e")
-		);
+        ExpressionTester selectStatement = selectStatement
+        (
+            select(nullIf),
+            from("Employee", "e")
+        );
 
-		testInvalidQuery(query, selectStatement);
-	}
+        testInvalidQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_6() {
-		String query = "SELECT NULLIF) FROM Employee e";
+    @Test
+    public void test_JPQLQuery_6() {
+        String query = "SELECT NULLIF) FROM Employee e";
 
-		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
-		nullIf.hasLeftParenthesis = false;
-		nullIf.hasComma = false;
-		nullIf.hasSpaceAfterComma = false;
-		nullIf.hasRightParenthesis = true;
+        NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
+        nullIf.hasLeftParenthesis = false;
+        nullIf.hasComma = false;
+        nullIf.hasSpaceAfterComma = false;
+        nullIf.hasRightParenthesis = true;
 
-		ExpressionTester selectStatement = selectStatement
-		(
-			select(nullIf),
-			from("Employee", "e")
-		);
+        ExpressionTester selectStatement = selectStatement
+        (
+            select(nullIf),
+            from("Employee", "e")
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_7() {
-		String query = "SELECT NULLIF(e.name) FROM Employee e";
+    @Test
+    public void test_JPQLQuery_7() {
+        String query = "SELECT NULLIF(e.name) FROM Employee e";
 
-		NullIfExpressionTester nullIf = nullIf(path("e.name"), nullExpression());
-		nullIf.hasComma = false;
-		nullIf.hasSpaceAfterComma = false;
+        NullIfExpressionTester nullIf = nullIf(path("e.name"), nullExpression());
+        nullIf.hasComma = false;
+        nullIf.hasSpaceAfterComma = false;
 
-		ExpressionTester selectStatement = selectStatement
-		(
-			select(nullIf),
-			from("Employee", "e")
-		);
+        ExpressionTester selectStatement = selectStatement
+        (
+            select(nullIf),
+            from("Employee", "e")
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_8() {
-		String query = "SELECT NULLIF(e.name,) FROM Employee e";
+    @Test
+    public void test_JPQLQuery_8() {
+        String query = "SELECT NULLIF(e.name,) FROM Employee e";
 
-		NullIfExpressionTester nullIf = nullIf(path("e.name"), nullExpression());
-		nullIf.hasComma = true;
-		nullIf.hasSpaceAfterComma = false;
+        NullIfExpressionTester nullIf = nullIf(path("e.name"), nullExpression());
+        nullIf.hasComma = true;
+        nullIf.hasSpaceAfterComma = false;
 
-		ExpressionTester selectStatement = selectStatement
-		(
-			select(nullIf),
-			from("Employee", "e")
-		);
+        ExpressionTester selectStatement = selectStatement
+        (
+            select(nullIf),
+            from("Employee", "e")
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_9() {
-		String query = "SELECT NULLIF(e.name, ) FROM Employee e";
+    @Test
+    public void test_JPQLQuery_9() {
+        String query = "SELECT NULLIF(e.name, ) FROM Employee e";
 
-		NullIfExpressionTester nullIf = nullIf(path("e.name"), nullExpression());
-		nullIf.hasComma = true;
-		nullIf.hasSpaceAfterComma = true;
+        NullIfExpressionTester nullIf = nullIf(path("e.name"), nullExpression());
+        nullIf.hasComma = true;
+        nullIf.hasSpaceAfterComma = true;
 
-		ExpressionTester selectStatement = selectStatement
-		(
-			select(nullIf),
-			from("Employee", "e")
-		);
+        ExpressionTester selectStatement = selectStatement
+        (
+            select(nullIf),
+            from("Employee", "e")
+        );
 
-		testValidQuery(query, selectStatement, buildFormatter_9());
-	}
+        testValidQuery(query, selectStatement, buildFormatter_9());
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,41 +28,41 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class WhereClause extends AbstractConditionalClause {
 
-	/**
-	 * Creates a new <code>WhereClause</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public WhereClause(AbstractExpression parent) {
-		super(parent, WHERE);
-	}
+    /**
+     * Creates a new <code>WhereClause</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public WhereClause(AbstractExpression parent) {
+        super(parent, WHERE);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
-		if (word.equalsIgnoreCase(SELECT) ||
-		    word.equalsIgnoreCase(FROM)) {
+        if (word.equalsIgnoreCase(SELECT) ||
+            word.equalsIgnoreCase(FROM)) {
 
-			return false;
-		}
+            return false;
+        }
 
-		return super.isParsingComplete(wordParser, word, expression);
-	}
+        return super.isParsingComplete(wordParser, word, expression);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(WhereClauseBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(WhereClauseBNF.ID);
+    }
 }

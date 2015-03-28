@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import java.io.FileInputStream;
@@ -29,16 +29,16 @@ import commonj.sdo.helper.XMLDocument;
 public class SDODataObjectCloneTestCases extends SDOTestCase {
 
     private SDODataObject purchaseOrder;
-    
+
     public SDODataObjectCloneTestCases(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
          String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectCloneTestCases" };
          TestRunner.main(arguments);
     }
-    
+
     public void setUp() {
         super.setUp();
         String xsdString = getXSDString("org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeep.xsd");
@@ -74,11 +74,11 @@ public class SDODataObjectCloneTestCases extends SDOTestCase {
         DataObject items = purchaseOrder.getDataObject("items");
         ListWrapper lineItems = (ListWrapper)items.getList("item");
         ListWrapper lineItemsClone = (ListWrapper)lineItems.clone();
-        
+
         assertFalse(lineItems == lineItemsClone);
-        
+
         assertFalse(lineItems.getCurrentElements() == lineItemsClone.getCurrentElements());
-        
+
         assertTrue(lineItems.size() == lineItemsClone.size());
         assertTrue(lineItems.get(0) == lineItemsClone.get(0));
         assertTrue(lineItems.get(1) == lineItemsClone.get(1));

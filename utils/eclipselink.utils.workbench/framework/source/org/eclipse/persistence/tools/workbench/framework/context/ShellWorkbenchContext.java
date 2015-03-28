@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,33 +26,33 @@ import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
  * window) will trigger a runtime exception.
  */
 public class ShellWorkbenchContext extends AbstractWorkbenchContext {
-	private ApplicationContext applicationContext;
-	private static final String CR = StringTools.CR;
-	
-	public ShellWorkbenchContext(ApplicationContext applicationContext) {
-		super();
-		this.applicationContext = applicationContext;
-	}
-	
-	public ApplicationContext getApplicationContext() {
-		return this.applicationContext;
-	}
+    private ApplicationContext applicationContext;
+    private static final String CR = StringTools.CR;
 
-	public ActionRepository getActionRepository() {
-		throw new UnsupportedOperationException("This WorkbenchContext holds only an ApplicationContext." + CR +
-				"It does not have access to an action repository.");
-	}
+    public ShellWorkbenchContext(ApplicationContext applicationContext) {
+        super();
+        this.applicationContext = applicationContext;
+    }
 
-	public Window getCurrentWindow() {
-		throw new UnsupportedOperationException("This WorkbenchContext holds only an ApplicationContext." + CR +
-				"It does not have access to a current window.");
-	}
+    public ApplicationContext getApplicationContext() {
+        return this.applicationContext;
+    }
 
-	public NavigatorSelectionModel getNavigatorSelectionModel() {
-		throw new UnsupportedOperationException("This WorkbenchContext holds only an ApplicationContext." + CR +
-				"It does not have access to a navigator.");
-	}
-    
+    public ActionRepository getActionRepository() {
+        throw new UnsupportedOperationException("This WorkbenchContext holds only an ApplicationContext." + CR +
+                "It does not have access to an action repository.");
+    }
+
+    public Window getCurrentWindow() {
+        throw new UnsupportedOperationException("This WorkbenchContext holds only an ApplicationContext." + CR +
+                "It does not have access to a current window.");
+    }
+
+    public NavigatorSelectionModel getNavigatorSelectionModel() {
+        throw new UnsupportedOperationException("This WorkbenchContext holds only an ApplicationContext." + CR +
+                "It does not have access to a navigator.");
+    }
+
     public Component getPropertiesPage() {
         throw new UnsupportedOperationException("This WorkbenchContext holds only an ApplicationContext." + CR +
         "It does not have access to a properties page.");

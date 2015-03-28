@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c)  2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c)  2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -35,7 +35,7 @@ public class AttributeProxyImpl<X, T> implements Attribute<X, T>, Serializable {
 
     protected Attribute<X, T> attribute = null;
     protected Set<WeakReference<EntityManagerFactoryImpl>> factories = new HashSet<WeakReference<EntityManagerFactoryImpl>>();
-    
+
     public synchronized Attribute<X, T> getAttribute(){
         if (attribute == null){
             for (WeakReference<EntityManagerFactoryImpl> factoryRef: factories){
@@ -49,25 +49,25 @@ public class AttributeProxyImpl<X, T> implements Attribute<X, T>, Serializable {
         }
         return attribute;
     }
-    
+
     public synchronized Attribute<X, T> getAttributeInternal(){
         return attribute;
     }
-    
+
     public synchronized void setAttribute(Attribute<X, T> attribute){
         this.attribute = attribute;
     }
-    
+
     public synchronized void addFactory(EntityManagerFactoryImpl factory){
         for (WeakReference<EntityManagerFactoryImpl> factoryRef: factories){
-            
+
             if (factoryRef.get() != null && factoryRef.get().equals(factory)){
                 return;
             }
         }
         factories.add(new WeakReference<EntityManagerFactoryImpl>(factory));
     }
-    
+
     @Override
     public String getName() {
         return getAttribute().getName();

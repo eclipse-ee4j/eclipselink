@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.optimisticlocking;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -52,9 +52,9 @@ public class ChangeSetOptimisticLockingUpdateTest extends TestCase {
 
     protected void verify() {
         ObjectChangeSet changeSet = (ObjectChangeSet)uow.getUnitOfWorkChangeSet().getObjectChangeSetForClone(originalObject);
-        Object lockValue = 
-            getSession().getDescriptor(domainClass).getOptimisticLockingPolicy().getWriteLockValue(originalObject, 
-                                                                                                   changeSet.getId(), 
+        Object lockValue =
+            getSession().getDescriptor(domainClass).getOptimisticLockingPolicy().getWriteLockValue(originalObject,
+                                                                                                   changeSet.getId(),
                                                                                                    (AbstractSession)getSession());
         if (lockValue instanceof Number){
             if (((Number)changeSet.getWriteLockValue()).longValue() !=((Number)lockValue).longValue()) {
@@ -64,6 +64,6 @@ public class ChangeSetOptimisticLockingUpdateTest extends TestCase {
             throw new TestErrorException("The Write Lock Value was not updated within the Object Change Set");
         }
 
-        
+
     }
 }

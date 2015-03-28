@@ -1,17 +1,17 @@
 /*******************************************************************************
  * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
  *     08/01/2012-2.5 Chris Delahunt
- *       - 371950: Metadata caching 
- ******************************************************************************/ 
+ *       - 371950: Metadata caching
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
 import java.lang.reflect.Method;
@@ -49,7 +49,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         if (listener == null) {
             if (listenerClassName !=null) {
                 Class listenerClass = getListenerClass(loader);
-                
+
                 if (DescriptorEventListener.class.isAssignableFrom(listenerClass)){
                     listener = (DescriptorEventListener)constructListenerInstance(listenerClass);
                 } else {
@@ -58,11 +58,11 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
                     if (!(serializableMethods == null)) {
                         //The user class is not a DescriptorEventListener, so wrap it in a JPA EntityListener instance
                         entityListener.setAllEventMethods(this.convertToMethods(loader));
-                        
+
                     }
                     listener = entityListener;
                 }
-                
+
             } else {
               //it must be an EntityClassListener
                 EntityListener entityListener = new EntityClassListener(descriptor.getJavaClass());
@@ -82,7 +82,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         }
 
     }
-    
+
     protected Object constructListenerInstance(Class listenerClass){
         Object entityListenerClassInstance = null;
         try {
@@ -102,7 +102,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         }
         return entityListenerClassInstance;
     }
-    
+
     public void convertToSerializableMethods(java.util.Hashtable<String,java.util.List<Method>> methods) {
         this.serializableMethods = new java.util.Hashtable();
         for (String event: methods.keySet()){
@@ -139,7 +139,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         }
         return entityListenerClass;
     }
-    
+
     /**
      * INTERNAL:
      * You can have multiple event methods for the same event, however, only
@@ -155,7 +155,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         MethodSerialImpl convertedMethod = new MethodSerialImpl(method);
         serializableMethods.get(event).add(convertedMethod);
     }
-    
+
     /**
      * INTERNAL:
      * This returns a hashtable of methods which are used in a JPA EntityListener instance, built from
@@ -180,13 +180,13 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         }
         return table;
     }
-    
+
     public java.util.Hashtable<String,java.util.List<MethodSerialImpl>> getMethods() {
         if (serializableMethods == null) {
             serializableMethods = new Hashtable<String, List<MethodSerialImpl>>();
         }
         return serializableMethods;
     }
-    
+
 }
 

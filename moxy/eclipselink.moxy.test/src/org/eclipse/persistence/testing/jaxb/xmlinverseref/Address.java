@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,16 +20,16 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 @XmlRootElement
 public class Address {
    public String street;
-   @XmlInverseReference(mappedBy ="addr")   
+   @XmlInverseReference(mappedBy ="addr")
    @XmlElement(type=Person.class)
    public AddressOwner owner;
-   
+
    public boolean equals(Object obj){
-	   if(obj instanceof Address){
-		   Address compareAddr = (Address)obj;
-		   return street.equals(compareAddr.street) &&
-		       owner.getAddr() == this;
-	   }
-	   return false;
+       if(obj instanceof Address){
+           Address compareAddr = (Address)obj;
+           return street.equals(compareAddr.street) &&
+               owner.getAddr() == this;
+       }
+       return false;
    }
 }

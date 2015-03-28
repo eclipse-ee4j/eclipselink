@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import org.eclipse.persistence.testing.tests.proxyindirection.ProxyIndirectionTestModel;
@@ -53,7 +53,7 @@ public class XMLProjectWriterTestModel extends TestModel {
         addRequiredSystem(new CMWorkbenchIntegrationSystem());
         addRequiredSystem(new ProxyIndirectionMWIntegrationSystem());
         if(this.getSession().getPlatform().isOracle9()) {
-        	addRequiredSystem(new InsuranceORWorkbenchIntegrationSystem());
+            addRequiredSystem(new InsuranceORWorkbenchIntegrationSystem());
         }
         addRequiredSystem(new MappingModelWorkbenchIntegrationSystem());
         addRequiredSystem(new MultipleTableModelWorkbenchIntegrationSystem());
@@ -174,7 +174,7 @@ public class XMLProjectWriterTestModel extends TestModel {
         insuranceORTestSuite.addTest(InsuranceObjectRelationalTestModel.getReadObjectTestSuite());
         insuranceORTestSuite.addTest(InsuranceObjectRelationalTestModel.getUpdateObjectTestSuite());
         addTest(insuranceORTestSuite);
-        
+
         // Mapping model test
         TestSuite mappingTestSuite = new TestSuite();
         mappingTestSuite.setName("MappingTestModel");
@@ -194,7 +194,7 @@ public class XMLProjectWriterTestModel extends TestModel {
         mappingTestSuite.addTest(MappingTestModel.getBuildSelectionCriteriaTestSuite());
         mappingTestSuite.addTest(MappingTestModel.getSameNameMappingTestSuite());
         addTest(mappingTestSuite);
-        
+
         // Multiple table model test
         TestSuite multipleTableTestSuite = new TestSuite();
         multipleTableTestSuite.setName("MultipleTableTestModel");

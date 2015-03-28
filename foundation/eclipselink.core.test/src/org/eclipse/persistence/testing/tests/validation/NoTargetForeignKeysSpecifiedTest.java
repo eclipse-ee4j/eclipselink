@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.validation;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -61,7 +61,7 @@ public class NoTargetForeignKeysSpecifiedTest extends ExceptionTest {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         descriptor.addTableName("EMPLOYEE");
-        //	descriptor.addTableName("SALARY");
+        //    descriptor.addTableName("SALARY");
         descriptor.addPrimaryKeyFieldName("EMPLOYEE.EMP_ID");
 
         // Descriptor properties.
@@ -83,8 +83,8 @@ public class NoTargetForeignKeysSpecifiedTest extends ExceptionTest {
         managedEmployeesMapping.setAttributeName("managedEmployees");
         managedEmployeesMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         managedEmployeesMapping.useBasicIndirection();
-        //if the following is missing then the correct error will occure.    
-        //	managedEmployeesMapping.addTargetForeignKeyFieldName("EMPLOYEE.MANAGER_ID", "EMPLOYEE.EMP_ID");
+        //if the following is missing then the correct error will occure.
+        //    managedEmployeesMapping.addTargetForeignKeyFieldName("EMPLOYEE.MANAGER_ID", "EMPLOYEE.EMP_ID");
         //  managedEmployeesMapping.setTargetForeignKeyFieldName();
 
         descriptor.addMapping(managedEmployeesMapping);

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -108,11 +108,11 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
 
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        
+
         Metamodel metamodel = em.getMetamodel();
         EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
         EntityType<Address> entityAddr_ = metamodel.entity(Address.class);
-        
+
         Root<Employee> root = cq.from(entityEmp_);
         Join address = root.join(entityEmp_.getSingularAttribute("address"));
         address.on(qb.equal(address.get(entityAddr_.getSingularAttribute("city")), "Ottawa"));
@@ -137,7 +137,7 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
         Metamodel metamodel = em.getMetamodel();
         EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
         EntityType<PhoneNumber> entityPhone_ = metamodel.entity(PhoneNumber.class);
-        
+
         Root<Employee> root = cq.from(entityEmp_);
         Join phoneNumber = root.join(entityEmp_.getCollection("phoneNumbers"));
         phoneNumber.on(qb.equal(phoneNumber.get(entityPhone_.getSingularAttribute("areaCode")), "613"));
@@ -157,7 +157,7 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
         Query query = em.createQuery("Select e from Employee e left join e.address a on a.city = 'Ottawa' " +
                 "where a.postalCode is not null");
         List baseResult = query.getResultList();
-        
+
         Metamodel metamodel = em.getMetamodel();
         EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
         EntityType<Address> entityAddr_ = metamodel.entity(Address.class);
@@ -203,12 +203,12 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
         try {
             Query q = em.createQuery(cq);
             int updated = q.executeUpdate();
-            assertEquals("simpleCriteriaUpdateTest: wrong number of updated instances", 
+            assertEquals("simpleCriteriaUpdateTest: wrong number of updated instances",
                     nrOfEmps, updated);
 
             // check database changes
             int nr = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'CHANGED'").getSingleResult()).intValue();
-            assertEquals("simpleCriteriaUpdateTest: unexpected number of changed values in the database", 
+            assertEquals("simpleCriteriaUpdateTest: unexpected number of changed values in the database",
                     nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
@@ -240,19 +240,19 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
         try {
             Query q = em.createQuery(cq);
             int updated = q.executeUpdate();
-            assertEquals("simpleCriteriaUpdateTest: wrong number of updated instances", 
+            assertEquals("simpleCriteriaUpdateTest: wrong number of updated instances",
                     nrOfEmps, updated);
 
             // check database changes
             int nr = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'CHANGED'").getSingleResult()).intValue();
-            assertEquals("simpleCriteriaUpdateTest: unexpected number of changed values in the database", 
+            assertEquals("simpleCriteriaUpdateTest: unexpected number of changed values in the database",
                     nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
-        } 
+        }
     }
 
     //test ejbqlString = "Update Employee e set e.lastName = case when e.firstName = 'Bob' then 'Jones' when e.firstName = 'Jill' then 'Jones' else '' end";
@@ -290,14 +290,14 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
-        } 
+        }
         assertTrue("complexConditionCaseInUpdateTest - wrong number of results", results.size() == 2);
         for (Employee e : results) {
             assertTrue("complexConditionCaseInUpdateTest wrong last name for - " + e.getFirstName(), e.getLastName().equals("Jones"));
         }
 
     }
-    
+
     public void testMetamodelCriteriaUpdateEmbeddedField() {
         if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
             getPersistenceUnitServerSession().logMessage("Test updateEmbeddedFieldTest skipped for this platform, "
@@ -310,7 +310,7 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
 
         Metamodel metamodel = em.getMetamodel();
         EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
-        javax.persistence.metamodel.EmbeddableType<EmploymentPeriod> embedEmpPeriod_ = 
+        javax.persistence.metamodel.EmbeddableType<EmploymentPeriod> embedEmpPeriod_ =
                 metamodel.embeddable(EmploymentPeriod.class);
 
         Calendar startCalendar = Calendar.getInstance();
@@ -329,13 +329,13 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
             clearCache();
 
             int updated = em.createQuery(cq).executeUpdate();
-            assertEquals("testCriteriaUpdateEmbeddedField: wrong number of updated instances", 
+            assertEquals("testCriteriaUpdateEmbeddedField: wrong number of updated instances",
                     nrOfEmps, updated);
 
             // check database changes
             int nr = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.period.startDate = :startDate")
                     .setParameter("startDate", startDate).getSingleResult()).intValue();
-            assertEquals("testCriteriaUpdateEmbeddedField: unexpected number of changed values in the database", 
+            assertEquals("testCriteriaUpdateEmbeddedField: unexpected number of changed values in the database",
                     nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
@@ -344,9 +344,9 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /////DELETE Criteria tests:
-    public void simpleMetamodelCriteriaDeleteTest() {          
+    public void simpleMetamodelCriteriaDeleteTest() {
         if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
             getPersistenceUnitServerSession().logMessage("Test simpleDelete skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -357,7 +357,7 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
 
         Metamodel metamodel = em.getMetamodel();
         EntityType<PhoneNumber> entityPhone_ = metamodel.entity(PhoneNumber.class);
-        
+
         // test query "Delete PhoneNumber phone";
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaDelete<PhoneNumber>cq = qb.createCriteriaDelete(PhoneNumber.class);
@@ -367,7 +367,7 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
         try {
             Query q = em.createQuery(cq);
             int updated = q.executeUpdate();
-            assertEquals("simpleCriteriaDeleteTest: wrong number of deleted instances"+updated, 
+            assertEquals("simpleCriteriaDeleteTest: wrong number of deleted instances"+updated,
                     nrOfEmps, updated);
 
             // check database changes
@@ -392,7 +392,7 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
             beginTransaction(em);
             int nrOfEmps = ((Number)em.createQuery("SELECT COUNT(phone) FROM PhoneNumber phone where phone.owner.firstName is not null")
                     .getSingleResult()).intValue();
-            
+
             Metamodel metamodel = em.getMetamodel();
             EntityType<PhoneNumber> entityPhone_ = metamodel.entity(PhoneNumber.class);
             EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
@@ -406,7 +406,7 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
             Query testQuery = em.createQuery(cq);
 
             int updated = testQuery.executeUpdate();
-            assertEquals("testCriteriaDelete: wrong number of deleted instances"+updated, 
+            assertEquals("testCriteriaDelete: wrong number of deleted instances"+updated,
                     nrOfEmps, updated);
 
             // check database changes

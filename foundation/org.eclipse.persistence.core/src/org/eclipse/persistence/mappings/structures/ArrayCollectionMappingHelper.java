@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -44,21 +44,21 @@ public class ArrayCollectionMappingHelper {
         super();
         this.mapping = mapping;
     }
-    
+
     /**
      * Convenience method.
      */
     private boolean mapKeyHasChanged(Object element, AbstractSession session) {
         return this.mapping.mapKeyHasChanged(element, session);
     }
-    
+
     /**
      * Convenience method.
      */
     private Object getRealCollectionAttributeValueFromObject(Object object, AbstractSession session) {
         return this.mapping.getRealCollectionAttributeValueFromObject(object, session);
     }
-    
+
     /**
      * Convenience method.
      */
@@ -86,7 +86,7 @@ public class ArrayCollectionMappingHelper {
     private Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
         return this.mapping.buildRemovedElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
-    
+
     /**
      * Convenience method.
      * Check for null values before delegating to the mapping.
@@ -120,7 +120,7 @@ public class ArrayCollectionMappingHelper {
         }
         return this.mapping.compareElementsForChange(element1, element2, session);
     }
-    
+
     /**
      * INTERNAL:
      * Return the mapping.
@@ -245,7 +245,7 @@ public class ArrayCollectionMappingHelper {
             return null;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
@@ -253,7 +253,7 @@ public class ArrayCollectionMappingHelper {
     public boolean compareObjects(Object object1, Object object2, AbstractSession session) {
         return this.compareAttributeValues(this.getRealCollectionAttributeValueFromObject(object1, session), this.getRealCollectionAttributeValueFromObject(object2, session), session);
     }
-    
+
     /**
      * Compare the attributes. Return true if they are alike.
      * Assume the passed-in attributes are non-null.
@@ -276,7 +276,7 @@ public class ArrayCollectionMappingHelper {
             return this.compareAttributeValuesWithoutOrder(collection1, collection2, session);
         }
     }
-    
+
     /**
      * Compare the attributes. Return true if they are alike.
      * The order of the elements is significant.
@@ -414,7 +414,7 @@ public class ArrayCollectionMappingHelper {
         // reset the attribute to allow for set method to re-morph changes if the collection is not being stored directly
         setRealAttributeValueInObject(target, targetCollection);
     }
-    
+
     /**
      * INTERNAL:
      * Merge changes from the source to the target object.
@@ -435,7 +435,7 @@ public class ArrayCollectionMappingHelper {
         // reset the attribute to allow for set method to re-morph changes if the collection is not being stored directly
         setRealAttributeValueInObject(target, targetCollection);
     }
-    
+
     /**
      * ADVANCED:
      * This method is used to add an object to a collection once the changeSet is applied.
@@ -509,15 +509,15 @@ public class ArrayCollectionMappingHelper {
         }
         changeRecord.simpleRemoveChangeSet(changeSetToRemove);
     }
-    
-    
+
+
     /**
      * Convenience method.
      */
     private void setRealAttributeValueInObject(Object object, Object attributeValue) {
         this.mapping.setRealAttributeValueInObject(object, attributeValue);
     }
-    
+
     /**
      * Convenience method.
      */
@@ -539,7 +539,7 @@ public class ArrayCollectionMappingHelper {
     public DatabaseMapping getDatabaseMapping() {
         return (DatabaseMapping)this.mapping;
     }
-    
+
 
 
 }

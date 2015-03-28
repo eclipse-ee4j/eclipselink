@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -23,8 +23,8 @@ import java.util.ArrayList;
 
 /**
  * <p>An ElementDeclaration object is used to represent the information that is
- * associated with a global element in XML.</p> 
- * 
+ * associated with a global element in XML.</p>
+ *
  * <p>ElementDeclarations will be created for classes with an XMLRootElement annotation,
  * for TypeMappingInfo objects which have an xml tag name specified.</p>
  */
@@ -32,9 +32,9 @@ public class ElementDeclaration {
     private QName elementName;
     private QName substitutionHead;
     private String javaTypeName;
-    private JavaClass javaType;    
+    private JavaClass javaType;
     private JavaClass adaptedJavaType;
-    private String adaptedJavaTypeName;    
+    private String adaptedJavaTypeName;
     private List<ElementDeclaration> substitutableElements;
     private boolean isXmlRootElement = false;
     private boolean isList = false;
@@ -46,13 +46,13 @@ public class ElementDeclaration {
     private String xmlMimeType;
     private boolean nillable;
     /**
-     * Create a new ElementDeclaration.  By default the scope of this ElementDeclaration 
+     * Create a new ElementDeclaration.  By default the scope of this ElementDeclaration
      * will be XmlElementDecl.GLOBAL
-     * 
+     *
      * @param name The QName of this element
-     * @param javaType The JavaClass of this element 
+     * @param javaType The JavaClass of this element
      * @param javaTypeName The String name of the javaType
-     * @param isList A boolean representing if this corresponds to an xsd:list 
+     * @param isList A boolean representing if this corresponds to an xsd:list
      */
     public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList) {
         this.elementName = name;
@@ -62,20 +62,20 @@ public class ElementDeclaration {
         this.isList = isList;
         this.scopeClass = XmlElementDecl.GLOBAL.class;
     }
-    
+
     /**
      * Create a new ElementDeclaration and set the scope.
      * @param name The QName of this element
-     * @param javaType The JavaClass of this element 
+     * @param javaType The JavaClass of this element
      * @param javaTypeName The String name of the javaType
      * @param isList A boolean representing if this corresponds to an xsd:list
      * @param scopeClass The class representing the scope of this element
      */
     public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList, Class scopeClass) {
-    	this(name, javaType, javaTypeName, isList);
-    	this.scopeClass = scopeClass;        
+        this(name, javaType, javaTypeName, isList);
+        this.scopeClass = scopeClass;
     }
-    
+
     /**
      * Get the QName representing this element
      * @return the QName associated with this element.
@@ -83,7 +83,7 @@ public class ElementDeclaration {
     public QName getElementName() {
         return elementName;
     }
-    
+
     /**
      * Get the name of the java type associated with this global element.
      * This may be set through the constructor or will be set when setJavaType(JavaClass) is called.
@@ -92,7 +92,7 @@ public class ElementDeclaration {
     public String getJavaTypeName() {
         return javaTypeName;
     }
-    
+
     /**
      * The list of elements which can be substituted for this element (ie: has this element in their substitutionGroup)
      * @return the list of element declarations which can be substituted for this element
@@ -115,7 +115,7 @@ public class ElementDeclaration {
             this.substitutableElements.add(element);
         }
     }
-    
+
     /**
      * If this element has a substitutionGroup this will be set.
      * @param rootElement the QName value of the substitutionGroup
@@ -123,7 +123,7 @@ public class ElementDeclaration {
     public void setSubstitutionHead(QName rootElement) {
         this.substitutionHead = rootElement;
     }
-    
+
     /**
      * If this element has a substitutionGroup this will be set.
      * @return the value of the substitutionGroup
@@ -139,7 +139,7 @@ public class ElementDeclaration {
     public boolean isXmlRootElement() {
         return this.isXmlRootElement;
     }
-    
+
     /**
      * Mark if this element had an @XmlRootElement annotation
      * @param isXmlRoot if the element has an @XmlRootElement
@@ -152,18 +152,18 @@ public class ElementDeclaration {
      * @return
      */
     public boolean isNillable() {
-		return nillable;
-	}
+        return nillable;
+    }
 
     /**
      * Set if the global element should be marked as nillable
      * @param nillable
      */
-	public void setNillable(boolean nillable) {
-		this.nillable = nillable;
-	}
-    
-    
+    public void setNillable(boolean nillable) {
+        this.nillable = nillable;
+    }
+
+
     /**
      * The javaType associated with this element.  Maybe set by the constructor
      * or by setJavaType.
@@ -172,10 +172,10 @@ public class ElementDeclaration {
     public JavaClass getJavaType() {
         return this.javaType;
     }
-    
+
 
     /**
-     * Set the javaType associated with this element.  
+     * Set the javaType associated with this element.
      * This will also set the java type name associated with this element to type.getQualifiedName()
      * @param type the javaType associated with this element.
      */
@@ -201,7 +201,7 @@ public class ElementDeclaration {
     }
 
     /**
-     * Get the java type adapter class associated with the element 
+     * Get the java type adapter class associated with the element
      * @return the java type adapater class associated with this element. May return null.
      */
     public Class getJavaTypeAdapterClass() {
@@ -217,7 +217,7 @@ public class ElementDeclaration {
     }
 
     /**
-     * Get the adapted java type.  
+     * Get the adapted java type.
      * Only set when an XmlJavaTypeAdapter is present.
      * @return the JavaClass of the adapted java type.  May return null.
      */
@@ -236,7 +236,7 @@ public class ElementDeclaration {
     }
 
     /**
-     * Get the adapted java type name.  
+     * Get the adapted java type name.
      * Only set when an XmlJavaTypeAdapter is present.
      * Will be set to adaptedJavaType.getQualifiedName when setAdaptedJavaType is called
      * @return the name of the class of the adapted java type.  May return null.
@@ -247,23 +247,23 @@ public class ElementDeclaration {
 
     /**
      * Get the scope class associated with this element.
-     * By default the scope of this ElementDeclaration 
+     * By default the scope of this ElementDeclaration
      * will be XmlElementDecl.GLOBAL
      * @return the scope class associated with this element
      */
     public Class getScopeClass() {
         return scopeClass;
     }
-    
-    /**   
+
+    /**
      * Set the scope class associated with this element.
      * Default setting is XmlElementDecl.GLOBAL
      * @param scopeClass associated with this element.
-     */  
+     */
     public void setScopeClass(Class scopeClass) {
         this.scopeClass = scopeClass;
     }
-    
+
     /**
      * This will be set if XmlElementDecl has a defaultValue specified
      * @return the default value associated with this element.  May return null.
@@ -271,15 +271,15 @@ public class ElementDeclaration {
     public String getDefaultValue() {
         return this.defaultValue;
     }
-    
+
     /**
-     * Set the default value associated with this element. 
+     * Set the default value associated with this element.
      * @param value the default value that corresponds to this element.
      */
     public void setDefaultValue(String value) {
         this.defaultValue = value;
     }
-    
+
     /**
      * Get the TypeMappingInfo object if this ElementDeclaration was created from a TypeMappingInfo
      * @return the corresponding TypeMappingInfo.  May return null.
@@ -300,32 +300,32 @@ public class ElementDeclaration {
      * Return the mimeType specified on this element.
      * @return the mimeType specified on this element. May return null.
      */
-	public String getXmlMimeType() {
-		return xmlMimeType;
-	}
+    public String getXmlMimeType() {
+        return xmlMimeType;
+    }
 
-	/**
-	 * Set of this element has an XmlMimeType annotation
-	 * @param xmlMimeType set the name of the mime type if specified for this element
-	 */
-	public void setXmlMimeType(String xmlMimeType) {
-		this.xmlMimeType = xmlMimeType;
-	}
+    /**
+     * Set of this element has an XmlMimeType annotation
+     * @param xmlMimeType set the name of the mime type if specified for this element
+     */
+    public void setXmlMimeType(String xmlMimeType) {
+        this.xmlMimeType = xmlMimeType;
+    }
 
-	/**
-	 * Return if this element is associated with an XmlAttachmentRef annotation 
-	 * @return if this element is associated with an XmlAttachmentRef annotation
-	 */
-	public boolean isXmlAttachmentRef() {
-		return xmlAttachmentRef;
-	}
+    /**
+     * Return if this element is associated with an XmlAttachmentRef annotation
+     * @return if this element is associated with an XmlAttachmentRef annotation
+     */
+    public boolean isXmlAttachmentRef() {
+        return xmlAttachmentRef;
+    }
 
-	/**
-	 * Set if there is an XmlAttachmentRef annotations associated with this element.
-	 * @param xmlAttachmentRef true if there is an XmlAttachmentRef annotation
-	 */
-	public void setXmlAttachmentRef(boolean xmlAttachmentRef) {
-		this.xmlAttachmentRef = xmlAttachmentRef;
-	}
+    /**
+     * Set if there is an XmlAttachmentRef annotations associated with this element.
+     * @param xmlAttachmentRef true if there is an XmlAttachmentRef annotation
+     */
+    public void setXmlAttachmentRef(boolean xmlAttachmentRef) {
+        this.xmlAttachmentRef = xmlAttachmentRef;
+    }
 
 }

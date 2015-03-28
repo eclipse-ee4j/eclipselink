@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -29,17 +29,17 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 /** A mismatched char or Token or tree node */
 public class MismatchedTokenException extends RecognitionException {
-	public int expecting = Token.INVALID_TOKEN_TYPE;
+    public int expecting = Token.INVALID_TOKEN_TYPE;
 
-	/** Used for remote debugger deserialization */
-	public MismatchedTokenException() {;}
+    /** Used for remote debugger deserialization */
+    public MismatchedTokenException() {;}
 
-	public MismatchedTokenException(int expecting, IntStream input) {
-		super(input);
-		this.expecting = expecting;
-	}
+    public MismatchedTokenException(int expecting, IntStream input) {
+        super(input);
+        this.expecting = expecting;
+    }
 
-	public String toString() {
-		return "MismatchedTokenException("+getUnexpectedType()+"!="+expecting+")";
-	}
+    public String toString() {
+        return "MismatchedTokenException("+getUnexpectedType()+"!="+expecting+")";
+    }
 }

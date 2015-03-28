@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries;
 
 import java.util.Vector;
@@ -27,7 +27,7 @@ public class FourPartialAttributeTestsWithJoinAttribute extends TestCase {
 
     static String lastName = "PartialAttributeTest";
     Vector[] results = new Vector[4];
-    
+
     public FourPartialAttributeTestsWithJoinAttribute() {
         setDescription("A partial attribute query where the partial attribute is also joined - 4 tests: all combinations of (inner join vs outer join) and (get(address) vs get(address).get(city)).");
     }
@@ -35,30 +35,30 @@ public class FourPartialAttributeTestsWithJoinAttribute extends TestCase {
     public void setup() {
         // remove Employees with the lastName in case they exist.
         cleanup();
-        
+
         // create two Employees with the lastName: one with an address another without.
         Employee empA = new Employee();
         empA.setLastName(lastName);
         empA.setFirstName("A");
-        
+
         Address address = new Address();
         address.setCountry("Canada");
         address.setCity("Ottawa");
         address.setStreet("O'Connor");
         // Employee A has Address
         empA.setAddress(address);
-        
+
         // Employee B doesn't have an Address
         Employee empB = new Employee();
         empB.setLastName(lastName);
         empB.setFirstName("B");
-        
+
         // save the created objects
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.registerNewObject(empA);
         uow.registerNewObject(empB);
         uow.commit();
-        
+
         // clear the cache
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
@@ -67,20 +67,20 @@ public class FourPartialAttributeTestsWithJoinAttribute extends TestCase {
         ReadAllQuery[] queries = {createQuery(), createQuery(), createQuery(), createQuery()};
 
         // The same as PartialAttributeTestWithJoinAttribute, but without changing any settings on the mapping.
-        // Inner join: should return 
+        // Inner join: should return
         // empA's first and last names and it's address.
         queries[0].addPartialAttribute("address");
 
-        // Inner join: should return 
+        // Inner join: should return
         // empA's first and last names and it's address's city.
         queries[1].addPartialAttribute(queries[1].getExpressionBuilder().get("address").get("city"));
 
-        // Outer join: should return 
+        // Outer join: should return
         // empA's first and last names and it's address;
         // empB's first and last names and null address.
         queries[2].addPartialAttribute(queries[2].getExpressionBuilder().getAllowingNull("address"));
 
-        // Outer join: should return 
+        // Outer join: should return
         // empA's first and last names and it's address's city;
         // empB's first and last names and address containing all nulls.
         queries[3].addPartialAttribute(queries[3].getExpressionBuilder().getAllowingNull("address").get("city"));
@@ -137,7 +137,7 @@ public class FourPartialAttributeTestsWithJoinAttribute extends TestCase {
                 }
             }
         }
-        
+
         if(errorMsg.length() > 0) {
             throw new TestErrorException(errorMsg);
         }
@@ -157,7 +157,7 @@ public class FourPartialAttributeTestsWithJoinAttribute extends TestCase {
         query.addOrdering(query.getExpressionBuilder().get("firstName").ascending());
         return query;
     }
-    
+
     protected void cleanup() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("lastName").equal(lastName));

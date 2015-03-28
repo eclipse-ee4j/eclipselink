@@ -6,7 +6,7 @@
           "user-id":"jane.doe",
            "domain":"example.com"
            },
-	   {
+       {
             "user-id":"jdoe",
            "domain":"test.com"
            }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,15 +31,15 @@ import javax.persistence.metamodel.Metamodel;
  * <p>
  * <b>Description</b>: This class represents a join of an attribute through a collection .
  * <p>
- * 
+ *
  * @see javax.persistence.criteria From
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
 
 public class CollectionJoinImpl<Z, X>  extends JoinImpl<Z, X> implements CollectionJoin<Z, X> {
-    
+
     public <T> CollectionJoinImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact){
         this(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact,JoinType.INNER);
     }
@@ -60,7 +60,7 @@ public class CollectionJoinImpl<Z, X>  extends JoinImpl<Z, X> implements Collect
     public CollectionAttribute<? super Z, X> getModel(){
         return (CollectionAttribute<? super Z, X>)this.modelArtifact;
     }
-    
+
     public CollectionJoinImpl<Z, X> on(Expression<Boolean> restriction) {
         return (CollectionJoinImpl<Z, X>)super.on(restriction);
     }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -37,67 +37,67 @@ import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
  */
 public class ExternalClassLoadFailuresDialogTest {
 
-	public static void main(String[] args) throws IOException {
-		new ExternalClassLoadFailuresDialogTest().exec(args);
-	}
+    public static void main(String[] args) throws IOException {
+        new ExternalClassLoadFailuresDialogTest().exec(args);
+    }
 
-	private ExternalClassLoadFailuresDialogTest() {
-		super();
-	}
+    private ExternalClassLoadFailuresDialogTest() {
+        super();
+    }
 
-	private void exec(String[] args) throws IOException {
-		MWRelationalProject project = this.buildProject();
-		ExternalClassLoadFailureContainer failures = this.buildFailures(project);
-		
-		ExternalClassLoadFailuresDialog dialog = new ExternalClassLoadFailuresDialog(buildWorkbenchContext(), failures);
-		dialog.show();
+    private void exec(String[] args) throws IOException {
+        MWRelationalProject project = this.buildProject();
+        ExternalClassLoadFailureContainer failures = this.buildFailures(project);
 
-		System.exit(0);
-	}
+        ExternalClassLoadFailuresDialog dialog = new ExternalClassLoadFailuresDialog(buildWorkbenchContext(), failures);
+        dialog.show();
 
-	private MWRelationalProject buildProject() throws IOException {
-		File pkgDir = FileTools.emptyTemporaryDirectory("bogus");
-		this.buildBogusClassFile(pkgDir, "Foo");
-		this.buildBogusClassFile(pkgDir, "Bar");
-		this.buildBogusClassFile(pkgDir, "Baz");
-		MWRelationalProject project = new MWRelationalProject(this.getClass().getName(), MappingsModelTestTools.buildSPIManager(), null);
-		project.getRepository().addClasspathEntry(pkgDir.getParentFile().getAbsolutePath());
-		return project;
-	}
+        System.exit(0);
+    }
 
-	private void buildBogusClassFile(File pkgDir, String shortClassName) throws IOException {
-		File bogusClassFile = new File(pkgDir, shortClassName + ".class");
-		Writer writer = new FileWriter(bogusClassFile);
-		writer.write("bogus class file - used for testing classloading problems");
-		writer.close();
-	}
+    private MWRelationalProject buildProject() throws IOException {
+        File pkgDir = FileTools.emptyTemporaryDirectory("bogus");
+        this.buildBogusClassFile(pkgDir, "Foo");
+        this.buildBogusClassFile(pkgDir, "Bar");
+        this.buildBogusClassFile(pkgDir, "Baz");
+        MWRelationalProject project = new MWRelationalProject(this.getClass().getName(), MappingsModelTestTools.buildSPIManager(), null);
+        project.getRepository().addClasspathEntry(pkgDir.getParentFile().getAbsolutePath());
+        return project;
+    }
 
-	private ExternalClassLoadFailureContainer buildFailures(MWRelationalProject project) {
-		return project.getRepository().refreshTypesFor(this.buildExternalClassDescriptions(project.getRepository()));
-	}
+    private void buildBogusClassFile(File pkgDir, String shortClassName) throws IOException {
+        File bogusClassFile = new File(pkgDir, shortClassName + ".class");
+        Writer writer = new FileWriter(bogusClassFile);
+        writer.write("bogus class file - used for testing classloading problems");
+        writer.close();
+    }
 
-	private Iterator buildExternalClassDescriptions(MWClassRepository repository) {
-		Collection exTypes = new ArrayList();
-		exTypes.add(this.externalClassDescriptionNamed("bogus.Foo", repository));
-		exTypes.add(this.externalClassDescriptionNamed("bogus.Bar", repository));
-		exTypes.add(this.externalClassDescriptionNamed("java.lang.Object", repository));
-		exTypes.add(this.externalClassDescriptionNamed("java.util.Collection", repository));
-		exTypes.add(this.externalClassDescriptionNamed("bogus.Baz", repository));
-		return exTypes.iterator();
-	}
+    private ExternalClassLoadFailureContainer buildFailures(MWRelationalProject project) {
+        return project.getRepository().refreshTypesFor(this.buildExternalClassDescriptions(project.getRepository()));
+    }
 
-	private Object externalClassDescriptionNamed(String name, MWClassRepository repository) {
-		for (Iterator stream = repository.externalClassDescriptions(); stream.hasNext(); ) {
-			ExternalClassDescription exType = (ExternalClassDescription) stream.next();
-			if (exType.getName().equals(name)) {
-				return exType;
-			}
-		}
-		throw new IllegalArgumentException(name);
-	}
-	
-	private WorkbenchContext buildWorkbenchContext() {
-		return new TestWorkbenchContext(UiMetaBundle.class, "org.eclipse.persistence.tools.workbench.mappingsplugin.MappingsPluginIconResourceFileNameMap");
-	}
+    private Iterator buildExternalClassDescriptions(MWClassRepository repository) {
+        Collection exTypes = new ArrayList();
+        exTypes.add(this.externalClassDescriptionNamed("bogus.Foo", repository));
+        exTypes.add(this.externalClassDescriptionNamed("bogus.Bar", repository));
+        exTypes.add(this.externalClassDescriptionNamed("java.lang.Object", repository));
+        exTypes.add(this.externalClassDescriptionNamed("java.util.Collection", repository));
+        exTypes.add(this.externalClassDescriptionNamed("bogus.Baz", repository));
+        return exTypes.iterator();
+    }
+
+    private Object externalClassDescriptionNamed(String name, MWClassRepository repository) {
+        for (Iterator stream = repository.externalClassDescriptions(); stream.hasNext(); ) {
+            ExternalClassDescription exType = (ExternalClassDescription) stream.next();
+            if (exType.getName().equals(name)) {
+                return exType;
+            }
+        }
+        throw new IllegalArgumentException(name);
+    }
+
+    private WorkbenchContext buildWorkbenchContext() {
+        return new TestWorkbenchContext(UiMetaBundle.class, "org.eclipse.persistence.tools.workbench.mappingsplugin.MappingsPluginIconResourceFileNameMap");
+    }
 
 }

@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.util.*;
@@ -75,15 +75,15 @@ public class RelationExpression extends CompoundExpression {
             // Parallel selects are not supported in memory.
             throw QueryException.cannotConformExpression();
         }
-        
+
         // Extract the value from the right side.
         //CR 3677 integration of valueHolderPolicy
-        Object rightValue = 
+        Object rightValue =
             this.secondChild.valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
 
         // Extract the value from the object.
         //CR 3677 integration of valueHolderPolicy
-        Object leftValue = 
+        Object leftValue =
             this.firstChild.valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
 
         // The right value may be a Collection of values from an anyof, or an in.
@@ -92,7 +92,7 @@ public class RelationExpression extends CompoundExpression {
             // CR#3240862, code for IN was incorrect, and was check for between which is a function not a relation.
             // Must check for IN and NOTIN, currently object comparison is not supported.
             // IN must be handled separately because right is always a vector of values, vector never means anyof.
-            if ((this.operator.getSelector() == ExpressionOperator.In) || 
+            if ((this.operator.getSelector() == ExpressionOperator.In) ||
                 (this.operator.getSelector() == ExpressionOperator.NotIn)) {
                 if (isObjectComparison(session)) {
                     // In object comparisons are not currently supported, in-memory or database.
@@ -235,7 +235,7 @@ public class RelationExpression extends CompoundExpression {
 
         // Descriptor to use for child query key
         ClassDescriptor descriptorForChild = null;
-        
+
         // Ensure that the primary key is being queried on.
         if (this.firstChild.isFieldExpression()) {
             FieldExpression child = (FieldExpression)this.firstChild;
@@ -246,7 +246,7 @@ public class RelationExpression extends CompoundExpression {
             field = child.getField();
         } else if (this.firstChild.isQueryKeyExpression()) {
             QueryKeyExpression child = (QueryKeyExpression)this.firstChild;
-            // Only get value for the source object.            
+            // Only get value for the source object.
             if (!child.getBaseExpression().isExpressionBuilder()) {
                 return false;
             }
@@ -255,12 +255,12 @@ public class RelationExpression extends CompoundExpression {
                 descriptorForChild = descriptor;
             }
             DatabaseMapping mapping = descriptorForChild.getObjectBuilder().getMappingForAttributeName(child.getName());
-            
+
             if (mapping != null) {
                 if (primaryKeyOnly && !mapping.isPrimaryKeyMapping()) {
                     return false;
                 }
-                // Only support referencing limited number of relationship types.            
+                // Only support referencing limited number of relationship types.
                 if (mapping.isObjectReferenceMapping() || mapping.isAggregateObjectMapping()) {
                     mapping.writeFromAttributeIntoRow(value, primaryKeyRow, getSession());
                     return true;
@@ -292,7 +292,7 @@ public class RelationExpression extends CompoundExpression {
                 descriptorForChild = descriptor;
             }
             DatabaseMapping mapping = descriptorForChild.getObjectBuilder().getMappingForAttributeName(child.getName());
-            
+
             // Only support referencing limited number of relationship types.
             if (mapping != null) {
                 if (primaryKeyOnly && !mapping.isPrimaryKeyMapping()) {
@@ -315,7 +315,7 @@ public class RelationExpression extends CompoundExpression {
         if (field == null) {
             return false;
         }
-        // Check child descriptor's primary key fields if the passed descriptor does not contain the field 
+        // Check child descriptor's primary key fields if the passed descriptor does not contain the field
         if (primaryKeyOnly && !descriptor.getPrimaryKeyFields().contains(field)) {
             if (descriptorForChild != null && descriptorForChild != descriptor && descriptorForChild.getPrimaryKeyFields().contains(field)) {
                 // Child descriptor's pk fields contains the field, return true.
@@ -362,7 +362,7 @@ public class RelationExpression extends CompoundExpression {
             field = child.getField();
         } else if (this.firstChild.isQueryKeyExpression()) {
             QueryKeyExpression child = (QueryKeyExpression)this.firstChild;
-            // Only get value for the source object.            
+            // Only get value for the source object.
             if (!child.getBaseExpression().isExpressionBuilder()) {
                 return false;
             }
@@ -371,12 +371,12 @@ public class RelationExpression extends CompoundExpression {
                 if (primaryKey && !mapping.isPrimaryKeyMapping()) {
                     return false;
                 }
-                // Only support referencing limited number of relationship types.            
+                // Only support referencing limited number of relationship types.
                 if (mapping.isObjectReferenceMapping() || mapping.isAggregateObjectMapping()) {
                     for (DatabaseField mappingField : mapping.getFields()) {
                         if (searchFields.contains(mappingField)) {
                             foundFields.add(mappingField);
-                        }                        
+                        }
                     }
                     return true;
                 }
@@ -412,7 +412,7 @@ public class RelationExpression extends CompoundExpression {
                     for (DatabaseField mappingField : mapping.getFields()) {
                         if (searchFields.contains(mappingField)) {
                             foundFields.add(mappingField);
-                        }                        
+                        }
                     }
                     return true;
                 }
@@ -432,7 +432,7 @@ public class RelationExpression extends CompoundExpression {
         foundFields.add(field);
         return true;
     }
-    
+
     /**
      * Check if the expression is an equal null expression, these must be handle in a special way in SQL.
      */
@@ -443,7 +443,7 @@ public class RelationExpression extends CompoundExpression {
             return false;
         } else if (this.secondChild.isConstantExpression() && (((ConstantExpression)this.secondChild).getValue() == null)) {
             return true;
-        } else if (this.secondChild.isParameterExpression() && (printer.getTranslationRow() != null) && 
+        } else if (this.secondChild.isParameterExpression() && (printer.getTranslationRow() != null) &&
             (((ParameterExpression)this.secondChild).getValue(printer.getTranslationRow(), printer.getSession()) == null)) {
             return true;
         } else {
@@ -461,7 +461,7 @@ public class RelationExpression extends CompoundExpression {
             return false;
         } else if (this.secondChild.isConstantExpression() && (((ConstantExpression)this.secondChild).getValue() == null)) {
             return true;
-        } else if (this.secondChild.isParameterExpression() && (printer.getTranslationRow() != null) && 
+        } else if (this.secondChild.isParameterExpression() && (printer.getTranslationRow() != null) &&
             (((ParameterExpression)this.secondChild).getValue(printer.getTranslationRow(), printer.getSession()) == null)) {
             return true;
         } else {
@@ -556,7 +556,7 @@ public class RelationExpression extends CompoundExpression {
         }
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Check for object comparison as this requires for the expression to be replaced by the object comparison.
@@ -578,13 +578,13 @@ public class RelationExpression extends CompoundExpression {
             // super.normalize will call validateNode as well.
             validateNode();
         }
-        if ((this.operator.getSelector() != ExpressionOperator.Equal) && 
-                (this.operator.getSelector() != ExpressionOperator.NotEqual) && 
-                (this.operator.getSelector() != ExpressionOperator.In) && 
+        if ((this.operator.getSelector() != ExpressionOperator.Equal) &&
+                (this.operator.getSelector() != ExpressionOperator.NotEqual) &&
+                (this.operator.getSelector() != ExpressionOperator.In) &&
                 (this.operator.getSelector() != ExpressionOperator.NotIn)) {
             throw QueryException.invalidOperatorForObjectComparison(this);
         }
-        
+
         // Check for IN with objects, "object IN :objects", "objects IN (:object1, :object2 ...)", "object IN aList"
         if ((this.operator.getSelector() == ExpressionOperator.In) || (this.operator.getSelector() == ExpressionOperator.NotIn)) {
             // Switch object comparison to compare on primary key.
@@ -690,20 +690,20 @@ public class RelationExpression extends CompoundExpression {
             second = this.secondChild;
         } else {
             first = (ObjectExpression)this.secondChild;
-            second = this.firstChild;            
+            second = this.firstChild;
         }
-        
+
         // Check for sub-selects, "object = ALL(Select object...) or ANY(Select object...), or "object = (Select object..)"
         if (second.isFunctionExpression()) {
             FunctionExpression funcExp = (FunctionExpression)second;
             if (funcExp.operator.isAnyOrAll()) {
                 SubSelectExpression subSelectExp = (SubSelectExpression)funcExp.getChildren().get(1);
                 ReportQuery subQuery = subSelectExp.getSubQuery();
-                
+
                 // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
                 subQuery.getItems().clear();
                 subQuery.addItem("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
-                
+
                 Expression subSelectCriteria = subQuery.getSelectionCriteria();
                 ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();
 
@@ -734,11 +734,11 @@ public class RelationExpression extends CompoundExpression {
         } else if (second.isSubSelectExpression()) {
             SubSelectExpression subSelectExp = (SubSelectExpression)second;
             ReportQuery subQuery = subSelectExp.getSubQuery();
-            
+
             // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
             subQuery.getItems().clear();
             subQuery.addItem("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
-            
+
             Expression subSelectCriteria = subQuery.getSelectionCriteria();
             ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();
 
@@ -755,7 +755,7 @@ public class RelationExpression extends CompoundExpression {
             newExp = builder.exists(subQuery);
             return newExp.normalize(normalizer);
         }
-        
+
         // This can either be comparison to another object, null or another expression reference.
         // Object comparisons can be done on other object builders, 1:1 or 1:m m:m mappings,
         // 1:m/m:m must twist the primary key expression,
@@ -766,7 +766,7 @@ public class RelationExpression extends CompoundExpression {
         // OPTIMIZATION 1: IDENTITY for CR#2456 / bug 2778339
         // Most exists subqueries have something like projBuilder.equal(empBuilder.anyOf("projects"))
         // to correlate the subquery to the enclosing query.
-        // TopLink can produce SQL with one less join by not mapping projBuilder and 
+        // TopLink can produce SQL with one less join by not mapping projBuilder and
         // anyOf("projects") to separate tables and equating them, but by treating
         // them as one and the same thing: as identical.
         // This trick can be pulled off by giving both the same TableAliasLookup,
@@ -774,7 +774,7 @@ public class RelationExpression extends CompoundExpression {
         // the equal() will be replaced directly with the mappingCriteria() of the anyOf("projects")
         // Example.  emp.equal(emp.get("manager")) will now produce this SQL:
         // SELECT ... FROM EMPLOYEE t0 WHERE (t0.EMP_ID = t0.MANAGER_ID) not:
-        // SELECT ... FROM EMPLOYEE t0, EMPLOYEE t1 WHERE ((t0.EMP_ID = t1.EMP_ID) 
+        // SELECT ... FROM EMPLOYEE t0, EMPLOYEE t1 WHERE ((t0.EMP_ID = t1.EMP_ID)
         //                                        AND (t0.MANAGER_ID = t1.EMP_ID))
         if // If setting two query keys to equal the user probably intends a proper join.
             //.equal(anyOf() or get())
@@ -818,7 +818,7 @@ public class RelationExpression extends CompoundExpression {
         else if // For bug 2718460, some QueryKeyExpressions have a query key but no mapping.
             // An example is the "back-ref" query key for batch reads.  Must not
             // attempt the optimization for these.
-            (!first.isExpressionBuilder() && !((QueryKeyExpression)first).shouldQueryToManyRelationship() && 
+            (!first.isExpressionBuilder() && !((QueryKeyExpression)first).shouldQueryToManyRelationship() &&
              (((QueryKeyExpression)first).getMapping() != null)) {
             // Normalize firstChild's base only, as firstChild will be optimized out.
             if (first.getBaseExpression() != null) {
@@ -844,7 +844,7 @@ public class RelationExpression extends CompoundExpression {
             // keys of the first expression and the selection object.
             if (second.isConstantExpression()) {
                 Object value = ((ConstantExpression)second).getValue();
-                Expression keyExpression = 
+                Expression keyExpression =
                     first.getDescriptor().getObjectBuilder().buildPrimaryKeyExpressionFromObject(value, getSession());
 
                 foreignKeyJoin = first.twist(keyExpression, first);
@@ -852,7 +852,7 @@ public class RelationExpression extends CompoundExpression {
                 // Each expression will represent a separate table, so compare the primary
                 // keys of the first and second expressions.
             } else if (second.isObjectExpression() || second.isParameterExpression()) {
-                foreignKeyJoin = 
+                foreignKeyJoin =
                         first.twist(first.getDescriptor().getObjectBuilder().getPrimaryKeyExpression(), second);
             } else {
                 throw QueryException.invalidUseOfToManyQueryKeyInExpression(this);

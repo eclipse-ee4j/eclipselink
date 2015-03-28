@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,7 +29,7 @@ import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
  * <p>
  * A <code>SingleElementListIterable</code> is equivalent to the
  * {@link Iterable} returned by:
- * 	{@link java.util.Collections#singletonList(Object)}.
+ *     {@link java.util.Collections#singletonList(Object)}.
  *
  * @param <E> the type of elements returned by the list iterable's list iterator
  *
@@ -39,28 +39,28 @@ import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
 @SuppressWarnings("nls")
 public class SingleElementListIterable<E> implements ListIterable<E> {
 
-	private final E element;
+    private final E element;
 
-	/**
-	 * Construct a list iterable that contains only the specified element.
-	 */
-	public SingleElementListIterable(E element) {
-		super();
-		this.element = element;
-	}
+    /**
+     * Construct a list iterable that contains only the specified element.
+     */
+    public SingleElementListIterable(E element) {
+        super();
+        this.element = element;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ListIterator<E> iterator() {
-		return new SingleElementListIterator<E>(this.element);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ListIterator<E> iterator() {
+        return new SingleElementListIterator<E>(this.element);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return "[" + this.element + "]";
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "[" + this.element + "]";
+    }
 }

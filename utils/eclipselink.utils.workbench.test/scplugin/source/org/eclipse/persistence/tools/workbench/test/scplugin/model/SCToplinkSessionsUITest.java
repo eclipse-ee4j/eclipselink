@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -47,197 +47,197 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.SimpleListCellRender
  * @author Tran Le
  */
 public class SCToplinkSessionsUITest extends SCAbstractUITest {
-	private TopLinkSessionsAdapter subject;
-	private PropertyValueModel subjectHolder;
-	private TextField textField;
+    private TopLinkSessionsAdapter subject;
+    private PropertyValueModel subjectHolder;
+    private TextField textField;
 
-	public static void main( String[] args) throws Exception {
-		new SCToplinkSessionsUITest().exec( args);
-	}
-	
-	public SCToplinkSessionsUITest() {
-		super();
-	}
+    public static void main( String[] args) throws Exception {
+        new SCToplinkSessionsUITest().exec( args);
+    }
 
-	protected String windowTitle() {
-		return "Enter a Database Session Name:";
-	}
+    public SCToplinkSessionsUITest() {
+        super();
+    }
 
-	private void exec( String[] args) throws Exception {
+    protected String windowTitle() {
+        return "Enter a Database Session Name:";
+    }
 
-		setUp();
+    private void exec( String[] args) throws Exception {
 
-		this.openWindow();
-	}
-	
-	protected Component buildPropertyTestingPanel() {
-		
-		JPanel propertyTestingPanel = new JPanel( new BorderLayout());
+        setUp();
 
-		propertyTestingPanel.add( this. buildProjectClassPanel(), BorderLayout.NORTH);
-		propertyTestingPanel.add( this.buildPropertyEntryPanel());
-	
-		return propertyTestingPanel;
-	}
+        this.openWindow();
+    }
 
-	private AddRemoveListPanel buildProjectClassPanel() {
-		
-		return this.buildAddRemoveListPanel( 
-			buildAddRemoveListPanelAdapter(), this.buildProjectClassListAdapter());
-	}
-	
-	private Component buildPropertyEntryPanel() {
-		JPanel addRemoveTaskPanel = new JPanel( new GridLayout( 1, 0));
-		addRemoveTaskPanel.add( this.buildTextField());
+    protected Component buildPropertyTestingPanel() {
 
-		return addRemoveTaskPanel;
-	}
-	
-	private TextField buildTextField() {
-		this.textField = new TextField( 50);
-		return this.textField;
-	}
-	
-	private AddRemoveListPanel buildAddRemoveListPanel( AddRemoveListPanel.Adapter panelAdapter, ListValueModel listAdapter) {
-		
-		AddRemoveListPanel addRemoveListPanel = new AddRemoveListPanel(
-			workbenchContext().getApplicationContext(),
-			panelAdapter,
-			listAdapter,
-			AddRemoveListPanel.RIGHT
-		);
-		addRemoveListPanel.setCellRenderer( new SimpleListCellRenderer());
+        JPanel propertyTestingPanel = new JPanel( new BorderLayout());
 
-		return addRemoveListPanel;
-	}
-	
-	private ListValueModel buildProjectClassListAdapter() {
-		
-		return new CollectionListValueModelAdapter( buildClassCollectionAdapter());
-	}
-	// - - - - - - - - -
-	private CollectionValueModel buildClassCollectionAdapter() {
-		
-		return new CollectionAspectAdapter( subjectHolder(), TopLinkSessionsAdapter.SESSIONS_COLLECTION) 		{
-			protected Iterator getValueFromSubject() {
+        propertyTestingPanel.add( this. buildProjectClassPanel(), BorderLayout.NORTH);
+        propertyTestingPanel.add( this.buildPropertyEntryPanel());
 
-				return (( TopLinkSessionsAdapter)subject).sessions();
-			}
-			protected int sizeFromSubject() {
-				return (( TopLinkSessionsAdapter)subject).sessionsSize();
-			}
-		};
-	}
-	
-	private AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter()
-	{
-		return new AddRemoveListPanel.Adapter() {
-			
-			public void addNewItem( ObjectListSelectionModel listSelectionModel) {
-	
-				String text =  SCToplinkSessionsUITest.this.textField().getText();
-				if( text.length() > 0) {
-				    DataSource ds  = new DataSource( "EISPlatform");
-					subject().addDatabaseSessionNamed( text, noServerPlatform(), ds);
-				}
-			}
+        return propertyTestingPanel;
+    }
 
-			public void removeSelectedItems( ObjectListSelectionModel listSelectionModel) {
-				
-				Object[] selectedValues = listSelectionModel.getSelectedValues();
-				for (int index = 0; index < selectedValues.length; index++) {
-					
-					subject().removeSessionNamed((( SessionAdapter)selectedValues[index]).getName());
-				}
-			}
-		};
-	}
-	// - - - - - - - - -	
-	
-	private TopLinkSessionsAdapter subject() {
-		return this.subject;
-	}	
-	
-	private PropertyValueModel subjectHolder() {
-		return this.subjectHolder;
-	}
+    private AddRemoveListPanel buildProjectClassPanel() {
 
-	protected void setUp() {
-		
-		super.setUp();
+        return this.buildAddRemoveListPanel(
+            buildAddRemoveListPanelAdapter(), this.buildProjectClassListAdapter());
+    }
 
-		this.subject = getTopLinkSessions();
-		
-		this.subjectHolder = new SimplePropertyValueModel( this.subject);
-	}
-	
-	protected TextField textField() {
-		return this.textField;
-	}
-	
-	protected void initialize() {
-		super.initialize();
-		
-		windowH = 200;
-		windowW = 500;
-	}
-	
-	protected void printModel() {
-		
-		System.out.println( this.subject.toString());
-	}
-	
-	protected void resetProperty() {}
-	protected void clearModel() {}
-	protected void restoreModel() {}
-	
-	protected void saveModel() {
+    private Component buildPropertyEntryPanel() {
+        JPanel addRemoveTaskPanel = new JPanel( new GridLayout( 1, 0));
+        addRemoveTaskPanel.add( this.buildTextField());
 
-		try {
-			getTopLinkSessions().save();
-		}
-		catch( IOException e) {
-			// TODO  - exeception handling
-			e.printStackTrace();
-		}							
-	}
-	
-	private File promptForSaveDirectory() {
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY);
-		fileChooser.setDialogTitle( "Save " + getTopLinkSessions().displayString());
-				
-		int buttonChoice = fileChooser.showDialog( window, "Select");
-		if (buttonChoice != JFileChooser.APPROVE_OPTION) {
-			return null;
-		}
-//		if( isValidSaveDirectory(fileChooser.getSelectedFile())) {
-//			return fileChooser.getSelectedFile();
-//		}
-//		else {
-//			showNeedEmptyDirectoryDialog();
-//			return promptForSaveDirectory();
-//		}
-		return fileChooser.getSelectedFile();
-	}
-	/**
-	 * Re-Use Restore button for Saving
-	 */
-	protected JButton buildRestoreModelButton() {
-		return new JButton( this.buildSaveAction());
-	}
-	private Action buildSaveAction() {
-		Action action = new AbstractAction("Save...") {
-			public void actionPerformed( ActionEvent event) {
-				SCToplinkSessionsUITest.this.saveModel();
-			}
-		};
-		action.setEnabled(true);
-		return action;
-	}
+        return addRemoveTaskPanel;
+    }
 
-//	public File saveLocation() {
-//		return getProject().getSaveDirectory();
-//	}
-	
+    private TextField buildTextField() {
+        this.textField = new TextField( 50);
+        return this.textField;
+    }
+
+    private AddRemoveListPanel buildAddRemoveListPanel( AddRemoveListPanel.Adapter panelAdapter, ListValueModel listAdapter) {
+
+        AddRemoveListPanel addRemoveListPanel = new AddRemoveListPanel(
+            workbenchContext().getApplicationContext(),
+            panelAdapter,
+            listAdapter,
+            AddRemoveListPanel.RIGHT
+        );
+        addRemoveListPanel.setCellRenderer( new SimpleListCellRenderer());
+
+        return addRemoveListPanel;
+    }
+
+    private ListValueModel buildProjectClassListAdapter() {
+
+        return new CollectionListValueModelAdapter( buildClassCollectionAdapter());
+    }
+    // - - - - - - - - -
+    private CollectionValueModel buildClassCollectionAdapter() {
+
+        return new CollectionAspectAdapter( subjectHolder(), TopLinkSessionsAdapter.SESSIONS_COLLECTION)         {
+            protected Iterator getValueFromSubject() {
+
+                return (( TopLinkSessionsAdapter)subject).sessions();
+            }
+            protected int sizeFromSubject() {
+                return (( TopLinkSessionsAdapter)subject).sessionsSize();
+            }
+        };
+    }
+
+    private AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter()
+    {
+        return new AddRemoveListPanel.Adapter() {
+
+            public void addNewItem( ObjectListSelectionModel listSelectionModel) {
+
+                String text =  SCToplinkSessionsUITest.this.textField().getText();
+                if( text.length() > 0) {
+                    DataSource ds  = new DataSource( "EISPlatform");
+                    subject().addDatabaseSessionNamed( text, noServerPlatform(), ds);
+                }
+            }
+
+            public void removeSelectedItems( ObjectListSelectionModel listSelectionModel) {
+
+                Object[] selectedValues = listSelectionModel.getSelectedValues();
+                for (int index = 0; index < selectedValues.length; index++) {
+
+                    subject().removeSessionNamed((( SessionAdapter)selectedValues[index]).getName());
+                }
+            }
+        };
+    }
+    // - - - - - - - - -
+
+    private TopLinkSessionsAdapter subject() {
+        return this.subject;
+    }
+
+    private PropertyValueModel subjectHolder() {
+        return this.subjectHolder;
+    }
+
+    protected void setUp() {
+
+        super.setUp();
+
+        this.subject = getTopLinkSessions();
+
+        this.subjectHolder = new SimplePropertyValueModel( this.subject);
+    }
+
+    protected TextField textField() {
+        return this.textField;
+    }
+
+    protected void initialize() {
+        super.initialize();
+
+        windowH = 200;
+        windowW = 500;
+    }
+
+    protected void printModel() {
+
+        System.out.println( this.subject.toString());
+    }
+
+    protected void resetProperty() {}
+    protected void clearModel() {}
+    protected void restoreModel() {}
+
+    protected void saveModel() {
+
+        try {
+            getTopLinkSessions().save();
+        }
+        catch( IOException e) {
+            // TODO  - exeception handling
+            e.printStackTrace();
+        }
+    }
+
+    private File promptForSaveDirectory() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setDialogTitle( "Save " + getTopLinkSessions().displayString());
+
+        int buttonChoice = fileChooser.showDialog( window, "Select");
+        if (buttonChoice != JFileChooser.APPROVE_OPTION) {
+            return null;
+        }
+//        if( isValidSaveDirectory(fileChooser.getSelectedFile())) {
+//            return fileChooser.getSelectedFile();
+//        }
+//        else {
+//            showNeedEmptyDirectoryDialog();
+//            return promptForSaveDirectory();
+//        }
+        return fileChooser.getSelectedFile();
+    }
+    /**
+     * Re-Use Restore button for Saving
+     */
+    protected JButton buildRestoreModelButton() {
+        return new JButton( this.buildSaveAction());
+    }
+    private Action buildSaveAction() {
+        Action action = new AbstractAction("Save...") {
+            public void actionPerformed( ActionEvent event) {
+                SCToplinkSessionsUITest.this.saveModel();
+            }
+        };
+        action.setEnabled(true);
+        return action;
+    }
+
+//    public File saveLocation() {
+//        return getProject().getSaveDirectory();
+//    }
+
 }

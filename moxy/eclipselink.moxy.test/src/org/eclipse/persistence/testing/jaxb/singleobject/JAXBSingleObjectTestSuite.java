@@ -26,7 +26,7 @@ public class JAXBSingleObjectTestSuite extends TestCase {
         suite.addTestSuite(JAXBSingleObjectStringXsiTestCases.class);
         suite.addTestSuite(JAXBSingleObjectObjectNoXsiTestCases.class);
         suite.addTestSuite(JAXBSingleObjectObjectXsiTestCases.class);
-      
+
         return suite;
     }
 }

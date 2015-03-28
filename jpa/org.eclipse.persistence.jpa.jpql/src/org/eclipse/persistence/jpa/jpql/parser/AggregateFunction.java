@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,130 +50,130 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpression {
 
-	/**
-	 * The actual <b>DISTINCT</b> identifier found in the string representation of the JPQL query.
-	 */
-	private String distinctIdentifier;
+    /**
+     * The actual <b>DISTINCT</b> identifier found in the string representation of the JPQL query.
+     */
+    private String distinctIdentifier;
 
-	/**
-	 * Determines whether whitespace was found after the identifier <b>DISTINCT</b>.
-	 */
-	private boolean hasSpaceAfterDistinct;
+    /**
+     * Determines whether whitespace was found after the identifier <b>DISTINCT</b>.
+     */
+    private boolean hasSpaceAfterDistinct;
 
-	/**
-	 * Creates a new <code>AggregateFunction</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param identifier The JPQL identifier that starts this expression
-	 */
-	protected AggregateFunction(AbstractExpression parent, String identifier) {
-		super(parent, identifier);
-	}
+    /**
+     * Creates a new <code>AggregateFunction</code>.
+     *
+     * @param parent The parent of this expression
+     * @param identifier The JPQL identifier that starts this expression
+     */
+    protected AggregateFunction(AbstractExpression parent, String identifier) {
+        super(parent, identifier);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
-		if (distinctIdentifier != null) {
-			children.add(buildStringExpression(DISTINCT));
-		}
+        if (distinctIdentifier != null) {
+            children.add(buildStringExpression(DISTINCT));
+        }
 
-		if (hasSpaceAfterDistinct) {
-			children.add(buildStringExpression(SPACE));
-		}
+        if (hasSpaceAfterDistinct) {
+            children.add(buildStringExpression(SPACE));
+        }
 
-		super.addOrderedEncapsulatedExpressionTo(children);
-	}
+        super.addOrderedEncapsulatedExpressionTo(children);
+    }
 
-	/**
-	 * Creates the {@link AbstractExpression} to represent the given word.
-	 *
-	 * @param word The word that was parsed
-	 * @return The encapsulated {@link AbstractExpression}
-	 */
-	protected AbstractExpression buildEncapsulatedExpression(WordParser wordParser, String word) {
-		return new StateFieldPathExpression(this, word);
-	}
+    /**
+     * Creates the {@link AbstractExpression} to represent the given word.
+     *
+     * @param word The word that was parsed
+     * @return The encapsulated {@link AbstractExpression}
+     */
+    protected AbstractExpression buildEncapsulatedExpression(WordParser wordParser, String word) {
+        return new StateFieldPathExpression(this, word);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getEncapsulatedExpressionQueryBNFId() {
-		return InternalAggregateFunctionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getEncapsulatedExpressionQueryBNFId() {
+        return InternalAggregateFunctionBNF.ID;
+    }
 
-	/**
-	 * Returns the actual <b>DISTINCT</b> identifier found in the string representation of the JPQL
-	 * query, which has the actual case that was used.
-	 *
-	 * @return The <b>DISTINCT</b> identifier that was actually parsed, or an empty string if it was
-	 * not parsed
-	 */
-	public String getActualDistinctIdentifier() {
-		return (distinctIdentifier != null) ?distinctIdentifier : ExpressionTools.EMPTY_STRING;
-	}
+    /**
+     * Returns the actual <b>DISTINCT</b> identifier found in the string representation of the JPQL
+     * query, which has the actual case that was used.
+     *
+     * @return The <b>DISTINCT</b> identifier that was actually parsed, or an empty string if it was
+     * not parsed
+     */
+    public String getActualDistinctIdentifier() {
+        return (distinctIdentifier != null) ?distinctIdentifier : ExpressionTools.EMPTY_STRING;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(AggregateExpressionBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(AggregateExpressionBNF.ID);
+    }
 
-	/**
-	 * Determines whether the <b>DISTINCT</b> identifier was specified in the query.
-	 *
-	 * @return <code>true</code> if the query has <b>DISTINCT</b>; <code>false</code> otherwise
-	 */
-	public final boolean hasDistinct() {
-		return distinctIdentifier != null;
-	}
+    /**
+     * Determines whether the <b>DISTINCT</b> identifier was specified in the query.
+     *
+     * @return <code>true</code> if the query has <b>DISTINCT</b>; <code>false</code> otherwise
+     */
+    public final boolean hasDistinct() {
+        return distinctIdentifier != null;
+    }
 
-	/**
-	 * Determines whether a whitespace was parsed after <b>DISTINCT</b>.
-	 *
-	 * @return <code>true</code> if there was a whitespace after <b>DISTINCT</b>; <code>false</code>
-	 * otherwise
-	 */
-	public final boolean hasSpaceAfterDistinct() {
-		return hasSpaceAfterDistinct;
-	}
+    /**
+     * Determines whether a whitespace was parsed after <b>DISTINCT</b>.
+     *
+     * @return <code>true</code> if there was a whitespace after <b>DISTINCT</b>; <code>false</code>
+     * otherwise
+     */
+    public final boolean hasSpaceAfterDistinct() {
+        return hasSpaceAfterDistinct;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected final void parseEncapsulatedExpression(WordParser wordParser,
-	                                                 int whitespaceCount,
-	                                                 boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final void parseEncapsulatedExpression(WordParser wordParser,
+                                                     int whitespaceCount,
+                                                     boolean tolerant) {
 
-		// Parse 'DISTINCT'
-		if (wordParser.startsWithIdentifier(DISTINCT)) {
-			distinctIdentifier = wordParser.moveForward(DISTINCT);
-			hasSpaceAfterDistinct = wordParser.skipLeadingWhitespace() > 0;
-		}
+        // Parse 'DISTINCT'
+        if (wordParser.startsWithIdentifier(DISTINCT)) {
+            distinctIdentifier = wordParser.moveForward(DISTINCT);
+            hasSpaceAfterDistinct = wordParser.skipLeadingWhitespace() > 0;
+        }
 
-		// Parse the rest
-		super.parseEncapsulatedExpression(wordParser, whitespaceCount, tolerant);
-	}
+        // Parse the rest
+        super.parseEncapsulatedExpression(wordParser, whitespaceCount, tolerant);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 
-		if (distinctIdentifier != null) {
-			writer.append(actual ? distinctIdentifier : DISTINCT);
-		}
+        if (distinctIdentifier != null) {
+            writer.append(actual ? distinctIdentifier : DISTINCT);
+        }
 
-		if (hasSpaceAfterDistinct) {
-			writer.append(SPACE);
-		}
+        if (hasSpaceAfterDistinct) {
+            writer.append(SPACE);
+        }
 
-		super.toParsedTextEncapsulatedExpression(writer, actual);
-	}
+        super.toParsedTextEncapsulatedExpression(writer, actual);
+    }
 }

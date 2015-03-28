@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     06/16/2009-2.0 Guy Pelletier 
+ *     06/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
@@ -50,14 +50,14 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     protected List<String> managedClassNames;
     protected URL persistenceUnitRootUrl;
     protected boolean excludeUnlistedClasses = true;
-    
-    // Persistence.xml loaded from the canonical model processor will 
+
+    // Persistence.xml loaded from the canonical model processor will
     // populate the properties into this collection.
     protected List<SEPersistenceUnitProperty> persistenceUnitProperties = new ArrayList<SEPersistenceUnitProperty>();
     // Persistence.xml loaded from the metadata processor will populate the
     // properties into this properties map.
     protected Properties properties;
-    
+
     protected ClassLoader tempClassLoader;
     protected ClassLoader realClassLoader;
 
@@ -76,23 +76,23 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     public String getPersistenceUnitName(){
         return persistenceUnitName;
     }
-    
+
     public void setPersistenceUnitName(String persistenceUnitName){
         this.persistenceUnitName = persistenceUnitName;
     }
-    
+
     /**
      * Used with the OX mapping file for the Canonical model processor.
      */
     public List<SEPersistenceUnitProperty> getPersistenceUnitProperties() {
-       return persistenceUnitProperties; 
+       return persistenceUnitProperties;
     }
 
     /**
      * Used with the OX mapping file for the Canonical model processor.
      */
     public void setPersistenceUnitProperties(List<SEPersistenceUnitProperty> persistenceUnitProperties) {
-       this.persistenceUnitProperties = persistenceUnitProperties; 
+       this.persistenceUnitProperties = persistenceUnitProperties;
     }
 
     /**
@@ -104,11 +104,11 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     public String getPersistenceProviderClassName(){
         return persistenceProviderClassName;
     }
-    
+
     public void setPersistenceProviderClassName(String persistenceProviderClassName){
         this.persistenceProviderClassName = persistenceProviderClassName;
     }
-    
+
     /**
     * @return The transaction type of the entity managers created
     * by the EntityManagerFactory.
@@ -122,7 +122,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     public void setTransactionType(PersistenceUnitTransactionType persistenceUnitTransactionType){
         this.persistenceUnitTransactionType = persistenceUnitTransactionType;
     }
-    
+
     /**
     * @return the JTA-enabled data source to be used by the
     * persistence provider.
@@ -133,11 +133,11 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     public DataSource getJtaDataSource(){
         return jtaDataSource;
     }
-    
+
     public void setJtaDataSource(DataSource jtaDataSource){
         this.jtaDataSource = jtaDataSource;
     }
-    
+
     /**
     * @return The non-JTA-enabled data source to be used by the
     * persistence provider for accessing data outside a JTA
@@ -167,7 +167,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     public List<String> getMappingFileNames(){
         return mappingFiles;
     }
-    
+
     public void setMappingFileNames(List<String> mappingFiles){
         this.mappingFiles = mappingFiles;
     }
@@ -195,11 +195,11 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
         }
         return Collections.unmodifiableList(jarFileUrls);
     }
-    
+
     public void setJarFileUrls(List<URL> jarFileUrls){
         this.jarFileUrls = jarFileUrls;
     }
-    
+
     /**
     * @return The URL for the jar file that is the root of the
     * persistence unit. If the persistence unit is rooted in
@@ -209,11 +209,11 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     public URL getPersistenceUnitRootUrl(){
         return persistenceUnitRootUrl;
     }
-    
+
     public void setPersistenceUnitRootUrl(URL persistenceUnitRootUrl){
         this.persistenceUnitRootUrl = persistenceUnitRootUrl;
     }
-    
+
     /**
     * @return The list of the names of the classes that the
     * persistence provider must add it to its set of managed
@@ -235,9 +235,9 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     * element in the persistence.xml file.
     */
     public boolean excludeUnlistedClasses(){
-        return excludeUnlistedClasses; 
+        return excludeUnlistedClasses;
     }
-    
+
     public void setExcludeUnlistedClasses(boolean excludeUnlistedClasses){
         this.excludeUnlistedClasses = excludeUnlistedClasses;
     }
@@ -291,22 +291,22 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     public ClassLoader getNewTempClassLoader(){
         return tempClassLoader;
     }
-    
+
     public void setNewTempClassLoader(ClassLoader loader){
         this.tempClassLoader = loader;
     }
-    
+
     /**
      * @see PersistenceUnitInfo#setSharedCacheMode()
      * @since Java Persistence 2.0
      */
     public void setSharedCacheMode(String sharedCacheMode) {
         // If user enters an invalid caching type valueOf will throw an illegal
-        // argument exception, e.g. 
+        // argument exception, e.g.
         // java.lang.IllegalArgumentException: No enum const class javax.persistence.SharedCacheMode.ALLBOGUS
         this.cacheMode = SharedCacheMode.valueOf(sharedCacheMode);
     }
-    
+
     /**
      * @see PersistenceUnitInfo#getValidationMode()
      * @since Java Persistence 2.0
@@ -331,7 +331,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
      * @since Java Persistence 2.0
      */
     public String getPersistenceXMLSchemaVersion() {
-        // TODO 
+        // TODO
         throw new PersistenceException("Not Yet Implemented");
     }
 
@@ -342,7 +342,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     public SharedCacheMode getSharedCacheMode() {
         return cacheMode;
     }
-    
+
     /**
      * @see PersistenceUnitInfo#getValidationMode()
      * @since Java Persistence 2.0

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries.repreparation;
 
 import java.util.Vector;
@@ -47,7 +47,7 @@ public class AddNonFetchedJoinedAttributeTest extends AutoVerifyTestCase {
     public void test() {
         query1.addNonFetchJoinedAttribute("address");
         employees1 = (Vector)getSession().executeQuery(query1);
-        
+
         query2 = new ReadAllQuery(Employee.class);
         query2.addNonFetchJoinedAttribute(query2.getExpressionBuilder().get("manager").get("address"));
         employees2 = (Vector)getSession().executeQuery(query2);
@@ -57,37 +57,37 @@ public class AddNonFetchedJoinedAttributeTest extends AutoVerifyTestCase {
         if (!query1.getCall().getSQLString().equals(EXPECTED_SQL1)) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("AddNonFetchedJoinedAttributeTest failed. \n [Expected] " + EXPECTED_SQL1 + "\n[Found] " + query1.getCall().getSQLString());
         }
-        
+
         Employee employee = (Employee) employees1.firstElement();
-    
+
         if (employee.address.isInstantiated()) {
             throw new TestErrorException("AddNonFetchedJoinedAttributeTest failed. The non fetch join attribute address was instantiated");
         }
-        
+
         Address address = employee.getAddress();
-        
+
         if (address.getPostalCode() == null) {
             throw new TestErrorException("Instantiating the address value holder returned an unpopulated address.");
         }
-        
+
         if (!query2.getCall().getSQLString().equals(EXPECTED_SQL2)) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("AddNonFetchedJoinedAttributeTest failed. \n [Expected] " + EXPECTED_SQL2 + "\n[Found] " + query2.getCall().getSQLString());
         }
-        
+
         employee = (Employee) employees2.firstElement();
-    
+
         if (employee.manager.isInstantiated()) {
             throw new TestErrorException("AddNonFetchedJoinedAttributeTest failed. The non fetch join attribute manager was instantiated");
         }
-        
+
         Employee manager = (Employee) employee.getManager();
-        
+
         if (manager.getFirstName() == null) {
             throw new TestErrorException("The manager object was not correctly populated.");
         }
-        
+
         address = manager.getAddress();
-        
+
         if (address.getPostalCode() == null) {
             throw new TestErrorException("Instantiating the address value holder returned an unpopulated address.");
         }

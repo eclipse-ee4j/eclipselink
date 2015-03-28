@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     14/05/2012-2.4 Guy Pelletier  
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant;
@@ -20,7 +20,7 @@ public class Supporter {
     public long id;
     public String name;
     public List<Candidate> supportedCandidates;
-    
+
     public Supporter() {
         supportedCandidates = new ArrayList<Candidate>();
     }
@@ -28,7 +28,7 @@ public class Supporter {
     protected void addSupportedCandidate(Candidate candidate) {
         supportedCandidates.add(candidate);
     }
-    
+
     public long getId() {
         return id;
     }
@@ -36,7 +36,7 @@ public class Supporter {
     public String getName() {
         return name;
     }
-    
+
     public List<Candidate> getSupportedCandidates() {
         return supportedCandidates;
     }
@@ -48,7 +48,7 @@ public class Supporter {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public void setSupportedCandidates(List<Candidate> supportedCandidates) {
         this.supportedCandidates = supportedCandidates;
     }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Component-defining annotation for a message driven bean.  
+ * Component-defining annotation for a message driven bean.
  * <p>
  * The message driven bean must implement the appropriate message
  * listener interface for the messaging type that the message-driven
@@ -71,7 +71,7 @@ public @interface MessageDriven {
      * Message-listener interface.  If the message-driven bean class
      * implements more than one interface other than <code>java.io.Serializable</code>,
      * <code>java.io.Externalizable</code>, or any of the interfaces defined by the
-     * <code>javax.ejb</code> package, the message listener interface must be 
+     * <code>javax.ejb</code> package, the message listener interface must be
      * specified.
      */
     Class messageListenerInterface() default Object.class;
@@ -79,22 +79,22 @@ public @interface MessageDriven {
     /**
      * Activation config properties.
      */
-    ActivationConfigProperty[] activationConfig() default {}; 
+    ActivationConfigProperty[] activationConfig() default {};
 
     /**
-      * A product specific name(e.g. global JNDI name of a queue) 
-      * that this message-driven bean should be mapped to.  
-      * 
-      * Application servers are not required to support any particular 
-      * form or type of mapped name, nor the ability to use mapped names. 
-      * The mapped name is product-dependent and often installation-dependent. 
-      * No use of a mapped name is portable. 
-      */ 
+      * A product specific name(e.g. global JNDI name of a queue)
+      * that this message-driven bean should be mapped to.
+      *
+      * Application servers are not required to support any particular
+      * form or type of mapped name, nor the ability to use mapped names.
+      * The mapped name is product-dependent and often installation-dependent.
+      * No use of a mapped name is portable.
+      */
     String mappedName() default "";
 
     /**
      * A string describing the message driven bean.
-     */ 
+     */
     String description() default "";
 }
 

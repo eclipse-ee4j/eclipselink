@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
@@ -158,48 +158,48 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
     }
-    
-	/**
-	 * INTERNAL: Build the identity query for native sequencing.
-	 */
-	public ValueReadQuery buildSelectQueryForIdentity() {
-		ValueReadQuery selectQuery = new ValueReadQuery();
-		StringWriter writer = new StringWriter();
-		writer.write("SELECT @@IDENTITY");
-		selectQuery.setSQLString(writer.toString());
-		return selectQuery;
-	}
 
-	/** Append the receiver's field 'identity' constraint clause to a writer. */
-	public void printFieldIdentityClause(Writer writer)	throws ValidationException {
-		try {
-			writer.write(" COUNTER");
-		} catch (IOException ioException) {
-			throw ValidationException.fileError(ioException);
-		}
-	}
+    /**
+     * INTERNAL: Build the identity query for native sequencing.
+     */
+    public ValueReadQuery buildSelectQueryForIdentity() {
+        ValueReadQuery selectQuery = new ValueReadQuery();
+        StringWriter writer = new StringWriter();
+        writer.write("SELECT @@IDENTITY");
+        selectQuery.setSQLString(writer.toString());
+        return selectQuery;
+    }
 
-	/**
-	 * INTERNAL: Indicates whether the platform supports identity. Sybase does
-	 * through IDENTITY field types. This method is to be used *ONLY* by
-	 * sequencing classes
-	 */
-	public boolean supportsIdentity() {
-		return true;
-	}
+    /** Append the receiver's field 'identity' constraint clause to a writer. */
+    public void printFieldIdentityClause(Writer writer)    throws ValidationException {
+        try {
+            writer.write(" COUNTER");
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
+        }
+    }
 
-	public void printFieldTypeSize(Writer writer, FieldDefinition field,FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
-		if (!shouldPrintFieldIdentityClause) {
-			super.printFieldTypeSize(writer, field, fieldType,
-					shouldPrintFieldIdentityClause);
-		}
-	}
+    /**
+     * INTERNAL: Indicates whether the platform supports identity. Sybase does
+     * through IDENTITY field types. This method is to be used *ONLY* by
+     * sequencing classes
+     */
+    public boolean supportsIdentity() {
+        return true;
+    }
 
-	public void printFieldUnique(Writer writer,	boolean shouldPrintFieldIdentityClause) throws IOException {
-		if (!shouldPrintFieldIdentityClause) {
-			super.printFieldUnique(writer, shouldPrintFieldIdentityClause);
-		}
-	}
+    public void printFieldTypeSize(Writer writer, FieldDefinition field,FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
+        if (!shouldPrintFieldIdentityClause) {
+            super.printFieldTypeSize(writer, field, fieldType,
+                    shouldPrintFieldIdentityClause);
+        }
+    }
+
+    public void printFieldUnique(Writer writer,    boolean shouldPrintFieldIdentityClause) throws IOException {
+        if (!shouldPrintFieldIdentityClause) {
+            super.printFieldUnique(writer, shouldPrintFieldIdentityClause);
+        }
+    }
 
 
 }

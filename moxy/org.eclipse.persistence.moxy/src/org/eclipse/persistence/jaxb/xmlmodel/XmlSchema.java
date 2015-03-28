@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,9 +24,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -51,8 +51,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -74,25 +74,25 @@ public class XmlSchema {
 
     /**
      * Gets the value of the xmlNs property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the xmlNs property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getXmlNs().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link XmlSchema.XmlNs }
-     * 
-     * 
+     *
+     *
      */
     public List<XmlSchema.XmlNs> getXmlNs() {
         if (xmlNs == null) {
@@ -103,11 +103,11 @@ public class XmlSchema {
 
     /**
      * Gets the value of the attributeFormDefault property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlNsForm }
-     *     
+     *
      */
     public XmlNsForm getAttributeFormDefault() {
         if (attributeFormDefault == null) {
@@ -119,11 +119,11 @@ public class XmlSchema {
 
     /**
      * Sets the value of the attributeFormDefault property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlNsForm }
-     *     
+     *
      */
     public void setAttributeFormDefault(XmlNsForm value) {
         this.attributeFormDefault = value;
@@ -131,11 +131,11 @@ public class XmlSchema {
 
     /**
      * Gets the value of the elementFormDefault property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlNsForm }
-     *     
+     *
      */
     public XmlNsForm getElementFormDefault() {
         if (elementFormDefault == null) {
@@ -147,11 +147,11 @@ public class XmlSchema {
 
     /**
      * Sets the value of the elementFormDefault property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlNsForm }
-     *     
+     *
      */
     public void setElementFormDefault(XmlNsForm value) {
         this.elementFormDefault = value;
@@ -159,11 +159,11 @@ public class XmlSchema {
 
     /**
      * Gets the value of the location property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getLocation() {
         return location;
@@ -171,11 +171,11 @@ public class XmlSchema {
 
     /**
      * Sets the value of the location property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setLocation(String value) {
         this.location = value;
@@ -183,11 +183,11 @@ public class XmlSchema {
 
     /**
      * Gets the value of the namespace property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getNamespace() {
         return namespace;
@@ -195,11 +195,11 @@ public class XmlSchema {
 
     /**
      * Sets the value of the namespace property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setNamespace(String value) {
         this.namespace = value;
@@ -208,9 +208,9 @@ public class XmlSchema {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -221,8 +221,8 @@ public class XmlSchema {
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
@@ -235,11 +235,11 @@ public class XmlSchema {
 
         /**
          * Gets the value of the namespaceUri property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getNamespaceUri() {
             return namespaceUri;
@@ -247,11 +247,11 @@ public class XmlSchema {
 
         /**
          * Sets the value of the namespaceUri property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setNamespaceUri(String value) {
             this.namespaceUri = value;
@@ -259,11 +259,11 @@ public class XmlSchema {
 
         /**
          * Gets the value of the prefix property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getPrefix() {
             return prefix;
@@ -271,11 +271,11 @@ public class XmlSchema {
 
         /**
          * Sets the value of the prefix property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setPrefix(String value) {
             this.prefix = value;

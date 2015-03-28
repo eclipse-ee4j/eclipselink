@@ -31,15 +31,15 @@ import org.eclipse.persistence.testing.jaxb.json.type.model.PersonWithType;
  *
  */
 public class TypePropertyTestCases extends JSONTestCases {
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/type/type_property.json";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/type/type_property.json";
 
-	public TypePropertyTestCases(String name) throws Exception {
-		super(name);
-		setClasses(new Class[]{PersonWithType.class});
-		setControlJSON(JSON_RESOURCE);
-	}
+    public TypePropertyTestCases(String name) throws Exception {
+        super(name);
+        setClasses(new Class[]{PersonWithType.class});
+        setControlJSON(JSON_RESOURCE);
+    }
 
-	public void setUp() throws Exception{
+    public void setUp() throws Exception{
         super.setUp();
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         jsonMarshaller.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, ':');
@@ -53,9 +53,9 @@ public class TypePropertyTestCases extends JSONTestCases {
         jsonUnmarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
-	protected Object getJSONReadControlObject() {
+    protected Object getJSONReadControlObject() {
 
-	    PersonWithType c = new PersonWithType();
+        PersonWithType c = new PersonWithType();
         c.name = "theName";
         c.type = "propertyType";
 
@@ -65,11 +65,11 @@ public class TypePropertyTestCases extends JSONTestCases {
         return jbe;
     }
 
-	protected Object getControlObject() {
-	    PersonWithType c = new PersonWithType();
-	    c.name = "theName";
-	    c.type = "propertyType";
-	    return c;
-	}
+    protected Object getControlObject() {
+        PersonWithType c = new PersonWithType();
+        c.name = "theName";
+        c.type = "propertyType";
+        return c;
+    }
 
 }

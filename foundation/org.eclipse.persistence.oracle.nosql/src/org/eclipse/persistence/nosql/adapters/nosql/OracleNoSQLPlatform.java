@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.nosql.adapters.nosql;
 
 import java.util.ArrayList;
@@ -95,7 +95,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
                 operation = OracleNoSQLOperation.valueOf((String)operation);
             }
             noSqlSpec.setOperation((OracleNoSQLOperation)operation);
-            
+
             // Allows setting of consistency as a property.
             Object consistency = interaction.getProperty(CONSISTENCY);
             if (consistency == null) {
@@ -111,10 +111,10 @@ public class OracleNoSQLPlatform extends EISPlatform {
                 } else if (constant.equals("NONE_REQUIRED")) {
                     noSqlSpec.setConsistency(Consistency.NONE_REQUIRED );
                 } else {
-                    throw new EISException("Invalid consistency property value: " + constant);                    
+                    throw new EISException("Invalid consistency property value: " + constant);
                 }
             }
-            
+
             // Allows setting of durability as a property.
             Object durability = interaction.getProperty(DURABILITY);
             if (durability == null) {
@@ -132,10 +132,10 @@ public class OracleNoSQLPlatform extends EISPlatform {
                 }  else if (constant.equals("COMMIT_WRITE_NO_SYNC")) {
                     noSqlSpec.setDurability(Durability.COMMIT_WRITE_NO_SYNC );
                 } else {
-                    throw new EISException("Invalid durability property value: " + constant);                    
+                    throw new EISException("Invalid durability property value: " + constant);
                 }
             }
-            
+
             // Allows setting of timeout as a property.
             Object timeout = interaction.getProperty(TIMEOUT);
             if (timeout == null) {
@@ -149,7 +149,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             } else if (interaction.getQuery().getQueryTimeout() > 0) {
                 noSqlSpec.setTimeout(interaction.getQuery().getQueryTimeout());
             }
-            
+
             // Allows setting of version as a property.
             Object version = interaction.getProperty(VERSION);
             if (version == null) {
@@ -172,7 +172,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             } else if (version instanceof byte[]) {
                 noSqlSpec.setVersion(Version.fromByteArray((byte[])version));
             }
-            
+
             spec = noSqlSpec;
         }
         return spec;
@@ -263,7 +263,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             }
         }
     }
-    
+
     /**
      * Allow the platform to create the appropriate type of record for the interaction.
      * Convert the nested local mapped record to a flat global keyed record.
@@ -282,7 +282,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
                 }
                 return input;
             }
-            Object key = createMajorKey(descriptor, new EISMappedRecord(input, accessor), interaction, accessor);            
+            Object key = createMajorKey(descriptor, new EISMappedRecord(input, accessor), interaction, accessor);
             OracleNoSQLRecord record = new OracleNoSQLRecord();
             record.put(key, input);
             if (getRecordConverter() != null) {
@@ -293,7 +293,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             return super.createInputRecord(interaction, accessor);
         }
     }
-    
+
     /**
      * Stores the XML DOM value into the record.
      * XML is stored in Oracle NoSQL but storing the XML text, keyed on the object's {@literal "<dataTypeName>/<id>"}.
@@ -338,7 +338,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
         }
         return key;
     }
-    
+
     /**
      * Allow the platform to handle the creation of the Record for the DOM record.
      * Creates a DOM record from the XML data stored as a value in the OracleNoSQLRecord.
@@ -380,11 +380,11 @@ public class OracleNoSQLPlatform extends EISPlatform {
                     domRecord.put(entry.getKey(), dom);
                 }
             }
-            
+
         }
         return domRecord;
     }
-    
+
     /**
      * INTERNAL:
      * Allow the platform to initialize the CRUD queries to defaults.
@@ -399,7 +399,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             call.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.PUT_IF_ABSENT);
             queryManager.setInsertCall(call);
         }
-        
+
         // Update
         if (!queryManager.hasUpdateQuery()) {
             EISInteraction call = isXML ? new XMLInteraction() : new MappedInteraction();
@@ -423,7 +423,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             call.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.ITERATOR);
             queryManager.setReadAllCall(call);
         }
-        
+
         // Delete
         if (!queryManager.hasDeleteQuery()) {
             MappedInteraction call = isXML ? new XMLInteraction() : new MappedInteraction();
@@ -432,9 +432,9 @@ public class OracleNoSQLPlatform extends EISPlatform {
                 call.addArgument(field.getName());
             }
             queryManager.setDeleteCall(call);
-        }        
+        }
     }
-    
+
     /**
      * Do not prepare to avoid errors being triggered for id and all queries.
      */

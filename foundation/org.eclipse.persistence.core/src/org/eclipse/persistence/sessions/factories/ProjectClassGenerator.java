@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -474,7 +474,7 @@ public class ProjectClassGenerator {
             if (mapping.isInnerJoinFetched()) {
                 method.addLine(mappingName + ".useInnerJoinFetch();");
             } else if (mapping.isOuterJoinFetched()) {
-                method.addLine(mappingName + ".useOuterJoinFetch();");                
+                method.addLine(mappingName + ".useOuterJoinFetch();");
             }
         }
 
@@ -518,11 +518,11 @@ public class ProjectClassGenerator {
             while (queryKeyExpressions.hasNext()) {
                 FunctionExpression expression = (FunctionExpression) queryKeyExpressions.next();
                 String queryKeyName = expression.getBaseExpression().getName();
-                
+
                 if (expression.getOperator().getSelector() == ExpressionOperator.Descending) {
-                    method.addLine(mappingName + ".addDescendingOrdering(\"" + queryKeyName + "\");");    
+                    method.addLine(mappingName + ".addDescendingOrdering(\"" + queryKeyName + "\");");
                 } else {
-                    method.addLine(mappingName + ".addAscendingOrdering(\"" + queryKeyName + "\");");    
+                    method.addLine(mappingName + ".addAscendingOrdering(\"" + queryKeyName + "\");");
                 }
             }
         }
@@ -833,7 +833,7 @@ public class ProjectClassGenerator {
 
         // Custom SQL.
         if (descriptor.getQueryManager().hasReadObjectQuery() && descriptor.getQueryManager().getReadObjectQuery().isSQLCallQuery()) {
-            method.addLine("descriptor.getQueryManager().setReadObjectSQLString(\"" 
+            method.addLine("descriptor.getQueryManager().setReadObjectSQLString(\""
               + constructValidSQLorEJBQLLinesForJavaSource(descriptor.getQueryManager().getReadObjectQuery().getSQLString()) + "\");");
         } else if (descriptor.getQueryManager().hasReadObjectQuery() && descriptor.getQueryManager().getReadObjectQuery().getDatasourceCall() instanceof XMLInteraction) {
             addXMLInteractionLines(method, (XMLInteraction)descriptor.getQueryManager().getReadObjectQuery().getDatasourceCall(), "readObjectCall");
@@ -888,19 +888,19 @@ public class ProjectClassGenerator {
     }
 
     private String constructValidSQLorEJBQLLinesForJavaSource(String qlString){
-    	//Bug2612384 Deals with the possibility of multi-line SQL statements.
-    	//Expects beginning and closing quotes to be in place
-    	String insertString = "\" " + Helper.cr() + '\t' + '\t' + "+ " + "\"";
-		
-    	if (qlString != null) {
-    		qlString.trim();
-    		//remove trailing carraige returns
-    		while (qlString.endsWith("\n"))
-    			qlString = qlString.substring(0, qlString.length() - 1);
-			
-    		qlString = qlString.replaceAll("\n",insertString);
-    	}
-    	return qlString;
+        //Bug2612384 Deals with the possibility of multi-line SQL statements.
+        //Expects beginning and closing quotes to be in place
+        String insertString = "\" " + Helper.cr() + '\t' + '\t' + "+ " + "\"";
+
+        if (qlString != null) {
+            qlString.trim();
+            //remove trailing carraige returns
+            while (qlString.endsWith("\n"))
+                qlString = qlString.substring(0, qlString.length() - 1);
+
+            qlString = qlString.replaceAll("\n",insertString);
+        }
+        return qlString;
     }
 
     protected void addXMLInteractionLines(NonreflectiveMethodDefinition method, XMLInteraction interaction, String variableName) {
@@ -1009,7 +1009,7 @@ public class ProjectClassGenerator {
                 method.addLine(queryIdentifier + ".setFirstResult(" + String.valueOf(readQuery.getFirstResult()) + ");");
             }
         }
-        
+
         //ExpressionBuilder string
         String builderString = null;
 
@@ -1116,7 +1116,7 @@ public class ProjectClassGenerator {
                 builderString = buildBuilderString(builderString, method, iteration, queryIdentifier);
                 buildExpressionString(builderString, method, queryIdentifier, readQuery.getSelectionCriteria(), ".setSelectionCriteria(");
             }
-            
+
             //joinedAttribute
             for (Iterator joinedEnum = readQuery.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinedEnum.hasNext();) {
                 Expression joinedExp = (Expression)joinedEnum.next();
@@ -1140,15 +1140,15 @@ public class ProjectClassGenerator {
             }
             //resultCollection
             if (readAllQuery.getContainerPolicy().isCursoredStreamPolicy()) {
-                method.addLine(queryIdentifier + ".useCursoredStream();");                
+                method.addLine(queryIdentifier + ".useCursoredStream();");
             }
             if (readAllQuery.getContainerPolicy().isScrollableCursorPolicy()) {
-                method.addLine(queryIdentifier + ".useScrollableCursor();");                
+                method.addLine(queryIdentifier + ".useScrollableCursor();");
             }
             if (readAllQuery.getContainerPolicy().isCollectionPolicy()) {
                 String collectionClass = readAllQuery.getContainerPolicy().getContainerClassName();
                 if (!collectionClass.equals("java.util.Vector")) {
-                    method.addLine(queryIdentifier + ".useCollectionClass(" + collectionClass + ".class);");                
+                    method.addLine(queryIdentifier + ".useCollectionClass(" + collectionClass + ".class);");
                 }
             }
         }
@@ -1197,11 +1197,11 @@ public class ProjectClassGenerator {
                         functionString = ".addItem(\"";
                         baseExpression = expression;
                     }
-                    baseExpression.printJava(javaPrinter);                                    
+                    baseExpression.printJava(javaPrinter);
                     if (databaseString == null) { //e.g. addCount(itemName, attributeExpression)
-                        method.addLine(queryIdentifier + functionString + itemName + "\", " + writer.toString() + ");");                                                                    
+                        method.addLine(queryIdentifier + functionString + itemName + "\", " + writer.toString() + ");");
                     } else { //i.e. addFunctionItem(itemName, attributeExpression, functionName) only
-                        method.addLine(queryIdentifier + functionString + itemName + "\", " + writer.toString() + ", \"" + databaseString + "\");");                                                                    
+                        method.addLine(queryIdentifier + functionString + itemName + "\", " + writer.toString() + ", \"" + databaseString + "\");");
                     }
                 }
             }
@@ -1211,20 +1211,20 @@ public class ProjectClassGenerator {
             }
             //shouldRetrievePrimaryKeys
             if (reportQuery.shouldRetrieveFirstPrimaryKey()) {
-                method.addLine(queryIdentifier + ".setShouldRetrieveFirstPrimaryKey(true);");                
+                method.addLine(queryIdentifier + ".setShouldRetrieveFirstPrimaryKey(true);");
             } else if (reportQuery.shouldRetrievePrimaryKeys()) {
-                method.addLine(queryIdentifier + ".setShouldRetrievePrimaryKeys(true);");                
+                method.addLine(queryIdentifier + ".setShouldRetrievePrimaryKeys(true);");
             }
             //returnChoice
             if (reportQuery.shouldReturnSingleAttribute()) {
-                method.addLine(queryIdentifier + ".setShouldReturnSingleAttribute(true);");                
+                method.addLine(queryIdentifier + ".setShouldReturnSingleAttribute(true);");
             } else if (reportQuery.shouldReturnSingleValue()) {
-                method.addLine(queryIdentifier + ".setShouldReturnSingleValue(true);");                
+                method.addLine(queryIdentifier + ".setShouldReturnSingleValue(true);");
             } else {
-                method.addLine(queryIdentifier + ".setShouldReturnSingleResult(true);");                
+                method.addLine(queryIdentifier + ".setShouldReturnSingleResult(true);");
             }
         }
-        
+
         // Query arguments.
         Iterator<String> argumentTypes = query.getArgumentTypeNames().iterator();
         for (Iterator arguments = query.getArguments().iterator(); arguments.hasNext();) {
@@ -1242,7 +1242,7 @@ public class ProjectClassGenerator {
         if (builderString == null) {
             builderString = "expBuilder" + String.valueOf(iteration);
             method.addLine("ExpressionBuilder " + builderString + " = " + queryIdentifier + ".getExpressionBuilder();");
-        }        
+        }
         return builderString;
     }
 
@@ -1251,9 +1251,9 @@ public class ProjectClassGenerator {
         StringWriter writer = new StringWriter();
         ExpressionJavaPrinter javaPrinter = new ExpressionJavaPrinter(builderString, writer, project.getDatasourceLogin().getPlatform());
         exp.printJava(javaPrinter);
-        method.addLine(queryIdentifier + attrString + writer.toString() + ");");             
+        method.addLine(queryIdentifier + attrString + writer.toString() + ");");
     }
-    
+
     protected void addReturningPolicyLines(NonreflectiveMethodDefinition method, ReturningPolicy policy) {
         if (policy.getFieldInfos().isEmpty()) {
             return;
@@ -1350,19 +1350,19 @@ public class ProjectClassGenerator {
     protected void addTypeConversionConverterLines(NonreflectiveMethodDefinition method, String converterName, TypeConversionConverter converter) {
         if (converter.getObjectClassName() != null) {
             // Bug 5170735 - if a conversion object class is an array type, we need to use different notation
-			// retrieve the component type from the converter's ocj
-			String arrayComponentType = Helper.getComponentTypeNameFromArrayString(converter.getObjectClassName());
-			if (arrayComponentType != null) {
-				method.addLine(converterName + ".setObjectClass(" + arrayComponentType + "[].class);");
-			} else {
-				method.addLine(converterName + ".setObjectClass(" + converter.getObjectClassName() + ".class);");
+            // retrieve the component type from the converter's ocj
+            String arrayComponentType = Helper.getComponentTypeNameFromArrayString(converter.getObjectClassName());
+            if (arrayComponentType != null) {
+                method.addLine(converterName + ".setObjectClass(" + arrayComponentType + "[].class);");
+            } else {
+                method.addLine(converterName + ".setObjectClass(" + converter.getObjectClassName() + ".class);");
             }
         }
         if (converter.getDataClassName() != null) {
             // Bug 5170735 - if a conversion data class is an array type, we need to use different notation
-			String arrayComponentType = Helper.getComponentTypeNameFromArrayString(converter.getDataClassName());
-        	if (arrayComponentType != null) {
-        		method.addLine(converterName + ".setDataClass(" + arrayComponentType + "[].class);");
+            String arrayComponentType = Helper.getComponentTypeNameFromArrayString(converter.getDataClassName());
+            if (arrayComponentType != null) {
+                method.addLine(converterName + ".setDataClass(" + arrayComponentType + "[].class);");
             } else {
                 method.addLine(converterName + ".setDataClass(" + converter.getDataClassName() + ".class);");
             }

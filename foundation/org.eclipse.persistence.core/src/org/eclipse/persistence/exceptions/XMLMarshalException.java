@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -54,7 +54,7 @@ public class XMLMarshalException extends ValidationException {
     public static final int NO_DESCRIPTOR_FOUND = 25023;
     public static final int ERROR_INSTANTIATING_UNMAPPED_CONTENTHANDLER = 25024;
     public static final int UNMAPPED_CONTENTHANDLER_DOESNT_IMPLEMENT = 25025;
-    public static final int OBJ_NOT_FOUND_IN_CACHE = 25026; 
+    public static final int OBJ_NOT_FOUND_IN_CACHE = 25026;
     public static final int NO_ATTACHMENT_UNMARSHALLER_SET = 25027;
     public static final int UNKNOWN_XSI_TYPE = 25028;
     public static final int SUBCLASS_ATTEMPTED_TO_OVERRIDE_NAMESPACE_DECLARATION = 25029;
@@ -311,7 +311,7 @@ public class XMLMarshalException extends ValidationException {
         exception.setInternalException(nestedException);
         return exception;
     }
-    
+
     public static XMLMarshalException objectNotFoundInCache(String nodeName) {
         Object[] args = { nodeName };
 
@@ -319,21 +319,21 @@ public class XMLMarshalException extends ValidationException {
         exception.setErrorCode(OBJ_NOT_FOUND_IN_CACHE);
         return exception;
     }
-    
+
     public static XMLMarshalException noAttachmentUnmarshallerSet(String cid) {
         Object[] args = { cid };
-        
+
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, NO_ATTACHMENT_UNMARSHALLER_SET, args));
         exception.setErrorCode(NO_ATTACHMENT_UNMARSHALLER_SET);
         return exception;
     }
-    
+
     /**
      * @since EclipseLink 2.5.0
      */
     public static XMLMarshalException unknownXsiTypeValue(String xsiType, Mapping mapping) {
         Object[] args = {xsiType, mapping};
-        
+
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, UNKNOWN_XSI_TYPE, args));
         exception.setErrorCode(UNKNOWN_XSI_TYPE);
         return exception;
@@ -341,7 +341,7 @@ public class XMLMarshalException extends ValidationException {
 
     public static XMLMarshalException unknownXsiTypeValue(String xsiType, DatabaseMapping mapping) {
         Object[] args = {xsiType, mapping};
-        
+
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, UNKNOWN_XSI_TYPE, args));
         exception.setErrorCode(UNKNOWN_XSI_TYPE);
         return exception;
@@ -354,22 +354,22 @@ public class XMLMarshalException extends ValidationException {
         exception.setErrorCode(SUBCLASS_ATTEMPTED_TO_OVERRIDE_NAMESPACE_DECLARATION);
         return exception;
     }
-    
+
     public static XMLMarshalException errorInvokingPrefixMapperMethod(String methodName, Object prefixMapper) {
         Object[] args = {methodName, prefixMapper};
-        
+
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, ERROR_INVOKING_NAMESPACE_PREFIX_MAPPER, args));
         exception.setErrorCode(ERROR_INVOKING_NAMESPACE_PREFIX_MAPPER);
         return exception;
     }
-    
+
     public static XMLMarshalException errorProcessingPrefixMapper(String methodName, Object prefixMapper) {
         Object[] args = {methodName, prefixMapper};
-        
+
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, ERROR_PROCESSING_PREFIX_MAPPER, args));
         exception.setErrorCode(ERROR_PROCESSING_PREFIX_MAPPER);
         return exception;
-    }    
+    }
 
     public static XMLMarshalException errorInvokingCharacterEscapeHandler(String methodName, Object handler, Throwable nestedException) {
         Object[] args = {methodName, handler};
@@ -416,7 +416,7 @@ public class XMLMarshalException extends ValidationException {
         exception.setErrorCode(OBJECT_CYCLE_DETECTED);
         return exception;
     }
-    
+
     public static XMLMarshalException unsupportedMediaTypeForPlatform() {
         Object[] args = { };
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, PLATFORM_NOT_SUPPORTED_WITH_JSON_MEDIA_TYPE, args));
@@ -458,14 +458,14 @@ public class XMLMarshalException extends ValidationException {
         exception.setErrorCode(MISSING_ID_FOR_IDREF);
         return exception;
     }
-    
+
     public static XMLMarshalException invalidAttributeGroupName(String groupName, String className) {
         Object[] args = {groupName, className};
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, INVALID_ATTRIBUTE_GROUP_NAME, args));
         exception.setErrorCode(INVALID_ATTRIBUTE_GROUP_NAME);
         return exception;
     }
-    
+
     public static XMLMarshalException nullValueNotAllowed(String variableName, String className) {
         Object[] args = {variableName, className};
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, NULL_VALUE_NOT_ALLOWED_FOR_VARIABLE, args));

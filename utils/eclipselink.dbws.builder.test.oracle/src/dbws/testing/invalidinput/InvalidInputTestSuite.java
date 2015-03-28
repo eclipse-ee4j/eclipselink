@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,10 +30,10 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class InvalidInputTestSuite extends DBWSTestSuite {
-	private static String WARNING_MSG_1 = "WARNING: No tables were found matching the following:  [%.TABLETYPE_INVALID] [SOMEUSER.TABLETYPE_INVALID2]";
-	private static String WARNING_MSG_2 = "WARNING: No procedures were found matching the following:  [CREATE_SOMETHING] [COMPLEXPKG3.CREATE_INVALID]";
-	
-	static final String CREATE_COMPLEXPKG3_PACKAGE =
+    private static String WARNING_MSG_1 = "WARNING: No tables were found matching the following:  [%.TABLETYPE_INVALID] [SOMEUSER.TABLETYPE_INVALID2]";
+    private static String WARNING_MSG_2 = "WARNING: No procedures were found matching the following:  [CREATE_SOMETHING] [COMPLEXPKG3.CREATE_INVALID]";
+
+    static final String CREATE_COMPLEXPKG3_PACKAGE =
         "CREATE OR REPLACE PACKAGE COMPLEXPKG3 AS" +
             "\nTYPE TAB3 IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;" +
         "\nEND COMPLEXPKG3;";
@@ -67,9 +67,9 @@ public class InvalidInputTestSuite extends DBWSTestSuite {
             ddlDebug = true;
         }
         if (ddlCreate) {
-        	runDdl(conn, CREATE_COMPLEXPKG3_PACKAGE, ddlDebug);
+            runDdl(conn, CREATE_COMPLEXPKG3_PACKAGE, ddlDebug);
         }
-        
+
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -89,22 +89,22 @@ public class InvalidInputTestSuite extends DBWSTestSuite {
                   "</property>" +
               "</properties>" +
               "<procedure " +
-		          "name=\"Blah\" " +
-		          "procedurePattern=\"CREATE_SOMETHING\" " +
-		      "/>" +
+                  "name=\"Blah\" " +
+                  "procedurePattern=\"CREATE_SOMETHING\" " +
+              "/>" +
               "<plsql-procedure " +
-		          "name=\"Bah\" " +
-		          "catalogPattern=\"COMPLEXPKG3\" " +
-		          "procedurePattern=\"CREATE_INVALID\" " +
-		      "/>" +
+                  "name=\"Bah\" " +
+                  "catalogPattern=\"COMPLEXPKG3\" " +
+                  "procedurePattern=\"CREATE_INVALID\" " +
+              "/>" +
               "<table " +
-	              "schemaPattern=\"%\" " +
-	              "tableNamePattern=\"TABLETYPE_INVALID\" " +
-	          "/>" +
+                  "schemaPattern=\"%\" " +
+                  "tableNamePattern=\"TABLETYPE_INVALID\" " +
+              "/>" +
               "<table " +
-	              "schemaPattern=\"SOMEUSER\" " +
-	              "tableNamePattern=\"TABLETYPE_INVALID2\" " +
-	          "/>" +
+                  "schemaPattern=\"SOMEUSER\" " +
+                  "tableNamePattern=\"TABLETYPE_INVALID2\" " +
+              "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".", true, false);
@@ -113,16 +113,16 @@ public class InvalidInputTestSuite extends DBWSTestSuite {
     @AfterClass
     public static void tearDown() {
         if (ddlDrop) {
-        	runDdl(conn, DROP_COMPLEXPKG3_PACKAGE, ddlDebug);
+            runDdl(conn, DROP_COMPLEXPKG3_PACKAGE, ddlDebug);
         }
     }
 
     @Test
     public void testWarningLogs() {
-		assertTrue("No WARNINGs logged", dbwsLogger.hasWarnings());
-		List<String> warnings = dbwsLogger.getWarnings();
-		assertTrue("Expected [2] WARNING, but was [" + warnings.size() + "]", warnings.size() == 2);
-		assertTrue("Expected WARNING message '" + WARNING_MSG_1 + "', but was '" + warnings.get(0) + "'", WARNING_MSG_1.equals(warnings.get(0)));   
-		assertTrue("Expected WARNING message '" + WARNING_MSG_2 + "', but was '" + warnings.get(1) + "'", WARNING_MSG_2.equals(warnings.get(1)));   
+        assertTrue("No WARNINGs logged", dbwsLogger.hasWarnings());
+        List<String> warnings = dbwsLogger.getWarnings();
+        assertTrue("Expected [2] WARNING, but was [" + warnings.size() + "]", warnings.size() == 2);
+        assertTrue("Expected WARNING message '" + WARNING_MSG_1 + "', but was '" + warnings.get(0) + "'", WARNING_MSG_1.equals(warnings.get(0)));
+        assertTrue("Expected WARNING message '" + WARNING_MSG_2 + "', but was '" + warnings.get(1) + "'", WARNING_MSG_2.equals(warnings.get(1)));
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,12 +33,12 @@ public class DatahandlerWithXMLTestCases extends DatahandlerWithAnnotationsTestC
         super(name);
         //useLogging = true;
     }
-    
+
     protected TypeMappingInfo[] getTypeMappingInfos()throws Exception {
         if(typeMappingInfos == null) {
             typeMappingInfos = new TypeMappingInfo[1];
             TypeMappingInfo tpi = new TypeMappingInfo();
-            tpi.setXmlTagName(new QName("someUri","testTagname"));      
+            tpi.setXmlTagName(new QName("someUri","testTagname"));
             tpi.setElementScope(ElementScope.Global);
             // set annotations - should be ignored since XML wins
             Annotation[] annotations = new Annotation[2];
@@ -46,9 +46,9 @@ public class DatahandlerWithXMLTestCases extends DatahandlerWithAnnotationsTestC
             annotations[1] = getClass().getField("xmlAttachementRefField").getAnnotations()[0];
             tpi.setAnnotations(annotations);
             tpi.setXmlElement(getXmlElement("<xml-element xml-mime-type=\"image/jpeg\" xml-attachment-ref=\"true\"/>"));
-            tpi.setType(DataHandler.class);         
-            typeMappingInfos[0] = tpi;          
+            tpi.setType(DataHandler.class);
+            typeMappingInfos[0] = tpi;
         }
-        return typeMappingInfos;        
+        return typeMappingInfos;
     }
 }

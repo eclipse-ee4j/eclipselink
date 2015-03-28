@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,7 @@ package javax.ejb;
 /**
  * The CreateException exception must be included in the throws clauses of
  * all create methods defined in an enterprise bean's home or local home
- * interface. 
+ * interface.
  *
  * <p> This exception is used as a standard application-level exception to
  * report a failure to create an EJB object or local object.
@@ -56,14 +56,14 @@ public class CreateException extends java.lang.Exception {
 
     /**
      * Constructs a CreateException with no detail message.
-     */  
+     */
     public CreateException() {
     }
 
     /**
      * Constructs a CreateException with the specified
      * detail message.
-     */  
+     */
     public CreateException(String message) {
         super(message);
     }

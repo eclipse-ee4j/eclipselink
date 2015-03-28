@@ -9,13 +9,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "ADV_ENTYC")
 public class EntyC {
-    
+
     @Id
     @GeneratedValue
     protected int id;
-    
+
     protected String name;
-    
+
     @OneToOne(optional=false, mappedBy="entyC")
     protected EntyA entyA;
     /**

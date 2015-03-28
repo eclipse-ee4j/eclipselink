@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -58,18 +58,18 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.NullListIterato
 
 final class CollectionOrderingPanel extends AbstractSubjectPanel
 {
-    
-	public CollectionOrderingPanel(ValueModel subjectHolder, WorkbenchContextHolder contextHolder) {
-		super(subjectHolder, contextHolder);
-	}
-    
+
+    public CollectionOrderingPanel(ValueModel subjectHolder, WorkbenchContextHolder contextHolder) {
+        super(subjectHolder, contextHolder);
+    }
+
     MWCollectionMapping getCollectionMapping() {
         return (MWCollectionMapping) getSubjectHolder().getValue();
     }
-    
+
     protected void initializeLayout() {
         GridBagConstraints constraints = new GridBagConstraints();
-        
+
         AddRemoveTablePanel orderingsPanel = buildOrderingsTablePanel();
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -82,7 +82,7 @@ final class CollectionOrderingPanel extends AbstractSubjectPanel
         constraints.insets = new Insets(5, 5, 5, 5);
         add(orderingsPanel, constraints);
     }
-    
+
     private AddRemoveTablePanel buildOrderingsTablePanel() {
         AddRemoveTablePanel tablePanel = new AddRemoveTablePanel(
                 getApplicationContext(),
@@ -93,10 +93,10 @@ final class CollectionOrderingPanel extends AbstractSubjectPanel
                 buildOrderingSelector());
 
         updateTableColumns((JTable) tablePanel.getComponent());
-       
+
         return tablePanel;
     }
-    
+
     private void updateTableColumns(JTable table) {
         int rowHeight = 0;
 
@@ -105,7 +105,7 @@ final class CollectionOrderingPanel extends AbstractSubjectPanel
         column.setCellRenderer(orderingRenderer);
         column.setCellEditor(new TableCellEditorAdapter(this.buildOrderingComboBoxRenderer()));
         rowHeight = Math.max(rowHeight, orderingRenderer.getPreferredHeight());
-        
+
         column = table.getColumnModel().getColumn(OrderingsColumnAdapter.QUERY_KEY_COLUMN);
         ComboBoxTableCellRenderer queryKeyRenderer = this.buildQueryKeyComboBoxRenderer();
         column.setCellRenderer(queryKeyRenderer);
@@ -113,20 +113,20 @@ final class CollectionOrderingPanel extends AbstractSubjectPanel
 
         table.setRowHeight(rowHeight);
     }
-    
+
     private UpDownAdapter buildTablePanelAdapter() {
-        return new UpDownAdapter() {   
+        return new UpDownAdapter() {
             public void removeSelectedItems(ObjectListSelectionModel listSelectionModel) {
                 Object[] selectedValues = listSelectionModel.getSelectedValues();
                 for (int i = 0; i < selectedValues.length; i++) {
                    getCollectionMapping().removeOrdering((MWCollectionOrdering) selectedValues[i]);
-                }        
+                }
             }
-        
+
             public void addNewItem(ObjectListSelectionModel listSelectionModel) {
                 if (getCollectionMapping().getReferenceDescriptor() != null) {
                     Collection queryKeys = getCollectionMapping().getReferenceDescriptor().getAllQueryKeysIncludingInherited();
-                    
+
                     if (queryKeys.size() == 0) {
                         getCollectionMapping().addOrdering(null);
                     }
@@ -136,72 +136,72 @@ final class CollectionOrderingPanel extends AbstractSubjectPanel
                 } else {
                     getCollectionMapping().addOrdering(null);
                 }
-        
+
             }
-        
+
             public void moveItemsDown(Object[] items) {
                 for (int i = 0; i < items.length; i++) {
                     getCollectionMapping().moveOrderingDown((MWCollectionOrdering) items[i]);
-                }        
+                }
             }
-        
+
             public void moveItemsUp(Object[] items) {
                 for (int i = 0; i < items.length; i++) {
                     getCollectionMapping().moveOrderingUp((MWCollectionOrdering) items[i]);
-                } 
+                }
             }
-        
+
         };
     }
-    
+
     private ListValueModel buildOrderingsListModel() {
         return new ListAspectAdapter(getSubjectHolder(), MWCollectionMapping.ORDERINGS_LIST) {
             protected ListIterator getValueFromSubject() {
                 return ((MWCollectionMapping) this.subject).orderings();
             }
-            
+
             protected int sizeFromSubject() {
                 return ((MWCollectionMapping) this.subject).orderingsSize();
             }
         };
     }
-    
+
     private ColumnAdapter buildOrderingColumnAdapter() {
         return new OrderingsColumnAdapter(resourceRepository());
     }
-    
-    private ComboBoxModel buildOrderingComboBoxModel() {    
+
+    private ComboBoxModel buildOrderingComboBoxModel() {
         return new DefaultComboBoxModel(new Object[] {
                     resourceRepository().getString("ASCENDING_OPTION"),
-                    resourceRepository().getString("DESCENDING_OPTION")});  
+                    resourceRepository().getString("DESCENDING_OPTION")});
     }
-    
+
     private ComboBoxTableCellRenderer buildOrderingComboBoxRenderer() {
         return new ComboBoxTableCellRenderer(this.buildOrderingComboBoxModel());
     }
-    
+
     private ComboBoxTableCellRenderer buildQueryKeyComboBoxRenderer() {
         return new ComboBoxTableCellRenderer(this.buildQueryKeyComboBoxModel(), buildQueryListCellRenderer());
     }
-    
+
     private ListCellRenderer buildQueryListCellRenderer(){
         return new AdaptableListCellRenderer(new QueryKeyCellRendererAdapter(resourceRepository()));
     }
-    
+
     private NodeSelector buildOrderingSelector() {
         return new NodeSelector() {
             public void selectNodeFor(Object item) {
                 RelationalProjectNode projectNode = (RelationalProjectNode) navigatorSelectionModel().getSelectedProjectNodes()[0];
-                projectNode.selectQueryKey(((MWCollectionOrdering) item).getQueryKey(), getWorkbenchContext());       
-             }       
+                projectNode.selectQueryKey(((MWCollectionOrdering) item).getQueryKey(), getWorkbenchContext());
+             }
         };
     }
-    
-    
+
+
     // ********** classes **********
 
     private static class OrderingsColumnAdapter implements ColumnAdapter {
-        
+
         ResourceRepository resourceRepository;
         public static final int QUERY_KEY_COLUMN = 0;
         public static final int ORDER_COLUMN = 1;
@@ -216,7 +216,7 @@ final class CollectionOrderingPanel extends AbstractSubjectPanel
             super();
             this.resourceRepository = repository;
         }
-        
+
         private PropertyValueModel buildQueryKeyAdapter(MWCollectionOrdering ordering) {
             PropertyValueModel adapter = new PropertyAspectAdapter(MWCollectionOrdering.QUERY_KEY_PROPERTY, ordering) {
                 protected Object getValueFromSubject() {
@@ -226,13 +226,13 @@ final class CollectionOrderingPanel extends AbstractSubjectPanel
                     ((MWCollectionOrdering) this.subject).setQueryKey((MWQueryKey) value);
                 }
             };
-			return new ValuePropertyPropertyValueModelAdapter(adapter, MWQueryKey.NAME_PROPERTY);
+            return new ValuePropertyPropertyValueModelAdapter(adapter, MWQueryKey.NAME_PROPERTY);
         }
-        
+
         private PropertyValueModel buildOrderAdapter(MWCollectionOrdering ordering) {
             return new TransformationPropertyValueModel(
                     new PropertyAspectAdapter(MWCollectionOrdering.ASCENDING_PROPERTY, ordering) {
-                        protected Object getValueFromSubject() {  
+                        protected Object getValueFromSubject() {
                             return Boolean.valueOf(((MWCollectionOrdering) this.subject).isAscending());
                         }
                         protected void setValueOnSubject(Object value) {
@@ -277,7 +277,7 @@ final class CollectionOrderingPanel extends AbstractSubjectPanel
                 default:                    return Object.class;
             }
         }
-        
+
         public int getColumnCount() {
             return COLUMN_COUNT;
         }
@@ -291,20 +291,20 @@ final class CollectionOrderingPanel extends AbstractSubjectPanel
         }
     }
 
-	private CachingComboBoxModel buildQueryKeyComboBoxModel() {
-		return new IndirectComboBoxModel(new SimplePropertyValueModel(), this.getSubjectHolder()) {
-			protected ListIterator listValueFromSubject(Object subject) {
-				return CollectionOrderingPanel.this.orderedQueryKeyChoices((MWCollectionMapping) subject);
-			}
-		};
-	}
-	
-	ListIterator orderedQueryKeyChoices(MWCollectionMapping collectionMapping) {
-		MWRelationalDescriptor referenceDescriptor = (MWRelationalDescriptor) collectionMapping.getReferenceDescriptor();
-		if (referenceDescriptor != null) {
-			return CollectionTools.sort(referenceDescriptor.allQueryKeysIncludingInherited()).listIterator();
-		}
-		return NullListIterator.instance();
-	}
+    private CachingComboBoxModel buildQueryKeyComboBoxModel() {
+        return new IndirectComboBoxModel(new SimplePropertyValueModel(), this.getSubjectHolder()) {
+            protected ListIterator listValueFromSubject(Object subject) {
+                return CollectionOrderingPanel.this.orderedQueryKeyChoices((MWCollectionMapping) subject);
+            }
+        };
+    }
+
+    ListIterator orderedQueryKeyChoices(MWCollectionMapping collectionMapping) {
+        MWRelationalDescriptor referenceDescriptor = (MWRelationalDescriptor) collectionMapping.getReferenceDescriptor();
+        if (referenceDescriptor != null) {
+            return CollectionTools.sort(referenceDescriptor.allQueryKeysIncludingInherited()).listIterator();
+        }
+        return NullListIterator.instance();
+    }
 
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -23,7 +23,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * Record for handling simple root elements that have a single text child node, 
+ * Record for handling simple root elements that have a single text child node,
  * and are being unmarshalled to a primitive wrapper object.  The characters
  * method will be used to gather the text to be converted.
  */
@@ -107,7 +107,7 @@ public class XMLRootRecord extends UnmarshalRecordImpl {
     @Override
     public void initializeRecord(Mapping selfRecordMapping) throws SAXException {
     }
-   	
+
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         // set the root element's prefix qualified name and namespace prefix

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -61,7 +61,7 @@ public class SDOXMLHelperDatatypeQNameTestCases extends SDOXMLHelperDatatypeTest
 
     @Override
     protected String getSchemaNameForUserDefinedType() {
-    	System.out.println(getSchemaLocation() + "myQName.xsd");
+        System.out.println(getSchemaLocation() + "myQName.xsd");
         return getSchemaLocation() + "myQName.xsd";
     }
 
@@ -116,7 +116,7 @@ public class SDOXMLHelperDatatypeQNameTestCases extends SDOXMLHelperDatatypeTest
         FileInputStream inputStream = new FileInputStream("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/myQName-2.xml");
         XMLDocument document = xmlHelper.load(inputStream, null, null);
         verifyAfterLoad(document);
-        
+
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
@@ -124,7 +124,7 @@ public class SDOXMLHelperDatatypeQNameTestCases extends SDOXMLHelperDatatypeTest
 
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);
-        
+
         compareXML("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/myQName-2.xml", result.getOutputStream().toString());
     }
 
@@ -134,7 +134,7 @@ public class SDOXMLHelperDatatypeQNameTestCases extends SDOXMLHelperDatatypeTest
         FileInputStream inputStream = new FileInputStream("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/myQName-2.xml");
         XMLDocument document = xmlHelper.load(inputStream, null, null);
         verifyAfterLoad(document);
-        
+
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
@@ -142,7 +142,7 @@ public class SDOXMLHelperDatatypeQNameTestCases extends SDOXMLHelperDatatypeTest
 
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);
-        
+
         compareXML("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/myQName-2.xml", result.getOutputStream().toString());
     }
 

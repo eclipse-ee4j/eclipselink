@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.validation;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -53,7 +53,7 @@ public class TableIsNotPresentInDatabaseTest extends ExceptionTest {
             RelationalDescriptor descriptor = descriptor();
             DatabaseTable table = descriptor.getTables().lastElement(); //retrieving address table
 
-            //the following causes the correct error to occure. 
+            //the following causes the correct error to occure.
             table.setName("Bad_Table"); //change name of table to cause error
             getSession().getIntegrityChecker().getTables().remove(table); //ensure table does not exist
             //   descriptor.getTables().remove(table);//if you remove it from this vector, it will not check it.
@@ -79,8 +79,8 @@ public class TableIsNotPresentInDatabaseTest extends ExceptionTest {
         descriptor.setIdentityMapSize(100);
         descriptor.useRemoteFullIdentityMap();
         descriptor.setRemoteIdentityMapSize(100);
-        //	descriptor.setSequenceNumberFieldName("EMP_ID");
-        //	descriptor.setSequenceNumberName("EMP_SEQ");
+        //    descriptor.setSequenceNumberFieldName("EMP_ID");
+        //    descriptor.setSequenceNumberName("EMP_SEQ");
 
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
         idMapping.setAttributeName("id");

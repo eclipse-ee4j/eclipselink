@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,12 +20,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TestSuperclass {
 
-	public String bar = "field";
-	
-	public String getBar() {
-		return "property";
-	}
-	
-	public void setBar(String bar) {}
-	
+    public String bar = "field";
+
+    public String getBar() {
+        return "property";
+    }
+
+    public void setBar(String bar) {}
+
 }

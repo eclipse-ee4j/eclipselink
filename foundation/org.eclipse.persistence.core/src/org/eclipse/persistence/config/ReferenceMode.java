@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Gordon Yorke - ER 214661 - VM Managed Entity Detachment
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.config;
 
 /**
@@ -17,7 +17,7 @@ package org.eclipse.persistence.config;
  * What type of Referenes EclipseLink will use when referencing Entities
  * within the Persistence Context / UnitOfWork.  Depending on the configured
  * ReferenceMode some Entities may be garbage collected.
- * 
+ *
  * @author Gordon
  *
  */
@@ -28,7 +28,7 @@ public enum ReferenceMode {
      * released or closed.
      */
     HARD,
-    
+
     /**
      * References to Objects that support active attribute change tracking
      * (enabled through weaving or by the developer)will be held by weak
@@ -45,7 +45,7 @@ public enum ReferenceMode {
      * {@link org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy}
      */
     WEAK,
-    
+
     /**
      * Same as weak reference except Objects that can not be changed
      * tracked (Deferred Change Detection) will not be prevented from being
@@ -54,10 +54,10 @@ public enum ReferenceMode {
      * When a change is made to a change tracked object that object
      * is moved to a hard reference and will not be available for GC until
      * flushed. New and removed objects are also held by hard references until
-     * flush.. 
+     * flush..
      */
     FORCE_WEAK
-    
+
 
 
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
 import java.util.HashMap;
@@ -25,8 +25,8 @@ import static javax.persistence.CascadeType.*;
 @Entity
 @Table(name="CMP3_CUSTOMER")
 @NamedQuery(
-	name="findAllCustomers",
-	query="SELECT OBJECT(thecust) FROM Customer thecust"
+    name="findAllCustomers",
+    query="SELECT OBJECT(thecust) FROM Customer thecust"
 )
 @NamedNativeQueries(value={
     @NamedNativeQuery(name="findAllSQLCustomers",
@@ -44,60 +44,60 @@ public class Customer implements java.io.Serializable{
     private CustomerCollection controlledCustomers = new CustomerCollection();
     private CustomerCollection controlledCustomers2 = new CustomerCollection();
     private Map<ServiceCall, CustomerServiceRepresentative> customerServiceInteractions = new HashMap<ServiceCall, CustomerServiceRepresentative>();
-        
+
     public Customer() {}
 
     @Id
     @GeneratedValue(strategy=TABLE, generator="CUSTOMER_TABLE_GENERATOR")
     @TableGenerator(
-        name="CUSTOMER_TABLE_GENERATOR", 
-        table="CMP3_CUSTOMER_SEQ", 
-        pkColumnName="SEQ_NAME", 
+        name="CUSTOMER_TABLE_GENERATOR",
+        table="CMP3_CUSTOMER_SEQ",
+        pkColumnName="SEQ_NAME",
         valueColumnName="SEQ_COUNT",
         pkColumnValue="CUST_SEQ"
     )
     @Column(name="CUST_ID")
-    public Integer getCustomerId() { 
-        return customerId; 
+    public Integer getCustomerId() {
+        return customerId;
     }
-    
-    public void setCustomerId(Integer id) { 
-        this.customerId = id; 
+
+    public void setCustomerId(Integer id) {
+        this.customerId = id;
     }
 
     @Version
     @Column(name="CUST_VERSION")
-    public int getVersion() { 
-        return version; 
+    public int getVersion() {
+        return version;
     }
-    
+
     protected void setVersion(int version) {
             this.version = version;
     }
 
     public String getCity() {
-        return city; 
-    }
-    
-    public void setCity(String aCity) { 
-        this.city = aCity; 
+        return city;
     }
 
-    public String getName() { 
-        return name; 
+    public void setCity(String aCity) {
+        this.city = aCity;
     }
-    
-    public void setName(String aName) { 
-        this.name = aName; 
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String aName) {
+        this.name = aName;
     }
 
     @OneToMany(targetEntity=Order.class, cascade=ALL, mappedBy="customer")
-    public Collection getOrders() { 
-        return orders; 
+    public Collection getOrders() {
+        return orders;
     }
-    
-    public void setOrders(Collection<Order> newValue) { 
-        this.orders = newValue; 
+
+    public void setOrders(Collection<Order> newValue) {
+        this.orders = newValue;
     }
 
     public void addOrder(Order anOrder) {
@@ -108,36 +108,36 @@ public class Customer implements java.io.Serializable{
     public void removeOrder(Order anOrder) {
         getOrders().remove(anOrder);
     }
-    
+
     //bug 236275: changed to test collection implementations with eagerly fetched mappings
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="CMP3_CUSTOMER_CUSTOMER")
     public CustomerCollection<Customer> getCCustomers() {
         return controlledCustomers;
     }
-    
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="CMP3_CUSTOMER_CUSTOMER2")
     public CustomerCollection<Customer> getCCustomers2() {
         return controlledCustomers2;
     }
-    
+
     public void setCCustomers(CustomerCollection controlledCustomers) {
         this.controlledCustomers = controlledCustomers;
     }
-    
+
     public void setCCustomers2(CustomerCollection controlledCustomers) {
         this.controlledCustomers2 = controlledCustomers;
     }
-    
+
     public void addCCustomer(Customer controlledCustomer) {
         getCCustomers().add(controlledCustomer);
     }
-    
+
     public void addCCustomer2(Customer controlledCustomer) {
         getCCustomers2().add(controlledCustomer);
     }
-    
+
     @ManyToMany(cascade={ALL})
     @MapKeyClass(ServiceCall.class)
     @JoinTable(
@@ -150,16 +150,16 @@ public class Customer implements java.io.Serializable{
     public Map<ServiceCall, CustomerServiceRepresentative> getCSInteractions(){
         return customerServiceInteractions;
     }
-    
+
     public void setCSInteractions(Map<ServiceCall, CustomerServiceRepresentative> interactions){
         this.customerServiceInteractions = interactions;
     }
-    
+
     public void addCSInteraction(ServiceCall call, CustomerServiceRepresentative rep){
         customerServiceInteractions.put(call, rep);
         rep.addCustomer(this);
     }
-    
+
     public void removeCSInteraction(ServiceCall call){
         customerServiceInteractions.remove(call);
     }

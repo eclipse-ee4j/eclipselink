@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,8 +26,8 @@ import org.eclipse.persistence.internal.xr.Result;
 /**
  * Model class for a batch SQL operation, i.e. two or more SQL statements
  * that are to be executed against the database in order.  The main
- * responsibilities of this model will be to hold the List of  SQL 
- * statements and build the BatchQueryOperation instance that will 
+ * responsibilities of this model will be to hold the List of  SQL
+ * statements and build the BatchQueryOperation instance that will
  * be responsible for executing the SQL statements.
  */
 public class BatchSQLOperationModel extends OperationModel {
@@ -40,16 +40,16 @@ public class BatchSQLOperationModel extends OperationModel {
 
     /**
      * Get the list of SQL statements to be executed.
-     * 
+     *
      * @return List of SQL statements to be executed
      */
     public List<String> getBatchSql() {
         return batchSql;
     }
-    
+
     /**
      * Set the list of SQL statements to be executed.
-     * 
+     *
      * @param sql List of SQL statements to be executed
      */
     public void setBatchSql(List<String> sql) {
@@ -58,10 +58,10 @@ public class BatchSQLOperationModel extends OperationModel {
 
     /**
      * Convenience method for adding a single SQL statement to the
-     * list of statements to be executed.  Note that the list 
+     * list of statements to be executed.  Note that the list
      * will be created if necessary.
-     * 
-     * @param sql SQL statement to be added to the list of 
+     *
+     * @param sql SQL statement to be added to the list of
      *            statements to be executed
      */
     public void addBatchSql(String sql) {
@@ -73,8 +73,8 @@ public class BatchSQLOperationModel extends OperationModel {
 
     /**
      * Indicates that this is a batch SQL operation.
-     * 
-     * @Override 
+     *
+     * @Override
      */
     public boolean isBatchSQLOperation() {
         return true;
@@ -83,16 +83,16 @@ public class BatchSQLOperationModel extends OperationModel {
     /**
      * Build the BatchQueryOperation instance that will be responsible
      * for executing the SQL statements.
-     * 
-     * @Override 
+     *
+     * @Override
      */
     public void buildOperation(DBWSBuilder builder) {
         super.buildOperation(builder);
-        
+
         BatchQueryOperation batchQueryOp = new BatchQueryOperation();
         batchQueryOp.setName(name);
         batchQueryOp.setBatchSql(batchSql);
-        
+
         Result result = new Result();
         result.setType(new QName(SCHEMA_URL, "int", SCHEMA_PREFIX)); // result 0, 1
         batchQueryOp.setResult(result);

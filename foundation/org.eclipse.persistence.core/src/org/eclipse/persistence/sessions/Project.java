@@ -1,39 +1,39 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     
- *     04/30/2009-2.0 Michael O'Brien 
+ *
+ *     04/30/2009-2.0 Michael O'Brien
  *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
- *         Add Set<RelationalDescriptor> mappedSuperclassDescriptors 
- *         to support the Metamodel API 
- *     06/17/2009-2.0 Michael O'Brien 
+ *         Add Set<RelationalDescriptor> mappedSuperclassDescriptors
+ *         to support the Metamodel API
+ *     06/17/2009-2.0 Michael O'Brien
  *       - 266912: change mappedSuperclassDescriptors Set to a Map
  *          keyed on MetadataClass - avoiding the use of a hashCode/equals
  *          override on RelationalDescriptor, but requiring a contains check prior to a put
- *     09/23/2009-2.0 Michael O'Brien 
- *       - 266912: Add metamodelIdClassMap to store IdClass types for exclusive 
- *         use by the IdentifiableTypeImpl class in the JPA 2.0 Metamodel API     
- *     06/30/2011-2.3.1 Guy Pelletier 
- *       - 341940: Add disable/enable allowing native queries 
- *     09/09/2011-2.3.1 Guy Pelletier 
+ *     09/23/2009-2.0 Michael O'Brien
+ *       - 266912: Add metamodelIdClassMap to store IdClass types for exclusive
+ *         use by the IdentifiableTypeImpl class in the JPA 2.0 Metamodel API
+ *     06/30/2011-2.3.1 Guy Pelletier
+ *       - 341940: Add disable/enable allowing native queries
+ *     09/09/2011-2.3.1 Guy Pelletier
  *       - 356197: Add new VPD type to MultitenantType
- *     09/14/2011-2.3.1 Guy Pelletier 
+ *     09/14/2011-2.3.1 Guy Pelletier
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     14/05/2012-2.4 Guy Pelletier   
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- *     31/05/2012-2.4 Guy Pelletier  
+ *     31/05/2012-2.4 Guy Pelletier
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
- *     08/11/2012-2.5 Guy Pelletier  
+ *     08/11/2012-2.5 Guy Pelletier
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
@@ -72,7 +72,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected Login datasourceLogin;
     protected Map<Class, ClassDescriptor> descriptors;
     protected List<ClassDescriptor> orderedDescriptors;
-    
+
     // Currently only one is supported.
     protected MultitenantPolicy multitenantPolicy;
 
@@ -90,7 +90,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected boolean hasGenericHistorySupport;
     /** Cache if any descriptor is using ProxyIndirection. (set during initialization */
     protected boolean hasProxyIndirection;
-    
+
     /** This a collection of 'maps' that allow users to map custom SQL to query results */
     protected Map<String, SQLResultSetMapping> sqlResultSetMappings;
 
@@ -99,27 +99,27 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /** Define the default setting for configuring if dates and calendars are mutable. */
     protected boolean defaultTemporalMutable = false;
-    
+
     /** Indicates whether there is at least one descriptor that has at least on mapping that
-     *  require a call on deleted objects to update change sets. 
+     *  require a call on deleted objects to update change sets.
      */
     protected transient boolean hasMappingsPostCalculateChangesOnDeleted = false;
-    
+
     /** Default value for ClassDescriptor.identityMapClass. */
     protected Class defaultIdentityMapClass = AbstractIdentityMap.getDefaultIdentityMapClass();
-    
+
     /** Default value for ClassDescriptor.identityMapSize. */
     protected int defaultIdentityMapSize = 100;
-    
+
     /** Default value for ClassDescriptor.isIsolated. */
     protected CacheIsolationType defaultCacheIsolation;
-    
+
     /** Default value for query caching options for all named queries. */
     protected QueryResultsCachePolicy defaultQueryResultsCachePolicy;
 
     /** Default value for ClassDescriptor.idValidation. */
     protected IdValidation defaultIdValidation;
-    
+
     /** List of queries - once Project is initialized, these are copied to the Session. */
     protected List<DatabaseQuery> queries;
 
@@ -128,20 +128,20 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /** List of queries from JPA that need special processing before execution. */
     protected List<DatabaseQuery> jpaQueries;
-    
-    /** List of queries from JPA that may special processing and handling before execution. */ 
+
+    /** List of queries from JPA that may special processing and handling before execution. */
     protected List<DatabaseQuery> jpaTablePerTenantQueries;
 
     /** Flag that allows native queries or not */
     protected boolean allowNativeSQLQueries = true;
-    
+
     /** Flag that allows DDL generation of table per tenant multitenant descriptors */
     protected boolean allowTablePerMultitenantDDLGeneration = false;
-    
+
     /**
      * Mapped Superclasses (JPA 2) collection of parent non-relational descriptors keyed on MetadataClass
      * without creating a compile time dependency on JPA.
-     * The descriptor values of this map must not be replaced by a put() so that the 
+     * The descriptor values of this map must not be replaced by a put() so that the
      * mappings on the initial descriptor are not overwritten.<p>
      * These descriptors are only to be used by Metamodel generation.
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
@@ -152,20 +152,20 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Store the IdClass Id attributes for exclusive use by the Metamodel API
      * Keyed on the fully qualified accessible object owner class name.
      * Value is a List of the fully qualified id class name or id attribute name.
-     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     protected Map<String, List<String>> metamodelIdClassMap;
-    
+
     /** Map of named partitioning policies, keyed by their name. */
     protected Map<String, PartitioningPolicy> partitioningPolicies;
-    
+
     /** Ensures that only one thread at a time can add/remove descriptors */
     protected Object descriptorsLock = new Boolean(true);
 
     /** VPD connection settings */
     protected String vpdIdentifier;
     protected String vpdLastIdentifierClassName; // Used for validation exception.
-    
+
     /** used for Caching JPA projects */
     protected Collection<String> classNamesForWeaving;
     protected Collection<String> structConverters;
@@ -208,7 +208,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         this();
         this.datasourceLogin = login;
     }
-    
+
     /**
      * PUBLIC:
      * Return the default values for query caching options for all named queries.
@@ -216,7 +216,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public QueryResultsCachePolicy getDefaultQueryResultsCachePolicy() {
         return defaultQueryResultsCachePolicy;
     }
-    
+
     /**
      * PUBLIC:
      * Set the default values for query caching options for all named queries.
@@ -225,7 +225,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setDefaultQueryResultsCachePolicy(QueryResultsCachePolicy defaultQueryResultsCachePolicy) {
         this.defaultQueryResultsCachePolicy = defaultQueryResultsCachePolicy;
     }
-    
+
     /**
      * PUBLIC:
      * Return the default setting for configuring if dates and calendars are mutable.
@@ -245,7 +245,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setDefaultTemporalMutable(boolean defaultTemporalMutable) {
         this.defaultTemporalMutable = defaultTemporalMutable;
     }
-    
+
     /**
      * INTERNAL:
      * Return all pre-defined not yet parsed JPQL queries.
@@ -255,10 +255,10 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         if (jpaQueries == null) {
             jpaQueries = new ArrayList();
         }
-        
+
         return jpaQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Return all pre-defined not yet parsed JPQL queries to table per tenant
@@ -269,7 +269,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         if (jpaTablePerTenantQueries == null) {
             jpaTablePerTenantQueries = new ArrayList();
         }
-        
+
         return jpaTablePerTenantQueries;
     }
 
@@ -326,7 +326,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setQueries(List<DatabaseQuery> queries) {
         this.queries = queries;
     }
-    
+
     /**
      * INTERNAL:
      * List of named AttributesGroups that will be copied to the session at initialization time.
@@ -334,7 +334,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public Map<String, AttributeGroup> getAttributeGroups(){
         return this.attributeGroups;
     }
-    
+
     /**
      * INTERNAL:
      * Set the VPD identifier for this project. This identifier should be
@@ -344,16 +344,16 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setVPDIdentifier(String vpdIdentifier) {
         this.vpdIdentifier = vpdIdentifier;
     }
-    
+
     /**
      * INTERNAL:
      * Set from individual descriptors from the project that set a VPD
-     * identifier and used in validation exception. 
+     * identifier and used in validation exception.
      */
     public void setVPDLastIdentifierClassName(String vpdLastIdentifierClassName) {
         this.vpdLastIdentifierClassName = vpdLastIdentifierClassName;
     }
-    
+
     /**
      * PUBLIC:
      * Add the read-only class which apply to each UnitOfWork created by default.
@@ -404,7 +404,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
                 Map<Class, ClassDescriptor> descriptorsClone = (Map)((HashMap)getDescriptors()).clone();
                 descriptorsClone.put(descriptor.getJavaClass(), descriptor);
                 setDescriptors(descriptorsClone);
-                session.copyDescriptorsFromProject();    
+                session.copyDescriptorsFromProject();
                 session.initializeDescriptorIfSessionAlive(descriptor);
             } else {
                 addDescriptor(descriptor);
@@ -446,8 +446,8 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
                     setAliasDescriptors(aliasDescriptorsClone);
                 }
                 setDescriptors(descriptorsClone);
-                session.copyDescriptorsFromProject();    
-                session.initializeDescriptors(descriptors);        
+                session.copyDescriptorsFromProject();
+                session.initializeDescriptors(descriptors);
             } else {
                 Iterator it = descriptors.iterator();
                 while (it.hasNext()) {
@@ -457,7 +457,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
                     if (alias != null) {
                         addAlias(alias, descriptor);
                     }
-                }        
+                }
             }
             getOrderedDescriptors().addAll(descriptors);
         }
@@ -489,7 +489,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         }
         this.sqlResultSetMappings.put(sqlResultSetMapping.getName(), sqlResultSetMapping);
     }
-    
+
     /**
      * PUBLIC:
      * Set all this project's descriptors to conform all read queries within the context of the unit of work.
@@ -648,23 +648,23 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         return defaultReadOnlyClasses;
     }
 
-    /** 
+    /**
      * PUBLIC:
-     * Return default value for descriptor cache type. 
+     * Return default value for descriptor cache type.
      */
     public Class getDefaultIdentityMapClass() {
         return this.defaultIdentityMapClass;
     }
-    
+
     /**
-     * PUBLIC: 
-     * Return default value descriptor cache size. 
+     * PUBLIC:
+     * Return default value descriptor cache size.
      */
     public int getDefaultIdentityMapSize() {
         return this.defaultIdentityMapSize;
     }
-    
-    /** 
+
+    /**
      * PUBLIC:
      * Return default value for whether descriptor should use isolated cache.
      * @deprecated see getDefaultCacheIsolation()
@@ -673,7 +673,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public boolean getDefaultIsIsolated() {
         return this.defaultCacheIsolation.equals(CacheIsolationType.ISOLATED);
     }
-    
+
     /**
      * PUBLIC:
      * Return the project level default for class cache isolation;
@@ -681,15 +681,15 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public CacheIsolationType getDefaultCacheIsolation(){
         return this.defaultCacheIsolation;
     }
-    
-    /** 
+
+    /**
      * PUBLIC:
      * Return default value for descriptor primary key validation.
      */
     public IdValidation getDefaultIdValidation() {
         return this.defaultIdValidation;
     }
-    
+
     /**
      * PUBLIC:
      * Return the descriptor specified for the class.
@@ -751,7 +751,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /**
      * INTERNAL:
-     * Returns all classes in this project that are needed for weaving. 
+     * Returns all classes in this project that are needed for weaving.
      * This list currently includes entity, embeddables and mappedSuperClasses.
      */
     public Collection<String> getClassNamesForWeaving() {
@@ -760,7 +760,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /**
      * INTERNAL:
-     * Returns all classes in this project that are needed for weaving. 
+     * Returns all classes in this project that are needed for weaving.
      * This list currently includes entity, embeddables and mappedSuperClasses.
      */
     public void setClassNamesForWeaving(Collection<String> classNamesForWeaving) {
@@ -834,7 +834,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public String getVPDLastIdentifierClassName() {
         return vpdLastIdentifierClassName;
     }
-    
+
     /**
      * INTERNAL:
      * Return the VPD identifier for this project.
@@ -849,7 +849,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public MultitenantPolicy getMultitenantPolicy() {
         return multitenantPolicy;
     }
-    
+
     /**
      * INTERNAL:
      * Answers if at least one Descriptor or Mapping had a HistoryPolicy at initialize time.
@@ -866,23 +866,23 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         this.defaultReadOnlyClasses = new Vector(newValue);
     }
 
-    /** 
+    /**
      * PUBLIC:
-     * Set default value for descriptor cache type. 
+     * Set default value for descriptor cache type.
      */
     public void setDefaultIdentityMapClass(Class defaultIdentityMapClass) {
         this.defaultIdentityMapClass = defaultIdentityMapClass;
     }
-    
+
     /**
-     * PUBLIC: 
-     * Set default value descriptor cache size. 
+     * PUBLIC:
+     * Set default value descriptor cache size.
      */
     public void setDefaultIdentityMapSize(int defaultIdentityMapSize) {
         this.defaultIdentityMapSize = defaultIdentityMapSize;
     }
-    
-    /** 
+
+    /**
      * PUBLIC:
      * Set default value for whether descriptor should use isolated cache.
      * @deprecated see setDefaultCacheIsolation(CacheIsolationType)
@@ -891,22 +891,22 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setDefaultIsIsolated(boolean defaultIsIsolated) {
         this.defaultCacheIsolation = defaultIsIsolated ? CacheIsolationType.ISOLATED : CacheIsolationType.SHARED;
     }
-    
-    /** 
+
+    /**
      * PUBLIC:
      * Set project level default value for class cache isolation.
      */
     public void setDefaultCacheIsolation(CacheIsolationType isolationType) {
         this.defaultCacheIsolation = isolationType;
     }
-    /** 
+    /**
      * PUBLIC:
      * Set default value for descriptor primary key validation.
      */
     public void setDefaultIdValidation(IdValidation defaultIdValidation) {
         this.defaultIdValidation = defaultIdValidation;
     }
-    
+
     /**
      * INTERNAL:
      * Set the descriptors registered with this session.
@@ -973,7 +973,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         }
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Return if any descriptors are isolated.
@@ -983,7 +983,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public boolean hasIsolatedClasses() {
         return hasIsolatedClasses;
     }
-    
+
     /**
      * INTERNAL:
      * Set to true during descriptor initialize if any descriptor is isolated.
@@ -1002,7 +1002,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public boolean hasNonIsolatedUOWClasses() {
         return hasNonIsolatedUOWClasses;
     }
-    
+
     /**
      * INTERNAL:
      * Set if any descriptors are not isolated to the unit of work.
@@ -1022,7 +1022,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public boolean hasProxyIndirection() {
         return this.hasProxyIndirection;
     }
-    
+
     /**
      * PUBLIC:
      * Return true if the sql result set mapping name exists.
@@ -1030,7 +1030,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public boolean hasSQLResultSetMapping(String sqlResultSetMapping) {
         return sqlResultSetMappings.containsKey(sqlResultSetMapping);
     }
-    
+
     /**
      * PUBLIC:
      * Return true if there is a VPD identifier for this project. Will not be
@@ -1039,7 +1039,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public boolean hasVPDIdentifier(AbstractSession session) {
         return (vpdIdentifier != null && session.getProperty(vpdIdentifier) != null);
     }
-    
+
     /**
      * INTERNAL:
      * Set to true during descriptor initialize if any descriptor uses ProxyIndirection
@@ -1055,10 +1055,10 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setLogin(DatabaseLogin datasourceLogin) {
         this.datasourceLogin = datasourceLogin;
     }
-    
+
     /**
      * INTERNAL:
-     * Set the multitenant policy. 
+     * Set the multitenant policy.
      */
     public void setMultitenantPolicy(MultitenantPolicy policy) {
         multitenantPolicy = policy;
@@ -1273,7 +1273,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public boolean allowTablePerMultitenantDDLGeneration() {
         return this.allowTablePerMultitenantDDLGeneration;
     }
-    
+
     /**
      * INTERNAL:
      * Return true if native sql is allowed on this project.
@@ -1281,7 +1281,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public boolean allowNativeSQLQueries() {
         return this.allowNativeSQLQueries;
     }
-    
+
     /**
      * PUBLIC:
      * Return the descriptor for  the alias
@@ -1301,18 +1301,18 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setAliasDescriptors(Map aHashtable) {
         aliasDescriptors = aHashtable;
     }
-    
+
     /**
      * INTERNAL:
-     * Set whether ddl generation should allowed for table per tenant 
+     * Set whether ddl generation should allowed for table per tenant
      * multitenant descriptors. This will only be true when a non shared emf
-     * is used and all the tenant context properties are provided at deploy 
+     * is used and all the tenant context properties are provided at deploy
      * time.
      */
     public void setAllowTablePerMultitenantDDLGeneration(boolean allowTablePerMultitenantDDLGeneration) {
         this.allowTablePerMultitenantDDLGeneration = allowTablePerMultitenantDDLGeneration;
     }
-    
+
     /**
      * INTERNAL:
      * Set whether native sql is allowed on this project.
@@ -1320,50 +1320,50 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setAllowNativeSQLQueries(boolean allowNativeSQLQueries) {
         this.allowNativeSQLQueries = allowNativeSQLQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether there is at least one descriptor that has at least on mapping that
-     * require a call on deleted objects to update change sets. 
+     * require a call on deleted objects to update change sets.
      */
     public boolean hasMappingsPostCalculateChangesOnDeleted() {
         return hasMappingsPostCalculateChangesOnDeleted;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether there is at least one descriptor that has at least on mapping that
-     * require a call on deleted objects to update change sets. 
+     * require a call on deleted objects to update change sets.
      */
     public void setHasMappingsPostCalculateChangesOnDeleted(boolean hasMappingsPostCalculateChangesOnDeleted) {
         this.hasMappingsPostCalculateChangesOnDeleted = hasMappingsPostCalculateChangesOnDeleted;
     }
-    
+
     /**
      * INTERNAL:
      * Return whether there any mappings that are mapped superclasses.
      * @return
-     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public boolean hasMappedSuperclasses() {
         return (null != this.mappedSuperclassDescriptors && !this.mappedSuperclassDescriptors.isEmpty());
     }
-    
+
     /**
      * INTERNAL:
      * Return whether the given class is mapped as superclass.
      * @param className
      * @return
-     * @since EclipseLink 2.3 for the JPA 2.0 Reference Implementation 
+     * @since EclipseLink 2.3 for the JPA 2.0 Reference Implementation
      */
     public boolean hasMappedSuperclass(String className) {
         if (!hasMappedSuperclasses()) {
             return false;
         }
-        
+
         return this.mappedSuperclassDescriptors.containsKey(className);
     }
-    
+
     /**
      * INTERNAL:
      * Return all pre-defined not yet parsed EJBQL queries.
@@ -1371,7 +1371,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void addJPAQuery(DatabaseQuery query) {
         getJPAQueries().add(query);
     }
-    
+
     /**
      * INTERNAL:
      * Return all pre-defined not yet parsed EJBQL queries to table per tenant entities.
@@ -1383,9 +1383,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /**
      * INTERNAL:
      * 266912: Add a descriptor to the Map of mappedSuperclass descriptors
-     * @param key (Metadata class) 
+     * @param key (Metadata class)
      * @param value (RelationalDescriptor)
-     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public void addMappedSuperclass(String key, ClassDescriptor value, boolean replace) {
         // Lazy initialization of the mappedSuperclassDescriptors field.
@@ -1400,13 +1400,13 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /**
      * INTERNAL:
-     * Use the Metadata key parameter to lookup the 
+     * Use the Metadata key parameter to lookup the
      * Descriptor from the Map of mappedSuperclass descriptors
      * @param key - theMetadata class
-     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public ClassDescriptor getMappedSuperclass(String key) {
-        // TODO: this implementation may have side effects when we have the same class 
+        // TODO: this implementation may have side effects when we have the same class
         // in different class loaders - however currently there is only one classLoader per project
         // Lazy initialization of the mappedSuperclassDescriptors field.
         if(null == this.mappedSuperclassDescriptors) {
@@ -1420,23 +1420,23 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * INTERNAL:
      * Return the Map of RelationalDescriptor objects representing mapped superclass parents
      * keyed by className of the metadata class.
-     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
-    public Map<String, ClassDescriptor> getMappedSuperclassDescriptors() {        
+    public Map<String, ClassDescriptor> getMappedSuperclassDescriptors() {
         // Lazy initialization of the mappedSuperclassDescriptors field.
         if(null == this.mappedSuperclassDescriptors) {
             this.mappedSuperclassDescriptors = new HashMap<String, ClassDescriptor>(2);
         }
         return this.mappedSuperclassDescriptors;
     }
-    
+
     /**
      * INTERNAL:
      * Add an IdClass entry to the map of ids for a particular owner
-     * This function is used exclusively by the Metamodel API. 
-     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
+     * This function is used exclusively by the Metamodel API.
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
-    public void addMetamodelIdClassMapEntry(String ownerName, String name) {        
+    public void addMetamodelIdClassMapEntry(String ownerName, String name) {
         // Add a possible composite key to the owner - this function will handle duplicates by overwriting the entry
         if(this.metamodelIdClassMap.containsKey(ownerName)) {
             // If we have a key entry then the list will always exist
@@ -1444,14 +1444,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         } else {
             List<String> ownerList = new ArrayList<String>();
             ownerList.add(name);
-            this.metamodelIdClassMap.put(ownerName, ownerList);    
-        }        
+            this.metamodelIdClassMap.put(ownerName, ownerList);
+        }
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Return the Map of IdClass attribute lists keyed on owner class name.
-     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
+     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public Map<String, List<String>> getMetamodelIdClassMap() {
         return metamodelIdClassMap;

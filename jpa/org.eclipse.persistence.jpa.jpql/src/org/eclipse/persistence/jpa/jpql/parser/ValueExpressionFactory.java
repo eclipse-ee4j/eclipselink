@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,23 +25,23 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public final class ValueExpressionFactory extends GeneralIdentificationExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link ValueExpressionFactory}.
-	 */
-	public static final String ID = Expression.VALUE;
+    /**
+     * The unique identifier of this {@link ValueExpressionFactory}.
+     */
+    public static final String ID = Expression.VALUE;
 
-	/**
-	 * Creates a new <code>ValueExpressionFactory</code>.
-	 */
-	public ValueExpressionFactory() {
-		super(ID, Expression.VALUE);
-	}
+    /**
+     * Creates a new <code>ValueExpressionFactory</code>.
+     */
+    public ValueExpressionFactory() {
+        super(ID, Expression.VALUE);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent) {
-		return new ValueExpression(parent);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent) {
+        return new ValueExpression(parent);
+    }
 }

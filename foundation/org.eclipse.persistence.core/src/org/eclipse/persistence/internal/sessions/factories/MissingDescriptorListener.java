@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.factories;
 
 import java.security.AccessController;
@@ -56,8 +56,8 @@ public class MissingDescriptorListener extends SessionEventAdapter {
             // this shouldn't happen - but if it does, build a new (empty) NamespaceResolverWithPrefixes
             namespaceResolverWithPrefixes = new NamespaceResolverWithPrefixes();
         }
-	    DirectToXMLTypeMappingHelper.getInstance().addXDBDescriptors(name,
-	        (DatabaseSessionImpl)session, namespaceResolverWithPrefixes);
+        DirectToXMLTypeMappingHelper.getInstance().addXDBDescriptors(name,
+            (DatabaseSessionImpl)session, namespaceResolverWithPrefixes);
 
         if (name.equals(EIS_DESCRIPTOR_CLASS) || name.equals(XML_INTERACTION_CLASS) || name.equals(EIS_LOGIN_CLASS)) {
             try {

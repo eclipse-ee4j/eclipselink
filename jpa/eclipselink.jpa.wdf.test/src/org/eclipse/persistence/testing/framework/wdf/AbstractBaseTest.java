@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2014 SAP, Oracle.  All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP, Oracle.  All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -94,7 +94,7 @@ public abstract class AbstractBaseTest {
             Context context;
             try {
                 context = new InitialContext();
-                aDataSource = (DataSource) context.lookup(ServerInfoHolder.getDataSourceName()); 
+                aDataSource = (DataSource) context.lookup(ServerInfoHolder.getDataSourceName());
             } catch (NamingException e) {
                 throw new RuntimeException(e);
             }
@@ -199,12 +199,12 @@ public abstract class AbstractBaseTest {
 
         @Override
         public EntityManagerFactory createNewEntityManagerFactory(Map properties) throws NamingException {
-            Map mergedProperties = new HashMap(); 
-            mergedProperties.putAll(EMF_PROPERTIES); 
-            mergedProperties.putAll(properties); 
-            
-            AbstractBaseTest.closeEntityManagerFactory(puName); 
-            return Persistence.createEntityManagerFactory(puName, mergedProperties); 
+            Map mergedProperties = new HashMap();
+            mergedProperties.putAll(EMF_PROPERTIES);
+            mergedProperties.putAll(properties);
+
+            AbstractBaseTest.closeEntityManagerFactory(puName);
+            return Persistence.createEntityManagerFactory(puName, mergedProperties);
         }
 
         @Override
@@ -214,11 +214,11 @@ public abstract class AbstractBaseTest {
             try {
                 getEntityManagerFactoryMethod = delegate.getClass().getMethod("getEntityManagerFactory");
                 Object emf = getEntityManagerFactoryMethod.invoke(delegate);
-                
+
                 Method getPropertiesMethod = emf.getClass().getMethod("getProperties");
                 @SuppressWarnings("rawtypes")
                 Map map = (Map) getPropertiesMethod.invoke(emf);
-                
+
                 return map.get(key);
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);
@@ -229,9 +229,9 @@ public abstract class AbstractBaseTest {
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
-            
+
         }
-        
+
         @Override
         public void evict(EntityManager em, Class<?> clazz) {
             Object delegate = em.getDelegate();
@@ -239,12 +239,12 @@ public abstract class AbstractBaseTest {
             try {
                 getEntityManagerFactoryMethod = delegate.getClass().getMethod("getEntityManagerFactory");
                 Object emf = getEntityManagerFactoryMethod.invoke(delegate);
-                
+
                 Method getCacheMethod = emf.getClass().getMethod("getCache");
                 Object cache =  getCacheMethod.invoke(emf);
-                
+
                 Method evictClassMethod = cache.getClass().getMethod("evict", Class.class);
-                
+
                 evictClassMethod.invoke(cache, clazz);
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);
@@ -256,7 +256,7 @@ public abstract class AbstractBaseTest {
                 throw new RuntimeException(e);
             }
         }
-        
+
         @Override
         public void evictAll(EntityManager em) {
             Object delegate = em.getDelegate();
@@ -264,12 +264,12 @@ public abstract class AbstractBaseTest {
             try {
                 getEntityManagerFactoryMethod = delegate.getClass().getMethod("getEntityManagerFactory");
                 Object emf = getEntityManagerFactoryMethod.invoke(delegate);
-                
+
                 Method getCacheMethod = emf.getClass().getMethod("getCache");
                 Object cache =  getCacheMethod.invoke(emf);
-                
+
                 Method evictClassMethod = cache.getClass().getMethod("evictAll", new Class[]{});
-                
+
                 evictClassMethod.invoke(cache, new Object[]{});
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);
@@ -374,7 +374,7 @@ public abstract class AbstractBaseTest {
         public void evict(EntityManager em, Class<?> clazz) {
             throw new UnsupportedOperationException();
         }
-        
+
         @Override
         public void evictAll(EntityManager em) {
             throw new UnsupportedOperationException();
@@ -418,7 +418,7 @@ public abstract class AbstractBaseTest {
     @Before
     public void clearAllTablesAndSetup() throws SQLException {
         clearAllTables();
-        
+
         setup();
     }
 
@@ -472,9 +472,9 @@ public abstract class AbstractBaseTest {
         } finally {
             conn.close();
         }
-        
+
         // TODO evictAll
-        
+
     }
 
     /**
@@ -504,7 +504,7 @@ public abstract class AbstractBaseTest {
      * Checks whether the given throwable is of type
      * java.lang.IllegalStateException, or otherwise if the throwable contains a
      * java.lang.IllegalStateException somewhere in the cause stack.
-     * 
+     *
      * @param e
      *            The throwable to check
      * @return <code>true</code> if the throwable is instance of or caused by
@@ -526,7 +526,7 @@ public abstract class AbstractBaseTest {
      * Checks whether the given throwable is of type java.sql.SQLException, or
      * otherwise if the throwable contains a java.sql.SQLException somewhere in
      * the cause stack.
-     * 
+     *
      * @param e
      *            The throwable to check
      * @return <code>true</code> if the throwable is instance of or caused by

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -41,7 +41,7 @@ public class XmlPathOverrideTestCases extends JAXBTestCases {
         super.setUp();
         setTypes(new Class[]{Employee.class, Address.class, Root.class, PhoneNumber.class});
     }
-    
+
     public Object getControlObject() {
         Employee emp = new Employee();
         emp.id = 101;
@@ -53,59 +53,59 @@ public class XmlPathOverrideTestCases extends JAXBTestCases {
         emp.address.id="102";
 
         emp.phones = new Vector<PhoneNumber>();
-        
+
         PhoneNumber num1 = new PhoneNumber();
         num1.number = "123-4567";
         emp.phones.add(num1);
-        
+
         PhoneNumber num2 = new PhoneNumber();
         num2.number = "234-5678";
         emp.phones.add(num2);
-        
+
         emp.attributes = new HashMap<QName, String>();
         emp.attributes.put(new QName("attr1"), "value1");
         emp.attributes.put(new QName("http://myns.com/myns", "attr2"), "value2");
-        
+
         Root root = new Root();
         root.employees = new Vector<Employee>();
         root.addresses = new Vector<Address>();
-        
+
         root.employees.add(emp);
         root.addresses.add(emp.address);
-        
+
         return root;
     }
-    
+
     protected Map getProperties() throws JAXBException{
-        
-        String bindings = 
+
+        String bindings =
             "<xml-bindings xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\"> " +
-                "<java-types>" + 
-                    "<java-type name=\"org.eclipse.persistence.testing.jaxb.annotations.xmlpath.Employee\">" + 
-                        "<java-attributes>" + 
-                            "<xml-element java-attribute=\"firstName\" xml-path=\"name[1]/text()\"/>" + 
+                "<java-types>" +
+                    "<java-type name=\"org.eclipse.persistence.testing.jaxb.annotations.xmlpath.Employee\">" +
+                        "<java-attributes>" +
+                            "<xml-element java-attribute=\"firstName\" xml-path=\"name[1]/text()\"/>" +
                             "<xml-element java-attribute=\"lastName\" xml-path=\"name[2]/text()\" nillable=\"false\"/>" +
                             "<xml-attribute java-attribute=\"id\" required=\"false\"/>" +
-                            "<xml-element java-attribute=\"address\" name=\"address-id\" xml-idref=\"true\"/>" + 
-                         "</java-attributes>" + 
-                   "</java-type>" + 
-                "</java-types>" + 
+                            "<xml-element java-attribute=\"address\" name=\"address-id\" xml-idref=\"true\"/>" +
+                         "</java-attributes>" +
+                   "</java-type>" +
+                "</java-types>" +
              "</xml-bindings>";
 
         DOMSource src = null;
-        try {             
+        try {
             Document doc = parser.parse(new ByteArrayInputStream(bindings.getBytes()));
             src = new DOMSource(doc.getDocumentElement());
         } catch (Exception e) {
             e.printStackTrace();
             fail("An error occurred during setup");
         }
-            
+
         HashMap<String, Source> overrides = new HashMap<String, Source>();
         overrides.put("org.eclipse.persistence.testing.jaxb.annotations.xmlpath", src);
         HashMap properties = new HashMap();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
         return properties;
-    }    
+    }
 
 }

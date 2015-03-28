@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     2010-10-27 - James Sutherland (Oracle) initial impl
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.partitioned;
 
 import junit.framework.*;
 
 public class PartitionedXMLTestSuite extends PartitionedTestSuite {
-        
+
     public static Test suite() {
         TestSuite suite = new TestSuite("PartitioningXMLTests");
         suite.addTest(new PartitionedXMLTestSuite("testSetup"));
@@ -32,11 +32,11 @@ public class PartitionedXMLTestSuite extends PartitionedTestSuite {
         suite.addTest(new PartitionedXMLTestSuite("testPartitioning"));
         return suite;
     }
-    
+
     public PartitionedXMLTestSuite(String name) {
         super(name);
     }
-    
+
     /**
      * Return the name of the persistence context this test uses.
      * This allow a subclass test to set this only in one place.

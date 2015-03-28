@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,14 +38,14 @@ public class IDResolverWrapper extends IDResolver {
     private final static String END_DOCUMENT_METHOD_NAME = "endDocument";
     private final static String RESOLVE_METHOD_NAME = "resolve";
     private final static String START_DOCUMENT_METHOD_NAME = "startDocument";
-    
+
     private final static Class[] BIND_PARAMS = new Class[] { CoreClassConstants.STRING, CoreClassConstants.OBJECT };
     private final static Class[] RESOLVE_PARAMS = new Class[] { CoreClassConstants.STRING, CoreClassConstants.CLASS };
     private final static Class[] START_DOCUMENT_PARAMS = new Class[] { ValidationEventHandler.class };
 
     private Object resolver;
     private Method bindMethod, endDocumentMethod, resolveMethod, startDocumentMethod;
-    
+
     public IDResolverWrapper(Object sunResolver) {
         this.resolver = sunResolver;
         Class resolverClass = sunResolver.getClass();
@@ -81,7 +81,7 @@ public class IDResolverWrapper extends IDResolver {
             throw XMLMarshalException.errorInvokingIDResolver(BIND_METHOD_NAME, this.resolver, ex);
         }
     }
-    
+
     @Override
     public void endDocument() throws SAXException {
         try {
@@ -90,7 +90,7 @@ public class IDResolverWrapper extends IDResolver {
             throw XMLMarshalException.errorInvokingIDResolver(END_DOCUMENT_METHOD_NAME, this.resolver, ex);
         }
     }
-    
+
     @Override
     public void startDocument(ValidationEventHandler eventHandler) throws SAXException {
         try {
@@ -100,7 +100,7 @@ public class IDResolverWrapper extends IDResolver {
             throw XMLMarshalException.errorInvokingIDResolver(START_DOCUMENT_METHOD_NAME, this.resolver, ex);
         }
     }
-    
+
     @Override
     public Callable<?> resolve(Object id, Class targetType) throws SAXException {
         try {

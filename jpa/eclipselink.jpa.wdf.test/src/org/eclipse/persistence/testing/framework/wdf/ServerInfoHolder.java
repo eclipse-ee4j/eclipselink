@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -16,10 +16,10 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Static class to hold state shared between ServerTestRunner and tests 
+ * Static class to hold state shared between ServerTestRunner and tests
  */
 public class ServerInfoHolder {
-    
+
     @SuppressWarnings("unchecked")
     private static Map<String, String> testProperties = Collections.EMPTY_MAP;
     private static String dataSourceName;
@@ -37,7 +37,7 @@ public class ServerInfoHolder {
 
     // prevent instantiation
     private ServerInfoHolder() {
-        
+
     }
 
     /**
@@ -49,7 +49,7 @@ public class ServerInfoHolder {
 
 
     /**
-     * Get the JNDI lookup name of the data source used by the tests 
+     * Get the JNDI lookup name of the data source used by the tests
      * @return the JNDI lookup name of the data source used by the tests
      */
     public synchronized static String getDataSourceName() {

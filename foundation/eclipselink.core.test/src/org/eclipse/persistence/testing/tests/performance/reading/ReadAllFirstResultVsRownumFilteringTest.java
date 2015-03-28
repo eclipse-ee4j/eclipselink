@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.performance.reading;
 
 import org.eclipse.persistence.platform.database.OraclePlatform;
@@ -32,7 +32,7 @@ public class ReadAllFirstResultVsRownumFilteringTest extends PerformanceComparis
         super.setup();
         size = (getSession().readAllObjects(Employee.class)).size();
     }
-    
+
     /**
      * Read all employees with cursored stream.
      */
@@ -51,14 +51,14 @@ public class ReadAllFirstResultVsRownumFilteringTest extends PerformanceComparis
                 query.setFirstResult(size-1);
                 getSession().executeQuery(query);
             }
-            
-                        
+
+
         };
         test.setName("ReadAllRownumFilteringTest");
         test.setAllowableDecrease(350);
         addTest(test);
     }
-    
+
     /**
      * Read all employees, base test for comparison.
      */
@@ -79,7 +79,7 @@ public class ReadAllFirstResultVsRownumFilteringTest extends PerformanceComparis
             public void endTest() {
                 ((OraclePlatform)getSession().getPlatform()).setShouldUseRownumFiltering(true);
             }
-                        
+
         };
         test.setName("FirstResultTest");
         addTest(test);

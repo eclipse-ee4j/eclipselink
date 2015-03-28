@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,25 +17,25 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlValue;
 
 public class Address {
-       
-	@XmlValue
+
+    @XmlValue
     private List<String> addressInfo;
 
-      
-    public List<String> getAddressInfo() {
-		return addressInfo;
-	}
 
-	public void setAddressInfo(List<String> addressInfo) {
-		this.addressInfo = addressInfo;
-	}
+    public List<String> getAddressInfo() {
+        return addressInfo;
+    }
+
+    public void setAddressInfo(List<String> addressInfo) {
+        this.addressInfo = addressInfo;
+    }
 
     public String toString(){
-      	String s = "Address:" +  " ";
-    	for(int i=0; i<getAddressInfo().size(); i++){
-    		s += " " + getAddressInfo().get(i);
-    	}
-    	
+          String s = "Address:" +  " ";
+        for(int i=0; i<getAddressInfo().size(); i++){
+            s += " " + getAddressInfo().get(i);
+        }
+
         return s;
     }
 
@@ -48,9 +48,9 @@ public class Address {
         }
        // return city.equals(add.city);// && street.equals(add.street);
         if(addressInfo.size() != add.getAddressInfo().size()){
-        	return false;
+            return false;
         }
-        
+
         return addressInfo.containsAll(add.getAddressInfo()) && add.getAddressInfo().containsAll(addressInfo);
     }
 

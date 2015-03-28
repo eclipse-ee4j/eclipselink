@@ -50,7 +50,7 @@ import org.eclipse.persistence.tools.dbws.TableOperationModel;
 import dbws.testing.DBWSTestSuite;
 
 public class SimpleSPTestSuite extends DBWSTestSuite {
-    
+
     static final String CREATE_SIMPLESP_TABLE =
         "CREATE TABLE SIMPLESP (" +
             "\nEMPNO DECIMAL(4,0) NOT NULL," +
@@ -207,7 +207,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
 
         builder = new DBWSBuilder();
-          
+
         builder.setProjectName("simpleSP");
         builder.setLogLevel("off");
         builder.setUsername(username);
@@ -215,28 +215,28 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         builder.setUrl(url);
         builder.setDriver(System.getProperty("db.driver", DATABASE_DRIVER));
         builder.setPlatformClassname(System.getProperty("db.platform", DATABASE_PLATFORM));
-        
+
         ProcedureOperationModel procOpModel = new ProcedureOperationModel();
         procOpModel.setName("VarcharTest");
         procOpModel.setCatalogPattern("TOPLEVEL");
         procOpModel.setProcedurePattern("VarcharSP");
         procOpModel.setReturnType("xsd:int");
         builder.addOperation(procOpModel);
-        
+
         procOpModel = new ProcedureOperationModel();
         procOpModel.setName("NoArgsTest");
         procOpModel.setCatalogPattern("TOPLEVEL");
         procOpModel.setProcedurePattern("NoArgSP");
         procOpModel.setReturnType("xsd:int");
         builder.addOperation(procOpModel);
-        
+
         procOpModel = new ProcedureOperationModel();
         procOpModel.setName("InOutArgsTest");
         procOpModel.setCatalogPattern("TOPLEVEL");
         procOpModel.setProcedurePattern("InOutArgsSP");
         procOpModel.setIsSimpleXMLFormat(true);
         builder.addOperation(procOpModel);
-        
+
         procOpModel = new ProcedureOperationModel();
         procOpModel.setName("OutInInOutArgsTest");
         procOpModel.setCatalogPattern("TOPLEVEL");
@@ -259,7 +259,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         procOpModel.setCatalogPattern("TOPLEVEL");
         procOpModel.setProcedurePattern("GETSALARYBYID");
         builder.addOperation(procOpModel);
-        
+
         TableOperationModel tableOpModel = new TableOperationModel();
         tableOpModel.setSchemaPattern("%");
         tableOpModel.setTablePattern("SIMPLESP");
@@ -270,7 +270,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         procOpModel.setIsCollection(true);
         procOpModel.setReturnType("simplespType");
         tableOpModel.addOperation(procOpModel);
-        
+
         procOpModel = new ProcedureOperationModel();
         procOpModel.setName("getXMLTypeData");
         procOpModel.setCatalogPattern("TOPLEVEL");
@@ -580,7 +580,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
       }
 
       public static final String SALARY =
-      	"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+          "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
           "<value>1100</value>";
 
       @Test
@@ -597,7 +597,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
           Document controlDoc = xmlParser.parse(new StringReader(MULTIPLE_OUT_XML));
           assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
       }
-      
+
       public static final String MULTIPLE_OUT_XML =
           "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
           "<simple-xml-format>" +
@@ -635,5 +635,5 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
           "<simple-xml>" +
           "<result>&lt;jb>&lt;data> jdev testing for 12.1.2 &lt;/data>&lt;/jb></result>" +
           "</simple-xml>" +
-          "</simple-xml-format>";      
+          "</simple-xml-format>";
 }

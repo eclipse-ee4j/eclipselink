@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -27,7 +27,7 @@ public class SDODataObjectGetIntConversionTest extends SDODataObjectConversionTe
         super(name);
     }
 
-   
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetIntConversionTest" };
         TestRunner.main(arguments);
@@ -39,9 +39,9 @@ public class SDODataObjectGetIntConversionTest extends SDODataObjectConversionTe
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BOOLEAN);
         dataObject.set(property, true);
-        
+
         int value = dataObject.getInt(property);
-        assertEquals(1, value);        
+        assertEquals(1, value);
     }
 
     //2. purpose: getInt with Defined Byte Property
@@ -74,18 +74,18 @@ public class SDODataObjectGetIntConversionTest extends SDODataObjectConversionTe
     public void testGetIntFromCharacter() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTER);
-        dataObject.set(property, 'c');        
+        dataObject.set(property, 'c');
         try {
             dataObject.getInt(property);
             fail("ClassCastException should be thrown.");
         } catch (ClassCastException e) {
         }
     }
-    
+
     //4. purpose: getInt with character property
     public void testGetIntFromNullCharacter() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
-        property.setType(SDOConstants.SDO_CHARACTER);        
+        property.setType(SDOConstants.SDO_CHARACTER);
         try {
             int value = dataObject.getInt(property);
             assertEquals(0, value);
@@ -251,7 +251,7 @@ public class SDODataObjectGetIntConversionTest extends SDODataObjectConversionTe
         String testString = "abc";
         byte[] bytes = testString.getBytes();
         dataObject.set(property, bytes);
-        
+
         try {
             dataObject.getInt(property);
             fail("ClassCastException should be thrown.");
@@ -338,10 +338,10 @@ public class SDODataObjectGetIntConversionTest extends SDODataObjectConversionTe
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BOOLEANOBJECT);
         dataObject.set(property, true);
-        
+
         int value = dataObject.getInt(property);
         assertEquals(1, value);
-        
+
     }
 
     //2. purpose: getInt with Defined Byte Property
@@ -404,15 +404,15 @@ public class SDODataObjectGetIntConversionTest extends SDODataObjectConversionTe
 
         this.assertEquals((int)in, dataObject.getInt(property));
     }
-    
+
      //9. purpose: getInt with Defined int Property
     public void testGetIntConversionFromNullDefinedIntObject() {
         // dataObject's type add int property
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
-        property.setType(SDOConstants.SDO_INTOBJECT);        
+        property.setType(SDOConstants.SDO_INTOBJECT);
         int value = dataObject.getInt(property);
-        
-        this.assertEquals(0, value);        
+
+        this.assertEquals(0, value);
     }
 
     //11. purpose: getInt with Defined long Property

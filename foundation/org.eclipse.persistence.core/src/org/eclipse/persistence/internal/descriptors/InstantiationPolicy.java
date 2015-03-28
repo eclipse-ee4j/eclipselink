@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
 
 import java.io.*;
@@ -121,9 +121,9 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
                     if (throwableException instanceof InvocationTargetException){
                         throw DescriptorException.targetInvocationWhileConstructorInstantiation(getDescriptor(), throwableException);
                     } else if (throwableException instanceof IllegalAccessException){
-                        throw DescriptorException.illegalAccessWhileConstructorInstantiation(getDescriptor(), throwableException);                    
+                        throw DescriptorException.illegalAccessWhileConstructorInstantiation(getDescriptor(), throwableException);
                     } else {
-                        throw DescriptorException.instantiationWhileConstructorInstantiation(getDescriptor(), throwableException);                       
+                        throw DescriptorException.instantiationWhileConstructorInstantiation(getDescriptor(), throwableException);
                     }
                  }
             } else {
@@ -449,7 +449,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * Convert all the class-name-based settings in this InstantiationPolicy to actual class-based
      * settings.  This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         if (factoryClassName == null){

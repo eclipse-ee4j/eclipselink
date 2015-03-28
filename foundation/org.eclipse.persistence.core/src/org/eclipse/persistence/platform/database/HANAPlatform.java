@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 SAP, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 SAP, Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -51,7 +51,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 /**
  * <b>Database Platform for SAP HANA</b> <br>
- * 
+ *
  * <p>
  * <b>Feature Testing</b><br>
  * ----------------------
@@ -91,7 +91,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * <li>Scrollable cursors are not supported.
  * <li>Query timeouts are not supported.
  * </ul>
- * 
+ *
  * @author Reiner Singer (SAP AG), Sabine Heider (SAP AG)
  */
 public final class HANAPlatform extends DatabasePlatform {
@@ -109,7 +109,7 @@ public final class HANAPlatform extends DatabasePlatform {
     public boolean isHANA() {
         return true;
     }
-    
+
     @Override
     public boolean usesStringBinding() {
         return false;
@@ -166,7 +166,7 @@ public final class HANAPlatform extends DatabasePlatform {
     @Override
     /**
      * EclipseLink does not support length dependent type mapping.
-     * Map varchar types with length > MAX_VARCHAR_UNICODE_LENGTH to CLOB (i.e clob); shorter types to NVARCHAR (n) 
+     * Map varchar types with length > MAX_VARCHAR_UNICODE_LENGTH to CLOB (i.e clob); shorter types to NVARCHAR (n)
      * See also bugs 317597, 317448
      */
     protected void printFieldTypeSize(Writer writer, FieldDefinition field,
@@ -211,7 +211,7 @@ public final class HANAPlatform extends DatabasePlatform {
     /**
      * Creates the expression operator representing the JPQL function current_timestamp as defined
      * by 4.6.17.2.3 of the JPA 2.0 specification
-     * 
+     *
      * @return the expression operator representing the JPQL function current_timestamp as defined
      *         by 4.6.17.2.3 of the JPA 2.0 specification
      */
@@ -221,10 +221,10 @@ public final class HANAPlatform extends DatabasePlatform {
     }
 
     /**
-     * Creates the expression operator representing the JPQL function current_date as defined by 
+     * Creates the expression operator representing the JPQL function current_date as defined by
      * 4.6.17.2.3 of the JPA 2.0 specification
-     * 
-     * @return the expression operator representing the JPQL function current_date as defined by 
+     *
+     * @return the expression operator representing the JPQL function current_date as defined by
      *         4.6.17.2.3 of the JPA 2.0 specification
      */
     private static final ExpressionOperator createCurrentDateExpressionOperator() {
@@ -235,7 +235,7 @@ public final class HANAPlatform extends DatabasePlatform {
     /**
      * Creates the expression operator representing the JPQL function current_timestamp as defined
      * by 4.6.17.2.3 of the JPA 2.0 specification
-     * 
+     *
      * @return the expression operator representing the JPQL function current_timestamp as defined
      *         by 4.6.17.2.3 of the JPA 2.0 specification
      */
@@ -246,7 +246,7 @@ public final class HANAPlatform extends DatabasePlatform {
 
     /**
      * Creates the expression operator representing the JPQL function variance
-     * 
+     *
      * @return the expression operator representing the JPQL function variance
      */
     private static final ExpressionOperator createVarianceOperator() {
@@ -389,8 +389,8 @@ public final class HANAPlatform extends DatabasePlatform {
     @Override
     public DatabaseTable getTempTableForTable(DatabaseTable table) {
         return new DatabaseTable("#" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters(), getStartDelimiter(), getEndDelimiter());
-    }          
-    
+    }
+
     @Override
     protected boolean shouldTempTableSpecifyPrimaryKeys() {
         return false;
@@ -528,16 +528,16 @@ public final class HANAPlatform extends DatabasePlatform {
         writer.write(Helper.printCalendar(calendar));
         writer.write("')");
     }
-    
+
     @Override
     public void writeAddColumnClause(Writer writer, AbstractSession session, TableDefinition table, FieldDefinition field) throws IOException {
         writer.write("ADD (");
         field.appendDBString(writer, session, table);
         writer.write(")");
     }
-    
+
     @Override
     public String getProcedureCallHeader() {
         return "CALL ";
-    }    
+    }
 }

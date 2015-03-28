@@ -1,6 +1,6 @@
 /***
  * ASM XML Adapter
- * Copyright (c) 2004-2011, Eugene Kuleshov
+ * Copyright (c) 2004, 2015 Eugene Kuleshov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,36 +73,36 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * In order to use a concrete XSLT engine, system property
  * <tt>javax.xml.transform.TransformerFactory</tt> must be set to one of the
  * following values.
- * 
+ *
  * <blockquote>
  * <table border="1" cellspacing="0" cellpadding="3">
  * <tr>
  * <td>jd.xslt</td>
  * <td>jd.xml.xslt.trax.TransformerFactoryImpl</td>
  * </tr>
- * 
+ *
  * <tr>
  * <td>Saxon</td>
  * <td>net.sf.saxon.TransformerFactoryImpl</td>
  * </tr>
- * 
+ *
  * <tr>
  * <td>Caucho</td>
  * <td>com.caucho.xsl.Xsl</td>
  * </tr>
- * 
+ *
  * <tr>
  * <td>Xalan interpeter</td>
  * <td>org.apache.xalan.processor.TransformerFactory</td>
  * </tr>
- * 
+ *
  * <tr>
  * <td>Xalan xsltc</td>
  * <td>org.apache.xalan.xsltc.trax.TransformerFactoryImpl</td>
  * </tr>
  * </table>
  * </blockquote>
- * 
+ *
  * @author Eugene Kuleshov
  */
 public class Processor {
@@ -359,7 +359,7 @@ public class Processor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
      */
     protected void update(final Object arg, final int n) {
@@ -484,7 +484,7 @@ public class Processor {
 
         /**
          * Creates an instance of the content handler.
-         * 
+         *
          * @return content handler
          */
         ContentHandler createContentHandler();
@@ -589,7 +589,7 @@ public class Processor {
      * A {@link org.xml.sax.ContentHandler ContentHandler} and
      * {@link org.xml.sax.ext.LexicalHandler LexicalHandler} that serializes XML
      * from SAX 2.0 events into {@link java.io.Writer Writer}.
-     * 
+     *
      * <i><blockquote> This implementation does not support namespaces, entity
      * definitions (uncluding DTD), CDATA and text elements. </blockquote></i>
      */
@@ -608,7 +608,7 @@ public class Processor {
 
         /**
          * Creates <code>SAXWriter</code>.
-         * 
+         *
          * @param w
          *            writer
          * @param optimizeEmptyElements
@@ -723,7 +723,7 @@ public class Processor {
 
         /**
          * Encode string with escaping.
-         * 
+         *
          * @param str
          *            string to encode.
          * @return encoded string
@@ -808,7 +808,7 @@ public class Processor {
         /**
          * Constructs a new {@link InputSlicingHandler SubdocumentHandler}
          * object.
-         * 
+         *
          * @param subdocumentRoot
          *            name/path to the root element of the subdocument
          * @param rootHandler
@@ -894,7 +894,7 @@ public class Processor {
      * {@link java.net.ContentHandlerFactory ContentHandlerFactory}. This is
      * useful for running XSLT engine against large XML document that will
      * hardly fit into the memory all together.
-     * 
+     *
      * <p>
      * TODO use complete path for subdocumentRoot
      */
@@ -914,7 +914,7 @@ public class Processor {
         /**
          * Constructs a new {@link OutputSlicingHandler SubdocumentHandler}
          * object.
-         * 
+         *
          * @param subdocumentHandlerFactory
          *            a {@link ContentHandlerFactory ContentHandlerFactory} used
          *            to create {@link ContentHandler ContentHandler} instances

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
 import java.sql.Types;
@@ -51,7 +51,7 @@ public class CustomSQLTestModel extends TestModel {
         addForcedRequiredSystem(new EmployeeCustomSQLSystem());
         if (getSession().getPlatform().isOracle()) {
             addForcedRequiredSystem(new InsuranceORStoredProcedureSystem());
-        } 
+        }
         // Force field names to upper case for custom SQL tests on postgres.
         if (getSession().getPlatform().isPostgreSQL()) {
             getSession().getPlatform().setShouldForceFieldNamesToUpperCase(true);
@@ -143,7 +143,7 @@ public class CustomSQLTestModel extends TestModel {
 
         // Add some test from the owenership to test multiple table and primary key
         //suite.addTest(new ReadObjectTest(
-        //	manager.getObject(org.eclipse.persistence.testing.models.legacy.Employee.class, "example3")));
+        //    manager.getObject(org.eclipse.persistence.testing.models.legacy.Employee.class, "example3")));
         return suite;
     }
 
@@ -220,7 +220,7 @@ public class CustomSQLTestModel extends TestModel {
         suite.addTest(build2ResultSetTest());
         return suite;
     }
-    
+
     public static TestSuite getStoredFunctionTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("CustomSQLStoredFunctionTestSuite");
@@ -270,7 +270,7 @@ public class CustomSQLTestModel extends TestModel {
         ClassDescriptor empDescriptor = getSession().getClassDescriptor(org.eclipse.persistence.testing.models.legacy.Employee.class);
         empDescriptor.getQueryManager().setReadObjectSQLString("select LEG_EMP.*, LEG_ADD.* FROM LEG_EMP, LEG_ADD WHERE (((LEG_EMP.FNAME = #LEG_EMP.FNAME) AND (LEG_EMP.LNAME = #LEG_EMP.LNAME)) AND ((LEG_ADD.FIRST_NM = #LEG_EMP.FNAME) AND (LEG_ADD.LNAME = #LEG_EMP.LNAME)))");
     }
-    
+
     /**
      * Test that transaction with only SQL queries commit.
      */
@@ -295,7 +295,7 @@ public class CustomSQLTestModel extends TestModel {
         test.setName("SQLTransactionTest");
         return test;
     }
-    
+
     /**
      * Test a procedure with 2 out cursors.
      */
@@ -325,7 +325,7 @@ public class CustomSQLTestModel extends TestModel {
         test.setName("2OutCursorTest");
         return test;
     }
-    
+
     /**
      * Test a procedure with unnamed cursor.
      */
@@ -348,7 +348,7 @@ public class CustomSQLTestModel extends TestModel {
         test.setName("UnnamedCursorTest");
         return test;
     }
-    
+
     /**
      * Test a procedure with multiple result sets
      */
@@ -373,7 +373,7 @@ public class CustomSQLTestModel extends TestModel {
         test.setName("2ResultSetTest");
         return test;
     }
-    
+
     /**
      * Test a stored function with ref cursor.
      */
@@ -393,13 +393,13 @@ public class CustomSQLTestModel extends TestModel {
                 query.setCall(call);
                 query.addArgument("P_CODE");
                 query.addArgument("P_LOOKUP_TBL");
-                
+
                 Object[] data = new Object[] {"5-Jul-13", 5L};
-                
+
                 List args = new ArrayList();
                 args.add("CN");
                 args.add(new Object[] {data});
-                
+
                 List<Map> result = (List<Map>) getSession().executeQuery(query, args);
                 if (result == null || result.size() != 1) {
                     throwError("Incorrect number of rows returned: " + result);

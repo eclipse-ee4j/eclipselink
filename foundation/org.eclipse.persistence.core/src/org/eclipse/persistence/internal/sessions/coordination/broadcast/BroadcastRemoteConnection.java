@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.coordination.broadcast;
 
 import org.eclipse.persistence.internal.helper.Helper;
@@ -33,7 +33,7 @@ import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 public abstract class BroadcastRemoteConnection extends RemoteConnection {
     protected RemoteCommandManager rcm;
     protected String topicName;
-    
+
     // Working state - connection can send and/or receive messages.
     public static final String STATE_ACTIVE         = "ACTIVE";
     // close method called but not all resources used by connection are freed yet.
@@ -43,7 +43,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
     public static final String STATE_CLOSED         = "CLOSED";
     // STATE_ACTIVE -> STATE_CLOSING -> STATE_CLOSED
     protected String state = STATE_ACTIVE;
-    
+
     // Connection information String.
     protected String displayString;
     // Array containing a single element - displayString. Used for warnings and debug logging.
@@ -52,7 +52,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
     // Used for debug logging which require messageId in case messageId is null
     // (so that a new array is not created each time).
     protected Object[] infoExt;
-        
+
     public BroadcastRemoteConnection(RemoteCommandManager rcm) {
         this.serviceId = rcm.getServiceId();
         this.rcm = rcm;
@@ -109,15 +109,15 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
             rcm.logWarning("broadcast_ignored_command_while_closing_connection", getInfo());
             return null;
         }
-    }    
-    
+    }
+
     /**
      * INTERNAL:
      * Publish the remote command. The result of execution is returned.
      * This method is used only by external (publishing) connection.
      */
     protected abstract Object executeCommandInternal(Object command) throws Exception;
-    
+
     /**
      * INTERNAL:
      * Called from executeCommandInternal to log debugInfo right before sending the message.
@@ -135,7 +135,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
         rcm.logDebugWithoutLevelCheck("broadcast_sending_message", debugInfo);
         return debugInfo;
     }
-    
+
     /**
      * INTERNAL:
      * Called from executeCommandInternal to log debugInfo right after sending the message.
@@ -158,7 +158,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
         // call logDebugWithoutLevelCheck to avoid the second rcm.shouldLogDebugMessage() check
         rcm.logDebugWithoutLevelCheck("broadcast_sent_message", debugInfo);
     }
-    
+
     /**
      * INTERNAL:
      * Called when a message is received to log debugInfo:
@@ -175,7 +175,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
         // call logDebugWithoutLevelCheck to avoid the second rcm.shouldLogDebugMessage() check
         rcm.logDebugWithoutLevelCheck("broadcast_retreived_message", debugInfo);
     }
-    
+
     /**
      * INTERNAL:
      * Process the object extracted from the received message.
@@ -224,10 +224,10 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
-     * Call this message in case there is failure to extract the object 
+     * Call this message in case there is failure to extract the object
      * (to be passed to processReceivedObject) from the message.
      * Pass to this method debugInfo created by logDebugOnReceiveMessage method.
      * This method is used by local (listening) connection only.
@@ -240,7 +240,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
             // The method is called by a listener thread - no one could catch this exception.
         }
     }
-    
+
     /**
      * INTERNAL:
      * This method is called when connection in no longer used and it's resources should be freed.
@@ -282,7 +282,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
     public String getState() {
         return state;
     }
-    
+
     /**
      * INTERNAL:
      * Connection is open for business.
@@ -310,18 +310,18 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
     /**
      * INTERNAL:
      * This method is called by close method.
-     * This method usually 
+     * This method usually
      * (but not always see comment to areAllResourcesFreedOnClose method)
      * frees all the resources.
      */
     protected abstract void closeInternal() throws Exception;
-    
+
     /**
      * INTERNAL:
      */
     public String getTopicName() {
         return topicName;
-    }    
+    }
 
     /**
      * INTERNAL:
@@ -331,7 +331,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
             info = new Object[] {toString()};
         }
         return info;
-    }    
+    }
 
     /**
      * INTERNAL:
@@ -341,7 +341,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
             infoExt = new Object[] {toString(), ""};
         }
         return infoExt;
-    }    
+    }
 
     /**
      * INTERNAL:
@@ -364,7 +364,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
         }
         return displayString;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -381,5 +381,5 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
     protected boolean shouldCheckServiceId() {
         return false;
     }
-    
+
 }

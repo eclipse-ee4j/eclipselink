@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
 
 import java.util.ArrayList;
@@ -61,9 +61,9 @@ public class ContentHandlerRecord extends MarshalRecord {
         attributes = new AttributesImpl();
     }
 
-    // bug#5035551 - content handler record will act more like writer 
+    // bug#5035551 - content handler record will act more like writer
     // record in that startElement is called with any attributes that
-    // are to be written to the element.  So, instead of calling 
+    // are to be written to the element.  So, instead of calling
     // openStartElement > attribute > closeStartElement, we'll gather
     // any required attributes and make a single call to openAndCloseStartElement.
     // This is necessary as the contentHandler.startElement() call results in
@@ -129,8 +129,8 @@ public class ContentHandlerRecord extends MarshalRecord {
                 currentLevelPrefixMappings = new ArrayList<String>();
             }
             currentLevelPrefixMappings.add(prefix);
-            
-            
+
+
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -147,13 +147,13 @@ public class ContentHandlerRecord extends MarshalRecord {
             return;
         }
         String namespaceURI = namespaceResolver.getDefaultNamespaceURI();
-        if(null != namespaceURI) {        	
-        	defaultNamespaceDeclaration(namespaceURI);
+        if(null != namespaceURI) {
+            defaultNamespaceDeclaration(namespaceURI);
         }
 
         if(namespaceResolver.hasPrefixesToNamespaces()) {
             for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
-                String namespacePrefix = entry.getKey();                
+                String namespacePrefix = entry.getKey();
                 namespaceDeclaration(namespacePrefix,  entry.getValue());
             }
         }
@@ -172,11 +172,11 @@ public class ContentHandlerRecord extends MarshalRecord {
 
     /**
      * INTERNAL:
-     * 
-     * Create a start element tag - this call results in a complete start element, 
-     * i.e. closeStartElement() does not need to be called after a call to this 
+     *
+     * Create a start element tag - this call results in a complete start element,
+     * i.e. closeStartElement() does not need to be called after a call to this
      * method.
-     * 
+     *
      */
     private void openAndCloseStartElement() {
         try {
@@ -185,10 +185,10 @@ public class ContentHandlerRecord extends MarshalRecord {
                 namespaceUri = Constants.EMPTY_STRING;
             }
             if(xPathFragment.isGeneratedPrefix()){
-            	this.namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+                this.namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
             }
             contentHandler.startElement(namespaceUri, xPathFragment.getLocalName(), getNameForFragment(xPathFragment), attributes);
-            
+
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -201,14 +201,14 @@ public class ContentHandlerRecord extends MarshalRecord {
         super.openStartElement(xPathFragment, namespaceResolver);
         currentLevelPrefixMappings = null;
         prefixMappings.add(currentLevelPrefixMappings);
-                
+
         if (isStartElementOpen) {
             openAndCloseStartElement();
         }
         this.isStartElementOpen = true;
         this.xPathFragment = xPathFragment;
         this.attributes.clear();
-        
+
     }
 
     /**
@@ -251,7 +251,7 @@ public class ContentHandlerRecord extends MarshalRecord {
                 localName = "";
             }
             this.startPrefixMapping(localName, value);
-        }        
+        }
         attributes.addAttribute(namespaceURI, localName, qName, Constants.CDATA, value);
     }
 
@@ -259,7 +259,7 @@ public class ContentHandlerRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void closeStartElement() {
-        // do nothing - the openAndCloseStartElement call results in a 
+        // do nothing - the openAndCloseStartElement call results in a
         // complete start element
     }
 
@@ -340,7 +340,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             String resolverPfx = null;
             if (getNamespaceResolver() != null) {
                 resolverPfx = this.getNamespaceResolver().resolveNamespaceURI(attr.getNamespaceURI());
-            } 
+            }
             String namespaceURI = attr.getNamespaceURI();
             String localName = attr.getLocalName();
             if(localName == null) {

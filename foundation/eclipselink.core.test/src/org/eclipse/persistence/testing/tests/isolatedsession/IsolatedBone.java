@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.isolatedsession;
 
 import org.eclipse.persistence.indirection.ValueHolder;
@@ -18,12 +18,12 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class IsolatedBone {
-    
+
     protected String id;
     protected String color;
     protected String deleted;
     protected ValueHolderInterface owner;
-    
+
     public IsolatedBone() {
         super();
         this.owner = new ValueHolder();
@@ -60,7 +60,7 @@ public class IsolatedBone {
     public void setDeleted(String deleted) {
         this.deleted = deleted;
     }
-    
+
     public static TableDefinition buildISOLATEDBONETable() {
         TableDefinition tabledefinition = new TableDefinition();
 
@@ -89,7 +89,7 @@ public class IsolatedBone {
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("ISOLATED_DOG.ID");
         tabledefinition.addField(field1);
-        
+
         // SECTION: FIELD
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("COLOR");
@@ -100,7 +100,7 @@ public class IsolatedBone {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         tabledefinition.addField(field2);
-        
+
         // SECTION: FIELD
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("DELETED");
@@ -111,10 +111,10 @@ public class IsolatedBone {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         tabledefinition.addField(field3);
-        
+
         return tabledefinition;
     }
-    
+
     public String toString() {
         return getClass().getSimpleName() + " [" + System.identityHashCode(this) + "]";
     }

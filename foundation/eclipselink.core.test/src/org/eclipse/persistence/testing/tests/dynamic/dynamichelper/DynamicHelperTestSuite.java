@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
@@ -49,10 +49,10 @@ import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper
  */
 public class DynamicHelperTestSuite {
 
-    public static final String PACKAGE_PREFIX = 
+    public static final String PACKAGE_PREFIX =
         DynamicHelperTestSuite.class.getPackage().getName();
     public static final String EMPLOYEE_CLASSNAME = PACKAGE_PREFIX + ".Employee";
-    
+
     //test fixtures
     static DatabaseSession session = null;
     static DynamicHelper dynamicHelper = null;
@@ -60,7 +60,7 @@ public class DynamicHelperTestSuite {
     public static void setUp() {
         session = createSession();
         dynamicHelper = new DynamicHelper(session);
-        DynamicClassLoader dcl = dynamicHelper.getDynamicClassLoader(); 
+        DynamicClassLoader dcl = dynamicHelper.getDynamicClassLoader();
         Class<?> empClass = dcl.createDynamicClass(EMPLOYEE_CLASSNAME);
         DynamicTypeBuilder typeBuilder = new DynamicTypeBuilder(empClass, null, "D_EMPLOYEE");
         typeBuilder.setPrimaryKeyFields("EMP_ID");
@@ -70,7 +70,7 @@ public class DynamicHelperTestSuite {
         dynamicHelper.addTypes(true, false, typeBuilder.getType());
         DynamicType empType = new DynamicHelper(session).getType("Employee");
         assertNotNull("No type found for Employee", empType);
-        
+
         //Populate table with a single Employee
         DynamicEntity e1 = empType.newDynamicEntity();
         e1.set("id", 1);
@@ -99,7 +99,7 @@ public class DynamicHelperTestSuite {
         DynamicEntity emp = (DynamicEntity) session.executeQuery(query);
         assertNotNull(emp);
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void createQuery_ValidReadAllQuery() throws Exception {

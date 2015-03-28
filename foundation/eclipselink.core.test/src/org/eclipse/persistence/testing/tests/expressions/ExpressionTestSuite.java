@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1021,10 +1021,10 @@ public class ExpressionTestSuite extends TestSuite {
         test.addUnsupportedPlatform(SybasePlatform.class);
         addTest(test);
     }
-    
+
     /**
      * Ensure certain operators work on multiple platforms should be tested on SQLServer and
-     * Oracle in particular.  This tests "CASE field WHERE value THEN value1 ELSE value2" statements  
+     * Oracle in particular.  This tests "CASE field WHERE value THEN value1 ELSE value2" statements
      * Added for JPA 2.0 support (bug 252491)
      */
     private void addMultiPlatformTest2() {
@@ -1045,10 +1045,10 @@ public class ExpressionTestSuite extends TestSuite {
         test.addUnsupportedPlatform(SybasePlatform.class);
         addTest(test);
     }
-    
+
     /**
-     * Ensure certain operators work on multiple platforms.  This tests more complex 
-     * "CASE WHERE expression THEN value1 ELSE value2" statements  
+     * Ensure certain operators work on multiple platforms.  This tests more complex
+     * "CASE WHERE expression THEN value1 ELSE value2" statements
      * Added for JPA 2.0 support (bug 252491)
      */
     private void addMultiPlatformTest3() {
@@ -1072,9 +1072,9 @@ public class ExpressionTestSuite extends TestSuite {
         test.addUnsupportedPlatform(SybasePlatform.class);
         addTest(test);
     }
-    
+
     /**
-     * Ensure certain operators work on multiple platforms.  This tests the NULLIF SQL statement 
+     * Ensure certain operators work on multiple platforms.  This tests the NULLIF SQL statement
      * Added for JPA 2.0 CASE support (bug 252491)
      */
     private void addMultiPlatformTest4() {
@@ -1088,9 +1088,9 @@ public class ExpressionTestSuite extends TestSuite {
         /*TODO: add in any unsupported platform checks*/
         addTest(test);
     }
-    
+
     /**
-     * Ensure certain operators work on multiple platforms.  This tests the COALESCE SQL statement 
+     * Ensure certain operators work on multiple platforms.  This tests the COALESCE SQL statement
      * Added for JPA 2.0 CASE support (bug 252491)
      */
     private void addMultiPlatformTest5() {
@@ -1631,7 +1631,7 @@ public class ExpressionTestSuite extends TestSuite {
 
         addTest(test);
     }
-    
+
     private void addSelectionObjectWithoutPrepareTest() {
         Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0002");
         ReadObjectQuery query = new ReadObjectQuery(employee);
@@ -1690,9 +1690,9 @@ public class ExpressionTestSuite extends TestSuite {
         // ET. The test doesn't work with DB2 jcc driver(Bug 4563813)
         addAdvancedDB2ExpressionFunctionTest();
         addInCollectionTest();
-        // Bug 247076 - LiteralExpression does not print SQL in statement 
+        // Bug 247076 - LiteralExpression does not print SQL in statement
         addTest(new LiteralExpressionTest());
-        // Bug 284884 - Quoted '?' symbol in expression literal causes ArrayIndexOutOfBoundsException 
+        // Bug 284884 - Quoted '?' symbol in expression literal causes ArrayIndexOutOfBoundsException
         addTest(new LiteralSQLExpressionWithQuestionMarkTest("'?'", true));
         addTest(new LiteralSQLExpressionWithQuestionMarkTest("'?'", false));
         addTest(new LiteralSQLExpressionWithQuestionMarkTest("'???'", true));
@@ -1703,9 +1703,9 @@ public class ExpressionTestSuite extends TestSuite {
         addTest(new LiteralSQLExpressionWithQuestionMarkTest("' 123?123 '", false));
         addTest(new LiteralSQLExpressionWithQuestionMarkTest("' 123 ? 123 '", true));
         addTest(new LiteralSQLExpressionWithQuestionMarkTest("' 123 ? 123 '", false));
-        
+
         addRegexpTest();
-        
+
         // Bug 384223 - add flag for case insensitive Expressions to use lower case, instead of upper case
         addTest(new LowerCaseForCaseInsensitiveTest(LowerCaseForCaseInsensitiveTest.EqualsIgnoreCase));
         addTest(new LowerCaseForCaseInsensitiveTest(LowerCaseForCaseInsensitiveTest.LikeIgnoreCase));
@@ -1846,38 +1846,38 @@ public class ExpressionTestSuite extends TestSuite {
         addMultiPlatformTest3();
         addMultiPlatformTest4();
         addMultiPlatformTest5();
-        
+
         addInheritanceTypeTest1();
         addInheritanceTypeTest2();
         addInheritanceTypeTest3();
     }
-    
+
     //bug:277509 Entity type expressions
     private void addInheritanceTypeTest1() {
         ExpressionBuilder builder = new ExpressionBuilder(Project.class);
-        
+
         Expression expression = builder.type().equal(SmallProject.class);
-       
+
         ReadAllExpressionTest test = new ReadAllExpressionTest(Project.class, 10);
         test.setExpression(expression);
         test.setName("InheritanceTypeTest1");
         test.setDescription("Test ClassForInheritance expression using an equals comparison.");
         addTest(test);
     }
-    
+
     //bug:277509 Entity type expressions
     private void addInheritanceTypeTest2() {
         ExpressionBuilder builder = new ExpressionBuilder(Project.class);
-        
+
         Expression expression = builder.type().equal(LargeProject.class);
-       
+
         ReadAllExpressionTest test = new ReadAllExpressionTest(Project.class, 5);
         test.setExpression(expression);
         test.setName("InheritanceTypeTest2");
         test.setDescription("Test ClassForInheritance expression using an equals comparison.");
         addTest(test);
     }
-    
+
     //bug:277509 Entity type expressions
     private void addInheritanceTypeTest3() {
         ExpressionBuilder builder = new ExpressionBuilder(Project.class);
@@ -1885,7 +1885,7 @@ public class ExpressionTestSuite extends TestSuite {
         classes.add(LargeProject.class);
         classes.add(SmallProject.class);
         Expression expression = builder.type().in(classes);
-       
+
         ReadAllExpressionTest test = new ReadAllExpressionTest(Project.class, 15);
         test.setExpression(expression);
         test.setName("InheritanceTypeTest3");
@@ -1893,7 +1893,7 @@ public class ExpressionTestSuite extends TestSuite {
         addTest(test);
     }
 
-    
+
     private void addTransformationTest() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("gender").equal("Male");

@@ -92,7 +92,7 @@ public abstract class Marshaller<
     }
 
     /**
-     * Get the encoding set on this Marshaller.  If the encoding has not been 
+     * Get the encoding set on this Marshaller.  If the encoding has not been
      * set the default UTF-8 will be used
      */
     public String getEncoding() {
@@ -131,7 +131,7 @@ public abstract class Marshaller<
        }
        return marshalProperties.get(key);
    }
-    
+
     /**
      * INTERNAL
      * @return the transformer instance for this Marshaller
@@ -160,7 +160,7 @@ public abstract class Marshaller<
     }
 
     /**
-    * Returns if this Marshaller should format the output.  By default this is 
+    * Returns if this Marshaller should format the output.  By default this is
     * set to true and the marshalled output will be formatted.
     * @return if this Marshaller should format the output
     */
@@ -169,13 +169,13 @@ public abstract class Marshaller<
     }
 
     /**
-     * Determine if the root not should be marshalled.  This property may 
-     * ignored for media types that require a root node such as XML. 
+     * Determine if the root not should be marshalled.  This property may
+     * ignored for media types that require a root node such as XML.
      */
     public abstract boolean isIncludeRoot();
 
     /**
-     * Property to determine if size 1 any collections should be treated as 
+     * Property to determine if size 1 any collections should be treated as
      * collections.
      */
     public abstract boolean isReduceAnyArrays();
@@ -191,7 +191,7 @@ public abstract class Marshaller<
     }
 
     /**
-     * Set the encoding on this Marshaller.  If the encoding is not set the 
+     * Set the encoding on this Marshaller.  If the encoding is not set the
      * default UTF-8 will be used.
      * @param newEncoding the encoding to set on this Marshaller
      */
@@ -220,7 +220,7 @@ public abstract class Marshaller<
     }
 
     /**
-     * Set the String that will be used to perform indenting in marshalled 
+     * Set the String that will be used to perform indenting in marshalled
      * documents.
      * @since 2.3.3
      */
@@ -233,7 +233,7 @@ public abstract class Marshaller<
     }
 
     /**
-     * NamespacePrefixMapper that can be used during marshal (instead of those 
+     * NamespacePrefixMapper that can be used during marshal (instead of those
      * set in the project meta data)
      */
     public void setNamespacePrefixMapper(NAMESPACE_PREFIX_MAPPER mapper) {
@@ -241,7 +241,7 @@ public abstract class Marshaller<
     }
 
     /**
-     * <p>An implementation of Marshaller.Listener can be set on an Marshaller 
+     * <p>An implementation of Marshaller.Listener can be set on an Marshaller
      * to provide additional behaviour during marshal operations.</p>
      */
     public static interface Listener {
@@ -252,7 +252,7 @@ public abstract class Marshaller<
          * @param target The object that was marshalled.
          */
         public void afterMarshal(Object target);
-        
+
         /**
          * This event will be called before an object is marshalled.
          *

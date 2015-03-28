@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,19 +18,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class TransportType {
-	
-	@XmlElement
-	public int transportTypeID;
-	
-	@XmlElement
-	public double transportCost;
-	
-	public boolean equals(Object obj) {
+
+    @XmlElement
+    public int transportTypeID;
+
+    @XmlElement
+    public double transportCost;
+
+    public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof TransportType)) {
             return false;
         }
         TransportType t = (TransportType) obj;
-        
+
         return t.transportTypeID == this.transportTypeID && t.transportCost == this.transportCost;
-	}
+    }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -18,15 +18,15 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  * Simple class for storing address information.
  **/
 public class Address {
-	private String street;
-	private String city;
-	private String state;
-	private String zip;
+    private String street;
+    private String city;
+    private String state;
+    private String zip;
 /**
  * Construct a new Address object
  */
 public Address() {
-	super();
+    super();
 }
 public static void addToDescriptor(ClassDescriptor desc) {
 }
@@ -37,7 +37,7 @@ public static void addToDescriptor(ClassDescriptor desc) {
  * @return java.lang.String
  */
 public String getCity() {
-	return this.city;
+    return this.city;
 }
 /**
  * Return the state of this Address object.
@@ -46,7 +46,7 @@ public String getCity() {
  * @return java.lang.String
  */
 public String getState() {
-	return this.state;
+    return this.state;
 }
 /**
  * Return the street address of this Address object
@@ -55,7 +55,7 @@ public String getState() {
  * @return java.lang.String
  */
 public String getStreet() {
-	return this.street;
+    return this.street;
 }
 /**
  * Return the zip code of this Address object
@@ -64,7 +64,7 @@ public String getStreet() {
  * @return java.lang.String
  */
 public String getZip() {
-	return this.zip;
+    return this.zip;
 }
 /**
  * Set the city for this address object.
@@ -73,7 +73,7 @@ public String getZip() {
  * @param newValue java.lang.String
  */
 public void setCity(String newValue) {
-	this.city = newValue;
+    this.city = newValue;
 }
 /**
  * Set the state for this address object.
@@ -82,7 +82,7 @@ public void setCity(String newValue) {
  * @param newValue java.lang.String
  */
 public void setState(String newValue) {
-	this.state = newValue;
+    this.state = newValue;
 }
 /**
  * Set the street for this address object
@@ -91,7 +91,7 @@ public void setState(String newValue) {
  * @param newValue java.lang.String
  */
 public void setStreet(String newValue) {
-	this.street = newValue;
+    this.street = newValue;
 }
 /**
  * Set the zip code for this address object
@@ -100,7 +100,7 @@ public void setStreet(String newValue) {
  * @param newValue java.lang.String
  */
 public void setZip(String newValue) {
-	this.zip = newValue;
+    this.zip = newValue;
 }
 /**
  * Returns a String which contains the entire address on one line.
@@ -109,6 +109,6 @@ public void setZip(String newValue) {
  */
 @Override
 public String toString() {
-	return getStreet() + ", " + getCity() + ", " + getState() + " " + getZip();
+    return getStreet() + ", " + getCity() + ", " + getState() + " " + getZip();
 }
 }

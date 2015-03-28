@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,30 +22,30 @@ public class Customer {
 
     @XmlAttribute(name="customerID")
     public String id;
-    
+
     @XmlElement(name="name")
     public String name;
 
     @XmlID
     public String getCustomerID(){
-    	return id;
+        return id;
     }
     public void setCustomerID(String id){
-    	this.id = id;
+        this.id = id;
     }
 
     public String getName(){
-    	return name;
+        return name;
     }
     public void setName(String name){
-    	this.name = name;
+        this.name = name;
     }
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Customer)) {
             return false;
         }
         Customer customer = (Customer) obj;
-      
+
         return this.id.equals(customer.id) && this.name.equals(customer.name);
     }
 }

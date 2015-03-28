@@ -1,28 +1,28 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Zoltan NAGY & tware - updated support for MaxRows
- *     11/01/2010-2.2 Guy Pelletier 
+ *     11/01/2010-2.2 Guy Pelletier
  *       - 322916: getParameter on Query throws NPE
- *     11/09/2010-2.1 Michael O'Brien 
+ *     11/09/2010-2.1 Michael O'Brien
  *       - 329089: PERF: EJBQueryImpl.setParamenterInternal() move indexOf check inside non-native block
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     06/20/2012-2.5 Guy Pelletier 
+ *     06/20/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier 
+ *     08/24/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     11/05/2012-2.5 Guy Pelletier 
+ *     11/05/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/11/2012-2.5 Guy Pelletier  
+ *     08/11/2012-2.5 Guy Pelletier
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
@@ -77,7 +77,7 @@ import org.eclipse.persistence.sessions.Session;
  * executed.
  */
 public class QueryImpl {
-    
+
     public static final int UNDEFINED = -1;
 
     /**
@@ -89,8 +89,8 @@ public class QueryImpl {
     protected String queryName = null;
     protected Map<String, Object> parameterValues = null;
     protected Map<String, Parameter<?>> parameters;
-    protected int firstResultIndex = UNDEFINED; 
-    protected int maxResults = UNDEFINED; 
+    protected int firstResultIndex = UNDEFINED;
+    protected int maxResults = UNDEFINED;
 
     protected LockModeType lockMode = null;
 
@@ -108,7 +108,7 @@ public class QueryImpl {
         this.entityManager = entityManager;
         this.isShared = true;
     }
-    
+
     /**
      * Create an EJBQueryImpl with a DatabaseQuery.
      */
@@ -116,15 +116,15 @@ public class QueryImpl {
         this(entityManager);
         this.databaseQuery = query;
     }
-    
-    /** 
-     * This method should be called to close any left over open connection to 
+
+    /**
+     * This method should be called to close any left over open connection to
      * the database (if there is one).
      */
     public void close() {
         // Currently nothing to do at this level. Connections are not left open.
     }
-    
+
     /**
      * INTERNAL:
      * Change the internal query to data modify query.
@@ -139,7 +139,7 @@ public class QueryImpl {
         query.setDatasourceCall((Call) this.databaseQuery.getDatasourceCall().clone());
         this.databaseQuery = query;
     }
-    
+
     /**
      * Internal method to change the wrapped query to a DataModifyQuery if
      * necessary. When created, the query is created as a DataReadQuery as it is
@@ -172,7 +172,7 @@ public class QueryImpl {
     /**
      * Execute a ReadQuery by assigning the stored parameter values and running
      * it in the database
-     * 
+     *
      * @return the results of the query execution
      */
     protected Object executeReadQuery() {
@@ -272,7 +272,7 @@ public class QueryImpl {
 
     /**
      * Execute an update or delete statement.
-     * 
+     *
      * @return the number of entities updated or deleted
      */
     public int executeUpdate() {
@@ -313,7 +313,7 @@ public class QueryImpl {
      * Return the wrapped {@link DatabaseQuery} ensuring that if it
      * {@link #isShared} it is cloned before returning to prevent corruption of
      * the query cache.
-     * 
+     *
      * @see #getDatabaseQueryInternal()
      */
     public DatabaseQuery getDatabaseQuery() {
@@ -328,9 +328,9 @@ public class QueryImpl {
      */
     public DatabaseQuery getDatabaseQueryInternal() {
         if ((this.queryName != null) && (this.databaseQuery == null)) {
-            // Always ask for the query from the active session. Table per 
-            // tenant multitenant entity queries may be isolated per EM meaning 
-            // those queries will not have been initialized (and made available) 
+            // Always ask for the query from the active session. Table per
+            // tenant multitenant entity queries may be isolated per EM meaning
+            // those queries will not have been initialized (and made available)
             // from their parent session.
             this.databaseQuery = this.entityManager.getActiveSessionIfExists().getQuery(this.queryName);
             // need error checking and appropriate exception for non-existing query
@@ -356,10 +356,10 @@ public class QueryImpl {
             }
 
         }
-        
+
         return this.databaseQuery;
     }
-    
+
     /**
      * Given a DatabaseException, this method will determine if we should
      * throw a different more specific exception like a lock timeout exception.
@@ -422,10 +422,10 @@ public class QueryImpl {
 
         return this.parameters;
     }
-    
+
     /**
      * Get the current lock mode for the query.
-     * 
+     *
      * @return lock mode
      * @throws IllegalStateException
      *             if not a Java Persistence query language SELECT query
@@ -442,7 +442,7 @@ public class QueryImpl {
 
     /**
      * Execute the query and return the query results as a List.
-     * 
+     *
      * @return a list of the results
      */
     public List getResultList() {
@@ -484,25 +484,25 @@ public class QueryImpl {
             throw new PersistenceException(exception);
         }
     }
- 
+
     /**
      * Execute a SELECT query that returns a single untyped result.
-     * 
+     *
      * @return the result
      * @throws NoResultException if there is no result
      * @throws NonUniqueResultException if more than one result
-     * @throws IllegalStateException if called for a Java Persistence query 
+     * @throws IllegalStateException if called for a Java Persistence query
      *         language UPDATE or DELETE statement
-     * @throws QueryTimeoutException if the query execution exceeds the query 
+     * @throws QueryTimeoutException if the query execution exceeds the query
      *         timeout value set and only the statement is rolled back
-     * @throws TransactionRequiredException if a lock mode other than NONE has 
-     *         been been set and there is no transaction or the persistence 
+     * @throws TransactionRequiredException if a lock mode other than NONE has
+     *         been been set and there is no transaction or the persistence
      *         context has not been joined to the transaction
-     * @throws PessimisticLockException if pessimistic locking fails and the 
+     * @throws PessimisticLockException if pessimistic locking fails and the
      *         transaction is rolled back
-     * @throws LockTimeoutException if pessimistic locking fails and only the 
+     * @throws LockTimeoutException if pessimistic locking fails and only the
      *         statement is rolled back
-     * @throws PersistenceException if the query execution exceeds the query 
+     * @throws PersistenceException if the query execution exceeds the query
      *         timeout value set and the transaction is rolled back
      */
     public Object getSingleResult() {
@@ -595,7 +595,7 @@ public class QueryImpl {
 
     /**
      * Set the position of the first result to retrieve.
-     * 
+     *
      * @param start
      *            position of the first result, numbered from 0
      * @return the same query instance
@@ -625,7 +625,7 @@ public class QueryImpl {
 
     /**
      * Set the flush mode type to be used for the query execution.
-     * 
+     *
      * @param flushMode
      */
     public QueryImpl setFlushMode(FlushModeType flushMode) {
@@ -643,10 +643,10 @@ public class QueryImpl {
             throw e;
         }
     }
-    
+
     /**
      * Set the position of the first result to retrieve.
-     * 
+     *
      * @param startPosition
      *            position of the first result, numbered from 0.
      */
@@ -674,7 +674,7 @@ public class QueryImpl {
                         query.addArgument(argument.name);
                     }
                 }
-            }            
+            }
         } else {
             for (int index = 0; index < call.getParameters().size(); index++) {
                 int type = call.getParameterTypes().get(index);
@@ -698,7 +698,7 @@ public class QueryImpl {
 
     /**
      * Set implementation-specific hints.
-     * 
+     *
      * @param hints
      *            a list of hints to be applied to the query
      * @param query
@@ -721,11 +721,11 @@ public class QueryImpl {
         }
         return String.valueOf(id);
     }
-    
+
     /**
      * Return a boolean indicating whether a value has been bound to the
      * parameter.
-     * 
+     *
      * @param param
      *            parameter object
      * @return boolean indicating whether parameter has been bound
@@ -753,11 +753,11 @@ public class QueryImpl {
             return entityManager.isFlushModeAUTO();
         }
     }
-    
+
     /**
      * Set an implementation-specific hint. If the hint name is not recognized,
      * it is silently ignored.
-     * 
+     *
      * @throws IllegalArgumentException
      *             if the second argument is not valid for the implementation.
      */
@@ -772,7 +772,7 @@ public class QueryImpl {
 
     /**
      * Set the lock mode type to be used for the query execution.
-     * 
+     *
      * @param lockMode
      * @throws IllegalStateException
      *             if not a Java Persistence query language SELECT query
@@ -811,7 +811,7 @@ public class QueryImpl {
     /**
      * Convert the given object to the class represented by the given temporal
      * type.
-     * 
+     *
      * @return an object representing the given TemporalType.
      */
     protected Object convertTemporalType(Object value, TemporalType type) {
@@ -828,7 +828,7 @@ public class QueryImpl {
 
     /**
      * Set the maximum number of results to retrieve.
-     * 
+     *
      * @param maxResult
      * @return the same query instance
      */
@@ -865,7 +865,7 @@ public class QueryImpl {
 
     /**
      * Set the maximum number of results to retrieve.
-     * 
+     *
      * @param maxResult
      */
     public void setMaxResultsInternal(int maxResult) {
@@ -903,17 +903,17 @@ public class QueryImpl {
 
     /**
      * Bind an argument to a positional parameter.
-     * 
+     *
      * @param position
      * @param value
      */
     protected void setParameterInternal(int position, Object value) {
         setParameterInternal(String.valueOf(position), value, true);
     }
-    
+
     /**
      * Bind an argument to a named or indexed parameter.
-     * 
+     *
      * @param name
      *            the parameter name
      * @param value
@@ -1073,7 +1073,7 @@ public class QueryImpl {
     public <T> T getParameterValue(Parameter<T> param) {
         if (param == null)
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PARAMETER_NILL_NOT_FOUND"));
-        
+
         ParameterExpressionImpl<T> parameter = (ParameterExpressionImpl<T>) this.getInternalParameters().get(getParameterId(param));
         if (parameter == null || !parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
@@ -1081,10 +1081,10 @@ public class QueryImpl {
 
         return (T) this.getParameterValue(getParameterId(param));
     }
-    
+
     /**
      * Return the value bound to the named parameter.
-     * 
+     *
      * @param name
      * @return parameter value
      * @throws IllegalStateException
@@ -1106,7 +1106,7 @@ public class QueryImpl {
 
     /**
      * Return the value bound to the positional parameter.
-     * 
+     *
      * @param position
      * @return parameter value
      * @throws IllegalStateException
@@ -1115,15 +1115,15 @@ public class QueryImpl {
     public Object getParameterValue(int position) {
         entityManager.verifyOpen();//don't rollback transaction
         String param = String.valueOf(position);
-        
+
         if (!getInternalParameters().containsKey(param)) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("position_param_not_found", new Object[] { position }));
         }
-        
+
         if (!this.parameterValues.containsKey(param)) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("position_bound_param_not_found", new Object[] { position }));
         }
-        
+
         return this.parameterValues.get(param);
     }
 
@@ -1147,7 +1147,7 @@ public class QueryImpl {
     /**
      * Unwrap the query into the JPA implementation classes/interfaces or the
      * underlying native EclipseLink query.
-     * 
+     *
      * @see Query#unwrap(Class)
      * @since Java Persistence 2.0
      */

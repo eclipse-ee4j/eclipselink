@@ -9,23 +9,23 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class JAXBXMLComparer extends XMLComparer{
-	
+
     public JAXBXMLComparer() {
         super();
     }
-    
-	/**
+
+    /**
      * Compares two XML documents which represent XML Schemas. Order of declarations should
-     * be ignored. 
+     * be ignored.
      */
     public boolean isSchemaEqual(Document control, Document test) {
         Element controlRoot = control.getDocumentElement();
         Element testRoot = test.getDocumentElement();
-        
+
         if(!(controlRoot.getChildNodes().getLength() == testRoot.getChildNodes().getLength())) {
             return false;
         }
-        
+
         //compare attributes:
         NamedNodeMap controlAttributes = controlRoot.getAttributes();
         NamedNodeMap testAttributes = testRoot.getAttributes();
@@ -49,7 +49,7 @@ public class JAXBXMLComparer extends XMLComparer{
                 return false;
             }
         }
-        
+
         //compare definitions ignoring order and text
         NodeList controlChildren = controlRoot.getChildNodes();
         for(int i = 0; i < controlChildren.getLength(); i++) {

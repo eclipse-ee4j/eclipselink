@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,23 +23,23 @@ package org.eclipse.persistence.jpa.tests.jpql;
 @SuppressWarnings("nls")
 public final class JPQLQueries2_1 {
 
-	private JPQLQueries2_1() {
-		super();
-	}
+    private JPQLQueries2_1() {
+        super();
+    }
 
-	public static String query_001() {
-		return "Select e " +
-		       "From Employee e Join TREAT(e.projects AS LargeProject) lp " +
-		       "Where lp.budget = :value";
-	}
+    public static String query_001() {
+        return "Select e " +
+               "From Employee e Join TREAT(e.projects AS LargeProject) lp " +
+               "Where lp.budget = :value";
+    }
 
-	public static String query_002() {
-		return "Select e " +
-		       "From Employee e Join TREAT(e.projects LargeProject) lp";
-	}
+    public static String query_002() {
+        return "Select e " +
+               "From Employee e Join TREAT(e.projects LargeProject) lp";
+    }
 
-	public static String query_003() {
-		return "SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate " +
-	          "FROM Product p";
-	}
+    public static String query_003() {
+        return "SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate " +
+              "FROM Product p";
+    }
 }

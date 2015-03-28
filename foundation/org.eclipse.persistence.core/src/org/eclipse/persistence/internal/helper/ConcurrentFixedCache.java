@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
 import java.io.Serializable;
@@ -32,7 +32,7 @@ public class ConcurrentFixedCache implements Serializable {
     public ConcurrentFixedCache() {
         this(100);
     }
-        
+
     /**
      * Create a new concurrent cache, with the max size.
      */
@@ -65,7 +65,7 @@ public class ConcurrentFixedCache implements Serializable {
     public Object get(Object key) {
         return this.cache.get(key);
     }
-    
+
     public void clear(){
         this.cache.clear();
     }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.identitymaps;
 
 import java.util.*;
@@ -21,8 +21,8 @@ import org.eclipse.persistence.sessions.*;
 
 /**
  * Bug 5840635
- * Ensure that adding a new CacheKey with a null object reference to 
- * SoftCacheWeakIdentityMap during a phase of putting objects into the 
+ * Ensure that adding a new CacheKey with a null object reference to
+ * SoftCacheWeakIdentityMap during a phase of putting objects into the
  * IdentityMap does not result in the existing IdentityMap entries getting removed.
  * @author David Minsky
  */
@@ -33,26 +33,26 @@ public class CleanupCacheKeyCorrectnessTest extends TestCase {
     protected int originalIdentityMapSize;
     protected int newIdentityMapSize;
     protected int numberOfObjectsToCreate;
-    protected int objectsNotFoundInIdentityMap;    
+    protected int objectsNotFoundInIdentityMap;
 
     public CleanupCacheKeyCorrectnessTest() {
         super();
         setDescription("This test verifies that CacheKeys with null object references aren't removed when calling IdentityMap.put()");
     }
-    
+
     public void setup() {
         originalIdentityMapClass = getSession().getDescriptor(Employee.class).getIdentityMapClass();
         originalIdentityMapSize = getSession().getDescriptor(Employee.class).getIdentityMapSize();
-        
+
         newIdentityMapClass = SoftCacheWeakIdentityMap.class;
         newIdentityMapSize = 5;
-        
+
         objectsNotFoundInIdentityMap = 0;
         numberOfObjectsToCreate = newIdentityMapSize * 5;
-       
+
         getSession().getDescriptor(Employee.class).setIdentityMapClass(newIdentityMapClass);
         getSession().getDescriptor(Employee.class).setIdentityMapSize(newIdentityMapSize);
-        
+
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         beginTransaction();
     }
@@ -67,7 +67,7 @@ public class CleanupCacheKeyCorrectnessTest extends TestCase {
     public void test() {
         List employees = new ArrayList<Employee>(numberOfObjectsToCreate);
 
-        UnitOfWork uow = getSession().acquireUnitOfWork();        
+        UnitOfWork uow = getSession().acquireUnitOfWork();
         for (int i = 0; i < numberOfObjectsToCreate; i++) {
             int identifier = i + 1;
             Employee employee = new Employee();
@@ -77,7 +77,7 @@ public class CleanupCacheKeyCorrectnessTest extends TestCase {
             uow.registerObject(employee);
         }
         uow.commit();
-        
+
         for (Iterator<Employee> iter = employees.iterator(); iter.hasNext();) {
             Employee employee = iter.next();
             // if the IdentityMap does not contain the employee object, increment failure count
@@ -86,7 +86,7 @@ public class CleanupCacheKeyCorrectnessTest extends TestCase {
             }
         }
     }
-    
+
     public void verify() {
         if (objectsNotFoundInIdentityMap > 0) {
             StringBuffer buffer = new StringBuffer();

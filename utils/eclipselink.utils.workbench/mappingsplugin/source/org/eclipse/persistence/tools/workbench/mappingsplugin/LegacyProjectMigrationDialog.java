@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -33,98 +33,98 @@ import org.eclipse.persistence.tools.workbench.uitools.LabelArea;
 
 public final class LegacyProjectMigrationDialog extends AbstractDialog {
 
-	private boolean saveLater;
-	
-	// ************ constructors / initialization ****************
-	
-	LegacyProjectMigrationDialog(WorkbenchContext context) {
-		super(context);
-	}
-		
-	protected void initialize() {
-		super.initialize();
-		this.saveLater = false;
-	}
-		
-	protected Component buildMainPanel() {
-		
-		JPanel mainPanel = new JPanel(new GridBagLayout());
-		GridBagConstraints constraints = new GridBagConstraints();
+    private boolean saveLater;
 
-		setTitle(resourceRepository().getString("PROJECT_LEGACY_MIGRATION_DIALOG_TITLE"));
-		
-		JLabel iconLabel = new JLabel(resourceRepository().getIcon("warning.large"));
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.weightx = 0;
-		constraints.weighty = 1;
-		constraints.fill = GridBagConstraints.NONE;
-		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
-		constraints.insets = new Insets(0, 10, 0, 0);
-		mainPanel.add(iconLabel, constraints);
-		
-		LabelArea label = new LabelArea(resourceRepository().getString("PROJECT_LEGACY_MIGRATION_DIALOG_WARNING"));
-		constraints.gridx = 1;
-		constraints.gridy = 0;
-		constraints.weightx = 1;
-		constraints.weighty = 1;
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
-		constraints.insets = new Insets(10, 10, 0, 10);
-		mainPanel.add(label, constraints);
+    // ************ constructors / initialization ****************
 
-		return mainPanel;
-	}
-	
-	// ********** opening **********
+    LegacyProjectMigrationDialog(WorkbenchContext context) {
+        super(context);
+    }
 
-	protected String helpTopicId() {
-		return "dialog.projectLegacyMigration";
-	}
+    protected void initialize() {
+        super.initialize();
+        this.saveLater = false;
+    }
 
-	protected Component initialFocusComponent() {
-		return getButtonFor(getOKAction());
-	}
-	
-	protected Iterator buildCustomActions() {
-		Collection customActions = new ArrayList();
-		customActions.add(buildSaveLaterAction());
-		return customActions.iterator();
-	}
+    protected Component buildMainPanel() {
 
-	// ********** OK action **********
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
 
-	protected String buildOKText() {
-		return this.resourceRepository().getString("PROJECT_LEGACY_MIGRATION_DIALOG_SAVE_NOW");
-	}
+        setTitle(resourceRepository().getString("PROJECT_LEGACY_MIGRATION_DIALOG_TITLE"));
 
-	// ********** save later action **********
+        JLabel iconLabel = new JLabel(resourceRepository().getIcon("warning.large"));
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.FIRST_LINE_START;
+        constraints.insets = new Insets(0, 10, 0, 0);
+        mainPanel.add(iconLabel, constraints);
 
-	protected Action buildSaveLaterAction() {
-		return new AbstractAction(this.buildSaveLaterText()) {
-			public void actionPerformed(ActionEvent e) {
-				LegacyProjectMigrationDialog.this.saveLaterPressed();
-			}
-		};
-	}	
+        LabelArea label = new LabelArea(resourceRepository().getString("PROJECT_LEGACY_MIGRATION_DIALOG_WARNING"));
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.FIRST_LINE_START;
+        constraints.insets = new Insets(10, 10, 0, 10);
+        mainPanel.add(label, constraints);
 
-	protected String buildSaveLaterText() {
-		return this.resourceRepository().getString("PROJECT_LEGACY_MIGRATION_DIALOG_SAVE_LATER");
-	}
+        return mainPanel;
+    }
 
-	protected void saveLaterPressed() {
-		this.saveLater = true;
-		this.dispose();
-		
-	}
-	
-	public boolean wasConfirmed() {
-		// return true if the user clicked either "save now" or "save later"
-		return super.wasConfirmed() || this.saveLater;
-	}
-	
-	public boolean saveLater() {
-		return this.saveLater;
-	}
+    // ********** opening **********
+
+    protected String helpTopicId() {
+        return "dialog.projectLegacyMigration";
+    }
+
+    protected Component initialFocusComponent() {
+        return getButtonFor(getOKAction());
+    }
+
+    protected Iterator buildCustomActions() {
+        Collection customActions = new ArrayList();
+        customActions.add(buildSaveLaterAction());
+        return customActions.iterator();
+    }
+
+    // ********** OK action **********
+
+    protected String buildOKText() {
+        return this.resourceRepository().getString("PROJECT_LEGACY_MIGRATION_DIALOG_SAVE_NOW");
+    }
+
+    // ********** save later action **********
+
+    protected Action buildSaveLaterAction() {
+        return new AbstractAction(this.buildSaveLaterText()) {
+            public void actionPerformed(ActionEvent e) {
+                LegacyProjectMigrationDialog.this.saveLaterPressed();
+            }
+        };
+    }
+
+    protected String buildSaveLaterText() {
+        return this.resourceRepository().getString("PROJECT_LEGACY_MIGRATION_DIALOG_SAVE_LATER");
+    }
+
+    protected void saveLaterPressed() {
+        this.saveLater = true;
+        this.dispose();
+
+    }
+
+    public boolean wasConfirmed() {
+        // return true if the user clicked either "save now" or "save later"
+        return super.wasConfirmed() || this.saveLater;
+    }
+
+    public boolean saveLater() {
+        return this.saveLater;
+    }
 
 }

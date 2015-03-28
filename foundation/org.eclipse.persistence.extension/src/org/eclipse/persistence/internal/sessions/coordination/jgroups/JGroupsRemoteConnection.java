@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.coordination.jgroups;
 
 import org.eclipse.persistence.internal.helper.Helper;
@@ -35,7 +35,7 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
     protected JChannel channel;
     // indicates whether it's a local connection.
     protected boolean isLocal;
-    
+
     /**
      * INTERNAL:
      * Constructor creating either a local or external connection.
@@ -61,7 +61,7 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
             throw ex;
         }
     }
-    
+
     /**
      * Creates local connections.
      */
@@ -78,7 +78,7 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
     public boolean isLocal() {
         return isLocal;
     }
-    
+
     /**
      * INTERNAL:
      * Execute the remote command. The result of execution is returned.
@@ -92,19 +92,19 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
         } else {
             message = new Message(null, null, command);
         }
-            
+
         Object[] debugInfo = null;
         if(this.rcm.shouldLogDebugMessage()) {
             debugInfo = logDebugBeforePublish(null);
         }
-            
+
         this.channel.send(message);
-            
+
         // debug logging is on
         if (debugInfo != null) {
             logDebugAfterPublish(debugInfo, null);
         }
-        
+
         return null;
     }
 
@@ -126,13 +126,13 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
             if (serializer != null) {
                 object = serializer.deserialize(message.getBuffer(), (AbstractSession)this.rcm.getCommandProcessor());
             } else {
-                object = message.getObject();            
+                object = message.getObject();
             }
         } catch (Exception exception) {
             failDeserializeMessage(null, exception);
             return;
         }
-        
+
         processReceivedObject(object, messageId);
     }
 

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors.invalidation;
 
 import java.util.Random;
@@ -38,10 +38,10 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable, C
 
     /** Determines if expired object registered in the unit of work should be refreshed, default true. */
     protected boolean shouldRefreshInvalidObjectsOnClone = true;
-    
+
     /** Allows the timeToLive to be randomized to avoid bottlenecks. */
     protected boolean isInvalidationRandomized = false;
-    
+
     /** Random used for randomized invalidation. */
     protected Random random;
 
@@ -63,7 +63,7 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable, C
             this.random = new Random();
         }
     }
-    
+
     /**
      * INTERNAL:
      * Get the next time when this object will become invalid
@@ -88,7 +88,7 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable, C
      * Allow initialization with the descriptor.
      */
     public void initialize(ClassDescriptor descriptor, AbstractSession session) {
-        
+
     }
 
     /**
@@ -98,7 +98,7 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable, C
     public boolean isInvalidated(CacheKey key) {
         return isInvalidated(key, System.currentTimeMillis());
     }
-    
+
     /**
      * INTERNAL:
      * return true if this object is expire, false otherwise.
@@ -127,8 +127,8 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable, C
     public boolean shouldUpdateReadTimeOnUpdate() {
         return shouldUpdateReadTimeOnUpdate;
     }
-    
-    /** 
+
+    /**
      * PUBLIC:
      * Set if expired object registered in the unit of work should be refreshed, default is true.
      * @deprecated since EclipseLink 2.2
@@ -138,15 +138,15 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable, C
     public void setShouldRefreshInvalidObjectsInUnitOfWork(boolean shouldRefreshInvalidObjectsInUnitOfWork) {
         this.shouldRefreshInvalidObjectsOnClone = shouldRefreshInvalidObjectsInUnitOfWork;
     }
-    
-    /** 
+
+    /**
      * PUBLIC:
      * Set if expired object should be refreshed prior to cloning, default is true.  Applies to Protected Entities and UnitOfWork registration.
      */
     public void setShouldRefreshInvalidObjectsOnClone(boolean shouldRefreshInvalidObjectsOnClone) {
         this.shouldRefreshInvalidObjectsOnClone = shouldRefreshInvalidObjectsOnClone;
     }
-    /** 
+    /**
      * PUBLIC:
      * Return if expired object registered in the unit of work should be refreshed.
      * @deprecated since EclipseLink 2.2
@@ -156,27 +156,27 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable, C
     public boolean shouldRefreshInvalidObjectsInUnitOfWork() {
         return shouldRefreshInvalidObjectsOnClone;
     }
-    /** 
+    /**
      * PUBLIC:
      * Return if expired object should be refreshed prior to cloning.  Applies to Protected Entities and UnitOfWork registration.
-     */ 
-    
+     */
+
     public boolean shouldRefreshInvalidObjectsOnClone() {
         return shouldRefreshInvalidObjectsOnClone;
     }
-    
+
     public Object clone() {
         CacheInvalidationPolicy clone = null;
-        
+
         try {
             clone = (CacheInvalidationPolicy)super.clone();
             clone.setShouldUpdateReadTimeOnUpdate(this.shouldUpdateReadTimeOnUpdate);
             clone.setShouldRefreshInvalidObjectsOnClone(this.shouldRefreshInvalidObjectsOnClone);
-            clone.setIsInvalidationRandomized(this.isInvalidationRandomized);            
+            clone.setIsInvalidationRandomized(this.isInvalidationRandomized);
         } catch (Exception exception) {
             throw new InternalError("clone failed");
         }
-        
+
         return clone;
     }
 }

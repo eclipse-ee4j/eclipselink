@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     rbarkhouse - 2009-03-13 09:49:35 - initial implementation 
- ******************************************************************************/  
+ *     rbarkhouse - 2009-03-13 09:49:35 - initial implementation
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.load;
 
 import commonj.sdo.DataObject;
@@ -31,10 +31,10 @@ public class StringWrapperBug268335TestCases extends SDOXMLHelperLoadTestCases {
 
     protected void verifyDocument(XMLDocument document) {
         super.verifyDocument(document);
-        
+
         DataObject stringDO = document.getRootObject();
         String doClassName = stringDO.getClass().getCanonicalName();
-        
+
         // Test that the root object's class is an instance of StringWrapperImpl,
         // not StringsWrapperImpl (bug 268335)
         assertEquals("The wrong wrapper type was created.", doClassName, "org.eclipse.persistence.sdo.types.SDOWrapperType.StringWrapperImpl");

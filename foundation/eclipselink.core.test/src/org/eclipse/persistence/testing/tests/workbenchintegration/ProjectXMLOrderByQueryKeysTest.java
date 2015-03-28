@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import java.util.List;
@@ -28,9 +28,9 @@ import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 /**
  * Tests that the order by query keys are properly persisted to the deployment
  * xml.
- * 
+ *
  * @author Guy Pelletier
- * @version 1.0 
+ * @version 1.0
  * @date March 11, 2005
  */
 public class ProjectXMLOrderByQueryKeysTest extends TestCase {
@@ -45,7 +45,7 @@ public class ProjectXMLOrderByQueryKeysTest extends TestCase {
 
     public void test() {
         Project project = new EmployeeProject();
-        CollectionMapping mapping = 
+        CollectionMapping mapping =
             (CollectionMapping)project.getDescriptor(Employee.class).getMappingForAttributeName(ATTRIBUTE_NAME);
 
         // Add the new order by query keys to the mapping
@@ -60,7 +60,7 @@ public class ProjectXMLOrderByQueryKeysTest extends TestCase {
         XMLProjectWriter.write(TEMP_FILE, project);
 
         project = XMLProjectReader.read(TEMP_FILE, getClass().getClassLoader());
-        mapping = 
+        mapping =
                 (CollectionMapping)project.getDescriptor(Employee.class).getMappingForAttributeName(ATTRIBUTE_NAME);
 
         // Store the query keys after reading them back in again
@@ -75,9 +75,9 @@ public class ProjectXMLOrderByQueryKeysTest extends TestCase {
 
         // check that each is in the same order as they were set.
         for (int i = 0; i < m_queryKeyExpressionsBeforeWrite.size(); i++) {
-            String key1 = 
+            String key1 =
                 ((FunctionExpression)m_queryKeyExpressionsBeforeWrite.get(i)).getBaseExpression().getName();
-            String key2 = 
+            String key2 =
                 ((FunctionExpression)m_queryKeyExpressionsAfterWrite.get(i)).getBaseExpression().getName();
 
             if (!key1.equals(key2)) {

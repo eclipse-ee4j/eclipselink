@@ -6,7 +6,7 @@
 
         <!-- mapping files that are packaged in xml-only-model-tests.jar. -->
         <mapping-file>META-INF/advanced-entity-mappings.xml</mapping-file>
-        <!-- inheritance-entity-mappings.xml is packaged as META-INF/orm.xml 
+        <!-- inheritance-entity-mappings.xml is packaged as META-INF/orm.xml
              to test default listeners are added only once (GF #589) as well as
              to test that we can read orm.xml from referenced jar(GF #1131)
              See build.xml for more details.
@@ -30,7 +30,7 @@
         <!-- this is here for testing purposes GF #588, do not remove. -->
         <class>org.eclipse.persistence.testing.models.jpa.xml.inherited.Beer</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
-        
+
         <properties>
             <!-- JDBC properties will be given by test.properties file in runtime -->
             <property name="eclipselink.session-name" value="default-session"/>
@@ -68,13 +68,13 @@
             <property name="NAME" value="Montreal%"/>
             <!-- Since we don't exclude unlisted classes here, we will       -->
             <!-- eventually hit the multitenant entities which turn native   -->
-            <!-- sql queries off by default, so we need to be explicit here  --> 
+            <!-- sql queries off by default, so we need to be explicit here  -->
             <!--  and turn them on                                           -->
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
             <property name="eclipselink.session-event-listener" value="org.eclipse.persistence.testing.models.jpa.inheritance.listeners.SessionListener"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="default1">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
@@ -82,19 +82,19 @@
             <property name="eclipselink.logging.level" value="OFF"/>
             <!-- Since we don't exclude unlisted classes here, we will       -->
             <!-- eventually hit the multitenant entities which turn native   -->
-            <!-- sql queries off by default, so we need to be explicit here  --> 
+            <!-- sql queries off by default, so we need to be explicit here  -->
             <!--  and turn them on                                           -->
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="ignore" transaction-type="JTA">
         <description>This PU is for validation purpose only - it should not
                 break the rest of the tests</description>
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <jta-data-source>jdbc/__default</jta-data-source>
     </persistence-unit>
-    
+
     <persistence-unit name="isolated1053">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.relationships.Item</class>
@@ -104,7 +104,7 @@
             <property name="eclipselink.cache.shared.default" value="false"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="ALL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
@@ -125,7 +125,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ALL</shared-cache-mode>
     </persistence-unit>
-    
+
     <persistence-unit name="NONE">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
@@ -146,7 +146,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
     </persistence-unit>
-    
+
     <persistence-unit name="ENABLE_SELECTIVE">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
@@ -173,7 +173,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
     </persistence-unit>
-    
+
     <persistence-unit name="DISABLE_SELECTIVE">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
@@ -195,7 +195,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
     </persistence-unit>
-    
+
     <persistence-unit name="UNSPECIFIED">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
@@ -216,7 +216,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>UNSPECIFIED</shared-cache-mode>
     </persistence-unit>
-    
+
     <!-- following persistence unit is for CASE_SENSITIVITY testing-->
     <persistence-unit name="MulitPU-1">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
@@ -226,24 +226,24 @@
           <property name="eclipselink.jpa.uppercase-column-names" value="true"/>
           <!-- Since we don't exclude unlisted classes here, we will       -->
           <!-- eventually hit the multitenant entities which turn native   -->
-          <!-- sql queries off by default, so we need to be explicit here  --> 
+          <!-- sql queries off by default, so we need to be explicit here  -->
           <!--  and turn them on                                           -->
           <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="METADATA_COMPLETE">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/metadata-complete-mappings.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
-    
+
     <persistence-unit name="XML_MAPPING_METADATA_COMPLETE">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/xml-mapping-metadata-complete-mappings.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
-    
+
     <persistence-unit name="customizeAddTarget">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
@@ -252,12 +252,12 @@
             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.AddTargetCustomizer"/>
             <!-- Since we don't exclude unlisted classes here, we will       -->
             <!-- eventually hit the multitenant entities which turn native   -->
-            <!-- sql queries off by default, so we need to be explicit here  --> 
+            <!-- sql queries off by default, so we need to be explicit here  -->
             <!--  and turn them on                                           -->
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="multi-tenant-shared-emf">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss</class>
@@ -282,12 +282,12 @@
             <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
             <!-- Since we don't exclude unlisted classes here, we will       -->
             <!-- eventually hit the multitenant entities which turn native   -->
-            <!-- sql queries off by default, so we need to be explicit here  --> 
+            <!-- sql queries off by default, so we need to be explicit here  -->
             <!--  and turn them on                                           -->
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="multi-tenant-123">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss</class>
@@ -311,7 +311,7 @@
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="false"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="multi-tenant-vpd">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/multitenant-vpd.xml</mapping-file>
@@ -337,7 +337,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Trowel</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
-    
+
     <persistence-unit name="multi-tenant-table-per-tenant-C">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Candidate</class>
@@ -386,33 +386,33 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 
-	<persistence-unit name="invalid-named-query">
-		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-		<mapping-file>META-INF/orm-invalid-named-query.xml</mapping-file>
-		<class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor</class>
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
-	</persistence-unit>
-	
-	<persistence-unit name="invalid-named-query-tolerate">
-		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-		<mapping-file>META-INF/orm-invalid-named-query.xml</mapping-file>
-		<class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor</class>
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
-		<properties>
-			<property name="eclipselink.tolerate-invalid-jpql" value="true"/>
-		</properties>
-	</persistence-unit>
-	
-	<persistence-unit name="invalid-named-query-validation-only">
-		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-		<mapping-file>META-INF/orm-invalid-named-query.xml</mapping-file>
-		<class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor</class>
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
-		<properties>
-			<property name="eclipselink.tolerate-invalid-jpql" value="true"/>
-			<property name="eclipselink.validation-only" value="true"/>
-		</properties>
-	</persistence-unit>
+    <persistence-unit name="invalid-named-query">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/orm-invalid-named-query.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+
+    <persistence-unit name="invalid-named-query-tolerate">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/orm-invalid-named-query.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.tolerate-invalid-jpql" value="true"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="invalid-named-query-validation-only">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/orm-invalid-named-query.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.tolerate-invalid-jpql" value="true"/>
+            <property name="eclipselink.validation-only" value="true"/>
+        </properties>
+    </persistence-unit>
 
     <!-- Advanced customer model persistence unit. -->
     <persistence-unit name="customer-pu" transaction-type="RESOURCE_LOCAL">

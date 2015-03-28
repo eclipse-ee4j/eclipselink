@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -52,7 +52,7 @@ import org.eclipse.persistence.sessions.Session;
  * <li>Write out approriate attachment information (xop:include) </li>
  * </ul>
  *  <p>XMLBinaryDataMapping represents a mapping of binary data in the object model
- *  to XML. This can either be written directly as inline binary data (base64) or 
+ *  to XML. This can either be written directly as inline binary data (base64) or
  *  passed through as an MTOM or SWAREF attachment.
  *  <p>The following typed are allowable to be mapped using an XMLBinaryDataMapping:<ul>
  *  <li>java.awt.Image</li>
@@ -66,13 +66,13 @@ import org.eclipse.persistence.sessions.Session;
  * The XPath may contain path and positional information;  the last node in the XPath forms the local
  * node for the binary mapping. The XPath is specified on the mapping using the <code>setXPath</code>
  * method.
- * 
+ *
  * <p><b>Inline Binary Data</b>: Set this flag if you want to always inline binary data for this mapping.
  * This will disable consideration for attachment handling for this mapping.
- * 
+ *
  * <p><b>SwaRef</b>: Set this flag in order to specify that the target node of this mapping is of type
  * xs:swaref
- *   
+ *
  *  @see org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller
  *  @see org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller
  *  @see org.eclipse.persistence.oxm.mappings.MimeTypePolicy
@@ -162,7 +162,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
             if(getNullPolicy() != null && !field.getXPathFragment().isSelfFragment()) {
                getNullPolicy().directMarshal((Field) this.getField(), (XMLRecord) row, object);
             }
-            return;            
+            return;
         }
         writeSingleValue(attributeValue, object, (XMLRecord) row, session);
     }
@@ -204,12 +204,12 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
             String elementName = field.getLastXPathFragment().getLocalName();
             String namespaceUri = field.getLastXPathFragment().getNamespaceURI();
             if(field.getLastXPathFragment().isSelfFragment()) {
-            	//If it's a self mapping, get the element from the DOM record
-            	DOMRecord domRecord = (DOMRecord)record;
-            	if(domRecord.getDOM().getNodeType() == Node.ELEMENT_NODE) {
-            		elementName = domRecord.getDOM().getLocalName();
-            		namespaceUri = domRecord.getDOM().getNamespaceURI();
-            	}
+                //If it's a self mapping, get the element from the DOM record
+                DOMRecord domRecord = (DOMRecord)record;
+                if(domRecord.getDOM().getNodeType() == Node.ELEMENT_NODE) {
+                    elementName = domRecord.getDOM().getLocalName();
+                    namespaceUri = domRecord.getDOM().getNamespaceURI();
+                }
             }
             if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {
                 if (getAttributeClassification() == ClassConstants.ABYTE) {
@@ -218,9 +218,9 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
                 bytes = (byte[])attributeValue;
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(//
                         bytes, 0,//
-                        bytes.length,// 
+                        bytes.length,//
                         this.getMimeType(parent),//
-                        elementName,// 
+                        elementName,//
                         namespaceUri);//
             } else if (getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(//
@@ -242,12 +242,12 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
                         namespaceUri);
             }
             if(c_id == null) {
-            	XMLField textField = null;
-            	if(field.isSelfField()){
+                XMLField textField = null;
+                if(field.isSelfField()){
                     textField = new XMLField(XMLConstants.TEXT);
-            	}else{
+                }else{
                     textField = new XMLField(field.getXPath() + '/' + XMLConstants.TEXT);
-            	}
+                }
                 textField.setNamespaceResolver(field.getNamespaceResolver());
                 textField.setSchemaType(field.getSchemaType());
                 record.put(textField, bytes);
@@ -256,8 +256,8 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
                 String xpath = this.getXPath();
                 String prefix = null;
                 boolean prefixAlreadyDefined = false;
-                //  If the field's resolver is non-null and has an entry for XOP, 
-                //  use it - otherwise, create a new resolver, set the XOP entry, 
+                //  If the field's resolver is non-null and has an entry for XOP,
+                //  use it - otherwise, create a new resolver, set the XOP entry,
                 // on it, and use it instead.
                 // We do this to avoid setting the XOP namespace declaration on
                 // a given field or descriptor's resolver, as it is only required
@@ -273,17 +273,17 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
                 } else {
                     prefixAlreadyDefined = true;
                 }
-                
-                
+
+
                 String incxpath = null;
                 if(field.isSelfField()){
-                	incxpath = prefix + ":Include";
-                	xpath = (prefix + include);
+                    incxpath = prefix + ":Include";
+                    xpath = (prefix + include);
                 }else{
                     incxpath = xpath + '/' + prefix + ":Include";
                     xpath += ('/' + prefix + include);
                 }
-                
+
                 XMLField xpathField = new XMLField(xpath);
                 xpathField.setNamespaceResolver(resolver);
                 record.put(xpathField, c_id);
@@ -358,7 +358,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
                 fieldValue = bytes;
             }
         } else if(value instanceof byte[] || value instanceof Byte[]){
-        	fieldValue = value;
+            fieldValue = value;
         } else {
             //this was an element, so do the XOP/SWAREF/Inline binary cases for an element
             XMLRecord record = (XMLRecord) value;
@@ -366,8 +366,8 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
             if (getNullPolicy().valueIsNull((Element) record.getDOM())) {
                 return null;
             }
-            
-           
+
+
             record.setSession(executionSession);
 
             if ((unmarshaller.getAttachmentUnmarshaller() != null) && unmarshaller.getAttachmentUnmarshaller().isXOPPackage() && !this.isSwaRef() && !this.shouldInlineBinaryData()) {

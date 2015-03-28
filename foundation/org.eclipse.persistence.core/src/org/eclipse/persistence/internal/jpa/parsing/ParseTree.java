@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -133,9 +133,9 @@ public class ParseTree {
         // Use the expression builder as the default expression builder for the query
         theQuery.setExpressionBuilder(builder);
         // Add the expression builder to the expression cache in the context
-        generationContext.setBaseExpression(variable, builder);        
+        generationContext.setBaseExpression(variable, builder);
     }
-    
+
     /** */
     private Class getBaseExpressionClass(Node node, GenerationContext generationContext) {
         ParseTreeContext context = generationContext.getParseTreeContext();
@@ -150,7 +150,7 @@ public class ParseTree {
             String variable = ((VariableNode)node).getCanonicalVariableName();
             if (!context.isRangeVariable(variable)) {
                 Node path = context.pathForVariable(variable);
-                // Variable is defined in JOIN/IN clause => 
+                // Variable is defined in JOIN/IN clause =>
                 // return the Class from its definition
                 clazz = getBaseExpressionClass(path, generationContext);
             } else {
@@ -165,7 +165,7 @@ public class ParseTree {
         return clazz;
     }
 
-    /** 
+    /**
      * INTERNAL
      * Validate the parse tree.
      */
@@ -173,7 +173,7 @@ public class ParseTree {
         validate(new TypeHelperImpl(session, classLoader));
     }
 
-    /** 
+    /**
      * INTERNAL
      * Validate the parse tree.
      */
@@ -182,8 +182,8 @@ public class ParseTree {
         context.setTypeHelper(typeHelper);
         validate(context);
     }
-    
-    /** 
+
+    /**
      * INTERNAL
      * Validate the parse tree.
      */
@@ -192,7 +192,7 @@ public class ParseTree {
             // already validated => return
             return;
         }
-        
+
         validated = true;
         context.enterScope();
         if (fromNode != null) {
@@ -220,7 +220,7 @@ public class ParseTree {
         context.leaveScope();
     }
 
-    /** 
+    /**
      * INTERNAL
      * This method handles any unqualified field access in bulk UPDATE and
      * DELETE statements. A UPDATE or DELETE statement may not define an
@@ -323,7 +323,7 @@ public class ParseTree {
             }
         }
     }
-    
+
     /**
      * INTERNAL
      * Apply the select or update to the passed query.
@@ -495,7 +495,7 @@ public class ParseTree {
     /**
      * INTERNAL:
      * Set the class loader for this parse tree
-     * @param loader 
+     * @param loader
      */
     public void setClassLoader(ClassLoader loader){
         this.classLoader = loader;

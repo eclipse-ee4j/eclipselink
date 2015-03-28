@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,17 +36,17 @@ public class AnyCollectionTestCases extends JSONMarshalUnmarshalTestCases {
     @Override
     protected JAXBElement<AnyCollectionRoot> getControlObject() {
         AnyCollectionRoot anyCollectionRoot = new AnyCollectionRoot();
-        
+
         List<Object> wrapperItems = new ArrayList<Object>(2);
         wrapperItems.add(new AnyCollectionRoot());
         wrapperItems.add(new AnyCollectionRoot());
         anyCollectionRoot.setWrapperItems(wrapperItems);
-        
+
         List<Object> xmlPathItems = new ArrayList<Object>(2);
         xmlPathItems.add(new AnyCollectionRoot());
         xmlPathItems.add(new AnyCollectionRoot());
         anyCollectionRoot.setXmlPathItems(xmlPathItems);
-        
+
         return new JAXBElement<AnyCollectionRoot>(new QName(""), AnyCollectionRoot.class, anyCollectionRoot);
     }
 

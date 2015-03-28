@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.validation;
 
 import org.eclipse.persistence.testing.framework.TestModel;
@@ -68,12 +68,12 @@ public class ValidationModel extends TestModel {
 
         return suite;
     }
-    
+
     public static TestSuite getLoginTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("LoginTestSuite");
         suite.setDescription("This suite tests Login options.");
-        
+
         suite.addTest(new NullUsernameLoginTest());
         return suite;
     }
@@ -110,8 +110,8 @@ public class ValidationModel extends TestModel {
         suite.addTest(new NoRelationTableTest()); //ian added
         suite.addTest(new NoSourceRelationKeysSpecifiedTest()); //ian added
         suite.addTest(new NoSuchMethodWhileInitializingAttributesInMethodAccessor_SetTest()); //ian added
-        suite.addTest(new NoSuchMethodWhileInitializingAttributesInMethodAccessor_GetTest()); //ian added  
-        suite.addTest(new NoSuchMethodWhileInitializingAttributesInMethodAccessorTest()); //ian added    
+        suite.addTest(new NoSuchMethodWhileInitializingAttributesInMethodAccessor_GetTest()); //ian added
+        suite.addTest(new NoSuchMethodWhileInitializingAttributesInMethodAccessorTest()); //ian added
         suite.addTest(new NoTargetForeignKeysSpecifiedTest()); //ian added
         suite.addTest(new NoTargetRelationKeysSpecifiedTest()); //ian added
         suite.addTest(new ClassIndicatorFieldNotFoundTest()); //ian added
@@ -130,7 +130,7 @@ public class ValidationModel extends TestModel {
         suite.addTest(new MultipleTablePrimaryKeyMustBeFullyQualifiedTest()); //vesna added
         suite.addTest(new NullPointerWhileGettingValueThruInstanceVariableAccessorTest()); //vesna added
         suite.addTest(new NullPointerWhileGettingValueThruMethodAccessorTest()); //vesna added
-        suite.addTest(new IllegalArgumentWhileSettingValueThruMethodAccessorTest()); //vesna added  
+        suite.addTest(new IllegalArgumentWhileSettingValueThruMethodAccessorTest()); //vesna added
         suite.addTest(new ParentClassIsSelfTest()); //vesna added
         suite.addTest(new IllegalArgumentWhileGettingValueThruInstanceVariableAccessorTest()); //vesna aded
         suite.addTest(new IllegalArgumentWhileSettingValueThruInstanceVariableAccessorTest()); //vesna added
@@ -153,12 +153,12 @@ public class ValidationModel extends TestModel {
         suite.addTest(new MissingMappingForFieldTest()); //ian added **
         suite.addTest(new InvalidUseOfTransparentIndirectionTest_extractPrimaryKeyForReferenceObject()); //ian added
         suite.addTest(new InvalidUseOfTransparentIndirectionTest_nullValueFromRow()); //ian added
-        suite.addTest(new InvalidUseOfTransparentIndirectionTest_valueFromMethod()); //ian added  
+        suite.addTest(new InvalidUseOfTransparentIndirectionTest_valueFromMethod()); //ian added
         suite.addTest(new ReferenceDescriptorIsNotAggreagteCollectionTest()); //ian added
         suite.addTest(new ReferenceDescriptorIsNotAggregateTest()); //ian added
         suite.addTest(new SetMethodParameterTypeNotValidTest()); //ian added
         suite.addTest(new IllegalTableNameInMultipleTableForeignKeyTest_Source()); //ian added
-        suite.addTest(new IllegalTableNameInMultipleTableForeignKeyTest_Target()); //ian added  
+        suite.addTest(new IllegalTableNameInMultipleTableForeignKeyTest_Target()); //ian added
         suite.addTest(new NormalDescriptorsDoNotSupportNonRelationalExtensionsTest("buildDirectValuesFromFieldValue")); //ian added
         suite.addTest(new NormalDescriptorsDoNotSupportNonRelationalExtensionsTest("buildFieldValueFromDirectValues")); //ian added
         suite.addTest(new NormalDescriptorsDoNotSupportNonRelationalExtensionsTest("buildFieldValueFromForeignKeys")); //ian added
@@ -168,14 +168,14 @@ public class ValidationModel extends TestModel {
         suite.addTest(new NormalDescriptorsDoNotSupportNonRelationalExtensionsTest("buildNestedRowsFromFieldValue")); //ian added
         suite.addTest(new InvalidDataModificationEventTest()); //ian added
         suite.addTest(new InvalidDataModificationEventCodeTest_DirectCollectionMapping()); //ian added
-        suite.addTest(new InvalidDataModificationEventCodeTest_ManyToManyMapping()); //ian added  
+        suite.addTest(new InvalidDataModificationEventCodeTest_ManyToManyMapping()); //ian added
         suite.addTest(new InvalidDescriptorEventCodeTest()); //ian added
         suite.addTest(new MultipleTablePrimaryKeyNotSpecifiedTest()); //ian added
         suite.addTest(new NoSuchMethodOnFindObsoleteMethodTest()); //ian added
         suite.addTest(new NoSuchMethodWhileInitializingClassExtractionMethodTest()); //ian added
         suite.addTest(new NoSuchMethodWhileInitializingCopyPolicyTest()); //ian added
         suite.addTest(new MappingCanNotBeReadOnlyTest()); //ian added
-        suite.addTest(new MappingMustBeReadOnlyWhenStoredInCacheTest()); //ian added 
+        suite.addTest(new MappingMustBeReadOnlyWhenStoredInCacheTest()); //ian added
         suite.addTest(new ParameterAndMappingWithoutIndirectionMismatchTest()); //vesna added *
         suite.addTest(new ReturnAndMappingWithoutIndirectionMismatchTest()); //vesna added
         suite.addTest(new ParameterAndMappingWithIndirectionMismatchTest()); //vesna added
@@ -190,7 +190,7 @@ public class ValidationModel extends TestModel {
         suite.setName("DescriptorExceptionTestSuite(SupportPhaseOne.3)");
         suite.setDescription("This suite tests that proper descriptor exceptions are thrown when appropriate.");
         suite.addTest(new NoSubClassMatchTest_AggregateCollection()); //ian added
-        suite.addTest(new NoSubClassMatchTest_AggregateObject()); //ian added  
+        suite.addTest(new NoSubClassMatchTest_AggregateObject()); //ian added
         suite.addTest(new ReturnAndMappingWithTransparentIndirectionMismatchTest()); //vesna added
         suite.addTest(new ParameterAndMappingWithTransparentIndirectionMismatchTest()); //vesna added
         suite.addTest(new GetMethodReturnTypeNotValidTest()); //vesna added
@@ -203,21 +203,21 @@ public class ValidationModel extends TestModel {
         suite.addTest(new ProxyIndirectionNotAvailableTest()); //ian added -- non standard test for JDK 1.2 or JDK 1.3+
         suite.addTest(new InvalidAttributeTypeForProxyIndirectionTest()); //ian added
         suite.addTest(new InvalidGetMethodReturnTypeForProxyIndirectionTest()); //ian added
-        suite.addTest(new InvalidSetMethodParameterTypeForProxyIndirectionTest()); //ian added  
+        suite.addTest(new InvalidSetMethodParameterTypeForProxyIndirectionTest()); //ian added
         suite.addTest(new InvalidMappingOperationTest("buildBackupCloneForPartObject")); //ian added
         suite.addTest(new InvalidMappingOperationTest("buildCloneForPartObject")); //ian added
         suite.addTest(new InvalidMappingOperationTest("createUnitOfWorkValueHolder")); //ian added
         suite.addTest(new InvalidMappingOperationTest("getContainerPolicy")); //ian added
         suite.addTest(new InvalidMappingOperationTest("getRealCollectionAttributeValueFromObject")); //ian added
-        suite.addTest(new InvalidMappingOperationTest("getValueFromRemoteValueHolder")); //ian added  
+        suite.addTest(new InvalidMappingOperationTest("getValueFromRemoteValueHolder")); //ian added
         suite.addTest(new InvalidMappingOperationTest("iterateOnRealAttributeValue")); //ian added
         suite.addTest(new InvalidMappingOperationTest("simpleAddToCollectionChangeRecord")); //ian added
         suite.addTest(new InvalidMappingOperationTest("simpleRemoveFromCollectionChangeRecord")); //ian added
         suite.addTest(new InvalidIndirectionPolicyOperationTest("NoIndirectionPolicy.getValueFromRemoteValueHolder")); //ian added
-        suite.addTest(new InvalidIndirectionPolicyOperationTest("NoIndirectionPolicy.mergeRemoteValueHolder")); //ian added 
+        suite.addTest(new InvalidIndirectionPolicyOperationTest("NoIndirectionPolicy.mergeRemoteValueHolder")); //ian added
         suite.addTest(new InvalidIndirectionPolicyOperationTest("ContainerIndirectionPolicy.nullValueFromRow")); //ian added
         suite.addTest(new MissingForeignKeyTranslationTest()); //ian added
-        suite.addTest(new TargetInvocationWhileInvokingFieldToMethodTest()); //vesna added 
+        suite.addTest(new TargetInvocationWhileInvokingFieldToMethodTest()); //vesna added
         return suite;
     }
 

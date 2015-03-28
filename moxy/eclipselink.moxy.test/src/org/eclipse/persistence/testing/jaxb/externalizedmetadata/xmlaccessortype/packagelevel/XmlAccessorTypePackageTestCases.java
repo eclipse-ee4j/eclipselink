@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,16 +29,16 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
  * Tests overriding @XmlAccessorType set in package-info.java via eclipselink-oxm.xml.
  * Here, package-info has the access set to 'PROPERTY', but this is
  * overridden as 'FIELD'.
- * 
+ *
  * Positive test.
  */
-public class XmlAccessorTypePackageTestCases extends JAXBWithJSONTestCases {    
+public class XmlAccessorTypePackageTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/employee-field.xml";
-    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/employee-field.json";    
-    
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/employee-field.json";
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public XmlAccessorTypePackageTestCases(String name) throws Exception{
@@ -47,42 +47,42 @@ public class XmlAccessorTypePackageTestCases extends JAXBWithJSONTestCases {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
-    
-    protected Object getControlObject() {
-		Employee emp = new Employee(666);	
-		emp.firstName = "firstName";
-		emp.lastName = "lastName";		
-		return emp;
-	}	   
-    
-    public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/packagelevel/eclipselink-oxm.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel", new StreamSource(inputStream));
-	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-        
+    protected Object getControlObject() {
+        Employee emp = new Employee(666);
+        emp.firstName = "firstName";
+        emp.lastName = "lastName";
+        return emp;
+    }
+
+    public Map getProperties(){
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/packagelevel/eclipselink-oxm.xml");
+
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
         return properties;
-	}
-	
+    }
+
     public void testInstanceDocValidation() throws Exception {
-    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/packagelevel/employee-package.xsd");        
-        StreamSource schemaSource = new StreamSource(schema); 
-                
+        InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/packagelevel/employee-package.xsd");
+        StreamSource schemaSource = new StreamSource(schema);
+
         MyMapStreamSchemaOutputResolver outputResolver = new MyMapStreamSchemaOutputResolver();
         getJAXBContext().generateSchema(outputResolver);
-        
+
         InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-        String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver );        
+        String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver );
         assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
     }
-    
+
     public void testSchemaGen() throws Exception {
-    	List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/packagelevel/employee-package.xsd");
-    	controlSchemas.add(is);
-    	super.testSchemaGen(controlSchemas);
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessortype/packagelevel/employee-package.xsd");
+        controlSchemas.add(is);
+        super.testSchemaGen(controlSchemas);
     }
-    
+
 }

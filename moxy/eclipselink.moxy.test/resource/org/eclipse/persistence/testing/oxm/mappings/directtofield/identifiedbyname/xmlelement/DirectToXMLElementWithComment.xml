@@ -4,8 +4,8 @@
     <first-name>Jane</first-name>
     <last-name>Doe</last-name>
     <married>
-	
+
     <!-- is the employee married -->
-	true
+    true
     </married>
 </employee>

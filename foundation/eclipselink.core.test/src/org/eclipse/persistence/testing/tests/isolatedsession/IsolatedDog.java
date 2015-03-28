@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.isolatedsession;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -22,11 +22,11 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class IsolatedDog {
-    
+
     protected String id;
     protected String name;
     protected ValueHolderInterface bone;
-    
+
     public IsolatedDog() {
         super();
         this.bone = new ValueHolder();
@@ -55,14 +55,14 @@ public class IsolatedDog {
     public void setBone(IsolatedBone bone) {
         this.bone.setValue(bone);
     }
-    
+
     public static void afterLoad(ClassDescriptor descriptor) {
         OneToOneMapping mapping = (OneToOneMapping)descriptor.getMappingForAttributeName("bone");
         Expression selectionCriteria = mapping.buildSelectionCriteria();
         ExpressionBuilder builder = new ExpressionBuilder();
         mapping.setSelectionCriteria(selectionCriteria.and(builder.get("deleted").equal("N")));
     }
-    
+
     public static TableDefinition buildISOLATEDDOGTable() {
         TableDefinition tabledefinition = new TableDefinition();
 
@@ -79,7 +79,7 @@ public class IsolatedDog {
         field.setUnique(false);
         field.setIsIdentity(true);
         tabledefinition.addField(field);
-        
+
         // SECTION: FIELD
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("NAME");
@@ -90,10 +90,10 @@ public class IsolatedDog {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         tabledefinition.addField(field2);
-        
+
         return tabledefinition;
     }
-    
+
     public static IsolatedDog buildIsolatedDogExample1() {
         IsolatedDog dog = new IsolatedDog();
         dog.setId("100");
@@ -103,13 +103,13 @@ public class IsolatedDog {
         bone.setColor("White");
         bone.setId("200");
         bone.setDeleted("N");
-        
+
         bone.setOwner(dog);
         dog.setBone(bone);
-        
+
         return dog;
     }
-    
+
     public String toString() {
         return getClass().getSimpleName() + " [" + System.identityHashCode(this) + "]";
     }

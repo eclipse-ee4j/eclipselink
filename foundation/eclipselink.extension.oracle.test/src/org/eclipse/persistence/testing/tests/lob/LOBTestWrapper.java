@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.lob;
 
 import org.eclipse.persistence.testing.framework.*;
@@ -35,7 +35,7 @@ public class LOBTestWrapper extends TestWrapper {
     }
 
     protected void setup() throws Throwable {
-        DatabasePlatform platform = getSession().getPlatform(); 
+        DatabasePlatform platform = getSession().getPlatform();
         if (!platform.isOracle()) {
             throw new TestWarningException("This test case works on Oracle only");
         }
@@ -43,9 +43,9 @@ public class LOBTestWrapper extends TestWrapper {
             Oracle8Platform platform8 = (Oracle8Platform)platform;
             shouldUseLocatorForLOBWriteOriginal = platform8.shouldUseLocatorForLOBWrite();
             if(shouldSetUseLocatorForLOBWriteIntoPlatform) {
-                platform8.setShouldUseLocatorForLOBWrite(shouldUseLocatorForLOBWrite);   
+                platform8.setShouldUseLocatorForLOBWrite(shouldUseLocatorForLOBWrite);
             } else {
-                // otherwise don't change the flag. 
+                // otherwise don't change the flag.
                 this.shouldUseLocatorForLOBWrite = shouldUseLocatorForLOBWriteOriginal;
             }
         } else {
@@ -55,7 +55,7 @@ public class LOBTestWrapper extends TestWrapper {
             }
             this.shouldUseLocatorForLOBWrite = false;
         }
-                
+
         if(!shouldUseLocatorForLOBWrite) {
             usesStringBindingOriginal = platform.usesStringBinding();
             platform.setUsesStringBinding(true);
@@ -65,7 +65,7 @@ public class LOBTestWrapper extends TestWrapper {
 
     public void reset() throws Throwable {
         super.reset();
-        DatabasePlatform platform = getSession().getPlatform(); 
+        DatabasePlatform platform = getSession().getPlatform();
         if(!shouldUseLocatorForLOBWrite) {
             platform.setUsesStringBinding(usesStringBindingOriginal);
         }

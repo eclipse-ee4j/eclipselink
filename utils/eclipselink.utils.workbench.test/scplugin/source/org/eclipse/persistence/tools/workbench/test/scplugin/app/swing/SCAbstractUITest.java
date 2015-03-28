@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -55,182 +55,182 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
  */
 public abstract class SCAbstractUITest {
 
-	private TopLinkSessionsAdapter topLinkSessions;
-	private WorkbenchContext workbenchContext;
-	protected String filename;
-	protected JFrame window;
-	protected int windowW, windowH, windowX;
-	
-	protected SCAbstractUITest() {
-		super();
-		initialize();
-	}
+    private TopLinkSessionsAdapter topLinkSessions;
+    private WorkbenchContext workbenchContext;
+    protected String filename;
+    protected JFrame window;
+    protected int windowW, windowH, windowX;
 
-	protected void setUp() {
+    protected SCAbstractUITest() {
+        super();
+        initialize();
+    }
 
-		Preferences preferences = Preferences.userNodeForPackage(AllSCTests.class);
+    protected void setUp() {
 
-		SCSessionsPropertiesManager manager = new SCSessionsPropertiesManager(preferences);
-		SCSessionsProperties properties = manager.getSessionsProperties(new File(filename));
+        Preferences preferences = Preferences.userNodeForPackage(AllSCTests.class);
 
-		topLinkSessions = new TopLinkSessionsAdapter( properties, preferences, true);
-		this.window = new JFrame( this.windowTitle());
-		this.workbenchContext = new SimpleWorkbenchContext(null, null, buildResourceRepository(), null, this.buildHelpManager(), window, null, null, null);
+        SCSessionsPropertiesManager manager = new SCSessionsPropertiesManager(preferences);
+        SCSessionsProperties properties = manager.getSessionsProperties(new File(filename));
 
-	}
+        topLinkSessions = new TopLinkSessionsAdapter( properties, preferences, true);
+        this.window = new JFrame( this.windowTitle());
+        this.workbenchContext = new SimpleWorkbenchContext(null, null, buildResourceRepository(), null, this.buildHelpManager(), window, null, null, null);
 
-	protected void openWindow() {
-		
-		window.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE);
-		window.addWindowListener( this.buildWindowListener());
-		window.getContentPane().add( this.buildMainPanel(), "Center");
-		window.setLocation( windowX, 0);
-		window.setSize( windowW, windowH);
-		window.setVisible( true);
-	}
-	
-	private ResourceRepository buildResourceRepository() {
+    }
 
-		ResourceRepository frameworkRepository = new DefaultResourceRepository( FrameworkResourceBundle.class, new FrameworkIconResourceFileNameMap());
-		return new ResourceRepositoryWrapper( frameworkRepository, SCPluginResourceBundle.class, new SCPluginIconResourceFileNameMap());
-	}
-	
-	protected final WorkbenchContext workbenchContext()
-	{
-		return this.workbenchContext;
-	}
-	protected abstract String windowTitle();
-	
-	protected WindowListener buildWindowListener() {
-		
-		return new WindowAdapter() {
-			public void windowClosing( WindowEvent e) {
-				e.getWindow().setVisible( false);
-				System.exit( 0);
-			}
-		};
-	}
+    protected void openWindow() {
 
-	protected Component buildMainPanel() {
-		
-		JPanel mainPanel = new JPanel( new BorderLayout());
-		mainPanel.add( this.buildPropertyTestingPanel(), BorderLayout.NORTH);
-		mainPanel.add( this.buildControlPanel(), BorderLayout.SOUTH);
-		return mainPanel;
-	}
+        window.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE);
+        window.addWindowListener( this.buildWindowListener());
+        window.getContentPane().add( this.buildMainPanel(), "Center");
+        window.setLocation( windowX, 0);
+        window.setSize( windowW, windowH);
+        window.setVisible( true);
+    }
 
-	protected abstract Component buildPropertyTestingPanel();
+    private ResourceRepository buildResourceRepository() {
 
-	protected Component buildControlPanel() {
-		
-		JPanel controlPanel = new JPanel( new GridLayout( 1, 0));
-		controlPanel.add( this.buildResetPropertyButton());
-		controlPanel.add( this.buildClearModelButton());
-		controlPanel.add( this.buildRestoreModelButton());
-		controlPanel.add( this.buildPrintModelButton());
-		return controlPanel;
-	}
-	
-	protected JButton buildResetPropertyButton() {
-		return new JButton(this.buildResetPropertyAction());
-	}
-	
-	private Action buildResetPropertyAction() {
-		Action action = new AbstractAction( "reset property") {
-			public void actionPerformed (ActionEvent event) {
-				SCAbstractUITest.this.resetProperty();
-			}
-		};
-		action.setEnabled( true);
-		return action;
-	}
-	
-	protected abstract void resetProperty();
+        ResourceRepository frameworkRepository = new DefaultResourceRepository( FrameworkResourceBundle.class, new FrameworkIconResourceFileNameMap());
+        return new ResourceRepositoryWrapper( frameworkRepository, SCPluginResourceBundle.class, new SCPluginIconResourceFileNameMap());
+    }
 
-	protected JButton buildClearModelButton() {
-		return new JButton( this.buildClearModelAction());
-	}
+    protected final WorkbenchContext workbenchContext()
+    {
+        return this.workbenchContext;
+    }
+    protected abstract String windowTitle();
 
-	private Action buildClearModelAction() {
-		Action action = new AbstractAction("clear model") {
-			public void actionPerformed(ActionEvent event) {
-				SCAbstractUITest.this.clearModel();
-			}
-		};
-		action.setEnabled(true);
-		return action;
-	}
+    protected WindowListener buildWindowListener() {
 
-	protected abstract void clearModel();
-	
-	protected TopLinkSessionsAdapter getTopLinkSessions() {
-		return topLinkSessions;
-	}
-	
-	protected String getFileName() {
-		return filename;
-	}
-	
-	protected JButton buildRestoreModelButton() {
-		return new JButton( this.buildRestoreModelAction());
-	}
+        return new WindowAdapter() {
+            public void windowClosing( WindowEvent e) {
+                e.getWindow().setVisible( false);
+                System.exit( 0);
+            }
+        };
+    }
 
-	private Action buildRestoreModelAction() {
-		Action action = new AbstractAction("restore model") {
-			public void actionPerformed(ActionEvent event) {
-				SCAbstractUITest.this.restoreModel();
-			}
-		};
-		action.setEnabled(true);
-		return action;
-	}
+    protected Component buildMainPanel() {
 
-	protected abstract void restoreModel();
+        JPanel mainPanel = new JPanel( new BorderLayout());
+        mainPanel.add( this.buildPropertyTestingPanel(), BorderLayout.NORTH);
+        mainPanel.add( this.buildControlPanel(), BorderLayout.SOUTH);
+        return mainPanel;
+    }
 
-	protected ServerPlatform noServerPlatform() {
+    protected abstract Component buildPropertyTestingPanel();
 
-		return new ServerPlatform( "NoServerPlatform");
-	}
+    protected Component buildControlPanel() {
 
-	protected JButton buildPrintModelButton() {
-		return new JButton( this.buildPrintModelAction());
-	}
-	
-	private Action buildPrintModelAction() {
-		Action action = new AbstractAction( "print model") {
-			public void actionPerformed( ActionEvent event) {
-				SCAbstractUITest.this.printModel();
-			}
-		};
-		action.setEnabled( true);
-		return action;
-	}
+        JPanel controlPanel = new JPanel( new GridLayout( 1, 0));
+        controlPanel.add( this.buildResetPropertyButton());
+        controlPanel.add( this.buildClearModelButton());
+        controlPanel.add( this.buildRestoreModelButton());
+        controlPanel.add( this.buildPrintModelButton());
+        return controlPanel;
+    }
 
-	protected abstract void printModel();
+    protected JButton buildResetPropertyButton() {
+        return new JButton(this.buildResetPropertyAction());
+    }
 
-	protected TopLinkSessionsAdapter topLinkSessions() {
-		return this.topLinkSessions;
-	}
-	
-	protected void initialize() {
-		this.filename = "scplugin/resource/SessionsXMLTestModel/XMLSchemaSessions.xml";
-		windowW = 400;
-		windowH = 100;
-		try {
-			InetAddress address = InetAddress.getLocalHost();
+    private Action buildResetPropertyAction() {
+        Action action = new AbstractAction( "reset property") {
+            public void actionPerformed (ActionEvent event) {
+                SCAbstractUITest.this.resetProperty();
+            }
+        };
+        action.setEnabled( true);
+        return action;
+    }
 
-			if ("138.2.91.83".equals(address.getHostAddress()))
-				windowX = 1600;
-		}
-		catch( UnknownHostException e) {}
-	}
-	
-	protected HelpManager buildHelpManager() {
-		try {
-			return (HelpManager) ClassTools.newInstance("org.eclipse.persistence.tools.workbench.framework.help.NullHelpManager");
-		} catch (ClassNotFoundException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-	
+    protected abstract void resetProperty();
+
+    protected JButton buildClearModelButton() {
+        return new JButton( this.buildClearModelAction());
+    }
+
+    private Action buildClearModelAction() {
+        Action action = new AbstractAction("clear model") {
+            public void actionPerformed(ActionEvent event) {
+                SCAbstractUITest.this.clearModel();
+            }
+        };
+        action.setEnabled(true);
+        return action;
+    }
+
+    protected abstract void clearModel();
+
+    protected TopLinkSessionsAdapter getTopLinkSessions() {
+        return topLinkSessions;
+    }
+
+    protected String getFileName() {
+        return filename;
+    }
+
+    protected JButton buildRestoreModelButton() {
+        return new JButton( this.buildRestoreModelAction());
+    }
+
+    private Action buildRestoreModelAction() {
+        Action action = new AbstractAction("restore model") {
+            public void actionPerformed(ActionEvent event) {
+                SCAbstractUITest.this.restoreModel();
+            }
+        };
+        action.setEnabled(true);
+        return action;
+    }
+
+    protected abstract void restoreModel();
+
+    protected ServerPlatform noServerPlatform() {
+
+        return new ServerPlatform( "NoServerPlatform");
+    }
+
+    protected JButton buildPrintModelButton() {
+        return new JButton( this.buildPrintModelAction());
+    }
+
+    private Action buildPrintModelAction() {
+        Action action = new AbstractAction( "print model") {
+            public void actionPerformed( ActionEvent event) {
+                SCAbstractUITest.this.printModel();
+            }
+        };
+        action.setEnabled( true);
+        return action;
+    }
+
+    protected abstract void printModel();
+
+    protected TopLinkSessionsAdapter topLinkSessions() {
+        return this.topLinkSessions;
+    }
+
+    protected void initialize() {
+        this.filename = "scplugin/resource/SessionsXMLTestModel/XMLSchemaSessions.xml";
+        windowW = 400;
+        windowH = 100;
+        try {
+            InetAddress address = InetAddress.getLocalHost();
+
+            if ("138.2.91.83".equals(address.getHostAddress()))
+                windowX = 1600;
+        }
+        catch( UnknownHostException e) {}
+    }
+
+    protected HelpManager buildHelpManager() {
+        try {
+            return (HelpManager) ClassTools.newInstance("org.eclipse.persistence.tools.workbench.framework.help.NullHelpManager");
+        } catch (ClassNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
 }

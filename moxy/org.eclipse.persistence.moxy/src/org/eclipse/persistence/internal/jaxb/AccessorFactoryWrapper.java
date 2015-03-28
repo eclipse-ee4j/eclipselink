@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,13 +20,13 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 /**
  * <p><b>Purpose:</b> This class provides a wrapper for an instance of AccessorFactory.
- * The instance can be from either the internal or public package. This class will 
- * reflectively invoke the createFieldAccessor and createPropertyAccessor methods 
+ * The instance can be from either the internal or public package. This class will
+ * reflectively invoke the createFieldAccessor and createPropertyAccessor methods
  * on the underlying AccessorFactory to create Accessor instances.
  * <p>
  * @author mmacivor
  * @since EclipseLink 2.4
- * 
+ *
  */
 public class AccessorFactoryWrapper {
     private static final String ACCESSOR_FACTORY_CREATE_FIELD_ACCESSOR = "createFieldAccessor";
@@ -35,8 +35,8 @@ public class AccessorFactoryWrapper {
     private Object accessorFactory;
     private Method createFieldAccessorMethod;
     private Method createPropertyAccessorMethod;
-    
-    
+
+
     public AccessorFactoryWrapper(Object factory) {
         this.accessorFactory = factory;
         Class accessorClass = factory.getClass();
@@ -47,7 +47,7 @@ public class AccessorFactoryWrapper {
             throw JAXBException.invalidAccessorFactory(accessorClass, ex);
         }
     }
-    
+
     public Object createFieldAccessor(Class beanClass, Field field, boolean isReadOnly) {
         try {
             return PrivilegedAccessHelper.invokeMethod(createFieldAccessorMethod, accessorFactory, new Object[]{beanClass, field, isReadOnly});
@@ -55,7 +55,7 @@ public class AccessorFactoryWrapper {
             throw JAXBException.errorCreatingFieldAccessor(accessorFactory, ex);
         }
     }
-    
+
     public Object createPropertyAccessor(Class beanClass, Method getMethod, Method setMethod) {
         try {
             return PrivilegedAccessHelper.invokeMethod(createPropertyAccessorMethod, accessorFactory, new Object[]{beanClass, getMethod, setMethod});
@@ -63,6 +63,6 @@ public class AccessorFactoryWrapper {
             throw JAXBException.errorCreatingPropertyAccessor(accessorFactory, ex);
         }
     }
-    
-    
+
+
 }

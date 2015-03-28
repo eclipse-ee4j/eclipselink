@@ -32,7 +32,7 @@ public class SDOPropertyEqualityTests extends TestCase {
      *   8) Load the document
      *   9) Get the root DataObject from the document
      *  10) Verify that the root DataObject has a 'result' list containing two entries
-     *  
+     *
      * If the hashCode and equals method on SDOProperty do not work properly, the root DataObject
      * will have return a 'result' list with only one entry.
      */
@@ -40,25 +40,25 @@ public class SDOPropertyEqualityTests extends TestCase {
         boolean exception = false;
         String msg = "";
         List resultList = null;
-        
+
         try {
             setUpDO();
-    
+
             List<DataObject> result = queryDO();
             // The HelperContext corresponding to the DataObjects in the query result.
             HelperContext helperContext = ((SDOType) result.get(0).getType()).getHelperContext();
-    
+
             DataObject wrapperDO = helperContext.getDataFactory().create("org.eclipse.persistence.sdo", "OpenSequencedType");
             wrapperDO.setList("result", result);
-    
+
             XMLDocument xmlDocument = helperContext.getXMLHelper().createDocument(wrapperDO, "http://www.example.org", "ROOT");
             StringWriter stringWriter = new StringWriter();
             XMLHelper.INSTANCE.save(xmlDocument, stringWriter, null);
-    
+
             StringReader stringReader = new StringReader(stringWriter.toString());
             XMLDocument resultDocument = helperContext.getXMLHelper().load(stringReader, null, null);
             DataObject resultDO = resultDocument.getRootObject();
-    
+
             resultList = resultDO.getList("result");
         } catch (Exception x) {
             exception = true;
@@ -67,7 +67,7 @@ public class SDOPropertyEqualityTests extends TestCase {
         assertFalse("An unexpected exception occurred: " + msg, exception);
         assertTrue("Expected 2 list entries, but was " + resultList.size() , resultList.size() == 2);
     }
-    
+
     private void setUpDO() {
         DataObject itemTypeDO = DataFactory.INSTANCE.create("commonj.sdo", "Type");
         itemTypeDO.set("name", "Item");

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -18,16 +18,16 @@ import javax.persistence.*;
 /**
  * <p><b>Purpose</b>: Defines the former employment of an Employee.
  *    <p><b>Description</b>: The former employment holds the name of the
- *    former company and an EmploymentPeriod. Maintained in an 
+ *    former company and an EmploymentPeriod. Maintained in an
  *    aggregate relationship of Employee
  *    @see Employee
  */
 @Embeddable
 @Table(name="CMP3_FA_EMPLOYEE")
 public class FormerEmployment implements Serializable {
-	@Basic
+    @Basic
     private String formerCompany;
-	@Embedded
+    @Embedded
     private EmploymentPeriod period;
 
     public FormerEmployment() {}
@@ -36,23 +36,23 @@ public class FormerEmployment implements Serializable {
         this.formerCompany = company;
         this.period = period;
     }
-    
-    public String getFormerCompany() { 
-        return formerCompany; 
+
+    public String getFormerCompany() {
+        return formerCompany;
     }
-    
-    public void setFormerCompany(String company) { 
-        this.formerCompany = company; 
+
+    public void setFormerCompany(String company) {
+        this.formerCompany = company;
     }
-    
-    public EmploymentPeriod getPeriod() { 
-        return period; 
+
+    public EmploymentPeriod getPeriod() {
+        return period;
     }
-    
-    public void setPeriod(EmploymentPeriod period) { 
-        this.period = period; 
+
+    public void setPeriod(EmploymentPeriod period) {
+        this.period = period;
     }
-    
+
 
     /**
      * Print the company and the period
@@ -60,17 +60,17 @@ public class FormerEmployment implements Serializable {
     public String toString() {
         java.io.StringWriter writer = new java.io.StringWriter();
         writer.write("FormerEmployment: ");
-        
+
         if (this.getFormerCompany() != null) {
             writer.write(this.getFormerCompany().toString());
         }
-        
+
         writer.write(",");
-        
+
         if (this.getPeriod() != null) {
             writer.write(this.getPeriod().toString());
         }
-        
+
         return writer.toString();
     }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -22,24 +22,24 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 public class AllFrameworkTests {
 
-	public static Test suite() {
-		return suite(true);
-	}
-	
-	public static Test suite(boolean all) {
-		TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllFrameworkTests.class));
+    public static Test suite() {
+        return suite(true);
+    }
 
-		suite.addTest(AllFrameworkResourcesTests.suite());		
+    public static Test suite(boolean all) {
+        TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllFrameworkTests.class));
 
-		suite.addTest(AbstractApplicationTests.suite());
-		suite.addTest(AllFrameworkUIToolsTests.suite());
+        suite.addTest(AllFrameworkResourcesTests.suite());
 
-		return suite;
-	}
+        suite.addTest(AbstractApplicationTests.suite());
+        suite.addTest(AllFrameworkUIToolsTests.suite());
 
-	private AllFrameworkTests() {
-		super();
-		throw new UnsupportedOperationException();
-	}
+        return suite;
+    }
+
+    private AllFrameworkTests() {
+        super();
+        throw new UnsupportedOperationException();
+    }
 
 }

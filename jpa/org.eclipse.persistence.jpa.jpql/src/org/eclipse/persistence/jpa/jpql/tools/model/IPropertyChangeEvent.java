@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,31 +25,31 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject;
  */
 public interface IPropertyChangeEvent<T> {
 
-	/**
-	 * Returns the new value of the property that changed.
-	 *
-	 * @return The property's new value
-	 */
-	T getNewValue();
+    /**
+     * Returns the new value of the property that changed.
+     *
+     * @return The property's new value
+     */
+    T getNewValue();
 
-	/**
-	 * Returns the old value of the property that changed.
-	 *
-	 * @return The property's old value
-	 */
-	T getOldValue();
+    /**
+     * Returns the old value of the property that changed.
+     *
+     * @return The property's old value
+     */
+    T getOldValue();
 
-	/**
-	 * Returns the name of the property that changed.
-	 *
-	 * @return A unique identifier of the property that changed
-	 */
-	String getPropertyName();
+    /**
+     * Returns the name of the property that changed.
+     *
+     * @return A unique identifier of the property that changed
+     */
+    String getPropertyName();
 
-	/**
-	 * Returns the source where the modification occurred and that fired the event.
-	 *
-	 * @return The source of the event
-	 */
-	<S extends StateObject> S getSource();
+    /**
+     * Returns the source where the modification occurred and that fired the event.
+     *
+     * @return The source of the event
+     */
+    <S extends StateObject> S getSource();
 }

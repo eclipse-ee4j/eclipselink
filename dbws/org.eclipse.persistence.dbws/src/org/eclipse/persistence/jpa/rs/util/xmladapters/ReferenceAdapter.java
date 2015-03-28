@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  *    -  Initial implementation
- *    
+ *
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util.xmladapters;
 
@@ -41,7 +41,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
 
     /**
      * Instantiates a new reference adapter.
-     * 
+     *
      * @param baseURI
      *            the base uri
      * @param context
@@ -54,7 +54,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
      */
@@ -83,7 +83,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
      */

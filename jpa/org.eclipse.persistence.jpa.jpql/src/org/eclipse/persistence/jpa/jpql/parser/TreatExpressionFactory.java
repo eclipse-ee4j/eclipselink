@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,37 +27,37 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class TreatExpressionFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link TreatExpressionFactory}.
-	 */
-	public static final String ID = Expression.TREAT;
+    /**
+     * The unique identifier of this {@link TreatExpressionFactory}.
+     */
+    public static final String ID = Expression.TREAT;
 
-	/**
-	 * Creates a new <code>TreatExpressionFactory</code>.
-	 */
-	public TreatExpressionFactory() {
-		super(ID, Expression.TREAT);
-	}
+    /**
+     * Creates a new <code>TreatExpressionFactory</code>.
+     */
+    public TreatExpressionFactory() {
+        super(ID, Expression.TREAT);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		expression = new TreatExpression(parent);
-		expression.parse(wordParser, tolerant);
+        expression = new TreatExpression(parent);
+        expression.parse(wordParser, tolerant);
 
-		if (wordParser.character() == AbstractExpression.DOT) {
-			ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(StateFieldPathExpressionFactory.ID);
-			expression = factory.buildExpression(parent, wordParser, wordParser.word(), queryBNF, expression, tolerant);
-		}
+        if (wordParser.character() == AbstractExpression.DOT) {
+            ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(StateFieldPathExpressionFactory.ID);
+            expression = factory.buildExpression(parent, wordParser, wordParser.word(), queryBNF, expression, tolerant);
+        }
 
-		return expression;
-	}
+        return expression;
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
 import java.util.Date;
@@ -27,30 +27,30 @@ import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
 public class InheritedCRUDTest extends EntityContainerTestBase {
     protected boolean m_reset = false;    // reset gets called twice on error
     protected Exception m_exception;
-    
+
     private BeerConsumer beerConsumer1, beerConsumer2;
     private Alpine alpine1, alpine2, alpine3;
     private Canadian canadian1, canadian2;
-        
+
     public InheritedCRUDTest() {
         setDescription("Tests the creation of an inheritance subclass that uses multiple tables with a different pk column than its parent");
     }
-    
+
     public void setup () {
         super.setup();
         m_reset = true;
         m_exception = null;
         ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
-    
-	public void test() throws Exception {
+
+    public void test() throws Exception {
         try {
             beginTransaction();
-            
+
             beerConsumer1 = new BeerConsumer();
             beerConsumer1.setName("Guy Pelletier");
             getEntityManager().persist(beerConsumer1);
-    
+
             beerConsumer2 = new BeerConsumer();
             beerConsumer2.setName("Tom Ware");
             getEntityManager().persist(beerConsumer2);
@@ -89,19 +89,19 @@ public class InheritedCRUDTest extends EntityContainerTestBase {
             canadian2.setAlcoholContent(5.0);
             canadian2.setBeerConsumer(beerConsumer1);
             getEntityManager().persist(canadian2);
-            
-            commitTransaction();    
+
+            commitTransaction();
         } catch (Exception e) {
             m_exception = e;
         }
     }
-    
+
     public void reset () {
         if (m_reset) {
             m_reset = false;
         }
     }
-    
+
     public void verify() {
         if (m_exception != null) {
             throw new TestErrorException("Exception was thrown when creating a bus: " + m_exception.getMessage());

@@ -1,23 +1,23 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
@@ -43,45 +43,45 @@ public interface MessageEndpoint {
      * This is called by a resource adapter before a message is delivered.
      *
      * @param method description of a target method. This information about
-     * the intended target method allows an application server to decide 
-     * whether to start a transaction during this method call, depending 
+     * the intended target method allows an application server to decide
+     * whether to start a transaction during this method call, depending
      * on the transaction preferences of the target method.
-     * The processing (by the application server) of the actual message 
-     * delivery method call on the endpoint must be independent of the 
-     * class loader associated with this descriptive method object. 
+     * The processing (by the application server) of the actual message
+     * delivery method call on the endpoint must be independent of the
+     * class loader associated with this descriptive method object.
      *
      * @throws NoSuchMethodException indicates that the specified method
      * does not exist on the target endpoint.
      *
      * @throws ResourceException generic exception.
      *
-     * @throws ApplicationServerInternalException indicates an error 
+     * @throws ApplicationServerInternalException indicates an error
      * condition in the application server.
      *
      * @throws IllegalStateException indicates that the endpoint is in an
      * illegal state for the method invocation. For example, this occurs when
-     * <code>beforeDelivery</code> and <code>afterDelivery</code> 
+     * <code>beforeDelivery</code> and <code>afterDelivery</code>
      * method calls are not paired.
      *
-     * @throws UnavailableException indicates that the endpoint is not 
+     * @throws UnavailableException indicates that the endpoint is not
      * available.
      */
     void beforeDelivery(java.lang.reflect.Method method)
-	throws NoSuchMethodException, ResourceException;
+    throws NoSuchMethodException, ResourceException;
 
     /**
      * This is called by a resource adapter after a message is delivered.
      *
      * @throws ResourceException generic exception.
      *
-     * @throws ApplicationServerInternalException indicates an error 
+     * @throws ApplicationServerInternalException indicates an error
      * condition in the application server.
      *
      * @throws IllegalStateException indicates that the endpoint is in an
      * illegal state for the method invocation. For example, this occurs when
      * beforeDelivery and afterDelivery method calls are not paired.
      *
-     * @throws UnavailableException indicates that the endpoint is not 
+     * @throws UnavailableException indicates that the endpoint is not
      * available.
      */
     void afterDelivery() throws ResourceException;

@@ -1,12 +1,12 @@
-/*******************************************************************************  
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.  
- * This program and the accompanying materials are made available under the  
- * terms of the Eclipse Public License v1.0, which accompanies this distribution  
- * and is available at http://www.eclipse.org/legal/epl-v10.html.  
- *  
- * Contributors: 
+/*******************************************************************************
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0, which accompanies this distribution
+ * and is available at http://www.eclipse.org/legal/epl-v10.html.
+ *
+ * Contributors:
  *     Oracle - initial design and implementation
- ******************************************************************************/    
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.coordination.jgroups;
 
 import java.util.Map;
@@ -34,19 +34,19 @@ import org.jgroups.JChannel;
 public class JGroupsTransportManager extends BroadcastTransportManager {
     protected String configFile = "";
 
-    /**  
-     * PUBLIC:  
-     * Creates a JGroupsTransportManager.  
-     */  
+    /**
+     * PUBLIC:
+     * Creates a JGroupsTransportManager.
+     */
     public JGroupsTransportManager() {
     }
-    
-    /**  
-     * PUBLIC:  
-     * Creates a JGroupsTransportManager.  
-     */  
-    public JGroupsTransportManager(RemoteCommandManager rcm) {  
-        super(rcm);  
+
+    /**
+     * PUBLIC:
+     * Creates a JGroupsTransportManager.
+     */
+    public JGroupsTransportManager(RemoteCommandManager rcm) {
+        super(rcm);
     }
 
     /**
@@ -93,10 +93,10 @@ public class JGroupsTransportManager extends BroadcastTransportManager {
                     // call createExternalConnection method again.
                     rcm.handleException(rcmException);
                 }
-            }            
+            }
         }
     }
-    
+
     /**
      * INTERNAL:
      * JGroups only requires a single connection.
@@ -115,7 +115,7 @@ public class JGroupsTransportManager extends BroadcastTransportManager {
             }
         }
     }
-    
+
 
     /**
      * INTERNAL:
@@ -153,4 +153,4 @@ public class JGroupsTransportManager extends BroadcastTransportManager {
         this.configFile = configFile;
     }
 
-}  
+}

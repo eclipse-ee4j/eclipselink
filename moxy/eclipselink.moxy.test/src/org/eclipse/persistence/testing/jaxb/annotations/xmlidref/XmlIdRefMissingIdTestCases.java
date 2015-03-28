@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,32 +22,32 @@ public class XmlIdRefMissingIdTestCases extends JAXBWithJSONTestCases{
 
     private static final String XML_RESOURCE="org/eclipse/persistence/testing/jaxb/annotations/xmlidref/missing_id.xml";
     private static final String JSON_RESOURCE="org/eclipse/persistence/testing/jaxb/annotations/xmlidref/missing_id.json";
-    
+
     public XmlIdRefMissingIdTestCases(String name) throws Exception {
-        super(name);              
+        super(name);
         setClasses(new Class[]{Owner.class});
         setControlDocument(XML_RESOURCE);
-        setControlJSON(JSON_RESOURCE);       
+        setControlJSON(JSON_RESOURCE);
     }
-    
+
     @Override
     protected Object getControlObject() {
         Owner owner = new Owner();
         owner.m_activityId = "1";
         Thing theThing = new Thing();
-        theThing.m_calendarId = "2";                   
-        owner.m_calendar = theThing;        
+        theThing.m_calendarId = "2";
+        owner.m_calendar = theThing;
         return owner;
     }
-    
+
     @Override
     public Object getReadControlObject() {
         Owner owner = new Owner();
-        owner.m_activityId = "1";                  
-        owner.m_calendar = null;        
+        owner.m_activityId = "1";
+        owner.m_calendar = null;
         return owner;
     }
-    
+
     //Not applicable
     public void testRoundTrip(){}
 }

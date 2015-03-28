@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,22 +27,22 @@ import org.eclipse.persistence.sessions.Project;
 
 public abstract class NamespaceResolvableProject extends Project {
 
-    public static final String ECLIPSELINK_PREFIX = 
+    public static final String ECLIPSELINK_PREFIX =
         "eclipselink";
-    public static final String ECLIPSELINK_NAMESPACE = 
+    public static final String ECLIPSELINK_NAMESPACE =
         "http://www.eclipse.org/eclipselink/xsds/persistence";
-    public static final String TOPLINK_PREFIX = 
+    public static final String TOPLINK_PREFIX =
         "toplink";
-    public static final String TOPLINK_NAMESPACE = 
+    public static final String TOPLINK_NAMESPACE =
         "http://xmlns.oracle.com/ias/xsds/toplink";
-    public static final String OPM_PREFIX = 
+    public static final String OPM_PREFIX =
         "opm";
-    public static final String OPM_NAMESPACE = 
+    public static final String OPM_NAMESPACE =
         "http://xmlns.oracle.com/ias/xsds/opm";
-    
+
     protected NamespaceResolverWithPrefixes ns;
     protected QName fieldQname;
-    
+
     public NamespaceResolvableProject() {
         super();
         fieldQname = new QName(getSecondaryNamespace(), "field");
@@ -74,14 +74,14 @@ public abstract class NamespaceResolvableProject extends Project {
             ns.putSecondary(ns2, getSecondaryNamespace());
         }
     }
-    
+
     public String getPrimaryNamespacePrefix() {
         return null;
     }
     public String getPrimaryNamespace() {
         return null;
     }
-    
+
     public String getPrimaryNamespaceXPath() {
         if (ns.getPrimaryPrefix() != null) {
             return ns.getPrimaryPrefix() + ":";
@@ -98,7 +98,7 @@ public abstract class NamespaceResolvableProject extends Project {
     public String getSecondaryNamespace() {
         return null;
     }
-    
+
     public String getSecondaryNamespaceXPath() {
         if (ns.getSecondaryPrefix() != null) {
             return ns.getSecondaryPrefix() + ":";
@@ -108,7 +108,7 @@ public abstract class NamespaceResolvableProject extends Project {
     public String resolveSecondaryNamespace() {
         return ns.resolveNamespacePrefix(ns.getSecondaryPrefix());
     }
-    
+
     protected abstract void buildDescriptors();
 
     protected void setNamespaceResolverOnDescriptors() {

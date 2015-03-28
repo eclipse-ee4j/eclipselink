@@ -1,32 +1,32 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Zoltan NAGY & tware - updated support for MaxRows
- *     11/01/2010-2.2 Guy Pelletier 
+ *     11/01/2010-2.2 Guy Pelletier
  *       - 322916: getParameter on Query throws NPE
- *     11/09/2010-2.1 Michael O'Brien 
+ *     11/09/2010-2.1 Michael O'Brien
  *       - 329089: PERF: EJBQueryImpl.setParamenterInternal() move indexOf check inside non-native block
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     06/20/2012-2.5 Guy Pelletier 
+ *     06/20/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     07/13/2012-2.5 Guy Pelletier 
+ *     07/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier 
+ *     08/24/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     09/13/2012-2.5 Guy Pelletier 
+ *     09/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/27/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     11/05/2012-2.5 Guy Pelletier 
+ *     11/05/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
@@ -71,22 +71,22 @@ import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 
 /**
- * Concrete JPA query class. The JPA query wraps a StoredProcesureQuery which 
+ * Concrete JPA query class. The JPA query wraps a StoredProcesureQuery which
  * is executed.
  */
 public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedureQuery {
     protected boolean hasMoreResults;
-    
+
     // Call will be returned from an execute. From it you can get the result set.
     protected DatabaseCall executeCall;
     protected Statement executeStatement;
     protected int executeResultSetIndex = -1;
-    
+
     // If the procedure returns output cursor(s), we'll use them to satisfy
     // getResultList and getSingleResult calls so keep track of our index.
     protected int outputCursorIndex = -1;
     protected boolean isOutputCursorResultSet = false;
-    
+
     /**
      * Base constructor for EJBQueryImpl. Initializes basic variables.
      */
@@ -100,10 +100,10 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public StoredProcedureQueryImpl(DatabaseQuery query, EntityManagerImpl entityManager) {
         super(query, entityManager);
     }
-    
+
     /**
      * Create an EJBQueryImpl with either a query name or an jpql string.
-     * 
+     *
      * @param isNamedQuery
      *            determines whether to treat the queryDescription as jpql or a
      *            query name.
@@ -112,9 +112,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         super(entityManager);
         this.queryName = name;
     }
-    
+
     /**
-     * Build the given result set into a list objects. Assumes there is an 
+     * Build the given result set into a list objects. Assumes there is an
      * execute call available and therefore should not be called unless an
      * execute statement was issued by the user.
      */
@@ -122,30 +122,30 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         try {
             AbstractSession session = (AbstractSession) getActiveSession();
             DatabaseAccessor accessor = (DatabaseAccessor) executeCall.getQuery().getAccessor();
-            
+
             executeCall.setFields(null);
             executeCall.matchFieldOrder(resultSet, accessor, session);
             ResultSetMetaData metaData = resultSet.getMetaData();
-            
+
             List result =  new Vector();
             while (resultSet.next()) {
                 result.add(accessor.fetchRow(executeCall.getFields(), executeCall.getFieldsArray(), resultSet, metaData, session));
             }
-    
+
             // The result set must be closed in case the statement is cached and not closed.
             resultSet.close();
-            
+
             return result;
         } catch (Exception e) {
             setRollbackOnly();
             throw new PersistenceException(e);
         }
     }
-    
+
     /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
-     * 
+     *
      * This is called from a named stored procedure that employs result set
      * mapping name(s) which should be available from the session.
      */
@@ -157,11 +157,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         query.setSQLResultSetMappingNames(resultSetMappingNames);
         return query;
     }
-    
+
     /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
-     * 
+     *
      * This is called from a named stored procedure that employs result set
      * mapping name(s) which should be available from the session.
      */
@@ -174,11 +174,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         return hintQuery;
     }
-    
+
     /**
      * Build a ResultSetMappingQuery from the sql result set mappings given
      *  a stored procedure call.
-     * 
+     *
      * This is called from a named stored procedure query that employs result
      * class name(s). The resultSetMappings are build from these class name(s)
      * and are not available from the session.
@@ -191,11 +191,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         query.setSQLResultSetMappings(resultSetMappings);
         return query;
     }
-    
+
     /**
      * Build a ResultSetMappingQuery from the sql result set mappings given
      *  a stored procedure call.
-     * 
+     *
      * This is called from a named stored procedure query that employs result
      * class name(s). The resultSetMappings are build from these class name(s)
      * and are not available from the session.
@@ -209,7 +209,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         return hintQuery;
     }
-    
+
     /**
      * Build a ReadAllQuery from a class and stored procedure call.
      */
@@ -226,7 +226,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         return query;
     }
-    
+
     /**
      * Build a DataReadQuery with the stored procedure call given.
      */
@@ -264,8 +264,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         return hintQuery;
     }
-    
-    /** 
+
+    /**
      * Call this method to close any open connections to the database.
      */
     @Override
@@ -273,12 +273,12 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         if (executeCall != null) {
             DatabaseQuery query = executeCall.getQuery();
             AbstractSession session = query.getSession();
-           
+
             // Release the accessors acquired for the query.
             for (Accessor accessor : query.getAccessors()) {
                 session.releaseReadConnection(accessor);
             }
-        
+
             try {
                 if (executeStatement != null) {
                     DatabaseAccessor accessor = (DatabaseAccessor) query.getAccessor();
@@ -289,33 +289,33 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 session.log(SessionLog.WARNING, SessionLog.CONNECTION, "exception_caught_closing_statement", exception);
             }
         }
-        
+
         executeCall = null;
         executeStatement = null;
     }
-    
+
     /**
-     * Returns true if the first result corresponds to a result set, and false 
-     * if it is an update count or if there are no results other than through 
+     * Returns true if the first result corresponds to a result set, and false
+     * if it is an update count or if there are no results other than through
      * INOUT and OUT parameters, if any.
      * @return true if first result corresponds to result set
-     * @throws QueryTimeoutException if the query execution exceeds the query 
+     * @throws QueryTimeoutException if the query execution exceeds the query
      * timeout value set and only the statement is rolled back
-     * @throws PersistenceException if the query execution exceeds the query 
+     * @throws PersistenceException if the query execution exceeds the query
      * timeout value set and the transaction is rolled back
      */
     public boolean execute() {
         try {
             entityManager.verifyOpen();
-            
+
             if (! getDatabaseQueryInternal().isResultSetMappingQuery()) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute"));
             }
-        
+
             getResultSetMappingQuery().setIsExecuteCall(true);
             executeCall = (DatabaseCall) executeReadQuery();
             executeStatement = executeCall.getStatement();
-            
+
             // Add this query to the entity manager open queries list.
             // The query will be closed in the following cases:
             // Within a transaction:
@@ -323,25 +323,25 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             //  - on rollback
             // Outside of a transaction:
             //  - em close
-            // Other safeguards, we will close the query if/when 
+            // Other safeguards, we will close the query if/when
             //  - we hit the end of the results.
             //  - this query is garbage collected (finalize method)
             //
-            // Deferring closing the call avoids having to go through all the 
-            // results now (and building all the result objects) and things 
+            // Deferring closing the call avoids having to go through all the
+            // results now (and building all the result objects) and things
             // remain on a as needed basis from the statement.
             entityManager.addOpenQuery(this);
-            
+
             hasMoreResults = executeCall.getExecuteReturnValue();
-            
+
             // If execute returned false but we have output cursors then return
-            // true and build the results from the output cursors. 
+            // true and build the results from the output cursors.
             if (!hasMoreResults && getCall().hasOutputCursors()) {
                 hasMoreResults = true;
                 outputCursorIndex = 0;
                 isOutputCursorResultSet = true;
             }
-            
+
             return hasMoreResults;
         } catch (LockTimeoutException exception) {
             throw exception;
@@ -354,9 +354,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         } catch (RuntimeException exception) {
             setRollbackOnly();
             throw new PersistenceException(exception);
-        } 
+        }
     }
-    
+
     /**
      * Execute an update or delete statement (from a stored procedure query).
      * @return the number of entities updated or deleted
@@ -365,10 +365,10 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         try {
             // Need to throw TransactionRequiredException if there is no active transaction
             entityManager.checkForTransaction(true);
-            
-            // Legacy: we could have a data read query or a read all query, so 
-            // clearly we shouldn't be executing an update on it. As of JPA 2.1 
-            // API we always create a result set mapping query to interact with 
+
+            // Legacy: we could have a data read query or a read all query, so
+            // clearly we shouldn't be executing an update on it. As of JPA 2.1
+            // API we always create a result set mapping query to interact with
             // a stored procedure.
             // Also if the result set mapping query has result set mappings
             // defined, then it's clearly expecting result sets and we can be
@@ -376,7 +376,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             if (! getDatabaseQueryInternal().isResultSetMappingQuery() || getResultSetMappingQuery().hasResultSetMappings()) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute_update"));
             }
-            
+
             // If the return value is true indicating a result set then throw an exception.
             if (execute()) {
                 if (getActiveSession().getPlatform().isJDBCExecuteCompliant()) {
@@ -402,7 +402,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             close(); // Close the connection once we're done.
         }
     }
-    
+
     /**
      * Finalize method in case the query is not closed.
      */
@@ -410,14 +410,14 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public void finalize() {
         close();
     }
-    
+
     /**
      * Return the stored procedure call associated with this query.
      */
     protected StoredProcedureCall getCall() {
         return (StoredProcedureCall) getDatabaseQueryInternal().getCall();
     }
-    
+
     /**
      * Return the internal map of parameters.
      */
@@ -425,15 +425,15 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     protected Map<String, Parameter<?>> getInternalParameters() {
         if (parameters == null) {
             parameters = new HashMap<String, Parameter<?>>();
-    
+
             int index = 0;
-                
+
             for (Object parameter : getCall().getParameters()) {
                 Integer parameterType = getCall().getParameterTypes().get(index);
                 String argumentName = getCall().getProcedureArgumentNames().get(index);
-                    
+
                 DatabaseField field = null;
-                    
+
                 if (parameterType == getCall().INOUT) {
                     field = (DatabaseField) ((Object[]) parameter)[0];
                 } else if (parameterType == getCall().IN || parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
@@ -444,7 +444,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                         field = ((OutputParameterForCallableStatement) parameter).getOutputField();
                     }
                 }
-                    
+
                 // If field is not null (one we care about) then add it, otherwise continue.
                 if (field != null) {
                     // If the argument name is null then it is a positional parameter.
@@ -454,27 +454,27 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                         parameters.put(field.getName(), new ParameterExpressionImpl(null, field.getType(), field.getName()));
                     }
                 }
-                        
+
                 ++index;
             }
         }
-        
+
         return parameters;
     }
-    
+
     /**
-     * Used to retrieve the values passed back from the procedure through INOUT 
-     * and OUT parameters. For portability, all results corresponding to result 
-     * sets and update counts must be retrieved before the values of output 
-     * parameters. 
+     * Used to retrieve the values passed back from the procedure through INOUT
+     * and OUT parameters. For portability, all results corresponding to result
+     * sets and update counts must be retrieved before the values of output
+     * parameters.
      * @param position parameter position
      * @return the result that is passed back through the parameter
-     * @throws IllegalArgumentException if the position does not correspond to a 
+     * @throws IllegalArgumentException if the position does not correspond to a
      * parameter of the query or is not an INOUT or OUT parameter
      */
     public Object getOutputParameterValue(int position) {
         entityManager.verifyOpen();
-        
+
         if (isValidCallableStatement()) {
             try {
                 Object obj = ((CallableStatement) executeStatement).getObject(position);
@@ -489,28 +489,28 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_position", new Object[] { position, exception.getMessage() }), exception);
             }
         }
-        
+
         return null;
     }
-    
+
     /**
-     * Used to retrieve the values passed back from the procedure through INOUT 
-     * and OUT parameters. For portability, all results corresponding to result 
-     * sets and update counts must be retrieved before the values of output 
+     * Used to retrieve the values passed back from the procedure through INOUT
+     * and OUT parameters. For portability, all results corresponding to result
+     * sets and update counts must be retrieved before the values of output
      * parameters.
-     * @param parameterName name of the parameter as registered or specified in 
+     * @param parameterName name of the parameter as registered or specified in
      *        metadata
      * @return the result that is passed back through the parameter
-     * @throws IllegalArgumentException if the parameter name does not 
+     * @throws IllegalArgumentException if the parameter name does not
      * correspond to a parameter of the query or is not an INOUT or OUT parameter
      */
     public Object getOutputParameterValue(String parameterName) {
         entityManager.verifyOpen();
-        
+
         if (isValidCallableStatement()) {
             try {
                 Integer position = getCall().getCursorOrdinalPosition(parameterName);
-                
+
                 if (position == null) {
                     return ((CallableStatement) executeStatement).getObject(parameterName);
                 } else {
@@ -523,7 +523,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         return null;
     }
-    
+
     /**
      * Execute the query and return the query results as a List.
      * @return a list of the results
@@ -537,36 +537,36 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             // If there is no execute statement, the user has not called
             // execute and is simply calling getResultList directly on the query.
             if (executeStatement == null) {
-                // If it's not a result set mapping query (as of JPA 2.1 we 
-                // always create a result set mapping query to interact with a 
+                // If it's not a result set mapping query (as of JPA 2.1 we
+                // always create a result set mapping query to interact with a
                 // stored procedure) then throw an exception.
                 if (! getDatabaseQueryInternal().isResultSetMappingQuery()) {
                     throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list"));
                 }
-                        
+
                 // If the return value is false indicating no result set then throw an exception.
                 if (execute()) {
                     return getResultList();
                 } else {
-                    throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list")); 
+                    throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list"));
                 }
             } else {
                 if (hasMoreResults()) {
                     if (isOutputCursorResultSet) {
                         // Return result set list for the current outputCursorIndex.
                         List results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
-                        
+
                         // Update the hasMoreResults flag.
                         hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());
-                        
+
                         return results;
                     } else {
                         // Build the result records first.
                         List result = buildResultRecords(executeStatement.getResultSet());
-                    
+
                         // Move the result pointer.
                         moveResultPointer();
-                    
+
                         return getResultSetMappingQuery().buildObjectsFromRecords(result, ++executeResultSetIndex);
                     }
                 } else {
@@ -586,9 +586,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             throw new PersistenceException(e);
         }
     }
-    
+
     /**
-     * Return the ResultSetMappingQuery for this stored procedure query. 
+     * Return the ResultSetMappingQuery for this stored procedure query.
      * NOTE: Methods assumes associated database query is a ResultSetMappingQuery.
      */
     protected ResultSetMappingQuery getResultSetMappingQuery() {
@@ -598,7 +598,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             return (ResultSetMappingQuery) getDatabaseQuery();
         }
     }
-    
+
     /**
      * Execute the query and return the single query result.
      * @return a single result object.
@@ -612,49 +612,49 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             // If there is no execute statement, the user has not called
             // execute and is simply calling getSingleResult directly on the query.
             if (executeStatement == null) {
-                // If it's not a result set mapping query (as of JPA 2.1 we 
-                // always create a result set mapping query to interact with a 
+                // If it's not a result set mapping query (as of JPA 2.1 we
+                // always create a result set mapping query to interact with a
                 // stored procedure) then throw an exception.
                 if (! getDatabaseQueryInternal().isResultSetMappingQuery()) {
                     throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_single_result"));
                 }
-                        
+
                 // If the return value is true indicating a result set then
                 // build and return the single result.
                 if (execute()) {
                     return getSingleResult();
                 } else {
-                    throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list")); 
+                    throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list"));
                 }
             } else {
                 if (hasMoreResults()) {
                     // Build the result records first.
                     List results;
-                    
+
                     if (isOutputCursorResultSet) {
                         // Return result set list for the current outputCursorIndex.
                         results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
-                        
+
                         // Update the hasMoreResults flag.
                         hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());
                     } else {
                         // Build the result records first.
                         List result = buildResultRecords(executeStatement.getResultSet());
-                    
+
                         // Move the result pointer.
                         moveResultPointer();
-                        
+
                         results = getResultSetMappingQuery().buildObjectsFromRecords(result, ++executeResultSetIndex);
                     }
-                    
+
                     if (results.size() > 1) {
                         throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", (Object[]) null));
                     } else if (results.isEmpty()) {
                         throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", (Object[]) null));
                     }
-                        
+
                     // TODO: if hasMoreResults is true, we 'could' and maybe should throw an exception here.
-                    
+
                     return results.get(0);
                 } else {
                     return null;
@@ -675,7 +675,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             close(); // Close the connection once we're done.
         }
     }
-    
+
     /**
      * Returns the update count or -1 if there is no pending result
      * or if the next result is not an update count.
@@ -690,11 +690,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     public int getUpdateCount() {
         entityManager.verifyOpenWithSetRollbackOnly();
-        
+
         if (executeStatement != null) {
             try {
                 int updateCount = executeStatement.getUpdateCount();
-                
+
                 // Moving the result pointer when -1 is reached doesn't seem
                 // to be an issue for the jbdc driver, however as a safeguard,
                 // once -1 is reached don't bother trying to move the pointer
@@ -707,44 +707,44 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 throw getDetailedException(DatabaseException.sqlException(e, executeCall, executeCall.getQuery().getAccessor(), executeCall.getQuery().getSession(), false));
             }
         }
-        
+
         return -1;
     }
-    
+
     /**
-     * Returns true if the next result corresponds to a result set, and false if 
-     * it is an update count or if there are no results other than through INOUT 
+     * Returns true if the next result corresponds to a result set, and false if
+     * it is an update count or if there are no results other than through INOUT
      * and OUT parameters, if any.
-     * 
+     *
      * @return true if next result corresponds to result set
-     * @throws QueryTimeoutException if the query execution exceeds the query 
+     * @throws QueryTimeoutException if the query execution exceeds the query
      * timeout value set and only the statement is rolled back
-     * @throws PersistenceException if the query execution exceeds the query 
+     * @throws PersistenceException if the query execution exceeds the query
      * timeout value set and the transaction is rolled back
      */
     public boolean hasMoreResults() {
         entityManager.verifyOpen();
-        
+
         return hasMoreResults;
     }
-    
+
     /**
      * Returns true if the execute statement for this query is 1) not null (i.e.
-     * query has been executed and 2) is an instance of callable statement, 
+     * query has been executed and 2) is an instance of callable statement,
      * meaning there are out parameters associated with it.
      */
     protected boolean isValidCallableStatement() {
         if (executeStatement == null) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("jpa21_invalid_call_on_un_executed_query"));
         }
-        
+
         if (! (executeStatement instanceof CallableStatement)) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("jpa21_invalid_call_with_no_output_parameters"));
         }
-        
+
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Move the pointer up and update our has more results flag.
@@ -758,11 +758,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             hasMoreResults = false;
         }
     }
-    
+
     /**
-     * Register a positional parameter. All positional parameters must be 
+     * Register a positional parameter. All positional parameters must be
      * registered.
-     * 
+     *
      * @param position parameter position
      * @param type type of the parameter
      * @param mode parameter mode
@@ -771,7 +771,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public StoredProcedureQuery registerStoredProcedureParameter(int position, Class type, ParameterMode mode) {
         entityManager.verifyOpenWithSetRollbackOnly();
         StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
-        
+
         if (mode.equals(ParameterMode.IN)) {
             call.addUnamedArgument(String.valueOf(position), type);
         } else if (mode.equals(ParameterMode.OUT)) {
@@ -781,22 +781,22 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         } else if (mode.equals(ParameterMode.REF_CURSOR)) {
             call.useUnnamedCursorOutputAsResultSet(position);
         }
-        
+
         // Force a re-calculate of the parameters.
         this.parameters = null;
-        
+
         return this;
     }
 
     /**
-     * Register a named parameter. When using parameter names, all parameters 
-     * must be registered in the order in which they occur in the parameter list 
+     * Register a named parameter. When using parameter names, all parameters
+     * must be registered in the order in which they occur in the parameter list
      * of the stored procedure.
-     * 
+     *
      * @param parameterName name of the parameter as registered or
      *        specified in metadata
      * @param type type of the parameter
-     * @param mode parameter mode  
+     * @param mode parameter mode
      * @return the same query instance
      */
     public StoredProcedureQuery registerStoredProcedureParameter(String parameterName, Class type, ParameterMode mode) {
@@ -817,13 +817,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         // Force a re-calculate of the parameters.
         this.parameters = null;
-        
+
         return this;
     }
-    
+
     /**
      * Set the position of the first result to retrieve.
-     * 
+     *
      * @param start
      *            position of the first result, numbered from 0
      * @return the same query instance
@@ -831,7 +831,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public StoredProcedureQueryImpl setFirstResult(int startPosition) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_not_supported", new Object[]{"setFirstResult", "StoredProcedureQuery"}));
     }
-    
+
     /**
      * Set the flush mode type to be used for the query execution.
      * The flush mode type applies to the query regardless of the
@@ -842,19 +842,19 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public StoredProcedureQueryImpl setFlushMode(FlushModeType flushMode) {
         return (StoredProcedureQueryImpl) super.setFlushMode(flushMode);
     }
-    
+
     /**
-     * Set a query property or hint. The hints elements may be used to specify 
-     * query properties and hints. Properties defined by this specification must 
-     * be observed by the provider. Vendor-specific hints that are not 
-     * recognized by a provider must be silently ignored. Portable applications 
+     * Set a query property or hint. The hints elements may be used to specify
+     * query properties and hints. Properties defined by this specification must
+     * be observed by the provider. Vendor-specific hints that are not
+     * recognized by a provider must be silently ignored. Portable applications
      * should not rely on the standard timeout hint. Depending on the database
      * in use, this hint may or may not be observed.
-     * 
+     *
      * @param hintName name of the property or hint
      * @param value value for the property or hint
      * @return the same query instance
-     * @throws IllegalArgumentException if the second argument is not valid for 
+     * @throws IllegalArgumentException if the second argument is not valid for
      * the implementation
      */
     public StoredProcedureQuery setHint(String hintName, Object value) {
@@ -867,10 +867,10 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             throw e;
         }
     }
-    
+
     /**
      * Set the lock mode type to be used for the query execution.
-     * 
+     *
      * @param lockMode
      * @throws IllegalStateException
      *             if not a Java Persistence query language SELECT query
@@ -878,10 +878,10 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public StoredProcedureQueryImpl setLockMode(LockModeType lockMode) {
         return (StoredProcedureQueryImpl) super.setLockMode(lockMode);
     }
-    
+
     /**
      * Set the maximum number of results to retrieve.
-     * 
+     *
      * @param maxResult
      * @return the same query instance
      */
@@ -891,43 +891,43 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
     /**
      * Bind an instance of java.util.Calendar to a positional parameter.
-     * 
+     *
      * @param position
      * @param value
      * @param temporalType
      * @return the same query instance
-     * @throws IllegalArgumentException if position does not correspond to a 
-     * positional parameter of the query or if the value argument is of 
+     * @throws IllegalArgumentException if position does not correspond to a
+     * positional parameter of the query or if the value argument is of
      * incorrect type
      */
     public StoredProcedureQuery setParameter(int position, Calendar value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
-    
+
     /**
      * Bind an instance of java.util.Date to a positional parameter.
-     * 
+     *
      * @param position
      * @param value
      * @param temporalType
      * @return the same query instance
-     * @throws IllegalArgumentException if position does not correspond to a 
-     * positional parameter of the query or if the value argument is of 
+     * @throws IllegalArgumentException if position does not correspond to a
+     * positional parameter of the query or if the value argument is of
      * incorrect type
      */
     public StoredProcedureQuery setParameter(int position, Date value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
-    
+
     /**
      * Bind an argument to a positional parameter.
-     * 
+     *
      * @param position
      * @param value
      * @return the same query instance
-     * @throws IllegalArgumentException if position does not correspond to a 
+     * @throws IllegalArgumentException if position does not correspond to a
      * positional parameter of the query or if the argument is of incorrect type
      */
     public StoredProcedureQuery setParameter(int position, Object value) {
@@ -940,15 +940,15 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             throw e;
         }
     }
-    
+
     /**
      * Bind an instance of java.util.Calendar to a Parameter object.
-     * 
-     * @param param 
-     * @param value 
+     *
+     * @param param
+     * @param value
      * @param temporalType
      * @return the same query instance
-     * @throws IllegalArgumentException if the parameter does not correspond to 
+     * @throws IllegalArgumentException if the parameter does not correspond to
      * a parameter of the query
      */
     public StoredProcedureQuery setParameter(Parameter<Calendar> param, Calendar value, TemporalType temporalType) {
@@ -966,15 +966,15 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         }
         return this.setParameter(position, value, temporalType);
     }
-    
+
     /**
      * Bind an instance of java.util.Date to a Parameter object.
-     * 
-     * @param param 
-     * @param value 
-     * @param temporalType 
+     *
+     * @param param
+     * @param value
+     * @param temporalType
      * @return the same query instance
-     * @throws IllegalArgumentException if the parameter does not correspond to 
+     * @throws IllegalArgumentException if the parameter does not correspond to
      * a parameter of the query
      */
     public StoredProcedureQuery setParameter(Parameter<Date> param, Date value, TemporalType temporalType) {
@@ -992,14 +992,14 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         }
         return this.setParameter(position, value, temporalType);
     }
-    
+
     /**
      * Bind the value of a Parameter object.
-     * 
+     *
      * @param param
      * @param value
      * @return the same query instance
-     * @throws IllegalArgumentException if the parameter does not correspond to 
+     * @throws IllegalArgumentException if the parameter does not correspond to
      * a parameter of the query
      */
     public <T> StoredProcedureQuery setParameter(Parameter<T> param, T value) {
@@ -1017,16 +1017,16 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         }
         return this.setParameter(position, value);
     }
-    
+
     /**
      * Bind an instance of java.util.Calendar to a named parameter.
-     * 
+     *
      * @param name
      * @param value
      * @param temporalType
      * @return the same query instance
-     * @throws IllegalArgumentException if the parameter name does not 
-     * correspond to a parameter of the query or if the value argument is of 
+     * @throws IllegalArgumentException if the parameter name does not
+     * correspond to a parameter of the query or if the value argument is of
      * incorrect type
      */
     public StoredProcedureQuery setParameter(String name, Calendar value, TemporalType temporalType) {
@@ -1036,28 +1036,28 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
     /**
      * Bind an instance of java.util.Date to a named parameter.
-     * 
+     *
      * @param name
      * @param value
      * @param temporalType
      * @return the same query instance
-     * @throws IllegalArgumentException if the parameter name does not 
-     * correspond to a parameter of the query or if the value argument is of 
+     * @throws IllegalArgumentException if the parameter name does not
+     * correspond to a parameter of the query or if the value argument is of
      * incorrect type
      */
     public StoredProcedureQuery setParameter(String name, Date value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
-    
+
     /**
      * Bind an argument to a named parameter.
-     * 
-     * @param name 
+     *
+     * @param name
      * @param value
      * @return the same query instance
-     * @throws IllegalArgumentException if the parameter name does not 
-     * correspond to a parameter of the query or if the argument is of incorrect 
+     * @throws IllegalArgumentException if the parameter name does not
+     * correspond to a parameter of the query or if the argument is of incorrect
      * type
      */
     public StoredProcedureQuery setParameter(String name, Object value) {
@@ -1073,7 +1073,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
     /**
      * Bind an argument to a named or indexed parameter.
-     * 
+     *
      * @param name
      *            the parameter name
      * @param value

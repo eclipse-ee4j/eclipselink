@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,87 +36,87 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public interface EclipseLinkExpressionVisitor extends ExpressionVisitor {
 
-	/**
-	 * Visits the {@link AsOfClause} expression.
-	 *
-	 * @param expression The {@link Expression} to visit
-	 */
-	void visit(AsOfClause expression);
+    /**
+     * Visits the {@link AsOfClause} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(AsOfClause expression);
 
-	/**
-	 * Visits the {@link CastExpression} expression.
-	 *
-	 * @param expression The {@link Expression} to visit
-	 */
-	void visit(CastExpression expression);
+    /**
+     * Visits the {@link CastExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(CastExpression expression);
 
-	/**
-	 * Visits the {@link ConnectByClause} expression.
-	 *
-	 * @param expression The {@link ConnectByClause} to visit
-	 */
-	void visit(ConnectByClause expression);
+    /**
+     * Visits the {@link ConnectByClause} expression.
+     *
+     * @param expression The {@link ConnectByClause} to visit
+     */
+    void visit(ConnectByClause expression);
 
-	/**
-	 * Visits the {@link DatabaseType} expression.
-	 *
-	 * @param expression The {@link DatabaseType} to visit
-	 */
-	void visit(DatabaseType expression);
+    /**
+     * Visits the {@link DatabaseType} expression.
+     *
+     * @param expression The {@link DatabaseType} to visit
+     */
+    void visit(DatabaseType expression);
 
-	/**
-	 * Visits the {@link ExtractExpression} expression.
-	 *
-	 * @param expression The {@link Expression} to visit
-	 */
-	void visit(ExtractExpression expression);
+    /**
+     * Visits the {@link ExtractExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(ExtractExpression expression);
 
-	/**
-	 * Visits the {@link HierarchicalQueryClause} expression.
-	 *
-	 * @param expression The {@link HierarchicalQueryClause} to visit
-	 */
-	void visit(HierarchicalQueryClause expression);
+    /**
+     * Visits the {@link HierarchicalQueryClause} expression.
+     *
+     * @param expression The {@link HierarchicalQueryClause} to visit
+     */
+    void visit(HierarchicalQueryClause expression);
 
-	/**
-	 * Visits the {@link OrderSiblingsByClause} expression.
-	 *
-	 * @param expression The {@link Expression} to visit
-	 */
-	void visit(OrderSiblingsByClause expression);
+    /**
+     * Visits the {@link OrderSiblingsByClause} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(OrderSiblingsByClause expression);
 
-	/**
-	 * Visits the {@link RegexpExpression} expression.
-	 *
-	 * @param expression The {@link Expression} to visit
-	 */
-	void visit(RegexpExpression expression);
+    /**
+     * Visits the {@link RegexpExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(RegexpExpression expression);
 
-	/**
-	 * Visits the {@link StartWithClause} expression.
-	 *
-	 * @param expression The {@link StartWithClause} to visit
-	 */
-	void visit(StartWithClause expression);
+    /**
+     * Visits the {@link StartWithClause} expression.
+     *
+     * @param expression The {@link StartWithClause} to visit
+     */
+    void visit(StartWithClause expression);
 
-	/**
-	 * Visits the {@link TableExpression} expression.
-	 *
-	 * @param expression The {@link Expression} to visit
-	 */
-	void visit(TableExpression expression);
+    /**
+     * Visits the {@link TableExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(TableExpression expression);
 
-	/**
-	 * Visits the {@link TableVariableDeclaration} expression.
-	 *
-	 * @param expression The {@link Expression} to visit
-	 */
-	void visit(TableVariableDeclaration expression);
+    /**
+     * Visits the {@link TableVariableDeclaration} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(TableVariableDeclaration expression);
 
-	/**
-	 * Visits the {@link UnionClause} expression.
-	 *
-	 * @param expression The {@link Expression} to visit
-	 */
-	void visit(UnionClause expression);
+    /**
+     * Visits the {@link UnionClause} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(UnionClause expression);
 }

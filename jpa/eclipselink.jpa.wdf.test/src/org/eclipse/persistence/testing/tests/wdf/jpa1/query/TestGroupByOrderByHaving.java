@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -140,13 +140,13 @@ public class TestGroupByOrderByHaving extends QueryTest {
     }
 
     @Test
-    @Skip(databaseNames="org.eclipse.persistence.platform.database.MaxDBPlatform") 
-	/*
-	 * On MaxDB, the query maps to
-	 * "SELECT t0.ID, t0.COOL, t0.NAME, t0.TYPE, t0.CITY_ENUM, t0.CITY_TESLA_INT, t0.CITY_TESLA_BLOB FROM TMP_CITY t0 WHERE EXISTS (SELECT 1 FROM TMP_COP t2, TMP_COP t1 WHERE (t2.ID = t1.PARTNER_ID) GROUP BY t1.ID HAVING (t2.ID = 5))"
-	 * . The query is invalid (as expected) and should fail on the database as
-	 * t2.ID is no grouping column and must not be used in HAVING.
-	 */
+    @Skip(databaseNames="org.eclipse.persistence.platform.database.MaxDBPlatform")
+    /*
+     * On MaxDB, the query maps to
+     * "SELECT t0.ID, t0.COOL, t0.NAME, t0.TYPE, t0.CITY_ENUM, t0.CITY_TESLA_INT, t0.CITY_TESLA_BLOB FROM TMP_CITY t0 WHERE EXISTS (SELECT 1 FROM TMP_COP t2, TMP_COP t1 WHERE (t2.ID = t1.PARTNER_ID) GROUP BY t1.ID HAVING (t2.ID = 5))"
+     * . The query is invalid (as expected) and should fail on the database as
+     * t2.ID is no grouping column and must not be used in HAVING.
+     */
     public void testSubQueryGroupBy3() {
         /* 21 */assertInvalidQuery("select _city from City _city where exists(select max(c.id) from Cop c group by c.id having c.partner.id = 5)");
     }

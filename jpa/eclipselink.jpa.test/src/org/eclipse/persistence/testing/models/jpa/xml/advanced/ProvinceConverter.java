@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -21,10 +21,10 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class ProvinceConverter implements Converter {
     public ProvinceConverter() {}
-    
+
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         if (dataValue == null) {
-        	return null;
+            return null;
         } else {
             String province = (String) dataValue;
 
@@ -53,17 +53,17 @@ public class ProvinceConverter implements Converter {
             } else if (province.equals("YT")) {
                 return "Yukon";
             } else {
-            	return province;
+                return province;
             }
         }
     }
-    
+
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         if (objectValue == null) {
-        	return null;
+            return null;
         } else {
             String province = (String) objectValue;
-        
+
             if (province.equalsIgnoreCase("Alberta")) {
                 return "AB";
             } else if (province.equalsIgnoreCase("British Columnbia")) {
@@ -89,14 +89,14 @@ public class ProvinceConverter implements Converter {
             } else if (province.equalsIgnoreCase("Yukon")) {
                 return "YT";
             } else {
-            	return province;
+                return province;
             }
         }
     }
 
-	public void initialize(DatabaseMapping mapping, Session session) {}
-    
-	public boolean isMutable() {
+    public void initialize(DatabaseMapping mapping, Session session) {}
+
+    public boolean isMutable() {
         return false;
     }
 }

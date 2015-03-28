@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork.transactionisolation;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -94,18 +94,18 @@ public class TransactionIsolationMergeCircularIndirectionTest extends AutoVerify
         unitOfWork = null;
 
         Employee newTeamLead = (Employee)getSession().getIdentityMapAccessor().getFromIdentityMap(teamLeadClone);
-        strongAssert(newTeamLead == teamLead, 
+        strongAssert(newTeamLead == teamLead,
                      "The previous original should have been merged into the shared cache.");
-        strongAssert(newTeamLead.managedEmployees.isInstantiated(), 
+        strongAssert(newTeamLead.managedEmployees.isInstantiated(),
                      "The valueholder [managedEmployees] in the shared cache should be triggered now.");
 
         Employee newFreelance = (Employee)getSession().getIdentityMapAccessor().getFromIdentityMap(freelanceClone);
         strongAssert(newFreelance == freelance, "Identity was lost on managed employees accross the 1-1");
-        strongAssert(newTeamLead.getManagedEmployees().contains(freelance), 
+        strongAssert(newTeamLead.getManagedEmployees().contains(freelance),
                      "teamLead is not pointing to the shared cache version of its new employee.");
-        strongAssert(newFreelance.manager.isInstantiated(), 
+        strongAssert(newFreelance.manager.isInstantiated(),
                      "The valueholder [manager] in the shared cache should be triggered now.");
-        strongAssert(newFreelance.getManager() == newTeamLead, 
+        strongAssert(newFreelance.getManager() == newTeamLead,
                      "freelance is not pointing to the shared cache version of its new manager.");
     }
 }

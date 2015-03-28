@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.converters;
 
 import java.sql.Connection;
@@ -27,16 +27,16 @@ import java.sql.Struct;
  * 2. convertToStruct(Object, Connection) will be invoked when an Object of the class
  * returned by getJavaType() is written to the database.  This conversion happens immediately before the
  * object is written to the database
- * 
+ *
  * Note: Many Structs can also be mapped with mappings StructureMapping and ObjectRelationalDataTypeDescriptor
- * This class provides support for advanced types of Structures that require some processing immediately 
+ * This class provides support for advanced types of Structures that require some processing immediately
  * before writing to the database or immediately after reading from the database.
- * 
+ *
  * @see org.eclipse.persistence.mappings.structures.StructureMapping
  * @see org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor
  */
 public interface StructConverter {
-    
+
     /**
      * PUBLIC:
      * @return The value return by getSQLTypeName() called when called on the appropriate Struct
@@ -68,6 +68,6 @@ public interface StructConverter {
      * @return The Object as a Struct
      * @throws SQLException
      */
-    public Struct convertToStruct(Object struct, 
+    public Struct convertToStruct(Object struct,
                            Connection connection) throws SQLException;
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
@@ -77,7 +77,7 @@ public class SDOExceptionResource extends ListResourceBundle {
                                            { "45208", "Unable to map property {0} from type {1}. The javax.activation and javax.mail packages are required to map properties of type DataHandler. Ensure that both of these are available on the classpath."},
                                            { "45209", "An attempt was made to reset the ApplicationResolver instance on SDOHelperContext.  Only one set is permitted."},
                                            { "45210", "The DataObject being marshalled is not from the same HelperContext as the XMLHelper."},
-                                           
+
     };
 
     /**

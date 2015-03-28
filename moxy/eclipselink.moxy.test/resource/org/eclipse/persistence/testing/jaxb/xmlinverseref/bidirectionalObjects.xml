@@ -3,8 +3,8 @@
    <name>theName</name>
    <addr>
       <street>theStreet</street>
-	  <owner>
+      <owner>
           <name>differentPerson</name>
-	  </owner>
+      </owner>
    </addr>
 </person>

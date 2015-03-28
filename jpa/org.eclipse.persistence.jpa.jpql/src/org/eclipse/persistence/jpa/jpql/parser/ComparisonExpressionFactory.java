@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,103 +30,103 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 @SuppressWarnings("nls")
 public final class ComparisonExpressionFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link ComparisonExpressionFactory}.
-	 */
-	public static final String ID = "comparison";
+    /**
+     * The unique identifier of this {@link ComparisonExpressionFactory}.
+     */
+    public static final String ID = "comparison";
 
-	/**
-	 * Creates a new <code>ComparisonExpressionFactory</code>.
-	 */
-	public ComparisonExpressionFactory() {
-		super(ID, DIFFERENT,
-		          EQUAL,
-		          GREATER_THAN,
-		          GREATER_THAN_OR_EQUAL,
-		          LOWER_THAN,
-		          LOWER_THAN_OR_EQUAL);
-	}
+    /**
+     * Creates a new <code>ComparisonExpressionFactory</code>.
+     */
+    public ComparisonExpressionFactory() {
+        super(ID, DIFFERENT,
+                  EQUAL,
+                  GREATER_THAN,
+                  GREATER_THAN_OR_EQUAL,
+                  LOWER_THAN,
+                  LOWER_THAN_OR_EQUAL);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		String operator = null;
+        String operator = null;
 
-		// First look for known operator (<, <=, =, =>, <>)
-		switch (wordParser.character()) {
+        // First look for known operator (<, <=, =, =>, <>)
+        switch (wordParser.character()) {
 
-			// <, <=, <>
-			case '<': {
-				switch (wordParser.character(wordParser.position() + 1)) {
-					case '=': {
-						operator = LOWER_THAN_OR_EQUAL;
-						break;
-					}
-					case '>': {
-						operator = DIFFERENT;
-						break;
-					}
-					default: {
-						operator = LOWER_THAN;
-						break;
-					}
-				}
-				break;
-			}
+            // <, <=, <>
+            case '<': {
+                switch (wordParser.character(wordParser.position() + 1)) {
+                    case '=': {
+                        operator = LOWER_THAN_OR_EQUAL;
+                        break;
+                    }
+                    case '>': {
+                        operator = DIFFERENT;
+                        break;
+                    }
+                    default: {
+                        operator = LOWER_THAN;
+                        break;
+                    }
+                }
+                break;
+            }
 
-			// >, >=
-			case '>': {
-				switch (wordParser.character(wordParser.position() + 1)) {
-					case '=': {
-						operator = GREATER_THAN_OR_EQUAL;
-						break;
-					}
-					default: {
-						operator = GREATER_THAN;
-						break;
-					}
-				}
-				break;
-			}
+            // >, >=
+            case '>': {
+                switch (wordParser.character(wordParser.position() + 1)) {
+                    case '=': {
+                        operator = GREATER_THAN_OR_EQUAL;
+                        break;
+                    }
+                    default: {
+                        operator = GREATER_THAN;
+                        break;
+                    }
+                }
+                break;
+            }
 
-			// =
-			case '=': {
-				operator = EQUAL;
-				break;
-			}
-		}
+            // =
+            case '=': {
+                operator = EQUAL;
+                break;
+            }
+        }
 
-		// Now look for additional identifiers
-		if (operator == null) {
-			for (String identifier : identifiers()) {
-				if (wordParser.startsWith(identifier)) {
-					operator = identifier;
-					break;
-				}
-			}
-		}
+        // Now look for additional identifiers
+        if (operator == null) {
+            for (String identifier : identifiers()) {
+                if (wordParser.startsWith(identifier)) {
+                    operator = identifier;
+                    break;
+                }
+            }
+        }
 
-		// The operator was found, create the expression
-		if (operator != null) {
+        // The operator was found, create the expression
+        if (operator != null) {
 
-			ComparisonExpression comparisonExpression = new ComparisonExpression(parent, operator);
-			comparisonExpression.parse(wordParser, tolerant);
+            ComparisonExpression comparisonExpression = new ComparisonExpression(parent, operator);
+            comparisonExpression.parse(wordParser, tolerant);
 
-			if (expression != null) {
-				comparisonExpression.setLeftExpression(expression);
-			}
+            if (expression != null) {
+                comparisonExpression.setLeftExpression(expression);
+            }
 
-			return comparisonExpression;
-		}
+            return comparisonExpression;
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

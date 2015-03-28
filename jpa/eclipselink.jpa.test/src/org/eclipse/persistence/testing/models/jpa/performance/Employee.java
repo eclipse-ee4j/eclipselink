@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.performance;
 
 import java.util.*;
@@ -61,7 +61,7 @@ import org.eclipse.persistence.config.QueryHints;
 //public class Employee implements Serializable, PortableObject {
 public class Employee implements Serializable {
 
-    protected long id;    
+    protected long id;
     protected long version;
     protected String firstName;
     protected String lastName;
@@ -82,24 +82,24 @@ public class Employee implements Serializable {
         this.phoneNumbers = new HashSet();
     }
 
-	/*public void readExternal(PofReader in) throws IOException {
-		this.id = in.readLong(0);
-		this.version = in.readLong(1);
-		this.firstName = in.readString(2);
-		this.lastName = in.readString(3);
-		this.gender = in.readString(4);
-		this.salary = in.readInt(5);
-		this.period = (EmploymentPeriod)in.readObject(6);
+    /*public void readExternal(PofReader in) throws IOException {
+        this.id = in.readLong(0);
+        this.version = in.readLong(1);
+        this.firstName = in.readString(2);
+        this.lastName = in.readString(3);
+        this.gender = in.readString(4);
+        this.salary = in.readInt(5);
+        this.period = (EmploymentPeriod)in.readObject(6);
     }
- 
-	public void writeExternal(PofWriter out) throws IOException {
-		out.writeLong(0, this.id);
-		out.writeLong(1, this.version);
-		out.writeString(2, this.firstName);
-		out.writeString(3, this.lastName);
-		out.writeString(4, this.gender);
-		out.writeInt(5, this.salary);
-		out.writeObject(6, this.period);
+
+    public void writeExternal(PofWriter out) throws IOException {
+        out.writeLong(0, this.id);
+        out.writeLong(1, this.version);
+        out.writeString(2, this.firstName);
+        out.writeString(3, this.lastName);
+        out.writeString(4, this.gender);
+        out.writeInt(5, this.salary);
+        out.writeObject(6, this.period);
     }*/
 
     /**
@@ -171,7 +171,7 @@ public class Employee implements Serializable {
     public int getSalary() {
         return salary;
     }
-    
+
     public long getVersion() {
         return version;
     }
@@ -252,7 +252,7 @@ public class Employee implements Serializable {
     public void setSalary(int salary) {
         this.salary = salary;
     }
-    
+
     public void setVersion(long version) {
         this.version = version;
     }

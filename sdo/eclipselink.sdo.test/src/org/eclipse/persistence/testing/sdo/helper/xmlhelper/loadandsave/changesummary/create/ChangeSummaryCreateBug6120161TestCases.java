@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.changesummary.create;
 
 import commonj.sdo.ChangeSummary;
@@ -45,7 +45,7 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/bug6120161.xml");
     }
-    
+
     protected String getControlWriteFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/bug6120161Write.xml");
     }
@@ -160,7 +160,7 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
             String nextEmpName = nextEmp.getString("Ename");
             if (nextEmpName.equals(empName)) {
                 if (empNo == nextEmpNo) {
-                    return;//found match              
+                    return;//found match
                 }
             }
         }
@@ -214,6 +214,6 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
     }
 
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() {
-        //do nothing 
+        //do nothing
     }
 }

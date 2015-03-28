@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 
 /**
  * INTERNAL:
- *  <p><b>Purpose:</b>Encapsulates a Map of Namespace URIs to Properties. 
+ *  <p><b>Purpose:</b>Encapsulates a Map of Namespace URIs to Properties.
  *  <p><b>Responsibilities:</b><ul>
  *  <li>Provide an API to set key/value pairs on a per namespace URI bases</li>
  *  <li>Lazily initialize a new Properties object for each namespace</li>
@@ -30,7 +30,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.Schema;
  *  <p> This class is used to hold onto a Map of Properties objects on a per namespace basis.
  *  It is intended to be used in conjunction with the SchemaModelGenerator class, to hand in
  *  Properties to be applied to the Schema that is generated for a given namespace.
- *  
+ *
  *  @see Schema
  *  @see SchemaModelGenerator
  *  @see Properties
@@ -42,7 +42,7 @@ public class SchemaModelGeneratorProperties {
     public static final String ELEMENT_FORM_QUALIFIED_KEY = "elementFormQualified";
 
     public SchemaModelGeneratorProperties() {}
-    
+
     /**
      * Lazily initialize the URI->Properties map
      * @return
@@ -58,7 +58,7 @@ public class SchemaModelGeneratorProperties {
      * Adds the key/value pair to the Properties object associated with the given
      * namespace URI.  If no entry exists for the given URI, a Properties object
      * will be created.
-     * 
+     *
      * @param uri
      * @param key
      * @param value
@@ -78,7 +78,7 @@ public class SchemaModelGeneratorProperties {
 
     /**
      * Return the property value for a given namespace/key pair.
-     * 
+     *
      * @param uri
      * @param key
      * @return
@@ -94,11 +94,11 @@ public class SchemaModelGeneratorProperties {
         }
         return props.get(key);
     }
-    
+
     /**
      * Return the Properties object for the given namespace uri.
      * If none exists a new Properties is created and returned.
-     *  
+     *
      * @return
      */
     public Properties getProperties(String uri) {

@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     04/30/2009-2.0 Michael O'Brien 
- *       - 266912: JPA 2.0 Metamodel API (part of Criteria API) 
- ******************************************************************************/  
+ *     04/30/2009-2.0 Michael O'Brien
+ *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
 
@@ -19,9 +19,9 @@ import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class MetamodelTableCreator extends TableCreator {
-    
+
     /**
-     * 
+     *
      * DDL schema cleanup order
 DROP TABLE CMP3_MM_HIST_EMPLOY
 DROP TABLE CMP3_MM_MANUF_MM_HWDES_MAP
@@ -54,7 +54,7 @@ DROP TABLE CMP3_MM_MANUF
 DROP TABLE CMP3_MM_ENCLOSURE
 DROP TABLE CMP3_MM_COMPUTER
      */
-    
+
     public MetamodelTableCreator() {
         setName("MetamodelProject");
 
@@ -65,8 +65,8 @@ DROP TABLE CMP3_MM_COMPUTER
         addTableDefinition(buildUSERTable());
         addTableDefinition(buildCOMPUTERTable());
         addTableDefinition(buildBOARDTable());
-        addTableDefinition(buildMEMORYTable());        
-        addTableDefinition(buildPROCESSORTable());        
+        addTableDefinition(buildMEMORYTable());
+        addTableDefinition(buildPROCESSORTable());
         //addTableDefinition(buildVECTORPROCESSORTable());
         //addTableDefinition(buildARRAYPROCESSORTable());
         //addTableDefinition(buildLOCATIONTable());
@@ -74,7 +74,7 @@ DROP TABLE CMP3_MM_COMPUTER
         // Test ms-ms-entity chain with idclass above id
         addTableDefinition(buildMS_MS_Entity_Leaf_Table());
 
-        
+
         // 1:n
         addTableDefinition(buildMANUFACTURER_COMPUTER_JOINTable());
         addTableDefinition(buildMANUFACTURER_CORPCOMPUTER_JOINTable());
@@ -83,9 +83,9 @@ DROP TABLE CMP3_MM_COMPUTER
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC2_JOINTable());
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC4_JOINTable());
         addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC7_JOINTable());
-        addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC8_JOINTable());        
-        //addTableDefinition(buildMANUFACTURER_ENCLOSURE_MAPUC9_JOINTable());        
-        addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_HISTORICAL_JOINTable());        
+        addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_MAPUC8_JOINTable());
+        //addTableDefinition(buildMANUFACTURER_ENCLOSURE_MAPUC9_JOINTable());
+        addTableDefinition(buildMANUFACTURER_HARDWAREDESIGNER_HISTORICAL_JOINTable());
         addTableDefinition(buildBOARD_MEMORY_JOINTable());
         addTableDefinition(buildBOARD_PROCESSOR_JOINTable());
         addTableDefinition(buildCOMPUTER_BOARD_JOINTable());
@@ -95,7 +95,7 @@ DROP TABLE CMP3_MM_COMPUTER
         addTableDefinition(buildCMP3_MM_PERSON_SEQTable());
         addTableDefinition(buildCMP3_MM_MANUF_CMP3_MM_MANUFTable());
     }
- 	
+
 
     public static TableDefinition buildMANUFACTURERTable() {
         TableDefinition table = new TableDefinition();
@@ -141,9 +141,9 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setUnique(false);
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_HWDESIGNER.PERSON_ID");
-        table.addField(field6);        
+        table.addField(field6);
 */
-                
+
         // Primitive and Basic type testing
         //ADOUBLEOBJECT, ABIGINTEGEROBJECT, AFLOATOBJECT, MANUF_VERSION, ALONGOBJECT, ASHORT, ABYTEOBJECT, NAME, ABOOLEANOBJECT, ACHAR, ACHARACTEROBJECT, ANINT, AFLOAT, ALONG, ADOUBLE, ASHORTOBJECT, ANINTEGEROBJECT
         //private Boolean aBooleanObject;
@@ -168,7 +168,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field72.setIsIdentity(false);
         table.addField(field72);
 
-        //private Short aShortObject;    
+        //private Short aShortObject;
         FieldDefinition field73 = new FieldDefinition();
         field73.setName("ASHORTOBJECT");
         field73.setTypeName("NUMERIC");
@@ -200,8 +200,8 @@ DROP TABLE CMP3_MM_COMPUTER
         field75.setUnique(false);
         field75.setIsIdentity(false);
         table.addField(field75);
-        
-        //private BigInteger aBigIntegerObject;    
+
+        //private BigInteger aBigIntegerObject;
         FieldDefinition field76 = new FieldDefinition();
         field76.setName("ABIGINTEGEROBJECT");
         field76.setTypeName("NUMERIC");
@@ -234,7 +234,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field78.setIsIdentity(false);
         table.addField(field78);
 
-        //private Character aCharacterObject;        
+        //private Character aCharacterObject;
         FieldDefinition field79 = new FieldDefinition();
         field79.setName("ACHARACTEROBJECT");
         field79.setTypeName("VARCHAR");
@@ -267,7 +267,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field81.setIsIdentity(false);
         table.addField(field81);
 
-        //private short aShort;    
+        //private short aShort;
         FieldDefinition field82 = new FieldDefinition();
         field82.setName("ASHORT");
         field82.setTypeName("NUMERIC");
@@ -288,7 +288,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field83.setUnique(false);
         field83.setIsIdentity(false);
         table.addField(field83);
-        
+
         //private long aLong;
         FieldDefinition field84 = new FieldDefinition();
         field84.setName("ALONG");
@@ -299,7 +299,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field84.setUnique(false);
         field84.setIsIdentity(false);
         table.addField(field84);
-        
+
         //private float aFloat;
         FieldDefinition field85 = new FieldDefinition();
         field85.setName("AFLOAT");
@@ -310,7 +310,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field85.setUnique(false);
         field85.setIsIdentity(false);
         table.addField(field85);
-        
+
         //private double aDouble;
         FieldDefinition field86 = new FieldDefinition();
         field86.setName("ADOUBLE");
@@ -321,7 +321,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field86.setUnique(false);
         field86.setIsIdentity(false);
         table.addField(field86);
-        
+
         //private char aChar;
         FieldDefinition field87 = new FieldDefinition();
         field87.setName("ACHAR");
@@ -332,7 +332,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field87.setUnique(false);
         field87.setIsIdentity(false);
         table.addField(field87);
-        
+
         //public enum anEnum { one, two, three};
 /*        FieldDefinition field88 = new FieldDefinition();
         field88.setName("ANENUM");
@@ -343,9 +343,9 @@ DROP TABLE CMP3_MM_COMPUTER
         field88.setUnique(false);
         field88.setIsIdentity(false);
         table.addField(field88);
-  */      
+  */
 
-        //private BigInteger aBigIntegerObject;    
+        //private BigInteger aBigIntegerObject;
         FieldDefinition field90 = new FieldDefinition();
         field90.setName("ABIGDECIMALOBJECT");
         field90.setTypeName("NUMERIC");
@@ -382,7 +382,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("HWDESIGNER_VERSION");
         field4.setTypeName("NUMERIC");
@@ -414,7 +414,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setUnique(false);
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field6);        
+        table.addField(field6);
 
         // from MappedSuperclass
         // m:1 does not require a JoinTable - only a JoinColumn
@@ -427,7 +427,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field9.setUnique(false);
         field9.setIsIdentity(false);
         field9.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field9);        
+        table.addField(field9);
 
         // from MappedSuperclass
         // m:1 does not require a JoinTable - only a JoinColumn
@@ -440,7 +440,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field19.setUnique(false);
         field19.setIsIdentity(false);
         field19.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field19);        
+        table.addField(field19);
 
         // from MappedSuperclass
         // m:1 does not require a JoinTable - only a JoinColumn
@@ -453,7 +453,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field29.setUnique(false);
         field29.setIsIdentity(false);
         field29.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field29);        
+        table.addField(field29);
 
         // from MappedSuperclass
         // m:1 does not require a JoinTable - only a JoinColumn
@@ -466,7 +466,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field39.setUnique(false);
         field39.setIsIdentity(false);
         field39.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field39);        
+        table.addField(field39);
 
         // from MappedSuperclass
         // m:1 does not require a JoinTable - only a JoinColumn
@@ -479,7 +479,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field49.setUnique(false);
         field49.setIsIdentity(false);
         field49.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field49);        
+        table.addField(field49);
 
         // from MappedSuperclass
         // m:1 does not require a JoinTable - only a JoinColumn
@@ -492,8 +492,8 @@ DROP TABLE CMP3_MM_COMPUTER
         field59.setUnique(false);
         field59.setIsIdentity(false);
         field59.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field59);        
-        
+        table.addField(field59);
+
         // from MappedSuperclass
         // 1:1 unidirectional
         FieldDefinition field7 = new FieldDefinition();
@@ -505,7 +505,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field7.setUnique(false);
         field7.setIsIdentity(false);
         field7.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field7);        
+        table.addField(field7);
 
         // m:1 does not require a JoinTable - only a JoinColumn
         FieldDefinition field8 = new FieldDefinition();
@@ -517,8 +517,8 @@ DROP TABLE CMP3_MM_COMPUTER
         field8.setUnique(false);
         field8.setIsIdentity(false);
         field8.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field8);        
- 
+        table.addField(field8);
+
         return table;
     }
 
@@ -535,7 +535,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field_id2.setUnique(false);
         field_id2.setIsIdentity(true);
         table.addField(field_id2);*/
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("PERSON_ID");
         field.setTypeName("NUMERIC");
@@ -545,7 +545,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("SWDESIGNER_VERSION");
         field4.setTypeName("NUMERIC");
@@ -565,7 +565,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-        
+
         // from MappedSuperclass
 /*        // 1:m does not require a JoinTable - only a JoinColumn
         FieldDefinition field6 = new FieldDefinition();
@@ -578,7 +578,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
         table.addField(field6);
-*/        
+*/
         // from MappedSuperclass
         // 1:1 unidirectional
         FieldDefinition field7 = new FieldDefinition();
@@ -590,7 +590,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field7.setUnique(false);
         field7.setIsIdentity(false);
         field7.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field7);        
+        table.addField(field7);
 
         // m:1 does not require a JoinTable - only a JoinColumn
         FieldDefinition field8 = new FieldDefinition();
@@ -602,7 +602,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field8.setUnique(false);
         field8.setIsIdentity(false);
         field8.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field8);        
+        table.addField(field8);
 
         // 1:m with JoinTable - by default
 /*        FieldDefinition field9 = new FieldDefinition();
@@ -614,9 +614,9 @@ DROP TABLE CMP3_MM_COMPUTER
         field9.setUnique(false);
         field9.setIsIdentity(false);
         field9.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field9);*/        
-        
-        
+        table.addField(field9);*/
+
+
         return table;
     }
 
@@ -633,7 +633,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("USER_VERSION");
         field4.setTypeName("NUMERIC");
@@ -653,7 +653,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-        
+
         return table;
     }
 
@@ -670,7 +670,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("COMPUTER_VERSION");
         field4.setTypeName("NUMERIC");
@@ -703,7 +703,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field5.setForeignKeyFieldName("CMP3_MM_GALACTIC.GALACTIC_ID");
         //field5.setForeignKeyFieldName("CMP3_MM_LOCATION.PK_PART1");
         table.addField(field5);
-        
+
         // 1:m does not require a JoinTable - only a JoinColumn
         FieldDefinition field6 = new FieldDefinition();
         field6.setName("MANUFACTURER_PERSON_ID");
@@ -714,8 +714,8 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setUnique(false);
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field6);        
-        
+        table.addField(field6);
+
         return table;
     }
 
@@ -732,7 +732,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-        
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("BOARD_VERSION");
         field4.setTypeName("NUMERIC");
@@ -753,16 +753,16 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setUnique(false);
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
-        table.addField(field6);        
-*/        
+        table.addField(field6);
+*/
         return table;
     }
 
-    
+
     public static TableDefinition buildENCLOSURETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_ENCLOSURE");
-        
+
         FieldDefinition field13 = new FieldDefinition();
         field13.setName("TYPE");
         field13.setTypeName("VARCHAR");
@@ -803,8 +803,8 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setUnique(false);
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
-        table.addField(field6);        
-        
+        table.addField(field6);
+
         FieldDefinition field = new FieldDefinition();
         field.setName("PERSON_ID");
         field.setTypeName("NUMERIC");
@@ -814,7 +814,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-        
+
         return table;
     }
 
@@ -873,7 +873,7 @@ DROP TABLE CMP3_MM_COMPUTER
         //field.setIsIdentity(false);//true);
         field.setIsIdentity(true);
         table.addField(field);
-        
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("DECLAREDCENTERSTRINGFIELD");
         field2.setTypeName("VARCHAR");
@@ -902,10 +902,10 @@ DROP TABLE CMP3_MM_COMPUTER
         field4.setIsPrimaryKey(false);
         field4.setUnique(false);
         field4.setIsIdentity(false);
-        table.addField(field4);        
+        table.addField(field4);
         return table;
     }
-    
+
     public static TableDefinition buildMEMORYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_MEMORY");
@@ -919,7 +919,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("MEMORY_VERSION");
         field4.setTypeName("NUMERIC");
@@ -939,7 +939,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-        
+
         // 1:m does not require a JoinTable - only a JoinColumn
         FieldDefinition field6 = new FieldDefinition();
         field6.setName("BOARD_BOARD_ID");
@@ -950,8 +950,8 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setUnique(false);
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_BOARD.BOARD_ID");
-        table.addField(field6);        
-        
+        table.addField(field6);
+
         return table;
     }
 
@@ -969,7 +969,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("PROC_VERSION");
         field4.setTypeName("NUMERIC");
@@ -989,7 +989,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field5.setUnique(false);
         field5.setIsIdentity(false);
         table.addField(field5);
-        
+
         // OVERRIDE @Inheritance from SINGLE_TABLE to JOINED
         // http://wiki.eclipse.org/Introduction_to_EclipseLink_JPA_%28ELUG%29#.40Inheritance
         // discriminator column (for inheritance)
@@ -1002,7 +1002,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-        
+
         // 1:m does not require a JoinTable - only a JoinColumn
         FieldDefinition field6 = new FieldDefinition();
         field6.setName("BOARD_BOARD_ID");
@@ -1013,12 +1013,12 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setUnique(false);
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_BOARD.BOARD_ID");
-        table.addField(field6);        
-        
+        table.addField(field6);
+
         return table;
     }
 
-    
+
     public static TableDefinition buildVECTORPROCESSORTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_PROC");
@@ -1033,7 +1033,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-        
+
 /*        FieldDefinition field3 = new FieldDefinition();
         field3.setName("SPEED");
         field3.setTypeName("VARCHAR");
@@ -1043,8 +1043,8 @@ DROP TABLE CMP3_MM_COMPUTER
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-*/        
-    
+*/
+
 /*        FieldDefinition field4 = new FieldDefinition();
         field4.setName("VECTPROC_VERSION");
         field4.setTypeName("NUMERIC");
@@ -1065,8 +1065,8 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setUnique(false);
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_BOARD.BOARD_ID");
-        table.addField(field6);        
-*/        
+        table.addField(field6);
+*/
         return table;
     }
 
@@ -1084,7 +1084,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
 /*        FieldDefinition field4 = new FieldDefinition();
         field4.setName("ARRAYPROC_VERSION");
         field4.setTypeName("NUMERIC");
@@ -1105,11 +1105,11 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setUnique(false);
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_BOARD.BOARD_ID");
-        table.addField(field6);        
-*/        
+        table.addField(field6);
+*/
         return table;
     }
-    
+
     public static TableDefinition buildGALACTICPOSITIONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_GALACTIC");
@@ -1124,7 +1124,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         // Using single Id
 /*        FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("GALACTIC_ID");
@@ -1136,7 +1136,7 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldID.setUnique(false);//true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-*/        
+*/
         /*FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("PK_PART1");
         fieldID.setTypeName("NUMBER");
@@ -1159,7 +1159,7 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldID2.setShouldAllowNull(false);
         table.addField(fieldID2);*/
 
-        
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("GALACTIC_VERSION");
         field4.setTypeName("NUMERIC");
@@ -1192,7 +1192,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field7.setIsIdentity(false);
         field7.setForeignKeyFieldName("CMP3_MM_GALACTIC.GALACTIC_ID");
         table.addField(field7);
-*/        
+*/
         // OVERRIDE @Inheritance from SINGLE_TABLE to JOINED
         // http://wiki.eclipse.org/Introduction_to_EclipseLink_JPA_%28ELUG%29#.40Inheritance
         // discriminator column (for inheritance)
@@ -1205,7 +1205,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field13.setUnique(false);
         field13.setIsIdentity(false);
         table.addField(field13);
-        
+
         // 1:m does not require a JoinTable - only a JoinColumn
         FieldDefinition field6 = new FieldDefinition();
         field6.setName("COMPUTERUC12_COMPUTER_ID");
@@ -1216,7 +1216,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setUnique(false);
         field6.setIsIdentity(false);
         field6.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
-        table.addField(field6);        
+        table.addField(field6);
 
         // 1:m does not require a JoinTable - only a JoinColumn
         FieldDefinition field7 = new FieldDefinition();
@@ -1228,8 +1228,8 @@ DROP TABLE CMP3_MM_COMPUTER
         field7.setUnique(false);
         field7.setIsIdentity(false);
         field7.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
-        table.addField(field7);        
-        
+        table.addField(field7);
+
         FieldDefinition field8 = new FieldDefinition();
         field8.setName("ELEVATION");
         field8.setTypeName("NUMERIC");
@@ -1239,7 +1239,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field8.setUnique(false);
         field8.setIsIdentity(false);
         table.addField(field8);
-        
+
         FieldDefinition field9 = new FieldDefinition();
         field9.setName("LATTITUDE");
         field9.setTypeName("NUMERIC");
@@ -1249,7 +1249,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field9.setUnique(false);
         field9.setIsIdentity(false);
         table.addField(field9);
-        
+
         FieldDefinition field10 = new FieldDefinition();
         field10.setName("LONGITUDE");
         field10.setTypeName("NUMERIC");
@@ -1259,7 +1259,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field10.setUnique(false);
         field10.setIsIdentity(false);
         table.addField(field10);
-        
+
         return table;
     }
 
@@ -1280,7 +1280,7 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldID.setUnique(false);//true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-*/        
+*/
         /*FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("PK_PART1");
         fieldID.setTypeName("NUMBER");
@@ -1303,7 +1303,7 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldID2.setShouldAllowNull(false);
         table.addField(fieldID2);*/
 
-        
+
 /*        FieldDefinition field4 = new FieldDefinition();
         field4.setName("LOCATION_VERSION");
         field4.setTypeName("NUMERIC");
@@ -1336,7 +1336,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field5.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
         table.addField(field5);
 */
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("GALACTIC_ID");
         fieldID.setTypeName("NUMBER");
@@ -1347,7 +1347,7 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldID.setUnique(false);//true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
 /*        // from MappedSuperclass
         // 1:1 unidirectional
         FieldDefinition field7 = new FieldDefinition();
@@ -1359,11 +1359,11 @@ DROP TABLE CMP3_MM_COMPUTER
         field7.setUnique(false);
         field7.setIsIdentity(false);
         field7.setForeignKeyFieldName("CMP3_MM_GALACTIC.GALACTIC_ID");
-        table.addField(field7);        
-*/        
+        table.addField(field7);
+*/
         return table;
     }
-    
+
     public static TableDefinition buildMANUFACTURER_COMPUTER_JOINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_MANUF_MM_COMPUTER");
@@ -1377,7 +1377,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("COMPUTER_ID");
@@ -1388,7 +1388,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
@@ -1406,7 +1406,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("COMPCOMPUTER_ID");
@@ -1417,11 +1417,11 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
-    
+
     public static TableDefinition buildMANUFACTURER_HARDWAREDESIGNER_JOINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_MANUF_MM_HWDESIGNER");
@@ -1435,7 +1435,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("DESIGNER_ID");
@@ -1446,7 +1446,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_HWDESIGNER.PERSON_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
@@ -1464,7 +1464,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("DESIGNER_ID");
@@ -1475,11 +1475,11 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_HWDESIGNER.PERSON_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
-    
+
     public static TableDefinition buildMANUFACTURER_HARDWAREDESIGNER_MAPUC1A_JOINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_MANUF_MM_HWDES_MAPUC1A");
@@ -1493,7 +1493,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("DESIGNER_MAP_ID");
@@ -1504,7 +1504,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_HWDESIGNER.PERSON_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
@@ -1522,7 +1522,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("DESIGNER_MAP_ID");
@@ -1533,7 +1533,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_HWDESIGNER.PERSON_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
@@ -1551,7 +1551,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("DESIGNER_MAP_ID");
@@ -1562,7 +1562,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_HWDESIGNER.PERSON_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
@@ -1580,7 +1580,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("DESIGNER_MAP_ID");
@@ -1591,7 +1591,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_HWDESIGNER.PERSON_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
@@ -1609,7 +1609,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("DESIGNER_MAP_ID");
@@ -1620,7 +1620,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_HWDESIGNER.PERSON_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
@@ -1638,7 +1638,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("ENCLOSURE_MAP_ID");
@@ -1649,11 +1649,11 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         //field2.setForeignKeyFieldName("CMP3_MM_ENCLOSURE.PERSON_ID"); // need composite PK reference
-        //table.addField(field2);        
+        //table.addField(field2);
 
         return table;
     }*/
-    
+
     public static TableDefinition buildMANUFACTURER_HARDWAREDESIGNER_MAP_JOINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_MANUF_MM_HWDES_MAP");
@@ -1667,7 +1667,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_MANUF.PERSON_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("DESIGNER_MAP_ID");
@@ -1678,7 +1678,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_HWDESIGNER.PERSON_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
@@ -1696,7 +1696,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_BOARD.BOARD_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("MEMORY_ID");
@@ -1707,7 +1707,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_MEMORY.MEMORY_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
@@ -1725,7 +1725,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_BOARD.BOARD_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("PROC_ID");
@@ -1736,7 +1736,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_PROC.PROC_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
@@ -1754,7 +1754,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_BOARD.BOARD_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("COMPUTER_ID");
@@ -1765,11 +1765,11 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
-        table.addField(field1);        
-        
+        table.addField(field1);
+
         return table;
     }
-    
+
     public static TableDefinition buildCOMPUTER_USER_JOINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_COMPUTER_MM_USER");
@@ -1783,7 +1783,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_MM_COMPUTER.COMPUTER_ID");
-        table.addField(field1);        
+        table.addField(field1);
 
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("USER_ID");
@@ -1794,32 +1794,32 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         field2.setForeignKeyFieldName("CMP3_MM_USER.PERSON_ID");
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public static TableDefinition buildMETAMODEL_CUSTOMERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_CUSTOMER");
@@ -1833,7 +1833,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
 /*        FieldDefinition field0 = new FieldDefinition();
         field0.setName("FK_DEALER_ID");
         field0.setTypeName("NUMERIC");
@@ -1844,7 +1844,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field0.setIsIdentity(false);
         field0.setForeignKeyFieldName("CMP3_DEALER.DEALER_ID");
         table.addField(field0);
-*/    
+*/
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("NAME");
         field1.setTypeName("VARCHAR");
@@ -1865,7 +1865,7 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldCITY.setIsIdentity(false);
         table.addField(fieldCITY);
 
-        
+
 /*        FieldDefinition field2 = new FieldDefinition();
         field2.setName("L_NAME");
         field2.setTypeName("VARCHAR");
@@ -1875,7 +1875,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(false);
         table.addField(field2);
-        
+
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("BUDGET");
         field3.setTypeName("NUMERIC");
@@ -1885,7 +1885,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-*/        
+*/
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("CUSTOMER_VERSION");
         field4.setTypeName("NUMERIC");
@@ -1906,9 +1906,9 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldADDRESS.setIsIdentity(false);
         fieldADDRESS.setForeignKeyFieldName("CMP3_MM_ADDRESS.ADDRESS_ID");
         table.addField(fieldADDRESS);
-        
+
         // we are using a JoinTable  - so no need for a column here
-/*        
+/*
         FieldDefinition fieldORDERS = new FieldDefinition();
         fieldORDERS.setName("ORDER_ID");
         fieldORDERS.setTypeName("NUMERIC");
@@ -1918,8 +1918,8 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldORDERS.setUnique(false);
         fieldORDERS.setIsIdentity(false);
         fieldORDERS.setForeignKeyFieldName("CMP3_MM_ORDER.ORDER_ID");
-        table.addField(fieldORDERS);        
-*/        
+        table.addField(fieldORDERS);
+*/
         return table;
     }
 
@@ -1959,7 +1959,7 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldDESCRIPTION.setUnique(false);
         fieldDESCRIPTION.setShouldAllowNull(true);
         table.addField(fieldDESCRIPTION);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("ORDER_VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -1969,8 +1969,8 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldVERSION.setUnique(false);
         fieldVERSION.setIsIdentity(false);
         table.addField(fieldVERSION);
-        
-        // 1:m does not require a JoinTable - only a JoinColumn        
+
+        // 1:m does not require a JoinTable - only a JoinColumn
         FieldDefinition fieldITEM = new FieldDefinition();
         fieldITEM.setName("ITEM_ITEM_ID");
         fieldITEM.setTypeName("NUMERIC");
@@ -1980,7 +1980,7 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldITEM.setUnique(false);
         fieldITEM.setIsIdentity(false);
         fieldITEM.setForeignKeyFieldName("CMP3_MM_ITEM.ITEM_ID");
-        table.addField(fieldITEM);        
+        table.addField(fieldITEM);
 
         // 1:m does not require a JoinTable - only a JoinColumn
         FieldDefinition fieldCUSTOMER = new FieldDefinition();
@@ -1992,7 +1992,7 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldCUSTOMER.setUnique(false);
         fieldCUSTOMER.setIsIdentity(false);
         fieldCUSTOMER.setForeignKeyFieldName("CMP3_MM_CUSTOMER.LIFEFORM_ID");
-        table.addField(fieldCUSTOMER);        
+        table.addField(fieldCUSTOMER);
 
         FieldDefinition fieldADDRESS = new FieldDefinition();
         fieldADDRESS.setName("BILLINGADDRESS_ADDRESS_ID");
@@ -2018,7 +2018,7 @@ DROP TABLE CMP3_MM_COMPUTER
 
         return table;
     }
-    
+
     public static TableDefinition buildMETAMODEL_CUSTOMER_ORDER_JOINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_CUSTOMER_MM_ORDER");
@@ -2032,7 +2032,7 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldORDER.setUnique(false);
         fieldORDER.setIsIdentity(false);
         fieldORDER.setForeignKeyFieldName("CMP3_MM_ORDER.ORDER_ID");
-        table.addField(fieldORDER);        
+        table.addField(fieldORDER);
 
         FieldDefinition fieldCUSTOMER = new FieldDefinition();
         fieldCUSTOMER.setName("CUSTOMER_ID");
@@ -2043,8 +2043,8 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldCUSTOMER.setUnique(false);
         fieldCUSTOMER.setIsIdentity(false);
         fieldCUSTOMER.setForeignKeyFieldName("CMP3_MM_CUSTOMER.LIFEFORM_ID");
-        table.addField(fieldCUSTOMER);        
-        
+        table.addField(fieldCUSTOMER);
+
         return table;
     }
 
@@ -2061,7 +2061,7 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldORDER.setUnique(false);
         fieldORDER.setIsIdentity(false);
         fieldORDER.setForeignKeyFieldName("CMP3_MM_ORDER.ORDER_ID");
-        table.addField(fieldORDER);        
+        table.addField(fieldORDER);
 
         FieldDefinition fieldCUSTOMER = new FieldDefinition();
         fieldCUSTOMER.setName("ITEM_ID");
@@ -2072,11 +2072,11 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldCUSTOMER.setUnique(false);
         fieldCUSTOMER.setIsIdentity(false);
         fieldCUSTOMER.setForeignKeyFieldName("CMP3_MM_ITEM.ITEM_ID");
-        table.addField(fieldCUSTOMER);        
-        
+        table.addField(fieldCUSTOMER);
+
         return table;
     }*/
-    
+
     public static TableDefinition buildMETAMODEL_ADDRESSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_ADDRESS");
@@ -2178,7 +2178,7 @@ DROP TABLE CMP3_MM_COMPUTER
         //HOMEADDRESS_ADDRESS_ID
         return table;
     }
-    
+
     public static TableDefinition buildMETAMODEL_ITEMTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_ITEM");
@@ -2215,7 +2215,7 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("ITEM_VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -2225,10 +2225,10 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldVERSION.setUnique(false);
         fieldVERSION.setIsIdentity(false);
         table.addField(fieldVERSION);
-        
+
         return table;
     }
-        
+
     public static TableDefinition buildCMP3_MM_BOARD_SEQTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_BOARD_SEQ");
@@ -2254,10 +2254,10 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldDESCRIPTION.setUnique(false);
         fieldDESCRIPTION.setShouldAllowNull(true);
         table.addField(fieldDESCRIPTION);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildCMP3_MM_PERSON_SEQTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_PERSON_SEQ");
@@ -2283,10 +2283,10 @@ DROP TABLE CMP3_MM_COMPUTER
         fieldDESCRIPTION.setUnique(false);
         fieldDESCRIPTION.setShouldAllowNull(true);
         table.addField(fieldDESCRIPTION);
-        
+
         return table;
     }
-    
+
     public static TableDefinition     buildCMP3_MM_MANUF_CMP3_MM_MANUFTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_MM_MANUF_CMP3_MM_MANUF");
@@ -2310,7 +2310,7 @@ DROP TABLE CMP3_MM_COMPUTER
         field2.setUnique(false);
         field2.setIsIdentity(true);
         table.addField(field2);
-        
+
         return table;
     }
 

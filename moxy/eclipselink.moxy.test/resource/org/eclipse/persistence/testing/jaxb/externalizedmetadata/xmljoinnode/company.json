@@ -3,18 +3,18 @@
     {"id":"e101",
        "work-address":{
           "id":"a100"
-	  },
-	"x.work-address":{
+      },
+    "x.work-address":{
           "city":"Kanata"
-	  }
+      }
      },
     {"id":"e102",
        "work-address":{
           "id":"a101"
-	  },
-	"x.work-address":{
+      },
+    "x.work-address":{
           "city":"Kanata"
-	  }}
+      }}
     ],
    "business-address":[
       {

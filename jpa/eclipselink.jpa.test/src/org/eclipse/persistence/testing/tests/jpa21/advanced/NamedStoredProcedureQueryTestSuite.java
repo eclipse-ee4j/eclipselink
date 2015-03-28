@@ -1,30 +1,30 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     06/20/2012-2.5 Guy Pelletier 
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls       
- *     07/13/2012-2.5 Guy Pelletier 
+ *     06/20/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier 
+ *     07/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     09/13/2013-2.5 Guy Pelletier 
+ *     08/24/2012-2.5 Guy Pelletier
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/13/2013-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/27/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     11/05/2012-2.5 Guy Pelletier 
+ *     11/05/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     01/23/2013-2.5 Guy Pelletier 
+ *     01/23/2013-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.List;
@@ -47,16 +47,16 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 
 public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     public NamedStoredProcedureQueryTestSuite() {}
-    
+
     public NamedStoredProcedureQueryTestSuite(String name) {
         super(name);
         setPuName("MulitPU-1");
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("NamedStoredProcedureQueryTestSuite");
-  
+
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryExecuteUpdateOnSelectQueryWithNoResultClass"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryExecuteUpdateOnSelectQueryWithResultClass"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryExecuteWithNamedCursors"));
@@ -70,8 +70,8 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryExecuteOnStoredProcQueryBuiltFromJPAThatDoesNothing"));
 
         return suite;
-    }  
-    
+    }
+
     /**
      * Tests an execute update on a named stored procedure that does a select.
      * NamedStoredProcedure defines a result class.
@@ -79,21 +79,21 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     public void testQueryExecuteOnStoredProcQueryBuiltFromJPAThatDoesNothing() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            
+
             try {
                 getServerSession(getPersistenceUnitName()).executeQuery(((StoredProcedureQueryImpl) em.createNamedStoredProcedureQuery("ReadNoAddresses")).getDatabaseQuery());
             } catch (Exception e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
-                
+
                 fail("Exception was caught: " + e);
             } finally {
                 closeEntityManager(em);
             }
         }
     }
-    
+
     /**
      * Tests an execute update on a named stored procedure that does a select.
      * NamedStoredProcedure defines a result class.
@@ -101,7 +101,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     public void testQueryExecuteUpdateOnSelectQueryWithNoResultClass() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            
+
             try {
                 beginTransaction(em);
                 em.createNamedStoredProcedureQuery("ReadAllAddressesWithNoResultClass").executeUpdate();
@@ -110,16 +110,16 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
-                
+
                 return;
             } finally {
                 closeEntityManager(em);
             }
-            
+
             fail("Expected Illegal state exception was not thrown.");
         }
     }
-    
+
     /**
      * Tests an execute update on a named stored procedure that does a select.
      * NamedStoredProcedure defines a result class.
@@ -127,7 +127,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     public void testQueryExecuteUpdateOnSelectQueryWithResultClass() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            
+
             try {
                 beginTransaction(em);
                 em.createNamedStoredProcedureQuery("ReadAddressWithResultClass").setParameter("address_id_v", 1).executeUpdate();
@@ -136,28 +136,28 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
-                
+
                 return;
             } finally {
                 closeEntityManager(em);
             }
-            
+
             fail("Expected Illegal state exception was not thrown.");
         }
     }
-    
+
     /**
      * Tests a StoredProcedureQuery using multiple names cursors.
      */
     public void testQueryExecuteWithNamedCursors() {
         if (supportsStoredProcedures() && getPlatform().isOracle() ) {
             EntityManager em = createEntityManager();
-            
+
             try {
                 StoredProcedureQuery query = em.createNamedStoredProcedureQuery("ReadUsingNamedRefCursors");
-                
+
                 boolean returnVal = query.execute();
-                
+
                 List<Employee> employees = (List<Employee>) query.getOutputParameterValue("CUR1");
                 assertFalse("No employees were returned", employees.isEmpty());
                 List<Address> addresses = (List<Address>) query.getOutputParameterValue("CUR2");
@@ -166,33 +166,33 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
-                
+
                 throw e;
             } finally {
                 closeEntityManager(em);
             }
         }
     }
-    
+
     /**
      * Tests a StoredProcedureQuery with an unnamed cursor.
      */
     public void testQueryExecuteWithUnNamedCursor() {
         if (supportsStoredProcedures() && getPlatform().isOracle() ) {
             EntityManager em = createEntityManager();
-            
+
             try {
                 StoredProcedureQuery query = em.createNamedStoredProcedureQuery("ReadUsingUnNamedRefCursor");
-                
+
                 boolean returnVal = query.execute();
-                
+
                 List<Employee> employees = (List<Employee>) query.getOutputParameterValue(1);
                 assertFalse("No employees were returned", employees.isEmpty());
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
-                
+
                 throw e;
             } finally {
                 closeEntityManager(em);
@@ -201,18 +201,18 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     }
 
     /**
-     * Tests a StoredProcedureQuery on Oracle using named ref cursors. 
+     * Tests a StoredProcedureQuery on Oracle using named ref cursors.
      */
     public void testQueryGetResultListWithNamedCursors() {
         if (supportsStoredProcedures() && getPlatform().isOracle() ) {
             EntityManager em = createEntityManager();
-            
+
             try {
                 StoredProcedureQuery query = em.createNamedStoredProcedureQuery("ReadUsingNamedRefCursors");
 
                 List<Employee> employees = (List<Employee>) query.getResultList();
                 assertFalse("No employees were returned", employees.isEmpty());
-                    
+
                 List<Address> addresses = (List<Address>) query.getResultList();
                 assertFalse("No addresses were returned", addresses.isEmpty());
             } catch (RuntimeException e) {
@@ -226,65 +226,65 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test multiple result sets by setting the SQL results set mapping from annotation.
      */
     public void testQueryWithMultipleResults() throws Exception {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             StoredProcedureQuery multipleResultSetQuery = createEntityManager().createNamedStoredProcedureQuery("ReadUsingMultipleResultSetMappings");
-            
+
             // Verify first result set mapping --> Employee
             List results = multipleResultSetQuery.getResultList();
             assertNotNull("No Employee results returned", results);
             assertTrue("Empty Employee results returned", results.size() > 0);
-    
+
             // Verify second result set mapping --> Address
             assertTrue("Address results not available", multipleResultSetQuery.hasMoreResults());
             results = multipleResultSetQuery.getResultList();
             assertNotNull("No Address results returned", results);
             assertTrue("Empty Address results returned", results.size() > 0);
-            
+
             // Verify third result set mapping --> Project
             assertTrue("Projects results not available", multipleResultSetQuery.hasMoreResults());
             results = multipleResultSetQuery.getResultList();
             assertNotNull("No Project results returned", results);
             assertTrue("Empty Project results returned", results.size() > 0);
-    
+
             for (Object result : results) {
                 Object[] resultElement = (Object[]) result;
                 assertTrue("Failed to Return 3 items", (resultElement.length == 3));
                 // Using Number as Different db/drivers  can return different types
-                // e.g. Oracle with ijdbc14.jar returns BigDecimal where as Derby 
-                // with derbyclient.jar returns Double. NOTE: the order of checking 
+                // e.g. Oracle with ijdbc14.jar returns BigDecimal where as Derby
+                // with derbyclient.jar returns Double. NOTE: the order of checking
                 // here is valid and as defined by the spec.
                 assertTrue("Failed to return LargeProject", (resultElement[0] instanceof LargeProject) );
                 assertTrue("Failed To Return SmallProject", (resultElement[1] instanceof SmallProject) );
                 assertTrue("Failed to return column",(resultElement[2] instanceof Number) );
                 assertFalse("Returned same data in both result elements",((SmallProject)resultElement[1]).getName().equals(((LargeProject)resultElement[0]).getName()));
             }
-            
+
             // Verify fourth result set mapping --> Employee Constructor Result
             assertTrue("Employee constructor results not available", multipleResultSetQuery.hasMoreResults());
             results = multipleResultSetQuery.getResultList();
             assertNotNull("No Employee constructor results returned", results);
             assertTrue("Empty Employee constructor results returned", results.size() > 0);
-            
+
             // Verify there as no more results available
             assertFalse("More results available", multipleResultSetQuery.hasMoreResults());
         }
     }
-    
+
     /**
-     * Tests a NamedStoredProcedureQuery annotation using a result-set mapping. 
+     * Tests a NamedStoredProcedureQuery annotation using a result-set mapping.
      */
     public void testQueryWithNamedColumnResult() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            
+
             try {
                 beginTransaction(em);
-                
+
                 Address address = new Address();
                 address.setCity("Ottawa");
                 address.setPostalCode("K1G 6P3");
@@ -293,11 +293,11 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 address.setCountry("Canada");
                 em.persist(address);
                 commitTransaction(em);
-                
+
                 // Clear the cache
                 em.clear();
                 clearCache();
-                
+
                 Object[] values = (Object[]) em.createNamedStoredProcedureQuery("ReadAddressMappedNamedColumnResult").setParameter("address_id_v", address.getId()).getSingleResult();
                 assertTrue("Address data not found or returned using stored procedure", ((values != null) && (values.length == 6)));
                 assertNotNull("No results returned from store procedure call", values[1]);
@@ -306,46 +306,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
-                
-                throw e;
-            } finally {
-                closeEntityManager(em);
-            }
-        }
-    }
-    
-    /**
-     * Tests a NamedStoredProcedureQuery using a result-set mapping. 
-     */
-    public void testQueryWithNamedFieldResult() {
-        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
-            EntityManager em = createEntityManager();
-            
-            try {
-                beginTransaction(em);
-                
-                Address address1 = new Address();
-                address1.setCity("Ottawa");
-                address1.setPostalCode("K1G 6P3");
-                address1.setProvince("ON");
-                address1.setStreet("123 Street");
-                address1.setCountry("Canada");
-    
-                em.persist(address1);
-                commitTransaction(em);
-                
-                // Clear the cache
-                em.clear();
-                clearCache();
-                
-                Address address2 = (Address) em.createNamedStoredProcedureQuery("ReadAddressMappedNamedFieldResult").setParameter("address_id_v", address1.getId()).getSingleResult();
-                assertNotNull("Address returned from stored procedure is null", address2); 
-                assertTrue("Address not found using stored procedure", (address1.getId() == address2.getId()));
-            } catch (RuntimeException e) {
-                if (isTransactionActive(em)){
-                    rollbackTransaction(em);
-                }
-                
+
                 throw e;
             } finally {
                 closeEntityManager(em);
@@ -354,57 +315,54 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     }
 
     /**
-     * Tests a NamedStoredProcedureQuery using positional paramters. 
+     * Tests a NamedStoredProcedureQuery using a result-set mapping.
      */
-    public void testQueryWithNumberedFieldResult() {
+    public void testQueryWithNamedFieldResult() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            
+
             try {
                 beginTransaction(em);
-                
+
                 Address address1 = new Address();
                 address1.setCity("Ottawa");
                 address1.setPostalCode("K1G 6P3");
                 address1.setProvince("ON");
                 address1.setStreet("123 Street");
                 address1.setCountry("Canada");
+
                 em.persist(address1);
                 commitTransaction(em);
-                
+
                 // Clear the cache
                 em.clear();
                 clearCache();
-                
-                Address address2 = (Address) em.createNamedStoredProcedureQuery("ReadAddressMappedNumberedFieldResult").setParameter(1, address1.getId()).getSingleResult();
-                assertNotNull("Address returned from stored procedure is null", address2); 
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getId() == address2.getId()));
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getStreet().equals(address2.getStreet())));
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getCountry().equals(address2.getCountry())));
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getProvince().equals(address2.getProvince())));
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getPostalCode().equals(address2.getPostalCode())));
+
+                Address address2 = (Address) em.createNamedStoredProcedureQuery("ReadAddressMappedNamedFieldResult").setParameter("address_id_v", address1.getId()).getSingleResult();
+                assertNotNull("Address returned from stored procedure is null", address2);
+                assertTrue("Address not found using stored procedure", (address1.getId() == address2.getId()));
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
-                
+
                 throw e;
             } finally {
                 closeEntityManager(em);
             }
         }
-    }  
-    
+    }
+
     /**
-     * Tests a NamedStoredProcedureQuery using a result-class. 
+     * Tests a NamedStoredProcedureQuery using positional paramters.
      */
-    public void testQueryWithResultClass() {
+    public void testQueryWithNumberedFieldResult() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            
+
             try {
                 beginTransaction(em);
-                
+
                 Address address1 = new Address();
                 address1.setCity("Ottawa");
                 address1.setPostalCode("K1G 6P3");
@@ -413,13 +371,13 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 address1.setCountry("Canada");
                 em.persist(address1);
                 commitTransaction(em);
-                
+
                 // Clear the cache
                 em.clear();
                 clearCache();
-    
-                Address address2 = (Address) em.createNamedStoredProcedureQuery("ReadAddressWithResultClass").setParameter("address_id_v", address1.getId()).getSingleResult();
-                assertNotNull("Address returned from stored procedure is null", address2); 
+
+                Address address2 = (Address) em.createNamedStoredProcedureQuery("ReadAddressMappedNumberedFieldResult").setParameter(1, address1.getId()).getSingleResult();
+                assertNotNull("Address returned from stored procedure is null", address2);
                 assertTrue("Address didn't build correctly using stored procedure", (address1.getId() == address2.getId()));
                 assertTrue("Address didn't build correctly using stored procedure", (address1.getStreet().equals(address2.getStreet())));
                 assertTrue("Address didn't build correctly using stored procedure", (address1.getCountry().equals(address2.getCountry())));
@@ -429,7 +387,49 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
-                
+
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+
+    /**
+     * Tests a NamedStoredProcedureQuery using a result-class.
+     */
+    public void testQueryWithResultClass() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+
+            try {
+                beginTransaction(em);
+
+                Address address1 = new Address();
+                address1.setCity("Ottawa");
+                address1.setPostalCode("K1G 6P3");
+                address1.setProvince("ON");
+                address1.setStreet("123 Street");
+                address1.setCountry("Canada");
+                em.persist(address1);
+                commitTransaction(em);
+
+                // Clear the cache
+                em.clear();
+                clearCache();
+
+                Address address2 = (Address) em.createNamedStoredProcedureQuery("ReadAddressWithResultClass").setParameter("address_id_v", address1.getId()).getSingleResult();
+                assertNotNull("Address returned from stored procedure is null", address2);
+                assertTrue("Address didn't build correctly using stored procedure", (address1.getId() == address2.getId()));
+                assertTrue("Address didn't build correctly using stored procedure", (address1.getStreet().equals(address2.getStreet())));
+                assertTrue("Address didn't build correctly using stored procedure", (address1.getCountry().equals(address2.getCountry())));
+                assertTrue("Address didn't build correctly using stored procedure", (address1.getProvince().equals(address2.getProvince())));
+                assertTrue("Address didn't build correctly using stored procedure", (address1.getPostalCode().equals(address2.getPostalCode())));
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+
                 throw e;
             } finally {
                 closeEntityManager(em);

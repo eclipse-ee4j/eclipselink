@@ -94,7 +94,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCMP3_SEEDTable());
         addTableDefinition(buildCMP3_SEEDED_FRUITTable());
         addTableDefinition(buildCMP3_CITRUS_FRUITTable());
-        
+
         // Bug 458177
         addTableDefinition(buildJPA_FISHTable());
         addTableDefinition(buildJPA_BETTATable());
@@ -2293,11 +2293,11 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildJPA_FISHTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_FISH");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -2307,7 +2307,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -2317,7 +2317,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldTYPE = new FieldDefinition();
         fieldTYPE.setName("TYPE");
         fieldTYPE.setTypeName("VARCHAR");
@@ -2327,7 +2327,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldTYPE.setUnique(false);
         fieldTYPE.setShouldAllowNull(true);
         table.addField(fieldTYPE);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMBER");
@@ -2337,7 +2337,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldVERSION.setUnique(false);
         fieldVERSION.setIsIdentity(false);
         table.addField(fieldVERSION);
-        
+
         FieldDefinition fieldTANK_ID = new FieldDefinition();
         fieldTANK_ID.setName("TANK_ID");
         fieldTANK_ID.setTypeName("NUMBER");
@@ -2347,14 +2347,14 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldTANK_ID.setUnique(false);
         fieldTANK_ID.setIsIdentity(false);
         table.addField(fieldTANK_ID);
-        
-        return table;        
+
+        return table;
     }
-    
+
     public TableDefinition buildJPA_FISH_TANKTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_FISH_TANK");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -2364,7 +2364,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMBER");
@@ -2374,7 +2374,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldVERSION.setUnique(false);
         fieldVERSION.setIsIdentity(false);
         table.addField(fieldVERSION);
-        
+
         FieldDefinition fieldSTOREID = new FieldDefinition();
         fieldSTOREID.setName("STORE_ID");
         fieldSTOREID.setTypeName("NUMBER");
@@ -2384,14 +2384,14 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldSTOREID.setUnique(false);
         fieldSTOREID.setShouldAllowNull(true);
         table.addField(fieldSTOREID);
-        
-        return table;        
+
+        return table;
     }
-    
+
     public TableDefinition buildJPA_BETTATable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_BETTA");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -2401,7 +2401,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldCOLOR = new FieldDefinition();
         fieldCOLOR.setName("COLOR");
         fieldCOLOR.setTypeName("VARCHAR");
@@ -2411,14 +2411,14 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldCOLOR.setUnique(false);
         fieldCOLOR.setShouldAllowNull(true);
         table.addField(fieldCOLOR);
-        
-        return table;        
+
+        return table;
     }
-    
+
     public TableDefinition buildJPA_PET_STORETable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_PET_STORE");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -2428,7 +2428,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMBER");
@@ -2438,7 +2438,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldVERSION.setUnique(false);
         fieldVERSION.setIsIdentity(false);
         table.addField(fieldVERSION);
-        
+
         FieldDefinition fieldSTORENAME = new FieldDefinition();
         fieldSTORENAME.setName("STORE_NAME");
         fieldSTORENAME.setTypeName("VARCHAR");
@@ -2448,7 +2448,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldSTORENAME.setUnique(false);
         fieldSTORENAME.setShouldAllowNull(true);
         table.addField(fieldSTORENAME);
-        
+
         return table;
     }
 

@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * 		dclarke/tware - Initial implementation
+ *         dclarke/tware - Initial implementation
  *      09-01-2014-2.6.0 Dmitry Kornilov
  *        - Fields filtering (projection), application/schema+json media type handling
  ******************************************************************************/

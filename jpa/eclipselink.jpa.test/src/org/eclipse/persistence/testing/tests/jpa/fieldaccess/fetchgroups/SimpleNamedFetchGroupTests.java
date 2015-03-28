@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
+ *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
@@ -30,7 +30,7 @@ import org.junit.Test;
 
 /**
  * Simple tests to verify the functionality of single level FetchGroup usage
- * 
+ *
  * @author dclarke
  * @since EclipseLink 2.1
  */
@@ -47,7 +47,7 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
     public static junit.framework.Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("SimpleNamedFetchGroupTests");
-        
+
         suite.addTest(new SimpleNamedFetchGroupTests("testSetup"));
         suite.addTest(new SimpleNamedFetchGroupTests("findDefaultFetchGroup"));
         suite.addTest(new SimpleNamedFetchGroupTests("singleResultDefaultFetchGroup"));
@@ -59,7 +59,7 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new SimpleNamedFetchGroupTests("namedNamesFetchGroupUsingGetSingleResult"));
         suite.addTest(new SimpleNamedFetchGroupTests("joinFetchEmployeeAddressWithDynamicFetchGroup"));
         suite.addTest(new SimpleNamedFetchGroupTests("joinFetchEmployeeAddressPhoneWithDynamicFetchGroup"));
-        
+
         return suite;
     }
 
@@ -83,7 +83,7 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
         assertConfig(phoneDescriptor, null, 1);
         assertConfig(addressDescriptor, null, 1);
     }
-    
+
     @Test
     public void findDefaultFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
@@ -291,14 +291,14 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
 
             assertFetched(emp, managerFG);
             assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            
+
             int nSqlToAdd = 0;
             if (emp.getManager() != null) {
                 assertFetchedAttribute(emp, "manager");
                 // additional sql to select the manager
                 nSqlToAdd++;
             }
-            
+
             assertEquals(1 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
             // instantiates the whole object

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,35 +34,35 @@ import org.eclipse.persistence.jpa.jpql.tools.TypeHelper;
  */
 public interface ITypeRepository extends IExternalForm {
 
-	/**
-	 * Returns the {@link IType} representing the possible given enum constant. If the given value
-	 * does not represent an enum constant, then <code>null</code> is returned.
-	 *
-	 * @param enumTypeName The fully qualified enum type with the constant
-	 * @return The external form for the given Enum type or <code>null</code> if none exists
-	 */
-	IType getEnumType(String enumTypeName);
+    /**
+     * Returns the {@link IType} representing the possible given enum constant. If the given value
+     * does not represent an enum constant, then <code>null</code> is returned.
+     *
+     * @param enumTypeName The fully qualified enum type with the constant
+     * @return The external form for the given Enum type or <code>null</code> if none exists
+     */
+    IType getEnumType(String enumTypeName);
 
-	/**
-	 * Retrieves the external type for the given Java type.
-	 *
-	 * @param type The Java type to wrap with an external form
-	 * @return The external form of the given type
-	 */
-	IType getType(Class<?> type);
+    /**
+     * Retrieves the external type for the given Java type.
+     *
+     * @param type The Java type to wrap with an external form
+     * @return The external form of the given type
+     */
+    IType getType(Class<?> type);
 
-	/**
-	 * Retrieves the external class for the given fully qualified class name.
-	 *
-	 * @param typeName The fully qualified class name of the class to retrieve
-	 * @return The external form of the class to retrieve
-	 */
-	IType getType(String typeName);
+    /**
+     * Retrieves the external class for the given fully qualified class name.
+     *
+     * @param typeName The fully qualified class name of the class to retrieve
+     * @return The external form of the class to retrieve
+     */
+    IType getType(String typeName);
 
-	/**
-	 * Returns a helper that gives access to the most common {@link IType types}.
-	 *
-	 * @return A helper containing a collection of methods related to {@link IType}
-	 */
-	TypeHelper getTypeHelper();
+    /**
+     * Returns a helper that gives access to the most common {@link IType types}.
+     *
+     * @return A helper containing a collection of methods related to {@link IType}
+     */
+    TypeHelper getTypeHelper();
 }

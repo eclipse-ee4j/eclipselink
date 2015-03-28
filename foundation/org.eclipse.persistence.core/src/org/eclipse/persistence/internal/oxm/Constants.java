@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -134,7 +134,7 @@ public class Constants {
     public static final QName NEGATIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NEGATIVE_INTEGER);
     public static final QName NON_NEGATIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NON_NEGATIVE_INTEGER);
     public static final QName NON_POSITIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NON_POSITIVE_INTEGER);
-    public static final QName NOTATION_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NOTATION);    
+    public static final QName NOTATION_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NOTATION);
     public static final QName POSITIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, POSITIVE_INTEGER);
     public static final QName NORMALIZEDSTRING_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NORMALIZED_STRING);
     public static final QName QNAME_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, QNAME);
@@ -158,7 +158,7 @@ public class Constants {
         public boolean isApplicationXML() {
             return false;
         }
-        
+
     };
 
     public static final MediaType APPLICATION_XML = new MediaType() {
@@ -172,7 +172,7 @@ public class Constants {
         public boolean isApplicationXML() {
             return true;
         }
-        
+
     };
 
     /**

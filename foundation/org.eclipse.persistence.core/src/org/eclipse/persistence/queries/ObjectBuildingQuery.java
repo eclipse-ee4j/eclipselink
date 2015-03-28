@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.security.AccessController;
@@ -80,20 +80,20 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
 
     /** PERF: Store if the query originally used the default lock mode. */
     protected boolean wasDefaultLockMode = false;
-    
+
     /**
      * INTERNAL:  If primary key is null ObjectBuilder.buildObject returns null
      * in case this flag is set to true (instead of throwing exception).
      */
     protected boolean shouldBuildNullForNullPk;
-    
+
     /**
      * When reading across relationships, queries may be set to acquire deferred locks
      * This is used to ensure any Eagerly fetched object that is the target of a relationship
      * with an object the acquires deferred locks behaves the same as its owner
      */
     protected Boolean requiresDeferredLocks = null;
-    
+
     /** was a check early return completed */
     protected boolean isCacheCheckComplete;
 
@@ -133,7 +133,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * Convert all the class-name-based settings in this query to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
@@ -161,7 +161,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     protected boolean wasDefaultLockMode() {
         return wasDefaultLockMode;
     }
-    
+
     /**
      * INTERNAL:
      * Set if this query originally used the default lock mode.
@@ -169,7 +169,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     protected void setWasDefaultLockMode(boolean wasDefaultLockMode) {
         this.wasDefaultLockMode = wasDefaultLockMode;
     }
-    
+
     /**
      * INTERNAL:
      * Clone the query, including its selection criteria.
@@ -178,9 +178,9 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * later on during prepare.
      */
     public Object deepClone() {
-    	return clone();
+        return clone();
     }
-        
+
     /**
      * INTERNAL:
      * Copy all setting from the query.
@@ -199,7 +199,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             this.shouldUseExclusiveConnection = readQuery.shouldUseExclusiveConnection;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Set the properties needed to be cascaded into the custom query including the translation row.
@@ -228,7 +228,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             this.wasDefaultLockMode = objectQuery.wasDefaultLockMode;
         }
     }
-    
+
     /**
      * PUBLIC:
      * When unset means perform read normally and dont do refresh.
@@ -313,15 +313,15 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * INTERNAL:
      * Return the primary key stored in this query if there is one
      * This is overridden by subclasses that actually hold a primary key
-     * 
+     *
      * @return
-     * 
+     *
      * @see ReadObjectQuery
      */
     protected Object getQueryPrimaryKey(){
         return null;
     }
-    
+
     /**
      * PUBLIC:
      * Return the reference class of the query.
@@ -434,7 +434,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             }
             clone = unitOfWork.getIdentityMapAccessorInstance().getIdentityMapManager().getFromIdentityMap(primaryKey, result.getClass(), concreteDescriptor);
 
-            // If object not registered do not register it here!  Simply return 
+            // If object not registered do not register it here!  Simply return
             // the original to the user.
             // Avoid setting clone = original, in case revert(clone) is called.
             if (clone == null) {
@@ -444,7 +444,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             // bug # 3183379 either the object comes from the shared cache and is existing, or
             //it is from a parent unit of work and this unit of work does not need to know if it is new
             //or not.  It will query the parent unit of work to determine newness.
-           
+
             clone = unitOfWork.registerExistingObject(result, concreteDescriptor, getQueryPrimaryKey(), true);
         }
         postRegisterIndividualResult(clone, result, primaryKey, unitOfWork, joinManager, concreteDescriptor);
@@ -457,7 +457,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     public void postRegisterIndividualResult(Object clone, Object original, Object primaryKey, UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager, ClassDescriptor concreteDescriptor) {
         // Check for refreshing, require to revert in the unit of work to accomplish a refresh.
         if (shouldRefreshIdentityMapResult()) {
-            
+
             if (shouldCascadeAllParts()) {
                 unitOfWork.mergeClone(original, MergeManager.CASCADE_ALL_PARTS, true);
             } else if (shouldCascadePrivateParts()) {
@@ -469,7 +469,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             }
         }
         //bug 6130550: trigger indirection on the clone where required due to fetch joins on the query
-        if (joinManager != null && joinManager.hasJoinedAttributeExpressions()) { 
+        if (joinManager != null && joinManager.hasJoinedAttributeExpressions()) {
             triggerJoinExpressions(unitOfWork, joinManager, clone, concreteDescriptor);
         }
     }
@@ -487,7 +487,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
         if (concreteDescriptor == null) {
             concreteDescriptor = unitOfWork.getDescriptor(clone.getClass());
         }
-        for (int index = 0; index < size; index++) {//since a's descriptor won't have a mapping for 'b'. 
+        for (int index = 0; index < size; index++) {//since a's descriptor won't have a mapping for 'b'.
             //baseExpression will be first relationship expression after the ExpressionBuilder, and may include aggregate intermediaries
             QueryKeyExpression baseExpression = (QueryKeyExpression)joinManager.getJoinedAttributes().get(index);
             DatabaseMapping mapping = joinManager.getJoinedAttributeMappings().get(index);
@@ -524,7 +524,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * When reading across relationships, queries may be set to acquire deferred locks
@@ -686,7 +686,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     public boolean shouldReadAllMappings() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Check if the mapping is part of the partial attributes.
@@ -756,7 +756,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     }
 
     /**
-     * INTERNAL:  
+     * INTERNAL:
      * If primary key is null ObjectBuilder.buildObject returns null
      * in case this flag is set to true (instead of throwing exception).
      */
@@ -765,7 +765,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     }
 
     /**
-     * INTERNAL:  
+     * INTERNAL:
      * If primary key is null ObjectBuilder.buildObject returns null
      * in case this flag is set to true (instead of throwing exception).
      */

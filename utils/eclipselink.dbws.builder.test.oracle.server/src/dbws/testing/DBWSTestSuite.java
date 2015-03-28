@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -107,7 +107,7 @@ public class DBWSTestSuite {
     protected static boolean ddlDrop = false;
     protected static boolean ddlDebug = false;
     protected final static String stageDir = "stage";
-    
+
     // JUnit test fixtures
     public static String DBWS_BUILDER_XML_USERNAME;
     public static String DBWS_BUILDER_XML_PASSWORD;
@@ -140,14 +140,14 @@ public class DBWSTestSuite {
         host = System.getProperty(SERVER_HOST_KEY, DEFAULT_SERVER_HOST);
         port = System.getProperty(SERVER_PORT_KEY, DEFAULT_SERVER_PORT);
         datasource = System.getProperty(SERVER_DATASOURCE_KEY, DEFAULT_SERVER_DATASOURCE);
-        
+
         ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE).equals("true");
         ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP).equals("true");
         ddlDebug = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG).equals("true");
     }
-    
+
     public static void setUp(String stageDir) throws WSDLException {
-    	setUp(stageDir, false);
+        setUp(stageDir, false);
     }
     public static void setUp(String stageDir, boolean useLogger) throws WSDLException {
         comparer.setIgnoreOrder(true);
@@ -157,11 +157,11 @@ public class DBWSTestSuite {
     }
 
     public static void build(String projectName, String builderFile) throws WSDLException {
-    	build(projectName, builderFile, false);
+        build(projectName, builderFile, false);
     }
     public static void build(String projectName, String builderFile, boolean useLogger) throws WSDLException {
         String[] builderArgs = new String[] {
-                "-builderFile", 
+                "-builderFile",
                 builderFile,
                 "-stageDir",
                 stageDir,
@@ -176,7 +176,7 @@ public class DBWSTestSuite {
 
     /**
      * Creates the staging folder and writes the builder XML file to it.
-     * The DB connection (if null) is created here as well. 
+     * The DB connection (if null) is created here as well.
      */
     protected static void setupTest(String builderFile, String builderXml) {
         FileWriter builderFileWriter = null;
@@ -203,7 +203,7 @@ public class DBWSTestSuite {
             }
         }
     }
-    
+
     /**
      * Build a web archive based on a given builder-xml file.
      */
@@ -216,7 +216,7 @@ public class DBWSTestSuite {
             fail("Build phase failed: " + e.getMessage());
         }
     }
-    
+
     /**
      * Helper method that removes empty text nodes from a Document.
      * This is typically called prior to comparing two documents
@@ -299,7 +299,7 @@ public class DBWSTestSuite {
             }
         }
     }
-    
+
     /**
      * Logger to test that a given message was logged correctly.
      *

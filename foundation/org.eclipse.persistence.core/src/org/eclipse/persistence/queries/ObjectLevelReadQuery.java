@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/5/2009-2.0 Guy Pelletier 
+ *     05/5/2009-2.0 Guy Pelletier
  *       - 248489: JPA 2.0 Pessimistic Locking/Lock Mode support
  *       - Allows the configuration of pessimistic locking from JPA entity manager
  *         functions (find, refresh, lock) and from individual query execution.
@@ -18,11 +18,11 @@
  *         a LockTimeoutException to be thrown if the query fails as a result of
  *         a timeout trying to acquire the lock. A PessimisticLockException is
  *         thrown otherwise.
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
- *     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE 
- *     3/13/2015 - Will Dazey  
+ *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
+ *     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE
+ *     3/13/2015 - Will Dazey
  *       - 458301 : Added check so that aggregate results won't attempt force version lock if locking type is set
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.ArrayList;
@@ -84,7 +84,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /** Names of the possible lock mode types, JPA 1.0 and 2.0 */
     public static final String READ = "READ";
     public static final String WRITE = "WRITE";
-    
+
     /** Names of the possible lock mode types, JPA 2.0 only */
     public static final String NONE = "NONE";
     public static final String PESSIMISTIC_ = "PESSIMISTIC_";
@@ -93,7 +93,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public static final String PESSIMISTIC_FORCE_INCREMENT = PESSIMISTIC_ + "FORCE_INCREMENT";
     public static final String OPTIMISTIC = "OPTIMISTIC";
     public static final String OPTIMISTIC_FORCE_INCREMENT = "OPTIMISTIC_FORCE_INCREMENT";
-    
+
     /** Provide a default builder so that it's easier to be consistent */
     protected ExpressionBuilder defaultBuilder;
 
@@ -151,7 +151,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /** Specifies indirection that should be instantiated before returning result */
     protected LoadGroup loadGroup;
-    
+
     /**
      * Stores the non fetchjoin attributes, these are joins that will be
      * represented in the where clause but not in the select.
@@ -160,52 +160,52 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**  Stores the partial attributes that have been added to this query */
     protected List<Expression> partialAttributeExpressions;
-    
+
     /** Stores the helper object for dealing with joined attributes */
     protected JoinedAttributeManager joinedAttributeManager;
-    
+
     /** Defines batch fetching configuration. */
     protected BatchFetchPolicy batchFetchPolicy;
 
     /** PERF: Caches locking policy isReferenceClassLocked setting. */
     protected Boolean isReferenceClassLocked;
-    
+
     /** PERF: Allow queries to build directly from the database result-set. */
     protected boolean isResultSetOptimizedQuery = false;
-    
-    /** PERF: Allow queries to build while accessing the database result-set. Skips accessing result set non-pk fields in case the cached object is found. 
+
+    /** PERF: Allow queries to build while accessing the database result-set. Skips accessing result set non-pk fields in case the cached object is found.
      If ResultSet optimization is used (isResultSetOptimizedQuery is set to true) then ResultSet Access optimization is ignored. */
     protected Boolean isResultSetAccessOptimizedQuery;
-    
-    /** If neither query specifies isResultSetOptimizedQuery nor session specifies shouldOptimizeResultSetAccess 
-     * then this value is used to indicate whether optimization should be attempted 
+
+    /** If neither query specifies isResultSetOptimizedQuery nor session specifies shouldOptimizeResultSetAccess
+     * then this value is used to indicate whether optimization should be attempted
      */
     public static boolean isResultSetAccessOptimizedQueryDefault = false;
 
     /** PERF: Indicates whether the query is actually using ResultSet optimization. If isResultSetOptimizedQuery==null set automatically before executing call. */
     protected transient Boolean usesResultSetAccessOptimization;
-    
+
     /** PERF: Allow queries to be defined as read-only in unit of work execution. */
     protected boolean isReadOnly = false;
-    
+
     /** Define if an outer join should be used to read subclasses. */
     protected Boolean shouldOuterJoinSubclasses;
-    
+
     /** Allow concrete subclasses calls to be prepared and cached for inheritance queries. */
     protected Map<Class, DatabaseCall> concreteSubclassCalls;
-    
+
     /** Allow concrete subclasses queries to be prepared and cached for inheritance queries. */
     protected Map<Class, DatabaseQuery> concreteSubclassQueries;
-    
+
     /** Allow aggregate queries to be prepared and cached. */
     protected Map<DatabaseMapping, ObjectLevelReadQuery> aggregateQueries;
-    
+
     /** Allow concrete subclasses joined mapping indexes to be prepared and cached for inheritance queries. */
     protected Map<Class, Map<DatabaseMapping, Object>> concreteSubclassJoinedMappingIndexes;
-    
+
     /** Used when specifying a lock mode for the query */
     protected String lockModeType;
-    
+
     /**
      * waitTimeout has three possible setting: null, 0 and 1..N
      * null: use the session.getPessimisticLockTimeoutDefault() if available.
@@ -213,12 +213,12 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * 1..N: use this value to set the WAIT clause.
      */
     protected Integer waitTimeout;
-    
+
     /** Used for ordering support. */
     protected List<Expression> orderByExpressions;
-    
+
     /** Indicates whether pessimistic lock should also be applied to relation tables (ManyToMany and OneToOne mappings),
-     *  reference tables (DirectCollection and AggregateCollection mapping). 
+     *  reference tables (DirectCollection and AggregateCollection mapping).
      */
     protected boolean shouldExtendPessimisticLockScope;
 
@@ -226,13 +226,13 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Allow a query's results to be unioned (UNION, INTERSECT, EXCEPT) with another query results.
      */
     protected List<Expression> unionExpressions;
-    
+
     /** Indicates whether the query is cached as an expression query in descriptor's query manager. */
     protected boolean isCachedExpressionQuery;
 
     /** default value for shouldUseSerializedObjectPolicy */
     public static boolean shouldUseSerializedObjectPolicyDefault = true;
-    
+
     /** Indicates whether the query should use SerializedObjectPolicy if descriptor has it.*/
     protected boolean shouldUseSerializedObjectPolicy;
 
@@ -249,7 +249,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         this.isCacheCheckComplete = false;
         this.shouldUseSerializedObjectPolicy = shouldUseSerializedObjectPolicyDefault;
     }
-    
+
     /**
      * PUBLIC:
      * Union the query results with the other query.
@@ -257,7 +257,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void union(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().union(query));
     }
-    
+
     /**
      * PUBLIC:
      * Intersect the query results with the other query.
@@ -265,7 +265,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void intersect(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().intersect(query));
     }
-    
+
     /**
      * PUBLIC:
      * Except the query results with the other query.
@@ -273,7 +273,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void except(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().except(query));
     }
-    
+
     /**
      * PUBLIC:
      * Add the union expression to the query.
@@ -284,7 +284,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         setIsPrepared(false);
         getUnionExpressions().add(union);
     }
-    
+
     /**
      * Return any union expressions.
      */
@@ -294,7 +294,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return unionExpressions;
     }
-    
+
     /**
      * INTERNAL:
      * Set any union expressions.
@@ -302,7 +302,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void setUnionExpressions(List<Expression> unionExpressions) {
         this.unionExpressions = unionExpressions;
     }
-    
+
     /**
      * PUBLIC:
      * Order the query results by the object's attribute or query key name.
@@ -390,7 +390,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         Expression otherSelectionCriteria = query.getSelectionCriteria();
         return ((selectionCriteria == otherSelectionCriteria) || ((selectionCriteria != null) && selectionCriteria.equals(otherSelectionCriteria)));
     }
-        
+
     /**
      * INTERNAL:
      * Compute a consistent hash-code for the expression.
@@ -411,7 +411,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return hashCode;
     }
-    
+
     /**
      * PUBLIC:
      * Return if the query is read-only.
@@ -424,7 +424,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public boolean isReadOnly() {
         return isReadOnly;
     }
-        
+
     /**
      * PUBLIC:
      * Set the query to be read-only.
@@ -437,23 +437,23 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void setIsReadOnly(boolean isReadOnly) {
         this.isReadOnly = isReadOnly;
     }
-    
+
     /**
      * PUBLIC:
      * Sets that this a pessimistic wait locking query.
      * <ul>
      * <li>ObjectBuildingQuery.LOCK: SELECT .... FOR UPDATE WAIT issued.
      * </ul>
-     * <p>Fine Grained Locking: On execution the reference class and those of 
-     * all joined attributes will be checked. If any of these have a 
-     * PessimisticLockingPolicy set on their descriptor, they will be locked 
+     * <p>Fine Grained Locking: On execution the reference class and those of
+     * all joined attributes will be checked. If any of these have a
+     * PessimisticLockingPolicy set on their descriptor, they will be locked
      * in a SELECT ... FOR UPDATE OF ... {NO WAIT}. Issues fewer locks
      * and avoids setting the lock mode on each query.
-     * 
+     *
      * <p>Example:
      * <code>readAllQuery.setSelectionCriteria(employee.get("address").equal("Ottawa"));</code>
      * <ul>
-     * <li>LOCK: all employees in Ottawa and all referenced Ottawa addresses 
+     * <li>LOCK: all employees in Ottawa and all referenced Ottawa addresses
      * will be locked and the lock will wait only the specified amount of time.
      * </ul>
      * @see org.eclipse.persistence.descriptors.PessimisticLockingPolicy
@@ -464,7 +464,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         setIsPrepared(false);
         setWasDefaultLockMode(false);
     }
-    
+
     /**
      * INTERNAL:
      * Clone the query
@@ -508,7 +508,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         ObjectLevelReadQuery clone = (ObjectLevelReadQuery)clone();
         if (getSelectionCriteria() != null) {
             clone.setSelectionCriteria((Expression)getSelectionCriteria().clone());
-        } 
+        }
         if (defaultBuilder != null) {
             clone.defaultBuilder = (ExpressionBuilder)defaultBuilder.clone();
         }
@@ -587,10 +587,10 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * as these objects will be omitted from the result set,
      * unless an outer join is used through passing and expression using "getAllowingNull".
      *
-     * <p>Example: 
+     * <p>Example:
      * The following will fetch along with Employee(s) "Jones" all projects they participate in
      * along with teamLeaders and their addresses, teamMembers and their phones.
-     * 
+     *
      * query.setSelectionCriteria(query.getExpressionBuilder().get("lastName").equal("Jones"));
      * Expression projects = query.getExpressionBuilder().anyOf("projects");
      * query.addJoinedAttribute(projects);
@@ -602,11 +602,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * query.addJoinedAttribute(teamMembers);
      * Expression teamMembersPhones = teamMembers.anyOfAllowingNone("phoneNumbers");
      * query.addJoinedAttribute(teamMembersPhones);
-     * 
+     *
      * Note that:
      * the order is essential: an expression should be added before any expression derived from it;
      * the object is built once - it won't be rebuilt if it to be read again as a joined attribute:
-     * in the example the query won't get phones for "Jones" - 
+     * in the example the query won't get phones for "Jones" -
      * even though they are among teamMembers (for whom phones are read).
      *
      */
@@ -693,7 +693,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * @see FetchGroup
      * Example:
      * FetchGroup fetchGroup = new FetchGroup();
-     * fetchGroup.addAttribute("address.city"); 
+     * fetchGroup.addAttribute("address.city");
      * query.setFetchGroup(fetchGroup);
      */
     public void addPartialAttribute(String attributeName) {
@@ -787,7 +787,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * @see FetchGroup
      * Example:
      * FetchGroup fetchGroup = new FetchGroup();
-     * fetchGroup.addAttribute("address.city"); 
+     * fetchGroup.addAttribute("address.city");
      * query.setFetchGroup(fetchGroup);
      */
     public void addPartialAttribute(Expression attributeExpression) {
@@ -798,7 +798,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Used to build the object, and register it if in the context of a unit of work. 
+     * Used to build the object, and register it if in the context of a unit of work.
      */
     @Override
     public Object buildObject(AbstractRecord row) {
@@ -858,7 +858,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)session;
 
         // The cache check must happen on the UnitOfWork in these cases either
-        // to access transient state or for pessimistic locking, as only the 
+        // to access transient state or for pessimistic locking, as only the
         // UOW knows which objects it has locked.
         Object result = null;
         // PERF: Avoid uow check for read-only.
@@ -920,7 +920,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void checkPrePrepare(AbstractSession session) {
         try {
             // This query is first prepared for global common state, this must be synced.
-            if (!this.isPrePrepared) {// Avoid the monitor is already prePrepare, must check again for concurrency.      
+            if (!this.isPrePrepared) {// Avoid the monitor is already prePrepare, must check again for concurrency.
                 synchronized (this) {
                     if (!isPrePrepared()) {
                         AbstractSession alreadySetSession = getSession();
@@ -930,7 +930,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                         setIsPrePrepared(true);// MUST not set prepare until done as other thread may hit before finishing the prePrepare.
                     }
                 }
-            } else if (this.descriptor == null) {        
+            } else if (this.descriptor == null) {
                 // Must always check descriptor as transient for remote.
                 checkDescriptor(session);
             }
@@ -1130,7 +1130,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (shouldRefreshIdentityMapResult() && shouldCheckCacheOnly()) {
             throw QueryException.refreshNotPossibleWithCheckCacheOnly(this);
         }
-        
+
         return super.execute(session, translationRow);
     }
 
@@ -1145,7 +1145,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (this.isResultSetOptimizedQuery) {
             return executeObjectLevelReadQueryFromResultSet();
         }
-        
+
         if (this.session.isUnitOfWork()) {
             UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
 
@@ -1165,7 +1165,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 return registerResultInUnitOfWork(result, nestedUnitOfWork, getTranslationRow(), false);
             }
         }
-        
+
         this.session.validateQuery(this);// this will update the query with any settings
 
         if (this.queryId == 0) {
@@ -1181,7 +1181,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 }
                 session.load(resultToLoad, getLoadGroup(), getDescriptor(), false);
             } else {
-                FetchGroup executionFetchGroup = getExecutionFetchGroup(); 
+                FetchGroup executionFetchGroup = getExecutionFetchGroup();
                 if (executionFetchGroup != null) {
                     LoadGroup lg = executionFetchGroup.toLoadGroupLoadOnly();
                     if (lg != null) {
@@ -1201,7 +1201,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Executes the prepared query on the datastore.
      */
     protected abstract Object executeObjectLevelReadQuery() throws DatabaseException;
-    
+
     /**
      * Executes the prepared query on the datastore.
      */
@@ -1213,9 +1213,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * This allows any pre-execute checks to be done for unit of work queries.
      */
     @Override
-    public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {        
+    public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
         Object result = null;
-        
+
         if (!shouldMaintainCache() || isReadOnly()) {
             result = unitOfWork.getParent().executeQuery(this, translationRow);
         } else {
@@ -1227,16 +1227,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (lockModeType != null && result != null) {
             if (lockModeType.equals(READ) || lockModeType.equals(WRITE) || lockModeType.contains(OPTIMISTIC) || lockModeType.equals(PESSIMISTIC_FORCE_INCREMENT)) {
                 boolean forceUpdateToVersionField = lockModeType.equals(WRITE) || lockModeType.equals(OPTIMISTIC_FORCE_INCREMENT) || lockModeType.equals(PESSIMISTIC_FORCE_INCREMENT);
-                    
+
                 if (result instanceof Collection) {
                     Iterator i = ((Collection) result).iterator();
                     while (i.hasNext()) {
                         Object obj = i.next();
-                            
+
                         if (obj != null) {
                             // If it is a report query the result could be an array of objects. Must
                             // also deal with null results.
-                            if (obj instanceof Object[]) {    
+                            if (obj instanceof Object[]) {
                                 for (Object o : (Object[]) obj) {
                                     if (o != null && unitOfWork.isObjectRegistered(o)) {
                                         unitOfWork.forceUpdateToVersionField(o, forceUpdateToVersionField);
@@ -1252,7 +1252,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 }
             }
         }
-        
+
         return result;
     }
 
@@ -1356,7 +1356,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public int getInMemoryQueryIndirectionPolicyState() {
         return this.inMemoryQueryIndirectionPolicy;
     }
-    
+
     /**
      * PUBLIC:
      * Returns the InMemoryQueryIndirectionPolicy for this query
@@ -1376,7 +1376,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return this.joinedAttributeManager;
     }
-    
+
     /**
      * INTERNAL:
      * Set join manager responsible for managing all aspects of joining for the query.
@@ -1384,7 +1384,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void setJoinedAttributeManager(JoinedAttributeManager joinedAttributeManager) {
         this.joinedAttributeManager = joinedAttributeManager;
     }
-    
+
     /**
      * INTERNAL:
      * Return if any attributes are joined.
@@ -1401,7 +1401,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public List getJoinedAttributeExpressions() {
         return getJoinedAttributeManager().getJoinedAttributeExpressions();
     }
- 
+
     /**
      * INTERNAL:
      * Convenience method for project mapping.
@@ -1411,7 +1411,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             getJoinedAttributeManager().setJoinedAttributeExpressions_(expressions);
         }
     }
-            
+
     /**
      * INTERNAL:
      * Return the order expressions for the query.
@@ -1457,14 +1457,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return true;
     }
-        
+
     /**
      * PUBLIC:
      * Set if duplicate rows should be filter when using 1-m joining.
      */
     public void setShouldFilterDuplicates(boolean shouldFilterDuplicates) {
         getJoinedAttributeManager().setShouldFilterDuplicates(shouldFilterDuplicates);
-    }    
+    }
 
     /**
      * INTERNAL:
@@ -1557,7 +1557,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public boolean hasPartialAttributeExpressions() {
         return (this.partialAttributeExpressions != null) && (!this.partialAttributeExpressions.isEmpty());
     }
-    
+
     /**
      * INTERNAL:
      * Return if additional field.
@@ -1565,7 +1565,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public boolean hasAdditionalFields() {
         return (this.additionalFields != null) && (!this.additionalFields.isEmpty());
     }
-    
+
     /**
      * INTERNAL:
      * Return the fields required in the select clause, for patial attribute reading.
@@ -1573,7 +1573,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Vector getPartialAttributeSelectionFields(boolean isCustomSQL) {
         Vector localFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getPartialAttributeExpressions().size());
         Vector foreignFields = null;
-        
+
         //Add primary key and indicator fields.
         localFields.addAll(getDescriptor().getPrimaryKeyFields());
         if (getDescriptor().hasInheritance() && (getDescriptor().getInheritancePolicy().getClassIndicatorField() != null)) {
@@ -1633,7 +1633,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return selectionFields;
     }
-    
+
     /**
      * INTERNAL:
      * Return the set of fields required in the select clause, for fetch group reading.
@@ -1641,7 +1641,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Set<DatabaseField> getFetchGroupNonNestedFieldsSet() {
         return getFetchGroupNonNestedFieldsSet(null);
     }
-    
+
     /**
      * INTERNAL:
      * Return the set of fields required in the select clause, for fetch group reading.
@@ -1677,7 +1677,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return fetchedFields;
     }
-    
+
     /**
      * INTERNAL:
      * Return the fields required in the select clause, for fetch group reading.
@@ -1693,7 +1693,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     protected List<DatabaseField> getFetchGroupSelectionFields(DatabaseMapping nestedMapping) {
         Set<DatabaseField> fetchedFields = getFetchGroupNonNestedFieldsSet(nestedMapping);
-        
+
         // Build field list in the same order as descriptor's fields so that the fields printed in the usual order in SELECT clause.
         List<DatabaseField> fields = new ArrayList(fetchedFields.size());
         for (Iterator iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
@@ -1760,8 +1760,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return fields;
     }
- 
- 
+
+
     /**
      * PUBLIC:
      * Return the WAIT timeout value of pessimistic locking query.
@@ -1769,7 +1769,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Integer getWaitTimeout() {
         return waitTimeout;
     }
-    
+
     /**
      * Initialize the expression builder which should be used for this query. If
      * there is a where clause, use its expression builder, otherwise
@@ -1854,16 +1854,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return false;
     }
-    
-    /** 
+
+    /**
      * INTERNAL:
      * Indicates whether pessimistic lock should also be applied to relation tables (ManyToMany and OneToOne mappings),
-     * reference tables (DirectCollection and AggregateCollection mapping). 
+     * reference tables (DirectCollection and AggregateCollection mapping).
      */
     public boolean shouldExtendPessimisticLockScope() {
         return shouldExtendPessimisticLockScope;
     }
-    
+
     /**
      * PUBLIC:
      * Queries prepare common stated in themselves.
@@ -1892,16 +1892,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         this.isPrePrepared = isPrePrepared;
     }
-    
-    /** 
+
+    /**
      * INTERNAL:
      * Indicates whether pessimistic lock should also be applied to relation tables (ManyToMany and OneToOne mappings),
-     * reference tables (DirectCollection and AggregateCollection mapping). 
+     * reference tables (DirectCollection and AggregateCollection mapping).
      */
     public void setShouldExtendPessimisticLockScope(boolean isExtended) {
         shouldExtendPessimisticLockScope = isExtended;
     }
-    
+
     /**
      * INTERNAL:
      * Clear cached flags when un-preparing.
@@ -1911,7 +1911,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         super.setIsPrepared(isPrepared);
         if (!isPrepared) {
             // when the query is cached is not yet prepared and while the query is prepared setIsPrepared(false) may be called.
-            // the intention is to remove the query from cache when it has been altered after prepare has completed. 
+            // the intention is to remove the query from cache when it has been altered after prepare has completed.
             if (this.isCachedExpressionQuery && oldIsPrepared) {
                 if (this.descriptor != null) {
                     this.descriptor.getQueryManager().removeCachedExpressionQuery(this);
@@ -1956,7 +1956,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Check if the query is cached and prepare from it.
@@ -2006,7 +2006,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.shouldUseSerializedObjectPolicy = readQuery.shouldUseSerializedObjectPolicy;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Prepare the query from the prepared query.
@@ -2049,7 +2049,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Add mandatory attributes to fetch group, create entityFetchGroup.
@@ -2080,7 +2080,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Prepare the receiver for execution in a session.
@@ -2091,7 +2091,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         buildSelectionCriteria(this.session);
         checkDescriptor(this.session);
 
-        // Validate and prepare join expressions.           
+        // Validate and prepare join expressions.
         if (hasJoining()) {
             this.joinedAttributeManager.prepareJoinExpressions(this.session);
         }
@@ -2119,14 +2119,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             } else if (this.lockModeType.contains(PESSIMISTIC_)) {
                 // If no wait timeout was set from a query hint, grab the
                 // default one from the session if one is available.
-                Integer timeout = (this.waitTimeout == null) ? this.session.getPessimisticLockTimeoutDefault() : this.waitTimeout;                
+                Integer timeout = (this.waitTimeout == null) ? this.session.getPessimisticLockTimeoutDefault() : this.waitTimeout;
                 if (timeout == null) {
                     setLockMode(ObjectBuildingQuery.LOCK);
                 } else {
                     if (timeout.intValue() == 0) {
-                        setLockMode(ObjectBuildingQuery.LOCK_NOWAIT);    
+                        setLockMode(ObjectBuildingQuery.LOCK_NOWAIT);
                     } else {
-                        this.lockingClause = ForUpdateClause.newInstance(timeout);    
+                        this.lockingClause = ForUpdateClause.newInstance(timeout);
                     }
                 }
             }
@@ -2150,7 +2150,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 dontUseDistinct();
             }
         } else if ((getLockMode() <= NO_LOCK) && (!descriptor.hasPessimisticLockingPolicy())) {
-            setWasDefaultLockMode(true);            
+            setWasDefaultLockMode(true);
         }
         setRequiresDeferredLocks(DeferredLockManager.SHOULD_USE_DEFERRED_LOCKS && (hasJoining() || (this.descriptor.shouldAcquireCascadedLocks())));
 
@@ -2192,14 +2192,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 // Search if any of the expression traverse a 1-m.
                 while (expression.isQueryKeyExpression() && (!expression.isExpressionBuilder())) {
                     if (((QueryKeyExpression)expression).shouldQueryToManyRelationship()) {
-                    	getJoinedAttributeManager().setIsToManyJoinQuery(true);
+                        getJoinedAttributeManager().setIsToManyJoinQuery(true);
                     }
                     expression = ((QueryKeyExpression)expression).getBaseExpression();
                 }
             }
         }
         if (!shouldOuterJoinSubclasses()) {
-            setShouldOuterJoinSubclasses(getMaxRows()>0 || getFirstResult()>0 || (this.descriptor != null && 
+            setShouldOuterJoinSubclasses(getMaxRows()>0 || getFirstResult()>0 || (this.descriptor != null &&
                     this.descriptor.hasInheritance() && (this.descriptor.getInheritancePolicy().shouldOuterJoinSubclasses()|| this.getExpressionBuilder().isTreatUsed()) ));
         }
 
@@ -2249,7 +2249,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void refreshRemoteIdentityMapResult() {
         setShouldRefreshRemoteIdentityMapResult(true);
     }
-    
+
     /**
      * INTERNAL:
      * All objects queried via a UnitOfWork get registered here.  If the query
@@ -2406,7 +2406,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             inMemoryQueryIndirectionPolicy.setQuery(this);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Set the InMemoryQueryIndirectionPolicy for this query.
@@ -2450,7 +2450,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         setIsPrepared(false);
         setWasDefaultLockMode(false);
     }
-    
+
     /**
      * INTERNAL:
      * returns the javax.persistence.LockModeType string value set on this query.
@@ -2461,7 +2461,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Sets a javax.persistence.LockModeType to used with this queries execution. 
+     * Sets a javax.persistence.LockModeType to used with this queries execution.
      * The valid types are:
      *  - WRITE
      *  - READ
@@ -2472,32 +2472,32 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      *  - PESSIMISTIC_FORCE_INCREMENT
      *  - NONE
      * Setting a null type will do nothing.
-     * @return returns a failure flag indicating that we were UNABLE to set the 
-     * lock mode because of validation. Callers to this method should check the 
+     * @return returns a failure flag indicating that we were UNABLE to set the
+     * lock mode because of validation. Callers to this method should check the
      * return value and throw the necessary exception.
      */
     public boolean setLockModeType(String lockModeType, AbstractSession session) {
         if (lockModeType != null) {
             OptimisticLockingPolicy lockingPolicy = session.getDescriptor(getReferenceClass()).getOptimisticLockingPolicy();
-        
+
             if (lockingPolicy == null || !(lockingPolicy instanceof VersionLockingPolicy)) {
                 if (! lockModeType.equals(PESSIMISTIC_READ) && ! lockModeType.equals(PESSIMISTIC_WRITE) && ! lockModeType.equals(NONE)) {
-                    // Any locking mode other than PESSIMISTIC and NONE needs a 
+                    // Any locking mode other than PESSIMISTIC and NONE needs a
                     // version locking policy to be present, otherwise return a
                     // failure flag of true.
                     return true;
                 }
             }
-            
+
             this.lockModeType = lockModeType;
             setIsPrePrepared(false);
             setIsPrepared(false);
             setWasDefaultLockMode(false);
         }
-        
+
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Return the attributes that must be joined, but not fetched, that is,
@@ -2622,7 +2622,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void setShouldIncludeData(boolean shouldIncludeData) {
         this.shouldIncludeData = shouldIncludeData;
         if (usesResultSetAccessOptimization() && shouldIncludeData) {
-        	// shouldIncludeData==true requires full row(s), ResultSetAccessOptimization purpose is to (sometimes) deliver incomplete row(s). These setting can't be used together.  
+            // shouldIncludeData==true requires full row(s), ResultSetAccessOptimization purpose is to (sometimes) deliver incomplete row(s). These setting can't be used together.
             if (this.isResultSetAccessOptimizedQuery != null) {
                 this.usesResultSetAccessOptimization = null;
                 throw QueryException.resultSetAccessOptimizationIsNotPossible(this);
@@ -2673,7 +2673,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public boolean shouldIncludeData() {
         return shouldIncludeData;
     }
-        
+
     /**
      * PUBLIC:
      * Return if an outer join should be used to read subclasses.
@@ -2686,7 +2686,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return shouldOuterJoinSubclasses.booleanValue();
     }
-            
+
     /**
      * PUBLIC:
      * Set if an outer join should be used to read subclasses.
@@ -2705,7 +2705,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public boolean shouldReadAllMappings() {
         return (!hasPartialAttributeExpressions()) && (this.fetchGroup == null);
     }
-    
+
     /**
      * INTERNAL:
      * Check if the mapping is part of the partial attributes.
@@ -2758,7 +2758,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return isReferenceClassLocked.booleanValue();
     }
-    
+
     /**
      * INTERNAL:
      * Helper method that records clone with uow if query is pessimistic locking.
@@ -2778,7 +2778,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public boolean isResultSetOptimizedQuery() {
         return this.isResultSetOptimizedQuery;
     }
-    
+
     /**
      * ADVANCED:
      * Return if the query result set access should be optimized.
@@ -2786,7 +2786,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Boolean isResultSetAccessOptimizedQuery() {
         return this.isResultSetAccessOptimizedQuery;
     }
-    
+
     /**
      * INTERNAL:
      * Return if the query uses ResultSet optimization.
@@ -2800,10 +2800,10 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public boolean usesResultSetAccessOptimization() {
         return this.usesResultSetAccessOptimization != null && this.usesResultSetAccessOptimization;
     }
-    
+
     /**
      * INTERNAL:
-     * Sets usesResultSetAccessOptimization based on isResultSetAccessOptimizedQuery, session default and 
+     * Sets usesResultSetAccessOptimization based on isResultSetAccessOptimizedQuery, session default and
      * query settings that could not be altered without re-preparing the query.
      * Called when the query is prepared or in case usesResultSetAccessOptimization hasn't been set yet.
      * Throws exception if isResultSetAccessOptimizedQuery==true cannot be accommodated because of a conflict with the query settings.
@@ -2811,7 +2811,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * the optimization is turned off.
      */
     protected void prepareResultSetAccessOptimization() {
-        // if ResultSet optimization is used then ResultSet Access optimization is ignored. 
+        // if ResultSet optimization is used then ResultSet Access optimization is ignored.
         if (this.isResultSetOptimizedQuery) {
             return;
         }
@@ -2831,14 +2831,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      */
     public void clearUsesResultSetAccessOptimization() {
         this.usesResultSetAccessOptimization = null;
     }
-    
+
     /**
      * ADVANCED:
      * Set if the query should be optimized to build directly from the result set.
@@ -2848,7 +2848,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void setIsResultSetOptimizedQuery(boolean isResultSetOptimizedQuery) {
         this.isResultSetOptimizedQuery = isResultSetOptimizedQuery;
     }
-    
+
     /**
      * ADVANCED:
      * Set if the query should be optimized to build directly from the result set.
@@ -2859,7 +2859,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.usesResultSetAccessOptimization = null;
         }
     }
-    
+
     /**
      * ADVANCED:
      * Clear the flag set by setIsResultSetOptimizedQuery method, allow to use default set on the session instead.
@@ -2870,7 +2870,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.usesResultSetAccessOptimization = null;
         }
     }
-    
+
     /**
      * INTERNAL: Helper method to determine the default mode. If true and query has a pessimistic locking policy,
      * locking will be configured according to the pessimistic locking policy.
@@ -2878,7 +2878,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public boolean isDefaultLock() {
         return (this.lockingClause == null) || wasDefaultLockMode();
     }
-    
+
     /**
      * INTERNAL:
      * Return true if the query uses default properties.
@@ -2901,7 +2901,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             && (this.fetchGroupName == null)
             && (this.shouldUseDefaultFetchGroup);
     }
-    
+
     /**
      * INTERNAL:
      * Checks to see if a builder has been set on the query.
@@ -2916,7 +2916,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public boolean hasFetchGroup() {
         return this.fetchGroup != null;
     }
-    
+
     /**
      * Return the fetch group set in the query.
      * If a fetch group is not explicitly set in the query, default fetch group optionally defined in the descriptor
@@ -3015,7 +3015,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // Force prepare again so executeFetchGroup is calculated
         setIsPrePrepared(false);
     }
-    
+
     /**
      * INTERNAL:
      * Return the cache of concrete subclass calls.
@@ -3027,7 +3027,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return concreteSubclassCalls;
     }
-    
+
     /**
      * INTERNAL:
      * Return the cache of concrete subclass queries.
@@ -3039,7 +3039,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return concreteSubclassQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Return the cache of aggregate queries.
@@ -3051,7 +3051,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return aggregateQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Return the aggregate query clone for the mapping.
@@ -3062,7 +3062,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return this.aggregateQueries.get(mapping);
     }
-    
+
     /**
      * INTERNAL:
      * Set the aggregate query clone for the mapping.
@@ -3082,7 +3082,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return concreteSubclassJoinedMappingIndexes;
     }
-    
+
 
     /**
      * INTERNAL:
@@ -3124,7 +3124,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             shouldExtendPessimisticLockScope = false;
         }
     }
-    
+
     /**
      * Return the batch fetch policy for configuring batch fetching.
      */
@@ -3134,7 +3134,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return batchFetchPolicy;
     }
-    
+
     /**
      * Set the batch fetch policy for configuring batch fetching.
      */
@@ -3168,7 +3168,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public boolean hasBatchReadAttributes() {
         return (this.batchFetchPolicy != null) && (this.batchFetchPolicy.hasAttributes());
     }
-        
+
     /**
      * INTERNAL:
      * Return if the attribute is specified for batch reading.
@@ -3204,7 +3204,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                     DatabaseMapping mapping = batchedMappings.get(index);
                     if ((mapping != null) && mapping.isForeignReferenceMapping()) {
                         // A nested query must be built to pass to the descriptor that looks like the real query execution would.
-                        ReadQuery nestedQuery = ((ForeignReferenceMapping)mapping).prepareNestedBatchQuery(this);    
+                        ReadQuery nestedQuery = ((ForeignReferenceMapping)mapping).prepareNestedBatchQuery(this);
                         // Register the nested query to be used by the mapping for all the objects.
                         this.batchFetchPolicy.getMappingQueries().put(mapping, nestedQuery);
                     }
@@ -3242,14 +3242,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if (builder.getQueryClass() == null) {
                 builder.setQueryClass(getReferenceClass());
             }
-            
+
             // PERF: Cache join attribute names.
             ObjectExpression baseExpression = objectExpression;
             while (!baseExpression.getBaseExpression().isExpressionBuilder()) {
                 baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
             }
             this.batchFetchPolicy.getAttributes().add(baseExpression.getName());
-        }        
+        }
     }
 
     /**
@@ -3270,14 +3270,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if (builder.getQueryClass() == null) {
                 builder.setQueryClass(getReferenceClass());
             }
-            
+
             // PERF: Cache join attribute names.
             ObjectExpression baseExpression = objectExpression;
             while (!baseExpression.getBaseExpression().isExpressionBuilder()) {
                 baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
             }
             this.batchFetchPolicy.getAttributes().add(baseExpression.getName());
-            
+
             DatabaseMapping mapping = baseExpression.getMapping();
             if ((mapping != null) && mapping.isAggregateObjectMapping()) {
                 // Also prepare the nested aggregate queries, as aggregates do not have their own query.
@@ -3287,7 +3287,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if ((mapping != null) && mapping.isForeignReferenceMapping()) {
                 if (!this.batchFetchPolicy.getMappingQueries().containsKey(mapping)) {
                     // A nested query must be built to pass to the descriptor that looks like the real query execution would.
-                    ReadQuery nestedQuery = ((ForeignReferenceMapping)mapping).prepareNestedBatchQuery(this);    
+                    ReadQuery nestedQuery = ((ForeignReferenceMapping)mapping).prepareNestedBatchQuery(this);
                     // Register the nested query to be used by the mapping for all the objects.
                     this.batchFetchPolicy.getMappingQueries().put(mapping, nestedQuery);
                 }
@@ -3344,7 +3344,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * This can be JOIN, EXISTS, or IN.
      * This defines the type of batch reading to use with the query.
      * The query must have defined batch read attributes to set its fetch type.
-     * 
+     *
      * @see #addBatchReadAttribute(Expression)
      */
     public void setBatchFetchType(BatchFetchType type) {
@@ -3357,7 +3357,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Set the batch fetch size for the query.
      * This is only relevant for the IN batch fetch type.
      * This defines the max number of keys for the IN clause.
-     * 
+     *
      * @see #setBatchFetchType(BatchFetchType)
      * @see #addBatchReadAttribute(Expression)
      */
@@ -3391,7 +3391,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             str += '\n' + "FetchGroup(" + this.fetchGroupName + ")";
         } else if(this.shouldUseDefaultFetchGroup) {
             if(this.descriptor != null && this.descriptor.hasFetchGroupManager()) {
-                FetchGroup defaultFetchGroup = descriptor.getFetchGroupManager().getDefaultFetchGroup(); 
+                FetchGroup defaultFetchGroup = descriptor.getFetchGroupManager().getDefaultFetchGroup();
                 if(defaultFetchGroup != null) {
                     str += '\n' + "Default " + defaultFetchGroup.toString();
                 }
@@ -3399,36 +3399,36 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return str;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether the query can use ResultSet optimization.
-     * The method is called when the query is prepared, 
+     * The method is called when the query is prepared,
      * so it should refer only to the attributes that cannot be altered without re-preparing the query.
      * If the query is a clone and the original has been already prepared
-     * this method will be called to set a (transient and therefore set to null) usesResultSetAccessOptimization attribute. 
+     * this method will be called to set a (transient and therefore set to null) usesResultSetAccessOptimization attribute.
      */
     public boolean supportsResultSetAccessOptimizationOnPrepare() {
         DatabaseCall call = getCall();
         return ((call != null) && call.getReturnsResultSet()) && // must return ResultSet
-            (!hasJoining() || !this.joinedAttributeManager.isToManyJoin()) && 
-            (!this.descriptor.hasInheritance() || 
+            (!hasJoining() || !this.joinedAttributeManager.isToManyJoin()) &&
+            (!this.descriptor.hasInheritance() ||
                     !this.descriptor.getInheritancePolicy().hasClassExtractor() &&  // ClassExtractor requires the whole row
                     (shouldOuterJoinSubclasses() || !this.descriptor.getInheritancePolicy().requiresMultipleTableSubclassRead() || this.descriptor.getInheritancePolicy().hasView())) &&  // don't know how to handle select class type call - ResultSet optimization breaks it.
-            (this.batchFetchPolicy == null || !this.batchFetchPolicy.isIN());  // batchFetchPolicy.isIN() requires all rows up front - can't support it 
+            (this.batchFetchPolicy == null || !this.batchFetchPolicy.isIN());  // batchFetchPolicy.isIN() requires all rows up front - can't support it
     }
 
     /**
      * INTERNAL:
      * Indicates whether the query can use ResultSet optimization.
      * Note that the session must be already set.
-     * The method is called when the query is executed, 
+     * The method is called when the query is executed,
      * so it should refer only to the attributes that can be altered without re-preparing the query.
      */
     public boolean supportsResultSetAccessOptimizationOnExecute() {
         return !this.session.isConcurrent() && !this.shouldIncludeData; // doesn't make sense to use ResultSetAccessOptimization if the whole row is required
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether the query should use SerializedObjectPolicy if descriptor has it.
@@ -3437,7 +3437,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public boolean shouldUseSerializedObjectPolicy() {
         return this.shouldUseSerializedObjectPolicy;
     }
-    
+
     /**
      * INTERNAL:
      * Set a flag that indicates whether the query should use SerializedObjectPolicy if descriptor has it.

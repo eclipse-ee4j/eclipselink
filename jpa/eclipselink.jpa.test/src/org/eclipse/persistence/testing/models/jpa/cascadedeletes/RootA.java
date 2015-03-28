@@ -13,7 +13,7 @@ import static javax.persistence.CascadeType.REMOVE;
 
 /**
  * Entity implementation class for Entity: RootA
- * 
+ *
  */
 
 @Entity

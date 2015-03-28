@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,9 +26,9 @@ import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
  * object model. XmlReadTransformer is used in conjunction with XmlWriteTransformers/XmlWriteTransformer to create a customised
  * mapping for a specific attribute. XmlReadTransformer specifies the transformer to be invoked on the
  * unmarshal.
- * 
- * <p><b>Mapping a transformation</b>:  A transformer can be configured to perform both the 
- * XML instance-to-Java attribute transformation at unmarshall time (via attribute transformer) and 
+ *
+ * <p><b>Mapping a transformation</b>:  A transformer can be configured to perform both the
+ * XML instance-to-Java attribute transformation at unmarshall time (via attribute transformer) and
  * the Java attribute-to-XML instance transformation at marshal time (via field transformer).
  *<p><b>Example:</b>
  * <p><em>XML Schema</em><br>
@@ -50,9 +50,9 @@ import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
  * &nbsp;&nbsp;&lt;/xsd:complexType&gt;<br>
  * &lt;/xsd:schema&gt;<br>
  * </code>
- * 
+ *
  * <p><em>Employee Class</em><br>
- * 
+ *
  * <pre>
  * &#64;XmlRootElement(name="employee")
  * public class Employee {
@@ -65,7 +65,7 @@ import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
  *   public String[] normalHours;
  * }
  * </pre>
- * 
+ *
  * <p><em>Normal Hours Transformer</em><br>
  * <pre>
  * public class NormalHoursTransformer implements AttributeTransformer {
@@ -81,26 +81,26 @@ import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
  * </pre>
  * @see AttributeTransformer
  * @see XmlWriteTransformer
- * @see XmlWriteTransformers   
+ * @see XmlWriteTransformers
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface XmlReadTransformer {
 
     /**
-     * User-defined class that must implement the 
-     * org.eclipse.persistence.mappings.transformers.AttributeTransformer 
-     * interface. The class will be instantiated, its buildAttributeValue will 
+     * User-defined class that must implement the
+     * org.eclipse.persistence.mappings.transformers.AttributeTransformer
+     * interface. The class will be instantiated, its buildAttributeValue will
      * be used to create the value to be assigned to the attribute.
      * Either transformerClass or method must be specified, but not both.
-     */ 
+     */
     Class<? extends AttributeTransformer> transformerClass() default AttributeTransformer.class;
 
     /**
-     * The mapped class must have a method with this name which returns a value 
+     * The mapped class must have a method with this name which returns a value
      * to be assigned to the attribute (not assigns the value to the attribute).
      * Either transformerClass or method must be specified, but not both.
-     */ 
+     */
     String method() default "";
 
 }

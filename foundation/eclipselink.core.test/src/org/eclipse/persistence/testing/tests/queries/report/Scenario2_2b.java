@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries.report;
 
 import java.util.*;
@@ -53,6 +53,6 @@ protected void setup()  throws Exception
         reportQuery.addAttribute("manager lastName", reportQuery.getExpressionBuilder().get("manager").get("lastName"));
         reportQuery.setSelectionCriteria(reportQuery.getExpressionBuilder().get("manager").get("gender").equal("Male"));
 
-        //	reportQuery.setSQLString("SELECT t0.F_NAME, t0.L_NAME, t1.F_NAME, t1.L_NAME FROM EMPLOYEE t0, EMPLOYEE t1 WHERE (t1.EMP_ID = t0.MANAGER_ID) AND (t1.GENDER = 'M')");
+        //    reportQuery.setSQLString("SELECT t0.F_NAME, t0.L_NAME, t1.F_NAME, t1.L_NAME FROM EMPLOYEE t0, EMPLOYEE t1 WHERE (t1.EMP_ID = t0.MANAGER_ID) AND (t1.GENDER = 'M')");
     }
 }

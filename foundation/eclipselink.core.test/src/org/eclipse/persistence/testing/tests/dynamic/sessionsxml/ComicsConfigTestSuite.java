@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
@@ -54,12 +54,12 @@ import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.logLevel;
 
 public class ComicsConfigTestSuite {
-    
-    public static final String PACKAGE_PATH = 
+
+    public static final String PACKAGE_PATH =
         ComicsConfigTestSuite.class.getPackage().getName().replace('.', '/');
     public static final String COMICS_SESSION_XML = PACKAGE_PATH + "/sessions.xml";
     public static final String COMICS_SESSION_NAME = "dynamic-comics";
-    
+
     // test fixtures
     static DatabaseSession session = null;
     @BeforeClass
@@ -67,7 +67,7 @@ public class ComicsConfigTestSuite {
         session = buildComicsSession();
         assertNotNull(session);
     }
-    
+
     public static DatabaseSession buildComicsSession() {
         DynamicClassLoader dcl = new DynamicClassLoader(ComicsConfigTestSuite.class.getClassLoader());
         new DynamicTypeBuilder(dcl.createDynamicClass("model.Issue"), null);
@@ -102,11 +102,11 @@ public class ComicsConfigTestSuite {
                                     s.dontLogMessages();
                                 }
                                 else {
-                                    s.setLogLevel(logLevel); 
+                                    s.setLogLevel(logLevel);
                                 }
                                 return s;
                             }
-                            
+
                         };
                         Map<String, Session> sessions = factory.buildSessionConfigs(configs, loader);
                         for (Map.Entry<String, Session> entry : sessions.entrySet()) {
@@ -123,7 +123,7 @@ public class ComicsConfigTestSuite {
         loader.setClassLoader(dcl);
         loader.setSessionName(COMICS_SESSION_NAME);
         return (DatabaseSession)SessionManager.getManager().getSession(loader);
-        
+
     }
 
     @Test

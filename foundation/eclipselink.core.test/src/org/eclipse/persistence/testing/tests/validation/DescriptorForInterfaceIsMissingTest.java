@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.validation;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -69,7 +69,7 @@ public class DescriptorForInterfaceIsMissingTest extends ExceptionTest {
         descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class, "S");
 
         // Interface properties.
-        //the following causes the correct error to occure. 
+        //the following causes the correct error to occure.
         descriptor.getInterfacePolicy().addParentInterface(org.eclipse.persistence.testing.models.employee.interfaces.LargeProject.class);
 
         // Descriptor properties.
@@ -97,19 +97,19 @@ public class DescriptorForInterfaceIsMissingTest extends ExceptionTest {
         idMapping.setFieldName("PROJECT.PROJ_ID");
         descriptor.addMapping(idMapping);
 
-        /*	DirectToFieldMapping nameMapping = new DirectToFieldMapping();
-	nameMapping.setAttributeName("name");
-	nameMapping.setFieldName("PROJECT.PROJ_NAME");
-	nameMapping.setNullValue("");
-	descriptor.addMapping(nameMapping);
-	*/
-        /*	OneToOneMapping teamLeaderMapping = new OneToOneMapping();
-	teamLeaderMapping.setAttributeName("teamLeader");
-	teamLeaderMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
-	teamLeaderMapping.useBasicIndirection();
-	teamLeaderMapping.addForeignKeyFieldName("PROJECT.LEADER_ID", "EMPLOYEE.EMP_ID");
-	descriptor.addMapping(teamLeaderMapping);
-	*/
+        /*    DirectToFieldMapping nameMapping = new DirectToFieldMapping();
+    nameMapping.setAttributeName("name");
+    nameMapping.setFieldName("PROJECT.PROJ_NAME");
+    nameMapping.setNullValue("");
+    descriptor.addMapping(nameMapping);
+    */
+        /*    OneToOneMapping teamLeaderMapping = new OneToOneMapping();
+    teamLeaderMapping.setAttributeName("teamLeader");
+    teamLeaderMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+    teamLeaderMapping.useBasicIndirection();
+    teamLeaderMapping.addForeignKeyFieldName("PROJECT.LEADER_ID", "EMPLOYEE.EMP_ID");
+    descriptor.addMapping(teamLeaderMapping);
+    */
         return descriptor;
     }
 }

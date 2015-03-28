@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions;
 
 import java.util.Collection;
@@ -68,7 +68,7 @@ public class JPQLException extends EclipseLinkException {
     public static final int indexOnlyAllowedOnVariable = 8041;
 
     public Collection internalExceptions = null;
-    
+
     /**
     * INTERNAL
     * Only TopLink can throw and create these excpetions
@@ -461,7 +461,7 @@ public class JPQLException extends EclipseLinkException {
         exception.setErrorCode(unknownAttribute);
         return exception;
     }
-    
+
     public static JPQLException invalidEnumEqualExpression(String query, int line, int column, String enumType, String type) {
         Object[] args = { query, line, column, enumType, type };
 
@@ -497,7 +497,7 @@ public class JPQLException extends EclipseLinkException {
         exception.setErrorCode(entityTypeNotFound2);
         return exception;
     }
-    
+
     public static JPQLException variableCannotHaveMapKey(String query, int line, int column, String name) {
         Object[] args = { query, line, column, name };
 
@@ -516,7 +516,7 @@ public class JPQLException extends EclipseLinkException {
         exception.setErrorCode(nonExistantOrderByAlias);
         return exception;
     }
-    
+
     public static JPQLException indexOnlyAllowedOnVariable(String query, int line, int column, String node) {
         Object[] args = { query, line, column, node };
 
@@ -526,7 +526,7 @@ public class JPQLException extends EclipseLinkException {
         exception.setErrorCode(indexOnlyAllowedOnVariable);
         return exception;
     }
-    
+
     /**
      * INTERNAL
      * Add an internal Exception to the collection of

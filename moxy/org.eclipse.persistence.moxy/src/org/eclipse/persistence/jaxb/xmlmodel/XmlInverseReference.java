@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,9 +21,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -39,8 +39,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -64,11 +64,11 @@ public class XmlInverseReference
 
     /**
      * Gets the value of the xmlAccessMethods property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public XmlAccessMethods getXmlAccessMethods() {
         return xmlAccessMethods;
@@ -76,11 +76,11 @@ public class XmlInverseReference
 
     /**
      * Sets the value of the xmlAccessMethods property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public void setXmlAccessMethods(XmlAccessMethods value) {
         this.xmlAccessMethods = value;
@@ -88,11 +88,11 @@ public class XmlInverseReference
 
     /**
      * Gets the value of the xmlProperties property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public XmlProperties getXmlProperties() {
         return xmlProperties;
@@ -100,11 +100,11 @@ public class XmlInverseReference
 
     /**
      * Sets the value of the xmlProperties property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
@@ -112,11 +112,11 @@ public class XmlInverseReference
 
     /**
      * Gets the value of the mappedBy property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getMappedBy() {
         return mappedBy;
@@ -124,11 +124,11 @@ public class XmlInverseReference
 
     /**
      * Sets the value of the mappedBy property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setMappedBy(String value) {
         this.mappedBy = value;
@@ -136,11 +136,11 @@ public class XmlInverseReference
 
     /**
      * Gets the value of the containerType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getContainerType() {
         if (containerType == null) {
@@ -152,11 +152,11 @@ public class XmlInverseReference
 
     /**
      * Sets the value of the containerType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setContainerType(String value) {
         this.containerType = value;
@@ -164,11 +164,11 @@ public class XmlInverseReference
 
     /**
      * Gets the value of the type property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getType() {
         if (type == null) {
@@ -180,11 +180,11 @@ public class XmlInverseReference
 
     /**
      * Sets the value of the type property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setType(String value) {
         this.type = value;

@@ -20,40 +20,40 @@ import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
  */
 public class StoredProcedureQueryFormatSubPanel extends AbstractSubjectPanel {
 
-	StoredProcedureQueryFormatSubPanel(ValueModel queryFormatHolder, WorkbenchContextHolder workbenchContextHolder) {
-		super(queryFormatHolder, workbenchContextHolder);
-	}
-	
-	@Override
-	protected void initializeLayout() {
-		GridBagConstraints constraints = new GridBagConstraints();
+    StoredProcedureQueryFormatSubPanel(ValueModel queryFormatHolder, WorkbenchContextHolder workbenchContextHolder) {
+        super(queryFormatHolder, workbenchContextHolder);
+    }
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 0;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 1;
-		constraints.fill       = GridBagConstraints.BOTH;
-		constraints.anchor     = GridBagConstraints.PAGE_START;
-		constraints.insets     = new Insets(0, 0, 0, 0);
-		
-		StoredProcedurePropertiesPane storedProcedurePane = new StoredProcedurePropertiesPane(buildStoredProcedureHolder(), getWorkbenchContextHolder());
-		add(storedProcedurePane, constraints);
+    @Override
+    protected void initializeLayout() {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-	}
-	
-	private PropertyValueModel buildStoredProcedureHolder() {
-		return new PropertyAspectAdapter(getSubjectHolder(), MWStoredProcedureQueryFormat.PROCEDURE_PROPERTY) {
-			@Override
-			protected Object getValueFromSubject() {
-				return ((MWStoredProcedureQueryFormat)subject).getProcedure();
-			}
-			
-			@Override
-			protected void setValueOnSubject(Object value) {
-				((MWStoredProcedureQueryFormat)subject).setProcedure((MWProcedure)value);
-			}
-		};
-	}
+        constraints.gridx      = 0;
+        constraints.gridy      = 0;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 1;
+        constraints.fill       = GridBagConstraints.BOTH;
+        constraints.anchor     = GridBagConstraints.PAGE_START;
+        constraints.insets     = new Insets(0, 0, 0, 0);
+
+        StoredProcedurePropertiesPane storedProcedurePane = new StoredProcedurePropertiesPane(buildStoredProcedureHolder(), getWorkbenchContextHolder());
+        add(storedProcedurePane, constraints);
+
+    }
+
+    private PropertyValueModel buildStoredProcedureHolder() {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWStoredProcedureQueryFormat.PROCEDURE_PROPERTY) {
+            @Override
+            protected Object getValueFromSubject() {
+                return ((MWStoredProcedureQueryFormat)subject).getProcedure();
+            }
+
+            @Override
+            protected void setValueOnSubject(Object value) {
+                ((MWStoredProcedureQueryFormat)subject).setProcedure((MWProcedure)value);
+            }
+        };
+    }
 }

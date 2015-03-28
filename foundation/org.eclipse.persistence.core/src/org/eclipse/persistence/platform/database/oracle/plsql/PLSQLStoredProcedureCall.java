@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -52,7 +52,7 @@ import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQL
 import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.PLSQLBoolean;
 import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.XMLType;
 /**
- * <b>Purpose</b>: 
+ * <b>Purpose</b>:
  * Generates an Anonymous PL/SQL block to invoke the specified Stored Procedure
  * with arguments that may or may not have JDBC equivalents.
  * This handles conversion of PLSQL Record and Table types into SQL ARRAY (VARRAY) and STRUCT (OBJECT TYPE).
@@ -103,7 +103,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * parameter (JDBCType vs. OraclePLSQLType, simple vs. complex)
      */
     public void addNamedArgument(String procedureParameterName, DatabaseType databaseType) {
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, IN, dt));
     }
@@ -116,7 +116,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      */
     public void addNamedArgument(String procedureParameterName, DatabaseType databaseType,
         int length) {
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, IN, dt, length));
     }
@@ -130,7 +130,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      */
     public void addNamedArgument(String procedureParameterName, DatabaseType databaseType,
         int precision, int scale) {
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, IN, dt, precision, scale));
     }
@@ -153,7 +153,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * classifies the parameter (JDBCType vs. OraclePLSQLType, simple vs. complex)
      */
     public void addNamedInOutputArgument(String procedureParameterName, DatabaseType databaseType) {
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, INOUT, dt));
     }
@@ -166,7 +166,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      */
     public void addNamedInOutputArgument(String procedureParameterName, DatabaseType databaseType,
         int length) {
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, INOUT, dt, length));
     }
@@ -179,7 +179,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      */
     public void addNamedInOutputArgument(String procedureParameterName, DatabaseType databaseType,
         int precision, int scale) {
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, INOUT, dt,
             precision, scale));
@@ -219,7 +219,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * classifies the parameter (JDBCType vs. OraclePLSQLType, simple vs. complex)
      */
     public void addNamedOutputArgument(String procedureParameterName, DatabaseType databaseType) {
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, OUT, dt));
     }
@@ -232,7 +232,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      */
     public void addNamedOutputArgument(String procedureParameterName, DatabaseType databaseType,
         int length) {
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, OUT, dt, length));
     }
@@ -245,7 +245,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      */
     public void addNamedOutputArgument(String procedureParameterName, DatabaseType databaseType,
         int precision, int scale) {
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, OUT, dt,
             precision, scale));
@@ -465,7 +465,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * classifies the parameter (JDBCType vs. OraclePLSQLType, simple vs. complex).
      */
     public void useNamedCursorOutputAsResultSet(String argumentName, DatabaseType databaseType) {
-        DatabaseType dt = databaseType.isComplexDatabaseType() ? 
+        DatabaseType dt = databaseType.isComplexDatabaseType() ?
             ((ComplexDatabaseType)databaseType).clone() : databaseType;
         PLSQLargument newArg = new PLSQLargument(argumentName, originalIndex++, OUT, dt);
         newArg.cursorOutput = true;
@@ -511,9 +511,9 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             } else {
                 ComplexDatabaseType complexType = (ComplexDatabaseType) type;
                 if (inArg.inIndex != MIN_VALUE) {
-                	if (complexType.isStruct()) {
+                    if (complexType.isStruct()) {
                         super.addNamedArgument(inArg.name, inArg.name, complexType.getSqlCode(), complexType.getTypeName());
-                	} else if (complexType.isArray()) {
+                    } else if (complexType.isArray()) {
                         DatabaseType nestedType = ((OracleArrayType) complexType).getNestedType();
                         if (nestedType != null) {
                             ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField("");
@@ -523,7 +523,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                         } else {
                             super.addNamedArgument(inArg.name, inArg.name, complexType.getSqlCode(), complexType.getTypeName());
                         }
-                	} else if (complexType.isCollection()) {
+                    } else if (complexType.isCollection()) {
                         DatabaseType nestedType = ((PLSQLCollection) complexType).getNestedType();
                         if (nestedType != null) {
                             ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField("");
@@ -574,9 +574,9 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                                     nestedField.setType(complexNestedType.getJavaType());
                                     nestedField.setSqlTypeName(complexNestedType.getCompatibleType());
                                 }
-                            	super.addNamedOutputArgument(outArg.name, outArg.name, type.getSqlCode(), complexType.getTypeName(), complexType.getJavaType(), nestedField);
+                                super.addNamedOutputArgument(outArg.name, outArg.name, type.getSqlCode(), complexType.getTypeName(), complexType.getJavaType(), nestedField);
                             } else {
-                            	super.addNamedOutputArgument(outArg.name, outArg.name, type.getSqlCode(), complexType.getTypeName(), complexType.getJavaType());
+                                super.addNamedOutputArgument(outArg.name, outArg.name, type.getSqlCode(), complexType.getTypeName(), complexType.getJavaType());
                             }
                         } else if (complexType.isCollection()) {
                             DatabaseType nestedType = ((PLSQLCollection) complexType).getNestedType();
@@ -604,7 +604,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             }
         }
     }
-    
+
     /**
      * INTERNAL
      * Generate portion of the Anonymous PL/SQL block that declares the temporary variables
@@ -624,7 +624,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             arg.databaseType.buildOutDeclare(sb, arg);
         }
     }
-    
+
     /**
      * INTERNAL
      * Add the nested function string required for the type and its subtypes. The functions
@@ -634,7 +634,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 DatabaseType databaseType, Set<DatabaseType> processed) {
         if ((databaseType == null)
               || !databaseType.isComplexDatabaseType()
-              || databaseType.isJDBCType() 
+              || databaseType.isJDBCType()
               || argument.cursorOutput
               || processed.contains(databaseType)) {
             return;
@@ -682,9 +682,9 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * INTERNAL: Generate the nested function to convert the PLSQL type to its compatible SQL type.
      */
     protected TypeInfo generateNestedFunction(ComplexDatabaseType type) {
-    	return generateNestedFunction(type, false);
+        return generateNestedFunction(type, false);
     }
-    
+
     /**
      * INTERNAL: Generate the nested function to convert the PLSQL type to its compatible SQL type.
      */
@@ -722,7 +722,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                     sb.append(", ");
                 }
             }
-            sb.append(");"); 
+            sb.append(");");
             sb.append(NL);
             for (PLSQLargument argument : record.getFields()) {
                 sb.append(INDENT);sb.append(INDENT);
@@ -771,7 +771,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             sb.append(NL);sb.append(INDENT);
             sb.append(RTURN);
             sb.append(record.getTypeName());
-            sb.append(" IS"); 
+            sb.append(" IS");
             sb.append(NL);sb.append(INDENT);sb.append(INDENT);
             sb.append("aPlsqlItem ");
             sb.append(record.getTypeName());
@@ -846,7 +846,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             sb.append("IF aPlsqlItem.COUNT > 0 THEN");
             sb.append(NL);
             sb.append(INDENT);sb.append(INDENT);
-            sb.append("FOR I IN aPlsqlItem.FIRST..aPlsqlItem.LAST LOOP"); 
+            sb.append("FOR I IN aPlsqlItem.FIRST..aPlsqlItem.LAST LOOP");
             sb.append(NL);
             sb.append(INDENT);sb.append(INDENT);sb.append(INDENT);
             sb.append("aSqlItem(I + 1 - aPlsqlItem.FIRST) := ");
@@ -899,7 +899,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             sb.append(BEGIN_BEGIN_BLOCK);
             sb.append(INDENT);sb.append(INDENT);
             // if the collection is non-associative we need to initialize it
-        	if (isNonAssociativeCollection) {
+            if (isNonAssociativeCollection) {
                 sb.append("aPlsqlItem := ");
                 sb.append(collection.getTypeName());
                 sb.append("();");
@@ -908,7 +908,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 sb.append("aPlsqlItem.EXTEND(aSqlItem.COUNT);");
                 sb.append(NL);
                 sb.append(INDENT);sb.append(INDENT);
-        	}            
+            }
             sb.append("IF aSqlItem.COUNT > 0 THEN");
             sb.append(NL);
             sb.append(INDENT);sb.append(INDENT);sb.append(INDENT);
@@ -926,7 +926,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 sb.append("(aSqlItem(I));");
             }
             else {
-        		sb.append("aPlsqlItem(I) := aSqlItem(I);");
+                sb.append("aPlsqlItem(I) := aSqlItem(I);");
             }
             sb.append(NL);
             sb.append(INDENT);sb.append(INDENT);sb.append(INDENT);
@@ -961,7 +961,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         Set<DatabaseType> processed = new HashSet<DatabaseType>();
         for (PLSQLargument arg : arguments) {
             DatabaseType type = arg.databaseType;
-        	addNestedFunctionsForArgument(nestedFunctions, arg, type, processed);
+            addNestedFunctionsForArgument(nestedFunctions, arg, type, processed);
         }
         if (!nestedFunctions.isEmpty()) {
             for (String function : nestedFunctions) {
@@ -978,7 +978,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         List<PLSQLargument> inArguments = getArguments(arguments, IN);
         inArguments.addAll(getArguments(arguments, INOUT));
         for (PLSQLargument arg : inArguments) {
-    		arg.databaseType.buildBeginBlock(sb, arg, this);
+            arg.databaseType.buildBeginBlock(sb, arg, this);
         }
     }
 
@@ -1011,7 +1011,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         List<PLSQLargument> outArguments = getArguments(arguments, OUT);
         outArguments.addAll(getArguments(arguments, INOUT));
         for (PLSQLargument arg : outArguments) {
-    		arg.databaseType.buildOutAssignment(sb, arg, this);
+            arg.databaseType.buildOutAssignment(sb, arg, this);
         }
     }
 
@@ -1027,7 +1027,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         this.parameters = null;
         // create a copy of the arguments re-ordered with different indices
         assignIndices();
-        
+
         // Filter out any optional arguments that are null.
         List<PLSQLargument> specifiedArguments = this.arguments;
         AbstractRecord row = getQuery().getTranslationRow();
@@ -1058,11 +1058,11 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         super.prepareInternalParameters(session);
     }
 
-    /**                                                            
-     * Translate the PLSQL procedure translation row, into the row 
-     * expected by the SQL procedure.                              
-     * This handles expanding and re-ordering parameters.          
-     */                                                            
+    /**
+     * Translate the PLSQL procedure translation row, into the row
+     * expected by the SQL procedure.
+     * This handles expanding and re-ordering parameters.
+     */
     @Override
     public void translate(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
         // re-order elements in translationRow to conform to re-ordered indices
@@ -1085,14 +1085,14 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         super.translate(translationRow, modifyRow, session);
     }
 
-    /**                                                    
+    /**
      * Translate the SQL procedure output row, into the row
-     * expected by the PLSQL procedure.                    
-     * This handles re-ordering parameters.                
-     */                                                    
+     * expected by the PLSQL procedure.
+     * This handles re-ordering parameters.
+     */
     @Override
     public AbstractRecord buildOutputRow(CallableStatement statement, DatabaseAccessor accessor, AbstractSession session) throws SQLException {
-        
+
         AbstractRecord outputRow = super.buildOutputRow(statement, accessor, session);
         if (!shouldBuildOutputRow) {
             outputRow.put("", 1); // fake-out Oracle executeUpdate rowCount, always 1
@@ -1115,10 +1115,10 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         return newOutputRow;
     }
 
-    /**                                  
-     * INTERNAL:                         
+    /**
+     * INTERNAL:
      * Build the log string for the call.
-     */                                  
+     */
     @Override
     public String getLogString(Accessor accessor) {
 
@@ -1148,7 +1148,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         });
         for (Iterator<PLSQLargument> i = inArguments.iterator(); i.hasNext();) {
             PLSQLargument inArg = i.next();
-            inArg.databaseType.logParameter(sb, IN, inArg, translationRow, 
+            inArg.databaseType.logParameter(sb, IN, inArg, translationRow,
                 getQuery().getSession().getPlatform());
             if (i.hasNext()) {
                 sb.append(", ");
@@ -1178,7 +1178,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
     /**
      * INTERNAL
-     * 
+     *
      * @param args
      * @param direction
      * @return list of arguments with the specified direction
@@ -1225,12 +1225,12 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         }
         return info.sql2PlName;
     }
-    
+
     @Override
     public boolean isStoredPLSQLProcedureCall() {
         return true;
     }
-    
+
     /**
      * Return the conversion function name, generate the function if missing.
      */
@@ -1244,21 +1244,21 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         }
         return info.pl2SqlName;
     }
-    
+
     /**
      * Return the PLSQL arguments.
      */
     public List<PLSQLargument> getArguments() {
         return arguments;
     }
-    
+
     /**
      * Set the PLSQL arguments.
      */
     public void setArguments(List<PLSQLargument> arguments) {
         this.arguments = arguments;
     }
-    
+
     // Made static final for performance reasons.
     /**
      * Class responsible for comparing PLSQLargument instances based on
@@ -1277,7 +1277,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             return 0;
         }
     }
-    
+
     // Made static final for performance reasons.
     /**
      * Class responsible for comparing PLSQLargument instances based on

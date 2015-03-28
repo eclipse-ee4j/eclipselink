@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,134 +32,134 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 @SuppressWarnings("nls")
 public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTest {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractGrammarValidator buildValidator() {
-		return new EclipseLinkGrammarValidator(jpqlGrammar);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractGrammarValidator buildValidator() {
+        return new EclipseLinkGrammarValidator(jpqlGrammar);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isJoinFetchIdentifiable() {
-		return EclipseLinkVersionTools.isNewerThanOrEqual2_4(jpqlGrammar);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isJoinFetchIdentifiable() {
+        return EclipseLinkVersionTools.isNewerThanOrEqual2_4(jpqlGrammar);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isSubqueryAllowedAnywhere() {
-		return EclipseLinkVersionTools.isNewerThanOrEqual2_4(jpqlGrammar);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isSubqueryAllowedAnywhere() {
+        return EclipseLinkVersionTools.isNewerThanOrEqual2_4(jpqlGrammar);
+    }
 
-	@Test
-	public void test_AggregateFunction_WrongClause_5() throws Exception {
+    @Test
+    public void test_AggregateFunction_WrongClause_5() throws Exception {
 
-		String query = "SELECT e FROM Employee e GROUP BY AVG(e.age)";
-		List<JPQLQueryProblem> problems = validate(query);
+        String query = "SELECT e FROM Employee e GROUP BY AVG(e.age)";
+        List<JPQLQueryProblem> problems = validate(query);
 
-		if (EclipseLinkVersionTools.isEquals2_0(jpqlGrammar)) {
-			int startPosition = "SELECT e FROM Employee e GROUP BY ".length();
-			int endPosition   = query.length();
-			testHasOnlyOneProblem(problems, BadExpression_InvalidExpression, startPosition, endPosition);
-		}
-		else {
-			testHasNoProblems(problems);
-		}
-	}
+        if (EclipseLinkVersionTools.isEquals2_0(jpqlGrammar)) {
+            int startPosition = "SELECT e FROM Employee e GROUP BY ".length();
+            int endPosition   = query.length();
+            testHasOnlyOneProblem(problems, BadExpression_InvalidExpression, startPosition, endPosition);
+        }
+        else {
+            testHasNoProblems(problems);
+        }
+    }
 
-	@Test
-	public void test_GroupByClause_GroupByItemIsMissingComma_3() throws Exception {
+    @Test
+    public void test_GroupByClause_GroupByItemIsMissingComma_3() throws Exception {
 
-		String query = "SELECT e FROM Employee e GROUP BY AVG(e.age) e.name";
-		int startPosition = "SELECT e FROM Employee e GROUP BY AVG(e.age)".length();
-		int endPosition   = "SELECT e FROM Employee e GROUP BY AVG(e.age) ".length();
+        String query = "SELECT e FROM Employee e GROUP BY AVG(e.age) e.name";
+        int startPosition = "SELECT e FROM Employee e GROUP BY AVG(e.age)".length();
+        int endPosition   = "SELECT e FROM Employee e GROUP BY AVG(e.age) ".length();
 
-		List<JPQLQueryProblem> problems = validate(query);
+        List<JPQLQueryProblem> problems = validate(query);
 
-		if (EclipseLinkVersionTools.isEquals2_0(jpqlGrammar)) {
+        if (EclipseLinkVersionTools.isEquals2_0(jpqlGrammar)) {
 
-			int startPosition1 = "SELECT e FROM Employee e GROUP BY ".length();
-			int endPosition1   = "SELECT e FROM Employee e GROUP BY AVG(e.age)".length();
+            int startPosition1 = "SELECT e FROM Employee e GROUP BY ".length();
+            int endPosition1   = "SELECT e FROM Employee e GROUP BY AVG(e.age)".length();
 
-			testHasProblem(
-				problems,
-				BadExpression_InvalidExpression,
-				startPosition1,
-				endPosition1
-			);
+            testHasProblem(
+                problems,
+                BadExpression_InvalidExpression,
+                startPosition1,
+                endPosition1
+            );
 
-			testHasProblem(
-				problems,
-				GroupByClause_GroupByItemIsMissingComma,
-				startPosition,
-				endPosition
-			);
-		}
-		else {
-			testHasOnlyOneProblem(
-				problems,
-				GroupByClause_GroupByItemIsMissingComma,
-				startPosition,
-				endPosition
-			);
-		}
-	}
+            testHasProblem(
+                problems,
+                GroupByClause_GroupByItemIsMissingComma,
+                startPosition,
+                endPosition
+            );
+        }
+        else {
+            testHasOnlyOneProblem(
+                problems,
+                GroupByClause_GroupByItemIsMissingComma,
+                startPosition,
+                endPosition
+            );
+        }
+    }
 
-	@Test
-	public void test_InExpression_InvalidExpression() throws Exception {
+    @Test
+    public void test_InExpression_InvalidExpression() throws Exception {
 
-		String jpqlQuery  = "SELECT e FROM Employee e WHERE ABS(e.salary) IN :age";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        String jpqlQuery  = "SELECT e FROM Employee e WHERE ABS(e.salary) IN :age";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		if (EclipseLinkVersionTools.isNewerThanOrEqual2_1(jpqlGrammar)) {
-			testHasNoProblems(problems);
-		}
-		else {
-			int startPosition = "SELECT e FROM Employee e WHERE ".length();
-			int endPosition   = "SELECT e FROM Employee e WHERE ABS(e.salary)".length();
+        if (EclipseLinkVersionTools.isNewerThanOrEqual2_1(jpqlGrammar)) {
+            testHasNoProblems(problems);
+        }
+        else {
+            int startPosition = "SELECT e FROM Employee e WHERE ".length();
+            int endPosition   = "SELECT e FROM Employee e WHERE ABS(e.salary)".length();
 
-			testHasOnlyOneProblem(
-				problems,
-				InExpression_InvalidExpression,
-				startPosition,
-				endPosition
-			);
-		}
-	}
+            testHasOnlyOneProblem(
+                problems,
+                InExpression_InvalidExpression,
+                startPosition,
+                endPosition
+            );
+        }
+    }
 
-	@Test
-	public void test_OrderByClause_GroupByItemIsMissingComma_3() throws Exception {
+    @Test
+    public void test_OrderByClause_GroupByItemIsMissingComma_3() throws Exception {
 
-		String query = "SELECT e FROM Employee e ORDER BY LENGTH(e.age) e.name";
-		List<JPQLQueryProblem> problems = validate(query);
+        String query = "SELECT e FROM Employee e ORDER BY LENGTH(e.age) e.name";
+        List<JPQLQueryProblem> problems = validate(query);
 
-		if (EclipseLinkVersionTools.isNewerThanOrEqual2_0(jpqlGrammar)) {
+        if (EclipseLinkVersionTools.isNewerThanOrEqual2_0(jpqlGrammar)) {
 
-			int startPosition1 = "SELECT e FROM Employee e ORDER BY ".length();
-			int endPosition1   = "SELECT e FROM Employee e ORDER BY LENGTH(e.age)be.name".length();
+            int startPosition1 = "SELECT e FROM Employee e ORDER BY ".length();
+            int endPosition1   = "SELECT e FROM Employee e ORDER BY LENGTH(e.age)be.name".length();
 
-			testHasProblem(
-				problems,
-				OrderByItem_InvalidExpression,
-				startPosition1,
-				endPosition1
-			);
-		}
-		else {
-			int startPosition = "SELECT e FROM Employee e ORDER BY LENGTH(e.age)".length();
-			int endPosition   = "SELECT e FROM Employee e ORDER BY LENGTH(e.age) ".length();
+            testHasProblem(
+                problems,
+                OrderByItem_InvalidExpression,
+                startPosition1,
+                endPosition1
+            );
+        }
+        else {
+            int startPosition = "SELECT e FROM Employee e ORDER BY LENGTH(e.age)".length();
+            int endPosition   = "SELECT e FROM Employee e ORDER BY LENGTH(e.age) ".length();
 
-			testHasOnlyOneProblem(
-				problems,
-				OrderByClause_OrderByItemIsMissingComma,
-				startPosition,
-				endPosition
-			);
-		}
-	}
+            testHasOnlyOneProblem(
+                problems,
+                OrderByClause_OrderByItemIsMissingComma,
+                startPosition,
+                endPosition
+            );
+        }
+    }
 }

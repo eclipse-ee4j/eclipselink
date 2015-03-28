@@ -1,7 +1,7 @@
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-public interface Node {                
-               
+public interface Node {
+
         boolean isVariable();
 
 }

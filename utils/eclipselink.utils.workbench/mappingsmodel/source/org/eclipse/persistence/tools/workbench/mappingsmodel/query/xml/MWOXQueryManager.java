@@ -16,46 +16,46 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.SchemaChange;
  *
  */
 public final class MWOXQueryManager extends MWQueryManager implements
-		MWXmlNode {
+        MWXmlNode {
 
-	public static XMLDescriptor buildDescriptor() {		
-		XMLDescriptor descriptor = new XMLDescriptor();
-		
-		descriptor.setJavaClass(MWOXQueryManager.class);
-		descriptor.getInheritancePolicy().setParentClass(MWQueryManager.class);
-		
-		return descriptor;
-	}
-	
-	// **************** Constructors ******************************************
-	
-	//Toplink persistence use only please	
-	private MWOXQueryManager() {
-		super();
-	}
-	
-	public MWOXQueryManager(MWOXTransactionalPolicy descriptor) {
-		super(descriptor);
-	}
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
 
-	@Override
-	public MWReadAllQuery buildReadAllQuery(String queryName) {
-		return null;
-	}
+        descriptor.setJavaClass(MWOXQueryManager.class);
+        descriptor.getInheritancePolicy().setParentClass(MWQueryManager.class);
 
-	@Override
-	public MWReadObjectQuery buildReadObjectQuery(String queryName) {
-		return null;
-	}
+        return descriptor;
+    }
 
-	public void resolveXpaths() {
-	}
+    // **************** Constructors ******************************************
 
-	public void schemaChanged(SchemaChange change) {
-	}
+    //Toplink persistence use only please
+    private MWOXQueryManager() {
+        super();
+    }
 
-	public boolean supportsReportQueries() {
-		return false;
-	}
+    public MWOXQueryManager(MWOXTransactionalPolicy descriptor) {
+        super(descriptor);
+    }
+
+    @Override
+    public MWReadAllQuery buildReadAllQuery(String queryName) {
+        return null;
+    }
+
+    @Override
+    public MWReadObjectQuery buildReadObjectQuery(String queryName) {
+        return null;
+    }
+
+    public void resolveXpaths() {
+    }
+
+    public void schemaChanged(SchemaChange change) {
+    }
+
+    public boolean supportsReportQueries() {
+        return false;
+    }
 
 }

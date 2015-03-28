@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -409,7 +409,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
 
         /*
          * support for additional runtime elements: // expressions (query, qk, mapping) // stored proc // properties // attribute accessors // inheritance extractors // converter class
-         * 
+         *
          * is being added incrementally through ObjectPersistenceRuntimeXMLProject_11_1_1
          */
     }
@@ -566,7 +566,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         // Handle translation of fields associations string to field.
         aggregateToSourceFieldNameAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
             public Object getAttributeValueFromObject(Object object) {
-                /*bug 322233: AttributeOverrides and AssociationOverride  
+                /*bug 322233: AttributeOverrides and AssociationOverride
                  * changed getAggregateToSourceFieldAssociations to hold String->DatabaseField associations
                  */
                 AggregateObjectMapping mapping = (AggregateObjectMapping)object;
@@ -3615,8 +3615,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         joinFetchConverter.addConversionValue("false", Integer.valueOf(ForeignReferenceMapping.NONE));
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
-        descriptor.addMapping(joinFetchMapping);        
-        
+        descriptor.addMapping(joinFetchMapping);
+
         XMLCompositeObjectMapping indirectionPolicyMapping = new XMLCompositeObjectMapping();
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
@@ -4296,7 +4296,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLSchemaReference reference = new XMLSchemaClassPathReference();
         reference.setSchemaContext("/"+ getSecondaryNamespaceXPath() + "column");
         descriptor.setSchemaReference(reference);
-        
+
         XMLDirectMapping tableMapping = new XMLDirectMapping();
         tableMapping.setAttributeName("table");
         tableMapping.setGetMethodName("getTableName");

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sequencing;
 
 import java.util.Vector;
@@ -42,21 +42,21 @@ public abstract class Sequence implements Serializable, Cloneable {
 
     // owner platform
     protected Platform platform;
-    
+
     protected int initialValue = 1;
 
     // number of times onConnect was called - number of times onDisconnect was called
     protected int depth;
 
     protected String qualifier = "";
-    // true indicates that qualifier was set through setQualifier method, 
-    // false - copied from platform (or not set at all). 
+    // true indicates that qualifier was set through setQualifier method,
+    // false - copied from platform (or not set at all).
     protected boolean isCustomQualifier;
-    
+
     // indicates whether the existing pk value should always be overridden by the sequence.
-    // note that even if set to false sequence always overrides if shouldAcquireValueAfterInsert returns true. 
+    // note that even if set to false sequence always overrides if shouldAcquireValueAfterInsert returns true.
     protected boolean shouldAlwaysOverrideExistingValue;
-    
+
     public Sequence() {
         super();
         setName("SEQUENCE");
@@ -69,7 +69,7 @@ public abstract class Sequence implements Serializable, Cloneable {
         this();
         setName(name);
     }
-    
+
     /**
      * Create a new sequence with the name and sequence pre-allocation size.
      */
@@ -78,22 +78,22 @@ public abstract class Sequence implements Serializable, Cloneable {
         setName(name);
         setPreallocationSize(size);
     }
-    
+
     public Sequence(String name, int size, int initialValue) {
         this();
         setName(name);
         setPreallocationSize(size);
         setInitialValue(initialValue);
     }
-    
+
     public boolean isNative() {
         return false;
     }
-    
+
     public boolean isTable() {
         return false;
     }
-    
+
     public boolean isUnaryTable() {
         return false;
     }
@@ -113,14 +113,14 @@ public abstract class Sequence implements Serializable, Cloneable {
     public void setPreallocationSize(int size) {
         this.size = size;
     }
-    
+
     public int getInitialValue() {
         return initialValue;
     }
 
     public void setInitialValue(int initialValue) {
         this.initialValue = initialValue;
-    }    
+    }
 
     public Object clone() {
         try {
@@ -334,7 +334,7 @@ public abstract class Sequence implements Serializable, Cloneable {
         this.isCustomQualifier = qualifier.length() > 0;
         this.qualifier = qualifier;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -348,7 +348,7 @@ public abstract class Sequence implements Serializable, Cloneable {
     public String getQualifier() {
         return qualifier;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -359,7 +359,7 @@ public abstract class Sequence implements Serializable, Cloneable {
             return qualifier + "." + str;
         }
     }
-    
+
     /**
      * ADVANCED:
      * Set that to true if the sequence should always override the existing pk value.
@@ -372,7 +372,7 @@ public abstract class Sequence implements Serializable, Cloneable {
      * INTERNAL:
      * Indicates whether the existing pk value should always be overridden by the sequence.
      * As always the version of the method taking seqName is provided for the benefit
-     * of DefaultSequence. 
+     * of DefaultSequence.
      */
     public boolean shouldAlwaysOverrideExistingValue() {
         return shouldAlwaysOverrideExistingValue(getName());
@@ -385,7 +385,7 @@ public abstract class Sequence implements Serializable, Cloneable {
     public boolean shouldAlwaysOverrideExistingValue(String seqName) {
         return this.shouldAlwaysOverrideExistingValue || shouldAcquireValueAfterInsert();
     }
-    
+
     public String toString() {
         return getClass().getSimpleName() + "(" + getName() + ")";
     }

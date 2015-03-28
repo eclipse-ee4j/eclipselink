@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -32,12 +32,12 @@ import org.eclipse.persistence.testing.models.aggregate.Transport;
 public class QueryKeyInAggregateInheritanceTest extends TestCase {
 
     protected Collection<Transport> results;
-    
+
     public QueryKeyInAggregateInheritanceTest() {
         super();
         setDescription("Conforming query on a QueryKey defined on an aggregate object with an inheritance hierarchy");
     }
-    
+
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
@@ -46,21 +46,21 @@ public class QueryKeyInAggregateInheritanceTest extends TestCase {
         example.setModel("TT");
         example.setColour("Azure");
         example.setCapacity(2);
-        
+
         Transport transport = new Transport();
         transport.setVehicle(example);
-        
+
         uow.registerObject(transport);
-        
+
         ReadAllQuery query = new ReadAllQuery(Transport.class);
         ExpressionBuilder builder = query.getExpressionBuilder();
         Expression expression = builder.get("vehicle").get("colour").equal("Azure");
         query.setSelectionCriteria(expression);
         query.conformResultsInUnitOfWork();
-        
+
         results = (Collection)uow.executeQuery(query);
     }
-    
+
     public void verify() {
         if (results == null || results.isEmpty()) {
             throwError("No results were returned");
@@ -68,9 +68,9 @@ public class QueryKeyInAggregateInheritanceTest extends TestCase {
             throwError("Incorrect results size: " + results);
         }
     }
-    
+
     public void reset() {
         this.results = null;
     }
-    
+
 }

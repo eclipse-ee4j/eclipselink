@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,11 +24,11 @@ public interface XMLContainerMapping {
      * This is the default setting for the defaultEmptyContainer property.  This
      * can be overridden at the mapping level.
      */
-    static final boolean EMPTY_CONTAINER_DEFAULT = true; 
+    static final boolean EMPTY_CONTAINER_DEFAULT = true;
 
     /**
-     * Return true if a pre-initialized container already set on the 
-     * field/property should be used.  If false a new container will always be 
+     * Return true if a pre-initialized container already set on the
+     * field/property should be used.  If false a new container will always be
      * created.
      */
     boolean getReuseContainer();
@@ -45,7 +45,7 @@ public interface XMLContainerMapping {
     boolean isDefaultEmptyContainer();
 
     /**
-     * Indicate whether by default an empty container should be set on the 
+     * Indicate whether by default an empty container should be set on the
      * field/property if the collection is not present in the XML document.
      */
     void setDefaultEmptyContainer(boolean defaultEmptyContainer);

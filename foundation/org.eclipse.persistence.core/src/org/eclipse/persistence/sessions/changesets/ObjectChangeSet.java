@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.changesets;
 
 import java.util.List;
@@ -90,13 +90,13 @@ public interface ObjectChangeSet {
      * This method is used to return the lock value of the object this changeSet represents.
      */
     Object getWriteLockValue();
-    
+
     /**
      * ADVANCED:
      * Returns the change record for the specified attribute name.
      */
     ChangeRecord getChangesForAttributeNamed(String attributeName);
-    
+
     /**
      * ADVANCED:
      * This method will return true if the specified attribute has been changed.
@@ -115,7 +115,7 @@ public interface ObjectChangeSet {
      * Returns true if this ObjectChangeSet represents a new object.
      */
     boolean isNew();
-    
+
     /**
      * ADVANCED
      * Returns true if this ObjectChangeSet should be recalculated after changes in event

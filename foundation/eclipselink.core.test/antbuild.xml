@@ -521,7 +521,7 @@
         </junitreport>
         <!-- fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/ -->
     </target>
-        
+
     <!-- Runs the test using the PromptTestRunner -->
     <target name="run-test-prompt" depends="init_paths, process-resource">
         <condition property="jvmarg.performance.baseline.version" value="-Dtoplink.loadbuild.baseline-version=${performance.baseline.version}">

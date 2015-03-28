@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,229 +19,229 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 @SuppressWarnings("nls")
 public final class UpdateClauseTest extends JPQLParserTest {
 
-	@Test
-	public void test_JPQLQuery_01() {
+    @Test
+    public void test_JPQLQuery_01() {
 
-		String query = "UPDATE ";
+        String query = "UPDATE ";
 
-		UpdateClauseTester updateClause = update(nullExpression(), nullExpression());
-		updateClause.hasSet              = false;
-		updateClause.hasSpaceAfterSet    = false;
-		updateClause.hasSpaceAfterUpdate = true;
-		updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        UpdateClauseTester updateClause = update(nullExpression(), nullExpression());
+        updateClause.hasSet              = false;
+        updateClause.hasSpaceAfterSet    = false;
+        updateClause.hasSpaceAfterUpdate = true;
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
 
-		UpdateStatementTester updateStatement = updateStatement(updateClause);
-		testInvalidQuery(query, updateStatement);
-	}
+        UpdateStatementTester updateStatement = updateStatement(updateClause);
+        testInvalidQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_02() {
+    @Test
+    public void test_JPQLQuery_02() {
 
-		String query = "UPDATE SET";
+        String query = "UPDATE SET";
 
-		UpdateClauseTester updateClause = update(nullExpression(), nullExpression());
-		updateClause.hasSpaceAfterUpdate = true;
-		updateClause.hasSet              = true;
-		updateClause.hasSpaceAfterSet    = false;
-		updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        UpdateClauseTester updateClause = update(nullExpression(), nullExpression());
+        updateClause.hasSpaceAfterUpdate = true;
+        updateClause.hasSet              = true;
+        updateClause.hasSpaceAfterSet    = false;
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
 
-		UpdateStatementTester updateStatement = updateStatement(updateClause);
-		testInvalidQuery(query, updateStatement);
-	}
+        UpdateStatementTester updateStatement = updateStatement(updateClause);
+        testInvalidQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_03() {
+    @Test
+    public void test_JPQLQuery_03() {
 
-		String query = "UPDATE SET ";
+        String query = "UPDATE SET ";
 
-		UpdateClauseTester updateClause = update(nullExpression(), nullExpression());
-		updateClause.hasSpaceAfterUpdate = true;
-		updateClause.hasSet              = true;
-		updateClause.hasSpaceAfterSet    = true;
-		updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        UpdateClauseTester updateClause = update(nullExpression(), nullExpression());
+        updateClause.hasSpaceAfterUpdate = true;
+        updateClause.hasSet              = true;
+        updateClause.hasSpaceAfterSet    = true;
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
 
-		UpdateStatementTester updateStatement = updateStatement(updateClause);
-		testInvalidQuery(query, updateStatement);
-	}
+        UpdateStatementTester updateStatement = updateStatement(updateClause);
+        testInvalidQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_04() {
+    @Test
+    public void test_JPQLQuery_04() {
 
-		String query = "UPDATE Employee";
+        String query = "UPDATE Employee";
 
-		RangeVariableDeclarationTester rangeVariableDeclaration = rangeVariableDeclaration(
-			abstractSchemaName("Employee"),
-			virtualVariable("employee")
-		);
-		rangeVariableDeclaration.hasSpaceAfterAbstractSchemaName = false;
-		rangeVariableDeclaration.hasSpaceAfterAs                 = false;
+        RangeVariableDeclarationTester rangeVariableDeclaration = rangeVariableDeclaration(
+            abstractSchemaName("Employee"),
+            virtualVariable("employee")
+        );
+        rangeVariableDeclaration.hasSpaceAfterAbstractSchemaName = false;
+        rangeVariableDeclaration.hasSpaceAfterAs                 = false;
 
-		UpdateClauseTester updateClause = update(rangeVariableDeclaration, nullExpression());
-		updateClause.hasSet           = false;
-		updateClause.hasSpaceAfterSet = false;
-		updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        UpdateClauseTester updateClause = update(rangeVariableDeclaration, nullExpression());
+        updateClause.hasSet           = false;
+        updateClause.hasSpaceAfterSet = false;
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
 
-		UpdateStatementTester updateStatement = updateStatement(updateClause);
-		testInvalidQuery(query, updateStatement);
-	}
+        UpdateStatementTester updateStatement = updateStatement(updateClause);
+        testInvalidQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_05() {
+    @Test
+    public void test_JPQLQuery_05() {
 
-		String query = "UPDATE Employee ";
+        String query = "UPDATE Employee ";
 
-		RangeVariableDeclarationTester rangeVariableDeclaration = rangeVariableDeclaration(
-			abstractSchemaName("Employee"),
-			virtualVariable("employee")
-		);
-		rangeVariableDeclaration.hasSpaceAfterAbstractSchemaName = true;
-		rangeVariableDeclaration.hasSpaceAfterAs                 = false;
+        RangeVariableDeclarationTester rangeVariableDeclaration = rangeVariableDeclaration(
+            abstractSchemaName("Employee"),
+            virtualVariable("employee")
+        );
+        rangeVariableDeclaration.hasSpaceAfterAbstractSchemaName = true;
+        rangeVariableDeclaration.hasSpaceAfterAs                 = false;
 
-		UpdateClauseTester updateClause = update(rangeVariableDeclaration, nullExpression());
-		updateClause.hasSet              = false;
-		updateClause.hasSpaceAfterSet    = false;
-		updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        UpdateClauseTester updateClause = update(rangeVariableDeclaration, nullExpression());
+        updateClause.hasSet              = false;
+        updateClause.hasSpaceAfterSet    = false;
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
 
-		UpdateStatementTester updateStatement = updateStatement(updateClause);
-		testInvalidQuery(query, updateStatement);
-	}
+        UpdateStatementTester updateStatement = updateStatement(updateClause);
+        testInvalidQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_06() {
+    @Test
+    public void test_JPQLQuery_06() {
 
-		String query = "UPDATE Employee AS";
+        String query = "UPDATE Employee AS";
 
-		RangeVariableDeclarationTester rangeVariableDeclaration = rangeVariableDeclarationAs(
-			abstractSchemaName("Employee"),
-			virtualVariable("employee")
-		);
-		rangeVariableDeclaration.hasSpaceAfterAs = false;
+        RangeVariableDeclarationTester rangeVariableDeclaration = rangeVariableDeclarationAs(
+            abstractSchemaName("Employee"),
+            virtualVariable("employee")
+        );
+        rangeVariableDeclaration.hasSpaceAfterAs = false;
 
-		UpdateClauseTester updateClause = update(rangeVariableDeclaration, nullExpression());
-		updateClause.hasSet              = false;
-		updateClause.hasSpaceAfterSet    = false;
-		updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        UpdateClauseTester updateClause = update(rangeVariableDeclaration, nullExpression());
+        updateClause.hasSet              = false;
+        updateClause.hasSpaceAfterSet    = false;
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
 
-		UpdateStatementTester updateStatement = updateStatement(updateClause);
-		testInvalidQuery(query, updateStatement);
-	}
+        UpdateStatementTester updateStatement = updateStatement(updateClause);
+        testInvalidQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_07() {
+    @Test
+    public void test_JPQLQuery_07() {
 
-		String query = "UPDATE Employee AS e";
+        String query = "UPDATE Employee AS e";
 
-		UpdateClauseTester updateClause = updateAs("Employee", "e", nullExpression());
-		updateClause.hasSet              = false;
-		updateClause.hasSpaceAfterSet    = false;
-		updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        UpdateClauseTester updateClause = updateAs("Employee", "e", nullExpression());
+        updateClause.hasSet              = false;
+        updateClause.hasSpaceAfterSet    = false;
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
 
-		UpdateStatementTester updateStatement = updateStatement(updateClause);
-		testInvalidQuery(query, updateStatement);
-	}
+        UpdateStatementTester updateStatement = updateStatement(updateClause);
+        testInvalidQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_08() {
+    @Test
+    public void test_JPQLQuery_08() {
 
-		String query = "UPDATE Employee AS SET";
+        String query = "UPDATE Employee AS SET";
 
-		UpdateClauseTester updateClause = updateAs("Employee", "{employee}");
-		updateClause.hasSet              = true;
-		updateClause.hasSpaceAfterSet    = false;
-		updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        UpdateClauseTester updateClause = updateAs("Employee", "{employee}");
+        updateClause.hasSet              = true;
+        updateClause.hasSpaceAfterSet    = false;
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
 
-		UpdateStatementTester updateStatement = updateStatement(updateClause);
-		testInvalidQuery(query, updateStatement);
-	}
+        UpdateStatementTester updateStatement = updateStatement(updateClause);
+        testInvalidQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_09() {
+    @Test
+    public void test_JPQLQuery_09() {
 
-		String query = "UPDATE Employee AS e SET";
+        String query = "UPDATE Employee AS e SET";
 
-		UpdateClauseTester updateClause = updateAs("Employee", "e", nullExpression());
-		updateClause.hasSet           = true;
-		updateClause.hasSpaceAfterSet = false;
-		updateClause.hasSpaceAfterRangeVariableDeclaration = true;
+        UpdateClauseTester updateClause = updateAs("Employee", "e", nullExpression());
+        updateClause.hasSet           = true;
+        updateClause.hasSpaceAfterSet = false;
+        updateClause.hasSpaceAfterRangeVariableDeclaration = true;
 
-		UpdateStatementTester updateStatement = updateStatement(updateClause);
-		testInvalidQuery(query, updateStatement);
-	}
+        UpdateStatementTester updateStatement = updateStatement(updateClause);
+        testInvalidQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_10() {
+    @Test
+    public void test_JPQLQuery_10() {
 
-		String query = "UPDATE Employee AS SET ";
+        String query = "UPDATE Employee AS SET ";
 
-		UpdateClauseTester updateClause = updateAs("Employee", "{employee}");
-		updateClause.hasSet           = true;
-		updateClause.hasSpaceAfterSet = true;
-		updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        UpdateClauseTester updateClause = updateAs("Employee", "{employee}");
+        updateClause.hasSet           = true;
+        updateClause.hasSpaceAfterSet = true;
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
 
-		UpdateStatementTester updateStatement = updateStatement(updateClause);
-		testInvalidQuery(query, updateStatement);
-	}
+        UpdateStatementTester updateStatement = updateStatement(updateClause);
+        testInvalidQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_11() {
+    @Test
+    public void test_JPQLQuery_11() {
 
-		String query = "UPDATE Employee AS e SET e.name = 'Pascal'";
+        String query = "UPDATE Employee AS e SET e.name = 'Pascal'";
 
-		UpdateStatementTester updateStatement = updateStatement(
-			updateAs("Employee", "e", set("e.name", string("'Pascal'")))
-		);
+        UpdateStatementTester updateStatement = updateStatement(
+            updateAs("Employee", "e", set("e.name", string("'Pascal'")))
+        );
 
-		testQuery(query, updateStatement);
-	}
+        testQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_12() {
+    @Test
+    public void test_JPQLQuery_12() {
 
-		String query = "UPDATE Employee AS e SET e.name = 'Pascal',";
+        String query = "UPDATE Employee AS e SET e.name = 'Pascal',";
 
-		CollectionExpressionTester collection = collection(
-			new ExpressionTester[] { set("e.name", string("'Pascal'")), nullExpression() },
-			new Boolean[] { Boolean.TRUE,  Boolean.FALSE},
-			new Boolean[] { Boolean.FALSE, Boolean.FALSE}
-		);
+        CollectionExpressionTester collection = collection(
+            new ExpressionTester[] { set("e.name", string("'Pascal'")), nullExpression() },
+            new Boolean[] { Boolean.TRUE,  Boolean.FALSE},
+            new Boolean[] { Boolean.FALSE, Boolean.FALSE}
+        );
 
-		UpdateStatementTester updateStatement = updateStatement(
-			updateAs("Employee", "e", collection)
-		);
+        UpdateStatementTester updateStatement = updateStatement(
+            updateAs("Employee", "e", collection)
+        );
 
-		testInvalidQuery(query, updateStatement);
-	}
+        testInvalidQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_13() {
+    @Test
+    public void test_JPQLQuery_13() {
 
-		String query = "UPDATE  SET";
+        String query = "UPDATE  SET";
 
-		UpdateClauseTester updateClause = update(nullExpression(), nullExpression());
-		updateClause.hasSet              = true;
-		updateClause.hasSpaceAfterSet    = false;
-		updateClause.hasSpaceAfterUpdate = true;
-		updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        UpdateClauseTester updateClause = update(nullExpression(), nullExpression());
+        updateClause.hasSet              = true;
+        updateClause.hasSpaceAfterSet    = false;
+        updateClause.hasSpaceAfterUpdate = true;
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
 
-		UpdateStatementTester updateStatement = updateStatement(updateClause);
-		testInvalidQuery(query, updateStatement);
-	}
+        UpdateStatementTester updateStatement = updateStatement(updateClause);
+        testInvalidQuery(query, updateStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_14() {
+    @Test
+    public void test_JPQLQuery_14() {
 
-		String query = "UPDATE SET e.name = 'Pascal'";
+        String query = "UPDATE SET e.name = 'Pascal'";
 
-		UpdateClauseTester updateClause = update(
-			nullExpression(),
-			set("e.name", string("'Pascal'"))
-		);
-		updateClause.hasSet              = true;
-		updateClause.hasSpaceAfterSet    = true;
-		updateClause.hasSpaceAfterUpdate = true;
-		updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        UpdateClauseTester updateClause = update(
+            nullExpression(),
+            set("e.name", string("'Pascal'"))
+        );
+        updateClause.hasSet              = true;
+        updateClause.hasSpaceAfterSet    = true;
+        updateClause.hasSpaceAfterUpdate = true;
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
 
-		UpdateStatementTester updateStatement = updateStatement(updateClause);
-		testInvalidQuery(query, updateStatement);
-	}
+        UpdateStatementTester updateStatement = updateStatement(updateClause);
+        testInvalidQuery(query, updateStatement);
+    }
 }

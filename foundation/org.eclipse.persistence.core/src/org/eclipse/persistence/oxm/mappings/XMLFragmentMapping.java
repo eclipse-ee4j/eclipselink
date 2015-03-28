@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -31,14 +31,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
 /**
-* <p><b>Purpose: </b>This mapping provides a means to keep a part of the xml tree as a DOM element. 
-* 
+* <p><b>Purpose: </b>This mapping provides a means to keep a part of the xml tree as a DOM element.
+*
 * <p><b>Setting the XPath</b>: TopLink XML mappings make use of XPath statements to find the relevant
 * data in an XML document.  The XPath statement is relative to the context node specified in the descriptor.
 * The XPath may contain path and positional information;  the last node in the XPath forms the local
 * root node for the fragment.  The XPath is specified on the mapping using the <code>setXPath</code>
 * method.
-* 
+*
 * <table summary="" border="1">
 * <tr>
 * <th id="c1" align="left">XPath</th>

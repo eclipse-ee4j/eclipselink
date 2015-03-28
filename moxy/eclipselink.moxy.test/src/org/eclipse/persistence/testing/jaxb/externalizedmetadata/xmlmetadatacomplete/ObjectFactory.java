@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,7 +23,7 @@ class ObjectFactory {
     public JAXBElement<String> createFoo(String s) {
         return new JAXBElement<String>(new QName("foo"), String.class, s);
     }
-    
+
     @XmlElementDecl(name="bar")
     public JAXBElement<String> createBar(String s) {
         return new JAXBElement<String>(new QName("bar"), String.class, s);

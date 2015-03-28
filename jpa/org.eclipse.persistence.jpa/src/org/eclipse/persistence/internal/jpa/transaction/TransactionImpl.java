@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.transaction;
 
 import java.lang.reflect.Proxy;
@@ -34,7 +34,7 @@ public class TransactionImpl implements Transaction {
     // Set by client-induced rollback marking
     boolean markedForRollback;
 
-    // Used to maintain the tx status 
+    // Used to maintain the tx status
     int status;
 
     // Collection of Synchronization listeners
@@ -196,7 +196,7 @@ public class TransactionImpl implements Transaction {
             throw new ExceptionFactory().invalidStateException(status);
         }
 
-        // Call beforeCompletion callback. 
+        // Call beforeCompletion callback.
         if (error == null) {
             try {
                 debug("TxImpl - invoking beforeCompletion");

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -64,21 +64,21 @@ public class XMLBinder {
     DOMReader reader;
 
     public XMLBinder(XMLContext context) {
-    	this.context = new XMLContext(context.getXMLContextState());
+        this.context = new XMLContext(context.getXMLContextState());
         marshaller = this.context.createMarshaller();
         unmarshaller = this.context.createUnmarshaller();
         initialize();
     }
-    
+
     public XMLBinder(XMLContext context, XMLMarshaller marshaller, XMLUnmarshaller unmarshaller) {
         this.context = new XMLContext(context.getXMLContextState());
         this.marshaller = marshaller;
         this.unmarshaller = unmarshaller;
         initialize();
     }
-    
+
     private void initialize() {
-    	saxUnmarshaller = new SAXUnmarshaller(unmarshaller, null);
+        saxUnmarshaller = new SAXUnmarshaller(unmarshaller, null);
         documentPreservationPolicy = new XMLBinderPolicy();
         reader = new DOMReader(unmarshaller);
     }
@@ -91,7 +91,7 @@ public class XMLBinder {
      */
     public Object unmarshal(org.w3c.dom.Node node) {
         validateNode(node);
-        
+
         reader.setDocPresPolicy(documentPreservationPolicy);
         Object toReturn = saxUnmarshaller.unmarshal(reader, node);
         return toReturn;
@@ -108,7 +108,7 @@ public class XMLBinder {
             }
         }
     }
-    
+
     public XMLRoot unmarshal(org.w3c.dom.Node node, Class javaClass) {
         validateNode(node);
         reader.setDocPresPolicy(documentPreservationPolicy);
@@ -130,7 +130,7 @@ public class XMLBinder {
         }
         updateXML(obj, associatedNode);
     }
-    
+
     public void marshal(Object obj, Node node) {
         XMLDescriptor desc = null;
         boolean isXMLRoot = obj instanceof Root;
@@ -140,7 +140,7 @@ public class XMLBinder {
         } else {
             desc = (XMLDescriptor) context.getSession(obj).getDescriptor(obj);
         }
-        
+
         DOMRecord domRecord = null;
         if (!isXMLRoot) {
             domRecord = new DOMRecord(desc.getDefaultRootElement(), desc.getNamespaceResolver());
@@ -149,7 +149,7 @@ public class XMLBinder {
         Node n = this.marshaller.objectToXML(obj, node, desc, domRecord, isXMLRoot, this.getDocumentPreservationPolicy());
 
         validateNode(n);
-        
+
         DOMResult result = new DOMResult(node);
         XMLTransformer transformer = marshaller.getTransformer();
         if (isXMLRoot) {
@@ -170,7 +170,7 @@ public class XMLBinder {
             }
         } else {
             transformer.transform(n, result);
-           
+
         }
     }
 
@@ -178,13 +178,13 @@ public class XMLBinder {
         if (obj instanceof Root) {
             obj = ((Root)obj).getObject();
         }
-        
-        Node objNode = this.getXMLNode(obj); 
+
+        Node objNode = this.getXMLNode(obj);
 
         AbstractSession session = context.getSession(obj);
         if (objNode == associatedNode) {
             DOMRecord root = new DOMRecord((Element)associatedNode);
-            root.setMarshaller(marshaller);            
+            root.setMarshaller(marshaller);
             root.setDocPresPolicy(this.documentPreservationPolicy);
             XMLDescriptor rootDescriptor = (XMLDescriptor) session.getDescriptor(obj);
             ((XMLObjectBuilder)rootDescriptor.getObjectBuilder()).buildIntoNestedRow(root, obj, session);
@@ -218,7 +218,7 @@ public class XMLBinder {
         if (node.getNodeType() == Node.DOCUMENT_NODE) {
             node = ((Document) node).getDocumentElement();
         }
-        
+
         Object cachedObject = documentPreservationPolicy.getObjectForNode(node);
         if (cachedObject != null) {
             unmarshal(node);
@@ -261,30 +261,30 @@ public class XMLBinder {
     public ErrorHandler getErrorHandler() {
         return this.unmarshaller.getErrorHandler();
     }
-    
+
     /**
      * Create an XMLRoot instance.  If the object is an instance of XMLRoot
      * it will simply be returned.  Otherwise, we will create a new XMLRoot
      * using the object's descriptor default root element - any prefixes
      * will be resolved - and the given object
-     *  
+     *
      * @param obj
      * @return an XMLRoot instance encapsulating the given object
      */
-    private XMLRoot buildXMLRootFromObject(Object obj) {    
-        if (obj instanceof XMLRoot) {           
-            return (XMLRoot) obj;            
+    private XMLRoot buildXMLRootFromObject(Object obj) {
+        if (obj instanceof XMLRoot) {
+            return (XMLRoot) obj;
         }
         XMLRoot xmlRoot = new XMLRoot();
         xmlRoot.setObject(obj);
-        
+
         // at this point, the default root element of the object being
-        // marshalled to == the root element  - here we need to create 
-        // an XMLRoot instance using information from the returned 
+        // marshalled to == the root element  - here we need to create
+        // an XMLRoot instance using information from the returned
         // object
         org.eclipse.persistence.sessions.Session sess = this.unmarshaller.getXMLContext().getSession(obj);
         XMLDescriptor desc = (XMLDescriptor) sess.getClassDescriptor(obj);
-        
+
         // here we are assuming that if we've gotten this far, there
         // must be a default root element set on the descriptor.  if
         // this is incorrect, we need to check for null and throw an
@@ -296,7 +296,7 @@ public class XMLBinder {
         String rootNamespaceUri = null;
         int idx = rootName.indexOf(":");
         if (idx != -1) {
-            rootNamespaceUri = desc.getNamespaceResolver().resolveNamespacePrefix(rootName.substring(0, idx)); 
+            rootNamespaceUri = desc.getNamespaceResolver().resolveNamespacePrefix(rootName.substring(0, idx));
             rootName = rootName.substring(idx + 1);
         }
         xmlRoot.setLocalName(rootName);

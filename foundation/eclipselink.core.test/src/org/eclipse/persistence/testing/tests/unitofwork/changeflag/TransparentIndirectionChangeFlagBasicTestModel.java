@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork.changeflag;
 
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.models.relationshipmaintenance.Relationsh
 /**
  * This model tests reading/writing/deleting through using the employee demo.
  * This model is set up to test the use of change tracking policy.  It uses
- * the employee demo test framework to ensure everything works as it did before when 
+ * the employee demo test framework to ensure everything works as it did before when
  * the new change policy is used.  It also makes use of several of the tests from the UnitOfWork
  * model to ensure that the actual updates function correctly.
  * @author Tom Ware

@@ -1,9 +1,9 @@
 <!--/*******************************************************************************
-* This program and the accompanying materials are made available under the 
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
-* which accompanies this distribution. 
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at 
+* and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 *   Ant naming conventions:
@@ -20,7 +20,7 @@
 *     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatenated
-*     e.g. 'runpathref'  
+*     e.g. 'runpathref'
 *   - multi-word tasks (taskdef) names are concatenated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
@@ -43,7 +43,7 @@
     <property file="${user.home}/test.properties"/>
     <property file="./test.properties"/>
     <property file="./weblogic.properties"/>
-    
+
     <!-- WebLogic ant tasks -->
     <taskdef name="wlserver" classname="weblogic.ant.taskdefs.management.WLServer">
         <classpath>
@@ -120,7 +120,7 @@
             failonerror="false">
         </wldeploy>
     </target>
-    
+
     <!-- initialize WL props for target 'run-cachecoordination-wls' -->
     <target name="init-wls">
         <property name="weblogic.domain" value="${weblogic.domain}"/>
@@ -152,7 +152,7 @@
         <delete file="${rcm.wls.admin.name}.err"/>
         <parallel>
             <echo message="*** starting WebLogic AdminServer"/>
-            <java classname="weblogic.Server" 
+            <java classname="weblogic.Server"
                 fork="true"
                 failonerror="true">
                 <jvmarg value="-server"/>
@@ -230,7 +230,7 @@
                         <classpath refid="build.wls.path"/>
                     </java>
                     <echo message="*** starting managed server: Server3 "/>
-                    <java classname="weblogic.Server" 
+                    <java classname="weblogic.Server"
                         fork="true"
                         failonerror="true">
                         <jvmarg value="-server"/>
@@ -264,7 +264,7 @@
                     </sequential>
                 </parallel>
             </sequential>
-        </parallel>  
+        </parallel>
     </target>
 
     <!-- This target starts the admin server only, (for multi machine testing)-->
@@ -272,29 +272,29 @@
         <delete file="${weblogic.domain}/edit.lok"/>
         <delete file="${rcm.wls.admin.name}.log"/>
         <delete file="${rcm.wls.admin.name}.err"/>
-		<echo message="*** starting WebLogic AdminServer"/>
-		<java classname="weblogic.Server" 
-			fork="true"
-			failonerror="true">
-			<jvmarg value="-server"/>
-			<jvmarg value="-Xms512m"/>
-			<jvmarg value="-Xmx960m"/>
-			<jvmarg value="-XX:PermSize=512m"/>
-			<jvmarg value="-XX:MaxPermSize=960m"/>
-			<!--jvmarg value="-XXjra:delay=180,recordingtime=900,filename=./jrockit-prof.xml,latency=true,tracedepth=128,sampletime=2 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=qaott48:2124"/-->
-			<env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
-			<sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
-			<sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
-			<sysproperty key="weblogic.Name" value="${rcm.wls.admin.name}"/>
-			<sysproperty key="bea.home" value="${bea.root.dir}"/>
-			<sysproperty key="weblogic.management.username" value="${server.user}"/>
-			<sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-			<sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
-			<sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
-			<sysproperty key="weblogic.Stdout" value="${rcm.wls.admin.name}.log"/>
-			<sysproperty key="weblogic.Stderr" value="${rcm.wls.admin.name}.err"/>
-			<classpath refid="build.wls.path"/>
-		</java>
+        <echo message="*** starting WebLogic AdminServer"/>
+        <java classname="weblogic.Server"
+            fork="true"
+            failonerror="true">
+            <jvmarg value="-server"/>
+            <jvmarg value="-Xms512m"/>
+            <jvmarg value="-Xmx960m"/>
+            <jvmarg value="-XX:PermSize=512m"/>
+            <jvmarg value="-XX:MaxPermSize=960m"/>
+            <!--jvmarg value="-XXjra:delay=180,recordingtime=900,filename=./jrockit-prof.xml,latency=true,tracedepth=128,sampletime=2 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=qaott48:2124"/-->
+            <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+            <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+            <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+            <sysproperty key="weblogic.Name" value="${rcm.wls.admin.name}"/>
+            <sysproperty key="bea.home" value="${bea.root.dir}"/>
+            <sysproperty key="weblogic.management.username" value="${server.user}"/>
+            <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+            <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
+            <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+            <sysproperty key="weblogic.Stdout" value="${rcm.wls.admin.name}.log"/>
+            <sysproperty key="weblogic.Stderr" value="${rcm.wls.admin.name}.err"/>
+            <classpath refid="build.wls.path"/>
+        </java>
     </target>
 
 
@@ -303,30 +303,30 @@
         <delete file="${weblogic.domain}/edit.lok"/>
         <delete file="${rcm.wls.jms-server.name}.log"/>
         <delete file="${rcm.wls.jms-server.name}.err"/>
-		<echo message="*** starting managed server: JMS "/>
-		<java classname="weblogic.Server"
-			fork="true"
-			failonerror="true">
-			<jvmarg value="-server"/>
-			<jvmarg value="-Xms512m"/>
-			<jvmarg value="-Xmx960m"/>
-			<jvmarg value="-XX:PermSize=512m"/>
-			<jvmarg value="-XX:MaxPermSize=960m"/>
-			<env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
-			<sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
-			<sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
-			<sysproperty key="weblogic.Name" value="${rcm.wls.jms-server.name}"/>
-			<sysproperty key="bea.home" value="${bea.root.dir}"/>
-			<sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
-			<sysproperty key="weblogic.management.username" value="${server.user}"/>
-			<sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-			<sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
-			<sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
-			<sysproperty key="weblogic.Stdout" value="${rcm.wls.jms-server.name}.log"/>
-			<sysproperty key="weblogic.Stderr" value="${rcm.wls.jms-server.name}.err"/>
-			<classpath refid="build.wls.path"/>
-		</java>
-	</target>
+        <echo message="*** starting managed server: JMS "/>
+        <java classname="weblogic.Server"
+            fork="true"
+            failonerror="true">
+            <jvmarg value="-server"/>
+            <jvmarg value="-Xms512m"/>
+            <jvmarg value="-Xmx960m"/>
+            <jvmarg value="-XX:PermSize=512m"/>
+            <jvmarg value="-XX:MaxPermSize=960m"/>
+            <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+            <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+            <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+            <sysproperty key="weblogic.Name" value="${rcm.wls.jms-server.name}"/>
+            <sysproperty key="bea.home" value="${bea.root.dir}"/>
+            <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+            <sysproperty key="weblogic.management.username" value="${server.user}"/>
+            <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+            <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
+            <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+            <sysproperty key="weblogic.Stdout" value="${rcm.wls.jms-server.name}.log"/>
+            <sysproperty key="weblogic.Stderr" value="${rcm.wls.jms-server.name}.err"/>
+            <classpath refid="build.wls.path"/>
+        </java>
+    </target>
 
 
     <!-- Start only the managed servers, (for multi machine testing) -->
@@ -339,85 +339,85 @@
         <delete file="${rcm.wls.server2.name}.err"/>
         <delete file="${rcm.wls.server3.name}.err"/>
         <parallel>
-			<echo message="*** starting managed server: Server1 "/>
-			<java classname="weblogic.Server"
-				fork="true"
-				failonerror="true">
-				<jvmarg value="-server"/>
-			    <jvmarg value="-Xms2g"/>
-			    <jvmarg value="-Xmx2g"/>
-			    <jvmarg value="-XX:PermSize=1g"/>
-			    <jvmarg value="-XX:MaxPermSize=1960m"/>
-				<env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
-				<sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
-				<sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
-				<sysproperty key="weblogic.Name" value="${rcm.wls.server1.name}"/>
-				<sysproperty key="bea.home" value="${bea.root.dir}"/>
-				<sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
-				<sysproperty key="weblogic.management.username" value="${server.user}"/>
-				<sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-				<sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
-				<sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
-				<sysproperty key="weblogic.Stdout" value="${rcm.wls.server1.name}.log"/>
-				<sysproperty key="weblogic.Stderr" value="${rcm.wls.server1.name}.err"/>
-				<classpath refid="build.wls.path"/>
-			</java>
-			<echo message="*** starting managed server: Server2 "/>
-			<java classname="weblogic.Server"
-				fork="true"
-				failonerror="true">
-				<jvmarg value="-server"/>
-			    <jvmarg value="-Xms2g"/>
-			    <jvmarg value="-Xmx2g"/>
-			    <jvmarg value="-XX:PermSize=1g"/>
-			    <jvmarg value="-XX:MaxPermSize=1960m"/>
-				<env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
-				<sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
-				<sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
-				<sysproperty key="weblogic.Name" value="${rcm.wls.server2.name}"/>
-				<sysproperty key="bea.home" value="${bea.root.dir}"/>
-				<sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
-				<sysproperty key="weblogic.management.username" value="${server.user}"/>
-				<sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-				<sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
-				<sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
-				<sysproperty key="weblogic.Stdout" value="${rcm.wls.server2.name}.log"/>
-				<sysproperty key="weblogic.Stderr" value="${rcm.wls.server2.name}.err"/>
-				<classpath refid="build.wls.path"/>
-			</java>
-			<echo message="*** starting managed server: Server3 "/>
-			<java classname="weblogic.Server" 
-				fork="true"
-				failonerror="true">
-				<jvmarg value="-server"/>
-			    <jvmarg value="-Xms2g"/>
-			    <jvmarg value="-Xmx2g"/>
-			    <jvmarg value="-XX:PermSize=1g"/>
-			    <jvmarg value="-XX:MaxPermSize=1960m"/>
-				<env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
-				<sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
-				<sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
-				<sysproperty key="weblogic.Name" value="${rcm.wls.server3.name}"/>
-				<sysproperty key="bea.home" value="${bea.root.dir}"/>
-				<sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
-				<sysproperty key="weblogic.management.username" value="${server.user}"/>
-				<sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-				<sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
-				<sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
-				<sysproperty key="weblogic.Stdout" value="${rcm.wls.server3.name}.log"/>
-				<sysproperty key="weblogic.Stderr" value="${rcm.wls.server3.name}.err"/>
-				<classpath refid="build.wls.path"/>
-			</java>
-			<sequential>
-				<waitfor>
-					<and>
-						<socket server="${rcm.wls.server2.httphost}" port="${rcm.wls.server2.port}"/>
-						<socket server="${rcm.wls.server3.httphost}" port="${rcm.wls.server3.port}"/>
-					</and>
-				</waitfor>
-				<sleep seconds="60"/>
-			</sequential>
-        </parallel>  
+            <echo message="*** starting managed server: Server1 "/>
+            <java classname="weblogic.Server"
+                fork="true"
+                failonerror="true">
+                <jvmarg value="-server"/>
+                <jvmarg value="-Xms2g"/>
+                <jvmarg value="-Xmx2g"/>
+                <jvmarg value="-XX:PermSize=1g"/>
+                <jvmarg value="-XX:MaxPermSize=1960m"/>
+                <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                <sysproperty key="weblogic.Name" value="${rcm.wls.server1.name}"/>
+                <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+                <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                <sysproperty key="weblogic.Stdout" value="${rcm.wls.server1.name}.log"/>
+                <sysproperty key="weblogic.Stderr" value="${rcm.wls.server1.name}.err"/>
+                <classpath refid="build.wls.path"/>
+            </java>
+            <echo message="*** starting managed server: Server2 "/>
+            <java classname="weblogic.Server"
+                fork="true"
+                failonerror="true">
+                <jvmarg value="-server"/>
+                <jvmarg value="-Xms2g"/>
+                <jvmarg value="-Xmx2g"/>
+                <jvmarg value="-XX:PermSize=1g"/>
+                <jvmarg value="-XX:MaxPermSize=1960m"/>
+                <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                <sysproperty key="weblogic.Name" value="${rcm.wls.server2.name}"/>
+                <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+                <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                <sysproperty key="weblogic.Stdout" value="${rcm.wls.server2.name}.log"/>
+                <sysproperty key="weblogic.Stderr" value="${rcm.wls.server2.name}.err"/>
+                <classpath refid="build.wls.path"/>
+            </java>
+            <echo message="*** starting managed server: Server3 "/>
+            <java classname="weblogic.Server"
+                fork="true"
+                failonerror="true">
+                <jvmarg value="-server"/>
+                <jvmarg value="-Xms2g"/>
+                <jvmarg value="-Xmx2g"/>
+                <jvmarg value="-XX:PermSize=1g"/>
+                <jvmarg value="-XX:MaxPermSize=1960m"/>
+                <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                <sysproperty key="weblogic.Name" value="${rcm.wls.server3.name}"/>
+                <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+                <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                <sysproperty key="weblogic.Stdout" value="${rcm.wls.server3.name}.log"/>
+                <sysproperty key="weblogic.Stderr" value="${rcm.wls.server3.name}.err"/>
+                <classpath refid="build.wls.path"/>
+            </java>
+            <sequential>
+                <waitfor>
+                    <and>
+                        <socket server="${rcm.wls.server2.httphost}" port="${rcm.wls.server2.port}"/>
+                        <socket server="${rcm.wls.server3.httphost}" port="${rcm.wls.server3.port}"/>
+                    </and>
+                </waitfor>
+                <sleep seconds="60"/>
+            </sequential>
+        </parallel>
     </target>
 
     <!-- Start only the managed servers, (for multi machine testing) -->
@@ -430,85 +430,85 @@
         <delete file="${rcm.wls.server5.name}.err"/>
         <delete file="${rcm.wls.server6.name}.err"/>
         <parallel>
-			<echo message="*** starting managed server: Server4 "/>
-			<java classname="weblogic.Server"
-				fork="true"
-				failonerror="true">
-				<jvmarg value="-server"/>
-			    <jvmarg value="-Xms2g"/>
-			    <jvmarg value="-Xmx2g"/>
-			    <jvmarg value="-XX:PermSize=1g"/>
-			    <jvmarg value="-XX:MaxPermSize=1960m"/>
-				<env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
-				<sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
-				<sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
-				<sysproperty key="weblogic.Name" value="${rcm.wls.server4.name}"/>
-				<sysproperty key="bea.home" value="${bea.root.dir}"/>
-				<sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
-				<sysproperty key="weblogic.management.username" value="${server.user}"/>
-				<sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-				<sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
-				<sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
-				<sysproperty key="weblogic.Stdout" value="${rcm.wls.server4.name}.log"/>
-				<sysproperty key="weblogic.Stderr" value="${rcm.wls.server4.name}.err"/>
-				<classpath refid="build.wls.path"/>
-			</java>
-			<echo message="*** starting managed server: Server5 "/>
-			<java classname="weblogic.Server"
-				fork="true"
-				failonerror="true">
-				<jvmarg value="-server"/>
-			    <jvmarg value="-Xms2g"/>
-			    <jvmarg value="-Xmx2g"/>
-			    <jvmarg value="-XX:PermSize=1g"/>
-			    <jvmarg value="-XX:MaxPermSize=1960m"/>
-				<env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
-				<sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
-				<sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
-				<sysproperty key="weblogic.Name" value="${rcm.wls.server5.name}"/>
-				<sysproperty key="bea.home" value="${bea.root.dir}"/>
-				<sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
-				<sysproperty key="weblogic.management.username" value="${server.user}"/>
-				<sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-				<sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
-				<sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
-				<sysproperty key="weblogic.Stdout" value="${rcm.wls.server5.name}.log"/>
-				<sysproperty key="weblogic.Stderr" value="${rcm.wls.server5.name}.err"/>
-				<classpath refid="build.wls.path"/>
-			</java>
-			<echo message="*** starting managed server: Server6 "/>
-			<java classname="weblogic.Server" 
-				fork="true"
-				failonerror="true">
-				<jvmarg value="-server"/>
-			    <jvmarg value="-Xms2g"/>
-			    <jvmarg value="-Xmx2g"/>
-			    <jvmarg value="-XX:PermSize=1g"/>
-			    <jvmarg value="-XX:MaxPermSize=1960m"/>
-				<env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
-				<sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
-				<sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
-				<sysproperty key="weblogic.Name" value="${rcm.wls.server6.name}"/>
-				<sysproperty key="bea.home" value="${bea.root.dir}"/>
-				<sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
-				<sysproperty key="weblogic.management.username" value="${server.user}"/>
-				<sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-				<sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
-				<sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
-				<sysproperty key="weblogic.Stdout" value="${rcm.wls.server6.name}.log"/>
-				<sysproperty key="weblogic.Stderr" value="${rcm.wls.server6.name}.err"/>
-				<classpath refid="build.wls.path"/>
-			</java>
-			<sequential>
-				<waitfor>
-					<and>
-						<socket server="${rcm.wls.server5.httphost}" port="${rcm.wls.server5.port}"/>
-						<socket server="${rcm.wls.server6.httphost}" port="${rcm.wls.server6.port}"/>
-					</and>
-				</waitfor>
-				<sleep seconds="60"/>
-			</sequential>
-        </parallel>  
+            <echo message="*** starting managed server: Server4 "/>
+            <java classname="weblogic.Server"
+                fork="true"
+                failonerror="true">
+                <jvmarg value="-server"/>
+                <jvmarg value="-Xms2g"/>
+                <jvmarg value="-Xmx2g"/>
+                <jvmarg value="-XX:PermSize=1g"/>
+                <jvmarg value="-XX:MaxPermSize=1960m"/>
+                <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                <sysproperty key="weblogic.Name" value="${rcm.wls.server4.name}"/>
+                <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+                <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                <sysproperty key="weblogic.Stdout" value="${rcm.wls.server4.name}.log"/>
+                <sysproperty key="weblogic.Stderr" value="${rcm.wls.server4.name}.err"/>
+                <classpath refid="build.wls.path"/>
+            </java>
+            <echo message="*** starting managed server: Server5 "/>
+            <java classname="weblogic.Server"
+                fork="true"
+                failonerror="true">
+                <jvmarg value="-server"/>
+                <jvmarg value="-Xms2g"/>
+                <jvmarg value="-Xmx2g"/>
+                <jvmarg value="-XX:PermSize=1g"/>
+                <jvmarg value="-XX:MaxPermSize=1960m"/>
+                <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                <sysproperty key="weblogic.Name" value="${rcm.wls.server5.name}"/>
+                <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+                <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                <sysproperty key="weblogic.Stdout" value="${rcm.wls.server5.name}.log"/>
+                <sysproperty key="weblogic.Stderr" value="${rcm.wls.server5.name}.err"/>
+                <classpath refid="build.wls.path"/>
+            </java>
+            <echo message="*** starting managed server: Server6 "/>
+            <java classname="weblogic.Server"
+                fork="true"
+                failonerror="true">
+                <jvmarg value="-server"/>
+                <jvmarg value="-Xms2g"/>
+                <jvmarg value="-Xmx2g"/>
+                <jvmarg value="-XX:PermSize=1g"/>
+                <jvmarg value="-XX:MaxPermSize=1960m"/>
+                <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                <sysproperty key="weblogic.Name" value="${rcm.wls.server6.name}"/>
+                <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+                <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                <sysproperty key="weblogic.Stdout" value="${rcm.wls.server6.name}.log"/>
+                <sysproperty key="weblogic.Stderr" value="${rcm.wls.server6.name}.err"/>
+                <classpath refid="build.wls.path"/>
+            </java>
+            <sequential>
+                <waitfor>
+                    <and>
+                        <socket server="${rcm.wls.server5.httphost}" port="${rcm.wls.server5.port}"/>
+                        <socket server="${rcm.wls.server6.httphost}" port="${rcm.wls.server6.port}"/>
+                    </and>
+                </waitfor>
+                <sleep seconds="60"/>
+            </sequential>
+        </parallel>
     </target>
 
     <!-- Start only the managed servers, (for multi machine testing) -->
@@ -521,85 +521,85 @@
         <delete file="${rcm.wls.server8.name}.err"/>
         <delete file="${rcm.wls.server9.name}.err"/>
         <parallel>
-			<echo message="*** starting managed server: Server7 "/>
-			<java classname="weblogic.Server"
-				fork="true"
-				failonerror="true">
-				<jvmarg value="-server"/>
-			    <jvmarg value="-Xms2g"/>
-			    <jvmarg value="-Xmx2g"/>
-			    <jvmarg value="-XX:PermSize=1g"/>
-			    <jvmarg value="-XX:MaxPermSize=1960m"/>
-				<env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
-				<sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
-				<sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
-				<sysproperty key="weblogic.Name" value="${rcm.wls.server7.name}"/>
-				<sysproperty key="bea.home" value="${bea.root.dir}"/>
-				<sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
-				<sysproperty key="weblogic.management.username" value="${server.user}"/>
-				<sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-				<sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
-				<sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
-				<sysproperty key="weblogic.Stdout" value="${rcm.wls.server7.name}.log"/>
-				<sysproperty key="weblogic.Stderr" value="${rcm.wls.server7.name}.err"/>
-				<classpath refid="build.wls.path"/>
-			</java>
-			<echo message="*** starting managed server: Server8 "/>
-			<java classname="weblogic.Server"
-				fork="true"
-				failonerror="true">
-				<jvmarg value="-server"/>
-			    <jvmarg value="-Xms2g"/>
-			    <jvmarg value="-Xmx2g"/>
-			    <jvmarg value="-XX:PermSize=1g"/>
-			    <jvmarg value="-XX:MaxPermSize=1960m"/>
-				<env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
-				<sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
-				<sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
-				<sysproperty key="weblogic.Name" value="${rcm.wls.server8.name}"/>
-				<sysproperty key="bea.home" value="${bea.root.dir}"/>
-				<sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
-				<sysproperty key="weblogic.management.username" value="${server.user}"/>
-				<sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-				<sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
-				<sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
-				<sysproperty key="weblogic.Stdout" value="${rcm.wls.server8.name}.log"/>
-				<sysproperty key="weblogic.Stderr" value="${rcm.wls.server8.name}.err"/>
-				<classpath refid="build.wls.path"/>
-			</java>
-			<echo message="*** starting managed server: Server9 "/>
-			<java classname="weblogic.Server" 
-				fork="true"
-				failonerror="true">
-				<jvmarg value="-server"/>
-			    <jvmarg value="-Xms2g"/>
-			    <jvmarg value="-Xmx2g"/>
-			    <jvmarg value="-XX:PermSize=1g"/>
-			    <jvmarg value="-XX:MaxPermSize=1960m"/>
-				<env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
-				<sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
-				<sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
-				<sysproperty key="weblogic.Name" value="${rcm.wls.server9.name}"/>
-				<sysproperty key="bea.home" value="${bea.root.dir}"/>
-				<sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
-				<sysproperty key="weblogic.management.username" value="${server.user}"/>
-				<sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-				<sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
-				<sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
-				<sysproperty key="weblogic.Stdout" value="${rcm.wls.server9.name}.log"/>
-				<sysproperty key="weblogic.Stderr" value="${rcm.wls.server9.name}.err"/>
-				<classpath refid="build.wls.path"/>
-			</java>
-			<sequential>
-				<waitfor>
-					<and>
-						<socket server="${rcm.wls.server8.httphost}" port="${rcm.wls.server8.port}"/>
-						<socket server="${rcm.wls.server9.httphost}" port="${rcm.wls.server9.port}"/>
-					</and>
-				</waitfor>
-				<sleep seconds="60"/>
+            <echo message="*** starting managed server: Server7 "/>
+            <java classname="weblogic.Server"
+                fork="true"
+                failonerror="true">
+                <jvmarg value="-server"/>
+                <jvmarg value="-Xms2g"/>
+                <jvmarg value="-Xmx2g"/>
+                <jvmarg value="-XX:PermSize=1g"/>
+                <jvmarg value="-XX:MaxPermSize=1960m"/>
+                <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                <sysproperty key="weblogic.Name" value="${rcm.wls.server7.name}"/>
+                <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+                <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                <sysproperty key="weblogic.Stdout" value="${rcm.wls.server7.name}.log"/>
+                <sysproperty key="weblogic.Stderr" value="${rcm.wls.server7.name}.err"/>
+                <classpath refid="build.wls.path"/>
+            </java>
+            <echo message="*** starting managed server: Server8 "/>
+            <java classname="weblogic.Server"
+                fork="true"
+                failonerror="true">
+                <jvmarg value="-server"/>
+                <jvmarg value="-Xms2g"/>
+                <jvmarg value="-Xmx2g"/>
+                <jvmarg value="-XX:PermSize=1g"/>
+                <jvmarg value="-XX:MaxPermSize=1960m"/>
+                <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                <sysproperty key="weblogic.Name" value="${rcm.wls.server8.name}"/>
+                <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+                <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                <sysproperty key="weblogic.Stdout" value="${rcm.wls.server8.name}.log"/>
+                <sysproperty key="weblogic.Stderr" value="${rcm.wls.server8.name}.err"/>
+                <classpath refid="build.wls.path"/>
+            </java>
+            <echo message="*** starting managed server: Server9 "/>
+            <java classname="weblogic.Server"
+                fork="true"
+                failonerror="true">
+                <jvmarg value="-server"/>
+                <jvmarg value="-Xms2g"/>
+                <jvmarg value="-Xmx2g"/>
+                <jvmarg value="-XX:PermSize=1g"/>
+                <jvmarg value="-XX:MaxPermSize=1960m"/>
+                <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                <sysproperty key="weblogic.Name" value="${rcm.wls.server9.name}"/>
+                <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+                <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                <sysproperty key="weblogic.Stdout" value="${rcm.wls.server9.name}.log"/>
+                <sysproperty key="weblogic.Stderr" value="${rcm.wls.server9.name}.err"/>
+                <classpath refid="build.wls.path"/>
+            </java>
+            <sequential>
+                <waitfor>
+                    <and>
+                        <socket server="${rcm.wls.server8.httphost}" port="${rcm.wls.server8.port}"/>
+                        <socket server="${rcm.wls.server9.httphost}" port="${rcm.wls.server9.port}"/>
+                    </and>
+                </waitfor>
+                <sleep seconds="60"/>
             </sequential>
-        </parallel>  
+        </parallel>
     </target>
 
     <!-- This creates the server domain. -->

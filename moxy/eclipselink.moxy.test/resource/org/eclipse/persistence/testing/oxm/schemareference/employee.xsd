@@ -55,6 +55,6 @@
       <xs:totalDigits value="3"/>
     </xs:restriction>
   </xs:simpleType>
-  
+
 </xs:schema>
 

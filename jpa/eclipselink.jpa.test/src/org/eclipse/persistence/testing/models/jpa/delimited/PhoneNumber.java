@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -19,7 +19,7 @@ import java.io.*;
  *    <p><b>Description</b>: Used in a 1:M relationship from an employee.
  */
 public class PhoneNumber implements Serializable {
-    
+
     private String number;
     private String type;
     private Employee owner;
@@ -37,48 +37,48 @@ public class PhoneNumber implements Serializable {
         this.owner = null;
     }
 
-    public Integer getId() { 
-        return id; 
+    public Integer getId() {
+        return id;
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getNumber() { 
-        return number; 
-    }
-    
-    public void setNumber(String number) { 
-        this.number = number; 
+    public String getNumber() {
+        return number;
     }
 
-    public String getType() { 
-        return type; 
+    public void setNumber(String number) {
+        this.number = number;
     }
-    
+
+    public String getType() {
+        return type;
+    }
+
     public void setType(String type) {
         this.type = type;
-    } 
-
-    public String getAreaCode() { 
-        return areaCode; 
     }
-    
+
+    public String getAreaCode() {
+        return areaCode;
+    }
+
     public void setAreaCode(String areaCode) {
         this.areaCode = areaCode;
     }
 
-    public Employee getOwner() { 
-        return owner; 
+    public Employee getOwner() {
+        return owner;
     }
-    
+
     public void setOwner(Employee owner) {
         this.owner = owner;
         id = owner.getId();
     }
 
-    
+
     /**
      * Example: Phone[Work]: (613) 225-8812
      */
@@ -100,7 +100,7 @@ public class PhoneNumber implements Serializable {
 
         return writer.toString();
     }
-    
+
     /**
      * Builds the PhoneNumberPK for this class
      */

@@ -3,8 +3,8 @@
     <xml-schema namespace="http://www.example.com/employees" >
         <xml-ns namespace-uri="http://www.example.com/contacts" prefix="c"/>
     </xml-schema>
-	<java-types>
-		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.Employee" xml-accessor-type="FIELD">
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.Employee" xml-accessor-type="FIELD">
             <xml-root-element name="employee" />
             <java-attributes>
                 <xml-attribute java-attribute="id" xml-path="@empId" />
@@ -25,5 +25,5 @@
                 </xml-attribute>
             </java-attributes>
         </java-type>
-	</java-types>
+    </java-types>
 </xml-bindings>

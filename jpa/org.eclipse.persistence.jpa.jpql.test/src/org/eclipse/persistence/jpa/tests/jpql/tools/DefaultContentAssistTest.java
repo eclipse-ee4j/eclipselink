@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,59 +28,59 @@ import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 @UniqueSignature
 public final class DefaultContentAssistTest extends AbstractContentAssistTest {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected Class<?> acceptableType(String identifier) {
-		return defaultAcceptableType(identifier);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Class<?> acceptableType(String identifier) {
+        return defaultAcceptableType(identifier);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected List<String> classNames() {
-		return Collections.emptyList();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected List<String> classNames() {
+        return Collections.emptyList();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected List<String> columnNames(String tableName) {
-		return Collections.emptyList();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected List<String> columnNames(String tableName) {
+        return Collections.emptyList();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected List<String> enumConstants() {
-		return Collections.emptyList();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected List<String> enumConstants() {
+        return Collections.emptyList();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected List<String> enumTypes() {
-		return Collections.emptyList();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected List<String> enumTypes() {
+        return Collections.emptyList();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isJoinFetchIdentifiable() {
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isJoinFetchIdentifiable() {
+        return false;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected List<String> tableNames() {
-		return Collections.emptyList();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected List<String> tableNames() {
+        return Collections.emptyList();
+    }
 }

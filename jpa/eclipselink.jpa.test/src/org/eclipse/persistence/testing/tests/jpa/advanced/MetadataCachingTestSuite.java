@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     08/01/2012-2.5 Chris Delahunt
- *       - 371950: Metadata caching 
+ *       - 371950: Metadata caching
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
@@ -39,7 +39,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  *
  */
 public class MetadataCachingTestSuite extends JUnitTestCase {
-    
+
     String fileName = "MetadataCachingTestProject.file";
 
     public MetadataCachingTestSuite() {
@@ -56,7 +56,7 @@ public class MetadataCachingTestSuite extends JUnitTestCase {
         suite.addTest(new MetadataCachingTestSuite("testProjectCacheALLWithDefaultPU"));
         return suite;
     }
-    
+
     public Map getProperties() {
         Map properties = new HashMap();
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.NONE);
@@ -67,7 +67,7 @@ public class MetadataCachingTestSuite extends JUnitTestCase {
         properties.put(PersistenceUnitProperties.PROJECT_CACHE_FILE, fileName);
         return properties;
     }
-    
+
     public void testSetup() {
         boolean exists = false;
         File file = new File(fileName);
@@ -79,7 +79,7 @@ public class MetadataCachingTestSuite extends JUnitTestCase {
             fail("the file exists and could not be removed.  file: "+fileName);
         }
     }
-    
+
     public void testFileBasedProjectCacheWriting(String persistenceUnitName) {
         EntityManager em = createEntityManager(persistenceUnitName);
         Map properties = getProperties();
@@ -98,7 +98,7 @@ public class MetadataCachingTestSuite extends JUnitTestCase {
             fail("the project cache file was not created on deployment using PROJECT_CACHE 'java-serialization'");
         }
     }
-    
+
     public void testFileBasedProjectCacheReading(String persistenceUnitName) {
         FileBasedProjectCache projectCache = new FileBasedProjectCache();
         Session session = this.getServerSession(persistenceUnitName);
@@ -107,7 +107,7 @@ public class MetadataCachingTestSuite extends JUnitTestCase {
             fail("Project returned from FileBasedProjectCache.retrieveProject() was null");
         }
     }
-    
+
     /*
      * This test just verifies the EM can be refreshed using the cached project written out in testFileBasedProjectCacheWriting
      * It must be run after testFileBasedProjectCacheWriting and testFileBasedProjectCacheReading
@@ -133,7 +133,7 @@ public class MetadataCachingTestSuite extends JUnitTestCase {
 
     /* Test project cache in runtime on JEE with default persistence unit*/
     public void testProjectCacheWithDefaultPU(){
-        testFileBasedProjectCacheLoading("default"); 
+        testFileBasedProjectCacheLoading("default");
     }
 
 }

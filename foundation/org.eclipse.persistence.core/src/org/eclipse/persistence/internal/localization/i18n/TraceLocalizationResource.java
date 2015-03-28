@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/13/2013-2.5 Guy Pelletier 
+ *     09/13/2013-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
@@ -312,7 +312,7 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "broadcast_processing_remote_command", "{0}: processing message {1} sent by service id {2}: processing remote command {3}." },
                                             { "broadcast_connection_start_listening", "{0}: Start listening." },
                                             { "broadcast_connection_stop_listening", "{0}: Stop listening." },
-                                            { "sdo_type_generation_processing_type", "{0}: Generating Type  [{1}]."},        
+                                            { "sdo_type_generation_processing_type", "{0}: Generating Type  [{1}]."},
                                             { "sdo_type_generation_processing_type_as", "{0}: Generating Type  [{1}] as [{2}]."},
                                             { "sdo_type_generation_modified_class_naming_format_to", "{0}: Generated Type   [{1}] java class name capitalized to [{2}] to follow class naming conventions."},
                                             { "sdo_type_generation_modified_function_naming_format_to", "{0}: Generated Type   [{1}] java get/set method name capitalized to [{2}] to follow class naming conventions."},
@@ -328,11 +328,11 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "connect_drivermanager_fail", "DriverManager connect failed, trying direct connect."},
                                             { "metamodel_unable_to_determine_element_type_in_absence_of_generic_parameters", "Metamodel processing: Unable to get the element type for the mapping [{0}] in the absence of generic parameters on mapping declaration." },
                                             { "metamodel_init_failed", "Initialization of the metamodel failed during deployment.  Ignoring exception: [{0}] " },
-                                            { "metamodel_canonical_model_class_not_found", "Canonical Metamodel class [{0}] not found during initialization."},  
+                                            { "metamodel_canonical_model_class_not_found", "Canonical Metamodel class [{0}] not found during initialization."},
                                             { "metamodel_canonical_model_class_found", "Canonical Metamodel class [{0}] found and instantiated during initialization."},
-                                            { "metamodel_relationaldescriptor_javaclass_null_on_managedType", "Metamodel processing: The javaClass field is null for the relationalDescriptor [{0}] for the managedType [{1}]." },                                            
-                                            { "metamodel_attribute_getmember_is_null", "The java Member is null for the Attribute [{0}] with managedType [{1}] and descriptor [{2}]." },                                            
-                                            { "metamodel_typeImpl_javaClass_should_not_be_null", "The metamodel TypeImpl.javaClass field should not be set to null for the Type [{0}] with name [{1}]." },                                            
+                                            { "metamodel_relationaldescriptor_javaclass_null_on_managedType", "Metamodel processing: The javaClass field is null for the relationalDescriptor [{0}] for the managedType [{1}]." },
+                                            { "metamodel_attribute_getmember_is_null", "The java Member is null for the Attribute [{0}] with managedType [{1}] and descriptor [{2}]." },
+                                            { "metamodel_typeImpl_javaClass_should_not_be_null", "The metamodel TypeImpl.javaClass field should not be set to null for the Type [{0}] with name [{1}]." },
                                             { "jmx_mbean_classloader_in_use", "EclipseLink JMX Runtime Services is referencing the [{0}] ClassLoader at: [{1}]" },
                                             { "metamodel_itentifiableType_javaclass_null_cannot_set_supertype", "Metamodel processing: Unable to set the superclass Hierarchy because the javaClass field is null for the relationalDescriptor [{0}] for the identifiableType [{1}]." },
                                             { "metamodel_relationaldescriptor_not_fully_initialized_yet", "Metamodel processing: The relationalDescriptor [{0}] for the managedType [{1}] is not fully initialized yet - the Metamodel instance will be incomplete before at least one entityManger session login (after a full deploy)." },
@@ -358,7 +358,7 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "dcn_invalidate", "Invalidating cache key [{0}] from database change event for class [{1}]." },
                                             { "dcn_register_table", "Registering table [{0}] for database change event notification." },
                                             { "dcn_unregister", "Removing registering for database change event notification." },
-                                            
+
                                             { "exception_caught_closing_statement", "Exception caught when trying to close the query statement [{0}]." },
     };
 

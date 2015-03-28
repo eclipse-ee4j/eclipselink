@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2015  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
 
 public class NonELIDResolver extends com.sun.xml.bind.IDResolver{
     Map<String, Melon> melons = new HashMap<String, Melon>();
-    
+
     public boolean hitStartDocument = false;
     public boolean hitEndDocument = false;
     public boolean hitBind = false;
@@ -35,11 +35,11 @@ public class NonELIDResolver extends com.sun.xml.bind.IDResolver{
         hitStartDocument = true;
         eventHandlerNotNull = (eventHandler != null);
     }
-    
+
     public void endDocument() throws SAXException {
         hitEndDocument = true;
     }
-    
+
     public void bind(String id, Object obj) throws SAXException {
         hitBind = true;
         if (obj instanceof Melon) {
@@ -60,5 +60,5 @@ public class NonELIDResolver extends com.sun.xml.bind.IDResolver{
             }
         };
     }
-    
+
 }

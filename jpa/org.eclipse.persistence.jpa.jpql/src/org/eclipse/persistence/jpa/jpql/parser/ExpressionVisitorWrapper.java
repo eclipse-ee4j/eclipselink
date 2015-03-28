@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,47 +24,47 @@ package org.eclipse.persistence.jpa.jpql.parser;
 @SuppressWarnings("nls")
 public abstract class ExpressionVisitorWrapper extends AnonymousExpressionVisitor {
 
-	/**
-	 * The {@link ExpressionVisitor} that will have the calls delegated from this one.
-	 */
-	private final ExpressionVisitor delegate;
+    /**
+     * The {@link ExpressionVisitor} that will have the calls delegated from this one.
+     */
+    private final ExpressionVisitor delegate;
 
-	/**
-	 * Creates a new <code>ExpressionVisitorWrapper</code>.
-	 */
-	@SuppressWarnings("unused")
-	private ExpressionVisitorWrapper() {
-		this(null);
-	}
+    /**
+     * Creates a new <code>ExpressionVisitorWrapper</code>.
+     */
+    @SuppressWarnings("unused")
+    private ExpressionVisitorWrapper() {
+        this(null);
+    }
 
-	/**
-	 * Creates a new <code>ExpressionVisitorWrapper</code>.
-	 *
-	 * @param delegate The {@link ExpressionVisitor} that will have the calls delegated from this one
-	 * @exception NullPointerException The delegate {@link ExpressionVisitor} cannot be null
-	 */
-	protected ExpressionVisitorWrapper(ExpressionVisitor delegate) {
-		super();
-		if (delegate == null) {
-			throw new NullPointerException("The delegate ExpressionVisitor cannot be null");
-		}
-		this.delegate = delegate;
-	}
+    /**
+     * Creates a new <code>ExpressionVisitorWrapper</code>.
+     *
+     * @param delegate The {@link ExpressionVisitor} that will have the calls delegated from this one
+     * @exception NullPointerException The delegate {@link ExpressionVisitor} cannot be null
+     */
+    protected ExpressionVisitorWrapper(ExpressionVisitor delegate) {
+        super();
+        if (delegate == null) {
+            throw new NullPointerException("The delegate ExpressionVisitor cannot be null");
+        }
+        this.delegate = delegate;
+    }
 
-	/**
-	 * Returns the delegate {@link ExpressionVisitor} that is receiving all the calls from this one.
-	 *
-	 * @return The delegate {@link ExpressionVisitor}
-	 */
-	protected ExpressionVisitor getDelegate() {
-		return delegate;
-	}
+    /**
+     * Returns the delegate {@link ExpressionVisitor} that is receiving all the calls from this one.
+     *
+     * @return The delegate {@link ExpressionVisitor}
+     */
+    protected ExpressionVisitor getDelegate() {
+        return delegate;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void visit(Expression expression) {
-		expression.accept(delegate);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void visit(Expression expression) {
+        expression.accept(delegate);
+    }
 }

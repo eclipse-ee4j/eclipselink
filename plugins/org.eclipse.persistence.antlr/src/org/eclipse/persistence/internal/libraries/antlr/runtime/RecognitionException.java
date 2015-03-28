@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -60,121 +60,121 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.*;
  *  figure out a fancy report.
  */
 public class RecognitionException extends Exception {
-	/** What input stream did the error occur in? */
-	public transient IntStream input;
+    /** What input stream did the error occur in? */
+    public transient IntStream input;
 
-	/** What is index of token/char were we looking at when the error occurred? */
-	public int index;
+    /** What is index of token/char were we looking at when the error occurred? */
+    public int index;
 
-	/** The current Token when an error occurred.  Since not all streams
-	 *  can retrieve the ith Token, we have to track the Token object.
-	 *  For parsers.  Even when it's a tree parser, token might be set.
-	 */
-	public Token token;
+    /** The current Token when an error occurred.  Since not all streams
+     *  can retrieve the ith Token, we have to track the Token object.
+     *  For parsers.  Even when it's a tree parser, token might be set.
+     */
+    public Token token;
 
-	/** If this is a tree parser exception, node is set to the node with
-	 *  the problem.
-	 */
-	public Object node;
+    /** If this is a tree parser exception, node is set to the node with
+     *  the problem.
+     */
+    public Object node;
 
-	/** The current char when an error occurred. For lexers. */
-	public int c;
+    /** The current char when an error occurred. For lexers. */
+    public int c;
 
-	/** Track the line at which the error occurred in case this is
-	 *  generated from a lexer.  We need to track this since the
-	 *  unexpected char doesn't carry the line info.
-	 */
-	public int line;
+    /** Track the line at which the error occurred in case this is
+     *  generated from a lexer.  We need to track this since the
+     *  unexpected char doesn't carry the line info.
+     */
+    public int line;
 
-	public int charPositionInLine;
+    public int charPositionInLine;
 
-	/** If you are parsing a tree node stream, you will encounter som
-	 *  imaginary nodes w/o line/col info.  We now search backwards looking
-	 *  for most recent token with line/col info, but notify getErrorHeader()
-	 *  that info is approximate.
-	 */
-	public boolean approximateLineInfo;
+    /** If you are parsing a tree node stream, you will encounter som
+     *  imaginary nodes w/o line/col info.  We now search backwards looking
+     *  for most recent token with line/col info, but notify getErrorHeader()
+     *  that info is approximate.
+     */
+    public boolean approximateLineInfo;
 
-	/** Used for remote debugger deserialization */
-	public RecognitionException() {
-	}
+    /** Used for remote debugger deserialization */
+    public RecognitionException() {
+    }
 
-	public RecognitionException(IntStream input) {
-		this.input = input;
-		this.index = input.index();
-		if ( input instanceof TokenStream ) {
-			this.token = ((TokenStream)input).LT(1);
-			this.line = token.getLine();
-			this.charPositionInLine = token.getCharPositionInLine();
-		}
-		if ( input instanceof TreeNodeStream ) {
-			extractInformationFromTreeNodeStream(input);
-		}
-		else if ( input instanceof CharStream ) {
-			this.c = input.LA(1);
-			this.line = ((CharStream)input).getLine();
-			this.charPositionInLine = ((CharStream)input).getCharPositionInLine();
-		}
-		else {
-			this.c = input.LA(1);
-		}
-	}
+    public RecognitionException(IntStream input) {
+        this.input = input;
+        this.index = input.index();
+        if ( input instanceof TokenStream ) {
+            this.token = ((TokenStream)input).LT(1);
+            this.line = token.getLine();
+            this.charPositionInLine = token.getCharPositionInLine();
+        }
+        if ( input instanceof TreeNodeStream ) {
+            extractInformationFromTreeNodeStream(input);
+        }
+        else if ( input instanceof CharStream ) {
+            this.c = input.LA(1);
+            this.line = ((CharStream)input).getLine();
+            this.charPositionInLine = ((CharStream)input).getCharPositionInLine();
+        }
+        else {
+            this.c = input.LA(1);
+        }
+    }
 
-	protected void extractInformationFromTreeNodeStream(IntStream input) {
-		TreeNodeStream nodes = (TreeNodeStream)input;
-		this.node = nodes.LT(1);
-		TreeAdaptor adaptor = nodes.getTreeAdaptor();
-		Token payload = adaptor.getToken(node);
-		if ( payload!=null ) {
-			this.token = payload;
-			if ( payload.getLine()<= 0 ) {
-				// imaginary node; no line/pos info; scan backwards
-				int i = -1;
-				Object priorNode = nodes.LT(i);
-				while ( priorNode!=null ) {
-					Token priorPayload = adaptor.getToken(priorNode);
-					if ( priorPayload!=null && priorPayload.getLine()>0 ) {
-						// we found the most recent real line / pos info
-						this.line = priorPayload.getLine();
-						this.charPositionInLine = priorPayload.getCharPositionInLine();
-						this.approximateLineInfo = true;
-						break;
-					}
-					--i;
-					priorNode = nodes.LT(i);
-				}
-			}
-			else { // node created from real token
-				this.line = payload.getLine();
-				this.charPositionInLine = payload.getCharPositionInLine();
-			}
-		}
-		else if ( this.node instanceof Tree) {
-			this.line = ((Tree)this.node).getLine();
-			this.charPositionInLine = ((Tree)this.node).getCharPositionInLine();
-			if ( this.node instanceof CommonTree) {
-				this.token = ((CommonTree)this.node).token;
-			}
-		}
-		else {
-			int type = adaptor.getType(this.node);
-			String text = adaptor.getText(this.node);
-			this.token = new CommonToken(type, text);
-		}
-	}
+    protected void extractInformationFromTreeNodeStream(IntStream input) {
+        TreeNodeStream nodes = (TreeNodeStream)input;
+        this.node = nodes.LT(1);
+        TreeAdaptor adaptor = nodes.getTreeAdaptor();
+        Token payload = adaptor.getToken(node);
+        if ( payload!=null ) {
+            this.token = payload;
+            if ( payload.getLine()<= 0 ) {
+                // imaginary node; no line/pos info; scan backwards
+                int i = -1;
+                Object priorNode = nodes.LT(i);
+                while ( priorNode!=null ) {
+                    Token priorPayload = adaptor.getToken(priorNode);
+                    if ( priorPayload!=null && priorPayload.getLine()>0 ) {
+                        // we found the most recent real line / pos info
+                        this.line = priorPayload.getLine();
+                        this.charPositionInLine = priorPayload.getCharPositionInLine();
+                        this.approximateLineInfo = true;
+                        break;
+                    }
+                    --i;
+                    priorNode = nodes.LT(i);
+                }
+            }
+            else { // node created from real token
+                this.line = payload.getLine();
+                this.charPositionInLine = payload.getCharPositionInLine();
+            }
+        }
+        else if ( this.node instanceof Tree) {
+            this.line = ((Tree)this.node).getLine();
+            this.charPositionInLine = ((Tree)this.node).getCharPositionInLine();
+            if ( this.node instanceof CommonTree) {
+                this.token = ((CommonTree)this.node).token;
+            }
+        }
+        else {
+            int type = adaptor.getType(this.node);
+            String text = adaptor.getText(this.node);
+            this.token = new CommonToken(type, text);
+        }
+    }
 
-	/** Return the token type or char of the unexpected input element */
-	public int getUnexpectedType() {
-		if ( input instanceof TokenStream ) {
-			return token.getType();
-		}
-		else if ( input instanceof TreeNodeStream ) {
-			TreeNodeStream nodes = (TreeNodeStream)input;
-			TreeAdaptor adaptor = nodes.getTreeAdaptor();
-			return adaptor.getType(node);
-		}
-		else {
-			return c;
-		}
-	}
+    /** Return the token type or char of the unexpected input element */
+    public int getUnexpectedType() {
+        if ( input instanceof TokenStream ) {
+            return token.getType();
+        }
+        else if ( input instanceof TreeNodeStream ) {
+            TreeNodeStream nodes = (TreeNodeStream)input;
+            TreeAdaptor adaptor = nodes.getTreeAdaptor();
+            return adaptor.getType(node);
+        }
+        else {
+            return c;
+        }
+    }
 }

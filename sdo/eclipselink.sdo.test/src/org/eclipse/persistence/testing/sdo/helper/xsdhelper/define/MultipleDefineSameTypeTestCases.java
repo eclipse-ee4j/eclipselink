@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
 import commonj.sdo.Type;
@@ -76,7 +76,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         assertEquals(declPropsSize, newSize);
         assertEquals(0, types2.size());
 
-        //else SDO113      
+        //else SDO113
 
         /*
         assertEquals(controlTypes.size(), types2.size());
@@ -90,7 +90,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
     }
 
     // THIS TEST CAN BE UNCOMMENTED AFTER A FIX FOR BUG# 245444 IS SUBMITTED.  CHANGES WILL BE REQUIRED...
-    
+
     /*
     public void testDefineThreeDifferenceSchemas() {
         InputStream is = getSchemaInputStream(getSchemaToDefine());
@@ -104,9 +104,9 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         assertEquals(declPropsSize, newSize);
         assertEquals(0, types2.size());
 
-        //else SDO113      
+        //else SDO113
 
-        
+
         //assertEquals(controlTypes.size(), types2.size());
         //compare(getControlTypes(), types2);
 
@@ -123,7 +123,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         assertEquals(9, types3.size());
         compare(getComplexControlTypes(), types3);
 
-        
+
         //assertEquals(types.size(), types2.size());
         //for (int i = 0; i < types.size(); i++) {
         //    Type type1 = (Type)types.get(i);
@@ -474,7 +474,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         //postalCodeProp.setElement(true);
         postalCodeProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         postalCodeProp.setContainment(true);
-        postalCodeProp.setContainingType(cdnAddressType);        
+        postalCodeProp.setContainingType(cdnAddressType);
         cdnAddressType.addDeclaredProperty(postalCodeProp);
 
         SDOProperty provinceProp = new SDOProperty(aHelperContext);
@@ -675,7 +675,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         genderProp.setName("gender");
         genderProp.setXsdLocalName("gender");
         genderProp.setType(genderType);
-        //genderProp.setType(stringType);             
+        //genderProp.setType(stringType);
         genderProp.setXsd(true);
         //genderProp.setElement(true);
         genderProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
@@ -689,7 +689,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         namePrefixProp.setXsdLocalName("namePrefix");
         namePrefixProp.setType(namePrefixType);
         namePrefixProp.setXsd(true);
-        //namePrefixProp.setAttribute(true);        
+        //namePrefixProp.setAttribute(true);
         namePrefixProp.setContainingType(customerType);
         customerType.addDeclaredProperty(namePrefixProp);
 
@@ -783,29 +783,29 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         POtype.getDeclaredProperties().add(orderDateProp);
         POtype.getDeclaredProperties().add(customerProp);
         */
-        
+
         SDOType cdnMailingAddressType = new SDOType(uri, "cdnAddressMailingType");
-        cdnMailingAddressType.setXsd(true);        
+        cdnMailingAddressType.setXsd(true);
         cdnMailingAddressType.setDataType(false);
         cdnMailingAddressType.setInstanceClassName(javaPackage + "." + "CdnAddressMailingType");
         cdnMailingAddressType.setXsdLocalName("cdnAddressMailingType");
         ArrayList cdnMailingbaseTypes = new ArrayList();
         cdnMailingbaseTypes.add(cdnAddressType);
         cdnMailingAddressType.setBaseTypes(cdnbaseTypes);
-        
+
         SDOProperty deliveryProp = new SDOProperty(aHelperContext);
         deliveryProp.setName("deliveryInfo");
         deliveryProp.setXsdLocalName("deliveryInfo");
         deliveryProp.setType(stringType);
-        deliveryProp.setXsd(true);        
+        deliveryProp.setXsd(true);
         deliveryProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         deliveryProp.setContainment(true);
-        deliveryProp.setContainingType(cdnMailingAddressType);        
+        deliveryProp.setContainingType(cdnMailingAddressType);
         cdnMailingAddressType.addDeclaredProperty(deliveryProp);
-        
+
         types.add(quantityType);
         types.add(phoneType);
-        types.add(cdnAddressType);        
+        types.add(cdnAddressType);
         types.add(SKUType);
         types.add(usAddressType);
         //types.add(itemsType);
@@ -815,7 +815,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         types.add(genderType);
         //types.add(itemType);
         //types.add(addrType);
-        types.add(namePrefixType);        
+        types.add(namePrefixType);
 
         return types;
 

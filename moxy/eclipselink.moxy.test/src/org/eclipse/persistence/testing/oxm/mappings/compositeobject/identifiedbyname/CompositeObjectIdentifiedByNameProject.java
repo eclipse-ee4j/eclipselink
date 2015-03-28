@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbyname;
 
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
@@ -33,11 +33,11 @@ public class CompositeObjectIdentifiedByNameProject extends Project {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(Employee.class);
     descriptor.setDefaultRootElement("employee");
-     
+
     XMLDirectMapping idMapping = new XMLDirectMapping();
     idMapping.setXPath("id/text()");
     idMapping.setAttributeName("id");
-    descriptor.addMapping(idMapping);   
+    descriptor.addMapping(idMapping);
 
     XMLCompositeObjectMapping addressMapping = new XMLCompositeObjectMapping();
     addressMapping.setAttributeName("mailingAddress");
@@ -54,61 +54,61 @@ public class CompositeObjectIdentifiedByNameProject extends Project {
     emailMapping.setSetMethodName("setEmailAddress");
     emailMapping.setReferenceClass(EmailAddress.class);
     descriptor.addMapping(emailMapping);
-    
+
     return descriptor;
   }
 
   private XMLDescriptor getEmailAddressDescriptor() {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(EmailAddress.class);
-        
+
     XMLDirectMapping userIDMapping = new XMLDirectMapping();
     userIDMapping.setAttributeName("userID");
     userIDMapping.setXPath("user-id/text()");
-    descriptor.addMapping(userIDMapping);   
+    descriptor.addMapping(userIDMapping);
 
     XMLDirectMapping domainMapping = new XMLDirectMapping();
     domainMapping.setAttributeName("domain");
     domainMapping.setXPath("domain/text()");
-    descriptor.addMapping(domainMapping);   
-    
+    descriptor.addMapping(domainMapping);
+
     XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
     schemaRef.setSchemaContext("/emailAddressType");
     schemaRef.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
-    descriptor.setSchemaReference(schemaRef);   
+    descriptor.setSchemaReference(schemaRef);
     return descriptor;
-  }  
+  }
 
   private XMLDescriptor getMailingAddressDescriptor() {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(MailingAddress.class);
-    
+
     XMLDirectMapping streetMapping = new XMLDirectMapping();
     streetMapping.setAttributeName("street");
     streetMapping.setXPath("street/text()");
-    descriptor.addMapping(streetMapping);   
+    descriptor.addMapping(streetMapping);
 
     XMLDirectMapping cityMapping = new XMLDirectMapping();
     cityMapping.setAttributeName("city");
     cityMapping.setXPath("city/text()");
-    descriptor.addMapping(cityMapping);   
+    descriptor.addMapping(cityMapping);
 
     XMLDirectMapping provinceMapping = new XMLDirectMapping();
     provinceMapping.setAttributeName("province");
     provinceMapping.setXPath("province/text()");
-    descriptor.addMapping(provinceMapping);   
+    descriptor.addMapping(provinceMapping);
 
     XMLDirectMapping postalCodeMapping = new XMLDirectMapping();
     postalCodeMapping.setAttributeName("postalCode");
     postalCodeMapping.setXPath("postal-code/text()");
-    descriptor.addMapping(postalCodeMapping);   
-    
+    descriptor.addMapping(postalCodeMapping);
+
       XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
     schemaRef.setSchemaContext("/mailingAddressType");
     schemaRef.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
-    descriptor.setSchemaReference(schemaRef);   
+    descriptor.setSchemaReference(schemaRef);
 
     return descriptor;
-  }  
-  
+  }
+
 }

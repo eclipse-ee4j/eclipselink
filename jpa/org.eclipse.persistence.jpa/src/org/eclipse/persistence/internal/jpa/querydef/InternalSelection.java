@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,18 +21,18 @@ package org.eclipse.persistence.internal.jpa.querydef;
  * Criteria API expressions.  A special interface was created because Subqueries can be selections but are not in the
  * ExpressionImpl hierarchy
  * <p>
- * 
+ *
  * @see javax.persistence.criteria Expression
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
 public interface InternalSelection{
 
     public void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery);
-    
+
     public org.eclipse.persistence.expressions.Expression getCurrentNode();
-    
+
     public boolean isFrom();
     public boolean isRoot();
     public boolean isConstructor();

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/   
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
 import java.io.*;
@@ -25,7 +25,7 @@ public class TelephoneNumber implements Serializable {
     private String number;
     private String areaCode;
     private BeerConsumer beerConsumer;
-	
+
     public TelephoneNumber() {
         this.type = "Unknown";
         this.areaCode = "###";
@@ -40,46 +40,46 @@ public class TelephoneNumber implements Serializable {
         pk.setAreaCode(getAreaCode());
         return pk;
     }
-    
+
     public boolean equals(Object telephoneNumber) {
         if (telephoneNumber.getClass() != TelephoneNumber.class) {
             return false;
         }
-        
+
         return ((TelephoneNumber) telephoneNumber).buildPK().equals(buildPK());
     }
-    
-	public String getAreaCode() { 
-        return areaCode; 
-    }
-    
-	public BeerConsumer getBeerConsumer() { 
-        return beerConsumer; 
-    }
-    
-	public String getNumber() { 
-        return number; 
-    }
-    
-	public String getType() { 
-        return type; 
-    }
-    
-    public void setAreaCode(String areaCode) {
-		this.areaCode = areaCode;
-	}
-    
-    public void setBeerConsumer(BeerConsumer beerConsumer) {
-		this.beerConsumer = beerConsumer;
-	}
-    
-	public void setNumber(String number) { 
-        this.number = number; 
+
+    public String getAreaCode() {
+        return areaCode;
     }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public BeerConsumer getBeerConsumer() {
+        return beerConsumer;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
+    }
+
+    public void setBeerConsumer(BeerConsumer beerConsumer) {
+        this.beerConsumer = beerConsumer;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     /**
      * Example: TelephoneNumber[Work]: (613) 225-8812

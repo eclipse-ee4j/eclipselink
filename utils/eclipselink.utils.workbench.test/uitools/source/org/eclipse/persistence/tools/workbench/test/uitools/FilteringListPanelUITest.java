@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -41,284 +41,284 @@ import org.eclipse.persistence.tools.workbench.utility.string.StringConverter;
 
 /**
  * Simple test class for playing around with the FilteringListPanel.
- * 
+ *
  * Optional command line parm:
- * 	the name of a jar (or class folder) to use to populate the list box
+ *     the name of a jar (or class folder) to use to populate the list box
  */
 public class FilteringListPanelUITest {
-	private Object[] completeList1;
-	private Object[] completeList2;
-	private FilteringListPanel filteringListPanel;
-	private Font font;
+    private Object[] completeList1;
+    private Object[] completeList2;
+    private FilteringListPanel filteringListPanel;
+    private Font font;
 
-	public static void main(String[] args) {
-		new FilteringListPanelUITest().exec(args);
-	}
+    public static void main(String[] args) {
+        new FilteringListPanelUITest().exec(args);
+    }
 
-	private FilteringListPanelUITest() {
-		super();
-		this.initialize();
-	}
+    private FilteringListPanelUITest() {
+        super();
+        this.initialize();
+    }
 
-	private void initialize() {
-		this.font = this.buildFont();
-	}
+    private void initialize() {
+        this.font = this.buildFont();
+    }
 
-	private Font buildFont() {
-		return new Font("Dialog", Font.PLAIN, 12);
-	}
+    private Font buildFont() {
+        return new Font("Dialog", Font.PLAIN, 12);
+    }
 
-	private void exec(String[] args) {
-		this.completeList1 = this.buildTypeList(args);
-		this.completeList2 = this.buildCompleteList2();
-		JFrame frame = new JFrame(ClassTools.shortClassNameForObject(this));
-		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		frame.addWindowListener(this.buildWindowListener());
-		frame.getContentPane().add(this.buildMainPanel(), "Center");
-		frame.setLocation(300, 300);
-		frame.setSize(400, 400);
-		frame.setVisible(true);
-	}
+    private void exec(String[] args) {
+        this.completeList1 = this.buildTypeList(args);
+        this.completeList2 = this.buildCompleteList2();
+        JFrame frame = new JFrame(ClassTools.shortClassNameForObject(this));
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(this.buildWindowListener());
+        frame.getContentPane().add(this.buildMainPanel(), "Center");
+        frame.setLocation(300, 300);
+        frame.setSize(400, 400);
+        frame.setVisible(true);
+    }
 
-	private Object[] buildTypeList(String[] args) {
-		return CollectionTools.sort(CollectionTools.array(this.buildTypes(args)));
-	}
+    private Object[] buildTypeList(String[] args) {
+        return CollectionTools.sort(CollectionTools.array(this.buildTypes(args)));
+    }
 
-	private Object[] buildCompleteList2() {
-		String classpathEntry = Classpath.locationFor(this.getClass());
-		return CollectionTools.sort(CollectionTools.array(this.buildTypes(new String[] {classpathEntry})));
-	}
+    private Object[] buildCompleteList2() {
+        String classpathEntry = Classpath.locationFor(this.getClass());
+        return CollectionTools.sort(CollectionTools.array(this.buildTypes(new String[] {classpathEntry})));
+    }
 
-	private Iterator buildTypes(String[] args) {
-		return new TransformationIterator(this.buildClassNames(args)) {
-			protected Object transform(Object next) {
-				return new Type((String) next);
-			}
-		};
-	}
+    private Iterator buildTypes(String[] args) {
+        return new TransformationIterator(this.buildClassNames(args)) {
+            protected Object transform(Object next) {
+                return new Type((String) next);
+            }
+        };
+    }
 
-	private Iterator buildClassNames(String[] args) {
-		if ((args == null) || (args.length == 0)) {
-			return Classpath.bootClasspath().classNamesStream();
-		}
-		return new Classpath(new String[] {args[0]}).classNamesStream();
-	}
-	
-	private WindowListener buildWindowListener() {
-		return new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				e.getWindow().setVisible(false);
-				System.exit(0);
-			}
-		};
-	}
+    private Iterator buildClassNames(String[] args) {
+        if ((args == null) || (args.length == 0)) {
+            return Classpath.bootClasspath().classNamesStream();
+        }
+        return new Classpath(new String[] {args[0]}).classNamesStream();
+    }
 
-	private JPanel buildMainPanel() {
-		JPanel panel = new JPanel(new BorderLayout());
-		this.filteringListPanel = this.buildFilteringListPanel();
-		panel.add(this.filteringListPanel, BorderLayout.CENTER);
-		panel.add(this.buildControlPanel(), BorderLayout.SOUTH);
-		return panel;
-	}
+    private WindowListener buildWindowListener() {
+        return new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                e.getWindow().setVisible(false);
+                System.exit(0);
+            }
+        };
+    }
 
-	private FilteringListPanel buildFilteringListPanel() {
-		Object initialSelection = this.typeNamedIn("java.lang.Object", this.completeList1);
-		FilteringListPanel panel = new FilteringListPanel(this.completeList1, initialSelection, this.buildStringConverter());
-		panel.setTextFieldLabelText("Choose a Type (? = any char, * = any string):");
-		panel.setListBoxLabelText("Matching Types:");
-		panel.setComponentsFont(this.font);
-		panel.setListBoxCellRenderer(this.buildRenderer());
-		return panel;
-	}
+    private JPanel buildMainPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        this.filteringListPanel = this.buildFilteringListPanel();
+        panel.add(this.filteringListPanel, BorderLayout.CENTER);
+        panel.add(this.buildControlPanel(), BorderLayout.SOUTH);
+        return panel;
+    }
 
-	private StringConverter buildStringConverter() {
-		return new StringConverter() {
-			public String convertToString(Object o) {
-				return (o == null) ? "" : ((Type) o).getName();
-			}
-		};
-	}
+    private FilteringListPanel buildFilteringListPanel() {
+        Object initialSelection = this.typeNamedIn("java.lang.Object", this.completeList1);
+        FilteringListPanel panel = new FilteringListPanel(this.completeList1, initialSelection, this.buildStringConverter());
+        panel.setTextFieldLabelText("Choose a Type (? = any char, * = any string):");
+        panel.setListBoxLabelText("Matching Types:");
+        panel.setComponentsFont(this.font);
+        panel.setListBoxCellRenderer(this.buildRenderer());
+        return panel;
+    }
 
-	private ListCellRenderer buildRenderer() {
-		return new SimpleListCellRenderer() {
-			protected Icon buildIcon(Object value) {
-				return UIManager.getIcon("Tree.leafIcon");
-			}
-			protected String buildText(Object value) {
-				return ((Type) value).getName();
-			}
-		};
-	}
+    private StringConverter buildStringConverter() {
+        return new StringConverter() {
+            public String convertToString(Object o) {
+                return (o == null) ? "" : ((Type) o).getName();
+            }
+        };
+    }
 
-	private JPanel buildControlPanel() {
-		JPanel panel = new JPanel(new GridLayout(1, 0));
-		panel.add(this.buildSwapButton());
-		panel.add(this.buildStringButton());
-		panel.add(this.buildNullButton());
-		panel.add(this.buildMax10Button());
-		panel.add(this.buildPrintButton());
-		return panel;
-	}
+    private ListCellRenderer buildRenderer() {
+        return new SimpleListCellRenderer() {
+            protected Icon buildIcon(Object value) {
+                return UIManager.getIcon("Tree.leafIcon");
+            }
+            protected String buildText(Object value) {
+                return ((Type) value).getName();
+            }
+        };
+    }
 
-	// ********** swap button **********
+    private JPanel buildControlPanel() {
+        JPanel panel = new JPanel(new GridLayout(1, 0));
+        panel.add(this.buildSwapButton());
+        panel.add(this.buildStringButton());
+        panel.add(this.buildNullButton());
+        panel.add(this.buildMax10Button());
+        panel.add(this.buildPrintButton());
+        return panel;
+    }
 
-	private JButton buildSwapButton() {
-		JButton button = new JButton(this.buildSwapAction());
-		button.setFont(this.font);
-		return button;
-	}
+    // ********** swap button **********
 
-	private Action buildSwapAction() {
-		return new AbstractAction("swap") {
-			public void actionPerformed(ActionEvent event) {
-				FilteringListPanelUITest.this.swap();
-			}
-		};
-	}
+    private JButton buildSwapButton() {
+        JButton button = new JButton(this.buildSwapAction());
+        button.setFont(this.font);
+        return button;
+    }
 
-	/**
-	 * swap in a new list
-	 */
-	void swap() {
-		if (this.filteringListPanel.getCompleteList() == this.completeList1) {
-			this.filteringListPanel.setCompleteList(this.completeList2);
-		} else {
-			this.filteringListPanel.setCompleteList(this.completeList1);
-		}
-	}
+    private Action buildSwapAction() {
+        return new AbstractAction("swap") {
+            public void actionPerformed(ActionEvent event) {
+                FilteringListPanelUITest.this.swap();
+            }
+        };
+    }
 
-	// ********** string button **********
+    /**
+     * swap in a new list
+     */
+    void swap() {
+        if (this.filteringListPanel.getCompleteList() == this.completeList1) {
+            this.filteringListPanel.setCompleteList(this.completeList2);
+        } else {
+            this.filteringListPanel.setCompleteList(this.completeList1);
+        }
+    }
 
-	private JButton buildStringButton() {
-		JButton button = new JButton(this.buildStringAction());
-		button.setFont(this.font);
-		return button;
-	}
+    // ********** string button **********
 
-	private Action buildStringAction() {
-		return new AbstractAction("String") {
-			public void actionPerformed(ActionEvent event) {
-				FilteringListPanelUITest.this.selectStringType();
-			}
-		};
-	}
+    private JButton buildStringButton() {
+        JButton button = new JButton(this.buildStringAction());
+        button.setFont(this.font);
+        return button;
+    }
 
-	/**
-	 * force a selection from "outside" the filtering list panel
-	 */
-	void selectStringType() {
-		this.filteringListPanel.setSelection(this.typeNamed("java.lang.String"));
-	}
+    private Action buildStringAction() {
+        return new AbstractAction("String") {
+            public void actionPerformed(ActionEvent event) {
+                FilteringListPanelUITest.this.selectStringType();
+            }
+        };
+    }
 
-	private Type typeNamed(String name) {
-		return this.typeNamedIn(name, this.filteringListPanel.getCompleteList());
-	}
+    /**
+     * force a selection from "outside" the filtering list panel
+     */
+    void selectStringType() {
+        this.filteringListPanel.setSelection(this.typeNamed("java.lang.String"));
+    }
 
-	private Type typeNamedIn(String name, Object[] list) {
-		for (int i = list.length; i-- > 0; ) {
-			Type type = (Type) list[i];
-			if (type.getName().equals(name)) {
-				return type;
-			}
-		}
-		return null;
-	}
+    private Type typeNamed(String name) {
+        return this.typeNamedIn(name, this.filteringListPanel.getCompleteList());
+    }
 
-	// ********** null button **********
+    private Type typeNamedIn(String name, Object[] list) {
+        for (int i = list.length; i-- > 0; ) {
+            Type type = (Type) list[i];
+            if (type.getName().equals(name)) {
+                return type;
+            }
+        }
+        return null;
+    }
 
-	private JButton buildNullButton() {
-		JButton button = new JButton(this.buildNullAction());
-		button.setFont(this.font);
-		return button;
-	}
+    // ********** null button **********
 
-	private Action buildNullAction() {
-		return new AbstractAction("null") {
-			public void actionPerformed(ActionEvent event) {
-				FilteringListPanelUITest.this.selectNull();
-			}
-		};
-	}
+    private JButton buildNullButton() {
+        JButton button = new JButton(this.buildNullAction());
+        button.setFont(this.font);
+        return button;
+    }
 
-	/**
-	 * set the current selection to null
-	 */
-	void selectNull() {
-		this.filteringListPanel.setSelection(null);
-	}
+    private Action buildNullAction() {
+        return new AbstractAction("null") {
+            public void actionPerformed(ActionEvent event) {
+                FilteringListPanelUITest.this.selectNull();
+            }
+        };
+    }
 
-	// ********** null button **********
+    /**
+     * set the current selection to null
+     */
+    void selectNull() {
+        this.filteringListPanel.setSelection(null);
+    }
 
-	private JButton buildMax10Button() {
-		JButton button = new JButton(this.buildMax10Action());
-		button.setFont(this.font);
-		return button;
-	}
+    // ********** null button **********
 
-	private Action buildMax10Action() {
-		return new AbstractAction("max = 10") {
-			public void actionPerformed(ActionEvent event) {
-				FilteringListPanelUITest.this.setMax10();
-			}
-		};
-	}
+    private JButton buildMax10Button() {
+        JButton button = new JButton(this.buildMax10Action());
+        button.setFont(this.font);
+        return button;
+    }
 
-	/**
-	 * toggle between allowing only 10 entries in the list box
-	 * and no limit
-	 */
-	void setMax10() {
-		if (this.filteringListPanel.getMaxListSize() == 10) {
-			this.filteringListPanel.setMaxListSize(-1);
-		} else {
-			this.filteringListPanel.setMaxListSize(10);
-		}
-	}
+    private Action buildMax10Action() {
+        return new AbstractAction("max = 10") {
+            public void actionPerformed(ActionEvent event) {
+                FilteringListPanelUITest.this.setMax10();
+            }
+        };
+    }
 
-	// ********** print button **********
+    /**
+     * toggle between allowing only 10 entries in the list box
+     * and no limit
+     */
+    void setMax10() {
+        if (this.filteringListPanel.getMaxListSize() == 10) {
+            this.filteringListPanel.setMaxListSize(-1);
+        } else {
+            this.filteringListPanel.setMaxListSize(10);
+        }
+    }
 
-	private JButton buildPrintButton() {
-		JButton button = new JButton(this.buildPrintAction());
-		button.setFont(this.font);
-		return button;
-	}
+    // ********** print button **********
 
-	private Action buildPrintAction() {
-		return new AbstractAction("print") {
-			public void actionPerformed(ActionEvent event) {
-				FilteringListPanelUITest.this.printType();
-			}
-		};
-	}
+    private JButton buildPrintButton() {
+        JButton button = new JButton(this.buildPrintAction());
+        button.setFont(this.font);
+        return button;
+    }
 
-	/**
-	 * print the currently selected type to the console
-	 */
-	void printType() {
-		System.out.println("selected item: " + this.filteringListPanel.getSelection());
-	}
+    private Action buildPrintAction() {
+        return new AbstractAction("print") {
+            public void actionPerformed(ActionEvent event) {
+                FilteringListPanelUITest.this.printType();
+            }
+        };
+    }
+
+    /**
+     * print the currently selected type to the console
+     */
+    void printType() {
+        System.out.println("selected item: " + this.filteringListPanel.getSelection());
+    }
 
 
-	// ********** inner class **********
-	private class Type implements Comparable {
-		private String name;
-	
-		Type(String name) {
-			super();
-			this.name = name;
-		}
-		public String shortName() {
-			return ClassTools.shortNameForClassNamed(this.name);
-		}
-		public String getName() {
-			return this.name;
-		}
-		public String toString() {
-			return "Type: " + this.name ;
-		}
-		public int compareTo(Object o) {
-			return this.name.compareTo(((Type) o).name);
-		}
-	}
+    // ********** inner class **********
+    private class Type implements Comparable {
+        private String name;
+
+        Type(String name) {
+            super();
+            this.name = name;
+        }
+        public String shortName() {
+            return ClassTools.shortNameForClassNamed(this.name);
+        }
+        public String getName() {
+            return this.name;
+        }
+        public String toString() {
+            return "Type: " + this.name ;
+        }
+        public int compareTo(Object o) {
+            return this.name.compareTo(((Type) o).name);
+        }
+    }
 
 }

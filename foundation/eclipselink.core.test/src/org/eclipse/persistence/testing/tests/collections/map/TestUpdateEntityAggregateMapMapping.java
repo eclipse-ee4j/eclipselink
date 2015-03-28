@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.collections.map;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -25,22 +25,22 @@ import org.eclipse.persistence.testing.models.collections.map.EntityMapKey;
 import org.eclipse.persistence.testing.models.collections.map.AggregateMapValue;
 
 public class TestUpdateEntityAggregateMapMapping extends TestReadEntityAggregateMapMapping {
-    
+
     private boolean usePrivateOwned = false;
     protected ForeignReferenceMapping keyMapping = null;
     private boolean oldKeyPrivateOwnedValue = false;
     protected EntityAggregateMapHolder changedHolder = null;
-    
+
     public TestUpdateEntityAggregateMapMapping(){
         super();
     }
-    
+
     public TestUpdateEntityAggregateMapMapping(boolean usePrivateOwned){
         this();
         this.usePrivateOwned = usePrivateOwned;
         setName("TestUpdateEntityAggregateMapMapping privateOwned=" + usePrivateOwned);
     }
-    
+
     public void setup(){
         AggregateCollectionMapping mapping = (AggregateCollectionMapping)getSession().getProject().getDescriptor(EntityAggregateMapHolder.class).getMappingForAttributeName("entityToAggregateMap");
         keyMapping = (ForeignReferenceMapping)((MappedKeyMapContainerPolicy)mapping.getContainerPolicy()).getKeyMapping();
@@ -48,8 +48,8 @@ public class TestUpdateEntityAggregateMapMapping extends TestReadEntityAggregate
         keyMapping.setIsPrivateOwned(usePrivateOwned);
         super.setup();
     }
-    
-    
+
+
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(EntityAggregateMapHolder.class, holderExp);
@@ -69,7 +69,7 @@ public class TestUpdateEntityAggregateMapMapping extends TestReadEntityAggregate
             throw new TestErrorException("Objects do not match after write");
         }
     }
-    
+
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         holders = getSession().readAllObjects(EntityAggregateMapHolder.class, holderExp);
@@ -99,9 +99,9 @@ public class TestUpdateEntityAggregateMapMapping extends TestReadEntityAggregate
             }
         }
     }
-    
+
     public void reset(){
         super.reset();
         keyMapping.setIsPrivateOwned(oldKeyPrivateOwnedValue);
-    }    
+    }
 }

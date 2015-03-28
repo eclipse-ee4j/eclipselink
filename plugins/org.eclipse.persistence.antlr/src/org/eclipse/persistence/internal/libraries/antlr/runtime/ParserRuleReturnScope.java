@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
  *  satisfy the superclass interface.
  */
 public class ParserRuleReturnScope extends RuleReturnScope {
-	public Token start, stop;
-	public Object getStart() { return start; }
-	public Object getStop() { return stop; }
+    public Token start, stop;
+    public Object getStart() { return start; }
+    public Object getStop() { return stop; }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -41,11 +41,11 @@ public class DirectWithLeafElementProject extends Project {
         birthDateMapping.setField(xmlField);
         //birthDateMapping.setXPath("birthdate/text()");
         descriptor.addMapping(birthDateMapping);
-        
+
         XMLDirectMapping firstNameMapping = new XMLDirectMapping();
         firstNameMapping.setAttributeName("firstName");
-        firstNameMapping.setXPath("firstname/text()");                
-        descriptor.addMapping(firstNameMapping);      
+        firstNameMapping.setXPath("firstname/text()");
+        descriptor.addMapping(firstNameMapping);
 
         XMLDirectMapping lastNameMapping = new XMLDirectMapping();
         lastNameMapping.setAttributeName("lastName");

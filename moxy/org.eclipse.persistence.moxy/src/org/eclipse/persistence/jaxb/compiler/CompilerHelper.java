@@ -4,11 +4,11 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Denise Smith -  January, 2010 - 2.0.1 
+ *     Denise Smith -  January, 2010 - 2.0.1
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
@@ -69,29 +69,29 @@ public class CompilerHelper {
     static {
         try {
             ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(XML_ACCESSOR_FACTORY_ANNOTATION_NAME, true, CompilerHelper.class.getClassLoader());
-            ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});            
-        } catch (Exception ex) {        
+            ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});
+        } catch (Exception ex) {
         }
-        
+
         try {
             XML_LOCATION_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(XML_LOCATION_ANNOTATION_NAME, true, CompilerHelper.class.getClassLoader());
         } catch (Exception ex) {
         }
-        
+
         try{
             INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(INTERNAL_ACCESSOR_FACTORY_ANNOTATION_NAME);
             INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});
-        } catch (Exception ex) {         
+        } catch (Exception ex) {
         }
-        
+
         try{
             INTERNAL_XML_LOCATION_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(INTERNAL_XML_LOCATION_ANNOTATION_NAME);
-        }catch (Exception ex) {         
+        }catch (Exception ex) {
         }
-        
-        
+
+
     }
-   
+
     /**
      * If 2 TypeMappingInfo objects would generate the same generated class (and
      * therefore complex type) then return the existing class otherwise return
@@ -209,7 +209,7 @@ public class CompilerHelper {
     private static boolean areTypesEqual(java.lang.reflect.Type type, java.lang.reflect.Type type2) {
         // handle null
         if (type == null) {
-        	return type2 == null;       
+            return type2 == null;
         } else if (type instanceof Class) {
             if (type2 instanceof ParameterizedType) {
 
@@ -217,19 +217,19 @@ public class CompilerHelper {
                 if (!areTypesEqual(type, rawType)) {
                     return false;
                 }
-                                
+
                 java.lang.reflect.Type[] args = ((ParameterizedType) type2).getActualTypeArguments();
                 for (int i = 0; i < args.length; i++) {
-                	Type argType = getActualArgumentType(args[i]);
+                    Type argType = getActualArgumentType(args[i]);
                     if (!areTypesEqual(Object.class, argType)) {
                         return false;
                     }
                 }
                 return true;
             } else if (type2 instanceof Class) {
-            	return type.equals(type2);                
+                return type.equals(type2);
             } else {
-            	return false;
+                return false;
             }
         } else if (type instanceof ParameterizedType) {
             if (type2 instanceof Class) {
@@ -241,7 +241,7 @@ public class CompilerHelper {
 
                 java.lang.reflect.Type[] args = ((ParameterizedType) type).getActualTypeArguments();
                 for (int i = 0; i < args.length; i++) {
-                	Type argType = getActualArgumentType(args[i]);
+                    Type argType = getActualArgumentType(args[i]);
                     if (!areTypesEqual(Object.class, argType)) {
                         return false;
                     }
@@ -260,41 +260,41 @@ public class CompilerHelper {
                 if (ta1.length != ta2.length) {
                     return false;
                 }
-                for (int i = 0; i < ta1.length; i++) {                
-                	Type componentType1 = getActualArgumentType(ta1[i]);
-                	Type componentType2 = getActualArgumentType(ta2[i]);
+                for (int i = 0; i < ta1.length; i++) {
+                    Type componentType1 = getActualArgumentType(ta1[i]);
+                    Type componentType2 = getActualArgumentType(ta2[i]);
                     if (!areTypesEqual(componentType1, componentType2)) {
                         return false;
                     }
                 }
                 return true;
-            } else {                      
+            } else {
                 return false;
             }
-        } 
+        }
         return false;
     }
 
     private static Type getActualArgumentType(Type argument){
-    	if(argument instanceof WildcardType){
-    		Type[] upperBounds = ((WildcardType)argument).getUpperBounds();
-        	if(upperBounds != null && upperBounds.length >0){
-        		return upperBounds[0];
-        	}else{
-        		return Object.class;
-        	}
-    	}else if (argument instanceof GenericArrayType){
-    		return ((GenericArrayType)argument).getGenericComponentType();
-    	}
-    	return argument;
+        if(argument instanceof WildcardType){
+            Type[] upperBounds = ((WildcardType)argument).getUpperBounds();
+            if(upperBounds != null && upperBounds.length >0){
+                return upperBounds[0];
+            }else{
+                return Object.class;
+            }
+        }else if (argument instanceof GenericArrayType){
+            return ((GenericArrayType)argument).getGenericComponentType();
+        }
+        return argument;
     }
-    
+
     /**
      * Convenience method for creating an XmlElement object based on a given
      * Element. The method will load the eclipselink metadata model and
      * unmarshal the Element. This assumes that the Element represents an
      * xml-element to be unmarshalled.
-     * 
+     *
      * @param xmlElementNode
      * @param classLoader
      * @return
@@ -334,7 +334,7 @@ public class CompilerHelper {
         return null;
 
     }
-    
+
     /**
      * If adapter class is null return null If there is a marshal method that
      * returns something other than Object on the adapter class return the
@@ -360,7 +360,7 @@ public class CompilerHelper {
         }
         return null;
 
-    }       
+    }
 
     /**
      * Return true if the type is a Collection, List or Set
@@ -383,7 +383,7 @@ public class CompilerHelper {
     /**
      * The actual type accounts for adapter classes or xmlelemnt types specified
      * in either an annotation or an XML override
-     * 
+     *
      */
     static Type getActualType(TypeMappingInfo tmi, org.eclipse.persistence.jaxb.xmlmodel.XmlElement element) {
         try {
@@ -507,18 +507,18 @@ public class CompilerHelper {
         if(parentTypeInfo == null || parentTypeInfo.isTransient()) {
             return getNextMappedSuperClass(superClass, typeInfo, helper);
         }
-        
+
         return superClass;
     }
-    
+
     public static void addClassToClassLoader(JavaClass cls, ClassLoader loader) {
-    
+
         if(loader.getClass() == JaxbClassLoader.class && cls.getClass() == JavaClassImpl.class) {
             Class wrappedClass = ((JavaClassImpl)cls).getJavaClass();
             ((JaxbClassLoader)loader).putClass(wrappedClass.getName(), wrappedClass);
         }
     }
-    
+
     static boolean hasNonAttributeJoinNodes(Property property) {
         if(property.isSetXmlJoinNodes()) {
             for(XmlJoinNodes.XmlJoinNode next: property.getXmlJoinNodes().getXmlJoinNode()) {
@@ -534,7 +534,7 @@ public class CompilerHelper {
                     }
                 }
             }
-            
+
         }
         return false;
     }
@@ -558,7 +558,7 @@ public class CompilerHelper {
                     setMethod = PrivilegedAccessHelper.getMethod(beanClass, property.getSetMethodName(), setMethodParams, true);
                 }
                 return accessorFactory.createPropertyAccessor(beanClass, getMethod, setMethod);
-            } catch(Exception ex) {}      
+            } catch(Exception ex) {}
         }  else {
             try {
                 Field field = PrivilegedAccessHelper.getField(beanClass, ((JavaField)property.getElement()).getName(), true);

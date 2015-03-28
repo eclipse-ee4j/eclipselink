@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -241,7 +241,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     private boolean isCollapsingStringValues;
     private boolean isNormalizingStringValues;
     private AbstractNullPolicy wrapperNullPolicy;
-    
+
     /** Support specification of the value to use for null. */
     protected transient Object nullValue;
 
@@ -573,7 +573,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
         }
         return value;
     }
-    
+
     /**
      * PUBLIC:
      * Allow for the value used for null to be specified.
@@ -584,7 +584,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     public Object getNullValue() {
         return nullValue;
     }
-    
+
     /**
      * PUBLIC:
      * Allow for the value used for null to be specified.

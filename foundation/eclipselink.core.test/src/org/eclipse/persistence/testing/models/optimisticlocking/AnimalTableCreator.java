@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -65,7 +65,7 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field1.setUnique(false);
         field1.setIsIdentity(false);
         tabledefinition.addField(field1);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("NAME");
@@ -75,7 +75,7 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field2.setUnique(false);
         field2.setIsIdentity(false);
         tabledefinition.addField(field2);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("ANIMAL_TYPE");
@@ -85,10 +85,10 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field3.setUnique(false);
         field3.setIsIdentity(false);
         tabledefinition.addField(field3);
-        
+
         addTableDefinition(tabledefinition);
     }
-    
+
     protected void buildCATTable() {
         org.eclipse.persistence.tools.schemaframework.TableDefinition tabledefinition = new org.eclipse.persistence.tools.schemaframework.TableDefinition();
 
@@ -105,7 +105,7 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field.setIsIdentity(false);
         tabledefinition.addField(field);
 
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("NAME");
@@ -115,7 +115,7 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field2.setUnique(false);
         field2.setIsIdentity(false);
         tabledefinition.addField(field2);
-        
+
         addTableDefinition(tabledefinition);
     }
 
@@ -139,7 +139,7 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field.setUnique(false);
         field.setIsIdentity(false);
         tabledefinition.addField(field);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("VERSION");
@@ -149,7 +149,7 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field1.setUnique(false);
         field1.setIsIdentity(false);
         tabledefinition.addField(field1);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("NAME");
@@ -159,7 +159,7 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field2.setUnique(false);
         field2.setIsIdentity(false);
         tabledefinition.addField(field2);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("ANIMAL_ID");
@@ -169,10 +169,10 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field3.setUnique(false);
         field3.setIsIdentity(false);
         tabledefinition.addField(field3);
-        
+
         addTableDefinition(tabledefinition);
     }
-    
+
     protected void build_VET_APPT_Table() {
         org.eclipse.persistence.tools.schemaframework.TableDefinition tabledefinition = new org.eclipse.persistence.tools.schemaframework.TableDefinition();
 
@@ -188,7 +188,7 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field.setUnique(false);
         field.setIsIdentity(false);
         tabledefinition.addField(field);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("VERSION");
@@ -198,7 +198,7 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field1.setUnique(false);
         field1.setIsIdentity(false);
         tabledefinition.addField(field1);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("COST");
@@ -208,7 +208,7 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field2.setUnique(false);
         field2.setIsIdentity(false);
         tabledefinition.addField(field2);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("ANIMAL_ID");
@@ -218,7 +218,7 @@ public class AnimalTableCreator extends org.eclipse.persistence.tools.schemafram
         field3.setUnique(false);
         field3.setIsIdentity(false);
         tabledefinition.addField(field3);
-        
+
         addTableDefinition(tabledefinition);
     }
 

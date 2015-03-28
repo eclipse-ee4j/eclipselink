@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,7 +26,7 @@ import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class SeparatorInNameTestCases extends JSONMarshalUnmarshalTestCases{
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/namespaces/person_separator.json";
-    
+
     public SeparatorInNameTestCases(String name) throws Exception {
         super(name);
         setControlJSON(JSON_RESOURCE);
@@ -51,22 +51,22 @@ public class SeparatorInNameTestCases extends JSONMarshalUnmarshalTestCases{
         middleNames.add("Jane");
         middleNames.add("Janice");
         p.setMiddleNames(middleNames);
-       
+
         return p;
     }
-    
+
 
     public Map getProperties(){
         Map props = new HashMap();
         props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "@");
-        
+
         Map<String, String> namespaceMap = new HashMap<String, String>();
-        
+
         namespaceMap.put("namespace0", "ns0");
         namespaceMap.put("namespace1", "");
         namespaceMap.put("namespace2", "ns2");
         namespaceMap.put("namespace3", "ns3");
-        
+
         props.put(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR, 'a');
         props.put(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, namespaceMap);
         return props;

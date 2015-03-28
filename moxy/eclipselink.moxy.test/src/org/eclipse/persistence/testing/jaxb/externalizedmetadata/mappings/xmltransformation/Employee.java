@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,7 +69,7 @@ public class Employee {
     public String buildEndTimeValue() {
         return normalHours[1];
     }
-    
+
     /**
      * Used for testing method name based attribute transformer.
      */
@@ -79,7 +79,7 @@ public class Employee {
         hours[1] = (String) record.get("normal-hours/end-time/text()");
         return hours;
     }
-    
+
     @XmlTransient
     /**
      * Used for testing method name based attribute transformer exception

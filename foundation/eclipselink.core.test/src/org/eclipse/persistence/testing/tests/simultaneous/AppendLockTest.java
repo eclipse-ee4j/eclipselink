@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.simultaneous;
 
 
@@ -28,7 +28,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Address;
 //see bug 305611
 
 public class AppendLockTest extends AutoVerifyTestCase {
-    
+
     Employee emp = null;
     SmallProject project = null;
     Address address = null;
@@ -36,7 +36,7 @@ public class AppendLockTest extends AutoVerifyTestCase {
     public AppendLockTest() {
         super();
     }
-    
+
 
     @Override
     protected void setup() throws Throwable {
@@ -73,7 +73,7 @@ public class AppendLockTest extends AutoVerifyTestCase {
             }
             fail("Bug 9484687 - deadlock occured.");
         }
-        
+
     } catch (Exception e) {
         e.printStackTrace();
     }
@@ -91,13 +91,13 @@ public class AppendLockTest extends AutoVerifyTestCase {
         uow.deleteObject(emp);
         uow.commit();
     }
-    
+
     public static class Writer1 implements Runnable{
         protected Project project;
         protected Employee emp;
         protected Session session;
         protected Address address;
-        
+
         public Writer1(Session session, Employee emp, Project project, Address address){
             this.session = session;
             this.project = project;
@@ -127,13 +127,13 @@ public class AppendLockTest extends AutoVerifyTestCase {
                     this.session.notifyAll();
             }
         }
-        
+
     }
 
     public static class Locker implements Runnable{
         protected Address address;
         protected Session session;
-        
+
         public Locker(Session session, Address address){
             this.session = session;
             this.address = address;
@@ -163,14 +163,14 @@ public class AppendLockTest extends AutoVerifyTestCase {
                 cacheKey.release();
             }
         }
-        
+
     }
 
     public static class Writer2 implements Runnable{
         protected Session session;
         protected Project project;
 
-        
+
         public Writer2(Session session, Project project){
             this.session = session;
             this.project = project;
@@ -201,7 +201,7 @@ public class AppendLockTest extends AutoVerifyTestCase {
             UnitOfWork uow = this.session.acquireUnitOfWork();
             try{
             this.project = (Project) uow.refreshObject(this.project); // should block
-            
+
                 synchronized (this.session) {
                         this.session.notifyAll();
                 }
@@ -210,7 +210,7 @@ public class AppendLockTest extends AutoVerifyTestCase {
                 System.out.println("Thread was interrupted");
             }
         }
-        
+
     }
 
 }

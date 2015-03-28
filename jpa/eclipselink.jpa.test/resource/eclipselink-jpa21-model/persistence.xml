@@ -2,7 +2,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
     http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
-  version="2.1"> 
+  version="2.1">
     <!-- This is for default persistence unit -->
     <persistence-unit name="MulitPU-1" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
@@ -42,9 +42,9 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TagConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter</class>
-        
+
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        
+
         <properties>
             <property name="eclipselink.session-name" value="default-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
@@ -84,9 +84,9 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter</class>
-        
+
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        
+
         <properties>
             <property name="eclipselink.session-name" value="default-ddl-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
@@ -104,7 +104,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/advanced-ddl-orm.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        
+
         <properties>
             <property name="eclipselink.session-name" value="default-xml-ddl-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
@@ -121,7 +121,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/advanced-orm.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        
+
         <properties>
             <property name="eclipselink.session-name" value="default-xml-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
@@ -167,5 +167,5 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
-    
+
 </persistence>

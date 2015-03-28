@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -36,100 +36,100 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
  *  fields, it's easy to cut them out in your own BaseTree subclass.
  */
 public class CommonTree extends BaseTree {
-	/** A single token is the payload */
-	public Token token;
+    /** A single token is the payload */
+    public Token token;
 
-	/** What token indexes bracket all tokens associated with this node
-	 *  and below?
-	 */
-	protected int startIndex=-1, stopIndex=-1;
+    /** What token indexes bracket all tokens associated with this node
+     *  and below?
+     */
+    protected int startIndex=-1, stopIndex=-1;
 
-	/** Who is the parent node of this node; if null, implies node is root */
-	public CommonTree parent;
+    /** Who is the parent node of this node; if null, implies node is root */
+    public CommonTree parent;
 
-	/** What index is this node in the child list? Range: 0..n-1 */
-	public int childIndex = -1;
+    /** What index is this node in the child list? Range: 0..n-1 */
+    public int childIndex = -1;
 
-	public CommonTree() { }
-	
-	public CommonTree(CommonTree node) {
-		super(node);
-		this.token = node.token;
-		this.startIndex = node.startIndex;
-		this.stopIndex = node.stopIndex;
-	}
+    public CommonTree() { }
 
-	public CommonTree(Token t) {
-		this.token = t;
-	}
+    public CommonTree(CommonTree node) {
+        super(node);
+        this.token = node.token;
+        this.startIndex = node.startIndex;
+        this.stopIndex = node.stopIndex;
+    }
 
-	public Token getToken() {
-		return token;
-	}
+    public CommonTree(Token t) {
+        this.token = t;
+    }
 
-	public Tree dupNode() {
-		return new CommonTree(this);
-	}
+    public Token getToken() {
+        return token;
+    }
 
-	public boolean isNil() {
-		return token==null;
-	}
+    public Tree dupNode() {
+        return new CommonTree(this);
+    }
 
-	public int getType() {
-		if ( token==null ) {
-			return Token.INVALID_TOKEN_TYPE;
-		}
-		return token.getType();
-	}
+    public boolean isNil() {
+        return token==null;
+    }
 
-	public String getText() {
-		if ( token==null ) {
-			return null;
-		}
-		return token.getText();
-	}
+    public int getType() {
+        if ( token==null ) {
+            return Token.INVALID_TOKEN_TYPE;
+        }
+        return token.getType();
+    }
 
-	public int getLine() {
-		if ( token==null || token.getLine()==0 ) {
-			if ( getChildCount()>0 ) {
-				return getChild(0).getLine();
-			}
-			return 0;
-		}
-		return token.getLine();
-	}
+    public String getText() {
+        if ( token==null ) {
+            return null;
+        }
+        return token.getText();
+    }
 
-	public int getCharPositionInLine() {
-		if ( token==null || token.getCharPositionInLine()==-1 ) {
-			if ( getChildCount()>0 ) {
-				return getChild(0).getCharPositionInLine();
-			}
-			return 0;
-		}
-		return token.getCharPositionInLine();
-	}
+    public int getLine() {
+        if ( token==null || token.getLine()==0 ) {
+            if ( getChildCount()>0 ) {
+                return getChild(0).getLine();
+            }
+            return 0;
+        }
+        return token.getLine();
+    }
 
-	public int getTokenStartIndex() {
-		if ( startIndex==-1 && token!=null ) {
-			return token.getTokenIndex();
-		}
-		return startIndex;
-	}
+    public int getCharPositionInLine() {
+        if ( token==null || token.getCharPositionInLine()==-1 ) {
+            if ( getChildCount()>0 ) {
+                return getChild(0).getCharPositionInLine();
+            }
+            return 0;
+        }
+        return token.getCharPositionInLine();
+    }
 
-	public void setTokenStartIndex(int index) {
-		startIndex = index;
-	}
+    public int getTokenStartIndex() {
+        if ( startIndex==-1 && token!=null ) {
+            return token.getTokenIndex();
+        }
+        return startIndex;
+    }
 
-	public int getTokenStopIndex() {
-		if ( stopIndex==-1 && token!=null ) {
-			return token.getTokenIndex();
-		}
-		return stopIndex;
-	}
+    public void setTokenStartIndex(int index) {
+        startIndex = index;
+    }
 
-	public void setTokenStopIndex(int index) {
-		stopIndex = index;
-	}
+    public int getTokenStopIndex() {
+        if ( stopIndex==-1 && token!=null ) {
+            return token.getTokenIndex();
+        }
+        return stopIndex;
+    }
+
+    public void setTokenStopIndex(int index) {
+        stopIndex = index;
+    }
 
     /** For every node in this subtree, make sure it's start/stop token's
      *  are set.  Walk depth first, visit bottom up.  Only updates nodes
@@ -154,32 +154,32 @@ public class CommonTree extends BaseTree {
         }
     }
 
-	public int getChildIndex() {
-		return childIndex;
-	}
+    public int getChildIndex() {
+        return childIndex;
+    }
 
-	public Tree getParent() {
-		return parent;
-	}
+    public Tree getParent() {
+        return parent;
+    }
 
-	public void setParent(Tree t) {
-		this.parent = (CommonTree)t;
-	}
+    public void setParent(Tree t) {
+        this.parent = (CommonTree)t;
+    }
 
-	public void setChildIndex(int index) {
-		this.childIndex = index;
-	}
+    public void setChildIndex(int index) {
+        this.childIndex = index;
+    }
 
-	public String toString() {
-		if ( isNil() ) {
-			return "nil";
-		}
-		if ( getType()==Token.INVALID_TOKEN_TYPE ) {
-			return "<errornode>";
-		}
-		if ( token==null ) {
-			return null;
-		}
-		return token.getText();
-	}
+    public String toString() {
+        if ( isNil() ) {
+            return "nil";
+        }
+        if ( getType()==Token.INVALID_TOKEN_TYPE ) {
+            return "<errornode>";
+        }
+        if ( token==null ) {
+            return null;
+        }
+        return token.getText();
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
 import java.io.FileInputStream;
@@ -41,37 +41,37 @@ import commonj.sdo.helper.XSDHelper;
  * Bug 451041
  */
 public class TypePropertyIndexTest extends XSDHelperTestCases {
-    
+
     public TypePropertyIndexTest(String name) {
         super(name);
     }
-    
+
     public void testPropertyIndexSequence() {
         String schemaLocation = "org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/propertyindex/";
         String resourceFileName = "ExtendedAttributes.xsd";
-        
+
         HelperContext helperContext = getHelperContext();
         SDOXSDHelper sdoXSDHelper = (SDOXSDHelper) XSDHelper.INSTANCE;
         sdoXSDHelper.setHelperContext(helperContext);
-        
+
         StreamSource streamSource = getResourceAsStreamSource(schemaLocation + resourceFileName);
         List definedTypes = sdoXSDHelper.define(streamSource, new TestResolver(schemaLocation));
 
         SDOType controlType = (SDOType) TypeHelper.INSTANCE.getType("http://www.example.org", "Electronics");
         SDOProperty controlProperty = controlType.getProperty("ItemTen");
-        
+
         SDOType type = (SDOType) TypeHelper.INSTANCE.getType("http://www.example.org", "Television");
         SDOProperty property1 = type.getProperty("HDTVTuners");
         SDOProperty property2 = type.getProperty("Resolution");
 
-        assertEquals("HDTVTuners property must be +1 from the last property in type: Electronics", 
+        assertEquals("HDTVTuners property must be +1 from the last property in type: Electronics",
                 controlProperty.getIndexInType() + 1, property1.getIndexInType());
-        assertEquals("Resolution property must be +2 from the last property in type: Electronics", 
+        assertEquals("Resolution property must be +2 from the last property in type: Electronics",
                 controlProperty.getIndexInType() + 2, property2.getIndexInType());
     }
-    
+
     protected static class TestResolver implements SchemaResolver {
-        
+
         protected String schemaLocationBase;
 
         protected TestResolver(String schemaLocation) {
@@ -86,7 +86,7 @@ public class TypePropertyIndexTest extends XSDHelperTestCases {
             return null;
         }
     }
-    
+
     protected static StreamSource getResourceAsStreamSource(String resource) {
         try {
              URL url = Thread.currentThread().getContextClassLoader().getResource(resource);
@@ -97,9 +97,9 @@ public class TypePropertyIndexTest extends XSDHelperTestCases {
             return null;
         }
     }
-    
+
     public static void main(String[] args) {
-        TestRunner.run(TypePropertyIndexTest.class);        
+        TestRunner.run(TypePropertyIndexTest.class);
     }
-    
+
 }

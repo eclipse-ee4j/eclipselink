@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,13 +49,13 @@ public enum LockType {
 
     /**
      * For read-only operations.  Allows simultaneous access to methods
-     * designated as <code>READ</code>, as long as no <code>WRITE</code> lock is held.  
+     * designated as <code>READ</code>, as long as no <code>WRITE</code> lock is held.
      */
     READ,
 
     /**
      * For exclusive access to the bean instance.  A <code>WRITE</code> lock can only
-     * be acquired when no other method with either a <code>READ</code> or 
+     * be acquired when no other method with either a <code>READ</code> or
      * <code>WRITE</code> lock is currently held.
      */
     WRITE

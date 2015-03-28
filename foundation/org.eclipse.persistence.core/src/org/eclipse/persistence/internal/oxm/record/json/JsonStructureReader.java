@@ -281,7 +281,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
             default:
                 throw new IllegalStateException("Unhandled valueType: " + jsonValue.getValueType());
         }
-	}
+    }
 
     private void parsePair(String name, JsonValue jsonValue) throws SAXException {
         if (jsonValue == null) {

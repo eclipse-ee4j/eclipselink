@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,9 +22,9 @@ import javax.xml.bind.annotation.XmlValue;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;simpleContent&gt;
@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.XmlValue;
  *   &lt;/simpleContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -51,11 +51,11 @@ public class XmlEnumValue {
 
     /**
      * Gets the value of the value property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getValue() {
         return value;
@@ -63,11 +63,11 @@ public class XmlEnumValue {
 
     /**
      * Sets the value of the value property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setValue(String value) {
         this.value = value;
@@ -75,11 +75,11 @@ public class XmlEnumValue {
 
     /**
      * Gets the value of the javaEnumValue property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getJavaEnumValue() {
         return javaEnumValue;
@@ -87,11 +87,11 @@ public class XmlEnumValue {
 
     /**
      * Sets the value of the javaEnumValue property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setJavaEnumValue(String value) {
         this.javaEnumValue = value;

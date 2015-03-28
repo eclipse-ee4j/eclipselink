@@ -15,31 +15,31 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unma
 import org.w3c.dom.Document;
 
 public class ClassLevelTestCases extends JAXBWithJSONTestCases {
-	protected Map getProperties() {
+    protected Map getProperties() {
 
         InputStream inStream1 = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/package1/no-adapter.xml");
         InputStream inStream2 = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/package2/class-adapter.xml");
         Map<String, Source> metadata = new LinkedHashMap<String, Source>();
         DOMSource src1 = null;
         DOMSource src2 = null;
-        try {             
+        try {
             Document doc1 = parser.parse(inStream1);
             Document doc2 = parser.parse(inStream2);
             src1 = new DOMSource(doc1.getDocumentElement());
             src2 = new DOMSource(doc2.getDocumentElement());
         } catch(Exception e){
             e.printStackTrace();
-            fail("An error occurred during setup");            
+            fail("An error occurred during setup");
         }
         metadata.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package1", src1);
         metadata.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package2", src2);
-        
+
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadata);
-        
+
         return properties;
     }
-    
+
     public ClassLevelTestCases(String name) throws Exception {
         super(name);
         setUp();
@@ -47,7 +47,7 @@ public class ClassLevelTestCases extends JAXBWithJSONTestCases {
         setControlDocument("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/container_class.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/container_class.json");
     }
-    
+
     public Object getControlObject() {
         Container container = new Container();
         container.setContainerProperty(Unmappable.getInstance("aaa"));

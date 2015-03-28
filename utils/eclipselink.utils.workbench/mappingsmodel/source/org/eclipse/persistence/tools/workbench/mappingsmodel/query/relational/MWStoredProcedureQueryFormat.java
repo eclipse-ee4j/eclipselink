@@ -11,81 +11,81 @@ import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 public final class MWStoredProcedureQueryFormat extends MWQueryFormat {
 
-	private MWProcedure procedure;
-		public static final String PROCEDURE_PROPERTY = "procedure";
-	
-	/**
-	 * Default constructor - for TopLink use only.
-	 */
-	@SuppressWarnings("unused")
-	private MWStoredProcedureQueryFormat() {
-		super();
-	}
+    private MWProcedure procedure;
+        public static final String PROCEDURE_PROPERTY = "procedure";
 
-	MWStoredProcedureQueryFormat(MWRelationalSpecificQueryOptions parent) {
-		super(parent);
-	}
+    /**
+     * Default constructor - for TopLink use only.
+     */
+    @SuppressWarnings("unused")
+    private MWStoredProcedureQueryFormat() {
+        super();
+    }
 
-	@Override
-	protected void addChildrenTo(List children) {
-		super.addChildrenTo(children);
-		children.add(procedure);
-	}
+    MWStoredProcedureQueryFormat(MWRelationalSpecificQueryOptions parent) {
+        super(parent);
+    }
 
-	/**
-	 * initialize persistent state
-	 */
-	@Override
-	protected void initialize(Node modelObject) {
-		super.initialize(modelObject);
-		procedure = new MWProcedure(this);
-	}
-	
-	@Override String getType() {
-		return MWRelationalQuery.STORED_PROCEDURE_FORMAT;
-	}
+    @Override
+    protected void addChildrenTo(List children) {
+        super.addChildrenTo(children);
+        children.add(procedure);
+    }
 
-	public MWProcedure getProcedure()
-	{
-		return this.procedure;
-	}
+    /**
+     * initialize persistent state
+     */
+    @Override
+    protected void initialize(Node modelObject) {
+        super.initialize(modelObject);
+        procedure = new MWProcedure(this);
+    }
 
-	public void setProcedure(MWProcedure procedure)
-	{
-		MWProcedure old = getProcedure();
-		this.procedure = procedure;
-		firePropertyChanged(PROCEDURE_PROPERTY, old, procedure);
-	}
+    @Override String getType() {
+        return MWRelationalQuery.STORED_PROCEDURE_FORMAT;
+    }
 
-	//persistence
-	public static XMLDescriptor buildDescriptor()
-	{
-		XMLDescriptor descriptor = new XMLDescriptor();
+    public MWProcedure getProcedure()
+    {
+        return this.procedure;
+    }
 
-		descriptor.setJavaClass(MWStoredProcedureQueryFormat.class);
-		descriptor.getInheritancePolicy().setParentClass(MWQueryFormat.class);
+    public void setProcedure(MWProcedure procedure)
+    {
+        MWProcedure old = getProcedure();
+        this.procedure = procedure;
+        firePropertyChanged(PROCEDURE_PROPERTY, old, procedure);
+    }
 
-		// 1-1 to the procedure
-		XMLCompositeObjectMapping procedureMapping = new XMLCompositeObjectMapping();
-		procedureMapping.setAttributeName("procedure");
-		procedureMapping.setReferenceClass(MWProcedure.class);
-		procedureMapping.setXPath("procedure");
-		descriptor.addMapping(procedureMapping);
+    //persistence
+    public static XMLDescriptor buildDescriptor()
+    {
+        XMLDescriptor descriptor = new XMLDescriptor();
 
-		return descriptor;
-	}
-	
-	public static XMLDescriptor buildStandaloneDescriptor() {
-		// Unchanged from standalone
-		return buildDescriptor();
-	}
+        descriptor.setJavaClass(MWStoredProcedureQueryFormat.class);
+        descriptor.getInheritancePolicy().setParentClass(MWQueryFormat.class);
 
-	@Override
-	void convertFromRuntime(DatabaseQuery runtimeQuery) {};
-	
-	@Override
-	void convertToRuntime(DatabaseQuery runtimeQuery) {
-		runtimeQuery.setCall(this.procedure.buildRuntimeCall());		
-	}
+        // 1-1 to the procedure
+        XMLCompositeObjectMapping procedureMapping = new XMLCompositeObjectMapping();
+        procedureMapping.setAttributeName("procedure");
+        procedureMapping.setReferenceClass(MWProcedure.class);
+        procedureMapping.setXPath("procedure");
+        descriptor.addMapping(procedureMapping);
+
+        return descriptor;
+    }
+
+    public static XMLDescriptor buildStandaloneDescriptor() {
+        // Unchanged from standalone
+        return buildDescriptor();
+    }
+
+    @Override
+    void convertFromRuntime(DatabaseQuery runtimeQuery) {};
+
+    @Override
+    void convertToRuntime(DatabaseQuery runtimeQuery) {
+        runtimeQuery.setCall(this.procedure.buildRuntimeCall());
+    }
 
 }

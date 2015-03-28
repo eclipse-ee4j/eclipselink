@@ -1,25 +1,25 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - initial impl
- *     04/27/2010-2.1 Guy Pelletier 
+ *     04/27/2010-2.1 Guy Pelletier
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
- *     06/18/2010-2.2 Guy Pelletier 
+ *     06/18/2010-2.2 Guy Pelletier
  *       - 300458: EclispeLink should throw a more specific exception than NPE
- *     09/03/2010-2.2 Guy Pelletier 
+ *     09/03/2010-2.2 Guy Pelletier
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
- *     10/28/2010-2.2 Guy Pelletier 
+ *     10/28/2010-2.2 Guy Pelletier
  *       - 3223850: Primary key metadata issues
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     11/19/2012-2.5 Guy Pelletier 
+ *     11/19/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
@@ -39,15 +39,15 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 
 /**
  * Object to hold onto primary key metadata.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @see PrimaryKey
  * @author James Sutherland
  * @since EclipseLink 1.1
@@ -71,11 +71,11 @@ public class PrimaryKeyMetadata extends ORMetadata {
      */
     public PrimaryKeyMetadata(MetadataAnnotation primaryKey, MetadataAccessor accessor) {
         super(primaryKey, accessor);
-        
+
         m_validation = primaryKey.getAttributeString("validation");
-        
-        m_cacheKeyType = primaryKey.getAttributeString("cacheKeyType"); 
-        
+
+        m_cacheKeyType = primaryKey.getAttributeString("cacheKeyType");
+
         for (Object selectedColumn : primaryKey.getAttributeArray("columns")) {
             m_columns.add(new ColumnMetadata((MetadataAnnotation)selectedColumn, accessor));
         }
@@ -88,21 +88,21 @@ public class PrimaryKeyMetadata extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof PrimaryKeyMetadata) {
             PrimaryKeyMetadata primaryKey = (PrimaryKeyMetadata) objectToCompare;
-            
+
             if (! valuesMatch(m_validation, primaryKey.getValidation())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_cacheKeyType, primaryKey.getCacheKeyType())) {
                 return false;
             }
-            
+
             return valuesMatch(m_columns, primaryKey.getColumns());
         }
-        
+
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -110,7 +110,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
     public String getCacheKeyType() {
         return m_cacheKeyType;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -118,7 +118,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
     public List<ColumnMetadata> getColumns() {
         return m_columns;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -126,7 +126,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
     public String getValidation() {
         return m_validation;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -139,15 +139,15 @@ public class PrimaryKeyMetadata extends ORMetadata {
      */
     public void process(MetadataDescriptor descriptor) {
         descriptor.setHasPrimaryKey();
-        
+
         if (m_validation != null) {
             descriptor.getClassDescriptor().setIdValidation(IdValidation.valueOf(m_validation));
         }
-        
+
         if (m_cacheKeyType != null) {
             descriptor.getClassDescriptor().setCacheKeyType(CacheKeyType.valueOf(m_cacheKeyType));
         }
-        
+
         if (hasColumns()) {
             for (ColumnMetadata column : m_columns) {
                 if (column.getName().equals("")) {
@@ -158,7 +158,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -166,7 +166,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
     public void setCacheKeyType(String cacheKeyType) {
         m_cacheKeyType = cacheKeyType;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -174,7 +174,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
     public void setColumns(List<ColumnMetadata> columns) {
         m_columns = columns;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.

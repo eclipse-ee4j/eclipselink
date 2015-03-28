@@ -22,7 +22,7 @@
       <exchange>555</exchange>
       <number>1234</number>
     </phone>
-	<phone>
+    <phone>
       <!-- This is another comment -->
       <area-code>902</area-code>
       <exchange>555</exchange>
@@ -30,5 +30,5 @@
     </phone>
   </phones>
 </employee>
-      
-  
+
+

@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
 import java.security.AccessController;
@@ -38,7 +38,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
     protected Comparator m_comparator = null;
     protected Class  comparatorClass = null ;
     protected String comparatorClassName = null;
-    
+
 
     /**
      * INTERNAL:
@@ -56,7 +56,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
         super(containerClass);
     }
 
-    
+
     /**
      * INTERNAL:
      * Construct a new policy for the specified class name.
@@ -64,7 +64,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
     public SortedCollectionContainerPolicy(String containerClassName) {
         super(containerClassName);
     }
-    
+
     /**
      * INTERNAL:
      * Sets a comparator object for this policy to use when instantiating
@@ -87,7 +87,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
         }
         this.comparatorClass=comparatorClass;
     }
-    
+
     /**
      * INTERNAL:
      * Sets a comparator class name for this policy to use when instantiating
@@ -96,8 +96,8 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
     public void setComparatorClassName(String comparatorClassName) {
         this.comparatorClassName=comparatorClassName;
     }
-    
-    
+
+
     /**
      * INTERNAL:
      * Return the stored comparator
@@ -105,7 +105,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
     public Comparator getComparator() {
         return m_comparator;
     }
-    
+
     /**
      * INTERNAL:
      * Return the stored comparator class
@@ -113,8 +113,8 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
     public Class getComparatorClass() {
         return comparatorClass;
     }
-    
-    
+
+
     /**
      * INTERNAL:
      * return stored comparator class name
@@ -175,13 +175,13 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
             throw QueryException.couldNotInstantiateContainerClass(getContainerClass(), ex);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this SortedCollectionContainerPolicy to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
@@ -204,5 +204,5 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
              }
         }
     }
-    
+
 }

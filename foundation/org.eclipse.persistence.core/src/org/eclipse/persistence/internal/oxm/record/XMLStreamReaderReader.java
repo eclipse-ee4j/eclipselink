@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -44,36 +44,36 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         unmarshalNamespaceContext = new UnmarshalNamespaceContext();
         indexedAttributeList = new XMLStreamReaderAttributes();
     }
-    
+
     public Locator getLocator(){
-    	if(locator == null){
-    		locator = new StreamReaderLocator(xmlStreamReader);
-    	}
-    	return locator;
+        if(locator == null){
+            locator = new StreamReaderLocator(xmlStreamReader);
+        }
+        return locator;
     }
 
     @Override
-    public void setContentHandler (ContentHandler handler) {   
+    public void setContentHandler (ContentHandler handler) {
         if(handler instanceof UnmarshalRecord){
             ((UnmarshalRecord)handler).setUnmarshalNamespaceResolver(unmarshalNamespaceContext);
             qNameAware = false;
             if(null == validatingContentHandler) {
-            	this.contentHandler = (UnmarshalRecord) handler;
+                this.contentHandler = (UnmarshalRecord) handler;
             }else{
-            	 validatingContentHandler.setContentHandler(handler);
+                 validatingContentHandler.setContentHandler(handler);
             }
         }else if(handler instanceof SAXUnmarshallerHandler){
             ((SAXUnmarshallerHandler)handler).setUnmarshalNamespaceResolver(unmarshalNamespaceContext);
             qNameAware = true;
             if(null == validatingContentHandler) {
-            	this.contentHandler = (SAXUnmarshallerHandler) handler;
+                this.contentHandler = (SAXUnmarshallerHandler) handler;
             }else{
-            	 validatingContentHandler.setContentHandler(handler);
+                 validatingContentHandler.setContentHandler(handler);
             }
         } else {
-        	super.setContentHandler(handler);
+            super.setContentHandler(handler);
             qNameAware = true;
-        }               
+        }
     }
 
     @Override
@@ -86,9 +86,9 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
             parse(xmlStreamReader);
         }
     }
-  
+
     public void parse(XMLStreamReader xmlStreamReader) throws SAXException {
-    	this.xmlStreamReader = xmlStreamReader;
+        this.xmlStreamReader = xmlStreamReader;
         unmarshalNamespaceContext.setXmlStreamReader(xmlStreamReader);
         indexedAttributeList.setXmlStreamReader(xmlStreamReader);
         try {
@@ -262,7 +262,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                         }
                         String value = xmlStreamReader.getNamespaceURI(x);
                         attributes[x + attributeCount] = new Attribute(uri, localName, qName, value);
-                    }               
+                    }
 
                 }
             }
@@ -336,5 +336,5 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         }
 
     }
-    
+
 }

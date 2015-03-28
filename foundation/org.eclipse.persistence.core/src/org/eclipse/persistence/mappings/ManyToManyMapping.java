@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     07/19/2011-2.2.1 Guy Pelletier 
+ *     07/19/2011-2.2.1 Guy Pelletier
  *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
 import java.util.*;
@@ -51,14 +51,14 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
     /**
      * 266912: Since: EclipseLink 2.0 for the Metamodel API
-     * For 1:1 and m:m mappings - track the original externally defined mapping if different 
-     * Note: This field will provide differentiation for the following 
+     * For 1:1 and m:m mappings - track the original externally defined mapping if different
+     * Note: This field will provide differentiation for the following
      *   external to internal representations for mapping types<br>
      *   - A OneToManyMapping will be represented by a ManyToManyMapping if unidirectional<br>
-     *   - A ManyToOneMapping will be represented by a OneToOneMapping (without a FK constraint)<br>      
+     *   - A ManyToOneMapping will be represented by a OneToOneMapping (without a FK constraint)<br>
      */
     protected boolean isDefinedAsOneToManyMapping = false;
-    
+
     /**
      * PUBLIC:
      * Default constructor.
@@ -86,16 +86,16 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
     /**
      * PUBLIC:
-     * Add the fields in the intermediate table that corresponds to the primary 
+     * Add the fields in the intermediate table that corresponds to the primary
      * key in the source table. This method is used if the keys are composite.
      */
     public void addSourceRelationKeyField(DatabaseField sourceRelationKeyField, DatabaseField sourcePrimaryKeyField) {
         this.mechanism.addSourceRelationKeyField(sourceRelationKeyField, sourcePrimaryKeyField);
     }
-    
+
     /**
      * PUBLIC:
-     * Add the fields in the intermediate table that corresponds to the primary 
+     * Add the fields in the intermediate table that corresponds to the primary
      * key in the source table. This method is used if the keys are composite.
      */
     public void addSourceRelationKeyFieldName(String sourceRelationKeyFieldName, String sourcePrimaryKeyFieldName) {
@@ -104,16 +104,16 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
     /**
      * PUBLIC:
-     * Add the fields in the intermediate table that corresponds to the primary 
+     * Add the fields in the intermediate table that corresponds to the primary
      * key in the target table. This method is used if the keys are composite.
      */
     public void addTargetRelationKeyField(DatabaseField targetRelationKeyField, DatabaseField targetPrimaryKeyField) {
         this.mechanism.addTargetRelationKeyField(targetRelationKeyField, targetPrimaryKeyField);
     }
-    
+
     /**
      * PUBLIC:
-     * Add the fields in the intermediate table that corresponds to the primary 
+     * Add the fields in the intermediate table that corresponds to the primary
      * key in the target table. This method is used if the keys are composite.
      */
     public void addTargetRelationKeyFieldName(String targetRelationKeyFieldName, String targetPrimaryKeyFieldName) {
@@ -121,7 +121,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
      * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
@@ -136,7 +136,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      */
     @Override
     public Object clone() {
-        ManyToManyMapping clone = (ManyToManyMapping)super.clone();        
+        ManyToManyMapping clone = (ManyToManyMapping)super.clone();
         clone.mechanism = (RelationTableMechanism)this.mechanism.clone();
 
         return clone;
@@ -161,7 +161,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             this.historyPolicy.mappingLogicalDelete(this.deleteAllQuery, query.getTranslationRow(), querySession);
         }
     }
-    
+
     /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
@@ -169,7 +169,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return session.executeQuery(getSelectionQuery(), dbRow);
     }
-    
+
     /**
      * INTERNAL:
      * Adds locking clause to the target query to extend pessimistic lock scope.
@@ -178,14 +178,14 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     protected void extendPessimisticLockScopeInTargetQuery(ObjectLevelReadQuery targetQuery, ObjectBuildingQuery sourceQuery) {
         this.mechanism.setRelationTableLockingClause(targetQuery, sourceQuery);
     }
-    
+
     /**
      * INTERNAL:
-     * Called only if both 
+     * Called only if both
      * shouldExtendPessimisticLockScope and shouldExtendPessimisticLockScopeInSourceQuery are true.
      * Adds fields to be locked to the where clause of the source query.
      * Note that the sourceQuery must be ObjectLevelReadQuery so that it has ExpressionBuilder.
-     * 
+     *
      * This method must be implemented in subclasses that allow
      * setting shouldExtendPessimisticLockScopeInSourceQuery to true.
      */
@@ -215,7 +215,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     protected Object extractBatchKeyFromRow(AbstractRecord row, AbstractSession session) {
         return this.mechanism.extractBatchKeyFromRow(row, session);
     }
-    
+
     /**
      * INTERNAL:
      * Return the selection criteria used to IN batch fetching.
@@ -246,7 +246,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             mappingBatchQuery.setSelectionCriteria(twisted);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return the base expression to use for adding fields to the query.
@@ -256,7 +256,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     protected Expression getAdditionalFieldsBaseExpression(ReadQuery query) {
         return ((ReadAllQuery)query).getExpressionBuilder().getTable(getRelationTable());
     }
-    
+
 
     protected DataModifyQuery getDeleteQuery() {
         return this.mechanism.getDeleteQuery();
@@ -265,17 +265,17 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     /**
      * INTERNAL:
      * Should be overridden by subclass that allows setting
-     * extendPessimisticLockScope to DEDICATED_QUERY. 
+     * extendPessimisticLockScope to DEDICATED_QUERY.
      */
     @Override
     protected ReadQuery getExtendPessimisticLockScopeDedicatedQuery(AbstractSession session, short lockMode) {
         if(this.mechanism != null) {
-            return this.mechanism.getLockRelationTableQueryClone(session, lockMode);            
+            return this.mechanism.getLockRelationTableQueryClone(session, lockMode);
         } else {
             return super.getExtendPessimisticLockScopeDedicatedQuery(session, lockMode);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return source key fields for translation by an AggregateObjectMapping
@@ -284,7 +284,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     public Collection getFieldsForTranslationInAggregate() {
         return getRelationTableMechanism().getSourceKeyFields();
     }
-    
+
     protected DataModifyQuery getInsertQuery() {
         return this.mechanism.getInsertQuery();
     }
@@ -332,7 +332,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     public RelationTableMechanism getRelationTableMechanism() {
         return this.mechanism;
     }
-    
+
     /**
      * INTERNAL:
      * Return the relation table associated with the mapping.
@@ -457,7 +457,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             // substitute session that owns the mapping for the session that owns reference descriptor.
             session = session.getBroker().getSessionForClass(getReferenceClass());
         }
-        
+
         super.initialize(session);
         getDescriptor().addPreDeleteMapping(this);
 
@@ -477,7 +477,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         if (!getSelectionQuery().hasSessionName()) {
             getSelectionQuery().setSessionName(session.getName());
         }
-        
+
         initializeDeleteAllQuery(session);
         if (getHistoryPolicy() != null) {
             getHistoryPolicy().initialize(session);
@@ -500,16 +500,16 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         }
         this.listOrderField = getDescriptor().buildField(this.listOrderField, getRelationTable());
     }
-    
+
     /**
      * INTERNAL:
-     * Indicates whether getListOrderFieldExpression method should create field expression on table expression.  
+     * Indicates whether getListOrderFieldExpression method should create field expression on table expression.
      */
     @Override
     public boolean shouldUseListOrderFieldTableExpression() {
         return true;
     }
-        
+
     /**
      * INTERNAL:
      * Initialize changeOrderTargetQuery.
@@ -519,7 +519,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         if(!hasChangeOrderTargetQuery) {
             changeOrderTargetQuery = new DataModifyQuery();
         }
-        
+
         changeOrderTargetQuery = new DataModifyQuery();
         if (!changeOrderTargetQuery.hasSessionName()) {
             changeOrderTargetQuery.setSessionName(session.getName());
@@ -557,7 +557,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         statement.setModifyRow(modifyRow);
         changeOrderTargetQuery.setSQLStatement(statement);
     }
-    
+
     /**
      * Initialize delete all query. This query is used to all relevant rows from the
      * relation table.
@@ -596,21 +596,21 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
     /**
      * INTERNAL:
-     * Initializes listOrderField's table. 
+     * Initializes listOrderField's table.
      * Precondition: listOrderField != null.
      */
     @Override
     protected void initializeListOrderFieldTable(AbstractSession session) {
         this.mechanism.initializeRelationTable(session, this);
     }
-    
+
     /**
      * INTERNAL:
      * Selection criteria is created to read target records from the table.
      */
     protected void initializeSelectionCriteriaAndAddFieldsToQuery(Expression startCriteria) {
         setSelectionCriteria(this.mechanism.buildSelectionCriteriaAndAddFieldsToQuery(this, startCriteria));
-    }    
+    }
 
     /**
      * INTERNAL:
@@ -622,11 +622,11 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
         AbstractRecord databaseRow = this.mechanism.buildRelationTableSourceAndTargetRow(query.getTranslationRow(), containerPolicy.unwrapIteratorResult(objectAdded), query.getSession(), this);
         ContainerPolicy.copyMapDataToRow(getContainerPolicy().getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
-        
+
         if(listOrderField != null && extraData != null) {
             databaseRow.put(listOrderField, extraData.get(listOrderField));
         }
-        
+
         query.getExecutionSession().executeQuery(this.mechanism.getInsertQuery(), databaseRow);
         if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
             getHistoryPolicy().mappingLogicalInsert(this.mechanism.getInsertQuery(), databaseRow, query.getSession());
@@ -664,7 +664,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             databaseRow = this.mechanism.addRelationTableTargetRow(object, query.getExecutionSession(), databaseRow, this);
 
             ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()), databaseRow);
-            
+
             if(listOrderField != null) {
                 databaseRow.put(listOrderField, orderIndex++);
             }
@@ -734,7 +734,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     public boolean isDefinedAsOneToManyMapping() {
         return isDefinedAsOneToManyMapping;
     }
-    
+
     /**
      * INTERNAL:
      * Return if this mapping support joining.
@@ -748,7 +748,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     public boolean isManyToManyMapping() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Ensure the container policy is post initialized
@@ -815,7 +815,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
         AbstractRecord databaseRow = this.mechanism.buildRelationTableSourceAndTargetRow(query.getTranslationRow(), orderChangedObject, query.getSession(), this);
         databaseRow.put(listOrderField, orderIndex);
-  
+
         query.getSession().executeQuery(changeOrderTargetQuery, databaseRow);
     }
 
@@ -899,12 +899,12 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         AbstractSession session = query.getSession();
         Object objectsIterator = null;
         ContainerPolicy containerPolicy = getContainerPolicy();
-        
+
         if (this.isReadOnly) {
             return;
         }
         Object objects = null;
-        
+
         boolean cascade = shouldObjectModifyCascadeToParts(query);
         if (containerPolicy.propagatesEventsToCollection() || cascade) {
             // if processed during UnitOfWork commit process the private owned delete will occur during change calculation
@@ -1004,7 +1004,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     public void setDefinedAsOneToManyMapping(boolean isDefinedAsOneToManyMapping) {
         this.isDefinedAsOneToManyMapping = isDefinedAsOneToManyMapping;
     }
-    
+
     /**
      * PUBLIC:
      * Set the receiver's delete Call. This allows the user to override the SQL
@@ -1033,7 +1033,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     public void setInsertSQLString(String sqlString) {
         this.mechanism.setInsertSQLString(sqlString);
     }
-    
+
     /**
      * PUBLIC:
      * Set the receiver's insert Call. This allows the user to override the SQL
@@ -1050,7 +1050,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * PUBLIC:
      * Allows to set RelationTableMechanism to be owned by the mapping.
      * It's not necessary to explicitly set the mechanism:
-     * one is created by mapping's constructor. 
+     * one is created by mapping's constructor.
      * The only reason this method is provided
      * is to allow a uniform approach to RelationTableMechanism
      * in both ManyToManyMapping and OneToOneMapping
@@ -1061,7 +1061,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     void setRelationTableMechanism(RelationTableMechanism mechanism) {
         this.mechanism = mechanism;
     }
-    
+
     /**
      * PUBLIC:
      * Set the relational table.
@@ -1070,7 +1070,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     public void setRelationTable(DatabaseTable relationTable) {
         this.mechanism.setRelationTable(relationTable);
     }
-    
+
     /**
      * PUBLIC:
      * Enable history tracking on the m-m join table.
@@ -1190,7 +1190,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     public void setTargetRelationKeyFields(Vector<DatabaseField> targetRelationKeyFields) {
         this.mechanism.setTargetRelationKeyFields(targetRelationKeyFields);
     }
-    
+
     /**
      * INTERNAL:
      * Append the temporal selection to the query selection criteria.

@@ -1,49 +1,49 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/30/2008-1.0M8 Guy Pelletier 
+ *     05/30/2008-1.0M8 Guy Pelletier
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
- *     06/20/2008-1.0 Guy Pelletier 
+ *     06/20/2008-1.0 Guy Pelletier
  *       - 232975: Failure when attribute type is generic
- *     09/23/2008-1.1 Guy Pelletier 
+ *     09/23/2008-1.1 Guy Pelletier
  *       - 241651: JPA 2.0 Access Type support
- *     01/28/2009-2.0 Guy Pelletier 
- *       - 248293: JPA 2.0 Element Collections (part 1)   
- *     02/06/2009-2.0 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier
+ *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     02/06/2009-2.0 Guy Pelletier
  *       - 248293: JPA 2.0 Element Collections (part 2)
- *     03/27/2009-2.0 Guy Pelletier 
+ *     03/27/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     04/03/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     06/02/2009-2.0 Guy Pelletier 
+ *     06/02/2009-2.0 Guy Pelletier
  *       - 278768: JPA 2.0 Association Override Join Table
- *     06/09/2009-2.0 Guy Pelletier 
+ *     06/09/2009-2.0 Guy Pelletier
  *       - 249037: JPA 2.0 persisting list item index
- *     01/26/2010-2.0.1 Guy Pelletier 
+ *     01/26/2010-2.0.1 Guy Pelletier
  *       - 299893: @MapKeyClass does not work with ElementCollection
- *     02/18/2010-2.0.2 Guy Pelletier 
+ *     02/18/2010-2.0.2 Guy Pelletier
  *       - 294803: @Column(updatable=false) has no effect on @Basic mappings
- *     06/18/2010-2.2 Guy Pelletier 
+ *     06/18/2010-2.2 Guy Pelletier
  *       - 300458: EclispeLink should throw a more specific exception than NPE
- *     07/16/2010-2.2 Guy Pelletier 
+ *     07/16/2010-2.2 Guy Pelletier
  *       - 260296: mixed access with no Transient annotation does not result in error
- *     08/11/2010-2.2 Guy Pelletier 
+ *     08/11/2010-2.2 Guy Pelletier
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
- *     09/16/2010-2.2 Guy Pelletier 
+ *     09/16/2010-2.2 Guy Pelletier
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
- *     04/04/2012-2.3.3 Guy Pelletier 
+ *     04/04/2012-2.3.3 Guy Pelletier
  *       - 362180: ConcurrentModificationException on predeploy for AttributeOverride
- *     04/09/2012-2.4 Guy Pelletier 
+ *     04/09/2012-2.4 Guy Pelletier
  *       - 374377: OrderBy with ElementCollection doesn't work
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import org.eclipse.persistence.sessions.Session;
@@ -60,10 +60,10 @@ public class InheritedTableManager extends TogglingFastTableCreator {
     public InheritedTableManager() {
         setName("EJB3BeerProject");
 
-        addTableDefinition(build_BEER_CONSUMER_Table());        
+        addTableDefinition(build_BEER_CONSUMER_Table());
         addTableDefinition(build_BEER_CONSUMER_REDSTRIPES_Table());
         addTableDefinition(build_BEER_CONSUMER_REDSTRIPE_CONTENT_Table());
-        
+
         addTableDefinition(build_EXPERT_BEER_CONSUMER_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_AWARDS_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_COURSES_Table());
@@ -75,7 +75,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         addTableDefinition(build_EXPERT_BEER_CONSUMER_QUOTES_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_RECORDS_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_ACCREDIDATION_WITNESS_Table());
-        
+
         addTableDefinition(build_NOVICE_BEER_CONSUMER_Table());
         addTableDefinition(build_NOVICE_BEER_CONSUMER_AWARDS_Table());
         addTableDefinition(build_NOVICE_BEER_CONSUMER_ACCLAIMS_Table());
@@ -83,7 +83,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         addTableDefinition(build_NOVICE_BEER_CONSUMER_DESIGNATIONS_Table());
         addTableDefinition(build_NOVICE_BEER_CONSUMER_RECORDS_Table());
         addTableDefinition(build_NOVICE_BEER_CONSUMER_ACCREDIDATION_WITNESS_Table());
-        
+
         addTableDefinition(build_ALPINE_Table());
         addTableDefinition(build_BECKS_Table());
         addTableDefinition(build_BECKS_TAG_Table());
@@ -91,7 +91,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         addTableDefinition(build_CANADIAN_Table());
         addTableDefinition(build_CORONA_Table());
         addTableDefinition(build_HEINEKEN_Table());
-        
+
         addTableDefinition(build_OFFICIAL_Table());
         addTableDefinition(build_OFFICIAL_COMPENSATIONTable());
         addTableDefinition(build_OFFICIAL_ENTRY_Table());
@@ -101,16 +101,16 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         addTableDefinition(build_SERIALNUMBER_Table());
         addTableDefinition(build_TELEPHONE_NUMBER_Table());
         addTableDefinition(build_LOCATION_Table());
-        
+
         addTableDefinition(build_BC_LOOKUP_Table());
         addTableDefinition(build_NOISE_BYLAW_Table());
         addTableDefinition(build_BUILDING_BYLAW_Table());
     }
-    
+
     public static TableDefinition build_ALPINE_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_ALPINE");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -119,9 +119,9 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ID_field.setUnique(false);
         ID_field.setIsIdentity(false);
         ID_field.setShouldAllowNull(false);
-        ID_field.setForeignKeyFieldName("CMP3_SERIAL_NUMBER.S_NUMBER"); 
+        ID_field.setForeignKeyFieldName("CMP3_SERIAL_NUMBER.S_NUMBER");
         table.addField(ID_field);
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -131,7 +131,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition BEST_BEFORE_DATE_field = new FieldDefinition();
         BEST_BEFORE_DATE_field.setName("BB_DATE");
         BEST_BEFORE_DATE_field.setTypeName("DATETIME");
@@ -141,7 +141,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEST_BEFORE_DATE_field.setIsIdentity(false);
         BEST_BEFORE_DATE_field.setShouldAllowNull(true);
         table.addField(BEST_BEFORE_DATE_field);
-        
+
         FieldDefinition CLASSIFICATION_field = new FieldDefinition();
         CLASSIFICATION_field.setName("CLASSIFICATION");
         CLASSIFICATION_field.setTypeName("NUMERIC");
@@ -151,7 +151,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         CLASSIFICATION_field.setIsIdentity(false);
         CLASSIFICATION_field.setShouldAllowNull(true);
         table.addField(CLASSIFICATION_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -162,7 +162,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_CONSUMER_ID_field.setShouldAllowNull(true);
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
-        
+
         FieldDefinition BEER_DOUBLE_ID_field = new FieldDefinition();
         BEER_DOUBLE_ID_field.setName("BD_ID");
         BEER_DOUBLE_ID_field.setTypeName("NUMERIC");
@@ -173,7 +173,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_DOUBLE_ID_field.setShouldAllowNull(true);
         BEER_DOUBLE_ID_field.setForeignKeyFieldName("CMP3_ALPINE.ID");
         table.addField(BEER_DOUBLE_ID_field);
-        
+
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
@@ -183,7 +183,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         VERSION_field.setIsIdentity(false);
         VERSION_field.setShouldAllowNull(true);
         table.addField(VERSION_field);
-        
+
         FieldDefinition fieldINSPECTIONDATES = new FieldDefinition();
         fieldINSPECTIONDATES.setName("I_DATES");
         fieldINSPECTIONDATES.setTypeName("LONG RAW");
@@ -197,12 +197,12 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
-    
+
+
     public static TableDefinition build_BC_LOOKUP_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_ALPINE_LOOKUP");
-        
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("S_NUMBER");
         ID_field.setTypeName("NUMERIC");
@@ -236,11 +236,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_BECKS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_BECKS");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -248,9 +248,9 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ID_field.setIsPrimaryKey(true);
         ID_field.setUnique(false);
         ID_field.setIsIdentity(false);
-        ID_field.setShouldAllowNull(false); 
+        ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -271,7 +271,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BECKS_TAG_field.setShouldAllowNull(true);
         BECKS_TAG_field.setForeignKeyFieldName("CMP3_BECKS_TAG.ID");
         table.addField(BECKS_TAG_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -282,7 +282,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_CONSUMER_ID_field.setShouldAllowNull(true);
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
-        
+
         FieldDefinition BEER_DOUBLE_ID_field = new FieldDefinition();
         BEER_DOUBLE_ID_field.setName("BD_ID");
         BEER_DOUBLE_ID_field.setTypeName("NUMERIC");
@@ -293,7 +293,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_DOUBLE_ID_field.setShouldAllowNull(true);
         BEER_DOUBLE_ID_field.setForeignKeyFieldName("CMP3_BECKS.ID");
         table.addField(BEER_DOUBLE_ID_field);
-        
+
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
@@ -306,11 +306,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_BECKS_TAG_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_BECKS_TAG");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -318,7 +318,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ID_field.setIsPrimaryKey(true);
         ID_field.setUnique(false);
         ID_field.setIsIdentity(false);
-        ID_field.setShouldAllowNull(false); 
+        ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
 
         FieldDefinition CALL_NUMBER_field = new FieldDefinition();
@@ -330,14 +330,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         CALL_NUMBER_field.setUnique(false);
         CALL_NUMBER_field.setIsIdentity(false);
         table.addField(CALL_NUMBER_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_BEER_CONSUMER_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CONSUMER");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -357,7 +357,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         NAME_field.setUnique(false);
         NAME_field.setIsIdentity(false);
         table.addField(NAME_field);
-        
+
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("NUMERIC");
@@ -367,7 +367,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         VERSION_field.setUnique(false);
         VERSION_field.setIsIdentity(false);
         table.addField(VERSION_field);
-        
+
         FieldDefinition DTYPE_field = new FieldDefinition();
         DTYPE_field.setName("DTYPE");
         DTYPE_field.setTypeName("VARCHAR2");
@@ -381,11 +381,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_BEER_CONSUMER_REDSTRIPES_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CONSUMER_REDSTRIPES");
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOLCONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -395,7 +395,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition RS_KEY_field = new FieldDefinition();
         RS_KEY_field.setName("RS_KEY");
         RS_KEY_field.setTypeName("VARCHAR");
@@ -405,7 +405,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         RS_KEY_field.setUnique(true);
         RS_KEY_field.setIsIdentity(false);
         table.addField(RS_KEY_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -419,11 +419,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_BEER_CONSUMER_REDSTRIPE_CONTENT_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CONSUMER_REDSTRIPE_CONTENT");
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOLCONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -433,7 +433,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -447,11 +447,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_BLUE_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_BLUE");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -461,7 +461,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ID_field.setIsIdentity(false);
         ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -471,7 +471,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -482,7 +482,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_CONSUMER_ID_field.setShouldAllowNull(true);
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
-        
+
         FieldDefinition BEER_DOUBLE_ID_field = new FieldDefinition();
         BEER_DOUBLE_ID_field.setName("BD_ID");
         BEER_DOUBLE_ID_field.setTypeName("NUMERIC");
@@ -493,7 +493,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_DOUBLE_ID_field.setShouldAllowNull(true);
         BEER_DOUBLE_ID_field.setForeignKeyFieldName("CMP3_BLUE.ID");
         table.addField(BEER_DOUBLE_ID_field);
-        
+
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
@@ -503,7 +503,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         VERSION_field.setIsIdentity(false);
         VERSION_field.setShouldAllowNull(true);
         table.addField(VERSION_field);
-        
+
         FieldDefinition UNIQUE_KEY_field = new FieldDefinition();
         UNIQUE_KEY_field.setName("UNIQUEKEY");
         UNIQUE_KEY_field.setTypeName("NUMERIC");
@@ -513,7 +513,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         UNIQUE_KEY_field.setIsIdentity(false);
         UNIQUE_KEY_field.setShouldAllowNull(false);
         table.addField(UNIQUE_KEY_field);
-        
+
         FieldDefinition DTYPE_field = new FieldDefinition();
         DTYPE_field.setName("DTYPE");
         DTYPE_field.setTypeName("VARCHAR2");
@@ -524,7 +524,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         DTYPE_field.setUnique(false);
         DTYPE_field.setShouldAllowNull(true);
         table.addField(DTYPE_field);
-        
+
         FieldDefinition DISCOUNT_field = new FieldDefinition();
         DISCOUNT_field.setName("DISCOUNT");
         DISCOUNT_field.setTypeName("NUMERIC");
@@ -537,11 +537,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_CANADIAN_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CANADIAN");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -551,7 +551,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ID_field.setIsIdentity(false);
         ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -561,7 +561,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition BORN_ON_DATE_field = new FieldDefinition();
         BORN_ON_DATE_field.setName("BORN");
         BORN_ON_DATE_field.setTypeName("DATETIME");
@@ -571,7 +571,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BORN_ON_DATE_field.setIsIdentity(false);
         BORN_ON_DATE_field.setShouldAllowNull(true);
         table.addField(BORN_ON_DATE_field);
-        
+
         FieldDefinition FLAVOR_field = new FieldDefinition();
         FLAVOR_field.setName("FLAVOR");
         FLAVOR_field.setTypeName("INTEGER");
@@ -592,7 +592,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_CONSUMER_ID_field.setShouldAllowNull(true);
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
-        
+
         FieldDefinition BEER_DOUBLE_ID_field = new FieldDefinition();
         BEER_DOUBLE_ID_field.setName("BD_ID");
         BEER_DOUBLE_ID_field.setTypeName("NUMERIC");
@@ -603,7 +603,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_DOUBLE_ID_field.setShouldAllowNull(true);
         BEER_DOUBLE_ID_field.setForeignKeyFieldName("CMP3_CANADIAN.ID");
         table.addField(BEER_DOUBLE_ID_field);
-        
+
         FieldDefinition fieldPROPERTIES = new FieldDefinition();
         fieldPROPERTIES.setName("PROPERTIES");
         fieldPROPERTIES.setTypeName("LONG RAW");
@@ -624,14 +624,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         VERSION_field.setIsIdentity(false);
         VERSION_field.setShouldAllowNull(true);
         table.addField(VERSION_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_CORONA_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CORONA");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -639,9 +639,9 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ID_field.setIsPrimaryKey(true);
         ID_field.setUnique(false);
         ID_field.setIsIdentity(false);
-        ID_field.setShouldAllowNull(false); 
+        ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -651,7 +651,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition TAG_NUMBER_field = new FieldDefinition();
         TAG_NUMBER_field.setName("TAG_NUMBER");
         TAG_NUMBER_field.setTypeName("NUMERIC");
@@ -659,7 +659,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         TAG_NUMBER_field.setIsPrimaryKey(false);
         TAG_NUMBER_field.setUnique(false);
         TAG_NUMBER_field.setIsIdentity(false);
-        TAG_NUMBER_field.setShouldAllowNull(true); 
+        TAG_NUMBER_field.setShouldAllowNull(true);
         table.addField(TAG_NUMBER_field);
 
         FieldDefinition TAG_CODE_field = new FieldDefinition();
@@ -671,7 +671,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         TAG_CODE_field.setUnique(false);
         TAG_CODE_field.setIsIdentity(false);
         table.addField(TAG_CODE_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -682,7 +682,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_CONSUMER_ID_field.setShouldAllowNull(true);
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
-        
+
         FieldDefinition BEER_DOUBLE_ID_field = new FieldDefinition();
         BEER_DOUBLE_ID_field.setName("BD_ID");
         BEER_DOUBLE_ID_field.setTypeName("NUMERIC");
@@ -693,7 +693,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_DOUBLE_ID_field.setShouldAllowNull(true);
         BEER_DOUBLE_ID_field.setForeignKeyFieldName("CMP3_CORONA.ID");
         table.addField(BEER_DOUBLE_ID_field);
-        
+
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
@@ -706,11 +706,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_CERTIFICATION_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CERTIFICATION");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -730,7 +730,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         DESCRIPTION_field.setUnique(false);
         DESCRIPTION_field.setIsIdentity(false);
         table.addField(DESCRIPTION_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("CONSUMER_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -744,11 +744,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_COMMITTEE_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_COMMITTEE");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -768,7 +768,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         DESCRIPTION_field.setUnique(false);
         DESCRIPTION_field.setIsIdentity(false);
         table.addField(DESCRIPTION_field);
-        
+
         FieldDefinition fieldSTARTDATE = new FieldDefinition();
         fieldSTARTDATE.setName("STARTDATE");
         fieldSTARTDATE.setTypeName("VARCHAR");
@@ -778,7 +778,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldSTARTDATE.setUnique(false);
         fieldSTARTDATE.setIsIdentity(false);
         table.addField(fieldSTARTDATE);
-    
+
         FieldDefinition fieldENDDATE = new FieldDefinition();
         fieldENDDATE.setName("ENDDATE");
         fieldENDDATE.setTypeName("VARCHAR");
@@ -788,7 +788,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldENDDATE.setUnique(false);
         fieldENDDATE.setIsIdentity(false);
         table.addField(fieldENDDATE);
-        
+
         FieldDefinition CAPTION_field = new FieldDefinition();
         CAPTION_field.setName("CAPTION");
         CAPTION_field.setTypeName("VARCHAR");
@@ -801,11 +801,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("EXPERT_CONSUMER");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -816,7 +816,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ID_field.setShouldAllowNull(false);
         ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(ID_field);
-        
+
         FieldDefinition IQ_field = new FieldDefinition();
         IQ_field.setName("CONSUMER_IQ");
         IQ_field.setTypeName("NUMERIC");
@@ -826,7 +826,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         IQ_field.setUnique(false);
         IQ_field.setIsIdentity(false);
         table.addField(IQ_field);
-        
+
         FieldDefinition ACCREDIDATION_field = new FieldDefinition();
         ACCREDIDATION_field.setName("ACCREDIDATION");
         ACCREDIDATION_field.setTypeName("VARCHAR");
@@ -836,14 +836,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ACCREDIDATION_field.setUnique(false);
         ACCREDIDATION_field.setIsIdentity(false);
         table.addField(ACCREDIDATION_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_HEINEKEN_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_HEINEKEN");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -851,9 +851,9 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ID_field.setIsPrimaryKey(true);
         ID_field.setUnique(false);
         ID_field.setIsIdentity(false);
-        ID_field.setShouldAllowNull(false); 
+        ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-    
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOL_CONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -863,7 +863,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition BOTTLED_DATE_field = new FieldDefinition();
         BOTTLED_DATE_field.setName("BOTTLED_DATE");
         BOTTLED_DATE_field.setTypeName("DATETIME");
@@ -873,7 +873,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BOTTLED_DATE_field.setIsIdentity(false);
         BOTTLED_DATE_field.setShouldAllowNull(true);
         table.addField(BOTTLED_DATE_field);
-        
+
         FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
         BEER_CONSUMER_ID_field.setName("C_ID");
         BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
@@ -884,7 +884,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_CONSUMER_ID_field.setShouldAllowNull(true);
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
-        
+
         FieldDefinition BEER_DOUBLE_ID_field = new FieldDefinition();
         BEER_DOUBLE_ID_field.setName("BD_ID");
         BEER_DOUBLE_ID_field.setTypeName("NUMERIC");
@@ -895,7 +895,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_DOUBLE_ID_field.setShouldAllowNull(true);
         BEER_DOUBLE_ID_field.setForeignKeyFieldName("CMP3_HEINEKEN.ID");
         table.addField(BEER_DOUBLE_ID_field);
-        
+
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
@@ -908,11 +908,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_LOCATION_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA2_LOCATION");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("VARCHAR");
@@ -922,7 +922,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ID_field.setIsIdentity(false);
         ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-        
+
         FieldDefinition CITY_field = new FieldDefinition();
         CITY_field.setName("CITY");
         CITY_field.setTypeName("VARCHAR");
@@ -932,7 +932,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         CITY_field.setUnique(false);
         CITY_field.setIsIdentity(false);
         table.addField(CITY_field);
-        
+
         FieldDefinition COUNTRY_field = new FieldDefinition();
         COUNTRY_field.setName("COUNTRY");
         COUNTRY_field.setTypeName("VARCHAR");
@@ -942,14 +942,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         COUNTRY_field.setUnique(false);
         COUNTRY_field.setIsIdentity(false);
         table.addField(COUNTRY_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_BUILDING_BYLAW_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_BUILDING");
-        
+
         FieldDefinition CITY_field = new FieldDefinition();
         CITY_field.setName("CITY");
         CITY_field.setTypeName("VARCHAR");
@@ -959,7 +959,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         CITY_field.setIsIdentity(false);
         CITY_field.setShouldAllowNull(false);
         table.addField(CITY_field);
-        
+
         FieldDefinition NUMB_field = new FieldDefinition();
         NUMB_field.setName("NUMB");
         NUMB_field.setTypeName("NUMERIC");
@@ -969,7 +969,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         NUMB_field.setIsIdentity(false);
         NUMB_field.setShouldAllowNull(false);
         table.addField(NUMB_field);
-        
+
         FieldDefinition DESCRIP_field = new FieldDefinition();
         DESCRIP_field.setName("DESCRIP");
         DESCRIP_field.setTypeName("VARCHAR");
@@ -979,7 +979,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         DESCRIP_field.setIsIdentity(false);
         DESCRIP_field.setShouldAllowNull(true);
         table.addField(DESCRIP_field);
-        
+
         FieldDefinition RELATED_ID_field = new FieldDefinition();
         RELATED_ID_field.setName("RELATED_ID");
         RELATED_ID_field.setTypeName("NUMERIC");
@@ -989,7 +989,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         RELATED_ID_field.setIsIdentity(false);
         RELATED_ID_field.setShouldAllowNull(true);
         table.addField(RELATED_ID_field);
-        
+
         FieldDefinition RELATED_CITY_field = new FieldDefinition();
         RELATED_CITY_field.setName("RELATED_CITY");
         RELATED_CITY_field.setTypeName("VARCHAR");
@@ -999,7 +999,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         RELATED_CITY_field.setIsIdentity(false);
         RELATED_CITY_field.setShouldAllowNull(true);
         table.addField(RELATED_CITY_field);
-        
+
         FieldDefinition REF_ID_field = new FieldDefinition();
         REF_ID_field.setName("REF_ID");
         REF_ID_field.setTypeName("NUMERIC");
@@ -1009,7 +1009,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         REF_ID_field.setIsIdentity(false);
         REF_ID_field.setShouldAllowNull(true);
         table.addField(REF_ID_field);
-        
+
         FieldDefinition REF_CITY_field = new FieldDefinition();
         REF_CITY_field.setName("REF_CITY");
         REF_CITY_field.setTypeName("VARCHAR");
@@ -1019,14 +1019,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         REF_CITY_field.setIsIdentity(false);
         REF_CITY_field.setShouldAllowNull(true);
         table.addField(REF_CITY_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_NOISE_BYLAW_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_NOISY");
-        
+
         FieldDefinition CITY_field = new FieldDefinition();
         CITY_field.setName("CITY");
         CITY_field.setTypeName("VARCHAR");
@@ -1036,7 +1036,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         CITY_field.setIsIdentity(false);
         CITY_field.setShouldAllowNull(false);
         table.addField(CITY_field);
-        
+
         FieldDefinition NUMB_field = new FieldDefinition();
         NUMB_field.setName("NUMB");
         NUMB_field.setTypeName("NUMERIC");
@@ -1046,7 +1046,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         NUMB_field.setIsIdentity(false);
         NUMB_field.setShouldAllowNull(false);
         table.addField(NUMB_field);
-        
+
         FieldDefinition DESCRIP_field = new FieldDefinition();
         DESCRIP_field.setName("DESCRIP");
         DESCRIP_field.setTypeName("VARCHAR");
@@ -1056,14 +1056,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         DESCRIP_field.setIsIdentity(false);
         DESCRIP_field.setShouldAllowNull(true);
         table.addField(DESCRIP_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_ACCLAIMS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("EXPERT_CONSUMER_ACCLAIMS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EXPERT_CONSUMER_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1073,7 +1073,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("ACCLAIM");
         field1.setTypeName("VARCHAR");
@@ -1083,12 +1083,12 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-        
+
         table.addForeignKeyConstraint("FK_EC_ACC", "EXPERT_CONSUMER_ID", "ID", "EXPERT_CONSUMER");
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_ACCREDIDATION_WITNESS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("EBC_ACCREDIDATION_WITNESS");
@@ -1103,7 +1103,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldCONSUMERID.setIsIdentity(false);
         fieldCONSUMERID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(fieldCONSUMERID);
-        
+
         FieldDefinition fieldWITNESSID = new FieldDefinition();
         fieldWITNESSID.setName("WITNESS_ID");
         fieldWITNESSID.setTypeName("NUMERIC");
@@ -1117,11 +1117,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_AUDIO_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("EXPERT_CONSUMER_AUDIO");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1131,7 +1131,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAUDIO = new FieldDefinition();
         fieldAUDIO.setName("AUDIO");
         fieldAUDIO.setTypeName("BLOB");
@@ -1142,17 +1142,17 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldAUDIO.setUnique(false);
         fieldAUDIO.setShouldAllowNull(true);
         table.addField(fieldAUDIO);
-        
+
         table.addForeignKeyConstraint("FK_EC_AUD", "ID", "ID", "EXPERT_CONSUMER");
-    
+
         return table;
     }
-    
-    
+
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_COURSES_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("EXPERT_COURSES");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1163,7 +1163,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAWARDS_KEY = new FieldDefinition();
         fieldAWARDS_KEY.setName("COURSE");
         fieldAWARDS_KEY.setTypeName("VARCHAR");
@@ -1173,7 +1173,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldAWARDS_KEY.setUnique(true);
         fieldAWARDS_KEY.setIsIdentity(false);
         table.addField(fieldAWARDS_KEY);
-        
+
         FieldDefinition fieldAWARD_CODE = new FieldDefinition();
         fieldAWARD_CODE.setName("COURSE_GRADE");
         fieldAWARD_CODE.setTypeName("VARCHAR");
@@ -1183,14 +1183,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldAWARD_CODE.setUnique(false);
         fieldAWARD_CODE.setIsIdentity(false);
         table.addField(fieldAWARD_CODE);
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_AWARDS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("EXPERT_CONSUMER_AWARDS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1200,7 +1200,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAWARDS_KEY = new FieldDefinition();
         fieldAWARDS_KEY.setName("AWARDS_KEY");
         fieldAWARDS_KEY.setTypeName("VARCHAR");
@@ -1210,7 +1210,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldAWARDS_KEY.setUnique(true);
         fieldAWARDS_KEY.setIsIdentity(false);
         table.addField(fieldAWARDS_KEY);
-        
+
         FieldDefinition fieldAWARD_CODE = new FieldDefinition();
         fieldAWARD_CODE.setName("AWARD_CODE");
         fieldAWARD_CODE.setTypeName("VARCHAR");
@@ -1220,16 +1220,16 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldAWARD_CODE.setUnique(false);
         fieldAWARD_CODE.setIsIdentity(false);
         table.addField(fieldAWARD_CODE);
-        
+
         table.addForeignKeyConstraint("FK_EC_AWD", "ID", "ID", "EXPERT_CONSUMER");
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_DESIGNATIONS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("EXPERT_CONSUMER_DESIGNATIONS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EXPERT_CONSUMER_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1239,7 +1239,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldDESIGNATION = new FieldDefinition();
         fieldDESIGNATION.setName("DESIGNATION");
         fieldDESIGNATION.setTypeName("VARCHAR");
@@ -1249,7 +1249,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldDESIGNATION.setUnique(false);
         fieldDESIGNATION.setIsIdentity(false);
         table.addField(fieldDESIGNATION);
-        
+
         FieldDefinition fieldORDER_COLUMN = new FieldDefinition();
         fieldORDER_COLUMN.setName("ORDER_COLUMN");
         fieldORDER_COLUMN.setTypeName("NUMERIC");
@@ -1259,16 +1259,16 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldORDER_COLUMN.setUnique(false);
         fieldORDER_COLUMN.setIsIdentity(false);
         table.addField(fieldORDER_COLUMN);
-        
+
         table.addForeignKeyConstraint("FK_EC_DESG", "EXPERT_CONSUMER_ID", "ID", "EXPERT_CONSUMER");
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_CELEBRATIONS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("EXPERT_CELEBRATIONS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1279,7 +1279,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition DETAILS_field = new FieldDefinition();
         DETAILS_field.setName("DETAILS");
         DETAILS_field.setTypeName("VARCHAR");
@@ -1289,7 +1289,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         DETAILS_field.setUnique(false);
         DETAILS_field.setIsIdentity(false);
         table.addField(DETAILS_field);
-        
+
         FieldDefinition BIRTH_DAY_field = new FieldDefinition();
         BIRTH_DAY_field.setName("BIRTH_DAY");
         BIRTH_DAY_field.setTypeName("NUMERIC");
@@ -1299,7 +1299,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BIRTH_DAY_field.setUnique(false);
         BIRTH_DAY_field.setIsIdentity(false);
         table.addField(BIRTH_DAY_field);
-        
+
         FieldDefinition BIRTH_MONTH_field = new FieldDefinition();
         BIRTH_MONTH_field.setName("BIRTH_MONTH");
         BIRTH_MONTH_field.setTypeName("NUMERIC");
@@ -1309,7 +1309,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BIRTH_MONTH_field.setUnique(false);
         BIRTH_MONTH_field.setIsIdentity(false);
         table.addField(BIRTH_MONTH_field);
-        
+
         FieldDefinition BIRTH_YEAR_field = new FieldDefinition();
         BIRTH_YEAR_field.setName("BIRTH_YEAR");
         BIRTH_YEAR_field.setTypeName("NUMERIC");
@@ -1319,10 +1319,10 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BIRTH_YEAR_field.setUnique(false);
         BIRTH_YEAR_field.setIsIdentity(false);
         table.addField(BIRTH_YEAR_field);
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_COMMITTEE_Table() {
         TableDefinition table = new TableDefinition();
 
@@ -1338,7 +1338,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldCONSUMERID.setIsIdentity(false);
         fieldCONSUMERID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(fieldCONSUMERID);
-        
+
         FieldDefinition fieldCOMMITTEEID = new FieldDefinition();
         fieldCOMMITTEEID.setName("COMMITTEE_ID");
         fieldCOMMITTEEID.setTypeName("NUMERIC");
@@ -1359,14 +1359,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldORDER_COLUMN.setUnique(false);
         fieldORDER_COLUMN.setIsIdentity(false);
         table.addField(fieldORDER_COLUMN);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_QUOTES_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("EXPERT_QUOTES");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EBC_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1377,7 +1377,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldQ_DATE = new FieldDefinition();
         fieldQ_DATE.setName("Q_DATE");
         fieldQ_DATE.setTypeName("DATE");
@@ -1397,14 +1397,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldQUOTE.setUnique(false);
         fieldQUOTE.setIsIdentity(false);
         table.addField(fieldQUOTE);
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_EXPERT_BEER_CONSUMER_RECORDS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("EXPERT_CONSUMER_RECORDS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EXPERT_CONSUMER_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1414,7 +1414,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldQ_DATE = new FieldDefinition();
         fieldQ_DATE.setName("RECORD_DATE");
         fieldQ_DATE.setTypeName("DATE");
@@ -1424,7 +1424,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldQ_DATE.setUnique(false);
         fieldQ_DATE.setIsIdentity(false);
         table.addField(fieldQ_DATE);
-        
+
         FieldDefinition DESCRIP_field = new FieldDefinition();
         DESCRIP_field.setName("DESCRIPTION");
         DESCRIP_field.setTypeName("VARCHAR");
@@ -1434,7 +1434,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         DESCRIP_field.setUnique(false);
         DESCRIP_field.setIsIdentity(false);
         table.addField(DESCRIP_field);
-        
+
         FieldDefinition LOCATION_ID_field = new FieldDefinition();
         LOCATION_ID_field.setName("LOCATION_ID");
         LOCATION_ID_field.setTypeName("VARCHAR");
@@ -1445,7 +1445,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         LOCATION_ID_field.setShouldAllowNull(false);
         LOCATION_ID_field.setForeignKeyFieldName("JPA2_LOCATION.ID");
         table.addField(LOCATION_ID_field);
-        
+
         FieldDefinition VENUE_NAME_field = new FieldDefinition();
         VENUE_NAME_field.setName("VENUE_NAME");
         VENUE_NAME_field.setTypeName("VARCHAR");
@@ -1455,7 +1455,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         VENUE_NAME_field.setUnique(false);
         VENUE_NAME_field.setIsIdentity(false);
         table.addField(VENUE_NAME_field);
-        
+
         FieldDefinition WITNESSES_field = new FieldDefinition();
         WITNESSES_field.setName("WITNESSES");
         WITNESSES_field.setTypeName("NUMERIC");
@@ -1465,7 +1465,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         WITNESSES_field.setIsIdentity(false);
         WITNESSES_field.setShouldAllowNull(true);
         table.addField(WITNESSES_field);
-        
+
         FieldDefinition BUILDER_field = new FieldDefinition();
         BUILDER_field.setName("BUILDER");
         BUILDER_field.setTypeName("VARCHAR");
@@ -1475,7 +1475,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BUILDER_field.setUnique(false);
         BUILDER_field.setIsIdentity(false);
         table.addField(BUILDER_field);
-        
+
         FieldDefinition YEAR_BUILT_field = new FieldDefinition();
         YEAR_BUILT_field.setName("YEAR_BUILT");
         YEAR_BUILT_field.setTypeName("NUMERIC");
@@ -1485,7 +1485,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         YEAR_BUILT_field.setIsIdentity(false);
         YEAR_BUILT_field.setShouldAllowNull(true);
         table.addField(YEAR_BUILT_field);
-        
+
         FieldDefinition fieldORDER_COLUMN = new FieldDefinition();
         fieldORDER_COLUMN.setName("ORDER_COLUMN");
         fieldORDER_COLUMN.setTypeName("NUMERIC");
@@ -1495,16 +1495,16 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldORDER_COLUMN.setUnique(false);
         fieldORDER_COLUMN.setIsIdentity(false);
         table.addField(fieldORDER_COLUMN);
-        
+
         table.addForeignKeyConstraint("FK_EC_REC", "EXPERT_CONSUMER_ID", "ID", "EXPERT_CONSUMER");
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("NOVICE_CONSUMER");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -1515,7 +1515,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ID_field.setShouldAllowNull(false);
         ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(ID_field);
-        
+
         FieldDefinition IQ_field = new FieldDefinition();
         IQ_field.setName("CONSUMER_IQ");
         IQ_field.setTypeName("NUMERIC");
@@ -1525,7 +1525,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         IQ_field.setUnique(false);
         IQ_field.setIsIdentity(false);
         table.addField(IQ_field);
-        
+
         FieldDefinition ACCREDIDATION_field = new FieldDefinition();
         ACCREDIDATION_field.setName("ACCR_DETAILS");
         ACCREDIDATION_field.setTypeName("VARCHAR");
@@ -1535,14 +1535,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ACCREDIDATION_field.setUnique(false);
         ACCREDIDATION_field.setIsIdentity(false);
         table.addField(ACCREDIDATION_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_ACCLAIMS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("NOVICE_CONSUMER_ACCLAIMS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("NOVICE_CONSUMER_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1553,7 +1553,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("ACCLAIM");
         field1.setTypeName("NUMERIC");
@@ -1563,10 +1563,10 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_ACCREDIDATION_WITNESS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("NBC_ACCREDITATION_WITNESS");
@@ -1581,7 +1581,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldCONSUMERID.setIsIdentity(false);
         fieldCONSUMERID.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
         table.addField(fieldCONSUMERID);
-        
+
         FieldDefinition fieldWITNESSID = new FieldDefinition();
         fieldWITNESSID.setName("WITNESSID");
         fieldWITNESSID.setTypeName("NUMERIC");
@@ -1595,11 +1595,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_AWARDS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("NOVICE_CONSUMER_AWARDS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1610,7 +1610,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAWARDS_KEY = new FieldDefinition();
         fieldAWARDS_KEY.setName("AWARDS_KEY");
         fieldAWARDS_KEY.setTypeName("NUMERIC");
@@ -1620,7 +1620,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldAWARDS_KEY.setUnique(true);
         fieldAWARDS_KEY.setIsIdentity(false);
         table.addField(fieldAWARDS_KEY);
-        
+
         FieldDefinition fieldAWARD_CODE = new FieldDefinition();
         fieldAWARD_CODE.setName("AWARD_CODE");
         fieldAWARD_CODE.setTypeName("NUMERIC");
@@ -1630,10 +1630,10 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldAWARD_CODE.setUnique(false);
         fieldAWARD_CODE.setIsIdentity(false);
         table.addField(fieldAWARD_CODE);
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_COMMITTEE_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_NBC_COMMITTEE");
@@ -1648,7 +1648,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldCONSUMERID.setIsIdentity(false);
         fieldCONSUMERID.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
         table.addField(fieldCONSUMERID);
-        
+
         FieldDefinition fieldCOMMITTEEID = new FieldDefinition();
         fieldCOMMITTEEID.setName("COM_ID");
         fieldCOMMITTEEID.setTypeName("NUMERIC");
@@ -1669,14 +1669,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldORDER_COLUMN.setUnique(false);
         fieldORDER_COLUMN.setIsIdentity(false);
         table.addField(fieldORDER_COLUMN);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_DESIGNATIONS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("NOVICE_CONSUMER_DESIGNATIONS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("NOVICE_CONSUMER_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1687,7 +1687,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldDESIGNATION = new FieldDefinition();
         fieldDESIGNATION.setName("DESIGNATION");
         fieldDESIGNATION.setTypeName("VARCHAR");
@@ -1697,7 +1697,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldDESIGNATION.setUnique(false);
         fieldDESIGNATION.setIsIdentity(false);
         table.addField(fieldDESIGNATION);
-        
+
         FieldDefinition fieldORDER_COLUMN = new FieldDefinition();
         fieldORDER_COLUMN.setName("ORDER_COLUMN");
         fieldORDER_COLUMN.setTypeName("NUMERIC");
@@ -1707,14 +1707,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldORDER_COLUMN.setUnique(false);
         fieldORDER_COLUMN.setIsIdentity(false);
         table.addField(fieldORDER_COLUMN);
-    
+
         return table;
     }
-    
+
     public static TableDefinition build_NOVICE_BEER_CONSUMER_RECORDS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("NOVICE_CONSUMER_RECORDS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("NOVICE_CONSUMER_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1725,7 +1725,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldQ_DATE = new FieldDefinition();
         fieldQ_DATE.setName("REC_DATE");
         fieldQ_DATE.setTypeName("DATE");
@@ -1735,7 +1735,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldQ_DATE.setUnique(false);
         fieldQ_DATE.setIsIdentity(false);
         table.addField(fieldQ_DATE);
-        
+
         FieldDefinition DESCRIP_field = new FieldDefinition();
         DESCRIP_field.setName("DESCRIP");
         DESCRIP_field.setTypeName("VARCHAR");
@@ -1745,7 +1745,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         DESCRIP_field.setUnique(false);
         DESCRIP_field.setIsIdentity(false);
         table.addField(DESCRIP_field);
-        
+
         FieldDefinition LOCATION_ID_field = new FieldDefinition();
         LOCATION_ID_field.setName("LOC_ID");
         LOCATION_ID_field.setTypeName("VARCHAR");
@@ -1756,7 +1756,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         LOCATION_ID_field.setShouldAllowNull(false);
         LOCATION_ID_field.setForeignKeyFieldName("JPA2_LOCATION.ID");
         table.addField(LOCATION_ID_field);
-        
+
         FieldDefinition VENUE_field = new FieldDefinition();
         VENUE_field.setName("VENUE");
         VENUE_field.setTypeName("VARCHAR");
@@ -1766,7 +1766,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         VENUE_field.setUnique(false);
         VENUE_field.setIsIdentity(false);
         table.addField(VENUE_field);
-        
+
         FieldDefinition VENUE_ATTENDANCE_field = new FieldDefinition();
         VENUE_ATTENDANCE_field.setName("VENUE_ATTENDANCE");
         VENUE_ATTENDANCE_field.setTypeName("NUMERIC");
@@ -1776,7 +1776,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         VENUE_ATTENDANCE_field.setIsIdentity(false);
         VENUE_ATTENDANCE_field.setShouldAllowNull(true);
         table.addField(VENUE_ATTENDANCE_field);
-        
+
         FieldDefinition VENUE_BUILDER_field = new FieldDefinition();
         VENUE_BUILDER_field.setName("VENUE_BUILDER");
         VENUE_BUILDER_field.setTypeName("VARCHAR");
@@ -1786,7 +1786,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         VENUE_BUILDER_field.setUnique(false);
         VENUE_BUILDER_field.setIsIdentity(false);
         table.addField(VENUE_BUILDER_field);
-        
+
         FieldDefinition VENUE_YEAR_BUILT_field = new FieldDefinition();
         VENUE_YEAR_BUILT_field.setName("VENUE_YEAR_BUILT");
         VENUE_YEAR_BUILT_field.setTypeName("NUMERIC");
@@ -1796,7 +1796,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         VENUE_YEAR_BUILT_field.setIsIdentity(false);
         VENUE_YEAR_BUILT_field.setShouldAllowNull(true);
         table.addField(VENUE_YEAR_BUILT_field);
-        
+
         FieldDefinition fieldORDER_COLUMN = new FieldDefinition();
         fieldORDER_COLUMN.setName("ORDER_COLUMN");
         fieldORDER_COLUMN.setTypeName("NUMERIC");
@@ -1806,14 +1806,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldORDER_COLUMN.setUnique(false);
         fieldORDER_COLUMN.setIsIdentity(false);
         table.addField(fieldORDER_COLUMN);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_OFFICIAL_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_OFFICIAL");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -1833,7 +1833,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         DESCRIPTION_field.setUnique(false);
         DESCRIPTION_field.setIsIdentity(false);
         table.addField(DESCRIPTION_field);
-        
+
         FieldDefinition AGE_field = new FieldDefinition();
         AGE_field.setName("AGE");
         AGE_field.setTypeName("NUMERIC");
@@ -1843,7 +1843,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         AGE_field.setIsIdentity(false);
         AGE_field.setShouldAllowNull(true);
         table.addField(AGE_field);
-        
+
         FieldDefinition fieldSTARTDATE = new FieldDefinition();
         fieldSTARTDATE.setName("START_DATE");
         fieldSTARTDATE.setTypeName("VARCHAR");
@@ -1853,7 +1853,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldSTARTDATE.setUnique(false);
         fieldSTARTDATE.setIsIdentity(false);
         table.addField(fieldSTARTDATE);
-    
+
         FieldDefinition fieldENDDATE = new FieldDefinition();
         fieldENDDATE.setName("END_DATE");
         fieldENDDATE.setTypeName("VARCHAR");
@@ -1863,7 +1863,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldENDDATE.setUnique(false);
         fieldENDDATE.setIsIdentity(false);
         table.addField(fieldENDDATE);
-        
+
         FieldDefinition fieldOFFICIALENTRYID = new FieldDefinition();
         fieldOFFICIALENTRYID.setName("OFFICIAL_ENTRYID");
         fieldOFFICIALENTRYID.setTypeName("NUMERIC");
@@ -1874,7 +1874,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldOFFICIALENTRYID.setIsIdentity(false);
         fieldOFFICIALENTRYID.setForeignKeyFieldName("JPA_OFFICIAL_ENTRY.ID");
         table.addField(fieldOFFICIALENTRYID);
-        
+
         FieldDefinition EBC_ID_field = new FieldDefinition();
         EBC_ID_field.setName("FK_EBC_ID");
         EBC_ID_field.setTypeName("NUMERIC");
@@ -1885,7 +1885,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         EBC_ID_field.setIsIdentity(false);
         EBC_ID_field.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
         table.addField(EBC_ID_field);
-        
+
         FieldDefinition NBC_ID_field = new FieldDefinition();
         NBC_ID_field.setName("FK_NBC_ID");
         NBC_ID_field.setTypeName("NUMERIC");
@@ -1896,7 +1896,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         NBC_ID_field.setIsIdentity(false);
         NBC_ID_field.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
         table.addField(NBC_ID_field);
-        
+
         FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
         ALCOHOL_CONTENT_field.setName("ALCOHOLCONTENT");
         ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
@@ -1906,7 +1906,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
-        
+
         FieldDefinition CAPTION_field = new FieldDefinition();
         CAPTION_field.setName("CAPTION");
         CAPTION_field.setTypeName("VARCHAR");
@@ -1916,14 +1916,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         CAPTION_field.setUnique(false);
         CAPTION_field.setIsIdentity(false);
         table.addField(CAPTION_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_OFFICIAL_ENTRY_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_OFFICIAL_ENTRY");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -1933,14 +1933,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ID_field.setIsIdentity(false);
         ID_field.setShouldAllowNull(false);
         table.addField(ID_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_OFFICIAL_COMPENSATIONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_OFFICIAL_COMPENSATION");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -1961,7 +1961,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         SALARY_field.setIsIdentity(false);
         SALARY_field.setShouldAllowNull(true);
         table.addField(SALARY_field);
-        
+
         FieldDefinition BONUS_field = new FieldDefinition();
         BONUS_field.setName("BONUS");
         BONUS_field.setTypeName("NUMERIC");
@@ -1971,14 +1971,14 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BONUS_field.setIsIdentity(false);
         BONUS_field.setShouldAllowNull(true);
         table.addField(BONUS_field);
-        
+
         return table;
     }
-    
+
     public static TableDefinition build_SERIALNUMBER_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_SERIAL_NUMBER");
-    
+
         FieldDefinition NUMBER_field = new FieldDefinition();
         NUMBER_field.setName("S_NUMBER");
         NUMBER_field.setTypeName("NUMERIC");
@@ -1988,7 +1988,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         NUMBER_field.setIsIdentity(false);
         NUMBER_field.setShouldAllowNull(false);
         table.addField(NUMBER_field);
-         
+
         FieldDefinition ISSUE_DATE_field = new FieldDefinition();
         ISSUE_DATE_field.setName("ISSUE_DATE");
         ISSUE_DATE_field.setTypeName("DATETIME");
@@ -1997,11 +1997,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ISSUE_DATE_field.setUnique(false);
         ISSUE_DATE_field.setIsIdentity(false);
         ISSUE_DATE_field.setShouldAllowNull(true);
-        table.addField(ISSUE_DATE_field);   
-        
+        table.addField(ISSUE_DATE_field);
+
         return table;
     }
-    
+
     public static TableDefinition build_TELEPHONE_NUMBER_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_TELEPHONE");
@@ -2016,7 +2016,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ID_field.setShouldAllowNull(true);
         ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(ID_field);
-    
+
         FieldDefinition TYPE_field = new FieldDefinition();
         TYPE_field.setName("TYPE");
         TYPE_field.setTypeName("VARCHAR");
@@ -2026,7 +2026,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         TYPE_field.setIsIdentity(false);
         TYPE_field.setShouldAllowNull(false);
         table.addField(TYPE_field);
-    
+
         FieldDefinition AREA_CODE_field = new FieldDefinition();
         AREA_CODE_field.setName("AREA_CODE");
         AREA_CODE_field.setTypeName("VARCHAR");
@@ -2036,7 +2036,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         AREA_CODE_field.setIsIdentity(false);
         AREA_CODE_field.setShouldAllowNull(false);
         table.addField(AREA_CODE_field);
-    
+
         FieldDefinition NUMBER_field = new FieldDefinition();
         NUMBER_field.setName("TNUMBER");
         NUMBER_field.setTypeName("VARCHAR");
@@ -2049,11 +2049,11 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition build_WITNESS_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_WITNESS");
-    
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -2076,20 +2076,20 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static void createTables(Session session) {
         InheritedTableManager.getCreator().createTables((DatabaseSession) session);
     }
-        
+
     public static void dropTables(Session session) {
         InheritedTableManager.getCreator().dropTables((DatabaseSession) session);
     }
-        
+
     public static TableCreator getCreator(){
         if (InheritedTableManager.tableCreator == null) {
             InheritedTableManager.tableCreator = new InheritedTableManager();
         }
-        
+
         return InheritedTableManager.tableCreator;
     }
 

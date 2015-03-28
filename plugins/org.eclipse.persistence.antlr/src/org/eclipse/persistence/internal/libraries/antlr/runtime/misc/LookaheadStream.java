@@ -1,6 +1,6 @@
 /*
 [The "BSD licence"]
-Copyright (c) 2005-2008 Terence Parr
+Copyright (c) 2005, 2015 Terence Parr
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ public abstract class LookaheadStream<T> extends FastQueue<T> {
     protected int lastMarker;
 
     /** tracks how deep mark() calls are nested */
-    protected int markDepth = 0;    
+    protected int markDepth = 0;
 
     public LookaheadStream(T eof) {
         this.eof = eof;
@@ -58,7 +58,7 @@ public abstract class LookaheadStream<T> extends FastQueue<T> {
         eofElementIndex = UNINITIALIZED_EOF_ELEMENT_INDEX;
         super.reset();
     }
-    
+
     /** Implement nextElement to supply a stream of elements to this
      *  lookahead buffer.  Return eof upon end of the stream we're pulling from.
      */
@@ -101,57 +101,57 @@ public abstract class LookaheadStream<T> extends FastQueue<T> {
     }
 
     //public boolean hasNext() { return eofElementIndex!=UNINITIALIZED_EOF_ELEMENT_INDEX; }
-    
+
     /** Size of entire stream is unknown; we only know buffer size from FastQueue */
     public int size() { throw new UnsupportedOperationException("streams are of unknown size"); }
 
     public Object LT(int k) {
-		if ( k==0 ) {
-			return null;
-		}
-		if ( k<0 ) {
-			return LB(-k);
-		}
-		//System.out.print("LT(p="+p+","+k+")=");
-		if ( (p+k-1) >= eofElementIndex ) { // move to super.LT
-			return eof;
-		}
+        if ( k==0 ) {
+            return null;
+        }
+        if ( k<0 ) {
+            return LB(-k);
+        }
+        //System.out.print("LT(p="+p+","+k+")=");
+        if ( (p+k-1) >= eofElementIndex ) { // move to super.LT
+            return eof;
+        }
         sync(k);
         return get(k-1);
-	}
+    }
 
-	/** Look backwards k nodes */
-	protected Object LB(int k) {
-		if ( k==0 ) {
-			return null;
-		}
-		if ( (p-k)<0 ) {
-			return null;
-		}
-		return get(-k);
-	}
+    /** Look backwards k nodes */
+    protected Object LB(int k) {
+        if ( k==0 ) {
+            return null;
+        }
+        if ( (p-k)<0 ) {
+            return null;
+        }
+        return get(-k);
+    }
 
     public Object getCurrentSymbol() { return LT(1); }
 
     public int index() { return p; }
 
-	public int mark() {
+    public int mark() {
         markDepth++;
         lastMarker = index();
         return lastMarker;
-	}
+    }
 
-	public void release(int marker) {
-		// no resources to release
-	}
+    public void release(int marker) {
+        // no resources to release
+    }
 
-	public void rewind(int marker) {
+    public void rewind(int marker) {
         markDepth--;
         seek(marker); // assume marker is top
         // release(marker); // waste of call; it does nothing in this class
     }
 
-	public void rewind() {
+    public void rewind() {
         seek(lastMarker); // rewind but do not release marker
     }
 

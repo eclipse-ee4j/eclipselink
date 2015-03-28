@@ -2,7 +2,7 @@
             xmlns="http://www.example.org"
             targetNamespace="http://www.example.org"
             elementFormDefault="unqualified"
-            attributeFormDefault="unqualified"> 
+            attributeFormDefault="unqualified">
 
      <xsd:complexType name="AddressType">
         <xsd:annotation>
@@ -11,10 +11,10 @@
         <xsd:attribute name="country" type="xsd:string"/>
         <xsd:sequence>
             <xsd:element name="name" type="xsd:string">
-	       <xsd:annotation>
+           <xsd:annotation>
                   <xsd:documentation>This is documentation for the name element inside the complextype called AddressType</xsd:documentation>
-		</xsd:annotation>
-	    </xsd:element>
+        </xsd:annotation>
+        </xsd:element>
             <xsd:element name="street" type="xsd:string"/>
             <xsd:element name="city" type="xsd:string"/>
             <xsd:element name="state" type="xsd:string"/>
@@ -27,22 +27,22 @@
            <xsd:annotation>
               <xsd:documentation>This is documentation for the partNum attribute inside the complextype called LineItemType</xsd:documentation>
               <xsd:documentation>This is the second documentation for the partNum attribute inside the complextype called LineItemType</xsd:documentation>
-	   </xsd:annotation>
-	</xsd:attribute>
+       </xsd:annotation>
+    </xsd:attribute>
         <xsd:sequence>
             <xsd:element name="productName" type="xsd:string"/>
             <xsd:element name="productSize" type="size">
-	      <xsd:annotation>
+          <xsd:annotation>
                   <xsd:documentation>This is documentation for the productSize element inside the complextype called LineItemType</xsd:documentation>
-	       </xsd:annotation>
-	    </xsd:element>
+           </xsd:annotation>
+        </xsd:element>
             <xsd:element name="quantity" type="xsd:int"/>
             <xsd:element name="USPrice" type="xsd:float">
-	       <xsd:annotation>
+           <xsd:annotation>
                   <xsd:documentation>This is documentation for the USPrice element inside the complextype called LineItemType</xsd:documentation>
-	       </xsd:annotation>
-	    </xsd:element>
-	    <xsd:element name="shipDate" type="xsd:date"/>
+           </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="shipDate" type="xsd:date"/>
             <xsd:element name="comment" type="xsd:string"/>
         </xsd:sequence>
     </xsd:complexType>
@@ -57,23 +57,23 @@
         <xsd:sequence>
             <!--xsd:element name="poId" type="xsd:string"/-->
             <xsd:element ref="theID">
-	      <xsd:annotation>
+          <xsd:annotation>
                   <xsd:documentation>This is documentation for element ref theID inside the complextype called PurchaseOrder</xsd:documentation>
-	       </xsd:annotation>
+           </xsd:annotation>
             </xsd:element>
             <xsd:element name="shipTo" type="AddressType"/>
             <xsd:element name="billTo" type="AddressType">
-    	       <xsd:annotation>
+               <xsd:annotation>
                   <xsd:documentation>This is documentation for the billTo element and has newlines now
-		  inside the and now
-		  complextype called PurchaseOrderType and again now
-		  </xsd:documentation>
-		  <xsd:documentation>This is the second documentation for the billTo element and has newlines now
-		  inside the and now
-		  complextype called PurchaseOrderType and again now
-		  </xsd:documentation>
-	       </xsd:annotation>
-	    </xsd:element>
+          inside the and now
+          complextype called PurchaseOrderType and again now
+          </xsd:documentation>
+          <xsd:documentation>This is the second documentation for the billTo element and has newlines now
+          inside the and now
+          complextype called PurchaseOrderType and again now
+          </xsd:documentation>
+           </xsd:annotation>
+        </xsd:element>
             <xsd:element name="comment" type="xsd:string"/>
             <xsd:element name="items" type="Items"/>
         </xsd:sequence>
@@ -81,20 +81,20 @@
     </xsd:complexType>
 
     <xsd:simpleType name="size">
-	<xsd:annotation>
+    <xsd:annotation>
            <xsd:documentation>This is documentation for the simpleType called gender</xsd:documentation>
-	</xsd:annotation>
-	<xsd:restriction base="xsd:string">
-	            <xsd:enumeration value="small"/>
-		    <xsd:enumeration value="medium"/>
-		    <xsd:enumeration value="large"/>
-          </xsd:restriction>    
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+                <xsd:enumeration value="small"/>
+            <xsd:enumeration value="medium"/>
+            <xsd:enumeration value="large"/>
+          </xsd:restriction>
     </xsd:simpleType>
 
     <xsd:element name="theID" type="xsd:string">
-	<xsd:annotation>
+    <xsd:annotation>
             <xsd:documentation>This is documentation for the global element called theID</xsd:documentation>
-	</xsd:annotation>
+    </xsd:annotation>
     </xsd:element>
 
 </xsd:schema>

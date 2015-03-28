@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
@@ -33,14 +33,14 @@ import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createSession;
 
 /**
- * 
+ *
  * @author dclarke
  * @since EclipseLink 1.2
  */
 public class EntityTypeFromScratch {
 
     static final String TABLE_NAME = "MY_ENTITY";
-    
+
     @AfterClass
     public static void tearDown() {
         DatabaseSession ds = createSession();
@@ -48,24 +48,24 @@ public class EntityTypeFromScratch {
         ds.executeNonSelectingSQL("DROP TABLE " + TABLE_NAME);
         ds.logout();
     }
-    
+
     @Test
     public void entityTypeFromDescriptor() throws Exception {
         DynamicType entityType = buildMyEntityType();
-    
+
         assertEquals(MyEntity.class, entityType.getJavaClass());
-    
+
         DatabaseSession session = createSession();
         session.login();
         session.addDescriptor(entityType.getDescriptor());
         new SchemaManager(session).replaceDefaultTables();
-    
+
         DynamicEntity entity = entityType.newDynamicEntity();
         entity.set("id", 1);
         entity.set("name", "Name");
-    
+
         session.insertObject(entity);
-    
+
         session.logout();
     }
 
@@ -74,7 +74,7 @@ public class EntityTypeFromScratch {
         factory.setPrimaryKeyFields("ID");
         factory.addDirectMapping("id", int.class, "ID");
         factory.addDirectMapping("name", String.class, "NAME");
-    
+
         return (DynamicType) factory.getType();
     }
 

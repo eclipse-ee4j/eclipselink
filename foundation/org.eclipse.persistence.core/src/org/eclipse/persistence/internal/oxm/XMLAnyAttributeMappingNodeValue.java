@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements ContainerValue {
     private AnyAttributeMapping xmlAnyAttributeMapping;
     private int index = -1;
-    
+
     public XMLAnyAttributeMappingNodeValue(AnyAttributeMapping xmlAnyAttributeMapping) {
         super();
         this.xmlAnyAttributeMapping = xmlAnyAttributeMapping;
@@ -88,7 +88,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
                         }
                         qualifiedName = generatedPrefix + Constants.COLON + qualifiedName;
                         nr.put(generatedPrefix, name.getNamespaceURI());
-                        extraNamespaces.add(generatedPrefix);                        
+                        extraNamespaces.add(generatedPrefix);
                         marshalRecord.namespaceDeclaration(generatedPrefix, name.getNamespaceURI());
 
                     }
@@ -108,20 +108,20 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         return true;
     }
 
-    public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {        
+    public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         boolean includeAttribute = true;
         if(!xmlAnyAttributeMapping.isNamespaceDeclarationIncluded() && javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(namespaceURI)){
-            includeAttribute = false;               
+            includeAttribute = false;
         }else if(!xmlAnyAttributeMapping.isSchemaInstanceIncluded() && javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(namespaceURI)){
-            includeAttribute = false;               
+            includeAttribute = false;
         }
-                    
+
         if(includeAttribute){
             CoreContainerPolicy cp = xmlAnyAttributeMapping.getContainerPolicy();
             Object containerInstance = unmarshalRecord.getContainerInstance(this);
-            QName key = new QName(namespaceURI, localName);            
+            QName key = new QName(namespaceURI, localName);
             cp.addInto(key, value, containerInstance, unmarshalRecord.getSession());
-        }          
+        }
     }
 
     public Object getContainerInstance() {
@@ -151,22 +151,22 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
     }
-   
+
     /**
      *  INTERNAL:
-     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
-     */  
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     */
     public void setIndex(int index){
-    	this.index = index;
+        this.index = index;
     }
-    
+
     /**
      * INTERNAL:
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
-     * Set during TreeObjectBuilder initialization 
+     * Set during TreeObjectBuilder initialization
      */
     public int getIndex(){
-    	return index;
+        return index;
     }
 
     /**

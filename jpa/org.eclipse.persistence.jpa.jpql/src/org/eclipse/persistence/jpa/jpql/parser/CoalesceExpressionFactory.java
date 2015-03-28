@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,31 +27,31 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class CoalesceExpressionFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link CoalesceExpressionFactory}.
-	 */
-	public static final String ID = Expression.COALESCE;
+    /**
+     * The unique identifier of this {@link CoalesceExpressionFactory}.
+     */
+    public static final String ID = Expression.COALESCE;
 
-	/**
-	 * Creates a new <code>CoalesceExpressionFactory</code>.
-	 */
-	public CoalesceExpressionFactory() {
-		super(ID, Expression.COALESCE);
-	}
+    /**
+     * Creates a new <code>CoalesceExpressionFactory</code>.
+     */
+    public CoalesceExpressionFactory() {
+        super(ID, Expression.COALESCE);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		expression = new CoalesceExpression(parent);
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        expression = new CoalesceExpression(parent);
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

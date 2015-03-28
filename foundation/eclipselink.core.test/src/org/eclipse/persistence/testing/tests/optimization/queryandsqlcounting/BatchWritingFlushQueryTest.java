@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting;
 
 import org.eclipse.persistence.testing.models.employee.domain.*;
@@ -106,21 +106,21 @@ public class BatchWritingFlushQueryTest extends TestCase {
 
     public void verify() {
         if (initialSQLStatements != EXPECTED_INITIAL_STATEMENTS) {
-            throw new TestErrorException("A DataModifyQuery with batchWriting executed resulting in incorrect number of SQL Statements. " + 
+            throw new TestErrorException("A DataModifyQuery with batchWriting executed resulting in incorrect number of SQL Statements. " +
                                          " expected: " + EXPECTED_INITIAL_STATEMENTS + " got: " + initialSQLStatements);
         }
         if (initialQueries != EXPECTED_INITIAL_QUERIES) {
-            throw new TestErrorException("A DataModifyQuery with batchWriting executed resulting in incorrect number of Queries. " + 
+            throw new TestErrorException("A DataModifyQuery with batchWriting executed resulting in incorrect number of Queries. " +
                                          " expected: " + EXPECTED_INITIAL_QUERIES + " got: " + (initialQueries));
         }
         if (secondSQLStatements != EXPECTED_SECOND_STATEMENTS) {
-            throw new TestErrorException("A DataModifyQuery with batchWriting executed resulting in the incorrect number of SQL statements. " + 
-                                         " expected: " + (EXPECTED_SECOND_STATEMENTS - EXPECTED_INITIAL_STATEMENTS) + 
+            throw new TestErrorException("A DataModifyQuery with batchWriting executed resulting in the incorrect number of SQL statements. " +
+                                         " expected: " + (EXPECTED_SECOND_STATEMENTS - EXPECTED_INITIAL_STATEMENTS) +
                                          " got: " + (secondSQLStatements - initialSQLStatements));
         }
         if (secondQueries != EXPECTED_SECOND_QUERIES) {
-            throw new TestErrorException("A DataModifyQuery with batchWriting executed resulting in an incorrect number of Queries. " + 
-                                         " expected: " + (EXPECTED_SECOND_QUERIES - EXPECTED_INITIAL_QUERIES) + " got: " + 
+            throw new TestErrorException("A DataModifyQuery with batchWriting executed resulting in an incorrect number of Queries. " +
+                                         " expected: " + (EXPECTED_SECOND_QUERIES - EXPECTED_INITIAL_QUERIES) + " got: " +
                                          (secondQueries - initialQueries));
         }
     }

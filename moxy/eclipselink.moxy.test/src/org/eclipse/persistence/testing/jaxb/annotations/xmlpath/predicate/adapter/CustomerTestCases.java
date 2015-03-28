@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,7 +30,7 @@ public class CustomerTestCases extends JAXBTestCases {
     public static String ALT_STREET = "somealternatestreet";
     public static int PHONE_AREA = 613;
     public static int PHONE_NUMBER = 1231234;
-    
+
     public CustomerTestCases(String name) throws Exception {
         super(name);
         this.setClasses(new Class[] {Customer.class});
@@ -50,15 +50,15 @@ public class CustomerTestCases extends JAXBTestCases {
 
         p = new PhoneNumber(); p.setAreaCode(PHONE_AREA); p.setNumber(PHONE_NUMBER);
         c.setPhoneNumber(p);
-        
+
         Address add = new Address();
         add.setStreet(STREET);
         c.setAddress(add);
-        
+
         add = new Address();
         add.setStreet(ALT_STREET);
         c.setAltAddress(add);
-        
+
         return c;
     }
 

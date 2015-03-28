@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,45 +21,45 @@ public class Address {
 
     @XmlTransient
     public String name;
-    
+
     @XmlTransient
     public String someTransientProperty;
-    
+
     public String getName(){
-    	return name;
+        return name;
     }
-    
+
     @XmlTransient
     public void setSomeTransientProperty(String someTransientProperty){
-    	this.someTransientProperty = someTransientProperty;
+        this.someTransientProperty = someTransientProperty;
     }
-    
+
     public String getSomeTransientProperty(){
-    	return someTransientProperty;
+        return someTransientProperty;
     }
-   
+
     public void setName(String name){
-    	this.name = name;
+        this.name = name;
     }
-    
+
     @XmlElement(name="street")
     public String street;
-    
-    @XmlElement(name="city")
-	public String city;
-    
-    @XmlElement(name="country")
-	public String country;
 
-	
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Address)) {
-			return false;
-		}
-		Address tgtAddress = (Address) obj;
-		return (tgtAddress.city.equals(city) &&
-				tgtAddress.country.equals(country) &&
-				tgtAddress.name.equals(name) &&
-				tgtAddress.street.equals(street) );
-	}
+    @XmlElement(name="city")
+    public String city;
+
+    @XmlElement(name="country")
+    public String country;
+
+
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof Address)) {
+            return false;
+        }
+        Address tgtAddress = (Address) obj;
+        return (tgtAddress.city.equals(city) &&
+                tgtAddress.country.equals(country) &&
+                tgtAddress.name.equals(name) &&
+                tgtAddress.street.equals(street) );
+    }
 }

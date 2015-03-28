@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,14 +22,14 @@ public class SDOXMLHelperLoadAndSavePurchaseOrderTestSuite {
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite("All XMLHelper Tests");
 
         suite.addTest(new TestSuite(LoadAndSavePurchaseOrderWChangeSummaryTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveImportsDefaultNamespaceTestCases.class));
 
-        // one expected failure 
+        // one expected failure
         suite.addTest(new TestSuite(LoadAndSaveWithImportsTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveImportsElementOrderTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveIDRefTestCases.class));
@@ -42,11 +42,11 @@ public class SDOXMLHelperLoadAndSavePurchaseOrderTestSuite {
         suite.addTest(new TestSuite(LoadAndSaveOpenContentTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveSchemaTypesEmptyStringTestCases.class));
 
-        
-        // test DirectMapping        
-        suite.addTest(new TestSuite(LoadAndSaveNillableOptionalNodeNullPolicyTestCases.class));        
-        suite.addTest(new TestSuite(LoadAndSaveNillableIsSetNodeNullPolicyTrueTestCases.class));        
-        suite.addTest(new TestSuite(LoadAndSaveNillableIsSetNodeNullPolicyFalseTestCases.class));        
+
+        // test DirectMapping
+        suite.addTest(new TestSuite(LoadAndSaveNillableOptionalNodeNullPolicyTestCases.class));
+        suite.addTest(new TestSuite(LoadAndSaveNillableIsSetNodeNullPolicyTrueTestCases.class));
+        suite.addTest(new TestSuite(LoadAndSaveNillableIsSetNodeNullPolicyFalseTestCases.class));
 
         return suite;
     }

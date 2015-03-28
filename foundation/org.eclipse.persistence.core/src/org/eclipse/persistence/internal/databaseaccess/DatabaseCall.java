@@ -1,25 +1,25 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/24/2011-2.3 Guy Pelletier 
+ *     05/24/2011-2.3 Guy Pelletier
  *       - 345962: Join fetch query when using tenant discriminator column fails.
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     07/13/2012-2.5 Guy Pelletier 
+ *     07/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier 
+ *     08/24/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/27/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.util.*;
@@ -43,13 +43,13 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescr
  * A call is an SQL string or procedure call with parameters.
  */
 public abstract class DatabaseCall extends DatasourceCall {
-    /** 
-     * JPA 2.1 NamedStoredProcedureQuery execute API implementation. 
+    /**
+     * JPA 2.1 NamedStoredProcedureQuery execute API implementation.
      */
     protected boolean executeReturnValue;
-    
+
     /**
-     * Following fields are used to bind MaxResults and FirstRow settings into 
+     * Following fields are used to bind MaxResults and FirstRow settings into
      * the query instead of using the values stored in the call.
      */
     public static final DatabaseField MAXROW_FIELD = new DatabaseField("EclipseLink-MaxResults");
@@ -112,10 +112,10 @@ public abstract class DatabaseCall extends DatasourceCall {
     //contain field - value pairs for LOB fields used to the
     //streaming operation during the writing (to the table)
     private transient AbstractRecord contexts;
-    
+
     /** Allow for a single cursored output parameter. */
     protected boolean isCursorOutputProcedure;
-    
+
     /** Allow for multiple cursored output parameter. */
     protected boolean isMultipleCursorOutputProcedure;
 
@@ -128,10 +128,10 @@ public abstract class DatabaseCall extends DatasourceCall {
 
     // Callable statement is required if there is an output parameter
     protected boolean isCallableStatementRequired;
-    
+
     /** Support multiple result sets. */
     protected boolean hasMultipleResultSets;
-    
+
     /**
      * Support returning multiple results sets instead of just one list, i.e.
      * support multiple results set mappings.
@@ -140,7 +140,7 @@ public abstract class DatabaseCall extends DatasourceCall {
 
     /** The SQL string to execute. */
     protected String sqlString;
-    
+
     /** Indicates whether the call has allocated connection. May be set if the call has not finished */
     protected boolean hasAllocatedConnection;
 
@@ -149,12 +149,12 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Some queries, such as DDL are not compatible.
      */
     protected boolean isBatchExecutionSupported;
-    
+
     /**
      * Keep a list of the output cursors.
      */
     protected List<DatabaseField> outputCursors;
-    
+
     public DatabaseCall() {
         super.shouldProcessTokenInQuotes = false;
         this.usesBinding = null;
@@ -168,14 +168,14 @@ public abstract class DatabaseCall extends DatasourceCall {
         this.returnsResultSet = null;
         this.isBatchExecutionSupported = true;
     }
-    
+
     /**
      * Return if the call returns multiple result sets.
      */
     public boolean hasMultipleResultSets() {
         return hasMultipleResultSets;
     }
-    
+
     /**
      * Set if the call returns multiple result sets.
      */
@@ -294,7 +294,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                         ResultSet resultSet = (ResultSet)value;
                         setFields(null);
                         matchFieldOrder(resultSet, accessor, session);
-                        value = accessor.processResultSet(resultSet, this, statement, session);                        
+                        value = accessor.processResultSet(resultSet, this, statement, session);
                     }
                     row.put(field, value);
                 }
@@ -396,12 +396,12 @@ public abstract class DatabaseCall extends DatasourceCall {
     }
 
     /**
-     * After an execute call the return value can be retrieved here. 
+     * After an execute call the return value can be retrieved here.
      */
     public boolean getExecuteReturnValue() {
         return executeReturnValue;
     }
-    
+
     /**
      * get first result
      */
@@ -429,13 +429,13 @@ public abstract class DatabaseCall extends DatasourceCall {
             return getSQLString();
         }
     }
-    
+
     /**
      * Print the parameters to the write for logging purposes.
      */
     public static void appendLogParameters(Collection parameters, Accessor accessor, StringWriter writer, AbstractSession session) {
         writer.write("\tbind => [");
-        
+
         if (session == null || (session != null && session.shouldDisplayData())) {
             for (Iterator paramsEnum = parameters.iterator(); paramsEnum.hasNext();) {
                 Object parameter = paramsEnum.next();
@@ -458,7 +458,7 @@ public abstract class DatabaseCall extends DatasourceCall {
             writer.write(parameters.size() + parameterString + " bound]");
         }
     }
-    
+
     /**
      * get max rows returned from the call
      */
@@ -484,7 +484,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         }
         return fields;
     }
-    
+
     /**
      * INTERNAL:
      * Return the output cursors for this stored procedure call.
@@ -493,7 +493,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         if (outputCursors == null) {
             outputCursors = new ArrayList<DatabaseField>();
         }
-        
+
         return outputCursors;
     }
 
@@ -572,7 +572,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     public boolean hasOutputCursors() {
         return outputCursors != null && ! outputCursors.isEmpty();
     }
-    
+
     /**
      * Callable statement is required if there is an output parameter.
      */
@@ -623,9 +623,9 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Used for Oracle result sets through procedures.
      */
     public boolean isMultipleCursorOutputProcedure() {
-        return this.isMultipleCursorOutputProcedure; 
+        return this.isMultipleCursorOutputProcedure;
     }
-    
+
     /**
      * Return true for procedures with any output (or in/out) parameters and no cursors
      */
@@ -669,7 +669,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     protected void prepareInternal(AbstractSession session) {
         prepareInternalParameters(session);
     }
-    
+
     /**
      * INTERNAL:
      * Called by prepareInternal method only. May be overridden.
@@ -761,7 +761,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         //logic may be weird but we must not batch if we are not using JDBC batchwriting and we have parameters
         // we may want to refactor this some day
         this.isBatchExecutionSupported = (isNothingReturned()
-                && (!hasOptimisticLock() || session.getPlatform().canBatchWriteWithOptimisticLocking(this)) 
+                && (!hasOptimisticLock() || session.getPlatform().canBatchWriteWithOptimisticLocking(this))
                 && (!shouldBuildOutputRow())
                 && (session.getPlatform().usesJDBCBatchWriting() || (!hasParameters()))
                 && (!isLOBLocatorNeeded()))
@@ -778,15 +778,15 @@ public abstract class DatabaseCall extends DatasourceCall {
         Statement statement = accessor.prepareStatement(this, session);
 
         // Setup the max rows returned and query timeout limit.
-        if (this.queryTimeout > 0) { 
-            statement.setQueryTimeout(this.queryTimeout); 
-        } 
-        if (!this.ignoreMaxResultsSetting && this.maxRows > 0) { 
-            statement.setMaxRows(this.maxRows); 
+        if (this.queryTimeout > 0) {
+            statement.setQueryTimeout(this.queryTimeout);
         }
-        if (this.resultSetFetchSize > 0) { 
+        if (!this.ignoreMaxResultsSetting && this.maxRows > 0) {
+            statement.setMaxRows(this.maxRows);
+        }
+        if (this.resultSetFetchSize > 0) {
             statement.setFetchSize(this.resultSetFetchSize);
-        } 
+        }
 
         if (this.parameters == null) {
             return statement;
@@ -806,7 +806,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     public boolean returnMultipleResultSetCollections() {
         return returnMultipleResultSetCollections;
     }
-    
+
     /**
      * The fields expected by the calls result set.
      */
@@ -872,7 +872,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     public void setIsCursorOutputProcedure(boolean isCursorOutputProcedure) {
         this.isCursorOutputProcedure = isCursorOutputProcedure;
     }
-    
+
     /**
      * Field matching is required for custom SQL statements where the result set field order is not known.
      */
@@ -884,9 +884,9 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Used for Oracle result sets through procedures.
      */
     public void setIsMultipleCursorOutputProcedure(boolean isMultipleCursorOutputProcedure) {
-        this.isMultipleCursorOutputProcedure = isMultipleCursorOutputProcedure; 
+        this.isMultipleCursorOutputProcedure = isMultipleCursorOutputProcedure;
     }
-    
+
     public void setIsResultSetScrollable(boolean isResultSetScrollable) {
         this.isResultSetScrollable = isResultSetScrollable;
     }
@@ -954,7 +954,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     public void setReturnMultipleResultSetCollections(boolean returnMultipleResultSetCollections) {
         this.returnMultipleResultSetCollections = returnMultipleResultSetCollections;
     }
-    
+
     /**
      * INTERNAL:
      * Set whether the call has to build output row
@@ -1160,7 +1160,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         Writer writer = new CharArrayWriter(queryString.length() + 50);
         try {
             // PERF: This method is heavily optimized do not touch anything unless you know "very well" what your doing.
-            List parameters = getParameters();            
+            List parameters = getParameters();
             List parametersValues = new ArrayList(parameters.size());
             while (lastIndex != -1) {
                 int tokenIndex = queryString.indexOf(argumentMarker(), lastIndex);
@@ -1225,7 +1225,7 @@ public abstract class DatabaseCall extends DatasourceCall {
             throw ValidationException.fileError(exception);
         }
     }
-    
+
     /**
      * The call may specify that its parameters should be bound.
      */
@@ -1294,7 +1294,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     public void setExecuteReturnValue(boolean value) {
         executeReturnValue = value;
     }
-    
+
     /**
      * PUBLIC:
      * Used for Oracle result sets through procedures.
@@ -1321,7 +1321,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     public void setBatchExecutionSupported(boolean isBatchExecutionSupported) {
         this.isBatchExecutionSupported = isBatchExecutionSupported;
     }
-    
+
     /**
      * INTERNAL:
      */

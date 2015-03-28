@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,21 +19,21 @@ public class Employee {
     public String g;
     public String b;
     public String a;
-    
+
     public boolean equals(Object obj){
-    	if(obj instanceof Employee){
-    		Employee empObj = (Employee)obj;
-    		if(!a.equals(empObj.a)){
-    			return false;
-    		}
-    		if(!b.equals(empObj.b)){
-    			return false;
-    		}
-    		if(!g.equals(empObj.g)){
-    			return false;
-    		}
-    		return true;
-    	}
-    	return false;
+        if(obj instanceof Employee){
+            Employee empObj = (Employee)obj;
+            if(!a.equals(empObj.a)){
+                return false;
+            }
+            if(!b.equals(empObj.b)){
+                return false;
+            }
+            if(!g.equals(empObj.g)){
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }

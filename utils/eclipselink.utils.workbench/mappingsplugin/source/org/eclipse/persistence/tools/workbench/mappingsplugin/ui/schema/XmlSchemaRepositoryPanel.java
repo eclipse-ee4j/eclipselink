@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -39,63 +39,63 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.ListModelAdapte
 import org.eclipse.persistence.tools.workbench.uitools.cell.DisplayableListCellRenderer;
 
 
-class XmlSchemaRepositoryPanel 
-	extends TitledPropertiesPage 
-{	
-	// this value is queried reflectively during plug-in initialization
-	private static final Class[] REQUIRED_RESOURCE_BUNDLES = new Class[] {
-		UiCommonBundle.class,
-		UiXmlBundle.class,
-		UiSchemaResourceBundle.class
-	};
+class XmlSchemaRepositoryPanel
+    extends TitledPropertiesPage
+{
+    // this value is queried reflectively during plug-in initialization
+    private static final Class[] REQUIRED_RESOURCE_BUNDLES = new Class[] {
+        UiCommonBundle.class,
+        UiXmlBundle.class,
+        UiSchemaResourceBundle.class
+    };
 
 
-	XmlSchemaRepositoryPanel(WorkbenchContext context) {
-		super(context);
-	}
-	
-	protected Component buildPage() {
-		JPanel page = new JPanel(new BorderLayout());
-		page.setBorder(new EmptyBorder(5, 5, 5, 5));
-		
-		JList schemaList = SwingComponentFactory.buildList();
-		schemaList.setBackground(UIManager.getColor("Panel.background"));
-		schemaList.setSelectionBackground(UIManager.getColor("Panel.background"));
-		schemaList.setCellRenderer(new DisplayableListCellRenderer());
-		schemaList.setModel(this.buildSchemasListModel());
-		page.add(schemaList, BorderLayout.CENTER);
-		
-		return page;
-	}
-	
-	private ListModel buildSchemasListModel() {
-		return new ListModelAdapter(this.buildUpdatingSortedDisplayableSchemasValueModel());
-	}
-	
-	private ListValueModel buildUpdatingSortedDisplayableSchemasValueModel() {
-		return new SortedListValueModelAdapter(this.buildUpdatingDisplayableSchemasValueModel());
-	}
-	
-	private ListValueModel buildUpdatingDisplayableSchemasValueModel() {
-		return new ItemPropertyListValueModelAdapter(this.buildDisplayableSchemasValueModel(), Displayable.DISPLAY_STRING_PROPERTY);
-	}
-	
-	private ListValueModel buildDisplayableSchemasValueModel() {
-		return new TransformationListValueModelAdapter(this.buildSchemasValueModel()) {
-			 protected Object transformItem(Object item) {
-				return new XmlSchemaDisplayableAdapter((MWXmlSchema) item, resourceRepository());
-			}
-		};
-	}
-	
-	private CollectionValueModel buildSchemasValueModel() {
-		return new CollectionAspectAdapter(this.getSelectionHolder(), MWXmlSchemaRepository.SCHEMAS_COLLECTION) {
-			protected Iterator getValueFromSubject() {
-				return ((MWXmlSchemaRepository) subject).schemas();
-			}
-			protected int sizeFromSubject() {
-				return ((MWXmlSchemaRepository) subject).schemasSize();
-			}
-		};
-	}
+    XmlSchemaRepositoryPanel(WorkbenchContext context) {
+        super(context);
+    }
+
+    protected Component buildPage() {
+        JPanel page = new JPanel(new BorderLayout());
+        page.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        JList schemaList = SwingComponentFactory.buildList();
+        schemaList.setBackground(UIManager.getColor("Panel.background"));
+        schemaList.setSelectionBackground(UIManager.getColor("Panel.background"));
+        schemaList.setCellRenderer(new DisplayableListCellRenderer());
+        schemaList.setModel(this.buildSchemasListModel());
+        page.add(schemaList, BorderLayout.CENTER);
+
+        return page;
+    }
+
+    private ListModel buildSchemasListModel() {
+        return new ListModelAdapter(this.buildUpdatingSortedDisplayableSchemasValueModel());
+    }
+
+    private ListValueModel buildUpdatingSortedDisplayableSchemasValueModel() {
+        return new SortedListValueModelAdapter(this.buildUpdatingDisplayableSchemasValueModel());
+    }
+
+    private ListValueModel buildUpdatingDisplayableSchemasValueModel() {
+        return new ItemPropertyListValueModelAdapter(this.buildDisplayableSchemasValueModel(), Displayable.DISPLAY_STRING_PROPERTY);
+    }
+
+    private ListValueModel buildDisplayableSchemasValueModel() {
+        return new TransformationListValueModelAdapter(this.buildSchemasValueModel()) {
+             protected Object transformItem(Object item) {
+                return new XmlSchemaDisplayableAdapter((MWXmlSchema) item, resourceRepository());
+            }
+        };
+    }
+
+    private CollectionValueModel buildSchemasValueModel() {
+        return new CollectionAspectAdapter(this.getSelectionHolder(), MWXmlSchemaRepository.SCHEMAS_COLLECTION) {
+            protected Iterator getValueFromSubject() {
+                return ((MWXmlSchemaRepository) subject).schemas();
+            }
+            protected int sizeFromSubject() {
+                return ((MWXmlSchemaRepository) subject).schemasSize();
+            }
+        };
+    }
 }

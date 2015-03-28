@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     ailitchev - Bug 244124 - Added AttributeGroup base class for nesting 
+ *     ailitchev - Bug 244124 - Added AttributeGroup base class for nesting
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
  ******************************************************************************/
@@ -40,11 +40,11 @@ import org.eclipse.persistence.sessions.CopyGroup;
  * To reference nested attributes a dot ('.') notation is used to reference
  * related attributes. All attribute names provided are assumed to be correct
  * until processed against the mappings during usage of the group.
- * 
+ *
  * @see FetchGroup
  * @see LoadGroup
  * @see CopyGroup
- * 
+ *
  * @author ailitchev
  * @since EclipseLink 2.1
  */
@@ -64,7 +64,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
         this(name);
         this.type = type;
         this.isValidated = isValidated;
-        
+
     }
 
     /*
@@ -75,7 +75,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
         this(name);
         this.typeName = type;
         this.isValidated = isValidated;
-        
+
     }
 
     public AttributeGroup() {
@@ -91,10 +91,10 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
      *    group.addAttribute("firstName", group1);<br>
      *    group.addAttribute("manager.address", group2);
      * </code>
-     * 
+     *
      * Note that existing group corresponding to attributeNameOrPath
-     * will be overridden with the passed group. 
-     * 
+     * will be overridden with the passed group.
+     *
      * @param attributeNameOrPath
      *            A simple attribute, array or attributes forming a path
      * @param group - an AttributeGroup to be added.
@@ -102,7 +102,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
     public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
         super.addAttribute(attributeNameOrPath, group);
     }
-    
+
     /**
      * Returns AttributeGroup corresponding to the passed (possibly nested)
      * attribute.
@@ -118,18 +118,18 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
     public boolean isSupersetOf(AttributeGroup anotherGroup) {
         return super.isSupersetOf(anotherGroup);
     }
-    
+
     /**
      * INTERNAL:
      * Lookup the {@link AttributeItem}for the provided attribute name or path.
-     * 
+     *
      * @return item or null
      * @throws IllegalArgumentException if name is not valid attribute name or path
      */
     public AttributeItem getItem(String attributeNameOrPath) {
         return super.getItem(attributeNameOrPath);
     }
-    
+
     /**
      * Subclass may create different types.
      */
@@ -141,7 +141,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
     public AttributeGroup findGroup(ClassDescriptor type){
         return (AttributeGroup)super.findGroup(type);
     }
-    
+
     /**
      * Convert the group to a FetchGroup for usage with queries.
      */
@@ -158,14 +158,14 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
      * @param cloneMap
      * @return
      */
-    
+
     public FetchGroup toFetchGroup(Map<AttributeGroup, FetchGroup> cloneMap){
         FetchGroup clone = cloneMap.get(this);
         if (clone != null) {
             return clone;
         }
         clone = new FetchGroup(this.name);
-        
+
         clone.type = this.type;
         clone.typeName = this.typeName;
         clone.isValidated = this.isValidated;
@@ -200,7 +200,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
      *    This method is used internally when converting to a copy group.
      * @return
      */
-    
+
     public boolean isCopyGroup() {
         return false;
     }
@@ -222,7 +222,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
          * @param cloneMap
          * @return
          */
-        
+
         public CopyGroup toCopyGroup(Map<AttributeGroup, CopyGroup> cloneMap, Map copies){
             CopyGroup clone = cloneMap.get(this);
             if (clone != null) {
@@ -231,12 +231,12 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
             clone = new CopyGroup(this.name);
             clone.cascadeTree();
             clone.setCopies(copies);
-            
+
             clone.type = this.type;
             clone.typeName = this.typeName;
             clone.isValidated = this.isValidated;
             cloneMap.put(this,clone);
-            
+
             if (this.allsubclasses != null){
                 for (CoreAttributeGroup group : this.allsubclasses.values()){
                     clone.getSubClassGroups().put(group.getType(), ((AttributeGroup)group).toCopyGroup(cloneMap, copies));
@@ -283,7 +283,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
             return clone;
         }
         clone = new LoadGroup(this.name);
-        
+
         clone.type = this.type;
         clone.typeName = this.typeName;
         clone.isValidated = this.isValidated;
@@ -339,7 +339,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
     @Override
     protected AttributeGroup newGroup(String name, CoreAttributeGroup parent) {
         return new AttributeGroup(name);
-    }  
+    }
 
-   
+
 }

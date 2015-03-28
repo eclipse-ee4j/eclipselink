@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -68,7 +68,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
             String namespaceURI = xPathFragment.getNamespaceURI();
             if(namespaceURI == null) {
                 xmlStreamWriter.writeAttribute(xPathFragment.getLocalName(), value);
-                
+
             } else {
                 String prefix = getPrefixForFragment(xPathFragment);
                 if(prefix == null) {
@@ -89,7 +89,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     public void namespaceDeclaration(String prefix, String namespaceURI){
         try{
             xmlStreamWriter.writeNamespace(prefix, namespaceURI);
@@ -97,9 +97,9 @@ public class XMLStreamWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
-    public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value){    
-        try {          
+
+    public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value){
+        try {
             if(namespaceURI == null || namespaceURI.length() == 0) {
                 xmlStreamWriter.writeAttribute(localName, value);
             } else {
@@ -107,11 +107,11 @@ public class XMLStreamWriterRecord extends MarshalRecord {
             }
         } catch(XMLStreamException e) {
             throw XMLMarshalException.marshalException(e);
-        }       
+        }
     }
-    
+
     public void attribute(String namespaceURI, String localName, String name, String value) {
-        try {          
+        try {
              if(namespaceURI == null || namespaceURI.length() == 0) {
                  xmlStreamWriter.writeAttribute(localName, value);
              } else {
@@ -137,9 +137,9 @@ public class XMLStreamWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     public boolean isNamespaceAware() {
-    	return true;    	
+        return true;
     }
 
     public void closeStartElement() {
@@ -154,7 +154,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
                 if(null == namespaceContext) {
                     xmlStreamWriter.writeStartElement(xPathFragment.getLocalName());
                 } else {
-                    String defaultNamespace = namespaceContext.getNamespaceURI(Constants.EMPTY_STRING);                    
+                    String defaultNamespace = namespaceContext.getNamespaceURI(Constants.EMPTY_STRING);
                     xmlStreamWriter.writeStartElement(Constants.EMPTY_STRING, xPathFragment.getLocalName(), Constants.EMPTY_STRING);
                     if(defaultNamespace != null && defaultNamespace.length() > 0 ) {
                         xmlStreamWriter.writeDefaultNamespace(Constants.EMPTY_STRING);
@@ -167,9 +167,9 @@ public class XMLStreamWriterRecord extends MarshalRecord {
                 }
                 xmlStreamWriter.writeStartElement(prefix, xPathFragment.getLocalName(), namespaceURI);
                 if(xPathFragment.isGeneratedPrefix()){
-                	namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+                    namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
                 }
-                
+
             }
             writePrefixMappings();
         } catch(XMLStreamException e) {
@@ -228,7 +228,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
 
     public void startPrefixMapping(String prefix, String namespaceUri) {
         if(null == this.prefixMapping) {
-            this.prefixMapping = new HashMap<String, String>(); 
+            this.prefixMapping = new HashMap<String, String>();
         }
         this.prefixMapping.put(prefix, namespaceUri);
     }

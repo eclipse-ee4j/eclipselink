@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import org.eclipse.persistence.testing.framework.TestModel;
@@ -136,18 +136,18 @@ public class MappingWorkbenchIntegrationTestModel extends TestModel {
             suite.addTest(new ProjectClassGeneratorWithCMPDescriptorTest());
         }
 
-        ProjectClassGeneratorResultFileTest test = 
+        ProjectClassGeneratorResultFileTest test =
             new ProjectClassGeneratorResultFileTest(new AggregateProject(), ".addFieldNameTranslation");
         test.setName("AddFieldNameTranslationTest");
         suite.addTest(test);
 
-        test = 
-new ProjectClassGeneratorResultFileTest(new org.eclipse.persistence.testing.models.relationshipmaintenance.RelationshipsProject(), 
+        test =
+new ProjectClassGeneratorResultFileTest(new org.eclipse.persistence.testing.models.relationshipmaintenance.RelationshipsProject(),
                                         ".useTransparentCollection();");
         test.setName("UseTransparentCollectionTest");
         suite.addTest(test);
 
-        test = 
+        test =
 new ProjectClassGeneratorResultFileTest(new org.eclipse.persistence.testing.models.mapping.MappingProject(), "SerializedObjectConverter");
         test.setName("SerializedObjectMappingTest");
         suite.addTest(test);
@@ -168,8 +168,8 @@ new ProjectClassGeneratorResultFileTest(new org.eclipse.persistence.testing.mode
         test.setName("ContainerIndirectionTransformationMappingTest");
         suite.addTest(test);
 
-        test = 
-new ProjectClassGeneratorResultFileTest(new org.eclipse.persistence.testing.models.transparentindirection.CustomIndirectContainerProject(), 
+        test =
+new ProjectClassGeneratorResultFileTest(new org.eclipse.persistence.testing.models.transparentindirection.CustomIndirectContainerProject(),
                                         ".useContainerIndirection(");
         test.setName("ContainerIndirectionForeignReferenceMappingTest");
         suite.addTest(test);
@@ -183,7 +183,7 @@ new ProjectClassGeneratorResultFileTest(new org.eclipse.persistence.testing.mode
         suite.addTest(new TypeConversionConverterDataClassIsArrayTest(Byte[].class));
         suite.addTest(new TypeConversionConverterDataClassIsArrayTest(char[].class));
         suite.addTest(new TypeConversionConverterDataClassIsArrayTest(Character[].class));
-         
+
         suite.addTest(new TypeConversionConverterObjectClassIsArrayTest(byte[].class));
         suite.addTest(new TypeConversionConverterObjectClassIsArrayTest(Byte[].class));
         suite.addTest(new TypeConversionConverterObjectClassIsArrayTest(char[].class));

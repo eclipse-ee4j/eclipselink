@@ -50,9 +50,9 @@ import org.eclipse.persistence.queries.ReportQuery;
  * <b>Description</b>: This is the container class for the components that
  * define a query.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria CriteriaQuery
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
@@ -70,7 +70,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     /**
      * Specify the item that is to be returned in the query result. Replaces the
      * previously specified selection, if any.
-     * 
+     *
      * @param selection
      *            selection specifying the item that is to be returned in the
      *            query result
@@ -82,7 +82,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         if (selection.isCompoundSelection()) {
             //bug 366386: validate that aliases are not reused
             if (this.selection.isCompoundSelection() && ((CompoundSelectionImpl)this.selection).getDuplicateAliasNames() != null) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_alias_reused", 
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_alias_reused",
                         new Object[] { ((CompoundSelectionImpl)this.selection).getDuplicateAliasNames() }));
             }
             if (selection.getJavaType().equals(Tuple.class)) {
@@ -115,37 +115,37 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     /**
      * Specify the items that are to be returned in the query result. Replaces
      * the previously specified selection(s), if any.
-     * 
+     *
      * The type of the result of the query execution depends on the
      * specification of the criteria query object as well as the arguments to
      * the multiselect method as follows:
-     * 
+     *
      * If the type of the criteria query is CriteriaQuery<Tuple>, a Tuple object
      * corresponding to the arguments of the multiselect method will be
      * instantiated and returned for each row that results from the query
      * execution.
-     * 
+     *
      * If the type of the criteria query is CriteriaQuery<X> for some
      * user-defined class X, then the arguments to the multiselect method will
      * be passed to the X constructor and an instance of type X will be returned
      * for each row. The IllegalStateException will be thrown if a constructor
      * for the given argument types does not exist.
-     * 
+     *
      * If the type of the criteria query is CriteriaQuery<X[]> for some class X,
      * an instance of type X[] will be returned for each row. The elements of
      * the array will correspond to the arguments of the multiselect method. The
      * IllegalStateException will be thrown if the arguments to the multiselect
      * method are not of type X.
-     * 
+     *
      * If the type of the criteria query is CriteriaQuery<Object>, and only a
      * single argument is passed to the multiselect method, an instance of type
      * Object will be returned for each row.
-     * 
+     *
      * If the type of the criteria query is CriteriaQuery<Object>, and more than
      * one argument is passed to the multiselect method, an instance of type
      * Object[] will be instantiated and returned for each row. The elements of
      * the array will correspond to the arguments to the multiselect method.
-     * 
+     *
      * @param selections
      *            expressions specifying the items that are to be returned in
      *            the query result
@@ -170,7 +170,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 } catch(IllegalArgumentException constructorDoesNotExist){
                     this.queryResult = ResultType.PARTIAL;
                     this.selection = new CompoundSelectionImpl(this.queryType, selections);
-                } 
+                }
             }
         } else if (this.queryResult.equals(ResultType.TUPLE)) {
             this.selection = new CompoundSelectionImpl(this.queryType, selections);
@@ -188,7 +188,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         }
         //bug 366386: validate that aliases are not reused
         if (this.selection.isCompoundSelection() && ((CompoundSelectionImpl)this.selection).getDuplicateAliasNames() != null) {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_alias_reused", 
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_alias_reused",
                     new Object[] { ((CompoundSelectionImpl)this.selection).getDuplicateAliasNames() }));
         }
         return this;
@@ -197,39 +197,39 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     /**
      * Specify the items that are to be returned in the query result. Replaces
      * the previously specified selection(s), if any.
-     * 
+     *
      * The type of the result of the query execution depends on the
      * specification of the criteria query object as well as the arguments to
      * the multiselect method as follows:
-     * 
+     *
      * If the type of the criteria query is CriteriaQuery<Tuple>, a Tuple object
      * corresponding to the items in the selection list passed to the
      * multiselect method will be instantiated and returned for each row that
      * results from the query execution.
-     * 
+     *
      * If the type of the criteria query is CriteriaQuery<X> for some
      * user-defined class X, then the items in the selection list passed to the
      * multiselect method will be passed to the X constructor and an instance of
      * type X will be returned for each row. The IllegalStateException will be
      * thrown if a constructor for the given argument types does not exist.
-     * 
+     *
      * If the type of the criteria query is CriteriaQuery<X[]> for some class X,
      * an instance of type X[] will be returned for each row. The elements of
      * the array will correspond to the items in the selection list passed to
      * the multiselect method. The IllegalStateException will be thrown if the
      * elements in the selection list passed to the multiselect method are not
      * of type X.
-     * 
+     *
      * If the type of the criteria query is CriteriaQuery<Object>, and the
      * selection list passed to the multiselect method contains only a single
      * item, an instance of type Object will be returned for each row.
-     * 
+     *
      * If the type of the criteria query is CriteriaQuery<Object>, and the
      * selection list passed to the multiselect method contains more than one
      * item, an instance of type Object[] will be instantiated and returned for
      * each row. The elements of the array will correspond to the items in the
      * selection list passed to the multiselect method.
-     * 
+     *
      * @param selectionList
      *            list of expressions specifying the items that to be are
      *            returned in the query result
@@ -249,7 +249,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * boolean expression. Replaces the previously added restriction(s), if any.
      * This method only overrides the return type of the corresponding
      * AbstractQuery method.
-     * 
+     *
      * @param restriction
      *            a simple or compound boolean expression
      * @return the modified query
@@ -265,7 +265,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * specified, any previously added restrictions are simply removed. This
      * method only overrides the return type of the corresponding AbstractQuery
      * method.
-     * 
+     *
      * @param restrictions
      *            zero or more restriction predicates
      * @return the modified query
@@ -280,7 +280,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * no grouping expressions are specified, any previously added grouping
      * expressions are simply removed. This method only overrides the return
      * type of the corresponding AbstractQuery method.
-     * 
+     *
      * @param grouping
      *            zero or more grouping expressions
      * @return the modified query
@@ -296,7 +296,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * no grouping expressions are specified, any previously added grouping
      * expressions are simply removed. This method only overrides the return
      * type of the corresponding AbstractQuery method.
-     * 
+     *
      * @param grouping
      *            list of zero or more grouping expressions
      * @return the modified query
@@ -310,7 +310,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * Specify a restriction over the groups of the query. Replaces the previous
      * having restriction(s), if any. This method only overrides the return type
      * of the corresponding AbstractQuery method.
-     * 
+     *
      * @param restriction
      *            a simple or compound boolean expression
      * @return the modified query
@@ -327,7 +327,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * specified, any previously added restrictions are simply removed. This
      * method only overrides the return type of the corresponding AbstractQuery
      * method.
-     * 
+     *
      * @param restrictions
      *            zero or more restriction predicates
      * @return the modified query
@@ -344,7 +344,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * simply removed, and results will be returned in no particular order. The
      * left-to-right sequence of the ordering expressions determines the
      * precedence, whereby the leftmost has highest precedence.
-     * 
+     *
      * @param o
      *            zero or more ordering expressions
      * @return the modified query.
@@ -364,7 +364,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * simply removed, and results will be returned in no particular order. The
      * order of the ordering expressions in the list determines the precedence,
      * whereby the first element in the list has highest precedence.
-     * 
+     *
      * @param o
      *            list of zero or more ordering expressions
      * @return the modified query.
@@ -375,13 +375,13 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     }
 
     /**
-     * This method will set this queryImpl's selection to a ConstructorSelectionImpl, creating a new 
-     * instance or populating the one passed in as necessary.    
-     * Throws IllegalArgumentException if a constructor taking arguments represented 
-     * by the selections array doesn't exist for the given class.  
-     * 
+     * This method will set this queryImpl's selection to a ConstructorSelectionImpl, creating a new
+     * instance or populating the one passed in as necessary.
+     * Throws IllegalArgumentException if a constructor taking arguments represented
+     * by the selections array doesn't exist for the given class.
+     *
      * Also sets the query result to ResultType.CONSTRUCTOR
-     * 
+     *
      * @param class1
      * @param selections
      * @throws IllegalArgumentException
@@ -420,7 +420,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * duplicates to be retained. If distinct has not been specified, duplicate
      * results must be retained. This method only overrides the return type of
      * the corresponding AbstractQuery method.
-     * 
+     *
      * @param distinct
      *            boolean value specifying whether duplicate results must be
      *            eliminated from the query result or whether they must be
@@ -451,7 +451,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
 
     /**
      * Return the ordering expressions in order of precedence.
-     * 
+     *
      * @return the list of ordering expressions
      */
     public List<Order> getOrderList() {
@@ -461,7 +461,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     /**
      * Return the selection item of the query. This will correspond to the query
      * type.
-     * 
+     *
      * @return the selection item of the query
      */
     public Selection<T> getSelection() {
@@ -527,7 +527,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     }
                 }
             }
-            if (this.where != null && ((InternalSelection) this.where).getCurrentNode() != null  && 
+            if (this.where != null && ((InternalSelection) this.where).getCurrentNode() != null  &&
                     ((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass() != null) {
                 reportQuery.setReferenceClass(((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass());
                 reportQuery.setExpressionBuilder(((InternalSelection) this.where).getCurrentNode().getBuilder());
@@ -636,10 +636,10 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     //selecting size not all databases support subselect in select clause so convert to count/groupby
                     PathImpl collectionExpression = (PathImpl) ((FunctionExpressionImpl)this.selection).getChildExpressions().get(0);
                     ExpressionImpl fromExpression = (ExpressionImpl) collectionExpression.getParentPath();
-                    reportQuery.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER); 
+                    reportQuery.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER);
                     reportQuery.addGrouping(fromExpression.getCurrentNode());
                 }else{
-                    reportQuery.addAttribute(this.selection.getAlias(), ((FunctionExpressionImpl)this.selection).getCurrentNode(), this.selection.getJavaType()); 
+                    reportQuery.addAttribute(this.selection.getAlias(), ((FunctionExpressionImpl)this.selection).getCurrentNode(), this.selection.getJavaType());
 
                 }}else{
                 if (((InternalSelection) selection).isFrom()) {

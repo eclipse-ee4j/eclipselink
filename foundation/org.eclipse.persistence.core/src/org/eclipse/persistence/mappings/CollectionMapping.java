@@ -1,27 +1,27 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     02/26/2009-2.0 Guy Pelletier 
+ *     02/26/2009-2.0 Guy Pelletier
  *       - 264001: dot notation for mapped-by and order-by
- *     08/23/2010-2.2 Michael O'Brien 
+ *     08/23/2010-2.2 Michael O'Brien
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
- *     07/19/2011-2.2.1 Guy Pelletier 
+ *     07/19/2011-2.2.1 Guy Pelletier
  *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
- *     04/09/2012-2.4 Guy Pelletier 
+ *     04/09/2012-2.4 Guy Pelletier
  *       - 374377: OrderBy with ElementCollection doesn't work
- *     14/05/2012-2.4 Guy Pelletier   
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
 import java.beans.PropertyChangeListener;
@@ -70,18 +70,18 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     protected boolean isListOrderFieldSupported;
     /** Query used when order of list members is changed. Used only if listOrderField!=null */
     protected transient DataModifyQuery changeOrderTargetQuery;
-    /** 
+    /**
      * Specifies what should be done if the list of values read from listOrserField is invalid
      * (there should be no nulls, no duplicates, no "holes").
-     **/ 
+     **/
     protected OrderCorrectionType orderCorrectionType;
-    
+
     /** Store if the mapping can batch delete reference objects. */
     protected Boolean mustDeleteReferenceObjectsOneByOne = null;
-    
+
     /** Flag to indicate if collection needs to be synchronized instead of cloning during merge. */
     protected static boolean isSynchronizeOnMerge = Boolean.getBoolean("eclipselink.synchronizeCollectionOnMerge");
-    
+
     /**
      * PUBLIC:
      * Default constructor.
@@ -119,7 +119,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
         ((ReadAllQuery)getSelectionQuery()).addDescendingOrdering(queryKeyName);
     }
-    
+
     /**
      * PUBLIC:
      * Provide order support for queryKeyName in descending or ascending order.
@@ -132,20 +132,20 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             addAscendingOrdering(queryKeyName);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Provide order support for queryKeyName in ascending or descending order.
-     * Called from the jpa metadata processing of an order by value. The 
+     * Called from the jpa metadata processing of an order by value. The
      * aggregate name may be chained through the dot notation.
      */
     public void addAggregateOrderBy(String aggregateName, String queryKeyName, boolean isDescending) {
         this.hasOrderBy = true;
-        
+
         ReadAllQuery readAllQuery = (ReadAllQuery) getSelectionQuery();
         ExpressionBuilder builder = readAllQuery.getExpressionBuilder();
         Expression expression = null;
-        
+
         if (aggregateName.contains(".")) {
             StringTokenizer st = new StringTokenizer(aggregateName, ".");
             while (st.hasMoreTokens()) {
@@ -155,7 +155,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     expression = expression.get(st.nextToken());
                 }
             }
-            
+
             expression = expression.get(queryKeyName);
         } else {
             // Single level aggregate
@@ -165,7 +165,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 expression = builder.get(aggregateName).get(queryKeyName);
             }
         }
-        
+
         if (isDescending) {
             readAllQuery.addOrdering(expression.descending());
         } else {
@@ -207,14 +207,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         Object clonedAttributeValue = containerPolicy.containerInstance(containerPolicy.sizeFor(attributeValue));
 
         Object temporaryCollection = null;
-        if (isSynchronizeOnMerge) { 
+        if (isSynchronizeOnMerge) {
             // I need to synchronize here to prevent the collection from changing while I am cloning it.
             // This will occur when I am merging into the cache and I am instantiating a UOW valueHolder at the same time
             // I can not synchronize around the clone, as this will cause deadlocks, so I will need to copy the collection then create the clones
             // I will use a temporary collection to help speed up the process
             synchronized (attributeValue) {
                 temporaryCollection = containerPolicy.cloneFor(attributeValue);
-            } 
+            }
         } else {
             // Clone is used while merging into cache. It can operate directly without synchronize/clone.
             temporaryCollection = attributeValue;
@@ -245,7 +245,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
         return newContainer;
     }
-    
+
    /**
      * INTERNAL:
      * Copy of the attribute of the object.
@@ -259,7 +259,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         while (this.containerPolicy.hasNext(valuesIterator)) {
             Object originalValue = this.containerPolicy.next(valuesIterator, group.getSession());
             Object copyValue = originalValue;
-            Object originalKey = this.containerPolicy.keyFromIterator(valuesIterator); 
+            Object originalKey = this.containerPolicy.keyFromIterator(valuesIterator);
             Object copyKey = originalKey;
             if (group.shouldCascadeAllParts() || (group.shouldCascadePrivateParts() && isPrivateOwned()) || group.shouldCascadeTree()) {
                 copyValue = copyElement(originalValue, group);
@@ -277,7 +277,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         getIndirectionPolicy().reset(copy);
         setRealAttributeValueInObject(copy, attributeValue);
     }
-    
+
     /**
      * INTERNAL:
      * Copies member's value
@@ -294,7 +294,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         // optimize registration to knowledge of existence
         if (refreshCascade != null ){
             switch(refreshCascade){
-            case ObjectBuildingQuery.CascadeAllParts : 
+            case ObjectBuildingQuery.CascadeAllParts :
                 return unitOfWork.mergeClone(element, MergeManager.CASCADE_ALL_PARTS, true);
             case ObjectBuildingQuery.CascadePrivateParts :
                 return unitOfWork.mergeClone(element, MergeManager.CASCADE_PRIVATE_PARTS, true);
@@ -420,7 +420,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade perform removal of orphaned private owned objects from the UnitOfWorkChangeSet
@@ -442,7 +442,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
@@ -484,7 +484,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, newObjects, unregisteredExistingObjects, visitedObjects, uow, cascadeErrors);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
@@ -506,7 +506,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
         Object cloneIter = cp.iteratorFor(cloneObjectCollection);
         // add private owned objects to uow list if mapping is a candidate and uow should discover new objects and the source object is new.
-        boolean shouldAddPrivateOwnedObject = isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && uow.isCloneNewObject(object); 
+        boolean shouldAddPrivateOwnedObject = isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && uow.isCloneNewObject(object);
         while (cp.hasNext(cloneIter)) {
             Object wrappedObject = cp.nextEntry(cloneIter, uow);
             Object nextObject = cp.unwrapIteratorResult(wrappedObject);
@@ -519,7 +519,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
      * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
@@ -539,7 +539,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         CollectionChangeRecord collectionRecord = (CollectionChangeRecord)changeRecord;
         // TODO: Handle events that fired after collection was replaced.
         compareCollectionsForChange(collectionRecord.getOriginalCollection(), collectionRecord.getLatestCollection(), collectionRecord, session);
-        
+
         if(this.isPrivateOwned()) {
             postCalculateChanges(collectionRecord, (UnitOfWorkImpl)session);
         }
@@ -559,10 +559,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if(this.changeOrderTargetQuery != null) {
             clone.changeOrderTargetQuery = (DataModifyQuery)this.changeOrderTargetQuery.clone();
         }
-        
+
         // Clone the container policy.
         clone.containerPolicy = (ContainerPolicy) this.containerPolicy.clone();
-        
+
         return clone;
     }
 
@@ -679,16 +679,16 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 }
                 if(previousList == currentList) {
                     // previousList is not available
-                    
+
                     // The same size as previous list,
-                    // at the i-th position holds the index of the i-th original object in the current list (-1 if the object was removed): 
+                    // at the i-th position holds the index of the i-th original object in the current list (-1 if the object was removed):
                     // for example: {0, -1, 1, -1, 3} means that:
                     //   previous(0) == current(0);
                     //   previous(1) was removed;
                     //   previous(2) == current(1);
                     //   previous(3) was removed;
                     //   previous(4) == current(3);
-                    // current(1) and current(3) were also on previous list, but with different indexes: they are the ones that should have their index changed. 
+                    // current(1) and current(3) were also on previous list, but with different indexes: they are the ones that should have their index changed.
                     List<Integer> currentIndexes = record.getCurrentIndexesOfOriginalObjects(currentList);
                     for(int i=0; i < currentIndexes.size(); i++) {
                         int currentIndex = currentIndexes.get(i);
@@ -698,7 +698,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     }
                 } else {
                     for (int i=0; i < previousSize; i++) {
-                        // TODO: should we check for previousObject != null? 
+                        // TODO: should we check for previousObject != null?
                         Object prevObject = previousList.get(i);
                         Object currentObject = null;
                         if(i < currentSize) {
@@ -720,7 +720,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * The memory objects are compared and only the changes are written to the database.
@@ -730,12 +730,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         Object previousObjects = readPrivateOwnedForObject(query);
         if (previousObjects == null) {
             previousObjects = getContainerPolicy().containerInstance(1);
-        }        
+        }
         if (this.listOrderField != null && this.isAggregateCollectionMapping()) {
             compareListsAndWrite((List)previousObjects, (List)currentObjects, query);
             return;
         }
-        
+
         ContainerPolicy cp = this.containerPolicy;
 
         Map previousObjectsByKey = new HashMap(cp.sizeFor(previousObjects)); // Read from db or from backup in uow.
@@ -810,7 +810,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     protected void compareListsAndWrite(List previousList, List currentList, WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
     }
-    
+
     /**
      * Compare two objects if their parts are not private owned
      */
@@ -819,7 +819,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if(this.listOrderField != null) {
             return compareLists((List)firstCollection, (List)secondCollection, session, false);
         }
-        
+
         ContainerPolicy cp = this.containerPolicy;
         if (cp.sizeFor(firstCollection) != cp.sizeFor(secondCollection)) {
             return false;
@@ -836,7 +836,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject.getValue(), session);
                 Object key = secondObject.getKey();
                 keyValues.put(key, primaryKey);
-            }    
+            }
             while (cp.hasNext(firstIter)) {
                 Map.Entry firstObject = (Map.Entry)cp.nextEntry(firstIter, session);
                 Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject.getValue(), session);
@@ -845,12 +845,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     return false;
                 }
             }
-        } else {        
+        } else {
             while (cp.hasNext(secondIter)) {
                 Object secondObject = cp.next(secondIter, session);
                 Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
                 keyValues.put(primaryKey, primaryKey);
-            }    
+            }
             while (cp.hasNext(firstIter)) {
                 Object firstObject = cp.next(firstIter, session);
                 Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
@@ -890,7 +890,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         while (cp.hasNext(firstIter)) {
             Object firstObject = cp.next(firstIter, session);
             Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
-            
+
             if (keyValueToObject.containsKey(primaryKey)) {
                 Object object = keyValueToObject.get(primaryKey);
 
@@ -906,7 +906,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     }
 
     /**
-     * Compare two lists. For equality the order of the elements should be the same. 
+     * Compare two lists. For equality the order of the elements should be the same.
      * Used only if listOrderField != null
      */
     protected boolean compareLists(List firstList, List secondList, AbstractSession session, boolean withPrivateOwned) {
@@ -938,14 +938,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings
      * This method is implemented by subclasses as necessary.
-     * @param classLoader 
+     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
         containerPolicy.convertClassNamesToClasses(classLoader);
     }
-    
+
     /**
      * INTERNAL:
      * Extract the value from the batch optimized query, this should be supported by most query types.
@@ -981,7 +981,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             for (Object objectsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(objectsIterator);) {
                 Object eachReferenceObject = queryContainerPolicy.next(objectsIterator, session);
                 AbstractRecord row = rowsIterator.next();
-                Object eachReferenceKey = extractKeyFromTargetRow(row, session);                        
+                Object eachReferenceKey = extractKeyFromTargetRow(row, session);
                 List[] objectsAndRows = referenceObjectsAndRowsByKey.get(eachReferenceKey);
                 if (objectsAndRows == null) {
                     objectsAndRows = new List[]{new ArrayList(), new ArrayList()};
@@ -994,7 +994,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             Iterator<Map.Entry<Object, List[]>> iterator = referenceObjectsAndRowsByKey.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<Object, List[]> entry = iterator.next();
-                Object eachReferenceKey = entry.getKey(); 
+                Object eachReferenceKey = entry.getKey();
                 List objects = entry.getValue()[0];
                 List<AbstractRecord> rows = entry.getValue()[1];
                 Object container = this.containerPolicy.containerInstance(objects.size());
@@ -1012,7 +1012,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     row = rowsIterator.next();
                 }
                 Object eachReferenceKey = extractKeyFromTargetRow(row, session);
-                
+
                 Object container = referenceObjectsByKey.get(eachReferenceKey);
                 if ((container == null) || (container == Helper.NULL_VALUE)) {
                     container = this.containerPolicy.containerInstance();
@@ -1032,7 +1032,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     protected Object extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
         throw QueryException.batchReadingNotSupported(this, null);
     }
-    
+
     /**
      * INTERNAL:
      * We are not using a remote valueholder
@@ -1124,8 +1124,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
-     * Get the container policy from the selection query for this mapping. This 
-     * method is overridden in DirectCollectionMapping since  its selection 
+     * Get the container policy from the selection query for this mapping. This
+     * method is overridden in DirectCollectionMapping since  its selection
      * query is a DataReadQuery.
      */
     protected ContainerPolicy getSelectionQueryContainerPolicy() {
@@ -1154,7 +1154,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public DatabaseField getListOrderField() {
         return listOrderField;
     }
-    
+
     /**
      * INTERNAL:
      * Returns list of primary key fields from the reference descriptor.
@@ -1162,7 +1162,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public List<DatabaseField> getTargetPrimaryKeyFields() {
         return getReferenceDescriptor().getPrimaryKeyFields();
     }
-    
+
     /**
      * PUBLIC:
      * Specifies what should be done if the list of values read from listOrserField is invalid
@@ -1171,20 +1171,20 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public OrderCorrectionType getOrderCorrectionType() {
         return this.orderCorrectionType;
     }
-    
+
     protected boolean hasCustomDeleteAllQuery() {
         return hasCustomDeleteAllQuery;
     }
 
     /**
      * INTERNAL:
-     * Return true if ascending or descending ordering has been set on this 
+     * Return true if ascending or descending ordering has been set on this
      * mapping via the @OrderBy annotation.
      */
     public boolean hasOrderBy() {
         return hasOrderBy;
     }
-    
+
     /**
      * INTERNAL:
      * Initialize the state of mapping.
@@ -1199,7 +1199,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if ((!usesIndirection()) && (!getAttributeAccessor().getAttributeClass().isAssignableFrom(this.containerPolicy.getContainerClass()))) {
             throw DescriptorException.incorrectCollectionPolicy(this, getAttributeAccessor().getAttributeClass(), this.containerPolicy.getContainerClass());
         }
-        
+
         if(listOrderField != null) {
             initializeListOrderField(session);
         }
@@ -1207,16 +1207,16 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
-     * Initializes listOrderField. 
+     * Initializes listOrderField.
      * Precondition: listOrderField != null.
      */
     protected void initializeListOrderField(AbstractSession session) {
         if(!List.class.isAssignableFrom(getAttributeAccessor().getAttributeClass())) {
             throw DescriptorException.listOrderFieldRequiersList(getDescriptor(), this);
         }
-        
+
         boolean isAttributeAssignableFromIndirectList = getAttributeAccessor().getAttributeClass().isAssignableFrom(IndirectList.class);
-        
+
         if(this.orderCorrectionType == null) {
             // set default validation mode
             if(isAttributeAssignableFromIndirectList) {
@@ -1232,28 +1232,28 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
 
         ContainerPolicy originalQueryContainerPolicy = getSelectionQueryContainerPolicy();
-        
+
         if(!this.containerPolicy.isOrderedListPolicy()) {
             setContainerPolicy(new OrderedListContainerPolicy(this.containerPolicy.getContainerClass()));
             // re-prepare replaced container policy as we are initializing
             getContainerPolicy().prepare(getSelectionQuery(), session);
         }
-        OrderedListContainerPolicy orderedListContainerPolicy = (OrderedListContainerPolicy)this.containerPolicy;  
+        OrderedListContainerPolicy orderedListContainerPolicy = (OrderedListContainerPolicy)this.containerPolicy;
         orderedListContainerPolicy.setListOrderField(this.listOrderField);
         orderedListContainerPolicy.setOrderCorrectionType(this.orderCorrectionType);
 
         // If ContainerPolicy's container class is IndirectList, originalQueryContainerPolicy's container class is not (likely Vector)
         // and orderCorrectionType doesn't require query to use IndirectList - then query will keep a separate container policy
         // that uses its original container class (likely Vector) - this is the same optimization as used in useTransparentList method.
-        if(this.containerPolicy.getContainerClass().isAssignableFrom(IndirectList.class) && 
+        if(this.containerPolicy.getContainerClass().isAssignableFrom(IndirectList.class) &&
            !IndirectList.class.isAssignableFrom(originalQueryContainerPolicy.getContainerClass()) &&
            this.orderCorrectionType != OrderCorrectionType.READ_WRITE ||
            originalQueryContainerPolicy == this.getSelectionQueryContainerPolicy())
         {
-            OrderedListContainerPolicy queryOrderedListContainerPolicy; 
+            OrderedListContainerPolicy queryOrderedListContainerPolicy;
             if(originalQueryContainerPolicy.getClass().equals(orderedListContainerPolicy.getClass())) {
                 // original query container policy
-                queryOrderedListContainerPolicy = (OrderedListContainerPolicy)originalQueryContainerPolicy;  
+                queryOrderedListContainerPolicy = (OrderedListContainerPolicy)originalQueryContainerPolicy;
                 queryOrderedListContainerPolicy.setListOrderField(this.listOrderField);
                 queryOrderedListContainerPolicy.setOrderCorrectionType(this.orderCorrectionType);
             } else {
@@ -1263,34 +1263,34 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 setSelectionQueryContainerPolicy(queryOrderedListContainerPolicy);
             }
         }
-        
+
         if(this.listOrderField.getType() == null) {
             this.listOrderField.setType(Integer.class);
         }
-        
+
         buildListOrderField();
-        
+
         // DirectCollectMap - that uses DataReadQuery - adds listOrderField to selection query in initializeSelectionStatement method.
         if (getSelectionQuery().isReadAllQuery()) {
             if(shouldUseListOrderFieldTableExpression()) {
                 initializeListOrderFieldTable(session);
             }
         }
-        
+
         initializeChangeOrderTargetQuery(session);
     }
-    
+
     /**
      * INTERNAL:
-     * Initializes listOrderField's table, does nothing by default. 
+     * Initializes listOrderField's table, does nothing by default.
      * Precondition: listOrderField != null.
      */
-    protected void initializeListOrderFieldTable(AbstractSession session) {        
+    protected void initializeListOrderFieldTable(AbstractSession session) {
     }
-    
+
     /**
      * INTERNAL:
-     * Verifies listOrderField's table, if none found sets the default one. 
+     * Verifies listOrderField's table, if none found sets the default one.
      * Precondition: listOrderField != null.
      */
     protected void buildListOrderField() {
@@ -1303,12 +1303,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
         this.listOrderField = this.getReferenceDescriptor().buildField(this.listOrderField);
     }
-    
-    
+
+
     /**
      * ADVANCED:
      * This method should only be called after this mapping's indirection policy has been set
-     * 
+     *
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
      * database when you add and remove from them.  IndirectList defaults to this behavior. When
      * Set to true, the collection associated with this TransparentIndirection will be setup so as
@@ -1322,22 +1322,22 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
         return getIndirectionPolicy().shouldUseLazyInstantiation();
     }
-    
+
     /**
      * INTERNAL:
-     * Indicates whether getListOrderFieldExpression method should create field expression based on table expression.  
+     * Indicates whether getListOrderFieldExpression method should create field expression based on table expression.
      */
     public boolean shouldUseListOrderFieldTableExpression() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Initialize changeOrderTargetQuery.
      */
     protected void initializeChangeOrderTargetQuery(AbstractSession session) {
     }
-    
+
     /**
      * INTERNAL:
      * Return whether this mapping is a Collection type.
@@ -1346,7 +1346,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public boolean isCollectionMapping() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Return if this mapping has a mapped key that uses a OneToOne (object).
@@ -1354,7 +1354,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public boolean isMapKeyObjectRelationship() {
         return this.containerPolicy.isMapKeyObject();
     }
-    
+
     /**
      * INTERNAL:
      * The referenced object is checked if it is instantiated or not,
@@ -1408,7 +1408,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
         }
     }
-    
+
     /**
      * Force instantiation of all indirections.
      */
@@ -1417,22 +1417,22 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         instantiateAttribute(object, session);
         ClassDescriptor referenceDescriptor = getReferenceDescriptor();
         if (referenceDescriptor != null) {
-        	boolean hasInheritance = referenceDescriptor.hasInheritance() || referenceDescriptor.hasTablePerClassPolicy();
-	        Object value = getRealAttributeValueFromObject(object, session);
-	        ContainerPolicy cp = this.containerPolicy;
-	        for (Object iterator = cp.iteratorFor(value); cp.hasNext(iterator);) {
-	            Object wrappedObject = cp.nextEntry(iterator, session);
-	            Object nestedObject = cp.unwrapIteratorResult(wrappedObject);
-	            if (hasInheritance && !nestedObject.getClass().equals(referenceDescriptor.getJavaClass())){
-	                ClassDescriptor concreteReferenceDescriptor = referenceDescriptor.getInheritancePolicy().getDescriptor(nestedObject.getClass());
-	                concreteReferenceDescriptor.getObjectBuilder().loadAll(nestedObject, session, loaded);
-	            } else {
-	            	referenceDescriptor.getObjectBuilder().loadAll(nestedObject, session, loaded);
-	            }
-	        }
+            boolean hasInheritance = referenceDescriptor.hasInheritance() || referenceDescriptor.hasTablePerClassPolicy();
+            Object value = getRealAttributeValueFromObject(object, session);
+            ContainerPolicy cp = this.containerPolicy;
+            for (Object iterator = cp.iteratorFor(value); cp.hasNext(iterator);) {
+                Object wrappedObject = cp.nextEntry(iterator, session);
+                Object nestedObject = cp.unwrapIteratorResult(wrappedObject);
+                if (hasInheritance && !nestedObject.getClass().equals(referenceDescriptor.getJavaClass())){
+                    ClassDescriptor concreteReferenceDescriptor = referenceDescriptor.getInheritancePolicy().getDescriptor(nestedObject.getClass());
+                    concreteReferenceDescriptor.getObjectBuilder().loadAll(nestedObject, session, loaded);
+                } else {
+                    referenceDescriptor.getObjectBuilder().loadAll(nestedObject, session, loaded);
+                }
+            }
         }
     }
-    
+
     /**
      * ADVANCED:
      * Return whether the reference objects must be deleted
@@ -1460,7 +1460,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         CollectionChangeRecord changeRecord = (CollectionChangeRecord) chgRecord;
         UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)changeRecord.getOwner().getUOWChangeSet();
 
-        // Collect the changes into a vector. Check to see if the target has an instantiated 
+        // Collect the changes into a vector. Check to see if the target has an instantiated
         // collection, if it does then iterate over the changes and merge the collections.
         if (isAttributeValueInstantiated(target)) {
             // If it is new will need a new collection.
@@ -1476,7 +1476,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
 
             containerPolicy.mergeChanges(changeRecord, valueOfTarget, shouldMergeCascadeParts(mergeManager), mergeManager, targetSession, isSynchronizeOnMerge);
-        } else { 
+        } else {
             // The valueholder has not been instantiated
             if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
                 return; // do nothing
@@ -1540,10 +1540,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     // We must clone and set the value holder from the source to the target.
                     // This ensures any cascaded refresh will be applied to the UOW backup valueholder
                     Object attributeValue = getAttributeValueFromObject(source);
-                    Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, null, target, null, mergeManager.getSession(), false); // building clone from an original not a row. 
+                    Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, null, target, null, mergeManager.getSession(), false); // building clone from an original not a row.
                     setAttributeValueInObject(target, clonedAttributeValue);
                 }
-                
+
                 // This will occur when the clone's value has not been instantiated yet and we do not need
                 // the refresh that attribute
                 return;
@@ -1570,8 +1570,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if (!mergeManager.isForRefresh()) {
             // EL Bug 338504 - No Need to clone in this case.
             valueOfSourceCloned = valueOfSource;
-            // if we are copying from original to clone then the source will be     
-            // instantiated anyway and we must continue to use the UnitOfWork 
+            // if we are copying from original to clone then the source will be
+            // instantiated anyway and we must continue to use the UnitOfWork
             // valueholder in the case of transparent indirection
             Object newContainer = containerPolicy.containerInstance(containerPolicy.sizeFor(valueOfSourceCloned));
             if ((this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) && (target instanceof ChangeTracker) && (((ChangeTracker)target)._persistence_getPropertyChangeListener() != null)) {
@@ -1585,28 +1585,28 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 Object iterator = containerPolicy.iteratorFor(valueOfTarget);
                 listener = (ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener();
                 if (fireChangeEvents) {
-                    // Objects removed from the first position in the list, so the index of the removed object is always 0. 
-                    // When event is processed the index is used only in listOrderField case, ignored otherwise.  
+                    // Objects removed from the first position in the list, so the index of the removed object is always 0.
+                    // When event is processed the index is used only in listOrderField case, ignored otherwise.
                     Integer zero = Integer.valueOf(0);
                     while (containerPolicy.hasNext(iterator)) {
                         CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE, zero, false);
                         listener.internalPropertyChange(event);
-                    }                        
+                    }
                 }
                 if (newContainer instanceof ChangeTracker) {
                     ((CollectionChangeTracker)newContainer).setTrackedAttributeName(getAttributeName());
                     ((CollectionChangeTracker)newContainer)._persistence_setPropertyChangeListener(listener);
                 }
                 if (valueOfTarget instanceof ChangeTracker) {
-                    ((ChangeTracker)valueOfTarget)._persistence_setPropertyChangeListener(null);//remove listener 
+                    ((ChangeTracker)valueOfTarget)._persistence_setPropertyChangeListener(null);//remove listener
                 }
             }
             valueOfTarget = newContainer;
         } else {
             if (isSynchronizeOnMerge) {
-                // EL Bug 338504 - It needs to iterate on object which can possibly 
+                // EL Bug 338504 - It needs to iterate on object which can possibly
                 // cause a deadlock scenario while merging changes from original
-                // to the working copy during rollback of the transaction. So, clone 
+                // to the working copy during rollback of the transaction. So, clone
                 // the original object instead of synchronizing on it and use cloned
                 // object to iterate and merge changes to the working copy.
                 synchronized(valueOfSource) {
@@ -1622,8 +1622,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
 
         Object sourceIterator = containerPolicy.iteratorFor(valueOfSourceCloned);
-        // Index of the added object - objects are added to the end of the list. 
-        // When event is processed the index is used only in listOrderField case, ignored otherwise.  
+        // Index of the added object - objects are added to the end of the list.
+        // When event is processed the index is used only in listOrderField case, ignored otherwise.
         int i = 0;
         while (containerPolicy.hasNext(sourceIterator)) {
             Object wrappedObject = containerPolicy.nextEntry(sourceIterator, mergeManager.getSession());
@@ -1688,7 +1688,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         // Must re-set variable to allow for set method to re-morph changes if the collection is not being stored directly.
         setRealAttributeValueInObject(target, valueOfTarget);
     }
-    
+
     /**
      * INTERNAL:
      * An object was added to the collection during an update, insert it if private.
@@ -1740,10 +1740,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             databaseRow.put(targetPrimaryKey, targetKeyValue);
         }
         databaseRow.put(listOrderField, orderIndex);
-  
+
         query.getSession().executeQuery(changeOrderTargetQuery, databaseRow);
     }
-    
+
     /**
      * INTERNAL:
      * An object was removed to the collection during an update, delete it if private.
@@ -1822,7 +1822,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         mappingBatchQuery.setShouldIncludeData(true);
         this.containerPolicy.addAdditionalFieldsToQuery(mappingBatchQuery, getAdditionalFieldsBaseExpression(mappingBatchQuery));
     }
-    
+
     /**
      * INTERNAL:
      * Return the base expression to use for adding fields to the query.
@@ -1831,7 +1831,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     protected Expression getAdditionalFieldsBaseExpression(ReadQuery query) {
         return ((ReadAllQuery)query).getExpressionBuilder();
     }
-    
+
     /**
      * INTERNAL:
      * copies the non primary key information into the row currently used only in ManyToMany
@@ -1857,7 +1857,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Ensure the container policy is post initialized
@@ -1876,7 +1876,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             this.mustDeleteReferenceObjectsOneByOne = false;
         }
     }
-    
+
     /**
      * INTERNAL:
      * A subclass should implement this method if it wants different behavior.
@@ -1894,7 +1894,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Propagate preInsert event to container policy if necessary
@@ -1911,7 +1911,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
         }
     }
-    
+
 
     /**
      * INTERNAL:
@@ -1929,7 +1929,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * An object is still in the collection, update it as it may have changed.
@@ -2020,11 +2020,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     protected void setHasCustomDeleteAllQuery(boolean bool) {
         hasCustomDeleteAllQuery = bool;
     }
-    
+
     /**
      * INTERNAL:
-     * Set the container policy on the selection query for this mapping. This 
-     * method is overridden in DirectCollectionMapping since  its selection 
+     * Set the container policy on the selection query for this mapping. This
+     * method is overridden in DirectCollectionMapping since  its selection
      * query is a DataReadQuery.
      */
     protected void setSelectionQueryContainerPolicy(ContainerPolicy containerPolicy) {
@@ -2045,7 +2045,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * ADVANCED:
      * Calling this method will only affect behavior of mappings using transparent indirection
      * This method should only be called after this mapping's indirection policy has been set
-     * 
+     *
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
      * database when you add and remove from them.  IndirectList defaults to this behavior. When
      * Set to true, the collection associated with this TransparentIndirection will be setup so as
@@ -2058,7 +2058,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             getIndirectionPolicy().setUseLazyInstantiation(useLazyInstantiation);
         }
     }
-    
+
     /**
      * ADVANCED:
      * This method is used to have an object add to a collection once the changeSet is applied
@@ -2117,15 +2117,15 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             objectChangeSet.addChange(collectionChangeRecord);
         }
         // the order is essential - the record should be set to deferred before recreateOriginalCollection is called -
-        // otherwise will keep altering the change record while adding/removing each element into/from the original collection. 
+        // otherwise will keep altering the change record while adding/removing each element into/from the original collection.
         collectionChangeRecord.setIsDeferred(true);
         objectChangeSet.deferredDetectionRequiredOn(getAttributeName());
         if (collectionChangeRecord.getOriginalCollection() == null) {
             collectionChangeRecord.recreateOriginalCollection(oldValue, uow);
         }
-        collectionChangeRecord.setLatestCollection(newValue);        
+        collectionChangeRecord.setLatestCollection(newValue);
     }
-    
+
     /**
      * INTERNAL:
      * Update a ChangeRecord to replace the ChangeSet for the old entity with the changeSet for the new Entity.  This is
@@ -2134,7 +2134,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void updateChangeRecordForSelfMerge(ChangeRecord changeRecord, Object source, Object target, UnitOfWorkChangeSet parentUOWChangeSet, UnitOfWorkImpl unitOfWork){
         getContainerPolicy().updateChangeRecordForSelfMerge(changeRecord, source, target, this, parentUOWChangeSet, unitOfWork);
     }
-    
+
     /**
      * INTERNAL:
      * Add or removes a new value and its change set to the collection change record based on the event passed in.  This is used by
@@ -2166,7 +2166,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
         }
     }
-           
+
     /**
      * INTERNAL:
      * Set the change listener in the collection.
@@ -2199,7 +2199,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if (this.indirectionPolicy.usesTransparentIndirection()){
             ((IndirectCollection)getRealAttributeValueFromObject(clone, uow)).clearDeferredChanges();
         }
-        
+
     }
 
     /**
@@ -2209,14 +2209,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public boolean isListOrderFieldSupported() {
         return isListOrderFieldSupported;
     }
-    
+
     /**
      * PUBLIC:
      * Field holds the order of elements in the list in the db, requires collection of type List.
      * Throws exception if the mapping doesn't support listOrderField.
      */
     public void setListOrderField(DatabaseField field) {
-        if(field != null) { 
+        if(field != null) {
             if(isListOrderFieldSupported) {
                 this.listOrderField = field;
             } else {
@@ -2226,7 +2226,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             this.listOrderField = null;
         }
     }
-    
+
     /**
      * PUBLIC:
      * Field holds the order of elements in the list in the db, requires collection of type List.
@@ -2235,8 +2235,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void setListOrderFieldName(String fieldName) {
         setListOrderField(new DatabaseField(fieldName));
     }
-    
-    
+
+
     /**
      * ADVANCED::
      * Return whether the reference objects must be deleted
@@ -2247,7 +2247,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void setMustDeleteReferenceObjectsOneByOne(Boolean deleteOneByOne) {
         this.mustDeleteReferenceObjectsOneByOne = deleteOneByOne;
     }
-    
+
     /**
      * PUBLIC:
      * Specifies what should be done if the list of values read from listOrserField is invalid
@@ -2261,7 +2261,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * PUBLIC:
      * Configure the mapping to use an instance of the specified container class
      * to hold the target objects.
-     * Note that if listOrderField is used then setListOrderField method 
+     * Note that if listOrderField is used then setListOrderField method
      * should be called before this method.
      * <p>The container class must implement (directly or indirectly) the
      * <code>java.util.Collection</code> interface.
@@ -2287,7 +2287,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             useCollectionClass(concreteClass);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Configure the mapping to use an instance of the specified container class name
@@ -2298,7 +2298,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void useSortedSetClassName(String className) {
         this.useSortedSetClassName(className, null);
     }
-    
+
     /**
      * INTERNAL:
      * Configure the mapping to use an instance of the specified container class name
@@ -2311,7 +2311,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         policy.setComparatorClassName(comparatorClassName);
         setContainerPolicy(policy);
     }
-    
+
     /**
      * INTERNAL:
      * Used to set the collection class by name.
@@ -2353,13 +2353,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
         setContainerPolicy(policy);
     }
-    
+
     /**
      * PUBLIC:
-     * Configure the mapping to use an instance of the specified container 
+     * Configure the mapping to use an instance of the specified container
      * class to hold the target objects. The key used to index a value in the
      * <code>Map</code> is an instance of the composite primary key class.
-     * <p> To facilitate resolving the primary key class, the mapping's 
+     * <p> To facilitate resolving the primary key class, the mapping's
      * referenceClass must set before calling this method.
      * <p> The container class must implement (directly or indirectly) the
      * <code>java.util.Map</code> interface.
@@ -2398,7 +2398,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         setIndirectionPolicy(new TransparentIndirectionPolicy());
         useCollectionClass(ClassConstants.IndirectList_Class);
     }
-    
+
     /**
      * PUBLIC:
      * If transparent indirection is used, a special collection will be placed in the source
@@ -2558,7 +2558,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * This method is used to load a relationship from a list of PKs. This list
@@ -2593,10 +2593,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             // A nested query must be built to pass to the descriptor that looks like the real query execution would,
             // these should be cached on the query during prepare.
             ObjectLevelReadQuery nestedQuery = prepareNestedJoinQueryClone(row, rows, joinManager, sourceQuery, executionSession);
-            
+
             // A set of target cache keys must be maintained to avoid duplicates from multiple 1-m joins.
             Set targetPrimaryKeys = new HashSet();
-            
+
             ArrayList targetObjects = null;
             ArrayList<AbstractRecord> targetRows = null;
             boolean shouldAddAll = this.containerPolicy.shouldAddAll();
@@ -2604,7 +2604,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 targetObjects = new ArrayList(size);
                 targetRows = new ArrayList(size);
             }
-            
+
             // For each rows, extract the target row and build the target object and add to the collection.
             ObjectBuilder referenceBuilder = getReferenceDescriptor().getObjectBuilder();
             JoinedAttributeManager referenceJoinManager = null;
@@ -2618,7 +2618,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 // so build the subpartion of the row through the computed values in the query,
                 // this also helps the field indexing match.
                 targetRow = trimRowForJoin(targetRow, joinManager, executionSession);
-                
+
                 // Partial object queries must select the primary key of the source and related objects.
                 // If the target joined rows in null (outerjoin) means an empty collection.
                 Object targetKey = referenceBuilder.extractPrimaryKeyFromRow(targetRow, executionSession);
@@ -2626,7 +2626,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     // A null primary key means an empty collection returned as nulls from an outerjoin.
                     return this.indirectionPolicy.valueFromRow(value);
                 }
-                
+
                 // Only build/add the target object once, skip duplicates from multiple 1-m joins.
                 if (!targetPrimaryKeys.contains(targetKey)) {
                     nestedQuery.setTranslationRow(targetRow);

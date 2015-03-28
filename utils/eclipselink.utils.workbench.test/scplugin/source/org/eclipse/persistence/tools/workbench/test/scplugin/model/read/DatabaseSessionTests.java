@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -31,80 +31,80 @@ import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
 public class DatabaseSessionTests extends TestCase {
 
-	private String xmlFileName;
-	private File xmlFileLocation;
-	private TopLinkSessionsAdapter topLinkSessions;
-	private DatabaseSessionAdapter databaseSession;
-	
-	public DatabaseSessionTests( String name) {
-		
-		super( name);
-	}
-	
-	protected void setUp() throws Exception {
-		super.setUp();
-		
-		xmlFileLocation = FileTools.resourceFile("/SessionsXMLTestModel/XMLSchemaSessions.xml", getClass());
+    private String xmlFileName;
+    private File xmlFileLocation;
+    private TopLinkSessionsAdapter topLinkSessions;
+    private DatabaseSessionAdapter databaseSession;
 
-//		topLinkSessions = new TopLinkSessionsAdapter( xmlFileLocation.getPath(), false);
-		topLinkSessions = AllSCTests.loadSessions(xmlFileLocation);
+    public DatabaseSessionTests( String name) {
 
-		assertNotNull( topLinkSessions);
-		
-		databaseSession = getDatabaseSessionNamed( "SC-EmployeeTest");
-	}
-	
-	protected void tearDown() throws Exception {
-		TestTools.clear(this);
-		super.tearDown();
-	}
+        super( name);
+    }
 
-	public void testDatabaseSession() {
-		
-		validateLoadedSession( databaseSession);
-		
-		databaseSession.addProjectClassNamed( "org.eclipse.persistence.tools.workbench.test.models.employee.SmallProject");
-		databaseSession.addProjectXmlNamed( "aProject.xml");
-		// Log
-		DefaultSessionLogAdapter currentLog = ( DefaultSessionLogAdapter)databaseSession.getLog();
-		currentLog.setLogLevel( "warning");
-		// Change the log type
-		databaseSession.setJavaLogging();
-		// Login
-		DatabaseLoginAdapter currentLogin = ( DatabaseLoginAdapter)databaseSession.getLogin();
-		currentLogin.setDatabaseDriverAsDataSource();
-		currentLogin.setDataSourceName( "J2EE.Data.Source");
+    protected void setUp() throws Exception {
+        super.setUp();
 
-		validateDatabaseSession( databaseSession);
-	}
-	private void validateDatabaseSession( DatabaseSessionAdapter session) {
-		
-		assertNotNull(session.getLog());
+        xmlFileLocation = FileTools.resourceFile("/SessionsXMLTestModel/XMLSchemaSessions.xml", getClass());
 
-	}
-	
-	private void validateLoadedSession( DatabaseSessionAdapter session) {
+//        topLinkSessions = new TopLinkSessionsAdapter( xmlFileLocation.getPath(), false);
+        topLinkSessions = AllSCTests.loadSessions(xmlFileLocation);
 
-		LogAdapter log = session.getLog();
-		String logFile = (( DefaultSessionLogAdapter)log).getFileName(); 
-		assertEquals( "EmployeeSessions.log", logFile);
+        assertNotNull( topLinkSessions);
 
-		assertNotNull(session.getPrimaryProjectName());
-		assertNotNull(session.additionalProjectNames());
-			
-		LoginAdapter login = session.getLogin();
-		String driverName = (( DatabaseLoginAdapter)login).getDriverClassName();
-		assertEquals( "oracle.jdbc.driver.OracleDriver", driverName);
-	}
-	
-	private DatabaseSessionAdapter getDatabaseSessionNamed( String name) {
+        databaseSession = getDatabaseSessionNamed( "SC-EmployeeTest");
+    }
 
-		return ( DatabaseSessionAdapter)topLinkSessions.sessionNamed( name);
-		
-	}
-	
-	public static Test suite() {
-		TestTools.setUpJUnitThreadContextClassLoader();
-		return new TestSuite( DatabaseSessionTests.class);
-	}
+    protected void tearDown() throws Exception {
+        TestTools.clear(this);
+        super.tearDown();
+    }
+
+    public void testDatabaseSession() {
+
+        validateLoadedSession( databaseSession);
+
+        databaseSession.addProjectClassNamed( "org.eclipse.persistence.tools.workbench.test.models.employee.SmallProject");
+        databaseSession.addProjectXmlNamed( "aProject.xml");
+        // Log
+        DefaultSessionLogAdapter currentLog = ( DefaultSessionLogAdapter)databaseSession.getLog();
+        currentLog.setLogLevel( "warning");
+        // Change the log type
+        databaseSession.setJavaLogging();
+        // Login
+        DatabaseLoginAdapter currentLogin = ( DatabaseLoginAdapter)databaseSession.getLogin();
+        currentLogin.setDatabaseDriverAsDataSource();
+        currentLogin.setDataSourceName( "J2EE.Data.Source");
+
+        validateDatabaseSession( databaseSession);
+    }
+    private void validateDatabaseSession( DatabaseSessionAdapter session) {
+
+        assertNotNull(session.getLog());
+
+    }
+
+    private void validateLoadedSession( DatabaseSessionAdapter session) {
+
+        LogAdapter log = session.getLog();
+        String logFile = (( DefaultSessionLogAdapter)log).getFileName();
+        assertEquals( "EmployeeSessions.log", logFile);
+
+        assertNotNull(session.getPrimaryProjectName());
+        assertNotNull(session.additionalProjectNames());
+
+        LoginAdapter login = session.getLogin();
+        String driverName = (( DatabaseLoginAdapter)login).getDriverClassName();
+        assertEquals( "oracle.jdbc.driver.OracleDriver", driverName);
+    }
+
+    private DatabaseSessionAdapter getDatabaseSessionNamed( String name) {
+
+        return ( DatabaseSessionAdapter)topLinkSessions.sessionNamed( name);
+
+    }
+
+    public static Test suite() {
+        TestTools.setUpJUnitThreadContextClassLoader();
+        return new TestSuite( DatabaseSessionTests.class);
+    }
 }

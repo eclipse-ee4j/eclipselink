@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,9 +21,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -45,8 +45,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -84,11 +84,11 @@ public class XmlAnyElement
 
     /**
      * Gets the value of the xmlAccessMethods property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public XmlAccessMethods getXmlAccessMethods() {
         return xmlAccessMethods;
@@ -96,11 +96,11 @@ public class XmlAnyElement
 
     /**
      * Sets the value of the xmlAccessMethods property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public void setXmlAccessMethods(XmlAccessMethods value) {
         this.xmlAccessMethods = value;
@@ -108,11 +108,11 @@ public class XmlAnyElement
 
     /**
      * Gets the value of the xmlJavaTypeAdapter property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlJavaTypeAdapter }
-     *     
+     *
      */
     public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
         return xmlJavaTypeAdapter;
@@ -120,11 +120,11 @@ public class XmlAnyElement
 
     /**
      * Sets the value of the xmlJavaTypeAdapter property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlJavaTypeAdapter }
-     *     
+     *
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
         this.xmlJavaTypeAdapter = value;
@@ -132,11 +132,11 @@ public class XmlAnyElement
 
     /**
      * Gets the value of the xmlProperties property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public XmlProperties getXmlProperties() {
         return xmlProperties;
@@ -144,11 +144,11 @@ public class XmlAnyElement
 
     /**
      * Sets the value of the xmlProperties property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
@@ -156,11 +156,11 @@ public class XmlAnyElement
 
     /**
      * Gets the value of the xmlElementRefs property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlElementRefs }
-     *     
+     *
      */
     public XmlElementRefs getXmlElementRefs() {
         return xmlElementRefs;
@@ -168,11 +168,11 @@ public class XmlAnyElement
 
     /**
      * Sets the value of the xmlElementRefs property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlElementRefs }
-     *     
+     *
      */
     public void setXmlElementRefs(XmlElementRefs value) {
         this.xmlElementRefs = value;
@@ -180,11 +180,11 @@ public class XmlAnyElement
 
     /**
      * Gets the value of the xmlMixed property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isXmlMixed() {
         if (xmlMixed == null) {
@@ -196,11 +196,11 @@ public class XmlAnyElement
 
     /**
      * Sets the value of the xmlMixed property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setXmlMixed(Boolean value) {
         this.xmlMixed = value;
@@ -208,11 +208,11 @@ public class XmlAnyElement
 
     /**
      * Gets the value of the lax property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isLax() {
         if (lax == null) {
@@ -224,11 +224,11 @@ public class XmlAnyElement
 
     /**
      * Sets the value of the lax property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setLax(Boolean value) {
         this.lax = value;
@@ -236,11 +236,11 @@ public class XmlAnyElement
 
     /**
      * Gets the value of the domHandler property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getDomHandler() {
         if (domHandler == null) {
@@ -252,11 +252,11 @@ public class XmlAnyElement
 
     /**
      * Sets the value of the domHandler property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setDomHandler(String value) {
         this.domHandler = value;
@@ -264,11 +264,11 @@ public class XmlAnyElement
 
     /**
      * Gets the value of the readOnly property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isReadOnly() {
         if (readOnly == null) {
@@ -280,11 +280,11 @@ public class XmlAnyElement
 
     /**
      * Sets the value of the readOnly property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setReadOnly(Boolean value) {
         this.readOnly = value;
@@ -292,7 +292,7 @@ public class XmlAnyElement
 
     /**
      * Indicates if readOnly has been set, i.e. is non-null.
-     *  
+     *
      * @return true if readOnly is non-null, false otherwise
      */
     public boolean isSetReadOnly() {
@@ -301,11 +301,11 @@ public class XmlAnyElement
 
     /**
      * Gets the value of the writeOnly property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isWriteOnly() {
         if (writeOnly == null) {
@@ -317,11 +317,11 @@ public class XmlAnyElement
 
     /**
      * Sets the value of the writeOnly property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setWriteOnly(Boolean value) {
         this.writeOnly = value;
@@ -329,7 +329,7 @@ public class XmlAnyElement
 
     /**
      * Indicates if writeOnly has been set, i.e. is non-null.
-     *  
+     *
      * @return true if writeOnly is non-null, false otherwise
      */
     public boolean isSetWriteOnly() {
@@ -338,11 +338,11 @@ public class XmlAnyElement
 
     /**
      * Gets the value of the xmlPath property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getXmlPath() {
         return xmlPath;
@@ -350,11 +350,11 @@ public class XmlAnyElement
 
     /**
      * Sets the value of the xmlPath property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setXmlPath(String value) {
         this.xmlPath = value;
@@ -362,11 +362,11 @@ public class XmlAnyElement
 
     /**
      * Gets the value of the containerType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getContainerType() {
         if (containerType == null) {
@@ -378,11 +378,11 @@ public class XmlAnyElement
 
     /**
      * Sets the value of the containerType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setContainerType(String value) {
         this.containerType = value;

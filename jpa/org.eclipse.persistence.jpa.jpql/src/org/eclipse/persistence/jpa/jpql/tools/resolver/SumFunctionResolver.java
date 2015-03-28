@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,57 +26,57 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration;
  */
 public class SumFunctionResolver extends Resolver {
 
-	/**
-	 * Creates a new <code>SumFunctionResolver</code>.
-	 *
-	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
-	 */
-	public SumFunctionResolver(Resolver parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>SumFunctionResolver</code>.
+     *
+     * @param parent The parent {@link Resolver}, which is never <code>null</code>
+     */
+    public SumFunctionResolver(Resolver parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected IType buildType() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected IType buildType() {
 
-		IType type = getTypeDeclaration().getType();
-		TypeHelper helper = getTypeHelper();
+        IType type = getTypeDeclaration().getType();
+        TypeHelper helper = getTypeHelper();
 
-		// Integral types: int/Integer, long/Long => the result is a Long
-		if (helper.isIntegralType(type)) {
-			return helper.longType();
-		}
+        // Integral types: int/Integer, long/Long => the result is a Long
+        if (helper.isIntegralType(type)) {
+            return helper.longType();
+        }
 
-		// Floating types: float/Float, double/Double => the result is a Double
-		if (helper.isFloatingType(type)) {
-			return helper.doubleType();
-		}
+        // Floating types: float/Float, double/Double => the result is a Double
+        if (helper.isFloatingType(type)) {
+            return helper.doubleType();
+        }
 
-		// BigInteger, the result is the same
-		IType bigIntegerType = helper.bigInteger();
+        // BigInteger, the result is the same
+        IType bigIntegerType = helper.bigInteger();
 
-		if (type.equals(bigIntegerType)) {
-			return bigIntegerType;
-		}
+        if (type.equals(bigIntegerType)) {
+            return bigIntegerType;
+        }
 
-		// BigDecimal, the result is the same
-		IType bigDecimalType = helper.bigDecimal();
+        // BigDecimal, the result is the same
+        IType bigDecimalType = helper.bigDecimal();
 
-		if (type.equals(bigDecimalType)) {
-			return bigDecimalType;
-		}
+        if (type.equals(bigDecimalType)) {
+            return bigDecimalType;
+        }
 
-		// Anything else is an invalid type
-		return helper.objectType();
-	}
+        // Anything else is an invalid type
+        return helper.objectType();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ITypeDeclaration buildTypeDeclaration() {
-		return getParentTypeDeclaration();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ITypeDeclaration buildTypeDeclaration() {
+        return getParentTypeDeclaration();
+    }
 }

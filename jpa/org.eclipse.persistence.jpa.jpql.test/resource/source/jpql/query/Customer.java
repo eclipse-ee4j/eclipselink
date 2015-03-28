@@ -25,27 +25,27 @@ import javax.persistence.Transient;
    @NamedQuery(name="customer.new",       query="SELECT new com.titan.domain.Name(c.firstName, c.lastName) FROM Customer c")
 })
 public class Customer implements Serializable {
-	@Column(name="FIRST_NAME")
-	private String firstName;
-	@Column(name="HAS_GOOD_CREDIT")
-	private Long hasGoodCredit;
-	@Id
-	@Column(nullable = false)
-	private Long id;
-	@Column(name="LAST_NAME")
-	private String lastName;
-	@ManyToOne
-	@JoinColumn(name = "ADDRESS_ID")
-	private Address address;
-	@OneToMany(mappedBy = "customer")
-	private List<Phone> phoneList;
-	@OrderBy
-	@OneToMany(mappedBy = "customer")
-	private List<Alias> aliases;
-	@OneToOne
-	private Home home;
-	@Transient
-	private String title;
-	@OneToOne
-	private Dept dept;
+    @Column(name="FIRST_NAME")
+    private String firstName;
+    @Column(name="HAS_GOOD_CREDIT")
+    private Long hasGoodCredit;
+    @Id
+    @Column(nullable = false)
+    private Long id;
+    @Column(name="LAST_NAME")
+    private String lastName;
+    @ManyToOne
+    @JoinColumn(name = "ADDRESS_ID")
+    private Address address;
+    @OneToMany(mappedBy = "customer")
+    private List<Phone> phoneList;
+    @OrderBy
+    @OneToMany(mappedBy = "customer")
+    private List<Alias> aliases;
+    @OneToOne
+    private Home home;
+    @Transient
+    private String title;
+    @OneToOne
+    private Dept dept;
 }

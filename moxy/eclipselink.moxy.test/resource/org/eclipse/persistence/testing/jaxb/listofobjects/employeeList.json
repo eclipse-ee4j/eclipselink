@@ -2,36 +2,36 @@
   "xsi.type":"listOfEmployee",
   "item":[
      {
-	"id":10,
-	"firstName":"Bob",
-	"lastName":"Smith",
-	"responsibilities":{
-	     "responsibility":[
-	         {
-		     "xsi.type":"string",
-		     "value":"Fix Bugs"
-		 },{
-		     "xsi.type":"string",
-		     "value":"Write JAXB2.0 Prototype"
-		 },{
-		     "xsi.type":"string",
-		     "value":"Write Design Spec"
-		 }
+    "id":10,
+    "firstName":"Bob",
+    "lastName":"Smith",
+    "responsibilities":{
+         "responsibility":[
+             {
+             "xsi.type":"string",
+             "value":"Fix Bugs"
+         },{
+             "xsi.type":"string",
+             "value":"Write JAXB2.0 Prototype"
+         },{
+             "xsi.type":"string",
+             "value":"Write Design Spec"
+         }
 
-	     ]
-	}
+         ]
+    }
      },{
          "id":100,
-	"firstName":"Bob2",
-	"lastName":"Smith2",
-	"responsibilities":{
-	     "responsibility":[
-	         {
-		     "xsi.type":"string",
-		     "value":"Fix Bugs"
-		 }
-	    ]
-	}
+    "firstName":"Bob2",
+    "lastName":"Smith2",
+    "responsibilities":{
+         "responsibility":[
+             {
+             "xsi.type":"string",
+             "value":"Fix Bugs"
+         }
+        ]
+    }
      }
 
   ]

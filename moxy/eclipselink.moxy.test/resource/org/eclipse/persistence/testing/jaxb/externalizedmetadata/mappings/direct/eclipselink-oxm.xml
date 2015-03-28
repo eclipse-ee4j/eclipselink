@@ -3,8 +3,8 @@
     <xml-schema namespace="http://www.example.com/employees">
         <xml-ns namespace-uri="http://www.example.com/projects" prefix="prj"/>
     </xml-schema>
-	<java-types>
-		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.Employee" xml-accessor-type="FIELD">
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.Employee" xml-accessor-type="FIELD">
             <xml-root-element name="employee" />
             <java-attributes>
                 <xml-attribute java-attribute="empId" name="id" />
@@ -41,6 +41,6 @@
                 <xml-property name="2" value="66" value-type="java.lang.Integer" />
                 <xml-property name="3" value="true" value-type="java.lang.Boolean" />
             </xml-properties>
-		</java-type>
-	</java-types>
+        </java-type>
+    </java-types>
 </xml-bindings>

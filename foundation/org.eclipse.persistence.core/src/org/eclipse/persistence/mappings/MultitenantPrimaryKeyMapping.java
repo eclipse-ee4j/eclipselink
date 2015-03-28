@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors: 
- *     11/10/2011-2.4 Guy Pelletier 
+ * Contributors:
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.mappings;
@@ -29,8 +29,8 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.Session;
 
 /**
- * <b>Purpose</b>: Maps a multitenant property to the corresponding database 
- * field type. The list of field types that are supported by EclipseLink's 
+ * <b>Purpose</b>: Maps a multitenant property to the corresponding database
+ * field type. The list of field types that are supported by EclipseLink's
  * direct to field mapping is dependent on the relational database being used.
  *
  * @author Guy Pelletier
@@ -38,7 +38,7 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     private MultitenantPrimaryKeyAccessor accessor;
-    
+
     /**
      * Constructor
      */
@@ -51,29 +51,29 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
         accessor = new MultitenantPrimaryKeyAccessor();
         setAttributeAccessor(accessor);
     }
-    
+
     /**
      * INTERNAL:
      * Clone the attribute from the clone and assign it to the backup.
-     * 
+     *
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         // Mapping is write only so nothing to do.
     }
-    
+
     /**
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
-     * 
+     *
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override
     public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         // Mapping is write only so nothing to do.
     }
-    
+
     /**
      * INTERNAL:
      * Extract value from the row and set the attribute to this value in the
@@ -88,9 +88,9 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
 
     /**
      * INTERNAL:
-     * Compare the clone and backup clone values and return a change record if 
+     * Compare the clone and backup clone values and return a change record if
      * the value changed.
-     * 
+     *
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override
@@ -98,11 +98,11 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
         // Mapping is write only so nothing to do.
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
-     * 
+     *
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override
@@ -110,7 +110,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
         // Mapping is write only so nothing to do.
         return true;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -118,24 +118,24 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     public Object getFieldValue(Object propertyValue, AbstractSession session) {
         return accessor.getValue(session);
     }
-    
+
     /**
      * INTERNAL:
      */
     @Override
     public Object getObjectValue(Object fieldValue, Session session) {
-        return accessor.getValue(session);    
+        return accessor.getValue(session);
     }
-    
+
     /**
      * INTERNAL:
-     * The mapping is initialized with the given session. This mapping is fully 
+     * The mapping is initialized with the given session. This mapping is fully
      * initialized after this.
      */
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        
+
         if (getField() == null) {
             session.getIntegrityChecker().handleError(DescriptorException.fieldNameNotSetInMapping(this));
         }
@@ -148,7 +148,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
             getDescriptor().setIsNativeConnectionRequired(true);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return if this mapping requires its attribute value to be cloned.
@@ -157,7 +157,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     public boolean isCloningRequired() {
         return false;
     }
-    
+
     /**
      * INTERNAL
      */
@@ -165,14 +165,14 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     public boolean isMultitenantPrimaryKeyMapping() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      */
     public boolean isRelationalMapping() {
         return true;
     }
-    
+
     /**
      * INTERNAL
      * This mapping must be write only as their is no attribute to read into.
@@ -181,31 +181,31 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     public boolean isWriteOnly() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Merge changes from the source to the target object.
-     * 
+     *
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         // Mapping is write only so do nothing.
     }
-    
+
     /**
      * INTERNAL:
-     * Merge changes from the source to the target object. This merge is only 
-     * called when a changeSet for the target does not exist or the target is 
+     * Merge changes from the source to the target object. This merge is only
+     * called when a changeSet for the target does not exist or the target is
      * uninitialized
-     * 
+     *
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUninitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         // Mapping is write only so do nothing.
     }
-    
+
     /**
      * INTERNAL:
      * The context property that is used to write this mapping must be set. It
@@ -214,7 +214,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     public void setContextProperty(String contextProperty) {
         setAttributeName(contextProperty);
     }
-    
+
     /**
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
@@ -223,7 +223,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         writeValueIntoRow(row, getField(), getFieldValue(null, session));
     }
-    
+
     /**
      * INTERNAL:
      * Return the Value from the object.
@@ -232,7 +232,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     public Object valueFromObject(Object anObject, DatabaseField field, AbstractSession session) {
         return accessor.getValue(session);
     }
-    
+
     /**
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
@@ -241,7 +241,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     public void writeInsertFieldsIntoRow(AbstractRecord databaseRow, AbstractSession session) {
         databaseRow.add(getField(), null);
     }
-    
+
     /**
      * INTERNAL:
      */

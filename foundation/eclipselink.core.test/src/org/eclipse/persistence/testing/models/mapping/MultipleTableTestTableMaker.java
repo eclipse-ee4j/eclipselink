@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.mapping;
 
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -51,14 +51,14 @@ public class MultipleTableTestTableMaker extends TableCreator {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         tabledefinition.addField(field3);
-        
+
         ForeignKeyConstraint foreignKeyEMP_INFO_EMP = new ForeignKeyConstraint();
         foreignKeyEMP_INFO_EMP.setName("EMP_INFO_EMP");
         foreignKeyEMP_INFO_EMP.setTargetTable("MUL2_EMP");
         foreignKeyEMP_INFO_EMP.addSourceField("EMP_NUM");
         foreignKeyEMP_INFO_EMP.addTargetField("EMP_NUM");
         tabledefinition.addForeignKeyConstraint(foreignKeyEMP_INFO_EMP);
-        
+
         addTableDefinition(tabledefinition);
     }
 
@@ -100,7 +100,7 @@ public class MultipleTableTestTableMaker extends TableCreator {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         tabledefinition.addField(field3);
-        
+
         addTableDefinition(tabledefinition);
 
     }

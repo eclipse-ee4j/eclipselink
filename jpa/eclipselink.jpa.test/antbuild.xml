@@ -1714,7 +1714,7 @@
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
     </target>
-    
+
     <!-- Runs JPA Oracle NoSQL tests. -->
     <target name="oracle-nosql-test" depends="clean-test, config-classpath">
         <antcall target="run-test" inheritRefs="true">
@@ -3433,7 +3433,7 @@
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-test" inheritRefs="true"/>
     </target>
 
-	<!-- Builds tests classpath and evaluates if multitenant test properties are passed before calling test switcher. -->
+    <!-- Builds tests classpath and evaluates if multitenant test properties are passed before calling test switcher. -->
     <target name="server-run-test" depends="config-classpath,check-test-type,server-run-test-switch"/>
 
     <macrodef name="server-run-test-call">
@@ -3510,7 +3510,7 @@
         </sequential>
     </macrodef>
 
-	<!-- Run an ear on the server. -->
+    <!-- Run an ear on the server. -->
     <target name="server-run-test-simple" unless="is.test.with.tenant">
         <server-run-test-call
             platform="${server.platform}"

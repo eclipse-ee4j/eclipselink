@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -53,7 +53,7 @@ import org.eclipse.persistence.sessions.Session;
  * <li>Write out approriate attachment information (xop:include) </li>
  * </ul>
  *  <p>XMLBinaryDataCollectionMapping represents a mapping of a collection of binary data in the object model
- *  to XML. This can either be written directly as inline binary data (base64) or 
+ *  to XML. This can either be written directly as inline binary data (base64) or
  *  passed through as an MTOM or SWAREF attachment.
  *  <p>The following types are allowable to be mapped using an XMLBinaryDataMapping:<ul>
  *  <li>java.awt.Image</li>
@@ -67,13 +67,13 @@ import org.eclipse.persistence.sessions.Session;
  * The XPath may contain path and positional information;  the last node in the XPath forms the local
  * node for the binary mapping. The XPath is specified on the mapping using the <code>setXPath</code>
  * method.
- * 
+ *
  * <p><b>Inline Binary Data</b>: Set this flag if you want to always inline binary data for this mapping.
  * This will disable consideration for attachment handling for this mapping.
- * 
+ *
  * <p><b>SwaRef</b>: Set this flag in order to specify that the target node of this mapping is of type
  * xs:swaref
- *   
+ *
  *  @see org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller
  *  @see org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller
  *  @see org.eclipse.persistence.oxm.mappings.MimeTypePolicy
@@ -177,8 +177,8 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
             if (record.isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
                 field = (XMLField) getField();
 
-                // If the field's resolver is non-null and has an entry for XOP, 
-                // use it - otherwise, create a new resolver, set the XOP entry, 
+                // If the field's resolver is non-null and has an entry for XOP,
+                // use it - otherwise, create a new resolver, set the XOP entry,
                 // on it, and use it instead.
                 // We do this to avoid setting the XOP namespace declaration on
                 // a given field or descriptor's resolver, as it is only required
@@ -218,8 +218,8 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     }
                 }
             }else{
-            
-                
+
+
                 if(element.getClass() == ClassConstants.ABYTE) {
                     inline = true;
                 }
@@ -245,7 +245,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         if(element == null){
             return null;
         }
-        
+
         if (isAttribute) {
             if (isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
                 //should be a DataHandler here
@@ -284,7 +284,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     bytes = data.getData();
                     c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, data.getMimeType(), field.getLastXPathFragment().getLocalName(), field.getLastXPathFragment().getNamespaceURI());
                 }
-                
+
                 if(c_id == null) {
                     element = bytes;
                 } else {
@@ -319,7 +319,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                 }
             } else {
                 //inline
-            	if (!((getAttributeElementClass() == ClassConstants.ABYTE) || (getAttributeElementClass() == ClassConstants.APBYTE))) {
+                if (!((getAttributeElementClass() == ClassConstants.ABYTE) || (getAttributeElementClass() == ClassConstants.APBYTE))) {
                     element = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(element, marshaller, this.mimeTypePolicy.getMimeType(parent)).getData();
                 }
             }
@@ -338,8 +338,8 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
             if (record.isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
                 field = (XMLField) getField();
 
-                // If the field's resolver is non-null and has an entry for XOP, 
-                // use it - otherwise, create a new resolver, set the XOP entry, 
+                // If the field's resolver is non-null and has an entry for XOP,
+                // use it - otherwise, create a new resolver, set the XOP entry,
                 // on it, and use it instead.
                 // We do this to avoid setting the XOP namespace declaration on
                 // a given field or descriptor's resolver, as it is only required
@@ -360,7 +360,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         XMLField textField = new XMLField(field.getXPath() + '/' +XMLConstants.TEXT);
         textField.setNamespaceResolver(field.getNamespaceResolver());
         textField.setSchemaType(field.getSchemaType());
-        
+
         Object valueToWrite = getValueToWrite(value, parent, record, field, includeField, session);
         if(!isAttribute && valueToWrite.getClass() == ClassConstants.ABYTE) {
             //if the returned value is a byte[] and not an XMLRecord, just write it inline
@@ -430,7 +430,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     if ((unmarshaller.getAttachmentUnmarshaller() != null) && unmarshaller.getAttachmentUnmarshaller().isXOPPackage() && !this.isSwaRef() && !this.shouldInlineBinaryData()) {
                         //look for the include element:
                         String xpath = XMLConstants.EMPTY_STRING;
-    
+
                         //  need a prefix for XOP
                         String prefix = null;
                         NamespaceResolver descriptorResolver = ((XMLDescriptor) getDescriptor()).getNamespaceResolver();
@@ -447,7 +447,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                         field.setNamespaceResolver(tempResolver);
                         String includeValue = (String) record.get(field);
                         if (element != null && includeValue != null) {
-                        	if ((getAttributeElementClass() == ClassConstants.ABYTE) || (getAttributeElementClass() == ClassConstants.APBYTE)) {
+                            if ((getAttributeElementClass() == ClassConstants.ABYTE) || (getAttributeElementClass() == ClassConstants.APBYTE)) {
                                 fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsByteArray(includeValue);
                             } else {
                                 fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(includeValue);
@@ -477,7 +477,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
     }
 
     public void setCollectionContentType(Class javaClass) {
-    	setAttributeElementClass(javaClass);
+        setAttributeElementClass(javaClass);
     }
 
     /*
@@ -485,9 +485,9 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
      * If not set by the user than byte[].class is the default
      */
     public Class getCollectionContentType() {
-    	return getAttributeElementClass();
+        return getAttributeElementClass();
     }
-    
+
     /**
      * PUBLIC:
      * Set the class each element in the object's
@@ -501,7 +501,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         super.setAttributeElementClass(attributeElementClass);
         this.collectionContentType = attributeElementClass;
     }
-    
+
     @Override
     public Class getAttributeElementClass() {
         Class elementClass = super.getAttributeElementClass();

@@ -14,8 +14,8 @@ public class Container {
     public void setContainerProperty(Unmappable containerProperty) {
         this.containerProperty = containerProperty;
     }
-    
+
     public boolean equals(Object obj) {
-        return (obj instanceof Container) && ((Container)obj).getContainerProperty().equals(this.containerProperty); 
+        return (obj instanceof Container) && ((Container)obj).getContainerProperty().equals(this.containerProperty);
     }
 }

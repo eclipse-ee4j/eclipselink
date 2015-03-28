@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,43 +23,43 @@ public class ContactInfo {
     public List<Address> addresses;
     public Address primaryAddress;
     @XmlTransient
-    public String phoneNumber;   
-    
+    public String phoneNumber;
+
     public ContactInfo(){
-    	addresses = new ArrayList<Address>();
-    	primaryAddress = new Address();
+        addresses = new ArrayList<Address>();
+        primaryAddress = new Address();
     }
-    
+
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
         if (!(obj instanceof ContactInfo)){
-        	return false;
+            return false;
         }
         if(phoneNumber == null && ((ContactInfo)obj).phoneNumber != null){
-        	return false;
+            return false;
         }
         if(!phoneNumber.equals(((ContactInfo)obj).phoneNumber)){
-        	return false;
+            return false;
         }
-        
+
         if(primaryAddress == null && ((ContactInfo)obj).primaryAddress != null){
-        	return false;
+            return false;
         }
         if(!primaryAddress.equals(((ContactInfo)obj).primaryAddress)){
-        	return false;
+            return false;
         }
-        
+
         List testList = ((ContactInfo)obj).addresses;
-        
+
         if(addresses == null && testList != null){
-        	return false;
+            return false;
         }
-        
+
         if(addresses.size() != testList.size()){
-        	return false;
+            return false;
         }
         if(!addresses.containsAll(testList)){
-        	return false;
+            return false;
         }
         return true;
     }

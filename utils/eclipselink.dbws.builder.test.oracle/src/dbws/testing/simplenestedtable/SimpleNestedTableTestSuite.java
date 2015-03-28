@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,27 +41,27 @@ import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
 import dbws.testing.DBWSTestSuite;
 
 /**
- * Tests nested tables with columns containing scalar values. 
+ * Tests nested tables with columns containing scalar values.
  *
  */
 public class SimpleNestedTableTestSuite extends DBWSTestSuite {
 
     static final String CREATE_NUMBER_TABLE =
-	    "CREATE OR REPLACE TYPE NUMTAB IS TABLE OF NUMBER";
-	
+        "CREATE OR REPLACE TYPE NUMTAB IS TABLE OF NUMBER";
+
     static final String CREATE_NUMBER_WRAPPER =
-	    "CREATE OR REPLACE TYPE WRAPPER_NUMTAB AS OBJECT (" +
+        "CREATE OR REPLACE TYPE WRAPPER_NUMTAB AS OBJECT (" +
             "\nNUMBTABLIST NUMTAB" +
-	    "\n);";
+        "\n);";
 
     static final String CREATE_TEST_NUMBER_PACKAGE =
-	    "CREATE OR REPLACE PACKAGE TEST_NUMBER_LIST_PKG AS" +
-	        "\nFUNCTION TEST_NUM RETURN WRAPPER_NUMTAB;" +
-	    "\nEND TEST_NUMBER_LIST_PKG;";
+        "CREATE OR REPLACE PACKAGE TEST_NUMBER_LIST_PKG AS" +
+            "\nFUNCTION TEST_NUM RETURN WRAPPER_NUMTAB;" +
+        "\nEND TEST_NUMBER_LIST_PKG;";
 
     static final String CREATE_TEST_NUMBER_PACKAGE_BODY =
-	    "CREATE OR REPLACE PACKAGE BODY TEST_NUMBER_LIST_PKG AS" +
-	        "\nFUNCTION TEST_NUM RETURN WRAPPER_NUMTAB IS" +
+        "CREATE OR REPLACE PACKAGE BODY TEST_NUMBER_LIST_PKG AS" +
+            "\nFUNCTION TEST_NUM RETURN WRAPPER_NUMTAB IS" +
             "\nL_WRAPPER_NUMTAB WRAPPER_NUMTAB;" +
             "\nL_NUMTAB NUMTAB;" +
             "\nBEGIN" +
@@ -71,8 +71,8 @@ public class SimpleNestedTableTestSuite extends DBWSTestSuite {
                 "\nL_WRAPPER_NUMTAB := WRAPPER_NUMTAB(L_NUMTAB);" +
                 "\nRETURN L_WRAPPER_NUMTAB;" +
             "\nEND;" +
-	    "\nEND TEST_NUMBER_LIST_PKG;";
-	
+        "\nEND TEST_NUMBER_LIST_PKG;";
+
     static final String DROP_TEST_NUMBER_BODY =
         "DROP PACKAGE BODY TEST_NUMBER_LIST_PKG";
     static final String DROP_TEST_NUMBER_PACKAGE =
@@ -81,7 +81,7 @@ public class SimpleNestedTableTestSuite extends DBWSTestSuite {
         "DROP TYPE WRAPPER_NUMTAB";
     static final String DROP_NUMTAB_TYPE =
         "DROP TYPE NUMTAB";
-    
+
     static final String CREATE_USERS_TABLE =
         "CREATE TABLE USERS_TABLE(" +
             "\nU_ID VARCHAR2(8)," +
@@ -96,7 +96,7 @@ public class SimpleNestedTableTestSuite extends DBWSTestSuite {
         "INSERT INTO USERS_TABLE (U_ID, U_NAME) VALUES ('321123', 'Lahey')",
         "INSERT INTO USERS_TABLE (U_ID, U_NAME) VALUES ('barfoo', 'Randy')"
     };
-    
+
     static final String CREATE_USERS_PKG =
         "CREATE OR REPLACE PACKAGE USERS_PKG AS" +
             "\nFUNCTION GET_USERS_NAME_test(in_users_id_list IN USERS_ID_LIST_TYPE) RETURN VARCHAR2;" +
@@ -108,7 +108,7 @@ public class SimpleNestedTableTestSuite extends DBWSTestSuite {
               "\nUSER_NAME VARCHAR2(10);" +
               "\nNUM NUMBER;" +
             "\nBEGIN" +
-                "\nNUM := in_users_id_list.COUNT;" + 
+                "\nNUM := in_users_id_list.COUNT;" +
                 "\nFOR I IN 1..NUM LOOP" +
                     "\nSELECT U_NAME INTO USER_NAME FROM USERS_TABLE WHERE U_ID LIKE in_users_id_list(I);" +
                     "\nout_usersname := CONCAT(out_usersname, USER_NAME);" +
@@ -121,7 +121,7 @@ public class SimpleNestedTableTestSuite extends DBWSTestSuite {
          "\nEND USERS_PKG;";
     static final String CREATE_USERS_ID_LIST_TYPE =
         "CREATE OR REPLACE TYPE USERS_ID_LIST_TYPE AS TABLE OF varchar2(8);";
-    
+
     static final String DROP_USERS_BODY =
         "DROP PACKAGE BODY USERS_PKG";
     static final String DROP_USERS_PKG =

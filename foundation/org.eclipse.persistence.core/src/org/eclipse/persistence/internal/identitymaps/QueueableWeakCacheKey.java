@@ -52,14 +52,14 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     public void acquireDeferredLock() {
         return;
     }
-    
+
     /**
      * Avoid acquiring locks for unit of work.
      */
     public void checkReadLock() {
         return;
     }
-    
+
     /**
      * Avoid acquiring locks for unit of work.
      */
@@ -108,7 +108,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
             super(object, referenceQueue);
             this.owner = owner;
         }
-        
+
         public QueueableWeakCacheKey getOwner(){
             return owner;
         }

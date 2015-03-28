@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,12 +19,12 @@ import java.util.StringTokenizer;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class StringStringAdapter extends XmlAdapter<String, String> {
-    public String marshal(String value) {      
+    public String marshal(String value) {
         return value;
     }
-    
+
     public String unmarshal(String value) {
-        return value;        
+        return value;
     }
 
 }

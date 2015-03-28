@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,20 +26,20 @@ import javax.persistence.Table;
 public class EntityZ {
     @Id
     private int id;
-    
+
     private String zname;
-    
+
     @OneToMany (mappedBy="yzEntityRelation", cascade=CascadeType.PERSIST)
     private List<EntityY> ylist;
 
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public int getId() {
         return id;
     }
-    
+
     public void setYlist(List<EntityY> ylist) {
         this.ylist = ylist;
     }
@@ -55,20 +55,20 @@ public class EntityZ {
     public String getZname() {
         return zname;
     }
-    
+
     public void addYToList(EntityY y) {
         if (ylist == null) {
             ylist = new ArrayList<EntityY>();
         }
-        
+
         ylist.add(y);
     }
-    
+
     public void removeYFromList(EntityY y) {
         if (ylist == null) {
             ylist = new ArrayList<EntityY>();
         }
-        
+
         ylist.remove(y);
     }
 }

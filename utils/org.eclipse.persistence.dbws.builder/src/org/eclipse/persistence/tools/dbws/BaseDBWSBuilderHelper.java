@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -208,7 +208,7 @@ public abstract class BaseDBWSBuilderHelper {
     public static final String NO_PROC_MSG = "No procedures were found matching the following: ";
     public static final String OXM_MARSHAL_EX_MSG = "An exception occurred while attempting to marshal the OXM bindings file";
     public static final String ORM_MARSHAL_EX_MSG = "An exception occurred while attempting to marshal the ORM mappings file";
-   
+
     public static final String SELECT_FROM_STR = "SELECT * FROM ";
     public static final String WHERE_STR = " WHERE ";
     public static final String AND_STR = " AND ";
@@ -231,11 +231,11 @@ public abstract class BaseDBWSBuilderHelper {
     protected XMLSessionConfigProject_11_1_1 sessionConfigProject = new XMLSessionConfigProject_11_1_1();
     protected NamingConventionTransformer nct;
     protected ObjectPersistenceWorkbenchXMLProject workbenchXMLProject = new ObjectPersistenceWorkbenchXMLProject();
-    
+
     protected Map<String, ClassDescriptor> createdORDescriptors = new HashMap<String, ClassDescriptor>();
     protected List<String> referencedORDescriptors = new ArrayList<String>();
     protected List<CompositeDatabaseType> complextypes = new ArrayList<CompositeDatabaseType>();
-    
+
     protected Map<String, Map<String, String>> crudOps = new HashMap<String, Map<String, String>>();
 
     public BaseDBWSBuilderHelper(DBWSBuilder dbwsBuilder) {
@@ -268,7 +268,7 @@ public abstract class BaseDBWSBuilderHelper {
         NamingConventionTransformer customNct = setUpCustomTransformer(tableName, nct);
         RelationalDescriptor desc = buildORDescriptor(tableName, dbwsBuilder.getProjectName(), null, customNct);
         createdORDescriptors.put(desc.getJavaClassName(), desc);
-        
+
         desc.descriptorIsAggregate();
         orProject.addDescriptor(desc);
         XMLDescriptor xdesc = buildOXDescriptor(desc.getAlias(), schemaAlias, desc.getJavaClassName(), dbwsBuilder.getTargetNamespace());
@@ -296,12 +296,12 @@ public abstract class BaseDBWSBuilderHelper {
             }
         }
     }
-    
+
     /**
      * Uses a custom visitor to traverse each procedure/function argument and build
      * a list of required Types.  Only on instance of a given type will exist in
      * the list.
-     *  
+     *
      */
     public List<CompositeDatabaseType> buildTypesList(List<OperationModel> operations) {
         EnclosedTypeVisitor etVisitor = new EnclosedTypeVisitor();
@@ -333,7 +333,7 @@ public abstract class BaseDBWSBuilderHelper {
                                 }
                                 arg.setEnclosedType(plsqlRec);
                             }
-                            // now visit each, adding types (only one instance of each) to the list 
+                            // now visit each, adding types (only one instance of each) to the list
                             if (arg.isComposite()) {
                                 etVisitor.visit((CompositeDatabaseType) arg);
                             }
@@ -342,24 +342,24 @@ public abstract class BaseDBWSBuilderHelper {
                 }
             }
         }
-        
+
         // gather Complex types to hand into XMLEntityMappingsGenerator
-        List<CompositeDatabaseType> types = etVisitor.getCompositeDatabaseTypes();    
+        List<CompositeDatabaseType> types = etVisitor.getCompositeDatabaseTypes();
         for (CompositeDatabaseType type : types) {
             complextypes.add(type);
         }
         return etVisitor.getCompositeDatabaseTypes();
     }
-    
+
     /**
      * Builds OR/OX projects, descriptors & mappings.  This method can be
      * used when no complex types exist, and only table(s) and secondary
-     * SQL will be used when building.  
+     * SQL will be used when building.
      */
     public void buildOROXProjects(NamingConventionTransformer nct) {
         buildOROXProjects(nct, new ArrayList<CompositeDatabaseType>());
     }
-    
+
     /**
      * Builds OR/OX projects, descriptors & mappings, based on a given list
      * of types, as well as table(s) and secondary SQL.
@@ -420,13 +420,13 @@ public abstract class BaseDBWSBuilderHelper {
         }
         // create OR/OX projects, descriptors/mappings for the types
         addToOROXProjectsForComplexTypes(typeList, orProject, oxProject);
-        
+
         // build queries for procedures with complex arguments
         for (OperationModel opModel : dbwsBuilder.operations) {
             if (opModel.isProcedureOperation()) {
                 ProcedureOperationModel procedureOperation = (ProcedureOperationModel)opModel;
                     for (ProcedureType procType : procedureOperation.getDbStoredProcedures()) {
-                        buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation, 
+                        buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation,
                                 hasPLSQLArgs(getArgumentListForProcedureType(procType)));
                     }
             }
@@ -440,7 +440,7 @@ public abstract class BaseDBWSBuilderHelper {
                 cdesc.descriptorIsAggregate();
             }
         }
-        
+
         DatabaseLogin databaseLogin = new DatabaseLogin();
         databaseLogin.removeProperty(USER_STR);
         databaseLogin.removeProperty(PASSWORD_STR);
@@ -593,7 +593,7 @@ public abstract class BaseDBWSBuilderHelper {
                     procedureNamePatterns.add(procedureOperation.getProcedurePattern());
                 }
                 List<ProcedureType> procedures = loadProcedures(catalogPatterns, schemaPatterns, procedureNamePatterns);
-                // if we didn't find any procs/funcs log a WARNING 
+                // if we didn't find any procs/funcs log a WARNING
                 if (procedures == null || procedures.isEmpty()) {
                     logNotFoundWarnings(NO_PROC_MSG, schemaPatterns, catalogPatterns, procedureNamePatterns);
                 } else {
@@ -718,7 +718,7 @@ public abstract class BaseDBWSBuilderHelper {
                         crudOps.put(tableName, ops);
                     }
                     ops = crudOps.get(tableName);
-                    
+
                     String pks = null;
                     int pkCount = 0;
                     for (Iterator j = desc.getPrimaryKeyFields().iterator(); j.hasNext();) {
@@ -732,7 +732,7 @@ public abstract class BaseDBWSBuilderHelper {
                     if (pks != null) {
                        pks = pks.concat(CLOSE_BRACKET);
                     }
-                    
+
                     // findByPk
                     String crudOpName = Util.PK_QUERYNAME + UNDERSCORE + aliasType;
                     String findByPKName = crudOpName;
@@ -755,7 +755,7 @@ public abstract class BaseDBWSBuilderHelper {
                         findByPKQueryOperation.getParameters().add(p);
                     }
                     dbwsBuilder.xrServiceModel.getOperations().put(findByPKQueryOperation.getName(), findByPKQueryOperation);
-                                        
+
                     // find all
                     crudOpName = FINDALL_QUERYNAME + UNDERSCORE + aliasType;
                     QueryOperation findAllOperation = new QueryOperation();
@@ -787,7 +787,7 @@ public abstract class BaseDBWSBuilderHelper {
                     DescriptorHelper.buildValuesAsQMarksFromMappings(sqlStmt, desc.getMappings(), COMMA_SPACE_STR);
                     sqlStmt.append(CLOSE_BRACKET);
                     ops.put(crudOpName, sqlStmt.toString());
-                    
+
                     // update
                     crudOpName = UPDATE_OPERATION_NAME + UNDERSCORE + aliasType;
                     UpdateOperation updateOperation = new UpdateOperation();
@@ -801,7 +801,7 @@ public abstract class BaseDBWSBuilderHelper {
                             desc.getPrimaryKeyFields(), pkCount, EQUALS_BINDING_STR, COMMA_SPACE_STR);
                     sqlStmt.append(WHERE_STR).append(pks);
                     ops.put(crudOpName, sqlStmt.toString());
-                    
+
                     // delete
                     crudOpName = REMOVE_OPERATION_NAME + UNDERSCORE + aliasType;
                     DeleteOperation deleteOperation = new DeleteOperation();
@@ -816,7 +816,7 @@ public abstract class BaseDBWSBuilderHelper {
                         deleteOperation.getParameters().add(p);
                     }
                     dbwsBuilder.xrServiceModel.getOperations().put(deleteOperation.getName(), deleteOperation);
-                    
+
                     sqlStmt = new StringBuilder(128);
                     sqlStmt.append(DELETE_STR).append(tableName).append(WHERE_STR).append(pks);
                     ops.put(crudOpName, sqlStmt.toString());
@@ -848,7 +848,7 @@ public abstract class BaseDBWSBuilderHelper {
             dbwsBuilder.getPackager().closeServiceStream(dbwsServiceStream);
         }
     }
-    
+
     public void writeAttachmentSchema(OutputStream swarefStream) {
         if (!isNullStream(swarefStream)) {
             dbwsBuilder.logMessage(FINEST, "writing " + WSI_SWAREF_XSD_FILE);
@@ -889,7 +889,7 @@ public abstract class BaseDBWSBuilderHelper {
             dbwsBuilder.getPackager().closeDeploymentDescriptorStream(deploymentDescriptorStream);
         }
     }
-    
+
     public void generateDBWSProvider(OutputStream sourceProviderStream, OutputStream classProviderStream, OutputStream sourceProviderListenerStream, OutputStream classProviderListenerStream) {
         if (isNullStream(sourceProviderStream) && isNullStream(classProviderStream) && isNullStream(sourceProviderListenerStream) && isNullStream(classProviderListenerStream)) {
             //no work to do
@@ -951,7 +951,7 @@ public abstract class BaseDBWSBuilderHelper {
         if ((writeORProject || !dbwsBuilder.xrServiceModel.getOperations().isEmpty()) && !isNullStream(dbwsOrStream)) {
             XMLContext context = new XMLContext(workbenchXMLProject);
             context.getSession(orProject).getEventManager().addListener(new MissingDescriptorListener());
-            
+
             XMLEntityMappings mappings = XmlEntityMappingsGenerator.generateXmlEntityMappings(orProject, complextypes, crudOps);
             if (mappings != null) {
                 XMLEntityMappingsWriter writer = new XMLEntityMappingsWriter();
@@ -1077,7 +1077,7 @@ public abstract class BaseDBWSBuilderHelper {
                     }
                 }
             }
-            XMLBinaryDataMapping xbdm = new XMLBinaryDataMapping(); 
+            XMLBinaryDataMapping xbdm = new XMLBinaryDataMapping();
             if (binaryAttach) {
                 if (attachmentType.equals(SWAREF_STR)) {
                     xbdm.setSwaRef(true);
@@ -1177,11 +1177,11 @@ public abstract class BaseDBWSBuilderHelper {
         ReadAllQuery raq = new ReadAllQuery();
         raq.setReferenceClassName(generatedJavaClassName);
         desc.getQueryManager().addQuery(FINDALL_QUERYNAME + UNDERSCORE + desc.getAlias() + TYPE_STR, raq);
-        
+
         // find by pk
         String findByPk = SELECT_FROM_STR + tableName + WHERE_STR + pks;
         roq.setSQLString(findByPk);
-        
+
         // find all
         String findAll = SELECT_FROM_STR + tableName;
         raq.setSQLString(findAll);
@@ -1261,7 +1261,7 @@ public abstract class BaseDBWSBuilderHelper {
             PLSQLType pType = (PLSQLType) dType;
             catalog = pType.getParentType().getPackageName();
         }
-        
+
         // handle cursors
         if (dType.isPLSQLCursorType()) {
             if (dType.isArgumentType()) {
@@ -1269,14 +1269,14 @@ public abstract class BaseDBWSBuilderHelper {
             }
             PLSQLCursorType pType = (PLSQLCursorType)dType;
             return new PLSQLCursor(pType.getParentType().getPackageName() + DOT + pType.getCursorName());
-        } 
-        
+        }
+
         if (dType.isArgumentType()) {
             dType = ((ArgumentType)dType).getEnclosedType();
         } else if (dType.isTYPEType()) {
             dType = ((TYPEType)dType).getEnclosedType();
         }
-        
+
         // composite types
         if (dType.isComposite()) {
             String typeName = dType.getTypeName();
@@ -1455,11 +1455,11 @@ public abstract class BaseDBWSBuilderHelper {
         }
         return wrapperClass;
     }
-    
+
     /**
      * Log a WARNING with the DBWSBuilder when a target (table, package, stored procedure/function, etc)
      * cannot be found using the information given by the user.
-     * 
+     *
      */
     protected void logNotFoundWarnings(String message, List<String> schemaPatterns, List<String> catalogPatterns, List<String> targetPatterns) {
         StringBuffer sb = new StringBuffer();
@@ -1492,11 +1492,11 @@ public abstract class BaseDBWSBuilderHelper {
         }
         dbwsBuilder.logMessage(Level.WARNING, sb.toString());
     }
-    
+
     /**
-     * Log a WARNING with the DBWSBuilder when a package cannot be found 
+     * Log a WARNING with the DBWSBuilder when a package cannot be found
      * using the information given by the user.
-     * 
+     *
      */
     protected void logPackageNotFoundWarnings(String message, List<String> schemaPatterns, List<String> catalogPatterns) {
         StringBuffer sb = new StringBuffer();

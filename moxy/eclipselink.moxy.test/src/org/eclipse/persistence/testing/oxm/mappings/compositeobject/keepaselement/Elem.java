@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -41,13 +41,13 @@ public class Elem {
             Elem anotherElem = (Elem) object;
             if (elem == null && anotherElem.getElem() != null) {
                 return false;
-            } 
+            }
             if (elem != null && anotherElem.getElem() == null) {
                 return false;
-            } 
+            }
             if (elem1 == null && anotherElem.getElem1() != null) {
                 return false;
-            } 
+            }
             if (elem1 != null && anotherElem.getElem1() == null) {
                 return false;
             }
@@ -57,20 +57,20 @@ public class Elem {
             if ((obj1 instanceof Element) && (obj2 instanceof Element)) {
                 Element elem1 = (Element )obj1;
                 Element elem2 = (Element) obj2;
-                
+
                 if (!(elem1.getLocalName().equals(elem2.getLocalName()))) {
                     return false;
                 }
             } else {
                 return false;
             }
-            
+
             Object obj3 = elem1;
             Object obj4 = anotherElem.getElem1();
             if ((obj3 instanceof Element) && (obj4 instanceof Element)) {
                 Element elem1 = (Element )obj3;
                 Element elem2 = (Element) obj4;
-                
+
                 if (!(elem1.getLocalName().equals(elem2.getLocalName()))) {
                     return false;
                 }
@@ -83,6 +83,6 @@ public class Elem {
         } else {
             return false;
         }
-    }    
-    
+    }
+
 }

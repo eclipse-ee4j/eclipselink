@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -32,16 +32,16 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
  *  in a subrule are different: (ID INT)+ where |ID|!=|INT|
  */
 public class RewriteCardinalityException extends RuntimeException {
-	public String elementDescription;
+    public String elementDescription;
 
-	public RewriteCardinalityException(String elementDescription) {
-		this.elementDescription = elementDescription;
-	}
+    public RewriteCardinalityException(String elementDescription) {
+        this.elementDescription = elementDescription;
+    }
 
-	public String getMessage() {
-		if ( elementDescription!=null ) {
-			return elementDescription;
-		}
-		return null;
-	}
+    public String getMessage() {
+        if ( elementDescription!=null ) {
+            return elementDescription;
+        }
+        return null;
+    }
 }

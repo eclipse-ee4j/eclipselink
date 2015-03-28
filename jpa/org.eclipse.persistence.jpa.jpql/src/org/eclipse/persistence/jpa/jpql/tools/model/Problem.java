@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,26 +25,26 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject;
  */
 public interface Problem {
 
-	/**
-	 * Returns the arguments associate with the problem's message.
-	 *
-	 * @return A non-<code>null</code> list of arguments that can be used to format the localized
-	 * message
-	 */
-	String[] getMessageArguments();
+    /**
+     * Returns the arguments associate with the problem's message.
+     *
+     * @return A non-<code>null</code> list of arguments that can be used to format the localized
+     * message
+     */
+    String[] getMessageArguments();
 
-	/**
-	 * Returns the key used to retrieve the localized message describing the problem found in the
-	 * {@link StateObject}.
-	 *
-	 * @return The key used to retrieve the localized message
-	 */
-	String getMessageKey();
+    /**
+     * Returns the key used to retrieve the localized message describing the problem found in the
+     * {@link StateObject}.
+     *
+     * @return The key used to retrieve the localized message
+     */
+    String getMessageKey();
 
-	/**
-	 * Returns the {@link StateObject} where the problem was found.
-	 *
-	 * @return The {@link StateObject} where the problem was found
-	 */
-	StateObject getStateObject();
+    /**
+     * Returns the {@link StateObject} where the problem was found.
+     *
+     * @return The {@link StateObject} where the problem was found
+     */
+    StateObject getStateObject();
 }

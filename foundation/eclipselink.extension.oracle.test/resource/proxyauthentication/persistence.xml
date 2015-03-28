@@ -8,7 +8,7 @@
         <property name="eclipselink.jdbc.write-connections.min" value="1"/>
         <!--property name="eclipselink.logging.level" value="FINEST"/-->
     </persistence-unit>
-    
+
 </persistence>
 
 

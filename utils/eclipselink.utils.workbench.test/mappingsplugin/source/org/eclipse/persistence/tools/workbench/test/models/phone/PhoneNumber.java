@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -18,13 +18,13 @@ package org.eclipse.persistence.tools.workbench.test.models.phone;
  * @author: Christopher Garrett
  */
 public class PhoneNumber implements Contact {
-	int id;
-	String number;
+    int id;
+    String number;
 /**
  * PhoneNumber constructor comment.
  */
 public PhoneNumber() {
-	super();
+    super();
 }
 /**
  * Insert the method's description here.
@@ -32,7 +32,7 @@ public PhoneNumber() {
  * @return int
  */
 public int getId() {
-	return id;
+    return id;
 }
 /**
  * Insert the method's description here.
@@ -40,7 +40,7 @@ public int getId() {
  * @return java.lang.String
  */
 public java.lang.String getNumber() {
-	return number;
+    return number;
 }
 /**
  * Insert the method's description here.
@@ -48,7 +48,7 @@ public java.lang.String getNumber() {
  * @param newId int
  */
 public void setId(int newId) {
-	id = newId;
+    id = newId;
 }
 /**
  * Insert the method's description here.
@@ -56,6 +56,6 @@ public void setId(int newId) {
  * @param newNumber java.lang.String
  */
 public void setNumber(java.lang.String newNumber) {
-	number = newNumber;
+    number = newNumber;
 }
 }

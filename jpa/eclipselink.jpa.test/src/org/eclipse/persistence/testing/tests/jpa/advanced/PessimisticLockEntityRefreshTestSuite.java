@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.List;
@@ -42,7 +42,7 @@ public class PessimisticLockEntityRefreshTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite("PessimisticLocking Entity Refresh TestSuite");
         if (!isJPA10()) {
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testSetup"));
-    
+
             // test lock-on-find an object multiple times with the same lock type
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteLockFind"));
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadLockFind"));
@@ -53,12 +53,12 @@ public class PessimisticLockEntityRefreshTestSuite extends JUnitTestCase {
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadLockAndNormalFind"));
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteLockAndNormalFind"));
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementLockAndNormalFind"));
-            
+
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadThenWriteLockFind"));
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteThenReadLockFind"));
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementThenReadLockFind"));
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementThenWriteLockFind"));
-            
+
             // test finding and locking an object multiple times with the same lock type
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteLockFindAndLock"));
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadLockFindAndLock"));
@@ -69,7 +69,7 @@ public class PessimisticLockEntityRefreshTestSuite extends JUnitTestCase {
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadLockAndNormalFindAndLock"));
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteLockAndNormalFindAndLock"));
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementLockAndNormalFindAndLock"));
-            
+
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadThenWriteLockFindAndLock"));
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteThenReadLockFindAndLock"));
             suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementThenReadLockFindAndLock"));
@@ -77,29 +77,29 @@ public class PessimisticLockEntityRefreshTestSuite extends JUnitTestCase {
         }
         return suite;
     }
-    
+
     public void testSetup() {
         ServerSession session = JUnitTestCase.getServerSession();
         new AdvancedTableCreator().replaceTables(session);
         clearCache();
     }
-    
+
     public void testPessimisticReadLockAndNormalFind() {
         doFindWithLockModes(LockModeType.PESSIMISTIC_READ, LockModeType.NONE);
     }
-    
+
     public void testPessimisticWriteLockAndNormalFind() {
         doFindWithLockModes(LockModeType.PESSIMISTIC_WRITE, LockModeType.NONE);
     }
-    
+
     public void testPessimisticForceIncrementLockAndNormalFind() {
         doFindWithLockModes(LockModeType.PESSIMISTIC_WRITE, LockModeType.NONE);
     }
-    
+
     public void testPessimisticReadLockFind() {
         doFindWithLockModes(LockModeType.PESSIMISTIC_READ, LockModeType.PESSIMISTIC_READ);
     }
-    
+
     public void testPessimisticWriteLockFind() {
         doFindWithLockModes(LockModeType.PESSIMISTIC_WRITE, LockModeType.PESSIMISTIC_WRITE);
     }
@@ -107,41 +107,41 @@ public class PessimisticLockEntityRefreshTestSuite extends JUnitTestCase {
     public void testPessimisticForceIncrementLockFind() {
         doFindWithLockModes(LockModeType.PESSIMISTIC_FORCE_INCREMENT, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
     }
-    
+
     public void testPessimisticReadThenWriteLockFind() {
         doFindWithLockModes(LockModeType.PESSIMISTIC_READ, LockModeType.PESSIMISTIC_WRITE);
     }
-    
+
     public void testPessimisticWriteThenReadLockFind() {
         doFindWithLockModes(LockModeType.PESSIMISTIC_WRITE, LockModeType.PESSIMISTIC_READ);
     }
-    
+
     public void testPessimisticForceIncrementThenReadLockFind() {
         doFindWithLockModes(LockModeType.PESSIMISTIC_FORCE_INCREMENT, LockModeType.PESSIMISTIC_READ);
     }
-    
+
     public void testPessimisticForceIncrementThenWriteLockFind() {
         doFindWithLockModes(LockModeType.PESSIMISTIC_FORCE_INCREMENT, LockModeType.PESSIMISTIC_WRITE);
     }
-    
+
     // Find-Lock tests
-    
+
     public void testPessimisticReadLockAndNormalFindAndLock() {
         doFindAndLockWithLockModes(LockModeType.PESSIMISTIC_READ, LockModeType.NONE);
     }
-    
+
     public void testPessimisticWriteLockAndNormalFindAndLock() {
         doFindAndLockWithLockModes(LockModeType.PESSIMISTIC_WRITE, LockModeType.NONE);
     }
-    
+
     public void testPessimisticForceIncrementLockAndNormalFindAndLock() {
         doFindAndLockWithLockModes(LockModeType.PESSIMISTIC_WRITE, LockModeType.NONE);
     }
-    
+
     public void testPessimisticReadLockFindAndLock() {
         doFindAndLockWithLockModes(LockModeType.PESSIMISTIC_READ, LockModeType.PESSIMISTIC_READ);
     }
-    
+
     public void testPessimisticWriteLockFindAndLock() {
         doFindAndLockWithLockModes(LockModeType.PESSIMISTIC_WRITE, LockModeType.PESSIMISTIC_WRITE);
     }
@@ -149,23 +149,23 @@ public class PessimisticLockEntityRefreshTestSuite extends JUnitTestCase {
     public void testPessimisticForceIncrementLockFindAndLock() {
         doFindAndLockWithLockModes(LockModeType.PESSIMISTIC_FORCE_INCREMENT, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
     }
-    
+
     public void testPessimisticReadThenWriteLockFindAndLock() {
         doFindAndLockWithLockModes(LockModeType.PESSIMISTIC_READ, LockModeType.PESSIMISTIC_WRITE);
     }
-    
+
     public void testPessimisticWriteThenReadLockFindAndLock() {
         doFindAndLockWithLockModes(LockModeType.PESSIMISTIC_WRITE, LockModeType.PESSIMISTIC_READ);
     }
-    
+
     public void testPessimisticForceIncrementThenReadLockFindAndLock() {
         doFindAndLockWithLockModes(LockModeType.PESSIMISTIC_FORCE_INCREMENT, LockModeType.PESSIMISTIC_READ);
     }
-    
+
     public void testPessimisticForceIncrementThenWriteLockFindAndLock() {
         doFindAndLockWithLockModes(LockModeType.PESSIMISTIC_FORCE_INCREMENT, LockModeType.PESSIMISTIC_WRITE);
     }
-    
+
     /**
      * Test utility method
      * @param lockMode1 - the lock mode for the first find()
@@ -182,13 +182,13 @@ public class PessimisticLockEntityRefreshTestSuite extends JUnitTestCase {
             em.persist(entity);
             em.flush();
             int entityId = entity.getID();
-            
+
             entity = em.find(Address.class, entityId, lockMode1);
             assertNotNull("Test data: entity should not be null", entity);
             entity.setCountry("changed");
-            
+
             Address entityRetrievedAgain = em.find(Address.class, entityId, lockMode2);
-            
+
             assertNotNull("Test data: entity retrieved again should not be null", entityRetrievedAgain);
             assertTrue("Same entity instance should be returned from find", entity == entityRetrievedAgain);
             assertEquals("Field value is expected to be the same", "changed", entityRetrievedAgain.getCountry());
@@ -199,7 +199,7 @@ public class PessimisticLockEntityRefreshTestSuite extends JUnitTestCase {
             closeEntityManagerAndTransaction(em);
         }
     }
-    
+
     /**
      * Test utility method
      * @param lockMode1 - the lock mode for the first lock()
@@ -216,16 +216,16 @@ public class PessimisticLockEntityRefreshTestSuite extends JUnitTestCase {
             em.persist(entity);
             em.flush();
             int entityId = entity.getID();
-            
+
             entity = em.find(Address.class, entityId);
             em.lock(entity, lockMode1);
-            
+
             assertNotNull("Test data: entity should not be null", entity);
             entity.setCountry("changed");
-            
+
             Address entityRetrievedAgain = em.find(Address.class, entityId);
             em.lock(entityRetrievedAgain, lockMode2);
-            
+
             assertNotNull("Test data: entity retrieved again should not be null", entityRetrievedAgain);
             assertTrue("Same entity instance should be returned from find", entity == entityRetrievedAgain);
             assertEquals("Field value is expected to be the same", "changed", entityRetrievedAgain.getCountry());

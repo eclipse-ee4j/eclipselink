@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Phillip Ross - LIMIT/OFFSET syntax support
- *     09/14/2011-2.3.1 Guy Pelletier 
+ *     09/14/2011-2.3.1 Guy Pelletier
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  ******************************************************************************/
 package org.eclipse.persistence.platform.database;
@@ -47,7 +47,7 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * <li>Platform specific operators.
  * <li>LIMIT/OFFSET query syntax for select statements.
  * </ul>
- * 
+ *
  * @since OracleAS TopLink 10<i>g</i> (10.1.3)
  */
 public class PostgreSQLPlatform extends DatabasePlatform {
@@ -60,7 +60,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         this.cursorCode = 1111; //jdbc.Types.OTHER - PostGreSQL expects this for refCursor types
         this.pingSQL = "SELECT 1";
     }
-    
+
     /**
      * Return the JDBC type for the Java type. For some reason PostgreSQL does
      * not seem to like the JDBC Blob type (PostgreSQL 8.2).
@@ -80,7 +80,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * field Valid literal values for the "true" state are: TRUE, 't', 'true',
      * 'y', 'yes', '1' Valid literal values for the false" state are : FALSE,
      * 'f', 'false', 'n', 'no', '0'
-     * 
+     *
      * To be consistent with the other data platforms we are using the values
      * '1' and '0' for true and false states of a boolean field.
      */
@@ -97,16 +97,16 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * INTERNAL: Use the JDBC maxResults and firstResultIndex setting to compute
      * a value to use when limiting the results of a query in SQL. These limits
      * tend to be used in two ways.
-     * 
+     *
      * 1. MaxRows is the index of the last row to be returned (like JDBC
      * maxResults) 2. MaxRows is the number of rows to be returned
-     * 
+     *
      * PostGreSQL uses case #2 and therefore the maxResults has to be altered
      * based on the firstResultIndex
      *
      * @param firstResultIndex
      * @param maxResults
-     * 
+     *
      * @see org.eclipse.persistence.platform.database.MySQLPlatform
      */
     @Override
@@ -203,18 +203,18 @@ public class PostgreSQLPlatform extends DatabasePlatform {
 
     /**
      * Calling a stored procedure query on PostgreSQL with no output parameters
-     * always returns true from an execute call regardless if a result set is 
-     * returned or not. This flag will help avoid throwing a JPA mandated 
+     * always returns true from an execute call regardless if a result set is
+     * returned or not. This flag will help avoid throwing a JPA mandated
      * exception on an executeUpdate call (which calls jdbc execute and checks
-     * the return value to ensure no results sets are returned (true)) 
-     * 
+     * the return value to ensure no results sets are returned (true))
+     *
      * @see PostgreSQLPlatform
      */
     @Override
     public boolean isJDBCExecuteCompliant() {
         return false;
     }
-    
+
     /**
      * INTERNAL: Answers whether platform is Postgres.
      */
@@ -360,7 +360,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         v.add(" FROM ");
         v.add("), ");
         v.add("), 0) - 1 + ");
-        v.add(", 0)");        
+        v.add(", 0)");
         operator.printsAs(v);
         operator.bePrefix();
         int[] argumentIndices = new int[4];
@@ -474,7 +474,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     public String getAssignmentString() {
         return ":= ";
     }
-    
+
     /**
      * Allows DROP TABLE to cascade dropping of any dependent constraints if the database supports this option.
      */
@@ -545,7 +545,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * for updating the original table from the temporary table. Precondition:
      * supportsTempTables() == true. Precondition: pkFields and assignFields
      * don't intersect.
-     * 
+     *
      * @param writer for writing the sql
      * @param table is original table for which temp table is
      *            created.

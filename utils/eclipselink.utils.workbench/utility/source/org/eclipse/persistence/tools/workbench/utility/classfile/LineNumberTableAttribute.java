@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,72 +27,72 @@ import org.eclipse.persistence.tools.workbench.utility.io.IndentingPrintWriter;
  *         u2 start_pc;
  *     u2 line_number;
  *     }[line_number_table_length] line_number_table;
- * 
+ *
  * See "The Java Virtual Machine Specification" Chapter 4.
  */
 public class LineNumberTableAttribute extends Attribute {
-	private short count;
-	private LineNumber[] lineNumbers;
+    private short count;
+    private LineNumber[] lineNumbers;
 
-	/**
-	 * Construct a line number table attribute from the specified stream
-	 * of byte codes.
-	 */
-	LineNumberTableAttribute(ClassFileDataInputStream stream, short nameIndex, AttributePool pool) throws IOException {
-		super(stream, nameIndex, pool);
-	}
-	
-	void initializeInfo(ClassFileDataInputStream stream) throws IOException {
-		this.count = stream.readU2();
-		short cnt = this.count;
-		this.lineNumbers = new LineNumber[cnt];
-		LineNumber[] numbers = this.lineNumbers;
-		for (short i = 0; i < cnt; i++) {
-			numbers[i] = new LineNumber(stream);
-		}
-	}
+    /**
+     * Construct a line number table attribute from the specified stream
+     * of byte codes.
+     */
+    LineNumberTableAttribute(ClassFileDataInputStream stream, short nameIndex, AttributePool pool) throws IOException {
+        super(stream, nameIndex, pool);
+    }
 
-	public void displayNameOn(IndentingPrintWriter writer) {
-		super.displayNameOn(writer);
-		writer.print(" (count: ");
-		writer.print(this.count);
-		writer.print(")");
-	}
-	
-	void displayInfoStringOn(IndentingPrintWriter writer) {
-		short cnt = this.count;
-		LineNumber[] numbers = this.lineNumbers;
-		for (short i = 0; i < cnt; i++) {
-			writer.print(i);
-			writer.print(": ");
-			numbers[i].displayStringOn(writer);
-		}
-	}
+    void initializeInfo(ClassFileDataInputStream stream) throws IOException {
+        this.count = stream.readU2();
+        short cnt = this.count;
+        this.lineNumbers = new LineNumber[cnt];
+        LineNumber[] numbers = this.lineNumbers;
+        for (short i = 0; i < cnt; i++) {
+            numbers[i] = new LineNumber(stream);
+        }
+    }
 
-	public void accept(Visitor visitor) {
-		visitor.visit(this);
-		short cnt = this.count;
-		LineNumber[] numbers = this.lineNumbers;
-		for (short i = 0; i < cnt; i++) {
-			numbers[i].accept(visitor);
-		}
-	}
+    public void displayNameOn(IndentingPrintWriter writer) {
+        super.displayNameOn(writer);
+        writer.print(" (count: ");
+        writer.print(this.count);
+        writer.print(")");
+    }
 
-	public short getCount() {
-		return this.count;
-	}
+    void displayInfoStringOn(IndentingPrintWriter writer) {
+        short cnt = this.count;
+        LineNumber[] numbers = this.lineNumbers;
+        for (short i = 0; i < cnt; i++) {
+            writer.print(i);
+            writer.print(": ");
+            numbers[i].displayStringOn(writer);
+        }
+    }
 
-	public LineNumber[] getLineNumbers() {
-		return this.lineNumbers;
-	}
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+        short cnt = this.count;
+        LineNumber[] numbers = this.lineNumbers;
+        for (short i = 0; i < cnt; i++) {
+            numbers[i].accept(visitor);
+        }
+    }
 
-	public LineNumber getLineNumber(short index) {
-		return this.lineNumbers[index];
-	}
+    public short getCount() {
+        return this.count;
+    }
 
-	void toString(StringBuffer sb) {
-		sb.append(this.count);
-		sb.append(" line number(s)");
-	}
+    public LineNumber[] getLineNumbers() {
+        return this.lineNumbers;
+    }
+
+    public LineNumber getLineNumber(short index) {
+        return this.lineNumbers[index];
+    }
+
+    void toString(StringBuffer sb) {
+        sb.append(this.count);
+        sb.append(" line number(s)");
+    }
 
 }

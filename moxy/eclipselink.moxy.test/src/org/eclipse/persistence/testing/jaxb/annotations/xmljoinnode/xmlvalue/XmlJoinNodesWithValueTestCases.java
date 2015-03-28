@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,23 +30,23 @@ public class XmlJoinNodesWithValueTestCases extends JAXBWithJSONTestCases {
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "value");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "value");
     }
-   
+
     @Override
     protected Object getControlObject() {
         Root root = new Root();
         root.customers = new ArrayList<Customer>();
         root.orders = new ArrayList<Order>();
-        
+
         Order order = new Order();
         order.id = "123";
         order.itemId = "456";
         root.orders.add(order);
-        
+
         Customer customer = new Customer();
         customer.info = "value";
         customer.order = order;
         root.customers.add(customer);
-        
+
         return root;
     }
 

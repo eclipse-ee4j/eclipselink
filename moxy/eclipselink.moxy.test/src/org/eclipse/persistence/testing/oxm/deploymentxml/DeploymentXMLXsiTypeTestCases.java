@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -36,17 +36,17 @@ public class DeploymentXMLXsiTypeTestCases extends XMLTestCase {
     public DeploymentXMLXsiTypeTestCases(String name) {
         super(name);
     }
-    
+
     public void testDeploymentXmlConversion() {
        XMLProjectReader reader = new XMLProjectReader();
        XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
        XMLParser parser = xmlPlatform.newXMLParser();
        InputStream stream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/deploymentxml/db-adapter-toplink-mapping-file.xml");
        Project proj = reader.read(new InputStreamReader(stream));
-       
+
        StringWriter writer = new StringWriter();
        new XMLProjectWriter().write(proj, writer);
-       
+
 
        parser.setNamespaceAware(true);
        parser.setWhitespacePreserving(false);
@@ -54,7 +54,7 @@ public class DeploymentXMLXsiTypeTestCases extends XMLTestCase {
        parser.setValidationMode(XMLParser.SCHEMA_VALIDATION);
        URL eclipselinkSchemaURL = getClass().getClassLoader().getResource(schema);
        parser.setEntityResolver(new EntityResolver() {
-            
+
            public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
                if (XMLProjectReader.OPM_SCHEMA.equals(systemId)) {
                    URL url = getClass().getClassLoader().getResource(XMLProjectReader.SCHEMA_DIR + XMLProjectReader.OPM_SCHEMA);
@@ -65,10 +65,10 @@ public class DeploymentXMLXsiTypeTestCases extends XMLTestCase {
                }
                return null;
            }
-       }); 
+       });
        parser.setXMLSchema(eclipselinkSchemaURL);
        parser.parse(new StringReader(writer.toString()));
-       
+
     }
 
 }

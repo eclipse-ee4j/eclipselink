@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -204,7 +204,7 @@ public class FormattedWriterRecord extends WriterRecord {
             } else {
                 attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
-                if (attr.getNamespaceURI() != null) {                    
+                if (attr.getNamespaceURI() != null) {
                     namespaceDeclaration(attr.getPrefix(), attr.getNamespaceURI());
                     this.getNamespaceResolver().put(attr.getPrefix(), attr.getNamespaceURI());
                 }

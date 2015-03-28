@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,31 +23,31 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 @SuppressWarnings("nls")
 public final class DatabaseTypeFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link DeleteStatementFactory}.
-	 */
-	public static final String ID = "database-type";
+    /**
+     * The unique identifier of this {@link DeleteStatementFactory}.
+     */
+    public static final String ID = "database-type";
 
-	/**
-	 * Creates a new <code>DatabaseTypeFactory</code>.
-	 */
-	public DatabaseTypeFactory() {
-		super(ID);
-	}
+    /**
+     * Creates a new <code>DatabaseTypeFactory</code>.
+     */
+    public DatabaseTypeFactory() {
+        super(ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		expression = new DatabaseType(parent, word);
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        expression = new DatabaseType(parent, word);
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -61,21 +61,21 @@ public class LoadAndSaveNillableOptionalNodeNullPolicyTestCases extends LoadAndS
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
     protected List<String> getPackages() {
-        List<String> packages = new ArrayList<String>();       
+        List<String> packages = new ArrayList<String>();
         packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
         return packages;
     }
-    
+
     protected void verifyAfterLoad(XMLDocument doc) {
         super.verifyAfterLoad(doc);
         Object value = doc.getRootObject().get("id");
         boolean isSet = doc.getRootObject().isSet("id");
 
         // 20070615 changed because Direct now uses IsSetOptionalNNP not OptionalNNP
-        assertNotNull(value);//???	
+        assertNotNull(value);//???
         // default values are not set - see UC3-2
         assertFalse(isSet);//???
-        //assertNull(value);	
+        //assertNull(value);
         // default values are not set - see UC3-2
         //assertTrue(isSet);
 
@@ -102,11 +102,11 @@ public class LoadAndSaveNillableOptionalNodeNullPolicyTestCases extends LoadAndS
         SDOType stringType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
         SDOType typeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
 
-        // create a new Type for Customers        
+        // create a new Type for Customers
         DataObject customerType = dataFactory.create(typeType);
         customerType.set("uri", getControlRootURI());
         customerType.set("name", "EmployeeType");
-        //customerType.set("name", "Employee");        
+        //customerType.set("name", "Employee");
         // create an idproperty (simple type = DirectMapping)
         addProperty(customerType, "id", intType, false, false, true);
         addProperty(customerType, "first-name", stringType, false, false, true);

@@ -47,336 +47,336 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 @SuppressWarnings({"nls", "unused"}) // unused used for the import statement: see bug 330740
 public class InExpressionStateObject extends AbstractListHolderStateObject<StateObject> {
 
-	/**
-	 * Determines whether the <code><b>NOT</b></code> identifier is part of the expression or not.
-	 */
-	private boolean not;
+    /**
+     * Determines whether the <code><b>NOT</b></code> identifier is part of the expression or not.
+     */
+    private boolean not;
 
-	/**
-	 * Determines whether what was parsed after the <code>IN</code> identifier is a single input
-	 * parameter.
-	 */
-	private boolean singleInputParameter;
+    /**
+     * Determines whether what was parsed after the <code>IN</code> identifier is a single input
+     * parameter.
+     */
+    private boolean singleInputParameter;
 
-	/**
-	 * The {@link StateObject} representing either the state field path expression or the type
-	 * discriminator.
-	 */
-	private StateObject stateObject;
+    /**
+     * The {@link StateObject} representing either the state field path expression or the type
+     * discriminator.
+     */
+    private StateObject stateObject;
 
-	/**
-	 * Notifies the list of items has changed.
-	 */
-	public static final String ITEMS_LIST = "items";
+    /**
+     * Notifies the list of items has changed.
+     */
+    public static final String ITEMS_LIST = "items";
 
-	/**
-	 * Notifies the visibility of the <code><b>NOT</b></code> identifier has changed.
-	 */
-	public static final String NOT_PROPERTY = "not";
+    /**
+     * Notifies the visibility of the <code><b>NOT</b></code> identifier has changed.
+     */
+    public static final String NOT_PROPERTY = "not";
 
-	/**
-	 * Notifies the {@link StateObject} representing the state field path expression or the input
-	 * parameter has changed.
-	 */
-	public static final String STATE_OBJECT_PROPERTY = "stateObject";
+    /**
+     * Notifies the {@link StateObject} representing the state field path expression or the input
+     * parameter has changed.
+     */
+    public static final String STATE_OBJECT_PROPERTY = "stateObject";
 
-	/**
-	 * Creates a new <code>InExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public InExpressionStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>InExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public InExpressionStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>InExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param path
-	 * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
-	 * or not
-	 * @param items The list of JPQL fragments that will be parsed and converted into {@link
-	 * StateObject}
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public InExpressionStateObject(StateObject parent,
-	                               boolean not,
-	                               String path,
-	                               List<String> items) {
+    /**
+     * Creates a new <code>InExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param path
+     * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
+     * or not
+     * @param items The list of JPQL fragments that will be parsed and converted into {@link
+     * StateObject}
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public InExpressionStateObject(StateObject parent,
+                                   boolean not,
+                                   String path,
+                                   List<String> items) {
 
-		super(parent);
-		// TODO
-	}
+        super(parent);
+        // TODO
+    }
 
-	/**
-	 * Creates a new <code>InExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param path
-	 * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
-	 * or not
-	 * @param parameter The
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public InExpressionStateObject(StateObject parent,
-	                               boolean not,
-	                               String path,
-	                               String parameter) {
+    /**
+     * Creates a new <code>InExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param path
+     * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
+     * or not
+     * @param parameter The
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public InExpressionStateObject(StateObject parent,
+                                   boolean not,
+                                   String path,
+                                   String parameter) {
 
-		super(parent);
-		this.not = not;
-		parse(path);
-		addItem(new InputParameterStateObject(this, parameter));
-	}
+        super(parent);
+        this.not = not;
+        parse(path);
+        addItem(new InputParameterStateObject(this, parameter));
+    }
 
-	/**
-	 * Creates a new <code>InExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param stateObject
-	 * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
-	 * or not
-	 * @param items
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public InExpressionStateObject(StateObject parent,
-	                               StateObject stateObject,
-	                               boolean not,
-	                               List<? extends StateObject> items) {
+    /**
+     * Creates a new <code>InExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param stateObject
+     * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
+     * or not
+     * @param items
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public InExpressionStateObject(StateObject parent,
+                                   StateObject stateObject,
+                                   boolean not,
+                                   List<? extends StateObject> items) {
 
-		super(parent, items);
-		this.not         = not;
-		this.stateObject = parent(stateObject);
-	}
+        super(parent, items);
+        this.not         = not;
+        this.stateObject = parent(stateObject);
+    }
 
-	/**
-	 * Creates a new <code>InExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param stateFieldPath
-	 * @param items
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public InExpressionStateObject(StateObject parent,
-	                               StateObject stateFieldPath,
-	                               List<? extends StateObject> items) {
+    /**
+     * Creates a new <code>InExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param stateFieldPath
+     * @param items
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public InExpressionStateObject(StateObject parent,
+                                   StateObject stateFieldPath,
+                                   List<? extends StateObject> items) {
 
-		this(parent, stateFieldPath, false, items);
-	}
+        this(parent, stateFieldPath, false, items);
+    }
 
-	/**
-	 * Creates a new <code>InExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param path
-	 * @param items The list of JPQL fragments that will be parsed and converted into {@link
-	 * StateObject}
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public InExpressionStateObject(StateObject parent,
-	                               String path,
-	                               List<String> items) {
+    /**
+     * Creates a new <code>InExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param path
+     * @param items The list of JPQL fragments that will be parsed and converted into {@link
+     * StateObject}
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public InExpressionStateObject(StateObject parent,
+                                   String path,
+                                   List<String> items) {
 
-		this(parent, false, path, items);
-	}
+        this(parent, false, path, items);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addChildren(List<StateObject> children) {
-		if (stateObject != null) {
-			children.add(stateObject);
-		}
-		super.addChildren(children);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addChildren(List<StateObject> children) {
+        if (stateObject != null) {
+            children.add(stateObject);
+        }
+        super.addChildren(children);
+    }
 
-	/**
-	 * Makes sure the <code><b>NOT</b></code> identifier is specified.
-	 *
-	 * @return This object
-	 */
-	public InExpressionStateObject addNot() {
-		if (!not) {
-			setNot(true);
-		}
-		return this;
-	}
+    /**
+     * Makes sure the <code><b>NOT</b></code> identifier is specified.
+     *
+     * @return This object
+     */
+    public InExpressionStateObject addNot() {
+        if (!not) {
+            setNot(true);
+        }
+        return this;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public InExpression getExpression() {
-		return (InExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InExpression getExpression() {
+        return (InExpression) super.getExpression();
+    }
 
-	/**
-	 * Returns
-	 *
-	 * @return
-	 */
-	public StateObject getStateObject() {
-		return stateObject;
-	}
+    /**
+     * Returns
+     *
+     * @return
+     */
+    public StateObject getStateObject() {
+        return stateObject;
+    }
 
-	/**
-	 * Determines whether the <code><b>NOT</b></code> identifier is used or not.
-	 *
-	 * @return <code>true</code> if the <code><b>NOT</b></code> identifier is part of the expression;
-	 * <code>false</code> otherwise
-	 */
-	public boolean hasNot() {
-		return not;
-	}
+    /**
+     * Determines whether the <code><b>NOT</b></code> identifier is used or not.
+     *
+     * @return <code>true</code> if the <code><b>NOT</b></code> identifier is part of the expression;
+     * <code>false</code> otherwise
+     */
+    public boolean hasNot() {
+        return not;
+    }
 
-	/**
-	 * Determines whether
-	 *
-	 * @return
-	 */
-	public boolean hasStateObject() {
-		return stateObject != null;
-	}
+    /**
+     * Determines whether
+     *
+     * @return
+     */
+    public boolean hasStateObject() {
+        return stateObject != null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isEquivalent(StateObject stateObject) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEquivalent(StateObject stateObject) {
 
-		if (super.isEquivalent(stateObject)) {
-			InExpressionStateObject inStateObject = (InExpressionStateObject) stateObject;
-			return not == inStateObject.not &&
-			       singleInputParameter == inStateObject.singleInputParameter &&
-			       areEquivalent(stateObject, stateObject) &&
-			       areChildrenEquivalent(inStateObject);
-		}
+        if (super.isEquivalent(stateObject)) {
+            InExpressionStateObject inStateObject = (InExpressionStateObject) stateObject;
+            return not == inStateObject.not &&
+                   singleInputParameter == inStateObject.singleInputParameter &&
+                   areEquivalent(stateObject, stateObject) &&
+                   areChildrenEquivalent(inStateObject);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Determines whether what was parsed after the <code>IN</code> identifier is a single input
-	 * parameter.
-	 *
-	 * @return <code>true</code> if the only item is an input parameter; <code>false</code> otherwise
-	 */
-	public boolean isSingleInputParameter() {
-		return singleInputParameter;
-	}
+    /**
+     * Determines whether what was parsed after the <code>IN</code> identifier is a single input
+     * parameter.
+     *
+     * @return <code>true</code> if the only item is an input parameter; <code>false</code> otherwise
+     */
+    public boolean isSingleInputParameter() {
+        return singleInputParameter;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String listName() {
-		return ITEMS_LIST;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String listName() {
+        return ITEMS_LIST;
+    }
 
-	/**
-	 * Parses the given JPQL fragment, which represents either a single or many items, the fragment
-	 * will be parsed and converted into {@link StateObject}.
-	 *
-	 * @param jpqlFragment The portion of the query to parse
-	 */
-	public void parse(String jpqlFragment) {
-		StateObject stateObject = buildStateObject(jpqlFragment, InExpressionItemBNF.ID);
-		setStateObject(stateObject);
-	}
+    /**
+     * Parses the given JPQL fragment, which represents either a single or many items, the fragment
+     * will be parsed and converted into {@link StateObject}.
+     *
+     * @param jpqlFragment The portion of the query to parse
+     */
+    public void parse(String jpqlFragment) {
+        StateObject stateObject = buildStateObject(jpqlFragment, InExpressionItemBNF.ID);
+        setStateObject(stateObject);
+    }
 
-	/**
-	 * Makes sure the <code><b>NOT</b></code> identifier is not specified.
-	 */
-	public void removeNot() {
-		if (not) {
-			setNot(false);
-		}
-	}
+    /**
+     * Makes sure the <code><b>NOT</b></code> identifier is not specified.
+     */
+    public void removeNot() {
+        if (not) {
+            setNot(false);
+        }
+    }
 
-	/**
-	 * Keeps a reference of the {@link InExpression parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link InExpression parsed object} representing an <code><b>IN</b></code>
-	 * expression
-	 */
-	public void setExpression(InExpression expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link InExpression parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link InExpression parsed object} representing an <code><b>IN</b></code>
+     * expression
+     */
+    public void setExpression(InExpression expression) {
+        super.setExpression(expression);
+    }
 
-	/**
-	 * Sets whether the <code><b>NOT</b></code> identifier should be part of the expression or not.
-	 *
-	 * @param not <code>true</code> if the <code><b>NOT</b></code> identifier should be part of the
-	 * expression; <code>false</code> otherwise
-	 */
-	public void setNot(boolean not) {
-		boolean oldNot = this.not;
-		this.not = not;
-		firePropertyChanged(NOT_PROPERTY, oldNot, not);
-	}
+    /**
+     * Sets whether the <code><b>NOT</b></code> identifier should be part of the expression or not.
+     *
+     * @param not <code>true</code> if the <code><b>NOT</b></code> identifier should be part of the
+     * expression; <code>false</code> otherwise
+     */
+    public void setNot(boolean not) {
+        boolean oldNot = this.not;
+        this.not = not;
+        firePropertyChanged(NOT_PROPERTY, oldNot, not);
+    }
 
-	/**
-	 * Sets whether what was parsed after the <code>IN</code> identifier is a single input parameter.
-	 *
-	 * @param singleInputParameter <code>true</code> if the only item is an input parameter;
-	 * <code>false</code> otherwise
-	 */
-	public void setSingleInputParameter(boolean singleInputParameter) {
-		this.singleInputParameter = singleInputParameter;
-	}
+    /**
+     * Sets whether what was parsed after the <code>IN</code> identifier is a single input parameter.
+     *
+     * @param singleInputParameter <code>true</code> if the only item is an input parameter;
+     * <code>false</code> otherwise
+     */
+    public void setSingleInputParameter(boolean singleInputParameter) {
+        this.singleInputParameter = singleInputParameter;
+    }
 
-	/**
-	 * Sets
-	 *
-	 * @param stateObject
-	 */
-	public void setStateObject(StateObject stateObject) {
-		StateObject oldStateObject = this.stateObject;
-		this.stateObject = parent(stateObject);
-		firePropertyChanged(STATE_OBJECT_PROPERTY, oldStateObject, stateObject);
-	}
+    /**
+     * Sets
+     *
+     * @param stateObject
+     */
+    public void setStateObject(StateObject stateObject) {
+        StateObject oldStateObject = this.stateObject;
+        this.stateObject = parent(stateObject);
+        firePropertyChanged(STATE_OBJECT_PROPERTY, oldStateObject, stateObject);
+    }
 
-	/**
-	 * Changes the visibility state of the <code><b>NOT</b></code> identifier.
-	 */
-	public void toggleNot() {
-		setNot(!not);
-	}
+    /**
+     * Changes the visibility state of the <code><b>NOT</b></code> identifier.
+     */
+    public void toggleNot() {
+        setNot(!not);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toTextInternal(Appendable writer) throws IOException {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toTextInternal(Appendable writer) throws IOException {
 
-		if (stateObject != null) {
-			stateObject.toString(writer);
-			writer.append(SPACE);
-		}
+        if (stateObject != null) {
+            stateObject.toString(writer);
+            writer.append(SPACE);
+        }
 
-		writer.append(not ? NOT_IN : IN);
-		writer.append(SPACE);
+        writer.append(not ? NOT_IN : IN);
+        writer.append(SPACE);
 
-		if (singleInputParameter) {
-			writer.append(LEFT_PARENTHESIS);
-		}
+        if (singleInputParameter) {
+            writer.append(LEFT_PARENTHESIS);
+        }
 
-		toStringItems(writer, true);
+        toStringItems(writer, true);
 
-		if (singleInputParameter) {
-			writer.append(RIGHT_PARENTHESIS);
-		}
-	}
+        if (singleInputParameter) {
+            writer.append(RIGHT_PARENTHESIS);
+        }
+    }
 }

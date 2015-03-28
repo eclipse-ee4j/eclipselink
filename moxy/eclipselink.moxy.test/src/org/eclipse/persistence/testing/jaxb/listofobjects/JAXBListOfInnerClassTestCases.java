@@ -4,11 +4,11 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Denise Smith  December 15, 2009 
+ *     Denise Smith  December 15, 2009
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
@@ -26,19 +26,19 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.listofobjects.ClassWithInnerClass.MyInner;
 
 public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
-	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/innerClassList.xml";
-	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/innerClassList.json";
-	protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/innerClassList.xml";
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/innerClassList.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/innerClassList.json";
+    protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/innerClassList.xml";
 
-	public List<MyInner> myList;
-	
-	public JAXBListOfInnerClassTestCases(String name) throws Exception {
-		super(name);
-		init();
-		initXsiType();
-	}
+    public List<MyInner> myList;
 
-	@Override
+    public JAXBListOfInnerClassTestCases(String name) throws Exception {
+        super(name);
+        init();
+        initXsiType();
+    }
+
+    @Override
     protected Map<String, String> getAdditationalNamespaces() {
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("examplenamespace", "ns0");
@@ -46,49 +46,49 @@ public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
         return namespaces;
     }
 
-	protected Type getTypeToUnmarshalTo() throws Exception {
-		return getClass().getField("myList").getGenericType();
-	}
+    protected Type getTypeToUnmarshalTo() throws Exception {
+        return getClass().getField("myList").getGenericType();
+    }
 
-	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-		Type[] types = new Type[1];
-		types[0] = getTypeToUnmarshalTo(); 
-		setTypes(types);	
-	}
+    public void init() throws Exception {
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        Type[] types = new Type[1];
+        types[0] = getTypeToUnmarshalTo();
+        setTypes(types);
+    }
 
-	protected Object getControlObject() {
-		MyInner myInner1 = new MyInner();
-		myInner1.innerName = "aaa";
-		
-		MyInner myInner2= new MyInner();
-		myInner2.innerName = "bbb";
-		
-		List<MyInner> theList = new ArrayList();
-		theList.add(myInner1);
-		theList.add(myInner2);
+    protected Object getControlObject() {
+        MyInner myInner1 = new MyInner();
+        myInner1.innerName = "aaa";
 
-		QName qname = new QName("examplenamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, Object.class ,theList);
+        MyInner myInner2= new MyInner();
+        myInner2.innerName = "bbb";
 
-		return jaxbElement;
-	}
+        List<MyInner> theList = new ArrayList();
+        theList.add(myInner1);
+        theList.add(myInner2);
 
-	public List<InputStream> getControlSchemaFiles() {
-        InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/innerClassList.xsd");		
-	    List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-		return controlSchema;
-	}
+        QName qname = new QName("examplenamespace", "root");
+        JAXBElement jaxbElement = new JAXBElement(qname, Object.class ,theList);
 
-	protected String getNoXsiTypeControlResourceName() {
-		return XML_RESOURCE_NO_XSI_TYPE;
-	}
-	
+        return jaxbElement;
+    }
+
+    public List<InputStream> getControlSchemaFiles() {
+        InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/innerClassList.xsd");
+        List<InputStream> controlSchema = new ArrayList<InputStream>();
+        controlSchema.add(instream);
+        return controlSchema;
+    }
+
+    protected String getNoXsiTypeControlResourceName() {
+        return XML_RESOURCE_NO_XSI_TYPE;
+    }
+
     public Map getProperties() {
         Map props = new HashMap();
         props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "listOfObjectsNamespace");
         return props;
-    }	
+    }
 }

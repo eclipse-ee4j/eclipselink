@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -19,7 +19,7 @@ import javax.persistence.Cache;
  * @author James Sutherland
  */
 public interface JpaCache extends Cache {
-    
+
     /**
      * ADVANCED:
      * Resets the entire Object cache, and the Query cache.
@@ -30,7 +30,7 @@ public interface JpaCache extends Cache {
      * if the application knows that it no longer has references to Objects held in the cache.
      */
     void clear();
-    
+
     /**
      * ADVANCED:
      * Resets the cache for only the instances of the given Class type.
@@ -55,7 +55,7 @@ public interface JpaCache extends Cache {
      * Clear all named query results cache associated with entity class.
      */
     void clearQueryCache(Class entityClass);
-    
+
     /**
      * Returns the remaining life of the given Object (in milliseconds).  This method is associated with use of
      * cache invalidation feature and returns the difference between the next expiry
@@ -94,14 +94,14 @@ public interface JpaCache extends Cache {
 
     /**
      * This can be used to help debugging an Object identity problem.
-     * An Object identity problem is when an Object in the cache references an 
-     * Object that is not in the cache. This method will validate that all cached 
+     * An Object identity problem is when an Object in the cache references an
+     * Object that is not in the cache. This method will validate that all cached
      * Objects are in a correct state.
      */
     void validate();
 
     /**
-     * Returns the Object from the cache map with the id 
+     * Returns the Object from the cache map with the id
      * and Class type.
      */
     Object getObject(Class cls, Object id);
@@ -140,7 +140,7 @@ public interface JpaCache extends Cache {
      * Sets an Object to be invalid in the cache.
      */
     void evict(Object object);
-    
+
     /**
      * Sets an Object to be invalid in the cache.
      * If true is passed, the object is also invalidated across cache coordination.

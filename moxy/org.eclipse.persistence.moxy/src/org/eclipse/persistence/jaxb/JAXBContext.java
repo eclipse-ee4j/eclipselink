@@ -1576,18 +1576,18 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
 
         public JAXBBinder createBinder(JAXBContext context) {
-		XMLMarshaller marshaller = null;
-		XMLUnmarshaller unmarshaller = null;
-		try {
-			marshaller = createMarshaller(context).getXMLMarshaller();
-			unmarshaller = createUnmarshaller(context).getXMLUnmarshaller();
-		} catch (javax.xml.bind.JAXBException e) {
-			// log something
-			marshaller = context.getXMLContext().createMarshaller();
-			unmarshaller = context.getXMLContext().createUnmarshaller();
-		}
+        XMLMarshaller marshaller = null;
+        XMLUnmarshaller unmarshaller = null;
+        try {
+            marshaller = createMarshaller(context).getXMLMarshaller();
+            unmarshaller = createUnmarshaller(context).getXMLUnmarshaller();
+        } catch (javax.xml.bind.JAXBException e) {
+            // log something
+            marshaller = context.getXMLContext().createMarshaller();
+            unmarshaller = context.getXMLContext().createUnmarshaller();
+        }
 
-		return new JAXBBinder(context, marshaller, unmarshaller);
+        return new JAXBBinder(context, marshaller, unmarshaller);
         }
 
         private void setPropertyOnMarshaller(String propertyName, JAXBMarshaller marshaller) throws PropertyException {

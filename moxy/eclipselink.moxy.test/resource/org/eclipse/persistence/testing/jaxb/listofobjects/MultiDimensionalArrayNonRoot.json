@@ -7,57 +7,57 @@
          {"item":
          [
          {
-	     "id":1,
-	     "firstName":"Jane",
-	     "lastName":"Doe",
-	     "responsibilities":{
-  	        "responsibility":[]
-	     }
-	 },
-	 {
-	     "id":2,
-	     "firstName":"John",
-	     "lastName":"Smith",
-	     "responsibilities":{
+         "id":1,
+         "firstName":"Jane",
+         "lastName":"Doe",
+         "responsibilities":{
+              "responsibility":[]
+         }
+     },
+     {
+         "id":2,
+         "firstName":"John",
+         "lastName":"Smith",
+         "responsibilities":{
                  "responsibility":[]
-	     }
-	 }
-         ]      
+         }
+     }
+         ]
      }
      ]
      ,
      "innerClass2dArray":[
           {
           "item":[
-	     {"innerName":"A"}
-	     ]
-	  },
-	  {
+         {"innerName":"A"}
+         ]
+      },
+      {
            "item":[
-	      {"innerName":"B"}	  
-	     ]
-	  }
+          {"innerName":"B"}
+         ]
+      }
      ],
      "int2dArray":[
         {"item":[1,2]},
         {"item":[3,4]},
-        {"item":[5,6]}   
+        {"item":[5,6]}
       ],
       "int3dArray":[
           {
-	     "item":[
-	        {"item":[1,2]},
-	        {"item":[3,4]},
-	        {"item":[5,6]}
-	     ]   
-	  },
-	  {
-	   "item":[
-	        {"item":[7,8]},
-	        {"item":[9,10]},
-	        {"item":[11,12]}	
-	     ]   
-	  }
+         "item":[
+            {"item":[1,2]},
+            {"item":[3,4]},
+            {"item":[5,6]}
+         ]
+      },
+      {
+       "item":[
+            {"item":[7,8]},
+            {"item":[9,10]},
+            {"item":[11,12]}
+         ]
+      }
       ]
     }
 }

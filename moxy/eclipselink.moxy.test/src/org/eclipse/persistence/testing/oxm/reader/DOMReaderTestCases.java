@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,7 +32,7 @@ public class DOMReaderTestCases extends ReaderTestCases {
     private static final String NO_NAMESPACE_RESOURCE = "org/eclipse/persistence/testing/oxm/reader/nonamespace.xml";
     private Document document;
     private Document noNamespaceDocument;
-    
+
     public DOMReaderTestCases(String name) {
         super(name);
     }
@@ -44,7 +44,7 @@ public class DOMReaderTestCases extends ReaderTestCases {
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         document = db.parse(xmlInputStream);
-        
+
         InputStream noNamespaceInput = Thread.currentThread().getContextClassLoader().getResourceAsStream(NO_NAMESPACE_RESOURCE);
         noNamespaceDocument = db.parse(noNamespaceInput);
     }
@@ -57,11 +57,11 @@ public class DOMReaderTestCases extends ReaderTestCases {
 
         assertEquals(getControlEvents(), testContentHandler.getEvents());
     }
-    
+
     public void testNoNamespaceDOMReader() throws Exception {
         DOMReader domReader = new DOMReader();
         domReader.setContentHandler(new ContentHandler() {
-            
+
             public void startPrefixMapping(String prefix, String uri) throws SAXException {
             }
             public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
@@ -70,7 +70,7 @@ public class DOMReaderTestCases extends ReaderTestCases {
                 }
             }
             public void startDocument() throws SAXException {
-            }            
+            }
             public void skippedEntity(String name) throws SAXException {
             }
             public void setDocumentLocator(Locator locator) {

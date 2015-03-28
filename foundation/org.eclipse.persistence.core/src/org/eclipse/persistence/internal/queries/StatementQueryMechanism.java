@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
 import java.util.*;
@@ -38,7 +38,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
 
     public StatementQueryMechanism() {
     }
-    
+
     /**
      * INTERNAL:
      * Return a new mechanism for the query
@@ -172,7 +172,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      */
     public void insertObject(boolean reprepare) {
         if (reprepare) {
-            // Clear old calls, and reprepare. 
+            // Clear old calls, and reprepare.
             setCalls(null);
             trimFieldsForInsert();
             prepareInsertObject();
@@ -187,7 +187,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     public void trimFieldsForInsert() {
         getDescriptor().getObjectBuilder().trimFieldsForInsert(getSession(), getModifyRow());
     }
-    
+
     /**
      * Return true if this is a call query mechanism
      */
@@ -378,7 +378,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
                     } else {
                         call = ((SQLStatement)statementEnum.nextElement()).buildCall(getExecutionSession());
                     }
-    
+
                     // In case of update call may be null if no update required.
                     if (call != null) {
                         addCall(call);
@@ -391,7 +391,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
                 } else {
                     call = getSQLStatement().buildCall(getExecutionSession());
                 }
-    
+
                 // In case of update call may be null if no update required.
                 if (call != null) {
                     setCall(call);

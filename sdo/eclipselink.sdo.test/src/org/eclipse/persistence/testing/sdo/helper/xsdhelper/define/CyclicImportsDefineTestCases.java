@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
 import commonj.sdo.DataObject;
@@ -48,26 +48,26 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
     }
     /**
-     * Failure case - should resolve to the schema location (i.e. base location will be 
+     * Failure case - should resolve to the schema location (i.e. base location will be
      * discarded) which isn't a valid URL
      */
     public void testFailWithInvalidBaseSchemaLocation() {
         Source xsdSource = new StreamSource(getSchemaToDefine());
         DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
         schemaResolver.setBaseSchemaLocation("file:./org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/");
-        
+
         Source result = schemaResolver.resolveSchema(xsdSource, uri2, "Cyclic2.xsd");
         assertTrue("The schema should not have been resolved as the base location is invalid", result == null);
     }
 
     /**
-     * Success case - invalid base location but absolute schema location 
+     * Success case - invalid base location but absolute schema location
      */
     public void testPassWithInvalidBaseSchemaLocation() {
         Source xsdSource = new StreamSource(getSchemaToDefine());
         DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
         schemaResolver.setBaseSchemaLocation("file:./org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/");
-        
+
         Source result = schemaResolver.resolveSchema(xsdSource, uri2, getSchemaLocation() + "Cyclic2.xsd");
         assertTrue("The schema should have been resolved as the base location is invalid but the schema location is absolute", result != null);
     }
@@ -79,11 +79,11 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         Source xsdSource = new StreamSource(getSchemaToDefine());
         DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
         schemaResolver.setBaseSchemaLocation(USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/");
-        
+
         Source result = schemaResolver.resolveSchema(xsdSource, uri2, "Cyclic2.xsd");
         assertTrue("The schema should not have been resolved as the base location does not contain a protocol", result == null);
     }
-    
+
     public void testPassWithNoBaseLocationAndRelativePaths() {
         Source xsdSource = new StreamSource(FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/Cyclic1.xsd");
         DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
@@ -99,7 +99,7 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         Source xsdSource = new StreamSource(getSchemaToDefine());
         DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
         schemaResolver.setBaseSchemaLocation(FILE_PROTOCOL + USER_DIR + "/./oracle/sdo/../sdo/testing/helper/xsdhelper/generate/");
-        
+
         Source result = schemaResolver.resolveSchema(xsdSource, uri2, "Cyclic2.xsd");
         assertTrue("The schema should have been resolved but wasn't", result != null);
     }
@@ -118,14 +118,14 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
      * looping or multiple schema processing.
      */
     public void testDefine() {
-    	testDefine(new StreamSource(getSchemaToDefine()), new DefaultSchemaResolver());
+        testDefine(new StreamSource(getSchemaToDefine()), new DefaultSchemaResolver());
     }
-    
+
     protected void testDefine(Source xsdSource, DefaultSchemaResolver schemaResolver) {
         schemaResolver.setBaseSchemaLocation(getSchemaLocation());
 
         List types = ((SDOXSDHelper)xsdHelper).define(xsdSource, schemaResolver);
-        
+
         log("\nExpected:\n");
         List<Type> controlTypes = getControlTypes();
         log(controlTypes);
@@ -152,7 +152,7 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
             fail("An error occurred during xmlhelper.load");
         }
     }
-    
+
     public List<Type> getControlTypes() {
         SDOType intType = (SDOType) typeHelper.getType("commonj.sdo", "Int");
         SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
@@ -166,7 +166,7 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         SDOType phoneType = (SDOType) typeHelper.define(PhoneTypeDO);
         phoneType.addBaseType(stringType);
         phoneType.setInstanceClassName("uri.my.PhoneType");
-        
+
         // create a new Type for USAddress
         DataObject USaddrDO = dataFactory.create("commonj.sdo", "Type");
         USaddrDO.set("uri", "my.uri2");
@@ -191,14 +191,14 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         QuantityTypeDO.set("name", "quantityType");
         SDOType quantityType = (SDOType) typeHelper.define(QuantityTypeDO);
         quantityType.addBaseType(intType);
-        
+
         // create a new Type for SKU
         DataObject SkuDO = dataFactory.create("commonj.sdo", "Type");
         SkuDO.set("uri", "my.uri");
         SkuDO.set("name", "SKU");
         SDOType skuType = (SDOType) typeHelper.define(SkuDO);
         skuType.addBaseType(stringType);
-        
+
         // create a new Type for PurchaseOrder
         DataObject PurchaseOrderDO = dataFactory.create("commonj.sdo", "Type");
         PurchaseOrderDO.set("uri", "my.uri");
@@ -210,7 +210,7 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         billToProperty.set("name", "billTo");
         billToProperty.set("type", usAddrType);
         Type purchaseOrderType = typeHelper.define(PurchaseOrderDO);
-        
+
         List<Type> types = new ArrayList<Type>();
         types.add(usAddrType);
         types.add(phoneType);

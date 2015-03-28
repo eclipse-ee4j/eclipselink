@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -33,7 +33,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 
 /**
  * INTERNAL:
- * <p><b>Purpose</b>: This is how the XML Binary Data Collection Mapping is 
+ * <p><b>Purpose</b>: This is how the XML Binary Data Collection Mapping is
  * handled when used with the TreeObjectBuilder.</p>
  */
 
@@ -85,28 +85,28 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                 return false;
             }
         }
-  
+
         CoreContainerPolicy cp = getContainerPolicy();
         Object iterator = cp.iteratorFor(collection);
         if (!cp.hasNext(iterator)) {
-        	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlBinaryDataCollectionMapping.getWrapperNullPolicy() != null);
+            return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlBinaryDataCollectionMapping.getWrapperNullPolicy() != null);
         }
-        
+
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
         marshalRecord.closeStartGroupingElements(groupingFragment);
-          
+
         marshalRecord.startCollection();
         while (cp.hasNext(iterator)) {
             Object objectValue = cp.next(iterator, session);
           marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
-        	marshalRecord.endCollection();
+            marshalRecord.endCollection();
         return true;
     }
 
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
-        	Field xmlField = (Field)xmlBinaryDataCollectionMapping.getField();
+            Field xmlField = (Field)xmlBinaryDataCollectionMapping.getField();
             XPathFragment lastFragment = xmlField.getLastXPathFragment();
             if(!lastFragment.isAttribute()) {
                  //set a new content handler to deal with the Include element's event.
@@ -165,12 +165,12 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         return true;
     }
 
-	@Override
-	public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-		Marshaller marshaller = marshalRecord.getMarshaller();
+    @Override
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        Marshaller marshaller = marshalRecord.getMarshaller();
         objectValue = xmlBinaryDataCollectionMapping.convertObjectValueToDataValue(objectValue, session, marshaller);
-        
-		if(objectValue == null) {
+
+        if(objectValue == null) {
             AbstractNullPolicy nullPolicy = xmlBinaryDataCollectionMapping.getNullPolicy();
             if (nullPolicy.getMarshalNullRepresentation() != XMLNullRepresentationType.ABSENT_NODE) {
                 XPathNode holderXPathNode = new XPathNode();
@@ -191,7 +191,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             mimeType = Constants.EMPTY_STRING;
             attachmentType = "application/octet-stream";
         }
-        
+
         marshalRecord.openStartElement(xPathFragment, namespaceResolver);
         marshalRecord.closeStartElement();
 
@@ -233,7 +233,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                 if(c_id == null) {
                     marshalRecord.characters(((Field) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, mimeType, false);
                 } else {
-                	
+
                     boolean addDeclaration = false;
                     String xopPrefix = null;
 
@@ -241,18 +241,18 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                         xopPrefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(Constants.XOP_URL);
                     }
                     if (xopPrefix == null) {
-                        addDeclaration = true;            
+                        addDeclaration = true;
                         xopPrefix = marshalRecord.getNamespaceResolver().generatePrefix(Constants.XOP_PREFIX);
                         marshalRecord.getNamespaceResolver().put(xopPrefix, Constants.XOP_URL);
                         namespaceResolver = marshalRecord.getNamespaceResolver();
                     }
-                	
-                	
+
+
                     XPathFragment xopInclude = new XPathFragment(xopPrefix + ":Include");
                     xopInclude.setNamespaceURI(Constants.XOP_URL);
                     marshalRecord.openStartElement(xopInclude, namespaceResolver);
                     marshalRecord.attribute(Constants.EMPTY_STRING, "href", "href", c_id);
-                    if (addDeclaration) {                    	                        
+                    if (addDeclaration) {
                         marshalRecord.namespaceDeclaration(xopPrefix,  Constants.XOP_URL);
                     }
                     marshalRecord.closeStartElement();
@@ -280,19 +280,19 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
 
     /**
      *  INTERNAL:
-     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
-     */  
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     */
     public void setIndex(int index){
-    	this.index = index;
+        this.index = index;
     }
-    
+
     /**
      * INTERNAL:
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
-     * Set during TreeObjectBuilder initialization 
+     * Set during TreeObjectBuilder initialization
      */
     public int getIndex(){
-    	return index;
+        return index;
     }
 
     /**

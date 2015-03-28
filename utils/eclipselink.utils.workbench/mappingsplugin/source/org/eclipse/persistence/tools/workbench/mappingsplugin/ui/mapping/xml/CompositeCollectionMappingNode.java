@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -19,49 +19,49 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.mapping.Mapping
 
 
 public final class CompositeCollectionMappingNode
-	extends MappingNode
+    extends MappingNode
 {
-	// **************** Constructors ******************************************
-	
-	public CompositeCollectionMappingNode(MWCompositeCollectionMapping mapping, SelectionActionsPolicy mappingNodeTypePolicy, XmlDescriptorNode parent) {
-		super(mapping, mappingNodeTypePolicy, parent);
-	}
-	
-	
-	// **************** MappingNode contract **********************************
-	
-	protected String buildIconKey() {
-		return "mapping.compositeCollection";
-	}
+    // **************** Constructors ******************************************
 
-	
-	// ************** AbstractApplicationNode overrides *************
-
-	protected String accessibleNameKey() {
-		return "ACCESSIBLE_COMPOSITE_COLLECTION_MAPPING_NODE";
-	}
+    public CompositeCollectionMappingNode(MWCompositeCollectionMapping mapping, SelectionActionsPolicy mappingNodeTypePolicy, XmlDescriptorNode parent) {
+        super(mapping, mappingNodeTypePolicy, parent);
+    }
 
 
-	// **************** ApplicationNode contract ******************************
-	
-	public String helpTopicID() {
-//		return this.getDescriptorNode().mappingHelpTopicPrefix() + ".compositeCollection";
+    // **************** MappingNode contract **********************************
 
-		//	TODO: For now!!! It's dirty but we can't use mappingHelpTopicPrefix()
-		// for both EIS and OX and we can't return "mapping" only, will break all
-		// the other mappind nodes!!!
-		if (this.getDescriptorNode().mappingHelpTopicPrefix().endsWith(".xml")) {
-			return "mapping.compositeCollection";
-		} else {
-			return "mapping.eis.compositeCollection";
-		}
-	}
-	
-	
-	// ********** MWApplicationNode overrides **********
+    protected String buildIconKey() {
+        return "mapping.compositeCollection";
+    }
 
-	protected Class propertiesPageClass() {
-		XmlDescriptorNode parentNode = (XmlDescriptorNode) getDescriptorNode();
-		return parentNode.propertiesPageClassForCompositeCollectionMapping();
-	}
+
+    // ************** AbstractApplicationNode overrides *************
+
+    protected String accessibleNameKey() {
+        return "ACCESSIBLE_COMPOSITE_COLLECTION_MAPPING_NODE";
+    }
+
+
+    // **************** ApplicationNode contract ******************************
+
+    public String helpTopicID() {
+//        return this.getDescriptorNode().mappingHelpTopicPrefix() + ".compositeCollection";
+
+        //    TODO: For now!!! It's dirty but we can't use mappingHelpTopicPrefix()
+        // for both EIS and OX and we can't return "mapping" only, will break all
+        // the other mappind nodes!!!
+        if (this.getDescriptorNode().mappingHelpTopicPrefix().endsWith(".xml")) {
+            return "mapping.compositeCollection";
+        } else {
+            return "mapping.eis.compositeCollection";
+        }
+    }
+
+
+    // ********** MWApplicationNode overrides **********
+
+    protected Class propertiesPageClass() {
+        XmlDescriptorNode parentNode = (XmlDescriptorNode) getDescriptorNode();
+        return parentNode.propertiesPageClassForCompositeCollectionMapping();
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Gordon Yorke
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
 
@@ -24,7 +24,7 @@ package org.eclipse.persistence.internal.helper;
  * in the value will be assumed to have garbage collected.
  * This class also uses weak references to the contents of the map allowing for garbage
  * collection to reduce the size of the Map
- * 
+ *
  * This work is an extension of the original work completed on the IdentityWeakHashMap as completed by
  * Mike Norman.
  *
@@ -56,7 +56,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     private transient int modCount = 0;// # of times this Map has been modified
     protected int threshold = 0;
     protected float loadFactor = 0;
-    
+
     /** This is used by the garbage collector.  Every weak reference that is garbage collected
      * will be enqueued on this.  Then only this queue needs to be checked to remove empty
      * references.
@@ -315,7 +315,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
         }
         return null;
     }
-    
+
     protected boolean removeEntry(WeakEntry o, boolean userModification) {
 
         WeakEntry[] copyOfEntries = entries;
@@ -325,7 +325,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
             if (e == o) {
                 // if this method was called as a result of a user action,
                 // increment the modification count
-                // this method is also called by our cleanup code and 
+                // this method is also called by our cleanup code and
                 // that code should not cause a concurrent modification
                 // exception
                 if (userModification){
@@ -377,7 +377,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
             count = 0;
         }
     }
-    
+
     protected void cleanUp(){
         WeakEntryReference reference = (WeakEntryReference)referenceQueue.poll();
         while (reference != null){
@@ -453,7 +453,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
                         }
 
                         public void clear() {
-                        	IdentityWeakHashMap.this.clear();
+                            IdentityWeakHashMap.this.clear();
                         }
                     };
         }
@@ -489,7 +489,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
                         }
 
                         public void clear() {
-                        	IdentityWeakHashMap.this.clear();
+                            IdentityWeakHashMap.this.clear();
                         }
                     };
         }
@@ -550,7 +550,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
                         }
 
                         public void clear() {
-                        	IdentityWeakHashMap.this.clear();
+                            IdentityWeakHashMap.this.clear();
                         }
                     };
         }
@@ -637,21 +637,21 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
         public String toString() {
             return key.get() + "=" + value.get();
         }
-        
+
         public boolean shouldBeIgnored(){
-        	return key.get() == null || value.get() == null;
+            return key.get() == null || value.get() == null;
         }
     }
-    
+
     static interface EntryReference<T> {
         public T get();
     }
-    
+
     static class WeakEntryReference<T> extends WeakReference<T> implements EntryReference{
         protected WeakEntry owner;
         protected boolean trashed = false;
         protected ReferenceQueue referenceQueue;
-        
+
         public WeakEntryReference(T referent, ReferenceQueue<? super T> q, WeakEntry owner) {
             super(referent, q);
             this.owner = owner;
@@ -663,11 +663,11 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     //of the key when the key and the value are the same object the same weak reference will be used
     static class HardEntryReference<T> implements EntryReference{
         protected T referent;
-        
+
         public HardEntryReference(T referent){
             this.referent = referent;
         }
-        
+
         public T get(){
             return referent;
         }
@@ -675,7 +675,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
     // Types of Iterators
     private enum COMPONENT_TYPES {KEYS, VALUES, ENTRIES};
-    
+
     private static EmptyHashIterator emptyHashIterator = new EmptyHashIterator();
 
     private static class EmptyHashIterator implements Iterator {

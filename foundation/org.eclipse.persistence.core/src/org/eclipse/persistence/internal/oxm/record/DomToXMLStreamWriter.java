@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -71,24 +71,24 @@ public class DomToXMLStreamWriter{
             if(newNamespace != null && newNamespace.length() > 0) {
                 NamespaceResolver tempNR = new NamespaceResolver();
                 tempNR.setDOM(elem);
-                
+
                 prefix = tempNR.resolveNamespaceURI(namespace);
-                
+
                 if(prefix == null || prefix.length() == 0){
                     String defaultNamespace = elem.getAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
                     if(defaultNamespace == null){
-                        prefix = tempNR.generatePrefix();    
+                        prefix = tempNR.generatePrefix();
                     }else if(defaultNamespace != namespace){
                         prefix = tempNR.generatePrefix();
                     }else{
                         prefix = Constants.EMPTY_STRING;
-                    }                    
-                }         
-               
+                    }
+                }
+
             }
         }else{
-            prefix = elem.getPrefix();         
-            namespace = elem.getNamespaceURI();   
+            prefix = elem.getPrefix();
+            namespace = elem.getNamespaceURI();
             localName = elem.getLocalName();
             nodeName = elem.getNodeName();
         }
@@ -101,9 +101,9 @@ public class DomToXMLStreamWriter{
             if(!(namespace.equals(namespaceURI))) {
                 xsw.writeNamespace(prefix, namespace);
            }
-        } else {            
+        } else {
             if(namespace == null || namespace.length() == 0) {
-                xsw.writeStartElement(nodeName);                                
+                xsw.writeStartElement(nodeName);
                 if(defaultNamespace != null &&  defaultNamespace.length() >0) {
                     //write default namespace declaration
                     xsw.writeDefaultNamespace(Constants.EMPTY_STRING);
@@ -128,17 +128,17 @@ public class DomToXMLStreamWriter{
                         xsw.writeNamespace(next.getLocalName(), next.getValue());
                     }
                 } else {
-                	if (next.getName().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)){
-                        //Part of bug fix 398446 modified fix for Bug 387464. 
-                		xsw.writeDefaultNamespace(next.getValue());
-                		needToAddDefaultNS = false;
-                	}else{
-                		nonNamespaceDeclAttrs.add(attribute);
-                	}
+                    if (next.getName().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)){
+                        //Part of bug fix 398446 modified fix for Bug 387464.
+                        xsw.writeDefaultNamespace(next.getValue());
+                        needToAddDefaultNS = false;
+                    }else{
+                        nonNamespaceDeclAttrs.add(attribute);
+                    }
                 }
             }
-        }        
-        if(needToAddDefaultNS){            
+        }
+        if(needToAddDefaultNS){
             if(defaultNamespace == null || !defaultNamespace.equals(namespace)){
                 xsw.writeDefaultNamespace(namespace);
             }
@@ -164,11 +164,11 @@ public class DomToXMLStreamWriter{
         }
         xsw.writeEndElement();
     }
-    
+
     protected String getPrefix (NamespaceContext nc, Element elem, String uri){
         NamespaceResolver tempResovler = new NamespaceResolver();
         tempResovler.setDOM(elem);
-        
+
         String prefix = tempResovler.resolveNamespaceURI(uri);
         if(prefix == null || prefix.length() == 0){
             prefix = tempResovler.generatePrefix();

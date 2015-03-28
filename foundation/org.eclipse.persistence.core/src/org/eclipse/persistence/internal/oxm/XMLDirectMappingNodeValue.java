@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -67,30 +67,30 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Object fieldValue = xmlDirectMapping.getFieldValue(objectValue, session, marshalRecord);
-        
-        // Check for a null value 
+
+        // Check for a null value
         if (null == fieldValue) {
             // Perform marshal operations based on the null policy
             return xmlDirectMapping.getNullPolicy().directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
-        } else {            
+        } else {
             QName schemaType = ((Field) xmlDirectMapping.getField()).getSchemaTypeForValue(fieldValue, session);
-            XPathFragment groupingFragment = null;    
+            XPathFragment groupingFragment = null;
             boolean isQName = false;
             if(Constants.QNAME_QNAME.equals(schemaType)) {
-                //if marshalling a QName, handle grouping elements here in case namespace adjustments need 
+                //if marshalling a QName, handle grouping elements here in case namespace adjustments need
                 //to happen
                 groupingFragment = openGroupingElementsForQName((QName)fieldValue, marshalRecord);
                 isQName = true;
-            } 
+            }
             if(groupingFragment == null) {
                 groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             }
             if (xPathFragment.hasAttribute) {
-            	marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
+                marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
-            } else {                
+            } else {
                 if(((Field) xmlDirectMapping.getField()).getXPathFragment().nameIsText ){
-                    XPathNode parentNode = xPathNode.getParent();                  
+                    XPathNode parentNode = xPathNode.getParent();
                     if(parentNode.getAttributeChildren() != null){
                         marshalRecord.forceValueWrapper();
                     }
@@ -99,8 +99,8 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
                 if (xmlField.isTypedTextField()) {
                     updateNamespaces(schemaType, marshalRecord, xmlField);
                 }
-                marshalRecord.closeStartGroupingElements(groupingFragment);           
-                marshalRecord.characters(schemaType, fieldValue, null, xmlDirectMapping.isCDATA());                
+                marshalRecord.closeStartGroupingElements(groupingFragment);
+                marshalRecord.characters(schemaType, fieldValue, null, xmlDirectMapping.isCDATA());
             }
             if(isQName) {
                 //check to see if the last grouping fragment was swapped
@@ -132,13 +132,13 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         ArrayList<XPathNode> groupingElements = marshalRecord.getGroupingElements();
         NamespaceResolver namespaceResolver = marshalRecord.getNamespaceResolver();
         if((fieldValue.getNamespaceURI() == null || fieldValue.getNamespaceURI().equals(Constants.EMPTY_STRING)) && marshalRecord.getNamespaceResolver().getDefaultNamespaceURI() != null) {
-            //In this case, the last grouping element may need to have a new prefix generated. 
+            //In this case, the last grouping element may need to have a new prefix generated.
             for (int x = 0, groupingElementsSize = groupingElements.size(); x < groupingElementsSize; x++) {
                 XPathNode xPathNode = groupingElements.get(x);
                 xPathFragment = xPathNode.getXPathFragment();
                 if(x == (groupingElements.size() - 1) && namespaceResolver.getDefaultNamespaceURI().equals(xPathFragment.getNamespaceURI()) && xPathFragment.getPrefix() == null) {
                     String prefix = namespaceResolver.generatePrefix();
-                    String xPath = prefix +  Constants.COLON + xPathFragment.getShortName(); 
+                    String xPath = prefix +  Constants.COLON + xPathFragment.getShortName();
                     XPathFragment newFragment = new XPathFragment(xPath);
                     newFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
                     marshalRecord.openStartElement(newFragment, namespaceResolver);
@@ -152,17 +152,17 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
                 }
             }
             marshalRecord.setGroupingElement(null);
-            
+
         }
         return xPathFragment;
-        
-        
+
+
     }
 
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
         Field xmlField = (Field) xmlDirectMapping.getField();
-        CoreAbstractSession session = unmarshalRecord.getSession();        
+        CoreAbstractSession session = unmarshalRecord.getSession();
         Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (ConversionManager) session.getDatasourcePlatform().getConversionManager(), unmarshalRecord);
 
         // Perform operations on the object based on the null policy
@@ -176,8 +176,8 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             unmarshalRecord.setAttributeValue(convertedValue, xmlDirectMapping);
             unmarshalRecord.resetStringBuffer();
             return;
-        }        
-        
+        }
+
         unmarshalRecord.removeNullCapableValue(this);
         Field xmlField = (Field) xmlDirectMapping.getField();
         if (!xmlField.getLastXPathFragment().nameIsText) {
@@ -193,7 +193,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         unmarshalRecord.resetStringBuffer();
         CoreAbstractSession session = unmarshalRecord.getSession();
         ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
-        QName typeQName = unmarshalRecord.getTypeQName(); 
+        QName typeQName = unmarshalRecord.getTypeQName();
         if (typeQName != null) {
             Class typeClass = xmlField.getJavaClass(typeQName, conversionManager);
             value = conversionManager.convertObject(value, typeClass, typeQName);

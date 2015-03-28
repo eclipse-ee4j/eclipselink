@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -32,78 +32,78 @@ import org.eclipse.persistence.tools.workbench.scplugin.ui.session.login.RdbmsCo
  */
 public class RdbmsConnectionPropertiesPageTest extends AbstractSessionPanelTest
 {
-	public RdbmsConnectionPropertiesPageTest(String name)
-	{
-		super(name);
-	}
+    public RdbmsConnectionPropertiesPageTest(String name)
+    {
+        super(name);
+    }
 
-	public static void main(String[] args) throws Exception
-	{
-		new RdbmsConnectionPropertiesPageTest("RdbmsConnectionPropertiesPageTest").execute(args);
-	}
+    public static void main(String[] args) throws Exception
+    {
+        new RdbmsConnectionPropertiesPageTest("RdbmsConnectionPropertiesPageTest").execute(args);
+    }
 
-	protected void _testFocusTransferDatabaseDriver() throws Exception
-	{
-		testFocusTransferByMnemonic("CONNECTION_RDBMS_DATABASE_DRIVER_COMBO_BOX", COMPONENT_COMBO_BOX);
-	}
+    protected void _testFocusTransferDatabaseDriver() throws Exception
+    {
+        testFocusTransferByMnemonic("CONNECTION_RDBMS_DATABASE_DRIVER_COMBO_BOX", COMPONENT_COMBO_BOX);
+    }
 
-	protected void _testFocusTransferDatabaseSourceURL() throws Exception
-	{
-		getLogin().setDatabaseDriverAsDataSource();
+    protected void _testFocusTransferDatabaseSourceURL() throws Exception
+    {
+        getLogin().setDatabaseDriverAsDataSource();
 
-		testFocusTransferByMnemonic("CONNECTION_RDBMS_DATA_SOURCE_FIELD", COMPONENT_TEXT_FIELD);
-	}
+        testFocusTransferByMnemonic("CONNECTION_RDBMS_DATA_SOURCE_FIELD", COMPONENT_TEXT_FIELD);
+    }
 
-	protected void _testFocusTransferDriverClass() throws Exception
-	{
-		getLogin().setDatabaseDriverAsDriverManager();
+    protected void _testFocusTransferDriverClass() throws Exception
+    {
+        getLogin().setDatabaseDriverAsDriverManager();
 
-		testFocusTransferByMnemonic("CONNECTION_RDBMS_DRIVER_CLASS_COMBO_BOX", COMPONENT_COMBO_BOX);
-	}
+        testFocusTransferByMnemonic("CONNECTION_RDBMS_DRIVER_CLASS_COMBO_BOX", COMPONENT_COMBO_BOX);
+    }
 
-	protected void _testFocusTransferDriverURL() throws Exception
-	{
-		getLogin().setDatabaseDriverAsDriverManager();
+    protected void _testFocusTransferDriverURL() throws Exception
+    {
+        getLogin().setDatabaseDriverAsDriverManager();
 
-		testFocusTransferByMnemonic("CONNECTION_RDBMS_DRIVER_URL_COMBO_BOX", COMPONENT_COMBO_BOX);
-	}
+        testFocusTransferByMnemonic("CONNECTION_RDBMS_DRIVER_URL_COMBO_BOX", COMPONENT_COMBO_BOX);
+    }
 
-	protected void _testFocusTransferExternalConnectionPooling() throws Exception
-	{
-		testFocusTransferByMnemonic("CONNECTION_EXTERNAL_CONNECTION_POOLING_CHECK_BOX", COMPONENT_CHECK_BOX);
-	}
+    protected void _testFocusTransferExternalConnectionPooling() throws Exception
+    {
+        testFocusTransferByMnemonic("CONNECTION_EXTERNAL_CONNECTION_POOLING_CHECK_BOX", COMPONENT_CHECK_BOX);
+    }
 
-	protected void _testFocusTransferPassword() throws Exception
-	{
-		testFocusTransferByMnemonic("CONNECTION_PASSWORD_FIELD", COMPONENT_TEXT_FIELD);
-	}
+    protected void _testFocusTransferPassword() throws Exception
+    {
+        testFocusTransferByMnemonic("CONNECTION_PASSWORD_FIELD", COMPONENT_TEXT_FIELD);
+    }
 
-	protected void _testFocusTransferUsername() throws Exception
-	{
-		testFocusTransferByMnemonic("CONNECTION_USER_NAME_FIELD", COMPONENT_TEXT_FIELD);
-	}
+    protected void _testFocusTransferUsername() throws Exception
+    {
+        testFocusTransferByMnemonic("CONNECTION_USER_NAME_FIELD", COMPONENT_TEXT_FIELD);
+    }
 
-	protected JComponent buildPane() throws Exception
-	{
-		return buildPage(RdbmsConnectionPropertiesPage.class, getNodeHolder());
-	}
+    protected JComponent buildPane() throws Exception
+    {
+        return buildPage(RdbmsConnectionPropertiesPage.class, getNodeHolder());
+    }
 
-	private DatabaseLoginAdapter getLogin()
-	{
-		DatabaseSessionAdapter session = (DatabaseSessionAdapter) getSession();
-		return (DatabaseLoginAdapter) session.getLogin();
-	}
+    private DatabaseLoginAdapter getLogin()
+    {
+        DatabaseSessionAdapter session = (DatabaseSessionAdapter) getSession();
+        return (DatabaseLoginAdapter) session.getLogin();
+    }
 
-	protected void printModel()
-	{
-	}
+    protected void printModel()
+    {
+    }
 
-	protected void resetProperty()
-	{
-	}
+    protected void resetProperty()
+    {
+    }
 
-	protected String windowTitle()
-	{
-		return "RDBMS Connection Page Test";
-	}
+    protected String windowTitle()
+    {
+        return "RDBMS Connection Page Test";
+    }
 }

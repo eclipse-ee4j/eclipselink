@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     06/30/2010-2.1.1 Michael O'Brien 
+ *     06/30/2010-2.1.1 Michael O'Brien
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
- ******************************************************************************/  
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
+ ******************************************************************************/
 package org.eclipse.persistence.platform.server.glassfish;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -48,7 +48,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * to satisfy the requirements for 248746 where we provide an identifier pair for JMX sessions.
      * Each application can have several modules.
      * 1) Application name - the persistence unit associated with the session (a 1-1 relationship)
-     * 2) Module name - the ejb or war jar name (there is a 1-many relationship for module:session(s)) 
+     * 2) Module name - the ejb or war jar name (there is a 1-many relationship for module:session(s))
      */
     static {
         /** Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
@@ -59,18 +59,18 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
         APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = "_war/";
         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "]";
         APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "postfix,match~not;required^";
-        
+
         // Change the default value of property "eclipselink.security.usedoprivileged".
         PrivilegedAccessHelper.setDefaultUseDoPrivilegedValue(true);
     }
-    
+
     /**
      * INTERNAL:
      * Default Constructor: All behavior for the default constructor is inherited
      */
     public GlassfishPlatform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);
-        this.enableRuntimeServices();        
+        this.enableRuntimeServices();
         // Create the JMX MBean specific to this platform for later registration
         this.prepareServerSpecificServicesMBean();
     }
@@ -87,9 +87,9 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * @see ServerPlatformBase#initializeExternalTransactionController()
      */
     public Class getExternalTransactionControllerClass() {
-    	if (externalTransactionControllerClass == null){
-    		externalTransactionControllerClass = GlassfishTransactionController.class;
-    	}
+        if (externalTransactionControllerClass == null){
+            externalTransactionControllerClass = GlassfishTransactionController.class;
+        }
         return externalTransactionControllerClass;
     }
 
@@ -120,7 +120,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
         // Currently "GlassFish" creates a separate instance of jdbc connector classloader
         // for each application. The connection wrapper passed here is created using this class loader. Hence caching
         // the class will not help.
-        // If GlassFish behavior changes, both reflective call below should be cached. 
+        // If GlassFish behavior changes, both reflective call below should be cached.
         Connection unwrappedConnection = null;
         try {
             Class connectionWrapperClass = connection.getClass().getClassLoader().loadClass("com.sun.gjc.spi.base.ConnectionHolder");
@@ -138,14 +138,14 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
     public SessionLog getServerLog() {
         return  new JavaLog();
     }
-    
+
     @Override
     public boolean isRuntimeServicesEnabledDefault() {
         return true;
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * prepareServerSpecificServicesMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for the
      * databaseSession.
@@ -166,7 +166,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * serverSpecificRegisterMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for my
      * databaseSession.
@@ -181,6 +181,6 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
         // get and cache module and application name during registration
         initializeApplicationNameAndModuleName();
     }
-        
-}    
+
+}
 

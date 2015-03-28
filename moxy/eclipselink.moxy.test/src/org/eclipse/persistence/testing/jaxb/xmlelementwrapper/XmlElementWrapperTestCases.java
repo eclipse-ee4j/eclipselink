@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,16 +31,16 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
  *
  */
 public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
-   
+
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/xmlelementwrapper/";
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementwrapper/department.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementwrapper/department.json";
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
-     * @throws Exception 
+     * @throws Exception
      */
     public XmlElementWrapperTestCases(String name) throws Exception {
         super(name);
@@ -48,7 +48,7 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
-    
+
     public void testSchemaGen() throws Exception {
         List controlSchemas = new ArrayList();
         InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlelementwrapper/schema.xsd");
@@ -61,14 +61,14 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
         // setup control objects
         Department dept = new Department();
         dept.name = "HR";
-        
+
         Employee emp1 = new Employee();
         emp1.id = 1;
         emp1.name = "Bob";
         Employee emp2 = new Employee();
         emp2.id = 2;
         emp2.name = "Fred";
-        
+
         dept.employees = new Employee[] {emp1, emp2};
         return dept;
     }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998 - 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998 - 2014, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
 import java.lang.reflect.Array;
@@ -52,12 +52,12 @@ import org.eclipse.persistence.oxm.XMLField;
  *  <li>Store some schema-specific information such as the schema name, the schema type, and mimeType</li>
  *  <li>Store some JAXB 2.0 Runtime specific information such as JAXB 2.0 Adapter classes</li>
  *  </ul>
- *  <p>This class is used to store information about a property on a JAXB 2.0 annotated class. It is 
+ *  <p>This class is used to store information about a property on a JAXB 2.0 annotated class. It is
  *  created by the AnnotationsProcessor during pre-processing and stored on a TypeInfo object
- *  
+ *
  *  @see org.eclipse.persistence.jaxb.compiler.TypeInfo
  *  @see org.eclipse.persistence.jaxb.compiler.AnnotationsProcessor
- *  
+ *
  *  @author mmacivor
  */
 public class Property implements Cloneable {
@@ -117,7 +117,7 @@ public class Property implements Cloneable {
     private JavaClass inverseReferencePropertyContainerClass;
     private boolean isInverseReference;
     private boolean isWriteableInverseReference;
-    
+
     // XmlAnyElement specific attributes
     private boolean lax;
     private String domHandlerClassName;
@@ -125,24 +125,24 @@ public class Property implements Cloneable {
     private String variableClassName;
     private boolean variableNodeAttribute;
 
-	// XmlMap specific attributes
+    // XmlMap specific attributes
     private JavaClass keyType;
-	private JavaClass valueType;
-	public static final String DEFAULT_KEY_NAME =  "key";
-	public static final String DEFAULT_VALUE_NAME =  "value";
-	private boolean isMap = false;
+    private JavaClass valueType;
+    public static final String DEFAULT_KEY_NAME =  "key";
+    public static final String DEFAULT_VALUE_NAME =  "value";
+    private boolean isMap = false;
     private String xmlPath;
-	
-	// XmlElements specific attributes
+
+    // XmlElements specific attributes
     private Collection<Property> choiceProperties;
     private XmlElements xmlElements;
     private boolean isChoice = false;
-	
+
     // XmlElementRef specific attributes
     private ArrayList<ElementDeclaration> referencedElements;
     private List<XmlElementRef> xmlElementRefs;
     private boolean isReference = false;
-    
+
     // XmlJoinNodes specific attributes
     private XmlJoinNodes xmlJoinNodes;
     private List<XmlJoinNodes> xmlJoinNodesList;
@@ -175,12 +175,12 @@ public class Property implements Cloneable {
     public void setHelper(Helper helper) {
         this.helper = helper;
     }
-    
+
     /**
-     * Set an XmlAdapter on this Property.  The type, generic type and 
+     * Set an XmlAdapter on this Property.  The type, generic type and
      * original type will be set as required based on the XmlAdapter's
      * marshal method return type and input parameters.
-     * 
+     *
      * @param adapterCls
      */
     public void setAdapterClass(JavaClass adapterCls) {
@@ -261,10 +261,10 @@ public class Property implements Cloneable {
 
     /**
      * This convenience method will set the generic type, type and original type
-     * for this Porperty as required based on a given 'new' type and parameter 
-     * type. This method will typically be called when setting the type during 
+     * for this Porperty as required based on a given 'new' type and parameter
+     * type. This method will typically be called when setting the type during
      * adapter processing.
-     * 
+     *
      * @param newType
      * @param parameterType
      */
@@ -281,11 +281,11 @@ public class Property implements Cloneable {
             this.setType(newType);
         }
     }
-    
+
     public JavaHasAnnotations getElement() {
         return element;
     }
-    
+
     public void setElement(JavaHasAnnotations element) {
         this.element = element;
     }
@@ -293,70 +293,70 @@ public class Property implements Cloneable {
     public String getPropertyName() {
         return propertyName;
     }
-    
+
     public void setPropertyName(String propertyName) {
         this.propertyName = propertyName;
     }
-    
+
     public QName getSchemaName() {
         return this.schemaName;
     }
-    
+
     public void setSchemaName(QName schemaName) {
         this.schemaName = schemaName;
     }
-    
+
     public boolean isMethodProperty() {
         return isMethodProperty;
     }
-    
+
     public void setMethodProperty(boolean isMethod) {
         isMethodProperty = isMethod;
     }
-    
+
     public void setType(JavaClass cls) {
         if(cls == null){
             return;
         }
         if(type != null && type == cls){
-        	return;
+            return;
         }
-    	String clsName= cls.getRawName();
+        String clsName= cls.getRawName();
         if(helper.isCollectionType(cls)){
-           	genericType = getGenericType(cls, 0, helper);           
+               genericType = getGenericType(cls, 0, helper);
             type = cls;
         }else if(cls.isArray()  && !clsName.equals("byte[]") ){
-        	type = cls;
-        	genericType = cls.getComponentType();
+            type = cls;
+            genericType = cls.getComponentType();
         }else{
             type = cls;
             genericType = null;
         }
-        
+
         boolean isNewTypeMap = helper.getJavaClass(java.util.Map.class).isAssignableFrom(type);
         setIsMap(isNewTypeMap);
-        
+
         if(isMap()){
             if(type.getPackageName().startsWith("java.")) {
-            	Object[] types = type.getActualTypeArguments().toArray();
-            	
-         	    if(types.length >=2){        	        	
-         	        keyType = (JavaClass)types[0];     	        
-         	        valueType = (JavaClass)types[1];
-         	    }else{
-         	    	keyType = helper.getJavaClass(Object.class);     	        
-         	        valueType = helper.getJavaClass(Object.class);	    
+                Object[] types = type.getActualTypeArguments().toArray();
+
+                 if(types.length >=2){
+                     keyType = (JavaClass)types[0];
+                     valueType = (JavaClass)types[1];
+                 }else{
+                     keyType = helper.getJavaClass(Object.class);
+                     valueType = helper.getJavaClass(Object.class);
                  }
             } else {
                 keyType = getGenericType(type, 0, helper);
                 valueType = getGenericType(type, 1, helper);
             }
         }
-       
+
     }
-  
+
     private JavaClass getGenericType(JavaClass cls, int argument, Helper helper){
-    	Collection typeArgs = cls.getActualTypeArguments();
+        Collection typeArgs = cls.getActualTypeArguments();
         Object[] typeArgsArray = typeArgs.toArray();
         JavaClass genericType = null;
         if(cls.getPackageName().startsWith("java.")) {
@@ -370,21 +370,21 @@ public class Property implements Cloneable {
                 return helper.getJavaClass(Object.class);
             }
         }else{
-        	Map<String, JavaClass> variableToType = null;
+            Map<String, JavaClass> variableToType = null;
 
             if(cls instanceof JavaClassImpl){
-            	variableToType = new HashMap<String, JavaClass>();
-            	TypeVariable[] tvs = ((JavaClassImpl)cls).getJavaClass().getTypeParameters();
-            	if(tvs.length == typeArgsArray.length){
-	            	for (int x = 0; x < tvs.length; x++) {
-	                    variableToType.put(tvs[x].getName(), (JavaClass)typeArgsArray[x]);
-	                }
-            	}
+                variableToType = new HashMap<String, JavaClass>();
+                TypeVariable[] tvs = ((JavaClassImpl)cls).getJavaClass().getTypeParameters();
+                if(tvs.length == typeArgsArray.length){
+                    for (int x = 0; x < tvs.length; x++) {
+                        variableToType.put(tvs[x].getName(), (JavaClass)typeArgsArray[x]);
+                    }
+                }
             }
-          
-        	Type genericTypeType = getGenericType(cls.getGenericSuperclass(), argument, variableToType);
-            
-        	if(null == genericTypeType) {
+
+            Type genericTypeType = getGenericType(cls.getGenericSuperclass(), argument, variableToType);
+
+            if(null == genericTypeType) {
                 for(Type genericInterface : cls.getGenericInterfaces()) {
                     genericTypeType = getGenericType(genericInterface, argument, variableToType);
                     if(null != genericTypeType) {
@@ -396,15 +396,15 @@ public class Property implements Cloneable {
                 TypeVariable typeVariable = (TypeVariable) genericTypeType;
                 JavaClass existing = variableToType.get(typeVariable.getName());
                 if( existing != null){
-                	return existing;
+                    return existing;
                 }else{
                     Type[] typeVariableBounds = typeVariable.getBounds();
                     if(typeVariableBounds.length > 0) {
-                    	genericTypeType = typeVariableBounds[0];
-                    }  
+                        genericTypeType = typeVariableBounds[0];
+                    }
                 }
-        	}
-        	 
+            }
+
             if(genericTypeType instanceof Class) {
                 genericType = helper.getJavaClass((Class) genericTypeType);
             }
@@ -421,7 +421,7 @@ public class Property implements Cloneable {
             }
             return genericType;
         }
-        
+
     }
 
     private Type getGenericType(Type type, int argument, Map<String, JavaClass> variableToType) {
@@ -432,18 +432,18 @@ public class Property implements Cloneable {
                 Class rawTypeClass = (Class) rawType;
                 Type[] typeArgs = parameterizedType.getActualTypeArguments();
                 TypeVariable[] tvs = rawTypeClass.getTypeParameters();
-            	if(tvs.length == typeArgs.length){
-	            	for (int x = 0; x < tvs.length; x++) {
-	            		String name = tvs[x].getName();	            	
-	            		Type theType = typeArgs[x];
-	            		if(!variableToType.containsKey(name) && theType instanceof Class){
-	            			variableToType.put(name, helper.getJavaClass((Class)theType));	
-	            		}	                    
-	                }
-            	}
-                
+                if(tvs.length == typeArgs.length){
+                    for (int x = 0; x < tvs.length; x++) {
+                        String name = tvs[x].getName();
+                        Type theType = typeArgs[x];
+                        if(!variableToType.containsKey(name) && theType instanceof Class){
+                            variableToType.put(name, helper.getJavaClass((Class)theType));
+                        }
+                    }
+                }
+
                 if(rawTypeClass.getPackage().getName().startsWith("java.")) {
-                    Type actualType = parameterizedType.getActualTypeArguments()[argument];                 
+                    Type actualType = parameterizedType.getActualTypeArguments()[argument];
                     return actualType;
                 }
                 Type genericType = getGenericType(rawType, argument, variableToType);
@@ -471,45 +471,45 @@ public class Property implements Cloneable {
     public JavaClass getType() {
         return type;
     }
-    
+
     public JavaClass getGenericType() {
         return genericType;
     }
-    
+
     public void setGenericType(JavaClass genericType) {
         this.genericType = genericType;
     }
-    
+
     public QName getSchemaType() {
         return schemaType;
     }
-    
+
     public void setSchemaType(QName type) {
         schemaType = type;
     }
-    
+
     public boolean isSwaAttachmentRef() {
         return isSwaAttachmentRef;
     }
-    
+
     public void setIsSwaAttachmentRef(boolean b) {
         isSwaAttachmentRef = b;
     }
-    
+
     public boolean isMtomAttachment() {
         return isMtomAttachment;
     }
-    
+
     public void setIsMtomAttachment(boolean b) {
         isMtomAttachment = b;
     }
 
     /**
-     * Indicates if XOP encoding should be disabled for datatypes that 
+     * Indicates if XOP encoding should be disabled for datatypes that
      * are bound to base64-encoded binary data in XML.
-     * 
+     *
      * @return true if XOP encoding should be disabled for datatypes
-     * that are bound to base64-encoded binary data in XML; false if 
+     * that are bound to base64-encoded binary data in XML; false if
      * not
      */
     public boolean isInlineBinaryData() {
@@ -518,10 +518,10 @@ public class Property implements Cloneable {
 
     /**
      * Sets the flag that indicates if XOP encoding should  be disabled
-     * for datatypes that are bound to base64-encoded binary data in 
+     * for datatypes that are bound to base64-encoded binary data in
      * XML.
 
-     * @param b if true, XOP encoding will be disabled for datatypes 
+     * @param b if true, XOP encoding will be disabled for datatypes
      * that are bound to base64-encoded binary data in XML.
      */
     public void setisInlineBinaryData(boolean b) {
@@ -531,7 +531,7 @@ public class Property implements Cloneable {
     public boolean isRequired() {
         return isRequired;
     }
-    
+
 
 
     public boolean isTransientType() {
@@ -549,109 +549,109 @@ public class Property implements Cloneable {
     public String getMimeType() {
         return mimeType;
     }
-    
+
     public void setMimeType(String mType) {
         mimeType = mType;
     }
-    
+
     public boolean isAttribute() {
         return isAttribute || isAnyAttribute;
     }
-    
+
     public boolean isAnyAttribute() {
         return isAnyAttribute;
     }
-    
+
     public void setIsAttribute(boolean attribute) {
         isAttribute = attribute;
     }
-    
+
     public void setIsAnyAttribute(boolean anyAtribute) {
         isAnyAttribute = anyAtribute;
     }
-    
+
     public String getGetMethodName() {
         return getMethodName;
     }
-    
+
     public void setGetMethodName(String methodName) {
         getMethodName = methodName;
     }
-    
+
     public String getSetMethodName() {
         return setMethodName;
     }
-    
+
     public void setSetMethodName(String methodName) {
         setMethodName = methodName;
     }
-    
+
     public String getOriginalGetMethodName() {
         return originalGetMethodName;
     }
-    
+
     public void setOriginalGetMethodName(String methodName) {
         originalGetMethodName = methodName;
     }
-    
+
     public String getOriginalSetMethodName() {
         return originalSetMethodName;
     }
-    
+
     public void setOriginalSetMethodName(String methodName) {
         originalSetMethodName = methodName;
-    }    
-    
+    }
+
     /**
      * Indicates if this property represents a choice property.
-     * 
+     *
      * @return
      */
     public boolean isChoice() {
         return isChoice;
-    }    
+    }
 
     /**
-     * Set flag to indicate whether this property represents a choice 
+     * Set flag to indicate whether this property represents a choice
      * property.
-     * 
+     *
      * @param choice
      */
     public void setChoice(boolean choice) {
         isChoice = choice;
-    }    
+    }
 
     /**
      * Returns indicator for XmlAnyElement
-     * 
+     *
      * @return
      */
     public boolean isAny() {
-    	return isAnyElement;
+        return isAnyElement;
     }
-    
+
     /**
      * Set indicator for XmlAnyElement.
-     * 
+     *
      * @param isAnyElement
      */
     public void setIsAny(boolean isAnyElement) {
         this.isAnyElement = isAnyElement;
     }
-    
+
     /**
      * Indicates if this Property is a reference property.
-     * 
+     *
      * @return
      */
     public boolean isReference() {
-    	return isReference;
+        return isReference;
     }
-    
+
     /**
-     * Set flag to indicate whether this property represents a reference 
+     * Set flag to indicate whether this property represents a reference
      * property.
-     * 
+     *
      * @param isReference
      */
     public void setIsReference(boolean isReference) {
@@ -665,7 +665,7 @@ public class Property implements Cloneable {
     public void setNillable(boolean isNillable) {
         this.isNillable = isNillable;
     }
-    
+
     public boolean isTransient() {
         return isTransient;
     }
@@ -694,11 +694,11 @@ public class Property implements Cloneable {
     public boolean isSetDefaultValue() {
         return defaultValue != null;
     }
-    
+
     public boolean isMixedContent() {
         return isMixedContent;
     }
-    
+
     public void setMixedContent(boolean b) {
         this.isMixedContent = b;
     }
@@ -714,7 +714,7 @@ public class Property implements Cloneable {
     /**
      * Return the generic type if it was set (collection or array item type) otherwise return the
      * type of this property
-     * 
+     *
      * @return
      */
     public JavaClass getActualType() {
@@ -726,9 +726,9 @@ public class Property implements Cloneable {
 
     /**
      * Get the original type of the property.  This is typically used when
-     * the type has been changed via @XmlElement annotation and the 
+     * the type has been changed via @XmlElement annotation and the
      * original type is desired.
-     *  
+     *
      * @return
      */
     public JavaClass getOriginalType() {
@@ -736,20 +736,20 @@ public class Property implements Cloneable {
             return type;
         return originalType;
     }
-    
+
     /**
      * Set the original type of the property.  This is typically used when
-     * the type will been changed via @XmlElement annotation and the 
+     * the type will been changed via @XmlElement annotation and the
      * original type may be needed.
      */
     public void  setOriginalType(JavaClass type) {
         originalType = type;
     }
-    
+
     /**
      * Indicates if an XmlJavaTypeAdapter has been set, i.e. the
      * xmlJavaTypeAdapter property is non-null.
-     * 
+     *
      * @return true if xmlJavaTypeAdapter is non-null, false otherwise
      * @see XmlJavaTypeAdapter
      */
@@ -759,7 +759,7 @@ public class Property implements Cloneable {
 
     /**
      * Return the xmlJavaTypeAdapter set on this Property.
-     * 
+     *
      * @return xmlJavaTypeAdapter, or null if not set
      * @see XmlJavaTypeAdapter
      */
@@ -770,7 +770,7 @@ public class Property implements Cloneable {
     /**
      * Set an XmlJavaTypeAdapter on this Property.  This call sets the adapterClass
      * property to the given adapter's value.
-     * 
+     *
      * @param xmlJavaTypeAdapter
      * @see XmlJavaTypeAdapter
      */
@@ -783,7 +783,7 @@ public class Property implements Cloneable {
             setAdapterClass(helper.getJavaClass(xmlJavaTypeAdapter.getValue()));
         }
     }
-    
+
     /**
      * Indicates if an XmlElementWrapper has been set, i.e. the
      * xmlElementWrapper property is non-null.
@@ -793,10 +793,10 @@ public class Property implements Cloneable {
     public boolean isSetXmlElementWrapper() {
         return getXmlElementWrapper() != null;
     }
-    
+
     /**
      * Return the XmlElementWrapper set on this property.
-     * 
+     *
      * @return XmlElementWrapper instance if non-null, null otherwise
      */
     public XmlElementWrapper getXmlElementWrapper() {
@@ -805,25 +805,25 @@ public class Property implements Cloneable {
 
     /**
      * Set the XmlElementWrapper for this property.
-     * 
+     *
      * @param xmlElementWrapper
      */
     public void setXmlElementWrapper(XmlElementWrapper xmlElementWrapper) {
         this.xmlElementWrapper = xmlElementWrapper;
     }
-    
+
     /**
      * Set the isXmlValue property.
-     * 
+     *
      * @param isXmlValue
      */
     public void setIsXmlValue(boolean isXmlValue) {
         this.isXmlValue = isXmlValue;
     }
-    
+
     /**
      * Indicates if this property is an XmlValue.
-     * 
+     *
      * @return
      */
     public boolean isXmlValue() {
@@ -859,51 +859,51 @@ public class Property implements Cloneable {
             this.setNillable(false);
         }
     }
-    
+
     /**
      * Indicates if this property is an XmlList.
-     * 
+     *
      * @return
      */
     public boolean isXmlList() {
         return this.isXmlList;
     }
-    
+
     public String getInverseReferencePropertyName() {
         return this.inverseReferencePropertyName;
     }
-    
+
     public void setInverseReferencePropertyName(String name) {
         this.inverseReferencePropertyName = name;
     }
-    
+
     public String getInverseReferencePropertyGetMethodName() {
         return this.inverseReferencePropertyGetMethodName;
     }
-    
+
     public String getInverseReferencePropertySetMethodName() {
         return this.inverseReferencePropertySetMethodName;
     }
-    
+
     public void setInverseReferencePropertyGetMethodName(String methodName) {
         this.inverseReferencePropertyGetMethodName = methodName;
     }
-    
+
     public void setInverseReferencePropertySetMethodName(String methodName) {
         this.inverseReferencePropertySetMethodName = methodName;
     }
-    
+
     public JavaClass getInverseReferencePropertyContainerClass() {
         return this.inverseReferencePropertyContainerClass;
     }
-    
+
     public void setInverseReferencePropertyContainerClass(JavaClass cls) {
         this.inverseReferencePropertyContainerClass = cls;
     }
-    
+
     /**
      * Indicates if this property is an ID field.
-     * 
+     *
      * @return
      */
     public boolean isXmlId() {
@@ -912,7 +912,7 @@ public class Property implements Cloneable {
 
     /**
      * Sets the indicator that identifies this property as an ID field.
-     * 
+     *
      * @param isXmlId
      */
     public void setIsXmlId(boolean isXmlId) {
@@ -939,7 +939,7 @@ public class Property implements Cloneable {
 
     /**
      * Indicates if this property is a reference to an ID field.
-     * 
+     *
      * @return
      */
     public boolean isXmlIdRef() {
@@ -949,7 +949,7 @@ public class Property implements Cloneable {
     /**
      * Sets the indicator that identifies this property as a reference
      * to an ID field.
-     * 
+     *
      * @param isXmlIdRef
      */
     public void setIsXmlIdRef(boolean isXmlIdRef) {
@@ -957,10 +957,10 @@ public class Property implements Cloneable {
     }
 
     // XmlAnyElement specific methods
-    
+
     /**
      * Used with XmlAnyElement.
-     * 
+     *
      * @return
      */
     public boolean isLax() {
@@ -969,17 +969,17 @@ public class Property implements Cloneable {
 
     /**
      * Used with XmlAnyElement.
-     * 
+     *
      * @param b
      */
     public void setLax(boolean b) {
         lax = b;
     }
-    
+
     /**
      * Return the DomHandler class name.
      * Used with XmlAnyElement.
-     * 
+     *
      * @return
      */
     public String getDomHandlerClassName() {
@@ -989,36 +989,36 @@ public class Property implements Cloneable {
     /**
      * Set the DomHandler class name.
      * Used with XmlAnyElement.
-     * 
+     *
      * @param domHandlerClassName
      */
     public void setDomHandlerClassName(String domHandlerClassName) {
         this.domHandlerClassName = domHandlerClassName;
     }
-    
+
     public JavaClass getKeyType() {
-		return keyType;
-	}
+        return keyType;
+    }
 
-	public void setKeyType(JavaClass keyType) {
-		this.keyType = keyType;
-	}
+    public void setKeyType(JavaClass keyType) {
+        this.keyType = keyType;
+    }
 
-	public JavaClass getValueType() {
-		return valueType;
-	}
+    public JavaClass getValueType() {
+        return valueType;
+    }
 
-	public void setValueType(JavaClass valueType) {
-		this.valueType = valueType;
-	}
+    public void setValueType(JavaClass valueType) {
+        this.valueType = valueType;
+    }
 
     public boolean isMap() {
         return isMap;
     }
-	
-	private void setIsMap(boolean isMap) {
-		this.isMap = isMap;
-	}
+
+    private void setIsMap(boolean isMap) {
+        this.isMap = isMap;
+    }
 
     public boolean isInverseReference() {
         return isInverseReference;
@@ -1028,15 +1028,15 @@ public class Property implements Cloneable {
         this.isInverseReference = isInverseReference;
         this.isWriteableInverseReference = isWriteable;
     }
-    
+
     public boolean isWriteableInverseReference(){
-    	return isWriteableInverseReference;
+        return isWriteableInverseReference;
     }
-    
+
     /**
-     * Return the XmlElements object set for this Property.  Typically 
+     * Return the XmlElements object set for this Property.  Typically
      * this will only be set if we are dealing with a 'choice'.
-     * 
+     *
      * @return
      */
     public XmlElements getXmlElements() {
@@ -1044,9 +1044,9 @@ public class Property implements Cloneable {
     }
 
     /**
-     * Set the XmlElements object for this Property.  Typically 
+     * Set the XmlElements object for this Property.  Typically
      * this will only be set if we are dealing with a 'choice'.
-     * 
+     *
      * @param xmlElements
      */
     public void setXmlElements(XmlElements xmlElements) {
@@ -1056,26 +1056,26 @@ public class Property implements Cloneable {
     /**
      * Return the choice properties set on this property.  Typically this
      * will only contain properties if we are dealing with a 'choice'.
-     * 
+     *
      * @return
      */
     public Collection<Property> getChoiceProperties() {
         return this.choiceProperties;
     }
-    
-    /** 
+
+    /**
      * Set the choice properties for this property.  Typically this
      * will only contain properties if we are dealing with a 'choice'.
-     * 
+     *
      * @param properties
      */
     public void setChoiceProperties(Collection<Property> properties) {
         this.choiceProperties = properties;
     }
-    
+
     /**
      * Return the List of XmlElementRef(s) for this Property.
-     * 
+     *
      * @return
      */
     public List<XmlElementRef> getXmlElementRefs() {
@@ -1084,17 +1084,17 @@ public class Property implements Cloneable {
 
     /**
      * Set the List of XmlElementRef(s) for this Property.
-     * 
+     *
      * @param xmlElementRefs
      */
     public void setXmlElementRefs(List<XmlElementRef> xmlElementRefs) {
         this.xmlElementRefs = xmlElementRefs;
     }
-    
+
     /**
-     * Add an ElementDeclaration to the list of referenced elements. Typically this 
+     * Add an ElementDeclaration to the list of referenced elements. Typically this
      * will only contain ElementDeclarations if we are dealing with a 'reference'.
-     * 
+     *
      * @param element
      */
     public void addReferencedElement(ElementDeclaration element) {
@@ -1105,11 +1105,11 @@ public class Property implements Cloneable {
             referencedElements.add(element);
         }
     }
-    
+
     /**
      * Return the list of referenced elements.  Typically this will only
      * contain ElementDeclarations if we are dealing with a 'reference'.
-     * 
+     *
      * @return
      */
     public List<ElementDeclaration> getReferencedElements() {
@@ -1123,12 +1123,12 @@ public class Property implements Cloneable {
     public void setFixedValue(String fixedValue) {
         this.fixedValue = fixedValue;
     }
-    
+
     /**
-     * Indicates if this property is mapped by position, i.e. 'name="data[1]"', 
-     * or is mapped by attribute value (predicate mapping), i.e. 
+     * Indicates if this property is mapped by position, i.e. 'name="data[1]"',
+     * or is mapped by attribute value (predicate mapping), i.e.
      * 'personal-info[@pi-type='last-name']/name[@name-type='surname']/text()'
-     *  
+     *
      */
     public boolean isPositional() {
         if (getXmlPath() == null) {
@@ -1149,7 +1149,7 @@ public class Property implements Cloneable {
 
     /**
      * Flag the mapping for this Property as read-only.
-     * 
+     *
      * @param isReadOnly the true/false value to set
      */
     public void setReadOnly(boolean isReadOnly) {
@@ -1158,7 +1158,7 @@ public class Property implements Cloneable {
 
     /**
      * Indicates if the mapping for this Property is read-only.
-     * 
+     *
      * @return true if read-only, false if not
      */
     public boolean isReadOnly() {
@@ -1170,7 +1170,7 @@ public class Property implements Cloneable {
 
     /**
      * Indicates if the isReadOnly flag was set via external metadata.
-     * 
+     *
      * @return
      */
     public boolean isSetReadOnly() {
@@ -1179,7 +1179,7 @@ public class Property implements Cloneable {
 
     /**
      * Flag the mapping for this Property as write-only.
-     * 
+     *
      * @param isWriteOnly the true/false value to set
      */
     public void setWriteOnly(boolean isWriteOnly) {
@@ -1195,10 +1195,10 @@ public class Property implements Cloneable {
         }
         return isWriteOnly;
     }
-    
+
     /**
      * Indicates if the isWriteOnly flag was set via external metadata.
-     * 
+     *
      * @return
      */
     public boolean isSetWriteOnly() {
@@ -1207,7 +1207,7 @@ public class Property implements Cloneable {
 
     /**
      * Flag the mapping for this Property as containing character data.
-     * 
+     *
      * @param isCdata the true/false value to set
      */
     public void setCdata(boolean isCdata) {
@@ -1223,19 +1223,19 @@ public class Property implements Cloneable {
         }
         return isCdata;
     }
-    
+
     /**
      * Indicates if the isCdata flag was set via external metadata.
-     * 
+     *
      * @return
      */
     public boolean isSetCdata() {
         return isCdata != null;
     }
-    
+
     /**
      * Return the xpath for this property.
-     * 
+     *
      * @return
      */
     public String getXmlPath() {
@@ -1244,16 +1244,16 @@ public class Property implements Cloneable {
 
     /**
      * Set the xpath for this property.
-     * 
+     *
      * @param xmlPath
      */
     public void setXmlPath(String xmlPath) {
         this.xmlPath = xmlPath;
     }
-    
+
     /**
      * Indicates if an xpath is set for this property.
-     * 
+     *
      * @return
      */
     public boolean isSetXmlPath() {
@@ -1262,7 +1262,7 @@ public class Property implements Cloneable {
 
     /**
      * Returns the null policy for this property.
-     * 
+     *
      * @return null policy or null if not set
      */
     public XmlAbstractNullPolicy getNullPolicy() {
@@ -1271,31 +1271,31 @@ public class Property implements Cloneable {
 
     /**
      * Set the null policy for this property.
-     * 
+     *
      * @param nullPolicy
      */
     public void setNullPolicy(XmlAbstractNullPolicy nullPolicy) {
         this.nullPolicy = nullPolicy;
     }
-    
+
     /**
      * Indicates if a null policy is set for this property.
-     * 
+     *
      * @return
      */
     public boolean isSetNullPolicy() {
         return nullPolicy != null;
     }
-    
+
     /**
      * Indicates if nillable='true' should be set on a given schema component.
      * This will typically be called by SchemaGenerator.
      * The value returned will be true if one of the following is true:
-     * 
+     *
      * - isNillable
      * - isSetNullPolicy {@literal &&} xsi-nil-represents-null == 'true'
      * - isSetNullPolicy {@literal &&} null-representation-for-xml == 'XSI_NIL'
-     * 
+     *
      * @return
      */
     public boolean shouldSetNillable() {
@@ -1310,7 +1310,7 @@ public class Property implements Cloneable {
 
     /**
      * Return the Map of user-defined properties.
-     * 
+     *
      * @return
      */
     public Map<Object, Object> getUserProperties() {
@@ -1319,26 +1319,26 @@ public class Property implements Cloneable {
 
     /**
      * Set the Map of user-defined properties.
-     * 
+     *
      * @param userProperties
      */
     public void setUserProperties(Map<Object, Object> userProperties) {
         this.userProperties = userProperties;
     }
-    
+
     /**
      * Indicates if a map of userProperties is set for this property.
-     * 
-     * @return true if the userProperties property has been set, 
+     *
+     * @return true if the userProperties property has been set,
      *         i.e. is non-null, otherwise false
      */
     public boolean isSetUserProperties() {
         return userProperties != null;
     }
-    
+
     /**
      * Return the XmlTransformation set on this property.
-     * 
+     *
      * @return the XmlTransformation set on this property, or null if one has not been set.
      */
     public XmlTransformation getXmlTransformation() {
@@ -1347,9 +1347,9 @@ public class Property implements Cloneable {
 
     /**
      * Set the XmlTransformation for this property.  The info contained in
-     * the XmlTransformation will be used to construct an 
+     * the XmlTransformation will be used to construct an
      * XmlTransformationMapping.
-     * 
+     *
      * @param xmlTransformation
      */
     public void setXmlTransformation(XmlTransformation xmlTransformation) {
@@ -1357,9 +1357,9 @@ public class Property implements Cloneable {
     }
 
     /**
-     * Indicates if an XmlTransformation is set for this porperty. 
-     * 
-     * @return true if the xmlTransformation property has been set, 
+     * Indicates if an XmlTransformation is set for this porperty.
+     *
+     * @return true if the xmlTransformation property has been set,
      *         i.e. is non-null, otherwise false
      */
     public boolean isSetXmlTransformation() {
@@ -1368,7 +1368,7 @@ public class Property implements Cloneable {
 
     /**
      * Indicates if this property represents an XmlTransformation.
-     * 
+     *
      * @return value of isXmlTransformation property
      */
     public boolean isXmlTransformation() {
@@ -1377,7 +1377,7 @@ public class Property implements Cloneable {
 
     /**
      * Set flag that indicates if this property represents an XmlTransformation.
-     * 
+     *
      * @param isXmlTransformation
      */
     public void setIsXmlTransformation(boolean isXmlTransformation) {
@@ -1386,7 +1386,7 @@ public class Property implements Cloneable {
 
     /**
      * Set XmlJoinNodes for this property.
-     * 
+     *
      * @param xmlJoinNodes the xmlJoinNodes to set
      */
     public void setXmlJoinNodes(XmlJoinNodes xmlJoinNodes) {
@@ -1398,7 +1398,7 @@ public class Property implements Cloneable {
 
     /**
      * Return the XmlJoinNodes for this property.
-     * 
+     *
      * @return the xmlJoinNodes
      */
     public XmlJoinNodes getXmlJoinNodes() {
@@ -1407,16 +1407,16 @@ public class Property implements Cloneable {
 
     /**
      * Indicates if this property has XmlJoinNodes set.
-     * 
+     *
      * return true if xmlJoinNodes is non-null, otherwise false
      */
     public boolean isSetXmlJoinNodes() {
         return this.xmlJoinNodes != null;
     }
 
-	/**
-     * Return a shallow copy of this Property.  
-     * Simply calls super.clone(). 
+    /**
+     * Return a shallow copy of this Property.
+     * Simply calls super.clone().
      */
     public Object clone() {
         try {
@@ -1429,19 +1429,19 @@ public class Property implements Cloneable {
 
     /**
      * Return the list of XmlJoinNodes for this Property, if any.
-     * This will typically be set when processing an XmlElements 
+     * This will typically be set when processing an XmlElements
      * declaration containing XmlJoinNodes.
-     * 
+     *
      */
     public List<XmlJoinNodes> getXmlJoinNodesList() {
         return xmlJoinNodesList;
     }
 
     /**
-     * Set the list of XmlJoinNodes for this Property. This method 
-     * will typically be called when processing an XmlElements 
+     * Set the list of XmlJoinNodes for this Property. This method
+     * will typically be called when processing an XmlElements
      * declaration containing XmlJoinNodes.
-     * 
+     *
      */
     public void setXmlJoinNodesList(List<XmlJoinNodes> xmlJoinNodesList) {
         this.xmlJoinNodesList = xmlJoinNodesList;
@@ -1449,10 +1449,10 @@ public class Property implements Cloneable {
             this.isAttribute = true;
         }
     }
-    
+
     /**
      * Indicates if xmlJoinNodesList has been set, i.e. is non-null
-     * 
+     *
      * @return true if xmlJoinNodesList is non-null, false otherwise
      */
     public boolean isSetXmlJoinNodesList() {
@@ -1476,8 +1476,8 @@ public class Property implements Cloneable {
     }
 
     /**
-     * This event is called when all of the metadata for this property has been 
-     * processed and provides a chance to deference anything that is no longer 
+     * This event is called when all of the metadata for this property has been
+     * processed and provides a chance to deference anything that is no longer
      * needed to reduce the memory footprint of this object.
      */
     void postInitialize() {
@@ -1507,7 +1507,7 @@ public class Property implements Cloneable {
     public void setVariableClassName(String variableClassName) {
         this.variableClassName = variableClassName;
      }
-	
+
     public boolean isVariableNodeAttribute() {
         return variableNodeAttribute;
     }

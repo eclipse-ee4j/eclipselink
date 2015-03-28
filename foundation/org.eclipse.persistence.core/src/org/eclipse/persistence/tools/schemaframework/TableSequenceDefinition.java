@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/14/2011-2.3.1 Guy Pelletier 
+ *     09/14/2011-2.3.1 Guy Pelletier
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     11/22/2012-2.5 Guy Pelletier 
+ *     11/22/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
- *     02/04/2013-2.5 Guy Pelletier 
+ *     02/04/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.util.List;
@@ -38,7 +38,7 @@ import org.eclipse.persistence.sequencing.TableSequence;
 public class TableSequenceDefinition extends SequenceDefinition {
     protected TableDefinition tableDefinition;
     protected boolean deleteSchema;
-    
+
     /**
      * INTERNAL:
      * Should be a sequence defining table sequence in the db:
@@ -47,7 +47,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      */
     public TableSequenceDefinition(Sequence sequence, boolean deleteSchema) {
         super(sequence);
-        
+
         this.deleteSchema = deleteSchema;
     }
 
@@ -74,7 +74,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * INTERNAL:
      * Return the SQL to delete the row from the sequence table. If we're
      * dealing with create creation, then delegate to the table so that is
-     * dropped outright since we will delete the schema. 
+     * dropped outright since we will delete the schema.
      */
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         if (shouldDropTableDefinition()) {
@@ -112,30 +112,30 @@ public class TableSequenceDefinition extends SequenceDefinition {
 
     /**
      * INTERNAL:
-     * Execute the DDL to drop the database schema for this object.      
+     * Execute the DDL to drop the database schema for this object.
      * Does nothing at this level, subclasses that support this must override
      * this method.
-     * 
+     *
      * @see TableDefinition
      */
     @Override
     public void dropDatabaseSchema(AbstractSession session, Writer writer) throws EclipseLinkException {
         tableDefinition.dropDatabaseSchema(session, writer);
     }
-    
+
     /**
      * INTERNAL:
      * Execute the DDL to drop the database schema for this object.
      * Does nothing at this level, subclasses that support this must override
      * this method.
-     * 
+     *
      * @see TableDefinition
      */
     @Override
     public void dropDatabaseSchemaOnDatabase(AbstractSession session) throws EclipseLinkException {
         tableDefinition.dropDatabaseSchemaOnDatabase(session);
     }
-    
+
     /**
      * PUBLIC:
      * Return the schema associated with this table sequence.
@@ -144,7 +144,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
     public String getDatabaseSchema() {
         return getSequenceTable().getTableQualifier();
     }
-    
+
     /**
      * PUBLIC:
      */
@@ -158,35 +158,35 @@ public class TableSequenceDefinition extends SequenceDefinition {
     public String getSequenceNameFieldName() {
         return getTableSequence().getNameFieldName();
     }
-    
+
     /**
      * Return the database table for the sequence.
      */
     public DatabaseTable getSequenceTable() {
         return getTableSequence().getTable();
     }
-    
+
     /**
      * PUBLIC:
      */
     public List<IndexDefinition> getSequenceTableIndexes() {
         return getTableSequence().getTableIndexes();
     }
-    
+
     /**
      * PUBLIC:
      */
     public String getSequenceTableName() {
         return getSequenceTable().getName();
     }
-    
+
     /**
      * PUBLIC:
      */
     public String getSequenceTableQualifier() {
         return getSequenceTable().getTableQualifier();
     }
-    
+
     /**
      * PUBLIC:
      */
@@ -209,10 +209,10 @@ public class TableSequenceDefinition extends SequenceDefinition {
             tableDefinition.addField(getSequenceCounterFieldName(), BigDecimal.class);
             tableDefinition.setIndexes(getSequenceTableIndexes());
         }
-        
+
         return tableDefinition;
     }
-    
+
     protected TableSequence getTableSequence() {
         if(sequence instanceof TableSequence) {
             return (TableSequence)sequence;
@@ -220,7 +220,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
             return (TableSequence)((DefaultSequence)sequence).getDefaultSequence();
         }
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -228,7 +228,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
     public boolean isTableSequenceDefinition() {
         return true;
     }
-    
+
     /**
      * Execute any statements required before the deletion of the object
      * @param session
@@ -236,12 +236,12 @@ public class TableSequenceDefinition extends SequenceDefinition {
      */
     public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles) {
         if ((session.getPlatform().shouldCreateIndicesForPrimaryKeys()) || (session.getPlatform().shouldCreateIndicesOnUniqueKeys())) {
-            // Do not drop index when database is Symfoware. Index is required for primary keys or unique keys.  
+            // Do not drop index when database is Symfoware. Index is required for primary keys or unique keys.
             return;
         }
         buildTableDefinition().preDropObject(session, dropSchemaWriter, createSQLFiles);
     }
-    
+
     /**
      * INTERNAL:
      * Returns true if the table definition should be dropped during buildDeletionWriter.

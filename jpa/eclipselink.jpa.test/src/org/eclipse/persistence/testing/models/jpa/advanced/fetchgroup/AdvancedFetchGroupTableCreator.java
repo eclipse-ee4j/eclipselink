@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     01/19/2010-2.1 Guy Pelletier 
+ *     01/19/2010-2.1 Guy Pelletier
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup;
 
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -26,11 +26,11 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildHELMETTable());
         addTableDefinition(buildHELMET_PROPERTIESTable());
     }
-    
+
     public static TableDefinition buildHOCKEYGEARTable(){
         TableDefinition table = new TableDefinition();
         table.setName("JPA_HOCKEY_GEAR");
-        
+
         FieldDefinition fieldSERIAL_NUMBER = new FieldDefinition();
         fieldSERIAL_NUMBER.setName("SERIAL_NUMBER");
         fieldSERIAL_NUMBER.setTypeName("NUMERIC");
@@ -40,7 +40,7 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldSERIAL_NUMBER.setUnique(false);
         fieldSERIAL_NUMBER.setIsIdentity(false);
         table.addField(fieldSERIAL_NUMBER);
-    
+
         FieldDefinition fieldMSRP = new FieldDefinition();
         fieldMSRP.setName("MSRP");
         fieldMSRP.setTypeName("DOUBLE PRECIS");
@@ -50,7 +50,7 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldMSRP.setUnique(false);
         fieldMSRP.setIsIdentity(false);
         table.addField(fieldMSRP);
-        
+
         FieldDefinition fieldDESCRIPTION = new FieldDefinition();
         fieldDESCRIPTION.setName("DESCRIP");
         fieldDESCRIPTION.setTypeName("VARCHAR");
@@ -60,7 +60,7 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldDESCRIPTION.setUnique(false);
         fieldDESCRIPTION.setIsIdentity(false);
         table.addField(fieldDESCRIPTION);
-        
+
         FieldDefinition fieldGEARTYPE = new FieldDefinition();
         fieldGEARTYPE.setName("GEAR_TYPE");
         fieldGEARTYPE.setTypeName("VARCHAR");
@@ -73,11 +73,11 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildPADSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_PADS");
-        
+
         FieldDefinition fieldSERIAL_NUMBER = new FieldDefinition();
         fieldSERIAL_NUMBER.setName("SERIAL_NUMBER");
         fieldSERIAL_NUMBER.setTypeName("NUMERIC");
@@ -87,7 +87,7 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldSERIAL_NUMBER.setUnique(false);
         fieldSERIAL_NUMBER.setIsIdentity(false);
         table.addField(fieldSERIAL_NUMBER);
-        
+
         FieldDefinition fieldWEIGHT = new FieldDefinition();
         fieldWEIGHT.setName("WEIGHT");
         fieldWEIGHT.setTypeName("DOUBLE PRECIS");
@@ -97,7 +97,7 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldWEIGHT.setUnique(false);
         fieldWEIGHT.setIsIdentity(false);
         table.addField(fieldWEIGHT);
-    
+
         FieldDefinition fieldHEIGHT = new FieldDefinition();
         fieldHEIGHT.setName("HEIGHT");
         fieldHEIGHT.setTypeName("DOUBLE PRECIS");
@@ -107,7 +107,7 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldHEIGHT.setUnique(false);
         fieldHEIGHT.setIsIdentity(false);
         table.addField(fieldHEIGHT);
-        
+
         FieldDefinition fieldWIDTH = new FieldDefinition();
         fieldWIDTH.setName("WIDTH");
         fieldWIDTH.setTypeName("DOUBLE PRECIS");
@@ -127,10 +127,10 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldAGEGROUP.setIsIdentity(false);
         fieldAGEGROUP.setShouldAllowNull(true);
         table.addField(fieldAGEGROUP);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildCHESTPROTECTORTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CHEST_PROTECT");
@@ -144,7 +144,7 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldSERIAL_NUMBER.setUnique(false);
         fieldSERIAL_NUMBER.setIsIdentity(false);
         table.addField(fieldSERIAL_NUMBER);
-        
+
         FieldDefinition fieldSIZE = new FieldDefinition();
         fieldSIZE.setName("C_SIZE");
         fieldSIZE.setTypeName("VARCHAR");
@@ -154,7 +154,7 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldSIZE.setUnique(false);
         fieldSIZE.setIsIdentity(false);
         table.addField(fieldSIZE);
-        
+
         FieldDefinition fieldAGEGROUP = new FieldDefinition();
         fieldAGEGROUP.setName("AGEGROUP");
         fieldAGEGROUP.setTypeName("NUMERIC");
@@ -167,11 +167,11 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildHELMETTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_HELMET");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -181,7 +181,7 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldCOLOR = new FieldDefinition();
         fieldCOLOR.setName("COLOR");
         fieldCOLOR.setTypeName("VARCHAR");
@@ -191,14 +191,14 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldCOLOR.setUnique(false);
         fieldCOLOR.setIsIdentity(false);
         table.addField(fieldCOLOR);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildHELMET_PROPERTIESTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_HELMET_PROPERTIES");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("HELMET_ID");
         fieldID.setTypeName("NUMERIC");
@@ -208,7 +208,7 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldPROPERTY_NAME = new FieldDefinition();
         fieldPROPERTY_NAME.setName("PROPERTY_NAME");
         fieldPROPERTY_NAME.setTypeName("VARCHAR");
@@ -218,7 +218,7 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldPROPERTY_NAME.setUnique(false);
         fieldPROPERTY_NAME.setIsIdentity(false);
         table.addField(fieldPROPERTY_NAME);
-        
+
         FieldDefinition fieldPROPERTY_VALUE = new FieldDefinition();
         fieldPROPERTY_VALUE.setName("PROPERTY_VALUE");
         fieldPROPERTY_VALUE.setTypeName("VARCHAR");
@@ -228,9 +228,9 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldPROPERTY_VALUE.setUnique(false);
         fieldPROPERTY_VALUE.setIsIdentity(false);
         table.addField(fieldPROPERTY_VALUE);
-        
+
         return table;
     }
-    
+
 }
 

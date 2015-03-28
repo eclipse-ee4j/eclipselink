@@ -26,5 +26,5 @@
          <xsd:enumeration value="HALF_EVEN"/>
          <xsd:enumeration value="UNNECESSARY"/>
       </xsd:restriction>
-   </xsd:simpleType>   
+   </xsd:simpleType>
 </xsd:schema>

@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import org.eclipse.persistence.internal.libraries.asm.TypePath;
  * of using it is via delegation: the next visitor in the chain can indeed add
  * new locals when needed by calling {@link #newLocal} on this adapter (this
  * requires a reference back to this {@link LocalVariablesSorter}).
- * 
+ *
  * @author Chris Nokleberg
  * @author Eugene Kuleshov
  * @author Eric Bruneton
@@ -84,7 +84,7 @@ public class LocalVariablesSorter extends MethodVisitor {
      * Creates a new {@link LocalVariablesSorter}. <i>Subclasses must not use
      * this constructor</i>. Instead, they must use the
      * {@link #LocalVariablesSorter(int, int, String, MethodVisitor)} version.
-     * 
+     *
      * @param access
      *            access flags of the adapted method.
      * @param desc
@@ -104,7 +104,7 @@ public class LocalVariablesSorter extends MethodVisitor {
 
     /**
      * Creates a new {@link LocalVariablesSorter}.
-     * 
+     *
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
      *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
@@ -264,7 +264,7 @@ public class LocalVariablesSorter extends MethodVisitor {
 
     /**
      * Creates a new local variable of the given type.
-     * 
+     *
      * @param type
      *            the type of the local variable to be created.
      * @return the identifier of the newly created local variable.
@@ -313,7 +313,7 @@ public class LocalVariablesSorter extends MethodVisitor {
      * But this behavior is not always the desired one, for instance if a local
      * variable is added in the middle of a try/catch block: the frame for the
      * exception handler should have a TOP type for this new local.
-     * 
+     *
      * @param newLocals
      *            the stack map frame types corresponding to the local variables
      *            added with {@link #newLocal} (and null for the others). The
@@ -328,7 +328,7 @@ public class LocalVariablesSorter extends MethodVisitor {
     /**
      * Notifies subclasses that a local variable has been added or remapped. The
      * default implementation of this method does nothing.
-     * 
+     *
      * @param local
      *            a local variable identifier, as returned by {@link #newLocal
      *            newLocal()}.

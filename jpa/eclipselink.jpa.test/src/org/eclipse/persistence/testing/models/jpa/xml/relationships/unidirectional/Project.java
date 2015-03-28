@@ -1,29 +1,29 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 /*******************************************************************************
  * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional;
 
 import java.io.Serializable;
@@ -46,66 +46,66 @@ public class Project implements Serializable {
     public int pre_persist_count = 0;
     public int post_persist_count = 0;
     public int post_load_count = 0;
-    
-	private Integer id;
-	private int version;
-	private String name;
-	private String description;
-	private Employee teamLeader;
-//	private Collection<Employee> teamMembers;
 
-	public Project () {
+    private Integer id;
+    private int version;
+    private String name;
+    private String description;
+    private Employee teamLeader;
+//    private Collection<Employee> teamMembers;
+
+    public Project () {
 //        this.teamMembers = new Vector<Employee>();
-	}
-
-	public Integer getId() { 
-        return id; 
-    }
-    
-	public void setId(Integer id) { 
-        this.id = id; 
     }
 
-	public int getVersion() { 
-        return version; 
-    }
-    
-	protected void setVersion(int version) { 
-        this.version = version; 
+    public Integer getId() {
+        return id;
     }
 
-	public String getName() { 
-        return name; 
-    }
-    
-	public void setName(String name) { 
-        this.name = name; 
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-	public String getDescription() { 
-        return description; 
-    }
-    
-	public void setDescription(String description) { 
-        this.description = description; 
+    public int getVersion() {
+        return version;
     }
 
-	public Employee getTeamLeader() {
-        return teamLeader; 
-    }
-    
-	public void setTeamLeader(Employee teamLeader) { 
-        this.teamLeader = teamLeader; 
+    protected void setVersion(int version) {
+        this.version = version;
     }
 
-/*	@ManyToMany(mappedBy="projects")
-	public Collection<Employee> getTeamMembers() { 
-        return teamMembers; 
+    public String getName() {
+        return name;
     }
 
-	public void setTeamMembers(Collection<Employee> employees) {
-		this.teamMembers = employees;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Employee getTeamLeader() {
+        return teamLeader;
+    }
+
+    public void setTeamLeader(Employee teamLeader) {
+        this.teamLeader = teamLeader;
+    }
+
+/*    @ManyToMany(mappedBy="projects")
+    public Collection<Employee> getTeamMembers() {
+        return teamMembers;
+    }
+
+    public void setTeamMembers(Collection<Employee> employees) {
+        this.teamMembers = employees;
+    }
 
     public void addTeamMember(Employee employee) {
         getTeamMembers().add(employee);
@@ -121,32 +121,32 @@ public class Project implements Serializable {
 
         return sbuff.toString();
     }
-    
-	public void prePersist() {
+
+    public void prePersist() {
         ++pre_persist_count;
-	}
+    }
 
-	public void postPersist() {
+    public void postPersist() {
         ++post_persist_count;
-	}
+    }
 
-	public void preRemove() {
+    public void preRemove() {
         ++pre_remove_count;
-	}
+    }
 
-	public void postRemove() {
+    public void postRemove() {
         ++post_remove_count;
-	}
+    }
 
-	public void preUpdate() {
+    public void preUpdate() {
         ++pre_update_count;
-	}
+    }
 
-	public void postUpdate() {
+    public void postUpdate() {
         ++post_update_count;
-	}
+    }
 
-	public void postLoad() {
+    public void postLoad() {
         ++post_load_count;
-	}
+    }
 }

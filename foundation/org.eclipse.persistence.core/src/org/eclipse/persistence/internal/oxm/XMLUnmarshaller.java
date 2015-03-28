@@ -108,7 +108,7 @@ public class XMLUnmarshaller<
 
     private JsonTypeConfiguration jsonTypeConfiguration;
 
-	/**
+    /**
      * @since EclipseLink 2.4
      */
     private static final ErrorHandler DEFAULT_ERROR_HANDLER = new ErrorHandler() {
@@ -129,7 +129,7 @@ public class XMLUnmarshaller<
         public void fatalError(SAXParseException exception)
                 throws SAXException {
             throw exception;
-            
+
         }
 
     };
@@ -181,7 +181,7 @@ public class XMLUnmarshaller<
 
                 Class xmlStreamReaderReaderClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_READER_READER_CLASS_NAME);
                 xmlStreamReaderReaderConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamReaderReaderClass, new Class[0], true);
-                
+
                 Class xmlEventReaderReaderClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_READER_READER_CLASS_NAME);
                 xmlEventReaderReaderConstructor = PrivilegedAccessHelper.getConstructorFor(xmlEventReaderReaderClass, new Class[0], true);
             }
@@ -219,13 +219,13 @@ public class XMLUnmarshaller<
         } catch(UnsupportedOperationException e) {}
         setUnmappedContentHandlerClass(xmlUnmarshaller.unmappedContentHandlerClass);
     }
-    
+
     protected void initialize(Map<String, Boolean> parserFeatures) {
-	    CoreSession session = context.getSession();
-	    XMLPlatform xmlPlatform = (XMLPlatform)session.getDatasourceLogin().getDatasourcePlatform();
-	    platformUnmarshaller = xmlPlatform.newPlatformUnmarshaller(this, parserFeatures);
-	    platformUnmarshaller.setWhitespacePreserving(false);
-	}
+        CoreSession session = context.getSession();
+        XMLPlatform xmlPlatform = (XMLPlatform)session.getDatasourceLogin().getDatasourcePlatform();
+        platformUnmarshaller = xmlPlatform.newPlatformUnmarshaller(this, parserFeatures);
+        platformUnmarshaller.setWhitespacePreserving(false);
+    }
 
     /**
      * Set the MediaType for this xmlUnmarshaller.
@@ -234,12 +234,12 @@ public class XMLUnmarshaller<
      * @param mediaType
      */
     public void setMediaType(MEDIA_TYPE mediaType) {
-    	if(this.mediaType != mediaType){
-    		this.mediaType = mediaType;
+        if(this.mediaType != mediaType){
+            this.mediaType = mediaType;
             if(platformUnmarshaller != null){
-            	platformUnmarshaller.mediaTypeChanged();
-            }	
-    	}    	
+                platformUnmarshaller.mediaTypeChanged();
+            }
+        }
     }
 
     /**
@@ -250,9 +250,9 @@ public class XMLUnmarshaller<
      * @return MediaType
      */
     public MEDIA_TYPE getMediaType(){
-    	return mediaType;
+        return mediaType;
     }
-    
+
     /**
      * Return the instance of XMLContext that was used to create this instance
      * of XMLUnmarshaller.
@@ -261,13 +261,13 @@ public class XMLUnmarshaller<
         return getContext();
     }
 
-    /** 
+    /**
      * Set the XMLContext used by this instance of XMLUnmarshaller.
      */
     public void setXMLContext(CONTEXT value) {
         context =  value;
     }
-    
+
     /**
     * Get the validation mode set on this XMLUnmarshaller
     * By default, the unmarshaller is set to be NONVALIDATING
@@ -621,7 +621,7 @@ public class XMLUnmarshaller<
         if ((null == source) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        if (source.getClass() == this.staxSourceClass) {        	
+        if (source.getClass() == this.staxSourceClass) {
             try {
                 Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetStreamReaderMethod, source);
                 if(xmlStreamReader != null) {
@@ -670,75 +670,75 @@ public class XMLUnmarshaller<
     public boolean isResultAlwaysXMLRoot() {
         return platformUnmarshaller.isResultAlwaysXMLRoot();
     }
-    
+
     public void setSchema(Schema schema) {
         this.platformUnmarshaller.setSchema(schema);
     }
-    
+
     public Schema getSchema() {
         return this.platformUnmarshaller.getSchema();
     }
-    
+
     /**
-     * Value that will be used to prefix attributes.  
-     * Ignored unmarshalling XML.   
+     * Value that will be used to prefix attributes.
+     * Ignored unmarshalling XML.
      * @return
      * @since 2.4
      */
     public String getAttributePrefix() {
         return attributePrefix;
     }
-    
+
     /**
-     * Value that will be used to prefix attributes.  
+     * Value that will be used to prefix attributes.
      * Ignored unmarshalling XML.
-     * @since 2.4	 
+     * @since 2.4
      */
     public void setAttributePrefix(String attributePrefix) {
         this.attributePrefix = attributePrefix;
     }
-    
+
     /**
-     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
-     * Ignored unmarshalling XML.  
-     * @since 2.4	 
-     */	
+     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings
+     * Ignored unmarshalling XML.
+     * @since 2.4
+     */
     public String getValueWrapper() {
         return valueWrapper;
     }
 
     /**
-     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
-     * Ignored unmarshalling XML.  
-     * @since 2.4	 
+     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings
+     * Ignored unmarshalling XML.
+     * @since 2.4
      */
     public void setValueWrapper(String valueWrapper) {
         this.valueWrapper = valueWrapper;
     }
-        
+
     /**
      * Get the namespace separator used during unmarshal operations.
      * If mediaType is application/json '.' is the default
-     * Ignored unmarshalling XML.   
+     * Ignored unmarshalling XML.
      * @since 2.4
      */
-    public char getNamespaceSeparator() {    	
+    public char getNamespaceSeparator() {
         return namespaceSeparator;
     }
 
     /**
      * Set the namespace separator used during unmarshal operations.
      * If mediaType is application/json '.' is the default
-     * Ignored unmarshalling XML.   
+     * Ignored unmarshalling XML.
      * @since 2.4
      */
-	public void setNamespaceSeparator(char namespaceSeparator) {
-		this.namespaceSeparator = namespaceSeparator;
-	}
-    
+    public void setNamespaceSeparator(char namespaceSeparator) {
+        this.namespaceSeparator = namespaceSeparator;
+    }
+
     /**
-     * Determine if the @XMLRootElement should be marshalled when present.  
-     * Ignored unmarshalling XML.   
+     * Determine if the @XMLRootElement should be marshalled when present.
+     * Ignored unmarshalling XML.
      * @return
      * @since 2.4
      */
@@ -747,8 +747,8 @@ public class XMLUnmarshaller<
     }
 
     /**
-     * Determine if the @XMLRootElement should be marshalled when present.  
-     * Ignored unmarshalling XML.   
+     * Determine if the @XMLRootElement should be marshalled when present.
+     * Ignored unmarshalling XML.
      * @return
      * @since 2.4
      */
@@ -782,17 +782,17 @@ public class XMLUnmarshaller<
      * by setMediaType)
      */
     public boolean isAutoDetectMediaType() {
-		return autoDetectMediaType;
-	}
+        return autoDetectMediaType;
+    }
 
     /**
      * Set if this XMLUnmarshaller should try to automatically determine
      * the MediaType of the document (instead of using the MediaType set
      * by setMediaType)
      */
-	public void setAutoDetectMediaType(boolean autoDetectMediaType) {
-		this.autoDetectMediaType = autoDetectMediaType;
-	}
+    public void setAutoDetectMediaType(boolean autoDetectMediaType) {
+        this.autoDetectMediaType = autoDetectMediaType;
+    }
 
     /**
      * Return if this Unmarshaller should perform case insensitive unmarshalling.
@@ -810,22 +810,22 @@ public class XMLUnmarshaller<
 
     /**
      * Name of the NamespaceResolver to be used during unmarshal
-     * Ignored unmarshalling XML.  
-     * @since 2.4	 
-     */	
+     * Ignored unmarshalling XML.
+     * @since 2.4
+     */
     public NamespaceResolver getNamespaceResolver() {
         return namespaceResolver;
     }
 
     /**
      * Get the NamespaceResolver to be used during unmarshal
-     * Ignored unmarshalling XML.  
-     * @since 2.4	 
+     * Ignored unmarshalling XML.
+     * @since 2.4
      */
     public void setNamespaceResolver(NamespaceResolver namespaceResolver) {
         this.namespaceResolver = namespaceResolver;
     }
-    
+
     /**
      * @since 2.4.2
      */
@@ -893,13 +893,13 @@ public class XMLUnmarshaller<
 
     /**
      * INTERNAL:
-     * Returns the AttributeGroup or the name of the AttributeGroup to be used to 
-     * unmarshal. 
+     * Returns the AttributeGroup or the name of the AttributeGroup to be used to
+     * unmarshal.
      */
     public Object getUnmarshalAttributeGroup() {
         return this.unmarshalAttributeGroup;
     }
-    
+
     public void setUnmarshalAttributeGroup(Object attributeGroup) {
         this.unmarshalAttributeGroup = attributeGroup;
     }
@@ -912,7 +912,7 @@ public class XMLUnmarshaller<
     public boolean shouldWarnOnUnmappedElement() {
         return this.warnOnUnmappedElement;
     }
-    
+
     /**
      * INTERNAL:
      * Set to true if a warning exception should be generated when an unmapped element is encountered, false otherwise.

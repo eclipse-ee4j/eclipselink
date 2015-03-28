@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -312,10 +312,10 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         login.setDatasourcePlatform(platform);
         ((DatabaseLogin)login).bindAllParameters();
         ((DatabaseLogin)login).setUsesStreamsForBinding(true);
-        
+
         Project orProject = null;
         if (DBWS_OR_STREAM.size() != 0) {
-            MetadataProcessor processor = new MetadataProcessor(new XRPersistenceUnitInfo(xrdecl), 
+            MetadataProcessor processor = new MetadataProcessor(new XRPersistenceUnitInfo(xrdecl),
                     new DatabaseSessionImpl(login), xrdecl, false, true, false, false, false, null, null);
             processor.setMetadataSource(new JPAMetadataSource(xrdecl, new StringReader(DBWS_OR_STREAM.toString())));
             PersistenceUnitProcessor.processORMetadata(processor, true, PersistenceUnitProcessor.Mode.ALL);
@@ -341,7 +341,7 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         try {
             JAXBContext jc = JAXBContext.newInstance(XmlBindingsModel.class);
             Unmarshaller unmarshaller = jc.createUnmarshaller();
-            
+
             JAXBElement<XmlBindingsModel> jaxbElt = unmarshaller.unmarshal(xml, XmlBindingsModel.class);
             XmlBindingsModel model = jaxbElt.getValue();
             for (XmlBindings xmlBindings : model.getBindingsList()) {
@@ -350,11 +350,11 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         } catch (JAXBException jaxbex) {
             jaxbex.printStackTrace();
         }
-        
+
         Map<String, Map<String, OXMMetadataSource>> properties = new HashMap<String, Map<String, OXMMetadataSource>>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
         try {
-            org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext jCtx = 
+            org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext jCtx =
                     org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory.createContextFromOXM(parentClassLoader, properties);
             oxProject = jCtx.getXMLContext().getSession(0).getProject();
         } catch (JAXBException e) {

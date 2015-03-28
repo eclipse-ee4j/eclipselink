@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.defineandgenerate;
 
 import commonj.sdo.DataObject;
@@ -57,17 +57,17 @@ public class DefineAndGenerateBug5893546TestCases extends XSDHelperDefineAndGene
     }
 
     public void testBug5893546() throws Exception {
-   
-        DataObject empTypeDO = dataFactory.create(SDOConstants.SDO_URL, "Type");        
+
+        DataObject empTypeDO = dataFactory.create(SDOConstants.SDO_URL, "Type");
         empTypeDO.set("uri", "http://example.com/emp/");
         empTypeDO.set("name", "Emp");
-        
+
         addProperty(empTypeDO, "ename", SDOConstants.SDO_STRING, false, false, true);
         Type empType = typeHelper.define(empTypeDO);
-        
+
         List baseTypes = new ArrayList();
         baseTypes.add(empType);
-        
+
         DataObject typeDO = dataFactory.create(SDOConstants.SDO_URL, "Type");
         typeDO.set("uri", "http://example.com/commemp/");
         typeDO.set("name", "CommEmp");
@@ -84,18 +84,18 @@ public class DefineAndGenerateBug5893546TestCases extends XSDHelperDefineAndGene
 
         List types = new ArrayList();
         types.add(type);
-        String generatedSchema = xsdHelper.generate(types, null);              
-        
+        String generatedSchema = xsdHelper.generate(types, null);
+
         String controlSchema = getSchema(getControlGeneratedFileName());
         log("EXPECTED: \n" + controlSchema);
         log("ACTUAL: \n" + generatedSchema);
 
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
+
         assertXMLIdentical(getDocument("org/eclipse/persistence/testing/sdo/helper/xsdhelper/Bug5893546.xsd"), generatedSchemaDoc);
-        
+
     }
 }

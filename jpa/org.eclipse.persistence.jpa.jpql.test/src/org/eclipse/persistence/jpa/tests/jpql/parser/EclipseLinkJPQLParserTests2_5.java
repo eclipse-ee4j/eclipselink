@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,68 +28,68 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 @SuppressWarnings("nls")
 public final class EclipseLinkJPQLParserTests2_5 extends JPQLParserTest {
 
-	private JPQLQueryStringFormatter buildQueryFormatter_1() {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace(" TIMESTAMP", " timestamp");
-			}
-		};
-	}
+    private JPQLQueryStringFormatter buildQueryFormatter_1() {
+        return new JPQLQueryStringFormatter() {
+            public String format(String query) {
+                return query.replace(" TIMESTAMP", " timestamp");
+            }
+        };
+    }
 
-	private JPQLQueryStringFormatter buildQueryFormatter_2() {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace("SCN", "scn");
-			}
-		};
-	}
+    private JPQLQueryStringFormatter buildQueryFormatter_2() {
+        return new JPQLQueryStringFormatter() {
+            public String format(String query) {
+                return query.replace("SCN", "scn");
+            }
+        };
+    }
 
-	@Test
-	public void test_HQL_Query_001() {
+    @Test
+    public void test_HQL_Query_001() {
 
-		String jpqlQuery = "FROM Employee e";
+        String jpqlQuery = "FROM Employee e";
 
-		ExpressionTester selectStatement = selectStatement(
-			from("Employee", "e")
-		);
+        ExpressionTester selectStatement = selectStatement(
+            from("Employee", "e")
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_HQL_Query_002() {
+    @Test
+    public void test_HQL_Query_002() {
 
-		String jpqlQuery = "FROM Employee e WHERE e.name = 'JPQL'";
+        String jpqlQuery = "FROM Employee e WHERE e.name = 'JPQL'";
 
-		ExpressionTester selectStatement = selectStatement(
-			from("Employee", "e"),
-			where(path("e.name").equal(string("'JPQL'")))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            from("Employee", "e"),
+            where(path("e.name").equal(string("'JPQL'")))
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_Query_006() {
+    @Test
+    public void test_Query_006() {
 
-		// UPDATE DateTime SET timestamp = CURRENT_TIMESTAMP
+        // UPDATE DateTime SET timestamp = CURRENT_TIMESTAMP
 
-		ExpressionTester updateStatement = updateStatement(
-			update("DateTime", set("{datetime}.timestamp", CURRENT_TIMESTAMP()))
-		);
+        ExpressionTester updateStatement = updateStatement(
+            update("DateTime", set("{datetime}.timestamp", CURRENT_TIMESTAMP()))
+        );
 
-		testQuery(query_006(), updateStatement, buildQueryFormatter_1());
-	}
+        testQuery(query_006(), updateStatement, buildQueryFormatter_1());
+    }
 
-	@Test
-	public void test_Query_007() {
+    @Test
+    public void test_Query_007() {
 
-		// UPDATE DateTime SET scn = CURRENT_TIMESTAMP
+        // UPDATE DateTime SET scn = CURRENT_TIMESTAMP
 
-		ExpressionTester updateStatement = updateStatement(
-			update("DateTime", set("{datetime}.scn", CURRENT_TIMESTAMP()))
-		);
+        ExpressionTester updateStatement = updateStatement(
+            update("DateTime", set("{datetime}.scn", CURRENT_TIMESTAMP()))
+        );
 
-		testQuery(query_007(), updateStatement, buildQueryFormatter_2());
-	}
+        testQuery(query_007(), updateStatement, buildQueryFormatter_2());
+    }
 }

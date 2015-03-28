@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,16 +60,16 @@ import static org.eclipse.persistence.tools.dbws.Util.XML_MIME_PREFIX;
 /**
  * This class is responsible for generating one or more EclipseLink XmlBindings
  * objects based on a given list of XMLDescriptors.
- * 
+ *
  */
 public class XmlBindingsGenerator {
-    public static final String SIMPLE_XML_FORMAT_PKG = "org.eclipse.persistence.internal.xr.sxf"; 
+    public static final String SIMPLE_XML_FORMAT_PKG = "org.eclipse.persistence.internal.xr.sxf";
     public static final String DATAHANDLER_CLASSNAME = "javax.activation.DataHandler";
 
     /**
      * Generate one or more XmlBindings based on a given list of
      * XML Descriptor instances.
-     * 
+     *
      */
     public static List<XmlBindings> generateXmlBindings(List<ClassDescriptor> descriptors) {
         // group the descriptors by package name
@@ -93,7 +93,7 @@ public class XmlBindingsGenerator {
         // generate an XmlBindings for each package
         for (String pkg : descriptorMap.keySet()) {
             List<XMLDescriptor> xdescList = descriptorMap.get(pkg);
-            
+
             XmlBindings xmlBindings = generateXmlBindings(pkg, xdescList);
             if (xmlBindings != null) {
                 bindingsList.add(xmlBindings);
@@ -101,18 +101,18 @@ public class XmlBindingsGenerator {
         }
         return bindingsList;
     }
-    
+
     /**
      * Generate an XmlBindings instance based on a list of XML descriptors.
-     * 
+     *
      * OXM metadata files are processed on a per package basis, hence it is
      * assumed that the given list of descriptors are from the same package.
-     * 
+     *
      */
     public static XmlBindings generateXmlBindings(String packageName, List<XMLDescriptor> descriptors) {
         String defaultNamespace = null;
         Map<String, String> prefixMap = new HashMap<String, String>();
-        
+
         JavaTypes jTypes = new JavaTypes();
         for (XMLDescriptor xdesc : descriptors) {
             // get xml-schema info from one of the descriptors, and add prefix
@@ -132,7 +132,7 @@ public class XmlBindingsGenerator {
             // generate a JavaType instance for the XML descriptor
             jTypes.getJavaType().add(generateJavaType(xdesc));
         }
-        
+
         XmlBindings xmlBindings = null;
         // if there are no JavaTypes, there's nothing to do
         if (jTypes.getJavaType().size() > 0) {
@@ -162,7 +162,7 @@ public class XmlBindingsGenerator {
 
     /**
      * Process a given XMLDescriptor and return a JavaType instance.
-     * 
+     *
      */
     protected static JavaType generateJavaType(XMLDescriptor xdesc) {
         String defaultNamespace = null;
@@ -173,11 +173,11 @@ public class XmlBindingsGenerator {
         if (xdesc.getSchemaReference() != null) {
             schemaContext = xdesc.getSchemaReference().getSchemaContext();
         }
-        
+
         JavaType jType = new JavaType();
         jType.setName(getClassName(xdesc.getJavaClassName()));
         jType.setXmlAccessorType(XmlAccessType.FIELD);
-        
+
         // handle XmlType
         if (schemaContext != null) {
             XmlType xType = new XmlType();
@@ -186,7 +186,7 @@ public class XmlBindingsGenerator {
                 xType.setNamespace(defaultNamespace);
             }
             jType.setXmlType(xType);
-        }        
+        }
         // handle XmlRootElement
         XmlRootElement xmlRootElt = new XmlRootElement();
         xmlRootElt.setName(xdesc.getDefaultRootElement());
@@ -215,7 +215,7 @@ public class XmlBindingsGenerator {
 
     /**
      * Process a given XMLMapping and return a JAXBElement<XmlAttribute>.
-     * 
+     *
      * Expected mappings are:
      * <ul>
      * <li>org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping
@@ -240,10 +240,10 @@ public class XmlBindingsGenerator {
         }
         return new JAXBElement<XmlAttribute>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-attribute"), XmlAttribute.class, xAtt);
     }
-    
+
     /**
      * Process a given XMLMapping and return a JAXBElement<XmlElement>.
-     * 
+     *
      * Expected mappings are:
      * <ul>
      * <li>org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping
@@ -277,9 +277,9 @@ public class XmlBindingsGenerator {
 
     /**
      * Process a given XMLMapping and return an XmlAttribute.
-     * 
+     *
      */
-    protected static XmlAttribute processXMLMapping(XMLField xfld, String attName, String xpath, String attClassification, 
+    protected static XmlAttribute processXMLMapping(XMLField xfld, String attName, String xpath, String attClassification,
             AbstractNullPolicy nullPolicy, String containerName, boolean inlineBinary, boolean isSWARef, String mimeType) {
 
         XmlAttribute xAtt = new XmlAttribute();
@@ -311,7 +311,7 @@ public class XmlBindingsGenerator {
         }
         if (!isDefaultNullPolicy(nullPolicy)) {
             XmlAbstractNullPolicy xmlNullPolicy;
-            
+
             if (nullPolicy instanceof NullPolicy) {
                 xmlNullPolicy = new XmlNullPolicy();
                 ((XmlNullPolicy) xmlNullPolicy).setIsSetPerformedForAbsentNode(nullPolicy.getIsSetPerformedForAbsentNode());
@@ -329,7 +329,7 @@ public class XmlBindingsGenerator {
 
     /**
      * Process a given XMLBinaryDataMapping and return an XmlAttribute.
-     * 
+     *
      */
     protected static XmlAttribute processXMLBinaryDataMappingAttribute(XMLBinaryDataMapping xmap) {
         // JAXB expects a DataHandler in the object model for SwaRef
@@ -337,59 +337,59 @@ public class XmlBindingsGenerator {
         if (xmap.isSwaRef()) {
             attClassName = DATAHANDLER_CLASSNAME;
         }
-        
+
         return processXMLMapping(
-                (XMLField)xmap.getField(), 
-                xmap.getAttributeName(), 
-                xmap.getXPath(), 
-                attClassName, 
-                xmap.getNullPolicy(), 
+                (XMLField)xmap.getField(),
+                xmap.getAttributeName(),
+                xmap.getXPath(),
+                attClassName,
+                xmap.getNullPolicy(),
                 null,
                 xmap.shouldInlineBinaryData(),
                 xmap.isSwaRef(),
                 xmap.getMimeType());
     }
- 
+
 
     /**
      * Process a given XMLCompositeDirectCollectionMapping and return an XmlAttribute.
-     * 
+     *
      */
     protected static XmlAttribute processXMLCompositeDirectCollectionMappingAttribute(XMLCompositeDirectCollectionMapping xmap) {
         return processXMLMapping(
-                (XMLField)xmap.getField(), 
-                xmap.getAttributeName(), 
-                xmap.getXPath(), 
-                null, 
-                xmap.getNullPolicy(), 
+                (XMLField)xmap.getField(),
+                xmap.getAttributeName(),
+                xmap.getXPath(),
+                null,
+                xmap.getNullPolicy(),
                 xmap.getContainerPolicy().getContainerClassName(),
                 false,
                 false,
                 null);
     }
-    
+
     /**
      * Process a given XMLDirectMapping and return an XmlAttribute.
-     * 
+     *
      */
     protected static XmlAttribute processXMLDirectMappingAttribute(XMLDirectMapping xmap) {
         return processXMLMapping(
-                (XMLField)xmap.getField(), 
-                xmap.getAttributeName(), 
-                xmap.getXPath(), 
-                xmap.getAttributeClassificationName(), 
-                xmap.getNullPolicy(), 
+                (XMLField)xmap.getField(),
+                xmap.getAttributeName(),
+                xmap.getXPath(),
+                xmap.getAttributeClassificationName(),
+                xmap.getNullPolicy(),
                 null,
                 false,
                 false,
                 null);
-    }    
+    }
 
     /**
      * Process a given XMLMapping and return an XmlElement.
-     * 
+     *
      */
-    protected static XmlElement processXMLMapping(XMLField xfld, String attName, String xpath, String attClassification, 
+    protected static XmlElement processXMLMapping(XMLField xfld, String attName, String xpath, String attClassification,
             AbstractNullPolicy nullPolicy, boolean isCDATA, String containerName, boolean inlineBinary, boolean isSWARef, String mimeType) {
 
         XmlElement xElt = new XmlElement();
@@ -424,7 +424,7 @@ public class XmlBindingsGenerator {
         }
         if (!isDefaultNullPolicy(nullPolicy)) {
             XmlAbstractNullPolicy xmlNullPolicy;
-            
+
             if (nullPolicy instanceof NullPolicy) {
                 xmlNullPolicy = new XmlNullPolicy();
                 ((XmlNullPolicy) xmlNullPolicy).setIsSetPerformedForAbsentNode(nullPolicy.getIsSetPerformedForAbsentNode());
@@ -442,15 +442,15 @@ public class XmlBindingsGenerator {
 
     /**
      * Process a given XMLDirectMapping and return an XmlElement.
-     * 
+     *
      */
     protected static XmlElement processXMLDirectMapping(XMLDirectMapping xmap) {
         return processXMLMapping(
-                (XMLField)xmap.getField(), 
-                xmap.getAttributeName(), 
-                xmap.getXPath(), 
-                xmap.getAttributeClassificationName(), 
-                xmap.getNullPolicy(), 
+                (XMLField)xmap.getField(),
+                xmap.getAttributeName(),
+                xmap.getXPath(),
+                xmap.getAttributeClassificationName(),
+                xmap.getNullPolicy(),
                 xmap.isCDATA(),
                 null,
                 false,
@@ -460,7 +460,7 @@ public class XmlBindingsGenerator {
 
     /**
      * Process a given XMLBinaryDataMapping and return an XmlElement.
-     * 
+     *
      */
     protected static XmlElement processXMLBinaryDataMapping(XMLBinaryDataMapping xmap) {
         // JAXB expects a DataHandler in the object model for SwaRef
@@ -468,13 +468,13 @@ public class XmlBindingsGenerator {
         if (xmap.isSwaRef()) {
             attClassName = DATAHANDLER_CLASSNAME;
         }
-        
+
         return processXMLMapping(
-                (XMLField)xmap.getField(), 
-                xmap.getAttributeName(), 
-                xmap.getXPath(), 
-                attClassName, 
-                xmap.getNullPolicy(), 
+                (XMLField)xmap.getField(),
+                xmap.getAttributeName(),
+                xmap.getXPath(),
+                attClassName,
+                xmap.getNullPolicy(),
                 xmap.isCDATA(),
                 null,
                 xmap.shouldInlineBinaryData(),
@@ -484,15 +484,15 @@ public class XmlBindingsGenerator {
 
     /**
      * Process a given XMLCompositeDirectCollectionMapping and return an XmlElement.
-     * 
+     *
      */
     protected static XmlElement processXMLCompositeDirectCollectionMapping(XMLCompositeDirectCollectionMapping xmap) {
         return processXMLMapping(
-                (XMLField)xmap.getField(), 
-                xmap.getAttributeName(), 
-                xmap.getXPath(), 
-                null, 
-                xmap.getNullPolicy(), 
+                (XMLField)xmap.getField(),
+                xmap.getAttributeName(),
+                xmap.getXPath(),
+                null,
+                xmap.getNullPolicy(),
                 xmap.isCDATA(),
                 xmap.getContainerPolicy().getContainerClassName(),
                 false,
@@ -502,15 +502,15 @@ public class XmlBindingsGenerator {
 
     /**
      * Process a given XMLCompositeObjectMapping and return an XmlElement.
-     * 
+     *
      */
     protected static XmlElement processXMLCompositeObjectMapping(XMLCompositeObjectMapping xmap) {
         return processXMLMapping(
-                (XMLField)xmap.getField(), 
-                xmap.getAttributeName(), 
-                xmap.getXPath(), 
-                xmap.getReferenceClassName(), 
-                xmap.getNullPolicy(), 
+                (XMLField)xmap.getField(),
+                xmap.getAttributeName(),
+                xmap.getXPath(),
+                xmap.getReferenceClassName(),
+                xmap.getNullPolicy(),
                 false,
                 null,
                 false,
@@ -520,15 +520,15 @@ public class XmlBindingsGenerator {
 
     /**
      * Process a given XMLCompositeCollectionMapping and return an XmlElement
-     * 
+     *
      */
     protected static XmlElement processXMLCompositeCollectionMapping(XMLCompositeCollectionMapping xmap) {
         return processXMLMapping(
-                (XMLField)xmap.getField(), 
-                xmap.getAttributeName(), 
-                xmap.getXPath(), 
-                xmap.getReferenceClassName(), 
-                xmap.getNullPolicy(), 
+                (XMLField)xmap.getField(),
+                xmap.getAttributeName(),
+                xmap.getXPath(),
+                xmap.getReferenceClassName(),
+                xmap.getNullPolicy(),
                 false,
                 xmap.getContainerPolicy().getContainerClassName(),
                 false,
@@ -537,9 +537,9 @@ public class XmlBindingsGenerator {
     }
 
     /**
-     * Convenience methods that returns the package name for a given fully 
+     * Convenience methods that returns the package name for a given fully
      * qualified Java class name.
-     * 
+     *
      */
     protected static String getPackageName(String javaClassName) {
         // handle 'default' package
@@ -548,11 +548,11 @@ public class XmlBindingsGenerator {
         }
         return javaClassName.substring(0, javaClassName.lastIndexOf(DOT));
     }
-    
+
     /**
-     * Convenience methods that returns the class name w/o package 
+     * Convenience methods that returns the class name w/o package
      * for a given fully qualified Java class name.
-     * 
+     *
      */
     protected static String getClassName(String javaClassName) {
         // handle 'default' package
@@ -566,7 +566,7 @@ public class XmlBindingsGenerator {
      * Indicates is a given AbstractNullPolicy is the default.  This is useful
      * if it is not desirable to write out the default policy in the oxm
      * metadata file.
-     * 
+     *
      * The default policy is NullPolicy, with the following set:
      * <ul>
      * <li>isNullRepresentedByXsiNil = false

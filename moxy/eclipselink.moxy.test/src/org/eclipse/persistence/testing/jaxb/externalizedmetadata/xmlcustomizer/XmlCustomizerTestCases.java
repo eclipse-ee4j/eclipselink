@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,47 +33,47 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
  *
  */
 public class XmlCustomizerTestCases extends JAXBWithJSONTestCases {
-    
+
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlcustomizer/employee_no_overrides.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlcustomizer/employee_no_overrides.json";
 
     /**
      * Test @XmlCustomizer annotation on the Java class.  Here, no XML override
-     * is performed.  The instance doc will contain 'first-name' and 'last-name' 
+     * is performed.  The instance doc will contain 'first-name' and 'last-name'
      * tags which were changed by the customizer from 'firstName' and
      * 'lastName' respectively.
-     * 
+     *
      * Positive test.
      */
     public XmlCustomizerTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Employee.class});
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
-    
+
     public void testSchemaGen() throws Exception{
-    	List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlcustomizer/employee.xsd");
-    	
-    	controlSchemas.add(is);
-    	
-    	super.testSchemaGen(controlSchemas);
-    	
-    	
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlcustomizer/employee.xsd");
+
+        controlSchemas.add(is);
+
+        super.testSchemaGen(controlSchemas);
+
+
     }
- 
+
     /**
      * Test @XmlCustomizer annotation on the Java class.  Here, no XML override
-     * is performed.  The instance doc will contain 'firstName' and 'lastName' 
+     * is performed.  The instance doc will contain 'firstName' and 'lastName'
      * tags which will have been changed by the customizer to 'first-name' and
      * 'last-name' respectively.
-     * 
+     *
      * Negative test.
-     * @throws JAXBException 
+     * @throws JAXBException
      */
     public void testXmlCustomizerNoOverrideFail() throws JAXBException {
-        Class<?>[] classes = { 
+        Class<?>[] classes = {
                 Employee.class
             };
 
@@ -105,11 +105,11 @@ public class XmlCustomizerTestCases extends JAXBWithJSONTestCases {
             fail("An unexpected exception occurred");
         }
     }
-       
+
     private String getInstanceDocumentInvalid() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><employee><firstName>Joe</firstName><lastName>Oracle</lastName></employee>";
     }
-     
+
     public Object getControlObject() {
         Employee emp = new Employee();
         emp.firstName = "Joe";

@@ -84,11 +84,11 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  * <li>*&#47;json (i.e. application/json and text/json)</li>
  * <li>*&#47;*+json</li>
  * </ul>
- * 
+ *
  * <p>Below are some different usage options.</p>
- * 
+ *
  * <b>Option #1 - <i>MOXyJsonProvider</i> Default Behavior</b>
- * <p>You can use the <i>Application</i> class to specify that 
+ * <p>You can use the <i>Application</i> class to specify that
  * <i>MOXyJsonProvider</i> should be used with your JAX-RS application.</p>
  * <pre>
  * package org.example;
@@ -109,9 +109,9 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  *
  * }
  * </pre>
- * 
+ *
  * <b>Option #2 - Customize <i>MOXyJsonProvider</i></b>
- * <p>You can use the <i>Application</i> class to specify a configured instance 
+ * <p>You can use the <i>Application</i> class to specify a configured instance
  * of <i>MOXyJsonProvider</i> should be used with your JAX-RS application.</p>
  * <pre>
  * package org.example;
@@ -140,10 +140,10 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  *         return set;
  *     }
  *
- * } 
+ * }
  * </pre>
  * <b>Option #3 - Extend MOXyJsonProvider</b>
- * <p>You can use MOXyJsonProvider for creating your own 
+ * <p>You can use MOXyJsonProvider for creating your own
  * <i>MessageBodyReader</i>/<i>MessageBodyWriter</i>.</p>
  * <pre>
  * package org.example;
@@ -199,7 +199,7 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
 @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD, "application/x-javascript"})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
 public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>{
- 
+
     private static final String APPLICATION_XJAVASCRIPT = "application/x-javascript";
     private static final String CHARSET = "charset";
     private static final QName EMPTY_STRING_QNAME = new QName("");
@@ -341,7 +341,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     }
 
     /**
-     * By default the JSON-binding will ignore namespace qualification. If this 
+     * By default the JSON-binding will ignore namespace qualification. If this
      * property is set the portion of the key before the namespace separator
      * will be used to determine the namespace URI.
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#NAMESPACE_PREFIX_MAPPER
@@ -398,7 +398,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     }
 
     /**
-     * If true empty collections will be marshalled as empty arrays, else the 
+     * If true empty collections will be marshalled as empty arrays, else the
      * collection will not be marshalled to JSON (default is true).
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_MARSHAL_EMPTY_COLLECTIONS
      */
@@ -408,8 +408,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
     /**
      * @return true indicating that <i>MOXyJsonProvider</i> will
-     * be used for the JSON binding if the media type is of the following 
-     * patterns *&#47;json or *&#47;*+json, and the type is not assignable from 
+     * be used for the JSON binding if the media type is of the following
+     * patterns *&#47;json or *&#47;*+json, and the type is not assignable from
      * any of (or a Collection or JAXBElement of) the following:
      * <ul>
      * <li>byte[]</li>
@@ -465,17 +465,17 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
     /**
      * If true the grouping element will be used as the JSON key.
-     * 
+     *
      * <p><b>Example</b></p>
      * <p>Given the following class:</p>
      * <pre>
      * &#64;XmlAccessorType(XmlAccessType.FIELD)
      * public class Customer {
-     * 
+     *
      *     &#64;XmlElementWrapper(name="phone-numbers")
      *     &#64;XmlElement(name="phone-number")
      *     private {@literal List<PhoneNumber>} phoneNumbers;
-     * 
+     *
      * }
      * </pre>
      * <p>If the property is set to false (the default) the JSON output will be:</p>
@@ -582,17 +582,17 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     }
 
     /**
-     * Subclasses of <i>MOXyJsonProvider</i> can override this method to 
-     * customize the instance of <i>Unmarshaller</i> that will be used to 
+     * Subclasses of <i>MOXyJsonProvider</i> can override this method to
+     * customize the instance of <i>Unmarshaller</i> that will be used to
      * unmarshal the JSON message in the readFrom call.
-     * @param type - The Class to be unmarshalled (i.e. <i>Customer</i> or 
+     * @param type - The Class to be unmarshalled (i.e. <i>Customer</i> or
      * <i>List</i>)
-     * @param genericType - The type of object to be unmarshalled (i.e 
+     * @param genericType - The type of object to be unmarshalled (i.e
      * <i>Customer</i> or <i>List&lt;Customer&gt;</i>).
      * @param annotations - The annotations corresponding to domain object.
      * @param mediaType - The media type for the HTTP entity.
      * @param httpHeaders - HTTP headers associated with HTTP entity.
-     * @param unmarshaller - The instance of <i>Unmarshaller</i> that will be 
+     * @param unmarshaller - The instance of <i>Unmarshaller</i> that will be
      * used to unmarshal the JSON message.
      * @throws JAXBException
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties
@@ -601,18 +601,18 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     }
 
     /**
-     * Subclasses of <i>MOXyJsonProvider</i> can override this method to 
-     * customize the instance of <i>Marshaller</i> that will be used to marshal 
+     * Subclasses of <i>MOXyJsonProvider</i> can override this method to
+     * customize the instance of <i>Marshaller</i> that will be used to marshal
      * the domain objects to JSON in the writeTo call.
      * @param object - The domain object that will be marshalled to JSON.
-     * @param type - The Class to be marshalled (i.e. <i>Customer</i> or 
+     * @param type - The Class to be marshalled (i.e. <i>Customer</i> or
      * <i>List</i>)
-     * @param genericType - The type of object to be marshalled (i.e 
+     * @param genericType - The type of object to be marshalled (i.e
      * <i>Customer</i> or <i>List&lt;Customer&gt;</i>).
      * @param annotations - The annotations corresponding to domain object.
      * @param mediaType - The media type for the HTTP entity.
      * @param httpHeaders - HTTP headers associated with HTTP entity.
-     * @param marshaller - The instance of <i>Marshaller</i> that will be used 
+     * @param marshaller - The instance of <i>Marshaller</i> that will be used
      * to marshal the domain object to JSON.
      * @throws JAXBException
      * @see org.eclipse.persistence.jaxb.MarshallerProperties
@@ -785,7 +785,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
     /**
      * Specify if the JSON output should be formatted (default is false).
-     * @param formattedOutput - true if the output should be formatted, else 
+     * @param formattedOutput - true if the output should be formatted, else
      * false.
      */
     public void setFormattedOutput(boolean formattedOutput) {
@@ -795,7 +795,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /**
      * Specify if the root node should be included in the JSON message (default
      * is false).
-     * @param includeRoot - true if the message includes the root node, else 
+     * @param includeRoot - true if the message includes the root node, else
      * false.
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_INCLUDE_ROOT
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_INCLUDE_ROOT
@@ -805,7 +805,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     }
 
     /**
-     * If true empty collections will be marshalled as empty arrays, else the 
+     * If true empty collections will be marshalled as empty arrays, else the
      * collection will not be marshalled to JSON (default is true).
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_MARSHAL_EMPTY_COLLECTIONS
      */
@@ -815,7 +815,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
    /**
      * By default the JSON-binding will ignore namespace qualification. If this
-     * property is set then a prefix corresponding to the namespace URI and a 
+     * property is set then a prefix corresponding to the namespace URI and a
      * namespace separator will be prefixed to the key.
      * include it you can specify a Map of namespace URI to prefix.
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#NAMESPACE_PREFIX_MAPPER
@@ -838,17 +838,17 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
     /**
      * If true the grouping element will be used as the JSON key.
-     * 
+     *
      * <p><b>Example</b></p>
      * <p>Given the following class:</p>
      * <pre>
      * &#64;XmlAccessorType(XmlAccessType.FIELD)
      * public class Customer {
-     * 
+     *
      *     &#64;XmlElementWrapper(name="phone-numbers")
      *     &#64;XmlElement(name="phone-number")
      *     private {@literal List<PhoneNumber>} phoneNumbers;
-     * 
+     *
      * }
      * </pre>
      * <p>If the property is set to false (the default) the JSON output will be:</p>
@@ -894,7 +894,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     }
 
     /**
-     * @return true for all media types of the pattern *&#47;json and 
+     * @return true for all media types of the pattern *&#47;json and
      * *&#47;*+json.
      */
     protected boolean supportsMediaType(MediaType mediaType) {

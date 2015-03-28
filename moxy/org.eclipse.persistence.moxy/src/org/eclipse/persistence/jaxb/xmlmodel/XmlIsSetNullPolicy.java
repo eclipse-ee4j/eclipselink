@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,9 +23,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -47,8 +47,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -65,25 +65,25 @@ public class XmlIsSetNullPolicy
 
     /**
      * Gets the value of the isSetParameter property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the isSetParameter property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getIsSetParameter().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link XmlIsSetNullPolicy.IsSetParameter }
-     * 
-     * 
+     *
+     *
      */
     public List<XmlIsSetNullPolicy.IsSetParameter> getIsSetParameter() {
         if (isSetParameter == null) {
@@ -94,11 +94,11 @@ public class XmlIsSetNullPolicy
 
     /**
      * Gets the value of the isSetMethodName property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getIsSetMethodName() {
         return isSetMethodName;
@@ -106,11 +106,11 @@ public class XmlIsSetNullPolicy
 
     /**
      * Sets the value of the isSetMethodName property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setIsSetMethodName(String value) {
         this.isSetMethodName = value;
@@ -119,9 +119,9 @@ public class XmlIsSetNullPolicy
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -132,8 +132,8 @@ public class XmlIsSetNullPolicy
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
@@ -146,11 +146,11 @@ public class XmlIsSetNullPolicy
 
         /**
          * Gets the value of the value property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getValue() {
             return value;
@@ -158,11 +158,11 @@ public class XmlIsSetNullPolicy
 
         /**
          * Sets the value of the value property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setValue(String value) {
             this.value = value;
@@ -170,11 +170,11 @@ public class XmlIsSetNullPolicy
 
         /**
          * Gets the value of the type property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getType() {
             return type;
@@ -182,11 +182,11 @@ public class XmlIsSetNullPolicy
 
         /**
          * Sets the value of the type property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setType(String value) {
             this.type = value;

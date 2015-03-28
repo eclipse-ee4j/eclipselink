@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.*;
@@ -136,7 +136,7 @@ public class CursoredStream extends Cursor {
             if (this.query.isCallQuery()) {
                 throw QueryException.additionalSizeQueryNotSpecified(this.query);
             }
-            
+
             if (!this.query.isExpressionQuery()) {
                 throw QueryException.sizeOnlySupportedOnExpressionQueries(this.query);
             }
@@ -354,7 +354,7 @@ public class CursoredStream extends Cursor {
      * @return - vector containing next number of objects
      * @throws DatabaseException if read pass end of stream
      */
-    public List<Object> read(int number) throws DatabaseException {        
+    public List<Object> read(int number) throws DatabaseException {
         List<Object> result = copy(this.position, this.position + number);
         this.position = this.position + result.size();
         return result;
@@ -372,9 +372,9 @@ public class CursoredStream extends Cursor {
             return;
         }
         this.objectCollection = Helper.copyVector(this.objectCollection, this.position, this.objectCollection.size());
-        this.position = 0;        
+        this.position = 0;
     }
-    
+
     /**
       * PUBLIC:
       * Release all objects read in so far.

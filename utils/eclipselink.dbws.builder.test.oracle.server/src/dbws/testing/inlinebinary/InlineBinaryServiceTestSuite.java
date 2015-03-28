@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,13 +40,13 @@ import static org.junit.Assert.assertTrue;
  *
  */
 public class InlineBinaryServiceTestSuite extends DBWSTestSuite {
-	//static final String b0 = "rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB";
-	//static final String b1 = "rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC";
-	//static final String b2 = "rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD";
+    //static final String b0 = "rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB";
+    //static final String b1 = "rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC";
+    //static final String b2 = "rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD";
     static final String b0 = "AQEBAQEBAQEBAQEBAQEB";
     static final String b1 = "AgICAgICAgICAgICAgIC";
     static final String b2 = "AwMDAwMDAwMDAwMDAwMD";
-	
+
     static final String SOAP_FINDBYPK_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
@@ -61,7 +61,7 @@ public class InlineBinaryServiceTestSuite extends DBWSTestSuite {
             "<findAll_InlinebinaryType xmlns=\"urn:inlinebinaryService\" />" +
           "</env:Body>" +
         "</env:Envelope>";
-    
+
     @BeforeClass
     public static void setUp() {
         if (conn == null) {
@@ -72,7 +72,7 @@ public class InlineBinaryServiceTestSuite extends DBWSTestSuite {
             }
         }
         if (ddlCreate) {
-        	runDdl(conn, CREATE_TABLE, ddlDebug);
+            runDdl(conn, CREATE_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_TABLE.length; i++) {
@@ -94,39 +94,39 @@ public class InlineBinaryServiceTestSuite extends DBWSTestSuite {
 
     @Test
     public void testService() {
-    	try {
-	        QName qname = new QName("urn:inlinebinaryService", "inlinebinaryServicePort");
-	        Service service = Service.create(new QName("urn:inlinebinary", "inlinebinaryService"));
-	        service.addPort(qname, SOAPBinding.SOAP11HTTP_BINDING, "http://" + host + ":" + port + "/inlinebinary/inlinebinary");
-	        Dispatch<SOAPMessage> sourceDispatch = service.createDispatch(qname, SOAPMessage.class, Service.Mode.MESSAGE);
+        try {
+            QName qname = new QName("urn:inlinebinaryService", "inlinebinaryServicePort");
+            Service service = Service.create(new QName("urn:inlinebinary", "inlinebinaryService"));
+            service.addPort(qname, SOAPBinding.SOAP11HTTP_BINDING, "http://" + host + ":" + port + "/inlinebinary/inlinebinary");
+            Dispatch<SOAPMessage> sourceDispatch = service.createDispatch(qname, SOAPMessage.class, Service.Mode.MESSAGE);
 
-	        // TEST FINDALL
-	        // we expect 3 inline binary elements
-	        SOAPMessage request = createSOAPMessage(SOAP_FINDALL_REQUEST);
-	    	SOAPMessage response = sourceDispatch.invoke(request);
+            // TEST FINDALL
+            // we expect 3 inline binary elements
+            SOAPMessage request = createSOAPMessage(SOAP_FINDALL_REQUEST);
+            SOAPMessage response = sourceDispatch.invoke(request);
 
-	    	NodeList elements = response.getSOAPBody().getElementsByTagName("b");
-	    	assertTrue("findAll failed:  wrong number of inline binary elements returned - expected [3] but was [" + elements.getLength() + "]", elements.getLength() == 3);
+            NodeList elements = response.getSOAPBody().getElementsByTagName("b");
+            assertTrue("findAll failed:  wrong number of inline binary elements returned - expected [3] but was [" + elements.getLength() + "]", elements.getLength() == 3);
 
-	    	String inlineBinary = elements.item(0).getTextContent();
-	    	assertTrue("findAll failed:  unexpected inline binary - expected [" + b0 + "] but was [" + inlineBinary + "]", (inlineBinary != null && inlineBinary.equals(b0)));
+            String inlineBinary = elements.item(0).getTextContent();
+            assertTrue("findAll failed:  unexpected inline binary - expected [" + b0 + "] but was [" + inlineBinary + "]", (inlineBinary != null && inlineBinary.equals(b0)));
 
-	    	inlineBinary = elements.item(1).getTextContent();
-	    	assertTrue("findAll failed:  unexpected inline binary - expected [" + b1 + "] but was [" + inlineBinary + "]", (inlineBinary != null && inlineBinary.equals(b1)));
+            inlineBinary = elements.item(1).getTextContent();
+            assertTrue("findAll failed:  unexpected inline binary - expected [" + b1 + "] but was [" + inlineBinary + "]", (inlineBinary != null && inlineBinary.equals(b1)));
 
-	    	inlineBinary = elements.item(2).getTextContent();
-	    	assertTrue("findAll failed:  unexpected inline binary - expected [" + b2 + "] but was [" + inlineBinary + "]", (inlineBinary != null && inlineBinary.equals(b2)));
+            inlineBinary = elements.item(2).getTextContent();
+            assertTrue("findAll failed:  unexpected inline binary - expected [" + b2 + "] but was [" + inlineBinary + "]", (inlineBinary != null && inlineBinary.equals(b2)));
 
-	        // TEST FINDBYPK
-	        request = createSOAPMessage(SOAP_FINDBYPK_REQUEST);
-	    	response = sourceDispatch.invoke(request);
-	    	elements = response.getSOAPBody().getElementsByTagName("b");
-	    	assertTrue("findByPk failed:  wrong number of inline binary elements returned - expected [1] but was [" + elements.getLength() + "]", elements.getLength() == 1);
+            // TEST FINDBYPK
+            request = createSOAPMessage(SOAP_FINDBYPK_REQUEST);
+            response = sourceDispatch.invoke(request);
+            elements = response.getSOAPBody().getElementsByTagName("b");
+            assertTrue("findByPk failed:  wrong number of inline binary elements returned - expected [1] but was [" + elements.getLength() + "]", elements.getLength() == 1);
 
-	    	inlineBinary = elements.item(0).getTextContent();
-	    	assertTrue("findByPk failed:  unexpected inline binary - expected [" + b1 + "] but was [" + inlineBinary + "]", (inlineBinary != null && inlineBinary.equals(b1)));
-    	} catch (Exception x) {
-    		fail("Service test failed: " + x.getMessage());
-    	}
-	}
+            inlineBinary = elements.item(0).getTextContent();
+            assertTrue("findByPk failed:  unexpected inline binary - expected [" + b1 + "] but was [" + inlineBinary + "]", (inlineBinary != null && inlineBinary.equals(b1)));
+        } catch (Exception x) {
+            fail("Service test failed: " + x.getMessage());
+        }
+    }
 }

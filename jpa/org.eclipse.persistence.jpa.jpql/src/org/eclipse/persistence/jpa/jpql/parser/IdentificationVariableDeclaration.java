@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,261 +34,261 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class IdentificationVariableDeclaration extends AbstractExpression {
 
-	/**
-	 * Determines whether there is a space after the range variable declaration.
-	 */
-	private boolean hasSpace;
+    /**
+     * Determines whether there is a space after the range variable declaration.
+     */
+    private boolean hasSpace;
 
-	/**
-	 * The unique join (fetch join) or list of join (fetch join) expression or a <code>null</code>
-	 * expression if none was declared.
-	 */
-	private AbstractExpression joins;
+    /**
+     * The unique join (fetch join) or list of join (fetch join) expression or a <code>null</code>
+     * expression if none was declared.
+     */
+    private AbstractExpression joins;
 
-	/**
-	 * Flag used to determine how to check if the parsing is complete.
-	 */
-	private boolean parsingJoinExpression;
+    /**
+     * Flag used to determine how to check if the parsing is complete.
+     */
+    private boolean parsingJoinExpression;
 
-	/**
-	 * The variable declaration, which is the abstract schema name and the variable.
-	 */
-	private AbstractExpression rangeVariableDeclaration;
+    /**
+     * The variable declaration, which is the abstract schema name and the variable.
+     */
+    private AbstractExpression rangeVariableDeclaration;
 
-	/**
-	 * Creates a new <code>IdentificationVariableDeclaration</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public IdentificationVariableDeclaration(AbstractExpression parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>IdentificationVariableDeclaration</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public IdentificationVariableDeclaration(AbstractExpression parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void acceptChildren(ExpressionVisitor visitor) {
-		getRangeVariableDeclaration().accept(visitor);
-		getJoins().accept(visitor);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void acceptChildren(ExpressionVisitor visitor) {
+        getRangeVariableDeclaration().accept(visitor);
+        getJoins().accept(visitor);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addChildrenTo(Collection<Expression> children) {
-		children.add(getRangeVariableDeclaration());
-		children.add(getJoins());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addChildrenTo(Collection<Expression> children) {
+        children.add(getRangeVariableDeclaration());
+        children.add(getJoins());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addOrderedChildrenTo(List<Expression> children) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addOrderedChildrenTo(List<Expression> children) {
 
-		if (rangeVariableDeclaration != null) {
-			children.add(rangeVariableDeclaration);
-		}
+        if (rangeVariableDeclaration != null) {
+            children.add(rangeVariableDeclaration);
+        }
 
-		if (hasSpace) {
-			children.add(buildStringExpression(SPACE));
-		}
+        if (hasSpace) {
+            children.add(buildStringExpression(SPACE));
+        }
 
-		if (joins != null) {
-			children.add(joins);
-		}
-	}
+        if (joins != null) {
+            children.add(joins);
+        }
+    }
 
-	/**
-	 * Creates a new {@link CollectionExpression} that will wrap the single join expression.
-	 *
-	 * @return The single join expression represented by a temporary collection
-	 */
-	public CollectionExpression buildCollectionExpression() {
+    /**
+     * Creates a new {@link CollectionExpression} that will wrap the single join expression.
+     *
+     * @return The single join expression represented by a temporary collection
+     */
+    public CollectionExpression buildCollectionExpression() {
 
-		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
-		children.add((AbstractExpression) getJoins());
+        List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+        children.add((AbstractExpression) getJoins());
 
-		List<Boolean> commas = new ArrayList<Boolean>(1);
-		commas.add(Boolean.FALSE);
+        List<Boolean> commas = new ArrayList<Boolean>(1);
+        commas.add(Boolean.FALSE);
 
-		List<Boolean> spaces = new ArrayList<Boolean>(1);
-		spaces.add(Boolean.FALSE);
+        List<Boolean> spaces = new ArrayList<Boolean>(1);
+        spaces.add(Boolean.FALSE);
 
-		return new CollectionExpression(this, children, commas, spaces, true);
-	}
+        return new CollectionExpression(this, children, commas, spaces, true);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPQLQueryBNF findQueryBNF(Expression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JPQLQueryBNF findQueryBNF(Expression expression) {
 
-		if ((rangeVariableDeclaration != null) && rangeVariableDeclaration.isAncestor(expression)) {
-			return getQueryBNF(RangeVariableDeclarationBNF.ID);
-		}
+        if ((rangeVariableDeclaration != null) && rangeVariableDeclaration.isAncestor(expression)) {
+            return getQueryBNF(RangeVariableDeclarationBNF.ID);
+        }
 
-		if ((joins != null) && joins.isAncestor(expression)) {
-			return getQueryBNF(InternalJoinBNF.ID);
-		}
+        if ((joins != null) && joins.isAncestor(expression)) {
+            return getQueryBNF(InternalJoinBNF.ID);
+        }
 
-		return super.findQueryBNF(expression);
-	}
+        return super.findQueryBNF(expression);
+    }
 
-	/**
-	 * Returns the unique join (fetch join) or the list of joins (fetch joins) expression.
-	 *
-	 * @return The <code>JOIN</code> expression(s) or a <code>null</code> expression if none was declared
-	 */
-	public Expression getJoins() {
-		if (joins == null) {
-			joins = buildNullExpression();
-		}
-		return joins;
-	}
+    /**
+     * Returns the unique join (fetch join) or the list of joins (fetch joins) expression.
+     *
+     * @return The <code>JOIN</code> expression(s) or a <code>null</code> expression if none was declared
+     */
+    public Expression getJoins() {
+        if (joins == null) {
+            joins = buildNullExpression();
+        }
+        return joins;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(IdentificationVariableDeclarationBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(IdentificationVariableDeclarationBNF.ID);
+    }
 
-	/**
-	 * Returns the variable declaration, which is the abstract schema name and the identification
-	 * variable.
-	 *
-	 * @return The {@link Expression} representing the range variable declaration
-	 */
-	public Expression getRangeVariableDeclaration() {
-		if (rangeVariableDeclaration == null) {
-			rangeVariableDeclaration = buildNullExpression();
-		}
-		return rangeVariableDeclaration;
-	}
+    /**
+     * Returns the variable declaration, which is the abstract schema name and the identification
+     * variable.
+     *
+     * @return The {@link Expression} representing the range variable declaration
+     */
+    public Expression getRangeVariableDeclaration() {
+        if (rangeVariableDeclaration == null) {
+            rangeVariableDeclaration = buildNullExpression();
+        }
+        return rangeVariableDeclaration;
+    }
 
-	/**
-	 * Determines whether this declaration has any join expressions.
-	 *
-	 * @return <code>true</code> if at least one join expression was specified; <code>false</code>
-	 * otherwise
-	 */
-	public boolean hasJoins() {
-		return joins != null &&
-		      !joins.isNull();
-	}
+    /**
+     * Determines whether this declaration has any join expressions.
+     *
+     * @return <code>true</code> if at least one join expression was specified; <code>false</code>
+     * otherwise
+     */
+    public boolean hasJoins() {
+        return joins != null &&
+              !joins.isNull();
+    }
 
-	/**
-	 * Determines whether the range variable declaration was parsed.
-	 *
-	 * @return <code>true</code> if the range variable declaration was parsed; <code>false</code>
-	 * otherwise
-	 */
-	public boolean hasRangeVariableDeclaration() {
-		return rangeVariableDeclaration != null &&
-		      !rangeVariableDeclaration.isNull();
-	}
+    /**
+     * Determines whether the range variable declaration was parsed.
+     *
+     * @return <code>true</code> if the range variable declaration was parsed; <code>false</code>
+     * otherwise
+     */
+    public boolean hasRangeVariableDeclaration() {
+        return rangeVariableDeclaration != null &&
+              !rangeVariableDeclaration.isNull();
+    }
 
-	/**
-	 * Determines whether there is a space after the range variable declaration.
-	 *
-	 * @return <code>true</code> if the range variable declaration is followed by a space,
-	 * <code>false</code> otherwise
-	 */
-	public boolean hasSpace() {
-		return hasSpace;
-	}
+    /**
+     * Determines whether there is a space after the range variable declaration.
+     *
+     * @return <code>true</code> if the range variable declaration is followed by a space,
+     * <code>false</code> otherwise
+     */
+    public boolean hasSpace() {
+        return hasSpace;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
-		// Parsing the join expressions
-		if (parsingJoinExpression) {
-			return !word.equalsIgnoreCase(JOIN)  &&
-			       !word.equalsIgnoreCase(INNER) &&
-			       !word.equalsIgnoreCase(OUTER) &&
-			       !word.equalsIgnoreCase(LEFT);
-		}
+        // Parsing the join expressions
+        if (parsingJoinExpression) {
+            return !word.equalsIgnoreCase(JOIN)  &&
+                   !word.equalsIgnoreCase(INNER) &&
+                   !word.equalsIgnoreCase(OUTER) &&
+                   !word.equalsIgnoreCase(LEFT);
+        }
 
-		// Parsing the range variable declaration
-		return word.equalsIgnoreCase(JOIN)  ||
-		       word.equalsIgnoreCase(INNER) ||
-		       word.equalsIgnoreCase(LEFT)  ||
-		       word.equalsIgnoreCase(OUTER) ||
-		       word.equalsIgnoreCase(IN)    ||
-		       super.isParsingComplete(wordParser, word, expression);
-	}
+        // Parsing the range variable declaration
+        return word.equalsIgnoreCase(JOIN)  ||
+               word.equalsIgnoreCase(INNER) ||
+               word.equalsIgnoreCase(LEFT)  ||
+               word.equalsIgnoreCase(OUTER) ||
+               word.equalsIgnoreCase(IN)    ||
+               super.isParsingComplete(wordParser, word, expression);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void parse(WordParser wordParser, boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse(WordParser wordParser, boolean tolerant) {
 
-		// Parse the range variable declaration
-		if (tolerant) {
-			rangeVariableDeclaration = parse(wordParser, RangeVariableDeclarationBNF.ID, tolerant);
-		}
-		else {
-			rangeVariableDeclaration = new RangeVariableDeclaration(this);
-			rangeVariableDeclaration.parse(wordParser, tolerant);
-		}
+        // Parse the range variable declaration
+        if (tolerant) {
+            rangeVariableDeclaration = parse(wordParser, RangeVariableDeclarationBNF.ID, tolerant);
+        }
+        else {
+            rangeVariableDeclaration = new RangeVariableDeclaration(this);
+            rangeVariableDeclaration.parse(wordParser, tolerant);
+        }
 
-		int count = wordParser.skipLeadingWhitespace();
+        int count = wordParser.skipLeadingWhitespace();
 
-		// Parse the JOIN expressions
-		parsingJoinExpression = true;
-		joins = parse(wordParser, InternalJoinBNF.ID, tolerant);
+        // Parse the JOIN expressions
+        parsingJoinExpression = true;
+        joins = parse(wordParser, InternalJoinBNF.ID, tolerant);
 
-		// If there are no JOIN expressions and there is more text to parse, then re-add the space so
-		// it can be owned by a parent expression. The only exception to that is if it's followed by
-		// a comma, the space will be kept as a virtual space (it will not be part of the string
-		// representation)
-		if (!hasJoins() && (wordParser.character() != COMMA)) {
-			wordParser.moveBackward(count);
-		}
-		else {
-			hasSpace = (count > 0);
-		}
-	}
+        // If there are no JOIN expressions and there is more text to parse, then re-add the space so
+        // it can be owned by a parent expression. The only exception to that is if it's followed by
+        // a comma, the space will be kept as a virtual space (it will not be part of the string
+        // representation)
+        if (!hasJoins() && (wordParser.character() != COMMA)) {
+            wordParser.moveBackward(count);
+        }
+        else {
+            hasSpace = (count > 0);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean shouldParseWithFactoryFirst() {
-		return parsingJoinExpression;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean shouldParseWithFactoryFirst() {
+        return parsingJoinExpression;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toParsedText(StringBuilder writer, boolean actual) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toParsedText(StringBuilder writer, boolean actual) {
 
-		// Range Variable Declaration
-		if (rangeVariableDeclaration != null) {
-			rangeVariableDeclaration.toParsedText(writer, actual);
-		}
+        // Range Variable Declaration
+        if (rangeVariableDeclaration != null) {
+            rangeVariableDeclaration.toParsedText(writer, actual);
+        }
 
-		if (hasSpace) {
-			writer.append(SPACE);
-		}
+        if (hasSpace) {
+            writer.append(SPACE);
+        }
 
-		// Joins
-		if (joins != null) {
-			joins.toParsedText(writer, actual);
-		}
-	}
+        // Joins
+        if (joins != null) {
+            joins.toParsedText(writer, actual);
+        }
+    }
 }

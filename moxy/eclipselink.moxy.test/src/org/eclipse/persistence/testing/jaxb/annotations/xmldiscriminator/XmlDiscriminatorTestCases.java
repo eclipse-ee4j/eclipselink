@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,7 +30,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_RESOURCE_WRITE);
     }
-    
+
     public Object getControlObject() {
         Car car = new Car();
         car.numberOfDoors = 2;
@@ -40,9 +40,9 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
         car.topSpeed = 354;
         return new JAXBElement(new QName("vehicle-data"), Vehicle.class, car);
     }
-    
+
     public Object getReadControlObject() {
-    	   Car car = new Car();
+           Car car = new Car();
            car.numberOfDoors = 2;
            car.milesPerGallon = 26;
            car.model = "Mustang GT";

@@ -1,26 +1,26 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     06/1/2011-2.3 Guy Pelletier 
+ *     06/1/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 9)
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- *     14/05/2012-2.4 Guy Pelletier  
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- *     01/06/2011-2.3 Guy Pelletier 
+ *     01/06/2011-2.3 Guy Pelletier
  *       - 371453: JPA Multi-Tenancy in Bidirectional OneToOne Relation throws ArrayIndexOutOfBoundsException
- *     20/11/2012-2.5 Guy Pelletier  
+ *     20/11/2012-2.5 Guy Pelletier
  *       - 394524: Invalid query key [...] in expression
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -45,7 +45,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildPhoneNumberTable());
         addTableDefinition(buildCardTable());
         addTableDefinition(buildEnvelopeTable());
-        
+
         // Table per tenant tables.
         addTableDefinition(buildRidingTable());
         addTableDefinition(buildPartyTable());
@@ -80,7 +80,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildTrowelTenantBTable());
         addTableDefinition(buildTrowelTenantCTable());
     }
-    
+
     public TableDefinition buildAddressTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MAFIOSO_ADDRESS");
@@ -150,7 +150,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldCountry.setUnique(false);
         fieldCountry.setShouldAllowNull(true);
         table.addField(fieldCountry);
-        
+
         FieldDefinition fieldVersion = new FieldDefinition();
         fieldVersion.setName("VERSION");
         fieldVersion.setTypeName("NUMERIC");
@@ -160,7 +160,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldVersion.setIsIdentity(false);
         fieldVersion.setShouldAllowNull(true);
         table.addField(fieldVersion);
-        
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -171,10 +171,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTenantId.setUnique(false);
         fieldTenantId.setShouldAllowNull(false);
         table.addField(fieldTenantId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildMafiaFamilyTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MAFIA_FAMILY");
@@ -199,7 +199,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setShouldAllowNull(true);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -210,10 +210,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTenantId.setUnique(true);
         fieldTenantId.setShouldAllowNull(false);
         table.addField(fieldTenantId);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildMafiaFamily_TagsTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_FAMILY_TAGS");
@@ -239,7 +239,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTag.setUnique(false);
         fieldTag.setShouldAllowNull(true);
         table.addField(fieldTag);
-        
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -254,7 +254,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildMafiaFamily_RevenueTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_FAMILY_REVENUE");
@@ -280,7 +280,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldRevenue.setUnique(false);
         fieldRevenue.setShouldAllowNull(true);
         table.addField(fieldRevenue);
-        
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -292,14 +292,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTenantId.setShouldAllowNull(false);
         fieldTenantId.setForeignKeyFieldName("JPA_MAFIA_FAMILY.TENANT_ID");
         table.addField(fieldTenantId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildMafiosoTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MAFIOSO");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -309,7 +309,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldFirstName = new FieldDefinition();
         fieldFirstName.setName("FIRSTNAME");
         fieldFirstName.setTypeName("VARCHAR");
@@ -319,7 +319,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldFirstName.setUnique(false);
         fieldFirstName.setIsIdentity(false);
         table.addField(fieldFirstName);
-        
+
         FieldDefinition fieldLastName = new FieldDefinition();
         fieldLastName.setName("LASTNAME");
         fieldLastName.setTypeName("VARCHAR");
@@ -329,7 +329,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldLastName.setUnique(false);
         fieldLastName.setIsIdentity(false);
         table.addField(fieldLastName);
-        
+
         FieldDefinition fieldNickname = new FieldDefinition();
         fieldNickname.setName("NICKNAME");
         fieldNickname.setTypeName("VARCHAR");
@@ -339,7 +339,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldNickname.setUnique(false);
         fieldNickname.setIsIdentity(false);
         table.addField(fieldNickname);
-        
+
         FieldDefinition fieldGender = new FieldDefinition();
         fieldGender.setName("GENDER");
         fieldGender.setTypeName("VARCHAR");
@@ -349,7 +349,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldGender.setUnique(false);
         fieldGender.setIsIdentity(false);
         table.addField(fieldGender);
-        
+
         FieldDefinition fieldFamily = new FieldDefinition();
         fieldFamily.setName("FAMILY_ID");
         fieldFamily.setTypeName("NUMERIC");
@@ -360,7 +360,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldFamily.setIsIdentity(false);
         //fieldFamily.setForeignKeyFieldName("JPA_MAFIA_FAMILY.ID");
         table.addField(fieldFamily);
-        
+
         FieldDefinition fielDiscriminatorType = new FieldDefinition();
         fielDiscriminatorType.setName("DTYPE");
         fielDiscriminatorType.setTypeName("VARCHAR");
@@ -370,7 +370,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fielDiscriminatorType.setUnique(false);
         fielDiscriminatorType.setIsIdentity(false);
         table.addField(fielDiscriminatorType);
-    
+
         FieldDefinition fieldAddress = new FieldDefinition();
         fieldAddress.setName("ADDRESS_ID");
         fieldAddress.setTypeName("NUMERIC");
@@ -380,7 +380,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldAddress.setUnique(false);
         fieldAddress.setIsIdentity(false);
         table.addField(fieldAddress);
-        
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -391,14 +391,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTenantId.setUnique(false);
         fieldTenantId.setShouldAllowNull(false);
         table.addField(fieldTenantId);
-        
+
         return table;
     }
 
     public TableDefinition buildMasonTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MASON_A");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -408,7 +408,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -418,7 +418,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldTrowelId = new FieldDefinition();
         fieldTrowelId.setName("TROWEL_ID");
         fieldTrowelId.setTypeName("NUMERIC");
@@ -429,14 +429,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTrowelId.setShouldAllowNull(true);
         fieldTrowelId.setForeignKeyFieldName("JPA_TROWEL_A.ID");
         table.addField(fieldTrowelId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildMasonTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MASON_B");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -446,7 +446,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -456,7 +456,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldTrowelId = new FieldDefinition();
         fieldTrowelId.setName("TROWEL_ID");
         fieldTrowelId.setTypeName("NUMERIC");
@@ -467,14 +467,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTrowelId.setShouldAllowNull(true);
         fieldTrowelId.setForeignKeyFieldName("JPA_TROWEL_B.ID");
         table.addField(fieldTrowelId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildMasonTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MASON_C");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -484,7 +484,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -494,7 +494,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldTrowelId = new FieldDefinition();
         fieldTrowelId.setName("TROWEL_ID");
         fieldTrowelId.setTypeName("NUMERIC");
@@ -505,14 +505,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTrowelId.setShouldAllowNull(true);
         fieldTrowelId.setForeignKeyFieldName("JPA_TROWEL_C.ID");
         table.addField(fieldTrowelId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildMasonAwardsTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MASON_AWARDS_A");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("MASON_ID");
         fieldID.setTypeName("NUMERIC");
@@ -523,7 +523,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("JPA_MASON_A.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAWARDDATE = new FieldDefinition();
         fieldAWARDDATE.setName("AWARD_DATE");
         fieldAWARDDATE.setTypeName("DATE");
@@ -543,14 +543,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldAWARD.setUnique(false);
         fieldAWARD.setIsIdentity(false);
         table.addField(fieldAWARD);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildMasonAwardsTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MASON_AWARDS_B");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("MASON_ID");
         fieldID.setTypeName("NUMERIC");
@@ -561,7 +561,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("JPA_MASON_B.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAWARDDATE = new FieldDefinition();
         fieldAWARDDATE.setName("AWARD_DATE");
         fieldAWARDDATE.setTypeName("DATE");
@@ -581,14 +581,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldAWARD.setUnique(false);
         fieldAWARD.setIsIdentity(false);
         table.addField(fieldAWARD);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildMasonAwardsTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MASON_AWARDS_C");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("MASON_ID");
         fieldID.setTypeName("NUMERIC");
@@ -599,7 +599,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("JPA_MASON_C.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAWARDDATE = new FieldDefinition();
         fieldAWARDDATE.setName("AWARD_DATE");
         fieldAWARDDATE.setTypeName("DATE");
@@ -619,14 +619,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldAWARD.setUnique(false);
         fieldAWARD.setIsIdentity(false);
         table.addField(fieldAWARD);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildTrowelTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_TROWEL_A");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -636,7 +636,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("TROWEL_TYPE");
         fieldName.setTypeName("VARCHAR");
@@ -646,14 +646,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildTrowelTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_TROWEL_B");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -663,7 +663,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("TROWEL_TYPE");
         fieldName.setTypeName("VARCHAR");
@@ -673,14 +673,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildTrowelTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_TROWEL_C");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -690,7 +690,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("TROWEL_TYPE");
         fieldName.setTypeName("VARCHAR");
@@ -700,14 +700,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildPhoneNumberTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MT_PHONE_NUMBER");
-    
+
         FieldDefinition fieldId = new FieldDefinition();
         fieldId.setName("ID");
         fieldId.setTypeName("NUMERIC");
@@ -717,7 +717,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldId.setUnique(false);
         fieldId.setIsIdentity(false);
         table.addField(fieldId);
-        
+
         FieldDefinition fieldType = new FieldDefinition();
         fieldType.setName("TYPE");
         fieldType.setTypeName("VARCHAR2");
@@ -727,7 +727,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldType.setUnique(false);
         fieldType.setIsIdentity(false);
         table.addField(fieldType);
-    
+
         FieldDefinition fieldAreaCode = new FieldDefinition();
         fieldAreaCode.setName("AREA_CODE");
         fieldAreaCode.setTypeName("VARCHAR2");
@@ -737,7 +737,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldAreaCode.setUnique(false);
         fieldAreaCode.setIsIdentity(false);
         table.addField(fieldAreaCode);
-    
+
         FieldDefinition fieldNumber = new FieldDefinition();
         fieldNumber.setName("NUMB");
         fieldNumber.setTypeName("VARCHAR2");
@@ -747,7 +747,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldNumber.setUnique(false);
         fieldNumber.setIsIdentity(false);
         table.addField(fieldNumber);
-        
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -761,7 +761,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildBossTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_BOSS");
@@ -787,7 +787,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldUnderboss.setIsIdentity(false);
         fieldUnderboss.setForeignKeyFieldName("JPA_MAFIOSO.ID");
         table.addField(fieldUnderboss);
-        
+
         return table;
     }
 
@@ -805,14 +805,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setForeignKeyFieldName("JPA_MAFIOSO.ID");
         table.addField(fieldID);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateHonorsTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CANDIDATE_HONORS_A");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("Candidate_ID");
         fieldID.setTypeName("NUMERIC");
@@ -822,7 +822,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("HONOR");
         field1.setTypeName("VARCHAR");
@@ -832,14 +832,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateHonorsTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CANDIDATE_HONORS_B");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("Candidate_ID");
         fieldID.setTypeName("NUMERIC");
@@ -849,7 +849,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("HONOR");
         field1.setTypeName("VARCHAR");
@@ -859,14 +859,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateHonorsTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CANDIDATE_HONORS_C");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("Candidate_ID");
         fieldID.setTypeName("NUMERIC");
@@ -876,7 +876,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("HONOR");
         field1.setTypeName("VARCHAR");
@@ -886,14 +886,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateSupporterTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CAN_SUP_A");
-        
+
         FieldDefinition fieldCandidateId = new FieldDefinition();
         fieldCandidateId.setName("CANDIDATE_ID");
         fieldCandidateId.setTypeName("NUMERIC");
@@ -904,7 +904,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldCandidateId.setShouldAllowNull(false);
         fieldCandidateId.setForeignKeyFieldName("JPA_CANDIDATE_A.ID");
         table.addField(fieldCandidateId);
-        
+
         FieldDefinition fieldSupporterId = new FieldDefinition();
         fieldSupporterId.setName("SUPPORTER_ID");
         fieldSupporterId.setTypeName("NUMERIC");
@@ -915,14 +915,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldSupporterId.setShouldAllowNull(false);
         fieldSupporterId.setForeignKeyFieldName("A_JPA_SUPPORTER.ID");
         table.addField(fieldSupporterId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateSupporterTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CAN_SUP_B");
-        
+
         FieldDefinition fieldCandidateId = new FieldDefinition();
         fieldCandidateId.setName("CANDIDATE_ID");
         fieldCandidateId.setTypeName("NUMERIC");
@@ -933,7 +933,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldCandidateId.setShouldAllowNull(false);
         fieldCandidateId.setForeignKeyFieldName("JPA_CANDIDATE_B.ID");
         table.addField(fieldCandidateId);
-        
+
         FieldDefinition fieldSupporterId = new FieldDefinition();
         fieldSupporterId.setName("SUPPORTER_ID");
         fieldSupporterId.setTypeName("NUMERIC");
@@ -944,14 +944,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldSupporterId.setShouldAllowNull(false);
         fieldSupporterId.setForeignKeyFieldName("B_JPA_SUPPORTER.ID");
         table.addField(fieldSupporterId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateSupporterTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CAN_SUP_C");
-        
+
         FieldDefinition fieldCandidateId = new FieldDefinition();
         fieldCandidateId.setName("CANDIDATE_ID");
         fieldCandidateId.setTypeName("NUMERIC");
@@ -962,7 +962,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldCandidateId.setShouldAllowNull(false);
         fieldCandidateId.setForeignKeyFieldName("JPA_CANDIDATE_C.ID");
         table.addField(fieldCandidateId);
-        
+
         FieldDefinition fieldSupporterId = new FieldDefinition();
         fieldSupporterId.setName("SUPPORTER_ID");
         fieldSupporterId.setTypeName("NUMERIC");
@@ -973,14 +973,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldSupporterId.setShouldAllowNull(false);
         fieldSupporterId.setForeignKeyFieldName("C_JPA_SUPPORTER.ID");
         table.addField(fieldSupporterId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CANDIDATE_A");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -990,7 +990,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1000,7 +1000,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldRidingId = new FieldDefinition();
         fieldRidingId.setName("RIDING_ID");
         fieldRidingId.setTypeName("NUMERIC");
@@ -1011,7 +1011,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldRidingId.setShouldAllowNull(true);
         fieldRidingId.setForeignKeyFieldName("JPA_RIDING.ID");
         table.addField(fieldRidingId);
-        
+
         FieldDefinition fieldPartyId = new FieldDefinition();
         fieldPartyId.setName("PARTY_ID");
         fieldPartyId.setTypeName("NUMERIC");
@@ -1022,14 +1022,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldPartyId.setShouldAllowNull(true);
         fieldPartyId.setForeignKeyFieldName("JPA_PARTY.ID");
         table.addField(fieldPartyId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CANDIDATE_B");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1039,7 +1039,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1049,7 +1049,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldRidingId = new FieldDefinition();
         fieldRidingId.setName("RIDING_ID");
         fieldRidingId.setTypeName("NUMERIC");
@@ -1060,7 +1060,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldRidingId.setShouldAllowNull(true);
         fieldRidingId.setForeignKeyFieldName("JPA_RIDING.ID");
         table.addField(fieldRidingId);
-        
+
         FieldDefinition fieldPartyId = new FieldDefinition();
         fieldPartyId.setName("PARTY_ID");
         fieldPartyId.setTypeName("NUMERIC");
@@ -1071,14 +1071,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldPartyId.setShouldAllowNull(true);
         fieldPartyId.setForeignKeyFieldName("JPA_PARTY.ID");
         table.addField(fieldPartyId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CANDIDATE_C");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1088,7 +1088,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1098,7 +1098,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldRidingId = new FieldDefinition();
         fieldRidingId.setName("RIDING_ID");
         fieldRidingId.setTypeName("NUMERIC");
@@ -1109,7 +1109,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldRidingId.setShouldAllowNull(true);
         fieldRidingId.setForeignKeyFieldName("JPA_RIDING.ID");
         table.addField(fieldRidingId);
-        
+
         FieldDefinition fieldPartyId = new FieldDefinition();
         fieldPartyId.setName("PARTY_ID");
         fieldPartyId.setTypeName("NUMERIC");
@@ -1120,10 +1120,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldPartyId.setShouldAllowNull(true);
         fieldPartyId.setForeignKeyFieldName("JPA_PARTY.ID");
         table.addField(fieldPartyId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCapoTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CAPO");
@@ -1138,7 +1138,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setForeignKeyFieldName("JPA_MAFIOSO.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldUnderboss = new FieldDefinition();
         fieldUnderboss.setName("UNDERBOSS_ID");
         fieldUnderboss.setTypeName("NUMERIC");
@@ -1149,10 +1149,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldUnderboss.setIsIdentity(false);
         fieldUnderboss.setForeignKeyFieldName("JPA_MAFIOSO.ID");
         table.addField(fieldUnderboss);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildSalaryTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CANDY_SALARY_A");
@@ -1182,7 +1182,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildSalaryTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CANDY_SALARY_B");
@@ -1212,7 +1212,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildSalaryTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CANDY_SALARY_C");
@@ -1242,7 +1242,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildSoldierTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_SOLDIER");
@@ -1257,7 +1257,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setForeignKeyFieldName("JPA_MAFIOSO.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldCapo = new FieldDefinition();
         fieldCapo.setName("CAPO_ID");
         fieldCapo.setTypeName("NUMERIC");
@@ -1268,14 +1268,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldCapo.setIsIdentity(false);
         fieldCapo.setForeignKeyFieldName("JPA_MAFIOSO.ID");
         table.addField(fieldCapo);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildSupporterInfoSubTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("A_JPA_SUPPORTER_INFO_SUB");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
         field.setTypeName("NUMERIC");
@@ -1285,7 +1285,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(true);
         field.setShouldAllowNull(false);
         table.addField(field);
-    
+
         field = new FieldDefinition();
         field.setName("SUB_DESCRIP");
         field.setTypeName("VARCHAR");
@@ -1295,14 +1295,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setShouldAllowNull(false);
         table.addField(field);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildSupporterInfoSubTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("B_JPA_SUPPORTER_INFO_SUB");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
         field.setTypeName("NUMERIC");
@@ -1312,7 +1312,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(true);
         field.setShouldAllowNull(false);
         table.addField(field);
-    
+
         field = new FieldDefinition();
         field.setName("SUB_DESCRIP");
         field.setTypeName("VARCHAR");
@@ -1322,14 +1322,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setShouldAllowNull(false);
         table.addField(field);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildSupporterInfoSubTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("C_JPA_SUPPORTER_INFO_SUB");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
         field.setTypeName("NUMERIC");
@@ -1339,7 +1339,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(true);
         field.setShouldAllowNull(false);
         table.addField(field);
-    
+
         field = new FieldDefinition();
         field.setName("SUB_DESCRIP");
         field.setTypeName("VARCHAR");
@@ -1349,14 +1349,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setShouldAllowNull(false);
         table.addField(field);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildSupporterInfoTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("A_JPA_SUPPORTER_INFO");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
         field.setTypeName("NUMERIC");
@@ -1366,7 +1366,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(true);
         field.setShouldAllowNull(false);
         table.addField(field);
-    
+
         field = new FieldDefinition();
         field.setName("DESCRIP");
         field.setTypeName("VARCHAR");
@@ -1376,7 +1376,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setShouldAllowNull(false);
         table.addField(field);
-        
+
         field = new FieldDefinition();
         field.setName("SUPPORTER_INFO_SUB_ID");
         field.setTypeName("NUMERIC");
@@ -1387,14 +1387,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("A_JPA_SUPPORTER_INFO_SUB.ID");
         table.addField(field);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildSupporterInfoTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("B_JPA_SUPPORTER_INFO");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
         field.setTypeName("NUMERIC");
@@ -1404,7 +1404,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(true);
         field.setShouldAllowNull(false);
         table.addField(field);
-    
+
         field = new FieldDefinition();
         field.setName("DESCRIP");
         field.setTypeName("VARCHAR");
@@ -1414,7 +1414,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setShouldAllowNull(false);
         table.addField(field);
-        
+
         field = new FieldDefinition();
         field.setName("SUPPORTER_INFO_SUB_ID");
         field.setTypeName("NUMERIC");
@@ -1425,14 +1425,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("B_JPA_SUPPORTER_INFO_SUB.ID");
         table.addField(field);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildSupporterInfoTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("C_JPA_SUPPORTER_INFO");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
         field.setTypeName("NUMERIC");
@@ -1442,7 +1442,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(true);
         field.setShouldAllowNull(false);
         table.addField(field);
-    
+
         field = new FieldDefinition();
         field.setName("DESCRIP");
         field.setTypeName("VARCHAR");
@@ -1452,7 +1452,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setShouldAllowNull(false);
         table.addField(field);
-        
+
         field = new FieldDefinition();
         field.setName("SUPPORTER_INFO_SUB_ID");
         field.setTypeName("NUMERIC");
@@ -1463,14 +1463,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("C_JPA_SUPPORTER_INFO_SUB.ID");
         table.addField(field);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildSupporterTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("A_JPA_SUPPORTER");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1480,7 +1480,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1490,7 +1490,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setIsIdentity(false);
         fieldName.setShouldAllowNull(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldSupporterInfo = new FieldDefinition();
         fieldSupporterInfo.setName("SUPPORTER_INFO_ID");
         fieldSupporterInfo.setTypeName("NUMERIC");
@@ -1501,14 +1501,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldSupporterInfo.setIsIdentity(false);
         fieldSupporterInfo.setForeignKeyFieldName("A_JPA_SUPPORTER_INFO.ID");
         table.addField(fieldSupporterInfo);
-        
+
         return table;
     }
-     
+
     public TableDefinition buildSupporterTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("B_JPA_SUPPORTER");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1518,7 +1518,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1528,7 +1528,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setIsIdentity(false);
         fieldName.setShouldAllowNull(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldSupporterInfo = new FieldDefinition();
         fieldSupporterInfo.setName("SUPPORTER_INFO_ID");
         fieldSupporterInfo.setTypeName("NUMERIC");
@@ -1539,14 +1539,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldSupporterInfo.setIsIdentity(false);
         fieldSupporterInfo.setForeignKeyFieldName("B_JPA_SUPPORTER_INFO.ID");
         table.addField(fieldSupporterInfo);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildSupporterTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("C_JPA_SUPPORTER");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1556,7 +1556,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1566,7 +1566,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setIsIdentity(false);
         fieldName.setShouldAllowNull(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldSupporterInfo = new FieldDefinition();
         fieldSupporterInfo.setName("SUPPORTER_INFO_ID");
         fieldSupporterInfo.setTypeName("NUMERIC");
@@ -1577,10 +1577,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldSupporterInfo.setIsIdentity(false);
         fieldSupporterInfo.setForeignKeyFieldName("C_JPA_SUPPORTER_INFO.ID");
         table.addField(fieldSupporterInfo);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildContractTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CONTRACT");
@@ -1605,7 +1605,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldDescription.setUnique(false);
         fieldDescription.setShouldAllowNull(true);
         table.addField(fieldDescription);
-        
+
         FieldDefinition fieldVersion = new FieldDefinition();
         fieldVersion.setName("VERSION");
         fieldVersion.setTypeName("NUMERIC");
@@ -1615,7 +1615,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldVersion.setUnique(false);
         fieldVersion.setIsIdentity(false);
         table.addField(fieldVersion);
-        
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -1626,10 +1626,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTenantId.setUnique(false);
         fieldTenantId.setShouldAllowNull(false);
         table.addField(fieldTenantId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildContract_SoldierTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CONTRACT_SOLDIER");
@@ -1644,7 +1644,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldContractId.setIsIdentity(false);
         fieldContractId.setForeignKeyFieldName("JPA_CONTRACT.ID");
         table.addField(fieldContractId);
-        
+
         FieldDefinition fieldSoldierId = new FieldDefinition();
         fieldSoldierId.setName("SOLDIER_ID");
         fieldSoldierId.setTypeName("NUMERIC");
@@ -1655,10 +1655,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldSoldierId.setIsIdentity(false);
         fieldSoldierId.setForeignKeyFieldName("JPA_MAFIOSO.ID");
         table.addField(fieldSoldierId);
-        
-        return table;   
+
+        return table;
     }
-    
+
     public TableDefinition buildRewardTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_REWARD");
@@ -1683,7 +1683,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldDescription.setUnique(false);
         fieldDescription.setShouldAllowNull(true);
         table.addField(fieldDescription);
-        
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("T_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -1694,7 +1694,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTenantId.setUnique(false);
         fieldTenantId.setShouldAllowNull(false);
         table.addField(fieldTenantId);
-        
+
         FieldDefinition fieldMafiosoId = new FieldDefinition();
         fieldMafiosoId.setName("MAFIOSO_ID");
         fieldMafiosoId.setTypeName("NUMERIC");
@@ -1705,14 +1705,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldMafiosoId.setIsIdentity(false);
         fieldMafiosoId.setForeignKeyFieldName("JPA_MAFIOSO.ID");
         table.addField(fieldMafiosoId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildRidingTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_RIDING");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1722,7 +1722,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1732,14 +1732,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildPartyTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_PARTY");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1749,7 +1749,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1759,10 +1759,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCardTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CARD");
@@ -1787,7 +1787,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldColor.setUnique(false);
         fieldColor.setShouldAllowNull(false);
         table.addField(fieldColor);
-        
+
         FieldDefinition fieldOccasion = new FieldDefinition();
         fieldOccasion.setName("OCCASION");
         fieldOccasion.setTypeName("VARCHAR2");
@@ -1798,7 +1798,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldOccasion.setUnique(false);
         fieldOccasion.setShouldAllowNull(false);
         table.addField(fieldOccasion);
-        
+
         FieldDefinition fieldFrontCaption = new FieldDefinition();
         fieldFrontCaption.setName("FRONT_CAPTION");
         fieldFrontCaption.setTypeName("VARCHAR2");
@@ -1809,7 +1809,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldFrontCaption.setUnique(false);
         fieldFrontCaption.setShouldAllowNull(false);
         table.addField(fieldFrontCaption);
-        
+
         FieldDefinition fieldInsideCaption = new FieldDefinition();
         fieldInsideCaption.setName("INSIDE_CAPTION");
         fieldInsideCaption.setTypeName("VARCHAR2");
@@ -1820,7 +1820,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldInsideCaption.setUnique(false);
         fieldInsideCaption.setShouldAllowNull(false);
         table.addField(fieldInsideCaption);
-        
+
         FieldDefinition fieldPrice = new FieldDefinition();
         fieldPrice.setName("PRICE");
         fieldPrice.setTypeName("DOUBLE");
@@ -1830,7 +1830,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldPrice.setUnique(false);
         fieldPrice.setShouldAllowNull(false);
         table.addField(fieldPrice);
-        
+
         FieldDefinition fieldPrintYear = new FieldDefinition();
         fieldPrintYear.setName("PRINT_YEAR");
         fieldPrintYear.setTypeName("NUMERIC");
@@ -1840,7 +1840,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldPrintYear.setUnique(false);
         fieldPrintYear.setShouldAllowNull(false);
         table.addField(fieldPrintYear);
-        
+
         FieldDefinition fieldEnvelopeId = new FieldDefinition();
         fieldEnvelopeId.setName("ENVELOPE_ID");
         fieldEnvelopeId.setTypeName("NUMERIC");
@@ -1851,7 +1851,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldEnvelopeId.setShouldAllowNull(false);
         fieldEnvelopeId.setForeignKeyFieldName("JPA_ENVELOPE.ID");
         table.addField(fieldEnvelopeId);
-        
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -1862,10 +1862,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTenantId.setUnique(true);
         fieldTenantId.setShouldAllowNull(false);
         table.addField(fieldTenantId);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildEnvelopeTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_ENVELOPE");
@@ -1890,7 +1890,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldColor.setUnique(false);
         fieldColor.setShouldAllowNull(true);
         table.addField(fieldColor);
-        
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -1901,7 +1901,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTenantId.setUnique(true);
         fieldTenantId.setShouldAllowNull(false);
         table.addField(fieldTenantId);
-    
+
         return table;
     }
 }

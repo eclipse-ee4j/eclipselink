@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,83 +28,83 @@ import org.eclipse.persistence.tools.workbench.utility.filters.Filter;
 
 
 final class ReportQueryGroupingOrderingPanel
-	extends AbstractPanel
+    extends AbstractPanel
 {
 
-	private PropertyValueModel queryHolder;
-	private OrderingAttributesPanel orderingPanel;
-	private GroupingAttributesPanel groupingAttributesPanel;
-	
-	public ReportQueryGroupingOrderingPanel(PropertyValueModel queryHolder, WorkbenchContextHolder contextHolder) {
-		super(contextHolder);
-		this.queryHolder = buildReportQueryHolder(queryHolder);
-		initializeLayout();
-	}
-	
-	private PropertyValueModel buildReportQueryHolder(PropertyValueModel queryHolder) {
-		return new FilteringPropertyValueModel(queryHolder) {
-			protected boolean accept(Object value) {
-				return value instanceof MWReportQuery;
-			}
-		};
-	}
+    private PropertyValueModel queryHolder;
+    private OrderingAttributesPanel orderingPanel;
+    private GroupingAttributesPanel groupingAttributesPanel;
 
-	private void initializeLayout() {
-		GridBagConstraints constraints = new GridBagConstraints();
-		
-		this.groupingAttributesPanel = 
-			new GroupingAttributesPanel(this.queryHolder, getWorkbenchContextHolder());
-		
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 1;
-		constraints.weighty = 1;
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.insets = new Insets(0, 0, 0, 0);
-		add(this.groupingAttributesPanel, constraints);
+    public ReportQueryGroupingOrderingPanel(PropertyValueModel queryHolder, WorkbenchContextHolder contextHolder) {
+        super(contextHolder);
+        this.queryHolder = buildReportQueryHolder(queryHolder);
+        initializeLayout();
+    }
 
-		
-		this.orderingPanel = 
-		    new OrderingAttributesPanel(
-		        this.queryHolder, 
-		        Filter.NULL_INSTANCE, 
-		        buildOrderingChooseableFilter(), 
-		        getWorkbenchContextHolder()) {
-		    AttributeItemDialog buildAttributeItemDialog(MWAttributeItem item) {
-				return new ReportQueryOrderingAttributeDialog(
-						(MWReportQuery) getQuery(),
-						(MWReportOrderingItem) item,
-						getTraversableFilter(), 
-						getChooseableFilter(), 
-						getWorkbenchContext());
+    private PropertyValueModel buildReportQueryHolder(PropertyValueModel queryHolder) {
+        return new FilteringPropertyValueModel(queryHolder) {
+            protected boolean accept(Object value) {
+                return value instanceof MWReportQuery;
+            }
+        };
+    }
+
+    private void initializeLayout() {
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        this.groupingAttributesPanel =
+            new GroupingAttributesPanel(this.queryHolder, getWorkbenchContextHolder());
+
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(0, 0, 0, 0);
+        add(this.groupingAttributesPanel, constraints);
+
+
+        this.orderingPanel =
+            new OrderingAttributesPanel(
+                this.queryHolder,
+                Filter.NULL_INSTANCE,
+                buildOrderingChooseableFilter(),
+                getWorkbenchContextHolder()) {
+            AttributeItemDialog buildAttributeItemDialog(MWAttributeItem item) {
+                return new ReportQueryOrderingAttributeDialog(
+                        (MWReportQuery) getQuery(),
+                        (MWReportOrderingItem) item,
+                        getTraversableFilter(),
+                        getChooseableFilter(),
+                        getWorkbenchContext());
            }
-		};
-		constraints.gridx = 0;
-		constraints.gridy = 1;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 1;
-		constraints.weighty = 1;
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.insets = new Insets(0, 0, 0, 0);
-		add(this.orderingPanel, constraints);
-		
-		
-	}
-	
-	private Filter buildOrderingChooseableFilter() {
-		return Filter.NULL_INSTANCE;
-	}
-	
-	void selectOrderingItem(Ordering orderingItem) {
-		this.orderingPanel.select(orderingItem);
-	}
-	
-	void selectGroupingItem(MWGroupingItem groupingItem) {
-		this.groupingAttributesPanel.select(groupingItem);
-	}
+        };
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(0, 0, 0, 0);
+        add(this.orderingPanel, constraints);
+
+
+    }
+
+    private Filter buildOrderingChooseableFilter() {
+        return Filter.NULL_INSTANCE;
+    }
+
+    void selectOrderingItem(Ordering orderingItem) {
+        this.orderingPanel.select(orderingItem);
+    }
+
+    void selectGroupingItem(MWGroupingItem groupingItem) {
+        this.groupingAttributesPanel.select(groupingItem);
+    }
 }

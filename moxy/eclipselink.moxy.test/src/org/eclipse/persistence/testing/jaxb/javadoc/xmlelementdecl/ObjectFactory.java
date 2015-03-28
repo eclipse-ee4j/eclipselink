@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,20 +27,20 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct
 //@XmlRootElement.
 @XmlRegistry
 public class ObjectFactory {
-	
-	private final static QName  _Name_QNAME = new QName("", "Name");
-	
+
+    private final static QName  _Name_QNAME = new QName("", "Name");
+
     public ObjectFactory() {
     }
 
     @XmlElementDecl (name = "foo")
     public JAXBElement<String> creatFoo(String s){
-    	return new JAXBElement<String> (_Name_QNAME ,String.class, null, s);
+        return new JAXBElement<String> (_Name_QNAME ,String.class, null, s);
     }
-    
-    public boolean equals(Object object) {
-		ObjectFactory obj = ((ObjectFactory)object);
 
-	return true;
-	}    	
+    public boolean equals(Object object) {
+        ObjectFactory obj = ((ObjectFactory)object);
+
+    return true;
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy;
 
 import junit.textui.TestRunner;
@@ -17,21 +17,21 @@ import junit.textui.TestRunner;
 import commonj.sdo.helper.XMLDocument;
 // TODO: How is this test different from 3-1 set(non-null) == set(default)
 public class IsSetOptionalAttributeWithoutDefaultSetNOPTestCases extends IsSetOptionalAttributeWithoutDefaultTestCases {
-	
-	// UC 1-2
-	/*
-	<xsd:element name='employee'>
-	<xsd:complexType>
-		<xsd:attribute name="id" type="xsd:int"/>
-		<xsd:attribute name="firstname" type="xsd:string"/>
-		<xsd:attribute name="lastname" type="xsd:string"/>
-	</xsd:complexType>
-	</xsd:element>
 
-	Use Case #1-2 - Is Set == False (NOP)
-	Unmarshal From					fn Property						Marshal To
-	<employee/>					Get = null	IsSet = false	<employee/>
-	 */
+    // UC 1-2
+    /*
+    <xsd:element name='employee'>
+    <xsd:complexType>
+        <xsd:attribute name="id" type="xsd:int"/>
+        <xsd:attribute name="firstname" type="xsd:string"/>
+        <xsd:attribute name="lastname" type="xsd:string"/>
+    </xsd:complexType>
+    </xsd:element>
+
+    Use Case #1-2 - Is Set == False (NOP)
+    Unmarshal From                    fn Property                        Marshal To
+    <employee/>                    Get = null    IsSet = false    <employee/>
+     */
     public IsSetOptionalAttributeWithoutDefaultSetNOPTestCases(String name) {
         super(name);
     }
@@ -62,7 +62,7 @@ public class IsSetOptionalAttributeWithoutDefaultSetNOPTestCases extends IsSetOp
         boolean isSet = doc.getRootObject().isSet(ID_NAME);
         // verify defaults
         // TODO: this test case will fail for noSchemaLoad until we resolve #6151874 Jira-253
-        assertEquals(0, value);        
+        assertEquals(0, value);
         assertNotNull(value);
         assertFalse(isSet);
 

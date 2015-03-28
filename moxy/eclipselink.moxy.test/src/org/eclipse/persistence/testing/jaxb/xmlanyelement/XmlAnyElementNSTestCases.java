@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,21 +48,21 @@ public class XmlAnyElementNSTestCases extends JAXBWithJSONTestCases {
         setClasses(classes);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
-        
+
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("namespace1", "ns1");
         namespaces.put("namespace2", "ns2");
         jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
-    
+
     protected Object getJSONReadControlObject() {
-    	Employee emp = (Employee)getControlObject();
-    	Object objectRemoved = ((ArrayList)emp.elements).remove(emp.elements.size()-1);    	
-    	((ArrayList)emp.elements).add(0, objectRemoved);
-    	//remove namespace declaration
-    	((Element)((ArrayList)emp.elements).get(3)).removeAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "myns");
-    	return emp;    
+        Employee emp = (Employee)getControlObject();
+        Object objectRemoved = ((ArrayList)emp.elements).remove(emp.elements.size()-1);
+        ((ArrayList)emp.elements).add(0, objectRemoved);
+        //remove namespace declaration
+        ((Element)((ArrayList)emp.elements).get(3)).removeAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "myns");
+        return emp;
     }
 
     protected Object getControlObject() {
@@ -89,21 +89,21 @@ public class XmlAnyElementNSTestCases extends JAXBWithJSONTestCases {
                 }
             }
             ((ArrayList)employee.elements).add(0,((ArrayList)employee.elements).get(employee.elements.size()-1));
-             
+
         } catch(Exception ex) {}
 
         return employee;
     }
-    	
-    public void testObjectToContentHandler() throws Exception {    	
+
+    public void testObjectToContentHandler() throws Exception {
     }
-    public void testObjectToXMLDocument() throws Exception {    	
+    public void testObjectToXMLDocument() throws Exception {
     }
     public void testXMLToObjectFromSAXSource() throws Exception {
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             InputSource source = new InputSource(instream);
-            
+
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
             try {
@@ -113,14 +113,14 @@ public class XmlAnyElementNSTestCases extends JAXBWithJSONTestCases {
             } catch(org.xml.sax.SAXNotSupportedException ex) {
             } catch (ParserConfigurationException e) {
             }
-            
+
             org.xml.sax.XMLReader reader = factory.newSAXParser().getXMLReader();
             SAXSource saxSource = new SAXSource(reader, source);
-            
+
             Object testObject = jaxbUnmarshaller.unmarshal(saxSource);
             instream.close();
             xmlToObjectTest(testObject);
         }
-    }	
+    }
 
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,112 +28,112 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.NumberSpinnerMo
 
 
 public class NumberSpinnerModelAdapterTests extends TestCase {
-	private PropertyValueModel valueHolder;
-	private SpinnerModel spinnerModelAdapter;
-	boolean eventFired;
+    private PropertyValueModel valueHolder;
+    private SpinnerModel spinnerModelAdapter;
+    boolean eventFired;
 
-	public static Test suite() {
-		return new TestSuite(NumberSpinnerModelAdapterTests.class);
-	}
-	
-	public NumberSpinnerModelAdapterTests(String name) {
-		super(name);
-	}
+    public static Test suite() {
+        return new TestSuite(NumberSpinnerModelAdapterTests.class);
+    }
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.valueHolder = new SimplePropertyValueModel(new Integer(0));
-		this.spinnerModelAdapter = new NumberSpinnerModelAdapter(this.valueHolder, -33, 33, 1);
-	}
+    public NumberSpinnerModelAdapterTests(String name) {
+        super(name);
+    }
 
-	protected void tearDown() throws Exception {
-		TestTools.clear(this);
-		super.tearDown();
-	}
+    protected void setUp() throws Exception {
+        super.setUp();
+        this.valueHolder = new SimplePropertyValueModel(new Integer(0));
+        this.spinnerModelAdapter = new NumberSpinnerModelAdapter(this.valueHolder, -33, 33, 1);
+    }
 
-	public void testSetValueSpinnerModel() throws Exception {
-		this.eventFired = false;
-		this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				NumberSpinnerModelAdapterTests.this.eventFired = true;
-			}
-		});
-		this.spinnerModelAdapter.setValue(new Integer(5));
-		assertTrue(this.eventFired);
-		assertEquals(new Integer(5), this.valueHolder.getValue());
-	}
+    protected void tearDown() throws Exception {
+        TestTools.clear(this);
+        super.tearDown();
+    }
 
-	public void testSetValueValueHolder() throws Exception {
-		this.eventFired = false;
-		this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				NumberSpinnerModelAdapterTests.this.eventFired = true;
-			}
-		});
-		assertEquals(new Integer(0), this.spinnerModelAdapter.getValue());
-		this.valueHolder.setValue(new Integer(7));
-		assertTrue(this.eventFired);
-		assertEquals(new Integer(7), this.spinnerModelAdapter.getValue());
-	}
+    public void testSetValueSpinnerModel() throws Exception {
+        this.eventFired = false;
+        this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                NumberSpinnerModelAdapterTests.this.eventFired = true;
+            }
+        });
+        this.spinnerModelAdapter.setValue(new Integer(5));
+        assertTrue(this.eventFired);
+        assertEquals(new Integer(5), this.valueHolder.getValue());
+    }
 
-	public void testDefaultValue() throws Exception {
-		this.eventFired = false;
-		this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				NumberSpinnerModelAdapterTests.this.eventFired = true;
-			}
-		});
-		assertEquals(new Integer(0), this.spinnerModelAdapter.getValue());
-		this.valueHolder.setValue(null);
-		assertTrue(this.eventFired);
-		assertEquals(new Integer(-33), this.spinnerModelAdapter.getValue());
-	}
+    public void testSetValueValueHolder() throws Exception {
+        this.eventFired = false;
+        this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                NumberSpinnerModelAdapterTests.this.eventFired = true;
+            }
+        });
+        assertEquals(new Integer(0), this.spinnerModelAdapter.getValue());
+        this.valueHolder.setValue(new Integer(7));
+        assertTrue(this.eventFired);
+        assertEquals(new Integer(7), this.spinnerModelAdapter.getValue());
+    }
 
-	public void testHasListeners() throws Exception {
-		SimplePropertyValueModel localValueHolder = (SimplePropertyValueModel) this.valueHolder;
-		assertFalse(localValueHolder.hasAnyPropertyChangeListeners(ValueModel.VALUE));
-		this.verifyHasNoListeners(this.spinnerModelAdapter);
+    public void testDefaultValue() throws Exception {
+        this.eventFired = false;
+        this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                NumberSpinnerModelAdapterTests.this.eventFired = true;
+            }
+        });
+        assertEquals(new Integer(0), this.spinnerModelAdapter.getValue());
+        this.valueHolder.setValue(null);
+        assertTrue(this.eventFired);
+        assertEquals(new Integer(-33), this.spinnerModelAdapter.getValue());
+    }
 
-		ChangeListener listener = new TestChangeListener();
-		this.spinnerModelAdapter.addChangeListener(listener);
-		assertTrue(localValueHolder.hasAnyPropertyChangeListeners(ValueModel.VALUE));
-		this.verifyHasListeners(this.spinnerModelAdapter);
+    public void testHasListeners() throws Exception {
+        SimplePropertyValueModel localValueHolder = (SimplePropertyValueModel) this.valueHolder;
+        assertFalse(localValueHolder.hasAnyPropertyChangeListeners(ValueModel.VALUE));
+        this.verifyHasNoListeners(this.spinnerModelAdapter);
 
-		this.spinnerModelAdapter.removeChangeListener(listener);
-		assertFalse(localValueHolder.hasAnyPropertyChangeListeners(ValueModel.VALUE));
-		this.verifyHasNoListeners(this.spinnerModelAdapter);
-	}
+        ChangeListener listener = new TestChangeListener();
+        this.spinnerModelAdapter.addChangeListener(listener);
+        assertTrue(localValueHolder.hasAnyPropertyChangeListeners(ValueModel.VALUE));
+        this.verifyHasListeners(this.spinnerModelAdapter);
 
-	private void verifyHasNoListeners(SpinnerModel adapter) throws Exception {
-		assertEquals(0, ((NumberSpinnerModelAdapter) adapter).getChangeListeners().length);
-	}
+        this.spinnerModelAdapter.removeChangeListener(listener);
+        assertFalse(localValueHolder.hasAnyPropertyChangeListeners(ValueModel.VALUE));
+        this.verifyHasNoListeners(this.spinnerModelAdapter);
+    }
 
-	private void verifyHasListeners(Object adapter) throws Exception {
-		assertFalse(((NumberSpinnerModelAdapter) adapter).getChangeListeners().length == 0);
-	}
+    private void verifyHasNoListeners(SpinnerModel adapter) throws Exception {
+        assertEquals(0, ((NumberSpinnerModelAdapter) adapter).getChangeListeners().length);
+    }
 
-	public void testNullInitialValue() {
-		this.valueHolder = new SimplePropertyValueModel();
-		this.spinnerModelAdapter = new NumberSpinnerModelAdapter(this.valueHolder, new Integer(-33), new Integer(33), new Integer(1), new Integer(0));
+    private void verifyHasListeners(Object adapter) throws Exception {
+        assertFalse(((NumberSpinnerModelAdapter) adapter).getChangeListeners().length == 0);
+    }
 
-		this.eventFired = false;
-		this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				NumberSpinnerModelAdapterTests.this.eventFired = true;
-			}
-		});
-		assertEquals(new Integer(0), this.spinnerModelAdapter.getValue());
-		this.valueHolder.setValue(new Integer(7));
-		assertTrue(this.eventFired);
-		assertEquals(new Integer(7), this.spinnerModelAdapter.getValue());
-	}
+    public void testNullInitialValue() {
+        this.valueHolder = new SimplePropertyValueModel();
+        this.spinnerModelAdapter = new NumberSpinnerModelAdapter(this.valueHolder, new Integer(-33), new Integer(33), new Integer(1), new Integer(0));
+
+        this.eventFired = false;
+        this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                NumberSpinnerModelAdapterTests.this.eventFired = true;
+            }
+        });
+        assertEquals(new Integer(0), this.spinnerModelAdapter.getValue());
+        this.valueHolder.setValue(new Integer(7));
+        assertTrue(this.eventFired);
+        assertEquals(new Integer(7), this.spinnerModelAdapter.getValue());
+    }
 
 
-	// ********** inner class **********
-	private class TestChangeListener implements ChangeListener {
-		public void stateChanged(ChangeEvent e) {
-			fail("unexpected event");
-		}
-	}
+    // ********** inner class **********
+    private class TestChangeListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            fail("unexpected event");
+        }
+    }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,20 +37,20 @@ public class NoRootElementTestCases extends JAXBWithJSONTestCases{
         jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
     }
 
-	@Override
-	protected Foo getControlObject() {
-	    Foo f = new Foo();
-	    f.theValue = 10;
-	    f.theOtherValue = 20;
-	    return f;
-	}
-	
-	public void setupControlDocs() throws Exception{
-  
+    @Override
+    protected Foo getControlObject() {
+        Foo f = new Foo();
+        f.theValue = 10;
+        f.theOtherValue = 20;
+        return f;
+    }
+
+    public void setupControlDocs() throws Exception{
+
         Document doc = parser.newDocument();
         Element root = doc.createElement("DUMMYROOT");
         doc.appendChild(root);
-        
+
         Element child1 = doc.createElement("theValue");
         child1.setTextContent("10");
         Element child2 = doc.createElement("theOtherValue");
@@ -61,43 +61,43 @@ public class NoRootElementTestCases extends JAXBWithJSONTestCases{
 
     }
     public Document getTestDocument(InputStream is) throws Exception{
-    	
+
         byte[] bytes = new byte[is.available()];
         is.read(bytes);
-        
+
         String s = new String(bytes);
         s = "<DUMMYROOT>" + s + "</DUMMYROOT>";
-        return parser.parse(new InputSource(new StringReader(s)));        
+        return parser.parse(new InputSource(new StringReader(s)));
      }
-     
-     public Document getTestDocument(String s) throws Exception{  	
+
+     public Document getTestDocument(String s) throws Exception{
          s = "<DUMMYROOT>" + s + "</DUMMYROOT>";
-         return parser.parse(new InputSource(new StringReader(s)));             
+         return parser.parse(new InputSource(new StringReader(s)));
      }
-		
-	@Override
-	public boolean isUnmarshalTest(){		
-		return false;
-	}
-	
-	public void testObjectToContentHandler() throws Exception{
-		try{
-		    super.testObjectToContentHandler();
-		}catch(MarshalException e){      		
-		    return;
-		}
-		fail("an error was expected");
-	}
-	
-	public void testObjectToXMLDocument() throws Exception{
-		try{
-		    super.testObjectToXMLDocument();
-		}catch(MarshalException e){
-      		assertTrue(((XMLMarshalException)e.getLinkedException()).getErrorCode() == 25003);
-		    return;
-		}
-		fail("an error was expected");
-	}
+
+    @Override
+    public boolean isUnmarshalTest(){
+        return false;
+    }
+
+    public void testObjectToContentHandler() throws Exception{
+        try{
+            super.testObjectToContentHandler();
+        }catch(MarshalException e){
+            return;
+        }
+        fail("an error was expected");
+    }
+
+    public void testObjectToXMLDocument() throws Exception{
+        try{
+            super.testObjectToXMLDocument();
+        }catch(MarshalException e){
+              assertTrue(((XMLMarshalException)e.getLinkedException()).getErrorCode() == 25003);
+            return;
+        }
+        fail("an error was expected");
+    }
 
     @Override
     public void testObjectToXMLStreamWriter() throws Exception {

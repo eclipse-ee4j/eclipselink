@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,13 +23,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Root {
     @XmlAttribute
     private String attr;
-    
+
     @XmlMixed
     private ArrayList<Object> objects;
 
     @XmlElement
     private String elem;
-    
+
 
     public ArrayList<Object> getObjects() {
         return objects;
@@ -46,7 +46,7 @@ public class Root {
     public void setAttr(String string) {
         this.attr = string;
     }
-    
+
     public String getElem() {
         return elem;
     }
@@ -81,5 +81,5 @@ public class Root {
     public String toString() {
         return "Root [attr=" + attr + ", objects=" + objects + ", elem=" + elem + "]";
     }
-    
+
 }

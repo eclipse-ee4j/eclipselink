@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -48,100 +48,100 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.mapping.xml.Xml
 public final class OXDescriptorNode extends XmlDescriptorNode {
 
 
-	// ********** constructors/initialization **********
-	
-	public OXDescriptorNode(MWOXDescriptor descriptor, DescriptorPackageNode parentNode) {
-		super(descriptor, parentNode);
-	}
-		
-	protected XmlMappingSelectionActionsPolicy buildMappingSelectionActionsPolicy() {
-		return new OXMappingSelectionActionsPolicy(getMappingsPlugin());
-	}
-	
-	
-	// ********** ApplicationNode implementation **********
+    // ********** constructors/initialization **********
 
-	public String helpTopicID() {
-		return "descriptor.ox";
-	}
+    public OXDescriptorNode(MWOXDescriptor descriptor, DescriptorPackageNode parentNode) {
+        super(descriptor, parentNode);
+    }
 
-	public String buildIconKey() {
-		return "descriptor.ox";
-	}
+    protected XmlMappingSelectionActionsPolicy buildMappingSelectionActionsPolicy() {
+        return new OXMappingSelectionActionsPolicy(getMappingsPlugin());
+    }
 
-	// ********** DescriptorNode implementation **********
 
-	protected boolean supportsDescriptorMorphing() {
-		return false;
-	}
+    // ********** ApplicationNode implementation **********
 
-	protected String accessibleNameKey() {
-		return "ACCESSIBLE_XML_DESCRIPTOR_NODE";
-	}
+    public String helpTopicID() {
+        return "descriptor.ox";
+    }
 
-	// ********** MWApplicationNode overrides **********
+    public String buildIconKey() {
+        return "descriptor.ox";
+    }
 
-	protected Class propertiesPageClass() {
-		return OXDescriptorTabbedPropertiesPage.class;
-	}
+    // ********** DescriptorNode implementation **********
 
-	
-	// ********** DescriptorNode overrides **********
-	
-	public boolean supportsEventsPolicy() {
-		return false;
-	}
-	
-	protected MappingNode buildMappingNode(MWMapping mapping) {
-		if (mapping instanceof MWAnyObjectMapping) {
-			return new AnyObjectMappingNode((MWAnyObjectMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
-		}
-		else if (mapping instanceof MWAnyCollectionMapping) {
-			return new AnyCollectionMappingNode((MWAnyCollectionMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
-		}
-		else if (mapping instanceof MWAnyAttributeMapping) {
-			return new AnyAttributeMappingNode((MWAnyAttributeMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
-		}
-		else if (mapping instanceof MWXmlObjectReferenceMapping) {
-			return new XmlObjectReferenceMappingNode((MWXmlObjectReferenceMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
-		}
-		else if (mapping instanceof MWXmlCollectionReferenceMapping) {
-			return new XmlCollectionReferenceMappingNode((MWXmlCollectionReferenceMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
-		}
-		else if (mapping instanceof MWXmlFragmentMapping) {
-			return new XmlFragmentMappingNode((MWXmlFragmentMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
-		}
-		else if (mapping instanceof MWXmlFragmentCollectionMapping) {
-			return new XmlFragmentCollectionMappingNode((MWXmlFragmentCollectionMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
-		}
-		else if (mapping instanceof MWXmlDirectCollectionMapping) {
-			return new OxDirectCollectionMappingNode((MWXmlDirectCollectionMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
-		}		
-		else if (mapping instanceof MWXmlDirectMapping) {
-			return new OxDirectMappingNode((MWXmlDirectMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
-		}		
-		else {
-			return super.buildMappingNode(mapping);
-		}
-	}
-	
-	protected MappingNode buildUnmappedMappingNode(MWClassAttribute attribute) {
-		ApplicationContext ctx2 = this.getApplicationContext().buildExpandedResourceRepositoryContext(UiMappingXmlBundle.class);
-		return new UnmappedMappingNode(attribute, ctx2, new OXMappingSelectionActionsPolicy(getMappingsPlugin()), this);
-	}
+    protected boolean supportsDescriptorMorphing() {
+        return false;
+    }
 
-	// ********** XmlDescriptorNode overrides **********
+    protected String accessibleNameKey() {
+        return "ACCESSIBLE_XML_DESCRIPTOR_NODE";
+    }
 
-	public Class propertiesPageClassForCompositeCollectionMapping() {
-		return OXCompositeCollectionMappingPropertiesPage.class;
-	}
+    // ********** MWApplicationNode overrides **********
 
-	@Override
-	public Class propertiesPageClassForCompositeObjectMapping() {
-		return OXCompositeObjectMappingPropertiesPage.class;
-	}
+    protected Class propertiesPageClass() {
+        return OXDescriptorTabbedPropertiesPage.class;
+    }
 
-	public Class propertiesPageClassForTransformationMapping() {
-		return OXTransformationMappingPropertiesPage.class;
-	}
+
+    // ********** DescriptorNode overrides **********
+
+    public boolean supportsEventsPolicy() {
+        return false;
+    }
+
+    protected MappingNode buildMappingNode(MWMapping mapping) {
+        if (mapping instanceof MWAnyObjectMapping) {
+            return new AnyObjectMappingNode((MWAnyObjectMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
+        }
+        else if (mapping instanceof MWAnyCollectionMapping) {
+            return new AnyCollectionMappingNode((MWAnyCollectionMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
+        }
+        else if (mapping instanceof MWAnyAttributeMapping) {
+            return new AnyAttributeMappingNode((MWAnyAttributeMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
+        }
+        else if (mapping instanceof MWXmlObjectReferenceMapping) {
+            return new XmlObjectReferenceMappingNode((MWXmlObjectReferenceMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
+        }
+        else if (mapping instanceof MWXmlCollectionReferenceMapping) {
+            return new XmlCollectionReferenceMappingNode((MWXmlCollectionReferenceMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
+        }
+        else if (mapping instanceof MWXmlFragmentMapping) {
+            return new XmlFragmentMappingNode((MWXmlFragmentMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
+        }
+        else if (mapping instanceof MWXmlFragmentCollectionMapping) {
+            return new XmlFragmentCollectionMappingNode((MWXmlFragmentCollectionMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
+        }
+        else if (mapping instanceof MWXmlDirectCollectionMapping) {
+            return new OxDirectCollectionMappingNode((MWXmlDirectCollectionMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
+        }
+        else if (mapping instanceof MWXmlDirectMapping) {
+            return new OxDirectMappingNode((MWXmlDirectMapping) mapping, this.buildMappingSelectionActionsPolicy(), this);
+        }
+        else {
+            return super.buildMappingNode(mapping);
+        }
+    }
+
+    protected MappingNode buildUnmappedMappingNode(MWClassAttribute attribute) {
+        ApplicationContext ctx2 = this.getApplicationContext().buildExpandedResourceRepositoryContext(UiMappingXmlBundle.class);
+        return new UnmappedMappingNode(attribute, ctx2, new OXMappingSelectionActionsPolicy(getMappingsPlugin()), this);
+    }
+
+    // ********** XmlDescriptorNode overrides **********
+
+    public Class propertiesPageClassForCompositeCollectionMapping() {
+        return OXCompositeCollectionMappingPropertiesPage.class;
+    }
+
+    @Override
+    public Class propertiesPageClassForCompositeObjectMapping() {
+        return OXCompositeObjectMappingPropertiesPage.class;
+    }
+
+    public Class propertiesPageClassForTransformationMapping() {
+        return OXTransformationMappingPropertiesPage.class;
+    }
 }

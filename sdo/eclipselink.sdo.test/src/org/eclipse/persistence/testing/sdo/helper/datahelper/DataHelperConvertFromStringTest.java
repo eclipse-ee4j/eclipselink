@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.datahelper;
 
 import commonj.sdo.Type;
@@ -115,7 +115,7 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
     public void testConverFromObject_DateWithNullTypeNullQName() {
         String b = "2000";
         Date aDate = dataHelper.toDate(b);
-        
+
         this.assertEquals("2000-01-01T00:00:00Z", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATETIME));
         this.assertEquals("2000", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEAR));
         this.assertEquals("2000-01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEARMONTH));
@@ -126,20 +126,20 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
         this.assertEquals("--01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTH));
         this.assertEquals("--01-01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTHDAY));
     }
-    
+
     public void testConverFromObject_Date_GMTDefault() {
-    	// Original date string, will be interpreted as GMT by default
-    	String origDateString = "1999-05-31T15:55:00.000";
-    	
-    	// String converted to date -- this will be converted to VM's time zone
-    	Date aDate = dataHelper.toDate(origDateString);
-    	
-    	// Format the date back to GMT and make sure it equals the original
-    	// date string
-		DateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS");
-		f.setTimeZone(TimeZone.getTimeZone("GMT"));
-		String dateString = f.format(aDate);
-		
-		this.assertEquals(origDateString, dateString);
+        // Original date string, will be interpreted as GMT by default
+        String origDateString = "1999-05-31T15:55:00.000";
+
+        // String converted to date -- this will be converted to VM's time zone
+        Date aDate = dataHelper.toDate(origDateString);
+
+        // Format the date back to GMT and make sure it equals the original
+        // date string
+        DateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS");
+        f.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String dateString = f.format(aDate);
+
+        this.assertEquals(origDateString, dateString);
     }
 }

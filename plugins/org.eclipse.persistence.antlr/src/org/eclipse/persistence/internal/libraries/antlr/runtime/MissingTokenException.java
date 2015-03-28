@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -31,26 +31,26 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
  *  is actually what we wanted next.  Used for tree node errors too.
  */
 public class MissingTokenException extends MismatchedTokenException {
-	public Object inserted;
-	/** Used for remote debugger deserialization */
-	public MissingTokenException() {;}
+    public Object inserted;
+    /** Used for remote debugger deserialization */
+    public MissingTokenException() {;}
 
-	public MissingTokenException(int expecting, IntStream input, Object inserted) {
-		super(expecting, input);
-		this.inserted = inserted;
-	}
+    public MissingTokenException(int expecting, IntStream input, Object inserted) {
+        super(expecting, input);
+        this.inserted = inserted;
+    }
 
-	public int getMissingType() {
-		return expecting;
-	}
+    public int getMissingType() {
+        return expecting;
+    }
 
-	public String toString() {
-		if ( inserted!=null && token!=null ) {
-			return "MissingTokenException(inserted "+inserted+" at "+token.getText()+")";
-		}
-		if ( token!=null ) {
-			return "MissingTokenException(at "+token.getText()+")";
-		}
-		return "MissingTokenException";
-	}
+    public String toString() {
+        if ( inserted!=null && token!=null ) {
+            return "MissingTokenException(inserted "+inserted+" at "+token.getText()+")";
+        }
+        if ( token!=null ) {
+            return "MissingTokenException(at "+token.getText()+")";
+        }
+        return "MissingTokenException";
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.DataObject;
@@ -226,7 +226,7 @@ public class SDOEqualityHelper implements EqualityHelper {
             return true;
         }
 
-        // both sequences must be null 
+        // both sequences must be null
         if ((null == aSequence) || (null == aSequenceCopy)) {
             return false;
         }
@@ -235,7 +235,7 @@ public class SDOEqualityHelper implements EqualityHelper {
         if (isDeep && aSequence.size() != aSequenceCopy.size()) {
             return false;
         }
-        // the settings inside the sequence must be new objects        
+        // the settings inside the sequence must be new objects
         List originalSettingsList = aSequence.getSettings();
         List copySettingsList = aSequenceCopy.getSettings();
         if ((null == originalSettingsList) || (null == copySettingsList)) {
@@ -309,7 +309,7 @@ public class SDOEqualityHelper implements EqualityHelper {
                                 if (!originalXMLRoot.getNamespaceURI().equals(copyXMLRoot.getNamespaceURI())) {
                                     return false;
                                 }
-                                
+
                                 Object originalUnwrappedValue = (originalXMLRoot).getObject();
                                 Object copyUnwrappedValue = (copyXMLRoot).getObject();
                                 if (originalUnwrappedValue instanceof DataObject && copyUnwrappedValue instanceof DataObject) {
@@ -369,15 +369,15 @@ public class SDOEqualityHelper implements EqualityHelper {
         }
         return true;
     }
-    
+
     /**
      * INTERNAL:
-     * Convenience method for returning the index of the next DataType 
+     * Convenience method for returning the index of the next DataType
      * Setting in a given sequence.
-     * 
+     *
      * @param aSequence
      * @param index
-     * @return the next Setting after index in the sequence, or -1 if none 
+     * @return the next Setting after index in the sequence, or -1 if none
      */
     private int getIndexOfNextDataTypeSetting(SDOSequence aSequence, int index) {
         List<Setting> settings = aSequence.getSettings();
@@ -389,7 +389,7 @@ public class SDOEqualityHelper implements EqualityHelper {
         }
         return -1;
     }
-    
+
     /**
      * INTERNAL:
      * Convenience method that compares two Property objects for equality
@@ -407,7 +407,7 @@ public class SDOEqualityHelper implements EqualityHelper {
         }
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * iterativly, compare the values of shared properties in two target DataObjects
@@ -481,10 +481,10 @@ public class SDOEqualityHelper implements EqualityHelper {
                     // compare unidirectional or containment=true properties - recursively
                     return compareDataObjects(dataObject1.getDataObject(p), dataObject2.getDataObject(p), isDeep);
                 } else {
-                    // 20060906: handle bidirectional properties 
+                    // 20060906: handle bidirectional properties
                     // the check across to another branch in the tree will only go 1 shallow level deep
                     // avoiding an infinite recursive loop and deferring the check for that branch when it
-                    // is encountered in its PreOrder sequence.                	
+                    // is encountered in its PreOrder sequence.
                     return compareDataObjects(dataObject1.getDataObject(p), dataObject2.getDataObject(p), false);
 
                     // Spec 3.10 "All reachable DOs in their graphs are equal"

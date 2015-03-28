@@ -28,15 +28,15 @@
 *   - Ant properties are lower case.
 *
 * Contributors:
-*     eric.gwin - initial API and implementation 
+*     eric.gwin - initial API and implementation
 #******************************************************************************/-->
 
 <!--/*******************************************************************************
   This buildfile looks for a eclipselink.jar file in the current directory, and
   generates an appropriate ear file for use as a WLS shared library. If the jar
-  does not exist, an attempt to generate one will be attempted (it is assumed 
-  that the this file resides at the same location as the primary buildfile for 
-  EclipseLink - not necessary, but assumed). 
+  does not exist, an attempt to generate one will be attempted (it is assumed
+  that the this file resides at the same location as the primary buildfile for
+  EclipseLink - not necessary, but assumed).
 #******************************************************************************/-->
 <project name="wls-shared-lib" default="create-shared-lib-install" basedir=".">
     <scriptdef name="genImpVersion" language="javascript" manager="javax">
@@ -95,7 +95,7 @@
             }
         ]]>
     </scriptdef>
-    
+
     <scriptdef name="genEarnameVersion" language="javascript" manager="javax">
         <attribute name="input"/>
         <attribute name="property"/>
@@ -134,7 +134,7 @@
         </condition>
         <ant antfile="${eclipselink.build.file}"    dir="."   target="build-eclipselink-jar"/>
     </target>
-        
+
     <target name="identify-eclipselink" depends="generate-eclipselink">
         <!-- unzip src="${eclipselink.jar}" dest=".">
            <patternset>
@@ -150,7 +150,7 @@
         <echo message="ImpV: '${implimentation.version}'"/>
         <echo message="EarV: '${earname.version}'"/>
     </target>
-        
+
     <target name="package-wls-shared-lib" depends="prepare-wls-metadata">
         <!-- generate Ear file -->
         <!-- if eclipselink.jar exists, generate ear with "o.e.p:spec version:imp version" -->
@@ -164,7 +164,7 @@
             <zipfileset dir="." includes="${eclipselink.jar}" prefix="lib"/>
         </jar>
     </target>
-    
+
     <target name="create-shared-lib-install" depends="package-wls-shared-lib">
         <delete file="eclipselink${earname.version}-shared-lib.zip"/>
         <!-- generate Ear file -->
@@ -183,14 +183,14 @@
     <target name="prepare-wls-metadata" depends="identify-eclipselink">
         <!-- artifact definitions -->
         <property name="wls-shared-lib.base.name" value="org.eclipse.persistence"/>
-	    <property name="wls-shared-lib.name"      value="${wls-shared-lib.base.name}${earname.version}-shared-lib"/>
-	    
+        <property name="wls-shared-lib.name"      value="${wls-shared-lib.base.name}${earname.version}-shared-lib"/>
+
         <!-- location to generate metadata artifacts -->
         <property name="shared-lib.dir"           value="build/shared-lib"/>
         <property name="metadata.dir"             value="${shared-lib.dir}/etc"/>
         <delete dir="${shared-lib.dir}"/>
-        <mkdir dir="${metadata.dir}"/> 
-        
+        <mkdir dir="${metadata.dir}"/>
+
         <!-- Create Library Metadata -->
         <echo file="${metadata.dir}/weblogic-application.xml" append="false">&lt;weblogic-application&gt;
     &lt;prefer-application-packages&gt;
@@ -199,7 +199,7 @@
     &lt;/prefer-application-packages&gt;
 &lt;/weblogic-application&gt;
 </echo>
-            
+
         <echo file="${metadata.dir}/application.xml" append="false">&lt;application&gt;
     &lt;display-name&gt;${wls-shared-lib.name}&lt;/display-name&gt;
     &lt;module&gt;
@@ -223,7 +223,7 @@
     &lt;/wls:library-ref&gt;
 &lt;/wls:weblogic-application&gt;
 </echo>
-        
+
         <!-- Create Sharedlib "Install" readme -->
         <echo file="${shared-lib.dir}/README" append="false">
 How to use a different version of EclipseLink than ships with Weblogic in your application
@@ -232,6 +232,6 @@ How to use a different version of EclipseLink than ships with Weblogic in your a
 Put the shared library (the ear in the 'shared-lib' dir) in the ...
 Package the 'weblogoc-application.xml found in the 'app' dir with your application, and...
         </echo>
-    </target>   
+    </target>
 
 </project>

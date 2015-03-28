@@ -4,26 +4,26 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     02/02/2009-2.0 Chris delahunt 
+ *     02/02/2009-2.0 Chris delahunt
  *       - 241765: JPA 2.0 Derived identities
- *     04/24/2009-2.0 Guy Pelletier 
+ *     04/24/2009-2.0 Guy Pelletier
  *       - 270011: JPA 2.0 MappedById support
- *     10/21/2009-2.0 Guy Pelletier 
+ *     10/21/2009-2.0 Guy Pelletier
  *       - 290567: mappedbyid support incomplete
- *     12/17/2010-2.2 Guy Pelletier 
+ *     12/17/2010-2.2 Guy Pelletier
  *       - 330755: Nested embeddables can't be used as embedded ids
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- *     14/05/2012-2.4 Guy Pelletier   
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- *     08/20/2012-2.4 Guy Pelletier 
+ *     08/20/2012-2.4 Guy Pelletier
  *       - 381079: EclipseLink dynamic entity does not support embedded-id
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
 import java.io.Serializable;
@@ -66,22 +66,22 @@ public class CMP3Policy extends CMPPolicy {
     /** Stores the fields for this classes compound primary key class if required. */
     protected transient KeyElementAccessor[] keyClassFields;
 
-    /** Used to look up the KeyElementAccessor for a specific DatabaseField, used for 
+    /** Used to look up the KeyElementAccessor for a specific DatabaseField, used for
       resolving DerivedIds */
     protected transient HashMap<DatabaseField,KeyElementAccessor> fieldToAccessorMap;
-    
+
     // Store the primary key class name
     protected String pkClassName;
-    
+
     // Stores the class version of the PKClass
     protected Class pkClass = null;
 
     public CMP3Policy() {
         super();
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Add the read only mappings for the given field to the allMappings list.
      * @param aDescriptor
      * @param field
@@ -89,15 +89,15 @@ public class CMP3Policy extends CMPPolicy {
      */
     protected void addWritableMapping(ClassDescriptor aDescriptor, DatabaseField field, List allMappings) {
         DatabaseMapping writableMapping = aDescriptor.getObjectBuilder().getMappingForField(field);
-        
+
         if (writableMapping != null) {
-            // Since it may be another aggregate mapping, add it to 
-            // the allMappings list so we can drill down on it as 
+            // Since it may be another aggregate mapping, add it to
+            // the allMappings list so we can drill down on it as
             // well.
             allMappings.add(writableMapping);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Add the writable mapping for the given field to the allMappings list.
@@ -107,12 +107,12 @@ public class CMP3Policy extends CMPPolicy {
      */
     protected void addReadOnlyMappings(ClassDescriptor aDescriptor, DatabaseField field, List allMappings) {
         List readOnlyMappings = aDescriptor.getObjectBuilder().getReadOnlyMappingsForField(field);
-        
+
         if (readOnlyMappings != null) {
             allMappings.addAll(readOnlyMappings);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Clone the CMP3Policy
@@ -124,13 +124,13 @@ public class CMP3Policy extends CMPPolicy {
         policy.setPKClass(getPKClass());
         return policy;
     }
-    
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this object to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
@@ -142,7 +142,7 @@ public class CMP3Policy extends CMPPolicy {
                         aPKClass = AccessController.doPrivileged(new PrivilegedClassForName(getPKClassName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("pk_class_not_found", new Object[] {this.pkClassName}), exception.getException());
-                        
+
                     }
                 } else {
                     aPKClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getPKClassName(), true, classLoader);
@@ -162,17 +162,17 @@ public class CMP3Policy extends CMPPolicy {
     public boolean isCMP3Policy() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setPrimaryKeyClassName(String pkClassName) {
         this.pkClassName = pkClassName;
     }
-    
+
     /**
      * INTERNAL:
-     * Return the java Class representing the primary key class name 
+     * Return the java Class representing the primary key class name
      */
     public Class getPKClass() {
         return this.pkClass;
@@ -184,14 +184,14 @@ public class CMP3Policy extends CMPPolicy {
     public void setPKClass(Class pkClass) {
         this.pkClass = pkClass;
     }
- 
+
     /**
      * INTERNAL:
      */
     public String getPKClassName() {
         return pkClassName;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -205,7 +205,7 @@ public class CMP3Policy extends CMPPolicy {
             throw DescriptorException.exceptionAccessingPrimaryKeyInstance(this.getDescriptor(), ex);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Use the key to create a EclipseLink primary key.
@@ -226,22 +226,22 @@ public class CMP3Policy extends CMPPolicy {
         for (int index = 0; index < pkElementArray.length; index++) {
             DatabaseMapping mapping = pkElementArray[index].getMapping();
             Object fieldValue = null;
-            if (mapping.isAbstractColumnMapping()) {    
+            if (mapping.isAbstractColumnMapping()) {
                 if (pkElementArray[index].isNestedAccessor()) {
                     // We have nested aggregate(s) in the embedded id pkclass.
                     DatabaseField keyField = pkElementArray[index].getDatabaseField();
                     Object keyToUse = key;
                     DatabaseMapping keyMapping = getDescriptor().getObjectBuilder().getMappingForField(keyField);
-                    
+
                     if (keyMapping.isAggregateMapping()) {
                         keyMapping = keyMapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(keyField);
-                        
+
                         // Keep driving down the nested aggregates ...
                         while (keyMapping.isAggregateMapping()) {
                             keyToUse = keyMapping.getRealAttributeValueFromObject(keyToUse, session);
                             keyMapping = keyMapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(keyField);
                         }
-                        
+
                         fieldValue = ((AbstractColumnMapping)mapping).getFieldValue(pkElementArray[index].getValue(keyToUse, session), session);
                     } else {
                         // This should never hit but just in case ... better to get a proper exception rather than a NPE etc.
@@ -272,7 +272,7 @@ public class CMP3Policy extends CMPPolicy {
         }
         return new CacheId(primaryKey);
     }
-    
+
     /**
      * INTERNAL:
      * @param cls
@@ -291,7 +291,7 @@ public class CMP3Policy extends CMPPolicy {
         } else {
             keyField = PrivilegedAccessHelper.getField(cls, fieldName, true);
         }
-        
+
         return keyField;
     }
 
@@ -331,7 +331,7 @@ public class CMP3Policy extends CMPPolicy {
                         mapping = this.getDescriptor().getObjectBuilder().getMappingForField(field);
                     }
 
-                    //change the object to write into to the aggregate for the next stage of the 
+                    //change the object to write into to the aggregate for the next stage of the
                     // loop or for when we exit the loop.
                     toWriteInto = aggregate;
                 }
@@ -342,7 +342,7 @@ public class CMP3Policy extends CMPPolicy {
             throw DescriptorException.errorUsingPrimaryKey(key, this.getDescriptor(), e);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cache the bean's primary key fields so speed up creating of primary key
@@ -360,38 +360,38 @@ public class CMP3Policy extends CMPPolicy {
         int numberOfIDFields = aDescriptor.getPrimaryKeyFields().size();
         pkAttributes = new KeyElementAccessor[numberOfIDFields];
         Iterator attributesIter = aDescriptor.getPrimaryKeyFields().iterator();
-        
+
         // Used fields in case it is an embedded class
         for (int i = 0; attributesIter.hasNext(); i++) {
             DatabaseField field = (DatabaseField)attributesIter.next();
-            
-            // We need to check all mappings for this field, not just the writable one and instead of 
-            // having multiple sections of duplicate code we'll just add the writable mapping directly 
+
+            // We need to check all mappings for this field, not just the writable one and instead of
+            // having multiple sections of duplicate code we'll just add the writable mapping directly
             // to the list.
             List allMappings = new ArrayList(1);
             addReadOnlyMappings(aDescriptor, field, allMappings);
             addWritableMapping(aDescriptor, field, allMappings);
-            
-            // This exception will be used to determine if the element (field or method) from 
+
+            // This exception will be used to determine if the element (field or method) from
             // the mapping was found on the key class was found or not and throw an exception otherwise.
             Exception noSuchElementException = null;
-            
+
             // Set the current key class ...
             Class currentKeyClass = keyClass;
-            
-            // We always start by looking at the writable mappings first. Our preference is to use the 
-            // writable mappings unless a derived id mapping is specified in which case we'll want to use 
+
+            // We always start by looking at the writable mappings first. Our preference is to use the
+            // writable mappings unless a derived id mapping is specified in which case we'll want to use
             // that mapping instead when we find it.
             for (int index = (allMappings.size() - 1); index >= 0; --index) {
                 DatabaseMapping mapping = (DatabaseMapping) allMappings.get(index);
-                
-                // So here is the ugly check to see if we want to further look at this mapping as part of 
+
+                // So here is the ugly check to see if we want to further look at this mapping as part of
                 // the id or not.
                 if (aDescriptor.hasDerivedId() && ! mapping.derivesId()) {
-                    // If the mapping is not a derived id, then we need to keep looking for the mapping that 
-                    // is marked as the derived id mapping. However, in a mapped by id case, we may have 
-                    // 'extra' non-derived id fields within the embeddable class (and the writable mapping 
-                    // that we care about at this point will be defined on the embeddable descriptor). Therefore, 
+                    // If the mapping is not a derived id, then we need to keep looking for the mapping that
+                    // is marked as the derived id mapping. However, in a mapped by id case, we may have
+                    // 'extra' non-derived id fields within the embeddable class (and the writable mapping
+                    // that we care about at this point will be defined on the embeddable descriptor). Therefore,
                     // we can't bail at this point and must drill down further into the embeddable to make sure
                     // we initialize this portion of the composite id.
                     if (mapping.isAggregateMapping() && allMappings.size() > 1) {
@@ -402,29 +402,29 @@ public class CMP3Policy extends CMPPolicy {
                     // JPA 2.0 allows DerrivedIds, so Id fields are either OneToOne or DirectToField mappings
                     continue;
                 }
-                
-                if (mapping.isAggregateMapping()) { 
-                    // Either this aggregate is the key class, or we need to drill down further. Add the read 
+
+                if (mapping.isAggregateMapping()) {
+                    // Either this aggregate is the key class, or we need to drill down further. Add the read
                     // only and writable mappings from the aggregate.
                     addReadOnlyMappings(mapping.getReferenceDescriptor(), field, allMappings);
                     addWritableMapping(mapping.getReferenceDescriptor(), field, allMappings);
-                    
-                    // Since we added the mappings from this aggregate mapping, we should remove this aggregate 
-                    // mapping from the allMappings list. Otherwise, if the mapping for the primary key field is 
+
+                    // Since we added the mappings from this aggregate mapping, we should remove this aggregate
+                    // mapping from the allMappings list. Otherwise, if the mapping for the primary key field is
                     // not found in the aggregate (or nested aggregate) then we will hit an infinite loop when
-                    // searching the aggregate and its mappings. Note: This is cautionary, since in reality, this 
-                    // 'should' never happen, but if it does we certainly would rather throw an exception instead 
+                    // searching the aggregate and its mappings. Note: This is cautionary, since in reality, this
+                    // 'should' never happen, but if it does we certainly would rather throw an exception instead
                     // of causing an infinite loop.
                     allMappings.remove(mapping);
-                    
+
                     // Update the index to parse the next mapping correctly.
                     index = allMappings.size();
-                    
+
                     // Update the key class now ...
                     currentKeyClass = mapping.getReferenceDescriptor().getJavaClass();
                 } else {
                     String fieldName = (mapping.hasMapsIdValue()) ? mapping.getMapsIdValue() : mapping.getAttributeName();
-                
+
                     if (currentKeyClass == null || mapping.isMultitenantPrimaryKeyMapping()) {
                         // Without a currentKeyClass, the primary key is a non compound key but
                         // we may need to add any multitenant primary key mappings that are
@@ -442,7 +442,7 @@ public class CMP3Policy extends CMPPolicy {
                             }
                             CMPPolicy refPolicy = refDescriptor.getCMPPolicy();
                             setPKClass(refPolicy.getPKClass());
-                        } 
+                        }
                         fieldToAccessorMap.put(field, pkAttributes[i]);
                         noSuchElementException = null;
                     } else {
@@ -470,8 +470,8 @@ public class CMP3Policy extends CMPPolicy {
                             fieldToAccessorMap.put(field, pkAttributes[i]);
                             noSuchElementException = null;
                         } catch (NoSuchFieldException ex) {
-                            String getMethodName = null; 
-                            String setMethodName = null; 
+                            String getMethodName = null;
+                            String setMethodName = null;
                             if(mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).getIndirectionPolicy().isWeavedObjectBasicIndirectionPolicy()) {
                                 WeavedObjectBasicIndirectionPolicy weavedIndirectionPolicy = (WeavedObjectBasicIndirectionPolicy)((ObjectReferenceMapping)mapping).getIndirectionPolicy();
                                 if (weavedIndirectionPolicy.hasUsedMethodAccess()) {
@@ -479,8 +479,8 @@ public class CMP3Policy extends CMPPolicy {
                                     setMethodName = weavedIndirectionPolicy.getSetMethodName();
                                 }
                             } else {
-                                getMethodName = mapping.getGetMethodName(); 
-                                setMethodName = mapping.getSetMethodName(); 
+                                getMethodName = mapping.getGetMethodName();
+                                setMethodName = mapping.getSetMethodName();
                             }
                             if (getMethodName != null) {
                                 // Must be a property.
@@ -514,17 +514,17 @@ public class CMP3Policy extends CMPPolicy {
                                 }
                             } else {
                                 noSuchElementException = ex;
-	                        }
-	                            
-	                        // If we can't load the field or methods and the attribute accessor is a values
-	                        // accessor then we're dealing with a dynamic entity.
-	                        if (noSuchElementException != null && mapping.getAttributeAccessor().isValuesAccessor()) {
-	                        	pkAttributes[i] = new ValuesFieldAccessor(fieldName, field, mapping, currentKeyClass != keyClass);
-	                        	noSuchElementException = null;
-	                        }
+                            }
+
+                            // If we can't load the field or methods and the attribute accessor is a values
+                            // accessor then we're dealing with a dynamic entity.
+                            if (noSuchElementException != null && mapping.getAttributeAccessor().isValuesAccessor()) {
+                                pkAttributes[i] = new ValuesFieldAccessor(fieldName, field, mapping, currentKeyClass != keyClass);
+                                noSuchElementException = null;
+                            }
                         }
                     }
-                 
+
                     if (mapping.derivesId() || noSuchElementException == null) {
                         // Break out of the loop as we do not need to look for
                         // any more mappings
@@ -532,12 +532,12 @@ public class CMP3Policy extends CMPPolicy {
                     }
                 }
             } // end for loop
-            
+
             if (noSuchElementException != null) {
                 throw DescriptorException.errorUsingPrimaryKey(keyClass, getDescriptor(), noSuchElementException);
             }
         } // end first for loop
-        
+
         return pkAttributes;
     }
 
@@ -691,7 +691,7 @@ public class CMP3Policy extends CMPPolicy {
         }
     }
 
-    // Made static final for performance reasons.    
+    // Made static final for performance reasons.
     /**
      * INTERNAL:
      * This class will be used when the element of the keyclass is a virtual field.
@@ -703,11 +703,11 @@ public class CMP3Policy extends CMPPolicy {
         }
 
         public Object getValue(Object object, AbstractSession session) {
-		return mapping.getRealAttributeValueFromObject(object, session);
+        return mapping.getRealAttributeValueFromObject(object, session);
         }
 
         public void setValue(Object object, Object value) {
-		mapping.setRealAttributeValueInObject(object, value);
+        mapping.setRealAttributeValueInObject(object, value);
         }
     }
 
@@ -742,7 +742,7 @@ public class CMP3Policy extends CMPPolicy {
         }
         return fieldValue;
     }
-    
+
     /**
      * INTERNAL:
      * Initialize the CMPPolicy settings.
@@ -750,10 +750,10 @@ public class CMP3Policy extends CMPPolicy {
     @Override
     public void initialize(ClassDescriptor descriptor, AbstractSession session) throws DescriptorException {
         super.initialize(descriptor, session);
-        
+
         this.keyClassFields = initializePrimaryKeyFields(this.pkClass, session);
     }
-    
+
     /**
      * INTERNAL:
      * Initialize the CMPPolicy settings for remote sessions.
@@ -761,7 +761,7 @@ public class CMP3Policy extends CMPPolicy {
     @Override
     public void remoteInitialize(ClassDescriptor descriptor, AbstractSession session) throws DescriptorException {
         super.remoteInitialize(descriptor, session);
-        
+
         this.keyClassFields = initializePrimaryKeyFields(null, session);
     }
 }

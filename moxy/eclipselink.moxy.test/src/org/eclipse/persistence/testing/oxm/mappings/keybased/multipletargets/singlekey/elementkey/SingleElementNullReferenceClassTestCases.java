@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Denise Smith - February 9, 2010 - Since 2.1
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.elementkey;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -23,21 +23,21 @@ import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.Emp
 public class SingleElementNullReferenceClassTestCases extends OXTestCase {
 
     Project p;
-	
+
     public SingleElementNullReferenceClassTestCases(String name) throws Exception {
         super(name);
         p = new SingleElementKeyWithGroupingProject();
-        XMLCollectionReferenceMapping mapping = ((XMLCollectionReferenceMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("addresses"));		
+        XMLCollectionReferenceMapping mapping = ((XMLCollectionReferenceMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("addresses"));
         mapping.setReferenceClass(null);
-        mapping.setReferenceClassName(null);		
+        mapping.setReferenceClassName(null);
     }
-	
+
     public void testNullReferenceClass() throws Exception{
         try{
-            super.getXMLContext(p);		
+            super.getXMLContext(p);
         }catch(IntegrityException e){
             Exception internalException = (Exception)((IntegrityException)e).getIntegrityChecker().getCaughtExceptions().get(0);
-            if (internalException instanceof DescriptorException) {            	
+            if (internalException instanceof DescriptorException) {
                 assertTrue("An incorrect DescriptorException exception occurred.", ((DescriptorException)internalException).getErrorCode() == DescriptorException.REFERENCE_CLASS_NOT_SPECIFIED);
                 return;
             }

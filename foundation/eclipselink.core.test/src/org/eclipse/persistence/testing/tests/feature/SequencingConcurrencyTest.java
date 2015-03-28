@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.feature;
 
 import java.util.Comparator;
@@ -110,7 +110,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
             }
         } else {
             if (dbSession != null) {
-//	        dbSession.getSequencingControl().setPreallocationSize(this.previousSequencePreallocationSize);
+//            dbSession.getSequencingControl().setPreallocationSize(this.previousSequencePreallocationSize);
                 dbSession.getSequencingControl().initializePreallocated();
                 if (useSeparateConnection != useSeparateConnectionOriginal) {
                     dbSession.getSequencingControl().setShouldUseSeparateConnection(useSeparateConnectionOriginal);
@@ -172,7 +172,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
             int numConnections = java.lang.Math.min(nThreads, 5);
             serverSession = new Project(getSession().getDatasourceLogin().clone()).createServerSession(numConnections, numConnections);
             serverSession.addDescriptors(new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject());
-//	    serverSession.getSequencingControl().setPreallocationSize(sequencePreallocationSize);
+//        serverSession.getSequencingControl().setPreallocationSize(sequencePreallocationSize);
             serverSession.getSequencingControl().setShouldUseSeparateConnection(useSeparateConnection);
             serverSession.setSessionLog(getSession().getSessionLog());
             if (shouldLogMessages) {
@@ -184,8 +184,8 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
             if (shouldLogMessages) {
                 dbSession.setLogLevel(SessionLog.FINE);
             }
-//	    this.previousSequencePreallocationSize = dbSession.getSequencingControl().getPreallocationSize();
-//	    dbSession.getSequencingControl().setPreallocationSize(sequencePreallocationSize);
+//        this.previousSequencePreallocationSize = dbSession.getSequencingControl().getPreallocationSize();
+//        dbSession.getSequencingControl().setPreallocationSize(sequencePreallocationSize);
             dbSession.getSequencingControl().resetSequencing();
             dbSession.getSequencingControl().initializePreallocated();
             useSeparateConnectionOriginal = dbSession.getSequencingControl().shouldUseSeparateConnection();

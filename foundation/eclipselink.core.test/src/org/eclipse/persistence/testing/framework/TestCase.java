@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import java.io.*;
@@ -35,13 +35,13 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * Reset Verify: Check if reset performed well or not.
  */
 public abstract class TestCase extends junit.framework.TestCase implements TestEntity {
-    
+
     /** Store the name to allow serialization, for some reason JUnit name does not serialize. */
     private String name;
-    
+
     /** The result of the test. */
     private TestResult testResult;
-    
+
     /** The executor used to execute the test. */
     private transient TestExecutor executor;
 
@@ -56,24 +56,24 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
 
     /** The indentation string that is added to each line of result for printing. */
     private String indentationString;
-    
+
     public TestCase() {
         description = "";
         nestedCounter = INITIAL_VALUE;
         testResult = new TestResult(this);
         setName(getClass().getName().substring(getClass().getName().lastIndexOf('.') + 1));
     }
-    
+
     /**
      * Reset the JUnit name in case serialization looses it.
      */
     public String getName() {
         if (super.getName() == null) {
-            setName(this.name); 
+            setName(this.name);
         }
         return super.getName();
     }
-    
+
     /**
      * Store the test name locally to ensure it can serialize.
      */
@@ -151,9 +151,9 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
                 setTestException(problem);
                 throw problem;
             }
-    
+
             try {
-                executeTest();    
+                executeTest();
                 verify();
             } catch (EclipseLinkException exception) {
                 executeFailed = true;
@@ -262,9 +262,9 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
             executor = TestExecutor.getDefaultExecutor();
         }
         try {
-        	execute(executor);
+            execute(executor);
         } catch (TestWarningException exception) {
-        	System.out.println("WARNING: " + exception);
+            System.out.println("WARNING: " + exception);
         }
     }
 
@@ -318,7 +318,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     public EntityManager createEntityManager() {
         return getExecutor().createEntityManager();
     }
-    
+
     /**
      * Return the session cast to DatabaseSession.
      */
@@ -407,7 +407,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     public void logResult(Writer log, boolean shouldLogOnlyErrors) {
         logResult(log);
     }
-    
+
     /**
      * The result of the test is logged on to the specified print stream.
      */
@@ -512,7 +512,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     public void setReport(ResultInterface testResult) {
         setTestResult((TestResult)testResult);
     }
-        
+
     /**
      * Set the test result. The testResult stores the result of the
      * test.
@@ -633,7 +633,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      */
     public void cleanAfterExecuteFailed() {
     }
-    
+
     /**
      * Throws a warning of pessimistic locking/select for update is not supported for this test platform.
      * Currently testing supports select for update on Oracle, MySQL, SQLServer, TimesTen.
@@ -655,7 +655,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     public void checkNoWaitSupported() {
         DatabasePlatform platform = getSession().getPlatform();
         if (!(platform.isOracle() || platform.isSQLServer() || platform.isPostgreSQL())) {
-            throw new TestWarningException("This database does not support NOWAIT");        
+            throw new TestWarningException("This database does not support NOWAIT");
         }
     }
 
@@ -688,7 +688,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
         getAbstractSession().getParent().getEventManager().addListener(listener);
         return listener;
     }
-    
+
     /**
      * Return if stored procedures are supported for the database platform for the test database.
      */
@@ -696,7 +696,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
         DatabasePlatform platform = session.getPlatform();
         return platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSQLServer() || platform.isSymfoware();
     }
-    
+
     /**
      * Force a garbage collection.
      */

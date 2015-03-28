@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,32 +50,32 @@ import org.xml.sax.SAXException;
 public class JSONFormattedWriterRecord extends JSONWriterRecord {
 
     private String tab;
-    private int numberOfTabs;    
+    private int numberOfTabs;
     private boolean isLastEventText;
-    
+
     public JSONFormattedWriterRecord() {
-        numberOfTabs = 0;        
-        isLastEventText = false;    
+        numberOfTabs = 0;
+        isLastEventText = false;
     }
-    
+
     public JSONFormattedWriterRecord(OutputStream outputStream){
         this();
         this.writer = new OutputStreamOutput(outputStream);
     }
-    
+
     public JSONFormattedWriterRecord(OutputStream outputStream, String callbackName){
         this(outputStream);
         setCallbackName(callbackName);
     }
 
     public JSONFormattedWriterRecord(Writer writer){
-    	this();
-    	setWriter(writer);
+        this();
+        setWriter(writer);
     }
-    
+
     public JSONFormattedWriterRecord(Writer writer, String callbackName){
-    	this(writer);
-    	setCallbackName(callbackName);
+        this(writer);
+        setCallbackName(callbackName);
     }
 
     private String tab() {
@@ -84,12 +84,12 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         }
         return tab;
     }
-    
+
     public void startDocument(String encoding, String version) {
         super.startDocument(encoding, version);
-        numberOfTabs++;; 
+        numberOfTabs++;;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -103,7 +103,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     protected void closeComplex() throws IOException {
         writer.writeCR();
         for (int x = 0; x < numberOfTabs; x++) {
-            writeValue(tab(), false);            
+            writeValue(tab(), false);
         }
         writer.write('}');
     }
@@ -116,20 +116,20 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             if(level.isFirst()) {
                 level.setFirst(false);
             } else {
-                writer.write(',');                    
+                writer.write(',');
             }
             if(xPathFragment.nameIsText()){
-                if(level.isCollection() && level.isEmptyCollection()) {           	    
+                if(level.isCollection() && level.isEmptyCollection()) {
                     writer.write('[');
                     writer.write(' ');
                     level.setEmptyCollection(false);
                     level.setNeedToOpenComplex(false);
                     level = new Level(true, true, level);
-                    numberOfTabs++;                    
+                    numberOfTabs++;
                     return;
                 }
             }
-            
+
             if(level.isNeedToOpenComplex()){
                 writer.write('{');
                 level.setNeedToOpenComplex(false);
@@ -145,18 +145,18 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                     }
                 }
             }
-            
+
           //write the key unless this is a a non-empty collection
             if(!(level.isCollection() && !level.isEmptyCollection())){
-     		   super.writeKey(xPathFragment);
+                super.writeKey(xPathFragment);
                 //if it is the first thing in the collection also add the [
                 if(level.isCollection() && level.isEmptyCollection()){
                      writer.write('[');
                      writer.write(' ');
-                     level.setEmptyCollection(false);                   
+                     level.setEmptyCollection(false);
                 }
             }
-         
+
             numberOfTabs++;
             isLastEventText = false;
             charactersAllowed = true;
@@ -170,19 +170,19 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
      * INTERNAL:
      */
     public void element(XPathFragment frag) {
-    } 
-    
+    }
+
     protected void writeListSeparator() throws IOException{
         super.writeListSeparator();
         writer.write(' ');
     }
-    
+
     protected void writeSeparator() throws IOException{
-    	writer.write(' ');
+        writer.write(' ');
         writer.write(Constants.COLON);
         writer.write(' ');
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -207,12 +207,12 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     }
     @Override
     protected void endEmptyCollection(){
-    	super.endCollection();
+        super.endCollection();
     }
-    
+
     @Override
     public void endCollection() {
-        try {        	
+        try {
             writer.write(' ');
             super.endCollection();
         } catch(IOException e) {
@@ -253,11 +253,11 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                     this.getNamespaceResolver().put(attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
-        } else if (node.getNodeType() == Node.TEXT_NODE) {            
+        } else if (node.getNodeType() == Node.TEXT_NODE) {
             characters(node.getNodeValue(), false, false);
         } else {
             try {
-            	JSONFormattedWriterRecordContentHandler wrcHandler = new JSONFormattedWriterRecordContentHandler();
+                JSONFormattedWriterRecordContentHandler wrcHandler = new JSONFormattedWriterRecordContentHandler();
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(wrcHandler);
                 xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
@@ -290,10 +290,10 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     private class JSONFormattedWriterRecordContentHandler extends JSONWriterRecordContentHandler {
         // --------------------- CONTENTHANDLER METHODS --------------------- //
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        	XPathFragment xPathFragment = new XPathFragment(localName);
-        	xPathFragment.setNamespaceURI(namespaceURI);
-        	
-        	JSONFormattedWriterRecord.this.endElement(xPathFragment, namespaceResolver);        
+            XPathFragment xPathFragment = new XPathFragment(localName);
+            xPathFragment.setNamespaceURI(namespaceURI);
+
+            JSONFormattedWriterRecord.this.endElement(xPathFragment, namespaceResolver);
         }
 
 

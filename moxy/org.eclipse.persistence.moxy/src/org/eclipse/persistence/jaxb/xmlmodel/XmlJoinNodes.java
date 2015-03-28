@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,9 +22,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -47,8 +47,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -67,25 +67,25 @@ public class XmlJoinNodes
 
     /**
      * Gets the value of the xmlJoinNode property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the xmlJoinNode property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getXmlJoinNode().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link XmlJoinNodes.XmlJoinNode }
-     * 
-     * 
+     *
+     *
      */
     public List<XmlJoinNodes.XmlJoinNode> getXmlJoinNode() {
         if (xmlJoinNode == null) {
@@ -96,7 +96,7 @@ public class XmlJoinNodes
 
     /**
      * Sets the value of the xmlJoinNode property.
-     * 
+     *
      * @param xmlJoinNode List of XmlJoinNode instances to be set
      */
     public void setXmlJoinNode(List<XmlJoinNodes.XmlJoinNode> xmlJoinNode) {
@@ -105,11 +105,11 @@ public class XmlJoinNodes
 
     /**
      * Gets the value of the containerType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getContainerType() {
         if (containerType == null) {
@@ -121,11 +121,11 @@ public class XmlJoinNodes
 
     /**
      * Sets the value of the containerType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setContainerType(String value) {
         this.containerType = value;
@@ -133,11 +133,11 @@ public class XmlJoinNodes
 
     /**
      * Gets the value of the type property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getType() {
         if (type == null) {
@@ -149,11 +149,11 @@ public class XmlJoinNodes
 
     /**
      * Sets the value of the type property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setType(String value) {
         this.type = value;
@@ -161,9 +161,9 @@ public class XmlJoinNodes
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -174,8 +174,8 @@ public class XmlJoinNodes
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
@@ -188,11 +188,11 @@ public class XmlJoinNodes
 
         /**
          * Gets the value of the xmlPath property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getXmlPath() {
             return xmlPath;
@@ -200,11 +200,11 @@ public class XmlJoinNodes
 
         /**
          * Sets the value of the xmlPath property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setXmlPath(String value) {
             this.xmlPath = value;
@@ -212,11 +212,11 @@ public class XmlJoinNodes
 
         /**
          * Gets the value of the referencedXmlPath property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getReferencedXmlPath() {
             return referencedXmlPath;
@@ -224,11 +224,11 @@ public class XmlJoinNodes
 
         /**
          * Sets the value of the referencedXmlPath property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setReferencedXmlPath(String value) {
             this.referencedXmlPath = value;

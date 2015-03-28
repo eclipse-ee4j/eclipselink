@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,7 +55,7 @@ import java.lang.annotation.Retention;
  * <pre>
  * void &#060;METHOD&#062;()
  * </pre>
- * The method can have public, private, protected, or package level access. 
+ * The method can have public, private, protected, or package level access.
  * It must not be declared as final or static.
  *
  * @since EJB 3.0
@@ -63,5 +63,5 @@ import java.lang.annotation.Retention;
 
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PrePassivate { 
+public @interface PrePassivate {
 }

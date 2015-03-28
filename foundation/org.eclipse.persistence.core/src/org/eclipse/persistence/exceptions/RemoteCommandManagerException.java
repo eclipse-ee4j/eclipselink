@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     cdelahun - Bug 214534: added message for JMSPublishingHelper error checking
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions;
 
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
@@ -21,7 +21,7 @@ import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
  * TopLink exceptions should only ever be thrown by TopLink code.
  */
 public class RemoteCommandManagerException extends org.eclipse.persistence.exceptions.EclipseLinkException implements java.io.Serializable {
-    // Exceptions for RCM are in range 22000 - 23000. 
+    // Exceptions for RCM are in range 22000 - 23000.
     // Leave the first 100 for DiscoveryManagerException sub exceptions
     public static final int ERROR_OBTAINING_CONTEXT_FOR_JNDI = 22101;
     public static final int ERROR_BINDING_CONNECTION = 22102;
@@ -38,19 +38,19 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
 
     //ServerPlatform exception
     public static final int ERROR_GETTING_SERVERPLATFORM = 22111;
-    
+
     // JMS
     public static final int ERROR_CREATING_LOCAL_JMS_CONNECTION = 22112;
-    
+
     // Broadcast
     public static final int ERROR_CREATING_OC4J_JGROUPS_CONNECTION = 22113;
-    
+
     public static final int ERROR_DESERIALIZE_REMOTE_COMMAND = 22114;
     public static final int ERROR_PROCESSING_REMOTE_COMMAND = 22115;
-    
+
     // JMS
     public static final int ERROR_RECEIVED_JMS_MESSAGE_IS_NULL = 22116;
-    //JMS PUBLISHING 
+    //JMS PUBLISHING
     public static final int RCM_UNINITIALIZED_OR_CLOSED = 22117;
 
     // JGroups
@@ -234,11 +234,11 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
         ex.setErrorCode(ERROR_RECEIVED_JMS_MESSAGE_IS_NULL);
         return ex;
     }
-    
-    public static RemoteCommandManagerException remoteCommandManagerIsClosed() {  
-        Object[] args = { };  
-        RemoteCommandManagerException ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class,RCM_UNINITIALIZED_OR_CLOSED,args));  
+
+    public static RemoteCommandManagerException remoteCommandManagerIsClosed() {
+        Object[] args = { };
+        RemoteCommandManagerException ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class,RCM_UNINITIALIZED_OR_CLOSED,args));
         ex.setErrorCode(RCM_UNINITIALIZED_OR_CLOSED);
-        return ex;  
+        return ex;
     }
 }

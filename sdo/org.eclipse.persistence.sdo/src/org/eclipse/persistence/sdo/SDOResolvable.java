@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo;
 
 import java.io.ByteArrayInputStream;
@@ -38,58 +38,58 @@ import commonj.sdo.impl.ExternalizableDelegator;
  * <li>Provide/override default Java serializable access to a DataObject</li>
  * </ul>
  * Serialization Process
- * 
+ *
  * <p>Serialization and de-serialization of objects occurs during DAS transactions,
- *   Web Service transactions in the SOAP envelope, EJB container passivation, 
- *   web container session saving or directly in an application using the function 
- *   ObjectOutputStream.writeObject(Object).  
- *   The Serializable and Externalizable framework handles automatic or user defined 
+ *   Web Service transactions in the SOAP envelope, EJB container passivation,
+ *   web container session saving or directly in an application using the function
+ *   ObjectOutputStream.writeObject(Object).
+ *   The Serializable and Externalizable framework handles automatic or user defined
  *   reading/writing of streams depending on which interface functions are realized in the implementing classes.
- *   
+ *
  * <p>The Serializable interface has no operations - therefore a class that implements
- * it needs to add no additional functionality.  
- *     Why do this? - For security.  The security manager in the JVM will only serialize objects at 
- * runtime if they are flagged as Serializable (or Externalizable) so that by default 
+ * it needs to add no additional functionality.
+ *     Why do this? - For security.  The security manager in the JVM will only serialize objects at
+ * runtime if they are flagged as Serializable (or Externalizable) so that by default
  * java classes do not expose themselves to serialization.  (See p49 of Java Security 2nd edition).
- * 
+ *
  * <p>There are 3 levels of serialization control.
  * <ul><li><i>1) Default Serialization</i><br>
- *     Here we make the class implement Serializable, mark non-serializable fields as 
+ *     Here we make the class implement Serializable, mark non-serializable fields as
  * transient and implement no new functions.</li>
  * <li><i>2) Partial custom Serialization</i><br>
- *     Here we make the class implement Serializable and implement the optional functions 
- * writeObject and readObject to handle custom serialization of the current class while 
+ *     Here we make the class implement Serializable and implement the optional functions
+ * writeObject and readObject to handle custom serialization of the current class while
  * using the default serialization for super and subtypes.</li>
  *
  * <li><b>3) Fully customized Serialization - current implementation</b>.<br>
- *     Here we make the class implement Externalizable and implement the functions 
+ *     Here we make the class implement Externalizable and implement the functions
  * readResolve, writeReplace, readExternal, writeExternal.
  * Supertypes and subtypes must also implement these functions.</li>
  * </ul>
  * <p>The SDO 2.01 specification details the high level structure of the
- * serialization format on page 64, section 6 - Java Serialization of DataObjects.  
- *     The process will involve gzip serialization of the xml data with UTF representation of the 
- * Xpath address of the current DataObject inside the entire tree along with its identification as root/no-root in 
+ * serialization format on page 64, section 6 - Java Serialization of DataObjects.
+ *     The process will involve gzip serialization of the xml data with UTF representation of the
+ * Xpath address of the current DataObject inside the entire tree along with its identification as root/no-root in
  * binary 1/0 format as follows.
  *
  * <ul><li><b>Security:</b><br>
- *     The following public functions expose a data replacement vulnerability where an 
- *     outside client can gain access and modify their constants.  
- *     We may need to wrap the GZIP streams in some sort of encryption when we are not 
+ *     The following public functions expose a data replacement vulnerability where an
+ *     outside client can gain access and modify their constants.
+ *     We may need to wrap the GZIP streams in some sort of encryption when we are not
  *     using HTTPS or SSL/TLS on the wire.
- *     
+ *
  * public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
  * public void writeExternal(ObjectOutput out) throws IOException</li>
  * <li><b>Concurrency:</b><br>
  *     Avoid synchronized classes that will queue threaded clients such as Enumeration, Vector etc.
- * We need to discuss how this API will be used by containers like an EJB container that can 
+ * We need to discuss how this API will be used by containers like an EJB container that can
  * invoke multithreaded clients.</li>
- * 
- * 	<li><b>Scalability:</b><br></li>
- * 	<li>XML Serialization Size is 4GB:<br>
- *     There is a limitation set by the SDO Specification on the size of the DataObject serialization.  
- *     According to the spec we must use an integer to define the size of the GZIP buffer that is serialized.  
- *     This size is limited to +/- 2GB.  This limitation is actually set by the JVM itself because a 
+ *
+ *     <li><b>Scalability:</b><br></li>
+ *     <li>XML Serialization Size is 4GB:<br>
+ *     There is a limitation set by the SDO Specification on the size of the DataObject serialization.
+ *     According to the spec we must use an integer to define the size of the GZIP buffer that is serialized.
+ *     This size is limited to +/- 2GB.  This limitation is actually set by the JVM itself because a
  *     call to buffer.length returns a signed 32 bit integer.
  * <p></li>
  * <li><b>Performance:</b><br>
@@ -108,34 +108,34 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
 
     /** root object with helper context id identifier */
     public static final int SDO_HELPER_CONTEXT_ID_IDENTIFIER = 2;
-    
+
     /** root object serialization type identifier = 1 */
     public static final int SDO_ROOT_OBJECT_IDENTIFIER = 1;
 
     /** internal object serialization type identifier = 0 */
     public static final int SDO_INTERNAL_OBJECT_IDENTIFIER = 0;
 
-	/** Visibility reduced from [public] in 2.1.0. May 15 2007 */
+    /** Visibility reduced from [public] in 2.1.0. May 15 2007 */
     /** member field holding DataObject being serialized/deserialized */
     private transient SDODataObject theSDODataObject;
 
-	/** Visibility reduced from [public] in 2.1.0. May 15 2007 */
+    /** Visibility reduced from [public] in 2.1.0. May 15 2007 */
     /** hold the context containing all helpers so that we can preserve inter-helper relationships */
     private transient HelperContext aHelperContext;
-    
+
     public SDOResolvable() {
         aHelperContext = SDOHelperContext.getHelperContext();
     }
 
     /**
-     * Default constructor for deserialization 
+     * Default constructor for deserialization
      */
     public SDOResolvable(HelperContext aContext) {
         aHelperContext = aContext;
     }
 
     /**
-     * Constructor for serialization 
+     * Constructor for serialization
      */
     public SDOResolvable(Object target, HelperContext aContext) {
         // set the serialized/deserialized object holder
@@ -179,8 +179,8 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
                 } else {
                     objectOutput.writeByte(SDO_ROOT_OBJECT_IDENTIFIER);
                 }
-                
-                
+
+
                 // write root xml
                 aByteOutputStream = new ByteArrayOutputStream();
 
@@ -189,9 +189,9 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
 
                 // write XML Serialization of the root DataObject to the GZIP output stream
                 XMLDocument aDocument = aHelperContext.getXMLHelper().createDocument(//
-                		theSDODataObject, //
-                		SDOConstants.SDO_URL, // root element URI
-                		SDOConstants.SDO_PREFIX + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + DEFAULT_ROOT_ELEMENT_NAME);
+                        theSDODataObject, //
+                        SDOConstants.SDO_URL, // root element URI
+                        SDOConstants.SDO_PREFIX + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + DEFAULT_ROOT_ELEMENT_NAME);
                 ((SDOXMLHelper) aHelperContext.getXMLHelper()).serialize(aDocument, aGZIPOutputStream, null);
                 // finished the stream to move compressed data from the Deflater
                 aGZIPOutputStream.finish();
@@ -205,7 +205,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
                 // write gzip buffer length
                 objectOutput.writeInt(buf.length);// compressed xml file length
                 // write gzip buffer to ostream
-                objectOutput.write(buf);            
+                objectOutput.write(buf);
             } finally {
                 // close streams on all Exceptions
                 if (aGZIPOutputStream != null) {// Clover: false case testing requires IO/comm failure
@@ -294,7 +294,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
                 // read XML Serialization of the root DataObject from the GZIP input stream
                 XMLDocument aDocument = aHelperContext.getXMLHelper().load(aGZIPInputStream);
 
-                theSDODataObject = (SDODataObject)aDocument.getRootObject();            
+                theSDODataObject = (SDODataObject)aDocument.getRootObject();
             } finally {
                 // close streams on all Exceptions
                 if (aGZIPInputStream != null) {// Clover: false case testing requires IO/comm failure
@@ -329,7 +329,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
 
                 XMLDocument aDocument = contextToUse.getXMLHelper().load(aGZIPInputStream);
 
-                theSDODataObject = (SDODataObject)aDocument.getRootObject();            
+                theSDODataObject = (SDODataObject)aDocument.getRootObject();
             } finally {
                 // close streams on all Exceptions
                 if (aGZIPInputStream != null) {// Clover: false case testing requires IO/comm failure
@@ -344,7 +344,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public HelperContext getHelperContext() {
@@ -352,7 +352,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
     }
 
     /**
-     * 
+     *
      * @param helperContext
      */
     public void setHelperContext(HelperContext helperContext) {

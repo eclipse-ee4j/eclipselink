@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,14 +35,14 @@ import org.w3c.dom.Element;
 public class AnyObjectMappingTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/employee.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/employee.json";
-    
+
     private static final String STUFF = "Some Stuff";
     private static final String OTHER = "ns0:other";
     private static final String OTHER_NS = "http://www.example.com/other";
 
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public AnyObjectMappingTestCases(String name) throws Exception {
@@ -66,31 +66,31 @@ public class AnyObjectMappingTestCases extends JAXBWithJSONTestCases {
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         }
-        
+
         ctrlEmp.stuff = elt;
         return ctrlEmp;
     }
 
     public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/employee-oxm.xml");
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/employee-oxm.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyobject", new StreamSource(inputStream));
-		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-		properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-	        
-	    return properties;
-	}
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyobject", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
-	public void testSchemaGen() throws Exception{
-	   	List controlSchemas = new ArrayList();
-	   	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/employee.xsd");
-	   	InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/stuff.xsd");
-	   	controlSchemas.add(is);
-	   	controlSchemas.add(is2);
-	   	
-	   	super.testSchemaGen(controlSchemas);	  
-	}
-   
+        return properties;
+    }
+
+    public void testSchemaGen() throws Exception{
+           List controlSchemas = new ArrayList();
+           InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/employee.xsd");
+           InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/stuff.xsd");
+           controlSchemas.add(is);
+           controlSchemas.add(is2);
+
+           super.testSchemaGen(controlSchemas);
+    }
+
 
 }

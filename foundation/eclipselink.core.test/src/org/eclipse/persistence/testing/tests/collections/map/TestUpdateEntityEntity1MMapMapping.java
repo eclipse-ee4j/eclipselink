@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.collections.map;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -25,24 +25,24 @@ import org.eclipse.persistence.testing.models.collections.map.EntityEntity1MMapH
 import org.eclipse.persistence.testing.models.collections.map.EntityMapKey;
 
 public class TestUpdateEntityEntity1MMapMapping extends TestReadEntityEntity1MMapMapping{
-    
+
     protected OneToManyMapping mapping = null;
     private boolean usePrivateOwned = false;
     private boolean oldValuePrivateOwnedValue = false;
     protected ForeignReferenceMapping keyMapping = null;
     private boolean oldKeyPrivateOwnedValue = false;
     protected EntityEntity1MMapHolder changedHolder = null;
-    
+
     public TestUpdateEntityEntity1MMapMapping(){
         super();
     }
-    
+
     public TestUpdateEntityEntity1MMapMapping(boolean usePrivateOwned){
         this();
         this.usePrivateOwned = usePrivateOwned;
         setName("TestUpdateEntityEntity1MMapMapping privateOwned=" + usePrivateOwned);
     }
-    
+
     public void setup(){
         mapping = (OneToManyMapping)getSession().getProject().getDescriptor(EntityEntity1MMapHolder.class).getMappingForAttributeName("entityToEntityMap");
         oldValuePrivateOwnedValue = mapping.isPrivateOwned();
@@ -50,10 +50,10 @@ public class TestUpdateEntityEntity1MMapMapping extends TestReadEntityEntity1MMa
         keyMapping = (ForeignReferenceMapping)((MappedKeyMapContainerPolicy)mapping.getContainerPolicy()).getKeyMapping();
         oldKeyPrivateOwnedValue = keyMapping.isPrivateOwned();
         keyMapping.setIsPrivateOwned(usePrivateOwned);
-        
+
         super.setup();
     }
-    
+
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(EntityEntity1MMapHolder.class, holderExp);
@@ -75,7 +75,7 @@ public class TestUpdateEntityEntity1MMapMapping extends TestReadEntityEntity1MMa
             throw new TestErrorException("Objects do not match after write");
         }
     }
-    
+
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         holders = getSession().readAllObjects(EntityEntity1MMapHolder.class, holderExp);
@@ -113,11 +113,11 @@ public class TestUpdateEntityEntity1MMapMapping extends TestReadEntityEntity1MMa
             }
         }
     }
-    
+
     public void reset(){
         super.reset();
         mapping.setIsPrivateOwned(oldValuePrivateOwnedValue);
         keyMapping.setIsPrivateOwned(oldKeyPrivateOwnedValue);
     }
-    
+
 }

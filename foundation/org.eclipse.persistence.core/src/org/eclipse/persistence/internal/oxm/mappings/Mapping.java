@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,7 +39,7 @@ public interface Mapping<
     public abstract Class getAttributeClassification();
 
     /**
-     * Return the name of the attribute set in the mapping. 
+     * Return the name of the attribute set in the mapping.
      */
     public abstract String getAttributeName();
 
@@ -60,7 +60,7 @@ public interface Mapping<
      * Related mapping should implement this method to return true.
      */
     public abstract boolean isAbstractCompositeCollectionMapping();
-    
+
     /**
      * Related mapping should implement this method to return true.
      */
@@ -94,15 +94,15 @@ public interface Mapping<
      * from the object for this mapping.
      * This can be set to an implementor of AttributeAccessor if the attribute
      * requires advanced conversion of the mapping value, or a real attribute does not exist.
-     */    
+     */
     public void setAttributeAccessor(ATTRIBUTE_ACCESSOR attributeAccessor);
-    
-    
+
+
     /**
      * Sets the name of the attribute in the mapping.
-     */    
+     */
     public void setAttributeName(String attributeName);
-    
+
     public void setAttributeValueInObject(Object object, Object value);
 
     public void writeSingleValue(Object value, Object object, XML_RECORD record, ABSTRACT_SESSION session);
@@ -111,22 +111,22 @@ public interface Mapping<
      * attribute in the object. This method sets the name of the getMethodName.
      */
     public void setGetMethodName(String methodName);
-    
+
     /**
      * Set this mapping to be read only.
      * Read-only mappings can be used if two attributes map to the same field.
      * Read-only mappings cannot be used for the primary key or other required fields.
      */
     public void setIsReadOnly(boolean aBoolean);
-    
 
-    
+
+
     /**
      * INTERNAL:
      * Allow user defined properties.
      */
     public void setProperties(Map properties);
-    
+
     /**
      * Set the methodName used to set the value for the mapping's attribute into the object.
      */

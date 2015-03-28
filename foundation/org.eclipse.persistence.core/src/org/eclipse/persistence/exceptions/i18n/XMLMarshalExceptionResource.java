@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/24/2014-2.6 Rick Curtis 
+ *     09/24/2014-2.6 Rick Curtis
  *       - 443762 : Misc message cleanup.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
@@ -62,12 +62,12 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25035", "An error occurred while processing the IDResolver: {1}. The method {0} was not found."},
                                            { "25036", "The custom IDResolver {1} does not support multiple XML IDs {0}.  Custom IDResolvers must be subclasses org.eclipse.persistence.jaxb.IDResolver if multiple IDs are used."},
                                            { "25037", "A cycle is detected in the object graph.  This will cause an infinite loop: {0}"},
-                                           { "25038", "DOMPlatform is not supported with media type application/json."},        
+                                           { "25038", "DOMPlatform is not supported with media type application/json."},
                                            { "25039", "An error occurred unmarshalling from {0}"},
                                            { "25040", "An object of type {0} with ID {1} was not found."},
                                            { "25041", "The attribute group specified {0} is not defined for the class {1}."},
-                                           { "25042", "The value of the variable property {0} on the class {1} can not be null."}                                           
-                                           
+                                           { "25042", "The value of the variable property {0} on the class {1} can not be null."}
+
     };
 
     /**

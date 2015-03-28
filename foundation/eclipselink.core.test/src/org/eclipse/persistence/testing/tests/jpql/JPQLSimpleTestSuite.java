@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpql;
 
 import java.util.List;
@@ -101,14 +101,14 @@ public class JPQLSimpleTestSuite extends TestSuite {
 
         addTest(ModTest.getSimpleModTest());
 
-        //JGL Added to test IS [NOT] EMPTY -- BUG 2775179 
+        //JGL Added to test IS [NOT] EMPTY -- BUG 2775179
         addSpecialTest(new SimpleIsEmptyTest());
         addSpecialTest(new SimpleIsNotEmptyTest());
-        //JGL Added to test ' (Apostrophe) -- BUG 3105560 
+        //JGL Added to test ' (Apostrophe) -- BUG 3105560
         addTest(new SimpleApostropheTest());
-        //JGL Added to test WHERE . '..\_' ...ESCAPE '\' -- BUG 3106981 
+        //JGL Added to test WHERE . '..\_' ...ESCAPE '\' -- BUG 3106981
         addTest(new SimpleEscapeUnderscoreTest());
-        //JGL Added to test l MEMBER OF o.lineItems -- BUG 3107061 
+        //JGL Added to test l MEMBER OF o.lineItems -- BUG 3107061
         addTest(new SmallProjectMemberOfProjectsTest());
         //JGL Added to test NOT MEMBER OF
         addTest(new SmallProjectNOTMemberOfProjectsTest());
@@ -132,14 +132,14 @@ public class JPQLSimpleTestSuite extends TestSuite {
 
         //BUG 3175011
         addTest(new ChangeJPQLStringAfterExecutionTest());
-        
+
         addTest(buildMaxRowsTest());
 
         //217745
         addTest(new CustomQueryStringTranlateValidationTest());
-    
+
     }
-    
+
     /**
      * This tests using query properties with EJBQL.
      * It verifies that the parse cache is not used if properties are used.

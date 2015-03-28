@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,11 +27,11 @@ import junit.framework.TestCase;
 public class SimpleListTestCases extends TestCase {
 
     private MOXyJsonProvider moxyJsonProvider;
-    
+
     public static final String jsonArrayOfString = "[\"A\",\"B\",\"C\",null]";
     public static final String[] arrayOfString = {"A", "B", "C", null};
     public static final List<String> listOfString = Arrays.asList(arrayOfString);
-    
+
     public static final String jsonArrayOfBoolean = "[true,false,null,true]";
     public static final Boolean[] arrayOfBoolean = {true,false,null,true};
     public static final List<Boolean> listOfBoolean = Arrays.asList(arrayOfBoolean);

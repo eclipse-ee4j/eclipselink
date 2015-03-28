@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,15 +24,15 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
- * 
+ *
  *        This type is extended by all types which allow annotation
  *        other than <schema> itself
- *      
- * 
+ *
+ *
  * <p>Java class for annotated complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="annotated">
  *   &lt;complexContent>
@@ -46,8 +46,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "annotated", propOrder = {
@@ -89,11 +89,11 @@ public class Annotated
 
     /**
      * Gets the value of the annotation property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Annotation }
-     *     
+     *
      */
     public Annotation getAnnotation() {
         return annotation;
@@ -101,11 +101,11 @@ public class Annotated
 
     /**
      * Sets the value of the annotation property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Annotation }
-     *     
+     *
      */
     public void setAnnotation(Annotation value) {
         this.annotation = value;
@@ -113,11 +113,11 @@ public class Annotated
 
     /**
      * Gets the value of the id property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getId() {
         return id;
@@ -125,11 +125,11 @@ public class Annotated
 
     /**
      * Sets the value of the id property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setId(String value) {
         this.id = value;

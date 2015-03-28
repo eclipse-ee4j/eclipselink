@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
 import java.io.Serializable;
@@ -53,34 +53,34 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  */
 
 public class JoinedAttributeManager implements Cloneable, Serializable {
-    
+
     /** Stores AggregateObjectMapping expressions used within local join expressions */
     protected transient List<DatabaseMapping> joinedAggregateMappings = new ArrayList(0);
-    
+
     /** indexed list of mappings corresponding to */
     protected transient List<DatabaseMapping> joinedAttributeMappings = new ArrayList(0);
 
     /** Stores the joined attributes added through the query */
     protected List<Expression> joinedAttributeExpressions;
-    
+
     /** Stores the joined attributes as specified in the descriptor */
     protected List<Expression> joinedMappingExpressions;
-    
+
     /** PERF: Cache the local joined attribute expressions. */
     protected List<Expression> joinedAttributes;
-    
+
     /** Used to determine if -m joining has been used. */
     protected boolean isToManyJoin = false;
 
     /** PERF: Used to avoid null checks for inner attribute joining. */
     protected boolean hasOuterJoinedAttribute = true;
-    
+
     /** Used internally for joining. */
     protected transient Map<DatabaseMapping, Object> joinedMappingIndexes;
 
     /** Used internally for joining. */
     protected transient Map<DatabaseMapping, ObjectLevelReadQuery> joinedMappingQueries;
-    
+
     /** PERF: Stores the cloned joinedMappingQueries. */
     protected transient Map<DatabaseMapping, ObjectLevelReadQuery> joinedMappingQueryClones;
 
@@ -89,41 +89,41 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
 
     /** Stored all row results to -m joining by cache key. */
     protected transient Map<Object, List<AbstractRecord>> dataResultsByPrimaryKey;
-    
+
     /** Stores the descriptor that these joins apply on */
     protected transient ClassDescriptor descriptor;
-    
+
     /** Stores the base builder for resolving joined attributes by name. */
     protected ExpressionBuilder baseExpressionBuilder;
-    
+
     /** Stores the last used base expression while adding joined attribute expression. */
     protected Expression lastJoinedAttributeBaseExpression;
-    
+
     /** Stores the base query. */
     protected ObjectBuildingQuery baseQuery;
-    
+
     /** Stores the result index of the parent, used for oneToMany joins. */
     protected int parentResultIndex;
-        
+
     /** Determine if duplicate rows should be filter when using 1-m joining. */
     protected boolean shouldFilterDuplicates = true;
-    
-    //** Stores orderBy expressions of the joined CollectionMappings - in case the mapping has listFieldOrder */ 
+
+    //** Stores orderBy expressions of the joined CollectionMappings - in case the mapping has listFieldOrder */
     protected transient List<Expression> orderByExpressions;
-    
-    //** Stores additional field expressions of the joined CollectionMappings - in case the mapping has listFieldOrder */ 
+
+    //** Stores additional field expressions of the joined CollectionMappings - in case the mapping has listFieldOrder */
     protected transient List<Expression> additionalFieldExpressions;
-    
+
     public JoinedAttributeManager(){
     }
-    
+
     public JoinedAttributeManager(ClassDescriptor descriptor, ExpressionBuilder baseBuilder, ObjectBuildingQuery baseQuery){
         this.descriptor = descriptor;
         this.baseQuery = baseQuery;
         this.baseExpressionBuilder = baseBuilder;
         this.parentResultIndex = 0;
     }
-        
+
     /**
      * Return if duplicate rows should be filter when using 1-m joining.
      */
@@ -137,7 +137,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     public void setShouldFilterDuplicates(boolean shouldFilterDuplicates) {
         this.shouldFilterDuplicates = shouldFilterDuplicates;
     }
-    
+
     public void addJoinedAttribute(Expression attributeExpression) {
         this.getJoinedAttributes().add(attributeExpression);
     }
@@ -147,7 +147,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             getJoinedAttributeExpressions().add(attributeExpression);
         }
     }
-    
+
     /**
      * Add an attribute represented by the given attribute name to the list of joins for this query.
      * Note: Mapping level joins are represented separately from query level joins.
@@ -203,7 +203,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         }
         return joinManager;
     }
-    
+
     /**
      * Copies settings from another manager. Should copy all the attributes that clone method clones.
      */
@@ -218,7 +218,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         this.joinedAttributeMappings = otherJoinManager.joinedAttributeMappings;
         this.joinedAggregateMappings = otherJoinManager.joinedAggregateMappings;
     }
-    
+
     /**
      * Clear the joining state.  This is used to redefine a queries joins for nested joins.
      */
@@ -293,10 +293,10 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
 
             // PERF: Cache local join attribute Expression.
             this.addJoinedAttribute(baseExpression);
-            
+
             DatabaseMapping mapping = baseExpression.getMapping();
             this.getJoinedAttributeMappings().add(mapping);
-            
+
             // focus on the base expression.  Nested queries will handle nested expressions, and only need to be processed once
             if (mapping.isForeignReferenceMapping() && !getJoinedMappingQueries_().containsKey(mapping)) {
                 // A nested query must be built to pass to the descriptor that looks like the real query execution would.
@@ -410,14 +410,14 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     public ExpressionBuilder getBaseExpressionBuilder(){
         return this.baseExpressionBuilder;
     }
-    
+
     /**
      * Returns the base query.
      */
     public ObjectBuildingQuery getBaseQuery(){
         return this.baseQuery;
     }
-    
+
     /**
      * Return  all of the rows fetched by the query, used for 1-m joining.
      */
@@ -511,7 +511,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     public boolean hasJoinedExpressions() {
         return hasJoinedAttributeExpressions() || hasJoinedMappingExpressions();
     }
-    
+
     /**
      * Return the attributes that must be joined.
      */
@@ -520,7 +520,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     }
 
     /**
-     * Return if any attributes are joined.  This is a convience method that 
+     * Return if any attributes are joined.  This is a convience method that
      * is only valid after prepare.
      */
     public boolean hasJoinedAttributes() {
@@ -550,13 +550,13 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     public List<Expression> getOrderByExpressions_() {
         return orderByExpressions;
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      *  Helper method to get the value from the clone for the expression passed in, triggering joins on
-     *  all intermediate steps.  
+     *  all intermediate steps.
      *  Example expression "emp.project.pk" with a clone Employee will trigger indirection and return
-     *  the project pk value.  
+     *  the project pk value.
      * @param session
      * @param clone
      * @param expression
@@ -578,7 +578,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                 }
             }
             return attributeValue;
-            
+
         }
         return clone;
     }
@@ -603,13 +603,13 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     public boolean isToManyJoin() {
         return this.isToManyJoin;
     }
-    
+
     /**
      * Return if the attribute is specified for joining.
      */
     public boolean isAttributeJoined(ClassDescriptor mappingDescriptor, DatabaseMapping attributeMapping) {
         // Since aggregates share the same query as their parent, must avoid the aggregate thinking
-        // the parents mappings is for it, (queries only share if the aggregate was not joined). 
+        // the parents mappings is for it, (queries only share if the aggregate was not joined).
         //This isn't taking into account inheritance - a query on a child may use/join parent level mappings
         if (this.hasJoinedAttributes()) {
             //if it has joined attributes, the other collections must also be set and so don't need to be checked
@@ -624,7 +624,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /**
      * Iterate through a list of expressions searching for the given attribute name.
      * Return true if it is found, false otherwise.  Only use if the query was preprepared so that join expressions
-     * were processed.  
+     * were processed.
      */
     protected boolean isMappingInJoinedExpressionList(DatabaseMapping attributeMapping, List joinedExpressionList) {
         for (Iterator joinEnum = joinedExpressionList.iterator(); joinEnum.hasNext();) {
@@ -632,13 +632,13 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             ObjectExpression expression = ((ObjectExpression)joinEnum.next()).getFirstNonAggregateExpressionAfterExpressionBuilder(aggregateMappings);
             if (attributeMapping.isAggregateObjectMapping() && aggregateMappings.contains(attributeMapping)) {
                 return true;
-            } else if (attributeMapping.equals(expression.getMapping())) {//expression may not have been processed yet     
+            } else if (attributeMapping.equals(expression.getMapping())) {//expression may not have been processed yet
                 return true;
             }
         }
         return false;
     }
-    
+
 
    /**
     * Iterate through a list of expressions searching for the given attribute name.
@@ -710,7 +710,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         // the first element of the list is the passed expression,
         // next one is its base, ...
         // the last one's base is ExpressionBuilder.
-        ObjectExpression currentExpression = (ObjectExpression)expression; 
+        ObjectExpression currentExpression = (ObjectExpression)expression;
         ArrayList<Expression> expressionBaseList = new ArrayList();
         do {
             //skip aggregates since they do not have nested query objects added to JoinedMappingQueries, instead
@@ -720,11 +720,11 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             }
             currentExpression = (ObjectExpression)currentExpression.getBaseExpression();
         } while(!currentExpression.isExpressionBuilder());
-        
+
         // the last expression in the list is not nested - its mapping should have corresponding nestedQuery.
         DatabaseMapping currentMapping = ((QueryKeyExpression)expressionBaseList.get(expressionBaseList.size() - 1)).getMapping();
         ObjectLevelReadQuery nestedQuery = getJoinedMappingQueries_().get(currentMapping);
-        
+
         // unless the passed expression was not nested, repeat moving up the list.
         // the last step is the passed expression (first on the list) getting nested query corresponding to its mapping.
         for(int i = expressionBaseList.size() - 2; i >= 0; i--) {
@@ -754,14 +754,14 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     protected void setIsOuterJoinedAttributeQuery(boolean isOuterJoinedAttribute) {
         this.hasOuterJoinedAttribute = isOuterJoinedAttribute;
     }
-    
+
     /**
      * Set if the query uses any -m joins, and thus return duplicate/multiple rows.
      */
     public void setIsToManyJoinQuery(boolean isToManyJoin) {
         this.isToManyJoin = isToManyJoin;
     }
-    
+
 
     /**
      * Validate and prepare join expressions.
@@ -774,7 +774,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         for (int index = 0; index < getJoinedAttributeExpressions().size(); index++) {
             Expression expression = getJoinedAttributeExpressions().get(index);
             expression = prepareJoinExpression(expression, session);
-            //EL bug 307497: break base expressions out onto the list and sort/group expressions by base expression  
+            //EL bug 307497: break base expressions out onto the list and sort/group expressions by base expression
             lastJoinedAttributeBaseExpression = addExpressionAndBaseToGroupedList(expression, groupedExpressionList, lastJoinedAttributeBaseExpression);
         }
         //use the grouped list instead of the original
@@ -785,7 +785,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             getJoinedMappingExpressions().set(index, expression);
         }
     }
-    
+
     /**
      * adds expression and its base expressions recursively to the expressionList in groups, so that an expression is never listed before
      * its base expression
@@ -804,7 +804,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                 while (!baseExpression.isExpressionBuilder() && ((QueryKeyExpression)baseExpression).getMapping().isAggregateMapping()){
                     baseExpression = ((BaseExpression)baseExpression).getBaseExpression();
                 }
-                
+
                 if(baseExpression != null && !baseExpression.isExpressionBuilder()) {
                     addExpressionAndBaseToGroupedList(baseExpression, expressionlist, lastJoinedAttributeBaseExpression);
                     // EL bug 307497
@@ -815,7 +815,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                     }
                 }
             }
-            
+
             // EL bug 307497
             if (baseExpressionIndex == -1) {
                 expressionlist.add(expression);
@@ -843,13 +843,13 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         // Expression may not have been initialized.
         if (objectExpression.getBuilder().getQueryClass() == null) {
             objectExpression = (QueryKeyExpression)objectExpression.rebuildOn(this.baseExpressionBuilder);
-            
+
             if (objectExpression.getBuilder().getQueryClass() == null) {
                 objectExpression.getBuilder().setQueryClass(this.descriptor.getJavaClass());
             }
         }
         objectExpression.getBuilder().setSession(session.getRootSession(null));
-        
+
         // Can only join relationships.
         if ((objectExpression.getMapping() == null) || (!objectExpression.getMapping().isJoiningSupported())) {
             throw QueryException.mappingForExpressionDoesNotSupportJoining(objectExpression);
@@ -860,7 +860,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         while (!baseExpression.isExpressionBuilder()) {
             //pulled from prepareJoinExpressions
             baseExpression.setShouldUseOuterJoinForMultitableInheritance(true);
-            
+
             if (((QueryKeyExpression)baseExpression).shouldQueryToManyRelationship()) {
                 setIsToManyJoinQuery(true);
             }
@@ -869,13 +869,13 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             }
             baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
         }
-        
+
         return objectExpression;
     }
 
     /**
      * This method collects the Joined Mappings from the descriptor and initializes them.
-     * Excludes the mapping that are not in the passed mappingsAllowedToJoin set (if it's not null). 
+     * Excludes the mapping that are not in the passed mappingsAllowedToJoin set (if it's not null).
      */
     public void processJoinedMappings(AbstractSession session) {
         Set<String> fetchGroupAttributes = null;
@@ -905,9 +905,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             }
         }
     }
-    
+
     /**
-     * Add the mapping for join fetch, prepare and return the join expression being used.  
+     * Add the mapping for join fetch, prepare and return the join expression being used.
      */
     public Expression addAndPrepareJoinedMapping(ForeignReferenceMapping mapping, AbstractSession session) {
         Expression joinMappingExpression = null;
@@ -930,7 +930,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         }
         return joinMappingExpression;
     }
-    
+
     /**
      * Reset the JoinedAttributeManager.  This will be called when the Query is re-prepared
      */
@@ -945,15 +945,15 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         this.joinedAttributeMappings = null;
         this.joinedAggregateMappings = null;
     }
-    
+
     /**
-     * This method is called from within this package it is used when 
+     * This method is called from within this package it is used when
      * initializing a report Item
      */
     public void setBaseQuery(ObjectLevelReadQuery query){
         this.baseQuery = query;
     }
-    
+
     /**
      * This method is called from within this package, it is used when
      * initializing a ReportItem
@@ -961,21 +961,21 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     protected void setBaseExpressionBuilder(ExpressionBuilder builder){
         this.baseExpressionBuilder = builder;
     }
-    
+
     /**
      * Return all of the rows fetched by the query by cache-key, used for 1-m joining.
      */
     public Map<Object, List<AbstractRecord>> getDataResultsByPrimaryKey() {
         return dataResultsByPrimaryKey;
     }
-    
+
     /**
      * Set all of the rows fetched by the query by cache-key, used for 1-m joining.
      */
     protected void setDataResultsByPrimaryKey(Map<Object, List<AbstractRecord>> dataResultsByPrimaryKey) {
         this.dataResultsByPrimaryKey = dataResultsByPrimaryKey;
     }
-    
+
     /**
      * Set all of the rows fetched by the query, used for 1-m joining.
      */
@@ -983,7 +983,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         this.dataResults = dataResults;
         processDataResults(session);
     }
-    
+
     /**
      * Process the data-results for joined data for a 1-m join.
      * This allows all the data to be processed once, instead of n times for each object.
@@ -1048,7 +1048,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             }
         }
     }
-    
+
     /**
      * Clear the data-results for joined data for a 1-m join.
      */
@@ -1056,7 +1056,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         this.dataResults = null;
         this.dataResultsByPrimaryKey = null;
     }
-    
+
     /**
      * Process the data-results for joined data for a 1-m join.
      * This allows incremental processing for a cursor.
@@ -1115,7 +1115,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     public void setDescriptor(ClassDescriptor descriptor){
         this.descriptor = descriptor;
     }
-    
+
     /**
      * Used for joining in conjunction with pessimistic locking.
      * Iterate through a list of joined expressions and ensure expression is set on the locking
@@ -1151,7 +1151,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                 if (joinedAttribute.getBuilder().getQueryClass() == null){
                     joinedAttribute.getBuilder().setQueryClass(descriptor.getJavaClass());
                 }
-                
+
                 ClassDescriptor nestedDescriptor = joinedAttribute.getDescriptor();
 
                 // expression may not be valid, no descriptor, validation occurs later.
@@ -1181,7 +1181,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     public Map<DatabaseMapping, ObjectLevelReadQuery> getJoinedMappingQueryClones() {
         return joinedMappingQueryClones;
     }
-    
+
     public void setJoinedMappingQueryClones(Map joinedMappingQueryClones) {
         this.joinedMappingQueryClones = joinedMappingQueryClones;
     }

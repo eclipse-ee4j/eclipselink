@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
@@ -46,7 +46,7 @@ public class DynamicEmployeeSystem {
 
     protected DynamicEntity[] employees = null;
     protected DynamicEntity[] projects = null;
-    
+
     public DynamicEmployeeSystem() {
         super();
     }
@@ -71,15 +71,15 @@ public class DynamicEmployeeSystem {
         for (int index = 0; index < this.employees.length; index++) {
             DynamicEntity emp = sampleEmps.get(index);
             DynamicEntity dbEmp = dbEmps.get(index);
-            assertEquals("First name does not match on employees[" + index + "]", 
+            assertEquals("First name does not match on employees[" + index + "]",
                 emp.<String> get("firstName"), dbEmp.<String> get("firstName"));
-            assertEquals("Last name does not match on employees[" + index + "]", 
+            assertEquals("Last name does not match on employees[" + index + "]",
                 emp.<String> get("lastName"), dbEmp.<String> get("lastName"));
-            assertEquals("Salary does not match on employees[" + index + "]", 
+            assertEquals("Salary does not match on employees[" + index + "]",
                 emp.<Integer> get("salary"), dbEmp.<Integer> get("salary"));
         }
     }
-    
+
     public static DynamicEmployeeSystem buildProject(DynamicHelper dynamicHelper) {
         DynamicClassLoader dcl = dynamicHelper.getDynamicClassLoader();
         Class<?> employeeClass = dcl.createDynamicClass(PACKAGE_PREFIX + ".Employee");
@@ -87,7 +87,7 @@ public class DynamicEmployeeSystem {
         Class<?> phoneClass = dcl.createDynamicClass(PACKAGE_PREFIX + ".PhoneNumber");
         Class<?> periodClass = dcl.createDynamicClass(PACKAGE_PREFIX + ".EmploymentPeriod");
         Class<?> projectClass = dcl.createDynamicClass(PACKAGE_PREFIX + ".Project");
-        JPADynamicTypeBuilder employee = new JPADynamicTypeBuilder(employeeClass, null, 
+        JPADynamicTypeBuilder employee = new JPADynamicTypeBuilder(employeeClass, null,
             "D_EMPLOYEE", "D_SALARY");
         JPADynamicTypeBuilder address = new JPADynamicTypeBuilder(addressClass, null, "D_ADDRESS");
         JPADynamicTypeBuilder phone = new JPADynamicTypeBuilder(phoneClass, null, "D_PHONE");
@@ -99,9 +99,9 @@ public class DynamicEmployeeSystem {
         configurePeriod(period);
         configureProject(project, employee);
         employee.addManyToManyMapping("projects", project.getType(), "D_PROJ_EMP");
-        dynamicHelper.addTypes(true, true, employee.getType(), address.getType(), phone.getType(), 
+        dynamicHelper.addTypes(true, true, employee.getType(), address.getType(), phone.getType(),
             period.getType(), project.getType());
-        
+
         return new DynamicEmployeeSystem();
     }
 
@@ -125,7 +125,7 @@ public class DynamicEmployeeSystem {
         address.configureSequencing("ADDR_SEQ", "ADDR_ID");
     }
 
-    private static void configureEmployee(JPADynamicTypeBuilder employee, JPADynamicTypeBuilder address, 
+    private static void configureEmployee(JPADynamicTypeBuilder employee, JPADynamicTypeBuilder address,
         JPADynamicTypeBuilder phone, JPADynamicTypeBuilder period, JPADynamicTypeBuilder project) {
         employee.setPrimaryKeyFields("EMP_ID");
         employee.addDirectMapping("id", int.class, "D_EMPLOYEE.EMP_ID");
@@ -133,12 +133,12 @@ public class DynamicEmployeeSystem {
         employee.addDirectMapping("lastName", String.class, "D_EMPLOYEE.L_NAME");
         employee.addDirectMapping("gender", String.class, "D_EMPLOYEE.GENDER");
         employee.addDirectMapping("salary", int.class, "D_SALARY.SALARY");
-        OneToOneMapping addressMapping = 
+        OneToOneMapping addressMapping =
             employee.addOneToOneMapping("address", address.getType(), "ADDR_ID");
         addressMapping.setCascadeAll(true);
         addressMapping.setIsPrivateOwned(true);
         employee.addOneToOneMapping("manager", employee.getType(), "MANAGER_ID");
-        OneToManyMapping phoneMapping = 
+        OneToManyMapping phoneMapping =
             employee.addOneToManyMapping("phoneNumbers", phone.getType(), "EMP_ID");
         phoneMapping.setCascadeAll(true);
         phoneMapping.setIsPrivateOwned(true);
@@ -159,7 +159,7 @@ public class DynamicEmployeeSystem {
         project.addDirectMapping("description", String.class, "DESCRIP");
         project.configureSequencing("PROJ_SEQ", "PROJ_ID");
     }
-    
+
     public void populate(JPADynamicHelper dynamicHelper, EntityManager em) {
         DynamicEntity[] employees = {
             basicEmployeeExample1(dynamicHelper),
@@ -178,14 +178,14 @@ public class DynamicEmployeeSystem {
         this.employees = employees;
         DynamicEntity[] projects = {
             basicProjectExample1(dynamicHelper),
-            basicProjectExample2(dynamicHelper), 
-            basicProjectExample3(dynamicHelper), 
-            basicProjectExample4(dynamicHelper), 
-            basicProjectExample5(dynamicHelper),  
+            basicProjectExample2(dynamicHelper),
+            basicProjectExample3(dynamicHelper),
+            basicProjectExample4(dynamicHelper),
+            basicProjectExample5(dynamicHelper),
             basicProjectExample6(dynamicHelper),
-            basicProjectExample7(dynamicHelper), 
-            basicProjectExample8(dynamicHelper), 
-            basicProjectExample9(dynamicHelper), 
+            basicProjectExample7(dynamicHelper),
+            basicProjectExample8(dynamicHelper),
+            basicProjectExample9(dynamicHelper),
             basicProjectExample10(dynamicHelper)
         };
         this.projects = projects;
@@ -220,7 +220,7 @@ public class DynamicEmployeeSystem {
         em.getTransaction().commit();
         em.close();
     }
-   
+
     @SuppressWarnings("deprecation")
     protected DynamicEntity basicEmployeeExample1(JPADynamicHelper dynamicHelper) {
         DynamicEntity employee = newInstance(dynamicHelper, "Employee");
@@ -513,7 +513,7 @@ public class DynamicEmployeeSystem {
     }
 
     @SuppressWarnings("unchecked")
-    protected DynamicEntity addPhoneNumber(JPADynamicHelper dynamicHelper, DynamicEntity employee, String type, 
+    protected DynamicEntity addPhoneNumber(JPADynamicHelper dynamicHelper, DynamicEntity employee, String type,
         String areaCode, String number) {
         DynamicEntity phone = newInstance(dynamicHelper, "PhoneNumber");
         phone.set("type", type);
@@ -532,7 +532,7 @@ public class DynamicEmployeeSystem {
     }
 
     @SuppressWarnings("unchecked")
-    protected void addManagedEmployees(JPADynamicHelper dynamicHelper, DynamicEntity[] employees, 
+    protected void addManagedEmployees(JPADynamicHelper dynamicHelper, DynamicEntity[] employees,
         int managerIndex, int[] employeeIndeces) {
         DynamicEntity manager = employees[managerIndex];
         if (manager.<Collection> get("managedEmployees").isEmpty()) {
@@ -543,7 +543,7 @@ public class DynamicEmployeeSystem {
     }
 
     @SuppressWarnings("unchecked")
-    protected void addProjects(JPADynamicHelper dynamicHelper, DynamicEntity[] employees, 
+    protected void addProjects(JPADynamicHelper dynamicHelper, DynamicEntity[] employees,
         DynamicEntity[] projects, int empIndex, int[] projIndeces) {
         DynamicEntity employee = employees[empIndex];
         for (int index = 0; index < projIndeces.length; index++) {

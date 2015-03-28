@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,9 +38,9 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <b>Description</b>: Represents a Join to a ElementCollection of basics.
  * Special type of Join that does not allow further joins.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria MapJoin
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
@@ -58,7 +58,7 @@ public class BasicMapJoinImpl<Z, K, E> extends MapJoinImpl<Z, K, E> {
     /**
      * Return the path corresponding to the referenced non-collection valued
      * attribute.
-     * 
+     *
      * @param model
      *            attribute
      * @return path corresponding to the referenced attribute
@@ -70,7 +70,7 @@ public class BasicMapJoinImpl<Z, K, E> extends MapJoinImpl<Z, K, E> {
     /**
      * Return the path corresponding to the referenced collection-valued
      * attribute.
-     * 
+     *
      * @param model
      *            collection-valued attribute
      * @return expression corresponding to the referenced attribute
@@ -82,7 +82,7 @@ public class BasicMapJoinImpl<Z, K, E> extends MapJoinImpl<Z, K, E> {
 
     /**
      * Return the path corresponding to the referenced map-valued attribute.
-     * 
+     *
      * @param model
      *            map-valued attribute
      * @return expression corresponding to the referenced attribute
@@ -91,17 +91,17 @@ public class BasicMapJoinImpl<Z, K, E> extends MapJoinImpl<Z, K, E> {
     public <L, W, M extends java.util.Map<L, W>> Expression<M> get(MapAttribute<E, L, W> map){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
-    
+
     /**
      * Return an expression corresponding to the type of the path.
-     * 
+     *
      * @return expression corresponding to the type of the path
      */
     @Override
     public Expression<Class<? extends E>> type(){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_type_does_not_apply"));
     }
-    
+
     @Override
     public <Y> Path<Y> get(String attName) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
@@ -141,7 +141,7 @@ public class BasicMapJoinImpl<Z, K, E> extends MapJoinImpl<Z, K, E> {
     public <E, Y> CollectionJoin<E, Y> joinCollection(String attributeName, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
-    
+
     @Override
     public <E, Y> ListJoin<E, Y> joinList(String attributeName, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,14 +26,14 @@ public class InverseRefChoiceAdapterTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlinversereference/owner.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlinversereference/owner.json";
     private static final String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlinversereference/ownerschema.json";
-    
+
     public InverseRefChoiceAdapterTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{ Owner.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);;
     }
-    
+
     public Object getControlObject() {
         Owner owner = new Owner();
         owner.owned = new ArrayList<Owned>();
@@ -48,11 +48,11 @@ public class InverseRefChoiceAdapterTestCases extends JAXBWithJSONTestCases {
         owner.owned.add(owned);
         return owner;
     }
-    
+
     public void testJSONSchemaGen() throws Exception{
         InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
         super.generateJSONSchema(controlSchema);
-       
+
     }
 
 

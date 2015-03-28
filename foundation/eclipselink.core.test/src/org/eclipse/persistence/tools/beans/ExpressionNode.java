@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.beans;
 
 import java.util.*;
@@ -93,18 +93,18 @@ public class ExpressionNode {
             operators.put(new Integer(ExpressionOperator.Equal), Equals);
             operators.put(new Integer(ExpressionOperator.NotEqual), NotEquals);
             operators.put(new Integer(ExpressionOperator.LessThan), LessThan);
-            operators.put(new Integer(ExpressionOperator.LessThanEqual), 
+            operators.put(new Integer(ExpressionOperator.LessThanEqual),
                           LessThanEqual);
-            operators.put(new Integer(ExpressionOperator.GreaterThan), 
+            operators.put(new Integer(ExpressionOperator.GreaterThan),
                           GreaterThan);
-            operators.put(new Integer(ExpressionOperator.GreaterThanEqual), 
+            operators.put(new Integer(ExpressionOperator.GreaterThanEqual),
                           GreaterThanEqual);
             operators.put(new Integer(ExpressionOperator.Like), Like);
             operators.put(new Integer(ExpressionOperator.NotLike), NotLike);
             operators.put(new Integer(ExpressionOperator.In), In);
             operators.put(new Integer(ExpressionOperator.NotIn), NotIn);
             operators.put(new Integer(ExpressionOperator.Between), Between);
-            operators.put(new Integer(ExpressionOperator.NotBetween), 
+            operators.put(new Integer(ExpressionOperator.NotBetween),
                           NotBetween);
             operators.put(new Integer(ExpressionOperator.Or), Or);
             operators.put(new Integer(ExpressionOperator.And), And);
@@ -130,7 +130,7 @@ public class ExpressionNode {
         } else if (getExpression() instanceof QueryKeyExpression) {
             return ((QueryKeyExpression)getExpression()).getName().toString();
         } else {
-            String anOperator = 
+            String anOperator =
                 getOperator(getExpression().getOperator().getSelector());
             if (anOperator == null) {
                 return getExpression().getOperator().toString();

@@ -16,7 +16,7 @@ public class XmlTransientUnsetPropTestCases extends JAXBWithJSONTestCases{
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltransient/phone.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltransient/phone.json";
-     
+
     public XmlTransientUnsetPropTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
@@ -30,16 +30,16 @@ public class XmlTransientUnsetPropTestCases extends JAXBWithJSONTestCases{
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.unset.prop", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);      
-            
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
         return properties;
     }
-        
+
     protected Object getControlObject() {
         PhoneNumber num = new PhoneNumber();
         num.setNumber("123-4567");
         num.setType("Cell");
-    
+
         return num;
     }
-}    
+}

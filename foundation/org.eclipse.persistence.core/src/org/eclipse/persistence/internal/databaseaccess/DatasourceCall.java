@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     10/29/2010-2.2 Michael O'Brien 
+ *     10/29/2010-2.2 Michael O'Brien
  *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
- *     05/24/2011-2.3 Guy Pelletier 
+ *     05/24/2011-2.3 Guy Pelletier
  *       - 345962: Join fetch query when using tenant discriminator column fails.
- *     07/13/2012-2.5 Guy Pelletier 
+ *     07/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier 
+ *     08/24/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     11/10/2014-2.6 Dmitry Kornilov
  *       - 450818: Column names with hash mark => "java.sql.SQLException: Invalid column index"
@@ -72,9 +72,9 @@ public abstract class DatasourceCall implements Call {
 
     /** Allow connection unwrapping to be configured. */
     protected boolean isNativeConnectionRequired;
-    
+
     //Eclipselink Bug 217745 indicates whether or not the token(#,?) needs to be processed if they are in the quotes.
-    protected boolean shouldProcessTokenInQuotes; 
+    protected boolean shouldProcessTokenInQuotes;
 
     // Type of call.
     protected int returnType;
@@ -219,7 +219,7 @@ public abstract class DatasourceCall implements Call {
     public boolean isCursorReturned() {
         return this.returnType == RETURN_CURSOR;
     }
-    
+
     /**
      * Returns true if this call returns from a statement.execute call.
      */
@@ -231,7 +231,7 @@ public abstract class DatasourceCall implements Call {
      * Return whether all the results of the call have been returned.
      */
     public boolean isFinished() {
-    	return !isCursorReturned() && !isExecuteUpdate();
+        return !isCursorReturned() && !isExecuteUpdate();
     }
 
     /**
@@ -255,11 +255,11 @@ public abstract class DatasourceCall implements Call {
     public boolean isStoredPLSQLFunctionCall() {
         return false;
     }
-    
+
     public boolean isStoredPLSQLProcedureCall() {
         return false;
     }
-    
+
     public boolean isStoredFunctionCall() {
         return false;
     }
@@ -293,7 +293,7 @@ public abstract class DatasourceCall implements Call {
     public void returnCursor() {
         setReturnType(RETURN_CURSOR);
     }
-    
+
     /**
      * Indicates that this call will return a boolean value from an execute()
      * call.
@@ -405,7 +405,7 @@ public abstract class DatasourceCall implements Call {
                     token = queryString.substring(lastIndex, queryString.length());
                     lastIndex = -1;
                 } else {
-                    if(this.shouldProcessTokenInQuotes){//Always process token no matter whether the quotes around it or not. 
+                    if(this.shouldProcessTokenInQuotes){//Always process token no matter whether the quotes around it or not.
                         token = queryString.substring(lastIndex, poundIndex);
                     }else{
                         boolean hasPairedQuoteBeforePound = true;
@@ -419,7 +419,7 @@ public abstract class DatasourceCall implements Call {
                                break;
                             }
                         }while(true);
-                        
+
                         int endQuoteIndex = -1;
                         if(!hasPairedQuoteBeforePound){//There is begin quote, so search end quote.
                             endQuoteIndex = queryString.indexOf('\'', poundIndex+1);
@@ -428,7 +428,7 @@ public abstract class DatasourceCall implements Call {
                             token = queryString.substring(lastIndex, endQuoteIndex+1);
                             poundIndex=-1;
                             lastIndex = endQuoteIndex + 1;
-                        } else { //No quote around pound, 
+                        } else { //No quote around pound,
                             token = queryString.substring(lastIndex, poundIndex);
                             lastIndex = poundIndex + 1;
                         }
@@ -507,7 +507,7 @@ public abstract class DatasourceCall implements Call {
                                break;
                             }
                         }while(true);
-                        
+
                         int endQuoteIndex = -1;
                         if(!hasPairedQuoteBeforeMark){//There is begin quote, so search end quote.
                             endQuoteIndex = queryString.indexOf('\'', markIndex+1);
@@ -517,7 +517,7 @@ public abstract class DatasourceCall implements Call {
                             markIndex=-1;
                             lastIndex = endQuoteIndex + 1;
                         }else{
-                            //if no quote around the mark, write the rest of sql. 
+                            //if no quote around the mark, write the rest of sql.
                             token = queryString.substring(lastIndex, markIndex);
                             lastIndex = markIndex + 1;
                         }
@@ -676,7 +676,7 @@ public abstract class DatasourceCall implements Call {
         if ((this.parameters == null) || getParameters().isEmpty()) {
             //has no parameters
             return;
-        }        
+        }
         if (getQueryString().indexOf(argumentMarker()) == -1) {
             return;
         }
@@ -711,7 +711,7 @@ public abstract class DatasourceCall implements Call {
                                 break;
                             }
                         } while (true);
-                        
+
                         int endQuoteIndex = -1;
                         if (!hasPairedQuoteBeforeMark) { // there is a begin quote, so search for end quote.
                             endQuoteIndex = queryString.indexOf('\'', tokenIndex + 1);
@@ -721,7 +721,7 @@ public abstract class DatasourceCall implements Call {
                             tokenIndex = -1;
                             lastIndex = endQuoteIndex + 1;
                         } else {
-                            // if no quote around the mark, write the rest of sql. 
+                            // if no quote around the mark, write the rest of sql.
                             token = queryString.substring(lastIndex, tokenIndex);
                             lastIndex = tokenIndex + 1;
                         }
@@ -797,7 +797,7 @@ public abstract class DatasourceCall implements Call {
         Object value = parameter;
         DatabaseField field = null;
         boolean isNull = false;
-        
+
         // Parameter expressions are used for nesting and correct mapping conversion of the value.
         if (parameter instanceof ParameterExpression) {
             value = ((ParameterExpression)parameter).getValue(translationRow, getQuery(), session);
@@ -871,7 +871,7 @@ public abstract class DatasourceCall implements Call {
         Object[] inOut = { inValue, outParameter };
         return inOut;
     }
-    
+
     /**
      * Return true if the specific mark is existing and not quoted around.
      *
@@ -882,7 +882,7 @@ public abstract class DatasourceCall implements Call {
     private boolean hasArgumentMark(String string, char mark, char quote){
         int quoteIndex = -1;
         int lastEndQuoteIndex = -1;
-        
+
         do{
             int markIndex=string.indexOf(mark,lastEndQuoteIndex+1);
             if(markIndex==-1){
@@ -930,8 +930,8 @@ public abstract class DatasourceCall implements Call {
 
     /**
      * INTERNAL:
-     * This method is used to correct parameterTypes which are compared to static values using == equality, which changes 
-     * during serialization/deserialization.  
+     * This method is used to correct parameterTypes which are compared to static values using == equality, which changes
+     * during serialization/deserialization.
      * @param in
      * @throws IOException
      * @throws ClassNotFoundException
@@ -957,7 +957,7 @@ public abstract class DatasourceCall implements Call {
                     newParameterTypes.add(IN);
                 } else if (OUT_CURSOR.equals(type)) {
                     newParameterTypes.add(OUT_CURSOR);
-                } 
+                }
             }
             parameterTypes = newParameterTypes;
         }

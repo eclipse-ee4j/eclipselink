@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -20,33 +20,33 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.mapping.Mapping
 
 public final class VariableOneToOneMappingNode extends MappingNode {
 
-	
-	public VariableOneToOneMappingNode(MWVariableOneToOneMapping value, SelectionActionsPolicy mappingNodeTypePolicy, MappingDescriptorNode parent) {
-		super(value, mappingNodeTypePolicy, parent);
-	}
+
+    public VariableOneToOneMappingNode(MWVariableOneToOneMapping value, SelectionActionsPolicy mappingNodeTypePolicy, MappingDescriptorNode parent) {
+        super(value, mappingNodeTypePolicy, parent);
+    }
 
 
-	// ************** AbstractApplicationNode overrides *************
+    // ************** AbstractApplicationNode overrides *************
 
-	protected String accessibleNameKey() {
-		return "ACCESSIBLE_TRANSFORMATION_MAPPING_NODE";
-	}
+    protected String accessibleNameKey() {
+        return "ACCESSIBLE_TRANSFORMATION_MAPPING_NODE";
+    }
 
-	// ************** ApplicationNode implementation *************
-	
-	public String helpTopicID() {
-		return "mapping.variableOneToOne";
-	}
+    // ************** ApplicationNode implementation *************
 
-	protected String buildIconKey() {
-		return this.getDescriptorNode().mappingHelpTopicPrefix() + ".variableOneToOne";
-	}
+    public String helpTopicID() {
+        return "mapping.variableOneToOne";
+    }
+
+    protected String buildIconKey() {
+        return this.getDescriptorNode().mappingHelpTopicPrefix() + ".variableOneToOne";
+    }
 
 
-	// ********** MWApplicationNode overrides **********
+    // ********** MWApplicationNode overrides **********
 
-	protected Class propertiesPageClass() {
-		return VariableOneToOneMappingTabbedPropertiesPage.class;
-	}
+    protected Class propertiesPageClass() {
+        return VariableOneToOneMappingTabbedPropertiesPage.class;
+    }
 
 }

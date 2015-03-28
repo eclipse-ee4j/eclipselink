@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,17 +27,17 @@ package org.eclipse.persistence.jpa.jpql.tools.spi;
  */
 public interface IQuery extends IExternalForm {
 
-	/**
-	 * Returns the string representation of the JPQL query.
-	 *
-	 * @return A non-<code>null</code> string representation of the JPQL query
-	 */
-	String getExpression();
+    /**
+     * Returns the string representation of the JPQL query.
+     *
+     * @return A non-<code>null</code> string representation of the JPQL query
+     */
+    String getExpression();
 
-	/**
-	 * Retrieves the provider of managed types.
-	 *
-	 * @return The object that has access to the application's managed types.
-	 */
-	IManagedTypeProvider getProvider();
+    /**
+     * Retrieves the provider of managed types.
+     *
+     * @return The object that has access to the application's managed types.
+     */
+    IManagedTypeProvider getProvider();
 }

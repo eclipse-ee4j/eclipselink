@@ -25,21 +25,21 @@ public class MotorcycleProject extends Project {
         descriptor.setDefaultRootElement("ns2:Motorcycle");
 
         XMLField classIndicatorField = new XMLField("@xsi:type");
-        descriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);        
-        descriptor.getInheritancePolicy().addClassIndicator(SportBike.class, "ns2:SportBike");        
-        descriptor.getInheritancePolicy().addClassIndicator(Motorcycle.class, "ns2:Motorcycle");      
+        descriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
+        descriptor.getInheritancePolicy().addClassIndicator(SportBike.class, "ns2:SportBike");
+        descriptor.getInheritancePolicy().addClassIndicator(Motorcycle.class, "ns2:Motorcycle");
         descriptor.getInheritancePolicy().setShouldReadSubclasses(true);
-        
+
         descriptor.setNamespaceResolver(nsr);
-        
+
         XMLDirectMapping licenseMapping = new XMLDirectMapping();
         licenseMapping.setAttributeName("license");
         licenseMapping.setXPath("license-number/text()");
-        descriptor.addMapping(licenseMapping);   
-        
+        descriptor.addMapping(licenseMapping);
+
         return descriptor;
     }
-    
+
     private XMLDescriptor getSportBikeDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(SportBike.class);
@@ -50,7 +50,7 @@ public class MotorcycleProject extends Project {
         XMLDirectMapping displacementMapping = new XMLDirectMapping();
         displacementMapping.setAttributeName("displacement");
         displacementMapping.setXPath("engine-size/text()");
-        descriptor.addMapping(displacementMapping);   
+        descriptor.addMapping(displacementMapping);
         return descriptor;
     }
 }

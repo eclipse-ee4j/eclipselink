@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jpa;
 
 import java.util.Collection;
@@ -46,14 +46,14 @@ public interface JpaQuery<X> extends javax.persistence.TypedQuery<X> {
      * @return Collection of results
      */
     public Collection getResultCollection();
-    
+
     /**
      * PUBLIC:
      * Non-standard method to return results of a ReadQuery that uses a Cursor.
      * @return Cursor on results, either a CursoredStream, or ScrollableCursor
      */
     public Cursor getResultCursor();
-    
+
     /**
      * PUBLIC:
      * Replace the cached query with the given query.

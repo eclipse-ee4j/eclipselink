@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle. All rights reserved.
+ * Copyright (c) 2014, 2015  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,7 +58,7 @@ public class PreLoginMappingAdapterV2 extends SessionEventListener {
                 XMLDescriptor xmlDescriptor = (XMLDescriptor) project.getAliasDescriptors().get(descriptorAlias);
                 if (null != xmlDescriptor) {
                     if (null == xmlDescriptor.getDefaultRootElement()) {
-                        // set root element 
+                        // set root element
                         xmlDescriptor.setDefaultRootElement(xmlNameTransformer.transformRootElementName(xmlDescriptor.getJavaClass().getName()));
                         // set resultAlwaysXMLRoot to false, so that the elements are not wrapped in JAXBElements when unmarshalling.
                         xmlDescriptor.setResultAlwaysXMLRoot(false);

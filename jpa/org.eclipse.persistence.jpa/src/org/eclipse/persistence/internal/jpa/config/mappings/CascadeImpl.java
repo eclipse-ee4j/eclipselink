@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -18,7 +18,7 @@ import org.eclipse.persistence.jpa.config.Cascade;
 
 /**
  * JPA scripting API implementation.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.5.1
  */
@@ -26,7 +26,7 @@ public class CascadeImpl extends MetadataImpl<CascadeMetadata> implements Cascad
     public CascadeImpl() {
         super(new CascadeMetadata());
     }
-    
+
     public Cascade setCascadeAll() {
         getMetadata().setCascadeAll(true);
         return this;
@@ -36,7 +36,7 @@ public class CascadeImpl extends MetadataImpl<CascadeMetadata> implements Cascad
         getMetadata().setCascadeDetach(true);
         return this;
     }
-    
+
     public Cascade setCascadeMerge() {
         getMetadata().setCascadeMerge(true);
         return this;
@@ -46,15 +46,15 @@ public class CascadeImpl extends MetadataImpl<CascadeMetadata> implements Cascad
         getMetadata().setCascadePersist(true);
         return this;
     }
-    
+
     public Cascade setCascadeRefresh() {
         getMetadata().setCascadeRefresh(true);
         return this;
     }
-    
+
     public Cascade setCascadeRemove() {
         getMetadata().setCascadeRemove(true);
         return this;
     }
-    
+
 }

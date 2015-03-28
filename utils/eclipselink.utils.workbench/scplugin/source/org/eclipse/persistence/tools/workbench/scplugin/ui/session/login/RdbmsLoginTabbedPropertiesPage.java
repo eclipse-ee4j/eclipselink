@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,89 +28,89 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
 
 public class RdbmsLoginTabbedPropertiesPage extends TabbedPropertiesPage {
 
-	public RdbmsLoginTabbedPropertiesPage( PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder) {
-		super( nodeHolder, contextHolder);
-	}
+    public RdbmsLoginTabbedPropertiesPage( PropertyValueModel nodeHolder, WorkbenchContextHolder contextHolder) {
+        super( nodeHolder, contextHolder);
+    }
 
-	protected Component buildConnectionPropertiesPage() {
-		return new RdbmsConnectionPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
-	}
+    protected Component buildConnectionPropertiesPage() {
+        return new RdbmsConnectionPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
+    }
 
-	protected String buildConnectionPropertiesPageTitle() {
-		return "LOGIN_CONNECTION_TAB_TITLE";
-	}
+    protected String buildConnectionPropertiesPageTitle() {
+        return "LOGIN_CONNECTION_TAB_TITLE";
+    }
 
-	protected Component buildOptionsPropertiesPage() {
-		return new RdbmsOptionsPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
-	}
+    protected Component buildOptionsPropertiesPage() {
+        return new RdbmsOptionsPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
+    }
 
-	protected String buildOptionsPropertiesPageTitle() {
-		return "LOGIN_OPTIONS_TAB_TITLE";
-	}
+    protected String buildOptionsPropertiesPageTitle() {
+        return "LOGIN_OPTIONS_TAB_TITLE";
+    }
 
-	protected PropertyValueModel buildPropertiesHolder() {
+    protected PropertyValueModel buildPropertiesHolder() {
 
-		PropertyAspectAdapter loginHolder = new PropertyAspectAdapter( getSelectionHolder(), DatabaseSessionAdapter.LOGIN_CONFIG_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return ((DatabaseSessionAdapter) subject).getLogin();
-			}
-		};
+        PropertyAspectAdapter loginHolder = new PropertyAspectAdapter( getSelectionHolder(), DatabaseSessionAdapter.LOGIN_CONFIG_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return ((DatabaseSessionAdapter) subject).getLogin();
+            }
+        };
 
-		return new PropertyAspectAdapter( loginHolder, DatabaseLoginAdapter.USE_PROPERTIES_PROPERTY) {
-			protected Object buildValue() {
-				if (subject == null) {
-					return Boolean.FALSE;
-				} else {
-					return getValueFromSubject();
-				}
-			}
-			public Object getValueFromSubject() {
-				DatabaseLoginAdapter session = (DatabaseLoginAdapter) subject;
-				return Boolean.valueOf( session.usesProperties());
-			}
-		};
-	}
+        return new PropertyAspectAdapter( loginHolder, DatabaseLoginAdapter.USE_PROPERTIES_PROPERTY) {
+            protected Object buildValue() {
+                if (subject == null) {
+                    return Boolean.FALSE;
+                } else {
+                    return getValueFromSubject();
+                }
+            }
+            public Object getValueFromSubject() {
+                DatabaseLoginAdapter session = (DatabaseLoginAdapter) subject;
+                return Boolean.valueOf( session.usesProperties());
+            }
+        };
+    }
 
-	protected ComponentBuilder buildPropertiesPageBuilder() {
-		return new ComponentBuilder() {
-			private RdbmsPropertiesPropertiesPage page;
-			
-			public Component buildComponent( PropertyValueModel nodeHolder) {
-				if (page == null)
-					page = new RdbmsPropertiesPropertiesPage( nodeHolder, getWorkbenchContextHolder());
+    protected ComponentBuilder buildPropertiesPageBuilder() {
+        return new ComponentBuilder() {
+            private RdbmsPropertiesPropertiesPage page;
 
-				return page;
-			}
-		};
-	}
+            public Component buildComponent( PropertyValueModel nodeHolder) {
+                if (page == null)
+                    page = new RdbmsPropertiesPropertiesPage( nodeHolder, getWorkbenchContextHolder());
 
-	protected String buildPropertiesPropertiesPageTitle() {
-		return "LOGIN_PROPERTIES_TAB_TITLE";
-	}
+                return page;
+            }
+        };
+    }
 
-	protected Component buildSequencingPropertiesPage() {
-		return new SequencingPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
-	}
+    protected String buildPropertiesPropertiesPageTitle() {
+        return "LOGIN_PROPERTIES_TAB_TITLE";
+    }
 
-	protected String buildSequencingPropertiesPageTitle() {
-		return "LOGIN_SEQUENCING_TAB_TITLE";
-	}
+    protected Component buildSequencingPropertiesPage() {
+        return new SequencingPropertiesPage( getNodeHolder(), getWorkbenchContextHolder());
+    }
 
-	protected Component buildTitlePanel() {
-		return new JComponent() { };
-	}
+    protected String buildSequencingPropertiesPageTitle() {
+        return "LOGIN_SEQUENCING_TAB_TITLE";
+    }
 
-	protected JTabbedPane buildTabbedPane()
-	{
-		JTabbedPane tabbedPane = super.buildTabbedPane();
-		tabbedPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		return tabbedPane;
-	}
+    protected Component buildTitlePanel() {
+        return new JComponent() { };
+    }
 
-	protected void initializeTabs() {
-		addTab( buildConnectionPropertiesPage(), buildConnectionPropertiesPageTitle());
-		addTab( buildSequencingPropertiesPage(), buildSequencingPropertiesPageTitle());
-		addTab( buildOptionsPropertiesPage(), buildOptionsPropertiesPageTitle());
-		addTab( buildPropertiesHolder(), 3, buildPropertiesPageBuilder(), buildPropertiesPropertiesPageTitle());
-	}
+    protected JTabbedPane buildTabbedPane()
+    {
+        JTabbedPane tabbedPane = super.buildTabbedPane();
+        tabbedPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        return tabbedPane;
+    }
+
+    protected void initializeTabs() {
+        addTab( buildConnectionPropertiesPage(), buildConnectionPropertiesPageTitle());
+        addTab( buildSequencingPropertiesPage(), buildSequencingPropertiesPageTitle());
+        addTab( buildOptionsPropertiesPage(), buildOptionsPropertiesPageTitle());
+        addTab( buildPropertiesHolder(), 3, buildPropertiesPageBuilder(), buildPropertiesPropertiesPageTitle());
+    }
 }

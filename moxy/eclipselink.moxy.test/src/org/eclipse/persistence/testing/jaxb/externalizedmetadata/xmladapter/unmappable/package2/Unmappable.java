@@ -18,7 +18,7 @@ public class Unmappable {
     public static Unmappable getInstance(String value) {
         return new Unmappable(value);
     }
-    
+
     public boolean equals(Object obj) {
         return (obj instanceof Unmappable) && ((Unmappable)obj).getProp().equals(this.getProp());
     }

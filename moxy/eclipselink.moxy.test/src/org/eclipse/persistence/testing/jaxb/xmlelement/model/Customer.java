@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,8 +28,8 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
 @XmlType(propOrder={"id","firstName", "lastName","address", "phoneNumbers", "firstTimeCustomer","orderNumbers"})
 public class Customer {
 
-	@XmlAttribute
-    private int id;	
+    @XmlAttribute
+    private int id;
     private String firstName;
     private String lastName;
     private boolean firstTimeCustomer;
@@ -47,7 +47,7 @@ public class Customer {
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }

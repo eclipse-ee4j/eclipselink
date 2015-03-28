@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.remote.rmi;
 
 import java.rmi.*;
@@ -26,14 +26,14 @@ public RMIConnectionExceptionsTest(int mode) {
 public void setup() throws Exception {
     Session session = new org.eclipse.persistence.internal.sessions.DatabaseSessionImpl();
     session.setProperty("TransporterGenerator", generator);
-	RMIServerManagerController.start(session, getNameToBind(), "org.eclipse.persistence.testing.tests.remote.rmi.RMIRemoteSessionControllerDispatcherForTestingExceptions");
-	RMIServerManager serverManager = (RMIServerManager) Naming.lookup(getNameToBind());
-	RMIConnection rmiConnection = new RMIConnection(serverManager.createRemoteSessionController());
+    RMIServerManagerController.start(session, getNameToBind(), "org.eclipse.persistence.testing.tests.remote.rmi.RMIRemoteSessionControllerDispatcherForTestingExceptions");
+    RMIServerManager serverManager = (RMIServerManager) Naming.lookup(getNameToBind());
+    RMIConnection rmiConnection = new RMIConnection(serverManager.createRemoteSessionController());
     setRemoteConnection(rmiConnection);
 }
 
 public void reset() throws Exception {
-	Naming.unbind(getNameToBind());
+    Naming.unbind(getNameToBind());
 }
 
 }

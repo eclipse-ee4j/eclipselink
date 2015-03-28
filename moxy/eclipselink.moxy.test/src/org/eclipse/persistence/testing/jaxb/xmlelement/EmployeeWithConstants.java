@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,14 +20,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="employee-data")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class EmployeeWithConstants {
-    
+
     @XmlElement(name = "constant")
     private static final String ANNOTATED_CONSTANT= "VALUE";
 
     private static final String UN_ANNOTATED_CONSTANT = "ANOTHER VALUE";
-    
+
     public String id;
-    
+
     public boolean equals(Object obj) {
         return this.id.equals(((EmployeeWithConstants)obj).id);
     }

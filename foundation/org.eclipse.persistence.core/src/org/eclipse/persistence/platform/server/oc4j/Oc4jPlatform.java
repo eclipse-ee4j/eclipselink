@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.server.oc4j;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -52,9 +52,9 @@ public class Oc4jPlatform extends ServerPlatformBase {
      * @see ServerPlatformBase#initializeExternalTransactionController()
      */
     public Class getExternalTransactionControllerClass() {
-    	if (externalTransactionControllerClass == null){
-    		externalTransactionControllerClass = Oc4jTransactionController.class;
-    	}
+        if (externalTransactionControllerClass == null){
+            externalTransactionControllerClass = Oc4jTransactionController.class;
+        }
         return externalTransactionControllerClass;
     }
 
@@ -77,10 +77,10 @@ public class Oc4jPlatform extends ServerPlatformBase {
      * Clears statement cache of the wrapper connection.
      * Required by Oracle proxy authentication: currently connection statement cache
      * becomes invalid on switching to/from proxy session.
-     * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer  
+     * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer
      * before opening proxy session and before closing it.
      */
-    public void clearStatementCache(java.sql.Connection connection) {   
+    public void clearStatementCache(java.sql.Connection connection) {
         Platform platform = getDatabaseSession().getDatasourceLogin().getDatasourcePlatform();
         if(platform.isOracle()) {
             ((OraclePlatform)platform).clearOracleConnectionCache(connection);

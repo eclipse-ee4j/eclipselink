@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -118,7 +118,7 @@ public class TestExtendedQueries extends JPA1Base {
 
     /**
      * returns a hobby for given employee, it is not possible to assign a hobby more than once to a employee
-     * 
+     *
      * @param empID
      *            the ID of the employee
      * @return a hobby for the given employee ID
@@ -247,7 +247,7 @@ public class TestExtendedQueries extends JPA1Base {
      * @Test public void testQueryWithMemberOf() throws Exception { EntityManager em = getEnvironment().getEntityManager(); try
      * { Bicycle bike = new Bicycle(); bike.setId((short)12); bike.setBrand("foo"); bike.setColor("brown");
      * bike.setNumberOfGears((short)1); em.persist(bike);
-     * 
+     *
      * //test string-mapping of enums Query query = em.createQuery("Select Distinct Object(emp) FROM Employee emp WHERE :param
      * NOT MEMBER emp.bicycles"); query.setParameter("param", bike); query.getResultList(); } finally { closeEntityManager(em);
      * } }

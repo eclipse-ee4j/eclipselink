@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/13/2013-2.5 Guy Pelletier 
+ *     02/13/2013-2.5 Guy Pelletier
  *       - 397772: JPA 2.1 Entity Graph Support (XML support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.graphs;
@@ -23,17 +23,17 @@ import org.eclipse.persistence.queries.AttributeGroup;
 
 /**
  * Object to hold onto named attribute node metadata.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
  * - any metadata mapped from XML to this class must be initialized in the
  *   initXMLObject method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.5
  */
@@ -41,7 +41,7 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
     protected String m_name;
     protected String m_subgraph;
     protected String m_keySubgraph;
-    
+
     /**
      * INTERNAL:
      * Used for XML loading.
@@ -49,19 +49,19 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
     public NamedAttributeNodeMetadata() {
         super("<named-entity-graph>");
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.
      */
     public NamedAttributeNodeMetadata(MetadataAnnotation namedAttributeNode, ClassAccessor accessor) {
         super(namedAttributeNode, accessor);
-        
+
         m_name = namedAttributeNode.getAttributeString("value");
         m_subgraph = namedAttributeNode.getAttributeString("subgraph");
         m_keySubgraph = namedAttributeNode.getAttributeString("key-subgraph");
     }
-    
+
     /**
      * INTERNAL:
      * Used for XML merging and overriding.
@@ -70,18 +70,18 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof NamedAttributeNodeMetadata) {
             NamedAttributeNodeMetadata attributeNode = (NamedAttributeNodeMetadata) objectToCompare;
-            
+
             if (! valuesMatch(m_name, attributeNode.getName())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_subgraph, attributeNode.getSubgraph())) {
                 return false;
             }
-            
+
             return valuesMatch(m_keySubgraph, attributeNode.getKeySubgraph());
         }
-        
+
         return false;
     }
 
@@ -93,7 +93,7 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
     public String getIdentifier() {
         return getName();
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -101,7 +101,7 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
     public String getKeySubgraph() {
         return m_keySubgraph;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -109,7 +109,7 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
     public String getName() {
         return m_name;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -133,7 +133,7 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
         }else {
             graph.addAttribute(getName());
         }
-           
+
         if (getKeySubgraph() != null) {
             if (attributeGraphs.containsKey(getKeySubgraph())) {
                 graph.getItem(getName()).addKeyGroups(attributeGraphs.get(getKeySubgraph()).values());
@@ -142,7 +142,7 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -150,7 +150,7 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
     public void setKeySubgraph(String keySubgraph) {
         m_keySubgraph = keySubgraph;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -158,7 +158,7 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
     public void setName(String name) {
         m_name = name;
     }
- 
+
     /**
      * INTERNAL:
      * Used for OX mapping.

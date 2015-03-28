@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 /**
  * Entity implementation class for Entity: LeafB
- * 
+ *
  */
 @Entity
 public class LeafB implements Serializable, PersistentIdentity {

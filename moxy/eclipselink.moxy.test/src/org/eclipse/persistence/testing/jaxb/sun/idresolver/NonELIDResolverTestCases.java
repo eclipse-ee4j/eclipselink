@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2015  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,9 +27,9 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 public class NonELIDResolverTestCases extends JAXBTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/idresolver/fruit2.xml";
-    
+
     private NonELIDResolver idResolver = new NonELIDResolver();
-    
+
     public NonELIDResolverTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] { Melon.class, MelonRef.class, Box.class, FruitOrder.class });
@@ -39,7 +39,7 @@ public class NonELIDResolverTestCases extends JAXBTestCases {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
+
         getJAXBUnmarshaller().setProperty("com.sun.xml.bind.IDResolver", idResolver);
     }
 
@@ -50,7 +50,7 @@ public class NonELIDResolverTestCases extends JAXBTestCases {
         assertTrue("IDResolver.endDocument() was not called.", idResolver.hitEndDocument);
         assertTrue("IDResolver.bind(Object) was not called.", idResolver.hitBind);
         assertTrue("IDResolver.resolve(Object) was not called.", idResolver.hitResolve);
-        assertTrue("ValidationEventHandler was not set.", idResolver.eventHandlerNotNull);        
+        assertTrue("ValidationEventHandler was not set.", idResolver.eventHandlerNotNull);
     }
 
     public Object getControlObject() {
@@ -72,7 +72,7 @@ public class NonELIDResolverTestCases extends JAXBTestCases {
         m3.processed = true;
         MelonRef m3Ref = new MelonRef();
         m3Ref.ref = m3;
-        
+
 
         Box box1 = new Box();
         box1.fruits.add(m1Ref);

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Denise Smith - May 2013
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlvariablenode;
 
 import org.eclipse.persistence.testing.jaxb.xmlvariablenode.method.XmlVariableNodeMethodGetOnlyTestCases;
@@ -26,7 +26,7 @@ public class AllVariableElementTestCases extends TestSuite {
         suite.addTestSuite(XmlVariableNodeChildTypeTestCases.class);
         suite.addTestSuite(XmlVariableNodeDuplicatesTestCases.class);
         suite.addTestSuite(XmlVariableNodeInvalidTestCases.class);
-        suite.addTestSuite(XmlVariableNodeObjectsTestCases.class);       
+        suite.addTestSuite(XmlVariableNodeObjectsTestCases.class);
         suite.addTestSuite(XmlVariableNodeTestCases.class);
         suite.addTestSuite(XmlVariableNodeQNameTestCases.class);
         suite.addTestSuite(XmlVariableNodeQNameNSTestCases.class);
@@ -37,14 +37,14 @@ public class AllVariableElementTestCases extends TestSuite {
         suite.addTestSuite(XmlVariableNodeNullValueTestCases.class);
         suite.addTestSuite(XmlVariableNodeAdapterTestCases.class);
         suite.addTestSuite(XmlVariableNodeWithReferenceTestCase.class);
-        
+
         suite.addTestSuite(XmlVariableNodeXmlValueTestCases.class);
         suite.addTestSuite(XmlVariableNodeXmlValueAttributeTestCases.class);
         suite.addTestSuite(XmlVariableNodeXmlValueCollectionTestCases.class);
-        
+
         suite.addTestSuite(XmlVariableNodeMethodTestCases.class);
         suite.addTestSuite(XmlVariableNodeMethodGetOnlyTestCases.class);
-        
+
         suite.addTestSuite(XmlVariableNodeSingleTestCases.class);
         suite.addTestSuite(XmlVariableNodeObjectXPathTestCases.class);
         suite.addTestSuite(XmlVariableNodeCollectionXPathTestCases.class);

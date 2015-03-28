@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,60 +28,60 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IQuery;
 @SuppressWarnings("nls")
 public class JavaQuery implements IQuery {
 
-	/**
-	 * The string representation of the JPQL query.
-	 */
-	private String jpqlQuery;
+    /**
+     * The string representation of the JPQL query.
+     */
+    private String jpqlQuery;
 
-	/**
-	 * The provider of JPA managed types.
-	 */
-	private IManagedTypeProvider provider;
+    /**
+     * The provider of JPA managed types.
+     */
+    private IManagedTypeProvider provider;
 
-	/**
-	 * Creates a new <code>JavaQuery</code>.
-	 *
-	 * @param provider The provider of JPA managed types
-	 * @param jpqlQuery The string representation of the JPQL query
-	 */
-	public JavaQuery(IManagedTypeProvider provider, CharSequence jpqlQuery) {
-		super();
-		this.provider = provider;
-		setExpression(jpqlQuery);
-	}
+    /**
+     * Creates a new <code>JavaQuery</code>.
+     *
+     * @param provider The provider of JPA managed types
+     * @param jpqlQuery The string representation of the JPQL query
+     */
+    public JavaQuery(IManagedTypeProvider provider, CharSequence jpqlQuery) {
+        super();
+        this.provider = provider;
+        setExpression(jpqlQuery);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getExpression() {
-		return jpqlQuery;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getExpression() {
+        return jpqlQuery;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public IManagedTypeProvider getProvider() {
-		return provider;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public IManagedTypeProvider getProvider() {
+        return provider;
+    }
 
-	/**
-	 * Sets the string representation of the JPQL query.
-	 *
-	 * @param jpqlQuery The string representation of the JPQL query
-	 */
-	public void setExpression(CharSequence jpqlQuery) {
-		this.jpqlQuery = (jpqlQuery != null) ? jpqlQuery.toString() : ExpressionTools.EMPTY_STRING;
-	}
+    /**
+     * Sets the string representation of the JPQL query.
+     *
+     * @param jpqlQuery The string representation of the JPQL query
+     */
+    public void setExpression(CharSequence jpqlQuery) {
+        this.jpqlQuery = (jpqlQuery != null) ? jpqlQuery.toString() : ExpressionTools.EMPTY_STRING;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("JPQL query=[");
-		sb.append(jpqlQuery);
-		sb.append("]");
-		return sb.toString();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("JPQL query=[");
+        sb.append(jpqlQuery);
+        sb.append("]");
+        return sb.toString();
+    }
 }

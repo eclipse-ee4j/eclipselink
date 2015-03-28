@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -84,7 +84,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //This method is run at the end of EVERY test case method
 
    @Override
-	public void tearDown() {
+    public void tearDown() {
         clearCache();
     }
 
@@ -238,26 +238,26 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             return;
         }
 
-    	EntityManager em = createEntityManager();
-    	beginTransaction(em);
-    	try {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
             Query query = em.createQuery("SELECT e FROM Employee e");
             List<Employee> emps = query.getResultList();
 
             Assert.assertNotNull(emps);
             int numRead = emps.size();
 
-	        query = em.createQuery("SELECT e FROM Employee e WHERE :arg1=:arg2");
-	        query.setParameter("arg1", 1);
-	        query.setParameter("arg2", 1);
-	        emps = query.getResultList();
+            query = em.createQuery("SELECT e FROM Employee e WHERE :arg1=:arg2");
+            query.setParameter("arg1", 1);
+            query.setParameter("arg2", 1);
+            emps = query.getResultList();
 
-	        Assert.assertNotNull(emps);
-	        Assert.assertEquals(numRead, emps.size());
-    	} finally {
-        	rollbackTransaction(em);
+            Assert.assertNotNull(emps);
+            Assert.assertEquals(numRead, emps.size());
+        } finally {
+            rollbackTransaction(em);
             closeEntityManager(em);
-    	}
+        }
     }
 
     /**
@@ -1777,8 +1777,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Expression selectionCriteria = new ExpressionBuilder(Address.class).equal(employeeBuilder.get("address")).and(employeeBuilder.get("lastName").like("%Way%"));
         query.setSelectionCriteria(selectionCriteria);
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
-        	query.setShouldUseSerializedObjectPolicy(false);
+            // distinct is incompatible with blob in selection clause on Oracle
+            query.setShouldUseSerializedObjectPolicy(false);
         }
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
 
@@ -1878,8 +1878,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         query.setSelectionCriteria(selectionCriteria);
         query.setReferenceClass(Employee.class);
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
-        	query.dontUseDistinct();
+            // distinct is incompatible with blob in selection clause on Oracle
+            query.dontUseDistinct();
         }
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
@@ -1893,8 +1893,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Query jpqlQuery = em.createQuery(ejbqlString);
         jpqlQuery.setMaxResults(10);
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
-        	jpqlQuery.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+            // distinct is incompatible with blob in selection clause on Oracle
+            jpqlQuery.setHint(QueryHints.SERIALIZED_OBJECT, "false");
         }
         List result = jpqlQuery.getResultList();
 
@@ -1950,25 +1950,25 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         boolean shouldCleanUp = false;
         PhoneNumber phone;
-        if (emp.getPhoneNumbers().isEmpty()) {        
+        if (emp.getPhoneNumbers().isEmpty()) {
             phone = new PhoneNumber();
             phone.setAreaCode("613");
             phone.setNumber("1234567");
-            phone.setType("cell");    
-    
+            phone.setType("cell");
+
             Server serverSession = JUnitTestCase.getServerSession();
             Session clientSession = serverSession.acquireClientSession();
             UnitOfWork uow = clientSession.acquireUnitOfWork();
             emp = (Employee)uow.readObject(emp);
             PhoneNumber phoneClone = (PhoneNumber)uow.registerObject(phone);
             emp.addPhoneNumber(phoneClone);
-	        if (usesSOP()) {
-	        	// In SOP is used then the phone is never read back (it's saved in sopObject), 
-	        	// therefore its ownerId (mapped as read only) is never set.
-	        	// If phone.ownerId is not set, then the next query (that takes phone as a parameter) would return all the employees,
-	        	// it supposed to return all the employees minus emp.
-	        	phoneClone.setId(emp.getId());
-	        }
+            if (usesSOP()) {
+                // In SOP is used then the phone is never read back (it's saved in sopObject),
+                // therefore its ownerId (mapped as read only) is never set.
+                // If phone.ownerId is not set, then the next query (that takes phone as a parameter) would return all the employees,
+                // it supposed to return all the employees minus emp.
+                phoneClone.setId(emp.getId());
+            }
             uow.commit();
             phone = emp.getPhoneNumbers().iterator().next();
             shouldCleanUp = true;
@@ -2004,7 +2004,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         String all = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL";
-        List<Project> allProjectsWithTeamLeader = em.createQuery(all).getResultList();        
+        List<Project> allProjectsWithTeamLeader = em.createQuery(all).getResultList();
         Assert.assertTrue("No projects with team leaders.", !allProjectsWithTeamLeader.isEmpty());
         PhoneNumber phone = null;
         for (Project project : allProjectsWithTeamLeader) {
@@ -2014,19 +2014,19 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             }
         }
         Assert.assertTrue("Not a single teamLeader has a phone!", phone != null);
-        
+
         String ejbqlString1 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 MEMBER OF p.teamLeader.phoneNumbers";
-        List result1 = em.createQuery(ejbqlString1).setParameter("1", phone).getResultList();        
+        List result1 = em.createQuery(ejbqlString1).setParameter("1", phone).getResultList();
         Assert.assertTrue("MEMBER OF result is empty", !result1.isEmpty());
-        
+
         String ejbqlString2 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 NOT MEMBER OF p.teamLeader.phoneNumbers";
         List result2 = em.createQuery(ejbqlString2).setParameter("1", phone).getResultList();
         Assert.assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
-        
+
         List union = new ArrayList(result1);
-        union.addAll(result2);                
+        union.addAll(result2);
         Assert.assertTrue("Union of results of MEMBER OF and NON MEMBER OF not equal to all projects with team leaders", comparer.compareObjects(union, allProjectsWithTeamLeader));
-        
+
         for (int i=0; i < result2.size(); i++) {
             if (result1.contains(result2.get(i))) {
                 fail("results of MEMBER OF and NON MEMBER OF intersect");
@@ -2039,17 +2039,17 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Collection allEmps = getServerSession().readAllObjects(Employee.class);
         String ejbqlString1 = "SELECT e FROM Employee e WHERE 'Clean the kitchen.' MEMBER OF e.responsibilities";
-        List result1 = em.createQuery(ejbqlString1).getResultList();        
+        List result1 = em.createQuery(ejbqlString1).getResultList();
         Assert.assertTrue("MEMBER OF result is empty", !result1.isEmpty());
-        
+
         String ejbqlString2 = "SELECT e FROM Employee e WHERE 'Clean the kitchen.' NOT MEMBER OF e.responsibilities";
         List result2 = em.createQuery(ejbqlString2).getResultList();
         Assert.assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
-        
+
         List union = new ArrayList(result1);
-        union.addAll(result2);                
+        union.addAll(result2);
         Assert.assertTrue("Union of results of MEMBER OF and NOT MEMBER OF not equal to all employees", comparer.compareObjects(union, allEmps));
-        
+
         for (int i=0; i < result2.size(); i++) {
             if (result1.contains(result2.get(i))) {
                 fail("results of MEMBER OF and NOT MEMBER OF intersect");
@@ -2061,7 +2061,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         String all = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL";
-        List<Project> allProjectsWithTeamLeader = em.createQuery(all).getResultList();        
+        List<Project> allProjectsWithTeamLeader = em.createQuery(all).getResultList();
         Assert.assertTrue("No projects with team leaders.", !allProjectsWithTeamLeader.isEmpty());
         String responsibility = null;
         for (Project project : allProjectsWithTeamLeader) {
@@ -2071,19 +2071,19 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             }
         }
         Assert.assertTrue("Not a single teamLeader has any responsibilities!", responsibility != null);
-        
+
         String ejbqlString1 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 MEMBER OF p.teamLeader.responsibilities";
-        List result1 = em.createQuery(ejbqlString1).setParameter("1", responsibility).getResultList();        
+        List result1 = em.createQuery(ejbqlString1).setParameter("1", responsibility).getResultList();
         Assert.assertTrue("MEMBER OF result is empty", !result1.isEmpty());
-        
+
         String ejbqlString2 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 NOT MEMBER OF p.teamLeader.responsibilities";
         List result2 = em.createQuery(ejbqlString2).setParameter("1", responsibility).getResultList();
         Assert.assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
-        
+
         List union = new ArrayList(result1);
-        union.addAll(result2);                
+        union.addAll(result2);
         Assert.assertTrue("Union of results of MEMBER OF and NON MEMBER OF not equal to all projects with team leaders", comparer.compareObjects(union, allProjectsWithTeamLeader));
-        
+
         for (int i=0; i < result2.size(); i++) {
             if (result1.contains(result2.get(i))) {
                 fail("results of MEMBER OF and NON MEMBER OF intersect");
@@ -2344,27 +2344,27 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void selectFromClauseWithJoin(){
-   	 EntityManager em = createEntityManager();
-   	 Query query = em.createQuery("SELECT Object(c) from Employee c JOIN FETCH c.address ");
-   	 query.getResultList();
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT Object(c) from Employee c JOIN FETCH c.address ");
+        query.getResultList();
     }
 
     /** Test for bug#378393 */
     public void testMultipleSubqueries(){
-   	 EntityManager em = createEntityManager();
-   	 try {
-   		 Query query = em.createQuery(multipleSubqueries());
-   	 }
-   	 catch (Exception e) {
-   		 // JPQLException is not expected but I didn't write a contextually valid query
-   		 // so EL will complain about it, I needed to have multiple nested subqueries
-   		 // to verify the bug is indeed fixed
-   		 if (e instanceof JPQLException) {
-   			 throw (JPQLException) e;
-   		 }
-   	 }
-   	 // The query is not run because the JPQL query was
-   	 // migrated from the bug and cannot be executed
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery(multipleSubqueries());
+        }
+        catch (Exception e) {
+            // JPQLException is not expected but I didn't write a contextually valid query
+            // so EL will complain about it, I needed to have multiple nested subqueries
+            // to verify the bug is indeed fixed
+            if (e instanceof JPQLException) {
+                throw (JPQLException) e;
+            }
+        }
+        // The query is not run because the JPQL query was
+        // migrated from the bug and cannot be executed
     }
 
     private String multipleSubqueries() {
@@ -2394,13 +2394,13 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
     /** Test for bug#385629 */
     public void simpleQueryWithFirstUnusedEntity() {
-   	 EntityManager em = createEntityManager();
-   	 Query query = em.createQuery("select b from Employee e, Buyer b");
-   	 List<?> resultList = query.getResultList();
-   	 assertFalse(resultList.isEmpty());
-   	 for (Object item : resultList) {
-   		 assertTrue(item instanceof org.eclipse.persistence.testing.models.jpa.advanced.Buyer);
-   	 }
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("select b from Employee e, Buyer b");
+        List<?> resultList = query.getResultList();
+        assertFalse(resultList.isEmpty());
+        for (Object item : resultList) {
+            assertTrue(item instanceof org.eclipse.persistence.testing.models.jpa.advanced.Buyer);
+        }
     }
 
     /** Test for bug#404509 */

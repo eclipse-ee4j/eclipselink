@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,43 +29,43 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 @SuppressWarnings("nls")
 public final class AllOrAnyExpressionFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link AllOrAnyExpressionFactory}.
-	 */
-	public static final String ID = "all-or-any";
+    /**
+     * The unique identifier of this {@link AllOrAnyExpressionFactory}.
+     */
+    public static final String ID = "all-or-any";
 
-	/**
-	 * Creates a new <code>AndExpressionFactory</code>.
-	 */
-	public AllOrAnyExpressionFactory() {
-		super(ID, Expression.ALL,
-		          Expression.ANY,
-		          Expression.SOME);
-	}
+    /**
+     * Creates a new <code>AndExpressionFactory</code>.
+     */
+    public AllOrAnyExpressionFactory() {
+        super(ID, Expression.ALL,
+                  Expression.ANY,
+                  Expression.SOME);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		switch (word.charAt(0)) {
-			case 's': case 'S': word = SOME; break;
-			default: {
-				switch (word.charAt(1)) {
-					case 'l': case 'L': word = ALL; break;
-					default:            word = ANY; break;
-				}
-			}
-		}
+        switch (word.charAt(0)) {
+            case 's': case 'S': word = SOME; break;
+            default: {
+                switch (word.charAt(1)) {
+                    case 'l': case 'L': word = ALL; break;
+                    default:            word = ANY; break;
+                }
+            }
+        }
 
-		expression = new AllOrAnyExpression(parent, word);
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        expression = new AllOrAnyExpression(parent, word);
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

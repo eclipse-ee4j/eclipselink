@@ -64,8 +64,8 @@ public abstract class Unmarshaller<
     public abstract XMLAttachmentUnmarshaller getAttachmentUnmarshaller();
 
     /**
-     * Value that will be used to prefix attributes.  
-     * Ignored unmarshalling XML.   
+     * Value that will be used to prefix attributes.
+     * Ignored unmarshalling XML.
      * @return
      */
     public abstract String getAttributePrefix();
@@ -101,14 +101,14 @@ public abstract class Unmarshaller<
 
     /**
      * Name of the NamespaceResolver to be used during unmarshal
-     * Ignored unmarshalling XML.  
-     */ 
+     * Ignored unmarshalling XML.
+     */
     public abstract NamespaceResolver getNamespaceResolver();
 
     /**
      * Get the namespace separator used during unmarshal operations.
      * If mediaType is application/json '.' is the default
-     * Ignored unmarshalling XML.   
+     * Ignored unmarshalling XML.
      */
     public abstract char getNamespaceSeparator();
 
@@ -136,8 +136,8 @@ public abstract class Unmarshaller<
 
     /**
      * INTERNAL:
-     * Returns the AttributeGroup or the name of the AttributeGroup to be used to 
-     * unmarshal. 
+     * Returns the AttributeGroup or the name of the AttributeGroup to be used to
+     * unmarshal.
      */
     public abstract Object getUnmarshalAttributeGroup();
 
@@ -148,9 +148,9 @@ public abstract class Unmarshaller<
     }
 
     /**
-     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
-     * Ignored unmarshalling XML.  
-     */ 
+     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings
+     * Ignored unmarshalling XML.
+     */
     public abstract String getValueWrapper();
 
     /**
@@ -180,8 +180,8 @@ public abstract class Unmarshaller<
     public abstract boolean isCaseInsensitive();
 
     /**
-     * Determine if the @XMLRootElement should be marshalled when present.  
-     * Ignored unmarshalling XML.   
+     * Determine if the @XMLRootElement should be marshalled when present.
+     * Ignored unmarshalling XML.
      * @return
      */
     public abstract boolean isIncludeRoot();
@@ -190,20 +190,20 @@ public abstract class Unmarshaller<
 
     public abstract boolean isWrapperAsCollectionName();
 
-    public abstract void setIDResolver(ID_RESOLVER idResolver); 
+    public abstract void setIDResolver(ID_RESOLVER idResolver);
 
     public abstract boolean shouldWarnOnUnmappedElement();
-    
+
     public void setUnmarshalListener(UNMARSHALLER_LISTENER unmarshalListener) {
         this.unmarshalListener = unmarshalListener;
     }
 
     /**
-     * <p>An implementation of UnmarshalListener can be set on an Unmarshaller to 
+     * <p>An implementation of UnmarshalListener can be set on an Unmarshaller to
      * provide additional behaviour during unmarshal operations.</p>
      */
     public interface Listener {
-        
+
         /**
          * Event that will be called after objects are unmarshalled.
          *
@@ -211,12 +211,12 @@ public abstract class Unmarshaller<
          * @param parent the owning object of the object that was unmarshalled. This may be null.
          */
         public void afterUnmarshal(Object target, Object parent);
-        
-        
+
+
         /**
          * Event that will be called before objects are unmarshalled.
          *
-         * @param target A newly created instance of the object to be unmarshalled.  
+         * @param target A newly created instance of the object to be unmarshalled.
          * @param parent the owning object of the object that will be unmarshalled. This may be null.
          */
         public void beforeUnmarshal(Object target, Object parent);

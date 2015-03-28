@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,53 +31,53 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class TypeExpression extends AbstractSingleEncapsulatedExpression {
 
-	/**
-	 * Creates a new <code>TypeExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public TypeExpression(AbstractExpression parent) {
-		super(parent, TYPE);
-	}
+    /**
+     * Creates a new <code>TypeExpression</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public TypeExpression(AbstractExpression parent) {
+        super(parent, TYPE);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getEncapsulatedExpressionQueryBNFId() {
-		return InternalEntityTypeExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getEncapsulatedExpressionQueryBNFId() {
+        return InternalEntityTypeExpressionBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(TypeExpressionBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(TypeExpressionBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 
-		if (tolerant) {
-			return super.parse(wordParser, queryBNFId, tolerant);
-		}
+        if (tolerant) {
+            return super.parse(wordParser, queryBNFId, tolerant);
+        }
 
-		return buildExpressionFromFallingBack(
-			wordParser,
-			wordParser.word(),
-			getQueryBNF(InternalEntityTypeExpressionBNF.ID),
-			null,
-			tolerant
-		);
-	}
+        return buildExpressionFromFallingBack(
+            wordParser,
+            wordParser.word(),
+            getQueryBNF(InternalEntityTypeExpressionBNF.ID),
+            null,
+            tolerant
+        );
+    }
 }

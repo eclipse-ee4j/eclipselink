@@ -1,20 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     06/20/2012-2.5 Guy Pelletier 
+ *     06/20/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     11/05/2012-2.5 Guy Pelletier 
+ *     11/05/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
 import java.io.Serializable;
@@ -48,17 +48,17 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
 @Entity
 @Table(name="JPA21_ADDRESS")
 @NamedStoredProcedureQueries({
-      
+
     @NamedStoredProcedureQuery(
         name = "ReadAllAddressesWithNoResultClass",
         procedureName = "Read_All_Addresses"
     ),
-    
+
     @NamedStoredProcedureQuery(
         name = "ReadNoAddresses",
         procedureName = "Read_No_Addresses"
     ),
-         
+
     @NamedStoredProcedureQuery(
         name = "ReadAddressWithResultClass",
         resultClasses = org.eclipse.persistence.testing.models.jpa21.advanced.Address.class,
@@ -67,7 +67,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
             @StoredProcedureParameter(mode=IN, name="address_id_v", type=Integer.class)
         }
     ),
-      
+
     @NamedStoredProcedureQuery(
         name = "ReadAddressMappedNamedFieldResult",
         resultSetMappings = "address-field-result-map-named",
@@ -76,7 +76,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
             @StoredProcedureParameter(mode=IN, name="address_id_v", type=Integer.class)
         }
     ),
-         
+
     @NamedStoredProcedureQuery(
         name = "ReadAddressMappedNumberedFieldResult",
         resultSetMappings = "address-field-result-map-numbered",
@@ -85,7 +85,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
             @StoredProcedureParameter(mode=IN, type=Integer.class)
         }
     ),
-            
+
     @NamedStoredProcedureQuery(
         name = "ReadAddressMappedNamedColumnResult",
         resultSetMappings = "address-column-result-map",
@@ -112,7 +112,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
                 }
             )
         }),
-            
+
     @SqlResultSetMapping(
         name = "address-field-result-map-numbered",
         entities = {
@@ -128,7 +128,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
                 }
             )
         }),
-        
+
     @SqlResultSetMapping(
         name = "address-column-result-map",
         columns = {
@@ -172,58 +172,58 @@ public class Address implements Serializable {
     @GeneratedValue(generator="ADDRESS_SEQ")
     @SequenceGenerator(name="ADDRESS_SEQ", allocationSize=25)
     @Column(name="ADDRESS_ID", length=23)
-    public int getId() { 
-        return id; 
+    public int getId() {
+        return id;
     }
 
-    public void setId(int id) { 
-        this.id = id; 
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getStreet() { 
-        return street; 
+    public String getStreet() {
+        return street;
     }
 
-    public void setStreet(String street) { 
-        this.street = street; 
+    public void setStreet(String street) {
+        this.street = street;
     }
 
-    public String getCity() { 
-        return city; 
+    public String getCity() {
+        return city;
     }
 
-    public void setCity(String city) { 
-        this.city = city; 
+    public void setCity(String city) {
+        this.city = city;
     }
 
-    public String getProvince() { 
-        return province; 
+    public String getProvince() {
+        return province;
     }
 
-    public void setProvince(String province) { 
-        this.province = province; 
+    public void setProvince(String province) {
+        this.province = province;
     }
 
     @Column(name="P_CODE")
-    public String getPostalCode() { 
-        return postalCode; 
+    public String getPostalCode() {
+        return postalCode;
     }
 
-    public void setPostalCode(String postalCode) { 
-        this.postalCode = postalCode; 
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
     }
 
-    public String getCountry() { 
-        return country; 
+    public String getCountry() {
+        return country;
     }
 
-    public void setCountry(String country) { 
+    public void setCountry(String country) {
         this.country = country;
     }
 
     @OneToMany(cascade=ALL, mappedBy="address")
-    public Collection<Employee> getEmployees() { 
-        return employees; 
+    public Collection<Employee> getEmployees() {
+        return employees;
     }
 
     public void setEmployees(Collection<Employee> employees) {
@@ -232,13 +232,13 @@ public class Address implements Serializable {
 
     @Version
     public Integer getVersion() {
-        return version; 
+        return version;
     }
 
     public void setVersion(Integer version) {
         this.version = version;
     }
-    
+
     public String toString() {
         return "Address: " + getId();
     }

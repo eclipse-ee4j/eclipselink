@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -75,8 +75,8 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
     };
     static final String DROP_TABLETYPE_TABLE =
         "DROP TABLE TABLETYPE";
-    
-    static final String CREATE_MYTYPEX = 
+
+    static final String CREATE_MYTYPEX =
         "CREATE OR REPLACE TYPE MYTYPE_X AS OBJECT (" +
             "\nid NUMBER," +
             "\nname VARCHAR2(30)" +
@@ -90,7 +90,7 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
          "DROP PROCEDURE GetMyTypeX";
     static final String DROP_MYTYPEX =
         "DROP TYPE MYTYPE_X";
-    
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -192,7 +192,7 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_MYTYPEX, ddlDebug);
         }
     }
-    
+
     @Test
     public void testNamingConventionTransformer() throws WSDLException {
         Invocation invocation = new Invocation("findByPrimaryKey_TabletypeType");

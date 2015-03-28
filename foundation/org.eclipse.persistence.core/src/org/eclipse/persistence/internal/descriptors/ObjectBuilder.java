@@ -4,20 +4,20 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     07/16/2009-2.0 Guy Pelletier 
+ *     07/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
- *     04/01/2011-2.3 Guy Pelletier 
+ *     04/01/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 2)
- *     09/09/2011-2.3.1 Guy Pelletier 
+ *     09/09/2011-2.3.1 Guy Pelletier
  *       - 356197: Add new VPD type to MultitenantType
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
 
 import java.io.*;
@@ -98,7 +98,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /** PERF: Cache mapping that use batch fetching. */
     protected boolean hasInBatchFetchedAttribute;
     /** PERF: Cache mappings that require cloning. */
-    protected List<DatabaseMapping> cloningMappings;    
+    protected List<DatabaseMapping> cloningMappings;
     /** PERF: Cache mappings that are eager loaded. */
     protected List<DatabaseMapping> eagerMappings;
     /** PERF: Cache relationship mappings. */
@@ -112,11 +112,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /** indicates whether part of primary key is unmapped - may happen only in case AggregateObject or AggregateCollection descriptor. */
     protected boolean mayHaveNullInPrimaryKey;
     /** attribute name corresponding to optimistic lock field, set only if optimistic locking is used */
-    protected String lockAttribute; 
-    /** PERF: is there a mapping using indirection (could be nested in aggregate(s)), or any other reason to keep row after the object has been created. 
+    protected String lockAttribute;
+    /** PERF: is there a mapping using indirection (could be nested in aggregate(s)), or any other reason to keep row after the object has been created.
      Used by ObjectLevelReadQuery ResultSetAccessOptimization. */
     protected boolean shouldKeepRow = false;
-    /** PERF: is there an cache index field that's would not be selected by SOP query. Ignored unless descriptor uses SOP and CachePolicy has cache indexes. */ 
+    /** PERF: is there an cache index field that's would not be selected by SOP query. Ignored unless descriptor uses SOP and CachePolicy has cache indexes. */
     protected boolean hasCacheIndexesInSopObject = false;
 
     public ObjectBuilder(ClassDescriptor descriptor) {
@@ -154,7 +154,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
     /**
      * Create a new row/record for the object builder. This allows subclasses to
-     * define different record types.  This will typically be called when a 
+     * define different record types.  This will typically be called when a
      * record will be used for temporarily holding on to primary key fields.
      */
     protected AbstractRecord createRecordForPKExtraction(int size, AbstractSession session) {
@@ -215,7 +215,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
     }
-    
+
     /**
      * Clear any primary key cache data in the object.
      */
@@ -225,7 +225,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             ((PersistenceEntity)object)._persistence_setId(null);
         }
     }
-  
+
     /**
      * Assign the fields in the row back into the object.
      * This is used by returning, as well as events and version locking.
@@ -287,7 +287,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 if (changeRecord == null) {
                     oldAttributeValue = mapping.getAttributeValueFromObject(object);
                 }
-                
+
                 //use null cachekey to ensure we build directly into the attribute
                 Object attributeValue = mapping.readFromRowIntoObject(row, null, object, null, query, query.getSession(), true);
 
@@ -334,7 +334,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public Object assignSequenceNumber(WriteObjectQuery writeQuery) throws DatabaseException {
         return assignSequenceNumber(writeQuery.getObject(), writeQuery.getSession(), writeQuery);
     }
-    
+
     /**
      * INTERNAL:
      * Update the object primary key by fetching a new sequence number from the accessor.
@@ -353,7 +353,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         } else {
             existingValue = getBaseValueForField(sequenceNumberField, object);
         }
-        
+
         // PERF: The (internal) support for letting the sequence decide this was removed,
         // as anything other than primitive should allow null and default as such.
         Object sequenceValue;
@@ -368,7 +368,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if (sequenceValue == null) {
             return null;
         }
-        
+
         writeSession.log(SessionLog.FINEST, SessionLog.SEQUENCING, "assign_sequence", sequenceValue, object);
         Object convertedSequenceValue = null;
         if (this.sequenceMapping != null) {
@@ -378,17 +378,17 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             // Now add the value to the object, this gets ugly.
             AbstractRecord tempRow = createRecord(1, writeSession);
             tempRow.put(sequenceNumberField, sequenceValue);
-    
+
             // Require a query context to read into an object.
             ReadObjectQuery query = new ReadObjectQuery();
             query.setSession(writeSession);
             DatabaseMapping mapping = getBaseMappingForField(sequenceNumberField);
             Object sequenceIntoObject = getParentObjectForField(sequenceNumberField, object);
-    
+
             // The following method will return the converted value for the sequence.
             convertedSequenceValue = mapping.readFromRowIntoObject(tempRow, null, sequenceIntoObject, null, query, writeSession, true);
         }
-        
+
         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key has changed.
         clearPrimaryKey(object);
 
@@ -411,8 +411,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     // objectChangeSet.isNew() == true
                     if (writeQuery.getDescriptor().shouldUseFullChangeSetsForNewObjects()) {
                         if (this.sequenceMapping != null) {
-                            // Don't use ObjectChangeSet.updateChangeRecordForAttribute to avoid unnecessary conversion - convertedSequenceValue is already converted. 
-                            String attributeName = this.sequenceMapping.getAttributeName(); 
+                            // Don't use ObjectChangeSet.updateChangeRecordForAttribute to avoid unnecessary conversion - convertedSequenceValue is already converted.
+                            String attributeName = this.sequenceMapping.getAttributeName();
                             DirectToFieldChangeRecord changeRecord = (DirectToFieldChangeRecord)objectChangeSet.getChangesForAttributeNamed(attributeName);
                             if (changeRecord == null) {
                                 changeRecord = new DirectToFieldChangeRecord(objectChangeSet);
@@ -436,7 +436,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 }
             }
         }
-        
+
         return convertedSequenceValue;
     }
 
@@ -468,7 +468,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             postBuildAttributesIntoObjectEvent(domainObject, databaseRow, query, forRefresh);
         }
     }
-    
+
     /**
      * Each mapping is recursed to assign values from the Record to the attributes in the domain object.
      * Should not be called unless (this.descriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy())
@@ -478,13 +478,13 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * from bit was done right before this method is called.
      * Alternative situation is processing an empty row that has been created by foreign reference mapping
      * and holds nothing but sopObject (which is an attribute of the original sopObject) - this case falls through to buildAttributesIntoObject.
-     * If attempt to deserialize sopObject from bits has failed, but SOP was setup to allow recovery 
+     * If attempt to deserialize sopObject from bits has failed, but SOP was setup to allow recovery
      * (all mapped all fields/value mapped to the object were read, not just those excluded from SOP)
-     * then fall through to buildAttributesIntoObject. 
+     * then fall through to buildAttributesIntoObject.
      * Nothing should be done if sopObject is not null, but domainObject != sopObject:
      * the only way to get into this case should be with original query not maintaining cache,
      * through a back reference to the original object, which is already being built (or has been built).
-     * @return whether the object has been populated with attributes, if not then buildAttributesIntoObject should be called.  
+     * @return whether the object has been populated with attributes, if not then buildAttributesIntoObject should be called.
      */
     protected boolean buildAttributesIntoObjectSOP(Object domainObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, FetchGroup executionFetchGroup, boolean forRefresh, AbstractSession targetSession) throws DatabaseException {
         Object sopObject = databaseRow.getSopObject();
@@ -559,7 +559,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
     }
-    
+
     protected void postBuildAttributesIntoObjectEvent(Object domainObject, AbstractRecord databaseRow, ObjectBuildingQuery query, boolean forRefresh) {
         DescriptorEventManager descriptorEventManager = this.descriptor.getDescriptorEventManager();
         if(descriptorEventManager.hasAnyEventListeners()) {
@@ -587,7 +587,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * The clone sent as parameter is always a working copy from the unit of work.
      */
     public Object buildBackupClone(Object clone, UnitOfWorkImpl unitOfWork) {
-        // The copy policy builds clone	.
+        // The copy policy builds clone    .
         ClassDescriptor descriptor = this.descriptor;
         Object backup = descriptor.getCopyPolicy().buildClone(clone, unitOfWork);
 
@@ -659,7 +659,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public Object buildNewInstance() {
         return this.descriptor.getInstantiationPolicy().buildNewInstance();
     }
-    
+
     /**
      * Return an instance of the receivers javaClass. Set the attributes of an instance
      * from the values stored in the database row.
@@ -707,8 +707,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if ((primaryKey == null) && (!query.hasPartialAttributeExpressions()) && (!this.descriptor.isAggregateCollectionDescriptor())) {
             //BUG 3168689: EJBQL: "Select Distinct s.customer from SpouseBean s"
             //BUG 3168699: EJBQL: "Select s.customer from SpouseBean s where s.id = '6'"
-            //If we return either a single null, or a Collection containing at least 
-            //one null, then we want the nulls returned/included if the indicated 
+            //If we return either a single null, or a Collection containing at least
+            //one null, then we want the nulls returned/included if the indicated
             //property is set in the query. (As opposed to throwing an Exception).
             if (query.shouldBuildNullForNullPk()) {
                 return null;
@@ -768,7 +768,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
     }
-    
+
     /**
      * Force instantiation to any mappings in the load group.
      */
@@ -804,7 +804,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
     }
-    
+
     /**
      * Force instantiation of all indirections.
      */
@@ -820,7 +820,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             mapping.loadAll(object, session, loaded);
         }
     }
-    
+
     /**
      * For executing all reads on the UnitOfWork, the session when building
      * objects from rows will now be the UnitOfWork.  Useful if the rows were
@@ -881,18 +881,18 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 // Pass the query off to the parent.  Let it build the object and
                 // cache it normally, then register/refresh it.
                 AbstractSession session = unitOfWork.getParentIdentityMapSession(query);
-                
+
                 // forwarding queries to different sessions is now as simple as setting
                 // the session on the query.
                 query.setSession(session);
                 if (session.isUnitOfWork()) {
                     // If a nested unit of work, recurse.
                     original = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, preFetchedCacheKey, concreteDescriptor);
-                    //GFBug#404  Pass in joinManager or not based on if shouldCascadeCloneToJoinedRelationship is set to true 
+                    //GFBug#404  Pass in joinManager or not based on if shouldCascadeCloneToJoinedRelationship is set to true
                     if (unitOfWork.shouldCascadeCloneToJoinedRelationship()) {
                         return query.registerIndividualResult(original, primaryKey, unitOfWork, joinManager, concreteDescriptor);
                     } else {
-                        return query.registerIndividualResult(original, primaryKey, unitOfWork, null, concreteDescriptor);            
+                        return query.registerIndividualResult(original, primaryKey, unitOfWork, null, concreteDescriptor);
                     }
                 } else {
                     // PERF: This optimizes the normal case to avoid duplicate cache access.
@@ -919,7 +919,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     //bug3659327
                     //fetch group manager control fetch group support
                     if (concreteDescriptor.hasFetchGroupManager()) {
-                        //if the object is already registered in uow, but it's partially fetched (fetch group case)     
+                        //if the object is already registered in uow, but it's partially fetched (fetch group case)
                         if (concreteDescriptor.getFetchGroupManager().shouldWriteInto(original, clone)) {
                             //there might be cases when reverting/refreshing clone is needed.
                             concreteDescriptor.getFetchGroupManager().writePartialIntoClones(original, clone, unitOfWork.getBackupClone(clone, concreteDescriptor), unitOfWork);
@@ -945,7 +945,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             return buildProtectedObject(returnCacheKey, query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
         }
         Object domainObject = null;
-        
+
         // Cache key is used for object locking.
         CacheKey cacheKey = null;
         // Keep track if we actually built/refresh the object.
@@ -1031,7 +1031,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 if (concreteDescriptor.hasFetchGroupManager()) {
                     concreteFetchGroupManager = concreteDescriptor.getFetchGroupManager();
                 }
-                
+
                 //CR #4365 - Queryid comparison used to prevent infinite recursion on refresh object cascade all
                 //if the concurrency manager is locked by the merge process then no refresh is required.
                 // bug # 3388383 If this thread does not have the active lock then someone is building the object so in order to maintain data integrity this thread will not
@@ -1040,7 +1040,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     cacheHit = refreshObjectIfRequired(concreteDescriptor, cacheKey, cacheKey.getObject(), query, joinManager, databaseRow, session, false);
                 } else if ((concreteFetchGroupManager != null) && (concreteFetchGroupManager.isPartialObject(domainObject) && (!concreteFetchGroupManager.isObjectValidForFetchGroup(domainObject, concreteFetchGroupManager.getEntityFetchGroup(fetchGroup))))) {
                     cacheHit = false;
-                    // The fetched object is not sufficient for the fetch group of the query 
+                    // The fetched object is not sufficient for the fetch group of the query
                     // refresh attributes of the query's fetch group.
                     concreteFetchGroupManager.unionEntityFetchGroupIntoObject(domainObject, concreteFetchGroupManager.getEntityFetchGroup(fetchGroup), session, false);
                     concreteObjectBuilder.buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
@@ -1090,7 +1090,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 session.load(domainObject, group, query.getDescriptor(), false);
             }
         }
-        
+
         if (returnCacheKey) {
             return cacheKey;
         } else {
@@ -1105,11 +1105,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     protected Object buildProtectedObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, CacheKey preFetchedCacheKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         Object cachedObject = null;
         Object protectedObject = null;
-        
+
         // Cache key is used for object locking.
         CacheKey cacheKey = null;
         CacheKey sharedCacheKey = null;
-        
+
         // Keep track if we actually built/refresh the object.
         boolean cacheHit = true;
         try {
@@ -1120,7 +1120,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
             FetchGroup fetchGroup = query.getExecutionFetchGroup(concreteDescriptor);
             FetchGroupManager fetchGroupManager = concreteDescriptor.getFetchGroupManager();
-            
+
             if (protectedObject == null || query.shouldRetrieveBypassCache()) {
                 cacheHit = false;
                 boolean domainWasMissing = protectedObject == null;
@@ -1143,7 +1143,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     cacheKey.setObject(protectedObject);
                 }
 
-                
+
                 // The object must be registered before building its attributes to resolve circular dependencies.
                 if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
                     if (preFetchedCacheKey == null){
@@ -1158,7 +1158,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     }
                 }
                 concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(protectedObject, sharedCacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
-                
+
                 //if !protected the returned object and the domain object are the same.
                 if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
                     // Set the fetch group to the domain object, after built.
@@ -1173,7 +1173,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 if (protectedObject instanceof PersistenceEntity) {
                     ((PersistenceEntity)protectedObject)._persistence_setId(primaryKey);
                 }
-            } else {                
+            } else {
                 if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
                     copyInto(protectedObject, ((ReadObjectQuery)query).getSelectionObject());
                     protectedObject = ((ReadObjectQuery)query).getSelectionObject();
@@ -1193,14 +1193,14 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 // bug # 3388383 If this thread does not have the active lock then someone is building the object so in order to maintain data integrity this thread will not
                 // fight to overwrite the object ( this also will avoid potential deadlock situations
                 if ((sharedCacheKey.getActiveThread() == Thread.currentThread()) && ((query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache() || isInvalidated) && ((sharedCacheKey.getLastUpdatedQueryId() != query.getQueryId()) && !sharedCacheKey.isLockedByMergeManager()))) {
-                    
+
                     //need to refresh. shared cache instance
                     cacheHit = refreshObjectIfRequired(concreteDescriptor, sharedCacheKey, cachedObject, query, joinManager, databaseRow, session.getParent(), true);
                     //shared cache was refreshed and a refresh has been requested so lets refresh the protected object as well
                     refreshObjectIfRequired(concreteDescriptor, sharedCacheKey, protectedObject, query, joinManager, databaseRow, session, true);
                 } else if (fetchGroupManager != null && (fetchGroupManager.isPartialObject(protectedObject) && (!fetchGroupManager.isObjectValidForFetchGroup(protectedObject, fetchGroupManager.getEntityFetchGroup(fetchGroup))))) {
                     cacheHit = false;
-                    // The fetched object is not sufficient for the fetch group of the query 
+                    // The fetched object is not sufficient for the fetch group of the query
                     // refresh attributes of the query's fetch group.
                     fetchGroupManager.unionEntityFetchGroupIntoObject(protectedObject, fetchGroupManager.getEntityFetchGroup(fetchGroup), session, false);
                     concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(protectedObject, sharedCacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
@@ -1252,7 +1252,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if (!cacheHit) {
             concreteDescriptor.getObjectBuilder().instantiateEagerMappings(protectedObject, session);
         }
-        
+
         if (returnCacheKey) {
             return cacheKey;
         } else {
@@ -1305,7 +1305,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 }
                 boolean isUnitOfWork = session.isUnitOfWork();
                 boolean shouldCacheQueryResults = query.shouldCacheQueryResults();
-                boolean shouldUseWrapperPolicy = query.shouldUseWrapperPolicy();            
+                boolean shouldUseWrapperPolicy = query.shouldUseWrapperPolicy();
                 // PERF: Avoid lazy init of join manager if no joining.
                 JoinedAttributeManager joinManager = null;
                 if (query.hasJoining()) {
@@ -1346,7 +1346,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                                 policy.addInto(domainObject, domainObjects, session, databaseRow, query, (CacheKey)null, true);
                             }
                         }
-                        
+
                     }
                 }
             } finally {
@@ -1373,14 +1373,14 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 }
                 boolean isUnitOfWork = session.isUnitOfWork();
                 boolean shouldCacheQueryResults = query.shouldCacheQueryResults();
-                boolean shouldUseWrapperPolicy = query.shouldUseWrapperPolicy();            
+                boolean shouldUseWrapperPolicy = query.shouldUseWrapperPolicy();
                 // PERF: Avoid lazy init of join manager if no joining.
                 JoinedAttributeManager joinManager = null;
                 if (query.hasJoining()) {
                     joinManager = query.getJoinedAttributeManager();
                 }
                 ContainerPolicy policy = query.getContainerPolicy();
-                // !cp.shouldAddAll() - query with SortedListContainerPolicy - currently does not use this method 
+                // !cp.shouldAddAll() - query with SortedListContainerPolicy - currently does not use this method
                 boolean quickAdd = (domainObjects instanceof Collection) && !this.hasWrapperPolicy;
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 ResultSetRecord row = null;
@@ -1408,15 +1408,15 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         // query with MappedKeyMapPolicy currently does not use this method
                         policy.addInto(domainObject, domainObjects, session);
                     }
-    
+
                     if (this.isSimple) {
                         ((SimpleResultSetRecord)row).reset();
                     } else {
                         if (this.shouldKeepRow) {
                             if (row.hasResultSet()) {
-                            	// ResultSet has not been fully triggered - that means the cached object was used. 
-                            	// Yet the row still may be cached in a value holder (see loadBatchReadAttributes and loadJoinedAttributes methods).
-                            	// Remove ResultSet to avoid attempt to trigger it (already closed) when pk or fk values (already extracted) accessed when the value holder is instantiated.
+                                // ResultSet has not been fully triggered - that means the cached object was used.
+                                // Yet the row still may be cached in a value holder (see loadBatchReadAttributes and loadJoinedAttributes methods).
+                                // Remove ResultSet to avoid attempt to trigger it (already closed) when pk or fk values (already extracted) accessed when the value holder is instantiated.
                                 row.removeResultSet();
                             } else {
                                 row.removeNonIndirectionValues();
@@ -1446,7 +1446,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
             boolean isUnitOfWork = session.isUnitOfWork();
             boolean shouldCacheQueryResults = query.shouldCacheQueryResults();
-            boolean shouldUseWrapperPolicy = query.shouldUseWrapperPolicy();            
+            boolean shouldUseWrapperPolicy = query.shouldUseWrapperPolicy();
             // PERF: Avoid lazy init of join manager if no joining.
             JoinedAttributeManager joinManager = null;
             if (query.hasJoining()) {
@@ -1487,7 +1487,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         }
         return domainObjects;
     }
-    
+
     /**
      * Build the primary key expression for the secondary table.
      */
@@ -1572,7 +1572,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             this.descriptor.getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
         }
 
-        // If this descriptor has multiple tables then we need to append the primary keys for 
+        // If this descriptor has multiple tables then we need to append the primary keys for
         // the non default tables.
         if (this.descriptor.hasMultipleTables() && !this.descriptor.isAggregateDescriptor()) {
             addPrimaryKeyForNonDefaultTable(databaseRow, object, session);
@@ -1580,9 +1580,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
         // If the session uses multi-tenancy, add the tenant id field.
         if (getDescriptor().hasMultitenantPolicy()) {
-            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, session);            
+            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, session);
         }
-        
+
         return databaseRow;
     }
     /**
@@ -1611,7 +1611,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             this.descriptor.getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
         }
 
-        // If this descriptor has multiple tables then we need to append the primary keys for 
+        // If this descriptor has multiple tables then we need to append the primary keys for
         // the non default tables.
         if (!this.descriptor.isAggregateDescriptor()) {
             addPrimaryKeyForNonDefaultTable(databaseRow, object, session);
@@ -1619,9 +1619,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
         // If the session uses multi-tenancy, add the tenant id field.
         if (getDescriptor().hasMultitenantPolicy()) {
-            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, session);            
+            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, session);
         }
-        
+
         return databaseRow;
     }
 
@@ -1679,9 +1679,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
         // If the session uses multi-tenancy, add the tenant id field.
         if (getDescriptor().hasMultitenantPolicy()) {
-            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, session);            
+            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, session);
         }
-        
+
         return databaseRow;
     }
 
@@ -1700,7 +1700,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
 
-        // If this descriptor has multiple tables then we need to append the primary keys for 
+        // If this descriptor has multiple tables then we need to append the primary keys for
         // the non default tables, this is require for m-m, dc defined in the Builder that prefixes the wrong table name.
         // Ideally the mappings should take part in building the translation row so they can add required values.
         if (this.descriptor.hasMultipleTables()) {
@@ -1718,7 +1718,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         AbstractRecord databaseRow = createRecord(query.getSession());
         return buildRowForUpdate(databaseRow, query);
     }
-    
+
     /**
      * Build into the row representation of the object for update. The row does not
      * contain entries for unchanged attributes.
@@ -1748,9 +1748,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
         // If the session uses multi-tenancy, add the tenant id field.
         if (getDescriptor().hasMultitenantPolicy()) {
-            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, query.getExecutionSession());            
+            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, query.getExecutionSession());
         }
-        
+
         return databaseRow;
     }
 
@@ -1766,7 +1766,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         for (int index = 0; index < size; index++) {
             ChangeRecord changeRecord = (ChangeRecord)changes.get(index);
             DatabaseMapping mapping = changeRecord.getMapping();
-            mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, databaseRow, session, WriteType.UPDATE); 
+            mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, databaseRow, session, WriteType.UPDATE);
         }
 
         return databaseRow;
@@ -1777,7 +1777,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      */
     public AbstractRecord buildRowForWhereClause(ObjectLevelModifyQuery query) {
         AbstractRecord databaseRow = createRecord(query.getSession());
-        
+
         // EL bug 319759
         if (query.isUpdateObjectQuery()) {
             query.setShouldValidateUpdateCallCacheUse(true);
@@ -1789,7 +1789,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             mapping.writeFromObjectIntoRowForWhereClause(query, databaseRow);
         }
 
-        // If this descriptor has multiple tables then we need to append the primary keys for 
+        // If this descriptor has multiple tables then we need to append the primary keys for
         // the non default tables.
         if (!this.descriptor.isAggregateDescriptor()) {
             addPrimaryKeyForNonDefaultTable(databaseRow);
@@ -1851,7 +1851,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             this.descriptor.getInheritancePolicy().addClassIndicatorFieldToInsertRow(databaseRow);
         }
 
-        // If this descriptor has multiple tables then we need to append the primary keys for 
+        // If this descriptor has multiple tables then we need to append the primary keys for
         // the non default tables.
         if (!this.descriptor.isAggregateDescriptor()) {
             addPrimaryKeyForNonDefaultTable(databaseRow);
@@ -1863,17 +1863,17 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
         // If the session uses multi-tenancy, add the tenant id field.
         if (this.descriptor.hasMultitenantPolicy()) {
-            this.descriptor.getMultitenantPolicy().addFieldsToRow(databaseRow, session);            
+            this.descriptor.getMultitenantPolicy().addFieldsToRow(databaseRow, session);
         }
-        
+
         if (this.descriptor.hasSerializedObjectPolicy()) {
             databaseRow.put(this.descriptor.getSerializedObjectPolicy().getField(), null);
         }
-        
+
         // remove any fields from the databaseRow
         trimFieldsForInsert(session, databaseRow);
     }
-        
+
     /**
      * INTERNAL
      * Remove a potential sequence number field and invoke the ReturningPolicy trimModifyRowsForInsert method
@@ -1908,7 +1908,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if (this.descriptor.hasSerializedObjectPolicy()) {
             databaseRow.put(this.descriptor.getSerializedObjectPolicy().getField(), null);
         }
-        
+
         return databaseRow;
     }
 
@@ -2012,13 +2012,13 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * That happens when the row has been just read from the database and potentially has serialized object still in deserialized bits as a field value.
      * Note that  clone == sopObject is the same case, but (because clone has to be set into cache beforehand) extraction of sopObject
      * from bit was done right before this method is called.
-     * If attempt to deserialize sopObject from bits has failed, but SOP was setup to allow recovery 
+     * If attempt to deserialize sopObject from bits has failed, but SOP was setup to allow recovery
      * (all mapped all fields/value mapped to the object were read, not just those excluded from SOP)
-     * then fall through to buildAttributesIntoWorkingCopyClone. 
+     * then fall through to buildAttributesIntoWorkingCopyClone.
      * Nothing should be done if sopObject is not null, but clone != sopObject:
      * the only way to get into this case should be with original query not maintaining cache,
      * through a back reference to the original object, which is already being built (or has been built).
-     * @return whether the object has been populated with attributes, if not then buildAttributesIntoWorkingCopyClone should be called.  
+     * @return whether the object has been populated with attributes, if not then buildAttributesIntoWorkingCopyClone should be called.
      */
     protected boolean buildAttributesIntoWorkingCopyCloneSOP(Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, boolean forRefresh) throws DatabaseException {
         Object sopObject = databaseRow.getSopObject();
@@ -2093,7 +2093,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
     }
-    
+
     protected void postBuildAttributesIntoWorkingCopyCloneEvent(Object clone, AbstractRecord databaseRow, ObjectBuildingQuery query, UnitOfWorkImpl unitOfWork, boolean forRefresh) {
         // Need to run post build or refresh selector, currently check with the query for this,
         // I'm not sure which should be called it case of refresh building a new object, currently refresh is used...
@@ -2108,7 +2108,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             event.setEventCode(DescriptorEventManager.PostBuildEvent);
             //fire a postBuildEvent then the postCloneEvent
             unitOfWork.deferEvent(event);
-           
+
             event = new DescriptorEvent(clone);
             event.setQuery(query);
             event.setSession(unitOfWork);
@@ -2152,16 +2152,16 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (wasAClone && (!isARefresh)) {
                 return workingClone;
             }
-    
+
             boolean wasAnOriginal = false;
             boolean isIsolated = descriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork()
                     || (descriptor.shouldIsolateObjectsInUnitOfWorkEarlyTransaction() && unitOfWork.wasTransactionBegunPrematurely());
 
-            Object original = null;    
+            Object original = null;
             CacheKey originalCacheKey = null;
             // If not refreshing can get the object from the cache.
             if ((!isARefresh) && (!isIsolated) && !query.shouldRetrieveBypassCache() && !unitOfWork.shouldReadFromDB() && (!unitOfWork.shouldForceReadFromDB(query, primaryKey))) {
-                AbstractSession session = unitOfWork.getParentIdentityMapSession(query);            
+                AbstractSession session = unitOfWork.getParentIdentityMapSession(query);
                 if (preFetchedCacheKey == null){
                     originalCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor, false);
                 }else{
@@ -2184,7 +2184,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     }
                 }
             }
-    
+
             if (!wasAClone) {
                 // This code is copied from UnitOfWork.cloneAndRegisterObject.  Unlike
                 // that method we don't need to lock the shared cache, because
@@ -2199,7 +2199,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
                         // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
                         workingClone = descriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, unitOfWork, (ObjectLevelReadQuery)query);
-                    } 
+                    }
                     if (workingClone == null) {
                         // What happens if a copy policy is defined is not pleasant.
                         //workingClone = instantiateWorkingCopyCloneFromRow(databaseRow, query, primaryKey, unitOfWork);
@@ -2207,28 +2207,28 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         workingClone = buildNewInstance();
                     }
                 }
-    
+
                 // This must be registered before it is built to avoid cycles.
                 // The version and read is set below in copyQueryInfoToCacheKey.
                 unitOfWorkCacheKey.setObject(workingClone);
-                
+
                 // This must be registered before it is built to avoid cycles.
                 unitOfWork.getCloneMapping().put(workingClone, workingClone);
             }
-    
+
             // Must avoid infinite loops while refreshing.
             if (wasAClone && (unitOfWorkCacheKey.getLastUpdatedQueryId() >= query.getQueryId())) {
                 return workingClone;
             }
             copyQueryInfoToCacheKey(unitOfWorkCacheKey, query, databaseRow, unitOfWork, descriptor);
-            
+
             ObjectChangePolicy policy = descriptor.getObjectChangePolicy();
             // If it was a clone the change listener must be cleared after.
             if (!wasAClone) {
                 // The change listener must be set before building the clone as aggregate/collections need the listener.
                 policy.setChangeListener(workingClone, unitOfWork, descriptor);
             }
-    
+
             // Turn it 'off' to prevent unwanted events.
             policy.dissableEventProcessing(workingClone);
             if (isARefresh && fetchGroupManager != null) {
@@ -2242,18 +2242,18 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             //If we are unable to access the shared cache because of any of the above settings at this point
             // the cachekey will be null so the attribute building will not be able to access the shared cache.
             if (isARefresh){
-                //if we need to refresh the UOW then remove the cache key and the clone will be rebuilt not using any of the 
-                //cache.  This should be updated to force the buildAttributesIntoWorkingCopyClone to refresh the objects 
+                //if we need to refresh the UOW then remove the cache key and the clone will be rebuilt not using any of the
+                //cache.  This should be updated to force the buildAttributesIntoWorkingCopyClone to refresh the objects
                 originalCacheKey = null;
             }
             // Build/refresh the clone from the row.
             buildAttributesIntoWorkingCopyClone(workingClone, originalCacheKey, query, joinManager, databaseRow, unitOfWork, wasAClone);
-            // Set fetch group after building object if not a refresh to avoid checking fetch during building.           
+            // Set fetch group after building object if not a refresh to avoid checking fetch during building.
             if ((!isARefresh) && fetchGroupManager != null) {
                 fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(this.descriptor), unitOfWork);
             }
             Object backupClone = policy.buildBackupClone(workingClone, this, unitOfWork);
-    
+
             // If it was a clone the change listener must be cleared.
             if (wasAClone) {
                 policy.clearChanges(workingClone, unitOfWork, descriptor, isARefresh);
@@ -2266,13 +2266,13 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 ((PersistenceEntity)workingClone)._persistence_setId(primaryKey);
             }
         } finally {
-            unitOfWorkCacheKey.release();            
+            unitOfWorkCacheKey.release();
         }
         instantiateEagerMappings(workingClone, unitOfWork);
 
         return workingClone;
     }
-    
+
     /**
      * INTERNAL:
      * Builds a working copy clone directly from a result set.
@@ -2304,7 +2304,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             unitOfWork = (UnitOfWorkImpl)executionSession;
             isolated |= unitOfWork.wasTransactionBegunPrematurely() && descriptor.shouldIsolateObjectsInUnitOfWorkEarlyTransaction();
         }
-        
+
         CacheKey cacheKey = session.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor, query.isCacheCheckComplete());
         CacheKey cacheKeyToUse = cacheKey;
         CacheKey parentCacheKey = null;
@@ -2325,19 +2325,19 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (object == null) {
                 object = buildNewInstance();
                 if (unitOfWork == null) {
-                    cacheKey.setObject(object);                    
+                    cacheKey.setObject(object);
                 } else {
                     if (isolated) {
-                        cacheKey.setObject(object); 
+                        cacheKey.setObject(object);
                         unitOfWork.getCloneMapping().put(object, object);
                     } else {
-                        parentCacheKey.setObject(object);                        
+                        parentCacheKey.setObject(object);
                     }
                 }
-                
-                List mappings = descriptor.getMappings();            
+
+                List mappings = descriptor.getMappings();
                 int size = mappings.size();
-                
+
                 if (isSimple) {
                     int shift = descriptor.getTables().size() * pkFieldsSize;
                     if (primaryKeyMapping != null) {
@@ -2364,7 +2364,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         mapping.readFromRowIntoObject(row, joinManager, object, cacheKeyToUse, query, session, isTargetProtected);
                     }
                 }
-                
+
                 ((PersistenceEntity)object)._persistence_setId(primaryKey);
                 if ((unitOfWork != null) && isolated) {
                     ObjectChangePolicy policy = descriptor.getObjectChangePolicy();
@@ -2417,7 +2417,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         objectBuilder.cloningMappings = new ArrayList(this.cloningMappings);
         objectBuilder.eagerMappings = new ArrayList(this.eagerMappings);
         objectBuilder.relationshipMappings = new ArrayList(this.relationshipMappings);
-        
+
         return objectBuilder;
     }
 
@@ -2436,7 +2436,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * This method is used to iterate over the specified object's mappings and cascade
@@ -2454,7 +2454,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * This method is used to store the FK values used for this mapping in the cachekey.
      * This is used when the mapping is protected but we have retrieved the fk values and will cache
      * them for use when the entity is cloned.
@@ -2469,11 +2469,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             cacheRecord.put(field, databaseRecord.get(field));
         }
         cacheKey.setProtectedForeignKeys(cacheRecord);
-        
+
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * This method is used to store the FK values used for this mapping in the cachekey.
      * This is used when the mapping is protected but we have retrieved the fk values and will cache
      * them for use when the entity is cloned.
@@ -2517,7 +2517,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * This method is used by the UnitOfWork to cascade registration of new objects.
@@ -2598,7 +2598,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             mapping.setAttributeValueInObject(target, value);
         }
     }
-    
+
     /**
      * Copy each attribute from one object into the other.
      */
@@ -2623,7 +2623,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         for (DatabaseMapping mapping : this.primaryKeyMappings) {
                             String name = mapping.getAttributeName();
                             if (!copyGroup.containsAttributeInternal(name)) {
-                               copyGroup.addAttribute(name); 
+                               copyGroup.addAttribute(name);
                             }
                         }
                     } else {
@@ -2631,21 +2631,21 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                             if (mapping.isForeignReferenceMapping()) {
                                 String name = mapping.getAttributeName();
                                 if (!copyGroup.containsAttributeInternal(name)) {
-                                   copyGroup.addAttribute(name); 
+                                   copyGroup.addAttribute(name);
                                 }
                             }
                         }
                     }
-                    
+
                     // by default version attribute if not already in the group
                     if (!copyGroup.shouldResetVersion()) {
                         if (this.lockAttribute != null) {
                             if (!copyGroup.containsAttributeInternal(this.lockAttribute)) {
-                               copyGroup.addAttribute(this.lockAttribute); 
+                               copyGroup.addAttribute(this.lockAttribute);
                             }
                         }
                     }
-                    
+
                     FetchGroup fetchGroup = fetchGroupManager.getObjectFetchGroup(original);
                     if (fetchGroup != null) {
                         if (!fetchGroup.getAttributeNames().containsAll(copyGroup.getAttributeNames())) {
@@ -2663,20 +2663,20 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     copy = copyArray[0];
                     // A set of CopyGroups that have visited.
                     Set<CopyGroup> visitedCopyGroups = (Set<CopyGroup>)copyArray[1];
-                    
+
                     if(visitedCopyGroups.contains(copyGroup)) {
                         // original has been already visited with this copyGroup - leave
                         return copy;
                     } else {
                         visitedCopyGroups.add(copyGroup);
                     }
-                    
+
                     existingEntityFetchGroup = fetchGroupManager.getObjectEntityFetchGroup(copy);
                 }
-                
+
                 // Entity fetch group that will be assigned to copyObject
                 EntityFetchGroup newEntityFetchGroup = null;
-                
+
                 // Attributes to be visited - only reference mappings will be visited.
                 // If null then all attributes should be visited.
                 Set<String> attributesToVisit = copyGroup.getAttributeNames();
@@ -2782,17 +2782,17 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (copy != null) {
                 return copy;
             }
-    
+
             copy = instantiateClone(original, copyGroup.getSession());
             copyGroup.getCopies().put(original, copy);
-    
+
             // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
             List mappings = getCloningMappings();
             int size = mappings.size();
             for (int index = 0; index < size; index++) {
                 ((DatabaseMapping)mappings.get(index)).buildCopy(copy, original, copyGroup);
             }
-    
+
             if (copyGroup.shouldResetPrimaryKey() && (!(this.descriptor.isDescriptorTypeAggregate()))) {
                 // Do not reset if any of the keys is mapped through a 1-1, i.e. back reference id has already changed.
                 boolean hasOneToOne = false;
@@ -2806,7 +2806,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 if (!hasOneToOne) {
                     for (int index = 0; index < size; index++) {
                         DatabaseMapping mapping = (DatabaseMapping)primaryKeyMappings.get(index);
-    
+
                         // Only null out direct mappings, as others will be nulled in the respective objects.
                         if (mapping.isAbstractColumnMapping()) {
                             Object nullValue = ((AbstractColumnMapping)mapping).getObjectValue(null, copyGroup.getSession());
@@ -2817,7 +2817,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     }
                 }
             }
-    
+
             // PERF: Avoid events if no listeners.
             if (this.descriptor.getEventManager().hasAnyEventListeners()) {
                 org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(copy);
@@ -2892,7 +2892,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         }
         return changes;
     }
-        
+
     /**
      * Creates and stores primary key expression.
      */
@@ -2921,7 +2921,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
         setPrimaryKeyExpression(expression);
     }
-    
+
     /**
      * Return the row with primary keys and their values from the given expression.
      */
@@ -2946,7 +2946,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         }
         return primaryKey;
     }
-    
+
     /**
      * Return if the expression is by primary key.
      */
@@ -2973,7 +2973,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public Object extractPrimaryKeyFromObject(Object domainObject, AbstractSession session) {
         return extractPrimaryKeyFromObject(domainObject, session, false);
     }
-    
+
     /**
      * Extract primary key attribute values from the domainObject.
      */
@@ -2995,9 +2995,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if (descriptor.hasInheritance() && (domainObject.getClass() != descriptor.getJavaClass()) && (!domainObject.getClass().getSuperclass().equals(descriptor.getJavaClass()))) {
             return session.getDescriptor(domainObject).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session, shouldReturnNullIfNull);
         }
-        
+
         CacheKeyType cacheKeyType = descriptor.getCachePolicy().getCacheKeyType();
-        List<DatabaseField> primaryKeyFields = descriptor.getPrimaryKeyFields();        
+        List<DatabaseField> primaryKeyFields = descriptor.getPrimaryKeyFields();
         Object[] primaryKeyValues = null;
         if (cacheKeyType != CacheKeyType.ID_VALUE) {
             primaryKeyValues = new Object[primaryKeyFields.size()];
@@ -3027,7 +3027,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         } else {
             AbstractRecord databaseRow = createRecordForPKExtraction(size, session);
-            // PERF: use index not enumeration			
+            // PERF: use index not enumeration
             for (int index = 0; index < size; index++) {
                 DatabaseMapping mapping = mappings.get(index);
                 // Primary key mapping may be null for aggregate collection.
@@ -3132,13 +3132,13 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size(), session);
 
         expression.getBuilder().setSession(session.getRootSession(null));
-        // Get all the field & values from expression	
+        // Get all the field & values from expression
         boolean isValid = expression.extractPrimaryKeyValues(true, this.descriptor, primaryKeyRow, translationRow);
         if (!isValid) {
             return null;
         }
 
-        // Check that the sizes match up 
+        // Check that the sizes match up
         if (primaryKeyRow.size() != this.descriptor.getPrimaryKeyFields().size()) {
             return null;
         }
@@ -3153,7 +3153,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         AbstractRecord record = createRecord(session);
 
         expression.getBuilder().setSession(session.getRootSession(null));
-        // Get all the field & values from expression   
+        // Get all the field & values from expression
         boolean isValid = expression.extractValues(false, false, this.descriptor, record, translationRow);
         if (!isValid) {
             return null;
@@ -3231,14 +3231,14 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /**
      * Return the base ChangeRecord for the given DatabaseField.
      * The object and all its relevant aggregates must exist.
-     * The returned ChangeRecord is 
+     * The returned ChangeRecord is
      * either DirectToFieldChangeRecord or TransformationMappingChangeRecord,
      * or null.
      */
     public ChangeRecord getBaseChangeRecordForField(ObjectChangeSet objectChangeSet, Object object, DatabaseField databaseField, AbstractSession session) {
         DatabaseMapping mapping = getMappingForField(databaseField);
 
-        // Drill down through the mappings until we get the direct mapping to the databaseField.    
+        // Drill down through the mappings until we get the direct mapping to the databaseField.
         while (mapping.isAggregateObjectMapping()) {
             String attributeName = mapping.getAttributeName();
             Object aggregate = mapping.getAttributeValueFromObject(object);
@@ -3260,7 +3260,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             objectChangeSet = aggregateChangeSet;
             object = aggregate;
         }
-        
+
         String attributeName = mapping.getAttributeName();
         if (mapping.isAbstractDirectMapping()) {
             DirectToFieldChangeRecord changeRecord = (DirectToFieldChangeRecord)objectChangeSet.getChangesForAttributeNamed(attributeName);
@@ -3292,7 +3292,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public DatabaseMapping getBaseMappingForField(DatabaseField databaseField) {
         DatabaseMapping mapping = getMappingForField(databaseField);
 
-        // Drill down through the mappings until we get the direct mapping to the databaseField.	
+        // Drill down through the mappings until we get the direct mapping to the databaseField.
         while ((mapping != null) && mapping.isAggregateObjectMapping()) {
             mapping = ((AggregateObjectMapping)mapping).getReferenceDescriptor().getObjectBuilder().getMappingForField(databaseField);
         }
@@ -3378,7 +3378,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     protected void setFieldsMap(Map fieldsMap) {
         this.fieldsMap = fieldsMap;
     }
-    
+
     /**
      * PERF:
      * Return all mappings that require cloning.
@@ -3395,7 +3395,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public boolean isSimple() {
         return isSimple;
     }
-    
+
     /**
      * PERF:
      * Return all relationship mappings.
@@ -3403,7 +3403,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public List<DatabaseMapping> getRelationshipMappings() {
         return relationshipMappings;
     }
-    
+
     /**
      * PERF:
      * Return all mappings that are eager loaded (but use indirection).
@@ -3442,7 +3442,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public void setSequenceMapping(AbstractDirectMapping sequenceMapping) {
         this.sequenceMapping = sequenceMapping;
     }
-    
+
     /**
      * Answers if any attributes are to be joined / returned in the same select
      * statement.
@@ -3450,21 +3450,21 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public boolean hasJoinedAttributes() {
         return (this.joinedAttributes != null);
     }
-    
+
     /**
      * Return is any mappings are always batch fetched.
      */
     public boolean hasBatchFetchedAttributes() {
         return (this.batchFetchedAttributes != null);
     }
-    
+
     /**
      * Return is any mappings are always batch fetched using IN.
      */
     public boolean hasInBatchFetchedAttribute() {
         return this.hasInBatchFetchedAttribute;
     }
-    
+
     /**
      * Set if any mappings are always batch fetched using IN.
      */
@@ -3632,14 +3632,14 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!mapping.isLazy())) {
                 getEagerMappings().add(mapping);
             }
-            
+
             if (mapping.getReferenceDescriptor() != null && mapping.isCollectionMapping()){
                 // only process writable mappings on the defining class in the case of inheritance
                 if (getDescriptor() == mapping.getDescriptor()){
                     ((ContainerMapping)mapping).getContainerPolicy().processAdditionalWritableMapKeyFields(session);
                 }
             }
-            
+
             // Cache relationship mappings.
             if (!mapping.isAbstractColumnMapping()) {
                 getRelationshipMappings().add(mapping);
@@ -3650,36 +3650,36 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
                 if (mapping.isReadOnly()) {
                     List readOnlyMappings = getReadOnlyMappingsByField().get(field);
-    
+
                     if (readOnlyMappings == null) {
                         readOnlyMappings = new ArrayList();
                         getReadOnlyMappingsByField().put(field, readOnlyMappings);
                     }
-    
+
                     readOnlyMappings.add(mapping);
                 } else {
                     if (mapping.isAggregateObjectMapping()) {
-                        // For Embeddable class, we need to test read-only 
+                        // For Embeddable class, we need to test read-only
                         // status of individual fields in the embeddable.
                         ObjectBuilder aggregateObjectBuilder = ((AggregateObjectMapping)mapping).getReferenceDescriptor().getObjectBuilder();
-                        
+
                         // Look in the non-read-only fields mapping
                         DatabaseMapping aggregatedFieldMapping = aggregateObjectBuilder.getMappingForField(field);
-    
+
                         if (aggregatedFieldMapping == null) { // mapping must be read-only
                             List readOnlyMappings = getReadOnlyMappingsByField().get(field);
-                            
+
                             if (readOnlyMappings == null) {
                                 readOnlyMappings = new ArrayList();
                                 getReadOnlyMappingsByField().put(field, readOnlyMappings);
                             }
-    
+
                             readOnlyMappings.add(mapping);
                         } else {
                             getMappingsByField().put(field, mapping);
                         }
                     } else { // Not an embeddable mapping
-                        if (getMappingsByField().containsKey(field) || mapping.getDescriptor().getAdditionalWritableMapKeyFields().contains(field)) {  
+                        if (getMappingsByField().containsKey(field) || mapping.getDescriptor().getAdditionalWritableMapKeyFields().contains(field)) {
                             session.getIntegrityChecker().handleError(DescriptorException.multipleWriteMappingsForField(field.toString(), mapping));
                         } else {
                             getMappingsByField().put(field, mapping);
@@ -3693,7 +3693,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         initializePrimaryKey(session);
         initializeJoinedAttributes();
         initializeBatchFetchedAttributes();
-        
+
         if (this.descriptor.usesSequenceNumbers()) {
             DatabaseMapping sequenceMapping = getMappingForField(this.descriptor.getSequenceNumberField());
             if ((sequenceMapping != null) && sequenceMapping.isDirectToFieldMapping()) {
@@ -3711,16 +3711,16 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         }
 
     }
-    
+
     public boolean isPrimaryKeyComponentInvalid(Object keyValue, int index) {
         IdValidation idValidation;
         if (index < 0) {
             idValidation = this.descriptor.getIdValidation();
-        } else {        
+        } else {
             idValidation = this.descriptor.getPrimaryKeyIdValidations().get(index);
         }
         if (idValidation == IdValidation.ZERO) {
-            return keyValue == null || Helper.isEquivalentToNull(keyValue); 
+            return keyValue == null || Helper.isEquivalentToNull(keyValue);
         } else if (idValidation == IdValidation.NULL) {
             return keyValue == null;
         } else if (idValidation == IdValidation.NEGATIVE) {
@@ -3730,7 +3730,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             return false;
         }
     }
-    
+
     public void recordPrivateOwnedRemovals(Object object, UnitOfWorkImpl uow, boolean initialPass) {
         if (!this.descriptor.isDescriptorTypeAggregate()){
             if (!initialPass && uow.getDeletedObjects().containsKey(object)){
@@ -3775,7 +3775,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Iterates through all one to one mappings and checks if any of them use joining.
@@ -3799,7 +3799,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         }
         this.joinedAttributes = joinedAttributes;
     }
-    
+
     /**
      * INTERNAL:
      * Iterates through all one to one mappings and checks if any of them use batch fetching.
@@ -3820,17 +3820,17 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 }
             } else if (mapping.isAggregateObjectMapping()) {
                 if (mapping.getReferenceDescriptor().getObjectBuilder().hasInBatchFetchedAttribute()) {
-                    this.hasInBatchFetchedAttribute = true;                    
+                    this.hasInBatchFetchedAttribute = true;
                 }
             }
         }
         this.batchFetchedAttributes = batchedAttributes;
-        
+
         if (this.hasInBatchFetchedAttribute && this.descriptor.hasInheritance()) {
             ClassDescriptor parent = this.descriptor.getInheritancePolicy().getParentDescriptor();
             while (parent != null) {
                 parent.getObjectBuilder().setHasInBatchFetchedAttribute(true);
-                parent = parent.getInheritancePolicy().getParentDescriptor();                
+                parent = parent.getInheritancePolicy().getParentDescriptor();
             }
         }
     }
@@ -3870,7 +3870,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
             List<DatabaseField> additionalFields = this.descriptor.getAdditionalAggregateCollectionKeyFields();
             for(int i=0; i < additionalFields.size(); i++) {
-                DatabaseField additionalField = additionalFields.get(i); 
+                DatabaseField additionalField = additionalFields.get(i);
                 if(!primaryKeyFields.contains(additionalField)) {
                     primaryKeyFields.add(additionalField);
                 }
@@ -3901,7 +3901,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             for (int index = 0; index < primaryKeyFields.size(); index++) {
                 DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(index);
                 DatabaseMapping mapping = getMappingForField(primaryKeyField);
-    
+
                 if (mapping == null) {
                     if(this.descriptor.isDescriptorTypeAggregate()) {
                         this.mayHaveNullInPrimaryKey = true;
@@ -3909,22 +3909,22 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         throw DescriptorException.noMappingForPrimaryKey(primaryKeyField, this.descriptor);
                     }
                 }
-    
+
                 getPrimaryKeyMappings().add(mapping);
                 if (mapping != null) {
                     mapping.setIsPrimaryKeyMapping(true);
                 }
-    
+
                 // Use the same mapping to map the additional table primary key fields.
                 // This is required if someone tries to map to one of these fields.
                 if (this.descriptor.hasMultipleTables() && (mapping != null)) {
                     for (Map keyMapping : this.descriptor.getAdditionalTablePrimaryKeyFields().values()) {
                         DatabaseField secondaryField = (DatabaseField) keyMapping.get(primaryKeyField);
-    
+
                         // This can be null in the custom multiple join case
                         if (secondaryField != null) {
                             getMappingsByField().put(secondaryField, mapping);
-    
+
                             if (mapping.isAggregateObjectMapping()) {
                                 // GF#1153,1391
                                 // If AggregateObjectMapping contain primary keys and the descriptor has multiple tables
@@ -3944,7 +3944,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if(null != primaryKeyMappings) {
             for (int index = 0; index < getPrimaryKeyMappings().size(); index++) {
                 DatabaseMapping mapping = getPrimaryKeyMappings().get(index);
-    
+
                 // Primary key mapping may be null for aggregate collection.
                 if ((mapping == null) || (!mapping.isAbstractColumnMapping())) {
                     hasSimplePrimaryKey = false;
@@ -4047,7 +4047,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             mappings.get(index).iterate(iterator);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Merge changes between the objects, this merge algorithm is dependent on the merge manager.
@@ -4055,7 +4055,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         mergeChangesIntoObject(target, changeSet, source, mergeManager, targetSession, false, false);
     }
-    
+
     /**
      * INTERNAL:
      * Merge changes between the objects, this merge algorithm is dependent on the merge manager.
@@ -4072,7 +4072,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 //cr 4236, use ObjectBuilder getMappingForAttributeName not the Descriptor one because the
                 // ObjectBuilder method is much more efficient.
                 DatabaseMapping mapping = getMappingForAttributeName(record.getAttribute());
-                mapping.mergeChangesIntoObject(target, record, source, mergeManager, targetSession);                
+                mapping.mergeChangesIntoObject(target, record, source, mergeManager, targetSession);
             }
             // PERF: Avoid events if no listeners.
             // Event is already raised in mergeIntoObject, avoid calling twice.
@@ -4096,7 +4096,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         mergeIntoObject(target, null, isUnInitialized, source, mergeManager, targetSession, false, false, false);
     }
-    
+
     /**
      * INTERNAL:
      * Merge the contents of one object into another, this merge algorithm is dependent on the merge manager.
@@ -4105,9 +4105,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * If 'isTargetCloneOfOriginal' then the target was create through a shallow clone of the source, so merge basics is not required.
      */
     public void mergeIntoObject(Object target, ObjectChangeSet changeSet, boolean isUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession, boolean cascadeOnly, boolean isTargetCloneOfOriginal, boolean shouldMergeFetchGroup) {
-        // cascadeOnly is introduced to optimize merge 
+        // cascadeOnly is introduced to optimize merge
         // for GF#1139 Cascade merge operations to relationship mappings even if already registered
-        
+
         FetchGroup sourceFetchGroup = null;
         FetchGroup targetFetchGroup = null;
         if(this.descriptor.hasFetchGroupManager()) {
@@ -4126,7 +4126,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         int size = mappings.size();
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = mappings.get(index);
-            if (((!cascadeOnly && !isTargetCloneOfOriginal) 
+            if (((!cascadeOnly && !isTargetCloneOfOriginal)
                     || (cascadeOnly && mapping.isForeignReferenceMapping())
                     || (isTargetCloneOfOriginal && mapping.isCloningRequired()))
                   && (sourceFetchGroup == null || sourceFetchGroup.containsAttributeInternal(mapping.getAttributeName()))) {
@@ -4176,7 +4176,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             cloningSession.deferEvent(event);
         }
     }
-    
+
     protected void loadBatchReadAttributes(ClassDescriptor concreteDescriptor, Object sourceObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, boolean isTargetProtected){
         boolean useOnlyMappingsExcludedFromSOP = false;
         if (concreteDescriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
@@ -4200,8 +4200,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         Object attributeValue = mapping.getAttributeValueFromObject(sourceObject);
                         if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
                             if (isUntriggeredResultSetRecord && mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).isForeignKeyRelationship() && !mapping.isPrimaryKeyMapping()) {
-                            	// ResultSetRecord hasn't been triggered (still has ResultSet), but values for its primary key field(s) were already extracted from ResultSet,
-                            	// still need to extract values from ResultSet for foreign key fields.
+                                // ResultSetRecord hasn't been triggered (still has ResultSet), but values for its primary key field(s) were already extracted from ResultSet,
+                                // still need to extract values from ResultSet for foreign key fields.
                                 for (DatabaseField field : mapping.getFields()) {
                                     // extract the values from ResultSet into the row
                                     databaseRow.get(field);
@@ -4230,7 +4230,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             QueryKeyExpression queryKeyExpression = (QueryKeyExpression)joinExpressions.get(index);
             QueryKeyExpression baseExpression = (QueryKeyExpression)joinManager.getJoinedAttributes().get(index);
             DatabaseMapping mapping = joinManager.getJoinedAttributeMappings().get(index);
-            
+
             // Only worry about immediate (excluding aggregates) foreign reference mapping attributes.
             if (queryKeyExpression == baseExpression) {
                 if (mapping == null) {
@@ -4255,7 +4255,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                             }
                             AbstractSession session = query.getExecutionSession();
                             mapping.readFromRowIntoObject(databaseRow, joinManager, intermediateValue, cacheKey, query, query.getExecutionSession(), isTargetProtected);
-                            session.getIdentityMapAccessorInstance().getIdentityMap(concreteDescriptor).lazyRelationshipLoaded(intermediateValue, (ValueHolderInterface) ((ForeignReferenceMapping)mapping).getIndirectionPolicy().getOriginalValueHolder(attributeValue, session), (ForeignReferenceMapping)mapping);                    
+                            session.getIdentityMapAccessorInstance().getIdentityMap(concreteDescriptor).lazyRelationshipLoaded(intermediateValue, (ValueHolderInterface) ((ForeignReferenceMapping)mapping).getIndirectionPolicy().getOriginalValueHolder(attributeValue, session), (ForeignReferenceMapping)mapping);
                         }
                     }
                 }
@@ -4270,7 +4270,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         FetchGroup fetchGroup = query.getExecutionFetchGroup(concreteDescriptor);
         FetchGroupManager fetchGroupManager = concreteDescriptor.getFetchGroupManager();
         //cached object might be partially fetched, only refresh the fetch group attributes of the query if
-        //the cached partial object is not invalidated and does not contain all data for the fetch group.   
+        //the cached partial object is not invalidated and does not contain all data for the fetch group.
         if (fetchGroupManager != null && fetchGroupManager.isPartialObject(domainObject)) {
             cacheHit = false;
             //only ObjectLevelReadQuery and above support partial objects
@@ -4416,7 +4416,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
 
-        return this.descriptor.getWrapperPolicy().unwrapObject(proxy, session);        
+        return this.descriptor.getWrapperPolicy().unwrapObject(proxy, session);
     }
 
     /**
@@ -4427,7 +4427,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         persistenceEntity._persistence_setCacheKey(cacheKey);
         persistenceEntity._persistence_setId(primaryKey);
     }
-    
+
     /**
      * Validates the object builder. This is done once the object builder initialized and descriptor
      * fires this validation.
@@ -4515,7 +4515,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public void setHasWrapperPolicy(boolean hasWrapperPolicy) {
         this.hasWrapperPolicy = hasWrapperPolicy;
     }
-    
+
     /**
      * Wrap the object if required.
      * This is used for the wrapper policy support and EJB.
@@ -4528,7 +4528,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             return null;
         }
         // PERF: Using direct variable access.
-        
+
         // Check if already wrapped.
         if ((!this.descriptor.hasWrapperPolicy()) || this.descriptor.getWrapperPolicy().isWrapped(implementation)) {
             return implementation;
@@ -4543,19 +4543,19 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         }
         return this.descriptor.getWrapperPolicy().wrapObject(implementation, session);
     }
-    
+
     public boolean isXMLObjectBuilder() {
         return false;
     }
-    
+
     public String getLockAttribute() {
         return this.lockAttribute;
     }
-    
+
     public boolean shouldKeepRow() {
         return this.shouldKeepRow;
     }
-    
+
     public boolean hasCacheIndexesInSopObject() {
         return this.hasCacheIndexesInSopObject;
     }

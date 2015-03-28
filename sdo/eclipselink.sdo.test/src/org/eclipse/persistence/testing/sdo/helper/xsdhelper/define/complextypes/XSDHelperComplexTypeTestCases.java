@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.complextypes;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
     public static void main(String[] args) {
         TestRunner.run(XSDHelperComplexTypeTestCases.class);
     }
-    
+
     public void testComplexTypeWithEmptyContent() {
         String xsdSchema = getSchema("org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/complextypes/ComplexTypeWithEmptyContent.xsd");
 
@@ -332,7 +332,7 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
         assertEquals(baseType.getName(), "TestType");
         assertEquals(baseType.getURI(), "http://www.example.org");
 
-        // check if it has properties        
+        // check if it has properties
         assertEquals(aType.getDeclaredProperties().size(), 2);
         assertEquals(aType.getProperties().size(), 3);
 
@@ -590,14 +590,14 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
         assertFalse(aType.isDataType());
         // check if it is not abstract
         assertFalse(aType.isAbstract());
-        
+
         assertTrue(aType.getProperty("test").isMany());
         assertTrue(aType.getProperty("test2").isMany());
         // check if it is not open
         assertTrue(aType.isOpen());
         // check if it is not sequenced
-        assertTrue(aType.isSequenced());        
-        
+        assertTrue(aType.isSequenced());
+
 
         aType = null;
         for(int i = 0; i < types.size(); i++) {
@@ -652,7 +652,7 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
         assertTrue(aType.isOpen());
         // check if it is sequenced
         assertTrue(aType.isSequenced());
-        
+
         aType = null;
         for(int i = 0; i < types.size(); i++) {
             if(((Type)types.get(i)).getName().equals("myTestType3")) {
@@ -677,8 +677,8 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
         // check if it is not open
         assertTrue(aType.isOpen());
         // check if it is sequenced
-        assertTrue("Type was not 'sequenced' as expected.", aType.isSequenced());              
-        
+        assertTrue("Type was not 'sequenced' as expected.", aType.isSequenced());
+
     }
 
     public void testComplexTypeWithOpenAttributes() {

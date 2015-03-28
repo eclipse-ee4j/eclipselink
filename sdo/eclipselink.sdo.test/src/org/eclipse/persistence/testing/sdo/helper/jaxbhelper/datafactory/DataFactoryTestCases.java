@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -60,7 +60,7 @@ public class DataFactoryTestCases extends SDOTestCase {
     public void testCreatePojoType() {
         DataObject rootDO = jaxbHelperContext.getDataFactory().create("urn:datafactory", "root");
         assertNotNull(rootDO);
-        
+
         Root root = (Root) jaxbHelperContext.unwrap(rootDO);
         assertNotNull(root);
     }
@@ -68,7 +68,7 @@ public class DataFactoryTestCases extends SDOTestCase {
     public void testCreateNonPojoType() {
         DataObject typeDO = jaxbHelperContext.getDataFactory().create("commonj.sdo", "Type");
         assertNotNull(typeDO);
-        
+
         Object object = jaxbHelperContext.unwrap(typeDO);
         assertNull(object);
     }
@@ -91,7 +91,7 @@ public class DataFactoryTestCases extends SDOTestCase {
     private class JAXBSchemaOutputResolver extends SchemaOutputResolver {
 
         private StringWriter schemaWriter;
-        
+
         public String getSchema() {
             return schemaWriter.toString();
         }

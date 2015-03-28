@@ -185,13 +185,13 @@ class JAXBBeanValidator {
      * Third, analyses the value and determines whether validation may be skipped.
      *
      * @param beanValidationMode Bean validation mode - allowed values AUTO, CALLBACK, NONE.
-     * @param value validated object. It is passed because validation on some objects may be skipped, 
+     * @param value validated object. It is passed because validation on some objects may be skipped,
      *              e.g. non-constrained objects (like XmlBindings).
      * @param preferredValidatorFactory May be null. Will use this factory as the preferred provider;
      *                                  if null, will use javax defaults.
      * @param noOptimisation if true, bean validation optimisations that skip non-constrained objects will not be
      *                       performed
-     * @return 
+     * @return
      *          true if should proceed with validation, else false.
      * @throws BeanValidationException
      *  {@link BeanValidationException#illegalValidationMode} or {@link BeanValidationException#providerNotFound}.

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -35,15 +35,15 @@ public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistribut
         setDescription("Ensure a remote object is invalidated when its descriptor is set to INVALIDATE_CHANGED_OBJECTS");
         cacheSyncConfigValues.put(Employee.class, new Integer(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
     }
-    
+
     public void setup() {
         super.setup();
-        
+
         // Create an Employee
         employee = new Employee();
         employee.setFirstName("George");
         employee.setLastName("Alpha");
-        
+
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.registerObject(employee);
         uow.commit();
@@ -52,20 +52,20 @@ public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistribut
         ExpressionBuilder employees = new ExpressionBuilder();
         Expression expression = employees.get("firstName").equal(employee.getFirstName());
         expression = expression.and(employees.get("lastName").equal(employee.getLastName()));
-        
+
         // Ensure our employee is in one of the distributed caches
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().firstElement();
         Object result = server.getDistributedSession().readObject(Employee.class, expression);
         assertNotNull(result);
     }
-    
+
     public void test() {
         // Update the employee and commit (x2)
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Employee employeeClone = (Employee)uow.registerObject(employee);
         employeeClone.setLastName("Beta");
         uow.commit();
-        
+
         uow = getSession().acquireUnitOfWork();
         employeeClone = (Employee)uow.registerObject(employee);
         employeeClone.setLastName("Gamma");
@@ -78,5 +78,5 @@ public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistribut
             throw new TestErrorException("Employee should have been invalidated in the distributed cache, descriptor was set to: INVALIDATE_CHANGED_OBJECTS");
         }
     }
-    
+
 }

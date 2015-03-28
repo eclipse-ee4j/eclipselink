@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.tests.jpa.relationships;
@@ -32,18 +32,18 @@ import junit.framework.TestSuite;
 
 public class EMQueryJUnitTestSuite extends JUnitTestCase {
     protected Integer nonExistingCustomerId = new Integer(999999);
-        
+
     public EMQueryJUnitTestSuite() {
     }
-    
+
     public EMQueryJUnitTestSuite(String name) {
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("EMQueryJUnitTestSuite");
-        
+
         suite.addTest(new EMQueryJUnitTestSuite("testSetup"));
         suite.addTest(new EMQueryJUnitTestSuite("testgetReference"));
         suite.addTest(new EMQueryJUnitTestSuite("testcreateNativeQuery"));
@@ -52,18 +52,18 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EMQueryJUnitTestSuite("testSetParameterUsingNull"));
         suite.addTest(new EMQueryJUnitTestSuite("testExcludingUnneccesaryJoin"));
         suite.addTest(new EMQueryJUnitTestSuite("testRemoveUnneccesaryDistinctFromJoin"));
-        
+
         return suite;
     }
-    
+
     public void testSetup() {
         clearCache();
-        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());        
+        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
     }
 
-    
+
     /*
-     * bug 4628215: changed ObjectNotFoundException to EntityNotFoundException, and modified getReference to 
+     * bug 4628215: changed ObjectNotFoundException to EntityNotFoundException, and modified getReference to
      * throw this exception instead of returning null.
      */
     public void testgetReference() throws Exception {
@@ -131,12 +131,12 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
             } catch (RuntimeException ex) {
                 rollbackTransaction(em);
                 closeEntityManager(em);
-                em = createEntityManager(); 
+                em = createEntityManager();
                 beginTransaction(em);
                 // inside container need to query again in order to attach em
                 query1 = em.createNativeQuery("Select * FROM CMP3_CUSTOMER");
             }
-        
+
             Query query2 = em.createNativeQuery("INSERT INTO CMP3_CUSTOMER (CUST_ID, NAME, CITY, CUST_VERSION) VALUES (1111, NULL, NULL, 1)");
             Query query3 = em.createNativeQuery("DELETE FROM CMP3_CUSTOMER WHERE (CUST_ID=1111)");
 
@@ -188,7 +188,7 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
             }catch(Exception ee){}
         }
     }
-    
+
     /*
      * bug 4775066: base EJBQueryImpl to check for null arguments to avoid throwing a NPE.
      * result doesn't matter, only that it doesn't throw or cause an NPE or other exception.
@@ -206,7 +206,7 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
             // Ignore any resulting DatabaseException
         }
     }
-    
+
     /*
      * bug 5683148/2380: Reducing unnecessary joins on an equality check between the a statement
      *   and itself
@@ -215,12 +215,12 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         try{
             beginTransaction(em);
-                
+
             Order o = new Order();
             Order o2 = new Order();
             em.persist(o);
             em.persist(o2);
-                
+
             java.util.List results = em.createQuery(
                     "Select Distinct Object(a) From OrderBean a where a.item Is Null OR a.item <> a.item")
                     .getResultList();
@@ -232,7 +232,7 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
             }catch(Exception ee){}
         }
     }
-    
+
     /*
      * gf bug 1395: test that not using Distinct in JPQL produces different results than using Distinct
      */
@@ -247,16 +247,16 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
             Order o2 = new Order();
             o2.setShippingAddress("somerandomaddress");
             o2.setCustomer(c);
-            
+
             c.getOrders().add(o);
             c.getOrders().add(o2);
-            
+
             em.persist(c);
             em.flush();
             Collection results1 = em.createQuery(
                 "Select Object(a) From Customer a JOIN a.orders o where o.shippingAddress = 'somerandomaddress'")
                 .getResultList();
-            
+
             Collection results2=em.createQuery(
                 "Select Distinct a From Customer a JOIN a.orders o where o.shippingAddress = 'somerandomaddress'")
                 .getResultList();

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.distributedservers.rcm.jgroups;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -35,12 +35,12 @@ public class JGroupsDistributedServersModel extends BroadcastDistributedServersM
         // BroadcastSetupHelper.TestWrapperWithEventLock, which contains
         // the original test as an internal test.
         // The wrapper methods call the respective methods on the internal test,
-        // adding a wait after internalTest.test() method is called 
-        // (in case there was merge with changes on the source side) 
+        // adding a wait after internalTest.test() method is called
+        // (in case there was merge with changes on the source side)
         // until either the target side merges the sent changes or exception occurs.
         BroadcastSetupHelper.wrapAllTestCases(this, timeToWaitBeforeVerify);
-    }    
-    
+    }
+
     /**
      * Factory method for a DistributedServer.
      */
@@ -51,7 +51,7 @@ public class JGroupsDistributedServersModel extends BroadcastDistributedServersM
     protected JGroupsSetupHelper getHelper() {
         return JGroupsSetupHelper.getHelper();
     }
-    
+
     @Override
     public boolean requiresRegistry() {
         return false;

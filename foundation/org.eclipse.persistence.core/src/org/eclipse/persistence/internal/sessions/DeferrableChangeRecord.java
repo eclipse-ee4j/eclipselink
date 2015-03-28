@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import org.eclipse.persistence.indirection.IndirectCollection;
@@ -36,7 +36,7 @@ public abstract class DeferrableChangeRecord extends ChangeRecord {
      * This is used to handle collection replacement.
      */
     protected boolean isDeferred = false;
-    
+
     public DeferrableChangeRecord() {
         super();
     }
@@ -92,7 +92,7 @@ public abstract class DeferrableChangeRecord extends ChangeRecord {
     public void setOriginalCollection(Object originalCollection) {
         this.originalCollection = originalCollection;
     }
-    
+
     /**
      * Recreates the original state of currentCollection.
      */
@@ -102,11 +102,11 @@ public abstract class DeferrableChangeRecord extends ChangeRecord {
      * Clears info about added / removed objects set by change tracker.
      * Called after the change info has been already used for creation of originalCollection.
      * Also called to make sure there is no change info before comparison for change is performed
-     * (change info is still in the record after comparison for change is performed 
+     * (change info is still in the record after comparison for change is performed
      *  and may cause wrong results when the second comparison for change performed on the same change record).
      */
     abstract public void clearChanges();
-    
+
     /**
      * Recreates the original state of the collection.
      */
@@ -124,7 +124,7 @@ public abstract class DeferrableChangeRecord extends ChangeRecord {
        internalRecreateOriginalCollection(this.originalCollection, session);
        clearChanges();
     }
-   
+
     /**
      * ADVANCED:
      * If the owning UnitOfWork has shouldChangeRecordKeepOldValue set to true,
@@ -140,7 +140,7 @@ public abstract class DeferrableChangeRecord extends ChangeRecord {
                 if(obj != null && session != null) {
                     Object currentCollection = this.mapping.getAttributeValueFromObject(obj);
                     ContainerPolicy cp = this.mapping.getContainerPolicy();
-                    Object cloneCurrentCollection = cp.containerInstance(cp.sizeFor(currentCollection)); 
+                    Object cloneCurrentCollection = cp.containerInstance(cp.sizeFor(currentCollection));
                     for (Object valuesIterator = cp.iteratorFor(currentCollection); cp.hasNext(valuesIterator);) {
                         Object member = cp.next(valuesIterator, session);
                         cp.addInto(cp.keyFromIterator(valuesIterator), member, cloneCurrentCollection , session);
@@ -151,7 +151,7 @@ public abstract class DeferrableChangeRecord extends ChangeRecord {
             return null;
         }
     }
-    
+
     public Object getOldValue(Object currentCollection, AbstractSession session) {
         if(currentCollection != null) {
             if(currentCollection  instanceof IndirectCollection) {
@@ -160,5 +160,5 @@ public abstract class DeferrableChangeRecord extends ChangeRecord {
             internalRecreateOriginalCollection(currentCollection, session);
         }
         return currentCollection;
-    }    
+    }
 }

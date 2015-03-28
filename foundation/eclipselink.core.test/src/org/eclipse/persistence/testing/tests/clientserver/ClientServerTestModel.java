@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.clientserver;
 
 import org.eclipse.persistence.internal.helper.Helper;
@@ -31,8 +31,8 @@ public class ClientServerTestModel extends TestModel {
 
     public void addRequiredSystems() {
         try {
-            getSession().getLog().write("WARNING, some JDBC drivers may fail if they are not thread safe." + 
-                                        Helper.cr() + "JDBC-ODBC will not be run for this test." + Helper.cr() + 
+            getSession().getLog().write("WARNING, some JDBC drivers may fail if they are not thread safe." +
+                                        Helper.cr() + "JDBC-ODBC will not be run for this test." + Helper.cr() +
                                         "Oracle OCI may fail." + Helper.cr() + "DB2 IBM JDBC may fail." + Helper.cr());
             getSession().getLog().flush();
         } catch (java.io.IOException e) {
@@ -102,22 +102,22 @@ public class ClientServerTestModel extends TestModel {
         //bug 3582102
         suite.addTest(new LockOnCloneTest());
         suite.addTest(new LockOnCloneDeadlockAvoidanceTest());
-        
+
         suite.addTest(new ConcurrentNewObjectTest());
         suite.addTest(new ConcurrentReadOnInsertTest());
         suite.addTest(new ConcurrentRefreshOnUpdateTest());
         suite.addTest(new ConcurrentRefreshOnCloneTest());
-        
+
         //bug 4438127
         suite.addTest(new NewObjectIdentityTest());
         // Failover connection management EclipseLink bug 211100
         suite.addTest(new CommunicationFailureTest());
-        
+
         suite.addTest(new ClientServerUpdateDeadlockTest());
         suite.addTest(new UnitOfWorkDeleteOrderTest()); // bug 331064
-        
+
         suite.addTest(new ConnectionPoolSizingTest()); // bug 388129
-        
+
         return suite;
     }
 

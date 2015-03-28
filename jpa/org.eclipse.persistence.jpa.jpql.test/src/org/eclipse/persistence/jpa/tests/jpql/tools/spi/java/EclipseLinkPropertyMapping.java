@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,61 +30,61 @@ import static org.eclipse.persistence.jpa.jpql.tools.spi.IEclipseLinkMappingType
 @SuppressWarnings("nls")
 public class EclipseLinkPropertyMapping extends AbstractMethodMapping {
 
-	/**
-	 * Creates a new <code>EclipseLinkPropertyMapping</code>.
-	 *
-	 * @param parent The parent of this mapping
-	 * @param method The Java {@link Method} wrapped by this mapping
-	 */
-	public EclipseLinkPropertyMapping(IManagedType parent, Method method) {
-		super(parent, method);
-	}
+    /**
+     * Creates a new <code>EclipseLinkPropertyMapping</code>.
+     *
+     * @param parent The parent of this mapping
+     * @param method The Java {@link Method} wrapped by this mapping
+     */
+    public EclipseLinkPropertyMapping(IManagedType parent, Method method) {
+        super(parent, method);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected int calculateMappingType(Annotation[] annotations) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int calculateMappingType(Annotation[] annotations) {
 
-		if (hasAnnotation(annotations, "org.eclipse.persistence.annotations.BasicCollection")) {
-			return BASIC_COLLECTION;
-		}
+        if (hasAnnotation(annotations, "org.eclipse.persistence.annotations.BasicCollection")) {
+            return BASIC_COLLECTION;
+        }
 
-		if (hasAnnotation(annotations, "org.eclipse.persistence.annotations.BasicMap")) {
-			return BASIC_MAP;
-		}
+        if (hasAnnotation(annotations, "org.eclipse.persistence.annotations.BasicMap")) {
+            return BASIC_MAP;
+        }
 
-		if (hasAnnotation(annotations, "org.eclipse.persistence.annotations.Transformation")) {
-			return TRANSFORMATION;
-		}
+        if (hasAnnotation(annotations, "org.eclipse.persistence.annotations.Transformation")) {
+            return TRANSFORMATION;
+        }
 
-		if (hasAnnotation(annotations, "org.eclipse.persistence.annotations.VariableOneToOne")) {
-			return VARIABLE_ONE_TO_ONE;
-		}
+        if (hasAnnotation(annotations, "org.eclipse.persistence.annotations.VariableOneToOne")) {
+            return VARIABLE_ONE_TO_ONE;
+        }
 
-		return super.calculateMappingType(annotations);
-	}
+        return super.calculateMappingType(annotations);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isCollection() {
-		switch (getMappingType()) {
-			case BASIC_COLLECTION:
-			case BASIC_MAP: return true;
-			default: return super.isCollection();
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isCollection() {
+        switch (getMappingType()) {
+            case BASIC_COLLECTION:
+            case BASIC_MAP: return true;
+            default: return super.isCollection();
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isRelationship() {
-		switch (getMappingType()) {
-			case VARIABLE_ONE_TO_ONE: return true;
-			default: return super.isRelationship();
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isRelationship() {
+        switch (getMappingType()) {
+            case VARIABLE_ONE_TO_ONE: return true;
+            default: return super.isRelationship();
+        }
+    }
 }

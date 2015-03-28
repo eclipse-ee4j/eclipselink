@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.transformation;
 
 
@@ -46,26 +46,26 @@ public class TransformationMappingTestProject extends Project {
     employeeDescriptor.setIdentityMapClass(NoIdentityMap.class);
     employeeDescriptor.setExistenceChecking("Check database");
 
-		XMLTransformationMapping nameMapping = new XMLTransformationMapping();
-		nameMapping.setAttributeName("name");
-		nameMapping.setGetMethodName("getName");
-		nameMapping.setSetMethodName("setName");
-		nameMapping.setAttributeTransformation("buildNameAttribute");
-		nameMapping.addFieldTransformation("name/text()", "buildNameField");
-		nameMapping.setIsMutable(false);
-		employeeDescriptor.addMapping(nameMapping);
-		
+        XMLTransformationMapping nameMapping = new XMLTransformationMapping();
+        nameMapping.setAttributeName("name");
+        nameMapping.setGetMethodName("getName");
+        nameMapping.setSetMethodName("setName");
+        nameMapping.setAttributeTransformation("buildNameAttribute");
+        nameMapping.addFieldTransformation("name/text()", "buildNameField");
+        nameMapping.setIsMutable(false);
+        employeeDescriptor.addMapping(nameMapping);
+
     XMLTransformationMapping mapping = new XMLTransformationMapping();
     mapping.setAttributeName("normalHours");
     mapping.setGetMethodName("getNormalHours");
-    mapping.setSetMethodName("setNormalHours");    
+    mapping.setSetMethodName("setNormalHours");
     mapping.setAttributeTransformer(new org.eclipse.persistence.testing.oxm.mappings.transformation.NormalHoursAttributeTransformer());
-    mapping.addFieldTransformer("normal-hours/start-time/text()", new StartTimeTransformer());      
+    mapping.addFieldTransformer("normal-hours/start-time/text()", new StartTimeTransformer());
     mapping.addFieldTransformer("normal-hours/end-time/text()", new org.eclipse.persistence.testing.oxm.mappings.transformation.EndTimeTransformer());
     employeeDescriptor.addMapping(mapping);
     return employeeDescriptor;
   }
-  
+
   public XMLDescriptor getRootWithAnyCollectionDescriptor() {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(RootWithAnyCollection.class);
@@ -74,22 +74,22 @@ public class TransformationMappingTestProject extends Project {
     XMLAnyCollectionMapping objectsMapping = new XMLAnyCollectionMapping();
     objectsMapping.setAttributeName("objects");
     descriptor.addMapping(objectsMapping);
-    
+
     return descriptor;
   }
-  
+
   public XMLDescriptor getRootWithAnyObjectDescriptor() {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(RootWithAnyObject.class);
     descriptor.setDefaultRootElement("root-with-any-object");
-    
+
     XMLAnyObjectMapping objectMapping = new XMLAnyObjectMapping();
     objectMapping.setAttributeName("object");
     descriptor.addMapping(objectMapping);
-    
-    return descriptor;    
+
+    return descriptor;
   }
-  
+
   public XMLDescriptor getRootWithCompositeCollectionDescriptor() {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(RootWithCompositeCollection.class);
@@ -100,22 +100,22 @@ public class TransformationMappingTestProject extends Project {
     employeesMapping.setXPath("employee");
     employeesMapping.setReferenceClass(Employee.class);
     descriptor.addMapping(employeesMapping);
-    
-    return descriptor;    
+
+    return descriptor;
   }
-  
+
   public XMLDescriptor getRootWithCompositeObjectDescriptor() {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setJavaClass(RootWithCompositeObject.class);
     descriptor.setDefaultRootElement("root-with-composite-object");
-    
+
     XMLCompositeObjectMapping employeeMapping = new XMLCompositeObjectMapping();
     employeeMapping.setAttributeName("employee");
     employeeMapping.setXPath("employee");
     employeeMapping.setReferenceClass(Employee.class);
     descriptor.addMapping(employeeMapping);
-    
+
     return descriptor;
   }
-  
+
 }

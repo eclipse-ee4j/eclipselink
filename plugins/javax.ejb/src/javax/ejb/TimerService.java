@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -65,18 +65,18 @@ public interface TimerService {
      *
      * @param info application information to be delivered along
      * with the timer expiration notification. This can be null.
-     *                    
+     *
      * @return the newly created Timer.
      *
      * @exception java.lang.IllegalArgumentException If duration is negative
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
-     * @exception javax.ejb.EJBException If this method fails due to a 
+     *
+     * @exception javax.ejb.EJBException If this method fails due to a
      * system-level failure.
-     * 
+     *
      */
     public Timer createTimer(long duration, Serializable info) throws
         java.lang.IllegalArgumentException, java.lang.IllegalStateException,
@@ -89,18 +89,18 @@ public interface TimerService {
      * the timer expires.
      *
      * @param timerConfig timer configuration.
-     *                    
+     *
      * @return the newly created Timer.
      *
      * @exception java.lang.IllegalArgumentException If duration is negative
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
-     * @exception javax.ejb.EJBException If this method fails due to a 
+     *
+     * @exception javax.ejb.EJBException If this method fails due to a
      * system-level failure.
-     * 
+     *
      * @since EJB 3.1
      */
     public Timer createSingleActionTimer(long duration, TimerConfig timerConfig) throws
@@ -112,35 +112,35 @@ public interface TimerService {
      * duration, and whose subsequent expirations occur after a specified
      * interval.
      *
-     * @param initialDuration The number of milliseconds that must elapse 
+     * @param initialDuration The number of milliseconds that must elapse
      * before the first timer expiration notification.
      *
      * @param intervalDuration The number of milliseconds that must elapse
      * between timer expiration notifications.  Expiration notifications are
      * scheduled relative to the time of the first expiration.  If expiration
      * is delayed (e.g. due to the interleaving of other method calls on the
-     * bean), two or more expiration notifications may occur in close 
+     * bean), two or more expiration notifications may occur in close
      * succession to "catch up".
-     * 
+     *
      * @param info application information to be delivered along
      * with the timer expiration. This can be null.
-     *                    
+     *
      * @return the newly created Timer.
      *
      * @exception java.lang.IllegalArgumentException If initialDuration is
      * negative or intervalDuration is negative.
-     * 
+     *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete
      * due to a system-level failure.
-     * 
+     *
      */
-    public Timer createTimer(long initialDuration, long intervalDuration, 
+    public Timer createTimer(long initialDuration, long intervalDuration,
                              Serializable info) throws
-        java.lang.IllegalArgumentException, java.lang.IllegalStateException, 
+        java.lang.IllegalArgumentException, java.lang.IllegalStateException,
         javax.ejb.EJBException;
 
     /**
@@ -148,37 +148,37 @@ public interface TimerService {
      * duration, and whose subsequent expirations occur after a specified
      * interval.
      *
-     * @param initialDuration The number of milliseconds that must elapse 
+     * @param initialDuration The number of milliseconds that must elapse
      * before the first timer expiration notification.
      *
      * @param intervalDuration The number of milliseconds that must elapse
      * between timer expiration notifications.  Expiration notifications are
      * scheduled relative to the time of the first expiration.  If expiration
      * is delayed (e.g. due to the interleaving of other method calls on the
-     * bean), two or more expiration notifications may occur in close 
+     * bean), two or more expiration notifications may occur in close
      * succession to "catch up".
-     * 
+     *
      * @param timerConfig timer configuration
-     *                    
+     *
      * @return the newly created Timer.
      *
      * @exception java.lang.IllegalArgumentException If initialDuration is
      * negative or intervalDuration is negative.
-     * 
+     *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete
      * due to a system-level failure.
-     * 
+     *
      * @since EJB 3.1
      */
-    public Timer createIntervalTimer(long initialDuration, long intervalDuration, 
+    public Timer createIntervalTimer(long initialDuration, long intervalDuration,
                              TimerConfig timerConfig) throws
-        java.lang.IllegalArgumentException, java.lang.IllegalStateException, 
+        java.lang.IllegalArgumentException, java.lang.IllegalStateException,
         javax.ejb.EJBException;
-        
+
 
     /**
      * Create a single-action timer that expires at a given point in time.
@@ -187,22 +187,22 @@ public interface TimerService {
      *
      * @param info application information to be delivered along
      * with the timer expiration notification. This can be null.
-     *                    
+     *
      * @return the newly created Timer.
      *
      * @exception java.lang.IllegalArgumentException If expiration is null or
      * expiration.getTime() is negative.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete
      * due to a system-level failure.
-     * 
+     *
      */
     public Timer createTimer(Date expiration, Serializable info) throws
-        java.lang.IllegalArgumentException, java.lang.IllegalStateException, 
+        java.lang.IllegalArgumentException, java.lang.IllegalStateException,
         javax.ejb.EJBException;
 
     /**
@@ -211,26 +211,26 @@ public interface TimerService {
      * @param expiration the point in time at which the timer must expire.
      *
      * @param timerConfig timer configuration.
-     *                    
+     *
      * @return the newly created Timer.
      *
      * @exception java.lang.IllegalArgumentException If expiration is null or
      * expiration.getTime() is negative.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete
      * due to a system-level failure.
-     * 
+     *
      * @since EJB 3.1
      */
     public Timer createSingleActionTimer(Date expiration, TimerConfig timerConfig) throws
-        java.lang.IllegalArgumentException, java.lang.IllegalStateException, 
+        java.lang.IllegalArgumentException, java.lang.IllegalStateException,
         javax.ejb.EJBException;
-        
-        
+
+
 
     /**
      * Create an interval timer whose first expiration occurs at a given
@@ -244,12 +244,12 @@ public interface TimerService {
      * between timer expiration notifications.  Expiration notifications are
      * scheduled relative to the time of the first expiration.  If expiration
      * is delayed (e.g. due to the interleaving of other method calls on the
-     * bean), two or more expiration notifications may occur in close 
+     * bean), two or more expiration notifications may occur in close
      * succession to "catch up".
-     * 
+     *
      * @param info application information to be delivered along
      * with the timer expiration. This can be null.
-     *                    
+     *
      * @return the newly created Timer.
      *
      * @exception java.lang.IllegalArgumentException If
@@ -257,14 +257,14 @@ public interface TimerService {
      * negative, or if intervalDuration is negative.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete
      * due to a system-level failure.
-     * 
+     *
      */
-    public Timer createTimer(Date initialExpiration, long intervalDuration, 
+    public Timer createTimer(Date initialExpiration, long intervalDuration,
                              Serializable info) throws
         java.lang.IllegalArgumentException, java.lang.IllegalStateException,
         javax.ejb.EJBException;
@@ -281,11 +281,11 @@ public interface TimerService {
      * between timer expiration notifications.  Expiration notifications are
      * scheduled relative to the time of the first expiration.  If expiration
      * is delayed (e.g. due to the interleaving of other method calls on the
-     * bean), two or more expiration notifications may occur in close 
+     * bean), two or more expiration notifications may occur in close
      * succession to "catch up".
-     * 
+     *
      * @param timerConfig timer configuration.
-     *                    
+     *
      * @return the newly created Timer.
      *
      * @exception java.lang.IllegalArgumentException If
@@ -293,15 +293,15 @@ public interface TimerService {
      * negative, or if intervalDuration is negative.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete
      * due to a system-level failure.
-     * 
+     *
      * @since EJB 3.1
      */
-    public Timer createIntervalTimer(Date initialExpiration, long intervalDuration, 
+    public Timer createIntervalTimer(Date initialExpiration, long intervalDuration,
                              TimerConfig timerConfig) throws
         java.lang.IllegalArgumentException, java.lang.IllegalStateException,
         javax.ejb.EJBException;
@@ -318,16 +318,16 @@ public interface TimerService {
      * invalid schedule expression.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete
      * due to a system-level failure.
-     * 
+     *
      * @since EJB 3.1
      */
-    public Timer createCalendarTimer(ScheduleExpression schedule) 
-        throws java.lang.IllegalArgumentException, 
+    public Timer createCalendarTimer(ScheduleExpression schedule)
+        throws java.lang.IllegalArgumentException,
                java.lang.IllegalStateException, javax.ejb.EJBException;
 
     /**
@@ -336,23 +336,23 @@ public interface TimerService {
      * @param schedule a schedule expression describing the timeouts for this timer.
      *
      * @param timerConfig timer configuration.
-     *                    
+     *
      * @return the newly created Timer.
      *
      * @exception java.lang.IllegalArgumentException If Schedule represents an
      * invalid schedule expression.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete
      * due to a system-level failure.
-     * 
+     *
      * @since EJB 3.1
      */
-    public Timer createCalendarTimer(ScheduleExpression schedule, TimerConfig timerConfig) 
-        throws java.lang.IllegalArgumentException, 
+    public Timer createCalendarTimer(ScheduleExpression schedule, TimerConfig timerConfig)
+        throws java.lang.IllegalArgumentException,
                java.lang.IllegalStateException, javax.ejb.EJBException;
 
     /**
@@ -361,16 +361,16 @@ public interface TimerService {
      * @return a collection of <code>javax.ejb.Timer</code> objects.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete
      * due to a system-level failure.
-     * 
+     *
      */
     public Collection<Timer> getTimers() throws java.lang.IllegalStateException,
         javax.ejb.EJBException;
 
 
 
-} 
+}

@@ -27,30 +27,30 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
  * Purpose:
  * Provide a version of Instantiation Policy that can make use of a multiple argument factory method.
  * The defaultValues specified on this policy will be passed in to the factory method for the parameter values.
- * 
- * This is required for certain JAXB generated classes that have no 0 arg constructor and a factory method with multiple arguments. 
+ *
+ * This is required for certain JAXB generated classes that have no 0 arg constructor and a factory method with multiple arguments.
  * @author mmacivor
  *
  */
 public class MultiArgInstantiationPolicy extends InstantiationPolicy {
     private String[] parameterTypeNames;
     private Class[] parameterTypes;
-    
+
     private Object[] defaultValues;
-    
-    
+
+
     public void setParameterTypeNames(String[] parameterTypeNames) {
         this.parameterTypeNames = parameterTypeNames;
     }
-    
+
     public void setParameterTypes(Class[] parameterTypes) {
         this.parameterTypes = parameterTypes;
     }
-    
+
     public void setDefaultValues(Object[] values) {
         defaultValues = values;
     }
-    
+
     @Override
     public void convertClassNamesToClasses(ClassLoader loader) {
         super.convertClassNamesToClasses(loader);
@@ -70,12 +70,12 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
                         }
                     } catch (ClassNotFoundException exc){
                         throw ValidationException.classNotFoundWhileConvertingClassNames(factoryClassName, exc);
-                    }                    
+                    }
                 }
                 this.parameterTypes = values;
             }
         }
-        
+
     }
     protected void initializeMethod() throws DescriptorException {
         Class tempClass;
@@ -92,7 +92,7 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
             this.setMethod(this.buildMethod(tempClass, this.getMethodName(), this.parameterTypes));
         }
     }
-    
+
     /**
      * Build and return a new instance, using the factory.
      * The factory can be null, in which case the method is a static method defined by the descriptor class.
@@ -122,6 +122,6 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
             // Some JVMs will throw a NULL pointer exception here
             throw DescriptorException.nullPointerWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), exception);
         }
-    }    
+    }
 
 }

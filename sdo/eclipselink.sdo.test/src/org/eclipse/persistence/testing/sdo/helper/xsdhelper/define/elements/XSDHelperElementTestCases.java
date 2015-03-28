@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.elements;
 
 import commonj.sdo.Property;
@@ -32,13 +32,13 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.elements.XSDHelperElementTestCases" };
         TestRunner.main(arguments);
     }
-    
+
     public void testElementWithName() {
         String xsdSchema = getSchema("org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/elements/ElementWithName.xsd");
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 2 types 
+        // check list has 2 types
         this.assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -85,7 +85,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 2 types 
+        // check list has 2 types
         this.assertEquals(2, types.size());
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -119,7 +119,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         // check opposite Property
         this.assertNull(p.getOpposite());
-        
+
         this.assertTrue(p.isContainment());
         // check if it many
         this.assertFalse(p.isMany());
@@ -131,7 +131,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 2 types 
+        // check list has 2 types
         this.assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -167,7 +167,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         // check opposite Property
         this.assertNull(p.getOpposite());
-        
+
         this.assertTrue(p.isContainment());
         // check if it many
         this.assertFalse(p.isMany());
@@ -177,7 +177,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         String xsdSchema = getSchema("org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/elements/ElementWithNameCollisions.xsd");
         List types = xsdHelper.define(xsdSchema);
         this.assertEquals(4, types.size());
-      
+
         for (int i = 0; i < types.size(); i++) {
             SDOType nextType = (SDOType)types.get(i);
             Property prop = null;
@@ -198,7 +198,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
             assertTrue(prop.isMany());
             assertFalse(prop.isContainment());
             assertEquals(SDOConstants.SDO_OBJECT, prop.getType());
-            assertTrue((Boolean)prop.get(SDOConstants.XMLELEMENT_PROPERTY));             
+            assertTrue((Boolean)prop.get(SDOConstants.XMLELEMENT_PROPERTY));
         }
      }
 
@@ -207,7 +207,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has one type   
+        // check list has one type
         this.assertEquals(2, types.size());
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -269,7 +269,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 2 types 
+        // check list has 2 types
         this.assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -316,7 +316,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 2 types 
+        // check list has 2 types
         this.assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -363,7 +363,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has one type   
+        // check list has one type
         this.assertEquals(types.size(), 3);
         //Type aType = (Type)types.get(0);
         Type aType = null;
@@ -410,7 +410,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 2 types 
+        // check list has 2 types
         this.assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -457,7 +457,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 2 types 
+        // check list has 2 types
         this.assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -503,7 +503,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 2 types 
+        // check list has 2 types
         this.assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -549,7 +549,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 2 types 
+        // check list has 2 types
         this.assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -596,7 +596,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 2 types 
+        // check list has 2 types
         this.assertEquals(3, types.size());
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -642,15 +642,15 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         String xsdSchema = getSchema("org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/elements/ElementWithSDOOppositePro_Simple.xsd");
         List types = null;
         // JIRA-235: simple single type references: Spec sect 9.2 (1) oppositeType.dataType must be false
-        try {            
+        try {
             types = xsdHelper.define(xsdSchema);
             fail("An SDOException " + SDOException.CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE //
-            		+ " should have occurred but did not.");
-        } catch (SDOException e) {            
-            assertEquals(SDOException.CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE ,e.getErrorCode());            
+                    + " should have occurred but did not.");
+        } catch (SDOException e) {
+            assertEquals(SDOException.CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE ,e.getErrorCode());
         }
-/*        
-        // check list has 2 types 
+/*
+        // check list has 2 types
         this.assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -698,7 +698,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has 2 types 
+        // check list has 2 types
         this.assertEquals(types.size(), 2);
         Type aType = null;
         for (int i = 0; i < types.size(); i++) {
@@ -719,7 +719,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         // check if Property name is as schema
         this.assertEquals(p.getName(), "myTest1");
 
-        // check if Property's Type is as schema        
+        // check if Property's Type is as schema
         this.assertEquals(p.getType().getName(), "String");
 
         // check alias name
@@ -732,7 +732,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         // check opposite Property
         this.assertNull(p.getOpposite());
-        
+
         this.assertFalse(p.isContainment());
         // check if it many
         this.assertFalse(p.isMany());
@@ -744,7 +744,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         List types = xsdHelper.define(xsdSchema);
 
-        // check list has one type   
+        // check list has one type
         this.assertEquals(types.size(), 1);
 
         Type aType = (Type)types.get(0);
@@ -771,7 +771,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
 
         // check opposite Property
         this.assertNull(p.getOpposite());
-        
+
         this.assertFalse(p.isContainment());
         // check if it many
         this.assertFalse(p.isMany());

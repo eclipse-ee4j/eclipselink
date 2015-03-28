@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -68,7 +68,7 @@ public class MappingsProject extends Project {
         xmlDescriptor.setJavaClass(Child2.class);
         xmlDescriptor.setDefaultRootElement("tns:child2");
         xmlDescriptor.addPrimaryKeyFieldName("@id");
-        
+
         XMLSchemaClassPathReference schemaReference = new XMLSchemaClassPathReference();
         schemaReference.setSchemaContext("/tns:child2");
         schemaReference.setType(XMLSchemaReference.ELEMENT);
@@ -121,7 +121,7 @@ public class MappingsProject extends Project {
         nameMapping.setAttributeName("name");
         nameMapping.setXPath("tns:name/text()");
         xmlDescriptor.addMapping(nameMapping);
-        
+
         XMLCompositeObjectMapping child1Mapping = new XMLCompositeObjectMapping();
         child1Mapping.setAttributeName("child1");
         child1Mapping.setXPath("tns:child1");
@@ -132,7 +132,7 @@ public class MappingsProject extends Project {
         simpleListMapping.setAttributeName("simpleList");
         simpleListMapping.setXPath("tns:simple-list/text()");
         xmlDescriptor.addMapping(simpleListMapping);
-        
+
         XMLCompositeCollectionMapping child2Mapping = new XMLCompositeCollectionMapping();
         child2Mapping.setAttributeName("child2");
         child2Mapping.setXPath("tns:child2");

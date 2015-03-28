@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -54,47 +54,47 @@ final class CacheExpiryPanel extends AbstractSubjectPanel {
 
     private PropertyValueModel cacheExpiryHolder;
     private PropertyValueModel cacheExpiryTypeHolder;
-    
-    
-	CacheExpiryPanel(ApplicationContext context,
-	                 PropertyValueModel cachingPolicyHolder,
-	                 String helpId)
-	{
-		super(cachingPolicyHolder, context.buildExpandedResourceRepositoryContext(UiDescriptorBundle.class));
-		addHelpTopicId(this, helpId);
-	}
+
+
+    CacheExpiryPanel(ApplicationContext context,
+                     PropertyValueModel cachingPolicyHolder,
+                     String helpId)
+    {
+        super(cachingPolicyHolder, context.buildExpandedResourceRepositoryContext(UiDescriptorBundle.class));
+        addHelpTopicId(this, helpId);
+    }
 
     protected void initialize(ValueModel subjectHolder) {
         super.initialize(subjectHolder);
         this.cacheExpiryHolder = buildCacheExpiryAdapter();
         this.cacheExpiryTypeHolder = buildCacheExpiryTypeAdapter();
     }
-    
+
     private PropertyValueModel buildCacheExpiryAdapter() {
         return new PropertyAspectAdapter(getSubjectHolder(), MWDescriptorCachingPolicy.CACHE_EXPIRY_PROPERTY) {
             protected Object getValueFromSubject() {
                 return ((MWCachingPolicy) this.subject).getCacheExpiry();
             }
-            
+
             protected void setValueOnSubject(Object value) {
                 //Do nothing here, this is handled in the projectDefaultAdapter
             }
-        };        
+        };
     }
-    
+
     private PropertyValueModel buildCacheExpiryTypeAdapter() {
         return new PropertyAspectAdapter(this.cacheExpiryHolder, MWCacheExpiry.CACHE_EXPIRY_TYPE_PROPERTY) {
             protected Object getValueFromSubject() {
                 return ((MWCacheExpiry) this.subject).getExpiryType();
             }
-            
+
             protected void setValueOnSubject(Object value) {
                 ((MWCacheExpiry) this.subject).setExpiryType((String) value);
             }
-        };        
-    }    
-    
-    
+        };
+    }
+
+
     protected void initializeLayout() {
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -103,7 +103,7 @@ final class CacheExpiryPanel extends AbstractSubjectPanel {
             BorderFactory.createEmptyBorder(0, 5, 5, 5)));
 
         // Project Default check box
-        JCheckBox projectDefaultCheckBox = 
+        JCheckBox projectDefaultCheckBox =
             buildCheckBox(
                     "CACHING_POLICY_PROJECT_DEFAULT_CHECK_BOX",
                     buildProjectDefaultCheckBoxAdapter());
@@ -121,7 +121,7 @@ final class CacheExpiryPanel extends AbstractSubjectPanel {
         add(projectDefaultCheckBox, constraints);
 
         // No expiry radio button
-        JRadioButton noCacheExpiryButton = 
+        JRadioButton noCacheExpiryButton =
             buildRadioButton(
                     "CACHING_POLICY_NO_EXPIRY",
                     buildNoCacheExpiryRadioButtonAdapter());
@@ -140,7 +140,7 @@ final class CacheExpiryPanel extends AbstractSubjectPanel {
         add(noCacheExpiryButton, constraints);
 
         // Time-to-live expiry radio button
-        JRadioButton timeToLiveExpiryButton = 
+        JRadioButton timeToLiveExpiryButton =
             buildRadioButton(
                     "CACHING_POLICY_TIME_TO_LIVE_EXPIRY",
                     buildTimeToLiveExpiryRadioButtonAdapter());
@@ -192,7 +192,7 @@ final class CacheExpiryPanel extends AbstractSubjectPanel {
         add(timeToLiveExpirySpinner, constraints);
         expireAfterLabel.setLabelFor(timeToLiveExpirySpinner);
 
-        
+
         // Create the "milliseconds" label
         JLabel millisecondsLabel = buildLabel("CACHING_POLICY_TIME_TO_LIVE_EXPIRY_POSTFIX_LABEL");
 
@@ -210,7 +210,7 @@ final class CacheExpiryPanel extends AbstractSubjectPanel {
         buildTimeToLiveExpiryComponentEnabler(new Component[] {timeToLiveExpirySpinner, expireAfterLabel, millisecondsLabel});
 
         // Daily Expiry radio button
-        JRadioButton dailyExpiryButton = 
+        JRadioButton dailyExpiryButton =
             buildRadioButton(
                     "CACHING_POLICY_DAILY_EXPIRY",
                     buildDailyExpiryRadioButtonAdapter() );
@@ -249,7 +249,7 @@ final class CacheExpiryPanel extends AbstractSubjectPanel {
         JSpinner dailyExpirySpinner = buildSpinnerDate(dateModel);
         dailyExpirySpinner.setEditor(new JSpinner.DateEditor(dailyExpirySpinner, "HH : mm : ss"));
         SwingComponentFactory.attachDateSpinnerCommiter(dailyExpirySpinner, cacheExpiryHolder);
- 
+
         constraints.gridx      = 2;
         constraints.gridy      = 3;
         constraints.gridwidth  = 2;
@@ -270,7 +270,7 @@ final class CacheExpiryPanel extends AbstractSubjectPanel {
             buildUpdateReadTimeOnUpdateCheckBoxAdapter()
         );
 //        updateReadTimeOnUpdateCheckBox.addItemListener(buildCacheExpiryActionListener(projectDefaultCheckBox));
- 
+
         constraints.gridx      = 0;
         constraints.gridy      = 4;
         constraints.gridwidth  = 4;
@@ -288,11 +288,11 @@ final class CacheExpiryPanel extends AbstractSubjectPanel {
     private ButtonModel buildProjectDefaultCheckBoxAdapter() {
         return new CheckBoxModelAdapter(buildProjectDefaultAdapter());
     }
-    
+
     private PropertyValueModel buildProjectDefaultAdapter() {
         return new TransformationPropertyValueModel(this.cacheExpiryHolder) {
             protected Object transform(Object value) {
-                return (value instanceof MWDescriptorCacheExpiry) ? Boolean.FALSE : Boolean.TRUE;               
+                return (value instanceof MWDescriptorCacheExpiry) ? Boolean.FALSE : Boolean.TRUE;
             }
             protected Object reverseTransform(Object value) {
                 MWCachingPolicy cachingPolicy = (MWCachingPolicy) getSubjectHolder().getValue();
@@ -300,24 +300,24 @@ final class CacheExpiryPanel extends AbstractSubjectPanel {
                     return null;
                 }
                 cachingPolicy.setUseProjectDefaultCacheExpiry(((Boolean) value).booleanValue());
-                return cachingPolicy.getCacheExpiry();               
+                return cachingPolicy.getCacheExpiry();
             }
         };
     }
-    
+
     private ButtonModel buildNoCacheExpiryRadioButtonAdapter() {
         return new RadioButtonModelAdapter(
              this.cacheExpiryTypeHolder,
              MWCacheExpiry.CACHE_EXPIRY_NO_EXPIRY
          );
      }
-    
+
     private ButtonModel buildTimeToLiveExpiryRadioButtonAdapter() {
         return new RadioButtonModelAdapter(
                 this.cacheExpiryTypeHolder,
                 MWCacheExpiry.CACHE_EXPIRY_TIME_TO_LIVE_EXPIRY);
     }
-    
+
 
 
 
@@ -330,95 +330,95 @@ final class CacheExpiryPanel extends AbstractSubjectPanel {
           new Long(0)               // Default value
       );
   }
-    
+
     private PropertyValueModel buildTimeToLiveAdapter() {
         return new PropertyAspectAdapter(this.cacheExpiryHolder, MWCacheExpiry.TIME_TO_LIVE_EXPIRY_PROPERTY) {
             protected Object getValueFromSubject() {
                 return ((MWCacheExpiry) this.subject).getTimeToLiveExpiry();
             }
-            
+
             protected void setValueOnSubject(Object value) {
                 ((MWCacheExpiry) this.subject).setTimeToLiveExpiry((Long) value);
             }
         };
     }
-    
+
     private ButtonModel buildDailyExpiryRadioButtonAdapter() {
         return new RadioButtonModelAdapter(
                 this.cacheExpiryTypeHolder,
                 MWCacheExpiry.CACHE_EXPIRY_DAILY_EXPIRY);
-    }    
-       
-	private SpinnerDateModel buildDailyExpirySpinnerAdapter()
-	{
-		Date MIN = new Date(0, 0, 1, 0, 0, 0);
-		Date MAX = new Date(300, 0, 1, 0, 0, 0);
+    }
 
-		return new DateSpinnerModelAdapter
-		(
-			buildDailyExpiryHolder(),
-			MIN,             // Minimum value
-			MAX,             // Maximum value
-			Calendar.MINUTE, // Step
-			MIN              // Default value
-		);
-	}
-    
+    private SpinnerDateModel buildDailyExpirySpinnerAdapter()
+    {
+        Date MIN = new Date(0, 0, 1, 0, 0, 0);
+        Date MAX = new Date(300, 0, 1, 0, 0, 0);
+
+        return new DateSpinnerModelAdapter
+        (
+            buildDailyExpiryHolder(),
+            MIN,             // Minimum value
+            MAX,             // Maximum value
+            Calendar.MINUTE, // Step
+            MIN              // Default value
+        );
+    }
+
     private PropertyValueModel buildDailyExpiryHolder() {
         return new PropertyAspectAdapter(this.cacheExpiryHolder, MWCacheExpiry.DAILY_EXPIRY_TIME_PROPERTY) {
             protected Object getValueFromSubject() {
                 return ((MWCacheExpiry) this.subject).getDailyExpiryTime();
             }
-            
+
             protected void setValueOnSubject(Object value) {
                 ((MWCacheExpiry) this.subject).setDailyExpiryTime((Date) value);
             }
         };
     }
-    
-    
+
+
     private ButtonModel buildUpdateReadTimeOnUpdateCheckBoxAdapter() {
         return new CheckBoxModelAdapter(buildUpdateReadTimeOnUpdateHolder());
     }
-      
+
     private PropertyValueModel buildUpdateReadTimeOnUpdateHolder() {
         return new PropertyAspectAdapter(this.cacheExpiryHolder, MWCacheExpiry.UPDATE_READ_TIME_ON_UPDATE_PROPERTY) {
             protected Object getValueFromSubject() {
                 return Boolean.valueOf(((MWCacheExpiry) this.subject).getUpdateReadTimeOnUpdate());
             }
-              
+
             protected void setValueOnSubject(Object value) {
                 ((MWCacheExpiry) this.subject).setUpdateReadTimeOnUpdate(((Boolean) value).booleanValue());
             }
         };
     }
-    
+
     private ComponentEnabler buildUpdateReadTimeOnUpdateComponentEnabler(Component component) {
         ValueModel noExpiryHolder = new TransformationPropertyValueModel(this.cacheExpiryTypeHolder) {
             protected Object transform(Object value) {
-                return Boolean.valueOf(value != MWCacheExpiry.CACHE_EXPIRY_NO_EXPIRY); 
+                return Boolean.valueOf(value != MWCacheExpiry.CACHE_EXPIRY_NO_EXPIRY);
             }
         };
         return new ComponentEnabler(noExpiryHolder, component);
     }
-    
+
     private ComponentEnabler buildTimeToLiveExpiryComponentEnabler(Component[] components) {
         ValueModel noExpiryHolder = new TransformationPropertyValueModel(this.cacheExpiryTypeHolder) {
             protected Object transform(Object value) {
-                return Boolean.valueOf(value == MWCacheExpiry.CACHE_EXPIRY_TIME_TO_LIVE_EXPIRY); 
+                return Boolean.valueOf(value == MWCacheExpiry.CACHE_EXPIRY_TIME_TO_LIVE_EXPIRY);
             }
         };
         return new ComponentEnabler(noExpiryHolder, components);
     }
-    
+
     private ComponentEnabler buildDailyExpiryComponentEnabler(Component[] components) {
         ValueModel noExpiryHolder = new TransformationPropertyValueModel(this.cacheExpiryTypeHolder) {
             protected Object transform(Object value) {
-                return Boolean.valueOf(value == MWCacheExpiry.CACHE_EXPIRY_DAILY_EXPIRY); 
+                return Boolean.valueOf(value == MWCacheExpiry.CACHE_EXPIRY_DAILY_EXPIRY);
             }
         };
         return new ComponentEnabler(noExpiryHolder, components);
     }
-    
-    
+
+
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     stardif - ClientSession broker ServerSession and change propagation additions
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.broker;
 
 import java.util.*;
@@ -85,7 +85,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     public SessionBroker acquireClientSessionBroker() {
         return acquireClientSessionBroker(null, null);
     }
-    
+
     /**
      * PUBLIC:
      * Return a session broker that behaves as a client session broker.  An
@@ -94,7 +94,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      *
      * NOTE: when finished with the client broker, it should be released.
      * @param connectionPolicies maps session name to connectionPolicy to be used for this session;
-     * @param mapOfProperties maps session name to properties to be used for this session. 
+     * @param mapOfProperties maps session name to properties to be used for this session.
      */
     public SessionBroker acquireClientSessionBroker(Map<String, ConnectionPolicy> connectionPolicies, Map mapOfProperties) {
         log(SessionLog.FINER, SessionLog.CONNECTION, "acquire_client_session_broker");
@@ -284,7 +284,7 @@ public class SessionBroker extends DatabaseSessionImpl {
             throw globalException;
         }
     }
-    
+
     /**
      * PUBLIC:
      * Return true if the pre-defined query is defined on the session.
@@ -331,7 +331,7 @@ public class SessionBroker extends DatabaseSessionImpl {
         broker.exceptionHandler = getExceptionHandler();
         broker.descriptors = getDescriptors();
         broker.shouldPropagateChanges = shouldPropagateChanges;
-	
+
         return broker;
     }
 
@@ -369,8 +369,8 @@ public class SessionBroker extends DatabaseSessionImpl {
             return ((AbstractSession)enumtr.next()).getAsOfClause();
         }
         return null;
-    }    
-    
+    }
+
     /**
      * INTERNAL:
      * Gets the parent SessionBroker.
@@ -419,18 +419,18 @@ public class SessionBroker extends DatabaseSessionImpl {
      * This allows for common queries to be pre-defined, reused and executed by name.
      * This method should be used if the Session has multiple queries with the same name but
      * different arguments.
-     * 
-     * The search order is: 
+     *
+     * The search order is:
      *    for ClientSessionBroker:
-     *      the broker; 
+     *      the broker;
      *      it's member ClientSessions (but not their parent ServerSessions);
      *      the parent SessionBroker.
-     *      
+     *
      *    for ServerSession or DatabaseSession SessionBroker:
      *      the broker;
-     *      it's member ServerSessions (or DatabaseSessions). 
+     *      it's member ServerSessions (or DatabaseSessions).
      */
-    //Bug#3551263  Override getQuery(String name, Vector arguments) in Session search through 
+    //Bug#3551263  Override getQuery(String name, Vector arguments) in Session search through
     //the server session broker as well
     public DatabaseQuery getQuery(String name, Vector arguments, boolean shouldSearchParent) {
         // First search the broker
@@ -532,18 +532,18 @@ public class SessionBroker extends DatabaseSessionImpl {
     public void initializeDescriptors() {
         // ClientSession initializes sequencing during construction,
         // however DatabaseSession and ServerSession normally call initializeSequencing()
-        // in initializeDescriptors method. 
+        // in initializeDescriptors method.
         // Because initializeDescriptors() is not called for a session-member of a SessionBroker,
         // initializeSequencing() for the sessions should be called here.
         for (Iterator enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
-            DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)enumtr.next();                
+            DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)enumtr.next();
             String sessionName = databaseSession.getName();
 
             // Initialize partitioning policies.
             for (PartitioningPolicy policy : databaseSession.getProject().getPartitioningPolicies().values()) {
                 policy.initialize(this);
             }
-            
+
             // Copy jpa queries from member sessions into SessionBroker before descriptors' initialization.
             if (!databaseSession.isJPAQueriesProcessed()) {
                 for(DatabaseQuery query: databaseSession.getJPAQueries()) {
@@ -562,7 +562,7 @@ public class SessionBroker extends DatabaseSessionImpl {
                     queryList.get(i).setSessionName(sessionName);
                 }
             }
-            
+
             databaseSession.initializeSequencing();
         }
         if(hasExternalTransactionController()) {
@@ -591,7 +591,7 @@ public class SessionBroker extends DatabaseSessionImpl {
             }
             getProject().getDefaultReadOnlyClasses().addAll(databaseSession.getProject().getDefaultReadOnlyClasses());
         }
-        
+
         // ServerSessionBroker doesn't need sequencing.
         // Sequencing should be obtained either from the ClientSessionBroker or directly
         // from the ClientSession.
@@ -797,7 +797,7 @@ public class SessionBroker extends DatabaseSessionImpl {
         }
         super.postLogin();
     }
-    
+
     /**
      * PUBLIC:
      * Register the session under its name.
@@ -817,7 +817,7 @@ public class SessionBroker extends DatabaseSessionImpl {
                 // each member session has all broker's listeners.
                 session.getEventManager().getListeners().addAll(getEventManager().getListeners());
             }
-    
+
             // The keys/classes must also be used as some descriptors may be under multiple classes.
             Iterator descriptors = session.getDescriptors().values().iterator();
             Iterator classes = session.getDescriptors().keySet().iterator();
@@ -1076,7 +1076,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     public boolean isSequencingCallbackRequired() {
         return howManySequencingCallbacks() > 0;
     }
-    
+
     /**
      * PUBLIC:
      * Indicates whether descriptors should use aliasDescriptors map.

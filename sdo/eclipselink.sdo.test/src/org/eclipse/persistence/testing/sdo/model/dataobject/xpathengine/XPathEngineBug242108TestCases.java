@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     rick.barkhouse@oracle.com - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.sdo.model.dataobject.xpathengine;
 
@@ -27,36 +27,36 @@ import commonj.sdo.helper.DataFactory;
 
 public class XPathEngineBug242108TestCases extends SDOTestCase {
 
-	private String schemaLocation = "org/eclipse/persistence/testing/sdo/model/dataobject/xpathengine/bug242108schema.xsd";
+    private String schemaLocation = "org/eclipse/persistence/testing/sdo/model/dataobject/xpathengine/bug242108schema.xsd";
 
-	private String testObjectUri  = "http://xmlns.oracle.com/oracle/apps/fnd";
-	private String testObjectName = "CustomType";
-	
+    private String testObjectUri  = "http://xmlns.oracle.com/oracle/apps/fnd";
+    private String testObjectName = "CustomType";
+
     public XPathEngineBug242108TestCases(String name) {
         super(name);
     }
-	
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.xpathengine.XPathEngineBug242108TestCases" };
         TestRunner.main(arguments);
     }
 
     // == TESTS - set() ===============================================================
-    
+
     public void testSetBracketIndexZero() throws Exception {
-    	InputStream is = new FileInputStream(schemaLocation);
+        InputStream is = new FileInputStream(schemaLocation);
         List types = xsdHelper.define(is, null);
-        
+
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
-		Class expectedExceptionClass = IllegalArgumentException.class;
+        Class expectedExceptionClass = IllegalArgumentException.class;
         Class caughtExceptionClass = null;
         try {
-        	do1.set("activity[0]", new String("Test"));
+            do1.set("activity[0]", new String("Test"));
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -68,11 +68,11 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class expectedExceptionClass = IndexOutOfBoundsException.class;
         Class caughtExceptionClass = null;
         try {
-        	do1.set("activity[99]", new String("Test"));
+            do1.set("activity[99]", new String("Test"));
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -84,11 +84,11 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class expectedExceptionClass = IndexOutOfBoundsException.class;
         Class caughtExceptionClass = null;
         try {
-        	do1.set("activity.99", new String("Test"));
+            do1.set("activity.99", new String("Test"));
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -100,11 +100,11 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class expectedExceptionClass = IllegalArgumentException.class;
         Class caughtExceptionClass = null;
         try {
-        	do1.set("activity", new String("Test"));
+            do1.set("activity", new String("Test"));
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -113,14 +113,14 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         List types = xsdHelper.define(is, null);
         DataObject do1 = dataFactory.create(testObjectUri, testObjectName);
 
-		Class expectedExceptionClass = SDOException.class;
+        Class expectedExceptionClass = SDOException.class;
         Class caughtExceptionClass = null;
         try {
             do1.set("activity[0]/what", new String("Test"));
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -134,9 +134,9 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         try {
             do1.set("activity[99]/what", new String("Test"));
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -150,9 +150,9 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         try {
             do1.set("activity.99/what", new String("Test"));
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -166,14 +166,14 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         try {
             do1.set("activity/what", new String("Test"));
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
     // == TESTS - get() ===============================================================
-    
+
     public void testGetBracketIndexZero() throws Exception {
         InputStream is = new FileInputStream(schemaLocation);
         List types = xsdHelper.define(is, null);
@@ -182,11 +182,11 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class expectedExceptionClass = null;
         Class caughtExceptionClass = null;
         try {
-        	do1.get("activity[0]");
+            do1.get("activity[0]");
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -198,11 +198,11 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class expectedExceptionClass = null;
         Class caughtExceptionClass = null;
         try {
-        	do1.get("activity[99]");
+            do1.get("activity[99]");
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -214,11 +214,11 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class expectedExceptionClass = null;
         Class caughtExceptionClass = null;
         try {
-        	do1.get("activity.99");
+            do1.get("activity.99");
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -232,9 +232,9 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         try {
             do1.get("activity[0]/what");
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -248,9 +248,9 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         try {
             do1.get("activity[99]/what");
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -264,9 +264,9 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         try {
             do1.get("activity.99/what");
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -280,12 +280,12 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         try {
             do1.get("activity");
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertNull("An unexpected exception was thrown.", caughtExceptionClass);
     }
-    
+
     public void testGetNoIndexWithChild() throws Exception {
         InputStream is = new FileInputStream(schemaLocation);
         List types = xsdHelper.define(is, null);
@@ -296,9 +296,9 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         try {
             do1.get("activity/what");
         } catch (Exception e) {
-        	caughtExceptionClass = e.getClass();
+            caughtExceptionClass = e.getClass();
         }
-        
+
         assertEquals("The expected exception was not thrown.", expectedExceptionClass, caughtExceptionClass);
     }
 
@@ -311,7 +311,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
 
         boolean isSet = false;
         isSet = do1.isSet("activity[0]");
-        
+
         assertFalse("isSet() did not return 'false' as expected.", isSet);
     }
 
@@ -322,7 +322,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
 
         boolean isSet = false;
         isSet = do1.isSet("activity[99]");
-        
+
         assertFalse("isSet() did not return 'false' as expected.", isSet);
     }
 
@@ -333,7 +333,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
 
         boolean isSet = false;
         isSet = do1.isSet("activity.99");
-        
+
         assertFalse("isSet() did not return 'false' as expected.", isSet);
     }
 
@@ -344,7 +344,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
 
         boolean isSet = false;
         isSet = do1.isSet("activity");
-        
+
         assertFalse("isSet() did not return 'false' as expected.", isSet);
     }
 
@@ -355,7 +355,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
 
         boolean isSet = false;
         isSet = do1.isSet("activity[0]/what");
-        
+
         assertFalse("isSet() did not return 'false' as expected.", isSet);
     }
 
@@ -366,7 +366,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
 
         boolean isSet = false;
         isSet = do1.isSet("activity[99]/what");
-        
+
         assertFalse("isSet() did not return 'false' as expected.", isSet);
     }
 
@@ -377,7 +377,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
 
         boolean isSet = false;
         isSet = do1.isSet("activity.99/what");
-        
+
         assertFalse("isSet() did not return 'false' as expected.", isSet);
     }
 
@@ -388,7 +388,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
 
         boolean isSet = false;
         isSet = do1.isSet("activity/what");
-        
+
         assertFalse("isSet() did not return 'false' as expected.", isSet);
     }
 

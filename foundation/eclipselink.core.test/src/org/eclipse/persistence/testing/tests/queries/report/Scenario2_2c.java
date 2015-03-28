@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries.report;
 
 import java.util.*;
@@ -46,7 +46,7 @@ public class Scenario2_2c extends ReportQueryTestCase {
                 String driverVersion = getAbstractSession().getAccessor().getConnection().getMetaData().getDriverVersion();
                 if (driverVersion.equals("1.0")) {
                     // up to version 1.00.35 driver version is returned as "1.0"
-                    // and numeric constant is returned as Long 
+                    // and numeric constant is returned as Long
                     result[1] = new java.lang.Long(3);
                 } else {
                     result[1] = new java.lang.Integer(3);
@@ -67,6 +67,6 @@ public class Scenario2_2c extends ReportQueryTestCase {
         reportQuery.addItem("id", reportQuery.getExpressionBuilder().get("id"));
         reportQuery.addAttribute("VALUE", reportQuery.getExpressionBuilder().value(3));
 
-        //	reportQuery.setSQLString("SELECT t0.EMP_ID, 3 FROM EMPLOYEE t0, SALARY t1 WHERE (t1.EMP_ID = t0.EMP_ID) 
+        //    reportQuery.setSQLString("SELECT t0.EMP_ID, 3 FROM EMPLOYEE t0, SALARY t1 WHERE (t1.EMP_ID = t0.EMP_ID)
     }
 }

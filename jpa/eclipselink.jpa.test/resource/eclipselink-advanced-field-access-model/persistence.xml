@@ -37,7 +37,7 @@
         </properties>
     </persistence-unit>
 
-	<persistence-unit name="negative1">
+    <persistence-unit name="negative1">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
@@ -49,7 +49,7 @@
         </properties>
     </persistence-unit>
 
-	<persistence-unit name="negative2" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="negative2" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
     </persistence-unit>

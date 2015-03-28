@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.inheritance;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier; 
+import java.lang.reflect.Modifier;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -33,12 +33,12 @@ import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.inheritance.*;
 
 public class STI_JoinedAttributeTest extends TestCase {
-        
+
     // If the flag is set to true then setup method ensures
     // that the objects in db are exactly those created by
     // STI_EmployeePopulator, and nothing else.
     static protected boolean eachTestShouldEnsurePopulation = false;
-    
+
     // the following static variables are used only in case eachTestShouldEnsurePopulation==true
     static protected Class[] classes = {STI_Employee.class, STI_Project.class};
     static protected Vector[] objectVectors = {null, null};
@@ -52,7 +52,7 @@ public class STI_JoinedAttributeTest extends TestCase {
         super();
         setName(name);
     }
-    
+
     // Junit-style trick: this method creates a TestSuite which contains
     // a TestCase for each method with the name starting with "test".
     public static TestSuite getTestSuite() {
@@ -67,20 +67,20 @@ public class STI_JoinedAttributeTest extends TestCase {
         }
         return suite;
     }
-    
-	// stolen from junit.framework.TestSuite
+
+    // stolen from junit.framework.TestSuite
     private static boolean isPublicTestMethod(Method m) {
-		return isTestMethod(m) && Modifier.isPublic(m.getModifiers());
-	 }
-	 
-	// stolen from junit.framework.TestSuite
-	private static boolean isTestMethod(Method m) {
-		String name= m.getName();
-		Class[] parameters= m.getParameterTypes();
-		Class returnType= m.getReturnType();
-		return parameters.length == 0 && name.startsWith("test") && returnType.equals(Void.TYPE);
-	 }
-     
+        return isTestMethod(m) && Modifier.isPublic(m.getModifiers());
+     }
+
+    // stolen from junit.framework.TestSuite
+    private static boolean isTestMethod(Method m) {
+        String name= m.getName();
+        Class[] parameters= m.getParameterTypes();
+        Class returnType= m.getReturnType();
+        return parameters.length == 0 && name.startsWith("test") && returnType.equals(Void.TYPE);
+     }
+
     // This method is designed to make sure that the tests always work in the same environment:
     // db has all the objects produced by populate method - and no other objects of the relevant classes.
     // In order to enforce that the first test populates the db and caches the objects in static collections,
@@ -97,35 +97,35 @@ public class STI_JoinedAttributeTest extends TestCase {
             clearCache();
         }
     }
-    
+
     // executes the method with the same name as the test
     protected void test() throws Exception {
         Method method = this.getClass().getDeclaredMethod(getName(), new Class[]{});
         method.invoke(this, new Object[] {});
     }
-    
+
     public void reset() {
         clearCache();
     }
-        
+
     protected void clear() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
         UpdateAllQuery updateEmployees = new UpdateAllQuery(STI_Employee.class);
         updateEmployees.addUpdate("manager", null);
         uow.executeQuery(updateEmployees);
-    
+
         UpdateAllQuery updateProjects = new UpdateAllQuery(STI_Project.class);
         updateProjects.addUpdate("teamLeader", null);
         uow.executeQuery(updateProjects);
-    
+
         uow.executeQuery(new DeleteAllQuery(STI_Employee.class));
         uow.executeQuery(new DeleteAllQuery(STI_Project.class));
 
         uow.commit();
         clearCache();
     }
-    
+
     protected void populate() {
         populator.buildExamples();
         populator.persistExample(getSession());
@@ -134,13 +134,13 @@ public class STI_JoinedAttributeTest extends TestCase {
             objectVectors[i] = getSession().readAllObjects(classes[i]);
         }
     }
-    
+
     public void testProjectJoinTeamMembers() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(STI_Project.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         query.addJoinedAttribute(query.getExpressionBuilder().anyOf("teamMembers"));
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
@@ -148,15 +148,15 @@ public class STI_JoinedAttributeTest extends TestCase {
             failTest(errorMsg);
         }
     }
-    
+
     public void testProjectJoinTeamLeaderWhereTeamLeaderNotNull() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(STI_Project.class);
         Expression teamLeader = query.getExpressionBuilder().get("teamLeader");
         query.setSelectionCriteria(teamLeader.notNull());
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         query.addJoinedAttribute(teamLeader);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
@@ -164,13 +164,13 @@ public class STI_JoinedAttributeTest extends TestCase {
             failTest(errorMsg);
         }
     }
-    
+
     public void testProjectOuterJoinTeamMembers() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(STI_Project.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         Expression teamMembers = query.getExpressionBuilder().anyOfAllowingNone("teamMembers");
         query.addJoinedAttribute(teamMembers);
 
@@ -179,14 +179,14 @@ public class STI_JoinedAttributeTest extends TestCase {
             failTest(errorMsg);
         }
     }
-    
+
     public void testProblemReporterProjectJoinTeamMembers() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(STI_Project.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("name").equal("Problem Reporter"));
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         Expression teamMembers = query.getExpressionBuilder().anyOf("teamMembers");
         query.addJoinedAttribute(teamMembers);
 
@@ -195,11 +195,11 @@ public class STI_JoinedAttributeTest extends TestCase {
             failTest(errorMsg);
         }
     }
-    
+
     public void testEmployeeJoinProjects() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(STI_Employee.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         query.addJoinedAttribute(query.getExpressionBuilder().anyOf("projects"));
 
@@ -208,12 +208,12 @@ public class STI_JoinedAttributeTest extends TestCase {
             failTest(errorMsg);
         }
     }
-    
+
     public void testEmployeeJoinProjectsJoinTeamLeaderWhereManagerIsNull() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(STI_Employee.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("manager").isNull());
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
         Expression projects = query.getExpressionBuilder().anyOf("projects");
         query.addJoinedAttribute(projects);
@@ -225,15 +225,15 @@ public class STI_JoinedAttributeTest extends TestCase {
             failTest(errorMsg);
         }
     }
-    
+
     public void testProjectOuterJoinTeamLeaderTeamMembersWhereProjectName() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(STI_Project.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("name").equal("Problem Reporting System").
             or(query.getExpressionBuilder().get("name").equal("Bleep Blob")));
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         Expression teamLeader = query.getExpressionBuilder().getAllowingNull("teamLeader");
         query.addJoinedAttribute(teamLeader);
         Expression teamMembers = query.getExpressionBuilder().anyOfAllowingNone("teamMembers");
@@ -244,13 +244,13 @@ public class STI_JoinedAttributeTest extends TestCase {
             failTest(errorMsg);
         }
     }
-    
+
     public void testEmployeeOuterJoinProjectsTeamLeader() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(STI_Employee.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         Expression projects = query.getExpressionBuilder().anyOfAllowingNone("projects");
         query.addJoinedAttribute(projects);
         Expression teamLeader = projects.getAllowingNull("teamLeader");
@@ -263,15 +263,15 @@ public class STI_JoinedAttributeTest extends TestCase {
             failTest(errorMsg);
         }
     }
-    
+
     protected String executeQueriesAndCompareResults(ObjectLevelReadQuery controlQuery, ObjectLevelReadQuery queryWithJoins) {
         return JoinedAttributeTestHelper.executeQueriesAndCompareResults(controlQuery, queryWithJoins, (AbstractSession)getSession());
     }
 
     protected void failTest(String errorMsg) {
-        throw new TestErrorException(errorMsg);        
+        throw new TestErrorException(errorMsg);
     }
-    
+
     protected boolean compare() {
         for(int i=0; i < classes.length; i++) {
             if(!compare(i)) {
@@ -286,7 +286,7 @@ public class STI_JoinedAttributeTest extends TestCase {
             return false;
         }
         Vector currentVector = getSession().readAllObjects(classes[i]);
-        
+
         if(currentVector.size() != objectVectors[i].size()) {
             return false;
         }

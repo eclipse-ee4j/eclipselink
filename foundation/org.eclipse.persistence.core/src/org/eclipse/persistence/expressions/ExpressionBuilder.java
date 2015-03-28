@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.expressions;
 
 import java.util.*;
@@ -53,7 +53,7 @@ public class ExpressionBuilder extends ObjectExpression {
     protected DatabaseTable aliasedViewTable;
 
     protected boolean wasQueryClassSetInternally = true;
-    
+
     protected boolean wasAdditionJoinCriteriaUsed = false;
 
     /**
@@ -88,7 +88,7 @@ public class ExpressionBuilder extends ObjectExpression {
         // Return false for parallel expressions, as equality is unknown.
         return super.equals(expression) && ((getQueryClass() == null) && ((ExpressionBuilder)expression).getQueryClass() == null);
     }
-    
+
     /**
      * INTERNAL: Find the alias for a given table. Handle the special case where we are bogus
      * and it should be aliased against our derived tables instead.
@@ -261,7 +261,7 @@ public class ExpressionBuilder extends ObjectExpression {
         } else {
             setHasBeenNormalized(true);
         }
-        
+
         // Normalize the ON clause if present.  Need to use rebuild, not twist as parameters are real parameters.
         if (this.onClause != null) {
             this.onClause = this.onClause.normalize(normalizer);
@@ -274,7 +274,7 @@ public class ExpressionBuilder extends ObjectExpression {
                     }
                 }
             } else {
-                normalizer.addAdditionalExpression(this.onClause);                
+                normalizer.addAdditionalExpression(this.onClause);
             }
         }
 
@@ -339,7 +339,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * Print java
      */
     public void printJava(ExpressionJavaPrinter printer) {
-        printer.printString(printer.getBuilderString());        
+        printer.printString(printer.getBuilderString());
     }
 
     /**
@@ -361,7 +361,7 @@ public class ExpressionBuilder extends ObjectExpression {
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
         return;
     }
-    
+
     /**
      * INTERNAL:
      * Override Expression.registerIn to check if the new base expression
@@ -453,7 +453,7 @@ public class ExpressionBuilder extends ObjectExpression {
     public void setWasAdditionJoinCriteriaUsed(boolean joinCriteriaUsed){
         this.wasAdditionJoinCriteriaUsed = joinCriteriaUsed;
     }
-    
+
     /**
      * INTERNAL:
      * Rebuild myself against the base, with the values of parameters supplied by the context
@@ -464,7 +464,7 @@ public class ExpressionBuilder extends ObjectExpression {
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         if (oldBase == null || this == oldBase) {
-            return newBase;            
+            return newBase;
         }
         return this;
     }
@@ -485,7 +485,7 @@ public class ExpressionBuilder extends ObjectExpression {
     public boolean wasAdditionJoinCriteriaUsed(){
         return this.wasAdditionJoinCriteriaUsed;
     }
-    
+
     /**
      * INTERNAL:
      * Returns true if TopLink set the query class as opposed to the customer.  This
@@ -495,7 +495,7 @@ public class ExpressionBuilder extends ObjectExpression {
     public boolean wasQueryClassSetInternally(){
         return this.wasQueryClassSetInternally;
     }
-    
+
     /**
      * INTERNAL:
      * Lookup the descriptor for this item by traversing its expression recursively.
@@ -511,7 +511,7 @@ public class ExpressionBuilder extends ObjectExpression {
         }
         return convertToCastDescriptor(rootDescriptor, session);//support casting
     }
-    
+
     /**
      * INTERNAL:
      * For debug printing purposes.

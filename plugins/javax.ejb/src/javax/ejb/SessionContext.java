@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,10 +45,10 @@ import java.security.Identity;
 import javax.xml.rpc.handler.MessageContext;
 
 /**
- * The SessionContext interface provides access to the runtime session context 
- * that the container provides for a session bean instance. The 
- * container passes the SessionContext interface to an instance after the 
- * instance has been created. The session context remains associated with 
+ * The SessionContext interface provides access to the runtime session context
+ * that the container provides for a session bean instance. The
+ * container passes the SessionContext interface to an instance after the
+ * instance has been created. The session context remains associated with
  * the instance for the lifetime of the instance.
  *
  * @since EJB 1.0
@@ -56,7 +56,7 @@ import javax.xml.rpc.handler.MessageContext;
 public interface SessionContext extends EJBContext
 {
     /**
-     * Obtain a reference to the EJB local object that is  
+     * Obtain a reference to the EJB local object that is
      * associated with the instance.
      *
      * <p> An instance of a session bean can call this method at
@@ -80,7 +80,7 @@ public interface SessionContext extends EJBContext
     EJBLocalObject getEJBLocalObject() throws IllegalStateException;
 
     /**
-     * Obtain a reference to the EJB object that is currently associated with 
+     * Obtain a reference to the EJB object that is currently associated with
      * the instance.
      *
      * <p> An instance of a session enterprise Bean can call this
@@ -102,7 +102,7 @@ public interface SessionContext extends EJBContext
     EJBObject getEJBObject() throws IllegalStateException;
 
     /**
-     * Obtain a reference to the JAX-RPC MessageContext. 
+     * Obtain a reference to the JAX-RPC MessageContext.
      *
      * <p> An instance of a stateless session bean can call this method
      * from any business method invoked through its web service
@@ -122,28 +122,28 @@ public interface SessionContext extends EJBContext
      * Obtain an object that can be used to invoke the current bean through
      * a particular business interface view or its no-interface view.
      *
-     * @param businessInterface One of the local business interfaces 
-     *        or remote business interfaces for this session bean. 
-     *        In addition, the bean class type can be used to acquire 
+     * @param businessInterface One of the local business interfaces
+     *        or remote business interfaces for this session bean.
+     *        In addition, the bean class type can be used to acquire
      *        a reference to the bean's no-interface view.
      *
-     * @return The business object corresponding to the given business 
+     * @return The business object corresponding to the given business
      *         interface or no-interface view.
      *
      * @exception IllegalStateException Thrown if invoked with a parameter
      *         that does not correspond to one of the beans' business interfaces
      *         or no-interface view.
-     *     
-     * @since EJB 3.0    
+     *
+     * @since EJB 3.0
      */
     <T> T getBusinessObject(Class<T> businessInterface) throws IllegalStateException;
 
     /**
-     * Obtain the business interface or no-interface view type through which the 
-     * current business method invocation was made. 
+     * Obtain the business interface or no-interface view type through which the
+     * current business method invocation was made.
      *
      * @exception IllegalStateException Thrown if this method is called
-     *       and the bean has not been invoked through a business interface or 
+     *       and the bean has not been invoked through a business interface or
      *       no-interface view.
      *
      * @since EJB 3.0
@@ -156,14 +156,14 @@ public interface SessionContext extends EJBContext
      * asynchronous business method.
      *
      * @return true if the client has invoked <code>Future.cancel</code> with a value of
-     *    true for the <code>mayInterruptIfRunning</code> parameter. 
+     *    true for the <code>mayInterruptIfRunning</code> parameter.
      *
-     * @exception IllegalStateException Thrown if not invoked from within an 
+     * @exception IllegalStateException Thrown if not invoked from within an
      *         asynchronous business method invocation with return type
      *        <code>Future&#060;V&#062;</code>.
-     *  
-     * @since EJB 3.1       
-     */    
+     *
+     * @since EJB 3.1
+     */
      boolean wasCancelCalled() throws IllegalStateException;
 
 }

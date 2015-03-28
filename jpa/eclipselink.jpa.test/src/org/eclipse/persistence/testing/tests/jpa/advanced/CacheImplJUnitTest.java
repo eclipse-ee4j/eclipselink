@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c)  2008, Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c)  2008, 2015 , Sun Microsystems, Inc. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -8,9 +8,9 @@
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 * Contributors:
- *     12/04/2008 - 2.0 Darani Yallapragada 
+ *     12/04/2008 - 2.0 Darani Yallapragada
  *       - 248780: Initial contribution for JPA 2.0
- *     06/02/2010 - 2.1 Michael O'Brien 
+ *     06/02/2010 - 2.1 Michael O'Brien
  *       - 248780: Refactor Cache Implementation surrounding evict()
  *         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/cache_api#Refactor_20100322
  *         Fix evict() to handle non-Entity classes
@@ -50,7 +50,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 public class CacheImplJUnitTest extends JUnitTestCase {
 
     private static final String METAMODEL_PERSISTENCE_UNIT = "metamodel1";
-    
+
     public CacheImplJUnitTest() {
         super();
     }
@@ -86,11 +86,11 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         suite.addTest(new CacheImplJUnitTest("testEvictClassObject_MappedSuperclass_RemovesAssignableSubclasses"));
         suite.addTest(new CacheImplJUnitTest("testEvictClass_JavaLangClass_hasNoEffect"));
         suite.addTest(new CacheImplJUnitTest("testEvictClass_NonPersistableParentOfEntityMappedSuperclassChain_RemovesAssignableSubclasses"));
-        suite.addTest(new CacheImplJUnitTest("testEvictClass_NonPersistableSubclassOfEntityMappedSuperclassChain_hasNoEffect"));        
-        
+        suite.addTest(new CacheImplJUnitTest("testEvictClass_NonPersistableSubclassOfEntityMappedSuperclassChain_hasNoEffect"));
+
         suite.addTest(new CacheImplJUnitTest("testGetId_fromUnmanagedMappedSuperclass_handles_null_descriptor"));
         suite.addTest(new CacheImplJUnitTest("testGetId_fromUnsupportedJavaLangInteger_throwsIAE_on_null_descriptor"));
-        // Run these tests last as they modify the state of the ClassDescriptor permanently to verify variant corner use cases        
+        // Run these tests last as they modify the state of the ClassDescriptor permanently to verify variant corner use cases
         suite.addTest(new CacheImplJUnitTest("testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_weaving_on"));
         // 315714: comment out 3 of the 10 new tests requiring setup() table creation - until the metamodel one is added to setup()
         // Tests fail to create tables when run outside of ant or before the metamodel model is created
@@ -98,14 +98,14 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         suite.addTest(new CacheImplJUnitTest("testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_and_null_pk_with_weaving_on"));
         suite.addTest(new CacheImplJUnitTest("testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_and_null_pk_with_weaving_off"));
         */
-        // test null descriptor on closed entityManager                
+        // test null descriptor on closed entityManager
         return suite;
     }
-    
+
     public String getPersistenceUnitName(){
         return "default1";
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -116,7 +116,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         // 315714: metamodel model requires a table creator now that we are persisting with it
         clearCache();
     }
-    
+
     /**
      * Test of contains method, of class CacheImpl.
      */
@@ -132,7 +132,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         boolean result = getEntityManagerFactory().getCache().contains(Employee.class, 101);
         assertTrue("Employee not found in cache", result);
     }
-    
+
     /**
      * Test cache API.
      */
@@ -152,7 +152,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         assertTrue("Employee not found in cache", cache.contains(employee));
         cache.evict(employee);
         cache.putObject(employee);
-        cache.print();        
+        cache.print();
         cache.removeObject(employee);
         cache.removeObject(Employee.class, employee.getId());
         cache.clear();
@@ -260,7 +260,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         }
 
     }
-    
+
     public void testEvictContains() {
         EntityManager em =  createEntityManager();
         beginTransaction(em);
@@ -271,18 +271,18 @@ public class CacheImplJUnitTest extends JUnitTestCase {
 
         try {
             assertTrue(em.getEntityManagerFactory().getCache().contains(Employee.class, emp.getId()));
-    
+
             em.clear();
             Employee findEmp = em.find(Employee.class, emp.getId());
             assertNotNull(findEmp);
-    
+
             em.getEntityManagerFactory().getCache().evict(Employee.class, emp.getId());
             assertFalse(em.getEntityManagerFactory().getCache().contains(Employee.class, emp.getId()));
         } finally {
             closeEntityManager(em);
         }
     }
-    
+
     // for entity1-mappedSuperclass-entity2 we only have cache entries for entity1 and entity2
     // evict lowest 3nd level subclass of entity-mappedSuperclass-entity does not evict 1st level root entity
     //evict(Pads) will evict Pads but leave Chest and HockeyGear
@@ -290,12 +290,12 @@ public class CacheImplJUnitTest extends JUnitTestCase {
     //evict(HockeyGear) will evict all Pads, Chest and HockeyGear
     //(evict(MappedSuperclass:GoalieGear) and evict(Entity:HockeyGear) have the same effect)
     // evict middle 2nd level mappedSuperclass evicts 3rd level implementing entities but not 1st level root entity
-    // evict 1st level root entity removes both 2nd level mappedSuperclasses and 3rd level implementing entities 
+    // evict 1st level root entity removes both 2nd level mappedSuperclasses and 3rd level implementing entities
     /**
      * In this test we attempt to remove the MappedSuperclass (superclass) from the entity cache.
      * The resulting action removes all implementing subclasses - which has the same effect
      * as just removing the implementing Entity in the first case.
-     * 
+     *
      * Hierarchy:
      * HockeyGear (Abstract Entity)
      *       +----- GoalieGear (Concrete MappedSuperclass) --- (we will evict this one)
@@ -303,7 +303,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
      *                  +----- Pads (Concrete Entity) ---- cacheable (as well as this one)
      */
     public void testEvictClass_MappedSuperclass_RemovesAssignableSubclasses() {
-        if (! isJPA10()) {        
+        if (! isJPA10()) {
             int ID_PADS = ID_TEST_BASE + 2100;
             int ID_CHESTPROTECTOR = ID_PADS++;
             final EntityManager em = createEntityManager();
@@ -316,7 +316,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             em.persist(e1);
             commitTransaction(em);
             // do not close the entityManager between transactions or you will get bug# 307445
-            
+
             beginTransaction(em);
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             Pads p1 = new Pads();
@@ -325,7 +325,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             em.persist(p1);
             commitTransaction(em);
             closeEntityManager(em);
-        
+
             EntityManager em1 = createEntityManager();
             EntityManager em2 = createEntityManager();
             try {
@@ -335,19 +335,19 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 e2.setDescription("new_chest_protector");
                 p2.setDescription("new_pads");
-                
+
                 String expected_chestProtector = em1.find(GoalieGear.class, ID_CHESTPROTECTOR).getDescription();
                 String expected_pads = em1.find(GoalieGear.class, ID_PADS).getDescription();
-            
+
                 // evict the inheriting entities via their MappedSuperclass (without referencing their ID)
-                getEntityManagerFactory().getCache().evict(GoalieGear.class);            
-            
+                getEntityManagerFactory().getCache().evict(GoalieGear.class);
+
                 // read the inheriting entities directly from the database (because they are no longer in the cache - hopefully)
                 GoalieGear g5 = em2.find(GoalieGear.class, ID_CHESTPROTECTOR);
-                GoalieGear p5 = em2.find(GoalieGear.class, ID_PADS);            
-            
+                GoalieGear p5 = em2.find(GoalieGear.class, ID_PADS);
+
                 // check that the root entity is also evicted
-                
+
                 // Check that we are not actually getting the supposed "to be evicted" cached version (that was modified)
                 String actual_chestProtector = g5.getDescription();
                 String actual_pads = p5.getDescription();
@@ -355,7 +355,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 assertNotSame("Assertion Error - There should be no modified cached entity instance in the cache - the entity read from the database should be different. "
                     , expected_chestProtector, actual_chestProtector);
                 assertNotSame("Assertion Error - There should be no modified cached entity instance in the cache - the entity read from the database should be different. "
-                    , expected_pads, actual_pads);            
+                    , expected_pads, actual_pads);
             } finally {
                 closeEntityManager(em1);
                 closeEntityManager(em2);
@@ -368,16 +368,16 @@ public class CacheImplJUnitTest extends JUnitTestCase {
      * from the entity cache.
      * The resulting action removes all implementing subclasses - which has the same effect
      * as just removing the root implementing Entity in the first case.
-     * 
+     *
      * Hierarchy:
      * Gear (non-entity/non-mappedSuperclass plain java class - with non-persistable state) - (we will evict this one)
      *    +-----HockeyGear (Abstract Entity) (not cacheable)
-     *                +----- GoalieGear (Concrete MappedSuperclass) --- (no cache entry) 
+     *                +----- GoalieGear (Concrete MappedSuperclass) --- (no cache entry)
      *                              +----- Chest Protector (Concrete Entity) ---- cacheable (but this will actually be evicted)
      *                              +----- Pads (Concrete Entity) ---- cacheable (as well as this one)
      */
     public void testEvictClass_NonPersistableParentOfEntityMappedSuperclassChain_RemovesAssignableSubclasses() {
-        if (! isJPA10()) {        
+        if (! isJPA10()) {
             int ID_PADS = ID_TEST_BASE + 800;
             int ID_CHESTPROTECTOR = ID_PADS++;
             final EntityManager em = createEntityManager();
@@ -390,7 +390,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             em.persist(e1);
             commitTransaction(em);
             // do not close the entityManager between transactions or you will get bug# 307445
-            
+
             beginTransaction(em);
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             Pads p1 = new Pads();
@@ -399,7 +399,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             em.persist(p1);
             commitTransaction(em);
             closeEntityManager(em);
-        
+
             EntityManager em1 = createEntityManager();
             EntityManager em2 = createEntityManager();
             try {
@@ -408,19 +408,19 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 e2.setDescription("new_chest_protector");
                 p2.setDescription("new_pads");
-                
+
                 String expected_chestProtector = em1.find(GoalieGear.class, ID_CHESTPROTECTOR).getDescription();
                 String expected_pads = em1.find(GoalieGear.class, ID_PADS).getDescription();
-            
+
                 // evict the inheriting entities via their non-persistable root (without referencing their ID)
-                getEntityManagerFactory().getCache().evict(Gear.class);            
-            
+                getEntityManagerFactory().getCache().evict(Gear.class);
+
                 // read the inheriting entities directly from the database (because they are no longer in the cache - hopefully)
                 GoalieGear g5 = em2.find(GoalieGear.class, ID_CHESTPROTECTOR);
-                GoalieGear p5 = em2.find(GoalieGear.class, ID_PADS);            
-            
+                GoalieGear p5 = em2.find(GoalieGear.class, ID_PADS);
+
                 // check that the root entity is also evicted
-                
+
                 // Check that we are not actually getting the supposed "to be evicted" cached version (that was modified)
                 String actual_chestProtector = g5.getDescription();
                 String actual_pads = p5.getDescription();
@@ -428,7 +428,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 assertNotSame("Assertion Error - There should be no modified cached entity instance in the cache - the entity read from the database should be different. "
                     , expected_chestProtector, actual_chestProtector);
                 assertNotSame("Assertion Error - There should be no modified cached entity instance in the cache - the entity read from the database should be different. "
-                    , expected_pads, actual_pads);            
+                    , expected_pads, actual_pads);
             } finally {
                 closeEntityManager(em1);
                 closeEntityManager(em2);
@@ -441,16 +441,16 @@ public class CacheImplJUnitTest extends JUnitTestCase {
      * from the entity cache.
      * The resulting action removes all implementing subclasses - which has the same effect
      * as just removing the root implementing Entity in the first case.
-     * 
+     *
      * Hierarchy:
      * Gear (non-entity/non-mappedSuperclass plain java class - with non-persistable state) - (we will evict this one)
      *    +-----HockeyGear (Abstract Entity) (not cacheable)
-     *                +----- GoalieGear (Concrete MappedSuperclass) --- (no cache entry) 
+     *                +----- GoalieGear (Concrete MappedSuperclass) --- (no cache entry)
      *                              +----- Chest Protector (Concrete Entity) ---- cacheable (but this will actually be evicted)
      *                              +----- Pads (Concrete Entity) ---- cacheable (as well as this one)
      */
     public void testEvictClass_NonPersistableSubclassOfEntityMappedSuperclassChain_hasNoEffect() {
-        if (! isJPA10()) {        
+        if (! isJPA10()) {
             int ID_PADS = ID_TEST_BASE + 900;
             int ID_CHESTPROTECTOR = ID_PADS++;
             final EntityManager em = createEntityManager();
@@ -463,7 +463,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             em.persist(e1);
             commitTransaction(em);
             // do not close the entityManager between transactions or you will get bug# 307445
-            
+
             beginTransaction(em);
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             Pads p1 = new Pads();
@@ -472,7 +472,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             em.persist(p1);
             commitTransaction(em);
             closeEntityManager(em);
-        
+
             EntityManager em1 = createEntityManager();
             EntityManager em2 = createEntityManager();
             try {
@@ -481,19 +481,19 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 e2.setDescription("new_chest_protector");
                 p2.setDescription("new_pads");
-                
+
                 String expected_chestProtector = em1.find(GoalieGear.class, ID_CHESTPROTECTOR).getDescription();
                 String expected_pads = em1.find(GoalieGear.class, ID_PADS).getDescription();
-            
+
                 // evict the inheriting entities via their non-persistable root (without referencing their ID)
-                getEntityManagerFactory().getCache().evict(NonPersistedSubclassOfChestProtector.class);            
-                //getEntityManagerFactory().getCache().evict(Pads.class);                
-            
-                // read the inheriting entities directly from the cache (because they were not evicted)            
+                getEntityManagerFactory().getCache().evict(NonPersistedSubclassOfChestProtector.class);
+                //getEntityManagerFactory().getCache().evict(Pads.class);
+
+                // read the inheriting entities directly from the cache (because they were not evicted)
                 GoalieGear g5 = em2.find(GoalieGear.class, ID_CHESTPROTECTOR);
-                GoalieGear p5 = em2.find(GoalieGear.class, ID_PADS);            
+                GoalieGear p5 = em2.find(GoalieGear.class, ID_PADS);
                 String actual_chestProtector = g5.getDescription();
-                String actual_pads = p5.getDescription();                
+                String actual_pads = p5.getDescription();
                 assertSame("Assertion Error - There should be a modified cached entity instance in the cache - the entity is not actually read from the database"
                     , expected_pads, actual_pads);
                 assertSame("Assertion Error - There should be a modified cached entity instance in the cache - the entity is not actually read from the database"
@@ -504,21 +504,21 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * In this test we attempt to remove the MappedSuperclass (superclass) from the entity cache.
      * The resulting action removes all implementing subclasses - which has the same effect
      * as just removing the implementing Entity in the first case.
-     * 
+     *
      * Hierarchy:
      * Gear (non-entity/non-mappedSuperclass plain java class - with non-persistable state) - (we will evict this one)
      *    +-----HockeyGear (Abstract Entity) (not cacheable)
-     *                +----- GoalieGear (Concrete MappedSuperclass) --- (no cache entry) 
+     *                +----- GoalieGear (Concrete MappedSuperclass) --- (no cache entry)
      *                              +----- Chest Protector (Concrete Entity) ---- cacheable (but this will actually be evicted)
      *                              +----- Pads (Concrete Entity) ---- cacheable (as well as this one)
      */
     public void testEvictClassObject_MappedSuperclass_RemovesAssignableSubclasses() {
-        if (! isJPA10()) {        
+        if (! isJPA10()) {
             int ID_PADS = ID_TEST_BASE + 200;
             int ID_CHESTPROTECTOR = ID_PADS++;
             EntityManager em = createEntityManager();
@@ -531,7 +531,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             em.persist(e1);
             commitTransaction(em);
             // do not close the entityManager between transactions or you will get bug# 307445
-        
+
             beginTransaction(em);
             Pads p1 = new Pads();
             p1.setDescription("pads");
@@ -539,7 +539,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             em.persist(p1);
             commitTransaction(em);
             closeEntityManager(em);
-        
+
             EntityManager em1 = createEntityManager();
             EntityManager em2 = createEntityManager();
             try {
@@ -550,15 +550,15 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 p2.setDescription("new_pads");
                 String expected_chestProtector = em1.find(GoalieGear.class, ID_CHESTPROTECTOR).getDescription();
                 String expected_pads = em1.find(GoalieGear.class, ID_PADS).getDescription();
-            
+
                 // evict the inheriting entity (by Id) via its' MappedSuperclass
-                    getEntityManagerFactory().getCache().evict(GoalieGear.class, c2.getSerialNumber()); // ChestProtector            
+                    getEntityManagerFactory().getCache().evict(GoalieGear.class, c2.getSerialNumber()); // ChestProtector
                     getEntityManagerFactory().getCache().evict(GoalieGear.class, p2.getSerialNumber()); // Pad
-            
+
                 // read the inheriting entities directly from the database (because they are no longer in the cache - hopefully)
                 GoalieGear c5 = em2.find(GoalieGear.class, ID_CHESTPROTECTOR);
-                GoalieGear p5 = em2.find(GoalieGear.class, ID_PADS);            
-            
+                GoalieGear p5 = em2.find(GoalieGear.class, ID_PADS);
+
                 // Check that we are not actually getting the supposed "to be evicted" cached version (that was modified)
                 String actual_chestProtector = c5.getDescription();
                 String actual_pads = p5.getDescription();
@@ -566,17 +566,17 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 assertNotSame("Assertion Error - There should be no modified cached entity instance in the cache - the entity read from the database should be different. "
                     , expected_chestProtector, actual_chestProtector);
                 assertNotSame("Assertion Error - There should be no modified cached entity instance in the cache - the entity read from the database should be different. "
-                    , expected_pads, actual_pads);            
+                    , expected_pads, actual_pads);
             } finally {
                 closeEntityManager(em1);
                 closeEntityManager(em2);
             }
         }
     }
-    
-    
+
+
     //org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer
-    
+
     public void testEvictClass_JavaLangClass_hasNoEffect() {
         if (! isJPA10()) {
             int ID = ID_TEST_BASE + 300;
@@ -591,7 +591,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             em.persist(e1);
             commitTransaction(em);
             closeEntityManager(em);
-        
+
             EntityManager em1 = createEntityManager();
             EntityManager em2 = createEntityManager();
             try {
@@ -602,7 +602,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 // The following does not throws an IAE on a plain java (Integer) class - it will leave the cached entities as-is in the cache
                 // This evict exercises the else clause in the evict when the descriptor is null on the session
                 getEntityManagerFactory().getCache().evict(Integer.class);
-                // read the inheriting entities directly from the cache (because they were not evicted)            
+                // read the inheriting entities directly from the cache (because they were not evicted)
                 GoalieGear g5 = em2.find(GoalieGear.class, ID);
                 String actual = g5.getDescription();
                 assertSame("Assertion Error - There should be a modified cached entity instance in the cache - the entity is not actually read from the database"
@@ -612,22 +612,22 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             } finally {
                 closeEntityManager(em1);
                 closeEntityManager(em2);
-                assertFalse("IllegalArgumentException was thrown.", _exceptionThrown);            
+                assertFalse("IllegalArgumentException was thrown.", _exceptionThrown);
             }
         }
     }
-            
+
     // The xml model version is not managed
     public void testGetId_fromUnmanagedMappedSuperclass_handles_null_descriptor() {
-        if (!isJPA10()) {        
+        if (!isJPA10()) {
             int ID = ID_TEST_BASE + 400;
             boolean _exceptionThrown = false;
             EntityManager em = createEntityManager();
             beginTransaction(em);
             // CacheableTrueMappedSuperclass (MappedSuperclass with Id) << SubCacheableFalseEntity (Entity)
-            org.eclipse.persistence.testing.models.jpa.xml.cacheable.SubCacheableFalseEntity anEntity 
+            org.eclipse.persistence.testing.models.jpa.xml.cacheable.SubCacheableFalseEntity anEntity
                 = new org.eclipse.persistence.testing.models.jpa.xml.cacheable.SubCacheableFalseEntity();
-            org.eclipse.persistence.testing.models.jpa.xml.cacheable.CacheableTrueMappedSuperclass aMappedSuperclass 
+            org.eclipse.persistence.testing.models.jpa.xml.cacheable.CacheableTrueMappedSuperclass aMappedSuperclass
                 = new org.eclipse.persistence.testing.models.jpa.xml.cacheable.CacheableTrueMappedSuperclass();
             anEntity.setId(ID);
             // Can we place non-persistable objects into only the cache (non-entities)?
@@ -635,7 +635,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             //em.persist(anEntity);
             commitTransaction(em);
             closeEntityManager(em);
-        
+
             EntityManager em1 = createEntityManager();
             EntityManager em2 = createEntityManager();
             Cache aJPACache = getEntityManagerFactory().getCache();
@@ -648,7 +648,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             } finally {
                 closeEntityManager(em1);
                 closeEntityManager(em2);
-                assertTrue("IllegalArgumentException should have been thrown on the unmanaged entity lacking a descriptor.", _exceptionThrown);            
+                assertTrue("IllegalArgumentException should have been thrown on the unmanaged entity lacking a descriptor.", _exceptionThrown);
             }
         }
     }
@@ -656,19 +656,19 @@ public class CacheImplJUnitTest extends JUnitTestCase {
     public void testGetId_fromUnsupportedJavaLangInteger_throwsIAE_on_null_descriptor() {
         if (!isJPA10()) {
             boolean _exceptionThrown = false;
-            EntityManager em1 = createEntityManager();            
+            EntityManager em1 = createEntityManager();
             JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory().getCache();
             try {
                 anEclipseLinkCache.getId(new Integer(1));
             } catch (IllegalArgumentException iae) {
                 _exceptionThrown = true;
             } finally {
-                closeEntityManager(em1);                
-                assertTrue("IllegalArgumentException should have been thrown on a getId() call on an Integer which obviously has no descriptor.", _exceptionThrown);                
+                closeEntityManager(em1);
+                assertTrue("IllegalArgumentException should have been thrown on a getId() call on an Integer which obviously has no descriptor.", _exceptionThrown);
             }
         }
     }
-    
+
     /**
      * In order to test handling of a null CMP3Policy on the descriptor during a cache.getId() call,
      * we must have an Id on an abstract MappedSuperclass root that is defined via sessions.xml.
@@ -689,12 +689,12 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             em.persist(anEntity);
             commitTransaction(em);
             closeEntityManager(em);
-        
+
             EntityManager em1 = createEntityManager();
             JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory().getCache();
             Object anId = null;
             originalId = anEntity.getId();
-        
+
             // clear the CMP3Policy to simulate a native pojo
             ClassDescriptor cdesc = ((EntityManagerImpl)em1).getSession().getClassDescriptor(anEntity.getClass());
             CMP3Policy policy = (CMP3Policy) (cdesc.getCMPPolicy());
@@ -704,7 +704,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 // This call will test the weaving [on] section of getId()
                 anId = anEclipseLinkCache.getId(anEntity);
                 assertNotNull("Id instance should not be null", anId);
-                assertTrue("Id instance should be of type Integer", anId instanceof Integer);            
+                assertTrue("Id instance should be of type Integer", anId instanceof Integer);
                 assertEquals(((Integer)anId).intValue(), ID);
                 assertEquals(anId, originalId);
             } finally {
@@ -728,13 +728,13 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             em.persist(anEntity);
             commitTransaction(em);
             closeEntityManager(em);
-        
+
             EntityManager em1 = createEntityManager(METAMODEL_PERSISTENCE_UNIT);
             JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory(METAMODEL_PERSISTENCE_UNIT).getCache();
             Object anId = null;
             // The originalId will be set by automatic sequence generation - if we require it
             originalId = anEntity.getId();
-        
+
             // clear the CMP3Policy to simulate a native pojo
             ClassDescriptor cdesc = ((EntityManagerImpl)em1).getSession().getClassDescriptor(anEntity.getClass());
             CMP3Policy policy = (CMP3Policy) (cdesc.getCMPPolicy());
@@ -743,7 +743,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             try {
                 anId = anEclipseLinkCache.getId(anEntity);
                 assertNotNull("Id instance should not be null", anId);
-                assertTrue("Id instance should be of type Integer", anId instanceof Integer);            
+                assertTrue("Id instance should be of type Integer", anId instanceof Integer);
                 assertEquals(anId, originalId);
             } finally {
                 // set the CMPPolicy back for out of order testing
@@ -752,7 +752,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             }
         }
     }
-    
+
     // We need a MappedSuperclass that is defined by a persistence.xml where eclipselink.weaving="false"
     // This test requires that weaving is off in persistence.xml for METAMODEL_PERSISTENCE_UNIT
     public void testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_and_null_pk_with_weaving_off() {
@@ -762,20 +762,20 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             Object originalId = null;
             EntityManager em = createEntityManager(METAMODEL_PERSISTENCE_UNIT);
             beginTransaction(em);
-            Manufacturer anEntity = new Manufacturer();            
+            Manufacturer anEntity = new Manufacturer();
             anEntity.setName("test");
             anEntity.setId(ID);
             // Can we place non-persistable objects into only the cache (non-entities)?
             em.persist(anEntity);
             commitTransaction(em);
             //closeEntityManager(em); // keep the EM open
-        
+
             EntityManager em1 = createEntityManager(METAMODEL_PERSISTENCE_UNIT);
             JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory(METAMODEL_PERSISTENCE_UNIT).getCache();
             Object anId = null;
             // The originalId will be set by automatic sequence generation - if we require it
             originalId = anEntity.getId();
-        
+
             // clear the CMP3Policy to simulate a native pojo
             ClassDescriptor cdesc = ((EntityManagerImpl)em).getSession().getClassDescriptor(anEntity.getClass());
             assertNotNull("ClassDescriptor for Entity must not be null", cdesc); // check that the entityManager is not null
@@ -785,7 +785,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             try {
                 anId = anEclipseLinkCache.getId(anEntity);
                 assertNotNull("Id instance should not be null", anId);
-                assertTrue("Id instance should be of type Integer", anId instanceof Integer);            
+                assertTrue("Id instance should be of type Integer", anId instanceof Integer);
                 assertEquals(anId, ID);
                 assertEquals(anId, originalId);
             } finally {
@@ -796,7 +796,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             }
         }
     }
-    
+
     // 20100422: 248780: CacheImpl refactor for non-Entity classes
     public static int ID_TEST_BASE = 3710; // change this value during iterative testing
 }

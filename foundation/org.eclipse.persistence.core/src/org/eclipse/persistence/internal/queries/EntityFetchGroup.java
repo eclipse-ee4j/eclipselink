@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
+ *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
  ******************************************************************************/
@@ -26,19 +26,19 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 
 /**
- * 
+ *
  * EntityFetchGroup reflects the state of the object.
- * Because EntityFetchGroup doesn't attempt to track 
+ * Because EntityFetchGroup doesn't attempt to track
  * the state of related objects it is flat (non-nested).
- * 
+ *
  * @author dclarke, ailitchev
  * @since EclipseLink 2.1
  */
 public class EntityFetchGroup extends FetchGroup {
 
-    protected EntityFetchGroup() {        
+    protected EntityFetchGroup() {
     }
-    
+
     public EntityFetchGroup(FetchGroup fetchGroup) {
         super(fetchGroup.getName());
         if(fetchGroup.hasItems()) {
@@ -48,12 +48,12 @@ public class EntityFetchGroup extends FetchGroup {
             }
         }
     }
-    
+
     public EntityFetchGroup(String attributeName) {
         super();
         super.addAttribute(attributeName, (AttributeGroup)null);
     }
-    
+
     public EntityFetchGroup(Collection<String> attributeNames) {
         super();
         Iterator<String> it = attributeNames.iterator();
@@ -61,14 +61,14 @@ public class EntityFetchGroup extends FetchGroup {
             super.addAttribute(it.next(), (AttributeGroup)null);
         }
     }
-    
+
     public EntityFetchGroup(String[] attributeNames) {
         super();
         for(int i=0; i < attributeNames.length; i++) {
             super.addAttribute(attributeNames[i], (AttributeGroup)null);
         }
     }
-    
+
     public EntityFetchGroup(FetchGroup fetchGroup, String attributeName) {
         super(fetchGroup.getName() + "+" + attributeName);
         if(fetchGroup.hasItems()) {
@@ -79,7 +79,7 @@ public class EntityFetchGroup extends FetchGroup {
         }
         super.addAttribute(attributeName, (AttributeGroup)null);
     }
-    
+
     @Override
     public void addAttribute(String attributeNameOrPath, CoreAttributeGroup group) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("cannot_update_entity_fetch-group", new Object[]{this, attributeNameOrPath}));
@@ -131,7 +131,7 @@ public class EntityFetchGroup extends FetchGroup {
     public boolean isEntityFetchGroup() {
         return true;
     }
-    
+
     /**
      * Return true if this EntityFetchGroup is a super-set of the passed in
      * EntityFetchGroup.

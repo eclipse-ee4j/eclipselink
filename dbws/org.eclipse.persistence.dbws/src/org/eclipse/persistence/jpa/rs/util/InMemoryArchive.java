@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      dclarke/tware - initial 
+ *      dclarke/tware - initial
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
@@ -30,7 +30,7 @@ import org.eclipse.persistence.internal.jpa.deployment.URLArchive;
 public class InMemoryArchive extends URLArchive {
 
     private InputStream stream = null;
-    
+
     private InMemoryArchive(){
         super(null, null);
         String persistenceFactoryResource = InMemoryArchive.class.getName().replace('.', '/') + ".class";
@@ -41,10 +41,10 @@ public class InMemoryArchive extends URLArchive {
             e.printStackTrace();
         } catch (IOException e){
             e.printStackTrace();
-        }  
+        }
         this.rootURL = myURL;
     }
-    
+
     public InMemoryArchive(InputStream stream){
         this();
         this.stream = stream;

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.Iterator;
@@ -57,9 +57,9 @@ public class QNameInheritancePolicy extends InheritancePolicy {
     public QNameInheritancePolicy(ClassDescriptor desc) {
         super(desc);
     }
-    
+
     /**
-     * Override to control order of uniqueTables, child tablenames should be first since 
+     * Override to control order of uniqueTables, child tablenames should be first since
      * getDefaultRootElement on an XMLDescriptor will return the first table.
      */
     protected void updateTables(){
@@ -68,18 +68,18 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         Vector<DatabaseTable> parentTables = getParentDescriptor().getTables();
         Vector<DatabaseTable> uniqueTables = Helper.concatenateUniqueVectors(childTables, parentTables);
         getDescriptor().setTables(uniqueTables);
-        
+
         if(getDescriptor().isXMLDescriptor() && getParentDescriptor().isXMLDescriptor()){
-	        if(((XMLDescriptor)getDescriptor()).getDefaultRootElementField() == null){
-	        	((XMLDescriptor)getDescriptor()).setDefaultRootElementField(((XMLDescriptor)getParentDescriptor()).getDefaultRootElementField());
-	        }
+            if(((XMLDescriptor)getDescriptor()).getDefaultRootElementField() == null){
+                ((XMLDescriptor)getDescriptor()).setDefaultRootElementField(((XMLDescriptor)getParentDescriptor()).getDefaultRootElementField());
+            }
         }
-        
+
         // After filtering out any duplicate tables, set the default table
         // if one is not already set. This must be done now before any other
-        // initialization occurs. In a joined strategy case, the default 
+        // initialization occurs. In a joined strategy case, the default
         // table will be at an index greater than 0. Which is where
-        // setDefaultTable() assumes it is. Therefore, we need to send the 
+        // setDefaultTable() assumes it is. Therefore, we need to send the
         // actual default table instead.
         if (childTables.isEmpty()) {
             getDescriptor().setInternalDefaultTable();
@@ -87,7 +87,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             getDescriptor().setInternalDefaultTable(uniqueTables.get(uniqueTables.indexOf(childTables.get(0))));
         }
     }
-    
+
     /**
      * INTERNAL:
      * Allow the inheritance properties of the descriptor to be initialized.
@@ -99,13 +99,13 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         // on the descriptor
         if (isChildDescriptor()) {
             updateTables();
-            
+
             // Clone the multitenant policy and set on child descriptor.
             if (getParentDescriptor().hasMultitenantPolicy()) {
                 MultitenantPolicy clonedMultitenantPolicy = (MultitenantPolicy) getParentDescriptor().getMultitenantPolicy().clone(getDescriptor());
                 getDescriptor().setMultitenantPolicy(clonedMultitenantPolicy);
             }
-            
+
             setClassIndicatorMapping(getParentDescriptor().getInheritancePolicy().getClassIndicatorMapping());
             setShouldUseClassNameAsIndicator(getParentDescriptor().getInheritancePolicy().shouldUseClassNameAsIndicator());
 
@@ -121,7 +121,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                 getDescriptor().setSequenceNumberName(getParentDescriptor().getSequenceNumberName());
             }
         } else {
-            // This must be done now before any other initialization occurs. 
+            // This must be done now before any other initialization occurs.
             getDescriptor().setInternalDefaultTable();
         }
 
@@ -151,7 +151,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                 getDescriptor().getFields().addElement(getClassIndicatorField());
             }
         }
-    }    
+    }
 
     /**
      * INTERNAL:
@@ -163,7 +163,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
 
         // If we have a namespace resolver, check any of the class-indicator values
         // for prefixed type names and resolve the namespaces.
-        if (!this.shouldUseClassNameAsIndicator()){ 
+        if (!this.shouldUseClassNameAsIndicator()){
             if(classIndicatorField != null){
                 XPathFragment frag = ((XMLField) classIndicatorField).getXPathFragment();
                 if (frag.getLocalName().equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(frag.getNamespaceURI())) {
@@ -175,7 +175,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             Iterator<Map.Entry> entries = new HashMap(getClassIndicatorMapping()).entrySet().iterator();
             while (entries.hasNext()) {
                 Map.Entry entry = entries.next();
-                Object key = entry.getKey();                
+                Object key = entry.getKey();
                 if (key instanceof String) {
                     XPathQName qname;
 
@@ -208,14 +208,14 @@ public class QNameInheritancePolicy extends InheritancePolicy {
           try {
               classIndicatorXMLField = (XMLField)getClassIndicatorField();
           } catch (ClassCastException ex) {
-              classIndicatorXMLField = new XMLField(getClassIndicatorField().getName());            
+              classIndicatorXMLField = new XMLField(getClassIndicatorField().getName());
               setClassIndicatorField(classIndicatorXMLField);
           }
-          XPathFragment frag = classIndicatorXMLField.getLastXPathFragment();                        
+          XPathFragment frag = classIndicatorXMLField.getLastXPathFragment();
           if ((frag != null) && frag.hasNamespace() && frag.getPrefix() !=null && (namespaceResolver != null)) {
               String uri = namespaceResolver.resolveNamespacePrefix(frag.getPrefix());
               classIndicatorXMLField.getLastXPathFragment().setNamespaceURI(uri);
-          }          
+          }
         }
     }
 
@@ -230,8 +230,8 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         if (hasClassExtractor() || shouldUseClassNameAsIndicator()) {
             return super.classFromRow(rowFromDatabase, session);
         }
-        Object indicator = rowFromDatabase.get(getClassIndicatorField());        
-        
+        Object indicator = rowFromDatabase.get(getClassIndicatorField());
+
         if (indicator == AbstractRecord.noEntry) {
             return null;
         }
@@ -239,7 +239,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         if (indicator == null) {
             return null;
         }
-        
+
         Class concreteClass;
         if (indicator instanceof String) {
             boolean namespaceAware = ((XMLRecord) rowFromDatabase).isNamespaceAware();
@@ -252,9 +252,9 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                 if (namespaceAware && usesXsiType) {
                     String uri = ((XMLRecord)rowFromDatabase).resolveNamespacePrefix(null);
                     if (uri == null && ((XMLRecord)rowFromDatabase).getNamespaceResolver() != null) {
-                    	uri = ((XMLRecord)rowFromDatabase).getNamespaceResolver().getDefaultNamespaceURI();
-                    } 
-                    XPathQName qname = new XPathQName(uri, indicatorValue, namespaceAware);                        
+                        uri = ((XMLRecord)rowFromDatabase).getNamespaceResolver().getDefaultNamespaceURI();
+                    }
+                    XPathQName qname = new XPathQName(uri, indicatorValue, namespaceAware);
                     concreteClass = (Class)this.classIndicatorMapping.get(qname);
                 } else {
                     XPathQName qname = new XPathQName(indicatorValue, namespaceAware);
@@ -296,7 +296,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             setClassIndicatorField(new XMLField(fieldName));
         }
     }
-    
+
     /**
      * INTERNAL:
      * Add abstract class indicator information to the database row.  This is
@@ -310,23 +310,23 @@ public class QNameInheritancePolicy extends InheritancePolicy {
 
         CoreField field = getClassIndicatorField();
         Object value = getClassIndicatorValue();
-        
-        if(usesXsiType){        
+
+        if(usesXsiType){
             boolean namespaceAware = ((XMLRecord)databaseRow).isNamespaceAware() || ((XMLRecord)databaseRow).hasCustomNamespaceMapper();
             if(value instanceof String){
-            	if(namespaceAware){
-            		if(((XMLRecord)databaseRow).getNamespaceSeparator() != Constants.COLON){
-                 	   value= ((String)value).replace(Constants.COLON, ((XMLRecord)databaseRow).getNamespaceSeparator());
-                 	}
-            	}else{
-            		 int colonIndex = ((String)value).indexOf(Constants.COLON);
+                if(namespaceAware){
+                    if(((XMLRecord)databaseRow).getNamespaceSeparator() != Constants.COLON){
+                        value= ((String)value).replace(Constants.COLON, ((XMLRecord)databaseRow).getNamespaceSeparator());
+                     }
+                }else{
+                     int colonIndex = ((String)value).indexOf(Constants.COLON);
                      if(colonIndex > -1){
                          value = ((String)value).substring(colonIndex + 1);
-             	    }		
-            	}
-            }        
+                     }
+                }
+            }
         }
-        
+
         databaseRow.put(field, value);
     }
 }

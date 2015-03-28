@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -51,9 +51,9 @@ public class AnyObjectXMLRootSimpleNonStringTestCases extends XMLWithJSONMapping
     public Object getControlObject() {
         Root root = new Root();
 
-        XMLRoot xmlroot = new XMLRoot();      
+        XMLRoot xmlroot = new XMLRoot();
         float theFloat = 22;
-        //child.setContent(theFloat);        
+        //child.setContent(theFloat);
         //xmlroot.setObject(child);
         xmlroot.setSchemaType(XMLConstants.FLOAT_QNAME);
         xmlroot.setObject(theFloat);

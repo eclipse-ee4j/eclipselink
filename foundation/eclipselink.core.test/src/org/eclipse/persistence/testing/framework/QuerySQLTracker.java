@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/17/2010-2.2 Michael O'Brien  
- *       - 325605: Do not track SQL logs that are at the FINEST level 
+ *     11/17/2010-2.2 Michael O'Brien
+ *       - 325605: Do not track SQL logs that are at the FINEST level
  *       these may be SQL warnings or other ORM warnings that happen to use the SQL category
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ public class QuerySQLTracker extends DefaultSessionLog {
     public synchronized void log(SessionLogEntry entry) {
         if (!isSuspended) {
             // Extend SessionLog.log() by also adding SQL statements into a tracking List that are above the FINEST level
-            if ((entry.getNameSpace() != null) && entry.getNameSpace().equalsIgnoreCase(SessionLog.SQL) 
+            if ((entry.getNameSpace() != null) && entry.getNameSpace().equalsIgnoreCase(SessionLog.SQL)
                     && entry.getLevel() > SessionLog.FINER) {  // we will not use shouldLog(level, category) in case the implementation there changes
                 getSqlStatements().add(entry.getMessage());
             }
@@ -93,7 +93,7 @@ public class QuerySQLTracker extends DefaultSessionLog {
      * Get a list of all the SQL strings that have been executed in while this QuerySQLTracker
      * has been logging. SQL is obtained through by getting logging statements with a SQL namespace.<br>
      * Logs that are categorized as FINE and below will not be tracked.
-     * 
+     *
      * */
     public List<String> getSqlStatements() {
         return sqlStatements;
@@ -106,15 +106,15 @@ public class QuerySQLTracker extends DefaultSessionLog {
     public List getQueries() {
         return queries;
     }
-    
+
     public boolean isSuspended() {
         return isSuspended;
     }
-    
+
     public void suspend() {
         isSuspended = true;
     }
-    
+
     public void resume() {
         isSuspended = false;
     }

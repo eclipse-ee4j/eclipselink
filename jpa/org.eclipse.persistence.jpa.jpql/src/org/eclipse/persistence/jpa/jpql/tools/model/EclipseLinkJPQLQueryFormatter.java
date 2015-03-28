@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,13 +27,13 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.EclipseLinkStateObject
 public class EclipseLinkJPQLQueryFormatter extends AbstractJPQLQueryFormatter
                                            implements EclipseLinkStateObjectVisitor {
 
-	/**
-	 * Creates a new <code>EclipseLinkJPQLQueryFormatter</code>.
-	 *
-	 * @param style Determines how the JPQL identifiers are written out
-	 * @exception NullPointerException The IdentifierStyle cannot be <code>null</code>
-	 */
-	public EclipseLinkJPQLQueryFormatter(IdentifierStyle style) {
-		super(style);
-	}
+    /**
+     * Creates a new <code>EclipseLinkJPQLQueryFormatter</code>.
+     *
+     * @param style Determines how the JPQL identifiers are written out
+     * @exception NullPointerException The IdentifierStyle cannot be <code>null</code>
+     */
+    public EclipseLinkJPQLQueryFormatter(IdentifierStyle style) {
+        super(style);
+    }
 }

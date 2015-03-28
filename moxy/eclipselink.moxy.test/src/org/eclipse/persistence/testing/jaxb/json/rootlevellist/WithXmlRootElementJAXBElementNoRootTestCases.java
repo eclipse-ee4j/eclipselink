@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,7 @@ import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 public class WithXmlRootElementJAXBElementNoRootTestCases extends JSONMarshalUnmarshalTestCases {
 
     private static final String CONTROL_JSON = "org/eclipse/persistence/testing/jaxb/json/rootlevellist/WithoutXmlRootElement.json";
-    
+
     public WithXmlRootElementJAXBElementNoRootTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {WithXmlRootElementRoot.class});
@@ -35,11 +35,11 @@ public class WithXmlRootElementJAXBElementNoRootTestCases extends JSONMarshalUnm
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
-    
+
     public Class getUnmarshalClass(){
-    	return WithXmlRootElementRoot.class;
+        return WithXmlRootElementRoot.class;
     }
-    
+
     @Override
     protected Collection<JAXBElement<WithXmlRootElementRoot>> getControlObject() {
         Collection<JAXBElement<WithXmlRootElementRoot>> list = new LinkedHashSet<JAXBElement<WithXmlRootElementRoot>>(2);
@@ -59,7 +59,7 @@ public class WithXmlRootElementJAXBElementNoRootTestCases extends JSONMarshalUnm
     }
 
     @Override
-	public Object getReadControlObject() {
+    public Object getReadControlObject() {
         List<WithXmlRootElementRoot> list = new ArrayList<WithXmlRootElementRoot>(2);
 
         WithXmlRootElementRoot foo = new WithXmlRootElementRoot();
@@ -69,9 +69,9 @@ public class WithXmlRootElementJAXBElementNoRootTestCases extends JSONMarshalUnm
         WithXmlRootElementRoot bar = new WithXmlRootElementRoot();
         bar.setName("BAR");
         list.add(bar);
-        
+
         JAXBElement elem = new JAXBElement(new QName(""),WithXmlRootElementRoot.class, list );
-    	return elem;
+        return elem;
     }
 
 }

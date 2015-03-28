@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.security;
 
 import java.io.IOException;
@@ -38,9 +38,9 @@ public class JCEEncryptor implements Securable {
     // Legacy decrypt cipher used for backwards compatibility only.
     private static final String DES = "DES/ECB/PKCS5Padding";
     private Cipher decryptCipherDES;
-    
+
     // All encryption is done through the AES cipher.
-    private static final String AES = "AES/ECB/PKCS5Padding"; 
+    private static final String AES = "AES/ECB/PKCS5Padding";
     private Cipher encryptCipherAES;
     private Cipher decryptCipherAES;
 
@@ -58,10 +58,10 @@ public class JCEEncryptor implements Securable {
          */
         decryptCipherDES = Cipher.getInstance(DES);
         decryptCipherDES.init(Cipher.DECRYPT_MODE, Synergizer.getDESMultitasker());
-        
+
         encryptCipherAES = Cipher.getInstance(AES);
         encryptCipherAES.init(Cipher.ENCRYPT_MODE, Synergizer.getAESMultitasker());
-        
+
         decryptCipherAES = Cipher.getInstance(AES);
         decryptCipherAES.init(Cipher.DECRYPT_MODE, Synergizer.getAESMultitasker());
     }
@@ -89,28 +89,28 @@ public class JCEEncryptor implements Securable {
      */
     public synchronized String decryptPassword(String encryptedPswd) {
         String password = null;
-        
+
         if (encryptedPswd != null) {
             ObjectInputStream ois = null;
-            
+
             try {
                 byte[] bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
-                
+
                 ByteArrayInputStream bais = new ByteArrayInputStream(bytePassword);
                 CipherInputStream cis = new CipherInputStream(bais, decryptCipherAES);
                 ois = new ObjectInputStream(cis);
-    
+
                 password = (String)ois.readObject();
             } catch (Exception ex) {
                 // Catch all exceptions when trying to decrypt using AES and try the
                 // old DES decryptor before deciding what to do.
                 try {
                     byte[] bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
-        
+
                     ByteArrayInputStream bais = new ByteArrayInputStream(bytePassword);
                     CipherInputStream cis = new CipherInputStream(bais, decryptCipherDES);
                     ois = new ObjectInputStream(cis);
-        
+
                     password = (String)ois.readObject();
                     ois.close();
                 } catch (IOException e) {
@@ -135,7 +135,7 @@ public class JCEEncryptor implements Securable {
                 }
             }
         }
-            
+
         return password;
     }
 
@@ -147,7 +147,7 @@ public class JCEEncryptor implements Securable {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("DES");
             return factory.generateSecret(new DESKeySpec(Helper.buildBytesFromHexString("E60B80C7AEC78038")));
         }
-        
+
         private static SecretKey getAESMultitasker() throws Exception {
             return new SecretKeySpec(Helper.buildBytesFromHexString("3E7CFEF156E712906E1F603B59463C67"), "AES");
         }

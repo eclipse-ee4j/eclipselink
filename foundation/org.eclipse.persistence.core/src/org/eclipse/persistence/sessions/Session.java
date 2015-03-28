@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
@@ -103,7 +103,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * The unit of work is an object level transaction that allows
      * a group of changes to be applied as a unit.
      * The return value should be used as the org.eclipse.persistence.sessions.UnitOfWork interface
-     * 
+     *
      * @see UnitOfWork
      */
     public UnitOfWork acquireUnitOfWork();
@@ -116,11 +116,11 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see UnitOfWorkImpl
      * @param referenceMode The reference type the UOW should use internally when
-     * referencing Working clones.  Setting this to WEAK means the UOW will use 
+     * referencing Working clones.  Setting this to WEAK means the UOW will use
      * weak references to reference clones that support active object change
      * tracking and hard references for deferred change tracked objects.
      * Setting to FORCE_WEAK means that all objects will be referenced by weak
-     * references and if the application no longer references the clone the 
+     * references and if the application no longer references the clone the
      * clone may be garbage collected.  If the clone
      * has uncommitted changes then those changes will be lost.
      */
@@ -131,10 +131,10 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * This allows for common queries to be pre-defined, reused and executed by name.
      */
     public void addQuery(String name, DatabaseQuery query);
-    
+
     /**
      * ADVANCED:
-     * Add a pre-defined not yet parsed JPQL String/query to the session to be parsed 
+     * Add a pre-defined not yet parsed JPQL String/query to the session to be parsed
      * after descriptors are initialized.
      */
     public void addJPAQuery(DatabaseQuery query);
@@ -178,7 +178,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * or have a common inheritance hierarchy mapped root class.
      * This can be used to obtain a scratch copy of an object,
      * or for templatizing an existing object into another new object.
-     * If there are no attributes in the group 
+     * If there are no attributes in the group
      * then the object and all of its privately owned parts will be copied.
      * Otherwise only the attributes included into the group will be copied.
      */
@@ -236,8 +236,8 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
     /**
      * PUBLIC:
      * Execute the non-selecting (update/DML) SQL string.
-     * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      */
     public void executeNonSelectingSQL(String sqlString);
 
@@ -371,8 +371,8 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * PUBLIC:
      * Execute the selecting SQL string.
      * A Vector of DatabaseRecords are returned.
-     * Warning: Allowing an unverified SQL string to be passed into this 
-     * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      */
     public Vector executeSQL(String sqlString);
 
@@ -465,7 +465,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Return all pre-defined not yet parsed EJBQL queries.
      */
     public List<DatabaseQuery> getJPAQueries();
-    
+
     /**
      * PUBLIC:
      * Return the event manager.
@@ -527,7 +527,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * The platform is used for database specific behavior.
      */
     public Platform getDatasourcePlatform();
-        
+
     /**
      * PUBLIC:
      * Return the login, the login holds any database connection information given.
@@ -714,7 +714,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Extract and return the Id from the object.
      */
     public Object getId(Object domainObject) throws ValidationException;
-    
+
     /**
      * ADVANCED:
      * Extract and return the primary key from the object.
@@ -848,7 +848,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *  @see org.eclipse.persistence.config.ReferenceMode
      */
    public void setDefaultReferenceMode(ReferenceMode defaultReferenceMode);
-   
+
    /**
      * PUBLIC:
      * Set the exceptionHandler.
@@ -953,7 +953,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
 
     /**
      * PUBLIC:
-     * Set the log level. 
+     * Set the log level.
      * <br>Possible values for log level are listed in SessionLog.
      * @see org.eclipse.persistence.logging.SessionLog
      */
@@ -972,7 +972,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Allow any SEVERE level exceptions that occur within EclipseLink to be logged and handled by the exception handler.
      */
     public Object handleSevere(RuntimeException exception) throws RuntimeException;
-    
+
     /**
      * PUBLIC:
      * Return if this session's descendants should use finalizers.
@@ -980,7 +980,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * These are disable by default for performance reasons.
      */
     public boolean isFinalizersEnabled();
-    
+
     /**
      * PUBLIC:
      * Set if this session's descendants should use finalizers.
@@ -988,7 +988,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * These are disable by default for performance reasons.
      */
     public void setIsFinalizersEnabled(boolean isFinalizersEnabled);
-    
+
     /**
      * PUBLIC:
      * Set the default query timeout for this session.
@@ -996,13 +996,13 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * and that do not have a default timeout defined in their descriptor.
      */
     public void setQueryTimeoutDefault(int queryTimeoutDefault);
-    
+
     /**
      * PUBLIC:
      * Return the session's partitioning policy.
      */
     public PartitioningPolicy getPartitioningPolicy();
-    
+
     /**
      * PUBLIC:
      * Set the session's partitioning policy.
@@ -1011,7 +1011,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
      */
     public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy);
-    
+
     /**
      * Return the Serializer to use by default for serialization.
      */

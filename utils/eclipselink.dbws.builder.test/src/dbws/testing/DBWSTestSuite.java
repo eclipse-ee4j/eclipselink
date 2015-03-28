@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -151,7 +151,7 @@ public class DBWSTestSuite {
     public static final String SQLCOLLECTION_SERVICE_NAMESPACE = SQLCOLLECTION_NAMESPACE + "Service";
     public static final String SQLCOLLECTION_SERVICE = SQLCOLLECTION + "Service";
     public static final String SQLCOLLECTION_SERVICE_PORT = SQLCOLLECTION_SERVICE + "Port";
-    
+
     public static final String SOAP12 = "soap12";
     public static final String SOAP12_TEST = SOAP12 + "Test";
     public static final String SOAP12_SERVICE = SOAP12 + "Service";
@@ -201,7 +201,7 @@ public class DBWSTestSuite {
     public static void setUp(String stageDir) throws WSDLException {
         setUp(stageDir, false);
     }
-    
+
     /**
      * This method should be used when sessions xml is to be generated and written out
      * to DBWS_SESSION_STREAM.
@@ -281,10 +281,10 @@ public class DBWSTestSuite {
                 }
                 login.setDatasourcePlatform(platform);
                 ((DatabaseLogin) login).bindAllParameters();
-                
+
                 Project orProject = null;
                 if (DBWS_OR_STREAM.size() != 0) {
-                    MetadataProcessor processor = new MetadataProcessor(new XRPersistenceUnitInfo(xrdecl), 
+                    MetadataProcessor processor = new MetadataProcessor(new XRPersistenceUnitInfo(xrdecl),
                             new DatabaseSessionImpl(login), xrdecl, false, true, false, false, false, null, null);
                     processor.setMetadataSource(new JPAMetadataSource(xrdecl, new StringReader(DBWS_OR_STREAM.toString())));
                     PersistenceUnitProcessor.processORMetadata(processor, true, PersistenceUnitProcessor.Mode.ALL);
@@ -303,7 +303,7 @@ public class DBWSTestSuite {
                 }
                 xrService.setORSession(databaseSession);
                 orProject.convertClassNamesToClasses(xrdecl);
-                
+
                 Project oxProject = null;
                 if (DBWS_OX_STREAM.size() != 0) {
                     Map<String, OXMMetadataSource> metadataMap = new HashMap<String, OXMMetadataSource>();
@@ -311,7 +311,7 @@ public class DBWSTestSuite {
                     try {
                         JAXBContext jc = JAXBContext.newInstance(XmlBindingsModel.class);
                         Unmarshaller unmarshaller = jc.createUnmarshaller();
-                        
+
                         JAXBElement<XmlBindingsModel> jaxbElt = unmarshaller.unmarshal(xml, XmlBindingsModel.class);
                         XmlBindingsModel model = jaxbElt.getValue();
                         for (XmlBindings xmlBindings : model.getBindingsList()) {
@@ -320,11 +320,11 @@ public class DBWSTestSuite {
                     } catch (JAXBException jaxbex) {
                         jaxbex.printStackTrace();
                     }
-                    
+
                     Map<String, Map<String, OXMMetadataSource>> properties = new HashMap<String, Map<String, OXMMetadataSource>>();
                     properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
                     try {
-                        org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext jCtx = 
+                        org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext jCtx =
                                 org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory.createContextFromOXM(xrdecl, properties);
                         oxProject = jCtx.getXMLContext().getSession(0).getProject();
                     } catch (JAXBException e) {
@@ -425,17 +425,17 @@ public class DBWSTestSuite {
      */
     public static class DBWSLogger extends Logger {
         List<String> messages;
-        
+
         protected DBWSLogger(String name, String resourceBundleName) {
             super(name, resourceBundleName);
             messages = new ArrayList<String>();
         }
-        
+
         public void log(Level level, String msg) {
             //System.out.println(level.getName() + ": " + msg);
             messages.add(level.getName() + ": " + msg);
         }
-        
+
         public boolean hasMessages() {
             return messages != null && messages.size() > 0;
         }
@@ -450,7 +450,7 @@ public class DBWSTestSuite {
             }
             return false;
         }
-        
+
         public List<String> getWarnings() {
             List<String> warnings = null;
             if (messages != null || messages.size() > 0) {
@@ -463,7 +463,7 @@ public class DBWSTestSuite {
             }
             return warnings;
         }
-        
+
         public List<String> getMessages() {
             return messages;
         }

@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -39,71 +39,71 @@ import java.util.List;
  *  to build a simple parse tree using ParseTree nodes.
  */
 public class ParseTreeBuilder extends BlankDebugEventListener {
-	public static final String EPSILON_PAYLOAD = "<epsilon>";
-	
-	Stack callStack = new Stack();
-	List hiddenTokens = new ArrayList();
-	int backtracking = 0;
+    public static final String EPSILON_PAYLOAD = "<epsilon>";
 
-	public ParseTreeBuilder(String grammarName) {
-		ParseTree root = create("<grammar "+grammarName+">");
-		callStack.push(root);
-	}
+    Stack callStack = new Stack();
+    List hiddenTokens = new ArrayList();
+    int backtracking = 0;
 
-	public ParseTree getTree() {
-		return (ParseTree)callStack.elementAt(0);
-	}
+    public ParseTreeBuilder(String grammarName) {
+        ParseTree root = create("<grammar "+grammarName+">");
+        callStack.push(root);
+    }
 
-	/**  What kind of node to create.  You might want to override
-	 *   so I factored out creation here.
-	 */
-	public ParseTree create(Object payload) {
-		return new ParseTree(payload);
-	}
+    public ParseTree getTree() {
+        return (ParseTree)callStack.elementAt(0);
+    }
 
-	public ParseTree epsilonNode() {
-		return create(EPSILON_PAYLOAD);
-	}
+    /**  What kind of node to create.  You might want to override
+     *   so I factored out creation here.
+     */
+    public ParseTree create(Object payload) {
+        return new ParseTree(payload);
+    }
 
-	/** Backtracking or cyclic DFA, don't want to add nodes to tree */
-	public void enterDecision(int d) { backtracking++; }
-	public void exitDecision(int i) { backtracking--; }
+    public ParseTree epsilonNode() {
+        return create(EPSILON_PAYLOAD);
+    }
 
-	public void enterRule(String filename, String ruleName) {
-		if ( backtracking>0 ) return;
-		ParseTree parentRuleNode = (ParseTree)callStack.peek();
-		ParseTree ruleNode = create(ruleName);
-		parentRuleNode.addChild(ruleNode);
-		callStack.push(ruleNode);
-	}
+    /** Backtracking or cyclic DFA, don't want to add nodes to tree */
+    public void enterDecision(int d) { backtracking++; }
+    public void exitDecision(int i) { backtracking--; }
 
-	public void exitRule(String filename, String ruleName) {
-		if ( backtracking>0 ) return;
-		ParseTree ruleNode = (ParseTree)callStack.peek();
-		if ( ruleNode.getChildCount()==0 ) {
-			ruleNode.addChild(epsilonNode());
-		}
-		callStack.pop();		
-	}
+    public void enterRule(String filename, String ruleName) {
+        if ( backtracking>0 ) return;
+        ParseTree parentRuleNode = (ParseTree)callStack.peek();
+        ParseTree ruleNode = create(ruleName);
+        parentRuleNode.addChild(ruleNode);
+        callStack.push(ruleNode);
+    }
 
-	public void consumeToken(Token token) {
-		if ( backtracking>0 ) return;
-		ParseTree ruleNode = (ParseTree)callStack.peek();
-		ParseTree elementNode = create(token);
-		elementNode.hiddenTokens = this.hiddenTokens;
-		this.hiddenTokens = new ArrayList();
-		ruleNode.addChild(elementNode);
-	}
+    public void exitRule(String filename, String ruleName) {
+        if ( backtracking>0 ) return;
+        ParseTree ruleNode = (ParseTree)callStack.peek();
+        if ( ruleNode.getChildCount()==0 ) {
+            ruleNode.addChild(epsilonNode());
+        }
+        callStack.pop();
+    }
 
-	public void consumeHiddenToken(Token token) {
-		if ( backtracking>0 ) return;
-		hiddenTokens.add(token);
-	}
+    public void consumeToken(Token token) {
+        if ( backtracking>0 ) return;
+        ParseTree ruleNode = (ParseTree)callStack.peek();
+        ParseTree elementNode = create(token);
+        elementNode.hiddenTokens = this.hiddenTokens;
+        this.hiddenTokens = new ArrayList();
+        ruleNode.addChild(elementNode);
+    }
 
-	public void recognitionException(RecognitionException e) {
-		if ( backtracking>0 ) return;
-		ParseTree ruleNode = (ParseTree)callStack.peek();
-		ParseTree errorNode = create(e);
-		ruleNode.addChild(errorNode);
-	}
+    public void consumeHiddenToken(Token token) {
+        if ( backtracking>0 ) return;
+        hiddenTokens.add(token);
+    }
+
+    public void recognitionException(RecognitionException e) {
+        if ( backtracking>0 ) return;
+        ParseTree ruleNode = (ParseTree)callStack.peek();
+        ParseTree errorNode = create(e);
+        ruleNode.addChild(errorNode);
+    }
 }

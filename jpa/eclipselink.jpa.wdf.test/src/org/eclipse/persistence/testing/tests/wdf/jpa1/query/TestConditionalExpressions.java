@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -601,17 +601,17 @@ public class TestConditionalExpressions extends QueryTest {
         assertValidQuery("select p from Person as p where p.string not in ('2', '3', '4.4', :one)");
 
     }
-    
+
     @Test
     public void testInBinary() {
         byte[] byteArr1 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
         byte[] byteArr2 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
         assertValidQueryExecutionWithArgs("SELECT b FROM BasicTypesFieldAccess b WHERE b.primitiveByteArray2Binary IN(?1,?2)",
                 new Object[] { byteArr1, byteArr2 });
-    	
+
     }
 
-    
+
 
     @Test
     @ToBeInvestigated
@@ -769,12 +769,12 @@ public class TestConditionalExpressions extends QueryTest {
         assertInvalidQuery("select c from City c where (select p from Person p) not member OF c.criminals");
         assertInvalidQuery("select c from City c where avg(c.id) not member OF c.criminals");
     }
-    
+
     @Test
     public void testMemberOfHandling0() {
       assertValidQuery("select cri from Criminal cri, City c where cri.attachedCop member of c.cops");
     }
-    
+
     @Test
     public void testMemberOfHandling4() {
         assertValidQuery("select cri from Criminal cri, City c where cri member c.criminals");

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -25,13 +25,13 @@ public abstract class ArrayValue<T> extends ManyValue<T, Object> {
         if(null == adaptedValue) {
             return null;
         }
-       
+
         int len = adaptedValue.size();
         Object array = Array.newInstance(containerClass(),len);
         for( int i=0; i<len; i++ ){
             Array.set(array,i,((ArrayList)adaptedValue).get(i));
         }
-        return array;      
+        return array;
     }
 
     @Override

@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/27/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.ArrayList;
@@ -89,7 +89,7 @@ public class StoredProcedureCall extends DatabaseCall {
         field.setType(type);
         appendIn(field);
     }
-    
+
     /**
      * PUBLIC:
      * Define the input argument to the stored procedure and the field/argument name to be substitute for it.
@@ -104,7 +104,7 @@ public class StoredProcedureCall extends DatabaseCall {
         field.setSqlType(type);
         appendIn(field);
     }
-    
+
     /**
      * PUBLIC:
      * Define the output argument to the stored procedure and the field/argument name to be substitute for it.
@@ -118,7 +118,7 @@ public class StoredProcedureCall extends DatabaseCall {
         String typeName) {
         addNamedArgument(procedureParameterName, argumentFieldName, type, typeName, (Class)null);
     }
-    
+
     /**
      * PUBLIC:
      * Define the output argument to the stored procedure and the field/argument name to be substitute for it.
@@ -139,7 +139,7 @@ public class StoredProcedureCall extends DatabaseCall {
         field.setSqlTypeName(typeName);
         appendIn(field);
     }
-    
+
     /**
      * PUBLIC:
      * Define the inout argument to the stored procedure and the field/argument name to be substituted for it.
@@ -160,7 +160,7 @@ public class StoredProcedureCall extends DatabaseCall {
         field.setNestedTypeField(nestedType);
         appendIn(field);
     }
-    
+
     /**
      * PUBLIC:
      * Define the output argument to the stored procedure and the field/argument name to be substitute for it.
@@ -257,7 +257,7 @@ public class StoredProcedureCall extends DatabaseCall {
             appendInOut(inField, outField);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure and the field/argument name to be substitute for it on the way in and out.
@@ -279,7 +279,7 @@ public class StoredProcedureCall extends DatabaseCall {
             appendInOut(inField, outField);
         }
     }
-        
+
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure and the field/argument name to be substitute for it on the way in and out.
@@ -293,7 +293,7 @@ public class StoredProcedureCall extends DatabaseCall {
     public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName, String outArgumentFieldName, int type, String typeName) {
         addNamedInOutputArgument(procedureParameterName, inArgumentFieldName, outArgumentFieldName, type, typeName, null, null);
     }
-    
+
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure and the field/argument name to be substitute for it on the way in and out.
@@ -308,7 +308,7 @@ public class StoredProcedureCall extends DatabaseCall {
     public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName, String outArgumentFieldName, int type, String typeName, Class classType) {
         addNamedInOutputArgument(procedureParameterName, inArgumentFieldName, outArgumentFieldName, type, typeName, classType, null);
     }
-    
+
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure and the field/argument name to be substitute for it on the way in and out.
@@ -393,7 +393,7 @@ public class StoredProcedureCall extends DatabaseCall {
         field.setType(type);
         appendOut(field);
     }
-    
+
     /**
      * PUBLIC:
      * Define the output argument to the stored procedure and the field/argument name to be substitute for it.
@@ -408,7 +408,7 @@ public class StoredProcedureCall extends DatabaseCall {
         field.setSqlType(type);
         appendOut(field);
     }
-    
+
     /**
      * PUBLIC:
      * Define the output argument to the stored procedure and the field/argument name to be substitute for it.
@@ -425,7 +425,7 @@ public class StoredProcedureCall extends DatabaseCall {
         field.setSqlTypeName(typeName);
         appendOut(field);
     }
-    
+
     /**
      * PUBLIC:
      * Define the output argument to the stored procedure and the field/argument name to be substitute for it.
@@ -436,14 +436,14 @@ public class StoredProcedureCall extends DatabaseCall {
      * The javaType is the java class to return instead of the ARRAY and STRUCT types if a conversion is possible.
      */
     public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName, int jdbcType, String typeName, Class javaType) {
-    	getProcedureArgumentNames().add(procedureParameterName);
+        getProcedureArgumentNames().add(procedureParameterName);
         ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(argumentFieldName);
         field.setSqlType(jdbcType);
         field.setSqlTypeName(typeName);
         field.setType(javaType);
         appendOut(field);
     }
-    
+
     /**
      * PUBLIC:
      * Define the output argument to the stored procedure and the field/argument name to be substitute for it.
@@ -486,7 +486,7 @@ public class StoredProcedureCall extends DatabaseCall {
         getProcedureArgumentNames().add(null);
         appendIn(argumentValue);
     }
-    
+
     /**
      * PUBLIC:
      * Define the argument to the stored procedure for the index argument.
@@ -501,7 +501,7 @@ public class StoredProcedureCall extends DatabaseCall {
         field.setType(type);
         appendIn(field);
     }
-    
+
     /**
      * PUBLIC:
      * Define the argument to the stored procedure for the index argument.
@@ -516,7 +516,7 @@ public class StoredProcedureCall extends DatabaseCall {
         field.setSqlType(type);
         appendIn(field);
     }
-    
+
     /**
      * PUBLIC:
      * Define the argument to the stored procedure for the index argument.
@@ -574,7 +574,7 @@ public class StoredProcedureCall extends DatabaseCall {
             appendInOut(inField, outField);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Define the argument to the stored procedure for the index argument.
@@ -596,7 +596,7 @@ public class StoredProcedureCall extends DatabaseCall {
             appendInOut(inField, outField);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure for the index argument and the field/argument name to be substitute for it on the way in and out.
@@ -644,7 +644,7 @@ public class StoredProcedureCall extends DatabaseCall {
     public void addUnamedInOutputArgument(String argumentFieldName) {
         addUnamedInOutputArgument(argumentFieldName, argumentFieldName, null);
     }
-    
+
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure for the index argument and the field/argument name to be substitute for it on the way in and out.
@@ -659,7 +659,7 @@ public class StoredProcedureCall extends DatabaseCall {
     public void addUnamedInOutputArgument( String inArgumentFieldName, String outArgumentFieldName, int type, String typeName, Class collection ) {
         addNamedInOutputArgument( null, inArgumentFieldName, outArgumentFieldName, type, typeName, collection, null);
     }
-    
+
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure for the index argument and the field/argument name to be substitute for it on the way in and out.
@@ -729,7 +729,7 @@ public class StoredProcedureCall extends DatabaseCall {
         field.setSqlType(type);
         appendOut(field);
     }
-    
+
     /**
      * PUBLIC:
      * Define the field/argument name to be substitute for the index output argument.
@@ -758,7 +758,7 @@ public class StoredProcedureCall extends DatabaseCall {
     public void addUnamedOutputArgument(String argumentFieldName, int jdbcType, String typeName, Class javaType) {
         addNamedOutputArgument(null, argumentFieldName, jdbcType, typeName, javaType, null);
     }
-    
+
     /**
      * PUBLIC:
      * Define the field/argument name to be substitute for the index output argument.
@@ -772,7 +772,7 @@ public class StoredProcedureCall extends DatabaseCall {
     public void addUnamedOutputArgument(String argumentFieldName, int jdbcType, String typeName, Class javaType, DatabaseField nestedType) {
         addNamedOutputArgument(null, argumentFieldName, jdbcType, typeName, javaType, nestedType);
     }
-    
+
     /**
      * INTERNAL:
      * Return call header for the call string.
@@ -780,26 +780,26 @@ public class StoredProcedureCall extends DatabaseCall {
     public String getCallHeader(DatabasePlatform platform) {
         return platform.getProcedureCallHeader();
     }
-    
+
     /**
      * INTERNAL:
-     * Used by JPA named stored procedure queries to associate parameter name 
+     * Used by JPA named stored procedure queries to associate parameter name
      * with position. This is used to ease JPA API.
      */
     public Integer getCursorOrdinalPosition(String cursorName) {
-        return getCursorOrdinalPositions().get(cursorName); 
+        return getCursorOrdinalPositions().get(cursorName);
     }
-    
+
     /**
      * INTERNAL:
-     * Used by JPA named stored procedure queries to associate parameter name 
+     * Used by JPA named stored procedure queries to associate parameter name
      * with position. This is used to ease JPA API.
      */
     public Map<String, Integer> getCursorOrdinalPositions() {
         if (cursorOrdinalPositions == null) {
             cursorOrdinalPositions = new HashMap<String, Integer>();
         }
-        
+
         return cursorOrdinalPositions;
     }
 
@@ -841,14 +841,14 @@ public class StoredProcedureCall extends DatabaseCall {
      * Called by prepare method only.
      */
     @Override
-    protected void prepareInternal(AbstractSession session) {        
+    protected void prepareInternal(AbstractSession session) {
         setSQLStringInternal(session.getPlatform().buildProcedureCallString(this, session, getQuery().getTranslationRow()));
         super.prepareInternal(session);
     }
-    
+
     /**
      * INTERNAL:
-     * Used by JPA named stored procedure queries to associate parameter name 
+     * Used by JPA named stored procedure queries to associate parameter name
      * with position. This is used to ease JPA API.
      */
     public void setCursorOrdinalPosition(String cursorName, int index) {
@@ -908,11 +908,11 @@ public class StoredProcedureCall extends DatabaseCall {
         // the flag must be false.
         setIsCursorOutputProcedure(!hasOutputCursors());
         setIsMultipleCursorOutputProcedure(hasOutputCursors());
-        
+
         getProcedureArgumentNames().add(argumentName);
         appendOutCursor(new DatabaseField(outputFieldName));
     }
-    
+
     /**
      * PUBLIC:
      * Used for Oracle result sets through procedures.
@@ -923,7 +923,7 @@ public class StoredProcedureCall extends DatabaseCall {
         // Store the cursor ordinal position after you add it.
         setCursorOrdinalPosition(argumentName, getParameters().size());
     }
-    
+
     /**
      * PUBLIC:
      * Used for Oracle result sets through procedures.
@@ -932,7 +932,7 @@ public class StoredProcedureCall extends DatabaseCall {
     public void useUnnamedCursorOutputAsResultSet() {
         useCursorOutputResultSet(null, "CURSOR");
     }
-    
+
     /**
      * PUBLIC:
      * Used for Oracle result sets through procedures.
@@ -944,7 +944,7 @@ public class StoredProcedureCall extends DatabaseCall {
         // Store the cursor ordinal position after you add it.
         setCursorOrdinalPosition(positionName, position);
     }
-    
+
     /**
      * PUBLIC:
      * Set if the call returns multiple result sets.

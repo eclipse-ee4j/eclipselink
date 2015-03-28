@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import junit.textui.TestRunner;
@@ -66,26 +66,26 @@ public class ChangeSummaryXSDWithCSonRootDeleteComplexManyLeafBelowComplexManyBe
     /**
      * Purpose: this test will delete the first item (price[1]) in a child list of a parent list.
      * The result of this is that the 2nd item (price[2]) will in effect move from index 2 to 1 in the resulting dataobject
-     * 
+     *
      * Before Delete
    <ns0:items>
       <ns0:item partNum="872-AA">
-		....
+        ....
       </ns0:item>
       <ns0:item partNum="926-AA">
-	     <ns0:product>
-			<ns0:price>
-				<ns0:dollarAmount>39.95</ns0:dollarAmount>		
-				<ns0:currency>US</ns0:currency>		
-			</ns0:price>
-			<ns0:price>
-				<ns0:dollarAmount>45.95</ns0:dollarAmount>		
-				<ns0:currency>CDN</ns0:currency>		
-			</ns0:price>
-		 </ns0:product>
+         <ns0:product>
+            <ns0:price>
+                <ns0:dollarAmount>39.95</ns0:dollarAmount>
+                <ns0:currency>US</ns0:currency>
+            </ns0:price>
+            <ns0:price>
+                <ns0:dollarAmount>45.95</ns0:dollarAmount>
+                <ns0:currency>CDN</ns0:currency>
+            </ns0:price>
+         </ns0:product>
       </ns0:item>
    </ns0:items>
-     * 
+     *
      * After Delete
    <ns0:items>
       <ns0:item partNum="872-AA">
@@ -131,7 +131,7 @@ public class ChangeSummaryXSDWithCSonRootDeleteComplexManyLeafBelowComplexManyBe
     }
 
     public void testDeleteComplexManySingleBelowRoot() {
-        defineTypes();    
+        defineTypes();
         // 1. read in model from a populated XML file - via setup()
         // 2. rootObject will be in pre-operation state
         // 3. get references to the original object tree - before operation is performed

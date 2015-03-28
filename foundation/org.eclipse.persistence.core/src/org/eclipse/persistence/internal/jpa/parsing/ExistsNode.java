@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import java.util.Iterator;
@@ -42,7 +42,7 @@ public class ExistsNode extends Node {
      */
     public void validate(ParseTreeContext context) {
         if (left != null) {
-            
+
             // change SELECT clause of subquery
             SubqueryNode subqueryNode = (SubqueryNode)getLeft();
             // validate changed subquery
@@ -68,7 +68,7 @@ public class ExistsNode extends Node {
         // e.g. ... EXISTS (SELECT o.customer FROM Order o ...). Add the
         // select clause expressions as non fetch join attributes to the
         // ReportQuery representing the subquery. This make sure the FK joins
-        // get generated.  
+        // get generated.
         List items = reportQuery.getItems();
         for (Iterator i = items.iterator(); i.hasNext();) {
             ReportItem item = (ReportItem)i.next();
@@ -80,7 +80,7 @@ public class ExistsNode extends Node {
         reportQuery.addItem("one", one);
         reportQuery.dontUseDistinct();
         Expression expr = context.getBaseExpression();
-        return notIndicated() ? expr.notExists(reportQuery) : 
+        return notIndicated() ? expr.notExists(reportQuery) :
             expr.exists(reportQuery);
     }
 

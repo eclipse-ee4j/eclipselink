@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -160,17 +160,17 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * Create a new XMLContext based on the specified Project and ClassLoader.
      *
      * @param project An EclipseLink project
-     * @param classLoader The ClassLoader to be used 
+     * @param classLoader The ClassLoader to be used
      */
     public XMLContext(Project project, ClassLoader classLoader) {
         this (project, classLoader, (Collection<SessionEventListener>) null);
     }
-    
+
     /**
      * Create a new XMLContext based on the specified Project and ClassLoader.
      *
      * @param project An EclipseLink project
-     * @param classLoader The ClassLoader to be used 
+     * @param classLoader The ClassLoader to be used
      * @param sessionEventListener If non-null, this listener will be registered with the SessionEventManager
      * @see SessionEventListener
      * @see SessionEventManager
@@ -185,7 +185,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * Create a new XMLContext based on the specified Project and ClassLoader.
      *
      * @param project An EclipseLink project
-     * @param classLoader The ClassLoader to be used 
+     * @param classLoader The ClassLoader to be used
      * @param sessionEventListeners If non-null, these listeners will be registered with the SessionEventManager
      * @see SessionEventListener
      * @see SessionEventManager
@@ -195,15 +195,15 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     }
 
     public XMLContext(Collection projects) {
-    	this(projects, Thread.currentThread().getContextClassLoader());
+        this(projects, Thread.currentThread().getContextClassLoader());
     }
-    
+
     public XMLContext(Collection projects, ClassLoader classLoader) {
         contextState = new XMLContextState(this, projects, classLoader);
     }
 
     /**
-     * INTERNAL:  Return the XMLContextState that represents the XMLContexts 
+     * INTERNAL:  Return the XMLContextState that represents the XMLContexts
      * stateful information.  This method is provided for the benefits of layers
      * that build on top of the core OXM layer such as MOXy's JAXB
      * implementation.
@@ -214,10 +214,10 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
 
     /**
      * INTERNAL: Set the stateful information for this XMLContext.  Once the new
-     * state has been set, OXM operations (marshal, unmarshal, etc) will be 
-     * based on this new state.  This method is provided for the benefit of 
+     * state has been set, OXM operations (marshal, unmarshal, etc) will be
+     * based on this new state.  This method is provided for the benefit of
      * layers that build on top of the core OXM layer such as MOXy's JAXB
-     * 
+     *
      */
     public void setXMLContextState(XMLContextState xcs) {
         synchronized(this) {
@@ -263,7 +263,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     public XMLBinder createBinder() {
         return new XMLBinder(this);
     }
-    
+
     /**
      * Create a new XMLBinder with supplied marshaller and unmarshaller instances.
      * @return an XMLBinder based on this XMLContext,
@@ -395,13 +395,13 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * the QName parameter.
      */
     public XMLDescriptor getDescriptor(XPathQName xpathQName) {
-    	return super.getDescriptor(xpathQName);
+        return super.getDescriptor(xpathQName);
     }
-    
+
     public void addDescriptorByQName(QName qName, XMLDescriptor descriptor) {
         contextState.addDescriptorByQName(qName, descriptor);
     }
-    
+
     /**
      * INTERNAL: Return the XMLDescriptor mapped to the global type matching the
      * XPathFragment parameter.
@@ -436,7 +436,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     public boolean hasDocumentPreservation() {
         return getXMLContextState().hasDocumentPreservation();
     }
-    
+
     /**
     * ADVANCED:
     * Adjust the OXM metadata to take into account ORM mapping metadata,
@@ -452,7 +452,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
                 oxmSession = this.getSession(javaClass);
             } catch(XMLMarshalException ex) {
                 //if we couldn't find a session for this class, we
-                //don't have an OX descriptor for it. 
+                //don't have an OX descriptor for it.
             }
             if(oxmSession != null) {
                 ClassDescriptor oxmDescriptor = oxmSession.getDescriptor(javaClass);
@@ -470,7 +470,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
                         }
                         newAccessor.setChangeTracking(ormDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
                         oxmMapping.setAttributeAccessor(newAccessor);
-                        
+
                         //check to see if we need to deal with containerAccessor
                         CoreAttributeAccessor containerAccessor = null;
                         Class containerClass = null;
@@ -495,7 +495,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
                                     } else if(oxmMapping.isAbstractCompositeCollectionMapping()) {
                                         ((CompositeCollectionMapping)oxmMapping).getInverseReferenceMapping().setAttributeAccessor(ormAccessor);
                                     }
-                                    
+
                                 }
                             }
                         }
@@ -503,7 +503,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
                 }
                 Iterator<DatabaseMapping> oxmMappingsIterator = oxmDescriptor.getMappings().iterator();
                 while(oxmMappingsIterator.hasNext()) {
-                    //iterate over the oxm mappings. Any ReferenceMappings that have a 
+                    //iterate over the oxm mappings. Any ReferenceMappings that have a
                     //collection as a backpointer, check to see if the container policy
                     //needs to be matched with the ORM project
                     DatabaseMapping nextMapping = oxmMappingsIterator.next();
@@ -525,33 +525,33 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     }
 
     /**
-     * <p>Query the object model based on the corresponding XML document.  The following pairings are equivalent:</p> 
-     * 
+     * <p>Query the object model based on the corresponding XML document.  The following pairings are equivalent:</p>
+     *
      * <i>Return the Customer's ID</i>
      * <pre> Integer id = xmlContext.getValueByXPath(customer, "@id", null, Integer.class);
      * Integer id = customer.getId();</pre>
-     * 
+     *
      * <i>Return the Customer's Name</i>
      * <pre> String name = xmlContext.getValueByXPath(customer, "ns:personal-info/ns:name/text()", null, String.class);
      * String name = customer.getName();</pre>
-     * 
+     *
      * <i>Return the Customer's Address</i>
      * <pre> Address address = xmlContext.getValueByXPath(customer, "ns:contact-info/ns:address", aNamespaceResolver, Address.class);
      * Address address = customer.getAddress();</pre>
-     * 
-     * <i>Return all the Customer's PhoneNumbers</i> 
+     *
+     * <i>Return all the Customer's PhoneNumbers</i>
      * <pre> List phoneNumbers = xmlContext.getValueByXPath(customer, "ns:contact-info/ns:phone-number", aNamespaceResolver, List.class);
      * List phoneNumbers = customer.getPhoneNumbers();</pre>
-     * 
+     *
      * <i>Return the Customer's second PhoneNumber</i>
      * <pre> PhoneNumber phoneNumber = xmlContext.getValueByXPath(customer, "ns:contact-info/ns:phone-number[2]", aNamespaceResolver, PhoneNumber.class);
      * PhoneNumber phoneNumber = customer.getPhoneNumbers().get(1);</pre>
-     * 
+     *
      * <i>Return the base object</i>
      * <pre> Customer customer = xmlContext.getValueByXPath(customer, ".", aNamespaceResolver, Customer.class);
      * Customer customer = customer;
      * </pre>
-     * 
+     *
      * @param <T> The return type of this method corresponds to the returnType parameter.
      * @param object  The XPath will be executed relative to this object.
      * @param xPath The XPath statement
@@ -564,36 +564,36 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     }
 
     /**
-     * <p>Set values in the object model based on the corresponding XML document.  The following pairings are equivalent:</p> 
-     * 
+     * <p>Set values in the object model based on the corresponding XML document.  The following pairings are equivalent:</p>
+     *
      * <i>Set the Customer's ID</i>
      * <pre> xmlContext.setValueByXPath(customer, "@id", null, new Integer(123));
      * customer.setId(new Integer(123));</pre>
-     * 
+     *
      * <i>Set the Customer's Name</i>
      * <pre> xmlContext.setValueByXPath(customer, "ns:personal-info/ns:name/text()", aNamespaceResolver, "Jane Doe");
      * customer.setName("Jane Doe");</pre>
-     * 
+     *
      * <i>Set the Customer's Address</i>
      * <pre> xmlContext.setValueByXPath(customer, "ns:contact-info/ns:address", aNamespaceResolver, anAddress);
      * customer.setAddress(anAddress);</pre>
-     * 
-     * <i>Set the Customer's PhoneNumbers</i> 
+     *
+     * <i>Set the Customer's PhoneNumbers</i>
      * <pre> xmlContext.setValueByXPath(customer, "ns:contact-info/ns:phone-number", aNamespaceResolver, phoneNumbers);
      * customer.setPhoneNumbers(phoneNumbers);</pre>
-     * 
+     *
      * <i>Set the Customer's second PhoneNumber</i>
      * <pre> xmlContext.setValueByXPath(customer, "ns:contact-info/ns:phone-number[2]", aNamespaceResolver, aPhoneNumber);
      * customer.getPhoneNumbers().get(1);</pre>
-     * 
+     *
      * @param object  The XPath will be executed relative to this object.
      * @param xPath The XPath statement
      * @param namespaceResolver A NamespaceResolver containing the prefix/URI pairings from the XPath statement.
      * @param value The value to be set.
      */
-    public void setValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Object value) { 
+    public void setValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Object value) {
         super.setValueByXPath(object, xPath, namespaceResolver, value);
-    } 
+    }
 
 
     /**
@@ -604,7 +604,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * @param typeName
      *      The XML type name to create a new Java instance of.
      * @param isGlobalType
-     *      True if the object to be created represents a global type, false if it 
+     *      True if the object to be created represents a global type, false if it
      *      represents a global element.
      *
      * @return
@@ -742,7 +742,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
 
             storeDescriptorsByQName(session);
         }
- 
+
         @Override
         protected void setupSession(DatabaseSession session) {
             session.setLogLevel(SessionLog.OFF);
@@ -903,7 +903,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
             if (login.getDocumentPreservationPolicy() == null) {
                 login.setDocumentPreservationPolicy(new NoDocumentPreservationPolicy());
             }
-            
+
             login.getDocumentPreservationPolicy().initialize(context);
 
             if (login.getDocumentPreservationPolicy().shouldPreserveDocument() && !hasDocumentPreservation) {

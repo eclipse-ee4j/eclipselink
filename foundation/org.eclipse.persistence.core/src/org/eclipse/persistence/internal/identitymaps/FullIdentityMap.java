@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
@@ -33,18 +33,18 @@ public class FullIdentityMap extends AbstractIdentityMap {
 
     /** Map of CacheKeys stored using their key. */
     protected Map<Object, CacheKey> cacheKeys;
-    
+
     /**
      * Used to allow subclasses to build different map type.
      */
-    public FullIdentityMap() {        
+    public FullIdentityMap() {
     }
-    
+
     public FullIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
         super(size, descriptor, session, isolated);
         this.cacheKeys = new ConcurrentHashMap(size);
     }
-    
+
     /**
      * INTERNAL:
      * Clones itself.
@@ -98,12 +98,12 @@ public class FullIdentityMap extends AbstractIdentityMap {
     @Override
     public CacheKey getCacheKey(Object searchKey, boolean forMerge) {
         return this.cacheKeys.get(searchKey);
-    }    
-        
+    }
+
     /**
      * Return the CacheKey (with object) matching the searchKey.
      * If the CacheKey is missing then put the searchKey in the map.
-     * The searchKey should have already been locked. 
+     * The searchKey should have already been locked.
      */
     @Override
     protected CacheKey putCacheKeyIfAbsent(CacheKey searchKey) {
@@ -168,7 +168,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
     public Enumeration keys(boolean checkReadLocks) {
         return new IdentityMapKeyEnumeration(this, checkReadLocks);
     }
-    
+
     /**
      * Notify the cache that a lazy relationship has been triggered in the object
      * and the cache may need to be updated

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,65 +28,65 @@ import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 
 public class TextAreaDialogUITest {
-	private JFrame window;
+    private JFrame window;
 
-	public static void main(String[] args) throws Exception {
-		new TextAreaDialogUITest().exec(args);
-	}
+    public static void main(String[] args) throws Exception {
+        new TextAreaDialogUITest().exec(args);
+    }
 
-	public TextAreaDialogUITest() {
-		super();
-	}
+    public TextAreaDialogUITest() {
+        super();
+    }
 
-	private void exec(String[] args) throws Exception {
-		this.window = new JFrame(ClassTools.shortClassNameForObject(this));
-		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.window.getContentPane().setLayout(new GridLayout(1, 0));
-		this.window.getContentPane().add(this.buildTextButton());
-		this.window.getContentPane().add(this.buildExceptionButton());
-		this.window.setLocation(200, 200);
-		this.window.setSize(300, 100);
-		this.window.setVisible(true);
-	}
+    private void exec(String[] args) throws Exception {
+        this.window = new JFrame(ClassTools.shortClassNameForObject(this));
+        this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.window.getContentPane().setLayout(new GridLayout(1, 0));
+        this.window.getContentPane().add(this.buildTextButton());
+        this.window.getContentPane().add(this.buildExceptionButton());
+        this.window.setLocation(200, 200);
+        this.window.setSize(300, 100);
+        this.window.setVisible(true);
+    }
 
-	private JButton buildTextButton() {
-		return new JButton(this.buildTextAction());
-	}
+    private JButton buildTextButton() {
+        return new JButton(this.buildTextAction());
+    }
 
-	private Action buildTextAction() {
-		return new AbstractAction("text") {
-			public void actionPerformed(ActionEvent event) {
-				TextAreaDialogUITest.this.testText();
-			}
-		};
-	}
+    private Action buildTextAction() {
+        return new AbstractAction("text") {
+            public void actionPerformed(ActionEvent event) {
+                TextAreaDialogUITest.this.testText();
+            }
+        };
+    }
 
-	private JButton buildExceptionButton() {
-		return new JButton(this.buildExceptionAction());
-	}
+    private JButton buildExceptionButton() {
+        return new JButton(this.buildExceptionAction());
+    }
 
-	private Action buildExceptionAction() {
-		return new AbstractAction("exception") {
-			public void actionPerformed(ActionEvent event) {
-				TextAreaDialogUITest.this.testException();
-			}
-		};
-	}
+    private Action buildExceptionAction() {
+        return new AbstractAction("exception") {
+            public void actionPerformed(ActionEvent event) {
+                TextAreaDialogUITest.this.testException();
+            }
+        };
+    }
 
-	private void testText() {
-		TestWorkbenchContext context = new TestWorkbenchContext();
-		context.setCurrentWindow(this.window);
-		TextAreaDialog dialog = new TextAreaDialog("The quick brown fox jumps over the lazy dog.", "foo.help", context);
-		dialog.setTitle("test");
-		dialog.show();
-	}
+    private void testText() {
+        TestWorkbenchContext context = new TestWorkbenchContext();
+        context.setCurrentWindow(this.window);
+        TextAreaDialog dialog = new TextAreaDialog("The quick brown fox jumps over the lazy dog.", "foo.help", context);
+        dialog.setTitle("test");
+        dialog.show();
+    }
 
-	private void testException() {
-		TestWorkbenchContext context = new TestWorkbenchContext();
-		context.setCurrentWindow(this.window);
-		TextAreaDialog dialog = new TextAreaDialog(new RuntimeException(new IOException()), "foo.help", context);
-		dialog.setTitle("test");
-		dialog.show();
-	}
+    private void testException() {
+        TestWorkbenchContext context = new TestWorkbenchContext();
+        context.setCurrentWindow(this.window);
+        TextAreaDialog dialog = new TextAreaDialog(new RuntimeException(new IOException()), "foo.help", context);
+        dialog.setTitle("test");
+        dialog.show();
+    }
 
 }

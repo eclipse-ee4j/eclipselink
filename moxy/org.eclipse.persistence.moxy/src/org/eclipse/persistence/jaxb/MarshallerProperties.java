@@ -16,7 +16,7 @@ package org.eclipse.persistence.jaxb;
 
 /**
  * These are properties that may be set on an instance of Marshaller.  Below is
- * an example of using the property mechanism to enable MOXy's JSON binding for 
+ * an example of using the property mechanism to enable MOXy's JSON binding for
  * an instance of Marshaller.
  * <pre>
  * Marshaller marshaller = jaxbContext.createMarshaller();
@@ -26,8 +26,8 @@ package org.eclipse.persistence.jaxb;
 public class MarshallerProperties {
 
     /**
-     * The Constant CHARACTER_ESCAPE_HANDLER.  Allows for customization of 
-     * character escaping when marshalling.  Value should be an implementation 
+     * The Constant CHARACTER_ESCAPE_HANDLER.  Allows for customization of
+     * character escaping when marshalling.  Value should be an implementation
      * of org.eclipse.persistence.oxm.CharacterEscapeHandler.
      * @since 2.3.3
      * @see org.eclipse.persistence.oxm.CharacterEscapeHandler
@@ -35,19 +35,19 @@ public class MarshallerProperties {
     public static final String CHARACTER_ESCAPE_HANDLER = "eclipselink.character-escape-handler";
 
     /**
-     * The Constant INDENT_STRING. Property used to set the string used when 
-     * indenting formatted marshalled documents. The default for formatted 
+     * The Constant INDENT_STRING. Property used to set the string used when
+     * indenting formatted marshalled documents. The default for formatted
      * documents is &quot;   &quot; (three spaces).
      * @since 2.3.3
      */
     public static final String INDENT_STRING = "eclipselink.indent-string";
 
     /**
-     * The name of the property used to specify a value that will be prepended 
-     * to all keys that are mapped to an XML attribute. By default there is no 
-     * attribute prefix.  There is no effect when media type is 
+     * The name of the property used to specify a value that will be prepended
+     * to all keys that are mapped to an XML attribute. By default there is no
+     * attribute prefix.  There is no effect when media type is
      * "application/xml".  When this property is specified at the
-     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and
      * <i>Unmarshaller</i> will default to this attribute prefix.
      * @since 2.4
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_ATTRIBUTE_PREFIX
@@ -59,7 +59,7 @@ public class MarshallerProperties {
      * The name of the property used to specify in the root node should be
      * included in the message (default is true). There is no effect when media
      * type is "application/xml".  When this property is specified at the
-     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and
      * <i>Unmarshaller</i> will default to this setting.
      * @since 2.4
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_INCLUDE_ROOT
@@ -70,9 +70,9 @@ public class MarshallerProperties {
     /**
      * The name of the property used to specify the character (default is '.')
      * that separates the prefix from the key name. It is only used if namespace
-     * qualification has been enabled be setting a namespace prefix mapper.  
-     * When this property is specified at the <i>JAXBContext</i> level all 
-     * instances of <i>Marshaller</i> and <i>Unmarshaller</i> will default to 
+     * qualification has been enabled be setting a namespace prefix mapper.
+     * When this property is specified at the <i>JAXBContext</i> level all
+     * instances of <i>Marshaller</i> and <i>Unmarshaller</i> will default to
      * this setting.
      * @since 2.4
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_NAMESPACE_SEPARATOR
@@ -83,8 +83,8 @@ public class MarshallerProperties {
     /**
      * The name of the property used to specify the key that will correspond to
      * the property mapped with <i>@XmlValue</i>.  This key will only be used if
-     * there are other mapped properties.  When this property is specified at 
-     * the <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * there are other mapped properties.  When this property is specified at
+     * the <i>JAXBContext</i> level all instances of <i>Marshaller</i> and
      * <i>Unmarshaller</i> will default to this setting.
      * @since 2.4
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_VALUE_WRAPPER
@@ -93,7 +93,7 @@ public class MarshallerProperties {
     public static final String JSON_VALUE_WRAPPER = JAXBContextProperties.JSON_VALUE_WRAPPER;
 
     /**
-     * The name of the property used to specify the type of binding to be 
+     * The name of the property used to specify the type of binding to be
      * performed.  When this property is specified at the <i>JAXBContext</i>
      * level all instances of <i>Marshaller</i> and <i>Unmarshaller</i> will
      * default to this media type. Supported values are:
@@ -113,22 +113,22 @@ public class MarshallerProperties {
     /**
      * The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the
      * namespace prefixes used while marshalling to XML.  Used for both marshal
-     * and unmarshal when mediaType is set to "application/json". Value is 
+     * and unmarshal when mediaType is set to "application/json". Value is
      * either a {@literal Map} of URIs to prefixes, or an
      * implementation of org.eclipse.persistence.oxm.NamespacePrefixMapper.
      * @since 2.3.3
-     * @see org.eclipse.persistence.oxm.NamespacePrefixMapper 
+     * @see org.eclipse.persistence.oxm.NamespacePrefixMapper
      */
     public static final String NAMESPACE_PREFIX_MAPPER = JAXBContextProperties.NAMESPACE_PREFIX_MAPPER;
 
     /**
-     * The Constant JSON_MARSHAL_EMPTY_COLLECTIONS.  If true an empty or null 
+     * The Constant JSON_MARSHAL_EMPTY_COLLECTIONS.  If true an empty or null
      * collection will be marshalled as null or empty array, if false both will be
      * represented as an absent node.
      * @since 2.4
      */
     public static final String JSON_MARSHAL_EMPTY_COLLECTIONS = "eclipselink.json.marshal-empty-collections";
-    
+
     /**
      * The Constant JSON_REDUCE_ANY_ARRAYS.  If true arrays that have just one item in them
      * will be reduced and marshalled as a single item and not as a collection.  ie: no [ ] in the marshalled JSON
@@ -158,24 +158,24 @@ public class MarshallerProperties {
      *
      */
     public static final String OBJECT_GRAPH = JAXBContextProperties.OBJECT_GRAPH;
-   
+
     /**
-     * The Constant JSON_WRAPPER_AS_ARRAY_NAME. If true the grouping 
-     * element will be used as the JSON key. There is no effect when media type 
+     * The Constant JSON_WRAPPER_AS_ARRAY_NAME. If true the grouping
+     * element will be used as the JSON key. There is no effect when media type
      * is "application/xml".  When this property is specified at the
-     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and
      * <i>Unmarshaller</i> will default to this.
-     * 
+     *
      * <p><b>Example</b></p>
      * <p>Given the following class:</p>
      * <pre>
      * &#64;XmlAccessorType(XmlAccessType.FIELD)
      * public class Customer {
-     * 
+     *
      *     &#64;XmlElementWrapper(name="phone-numbers")
      *     &#64;XmlElement(name="phone-number")
      *     private {@literal List<PhoneNumber>} phoneNumbers;
-     * 
+     *
      * }
      * </pre>
      * <p>If the property is set to false (the default) the JSON output will be:</p>

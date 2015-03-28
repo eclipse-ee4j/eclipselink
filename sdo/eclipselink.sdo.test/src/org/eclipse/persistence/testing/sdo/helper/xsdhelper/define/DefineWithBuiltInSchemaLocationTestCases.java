@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
 import commonj.sdo.DataObject;
@@ -36,7 +36,7 @@ public class DefineWithBuiltInSchemaLocationTestCases extends XSDHelperDefineTes
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
     }
-    
+
     public List<Type> getControlTypes() {
         SDOType intType = (SDOType) typeHelper.getType("commonj.sdo", "Int");
         SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
@@ -57,10 +57,10 @@ public class DefineWithBuiltInSchemaLocationTestCases extends XSDHelperDefineTes
         zipProperty.set("type", decimalType);
         DataObject countryProperty = USaddrDO.createDataObject("property");
         countryProperty.set("name", "country");
-        
+
         SDOType usAddrType = (SDOType) typeHelper.define(USaddrDO);
         usAddrType.setInstanceClassName("com.example.myPackage.USAddress");
-        
+
         // create a new Type for Item
         DataObject ItemDO = dataFactory.create("commonj.sdo", "Type");
         ItemDO.set("uri", "my.uri");
@@ -78,7 +78,7 @@ public class DefineWithBuiltInSchemaLocationTestCases extends XSDHelperDefineTes
         commentProperty.set("AliasNames", aliasNames);
         DataObject shipDateProperty = ItemDO.createDataObject("property");
         shipDateProperty.set("name", "shipDate");
-        
+
         SDOType itemType = (SDOType) typeHelper.define(ItemDO);
         itemType.setInstanceClassName("com.example.myPackage.ItemSDO");
 
@@ -92,7 +92,7 @@ public class DefineWithBuiltInSchemaLocationTestCases extends XSDHelperDefineTes
 
         SDOType itemsType = (SDOType) typeHelper.define(ItemsDO);
         itemsType.setInstanceClassName("com.example.myPackage.Items");
-        
+
         // create a new Type for PurchaseOrder
         DataObject PurchaseOrderDO = dataFactory.create("commonj.sdo", "Type");
         PurchaseOrderDO.set("uri", "my.uri");

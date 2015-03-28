@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.events;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class RootWithAnyCollectionTestCases extends XMLMappingTestCases {
     public UnmarshalListenerImpl unmarshalListener;
     public ArrayList expectedMarshalEvents;
     public ArrayList expectedUnmarshalEvents;
-    
+
     public RootWithAnyCollectionTestCases(String name) throws Exception {
         super(name);
         setProject(new EmployeeProject());
@@ -42,7 +42,7 @@ public class RootWithAnyCollectionTestCases extends XMLMappingTestCases {
         expectedMarshalEvents.add(MarshalListenerImpl.ADDRESS_BEFORE_MARSHAL);
         expectedMarshalEvents.add(MarshalListenerImpl.ADDRESS_AFTER_MARSHAL);
         expectedMarshalEvents.add(MarshalListenerImpl.EMPLOYEE_AFTER_MARSHAL);
-        
+
         expectedUnmarshalEvents = new ArrayList();
         expectedUnmarshalEvents.add(UnmarshalListenerImpl.EMPLOYEE_BEFORE_UNMARSHAL);
         expectedUnmarshalEvents.add(UnmarshalListenerImpl.ADDRESS_BEFORE_UNMARSHAL);
@@ -53,7 +53,7 @@ public class RootWithAnyCollectionTestCases extends XMLMappingTestCases {
         expectedUnmarshalEvents.add(UnmarshalListenerImpl.ADDRESS_AFTER_UNMARSHAL);
         expectedUnmarshalEvents.add(UnmarshalListenerImpl.EMPLOYEE_AFTER_UNMARSHAL);
     }
-    
+
     public void setUp() throws Exception {
         super.setUp();
         unmarshalListener = new UnmarshalListenerImpl();
@@ -72,7 +72,7 @@ public class RootWithAnyCollectionTestCases extends XMLMappingTestCases {
         super.xmlToObjectTest(testObject);
         assertTrue("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents.equals(unmarshalListener.events));
     }
-    
+
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Expected sequence of Marshal events not found", expectedMarshalEvents.equals(listener.events));
@@ -84,15 +84,15 @@ public class RootWithAnyCollectionTestCases extends XMLMappingTestCases {
         Address address = new Address();
         address.street = "2201 Riverside Drive";
         anyCollection.add(address);
-        
+
         PhoneNumber phone = new PhoneNumber();
         phone.number = "123-4567";
         anyCollection.add(phone);
-        
+
         address = new Address();
         address.street = "225 Alvin Road";
         anyCollection.add(address);
-        
+
         employee.anyCollection = anyCollection;
         return employee;
     }

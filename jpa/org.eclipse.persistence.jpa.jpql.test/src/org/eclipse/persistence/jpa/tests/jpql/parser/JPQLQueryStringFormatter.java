@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,26 +24,26 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
  */
 public interface JPQLQueryStringFormatter {
 
-	/**
-	 * The default implementation of {@link QueryStringFormatter}, which returns the JPQL query
-	 * without formatting it.
-	 */
-	public static JPQLQueryStringFormatter DEFAULT = new JPQLQueryStringFormatter() {
+    /**
+     * The default implementation of {@link QueryStringFormatter}, which returns the JPQL query
+     * without formatting it.
+     */
+    public static JPQLQueryStringFormatter DEFAULT = new JPQLQueryStringFormatter() {
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public String format(String query) {
-			return query;
-		}
-	};
+        /**
+         * {@inheritDoc}
+         */
+        public String format(String query) {
+            return query;
+        }
+    };
 
-	/**
-	 * Formats the given JPQL query by changing its information, which is usually changing the
-	 * number of whitespace between two non-whitespace characters.
-	 *
-	 * @param query The JPQL query to format
-	 * @return The formatted JPQL query
-	 */
-	String format(String query);
+    /**
+     * Formats the given JPQL query by changing its information, which is usually changing the
+     * number of whitespace between two non-whitespace characters.
+     *
+     * @param query The JPQL query to format
+     * @return The formatted JPQL query
+     */
+    String format(String query);
 }

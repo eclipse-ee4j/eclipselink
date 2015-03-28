@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.performance.emulateddb;
 
 import java.sql.*;
@@ -28,7 +28,7 @@ public class EmulatedConnection implements Connection {
     public EmulatedConnection() {
         this.rows = new HashMap();
     }
-    
+
     public EmulatedConnection(Connection connection) {
         this();
         this.connection = connection;
@@ -40,7 +40,7 @@ public class EmulatedConnection implements Connection {
     public Connection getRealConnection() {
         return connection;
     }
-    
+
     /**
      * Return the rows for the sql.
      */
@@ -887,7 +887,7 @@ public class EmulatedConnection implements Connection {
     public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
         return prepareStatement(sql);
     }
-    
+
     // 236070: Methods introduced in JDK 1.6
     public Array createArrayOf(String typeName, Object[] elements)  throws SQLException {
         return null;
@@ -920,7 +920,7 @@ public class EmulatedConnection implements Connection {
     public String getClientInfo(String name)  throws SQLException {
         return null;
     }
-    
+
     public boolean isValid(int timeout)  throws SQLException {
         return true;
     }
@@ -938,7 +938,7 @@ public class EmulatedConnection implements Connection {
     public <T>T unwrap(Class<T> iFace)  throws SQLException {
         return iFace.cast(this);
     }
-        
+
     public int getNetworkTimeout(){return 0;}
 
     public void setNetworkTimeout(Executor executor, int milliseconds){}

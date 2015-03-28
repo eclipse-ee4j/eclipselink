@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -54,7 +54,7 @@ public class DBWSException extends EclipseLinkException {
     public DBWSException(String message) {
         super(message);
     }
-    
+
     /**
      * INTERNAL:
      * Exception when reading DBWS metadata and the given file cannot be located
@@ -67,7 +67,7 @@ public class DBWSException extends EclipseLinkException {
         exception.setErrorCode(COULD_NOT_LOCATE_FILE);
         return exception;
     }
-    
+
     /**
      * INTERNAL:
      * Exception when processing DBWS metadata and the descriptor cannot be located for the operation
@@ -80,7 +80,7 @@ public class DBWSException extends EclipseLinkException {
         exception.setErrorCode(COULD_NOT_LOCATE_DESCRIPTOR);
         return exception;
     }
-    
+
     /**
      * INTERNAL:
      * Exception when processing DBWS metadata and the descriptor cannot be located for the operation
@@ -93,7 +93,7 @@ public class DBWSException extends EclipseLinkException {
         exception.setErrorCode(COULD_NOT_LOCATE_QUERY_FOR_DESCRIPTOR);
         return exception;
     }
-    
+
     /**
      * INTERNAL:
      * Exception when processing DBWS metadata and the descriptor cannot be located for the operation
@@ -106,7 +106,7 @@ public class DBWSException extends EclipseLinkException {
         exception.setErrorCode(COULD_NOT_LOCATE_QUERY_FOR_SESSION);
         return exception;
     }
-    
+
     /**
      * INTERNAL:
      * Exception when processing DBWS metadata and the descriptor cannot be located for the operation
@@ -119,7 +119,7 @@ public class DBWSException extends EclipseLinkException {
         exception.setErrorCode(PARAMETER_DOES_NOT_EXIST_FOR_OPERATION);
         return exception;
     }
-    
+
     /**
      * INTERNAL:
      * Exception when processing DBWS metadata and the descriptor cannot be located for the operation
@@ -132,7 +132,7 @@ public class DBWSException extends EclipseLinkException {
         exception.setErrorCode(PARAMETER_HAS_NO_MAPPING);
         return exception;
     }
-    
+
     /**
      * INTERNAL:
      * Exception when processing DBWS metadata and the descriptor cannot be located for the operation
@@ -145,7 +145,7 @@ public class DBWSException extends EclipseLinkException {
         exception.setErrorCode(RESULT_DOES_NOT_EXIST_FOR_OPERATION);
         return exception;
     }
-    
+
     /**
      * INTERNAL:
      * Exception when processing DBWS metadata and the descriptor cannot be located for the operation
@@ -158,7 +158,7 @@ public class DBWSException extends EclipseLinkException {
         exception.setErrorCode(RESULT_HAS_NO_MAPPING);
         return exception;
     }
-    
+
     /**
      * INTERNAL:
      * Exception when processing DBWS metadata and the descriptor cannot be located for the operation
@@ -171,7 +171,7 @@ public class DBWSException extends EclipseLinkException {
         exception.setErrorCode(MULTIPLE_OUTPUT_ARGUMENTS_ONLY_FOR_SIMPLE_XML);
         return exception;
     }
-    
+
     /**
      * INTERNAL:
      * Exception when processing DBWS metadata and the descriptor cannot be located for the operation

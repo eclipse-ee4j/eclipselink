@@ -115,13 +115,13 @@ public abstract class XMLMarshaller<
             Class eventWriterRecordClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_WRITER_RECORD_CLASS_NAME);
             Class eventWriterClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_WRITER_CLASS_NAME);
             xmlEventWriterRecordConstructor = PrivilegedAccessHelper.getConstructorFor(eventWriterRecordClass, new Class[]{eventWriterClass}, true);
-            
+
             domToStreamWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_STREAM_WRITER_CLASS_NAME);
             writeToStreamMethod = PrivilegedAccessHelper.getMethod(domToStreamWriterClass, WRITE_TO_STREAM_METHOD_NAME, new Class[] {CoreClassConstants.NODE, CoreClassConstants.STRING, CoreClassConstants.STRING, streamWriterClass}, true);
-            
+
             domToEventWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_EVENT_WRITER_CLASS_NAME);
             writeToEventWriterMethod = PrivilegedAccessHelper.getMethod(domToEventWriterClass, WRITE_TO_EVENT_WRITER_METHOD_NAME, new Class[] {CoreClassConstants.NODE, CoreClassConstants.STRING, CoreClassConstants.STRING, eventWriterClass}, true);
-            
+
         } catch (Exception ex) {
             // Do nothing
         }
@@ -167,7 +167,7 @@ public abstract class XMLMarshaller<
         namespaceSeparator = xmlMarshaller.getNamespaceSeparator();
         noNamespaceSchemaLocation = xmlMarshaller.getNoNamespaceSchemaLocation();
         reduceAnyArrays = xmlMarshaller.isReduceAnyArrays();
-        
+
         if(null != xmlMarshaller.getSchema()) {
             setSchema(xmlMarshaller.getSchema());
         }
@@ -220,7 +220,7 @@ public abstract class XMLMarshaller<
             }
         } else {
             Field defaultRootField = (Field) descriptor.getDefaultRootElementField();
-            if(defaultRootField != null){               
+            if(defaultRootField != null){
                 rootFragment = defaultRootField.getXPathFragment();
             }
         }
@@ -242,8 +242,8 @@ public abstract class XMLMarshaller<
     }
 
     /**
-     * Value that will be used to prefix attributes.  
-     * Ignored marshalling XML.   
+     * Value that will be used to prefix attributes.
+     * Ignored marshalling XML.
      * @since 2.4
      */
     public String getAttributePrefix() {
@@ -319,7 +319,7 @@ public abstract class XMLMarshaller<
 
           return descriptor;
       }
-      
+
       protected DESCRIPTOR getDescriptor(Root object, ABSTRACT_SESSION session) throws XMLMarshalException {
           DESCRIPTOR descriptor = null;
 
@@ -376,15 +376,15 @@ public abstract class XMLMarshaller<
             transformer.setEncoding(getEncoding());
             transformer.setFormattedOutput(isFormattedOutput());
             transformer.setFragment(fragment);
-            
+
         }
         return transformer;
     }
 
     /**
-     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
-     * Ignored marshalling XML.  
-     * @since 2.4    
+     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings
+     * Ignored marshalling XML.
+     * @since 2.4
      */
     public String getValueWrapper() {
         return valueWrapper;
@@ -436,8 +436,8 @@ public abstract class XMLMarshaller<
     }
 
     /**
-     * Determine if the @XMLRootElement should be marshalled when present.  
-     * Ignored marshalling XML.   
+     * Determine if the @XMLRootElement should be marshalled when present.
+     * Ignored marshalling XML.
      * @return
      * @since 2.4
      */
@@ -461,17 +461,17 @@ public abstract class XMLMarshaller<
     /**
      * Get the namespace separator used during marshal operations.
      * If mediaType is application/json '.' is the default
-     * Ignored marshalling XML.   
+     * Ignored marshalling XML.
      * @since 2.4
      */
-    public char getNamespaceSeparator() {       
+    public char getNamespaceSeparator() {
         return namespaceSeparator;
     }
 
     /**
-     * Name of the property to determine if empty collections should be marshalled as []   
-     * Ignored marshalling XML.  
-     * @since 2.4    
+     * Name of the property to determine if empty collections should be marshalled as []
+     * Ignored marshalling XML.
+     * @since 2.4
      */
     public boolean isMarshalEmptyCollections() {
         return marshalEmptyCollections;
@@ -526,13 +526,13 @@ public abstract class XMLMarshaller<
         boolean isXMLRoot = (object instanceof Root);
         if(isXMLRoot){
             try{
-                session = context.getSession(((Root)object).getObject());               
+                session = context.getSession(((Root)object).getObject());
                 if(session != null){
                     xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
                 }
             }catch (XMLMarshalException marshalException) {
                 if (!isSimpleXMLRoot((Root) object)) {
-                    throw marshalException;    
+                    throw marshalException;
                 }
             }
         }else{
@@ -554,16 +554,16 @@ public abstract class XMLMarshaller<
      * @param object the object to marshal
      * @param marshalRecord the marshalRecord to marshal the object to
      */
-    public void marshal(Object object, MarshalRecord marshalRecord) {        
+    public void marshal(Object object, MarshalRecord marshalRecord) {
         if(object instanceof JSONWithPadding && !isApplicationJSON()){
             object = ((JSONWithPadding)object).getObject();
         }
         if ((object == null) || (marshalRecord == null)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        
+
         boolean isXMLRoot = (object instanceof Root);
-        
+
         ABSTRACT_SESSION session = null;
         DESCRIPTOR xmlDescriptor = null;
         if(isXMLRoot){
@@ -659,7 +659,7 @@ public abstract class XMLMarshaller<
             marshalRecord.flush();
             return;
         }
-      
+
         if(isXMLRoot){
             if(descriptor != null){
                 marshalRecord.beforeContainmentMarshal(root.getObject());
@@ -667,7 +667,7 @@ public abstract class XMLMarshaller<
         }else{
             marshalRecord.beforeContainmentMarshal(object);
         }
-        
+
         if (!isFragment()) {
             String encoding = getEncoding();
             String version = DEFAULT_XML_VERSION;
@@ -721,7 +721,7 @@ public abstract class XMLMarshaller<
 
         OBJECT_BUILDER treeObjectBuilder = null;
         if (descriptor != null) {
-            treeObjectBuilder = (OBJECT_BUILDER) descriptor.getObjectBuilder();     
+            treeObjectBuilder = (OBJECT_BUILDER) descriptor.getObjectBuilder();
         }
         if(session == null){
             session = (ABSTRACT_SESSION) context.getSession();
@@ -734,7 +734,7 @@ public abstract class XMLMarshaller<
                 // throw an exception if the name has a : in it but the namespaceresolver is null
                 throw XMLMarshalException.namespaceResolverNotSpecified(rootFragment.getShortName());
             }
-            
+
             if(isIncludeRoot()){
                 marshalRecord.openStartElement(rootFragment, nr);
             }
@@ -754,7 +754,7 @@ public abstract class XMLMarshaller<
                 marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
                 treeObjectBuilder.marshalAttributes(marshalRecord, object, session);
             }
-            
+
             if(isIncludeRoot()) {
                 marshalRecord.closeStartElement();
             }
@@ -782,7 +782,7 @@ public abstract class XMLMarshaller<
                           marshalRecord.attribute(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + Constants.COLON + Constants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
                       }
                  }
-                
+
                 marshalRecord.characters(root.getSchemaType(), object, null, false);
             }
         }
@@ -800,7 +800,7 @@ public abstract class XMLMarshaller<
             }
         }else{
             marshalRecord.afterContainmentMarshal(null, object);
-        }              
+        }
     }
 
     /**
@@ -824,13 +824,13 @@ public abstract class XMLMarshaller<
         boolean isXMLRoot = (object instanceof Root);
         if(isXMLRoot){
             try{
-                session = context.getSession(((Root)object).getObject());               
+                session = context.getSession(((Root)object).getObject());
                 if(session != null){
                     xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
                 }
             }catch (XMLMarshalException marshalException) {
                 if (!isSimpleXMLRoot((Root) object)) {
-                    throw marshalException;    
+                    throw marshalException;
                 }
             }
         }else{
@@ -947,9 +947,9 @@ public abstract class XMLMarshaller<
         }
         DESCRIPTOR xmlDescriptor = null;
         ABSTRACT_SESSION session = null;
-        
+
         boolean isXMLRoot = (object instanceof Root);
-        
+
         if(isXMLRoot){
             try{
                 session = context.getSession(((Root)object).getObject());
@@ -958,7 +958,7 @@ public abstract class XMLMarshaller<
                 }
            }catch (XMLMarshalException marshalException) {
                 if (!isSimpleXMLRoot((Root) object)) {
-                    throw marshalException;    
+                    throw marshalException;
                 }
             }
         }else{
@@ -1008,7 +1008,7 @@ public abstract class XMLMarshaller<
         } else if (result instanceof SAXResult) {
             SAXResult saxResult = (SAXResult) result;
             marshal(object, saxResult.getHandler());
-        } else if (result instanceof ExtendedResult){           
+        } else if (result instanceof ExtendedResult){
             marshal(object, ((ExtendedResult)result).createRecord(), session, xmlDescriptor, isXMLRoot);
         }else {
             if (result.getClass().equals(staxResultClass)) {
@@ -1017,7 +1017,7 @@ public abstract class XMLMarshaller<
                     if (xmlStreamWriter != null) {
                         MarshalRecord record = (MarshalRecord)PrivilegedAccessHelper.invokeConstructor(xmlStreamWriterRecordConstructor, new Object[]{xmlStreamWriter});
                         record.setMarshaller(this);
-                        marshal(object, record, session, xmlDescriptor, isXMLRoot);                            
+                        marshal(object, record, session, xmlDescriptor, isXMLRoot);
                         return;
                     } else {
                         Object xmlEventWriter = PrivilegedAccessHelper.invokeMethod(staxResultGetEventWriterMethod, result);
@@ -1050,7 +1050,7 @@ public abstract class XMLMarshaller<
     * @throws XMLMarshalException if an error occurred during marshalling
     */
     public void marshal(Object object, Writer writer) throws XMLMarshalException {
-        marshal(object, writer, null, null);        
+        marshal(object, writer, null, null);
     }
 
     private void marshal(Object object, Writer writer, ABSTRACT_SESSION session, DESCRIPTOR xmlDescriptor) throws XMLMarshalException {
@@ -1080,15 +1080,15 @@ public abstract class XMLMarshaller<
         MarshalRecord marshalRecord;
         writer = wrapWriter(writer);
         if (isFormattedOutput()) {
-            if(isApplicationJSON()) {                          
-                marshalRecord = new JSONFormattedWriterRecord(writer, callbackName);                
+            if(isApplicationJSON()) {
+                marshalRecord = new JSONFormattedWriterRecord(writer, callbackName);
             } else {
                 marshalRecord = new FormattedWriterRecord();
                 ((FormattedWriterRecord) marshalRecord).setWriter(writer);
             }
         } else {
             if(isApplicationJSON()) {
-                marshalRecord = new JSONWriterRecord(writer, callbackName);                
+                marshalRecord = new JSONWriterRecord(writer, callbackName);
             } else {
                 marshalRecord = new WriterRecord();
                 ((WriterRecord) marshalRecord).setWriter(writer);
@@ -1151,7 +1151,7 @@ public abstract class XMLMarshaller<
     /**
      * INTERNAL:
      * Wrap Writer in a BufferedWriter only if its write() operations may be costly
-     * (such as FileWriters and OutputStreamWriters). 
+     * (such as FileWriters and OutputStreamWriters).
      */
     private Writer wrapWriter(Writer writer) {
         if (writer instanceof OutputStreamWriter || writer instanceof FileWriter) {
@@ -1211,9 +1211,9 @@ public abstract class XMLMarshaller<
     }
 
     /**
-     * Value that will be used to prefix attributes.  
+     * Value that will be used to prefix attributes.
      * Ignored marshalling XML.
-     * @since 2.4    
+     * @since 2.4
      */
     public void setAttributePrefix(String attributePrefix) {
         this.attributePrefix = attributePrefix;
@@ -1257,8 +1257,8 @@ public abstract class XMLMarshaller<
     }
 
     /**
-     * Determine if the @XMLRootElement should be marshalled when present.  
-     * Ignored marshalling XML.   
+     * Determine if the @XMLRootElement should be marshalled when present.
+     * Ignored marshalling XML.
      * @return
      * @since 2.4
      */
@@ -1267,9 +1267,9 @@ public abstract class XMLMarshaller<
     }
 
     /**
-     * Name of the property to determine if empty collections should be marshalled as []    
-     * Ignored marshalling XML.  
-     * @since 2.4    
+     * Name of the property to determine if empty collections should be marshalled as []
+     * Ignored marshalling XML.
+     * @since 2.4
      */
     public void setMarshalEmptyCollections(Boolean marshalEmptyCollections) {
         this.marshalEmptyCollections = marshalEmptyCollections;
@@ -1287,7 +1287,7 @@ public abstract class XMLMarshaller<
     /**
      * Set the namespace separator used during marshal operations.
      * If mediaType is application/json '.' is the default
-     * Ignored marshalling XML.   
+     * Ignored marshalling XML.
      * @since 2.4
      */
     public void setNamespaceSeparator(char namespaceSeparator) {
@@ -1327,9 +1327,9 @@ public abstract class XMLMarshaller<
     }
 
     /**
-     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
-     * Ignored marshalling XML.  
-     * @since 2.4    
+     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings
+     * Ignored marshalling XML.
+     * @since 2.4
      */
     public void setValueWrapper(String valueWrapper) {
         this.valueWrapper = valueWrapper;
@@ -1338,10 +1338,10 @@ public abstract class XMLMarshaller<
     /**
      * <p>
      * Set this Marshaller's XML Header.  This header string will appear after
-     * the XML processing instruction (&lt;?xml ...&gt;), but before the start 
+     * the XML processing instruction (&lt;?xml ...&gt;), but before the start
      * of the document's data.
      * </p>
-     * 
+     *
      * <p>
      * This feature is only supported when marshalling to Stream, Writer,
      * or StreamResult.
@@ -1354,9 +1354,9 @@ public abstract class XMLMarshaller<
 
     public void setMarshalAttributeGroup(Object group) {
         this.marshalAttributeGroup = group;
-        
+
     }
-    
+
     public Object getMarshalAttributeGroup() {
         return this.marshalAttributeGroup;
     }

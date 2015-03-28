@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.remote;
 
 import java.util.*;
@@ -32,7 +32,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         setKnownBugs();
     }
 
-    public RemoteConnectionExceptionsTest(int mode, 
+    public RemoteConnectionExceptionsTest(int mode,
                                           String remoteConnectionClassName) throws ClassNotFoundException {
         this(mode, Class.forName(remoteConnectionClassName));
     }
@@ -63,8 +63,8 @@ public class RemoteConnectionExceptionsTest extends TestCase {
 
     protected void setNamesToExclude() {
         namesToExclude = new Vector();
-        String namesToExcludeArray[] = 
-        { "createProxySession", "createRemoteSession", "cursoredStreamNextPage", "fixObjectReferences", 
+        String namesToExcludeArray[] =
+        { "createProxySession", "createRemoteSession", "cursoredStreamNextPage", "fixObjectReferences",
           "getRemoteSessionController", "setRemoteSessionController", };
         for (int i = 0; i < namesToExcludeArray.length; i++) {
             namesToExclude.add(namesToExcludeArray[i]);
@@ -76,11 +76,11 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         String className = remoteConnectionClass.getName();
         if (mode == TransporterGenerator.THROW_REMOTE_EXCEPTION) {
             setName(getName().concat(" THROW_REMOTE_EXCEPTION"));
-            setDescription("Verifies that CommunicationException are thrown by methods of " + className + 
+            setDescription("Verifies that CommunicationException are thrown by methods of " + className +
                            " class");
         } else if (mode == TransporterGenerator.SET_EXCEPTION_INTO_TRANSPORTER) {
             setName(getName().concat(" SET_EXCEPTION_INTO_TRANSPORTER"));
-            setDescription("Verifies that Transporter.getException() are thrown by methods of " + className + 
+            setDescription("Verifies that Transporter.getException() are thrown by methods of " + className +
                            " class");
         } else {
             throw new TestProblemException("Unsupported mode");
@@ -146,7 +146,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
             if (ok) {
                 ok = CommunicationException.class.isInstance(exception);
                 if (ok) {
-                    ok = 
+                    ok =
  ((CommunicationException)exception).getErrorCode() == CommunicationException.ERROR_IN_INVOCATION;
                 }
             }

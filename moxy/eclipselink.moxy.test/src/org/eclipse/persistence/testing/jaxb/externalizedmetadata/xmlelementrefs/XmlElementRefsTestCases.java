@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,19 +35,19 @@ import org.w3c.dom.Document;
 public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementrefs/";
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public XmlElementRefsTestCases(String name) {
         super(name);
     }
-    
+
     /**
-     * Tests @XmlElementRefs schema generation via eclipselink-oxm.xml.  
-     * 
+     * Tests @XmlElementRefs schema generation via eclipselink-oxm.xml.
+     *
      * Positive test.
      */
     public void testXmlElementRefsSchemaGen() {
@@ -60,14 +60,14 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
 
     /**
      * Tests @XmlElementRefs via eclipselink-oxm.xml.
-     * 
+     *
      * Positive test.
-     * @throws JAXBException 
+     * @throws JAXBException
      */
     public void testXmlElementRefs() throws JAXBException {
         // load XML metadata
-    	MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH, 2);
-          
+        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH, 2);
+
         // load instance doc
         String src = PATH + "foos.xml";
         InputStream iDocStream = loader.getResourceAsStream(src);
@@ -118,10 +118,10 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
             fail("Unmarshal operation failed.");
         }
     }
-    
+
     /**
      * Verify that the container type is set correctly for Array types.
-     * 
+     *
      * Positive test.
      */
     public void testCollectionType() {

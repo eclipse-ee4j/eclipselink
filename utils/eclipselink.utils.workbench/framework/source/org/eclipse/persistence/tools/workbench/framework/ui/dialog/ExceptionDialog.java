@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -33,85 +33,85 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.SingleElementIt
  * the exception's stack trace.
  */
 public class ExceptionDialog extends AbstractDialog {
-	private String message;
-	private Throwable exception;
-
-	
-	public ExceptionDialog(String message, Throwable exception, WorkbenchContext context, String title) {
-		super(context, title);
-		this.message = message;
-		this.exception = exception;
-	}
-
-	public ExceptionDialog(String message, Throwable exception, WorkbenchContext context, Dialog owner, String title) {
-		super(context, title, owner);
-		this.message = message;
-		this.exception = exception;
-	}
+    private String message;
+    private Throwable exception;
 
 
-	// ********** AbstractDialog implementation **********
+    public ExceptionDialog(String message, Throwable exception, WorkbenchContext context, String title) {
+        super(context, title);
+        this.message = message;
+        this.exception = exception;
+    }
 
-	/**
-	 * The main panel merely consists of a label or two.
-	 * @see org.eclipse.persistence.tools.workbench.framework.ui.dialog.AbstractDialog#buildMainPanel()
-	 */
-	protected Component buildMainPanel() {
-		JPanel mainPanel = new JPanel(new GridLayout(0, 1));
+    public ExceptionDialog(String message, Throwable exception, WorkbenchContext context, Dialog owner, String title) {
+        super(context, title, owner);
+        this.message = message;
+        this.exception = exception;
+    }
 
-		JLabel messageLabel = new JLabel();
-		messageLabel.setText(this.message);
-		messageLabel.setIcon(this.resourceRepository().getIcon("warning"));
-		messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		mainPanel.add(messageLabel);
 
-		JLabel exceptionLabel = new JLabel(this.exception.getClass().getName(), SwingConstants.CENTER);
-		mainPanel.add(exceptionLabel);
+    // ********** AbstractDialog implementation **********
 
-		return mainPanel;
-	}
+    /**
+     * The main panel merely consists of a label or two.
+     * @see org.eclipse.persistence.tools.workbench.framework.ui.dialog.AbstractDialog#buildMainPanel()
+     */
+    protected Component buildMainPanel() {
+        JPanel mainPanel = new JPanel(new GridLayout(0, 1));
 
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.framework.ui.dialog.AbstractDialog#helpTopicId()
-	 */
-	protected String helpTopicId() {
-		return "dialog.unexpectedError";
-	}
+        JLabel messageLabel = new JLabel();
+        messageLabel.setText(this.message);
+        messageLabel.setIcon(this.resourceRepository().getIcon("warning"));
+        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        mainPanel.add(messageLabel);
 
-	/**
-	 * Allow the user to see the stack trace.
-	 * @see org.eclipse.persistence.tools.workbench.framework.ui.dialog.AbstractDialog#buildCustomActions()
-	 */
-	protected Iterator buildCustomActions() {
-		Action stackTraceAction = this.buildStackTraceAction();
-		return new SingleElementIterator(stackTraceAction);
-	}
+        JLabel exceptionLabel = new JLabel(this.exception.getClass().getName(), SwingConstants.CENTER);
+        mainPanel.add(exceptionLabel);
 
-	private Action buildStackTraceAction() {
-		return new AbstractAction(this.buildStackTraceText()) {
-			public void actionPerformed(ActionEvent e) {
-				ExceptionDialog.this.displayStackTrace();
-			}
-		};
-	}
+        return mainPanel;
+    }
 
-	protected String buildStackTraceText() {
-		return this.resourceRepository().getString("STACK_TRACE");
-	}
+    /**
+     * @see org.eclipse.persistence.tools.workbench.framework.ui.dialog.AbstractDialog#helpTopicId()
+     */
+    protected String helpTopicId() {
+        return "dialog.unexpectedError";
+    }
 
-	/**
-	 * display the stack trace with a text area dialog
-	 */
-	protected void displayStackTrace() {
-		TextAreaDialog dialog =
-			new TextAreaDialog(
-				this.exception,
-				this.helpTopicId(),
-				this.getWorkbenchContext(),
-				this
-			);
-		dialog.setTitle(this.buildStackTraceText());
-		dialog.show();
-	}
+    /**
+     * Allow the user to see the stack trace.
+     * @see org.eclipse.persistence.tools.workbench.framework.ui.dialog.AbstractDialog#buildCustomActions()
+     */
+    protected Iterator buildCustomActions() {
+        Action stackTraceAction = this.buildStackTraceAction();
+        return new SingleElementIterator(stackTraceAction);
+    }
+
+    private Action buildStackTraceAction() {
+        return new AbstractAction(this.buildStackTraceText()) {
+            public void actionPerformed(ActionEvent e) {
+                ExceptionDialog.this.displayStackTrace();
+            }
+        };
+    }
+
+    protected String buildStackTraceText() {
+        return this.resourceRepository().getString("STACK_TRACE");
+    }
+
+    /**
+     * display the stack trace with a text area dialog
+     */
+    protected void displayStackTrace() {
+        TextAreaDialog dialog =
+            new TextAreaDialog(
+                this.exception,
+                this.helpTopicId(),
+                this.getWorkbenchContext(),
+                this
+            );
+        dialog.setTitle(this.buildStackTraceText());
+        dialog.show();
+    }
 
 }

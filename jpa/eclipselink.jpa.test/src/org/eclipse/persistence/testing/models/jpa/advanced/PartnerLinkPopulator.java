@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -22,12 +22,12 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
  * <p><b>Purpose</b>: To build and populate the database for example and
  * testing purposes. This population routine is fairly complex and makes use
  * of the population manager to resolve interrated objects as the employee
- * objects are an interconnection graph of objects. 
+ * objects are an interconnection graph of objects.
  *
- * This is not the recomended way to create new objects in your application, 
+ * This is not the recomended way to create new objects in your application,
  * this is just the easiest way to create interconnected new example objects
  * from code. Normally in your application the objects will be defined as part
- * of a transactional and user interactive process. 
+ * of a transactional and user interactive process.
  */
 public class PartnerLinkPopulator {
 
@@ -104,17 +104,17 @@ public class PartnerLinkPopulator {
         partnerLinkExample1();
         manExample2();
     }
-    
-    public void persistExample(Session session) {        
-        Vector allObjects = new Vector();        
-        UnitOfWork unitOfWork = session.acquireUnitOfWork();        
+
+    public void persistExample(Session session) {
+        Vector allObjects = new Vector();
+        UnitOfWork unitOfWork = session.acquireUnitOfWork();
         PopulationManager.getDefaultManager().addAllObjectsForClass(Man.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(Woman.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(PartnerLink.class, allObjects);
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
     }
-    
+
     protected void registerObject(Class domainClass, Object domainObject, String identifier) {
         populationManager.registerObject(domainClass, domainObject, identifier);
     }

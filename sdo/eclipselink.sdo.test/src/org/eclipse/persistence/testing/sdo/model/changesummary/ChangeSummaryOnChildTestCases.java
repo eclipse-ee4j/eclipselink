@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import java.io.ByteArrayOutputStream;
@@ -55,7 +55,7 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
     protected String getControlRootName() {
         return TYPENAME;
     }
-    
+
     protected String getRootInterfaceName() {
         return "CorporationType";
     }
@@ -70,12 +70,12 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
     //protected String getNoSchemaControlFileName() {
     //    return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeepWithCS.xml");
     //}
-    
+
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
         //do nothing
         //TODO: need to make this test run
     }
-    
+
     protected String getModelFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeepWithCSonChild.xml");
     }
@@ -92,9 +92,9 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.changesummary.ChangeSummaryOnChildTestCases" };
         TestRunner.main(arguments);
     }
-    
+
     protected List defineTypes() {
-        
+
         List types =  xsdHelper.define(getSchema(getSchemaName()));
         try{
         XMLDocument document = xmlHelper.load(new FileInputStream(getModelFileName()));
@@ -111,15 +111,15 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
             // see bug #5878605: SDO: COPYHELPER.COPY() LOGS CS CHANGES - SHOULD SUSPEND LOGGING DURING COPY
             // turn off logging before deep copy as a workaround
             salesPO1CS.endLogging();
-            salesPO2CS.endLogging();            
+            salesPO2CS.endLogging();
             developmentPO1CS.endLogging();
             //developmentPO2CS.endLogging();
             stock1CS.endLogging();
             stock2CS.endLogging();
-            stock3CS.endLogging();            
-            
+            stock3CS.endLogging();
+
             rootObject2 = copyHelper.copy(rootObject);
-            
+
             salesPO1CS2 = rootObject2.getDataObject("sales/purchaseOrder[1]").getChangeSummary();
             salesPO2CS2 = rootObject2.getDataObject("sales/purchaseOrder[2]").getChangeSummary();
             developmentPO1CS2 = rootObject.getDataObject("development/purchaseOrder[1]").getChangeSummary();
@@ -130,15 +130,15 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
 
             // make sure all logs are off
             salesPO1CS.endLogging();
-            salesPO2CS.endLogging();            
+            salesPO2CS.endLogging();
             developmentPO1CS.endLogging();
             //developmentPO2CS.endLogging();
             stock1CS.endLogging();
             stock2CS.endLogging();
             stock3CS.endLogging();
-            
+
             salesPO1CS2.endLogging();
-            salesPO2CS2.endLogging();            
+            salesPO2CS2.endLogging();
             developmentPO1CS2.endLogging();
             //developmentPO2CS2.endLogging();
             stock1CS2.endLogging();
@@ -220,37 +220,37 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
     }
 
     public void assertDeleteDetachUnsetComplexSingleBelowRoot(boolean testLoadSave, //
-    		boolean isDeleted, //
-    		DataObject itemsDO,//
-    		DataObject item1DO,//
-    		DataObject item1ProductDO,//
-    		DataObject item1ProductPrice1DO,//
-    		DataObject item1ProductPrice2DO//
-    		) {
+            boolean isDeleted, //
+            DataObject itemsDO,//
+            DataObject item1DO,//
+            DataObject item1ProductDO,//
+            DataObject item1ProductPrice1DO,//
+            DataObject item1ProductPrice2DO//
+            ) {
         assertEquals(5, salesPO1CS.getChangedDataObjects().size());
         assertEquals(1, salesPO1CS.getOldValues(itemsDO).size());
         if (!testLoadSave) {
-            assertModified(itemsDO, salesPO1CS);            
+            assertModified(itemsDO, salesPO1CS);
             if (isDeleted) {
                 assertDeleted(item1DO, salesPO1CS);
                 assertFalse(item1DO == salesPO1CS.getOldValue(itemsDO, itemsDO.getInstanceProperty("item"))); // verify that oldValue of original deleted is deep copy
                 assertDeleted(item1ProductDO, salesPO1CS);
-                assertFalse(item1ProductDO == salesPO1CS.getOldValue(item1DO, item1DO.getInstanceProperty("product"))); // verify that oldValue of original deleted is deep copy                
+                assertFalse(item1ProductDO == salesPO1CS.getOldValue(item1DO, item1DO.getInstanceProperty("product"))); // verify that oldValue of original deleted is deep copy
                 assertDeleted(item1ProductPrice1DO, salesPO1CS);
                 Object  oldValue = salesPO1CS.getOldValue(item1ProductDO, item1ProductDO.getInstanceProperty("price")).getValue();
                 // Bug# 5895047 - verify we are not getting an oldSetting that is an empty ArrayList
                 assertTrue(oldValue instanceof ArrayList);
                 assertEquals(2, ((ArrayList)oldValue).size());
                 List aPriceList = ((ArrayList)oldValue);
-                DataObject oldItem1ProductPrice1DO = (DataObject) aPriceList.get(0); 
+                DataObject oldItem1ProductPrice1DO = (DataObject) aPriceList.get(0);
                 assertNotNull(oldItem1ProductPrice1DO);
-                assertFalse(item1ProductPrice1DO == oldItem1ProductPrice1DO); // verify that oldValue of original deleted is deep copy                
+                assertFalse(item1ProductPrice1DO == oldItem1ProductPrice1DO); // verify that oldValue of original deleted is deep copy
                 assertDeleted(item1ProductPrice2DO, salesPO1CS);
-                DataObject oldItem2ProductPrice1DO = (DataObject) aPriceList.get(1); 
+                DataObject oldItem2ProductPrice1DO = (DataObject) aPriceList.get(1);
                 assertNotNull(oldItem2ProductPrice1DO);
-                assertFalse(item1ProductPrice2DO == oldItem2ProductPrice1DO); // verify that oldValue of original deleted is deep copy                
+                assertFalse(item1ProductPrice2DO == oldItem2ProductPrice1DO); // verify that oldValue of original deleted is deep copy
             } else {
-                assertDetached(item1DO, salesPO1CS);    
+                assertDetached(item1DO, salesPO1CS);
                 assertDetached(item1ProductDO, salesPO1CS, false);
                 assertDetached(item1ProductPrice1DO, salesPO1CS, false);
                 assertDetached(item1ProductPrice2DO, salesPO1CS, false);
@@ -270,22 +270,22 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
 
         assertEquals(16, ((SDOChangeSummary)salesPO1CS).getOldContainer().size());
         assertEquals(16, ((SDOChangeSummary)salesPO1CS).getOldContainmentProperty().size());
-    }    
+    }
 
     public void assertDeleteDetachUnsetComplexSingleAtRoot(boolean testLoadSave, //
-    		boolean isDeleted, //
-    		DataObject po1DO,//
-    		DataObject itemsDO,//
-    		DataObject item1DO,//
-    		DataObject item2DO,//
-    		DataObject item1ProductDO,//
-    		DataObject item1ProductPrice1DO,//
-    		DataObject item1ProductPrice2DO//
-    		) {
+            boolean isDeleted, //
+            DataObject po1DO,//
+            DataObject itemsDO,//
+            DataObject item1DO,//
+            DataObject item2DO,//
+            DataObject item1ProductDO,//
+            DataObject item1ProductPrice1DO,//
+            DataObject item1ProductPrice2DO//
+            ) {
         assertEquals(10, salesPO1CS.getChangedDataObjects().size());
         assertEquals(1, salesPO1CS.getOldValues(po1DO).size());
         if (!testLoadSave) {
-            assertModified(po1DO, salesPO1CS);            
+            assertModified(po1DO, salesPO1CS);
             if (isDeleted) {
                 assertDeleted(itemsDO, salesPO1CS);
                 assertFalse(itemsDO == salesPO1CS.getOldValue(po1DO, po1DO.getInstanceProperty("items"))); // verify that oldValue of original deleted is deep copy
@@ -295,32 +295,32 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
                 assertTrue(oldValueItem instanceof ArrayList);
                 assertEquals(2, ((ArrayList)oldValueItem).size());
                 List anItemList = ((ArrayList)oldValueItem);
-                DataObject oldItem1DO = (DataObject) anItemList.get(0); 
+                DataObject oldItem1DO = (DataObject) anItemList.get(0);
                 assertNotNull(oldItem1DO);
-                assertFalse(item1ProductPrice1DO == oldItem1DO); // verify that oldValue of original deleted is deep copy                
+                assertFalse(item1ProductPrice1DO == oldItem1DO); // verify that oldValue of original deleted is deep copy
                 assertDeleted(item1DO, salesPO1CS);
-                DataObject oldItem2DO = (DataObject) anItemList.get(1); 
+                DataObject oldItem2DO = (DataObject) anItemList.get(1);
                 assertNotNull(oldItem2DO);
-                assertFalse(item1ProductPrice2DO == oldItem2DO); // verify that oldValue of original deleted is deep copy                
-                assertDeleted(item2DO, salesPO1CS);                
+                assertFalse(item1ProductPrice2DO == oldItem2DO); // verify that oldValue of original deleted is deep copy
+                assertDeleted(item2DO, salesPO1CS);
 
                 assertDeleted(item1ProductDO, salesPO1CS);
-                assertFalse(item1ProductDO == salesPO1CS.getOldValue(item1DO, item1DO.getInstanceProperty("product"))); // verify that oldValue of original deleted is deep copy                
+                assertFalse(item1ProductDO == salesPO1CS.getOldValue(item1DO, item1DO.getInstanceProperty("product"))); // verify that oldValue of original deleted is deep copy
                 assertDeleted(item1ProductPrice1DO, salesPO1CS);
                 Object  oldValuePrice = salesPO1CS.getOldValue(item1ProductDO, item1ProductDO.getInstanceProperty("price")).getValue();
                 // Bug# 5895047 - verify we are not getting an oldSetting that is an empty ArrayList
                 assertTrue(oldValuePrice instanceof ArrayList);
                 assertEquals(2, ((ArrayList)oldValuePrice).size());
                 List aPriceList = ((ArrayList)oldValuePrice);
-                DataObject oldItem1ProductPrice1DO = (DataObject) aPriceList.get(0); 
+                DataObject oldItem1ProductPrice1DO = (DataObject) aPriceList.get(0);
                 assertNotNull(oldItem1ProductPrice1DO);
-                assertFalse(item1ProductPrice1DO == oldItem1ProductPrice1DO); // verify that oldValue of original deleted is deep copy                
+                assertFalse(item1ProductPrice1DO == oldItem1ProductPrice1DO); // verify that oldValue of original deleted is deep copy
                 assertDeleted(item1ProductPrice2DO, salesPO1CS);
-                DataObject oldItem2ProductPrice1DO = (DataObject) aPriceList.get(1); 
+                DataObject oldItem2ProductPrice1DO = (DataObject) aPriceList.get(1);
                 assertNotNull(oldItem2ProductPrice1DO);
-                assertFalse(item1ProductPrice2DO == oldItem2ProductPrice1DO); // verify that oldValue of original deleted is deep copy                
+                assertFalse(item1ProductPrice2DO == oldItem2ProductPrice1DO); // verify that oldValue of original deleted is deep copy
             } else {
-                assertDetached(item1DO, salesPO1CS);    
+                assertDetached(item1DO, salesPO1CS);
                 assertDetached(item1ProductDO, salesPO1CS, false);
                 assertDetached(item1ProductPrice1DO, salesPO1CS, false);
                 assertDetached(item1ProductPrice2DO, salesPO1CS, false);
@@ -340,5 +340,5 @@ public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoa
 
         assertEquals(16, ((SDOChangeSummary)salesPO1CS).getOldContainer().size());
         assertEquals(16, ((SDOChangeSummary)salesPO1CS).getOldContainmentProperty().size());
-    }    
+    }
 }

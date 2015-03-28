@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,28 +27,28 @@ package org.eclipse.persistence.jpa.jpql.parser;
 @SuppressWarnings("nls")
 public final class BetweenExpressionBNF extends JPQLQueryBNF {
 
-	/**
-	 * The unique identifier of this {@link BetweenExpressionBNF}.
-	 */
-	public static final String ID = "between_expression";
+    /**
+     * The unique identifier of this {@link BetweenExpressionBNF}.
+     */
+    public static final String ID = "between_expression";
 
-	/**
-	 * Creates a new <code>BetweenExpressionBNF</code>.
-	 */
-	public BetweenExpressionBNF() {
-		super(ID);
-	}
+    /**
+     * Creates a new <code>BetweenExpressionBNF</code>.
+     */
+    public BetweenExpressionBNF() {
+        super(ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initialize() {
-		super.initialize();
-		setCompound(true);
-		registerExpressionFactory(BetweenExpressionFactory.ID);
-		registerChild(ArithmeticExpressionBNF.ID);
-		registerChild(StringExpressionBNF.ID);
-		registerChild(DatetimeExpressionBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initialize() {
+        super.initialize();
+        setCompound(true);
+        registerExpressionFactory(BetweenExpressionFactory.ID);
+        registerChild(ArithmeticExpressionBNF.ID);
+        registerChild(StringExpressionBNF.ID);
+        registerChild(DatetimeExpressionBNF.ID);
+    }
 }

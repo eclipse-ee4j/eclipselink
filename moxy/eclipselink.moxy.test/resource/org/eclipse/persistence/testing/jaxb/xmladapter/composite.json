@@ -2,14 +2,14 @@
      "hashMap":{
          "entry":[
               {
-	      "key":321,
-	      "val":"this is another value"
-	       },
-	       {
-	      "key":123,
-	      "val":"this is a value"
-	       }
-	 ]
+          "key":321,
+          "val":"this is another value"
+           },
+           {
+          "key":123,
+          "val":"this is a value"
+           }
+     ]
      }
 }
 }

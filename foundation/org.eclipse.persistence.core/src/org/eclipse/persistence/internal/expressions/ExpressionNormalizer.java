@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import org.eclipse.persistence.expressions.*;
@@ -32,10 +32,10 @@ public class ExpressionNormalizer {
 
     /** The session being normalized in. */
     protected AbstractSession session;
-    
+
     /** Used to maintain identity of cloned expressions. */
     protected Map<Expression, Expression> clonedExpressions;
-    
+
     /**
      * Used to trigger adding additional join operations etc to the expression being processed instead of at the end of the where clause.
      * Useful for dealing with Treat within an Or clause, as the type expression needs to be appended within the OR condition rather AND'd
@@ -128,8 +128,8 @@ public class ExpressionNormalizer {
     }
 
     /**
-     * Similar to addAdditionalExpression, this keeps a running expression used for joins so that they can be added locally within 'OR' 
-     * predicates rather than to the entire where clause.  If addAdditionalExpressionsWithinCurrrentExpressionContext is false, it will work 
+     * Similar to addAdditionalExpression, this keeps a running expression used for joins so that they can be added locally within 'OR'
+     * predicates rather than to the entire where clause.  If addAdditionalExpressionsWithinCurrrentExpressionContext is false, it will work
      * the same as addAdditionalExpression
      * @param theExpression
      */
@@ -146,10 +146,10 @@ public class ExpressionNormalizer {
     /**
      * INTERNAL
      * This will return the localExpression if isLogicalExpression is false, otherwise it will check the addAdditionalExpressionsWithinCurrrentExpressionContext
-     * flag and clear additionalLocalExpression once adding it to the localExpression.  
+     * flag and clear additionalLocalExpression once adding it to the localExpression.
      * @param localExpression
      * @param isLogicalExpression
-     * @return 
+     * @return
      */
     public Expression processAdditionalLocalExpressions(Expression localExpression, boolean isLogicalExpression) {
         if (!isLogicalExpression || !addAdditionalExpressionsWithinCurrrentExpressionContext) {
@@ -167,7 +167,7 @@ public class ExpressionNormalizer {
 
     /**
      * INTERNAL:
-     * Allows keeping track when the normalizer is within a logical OR statement, where additionalExpressions might need to be added to the local 
+     * Allows keeping track when the normalizer is within a logical OR statement, where additionalExpressions might need to be added to the local
      * expression instead of at the end of the where clause.
      * @param addAdditionalExpressionsWithinCurrrentExpressionContext
      */

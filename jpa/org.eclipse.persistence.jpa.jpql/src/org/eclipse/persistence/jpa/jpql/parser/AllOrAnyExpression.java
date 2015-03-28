@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,51 +39,51 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class AllOrAnyExpression extends AbstractSingleEncapsulatedExpression {
 
-	/**
-	 * Creates a new <code>AllOrAnyExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param identifier Either {@link Expression#ALL ALL}, {@link Expression#ANY ANY} or {@link
-	 * Expression#SOME SOME}
-	 */
-	public AllOrAnyExpression(AbstractExpression parent, String identifier) {
-		super(parent, identifier);
-	}
+    /**
+     * Creates a new <code>AllOrAnyExpression</code>.
+     *
+     * @param parent The parent of this expression
+     * @param identifier Either {@link Expression#ALL ALL}, {@link Expression#ANY ANY} or {@link
+     * Expression#SOME SOME}
+     */
+    public AllOrAnyExpression(AbstractExpression parent, String identifier) {
+        super(parent, identifier);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getEncapsulatedExpressionQueryBNFId() {
-		return SubqueryBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getEncapsulatedExpressionQueryBNFId() {
+        return SubqueryBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(AllOrAnyExpressionBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(AllOrAnyExpressionBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 
-		if (tolerant) {
-			return super.parse(wordParser, queryBNFId, tolerant);
-		}
+        if (tolerant) {
+            return super.parse(wordParser, queryBNFId, tolerant);
+        }
 
-		SimpleSelectStatement expression = new SimpleSelectStatement(this);
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        SimpleSelectStatement expression = new SimpleSelectStatement(this);
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

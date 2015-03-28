@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
- 
+
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import java.util.Vector;
@@ -61,29 +61,29 @@ public class InheritancePopulator {
 
         Company company = InheritanceModelExamples.companyExample1();
         engineer.setCompany(company);
-        
+
         PopulationManager.getDefaultManager().registerObject(Company.class, company, "co1");
         PopulationManager.getDefaultManager().registerObject(Company.class, InheritanceModelExamples.companyExample2(), "co2");
         PopulationManager.getDefaultManager().registerObject(Company.class, InheritanceModelExamples.companyExample3(), "co3");
-        
+
         PopulationManager.getDefaultManager().registerObject(Computer.class, InheritanceModelExamples.laptopExample1(), "lap1");
         PopulationManager.getDefaultManager().registerObject(Computer.class, InheritanceModelExamples.laptopExample2(), "lap2");
         PopulationManager.getDefaultManager().registerObject(Computer.class, InheritanceModelExamples.desktopExample1(), "desk1");
         PopulationManager.getDefaultManager().registerObject(Computer.class, InheritanceModelExamples.desktopExample2(), "desk2");
     }
-    
-    
+
+
     public void persistExample(Session session)
-    {        
-        Vector allObjects = new Vector();        
-        UnitOfWork unitOfWork = session.acquireUnitOfWork();        
+    {
+        Vector allObjects = new Vector();
+        UnitOfWork unitOfWork = session.acquireUnitOfWork();
         PopulationManager.getDefaultManager().addAllObjectsForClass(Person.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(AAA.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(Company.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(Computer.class, allObjects);
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
-        
+
     }
     protected boolean containsObject(Class domainClass, String identifier) {
         return populationManager.containsObject(domainClass, identifier);

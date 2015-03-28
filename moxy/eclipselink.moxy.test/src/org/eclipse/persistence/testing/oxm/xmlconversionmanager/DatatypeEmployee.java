@@ -24,7 +24,7 @@ public class DatatypeEmployee {
         if (!(anObject instanceof DatatypeEmployee)) {
             return false;
         }
-        
+
         DatatypeEmployee test = (DatatypeEmployee) anObject;
         if (!test.name.equals(this.name)) {
             System.err.println("name NOT EQUAL");
@@ -49,21 +49,21 @@ public class DatatypeEmployee {
             System.err.println("vacationTaken NOT EQUAL");
             return false;
         }
-        
+
         return true;
     }
-    
+
     public String toString() {
         SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss Z");
-        
+
         String toString = "\nDatatypeEmployee@" + Integer.toHexString(hashCode());
         toString += "\n   name:          " + name;
         toString += "\n   deptNumber:    " + deptNumber;
         toString += "\n   birthDate:     " + birthDate; //format.format(birthDate.getTime());
         toString += "\n   hireDate:      " + hireDate; //format.format(hireDate.toGregorianCalendar().getTime());
         toString += "\n   vacationTaken: " + vacationTaken.toString() + "\n";
-        
+
         return toString;
     }
-    
+
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.generate;
 
 import commonj.sdo.Type;
@@ -40,7 +40,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
     public String getControlFileName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsGenerated.xsd";
     }
-    
+
     public String getControlFileNameDifferentOrder() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsGeneratedRoundTrip.xsd";
     }
@@ -158,7 +158,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         pOrderProp.setName("porder");
         pOrderProp.setXsdLocalName("porder");
         pOrderProp.setType(stringType);
-        //pOrderProp.setElement(true);        
+        //pOrderProp.setElement(true);
         pOrderProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         pOrderProp.setMany(false);
         pOrderProp.setContainment(true);
@@ -168,8 +168,8 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         SDOProperty quantityProp = new SDOProperty(aHelperContext);
         quantityProp.setXsd(true);
         quantityProp.setName("quantity");
-        quantityProp.setXsdLocalName("quantity");        
-        quantityProp.setContainingType(itemType);          
+        quantityProp.setXsdLocalName("quantity");
+        quantityProp.setContainingType(itemType);
         quantityProp.setInstanceProperty(xmlDataTypeProperty, SDOConstants.SDO_INTEGER);
         quantityProp.setType(SDOConstants.SDO_INTEGER);
         itemType.getDeclaredProperties().add(quantityProp);
@@ -309,7 +309,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         topPriorityItemProp.setType(itemType);
         topPriorityItemProp.setMany(true);
         topPriorityItemProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
-        
+
         topPriorityItemProp.setContainment(true);
         topPriorityItemProp.setContainingType(POtype);
 
@@ -344,9 +344,9 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
 
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
+
         assertSchemaIdentical(getDocument(getControlFileNameDifferentOrder()), generatedSchemaDoc);
     }
 

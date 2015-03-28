@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,39 +31,39 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 @SuppressWarnings("nls")
 public final class KeywordExpressionFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link KeywordExpressionFactory}.
-	 */
-	public static final String ID = "keyword";
+    /**
+     * The unique identifier of this {@link KeywordExpressionFactory}.
+     */
+    public static final String ID = "keyword";
 
-	/**
-	 * Creates a new <code>KeywordExpressionFactory</code>.
-	 */
-	public KeywordExpressionFactory() {
-		super(ID, Expression.FALSE,
-		          Expression.NULL,
-		          Expression.TRUE);
-	}
+    /**
+     * Creates a new <code>KeywordExpressionFactory</code>.
+     */
+    public KeywordExpressionFactory() {
+        super(ID, Expression.FALSE,
+                  Expression.NULL,
+                  Expression.TRUE);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		for (String identifier : identifiers()) {
-			if (identifier.equalsIgnoreCase(word)) {
-				expression = new KeywordExpression(parent, identifier);
-				expression.parse(wordParser, tolerant);
-				return expression;
-			}
-		}
+        for (String identifier : identifiers()) {
+            if (identifier.equalsIgnoreCase(word)) {
+                expression = new KeywordExpression(parent, identifier);
+                expression.parse(wordParser, tolerant);
+                return expression;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

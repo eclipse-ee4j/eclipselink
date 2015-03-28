@@ -5,12 +5,12 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
  */
 public class TreeVisitor {
     protected TreeAdaptor adaptor;
-    
+
     public TreeVisitor(TreeAdaptor adaptor) {
         this.adaptor = adaptor;
     }
     public TreeVisitor() { this(new CommonTreeAdaptor()); }
-    
+
     /** Visit every node in tree t and trigger an action for each node
      *  before/after having visited all of its children.
      *  Execute both actions even if t has no children.

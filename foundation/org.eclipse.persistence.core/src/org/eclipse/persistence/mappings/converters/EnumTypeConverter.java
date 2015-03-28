@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *      *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.converters;
 
 import java.security.AccessController;
@@ -25,10 +25,10 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 
 /**
- * <b>Purpose</b>: Object type converter is used to match a fixed number of 
- * database data values to a Java enum object value. It can be used when the 
- * values on the database and in the Java differ. To create an object type 
- * converter, simply specify the set of conversion value pairs. A default value 
+ * <b>Purpose</b>: Object type converter is used to match a fixed number of
+ * database data values to a Java enum object value. It can be used when the
+ * values on the database and in the Java differ. To create an object type
+ * converter, simply specify the set of conversion value pairs. A default value
  * and one-way conversion are also supported for legacy data situations.
  *
  * @author Guy Pelletier
@@ -38,7 +38,7 @@ public class EnumTypeConverter extends ObjectTypeConverter {
     private Class m_enumClass;
     private String m_enumClassName;
     private boolean m_useOrdinalValues;
-    
+
     /**
      * PUBLIC:
      * Creating an enum converter this way will create the conversion values
@@ -77,10 +77,10 @@ public class EnumTypeConverter extends ObjectTypeConverter {
         if (getFieldToAttributeValues().isEmpty()) {
             EnumSet theEnums = EnumSet.allOf(enumClass);
             Iterator<Enum> i = theEnums.iterator();
-            
+
             while (i.hasNext()) {
                 Enum theEnum = i.next();
-                
+
                 if (m_useOrdinalValues) {
                     addConversionValue(theEnum.ordinal(), theEnum.name());
                 } else {
@@ -93,23 +93,23 @@ public class EnumTypeConverter extends ObjectTypeConverter {
     public Class getEnumClass() {
         return m_enumClass;
     }
-    
+
     public String getEnumClassName() {
         return m_enumClassName;
     }
 
     /**
      * INTERNAL:
-     * Convert all the class-name-based settings in this converter to actual 
-     * class-based settings. This method is used when converting a project 
+     * Convert all the class-name-based settings in this converter to actual
+     * class-based settings. This method is used when converting a project
      * that has been built with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         super.convertClassNamesToClasses(classLoader);
-        
+
         // convert if enumClass is null or if different classLoader
-        if (m_enumClass == null || 
+        if (m_enumClass == null ||
             (m_enumClass != null && !m_enumClass.getClassLoader().equals(classLoader))) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -131,7 +131,7 @@ public class EnumTypeConverter extends ObjectTypeConverter {
         }
         initializeConversions(m_enumClass);
     }
-    
+
     /**
      * INTERNAL:
      * Returns the corresponding attribute value for the specified field value.
@@ -139,14 +139,14 @@ public class EnumTypeConverter extends ObjectTypeConverter {
      */
     public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
         Object obj = super.convertDataValueToObjectValue(fieldValue, session);
-        
+
         if (fieldValue == null || obj == null) {
             return obj;
         } else {
             return Enum.valueOf(m_enumClass, (String) obj);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Convert Enum object to the data value. Internal enums are stored as

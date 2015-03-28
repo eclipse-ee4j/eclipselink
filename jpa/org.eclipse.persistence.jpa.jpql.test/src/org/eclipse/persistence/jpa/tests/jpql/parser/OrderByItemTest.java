@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,132 +27,132 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 @SuppressWarnings("nls")
 public final class OrderByItemTest extends JPQLParserTest {
 
-	@Test
-	public void test_JPQLQuery_01() throws Exception {
+    @Test
+    public void test_JPQLQuery_01() throws Exception {
 
-		String jpqlQuery = "select e from Employee e order by e.name asc nulls first";
+        String jpqlQuery = "select e from Employee e order by e.name asc nulls first";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			orderBy(orderByItemAscNullsFirst("e.name"))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            orderBy(orderByItemAscNullsFirst("e.name"))
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_02() throws Exception {
+    @Test
+    public void test_JPQLQuery_02() throws Exception {
 
-		String jpqlQuery = "select e from Employee e order by e.name asc nulls last";
+        String jpqlQuery = "select e from Employee e order by e.name asc nulls last";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			orderBy(orderByItemAscNullsLast("e.name"))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            orderBy(orderByItemAscNullsLast("e.name"))
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_03() throws Exception {
+    @Test
+    public void test_JPQLQuery_03() throws Exception {
 
-		String jpqlQuery = "select e from Employee e order by e.name nulls first";
+        String jpqlQuery = "select e from Employee e order by e.name nulls first";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			orderBy(orderByItemNullsFirst("e.name"))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            orderBy(orderByItemNullsFirst("e.name"))
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_04() throws Exception {
+    @Test
+    public void test_JPQLQuery_04() throws Exception {
 
-		String jpqlQuery = "select e from Employee e order by e.name nulls last";
+        String jpqlQuery = "select e from Employee e order by e.name nulls last";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			orderBy(orderByItemNullsLast("e.name"))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            orderBy(orderByItemNullsLast("e.name"))
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_05() throws Exception {
+    @Test
+    public void test_JPQLQuery_05() throws Exception {
 
-		String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age desc nulls first";
+        String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age desc nulls first";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			orderBy(
-				orderByItemNullsLast("e.name"),
-				orderByItemDescNullsFirst("e.age")
-			)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            orderBy(
+                orderByItemNullsLast("e.name"),
+                orderByItemDescNullsFirst("e.age")
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_06() throws Exception {
+    @Test
+    public void test_JPQLQuery_06() throws Exception {
 
-		String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age nulls";
+        String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age nulls";
 
-		OrderByItemTester orderByItem = orderByItemNullsFirst("e.age");
-		orderByItem.nulls = NULLS;
+        OrderByItemTester orderByItem = orderByItemNullsFirst("e.age");
+        orderByItem.nulls = NULLS;
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			orderBy(
-				orderByItemNullsLast("e.name"),
-				orderByItem
-			)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            orderBy(
+                orderByItemNullsLast("e.name"),
+                orderByItem
+            )
+        );
 
-		testQuery(jpqlQuery, selectStatement);
-	}
+        testQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_07() throws Exception {
+    @Test
+    public void test_JPQLQuery_07() throws Exception {
 
-		String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age NULLS ";
+        String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age NULLS ";
 
-		OrderByItemTester orderByItem = orderByItemNullsFirst("e.age");
-		orderByItem.nulls = "NULLS";
-		orderByItem.hasSpaceAfterNulls = true;
+        OrderByItemTester orderByItem = orderByItemNullsFirst("e.age");
+        orderByItem.nulls = "NULLS";
+        orderByItem.hasSpaceAfterNulls = true;
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e"),
-			orderBy(
-				orderByItemNullsLast("e.name"),
-				orderByItem
-			)
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e"),
+            orderBy(
+                orderByItemNullsLast("e.name"),
+                orderByItem
+            )
+        );
 
-		testInvalidQuery(jpqlQuery, selectStatement);
-	}
+        testInvalidQuery(jpqlQuery, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_08() throws Exception {
+    @Test
+    public void test_JPQLQuery_08() throws Exception {
 
-		String jpqlQuery = "SELECT i FROM Item i WHERE i.category=:category ORDER BY i.id\"";
+        String jpqlQuery = "SELECT i FROM Item i WHERE i.category=:category ORDER BY i.id\"";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("i")),
-			from("Item", "i"),
-			where(path("i.category").equal(inputParameter(":category"))),
-			orderBy(orderByItem(path("i.id\"")))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("i")),
+            from("Item", "i"),
+            where(path("i.category").equal(inputParameter(":category"))),
+            orderBy(orderByItem(path("i.id\"")))
+        );
 
-		testInvalidQuery(jpqlQuery, selectStatement);
-	}
+        testInvalidQuery(jpqlQuery, selectStatement);
+    }
 }

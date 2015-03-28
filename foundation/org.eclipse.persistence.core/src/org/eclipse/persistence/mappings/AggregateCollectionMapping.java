@@ -1,23 +1,23 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     12/30/2010-2.3 Guy Pelletier  
+ *     12/30/2010-2.3 Guy Pelletier
  *       - 312253: Descriptor exception with Embeddable on DDL gen
  *     07/27/2012-2.5 Chris Delahunt
- *       - 371950: Metadata caching 
- *     10/25/2012-2.5 Guy Pelletier 
+ *       - 371950: Metadata caching
+ *     10/25/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     02/11/2013-2.5 Guy Pelletier 
+ *     02/11/2013-2.5 Guy Pelletier
  *       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
 import java.util.ArrayList;
@@ -126,17 +126,17 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /** In RemoteSession case the mapping needs the reference descriptor serialized from the server,
      * but referenceDescriptor attribute defined as transient in the superclass. To overcome that
      * in non-remote case referenceDescriptor is assigned to remoteReferenceDescriptor; in remote - another way around.
-     */  
+     */
     protected ClassDescriptor remoteReferenceDescriptor;
-    
+
     /** Default source table that should be used with the default source fields of this mapping. */
     protected DatabaseTable defaultSourceTable;
 
     /** Indicates whether the entire target object is primary key - in that case the object can't be updated in the db,
-     * but rather deleted and then re-inserted. 
+     * but rather deleted and then re-inserted.
      */
     protected boolean isEntireObjectPK;
-    
+
     /** These queries used to update listOrderField
      */
     protected transient DataModifyQuery updateListOrderFieldQuery;
@@ -145,7 +145,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /** indicates whether listOrderField value could be updated in the db. Used only if listOrderField!=null */
     protected boolean isListOrderFieldUpdatable;
-    
+
     protected static final String min = "min";
     protected static final String max = "max";
     protected static final String shift = "shift";
@@ -154,13 +154,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     protected static final String bulk = "bulk";
 
     /**
-     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth)
      * references an entity.
      * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.
-     * Lazily initialized.  
+     * Lazily initialized.
      */
     protected Boolean hasNestedIdentityReference;
-    
+
     /**
      * PUBLIC:
      * Default constructor.
@@ -177,7 +177,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         this.setCascadeAll(true);
         this.isListOrderFieldSupported = true;
         this.isListOrderFieldUpdatable = true;
-        this.isPrivateOwned = true;        
+        this.isPrivateOwned = true;
     }
 
     /**
@@ -200,20 +200,20 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public void addOverrideManyToManyMapping(ManyToManyMapping mapping) {
         // Not supported at this time ...
     }
-    
+
     /**
      * INTERNAL:
-     * In JPA users may specify overrides to apply to a unidirectional one to 
-     * many mapping on a shared embeddable descriptor. These settings are 
-     * applied at initialize time, after the reference descriptor is cloned. In 
-     * an aggregate collection case, this is not supported and currently 
+     * In JPA users may specify overrides to apply to a unidirectional one to
+     * many mapping on a shared embeddable descriptor. These settings are
+     * applied at initialize time, after the reference descriptor is cloned. In
+     * an aggregate collection case, this is not supported and currently
      * silently ignored and does nothing.
      */
     @Override
     public void addOverrideUnidirectionalOneToManyMapping(UnidirectionalOneToManyMapping mapping) {
         // Not supported at this time ...
     }
-    
+
     /**
      * Add a converter to be applied to a mapping of the aggregate descriptor.
      */
@@ -230,7 +230,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public void addFieldNameTranslation(String sourceFieldName, String aggregateFieldName) {
         addFieldTranslation(new DatabaseField(sourceFieldName), aggregateFieldName);
     }
-    
+
     /**
      * PUBLIC:
      * Maps a field name in the aggregate descriptor
@@ -242,7 +242,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * PUBLIC:
-     * 
+     *
      * Maps a field name in the aggregate descriptor
      * to a field name in the source table.
      */
@@ -258,7 +258,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public void addNestedFieldNameTranslation(String attributeName, String sourceFieldName, String aggregateFieldName) {
         addNestedFieldTranslation(attributeName, new DatabaseField(sourceFieldName), aggregateFieldName);
     }
-    
+
     /**
      * PUBLIC:
      * Map the name of an attribute of the reference descriptor mapped with AggregateCollectionMapping to aggregateToSourceFieldNames
@@ -266,12 +266,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     public void addNestedFieldTranslation(String attributeName, DatabaseField sourceField, String aggregateFieldName) {
         Map<String, DatabaseField> attributeFieldNameTranslation = nestedAggregateToSourceFields.get(attributeName);
-        
+
         if (attributeFieldNameTranslation == null) {
             attributeFieldNameTranslation = new HashMap<String, DatabaseField>(5);
             nestedAggregateToSourceFields.put(attributeName, attributeFieldNameTranslation);
         }
-        
+
         attributeFieldNameTranslation.put(aggregateFieldName, sourceField);
     }
 
@@ -299,7 +299,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         getTargetForeignKeyFields().addElement(targetForeignKey);
         getSourceKeyFields().addElement(sourceKey);
     }
-    
+
     /**
      * PUBLIC:
      * Define the target foreign key relationship in the 1-M aggregate collection mapping.
@@ -419,7 +419,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         // bug 2612602 as we are building the working copy make sure that we call to correct clone method.
         Object clonedElement = aggregateDescriptor.getObjectBuilder().instantiateWorkingCopyClone(element, cloningSession);
         aggregateDescriptor.getObjectBuilder().populateAttributesForClone(element, parentCacheKey, clonedElement, refreshCascade, cloningSession);
-        
+
         if (cloningSession.isUnitOfWork()){
             // CR 4155 add the originals to the UnitOfWork so that we can find it later in the merge
             // as aggregates have no identity.  If we don't do this we will loose indirection information.
@@ -441,7 +441,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
      * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
@@ -497,7 +497,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
@@ -566,7 +566,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade perform removal of orphaned private owned objects from the UnitOfWorkChangeSet
@@ -602,13 +602,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         mappingObject.aggregateToSourceFields = new HashMap(this.aggregateToSourceFields);
         mappingObject.nestedAggregateToSourceFields = new HashMap(this.nestedAggregateToSourceFields);
         if(updateListOrderFieldQuery != null) {
-            mappingObject.updateListOrderFieldQuery = this.updateListOrderFieldQuery; 
+            mappingObject.updateListOrderFieldQuery = this.updateListOrderFieldQuery;
         }
         if(bulkUpdateListOrderFieldQuery != null) {
-            mappingObject.bulkUpdateListOrderFieldQuery = this.bulkUpdateListOrderFieldQuery; 
+            mappingObject.bulkUpdateListOrderFieldQuery = this.bulkUpdateListOrderFieldQuery;
         }
         if(pkUpdateListOrderFieldQuery != null) {
-            mappingObject.pkUpdateListOrderFieldQuery = this.pkUpdateListOrderFieldQuery; 
+            mappingObject.pkUpdateListOrderFieldQuery = this.pkUpdateListOrderFieldQuery;
         }
 
         return mappingObject;
@@ -658,7 +658,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 UnitOfWorkChangeSet uowComparisonChangeSet = new UnitOfWorkChangeSet(session);
                 while (cp.hasNext(cloneIterator)) {
                     Object cloneObject = cp.next(cloneIterator, session);
-    
+
                     // For CR#2285 assume that if null is added the collection has changed.
                     if (cloneObject == null) {
                         change = true;
@@ -674,7 +674,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                     if (cloneObject.getClass().equals(backUpObject.getClass())) {
                         ObjectBuilder builder = getReferenceDescriptor(cloneObject.getClass(), session).getObjectBuilder();
                         ObjectChangeSet initialChanges = builder.createObjectChangeSet(cloneObject, uowComparisonChangeSet, owner.isNew(), session);
-        
+
                         //compare for changes will return null if no change is detected and I need to remove the changeSet
                         ObjectChangeSet changes = builder.compareForChange(cloneObject, backUpObject, uowComparisonChangeSet, session);
                         if (changes != null) {
@@ -699,8 +699,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         return convertToChangeRecord(getRealCollectionAttributeValueFromObject(clone, session), containerPolicy.containerInstance(), owner, session);
     }
-  
-    
+
+
     /**
      * INTERNAL:
      * Determine if an AggregateCollection that is contained as a map has changed by comparing the values in the
@@ -739,7 +739,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
         return !originalKeyValues.isEmpty();
     }
-    
+
     /**
      * INTERNAL:
      * Old and new lists are compared and only the changes are written to the database.
@@ -753,7 +753,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             compareListsAndWrite_NonUpdatableListOrderField(previousList, currentList, query);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Old and new lists are compared and only the changes are written to the database.
@@ -764,10 +764,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if(currentList instanceof IndirectList) {
             shouldRepairOrder = ((IndirectList)currentList).isListOrderBrokenInDb();
         }
-        
+
         HashMap<Object, Object[]> previousAndCurrentByKey = new HashMap<Object, Object[]>();
         int pkSize = getReferenceDescriptor().getPrimaryKeyFields().size();
-        
+
         // First index the current objects by their primary key.
         for (int i=0; i < currentList.size(); i++) {
             Object currentObject = currentList.get(i);
@@ -820,27 +820,27 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             Object previousObject = previousAndCurrent[0];
             // currentObject is not null
             Object currentObject = previousAndCurrent[1];
-            
+
             if(previousObject == null) {
                 // there's no previous object - that means that current object should be added.
                 // index of currentObject in currentList
                 int iCurrent = (Integer)((CacheId)key).getPrimaryKey()[pkSize];
                 DatabaseRecord extraData = new DatabaseRecord(1);
                 extraData.put(this.listOrderField, iCurrent);
-                
+
                 objectAddedDuringUpdate(query, currentObject, null, extraData);
             } else {
                 if(!this.isEntireObjectPK) {
                     objectUnchangedDuringUpdate(query, currentObject, previousObject);
                 }
             }
-        }        
+        }
 
         if(shouldRepairOrder) {
             ((IndirectList)currentList).setIsListOrderBrokenInDb(false);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Old and new lists are compared and only the changes are written to the database.
@@ -851,7 +851,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if(currentList instanceof IndirectList) {
             shouldRepairOrder = ((IndirectList)currentList).isListOrderBrokenInDb();
         }
-        
+
         // Object[] = {previousObject, currentObject, previousIndex, currentIndex}
         HashMap<Object, Object[]> previousAndCurrentByKey = new HashMap<Object, Object[]>();
         // a SortedMap, current index mapped by previous index, both indexes must exist and be not equal.
@@ -896,11 +896,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if(!currentIndexByPreviousIndex.isEmpty()) {
             boolean shouldUpdateOrderUsingPk = shouldRepairOrder;
             if(!shouldUpdateOrderUsingPk) {
-                // search for cycles in order changes, such as, for instance: 
-                //   previous index  1, 2 
+                // search for cycles in order changes, such as, for instance:
+                //   previous index  1, 2
                 //   current  index  2, 1
                 // or
-                //   previous index  1, 3, 5 
+                //   previous index  1, 3, 5
                 //   current  index  3, 5, 1
                 // those objects order index can't be updated using their previous order index value - should use pk in where clause instead.
                 // For now, if a cycle is found let's update all order indexes using pk.
@@ -926,9 +926,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                     Object key = entry.getKey();
                     Object[] previousAndCurrent = entry.getValue();
                     // previousObject may be null, meaning currentObject has been added to the list
-                    Object previousObject = previousAndCurrent[0];                    
+                    Object previousObject = previousAndCurrent[0];
                     if(previousObject != null) {
-                        Object currentObject = previousAndCurrent[1];                    
+                        Object currentObject = previousAndCurrent[1];
                         if(!this.isEntireObjectPK) {
                             objectUnchangedDuringUpdate(query, currentObject, previousObject);
                         }
@@ -938,7 +938,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                             objectChangedListOrderDuringUpdate(query, key, iCurrent);
                         }
                     }
-                }        
+                }
             } else {
                 // update the objects - but not their order values
                 if(!this.isEntireObjectPK) {
@@ -949,17 +949,17 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                         // previousObject may be null, meaning currentObject has been added to the list
                         Object previousObject = previousAndCurrent[0];
                         if( previousObject != null) {
-                            Object currentObject = previousAndCurrent[1];                    
+                            Object currentObject = previousAndCurrent[1];
                             objectUnchangedDuringUpdate(query, currentObject, previousObject);
                         }
-                    }        
+                    }
                 }
-                
+
                 // a bulk update query will be executed for each bunch of adjacent previous indexes from which current indexes could be obtained with a shift, for instance:
-                //   previous index  1, 2, 3 
+                //   previous index  1, 2, 3
                 //   current  index  5, 6, 7
                 // the sql will look like:
-                //   UPDATE ... SET ListOrderField = ListOrderField + 4 WHERE 1 <= ListOrderField AND ListOrderField <= 3 AND FK = ...  
+                //   UPDATE ... SET ListOrderField = ListOrderField + 4 WHERE 1 <= ListOrderField AND ListOrderField <= 3 AND FK = ...
                 int iMin = -1;
                 int iMax = -1;
                 int iShift = 0;
@@ -1039,7 +1039,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 }
             }
         }
-        
+
         // Add the new objects
         Iterator<Map.Entry<Object, Object[]>> iterator = previousAndCurrentByKey.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -1053,18 +1053,18 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 Object currentObject = previousAndCurrent[1];
                 // index of currentObject in currentList
                 int iCurrent = (Integer)previousAndCurrent[3];
-                
+
                 DatabaseRecord extraData = new DatabaseRecord(1);
                 extraData.put(this.listOrderField, iCurrent);
-                
+
                 objectAddedDuringUpdate(query, currentObject, null, extraData);
             }
-        }        
+        }
         if (shouldRepairOrder) {
             ((IndirectList)currentList).setIsListOrderBrokenInDb(false);
         }
     }
-    
+
     protected int objectChangedListOrderDuringUpdate(WriteObjectQuery query, int iMin, int iMax, int iShift) {
         DataModifyQuery updateQuery;
         AbstractRecord translationRow = query.getTranslationRow().clone();
@@ -1107,7 +1107,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (containerPolicy.sizeFor(firstCollection) == 0) {
             return true;
         }
-        
+
         if (isMapKeyMapping()) {
             Object firstIter = containerPolicy.iteratorFor(firstCollection);
             Object secondIter = containerPolicy.iteratorFor(secondCollection);
@@ -1118,7 +1118,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondEntry.getValue(), session);
                 Object key = secondEntry.getKey();
                 keyValues.put(key, primaryKey);
-            }    
+            }
             while (containerPolicy.hasNext(firstIter)) {
                 Map.Entry firstEntry = (Map.Entry)containerPolicy.nextEntry(firstIter, session);
                 Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstEntry.getValue(), session);
@@ -1127,23 +1127,23 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                     return false;
                 }
             }
-        } else { 
-            //iterator the first aggregate collection    
+        } else {
+            //iterator the first aggregate collection
             for (Object iterFirst = containerPolicy.iteratorFor(firstCollection);
                      containerPolicy.hasNext(iterFirst);) {
                 //fetch the next object from the first iterator.
                 Object firstAggregateObject = containerPolicy.next(iterFirst, session);
-    
-                //iterator the second aggregate collection    
+
+                //iterator the second aggregate collection
                 for (Object iterSecond = containerPolicy.iteratorFor(secondCollection); true;) {
                     //fetch the next object from the second iterator.
                     Object secondAggregateObject = containerPolicy.next(iterSecond, session);
-    
-                    //matched object found, break to outer FOR loop            
+
+                    //matched object found, break to outer FOR loop
                     if (getReferenceDescriptor().getObjectBuilder().compareObjects(firstAggregateObject, secondAggregateObject, session)) {
                         break;
                     }
-    
+
                     if (!containerPolicy.hasNext(iterSecond)) {
                         return false;
                     }
@@ -1204,9 +1204,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         changeRecord.setMapping(this);
         changeRecord.setChangedValues(collectionChanges);
         changeRecord.setOriginalCollection(backupCollection);
-        
+
         getContainerPolicy().compareCollectionsForChange(backupCollection, cloneCollection, changeRecord, session, remoteReferenceDescriptor);
-        
+
         return changeRecord;
     }
 
@@ -1236,13 +1236,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return valueFromRow(dbRow, null, query, parentCacheKey, query.getExecutionSession(), isTargetProtected, null);
     }
-    
+
     /**
      * To delete all the entries matching the selection criteria from the table stored in the
      * referenced descriptor
      */
     protected void deleteAll(DeleteObjectQuery query, AbstractSession session) throws DatabaseException {
-        Object attribute = getAttributeValueFromObject(query.getObject()); 
+        Object attribute = getAttributeValueFromObject(query.getObject());
         if (usesIndirection()) {
            if (!this.indirectionPolicy.objectIsInstantiated(attribute)) {
                // An empty Vector indicates to DeleteAllQuery that no objects should be removed from cache
@@ -1316,10 +1316,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 throw ConversionException.couldNotBeConverted(this, this.descriptor, exception);
             }
             key[index] = value;
-        }        
+        }
         return new CacheId(key);
     }
-    
+
     /**
      * INTERNAL:
      * Return the selection criteria used to IN batch fetching.
@@ -1390,7 +1390,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     }
 
     /**
-     * Overrides CollectionMappig because this mapping requires a DeleteAllQuery instead of a ModifyQuery.  
+     * Overrides CollectionMappig because this mapping requires a DeleteAllQuery instead of a ModifyQuery.
      */
     @Override
     protected ModifyQuery getDeleteAllQuery() {
@@ -1448,7 +1448,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                  sourcekeys.hasMoreElements();) {
             DatabaseField sourceKey = (DatabaseField)sourcekeys.nextElement();
 
-            // CR#2587.  Try first to get the source key from the original query.  If that fails try to get it from the object. 
+            // CR#2587.  Try first to get the source key from the original query.  If that fails try to get it from the object.
             Object referenceKey = null;
             if ((translationRow != null) && (translationRow.containsKey(sourceKey))) {
                 referenceKey = translationRow.get(sourceKey);
@@ -1532,7 +1532,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             // substitute session that owns the mapping for the session that owns reference descriptor.
             session = session.getBroker().getSessionForClass(getReferenceClass());
         }
-        
+
         super.initialize(session);
         if (getDescriptor() != null) { // descriptor will only be null in special case where the mapping has not been added to a descriptor prior to initialization.
             getDescriptor().addMappingsPostCalculateChanges(this); // always equivalent to Private Owned
@@ -1589,7 +1589,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     @Override
     protected void initializeReferenceDescriptor(AbstractSession session) throws DescriptorException {
         super.initializeReferenceDescriptor(session);
-        
+
         HashMap<DatabaseField, DatabaseField> fieldTranslation = null;
         HashMap<DatabaseTable, DatabaseTable> tableTranslation = null;
 
@@ -1598,12 +1598,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (clonedDescriptor.isAggregateDescriptor()) {
             clonedDescriptor.descriptorIsAggregateCollection();
         }
-        
+
         int nAggregateTables = 0;
         if (referenceDescriptor.getTables() != null) {
             nAggregateTables = referenceDescriptor.getTables().size();
         }
-        
+
         if (! aggregateToSourceFields.isEmpty()) {
             DatabaseTable aggregateDefaultTable = null;
             if (nAggregateTables != 0) {
@@ -1611,20 +1611,20 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             } else {
                 aggregateDefaultTable = new DatabaseTable();
             }
-            
+
             tableTranslation = new HashMap<DatabaseTable, DatabaseTable>();
             fieldTranslation = new HashMap<DatabaseField, DatabaseField>();
-            
+
             for (String aggregateFieldName : aggregateToSourceFields.keySet()) {
                 DatabaseField aggregateField = new DatabaseField(aggregateFieldName);
-                // 322233 - continue using a string for the Aggregate field name 
+                // 322233 - continue using a string for the Aggregate field name
                 // because the table may or may not have been set. DatabaseFields without a table
                 // will match any DatabaseField with a table if the name is the same, breaking
                 // legacy support for AggregateCollection inheritance models
                 if (! aggregateField.hasTableName()) {
                     aggregateField.setTable(aggregateDefaultTable);
                 }
-                
+
                 DatabaseField sourceField = aggregateToSourceFields.get(aggregateFieldName);
                 if (! sourceField.hasTableName()) {
                     if (defaultSourceTable == null) {
@@ -1633,7 +1633,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                         sourceField.setTable(defaultSourceTable);
                     }
                 }
-                
+
                 DatabaseTable sourceTable = sourceField.getTable();
                 DatabaseTable savedSourceTable = tableTranslation.get(aggregateField.getTable());
                 if (savedSourceTable == null) {
@@ -1643,11 +1643,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                         // TODO: throw exception: aggregate table mapped to two source tables
                     }
                 }
-                
+
                 sourceField.setIsTranslated(true);
                 fieldTranslation.put(aggregateField, sourceField);
             }
-         
+
             // Translate the table and fields now.
             translateTablesAndFields(clonedDescriptor, fieldTranslation, tableTranslation);
         } else {
@@ -1659,9 +1659,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 }
             }
         }
-        
+
         updateNestedAggregateMappings(clonedDescriptor, session);
-        
+
         if (clonedDescriptor.isChildDescriptor()) {
             ClassDescriptor parentDescriptor = session.getDescriptor(clonedDescriptor.getInheritancePolicy().getParentClass());
             initializeParentInheritance(parentDescriptor, clonedDescriptor, session, fieldTranslation, tableTranslation);
@@ -1672,7 +1672,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
 
         setReferenceDescriptor(clonedDescriptor);
-        
+
         clonedDescriptor.preInitialize(session);
         getContainerPolicy().initialize(session, clonedDescriptor.getDefaultTable());
         if (clonedDescriptor.getPrimaryKeyFields().isEmpty()) {
@@ -1721,7 +1721,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
 
         query.setSessionName(session.getName());
-        
+
         // Build where clause expression.
         Expression whereClause = null;
         Expression builder = new ExpressionBuilder();
@@ -1762,7 +1762,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         statement.setModifyRow(modifyRow);
         query.setSQLStatement(statement);
     }
-    
+
     /**
      * INTERNAL:
      * Clone and prepare the JoinedAttributeManager nested JoinedAttributeManager.
@@ -1774,7 +1774,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         nestedQuery.setShouldMaintainCache(false);
         return nestedQuery;
     }
-    
+
     /**
      * INTERNAL:
      * Called in case fieldTranslation != null
@@ -1783,7 +1783,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     protected static void translateTablesAndFields(ClassDescriptor descriptor, HashMap<DatabaseField, DatabaseField> fieldTranslation, HashMap<DatabaseTable, DatabaseTable> tableTranslation) {
         int nTables = 0;
         if(descriptor.getTables() != null) {
-            nTables = descriptor.getTables().size(); 
+            nTables = descriptor.getTables().size();
         }
         DatabaseTable defaultAggregateTable = null;
         if(nTables == 0) {
@@ -1807,10 +1807,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             }
             descriptor.setTables(newTables);
         }
-        
+
         int nPrimaryKeyFields = 0;
         if(descriptor.getPrimaryKeyFields() != null) {
-            nPrimaryKeyFields = descriptor.getPrimaryKeyFields().size(); 
+            nPrimaryKeyFields = descriptor.getPrimaryKeyFields().size();
         }
         if(nPrimaryKeyFields > 0) {
             ArrayList<DatabaseField> newPrimaryKeyFields = new ArrayList(nPrimaryKeyFields);
@@ -1827,34 +1827,34 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             }
             descriptor.setPrimaryKeyFields(newPrimaryKeyFields);
         }
-        
+
         // put fieldTranslation into fieldsMap so that all the fields in the mappings, inheritance policy etc
         // are translated to the new ones.
         descriptor.getObjectBuilder().getFieldsMap().putAll(fieldTranslation);
     }
-    
+
     /**
      * INTERNAL:
      * Called in case nestedAggregateToSourceFieldNames != null
-     * Updates AggregateObjectMappings and AggregateCollectionMappings of the 
-     * reference descriptor.  
+     * Updates AggregateObjectMappings and AggregateCollectionMappings of the
+     * reference descriptor.
      */
     protected void updateNestedAggregateMappings(ClassDescriptor descriptor, AbstractSession session) {
         if (! nestedAggregateToSourceFields.isEmpty()) {
             Iterator<Map.Entry<String, Map<String, DatabaseField>>> it = nestedAggregateToSourceFields.entrySet().iterator();
-            
+
             while (it.hasNext()) {
                 Map.Entry<String, Map<String, DatabaseField>> entry = it.next();
                 String attribute = entry.getKey();
                 String nestedAttribute = null;
                 int indexOfDot = attribute.indexOf('.');
-                
-                // attribute "homes.sellingPonts" is divided into attribute "homes" and nestedAttribute "sellingPoints" 
+
+                // attribute "homes.sellingPonts" is divided into attribute "homes" and nestedAttribute "sellingPoints"
                 if (indexOfDot >= 0) {
                     nestedAttribute = attribute.substring(indexOfDot + 1, attribute.length());
                     attribute = attribute.substring(0, indexOfDot);
                 }
-                
+
                 DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
                 if (mapping == null) {
                     //TODO: may have been already processed by the parent, may be processed later by a child.
@@ -1862,7 +1862,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                     //all the children and detect the wrong attribute.
                     continue;
                 }
-            
+
                 if (mapping.isAggregateCollectionMapping()) {
                     AggregateCollectionMapping nestedAggregateCollectionMapping = (AggregateCollectionMapping)mapping;
                     if (nestedAttribute == null) {
@@ -1871,24 +1871,24 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                         nestedAggregateCollectionMapping.addNestedFieldNameTranslations(nestedAttribute, entry.getValue());
                     }
                 } else if (mapping.isAggregateObjectMapping()) {
-                    // We have a nested aggregate object mapping (which in turn may have more nested aggregate object mappings). 
-                    // However, at this point we have all the field name translations in the nested list. Since we have the clone 
-                    // of the first nested aggregate object from the aggregate collection mapping, we will add all the field name 
-                    // translations to it since we do not need to look up nested mappings field names. The way nested aggregate 
-                    // object mappings handle field name translations will work if we set all the translations on the root of the 
-                    // nested objects. This in turn allows sharing nested aggregate objects and allowing different name translations 
-                    // for each different chain. Given this aggregate chain "record.location.venue.history" where record is an 
-                    // aggregate collection mapping, metadata processing from JPA will (and a direct user may opt to) add all the 
+                    // We have a nested aggregate object mapping (which in turn may have more nested aggregate object mappings).
+                    // However, at this point we have all the field name translations in the nested list. Since we have the clone
+                    // of the first nested aggregate object from the aggregate collection mapping, we will add all the field name
+                    // translations to it since we do not need to look up nested mappings field names. The way nested aggregate
+                    // object mappings handle field name translations will work if we set all the translations on the root of the
+                    // nested objects. This in turn allows sharing nested aggregate objects and allowing different name translations
+                    // for each different chain. Given this aggregate chain "record.location.venue.history" where record is an
+                    // aggregate collection mapping, metadata processing from JPA will (and a direct user may opt to) add all the
                     // attribute overrides from location, venue and history under separate attribute names, that is,
                     //  - addNestedFieldNameTranslation("location", ..., ...);
                     //  - addNestedFieldNameTranslation("location.venue", ..., ...);
                     //  - addNestedFieldNameTranslation("location.venue.history", ..., ...);
-                    // 
+                    //
                     // This will add all the field name translations to the 'location' aggregate object mapping since we extract
                     // the attribute name as the string up to the first dot.
                     // Simply adding all the nestedFieldNameTranslations to 'location' would work as well.
                     AggregateObjectMapping nestedAggregateObjectMapping = (AggregateObjectMapping) mapping;
-                    
+
                     Map<String, DatabaseField> entries = entry.getValue();
                     for (String aggregateFieldName : entries.keySet()) {
                         DatabaseField sourceField = entries.get(aggregateFieldName);
@@ -1900,7 +1900,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * For aggregate mapping the reference descriptor is cloned. Also the involved inheritance descriptor, its children
@@ -1910,21 +1910,21 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * and after that mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
-    public void initializeChildInheritance(ClassDescriptor parentDescriptor, AbstractSession session, 
+    public void initializeChildInheritance(ClassDescriptor parentDescriptor, AbstractSession session,
                 HashMap<DatabaseField, DatabaseField> fieldTranslation, HashMap<DatabaseTable, DatabaseTable> tableTranslation) throws DescriptorException {
         //recursive call to further children descriptors
         if (parentDescriptor.getInheritancePolicy().hasChildren()) {
-            //setFields(clonedChildDescriptor.getFields());        
+            //setFields(clonedChildDescriptor.getFields());
             List<ClassDescriptor> childDescriptors = parentDescriptor.getInheritancePolicy().getChildDescriptors();
             List<ClassDescriptor> cloneChildDescriptors = new ArrayList(childDescriptors.size());
             for (ClassDescriptor childDescriptor : childDescriptors) {
                 ClassDescriptor clonedChildDescriptor = (ClassDescriptor)childDescriptor.clone();
                 if (fieldTranslation != null) {
-                    translateTablesAndFields(clonedChildDescriptor, fieldTranslation, tableTranslation); 
+                    translateTablesAndFields(clonedChildDescriptor, fieldTranslation, tableTranslation);
                 }
-                
+
                 updateNestedAggregateMappings(clonedChildDescriptor, session);
-                
+
                 if (clonedChildDescriptor.isAggregateDescriptor()) {
                     clonedChildDescriptor.descriptorIsAggregateCollection();
                 }
@@ -1974,7 +1974,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * and after that mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
-    public void initializeParentInheritance(ClassDescriptor parentDescriptor, ClassDescriptor childDescriptor, AbstractSession session, 
+    public void initializeParentInheritance(ClassDescriptor parentDescriptor, ClassDescriptor childDescriptor, AbstractSession session,
                 HashMap<DatabaseField, DatabaseField> fieldTranslation, HashMap<DatabaseTable, DatabaseTable> tableTranslation) throws DescriptorException {
 
         ClassDescriptor clonedParentDescriptor = (ClassDescriptor)parentDescriptor.clone();
@@ -1985,11 +1985,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             session.getIntegrityChecker().handleError(DescriptorException.referenceDescriptorIsNotAggregateCollection(parentDescriptor.getJavaClass().getName(), this));
         }
         if (fieldTranslation != null) {
-            translateTablesAndFields(clonedParentDescriptor, fieldTranslation, tableTranslation); 
+            translateTablesAndFields(clonedParentDescriptor, fieldTranslation, tableTranslation);
         }
-        
+
         updateNestedAggregateMappings(clonedParentDescriptor, session);
-        
+
         //recursive call to the further parent descriptors
         if (clonedParentDescriptor.getInheritancePolicy().isChildDescriptor()) {
             ClassDescriptor parentToParentDescriptor = session.getDescriptor(clonedParentDescriptor.getJavaClass());
@@ -2111,7 +2111,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public boolean isAggregateCollectionMapping() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -2128,7 +2128,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public boolean isJoiningSupported() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -2153,7 +2153,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (item.getGroup() != null && (!fromFetchGroup || session.isUnitOfWork())) {
             //if UOW make sure the nested attributes are loaded as the clones will not be instantiated
             Object value = getRealAttributeValueFromObject(object, session);
-            
+
             ContainerPolicy cp = this.containerPolicy;
             for (Object iterator = cp.iteratorFor(value); cp.hasNext(iterator);) {
                 Object wrappedObject = cp.nextEntry(iterator, session);
@@ -2162,7 +2162,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             }
         }
     }
-    
+
     /**
      * Force instantiation of all indirections.
      */
@@ -2177,7 +2177,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             getReferenceDescriptor(nestedObject.getClass(), session).getObjectBuilder().loadAll(nestedObject, session, loaded);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Merge changes from the source to the target object.
@@ -2208,7 +2208,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         //On a distributed cache if our changes are for the same version as the target object
         //then load the changes from database.
-        // CR 4143  
+        // CR 4143
         // CR 4155 Always replace the collection with the query results as we will not be able to
         // find the originals for merging and indirection information may be lost.
         if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
@@ -2331,7 +2331,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         prepareModifyQueryForDelete(query, deleteQuery, objectDeleted, extraData);
         ContainerPolicy.copyMapDataToRow(extraData, deleteQuery.getTranslationRow());
         query.getSession().executeQuery(deleteQuery, deleteQuery.getTranslationRow());
-        
+
         if (containerPolicy.shouldIncludeKeyInDeleteEvent()){
             query.getSession().deleteObject(containerPolicy.keyFromEntry(objectDeleted));
         }
@@ -2351,7 +2351,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         prepareModifyQueryForUpdate(query, updateQuery, object);
         query.getSession().executeQuery(updateQuery, updateQuery.getTranslationRow());
     }
-    
+
     protected void objectUnchangedDuringUpdate(ObjectLevelModifyQuery query, Object object, Object backupClone) throws DatabaseException, OptimisticLockException {
         // Always write for updates, either private or in uow if calling this method.
         UpdateObjectQuery updateQuery = new UpdateObjectQuery();
@@ -2383,10 +2383,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                     && getReferenceDescriptor().getObjectChangePolicy().getClass().equals(AttributeChangeTrackingPolicy.class)) {
                 getReferenceDescriptor().setObjectChangePolicy(new ObjectChangeTrackingPolicy());
             }
-            
+
             getReferenceDescriptor().postInitialize(session);
         }
-        
+
         // Need to set the types on the foreign key fields, as not mapped in the object.
         for (int index = 0; index < getSourceKeyFields().size(); index++) {
             DatabaseField foreignKey = getSourceKeyFields().get(index);
@@ -2783,7 +2783,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public boolean isCandidateForPrivateOwnedRemoval() {
         return false;
     }
-    
+
     /**
      * INTERNAL
      * Return true if this mapping supports cascaded version optimistic locking.
@@ -2792,7 +2792,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public boolean isCascadedLockingSupported() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Return if this mapping supports change tracking.
@@ -2813,10 +2813,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         super.remoteInitialization(session);
         getReferenceDescriptor().remoteInitialization(session);
     }
-    
+
     /**
      * PUBLIC:
-     * indicates whether listOrderField value could be updated in the db. Used only if listOrderField!=null 
+     * indicates whether listOrderField value could be updated in the db. Used only if listOrderField!=null
      */
     public boolean isListOrderFieldUpdatable() {
         return this.isListOrderFieldUpdatable;
@@ -2825,12 +2825,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
    /**
     * PUBLIC:
     * indicates whether listOrderField value could be updated in the db. Used only if listOrderField!=null
-    * Default value is true. 
+    * Default value is true.
     */
     public void setIsListOrderFieldUpdatable(boolean isUpdatable) {
        this.isListOrderFieldUpdatable = isUpdatable;
     }
-    
+
     /**
      * PUBLIC:
      * Set a default source table to use with the source fields of this mapping.
@@ -2841,15 +2841,15 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * INTERNAL:
-     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth)
      * references an entity.
-     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.  
+     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.
      */
     @Override
     public boolean hasNestedIdentityReference() {
         if (hasNestedIdentityReference == null) {
             hasNestedIdentityReference = getReferenceDescriptor().hasNestedIdentityReference(true);
         }
-        return hasNestedIdentityReference; 
-    }        
+        return hasNestedIdentityReference;
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -141,7 +141,7 @@ public class JPQLLexer extends Lexer {
     // delegates
     // delegators
 
-    public JPQLLexer() {;} 
+    public JPQLLexer() {;}
     public JPQLLexer(CharStream input) {
         this(input, new RecognizerSharedState());
     }
@@ -159,7 +159,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:9:5: ( 'abs' )
             // JPQL.g:9:7: 'abs'
             {
-            match("abs"); 
+            match("abs");
 
 
             }
@@ -180,7 +180,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:10:5: ( 'all' )
             // JPQL.g:10:7: 'all'
             {
-            match("all"); 
+            match("all");
 
 
             }
@@ -201,7 +201,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:11:5: ( 'and' )
             // JPQL.g:11:7: 'and'
             {
-            match("and"); 
+            match("and");
 
 
             }
@@ -222,7 +222,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:12:5: ( 'any' )
             // JPQL.g:12:7: 'any'
             {
-            match("any"); 
+            match("any");
 
 
             }
@@ -243,7 +243,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:13:4: ( 'as' )
             // JPQL.g:13:6: 'as'
             {
-            match("as"); 
+            match("as");
 
 
             }
@@ -264,7 +264,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:14:5: ( 'asc' )
             // JPQL.g:14:7: 'asc'
             {
-            match("asc"); 
+            match("asc");
 
 
             }
@@ -285,7 +285,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:15:5: ( 'avg' )
             // JPQL.g:15:7: 'avg'
             {
-            match("avg"); 
+            match("avg");
 
 
             }
@@ -306,7 +306,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:16:9: ( 'between' )
             // JPQL.g:16:11: 'between'
             {
-            match("between"); 
+            match("between");
 
 
             }
@@ -327,7 +327,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:17:6: ( 'both' )
             // JPQL.g:17:8: 'both'
             {
-            match("both"); 
+            match("both");
 
 
             }
@@ -348,7 +348,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:18:4: ( 'by' )
             // JPQL.g:18:6: 'by'
             {
-            match("by"); 
+            match("by");
 
 
             }
@@ -369,7 +369,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:19:6: ( 'case' )
             // JPQL.g:19:8: 'case'
             {
-            match("case"); 
+            match("case");
 
 
             }
@@ -390,7 +390,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:20:10: ( 'coalesce' )
             // JPQL.g:20:12: 'coalesce'
             {
-            match("coalesce"); 
+            match("coalesce");
 
 
             }
@@ -411,7 +411,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:21:8: ( 'concat' )
             // JPQL.g:21:10: 'concat'
             {
-            match("concat"); 
+            match("concat");
 
 
             }
@@ -432,7 +432,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:22:7: ( 'count' )
             // JPQL.g:22:9: 'count'
             {
-            match("count"); 
+            match("count");
 
 
             }
@@ -453,7 +453,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:23:14: ( 'current_date' )
             // JPQL.g:23:16: 'current_date'
             {
-            match("current_date"); 
+            match("current_date");
 
 
             }
@@ -474,7 +474,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:24:14: ( 'current_time' )
             // JPQL.g:24:16: 'current_time'
             {
-            match("current_time"); 
+            match("current_time");
 
 
             }
@@ -495,7 +495,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:25:19: ( 'current_timestamp' )
             // JPQL.g:25:21: 'current_timestamp'
             {
-            match("current_timestamp"); 
+            match("current_timestamp");
 
 
             }
@@ -516,7 +516,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:26:6: ( 'desc' )
             // JPQL.g:26:8: 'desc'
             {
-            match("desc"); 
+            match("desc");
 
 
             }
@@ -537,7 +537,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:27:8: ( 'delete' )
             // JPQL.g:27:10: 'delete'
             {
-            match("delete"); 
+            match("delete");
 
 
             }
@@ -558,7 +558,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:28:10: ( 'distinct' )
             // JPQL.g:28:12: 'distinct'
             {
-            match("distinct"); 
+            match("distinct");
 
 
             }
@@ -579,7 +579,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:29:6: ( 'else' )
             // JPQL.g:29:8: 'else'
             {
-            match("else"); 
+            match("else");
 
 
             }
@@ -600,7 +600,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:30:7: ( 'empty' )
             // JPQL.g:30:9: 'empty'
             {
-            match("empty"); 
+            match("empty");
 
 
             }
@@ -621,7 +621,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:31:5: ( 'end' )
             // JPQL.g:31:7: 'end'
             {
-            match("end"); 
+            match("end");
 
 
             }
@@ -642,7 +642,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:32:7: ( 'entry' )
             // JPQL.g:32:9: 'entry'
             {
-            match("entry"); 
+            match("entry");
 
 
             }
@@ -663,7 +663,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:33:8: ( 'escape' )
             // JPQL.g:33:10: 'escape'
             {
-            match("escape"); 
+            match("escape");
 
 
             }
@@ -684,7 +684,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:34:8: ( 'exists' )
             // JPQL.g:34:10: 'exists'
             {
-            match("exists"); 
+            match("exists");
 
 
             }
@@ -705,7 +705,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:35:7: ( 'false' )
             // JPQL.g:35:9: 'false'
             {
-            match("false"); 
+            match("false");
 
 
             }
@@ -726,7 +726,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:36:7: ( 'fetch' )
             // JPQL.g:36:9: 'fetch'
             {
-            match("fetch"); 
+            match("fetch");
 
 
             }
@@ -747,7 +747,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:37:6: ( 'func' )
             // JPQL.g:37:8: 'func'
             {
-            match("func"); 
+            match("func");
 
 
             }
@@ -768,7 +768,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:38:6: ( 'from' )
             // JPQL.g:38:8: 'from'
             {
-            match("from"); 
+            match("from");
 
 
             }
@@ -789,7 +789,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:39:7: ( 'group' )
             // JPQL.g:39:9: 'group'
             {
-            match("group"); 
+            match("group");
 
 
             }
@@ -810,7 +810,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:40:8: ( 'having' )
             // JPQL.g:40:10: 'having'
             {
-            match("having"); 
+            match("having");
 
 
             }
@@ -831,7 +831,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:41:4: ( 'in' )
             // JPQL.g:41:6: 'in'
             {
-            match("in"); 
+            match("in");
 
 
             }
@@ -852,7 +852,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:42:7: ( 'index' )
             // JPQL.g:42:9: 'index'
             {
-            match("index"); 
+            match("index");
 
 
             }
@@ -873,7 +873,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:43:7: ( 'inner' )
             // JPQL.g:43:9: 'inner'
             {
-            match("inner"); 
+            match("inner");
 
 
             }
@@ -894,7 +894,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:44:4: ( 'is' )
             // JPQL.g:44:6: 'is'
             {
-            match("is"); 
+            match("is");
 
 
             }
@@ -915,7 +915,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:45:6: ( 'join' )
             // JPQL.g:45:8: 'join'
             {
-            match("join"); 
+            match("join");
 
 
             }
@@ -936,7 +936,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:46:5: ( 'key' )
             // JPQL.g:46:7: 'key'
             {
-            match("key"); 
+            match("key");
 
 
             }
@@ -957,7 +957,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:47:9: ( 'leading' )
             // JPQL.g:47:11: 'leading'
             {
-            match("leading"); 
+            match("leading");
 
 
             }
@@ -978,7 +978,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:48:6: ( 'left' )
             // JPQL.g:48:8: 'left'
             {
-            match("left"); 
+            match("left");
 
 
             }
@@ -999,7 +999,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:49:8: ( 'length' )
             // JPQL.g:49:10: 'length'
             {
-            match("length"); 
+            match("length");
 
 
             }
@@ -1020,7 +1020,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:50:6: ( 'like' )
             // JPQL.g:50:8: 'like'
             {
-            match("like"); 
+            match("like");
 
 
             }
@@ -1041,7 +1041,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:51:8: ( 'locate' )
             // JPQL.g:51:10: 'locate'
             {
-            match("locate"); 
+            match("locate");
 
 
             }
@@ -1062,7 +1062,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:52:7: ( 'lower' )
             // JPQL.g:52:9: 'lower'
             {
-            match("lower"); 
+            match("lower");
 
 
             }
@@ -1083,7 +1083,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:53:5: ( 'max' )
             // JPQL.g:53:7: 'max'
             {
-            match("max"); 
+            match("max");
 
 
             }
@@ -1104,7 +1104,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:54:8: ( 'member' )
             // JPQL.g:54:10: 'member'
             {
-            match("member"); 
+            match("member");
 
 
             }
@@ -1125,7 +1125,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:55:5: ( 'min' )
             // JPQL.g:55:7: 'min'
             {
-            match("min"); 
+            match("min");
 
 
             }
@@ -1146,7 +1146,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:56:5: ( 'mod' )
             // JPQL.g:56:7: 'mod'
             {
-            match("mod"); 
+            match("mod");
 
 
             }
@@ -1167,7 +1167,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:57:5: ( 'new' )
             // JPQL.g:57:7: 'new'
             {
-            match("new"); 
+            match("new");
 
 
             }
@@ -1188,7 +1188,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:58:5: ( 'not' )
             // JPQL.g:58:7: 'not'
             {
-            match("not"); 
+            match("not");
 
 
             }
@@ -1209,7 +1209,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:59:6: ( 'null' )
             // JPQL.g:59:8: 'null'
             {
-            match("null"); 
+            match("null");
 
 
             }
@@ -1230,7 +1230,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:60:8: ( 'nullif' )
             // JPQL.g:60:10: 'nullif'
             {
-            match("nullif"); 
+            match("nullif");
 
 
             }
@@ -1251,7 +1251,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:61:8: ( 'object' )
             // JPQL.g:61:10: 'object'
             {
-            match("object"); 
+            match("object");
 
 
             }
@@ -1272,7 +1272,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:62:4: ( 'of' )
             // JPQL.g:62:6: 'of'
             {
-            match("of"); 
+            match("of");
 
 
             }
@@ -1293,7 +1293,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:63:4: ( 'or' )
             // JPQL.g:63:6: 'or'
             {
-            match("or"); 
+            match("or");
 
 
             }
@@ -1314,7 +1314,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:64:7: ( 'order' )
             // JPQL.g:64:9: 'order'
             {
-            match("order"); 
+            match("order");
 
 
             }
@@ -1335,7 +1335,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:65:7: ( 'outer' )
             // JPQL.g:65:9: 'outer'
             {
-            match("outer"); 
+            match("outer");
 
 
             }
@@ -1356,7 +1356,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:66:8: ( 'select' )
             // JPQL.g:66:10: 'select'
             {
-            match("select"); 
+            match("select");
 
 
             }
@@ -1377,7 +1377,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:67:5: ( 'set' )
             // JPQL.g:67:7: 'set'
             {
-            match("set"); 
+            match("set");
 
 
             }
@@ -1398,7 +1398,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:68:6: ( 'size' )
             // JPQL.g:68:8: 'size'
             {
-            match("size"); 
+            match("size");
 
 
             }
@@ -1419,7 +1419,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:69:6: ( 'sqrt' )
             // JPQL.g:69:8: 'sqrt'
             {
-            match("sqrt"); 
+            match("sqrt");
 
 
             }
@@ -1440,7 +1440,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:70:6: ( 'some' )
             // JPQL.g:70:8: 'some'
             {
-            match("some"); 
+            match("some");
 
 
             }
@@ -1461,7 +1461,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:71:11: ( 'substring' )
             // JPQL.g:71:13: 'substring'
             {
-            match("substring"); 
+            match("substring");
 
 
             }
@@ -1482,7 +1482,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:72:5: ( 'sum' )
             // JPQL.g:72:7: 'sum'
             {
-            match("sum"); 
+            match("sum");
 
 
             }
@@ -1503,7 +1503,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:73:6: ( 'then' )
             // JPQL.g:73:8: 'then'
             {
-            match("then"); 
+            match("then");
 
 
             }
@@ -1524,7 +1524,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:74:10: ( 'trailing' )
             // JPQL.g:74:12: 'trailing'
             {
-            match("trailing"); 
+            match("trailing");
 
 
             }
@@ -1545,7 +1545,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:75:7: ( 'treat' )
             // JPQL.g:75:9: 'treat'
             {
-            match("treat"); 
+            match("treat");
 
 
             }
@@ -1566,7 +1566,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:76:6: ( 'trim' )
             // JPQL.g:76:8: 'trim'
             {
-            match("trim"); 
+            match("trim");
 
 
             }
@@ -1587,7 +1587,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:77:6: ( 'true' )
             // JPQL.g:77:8: 'true'
             {
-            match("true"); 
+            match("true");
 
 
             }
@@ -1608,7 +1608,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:78:6: ( 'type' )
             // JPQL.g:78:8: 'type'
             {
-            match("type"); 
+            match("type");
 
 
             }
@@ -1629,7 +1629,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:79:9: ( 'unknown' )
             // JPQL.g:79:11: 'unknown'
             {
-            match("unknown"); 
+            match("unknown");
 
 
             }
@@ -1650,7 +1650,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:80:8: ( 'update' )
             // JPQL.g:80:10: 'update'
             {
-            match("update"); 
+            match("update");
 
 
             }
@@ -1671,7 +1671,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:81:7: ( 'upper' )
             // JPQL.g:81:9: 'upper'
             {
-            match("upper"); 
+            match("upper");
 
 
             }
@@ -1692,7 +1692,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:82:7: ( 'value' )
             // JPQL.g:82:9: 'value'
             {
-            match("value"); 
+            match("value");
 
 
             }
@@ -1713,7 +1713,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:83:6: ( 'when' )
             // JPQL.g:83:8: 'when'
             {
-            match("when"); 
+            match("when");
 
 
             }
@@ -1734,7 +1734,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:84:7: ( 'where' )
             // JPQL.g:84:9: 'where'
             {
-            match("where"); 
+            match("where");
 
 
             }
@@ -1755,7 +1755,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1394:5: ( '.' )
             // JPQL.g:1394:7: '.'
             {
-            match('.'); 
+            match('.');
 
             }
 
@@ -1788,24 +1788,24 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt1) {
-            	case 1 :
-            	    // JPQL.g:
-            	    {
-            	    if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
-            	        input.consume();
+                case 1 :
+                    // JPQL.g:
+                    {
+                    if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
+                        input.consume();
 
-            	    }
-            	    else {
-            	        MismatchedSetException mse = new MismatchedSetException(null,input);
-            	        recover(mse);
-            	        throw mse;}
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;}
 
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    if ( cnt1 >= 1 ) break loop1;
+                default :
+                    if ( cnt1 >= 1 ) break loop1;
                         EarlyExitException eee =
                             new EarlyExitException(1, input);
                         throw eee;
@@ -1813,7 +1813,7 @@ public class JPQLLexer extends Lexer {
                 cnt1++;
             } while (true);
 
-             skip(); 
+             skip();
 
             }
 
@@ -1833,7 +1833,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1401:5: ( '(' )
             // JPQL.g:1401:7: '('
             {
-            match('('); 
+            match('(');
 
             }
 
@@ -1853,7 +1853,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1405:5: ( '{' )
             // JPQL.g:1405:7: '{'
             {
-            match('{'); 
+            match('{');
 
             }
 
@@ -1873,7 +1873,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1409:5: ( ')' )
             // JPQL.g:1409:7: ')'
             {
-            match(')'); 
+            match(')');
 
             }
 
@@ -1893,7 +1893,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1413:5: ( '}' )
             // JPQL.g:1413:7: '}'
             {
-            match('}'); 
+            match('}');
 
             }
 
@@ -1913,7 +1913,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1417:5: ( ',' )
             // JPQL.g:1417:7: ','
             {
-            match(','); 
+            match(',');
 
             }
 
@@ -1933,7 +1933,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1421:5: ( TEXTCHAR )
             // JPQL.g:1421:7: TEXTCHAR
             {
-            mTEXTCHAR(); 
+            mTEXTCHAR();
 
             }
 
@@ -2093,112 +2093,112 @@ public class JPQLLexer extends Lexer {
                 case 1 :
                     // JPQL.g:1426:8: 'a' .. 'z'
                     {
-                    matchRange('a','z'); 
+                    matchRange('a','z');
 
                     }
                     break;
                 case 2 :
                     // JPQL.g:1426:19: 'A' .. 'Z'
                     {
-                    matchRange('A','Z'); 
+                    matchRange('A','Z');
 
                     }
                     break;
                 case 3 :
                     // JPQL.g:1426:30: '_'
                     {
-                    match('_'); 
+                    match('_');
 
                     }
                     break;
                 case 4 :
                     // JPQL.g:1426:36: '$'
                     {
-                    match('$'); 
+                    match('$');
 
                     }
                     break;
                 case 5 :
                     // JPQL.g:1426:42: '`'
                     {
-                    match('`'); 
+                    match('`');
 
                     }
                     break;
                 case 6 :
                     // JPQL.g:1426:48: '~'
                     {
-                    match('~'); 
+                    match('~');
 
                     }
                     break;
                 case 7 :
                     // JPQL.g:1426:54: '@'
                     {
-                    match('@'); 
+                    match('@');
 
                     }
                     break;
                 case 8 :
                     // JPQL.g:1426:60: '#'
                     {
-                    match('#'); 
+                    match('#');
 
                     }
                     break;
                 case 9 :
                     // JPQL.g:1426:66: '%'
                     {
-                    match('%'); 
+                    match('%');
 
                     }
                     break;
                 case 10 :
                     // JPQL.g:1426:72: '^'
                     {
-                    match('^'); 
+                    match('^');
 
                     }
                     break;
                 case 11 :
                     // JPQL.g:1426:78: '&'
                     {
-                    match('&'); 
+                    match('&');
 
                     }
                     break;
                 case 12 :
                     // JPQL.g:1426:84: '|'
                     {
-                    match('|'); 
+                    match('|');
 
                     }
                     break;
                 case 13 :
                     // JPQL.g:1426:90: '['
                     {
-                    match('['); 
+                    match('[');
 
                     }
                     break;
                 case 14 :
                     // JPQL.g:1426:96: ']'
                     {
-                    match(']'); 
+                    match(']');
 
                     }
                     break;
                 case 15 :
                     // JPQL.g:1426:102: ';' c1= '\\u0080' .. '\\uFFFE'
                     {
-                    match(';'); 
+                    match(';');
                     c1 = input.LA(1);
-                    matchRange('\u0080','\uFFFE'); 
+                    matchRange('\u0080','\uFFFE');
 
                                if (!Character.isJavaIdentifierStart(c1)) {
                                     throw new InvalidIdentifierStartException(c1, getLine(), getCharPositionInLine());
                                }
-                           
+
 
                     }
                     break;
@@ -2229,50 +2229,50 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt3) {
-            	case 1 :
-            	    // JPQL.g:1434:8: 'a' .. 'z'
-            	    {
-            	    matchRange('a','z'); 
+                case 1 :
+                    // JPQL.g:1434:8: 'a' .. 'z'
+                    {
+                    matchRange('a','z');
 
-            	    }
-            	    break;
-            	case 2 :
-            	    // JPQL.g:1434:19: '_'
-            	    {
-            	    match('_'); 
+                    }
+                    break;
+                case 2 :
+                    // JPQL.g:1434:19: '_'
+                    {
+                    match('_');
 
-            	    }
-            	    break;
-            	case 3 :
-            	    // JPQL.g:1434:25: '$'
-            	    {
-            	    match('$'); 
+                    }
+                    break;
+                case 3 :
+                    // JPQL.g:1434:25: '$'
+                    {
+                    match('$');
 
-            	    }
-            	    break;
-            	case 4 :
-            	    // JPQL.g:1434:31: '0' .. '9'
-            	    {
-            	    matchRange('0','9'); 
+                    }
+                    break;
+                case 4 :
+                    // JPQL.g:1434:31: '0' .. '9'
+                    {
+                    matchRange('0','9');
 
-            	    }
-            	    break;
-            	case 5 :
-            	    // JPQL.g:1435:8: c2= '\\u0080' .. '\\uFFFE'
-            	    {
-            	    c2 = input.LA(1);
-            	    matchRange('\u0080','\uFFFE'); 
+                    }
+                    break;
+                case 5 :
+                    // JPQL.g:1435:8: c2= '\\u0080' .. '\\uFFFE'
+                    {
+                    c2 = input.LA(1);
+                    matchRange('\u0080','\uFFFE');
 
-            	               if (!Character.isJavaIdentifierPart(c2)) {
-            	                    throw new InvalidIdentifierStartException(c2, getLine(), getCharPositionInLine());
-            	               }
-            	           
+                               if (!Character.isJavaIdentifierPart(c2)) {
+                                    throw new InvalidIdentifierStartException(c2, getLine(), getCharPositionInLine());
+                               }
 
-            	    }
-            	    break;
 
-            	default :
-            	    break loop3;
+                    }
+                    break;
+
+                default :
+                    break loop3;
                 }
             } while (true);
 
@@ -2293,7 +2293,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1445:13: ( '0' ( 'x' | 'X' ) ( HEX_DIGIT )+ )
             // JPQL.g:1445:15: '0' ( 'x' | 'X' ) ( HEX_DIGIT )+
             {
-            match('0'); 
+            match('0');
             if ( input.LA(1)=='X'||input.LA(1)=='x' ) {
                 input.consume();
 
@@ -2316,16 +2316,16 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt4) {
-            	case 1 :
-            	    // JPQL.g:1445:29: HEX_DIGIT
-            	    {
-            	    mHEX_DIGIT(); 
+                case 1 :
+                    // JPQL.g:1445:29: HEX_DIGIT
+                    {
+                    mHEX_DIGIT();
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    if ( cnt4 >= 1 ) break loop4;
+                default :
+                    if ( cnt4 >= 1 ) break loop4;
                         EarlyExitException eee =
                             new EarlyExitException(4, input);
                         throw eee;
@@ -2363,7 +2363,7 @@ public class JPQLLexer extends Lexer {
                 case 1 :
                     // JPQL.g:1447:19: MINUS
                     {
-                    mMINUS(); 
+                    mMINUS();
 
                     }
                     break;
@@ -2390,14 +2390,14 @@ public class JPQLLexer extends Lexer {
                 case 1 :
                     // JPQL.g:1447:27: '0'
                     {
-                    match('0'); 
+                    match('0');
 
                     }
                     break;
                 case 2 :
                     // JPQL.g:1447:33: '1' .. '9' ( '0' .. '9' )*
                     {
-                    matchRange('1','9'); 
+                    matchRange('1','9');
                     // JPQL.g:1447:42: ( '0' .. '9' )*
                     loop6:
                     do {
@@ -2410,16 +2410,16 @@ public class JPQLLexer extends Lexer {
 
 
                         switch (alt6) {
-                    	case 1 :
-                    	    // JPQL.g:1447:42: '0' .. '9'
-                    	    {
-                    	    matchRange('0','9'); 
+                        case 1 :
+                            // JPQL.g:1447:42: '0' .. '9'
+                            {
+                            matchRange('0','9');
 
-                    	    }
-                    	    break;
+                            }
+                            break;
 
-                    	default :
-                    	    break loop6;
+                        default :
+                            break loop6;
                         }
                     } while (true);
 
@@ -2448,8 +2448,8 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1449:14: ( INTEGER_LITERAL INTEGER_SUFFIX )
             // JPQL.g:1449:16: INTEGER_LITERAL INTEGER_SUFFIX
             {
-            mINTEGER_LITERAL(); 
-            mINTEGER_SUFFIX(); 
+            mINTEGER_LITERAL();
+            mINTEGER_SUFFIX();
 
             }
 
@@ -2480,14 +2480,14 @@ public class JPQLLexer extends Lexer {
                 case 1 :
                     // JPQL.g:1451:17: MINUS
                     {
-                    mMINUS(); 
+                    mMINUS();
 
                     }
                     break;
 
             }
 
-            match('0'); 
+            match('0');
             // JPQL.g:1451:28: ( '0' .. '7' )+
             int cnt9=0;
             loop9:
@@ -2501,16 +2501,16 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt9) {
-            	case 1 :
-            	    // JPQL.g:1451:29: '0' .. '7'
-            	    {
-            	    matchRange('0','7'); 
+                case 1 :
+                    // JPQL.g:1451:29: '0' .. '7'
+                    {
+                    matchRange('0','7');
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    if ( cnt9 >= 1 ) break loop9;
+                default :
+                    if ( cnt9 >= 1 ) break loop9;
                         EarlyExitException eee =
                             new EarlyExitException(9, input);
                         throw eee;
@@ -2598,7 +2598,7 @@ public class JPQLLexer extends Lexer {
                         case 1 :
                             // JPQL.g:1464:9: MINUS
                             {
-                            mMINUS(); 
+                            mMINUS();
 
                             }
                             break;
@@ -2618,16 +2618,16 @@ public class JPQLLexer extends Lexer {
 
 
                         switch (alt11) {
-                    	case 1 :
-                    	    // JPQL.g:1464:17: '0' .. '9'
-                    	    {
-                    	    matchRange('0','9'); 
+                        case 1 :
+                            // JPQL.g:1464:17: '0' .. '9'
+                            {
+                            matchRange('0','9');
 
-                    	    }
-                    	    break;
+                            }
+                            break;
 
-                    	default :
-                    	    if ( cnt11 >= 1 ) break loop11;
+                        default :
+                            if ( cnt11 >= 1 ) break loop11;
                                 EarlyExitException eee =
                                     new EarlyExitException(11, input);
                                 throw eee;
@@ -2635,7 +2635,7 @@ public class JPQLLexer extends Lexer {
                         cnt11++;
                     } while (true);
 
-                    match('.'); 
+                    match('.');
                     // JPQL.g:1464:32: ( '0' .. '9' )*
                     loop12:
                     do {
@@ -2648,16 +2648,16 @@ public class JPQLLexer extends Lexer {
 
 
                         switch (alt12) {
-                    	case 1 :
-                    	    // JPQL.g:1464:33: '0' .. '9'
-                    	    {
-                    	    matchRange('0','9'); 
+                        case 1 :
+                            // JPQL.g:1464:33: '0' .. '9'
+                            {
+                            matchRange('0','9');
 
-                    	    }
-                    	    break;
+                            }
+                            break;
 
-                    	default :
-                    	    break loop12;
+                        default :
+                            break loop12;
                         }
                     } while (true);
 
@@ -2678,14 +2678,14 @@ public class JPQLLexer extends Lexer {
                         case 1 :
                             // JPQL.g:1465:9: MINUS
                             {
-                            mMINUS(); 
+                            mMINUS();
 
                             }
                             break;
 
                     }
 
-                    match('.'); 
+                    match('.');
                     // JPQL.g:1465:20: ( '0' .. '9' )+
                     int cnt14=0;
                     loop14:
@@ -2699,16 +2699,16 @@ public class JPQLLexer extends Lexer {
 
 
                         switch (alt14) {
-                    	case 1 :
-                    	    // JPQL.g:1465:21: '0' .. '9'
-                    	    {
-                    	    matchRange('0','9'); 
+                        case 1 :
+                            // JPQL.g:1465:21: '0' .. '9'
+                            {
+                            matchRange('0','9');
 
-                    	    }
-                    	    break;
+                            }
+                            break;
 
-                    	default :
-                    	    if ( cnt14 >= 1 ) break loop14;
+                        default :
+                            if ( cnt14 >= 1 ) break loop14;
                                 EarlyExitException eee =
                                     new EarlyExitException(14, input);
                                 throw eee;
@@ -2733,7 +2733,7 @@ public class JPQLLexer extends Lexer {
                         case 1 :
                             // JPQL.g:1466:9: MINUS
                             {
-                            mMINUS(); 
+                            mMINUS();
 
                             }
                             break;
@@ -2753,16 +2753,16 @@ public class JPQLLexer extends Lexer {
 
 
                         switch (alt16) {
-                    	case 1 :
-                    	    // JPQL.g:1466:17: '0' .. '9'
-                    	    {
-                    	    matchRange('0','9'); 
+                        case 1 :
+                            // JPQL.g:1466:17: '0' .. '9'
+                            {
+                            matchRange('0','9');
 
-                    	    }
-                    	    break;
+                            }
+                            break;
 
-                    	default :
-                    	    if ( cnt16 >= 1 ) break loop16;
+                        default :
+                            if ( cnt16 >= 1 ) break loop16;
                                 EarlyExitException eee =
                                     new EarlyExitException(16, input);
                                 throw eee;
@@ -2789,7 +2789,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1470:5: ( NUMERIC_DIGITS ( DOUBLE_SUFFIX )? )
             // JPQL.g:1470:9: NUMERIC_DIGITS ( DOUBLE_SUFFIX )?
             {
-            mNUMERIC_DIGITS(); 
+            mNUMERIC_DIGITS();
             // JPQL.g:1470:24: ( DOUBLE_SUFFIX )?
             int alt18=2;
             int LA18_0 = input.LA(1);
@@ -2801,7 +2801,7 @@ public class JPQLLexer extends Lexer {
                 case 1 :
                     // JPQL.g:1470:24: DOUBLE_SUFFIX
                     {
-                    mDOUBLE_SUFFIX(); 
+                    mDOUBLE_SUFFIX();
 
                     }
                     break;
@@ -2831,8 +2831,8 @@ public class JPQLLexer extends Lexer {
                 case 1 :
                     // JPQL.g:1474:9: NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )?
                     {
-                    mNUMERIC_DIGITS(); 
-                    mEXPONENT(); 
+                    mNUMERIC_DIGITS();
+                    mEXPONENT();
                     // JPQL.g:1474:33: ( FLOAT_SUFFIX )?
                     int alt19=2;
                     int LA19_0 = input.LA(1);
@@ -2844,7 +2844,7 @@ public class JPQLLexer extends Lexer {
                         case 1 :
                             // JPQL.g:1474:33: FLOAT_SUFFIX
                             {
-                            mFLOAT_SUFFIX(); 
+                            mFLOAT_SUFFIX();
 
                             }
                             break;
@@ -2857,8 +2857,8 @@ public class JPQLLexer extends Lexer {
                 case 2 :
                     // JPQL.g:1475:9: NUMERIC_DIGITS FLOAT_SUFFIX
                     {
-                    mNUMERIC_DIGITS(); 
-                    mFLOAT_SUFFIX(); 
+                    mNUMERIC_DIGITS();
+                    mFLOAT_SUFFIX();
 
                     }
                     break;
@@ -2926,16 +2926,16 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt22) {
-            	case 1 :
-            	    // JPQL.g:1481:33: '0' .. '9'
-            	    {
-            	    matchRange('0','9'); 
+                case 1 :
+                    // JPQL.g:1481:33: '0' .. '9'
+                    {
+                    matchRange('0','9');
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    if ( cnt22 >= 1 ) break loop22;
+                default :
+                    if ( cnt22 >= 1 ) break loop22;
                         EarlyExitException eee =
                             new EarlyExitException(22, input);
                         throw eee;
@@ -2958,7 +2958,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1487:5: ( 'f' )
             // JPQL.g:1487:9: 'f'
             {
-            match('f'); 
+            match('f');
 
             }
 
@@ -2976,11 +2976,11 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1491:5: ( LEFT_CURLY_BRACKET ( 'd' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
             // JPQL.g:1491:7: LEFT_CURLY_BRACKET ( 'd' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
             {
-            mLEFT_CURLY_BRACKET(); 
+            mLEFT_CURLY_BRACKET();
             // JPQL.g:1491:26: ( 'd' )
             // JPQL.g:1491:27: 'd'
             {
-            match('d'); 
+            match('d');
 
             }
 
@@ -2997,24 +2997,24 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt23) {
-            	case 1 :
-            	    // JPQL.g:
-            	    {
-            	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
-            	        input.consume();
+                case 1 :
+                    // JPQL.g:
+                    {
+                    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
+                        input.consume();
 
-            	    }
-            	    else {
-            	        MismatchedSetException mse = new MismatchedSetException(null,input);
-            	        recover(mse);
-            	        throw mse;}
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;}
 
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    if ( cnt23 >= 1 ) break loop23;
+                default :
+                    if ( cnt23 >= 1 ) break loop23;
                         EarlyExitException eee =
                             new EarlyExitException(23, input);
                         throw eee;
@@ -3022,9 +3022,9 @@ public class JPQLLexer extends Lexer {
                 cnt23++;
             } while (true);
 
-            match('\''); 
-            mDATE_STRING(); 
-            match('\''); 
+            match('\'');
+            mDATE_STRING();
+            match('\'');
             // JPQL.g:1491:68: ( ' ' | '\\t' )*
             loop24:
             do {
@@ -3037,28 +3037,28 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt24) {
-            	case 1 :
-            	    // JPQL.g:
-            	    {
-            	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
-            	        input.consume();
+                case 1 :
+                    // JPQL.g:
+                    {
+                    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
+                        input.consume();
 
-            	    }
-            	    else {
-            	        MismatchedSetException mse = new MismatchedSetException(null,input);
-            	        recover(mse);
-            	        throw mse;}
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;}
 
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop24;
+                default :
+                    break loop24;
                 }
             } while (true);
 
-            mRIGHT_CURLY_BRACKET(); 
+            mRIGHT_CURLY_BRACKET();
 
             }
 
@@ -3078,11 +3078,11 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1495:5: ( LEFT_CURLY_BRACKET ( 't' ) ( ' ' | '\\t' )+ '\\'' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
             // JPQL.g:1495:7: LEFT_CURLY_BRACKET ( 't' ) ( ' ' | '\\t' )+ '\\'' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
             {
-            mLEFT_CURLY_BRACKET(); 
+            mLEFT_CURLY_BRACKET();
             // JPQL.g:1495:26: ( 't' )
             // JPQL.g:1495:27: 't'
             {
-            match('t'); 
+            match('t');
 
             }
 
@@ -3099,24 +3099,24 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt25) {
-            	case 1 :
-            	    // JPQL.g:
-            	    {
-            	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
-            	        input.consume();
+                case 1 :
+                    // JPQL.g:
+                    {
+                    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
+                        input.consume();
 
-            	    }
-            	    else {
-            	        MismatchedSetException mse = new MismatchedSetException(null,input);
-            	        recover(mse);
-            	        throw mse;}
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;}
 
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    if ( cnt25 >= 1 ) break loop25;
+                default :
+                    if ( cnt25 >= 1 ) break loop25;
                         EarlyExitException eee =
                             new EarlyExitException(25, input);
                         throw eee;
@@ -3124,9 +3124,9 @@ public class JPQLLexer extends Lexer {
                 cnt25++;
             } while (true);
 
-            match('\''); 
-            mTIME_STRING(); 
-            match('\''); 
+            match('\'');
+            mTIME_STRING();
+            match('\'');
             // JPQL.g:1495:68: ( ' ' | '\\t' )*
             loop26:
             do {
@@ -3139,28 +3139,28 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt26) {
-            	case 1 :
-            	    // JPQL.g:
-            	    {
-            	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
-            	        input.consume();
+                case 1 :
+                    // JPQL.g:
+                    {
+                    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
+                        input.consume();
 
-            	    }
-            	    else {
-            	        MismatchedSetException mse = new MismatchedSetException(null,input);
-            	        recover(mse);
-            	        throw mse;}
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;}
 
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop26;
+                default :
+                    break loop26;
                 }
             } while (true);
 
-            mRIGHT_CURLY_BRACKET(); 
+            mRIGHT_CURLY_BRACKET();
 
             }
 
@@ -3180,11 +3180,11 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1499:5: ( LEFT_CURLY_BRACKET ( 'ts' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING ' ' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
             // JPQL.g:1499:7: LEFT_CURLY_BRACKET ( 'ts' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING ' ' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
             {
-            mLEFT_CURLY_BRACKET(); 
+            mLEFT_CURLY_BRACKET();
             // JPQL.g:1499:26: ( 'ts' )
             // JPQL.g:1499:27: 'ts'
             {
-            match("ts"); 
+            match("ts");
 
 
             }
@@ -3202,24 +3202,24 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt27) {
-            	case 1 :
-            	    // JPQL.g:
-            	    {
-            	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
-            	        input.consume();
+                case 1 :
+                    // JPQL.g:
+                    {
+                    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
+                        input.consume();
 
-            	    }
-            	    else {
-            	        MismatchedSetException mse = new MismatchedSetException(null,input);
-            	        recover(mse);
-            	        throw mse;}
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;}
 
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    if ( cnt27 >= 1 ) break loop27;
+                default :
+                    if ( cnt27 >= 1 ) break loop27;
                         EarlyExitException eee =
                             new EarlyExitException(27, input);
                         throw eee;
@@ -3227,11 +3227,11 @@ public class JPQLLexer extends Lexer {
                 cnt27++;
             } while (true);
 
-            match('\''); 
-            mDATE_STRING(); 
-            match(' '); 
-            mTIME_STRING(); 
-            match('\''); 
+            match('\'');
+            mDATE_STRING();
+            match(' ');
+            mTIME_STRING();
+            match('\'');
             // JPQL.g:1499:85: ( ' ' | '\\t' )*
             loop28:
             do {
@@ -3244,28 +3244,28 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt28) {
-            	case 1 :
-            	    // JPQL.g:
-            	    {
-            	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
-            	        input.consume();
+                case 1 :
+                    // JPQL.g:
+                    {
+                    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
+                        input.consume();
 
-            	    }
-            	    else {
-            	        MismatchedSetException mse = new MismatchedSetException(null,input);
-            	        recover(mse);
-            	        throw mse;}
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;}
 
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop28;
+                default :
+                    break loop28;
                 }
             } while (true);
 
-            mRIGHT_CURLY_BRACKET(); 
+            mRIGHT_CURLY_BRACKET();
 
             }
 
@@ -3285,16 +3285,16 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1503:5: ( '0' .. '9' '0' .. '9' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' )
             // JPQL.g:1503:7: '0' .. '9' '0' .. '9' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9'
             {
-            matchRange('0','9'); 
-            matchRange('0','9'); 
-            matchRange('0','9'); 
-            matchRange('0','9'); 
-            match('-'); 
-            matchRange('0','9'); 
-            matchRange('0','9'); 
-            match('-'); 
-            matchRange('0','9'); 
-            matchRange('0','9'); 
+            matchRange('0','9');
+            matchRange('0','9');
+            matchRange('0','9');
+            matchRange('0','9');
+            match('-');
+            matchRange('0','9');
+            matchRange('0','9');
+            match('-');
+            matchRange('0','9');
+            matchRange('0','9');
 
             }
 
@@ -3314,7 +3314,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1507:5: ( '0' .. '9' ( '0' .. '9' )? ':' '0' .. '9' '0' .. '9' ':' '0' .. '9' '0' .. '9' '.' ( '0' .. '9' )* )
             // JPQL.g:1507:7: '0' .. '9' ( '0' .. '9' )? ':' '0' .. '9' '0' .. '9' ':' '0' .. '9' '0' .. '9' '.' ( '0' .. '9' )*
             {
-            matchRange('0','9'); 
+            matchRange('0','9');
             // JPQL.g:1507:16: ( '0' .. '9' )?
             int alt29=2;
             int LA29_0 = input.LA(1);
@@ -3326,20 +3326,20 @@ public class JPQLLexer extends Lexer {
                 case 1 :
                     // JPQL.g:1507:17: '0' .. '9'
                     {
-                    matchRange('0','9'); 
+                    matchRange('0','9');
 
                     }
                     break;
 
             }
 
-            match(':'); 
-            matchRange('0','9'); 
-            matchRange('0','9'); 
-            match(':'); 
-            matchRange('0','9'); 
-            matchRange('0','9'); 
-            match('.'); 
+            match(':');
+            matchRange('0','9');
+            matchRange('0','9');
+            match(':');
+            matchRange('0','9');
+            matchRange('0','9');
+            match('.');
             // JPQL.g:1507:76: ( '0' .. '9' )*
             loop30:
             do {
@@ -3352,16 +3352,16 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt30) {
-            	case 1 :
-            	    // JPQL.g:1507:76: '0' .. '9'
-            	    {
-            	    matchRange('0','9'); 
+                case 1 :
+                    // JPQL.g:1507:76: '0' .. '9'
+                    {
+                    matchRange('0','9');
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop30;
+                default :
+                    break loop30;
                 }
             } while (true);
 
@@ -3382,7 +3382,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1512:5: ( 'd' )
             // JPQL.g:1512:7: 'd'
             {
-            match('d'); 
+            match('d');
 
             }
 
@@ -3400,7 +3400,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1516:5: ( '=' )
             // JPQL.g:1516:7: '='
             {
-            match('='); 
+            match('=');
 
             }
 
@@ -3420,7 +3420,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1520:5: ( '>' )
             // JPQL.g:1520:7: '>'
             {
-            match('>'); 
+            match('>');
 
             }
 
@@ -3440,7 +3440,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1524:5: ( '>=' )
             // JPQL.g:1524:7: '>='
             {
-            match(">="); 
+            match(">=");
 
 
             }
@@ -3461,7 +3461,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1528:5: ( '<' )
             // JPQL.g:1528:7: '<'
             {
-            match('<'); 
+            match('<');
 
             }
 
@@ -3481,7 +3481,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1532:5: ( '<=' )
             // JPQL.g:1532:7: '<='
             {
-            match("<="); 
+            match("<=");
 
 
             }
@@ -3519,7 +3519,7 @@ public class JPQLLexer extends Lexer {
                 case 1 :
                     // JPQL.g:1536:7: '<>'
                     {
-                    match("<>"); 
+                    match("<>");
 
 
                     }
@@ -3527,7 +3527,7 @@ public class JPQLLexer extends Lexer {
                 case 2 :
                     // JPQL.g:1537:7: '!='
                     {
-                    match("!="); 
+                    match("!=");
 
 
                     }
@@ -3550,7 +3550,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1541:5: ( '*' )
             // JPQL.g:1541:7: '*'
             {
-            match('*'); 
+            match('*');
 
             }
 
@@ -3570,7 +3570,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1545:5: ( '/' )
             // JPQL.g:1545:7: '/'
             {
-            match('/'); 
+            match('/');
 
             }
 
@@ -3590,7 +3590,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1549:5: ( '+' )
             // JPQL.g:1549:7: '+'
             {
-            match('+'); 
+            match('+');
 
             }
 
@@ -3610,7 +3610,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1553:5: ( '-' )
             // JPQL.g:1553:7: '-'
             {
-            match('-'); 
+            match('-');
 
             }
 
@@ -3630,11 +3630,11 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1558:5: ( '?' ( '1' .. '9' ) ( '0' .. '9' )* )
             // JPQL.g:1558:7: '?' ( '1' .. '9' ) ( '0' .. '9' )*
             {
-            match('?'); 
+            match('?');
             // JPQL.g:1558:11: ( '1' .. '9' )
             // JPQL.g:1558:12: '1' .. '9'
             {
-            matchRange('1','9'); 
+            matchRange('1','9');
 
             }
 
@@ -3650,16 +3650,16 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt32) {
-            	case 1 :
-            	    // JPQL.g:1558:23: '0' .. '9'
-            	    {
-            	    matchRange('0','9'); 
+                case 1 :
+                    // JPQL.g:1558:23: '0' .. '9'
+                    {
+                    matchRange('0','9');
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop32;
+                default :
+                    break loop32;
                 }
             } while (true);
 
@@ -3682,8 +3682,8 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1562:5: ( ':' TEXTCHAR )
             // JPQL.g:1562:7: ':' TEXTCHAR
             {
-            match(':'); 
-            mTEXTCHAR(); 
+            match(':');
+            mTEXTCHAR();
 
             }
 
@@ -3703,7 +3703,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1568:5: ( '\"' (~ ( '\"' ) )* '\"' )
             // JPQL.g:1568:7: '\"' (~ ( '\"' ) )* '\"'
             {
-            match('\"'); 
+            match('\"');
             // JPQL.g:1568:11: (~ ( '\"' ) )*
             loop33:
             do {
@@ -3716,28 +3716,28 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt33) {
-            	case 1 :
-            	    // JPQL.g:1568:12: ~ ( '\"' )
-            	    {
-            	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='\uFFFF') ) {
-            	        input.consume();
+                case 1 :
+                    // JPQL.g:1568:12: ~ ( '\"' )
+                    {
+                    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='\uFFFF') ) {
+                        input.consume();
 
-            	    }
-            	    else {
-            	        MismatchedSetException mse = new MismatchedSetException(null,input);
-            	        recover(mse);
-            	        throw mse;}
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;}
 
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop33;
+                default :
+                    break loop33;
                 }
             } while (true);
 
-            match('\"'); 
+            match('\"');
 
             }
 
@@ -3757,7 +3757,7 @@ public class JPQLLexer extends Lexer {
             // JPQL.g:1572:5: ( '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\'' )
             // JPQL.g:1572:7: '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\''
             {
-            match('\''); 
+            match('\'');
             // JPQL.g:1572:12: (~ ( '\\'' ) | ( '\\'\\'' ) )*
             loop34:
             do {
@@ -3779,42 +3779,42 @@ public class JPQLLexer extends Lexer {
 
 
                 switch (alt34) {
-            	case 1 :
-            	    // JPQL.g:1572:13: ~ ( '\\'' )
-            	    {
-            	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='\uFFFF') ) {
-            	        input.consume();
+                case 1 :
+                    // JPQL.g:1572:13: ~ ( '\\'' )
+                    {
+                    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='\uFFFF') ) {
+                        input.consume();
 
-            	    }
-            	    else {
-            	        MismatchedSetException mse = new MismatchedSetException(null,input);
-            	        recover(mse);
-            	        throw mse;}
-
-
-            	    }
-            	    break;
-            	case 2 :
-            	    // JPQL.g:1572:24: ( '\\'\\'' )
-            	    {
-            	    // JPQL.g:1572:24: ( '\\'\\'' )
-            	    // JPQL.g:1572:25: '\\'\\''
-            	    {
-            	    match("''"); 
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;}
 
 
-            	    }
+                    }
+                    break;
+                case 2 :
+                    // JPQL.g:1572:24: ( '\\'\\'' )
+                    {
+                    // JPQL.g:1572:24: ( '\\'\\'' )
+                    // JPQL.g:1572:25: '\\'\\''
+                    {
+                    match("''");
 
 
-            	    }
-            	    break;
+                    }
 
-            	default :
-            	    break loop34;
+
+                    }
+                    break;
+
+                default :
+                    break loop34;
                 }
             } while (true);
 
-            match('\''); 
+            match('\'');
 
             }
 
@@ -3834,763 +3834,763 @@ public class JPQLLexer extends Lexer {
             case 1 :
                 // JPQL.g:1:10: ABS
                 {
-                mABS(); 
+                mABS();
 
                 }
                 break;
             case 2 :
                 // JPQL.g:1:14: ALL
                 {
-                mALL(); 
+                mALL();
 
                 }
                 break;
             case 3 :
                 // JPQL.g:1:18: AND
                 {
-                mAND(); 
+                mAND();
 
                 }
                 break;
             case 4 :
                 // JPQL.g:1:22: ANY
                 {
-                mANY(); 
+                mANY();
 
                 }
                 break;
             case 5 :
                 // JPQL.g:1:26: AS
                 {
-                mAS(); 
+                mAS();
 
                 }
                 break;
             case 6 :
                 // JPQL.g:1:29: ASC
                 {
-                mASC(); 
+                mASC();
 
                 }
                 break;
             case 7 :
                 // JPQL.g:1:33: AVG
                 {
-                mAVG(); 
+                mAVG();
 
                 }
                 break;
             case 8 :
                 // JPQL.g:1:37: BETWEEN
                 {
-                mBETWEEN(); 
+                mBETWEEN();
 
                 }
                 break;
             case 9 :
                 // JPQL.g:1:45: BOTH
                 {
-                mBOTH(); 
+                mBOTH();
 
                 }
                 break;
             case 10 :
                 // JPQL.g:1:50: BY
                 {
-                mBY(); 
+                mBY();
 
                 }
                 break;
             case 11 :
                 // JPQL.g:1:53: CASE
                 {
-                mCASE(); 
+                mCASE();
 
                 }
                 break;
             case 12 :
                 // JPQL.g:1:58: COALESCE
                 {
-                mCOALESCE(); 
+                mCOALESCE();
 
                 }
                 break;
             case 13 :
                 // JPQL.g:1:67: CONCAT
                 {
-                mCONCAT(); 
+                mCONCAT();
 
                 }
                 break;
             case 14 :
                 // JPQL.g:1:74: COUNT
                 {
-                mCOUNT(); 
+                mCOUNT();
 
                 }
                 break;
             case 15 :
                 // JPQL.g:1:80: CURRENT_DATE
                 {
-                mCURRENT_DATE(); 
+                mCURRENT_DATE();
 
                 }
                 break;
             case 16 :
                 // JPQL.g:1:93: CURRENT_TIME
                 {
-                mCURRENT_TIME(); 
+                mCURRENT_TIME();
 
                 }
                 break;
             case 17 :
                 // JPQL.g:1:106: CURRENT_TIMESTAMP
                 {
-                mCURRENT_TIMESTAMP(); 
+                mCURRENT_TIMESTAMP();
 
                 }
                 break;
             case 18 :
                 // JPQL.g:1:124: DESC
                 {
-                mDESC(); 
+                mDESC();
 
                 }
                 break;
             case 19 :
                 // JPQL.g:1:129: DELETE
                 {
-                mDELETE(); 
+                mDELETE();
 
                 }
                 break;
             case 20 :
                 // JPQL.g:1:136: DISTINCT
                 {
-                mDISTINCT(); 
+                mDISTINCT();
 
                 }
                 break;
             case 21 :
                 // JPQL.g:1:145: ELSE
                 {
-                mELSE(); 
+                mELSE();
 
                 }
                 break;
             case 22 :
                 // JPQL.g:1:150: EMPTY
                 {
-                mEMPTY(); 
+                mEMPTY();
 
                 }
                 break;
             case 23 :
                 // JPQL.g:1:156: END
                 {
-                mEND(); 
+                mEND();
 
                 }
                 break;
             case 24 :
                 // JPQL.g:1:160: ENTRY
                 {
-                mENTRY(); 
+                mENTRY();
 
                 }
                 break;
             case 25 :
                 // JPQL.g:1:166: ESCAPE
                 {
-                mESCAPE(); 
+                mESCAPE();
 
                 }
                 break;
             case 26 :
                 // JPQL.g:1:173: EXISTS
                 {
-                mEXISTS(); 
+                mEXISTS();
 
                 }
                 break;
             case 27 :
                 // JPQL.g:1:180: FALSE
                 {
-                mFALSE(); 
+                mFALSE();
 
                 }
                 break;
             case 28 :
                 // JPQL.g:1:186: FETCH
                 {
-                mFETCH(); 
+                mFETCH();
 
                 }
                 break;
             case 29 :
                 // JPQL.g:1:192: FUNC
                 {
-                mFUNC(); 
+                mFUNC();
 
                 }
                 break;
             case 30 :
                 // JPQL.g:1:197: FROM
                 {
-                mFROM(); 
+                mFROM();
 
                 }
                 break;
             case 31 :
                 // JPQL.g:1:202: GROUP
                 {
-                mGROUP(); 
+                mGROUP();
 
                 }
                 break;
             case 32 :
                 // JPQL.g:1:208: HAVING
                 {
-                mHAVING(); 
+                mHAVING();
 
                 }
                 break;
             case 33 :
                 // JPQL.g:1:215: IN
                 {
-                mIN(); 
+                mIN();
 
                 }
                 break;
             case 34 :
                 // JPQL.g:1:218: INDEX
                 {
-                mINDEX(); 
+                mINDEX();
 
                 }
                 break;
             case 35 :
                 // JPQL.g:1:224: INNER
                 {
-                mINNER(); 
+                mINNER();
 
                 }
                 break;
             case 36 :
                 // JPQL.g:1:230: IS
                 {
-                mIS(); 
+                mIS();
 
                 }
                 break;
             case 37 :
                 // JPQL.g:1:233: JOIN
                 {
-                mJOIN(); 
+                mJOIN();
 
                 }
                 break;
             case 38 :
                 // JPQL.g:1:238: KEY
                 {
-                mKEY(); 
+                mKEY();
 
                 }
                 break;
             case 39 :
                 // JPQL.g:1:242: LEADING
                 {
-                mLEADING(); 
+                mLEADING();
 
                 }
                 break;
             case 40 :
                 // JPQL.g:1:250: LEFT
                 {
-                mLEFT(); 
+                mLEFT();
 
                 }
                 break;
             case 41 :
                 // JPQL.g:1:255: LENGTH
                 {
-                mLENGTH(); 
+                mLENGTH();
 
                 }
                 break;
             case 42 :
                 // JPQL.g:1:262: LIKE
                 {
-                mLIKE(); 
+                mLIKE();
 
                 }
                 break;
             case 43 :
                 // JPQL.g:1:267: LOCATE
                 {
-                mLOCATE(); 
+                mLOCATE();
 
                 }
                 break;
             case 44 :
                 // JPQL.g:1:274: LOWER
                 {
-                mLOWER(); 
+                mLOWER();
 
                 }
                 break;
             case 45 :
                 // JPQL.g:1:280: MAX
                 {
-                mMAX(); 
+                mMAX();
 
                 }
                 break;
             case 46 :
                 // JPQL.g:1:284: MEMBER
                 {
-                mMEMBER(); 
+                mMEMBER();
 
                 }
                 break;
             case 47 :
                 // JPQL.g:1:291: MIN
                 {
-                mMIN(); 
+                mMIN();
 
                 }
                 break;
             case 48 :
                 // JPQL.g:1:295: MOD
                 {
-                mMOD(); 
+                mMOD();
 
                 }
                 break;
             case 49 :
                 // JPQL.g:1:299: NEW
                 {
-                mNEW(); 
+                mNEW();
 
                 }
                 break;
             case 50 :
                 // JPQL.g:1:303: NOT
                 {
-                mNOT(); 
+                mNOT();
 
                 }
                 break;
             case 51 :
                 // JPQL.g:1:307: NULL
                 {
-                mNULL(); 
+                mNULL();
 
                 }
                 break;
             case 52 :
                 // JPQL.g:1:312: NULLIF
                 {
-                mNULLIF(); 
+                mNULLIF();
 
                 }
                 break;
             case 53 :
                 // JPQL.g:1:319: OBJECT
                 {
-                mOBJECT(); 
+                mOBJECT();
 
                 }
                 break;
             case 54 :
                 // JPQL.g:1:326: OF
                 {
-                mOF(); 
+                mOF();
 
                 }
                 break;
             case 55 :
                 // JPQL.g:1:329: OR
                 {
-                mOR(); 
+                mOR();
 
                 }
                 break;
             case 56 :
                 // JPQL.g:1:332: ORDER
                 {
-                mORDER(); 
+                mORDER();
 
                 }
                 break;
             case 57 :
                 // JPQL.g:1:338: OUTER
                 {
-                mOUTER(); 
+                mOUTER();
 
                 }
                 break;
             case 58 :
                 // JPQL.g:1:344: SELECT
                 {
-                mSELECT(); 
+                mSELECT();
 
                 }
                 break;
             case 59 :
                 // JPQL.g:1:351: SET
                 {
-                mSET(); 
+                mSET();
 
                 }
                 break;
             case 60 :
                 // JPQL.g:1:355: SIZE
                 {
-                mSIZE(); 
+                mSIZE();
 
                 }
                 break;
             case 61 :
                 // JPQL.g:1:360: SQRT
                 {
-                mSQRT(); 
+                mSQRT();
 
                 }
                 break;
             case 62 :
                 // JPQL.g:1:365: SOME
                 {
-                mSOME(); 
+                mSOME();
 
                 }
                 break;
             case 63 :
                 // JPQL.g:1:370: SUBSTRING
                 {
-                mSUBSTRING(); 
+                mSUBSTRING();
 
                 }
                 break;
             case 64 :
                 // JPQL.g:1:380: SUM
                 {
-                mSUM(); 
+                mSUM();
 
                 }
                 break;
             case 65 :
                 // JPQL.g:1:384: THEN
                 {
-                mTHEN(); 
+                mTHEN();
 
                 }
                 break;
             case 66 :
                 // JPQL.g:1:389: TRAILING
                 {
-                mTRAILING(); 
+                mTRAILING();
 
                 }
                 break;
             case 67 :
                 // JPQL.g:1:398: TREAT
                 {
-                mTREAT(); 
+                mTREAT();
 
                 }
                 break;
             case 68 :
                 // JPQL.g:1:404: TRIM
                 {
-                mTRIM(); 
+                mTRIM();
 
                 }
                 break;
             case 69 :
                 // JPQL.g:1:409: TRUE
                 {
-                mTRUE(); 
+                mTRUE();
 
                 }
                 break;
             case 70 :
                 // JPQL.g:1:414: TYPE
                 {
-                mTYPE(); 
+                mTYPE();
 
                 }
                 break;
             case 71 :
                 // JPQL.g:1:419: UNKNOWN
                 {
-                mUNKNOWN(); 
+                mUNKNOWN();
 
                 }
                 break;
             case 72 :
                 // JPQL.g:1:427: UPDATE
                 {
-                mUPDATE(); 
+                mUPDATE();
 
                 }
                 break;
             case 73 :
                 // JPQL.g:1:434: UPPER
                 {
-                mUPPER(); 
+                mUPPER();
 
                 }
                 break;
             case 74 :
                 // JPQL.g:1:440: VALUE
                 {
-                mVALUE(); 
+                mVALUE();
 
                 }
                 break;
             case 75 :
                 // JPQL.g:1:446: WHEN
                 {
-                mWHEN(); 
+                mWHEN();
 
                 }
                 break;
             case 76 :
                 // JPQL.g:1:451: WHERE
                 {
-                mWHERE(); 
+                mWHERE();
 
                 }
                 break;
             case 77 :
                 // JPQL.g:1:457: DOT
                 {
-                mDOT(); 
+                mDOT();
 
                 }
                 break;
             case 78 :
                 // JPQL.g:1:461: WS
                 {
-                mWS(); 
+                mWS();
 
                 }
                 break;
             case 79 :
                 // JPQL.g:1:464: LEFT_ROUND_BRACKET
                 {
-                mLEFT_ROUND_BRACKET(); 
+                mLEFT_ROUND_BRACKET();
 
                 }
                 break;
             case 80 :
                 // JPQL.g:1:483: LEFT_CURLY_BRACKET
                 {
-                mLEFT_CURLY_BRACKET(); 
+                mLEFT_CURLY_BRACKET();
 
                 }
                 break;
             case 81 :
                 // JPQL.g:1:502: RIGHT_ROUND_BRACKET
                 {
-                mRIGHT_ROUND_BRACKET(); 
+                mRIGHT_ROUND_BRACKET();
 
                 }
                 break;
             case 82 :
                 // JPQL.g:1:522: RIGHT_CURLY_BRACKET
                 {
-                mRIGHT_CURLY_BRACKET(); 
+                mRIGHT_CURLY_BRACKET();
 
                 }
                 break;
             case 83 :
                 // JPQL.g:1:542: COMMA
                 {
-                mCOMMA(); 
+                mCOMMA();
 
                 }
                 break;
             case 84 :
                 // JPQL.g:1:548: IDENT
                 {
-                mIDENT(); 
+                mIDENT();
 
                 }
                 break;
             case 85 :
                 // JPQL.g:1:554: HEX_LITERAL
                 {
-                mHEX_LITERAL(); 
+                mHEX_LITERAL();
 
                 }
                 break;
             case 86 :
                 // JPQL.g:1:566: INTEGER_LITERAL
                 {
-                mINTEGER_LITERAL(); 
+                mINTEGER_LITERAL();
 
                 }
                 break;
             case 87 :
                 // JPQL.g:1:582: LONG_LITERAL
                 {
-                mLONG_LITERAL(); 
+                mLONG_LITERAL();
 
                 }
                 break;
             case 88 :
                 // JPQL.g:1:595: OCTAL_LITERAL
                 {
-                mOCTAL_LITERAL(); 
+                mOCTAL_LITERAL();
 
                 }
                 break;
             case 89 :
                 // JPQL.g:1:609: DOUBLE_LITERAL
                 {
-                mDOUBLE_LITERAL(); 
+                mDOUBLE_LITERAL();
 
                 }
                 break;
             case 90 :
                 // JPQL.g:1:624: FLOAT_LITERAL
                 {
-                mFLOAT_LITERAL(); 
+                mFLOAT_LITERAL();
 
                 }
                 break;
             case 91 :
                 // JPQL.g:1:638: DATE_LITERAL
                 {
-                mDATE_LITERAL(); 
+                mDATE_LITERAL();
 
                 }
                 break;
             case 92 :
                 // JPQL.g:1:651: TIME_LITERAL
                 {
-                mTIME_LITERAL(); 
+                mTIME_LITERAL();
 
                 }
                 break;
             case 93 :
                 // JPQL.g:1:664: TIMESTAMP_LITERAL
                 {
-                mTIMESTAMP_LITERAL(); 
+                mTIMESTAMP_LITERAL();
 
                 }
                 break;
             case 94 :
                 // JPQL.g:1:682: DATE_STRING
                 {
-                mDATE_STRING(); 
+                mDATE_STRING();
 
                 }
                 break;
             case 95 :
                 // JPQL.g:1:694: TIME_STRING
                 {
-                mTIME_STRING(); 
+                mTIME_STRING();
 
                 }
                 break;
             case 96 :
                 // JPQL.g:1:706: EQUALS
                 {
-                mEQUALS(); 
+                mEQUALS();
 
                 }
                 break;
             case 97 :
                 // JPQL.g:1:713: GREATER_THAN
                 {
-                mGREATER_THAN(); 
+                mGREATER_THAN();
 
                 }
                 break;
             case 98 :
                 // JPQL.g:1:726: GREATER_THAN_EQUAL_TO
                 {
-                mGREATER_THAN_EQUAL_TO(); 
+                mGREATER_THAN_EQUAL_TO();
 
                 }
                 break;
             case 99 :
                 // JPQL.g:1:748: LESS_THAN
                 {
-                mLESS_THAN(); 
+                mLESS_THAN();
 
                 }
                 break;
             case 100 :
                 // JPQL.g:1:758: LESS_THAN_EQUAL_TO
                 {
-                mLESS_THAN_EQUAL_TO(); 
+                mLESS_THAN_EQUAL_TO();
 
                 }
                 break;
             case 101 :
                 // JPQL.g:1:777: NOT_EQUAL_TO
                 {
-                mNOT_EQUAL_TO(); 
+                mNOT_EQUAL_TO();
 
                 }
                 break;
             case 102 :
                 // JPQL.g:1:790: MULTIPLY
                 {
-                mMULTIPLY(); 
+                mMULTIPLY();
 
                 }
                 break;
             case 103 :
                 // JPQL.g:1:799: DIVIDE
                 {
-                mDIVIDE(); 
+                mDIVIDE();
 
                 }
                 break;
             case 104 :
                 // JPQL.g:1:806: PLUS
                 {
-                mPLUS(); 
+                mPLUS();
 
                 }
                 break;
             case 105 :
                 // JPQL.g:1:811: MINUS
                 {
-                mMINUS(); 
+                mMINUS();
 
                 }
                 break;
             case 106 :
                 // JPQL.g:1:817: POSITIONAL_PARAM
                 {
-                mPOSITIONAL_PARAM(); 
+                mPOSITIONAL_PARAM();
 
                 }
                 break;
             case 107 :
                 // JPQL.g:1:834: NAMED_PARAM
                 {
-                mNAMED_PARAM(); 
+                mNAMED_PARAM();
 
                 }
                 break;
             case 108 :
                 // JPQL.g:1:846: STRING_LITERAL_DOUBLE_QUOTED
                 {
-                mSTRING_LITERAL_DOUBLE_QUOTED(); 
+                mSTRING_LITERAL_DOUBLE_QUOTED();
 
                 }
                 break;
             case 109 :
                 // JPQL.g:1:875: STRING_LITERAL_SINGLE_QUOTED
                 {
-                mSTRING_LITERAL_SINGLE_QUOTED(); 
+                mSTRING_LITERAL_SINGLE_QUOTED();
 
                 }
                 break;
@@ -5370,6 +5370,6 @@ public class JPQLLexer extends Lexer {
             return "1:1: Tokens : ( ABS | ALL | AND | ANY | AS | ASC | AVG | BETWEEN | BOTH | BY | CASE | COALESCE | CONCAT | COUNT | CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | DESC | DELETE | DISTINCT | ELSE | EMPTY | END | ENTRY | ESCAPE | EXISTS | FALSE | FETCH | FUNC | FROM | GROUP | HAVING | IN | INDEX | INNER | IS | JOIN | KEY | LEADING | LEFT | LENGTH | LIKE | LOCATE | LOWER | MAX | MEMBER | MIN | MOD | NEW | NOT | NULL | NULLIF | OBJECT | OF | OR | ORDER | OUTER | SELECT | SET | SIZE | SQRT | SOME | SUBSTRING | SUM | THEN | TRAILING | TREAT | TRIM | TRUE | TYPE | UNKNOWN | UPDATE | UPPER | VALUE | WHEN | WHERE | DOT | WS | LEFT_ROUND_BRACKET | LEFT_CURLY_BRACKET | RIGHT_ROUND_BRACKET | RIGHT_CURLY_BRACKET | COMMA | IDENT | HEX_LITERAL | INTEGER_LITERAL | LONG_LITERAL | OCTAL_LITERAL | DOUBLE_LITERAL | FLOAT_LITERAL | DATE_LITERAL | TIME_LITERAL | TIMESTAMP_LITERAL | DATE_STRING | TIME_STRING | EQUALS | GREATER_THAN | GREATER_THAN_EQUAL_TO | LESS_THAN | LESS_THAN_EQUAL_TO | NOT_EQUAL_TO | MULTIPLY | DIVIDE | PLUS | MINUS | POSITIONAL_PARAM | NAMED_PARAM | STRING_LITERAL_DOUBLE_QUOTED | STRING_LITERAL_SINGLE_QUOTED );";
         }
     }
- 
+
 
 }

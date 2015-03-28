@@ -15,21 +15,21 @@
    </xsd:complexType>
    <xsd:complexType name="Item" sdoXML:name="ItemSDO">
       <xsd:sequence maxOccurs="unbounded">
-         <xsd:element name="porder" type="xsd:ID" sdoXML:string="true" sdoXML:many="false" minOccurs="0"/>	 
+         <xsd:element name="porder" type="xsd:ID" sdoXML:string="true" sdoXML:many="false" minOccurs="0"/>
       </xsd:sequence>
       <xsd:attribute name="productName" type="xsd:string" sdoXML:readOnly="true"/>
       <xsd:attribute name="quantity" sdoXML:dataType="sdo:Integer"/>
       <xsd:attribute name="partNum" type="SKU" sdoXML:name="partNumSDO"/>
       <xsd:attribute name="USPrice" type="xsd:decimal"/>
       <xsd:attribute name="comment" type="xsd:string" sdoXML:aliasName="itemComment"/>
-      <xsd:attribute name="shipDate" type="xsd:date" sdoXML:string="true"/>      
+      <xsd:attribute name="shipDate" type="xsd:date" sdoXML:string="true"/>
    </xsd:complexType>
    <xsd:complexType name="PurchaseOrder" sdoXML:aliasName="Purchase">
       <xsd:sequence maxOccurs="unbounded">
          <xsd:element name="shipTo" type="USAddress" minOccurs="0" sdoXML:aliasName="mailingAddress" sdoXML:many="true"/>
          <xsd:element name="billTo" type="USAddress" minOccurs="0" sdoXML:name="billToSDO" sdoXML:readOnly="true" sdoXML:many="false"/>
          <xsd:element name="items" minOccurs="0" sdoXML:dataType="Items" sdoXML:many="false"/>
-	 <xsd:element name="topPriorityItems" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded" sdoXML:propertyType="ItemSDO" sdoXML:many="false"/>
+     <xsd:element name="topPriorityItems" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded" sdoXML:propertyType="ItemSDO" sdoXML:many="false"/>
       </xsd:sequence>
       <xsd:attribute name="comment" type="xsd:string"/>
       <xsd:attribute name="orderDate" type="xsd:date" sdoXML:dataType="MyGregorianDate"/>

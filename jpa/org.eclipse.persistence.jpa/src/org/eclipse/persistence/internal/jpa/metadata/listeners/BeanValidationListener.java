@@ -57,7 +57,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         this.groupPreUpdate = groupPreUpdate != null ? groupPreUpdate : groupDefault;
         //No validation performed on preRemove if user has not explicitly specified a validation group
         this.groupPreRemove = groupPreRemove;
-        
+
         validatorMap = new ConcurrentHashMap<>();
     }
 
@@ -82,7 +82,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         Object source = event.getSource();
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl )event.getSession();
         // preUpdate is also generated for deleted objects that were modified in this UOW.
-        // Do not perform preUpdate validation for such objects as preRemove would have already been called.         
+        // Do not perform preUpdate validation for such objects as preRemove would have already been called.
         if(!unitOfWork.isObjectDeleted(source)) {
             validateOnCallbackEvent(event, "preUpdate", groupPreUpdate);
         }

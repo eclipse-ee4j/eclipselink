@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -30,7 +30,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * End the operation timing.
      */
     public void endOperationProfile(String operationName) {
-        
+
     }
 
     /**
@@ -38,7 +38,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * End the operation timing.
      */
     public void endOperationProfile(String operationName, DatabaseQuery query, int weight) {
-        
+
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * Set the session.
      */
     public void setSession(Session session) {
-        
+
     }
 
     /**
@@ -66,7 +66,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * Start the operation timing.
      */
     public void startOperationProfile(String operationName) {
-        
+
     }
 
     /**
@@ -74,7 +74,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * Start the operation timing.
      */
     public void startOperationProfile(String operationName, DatabaseQuery query, int weight) {
-        
+
     }
 
     /**
@@ -82,7 +82,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * Update the value of the State sensor.(DMS)
      */
     public void update(String operationName, Object value) {
-        
+
     }
 
     /**
@@ -90,15 +90,15 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * Increase DMS Event sensor occurrence.(DMS)
      */
     public void occurred(String operationName, AbstractSession session) {
-        
+
     }
-    
+
     /**
      * INTERNAL:
      * Increase DMS Event sensor occurrence.(DMS)
      */
     public void occurred(String operationName, DatabaseQuery query, AbstractSession session) {
-        
+
     }
 
     /**
@@ -106,7 +106,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * Set DMS sensor weight(DMS)
      */
     public void setProfileWeight(int weight) {
-        
+
     }
 
     /**
@@ -122,6 +122,6 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * Initialize EclipseLink noun tree(DMS)
      */
     public void initialize() {
-        
+
     }
 }

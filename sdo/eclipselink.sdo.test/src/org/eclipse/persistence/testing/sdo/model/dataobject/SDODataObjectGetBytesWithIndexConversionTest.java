@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -47,8 +47,8 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
 
     //2. purpose: getBytes with Byte property
     public void testGetBytesFromByte() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);        
-        property.setType(SDOConstants.SDO_BYTE);        
+        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        property.setType(SDOConstants.SDO_BYTE);
         dataObject.set(property, new String("ddd").getBytes()[0]);
         try {
             dataObject.getBytes(PROPERTY_INDEX);
@@ -59,10 +59,10 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
 
     //3. purpose: getBytes with character property
     public void testGetBytesFromCharacter() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);        
+        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTER);
         dataObject.set(property, 'd');
-        
+
         try {
             dataObject.getBytes(PROPERTY_INDEX);
             fail("ClassCastException should be thrown.");
@@ -72,8 +72,8 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
 
     //4. purpose: getBytes with Double Property
     public void testGetBytesFromDouble() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);        
-        property.setType(SDOConstants.SDO_DOUBLE);        
+        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
+        property.setType(SDOConstants.SDO_DOUBLE);
         double doubleValue = 3;
         dataObject.set(property, doubleValue);
 
@@ -86,7 +86,7 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
 
     //5. purpose: getBytes with float Property
     public void testGetBytesFromFloat() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);        
+        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_FLOAT);
         float floatValue = 3;
         dataObject.set(property, floatValue);
@@ -101,7 +101,7 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
 
     //6. purpose: getBytes with int Property
     public void testGetBytesFromInt() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);        
+        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
          property.setType(SDOConstants.SDO_FLOAT);
         int intValue = 3;
         dataObject.set(property, intValue);
@@ -115,7 +115,7 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
 
     //7. purpose: getBytes with long Property
     public void testGetBytesFromLong() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);        
+        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_LONG);
         long longValue = 3;
         dataObject.set(property, longValue);
@@ -130,13 +130,13 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
 
     //8. purpose: getBytes with short Property
     public void testGetBytesFromShort() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);        
+        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_SHORT);
-   
+
         short shortValue = 3;
         dataObject.set(property, shortValue);
 
-   
+
         try {
             dataObject.getBytes(PROPERTY_INDEX);
             fail("ClassCastException should be thrown.");
@@ -146,15 +146,15 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
 
     //9. purpose: getBytes with string Property
     public void testGetBytesFromString() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);        
+        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_STRING);
-        
+
         dataObject.set(property, new String("0A64"));
-        
+
         try {
             byte[] value = dataObject.getBytes(PROPERTY_INDEX);
             byte[] controlBytes = new byte[]{10, 100};
-            assertEqualsBytes(controlBytes, value);                      
+            assertEqualsBytes(controlBytes, value);
         } catch (ClassCastException e) {
         }
     }
@@ -184,7 +184,7 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
 
     //12. purpose: getBytes with decimal property
     public void testGetBytesFromDecimal() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);        
+        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DECIMAL);
         dataObject.set(property, new BigDecimal(2));
 
@@ -211,9 +211,9 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
 
     //22. purpose: getBytes with date property
     public void testGetBytesFromDate() {
-        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);        
+        SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DATE);
-        
+
         dataObject.set(property, Calendar.getInstance().getTime());
         try {
             dataObject.getBytes(PROPERTY_INDEX);
@@ -231,6 +231,6 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
             return;
         }
-        fail("an SDOException should have occurred.");    
+        fail("an SDOException should have occurred.");
     }
 }

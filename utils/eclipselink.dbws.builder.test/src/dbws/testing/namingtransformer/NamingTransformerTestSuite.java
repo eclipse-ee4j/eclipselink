@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -135,7 +135,7 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_SIMPLE_TABLE, ddlDebug);
         }
     }
-    
+
     @Test
     public void findByPrimaryKeyTest() throws WSDLException {
         Invocation invocation = new Invocation("findByPrimaryKey_SimpletableType");
@@ -149,29 +149,29 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(ANOTHER_PERSON_XML));
         assertTrue("Control document not same as instance document.  Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     public static final String ANOTHER_PERSON_XML =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
         "<simpletablexType xmlns=\"urn:simpletable\" id=\"3\">" +
           "<name>rick</name>" +
         "</simpletablexType>";
-    
+
     /**
      * Inner class used for testing NamingConventionTransformer
      *
      */
     static class DBWSNamingConventionTransformer extends DefaultNamingConventionTransformer {
-        
+
         @Override
         public String generateSchemaAlias(String tableName) {
             return super.generateSchemaAlias(tableName +"xType");
         }
-        
+
         @Override
         public String generateElementAlias(String originalElementName) {
             return super.generateElementAlias(originalElementName.toLowerCase());
         }
-        
+
         @Override
         public ElementStyle styleForElement(String elementName) {
             if ("id".equalsIgnoreCase(elementName)) {

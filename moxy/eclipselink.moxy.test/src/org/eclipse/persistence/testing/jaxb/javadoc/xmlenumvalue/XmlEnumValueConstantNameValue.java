@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,29 +15,29 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmlenumvalue;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-     public class XmlEnumValueConstantNameValue { 
+     public class XmlEnumValueConstantNameValue {
 
-     	private Coin coin;
-    	private Card card = Card.CLUBS;
+         private Coin coin;
+        private Card card = Card.CLUBS;
 
-    	public Coin getCoin() {
-    		return coin;
-    	}
+        public Coin getCoin() {
+            return coin;
+        }
 
-    	public void setCoin(Coin coin) {
-    		this.coin = coin;
-    	}
-    	
-    	public Card getCard() {
-    		return card;
-    	}
+        public void setCoin(Coin coin) {
+            this.coin = coin;
+        }
 
-    	public void setCard(Card card) {
-    		this.card = card;
-    	}    	
+        public Card getCard() {
+            return card;
+        }
 
-     	public boolean equals(Object object) {
-     		XmlEnumValueConstantNameValue example = ((XmlEnumValueConstantNameValue)object);
-    		return example.coin.equals(this.coin) && example.card.equals(this.card);
-    	}
+        public void setCard(Card card) {
+            this.card = card;
+        }
+
+         public boolean equals(Object object) {
+             XmlEnumValueConstantNameValue example = ((XmlEnumValueConstantNameValue)object);
+            return example.coin.equals(this.coin) && example.card.equals(this.card);
+        }
      }

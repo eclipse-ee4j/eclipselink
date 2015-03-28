@@ -2,12 +2,12 @@
     "name":"Jane Doe",
     "address":{
         "street":"123 Some Street",
-	"new-city":"Any Town"
+    "new-city":"Any Town"
     },
     "phoneNumber":[
        {"type":"work",
         "value":"555-WORK"},
-	{"type":"home",
-	"value":"555-HOME"}
-	]
+    {"type":"home",
+    "value":"555-HOME"}
+    ]
 }}

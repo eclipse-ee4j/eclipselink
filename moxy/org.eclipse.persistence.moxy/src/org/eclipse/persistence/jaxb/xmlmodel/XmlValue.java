@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,9 +23,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -45,8 +45,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -80,13 +80,13 @@ public class XmlValue
 
     /**
      * Gets the value of the xmlAbstractNullPolicy property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link XmlAbstractNullPolicy }{@code >}
      *     {@link JAXBElement }{@code <}{@link XmlIsSetNullPolicy }{@code >}
      *     {@link JAXBElement }{@code <}{@link XmlNullPolicy }{@code >}
-     *     
+     *
      */
     public JAXBElement<? extends XmlAbstractNullPolicy> getXmlAbstractNullPolicy() {
         return xmlAbstractNullPolicy;
@@ -94,13 +94,13 @@ public class XmlValue
 
     /**
      * Sets the value of the xmlAbstractNullPolicy property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link XmlAbstractNullPolicy }{@code >}
      *     {@link JAXBElement }{@code <}{@link XmlIsSetNullPolicy }{@code >}
      *     {@link JAXBElement }{@code <}{@link XmlNullPolicy }{@code >}
-     *     
+     *
      */
     public void setXmlAbstractNullPolicy(JAXBElement<? extends XmlAbstractNullPolicy> value) {
         this.xmlAbstractNullPolicy = ((JAXBElement<? extends XmlAbstractNullPolicy> ) value);
@@ -108,11 +108,11 @@ public class XmlValue
 
     /**
      * Gets the value of the xmlAccessMethods property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public XmlAccessMethods getXmlAccessMethods() {
         return xmlAccessMethods;
@@ -120,11 +120,11 @@ public class XmlValue
 
     /**
      * Sets the value of the xmlAccessMethods property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public void setXmlAccessMethods(XmlAccessMethods value) {
         this.xmlAccessMethods = value;
@@ -132,11 +132,11 @@ public class XmlValue
 
     /**
      * Gets the value of the xmlProperties property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public XmlProperties getXmlProperties() {
         return xmlProperties;
@@ -144,11 +144,11 @@ public class XmlValue
 
     /**
      * Sets the value of the xmlProperties property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
@@ -156,11 +156,11 @@ public class XmlValue
 
     /**
      * Gets the value of the xmlJavaTypeAdapter property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlJavaTypeAdapter }
-     *     
+     *
      */
     public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
         return xmlJavaTypeAdapter;
@@ -168,11 +168,11 @@ public class XmlValue
 
     /**
      * Sets the value of the xmlJavaTypeAdapter property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlJavaTypeAdapter }
-     *     
+     *
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
         this.xmlJavaTypeAdapter = value;
@@ -180,11 +180,11 @@ public class XmlValue
 
     /**
      * Gets the value of the readOnly property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isReadOnly() {
         if (readOnly == null) {
@@ -196,11 +196,11 @@ public class XmlValue
 
     /**
      * Sets the value of the readOnly property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setReadOnly(Boolean value) {
         this.readOnly = value;
@@ -208,7 +208,7 @@ public class XmlValue
 
     /**
      * Indicates if the isReadOnly flag was set.
-     * 
+     *
      * @return
      */
     public boolean isSetReadOnly() {
@@ -217,11 +217,11 @@ public class XmlValue
 
     /**
      * Gets the value of the writeOnly property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isWriteOnly() {
         if (writeOnly == null) {
@@ -233,11 +233,11 @@ public class XmlValue
 
     /**
      * Sets the value of the writeOnly property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setWriteOnly(Boolean value) {
         this.writeOnly = value;
@@ -245,7 +245,7 @@ public class XmlValue
 
     /**
      * Indicates if the isWriteOnly flag was set.
-     * 
+     *
      * @return
      */
     public boolean isSetWriteOnly() {
@@ -254,11 +254,11 @@ public class XmlValue
 
     /**
      * Gets the value of the cdata property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isCdata() {
         if (cdata == null) {
@@ -270,18 +270,18 @@ public class XmlValue
 
     /**
      * Sets the value of the cdata property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setCdata(Boolean value) {
         this.cdata = value;
     }
     /**
      * Indicates if the cdata field has been set, i.e. is not null.
-     * 
+     *
      * @return true if this.cdata is not null, false otherwise
      */
     public boolean isSetCdata() {
@@ -289,11 +289,11 @@ public class XmlValue
     }
     /**
      * Gets the value of the type property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getType() {
         if (type == null) {
@@ -305,11 +305,11 @@ public class XmlValue
 
     /**
      * Sets the value of the type property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setType(String value) {
         this.type = value;
@@ -317,11 +317,11 @@ public class XmlValue
 
     /**
      * Gets the value of the containerType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getContainerType() {
         if (containerType == null) {
@@ -333,11 +333,11 @@ public class XmlValue
 
     /**
      * Sets the value of the containerType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setContainerType(String value) {
         this.containerType = value;

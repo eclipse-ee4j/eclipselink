@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *      ailitchev ported the original test written by dminsky
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.types;
 
 import java.text.*;
@@ -33,7 +33,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
     // persistent fields
     private Calendar calendar;
     private int testId;
-    
+
     // transient fields
     private boolean oldBindingValue;
     private boolean printCalendarIntoTimestampTZ;
@@ -53,31 +53,31 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
 
         "04/01/2006 21:00:00 US/Eastern",
         "04/01/2006 21:00:00 US/Pacific",
-    
+
         "04/01/2006 21:01:00 US/Eastern",
         "04/01/2006 21:01:00 US/Pacific",
-    
+
         "04/01/2006 22:00:00 US/Eastern",
         "04/01/2006 22:00:00 US/Pacific",
-    
+
         "10/29/2006 01:00:00 US/Eastern",
         "10/29/2006 01:00:00 PST",
-    
-        "10/29/2006 01:00:00 EST", 
+
+        "10/29/2006 01:00:00 EST",
         "10/29/2006 01:00:00 PST",
-            
+
         "03/10/2007 21:00:00 EST",
         "03/10/2007 21:00:00 PST",
-            
+
         "03/10/2007 22:00:00 EST",
         "03/10/2007 22:00:00 PST",
-            
+
         "10/28/2007 01:00:00 US/Eastern",
         "10/28/2007 01:00:00 PST",
-    
+
         "11/04/2007 01:00:00 EST",
         "11/04/2007 01:00:00 PST",
-            
+
         "12/31/2007 23:00:00 US/Eastern",
         "12/31/2007 23:00:00 US/Pacific"
     };
@@ -85,7 +85,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
     public CalendarToTSTZWithBindingTest() {
         super();
     }
-    
+
     public CalendarToTSTZWithBindingTest(int testId, String calendarString, boolean printCalendarIntoTimestampTZ) {
         super();
         this.printCalendarIntoTimestampTZ = printCalendarIntoTimestampTZ;
@@ -101,23 +101,23 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
     public void setCalendar(Calendar calendar) {
         this.calendar = calendar;
     }
-    
+
     public int getTestId() {
         return testId;
     }
-    
+
     public void setTestId(int testId) {
         this.testId = testId;
     }
-    
+
     public void setOriginalCalendarString(String originalCalendarString) {
         this.originalCalendarString = originalCalendarString;
     }
-    
+
     public String getOriginalCalendarString() {
         return this.originalCalendarString;
     }
-    
+
     public String toString() {
         return "Test #: " + getTestId() + " -> " + getOriginalCalendarString();
     }
@@ -129,7 +129,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
         }
         return tests;
     }*/
-    
+
     public static Vector testInstancesWithBindingAndNoCalendarPrinting() {
         Vector tests = new Vector(calendarStrings.length);
         for (int i = 0; i < calendarStrings.length; i++) {
@@ -137,25 +137,25 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
         }
         return tests;
     }
-    
+
     public void setup() {
         if (!(getSession().getPlatform() instanceof Oracle9Platform)) {
             throw new TestWarningException("Test is only supported on Oracle9 platform and above, as TIMESTAMPTZ is used");
         }
         Oracle9Platform platform = (Oracle9Platform) getSession().getPlatform();
-        
+
 //        this.oldPrintingValue = platform.getPrintCalendarIntoTimestampTZ();
         this.oldBindingValue = platform.shouldBindAllParameters();
-        
+
 //        platform.setPrintCalendarIntoTimestampTZ(Boolean.TRUE);
         platform.setShouldBindAllParameters(true);
-        
+
         // write myself out
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.registerObject(this);
         uow.commit();
     }
-    
+
     public void test() {
         // read data back from database literally in order to check contents of database rather than the driver's TIMESTAMPTZ
         String sql = "select TEST_ID, to_char(TSTZ_DATA,'MM/DD/YYYY hh24:mi:ss TZR') as TSTZ_DATA FROM " +  commonDescriptor().getTableName() +  " where TEST_ID = " + getTestId();
@@ -164,19 +164,19 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
             this.result = (DatabaseRecord) result.firstElement();
         }
     }
-    
+
     public void verify() throws Exception {
         String expectedResult = getOriginalCalendarString();
         if (this.result == null) {
             throw new TestErrorException("Unexpected exception - database returned no data for test id: " + getTestId() + " expected: " + expectedResult);
         }
         String actualResult = (String) result.get("TSTZ_DATA");
-        
+
         if (!expectedResult.equalsIgnoreCase(actualResult)) {
             throw new TestErrorException("Data from database is not equal for test id: "  + getTestId() + " - got: " + actualResult + " expected: " + expectedResult);
         }
     }
-    
+
     public void reset() {
         // Compatibility for Oracle 9 and above is checked in the setup() method
         Oracle9Platform platform = (Oracle9Platform) getSession().getPlatform();
@@ -190,7 +190,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
     }
 
     // Calendar formatting behaviour
-   
+
     protected Calendar formatStringAsCalendar(String calendarString) {
         try {
             String dateOnly = calendarString.substring(0,19);
@@ -225,7 +225,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
     descriptor.addDirectMapping("calendar", "getCalendar", "setCalendar", "TSTZ_DATA");
         return descriptor;
     }
-    
+
     public static RelationalDescriptor descriptor() {
         RelationalDescriptor descriptor = commonDescriptor();
     descriptor.addDirectMapping("calendar", "TSTZ_DATA");

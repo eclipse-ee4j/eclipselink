@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,33 +22,33 @@ import org.eclipse.persistence.testing.jaxb.json.numbers.NumberHolder;
 
 public class JAXBElementJSONPaddingTestCases extends JAXBWithJSONTestCases{
 
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/padding/paddingJAXBElement.json";
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/padding/paddingJAXBElement.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/padding/paddingJAXBElement.json";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/padding/paddingJAXBElement.xml";
 
-	public JAXBElementJSONPaddingTestCases(String name) throws Exception {
-		super(name);
-		setClasses(new Class[]{Simple.class});
-		setControlJSON(JSON_RESOURCE);		
-		setControlDocument(XML_RESOURCE);
-	}
-
-	@Override
-	protected Object getControlObject() {
-		Simple sample = new Simple();
-		sample.id = "1111";
-		sample.name = "theName";
-		JAXBElement<Simple> jbe = new JAXBElement<Simple>(new QName("someUri", "someRootName"), Simple.class, sample);
-		JSONWithPadding test = new JSONWithPadding(jbe, "blah");
-		return test;
-	}
-	
-	public boolean isUnmarshalTest (){
-		return false;
-	}
-	
-	public void testJSONMarshalToBuilderResult() throws Exception{     
+    public JAXBElementJSONPaddingTestCases(String name) throws Exception {
+        super(name);
+        setClasses(new Class[]{Simple.class});
+        setControlJSON(JSON_RESOURCE);
+        setControlDocument(XML_RESOURCE);
     }
-    
+
+    @Override
+    protected Object getControlObject() {
+        Simple sample = new Simple();
+        sample.id = "1111";
+        sample.name = "theName";
+        JAXBElement<Simple> jbe = new JAXBElement<Simple>(new QName("someUri", "someRootName"), Simple.class, sample);
+        JSONWithPadding test = new JSONWithPadding(jbe, "blah");
+        return test;
+    }
+
+    public boolean isUnmarshalTest (){
+        return false;
+    }
+
+    public void testJSONMarshalToBuilderResult() throws Exception{
+    }
+
     public void testJSONMarshalToGeneratorResult() throws Exception{
     }
 }

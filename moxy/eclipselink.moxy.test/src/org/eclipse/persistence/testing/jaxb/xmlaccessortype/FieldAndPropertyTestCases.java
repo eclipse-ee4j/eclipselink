@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,25 +24,25 @@ public class FieldAndPropertyTestCases extends SchemaGenTestCases {
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/xmlaccessortype/";
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public FieldAndPropertyTestCases(String name) throws Exception {
         super(name);
     }
-        
+
     public void testFieldAccess() throws Exception {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         generateSchema(new Class[]{PersonField.class}, outputResolver, null);
         String result = validateAgainstSchema(PATH + "person_field.xml", outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);        
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
     public void testPropertyAccess() throws Exception {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         generateSchema(new Class[]{PersonProperty.class}, outputResolver, null);
         String result = validateAgainstSchema(PATH + "person_property.xml", outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);        
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
 }

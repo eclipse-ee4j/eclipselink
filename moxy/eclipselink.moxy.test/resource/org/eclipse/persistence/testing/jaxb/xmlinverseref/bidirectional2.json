@@ -1,6 +1,6 @@
 {"address":{
    "street":"theStreet",
-   "owner":{   
+   "owner":{
       "name":"theName"
    }
 }}

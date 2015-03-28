@@ -3,17 +3,17 @@
     <xml-schema>
         <xml-ns namespace-uri="http://www.example.com/vehicles" prefix="v"/>
     </xml-schema>
-	<java-types>
-		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.Car">
-		    <xml-root-element name="car" />
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.Car">
+            <xml-root-element name="car" />
             <java-attributes>
                 <xml-element java-attribute="horsepower" xml-path="features/v:horsepower/text()" />
             </java-attributes>
-		</java-type>
+        </java-type>
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.Truck">
             <java-attributes>
                 <xml-element java-attribute="torque" xml-path="features/v:torque/text()" />
             </java-attributes>
         </java-type>
-	</java-types>
+    </java-types>
 </xml-bindings>

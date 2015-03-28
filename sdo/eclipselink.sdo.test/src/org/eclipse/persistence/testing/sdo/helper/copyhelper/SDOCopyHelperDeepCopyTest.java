@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 /*
    DESCRIPTION
     Test SDOCopyHelper for deep and shallow copy
@@ -21,9 +21,9 @@
 
    NOTES
 
-   MODIFIED    (MM/DD/YY)   
-    mfobrien    05/16/07 - 
-    dmahar      04/23/07 - 
+   MODIFIED    (MM/DD/YY)
+    mfobrien    05/16/07 -
+    dmahar      04/23/07 -
     mfobrien    07/31/06 - As part of the refactor of SDODataObject.properties <Map> into
                                      the ValueStore interfaces, these tests require non-Map specific tests.
                                      Currently testing is hardcoded to additional values() and keySet() functions
@@ -120,25 +120,25 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
      * Test whether EqualityHelper.compareProperty() handles nested objects that are null but isSet=true
      * (Where we also have a bidirectional child property)
      * See SDOEqualityHelperTest for the same tests without the bidirectional child
-     * 
+     *
      * Disjoint trees can maintain a bidirectional link
-     * 
-     * Results: This test will verify that the bidirectional property is left unchanged 
+     *
+     * Results: This test will verify that the bidirectional property is left unchanged
      * after an unset on its parent - in effect creating a nc link between 2 separate dataobject trees.
      * See SDO_Ref_BiDir_Relationships_DesignSpec.doc section 4.2.2
-     * 	    See spec 3.1.7. If other DataObjects have one-way, non-containment properties that refer to deleted DataObjects, 
+     *         See spec 3.1.7. If other DataObjects have one-way, non-containment properties that refer to deleted DataObjects,
      * then these references are not modified. - we retain both sides of the bidirectional link here.
-     * 	    See spec 3.1.7. However, these properties can need changing to other values, 
-     * in order to restore closure to the data graph? - the implementer will need to be aware and fix any set/reset issues 
+     *         See spec 3.1.7. However, these properties can need changing to other values,
+     * in order to restore closure to the data graph? - the implementer will need to be aware and fix any set/reset issues
      * - the SDO API will not attempt to remove any of these NC references for deleted objects.
-     *     No code changes are required because non-equality is expected in this case. 
-     *    	Leaving a bidirectional property set between two trees that do not share a common root is not an invalid state (step 2 above)
-     * 
+     *     No code changes are required because non-equality is expected in this case.
+     *        Leaving a bidirectional property set between two trees that do not share a common root is not an invalid state (step 2 above)
+     *
      * root
      *   rp2 -> cdo (unset this one - placing it outside the copy tree)
      *                 cp2 -> cbcdo
-     *                                cbcp1 -> cdo1 (bidir)     
-     *                                c1p3 -> cdo1 (bidir)     
+     *                                cbcp1 -> cdo1 (bidir)
+     *                                c1p3 -> cdo1 (bidir)
      *                 cp3 -> cbcdo3
      *                 cpcs -> cs
      *   rp3 -> cdo1
@@ -146,35 +146,35 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
      *   rp4 -> lw
      */
     public void testDeepCopyAfterUnsetComplexChildWithBidirectionalChild_generatingLinkedDisjointTrees() {
-    	int aRootsize = preOrderTraversalDataObjectList(root).size();
-    	assertEquals(7, aRootsize);
-    	
-    	// save cdo before we unset it
-    	DataObject aCDO = (DataObject)root.get("rootproperty2-notdatatype");
-    	assertNotNull(aCDO);
-    	int aCDOsize = preOrderTraversalDataObjectList((SDODataObject)aCDO).size();
-    	// save child of cdo
-    	DataObject aCDO_CBCDO = (DataObject)aCDO.get("containedProperty2-notdataType");
-    	assertNotNull(aCDO_CBCDO);    	
-    	int aCDO_CBCDOsize = preOrderTraversalDataObjectList((SDODataObject)aCDO_CBCDO).size();
-    	// save bidirectional partner of cdo    	
-    	DataObject aCDO1 = (DataObject)root.get("rootproperty3-notdatatype");
-    	assertNotNull(aCDO1);    	
-    	int aCDO1size = preOrderTraversalDataObjectList((SDODataObject)aCDO1).size();
-    	
-    	// get a list of nodes (NC references do not recursively iterate)
-    	List<DataObject> rootPreOrderListBeforeUnset = preOrderTraversalDataObjectList(root);
-    	assertNotNull(rootPreOrderListBeforeUnset);
-    	assertEquals(aRootsize, rootPreOrderListBeforeUnset.size());
-    	rootPreOrderListBeforeUnset.contains(aCDO_CBCDO);
-    	rootPreOrderListBeforeUnset.contains(aCDO1);
-    	
-    	
+        int aRootsize = preOrderTraversalDataObjectList(root).size();
+        assertEquals(7, aRootsize);
+
+        // save cdo before we unset it
+        DataObject aCDO = (DataObject)root.get("rootproperty2-notdatatype");
+        assertNotNull(aCDO);
+        int aCDOsize = preOrderTraversalDataObjectList((SDODataObject)aCDO).size();
+        // save child of cdo
+        DataObject aCDO_CBCDO = (DataObject)aCDO.get("containedProperty2-notdataType");
+        assertNotNull(aCDO_CBCDO);
+        int aCDO_CBCDOsize = preOrderTraversalDataObjectList((SDODataObject)aCDO_CBCDO).size();
+        // save bidirectional partner of cdo
+        DataObject aCDO1 = (DataObject)root.get("rootproperty3-notdatatype");
+        assertNotNull(aCDO1);
+        int aCDO1size = preOrderTraversalDataObjectList((SDODataObject)aCDO1).size();
+
+        // get a list of nodes (NC references do not recursively iterate)
+        List<DataObject> rootPreOrderListBeforeUnset = preOrderTraversalDataObjectList(root);
+        assertNotNull(rootPreOrderListBeforeUnset);
+        assertEquals(aRootsize, rootPreOrderListBeforeUnset.size());
+        rootPreOrderListBeforeUnset.contains(aCDO_CBCDO);
+        rootPreOrderListBeforeUnset.contains(aCDO1);
+
+
         // NOTE: unset does not affect bidirectional properties between disjoint trees of dataObjects
-    	// the remaining unidirectional property is left unaffected.
+        // the remaining unidirectional property is left unaffected.
         root.unset("rootproperty2-notdatatype");
-        
-        
+
+
         // verify that bidirectional property is still set
         DataObject aCDO1_CBCDO = (DataObject)aCDO1.get("contained1Property1-notdataType");
         assertNotNull(aCDO1_CBCDO);
@@ -182,64 +182,64 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         DataObject aCBCDO_CDO1 = (DataObject)aCDO_CBCDO.get("containedByContainedProperty1-notdataType");
         assertNotNull(aCBCDO_CDO1);
         assertEquals(aCBCDO_CDO1, aCDO1);
-        
-    	// get a list of nodes (NC references do not recursively iterate)
-    	List<DataObject> rootPreOrderListAfterUnset = preOrderTraversalDataObjectList(root);
-    	assertNotNull(rootPreOrderListAfterUnset);
-    	// 4 not 3 because we shallow iterate to the non-contaiment property c1p1
-    	assertEquals(aRootsize - aCDOsize, rootPreOrderListAfterUnset.size());
-    	rootPreOrderListAfterUnset.contains(aCDO_CBCDO);
-    	rootPreOrderListAfterUnset.contains(aCDO1);
 
-    	// get a list of nodes (NC references do not recursively iterate)
-    	List<DataObject> cdoPreOrderListAfterUnset = preOrderTraversalDataObjectList((SDODataObject)aCDO);
-    	assertNotNull(cdoPreOrderListAfterUnset);
-    	// 4 not 3 because we shallow iterate to the non-contaiment property c1p1
-    	assertEquals(aCDOsize, cdoPreOrderListAfterUnset.size());
-    	cdoPreOrderListAfterUnset.contains(aCDO_CBCDO);
-    	
+        // get a list of nodes (NC references do not recursively iterate)
+        List<DataObject> rootPreOrderListAfterUnset = preOrderTraversalDataObjectList(root);
+        assertNotNull(rootPreOrderListAfterUnset);
+        // 4 not 3 because we shallow iterate to the non-contaiment property c1p1
+        assertEquals(aRootsize - aCDOsize, rootPreOrderListAfterUnset.size());
+        rootPreOrderListAfterUnset.contains(aCDO_CBCDO);
+        rootPreOrderListAfterUnset.contains(aCDO1);
+
+        // get a list of nodes (NC references do not recursively iterate)
+        List<DataObject> cdoPreOrderListAfterUnset = preOrderTraversalDataObjectList((SDODataObject)aCDO);
+        assertNotNull(cdoPreOrderListAfterUnset);
+        // 4 not 3 because we shallow iterate to the non-contaiment property c1p1
+        assertEquals(aCDOsize, cdoPreOrderListAfterUnset.size());
+        cdoPreOrderListAfterUnset.contains(aCDO_CBCDO);
+
         SDODataObject copyOfRoot = (SDODataObject)((SDOCopyHelper)copyHelper).copy(root, getChangeSummary());
         assertFalse(root.isSet("rootproperty2-notdatatype"));
         assertNotNull(copyOfRoot);
-        
-    	DataObject aCDOc = (DataObject)copyOfRoot.get("rootproperty2-notdatatype");
-    	assertNull(aCDOc);
-    	DataObject aCDO1c = (DataObject)copyOfRoot.get("rootproperty3-notdatatype");
-    	assertNotNull(aCDO1c);
-    	int aCDO1sizec = preOrderTraversalDataObjectList((SDODataObject)aCDO1c).size();
-    	// 2 not 1 because the bidirectional property was not copied
-    	assertEquals(1, aCDO1sizec);
-        
+
+        DataObject aCDOc = (DataObject)copyOfRoot.get("rootproperty2-notdatatype");
+        assertNull(aCDOc);
+        DataObject aCDO1c = (DataObject)copyOfRoot.get("rootproperty3-notdatatype");
+        assertNotNull(aCDO1c);
+        int aCDO1sizec = preOrderTraversalDataObjectList((SDODataObject)aCDO1c).size();
+        // 2 not 1 because the bidirectional property was not copied
+        assertEquals(1, aCDO1sizec);
+
         // test copy helper results outside of equality helper (to keep equality helper issues outside of copyhelper testing)
         // get non-containment property between original cdo1 and unset cdo/cbcdo
         // verify that bidirectional property is not set on copy
         DataObject aCDO1_CBCDOc = (DataObject)aCDO1c.get("contained1Property1-notdataType");
         assertNull(aCDO1_CBCDOc);
-        
+
         // lastly use equality helper to test copy helper
         assertFalse(equalityHelper.equal(root, copyOfRoot));
-        
+
         // we need a diff function on cs or equalityHelper to show us that aCDO (copy) is not on copyOfRoot
     }
 
-    // see same comments for testDeepCopyAfterUnsetComplexChildWithBidirectionalChild_generatingLinkedDisjointTrees() above 
+    // see same comments for testDeepCopyAfterUnsetComplexChildWithBidirectionalChild_generatingLinkedDisjointTrees() above
     public void testDeepCopyAfterSetNullComplexChildWithBidirectionalChild_generatingLinkedDisjointTrees() {
         // clear complex child
         root.set("rootproperty2-notdatatype", null);
         SDODataObject copyOfRoot = (SDODataObject)((SDOCopyHelper)copyHelper).copy(root, getChangeSummary());
         assertFalse(root.isSet("rootproperty2-notdatatype"));
         assertNotNull(copyOfRoot);
-        // this assertion previously failed before fix for #5852525    	
+        // this assertion previously failed before fix for #5852525
         assertFalse(equalityHelper.equal(root, copyOfRoot));
     }
-    
-    // test R21 p44	3.9.4	For each Property where property.getType().isDataType() is false 
+
+    // test R21 p44    3.9.4    For each Property where property.getType().isDataType() is false
     // the value is copied if it is a DataObject contained by the source dataObject.
     public void testR21P44Sect3_9_4_NonContainedDOsAreNotCopied() {
 
     }
-    
-    // test R22 p44	3.9.4	If a DataObject is outside the copy tree and the property is bidirectional then //
+
+    // test R22 p44    3.9.4    If a DataObject is outside the copy tree and the property is bidirectional then //
     // the DataObject is not copied and references to the object are also not copied.
     public void testR22P44Sect3_9_4_DOisOutsideCopyTreeWithBidirectionalPropertyNotCopied() {
         // cdo/cbcdo (depth2) and cdo1 (depth1) are bidirectional with each other
@@ -270,11 +270,11 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         "rootproperty3-notdatatype/contained1Property1-notdataType");
         assertNull(bidirCopyViaOppositeDO);
     }
-    
-    // test R23 p44	3.9.4	If a DataObject is outside the copy tree and the property is unidirectional then //
+
+    // test R23 p44    3.9.4    If a DataObject is outside the copy tree and the property is unidirectional then //
     // the same DataObject is referenced.
     public void testR23P44Sect3_9_4_DOisOutsideCopyTreeWithUnidirectionalPropertyThenSameDOreferenced() {
-    	
+
     }
 
     // we dont want changes to occur during the embedded set() calls in copy()
@@ -287,7 +287,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         // take an object with CS on and deep copy it
         SDODataObject copy = (SDODataObject)((SDOCopyHelper)copyHelper).copy(containedDataObject, getChangeSummary());
 
-        //containedDataObject.getChangeSummary().beginLogging();    	
+        //containedDataObject.getChangeSummary().beginLogging();
         // verify that logging is still on
         assertTrue(containedDataObject.getChangeSummary().isLogging());
         assertTrue(copy.getChangeSummary().isLogging());
@@ -296,8 +296,8 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         // verify that we have not logged changes during the copy
         assertEquals(0, cs.getChangedDataObjects().size());
     }
-    
-    
+
+
     // we dont want changes to occur during the embedded set() calls in copy()
     // #5878436 12-FEB-07 do not recurse into a non-containment relationship
     public void testNoInfiniteLoopTurningLoggingBackOnAfterADeepCopyObjectWithCSLoggingOff() {
@@ -307,7 +307,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         containedDataObject.getChangeSummary().endLogging();
         // take an object with CS on and deep copy it
         SDODataObject copy = (SDODataObject)((SDOCopyHelper)copyHelper).copy(containedDataObject, getChangeSummary());
-        containedDataObject.getChangeSummary().beginLogging();// infinite loop on resetChanges()    	
+        containedDataObject.getChangeSummary().beginLogging();// infinite loop on resetChanges()
     }
 
     public void testUC010xDeepCopy1_1BidirectionalPropOutsideCopyTreeNotCopied() {
@@ -396,7 +396,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
     }
 
     public void testUC0302DeepCopy1_1BidirectionalPropInsideCopyTreeCopiedContTreeSameAsCopyTree() {
-        // create copy of the root 
+        // create copy of the root
         SDODataObject copy = (SDODataObject)((SDOCopyHelper)copyHelper).copy(rootUC4, getChangeSummary());
 
         // verify that container is null
@@ -645,7 +645,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         // verify list elements are different (deep check)
         assertNull(do2.get(0));
         assertNull(do1.get(0));
-        // the unidirectional property rootWork (unset) gives us no copy of the list 
+        // the unidirectional property rootWork (unset) gives us no copy of the list
         //assertFalse(do1.get(0) == do2.get(0));
         //assertNotSame((SDODataObject)rootUC4m.get(//
         //"rootHome/homeAddress/addressWork"),//
@@ -695,7 +695,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
     }
 
     // purpose: copy and source have same map if source has no properties having not null opposite
-    // or if source has but these properties are not set. 
+    // or if source has but these properties are not set.
     // TODO: this tests only tests the MapValueStore impl, separate generic test required
     public void testCopySourceHaveSameMap() {
         SDODataObject copy = (SDODataObject)((SDOCopyHelper)copyHelper).copy(root, getChangeSummary());
@@ -748,9 +748,9 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         }
     }
 
-    // purpose: source add a new not containment property with null opposite and set its value, 
+    // purpose: source add a new not containment property with null opposite and set its value,
     // then copy and source should still have same map.
-    // Test case 4: unidirectional 
+    // Test case 4: unidirectional
     // TODO: this tests only tests the DefaultValueStore impl, separate generic test required
     // TODO: 20060906 bidirectional/reference
     public void testUnidirectionalOutsideCopyTreeReferencesSameDO() {
@@ -978,7 +978,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         containedByContainedDataObject.unset(containedByContainedProperty1);
         containedByContainedDataObject.getChangeSummary().beginLogging();
         containedByContainedDataObject.delete();
-        assertNull(containedDataObject.get(containedProperty2));        
+        assertNull(containedDataObject.get(containedProperty2));
         DataObject deepCopy = ((SDOCopyHelper)copyHelper).copy(containedDataObject, getChangeSummary());
         assertEqualityHelperEqual(containedDataObject, deepCopy);
     }

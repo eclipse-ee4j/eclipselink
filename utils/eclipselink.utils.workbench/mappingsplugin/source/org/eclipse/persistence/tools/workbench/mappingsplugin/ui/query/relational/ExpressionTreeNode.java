@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -24,35 +24,35 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MW
  * so they can notify it when a propertyChange occurs.
  */
 abstract class ExpressionTreeNode
-	extends DefaultMutableTreeNode
+    extends DefaultMutableTreeNode
 {
-	private DefaultTreeModel model;
-	   	
- 	protected ExpressionTreeNode(MWExpression userObject, boolean allowsChildren) {
-		this(userObject, allowsChildren, null);				
- 	}
- 	
- 	protected ExpressionTreeNode(MWExpression userObject, boolean allowsChildren, DefaultTreeModel model) {
-		super(userObject, allowsChildren);	
-		setModel(model);	
- 		engageListeners();
-	}
+    private DefaultTreeModel model;
 
-	DefaultTreeModel getModel() {
-		return model;
-	}
-	
-	public abstract void initializeChildren();
-	
-	protected abstract void engageListeners();
-	
-	protected abstract void disengageListeners();
-	
-   	protected void setModel(DefaultTreeModel model) {
-   		this.model = model;
-   	}	
+     protected ExpressionTreeNode(MWExpression userObject, boolean allowsChildren) {
+        this(userObject, allowsChildren, null);
+     }
 
-	public String toString() {	
-   		return ((MWExpression)getUserObject()).getIndex() + ((MWExpression)getUserObject()).displayString();
-   	}
+     protected ExpressionTreeNode(MWExpression userObject, boolean allowsChildren, DefaultTreeModel model) {
+        super(userObject, allowsChildren);
+        setModel(model);
+         engageListeners();
+    }
+
+    DefaultTreeModel getModel() {
+        return model;
+    }
+
+    public abstract void initializeChildren();
+
+    protected abstract void engageListeners();
+
+    protected abstract void disengageListeners();
+
+       protected void setModel(DefaultTreeModel model) {
+           this.model = model;
+       }
+
+    public String toString() {
+           return ((MWExpression)getUserObject()).getIndex() + ((MWExpression)getUserObject()).displayString();
+       }
 }

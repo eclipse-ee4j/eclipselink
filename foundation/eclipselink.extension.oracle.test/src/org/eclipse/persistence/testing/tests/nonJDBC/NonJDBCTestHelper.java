@@ -36,10 +36,10 @@ public class NonJDBCTestHelper {
         "Eclipse Persistence Services - @VERSION@ (Build @BUILD_NUMBER@)";
 
     public static Project buildTestProject(Properties p) {
-	    String username = p.getProperty(DATABASE_USERNAME_KEY);
-	    if (username == null) {
-	        fail("error retrieving database username");
-	    }
+        String username = p.getProperty(DATABASE_USERNAME_KEY);
+        if (username == null) {
+            fail("error retrieving database username");
+        }
         String password = p.getProperty(DATABASE_PASSWORD_KEY);
         if (password == null) {
             fail("error retrieving database password");

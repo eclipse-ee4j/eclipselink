@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,9 +8,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * 		gonural - Initial implementation
- * 	    2014-09-01-2.6.0 Dmitry Kornilov
- * 	      - Moved to separate package together with other 'no version' tests.
+ *         gonural - Initial implementation
+ *         2014-09-01-2.6.0 Dmitry Kornilov
+ *           - Moved to separate package together with other 'no version' tests.
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.service.noversion;
 

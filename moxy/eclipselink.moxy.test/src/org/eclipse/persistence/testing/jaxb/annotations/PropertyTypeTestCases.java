@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -48,13 +48,13 @@ public class PropertyTypeTestCases extends JAXBWithJSONTestCases {
 
         String s = new String("123456789");
         byte[] bytes = s.getBytes();
-            
+
         testObject.byteArrayTest = bytes;
 
         testObject.byteArrayListTest = new ArrayList<byte[]>();
         testObject.byteArrayListTest.add(bytes);
         testObject.byteArrayListTest.add(bytes);
-        
+
         testObject.booleanTest = Boolean.TRUE;
 
         testObject.booleanListTest = new ArrayList<Object>();
@@ -93,10 +93,10 @@ public class PropertyTypeTestCases extends JAXBWithJSONTestCases {
     }
 
     public void testSchemaGen() throws Exception {
-    	InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/propertyType.xsd");
-    	
-    	List<InputStream> controlSchemas = new ArrayList<InputStream>();    	
-    	controlSchemas.add(controlInputStream);
-    	testSchemaGen(controlSchemas);
-    }    
+        InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/propertyType.xsd");
+
+        List<InputStream> controlSchemas = new ArrayList<InputStream>();
+        controlSchemas.add(controlInputStream);
+        testSchemaGen(controlSchemas);
+    }
 }

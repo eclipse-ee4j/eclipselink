@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/05/2009 Andrei Ilitchev 
+ *     05/05/2009 Andrei Ilitchev
  *       - JPA 2.0 - OrderedList support.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.orderedlist;
 
 import java.util.ArrayList;
@@ -37,9 +37,9 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
     boolean useVarcharOrder;
     ChangeTracking changeTracking;
     OrderCorrectionType orderCorrectionType;
-    boolean shouldOverrideContainerPolicy; 
+    boolean shouldOverrideContainerPolicy;
     JoinFetchOrBatchRead joinFetchOrBatchRead;
-    
+
     public EmployeeProject(boolean useListOrderField, boolean useIndirection, boolean isPrivatelyOwned, boolean useSecondaryTable, boolean useVarcharOrder, ChangeTracking changeTracking, OrderCorrectionType orderCorrectionType, boolean shouldOverrideContainerPolicy, JoinFetchOrBatchRead joinFetchOrBatchRead) {
         this.useListOrderField = useListOrderField;
         this.useIndirection = useIndirection;
@@ -50,7 +50,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         this.orderCorrectionType = orderCorrectionType;
         this.shouldOverrideContainerPolicy = shouldOverrideContainerPolicy;
         this.joinFetchOrBatchRead = joinFetchOrBatchRead;
-        
+
         setName("OL_Employee");
         setDatasourceLogin(new DatabaseLogin());
 
@@ -71,18 +71,18 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         descriptor.addTableName("OL_CHILD");
         descriptor.addTableName("OL_ALLOWANCE");
         descriptor.addPrimaryKeyFieldName("CHILD_ID");
-        
+
         descriptor.addForeignKeyFieldNameForMultipleTable("OL_ALLOWANCE.OWNER_CHILD_ID", "OL_CHILD.CHILD_ID");
-        
+
         descriptor.useSoftCacheWeakIdentityMap();
         descriptor.setIdentityMapSize(50);
         descriptor.setSequenceNumberFieldName("CHILD_ID");
         descriptor.setSequenceNumberName("OL_CHILD_SEQ");
         descriptor.setAlias("OL_Child");
-        
+
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
-        
+
         // Mappings.
         DirectToFieldMapping firstNameMapping = new DirectToFieldMapping();
         firstNameMapping.setAttributeName("firstName");
@@ -100,13 +100,13 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         idMapping.setAttributeName("id");
         idMapping.setFieldName("CHILD_ID");
         descriptor.addMapping(idMapping);
-        
+
         DirectToFieldMapping allowanceMapping = new DirectToFieldMapping();
         allowanceMapping.setAttributeName("allowance");
         allowanceMapping.setFieldName("OL_ALLOWANCE.ALLOWANCE");
         descriptor.addMapping(allowanceMapping);
 
-        return descriptor;        
+        return descriptor;
     }
 
     public ClassDescriptor buildEmployeeDescriptor() {
@@ -117,7 +117,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         descriptor.addPrimaryKeyFieldName("OL_EMPLOYEE.EMP_ID");
 
         descriptor.addForeignKeyFieldNameForMultipleTable("OL_SALARY.OWNER_EMP_ID", "OL_EMPLOYEE.EMP_ID");
-        
+
         // Descriptor Properties.
         descriptor.useSoftCacheWeakIdentityMap();
         descriptor.setIdentityMapSize(100);
@@ -132,7 +132,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
-        // Named Queries.   
+        // Named Queries.
         // Event Manager.
         // Mappings.
         DirectToFieldMapping firstNameMapping = new DirectToFieldMapping();
@@ -199,7 +199,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
                 managerMapping.addForeignKeyFieldName("MANAGER_ID", "EMP_ID");
             }
             descriptor.addMapping(managerMapping);
-    
+
             OneToManyMapping managedEmployeesMapping = new OneToManyMapping();
             managedEmployeesMapping.setAttributeName("managedEmployees");
             managedEmployeesMapping.setReferenceClass(Employee.class);
@@ -242,7 +242,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             setJoinFetchOrBatchRead(managedEmployeesMapping);
             descriptor.addMapping(managedEmployeesMapping);
         }
-        
+
         OneToManyMapping childrenMapping = new UnidirectionalOneToManyMapping();
         childrenMapping.setAttributeName("children");
         childrenMapping.setReferenceClass(Child.class);
@@ -442,7 +442,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
-        // Named Queries.   
+        // Named Queries.
         // Event Manager.
         // Mappings.
         DirectToFieldMapping descriptionMapping = new DirectToFieldMapping();
@@ -518,11 +518,11 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
-        // Named Queries.   
+        // Named Queries.
         // Event Manager.
         return descriptor;
     }
-    
+
     public ClassDescriptor buildLargeProjectDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(LargeProject.class);
@@ -539,7 +539,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
 
-        // Named Queries.   
+        // Named Queries.
         // Event Manager.
         // Mappings.
         DirectToFieldMapping budgetMapping = new DirectToFieldMapping();
@@ -554,7 +554,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
 
         return descriptor;
     }
-    
+
     void setJoinFetchOrBatchRead(ForeignReferenceMapping mapping) {
         if(joinFetchOrBatchRead == JoinFetchOrBatchRead.INNER_JOIN) {
             mapping.setJoinFetch(ForeignReferenceMapping.INNER_JOIN);
@@ -568,7 +568,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             mapping.setBatchFetchType(BatchFetchType.EXISTS);
         }
     }
-    
+
     List<CollectionMapping> getListOrderMappings() {
         List<CollectionMapping> list = new ArrayList();
         Iterator<ClassDescriptor> it = this.getDescriptors().values().iterator();
@@ -590,9 +590,9 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         List<DatabaseMapping> mappings = desc.getMappings();
         for(int i=0; i < mappings.size(); i++) {
             if(mappings.get(i).isCollectionMapping()) {
-                CollectionMapping collectionMapping = (CollectionMapping)mappings.get(i); 
+                CollectionMapping collectionMapping = (CollectionMapping)mappings.get(i);
                 if(collectionMapping.getListOrderField() != null) {
-                    list.add(collectionMapping);                    
+                    list.add(collectionMapping);
                 }
              }
         }

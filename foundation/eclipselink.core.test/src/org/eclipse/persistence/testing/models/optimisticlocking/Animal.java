@@ -11,26 +11,26 @@ public class Animal {
     public List<VetAppointment> getAppointments(){
         return appointments;
     }
-    
+
     public void setAppointments(List<VetAppointment> appointments){
         this.appointments = appointments;
     }
-    
+
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public int getVersion() {
         return version;
     }
-    
+
     public void setVersion(int version) {
         this.version = version;
     }
-    
-    
+
+
 }

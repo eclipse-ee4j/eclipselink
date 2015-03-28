@@ -1,5 +1,5 @@
 <root xmlns="myns">
     <something>
-	   <theFlag>true</theFlag>
+       <theFlag>true</theFlag>
     </something>
 </root>

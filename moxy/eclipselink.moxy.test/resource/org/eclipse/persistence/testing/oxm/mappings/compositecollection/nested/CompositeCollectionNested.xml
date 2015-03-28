@@ -25,7 +25,7 @@
           <province>Quebec</province>
           <postal-code>X1Y 2Z3</postal-code>
         </mailing-address>
-      </mailing-addresses>    
+      </mailing-addresses>
     </employee>
     <employee id="789">
       <email-addresses>
@@ -51,8 +51,8 @@
           <province>Ontario</province>
           <postal-code>A1B 2C3</postal-code>
         </mailing-address>
-      </mailing-addresses>     
-    </employee> 
+      </mailing-addresses>
+    </employee>
   </employees>
 </project>
-  
+

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,11 +30,11 @@ public class ObjectGraphInheritanceTestCases extends JAXBWithJSONTestCases {
         super(name);
         this.setClasses(new Class[]{Employee.class, ContactInfo.class, AddressInh.class, PhoneNumberInh.class});
         setControlDocument(XML_RESOURCE);
-        setControlJSON(JSON_RESOURCE);   
+        setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.OBJECT_GRAPH, "simple");
-        jaxbMarshaller.setProperty(MarshallerProperties.OBJECT_GRAPH, "simple");        
+        jaxbMarshaller.setProperty(MarshallerProperties.OBJECT_GRAPH, "simple");
     }
 
     @Override
@@ -45,14 +45,14 @@ public class ObjectGraphInheritanceTestCases extends JAXBWithJSONTestCases {
         address.contactType="billingAddress";
         address.setCity("Any Town");
         emp.getContactInfo().add(address);
-        
+
         PhoneNumberInh pn = new PhoneNumberInh();
         pn.number = "555-1111";
         pn.contactType = "work";
         emp.getContactInfo().add(pn);
         return emp;
     }
-    
+
     @Override
     public Object getWriteControlObject() {
         Employee emp = new Employee();
@@ -63,7 +63,7 @@ public class ObjectGraphInheritanceTestCases extends JAXBWithJSONTestCases {
         address.setCity("Any Town");
         address.setStreet("1 A St");
         emp.getContactInfo().add(address);
-        
+
         PhoneNumberInh pn = new PhoneNumberInh();
         pn.id = 2;
         pn.number = "555-1111";

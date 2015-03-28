@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import java.math.BigDecimal;
@@ -25,7 +25,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
     public SDODataObjectGetBooleanByPositionalPathTest(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetBooleanByPositionalPathTest" };
         TestRunner.main(arguments);
@@ -70,8 +70,8 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);              
-        
+        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
+
         Boolean b = new Boolean(true);
 
         dataObject_a.setBoolean(property1, true);// c dataobject's a property has value boolean 'true'
@@ -102,17 +102,17 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         try {
             dataObject_a.getBoolean(UNDEFINED_PATH);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());                        
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
     //3. purpose: getBoolean with Byte property
-    public void testGetBooleanFromByte() {        
+    public void testGetBooleanFromByte() {
         SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
         prop.setType(SDOConstants.SDO_BYTE);
         byte theByte = 0;
         dataObject_c.set(prop, theByte);
-        
+
         try {
             boolean value = dataObject_a.getBoolean(property);
             boolean controlValue = false;
@@ -231,7 +231,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanStringBracketPositionalSet() {
-        // dataObject's type add boolean property        
+        // dataObject's type add boolean property
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
 
@@ -299,19 +299,19 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
     }*/
 
     //12. purpose: getBoolean with bytes property
-    public void testGetBooleanFromBytes() {        
+    public void testGetBooleanFromBytes() {
         SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
         prop.setType(SDOConstants.SDO_BYTES);
         dataObject_c.set(prop, new String("eee").getBytes());
         try {
             dataObject_a.getBoolean(property);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());                        
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
     //13. purpose: getBoolean with decimal property
-    public void testGetBooleanFromDecimal() {        
+    public void testGetBooleanFromDecimal() {
         SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
         prop.setType(SDOConstants.SDO_DECIMAL);
         dataObject_c.set(prop, new BigDecimal("3"));
@@ -325,7 +325,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
     }
 
     //14. purpose: getBoolean with integer property
-    public void testGetBooleanFromInteger() {        
+    public void testGetBooleanFromInteger() {
         SDOProperty prop = ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
         prop.setType(SDOConstants.SDO_INTEGER);
         dataObject_c.set(prop, new BigInteger("0"));
@@ -346,7 +346,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         try {
             dataObject_a.getBoolean(property);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());                        
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -356,7 +356,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
             String path = null;
             dataObject_a.getBoolean(path);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());                        
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 }

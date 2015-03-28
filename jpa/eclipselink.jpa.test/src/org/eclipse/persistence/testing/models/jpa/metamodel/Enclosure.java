@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     09/23/2009-2.0  mobrien 
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
- ******************************************************************************/  
+ *     09/23/2009-2.0  mobrien
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
 import static javax.persistence.FetchType.EAGER;
@@ -29,7 +29,7 @@ import javax.persistence.Table;
 public class Enclosure implements java.io.Serializable {
 
     private static final long serialVersionUID = -8761221910595496687L;
-    
+
     @Id
     @Column(name="TYPE")
     public String type;
@@ -39,40 +39,40 @@ public class Enclosure implements java.io.Serializable {
     @Id
     @Column(name="WIDTH")
     private String width;
-    
+
     // The M:1 side is the owning side
     @Id
     @ManyToOne
     @JoinColumn(name="PERSON_ID")
-/*    @JoinTable(name="CMP3_MM_MANUF_MM_ENCLOSURE_MAPUC9", 
-            joinColumns = @JoinColumn(name="ENCLOSURE_MAP_ID"), 
-            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))*/   
+/*    @JoinTable(name="CMP3_MM_MANUF_MM_ENCLOSURE_MAPUC9",
+            joinColumns = @JoinColumn(name="ENCLOSURE_MAP_ID"),
+            inverseJoinColumns =@JoinColumn(name="MANUF_ID"))*/
     private Manufacturer mappedManufacturerUC9;
-  
+
 /*    @Id
     @GeneratedValue(strategy=TABLE, generator="ENCLOSURE_MM_TABLE_GENERATOR")
     @TableGenerator(
-        name="ENCLOSURE_MM_TABLE_GENERATOR", 
-        table="CMP3_MM_ENCLOSURE_SEQ", 
-        pkColumnName="SEQ_MM_NAME", 
+        name="ENCLOSURE_MM_TABLE_GENERATOR",
+        table="CMP3_MM_ENCLOSURE_SEQ",
+        pkColumnName="SEQ_MM_NAME",
         valueColumnName="SEQ_MM_COUNT",
         pkColumnValue="CUST_MM_SEQ"
     )
-    @Column(name="ENCLOSURE_ID")    
+    @Column(name="ENCLOSURE_ID")
     private Integer id;
 */
-    
+
     //@Version
     //@Column(name="ENCLOSURE_VERSION")
     //private int version;
 
     // The M:1 side is the owning side for "enclosureUC10"
     @ManyToOne(fetch=EAGER)
-/*    @JoinTable(name="CMP3_MM_COMPUTER_MM_ENCLOSURE", 
-            joinColumns = @JoinColumn(name="ENCLOSURE_ID"), 
-            inverseJoinColumns = @JoinColumn(name="COMPUTER_ID"))*/   
+/*    @JoinTable(name="CMP3_MM_COMPUTER_MM_ENCLOSURE",
+            joinColumns = @JoinColumn(name="ENCLOSURE_ID"),
+            inverseJoinColumns = @JoinColumn(name="COMPUTER_ID"))*/
     private Computer computerUC10;
-    
+
     public Enclosure() {}
 
     public EnclosureIdClassPK buildPK(){
@@ -88,10 +88,10 @@ public class Enclosure implements java.io.Serializable {
     public boolean equals(Object enclosure) {
         if (enclosure.getClass() != Enclosure.class) {
             return false;
-        }        
+        }
         return ((Enclosure) enclosure).buildPK().equals(buildPK());
     }
-    
+
     @Override
     public int hashCode() {
         if (null != type && null != length && null != width) {
@@ -100,7 +100,7 @@ public class Enclosure implements java.io.Serializable {
             return super.hashCode();
         }
     }
-    
+
     public String getType() {
         return type;
     }
@@ -124,11 +124,11 @@ public class Enclosure implements java.io.Serializable {
     public void setWidth(String width) {
         this.width = width;
     }
-    
-/*    public int getVersion() { 
-        return version; 
+
+/*    public int getVersion() {
+        return version;
     }
-    
+
     protected void setVersion(int version) {
         this.version = version;
     }
@@ -150,7 +150,7 @@ public class Enclosure implements java.io.Serializable {
         this.computerUC10 = computer;
     }
 
-    
+
     public Manufacturer getMappedManufacturer() {
         return mappedManufacturerUC9;
     }
@@ -158,5 +158,5 @@ public class Enclosure implements java.io.Serializable {
     public void setMappedManufacturer(Manufacturer mappedManufacturer) {
         this.mappedManufacturerUC9 = mappedManufacturer;
     }
-    
+
 }

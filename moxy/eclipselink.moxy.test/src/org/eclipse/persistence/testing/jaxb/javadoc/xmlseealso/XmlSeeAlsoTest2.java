@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,7 +38,7 @@ public class XmlSeeAlsoTest2 extends JAXBWithJSONTestCases {
         exampleC.sleephours = 10;
         return new JAXBElement<Animal>(new QName("animal"), Animal.class, exampleC);
     }
-    
+
     public Object getReadControlObject() {
         Cat exampleC = new Cat();
         exampleC.owner = "JANE DOE";
@@ -46,7 +46,7 @@ public class XmlSeeAlsoTest2 extends JAXBWithJSONTestCases {
         exampleC.sleephours = 10;
         return exampleC;
     }
-    
+
     public void testRoundTrip(){};
 
 }

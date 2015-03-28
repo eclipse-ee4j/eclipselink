@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -29,7 +29,7 @@ public class Root {
 
     @XmlElementRef(name = "elem1", namespace = "someuri", type = JAXBElement.class)
     protected JAXBElement<Object> elem1;
-      
+
     public JAXBElement<Object> getElem1() {
         return elem1;
     }
@@ -37,47 +37,47 @@ public class Root {
     public void setElem1(JAXBElement<Object> value) {
         this.elem1 = ((JAXBElement<Object> ) value);
     }
-    
+
     public boolean equals(Object compareObject) {
-    	boolean equals = super.equals(compareObject);
-    	if(!equals){
-    	   if(!(compareObject instanceof Root)){
-    		   return false;
-    	   }
-    	   if(!compareJAXBElements(elem1, ((Root)compareObject).elem1)){
-    		   return false;
-    	   }
-    	}
-    	return true;    	    	
+        boolean equals = super.equals(compareObject);
+        if(!equals){
+           if(!(compareObject instanceof Root)){
+               return false;
+           }
+           if(!compareJAXBElements(elem1, ((Root)compareObject).elem1)){
+               return false;
+           }
+        }
+        return true;
     }
-    
+
     public boolean compareJAXBElements(JAXBElement<Object> controlObj, JAXBElement<Object> testObj) {
         if(!controlObj.getName().getLocalPart().equals(testObj.getName().getLocalPart())){
-        	return false;
+            return false;
         }
         if(!controlObj.getName().getNamespaceURI().equals(testObj.getName().getNamespaceURI())){
-        	return false;
+            return false;
         }
-        
+
         if(!controlObj.getDeclaredType().equals(testObj.getDeclaredType())){
-        	return false;
+            return false;
         }
 
         Object controlValue = controlObj.getValue();
         Object testValue = testObj.getValue();
-        
+
         if(controlValue == null && testValue != null){
-        	return false;
+            return false;
         }
         if(controlValue != null && testValue == null){
-        	return false;
+            return false;
         }
         if(controlValue instanceof Node){
-        	if(!new XMLComparer().isNodeEqual((Node)controlValue, (Node)testValue)){
-        		return false;
-        	}
+            if(!new XMLComparer().isNodeEqual((Node)controlValue, (Node)testValue)){
+                return false;
+            }
         }else if(!controlValue.equals(testValue)){
-        	return false;        	
+            return false;
         }
         return true;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,7 +43,7 @@ public class SchemaGenXmlElementRefTestCases extends SchemaGenTestCases {
 
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public SchemaGenXmlElementRefTestCases(String name) throws Exception {
@@ -59,7 +59,7 @@ public class SchemaGenXmlElementRefTestCases extends SchemaGenTestCases {
         if (shouldGenerateSchema) {
             outputResolver = new MySchemaOutputResolver();
             try {
-                Class[] classes = new Class[]{ Employee.class, Address.class, Thing.class }; 
+                Class[] classes = new Class[]{ Employee.class, Address.class, Thing.class };
                 JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
                 context.generateSchema(outputResolver);
             } catch (Exception ex) {
@@ -70,10 +70,10 @@ public class SchemaGenXmlElementRefTestCases extends SchemaGenTestCases {
             shouldGenerateSchema = false;
         }
     }
-    
+
     /**
      * ElementRef on collection results in minOccurs=0, maxOccurs=unbounded
-     * 
+     *
      * Zero or more 'address' elements are allowed.
      */
     public void testElementRefSingleAddress() {
@@ -81,10 +81,10 @@ public class SchemaGenXmlElementRefTestCases extends SchemaGenTestCases {
         String result = validateAgainstSchema(PATH + "emp0.xml", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
-    
+
     /**
      * ElementRef on collection results in minOccurs=0, maxOccurs=unbounded
-     * 
+     *
      * Zero or more 'address' elements are allowed.
      */
     public void testElementRefMultipleAddresses() {
@@ -95,7 +95,7 @@ public class SchemaGenXmlElementRefTestCases extends SchemaGenTestCases {
 
     /**
      * ElementRef on collection results in minOccurs=0, maxOccurs=unbounded
-     * 
+     *
      * Zero or more 'address' elements are allowed.
      */
     public void testElementRefNoAddresses() {
@@ -106,7 +106,7 @@ public class SchemaGenXmlElementRefTestCases extends SchemaGenTestCases {
 
     /**
      * Exception case:  ElementRef on single property results in minOccurs=1, maxOccurs=1
-     *  
+     *
      * One 'thing' is required.
      */
     public void testElementRefRequired() {

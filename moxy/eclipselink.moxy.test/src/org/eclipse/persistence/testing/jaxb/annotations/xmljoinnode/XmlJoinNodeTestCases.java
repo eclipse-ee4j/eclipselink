@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,7 +26,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
-    
+
     public Object getControlObject() {
         Address ottawa100 = new Address(100, "45 O'Connor St.", "400", "Ottawa", "K1P1A4");
         Address ottawa200 = new Address(200, "1 Anystreet Rd.", "9", "Ottawa", "K4P1A2");

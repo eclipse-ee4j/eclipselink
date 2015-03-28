@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -29,7 +29,7 @@ import org.eclipse.persistence.internal.queries.*;
  */
 public class SubSelectExpression extends BaseExpression {
     protected boolean hasBeenNormalized;
-    
+
     protected ReportQuery subQuery;
 
     protected String attribute;
@@ -45,7 +45,7 @@ public class SubSelectExpression extends BaseExpression {
         super(baseExpression);
         this.subQuery = query;
     }
-    
+
     /**
      * INTERNAL:
      * Return if the expression is equal to the other.
@@ -59,7 +59,7 @@ public class SubSelectExpression extends BaseExpression {
         // Equality cannot easily be determined for sub-select expressions.
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Used in debug printing of this node.
@@ -77,7 +77,7 @@ public class SubSelectExpression extends BaseExpression {
     /**
      * INTERNAL:
      * This method creates a report query that counts the number of values in baseExpression.anyOf(attribute)
-     * 
+     *
      * For most queries, a ReportQuery will be created that does a simple count using an anonymous query.  In the case of
      * a DirectCollectionMapping, the ReportQuery will use the baseExpression to create a join to the table
      * containing the Direct fields and count based on that join.
@@ -107,7 +107,7 @@ public class SubSelectExpression extends BaseExpression {
              }
         }
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -115,7 +115,7 @@ public class SubSelectExpression extends BaseExpression {
     public boolean isSubSelectExpression() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * For iterating using an inner class
@@ -282,60 +282,60 @@ public class SubSelectExpression extends BaseExpression {
         // and should be merged into a single method instead of having three methods doing the same thing 3 different ways
         // and all having various different bugs in them.
         SubSelectExpression subSelect = (SubSelectExpression) shallowClone();
-        
+
         // Rebuild base expression
         subSelect.setBaseExpression(getBaseExpression().rebuildOn(newBase));
-        
+
         // Clone report query
         ReportQuery reportQuery = (ReportQuery) getSubQuery().clone();
-        
+
         // Twist report items
         List<ReportItem> newItems = new ArrayList<ReportItem>(getSubQuery().getItems().size());
-        
+
         for (ReportItem item : reportQuery.getItems()) {
             newItems.add(new ReportItem(item.getName(), item.getAttributeExpression().twistedForBaseAndContext(newBase, getBuilder(), getBaseExpression())));
         }
 
         reportQuery.setItems(newItems);
-        
+
         // Twist group by expressions
         if (reportQuery.hasGroupByExpressions()) {
             List<Expression> groupByExpressions = new ArrayList<Expression>(reportQuery.getGroupByExpressions().size());
             for (Expression groupByExpression : reportQuery.getGroupByExpressions()) {
                 groupByExpressions.add(groupByExpression.twistedForBaseAndContext(newBase, getBuilder(), getBaseExpression()));
             }
-            
+
             reportQuery.setGroupByExpressions(groupByExpressions);
         }
-        
+
         // Twist order by expressions
         if (reportQuery.hasOrderByExpressions()) {
             List<Expression> orderByExpressions = new ArrayList<Expression>(reportQuery.getOrderByExpressions().size());
             for (Expression orderByExpression : reportQuery.getOrderByExpressions()) {
                 orderByExpressions.add(orderByExpression.twistedForBaseAndContext(newBase, getBuilder(), getBaseExpression()));
             }
-            
+
             reportQuery.setOrderByExpressions(orderByExpressions);
         }
-        
+
         // Twist union expressions
         if (reportQuery.hasUnionExpressions()) {
             List<Expression> unionExpressions = new ArrayList<Expression>(reportQuery.getUnionExpressions().size());
             for (Expression unionExpression : reportQuery.getUnionExpressions()) {
                 unionExpressions.add(unionExpression.twistedForBaseAndContext(newBase, getBuilder(), getBaseExpression()));
             }
-            
+
             reportQuery.setUnionExpressions(unionExpressions);
         }
-        
+
         // Twist selection criteria
         if (reportQuery.getSelectionCriteria() != null) {
             reportQuery.setSelectionCriteria(reportQuery.getSelectionCriteria().twistedForBaseAndContext(newBase, getBuilder(), getBaseExpression()));
         }
-        
+
         // Set the cloned report query
         subSelect.setSubQuery(reportQuery);
-        
+
         return subSelect;
     }
 
@@ -360,67 +360,67 @@ public class SubSelectExpression extends BaseExpression {
     public void setSubQuery(ReportQuery subQuery) {
         this.subQuery = subQuery;
     }
-    
+
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         SubSelectExpression subSelect = (SubSelectExpression) shallowClone();
-        
+
         // Twist base expression
         subSelect.setBaseExpression(subSelect.getBaseExpression().twistedForBaseAndContext(newBase, context, oldBase));
-        
+
         // Clone report query
         ReportQuery reportQuery = (ReportQuery) getSubQuery().clone();
-        
+
         // Twist report items
         List<ReportItem> newItems = new ArrayList<ReportItem>(getSubQuery().getItems().size());
-        
+
         for (ReportItem item : getSubQuery().getItems()) {
             newItems.add(new ReportItem(item.getName(), item.getAttributeExpression().twistedForBaseAndContext(newBase, context, getBaseExpression())));
         }
 
         reportQuery.setItems(newItems);
-        
+
         // Twist group by expressions
         if (getSubQuery().hasGroupByExpressions()) {
             List<Expression> groupByExpressions = new ArrayList<Expression>(getSubQuery().getGroupByExpressions().size());
             for (Expression groupByExpression : getSubQuery().getGroupByExpressions()) {
                 groupByExpressions.add(groupByExpression.twistedForBaseAndContext(newBase, context, getBaseExpression()));
             }
-            
+
             reportQuery.setGroupByExpressions(groupByExpressions);
         }
-        
+
         // Twist order by expressions
         if (getSubQuery().hasOrderByExpressions()) {
             List<Expression> orderByExpressions = new ArrayList<Expression>(getSubQuery().getOrderByExpressions().size());
             for (Expression orderByExpression : getSubQuery().getOrderByExpressions()) {
                 orderByExpressions.add(orderByExpression.twistedForBaseAndContext(newBase, context, getBaseExpression()));
             }
-            
+
             reportQuery.setOrderByExpressions(orderByExpressions);
         }
-        
+
         // Twist union expressions
         if (getSubQuery().hasUnionExpressions()) {
             List<Expression> unionByExpressions = new ArrayList<Expression>(getSubQuery().getUnionExpressions().size());
             for (Expression unionExpression : getSubQuery().getUnionExpressions()) {
                 unionByExpressions.add(unionExpression.twistedForBaseAndContext(newBase, context, getBaseExpression()));
             }
-            
+
             reportQuery.setUnionExpressions(unionByExpressions);
         }
-        
+
         // Twist selection criteria
         if (getSubQuery().getSelectionCriteria() != null) {
             reportQuery.setSelectionCriteria(getSubQuery().getSelectionCriteria().twistedForBaseAndContext(newBase, context, getBaseExpression()));
         }
-        
+
         // Set the clones report query
         subSelect.setSubQuery(reportQuery);
-        
+
         return subSelect;
     }
-    
+
     /**
      * INTERNAL:
      * Used to print a debug form of the expression tree.
@@ -435,7 +435,7 @@ public class SubSelectExpression extends BaseExpression {
      * Used in SQL printing.
      */
     @Override
-    public void writeSubexpressionsTo(BufferedWriter writer, int indent) throws IOException {        
+    public void writeSubexpressionsTo(BufferedWriter writer, int indent) throws IOException {
         if (getSubQuery().getSelectionCriteria() != null) {
             getSubQuery().getSelectionCriteria().toString(writer, indent);
         }
@@ -461,7 +461,7 @@ public class SubSelectExpression extends BaseExpression {
 
         printSQL(printer);
     }
-    
+
     /**
      * INTERNAL:
      * This factory method is used to build a subselect that will do a count.

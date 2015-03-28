@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.defineandgenerate;
 
 import commonj.sdo.Type;
@@ -103,15 +103,15 @@ public abstract class XSDHelperDefineAndGenerateTestCases extends XSDHelperTestC
                     assertTrue(generatedXMLElementValue instanceof Boolean);
                     assertEquals(((Boolean)controlXMLElementValue).booleanValue(), ((Boolean)generatedXMLElementValue).booleanValue());
                 }*/
-                Object controlXMLElementValue = controlProp.get(SDOConstants.XMLELEMENT_PROPERTY);                
+                Object controlXMLElementValue = controlProp.get(SDOConstants.XMLELEMENT_PROPERTY);
                 if(controlXMLElementValue != null) {
                     Object generatedXMLElementValue = generatedProp.get(SDOConstants.XMLELEMENT_PROPERTY);
                     assertTrue(controlXMLElementValue instanceof Boolean);
                     assertTrue(generatedXMLElementValue instanceof Boolean);
                     assertEquals(((Boolean)controlXMLElementValue).booleanValue(), ((Boolean)generatedXMLElementValue).booleanValue());
                 }
-                
-                
+
+
                 Object controlDataTypeValue = controlProp.get(xmlDataTypeProperty);
                 Object generatedDataTypeValue = generatedProp.get(xmlDataTypeProperty);
                 if (controlDataTypeValue == null) {
@@ -121,7 +121,7 @@ public abstract class XSDHelperDefineAndGenerateTestCases extends XSDHelperTestC
                     assertTrue(generatedDataTypeValue instanceof Type);
                     assertEquals(controlDataTypeValue, generatedDataTypeValue);
                 }
-                
+
                 Object generatedSchemaTypeValue = generatedProp.get(xmlSchemaTypeProperty);
 
                 assertEquals(xsdHelper.isAttribute(controlProp), xsdHelper.isAttribute(generatedProp));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,9 +50,9 @@ public class SessionBeanTestsRCM extends JUnitTestCase {
     public SessionBeanTestsRCM(String name, boolean shouldRunTestOnServer) {
         super(name);
         this.shouldRunTestOnServer = shouldRunTestOnServer;
-        
+
         URL url = getClass().getResource("/weblogic.properties");
-        Properties properties = new Properties(); 
+        Properties properties = new Properties();
         try {
             properties.load(url.openStream());
         } catch (Exception error) {
@@ -69,13 +69,13 @@ public class SessionBeanTestsRCM extends JUnitTestCase {
 
         suite.addTest(new SessionBeanTestsRCM("testSetup", true));
         suite.addTest(new SessionBeanTestsRCM("testLag", false));
-        
+
         suite.addTest(new SessionBeanTestsRCM("testUpdates", false));
         suite.addTest(new SessionBeanTestsRCM("testDelete", false));
-        
+
         return suite;
     }
-    
+
     /**
      * Return the next server index to use.
      * This cycles through the servers.
@@ -87,14 +87,14 @@ public class SessionBeanTestsRCM extends JUnitTestCase {
         }
         return this.server;
     }
-    
+
     public EmployeeService getEmployeeService() {
         if (this.service == null) {
             this.service = nextEmployeeService();
         }
         return service;
     }
-    
+
     public EmployeeService nextEmployeeService() {
         EmployeeService service = null;
         int server = nextServer();
@@ -136,7 +136,7 @@ public class SessionBeanTestsRCM extends JUnitTestCase {
     public void testUpdates() {
         EmployeeService service = nextEmployeeService();
         Employee employee = (Employee)service.findAll().get(0);
-        
+
         for (int index = 0; index < 5; index++) {
             service = nextEmployeeService();
             employee = service.findById(employee.getId());
@@ -156,11 +156,11 @@ public class SessionBeanTestsRCM extends JUnitTestCase {
     /**
      * Build a test that validates cache coordination deletes are working in the cluster.
      */
-    public void testDelete() {        
+    public void testDelete() {
         EmployeeService service = nextEmployeeService();
         Employee employee = new Employee();
         employee.setId(service.insert(employee));
-        
+
         for (int index = 0; index < 5; index++) {
             service = nextEmployeeService();
             employee = service.findById(employee.getId());
@@ -172,7 +172,7 @@ public class SessionBeanTestsRCM extends JUnitTestCase {
         try {
             Thread.sleep(SLEEP);
         } catch (Exception ignore) {}
-        
+
         for (int index = 0; index < 5; index++) {
             service = nextEmployeeService();
             Employee result = service.findById(employee.getId());
@@ -182,14 +182,14 @@ public class SessionBeanTestsRCM extends JUnitTestCase {
         }
 
     }
-    
+
     /**
      * Build a test that attempt to determine the coordination lag in a cluster.
      */
     public void testLag() {
         EmployeeService service = nextEmployeeService();
         Employee employee = (Employee)service.findAll().get(0);
-        
+
         for (int index = 0; index < 5; index++) {
             service = nextEmployeeService();
             employee = service.findById(employee.getId());

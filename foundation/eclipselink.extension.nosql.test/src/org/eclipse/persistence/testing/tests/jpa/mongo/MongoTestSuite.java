@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.mongo;
 
 import java.math.BigDecimal;
@@ -56,9 +56,9 @@ import com.mongodb.Mongo;
  * ** To run this test suite the Mongo must be running.
  */
 public class MongoTestSuite extends JUnitTestCase {
-    
+
     public static Order existingOrder;
-    
+
     public MongoTestSuite(){
     }
 
@@ -88,7 +88,7 @@ public class MongoTestSuite extends JUnitTestCase {
         suite.addTest(new MongoTestSuite("testDynamicEntities"));
         return suite;
     }
-    
+
     @Override
     public String getPersistenceUnitName() {
         return "mongo";
@@ -100,7 +100,7 @@ public class MongoTestSuite extends JUnitTestCase {
         properties.put(PersistenceUnitProperties.LOGGING_LEVEL, super.getPersistenceProperties().get(PersistenceUnitProperties.LOGGING_LEVEL));
         return properties;
     }
-    
+
     public void testSetup() {
         EntityManager em = createEntityManager();
         // First clear old database.
@@ -141,7 +141,7 @@ public class MongoTestSuite extends JUnitTestCase {
         }
         clearCache();
     }
-    
+
     /**
      * Test inserts.
      */
@@ -154,37 +154,37 @@ public class MongoTestSuite extends JUnitTestCase {
             order.address = new Address();
             order.address.city = "Ottawa";
             order.address.type = AddressType.Work;
-            
+
             LineItem item = new LineItem();
             item.itemName = "stuff";
             item.itemPrice = new BigDecimal("9.99");
             item.lineNumber = 1;
             item.quantity = 50;
             order.lineItems.add(item);
-            
+
             item = new LineItem();
             item.itemName = "more stuff";
             item.itemPrice = new BigDecimal(500);
             item.lineNumber = 2;
             item.quantity = 1;
             order.lineItems.add(item);
-            
+
             item = new LineItem();
             item.itemName = "stuff";
             item.itemPrice = new BigDecimal("9.99");
             item.lineNumber = 1;
             item.quantity = 50;
             order.lineItemsByNumber.put(1L, item);
-            
+
             item = new LineItem();
             item.itemName = "more stuff";
             item.itemPrice = new BigDecimal(500);
             item.lineNumber = 2;
             item.quantity = 1;
             order.lineItemsByNumber.put(2L, item);
-                        
+
             em.persist(order);
-            
+
             Customer customer = new Customer();
             customer.name = "ACME";
             em.persist(customer);
@@ -194,7 +194,7 @@ public class MongoTestSuite extends JUnitTestCase {
             customer.name = "Startup";
             em.persist(customer);
             order.customers.add(customer);
-            
+
             Buyer buyer = new Buyer();
             buyer.id1 = 1;
             buyer.id2 = 1;
@@ -208,7 +208,7 @@ public class MongoTestSuite extends JUnitTestCase {
             buyer.name = "BAR Corp.";
             em.persist(buyer);
             order.buyers.add(buyer);
-            
+
             commitTransaction(em);
         } finally {
             closeEntityManagerAndTransaction(em);
@@ -216,7 +216,7 @@ public class MongoTestSuite extends JUnitTestCase {
         verifyObjectInCacheAndDatabase(order);
         verifyObjectInEntityManager(order);
     }
-    
+
     /**
      * Test pass an external factory when connecting.
      */
@@ -231,7 +231,7 @@ public class MongoTestSuite extends JUnitTestCase {
         factory.close();
         mongo.close();
     }
-    
+
     /**
      * Test user/password connecting.
      */
@@ -273,7 +273,7 @@ public class MongoTestSuite extends JUnitTestCase {
             fail("authentication should have failed");
         }
     }
-    
+
     /**
      * Test find.
      */
@@ -289,7 +289,7 @@ public class MongoTestSuite extends JUnitTestCase {
             closeEntityManagerAndTransaction(em);
         }
     }
-    
+
     /**
      * Test updates.
      */
@@ -321,7 +321,7 @@ public class MongoTestSuite extends JUnitTestCase {
         verifyObjectInEntityManager(order);
     }
 
-    
+
     /**
      * Test updates.
      */
@@ -354,7 +354,7 @@ public class MongoTestSuite extends JUnitTestCase {
         verifyObjectInCacheAndDatabase(order);
         verifyObjectInEntityManager(order);
     }
-    
+
     /**
      * Test merge.
      */
@@ -400,7 +400,7 @@ public class MongoTestSuite extends JUnitTestCase {
             closeEntityManagerAndTransaction(em);
         }
     }
-    
+
     /**
      * Test locking.
      */
@@ -443,7 +443,7 @@ public class MongoTestSuite extends JUnitTestCase {
             fail("Lock error did not occur.");
         }
     }
-    
+
     /**
      * Test refresh.
      */
@@ -474,7 +474,7 @@ public class MongoTestSuite extends JUnitTestCase {
             closeEntityManagerAndTransaction(em);
         }
     }
-    
+
     /**
      * Test JPQL.
      */
@@ -557,7 +557,7 @@ public class MongoTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Test JPQL.
      */
@@ -623,7 +623,7 @@ public class MongoTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Test JPQL.
      */
@@ -678,7 +678,7 @@ public class MongoTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Test enum query.
      */
@@ -698,13 +698,13 @@ public class MongoTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Test native query.
      */
     public void testNativeQuery() {
         EntityManager em = createEntityManager();
-        
+
         MappedInteraction interaction = new MappedInteraction();
         interaction.setProperty(MongoPlatform.OPERATION, MongoOperation.FIND.name());
         interaction.setProperty(MongoPlatform.COLLECTION, "ORDER");
@@ -718,7 +718,7 @@ public class MongoTestSuite extends JUnitTestCase {
                 || !(((Record)result.get(0)).get("_id").equals(existingOrder.id))) {
             fail("Incorrect result: " + result);
         }
-        
+
         interaction = new MappedInteraction();
         interaction.setProperty(MongoPlatform.OPERATION, MongoOperation.FIND.name());
         interaction.setProperty(MongoPlatform.COLLECTION, "ORDER");
@@ -730,7 +730,7 @@ public class MongoTestSuite extends JUnitTestCase {
         if ((order == null) || (!order.id.equals(existingOrder.id))) {
             fail("Incorrect result: " + order);
         }
-        
+
         QueryStringInteraction mqlInteraction = new QueryStringInteraction();
         mqlInteraction.setQueryString("db.ORDER.findOne({\"_id\":\"" + existingOrder.id + "\"})");
         query = em.unwrap(JpaEntityManager.class).createQuery(mqlInteraction, Order.class);
@@ -738,15 +738,15 @@ public class MongoTestSuite extends JUnitTestCase {
         if ((order == null) || (!order.id.equals(existingOrder.id))) {
             fail("Incorrect result: " + order);
         }
-        
+
         query = em.createNativeQuery("db.ORDER.findOne({\"_id\":\"" + existingOrder.id + "\"})", Order.class);
         order = (Order)query.getSingleResult();
         if ((order == null) || (!order.id.equals(existingOrder.id))) {
             fail("Incorrect result: " + order);
         }
-        
+
     }
-    
+
     /**
      * Test deletes.
      */
@@ -772,7 +772,7 @@ public class MongoTestSuite extends JUnitTestCase {
             commitTransaction(em);
         } finally {
             closeEntityManagerAndTransaction(em);
-        }        
+        }
         clearCache();
         em = createEntityManager();
         beginTransaction(em);
@@ -808,27 +808,27 @@ public class MongoTestSuite extends JUnitTestCase {
             person.set("addresses", addresses);
             em.persist(person);
             commitTransaction(em);
-            
+
             em.createNamedQuery("Person.findAll").getResultList();
-            
+
             beginTransaction(em);
             address = helper.newDynamicEntity("org.eclipse.persistence.testing.models.jpa.nosql.dynamic.Address");
             address.set("city", "Ottawa2");
             addresses = person.get("addresses");
             addresses.add(address);
-            person.set("addresses", addresses);            
+            person.set("addresses", addresses);
             commitTransaction(em);
-            
+
             factory.getCache().evictAll();
             em.clear();
             DynamicEntity dbPerson = em.find(helper.getType("Person").getJavaClass(), person.get("id"));
             if (((Collection)dbPerson.get("addresses")).size() != 2) {
                 fail("Expected 2 addresses: " + dbPerson.get("addresses"));
-            }            
+            }
         } finally {
             closeEntityManagerAndTransaction(em);
             factory.close();
         }
     }
-    
+
 }

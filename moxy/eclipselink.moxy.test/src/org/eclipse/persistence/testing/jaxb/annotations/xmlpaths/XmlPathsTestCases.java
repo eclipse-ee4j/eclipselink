@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlChoiceObjectMappings via eclipselink-oxm.xml
- * 
+ *
  */
 public class XmlPathsTestCases extends JAXBWithJSONTestCases{
     private static final String INT_VAL = "66";
@@ -34,21 +34,21 @@ public class XmlPathsTestCases extends JAXBWithJSONTestCases{
 
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
-     * @throws Exception 
+     * @throws Exception
      */
     public XmlPathsTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Employee.class});    
+        setClasses(new Class[]{Employee.class});
     }
-    
-  
+
+
     /**
      * Return the control Employee.
-     * 
+     *
      * @return
      */
     public Employee getControlObject() {
@@ -56,26 +56,26 @@ public class XmlPathsTestCases extends JAXBWithJSONTestCases{
         emp.thing = new Integer(INT_VAL);
         return emp;
     }
-    
-    
-    
+
+
+
     public void testEmployeeSchemaGen() throws Exception {
         // validate the schema
-    	List controlSchemas = new ArrayList();
-    	controlSchemas.add(getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlpaths/employee.xsd"));
-    	super.testSchemaGen(controlSchemas);
+        List controlSchemas = new ArrayList();
+        controlSchemas.add(getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlpaths/employee.xsd"));
+        super.testSchemaGen(controlSchemas);
     }
-    
+
 
     public void testInstanceDocValidation() {
-    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlpaths/employee.xsd");        
-        StreamSource schemaSource = new StreamSource(schema); 
-                
+        InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlpaths/employee.xsd");
+        StreamSource schemaSource = new StreamSource(schema);
+
         InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-        String result = validateAgainstSchema(instanceDocStream, schemaSource);        
+        String result = validateAgainstSchema(instanceDocStream, schemaSource);
         assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
     }
- 
+
     public void testInvalidXmlPaths() {
         try {
             JAXBContext jaxbCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { InvalidEmployee.class }, null);

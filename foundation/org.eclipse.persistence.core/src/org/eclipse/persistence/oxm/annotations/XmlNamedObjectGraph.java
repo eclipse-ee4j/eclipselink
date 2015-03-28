@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,8 +20,8 @@ import java.lang.annotation.Target;
 
 /**
  * <b>Purpose:</b> Used to define the boundaries for a marshal or unmarhsal
- * operation. 
- * 
+ * operation.
+ *
  * @author mmacivor
  * @since EclipseLink 2.5
  */
@@ -32,18 +32,18 @@ public @interface XmlNamedObjectGraph {
      * The name of this object graph. Defaults to the name of the class
      */
     String name();
- 
+
     /**
      * The list of properties to be marshalled/unmarshalled for this graph.
      */
     XmlNamedAttributeNode[] attributeNodes();
- 
+
     /**
-     * Optional: a list of named subgraphs that are referenced 
+     * Optional: a list of named subgraphs that are referenced
      * from the property entries.
      */
     XmlNamedSubgraph[] subgraphs() default {};
- 
+
     /**
      * Optional: a list of named subgraphs for any subclasses
      * of this class.

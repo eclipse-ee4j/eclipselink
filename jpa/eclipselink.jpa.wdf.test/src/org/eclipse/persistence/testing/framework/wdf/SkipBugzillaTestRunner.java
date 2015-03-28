@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -72,7 +72,7 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             ServerTestRunner runner = (ServerTestRunner) PortableRemoteObject.narrow(object, ServerTestRunner.class);
             String testClassName = getTestClass().getJavaClass().getName();
             List<Notification> notifications = runner.runTestClass(testClassName, dataSourceName, testProperties);
-            
+
             for (Notification notification : notifications) {
                 notification.notify(notifier);
             }
@@ -97,28 +97,28 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
     final boolean runOnlyUnknown;
     final Class<? extends DatabasePlatform> databasePlatformClass;
     private final Map<String, String> testProperties;
-    
-    
+
+
     @SuppressWarnings("unchecked")
     public SkipBugzillaTestRunner(Class<?> klass) throws Throwable {
         super(klass);
-        
+
         testProperties = AbstractBaseTest.getTestProperties();
-        
-        
+
+
         addProperty(TEST_BUGZILLA_RUN);
         addProperty(TEST_ISSUE_RUN);
         addProperty(TEST_TO_BE_INVESTIGATED_RUN);
 
-        String databasePlatformClassName = testProperties.get(PersistenceUnitProperties.TARGET_DATABASE); 
-        
+        String databasePlatformClassName = testProperties.get(PersistenceUnitProperties.TARGET_DATABASE);
 
-		if (databasePlatformClassName != null) {
-			databasePlatformClass = (Class<? extends DatabasePlatform>) Class.forName(databasePlatformClassName);
-			AdjustArrayTypeCustomizer.setDatabasePlatformClass(databasePlatformClass);
-		} else {
-			databasePlatformClass = null; // FIXME
-		}        
+
+        if (databasePlatformClassName != null) {
+            databasePlatformClass = (Class<? extends DatabasePlatform>) Class.forName(databasePlatformClassName);
+            AdjustArrayTypeCustomizer.setDatabasePlatformClass(databasePlatformClass);
+        } else {
+            databasePlatformClass = null; // FIXME
+        }
 
         String testBugzillaRun = (String) testProperties.get(TEST_BUGZILLA_RUN);
         if ("all".equals(testBugzillaRun)) {
@@ -157,7 +157,7 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             runAllUnknown = false;
             runOnlyUnknown = false;
         }
-        
+
 
     }
 
@@ -203,7 +203,7 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
 
         Class<? extends DatabasePlatform>[] databases = skipper.getDatabases(a);
         String[] databaseNames = skipper.getDatabaseNames(a);
-        
+
         if ((databases == null || databases.length == 0) && (databaseNames == null || databaseNames.length == 0)) {
             // all databases are unsupported
             throw new SkipException();
@@ -255,11 +255,11 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
 
         @Override
         public boolean runThis(Skip skip) {
-            
+
             if(skip.server()) {
                 return !ServerInfoHolder.isOnServer();
             }
-            
+
             return false;
         }
 
@@ -383,11 +383,11 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
         boolean runAll();
 
         boolean runThis(T t);
-        
+
         boolean skipOthers();
 
         Class<? extends DatabasePlatform>[] getDatabases(T t);
-        
+
         String[] getDatabaseNames(T t);
     }
 

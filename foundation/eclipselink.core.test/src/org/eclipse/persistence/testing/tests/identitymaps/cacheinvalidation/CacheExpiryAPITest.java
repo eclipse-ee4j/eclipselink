@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation;
 
 import java.util.*;
@@ -117,7 +117,7 @@ public class CacheExpiryAPITest extends CacheExpiryTest {
             throw new TestErrorException("Invalidate Class API call did not correctly invalidate objects.");
         }
         if (remainingTime > 101000 || remainingTime < 99000) {
-            throw new TestErrorException("Get Remaining Life API call did not return a reasonable value.  Please check to see that the" + 
+            throw new TestErrorException("Get Remaining Life API call did not return a reasonable value.  Please check to see that the" +
                                          " the system is not so overloaded that the time between 2 lines of java is greater than 1 second.");
         }
 
@@ -125,7 +125,7 @@ public class CacheExpiryAPITest extends CacheExpiryTest {
 
     public boolean getValidityFromIdentityMapManager(Object object) {
         CacheKey key = getAbstractSession().getIdentityMapAccessorInstance().getCacheKeyForObject(object);
-        return !getAbstractSession().getDescriptor(object).getCacheInvalidationPolicy().isInvalidated(key, 
+        return !getAbstractSession().getDescriptor(object).getCacheInvalidationPolicy().isInvalidated(key,
                                                                                                                  System.currentTimeMillis());
     }
 }

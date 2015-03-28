@@ -7,5 +7,5 @@
       <ns0:manager sdo:ref="#/root/ns0:manager">
          <name>Original Name</name>
       </ns0:manager>
-   </myChangeSummary>   
+   </myChangeSummary>
 </root>

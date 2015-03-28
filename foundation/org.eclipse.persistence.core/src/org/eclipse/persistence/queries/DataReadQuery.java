@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.*;
@@ -34,12 +34,12 @@ import org.eclipse.persistence.mappings.converters.Converter;
  */
 public class DataReadQuery extends ReadQuery {
     protected ContainerPolicy containerPolicy;
-    
+
     /**
      * Allow return type to be configured, MAP, ARRAY, VALUE, ATTRIBUTE (MAP is the default, i.e. DatabaseRecord).
      */
     protected int resultType;
-    
+
     /** A Map (DatabaseRecord) is returned for each row. */
     public static final int MAP = 0;
     /** An Object[] of values is returned for each row. */
@@ -65,8 +65,8 @@ public class DataReadQuery extends ReadQuery {
     /**
      * PUBLIC:
      * Initialize the query to use the specified SQL string.
-	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      */
     public DataReadQuery(String sqlString) {
         this();
@@ -187,7 +187,7 @@ public class DataReadQuery extends ReadQuery {
         }
         return row;
     }
-    
+
     /**
      * INTERNAL:
      * The results are *not* in a cursor, build the collection.

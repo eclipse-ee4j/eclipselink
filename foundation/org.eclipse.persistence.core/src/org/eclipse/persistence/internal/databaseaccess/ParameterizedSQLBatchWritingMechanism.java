@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.StringWriter;
@@ -47,11 +47,11 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
      */
     protected List<List> parameters;
     protected DatabaseCall lastCallAppended;
-    
+
     public ParameterizedSQLBatchWritingMechanism() {
         super();
     }
-    
+
     public ParameterizedSQLBatchWritingMechanism(DatabaseAccessor databaseAccessor) {
         this.databaseAccessor = databaseAccessor;
         this.parameters = new ArrayList();
@@ -127,7 +127,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
             return;
         }
         //Bug#419326 : Added below clone, clear and clone.executeBatch(session)
-        //Cloning the mechanism and clearing the current mechanism ensures that the current batch 
+        //Cloning the mechanism and clearing the current mechanism ensures that the current batch
         //is not visible to recursive calls to executeBatchedStatements(session).
         ParameterizedSQLBatchWritingMechanism currentBatch = (ParameterizedSQLBatchWritingMechanism) this.clone();
         this.clear();
@@ -136,9 +136,9 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
 
     /**
      * INTERNAL:
-     * This method is added to execute and clear the batched statements on the cloned batch mechanism which 
+     * This method is added to execute and clear the batched statements on the cloned batch mechanism which
      * is created in executeBatchedStatements(session).
-     * 
+     *
      * Introduced in fix for bug#419326.
      */
     private void executeBatch(AbstractSession session) {
@@ -146,8 +146,8 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
         if (this.parameters.size() == 1) {
             // If only one call, just execute normally.
             try {
-                int rowCount = (Integer)this.databaseAccessor.basicExecuteCall(this.previousCall, null, session, false);          
-                if (this.previousCall.hasOptimisticLock()) {                    
+                int rowCount = (Integer)this.databaseAccessor.basicExecuteCall(this.previousCall, null, session, false);
+                if (this.previousCall.hasOptimisticLock()) {
                     if (rowCount != 1) {
                         throw OptimisticLockException.batchStatementExecutionFailure();
                     }
@@ -167,18 +167,18 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                 // took this logging part from SQLCall
                 for (List callParameters : this.parameters) {
                     StringWriter writer = new StringWriter();
-                    DatabaseCall.appendLogParameters(callParameters, this.databaseAccessor, writer, session);                
+                    DatabaseCall.appendLogParameters(callParameters, this.databaseAccessor, writer, session);
                     session.log(SessionLog.FINE, SessionLog.SQL, writer.toString(), null, this.databaseAccessor, false);
                 }
                 session.log(SessionLog.FINER, SessionLog.SQL, "end_batch_statements", null, this.databaseAccessor);
             }
-            
+
             //bug 4241441: need to keep track of rows modified and throw opti lock exception if needed
             PreparedStatement statement = prepareBatchStatements(session);
             // += is used as native batch writing can return a row count before execution.
             this.executionCount += this.databaseAccessor.executeJDK12BatchStatement(statement, this.lastCallAppended, session, true);
             this.databaseAccessor.writeStatementsCount++;
-            
+
             if (this.previousCall.hasOptimisticLock() && (this.executionCount != this.statementCount)) {
                 throw OptimisticLockException.batchStatementExecutionFailure();
             }
@@ -212,11 +212,11 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                 statement = (PreparedStatement)this.databaseAccessor.prepareStatement(this.previousCall, session, shouldUnwrapConnection);
                 // Perform platform specific preparations
                 platform.prepareBatchStatement(statement, this.maxBatchSize);
-               	if (this.queryTimeoutCache > DescriptorQueryManager.NoTimeout) {
-                	// Set the query timeout that was cached during the multiple calls to appendCall
-               		statement.setQueryTimeout(this.queryTimeoutCache);
+                   if (this.queryTimeoutCache > DescriptorQueryManager.NoTimeout) {
+                    // Set the query timeout that was cached during the multiple calls to appendCall
+                       statement.setQueryTimeout(this.queryTimeoutCache);
                 }
-               	
+
                 // Iterate over the parameter lists that were batched.
                 int statementSize = this.parameters.size();
                 for (int statementIndex = 0; statementIndex < statementSize; ++statementIndex) {

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.helper.HelperContext;
@@ -136,7 +136,7 @@ public class SDOClassGenerator {
         if (null != messageID) {
             System.out.println(ToStringLocalization.buildMessage(messageID, new Object[] { Helper.getShortClassName(getClass()) }));
         }
-        
+
         // Because we can no longer use Helper.cr() inside of message bundles, we must break
         // up the message into separate lines and use Helper.cr() here instead. (bug6470503)
         String messageString = ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_1of8", new Object[] { Helper.getShortClassName(getClass()) });
@@ -349,9 +349,9 @@ public class SDOClassGenerator {
             if (interfaceExtends != null) {
                 currentInterfaceBuffer.append(" extends " + interfaceExtends );
             } else{
-            	currentInterfaceBuffer.append(" extends java.io.Serializable");
+                currentInterfaceBuffer.append(" extends java.io.Serializable");
             }
-                        
+
             currentInterfaceBuffer.append(indent).append(" {").append(lsep2);
             classBuffer.setInterfaceBuffer(currentInterfaceBuffer);
         }
@@ -504,7 +504,7 @@ public class SDOClassGenerator {
             classBuffer.getMethodBuffer().append("() {").append(lsep);
             pushIndent();
             classBuffer.getMethodBuffer().append(indent).append("return ");
-            //cast return value        
+            //cast return value
             String builtIn = SDOUtil.getBuiltInType(returnType);
 
             if (builtIn != null) {

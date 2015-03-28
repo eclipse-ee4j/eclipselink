@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.defineandgenerate;
 
 import commonj.sdo.DataObject;
@@ -142,10 +142,10 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
 
         ((SDOProperty)itemType.getProperty("comment")).setXsd(true);
         ((SDOProperty)itemType.getProperty("comment")).setXsdLocalName("comment");
-        //-----------------        
+        //-----------------
         DataObject itemsTypeDO = dataFactory.create("commonj.sdo", "Type");
         itemsTypeDO.set("uri", NON_DEFAULT_URI);
-        itemsTypeDO.set("name", "Items");        
+        itemsTypeDO.set("name", "Items");
         itemsTypeDO.set("sequenced", true);
 
         addProperty(itemsTypeDO, "item", itemType, true, true, true);
@@ -171,7 +171,7 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
         ((SDOProperty)poType.getProperty("items")).setXsdLocalName("items");
       //  ((SDOProperty)poType.getProperty("myCS")).setXsd(true);
 //        ((SDOProperty)poType.getProperty("myCS")).setXsdLocalName("myCS");
-      
+
        //-----------------
         DataObject companyTypeDO = dataFactory.create("commonj.sdo", "Type");
         companyTypeDO.set("uri", NON_DEFAULT_URI);
@@ -179,22 +179,22 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
 
         DataObject csProp = addProperty(companyTypeDO, "myCS", changeSummaryType, true, false, true);
         csProp.set("readOnly", true);
-        addProperty(companyTypeDO, "order", poType, true, false, true);        
+        addProperty(companyTypeDO, "order", poType, true, false, true);
 
         Type companyType = typeHelper.define(companyTypeDO);
         ((SDOProperty)companyType.getProperty("myCS")).setXsd(true);
         ((SDOProperty)companyType.getProperty("myCS")).setXsdLocalName("myCS");
-        
+
         ((SDOProperty)companyType.getProperty("order")).setXsd(true);
         ((SDOProperty)companyType.getProperty("order")).setXsdLocalName("order");
 
         //------------------
-        
-        types.add(companyType);        
+
+        types.add(companyType);
         types.add(cdnAddressType);
         types.add(usAddressType);
         types.add(itemsType);
-        types.add(poType);        
+        types.add(poType);
         types.add(cdnAddressMailingType);
         types.add(itemType);
         types.add(addressType);

@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 JPQL.g 2010-10-07 15:45:34
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 JPQL.g 2010, 2015 -10-07 15:45:34
 
     package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
 
@@ -18,7 +18,7 @@ import java.util.Stack;
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -155,9 +155,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
         public JPQLParser(TokenStream input, RecognizerSharedState state) {
             super(input, state);
-             
+
         }
-        
+
 
     public String[] getTokenNames() { return JPQLParser.tokenNames; }
     public String getGrammarFileName() { return "JPQL.g"; }
@@ -194,7 +194,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
 
         /** */
-        protected void validateAttributeName(Token token) 
+        protected void validateAttributeName(Token token)
             throws RecognitionException {
             String text = token.getText();
             if (!isValidJavaIdentifier(token.getText())) {
@@ -217,21 +217,21 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     return false;
                 }
             }
-            
+
             return true;
         }
 
         protected String convertStringLiteral(String text) {
             // skip leading and trailing quotes
             String literal = text.substring(1, text.length() - 1);
-            
+
             // convert ''s to 's
             while (true) {
                 int index = literal.indexOf("''");
                 if (index == -1) {
                     break;
                 }
-                literal = literal.substring(0, index) + 
+                literal = literal.substring(0, index) +
                           literal.substring(index + 1, literal.length());
             }
 
@@ -353,7 +353,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object orderBy = null;
 
 
-         
+
             node = null;
 
         try {
@@ -460,10 +460,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
             match(input,EOF,FOLLOW_EOF_in_selectStatement910); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               
-                          node = factory.newSelectStatement(0, 0, select, from, where, 
-                                                            groupBy, having, orderBy); 
-                      
+
+                          node = factory.newSelectStatement(0, 0, select, from, where,
+                                                            groupBy, having, orderBy);
+
             }
 
             }
@@ -492,8 +492,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object where = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:228:5: (update= updateClause set= setClause (where= whereClause )? EOF )
@@ -533,7 +533,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
             match(input,EOF,FOLLOW_EOF_in_updateStatement992); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newUpdateStatement(0, 0, update, set, where); 
+               node = factory.newUpdateStatement(0, 0, update, set, where);
             }
 
             }
@@ -560,8 +560,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         String schema = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:238:5: (u= UPDATE schema= abstractSchemaName ( ( AS )? ident= IDENT )? )
@@ -610,14 +610,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
 
             if ( state.backtracking==0 ) {
-               
+
                           String schemaName = null;
                           if (ident != null){
                               schemaName = ident.getText();
                           }
-                          node = factory.newUpdateClause(u.getLine(), u.getCharPositionInLine(), 
-                                                         schema, schemaName); 
-                      
+                          node = factory.newUpdateClause(u.getLine(), u.getCharPositionInLine(),
+                                                         schema, schemaName);
+
             }
 
             }
@@ -649,8 +649,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         
-            node = null; 
+
+            node = null;
             ((setClause_scope)setClause_stack.peek()).assignments = new ArrayList();
 
         try {
@@ -664,7 +664,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             state._fsp--;
             if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               ((setClause_scope)setClause_stack.peek()).assignments.add(n); 
+               ((setClause_scope)setClause_stack.peek()).assignments.add(n);
             }
             // JPQL.g:259:9: ( COMMA n= setAssignmentClause )*
             loop9:
@@ -678,29 +678,29 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt9) {
-            	case 1 :
-            	    // JPQL.g:259:10: COMMA n= setAssignmentClause
-            	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_setClause1119); if (state.failed) return node;
-            	    pushFollow(FOLLOW_setAssignmentClause_in_setClause1125);
-            	    n=setAssignmentClause();
+                case 1 :
+                    // JPQL.g:259:10: COMMA n= setAssignmentClause
+                    {
+                    match(input,COMMA,FOLLOW_COMMA_in_setClause1119); if (state.failed) return node;
+                    pushFollow(FOLLOW_setAssignmentClause_in_setClause1125);
+                    n=setAssignmentClause();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	       ((setClause_scope)setClause_stack.peek()).assignments.add(n); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                       ((setClause_scope)setClause_stack.peek()).assignments.add(n);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop9;
+                default :
+                    break loop9;
                 }
             } while (true);
 
             if ( state.backtracking==0 ) {
-               node = factory.newSetClause(t.getLine(), t.getCharPositionInLine(), ((setClause_scope)setClause_stack.peek()).assignments); 
+               node = factory.newSetClause(t.getLine(), t.getCharPositionInLine(), ((setClause_scope)setClause_stack.peek()).assignments);
             }
 
             }
@@ -729,7 +729,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object value = null;
 
 
-         
+
             node = null;
 
         try {
@@ -751,10 +751,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
 
             if ( state.backtracking==0 ) {
-               
-                          node = factory.newSetAssignmentClause(t.getLine(), t.getCharPositionInLine(), 
-                                                                target, value); 
-                      
+
+                          node = factory.newSetAssignmentClause(t.getLine(), t.getCharPositionInLine(),
+                                                                target, value);
+
             }
         }
         catch (RecognitionException re) {
@@ -776,7 +776,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         
+
             node = null;
 
         try {
@@ -835,7 +835,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:284:5: (n= scalarExpression | n1= NULL )
             int alt11=2;
@@ -860,7 +860,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     n1=(Token)match(input,NULL,FOLLOW_NULL_in_newValue1284); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newNullLiteral(n1.getLine(), n1.getCharPositionInLine()); 
+                       node = factory.newNullLiteral(n1.getLine(), n1.getCharPositionInLine());
                     }
 
                     }
@@ -889,8 +889,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object where = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:295:5: (delete= deleteClause (where= whereClause )? EOF )
@@ -925,7 +925,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
             match(input,EOF,FOLLOW_EOF_in_deleteStatement1351); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newDeleteStatement(0, 0, delete, where); 
+               node = factory.newDeleteStatement(0, 0, delete, where);
             }
 
             }
@@ -958,8 +958,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         String schema = null;
 
 
-         
-            node = null; 
+
+            node = null;
             ((deleteClause_scope)deleteClause_stack.peek()).variable = null;
 
         try {
@@ -1004,7 +1004,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                     ident=(Token)match(input,IDENT,FOLLOW_IDENT_in_deleteClause1411); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       ((deleteClause_scope)deleteClause_stack.peek()).variable = ident.getText(); 
+                       ((deleteClause_scope)deleteClause_stack.peek()).variable = ident.getText();
                     }
 
                     }
@@ -1013,10 +1013,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
 
             if ( state.backtracking==0 ) {
-               
-                          node = factory.newDeleteClause(t.getLine(), t.getCharPositionInLine(), 
-                                                         schema, ((deleteClause_scope)deleteClause_stack.peek()).variable); 
-                      
+
+                          node = factory.newDeleteClause(t.getLine(), t.getCharPositionInLine(),
+                                                         schema, ((deleteClause_scope)deleteClause_stack.peek()).variable);
+
             }
 
             }
@@ -1051,7 +1051,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         JPQLParser.selectItem_return n = null;
 
 
-         
+
             node = null;
             ((selectClause_scope)selectClause_stack.peek()).distinct = false;
             ((selectClause_scope)selectClause_stack.peek()).exprs = new ArrayList();
@@ -1071,7 +1071,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     match(input,DISTINCT,FOLLOW_DISTINCT_in_selectClause1461); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       ((selectClause_scope)selectClause_stack.peek()).distinct = true; 
+                       ((selectClause_scope)selectClause_stack.peek()).distinct = true;
                     }
 
                     }
@@ -1080,7 +1080,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
 
             if ( state.backtracking==0 ) {
-               setAggregatesAllowed(true); 
+               setAggregatesAllowed(true);
             }
             pushFollow(FOLLOW_selectItem_in_selectClause1480);
             n=selectItem();
@@ -1091,7 +1091,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                             ((selectClause_scope)selectClause_stack.peek()).exprs.add((n!=null?n.expr:null));
                             ((selectClause_scope)selectClause_stack.peek()).idents.add((n!=null?n.ident:null));
-                        
+
             }
             // JPQL.g:336:11: ( COMMA n= selectItem )*
             loop16:
@@ -1105,36 +1105,36 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt16) {
-            	case 1 :
-            	    // JPQL.g:336:13: COMMA n= selectItem
-            	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_selectClause1508); if (state.failed) return node;
-            	    pushFollow(FOLLOW_selectItem_in_selectClause1514);
-            	    n=selectItem();
+                case 1 :
+                    // JPQL.g:336:13: COMMA n= selectItem
+                    {
+                    match(input,COMMA,FOLLOW_COMMA_in_selectClause1508); if (state.failed) return node;
+                    pushFollow(FOLLOW_selectItem_in_selectClause1514);
+                    n=selectItem();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
 
-            	                        ((selectClause_scope)selectClause_stack.peek()).exprs.add((n!=null?n.expr:null));
-            	                        ((selectClause_scope)selectClause_stack.peek()).idents.add((n!=null?n.ident:null));
-            	                     
-            	    }
+                                        ((selectClause_scope)selectClause_stack.peek()).exprs.add((n!=null?n.expr:null));
+                                        ((selectClause_scope)selectClause_stack.peek()).idents.add((n!=null?n.ident:null));
 
-            	    }
-            	    break;
+                    }
 
-            	default :
-            	    break loop16;
+                    }
+                    break;
+
+                default :
+                    break loop16;
                 }
             } while (true);
 
             if ( state.backtracking==0 ) {
-               
-                          setAggregatesAllowed(false); 
-                          node = factory.newSelectClause(t.getLine(), t.getCharPositionInLine(), 
-                                                         ((selectClause_scope)selectClause_stack.peek()).distinct, ((selectClause_scope)selectClause_stack.peek()).exprs, ((selectClause_scope)selectClause_stack.peek()).idents); 
-                      
+
+                          setAggregatesAllowed(false);
+                          node = factory.newSelectClause(t.getLine(), t.getCharPositionInLine(),
+                                                         ((selectClause_scope)selectClause_stack.peek()).distinct, ((selectClause_scope)selectClause_stack.peek()).exprs, ((selectClause_scope)selectClause_stack.peek()).idents);
+
             }
 
             }
@@ -1219,8 +1219,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                           } else {
                               retval.ident = identifier.getText();
                           }
-                              
-                      
+
+
             }
 
             }
@@ -1247,7 +1247,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:366:5: (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression )
             int alt19=5;
@@ -1349,7 +1349,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:375:5: (l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
             // JPQL.g:375:7: l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
@@ -1412,24 +1412,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 int alt20=2;
                 alt20 = dfa20.predict(input);
                 switch (alt20) {
-            	case 1 :
-            	    // JPQL.g:383:10: d= DOT right= attribute
-            	    {
-            	    d=(Token)match(input,DOT,FOLLOW_DOT_in_pathExprOrVariableAccess1827); if (state.failed) return node;
-            	    pushFollow(FOLLOW_attribute_in_pathExprOrVariableAccess1833);
-            	    right=attribute();
+                case 1 :
+                    // JPQL.g:383:10: d= DOT right= attribute
+                    {
+                    d=(Token)match(input,DOT,FOLLOW_DOT_in_pathExprOrVariableAccess1827); if (state.failed) return node;
+                    pushFollow(FOLLOW_attribute_in_pathExprOrVariableAccess1833);
+                    right=attribute();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	       node = factory.newDot(d.getLine(), d.getCharPositionInLine(), node, right); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                       node = factory.newDot(d.getLine(), d.getCharPositionInLine(), node, right);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop20;
+                default :
+                    break loop20;
                 }
             } while (true);
 
@@ -1457,7 +1457,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:390:5: (n= variableAccessOrTypeConstant | l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
             int alt21=3;
@@ -1512,7 +1512,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     if (state.failed) return node;
                     match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_qualifiedIdentificationVariable1913); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newKey(l.getLine(), l.getCharPositionInLine(), n); 
+                       node = factory.newKey(l.getLine(), l.getCharPositionInLine(), n);
                     }
 
                     }
@@ -1567,8 +1567,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         
-            node = null; 
+
+            node = null;
             ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = false;
 
         try {
@@ -1623,7 +1623,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             {
                             match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1976); if (state.failed) return node;
                             if ( state.backtracking==0 ) {
-                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
+                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true;
                             }
 
                             }
@@ -1638,7 +1638,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     if (state.failed) return node;
                     match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1996); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newAvg(t1.getLine(), t1.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
+                       node = factory.newAvg(t1.getLine(), t1.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n);
                     }
 
                     }
@@ -1657,7 +1657,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             {
                             match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression2022); if (state.failed) return node;
                             if ( state.backtracking==0 ) {
-                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
+                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true;
                             }
 
                             }
@@ -1672,7 +1672,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     if (state.failed) return node;
                     match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2043); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newMax(t2.getLine(), t2.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
+                       node = factory.newMax(t2.getLine(), t2.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n);
                     }
 
                     }
@@ -1691,7 +1691,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             {
                             match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression2068); if (state.failed) return node;
                             if ( state.backtracking==0 ) {
-                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
+                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true;
                             }
 
                             }
@@ -1706,7 +1706,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     if (state.failed) return node;
                     match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2088); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newMin(t3.getLine(), t3.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
+                       node = factory.newMin(t3.getLine(), t3.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n);
                     }
 
                     }
@@ -1725,7 +1725,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             {
                             match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression2113); if (state.failed) return node;
                             if ( state.backtracking==0 ) {
-                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
+                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true;
                             }
 
                             }
@@ -1740,7 +1740,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     if (state.failed) return node;
                     match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2133); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newSum(t4.getLine(), t4.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
+                       node = factory.newSum(t4.getLine(), t4.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n);
                     }
 
                     }
@@ -1759,7 +1759,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             {
                             match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression2158); if (state.failed) return node;
                             if ( state.backtracking==0 ) {
-                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
+                               ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true;
                             }
 
                             }
@@ -1774,7 +1774,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     if (state.failed) return node;
                     match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression2178); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newCount(t5.getLine(), t5.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
+                       node = factory.newCount(t5.getLine(), t5.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n);
                     }
 
                     }
@@ -1811,7 +1811,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         
+
             node = null;
             ((constructorExpression_scope)constructorExpression_stack.peek()).args = new ArrayList();
 
@@ -1832,7 +1832,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             state._fsp--;
             if (state.failed) return node;
             if ( state.backtracking==0 ) {
-              ((constructorExpression_scope)constructorExpression_stack.peek()).args.add(n); 
+              ((constructorExpression_scope)constructorExpression_stack.peek()).args.add(n);
             }
             // JPQL.g:431:9: ( COMMA n= constructorItem )*
             loop28:
@@ -1846,33 +1846,33 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt28) {
-            	case 1 :
-            	    // JPQL.g:431:11: COMMA n= constructorItem
-            	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_constructorExpression2267); if (state.failed) return node;
-            	    pushFollow(FOLLOW_constructorItem_in_constructorExpression2273);
-            	    n=constructorItem();
+                case 1 :
+                    // JPQL.g:431:11: COMMA n= constructorItem
+                    {
+                    match(input,COMMA,FOLLOW_COMMA_in_constructorExpression2267); if (state.failed) return node;
+                    pushFollow(FOLLOW_constructorItem_in_constructorExpression2273);
+                    n=constructorItem();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	       ((constructorExpression_scope)constructorExpression_stack.peek()).args.add(n); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                       ((constructorExpression_scope)constructorExpression_stack.peek()).args.add(n);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop28;
+                default :
+                    break loop28;
                 }
             } while (true);
 
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_constructorExpression2288); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               
-                          node = factory.newConstructor(t.getLine(), t.getCharPositionInLine(), 
-                                                        className, ((constructorExpression_scope)constructorExpression_stack.peek()).args); 
-                      
+
+                          node = factory.newConstructor(t.getLine(), t.getCharPositionInLine(),
+                                                        className, ((constructorExpression_scope)constructorExpression_stack.peek()).args);
+
             }
 
             }
@@ -1904,9 +1904,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Token i1=null;
         Token i2=null;
 
-         
+
             className = null;
-            ((constructorName_scope)constructorName_stack.peek()).buf = new StringBuffer(); 
+            ((constructorName_scope)constructorName_stack.peek()).buf = new StringBuffer();
 
         try {
             // JPQL.g:447:5: (i1= IDENT ( DOT i2= IDENT )* )
@@ -1914,7 +1914,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             {
             i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_constructorName2329); if (state.failed) return className;
             if ( state.backtracking==0 ) {
-               ((constructorName_scope)constructorName_stack.peek()).buf.append(i1.getText()); 
+               ((constructorName_scope)constructorName_stack.peek()).buf.append(i1.getText());
             }
             // JPQL.g:448:9: ( DOT i2= IDENT )*
             loop29:
@@ -1928,25 +1928,25 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt29) {
-            	case 1 :
-            	    // JPQL.g:448:11: DOT i2= IDENT
-            	    {
-            	    match(input,DOT,FOLLOW_DOT_in_constructorName2343); if (state.failed) return className;
-            	    i2=(Token)match(input,IDENT,FOLLOW_IDENT_in_constructorName2347); if (state.failed) return className;
-            	    if ( state.backtracking==0 ) {
-            	       ((constructorName_scope)constructorName_stack.peek()).buf.append('.').append(i2.getText()); 
-            	    }
+                case 1 :
+                    // JPQL.g:448:11: DOT i2= IDENT
+                    {
+                    match(input,DOT,FOLLOW_DOT_in_constructorName2343); if (state.failed) return className;
+                    i2=(Token)match(input,IDENT,FOLLOW_IDENT_in_constructorName2347); if (state.failed) return className;
+                    if ( state.backtracking==0 ) {
+                       ((constructorName_scope)constructorName_stack.peek()).buf.append('.').append(i2.getText());
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop29;
+                default :
+                    break loop29;
                 }
             } while (true);
 
             if ( state.backtracking==0 ) {
-               className = ((constructorName_scope)constructorName_stack.peek()).buf.toString(); 
+               className = ((constructorName_scope)constructorName_stack.peek()).buf.toString();
             }
 
             }
@@ -1972,7 +1972,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:454:5: (n= scalarExpression | n= aggregateExpression )
             int alt30=2;
@@ -2035,8 +2035,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         
-            node = null; 
+
+            node = null;
             ((fromClause_scope)fromClause_stack.peek()).varDecls = new ArrayList();
 
         try {
@@ -2061,81 +2061,81 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt32) {
-            	case 1 :
-            	    // JPQL.g:468:10: COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
-            	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_fromClause2453); if (state.failed) return node;
-            	    // JPQL.g:468:17: ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
-            	    int alt31=2;
-            	    int LA31_0 = input.LA(1);
+                case 1 :
+                    // JPQL.g:468:10: COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
+                    {
+                    match(input,COMMA,FOLLOW_COMMA_in_fromClause2453); if (state.failed) return node;
+                    // JPQL.g:468:17: ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
+                    int alt31=2;
+                    int LA31_0 = input.LA(1);
 
-            	    if ( (LA31_0==IN) ) {
-            	        int LA31_1 = input.LA(2);
+                    if ( (LA31_0==IN) ) {
+                        int LA31_1 = input.LA(2);
 
-            	        if ( (LA31_1==LEFT_ROUND_BRACKET) ) {
-            	            alt31=2;
-            	        }
-            	        else if ( (LA31_1==AS||LA31_1==IDENT) ) {
-            	            alt31=1;
-            	        }
-            	        else {
-            	            if (state.backtracking>0) {state.failed=true; return node;}
-            	            NoViableAltException nvae =
-            	                new NoViableAltException("", 31, 1, input);
+                        if ( (LA31_1==LEFT_ROUND_BRACKET) ) {
+                            alt31=2;
+                        }
+                        else if ( (LA31_1==AS||LA31_1==IDENT) ) {
+                            alt31=1;
+                        }
+                        else {
+                            if (state.backtracking>0) {state.failed=true; return node;}
+                            NoViableAltException nvae =
+                                new NoViableAltException("", 31, 1, input);
 
-            	            throw nvae;
-            	        }
-            	    }
-            	    else if ( ((LA31_0>=ABS && LA31_0<=HAVING)||(LA31_0>=INDEX && LA31_0<=TIME_STRING)) ) {
-            	        alt31=1;
-            	    }
-            	    else {
-            	        if (state.backtracking>0) {state.failed=true; return node;}
-            	        NoViableAltException nvae =
-            	            new NoViableAltException("", 31, 0, input);
+                            throw nvae;
+                        }
+                    }
+                    else if ( ((LA31_0>=ABS && LA31_0<=HAVING)||(LA31_0>=INDEX && LA31_0<=TIME_STRING)) ) {
+                        alt31=1;
+                    }
+                    else {
+                        if (state.backtracking>0) {state.failed=true; return node;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("", 31, 0, input);
 
-            	        throw nvae;
-            	    }
-            	    switch (alt31) {
-            	        case 1 :
-            	            // JPQL.g:468:19: identificationVariableDeclaration[$fromClause::varDecls]
-            	            {
-            	            pushFollow(FOLLOW_identificationVariableDeclaration_in_fromClause2458);
-            	            identificationVariableDeclaration(((fromClause_scope)fromClause_stack.peek()).varDecls);
+                        throw nvae;
+                    }
+                    switch (alt31) {
+                        case 1 :
+                            // JPQL.g:468:19: identificationVariableDeclaration[$fromClause::varDecls]
+                            {
+                            pushFollow(FOLLOW_identificationVariableDeclaration_in_fromClause2458);
+                            identificationVariableDeclaration(((fromClause_scope)fromClause_stack.peek()).varDecls);
 
-            	            state._fsp--;
-            	            if (state.failed) return node;
+                            state._fsp--;
+                            if (state.failed) return node;
 
-            	            }
-            	            break;
-            	        case 2 :
-            	            // JPQL.g:469:19: n= collectionMemberDeclaration
-            	            {
-            	            pushFollow(FOLLOW_collectionMemberDeclaration_in_fromClause2483);
-            	            n=collectionMemberDeclaration();
+                            }
+                            break;
+                        case 2 :
+                            // JPQL.g:469:19: n= collectionMemberDeclaration
+                            {
+                            pushFollow(FOLLOW_collectionMemberDeclaration_in_fromClause2483);
+                            n=collectionMemberDeclaration();
 
-            	            state._fsp--;
-            	            if (state.failed) return node;
-            	            if ( state.backtracking==0 ) {
-            	              ((fromClause_scope)fromClause_stack.peek()).varDecls.add(n); 
-            	            }
+                            state._fsp--;
+                            if (state.failed) return node;
+                            if ( state.backtracking==0 ) {
+                              ((fromClause_scope)fromClause_stack.peek()).varDecls.add(n);
+                            }
 
-            	            }
-            	            break;
+                            }
+                            break;
 
-            	    }
+                    }
 
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop32;
+                default :
+                    break loop32;
                 }
             } while (true);
 
             if ( state.backtracking==0 ) {
-               node = factory.newFromClause(t.getLine(), t.getCharPositionInLine(), ((fromClause_scope)fromClause_stack.peek()).varDecls); 
+               node = factory.newFromClause(t.getLine(), t.getCharPositionInLine(), ((fromClause_scope)fromClause_stack.peek()).varDecls);
             }
 
             }
@@ -2169,7 +2169,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             state._fsp--;
             if (state.failed) return ;
             if ( state.backtracking==0 ) {
-               varDecls.add(node); 
+               varDecls.add(node);
             }
             // JPQL.g:477:9: (node= join )*
             loop33:
@@ -2177,23 +2177,23 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 int alt33=2;
                 alt33 = dfa33.predict(input);
                 switch (alt33) {
-            	case 1 :
-            	    // JPQL.g:477:11: node= join
-            	    {
-            	    pushFollow(FOLLOW_join_in_identificationVariableDeclaration2568);
-            	    node=join();
+                case 1 :
+                    // JPQL.g:477:11: node= join
+                    {
+                    pushFollow(FOLLOW_join_in_identificationVariableDeclaration2568);
+                    node=join();
 
-            	    state._fsp--;
-            	    if (state.failed) return ;
-            	    if ( state.backtracking==0 ) {
-            	       varDecls.add(node); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return ;
+                    if ( state.backtracking==0 ) {
+                       varDecls.add(node);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop33;
+                default :
+                    break loop33;
                 }
             } while (true);
 
@@ -2221,8 +2221,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         String schema = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:484:5: (schema= abstractSchemaName ( AS )? i= IDENT )
@@ -2253,10 +2253,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
             i=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeVariableDeclaration2612); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               
-                          node = factory.newRangeVariableDecl(i.getLine(), i.getCharPositionInLine(), 
-                                                              schema, i.getText()); 
-                      
+
+                          node = factory.newRangeVariableDecl(i.getLine(), i.getCharPositionInLine(),
+                                                              schema, i.getText());
+
             }
 
             }
@@ -2280,7 +2280,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
         Token ident=null;
 
-         schema = null; 
+         schema = null;
         try {
             // JPQL.g:497:5: (ident= . )
             // JPQL.g:497:7: ident= .
@@ -2290,8 +2290,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( state.backtracking==0 ) {
 
                           schema = ident.getText();
-                          validateAbstractSchemaName(ident); 
-                      
+                          validateAbstractSchemaName(ident);
+
             }
 
             }
@@ -2321,7 +2321,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         
+
             node = null;
 
         try {
@@ -2391,9 +2391,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     i=(Token)match(input,IDENT,FOLLOW_IDENT_in_join2718); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
 
-                                  node = factory.newJoinVariableDecl(i.getLine(), i.getCharPositionInLine(), 
-                                                                     outerJoin, n, i.getText(), null); 
-                              
+                                  node = factory.newJoinVariableDecl(i.getLine(), i.getCharPositionInLine(),
+                                                                     outerJoin, n, i.getText(), null);
+
                     }
 
                     }
@@ -2432,9 +2432,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     i=(Token)match(input,IDENT,FOLLOW_IDENT_in_join2774); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
 
-                                  node = factory.newJoinVariableDecl(i.getLine(), i.getCharPositionInLine(), 
-                                                                     outerJoin, n, i.getText(), castClass.getText()); 
-                              
+                                  node = factory.newJoinVariableDecl(i.getLine(), i.getCharPositionInLine(),
+                                                                     outerJoin, n, i.getText(), castClass.getText());
+
                     }
 
                     }
@@ -2449,9 +2449,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     state._fsp--;
                     if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       
-                                  node = factory.newFetchJoin(t.getLine(), t.getCharPositionInLine(), 
-                                                              outerJoin, n); 
+
+                                  node = factory.newFetchJoin(t.getLine(), t.getCharPositionInLine(),
+                                                              outerJoin, n);
                     }
 
                     }
@@ -2479,7 +2479,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     public final boolean joinSpec() throws RecognitionException {
         boolean outer = false;
 
-         outer = false; 
+         outer = false;
         try {
             // JPQL.g:529:5: ( ( LEFT ( OUTER )? | INNER )? JOIN )
             // JPQL.g:529:7: ( LEFT ( OUTER )? | INNER )? JOIN
@@ -2518,7 +2518,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
 
                     if ( state.backtracking==0 ) {
-                       outer = true; 
+                       outer = true;
                     }
 
                     }
@@ -2559,7 +2559,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:534:5: (t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT )
             // JPQL.g:534:7: t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT
@@ -2592,10 +2592,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
             i=(Token)match(input,IDENT,FOLLOW_IDENT_in_collectionMemberDeclaration2921); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               
+
                         node = factory.newCollectionMemberVariableDecl(
-                              t.getLine(), t.getCharPositionInLine(), n, i.getText()); 
-                      
+                              t.getLine(), t.getCharPositionInLine(), n, i.getText());
+
             }
 
             }
@@ -2620,7 +2620,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:544:5: (n= pathExpression )
             // JPQL.g:544:7: n= pathExpression
@@ -2656,7 +2656,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:549:5: (n= pathExpression )
             // JPQL.g:549:7: n= pathExpression
@@ -2696,7 +2696,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
 
-            node = null; 
+            node = null;
 
         try {
             // JPQL.g:556:6: (n= qualifiedIdentificationVariable (d= DOT right= attribute )+ )
@@ -2717,25 +2717,25 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 int alt41=2;
                 alt41 = dfa41.predict(input);
                 switch (alt41) {
-            	case 1 :
-            	    // JPQL.g:557:10: d= DOT right= attribute
-            	    {
-            	    d=(Token)match(input,DOT,FOLLOW_DOT_in_joinAssociationPathExpression3039); if (state.failed) return node;
-            	    pushFollow(FOLLOW_attribute_in_joinAssociationPathExpression3045);
-            	    right=attribute();
+                case 1 :
+                    // JPQL.g:557:10: d= DOT right= attribute
+                    {
+                    d=(Token)match(input,DOT,FOLLOW_DOT_in_joinAssociationPathExpression3039); if (state.failed) return node;
+                    pushFollow(FOLLOW_attribute_in_joinAssociationPathExpression3045);
+                    right=attribute();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	       node = factory.newDot(d.getLine(), d.getCharPositionInLine(), node, right); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                       node = factory.newDot(d.getLine(), d.getCharPositionInLine(), node, right);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    if ( cnt41 >= 1 ) break loop41;
-            	    if (state.backtracking>0) {state.failed=true; return node;}
+                default :
+                    if ( cnt41 >= 1 ) break loop41;
+                    if (state.backtracking>0) {state.failed=true; return node;}
                         EarlyExitException eee =
                             new EarlyExitException(41, input);
                         throw eee;
@@ -2766,7 +2766,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:564:5: (n= pathExpression )
             // JPQL.g:564:7: n= pathExpression
@@ -2802,7 +2802,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:569:5: (n= pathExpression )
             // JPQL.g:569:7: n= pathExpression
@@ -2841,8 +2841,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object right = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:576:5: (n= qualifiedIdentificationVariable (d= DOT right= attribute )+ )
@@ -2863,27 +2863,27 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 int alt42=2;
                 alt42 = dfa42.predict(input);
                 switch (alt42) {
-            	case 1 :
-            	    // JPQL.g:577:10: d= DOT right= attribute
-            	    {
-            	    d=(Token)match(input,DOT,FOLLOW_DOT_in_pathExpression3180); if (state.failed) return node;
-            	    pushFollow(FOLLOW_attribute_in_pathExpression3186);
-            	    right=attribute();
+                case 1 :
+                    // JPQL.g:577:10: d= DOT right= attribute
+                    {
+                    d=(Token)match(input,DOT,FOLLOW_DOT_in_pathExpression3180); if (state.failed) return node;
+                    pushFollow(FOLLOW_attribute_in_pathExpression3186);
+                    right=attribute();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
 
-            	                      node = factory.newDot(d.getLine(), d.getCharPositionInLine(), node, right); 
-            	                  
-            	    }
+                                      node = factory.newDot(d.getLine(), d.getCharPositionInLine(), node, right);
 
-            	    }
-            	    break;
+                    }
 
-            	default :
-            	    if ( cnt42 >= 1 ) break loop42;
-            	    if (state.backtracking>0) {state.failed=true; return node;}
+                    }
+                    break;
+
+                default :
+                    if ( cnt42 >= 1 ) break loop42;
+                    if (state.backtracking>0) {state.failed=true; return node;}
                         EarlyExitException eee =
                             new EarlyExitException(42, input);
                         throw eee;
@@ -2913,7 +2913,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
         Token i=null;
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:591:5: (i= . )
             // JPQL.g:591:7: i= .
@@ -2921,10 +2921,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             i=(Token)input.LT(1);
             matchAny(input); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               
+
                           validateAttributeName(i);
-                          node = factory.newAttribute(i.getLine(), i.getCharPositionInLine(), i.getText()); 
-                      
+                          node = factory.newAttribute(i.getLine(), i.getCharPositionInLine(), i.getText());
+
             }
 
             }
@@ -2948,14 +2948,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
         Token i=null;
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:600:5: (i= IDENT )
             // JPQL.g:600:7: i= IDENT
             {
             i=(Token)match(input,IDENT,FOLLOW_IDENT_in_variableAccessOrTypeConstant3282); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newVariableAccessOrTypeConstant(i.getLine(), i.getCharPositionInLine(), i.getText()); 
+               node = factory.newVariableAccessOrTypeConstant(i.getLine(), i.getCharPositionInLine(), i.getText());
             }
 
             }
@@ -2981,7 +2981,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:606:5: (t= WHERE n= conditionalExpression )
             // JPQL.g:606:7: t= WHERE n= conditionalExpression
@@ -2994,8 +2994,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if (state.failed) return node;
             if ( state.backtracking==0 ) {
 
-                          node = factory.newWhereClause(t.getLine(), t.getCharPositionInLine(), n); 
-                      
+                          node = factory.newWhereClause(t.getLine(), t.getCharPositionInLine(), n);
+
             }
 
             }
@@ -3023,8 +3023,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object right = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:616:5: (n= conditionalTerm (t= OR right= conditionalTerm )* )
@@ -3050,24 +3050,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt43) {
-            	case 1 :
-            	    // JPQL.g:617:10: t= OR right= conditionalTerm
-            	    {
-            	    t=(Token)match(input,OR,FOLLOW_OR_in_conditionalExpression3383); if (state.failed) return node;
-            	    pushFollow(FOLLOW_conditionalTerm_in_conditionalExpression3389);
-            	    right=conditionalTerm();
+                case 1 :
+                    // JPQL.g:617:10: t= OR right= conditionalTerm
+                    {
+                    t=(Token)match(input,OR,FOLLOW_OR_in_conditionalExpression3383); if (state.failed) return node;
+                    pushFollow(FOLLOW_conditionalTerm_in_conditionalExpression3389);
+                    right=conditionalTerm();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	       node = factory.newOr(t.getLine(), t.getCharPositionInLine(), node, right); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                       node = factory.newOr(t.getLine(), t.getCharPositionInLine(), node, right);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop43;
+                default :
+                    break loop43;
                 }
             } while (true);
 
@@ -3097,8 +3097,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object right = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:626:5: (n= conditionalFactor (t= AND right= conditionalFactor )* )
@@ -3124,24 +3124,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt44) {
-            	case 1 :
-            	    // JPQL.g:627:10: t= AND right= conditionalFactor
-            	    {
-            	    t=(Token)match(input,AND,FOLLOW_AND_in_conditionalTerm3459); if (state.failed) return node;
-            	    pushFollow(FOLLOW_conditionalFactor_in_conditionalTerm3465);
-            	    right=conditionalFactor();
+                case 1 :
+                    // JPQL.g:627:10: t= AND right= conditionalFactor
+                    {
+                    t=(Token)match(input,AND,FOLLOW_AND_in_conditionalTerm3459); if (state.failed) return node;
+                    pushFollow(FOLLOW_conditionalFactor_in_conditionalTerm3465);
+                    right=conditionalFactor();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	       node = factory.newAnd(t.getLine(), t.getCharPositionInLine(), node, right); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                       node = factory.newAnd(t.getLine(), t.getCharPositionInLine(), node, right);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop44;
+                default :
+                    break loop44;
                 }
             } while (true);
 
@@ -3169,7 +3169,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n1 = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:634:5: ( (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] ) )
             // JPQL.g:634:7: (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] )
@@ -3202,11 +3202,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     if (state.failed) return node;
                     if ( state.backtracking==0 ) {
 
-                                    node = n1; 
+                                    node = n1;
                                     if (n != null) {
-                                        node = factory.newNot(n.getLine(), n.getCharPositionInLine(), n1); 
+                                        node = factory.newNot(n.getLine(), n.getCharPositionInLine(), n1);
                                     }
-                                
+
                     }
 
                     }
@@ -3251,7 +3251,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:648:5: ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression )
             int alt47=2;
@@ -3311,8 +3311,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:657:5: (left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node] | left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node] )
@@ -3381,7 +3381,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:663:5: (n= comparisonExpression[left] | (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left] | IS (n2= NOT )? n= isExpression[(n2!=null), left] )
             int alt51=3;
@@ -3488,7 +3488,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:670:5: (n= betweenExpression[not, left] | n= likeExpression[not, left] | n= inExpression[not, left] | n= collectionMemberExpression[not, left] )
             int alt52=4;
@@ -3600,7 +3600,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:678:5: (n= nullComparisonExpression[not, left] | n= emptyCollectionComparisonExpression[not, left] )
             int alt53=2;
@@ -3696,7 +3696,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                           node = factory.newBetween(t.getLine(), t.getCharPositionInLine(),
                                                     not, left, lowerBound, upperBound);
-                      
+
             }
 
             }
@@ -3779,7 +3779,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                                       node = factory.newIn(t.getLine(), t.getCharPositionInLine(),
                                                            not, left, n);
-                                  
+
                     }
 
                     }
@@ -3802,7 +3802,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             state._fsp--;
                             if (state.failed) return node;
                             if ( state.backtracking==0 ) {
-                               ((inExpression_scope)inExpression_stack.peek()).items.add(itemNode); 
+                               ((inExpression_scope)inExpression_stack.peek()).items.add(itemNode);
                             }
                             // JPQL.g:710:13: ( COMMA itemNode= scalarOrSubSelectExpression )*
                             loop54:
@@ -3816,24 +3816,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                                 switch (alt54) {
-                            	case 1 :
-                            	    // JPQL.g:710:15: COMMA itemNode= scalarOrSubSelectExpression
-                            	    {
-                            	    match(input,COMMA,FOLLOW_COMMA_in_inExpression4093); if (state.failed) return node;
-                            	    pushFollow(FOLLOW_scalarOrSubSelectExpression_in_inExpression4099);
-                            	    itemNode=scalarOrSubSelectExpression();
+                                case 1 :
+                                    // JPQL.g:710:15: COMMA itemNode= scalarOrSubSelectExpression
+                                    {
+                                    match(input,COMMA,FOLLOW_COMMA_in_inExpression4093); if (state.failed) return node;
+                                    pushFollow(FOLLOW_scalarOrSubSelectExpression_in_inExpression4099);
+                                    itemNode=scalarOrSubSelectExpression();
 
-                            	    state._fsp--;
-                            	    if (state.failed) return node;
-                            	    if ( state.backtracking==0 ) {
-                            	       ((inExpression_scope)inExpression_stack.peek()).items.add(itemNode); 
-                            	    }
+                                    state._fsp--;
+                                    if (state.failed) return node;
+                                    if ( state.backtracking==0 ) {
+                                       ((inExpression_scope)inExpression_stack.peek()).items.add(itemNode);
+                                    }
 
-                            	    }
-                            	    break;
+                                    }
+                                    break;
 
-                            	default :
-                            	    break loop54;
+                                default :
+                                    break loop54;
                                 }
                             } while (true);
 
@@ -3841,7 +3841,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                                               node = factory.newIn(t.getLine(), t.getCharPositionInLine(),
                                                                    not, left, ((inExpression_scope)inExpression_stack.peek()).items);
-                                          
+
                             }
 
                             }
@@ -3858,7 +3858,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                                               node = factory.newIn(t.getLine(), t.getCharPositionInLine(),
                                                                    not, left, subqueryNode);
-                                          
+
                             }
 
                             }
@@ -3931,7 +3931,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                           node = factory.newLike(t.getLine(), t.getCharPositionInLine(), not,
                                                  left, pattern, escapeChars);
-                      
+
             }
 
             }
@@ -3957,8 +3957,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object escapeClause = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:740:5: (t= ESCAPE escapeClause= scalarExpression )
@@ -3971,7 +3971,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             state._fsp--;
             if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newEscape(t.getLine(), t.getCharPositionInLine(), escapeClause); 
+               node = factory.newEscape(t.getLine(), t.getCharPositionInLine(), escapeClause);
             }
 
             }
@@ -3995,14 +3995,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
         Token t=null;
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:746:5: (t= NULL )
             // JPQL.g:746:7: t= NULL
             {
             t=(Token)match(input,NULL,FOLLOW_NULL_in_nullComparisonExpression4306); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newIsNull(t.getLine(), t.getCharPositionInLine(), not, left); 
+               node = factory.newIsNull(t.getLine(), t.getCharPositionInLine(), not, left);
             }
 
             }
@@ -4026,14 +4026,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
         Token t=null;
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:752:5: (t= EMPTY )
             // JPQL.g:752:7: t= EMPTY
             {
             t=(Token)match(input,EMPTY,FOLLOW_EMPTY_in_emptyCollectionComparisonExpression4347); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newIsEmpty(t.getLine(), t.getCharPositionInLine(), not, left); 
+               node = factory.newIsEmpty(t.getLine(), t.getCharPositionInLine(), not, left);
             }
 
             }
@@ -4059,7 +4059,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:758:5: (t= MEMBER ( OF )? n= collectionValuedPathExpression )
             // JPQL.g:758:7: t= MEMBER ( OF )? n= collectionValuedPathExpression
@@ -4089,10 +4089,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             state._fsp--;
             if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               
-                          node = factory.newMemberOf(t.getLine(), t.getCharPositionInLine(), 
-                                                     not, left, n); 
-                      
+
+                          node = factory.newMemberOf(t.getLine(), t.getCharPositionInLine(),
+                                                     not, left, n);
+
             }
 
             }
@@ -4118,7 +4118,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object subqueryNode = null;
 
 
-         
+
             node = null;
 
         try {
@@ -4134,10 +4134,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if (state.failed) return node;
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_existsExpression4449); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               
-                          node = factory.newExists(t.getLine(), t.getCharPositionInLine(), 
-                                                   not, subqueryNode); 
-                      
+
+                          node = factory.newExists(t.getLine(), t.getCharPositionInLine(),
+                                                   not, subqueryNode);
+
             }
 
             }
@@ -4168,7 +4168,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:778:5: (t1= EQUALS n= comparisonExpressionRightOperand | t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand | t3= GREATER_THAN n= comparisonExpressionRightOperand | t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand | t5= LESS_THAN n= comparisonExpressionRightOperand | t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand )
             int alt59=6;
@@ -4222,7 +4222,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     state._fsp--;
                     if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newEquals(t1.getLine(), t1.getCharPositionInLine(), left, n); 
+                       node = factory.newEquals(t1.getLine(), t1.getCharPositionInLine(), left, n);
                     }
 
                     }
@@ -4237,7 +4237,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     state._fsp--;
                     if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newNotEquals(t2.getLine(), t2.getCharPositionInLine(), left, n); 
+                       node = factory.newNotEquals(t2.getLine(), t2.getCharPositionInLine(), left, n);
                     }
 
                     }
@@ -4252,7 +4252,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     state._fsp--;
                     if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newGreaterThan(t3.getLine(), t3.getCharPositionInLine(), left, n); 
+                       node = factory.newGreaterThan(t3.getLine(), t3.getCharPositionInLine(), left, n);
                     }
 
                     }
@@ -4267,7 +4267,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     state._fsp--;
                     if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newGreaterThanEqual(t4.getLine(), t4.getCharPositionInLine(), left, n); 
+                       node = factory.newGreaterThanEqual(t4.getLine(), t4.getCharPositionInLine(), left, n);
                     }
 
                     }
@@ -4282,7 +4282,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     state._fsp--;
                     if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newLessThan(t5.getLine(), t5.getCharPositionInLine(), left, n); 
+                       node = factory.newLessThan(t5.getLine(), t5.getCharPositionInLine(), left, n);
                     }
 
                     }
@@ -4297,7 +4297,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     state._fsp--;
                     if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newLessThanEqual(t6.getLine(), t6.getCharPositionInLine(), left, n); 
+                       node = factory.newLessThanEqual(t6.getLine(), t6.getCharPositionInLine(), left, n);
                     }
 
                     }
@@ -4324,7 +4324,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:794:5: (n= arithmeticExpression | n= nonArithmeticScalarExpression | n= anyOrAllExpression )
             int alt60=3;
@@ -4394,7 +4394,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:801:5: (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET )
             int alt61=2;
@@ -4456,8 +4456,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object right = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:809:5: (n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )* )
@@ -4477,39 +4477,39 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 int alt62=3;
                 alt62 = dfa62.predict(input);
                 switch (alt62) {
-            	case 1 :
-            	    // JPQL.g:810:11: p= PLUS right= arithmeticTerm
-            	    {
-            	    p=(Token)match(input,PLUS,FOLLOW_PLUS_in_simpleArithmeticExpression4797); if (state.failed) return node;
-            	    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4803);
-            	    right=arithmeticTerm();
+                case 1 :
+                    // JPQL.g:810:11: p= PLUS right= arithmeticTerm
+                    {
+                    p=(Token)match(input,PLUS,FOLLOW_PLUS_in_simpleArithmeticExpression4797); if (state.failed) return node;
+                    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4803);
+                    right=arithmeticTerm();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	       node = factory.newPlus(p.getLine(), p.getCharPositionInLine(), node, right); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                       node = factory.newPlus(p.getLine(), p.getCharPositionInLine(), node, right);
+                    }
 
-            	    }
-            	    break;
-            	case 2 :
-            	    // JPQL.g:812:11: m= MINUS right= arithmeticTerm
-            	    {
-            	    m=(Token)match(input,MINUS,FOLLOW_MINUS_in_simpleArithmeticExpression4832); if (state.failed) return node;
-            	    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4838);
-            	    right=arithmeticTerm();
+                    }
+                    break;
+                case 2 :
+                    // JPQL.g:812:11: m= MINUS right= arithmeticTerm
+                    {
+                    m=(Token)match(input,MINUS,FOLLOW_MINUS_in_simpleArithmeticExpression4832); if (state.failed) return node;
+                    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4838);
+                    right=arithmeticTerm();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	       node = factory.newMinus(m.getLine(), m.getCharPositionInLine(), node, right); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                       node = factory.newMinus(m.getLine(), m.getCharPositionInLine(), node, right);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop62;
+                default :
+                    break loop62;
                 }
             } while (true);
 
@@ -4540,8 +4540,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object right = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:821:5: (n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )* )
@@ -4561,39 +4561,39 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 int alt63=3;
                 alt63 = dfa63.predict(input);
                 switch (alt63) {
-            	case 1 :
-            	    // JPQL.g:822:11: m= MULTIPLY right= arithmeticFactor
-            	    {
-            	    m=(Token)match(input,MULTIPLY,FOLLOW_MULTIPLY_in_arithmeticTerm4911); if (state.failed) return node;
-            	    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4917);
-            	    right=arithmeticFactor();
+                case 1 :
+                    // JPQL.g:822:11: m= MULTIPLY right= arithmeticFactor
+                    {
+                    m=(Token)match(input,MULTIPLY,FOLLOW_MULTIPLY_in_arithmeticTerm4911); if (state.failed) return node;
+                    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4917);
+                    right=arithmeticFactor();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	       node = factory.newMultiply(m.getLine(), m.getCharPositionInLine(), node, right); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                       node = factory.newMultiply(m.getLine(), m.getCharPositionInLine(), node, right);
+                    }
 
-            	    }
-            	    break;
-            	case 2 :
-            	    // JPQL.g:824:11: d= DIVIDE right= arithmeticFactor
-            	    {
-            	    d=(Token)match(input,DIVIDE,FOLLOW_DIVIDE_in_arithmeticTerm4946); if (state.failed) return node;
-            	    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4952);
-            	    right=arithmeticFactor();
+                    }
+                    break;
+                case 2 :
+                    // JPQL.g:824:11: d= DIVIDE right= arithmeticFactor
+                    {
+                    d=(Token)match(input,DIVIDE,FOLLOW_DIVIDE_in_arithmeticTerm4946); if (state.failed) return node;
+                    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4952);
+                    right=arithmeticFactor();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	       node = factory.newDivide(d.getLine(), d.getCharPositionInLine(), node, right); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                       node = factory.newDivide(d.getLine(), d.getCharPositionInLine(), node, right);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop63;
+                default :
+                    break loop63;
                 }
             } while (true);
 
@@ -4622,7 +4622,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:831:5: (p= PLUS n= arithmeticPrimary | m= MINUS n= arithmeticPrimary | n= arithmeticPrimary )
             int alt64=3;
@@ -4638,7 +4638,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     state._fsp--;
                     if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                      node = factory.newUnaryPlus(p.getLine(), p.getCharPositionInLine(), n); 
+                      node = factory.newUnaryPlus(p.getLine(), p.getCharPositionInLine(), n);
                     }
 
                     }
@@ -4653,7 +4653,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     state._fsp--;
                     if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newUnaryMinus(m.getLine(), m.getCharPositionInLine(), n); 
+                       node = factory.newUnaryMinus(m.getLine(), m.getCharPositionInLine(), n);
                     }
 
                     }
@@ -4694,7 +4694,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:840:5: ({...}?n= aggregateExpression | n= pathExprOrVariableAccess | n= inputParameter | n= caseExpression | n= functionsReturningNumerics | LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET | n= literalNumeric )
             int alt65=7;
@@ -4826,7 +4826,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-        node = null; 
+        node = null;
         try {
             // JPQL.g:851:5: (n= simpleArithmeticExpression | n= nonArithmeticScalarExpression )
             int alt66=2;
@@ -4882,7 +4882,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-        node = null; 
+        node = null;
         try {
             // JPQL.g:857:5: (n= arithmeticExpression | n= nonArithmeticScalarExpression )
             int alt67=2;
@@ -4938,7 +4938,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-        node = null; 
+        node = null;
         try {
             // JPQL.g:863:5: (n= functionsReturningDatetime | n= functionsReturningStrings | n= literalString | n= literalBoolean | n= literalTemporal | n= entityTypeExpression )
             int alt68=6;
@@ -5053,7 +5053,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:873:5: (a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET )
             int alt69=3;
@@ -5094,7 +5094,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     if (state.failed) return node;
                     match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5427); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newAll(a.getLine(), a.getCharPositionInLine(), n); 
+                       node = factory.newAll(a.getLine(), a.getCharPositionInLine(), n);
                     }
 
                     }
@@ -5111,7 +5111,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     if (state.failed) return node;
                     match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5457); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newAny(y.getLine(), y.getCharPositionInLine(), n); 
+                       node = factory.newAny(y.getLine(), y.getCharPositionInLine(), n);
                     }
 
                     }
@@ -5128,7 +5128,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     if (state.failed) return node;
                     match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression5487); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newSome(s.getLine(), s.getCharPositionInLine(), n); 
+                       node = factory.newSome(s.getLine(), s.getCharPositionInLine(), n);
                     }
 
                     }
@@ -5457,23 +5457,23 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt72) {
-            	case 1 :
-            	    // JPQL.g:908:98: w= simpleWhenClause
-            	    {
-            	    pushFollow(FOLLOW_simpleWhenClause_in_simpleCaseExpression5728);
-            	    w=simpleWhenClause();
+                case 1 :
+                    // JPQL.g:908:98: w= simpleWhenClause
+                    {
+                    pushFollow(FOLLOW_simpleWhenClause_in_simpleCaseExpression5728);
+                    w=simpleWhenClause();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	      ((simpleCaseExpression_scope)simpleCaseExpression_stack.peek()).whens.add(w);
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                      ((simpleCaseExpression_scope)simpleCaseExpression_stack.peek()).whens.add(w);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop72;
+                default :
+                    break loop72;
                 }
             } while (true);
 
@@ -5487,8 +5487,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( state.backtracking==0 ) {
 
                              node = factory.newCaseClause(a.getLine(), a.getCharPositionInLine(), c,
-                                  ((simpleCaseExpression_scope)simpleCaseExpression_stack.peek()).whens, e); 
-                         
+                                  ((simpleCaseExpression_scope)simpleCaseExpression_stack.peek()).whens, e);
+
             }
 
             }
@@ -5552,23 +5552,23 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt73) {
-            	case 1 :
-            	    // JPQL.g:923:77: w= whenClause
-            	    {
-            	    pushFollow(FOLLOW_whenClause_in_generalCaseExpression5801);
-            	    w=whenClause();
+                case 1 :
+                    // JPQL.g:923:77: w= whenClause
+                    {
+                    pushFollow(FOLLOW_whenClause_in_generalCaseExpression5801);
+                    w=whenClause();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	      ((generalCaseExpression_scope)generalCaseExpression_stack.peek()).whens.add(w);
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                      ((generalCaseExpression_scope)generalCaseExpression_stack.peek()).whens.add(w);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop73;
+                default :
+                    break loop73;
                 }
             } while (true);
 
@@ -5582,8 +5582,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( state.backtracking==0 ) {
 
                              node = factory.newCaseClause(a.getLine(), a.getCharPositionInLine(), null,
-                                  ((generalCaseExpression_scope)generalCaseExpression_stack.peek()).whens, e); 
-                         
+                                  ((generalCaseExpression_scope)generalCaseExpression_stack.peek()).whens, e);
+
             }
 
             }
@@ -5649,25 +5649,25 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt74) {
-            	case 1 :
-            	    // JPQL.g:938:107: COMMA s= scalarExpression
-            	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_coalesceExpression5872); if (state.failed) return node;
-            	    pushFollow(FOLLOW_scalarExpression_in_coalesceExpression5878);
-            	    s=scalarExpression();
+                case 1 :
+                    // JPQL.g:938:107: COMMA s= scalarExpression
+                    {
+                    match(input,COMMA,FOLLOW_COMMA_in_coalesceExpression5872); if (state.failed) return node;
+                    pushFollow(FOLLOW_scalarExpression_in_coalesceExpression5878);
+                    s=scalarExpression();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	      ((coalesceExpression_scope)coalesceExpression_stack.peek()).primaries.add(s);
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                      ((coalesceExpression_scope)coalesceExpression_stack.peek()).primaries.add(s);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    if ( cnt74 >= 1 ) break loop74;
-            	    if (state.backtracking>0) {state.failed=true; return node;}
+                default :
+                    if ( cnt74 >= 1 ) break loop74;
+                    if (state.backtracking>0) {state.failed=true; return node;}
                         EarlyExitException eee =
                             new EarlyExitException(74, input);
                         throw eee;
@@ -5678,9 +5678,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_coalesceExpression5884); if (state.failed) return node;
             if ( state.backtracking==0 ) {
 
-                             node = factory.newCoalesceClause(c.getLine(), c.getCharPositionInLine(), 
-                                  ((coalesceExpression_scope)coalesceExpression_stack.peek()).primaries); 
-                         
+                             node = factory.newCoalesceClause(c.getLine(), c.getCharPositionInLine(),
+                                  ((coalesceExpression_scope)coalesceExpression_stack.peek()).primaries);
+
             }
 
             }
@@ -5730,9 +5730,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_nullIfExpression5943); if (state.failed) return node;
             if ( state.backtracking==0 ) {
 
-                             node = factory.newNullIfClause(n.getLine(), n.getCharPositionInLine(), 
-                                  l, r); 
-                         
+                             node = factory.newNullIfClause(n.getLine(), n.getCharPositionInLine(),
+                                  l, r);
+
             }
 
             }
@@ -5849,9 +5849,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if (state.failed) return node;
             if ( state.backtracking==0 ) {
 
-                         node = factory.newWhenClause(w.getLine(), w.getCharPositionInLine(), 
-                             c, a); 
-                     
+                         node = factory.newWhenClause(w.getLine(), w.getCharPositionInLine(),
+                             c, a);
+
             }
 
             }
@@ -5898,9 +5898,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if (state.failed) return node;
             if ( state.backtracking==0 ) {
 
-                         node = factory.newWhenClause(w.getLine(), w.getCharPositionInLine(), 
-                             c, a); 
-                     
+                         node = factory.newWhenClause(w.getLine(), w.getCharPositionInLine(),
+                             c, a);
+
             }
 
             }
@@ -6009,7 +6009,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:987:5: (n= literalString | n= functionsReturningStrings | n= inputParameter | n= stateFieldPathExpression )
             int alt77=4;
@@ -6093,7 +6093,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:997:5: (n= literalNumeric | n= literalBoolean | n= literalString )
             int alt78=3;
@@ -6193,7 +6193,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Token f=null;
         Token d=null;
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1004:5: (i= INTEGER_LITERAL | l= LONG_LITERAL | f= FLOAT_LITERAL | d= DOUBLE_LITERAL )
             int alt79=4;
@@ -6232,10 +6232,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     i=(Token)match(input,INTEGER_LITERAL,FOLLOW_INTEGER_LITERAL_in_literalNumeric6326); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       
-                                  node = factory.newIntegerLiteral(i.getLine(), i.getCharPositionInLine(), 
-                                                                   Integer.valueOf(i.getText())); 
-                              
+
+                                  node = factory.newIntegerLiteral(i.getLine(), i.getCharPositionInLine(),
+                                                                   Integer.valueOf(i.getText()));
+
                     }
 
                     }
@@ -6245,13 +6245,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     l=(Token)match(input,LONG_LITERAL,FOLLOW_LONG_LITERAL_in_literalNumeric6342); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       
+
                                   String text = l.getText();
                                   // skip the tailing 'l'
                                   text = text.substring(0, text.length() - 1);
-                                  node = factory.newLongLiteral(l.getLine(), l.getCharPositionInLine(), 
-                                                                Long.valueOf(text)); 
-                              
+                                  node = factory.newLongLiteral(l.getLine(), l.getCharPositionInLine(),
+                                                                Long.valueOf(text));
+
                     }
 
                     }
@@ -6261,10 +6261,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     f=(Token)match(input,FLOAT_LITERAL,FOLLOW_FLOAT_LITERAL_in_literalNumeric6363); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       
+
                                   node = factory.newFloatLiteral(f.getLine(), f.getCharPositionInLine(),
                                                                  Float.valueOf(f.getText()));
-                              
+
                     }
 
                     }
@@ -6274,10 +6274,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     d=(Token)match(input,DOUBLE_LITERAL,FOLLOW_DOUBLE_LITERAL_in_literalNumeric6383); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       
+
                                   node = factory.newDoubleLiteral(d.getLine(), d.getCharPositionInLine(),
                                                                   Double.valueOf(d.getText()));
-                              
+
                     }
 
                     }
@@ -6304,7 +6304,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Token t=null;
         Token f=null;
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1031:5: (t= TRUE | f= FALSE )
             int alt80=2;
@@ -6329,7 +6329,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     t=(Token)match(input,TRUE,FOLLOW_TRUE_in_literalBoolean6421); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newBooleanLiteral(t.getLine(), t.getCharPositionInLine(), Boolean.TRUE); 
+                       node = factory.newBooleanLiteral(t.getLine(), t.getCharPositionInLine(), Boolean.TRUE);
                     }
 
                     }
@@ -6339,7 +6339,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     f=(Token)match(input,FALSE,FOLLOW_FALSE_in_literalBoolean6443); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newBooleanLiteral(f.getLine(), f.getCharPositionInLine(), Boolean.FALSE); 
+                       node = factory.newBooleanLiteral(f.getLine(), f.getCharPositionInLine(), Boolean.FALSE);
                     }
 
                     }
@@ -6366,7 +6366,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Token d=null;
         Token s=null;
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1039:5: (d= STRING_LITERAL_DOUBLE_QUOTED | s= STRING_LITERAL_SINGLE_QUOTED )
             int alt81=2;
@@ -6391,10 +6391,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     d=(Token)match(input,STRING_LITERAL_DOUBLE_QUOTED,FOLLOW_STRING_LITERAL_DOUBLE_QUOTED_in_literalString6482); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       
-                                  node = factory.newStringLiteral(d.getLine(), d.getCharPositionInLine(), 
-                                                                  convertStringLiteral(d.getText())); 
-                              
+
+                                  node = factory.newStringLiteral(d.getLine(), d.getCharPositionInLine(),
+                                                                  convertStringLiteral(d.getText()));
+
                     }
 
                     }
@@ -6404,10 +6404,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     s=(Token)match(input,STRING_LITERAL_SINGLE_QUOTED,FOLLOW_STRING_LITERAL_SINGLE_QUOTED_in_literalString6503); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       
-                                  node = factory.newStringLiteral(s.getLine(), s.getCharPositionInLine(), 
-                                                                  convertStringLiteral(s.getText())); 
-                              
+
+                                  node = factory.newStringLiteral(s.getLine(), s.getCharPositionInLine(),
+                                                                  convertStringLiteral(s.getText()));
+
                     }
 
                     }
@@ -6433,7 +6433,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
         Token d=null;
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1053:5: (d= DATE_LITERAL | d= TIME_LITERAL | d= TIMESTAMP_LITERAL )
             int alt82=3;
@@ -6467,7 +6467,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     d=(Token)match(input,DATE_LITERAL,FOLLOW_DATE_LITERAL_in_literalTemporal6543); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                      node = factory.newDateLiteral(d.getLine(), d.getCharPositionInLine(), d.getText()); 
+                      node = factory.newDateLiteral(d.getLine(), d.getCharPositionInLine(), d.getText());
                     }
 
                     }
@@ -6477,7 +6477,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     d=(Token)match(input,TIME_LITERAL,FOLLOW_TIME_LITERAL_in_literalTemporal6557); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                      node = factory.newTimeLiteral(d.getLine(), d.getCharPositionInLine(), d.getText()); 
+                      node = factory.newTimeLiteral(d.getLine(), d.getCharPositionInLine(), d.getText());
                     }
 
                     }
@@ -6487,7 +6487,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     d=(Token)match(input,TIMESTAMP_LITERAL,FOLLOW_TIMESTAMP_LITERAL_in_literalTemporal6571); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                      node = factory.newTimeStampLiteral(d.getLine(), d.getCharPositionInLine(), d.getText()); 
+                      node = factory.newTimeStampLiteral(d.getLine(), d.getCharPositionInLine(), d.getText());
                     }
 
                     }
@@ -6514,7 +6514,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Token p=null;
         Token n=null;
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1060:5: (p= POSITIONAL_PARAM | n= NAMED_PARAM )
             int alt83=2;
@@ -6539,11 +6539,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     p=(Token)match(input,POSITIONAL_PARAM,FOLLOW_POSITIONAL_PARAM_in_inputParameter6601); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       
+
                                   // skip the leading ?
                                   String text = p.getText().substring(1);
-                                  node = factory.newPositionalParameter(p.getLine(), p.getCharPositionInLine(), text); 
-                              
+                                  node = factory.newPositionalParameter(p.getLine(), p.getCharPositionInLine(), text);
+
                     }
 
                     }
@@ -6553,11 +6553,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     n=(Token)match(input,NAMED_PARAM,FOLLOW_NAMED_PARAM_in_inputParameter6621); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       
+
                                   // skip the leading :
                                   String text = n.getText().substring(1);
-                                  node = factory.newNamedParameter(n.getLine(), n.getCharPositionInLine(), text); 
-                              
+                                  node = factory.newNamedParameter(n.getLine(), n.getCharPositionInLine(), text);
+
                     }
 
                     }
@@ -6584,7 +6584,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1076:5: (n= abs | n= length | n= mod | n= sqrt | n= locate | n= size | n= index | n= func )
             int alt84=8;
@@ -6773,7 +6773,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Token t=null;
         Token ts=null;
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1088:5: (d= CURRENT_DATE | t= CURRENT_TIME | ts= CURRENT_TIMESTAMP )
             int alt85=3;
@@ -6807,7 +6807,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     d=(Token)match(input,CURRENT_DATE,FOLLOW_CURRENT_DATE_in_functionsReturningDatetime6789); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newCurrentDate(d.getLine(), d.getCharPositionInLine()); 
+                       node = factory.newCurrentDate(d.getLine(), d.getCharPositionInLine());
                     }
 
                     }
@@ -6817,7 +6817,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     t=(Token)match(input,CURRENT_TIME,FOLLOW_CURRENT_TIME_in_functionsReturningDatetime6810); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newCurrentTime(t.getLine(), t.getCharPositionInLine()); 
+                       node = factory.newCurrentTime(t.getLine(), t.getCharPositionInLine());
                     }
 
                     }
@@ -6827,7 +6827,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     ts=(Token)match(input,CURRENT_TIMESTAMP,FOLLOW_CURRENT_TIMESTAMP_in_functionsReturningDatetime6830); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newCurrentTimestamp(ts.getLine(), ts.getCharPositionInLine()); 
+                       node = factory.newCurrentTimestamp(ts.getLine(), ts.getCharPositionInLine());
                     }
 
                     }
@@ -6854,7 +6854,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1098:5: (n= concat | n= substring | n= trim | n= upper | n= lower )
             int alt86=5;
@@ -6994,7 +6994,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object arg = null;
 
 
-         
+
             node = null;
             ((concat_scope)concat_stack.peek()).items = new ArrayList();
 
@@ -7025,25 +7025,25 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt87) {
-            	case 1 :
-            	    // JPQL.g:1116:76: COMMA arg= scalarExpression
-            	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_concat6992); if (state.failed) return node;
-            	    pushFollow(FOLLOW_scalarExpression_in_concat6998);
-            	    arg=scalarExpression();
+                case 1 :
+                    // JPQL.g:1116:76: COMMA arg= scalarExpression
+                    {
+                    match(input,COMMA,FOLLOW_COMMA_in_concat6992); if (state.failed) return node;
+                    pushFollow(FOLLOW_scalarExpression_in_concat6998);
+                    arg=scalarExpression();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	      ((concat_scope)concat_stack.peek()).items.add(arg);
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                      ((concat_scope)concat_stack.peek()).items.add(arg);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    if ( cnt87 >= 1 ) break loop87;
-            	    if (state.backtracking>0) {state.failed=true; return node;}
+                default :
+                    if ( cnt87 >= 1 ) break loop87;
+                    if (state.backtracking>0) {state.failed=true; return node;}
                         EarlyExitException eee =
                             new EarlyExitException(87, input);
                         throw eee;
@@ -7053,7 +7053,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_concat7012); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newConcat(c.getLine(), c.getCharPositionInLine(), ((concat_scope)concat_stack.peek()).items); 
+               node = factory.newConcat(c.getLine(), c.getCharPositionInLine(), ((concat_scope)concat_stack.peek()).items);
             }
 
             }
@@ -7084,7 +7084,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object lengthNode = null;
 
 
-         
+
             node = null;
             lengthNode = null;
 
@@ -7130,15 +7130,15 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_substring7122); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               
+
                           if (lengthNode != null){
-                              node = factory.newSubstring(s.getLine(), s.getCharPositionInLine(), 
-                                                      string, start, lengthNode); 
+                              node = factory.newSubstring(s.getLine(), s.getCharPositionInLine(),
+                                                      string, start, lengthNode);
                           } else {
-                              node = factory.newSubstring(s.getLine(), s.getCharPositionInLine(), 
-                                                      string, start, null); 
+                              node = factory.newSubstring(s.getLine(), s.getCharPositionInLine(),
+                                                      string, start, null);
                           }
-                      
+
             }
 
             }
@@ -7168,7 +7168,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         
+
             node = null;
             trimSpecIndicator = TrimSpecification.BOTH;
 
@@ -7210,9 +7210,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_trim7220); if (state.failed) return node;
             if ( state.backtracking==0 ) {
 
-                          node = factory.newTrim(t.getLine(), t.getCharPositionInLine(), 
-                                                 trimSpecIndicator, trimCharNode, n); 
-                      
+                          node = factory.newTrim(t.getLine(), t.getCharPositionInLine(),
+                                                 trimSpecIndicator, trimCharNode, n);
+
             }
 
             }
@@ -7234,7 +7234,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     public final TrimSpecification trimSpec() throws RecognitionException {
         TrimSpecification trimSpec = null;
 
-         trimSpec = TrimSpecification.BOTH; 
+         trimSpec = TrimSpecification.BOTH;
         try {
             // JPQL.g:1161:5: ( LEADING | TRAILING | BOTH | )
             int alt90=4;
@@ -7277,7 +7277,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     match(input,LEADING,FOLLOW_LEADING_in_trimSpec7256); if (state.failed) return trimSpec;
                     if ( state.backtracking==0 ) {
-                       trimSpec = TrimSpecification.LEADING; 
+                       trimSpec = TrimSpecification.LEADING;
                     }
 
                     }
@@ -7287,7 +7287,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     match(input,TRAILING,FOLLOW_TRAILING_in_trimSpec7274); if (state.failed) return trimSpec;
                     if ( state.backtracking==0 ) {
-                       trimSpec = TrimSpecification.TRAILING; 
+                       trimSpec = TrimSpecification.TRAILING;
                     }
 
                     }
@@ -7297,13 +7297,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     match(input,BOTH,FOLLOW_BOTH_in_trimSpec7292); if (state.failed) return trimSpec;
                     if ( state.backtracking==0 ) {
-                       trimSpec = TrimSpecification.BOTH; 
+                       trimSpec = TrimSpecification.BOTH;
                     }
 
                     }
                     break;
                 case 4 :
-                    // JPQL.g:1168:5: 
+                    // JPQL.g:1168:5:
                     {
                     }
                     break;
@@ -7329,7 +7329,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1173:5: (n= literalString | n= inputParameter | )
             int alt91=3;
@@ -7389,7 +7389,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1176:5: 
+                    // JPQL.g:1176:5:
                     {
                     }
                     break;
@@ -7416,7 +7416,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1180:5: (u= UPPER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET )
             // JPQL.g:1180:7: u= UPPER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET
@@ -7430,7 +7430,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if (state.failed) return node;
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_upper7419); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newUpper(u.getLine(), u.getCharPositionInLine(), n); 
+               node = factory.newUpper(u.getLine(), u.getCharPositionInLine(), n);
             }
 
             }
@@ -7456,7 +7456,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1186:5: (l= LOWER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET )
             // JPQL.g:1186:7: l= LOWER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET
@@ -7470,7 +7470,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if (state.failed) return node;
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_lower7467); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newLower(l.getLine(), l.getCharPositionInLine(), n); 
+               node = factory.newLower(l.getLine(), l.getCharPositionInLine(), n);
             }
 
             }
@@ -7496,7 +7496,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1193:5: (a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
             // JPQL.g:1193:7: a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
@@ -7510,7 +7510,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if (state.failed) return node;
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_abs7516); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newAbs(a.getLine(), a.getCharPositionInLine(), n); 
+               node = factory.newAbs(a.getLine(), a.getCharPositionInLine(), n);
             }
 
             }
@@ -7536,7 +7536,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1199:5: (l= LENGTH LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET )
             // JPQL.g:1199:7: l= LENGTH LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET
@@ -7550,7 +7550,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if (state.failed) return node;
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_length7564); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newLength(l.getLine(), l.getCharPositionInLine(), n); 
+               node = factory.newLength(l.getLine(), l.getCharPositionInLine(), n);
             }
 
             }
@@ -7580,8 +7580,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object startPos = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:1207:5: (l= LOCATE LEFT_ROUND_BRACKET pattern= scalarExpression COMMA n= scalarExpression ( COMMA startPos= scalarExpression )? RIGHT_ROUND_BRACKET )
@@ -7625,10 +7625,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_locate7666); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               
-                          node = factory.newLocate(l.getLine(), l.getCharPositionInLine(), 
-                                                   pattern, n, startPos); 
-                      
+
+                          node = factory.newLocate(l.getLine(), l.getCharPositionInLine(),
+                                                   pattern, n, startPos);
+
             }
 
             }
@@ -7654,7 +7654,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1220:5: (s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET )
             // JPQL.g:1220:7: s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET
@@ -7696,8 +7696,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object right = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:1229:5: (m= MOD LEFT_ROUND_BRACKET left= scalarExpression COMMA right= scalarExpression RIGHT_ROUND_BRACKET )
@@ -7718,7 +7718,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if (state.failed) return node;
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_mod7804); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newMod(m.getLine(), m.getCharPositionInLine(), left, right); 
+               node = factory.newMod(m.getLine(), m.getCharPositionInLine(), left, right);
             }
 
             }
@@ -7744,7 +7744,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1238:5: (s= SQRT LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET )
             // JPQL.g:1238:7: s= SQRT LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET
@@ -7758,7 +7758,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if (state.failed) return node;
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_sqrt7861); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newSqrt(s.getLine(), s.getCharPositionInLine(), n); 
+               node = factory.newSqrt(s.getLine(), s.getCharPositionInLine(), n);
             }
 
             }
@@ -7784,7 +7784,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1245:5: (s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
             // JPQL.g:1245:7: s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
@@ -7798,7 +7798,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if (state.failed) return node;
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_index7913); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               node = factory.newIndex(s.getLine(), s.getCharPositionInLine(), n); 
+               node = factory.newIndex(s.getLine(), s.getCharPositionInLine(), n);
             }
 
             }
@@ -7831,8 +7831,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         
-            node = null; 
+
+            node = null;
             ((func_scope)func_stack.peek()).exprs = new ArrayList();
 
         try {
@@ -7854,26 +7854,26 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt93) {
-            	case 1 :
-            	    // JPQL.g:1260:8: COMMA n= newValue
-            	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_func7978); if (state.failed) return node;
-            	    pushFollow(FOLLOW_newValue_in_func7984);
-            	    n=newValue();
+                case 1 :
+                    // JPQL.g:1260:8: COMMA n= newValue
+                    {
+                    match(input,COMMA,FOLLOW_COMMA_in_func7978); if (state.failed) return node;
+                    pushFollow(FOLLOW_newValue_in_func7984);
+                    n=newValue();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
 
-            	                  ((func_scope)func_stack.peek()).exprs.add(n);
-            	                
-            	    }
+                                  ((func_scope)func_stack.peek()).exprs.add(n);
 
-            	    }
-            	    break;
+                    }
 
-            	default :
-            	    break loop93;
+                    }
+                    break;
+
+                default :
+                    break loop93;
                 }
             } while (true);
 
@@ -7913,8 +7913,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object having = null;
 
 
-         
-            node = null; 
+
+            node = null;
 
         try {
             // JPQL.g:1273:5: (select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? )
@@ -7997,10 +7997,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
 
             if ( state.backtracking==0 ) {
-               
-                          node = factory.newSubquery(0, 0, select, from, 
-                                                     where, groupBy, having); 
-                      
+
+                          node = factory.newSubquery(0, 0, select, from,
+                                                     where, groupBy, having);
+
             }
 
             }
@@ -8032,8 +8032,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         
-            node = null; 
+
+            node = null;
             ((simpleSelectClause_scope)simpleSelectClause_stack.peek()).distinct = false;
 
         try {
@@ -8050,7 +8050,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     match(input,DISTINCT,FOLLOW_DISTINCT_in_simpleSelectClause8161); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       ((simpleSelectClause_scope)simpleSelectClause_stack.peek()).distinct = true; 
+                       ((simpleSelectClause_scope)simpleSelectClause_stack.peek()).distinct = true;
                     }
 
                     }
@@ -8067,9 +8067,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                           List exprs = new ArrayList();
                           exprs.add(n);
-                          node = factory.newSelectClause(s.getLine(), s.getCharPositionInLine(), 
+                          node = factory.newSelectClause(s.getLine(), s.getCharPositionInLine(),
                                                          ((simpleSelectClause_scope)simpleSelectClause_stack.peek()).distinct, exprs);
-                      
+
             }
 
             }
@@ -8095,7 +8095,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1304:5: (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant )
             int alt98=3;
@@ -8172,8 +8172,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object c = null;
 
 
-         
-            node = null; 
+
+            node = null;
             ((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls = new ArrayList();
 
         try {
@@ -8201,40 +8201,40 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt99) {
-            	case 1 :
-            	    // JPQL.g:1320:13: COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls]
-            	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_subqueryFromClause8311); if (state.failed) return node;
-            	    pushFollow(FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause8330);
-            	    subselectIdentificationVariableDeclaration(((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls);
+                case 1 :
+                    // JPQL.g:1320:13: COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls]
+                    {
+                    match(input,COMMA,FOLLOW_COMMA_in_subqueryFromClause8311); if (state.failed) return node;
+                    pushFollow(FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause8330);
+                    subselectIdentificationVariableDeclaration(((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls);
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
+                    state._fsp--;
+                    if (state.failed) return node;
 
-            	    }
-            	    break;
-            	case 2 :
-            	    // JPQL.g:1322:19: c= collectionMemberDeclaration
-            	    {
-            	    pushFollow(FOLLOW_collectionMemberDeclaration_in_subqueryFromClause8356);
-            	    c=collectionMemberDeclaration();
+                    }
+                    break;
+                case 2 :
+                    // JPQL.g:1322:19: c= collectionMemberDeclaration
+                    {
+                    pushFollow(FOLLOW_collectionMemberDeclaration_in_subqueryFromClause8356);
+                    c=collectionMemberDeclaration();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	      ((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls.add(c);
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                      ((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls.add(c);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop99;
+                default :
+                    break loop99;
                 }
             } while (true);
 
             if ( state.backtracking==0 ) {
-               node = factory.newFromClause(f.getLine(), f.getCharPositionInLine(), ((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls); 
+               node = factory.newFromClause(f.getLine(), f.getCharPositionInLine(), ((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls);
             }
 
             }
@@ -8259,7 +8259,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         Object node = null; 
+         Object node = null;
         try {
             // JPQL.g:1329:5: ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT (node= join )* | n= collectionMemberDeclaration )
             int alt102=3;
@@ -8305,10 +8305,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     i=(Token)match(input,IDENT,FOLLOW_IDENT_in_subselectIdentificationVariableDeclaration8425); if (state.failed) return ;
 
                     if ( state.backtracking==0 ) {
-                       
-                            varDecls.add(factory.newVariableDecl(i.getLine(), i.getCharPositionInLine(), 
-                                                                n, i.getText())); 
-                              
+
+                            varDecls.add(factory.newVariableDecl(i.getLine(), i.getCharPositionInLine(),
+                                                                n, i.getText()));
+
                     }
 
                     // JPQL.g:1330:51: (node= join )*
@@ -8317,23 +8317,23 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         int alt101=2;
                         alt101 = dfa101.predict(input);
                         switch (alt101) {
-                    	case 1 :
-                    	    // JPQL.g:1330:52: node= join
-                    	    {
-                    	    pushFollow(FOLLOW_join_in_subselectIdentificationVariableDeclaration8428);
-                    	    node = join();
+                        case 1 :
+                            // JPQL.g:1330:52: node= join
+                            {
+                            pushFollow(FOLLOW_join_in_subselectIdentificationVariableDeclaration8428);
+                            node = join();
 
-                    	    state._fsp--;
-                    	    if (state.failed) return ;
-                    	    if ( state.backtracking==0 ) {
-                    	       varDecls.add(node); 
-                    	    }
+                            state._fsp--;
+                            if (state.failed) return ;
+                            if ( state.backtracking==0 ) {
+                               varDecls.add(node);
+                            }
 
-                    	    }
-                    	    break;
+                            }
+                            break;
 
-                    	default :
-                    	    break loop101;
+                        default :
+                            break loop101;
                         }
                     } while (true);
 
@@ -8348,7 +8348,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     state._fsp--;
                     if (state.failed) return ;
                     if ( state.backtracking==0 ) {
-                       varDecls.add(n); 
+                       varDecls.add(n);
                     }
 
                     }
@@ -8382,8 +8382,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         
-            node = null; 
+
+            node = null;
             ((orderByClause_scope)orderByClause_stack.peek()).items = new ArrayList();
 
         try {
@@ -8393,7 +8393,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             o=(Token)match(input,ORDER,FOLLOW_ORDER_in_orderByClause8488); if (state.failed) return node;
             match(input,BY,FOLLOW_BY_in_orderByClause8490); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               setAggregatesAllowed(true); 
+               setAggregatesAllowed(true);
             }
             pushFollow(FOLLOW_orderByItem_in_orderByClause8507);
             n=orderByItem();
@@ -8401,7 +8401,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             state._fsp--;
             if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               ((orderByClause_scope)orderByClause_stack.peek()).items.add(n); 
+               ((orderByClause_scope)orderByClause_stack.peek()).items.add(n);
             }
             // JPQL.g:1348:9: ( COMMA n= orderByItem )*
             loop103:
@@ -8415,32 +8415,32 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt103) {
-            	case 1 :
-            	    // JPQL.g:1348:10: COMMA n= orderByItem
-            	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_orderByClause8522); if (state.failed) return node;
-            	    pushFollow(FOLLOW_orderByItem_in_orderByClause8528);
-            	    n=orderByItem();
+                case 1 :
+                    // JPQL.g:1348:10: COMMA n= orderByItem
+                    {
+                    match(input,COMMA,FOLLOW_COMMA_in_orderByClause8522); if (state.failed) return node;
+                    pushFollow(FOLLOW_orderByItem_in_orderByClause8528);
+                    n=orderByItem();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	       ((orderByClause_scope)orderByClause_stack.peek()).items.add(n); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                       ((orderByClause_scope)orderByClause_stack.peek()).items.add(n);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop103;
+                default :
+                    break loop103;
                 }
             } while (true);
 
             if ( state.backtracking==0 ) {
-               
+
                           setAggregatesAllowed(false);
                           node = factory.newOrderByClause(o.getLine(), o.getCharPositionInLine(), ((orderByClause_scope)orderByClause_stack.peek()).items);
-                      
+
             }
 
             }
@@ -8468,7 +8468,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1357:5: (n= scalarExpression (a= ASC | d= DESC | ) )
             // JPQL.g:1357:7: n= scalarExpression (a= ASC | d= DESC | )
@@ -8511,7 +8511,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     a=(Token)match(input,ASC,FOLLOW_ASC_in_orderByItem8588); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newAscOrdering(a.getLine(), a.getCharPositionInLine(), n); 
+                       node = factory.newAscOrdering(a.getLine(), a.getCharPositionInLine(), n);
                     }
 
                     }
@@ -8521,16 +8521,16 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     {
                     d=(Token)match(input,DESC,FOLLOW_DESC_in_orderByItem8617); if (state.failed) return node;
                     if ( state.backtracking==0 ) {
-                       node = factory.newDescOrdering(d.getLine(), d.getCharPositionInLine(), n); 
+                       node = factory.newDescOrdering(d.getLine(), d.getCharPositionInLine(), n);
                     }
 
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1363:13: 
+                    // JPQL.g:1363:13:
                     {
                     if ( state.backtracking==0 ) {
-                       node = factory.newAscOrdering(0, 0, n); 
+                       node = factory.newAscOrdering(0, 0, n);
                     }
 
                     }
@@ -8568,8 +8568,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         
-            node = null; 
+
+            node = null;
             ((groupByClause_scope)groupByClause_stack.peek()).items = new ArrayList();
 
         try {
@@ -8584,7 +8584,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             state._fsp--;
             if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               ((groupByClause_scope)groupByClause_stack.peek()).items.add(n); 
+               ((groupByClause_scope)groupByClause_stack.peek()).items.add(n);
             }
             // JPQL.g:1377:9: ( COMMA n= scalarExpression )*
             loop105:
@@ -8598,29 +8598,29 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
                 switch (alt105) {
-            	case 1 :
-            	    // JPQL.g:1377:10: COMMA n= scalarExpression
-            	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_groupByClause8727); if (state.failed) return node;
-            	    pushFollow(FOLLOW_scalarExpression_in_groupByClause8733);
-            	    n=scalarExpression();
+                case 1 :
+                    // JPQL.g:1377:10: COMMA n= scalarExpression
+                    {
+                    match(input,COMMA,FOLLOW_COMMA_in_groupByClause8727); if (state.failed) return node;
+                    pushFollow(FOLLOW_scalarExpression_in_groupByClause8733);
+                    n=scalarExpression();
 
-            	    state._fsp--;
-            	    if (state.failed) return node;
-            	    if ( state.backtracking==0 ) {
-            	       ((groupByClause_scope)groupByClause_stack.peek()).items.add(n); 
-            	    }
+                    state._fsp--;
+                    if (state.failed) return node;
+                    if ( state.backtracking==0 ) {
+                       ((groupByClause_scope)groupByClause_stack.peek()).items.add(n);
+                    }
 
-            	    }
-            	    break;
+                    }
+                    break;
 
-            	default :
-            	    break loop105;
+                default :
+                    break loop105;
                 }
             } while (true);
 
             if ( state.backtracking==0 ) {
-               node = factory.newGroupByClause(g.getLine(), g.getCharPositionInLine(), ((groupByClause_scope)groupByClause_stack.peek()).items); 
+               node = factory.newGroupByClause(g.getLine(), g.getCharPositionInLine(), ((groupByClause_scope)groupByClause_stack.peek()).items);
             }
 
             }
@@ -8647,14 +8647,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         Object n = null;
 
 
-         node = null; 
+         node = null;
         try {
             // JPQL.g:1384:5: (h= HAVING n= conditionalExpression )
             // JPQL.g:1384:7: h= HAVING n= conditionalExpression
             {
             h=(Token)match(input,HAVING,FOLLOW_HAVING_in_havingClause8778); if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               setAggregatesAllowed(true); 
+               setAggregatesAllowed(true);
             }
             pushFollow(FOLLOW_conditionalExpression_in_havingClause8795);
             n=conditionalExpression();
@@ -8662,10 +8662,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             state._fsp--;
             if (state.failed) return node;
             if ( state.backtracking==0 ) {
-               
-                          setAggregatesAllowed(false); 
+
+                          setAggregatesAllowed(false);
                           node = factory.newHavingClause(h.getLine(), h.getCharPositionInLine(), n);
-                      
+
             }
 
             }
@@ -8682,7 +8682,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     // $ANTLR end "havingClause"
 
     // $ANTLR start synpred1_JPQL
-    public final void synpred1_JPQL_fragment() throws RecognitionException {   
+    public final void synpred1_JPQL_fragment() throws RecognitionException {
         // JPQL.g:648:7: ( LEFT_ROUND_BRACKET conditionalExpression )
         // JPQL.g:648:8: LEFT_ROUND_BRACKET conditionalExpression
         {
@@ -9422,12 +9422,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
-        	int _s = s;
+            int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA19_53 = input.LA(1);
 
-                         
+
                         int index19_53 = input.index();
                         input.rewind();
                         s = -1;
@@ -9435,14 +9435,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_53);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA19_54 = input.LA(1);
 
-                         
+
                         int index19_54 = input.index();
                         input.rewind();
                         s = -1;
@@ -9450,14 +9450,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_54);
                         if ( s>=0 ) return s;
                         break;
-                    case 2 : 
+                    case 2 :
                         int LA19_55 = input.LA(1);
 
-                         
+
                         int index19_55 = input.index();
                         input.rewind();
                         s = -1;
@@ -9465,14 +9465,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_55);
                         if ( s>=0 ) return s;
                         break;
-                    case 3 : 
+                    case 3 :
                         int LA19_56 = input.LA(1);
 
-                         
+
                         int index19_56 = input.index();
                         input.rewind();
                         s = -1;
@@ -9480,14 +9480,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_56);
                         if ( s>=0 ) return s;
                         break;
-                    case 4 : 
+                    case 4 :
                         int LA19_57 = input.LA(1);
 
-                         
+
                         int index19_57 = input.index();
                         input.rewind();
                         s = -1;
@@ -9495,14 +9495,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_57);
                         if ( s>=0 ) return s;
                         break;
-                    case 5 : 
+                    case 5 :
                         int LA19_58 = input.LA(1);
 
-                         
+
                         int index19_58 = input.index();
                         input.rewind();
                         s = -1;
@@ -9510,14 +9510,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_58);
                         if ( s>=0 ) return s;
                         break;
-                    case 6 : 
+                    case 6 :
                         int LA19_59 = input.LA(1);
 
-                         
+
                         int index19_59 = input.index();
                         input.rewind();
                         s = -1;
@@ -9525,14 +9525,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_59);
                         if ( s>=0 ) return s;
                         break;
-                    case 7 : 
+                    case 7 :
                         int LA19_60 = input.LA(1);
 
-                         
+
                         int index19_60 = input.index();
                         input.rewind();
                         s = -1;
@@ -9540,14 +9540,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_60);
                         if ( s>=0 ) return s;
                         break;
-                    case 8 : 
+                    case 8 :
                         int LA19_61 = input.LA(1);
 
-                         
+
                         int index19_61 = input.index();
                         input.rewind();
                         s = -1;
@@ -9555,14 +9555,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_61);
                         if ( s>=0 ) return s;
                         break;
-                    case 9 : 
+                    case 9 :
                         int LA19_62 = input.LA(1);
 
-                         
+
                         int index19_62 = input.index();
                         input.rewind();
                         s = -1;
@@ -9570,14 +9570,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_62);
                         if ( s>=0 ) return s;
                         break;
-                    case 10 : 
+                    case 10 :
                         int LA19_63 = input.LA(1);
 
-                         
+
                         int index19_63 = input.index();
                         input.rewind();
                         s = -1;
@@ -9585,14 +9585,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_63);
                         if ( s>=0 ) return s;
                         break;
-                    case 11 : 
+                    case 11 :
                         int LA19_64 = input.LA(1);
 
-                         
+
                         int index19_64 = input.index();
                         input.rewind();
                         s = -1;
@@ -9600,14 +9600,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_64);
                         if ( s>=0 ) return s;
                         break;
-                    case 12 : 
+                    case 12 :
                         int LA19_65 = input.LA(1);
 
-                         
+
                         int index19_65 = input.index();
                         input.rewind();
                         s = -1;
@@ -9615,14 +9615,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_65);
                         if ( s>=0 ) return s;
                         break;
-                    case 13 : 
+                    case 13 :
                         int LA19_66 = input.LA(1);
 
-                         
+
                         int index19_66 = input.index();
                         input.rewind();
                         s = -1;
@@ -9630,14 +9630,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_66);
                         if ( s>=0 ) return s;
                         break;
-                    case 14 : 
+                    case 14 :
                         int LA19_67 = input.LA(1);
 
-                         
+
                         int index19_67 = input.index();
                         input.rewind();
                         s = -1;
@@ -9645,14 +9645,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_67);
                         if ( s>=0 ) return s;
                         break;
-                    case 15 : 
+                    case 15 :
                         int LA19_68 = input.LA(1);
 
-                         
+
                         int index19_68 = input.index();
                         input.rewind();
                         s = -1;
@@ -9660,14 +9660,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_68);
                         if ( s>=0 ) return s;
                         break;
-                    case 16 : 
+                    case 16 :
                         int LA19_69 = input.LA(1);
 
-                         
+
                         int index19_69 = input.index();
                         input.rewind();
                         s = -1;
@@ -9675,14 +9675,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_69);
                         if ( s>=0 ) return s;
                         break;
-                    case 17 : 
+                    case 17 :
                         int LA19_70 = input.LA(1);
 
-                         
+
                         int index19_70 = input.index();
                         input.rewind();
                         s = -1;
@@ -9690,14 +9690,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_70);
                         if ( s>=0 ) return s;
                         break;
-                    case 18 : 
+                    case 18 :
                         int LA19_71 = input.LA(1);
 
-                         
+
                         int index19_71 = input.index();
                         input.rewind();
                         s = -1;
@@ -9705,14 +9705,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_71);
                         if ( s>=0 ) return s;
                         break;
-                    case 19 : 
+                    case 19 :
                         int LA19_72 = input.LA(1);
 
-                         
+
                         int index19_72 = input.index();
                         input.rewind();
                         s = -1;
@@ -9720,14 +9720,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_72);
                         if ( s>=0 ) return s;
                         break;
-                    case 20 : 
+                    case 20 :
                         int LA19_73 = input.LA(1);
 
-                         
+
                         int index19_73 = input.index();
                         input.rewind();
                         s = -1;
@@ -9735,14 +9735,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_73);
                         if ( s>=0 ) return s;
                         break;
-                    case 21 : 
+                    case 21 :
                         int LA19_74 = input.LA(1);
 
-                         
+
                         int index19_74 = input.index();
                         input.rewind();
                         s = -1;
@@ -9750,14 +9750,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_74);
                         if ( s>=0 ) return s;
                         break;
-                    case 22 : 
+                    case 22 :
                         int LA19_75 = input.LA(1);
 
-                         
+
                         int index19_75 = input.index();
                         input.rewind();
                         s = -1;
@@ -9765,14 +9765,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_75);
                         if ( s>=0 ) return s;
                         break;
-                    case 23 : 
+                    case 23 :
                         int LA19_76 = input.LA(1);
 
-                         
+
                         int index19_76 = input.index();
                         input.rewind();
                         s = -1;
@@ -9780,14 +9780,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_76);
                         if ( s>=0 ) return s;
                         break;
-                    case 24 : 
+                    case 24 :
                         int LA19_77 = input.LA(1);
 
-                         
+
                         int index19_77 = input.index();
                         input.rewind();
                         s = -1;
@@ -9795,14 +9795,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_77);
                         if ( s>=0 ) return s;
                         break;
-                    case 25 : 
+                    case 25 :
                         int LA19_78 = input.LA(1);
 
-                         
+
                         int index19_78 = input.index();
                         input.rewind();
                         s = -1;
@@ -9810,14 +9810,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_78);
                         if ( s>=0 ) return s;
                         break;
-                    case 26 : 
+                    case 26 :
                         int LA19_79 = input.LA(1);
 
-                         
+
                         int index19_79 = input.index();
                         input.rewind();
                         s = -1;
@@ -9825,14 +9825,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_79);
                         if ( s>=0 ) return s;
                         break;
-                    case 27 : 
+                    case 27 :
                         int LA19_80 = input.LA(1);
 
-                         
+
                         int index19_80 = input.index();
                         input.rewind();
                         s = -1;
@@ -9840,14 +9840,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_80);
                         if ( s>=0 ) return s;
                         break;
-                    case 28 : 
+                    case 28 :
                         int LA19_81 = input.LA(1);
 
-                         
+
                         int index19_81 = input.index();
                         input.rewind();
                         s = -1;
@@ -9855,14 +9855,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_81);
                         if ( s>=0 ) return s;
                         break;
-                    case 29 : 
+                    case 29 :
                         int LA19_82 = input.LA(1);
 
-                         
+
                         int index19_82 = input.index();
                         input.rewind();
                         s = -1;
@@ -9870,14 +9870,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_82);
                         if ( s>=0 ) return s;
                         break;
-                    case 30 : 
+                    case 30 :
                         int LA19_83 = input.LA(1);
 
-                         
+
                         int index19_83 = input.index();
                         input.rewind();
                         s = -1;
@@ -9885,14 +9885,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_83);
                         if ( s>=0 ) return s;
                         break;
-                    case 31 : 
+                    case 31 :
                         int LA19_84 = input.LA(1);
 
-                         
+
                         int index19_84 = input.index();
                         input.rewind();
                         s = -1;
@@ -9900,14 +9900,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_84);
                         if ( s>=0 ) return s;
                         break;
-                    case 32 : 
+                    case 32 :
                         int LA19_85 = input.LA(1);
 
-                         
+
                         int index19_85 = input.index();
                         input.rewind();
                         s = -1;
@@ -9915,14 +9915,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_85);
                         if ( s>=0 ) return s;
                         break;
-                    case 33 : 
+                    case 33 :
                         int LA19_86 = input.LA(1);
 
-                         
+
                         int index19_86 = input.index();
                         input.rewind();
                         s = -1;
@@ -9930,14 +9930,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_86);
                         if ( s>=0 ) return s;
                         break;
-                    case 34 : 
+                    case 34 :
                         int LA19_87 = input.LA(1);
 
-                         
+
                         int index19_87 = input.index();
                         input.rewind();
                         s = -1;
@@ -9945,14 +9945,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_87);
                         if ( s>=0 ) return s;
                         break;
-                    case 35 : 
+                    case 35 :
                         int LA19_88 = input.LA(1);
 
-                         
+
                         int index19_88 = input.index();
                         input.rewind();
                         s = -1;
@@ -9960,14 +9960,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_88);
                         if ( s>=0 ) return s;
                         break;
-                    case 36 : 
+                    case 36 :
                         int LA19_89 = input.LA(1);
 
-                         
+
                         int index19_89 = input.index();
                         input.rewind();
                         s = -1;
@@ -9975,14 +9975,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_89);
                         if ( s>=0 ) return s;
                         break;
-                    case 37 : 
+                    case 37 :
                         int LA19_90 = input.LA(1);
 
-                         
+
                         int index19_90 = input.index();
                         input.rewind();
                         s = -1;
@@ -9990,14 +9990,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_90);
                         if ( s>=0 ) return s;
                         break;
-                    case 38 : 
+                    case 38 :
                         int LA19_91 = input.LA(1);
 
-                         
+
                         int index19_91 = input.index();
                         input.rewind();
                         s = -1;
@@ -10005,14 +10005,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_91);
                         if ( s>=0 ) return s;
                         break;
-                    case 39 : 
+                    case 39 :
                         int LA19_92 = input.LA(1);
 
-                         
+
                         int index19_92 = input.index();
                         input.rewind();
                         s = -1;
@@ -10020,14 +10020,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_92);
                         if ( s>=0 ) return s;
                         break;
-                    case 40 : 
+                    case 40 :
                         int LA19_93 = input.LA(1);
 
-                         
+
                         int index19_93 = input.index();
                         input.rewind();
                         s = -1;
@@ -10035,14 +10035,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_93);
                         if ( s>=0 ) return s;
                         break;
-                    case 41 : 
+                    case 41 :
                         int LA19_94 = input.LA(1);
 
-                         
+
                         int index19_94 = input.index();
                         input.rewind();
                         s = -1;
@@ -10050,14 +10050,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_94);
                         if ( s>=0 ) return s;
                         break;
-                    case 42 : 
+                    case 42 :
                         int LA19_95 = input.LA(1);
 
-                         
+
                         int index19_95 = input.index();
                         input.rewind();
                         s = -1;
@@ -10065,14 +10065,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_95);
                         if ( s>=0 ) return s;
                         break;
-                    case 43 : 
+                    case 43 :
                         int LA19_96 = input.LA(1);
 
-                         
+
                         int index19_96 = input.index();
                         input.rewind();
                         s = -1;
@@ -10080,14 +10080,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_96);
                         if ( s>=0 ) return s;
                         break;
-                    case 44 : 
+                    case 44 :
                         int LA19_97 = input.LA(1);
 
-                         
+
                         int index19_97 = input.index();
                         input.rewind();
                         s = -1;
@@ -10095,14 +10095,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_97);
                         if ( s>=0 ) return s;
                         break;
-                    case 45 : 
+                    case 45 :
                         int LA19_98 = input.LA(1);
 
-                         
+
                         int index19_98 = input.index();
                         input.rewind();
                         s = -1;
@@ -10110,14 +10110,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_98);
                         if ( s>=0 ) return s;
                         break;
-                    case 46 : 
+                    case 46 :
                         int LA19_99 = input.LA(1);
 
-                         
+
                         int index19_99 = input.index();
                         input.rewind();
                         s = -1;
@@ -10125,14 +10125,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_99);
                         if ( s>=0 ) return s;
                         break;
-                    case 47 : 
+                    case 47 :
                         int LA19_100 = input.LA(1);
 
-                         
+
                         int index19_100 = input.index();
                         input.rewind();
                         s = -1;
@@ -10140,14 +10140,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_100);
                         if ( s>=0 ) return s;
                         break;
-                    case 48 : 
+                    case 48 :
                         int LA19_101 = input.LA(1);
 
-                         
+
                         int index19_101 = input.index();
                         input.rewind();
                         s = -1;
@@ -10155,14 +10155,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_101);
                         if ( s>=0 ) return s;
                         break;
-                    case 49 : 
+                    case 49 :
                         int LA19_102 = input.LA(1);
 
-                         
+
                         int index19_102 = input.index();
                         input.rewind();
                         s = -1;
@@ -10170,14 +10170,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_102);
                         if ( s>=0 ) return s;
                         break;
-                    case 50 : 
+                    case 50 :
                         int LA19_103 = input.LA(1);
 
-                         
+
                         int index19_103 = input.index();
                         input.rewind();
                         s = -1;
@@ -10185,14 +10185,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_103);
                         if ( s>=0 ) return s;
                         break;
-                    case 51 : 
+                    case 51 :
                         int LA19_104 = input.LA(1);
 
-                         
+
                         int index19_104 = input.index();
                         input.rewind();
                         s = -1;
@@ -10200,14 +10200,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_104);
                         if ( s>=0 ) return s;
                         break;
-                    case 52 : 
+                    case 52 :
                         int LA19_105 = input.LA(1);
 
-                         
+
                         int index19_105 = input.index();
                         input.rewind();
                         s = -1;
@@ -10215,14 +10215,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_105);
                         if ( s>=0 ) return s;
                         break;
-                    case 53 : 
+                    case 53 :
                         int LA19_106 = input.LA(1);
 
-                         
+
                         int index19_106 = input.index();
                         input.rewind();
                         s = -1;
@@ -10230,14 +10230,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_106);
                         if ( s>=0 ) return s;
                         break;
-                    case 54 : 
+                    case 54 :
                         int LA19_107 = input.LA(1);
 
-                         
+
                         int index19_107 = input.index();
                         input.rewind();
                         s = -1;
@@ -10245,14 +10245,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_107);
                         if ( s>=0 ) return s;
                         break;
-                    case 55 : 
+                    case 55 :
                         int LA19_108 = input.LA(1);
 
-                         
+
                         int index19_108 = input.index();
                         input.rewind();
                         s = -1;
@@ -10260,14 +10260,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_108);
                         if ( s>=0 ) return s;
                         break;
-                    case 56 : 
+                    case 56 :
                         int LA19_109 = input.LA(1);
 
-                         
+
                         int index19_109 = input.index();
                         input.rewind();
                         s = -1;
@@ -10275,14 +10275,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_109);
                         if ( s>=0 ) return s;
                         break;
-                    case 57 : 
+                    case 57 :
                         int LA19_110 = input.LA(1);
 
-                         
+
                         int index19_110 = input.index();
                         input.rewind();
                         s = -1;
@@ -10290,14 +10290,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_110);
                         if ( s>=0 ) return s;
                         break;
-                    case 58 : 
+                    case 58 :
                         int LA19_111 = input.LA(1);
 
-                         
+
                         int index19_111 = input.index();
                         input.rewind();
                         s = -1;
@@ -10305,14 +10305,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_111);
                         if ( s>=0 ) return s;
                         break;
-                    case 59 : 
+                    case 59 :
                         int LA19_112 = input.LA(1);
 
-                         
+
                         int index19_112 = input.index();
                         input.rewind();
                         s = -1;
@@ -10320,14 +10320,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_112);
                         if ( s>=0 ) return s;
                         break;
-                    case 60 : 
+                    case 60 :
                         int LA19_113 = input.LA(1);
 
-                         
+
                         int index19_113 = input.index();
                         input.rewind();
                         s = -1;
@@ -10335,14 +10335,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_113);
                         if ( s>=0 ) return s;
                         break;
-                    case 61 : 
+                    case 61 :
                         int LA19_114 = input.LA(1);
 
-                         
+
                         int index19_114 = input.index();
                         input.rewind();
                         s = -1;
@@ -10350,14 +10350,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_114);
                         if ( s>=0 ) return s;
                         break;
-                    case 62 : 
+                    case 62 :
                         int LA19_115 = input.LA(1);
 
-                         
+
                         int index19_115 = input.index();
                         input.rewind();
                         s = -1;
@@ -10365,14 +10365,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_115);
                         if ( s>=0 ) return s;
                         break;
-                    case 63 : 
+                    case 63 :
                         int LA19_116 = input.LA(1);
 
-                         
+
                         int index19_116 = input.index();
                         input.rewind();
                         s = -1;
@@ -10380,14 +10380,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_116);
                         if ( s>=0 ) return s;
                         break;
-                    case 64 : 
+                    case 64 :
                         int LA19_117 = input.LA(1);
 
-                         
+
                         int index19_117 = input.index();
                         input.rewind();
                         s = -1;
@@ -10395,14 +10395,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_117);
                         if ( s>=0 ) return s;
                         break;
-                    case 65 : 
+                    case 65 :
                         int LA19_118 = input.LA(1);
 
-                         
+
                         int index19_118 = input.index();
                         input.rewind();
                         s = -1;
@@ -10410,14 +10410,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_118);
                         if ( s>=0 ) return s;
                         break;
-                    case 66 : 
+                    case 66 :
                         int LA19_119 = input.LA(1);
 
-                         
+
                         int index19_119 = input.index();
                         input.rewind();
                         s = -1;
@@ -10425,14 +10425,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_119);
                         if ( s>=0 ) return s;
                         break;
-                    case 67 : 
+                    case 67 :
                         int LA19_120 = input.LA(1);
 
-                         
+
                         int index19_120 = input.index();
                         input.rewind();
                         s = -1;
@@ -10440,14 +10440,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_120);
                         if ( s>=0 ) return s;
                         break;
-                    case 68 : 
+                    case 68 :
                         int LA19_121 = input.LA(1);
 
-                         
+
                         int index19_121 = input.index();
                         input.rewind();
                         s = -1;
@@ -10455,14 +10455,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_121);
                         if ( s>=0 ) return s;
                         break;
-                    case 69 : 
+                    case 69 :
                         int LA19_122 = input.LA(1);
 
-                         
+
                         int index19_122 = input.index();
                         input.rewind();
                         s = -1;
@@ -10470,14 +10470,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_122);
                         if ( s>=0 ) return s;
                         break;
-                    case 70 : 
+                    case 70 :
                         int LA19_123 = input.LA(1);
 
-                         
+
                         int index19_123 = input.index();
                         input.rewind();
                         s = -1;
@@ -10485,14 +10485,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_123);
                         if ( s>=0 ) return s;
                         break;
-                    case 71 : 
+                    case 71 :
                         int LA19_124 = input.LA(1);
 
-                         
+
                         int index19_124 = input.index();
                         input.rewind();
                         s = -1;
@@ -10500,14 +10500,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_124);
                         if ( s>=0 ) return s;
                         break;
-                    case 72 : 
+                    case 72 :
                         int LA19_125 = input.LA(1);
 
-                         
+
                         int index19_125 = input.index();
                         input.rewind();
                         s = -1;
@@ -10515,14 +10515,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_125);
                         if ( s>=0 ) return s;
                         break;
-                    case 73 : 
+                    case 73 :
                         int LA19_126 = input.LA(1);
 
-                         
+
                         int index19_126 = input.index();
                         input.rewind();
                         s = -1;
@@ -10530,14 +10530,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_126);
                         if ( s>=0 ) return s;
                         break;
-                    case 74 : 
+                    case 74 :
                         int LA19_127 = input.LA(1);
 
-                         
+
                         int index19_127 = input.index();
                         input.rewind();
                         s = -1;
@@ -10545,14 +10545,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_127);
                         if ( s>=0 ) return s;
                         break;
-                    case 75 : 
+                    case 75 :
                         int LA19_128 = input.LA(1);
 
-                         
+
                         int index19_128 = input.index();
                         input.rewind();
                         s = -1;
@@ -10560,14 +10560,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_128);
                         if ( s>=0 ) return s;
                         break;
-                    case 76 : 
+                    case 76 :
                         int LA19_129 = input.LA(1);
 
-                         
+
                         int index19_129 = input.index();
                         input.rewind();
                         s = -1;
@@ -10575,14 +10575,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_129);
                         if ( s>=0 ) return s;
                         break;
-                    case 77 : 
+                    case 77 :
                         int LA19_130 = input.LA(1);
 
-                         
+
                         int index19_130 = input.index();
                         input.rewind();
                         s = -1;
@@ -10590,14 +10590,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_130);
                         if ( s>=0 ) return s;
                         break;
-                    case 78 : 
+                    case 78 :
                         int LA19_131 = input.LA(1);
 
-                         
+
                         int index19_131 = input.index();
                         input.rewind();
                         s = -1;
@@ -10605,14 +10605,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_131);
                         if ( s>=0 ) return s;
                         break;
-                    case 79 : 
+                    case 79 :
                         int LA19_132 = input.LA(1);
 
-                         
+
                         int index19_132 = input.index();
                         input.rewind();
                         s = -1;
@@ -10620,14 +10620,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_132);
                         if ( s>=0 ) return s;
                         break;
-                    case 80 : 
+                    case 80 :
                         int LA19_133 = input.LA(1);
 
-                         
+
                         int index19_133 = input.index();
                         input.rewind();
                         s = -1;
@@ -10635,14 +10635,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_133);
                         if ( s>=0 ) return s;
                         break;
-                    case 81 : 
+                    case 81 :
                         int LA19_134 = input.LA(1);
 
-                         
+
                         int index19_134 = input.index();
                         input.rewind();
                         s = -1;
@@ -10650,14 +10650,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_134);
                         if ( s>=0 ) return s;
                         break;
-                    case 82 : 
+                    case 82 :
                         int LA19_135 = input.LA(1);
 
-                         
+
                         int index19_135 = input.index();
                         input.rewind();
                         s = -1;
@@ -10665,14 +10665,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_135);
                         if ( s>=0 ) return s;
                         break;
-                    case 83 : 
+                    case 83 :
                         int LA19_136 = input.LA(1);
 
-                         
+
                         int index19_136 = input.index();
                         input.rewind();
                         s = -1;
@@ -10680,14 +10680,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_136);
                         if ( s>=0 ) return s;
                         break;
-                    case 84 : 
+                    case 84 :
                         int LA19_137 = input.LA(1);
 
-                         
+
                         int index19_137 = input.index();
                         input.rewind();
                         s = -1;
@@ -10695,14 +10695,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_137);
                         if ( s>=0 ) return s;
                         break;
-                    case 85 : 
+                    case 85 :
                         int LA19_138 = input.LA(1);
 
-                         
+
                         int index19_138 = input.index();
                         input.rewind();
                         s = -1;
@@ -10710,14 +10710,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_138);
                         if ( s>=0 ) return s;
                         break;
-                    case 86 : 
+                    case 86 :
                         int LA19_139 = input.LA(1);
 
-                         
+
                         int index19_139 = input.index();
                         input.rewind();
                         s = -1;
@@ -10725,14 +10725,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_139);
                         if ( s>=0 ) return s;
                         break;
-                    case 87 : 
+                    case 87 :
                         int LA19_140 = input.LA(1);
 
-                         
+
                         int index19_140 = input.index();
                         input.rewind();
                         s = -1;
@@ -10740,14 +10740,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_140);
                         if ( s>=0 ) return s;
                         break;
-                    case 88 : 
+                    case 88 :
                         int LA19_141 = input.LA(1);
 
-                         
+
                         int index19_141 = input.index();
                         input.rewind();
                         s = -1;
@@ -10755,14 +10755,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_141);
                         if ( s>=0 ) return s;
                         break;
-                    case 89 : 
+                    case 89 :
                         int LA19_142 = input.LA(1);
 
-                         
+
                         int index19_142 = input.index();
                         input.rewind();
                         s = -1;
@@ -10770,14 +10770,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_142);
                         if ( s>=0 ) return s;
                         break;
-                    case 90 : 
+                    case 90 :
                         int LA19_143 = input.LA(1);
 
-                         
+
                         int index19_143 = input.index();
                         input.rewind();
                         s = -1;
@@ -10785,14 +10785,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_143);
                         if ( s>=0 ) return s;
                         break;
-                    case 91 : 
+                    case 91 :
                         int LA19_144 = input.LA(1);
 
-                         
+
                         int index19_144 = input.index();
                         input.rewind();
                         s = -1;
@@ -10800,14 +10800,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_144);
                         if ( s>=0 ) return s;
                         break;
-                    case 92 : 
+                    case 92 :
                         int LA19_145 = input.LA(1);
 
-                         
+
                         int index19_145 = input.index();
                         input.rewind();
                         s = -1;
@@ -10815,14 +10815,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_145);
                         if ( s>=0 ) return s;
                         break;
-                    case 93 : 
+                    case 93 :
                         int LA19_146 = input.LA(1);
 
-                         
+
                         int index19_146 = input.index();
                         input.rewind();
                         s = -1;
@@ -10830,14 +10830,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_146);
                         if ( s>=0 ) return s;
                         break;
-                    case 94 : 
+                    case 94 :
                         int LA19_147 = input.LA(1);
 
-                         
+
                         int index19_147 = input.index();
                         input.rewind();
                         s = -1;
@@ -10845,14 +10845,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_147);
                         if ( s>=0 ) return s;
                         break;
-                    case 95 : 
+                    case 95 :
                         int LA19_148 = input.LA(1);
 
-                         
+
                         int index19_148 = input.index();
                         input.rewind();
                         s = -1;
@@ -10860,14 +10860,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_148);
                         if ( s>=0 ) return s;
                         break;
-                    case 96 : 
+                    case 96 :
                         int LA19_149 = input.LA(1);
 
-                         
+
                         int index19_149 = input.index();
                         input.rewind();
                         s = -1;
@@ -10875,14 +10875,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_149);
                         if ( s>=0 ) return s;
                         break;
-                    case 97 : 
+                    case 97 :
                         int LA19_150 = input.LA(1);
 
-                         
+
                         int index19_150 = input.index();
                         input.rewind();
                         s = -1;
@@ -10890,14 +10890,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_150);
                         if ( s>=0 ) return s;
                         break;
-                    case 98 : 
+                    case 98 :
                         int LA19_151 = input.LA(1);
 
-                         
+
                         int index19_151 = input.index();
                         input.rewind();
                         s = -1;
@@ -10905,14 +10905,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_151);
                         if ( s>=0 ) return s;
                         break;
-                    case 99 : 
+                    case 99 :
                         int LA19_152 = input.LA(1);
 
-                         
+
                         int index19_152 = input.index();
                         input.rewind();
                         s = -1;
@@ -10920,14 +10920,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_152);
                         if ( s>=0 ) return s;
                         break;
-                    case 100 : 
+                    case 100 :
                         int LA19_153 = input.LA(1);
 
-                         
+
                         int index19_153 = input.index();
                         input.rewind();
                         s = -1;
@@ -10935,14 +10935,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_153);
                         if ( s>=0 ) return s;
                         break;
-                    case 101 : 
+                    case 101 :
                         int LA19_154 = input.LA(1);
 
-                         
+
                         int index19_154 = input.index();
                         input.rewind();
                         s = -1;
@@ -10950,14 +10950,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_154);
                         if ( s>=0 ) return s;
                         break;
-                    case 102 : 
+                    case 102 :
                         int LA19_155 = input.LA(1);
 
-                         
+
                         int index19_155 = input.index();
                         input.rewind();
                         s = -1;
@@ -10965,14 +10965,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_155);
                         if ( s>=0 ) return s;
                         break;
-                    case 103 : 
+                    case 103 :
                         int LA19_156 = input.LA(1);
 
-                         
+
                         int index19_156 = input.index();
                         input.rewind();
                         s = -1;
@@ -10980,14 +10980,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_156);
                         if ( s>=0 ) return s;
                         break;
-                    case 104 : 
+                    case 104 :
                         int LA19_157 = input.LA(1);
 
-                         
+
                         int index19_157 = input.index();
                         input.rewind();
                         s = -1;
@@ -10995,14 +10995,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_157);
                         if ( s>=0 ) return s;
                         break;
-                    case 105 : 
+                    case 105 :
                         int LA19_158 = input.LA(1);
 
-                         
+
                         int index19_158 = input.index();
                         input.rewind();
                         s = -1;
@@ -11010,14 +11010,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_158);
                         if ( s>=0 ) return s;
                         break;
-                    case 106 : 
+                    case 106 :
                         int LA19_159 = input.LA(1);
 
-                         
+
                         int index19_159 = input.index();
                         input.rewind();
                         s = -1;
@@ -11025,14 +11025,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_159);
                         if ( s>=0 ) return s;
                         break;
-                    case 107 : 
+                    case 107 :
                         int LA19_160 = input.LA(1);
 
-                         
+
                         int index19_160 = input.index();
                         input.rewind();
                         s = -1;
@@ -11040,14 +11040,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_160);
                         if ( s>=0 ) return s;
                         break;
-                    case 108 : 
+                    case 108 :
                         int LA19_161 = input.LA(1);
 
-                         
+
                         int index19_161 = input.index();
                         input.rewind();
                         s = -1;
@@ -11055,14 +11055,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_161);
                         if ( s>=0 ) return s;
                         break;
-                    case 109 : 
+                    case 109 :
                         int LA19_162 = input.LA(1);
 
-                         
+
                         int index19_162 = input.index();
                         input.rewind();
                         s = -1;
@@ -11070,14 +11070,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_162);
                         if ( s>=0 ) return s;
                         break;
-                    case 110 : 
+                    case 110 :
                         int LA19_163 = input.LA(1);
 
-                         
+
                         int index19_163 = input.index();
                         input.rewind();
                         s = -1;
@@ -11085,14 +11085,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_163);
                         if ( s>=0 ) return s;
                         break;
-                    case 111 : 
+                    case 111 :
                         int LA19_164 = input.LA(1);
 
-                         
+
                         int index19_164 = input.index();
                         input.rewind();
                         s = -1;
@@ -11100,14 +11100,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_164);
                         if ( s>=0 ) return s;
                         break;
-                    case 112 : 
+                    case 112 :
                         int LA19_165 = input.LA(1);
 
-                         
+
                         int index19_165 = input.index();
                         input.rewind();
                         s = -1;
@@ -11115,14 +11115,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_165);
                         if ( s>=0 ) return s;
                         break;
-                    case 113 : 
+                    case 113 :
                         int LA19_166 = input.LA(1);
 
-                         
+
                         int index19_166 = input.index();
                         input.rewind();
                         s = -1;
@@ -11130,14 +11130,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_166);
                         if ( s>=0 ) return s;
                         break;
-                    case 114 : 
+                    case 114 :
                         int LA19_167 = input.LA(1);
 
-                         
+
                         int index19_167 = input.index();
                         input.rewind();
                         s = -1;
@@ -11145,14 +11145,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_167);
                         if ( s>=0 ) return s;
                         break;
-                    case 115 : 
+                    case 115 :
                         int LA19_168 = input.LA(1);
 
-                         
+
                         int index19_168 = input.index();
                         input.rewind();
                         s = -1;
@@ -11160,14 +11160,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_168);
                         if ( s>=0 ) return s;
                         break;
-                    case 116 : 
+                    case 116 :
                         int LA19_169 = input.LA(1);
 
-                         
+
                         int index19_169 = input.index();
                         input.rewind();
                         s = -1;
@@ -11175,14 +11175,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_169);
                         if ( s>=0 ) return s;
                         break;
-                    case 117 : 
+                    case 117 :
                         int LA19_170 = input.LA(1);
 
-                         
+
                         int index19_170 = input.index();
                         input.rewind();
                         s = -1;
@@ -11190,14 +11190,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_170);
                         if ( s>=0 ) return s;
                         break;
-                    case 118 : 
+                    case 118 :
                         int LA19_171 = input.LA(1);
 
-                         
+
                         int index19_171 = input.index();
                         input.rewind();
                         s = -1;
@@ -11205,14 +11205,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_171);
                         if ( s>=0 ) return s;
                         break;
-                    case 119 : 
+                    case 119 :
                         int LA19_172 = input.LA(1);
 
-                         
+
                         int index19_172 = input.index();
                         input.rewind();
                         s = -1;
@@ -11220,14 +11220,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_172);
                         if ( s>=0 ) return s;
                         break;
-                    case 120 : 
+                    case 120 :
                         int LA19_173 = input.LA(1);
 
-                         
+
                         int index19_173 = input.index();
                         input.rewind();
                         s = -1;
@@ -11235,14 +11235,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_173);
                         if ( s>=0 ) return s;
                         break;
-                    case 121 : 
+                    case 121 :
                         int LA19_174 = input.LA(1);
 
-                         
+
                         int index19_174 = input.index();
                         input.rewind();
                         s = -1;
@@ -11250,14 +11250,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_174);
                         if ( s>=0 ) return s;
                         break;
-                    case 122 : 
+                    case 122 :
                         int LA19_175 = input.LA(1);
 
-                         
+
                         int index19_175 = input.index();
                         input.rewind();
                         s = -1;
@@ -11265,14 +11265,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_175);
                         if ( s>=0 ) return s;
                         break;
-                    case 123 : 
+                    case 123 :
                         int LA19_176 = input.LA(1);
 
-                         
+
                         int index19_176 = input.index();
                         input.rewind();
                         s = -1;
@@ -11280,14 +11280,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_176);
                         if ( s>=0 ) return s;
                         break;
-                    case 124 : 
+                    case 124 :
                         int LA19_177 = input.LA(1);
 
-                         
+
                         int index19_177 = input.index();
                         input.rewind();
                         s = -1;
@@ -11295,14 +11295,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_177);
                         if ( s>=0 ) return s;
                         break;
-                    case 125 : 
+                    case 125 :
                         int LA19_178 = input.LA(1);
 
-                         
+
                         int index19_178 = input.index();
                         input.rewind();
                         s = -1;
@@ -11310,14 +11310,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_178);
                         if ( s>=0 ) return s;
                         break;
-                    case 126 : 
+                    case 126 :
                         int LA19_179 = input.LA(1);
 
-                         
+
                         int index19_179 = input.index();
                         input.rewind();
                         s = -1;
@@ -11325,14 +11325,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_179);
                         if ( s>=0 ) return s;
                         break;
-                    case 127 : 
+                    case 127 :
                         int LA19_180 = input.LA(1);
 
-                         
+
                         int index19_180 = input.index();
                         input.rewind();
                         s = -1;
@@ -11340,14 +11340,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_180);
                         if ( s>=0 ) return s;
                         break;
-                    case 128 : 
+                    case 128 :
                         int LA19_181 = input.LA(1);
 
-                         
+
                         int index19_181 = input.index();
                         input.rewind();
                         s = -1;
@@ -11355,14 +11355,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_181);
                         if ( s>=0 ) return s;
                         break;
-                    case 129 : 
+                    case 129 :
                         int LA19_182 = input.LA(1);
 
-                         
+
                         int index19_182 = input.index();
                         input.rewind();
                         s = -1;
@@ -11370,14 +11370,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_182);
                         if ( s>=0 ) return s;
                         break;
-                    case 130 : 
+                    case 130 :
                         int LA19_183 = input.LA(1);
 
-                         
+
                         int index19_183 = input.index();
                         input.rewind();
                         s = -1;
@@ -11385,14 +11385,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_183);
                         if ( s>=0 ) return s;
                         break;
-                    case 131 : 
+                    case 131 :
                         int LA19_184 = input.LA(1);
 
-                         
+
                         int index19_184 = input.index();
                         input.rewind();
                         s = -1;
@@ -11400,14 +11400,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_184);
                         if ( s>=0 ) return s;
                         break;
-                    case 132 : 
+                    case 132 :
                         int LA19_185 = input.LA(1);
 
-                         
+
                         int index19_185 = input.index();
                         input.rewind();
                         s = -1;
@@ -11415,14 +11415,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_185);
                         if ( s>=0 ) return s;
                         break;
-                    case 133 : 
+                    case 133 :
                         int LA19_186 = input.LA(1);
 
-                         
+
                         int index19_186 = input.index();
                         input.rewind();
                         s = -1;
@@ -11430,14 +11430,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_186);
                         if ( s>=0 ) return s;
                         break;
-                    case 134 : 
+                    case 134 :
                         int LA19_187 = input.LA(1);
 
-                         
+
                         int index19_187 = input.index();
                         input.rewind();
                         s = -1;
@@ -11445,14 +11445,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_187);
                         if ( s>=0 ) return s;
                         break;
-                    case 135 : 
+                    case 135 :
                         int LA19_188 = input.LA(1);
 
-                         
+
                         int index19_188 = input.index();
                         input.rewind();
                         s = -1;
@@ -11460,14 +11460,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_188);
                         if ( s>=0 ) return s;
                         break;
-                    case 136 : 
+                    case 136 :
                         int LA19_189 = input.LA(1);
 
-                         
+
                         int index19_189 = input.index();
                         input.rewind();
                         s = -1;
@@ -11475,14 +11475,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_189);
                         if ( s>=0 ) return s;
                         break;
-                    case 137 : 
+                    case 137 :
                         int LA19_190 = input.LA(1);
 
-                         
+
                         int index19_190 = input.index();
                         input.rewind();
                         s = -1;
@@ -11490,14 +11490,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_190);
                         if ( s>=0 ) return s;
                         break;
-                    case 138 : 
+                    case 138 :
                         int LA19_191 = input.LA(1);
 
-                         
+
                         int index19_191 = input.index();
                         input.rewind();
                         s = -1;
@@ -11505,14 +11505,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_191);
                         if ( s>=0 ) return s;
                         break;
-                    case 139 : 
+                    case 139 :
                         int LA19_192 = input.LA(1);
 
-                         
+
                         int index19_192 = input.index();
                         input.rewind();
                         s = -1;
@@ -11520,14 +11520,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_192);
                         if ( s>=0 ) return s;
                         break;
-                    case 140 : 
+                    case 140 :
                         int LA19_193 = input.LA(1);
 
-                         
+
                         int index19_193 = input.index();
                         input.rewind();
                         s = -1;
@@ -11535,14 +11535,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_193);
                         if ( s>=0 ) return s;
                         break;
-                    case 141 : 
+                    case 141 :
                         int LA19_194 = input.LA(1);
 
-                         
+
                         int index19_194 = input.index();
                         input.rewind();
                         s = -1;
@@ -11550,14 +11550,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_194);
                         if ( s>=0 ) return s;
                         break;
-                    case 142 : 
+                    case 142 :
                         int LA19_195 = input.LA(1);
 
-                         
+
                         int index19_195 = input.index();
                         input.rewind();
                         s = -1;
@@ -11565,14 +11565,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_195);
                         if ( s>=0 ) return s;
                         break;
-                    case 143 : 
+                    case 143 :
                         int LA19_196 = input.LA(1);
 
-                         
+
                         int index19_196 = input.index();
                         input.rewind();
                         s = -1;
@@ -11580,14 +11580,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_196);
                         if ( s>=0 ) return s;
                         break;
-                    case 144 : 
+                    case 144 :
                         int LA19_197 = input.LA(1);
 
-                         
+
                         int index19_197 = input.index();
                         input.rewind();
                         s = -1;
@@ -11595,14 +11595,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_197);
                         if ( s>=0 ) return s;
                         break;
-                    case 145 : 
+                    case 145 :
                         int LA19_198 = input.LA(1);
 
-                         
+
                         int index19_198 = input.index();
                         input.rewind();
                         s = -1;
@@ -11610,14 +11610,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_198);
                         if ( s>=0 ) return s;
                         break;
-                    case 146 : 
+                    case 146 :
                         int LA19_199 = input.LA(1);
 
-                         
+
                         int index19_199 = input.index();
                         input.rewind();
                         s = -1;
@@ -11625,14 +11625,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_199);
                         if ( s>=0 ) return s;
                         break;
-                    case 147 : 
+                    case 147 :
                         int LA19_200 = input.LA(1);
 
-                         
+
                         int index19_200 = input.index();
                         input.rewind();
                         s = -1;
@@ -11640,14 +11640,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_200);
                         if ( s>=0 ) return s;
                         break;
-                    case 148 : 
+                    case 148 :
                         int LA19_201 = input.LA(1);
 
-                         
+
                         int index19_201 = input.index();
                         input.rewind();
                         s = -1;
@@ -11655,14 +11655,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_201);
                         if ( s>=0 ) return s;
                         break;
-                    case 149 : 
+                    case 149 :
                         int LA19_202 = input.LA(1);
 
-                         
+
                         int index19_202 = input.index();
                         input.rewind();
                         s = -1;
@@ -11670,14 +11670,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_202);
                         if ( s>=0 ) return s;
                         break;
-                    case 150 : 
+                    case 150 :
                         int LA19_203 = input.LA(1);
 
-                         
+
                         int index19_203 = input.index();
                         input.rewind();
                         s = -1;
@@ -11685,14 +11685,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_203);
                         if ( s>=0 ) return s;
                         break;
-                    case 151 : 
+                    case 151 :
                         int LA19_204 = input.LA(1);
 
-                         
+
                         int index19_204 = input.index();
                         input.rewind();
                         s = -1;
@@ -11700,14 +11700,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_204);
                         if ( s>=0 ) return s;
                         break;
-                    case 152 : 
+                    case 152 :
                         int LA19_205 = input.LA(1);
 
-                         
+
                         int index19_205 = input.index();
                         input.rewind();
                         s = -1;
@@ -11715,14 +11715,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_205);
                         if ( s>=0 ) return s;
                         break;
-                    case 153 : 
+                    case 153 :
                         int LA19_206 = input.LA(1);
 
-                         
+
                         int index19_206 = input.index();
                         input.rewind();
                         s = -1;
@@ -11730,14 +11730,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_206);
                         if ( s>=0 ) return s;
                         break;
-                    case 154 : 
+                    case 154 :
                         int LA19_207 = input.LA(1);
 
-                         
+
                         int index19_207 = input.index();
                         input.rewind();
                         s = -1;
@@ -11745,14 +11745,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_207);
                         if ( s>=0 ) return s;
                         break;
-                    case 155 : 
+                    case 155 :
                         int LA19_208 = input.LA(1);
 
-                         
+
                         int index19_208 = input.index();
                         input.rewind();
                         s = -1;
@@ -11760,14 +11760,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_208);
                         if ( s>=0 ) return s;
                         break;
-                    case 156 : 
+                    case 156 :
                         int LA19_209 = input.LA(1);
 
-                         
+
                         int index19_209 = input.index();
                         input.rewind();
                         s = -1;
@@ -11775,14 +11775,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_209);
                         if ( s>=0 ) return s;
                         break;
-                    case 157 : 
+                    case 157 :
                         int LA19_210 = input.LA(1);
 
-                         
+
                         int index19_210 = input.index();
                         input.rewind();
                         s = -1;
@@ -11790,14 +11790,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_210);
                         if ( s>=0 ) return s;
                         break;
-                    case 158 : 
+                    case 158 :
                         int LA19_211 = input.LA(1);
 
-                         
+
                         int index19_211 = input.index();
                         input.rewind();
                         s = -1;
@@ -11805,14 +11805,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_211);
                         if ( s>=0 ) return s;
                         break;
-                    case 159 : 
+                    case 159 :
                         int LA19_212 = input.LA(1);
 
-                         
+
                         int index19_212 = input.index();
                         input.rewind();
                         s = -1;
@@ -11820,14 +11820,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_212);
                         if ( s>=0 ) return s;
                         break;
-                    case 160 : 
+                    case 160 :
                         int LA19_213 = input.LA(1);
 
-                         
+
                         int index19_213 = input.index();
                         input.rewind();
                         s = -1;
@@ -11835,14 +11835,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_213);
                         if ( s>=0 ) return s;
                         break;
-                    case 161 : 
+                    case 161 :
                         int LA19_214 = input.LA(1);
 
-                         
+
                         int index19_214 = input.index();
                         input.rewind();
                         s = -1;
@@ -11850,14 +11850,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_214);
                         if ( s>=0 ) return s;
                         break;
-                    case 162 : 
+                    case 162 :
                         int LA19_215 = input.LA(1);
 
-                         
+
                         int index19_215 = input.index();
                         input.rewind();
                         s = -1;
@@ -11865,14 +11865,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_215);
                         if ( s>=0 ) return s;
                         break;
-                    case 163 : 
+                    case 163 :
                         int LA19_216 = input.LA(1);
 
-                         
+
                         int index19_216 = input.index();
                         input.rewind();
                         s = -1;
@@ -11880,14 +11880,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_216);
                         if ( s>=0 ) return s;
                         break;
-                    case 164 : 
+                    case 164 :
                         int LA19_217 = input.LA(1);
 
-                         
+
                         int index19_217 = input.index();
                         input.rewind();
                         s = -1;
@@ -11895,14 +11895,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_217);
                         if ( s>=0 ) return s;
                         break;
-                    case 165 : 
+                    case 165 :
                         int LA19_218 = input.LA(1);
 
-                         
+
                         int index19_218 = input.index();
                         input.rewind();
                         s = -1;
@@ -11910,14 +11910,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_218);
                         if ( s>=0 ) return s;
                         break;
-                    case 166 : 
+                    case 166 :
                         int LA19_219 = input.LA(1);
 
-                         
+
                         int index19_219 = input.index();
                         input.rewind();
                         s = -1;
@@ -11925,14 +11925,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_219);
                         if ( s>=0 ) return s;
                         break;
-                    case 167 : 
+                    case 167 :
                         int LA19_220 = input.LA(1);
 
-                         
+
                         int index19_220 = input.index();
                         input.rewind();
                         s = -1;
@@ -11940,14 +11940,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_220);
                         if ( s>=0 ) return s;
                         break;
-                    case 168 : 
+                    case 168 :
                         int LA19_221 = input.LA(1);
 
-                         
+
                         int index19_221 = input.index();
                         input.rewind();
                         s = -1;
@@ -11955,14 +11955,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_221);
                         if ( s>=0 ) return s;
                         break;
-                    case 169 : 
+                    case 169 :
                         int LA19_222 = input.LA(1);
 
-                         
+
                         int index19_222 = input.index();
                         input.rewind();
                         s = -1;
@@ -11970,14 +11970,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_222);
                         if ( s>=0 ) return s;
                         break;
-                    case 170 : 
+                    case 170 :
                         int LA19_223 = input.LA(1);
 
-                         
+
                         int index19_223 = input.index();
                         input.rewind();
                         s = -1;
@@ -11985,14 +11985,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_223);
                         if ( s>=0 ) return s;
                         break;
-                    case 171 : 
+                    case 171 :
                         int LA19_224 = input.LA(1);
 
-                         
+
                         int index19_224 = input.index();
                         input.rewind();
                         s = -1;
@@ -12000,14 +12000,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_224);
                         if ( s>=0 ) return s;
                         break;
-                    case 172 : 
+                    case 172 :
                         int LA19_225 = input.LA(1);
 
-                         
+
                         int index19_225 = input.index();
                         input.rewind();
                         s = -1;
@@ -12015,14 +12015,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_225);
                         if ( s>=0 ) return s;
                         break;
-                    case 173 : 
+                    case 173 :
                         int LA19_226 = input.LA(1);
 
-                         
+
                         int index19_226 = input.index();
                         input.rewind();
                         s = -1;
@@ -12030,14 +12030,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_226);
                         if ( s>=0 ) return s;
                         break;
-                    case 174 : 
+                    case 174 :
                         int LA19_227 = input.LA(1);
 
-                         
+
                         int index19_227 = input.index();
                         input.rewind();
                         s = -1;
@@ -12045,14 +12045,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_227);
                         if ( s>=0 ) return s;
                         break;
-                    case 175 : 
+                    case 175 :
                         int LA19_228 = input.LA(1);
 
-                         
+
                         int index19_228 = input.index();
                         input.rewind();
                         s = -1;
@@ -12060,14 +12060,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_228);
                         if ( s>=0 ) return s;
                         break;
-                    case 176 : 
+                    case 176 :
                         int LA19_229 = input.LA(1);
 
-                         
+
                         int index19_229 = input.index();
                         input.rewind();
                         s = -1;
@@ -12075,14 +12075,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_229);
                         if ( s>=0 ) return s;
                         break;
-                    case 177 : 
+                    case 177 :
                         int LA19_230 = input.LA(1);
 
-                         
+
                         int index19_230 = input.index();
                         input.rewind();
                         s = -1;
@@ -12090,14 +12090,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_230);
                         if ( s>=0 ) return s;
                         break;
-                    case 178 : 
+                    case 178 :
                         int LA19_231 = input.LA(1);
 
-                         
+
                         int index19_231 = input.index();
                         input.rewind();
                         s = -1;
@@ -12105,14 +12105,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_231);
                         if ( s>=0 ) return s;
                         break;
-                    case 179 : 
+                    case 179 :
                         int LA19_232 = input.LA(1);
 
-                         
+
                         int index19_232 = input.index();
                         input.rewind();
                         s = -1;
@@ -12120,14 +12120,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_232);
                         if ( s>=0 ) return s;
                         break;
-                    case 180 : 
+                    case 180 :
                         int LA19_233 = input.LA(1);
 
-                         
+
                         int index19_233 = input.index();
                         input.rewind();
                         s = -1;
@@ -12135,14 +12135,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_233);
                         if ( s>=0 ) return s;
                         break;
-                    case 181 : 
+                    case 181 :
                         int LA19_234 = input.LA(1);
 
-                         
+
                         int index19_234 = input.index();
                         input.rewind();
                         s = -1;
@@ -12150,14 +12150,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_234);
                         if ( s>=0 ) return s;
                         break;
-                    case 182 : 
+                    case 182 :
                         int LA19_235 = input.LA(1);
 
-                         
+
                         int index19_235 = input.index();
                         input.rewind();
                         s = -1;
@@ -12165,14 +12165,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_235);
                         if ( s>=0 ) return s;
                         break;
-                    case 183 : 
+                    case 183 :
                         int LA19_236 = input.LA(1);
 
-                         
+
                         int index19_236 = input.index();
                         input.rewind();
                         s = -1;
@@ -12180,14 +12180,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_236);
                         if ( s>=0 ) return s;
                         break;
-                    case 184 : 
+                    case 184 :
                         int LA19_237 = input.LA(1);
 
-                         
+
                         int index19_237 = input.index();
                         input.rewind();
                         s = -1;
@@ -12195,14 +12195,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_237);
                         if ( s>=0 ) return s;
                         break;
-                    case 185 : 
+                    case 185 :
                         int LA19_238 = input.LA(1);
 
-                         
+
                         int index19_238 = input.index();
                         input.rewind();
                         s = -1;
@@ -12210,14 +12210,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_238);
                         if ( s>=0 ) return s;
                         break;
-                    case 186 : 
+                    case 186 :
                         int LA19_239 = input.LA(1);
 
-                         
+
                         int index19_239 = input.index();
                         input.rewind();
                         s = -1;
@@ -12225,14 +12225,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_239);
                         if ( s>=0 ) return s;
                         break;
-                    case 187 : 
+                    case 187 :
                         int LA19_240 = input.LA(1);
 
-                         
+
                         int index19_240 = input.index();
                         input.rewind();
                         s = -1;
@@ -12240,14 +12240,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_240);
                         if ( s>=0 ) return s;
                         break;
-                    case 188 : 
+                    case 188 :
                         int LA19_241 = input.LA(1);
 
-                         
+
                         int index19_241 = input.index();
                         input.rewind();
                         s = -1;
@@ -12255,14 +12255,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_241);
                         if ( s>=0 ) return s;
                         break;
-                    case 189 : 
+                    case 189 :
                         int LA19_242 = input.LA(1);
 
-                         
+
                         int index19_242 = input.index();
                         input.rewind();
                         s = -1;
@@ -12270,14 +12270,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_242);
                         if ( s>=0 ) return s;
                         break;
-                    case 190 : 
+                    case 190 :
                         int LA19_243 = input.LA(1);
 
-                         
+
                         int index19_243 = input.index();
                         input.rewind();
                         s = -1;
@@ -12285,14 +12285,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_243);
                         if ( s>=0 ) return s;
                         break;
-                    case 191 : 
+                    case 191 :
                         int LA19_244 = input.LA(1);
 
-                         
+
                         int index19_244 = input.index();
                         input.rewind();
                         s = -1;
@@ -12300,14 +12300,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_244);
                         if ( s>=0 ) return s;
                         break;
-                    case 192 : 
+                    case 192 :
                         int LA19_245 = input.LA(1);
 
-                         
+
                         int index19_245 = input.index();
                         input.rewind();
                         s = -1;
@@ -12315,14 +12315,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_245);
                         if ( s>=0 ) return s;
                         break;
-                    case 193 : 
+                    case 193 :
                         int LA19_246 = input.LA(1);
 
-                         
+
                         int index19_246 = input.index();
                         input.rewind();
                         s = -1;
@@ -12330,14 +12330,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_246);
                         if ( s>=0 ) return s;
                         break;
-                    case 194 : 
+                    case 194 :
                         int LA19_247 = input.LA(1);
 
-                         
+
                         int index19_247 = input.index();
                         input.rewind();
                         s = -1;
@@ -12345,14 +12345,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_247);
                         if ( s>=0 ) return s;
                         break;
-                    case 195 : 
+                    case 195 :
                         int LA19_248 = input.LA(1);
 
-                         
+
                         int index19_248 = input.index();
                         input.rewind();
                         s = -1;
@@ -12360,14 +12360,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_248);
                         if ( s>=0 ) return s;
                         break;
-                    case 196 : 
+                    case 196 :
                         int LA19_249 = input.LA(1);
 
-                         
+
                         int index19_249 = input.index();
                         input.rewind();
                         s = -1;
@@ -12375,14 +12375,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_249);
                         if ( s>=0 ) return s;
                         break;
-                    case 197 : 
+                    case 197 :
                         int LA19_250 = input.LA(1);
 
-                         
+
                         int index19_250 = input.index();
                         input.rewind();
                         s = -1;
@@ -12390,14 +12390,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_250);
                         if ( s>=0 ) return s;
                         break;
-                    case 198 : 
+                    case 198 :
                         int LA19_251 = input.LA(1);
 
-                         
+
                         int index19_251 = input.index();
                         input.rewind();
                         s = -1;
@@ -12405,14 +12405,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_251);
                         if ( s>=0 ) return s;
                         break;
-                    case 199 : 
+                    case 199 :
                         int LA19_252 = input.LA(1);
 
-                         
+
                         int index19_252 = input.index();
                         input.rewind();
                         s = -1;
@@ -12420,14 +12420,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_252);
                         if ( s>=0 ) return s;
                         break;
-                    case 200 : 
+                    case 200 :
                         int LA19_253 = input.LA(1);
 
-                         
+
                         int index19_253 = input.index();
                         input.rewind();
                         s = -1;
@@ -12435,14 +12435,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_253);
                         if ( s>=0 ) return s;
                         break;
-                    case 201 : 
+                    case 201 :
                         int LA19_254 = input.LA(1);
 
-                         
+
                         int index19_254 = input.index();
                         input.rewind();
                         s = -1;
@@ -12450,14 +12450,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_254);
                         if ( s>=0 ) return s;
                         break;
-                    case 202 : 
+                    case 202 :
                         int LA19_255 = input.LA(1);
 
-                         
+
                         int index19_255 = input.index();
                         input.rewind();
                         s = -1;
@@ -12465,14 +12465,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_255);
                         if ( s>=0 ) return s;
                         break;
-                    case 203 : 
+                    case 203 :
                         int LA19_256 = input.LA(1);
 
-                         
+
                         int index19_256 = input.index();
                         input.rewind();
                         s = -1;
@@ -12480,14 +12480,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_256);
                         if ( s>=0 ) return s;
                         break;
-                    case 204 : 
+                    case 204 :
                         int LA19_257 = input.LA(1);
 
-                         
+
                         int index19_257 = input.index();
                         input.rewind();
                         s = -1;
@@ -12495,14 +12495,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_257);
                         if ( s>=0 ) return s;
                         break;
-                    case 205 : 
+                    case 205 :
                         int LA19_258 = input.LA(1);
 
-                         
+
                         int index19_258 = input.index();
                         input.rewind();
                         s = -1;
@@ -12510,14 +12510,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_258);
                         if ( s>=0 ) return s;
                         break;
-                    case 206 : 
+                    case 206 :
                         int LA19_259 = input.LA(1);
 
-                         
+
                         int index19_259 = input.index();
                         input.rewind();
                         s = -1;
@@ -12525,14 +12525,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_259);
                         if ( s>=0 ) return s;
                         break;
-                    case 207 : 
+                    case 207 :
                         int LA19_260 = input.LA(1);
 
-                         
+
                         int index19_260 = input.index();
                         input.rewind();
                         s = -1;
@@ -12540,14 +12540,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_260);
                         if ( s>=0 ) return s;
                         break;
-                    case 208 : 
+                    case 208 :
                         int LA19_261 = input.LA(1);
 
-                         
+
                         int index19_261 = input.index();
                         input.rewind();
                         s = -1;
@@ -12555,14 +12555,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_261);
                         if ( s>=0 ) return s;
                         break;
-                    case 209 : 
+                    case 209 :
                         int LA19_262 = input.LA(1);
 
-                         
+
                         int index19_262 = input.index();
                         input.rewind();
                         s = -1;
@@ -12570,14 +12570,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_262);
                         if ( s>=0 ) return s;
                         break;
-                    case 210 : 
+                    case 210 :
                         int LA19_263 = input.LA(1);
 
-                         
+
                         int index19_263 = input.index();
                         input.rewind();
                         s = -1;
@@ -12585,14 +12585,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_263);
                         if ( s>=0 ) return s;
                         break;
-                    case 211 : 
+                    case 211 :
                         int LA19_264 = input.LA(1);
 
-                         
+
                         int index19_264 = input.index();
                         input.rewind();
                         s = -1;
@@ -12600,14 +12600,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_264);
                         if ( s>=0 ) return s;
                         break;
-                    case 212 : 
+                    case 212 :
                         int LA19_265 = input.LA(1);
 
-                         
+
                         int index19_265 = input.index();
                         input.rewind();
                         s = -1;
@@ -12615,14 +12615,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_265);
                         if ( s>=0 ) return s;
                         break;
-                    case 213 : 
+                    case 213 :
                         int LA19_266 = input.LA(1);
 
-                         
+
                         int index19_266 = input.index();
                         input.rewind();
                         s = -1;
@@ -12630,14 +12630,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_266);
                         if ( s>=0 ) return s;
                         break;
-                    case 214 : 
+                    case 214 :
                         int LA19_267 = input.LA(1);
 
-                         
+
                         int index19_267 = input.index();
                         input.rewind();
                         s = -1;
@@ -12645,14 +12645,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_267);
                         if ( s>=0 ) return s;
                         break;
-                    case 215 : 
+                    case 215 :
                         int LA19_268 = input.LA(1);
 
-                         
+
                         int index19_268 = input.index();
                         input.rewind();
                         s = -1;
@@ -12660,14 +12660,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_268);
                         if ( s>=0 ) return s;
                         break;
-                    case 216 : 
+                    case 216 :
                         int LA19_269 = input.LA(1);
 
-                         
+
                         int index19_269 = input.index();
                         input.rewind();
                         s = -1;
@@ -12675,14 +12675,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_269);
                         if ( s>=0 ) return s;
                         break;
-                    case 217 : 
+                    case 217 :
                         int LA19_270 = input.LA(1);
 
-                         
+
                         int index19_270 = input.index();
                         input.rewind();
                         s = -1;
@@ -12690,14 +12690,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_270);
                         if ( s>=0 ) return s;
                         break;
-                    case 218 : 
+                    case 218 :
                         int LA19_271 = input.LA(1);
 
-                         
+
                         int index19_271 = input.index();
                         input.rewind();
                         s = -1;
@@ -12705,14 +12705,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_271);
                         if ( s>=0 ) return s;
                         break;
-                    case 219 : 
+                    case 219 :
                         int LA19_272 = input.LA(1);
 
-                         
+
                         int index19_272 = input.index();
                         input.rewind();
                         s = -1;
@@ -12720,14 +12720,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_272);
                         if ( s>=0 ) return s;
                         break;
-                    case 220 : 
+                    case 220 :
                         int LA19_273 = input.LA(1);
 
-                         
+
                         int index19_273 = input.index();
                         input.rewind();
                         s = -1;
@@ -12735,14 +12735,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_273);
                         if ( s>=0 ) return s;
                         break;
-                    case 221 : 
+                    case 221 :
                         int LA19_274 = input.LA(1);
 
-                         
+
                         int index19_274 = input.index();
                         input.rewind();
                         s = -1;
@@ -12750,14 +12750,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_274);
                         if ( s>=0 ) return s;
                         break;
-                    case 222 : 
+                    case 222 :
                         int LA19_275 = input.LA(1);
 
-                         
+
                         int index19_275 = input.index();
                         input.rewind();
                         s = -1;
@@ -12765,14 +12765,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_275);
                         if ( s>=0 ) return s;
                         break;
-                    case 223 : 
+                    case 223 :
                         int LA19_276 = input.LA(1);
 
-                         
+
                         int index19_276 = input.index();
                         input.rewind();
                         s = -1;
@@ -12780,14 +12780,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_276);
                         if ( s>=0 ) return s;
                         break;
-                    case 224 : 
+                    case 224 :
                         int LA19_277 = input.LA(1);
 
-                         
+
                         int index19_277 = input.index();
                         input.rewind();
                         s = -1;
@@ -12795,7 +12795,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (( aggregatesAllowed() )) ) {s = 6;}
 
-                         
+
                         input.seek(index19_277);
                         if ( s>=0 ) return s;
                         break;
@@ -13777,12 +13777,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
-        	int _s = s;
+            int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA30_50 = input.LA(1);
 
-                         
+
                         int index30_50 = input.index();
                         input.rewind();
                         s = -1;
@@ -13790,14 +13790,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_50);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA30_51 = input.LA(1);
 
-                         
+
                         int index30_51 = input.index();
                         input.rewind();
                         s = -1;
@@ -13805,14 +13805,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_51);
                         if ( s>=0 ) return s;
                         break;
-                    case 2 : 
+                    case 2 :
                         int LA30_52 = input.LA(1);
 
-                         
+
                         int index30_52 = input.index();
                         input.rewind();
                         s = -1;
@@ -13820,14 +13820,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_52);
                         if ( s>=0 ) return s;
                         break;
-                    case 3 : 
+                    case 3 :
                         int LA30_53 = input.LA(1);
 
-                         
+
                         int index30_53 = input.index();
                         input.rewind();
                         s = -1;
@@ -13835,14 +13835,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_53);
                         if ( s>=0 ) return s;
                         break;
-                    case 4 : 
+                    case 4 :
                         int LA30_54 = input.LA(1);
 
-                         
+
                         int index30_54 = input.index();
                         input.rewind();
                         s = -1;
@@ -13850,14 +13850,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_54);
                         if ( s>=0 ) return s;
                         break;
-                    case 5 : 
+                    case 5 :
                         int LA30_55 = input.LA(1);
 
-                         
+
                         int index30_55 = input.index();
                         input.rewind();
                         s = -1;
@@ -13865,14 +13865,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_55);
                         if ( s>=0 ) return s;
                         break;
-                    case 6 : 
+                    case 6 :
                         int LA30_56 = input.LA(1);
 
-                         
+
                         int index30_56 = input.index();
                         input.rewind();
                         s = -1;
@@ -13880,14 +13880,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_56);
                         if ( s>=0 ) return s;
                         break;
-                    case 7 : 
+                    case 7 :
                         int LA30_57 = input.LA(1);
 
-                         
+
                         int index30_57 = input.index();
                         input.rewind();
                         s = -1;
@@ -13895,14 +13895,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_57);
                         if ( s>=0 ) return s;
                         break;
-                    case 8 : 
+                    case 8 :
                         int LA30_58 = input.LA(1);
 
-                         
+
                         int index30_58 = input.index();
                         input.rewind();
                         s = -1;
@@ -13910,14 +13910,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_58);
                         if ( s>=0 ) return s;
                         break;
-                    case 9 : 
+                    case 9 :
                         int LA30_59 = input.LA(1);
 
-                         
+
                         int index30_59 = input.index();
                         input.rewind();
                         s = -1;
@@ -13925,14 +13925,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_59);
                         if ( s>=0 ) return s;
                         break;
-                    case 10 : 
+                    case 10 :
                         int LA30_60 = input.LA(1);
 
-                         
+
                         int index30_60 = input.index();
                         input.rewind();
                         s = -1;
@@ -13940,14 +13940,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_60);
                         if ( s>=0 ) return s;
                         break;
-                    case 11 : 
+                    case 11 :
                         int LA30_61 = input.LA(1);
 
-                         
+
                         int index30_61 = input.index();
                         input.rewind();
                         s = -1;
@@ -13955,14 +13955,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_61);
                         if ( s>=0 ) return s;
                         break;
-                    case 12 : 
+                    case 12 :
                         int LA30_62 = input.LA(1);
 
-                         
+
                         int index30_62 = input.index();
                         input.rewind();
                         s = -1;
@@ -13970,14 +13970,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_62);
                         if ( s>=0 ) return s;
                         break;
-                    case 13 : 
+                    case 13 :
                         int LA30_63 = input.LA(1);
 
-                         
+
                         int index30_63 = input.index();
                         input.rewind();
                         s = -1;
@@ -13985,14 +13985,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_63);
                         if ( s>=0 ) return s;
                         break;
-                    case 14 : 
+                    case 14 :
                         int LA30_64 = input.LA(1);
 
-                         
+
                         int index30_64 = input.index();
                         input.rewind();
                         s = -1;
@@ -14000,14 +14000,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_64);
                         if ( s>=0 ) return s;
                         break;
-                    case 15 : 
+                    case 15 :
                         int LA30_65 = input.LA(1);
 
-                         
+
                         int index30_65 = input.index();
                         input.rewind();
                         s = -1;
@@ -14015,14 +14015,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_65);
                         if ( s>=0 ) return s;
                         break;
-                    case 16 : 
+                    case 16 :
                         int LA30_66 = input.LA(1);
 
-                         
+
                         int index30_66 = input.index();
                         input.rewind();
                         s = -1;
@@ -14030,14 +14030,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_66);
                         if ( s>=0 ) return s;
                         break;
-                    case 17 : 
+                    case 17 :
                         int LA30_67 = input.LA(1);
 
-                         
+
                         int index30_67 = input.index();
                         input.rewind();
                         s = -1;
@@ -14045,14 +14045,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_67);
                         if ( s>=0 ) return s;
                         break;
-                    case 18 : 
+                    case 18 :
                         int LA30_68 = input.LA(1);
 
-                         
+
                         int index30_68 = input.index();
                         input.rewind();
                         s = -1;
@@ -14060,14 +14060,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_68);
                         if ( s>=0 ) return s;
                         break;
-                    case 19 : 
+                    case 19 :
                         int LA30_69 = input.LA(1);
 
-                         
+
                         int index30_69 = input.index();
                         input.rewind();
                         s = -1;
@@ -14075,14 +14075,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_69);
                         if ( s>=0 ) return s;
                         break;
-                    case 20 : 
+                    case 20 :
                         int LA30_70 = input.LA(1);
 
-                         
+
                         int index30_70 = input.index();
                         input.rewind();
                         s = -1;
@@ -14090,14 +14090,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_70);
                         if ( s>=0 ) return s;
                         break;
-                    case 21 : 
+                    case 21 :
                         int LA30_71 = input.LA(1);
 
-                         
+
                         int index30_71 = input.index();
                         input.rewind();
                         s = -1;
@@ -14105,14 +14105,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_71);
                         if ( s>=0 ) return s;
                         break;
-                    case 22 : 
+                    case 22 :
                         int LA30_72 = input.LA(1);
 
-                         
+
                         int index30_72 = input.index();
                         input.rewind();
                         s = -1;
@@ -14120,14 +14120,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_72);
                         if ( s>=0 ) return s;
                         break;
-                    case 23 : 
+                    case 23 :
                         int LA30_73 = input.LA(1);
 
-                         
+
                         int index30_73 = input.index();
                         input.rewind();
                         s = -1;
@@ -14135,14 +14135,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_73);
                         if ( s>=0 ) return s;
                         break;
-                    case 24 : 
+                    case 24 :
                         int LA30_74 = input.LA(1);
 
-                         
+
                         int index30_74 = input.index();
                         input.rewind();
                         s = -1;
@@ -14150,14 +14150,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_74);
                         if ( s>=0 ) return s;
                         break;
-                    case 25 : 
+                    case 25 :
                         int LA30_75 = input.LA(1);
 
-                         
+
                         int index30_75 = input.index();
                         input.rewind();
                         s = -1;
@@ -14165,14 +14165,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_75);
                         if ( s>=0 ) return s;
                         break;
-                    case 26 : 
+                    case 26 :
                         int LA30_76 = input.LA(1);
 
-                         
+
                         int index30_76 = input.index();
                         input.rewind();
                         s = -1;
@@ -14180,14 +14180,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_76);
                         if ( s>=0 ) return s;
                         break;
-                    case 27 : 
+                    case 27 :
                         int LA30_77 = input.LA(1);
 
-                         
+
                         int index30_77 = input.index();
                         input.rewind();
                         s = -1;
@@ -14195,14 +14195,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_77);
                         if ( s>=0 ) return s;
                         break;
-                    case 28 : 
+                    case 28 :
                         int LA30_78 = input.LA(1);
 
-                         
+
                         int index30_78 = input.index();
                         input.rewind();
                         s = -1;
@@ -14210,14 +14210,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_78);
                         if ( s>=0 ) return s;
                         break;
-                    case 29 : 
+                    case 29 :
                         int LA30_79 = input.LA(1);
 
-                         
+
                         int index30_79 = input.index();
                         input.rewind();
                         s = -1;
@@ -14225,14 +14225,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_79);
                         if ( s>=0 ) return s;
                         break;
-                    case 30 : 
+                    case 30 :
                         int LA30_80 = input.LA(1);
 
-                         
+
                         int index30_80 = input.index();
                         input.rewind();
                         s = -1;
@@ -14240,14 +14240,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_80);
                         if ( s>=0 ) return s;
                         break;
-                    case 31 : 
+                    case 31 :
                         int LA30_81 = input.LA(1);
 
-                         
+
                         int index30_81 = input.index();
                         input.rewind();
                         s = -1;
@@ -14255,14 +14255,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_81);
                         if ( s>=0 ) return s;
                         break;
-                    case 32 : 
+                    case 32 :
                         int LA30_82 = input.LA(1);
 
-                         
+
                         int index30_82 = input.index();
                         input.rewind();
                         s = -1;
@@ -14270,14 +14270,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_82);
                         if ( s>=0 ) return s;
                         break;
-                    case 33 : 
+                    case 33 :
                         int LA30_83 = input.LA(1);
 
-                         
+
                         int index30_83 = input.index();
                         input.rewind();
                         s = -1;
@@ -14285,14 +14285,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_83);
                         if ( s>=0 ) return s;
                         break;
-                    case 34 : 
+                    case 34 :
                         int LA30_84 = input.LA(1);
 
-                         
+
                         int index30_84 = input.index();
                         input.rewind();
                         s = -1;
@@ -14300,14 +14300,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_84);
                         if ( s>=0 ) return s;
                         break;
-                    case 35 : 
+                    case 35 :
                         int LA30_85 = input.LA(1);
 
-                         
+
                         int index30_85 = input.index();
                         input.rewind();
                         s = -1;
@@ -14315,14 +14315,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_85);
                         if ( s>=0 ) return s;
                         break;
-                    case 36 : 
+                    case 36 :
                         int LA30_86 = input.LA(1);
 
-                         
+
                         int index30_86 = input.index();
                         input.rewind();
                         s = -1;
@@ -14330,14 +14330,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_86);
                         if ( s>=0 ) return s;
                         break;
-                    case 37 : 
+                    case 37 :
                         int LA30_87 = input.LA(1);
 
-                         
+
                         int index30_87 = input.index();
                         input.rewind();
                         s = -1;
@@ -14345,14 +14345,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_87);
                         if ( s>=0 ) return s;
                         break;
-                    case 38 : 
+                    case 38 :
                         int LA30_88 = input.LA(1);
 
-                         
+
                         int index30_88 = input.index();
                         input.rewind();
                         s = -1;
@@ -14360,14 +14360,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_88);
                         if ( s>=0 ) return s;
                         break;
-                    case 39 : 
+                    case 39 :
                         int LA30_89 = input.LA(1);
 
-                         
+
                         int index30_89 = input.index();
                         input.rewind();
                         s = -1;
@@ -14375,14 +14375,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_89);
                         if ( s>=0 ) return s;
                         break;
-                    case 40 : 
+                    case 40 :
                         int LA30_90 = input.LA(1);
 
-                         
+
                         int index30_90 = input.index();
                         input.rewind();
                         s = -1;
@@ -14390,14 +14390,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_90);
                         if ( s>=0 ) return s;
                         break;
-                    case 41 : 
+                    case 41 :
                         int LA30_91 = input.LA(1);
 
-                         
+
                         int index30_91 = input.index();
                         input.rewind();
                         s = -1;
@@ -14405,14 +14405,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_91);
                         if ( s>=0 ) return s;
                         break;
-                    case 42 : 
+                    case 42 :
                         int LA30_92 = input.LA(1);
 
-                         
+
                         int index30_92 = input.index();
                         input.rewind();
                         s = -1;
@@ -14420,14 +14420,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_92);
                         if ( s>=0 ) return s;
                         break;
-                    case 43 : 
+                    case 43 :
                         int LA30_93 = input.LA(1);
 
-                         
+
                         int index30_93 = input.index();
                         input.rewind();
                         s = -1;
@@ -14435,14 +14435,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_93);
                         if ( s>=0 ) return s;
                         break;
-                    case 44 : 
+                    case 44 :
                         int LA30_94 = input.LA(1);
 
-                         
+
                         int index30_94 = input.index();
                         input.rewind();
                         s = -1;
@@ -14450,14 +14450,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_94);
                         if ( s>=0 ) return s;
                         break;
-                    case 45 : 
+                    case 45 :
                         int LA30_95 = input.LA(1);
 
-                         
+
                         int index30_95 = input.index();
                         input.rewind();
                         s = -1;
@@ -14465,14 +14465,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_95);
                         if ( s>=0 ) return s;
                         break;
-                    case 46 : 
+                    case 46 :
                         int LA30_96 = input.LA(1);
 
-                         
+
                         int index30_96 = input.index();
                         input.rewind();
                         s = -1;
@@ -14480,14 +14480,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_96);
                         if ( s>=0 ) return s;
                         break;
-                    case 47 : 
+                    case 47 :
                         int LA30_97 = input.LA(1);
 
-                         
+
                         int index30_97 = input.index();
                         input.rewind();
                         s = -1;
@@ -14495,14 +14495,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_97);
                         if ( s>=0 ) return s;
                         break;
-                    case 48 : 
+                    case 48 :
                         int LA30_98 = input.LA(1);
 
-                         
+
                         int index30_98 = input.index();
                         input.rewind();
                         s = -1;
@@ -14510,14 +14510,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_98);
                         if ( s>=0 ) return s;
                         break;
-                    case 49 : 
+                    case 49 :
                         int LA30_99 = input.LA(1);
 
-                         
+
                         int index30_99 = input.index();
                         input.rewind();
                         s = -1;
@@ -14525,14 +14525,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_99);
                         if ( s>=0 ) return s;
                         break;
-                    case 50 : 
+                    case 50 :
                         int LA30_100 = input.LA(1);
 
-                         
+
                         int index30_100 = input.index();
                         input.rewind();
                         s = -1;
@@ -14540,14 +14540,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_100);
                         if ( s>=0 ) return s;
                         break;
-                    case 51 : 
+                    case 51 :
                         int LA30_101 = input.LA(1);
 
-                         
+
                         int index30_101 = input.index();
                         input.rewind();
                         s = -1;
@@ -14555,14 +14555,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_101);
                         if ( s>=0 ) return s;
                         break;
-                    case 52 : 
+                    case 52 :
                         int LA30_102 = input.LA(1);
 
-                         
+
                         int index30_102 = input.index();
                         input.rewind();
                         s = -1;
@@ -14570,14 +14570,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_102);
                         if ( s>=0 ) return s;
                         break;
-                    case 53 : 
+                    case 53 :
                         int LA30_103 = input.LA(1);
 
-                         
+
                         int index30_103 = input.index();
                         input.rewind();
                         s = -1;
@@ -14585,14 +14585,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_103);
                         if ( s>=0 ) return s;
                         break;
-                    case 54 : 
+                    case 54 :
                         int LA30_104 = input.LA(1);
 
-                         
+
                         int index30_104 = input.index();
                         input.rewind();
                         s = -1;
@@ -14600,14 +14600,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_104);
                         if ( s>=0 ) return s;
                         break;
-                    case 55 : 
+                    case 55 :
                         int LA30_105 = input.LA(1);
 
-                         
+
                         int index30_105 = input.index();
                         input.rewind();
                         s = -1;
@@ -14615,14 +14615,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_105);
                         if ( s>=0 ) return s;
                         break;
-                    case 56 : 
+                    case 56 :
                         int LA30_106 = input.LA(1);
 
-                         
+
                         int index30_106 = input.index();
                         input.rewind();
                         s = -1;
@@ -14630,14 +14630,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_106);
                         if ( s>=0 ) return s;
                         break;
-                    case 57 : 
+                    case 57 :
                         int LA30_107 = input.LA(1);
 
-                         
+
                         int index30_107 = input.index();
                         input.rewind();
                         s = -1;
@@ -14645,14 +14645,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_107);
                         if ( s>=0 ) return s;
                         break;
-                    case 58 : 
+                    case 58 :
                         int LA30_108 = input.LA(1);
 
-                         
+
                         int index30_108 = input.index();
                         input.rewind();
                         s = -1;
@@ -14660,14 +14660,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_108);
                         if ( s>=0 ) return s;
                         break;
-                    case 59 : 
+                    case 59 :
                         int LA30_109 = input.LA(1);
 
-                         
+
                         int index30_109 = input.index();
                         input.rewind();
                         s = -1;
@@ -14675,14 +14675,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_109);
                         if ( s>=0 ) return s;
                         break;
-                    case 60 : 
+                    case 60 :
                         int LA30_110 = input.LA(1);
 
-                         
+
                         int index30_110 = input.index();
                         input.rewind();
                         s = -1;
@@ -14690,14 +14690,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_110);
                         if ( s>=0 ) return s;
                         break;
-                    case 61 : 
+                    case 61 :
                         int LA30_111 = input.LA(1);
 
-                         
+
                         int index30_111 = input.index();
                         input.rewind();
                         s = -1;
@@ -14705,14 +14705,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_111);
                         if ( s>=0 ) return s;
                         break;
-                    case 62 : 
+                    case 62 :
                         int LA30_112 = input.LA(1);
 
-                         
+
                         int index30_112 = input.index();
                         input.rewind();
                         s = -1;
@@ -14720,14 +14720,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_112);
                         if ( s>=0 ) return s;
                         break;
-                    case 63 : 
+                    case 63 :
                         int LA30_113 = input.LA(1);
 
-                         
+
                         int index30_113 = input.index();
                         input.rewind();
                         s = -1;
@@ -14735,14 +14735,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_113);
                         if ( s>=0 ) return s;
                         break;
-                    case 64 : 
+                    case 64 :
                         int LA30_114 = input.LA(1);
 
-                         
+
                         int index30_114 = input.index();
                         input.rewind();
                         s = -1;
@@ -14750,14 +14750,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_114);
                         if ( s>=0 ) return s;
                         break;
-                    case 65 : 
+                    case 65 :
                         int LA30_115 = input.LA(1);
 
-                         
+
                         int index30_115 = input.index();
                         input.rewind();
                         s = -1;
@@ -14765,14 +14765,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_115);
                         if ( s>=0 ) return s;
                         break;
-                    case 66 : 
+                    case 66 :
                         int LA30_116 = input.LA(1);
 
-                         
+
                         int index30_116 = input.index();
                         input.rewind();
                         s = -1;
@@ -14780,14 +14780,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_116);
                         if ( s>=0 ) return s;
                         break;
-                    case 67 : 
+                    case 67 :
                         int LA30_117 = input.LA(1);
 
-                         
+
                         int index30_117 = input.index();
                         input.rewind();
                         s = -1;
@@ -14795,14 +14795,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_117);
                         if ( s>=0 ) return s;
                         break;
-                    case 68 : 
+                    case 68 :
                         int LA30_118 = input.LA(1);
 
-                         
+
                         int index30_118 = input.index();
                         input.rewind();
                         s = -1;
@@ -14810,14 +14810,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_118);
                         if ( s>=0 ) return s;
                         break;
-                    case 69 : 
+                    case 69 :
                         int LA30_119 = input.LA(1);
 
-                         
+
                         int index30_119 = input.index();
                         input.rewind();
                         s = -1;
@@ -14825,14 +14825,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_119);
                         if ( s>=0 ) return s;
                         break;
-                    case 70 : 
+                    case 70 :
                         int LA30_120 = input.LA(1);
 
-                         
+
                         int index30_120 = input.index();
                         input.rewind();
                         s = -1;
@@ -14840,14 +14840,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_120);
                         if ( s>=0 ) return s;
                         break;
-                    case 71 : 
+                    case 71 :
                         int LA30_121 = input.LA(1);
 
-                         
+
                         int index30_121 = input.index();
                         input.rewind();
                         s = -1;
@@ -14855,14 +14855,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_121);
                         if ( s>=0 ) return s;
                         break;
-                    case 72 : 
+                    case 72 :
                         int LA30_122 = input.LA(1);
 
-                         
+
                         int index30_122 = input.index();
                         input.rewind();
                         s = -1;
@@ -14870,14 +14870,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_122);
                         if ( s>=0 ) return s;
                         break;
-                    case 73 : 
+                    case 73 :
                         int LA30_123 = input.LA(1);
 
-                         
+
                         int index30_123 = input.index();
                         input.rewind();
                         s = -1;
@@ -14885,14 +14885,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_123);
                         if ( s>=0 ) return s;
                         break;
-                    case 74 : 
+                    case 74 :
                         int LA30_124 = input.LA(1);
 
-                         
+
                         int index30_124 = input.index();
                         input.rewind();
                         s = -1;
@@ -14900,14 +14900,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_124);
                         if ( s>=0 ) return s;
                         break;
-                    case 75 : 
+                    case 75 :
                         int LA30_125 = input.LA(1);
 
-                         
+
                         int index30_125 = input.index();
                         input.rewind();
                         s = -1;
@@ -14915,14 +14915,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_125);
                         if ( s>=0 ) return s;
                         break;
-                    case 76 : 
+                    case 76 :
                         int LA30_126 = input.LA(1);
 
-                         
+
                         int index30_126 = input.index();
                         input.rewind();
                         s = -1;
@@ -14930,14 +14930,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_126);
                         if ( s>=0 ) return s;
                         break;
-                    case 77 : 
+                    case 77 :
                         int LA30_127 = input.LA(1);
 
-                         
+
                         int index30_127 = input.index();
                         input.rewind();
                         s = -1;
@@ -14945,14 +14945,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_127);
                         if ( s>=0 ) return s;
                         break;
-                    case 78 : 
+                    case 78 :
                         int LA30_128 = input.LA(1);
 
-                         
+
                         int index30_128 = input.index();
                         input.rewind();
                         s = -1;
@@ -14960,14 +14960,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_128);
                         if ( s>=0 ) return s;
                         break;
-                    case 79 : 
+                    case 79 :
                         int LA30_129 = input.LA(1);
 
-                         
+
                         int index30_129 = input.index();
                         input.rewind();
                         s = -1;
@@ -14975,14 +14975,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_129);
                         if ( s>=0 ) return s;
                         break;
-                    case 80 : 
+                    case 80 :
                         int LA30_130 = input.LA(1);
 
-                         
+
                         int index30_130 = input.index();
                         input.rewind();
                         s = -1;
@@ -14990,14 +14990,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_130);
                         if ( s>=0 ) return s;
                         break;
-                    case 81 : 
+                    case 81 :
                         int LA30_131 = input.LA(1);
 
-                         
+
                         int index30_131 = input.index();
                         input.rewind();
                         s = -1;
@@ -15005,14 +15005,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_131);
                         if ( s>=0 ) return s;
                         break;
-                    case 82 : 
+                    case 82 :
                         int LA30_132 = input.LA(1);
 
-                         
+
                         int index30_132 = input.index();
                         input.rewind();
                         s = -1;
@@ -15020,14 +15020,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_132);
                         if ( s>=0 ) return s;
                         break;
-                    case 83 : 
+                    case 83 :
                         int LA30_133 = input.LA(1);
 
-                         
+
                         int index30_133 = input.index();
                         input.rewind();
                         s = -1;
@@ -15035,14 +15035,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_133);
                         if ( s>=0 ) return s;
                         break;
-                    case 84 : 
+                    case 84 :
                         int LA30_134 = input.LA(1);
 
-                         
+
                         int index30_134 = input.index();
                         input.rewind();
                         s = -1;
@@ -15050,14 +15050,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_134);
                         if ( s>=0 ) return s;
                         break;
-                    case 85 : 
+                    case 85 :
                         int LA30_135 = input.LA(1);
 
-                         
+
                         int index30_135 = input.index();
                         input.rewind();
                         s = -1;
@@ -15065,14 +15065,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_135);
                         if ( s>=0 ) return s;
                         break;
-                    case 86 : 
+                    case 86 :
                         int LA30_136 = input.LA(1);
 
-                         
+
                         int index30_136 = input.index();
                         input.rewind();
                         s = -1;
@@ -15080,14 +15080,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_136);
                         if ( s>=0 ) return s;
                         break;
-                    case 87 : 
+                    case 87 :
                         int LA30_137 = input.LA(1);
 
-                         
+
                         int index30_137 = input.index();
                         input.rewind();
                         s = -1;
@@ -15095,14 +15095,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_137);
                         if ( s>=0 ) return s;
                         break;
-                    case 88 : 
+                    case 88 :
                         int LA30_138 = input.LA(1);
 
-                         
+
                         int index30_138 = input.index();
                         input.rewind();
                         s = -1;
@@ -15110,14 +15110,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_138);
                         if ( s>=0 ) return s;
                         break;
-                    case 89 : 
+                    case 89 :
                         int LA30_139 = input.LA(1);
 
-                         
+
                         int index30_139 = input.index();
                         input.rewind();
                         s = -1;
@@ -15125,14 +15125,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_139);
                         if ( s>=0 ) return s;
                         break;
-                    case 90 : 
+                    case 90 :
                         int LA30_140 = input.LA(1);
 
-                         
+
                         int index30_140 = input.index();
                         input.rewind();
                         s = -1;
@@ -15140,14 +15140,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_140);
                         if ( s>=0 ) return s;
                         break;
-                    case 91 : 
+                    case 91 :
                         int LA30_141 = input.LA(1);
 
-                         
+
                         int index30_141 = input.index();
                         input.rewind();
                         s = -1;
@@ -15155,14 +15155,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_141);
                         if ( s>=0 ) return s;
                         break;
-                    case 92 : 
+                    case 92 :
                         int LA30_142 = input.LA(1);
 
-                         
+
                         int index30_142 = input.index();
                         input.rewind();
                         s = -1;
@@ -15170,14 +15170,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_142);
                         if ( s>=0 ) return s;
                         break;
-                    case 93 : 
+                    case 93 :
                         int LA30_143 = input.LA(1);
 
-                         
+
                         int index30_143 = input.index();
                         input.rewind();
                         s = -1;
@@ -15185,14 +15185,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_143);
                         if ( s>=0 ) return s;
                         break;
-                    case 94 : 
+                    case 94 :
                         int LA30_144 = input.LA(1);
 
-                         
+
                         int index30_144 = input.index();
                         input.rewind();
                         s = -1;
@@ -15200,14 +15200,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_144);
                         if ( s>=0 ) return s;
                         break;
-                    case 95 : 
+                    case 95 :
                         int LA30_145 = input.LA(1);
 
-                         
+
                         int index30_145 = input.index();
                         input.rewind();
                         s = -1;
@@ -15215,14 +15215,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_145);
                         if ( s>=0 ) return s;
                         break;
-                    case 96 : 
+                    case 96 :
                         int LA30_146 = input.LA(1);
 
-                         
+
                         int index30_146 = input.index();
                         input.rewind();
                         s = -1;
@@ -15230,14 +15230,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_146);
                         if ( s>=0 ) return s;
                         break;
-                    case 97 : 
+                    case 97 :
                         int LA30_147 = input.LA(1);
 
-                         
+
                         int index30_147 = input.index();
                         input.rewind();
                         s = -1;
@@ -15245,14 +15245,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_147);
                         if ( s>=0 ) return s;
                         break;
-                    case 98 : 
+                    case 98 :
                         int LA30_148 = input.LA(1);
 
-                         
+
                         int index30_148 = input.index();
                         input.rewind();
                         s = -1;
@@ -15260,14 +15260,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_148);
                         if ( s>=0 ) return s;
                         break;
-                    case 99 : 
+                    case 99 :
                         int LA30_149 = input.LA(1);
 
-                         
+
                         int index30_149 = input.index();
                         input.rewind();
                         s = -1;
@@ -15275,14 +15275,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_149);
                         if ( s>=0 ) return s;
                         break;
-                    case 100 : 
+                    case 100 :
                         int LA30_150 = input.LA(1);
 
-                         
+
                         int index30_150 = input.index();
                         input.rewind();
                         s = -1;
@@ -15290,14 +15290,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_150);
                         if ( s>=0 ) return s;
                         break;
-                    case 101 : 
+                    case 101 :
                         int LA30_151 = input.LA(1);
 
-                         
+
                         int index30_151 = input.index();
                         input.rewind();
                         s = -1;
@@ -15305,14 +15305,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_151);
                         if ( s>=0 ) return s;
                         break;
-                    case 102 : 
+                    case 102 :
                         int LA30_152 = input.LA(1);
 
-                         
+
                         int index30_152 = input.index();
                         input.rewind();
                         s = -1;
@@ -15320,14 +15320,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_152);
                         if ( s>=0 ) return s;
                         break;
-                    case 103 : 
+                    case 103 :
                         int LA30_153 = input.LA(1);
 
-                         
+
                         int index30_153 = input.index();
                         input.rewind();
                         s = -1;
@@ -15335,14 +15335,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_153);
                         if ( s>=0 ) return s;
                         break;
-                    case 104 : 
+                    case 104 :
                         int LA30_154 = input.LA(1);
 
-                         
+
                         int index30_154 = input.index();
                         input.rewind();
                         s = -1;
@@ -15350,14 +15350,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_154);
                         if ( s>=0 ) return s;
                         break;
-                    case 105 : 
+                    case 105 :
                         int LA30_155 = input.LA(1);
 
-                         
+
                         int index30_155 = input.index();
                         input.rewind();
                         s = -1;
@@ -15365,14 +15365,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_155);
                         if ( s>=0 ) return s;
                         break;
-                    case 106 : 
+                    case 106 :
                         int LA30_156 = input.LA(1);
 
-                         
+
                         int index30_156 = input.index();
                         input.rewind();
                         s = -1;
@@ -15380,14 +15380,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_156);
                         if ( s>=0 ) return s;
                         break;
-                    case 107 : 
+                    case 107 :
                         int LA30_157 = input.LA(1);
 
-                         
+
                         int index30_157 = input.index();
                         input.rewind();
                         s = -1;
@@ -15395,14 +15395,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_157);
                         if ( s>=0 ) return s;
                         break;
-                    case 108 : 
+                    case 108 :
                         int LA30_158 = input.LA(1);
 
-                         
+
                         int index30_158 = input.index();
                         input.rewind();
                         s = -1;
@@ -15410,14 +15410,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_158);
                         if ( s>=0 ) return s;
                         break;
-                    case 109 : 
+                    case 109 :
                         int LA30_159 = input.LA(1);
 
-                         
+
                         int index30_159 = input.index();
                         input.rewind();
                         s = -1;
@@ -15425,14 +15425,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_159);
                         if ( s>=0 ) return s;
                         break;
-                    case 110 : 
+                    case 110 :
                         int LA30_160 = input.LA(1);
 
-                         
+
                         int index30_160 = input.index();
                         input.rewind();
                         s = -1;
@@ -15440,14 +15440,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_160);
                         if ( s>=0 ) return s;
                         break;
-                    case 111 : 
+                    case 111 :
                         int LA30_161 = input.LA(1);
 
-                         
+
                         int index30_161 = input.index();
                         input.rewind();
                         s = -1;
@@ -15455,14 +15455,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_161);
                         if ( s>=0 ) return s;
                         break;
-                    case 112 : 
+                    case 112 :
                         int LA30_162 = input.LA(1);
 
-                         
+
                         int index30_162 = input.index();
                         input.rewind();
                         s = -1;
@@ -15470,14 +15470,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_162);
                         if ( s>=0 ) return s;
                         break;
-                    case 113 : 
+                    case 113 :
                         int LA30_163 = input.LA(1);
 
-                         
+
                         int index30_163 = input.index();
                         input.rewind();
                         s = -1;
@@ -15485,14 +15485,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_163);
                         if ( s>=0 ) return s;
                         break;
-                    case 114 : 
+                    case 114 :
                         int LA30_164 = input.LA(1);
 
-                         
+
                         int index30_164 = input.index();
                         input.rewind();
                         s = -1;
@@ -15500,14 +15500,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_164);
                         if ( s>=0 ) return s;
                         break;
-                    case 115 : 
+                    case 115 :
                         int LA30_165 = input.LA(1);
 
-                         
+
                         int index30_165 = input.index();
                         input.rewind();
                         s = -1;
@@ -15515,14 +15515,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_165);
                         if ( s>=0 ) return s;
                         break;
-                    case 116 : 
+                    case 116 :
                         int LA30_166 = input.LA(1);
 
-                         
+
                         int index30_166 = input.index();
                         input.rewind();
                         s = -1;
@@ -15530,14 +15530,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_166);
                         if ( s>=0 ) return s;
                         break;
-                    case 117 : 
+                    case 117 :
                         int LA30_167 = input.LA(1);
 
-                         
+
                         int index30_167 = input.index();
                         input.rewind();
                         s = -1;
@@ -15545,14 +15545,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_167);
                         if ( s>=0 ) return s;
                         break;
-                    case 118 : 
+                    case 118 :
                         int LA30_168 = input.LA(1);
 
-                         
+
                         int index30_168 = input.index();
                         input.rewind();
                         s = -1;
@@ -15560,14 +15560,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_168);
                         if ( s>=0 ) return s;
                         break;
-                    case 119 : 
+                    case 119 :
                         int LA30_169 = input.LA(1);
 
-                         
+
                         int index30_169 = input.index();
                         input.rewind();
                         s = -1;
@@ -15575,14 +15575,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_169);
                         if ( s>=0 ) return s;
                         break;
-                    case 120 : 
+                    case 120 :
                         int LA30_170 = input.LA(1);
 
-                         
+
                         int index30_170 = input.index();
                         input.rewind();
                         s = -1;
@@ -15590,14 +15590,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_170);
                         if ( s>=0 ) return s;
                         break;
-                    case 121 : 
+                    case 121 :
                         int LA30_171 = input.LA(1);
 
-                         
+
                         int index30_171 = input.index();
                         input.rewind();
                         s = -1;
@@ -15605,14 +15605,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_171);
                         if ( s>=0 ) return s;
                         break;
-                    case 122 : 
+                    case 122 :
                         int LA30_172 = input.LA(1);
 
-                         
+
                         int index30_172 = input.index();
                         input.rewind();
                         s = -1;
@@ -15620,14 +15620,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_172);
                         if ( s>=0 ) return s;
                         break;
-                    case 123 : 
+                    case 123 :
                         int LA30_173 = input.LA(1);
 
-                         
+
                         int index30_173 = input.index();
                         input.rewind();
                         s = -1;
@@ -15635,14 +15635,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_173);
                         if ( s>=0 ) return s;
                         break;
-                    case 124 : 
+                    case 124 :
                         int LA30_174 = input.LA(1);
 
-                         
+
                         int index30_174 = input.index();
                         input.rewind();
                         s = -1;
@@ -15650,14 +15650,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_174);
                         if ( s>=0 ) return s;
                         break;
-                    case 125 : 
+                    case 125 :
                         int LA30_175 = input.LA(1);
 
-                         
+
                         int index30_175 = input.index();
                         input.rewind();
                         s = -1;
@@ -15665,14 +15665,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_175);
                         if ( s>=0 ) return s;
                         break;
-                    case 126 : 
+                    case 126 :
                         int LA30_176 = input.LA(1);
 
-                         
+
                         int index30_176 = input.index();
                         input.rewind();
                         s = -1;
@@ -15680,14 +15680,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_176);
                         if ( s>=0 ) return s;
                         break;
-                    case 127 : 
+                    case 127 :
                         int LA30_177 = input.LA(1);
 
-                         
+
                         int index30_177 = input.index();
                         input.rewind();
                         s = -1;
@@ -15695,14 +15695,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_177);
                         if ( s>=0 ) return s;
                         break;
-                    case 128 : 
+                    case 128 :
                         int LA30_178 = input.LA(1);
 
-                         
+
                         int index30_178 = input.index();
                         input.rewind();
                         s = -1;
@@ -15710,14 +15710,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_178);
                         if ( s>=0 ) return s;
                         break;
-                    case 129 : 
+                    case 129 :
                         int LA30_179 = input.LA(1);
 
-                         
+
                         int index30_179 = input.index();
                         input.rewind();
                         s = -1;
@@ -15725,14 +15725,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_179);
                         if ( s>=0 ) return s;
                         break;
-                    case 130 : 
+                    case 130 :
                         int LA30_180 = input.LA(1);
 
-                         
+
                         int index30_180 = input.index();
                         input.rewind();
                         s = -1;
@@ -15740,14 +15740,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_180);
                         if ( s>=0 ) return s;
                         break;
-                    case 131 : 
+                    case 131 :
                         int LA30_181 = input.LA(1);
 
-                         
+
                         int index30_181 = input.index();
                         input.rewind();
                         s = -1;
@@ -15755,14 +15755,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_181);
                         if ( s>=0 ) return s;
                         break;
-                    case 132 : 
+                    case 132 :
                         int LA30_182 = input.LA(1);
 
-                         
+
                         int index30_182 = input.index();
                         input.rewind();
                         s = -1;
@@ -15770,14 +15770,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_182);
                         if ( s>=0 ) return s;
                         break;
-                    case 133 : 
+                    case 133 :
                         int LA30_183 = input.LA(1);
 
-                         
+
                         int index30_183 = input.index();
                         input.rewind();
                         s = -1;
@@ -15785,14 +15785,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_183);
                         if ( s>=0 ) return s;
                         break;
-                    case 134 : 
+                    case 134 :
                         int LA30_184 = input.LA(1);
 
-                         
+
                         int index30_184 = input.index();
                         input.rewind();
                         s = -1;
@@ -15800,14 +15800,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_184);
                         if ( s>=0 ) return s;
                         break;
-                    case 135 : 
+                    case 135 :
                         int LA30_185 = input.LA(1);
 
-                         
+
                         int index30_185 = input.index();
                         input.rewind();
                         s = -1;
@@ -15815,14 +15815,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_185);
                         if ( s>=0 ) return s;
                         break;
-                    case 136 : 
+                    case 136 :
                         int LA30_186 = input.LA(1);
 
-                         
+
                         int index30_186 = input.index();
                         input.rewind();
                         s = -1;
@@ -15830,14 +15830,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_186);
                         if ( s>=0 ) return s;
                         break;
-                    case 137 : 
+                    case 137 :
                         int LA30_187 = input.LA(1);
 
-                         
+
                         int index30_187 = input.index();
                         input.rewind();
                         s = -1;
@@ -15845,14 +15845,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_187);
                         if ( s>=0 ) return s;
                         break;
-                    case 138 : 
+                    case 138 :
                         int LA30_188 = input.LA(1);
 
-                         
+
                         int index30_188 = input.index();
                         input.rewind();
                         s = -1;
@@ -15860,14 +15860,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_188);
                         if ( s>=0 ) return s;
                         break;
-                    case 139 : 
+                    case 139 :
                         int LA30_189 = input.LA(1);
 
-                         
+
                         int index30_189 = input.index();
                         input.rewind();
                         s = -1;
@@ -15875,14 +15875,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_189);
                         if ( s>=0 ) return s;
                         break;
-                    case 140 : 
+                    case 140 :
                         int LA30_190 = input.LA(1);
 
-                         
+
                         int index30_190 = input.index();
                         input.rewind();
                         s = -1;
@@ -15890,14 +15890,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_190);
                         if ( s>=0 ) return s;
                         break;
-                    case 141 : 
+                    case 141 :
                         int LA30_191 = input.LA(1);
 
-                         
+
                         int index30_191 = input.index();
                         input.rewind();
                         s = -1;
@@ -15905,14 +15905,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_191);
                         if ( s>=0 ) return s;
                         break;
-                    case 142 : 
+                    case 142 :
                         int LA30_192 = input.LA(1);
 
-                         
+
                         int index30_192 = input.index();
                         input.rewind();
                         s = -1;
@@ -15920,14 +15920,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_192);
                         if ( s>=0 ) return s;
                         break;
-                    case 143 : 
+                    case 143 :
                         int LA30_193 = input.LA(1);
 
-                         
+
                         int index30_193 = input.index();
                         input.rewind();
                         s = -1;
@@ -15935,14 +15935,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_193);
                         if ( s>=0 ) return s;
                         break;
-                    case 144 : 
+                    case 144 :
                         int LA30_194 = input.LA(1);
 
-                         
+
                         int index30_194 = input.index();
                         input.rewind();
                         s = -1;
@@ -15950,14 +15950,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_194);
                         if ( s>=0 ) return s;
                         break;
-                    case 145 : 
+                    case 145 :
                         int LA30_195 = input.LA(1);
 
-                         
+
                         int index30_195 = input.index();
                         input.rewind();
                         s = -1;
@@ -15965,14 +15965,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_195);
                         if ( s>=0 ) return s;
                         break;
-                    case 146 : 
+                    case 146 :
                         int LA30_196 = input.LA(1);
 
-                         
+
                         int index30_196 = input.index();
                         input.rewind();
                         s = -1;
@@ -15980,14 +15980,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_196);
                         if ( s>=0 ) return s;
                         break;
-                    case 147 : 
+                    case 147 :
                         int LA30_197 = input.LA(1);
 
-                         
+
                         int index30_197 = input.index();
                         input.rewind();
                         s = -1;
@@ -15995,14 +15995,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_197);
                         if ( s>=0 ) return s;
                         break;
-                    case 148 : 
+                    case 148 :
                         int LA30_198 = input.LA(1);
 
-                         
+
                         int index30_198 = input.index();
                         input.rewind();
                         s = -1;
@@ -16010,14 +16010,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_198);
                         if ( s>=0 ) return s;
                         break;
-                    case 149 : 
+                    case 149 :
                         int LA30_199 = input.LA(1);
 
-                         
+
                         int index30_199 = input.index();
                         input.rewind();
                         s = -1;
@@ -16025,14 +16025,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_199);
                         if ( s>=0 ) return s;
                         break;
-                    case 150 : 
+                    case 150 :
                         int LA30_200 = input.LA(1);
 
-                         
+
                         int index30_200 = input.index();
                         input.rewind();
                         s = -1;
@@ -16040,14 +16040,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_200);
                         if ( s>=0 ) return s;
                         break;
-                    case 151 : 
+                    case 151 :
                         int LA30_201 = input.LA(1);
 
-                         
+
                         int index30_201 = input.index();
                         input.rewind();
                         s = -1;
@@ -16055,14 +16055,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_201);
                         if ( s>=0 ) return s;
                         break;
-                    case 152 : 
+                    case 152 :
                         int LA30_202 = input.LA(1);
 
-                         
+
                         int index30_202 = input.index();
                         input.rewind();
                         s = -1;
@@ -16070,14 +16070,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_202);
                         if ( s>=0 ) return s;
                         break;
-                    case 153 : 
+                    case 153 :
                         int LA30_203 = input.LA(1);
 
-                         
+
                         int index30_203 = input.index();
                         input.rewind();
                         s = -1;
@@ -16085,14 +16085,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_203);
                         if ( s>=0 ) return s;
                         break;
-                    case 154 : 
+                    case 154 :
                         int LA30_204 = input.LA(1);
 
-                         
+
                         int index30_204 = input.index();
                         input.rewind();
                         s = -1;
@@ -16100,14 +16100,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_204);
                         if ( s>=0 ) return s;
                         break;
-                    case 155 : 
+                    case 155 :
                         int LA30_205 = input.LA(1);
 
-                         
+
                         int index30_205 = input.index();
                         input.rewind();
                         s = -1;
@@ -16115,14 +16115,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_205);
                         if ( s>=0 ) return s;
                         break;
-                    case 156 : 
+                    case 156 :
                         int LA30_206 = input.LA(1);
 
-                         
+
                         int index30_206 = input.index();
                         input.rewind();
                         s = -1;
@@ -16130,14 +16130,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_206);
                         if ( s>=0 ) return s;
                         break;
-                    case 157 : 
+                    case 157 :
                         int LA30_207 = input.LA(1);
 
-                         
+
                         int index30_207 = input.index();
                         input.rewind();
                         s = -1;
@@ -16145,14 +16145,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_207);
                         if ( s>=0 ) return s;
                         break;
-                    case 158 : 
+                    case 158 :
                         int LA30_208 = input.LA(1);
 
-                         
+
                         int index30_208 = input.index();
                         input.rewind();
                         s = -1;
@@ -16160,14 +16160,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_208);
                         if ( s>=0 ) return s;
                         break;
-                    case 159 : 
+                    case 159 :
                         int LA30_209 = input.LA(1);
 
-                         
+
                         int index30_209 = input.index();
                         input.rewind();
                         s = -1;
@@ -16175,14 +16175,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_209);
                         if ( s>=0 ) return s;
                         break;
-                    case 160 : 
+                    case 160 :
                         int LA30_210 = input.LA(1);
 
-                         
+
                         int index30_210 = input.index();
                         input.rewind();
                         s = -1;
@@ -16190,14 +16190,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_210);
                         if ( s>=0 ) return s;
                         break;
-                    case 161 : 
+                    case 161 :
                         int LA30_211 = input.LA(1);
 
-                         
+
                         int index30_211 = input.index();
                         input.rewind();
                         s = -1;
@@ -16205,14 +16205,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_211);
                         if ( s>=0 ) return s;
                         break;
-                    case 162 : 
+                    case 162 :
                         int LA30_212 = input.LA(1);
 
-                         
+
                         int index30_212 = input.index();
                         input.rewind();
                         s = -1;
@@ -16220,14 +16220,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_212);
                         if ( s>=0 ) return s;
                         break;
-                    case 163 : 
+                    case 163 :
                         int LA30_213 = input.LA(1);
 
-                         
+
                         int index30_213 = input.index();
                         input.rewind();
                         s = -1;
@@ -16235,14 +16235,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_213);
                         if ( s>=0 ) return s;
                         break;
-                    case 164 : 
+                    case 164 :
                         int LA30_214 = input.LA(1);
 
-                         
+
                         int index30_214 = input.index();
                         input.rewind();
                         s = -1;
@@ -16250,14 +16250,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_214);
                         if ( s>=0 ) return s;
                         break;
-                    case 165 : 
+                    case 165 :
                         int LA30_215 = input.LA(1);
 
-                         
+
                         int index30_215 = input.index();
                         input.rewind();
                         s = -1;
@@ -16265,14 +16265,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_215);
                         if ( s>=0 ) return s;
                         break;
-                    case 166 : 
+                    case 166 :
                         int LA30_216 = input.LA(1);
 
-                         
+
                         int index30_216 = input.index();
                         input.rewind();
                         s = -1;
@@ -16280,14 +16280,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_216);
                         if ( s>=0 ) return s;
                         break;
-                    case 167 : 
+                    case 167 :
                         int LA30_217 = input.LA(1);
 
-                         
+
                         int index30_217 = input.index();
                         input.rewind();
                         s = -1;
@@ -16295,14 +16295,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_217);
                         if ( s>=0 ) return s;
                         break;
-                    case 168 : 
+                    case 168 :
                         int LA30_218 = input.LA(1);
 
-                         
+
                         int index30_218 = input.index();
                         input.rewind();
                         s = -1;
@@ -16310,14 +16310,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_218);
                         if ( s>=0 ) return s;
                         break;
-                    case 169 : 
+                    case 169 :
                         int LA30_219 = input.LA(1);
 
-                         
+
                         int index30_219 = input.index();
                         input.rewind();
                         s = -1;
@@ -16325,14 +16325,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_219);
                         if ( s>=0 ) return s;
                         break;
-                    case 170 : 
+                    case 170 :
                         int LA30_220 = input.LA(1);
 
-                         
+
                         int index30_220 = input.index();
                         input.rewind();
                         s = -1;
@@ -16340,14 +16340,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_220);
                         if ( s>=0 ) return s;
                         break;
-                    case 171 : 
+                    case 171 :
                         int LA30_221 = input.LA(1);
 
-                         
+
                         int index30_221 = input.index();
                         input.rewind();
                         s = -1;
@@ -16355,14 +16355,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_221);
                         if ( s>=0 ) return s;
                         break;
-                    case 172 : 
+                    case 172 :
                         int LA30_222 = input.LA(1);
 
-                         
+
                         int index30_222 = input.index();
                         input.rewind();
                         s = -1;
@@ -16370,14 +16370,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_222);
                         if ( s>=0 ) return s;
                         break;
-                    case 173 : 
+                    case 173 :
                         int LA30_223 = input.LA(1);
 
-                         
+
                         int index30_223 = input.index();
                         input.rewind();
                         s = -1;
@@ -16385,14 +16385,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_223);
                         if ( s>=0 ) return s;
                         break;
-                    case 174 : 
+                    case 174 :
                         int LA30_224 = input.LA(1);
 
-                         
+
                         int index30_224 = input.index();
                         input.rewind();
                         s = -1;
@@ -16400,14 +16400,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_224);
                         if ( s>=0 ) return s;
                         break;
-                    case 175 : 
+                    case 175 :
                         int LA30_225 = input.LA(1);
 
-                         
+
                         int index30_225 = input.index();
                         input.rewind();
                         s = -1;
@@ -16415,14 +16415,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_225);
                         if ( s>=0 ) return s;
                         break;
-                    case 176 : 
+                    case 176 :
                         int LA30_226 = input.LA(1);
 
-                         
+
                         int index30_226 = input.index();
                         input.rewind();
                         s = -1;
@@ -16430,14 +16430,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_226);
                         if ( s>=0 ) return s;
                         break;
-                    case 177 : 
+                    case 177 :
                         int LA30_227 = input.LA(1);
 
-                         
+
                         int index30_227 = input.index();
                         input.rewind();
                         s = -1;
@@ -16445,14 +16445,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_227);
                         if ( s>=0 ) return s;
                         break;
-                    case 178 : 
+                    case 178 :
                         int LA30_228 = input.LA(1);
 
-                         
+
                         int index30_228 = input.index();
                         input.rewind();
                         s = -1;
@@ -16460,14 +16460,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_228);
                         if ( s>=0 ) return s;
                         break;
-                    case 179 : 
+                    case 179 :
                         int LA30_229 = input.LA(1);
 
-                         
+
                         int index30_229 = input.index();
                         input.rewind();
                         s = -1;
@@ -16475,14 +16475,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_229);
                         if ( s>=0 ) return s;
                         break;
-                    case 180 : 
+                    case 180 :
                         int LA30_230 = input.LA(1);
 
-                         
+
                         int index30_230 = input.index();
                         input.rewind();
                         s = -1;
@@ -16490,14 +16490,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_230);
                         if ( s>=0 ) return s;
                         break;
-                    case 181 : 
+                    case 181 :
                         int LA30_231 = input.LA(1);
 
-                         
+
                         int index30_231 = input.index();
                         input.rewind();
                         s = -1;
@@ -16505,14 +16505,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_231);
                         if ( s>=0 ) return s;
                         break;
-                    case 182 : 
+                    case 182 :
                         int LA30_232 = input.LA(1);
 
-                         
+
                         int index30_232 = input.index();
                         input.rewind();
                         s = -1;
@@ -16520,14 +16520,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_232);
                         if ( s>=0 ) return s;
                         break;
-                    case 183 : 
+                    case 183 :
                         int LA30_233 = input.LA(1);
 
-                         
+
                         int index30_233 = input.index();
                         input.rewind();
                         s = -1;
@@ -16535,14 +16535,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_233);
                         if ( s>=0 ) return s;
                         break;
-                    case 184 : 
+                    case 184 :
                         int LA30_234 = input.LA(1);
 
-                         
+
                         int index30_234 = input.index();
                         input.rewind();
                         s = -1;
@@ -16550,14 +16550,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_234);
                         if ( s>=0 ) return s;
                         break;
-                    case 185 : 
+                    case 185 :
                         int LA30_235 = input.LA(1);
 
-                         
+
                         int index30_235 = input.index();
                         input.rewind();
                         s = -1;
@@ -16565,14 +16565,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_235);
                         if ( s>=0 ) return s;
                         break;
-                    case 186 : 
+                    case 186 :
                         int LA30_236 = input.LA(1);
 
-                         
+
                         int index30_236 = input.index();
                         input.rewind();
                         s = -1;
@@ -16580,14 +16580,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_236);
                         if ( s>=0 ) return s;
                         break;
-                    case 187 : 
+                    case 187 :
                         int LA30_237 = input.LA(1);
 
-                         
+
                         int index30_237 = input.index();
                         input.rewind();
                         s = -1;
@@ -16595,14 +16595,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_237);
                         if ( s>=0 ) return s;
                         break;
-                    case 188 : 
+                    case 188 :
                         int LA30_238 = input.LA(1);
 
-                         
+
                         int index30_238 = input.index();
                         input.rewind();
                         s = -1;
@@ -16610,14 +16610,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_238);
                         if ( s>=0 ) return s;
                         break;
-                    case 189 : 
+                    case 189 :
                         int LA30_239 = input.LA(1);
 
-                         
+
                         int index30_239 = input.index();
                         input.rewind();
                         s = -1;
@@ -16625,14 +16625,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_239);
                         if ( s>=0 ) return s;
                         break;
-                    case 190 : 
+                    case 190 :
                         int LA30_240 = input.LA(1);
 
-                         
+
                         int index30_240 = input.index();
                         input.rewind();
                         s = -1;
@@ -16640,14 +16640,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_240);
                         if ( s>=0 ) return s;
                         break;
-                    case 191 : 
+                    case 191 :
                         int LA30_241 = input.LA(1);
 
-                         
+
                         int index30_241 = input.index();
                         input.rewind();
                         s = -1;
@@ -16655,14 +16655,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_241);
                         if ( s>=0 ) return s;
                         break;
-                    case 192 : 
+                    case 192 :
                         int LA30_242 = input.LA(1);
 
-                         
+
                         int index30_242 = input.index();
                         input.rewind();
                         s = -1;
@@ -16670,14 +16670,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_242);
                         if ( s>=0 ) return s;
                         break;
-                    case 193 : 
+                    case 193 :
                         int LA30_243 = input.LA(1);
 
-                         
+
                         int index30_243 = input.index();
                         input.rewind();
                         s = -1;
@@ -16685,14 +16685,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_243);
                         if ( s>=0 ) return s;
                         break;
-                    case 194 : 
+                    case 194 :
                         int LA30_244 = input.LA(1);
 
-                         
+
                         int index30_244 = input.index();
                         input.rewind();
                         s = -1;
@@ -16700,14 +16700,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_244);
                         if ( s>=0 ) return s;
                         break;
-                    case 195 : 
+                    case 195 :
                         int LA30_245 = input.LA(1);
 
-                         
+
                         int index30_245 = input.index();
                         input.rewind();
                         s = -1;
@@ -16715,14 +16715,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_245);
                         if ( s>=0 ) return s;
                         break;
-                    case 196 : 
+                    case 196 :
                         int LA30_246 = input.LA(1);
 
-                         
+
                         int index30_246 = input.index();
                         input.rewind();
                         s = -1;
@@ -16730,14 +16730,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_246);
                         if ( s>=0 ) return s;
                         break;
-                    case 197 : 
+                    case 197 :
                         int LA30_247 = input.LA(1);
 
-                         
+
                         int index30_247 = input.index();
                         input.rewind();
                         s = -1;
@@ -16745,14 +16745,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_247);
                         if ( s>=0 ) return s;
                         break;
-                    case 198 : 
+                    case 198 :
                         int LA30_248 = input.LA(1);
 
-                         
+
                         int index30_248 = input.index();
                         input.rewind();
                         s = -1;
@@ -16760,14 +16760,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_248);
                         if ( s>=0 ) return s;
                         break;
-                    case 199 : 
+                    case 199 :
                         int LA30_249 = input.LA(1);
 
-                         
+
                         int index30_249 = input.index();
                         input.rewind();
                         s = -1;
@@ -16775,14 +16775,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_249);
                         if ( s>=0 ) return s;
                         break;
-                    case 200 : 
+                    case 200 :
                         int LA30_250 = input.LA(1);
 
-                         
+
                         int index30_250 = input.index();
                         input.rewind();
                         s = -1;
@@ -16790,14 +16790,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_250);
                         if ( s>=0 ) return s;
                         break;
-                    case 201 : 
+                    case 201 :
                         int LA30_251 = input.LA(1);
 
-                         
+
                         int index30_251 = input.index();
                         input.rewind();
                         s = -1;
@@ -16805,14 +16805,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_251);
                         if ( s>=0 ) return s;
                         break;
-                    case 202 : 
+                    case 202 :
                         int LA30_252 = input.LA(1);
 
-                         
+
                         int index30_252 = input.index();
                         input.rewind();
                         s = -1;
@@ -16820,14 +16820,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_252);
                         if ( s>=0 ) return s;
                         break;
-                    case 203 : 
+                    case 203 :
                         int LA30_253 = input.LA(1);
 
-                         
+
                         int index30_253 = input.index();
                         input.rewind();
                         s = -1;
@@ -16835,14 +16835,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_253);
                         if ( s>=0 ) return s;
                         break;
-                    case 204 : 
+                    case 204 :
                         int LA30_254 = input.LA(1);
 
-                         
+
                         int index30_254 = input.index();
                         input.rewind();
                         s = -1;
@@ -16850,14 +16850,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_254);
                         if ( s>=0 ) return s;
                         break;
-                    case 205 : 
+                    case 205 :
                         int LA30_255 = input.LA(1);
 
-                         
+
                         int index30_255 = input.index();
                         input.rewind();
                         s = -1;
@@ -16865,14 +16865,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_255);
                         if ( s>=0 ) return s;
                         break;
-                    case 206 : 
+                    case 206 :
                         int LA30_256 = input.LA(1);
 
-                         
+
                         int index30_256 = input.index();
                         input.rewind();
                         s = -1;
@@ -16880,14 +16880,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_256);
                         if ( s>=0 ) return s;
                         break;
-                    case 207 : 
+                    case 207 :
                         int LA30_257 = input.LA(1);
 
-                         
+
                         int index30_257 = input.index();
                         input.rewind();
                         s = -1;
@@ -16895,14 +16895,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_257);
                         if ( s>=0 ) return s;
                         break;
-                    case 208 : 
+                    case 208 :
                         int LA30_258 = input.LA(1);
 
-                         
+
                         int index30_258 = input.index();
                         input.rewind();
                         s = -1;
@@ -16910,14 +16910,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_258);
                         if ( s>=0 ) return s;
                         break;
-                    case 209 : 
+                    case 209 :
                         int LA30_259 = input.LA(1);
 
-                         
+
                         int index30_259 = input.index();
                         input.rewind();
                         s = -1;
@@ -16925,14 +16925,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_259);
                         if ( s>=0 ) return s;
                         break;
-                    case 210 : 
+                    case 210 :
                         int LA30_260 = input.LA(1);
 
-                         
+
                         int index30_260 = input.index();
                         input.rewind();
                         s = -1;
@@ -16940,14 +16940,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_260);
                         if ( s>=0 ) return s;
                         break;
-                    case 211 : 
+                    case 211 :
                         int LA30_261 = input.LA(1);
 
-                         
+
                         int index30_261 = input.index();
                         input.rewind();
                         s = -1;
@@ -16955,14 +16955,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_261);
                         if ( s>=0 ) return s;
                         break;
-                    case 212 : 
+                    case 212 :
                         int LA30_262 = input.LA(1);
 
-                         
+
                         int index30_262 = input.index();
                         input.rewind();
                         s = -1;
@@ -16970,14 +16970,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_262);
                         if ( s>=0 ) return s;
                         break;
-                    case 213 : 
+                    case 213 :
                         int LA30_263 = input.LA(1);
 
-                         
+
                         int index30_263 = input.index();
                         input.rewind();
                         s = -1;
@@ -16985,14 +16985,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_263);
                         if ( s>=0 ) return s;
                         break;
-                    case 214 : 
+                    case 214 :
                         int LA30_264 = input.LA(1);
 
-                         
+
                         int index30_264 = input.index();
                         input.rewind();
                         s = -1;
@@ -17000,14 +17000,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_264);
                         if ( s>=0 ) return s;
                         break;
-                    case 215 : 
+                    case 215 :
                         int LA30_265 = input.LA(1);
 
-                         
+
                         int index30_265 = input.index();
                         input.rewind();
                         s = -1;
@@ -17015,14 +17015,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_265);
                         if ( s>=0 ) return s;
                         break;
-                    case 216 : 
+                    case 216 :
                         int LA30_266 = input.LA(1);
 
-                         
+
                         int index30_266 = input.index();
                         input.rewind();
                         s = -1;
@@ -17030,14 +17030,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_266);
                         if ( s>=0 ) return s;
                         break;
-                    case 217 : 
+                    case 217 :
                         int LA30_267 = input.LA(1);
 
-                         
+
                         int index30_267 = input.index();
                         input.rewind();
                         s = -1;
@@ -17045,14 +17045,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_267);
                         if ( s>=0 ) return s;
                         break;
-                    case 218 : 
+                    case 218 :
                         int LA30_268 = input.LA(1);
 
-                         
+
                         int index30_268 = input.index();
                         input.rewind();
                         s = -1;
@@ -17060,14 +17060,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_268);
                         if ( s>=0 ) return s;
                         break;
-                    case 219 : 
+                    case 219 :
                         int LA30_269 = input.LA(1);
 
-                         
+
                         int index30_269 = input.index();
                         input.rewind();
                         s = -1;
@@ -17075,14 +17075,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_269);
                         if ( s>=0 ) return s;
                         break;
-                    case 220 : 
+                    case 220 :
                         int LA30_270 = input.LA(1);
 
-                         
+
                         int index30_270 = input.index();
                         input.rewind();
                         s = -1;
@@ -17090,14 +17090,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_270);
                         if ( s>=0 ) return s;
                         break;
-                    case 221 : 
+                    case 221 :
                         int LA30_271 = input.LA(1);
 
-                         
+
                         int index30_271 = input.index();
                         input.rewind();
                         s = -1;
@@ -17105,14 +17105,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_271);
                         if ( s>=0 ) return s;
                         break;
-                    case 222 : 
+                    case 222 :
                         int LA30_272 = input.LA(1);
 
-                         
+
                         int index30_272 = input.index();
                         input.rewind();
                         s = -1;
@@ -17120,14 +17120,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_272);
                         if ( s>=0 ) return s;
                         break;
-                    case 223 : 
+                    case 223 :
                         int LA30_273 = input.LA(1);
 
-                         
+
                         int index30_273 = input.index();
                         input.rewind();
                         s = -1;
@@ -17135,14 +17135,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_273);
                         if ( s>=0 ) return s;
                         break;
-                    case 224 : 
+                    case 224 :
                         int LA30_274 = input.LA(1);
 
-                         
+
                         int index30_274 = input.index();
                         input.rewind();
                         s = -1;
@@ -17150,7 +17150,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 275;}
 
-                         
+
                         input.seek(index30_274);
                         if ( s>=0 ) return s;
                         break;
@@ -18004,12 +18004,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
-        	int _s = s;
+            int _s = s;
             switch ( s ) {
-                    case 0 : 
+                    case 0 :
                         int LA47_1 = input.LA(1);
 
-                         
+
                         int index47_1 = input.index();
                         input.rewind();
                         s = -1;
@@ -18107,14 +18107,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (LA47_1==EXISTS) && (synpred1_JPQL())) {s = 91;}
 
-                         
+
                         input.seek(index47_1);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 : 
+                    case 1 :
                         int LA47_53 = input.LA(1);
 
-                         
+
                         int index47_53 = input.index();
                         input.rewind();
                         s = -1;
@@ -18154,14 +18154,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (LA47_53==RIGHT_ROUND_BRACKET) ) {s = 2;}
 
-                         
+
                         input.seek(index47_53);
                         if ( s>=0 ) return s;
                         break;
-                    case 2 : 
+                    case 2 :
                         int LA47_56 = input.LA(1);
 
-                         
+
                         int index47_56 = input.index();
                         input.rewind();
                         s = -1;
@@ -18199,14 +18199,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (LA47_56==IS) && (synpred1_JPQL())) {s = 185;}
 
-                         
+
                         input.seek(index47_56);
                         if ( s>=0 ) return s;
                         break;
-                    case 3 : 
+                    case 3 :
                         int LA47_57 = input.LA(1);
 
-                         
+
                         int index47_57 = input.index();
                         input.rewind();
                         s = -1;
@@ -18244,14 +18244,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (LA47_57==RIGHT_ROUND_BRACKET) ) {s = 2;}
 
-                         
+
                         input.seek(index47_57);
                         if ( s>=0 ) return s;
                         break;
-                    case 4 : 
+                    case 4 :
                         int LA47_69 = input.LA(1);
 
-                         
+
                         int index47_69 = input.index();
                         input.rewind();
                         s = -1;
@@ -18349,14 +18349,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (LA47_69==EXISTS) && (synpred1_JPQL())) {s = 264;}
 
-                         
+
                         input.seek(index47_69);
                         if ( s>=0 ) return s;
                         break;
-                    case 5 : 
+                    case 5 :
                         int LA47_70 = input.LA(1);
 
-                         
+
                         int index47_70 = input.index();
                         input.rewind();
                         s = -1;
@@ -18394,14 +18394,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (LA47_70==IS) && (synpred1_JPQL())) {s = 281;}
 
-                         
+
                         input.seek(index47_70);
                         if ( s>=0 ) return s;
                         break;
-                    case 6 : 
+                    case 6 :
                         int LA47_71 = input.LA(1);
 
-                         
+
                         int index47_71 = input.index();
                         input.rewind();
                         s = -1;
@@ -18439,14 +18439,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (LA47_71==IS) && (synpred1_JPQL())) {s = 298;}
 
-                         
+
                         input.seek(index47_71);
                         if ( s>=0 ) return s;
                         break;
-                    case 7 : 
+                    case 7 :
                         int LA47_72 = input.LA(1);
 
-                         
+
                         int index47_72 = input.index();
                         input.rewind();
                         s = -1;
@@ -18484,14 +18484,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (LA47_72==RIGHT_ROUND_BRACKET) ) {s = 2;}
 
-                         
+
                         input.seek(index47_72);
                         if ( s>=0 ) return s;
                         break;
-                    case 8 : 
+                    case 8 :
                         int LA47_73 = input.LA(1);
 
-                         
+
                         int index47_73 = input.index();
                         input.rewind();
                         s = -1;
@@ -18529,14 +18529,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (LA47_73==IS) && (synpred1_JPQL())) {s = 332;}
 
-                         
+
                         input.seek(index47_73);
                         if ( s>=0 ) return s;
                         break;
-                    case 9 : 
+                    case 9 :
                         int LA47_92 = input.LA(1);
 
-                         
+
                         int index47_92 = input.index();
                         input.rewind();
                         s = -1;
@@ -18544,14 +18544,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_92);
                         if ( s>=0 ) return s;
                         break;
-                    case 10 : 
+                    case 10 :
                         int LA47_93 = input.LA(1);
 
-                         
+
                         int index47_93 = input.index();
                         input.rewind();
                         s = -1;
@@ -18559,14 +18559,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_93);
                         if ( s>=0 ) return s;
                         break;
-                    case 11 : 
+                    case 11 :
                         int LA47_94 = input.LA(1);
 
-                         
+
                         int index47_94 = input.index();
                         input.rewind();
                         s = -1;
@@ -18574,14 +18574,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_94);
                         if ( s>=0 ) return s;
                         break;
-                    case 12 : 
+                    case 12 :
                         int LA47_95 = input.LA(1);
 
-                         
+
                         int index47_95 = input.index();
                         input.rewind();
                         s = -1;
@@ -18589,14 +18589,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_95);
                         if ( s>=0 ) return s;
                         break;
-                    case 13 : 
+                    case 13 :
                         int LA47_96 = input.LA(1);
 
-                         
+
                         int index47_96 = input.index();
                         input.rewind();
                         s = -1;
@@ -18604,14 +18604,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_96);
                         if ( s>=0 ) return s;
                         break;
-                    case 14 : 
+                    case 14 :
                         int LA47_97 = input.LA(1);
 
-                         
+
                         int index47_97 = input.index();
                         input.rewind();
                         s = -1;
@@ -18619,14 +18619,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_97);
                         if ( s>=0 ) return s;
                         break;
-                    case 15 : 
+                    case 15 :
                         int LA47_98 = input.LA(1);
 
-                         
+
                         int index47_98 = input.index();
                         input.rewind();
                         s = -1;
@@ -18634,14 +18634,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_98);
                         if ( s>=0 ) return s;
                         break;
-                    case 16 : 
+                    case 16 :
                         int LA47_99 = input.LA(1);
 
-                         
+
                         int index47_99 = input.index();
                         input.rewind();
                         s = -1;
@@ -18649,14 +18649,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_99);
                         if ( s>=0 ) return s;
                         break;
-                    case 17 : 
+                    case 17 :
                         int LA47_100 = input.LA(1);
 
-                         
+
                         int index47_100 = input.index();
                         input.rewind();
                         s = -1;
@@ -18664,14 +18664,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_100);
                         if ( s>=0 ) return s;
                         break;
-                    case 18 : 
+                    case 18 :
                         int LA47_101 = input.LA(1);
 
-                         
+
                         int index47_101 = input.index();
                         input.rewind();
                         s = -1;
@@ -18679,14 +18679,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_101);
                         if ( s>=0 ) return s;
                         break;
-                    case 19 : 
+                    case 19 :
                         int LA47_102 = input.LA(1);
 
-                         
+
                         int index47_102 = input.index();
                         input.rewind();
                         s = -1;
@@ -18694,14 +18694,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_102);
                         if ( s>=0 ) return s;
                         break;
-                    case 20 : 
+                    case 20 :
                         int LA47_103 = input.LA(1);
 
-                         
+
                         int index47_103 = input.index();
                         input.rewind();
                         s = -1;
@@ -18709,14 +18709,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_103);
                         if ( s>=0 ) return s;
                         break;
-                    case 21 : 
+                    case 21 :
                         int LA47_104 = input.LA(1);
 
-                         
+
                         int index47_104 = input.index();
                         input.rewind();
                         s = -1;
@@ -18724,14 +18724,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_104);
                         if ( s>=0 ) return s;
                         break;
-                    case 22 : 
+                    case 22 :
                         int LA47_105 = input.LA(1);
 
-                         
+
                         int index47_105 = input.index();
                         input.rewind();
                         s = -1;
@@ -18739,14 +18739,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_105);
                         if ( s>=0 ) return s;
                         break;
-                    case 23 : 
+                    case 23 :
                         int LA47_106 = input.LA(1);
 
-                         
+
                         int index47_106 = input.index();
                         input.rewind();
                         s = -1;
@@ -18754,14 +18754,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_106);
                         if ( s>=0 ) return s;
                         break;
-                    case 24 : 
+                    case 24 :
                         int LA47_107 = input.LA(1);
 
-                         
+
                         int index47_107 = input.index();
                         input.rewind();
                         s = -1;
@@ -18769,14 +18769,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_107);
                         if ( s>=0 ) return s;
                         break;
-                    case 25 : 
+                    case 25 :
                         int LA47_108 = input.LA(1);
 
-                         
+
                         int index47_108 = input.index();
                         input.rewind();
                         s = -1;
@@ -18784,14 +18784,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_108);
                         if ( s>=0 ) return s;
                         break;
-                    case 26 : 
+                    case 26 :
                         int LA47_109 = input.LA(1);
 
-                         
+
                         int index47_109 = input.index();
                         input.rewind();
                         s = -1;
@@ -18799,14 +18799,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_109);
                         if ( s>=0 ) return s;
                         break;
-                    case 27 : 
+                    case 27 :
                         int LA47_110 = input.LA(1);
 
-                         
+
                         int index47_110 = input.index();
                         input.rewind();
                         s = -1;
@@ -18814,14 +18814,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_110);
                         if ( s>=0 ) return s;
                         break;
-                    case 28 : 
+                    case 28 :
                         int LA47_111 = input.LA(1);
 
-                         
+
                         int index47_111 = input.index();
                         input.rewind();
                         s = -1;
@@ -18829,14 +18829,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_111);
                         if ( s>=0 ) return s;
                         break;
-                    case 29 : 
+                    case 29 :
                         int LA47_112 = input.LA(1);
 
-                         
+
                         int index47_112 = input.index();
                         input.rewind();
                         s = -1;
@@ -18844,14 +18844,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_112);
                         if ( s>=0 ) return s;
                         break;
-                    case 30 : 
+                    case 30 :
                         int LA47_113 = input.LA(1);
 
-                         
+
                         int index47_113 = input.index();
                         input.rewind();
                         s = -1;
@@ -18859,14 +18859,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_113);
                         if ( s>=0 ) return s;
                         break;
-                    case 31 : 
+                    case 31 :
                         int LA47_114 = input.LA(1);
 
-                         
+
                         int index47_114 = input.index();
                         input.rewind();
                         s = -1;
@@ -18874,14 +18874,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_114);
                         if ( s>=0 ) return s;
                         break;
-                    case 32 : 
+                    case 32 :
                         int LA47_115 = input.LA(1);
 
-                         
+
                         int index47_115 = input.index();
                         input.rewind();
                         s = -1;
@@ -18889,14 +18889,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_115);
                         if ( s>=0 ) return s;
                         break;
-                    case 33 : 
+                    case 33 :
                         int LA47_116 = input.LA(1);
 
-                         
+
                         int index47_116 = input.index();
                         input.rewind();
                         s = -1;
@@ -18904,14 +18904,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_116);
                         if ( s>=0 ) return s;
                         break;
-                    case 34 : 
+                    case 34 :
                         int LA47_117 = input.LA(1);
 
-                         
+
                         int index47_117 = input.index();
                         input.rewind();
                         s = -1;
@@ -18919,14 +18919,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_117);
                         if ( s>=0 ) return s;
                         break;
-                    case 35 : 
+                    case 35 :
                         int LA47_118 = input.LA(1);
 
-                         
+
                         int index47_118 = input.index();
                         input.rewind();
                         s = -1;
@@ -18934,14 +18934,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_118);
                         if ( s>=0 ) return s;
                         break;
-                    case 36 : 
+                    case 36 :
                         int LA47_119 = input.LA(1);
 
-                         
+
                         int index47_119 = input.index();
                         input.rewind();
                         s = -1;
@@ -18949,14 +18949,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_119);
                         if ( s>=0 ) return s;
                         break;
-                    case 37 : 
+                    case 37 :
                         int LA47_120 = input.LA(1);
 
-                         
+
                         int index47_120 = input.index();
                         input.rewind();
                         s = -1;
@@ -18964,14 +18964,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_120);
                         if ( s>=0 ) return s;
                         break;
-                    case 38 : 
+                    case 38 :
                         int LA47_121 = input.LA(1);
 
-                         
+
                         int index47_121 = input.index();
                         input.rewind();
                         s = -1;
@@ -18979,14 +18979,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_121);
                         if ( s>=0 ) return s;
                         break;
-                    case 39 : 
+                    case 39 :
                         int LA47_122 = input.LA(1);
 
-                         
+
                         int index47_122 = input.index();
                         input.rewind();
                         s = -1;
@@ -18994,14 +18994,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_122);
                         if ( s>=0 ) return s;
                         break;
-                    case 40 : 
+                    case 40 :
                         int LA47_123 = input.LA(1);
 
-                         
+
                         int index47_123 = input.index();
                         input.rewind();
                         s = -1;
@@ -19009,14 +19009,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_123);
                         if ( s>=0 ) return s;
                         break;
-                    case 41 : 
+                    case 41 :
                         int LA47_124 = input.LA(1);
 
-                         
+
                         int index47_124 = input.index();
                         input.rewind();
                         s = -1;
@@ -19024,14 +19024,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_124);
                         if ( s>=0 ) return s;
                         break;
-                    case 42 : 
+                    case 42 :
                         int LA47_125 = input.LA(1);
 
-                         
+
                         int index47_125 = input.index();
                         input.rewind();
                         s = -1;
@@ -19039,14 +19039,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_125);
                         if ( s>=0 ) return s;
                         break;
-                    case 43 : 
+                    case 43 :
                         int LA47_126 = input.LA(1);
 
-                         
+
                         int index47_126 = input.index();
                         input.rewind();
                         s = -1;
@@ -19054,14 +19054,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_126);
                         if ( s>=0 ) return s;
                         break;
-                    case 44 : 
+                    case 44 :
                         int LA47_127 = input.LA(1);
 
-                         
+
                         int index47_127 = input.index();
                         input.rewind();
                         s = -1;
@@ -19069,14 +19069,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_127);
                         if ( s>=0 ) return s;
                         break;
-                    case 45 : 
+                    case 45 :
                         int LA47_128 = input.LA(1);
 
-                         
+
                         int index47_128 = input.index();
                         input.rewind();
                         s = -1;
@@ -19084,14 +19084,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_128);
                         if ( s>=0 ) return s;
                         break;
-                    case 46 : 
+                    case 46 :
                         int LA47_129 = input.LA(1);
 
-                         
+
                         int index47_129 = input.index();
                         input.rewind();
                         s = -1;
@@ -19099,14 +19099,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_129);
                         if ( s>=0 ) return s;
                         break;
-                    case 47 : 
+                    case 47 :
                         int LA47_130 = input.LA(1);
 
-                         
+
                         int index47_130 = input.index();
                         input.rewind();
                         s = -1;
@@ -19114,14 +19114,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_130);
                         if ( s>=0 ) return s;
                         break;
-                    case 48 : 
+                    case 48 :
                         int LA47_131 = input.LA(1);
 
-                         
+
                         int index47_131 = input.index();
                         input.rewind();
                         s = -1;
@@ -19129,14 +19129,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_131);
                         if ( s>=0 ) return s;
                         break;
-                    case 49 : 
+                    case 49 :
                         int LA47_132 = input.LA(1);
 
-                         
+
                         int index47_132 = input.index();
                         input.rewind();
                         s = -1;
@@ -19144,14 +19144,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_132);
                         if ( s>=0 ) return s;
                         break;
-                    case 50 : 
+                    case 50 :
                         int LA47_133 = input.LA(1);
 
-                         
+
                         int index47_133 = input.index();
                         input.rewind();
                         s = -1;
@@ -19159,14 +19159,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_133);
                         if ( s>=0 ) return s;
                         break;
-                    case 51 : 
+                    case 51 :
                         int LA47_134 = input.LA(1);
 
-                         
+
                         int index47_134 = input.index();
                         input.rewind();
                         s = -1;
@@ -19174,14 +19174,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_134);
                         if ( s>=0 ) return s;
                         break;
-                    case 52 : 
+                    case 52 :
                         int LA47_135 = input.LA(1);
 
-                         
+
                         int index47_135 = input.index();
                         input.rewind();
                         s = -1;
@@ -19189,14 +19189,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_135);
                         if ( s>=0 ) return s;
                         break;
-                    case 53 : 
+                    case 53 :
                         int LA47_136 = input.LA(1);
 
-                         
+
                         int index47_136 = input.index();
                         input.rewind();
                         s = -1;
@@ -19204,14 +19204,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_136);
                         if ( s>=0 ) return s;
                         break;
-                    case 54 : 
+                    case 54 :
                         int LA47_137 = input.LA(1);
 
-                         
+
                         int index47_137 = input.index();
                         input.rewind();
                         s = -1;
@@ -19219,14 +19219,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_137);
                         if ( s>=0 ) return s;
                         break;
-                    case 55 : 
+                    case 55 :
                         int LA47_138 = input.LA(1);
 
-                         
+
                         int index47_138 = input.index();
                         input.rewind();
                         s = -1;
@@ -19234,14 +19234,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_138);
                         if ( s>=0 ) return s;
                         break;
-                    case 56 : 
+                    case 56 :
                         int LA47_139 = input.LA(1);
 
-                         
+
                         int index47_139 = input.index();
                         input.rewind();
                         s = -1;
@@ -19249,14 +19249,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_139);
                         if ( s>=0 ) return s;
                         break;
-                    case 57 : 
+                    case 57 :
                         int LA47_140 = input.LA(1);
 
-                         
+
                         int index47_140 = input.index();
                         input.rewind();
                         s = -1;
@@ -19264,14 +19264,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_140);
                         if ( s>=0 ) return s;
                         break;
-                    case 58 : 
+                    case 58 :
                         int LA47_141 = input.LA(1);
 
-                         
+
                         int index47_141 = input.index();
                         input.rewind();
                         s = -1;
@@ -19279,14 +19279,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_141);
                         if ( s>=0 ) return s;
                         break;
-                    case 59 : 
+                    case 59 :
                         int LA47_142 = input.LA(1);
 
-                         
+
                         int index47_142 = input.index();
                         input.rewind();
                         s = -1;
@@ -19294,14 +19294,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_142);
                         if ( s>=0 ) return s;
                         break;
-                    case 60 : 
+                    case 60 :
                         int LA47_143 = input.LA(1);
 
-                         
+
                         int index47_143 = input.index();
                         input.rewind();
                         s = -1;
@@ -19309,14 +19309,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_143);
                         if ( s>=0 ) return s;
                         break;
-                    case 61 : 
+                    case 61 :
                         int LA47_144 = input.LA(1);
 
-                         
+
                         int index47_144 = input.index();
                         input.rewind();
                         s = -1;
@@ -19324,14 +19324,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_144);
                         if ( s>=0 ) return s;
                         break;
-                    case 62 : 
+                    case 62 :
                         int LA47_145 = input.LA(1);
 
-                         
+
                         int index47_145 = input.index();
                         input.rewind();
                         s = -1;
@@ -19339,14 +19339,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_145);
                         if ( s>=0 ) return s;
                         break;
-                    case 63 : 
+                    case 63 :
                         int LA47_146 = input.LA(1);
 
-                         
+
                         int index47_146 = input.index();
                         input.rewind();
                         s = -1;
@@ -19354,14 +19354,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_146);
                         if ( s>=0 ) return s;
                         break;
-                    case 64 : 
+                    case 64 :
                         int LA47_147 = input.LA(1);
 
-                         
+
                         int index47_147 = input.index();
                         input.rewind();
                         s = -1;
@@ -19369,14 +19369,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_147);
                         if ( s>=0 ) return s;
                         break;
-                    case 65 : 
+                    case 65 :
                         int LA47_148 = input.LA(1);
 
-                         
+
                         int index47_148 = input.index();
                         input.rewind();
                         s = -1;
@@ -19384,14 +19384,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_148);
                         if ( s>=0 ) return s;
                         break;
-                    case 66 : 
+                    case 66 :
                         int LA47_149 = input.LA(1);
 
-                         
+
                         int index47_149 = input.index();
                         input.rewind();
                         s = -1;
@@ -19399,14 +19399,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_149);
                         if ( s>=0 ) return s;
                         break;
-                    case 67 : 
+                    case 67 :
                         int LA47_150 = input.LA(1);
 
-                         
+
                         int index47_150 = input.index();
                         input.rewind();
                         s = -1;
@@ -19414,14 +19414,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_150);
                         if ( s>=0 ) return s;
                         break;
-                    case 68 : 
+                    case 68 :
                         int LA47_151 = input.LA(1);
 
-                         
+
                         int index47_151 = input.index();
                         input.rewind();
                         s = -1;
@@ -19429,14 +19429,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_151);
                         if ( s>=0 ) return s;
                         break;
-                    case 69 : 
+                    case 69 :
                         int LA47_152 = input.LA(1);
 
-                         
+
                         int index47_152 = input.index();
                         input.rewind();
                         s = -1;
@@ -19444,14 +19444,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_152);
                         if ( s>=0 ) return s;
                         break;
-                    case 70 : 
+                    case 70 :
                         int LA47_153 = input.LA(1);
 
-                         
+
                         int index47_153 = input.index();
                         input.rewind();
                         s = -1;
@@ -19459,14 +19459,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_153);
                         if ( s>=0 ) return s;
                         break;
-                    case 71 : 
+                    case 71 :
                         int LA47_167 = input.LA(1);
 
-                         
+
                         int index47_167 = input.index();
                         input.rewind();
                         s = -1;
@@ -19474,14 +19474,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_167);
                         if ( s>=0 ) return s;
                         break;
-                    case 72 : 
+                    case 72 :
                         int LA47_168 = input.LA(1);
 
-                         
+
                         int index47_168 = input.index();
                         input.rewind();
                         s = -1;
@@ -19489,14 +19489,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_168);
                         if ( s>=0 ) return s;
                         break;
-                    case 73 : 
+                    case 73 :
                         int LA47_169 = input.LA(1);
 
-                         
+
                         int index47_169 = input.index();
                         input.rewind();
                         s = -1;
@@ -19504,14 +19504,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_169);
                         if ( s>=0 ) return s;
                         break;
-                    case 74 : 
+                    case 74 :
                         int LA47_170 = input.LA(1);
 
-                         
+
                         int index47_170 = input.index();
                         input.rewind();
                         s = -1;
@@ -19519,14 +19519,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_170);
                         if ( s>=0 ) return s;
                         break;
-                    case 75 : 
+                    case 75 :
                         int LA47_171 = input.LA(1);
 
-                         
+
                         int index47_171 = input.index();
                         input.rewind();
                         s = -1;
@@ -19534,14 +19534,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_171);
                         if ( s>=0 ) return s;
                         break;
-                    case 76 : 
+                    case 76 :
                         int LA47_172 = input.LA(1);
 
-                         
+
                         int index47_172 = input.index();
                         input.rewind();
                         s = -1;
@@ -19549,14 +19549,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_172);
                         if ( s>=0 ) return s;
                         break;
-                    case 77 : 
+                    case 77 :
                         int LA47_186 = input.LA(1);
 
-                         
+
                         int index47_186 = input.index();
                         input.rewind();
                         s = -1;
@@ -19564,14 +19564,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_186);
                         if ( s>=0 ) return s;
                         break;
-                    case 78 : 
+                    case 78 :
                         int LA47_187 = input.LA(1);
 
-                         
+
                         int index47_187 = input.index();
                         input.rewind();
                         s = -1;
@@ -19579,14 +19579,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_187);
                         if ( s>=0 ) return s;
                         break;
-                    case 79 : 
+                    case 79 :
                         int LA47_188 = input.LA(1);
 
-                         
+
                         int index47_188 = input.index();
                         input.rewind();
                         s = -1;
@@ -19594,14 +19594,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_188);
                         if ( s>=0 ) return s;
                         break;
-                    case 80 : 
+                    case 80 :
                         int LA47_189 = input.LA(1);
 
-                         
+
                         int index47_189 = input.index();
                         input.rewind();
                         s = -1;
@@ -19609,14 +19609,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_189);
                         if ( s>=0 ) return s;
                         break;
-                    case 81 : 
+                    case 81 :
                         int LA47_203 = input.LA(1);
 
-                         
+
                         int index47_203 = input.index();
                         input.rewind();
                         s = -1;
@@ -19624,14 +19624,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_203);
                         if ( s>=0 ) return s;
                         break;
-                    case 82 : 
+                    case 82 :
                         int LA47_204 = input.LA(1);
 
-                         
+
                         int index47_204 = input.index();
                         input.rewind();
                         s = -1;
@@ -19639,14 +19639,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_204);
                         if ( s>=0 ) return s;
                         break;
-                    case 83 : 
+                    case 83 :
                         int LA47_205 = input.LA(1);
 
-                         
+
                         int index47_205 = input.index();
                         input.rewind();
                         s = -1;
@@ -19654,14 +19654,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_205);
                         if ( s>=0 ) return s;
                         break;
-                    case 84 : 
+                    case 84 :
                         int LA47_206 = input.LA(1);
 
-                         
+
                         int index47_206 = input.index();
                         input.rewind();
                         s = -1;
@@ -19669,14 +19669,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_206);
                         if ( s>=0 ) return s;
                         break;
-                    case 85 : 
+                    case 85 :
                         int LA47_207 = input.LA(1);
 
-                         
+
                         int index47_207 = input.index();
                         input.rewind();
                         s = -1;
@@ -19684,14 +19684,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_207);
                         if ( s>=0 ) return s;
                         break;
-                    case 86 : 
+                    case 86 :
                         int LA47_208 = input.LA(1);
 
-                         
+
                         int index47_208 = input.index();
                         input.rewind();
                         s = -1;
@@ -19699,14 +19699,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_208);
                         if ( s>=0 ) return s;
                         break;
-                    case 87 : 
+                    case 87 :
                         int LA47_209 = input.LA(1);
 
-                         
+
                         int index47_209 = input.index();
                         input.rewind();
                         s = -1;
@@ -19714,14 +19714,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_209);
                         if ( s>=0 ) return s;
                         break;
-                    case 88 : 
+                    case 88 :
                         int LA47_210 = input.LA(1);
 
-                         
+
                         int index47_210 = input.index();
                         input.rewind();
                         s = -1;
@@ -19729,14 +19729,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_210);
                         if ( s>=0 ) return s;
                         break;
-                    case 89 : 
+                    case 89 :
                         int LA47_211 = input.LA(1);
 
-                         
+
                         int index47_211 = input.index();
                         input.rewind();
                         s = -1;
@@ -19744,14 +19744,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_211);
                         if ( s>=0 ) return s;
                         break;
-                    case 90 : 
+                    case 90 :
                         int LA47_212 = input.LA(1);
 
-                         
+
                         int index47_212 = input.index();
                         input.rewind();
                         s = -1;
@@ -19759,14 +19759,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_212);
                         if ( s>=0 ) return s;
                         break;
-                    case 91 : 
+                    case 91 :
                         int LA47_213 = input.LA(1);
 
-                         
+
                         int index47_213 = input.index();
                         input.rewind();
                         s = -1;
@@ -19774,14 +19774,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_213);
                         if ( s>=0 ) return s;
                         break;
-                    case 92 : 
+                    case 92 :
                         int LA47_214 = input.LA(1);
 
-                         
+
                         int index47_214 = input.index();
                         input.rewind();
                         s = -1;
@@ -19789,14 +19789,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_214);
                         if ( s>=0 ) return s;
                         break;
-                    case 93 : 
+                    case 93 :
                         int LA47_215 = input.LA(1);
 
-                         
+
                         int index47_215 = input.index();
                         input.rewind();
                         s = -1;
@@ -19804,14 +19804,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_215);
                         if ( s>=0 ) return s;
                         break;
-                    case 94 : 
+                    case 94 :
                         int LA47_216 = input.LA(1);
 
-                         
+
                         int index47_216 = input.index();
                         input.rewind();
                         s = -1;
@@ -19819,14 +19819,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_216);
                         if ( s>=0 ) return s;
                         break;
-                    case 95 : 
+                    case 95 :
                         int LA47_217 = input.LA(1);
 
-                         
+
                         int index47_217 = input.index();
                         input.rewind();
                         s = -1;
@@ -19834,14 +19834,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_217);
                         if ( s>=0 ) return s;
                         break;
-                    case 96 : 
+                    case 96 :
                         int LA47_220 = input.LA(1);
 
-                         
+
                         int index47_220 = input.index();
                         input.rewind();
                         s = -1;
@@ -19849,14 +19849,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_220);
                         if ( s>=0 ) return s;
                         break;
-                    case 97 : 
+                    case 97 :
                         int LA47_221 = input.LA(1);
 
-                         
+
                         int index47_221 = input.index();
                         input.rewind();
                         s = -1;
@@ -19864,14 +19864,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_221);
                         if ( s>=0 ) return s;
                         break;
-                    case 98 : 
+                    case 98 :
                         int LA47_222 = input.LA(1);
 
-                         
+
                         int index47_222 = input.index();
                         input.rewind();
                         s = -1;
@@ -19879,14 +19879,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_222);
                         if ( s>=0 ) return s;
                         break;
-                    case 99 : 
+                    case 99 :
                         int LA47_223 = input.LA(1);
 
-                         
+
                         int index47_223 = input.index();
                         input.rewind();
                         s = -1;
@@ -19894,14 +19894,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_223);
                         if ( s>=0 ) return s;
                         break;
-                    case 100 : 
+                    case 100 :
                         int LA47_224 = input.LA(1);
 
-                         
+
                         int index47_224 = input.index();
                         input.rewind();
                         s = -1;
@@ -19909,14 +19909,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_224);
                         if ( s>=0 ) return s;
                         break;
-                    case 101 : 
+                    case 101 :
                         int LA47_225 = input.LA(1);
 
-                         
+
                         int index47_225 = input.index();
                         input.rewind();
                         s = -1;
@@ -19924,14 +19924,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_225);
                         if ( s>=0 ) return s;
                         break;
-                    case 102 : 
+                    case 102 :
                         int LA47_226 = input.LA(1);
 
-                         
+
                         int index47_226 = input.index();
                         input.rewind();
                         s = -1;
@@ -19939,14 +19939,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_226);
                         if ( s>=0 ) return s;
                         break;
-                    case 103 : 
+                    case 103 :
                         int LA47_227 = input.LA(1);
 
-                         
+
                         int index47_227 = input.index();
                         input.rewind();
                         s = -1;
@@ -19954,14 +19954,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_227);
                         if ( s>=0 ) return s;
                         break;
-                    case 104 : 
+                    case 104 :
                         int LA47_228 = input.LA(1);
 
-                         
+
                         int index47_228 = input.index();
                         input.rewind();
                         s = -1;
@@ -19969,14 +19969,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_228);
                         if ( s>=0 ) return s;
                         break;
-                    case 105 : 
+                    case 105 :
                         int LA47_229 = input.LA(1);
 
-                         
+
                         int index47_229 = input.index();
                         input.rewind();
                         s = -1;
@@ -19984,14 +19984,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_229);
                         if ( s>=0 ) return s;
                         break;
-                    case 106 : 
+                    case 106 :
                         int LA47_230 = input.LA(1);
 
-                         
+
                         int index47_230 = input.index();
                         input.rewind();
                         s = -1;
@@ -19999,14 +19999,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_230);
                         if ( s>=0 ) return s;
                         break;
-                    case 107 : 
+                    case 107 :
                         int LA47_231 = input.LA(1);
 
-                         
+
                         int index47_231 = input.index();
                         input.rewind();
                         s = -1;
@@ -20014,14 +20014,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_231);
                         if ( s>=0 ) return s;
                         break;
-                    case 108 : 
+                    case 108 :
                         int LA47_232 = input.LA(1);
 
-                         
+
                         int index47_232 = input.index();
                         input.rewind();
                         s = -1;
@@ -20029,14 +20029,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_232);
                         if ( s>=0 ) return s;
                         break;
-                    case 109 : 
+                    case 109 :
                         int LA47_233 = input.LA(1);
 
-                         
+
                         int index47_233 = input.index();
                         input.rewind();
                         s = -1;
@@ -20044,14 +20044,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_233);
                         if ( s>=0 ) return s;
                         break;
-                    case 110 : 
+                    case 110 :
                         int LA47_234 = input.LA(1);
 
-                         
+
                         int index47_234 = input.index();
                         input.rewind();
                         s = -1;
@@ -20059,14 +20059,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_234);
                         if ( s>=0 ) return s;
                         break;
-                    case 111 : 
+                    case 111 :
                         int LA47_235 = input.LA(1);
 
-                         
+
                         int index47_235 = input.index();
                         input.rewind();
                         s = -1;
@@ -20074,14 +20074,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_235);
                         if ( s>=0 ) return s;
                         break;
-                    case 112 : 
+                    case 112 :
                         int LA47_236 = input.LA(1);
 
-                         
+
                         int index47_236 = input.index();
                         input.rewind();
                         s = -1;
@@ -20089,14 +20089,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_236);
                         if ( s>=0 ) return s;
                         break;
-                    case 113 : 
+                    case 113 :
                         int LA47_237 = input.LA(1);
 
-                         
+
                         int index47_237 = input.index();
                         input.rewind();
                         s = -1;
@@ -20104,14 +20104,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_237);
                         if ( s>=0 ) return s;
                         break;
-                    case 114 : 
+                    case 114 :
                         int LA47_238 = input.LA(1);
 
-                         
+
                         int index47_238 = input.index();
                         input.rewind();
                         s = -1;
@@ -20119,14 +20119,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_238);
                         if ( s>=0 ) return s;
                         break;
-                    case 115 : 
+                    case 115 :
                         int LA47_239 = input.LA(1);
 
-                         
+
                         int index47_239 = input.index();
                         input.rewind();
                         s = -1;
@@ -20134,14 +20134,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_239);
                         if ( s>=0 ) return s;
                         break;
-                    case 116 : 
+                    case 116 :
                         int LA47_240 = input.LA(1);
 
-                         
+
                         int index47_240 = input.index();
                         input.rewind();
                         s = -1;
@@ -20149,14 +20149,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_240);
                         if ( s>=0 ) return s;
                         break;
-                    case 117 : 
+                    case 117 :
                         int LA47_241 = input.LA(1);
 
-                         
+
                         int index47_241 = input.index();
                         input.rewind();
                         s = -1;
@@ -20164,14 +20164,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_241);
                         if ( s>=0 ) return s;
                         break;
-                    case 118 : 
+                    case 118 :
                         int LA47_242 = input.LA(1);
 
-                         
+
                         int index47_242 = input.index();
                         input.rewind();
                         s = -1;
@@ -20179,14 +20179,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_242);
                         if ( s>=0 ) return s;
                         break;
-                    case 119 : 
+                    case 119 :
                         int LA47_243 = input.LA(1);
 
-                         
+
                         int index47_243 = input.index();
                         input.rewind();
                         s = -1;
@@ -20194,14 +20194,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_243);
                         if ( s>=0 ) return s;
                         break;
-                    case 120 : 
+                    case 120 :
                         int LA47_244 = input.LA(1);
 
-                         
+
                         int index47_244 = input.index();
                         input.rewind();
                         s = -1;
@@ -20209,14 +20209,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_244);
                         if ( s>=0 ) return s;
                         break;
-                    case 121 : 
+                    case 121 :
                         int LA47_245 = input.LA(1);
 
-                         
+
                         int index47_245 = input.index();
                         input.rewind();
                         s = -1;
@@ -20224,14 +20224,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_245);
                         if ( s>=0 ) return s;
                         break;
-                    case 122 : 
+                    case 122 :
                         int LA47_246 = input.LA(1);
 
-                         
+
                         int index47_246 = input.index();
                         input.rewind();
                         s = -1;
@@ -20239,14 +20239,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_246);
                         if ( s>=0 ) return s;
                         break;
-                    case 123 : 
+                    case 123 :
                         int LA47_247 = input.LA(1);
 
-                         
+
                         int index47_247 = input.index();
                         input.rewind();
                         s = -1;
@@ -20254,14 +20254,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_247);
                         if ( s>=0 ) return s;
                         break;
-                    case 124 : 
+                    case 124 :
                         int LA47_265 = input.LA(1);
 
-                         
+
                         int index47_265 = input.index();
                         input.rewind();
                         s = -1;
@@ -20269,14 +20269,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_265);
                         if ( s>=0 ) return s;
                         break;
-                    case 125 : 
+                    case 125 :
                         int LA47_266 = input.LA(1);
 
-                         
+
                         int index47_266 = input.index();
                         input.rewind();
                         s = -1;
@@ -20284,14 +20284,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_266);
                         if ( s>=0 ) return s;
                         break;
-                    case 126 : 
+                    case 126 :
                         int LA47_267 = input.LA(1);
 
-                         
+
                         int index47_267 = input.index();
                         input.rewind();
                         s = -1;
@@ -20299,14 +20299,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_267);
                         if ( s>=0 ) return s;
                         break;
-                    case 127 : 
+                    case 127 :
                         int LA47_268 = input.LA(1);
 
-                         
+
                         int index47_268 = input.index();
                         input.rewind();
                         s = -1;
@@ -20314,14 +20314,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_268);
                         if ( s>=0 ) return s;
                         break;
-                    case 128 : 
+                    case 128 :
                         int LA47_282 = input.LA(1);
 
-                         
+
                         int index47_282 = input.index();
                         input.rewind();
                         s = -1;
@@ -20329,14 +20329,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_282);
                         if ( s>=0 ) return s;
                         break;
-                    case 129 : 
+                    case 129 :
                         int LA47_283 = input.LA(1);
 
-                         
+
                         int index47_283 = input.index();
                         input.rewind();
                         s = -1;
@@ -20344,14 +20344,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_283);
                         if ( s>=0 ) return s;
                         break;
-                    case 130 : 
+                    case 130 :
                         int LA47_284 = input.LA(1);
 
-                         
+
                         int index47_284 = input.index();
                         input.rewind();
                         s = -1;
@@ -20359,14 +20359,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_284);
                         if ( s>=0 ) return s;
                         break;
-                    case 131 : 
+                    case 131 :
                         int LA47_285 = input.LA(1);
 
-                         
+
                         int index47_285 = input.index();
                         input.rewind();
                         s = -1;
@@ -20374,14 +20374,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_285);
                         if ( s>=0 ) return s;
                         break;
-                    case 132 : 
+                    case 132 :
                         int LA47_299 = input.LA(1);
 
-                         
+
                         int index47_299 = input.index();
                         input.rewind();
                         s = -1;
@@ -20389,14 +20389,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_299);
                         if ( s>=0 ) return s;
                         break;
-                    case 133 : 
+                    case 133 :
                         int LA47_300 = input.LA(1);
 
-                         
+
                         int index47_300 = input.index();
                         input.rewind();
                         s = -1;
@@ -20404,14 +20404,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_300);
                         if ( s>=0 ) return s;
                         break;
-                    case 134 : 
+                    case 134 :
                         int LA47_301 = input.LA(1);
 
-                         
+
                         int index47_301 = input.index();
                         input.rewind();
                         s = -1;
@@ -20419,14 +20419,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_301);
                         if ( s>=0 ) return s;
                         break;
-                    case 135 : 
+                    case 135 :
                         int LA47_302 = input.LA(1);
 
-                         
+
                         int index47_302 = input.index();
                         input.rewind();
                         s = -1;
@@ -20434,14 +20434,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_302);
                         if ( s>=0 ) return s;
                         break;
-                    case 136 : 
+                    case 136 :
                         int LA47_316 = input.LA(1);
 
-                         
+
                         int index47_316 = input.index();
                         input.rewind();
                         s = -1;
@@ -20449,14 +20449,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_316);
                         if ( s>=0 ) return s;
                         break;
-                    case 137 : 
+                    case 137 :
                         int LA47_317 = input.LA(1);
 
-                         
+
                         int index47_317 = input.index();
                         input.rewind();
                         s = -1;
@@ -20464,14 +20464,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_317);
                         if ( s>=0 ) return s;
                         break;
-                    case 138 : 
+                    case 138 :
                         int LA47_318 = input.LA(1);
 
-                         
+
                         int index47_318 = input.index();
                         input.rewind();
                         s = -1;
@@ -20479,14 +20479,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_318);
                         if ( s>=0 ) return s;
                         break;
-                    case 139 : 
+                    case 139 :
                         int LA47_319 = input.LA(1);
 
-                         
+
                         int index47_319 = input.index();
                         input.rewind();
                         s = -1;
@@ -20494,7 +20494,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                         else if ( (true) ) {s = 2;}
 
-                         
+
                         input.seek(index47_319);
                         if ( s>=0 ) return s;
                         break;
@@ -22028,7 +22028,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             return "()* loopback of 1330:51: ( join )*";
         }
     }
- 
+
 
     public static final BitSet FOLLOW_selectStatement_in_document763 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_updateStatement_in_document777 = new BitSet(new long[]{0x0000000000000002L});

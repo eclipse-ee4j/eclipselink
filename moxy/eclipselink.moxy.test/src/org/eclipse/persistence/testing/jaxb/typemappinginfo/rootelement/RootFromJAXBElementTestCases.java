@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -35,18 +35,18 @@ public class RootFromJAXBElementTestCases extends TypeMappingInfoWithJSONTestCas
     private static final String JAXB_ELEMENT_NAMESPACE_URI = null;
     private static final String JAXB_ELEMENT_LOCAL_NAME = "jaxb-element-address";
     private static final String CONTROL_STREET = "123 A St.";
-    
+
     public RootFromJAXBElementTestCases(String name) throws Exception{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
         TypeMappingInfo[] typeMappingInfos = new TypeMappingInfo[1];
-        TypeMappingInfo addressTypeMappingInfo = new TypeMappingInfo(); 
-        addressTypeMappingInfo.setType(Address.class); 
-        addressTypeMappingInfo.setXmlTagName(new QName(ADDRESS_NAMESPACE_URI, ADDRESS_LOCAL_NAME)); 
-        addressTypeMappingInfo.setElementScope(ElementScope.Local); 
-        addressTypeMappingInfo.setAnnotations(new Annotation[0]); 
+        TypeMappingInfo addressTypeMappingInfo = new TypeMappingInfo();
+        addressTypeMappingInfo.setType(Address.class);
+        addressTypeMappingInfo.setXmlTagName(new QName(ADDRESS_NAMESPACE_URI, ADDRESS_LOCAL_NAME));
+        addressTypeMappingInfo.setElementScope(ElementScope.Local);
+        addressTypeMappingInfo.setAnnotations(new Annotation[0]);
         typeMappingInfos[0] = addressTypeMappingInfo;
         setTypeMappingInfos(typeMappingInfos);
     }
@@ -57,8 +57,8 @@ public class RootFromJAXBElementTestCases extends TypeMappingInfoWithJSONTestCas
         address.setStreet(CONTROL_STREET);
         return new JAXBElement<Address>(new QName(JAXB_ELEMENT_NAMESPACE_URI, JAXB_ELEMENT_LOCAL_NAME), Address.class, address);
     }
-    
-    @Override   
+
+    @Override
     public JAXBElement<Object> getWriteControlObject() {
         Address address = new Address();
         address.setStreet(CONTROL_STREET);

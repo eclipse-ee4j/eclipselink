@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -32,73 +32,73 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.CheckBoxModelAd
  */
 public class SCExternalConnectionPoolingUITest extends SCDatabaseLoginUITest {
 
-	private PropertyValueModel booleanHolder;
-	private ButtonModel buttonModel;
+    private PropertyValueModel booleanHolder;
+    private ButtonModel buttonModel;
 
-	public static void main(String[] args) throws Exception {
-		new SCExternalConnectionPoolingUITest().exec(args);
-	}
+    public static void main(String[] args) throws Exception {
+        new SCExternalConnectionPoolingUITest().exec(args);
+    }
 
-	private SCExternalConnectionPoolingUITest() {
-		super();
-	}
-	
-	protected String windowTitle() {
-		return "Setup:";
-	}
+    private SCExternalConnectionPoolingUITest() {
+        super();
+    }
 
-	private void exec( String[] args) throws Exception {
+    protected String windowTitle() {
+        return "Setup:";
+    }
 
-		setUp();
-		
-		booleanHolder = this.buildBooleanHolder( subjectHolder());
-		
-		buttonModel = this.buildCheckBoxModelAdapter( booleanHolder);
-		
-		this.openWindow();
-	}
+    private void exec( String[] args) throws Exception {
 
-	private PropertyValueModel buildBooleanHolder( ValueModel subjectHolder) {
-		
-		return new PropertyAspectAdapter( subjectHolder, DatabaseSessionAdapter.EXTERNAL_CONNECTION_POOLING_PROPERTY) {
-			protected Object getValueFromSubject() {
-				LoginAdapter login = (LoginAdapter) subject;
-				DatabaseSessionAdapter session = (DatabaseSessionAdapter) login.getParent();
-				
-				return Boolean.valueOf(session.usesExternalConnectionPooling());
-			}
-			protected void setValueOnSubject( Object value) {
-				LoginAdapter login = (LoginAdapter) subject;
-				DatabaseSessionAdapter session = (DatabaseSessionAdapter) login.getParent();
-				
-				session.setExternalConnectionPooling((( Boolean)value).booleanValue());
-			}
-		};
-	}
+        setUp();
 
-	private ButtonModel buildCheckBoxModelAdapter( PropertyValueModel booleanHolder) {
-		
-		return new CheckBoxModelAdapter( booleanHolder);
-	}
+        booleanHolder = this.buildBooleanHolder( subjectHolder());
 
-	protected Component buildPropertyTestingPanel() {
-		
-		JPanel taskListPanel = new JPanel( new GridLayout( 1, 0));
-		taskListPanel.add( this.buildCheckBox());
-		taskListPanel.add( this.buildCheckBox());
-		return taskListPanel;
-	}
+        buttonModel = this.buildCheckBoxModelAdapter( booleanHolder);
 
-	private JCheckBox buildCheckBox() {
-		
-		JCheckBox checkBox = new JCheckBox();
-		checkBox.setText( "External Connection Pooling");
-		checkBox.setModel( buttonModel);
-		return checkBox;
-	}
-	
-	protected void resetProperty() {
-		
-		subject().setUserName( "");
-	}
+        this.openWindow();
+    }
+
+    private PropertyValueModel buildBooleanHolder( ValueModel subjectHolder) {
+
+        return new PropertyAspectAdapter( subjectHolder, DatabaseSessionAdapter.EXTERNAL_CONNECTION_POOLING_PROPERTY) {
+            protected Object getValueFromSubject() {
+                LoginAdapter login = (LoginAdapter) subject;
+                DatabaseSessionAdapter session = (DatabaseSessionAdapter) login.getParent();
+
+                return Boolean.valueOf(session.usesExternalConnectionPooling());
+            }
+            protected void setValueOnSubject( Object value) {
+                LoginAdapter login = (LoginAdapter) subject;
+                DatabaseSessionAdapter session = (DatabaseSessionAdapter) login.getParent();
+
+                session.setExternalConnectionPooling((( Boolean)value).booleanValue());
+            }
+        };
+    }
+
+    private ButtonModel buildCheckBoxModelAdapter( PropertyValueModel booleanHolder) {
+
+        return new CheckBoxModelAdapter( booleanHolder);
+    }
+
+    protected Component buildPropertyTestingPanel() {
+
+        JPanel taskListPanel = new JPanel( new GridLayout( 1, 0));
+        taskListPanel.add( this.buildCheckBox());
+        taskListPanel.add( this.buildCheckBox());
+        return taskListPanel;
+    }
+
+    private JCheckBox buildCheckBox() {
+
+        JCheckBox checkBox = new JCheckBox();
+        checkBox.setText( "External Connection Pooling");
+        checkBox.setModel( buttonModel);
+        return checkBox;
+    }
+
+    protected void resetProperty() {
+
+        subject().setUserName( "");
+    }
 }

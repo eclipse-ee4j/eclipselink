@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
 /**
  * A {@link MethodVisitor} providing a more detailed API to generate and
  * transform instructions.
- * 
+ *
  * @author Eric Bruneton
  */
 public class InstructionAdapter extends MethodVisitor {
@@ -50,7 +50,7 @@ public class InstructionAdapter extends MethodVisitor {
      * Creates a new {@link InstructionAdapter}. <i>Subclasses must not use this
      * constructor</i>. Instead, they must use the
      * {@link #InstructionAdapter(int, MethodVisitor)} version.
-     * 
+     *
      * @param mv
      *            the method visitor to which this adapter delegates calls.
      * @throws IllegalStateException
@@ -65,7 +65,7 @@ public class InstructionAdapter extends MethodVisitor {
 
     /**
      * Creates a new {@link InstructionAdapter}.
-     * 
+     *
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
      *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.

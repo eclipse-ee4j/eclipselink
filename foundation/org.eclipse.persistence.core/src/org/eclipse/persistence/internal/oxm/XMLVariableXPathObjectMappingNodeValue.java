@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,12 +21,12 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 
 public class XMLVariableXPathObjectMappingNodeValue extends XMLVariableXPathMappingNodeValue {
 
-	VariableXPathObjectMapping mapping;
-	
-	public XMLVariableXPathObjectMappingNodeValue(VariableXPathObjectMapping mapping) {
-		this.mapping = mapping;
-	}
-	
+    VariableXPathObjectMapping mapping;
+
+    public XMLVariableXPathObjectMappingNodeValue(VariableXPathObjectMapping mapping) {
+        this.mapping = mapping;
+    }
+
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
@@ -38,14 +38,14 @@ public class XMLVariableXPathObjectMappingNodeValue extends XMLVariableXPathMapp
         Object objectValue = marshalContext.getAttributeValue(object, mapping);
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
     }
-	
+
     @Override
-	public VariableXPathObjectMapping getMapping() {
-		return mapping;
-	}
-	
-	protected void setOrAddAttributeValue(UnmarshalRecord unmarshalRecord, Object value, XPathFragment xPathFragment, Object collection){	       
-	     unmarshalRecord.setAttributeValue(value, mapping);		        
-	}
-	
+    public VariableXPathObjectMapping getMapping() {
+        return mapping;
+    }
+
+    protected void setOrAddAttributeValue(UnmarshalRecord unmarshalRecord, Object value, XPathFragment xPathFragment, Object collection){
+         unmarshalRecord.setAttributeValue(value, mapping);
+    }
+
 }

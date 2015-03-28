@@ -27,7 +27,7 @@ public class BranchB implements Serializable, PersistentIdentity{
     @OneToMany(fetch = LAZY, cascade = REMOVE)
     @OrderBy("id")
     protected List<BranchB> branchBs;
-    
+
     @ManyToMany(fetch = LAZY, cascade = REMOVE)
     protected List<LeafB> leafBs;
 
@@ -79,7 +79,7 @@ public class BranchB implements Serializable, PersistentIdentity{
     public void setLeafBs(List<LeafB> leafBs) {
         this.leafBs = leafBs;
     }
-    
+
     public boolean checkTreeForRemoval(EntityManager em){
         boolean exists = em.find(this.getClass(), this.getId())!= null;
         if (! exists){

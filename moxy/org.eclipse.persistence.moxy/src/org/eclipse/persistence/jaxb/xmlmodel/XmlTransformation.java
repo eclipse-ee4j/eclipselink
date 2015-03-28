@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,9 +24,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -61,8 +61,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -88,11 +88,11 @@ public class XmlTransformation
 
     /**
      * Gets the value of the xmlAccessMethods property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public XmlAccessMethods getXmlAccessMethods() {
         return xmlAccessMethods;
@@ -100,11 +100,11 @@ public class XmlTransformation
 
     /**
      * Sets the value of the xmlAccessMethods property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public void setXmlAccessMethods(XmlAccessMethods value) {
         this.xmlAccessMethods = value;
@@ -112,11 +112,11 @@ public class XmlTransformation
 
     /**
      * Gets the value of the xmlProperties property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public XmlProperties getXmlProperties() {
         return xmlProperties;
@@ -124,11 +124,11 @@ public class XmlTransformation
 
     /**
      * Sets the value of the xmlProperties property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
@@ -136,20 +136,20 @@ public class XmlTransformation
 
     /**
      * Indicates if an XmlReadTransformer has been set, i.e. is non-null.
-     * 
+     *
      * @return
      */
     public boolean isSetXmlReadTransformer() {
         return xmlReadTransformer != null;
     }
-    
+
     /**
      * Gets the value of the xmlReadTransformer property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlTransformation.XmlReadTransformer }
-     *     
+     *
      */
     public XmlTransformation.XmlReadTransformer getXmlReadTransformer() {
         return xmlReadTransformer;
@@ -157,21 +157,21 @@ public class XmlTransformation
 
     /**
      * Sets the value of the xmlReadTransformer property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlTransformation.XmlReadTransformer }
-     *     
+     *
      */
     public void setXmlReadTransformer(XmlTransformation.XmlReadTransformer value) {
         this.xmlReadTransformer = value;
     }
 
     /**
-     * Indicates if at least one XmlWriteTransformer has been 
+     * Indicates if at least one XmlWriteTransformer has been
      * set, i.e. the List of is XmlWriteTransformers is non-null
      * and non-empty.
-     * 
+     *
      * @return
      */
     public boolean isSetXmlWriteTransformers() {
@@ -180,25 +180,25 @@ public class XmlTransformation
 
     /**
      * Gets the value of the xmlWriteTransformer property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the xmlWriteTransformer property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getXmlWriteTransformer().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link XmlTransformation.XmlWriteTransformer }
-     * 
-     * 
+     *
+     *
      */
     public List<XmlTransformation.XmlWriteTransformer> getXmlWriteTransformer() {
         if (xmlWriteTransformer == null) {
@@ -209,11 +209,11 @@ public class XmlTransformation
 
     /**
      * Gets the value of the optional property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isOptional() {
         if (optional == null) {
@@ -225,11 +225,11 @@ public class XmlTransformation
 
     /**
      * Sets the value of the optional property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setOptional(Boolean value) {
         this.optional = value;
@@ -238,9 +238,9 @@ public class XmlTransformation
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -251,8 +251,8 @@ public class XmlTransformation
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
@@ -265,11 +265,11 @@ public class XmlTransformation
 
         /**
          * Gets the value of the method property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getMethod() {
             return method;
@@ -277,19 +277,19 @@ public class XmlTransformation
 
         /**
          * Sets the value of the method property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setMethod(String value) {
             this.method = value;
         }
-        
+
         /**
          * Indicates if a method has been set, i.e. the method property is non-null.
-         * 
+         *
          * @return
          */
         public boolean isSetMethod() {
@@ -298,11 +298,11 @@ public class XmlTransformation
 
         /**
          * Gets the value of the transformerClass property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getTransformerClass() {
             return transformerClass;
@@ -310,33 +310,33 @@ public class XmlTransformation
 
         /**
          * Sets the value of the transformerClass property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setTransformerClass(String value) {
             this.transformerClass = value;
         }
-        
+
         /**
-         * Indicates if a transformerClass has been set, i.e. the 
+         * Indicates if a transformerClass has been set, i.e. the
          * transformerClass property is non-null.
-         * 
+         *
          * @return
          */
         public boolean isSetTransformerClass() {
-           return transformerClass != null; 
+           return transformerClass != null;
         }
     }
 
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -348,8 +348,8 @@ public class XmlTransformation
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
@@ -364,11 +364,11 @@ public class XmlTransformation
 
         /**
          * Gets the value of the method property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getMethod() {
             return method;
@@ -376,11 +376,11 @@ public class XmlTransformation
 
         /**
          * Sets the value of the method property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setMethod(String value) {
             this.method = value;
@@ -388,20 +388,20 @@ public class XmlTransformation
 
         /**
          * Indicates if a method has been set, i.e. the method property is non-null.
-         * 
+         *
          * @return
          */
         public boolean isSetMethod() {
             return method != null;
         }
-        
+
         /**
          * Gets the value of the xmlPath property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getXmlPath() {
             return xmlPath;
@@ -409,11 +409,11 @@ public class XmlTransformation
 
         /**
          * Sets the value of the xmlPath property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setXmlPath(String value) {
             this.xmlPath = value;
@@ -421,7 +421,7 @@ public class XmlTransformation
 
         /**
          * Indicates if a xmlPath has been set, i.e. the xmlPath property is non-null.
-         * 
+         *
          * @return
          */
         public boolean isSetXmlPath() {
@@ -430,11 +430,11 @@ public class XmlTransformation
 
         /**
          * Gets the value of the transformerClass property.
-         * 
+         *
          * @return
          *     possible object is
          *     {@link String }
-         *     
+         *
          */
         public String getTransformerClass() {
             return transformerClass;
@@ -442,24 +442,24 @@ public class XmlTransformation
 
         /**
          * Sets the value of the transformerClass property.
-         * 
+         *
          * @param value
          *     allowed object is
          *     {@link String }
-         *     
+         *
          */
         public void setTransformerClass(String value) {
             this.transformerClass = value;
         }
-        
+
         /**
-         * Indicates if a transformerClass has been set, i.e. the 
+         * Indicates if a transformerClass has been set, i.e. the
          * transformerClass property is non-null.
-         * 
+         *
          * @return
          */
         public boolean isSetTransformerClass() {
-           return transformerClass != null; 
+           return transformerClass != null;
         }
     }
 }

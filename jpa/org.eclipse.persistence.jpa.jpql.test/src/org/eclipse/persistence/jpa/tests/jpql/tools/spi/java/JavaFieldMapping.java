@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,13 +26,13 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
  */
 public class JavaFieldMapping extends AbstractFieldMapping {
 
-	/**
-	 * Creates a new <code>JavaFieldMapping</code>.
-	 *
-	 * @param parent The parent of this mapping
-	 * @param field The Java field wrapped by this mapping
-	 */
-	public JavaFieldMapping(IManagedType parent, Field field) {
-		super(parent, field);
-	}
+    /**
+     * Creates a new <code>JavaFieldMapping</code>.
+     *
+     * @param parent The parent of this mapping
+     * @param field The Java field wrapped by this mapping
+     */
+    public JavaFieldMapping(IManagedType parent, Field field) {
+        super(parent, field);
+    }
 }

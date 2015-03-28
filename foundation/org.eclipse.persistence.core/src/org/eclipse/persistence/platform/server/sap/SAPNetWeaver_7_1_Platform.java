@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2009, 2015  SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -25,7 +25,7 @@ import org.eclipse.persistence.transaction.sap.SAPNetWeaverTransactionController
  * follow-up releases.
  * <p>
  * Known limitations:
- * 
+ *
  * <ul>
  * <li>SAP NetWeaver AS Java (version 7.1 to 7.2) is a Java EE 5 server, hence
  * supporting only JPA 1.0. Namely, criteria queries cannot be used.</li>
@@ -62,12 +62,12 @@ public class SAPNetWeaver_7_1_Platform extends ServerPlatformBase {
     @Override
     /**
      * SAP NetWeaver does not support dynamic byte code weaving. We return the original class loader
-     * in order to prevent dynamic weaving. 
+     * in order to prevent dynamic weaving.
      */
     public JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo) {
         ClassLoader realClassLoader = puInfo.getClassLoader();
         AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_sap_temp_classloader_bypassed",//
                 puInfo.getPersistenceUnitName(), realClassLoader);
         return new JPAClassLoaderHolder(realClassLoader, NO_TEMP_CLASS_LOADER);
-    }    
+    }
 }

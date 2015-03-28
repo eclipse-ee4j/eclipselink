@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,78 +24,78 @@ import org.eclipse.persistence.jpa.jpql.utility.iterator.CloneListIterator;
  * @see <a href="http://git.eclipse.org/c/dali/webtools.dali.git/tree/common/plugins/org.eclipse.jpt.common.utility/src/org/eclipse/jpt/common/utility/internal/iterable/SnapshotCloneListIterable.java">SnapshotCloneListIterable</a>
  */
 public abstract class CloneListIterable<E>
-	implements ListIterable<E>
+    implements ListIterable<E>
 {
-	final CloneListIterator.Mutator<E> mutator;
+    final CloneListIterator.Mutator<E> mutator;
 
 
-	// ********** constructors **********
+    // ********** constructors **********
 
-	protected CloneListIterable() {
-		super();
-		this.mutator = this.buildDefaultMutator();
-	}
+    protected CloneListIterable() {
+        super();
+        this.mutator = this.buildDefaultMutator();
+    }
 
-	protected CloneListIterable(CloneListIterator.Mutator<E> mutator) {
-		super();
-		if (mutator == null) {
-			throw new NullPointerException();
-		}
-		this.mutator = mutator;
-	}
+    protected CloneListIterable(CloneListIterator.Mutator<E> mutator) {
+        super();
+        if (mutator == null) {
+            throw new NullPointerException();
+        }
+        this.mutator = mutator;
+    }
 
-	protected CloneListIterator.Mutator<E> buildDefaultMutator() {
-		return new DefaultMutator();
-	}
-
-
-	// ********** default mutations **********
-
-	/**
-	 * At the specified index, add the specified element to the original list.
-	 * <p>
-	 * This method can be overridden by a subclass as an
-	 * alternative to building a
-	 * {@link CloneListIterator.Mutator}.
-	 */
-	protected void add(@SuppressWarnings("unused") int index, @SuppressWarnings("unused") E element) {
-		throw new RuntimeException("This method was not overridden."); //$NON-NLS-1$
-	}
-
-	/**
-	 * Remove the element at the specified index from the original list.
-	 * <p>
-	 * This method can be overridden by a subclass as an
-	 * alternative to building a
-	 * {@link CloneListIterator.Mutator}.
-	 */
-	protected void remove(@SuppressWarnings("unused") int index) {
-		throw new RuntimeException("This method was not overridden."); //$NON-NLS-1$
-	}
-
-	/**
-	 * At the specified index, set the specified element in the original list.
-	 * <p>
-	 * This method can be overridden by a subclass as an
-	 * alternative to building a
-	 * {@link CloneListIterator.Mutator}.
-	 */
-	protected void set(@SuppressWarnings("unused") int index, @SuppressWarnings("unused") E element) {
-		throw new RuntimeException("This method was not overridden."); //$NON-NLS-1$
-	}
+    protected CloneListIterator.Mutator<E> buildDefaultMutator() {
+        return new DefaultMutator();
+    }
 
 
-	//********** default mutator **********
+    // ********** default mutations **********
 
-	protected class DefaultMutator implements CloneListIterator.Mutator<E> {
-		public void add(int index, E element) {
-			CloneListIterable.this.add(index, element);
-		}
-		public void remove(int index) {
-			CloneListIterable.this.remove(index);
-		}
-		public void set(int index, E element) {
-			CloneListIterable.this.set(index, element);
-		}
-	}
+    /**
+     * At the specified index, add the specified element to the original list.
+     * <p>
+     * This method can be overridden by a subclass as an
+     * alternative to building a
+     * {@link CloneListIterator.Mutator}.
+     */
+    protected void add(@SuppressWarnings("unused") int index, @SuppressWarnings("unused") E element) {
+        throw new RuntimeException("This method was not overridden."); //$NON-NLS-1$
+    }
+
+    /**
+     * Remove the element at the specified index from the original list.
+     * <p>
+     * This method can be overridden by a subclass as an
+     * alternative to building a
+     * {@link CloneListIterator.Mutator}.
+     */
+    protected void remove(@SuppressWarnings("unused") int index) {
+        throw new RuntimeException("This method was not overridden."); //$NON-NLS-1$
+    }
+
+    /**
+     * At the specified index, set the specified element in the original list.
+     * <p>
+     * This method can be overridden by a subclass as an
+     * alternative to building a
+     * {@link CloneListIterator.Mutator}.
+     */
+    protected void set(@SuppressWarnings("unused") int index, @SuppressWarnings("unused") E element) {
+        throw new RuntimeException("This method was not overridden."); //$NON-NLS-1$
+    }
+
+
+    //********** default mutator **********
+
+    protected class DefaultMutator implements CloneListIterator.Mutator<E> {
+        public void add(int index, E element) {
+            CloneListIterable.this.add(index, element);
+        }
+        public void remove(int index) {
+            CloneListIterable.this.remove(index);
+        }
+        public void set(int index, E element) {
+            CloneListIterable.this.set(index, element);
+        }
+    }
 }

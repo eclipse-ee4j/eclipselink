@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,61 +27,61 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  */
 final class JoinDeclaration extends Declaration {
 
-	/**
-	 * Creates a new <code>JoinDeclaration</code>.
-	 *
-	 * @param queryContext The context used to query information about the application metadata and
-	 * cached information
-	 */
-	JoinDeclaration(JPQLQueryContext queryContext) {
-		super(queryContext);
-	}
+    /**
+     * Creates a new <code>JoinDeclaration</code>.
+     *
+     * @param queryContext The context used to query information about the application metadata and
+     * cached information
+     */
+    JoinDeclaration(JPQLQueryContext queryContext) {
+        super(queryContext);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	Expression buildQueryExpression() {
-		return queryContext.buildExpression(baseExpression);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    Expression buildQueryExpression() {
+        return queryContext.buildExpression(baseExpression);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Join getBaseExpression() {
-		return (Join) super.getBaseExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Join getBaseExpression() {
+        return (Join) super.getBaseExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Type getType() {
-		return Type.UNKNOWN;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Type getType() {
+        return Type.UNKNOWN;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	ClassDescriptor resolveDescriptor() {
-		return queryContext.resolveDescriptor(getBaseExpression().getJoinAssociationPath());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    ClassDescriptor resolveDescriptor() {
+        return queryContext.resolveDescriptor(getBaseExpression().getJoinAssociationPath());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	DatabaseMapping resolveMapping() {
-		return queryContext.resolveMapping(getBaseExpression().getJoinAssociationPath());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    DatabaseMapping resolveMapping() {
+        return queryContext.resolveMapping(getBaseExpression().getJoinAssociationPath());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return baseExpression.toParsedText();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return baseExpression.toParsedText();
+    }
 }

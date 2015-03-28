@@ -5,7 +5,7 @@
             xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java"
             sdoJava:package="oracle.test.xpath"
             elementFormDefault="qualified" attributeFormDefault="unqualified">
-            
+
   <xsd:import schemaLocation="classpath:/xml/sdoJava.xsd" namespace="commonj.sdo/java"/>
   <xsd:import namespace="commonj.sdo" schemaLocation="classpath:/xml/datagraph.xsd"/>
 

@@ -15,7 +15,7 @@
 
     <property name="base.dir" value="../.."/>
     <property name="plugins.dir" value="${base.dir}/plugins"/>
-    
+
     <property name="jpa.base.dir" value="../"/>
     <property name="jpa.plugins.dir" value="${jpa.base.dir}/plugins"/>
 
@@ -25,32 +25,32 @@
     <property name="javax.validation" value="${plugins.dir}/javax.validation_1.1.0.v201304101302.jar"/>
     <property name="javax.persistence" value="${jpa.plugins.dir}/javax.persistence_2.1.0.v201304241213.jar"/>
 
-	<property file="${user.home}/build.properties"/>
+    <property file="${user.home}/build.properties"/>
     <property file="./antbuild.properties" />
     <property file="./test.properties" />
 
-	<path id="compile.path">
-		<pathelement path="${eclipselink.jar}" />
+    <path id="compile.path">
+        <pathelement path="${eclipselink.jar}" />
 
-		<pathelement path="${javax.transaction}" />
-		<pathelement path="${javax.validation}" />
-		<pathelement path="${javax.persistence}" />
-		<pathelement path="${junit.lib}" />
-	</path>
-	<path id="run.path">
-		<pathelement path="${classes.dir}" />
-		<pathelement path="${eclipselink.jar}" />
+        <pathelement path="${javax.transaction}" />
+        <pathelement path="${javax.validation}" />
+        <pathelement path="${javax.persistence}" />
+        <pathelement path="${junit.lib}" />
+    </path>
+    <path id="run.path">
+        <pathelement path="${classes.dir}" />
+        <pathelement path="${eclipselink.jar}" />
 
-		<pathelement path="${javax.transaction}" />
-		<pathelement path="${javax.validation}" />
-		<pathelement path="${javax.persistence}" />
-		<pathelement path="${junit.lib}" />
-		<pathelement path="${jdbc.driver.jar}" />
-	</path>
-			
+        <pathelement path="${javax.transaction}" />
+        <pathelement path="${javax.validation}" />
+        <pathelement path="${javax.persistence}" />
+        <pathelement path="${junit.lib}" />
+        <pathelement path="${jdbc.driver.jar}" />
+    </path>
+
     <target name="test" depends="compile, weave">
 
-		
+
         <mkdir dir="${reports.dir}"/>
 
         <junit printsummary="on" haltonfailure="false" failureproperty="fail">
@@ -64,7 +64,7 @@
             </classpath>
 
             <formatter type="xml"/>
-			
+
             <batchtest fork="no" todir="${reports.dir}">
                 <fileset dir="${src.dir}">
                     <include name="**/Test*.java"/>
@@ -72,18 +72,18 @@
             </batchtest>
 
         </junit>
-		<junitreport todir="./reports">
-		  <fileset dir="./reports">
-			<include name="TEST-*.xml"/>
-		  </fileset>
-		  <report format="frames" todir="./reports/html"/>
-		</junitreport>
-		<echo message="JUNIT results in ${user.dir}/reports/html"/>
-		<fail if="fail" message="Test failures detected, please check the results."/>
+        <junitreport todir="./reports">
+          <fileset dir="./reports">
+            <include name="TEST-*.xml"/>
+          </fileset>
+          <report format="frames" todir="./reports/html"/>
+        </junitreport>
+        <echo message="JUNIT results in ${user.dir}/reports/html"/>
+        <fail if="fail" message="Test failures detected, please check the results."/>
     </target>
 
-    <!-- 
-    Ideally we could do something smart here to have different weaving targets to weave with different properties. 
+    <!--
+    Ideally we could do something smart here to have different weaving targets to weave with different properties.
     We can cross that bridge when / if it is needed.
     -->
     <target name="weave">

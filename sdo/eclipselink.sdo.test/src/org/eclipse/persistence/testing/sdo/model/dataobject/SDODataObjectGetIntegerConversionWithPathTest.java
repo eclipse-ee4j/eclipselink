@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import java.math.BigDecimal;
@@ -23,14 +23,14 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
     public SDODataObjectGetIntegerConversionWithPathTest(String name) {
         super(name);
     }
-    
+
      public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetIntegerConversionWithPathTest" };
         TestRunner.main(arguments);
     }
 
     //1. purpose: getBigInteger with boolean property
-    public void testGetIntegerFromBoolean() {        
+    public void testGetIntegerFromBoolean() {
         property_c = new SDOProperty(aHelperContext);
         property_c.setName(PROPERTY_NAME_C);
         property_c.setType(SDOConstants.SDO_BOOLEAN);
@@ -70,13 +70,13 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         property_c.setName(PROPERTY_NAME_C);
         property_c.setType(SDOConstants.SDO_CHARACTER);
         type_c.addDeclaredProperty(property_c);
-        dataObject_c._setType(type_c);       
+        dataObject_c._setType(type_c);
         dataObject_c.set(property_c, 'e');
 
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -108,7 +108,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -120,7 +120,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         property_c.setType(SDOConstants.SDO_FLOAT);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-               
+
         float fl = 12;
         int il = (int)fl;
         BigInteger bd = new BigInteger(String.valueOf(il));
@@ -140,7 +140,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -151,7 +151,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         property_c.setName(PROPERTY_NAME_C);
         property_c.setType(SDOConstants.SDO_INT);
         type_c.addDeclaredProperty(property_c);
-        dataObject_c._setType(type_c);        
+        dataObject_c._setType(type_c);
 
         int in = 12;
         BigInteger bd = new BigInteger(String.valueOf(in));
@@ -171,7 +171,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -202,7 +202,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -215,7 +215,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         dataObject_c._setType(type_c);
 
         try {
-            BigInteger value = dataObject_a.getBigInteger(propertyPath_a_b_c);            
+            BigInteger value = dataObject_a.getBigInteger(propertyPath_a_b_c);
             assertEquals(new BigInteger("0"), value); // 6151874: default used to be null
             //TODO: conversion not supported by sdo spec but is supported by TopLink
         } catch (ClassCastException e) {
@@ -249,7 +249,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -281,7 +281,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -313,7 +313,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -343,7 +343,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -358,7 +358,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
         try {
             dataObject_a.getBigInteger(propertyPath_a_b_c);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -368,7 +368,7 @@ public class SDODataObjectGetIntegerConversionWithPathTest extends SDODataObject
             String p = null;
             dataObject_a.getBigInteger(p);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 }

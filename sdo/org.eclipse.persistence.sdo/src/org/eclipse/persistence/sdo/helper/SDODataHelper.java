@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -84,11 +84,11 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Creates a Calendar based on a given Duration and Locale.
-     * 
+     *
      * @param dur the Duration object to use to populate the Calendar
      * @param loc the Locale to use - null is a valid value
-     *            
-     * @return a Calendar 
+     *
+     * @return a Calendar
      */
     private Calendar toCalendar(Duration dur, Locale loc) {
         Calendar cal;
@@ -106,11 +106,11 @@ public class SDODataHelper implements DataHelper {
         cal.set(Calendar.SECOND, dur.getSeconds());
         return cal;
     }
-    
+
     /**
      * Convert from a String representation of an SDO date type to a Calendar
      * using the default locale. Same as toCalendar(dateString, null).
-     * 
+     *
      * @param dateString
      *            the String representation of an SDO date type
      * @return a Calendar representation of an SDO date type.
@@ -124,7 +124,7 @@ public class SDODataHelper implements DataHelper {
     /**
      * Convert from a String representation of an SDO date type to a Calendar
      * using the specified locale, or the default locale if the locale is null.
-     * 
+     *
      * @param dateString
      *            the String representation of an SDO date type
      * @param locale
@@ -155,7 +155,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a String representation of the Date type to a Date.
-     * 
+     *
      * @param dateString a String representation of the Date type
      * @return a Date from a String representation of the Date type.
      */
@@ -178,7 +178,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Calendar to a String representation of the DateTime type.
-     * 
+     *
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the DateTime type.
      */
@@ -198,7 +198,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Date to a String representation of the DateTime type.
-     * 
+     *
      * @param date the date
      * @return a Date to a String representation of the DateTime type.
      */
@@ -211,7 +211,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Calendar to a String representation of the Day type.
-     * 
+     *
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the Day type.
      */
@@ -231,7 +231,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Date to a String representation of the Day type.
-     * 
+     *
      * @param date the date
      * @return a Date to a String representation of the Day type.
      */
@@ -244,7 +244,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Calendar to a String representation of the Duration type.
-     * 
+     *
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the Duration type.
      */
@@ -272,7 +272,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Date to a String representation of the Duration type.
-     * 
+     *
      * @param date the date
      * @return a Date to a String representation of the Duration type.
      */
@@ -288,7 +288,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Calendar to a String representation of the Month type.
-     * 
+     *
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the Month type.
      */
@@ -307,7 +307,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Date to a String representation of the Month type.
-     * 
+     *
      * @param date the date
      * @return a Date to a String representation of the Month type.
      */
@@ -315,7 +315,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        
+
         // Temporarily turn off TZ qualification
         boolean wasTimezoneQualified = getXMLConversionManager().isTimeZoneQualified();
         getXMLConversionManager().setTimeZoneQualified(false);
@@ -326,7 +326,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Calendar to a String representation of the MonthDay type.
-     * 
+     *
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the MonthDay type.
      */
@@ -386,7 +386,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Date to a String representation of the MonthDay type.
-     * 
+     *
      * @param date the date to convert
      * @return a Date to a String representation of the MonthDay type.
      */
@@ -404,7 +404,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Calendar to a String representation of the Time type.
-     * 
+     *
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the Time type.
      */
@@ -423,7 +423,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Date to a String representation of the Time type.
-     * 
+     *
      * @param date the date
      * @return a Date to a String representation of the Time type.
      */
@@ -436,7 +436,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Calendar to a String representation of the Year type.
-     * 
+     *
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the Year type.
      */
@@ -455,7 +455,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Date to a String representation of the Year type.
-     * 
+     *
      * @param date the date
      * @return a Date to a String representation of the Year type.
      */
@@ -468,7 +468,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Date to a String representation of the YearMonth type.
-     * 
+     *
      * @param date the date
      * @return a Date to a String representation of the YearMonth type.
      */
@@ -481,7 +481,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Date to a String representation of the YearMonthDay type.
-     * 
+     *
      * @param date the date
      * @return a Date to a String representation of the YearMonthDay type.
      */
@@ -494,7 +494,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert from a Calendar to a String representation of the YearMonth type.
-     * 
+     *
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the YearMonth type.
      */
@@ -514,7 +514,7 @@ public class SDODataHelper implements DataHelper {
     /**
      * Convert from a Calendar to a String representation of the YearMonthDay
      * type.
-     * 
+     *
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the YearMonthDay type.
      */
@@ -533,7 +533,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Perform Calendar setting based on passed in parameters.
-     * 
+     *
      * @param c the Calendar to be set
      * @param i an offset indicate what value to be set
      * @param data the value to set to the Calendar
@@ -567,7 +567,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert a value based to the appropriate type.
-     * 
+     *
      * @param value The value to convert.
      * @param convertClass The class to convert the value to.
      * @param schemaType The schema type if available.
@@ -580,7 +580,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert a String value based to the appropriate type.
-     * 
+     *
      * @param value The String value to convert.
      * @param convertClass The class to convert the value to.
      * @return the original value converted based on the convertClass parameter.
@@ -591,7 +591,7 @@ public class SDODataHelper implements DataHelper {
         } else if (convertClass == ClassConstants.CALENDAR) {
             return toCalendar(value);
         } else if(value == SDOConstants.EMPTY_STRING && (convertClass == ClassConstants.LONG || convertClass == ClassConstants.SHORT || convertClass == ClassConstants.INTEGER || convertClass == ClassConstants.FLOAT || convertClass == ClassConstants.DOUBLE || convertClass == ClassConstants.BOOLEAN || convertClass == ClassConstants.CHAR || convertClass == ClassConstants.QNAME )){
-       	    return null;        	
+               return null;
         } else {
             return getXMLConversionManager().convertObject(value, convertClass);
         }
@@ -599,7 +599,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert a String value based to the appropriate type.
-     * 
+     *
      * @param value The String value to convert.
      * @param sdoType The SDO type of the value to convert the value to.
      * @return the original value converted based on the SDO type.
@@ -610,7 +610,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert a String value based to the appropriate type.
-     * 
+     *
      * @param value The String value to convert.
      * @param sdoType The SDO type of the value to convert the value to.
      * @param schemaType The schema type if available.
@@ -630,7 +630,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert a String value based to the appropriate type.
-     * 
+     *
      * @param value The String value to convert.
      * @param convertClass The class to convert the value to.
      * @param schemaType The schema type if available.
@@ -648,7 +648,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert to a String value based to the SDO type.
-     * 
+     *
      * @param value The value to convert.
      * @param sdoType the SDO type
      * @return the original value converted to a String based on the SDO type
@@ -660,7 +660,7 @@ public class SDODataHelper implements DataHelper {
 
     /**
      * Convert to a String value based to the SDO type.
-     * 
+     *
      * @param value The value to convert.
      * @param sdoType the SDO type
      * @return the original value converted to a String based on the SDO type
@@ -729,7 +729,7 @@ public class SDODataHelper implements DataHelper {
      * Convert the specified value to an {@link Type#getInstanceClass()
      * instance} of the specified type. Supported conversions are listed in
      * Section 14 of the SDO specification.
-     * 
+     *
      * @param type the target {@link Type#isDataType() data type}.
      * @param value the value to convert
      * @return a value of the specified type's instance class
@@ -763,7 +763,7 @@ public class SDODataHelper implements DataHelper {
      * The specified value must be a List if the property is
      * {@link Property#isMany() many valued}. In this case, all the values in
      * the List are converted.
-     * 
+     *
      * @param property the target {@link Type#isDataType() data type} property.
      * @param value the value or List of values to convert
      * @return a converted value or list of converted values

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,13 +19,13 @@ import org.w3c.dom.Node;
 public class Employee {
     public int a;
     public String b;
-    
+
     //@javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter(value=org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.MyDomAdapter.class)
     //@javax.xml.bind.annotation.XmlAnyElement(lax=false, value=org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.MyDomHandler.class)
     public Object stuff;
 
     public Employee() {}
-    
+
     public boolean equals(Object obj) {
         Employee empObj;
         try {
@@ -33,7 +33,7 @@ public class Employee {
         } catch (ClassCastException e) {
             return false;
         }
-        
+
         if (empObj.stuff == null) {
             if (this.stuff != null) {
                 return false;
@@ -51,7 +51,7 @@ public class Employee {
         // here 'stuff' should be text or an Employee
         return empObj.a == this.a && empObj.b.equals(this.b) && empObj.stuff.equals(this.stuff);
     }
-    
+
     public String toString() {
         return "Employee[a="+a+", b="+b+", stuff="+stuff+"]";
     }

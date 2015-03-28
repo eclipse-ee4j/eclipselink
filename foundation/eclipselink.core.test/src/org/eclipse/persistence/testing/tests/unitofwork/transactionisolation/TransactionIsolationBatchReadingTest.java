@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork.transactionisolation;
 
 import java.util.Vector;
@@ -94,22 +94,22 @@ TransactionIsolationBatchReadingTest extends AutoVerifyTestCase {
 
         strongAssert((maleAddress != null), "The batch read attribute [male.address] was null");
         strongAssert((femaleAddress != null), "The batch read attribute [female.address] was null");
-        strongAssert(male.address.isInstantiated(), 
+        strongAssert(male.address.isInstantiated(),
                      "The wrapped valueholder should be instantiated, because it " + "was read on the session and is safe to trigger.");
-        strongAssert(((UnitOfWorkImpl)unitOfWork).getBatchQueries() != null, 
+        strongAssert(((UnitOfWorkImpl)unitOfWork).getBatchQueries() != null,
                      "unitOfWork.getBatchReadObjects() must never return null");
-        strongAssert(((UnitOfWorkImpl)unitOfWork).getBatchQueries().size() == 2, 
+        strongAssert(((UnitOfWorkImpl)unitOfWork).getBatchQueries().size() == 2,
                      "unitOfWork batchReadObjects should only be storing the female addresses");
 
         if (!((UnitOfWorkImpl)unitOfWork).getBatchQueries().isEmpty()) {
-            DatabaseQuery batchQuery = 
+            DatabaseQuery batchQuery =
                 ((UnitOfWorkImpl)unitOfWork).getBatchQueries().keySet().iterator().next();
-            strongAssert(batchQuery.getBatchObjects() == null, 
+            strongAssert(batchQuery.getBatchObjects() == null,
                          "triggering batch query on UOW should not store batched objects on the query.");
         }
 
-        strongAssert((originalMale.getAddress() != maleAddress), 
-                     "Triggering a valueholder on session is returning a clone from " + 
+        strongAssert((originalMale.getAddress() != maleAddress),
+                     "Triggering a valueholder on session is returning a clone from " +
                      "the UnitOfWork batched objects.");
 
         Employee otherFemale = (Employee)females.elementAt(1);
@@ -132,7 +132,7 @@ TransactionIsolationBatchReadingTest extends AutoVerifyTestCase {
          * The event contains the query to be executed.
          */
         public void preExecuteQuery(SessionEvent event) {
-            throw new TestErrorException("Triggering a second batch valueholder of the same batch query is going to the database.  Query: " + 
+            throw new TestErrorException("Triggering a second batch valueholder of the same batch query is going to the database.  Query: " +
                                          event.getQuery());
         }
     }

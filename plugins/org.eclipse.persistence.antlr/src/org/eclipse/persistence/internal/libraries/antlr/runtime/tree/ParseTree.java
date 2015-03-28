@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -37,83 +37,83 @@ import java.util.List;
  *  that is more meaningful (specific) and holds a String to display for a node.
  */
 public class ParseTree extends BaseTree {
-	public Object payload;
-	public List hiddenTokens;
+    public Object payload;
+    public List hiddenTokens;
 
-	public ParseTree(Object label) {
-		this.payload = label;
-	}
+    public ParseTree(Object label) {
+        this.payload = label;
+    }
 
-	public Tree dupNode() {
-		return null;
-	}
+    public Tree dupNode() {
+        return null;
+    }
 
-	public int getType() {
-		return 0;
-	}
+    public int getType() {
+        return 0;
+    }
 
-	public String getText() {
-		return toString();
-	}
+    public String getText() {
+        return toString();
+    }
 
-	public int getTokenStartIndex() {
-		return 0;
-	}
+    public int getTokenStartIndex() {
+        return 0;
+    }
 
-	public void setTokenStartIndex(int index) {
-	}
+    public void setTokenStartIndex(int index) {
+    }
 
-	public int getTokenStopIndex() {
-		return 0;
-	}
+    public int getTokenStopIndex() {
+        return 0;
+    }
 
-	public void setTokenStopIndex(int index) {
-	}
+    public void setTokenStopIndex(int index) {
+    }
 
-	public String toString() {
-		if ( payload instanceof Token ) {
-			Token t = (Token)payload;
-			if ( t.getType() == Token.EOF ) {
-				return "<EOF>";
-			}
-			return t.getText();
-		}
-		return payload.toString();
-	}
+    public String toString() {
+        if ( payload instanceof Token ) {
+            Token t = (Token)payload;
+            if ( t.getType() == Token.EOF ) {
+                return "<EOF>";
+            }
+            return t.getText();
+        }
+        return payload.toString();
+    }
 
-	/** Emit a token and all hidden nodes before.  EOF node holds all
-	 *  hidden tokens after last real token.
-	 */
-	public String toStringWithHiddenTokens() {
-		StringBuffer buf = new StringBuffer();
-		if ( hiddenTokens!=null ) {
-			for (int i = 0; i < hiddenTokens.size(); i++) {
-				Token hidden = (Token) hiddenTokens.get(i);
-				buf.append(hidden.getText());
-			}
-		}
-		String nodeText = this.toString();
-		if ( !nodeText.equals("<EOF>") ) buf.append(nodeText);
-		return buf.toString();
-	}
+    /** Emit a token and all hidden nodes before.  EOF node holds all
+     *  hidden tokens after last real token.
+     */
+    public String toStringWithHiddenTokens() {
+        StringBuffer buf = new StringBuffer();
+        if ( hiddenTokens!=null ) {
+            for (int i = 0; i < hiddenTokens.size(); i++) {
+                Token hidden = (Token) hiddenTokens.get(i);
+                buf.append(hidden.getText());
+            }
+        }
+        String nodeText = this.toString();
+        if ( !nodeText.equals("<EOF>") ) buf.append(nodeText);
+        return buf.toString();
+    }
 
-	/** Print out the leaves of this tree, which means printing original
-	 *  input back out.
-	 */
-	public String toInputString() {
-		StringBuffer buf = new StringBuffer();
-		_toStringLeaves(buf);
-		return buf.toString();
-	}
+    /** Print out the leaves of this tree, which means printing original
+     *  input back out.
+     */
+    public String toInputString() {
+        StringBuffer buf = new StringBuffer();
+        _toStringLeaves(buf);
+        return buf.toString();
+    }
 
-	public void _toStringLeaves(StringBuffer buf) {
-		if ( payload instanceof Token ) { // leaf node token?
-			buf.append(this.toStringWithHiddenTokens());
-			return;
-		}
-		for (int i = 0; children!=null && i < children.size(); i++) {
-			ParseTree t = (ParseTree)children.get(i);
-			t._toStringLeaves(buf);
-		}
-	}
+    public void _toStringLeaves(StringBuffer buf) {
+        if ( payload instanceof Token ) { // leaf node token?
+            buf.append(this.toStringWithHiddenTokens());
+            return;
+        }
+        for (int i = 0; children!=null && i < children.size(); i++) {
+            ParseTree t = (ParseTree)children.get(i);
+            t._toStringLeaves(buf);
+        }
+    }
 }

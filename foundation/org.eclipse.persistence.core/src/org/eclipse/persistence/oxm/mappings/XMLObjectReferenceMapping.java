@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -47,10 +47,10 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
 /**
  * TopLink OXM version of a 1-1 mapping.  A list of source-target key field
- * associations is used to link the source xpaths to their related target xpaths, 
+ * associations is used to link the source xpaths to their related target xpaths,
  * and hence their primary key (unique identifier) values used when (un)marshalling.
  * This mapping has a Vector of XMLFields as opposed to a single XMLField.
- * 
+ *
  * It is important to note that each target xpath is assumed to be set as a primary
  * key field on the target (reference) class descriptor - this is necessary in order
  * to locate the correct target object instance in the session cache when resolving
@@ -75,7 +75,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
     /**
      * PUBLIC:
      * Add a source-target xpath pair to the map.
-     * 
+     *
      * @param srcXPath
      * @param tgtXPath
      */
@@ -88,24 +88,24 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
             sourceToTargetKeyFieldAssociations.put(srcFld, new XMLField(tgtXPath));
         }
     }
-    
+
     public void addSourceToTargetKeyFieldAssociation(XMLField srcField, XMLField tgtField) {
         sourceToTargetKeys.add(srcField);
         sourceToTargetKeyFieldAssociations.put(srcField, tgtField);
     }
 
-    /**    
+    /**
      * INTERNAL:
      * Retrieve the target object's primary key value that is mapped to a given
      * source xpath (in the source-target key field association list).
-     * 
+     *
      * @param targetObject
      * @param xmlFld
      * @param session
      * @return null if the target object is null, the reference class is null, or
      * a primary key field name does not exist on the reference descriptor that
-     * matches the target field name - otherwise, return the associated primary 
-     * key value   
+     * matches the target field name - otherwise, return the associated primary
+     * key value
      */
     public Object buildFieldValue(Object targetObject, XMLField xmlFld, AbstractSession session) {
         if (targetObject == null || getReferenceClass() == null) {
@@ -136,7 +136,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * Create (if necessary) and populate a reference object that will be used
      * during the mapping reference resolution phase after unmarshalling is
      * complete.
-     * 
+     *
      * @param record
      * @param xmlField
      * @param object
@@ -150,7 +150,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
 
         Object srcObject = record.getCurrentObject();
         // the order in which the primary keys are added to the vector is
-        // relevant for cache lookup - it must match the ordering of the 
+        // relevant for cache lookup - it must match the ordering of the
         // reference descriptor's primary key entries
 
         Reference reference = resolver.getReference(this, srcObject);
@@ -180,7 +180,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
             XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
             int idx = pkFieldNames.indexOf(tgtFld.getQualifiedName());
             // fix for bug# 5687430
-            // need to get the actual type of the target (i.e. int, String, etc.) 
+            // need to get the actual type of the target (i.e. int, String, etc.)
             // and use the converted value when checking the cache.
             Object value = session.getDatasourcePlatform().getConversionManager().convertObject(object, referenceDescriptor.getTypedField(tgtFld).getType());
             if (value != null) {
@@ -236,10 +236,10 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
     /**
      * Return a QName representation the schema type for a given XMLField, if
      * applicable.
-     * 
-     * Note:  This method performs the same functionality as 'getSchemaType' in 
+     *
+     * Note:  This method performs the same functionality as 'getSchemaType' in
      * org.eclipse.persistence.internal.oxm.XMLSimpleMappingNodeValue.
-     * 
+     *
      * @param xmlField
      * @param value
      * @return
@@ -259,10 +259,10 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
 
     /**
      * Return a single QName representation for a given XMLUnionField, if applicable.
-     * 
+     *
      * Note:  This method performs the same functionality as 'getSingleValueToWriteForUnion'
      * in org.eclipse.persistence.internal.oxm.XMLSimpleMappingNodeValue.
-     *  
+     *
      * @param xmlField
      * @param value
      * @return
@@ -294,7 +294,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
     /**
      * INTERNAL:
      * Return a list of source-target xmlfield pairs.
-     * 
+     *
      * @return
      */
     public HashMap getSourceToTargetKeyFieldAssociations() {
@@ -302,11 +302,11 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
     }
 
     /**
-     * Return a string representation of a given value, based on a given schema type. 
-     * 
+     * Return a string representation of a given value, based on a given schema type.
+     *
      * Note:  This method performs the same functionality as 'getValueToWrite'
      * in org.eclipse.persistence.internal.oxm.XMLSimpleMappingNodeValue.
-     * 
+     *
      * @param schemaType
      * @param value
      * @return
@@ -317,10 +317,10 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
 
     /**
      * INTERNAL:
-     * Register a ReferenceResolver as an event listener on the session, 
+     * Register a ReferenceResolver as an event listener on the session,
      * if one doesn't already exist.  Each source/target field will have
-     * a namespace resolver set as well. 
-     * 
+     * a namespace resolver set as well.
+     *
      * @see org.eclipse.persistence.internal.oxm.ReferenceResolver
      * @see org.eclipse.persistence.oxm.NamespaceResolver
      */
@@ -334,7 +334,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
             super.initialize(session);
         }
 
-        // iterate over each source & target XMLField and set the 
+        // iterate over each source & target XMLField and set the
         // appropriate namespace resolver
         XMLDescriptor descriptor = (XMLDescriptor) this.getDescriptor();
         XMLDescriptor targetDescriptor = (XMLDescriptor) getReferenceDescriptor();
@@ -346,35 +346,35 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
             if(null != targetField) {
                 if(null == targetDescriptor) {
                     throw DescriptorException.referenceClassNotSpecified(this);
-                }               
+                }
                 //primary key field from ref desc
                 List<DatabaseField > pkFields  = targetDescriptor.getPrimaryKeyFields();
                 for(int i=0; i<pkFields.size(); i++){
-                	XMLField nextPKField = (XMLField)pkFields.get(i);
-                	if(targetField.equals(nextPKField)){
-                		targetField = (XMLField) targetDescriptor.buildField(nextPKField);
-                		sourceField.setSchemaType(targetField.getSchemaType());
-                		break;
-                	}
-                } 
+                    XMLField nextPKField = (XMLField)pkFields.get(i);
+                    if(targetField.equals(nextPKField)){
+                        targetField = (XMLField) targetDescriptor.buildField(nextPKField);
+                        sourceField.setSchemaType(targetField.getSchemaType());
+                        break;
+                    }
+                }
 
             }
             sourceToTargetKeyFieldAssociations.put(sourceField, targetField);
         }
-        
+
         if (this.inverseReferenceMapping != null) {
             if (null != this.inverseReferenceMapping.getAttributeAccessor()) {
                 this.inverseReferenceMapping.getAttributeAccessor().initializeAttributes(this.referenceClass);
             }
         }
     }
-    
+
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
-    
+
 
     /**
      * INTERNAL:
@@ -386,13 +386,13 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
 
     /**
      * INTERNAL:
-     * Extract the primary key values from the row, then create an 
-     * org.eclipse.persistence.internal.oxm.Reference instance and store it 
+     * Extract the primary key values from the row, then create an
+     * org.eclipse.persistence.internal.oxm.Reference instance and store it
      * on the session's org.eclipse.persistence.internal.oxm.ReferenceResolver.
      */
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         // the order in which the primary keys are added to the vector is
-        // relevant for cache lookup - it must match the ordering of the 
+        // relevant for cache lookup - it must match the ordering of the
         // reference descriptor's primary key entries
         CacheId primaryKeys;
         ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(referenceClass);
@@ -417,7 +417,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
                     continue;
                 }
                 // fix for bug# 5687430
-                // need to get the actual type of the target (i.e. int, String, etc.) 
+                // need to get the actual type of the target (i.e. int, String, etc.)
                 // and use the converted value when checking the cache.
                 value = executionSession.getDatasourcePlatform().getConversionManager().convertObject(databaseRow.get(keyFld), descriptor.getTypedField(tgtFld).getType());
             }
@@ -472,22 +472,22 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
         }
 
     }
-    
+
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
-    
+
     public boolean isWriteOnly() {
         return this.isWriteOnly;
     }
-    
+
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
         }
         super.setAttributeValueInObject(object, value);
-    } 
-    
+    }
+
     public XMLInverseReferenceMapping getInverseReferenceMapping() {
         return inverseReferenceMapping;
     }
@@ -499,5 +499,5 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
     public boolean isObjectReferenceMapping() {
         return true;
     }
-    
+
 }

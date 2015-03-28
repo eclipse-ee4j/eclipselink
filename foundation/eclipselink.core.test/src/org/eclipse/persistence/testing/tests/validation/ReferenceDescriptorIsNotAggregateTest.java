@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.validation;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -51,7 +51,7 @@ public class ReferenceDescriptorIsNotAggregateTest extends ExceptionTestSaveDesc
         descriptor.addPrimaryKeyFieldName("EMPLOYEE.EMP_ID");
 
         // Interface properties.
-        //	descriptor.getInterfacePolicy().addParentInterface(org.eclipse.persistence.testing.models.employee.interfaces.Employee.class);
+        //    descriptor.getInterfacePolicy().addParentInterface(org.eclipse.persistence.testing.models.employee.interfaces.Employee.class);
 
         // Descriptor properties.
         descriptor.useFullIdentityMap();
@@ -76,9 +76,9 @@ public class ReferenceDescriptorIsNotAggregateTest extends ExceptionTestSaveDesc
 
         AggregateObjectMapping periodMapping = new AggregateObjectMapping();
         periodMapping.setAttributeName("period");
-        //	periodMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
+        //    periodMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
         periodMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
-        //works	periodMapping.setReferenceClass(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
+        //works    periodMapping.setReferenceClass(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
         periodMapping.setIsNullAllowed(true);
         descriptor.addMapping(periodMapping);
 
@@ -87,17 +87,17 @@ public class ReferenceDescriptorIsNotAggregateTest extends ExceptionTestSaveDesc
 
     public RelationalDescriptor buildEmploymentPeriodDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
-        //	descriptor.setJavaClass(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
+        //    descriptor.setJavaClass(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
-        //works	descriptor.setJavaClass(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
+        //works    descriptor.setJavaClass(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
 
 
-        //if the following is missing then the correct error will occure.  
-        //	descriptor.descriptorIsAggregate();
+        //if the following is missing then the correct error will occure.
+        //    descriptor.descriptorIsAggregate();
 
         descriptor.addTableName("EMPLOYEE"); //added to prevent error tl-94
         descriptor.addPrimaryKeyFieldName("EMPLOYEE.EMP_ID"); //added to prevent ERRROR 74 and 59
-        //added to prevent error - 46 
+        //added to prevent error - 46
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
         idMapping.setAttributeName("id");
         idMapping.setFieldName("EMPLOYEE.EMP_ID");
@@ -111,14 +111,14 @@ public class ReferenceDescriptorIsNotAggregateTest extends ExceptionTestSaveDesc
 
         // Mappings.
         /*DirectToFieldMapping endDateMapping = new DirectToFieldMapping();
-	endDateMapping.setAttributeName("endDate");
-	endDateMapping.setFieldName("END_DATE");
-	descriptor.addMapping(endDateMapping);
-	
-	DirectToFieldMapping startDateMapping = new DirectToFieldMapping();
-	startDateMapping.setAttributeName("startDate");
-	startDateMapping.setFieldName("START_DATE");
-	descriptor.addMapping(startDateMapping);
+    endDateMapping.setAttributeName("endDate");
+    endDateMapping.setFieldName("END_DATE");
+    descriptor.addMapping(endDateMapping);
+
+    DirectToFieldMapping startDateMapping = new DirectToFieldMapping();
+    startDateMapping.setAttributeName("startDate");
+    startDateMapping.setFieldName("START_DATE");
+    descriptor.addMapping(startDateMapping);
 */
 
 

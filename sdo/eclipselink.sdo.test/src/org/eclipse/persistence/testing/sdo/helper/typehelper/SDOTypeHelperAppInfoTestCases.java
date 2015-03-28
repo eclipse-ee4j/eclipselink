@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     David McCann - 2.3 - Initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.typehelper;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ import commonj.sdo.helper.XSDHelper;
 import commonj.sdo.impl.HelperProvider;
 
 public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
-	private boolean customContext;
+    private boolean customContext;
     protected DocumentBuilderFactory dbf;
     protected Document doc;
     protected HelperContext aHelperContext;
@@ -50,17 +50,17 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
     protected Element aiElement;
     protected Element aiElementProp;
     protected SDOType sdoTypeType;
-	private static final String CUSTOM_CTX = "customContext";
-	private static final String APP_INFO = "xsd:appinfo";
-	private static final String NAME = "name";
-	private static final String URI = "uri";
-	private static final String TYPE = "type";
+    private static final String CUSTOM_CTX = "customContext";
+    private static final String APP_INFO = "xsd:appinfo";
+    private static final String NAME = "name";
+    private static final String URI = "uri";
+    private static final String TYPE = "type";
     private static final String ATT = "attribute";
     private static final String TYPENO = "Typeno";
     private static final String PROPNO = "Propno";
     private static final String XMLNS = "xmlns";
     private static final String KEY = "key";
-	private static final String PROPERTY = "property"; 
+    private static final String PROPERTY = "property";
     private static final String MYDO = "myDO";
     private static final String MYPROP = "myProperty";
     private static final String MYURI = "myUri";
@@ -68,7 +68,7 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
     private static final String PROPERTY_APP_INFO = "http://xmlns.oracle.com/adf/svc/metadata/property";
     private static final String TYPE_APP_INFO_STRING = "<xsd:appinfo source=\"http://xmlns.oracle.com/adf/svc/metadata/type\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><key xmlns=\"http://xmlns.oracle.com/adf/svc/metadata/type\"><attribute>Typeno</attribute></key></xsd:appinfo>";
     private static final String PROPERTY_APP_INFO_STRING = "<xsd:appinfo source=\"http://xmlns.oracle.com/adf/svc/metadata/property\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><key xmlns=\"http://xmlns.oracle.com/adf/svc/metadata/property\"><attribute>Propno</attribute></key></xsd:appinfo>";
-	
+
     public SDOTypeHelperAppInfoTestCases(String name) {
         super(name);
         customContext = Boolean.getBoolean(CUSTOM_CTX);
@@ -81,14 +81,14 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
 
     public void setUp() {
         HelperContext aHelperContext;
-    	if (customContext) {
+        if (customContext) {
             // default to instance of a HelperContext
             aHelperContext = new SDOHelperContext();
         } else {
             // default to static context (Global)
             aHelperContext = HelperProvider.getDefaultContext();
         }
-    	typeHelper = aHelperContext.getTypeHelper();
+        typeHelper = aHelperContext.getTypeHelper();
         dbf = DocumentBuilderFactory.newInstance();
         try {
             doc = dbf.newDocumentBuilder().newDocument();
@@ -98,7 +98,7 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         xsdHelper = aHelperContext.getXSDHelper();
         typeHelper = aHelperContext.getTypeHelper();
         dataFactory = aHelperContext.getDataFactory();
-        
+
         // setup AppInfoElement for Type:
         // <xsd:appinfo source="http://xmlns.oracle.com/adf/svc/metadata/type">
         //   <key xmlns="http://xmlns.oracle.com/adf/svc/metadata/type">
@@ -113,7 +113,7 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         aiElement = doc.createElementNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, APP_INFO);
         aiElement.setAttribute(SDOConstants.APPINFO_SOURCE_ATTRIBUTE, TYPE_APP_INFO);
         aiElement.appendChild(keyElement);
-        
+
         // setup AppInfoElement for Property:
         // <xsd:appinfo source="http://xmlns.oracle.com/adf/svc/metadata/property">
         //   <key xmlns="http://xmlns.oracle.com/adf/svc/metadata/property">
@@ -128,14 +128,14 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         aiElementProp = doc.createElementNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, APP_INFO);
         aiElementProp.setAttribute(SDOConstants.APPINFO_SOURCE_ATTRIBUTE, PROPERTY_APP_INFO);
         aiElementProp.appendChild(keyElementProp);
-        
+
         sdoTypeType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.TYPE);
     }
 
     /**
-     * Tests setting appinfo elements on a Type and Property via 
+     * Tests setting appinfo elements on a Type and Property via
      * dataObject.set(Property, Object) API.
-     * 
+     *
      * Positive test.
      */
     public void testAppInfoElements() {
@@ -149,16 +149,16 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         dataObject.set(NAME, MYDO);
         dataObject.set(URI, MYURI);
         dataObject.set(SDOConstants.APPINFO_PROPERTY, aieList);
-        
+
         // create a property
         SDODataObject prop = (SDODataObject) dataObject.createDataObject(PROPERTY);
         prop.set(NAME, MYPROP);
         prop.set(TYPE, SDOConstants.SDO_STRING);
         prop.set(SDOConstants.APPINFO_PROPERTY, aiePropList);
-        
+
         // create the type
         SDOType newType = (SDOType) typeHelper.define(dataObject);
-        
+
         //======
         //DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(new HashMap<QName, String>());
         //List<Object> types = new ArrayList<Object>();
@@ -166,7 +166,7 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         //String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         //System.out.println(generatedSchema);
         //======
-        
+
         // validate that AppInfoElements were handled correctly on Type and Property
         // Type
         assertNotNull("Type [newType] is null", newType);
@@ -188,11 +188,11 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         appInfoString = xsdHelper.getAppinfo(myProp, PROPERTY_APP_INFO);
         assertEquals("Expected getAppInfo() to return ["+PROPERTY_APP_INFO_STRING+"] but was ["+appInfoString+"]", PROPERTY_APP_INFO_STRING, appInfoString);
     }
-    
+
     /**
      * Test error handling by setting a single Element as opposed to the
      * expected List<Element>.
-     * 
+     *
      * Negative test.
      */
     public void testSingleAppInfoElement() {
@@ -200,7 +200,7 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         SDODataObject dataObject = (SDODataObject) dataFactory.create(sdoTypeType);
         dataObject.set(NAME, MYDO);
         dataObject.set(URI, MYURI);
-        
+
         // the following should cause an IllegalArgumentException
         try {
             dataObject.set(SDOConstants.APPINFO_PROPERTY, aiElement);

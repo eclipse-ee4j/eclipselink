@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     
- ******************************************************************************/  
+ *
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.util.*;
@@ -48,7 +48,7 @@ import org.eclipse.persistence.exceptions.*;
  * @see InterfacePolicy
  */
 public class RelationalDescriptor extends ClassDescriptor {
-    
+
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -65,7 +65,7 @@ public class RelationalDescriptor extends ClassDescriptor {
     public boolean isRelationalDescriptor() {
         return true;
     }
-    
+
     /**
      * PUBLIC:
      * Specify the table name for the class of objects the receiver describes.
@@ -92,7 +92,7 @@ public class RelationalDescriptor extends ClassDescriptor {
     public Vector getTableNames() {
         return super.getTableNames();
     }
-    
+
     /**
      * PUBLIC:
      * The descriptors default table can be configured if the first table is not desired.
@@ -128,5 +128,5 @@ public class RelationalDescriptor extends ClassDescriptor {
     public void setTableQualifier(String tableQualifier) {
         super.setTableQualifier(tableQualifier);
     }
-    
+
 }

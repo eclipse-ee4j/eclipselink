@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.util.Vector;
@@ -31,11 +31,11 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;    // reset gets called twice on error
     protected Employee new_emp = null;
     protected int m_beforeEvent, m_afterEvent;
-    
-        
+
+
     public CallbackEventJUnitTestSuite() {
     }
-    
+
     public CallbackEventJUnitTestSuite(String name) {
         super(name);
     }
@@ -43,26 +43,26 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("CallbackEventJUnitTestSuite");
-        
+
         suite.addTest(new CallbackEventJUnitTestSuite("testSetup"));
         suite.addTest(new CallbackEventJUnitTestSuite("testPersistThenRemoveCalls"));
         suite.addTest(new CallbackEventJUnitTestSuite("testRemoveUnmanagedNewEntity"));
         suite.addTest(new CallbackEventJUnitTestSuite("testPersistOnRegisteredObject"));
         suite.addTest(new CallbackEventJUnitTestSuite("testPreUpdateEvent_UpdateAltered"));
         suite.addTest(new CallbackEventJUnitTestSuite("testPreUpdateEvent_UpdateReverted"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
-        
+
         clearCache("fieldaccess");
     }
-    
+
     public void setUp () {
         m_reset = true;
         super.setUp();
@@ -82,7 +82,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
             throw ex;
         }
-            
+
         clearCache("fieldaccess");
     }
 
@@ -96,9 +96,9 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         clearCache("fieldaccess");
         m_beforeEvent = EmployeeListener.PRE_REMOVE_COUNT;
         int m_beforePrePersistEvent = EmployeeListener.PRE_PERSIST_COUNT;
-        
+
         EntityManager em = createEntityManager("fieldaccess");
-        beginTransaction(em);      
+        beginTransaction(em);
         Employee employee = new Employee();
         try {
             employee = new Employee();
@@ -121,8 +121,8 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         this.assertTrue("The prePersist callback method was not called.", m_beforePrePersistEvent != m_afterPrePersistEvent);
         this.assertTrue("The preRemove callback method was not called.", m_beforeEvent != m_afterEvent);
     }
-    
-    
+
+
     public void testRemoveUnmanagedNewEntity() throws Exception {
         m_beforeEvent = EmployeeListener.PRE_REMOVE_COUNT;
         clearCache("fieldaccess");
@@ -144,13 +144,13 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         }
         m_afterEvent = EmployeeListener.PRE_REMOVE_COUNT;
         closeEntityManager(em);
-        
+
         this.assertTrue("The preRemove callback method was called, remove should have been ignored.", m_beforeEvent == m_afterEvent);
         //Employee emp = (Employee)em.find(Employee.class, new_emp.getId());
-        
+
         //this.assertTrue("The remove should have been ignored.", m_beforeEvent == m_afterEvent);
     }
-    
+
     public void testPersistOnRegisteredObject() {
         clearCache("fieldaccess");
         EntityManager em = createEntityManager("fieldaccess");
@@ -163,7 +163,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
             em.persist(newEmp);
             m_beforeEvent = EmployeeListener.POST_PERSIST_COUNT;
             em.persist(newEmp);
-            m_afterEvent = EmployeeListener.POST_PERSIST_COUNT;        
+            m_afterEvent = EmployeeListener.POST_PERSIST_COUNT;
             rollbackTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -173,18 +173,18 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
             throw ex;
         }
 
-        
+
         this.assertTrue("Calling persist on a managed object should be ignored", m_beforeEvent==m_afterEvent);
     }
-    
+
     public void testPreUpdateEvent_UpdateAltered() {
         internalTestPreUpdateEvent(false);
     }
-    
+
     public void testPreUpdateEvent_UpdateReverted() {
         internalTestPreUpdateEvent(true);
     }
-    
+
     // PreUpdate event support must change to allow data modifications in event[PreUpdate]
     protected void internalTestPreUpdateEvent(boolean shouldUseOriginalName) {
         EntityManager em = createEntityManager("fieldaccess");
@@ -221,7 +221,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         // because by removing the prefix EmployeeListener reverts the object to its original state -
         // therefore in this case employee's versions before and after commit should be the same.
         // However change tracking will perform the update...
-        
+
         // Verify the employee object from the cache first.
         emp = em.find(Employee.class, new_emp.getId());
         if(!emp.getFirstName().equals(firstNameExpectedAfterCommit)) {
@@ -247,12 +247,12 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     // helper method, used by internalTestPreUpdate
     protected int getVersion(Employee emp) {
         Vector pk = new Vector();
         pk.add(emp.getId());
         return ((Integer)getServerSession("fieldaccess").getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, pk, getServerSession("fieldaccess"))).intValue();
     }
-    
+
 }

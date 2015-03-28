@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- *     11/19/2012-2.5 Guy Pelletier 
+ *     11/19/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.util.ArrayList;
@@ -27,23 +27,23 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 /**
  * INTERNAL:
  * Object to hold onto a PLSQL record meta-data.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
- * - all metadata mapped from XML should be initialized in the initXMLObject 
+ * - all metadata mapped from XML should be initialized in the initXMLObject
  *   method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author James Sutherland
  * @since EclipseLink 2.3
  */
 public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
     private List<PLSQLParameterMetadata> fields = new ArrayList<PLSQLParameterMetadata>();
-    
+
     /**
      * INTERNAL:
      * Used for XML loading.
@@ -51,35 +51,35 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
     public PLSQLRecordMetadata() {
         super("<plsql-record>");
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.
      */
     public PLSQLRecordMetadata(MetadataAnnotation record, MetadataAccessor accessor) {
         super(record, accessor);
-                
+
         for (Object field : record.getAttributeArray("fields")) {
             this.fields.add(new PLSQLParameterMetadata((MetadataAnnotation) field, accessor));
         }
     }
-    
+
     /**
      * INTERNAL:
      */
     @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof PLSQLRecordMetadata) {
-            PLSQLRecordMetadata parameter = (PLSQLRecordMetadata) objectToCompare;            
-            
+            PLSQLRecordMetadata parameter = (PLSQLRecordMetadata) objectToCompare;
+
             if (! valuesMatch(this.fields, parameter.getFields())) {
                 return false;
             }
         }
-        
+
         return super.equals(objectToCompare);
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -87,18 +87,18 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
     public List<PLSQLParameterMetadata> getFields() {
         return fields;
     }
-    
+
     /**
      * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
-        
+
         // Initialize lists of ORMetadata objects.
         initXMLObjects(fields, accessibleObject);
     }
-    
+
     /**
      * INTERNAL:
      * Build a runtime record type from the meta-data.
@@ -106,27 +106,27 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
     public PLSQLrecord process() {
         PLSQLrecord record = new PLSQLrecord();
         super.process(record);
-        
+
         for (PLSQLParameterMetadata field : this.fields) {
             PLSQLargument argument = new PLSQLargument();
             argument.name = field.getName();
             argument.databaseType = getDatabaseTypeEnum(field.getDatabaseType());
-            
+
             if (field.getLength() != null) {
                 argument.length = field.getLength();
             }
-            
+
             if (field.getPrecision() != null) {
                 argument.precision = field.getPrecision();
             }
-            
+
             if (field.getScale() != null) {
                 argument.scale = field.getScale();
             }
-            
+
             record.addField(argument);
         }
-        
+
         return record;
     }
 
@@ -137,7 +137,7 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
     public void setFields(List<PLSQLParameterMetadata> fields) {
         this.fields = fields;
     }
-    
+
     /**
      * Indicates an instance of PLSQLRecordMetadata.
      */

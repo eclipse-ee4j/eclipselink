@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.tests.jpa.advanced;
@@ -29,27 +29,27 @@ import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;    // reset gets called twice on error
 
-        
+
     public ReportQueryMultipleReturnTestSuite() {
     }
-    
+
     public ReportQueryMultipleReturnTestSuite(String name) {
         super(name);
     }
-    
+
     public void setUp () {
         m_reset = true;
         super.setUp();
         clearCache();
     }
-    
+
     public void tearDown () {
         if (m_reset) {
             m_reset = false;
         }
         super.tearDown();
     }
-    
+
     public void testSimpleReturnDirectToField(){
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.returnWithoutReportQueryResult();
@@ -62,7 +62,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         assertTrue("Failed to return Employees correctly, Not A Number", Number.class.isAssignableFrom(resultItem.getClass()));
         assertTrue("Failed to return Employees correctly, Not Correct Result", ((Number)resultItem).intValue() > 1);
     }
-    
+
     public void testSimpleReturnObject(){
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.returnWithoutReportQueryResult();
@@ -74,7 +74,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         Object resultItem = result.get(0);
         assertTrue("Failed to return Employees correctly, Not An Employee", Employee.class.isAssignableFrom(resultItem.getClass()));
     }
-    
+
     public void testReturnObjectAndDirectToField(){
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.returnWithoutReportQueryResult();
@@ -92,7 +92,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         resultItem = ((Object[])innerResult)[1];
         assertTrue("Failed to return Employees correctly, Not An Employee", Employee.class.isAssignableFrom(resultItem.getClass()));
     }
-    
+
     public void testReturnUnrelatedObjectAndDirectToField(){
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.returnWithoutReportQueryResult();
@@ -114,7 +114,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         resultItem = ((Object[])innerResult)[2];
         assertTrue("Failed to return Employees correctly, Not a City", String.class.isAssignableFrom(resultItem.getClass()));
     }
-    
+
     public void testReturnRootObject(){
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.returnWithoutReportQueryResult();
@@ -124,7 +124,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         Object resultItem = result.get(0);
         assertTrue("Failed to return Project as expression root correctly, Not A Project", LargeProject.class.isAssignableFrom(resultItem.getClass()));
     }
-    
+
     public static Test suite() {
         return new TestSuite(ReportQueryMultipleReturnTestSuite.class);
     }

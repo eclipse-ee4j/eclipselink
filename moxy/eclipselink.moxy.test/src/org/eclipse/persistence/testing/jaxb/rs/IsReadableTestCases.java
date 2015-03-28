@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,7 +34,7 @@ import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
 public class IsReadableTestCases extends TestCase {
 
     private MOXyJsonProvider moxyJsonProvider;
-    
+
     public Integer integerField;
 
     @Override
@@ -112,7 +112,7 @@ public class IsReadableTestCases extends TestCase {
 
     public void testIntegerReadable() throws Exception {
         assertTrue(moxyJsonProvider.isReadable(Integer.class, null, null, null));
-        
+
         Field integerField = IsReadableTestCases.class.getDeclaredField("integerField");
         ByteArrayInputStream bais = new ByteArrayInputStream("{\"value\" : 123}".getBytes());
         Object result = moxyJsonProvider.readFrom((Class<Object>) integerField.getType(), null, null, null, null, bais);
@@ -137,9 +137,9 @@ public class IsReadableTestCases extends TestCase {
     }
 
     public static class Root {
-        
+
     }
- 
+
     public static class InvalidDomainClass {
 
         public InvalidDomainClass(String parameter) {

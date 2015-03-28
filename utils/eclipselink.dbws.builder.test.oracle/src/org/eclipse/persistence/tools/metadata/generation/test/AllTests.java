@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -77,7 +77,7 @@ public class AllTests {
     public static final String DEFAULT_DATABASE_USERNAME = "user";
     public static final String DEFAULT_DATABASE_PASSWORD = "password";
     public static final String DEFAULT_DATABASE_URL = "jdbc:oracle:thin:@localhost:1521:ORCL";
-    public static final String DATABASE_PLATFORM = "org.eclipse.persistence.platform.database.oracle.Oracle11Platform";    
+    public static final String DATABASE_PLATFORM = "org.eclipse.persistence.platform.database.oracle.Oracle11Platform";
     // DDL creation
     public static final String DATABASE_DDL_CREATE_KEY = "db.ddl.create";
     public static final String DEFAULT_DATABASE_DDL_CREATE = "false";
@@ -85,13 +85,13 @@ public class AllTests {
     public static final String DEFAULT_DATABASE_DDL_DROP = "false";
     public static final String DATABASE_DDL_DEBUG_KEY = "db.ddl.debug";
     public static final String DEFAULT_DATABASE_DDL_DEBUG = "false";
-    
+
     public static final String DEFAULT_PACKAGE_NAME = "metadatagen";
-    
+
     //shared JUnit fixtures
     public static Connection conn = null;
     public static DatabasePlatform databasePlatform = null;
-    
+
     public static XMLComparer comparer = new XMLComparer();
     public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
     public static XMLParser xmlParser = xmlPlatform.newXMLParser();
@@ -102,7 +102,7 @@ public class AllTests {
         databasePlatform = JPAMetadataGenerator.loadDatabasePlatform(DATABASE_PLATFORM);
         comparer.setIgnoreOrder(true);
     }
-    
+
     /**
      * Helper method that removes empty text nodes from a Document.
      * This is typically called prior to comparing two documents
@@ -123,7 +123,7 @@ public class AllTests {
             }
         }
     }
-    
+
     /**
      * Returns the given org.w3c.dom.Document as a String.
      *
@@ -142,7 +142,7 @@ public class AllTests {
             return "<empty/>";
         }
     }
-    
+
     /**
      * Returns a connection to the Database using System properties, or defaults
      * if a given System property is not set.

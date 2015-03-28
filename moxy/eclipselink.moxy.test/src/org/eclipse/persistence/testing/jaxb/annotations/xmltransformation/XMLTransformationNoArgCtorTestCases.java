@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,11 +22,11 @@ public class XMLTransformationNoArgCtorTestCases extends JAXBWithJSONTestCases{
         setControlDocument("org/eclipse/persistence/testing/jaxb/annotations/xmltransformation/employee.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/annotations/xmltransformation/employee.json");
     }
-    
+
     public Object getControlObject() {
-    	EmployeeWithAddressAndTransformer emp = new EmployeeWithAddressAndTransformer();
+        EmployeeWithAddressAndTransformer emp = new EmployeeWithAddressAndTransformer();
         emp.name = "John Smith";
-        AddressNoCtor address = new AddressNoCtor("theStreet", "theCity");        
+        AddressNoCtor address = new AddressNoCtor("theStreet", "theCity");
         emp.address = address;
         return emp;
     }

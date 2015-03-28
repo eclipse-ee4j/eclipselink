@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -19,17 +19,17 @@ import commonj.sdo.impl.HelperProvider;
 /**
  * Abstract class for SDO helper delegators.  Delegates will shared on an application
  * basis.  This class will return the key to be used to store/retrieve the delegates
- * for a given application. 
+ * for a given application.
  */
 public abstract class AbstractHelperDelegator {
     // Hold the context containing all helpers so that we can preserve inter-helper relationships
     protected HelperContext aHelperContext;
-    
+
     /**
      * Return the helperContext that this instance is associated with.
      * This context contains all helpers. If null, the default context
-     * is returned. 
-     * 
+     * is returned.
+     *
      * @return set helper context or, if null, the default context
      * @see commonj.sdo.helper.HelperContext
      * @see commonj.sdo.impl.HelperProvider
@@ -43,7 +43,7 @@ public abstract class AbstractHelperDelegator {
 
     /**
      * INTERNAL:
-     * Set the helperContext that this instance is associated with.  This context 
+     * Set the helperContext that this instance is associated with.  This context
      * will contain all helpers, so inter-helper relationships are preserved.
      *
      * @param helperContext

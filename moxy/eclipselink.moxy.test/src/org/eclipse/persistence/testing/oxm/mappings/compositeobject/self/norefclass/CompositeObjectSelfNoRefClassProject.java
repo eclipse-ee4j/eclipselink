@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Denise Smith - May 8/2009 
+ *     Denise Smith - May 8/2009
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass;
 
@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.oxm.xmlmarshaller.setschemas.SetSchemasTe
 public class CompositeObjectSelfNoRefClassProject extends Project {
     public CompositeObjectSelfNoRefClassProject() {
         addDescriptor(getEmployeeDescriptor());
-        addDescriptor(getAddressDescriptor());  
+        addDescriptor(getAddressDescriptor());
     }
 
     protected XMLDescriptor getEmployeeDescriptor() {
@@ -34,12 +34,12 @@ public class CompositeObjectSelfNoRefClassProject extends Project {
 
         XMLCompositeObjectMapping theObjectMapping = new XMLCompositeObjectMapping();
         theObjectMapping.setAttributeName("theObject");
-        theObjectMapping.setXPath(".");                
+        theObjectMapping.setXPath(".");
         descriptor.addMapping(theObjectMapping);
-        
+
         return descriptor;
     }
-    
+
     protected XMLDescriptor getAddressDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Address.class);
@@ -47,14 +47,14 @@ public class CompositeObjectSelfNoRefClassProject extends Project {
 
         XMLDirectMapping streetMapping = new XMLDirectMapping();
         streetMapping.setAttributeName("street");
-        streetMapping.setXPath("street/text()");                
+        streetMapping.setXPath("street/text()");
         descriptor.addMapping(streetMapping);
-        
+
         XMLSchemaClassPathReference schemaReference = new XMLSchemaClassPathReference();
-		schemaReference.setSchemaContext("/addressType");
-		schemaReference.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
-		descriptor.setSchemaReference(schemaReference);
-        
+        schemaReference.setSchemaContext("/addressType");
+        schemaReference.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
+        descriptor.setSchemaReference(schemaReference);
+
         return descriptor;
     }
 }

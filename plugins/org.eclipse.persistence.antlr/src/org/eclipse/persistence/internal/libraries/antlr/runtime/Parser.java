@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -31,68 +31,68 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
  *  of this.
  */
 public class Parser extends BaseRecognizer {
-	public TokenStream input;
+    public TokenStream input;
 
-	public Parser(TokenStream input) {
-		super(); // highlight that we go to super to set state object
-		setTokenStream(input);
+    public Parser(TokenStream input) {
+        super(); // highlight that we go to super to set state object
+        setTokenStream(input);
     }
 
-	public Parser(TokenStream input, RecognizerSharedState state) {
-		super(state); // share the state object with another parser
-		setTokenStream(input);
+    public Parser(TokenStream input, RecognizerSharedState state) {
+        super(state); // share the state object with another parser
+        setTokenStream(input);
     }
 
-	public void reset() {
-		super.reset(); // reset all recognizer state variables
-		if ( input!=null ) {
-			input.seek(0); // rewind the input
-		}
-	}
+    public void reset() {
+        super.reset(); // reset all recognizer state variables
+        if ( input!=null ) {
+            input.seek(0); // rewind the input
+        }
+    }
 
-	protected Object getCurrentInputSymbol(IntStream input) {
-		return ((TokenStream)input).LT(1);
-	}
+    protected Object getCurrentInputSymbol(IntStream input) {
+        return ((TokenStream)input).LT(1);
+    }
 
-	protected Object getMissingSymbol(IntStream input,
-									  RecognitionException e,
-									  int expectedTokenType,
-									  BitSet follow)
-	{
-		String tokenText = null;
-		if ( expectedTokenType==Token.EOF ) tokenText = "<missing EOF>";
-		else tokenText = "<missing "+getTokenNames()[expectedTokenType]+">";
-		CommonToken t = new CommonToken(expectedTokenType, tokenText);
-		Token current = ((TokenStream)input).LT(1);
-		if ( current.getType() == Token.EOF ) {
-			current = ((TokenStream)input).LT(-1);
-		}
-		t.line = current.getLine();
-		t.charPositionInLine = current.getCharPositionInLine();
-		t.channel = DEFAULT_TOKEN_CHANNEL;
-		return t;
-	}
+    protected Object getMissingSymbol(IntStream input,
+                                      RecognitionException e,
+                                      int expectedTokenType,
+                                      BitSet follow)
+    {
+        String tokenText = null;
+        if ( expectedTokenType==Token.EOF ) tokenText = "<missing EOF>";
+        else tokenText = "<missing "+getTokenNames()[expectedTokenType]+">";
+        CommonToken t = new CommonToken(expectedTokenType, tokenText);
+        Token current = ((TokenStream)input).LT(1);
+        if ( current.getType() == Token.EOF ) {
+            current = ((TokenStream)input).LT(-1);
+        }
+        t.line = current.getLine();
+        t.charPositionInLine = current.getCharPositionInLine();
+        t.channel = DEFAULT_TOKEN_CHANNEL;
+        return t;
+    }
 
-	/** Set the token stream and reset the parser */
-	public void setTokenStream(TokenStream input) {
-		this.input = null;
-		reset();
-		this.input = input;
-	}
+    /** Set the token stream and reset the parser */
+    public void setTokenStream(TokenStream input) {
+        this.input = null;
+        reset();
+        this.input = input;
+    }
 
     public TokenStream getTokenStream() {
-		return input;
-	}
+        return input;
+    }
 
-	public String getSourceName() {
-		return input.getSourceName();
-	}
+    public String getSourceName() {
+        return input.getSourceName();
+    }
 
-	public void traceIn(String ruleName, int ruleIndex)  {
-		super.traceIn(ruleName, ruleIndex, input.LT(1));
-	}
+    public void traceIn(String ruleName, int ruleIndex)  {
+        super.traceIn(ruleName, ruleIndex, input.LT(1));
+    }
 
-	public void traceOut(String ruleName, int ruleIndex)  {
-		super.traceOut(ruleName, ruleIndex, input.LT(1));
-	}
+    public void traceOut(String ruleName, int ruleIndex)  {
+        super.traceOut(ruleName, ruleIndex, input.LT(1));
+    }
 }

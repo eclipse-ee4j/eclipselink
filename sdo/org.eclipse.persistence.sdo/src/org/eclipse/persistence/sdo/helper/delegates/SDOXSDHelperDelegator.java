@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper.delegates;
 
 import java.io.InputStream;
@@ -31,7 +31,7 @@ import commonj.sdo.helper.HelperContext;
 /**
  * <p><b>Purpose</b>: Provides access to additional information when the Type or Property is defined by an XML Schema (XSD)..
  * <p><b>Responsibilities</b>:<ul>
- * <li> Finds the appropriate SDOXSDHelperDelegate for the classLoader/application name and delegates work to that implementation of SDOXSDHelper. 
+ * <li> Finds the appropriate SDOXSDHelperDelegate for the classLoader/application name and delegates work to that implementation of SDOXSDHelper.
  * <li> Define methods defines Types from an XSD.
  * <li> Generate methods an XSD from Types.
  * <li> Other Methods return null/false otherwise or if the information is unavailable.
@@ -132,7 +132,7 @@ public class SDOXSDHelperDelegator extends AbstractHelperDelegator implements SD
 
     /**
      * INTERNAL:
-     * 
+     *
      * @param qname
      * @param prop
      * @param isElement

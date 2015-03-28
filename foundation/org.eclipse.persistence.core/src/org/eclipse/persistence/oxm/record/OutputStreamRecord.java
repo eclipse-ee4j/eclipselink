@@ -1,15 +1,15 @@
 /***************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Denise Smith - November 2, 2009
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
 
 import java.io.CharArrayWriter;
@@ -373,7 +373,7 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
             } else {
                 attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
-                if (attr.getNamespaceURI() != null) {                    
+                if (attr.getNamespaceURI() != null) {
                     namespaceDeclaration(attr.getPrefix(), attr.getNamespaceURI());
                     this.getNamespaceResolver().put(attr.getPrefix(), attr.getNamespaceURI());
                 }
@@ -489,10 +489,10 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
         protected void writePrefixMappings() {
             try {
                 if (!prefixMappings.isEmpty()) {
-                	Set<Entry<String, String>> entries = prefixMappings.entrySet();
-                	Iterator<Entry<String, String>> iter = entries.iterator();
-                	while(iter.hasNext()){
-                		Entry<String, String> nextEntry = iter.next();
+                    Set<Entry<String, String>> entries = prefixMappings.entrySet();
+                    Iterator<Entry<String, String>> iter = entries.iterator();
+                    while(iter.hasNext()){
+                        Entry<String, String> nextEntry = iter.next();
                         String prefix = nextEntry.getKey();
                         outputStreamWrite(SPACE);
                         outputStreamWrite(javax.xml.XMLConstants.XMLNS_ATTRIBUTE.getBytes(Constants.DEFAULT_XML_ENCODING));

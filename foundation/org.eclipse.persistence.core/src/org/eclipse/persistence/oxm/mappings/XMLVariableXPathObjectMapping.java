@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,16 +37,16 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  implements VariableXPathObjectMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, Session,  XMLUnmarshaller, XMLRecord>, XMLMapping {
-    
+
     protected String variableAttributeName;
     protected String variableGetMethodName;
     protected String variableSetMethodName;
-    
+
     private AttributeAccessor variableAttributeAccessor;
-    
+
     private boolean isAttribute;
-   
-	public void initialize(AbstractSession session) throws DescriptorException {
+
+    public void initialize(AbstractSession session) throws DescriptorException {
         //modified so that reference class on composite mappings is no longer mandatory
         String referenceClassName = getReferenceClassName();
         if ((this.referenceClass == null) && (referenceClassName != null)) {
@@ -72,41 +72,41 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
         if(null != getContainerAccessor()) {
             getContainerAccessor().initializeAttributes(this.referenceClass);
         }
-        
+
         if(variableAttributeName != null){
-	        this.variableAttributeAccessor = new InstanceVariableAttributeAccessor();
-	        this.variableAttributeAccessor.setAttributeName(variableAttributeName);
-	        this.variableAttributeAccessor.initializeAttributes(this.getReferenceClass());
+            this.variableAttributeAccessor = new InstanceVariableAttributeAccessor();
+            this.variableAttributeAccessor.setAttributeName(variableAttributeName);
+            this.variableAttributeAccessor.initializeAttributes(this.getReferenceClass());
         }else if(variableGetMethodName != null){
-        	this.variableAttributeAccessor = new MethodAttributeAccessor();
-        	this.variableAttributeAccessor.setAttributeName("VARIABLE");
-        	((MethodAttributeAccessor)this.variableAttributeAccessor).setGetMethodName(variableGetMethodName);
-        	if(variableSetMethodName == null){
-        		this.variableAttributeAccessor.setIsWriteOnly(true);
-        	}else{
-            	((MethodAttributeAccessor)this.variableAttributeAccessor).setSetMethodName(variableSetMethodName);
-        	}
-  	        this.variableAttributeAccessor.initializeAttributes(this.getReferenceClass());
+            this.variableAttributeAccessor = new MethodAttributeAccessor();
+            this.variableAttributeAccessor.setAttributeName("VARIABLE");
+            ((MethodAttributeAccessor)this.variableAttributeAccessor).setGetMethodName(variableGetMethodName);
+            if(variableSetMethodName == null){
+                this.variableAttributeAccessor.setIsWriteOnly(true);
+            }else{
+                ((MethodAttributeAccessor)this.variableAttributeAccessor).setSetMethodName(variableSetMethodName);
+            }
+              this.variableAttributeAccessor.initializeAttributes(this.getReferenceClass());
         }
     }
-    
-	  @Override
-	    protected Vector collectFields() {
-	    	if(field != null){
-	    		return super.collectFields();
-	    	}
-	       // Vector fields = new Vector(1);
-	        //fields.addElement(this.getField());
-	        //return fields;
-	    	return NO_FIELDS;
-	    }
-	
+
+      @Override
+        protected Vector collectFields() {
+            if(field != null){
+                return super.collectFields();
+            }
+           // Vector fields = new Vector(1);
+            //fields.addElement(this.getField());
+            //return fields;
+            return NO_FIELDS;
+        }
+
     public Vector getFields() {
-    	return collectFields();
+        return collectFields();
     }
-    
+
     protected void initializeReferenceDescriptorAndField(AbstractSession session){
-    	 if (getReferenceClass() == null) {
+         if (getReferenceClass() == null) {
              throw DescriptorException.referenceClassNotSpecified(this);
          }
 
@@ -119,11 +119,11 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
          }
          if (hasConverter()) {
              getConverter().initialize(this, session);
-         }   
+         }
    }
-    
+
     public boolean isAbstractCompositeObjectMapping(){
-    	return false;
+        return false;
     }
 
     public String getVariableAttributeName() {
@@ -133,87 +133,87 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
     public void setVariableAttributeName(String variableAttributeName) {
         this.variableAttributeName = variableAttributeName;
     }
-    
+
     public String getVariableGetMethodName() {
-		return variableGetMethodName;
-	}
+        return variableGetMethodName;
+    }
 
-	public void setVariableGetMethodName(String variableGetMethodName) {
-		this.variableGetMethodName = variableGetMethodName;
-	}
+    public void setVariableGetMethodName(String variableGetMethodName) {
+        this.variableGetMethodName = variableGetMethodName;
+    }
 
-	public String getVariableSetMethodName() {
-		return variableSetMethodName;
-	}
+    public String getVariableSetMethodName() {
+        return variableSetMethodName;
+    }
 
-	public void setVariableSetMethodName(String variableSetMethodName) {
-		this.variableSetMethodName = variableSetMethodName;
-	}
+    public void setVariableSetMethodName(String variableSetMethodName) {
+        this.variableSetMethodName = variableSetMethodName;
+    }
 
     public AttributeAccessor getVariableAttributeAccessor() {
-		return variableAttributeAccessor;
-	}
+        return variableAttributeAccessor;
+    }
 
-	public void setVariableAttributeAccessor(
-			AttributeAccessor variableAttributeAccessor) {
-		this.variableAttributeAccessor = variableAttributeAccessor;
-	}
-	
-	public void writeSingleValue(Object value, Object parent, XMLRecord xmlRow, AbstractSession session) {
+    public void setVariableAttributeAccessor(
+            AttributeAccessor variableAttributeAccessor) {
+        this.variableAttributeAccessor = variableAttributeAccessor;
+    }
+
+    public void writeSingleValue(Object value, Object parent, XMLRecord xmlRow, AbstractSession session) {
         Object attributeValue = convertObjectValueToDataValue(value, session, xmlRow.getMarshaller());
-           
-        if (attributeValue != null) {        	
-        	XMLField variableField = new XMLField();        	
-        	variableField.setXPathFragment(getXPathFragmentForValue(attributeValue, xmlRow.getNamespaceResolver(), xmlRow.isNamespaceAware(), xmlRow.getNamespaceSeparator()));
-        	xmlRow.put(variableField, buildCompositeRow(variableField, attributeValue, session, xmlRow, WriteType.UNDEFINED));
-        }            
+
+        if (attributeValue != null) {
+            XMLField variableField = new XMLField();
+            variableField.setXPathFragment(getXPathFragmentForValue(attributeValue, xmlRow.getNamespaceResolver(), xmlRow.isNamespaceAware(), xmlRow.getNamespaceSeparator()));
+            xmlRow.put(variableField, buildCompositeRow(variableField, attributeValue, session, xmlRow, WriteType.UNDEFINED));
+        }
     }
-		
-	protected AbstractRecord buildCompositeRow(XMLField variableField, Object attributeValue, AbstractSession session, AbstractRecord parentRow, WriteType writeType) {
+
+    protected AbstractRecord buildCompositeRow(XMLField variableField, Object attributeValue, AbstractSession session, AbstractRecord parentRow, WriteType writeType) {
          ClassDescriptor  classDesc = getReferenceDescriptor(attributeValue, session);
-	     return buildCompositeRowForDescriptor(classDesc, attributeValue, session, (XMLRecord)parentRow, writeType);
+         return buildCompositeRowForDescriptor(classDesc, attributeValue, session, (XMLRecord)parentRow, writeType);
     }
-	 
-	 public XPathFragment getXPathFragmentForValue(Object obj, NamespaceResolver nr, boolean isNamespaceAware, char namespaceSep) {
-	    	Object value = getVariableAttributeAccessor().getAttributeValueFromObject(obj);
-			String returnString;
-			String uri = null;
-			if(value instanceof QName){
-				returnString = ((QName)value).getLocalPart();
-				uri = ((QName)value).getNamespaceURI();
-			}else{
-				returnString = (String)value;
-			}
-			XPathFragment frag = new XPathFragment();
-			if(isNamespaceAware && uri != null && uri.length() >0){
-								
-				String prefix = nr.resolveNamespaceURI(uri);
-				if(prefix == null){
-	 		   	   prefix = nr.generatePrefix();														
-					//marshalRecord.namespaceDeclaration(prefix, uri);
-	 		   	   frag.setGeneratedPrefix(true);
-				}
-				if(prefix != null && prefix.length() >0){
-					frag.setPrefix(prefix);
-				    returnString = prefix + namespaceSep + returnString;
-				}				
-			}
-			frag.setXPath(returnString);
-			frag.setNamespaceURI(uri);
-		
-			
-			return frag;
-		}
-	 
-	 
-	    public boolean isAttribute() {
-			return isAttribute;
-		}
 
-		public void setAttribute(boolean isAttribute) {
-			this.isAttribute = isAttribute;
-		}
+     public XPathFragment getXPathFragmentForValue(Object obj, NamespaceResolver nr, boolean isNamespaceAware, char namespaceSep) {
+            Object value = getVariableAttributeAccessor().getAttributeValueFromObject(obj);
+            String returnString;
+            String uri = null;
+            if(value instanceof QName){
+                returnString = ((QName)value).getLocalPart();
+                uri = ((QName)value).getNamespaceURI();
+            }else{
+                returnString = (String)value;
+            }
+            XPathFragment frag = new XPathFragment();
+            if(isNamespaceAware && uri != null && uri.length() >0){
+
+                String prefix = nr.resolveNamespaceURI(uri);
+                if(prefix == null){
+                       prefix = nr.generatePrefix();
+                    //marshalRecord.namespaceDeclaration(prefix, uri);
+                       frag.setGeneratedPrefix(true);
+                }
+                if(prefix != null && prefix.length() >0){
+                    frag.setPrefix(prefix);
+                    returnString = prefix + namespaceSep + returnString;
+                }
+            }
+            frag.setXPath(returnString);
+            frag.setNamespaceURI(uri);
 
 
-	
+            return frag;
+        }
+
+
+        public boolean isAttribute() {
+            return isAttribute;
+        }
+
+        public void setAttribute(boolean isAttribute) {
+            this.isAttribute = isAttribute;
+        }
+
+
+
 }

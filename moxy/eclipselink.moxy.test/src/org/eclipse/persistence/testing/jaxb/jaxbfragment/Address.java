@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,21 +17,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Address {
-	
-	@XmlAttribute
-    private int id;	
+
+    @XmlAttribute
+    private int id;
     private String street;
     @XmlAttribute
     private String city;
- 
-	public int getId() {
+
+    public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public String getStreet() {
         return street;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,9 +26,9 @@ public interface ExtendedContentHandler extends ContentHandler {
      * If this method is called other characters methods must not be called.
      */
     void characters(CharSequence characters) throws SAXException;
-    
+
     /**
-     * This method can be used to track that the current element is nil 
+     * This method can be used to track that the current element is nil
      * @param isNil
      */
     void setNil(boolean isNil);

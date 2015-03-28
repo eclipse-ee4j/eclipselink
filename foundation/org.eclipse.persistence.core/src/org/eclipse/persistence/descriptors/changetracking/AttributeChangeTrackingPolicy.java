@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors.changetracking;
 
 import java.beans.PropertyChangeListener;
@@ -47,7 +47,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
     public ObjectChangeSet calculateChangesForExistingObject(Object clone, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
         return calculateChanges(clone, null, false, changeSet, unitOfWork, descriptor, shouldRaiseEvent);
     }
-    
+
     /**
      * INTERNAL:
      * Create ObjectChangeSet
@@ -59,7 +59,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
             if (listener != null){
                 changes = listener.getObjectChangeSet();
             }
-    
+
             // The changes can be null if forceUpdate is used in CMP, so an empty change must be created.
             if (changes != null) {
                 // PERF: Only merge the change set if merging into a new uow change set.
@@ -77,7 +77,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
                     changes.getDeferredSet().clear();
                 }
             } else {
-                changes = descriptor.getObjectBuilder().createObjectChangeSet(clone, changeSet, isNew, session);            
+                changes = descriptor.getObjectBuilder().createObjectChangeSet(clone, changeSet, isNew, session);
             }
         } else {
             changes = descriptor.getObjectBuilder().createObjectChangeSet(clone, changeSet, isNew, true, session);
@@ -102,7 +102,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
         if ((descriptor.usesOptimisticLocking()) && (changes.getId() != null)) {
             changes.setOptimisticLockingPolicyAndInitialWriteLockValue(descriptor.getOptimisticLockingPolicy(), session);
         }
-        
+
         return changes;
     }
 
@@ -123,7 +123,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
 
     /**
      * INTERNAL:
-     * In cases where a relationship with detached or new entities is merged into itself previous changes may have been recorded for 
+     * In cases where a relationship with detached or new entities is merged into itself previous changes may have been recorded for
      * the detached/new entity that need to be updated.
      */
     public void updateListenerForSelfMerge(ObjectChangeListener listener, ForeignReferenceMapping mapping, Object source, Object target, UnitOfWorkImpl unitOfWork){
@@ -145,8 +145,8 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * Assign ChangeListener to an aggregate object
      */
     public void setAggregateChangeListener(Object parent, Object aggregate, UnitOfWorkImpl uow, ClassDescriptor descriptor, String mappingAttribute){
-        ((ChangeTracker)aggregate)._persistence_setPropertyChangeListener(new AggregateAttributeChangeListener(descriptor, uow, (AttributeChangeListener)((ChangeTracker)parent)._persistence_getPropertyChangeListener(), mappingAttribute, aggregate)); 
-        
+        ((ChangeTracker)aggregate)._persistence_setPropertyChangeListener(new AggregateAttributeChangeListener(descriptor, uow, (AttributeChangeListener)((ChangeTracker)parent)._persistence_getPropertyChangeListener(), mappingAttribute, aggregate));
+
         // set change trackers for nested aggregates
         Iterator<DatabaseMapping> i = descriptor.getMappings().iterator();
         while (i.hasNext()){
@@ -178,7 +178,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
     public void setChangeSetOnListener(ObjectChangeSet objectChangeSet, Object clone){
         ((AttributeChangeListener)((ChangeTracker)clone)._persistence_getPropertyChangeListener()).setObjectChangeSet(objectChangeSet);
     }
-    
+
    /**
      * INTERNAL:
      * Only build backup clone

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,31 +32,31 @@ public class XmlElementRefWithNamespaceTests extends JAXBWithJSONTestCases {
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/ns/echobytearray.json";
     private Marshaller jsonMarshaller;
     private Unmarshaller jsonUnmarshaller;
-    
+
     public XmlElementRefWithNamespaceTests(String name) throws Exception {
         super(name);
         setClasses(new Class[]{ EchoByteArray.class, ObjectFactory.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        
+
         jsonMarshaller = jaxbContext.createMarshaller();
         jsonUnmarshaller = jaxbContext.createUnmarshaller();
         Map<String, String> namespaces = new HashMap<String, String>();
-    	namespaces.put("http://root.org/", "ns1");
-    	namespaces.put("http://missing-uri.org/", "ns0");
-    	
-    	jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);        
-  	 	jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+        namespaces.put("http://root.org/", "ns1");
+        namespaces.put("http://missing-uri.org/", "ns0");
 
-  	 	
+        jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
+           jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+
+
     }
-    
+
     protected Marshaller getJSONMarshaller() throws Exception{
-    	return jsonMarshaller;
+        return jsonMarshaller;
     }
-    
+
    protected Unmarshaller getJSONUnmarshaller() throws Exception{
-	   return jsonUnmarshaller;
+       return jsonUnmarshaller;
     }
 
     protected Object getControlObject() {

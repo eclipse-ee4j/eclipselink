@@ -25,7 +25,7 @@ public class XMLLoginSessionsXMLTestCases extends TestCase {
 
     private final String SESSION_NAME = "XMLLoginSessionsXMLTestCases";
     private final String SESSION_FILE_NAME = "XMLLoginSessionsXMLTestCases-sessions.xml";
-    
+
     public XMLLoginSessionsXMLTestCases(String name) {
         super(name);
     }
@@ -36,65 +36,65 @@ public class XMLLoginSessionsXMLTestCases extends TestCase {
         m_loginConfig = new XMLLoginConfig();
         m_sessionConfig.setLoginConfig(m_loginConfig);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.xmllogin.XMLLoginSessionsXMLTestCases" };
         junit.textui.TestRunner.main(arguments);
     }
-    
+
     // Bug 242452 - test 'DatasourcePlatform' in sessions.xml
     public void testDataSourcePlatform() {
         DatabaseSessionConfig roundTrippedConfig;
         XMLLoginConfig roundTrippedLoginConfig;
-        
+
         // DatasourcePlatform = SAXPlatform
-        // ================================        
+        // ================================
         m_loginConfig.setPlatformClass(new SAXPlatform().getClass().getName());
-        
+
         roundTrippedConfig = writeAndReadSessionsXML();
         roundTrippedLoginConfig = (XMLLoginConfig) roundTrippedConfig.getLoginConfig();
-        
+
         assertEquals(m_loginConfig.getPlatformClass(), roundTrippedLoginConfig.getPlatformClass());
-        
+
         // DatasourcePlatform = DOMPlatform
-        // ================================        
+        // ================================
         m_loginConfig.setPlatformClass(new DOMPlatform().getClass().getName());
-        
+
         roundTrippedConfig = writeAndReadSessionsXML();
         roundTrippedLoginConfig = (XMLLoginConfig) roundTrippedConfig.getLoginConfig();
-        
+
         assertEquals(m_loginConfig.getPlatformClass(), roundTrippedLoginConfig.getPlatformClass());
     }
 
     // Bug - test 'EqualNamespaceResolvers' in sessions.xml
     public void testEqualNamespaceResolvers() {
-        DatabaseSessionConfig roundTrippedConfig; 
-        XMLLoginConfig roundTrippedLoginConfig; 
-        
+        DatabaseSessionConfig roundTrippedConfig;
+        XMLLoginConfig roundTrippedLoginConfig;
+
         // EqualNamespaceResolvers = true
         // ==============================
         m_loginConfig.setEqualNamespaceResolvers(true);
 
         roundTrippedConfig = writeAndReadSessionsXML();
         roundTrippedLoginConfig = (XMLLoginConfig) roundTrippedConfig.getLoginConfig();
-        
+
         assertEquals(m_loginConfig.getEqualNamespaceResolvers(), roundTrippedLoginConfig.getEqualNamespaceResolvers());
-        
+
         // EqualNamespaceResolvers = false
         // ===============================
         m_loginConfig.setEqualNamespaceResolvers(false);
 
         roundTrippedConfig = writeAndReadSessionsXML();
         roundTrippedLoginConfig = (XMLLoginConfig) roundTrippedConfig.getLoginConfig();
-        
+
         assertEquals(m_loginConfig.getEqualNamespaceResolvers(), roundTrippedLoginConfig.getEqualNamespaceResolvers());
     }
-    
+
     // Bug - test 'DocumentPreservationPolicy' in sessions.xml
     public void testDocumentPreservationPolicy() {
-        DatabaseSessionConfig roundTrippedConfig; 
-        XMLLoginConfig roundTrippedLoginConfig; 
-        
+        DatabaseSessionConfig roundTrippedConfig;
+        XMLLoginConfig roundTrippedLoginConfig;
+
         // DocumentPreservationPolicy = DescriptorLevelDocumentPreservationPolicy
         // NodeOrderingPolicy = AppendNewElementsOrderingPolicy
         // ======================================================================
@@ -102,12 +102,12 @@ public class XMLLoginSessionsXMLTestCases extends TestCase {
         m_loginConfig.getDocumentPreservationPolicy().setNodeOrderingPolicy(new AppendNewElementsOrderingPolicyConfig());
 
         roundTrippedConfig = writeAndReadSessionsXML();
-        roundTrippedLoginConfig = (XMLLoginConfig) roundTrippedConfig.getLoginConfig(); 
-        
+        roundTrippedLoginConfig = (XMLLoginConfig) roundTrippedConfig.getLoginConfig();
+
         assertEquals(m_loginConfig.getDocumentPreservationPolicy().getClass(), roundTrippedLoginConfig.getDocumentPreservationPolicy().getClass());
-        assertEquals(m_loginConfig.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass(), 
+        assertEquals(m_loginConfig.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass(),
                 roundTrippedLoginConfig.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass());
-        
+
         // DocumentPreservationPolicy = NoDocumentPreservationPolicy
         // NodeOrderingPolicy = IgnoreNewElementsOrderingPolicy
         // =========================================================
@@ -115,12 +115,12 @@ public class XMLLoginSessionsXMLTestCases extends TestCase {
         m_loginConfig.getDocumentPreservationPolicy().setNodeOrderingPolicy(new IgnoreNewElementsOrderingPolicyConfig());
 
         roundTrippedConfig = writeAndReadSessionsXML();
-        roundTrippedLoginConfig = (XMLLoginConfig) roundTrippedConfig.getLoginConfig(); 
-        
+        roundTrippedLoginConfig = (XMLLoginConfig) roundTrippedConfig.getLoginConfig();
+
         assertEquals(m_loginConfig.getDocumentPreservationPolicy().getClass(), roundTrippedLoginConfig.getDocumentPreservationPolicy().getClass());
-        assertEquals(m_loginConfig.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass(), 
+        assertEquals(m_loginConfig.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass(),
                 roundTrippedLoginConfig.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass());
-        
+
         // DocumentPreservationPolicy = XMLBinderPolicy
         // NodeOrderingPolicy = RelativePositionOrderingPolicy
         // ===================================================
@@ -128,10 +128,10 @@ public class XMLLoginSessionsXMLTestCases extends TestCase {
         m_loginConfig.getDocumentPreservationPolicy().setNodeOrderingPolicy(new RelativePositionOrderingPolicyConfig());
 
         roundTrippedConfig = writeAndReadSessionsXML();
-        roundTrippedLoginConfig = (XMLLoginConfig) roundTrippedConfig.getLoginConfig(); 
-        
+        roundTrippedLoginConfig = (XMLLoginConfig) roundTrippedConfig.getLoginConfig();
+
         assertEquals(m_loginConfig.getDocumentPreservationPolicy().getClass(), roundTrippedLoginConfig.getDocumentPreservationPolicy().getClass());
-        assertEquals(m_loginConfig.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass(), 
+        assertEquals(m_loginConfig.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass(),
                 roundTrippedLoginConfig.getDocumentPreservationPolicy().getNodeOrderingPolicy().getClass());
     }
 
@@ -142,17 +142,17 @@ public class XMLLoginSessionsXMLTestCases extends TestCase {
         configs.addSessionConfig(m_sessionConfig);
         configs.setVersion("0");
         XMLSessionConfigWriter.write(configs, SESSION_FILE_NAME);
-        
+
         XMLSessionConfigLoader sessionLoader = new XMLSessionConfigLoader(SESSION_FILE_NAME);
         SessionConfigs readConfigs = sessionLoader.loadConfigsForMappingWorkbench(this.getClass().getClassLoader());
-        
+
         // There is only one session in this sessions.xml
         return (DatabaseSessionConfig) readConfigs.getSessionConfigs().firstElement();
     }
-    
+
     public void tearDown() {
         File tempFile = new File(SESSION_FILE_NAME);
         tempFile.delete();
     }
-    
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,15 +40,15 @@ public class Employee {
         this.department = department;
     }
 
-    Department getADept() { 
-        return aDept; 
+    Department getADept() {
+        return aDept;
     }
-    
+
     void setADept(Department dept) {
         isADeptSet = true;
-        aDept = dept; 
+        aDept = dept;
     }
-    
+
     public boolean isSetADept() {
         return isADeptSet;
     }
@@ -62,7 +62,7 @@ public class Employee {
         } catch (ClassCastException e) {
             return false;
         }
-        
+
         if (homeAddress == null && empObj.homeAddress != null) {
             return false;
         }

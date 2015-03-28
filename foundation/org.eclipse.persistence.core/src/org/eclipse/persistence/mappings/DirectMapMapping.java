@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     07/19/2011-2.2.1 Guy Pelletier 
+ *     07/19/2011-2.2.1 Guy Pelletier
  *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *      *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
 import java.util.*;
@@ -67,7 +67,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         this.selectionQuery = query;
         MappedKeyMapContainerPolicy mapPolicy = new MappedKeyMapContainerPolicy(ClassConstants.Hashtable_Class);
         mapPolicy.setValueMapping(this);
-        this.containerPolicy = mapPolicy;        
+        this.containerPolicy = mapPolicy;
         this.isListOrderFieldSupported = false;
     }
 
@@ -79,13 +79,13 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      */
     public void setContainerPolicy(ContainerPolicy containerPolicy) {
         super.setContainerPolicy(containerPolicy);
-        ((MappedKeyMapContainerPolicy)containerPolicy).setValueMapping(this);        
+        ((MappedKeyMapContainerPolicy)containerPolicy).setValueMapping(this);
     }
 
     private MappedKeyMapContainerPolicy getMappedKeyMapContainerPolicy(){
         return (MappedKeyMapContainerPolicy)containerPolicy;
     }
-    
+
     /**
      * PUBLIC:
      * Return the converter on the mapping.
@@ -106,14 +106,14 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
 
     /**
      * INTERNAL:
-     * Set the converter class name on the mapping. Initialized in 
+     * Set the converter class name on the mapping. Initialized in
      * convertClassNamesToClasses.
      * A converter can be used to convert between the key's object value and database value.
      */
     public void setKeyConverterClassName(String keyConverterClassName) {
         getMappedKeyMapContainerPolicy().setKeyConverterClassName(keyConverterClassName, this);
     }
-    
+
     /**
      * INTERNAL:
      * Add a new value and its change set to the collection change record.  This is used by
@@ -161,7 +161,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         }
         return clonedAttributeValue;
     }
-    
+
     /**
      * INTERNAL:
      * Used by AttributeLevelChangeTracking to update a changeRecord with calculated changes
@@ -174,7 +174,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         // TODO: Handle events that fired after collection was replaced.
         compareCollectionsForChange(collectionRecord.getOriginalCollection(), collectionRecord.getLatestCollection(), collectionRecord, session);
     }
-    
+
 
     /**
      * INTERNAL:
@@ -193,7 +193,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
@@ -211,7 +211,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
@@ -229,13 +229,13 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             }
         }
     }
-        
+
     /**
      * INTERNAL:
      * This method is used to calculate the differences between two collections.
      */
     @Override
-    public void compareCollectionsForChange(Object oldCollection, Object newCollection, ChangeRecord changeRecord, AbstractSession session) {      
+    public void compareCollectionsForChange(Object oldCollection, Object newCollection, ChangeRecord changeRecord, AbstractSession session) {
         HashMap originalKeyValues = new HashMap(10);
         HashMap cloneKeyValues = new HashMap(10);
 
@@ -270,7 +270,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         ((DirectMapChangeRecord)changeRecord).setIsDeferred(false);
         ((DirectMapChangeRecord)changeRecord).setLatestCollection(null);
     }
-    
+
     /**
      * INTERNAL:
      * This method compares the changes between two direct collections.  Comparisons are made on equality
@@ -291,7 +291,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         HashMap cloneKeyValues = new HashMap(10);
 
         Map backUpCollection = null;
-        
+
         if (!owner.isNew()) {
             backUpAttribute = getAttributeValueFromObject(backUp);
             if ((backUpAttribute == null) && (cloneAttribute == null)) {
@@ -324,20 +324,20 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
 
     /*
      * INTERNAL:
-     * Convert all the class-name-based settings in this mapping to actual 
-     * class-based settings. This method is implemented by subclasses as 
+     * Convert all the class-name-based settings in this mapping to actual
+     * class-based settings. This method is implemented by subclasses as
      * necessary.
-     * @param classLoader 
+     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         super.convertClassNamesToClasses(classLoader);
-        
+
         if (getDirectKeyField() != null) {
             getDirectKeyField().convertClassNamesToClasses(classLoader);
-        }           
+        }
     }
-    
+
     /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
@@ -438,7 +438,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             ((DirectReadQuery)this.selectionQuery).setResultType(DataReadQuery.MAP);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Iterate on the attribute value.
@@ -456,7 +456,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Iterate on the specified element.
@@ -536,7 +536,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
                     Object keyToAdd = i.next();
                     Object nextItem = addObjects.get(keyToAdd);
                     if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
-                        //bug#4458089 and 4454532- check if collection contains new item before adding during merge into distributed cache															
+                        //bug#4458089 and 4454532- check if collection contains new item before adding during merge into distributed cache
                         if (!containerPolicy.contains(nextItem, valueOfTarget, session)) {
                             containerPolicy.addInto(keyToAdd, nextItem, valueOfTarget, session);
                         }
@@ -605,7 +605,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
                 ((ChangeTracker)newContainer)._persistence_setPropertyChangeListener(((ChangeTracker)target)._persistence_getPropertyChangeListener());
             }
             if (valueOfTarget instanceof ChangeTracker) {
-                ((ChangeTracker)valueOfTarget)._persistence_setPropertyChangeListener(null);//remove listener 
+                ((ChangeTracker)valueOfTarget)._persistence_setPropertyChangeListener(null);//remove listener
             }
         }
         valueOfTarget = newContainer;
@@ -654,7 +654,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             session.deleteObject(event[3]);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Overridden by mappings that require additional processing of the change record after the record has been calculated.
@@ -664,7 +664,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         // no need for private owned check.  This code is only registered for private owned mappings.
         // targets are added to and/or removed to/from the source.
         DirectMapChangeRecord mapChangeRecord = (DirectMapChangeRecord)changeRecord;
-        
+
         Iterator it = mapChangeRecord.getRemoveObjects().entrySet().iterator();
         while(it.hasNext()) {
             Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>)it.next();
@@ -792,16 +792,16 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         }
         super.preDelete(query);
     }
-    
+
     /**
      * INTERNAL:
      * Rebuild select query.
      */
     @Override
-    protected void initOrRebuildSelectQuery() {        
+    protected void initOrRebuildSelectQuery() {
         this.selectionQuery = containerPolicy.buildSelectionQueryForDirectCollectionMapping();
     }
-    
+
     /**
      * INTERNAL:
      * Overridden by mappings that require additional processing of the change record after the record has been calculated.
@@ -850,7 +850,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     public void setDirectKeyFieldClassification(Class fieldType) {
         getDirectKeyField().setType(fieldType);
     }
-    
+
     /**
      * ADVANCED:
      * Set the class type name of the field value.
@@ -861,7 +861,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     public void setDirectKeyFieldClassificationName(String fieldTypeName) {
         getDirectKeyField().setTypeName(fieldTypeName);
     }
-    
+
     /**
      * PUBLIC:
      * Set the direct key field name in the reference table.
@@ -902,14 +902,14 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     @Override
     public void updateCollectionChangeRecord(CollectionChangeEvent event, ObjectChangeSet changeSet, UnitOfWorkImpl uow) {
         if (event != null ) {
-            //Letting the mapping create and add the ChangeSet to the ChangeRecord rather 
+            //Letting the mapping create and add the ChangeSet to the ChangeRecord rather
             // than the policy, since the policy doesn't know how to handle DirectCollectionChangeRecord.
             // if ordering is to be supported in the future, check how the method in CollectionMapping is implemented
             Object key = null;
             if (event.getClass().equals(ClassConstants.MapChangeEvent_Class)){
                 key = ((MapChangeEvent)event).getKey();
             }
-            
+
             if (event.getChangeType() == CollectionChangeEvent.ADD) {
                 addToCollectionChangeRecord(key, event.getNewValue(), changeSet, uow);
             } else if (event.getChangeType() == CollectionChangeEvent.REMOVE) {
@@ -1053,7 +1053,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      */
     @Override
     protected void executeBatchQuery(DatabaseQuery query, CacheKey parentCacheKey, Map referenceDataByKey, AbstractSession session, AbstractRecord translationRow) {
-        // Execute query and index resulting object sets by key.                
+        // Execute query and index resulting object sets by key.
         List<AbstractRecord> rows = (List)session.executeQuery(query, translationRow);
         MappedKeyMapContainerPolicy mapContainerPolicy = getMappedKeyMapContainerPolicy();
         for (AbstractRecord referenceRow : rows) {
@@ -1080,7 +1080,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             this.containerPolicy.addInto(referenceKey, referenceValue, container, query.getSession());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return the value of the field from the row or a value holder on the query to obtain the object.
@@ -1108,7 +1108,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         int size = rows.size();
         for (int index = 0; index < size; index++) {
             AbstractRecord sourceRow = rows.get(index);
-            AbstractRecord targetRow = sourceRow;            
+            AbstractRecord targetRow = sourceRow;
             // The field for many objects may be in the row,
             // so build the subpartion of the row through the computed values in the query,
             // this also helps the field indexing match.
@@ -1119,7 +1119,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             if (directKey == null) {
                 // A null direct value means an empty collection returned as nulls from an outerjoin.
                 return getIndirectionPolicy().valueFromRow(value);
-            }                        
+            }
             // Only build/add the target object once, skip duplicates from multiple 1-m joins.
             if (!directValues.contains(directKey)) {
                 directValues.add(directKey);
@@ -1127,7 +1127,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
                 // Allow for value conversion.
                 if (valueConverter != null) {
                     directValue = valueConverter.convertDataValueToObjectValue(directValue, executionSession);
-                }            
+                }
                 policy.addInto(directKey, directValue, value, executionSession);
             }
         }

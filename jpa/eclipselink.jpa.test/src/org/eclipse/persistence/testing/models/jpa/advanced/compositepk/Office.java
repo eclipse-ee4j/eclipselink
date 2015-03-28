@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - test for bug 280436
- *     02/02/2011-2.3 Chris Delahunt 
+ *     02/02/2011-2.3 Chris Delahunt
  *       - 336122: ValidationException thrown for JoinColumns on OneToMany with composite primary key
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
 
 import java.util.Collection;
@@ -32,10 +32,10 @@ public class Office {
 
     @Id
     protected int id;
-    
+
     @Id
     protected String location;
-    
+
     @ManyToOne
     @JoinColumns({
         @JoinColumn(name="LOCATION", referencedColumnName="LOCATION", insertable=false, updatable=false),
@@ -43,7 +43,7 @@ public class Office {
         @JoinColumn(name="DROLE", referencedColumnName="drole") //<- this is testing case insensitivity
         })
     private Department department;
-    
+
     //added for bug 336122
     @OneToMany
     @JoinColumns({

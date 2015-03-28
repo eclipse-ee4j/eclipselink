@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,7 @@
 
 package javax.ejb;
 
-/**  
+/**
  * A NoSuchObjectLocalException is thrown if an attempt is made to invoke
  * a method on a local object (local EJB object or timer) that no longer exists.
  *
@@ -52,22 +52,22 @@ public class NoSuchObjectLocalException extends EJBException {
 
     /**
      * Constructs a NoSuchObjectLocalException with no detail message.
-     */  
+     */
     public NoSuchObjectLocalException() {
     }
 
     /**
      * Constructs a NoSuchObjectLocalException with the specified
      * detail message.
-     */  
+     */
     public NoSuchObjectLocalException(String message) {
         super(message);
     }
 
     /**
      * Constructs a NoSuchObjectLocalException with the specified
-     * detail message and a nested exception. 
-     */  
+     * detail message and a nested exception.
+     */
     public NoSuchObjectLocalException(String message, Exception ex) {
         super(message, ex);
     }

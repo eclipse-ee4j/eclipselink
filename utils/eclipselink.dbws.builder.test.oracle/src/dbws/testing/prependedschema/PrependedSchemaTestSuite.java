@@ -39,7 +39,7 @@ import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests parser handling of types, etc. that have the schema name (aka user name)
- * prepended to the name, i.e. 'SCOTT.MY_TYPE'. 
+ * prepended to the name, i.e. 'SCOTT.MY_TYPE'.
  *
  */
 public class PrependedSchemaTestSuite extends DBWSTestSuite {
@@ -65,7 +65,7 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
         "CREATE TYPE XTESMAN_TYPE1 AS OBJECT" +
           "\n(" +
             "\nACCT NUMBER, " +
-            "\nSTATE VARCHAR2(30)," + 
+            "\nSTATE VARCHAR2(30)," +
             "\nDIVISION VARCHAR2(30)," +
             "\nCOUNTRY VARCHAR2(30)" +
           "\n);";
@@ -78,7 +78,7 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
             "\nSCRIP VARCHAR2(30)," +
             "\nTT "+username+".XTESMAN_TYPE1" +
           "\n);";
-    
+
     static final String[] POPULATE_TESMAN_TABLE2 = new String[] {
         "INSERT INTO XTESMAN_TABLE2 (SRNO, DETAIL) VALUES (1, " +
             "XTESMAN_TYPE2(11, 'SOMECOMPANY', 'SEVAL', 'SCRIPVAL'," +
@@ -87,7 +87,7 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
             "XTESMAN_TYPE2(12, 'SOMECO', 'SECKS', 'SCRIPPER'," +
             "XTESMAN_TYPE1(46, 'COMASTATE', 'MYDIV', 'CANADA')))"};
 
-    static final String CREATE_TESMAN_PACK = 
+    static final String CREATE_TESMAN_PACK =
         "create or replace PACKAGE XTESMANPACK AS" +
           "\nFUNCTION TESMANFUNC17( param1 in INTEGER) return "+username+".XTESMAN_TABLE2%ROWTYPE;" +
         "\nEND XTESMANPACK;";
@@ -97,7 +97,7 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
             "\nl_data1 "+username+".XTESMAN_TABLE2%ROWTYPE;" +
             "\nCURSOR c_emp(paramtemp in INTEGER) IS" +
               "\nselect * from XTESMAN_TABLE2 te WHERE te.srno=paramtemp;" +
-          "\nbegin" + 
+          "\nbegin" +
             "\nopen c_emp(param1);" +
             "\nLOOP" +
               "\nFETCH c_emp into l_data1;" +
@@ -106,7 +106,7 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
             "\nRETURN l_data1;" +
           "\nEND TESMANFUNC17;" +
         "\nEND XTESMANPACK;";
-    
+
     static final String DROP_TESMAN_BODY =
         "DROP PACKAGE BODY XTESMANPACK";
     static final String DROP_TESMAN_PACK =
@@ -186,7 +186,7 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
           builder = null;
           DBWSTestSuite.setUp(".");
 
-          // execute shadow type ddl to generate JDBC equivalents of PL/SQL types 
+          // execute shadow type ddl to generate JDBC equivalents of PL/SQL types
           for (String ddl : builder.getTypeDDL()) {
               //System.out.println("create: " + ddl);
               runDdl(conn, ddl, ddlDebug);
@@ -195,7 +195,7 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        // drop shadow type ddl 
+        // drop shadow type ddl
         for (String ddl : builder.getTypeDropDDL()) {
             // may need to strip off trailing ';'
             try {
@@ -210,12 +210,12 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
         if (ddlDrop) {
             runDdl(conn, DROP_TESMAN_BODY, ddlDebug);
             runDdl(conn, DROP_TESMAN_PACK, ddlDebug);
-        	runDdl(conn, DROP_TESMAN_TABLE2, ddlDebug);
+            runDdl(conn, DROP_TESMAN_TABLE2, ddlDebug);
             runDdl(conn, DROP_TESMAN_TYPE2, ddlDebug);
             runDdl(conn, DROP_TESMAN_TYPE1, ddlDebug);
         }
     }
-    
+
     @Test
     public void test() {
         Invocation invocation = new Invocation("TestFunc17");

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.xmlbinder.anymappingtests;
 
 import java.io.*;
@@ -58,11 +58,11 @@ public class XMLBinderAnyObjectTestCases extends OXTestCase {
     public void testUpdateXMLValue() throws Exception {
         Document sourceDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/anymappingtests/anyobjectupdatevalue_before.xml");
         Document controlDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/anymappingtests/anyobjectupdatevalue_after.xml");
-        
+
         AnyObjectRoot root = (AnyObjectRoot)binder.unmarshal(sourceDocument);
         AnyObjectChild child = (AnyObjectChild)root.getAny();
         child.setContent("New Content!!");
-        
+
         binder.updateXML(child);
         assertXMLIdentical(controlDocument, binder.getXMLNode(root).getOwnerDocument());
     }
@@ -70,39 +70,39 @@ public class XMLBinderAnyObjectTestCases extends OXTestCase {
     public void testUpdateXMLDirectValue() throws Exception {
         Document sourceDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/anymappingtests/anyobjectupdatedirect_before.xml");
         Document controlDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/anymappingtests/anyobjectupdatedirect_after.xml");
-        
+
         AnyObjectRoot root = (AnyObjectRoot)binder.unmarshal(sourceDocument);
         root.setAny("A String");
         //children.remove(1);
-        
+
         binder.updateXML(root);
         assertXMLIdentical(controlDocument, binder.getXMLNode(root).getOwnerDocument());
     }
-    
 
-    
+
+
     public void testUpdateObjectChild() throws Exception {
         Document sourceDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/anymappingtests/anyobjectupdateobject.xml");
         AnyObjectChild controlChild = getControlChild();
 
         AnyObjectRoot root = (AnyObjectRoot)binder.unmarshal(sourceDocument);
         AnyObjectChild child = (AnyObjectChild)root.getAny();
-        
+
         NodeList nodes = sourceDocument.getDocumentElement().getElementsByTagName("child");
         nodes.item(0).getFirstChild().setNodeValue("Changed 1");
-        
+
         binder.updateObject(nodes.item(0));
-        
+
         assertTrue(child.equals(controlChild));
 
     }
-    
+
     private AnyObjectChild getControlChild() {
         AnyObjectChild child = new AnyObjectChild();
         child.setContent("Changed 1");
         return child;
     }
-    
+
     private Document parse(String resource) throws Exception {
         InputStream stream = getClass().getClassLoader().getResourceAsStream(resource);
         Document document = parser.parse(stream);

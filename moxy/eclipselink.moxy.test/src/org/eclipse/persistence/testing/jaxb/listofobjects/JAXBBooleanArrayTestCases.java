@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -24,25 +24,25 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 public class JAXBBooleanArrayTestCases extends JAXBListOfObjectsTestCases {
-	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/booleanArray.xml";
-	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/booleanArray.json";
-	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/booleanArrayNoXsiType.xml";
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/booleanArray.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/booleanArray.json";
+    private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/booleanArrayNoXsiType.xml";
 
-	public JAXBBooleanArrayTestCases(String name) throws Exception {
-		super(name);
-		init();
-	}
+    public JAXBBooleanArrayTestCases(String name) throws Exception {
+        super(name);
+        init();
+    }
 
-	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-		Class[] classes = new Class[1];
-		classes[0] = boolean[].class;
-		setClasses(classes);
-		initXsiType();
-	}
+    public void init() throws Exception {
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        Class[] classes = new Class[1];
+        classes[0] = boolean[].class;
+        setClasses(classes);
+        initXsiType();
+    }
 
-	@Override
+    @Override
     protected Map<String, String> getAdditationalNamespaces() {
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("examplenamespace", "ns0");
@@ -52,43 +52,43 @@ public class JAXBBooleanArrayTestCases extends JAXBListOfObjectsTestCases {
 
 
     public List< InputStream> getControlSchemaFiles(){
-		InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/booleanArray.xsd");
-		
-		List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-		return controlSchema;
-	}
+        InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/booleanArray.xsd");
 
-	protected Type getTypeToUnmarshalTo() {
-		return boolean[].class;
-	}
+        List<InputStream> controlSchema = new ArrayList<InputStream>();
+        controlSchema.add(instream);
+        return controlSchema;
+    }
 
-	protected Object getControlObject() {
-		boolean[] booleans = new boolean[4];
-		booleans[0] = Boolean.FALSE.booleanValue();
-		booleans[1] = Boolean.TRUE.booleanValue();
-		booleans[2] = Boolean.FALSE.booleanValue();
-		booleans[3] = Boolean.TRUE.booleanValue();
+    protected Type getTypeToUnmarshalTo() {
+        return boolean[].class;
+    }
 
-		QName qname = new QName("examplenamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, Object.class,null);
-		jaxbElement.setValue(booleans);
+    protected Object getControlObject() {
+        boolean[] booleans = new boolean[4];
+        booleans[0] = Boolean.FALSE.booleanValue();
+        booleans[1] = Boolean.TRUE.booleanValue();
+        booleans[2] = Boolean.FALSE.booleanValue();
+        booleans[3] = Boolean.TRUE.booleanValue();
 
-		return jaxbElement;
-	}
+        QName qname = new QName("examplenamespace", "root");
+        JAXBElement jaxbElement = new JAXBElement(qname, Object.class,null);
+        jaxbElement.setValue(booleans);
 
-	protected void comparePrimitiveArrays(Object controlValue, Object testValue) {
-		boolean[] controlArray = (boolean[]) controlValue;
-		boolean[] testArray = (boolean[]) testValue;
+        return jaxbElement;
+    }
 
-		assertEquals(controlArray.length, testArray.length);
-		for (int i = 0; i < controlArray.length; i++) {
-			assertEquals(controlArray[i], testArray[i]);
-		}
-	}
+    protected void comparePrimitiveArrays(Object controlValue, Object testValue) {
+        boolean[] controlArray = (boolean[]) controlValue;
+        boolean[] testArray = (boolean[]) testValue;
 
-	protected String getNoXsiTypeControlResourceName() {
-		return XML_RESOURCE_NO_XSI_TYPE;
-	}
+        assertEquals(controlArray.length, testArray.length);
+        for (int i = 0; i < controlArray.length; i++) {
+            assertEquals(controlArray[i], testArray[i]);
+        }
+    }
+
+    protected String getNoXsiTypeControlResourceName() {
+        return XML_RESOURCE_NO_XSI_TYPE;
+    }
 
 }

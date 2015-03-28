@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelements;
 
 import java.io.InputStream;
@@ -28,7 +28,7 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
 
     public XmlElementsArrayTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);   
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = EmployeeArray.class;
@@ -37,9 +37,9 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
     }
 
     protected Object getControlObject() {
-    	EmployeeArray employee = new EmployeeArray();
+        EmployeeArray employee = new EmployeeArray();
         employee.id = CONTROL_ID;
-        Object[] choices =new Object[5]; 
+        Object[] choices =new Object[5];
         choices[0]= new Integer(12);
         choices[1]="String Value";
         Address addr = new Address();
@@ -51,9 +51,9 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
         employee.choice = choices;
         return employee;
     }
-    
+
     protected Object getJSONReadControlObject() {
-    	EmployeeArray employee = new EmployeeArray();
+        EmployeeArray employee = new EmployeeArray();
           employee.id = CONTROL_ID;
           Object[] choices =new Object[5];
           choices[0]= new Integer(12);
@@ -67,11 +67,11 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
           choices[4]=addr;
           return employee;
     }
-    
+
     public void testJSONSchemaGen() throws Exception{
         InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
         super.generateJSONSchema(controlSchema);
-       
+
     }
 }
 

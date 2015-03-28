@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -27,7 +27,7 @@ import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.sessions.Session;
 
 /**
- * Convert between instances of XMLRoot and JAXBElement 
+ * Convert between instances of XMLRoot and JAXBElement
  */
 public class JAXBElementRootConverter implements XMLConverter {
 
@@ -63,7 +63,7 @@ public class JAXBElementRootConverter implements XMLConverter {
         if(dataValue instanceof JAXBElement) {
             return dataValue;
         } else if(dataValue instanceof Root) {
-        	Root root = (Root)dataValue;
+            Root root = (Root)dataValue;
             QName name = new QName(root.getNamespaceURI(), root.getLocalName());
             dataValue = root.getObject();
             if(null == dataValue) {
@@ -83,10 +83,10 @@ public class JAXBElementRootConverter implements XMLConverter {
         if(null != nestedConverter) {
             objectValue = nestedConverter.convertObjectValueToDataValue(objectValue, session, marshaller);
         }
-    
-        if(objectValue instanceof JAXBElement) {        	
-        	ClassDescriptor desc = session.getDescriptor(objectValue);
-        	if(desc == null || objectValue instanceof WrappedValue){
+
+        if(objectValue instanceof JAXBElement) {
+            ClassDescriptor desc = session.getDescriptor(objectValue);
+            if(desc == null || objectValue instanceof WrappedValue){
                 JAXBElement element = (JAXBElement) objectValue;
                 Root root = new XMLRoot();
                 root.setLocalName(element.getName().getLocalPart());
@@ -95,7 +95,7 @@ public class JAXBElementRootConverter implements XMLConverter {
                 root.setDeclaredType(element.getDeclaredType());
                 root.setNil(element.isNil());
                 return root;
-        	}
+            }
         }
         return objectValue;
     }

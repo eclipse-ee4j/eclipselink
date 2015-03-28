@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,12 +23,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public class GenericQueryBNF extends JPQLQueryBNF {
 
-	/**
-	 * Creates a new <code>GenericQueryBNF</code>.
-	 *
-	 * @param id The unique identifier of this BNF
-	 */
-	public GenericQueryBNF(String id) {
-		super(id);
-	}
+    /**
+     * Creates a new <code>GenericQueryBNF</code>.
+     *
+     * @param id The unique identifier of this BNF
+     */
+    public GenericQueryBNF(String id) {
+        super(id);
+    }
 }

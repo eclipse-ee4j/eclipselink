@@ -12,7 +12,7 @@ public class SimpleLanguage {
     private String code;
 
     private String description;
-    
+
     private int version;
 
     public String getCode() {

@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     03/03/2010 - 2.1 Michael O'Brien  
+ *     03/03/2010 - 2.1 Michael O'Brien
  *       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.util.*;
@@ -32,8 +32,8 @@ import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
  * This is not the recommended way to create new objects in your application,
  * this is just the easiest way to create interconnected new example objects from code.
  * Normally in your application the objects will be defined as part of a transactional and user interactive process.
- * 
- * Be careful in changing any of the examples (names, projects etc) as they may 
+ *
+ * Be careful in changing any of the examples (names, projects etc) as they may
  * be used and relied on in testing.
  */
 public class EmployeePopulator {
@@ -270,7 +270,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee basicEmployeeExample13() {
         Employee employee = createEmployee();
 
@@ -289,7 +289,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
      public Employee basicEmployeeExample14() {
         Employee employee = createEmployee();
 
@@ -299,19 +299,19 @@ public class EmployeePopulator {
             employee.setSalary(49);
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());
- 
+
             employee.addPhoneNumber(phoneNumberExample1());
             employee.addResponsibility("Attend technology conferences");
             employee.addResponsibility("Review design specifications");
             employee.addResponsibility("Critique coding styles");
-            
+
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
 
         return employee;
     }
-    
+
     public Employee basicEmployeeExample15() {
         Employee employee = createEmployee();
 
@@ -320,7 +320,7 @@ public class EmployeePopulator {
             employee.setLastName("Test case");
             employee.setSalary(555);
             employee.setPeriod(employmentPeriodExample1());
-            employee.setAddress(addressExample1());         
+            employee.setAddress(addressExample1());
             employee.addResponsibility("Find ways to make the days go by faster");
             employee.setFormerEmployment(formerEmploymentExample1());
         } catch (Exception exception) {
@@ -329,7 +329,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee basicEmployeeExample2() {
         Employee employee = createEmployee();
 
@@ -522,7 +522,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public EquipmentCode basicEquipmentCodeExampleA() {
         EquipmentCode equipmentCode = createEquipmentCode();
 
@@ -534,7 +534,7 @@ public class EmployeePopulator {
 
         return equipmentCode;
     }
-    
+
     public EquipmentCode basicEquipmentCodeExampleB() {
         EquipmentCode equipmentCode = createEquipmentCode();
 
@@ -546,7 +546,7 @@ public class EmployeePopulator {
 
         return equipmentCode;
     }
-    
+
     public EquipmentCode basicEquipmentCodeExampleC() {
         EquipmentCode equipmentCode = createEquipmentCode();
 
@@ -896,18 +896,18 @@ public class EmployeePopulator {
         equipmentCodeB();
         equipmentCodeC();
     }
-    
+
     public StoredProcedureDefinition buildOracleStoredProcedureReadFromAddress(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("SProc_Read_Address");
-        
+
         proc.addInOutputArgument("address_id_v", Integer.class);
         proc.addOutputArgument("street_v", String.class);
         proc.addOutputArgument("city_v", String.class);
         proc.addOutputArgument("country_v", String.class);
         proc.addOutputArgument("province_v", String.class);
         proc.addOutputArgument("p_code_v", String.class);
-        
+
         String statement = null;
         if(session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
@@ -915,11 +915,11 @@ public class EmployeePopulator {
         } else {
             statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM CMP3_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
         }
-        
+
         proc.addStatement(statement);
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildOracleStoredProcedureReadFromEmployee(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("SProc_Read_Employee");
@@ -932,18 +932,18 @@ public class EmployeePopulator {
             statement = "SELECT @f_name_v=F_NAME, @huge_proj_id_v=HUGE_PROJ_ID FROM CMP3_EMPLOYEE WHERE EMP_ID = @employee_id_v";
         } else {
             statement = "SELECT F_NAME, HUGE_PROJ_ID  INTO f_name_v, huge_proj_id_v FROM CMP3_EMPLOYEE WHERE (EMP_ID = employee_id_v)";
-        } 
+        }
         proc.addStatement(statement);
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildOracleStoredProcedureReadInOut(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("SProc_Read_InOut");
-        
+
         proc.addInOutputArgument("address_id_v", Long.class);
         proc.addOutputArgument("street_v", String.class);
-        
+
         String statement = null;
         if(session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
@@ -951,18 +951,18 @@ public class EmployeePopulator {
         } else {
             statement = "SELECT ADDRESS_ID, STREET into address_id_v, street_v from CMP3_ADDRESS where (ADDRESS_ID = address_id_v)";
         }
-        
+
         proc.addStatement(statement);
         return proc;
     }
-    
-    public void persistExample(Session session) {        
-        Vector allObjects = new Vector();        
+
+    public void persistExample(Session session) {
+        Vector allObjects = new Vector();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
         // Disable the read-only classes for model population. Specifically,
         // in this case we want to be able to create EquipmentCode objects.
         unitOfWork.removeAllReadOnlyClasses();
-                
+
         PopulationManager.getDefaultManager().addAllObjectsForClass(Employee.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(SmallProject.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(LargeProject.class, allObjects);
@@ -971,7 +971,7 @@ public class EmployeePopulator {
         PopulationManager.getDefaultManager().addAllObjectsForClass(EquipmentCode.class, allObjects);
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
-        
+
         if (TestCase.supportsStoredProcedures(session)) {
             boolean orig_FAST_TABLE_CREATOR = SchemaManager.FAST_TABLE_CREATOR;
             // on Symfoware, to avoid table locking issues only the first invocation
@@ -991,9 +991,9 @@ public class EmployeePopulator {
             }
             // next time it deletes the rows instead.
             isFirstCreation = false;
-        }        
+        }
     }
-    
+
     protected boolean containsObject(Class domainClass, String identifier) {
         return populationManager.containsObject(domainClass, identifier);
     }
@@ -1001,7 +1001,7 @@ public class EmployeePopulator {
     public Employee createEmployee() {
         return new Employee();
     }
-    
+
     public EquipmentCode createEquipmentCode() {
         return new EquipmentCode();
     }
@@ -1021,26 +1021,26 @@ public class EmployeePopulator {
     public GoldBuyer createGoldBuyer() {
         return new GoldBuyer();
     }
-    
+
     public Equipment createEquipment(String desc){
         Equipment equip = new Equipment();
         equip.setDescription(desc);
         return equip;
     }
-    
+
     public Department departmentExample1() {
         Department department = new Department();
         department.setName("Department 1");
         department.addEquipment(createEquipment("Equipment-Populator -1"));
         return department;
     }
-    
+
     public Department departmentExample2() {
         Department department = new Department();
         department.setName("Department 2");
         return department;
     }
-    
+
     public Department departmentExample3() {
         Department department = new Department();
         department.setName("Department 3");
@@ -1118,7 +1118,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee employeeExample13() {
         if (containsObject(Employee.class, "0013")) {
             return (Employee)getObject(Employee.class, "0013");
@@ -1126,10 +1126,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample13();
         registerObject(Employee.class, employee, "0013");
-        
+
         return employee;
     }
-    
+
      public Employee employeeExample14() {
         if (containsObject(Employee.class, "0014")) {
             return (Employee)getObject(Employee.class, "0014");
@@ -1137,10 +1137,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample14();
         registerObject(Employee.class, employee, "0014");
-        
+
         return employee;
     }
-    
+
     public Employee employeeExample15() {
         if (containsObject(Employee.class, "0015")) {
             return (Employee)getObject(Employee.class, "0015");
@@ -1148,10 +1148,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample15();
         registerObject(Employee.class, employee, "0015");
-        
+
         return employee;
     }
-    
+
     public Employee employeeExample2() {
         if (containsObject(Employee.class, "0002")) {
             return (Employee)getObject(Employee.class, "0002");
@@ -1416,7 +1416,7 @@ public class EmployeePopulator {
         formerEmployment.setPeriod(employmentPeriodExample13());
         return formerEmployment;
     }
-    
+
     public EquipmentCode equipmentCodeA() {
         if (containsObject(EquipmentCode.class, "0001")) {
             return (EquipmentCode) getObject(EquipmentCode.class, "0001");
@@ -1426,7 +1426,7 @@ public class EmployeePopulator {
         registerObject(equipmentCode, "0001");
         return equipmentCode;
     }
-    
+
     public EquipmentCode equipmentCodeB() {
         if (containsObject(EquipmentCode.class, "0002")) {
             return (EquipmentCode) getObject(EquipmentCode.class, "0002");
@@ -1436,7 +1436,7 @@ public class EmployeePopulator {
         registerObject(equipmentCode, "0002");
         return equipmentCode;
     }
-    
+
     public EquipmentCode equipmentCodeC() {
         if (containsObject(EquipmentCode.class, "0003")) {
             return (EquipmentCode) getObject(EquipmentCode.class, "0003");

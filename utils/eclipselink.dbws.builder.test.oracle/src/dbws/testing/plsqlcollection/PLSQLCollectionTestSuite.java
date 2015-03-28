@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -300,7 +300,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
           "<item>true</item>" +
           "<item>false</item>" +
         "</package2_tab1Type>";
-    
+
     /**
      * StoredProcedure test.
      */
@@ -358,7 +358,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
      */
     @Test
     public void testWSDLGeneration() {
-    	assertNotNull("No WSDL was generated", DBWS_WSDL_STREAM);
+        assertNotNull("No WSDL was generated", DBWS_WSDL_STREAM);
         Document doc = xmlParser.parse(new StringReader(DBWS_WSDL_STREAM.toString()));
         removeEmptyTextNodes(doc);
         Document controlDoc = xmlParser.parse(new StringReader(WSDL_XML));
@@ -548,5 +548,5 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
         "</wsdl:service>" +
       "</wsdl:definitions>";
 
-    
+
 }

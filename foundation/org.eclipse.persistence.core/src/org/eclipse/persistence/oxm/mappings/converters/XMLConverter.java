@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings.converters;
 
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -22,13 +22,13 @@ import org.eclipse.persistence.sessions.Session;
  * This can be used in any mapping to convert between the object and data types without requiring code
  * placed in the object model. This extension of the Converter interface allows for the XMLMarshaller
  * and XMLUnmarshaller to be passed into the conversion methods.
- * 
+ *
  * @see Converter
  * @see org.eclipse.persistence.oxm.mappings.XMLDirectMapping XMLDirectMapping
  * @see org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping XMLCompositeDirectCollectionMapping
  * @see org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping XMLCompositeObjectMapping
  * @see org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping XMLCompositeCollectionMapping
- * 
+ *
  */
 
 public interface XMLConverter extends Converter {

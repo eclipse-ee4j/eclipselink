@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,34 +30,34 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public final class NullIfExpression extends AbstractDoubleEncapsulatedExpression {
 
-	/**
-	 * Creates a new <code>NullIfExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public NullIfExpression(AbstractExpression parent) {
-		super(parent, NULLIF);
-	}
+    /**
+     * Creates a new <code>NullIfExpression</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public NullIfExpression(AbstractExpression parent) {
+        super(parent, NULLIF);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(NullIfExpressionBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(NullIfExpressionBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String parameterExpressionBNF(int index) {
-		return ScalarExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String parameterExpressionBNF(int index) {
+        return ScalarExpressionBNF.ID;
+    }
 }

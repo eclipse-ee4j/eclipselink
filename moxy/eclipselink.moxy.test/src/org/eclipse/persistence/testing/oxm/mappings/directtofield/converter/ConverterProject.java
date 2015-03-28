@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,30 +19,30 @@ import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.sessions.Project;
 
 
-public class ConverterProject extends Project 
+public class ConverterProject extends Project
 {
-  public ConverterProject() 
+  public ConverterProject()
   {
     super();
     addDescriptor(getEmployeeDescriptor());
   }
-  
-  public ClassDescriptor getEmployeeDescriptor() 
+
+  public ClassDescriptor getEmployeeDescriptor()
   {
     XMLDescriptor descriptor = new XMLDescriptor();
     descriptor.setDefaultRootElement("employee");
     descriptor.setJavaClass(Employee.class);
-    
+
     XMLDirectMapping firstNameMapping = new XMLDirectMapping();
     firstNameMapping.setAttributeName("firstName");
     firstNameMapping.setXPath("first-name/text()");
-	descriptor.addMapping(firstNameMapping);
-    
+    descriptor.addMapping(firstNameMapping);
+
     XMLDirectMapping lastNameMapping = new XMLDirectMapping();
     lastNameMapping.setAttributeName("lastName");
     lastNameMapping.setXPath("last-name/text()");
     descriptor.addMapping(lastNameMapping);
-    
+
     XMLDirectMapping genderMapping = new XMLDirectMapping();
     genderMapping.setAttributeName("gender");
     genderMapping.setXPath("gender/text()");
@@ -50,10 +50,10 @@ public class ConverterProject extends Project
     nullPolicy.setSetPerformedForAbsentNode(false);
     genderMapping.setNullPolicy(nullPolicy);
     MyConverter converter = new MyConverter();
- 
+
     genderMapping.setConverter(converter);
     descriptor.addMapping(genderMapping);
     return descriptor;
-    
+
   }
 }

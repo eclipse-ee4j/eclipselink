@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     08/15/2008-1.0.1 Chris Delahunt 
+ *     08/15/2008-1.0.1 Chris Delahunt
  *       - 237545: List attribute types on OneToMany using @OrderBy does not work with attribute change tracking
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.distributedcache;
 
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
@@ -46,7 +46,7 @@ public class OrderedListMergeTest extends DistributedCacheMergeTest {
         emp.setFemale();
         java.util.Vector children = new java.util.Vector();
         java.util.Calendar cal =java.util.Calendar.getInstance();
-        
+
         Child child = new Child();
         child.setFirstName("Sarah");
         child.setLastName("Hamilton");
@@ -55,8 +55,8 @@ public class OrderedListMergeTest extends DistributedCacheMergeTest {
         child.setGender("Female");
         child.setParent(emp);
         children.add(child);
-        
-        
+
+
         child = new Child();
         child.setFirstName("Billy");
         child.setLastName("Hamilton");
@@ -65,7 +65,7 @@ public class OrderedListMergeTest extends DistributedCacheMergeTest {
         child.setGender("Male");
         child.setParent( emp );
         children.add(child);
-        
+
         child = new Child();
         child.setFirstName("Samantha");
         child.setLastName("Hamilton");
@@ -87,20 +87,20 @@ public class OrderedListMergeTest extends DistributedCacheMergeTest {
         child.gender = "Female";
         return child;
     }
-    
+
     protected Project getNewProject() {
         Project empProject = new EmployeeProject();
         empProject.getDescriptor(Employee.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
         return empProject;
     }
-    
+
     protected boolean compareObjectsCollections(Object object1, Object object2){
         if ( getCollectionSize(object1)!=getCollectionSize(object2) ){
             return false;
         }
         return compareCollections( ((Employee)object1).children, ((Employee)object2).children );
     }
-    
+
     protected boolean compareCollections(Collection col1, Collection col2){
         boolean comparison=true;
         Iterator i1 = col1.iterator();

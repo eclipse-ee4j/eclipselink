@@ -20,11 +20,11 @@
             <parameter direction="OUT" name="city_v" query-parameter="CITY" type="String"/>
             <parameter direction="OUT" name="country_v" query-parameter="COUNTRY" type="String"/>
             <parameter direction="OUT" name="province_v" query-parameter="PROVINCE" type="String"/>
-            <parameter direction="OUT" name="p_code_v" query-parameter="P_CODE" type="String"/> 
-        </named-stored-procedure-query>       
+            <parameter direction="OUT" name="p_code_v" query-parameter="P_CODE" type="String"/>
+        </named-stored-procedure-query>
         <named-stored-procedure-query name="SProcXMLInOut" result-class="Address" procedure-name="SProc_Read_BR1_XMLInOut">
             <parameter direction="IN_OUT" name="address_id_v" query-parameter="ADDRESS_ID" type="Long"/>
-            <parameter direction="OUT" name="street_v" query-parameter="STREET" type="String"/> 
+            <parameter direction="OUT" name="street_v" query-parameter="STREET" type="String"/>
         </named-stored-procedure-query>
         <query-redirectors
             all-queries="DoNotRedirect"

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -30,254 +30,254 @@ import org.eclipse.persistence.tools.workbench.utility.AbstractModel;
 
 public class ComponentEnablerTest extends TestCase
 {
-	public ComponentEnablerTest(String name)
-	{
-		super(name);
-	}
+    public ComponentEnablerTest(String name)
+    {
+        super(name);
+    }
 
-	public static Test suite()
-	{
-		return new TestSuite(ComponentEnablerTest.class, "ComponentEnabler Test");
-	}
+    public static Test suite()
+    {
+        return new TestSuite(ComponentEnablerTest.class, "ComponentEnabler Test");
+    }
 
-	public void testUpdateEnableState1() throws Exception
-	{
-		JButton component1 = new JButton();
-		component1.setEnabled(true);
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
+    public void testUpdateEnableState1() throws Exception
+    {
+        JButton component1 = new JButton();
+        component1.setEnabled(true);
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
 
-		new ComponentEnabler(booleanHolder, Collections.singleton(component1));
+        new ComponentEnabler(booleanHolder, Collections.singleton(component1));
 
-		assertTrue(component1.isEnabled());
-	}
+        assertTrue(component1.isEnabled());
+    }
 
-	public void testUpdateEnableState10() throws Exception
-	{
-		JButton component1 = new JButton();
-		component1.setEnabled(true);
+    public void testUpdateEnableState10() throws Exception
+    {
+        JButton component1 = new JButton();
+        component1.setEnabled(true);
 
-		JLabel component2 = new JLabel();
-		component2.setEnabled(true);
+        JLabel component2 = new JLabel();
+        component2.setEnabled(true);
 
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
 
-		new ComponentEnabler(booleanHolder, new Component[] { component1, component2 });
+        new ComponentEnabler(booleanHolder, new Component[] { component1, component2 });
 
-		booleanHolder.setValue(Boolean.FALSE);
+        booleanHolder.setValue(Boolean.FALSE);
 
-		assertFalse(component1.isEnabled());
-		assertFalse(component2.isEnabled());
-	}
+        assertFalse(component1.isEnabled());
+        assertFalse(component2.isEnabled());
+    }
 
-	public void testUpdateEnableState11() throws Exception
-	{
-		TestClass testClass = new TestClass();
+    public void testUpdateEnableState11() throws Exception
+    {
+        TestClass testClass = new TestClass();
 
-		JButton component1 = new JButton();
-		component1.setEnabled(true);
-		testClass.addComponent(component1);
+        JButton component1 = new JButton();
+        component1.setEnabled(true);
+        testClass.addComponent(component1);
 
-		JLabel component2 = new JLabel();
-		component2.setEnabled(true);
-		testClass.addComponent(component2);
+        JLabel component2 = new JLabel();
+        component2.setEnabled(true);
+        testClass.addComponent(component2);
 
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
-		new ComponentEnabler(booleanHolder, testClass.components());
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
+        new ComponentEnabler(booleanHolder, testClass.components());
 
-		booleanHolder.setValue(Boolean.FALSE);
+        booleanHolder.setValue(Boolean.FALSE);
 
-		assertFalse(component1.isEnabled());
-		assertFalse(component2.isEnabled());
-	}
+        assertFalse(component1.isEnabled());
+        assertFalse(component2.isEnabled());
+    }
 
-	public void testUpdateEnableState12() throws Exception
-	{
-		TestClass testClass = new TestClass();
+    public void testUpdateEnableState12() throws Exception
+    {
+        TestClass testClass = new TestClass();
 
-		JButton component1 = new JButton();
-		component1.setEnabled(true);
-		testClass.addComponent(component1);
+        JButton component1 = new JButton();
+        component1.setEnabled(true);
+        testClass.addComponent(component1);
 
-		JLabel component2 = new JLabel();
-		component2.setEnabled(true);
-		testClass.addComponent(component2);
+        JLabel component2 = new JLabel();
+        component2.setEnabled(true);
+        testClass.addComponent(component2);
 
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
-		new ComponentEnabler(booleanHolder, testClass.components());
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
+        new ComponentEnabler(booleanHolder, testClass.components());
 
-		booleanHolder.setValue(Boolean.FALSE);
+        booleanHolder.setValue(Boolean.FALSE);
 
-		assertFalse(component1.isEnabled());
-		assertFalse(component2.isEnabled());
+        assertFalse(component1.isEnabled());
+        assertFalse(component2.isEnabled());
 
-		JLabel component3 = new JLabel();
-		component2.setEnabled(true);
-		testClass.addComponent(component3);
+        JLabel component3 = new JLabel();
+        component2.setEnabled(true);
+        testClass.addComponent(component3);
 
-		assertFalse(component1.isEnabled());
-	}
+        assertFalse(component1.isEnabled());
+    }
 
-	public void testUpdateEnableState13() throws Exception
-	{
-		TestClass testClass = new TestClass();
+    public void testUpdateEnableState13() throws Exception
+    {
+        TestClass testClass = new TestClass();
 
-		JButton component1 = new JButton();
-		component1.setEnabled(true);
-		testClass.addComponent(component1);
+        JButton component1 = new JButton();
+        component1.setEnabled(true);
+        testClass.addComponent(component1);
 
-		JLabel component2 = new JLabel();
-		component2.setEnabled(true);
-		testClass.addComponent(component2);
+        JLabel component2 = new JLabel();
+        component2.setEnabled(true);
+        testClass.addComponent(component2);
 
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
-		new ComponentEnabler(booleanHolder, testClass.components());
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
+        new ComponentEnabler(booleanHolder, testClass.components());
 
-		booleanHolder.setValue(Boolean.FALSE);
+        booleanHolder.setValue(Boolean.FALSE);
 
-		assertFalse(component1.isEnabled());
-		assertFalse(component2.isEnabled());
+        assertFalse(component1.isEnabled());
+        assertFalse(component2.isEnabled());
 
-		testClass.clear();
-	}
+        testClass.clear();
+    }
 
-	public void testUpdateEnableState2() throws Exception
-	{
-		JButton component1 = new JButton();
-		component1.setEnabled(false);
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
+    public void testUpdateEnableState2() throws Exception
+    {
+        JButton component1 = new JButton();
+        component1.setEnabled(false);
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
 
-		new ComponentEnabler(booleanHolder, Collections.singleton(component1));
+        new ComponentEnabler(booleanHolder, Collections.singleton(component1));
 
-		assertTrue(component1.isEnabled());
-	}
+        assertTrue(component1.isEnabled());
+    }
 
-	public void testUpdateEnableState3() throws Exception
-	{
-		JButton component1 = new JButton();
-		component1.setEnabled(false);
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.FALSE);
+    public void testUpdateEnableState3() throws Exception
+    {
+        JButton component1 = new JButton();
+        component1.setEnabled(false);
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.FALSE);
 
-		new ComponentEnabler(booleanHolder, Collections.singleton(component1));
+        new ComponentEnabler(booleanHolder, Collections.singleton(component1));
 
-		assertFalse(component1.isEnabled());
-	}
+        assertFalse(component1.isEnabled());
+    }
 
-	public void testUpdateEnableState4() throws Exception
-	{
-		JButton component1 = new JButton();
-		component1.setEnabled(true);
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.FALSE);
+    public void testUpdateEnableState4() throws Exception
+    {
+        JButton component1 = new JButton();
+        component1.setEnabled(true);
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.FALSE);
 
-		new ComponentEnabler(booleanHolder, Collections.singleton(component1));
+        new ComponentEnabler(booleanHolder, Collections.singleton(component1));
 
-		assertFalse(component1.isEnabled());
-	}
+        assertFalse(component1.isEnabled());
+    }
 
-	public void testUpdateEnableState5() throws Exception
-	{
-		JButton component1 = new JButton();
-		component1.setEnabled(true);
+    public void testUpdateEnableState5() throws Exception
+    {
+        JButton component1 = new JButton();
+        component1.setEnabled(true);
 
-		JLabel component2 = new JLabel();
-		component2.setEnabled(true);
+        JLabel component2 = new JLabel();
+        component2.setEnabled(true);
 
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
 
-		new ComponentEnabler(booleanHolder, new Component[] { component1, component2 });
+        new ComponentEnabler(booleanHolder, new Component[] { component1, component2 });
 
-		assertTrue(component1.isEnabled());
-		assertTrue(component2.isEnabled());
-	}
+        assertTrue(component1.isEnabled());
+        assertTrue(component2.isEnabled());
+    }
 
-	public void testUpdateEnableState6() throws Exception
-	{
-		JButton component1 = new JButton();
-		component1.setEnabled(false);
+    public void testUpdateEnableState6() throws Exception
+    {
+        JButton component1 = new JButton();
+        component1.setEnabled(false);
 
-		JLabel component2 = new JLabel();
-		component2.setEnabled(false);
+        JLabel component2 = new JLabel();
+        component2.setEnabled(false);
 
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.TRUE);
 
-		new ComponentEnabler(booleanHolder, new Component[] { component1, component2 });
+        new ComponentEnabler(booleanHolder, new Component[] { component1, component2 });
 
-		assertTrue(component1.isEnabled());
-		assertTrue(component2.isEnabled());
-	}
+        assertTrue(component1.isEnabled());
+        assertTrue(component2.isEnabled());
+    }
 
-	public void testUpdateEnableState7() throws Exception
-	{
-		JButton component1 = new JButton();
-		component1.setEnabled(false);
+    public void testUpdateEnableState7() throws Exception
+    {
+        JButton component1 = new JButton();
+        component1.setEnabled(false);
 
-		JLabel component2 = new JLabel();
-		component2.setEnabled(false);
+        JLabel component2 = new JLabel();
+        component2.setEnabled(false);
 
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.FALSE);
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.FALSE);
 
-		new ComponentEnabler(booleanHolder, new Component[] { component1, component2 });
+        new ComponentEnabler(booleanHolder, new Component[] { component1, component2 });
 
-		assertFalse(component1.isEnabled());
-		assertFalse(component2.isEnabled());
-	}
+        assertFalse(component1.isEnabled());
+        assertFalse(component2.isEnabled());
+    }
 
-	public void testUpdateEnableState8() throws Exception
-	{
-		JButton component1 = new JButton();
-		component1.setEnabled(true);
+    public void testUpdateEnableState8() throws Exception
+    {
+        JButton component1 = new JButton();
+        component1.setEnabled(true);
 
-		JLabel component2 = new JLabel();
-		component2.setEnabled(true);
+        JLabel component2 = new JLabel();
+        component2.setEnabled(true);
 
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.FALSE);
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.FALSE);
 
-		new ComponentEnabler(booleanHolder, new Component[] { component1, component2 });
+        new ComponentEnabler(booleanHolder, new Component[] { component1, component2 });
 
-		assertFalse(component1.isEnabled());
-		assertFalse(component2.isEnabled());
-	}
+        assertFalse(component1.isEnabled());
+        assertFalse(component2.isEnabled());
+    }
 
-	public void testUpdateEnableState9() throws Exception
-	{
-		JButton component1 = new JButton();
-		component1.setEnabled(true);
+    public void testUpdateEnableState9() throws Exception
+    {
+        JButton component1 = new JButton();
+        component1.setEnabled(true);
 
-		JLabel component2 = new JLabel();
-		component2.setEnabled(true);
+        JLabel component2 = new JLabel();
+        component2.setEnabled(true);
 
-		SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.FALSE);
+        SimplePropertyValueModel booleanHolder = new SimplePropertyValueModel(Boolean.FALSE);
 
-		new ComponentEnabler(booleanHolder, new Component[] { component1, component2 });
+        new ComponentEnabler(booleanHolder, new Component[] { component1, component2 });
 
-		booleanHolder.setValue(Boolean.TRUE);
+        booleanHolder.setValue(Boolean.TRUE);
 
-		assertTrue(component1.isEnabled());
-		assertTrue(component2.isEnabled());
-	}
+        assertTrue(component1.isEnabled());
+        assertTrue(component2.isEnabled());
+    }
 
-	private class TestClass extends AbstractModel
-	{
-		private Vector components = new Vector();
-		public static final String COMPONENT_COLLECTION = "components";
+    private class TestClass extends AbstractModel
+    {
+        private Vector components = new Vector();
+        public static final String COMPONENT_COLLECTION = "components";
 
-		public void addComponent(Component component)
-		{
-			addItemToCollection(component, this.components, COMPONENT_COLLECTION);
-		}
+        public void addComponent(Component component)
+        {
+            addItemToCollection(component, this.components, COMPONENT_COLLECTION);
+        }
 
-		public void clear()
-		{
-			fireCollectionChanged(COMPONENT_COLLECTION);
-		}
+        public void clear()
+        {
+            fireCollectionChanged(COMPONENT_COLLECTION);
+        }
 
-		public Iterator components()
-		{
-			return this.components.iterator();
-		}
+        public Iterator components()
+        {
+            return this.components.iterator();
+        }
 
-		public void removeComponent(Component component)
-		{
-			removeItemFromCollection(component, this.components, COMPONENT_COLLECTION);
-		}
-	}
+        public void removeComponent(Component component)
+        {
+            removeItemFromCollection(component, this.components, COMPONENT_COLLECTION);
+        }
+    }
 }

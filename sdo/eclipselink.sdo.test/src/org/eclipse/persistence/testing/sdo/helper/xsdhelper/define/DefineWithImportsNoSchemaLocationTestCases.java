@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -93,7 +93,7 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
         SDOType quantityType = (SDOType) typeHelper.define(QuantityTypeDO);
         quantityType.addBaseType(intType);
         quantityType.setInstanceClassName(ClassConstants.PINT.getName());
-        
+
         // create a new Type for SKU
         DataObject SkuDO = dataFactory.create("commonj.sdo", "Type");
         SkuDO.set("uri", "my.uri4");
@@ -120,7 +120,7 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
         partNumberProperty.set("type", skuType);
         SDOType purchaseOrderType = (SDOType) typeHelper.define(PurchaseOrderDO);
         purchaseOrderType.setInstanceClassName("uri.my.PurchaseOrder");
-        
+
         List<Type> types = new ArrayList<Type>();
         types.add(purchaseOrderType);
         types.add(skuType);
@@ -158,7 +158,7 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
         /**
          * Satisfy EntityResolver interface implementation.
          * Allow resolution of external entities.
-         * 
+         *
          * @param publicId
          * @param systemId
          * @return null

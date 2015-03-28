@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,17 +28,17 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-	EclipseLinkJPQLParserTests.class
+    EclipseLinkJPQLParserTests.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllEclipseLinkJPQLParserTests {
 
-	private AllEclipseLinkJPQLParserTests() {
-		super();
-	}
+    private AllEclipseLinkJPQLParserTests() {
+        super();
+    }
 
-	@JPQLGrammarTestHelper
-	static JPQLGrammar[] buildJPQLGrammars() {
-		return JPQLGrammarTools.allEclipseLinkJPQLGrammars(EclipseLinkVersion.VERSION_2_1);
-	}
+    @JPQLGrammarTestHelper
+    static JPQLGrammar[] buildJPQLGrammars() {
+        return JPQLGrammarTools.allEclipseLinkJPQLGrammars(EclipseLinkVersion.VERSION_2_1);
+    }
 }

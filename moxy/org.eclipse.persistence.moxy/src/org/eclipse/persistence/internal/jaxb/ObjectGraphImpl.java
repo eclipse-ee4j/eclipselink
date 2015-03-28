@@ -14,8 +14,8 @@ public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, S
 
     private CoreAttributeGroup attributeGroup;
     private Map<String, AttributeNode> attributeNodes;
-    
-    
+
+
     public ObjectGraphImpl(CoreAttributeGroup group) {
         super();
         this.attributeGroup = group;
@@ -44,7 +44,7 @@ public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, S
             this.attributeNodes.put(attribute,  impl);
         }
         this.attributeGroup.addAttribute(attribute, group);
-        
+
         return new ObjectGraphImpl(group);
     }
 
@@ -55,7 +55,7 @@ public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, S
             this.attributeNodes.put(attribute,  impl);
         }
         this.attributeGroup.addAttribute(attribute, group);
-        
+
         return new ObjectGraphImpl(group);
     }
 
@@ -66,7 +66,7 @@ public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, S
         }
         return nodes;
     }
-    
+
     public CoreAttributeGroup getAttributeGroup() {
         return this.attributeGroup;
     }

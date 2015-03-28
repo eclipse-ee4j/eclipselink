@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -28,14 +28,14 @@
 package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 public class MismatchedNotSetException extends MismatchedSetException {
-	/** Used for remote debugger deserialization */
-	public MismatchedNotSetException() {;}
+    /** Used for remote debugger deserialization */
+    public MismatchedNotSetException() {;}
 
-	public MismatchedNotSetException(BitSet expecting, IntStream input) {
-		super(expecting, input);
-	}
+    public MismatchedNotSetException(BitSet expecting, IntStream input) {
+        super(expecting, input);
+    }
 
-	public String toString() {
-		return "MismatchedNotSetException("+getUnexpectedType()+"!="+expecting+")";
-	}
+    public String toString() {
+        return "MismatchedNotSetException("+getUnexpectedType()+"!="+expecting+")";
+    }
 }

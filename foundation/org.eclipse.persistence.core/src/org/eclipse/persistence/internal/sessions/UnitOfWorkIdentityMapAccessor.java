@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
@@ -30,10 +30,10 @@ import org.eclipse.persistence.sessions.Record;
  * getting objects from identity maps.
  */
 public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
-    
+
     public UnitOfWorkIdentityMapAccessor() {
     }
-    
+
     public UnitOfWorkIdentityMapAccessor(AbstractSession session, IdentityMapManager identityMapManager) {
         super(session, identityMapManager);
     }
@@ -150,7 +150,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
         if (objectToClone != null && objectToClone instanceof PersistenceEntity){
             cacheKey = ((PersistenceEntity)objectToClone)._persistence_getCacheKey();
         }
-            
+
         if (cacheKey == null || cacheKey.getOwningMap() == null){
             org.eclipse.persistence.internal.sessions.IdentityMapAccessor parentIdentityMapAccessor = unitOfWork.getParentIdentityMapSession(descriptor, false, false).getIdentityMapAccessorInstance();
             cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor, false);
@@ -183,7 +183,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
                 } catch (InterruptedException ex) {
                 }
             }
-            
+
             // check for inheritance.
             objectFromCache = checkForInheritance(objectFromCache, theClass, descriptor);
             if (objectFromCache == null) {
@@ -205,7 +205,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
                 return unregisteredDeletedClone;
             }
         }
-        
+
         return unitOfWork.cloneAndRegisterObject(objectFromCache, cacheKey, descriptor);
     }
 
@@ -251,11 +251,11 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
         super.initializeAllIdentityMaps();
         ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
-    
+
     /**
-     * This method is used to resolve the inheritance issues arise while trying to get object from 
+     * This method is used to resolve the inheritance issues arise while trying to get object from
      * identity map of parent session. Avoid reading the unintended subclass during in-memory query
-     * (e.g. when querying on large project, do not want to check small project, both are inherited 
+     * (e.g. when querying on large project, do not want to check small project, both are inherited
      * from the project, and stored in the same identity map).
      */
     protected Object checkForInheritance(Object domainObject, Class superClass, ClassDescriptor descriptor) {

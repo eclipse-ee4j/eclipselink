@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -259,7 +259,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * INTERNAL:
      * Clone the query manager
      */
-	public Object clone() {
+    public Object clone() {
         DescriptorQueryManager manager = null;
         try {
             manager = (DescriptorQueryManager)super.clone();
@@ -856,7 +856,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         if (getDescriptor().isAggregateCollectionDescriptor()) {
             return;
         }
-        
+
         // Configure default query cache for all named queries.
         QueryResultsCachePolicy defaultQueryCachePolicy = session.getProject().getDefaultQueryResultsCachePolicy();
         if (defaultQueryCachePolicy != null && !getDescriptor().getCachePolicy().isIsolated()) {

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
  package org.eclipse.persistence.testing.tests.jpa.performance.writing;
 
 import java.util.ArrayList;
@@ -35,16 +35,16 @@ public class JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparis
     int nDirects;
     // used to keep ids in case sequencing is not used
     long id = 0;
-    
+
     boolean wasBatchWriting;
-     
+
     // Example: nLevels == 3; nDirects = 4.
     // First all the Employees corresponding to nLevels and nDirects values are created:
     // There is always the single (highest ranking) topEmployee on Level_0;
     // He/she has 4 Level_1 direct subordinates;
-    // each of those has 4 Level_2 directs, 
+    // each of those has 4 Level_2 directs,
     // each of those has 4 Level_3 directs.
-    // For debugging: 
+    // For debugging:
     // Employee's firstName is always his level (in "Level_2" format);
     // Employee's lastName is his number in his level (from 0 to number of employees of this level - 1)
     // in "Number_3" format.
@@ -90,7 +90,7 @@ public class JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparis
      */
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
-        try {    
+        try {
             // topEmployee - the only one on level 0.
             Employee topEmployee = new Employee();
             topEmployee.setFirstName("Level_0");
@@ -98,12 +98,12 @@ public class JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparis
             if(!shouldUseSequencing) {
                 topEmployee.setId(id++);
             }
-    
-            // During each nLevel loop iterartion 
+
+            // During each nLevel loop iterartion
             // this array contains direct managers for the Employees to be created -
             // all the Employees of nLevel - 1 level.
             ArrayList<Employee> employeesForHigherLevel = new ArrayList<Employee>(1);
-            // In the end of each nLevel loop iterartion 
+            // In the end of each nLevel loop iterartion
             // this array contains all Employees created during this iteration -
             // all the Employees of nLevel level.
             ArrayList<Employee> employeesForCurrentLevel;
@@ -129,7 +129,7 @@ public class JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparis
                 employeesForHigherLevel = employeesForCurrentLevel;
                 nEmployeesTotal = nEmployeesTotal + employeesForCurrentLevel.size();
             }
-            
+
             manager.getTransaction().begin();
             if(shouldInsert) {
                 manager.persist(topEmployee);
@@ -152,7 +152,7 @@ public class JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparis
         manager.createQuery("Delete from Employee where firstName like 'Level_%'").executeUpdate();
         manager.getTransaction().commit();
         manager.close();
-        
+
         // Re-enable batch writing.
         EntityManager entityManager = createEntityManager();
         if (entityManager instanceof JpaEntityManager) {

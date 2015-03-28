@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,7 +47,7 @@ public class PropertyTestCases extends TestCase {
 
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
         m = ctx.createMarshaller();
-        u = ctx.createUnmarshaller(); 
+        u = ctx.createUnmarshaller();
     }
 
     public String getName() {
@@ -61,8 +61,8 @@ public class PropertyTestCases extends TestCase {
         assertFalse((Boolean) m.getProperty(Marshaller.JAXB_FORMATTED_OUTPUT));
         try{
            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, null);
-        }catch(PropertyException pException){        	
-        	return;
+        }catch(PropertyException pException){
+            return;
         }
         fail("A PropertyException should have been thrown");
     }
@@ -92,11 +92,11 @@ public class PropertyTestCases extends TestCase {
         m.setProperty(XMLConstants.JAXB_FRAGMENT, true);
         assertTrue((Boolean) m.getProperty(XMLConstants.JAXB_FRAGMENT));
         m.setProperty(XMLConstants.JAXB_FRAGMENT, false);
-        assertFalse((Boolean) m.getProperty(XMLConstants.JAXB_FRAGMENT));        
+        assertFalse((Boolean) m.getProperty(XMLConstants.JAXB_FRAGMENT));
         try{
             m.setProperty(Marshaller.JAXB_FRAGMENT, null);
-         }catch(PropertyException pException){        	
-         	return;
+         }catch(PropertyException pException){
+             return;
          }
          fail("A PropertyException should have been thrown");
     }
@@ -113,8 +113,8 @@ public class PropertyTestCases extends TestCase {
         assertEquals(mapper, m.getProperty(SUN_NAMESPACE_PREFIX_MAPPER));
         m.setProperty(SUN_JSE_NAMESPACE_PREFIX_MAPPER, mapper);
         assertEquals(mapper, m.getProperty(SUN_JSE_NAMESPACE_PREFIX_MAPPER));
-             
-        m.setProperty(SUN_NAMESPACE_PREFIX_MAPPER, null);     
+
+        m.setProperty(SUN_NAMESPACE_PREFIX_MAPPER, null);
     }
 
     public void testMarshallerIndentString() throws Exception {
@@ -128,10 +128,10 @@ public class PropertyTestCases extends TestCase {
         assertEquals(myTab, m.getProperty(SUN_INDENT_STRING));
         m.setProperty(SUN_JSE_INDENT_STRING, myTab);
         assertEquals(myTab, m.getProperty(SUN_JSE_INDENT_STRING));
-        
+
         m.setProperty(SUN_JSE_INDENT_STRING, null);
         assertNull( m.getProperty(SUN_JSE_INDENT_STRING));
-        
+
         m.setProperty(SUN_INDENT_STRING, null);
         assertNull( m.getProperty(SUN_INDENT_STRING));
     }
@@ -185,11 +185,11 @@ public class PropertyTestCases extends TestCase {
         assertTrue((Boolean) m.getProperty(XML_DECLARATION));
         m.setProperty(XML_DECLARATION, false);
         assertFalse((Boolean) m.getProperty(XML_DECLARATION));
-        
+
         try{
             m.setProperty(XML_DECLARATION, null);
-         }catch(PropertyException pException){        	
-         	return;
+         }catch(PropertyException pException){
+             return;
          }
          fail("A PropertyException should have been thrown");
     }
@@ -202,7 +202,7 @@ public class PropertyTestCases extends TestCase {
         assertEquals(HEADER_STRING, m.getProperty(XML_HEADERS));
         m.setProperty(XML_HEADERS, null);
         assertNull(m.getProperty(XML_HEADERS));
-        
+
     }
 
     public void testMarshallerObjectIdentity() throws Exception {
@@ -212,24 +212,24 @@ public class PropertyTestCases extends TestCase {
         assertFalse((Boolean) m.getProperty(prop));
         m.setProperty(prop, true);
         assertTrue((Boolean) m.getProperty(prop));
-        
+
         try{
             m.setProperty(prop, null);
-         }catch(PropertyException pException){        	
-         	return;
+         }catch(PropertyException pException){
+             return;
          }
          fail("A PropertyException should have been thrown");
-        
+
     }
 
     public void testMarshallerMediaTypeEnum() throws Exception {
         m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
         assertEquals(MediaType.APPLICATION_JSON, m.getProperty(MarshallerProperties.MEDIA_TYPE));
-        
+
         try{
             m.setProperty(MarshallerProperties.MEDIA_TYPE, null);
-         }catch(PropertyException pException){        	
-         	return;
+         }catch(PropertyException pException){
+             return;
          }
          fail("A PropertyException should have been thrown");
     }
@@ -254,58 +254,58 @@ public class PropertyTestCases extends TestCase {
         assertTrue((Boolean) m.getProperty(MarshallerProperties.JSON_INCLUDE_ROOT));
         m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         assertFalse((Boolean) m.getProperty(MarshallerProperties.JSON_INCLUDE_ROOT));
-        
+
         try{
             m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, null);
-         }catch(PropertyException pException){        	
-         	return;
+         }catch(PropertyException pException){
+             return;
          }
          fail("A PropertyException should have been thrown");
     }
-    
+
     public void testMarshallerJsonNamespaceSeparator() throws Exception {
-    	assertEquals (XMLConstants.DOT, m.getProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR));
-    	m.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, '&');
-    	assertEquals ('&', m.getProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR));
-    	m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-    	assertEquals ('&', m.getProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR));
-    	 try{
+        assertEquals (XMLConstants.DOT, m.getProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR));
+        m.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, '&');
+        assertEquals ('&', m.getProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR));
+        m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+        assertEquals ('&', m.getProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR));
+         try{
              m.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, null);
-          }catch(PropertyException pException){        	
-          	return;
+          }catch(PropertyException pException){
+              return;
           }
           fail("A PropertyException should have been thrown");
     }
 
-    
+
     public void testUnmarshallerJsonNamespaceSeparator() throws Exception {
-    	assertEquals (XMLConstants.DOT, m.getProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR));
-    	u.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, '&');
-    	assertEquals ('&', u.getProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR));
-    	u.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
-    	assertEquals ('&', u.getProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR));
-    	try{
+        assertEquals (XMLConstants.DOT, m.getProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR));
+        u.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, '&');
+        assertEquals ('&', u.getProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR));
+        u.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
+        assertEquals ('&', u.getProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR));
+        try{
             u.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, null);
-         }catch(PropertyException pException){        	
-         	return;
+         }catch(PropertyException pException){
+             return;
          }
          fail("A PropertyException should have been thrown");
     }
-    
+
     public void testInvalidValue() throws Exception {
-    	try{
-    	    m.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, "mySep");
-    	}catch(PropertyException pException){
-    		assertTrue(pException.getCause() instanceof ClassCastException);     		
-    		return;
-    	}
-    	fail("A PropertyException should have occurred");
+        try{
+            m.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, "mySep");
+        }catch(PropertyException pException){
+            assertTrue(pException.getCause() instanceof ClassCastException);
+            return;
+        }
+        fail("A PropertyException should have occurred");
     }
-        
-    
+
+
     public void testMarshallerJsonValueWrapper() throws Exception {
         m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "wrapper");
-        assertEquals("wrapper", m.getProperty(MarshallerProperties.JSON_VALUE_WRAPPER));        
+        assertEquals("wrapper", m.getProperty(MarshallerProperties.JSON_VALUE_WRAPPER));
     }
 
     public void testMarshallerJsonValueWrapperNull() throws Exception {
@@ -322,28 +322,28 @@ public class PropertyTestCases extends TestCase {
     public void testMarshallerJsonValueWrapperEmptyString() throws Exception {
         try{
             m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "");
-        }catch(PropertyException e){            
+        }catch(PropertyException e){
                 return;
             }catch(Exception e){
                 e.printStackTrace();
                 fail();
             }
     }
-    
+
     public void testUnmarshallerMediaTypeString() throws Exception {
         u.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
         assertEquals(MediaType.APPLICATION_JSON, u.getProperty(UnmarshallerProperties.MEDIA_TYPE));
         try{
             u.setProperty(MarshallerProperties.MEDIA_TYPE, null);
-         }catch(PropertyException pException){        	
-         	return;
+         }catch(PropertyException pException){
+             return;
          }
-         fail("A PropertyException should have been thrown");        
+         fail("A PropertyException should have been thrown");
     }
 
     public void testUnmarshallerMediaTypeEnum() throws Exception {
         u.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
-        assertEquals(MediaType.APPLICATION_JSON, u.getProperty(UnmarshallerProperties.MEDIA_TYPE));        
+        assertEquals(MediaType.APPLICATION_JSON, u.getProperty(UnmarshallerProperties.MEDIA_TYPE));
     }
 
     public void testUnmarshallerJsonAttributePrefix() throws Exception {
@@ -361,13 +361,13 @@ public class PropertyTestCases extends TestCase {
         assertTrue((Boolean) u.getProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT));
         u.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
         assertFalse((Boolean) u.getProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT));
-        
+
         try{
             u.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, null);
-         }catch(PropertyException pException){        	
-         	return;
+         }catch(PropertyException pException){
+             return;
          }
-         fail("A PropertyException should have been thrown");   
+         fail("A PropertyException should have been thrown");
     }
 
     public void testUnmarshallerJsonNamespacePrefixMapper() throws Exception {
@@ -379,7 +379,7 @@ public class PropertyTestCases extends TestCase {
         map.put("mynamespace", "ns1");
         u.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, map);
         assertEquals(map, u.getProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER));
-        
+
         u.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, null);
         assertNull( u.getProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER));
     }
@@ -387,7 +387,7 @@ public class PropertyTestCases extends TestCase {
     public void testUnmarshallerJsonValueWrapper() throws Exception {
         u.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "wrapper");
         assertEquals("wrapper", u.getProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER));
-        
+
         u.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, null);
         assertNull( u.getProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER));
     }
@@ -405,7 +405,7 @@ public class PropertyTestCases extends TestCase {
         assertEquals(nonELResolver, u.getProperty(SUN_ID_RESOLVER));
         u.setProperty(SUN_JSE_ID_RESOLVER, nonELResolver);
         assertEquals(nonELResolver, u.getProperty(SUN_JSE_ID_RESOLVER));
-        
+
         u.setProperty(SUN_JSE_ID_RESOLVER, null);
         assertNull( u.getProperty(SUN_JSE_ID_RESOLVER));
     }

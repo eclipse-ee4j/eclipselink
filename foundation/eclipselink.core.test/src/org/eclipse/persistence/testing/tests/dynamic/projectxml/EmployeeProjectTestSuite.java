@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
@@ -49,15 +49,15 @@ import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.logLevel;
 
 /*
- * Test cases verifying the use of employee-project.xml 
+ * Test cases verifying the use of employee-project.xml
  */
 public class EmployeeProjectTestSuite  {
 
-    public static final String PACKAGE_PREFIX = 
+    public static final String PACKAGE_PREFIX =
         EmployeeProjectTestSuite.class.getPackage().getName();
-    static final String PROJECT_XML = 
+    static final String PROJECT_XML =
         PACKAGE_PREFIX.replace('.', '/') + "/employee-project.xml";
-    
+
     //test fixtures
     static DatabaseSession session = null;
     static DynamicHelper dynamicHelper = null;
@@ -78,7 +78,7 @@ public class EmployeeProjectTestSuite  {
             session.dontLogMessages();
         }
         else {
-            session.setLogLevel(logLevel); 
+            session.setLogLevel(logLevel);
         }
         dynamicHelper = new DynamicHelper(session);
         session.login();

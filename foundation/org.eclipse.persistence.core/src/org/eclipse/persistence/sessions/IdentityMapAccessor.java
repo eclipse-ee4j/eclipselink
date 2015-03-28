@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
@@ -21,7 +21,7 @@ import org.eclipse.persistence.queries.*;
 /**
  * PUBLIC:
  * IdentityMapAccessor provides the public interface into all functionality associated with
- * EclipseLink's cache. An appropriate IdentityMapAccessor can be obtained from a session 
+ * EclipseLink's cache. An appropriate IdentityMapAccessor can be obtained from a session
  * with its getIdentityMapAccessor() method.
  * Methods that used to be called on the Session to access identity maps can now be called
  * through the IdentityMapAccessor.
@@ -69,7 +69,7 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
-     * Returns true if the identity map contains an Object with the same primary 
+     * Returns true if the identity map contains an Object with the same primary
      * key and Class type of the given domainObject.
      */
     public boolean containsObjectInIdentityMap(Object domainObject);
@@ -83,7 +83,7 @@ public interface IdentityMapAccessor {
      */
     @Deprecated
     public boolean containsObjectInIdentityMap(Vector primaryKey, Class theClass);
-    
+
     /**
      * ADVANCED:
      * Returns true if the identity map contains an Object with the same
@@ -93,7 +93,7 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
-     * Returns true if the identity map contains an Object with the same primary key 
+     * Returns true if the identity map contains an Object with the same primary key
      * of the specified row (i.e. the database record) and Class type.
      */
     public boolean containsObjectInIdentityMap(Record rowContainingPrimaryKey, Class theClass);
@@ -102,12 +102,12 @@ public interface IdentityMapAccessor {
      * ADVANCED:
      * Queries the cache in-memory with the passed in criteria and returns matching Objects.
      * If the expression is too complex an exception will be thrown.
-     * Only returns Objects that are invalid from the map if specified with the 
+     * Only returns Objects that are invalid from the map if specified with the
      * boolean shouldReturnInvalidatedObjects.
      * @param selectionCriteria Expression selecting the Objects to be returned
      * @param theClass Class to be considered
      * @param translationRow Record
-     * @param valueHolderPolicy see 
+     * @param valueHolderPolicy see
      * {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @param shouldReturnInvalidatedObjects boolean - true if only invalid Objects should be returned
      * @return Vector of Objects
@@ -119,12 +119,12 @@ public interface IdentityMapAccessor {
      * ADVANCED:
      * Queries the cache in-memory with the passed in criteria and returns matching Objects.
      * If the expression is too complex an exception will be thrown.
-     * Only returns Objects that are invalid from the map if specified with the 
+     * Only returns Objects that are invalid from the map if specified with the
      * boolean shouldReturnInvalidatedObjects.
      * @param selectionCriteria Expression selecting the Objects to be returned
      * @param theClass Class to be considered
      * @param translationRow Record
-     * @param valueHolderPolicy see 
+     * @param valueHolderPolicy see
      * {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @param shouldReturnInvalidatedObjects boolean - true if only invalid Objects should be returned
      * @return Vector of Objects
@@ -139,7 +139,7 @@ public interface IdentityMapAccessor {
      * @param selectionCriteria Expression selecting the Objects to be returned
      * @param theClass Class to be considered
      * @param translationRow Record
-     * @param valueHolderPolicy  see 
+     * @param valueHolderPolicy  see
      * {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @return Vector of Objects with type theClass and matching the selectionCriteria
      * @throws QueryException
@@ -153,7 +153,7 @@ public interface IdentityMapAccessor {
      * @param selectionCriteria Expression selecting the Objects to be returned
      * @param theClass Class to be considered
      * @param translationRow Record
-     * @param valueHolderPolicy  see 
+     * @param valueHolderPolicy  see
      * {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @return Vector of Objects with type theClass and matching the selectionCriteria
      * @throws QueryException
@@ -162,17 +162,17 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
-     * Returns the Object from the identity map with the same primary key 
-     * and Class type of the given domainObject. 
+     * Returns the Object from the identity map with the same primary key
+     * and Class type of the given domainObject.
      * @param domainObject Object
      * @return Object from identity map, may be null.
      */
     public Object getFromIdentityMap(Object domainObject);
 
-    
+
     /**
      * ADVANCED:
-     * Returns the Object from the identity map with the same primary key 
+     * Returns the Object from the identity map with the same primary key
      * and Class type as those specified.
      * @return Object from identity map, may be null.
      * @deprecated since EclipseLink 2.1, replaced by getFromIdentityMap(Object, Class)
@@ -180,10 +180,10 @@ public interface IdentityMapAccessor {
      */
     @Deprecated
     public Object getFromIdentityMap(Vector primaryKey, Class theClass);
-   
+
     /**
      * ADVANCED:
-     * Returns the Object from the identity map with the same primary key 
+     * Returns the Object from the identity map with the same primary key
      * and Class type as those specified.
      * @return Object from identity map, may be null.
      */
@@ -191,7 +191,7 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
-     * Returns the Object from the identity map with the same primary key 
+     * Returns the Object from the identity map with the same primary key
      * of the specified row (i.e. the database record) and Class type.
      * @param rowContainingPrimaryKey Record
      * @param theClass Class
@@ -202,7 +202,7 @@ public interface IdentityMapAccessor {
     /**
      * ADVANCED:
      * Returns the Object from the identity map with the same primary key and Class type
-     * as specified. May return null and will only return an Object that is invalidated 
+     * as specified. May return null and will only return an Object that is invalidated
      * if specified with the boolean shouldReturnInvalidatedObjects.
      * @return Object from identity map, may be null.
      * @deprecated since EclipseLink 2.1, replaced by getFromIdentityMap(Object, Class, boolean)
@@ -210,11 +210,11 @@ public interface IdentityMapAccessor {
      */
     @Deprecated
     public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects);
-    
+
     /**
      * ADVANCED:
      * Returns the Object from the identity map with the same primary key and Class type
-     * as specified. May return null and will only return an Object that is invalidated 
+     * as specified. May return null and will only return an Object that is invalidated
      * if specified with the boolean shouldReturnInvalidatedObjects.
      * @return Object from identity map, may be null.
      */
@@ -222,8 +222,8 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
-     * Returns the Object from the identity map with the same primary key of the specified 
-     * row and Class type. May return null and will only Only return an Object that is 
+     * Returns the Object from the identity map with the same primary key of the specified
+     * row and Class type. May return null and will only Only return an Object that is
      * invalidated if specified with the boolean shouldReturnInvalidatedObjects.
      * @param rowContainingPrimaryKey Record
      * @param theClass Class
@@ -235,7 +235,7 @@ public interface IdentityMapAccessor {
     /**
      * ADVANCED:
      * Queries the cache in-memory and returns an Object from this identity map.
-     * If the Object is not found with the passed in Class type, Row and selectionCriteria, 
+     * If the Object is not found with the passed in Class type, Row and selectionCriteria,
      * null is returned. If the expression is too complex an exception will be thrown.
      * @param selectionCriteria Expression
      * @param theClass Class
@@ -248,13 +248,13 @@ public interface IdentityMapAccessor {
     /**
      * ADVANCED:
      * Queries the cache in-memory and returns an Object from this identity map.
-     * If the Object is not found with the passed in Class type, Row and selectionCriteria, 
-     * null is returned. This method allows for control of un-instantiated indirection access 
+     * If the Object is not found with the passed in Class type, Row and selectionCriteria,
+     * null is returned. This method allows for control of un-instantiated indirection access
      * with valueHolderPolicy. If the expression is too complex an exception will be thrown.
      * @param selectionCriteria Expression
      * @param theClass Class
      * @param translationRow Record
-     * @param valueHolderPolicy 
+     * @param valueHolderPolicy
      * see {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @return Object from identity map, may be null
      * @throws QueryException
@@ -264,13 +264,13 @@ public interface IdentityMapAccessor {
     /**
      * ADVANCED:
      * Queries the cache in-memory and returns an Object from this identity map.
-     * If the Object is not found with the passed in Class type, Row and selectionCriteria, 
-     * null is returned. This method allows for control of un-instantiated indirection access 
+     * If the Object is not found with the passed in Class type, Row and selectionCriteria,
+     * null is returned. This method allows for control of un-instantiated indirection access
      * with valueHolderPolicy. If the expression is too complex an exception will be thrown.
      * @param selectionCriteria Expression
      * @param theClass Class
      * @param translationRow Record
-     * @param valueHolderPolicy 
+     * @param valueHolderPolicy
      * see {@link org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy InMemoryQueryIndirectionPolicy}
      * @return Object from identity map, may be null
      * @throws QueryException
@@ -362,19 +362,19 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
-     * Sets an Object with the specified primary key and Class type to be invalid in 
-     * the cache. If the Object does not exist in the cache, 
+     * Sets an Object with the specified primary key and Class type to be invalid in
+     * the cache. If the Object does not exist in the cache,
      * this method will return without any action.
      * @deprecated since EclipseLink 2.1, replaced by invalidateObject(Object, Class)
      * @see #invalidateObject(Object, Class)
      */
     @Deprecated
     public void invalidateObject(Vector primaryKey, Class theClass);
-    
+
     /**
      * ADVANCED:
-     * Sets an Object with the specified primary key and Class type to be invalid in 
-     * the cache. If the Object does not exist in the cache, 
+     * Sets an Object with the specified primary key and Class type to be invalid in
+     * the cache. If the Object does not exist in the cache,
      * this method will return without any action.
      */
     public void invalidateObject(Object primaryKey, Class theClass);
@@ -388,18 +388,18 @@ public interface IdentityMapAccessor {
      */
     @Deprecated
     public void invalidateObject(Vector primaryKey, Class theClass, boolean invalidateCluster);
-    
+
     /**
      * ADVANCED:
      * Set an object to be invalid in the cache.
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
     public void invalidateObject(Object primaryKey, Class theClass, boolean invalidateCluster);
-    
+
     /**
      * ADVANCED:
-     * Sets an Object with the specified primary key of the passed in Row and Class type to 
-     * be invalid in the cache. If the Object does not exist in the cache, 
+     * Sets an Object with the specified primary key of the passed in Row and Class type to
+     * be invalid in the cache. If the Object does not exist in the cache,
      * this method will return without any action.
      */
     public void invalidateObject(Record rowContainingPrimaryKey, Class theClass);
@@ -410,7 +410,7 @@ public interface IdentityMapAccessor {
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
     public void invalidateObject(Record rowContainingPrimaryKey, Class theClass, boolean invalidateCluster);
-    
+
     /**
      * ADVANCED:
      * Sets all of the Objects in the given collection to be invalid in the TopLink identity maps.
@@ -425,17 +425,17 @@ public interface IdentityMapAccessor {
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
     public void invalidateObjects(Collection collection, boolean invalidateCluster);
-    
+
     /**
      * ADVANCED:
      * Sets all of the Objects matching the given Expression to be invalid in the cache.
      * <p>
-     * <b>Example</b> - Invalidating Employee Objects with non-null first names: 
-     * <p> 
+     * <b>Example</b> - Invalidating Employee Objects with non-null first names:
+     * <p>
      * <code>
      *  ExpressionBuilder eb = new ExpressionBuilder(Employee.class);    <br>
      *  Expression exp = eb.get("firstName").notNull();                  <br>
-     *  session.getIdentityMapAccessor().invalidateObjects(exp);         <br> 
+     *  session.getIdentityMapAccessor().invalidateObjects(exp);         <br>
      * </code>
      * @param selectionCriteria Expression
      */
@@ -451,14 +451,14 @@ public interface IdentityMapAccessor {
      * @param shouldInvalidateOnException boolean indicates weather to invalidate the object if conform threw exception.
      */
     public void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException);
-    
+
     /**
      * ADVANCED:
-     * Sets all of the Objects for all classes to be invalid in the cache. 
+     * Sets all of the Objects for all classes to be invalid in the cache.
      * It will recurse on inheritance.
      */
     public void invalidateAll();
-    
+
     /**
      * ADVANCED:
      * Sets all of the Objects of the specified Class type to be invalid in the cache.
@@ -485,7 +485,7 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
-     * Returns true if the Object described by the given primary key and Class type is valid 
+     * Returns true if the Object described by the given primary key and Class type is valid
      * in the cache.
      * @deprecated since EclipseLink 2.1, replaced by isValid(Object, Class)
      * @see #isValid(Object, Class)
@@ -495,14 +495,14 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
-     * Returns true if the Object described by the given primary key and Class type is valid 
+     * Returns true if the Object described by the given primary key and Class type is valid
      * in the cache.
      */
     public boolean isValid(Object primaryKey, Class theClass);
 
     /**
      * ADVANCED:
-     * Returns true if this Object with the given primary key of the Row and Class type 
+     * Returns true if this Object with the given primary key of the Row and Class type
      * given is valid in the cache.
      */
     public boolean isValid(Record rowContainingPrimaryKey, Class theClass);
@@ -660,8 +660,8 @@ public interface IdentityMapAccessor {
     /**
      * ADVANCED:
      * This can be used to help debugging an Object identity problem.
-     * An Object identity problem is when an Object in the cache references an 
-     * Object that is not in the cache. This method will validate that all cached 
+     * An Object identity problem is when an Object in the cache references an
+     * Object that is not in the cache. This method will validate that all cached
      * Objects are in a correct state.
      */
     public void validateCache();

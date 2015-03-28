@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -36,43 +36,43 @@ import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueMo
  */
 public class EisPoolLoginPropertiesPageTest extends AbstractPoolPanelTest
 {
-	public EisPoolLoginPropertiesPageTest(String name)
-	{
-		super(name);
-	}
+    public EisPoolLoginPropertiesPageTest(String name)
+    {
+        super(name);
+    }
 
-	public static void main(String[] args) throws Exception
-	{
-		new EisPoolLoginPropertiesPageTest(null).execute(args);
-	}
+    public static void main(String[] args) throws Exception
+    {
+        new EisPoolLoginPropertiesPageTest(null).execute(args);
+    }
 
-	protected void _testSubPaneEisLoginPaneTest() throws Throwable
-	{
-		ConnectionPoolAdapter pool = (ConnectionPoolAdapter) getSelection();
-		runTestCase(new EisLoginPaneTest(this, getNodeHolder(), (EISLoginAdapter) pool.getLogin()));
-	}
+    protected void _testSubPaneEisLoginPaneTest() throws Throwable
+    {
+        ConnectionPoolAdapter pool = (ConnectionPoolAdapter) getSelection();
+        runTestCase(new EisLoginPaneTest(this, getNodeHolder(), (EISLoginAdapter) pool.getLogin()));
+    }
 
-	protected PropertyValueModel buildNodeHolder(ApplicationNode projectNode)
-	{
-		ServerSessionAdapter session = (ServerSessionAdapter) getTopLinkSessions().sessionNamed("SC-EisServerSessionTest");
-		SessionNode sessionNode = (SessionNode) retrieveNode(projectNode, session);
-		PoolNode poolNode = (PoolNode) retrieveNode(sessionNode, session.poolNamed("MyConnectionPool"));
-		return new SimplePropertyValueModel(poolNode);
-	}
+    protected PropertyValueModel buildNodeHolder(ApplicationNode projectNode)
+    {
+        ServerSessionAdapter session = (ServerSessionAdapter) getTopLinkSessions().sessionNamed("SC-EisServerSessionTest");
+        SessionNode sessionNode = (SessionNode) retrieveNode(projectNode, session);
+        PoolNode poolNode = (PoolNode) retrieveNode(sessionNode, session.poolNamed("MyConnectionPool"));
+        return new SimplePropertyValueModel(poolNode);
+    }
 
-	protected JComponent buildPane() throws Exception
-	{
-		return buildPage(EisPoolLoginPropertiesPage.class, getNodeHolder());
-	}
+    protected JComponent buildPane() throws Exception
+    {
+        return buildPage(EisPoolLoginPropertiesPage.class, getNodeHolder());
+    }
 
-	protected SCAdapter buildSelection()
-	{
-		ServerSessionAdapter session = (ServerSessionAdapter) getTopLinkSessions().sessionNamed("SC-EisServerSessionTest");
-		return session.poolNamed("MyConnectionPool");
-	}
+    protected SCAdapter buildSelection()
+    {
+        ServerSessionAdapter session = (ServerSessionAdapter) getTopLinkSessions().sessionNamed("SC-EisServerSessionTest");
+        return session.poolNamed("MyConnectionPool");
+    }
 
-	protected String windowTitle()
-	{
-		return "Eis Connection Pool - Login Tab Test";
-	}
+    protected String windowTitle()
+    {
+        return "Eis Connection Pool - Login Tab Test";
+    }
 }

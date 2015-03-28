@@ -1,22 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Zoltan NAGY & tware - updated support for MaxRows
- *     11/01/2010-2.2 Guy Pelletier 
+ *     11/01/2010-2.2 Guy Pelletier
  *       - 322916: getParameter on Query throws NPE
- *     11/09/2010-2.1 Michael O'Brien 
+ *     11/09/2010-2.1 Michael O'Brien
  *       - 329089: PERF: EJBQueryImpl.setParamenterInternal() move indexOf check inside non-native block
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/11/2012-2.5 Guy Pelletier  
+ *     08/11/2012-2.5 Guy Pelletier
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
@@ -88,7 +88,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
     /**
      * Create an EJBQueryImpl with either a query name or an jpql string.
-     * 
+     *
      * @param isNamedQuery
      *            determines whether to treat the queryDescription as jpql or a
      *            query name.
@@ -106,7 +106,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
     /**
      * Build a DatabaseQuery from an jpql string.
-     * 
+     *
      * @param jpql
      * @param session
      *            the session to get the descriptors for this query for.
@@ -115,10 +115,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     public static DatabaseQuery buildEJBQLDatabaseQuery(String jpql, AbstractSession session) {
         return buildEJBQLDatabaseQuery(null, jpql, session, null, null, session.getDatasourcePlatform().getConversionManager().getLoader());
     }
-    
+
     /**
      * Build a DatabaseQuery from an JPQL string.
-     * 
+     *
      * @param jpql
      *            the JPQL string.
      * @param flushOnExecute
@@ -140,7 +140,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         if ((databaseQuery == null) || (!databaseQuery.isPrepared())) {
             JPAQueryBuilder queryBuilder = session.getQueryBuilder();
             databaseQuery = queryBuilder.buildQuery(jpqlQuery, session);
-            
+
             // If the query uses fetch joins, need to use JPA default of not
             // filtering duplicates.
             if (databaseQuery.isReadAllQuery()) {
@@ -152,7 +152,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                 // By default, do not batch modify queries, as row count must be returned.
                 ((ModifyQuery)databaseQuery).setIsBatchExecutionSupported(false);
             }
-         
+
             ((JPQLCallQueryMechanism) databaseQuery.getQueryMechanism()).getJPQLCall().setIsParsed(true);
 
             // Apply the lock mode.
@@ -187,7 +187,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                     }
                 }
             }
-            
+
             if (isCacheable) {
                 // Prepare query as hint may cause cloning (but not un-prepare
                 // as in read-only).
@@ -198,17 +198,17 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
         return databaseQuery;
     }
-    
+
     /**
      * Build a ReadAllQuery from a class and sql string.
      */
     public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, ClassLoader classLoader, AbstractSession session) {
         return buildSQLDatabaseQuery(resultClass, sqlString, null, classLoader, session);
     }
-    
+
     /**
      * Build a ReadAllQuery for class and sql string.
-     * 
+     *
      * @param hints
      *            a list of hints to be applied to the query.
      */
@@ -220,7 +220,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         // apply any query hints
         return applyHints(hints, query, classLoader, session);
     }
-    
+
     /**
      * Build a DataReadQuery from a sql string.
      */
@@ -240,7 +240,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         // apply any query hints
         return applyHints(hints, query, classLoader, session);
     }
-    
+
     /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and sql
      * string.
@@ -252,7 +252,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and sql
      * string.
-     * 
+     *
      * @param hints
      *            a list of hints to be applied to the query.
      */
@@ -265,11 +265,11 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         // apply any query hints
         return applyHints(hints, query, classLoader, session);
     }
-    
+
     /**
      * Set an implementation-specific hint. If the hint name is not recognized,
      * it is silently ignored.
-     * 
+     *
      * @param hintName
      * @param value
      * @return the same query instance
@@ -286,10 +286,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             throw e;
         }
     }
-    
+
     /**
      * Set the lock mode type to be used for the query execution.
-     * 
+     *
      * @param lockMode
      * @throws IllegalStateException
      *             if not a Java Persistence query language SELECT query
@@ -297,11 +297,11 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     public EJBQueryImpl setLockMode(LockModeType lockMode) {
         return (EJBQueryImpl) super.setLockMode(lockMode);
     }
-    
+
     /**
      * Non-standard method to return results of a ReadQuery that has a
      * containerPolicy that returns objects as a collection rather than a List
-     * 
+     *
      * @return Collection of results
      */
     public Collection getResultCollection() {
@@ -344,10 +344,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             throw new PersistenceException(exception);
         }
     }
-    
+
     /**
      * Non-standard method to return results of a ReadQuery that uses a Cursor.
-     * 
+     *
      * @return Cursor on results, either a CursoredStream, or ScrollableCursor
      */
     public Cursor getResultCursor() {
@@ -385,10 +385,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             throw new PersistenceException(exception);
         }
     }
-    
+
     /**
      * Execute a query that returns a single result.
-     * 
+     *
      * @return the result
      * @throws javax.persistence.EntityNotFoundException
      *             if there is no result
@@ -399,10 +399,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     public X getSingleResult() {
         return (X) super.getSingleResult();
     }
-    
+
     /**
      * Set the position of the first result to retrieve.
-     * 
+     *
      * @param start
      *            position of the first result, numbered from 0
      * @return the same query instance
@@ -410,29 +410,29 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     public EJBQueryImpl setFirstResult(int startPosition) {
         return (EJBQueryImpl) super.setFirstResult(startPosition);
     }
-    
+
     /**
      * Set the flush mode type to be used for the query execution.
-     * 
+     *
      * @param flushMode
      */
     public EJBQueryImpl setFlushMode(FlushModeType flushMode) {
         return (EJBQueryImpl) super.setFlushMode(flushMode);
     }
-    
+
     /**
      * Set the maximum number of results to retrieve.
-     * 
+     *
      * @param maxResult
      * @return the same query instance
      */
     public EJBQueryImpl setMaxResults(int maxResult) {
         return (EJBQueryImpl) super.setMaxResults(maxResult);
     }
-    
+
     /**
      * Bind an instance of java.util.Calendar to a positional parameter.
-     * 
+     *
      * @param position
      * @param value
      * @param temporalType
@@ -442,10 +442,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
-    
+
     /**
      * Bind an instance of java.util.Date to a positional parameter.
-     * 
+     *
      * @param position
      * @param value
      * @param temporalType
@@ -455,10 +455,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
-    
+
     /**
      * Bind an argument to a positional parameter.
-     * 
+     *
      * @param position
      * @param value
      * @return the same query instance
@@ -473,10 +473,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             throw e;
         }
     }
-    
+
     /**
      * Bind an instance of java.util.Calendar to a Parameter object.
-     * 
+     *
      * @param parameter
      * @param value
      * @param temporalType
@@ -499,10 +499,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         }
         return this.setParameter(position, value, temporalType);
     }
-    
+
     /**
      * Bind an instance of java.util.Date to a Parameter object.
-     * 
+     *
      * @param parameter
      *            object
      * @param value
@@ -525,10 +525,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         }
         return this.setParameter(position, value, temporalType);
     }
-    
+
     /**
      * Set the value of a Parameter object.
-     * 
+     *
      * @param param
      *            parameter to be set
      * @param value
@@ -552,10 +552,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         }
         return this.setParameter(position, value);
     }
-    
+
     /**
      * Bind an instance of java.util.Calendar to a named parameter.
-     * 
+     *
      * @param name
      * @param value
      * @param temporalType
@@ -565,10 +565,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
-    
+
     /**
      * Bind an instance of java.util.Date to a named parameter.
-     * 
+     *
      * @param name
      * @param value
      * @param temporalType
@@ -578,10 +578,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
-    
+
     /**
      * Bind an argument to a named parameter.
-     * 
+     *
      * @param name
      *            the parameter name
      * @param value

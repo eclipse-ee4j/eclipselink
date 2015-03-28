@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import java.util.Iterator;
@@ -28,7 +28,7 @@ public class SelectGenerationContext extends GenerationContext {
     //with each ExpressionBuilder created using "new ExpressionBuilder(MyClass.class)"
     private boolean useParallelExpressions = false;
 
-    //BUG 3105651: If a variable is SELECTed, and it's in an ORDER BY, then 
+    //BUG 3105651: If a variable is SELECTed, and it's in an ORDER BY, then
     //we want the ExpressionBuilder to be instantiated using an empty constructor
     private boolean shouldCheckSelectNodeBeforeResolving = false;
 
@@ -84,19 +84,19 @@ public class SelectGenerationContext extends GenerationContext {
     }
 
     //Answer true if we need to use parallel expressions
-    //This will be the case if a 1:1 is SELECTed in the EJBQL. 
+    //This will be the case if a 1:1 is SELECTed in the EJBQL.
     public boolean useParallelExpressions() {
         return useParallelExpressions;
     }
 
     //Indicate that we want VariableNodes to check if they're
-    //SELECTed first, to determine how to instantiate the ExpressionBuilder 
+    //SELECTed first, to determine how to instantiate the ExpressionBuilder
     public void checkSelectNodeBeforeResolving(boolean shouldCheck) {
         shouldCheckSelectNodeBeforeResolving = shouldCheck;
     }
 
     //Answer true if we want VariableNodes to check if they're
-    //SELECTed first, to determine how to instantiate the ExpressionBuilder 
+    //SELECTed first, to determine how to instantiate the ExpressionBuilder
     public boolean shouldCheckSelectNodeBeforeResolving() {
         return shouldCheckSelectNodeBeforeResolving;
     }
@@ -118,7 +118,7 @@ public class SelectGenerationContext extends GenerationContext {
     public boolean hasMemberOfNode() {
         return memberOfNode != null;
     }
-    
+
     public boolean isSelectGenerationContext() {
         return true;
     }
@@ -127,12 +127,12 @@ public class SelectGenerationContext extends GenerationContext {
     public GenerationContext getOuterContext() {
         return outer;
     }
-    
-    /** 
+
+    /**
      * Iterate the set of variables declared in an outer scope and
      * connect the inner variable expression with the outer one.
      */
-    public Expression joinVariables(Set variables) {        
+    public Expression joinVariables(Set variables) {
         if ((outer == null) || (variables == null) || variables.isEmpty()) {
             // not an inner query or no variables to join
             return null;
@@ -143,7 +143,7 @@ public class SelectGenerationContext extends GenerationContext {
             VariableNode var = new VariableNode(name);
             Expression innerExpr = var.generateExpression(this);
             Expression outerExpr = var.generateExpression(outer);
-            
+
             // Join them only if they are not the same.
             if (innerExpr != outerExpr) {
                 Expression join = innerExpr.equal(outerExpr);
@@ -151,6 +151,6 @@ public class SelectGenerationContext extends GenerationContext {
             }
         }
         return expr;
-        
+
     }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -29,8 +29,8 @@ import org.eclipse.persistence.testing.framework.wdf.customizer.AdjustArrayTypeC
 @Table(name = "TMP_PROFILE")
 @Customizer(AdjustArrayTypeCustomizer.class)
 public class TravelProfile {
-	
-	static final String BINARY_16_COLUMN = "BINARY(16)";
+
+    static final String BINARY_16_COLUMN = "BINARY(16)";
     static final String BINARY_16_COLUMN_NOT_NULL = "BINARY(16) NOT NULL";
 
     /**
@@ -41,7 +41,7 @@ public class TravelProfile {
         this.guid = guid;
     }
 
-    
+
     private byte[] guid = new byte[16];
     private boolean smoker;
     private String preferredAirline;

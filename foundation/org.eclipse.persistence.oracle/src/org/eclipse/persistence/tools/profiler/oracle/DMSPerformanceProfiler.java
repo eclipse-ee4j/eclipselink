@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - contribution direct from Oracle TopLink
  *     tware - updates for new SessionProfiling API
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.profiler.oracle;
 
 import java.util.*;
@@ -42,7 +42,7 @@ import oracle.dms.spy.*;
  * @since TopLink 10.1.3
  */
 public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionProfiler {
-    
+
     //nouns type display name
     public static final String EclipseLinkRootNoun = "/EclipseLink";
     public static final String SessionNounType = "EclipseLink Session";
@@ -51,16 +51,16 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
     public static final String ConnectionNounType = "EclipseLink Connections";
     public static final String CacheNounType = "EclipseLink Cache";
     public static final String MiscellaneousNounType = "EclipseLink Miscellaneous";
-    
+
     public static final String ConnectionInUse = "ConnectionsInUse";
     public static final String MergeTime = "MergeTime";
     public static final String UnitOfWorkRegister = "UnitOfWorkRegister";
     public static final String DistributedMergeDmsDisplayName = "DistributedMerge";
     public static final String Sequencing = "Sequencing";
-    
+
     public static final String CONNECT = "connect";
     public static final String CACHE = "cache";
-    
+
     protected AbstractSession session;
     protected Noun root;
     protected Map<String, Sensor> normalWeightSensors;
@@ -83,7 +83,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
     public DMSPerformanceProfiler() {
         this(null);
     }
-    
+
     /**
      * PUBLIC:
      * Create a new dms profiler.
@@ -165,9 +165,9 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         if (newWeight != this.weight) {
             getSession().setIsInProfile(!(newWeight == DMSConsole.NONE));
 
-            // It is necessary to reset the weight to the real weight of NONE to trigger 
-            //correct noun creation. This handles the case where the profiler 
-            //instance is recreated and the weight is set to the DMSConsole weight 
+            // It is necessary to reset the weight to the real weight of NONE to trigger
+            //correct noun creation. This handles the case where the profiler
+            //instance is recreated and the weight is set to the DMSConsole weight
             //which may differ since it currently does not change at runtime.
             if (getNormalWeightNouns().isEmpty()) {
                 weight = DMSConsole.NONE;
@@ -226,14 +226,14 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         if (getProfileWeight() < weight) {
             return;
         }
-        
-        Sensor phaseEvent = getPhaseEventForQuery(operationName, query, weight);        
+
+        Sensor phaseEvent = getPhaseEventForQuery(operationName, query, weight);
         if (phaseEvent != null) {
             Long startToken = new Long(((PhaseEvent)phaseEvent).start());
             if (query != null) {
                 getPhaseEventStartToken().put(query.getSensorName(operationName, getSessionName()), startToken);
             } else {
-                getPhaseEventStartToken().put(operationName, startToken);                
+                getPhaseEventStartToken().put(operationName, startToken);
             }
         }
     }
@@ -268,14 +268,14 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         if (getProfileWeight() < weight) {
             return;
         }
-        
+
         Sensor phaseEvent = getPhaseEventForQuery(operationName, query, weight);
         if (phaseEvent != null) {
             Long startTime;
             if (query != null) {
                 startTime = (Long)getPhaseEventStartToken().get(query.getSensorName(operationName, getSessionName()));
             } else {
-                startTime = (Long)getPhaseEventStartToken().get(operationName);                
+                startTime = (Long)getPhaseEventStartToken().get(operationName);
             }
             ((PhaseEvent)phaseEvent).stop(startTime.longValue());
         }
@@ -302,7 +302,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
             ((Event)event).occurred();
         }
     }
-    
+
     /**
      * INTERNAL:
      * Increase DMS Event sensor occurrence.(DMS)
@@ -321,16 +321,16 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * If not found, look for the noun the sensor should be built on.  If the noun is not found, create a new one.  Create the sensor
      * based on the noun.
      */
-     protected Sensor getPhaseEventForQuery(String operationName, DatabaseQuery query, int weight) {    
+     protected Sensor getPhaseEventForQuery(String operationName, DatabaseQuery query, int weight) {
         String sensorName;
         if (query != null) {
             sensorName = query.getSensorName(operationName, getSessionName());
         } else {
             sensorName = operationName;
         }
-        
+
         Sensor phaseEvent = getSensorByName(sensorName);
-        
+
         if (phaseEvent == null) {
             Noun queryNoun;
             if (query != null) {
@@ -342,19 +342,19 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
                 }
                 phaseEvent = PhaseEvent.create(queryNoun, sensorName, DMSLocalization.buildMessage("query", new Object[]{sensorName}));
             } else {
-                queryNoun = (Noun)getAllWeightNouns().get(MiscellaneousNounType);                
+                queryNoun = (Noun)getAllWeightNouns().get(MiscellaneousNounType);
                 phaseEvent = PhaseEvent.create(queryNoun, sensorName, DMSLocalization.buildMessage("query_misc", new Object[]{sensorName}));
             }
             phaseEvent.deriveMetric(Sensor.all);
             if (weight == DMSConsole.HEAVY) {
-                getHeavyWeightSensors().put(sensorName, phaseEvent);    
+                getHeavyWeightSensors().put(sensorName, phaseEvent);
                 getNormalAndHeavyWeightSensors().put(sensorName, phaseEvent);
             } else if (weight == DMSConsole.ALL) {
-                getAllWeightSensors().put(sensorName, phaseEvent);       
+                getAllWeightSensors().put(sensorName, phaseEvent);
                 getNormalHeavyAndAllWeightSensors().put(sensorName, phaseEvent);
-            }                        
+            }
         }
-        
+
         return phaseEvent;
      }
 
@@ -379,12 +379,12 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
             noun = (Noun)map.get(type);
             if (noun == null) {
                 if (parentNoun != null) {
-                    noun = Noun.create(parentNoun, type, type);                
+                    noun = Noun.create(parentNoun, type, type);
                     map.put(type, noun);
                 }
             }
         }
-        
+
         return noun;
     }
 
@@ -493,7 +493,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         PhaseEvent connectionPing = PhaseEvent.create(connectionsNoun, SessionProfiler.ConnectionPing, DMSLocalization.buildMessage("connection_ping"));
         connectionPing.deriveMetric(Sensor.all);
         this.getAllWeightSensors().put(SessionProfiler.ConnectionPing, connectionPing);
-        
+
         //ConnectCalls
         Event tl_connects = Event.create(connectionsNoun, SessionProfiler.Connects, DMSLocalization.buildMessage("connect_call"));
         getHeavyWeightSensors().put(SessionProfiler.Connects, tl_connects);
@@ -545,7 +545,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         PhaseEvent distributedMerge = PhaseEvent.create(baseTransactionNoun, DistributedMergeDmsDisplayName, DMSLocalization.buildMessage("distributed_merge"));
         distributedMerge.deriveMetric(Sensor.all);
         this.getAllWeightSensors().put(SessionProfiler.DistributedMerge, distributedMerge);
-        
+
         //assigning sequence numbers
         PhaseEvent sequence = PhaseEvent.create(baseTransactionNoun, Sequencing, DMSLocalization.buildMessage("assigning_sequence_numbers"));
         sequence.deriveMetric(Sensor.all);
@@ -566,10 +566,10 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         //rcm
         Noun baseRcmNoun = (Noun)getHeavyWeightNouns().get(RcmNounType);
 
-        //ChangeSetsMerged 
+        //ChangeSetsMerged
         Event changeSetsProcessed = Event.create(baseRcmNoun, SessionProfiler.ChangeSetsProcessed, DMSLocalization.buildMessage("change_set_processed"));
         getAllWeightSensors().put(SessionProfiler.ChangeSetsProcessed, changeSetsProcessed);
-        //ChangeSetsNotMerged 
+        //ChangeSetsNotMerged
         Event changeSetsNotProcessed = Event.create(baseRcmNoun, SessionProfiler.ChangeSetsNotProcessed, DMSLocalization.buildMessage("change_set_not_processed"));
         getAllWeightSensors().put(SessionProfiler.ChangeSetsNotProcessed, changeSetsNotProcessed);
 
@@ -582,12 +582,12 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         logging.deriveMetric(Sensor.all);
         this.getAllWeightSensors().put(SessionProfiler.Logging, logging);
 
-        //DescriptorEvents 
+        //DescriptorEvents
         PhaseEvent descriptorEvent = PhaseEvent.create(miscellaneousNoun, SessionProfiler.DescriptorEvent, DMSLocalization.buildMessage("descriptor_event"));
         descriptorEvent.deriveMetric(Sensor.all);
         this.getAllWeightSensors().put(SessionProfiler.DescriptorEvent, descriptorEvent);
 
-        //SessionEvents 
+        //SessionEvents
         PhaseEvent sessionEvent = PhaseEvent.create(miscellaneousNoun, SessionProfiler.SessionEvent, DMSLocalization.buildMessage("session_event"));
         sessionEvent.deriveMetric(Sensor.all);
         this.getAllWeightSensors().put(SessionProfiler.SessionEvent, sessionEvent);

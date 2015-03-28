@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.eis;
 
 import java.lang.reflect.*;
@@ -25,10 +25,10 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
- * <p>An <code>EISDOMRecord</code> is a wrapper for a DOM tree.  It provides a 
- * Record/Map API on an XML DOM element.  This can be used from the 
+ * <p>An <code>EISDOMRecord</code> is a wrapper for a DOM tree.  It provides a
+ * Record/Map API on an XML DOM element.  This can be used from the
  * platform to wrap adapter XML/DOM records to be used with TopLink XML.
- * 
+ *
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
@@ -64,7 +64,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
         this.recordName = record.getRecordName();
         this.recordShortDescription = record.getRecordShortDescription();
         if (record instanceof XMLRecord) {
-        	this.session = ((XMLRecord)record).getSession();
+            this.session = ((XMLRecord)record).getSession();
         }
     }
 
@@ -86,7 +86,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
         this.recordName = record.getRecordName();
         this.recordShortDescription = record.getRecordShortDescription();
         if (record instanceof XMLRecord) {
-        	this.session = ((XMLRecord)record).getSession();
+            this.session = ((XMLRecord)record).getSession();
         }
         if (domMethod == null) {
             try {
@@ -145,7 +145,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
         this.recordName = record.getRecordName();
         this.recordShortDescription = record.getRecordShortDescription();
         if (record instanceof XMLRecord) {
-        	this.session = ((XMLRecord)record).getSession();
+            this.session = ((XMLRecord)record).getSession();
         }
     }
 

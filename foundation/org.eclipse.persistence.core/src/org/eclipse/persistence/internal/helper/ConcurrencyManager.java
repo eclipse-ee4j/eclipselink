@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
 import java.io.*;
@@ -155,7 +155,7 @@ public class ConcurrencyManager implements Serializable {
      * Call with true from the merge process, if true then the refresh will not refresh the object.
      */
     public synchronized boolean acquireIfUnownedNoWait(boolean forMerge) throws ConcurrencyException {
-        // Only acquire lock if active thread is null. Do not check current thread. 
+        // Only acquire lock if active thread is null. Do not check current thread.
         if (this.activeThread == null && this.numberOfReaders == 0) {
              // if lock is unowned increment depth
             acquire(forMerge);
@@ -203,7 +203,7 @@ public class ConcurrencyManager implements Serializable {
             }
         }
     }
-        
+
     /**
      * Check the lock state, if locked, acquire and release a deferred lock.
      * This optimizes out the normal deferred-lock check if not locked.
@@ -216,7 +216,7 @@ public class ConcurrencyManager implements Serializable {
         acquireDeferredLock();
         releaseDeferredLock();
     }
-    
+
     /**
      * Check the lock state, if locked, acquire and release a read lock.
      * This optimizes out the normal read-lock check if not locked.
@@ -229,7 +229,7 @@ public class ConcurrencyManager implements Serializable {
         acquireReadLock();
         releaseReadLock();
     }
-    
+
     /**
      * Wait on any writer.
      * Allow concurrent reads.
@@ -278,7 +278,7 @@ public class ConcurrencyManager implements Serializable {
     protected static Map<Thread, DeferredLockManager> getDeferredLockManagers() {
         return deferredLockManagers;
     }
-    
+
     /**
      * Init the deferred lock managers (thread - DeferredLockManager).
      */
@@ -308,7 +308,7 @@ public class ConcurrencyManager implements Serializable {
     public int getNumberOfWritersWaiting() {
         return numberOfWritersWaiting;
     }
-    
+
     /**
      * Return if a thread has acquire this manager.
      */
@@ -348,7 +348,7 @@ public class ConcurrencyManager implements Serializable {
                 activeThread = deferedLock.getActiveThread();
 
                 // the active thread may be set to null at anypoint
-                // if added for CR 2330 
+                // if added for CR 2330
                 if (activeThread != null) {
                     DeferredLockManager currentLockManager = getDeferredLockManager(activeThread);
                     if (currentLockManager == null) {
@@ -523,7 +523,7 @@ public class ConcurrencyManager implements Serializable {
     protected void setNumberOfWritersWaiting(int numberOfWritersWaiting) {
         this.numberOfWritersWaiting = numberOfWritersWaiting;
     }
-    
+
     public synchronized void transitionToDeferredLock() {
         Thread currentThread = Thread.currentThread();
         DeferredLockManager lockManager = getDeferredLockManager(currentThread);
@@ -559,9 +559,9 @@ public class ConcurrencyManager implements Serializable {
      * INTERNAL:
      * This can be set during debugging to record the stacktrace when a lock is acquired.
      * Then once IdentityMapAccessor.printIdentityMapLocks() is called the stack call for each
-     * lock will be printed as well.  Because locking issues are usually quite time sensitive setting 
+     * lock will be printed as well.  Because locking issues are usually quite time sensitive setting
      * this flag may inadvertently remove the deadlock because of the change in timings.
-     * 
+     *
      * There is also a system level property for this setting. "eclipselink.cache.record-stack-on-lock"
      * @param shouldTrackStack
      */
@@ -574,5 +574,5 @@ public class ConcurrencyManager implements Serializable {
                 AccessController.doPrivileged(new PrivilegedGetSystemProperty(SystemProperties.RECORD_STACK_ON_LOCK))
                 : System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK);
     }
-    
+
 }

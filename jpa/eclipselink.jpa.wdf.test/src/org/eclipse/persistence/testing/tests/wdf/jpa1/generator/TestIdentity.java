@@ -1,5 +1,5 @@
 /* $Id: //dev/eclipselink/jpa/eclipselink.jpa.wdf.test/src/org/eclipse/persistence/testing/tests/wdf/jpa1/generator/TestIdentity.java#2 $
- * Last changelist: $Change: 38610 $
+ * Last changelist: $Change: 3861, 2015 0 $
  * Last changed at: $DateTime: 2009/09/23 09:51:44 $
  * Last changed by: $Author: d024108 $
  */
@@ -39,9 +39,9 @@ public class TestIdentity extends JPA1Base {
             creatureSet.add(fluppi2);
             em.persist(fluppi1);
             em.persist(fluppi2);
-            
+
             em.flush(); // added as suggested by Andrei
-            
+
             Integer id1 = fluppi1.getId();
             Integer id2 = fluppi2.getId();
             Assert.assertNotNull("id1 null", id1);
@@ -88,11 +88,11 @@ public class TestIdentity extends JPA1Base {
             schnappi1 = em.merge(schnappi1);
 
             em.flush(); // added as suggested by Andrei
-            
+
             Integer id = schnappi1.getId();
             Assert.assertNotNull("id null", id);
             em.getTransaction().commit();
-            
+
             Creature schnappi2 = em.find(Creature.class, id);
             Assert.assertEquals("wrong object name", schnappi1.getName(), schnappi2.getName());
             Assert.assertEquals("wrong object color", schnappi1.getColor(), schnappi2.getColor());
@@ -114,7 +114,7 @@ public class TestIdentity extends JPA1Base {
     // final EntityManager em = emf.createEntityManager();
     // try {
     // execute(dataSource, addFK);
-    //            
+    //
     // em.getTransaction().begin();
     // Creature creature = new Creature("Creature");
     // Weapon weapon = new Weapon(47);
@@ -143,9 +143,9 @@ public class TestIdentity extends JPA1Base {
             unicorn.setStory("once upon a time");
             unicorn.setColor("white");
             em.persist(unicorn);
-            
+
             em.flush(); // added as suggested by Andrei
-            
+
             Integer id = unicorn.getId();
             em.getTransaction().commit();
             MythicalCreature duocorn = em.find(MythicalCreature.class, id);
@@ -177,7 +177,7 @@ public class TestIdentity extends JPA1Base {
     // Assert.assertTrue("missing PersistenceException", caught);
     // }
     // }
-    //    
+    //
     @Test
     @Skip(databases = OraclePlatform.class, databaseNames="org.eclipse.persistence.platform.database.MaxDBPlatform")
     public void testPersistNoTx() {

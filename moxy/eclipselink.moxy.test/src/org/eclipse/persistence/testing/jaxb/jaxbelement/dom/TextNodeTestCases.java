@@ -13,7 +13,7 @@ public class TextNodeTestCases extends JAXBWithJSONTestCases{
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/dom/text.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/dom/text.json";
 
-    
+
     public TextNodeTestCases(String name) throws Exception {
         super(name);
         setContextPath("org.eclipse.persistence.testing.jaxb.jaxbelement.dom");
@@ -26,7 +26,7 @@ public class TextNodeTestCases extends JAXBWithJSONTestCases{
         ObjectFactory factory = new ObjectFactory();
         Document doc;
         try {
-            doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();       
+            doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             Element elm = doc.createElementNS(null, "abcdef");
             elm.setTextContent("thetext");
             Object value = elm;
@@ -34,10 +34,10 @@ public class TextNodeTestCases extends JAXBWithJSONTestCases{
             return obj;
         } catch (Exception e) {
             e.printStackTrace();
-            fail("An exception was thrown.");            
+            fail("An exception was thrown.");
             return null;
         }
     }
-    
+
 
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork.writechanges;
 
 import java.math.BigDecimal;
@@ -54,7 +54,7 @@ public class WriteChangesFailed_StatementCountTestCase extends AutoVerifyTestCas
         UnitOfWork uow = getSession().acquireUnitOfWork();
         originalWriteStatementsCount = ((DatasourceAccessor)uow.getParent().getAccessor()).writeStatementsCount;
         originalReadStatementsCount = ((DatasourceAccessor)uow.getParent().getAccessor()).readStatementsCount;
-        originalStoredProcedureStatementsCount = 
+        originalStoredProcedureStatementsCount =
                 ((DatasourceAccessor)uow.getParent().getAccessor()).storedProcedureStatementsCount;
 
         try {
@@ -73,7 +73,7 @@ public class WriteChangesFailed_StatementCountTestCase extends AutoVerifyTestCas
                     if (uow.getProperties().get(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY) == null) {
                         throw new TestErrorException("The write statments count property should be set if writechanges get failed.");
                     }else {
-                        writeStatementsCount = 
+                        writeStatementsCount =
                                 ((Integer)uow.getProperties().get(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY)).intValue();
                     }
                     if (uow.getProperties().get(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY) == null) {
@@ -88,7 +88,7 @@ public class WriteChangesFailed_StatementCountTestCase extends AutoVerifyTestCas
 
     public void verify() {
         if ((writeStatementsCount - originalWriteStatementsCount) != 0) {
-            throw new TestErrorException("The desirable number of write statement being executed should be 0, it however has more than 0 statement being executed:" + 
+            throw new TestErrorException("The desirable number of write statement being executed should be 0, it however has more than 0 statement being executed:" +
                                          (writeStatementsCount - originalWriteStatementsCount));
         }
     }

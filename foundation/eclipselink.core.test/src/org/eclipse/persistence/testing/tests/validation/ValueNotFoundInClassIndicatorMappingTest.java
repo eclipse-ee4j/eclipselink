@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.validation;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -64,9 +64,9 @@ public class ValueNotFoundInClassIndicatorMappingTest extends ExceptionTest {
         descriptor.addPrimaryKeyFieldName("PROJECT.PROJ_ID");
         descriptor.getInheritancePolicy().setClassIndicatorFieldName("PROJ_TYPE");
 
-        //if the following is missing then the correct error will occure.  
-        // 	descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.LargeProject.class, "L");
-        //	descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class, "S");
+        //if the following is missing then the correct error will occure.
+        //     descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.LargeProject.class, "L");
+        //    descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class, "S");
 
 
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
@@ -75,7 +75,7 @@ public class ValueNotFoundInClassIndicatorMappingTest extends ExceptionTest {
         descriptor.addMapping(idMapping);
 
         // Inheritance properties.
-        //	descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.testing.models.employee.domain.Project.class);
+        //    descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.testing.models.employee.domain.Project.class);
         descriptor.getInheritancePolicy().dontReadSubclassesOnQueries();
 
         // Interface properties.

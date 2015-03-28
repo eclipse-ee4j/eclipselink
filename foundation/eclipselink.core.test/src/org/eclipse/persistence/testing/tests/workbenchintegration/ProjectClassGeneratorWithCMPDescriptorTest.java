@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import java.io.File;
@@ -79,7 +79,7 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
         }
 
         try {
-        	Object[] params = new Object[1];
+            Object[] params = new Object[1];
             String[] source = { fileName };
             params[0] = source;
             Class mainClass = Class.forName("com.sun.tools.javac.Main");
@@ -89,30 +89,30 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
             int result = ((Integer)method.invoke(null, params)).intValue();
             if (result != 0) {
                 throw new TestErrorException("Failed to compiled the generated project file " + fileName + ". This could either be a legitimate compile " +
-                 		"failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
+                         "failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
             }
             //Class projectClass = (Class) getSession().getPlatform().getConversionManager().convertObject(projectShortClassName, ClassConstants.CLASS);
             Class projectClass = Class.forName(projectShortClassName);
             generatedProject = (org.eclipse.persistence.sessions.Project)projectClass.newInstance();
         } catch (Exception exception) {
             throw new TestErrorException("Failed obtain new project instance from the generated and compiled project. " +
-            		" It may be possible to solve this issue by adding the tools.jar from your JDK to the classpath.", 
+                    " It may be possible to solve this issue by adding the tools.jar from your JDK to the classpath.",
                                          exception);
         }
     }
 
     protected void verify() {
 
-        CMPPolicy cmpPolicy = 
+        CMPPolicy cmpPolicy =
             project.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Address.class).getCMPPolicy();
-        CMPPolicy generatedCMPPolicy = 
+        CMPPolicy generatedCMPPolicy =
             generatedProject.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Address.class).getCMPPolicy();
         String errors = new String();
 
         if (generatedCMPPolicy == null) {
             errors += "CMPPolicy is null.\n";
         } else {
-            if (generatedCMPPolicy.getDeferModificationsUntilCommit() != 
+            if (generatedCMPPolicy.getDeferModificationsUntilCommit() !=
                 cmpPolicy.getDeferModificationsUntilCommit()) {
                 errors += "CMPPolicy: deferModificationsUntilCommit setting is not the same.\n";
             }
@@ -127,14 +127,14 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
             }
             if (generatedCMPPolicy.getPessimisticLockingPolicy() == null) {
                 errors += "CMPPolicy: pessimistic locking policy is null\n";
-            } else if (generatedCMPPolicy.getPessimisticLockingPolicy().getLockingMode() != 
+            } else if (generatedCMPPolicy.getPessimisticLockingPolicy().getLockingMode() !=
                        cmpPolicy.getPessimisticLockingPolicy().getLockingMode()) {
                 errors += "PessimisticLockingPolicy: locking mode is not the same\n";
             }
         }
 
         if (errors.length() > 0) {
-            throw new TestErrorException("The following settings of the generated project instance does not have the expected value:\n" + 
+            throw new TestErrorException("The following settings of the generated project instance does not have the expected value:\n" +
                                          errors);
         }
     }

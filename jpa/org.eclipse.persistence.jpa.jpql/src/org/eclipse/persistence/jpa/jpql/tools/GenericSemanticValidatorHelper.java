@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,434 +55,434 @@ import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
 @SuppressWarnings("nls")
 public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 
-	private IdentificationVariableVisitor identificationVariableVisitor;
-
-	/**
-	 * The context used to query information about the JPQL query.
-	 */
-	private final JPQLQueryContext queryContext;
-
-	/**
-	 * The concrete instance of {@link ITypeHelper} that simply wraps {@link TypeHelper}.
-	 */
-	private ITypeHelper typeHelper;
-
-	/**
-	 * Creates a new <code>GenericSemanticValidatorHelper</code>.
-	 *
-	 * @param queryContext The context used to query information about the JPQL query
-	 * @exception NullPointerException The given {@link JPQLQueryContext} cannot be <code>null</code>
-	 */
-	public GenericSemanticValidatorHelper(JPQLQueryContext queryContext) {
-		super();
-		Assert.isNotNull(queryContext, "The JPQLQueryContext cannot be null");
-		this.queryContext = queryContext;
-	}
-
-	protected void addIdentificationVariable(IdentificationVariable identificationVariable,
-	                                         Map<String, List<IdentificationVariable>> identificationVariables) {
-
-		String variableName = (identificationVariable != null) ? identificationVariable.getVariableName() : null;
-
-		if (ExpressionTools.stringIsNotEmpty(variableName)) {
-
-			// Add the IdentificationVariable to the list
-			List<IdentificationVariable> variables = identificationVariables.get(variableName);
-
-			if (variables == null) {
-				variables = new ArrayList<IdentificationVariable>();
-				identificationVariables.put(variableName, variables);
-			}
-
-			variables.add(identificationVariable);
-		}
-	}
-
-	protected IdentificationVariableVisitor buildIdentificationVariableVisitor() {
-		return new IdentificationVariableVisitor();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void collectAllDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
-
-		JPQLQueryContext currentContext = queryContext.getCurrentContext();
-
-		while (currentContext != null) {
-			collectLocalDeclarationIdentificationVariables(currentContext, identificationVariables);
-			currentContext = currentContext.getParent();
-		}
-	}
-
-	protected void collectLocalDeclarationIdentificationVariables(JPQLQueryContext queryContext,
-	                                                              Map<String, List<IdentificationVariable>> identificationVariables) {
-
-		DeclarationResolver declarationResolver = queryContext.getDeclarationResolverImp();
-
-		for (Declaration declaration : declarationResolver.getDeclarations()) {
-
-			// Register the identification variable from the base expression
-			IdentificationVariable identificationVariable = declaration.getIdentificationVariable();
-			addIdentificationVariable(identificationVariable, identificationVariables);
-
-			// Register the identification variable from the JOIN expressions
-			for (Join join : declaration.getJoins()) {
-				IdentificationVariable joinIdentificationVariable = getIdentificationVariable(join.getIdentificationVariable());
-				addIdentificationVariable(joinIdentificationVariable, identificationVariables);
-			}
-		}
-
-		if (queryContext.getParent() == null) {
-			for (IdentificationVariable identificationVariable : declarationResolver.getResultVariablesMap().keySet()) {
-				addIdentificationVariable(identificationVariable, identificationVariables);
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void collectLocalDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
-		collectLocalDeclarationIdentificationVariables(queryContext.getCurrentContext(), identificationVariables);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void disposeSubqueryContext() {
-		queryContext.disposeSubqueryContext();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String[] entityNames() {
-
-		List<String> names = new ArrayList<String>();
-
-		for (IEntity entity : queryContext.getProvider().entities()) {
-			names.add(entity.getName());
-		}
-
-		return names.toArray(new String[names.size()]);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public List<JPQLQueryDeclaration> getAllDeclarations() {
-
-		List<JPQLQueryDeclaration> declarations = new ArrayList<JPQLQueryDeclaration>();
-		JPQLQueryContext context = queryContext.getCurrentContext();
-
-		while (context != null) {
-			declarations.addAll(context.getDeclarationResolverImp().getDeclarations());
-			context = context.getParent();
-		}
-
-		return declarations;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IConstructor[] getConstructors(Object type) {
-		return CollectionTools.array(IConstructor.class, ((IType) type).constructors());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List getDeclarations() {
-		return queryContext.getDeclarations();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IManagedType getEmbeddable(Object type) {
-		return queryContext.getProvider().getEmbeddable((IType) type);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IEntity getEntityNamed(String entityName) {
-		return queryContext.getProvider().getEntityNamed(entityName);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String[] getEnumConstants(Object type) {
-		return ((IType) type).getEnumConstants();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLGrammar getGrammar() {
-		return queryContext.getGrammar();
-	}
-
-	protected IdentificationVariable getIdentificationVariable(Expression expression) {
-		IdentificationVariableVisitor visitor = getIdentificationVariableVisitor();
-		expression.accept(visitor);
-		try {
-			return visitor.identificationVariable;
-		}
-		finally {
-			visitor.identificationVariable = null;
-		}
-	}
-
-	protected IdentificationVariableVisitor getIdentificationVariableVisitor() {
-		if (identificationVariableVisitor == null) {
-			identificationVariableVisitor = buildIdentificationVariableVisitor();
-		}
-		return identificationVariableVisitor;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IManagedType getManagedType(Expression expression) {
-		return queryContext.getResolver(expression).getManagedType();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IMapping getMappingNamed(Object managedType, String path) {
-		return ((IManagedType) managedType).getMappingNamed(path);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IType getMappingType(Object mapping) {
-		return (mapping != null) ? ((IMapping) mapping).getType() : queryContext.getTypeHelper().unknownType();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public ITypeDeclaration[] getMethodParameterTypeDeclarations(Object constructor) {
-		return ((IConstructor) constructor).getParameterTypes();
-	}
-
-	/**
-	 * Returns the context used to query information about the JPQL query.
-	 *
-	 * @return The context used to query information about the JPQL query
-	 */
-	public JPQLQueryContext getQueryContext() {
-		return queryContext;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IManagedType getReferenceManagedType(Object relationshipMapping) {
-
-		if (relationshipMapping == null) {
-			return null;
-		}
-
-		IMapping mapping = (IMapping) relationshipMapping;
-		return mapping.getParent().getProvider().getManagedType(mapping.getType());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IType getType(Expression expression) {
-		return queryContext.getType(expression);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IType getType(Object typeDeclaration) {
-		return ((ITypeDeclaration) typeDeclaration).getType();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IType getType(String typeName) {
-		return queryContext.getType(typeName);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public ITypeDeclaration getTypeDeclaration(Expression expression) {
-		return queryContext.getTypeDeclaration(expression);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public ITypeHelper getTypeHelper() {
-		if (typeHelper == null) {
-			typeHelper = new GenericTypeHelper(queryContext.getTypeHelper());
-		}
-		return typeHelper;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getTypeName(Object type) {
-		return ((IType) type).getName();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isAssignableTo(Object type1, Object type2) {
-		return ((IType) type1).isAssignableTo((IType) type2) ;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isCollectionIdentificationVariable(String variableName) {
-		return queryContext.isCollectionIdentificationVariable(variableName);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isCollectionMapping(Object mapping) {
-		return (mapping != null) && ((IMapping) mapping).isCollection();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isEnumType(Object type) {
-		return ((IType) type).isEnum();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isIdentificationVariableValidInComparison(IdentificationVariable expression) {
-		return false;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isManagedTypeResolvable(Object managedType) {
-		return ((IManagedType) managedType).getType().isResolvable();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isPropertyMapping(Object mapping) {
-		return (mapping != null) && ((IMapping) mapping).isProperty();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isRelationshipMapping(Object mapping) {
-		return (mapping != null) && ((IMapping) mapping).isRelationship();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isResultVariable(String variableName) {
-		return queryContext.isResultVariable(variableName);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isTransient(Object mapping) {
-		return (mapping != null) && ((IMapping) mapping).isTransient();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isTypeDeclarationAssignableTo(Object typeDeclaration1, Object typeDeclaration2) {
-
-		ITypeDeclaration declaration1 = (ITypeDeclaration) typeDeclaration1;
-		ITypeDeclaration declaration2 = (ITypeDeclaration) typeDeclaration2;
-
-		// One is an array but not the other one
-		if (declaration1.isArray() && !declaration2.isArray() ||
-		   !declaration1.isArray() &&  declaration2.isArray()) {
-
-			return false;
-		}
-
-		// Check the array dimensionality
-		if (declaration1.isArray()) {
-			return declaration1.getDimensionality() == declaration2.getDimensionality();
-		}
-
-		return isAssignableTo(declaration1.getType(), declaration2.getType());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isTypeResolvable(Object type) {
-		return ((IType) type).isResolvable();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void newSubqueryContext(SimpleSelectStatement expression) {
-		queryContext.newSubqueryContext(expression);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IMapping resolveMapping(Expression expression) {
-		return queryContext.getResolver(expression).getMapping();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IMapping resolveMapping(String variableName, String name) {
-
-		Resolver parent = queryContext.getResolver(variableName);
-		Resolver resolver = parent.getChild(name);
-
-		if (resolver == null) {
-			resolver = new StateFieldResolver(parent, name);
-			parent.addChild(variableName, resolver);
-		}
-
-		return resolver.getMapping();
-	}
-
-	protected static class IdentificationVariableVisitor extends AbstractExpressionVisitor {
-
-		/**
-		 *
-		 */
-		protected IdentificationVariable identificationVariable;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariable expression) {
-			identificationVariable = expression;
-		}
-	}
+    private IdentificationVariableVisitor identificationVariableVisitor;
+
+    /**
+     * The context used to query information about the JPQL query.
+     */
+    private final JPQLQueryContext queryContext;
+
+    /**
+     * The concrete instance of {@link ITypeHelper} that simply wraps {@link TypeHelper}.
+     */
+    private ITypeHelper typeHelper;
+
+    /**
+     * Creates a new <code>GenericSemanticValidatorHelper</code>.
+     *
+     * @param queryContext The context used to query information about the JPQL query
+     * @exception NullPointerException The given {@link JPQLQueryContext} cannot be <code>null</code>
+     */
+    public GenericSemanticValidatorHelper(JPQLQueryContext queryContext) {
+        super();
+        Assert.isNotNull(queryContext, "The JPQLQueryContext cannot be null");
+        this.queryContext = queryContext;
+    }
+
+    protected void addIdentificationVariable(IdentificationVariable identificationVariable,
+                                             Map<String, List<IdentificationVariable>> identificationVariables) {
+
+        String variableName = (identificationVariable != null) ? identificationVariable.getVariableName() : null;
+
+        if (ExpressionTools.stringIsNotEmpty(variableName)) {
+
+            // Add the IdentificationVariable to the list
+            List<IdentificationVariable> variables = identificationVariables.get(variableName);
+
+            if (variables == null) {
+                variables = new ArrayList<IdentificationVariable>();
+                identificationVariables.put(variableName, variables);
+            }
+
+            variables.add(identificationVariable);
+        }
+    }
+
+    protected IdentificationVariableVisitor buildIdentificationVariableVisitor() {
+        return new IdentificationVariableVisitor();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void collectAllDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
+
+        JPQLQueryContext currentContext = queryContext.getCurrentContext();
+
+        while (currentContext != null) {
+            collectLocalDeclarationIdentificationVariables(currentContext, identificationVariables);
+            currentContext = currentContext.getParent();
+        }
+    }
+
+    protected void collectLocalDeclarationIdentificationVariables(JPQLQueryContext queryContext,
+                                                                  Map<String, List<IdentificationVariable>> identificationVariables) {
+
+        DeclarationResolver declarationResolver = queryContext.getDeclarationResolverImp();
+
+        for (Declaration declaration : declarationResolver.getDeclarations()) {
+
+            // Register the identification variable from the base expression
+            IdentificationVariable identificationVariable = declaration.getIdentificationVariable();
+            addIdentificationVariable(identificationVariable, identificationVariables);
+
+            // Register the identification variable from the JOIN expressions
+            for (Join join : declaration.getJoins()) {
+                IdentificationVariable joinIdentificationVariable = getIdentificationVariable(join.getIdentificationVariable());
+                addIdentificationVariable(joinIdentificationVariable, identificationVariables);
+            }
+        }
+
+        if (queryContext.getParent() == null) {
+            for (IdentificationVariable identificationVariable : declarationResolver.getResultVariablesMap().keySet()) {
+                addIdentificationVariable(identificationVariable, identificationVariables);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void collectLocalDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
+        collectLocalDeclarationIdentificationVariables(queryContext.getCurrentContext(), identificationVariables);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void disposeSubqueryContext() {
+        queryContext.disposeSubqueryContext();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String[] entityNames() {
+
+        List<String> names = new ArrayList<String>();
+
+        for (IEntity entity : queryContext.getProvider().entities()) {
+            names.add(entity.getName());
+        }
+
+        return names.toArray(new String[names.size()]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<JPQLQueryDeclaration> getAllDeclarations() {
+
+        List<JPQLQueryDeclaration> declarations = new ArrayList<JPQLQueryDeclaration>();
+        JPQLQueryContext context = queryContext.getCurrentContext();
+
+        while (context != null) {
+            declarations.addAll(context.getDeclarationResolverImp().getDeclarations());
+            context = context.getParent();
+        }
+
+        return declarations;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public IConstructor[] getConstructors(Object type) {
+        return CollectionTools.array(IConstructor.class, ((IType) type).constructors());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public List getDeclarations() {
+        return queryContext.getDeclarations();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public IManagedType getEmbeddable(Object type) {
+        return queryContext.getProvider().getEmbeddable((IType) type);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public IEntity getEntityNamed(String entityName) {
+        return queryContext.getProvider().getEntityNamed(entityName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String[] getEnumConstants(Object type) {
+        return ((IType) type).getEnumConstants();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLGrammar getGrammar() {
+        return queryContext.getGrammar();
+    }
+
+    protected IdentificationVariable getIdentificationVariable(Expression expression) {
+        IdentificationVariableVisitor visitor = getIdentificationVariableVisitor();
+        expression.accept(visitor);
+        try {
+            return visitor.identificationVariable;
+        }
+        finally {
+            visitor.identificationVariable = null;
+        }
+    }
+
+    protected IdentificationVariableVisitor getIdentificationVariableVisitor() {
+        if (identificationVariableVisitor == null) {
+            identificationVariableVisitor = buildIdentificationVariableVisitor();
+        }
+        return identificationVariableVisitor;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public IManagedType getManagedType(Expression expression) {
+        return queryContext.getResolver(expression).getManagedType();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public IMapping getMappingNamed(Object managedType, String path) {
+        return ((IManagedType) managedType).getMappingNamed(path);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public IType getMappingType(Object mapping) {
+        return (mapping != null) ? ((IMapping) mapping).getType() : queryContext.getTypeHelper().unknownType();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public ITypeDeclaration[] getMethodParameterTypeDeclarations(Object constructor) {
+        return ((IConstructor) constructor).getParameterTypes();
+    }
+
+    /**
+     * Returns the context used to query information about the JPQL query.
+     *
+     * @return The context used to query information about the JPQL query
+     */
+    public JPQLQueryContext getQueryContext() {
+        return queryContext;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public IManagedType getReferenceManagedType(Object relationshipMapping) {
+
+        if (relationshipMapping == null) {
+            return null;
+        }
+
+        IMapping mapping = (IMapping) relationshipMapping;
+        return mapping.getParent().getProvider().getManagedType(mapping.getType());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public IType getType(Expression expression) {
+        return queryContext.getType(expression);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public IType getType(Object typeDeclaration) {
+        return ((ITypeDeclaration) typeDeclaration).getType();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public IType getType(String typeName) {
+        return queryContext.getType(typeName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public ITypeDeclaration getTypeDeclaration(Expression expression) {
+        return queryContext.getTypeDeclaration(expression);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public ITypeHelper getTypeHelper() {
+        if (typeHelper == null) {
+            typeHelper = new GenericTypeHelper(queryContext.getTypeHelper());
+        }
+        return typeHelper;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getTypeName(Object type) {
+        return ((IType) type).getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isAssignableTo(Object type1, Object type2) {
+        return ((IType) type1).isAssignableTo((IType) type2) ;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isCollectionIdentificationVariable(String variableName) {
+        return queryContext.isCollectionIdentificationVariable(variableName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isCollectionMapping(Object mapping) {
+        return (mapping != null) && ((IMapping) mapping).isCollection();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isEnumType(Object type) {
+        return ((IType) type).isEnum();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isIdentificationVariableValidInComparison(IdentificationVariable expression) {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isManagedTypeResolvable(Object managedType) {
+        return ((IManagedType) managedType).getType().isResolvable();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isPropertyMapping(Object mapping) {
+        return (mapping != null) && ((IMapping) mapping).isProperty();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isRelationshipMapping(Object mapping) {
+        return (mapping != null) && ((IMapping) mapping).isRelationship();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isResultVariable(String variableName) {
+        return queryContext.isResultVariable(variableName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isTransient(Object mapping) {
+        return (mapping != null) && ((IMapping) mapping).isTransient();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isTypeDeclarationAssignableTo(Object typeDeclaration1, Object typeDeclaration2) {
+
+        ITypeDeclaration declaration1 = (ITypeDeclaration) typeDeclaration1;
+        ITypeDeclaration declaration2 = (ITypeDeclaration) typeDeclaration2;
+
+        // One is an array but not the other one
+        if (declaration1.isArray() && !declaration2.isArray() ||
+           !declaration1.isArray() &&  declaration2.isArray()) {
+
+            return false;
+        }
+
+        // Check the array dimensionality
+        if (declaration1.isArray()) {
+            return declaration1.getDimensionality() == declaration2.getDimensionality();
+        }
+
+        return isAssignableTo(declaration1.getType(), declaration2.getType());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isTypeResolvable(Object type) {
+        return ((IType) type).isResolvable();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void newSubqueryContext(SimpleSelectStatement expression) {
+        queryContext.newSubqueryContext(expression);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public IMapping resolveMapping(Expression expression) {
+        return queryContext.getResolver(expression).getMapping();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public IMapping resolveMapping(String variableName, String name) {
+
+        Resolver parent = queryContext.getResolver(variableName);
+        Resolver resolver = parent.getChild(name);
+
+        if (resolver == null) {
+            resolver = new StateFieldResolver(parent, name);
+            parent.addChild(variableName, resolver);
+        }
+
+        return resolver.getMapping();
+    }
+
+    protected static class IdentificationVariableVisitor extends AbstractExpressionVisitor {
+
+        /**
+         *
+         */
+        protected IdentificationVariable identificationVariable;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(IdentificationVariable expression) {
+            identificationVariable = expression;
+        }
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
 import java.util.*;
@@ -38,8 +38,8 @@ public class ClassConstants extends CoreClassConstants {
     public static final Class JavaSqlTime_Class = java.sql.Time.class;
     public static final Class JavaSqlDate_Class = java.sql.Date.class;
     public static final Class JavaSqlTimestamp_Class = java.sql.Timestamp.class;
-    public static final Class List_Class = List.class;    
-    public static final Class Map_Entry_Class = Map.Entry.class;    
+    public static final Class List_Class = List.class;
+    public static final Class Map_Entry_Class = Map.Entry.class;
     public static final Class Object_Class = Object.class;
     public static final Class SortedSet_Class = SortedSet.class;
     public static final Class URL_Class = URL.class;
@@ -80,7 +80,7 @@ public class ClassConstants extends CoreClassConstants {
     public static final Class ChangeTracker_Class = org.eclipse.persistence.descriptors.changetracking.ChangeTracker.class;
     public static final Class WeavedAttributeValueHolderInterface_Class = org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface.class;
     public static final Class PersistenceWeavedLazy_Class = org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy.class;
-    
+
     // Identity map classes
     public static final Class CacheIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.CacheIdentityMap.class;
     public static final Class FullIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.FullIdentityMap.class;
@@ -129,7 +129,7 @@ public class ClassConstants extends CoreClassConstants {
     public static final Class UTILDATE = java.util.Date.class;
     public static final Class QNAME = QName.class;
     public static final Class XML_GREGORIAN_CALENDAR = XMLGregorianCalendar.class;
-    public static final Class DURATION = Duration.class;    
+    public static final Class DURATION = Duration.class;
 
     //LOB support types
     public static final Class BLOB = java.sql.Blob.class;
@@ -141,7 +141,7 @@ public class ClassConstants extends CoreClassConstants {
     //XML Classes
     public static final Class DOCUMENT = Document.class;
     public static final Class NODE = Node.class;
-    
+
     public ClassConstants() {
     }
 }

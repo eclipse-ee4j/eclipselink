@@ -1,23 +1,23 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
@@ -52,7 +52,7 @@ public final class PasswordCredential implements java.io.Serializable {
    * @param userName the user name
    * @param password the user's password
   **/
-  public 
+  public
   PasswordCredential(String userName, char[] password) {
     this.userName = userName;
     this.password = (char[])password.clone();
@@ -63,7 +63,7 @@ public final class PasswordCredential implements java.io.Serializable {
    *
    * @return the user name
   **/
-  public 
+  public
   String getUserName() {
     return userName;
   }
@@ -77,12 +77,12 @@ public final class PasswordCredential implements java.io.Serializable {
    *
    * @return the password
   **/
-  public 
+  public
   char[] getPassword() {
     return password;
   }
 
-  /** Gets the target ManagedConnectionFactory for which the user name and 
+  /** Gets the target ManagedConnectionFactory for which the user name and
    *  password has been set by the application server. A ManagedConnection-
    *  Factory uses this field to find out whether PasswordCredential should
    *  be used by it for sign-on to the target EIS instance.
@@ -95,7 +95,7 @@ public final class PasswordCredential implements java.io.Serializable {
     return mcf;
   }
 
- /**  Sets the target ManagedConenctionFactory instance for which the user 
+ /**  Sets the target ManagedConenctionFactory instance for which the user
   *   name and password has been set by the application server.
    *
    *  @param     mcf   ManagedConnectionFactory instance for which user name
@@ -106,7 +106,7 @@ public final class PasswordCredential implements java.io.Serializable {
     this.mcf = mcf;
   }
 
-  /** Compares this PasswordCredential with the specified object for 
+  /** Compares this PasswordCredential with the specified object for
    *  equality. The two PasswordCredential instances are the same if
    *  they are equal in username and password.
    *
@@ -115,7 +115,7 @@ public final class PasswordCredential implements java.io.Serializable {
    *            PasswordCredential whose username and password are
    *            equal to this instance.
   **/
-  public 
+  public
   boolean equals(Object other) {
     if (!(other instanceof PasswordCredential))
       return false;
@@ -127,17 +127,17 @@ public final class PasswordCredential implements java.io.Serializable {
 
     if (password.length != pc.password.length)
       return false;
-    
+
     for (int i = 0; i < password.length;i++) {
-      if (password[i] != pc.password[i]) 
-	return false;
+      if (password[i] != pc.password[i])
+    return false;
     }
 
     return true;
   }
 
   /** Returns the hash code for this PasswordCredential
-   * 
+   *
    *  @return  hash code for this PasswordCredential
   **/
   public

@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - initial impl
- *     10/21/2009-2.0 Guy Pelletier 
+ *     10/21/2009-2.0 Guy Pelletier
  *       - 290567: mappedbyid support incomplete
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *      *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
- *     11/19/2012-2.5 Guy Pelletier 
+ *     11/19/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import java.util.HashMap;
@@ -23,14 +23,14 @@ import java.util.Map;
 
 /**
  * Metadata representation of an annotation.
- * 
+ *
  * @author James Sutherland
  * @since EclipseLink 1.2
  */
 public class MetadataAnnotation {
     /** The name of the annotation. */
     protected String m_name;
-    
+
     /** Map of attribute names and values. */
     protected Map<String, Object> m_attributes = new HashMap<String, Object>();
 
@@ -40,13 +40,13 @@ public class MetadataAnnotation {
     public void addAttribute(String key, Object value) {
         m_attributes.put(key, value);
     }
-    
+
     /**
      * INTERNAL:
-     * Return the attribute value, or null if not set. This should remain a 
-     * private method and callers should use one of the more specific 
+     * Return the attribute value, or null if not set. This should remain a
+     * private method and callers should use one of the more specific
      * getAttribute calls. (and build one if necessary)
-     * 
+     *
      * @see getAttributeAnnotation
      * @see getAttributeArray
      * @see getAttributeInteger
@@ -66,9 +66,9 @@ public class MetadataAnnotation {
      */
     public MetadataAnnotation getAttributeAnnotation(String name) {
         Object value = getAttribute(name);
-        return (value == null) ? null : (MetadataAnnotation) value; 
+        return (value == null) ? null : (MetadataAnnotation) value;
     }
-    
+
     /**
      * INTERNAL:
      * Return the attribute value, or an empty array if not set. Callers will
@@ -78,7 +78,7 @@ public class MetadataAnnotation {
         Object value = getAttribute(name);
         return (value == null) ? new Object[0] : (Object[]) value;
     }
-    
+
     /**
      * INTERNAL:
      * Return the boolean attribute value, or the default value if not set.
@@ -87,7 +87,7 @@ public class MetadataAnnotation {
         Object value = getAttribute(name);
         return (value == null) ? defaultValue : (Boolean) value;
     }
-    
+
     /**
      * INTERNAL:
      * Return the boolean attribute value, or FALSE if not set.
@@ -95,7 +95,7 @@ public class MetadataAnnotation {
     public Boolean getAttributeBooleanDefaultFalse(String name) {
         return getAttributeBoolean(name, Boolean.FALSE);
     }
-    
+
     /**
      * INTERNAL:
      * Return the boolean attribute value, or TRUE if not set.
@@ -103,7 +103,7 @@ public class MetadataAnnotation {
     public Boolean getAttributeBooleanDefaultTrue(String name) {
         return getAttributeBoolean(name, Boolean.TRUE);
     }
-    
+
     /**
      * INTERNAL:
      * Return the Class attribute value, or the default provided.
@@ -112,7 +112,7 @@ public class MetadataAnnotation {
         Object value = getAttribute(name);
         return (value == null) ? defaultClass.getName() : (String) value;
     }
-    
+
     /**
      * INTERNAL:
      * Return Integer attribute value. You should call this method only
@@ -120,16 +120,16 @@ public class MetadataAnnotation {
      */
     public Integer getAttributeInteger(String name) {
         Object value = getAttribute(name);
-        return (value == null) ? null : (Integer) value; 
+        return (value == null) ? null : (Integer) value;
     }
-    
+
     /**
      * INTERNAL:
      */
     public Map<String, Object> getAttributes() {
         return m_attributes;
     }
-    
+
     /**
      * INTERNAL:
      * Return the attribute value, or null if not set.
@@ -137,7 +137,7 @@ public class MetadataAnnotation {
     public String getAttributeString(String name) {
         return (String) getAttribute(name);
     }
-    
+
     /**
      * INTERNAL:
      * Return the attribute value, or defaultValue if not set.
@@ -146,7 +146,7 @@ public class MetadataAnnotation {
         Object value = getAttribute(name);
         return (value == null) ? defaultValue : (String) value;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -161,14 +161,14 @@ public class MetadataAnnotation {
     public boolean hasAttribute(String name) {
         return getAttribute(name) != null;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setAttributes(Map<String, Object> attributes) {
         m_attributes = attributes;
     }
-    
+
     /**
      * INTERNAL:
      */

@@ -51,7 +51,7 @@ import org.w3c.dom.Element;
 import dbws.testing.DBWSTestSuite;
 
 public class SecondarySQLTestSuite extends DBWSTestSuite {
-    
+
     static final String CREATE_SECONDARY_TABLE =
         "CREATE TABLE DBWS_SECONDARY (" +
             "\nEMPNO NUMERIC(4)," +
@@ -187,7 +187,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<build-statement><![CDATA[" + GETBYNAME_SCHEMA_SQL + "]]></build-statement>" +
           "</procedure>" +
         "</dbws-builder>";
-    
+
         builder = new DBWSBuilder();
         DBWSTestSuite.setUp(".");
     }
@@ -260,13 +260,13 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
          Document controlDoc = xmlParser.parse(new StringReader(SECONDARY_AGGREGATE_XML));
          assertTrue("control document not same as instance document", comparer.isNodeEqual(controlDoc, doc));
      }
-     static final String SECONDARY_AGGREGATE_XML = 
+     static final String SECONDARY_AGGREGATE_XML =
          "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
          "<secondaryAggregate xmlns=\"urn:secondarySQL\">" +
              "<count>14</count>" +
              "<max-salary>5000.99</max-salary>" +
          "</secondaryAggregate>";
-     
+
      @SuppressWarnings("rawtypes")
      @Test
      public void allSecondary() throws ParseException {
@@ -274,7 +274,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
          Operation op = xrService.getOperation(invocation.getName());
          Object result = op.invoke(xrService, invocation);
          assertNotNull("result is null", result);
-         
+
          XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
          Document doc = xmlPlatform.createDocument();
          Element ec = doc.createElement("collection");
@@ -497,7 +497,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
          Operation op = xrService.getOperation(invocation.getName());
          Object result = op.invoke(xrService, invocation);
          assertNotNull("result is null", result);
-         
+
          XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
          Document doc = xmlPlatform.createDocument();
          Element ec = doc.createElement("collection");

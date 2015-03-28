@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -44,181 +44,181 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.FilteringIterat
  * item and add or remove it from the "filtered" collection as appropriate.
  */
 public class FilteringCollectionValueModel
-	extends CollectionValueModelWrapper
+    extends CollectionValueModelWrapper
 {
-	/** This filters the items in the nested collection. */
-	private Filter filter;
+    /** This filters the items in the nested collection. */
+    private Filter filter;
 
-	/** This filters the items in the nested collection. */
-	private Filter localFilter;
+    /** This filters the items in the nested collection. */
+    private Filter localFilter;
 
-	/** Cache the items that were accepted by the filter */
-	private Collection filteredItems;
-
-
-	// ********** constructors **********
-
-	/**
-	 * Construct a collection value model with the specified wrapped
-	 * collection value model and a filter that simply accepts every object.
-	 * Use this constructor if you want to override the
-	 * <code>accept(Object)</code> method
-	 * instead of building a <code>Filter</code>.
-	 */
-	public FilteringCollectionValueModel(CollectionValueModel collectionHolder) {
-		this(collectionHolder, Filter.NULL_INSTANCE);
-	}
-
-	/**
-	 * Construct a collection value model with the specified wrapped
-	 * collection value model and filter.
-	 */
-	public FilteringCollectionValueModel(CollectionValueModel collectionHolder, Filter filter) {
-		super(collectionHolder);
-		this.filter = filter;
-	}
-
-	/**
-	 * Construct a collection value model with the specified wrapped
-	 * list value model and a filter that simply accepts every object.
-	 * Use this constructor if you want to override the
-	 * <code>accept(Object)</code> method
-	 * instead of building a <code>Filter</code>.
-	 */
-	public FilteringCollectionValueModel(ListValueModel listHolder) {
-		this(new ListCollectionValueModelAdapter(listHolder));
-	}
-
-	/**
-	 * Construct a collection value model with the specified wrapped
-	 * list value model and filter.
-	 */
-	public FilteringCollectionValueModel(ListValueModel listHolder, Filter filter) {
-		this(new ListCollectionValueModelAdapter(listHolder), filter);
-	}
+    /** Cache the items that were accepted by the filter */
+    private Collection filteredItems;
 
 
-	// ********** initialization **********
+    // ********** constructors **********
 
-	protected void initialize() {
-		super.initialize();
-		this.localFilter = this.buildLocalFilter();
-		this.filteredItems = new ArrayList();
-	}
+    /**
+     * Construct a collection value model with the specified wrapped
+     * collection value model and a filter that simply accepts every object.
+     * Use this constructor if you want to override the
+     * <code>accept(Object)</code> method
+     * instead of building a <code>Filter</code>.
+     */
+    public FilteringCollectionValueModel(CollectionValueModel collectionHolder) {
+        this(collectionHolder, Filter.NULL_INSTANCE);
+    }
 
-	/**
-	 * Implement the filter by calling back to the collection
-	 * value model. This allows us to keep the method
-	 * #accept(Object) protected.
-	 */
-	protected Filter buildLocalFilter() {
-		return new Filter() {
-			public boolean accept(Object o) {
-				return FilteringCollectionValueModel.this.accept(o);
-			}
-		};
-	}
+    /**
+     * Construct a collection value model with the specified wrapped
+     * collection value model and filter.
+     */
+    public FilteringCollectionValueModel(CollectionValueModel collectionHolder, Filter filter) {
+        super(collectionHolder);
+        this.filter = filter;
+    }
 
+    /**
+     * Construct a collection value model with the specified wrapped
+     * list value model and a filter that simply accepts every object.
+     * Use this constructor if you want to override the
+     * <code>accept(Object)</code> method
+     * instead of building a <code>Filter</code>.
+     */
+    public FilteringCollectionValueModel(ListValueModel listHolder) {
+        this(new ListCollectionValueModelAdapter(listHolder));
+    }
 
-	// ********** ValueModel implementation **********
-
-	/**
-	 * @see ValueModel#getValue()
-	 */
-	public Object getValue() {
-		return this.filteredItems.iterator();
-	}
-
-
-	// ********** CollectionValueModel implementation **********
-
-	/**
-	 * @see CollectionValueModel#size()
-	 */
-	public int size() {
-		return this.filteredItems.size();
-	}
-
-
-	// ********** CollectionValueModelWrapper overrides/implementation **********
-
-	/**
-	 * @see CollectionValueModelWrapper#engageModel()
-	 */
-	protected void engageModel() {
-		super.engageModel();
-		// synch our cache *after* we start listening to the nested collection,
-		// since its value might change when a listener is added
-		this.synchFilteredItems();
-	}
-
-	/**
-	 * @see CollectionValueModelWrapper#disengageModel()
-	 */
-	protected void disengageModel() {
-		super.disengageModel();
-		// clear out the cache when we are not listening to the nested collection
-		this.filteredItems.clear();
-	}
-
-	/**
-	 * @see CollectionValueModelWrapper#itemsAdded(org.eclipse.persistence.tools.workbench.utility.events.CollectionChangeEvent)
-	 */
-	protected void itemsAdded(CollectionChangeEvent e) {
-		// filter the values before propagating the change event
-		this.addItemsToCollection(this.filter(e.items()), this.filteredItems, VALUE);
-	}
-
-	/**
-	 * @see CollectionValueModelWrapper#itemsRemoved(org.eclipse.persistence.tools.workbench.utility.events.CollectionChangeEvent)
-	 */
-	protected void itemsRemoved(CollectionChangeEvent e) {
-		// do NOT filter the values, because they may no longer be
-		// "accepted" and that might be why they were removed in the first place;
-		// anyway, any extraneous items are harmless
-		this.removeItemsFromCollection(e.items(), this.filteredItems, VALUE);
-	}
-
-	/**
-	 * @see CollectionValueModelWrapper#collectionChanged(org.eclipse.persistence.tools.workbench.utility.events.CollectionChangeEvent)
-	 */
-	protected void collectionChanged(CollectionChangeEvent e) {
-		this.synchFilteredItems();
-		this.fireCollectionChanged(VALUE);
-	}
+    /**
+     * Construct a collection value model with the specified wrapped
+     * list value model and filter.
+     */
+    public FilteringCollectionValueModel(ListValueModel listHolder, Filter filter) {
+        this(new ListCollectionValueModelAdapter(listHolder), filter);
+    }
 
 
-	// ********** queries **********
+    // ********** initialization **********
 
-	/**
-	 * Return whether the <code>FilteringCollectionValueModel</code> should
-	 * include the specified value in the iterator returned from a call to the
-	 * <code>getValue()</code> method; the value came
-	 * from the nested collection value model.
-	 * <p>
-	 * This method can be overridden by a subclass as an
-	 * alternative to building a <code>Filter</code>.
-	 */
-	protected boolean accept(Object value) {
-		return this.filter.accept(value);
-	}
+    protected void initialize() {
+        super.initialize();
+        this.localFilter = this.buildLocalFilter();
+        this.filteredItems = new ArrayList();
+    }
 
-	/**
-	 * Return an iterator that filters the specified iterator.
-	 */
-	protected Iterator filter(Iterator items) {
-		return new FilteringIterator(items, this.localFilter);
-	}
+    /**
+     * Implement the filter by calling back to the collection
+     * value model. This allows us to keep the method
+     * #accept(Object) protected.
+     */
+    protected Filter buildLocalFilter() {
+        return new Filter() {
+            public boolean accept(Object o) {
+                return FilteringCollectionValueModel.this.accept(o);
+            }
+        };
+    }
 
 
-	// ********** behavior **********
+    // ********** ValueModel implementation **********
 
-	/**
-	 * Synchronize our cache with the wrapped collection.
-	 */
-	protected void synchFilteredItems() {
-		this.filteredItems.clear();
-		CollectionTools.addAll(this.filteredItems, this.filter((Iterator) this.collectionHolder.getValue()));
-	}
+    /**
+     * @see ValueModel#getValue()
+     */
+    public Object getValue() {
+        return this.filteredItems.iterator();
+    }
+
+
+    // ********** CollectionValueModel implementation **********
+
+    /**
+     * @see CollectionValueModel#size()
+     */
+    public int size() {
+        return this.filteredItems.size();
+    }
+
+
+    // ********** CollectionValueModelWrapper overrides/implementation **********
+
+    /**
+     * @see CollectionValueModelWrapper#engageModel()
+     */
+    protected void engageModel() {
+        super.engageModel();
+        // synch our cache *after* we start listening to the nested collection,
+        // since its value might change when a listener is added
+        this.synchFilteredItems();
+    }
+
+    /**
+     * @see CollectionValueModelWrapper#disengageModel()
+     */
+    protected void disengageModel() {
+        super.disengageModel();
+        // clear out the cache when we are not listening to the nested collection
+        this.filteredItems.clear();
+    }
+
+    /**
+     * @see CollectionValueModelWrapper#itemsAdded(org.eclipse.persistence.tools.workbench.utility.events.CollectionChangeEvent)
+     */
+    protected void itemsAdded(CollectionChangeEvent e) {
+        // filter the values before propagating the change event
+        this.addItemsToCollection(this.filter(e.items()), this.filteredItems, VALUE);
+    }
+
+    /**
+     * @see CollectionValueModelWrapper#itemsRemoved(org.eclipse.persistence.tools.workbench.utility.events.CollectionChangeEvent)
+     */
+    protected void itemsRemoved(CollectionChangeEvent e) {
+        // do NOT filter the values, because they may no longer be
+        // "accepted" and that might be why they were removed in the first place;
+        // anyway, any extraneous items are harmless
+        this.removeItemsFromCollection(e.items(), this.filteredItems, VALUE);
+    }
+
+    /**
+     * @see CollectionValueModelWrapper#collectionChanged(org.eclipse.persistence.tools.workbench.utility.events.CollectionChangeEvent)
+     */
+    protected void collectionChanged(CollectionChangeEvent e) {
+        this.synchFilteredItems();
+        this.fireCollectionChanged(VALUE);
+    }
+
+
+    // ********** queries **********
+
+    /**
+     * Return whether the <code>FilteringCollectionValueModel</code> should
+     * include the specified value in the iterator returned from a call to the
+     * <code>getValue()</code> method; the value came
+     * from the nested collection value model.
+     * <p>
+     * This method can be overridden by a subclass as an
+     * alternative to building a <code>Filter</code>.
+     */
+    protected boolean accept(Object value) {
+        return this.filter.accept(value);
+    }
+
+    /**
+     * Return an iterator that filters the specified iterator.
+     */
+    protected Iterator filter(Iterator items) {
+        return new FilteringIterator(items, this.localFilter);
+    }
+
+
+    // ********** behavior **********
+
+    /**
+     * Synchronize our cache with the wrapped collection.
+     */
+    protected void synchFilteredItems() {
+        this.filteredItems.clear();
+        CollectionTools.addAll(this.filteredItems, this.filter((Iterator) this.collectionHolder.getValue()));
+    }
 
 }

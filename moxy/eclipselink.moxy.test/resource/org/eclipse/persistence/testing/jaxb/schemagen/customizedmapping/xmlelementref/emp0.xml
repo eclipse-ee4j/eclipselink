@@ -2,6 +2,6 @@
 <employee>
   <address>
     <addressAsString>45 O'Connor St.</addressAsString>
-	<thing/>
+    <thing/>
   </address>
 </employee>

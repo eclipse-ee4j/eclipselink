@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,31 +27,31 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class MinFunctionFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link MinFunctionFactory}.
-	 */
-	public static final String ID = Expression.MIN;
+    /**
+     * The unique identifier of this {@link MinFunctionFactory}.
+     */
+    public static final String ID = Expression.MIN;
 
-	/**
-	 * Creates a new <code>MinFunctionFactory</code>.
-	 */
-	public MinFunctionFactory() {
-		super(ID, Expression.MIN);
-	}
+    /**
+     * Creates a new <code>MinFunctionFactory</code>.
+     */
+    public MinFunctionFactory() {
+        super(ID, Expression.MIN);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		expression = new MinFunction(parent);
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        expression = new MinFunction(parent);
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

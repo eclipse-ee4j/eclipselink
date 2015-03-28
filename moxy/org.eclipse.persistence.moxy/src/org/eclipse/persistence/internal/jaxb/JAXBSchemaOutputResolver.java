@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -20,7 +20,7 @@ import javax.xml.transform.Result;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelOutputResolver;
 
 /**
- * Implementation of a SchemaModelOutputResolver that wraps a 
+ * Implementation of a SchemaModelOutputResolver that wraps a
  * javax.xml.bind.SchemaOutputResolver instance.
  *
  */
@@ -28,9 +28,9 @@ public class JAXBSchemaOutputResolver implements SchemaModelOutputResolver {
     SchemaOutputResolver outputResolver;
 
     /**
-     * This constructor sets the underlying SchemaOutputResolver to be used 
+     * This constructor sets the underlying SchemaOutputResolver to be used
      * during createOutput operation.
-     * 
+     *
      * @param outputResolver
      */
     public JAXBSchemaOutputResolver(SchemaOutputResolver outputResolver) {
@@ -40,7 +40,7 @@ public class JAXBSchemaOutputResolver implements SchemaModelOutputResolver {
     /**
      * Determines the location where a given schema file (of the given namespace URI)
      * will be generated, and return it as a Result object.
-     *  
+     *
      * @param namespaceURI
      * @param suggestedFileName
      * @return schema file as a Result object

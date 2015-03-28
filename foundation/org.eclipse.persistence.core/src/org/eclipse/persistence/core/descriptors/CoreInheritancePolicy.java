@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 
 /**
  * INTERNAL
- * A abstraction of inheritance policy capturing behavior common to all 
+ * A abstraction of inheritance policy capturing behavior common to all
  * persistence types.
  */
 public abstract class CoreInheritancePolicy<
@@ -49,7 +49,7 @@ public abstract class CoreInheritancePolicy<
      * This method is invoked only for the abstract descriptors.
      */
     public abstract Class classFromRow(ABSTRACT_RECORD record, ABSTRACT_SESSION session);
-    
+
     /**
      * INTERNAL:
      * Returns all the child descriptors, even descriptors for subclasses of
@@ -57,7 +57,7 @@ public abstract class CoreInheritancePolicy<
      * Required for bug 3019934.
      */
     public abstract List<DESCRIPTOR> getAllChildDescriptors();
-    
+
     /**
      * INTERNAL:
      * Returns field that the class type indicator is store when using inheritance.
@@ -82,19 +82,19 @@ public abstract class CoreInheritancePolicy<
      * Return the mapping from class name to indicator, used by MW.
      */
     public abstract Map getClassNameIndicatorMapping();
-    
+
     /**
      * INTERNAL:
      * Returns the descriptor which the policy belongs to.
      */
     public abstract DESCRIPTOR getDescriptor();
-    
+
     /**
      * PUBLIC:
      * Return the parent class.
      */
     public abstract Class getParentClass();
-    
+
     /**
      * INTERNAL:
      * Return the parent descriptor.
@@ -105,44 +105,44 @@ public abstract class CoreInheritancePolicy<
      * INTERNAL:
      */
     public abstract boolean hasClassExtractor();
-    
+
     /**
      * INTERNAL:
      * Return whether or not is root parent descriptor
      */
     public abstract boolean isRootParentDescriptor();
-    
+
     /**
      * ADVANCED:
      * Set the class extractor class name. At descriptor initialize time this
      * class will be converted to a Class and set as the ClassExtractor. This
      * method is called from JPA.
-     * 
+     *
      * @see org.eclipse.persistence.descriptors.InheritancePolicy#setClassExtractor
      * setClassExtractor for more information on the ClassExtractor class.
      */
     public abstract void setClassExtractorName(String classExtractorName);
-    
+
     /**
      * ADVANCED:
      * To set the class indicator field.
      * This can be used for advanced field types, such as XML nodes, or to set the field type.
      */
     public abstract void setClassIndicatorField(FIELD classIndicatorField);
-    
+
     /**
      * PUBLIC:
      * Set the association of indicators and classes.
      * This may be desired to be used by clients in strange inheritance models.
      */
     public abstract void setClassIndicatorMapping(Map classIndicatorMapping);
-    
+
     /**
      * INTERNAL:
      * Set the descriptor.
      */
     public abstract void setDescriptor(DESCRIPTOR descriptor);
-    
+
 
     /**
      * INTERNAL:
@@ -150,7 +150,7 @@ public abstract class CoreInheritancePolicy<
      * deployment XML generation.
      */
     public abstract void setParentClassName(String parentClassName);
-    
+
     /**
      * INTERNAL:
      * Set the descriptor to read instance of itself and its subclasses when queried.

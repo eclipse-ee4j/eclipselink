@@ -1,25 +1,25 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     08/27/2008-1.1 Guy Pelletier 
+ *     08/27/2008-1.1 Guy Pelletier
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
- *     08/28/2008-1.1 Guy Pelletier 
- *       - 245120: unidir one-to-many within embeddable fails to deploy for missing primary key field 
- *     02/06/2009-2.0 Guy Pelletier 
- *       - 248293: JPA 2.0 Element Collections (part 2)    
- *     02/25/2009-2.0 Guy Pelletier 
+ *     08/28/2008-1.1 Guy Pelletier
+ *       - 245120: unidir one-to-many within embeddable fails to deploy for missing primary key field
+ *     02/06/2009-2.0 Guy Pelletier
+ *       - 248293: JPA 2.0 Element Collections (part 2)
+ *     02/25/2009-2.0 Guy Pelletier
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     12/17/2010-2.2 Guy Pelletier 
+ *     12/17/2010-2.2 Guy Pelletier
  *       - 330755: Nested embeddables can't be used as embedded ids
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
 import java.util.Iterator;
@@ -34,24 +34,24 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         addTableDefinition(buildCITYSLICKERTable());
         addTableDefinition(buildCOUNTRYDWELLERTable());
         addTableDefinition(buildWORLDTable());
-        
+
         addTableDefinition(buildHOCKEYCOACHTable());
         addTableDefinition(buildHOCKEYPLAYERTable());
         addTableDefinition(buildHOCKEYTEAMTable());
-        
+
         addTableDefinition(buildROLETable());
         addTableDefinition(buildPLAYERROLESTable());
         addTableDefinition(buildHockeyCoach_NICKNAMESTable());
-        
+
         addTableDefinition(buildBODYTable());
-        
+
         addTableDefinition(buildPLACETable());
     }
 
     public TableDefinition buildBODYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_BODY");
-        
+
         FieldDefinition fieldCOUNT = new FieldDefinition();
         fieldCOUNT.setName("BODY_COUNT");
         fieldCOUNT.setTypeName("NUMBER");
@@ -62,7 +62,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldCOUNT.setUnique(false);
         fieldCOUNT.setShouldAllowNull(false);
         table.addField(fieldCOUNT);
-        
+
         FieldDefinition fieldHEARTSIZE = new FieldDefinition();
         fieldHEARTSIZE.setName("H_SIZE");
         fieldHEARTSIZE.setTypeName("NUMBER");
@@ -73,10 +73,10 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldHEARTSIZE.setUnique(false);
         fieldHEARTSIZE.setShouldAllowNull(false);
         table.addField(fieldHEARTSIZE);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCITYSLICKERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CITYSLICKER");
@@ -91,7 +91,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldID.setUnique(true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldFNAME = new FieldDefinition();
         fieldFNAME.setName("FIRST_NAME");
         fieldFNAME.setTypeName("VARCHAR2");
@@ -102,7 +102,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldFNAME.setUnique(true);
         fieldFNAME.setShouldAllowNull(false);
         table.addField(fieldFNAME);
-        
+
         FieldDefinition fieldLNAME = new FieldDefinition();
         fieldLNAME.setName("LNAME");
         fieldLNAME.setTypeName("VARCHAR2");
@@ -113,7 +113,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldLNAME.setUnique(true);
         fieldLNAME.setShouldAllowNull(false);
         table.addField(fieldLNAME);
-        
+
         FieldDefinition fieldAGE = new FieldDefinition();
         fieldAGE.setName("AGE");
         fieldAGE.setTypeName("NUMBER");
@@ -124,7 +124,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldAGE.setUnique(false);
         fieldAGE.setShouldAllowNull(false);
         table.addField(fieldAGE);
-        
+
         FieldDefinition fieldGENDER = new FieldDefinition();
         fieldGENDER.setName("GENDER");
         fieldGENDER.setTypeName("VARCHAR2");
@@ -147,10 +147,10 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldWORLDID.setShouldAllowNull(true);
         fieldWORLDID.setForeignKeyFieldName("CMP3_WORLD.ID");
         table.addField(fieldWORLDID);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCOUNTRYDWELLERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_COUNTRY_DWELLER");
@@ -165,7 +165,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldID.setUnique(true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldFNAME = new FieldDefinition();
         fieldFNAME.setName("FNAME");
         fieldFNAME.setTypeName("VARCHAR2");
@@ -176,7 +176,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldFNAME.setUnique(true);
         fieldFNAME.setShouldAllowNull(false);
         table.addField(fieldFNAME);
-        
+
         FieldDefinition fieldLNAME = new FieldDefinition();
         fieldLNAME.setName("LNAME");
         fieldLNAME.setTypeName("VARCHAR2");
@@ -187,7 +187,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldLNAME.setUnique(true);
         fieldLNAME.setShouldAllowNull(false);
         table.addField(fieldLNAME);
-        
+
         FieldDefinition fieldAGE = new FieldDefinition();
         fieldAGE.setName("AGE");
         fieldAGE.setTypeName("NUMBER");
@@ -209,7 +209,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldGENDER.setUnique(false);
         fieldGENDER.setShouldAllowNull(true);
         table.addField(fieldGENDER);
-        
+
         FieldDefinition fieldWORLDID = new FieldDefinition();
         fieldWORLDID.setName("WORLD_ID");
         fieldWORLDID.setTypeName("NUMBER");
@@ -221,10 +221,10 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldWORLDID.setShouldAllowNull(true);
         fieldWORLDID.setForeignKeyFieldName("CMP3_WORLD.ID");
         table.addField(fieldWORLDID);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildHOCKEYCOACHTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_HOCKEY_COACH");
@@ -239,7 +239,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldFNAME = new FieldDefinition();
         fieldFNAME.setName("FNAME");
         fieldFNAME.setTypeName("VARCHAR2");
@@ -250,7 +250,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldFNAME.setUnique(false);
         fieldFNAME.setShouldAllowNull(false);
         table.addField(fieldFNAME);
-        
+
         FieldDefinition fieldLNAME = new FieldDefinition();
         fieldLNAME.setName("LNAME");
         fieldLNAME.setTypeName("VARCHAR2");
@@ -261,7 +261,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldLNAME.setUnique(false);
         fieldLNAME.setShouldAllowNull(false);
         table.addField(fieldLNAME);
-        
+
         FieldDefinition fieldAGE = new FieldDefinition();
         fieldAGE.setName("AGE");
         fieldAGE.setTypeName("NUMBER");
@@ -272,7 +272,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldAGE.setUnique(false);
         fieldAGE.setShouldAllowNull(true);
         table.addField(fieldAGE);
-        
+
         FieldDefinition fieldHEIGHT = new FieldDefinition();
         fieldHEIGHT.setName("HEIGHT");
         fieldHEIGHT.setTypeName("DOUBLE PRECIS");
@@ -283,7 +283,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldHEIGHT.setUnique(false);
         fieldHEIGHT.setShouldAllowNull(true);
         table.addField(fieldHEIGHT);
-        
+
         FieldDefinition fieldWEIGHT = new FieldDefinition();
         fieldWEIGHT.setName("WEIGHT");
         fieldWEIGHT.setTypeName("DOUBLE PRECIS");
@@ -294,7 +294,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldWEIGHT.setUnique(false);
         fieldWEIGHT.setShouldAllowNull(true);
         table.addField(fieldWEIGHT);
-        
+
         FieldDefinition fieldTEAMID = new FieldDefinition();
         fieldTEAMID.setName("TEAM_ID");
         fieldTEAMID.setTypeName("NUMBER");
@@ -306,10 +306,10 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldTEAMID.setShouldAllowNull(true);
         fieldTEAMID.setForeignKeyFieldName("CMP3_HOCKEY_TEAM.ID");
         table.addField(fieldTEAMID);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildHockeyCoach_NICKNAMESTable() {
         // TODO: This table and column name is defaulting incorrectly, it should be all upper-case.
         TableDefinition table = new TableDefinition();
@@ -326,7 +326,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldID.setShouldAllowNull(false);
         fieldID.setForeignKeyFieldName("CMP3_HOCKEY_COACH.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNICKNAMES = new FieldDefinition();
         fieldNICKNAMES.setName("NICKNAMES");
         fieldNICKNAMES.setTypeName("VARCHAR2");
@@ -337,11 +337,11 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldNICKNAMES.setUnique(false);
         fieldNICKNAMES.setShouldAllowNull(false);
         table.addField(fieldNICKNAMES);
-        
-        
+
+
         return table;
     }
-    
+
     public TableDefinition buildHOCKEYPLAYERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_HOCKEY_PLAYER");
@@ -356,7 +356,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldFNAME = new FieldDefinition();
         fieldFNAME.setName("FNAME");
         fieldFNAME.setTypeName("VARCHAR2");
@@ -367,7 +367,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldFNAME.setUnique(false);
         fieldFNAME.setShouldAllowNull(false);
         table.addField(fieldFNAME);
-        
+
         FieldDefinition fieldLNAME = new FieldDefinition();
         fieldLNAME.setName("LNAME");
         fieldLNAME.setTypeName("VARCHAR2");
@@ -378,7 +378,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldLNAME.setUnique(false);
         fieldLNAME.setShouldAllowNull(false);
         table.addField(fieldLNAME);
-        
+
         FieldDefinition fieldAGE = new FieldDefinition();
         fieldAGE.setName("AGE");
         fieldAGE.setTypeName("NUMBER");
@@ -389,7 +389,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldAGE.setUnique(false);
         fieldAGE.setShouldAllowNull(true);
         table.addField(fieldAGE);
-        
+
         FieldDefinition fieldHEIGHT = new FieldDefinition();
         fieldHEIGHT.setName("HEIGHT");
         fieldHEIGHT.setTypeName("DOUBLE PRECIS");
@@ -400,7 +400,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldHEIGHT.setUnique(false);
         fieldHEIGHT.setShouldAllowNull(true);
         table.addField(fieldHEIGHT);
-        
+
         FieldDefinition fieldWEIGHT = new FieldDefinition();
         fieldWEIGHT.setName("WEIGHT");
         fieldWEIGHT.setTypeName("DOUBLE PRECIS");
@@ -411,7 +411,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldWEIGHT.setUnique(false);
         fieldWEIGHT.setShouldAllowNull(true);
         table.addField(fieldWEIGHT);
-        
+
         FieldDefinition fieldJERSEYNUMBER = new FieldDefinition();
         fieldJERSEYNUMBER.setName("JERSEY_NUMBER");
         fieldJERSEYNUMBER.setTypeName("NUMBER");
@@ -422,7 +422,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldJERSEYNUMBER.setUnique(false);
         fieldJERSEYNUMBER.setShouldAllowNull(true);
         table.addField(fieldJERSEYNUMBER);
-        
+
         FieldDefinition fieldPOSITION = new FieldDefinition();
         fieldPOSITION.setName("PLAYER_POSITION");
         fieldPOSITION.setTypeName("VARCHAR2");
@@ -433,7 +433,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldPOSITION.setUnique(false);
         fieldPOSITION.setShouldAllowNull(true);
         table.addField(fieldPOSITION);
-        
+
         FieldDefinition fieldTEAMID = new FieldDefinition();
         fieldTEAMID.setName("TEAM_ID");
         fieldTEAMID.setTypeName("NUMBER");
@@ -456,10 +456,10 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldHockeyCoach_ID.setUnique(false);
         fieldHockeyCoach_ID.setShouldAllowNull(true);
         table.addField(fieldHockeyCoach_ID);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildHOCKEYTEAMTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_HOCKEY_TEAM");
@@ -474,7 +474,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR2");
@@ -485,7 +485,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(false);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldLEVEL = new FieldDefinition();
         fieldLEVEL.setName("TEAM_LEVEL");
         fieldLEVEL.setTypeName("VARCHAR2");
@@ -507,7 +507,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldHOMECOLOR.setUnique(false);
         fieldHOMECOLOR.setShouldAllowNull(true);
         table.addField(fieldHOMECOLOR);
-        
+
         FieldDefinition fieldAWAYCOLOR = new FieldDefinition();
         fieldAWAYCOLOR.setName("AWAY_COLOR");
         fieldAWAYCOLOR.setTypeName("VARCHAR2");
@@ -518,10 +518,10 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldAWAYCOLOR.setUnique(false);
         fieldAWAYCOLOR.setShouldAllowNull(true);
         table.addField(fieldAWAYCOLOR);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildPLAYERROLESTable() {
         TableDefinition table = new TableDefinition();
         table.setName("PLAYER_ROLES");
@@ -537,7 +537,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldPLAYERID.setShouldAllowNull(false);
         fieldPLAYERID.setForeignKeyFieldName("CMP3_HOCKEY_PLAYER.PLAYERID");
         table.addField(fieldPLAYERID);
-        
+
         FieldDefinition fieldROLEID = new FieldDefinition();
         fieldROLEID.setName("ROLE_ID");
         fieldROLEID.setTypeName("NUMBER");
@@ -549,10 +549,10 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldROLEID.setShouldAllowNull(false);
         fieldROLEID.setForeignKeyFieldName("CMP3_ROLE.ID");
         table.addField(fieldROLEID);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildROLETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_ROLE");
@@ -567,7 +567,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldDESCRIPTION = new FieldDefinition();
         fieldDESCRIPTION.setName("DESCRIP");
         fieldDESCRIPTION.setTypeName("VARCHAR2");
@@ -578,10 +578,10 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldDESCRIPTION.setUnique(false);
         fieldDESCRIPTION.setShouldAllowNull(false);
         table.addField(fieldDESCRIPTION);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildWORLDTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_WORLD");
@@ -596,14 +596,14 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildPLACETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_PLACE");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -614,7 +614,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldCOUNTRY_CODE = new FieldDefinition();
         fieldCOUNTRY_CODE.setName("COUNTRY_CODE");
         fieldCOUNTRY_CODE.setTypeName("VARCHAR2");
@@ -625,7 +625,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldCOUNTRY_CODE.setUnique(false);
         fieldCOUNTRY_CODE.setShouldAllowNull(true);
         table.addField(fieldCOUNTRY_CODE);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR2");
@@ -636,7 +636,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldADDRESS_1 = new FieldDefinition();
         fieldADDRESS_1.setName("ADDRESS_1");
         fieldADDRESS_1.setTypeName("VARCHAR2");
@@ -647,7 +647,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldADDRESS_1.setUnique(false);
         fieldADDRESS_1.setShouldAllowNull(true);
         table.addField(fieldADDRESS_1);
-        
+
         FieldDefinition fieldADDRESS_2 = new FieldDefinition();
         fieldADDRESS_2.setName("ADDRESS_2");
         fieldADDRESS_2.setTypeName("VARCHAR2");
@@ -658,7 +658,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldADDRESS_2.setUnique(false);
         fieldADDRESS_2.setShouldAllowNull(true);
         table.addField(fieldADDRESS_2);
-        
+
         return table;
     }
 

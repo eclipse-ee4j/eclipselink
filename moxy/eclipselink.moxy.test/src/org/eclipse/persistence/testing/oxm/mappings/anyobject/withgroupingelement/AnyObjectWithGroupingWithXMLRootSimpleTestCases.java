@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.anyobject.withgroupingelement;
 
 import junit.textui.TestRunner;
@@ -25,7 +25,7 @@ public class AnyObjectWithGroupingWithXMLRootSimpleTestCases extends XMLMappingT
         super(name);
         Project project = new AnyObjectWithGroupingElementProjectNS();
         ((XMLAnyObjectMapping)((XMLDescriptor)project.getDescriptor(Root.class)).getMappingForAttributeName("any")).setUseXMLRoot(true);
-                        
+
         setProject(project);
 
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withgroupingelement/simple_ns_xmlroot.xml");
@@ -34,7 +34,7 @@ public class AnyObjectWithGroupingWithXMLRootSimpleTestCases extends XMLMappingT
     public Object getControlObject() {
         Root root = new Root();
 
-        XMLRoot xmlroot = new XMLRoot();        
+        XMLRoot xmlroot = new XMLRoot();
         xmlroot.setObject("child's text");
         xmlroot.setLocalName("myns:theXMLRoot");
         xmlroot.setNamespaceURI("www.example.com/some-dir/some.xsd");

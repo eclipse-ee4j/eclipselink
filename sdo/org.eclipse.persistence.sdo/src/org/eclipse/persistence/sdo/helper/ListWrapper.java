@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.DataObject;
@@ -122,20 +122,20 @@ public class ListWrapper implements List, Serializable, Cloneable {
         if (item == null && (property != null && !property.isNullable())) {
             throw new UnsupportedOperationException("Property [" + property.getName() + "] is non-nullable");
         }
-        
+
         // update element arrays before we modify original object
         copyElements();
-        
-        boolean result = currentElements.add(item); 
-        
-        // update containment    	
+
+        boolean result = currentElements.add(item);
+
+        // update containment
         updateContainment(item, updateSequence);
 
         // update opposite property
         if (property != null && item != null) {
             Property oppositeProp = property.getOpposite();
             if (oppositeProp != null) {
-            	((DataObject) item).set(oppositeProp, dataObject);
+                ((DataObject) item).set(oppositeProp, dataObject);
             }
         }
 
@@ -162,7 +162,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
         if (item == null && (property != null && !property.isNullable())) {
             throw new UnsupportedOperationException("Property [" + property.getName() + "] is non-nullable");
         }
-        
+
         // see testLitWrapperAddMaintainsContainment()
         // fail-fast range checking
         if ((index < 0) || (index > size())) {
@@ -177,12 +177,12 @@ public class ListWrapper implements List, Serializable, Cloneable {
 
         // update containment
         updateContainment(item, updateSequence);
-        
+
         // update opposite property
         if (property != null && item != null) {
             Property oppositeProp = property.getOpposite();
             if (oppositeProp != null) {
-            	((DataObject) item).set(oppositeProp, dataObject);
+                ((DataObject) item).set(oppositeProp, dataObject);
                 dataObject.set(oppositeProp, null);
             }
         }
@@ -201,11 +201,11 @@ public class ListWrapper implements List, Serializable, Cloneable {
      *
      */
     protected void copyElements() {
-        // update element arrays before we modify original object        
+        // update element arrays before we modify original object
         if (isLogging() && (!dataObject.getChangeSummary().isDirty(this))) {
-            // original will maintain object identity - swap before copying            
+            // original will maintain object identity - swap before copying
             dataObject.getChangeSummary().getOriginalElements().put(this, currentElements);
-            // current list will now be a shallow copy of original(itself) - we will not use ArrayList.clone()            
+            // current list will now be a shallow copy of original(itself) - we will not use ArrayList.clone()
             currentElements = new ArrayList(currentElements);
         }
     }
@@ -215,12 +215,12 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * Undo any changes and return the original List
      */
     public void undoChanges(SDOChangeSummary cs) {
-        // ignore logging state  
+        // ignore logging state
         if (null == cs) {
             return;
         }
         if (cs.isDirty(this)) {
-            // swap elements, discard current state            
+            // swap elements, discard current state
             currentElements = (List)cs.getOriginalElements().get(this);
             cs.getOriginalElements().remove(this);
         }
@@ -260,7 +260,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      */
     private void updateSequenceSettingInternal(Property aProperty, Object item) {
         // create a new setting
-        // Note: A non spec isSequenced=true after type define will throw a NPE    	
+        // Note: A non spec isSequenced=true after type define will throw a NPE
         if (dataObject.getType().isSequenced()) {
             dataObject.getSequence().addSettingWithoutModifyingDataObject(property, item);
         }
@@ -288,23 +288,23 @@ public class ListWrapper implements List, Serializable, Cloneable {
         if ((property != null) && property.isContainment() && item instanceof SDODataObject) {
             dataObject.updateContainment(property, (SDODataObject)item);
         } else {
-        	if(dataObject != null) {
-        		dataObject._setModified(true);
-        	}
+            if(dataObject != null) {
+                dataObject._setModified(true);
+            }
         }
         // update sequence for containment and non-containment objects
         if ((property != null) && updateSequence) {
             updateSequenceSettingInternal(property, item);
         }
     }
-    
+
     protected void updateContainment(Collection items, boolean updateSequence) {
         if ((property != null) && property.isContainment()) {
             dataObject.updateContainment(property, items, updateSequence);
         } else {
-        	if(dataObject != null) {
-        		dataObject._setModified(true);
-        	}
+            if(dataObject != null) {
+                dataObject._setModified(true);
+            }
         }
     }
 
@@ -338,7 +338,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
             // passing a false fromDelete flag will not remove containment
             ((SDODataObject)item).detachOrDelete(fromDelete);
         } else {
-        	dataObject._setModified(true);
+            dataObject._setModified(true);
         }
         if ((property != null) && dataObject.getType().isSequenced() && updateSequence) {
             removeSequenceSettingInternal(occurrence, property, item);
@@ -354,7 +354,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * @return
      */
     public boolean remove(Object item, boolean fromDelete, boolean updateSequence) {
-        // update element arrays before we modify original object        
+        // update element arrays before we modify original object
         copyElements();
         // pass the remove containment (fromDelete) flag back to the recursive delete/detach call to dataObject
         // fromDelete will always be false when called within ListWrapper
@@ -420,7 +420,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
          * 2 - remove elements
          */
 
-        // add new elements before we have updated containment on the items - duplicates will be removed 
+        // add new elements before we have updated containment on the items - duplicates will be removed
         boolean modified = currentElements.addAll(items);
 
         // non-default Pluggable implementations do not require updateContainment
@@ -432,22 +432,22 @@ public class ListWrapper implements List, Serializable, Cloneable {
          * in the items collection that was added.
          * For sequences we must remove duplicates from items to match updateContainment for containment dataObjects
          */
-       	updateContainment(items, updateSequence);
+           updateContainment(items, updateSequence);
 
         // update opposite property
         if (property != null) {
-	        Property oppositeProp = property.getOpposite();
-	        if (oppositeProp != null) {
-			    Iterator itemsIterator = items.iterator();
-			    while(itemsIterator.hasNext()) {
-			        Object item = itemsIterator.next();
-			        if (item != null) {
-				        ((DataObject) item).set(oppositeProp, dataObject);
-			        }
-			    }
-		    }
+            Property oppositeProp = property.getOpposite();
+            if (oppositeProp != null) {
+                Iterator itemsIterator = items.iterator();
+                while(itemsIterator.hasNext()) {
+                    Object item = itemsIterator.next();
+                    if (item != null) {
+                        ((DataObject) item).set(oppositeProp, dataObject);
+                    }
+                }
+            }
         }
-        
+
         // create new settings outside of updateContainment as we do earlier in currentElements.add
         updateSequence(property, items, updateSequence);
 
@@ -508,19 +508,19 @@ public class ListWrapper implements List, Serializable, Cloneable {
 
         // update opposite property
         if (property != null) {
-	        Property oppositeProp = property.getOpposite();
-	        if (oppositeProp != null) {
-			    Iterator itemsIterator = items.iterator();
-			    while(itemsIterator.hasNext()) {
-			        Object item = itemsIterator.next();
-			        if (item != null) {
-				        ((DataObject) item).set(oppositeProp, dataObject);
-			            dataObject.set(oppositeProp, null);
-			        }
-			    }
-		    }
+            Property oppositeProp = property.getOpposite();
+            if (oppositeProp != null) {
+                Iterator itemsIterator = items.iterator();
+                while(itemsIterator.hasNext()) {
+                    Object item = itemsIterator.next();
+                    if (item != null) {
+                        ((DataObject) item).set(oppositeProp, dataObject);
+                        dataObject.set(oppositeProp, null);
+                    }
+                }
+            }
         }
-        
+
         // create new settings outside of updateContainment as we do earlier in currentElements.add
         updateSequence(property, items, updateSequence);
 
@@ -575,7 +575,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
 
         boolean modified = false;
 
-        // iterate across the full collection and remove only non-(itemsToKeep)    	
+        // iterate across the full collection and remove only non-(itemsToKeep)
         // don't use an Iterator when modifying the list or we will
         // get a ConcurrentModificationException on the Iterator.
         int originalSize = size();// store: as size will reduce as we iterate
@@ -586,7 +586,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
             // get object at current index
             Object anObject = get(index);
 
-            // is this element in the keep list?    		
+            // is this element in the keep list?
             if (!itemsToKeep.contains(anObject)) {
                 remove(anObject);
                 modified = true;
@@ -789,12 +789,12 @@ public class ListWrapper implements List, Serializable, Cloneable {
     }
 
     public Object get(int position) {
-    	try {
-    		return currentElements.get(position);
+        try {
+            return currentElements.get(position);
         } catch (Exception e) {
-        	// Return null in case of exception, as per SDO 2.1 Spec
-        	return null;
-        }    		    		
+            // Return null in case of exception, as per SDO 2.1 Spec
+            return null;
+        }
     }
 
     /**
@@ -830,15 +830,15 @@ public class ListWrapper implements List, Serializable, Cloneable {
     public void setCurrentElements(List currentElementsList) {
         currentElements = currentElementsList;
     }
-    
+
     /**
      * Clone the ListWrapper.
      * This creates a new ListWrapper with the same contents as the original (shallow clone)
-     * Minimal clone operation implemented to support usage in JPA 
+     * Minimal clone operation implemented to support usage in JPA
      */
     public Object clone() {
-    	ListWrapper listWrapperClone = new ListWrapper(dataObject, property);
-    	listWrapperClone.setCurrentElements(new ArrayList(currentElements));
-    	return listWrapperClone;
+        ListWrapper listWrapperClone = new ListWrapper(dataObject, property);
+        listWrapperClone.setCurrentElements(new ArrayList(currentElements));
+        return listWrapperClone;
     }
 }

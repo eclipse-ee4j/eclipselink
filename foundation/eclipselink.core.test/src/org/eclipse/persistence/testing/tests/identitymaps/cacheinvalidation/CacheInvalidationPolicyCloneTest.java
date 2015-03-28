@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation;
 
 import java.util.Calendar;
@@ -29,24 +29,24 @@ import org.eclipse.persistence.testing.framework.TestCase;
 public class CacheInvalidationPolicyCloneTest extends TestCase {
 
     protected Class policyClassToTest;
-    
+
     public CacheInvalidationPolicyCloneTest(Class policyClassToTest) {
         super();
         this.policyClassToTest = policyClassToTest;
         setName(getClass().getSimpleName() + " : " + policyClassToTest.getSimpleName());
         setDescription("Test CacheInvalidationPolicy cloning for: " + policyClassToTest.getSimpleName());
     }
-    
+
     public void test() {
         if (policyClassToTest == null || !Helper.classIsSubclass(policyClassToTest, CacheInvalidationPolicy.class)) {
             throwError("CacheInvalidationPolicy class to test cannot be null");
         }
-        
+
         if (policyClassToTest.equals(DailyCacheInvalidationPolicy.class)) {
             // expire at 01:02:03.004
             DailyCacheInvalidationPolicy policy = new DailyCacheInvalidationPolicy(1, 2, 3, 4);
             DailyCacheInvalidationPolicy policyClone = (DailyCacheInvalidationPolicy)policy.clone();
-            
+
             assertNotNull("Clone should not be null", policyClone);
             assertFalse("Clone should not be the same instance", policy == policyClone);
             assertEquals("Clone should be of the same type", policy.getClass(), policyClone.getClass());
@@ -58,14 +58,14 @@ public class CacheInvalidationPolicyCloneTest extends TestCase {
         } else if (policyClassToTest.equals(NoExpiryCacheInvalidationPolicy.class)) {
             NoExpiryCacheInvalidationPolicy policy = new NoExpiryCacheInvalidationPolicy();
             NoExpiryCacheInvalidationPolicy policyClone = (NoExpiryCacheInvalidationPolicy)policy.clone();
-            
+
             assertNotNull("Clone should not be null", policyClone);
             assertFalse("Clone should not be the same instance", policy == policyClone);
             assertEquals("Clone should be of the same type", policy.getClass(), policyClone.getClass());
         } else if (policyClassToTest.equals(TimeToLiveCacheInvalidationPolicy.class)) {
             TimeToLiveCacheInvalidationPolicy policy = new TimeToLiveCacheInvalidationPolicy();
             TimeToLiveCacheInvalidationPolicy policyClone = (TimeToLiveCacheInvalidationPolicy)policy.clone();
-            
+
             assertNotNull("Clone should not be null", policyClone);
             assertFalse("Clone should not be the same instance", policy == policyClone);
             assertEquals("Clone should be of the same type", policy.getClass(), policyClone.getClass());
@@ -74,5 +74,5 @@ public class CacheInvalidationPolicyCloneTest extends TestCase {
             throwError("Invalid policy class: " + this.policyClassToTest);
         }
     }
-    
+
 }

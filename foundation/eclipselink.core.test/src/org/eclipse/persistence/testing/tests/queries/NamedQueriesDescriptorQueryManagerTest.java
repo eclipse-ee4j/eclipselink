@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries;
 
 import java.util.*;
@@ -76,7 +76,7 @@ public class NamedQueriesDescriptorQueryManagerTest extends MultiNameQueriesTest
         this.descriptor = serverSession.getClassDescriptor(cls);
     }
 
-    // end of setDescriptorNamedQuery    
+    // end of setDescriptorNamedQuery
     public void useNamedQueryFirstName() {
         // do not use the following session's API,
         // public Object executeQuery(queryName, argumentValues)
@@ -99,7 +99,7 @@ public class NamedQueriesDescriptorQueryManagerTest extends MultiNameQueriesTest
         descriptor.getQueryManager().addQuery("namedQuerySameName", getNamedQueryFirstAndLastName());
     }
 
-    // end of addNamedQueryFirstAndLastName    
+    // end of addNamedQueryFirstAndLastName
     public void test() {
         // Can more than one named query co-exist with the same name?
         // Same name "namedQuerySameName" added twice to the very same

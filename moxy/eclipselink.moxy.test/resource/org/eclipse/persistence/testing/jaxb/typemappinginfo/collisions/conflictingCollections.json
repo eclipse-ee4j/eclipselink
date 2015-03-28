@@ -4,9 +4,9 @@
        {
          "xsi.type":"string",
          "value":"one"
-	},{
-	 "xsi.type":"int",
+    },{
+     "xsi.type":"int",
          "value":2
-	 }
+     }
    ]
    }}

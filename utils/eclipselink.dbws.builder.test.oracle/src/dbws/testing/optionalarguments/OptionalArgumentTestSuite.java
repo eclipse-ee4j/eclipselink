@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -63,43 +63,43 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
                     "\nA := '-1';" +
                 "\nEND IF;" +
                 "\nIF B IS NULL THEN" +
-	                "\nB := '-1';" +
-	            "\nEND IF;" +
+                    "\nB := '-1';" +
+                "\nEND IF;" +
                 "\nQ := CONCAT(A, ', ');" +
                 "\nQ := CONCAT(Q, B);" +
-	        "\nEND OPTIONAL_ARG1;" +
+            "\nEND OPTIONAL_ARG1;" +
             "\nPROCEDURE OPTIONAL_ARG2(X IN DBWS_VCARRAY DEFAULT NULL, Q OUT VARCHAR2) AS" +
             "\nBEGIN" +
-	            "\nIF X IS NULL THEN" +
-			        "\nQ := 'null';" +
-	            "\nELSE" + 
-			        "\nQ := 'not null';" +
-			    "\nEND IF;" +
-	        "\nEND OPTIONAL_ARG2;" +
+                "\nIF X IS NULL THEN" +
+                    "\nQ := 'null';" +
+                "\nELSE" +
+                    "\nQ := 'not null';" +
+                "\nEND IF;" +
+            "\nEND OPTIONAL_ARG2;" +
             "\nPROCEDURE OPTIONAL_ARG3(X IN DBWS_PHONETYPE DEFAULT NULL, Q OUT VARCHAR2) AS" +
             "\nBEGIN" +
-	            "\nIF X IS NULL THEN" +
-			        "\nQ := 'null';" +
-	            "\nELSE" + 
-			        "\nQ := CONCAT(X.HOME, ', ');" +
-			        "\nQ := CONCAT(Q, X.CELL);" +
-			    "\nEND IF;" +
-	        "\nEND OPTIONAL_ARG3;" +
+                "\nIF X IS NULL THEN" +
+                    "\nQ := 'null';" +
+                "\nELSE" +
+                    "\nQ := CONCAT(X.HOME, ', ');" +
+                    "\nQ := CONCAT(Q, X.CELL);" +
+                "\nEND IF;" +
+            "\nEND OPTIONAL_ARG3;" +
             "\nPROCEDURE OPTIONAL_ARG4(X IN DBWS_PHONETYPE_TABLE DEFAULT NULL, Q OUT VARCHAR2) AS" +
-	        "\nPHONE1 DBWS_PHONETYPE;" +
-	        "\nPHONE2 DBWS_PHONETYPE;" +
+            "\nPHONE1 DBWS_PHONETYPE;" +
+            "\nPHONE2 DBWS_PHONETYPE;" +
             "\nBEGIN" +
-	            "\nIF X IS NULL THEN" +
-			        "\nQ := 'null';" +
-	            "\nELSE" +
-			        "\nQ := CONCAT(X(1).HOME, ', ');" +
-			        "\nQ := CONCAT(Q, X(1).CELL);" +
-			        "\nQ := CONCAT(Q, ' - ');" +
-			        "\nQ := CONCAT(Q, X(2).HOME);" +
-			        "\nQ := CONCAT(Q, ', ');" +
-			        "\nQ := CONCAT(Q, X(2).CELL);" +
-			    "\nEND IF;" +
-	        "\nEND OPTIONAL_ARG4;" +
+                "\nIF X IS NULL THEN" +
+                    "\nQ := 'null';" +
+                "\nELSE" +
+                    "\nQ := CONCAT(X(1).HOME, ', ');" +
+                    "\nQ := CONCAT(Q, X(1).CELL);" +
+                    "\nQ := CONCAT(Q, ' - ');" +
+                    "\nQ := CONCAT(Q, X(2).HOME);" +
+                    "\nQ := CONCAT(Q, ', ');" +
+                    "\nQ := CONCAT(Q, X(2).CELL);" +
+                "\nEND IF;" +
+            "\nEND OPTIONAL_ARG4;" +
         "\nEND OPTIONALARG;";
 
     static final String DROP_OPTIONALARG_BODY =
@@ -153,15 +153,15 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
                 "<property name=\"projectName\">optionalArgs</property>" +
                 "<property name=\"logLevel\">off</property>" +
                 "<property name=\"username\">";
-        			DBWS_BUILDER_XML_PASSWORD =
+                    DBWS_BUILDER_XML_PASSWORD =
                 "</property><property name=\"password\">";
                     DBWS_BUILDER_XML_URL =
                 "</property><property name=\"url\">";
-        			DBWS_BUILDER_XML_DRIVER =
+                    DBWS_BUILDER_XML_DRIVER =
                 "</property><property name=\"driver\">";
-        			DBWS_BUILDER_XML_PLATFORM =
+                    DBWS_BUILDER_XML_PLATFORM =
                 "</property><property name=\"platformClassname\">";
-        			DBWS_BUILDER_XML_MAIN =
+                    DBWS_BUILDER_XML_MAIN =
                 "</property>" +
             "</properties>" +
             "<plsql-procedure " +
@@ -171,23 +171,23 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
                 "isSimpleXMLFormat=\"true\" " +
             "/>" +
             "<plsql-procedure " +
-	            "name=\"OptionalArgTest2\" " +
-	            "catalogPattern=\"OPTIONALARG\" " +
-	            "procedurePattern=\"OPTIONAL_ARG2\" " +
-	            "isSimpleXMLFormat=\"true\" " +
-	        "/>" +
+                "name=\"OptionalArgTest2\" " +
+                "catalogPattern=\"OPTIONALARG\" " +
+                "procedurePattern=\"OPTIONAL_ARG2\" " +
+                "isSimpleXMLFormat=\"true\" " +
+            "/>" +
             "<plsql-procedure " +
-	            "name=\"OptionalArgTest3\" " +
-	            "catalogPattern=\"OPTIONALARG\" " +
-	            "procedurePattern=\"OPTIONAL_ARG3\" " +
-	            "isSimpleXMLFormat=\"true\" " +
-	        "/>" +
+                "name=\"OptionalArgTest3\" " +
+                "catalogPattern=\"OPTIONALARG\" " +
+                "procedurePattern=\"OPTIONAL_ARG3\" " +
+                "isSimpleXMLFormat=\"true\" " +
+            "/>" +
             "<plsql-procedure " +
-	            "name=\"OptionalArgTest4\" " +
-	            "catalogPattern=\"OPTIONALARG\" " +
-	            "procedurePattern=\"OPTIONAL_ARG4\" " +
-	            "isSimpleXMLFormat=\"true\" " +
-	        "/>" +
+                "name=\"OptionalArgTest4\" " +
+                "catalogPattern=\"OPTIONALARG\" " +
+                "procedurePattern=\"OPTIONAL_ARG4\" " +
+                "isSimpleXMLFormat=\"true\" " +
+            "/>" +
           "</dbws-builder>";
           builder = new DBWSBuilder();
           DBWSTestSuite.setUp(".");
@@ -205,7 +205,7 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
     }
 
     /**
-     * Tests handing in second optional arg.  
+     * Tests handing in second optional arg.
      * Expects -1 for 'X'.
      */
     @Test
@@ -225,10 +225,10 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
     static String OPTIONAL_ARG_RESULT1_XML =
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
-		  "<simple-xml>" +
-		    "<Q>-1, 2</Q>" +
-		  "</simple-xml>" +
-	    "</simple-xml-format>";
+          "<simple-xml>" +
+            "<Q>-1, 2</Q>" +
+          "</simple-xml>" +
+        "</simple-xml-format>";
 
     /**
      * Tests handing in first optional arg.
@@ -251,10 +251,10 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
     static String OPTIONAL_ARG_RESULT2_XML =
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
-		  "<simple-xml>" +
-		    "<Q>2, -1</Q>" +
-		  "</simple-xml>" +
-	    "</simple-xml-format>";
+          "<simple-xml>" +
+            "<Q>2, -1</Q>" +
+          "</simple-xml>" +
+        "</simple-xml-format>";
 
     /**
      * Tests handing in no optional args.
@@ -276,10 +276,10 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
     static String OPTIONAL_ARG_RESULT3_XML =
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
-		  "<simple-xml>" +
-		    "<Q>-1, -1</Q>" +
-		  "</simple-xml>" +
-	    "</simple-xml-format>";
+          "<simple-xml>" +
+            "<Q>-1, -1</Q>" +
+          "</simple-xml>" +
+        "</simple-xml-format>";
 
     @Test
     public void optionalArgTest4() {
@@ -299,13 +299,13 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
     static String OPTIONAL_ARG_RESULT5_XML =
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
-		  "<simple-xml>" +
-		    "<Q>66, 99</Q>" +
-		  "</simple-xml>" +
-	    "</simple-xml-format>";
+          "<simple-xml>" +
+            "<Q>66, 99</Q>" +
+          "</simple-xml>" +
+        "</simple-xml-format>";
 
     /**
-     * Tests VArray default.  
+     * Tests VArray default.
      * Expects 'null'.
      */
     @Test
@@ -323,13 +323,13 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
     static String NULL_RESULT_XML =
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
-		  "<simple-xml>" +
-		    "<Q>null</Q>" +
-		  "</simple-xml>" +
-	    "</simple-xml-format>";
-    
+          "<simple-xml>" +
+            "<Q>null</Q>" +
+          "</simple-xml>" +
+        "</simple-xml-format>";
+
     /**
-     * Tests VArray default.  
+     * Tests VArray default.
      * Expects 'not-null'.
      */
     @Test
@@ -356,13 +356,13 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
     static String NOT_NULL_RESULT_XML =
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
-		  "<simple-xml>" +
-		    "<Q>not null</Q>" +
-		  "</simple-xml>" +
-	    "</simple-xml-format>";
+          "<simple-xml>" +
+            "<Q>not null</Q>" +
+          "</simple-xml>" +
+        "</simple-xml-format>";
 
     /**
-     * Tests Object default.  
+     * Tests Object default.
      * Expects 'null'.
      */
     @Test
@@ -377,9 +377,9 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(NULL_RESULT_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     /**
-     * Tests Object default.  
+     * Tests Object default.
      * Expects '(613)123-1234, (902)678-6789'.
      */
     @Test
@@ -406,13 +406,13 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
     static String PHONE_RESULT_XML =
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
-		  "<simple-xml>" +
-		    "<Q>(613)123-1234, (902)678-6789</Q>" +
-		  "</simple-xml>" +
-	    "</simple-xml-format>";
+          "<simple-xml>" +
+            "<Q>(613)123-1234, (902)678-6789</Q>" +
+          "</simple-xml>" +
+        "</simple-xml-format>";
 
     /**
-     * Tests ObjectTable default.  
+     * Tests ObjectTable default.
      * Expects 'null'.
      */
     @Test
@@ -429,7 +429,7 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
     }
 
     /**
-     * Tests ObjectTable default.  
+     * Tests ObjectTable default.
      * Expects ''.
      */
     @Test
@@ -451,20 +451,20 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
     static String PHONE_TABLE_INPUT_XML =
         REGULAR_XML_HEADER +
         "<dbws_phonetype_tableType xmlns=\"urn:optionalArgs\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-        	"<item>" +
-	            "<home>(613)123-1234</home>" +
-	            "<cell>(902)678-6789</cell>" +
-        	"</item>" +
-        	"<item>" +
-	            "<home>(613)234-4567</home>" +
-	            "<cell>(902)987-9876</cell>" +
-        	"</item>" +
+            "<item>" +
+                "<home>(613)123-1234</home>" +
+                "<cell>(902)678-6789</cell>" +
+            "</item>" +
+            "<item>" +
+                "<home>(613)234-4567</home>" +
+                "<cell>(902)987-9876</cell>" +
+            "</item>" +
         "</dbws_phonetype_tableType>";
     static String PHONE_TABLE_RESULT_XML =
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
-		  "<simple-xml>" +
-		    "<Q>(613)123-1234, (902)678-6789 - (613)234-4567, (902)987-9876</Q>" +
-		  "</simple-xml>" +
-	    "</simple-xml-format>";
+          "<simple-xml>" +
+            "<Q>(613)123-1234, (902)678-6789 - (613)234-4567, (902)987-9876</Q>" +
+          "</simple-xml>" +
+        "</simple-xml-format>";
 }

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm orm_2_1.xsd"
     version="2.1">
-    
+
     <description>Mapping Document containing persistence unit metadata.</description>
-    
+
     <package>org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl</package>
-    
+
     <mapped-superclass class="Athlete">
         <attributes>
             <basic name="age"/>
@@ -51,7 +51,7 @@
             </basic>
         </attributes>
     </mapped-superclass>
-    
+
     <entity name="XMLRunner" class="Runner">
         <table name="JPA21_XML_DLL_RUNNER"/>
         <inheritance strategy="JOINED"/>
@@ -96,13 +96,13 @@
             </embedded>
         </attributes>
     </entity>
-    
+
     <entity name="XMLSprinter" class="Sprinter">
         <table name="JPA21_XML_DDL_SPRINTER"/>
         <primary-key-join-column name="SPRINTER_ID" referenced-column-name="ID"/>
         <primary-key-foreign-key name="XML_Sprinter_Foreign_Key" foreign-key-definition="FOREIGN KEY (SPRINTER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
     </entity>
-    
+
     <entity name="XMLShoe" class="Shoe">
         <table name="JPA21_XML_DDL_SHOE"/>
         <attributes>
@@ -115,7 +115,7 @@
             </many-to-one>
         </attributes>
     </entity>
-    
+
     <entity name="XMLShoeTag" class="ShoeTag">
         <table name="JPA21_XML_DDL_SHOE_TAG"/>
         <attributes>
@@ -124,7 +124,7 @@
             </id>
         </attributes>
     </entity>
-    
+
     <entity name="XMLRace" class="Race">
         <table name="JPA21_XML_DDL_RACE"/>
         <attributes>
@@ -139,7 +139,7 @@
             <many-to-many name="runners" mapped-by="races"/>
         </attributes>
     </entity>
-    
+
     <entity name="XMLEndorser" class="Endorser">
         <table name="JPA21_XML_DDL_ENDORSER"/>
         <attributes>
@@ -149,7 +149,7 @@
             <basic name="name"/>
         </attributes>
     </entity>
-    
+
     <entity name="XMLOrganizer" class="Organizer">
         <table name="JPA21_XML_DDL_ORGANIZER"/>
         <attributes>
@@ -163,7 +163,7 @@
             </many-to-one>
         </attributes>
     </entity>
-    
+
     <entity name="XMLFork" class="Fork">
         <table name="JPA21_XML_FORK">
             <!-- default the name to JPA21_XML_FORK_INDEX_STYLE_COLOR -->
@@ -194,7 +194,7 @@
             </element-collection>
         </attributes>
     </entity>
-    
+
     <entity name="XMLForkUser" class="ForkUser">
         <table name="JPA21_XML_FORK_USER"/>
         <attributes>
@@ -204,7 +204,7 @@
             <many-to-many name="forks" mapped-by="users"/>
         </attributes>
     </entity>
-    
+
     <embeddable class="RunnerInfo">
         <attributes>
             <basic name="level">
@@ -215,7 +215,7 @@
             </basic>
         </attributes>
     </embeddable>
-    
+
     <embeddable class="RunnerStatus">
         <attributes>
             <basic name="runningStatus">
@@ -223,7 +223,7 @@
             </basic>
         </attributes>
     </embeddable>
-    
+
     <embeddable class="Responsibility">
         <attributes>
             <basic name="uniqueIdentifier"/>

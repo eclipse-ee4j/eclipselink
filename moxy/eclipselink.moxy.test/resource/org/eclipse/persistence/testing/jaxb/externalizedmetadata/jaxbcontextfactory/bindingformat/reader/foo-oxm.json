@@ -3,24 +3,24 @@
     "xml-schema":{
         "namespace":"reader",
         "xml-ns":{
-	   "prefix":"ns0",
-	   "namespace-uri":"reader"
-	   }
+       "prefix":"ns0",
+       "namespace-uri":"reader"
+       }
       },
     "java-types":{
         "java-type":[
-	    {
-	     "name":"Foo",
+        {
+         "name":"Foo",
              "xml-root-element":{
-	        "name":"my-foo"
-	      },
+            "name":"my-foo"
+          },
             "java-attributes":{
                 "xml-attribute":[
-   		   {
-   	               "java-attribute":"id"
-		   }
-		 ]
-		 }
+              {
+                      "java-attribute":"id"
+           }
+         ]
+         }
               }
             ]
      }

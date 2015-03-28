@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -33,7 +33,7 @@ public interface SessionProfiler {
     public static final String LoginTime = "Info:LoginTime";
     public static final String RcmStatus = "Info:CacheCoordinationStatus";
     public static final String CacheSize = "Info:CacheSize";//TODO
-    
+
     public static final String ClientSessionCreated = "Counter:ClientSessionCreates";
     public static final String ClientSessionReleased = "Counter:ClientSessionReleases";
     public static final String UowCreated = "Counter:UnitOfWorkCreates";
@@ -50,7 +50,7 @@ public interface SessionProfiler {
     public static final String CacheMisses = "Counter:CacheMisses";
     public static final String ChangeSetsProcessed = "Counter:ChangesProcessed";
     public static final String ChangeSetsNotProcessed = "Counter:ChangesNotProcessed";
-    
+
     public static final String DescriptorEvent = "Timer:DescriptorEvents";
     public static final String SessionEvent = "Timer:SessionEvents";
     public static final String QueryPreparation = "Timer:QueryPreparation";
@@ -128,7 +128,7 @@ public interface SessionProfiler {
      * Increase DMS Event sensor occurrence.(DMS)
      */
     public void occurred(String operationName, AbstractSession session);
-    
+
     /**
      * INTERNAL:
      * Increase DMS Event sensor occurrence.(DMS)

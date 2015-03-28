@@ -9,22 +9,22 @@ import org.eclipse.persistence.testing.jaxb.xmlelementref.nills.Employee.Task;
 
 @XmlRegistry
 public class ObjectFactory {
-	
-	@XmlElementDecl(name = "task")
-	public JAXBElement<Task> createTask(Task t) {
-		JAXBElement<Task> task =  new JAXBElement<Employee.Task>(new QName("task"), Task.class, t);
-		task.setNil(true);
-		return task;
-	}
-	
-	@XmlElementDecl(name = "address")
-	public JAXBElement<Address> createAddress(Address a) {
-		JAXBElement<Address> address =  new JAXBElement<Address>(new QName("address"), Address.class, a);
-		address.setNil(true);
-		return address;
-	}
 
-	@XmlElementDecl(name="foo")
+    @XmlElementDecl(name = "task")
+    public JAXBElement<Task> createTask(Task t) {
+        JAXBElement<Task> task =  new JAXBElement<Employee.Task>(new QName("task"), Task.class, t);
+        task.setNil(true);
+        return task;
+    }
+
+    @XmlElementDecl(name = "address")
+    public JAXBElement<Address> createAddress(Address a) {
+        JAXBElement<Address> address =  new JAXBElement<Address>(new QName("address"), Address.class, a);
+        address.setNil(true);
+        return address;
+    }
+
+    @XmlElementDecl(name="foo")
     public JAXBElement<String> createFoo(String foo) {
         return new JAXBElement<String>(new QName("foo"), String.class, foo);
     }

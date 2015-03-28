@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,85 +40,85 @@ public class CollectionHolderNillableWithNullsTestCases extends JAXBWithJSONTest
     @Override
     protected Object getControlObject() {
         CollectionHolderNillable obj = new CollectionHolderNillable();
-    	obj.collection1 = new ArrayList();
-    	obj.collection1.add(null);
-    	obj.collection1.add(null);
-    	obj.collection2 = new ArrayList();
-    	obj.collection2.add(null);
-    	obj.collection2.add(null);
-    	obj.collection3 = new ArrayList();
-    	obj.collection3.add(null);
-    	obj.collection3.add(null);
-    	obj.collection4 = new ArrayList();
-    	obj.collection4.add(null);
-    	obj.collection4.add(null);
-    	obj.collection5 = new ArrayList();
-    	obj.collection5.add(null);
-    	obj.collection5.add(null);
-    	obj.collection6 = new ArrayList();
-    	obj.collection6.add(null);
-    	obj.collection6.add(null);
-   // 	obj.collection7 = new ArrayList();
-   // 	obj.collection7.add(null);
-    //	obj.collection7.add(null);
-    //	obj.collection8 = new ArrayList();
-    //	obj.collection8.add(null);
-    //	obj.collection8.add(null);
-    	obj.collection9 = new ArrayList();
-     	obj.collection9.add(null);
-     	obj.collection9.add(null);
-     	//obj.collection10 = new HashMap());
+        obj.collection1 = new ArrayList();
+        obj.collection1.add(null);
+        obj.collection1.add(null);
+        obj.collection2 = new ArrayList();
+        obj.collection2.add(null);
+        obj.collection2.add(null);
+        obj.collection3 = new ArrayList();
+        obj.collection3.add(null);
+        obj.collection3.add(null);
+        obj.collection4 = new ArrayList();
+        obj.collection4.add(null);
+        obj.collection4.add(null);
+        obj.collection5 = new ArrayList();
+        obj.collection5.add(null);
+        obj.collection5.add(null);
+        obj.collection6 = new ArrayList();
+        obj.collection6.add(null);
+        obj.collection6.add(null);
+   //     obj.collection7 = new ArrayList();
+   //     obj.collection7.add(null);
+    //    obj.collection7.add(null);
+    //    obj.collection8 = new ArrayList();
+    //    obj.collection8.add(null);
+    //    obj.collection8.add(null);
+        obj.collection9 = new ArrayList();
+         obj.collection9.add(null);
+         obj.collection9.add(null);
+         //obj.collection10 = new HashMap());
        //obj.collection10.put(new QName("theKey"), null);
-     //	obj.collection10.put(new QName("theKey2"), null);
-   
-     //	obj.collection11 = new ArrayList();
-   	   // obj.collection11.add(null);
-   	    //obj.collection11.add(null);
-   
-   	 return obj;
+     //    obj.collection10.put(new QName("theKey2"), null);
+
+     //    obj.collection11 = new ArrayList();
+          // obj.collection11.add(null);
+           //obj.collection11.add(null);
+
+        return obj;
     }
 
     public Object getReadControlObject() {
         CollectionHolderNillable obj = new CollectionHolderNillable();
-    	obj.collection1 = new ArrayList();
-    	obj.collection1.add(null);
-    	obj.collection1.add(null);
-    	obj.collection2 = new ArrayList();
-    	//obj.collection2.add(null);
-    	//obj.collection2.add(null);
-    	obj.collection3 = new ArrayList();
-    	obj.collection3.add(null);
-    	obj.collection3.add(null);
-    	//obj.collection4 = new ArrayList();
-    	//obj.collection4.add(null);
-    	//obj.collection4.add(null);
-    	obj.collection5 = new ArrayList();
-    	obj.collection5.add(null);
-    	obj.collection5.add(null);
-    	
-    	obj.collection6 = new ArrayList();
-    	obj.collection6.add(new JAXBElement(new QName("root2"), String.class, null));
-    	obj.collection6.add(new JAXBElement(new QName("root2"), String.class, null));    	
-    	//obj.collection7 = new ArrayList();
-    	//obj.collection7.add(null);
-    	//obj.collection7.add(null);
-    //	obj.collection8 = new ArrayList();
-    	//obj.collection8.add(null);
-    	//obj.collection8.add(null);
-    	obj.collection9 = new ArrayList();
-     	obj.collection9.add(null);
-     	obj.collection9.add(null);
-     	//obj.collection10 = new HashMap());
+        obj.collection1 = new ArrayList();
+        obj.collection1.add(null);
+        obj.collection1.add(null);
+        obj.collection2 = new ArrayList();
+        //obj.collection2.add(null);
+        //obj.collection2.add(null);
+        obj.collection3 = new ArrayList();
+        obj.collection3.add(null);
+        obj.collection3.add(null);
+        //obj.collection4 = new ArrayList();
+        //obj.collection4.add(null);
+        //obj.collection4.add(null);
+        obj.collection5 = new ArrayList();
+        obj.collection5.add(null);
+        obj.collection5.add(null);
+
+        obj.collection6 = new ArrayList();
+        obj.collection6.add(new JAXBElement(new QName("root2"), String.class, null));
+        obj.collection6.add(new JAXBElement(new QName("root2"), String.class, null));
+        //obj.collection7 = new ArrayList();
+        //obj.collection7.add(null);
+        //obj.collection7.add(null);
+    //    obj.collection8 = new ArrayList();
+        //obj.collection8.add(null);
+        //obj.collection8.add(null);
+        obj.collection9 = new ArrayList();
+         obj.collection9.add(null);
+         obj.collection9.add(null);
+         //obj.collection10 = new HashMap());
        //obj.collection10.put(new QName("theKey"), null);
-     //	obj.collection10.put(new QName("theKey2"), null);
-   
-     //	obj.collection11 = new ArrayList();
-   	   // obj.collection11.add(null);
-   	    //obj.collection11.add(null);
-   
-   	 return obj;
+     //    obj.collection10.put(new QName("theKey2"), null);
+
+     //    obj.collection11 = new ArrayList();
+          // obj.collection11.add(null);
+           //obj.collection11.add(null);
+
+        return obj;
     }
-    
-    public void testRoundTrip() throws Exception{    
+
+    public void testRoundTrip() throws Exception{
     }
 }

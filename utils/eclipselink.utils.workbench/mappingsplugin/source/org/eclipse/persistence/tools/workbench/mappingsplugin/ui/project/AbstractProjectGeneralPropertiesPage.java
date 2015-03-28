@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -41,153 +41,153 @@ import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
 public abstract class AbstractProjectGeneralPropertiesPage extends ScrollablePropertiesPage {
 
-	private PropertyValueModel projectSaveDirectoryHolder;
-	
-	protected AbstractProjectGeneralPropertiesPage(PropertyValueModel projectNodeHolder, WorkbenchContextHolder contextHolder) {
-		super(projectNodeHolder, contextHolder);
-	}
+    private PropertyValueModel projectSaveDirectoryHolder;
 
-	protected void initialize(PropertyValueModel selectionNodeHolder) {
-		super.initialize(selectionNodeHolder);
-		this.projectSaveDirectoryHolder = this.buildProjectSaveDirectoryHolder();
-	}
-	
-	protected final JComponent buildProjectSaveLocationPanel() {
-		GridBagConstraints constraints = new GridBagConstraints();
+    protected AbstractProjectGeneralPropertiesPage(PropertyValueModel projectNodeHolder, WorkbenchContextHolder contextHolder) {
+        super(projectNodeHolder, contextHolder);
+    }
 
-		JPanel panel = new JPanel(new GridBagLayout());
+    protected void initialize(PropertyValueModel selectionNodeHolder) {
+        super.initialize(selectionNodeHolder);
+        this.projectSaveDirectoryHolder = this.buildProjectSaveDirectoryHolder();
+    }
 
-		//  label
-		JLabel projectSaveLocationLabel = this.buildLabel("SAVE_LOCATION_TEXT_FIELD_LABEL");
+    protected final JComponent buildProjectSaveLocationPanel() {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 0;
-		constraints.weighty = 0;
-		constraints.fill = GridBagConstraints.NONE;
-		constraints.anchor = GridBagConstraints.LINE_START;
-		constraints.insets = new Insets(0, 0, 0, 0);
+        JPanel panel = new JPanel(new GridBagLayout());
 
-		panel.add(projectSaveLocationLabel, constraints);
+        //  label
+        JLabel projectSaveLocationLabel = this.buildLabel("SAVE_LOCATION_TEXT_FIELD_LABEL");
 
-		// text field
-		JTextField projectSaveLocationField = new JTextField(this.buildSaveLocationDocumentAdapter(), null, 1);	
-		projectSaveLocationField.setEditable(false);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 0;
+        constraints.weighty = 0;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.insets = new Insets(0, 0, 0, 0);
 
-		constraints.gridx = 0;
-		constraints.gridy = 1;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 1;
-		constraints.weighty = 0;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.insets = new Insets(1, 0, 0, 0);
+        panel.add(projectSaveLocationLabel, constraints);
 
-		panel.add(projectSaveLocationField, constraints);
-		this.addHelpTopicId(projectSaveLocationField, this.helpTopicId() + ".location");
-		projectSaveLocationLabel.setLabelFor(projectSaveLocationField);
+        // text field
+        JTextField projectSaveLocationField = new JTextField(this.buildSaveLocationDocumentAdapter(), null, 1);
+        projectSaveLocationField.setEditable(false);
 
-		this.addHelpTopicId(panel, this.helpTopicId());
-		return panel;
-	}
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(1, 0, 0, 0);
 
-	protected final JComponent buildCommentPanel() {
-		return SwingComponentFactory.buildCommentPanel(this.getSelectionHolder(), this.resourceRepository());
-	}
+        panel.add(projectSaveLocationField, constraints);
+        this.addHelpTopicId(projectSaveLocationField, this.helpTopicId() + ".location");
+        projectSaveLocationLabel.setLabelFor(projectSaveLocationField);
 
-	protected final AbstractPanel buildClassPathPanel() {
-		ClasspathPanel classpathPanel = new ClasspathPanel(this.getApplicationContext(), this.buildClasspathHolder(), this.projectSaveDirectoryHolder);
-		classpathPanel.setDefaultClasspathDirectoryHolder(this.buildDefaultClasspathDirectoryHolder());
-		return classpathPanel;
-	}
+        this.addHelpTopicId(panel, this.helpTopicId());
+        return panel;
+    }
 
-	protected MWProject getProject() {
-		return (MWProject) this.getSelectionHolder().getValue();
-	}
+    protected final JComponent buildCommentPanel() {
+        return SwingComponentFactory.buildCommentPanel(this.getSelectionHolder(), this.resourceRepository());
+    }
 
-	File projectSaveDirectory() {
-		return this.getProject().getSaveDirectory();
-	}
+    protected final AbstractPanel buildClassPathPanel() {
+        ClasspathPanel classpathPanel = new ClasspathPanel(this.getApplicationContext(), this.buildClasspathHolder(), this.projectSaveDirectoryHolder);
+        classpathPanel.setDefaultClasspathDirectoryHolder(this.buildDefaultClasspathDirectoryHolder());
+        return classpathPanel;
+    }
 
-	String mostRecentClasspathDirectoryPreference() {
-		return this.preferences().get(ClasspathPanel.MOST_RECENT_CLASSPATH_DIRECTORY_PREFERENCE, null);
-	}
+    protected MWProject getProject() {
+        return (MWProject) this.getSelectionHolder().getValue();
+    }
 
-	void setMostRecentClasspathDirectoryPreference(String dirName) {
-		this.preferences().put(ClasspathPanel.MOST_RECENT_CLASSPATH_DIRECTORY_PREFERENCE, dirName);
-	}
+    File projectSaveDirectory() {
+        return this.getProject().getSaveDirectory();
+    }
 
-	private ClasspathPanel.DefaultClasspathDirectoryHolder buildDefaultClasspathDirectoryHolder() {
-		return new ClasspathPanel.DefaultClasspathDirectoryHolder() {
-			public File getDefaultClasspathDirectory() {
-				String dirName = AbstractProjectGeneralPropertiesPage.this.mostRecentClasspathDirectoryPreference();
-				if (dirName != null) {
-					return new File(dirName);
-				}
-				File dir = AbstractProjectGeneralPropertiesPage.this.projectSaveDirectory();
-				if (dir != null) {
-					return dir;
-				}
-				return FileTools.userHomeDirectory();
-			}
+    String mostRecentClasspathDirectoryPreference() {
+        return this.preferences().get(ClasspathPanel.MOST_RECENT_CLASSPATH_DIRECTORY_PREFERENCE, null);
+    }
 
-			public void setDefaultClasspathDirectory(File defaultClasspathDirectory) {
-				AbstractProjectGeneralPropertiesPage.this.setMostRecentClasspathDirectoryPreference(defaultClasspathDirectory.getPath());
-			}
-		};
-	}
+    void setMostRecentClasspathDirectoryPreference(String dirName) {
+        this.preferences().put(ClasspathPanel.MOST_RECENT_CLASSPATH_DIRECTORY_PREFERENCE, dirName);
+    }
 
-	private PropertyValueModel buildProjectSaveDirectoryHolder() {
-		return new PropertyAspectAdapter(this.getSelectionHolder(), MWProject.SAVE_DIRECTORY_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return ((MWProject) this.subject).getSaveDirectory();
-			}
-		};
-	}
-	
-	private Document buildSaveLocationDocumentAdapter() {
-		return new DocumentAdapter(
-			new PropertyAspectAdapter(this.projectSaveDirectoryHolder) {
-				protected Object getValueFromSubject() {
-					return ((File) this.subject).getAbsolutePath();
-				}
-			}
-		);
-	}
+    private ClasspathPanel.DefaultClasspathDirectoryHolder buildDefaultClasspathDirectoryHolder() {
+        return new ClasspathPanel.DefaultClasspathDirectoryHolder() {
+            public File getDefaultClasspathDirectory() {
+                String dirName = AbstractProjectGeneralPropertiesPage.this.mostRecentClasspathDirectoryPreference();
+                if (dirName != null) {
+                    return new File(dirName);
+                }
+                File dir = AbstractProjectGeneralPropertiesPage.this.projectSaveDirectory();
+                if (dir != null) {
+                    return dir;
+                }
+                return FileTools.userHomeDirectory();
+            }
 
-	private PropertyValueModel buildRepositoryHolder() {
-		return new PropertyAspectAdapter(this.getSelectionHolder()) {
-			protected Object getValueFromSubject() {
-				return ((MWProject) this.subject).getRepository();
-			}
-		};
-	}
+            public void setDefaultClasspathDirectory(File defaultClasspathDirectory) {
+                AbstractProjectGeneralPropertiesPage.this.setMostRecentClasspathDirectoryPreference(defaultClasspathDirectory.getPath());
+            }
+        };
+    }
 
-	private ListValueModel buildClasspathHolder() {
-		return new ListAspectAdapter(this.buildRepositoryHolder(), MWClassRepository.CLASSPATH_ENTRIES_LIST) {
-			public void addItem(int index, Object item) {
-				((MWClassRepository) this.subject).addClasspathEntry(index, (String) item);
-			}
-			protected ListIterator getValueFromSubject() {
-				return ((MWClassRepository) this.subject).classpathEntries();
-			}
-			public Object removeItem(int index) {
-				return ((MWClassRepository) this.subject).removeClasspathEntry(index);
-			}
-			public Object replaceItem(int index, Object item) {
-				return ((MWClassRepository) this.subject).replaceClasspathEntry(index, (String) item);
-			}
-			protected int sizeFromSubject() {
-				return ((MWClassRepository) this.subject).classpathEntriesSize();
-			}
-		};
-	}
+    private PropertyValueModel buildProjectSaveDirectoryHolder() {
+        return new PropertyAspectAdapter(this.getSelectionHolder(), MWProject.SAVE_DIRECTORY_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return ((MWProject) this.subject).getSaveDirectory();
+            }
+        };
+    }
 
-	protected final String helpTopicId() {
-		return "project.general";
-	}
+    private Document buildSaveLocationDocumentAdapter() {
+        return new DocumentAdapter(
+            new PropertyAspectAdapter(this.projectSaveDirectoryHolder) {
+                protected Object getValueFromSubject() {
+                    return ((File) this.subject).getAbsolutePath();
+                }
+            }
+        );
+    }
+
+    private PropertyValueModel buildRepositoryHolder() {
+        return new PropertyAspectAdapter(this.getSelectionHolder()) {
+            protected Object getValueFromSubject() {
+                return ((MWProject) this.subject).getRepository();
+            }
+        };
+    }
+
+    private ListValueModel buildClasspathHolder() {
+        return new ListAspectAdapter(this.buildRepositoryHolder(), MWClassRepository.CLASSPATH_ENTRIES_LIST) {
+            public void addItem(int index, Object item) {
+                ((MWClassRepository) this.subject).addClasspathEntry(index, (String) item);
+            }
+            protected ListIterator getValueFromSubject() {
+                return ((MWClassRepository) this.subject).classpathEntries();
+            }
+            public Object removeItem(int index) {
+                return ((MWClassRepository) this.subject).removeClasspathEntry(index);
+            }
+            public Object replaceItem(int index, Object item) {
+                return ((MWClassRepository) this.subject).replaceClasspathEntry(index, (String) item);
+            }
+            protected int sizeFromSubject() {
+                return ((MWClassRepository) this.subject).classpathEntriesSize();
+            }
+        };
+    }
+
+    protected final String helpTopicId() {
+        return "project.general";
+    }
 
 }

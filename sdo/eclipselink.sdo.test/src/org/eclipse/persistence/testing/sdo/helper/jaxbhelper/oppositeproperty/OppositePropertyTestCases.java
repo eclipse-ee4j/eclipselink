@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -43,7 +43,7 @@ public class OppositePropertyTestCases extends SDOTestCase {
         XMLContext xmlContext = new XMLContext(project);
         JAXBContext jaxbContext = new JAXBContext(xmlContext);
         jaxbHelperContext = new JAXBHelperContext(jaxbContext);
-        
+
         InputStream xsd = Thread.currentThread().getContextClassLoader().getResourceAsStream(XML_SCHEMA);
         jaxbHelperContext.getXSDHelper().define(xsd, null);
     }
@@ -56,7 +56,7 @@ public class OppositePropertyTestCases extends SDOTestCase {
         Property child2Property = child1DO.getType().getProperty("child2");
         child1DO.set(child2Property, child2DO);
         this.assertEquals(child1DO, child2DO.get("child1"));
-        
+
         Child2 child2 = (Child2) jaxbHelperContext.unwrap(child2DO);
         this.assertNotNull(child2.getChild1());
     }
@@ -66,7 +66,7 @@ public class OppositePropertyTestCases extends SDOTestCase {
         DataObject child1DO = rootDO.createDataObject("child1");
         DataObject child2DO = rootDO.createDataObject("child2");
         DataObject newChild2DO =  rootDO.createDataObject("child2");
-        
+
         Property child2Property = child1DO.getType().getProperty("child2");
         child1DO.set(child2Property, child2DO);
         child1DO.set(child2Property, newChild2DO);
@@ -78,7 +78,7 @@ public class OppositePropertyTestCases extends SDOTestCase {
         this.assertNull(child2.getChild1());
 
         Child2 newChild2 = (Child2) jaxbHelperContext.unwrap(newChild2DO);
-        this.assertNotNull(newChild2.getChild1());        
+        this.assertNotNull(newChild2.getChild1());
     }
 
     public void testOppositePropertyCleared2() {
@@ -93,12 +93,12 @@ public class OppositePropertyTestCases extends SDOTestCase {
 
         this.assertNull(child2DO.get("child1"));
         this.assertEquals(child1DO, newChild2DO.get("child1"));
-        
+
         Child2 child2 = (Child2) jaxbHelperContext.unwrap(child2DO);
         this.assertNull(child2.getChild1());
 
         Child2 newChild2 = (Child2) jaxbHelperContext.unwrap(newChild2DO);
-        this.assertNotNull(newChild2.getChild1());        
+        this.assertNotNull(newChild2.getChild1());
     }
 
     public void testOppositePropertySetCollectionCaseAdd() {
@@ -110,7 +110,7 @@ public class OppositePropertyTestCases extends SDOTestCase {
         List list = child1DO.getList(child2CollectionProperty);
         list.add(child2DO);
         this.assertEquals(child1DO, child2DO.get("child1"));
-        
+
         Child2 child2 = (Child2) jaxbHelperContext.unwrap(child2DO);
         this.assertNotNull(child2.getChild1());
     }
@@ -124,9 +124,9 @@ public class OppositePropertyTestCases extends SDOTestCase {
         List child2Collection = new ArrayList();
         child2Collection.add(child2DO);
         child1DO.setList(child2CollectionProperty, child2Collection);
-        
+
         this.assertEquals(child1DO, child2DO.get("child1"));
-        
+
         Child2 child2 = (Child2) jaxbHelperContext.unwrap(child2DO);
         this.assertNotNull(child2.getChild1());
     }

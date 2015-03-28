@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -34,26 +34,26 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
  */
 public class CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalseTestCases extends XMLWithJSONMappingTestCases {
     private final static String XML_RESOURCE = //
-    	"org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalse.xml";
+        "org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalse.xml";
     private final static String JSON_RESOURCE = //
-    	"org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalse.json";
+        "org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalse.json";
     private final static String XML_WRITE_RESOURCE = //
-    	"org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalse.xml";    																		   
+        "org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalse.xml";
 
     public CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalseTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);       
-		setControlJSON(JSON_RESOURCE);
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
 
         AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
-    	// Alter unmarshal policy state
-    	aNullPolicy.setNullRepresentedByEmptyNode(true);
-    	aNullPolicy.setNullRepresentedByXsiNil(false);
-    	// Alter marshal policy state
-    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        // Alter unmarshal policy state
+        aNullPolicy.setNullRepresentedByEmptyNode(true);
+        aNullPolicy.setNullRepresentedByXsiNil(false);
+        // Alter marshal policy state
+        aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
 
-    	((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetManager");
+        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetManager");
         Project aProject = new CompositeObjectNodeNullPolicyProject(true);
         XMLDescriptor teamDescriptor = (XMLDescriptor) aProject.getDescriptor(Team.class);
         NamespaceResolver namespaceResolver = new NamespaceResolver();
@@ -71,19 +71,19 @@ public class CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalseTestCases exten
 
     // Override unmarshal
     public Object getReadControlObject() {
-    	Team aTeam = new Team();
-    	aTeam.setId(123);
-    	aTeam.setName("Eng");
-    	aTeam.setManager(null); // output isset=true for UC 9-3 to 9-4       
+        Team aTeam = new Team();
+        aTeam.setId(123);
+        aTeam.setName("Eng");
+        aTeam.setManager(null); // output isset=true for UC 9-3 to 9-4
         return aTeam;
     }
 
     // Marshal
     protected Object getControlObject() {
-    	Team aTeam = new Team();
-    	aTeam.setId(123);
-    	aTeam.setName("Eng");
-    	aTeam.setManager(null); // input sset=false for UC 11.2       
+        Team aTeam = new Team();
+        aTeam.setId(123);
+        aTeam.setName("Eng");
+        aTeam.setManager(null); // input sset=false for UC 11.2
         return aTeam;
     }
 }

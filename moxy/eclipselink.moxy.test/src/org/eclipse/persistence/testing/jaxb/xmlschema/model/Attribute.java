@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,9 +25,9 @@ import javax.xml.namespace.QName;
 
 /**
  * <p>Java class for attribute complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="attribute">
  *   &lt;complexContent>
@@ -54,8 +54,8 @@ import javax.xml.namespace.QName;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "attribute", propOrder = {
@@ -89,11 +89,11 @@ public class Attribute
 
     /**
      * Gets the value of the simpleType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link LocalSimpleType }
-     *     
+     *
      */
     public LocalSimpleType getSimpleType() {
         return simpleType;
@@ -101,11 +101,11 @@ public class Attribute
 
     /**
      * Sets the value of the simpleType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link LocalSimpleType }
-     *     
+     *
      */
     public void setSimpleType(LocalSimpleType value) {
         this.simpleType = value;
@@ -113,11 +113,11 @@ public class Attribute
 
     /**
      * Gets the value of the type property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link QName }
-     *     
+     *
      */
     public QName getType() {
         return type;
@@ -125,11 +125,11 @@ public class Attribute
 
     /**
      * Sets the value of the type property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link QName }
-     *     
+     *
      */
     public void setType(QName value) {
         this.type = value;
@@ -137,11 +137,11 @@ public class Attribute
 
     /**
      * Gets the value of the use property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getUse() {
         if (use == null) {
@@ -153,11 +153,11 @@ public class Attribute
 
     /**
      * Sets the value of the use property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setUse(String value) {
         this.use = value;
@@ -165,11 +165,11 @@ public class Attribute
 
     /**
      * Gets the value of the default property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getDefault() {
         return _default;
@@ -177,11 +177,11 @@ public class Attribute
 
     /**
      * Sets the value of the default property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setDefault(String value) {
         this._default = value;
@@ -189,11 +189,11 @@ public class Attribute
 
     /**
      * Gets the value of the fixed property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getFixed() {
         return fixed;
@@ -201,11 +201,11 @@ public class Attribute
 
     /**
      * Sets the value of the fixed property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setFixed(String value) {
         this.fixed = value;
@@ -213,11 +213,11 @@ public class Attribute
 
     /**
      * Gets the value of the form property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link FormChoice }
-     *     
+     *
      */
     public FormChoice getForm() {
         return form;
@@ -225,11 +225,11 @@ public class Attribute
 
     /**
      * Sets the value of the form property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link FormChoice }
-     *     
+     *
      */
     public void setForm(FormChoice value) {
         this.form = value;
@@ -237,11 +237,11 @@ public class Attribute
 
     /**
      * Gets the value of the name property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getName() {
         return name;
@@ -249,11 +249,11 @@ public class Attribute
 
     /**
      * Sets the value of the name property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setName(String value) {
         this.name = value;
@@ -261,11 +261,11 @@ public class Attribute
 
     /**
      * Gets the value of the ref property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link QName }
-     *     
+     *
      */
     public QName getRef() {
         return ref;
@@ -273,11 +273,11 @@ public class Attribute
 
     /**
      * Sets the value of the ref property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link QName }
-     *     
+     *
      */
     public void setRef(QName value) {
         this.ref = value;

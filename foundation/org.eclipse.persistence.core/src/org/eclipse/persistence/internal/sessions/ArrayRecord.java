@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.io.StringWriter;
@@ -29,13 +29,13 @@ public class ArrayRecord extends DatabaseRecord {
     protected ArrayRecord() {
         super();
     }
-    
+
     public ArrayRecord(Vector fields, DatabaseField[] fieldsArray, Object[] valuesArray) {
         super(fields, null, fieldsArray.length);
         this.fieldsArray = fieldsArray;
         this.valuesArray = valuesArray;
     }
-    
+
     /**
      * Reset the fields and values from the arrays.
      * This removes the optimization if a non-optimized method is called.
@@ -97,7 +97,7 @@ public class ArrayRecord extends DatabaseRecord {
             for (DatabaseField field : this.fieldsArray) {
                 if ((field == key) || field.equals(key)) {
                     return true;
-                } 
+                }
             }
             return false;
         } else {
@@ -114,7 +114,7 @@ public class ArrayRecord extends DatabaseRecord {
             for (Object rowValue : this.valuesArray) {
                 if ((value == rowValue) || rowValue.equals(value)) {
                     return true;
-                } 
+                }
             }
             return false;
         } else {
@@ -151,7 +151,7 @@ public class ArrayRecord extends DatabaseRecord {
             return super.get(key);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Retrieve the value for the field. If missing DatabaseRow.noEntry is returned.
@@ -295,7 +295,7 @@ public class ArrayRecord extends DatabaseRecord {
         this.valuesArray = null;
         super.setFields(fields);
     }
-    
+
     protected void setValues(Vector values) {
         checkValues();
         this.fieldsArray = null;
@@ -311,7 +311,7 @@ public class ArrayRecord extends DatabaseRecord {
         if (this.fieldsArray == null) {
             return this.fields.size();
         } else {
-            return this.fieldsArray.length;            
+            return this.fieldsArray.length;
         }
     }
 
@@ -335,13 +335,13 @@ public class ArrayRecord extends DatabaseRecord {
                 writer.write(this.sopObject.toString());
             }
             writer.write(")");
-    
+
             return writer.toString();
         } else {
             return super.toString();
         }
     }
-    
+
     protected String toStringAditional() {
         return "";
     }

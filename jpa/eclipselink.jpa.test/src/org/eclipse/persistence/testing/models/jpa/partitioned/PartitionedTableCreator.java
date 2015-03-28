@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.partitioned;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -31,7 +31,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildDEPT_EMPTable());
         addTableDefinition(buildPART_OFFICETable());
     }
-    
+
     public TableDefinition buildADDRESSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("PART_ADDRESS");
@@ -79,20 +79,20 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         fieldType.setTypeName("VARCHAR2");
         fieldType.setSize(150);
         table.addField(fieldType);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMERIC");
         fieldVERSION.setSize(15);
         table.addField(fieldVERSION);
-        
+
         return table;
     }
 
     public TableDefinition buildEMPLOYEETable() {
         TableDefinition table = new TableDefinition();
         table.setName("PART_EMPLOYEE");
-    
+
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
         field.setTypeName("NUMERIC");
@@ -100,7 +100,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field.setShouldAllowNull(false);
         field.setIsPrimaryKey(true);
         table.addField(field);
-        
+
         FieldDefinition location = new FieldDefinition();
         location.setName("LOCATION");
         location.setTypeName("VARCHAR");
@@ -108,13 +108,13 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         location.setShouldAllowNull(false);
         location.setIsPrimaryKey(true);
         table.addField(location);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("F_NAME");
         field1.setTypeName("VARCHAR");
         field1.setSize(40);
         table.addField(field1);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("L_NAME");
         field2.setTypeName("VARCHAR");
@@ -127,36 +127,36 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field8.setSize(15);
         //field8.setForeignKeyFieldName("PART_ADDRESS.ADDRESS_ID");
         table.addField(field8);
-    
+
         FieldDefinition field9 = new FieldDefinition();
         field9.setName("MANAGER_EMP_ID");
         field9.setTypeName("NUMERIC");
         field9.setSize(15);
         //field9.setForeignKeyFieldName("PART_EMPLOYEE.EMP_ID");
         table.addField(field9);
-        
+
         FieldDefinition mgrLocation = new FieldDefinition();
         mgrLocation.setName("MANAGER_LOCATION");
         mgrLocation.setTypeName("VARCHAR");
         mgrLocation.setSize(64);
         table.addField(mgrLocation);
-    
+
         FieldDefinition field10 = new FieldDefinition();
         field10.setName("VERSION");
         field10.setTypeName("NUMERIC");
         field10.setSize(15);
         table.addField(field10);
-        
+
         FieldDefinition fieldDEPT = new FieldDefinition();
         fieldDEPT.setName("DEPT_ID");
         fieldDEPT.setTypeName("NUMERIC");
         fieldDEPT.setSize(15);
         table.addField(fieldDEPT);
-        
+
         return table;
     }
-    
-    
+
+
     public TableDefinition buildLARGEPROJECTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("PART_LPROJECT");
@@ -170,17 +170,17 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true );
         field.setForeignKeyFieldName("PART_PROJECT.PROJ_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("BUDGET");
         field1.setTypeName("DOUBLE PRECIS");
         field1.setSize(18);
         table.addField(field1);
-    
+
         return table;
     }
-        
+
     public TableDefinition buildPHONENUMBERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("PART_PHONENUMBER");
@@ -194,7 +194,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true );
         //field.setForeignKeyFieldName("PART_EMPLOYEE.EMP_ID");
         table.addField(field);
-        
+
         FieldDefinition location = new FieldDefinition();
         location.setName("LOCATION");
         location.setTypeName("VARCHAR");
@@ -202,7 +202,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         location.setShouldAllowNull(false);
         location.setIsPrimaryKey(true);
         table.addField(location);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("TYPE");
@@ -211,21 +211,21 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field1.setShouldAllowNull(false );
         field1.setIsPrimaryKey(true );
         table.addField(field1);
-    
+
         // SECTION: FIELD
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("AREA_CODE");
         field2.setTypeName("VARCHAR");
         field2.setSize(3);
         table.addField(field2);
-    
+
         // SECTION: FIELD
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("NUMB");
         field3.setTypeName("VARCHAR");
         field3.setSize(8);
         table.addField(field3);
-        
+
         ForeignKeyConstraint foreignKey = new ForeignKeyConstraint();
         foreignKey.setName("FK_PART_PHONE_OWNER");
         foreignKey.setTargetTable("PART_EMPLOYEE");
@@ -234,10 +234,10 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         foreignKey.addSourceField("LOCATION");
         foreignKey.addTargetField("LOCATION");
         table.addForeignKeyConstraint(foreignKey);
-        
+
         return table;
     }
-        
+
     public TableDefinition buildPROJECT_EMPTable() {
         TableDefinition table = new TableDefinition();
 
@@ -252,7 +252,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true );
         //field.setForeignKeyFieldName("PART_EMPLOYEE.EMP_ID");
         table.addField(field);
-        
+
         FieldDefinition location = new FieldDefinition();
         location.setName("LOCATION");
         location.setTypeName("VARCHAR");
@@ -260,7 +260,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         location.setShouldAllowNull(false);
         location.setIsPrimaryKey(true);
         table.addField(location);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("PROJECTS_PROJ_ID");
@@ -270,7 +270,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field1.setIsPrimaryKey(true );
         //field1.setForeignKeyFieldName("PART_PROJECT.PROJ_ID");
         table.addField(field1);
-        
+
         /*ForeignKeyConstraint foreignKey = new ForeignKeyConstraint();
         foreignKey.setName("FK_PART_PROJ_EMP");
         foreignKey.setTargetTable("PART_EMPLOYEE");
@@ -282,7 +282,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildPROJECTTable() {
         TableDefinition table = new TableDefinition();
 
@@ -296,28 +296,28 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field.setShouldAllowNull(false );
         field.setIsPrimaryKey(true );
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("PROJ_TYPE");
         field1.setTypeName("VARCHAR");
         field1.setSize(1);
         table.addField(field1);
-    
+
         // SECTION: FIELD
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("PROJ_NAME");
         field2.setTypeName("VARCHAR");
         field2.setSize(30);
         table.addField(field2);
-    
+
         // SECTION: FIELD
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("DESCRIP");
         field3.setTypeName("VARCHAR");
         field3.setSize(200);
         table.addField(field3);
-    
+
         // SECTION: FIELD
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("LEADER_ID");
@@ -325,13 +325,13 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field4.setSize(15);
         //field4.setForeignKeyFieldName("PART_EMPLOYEE.EMP_ID");
         table.addField(field4);
-        
+
         FieldDefinition location = new FieldDefinition();
         location.setName("LEADER_LOCATION");
         location.setTypeName("VARCHAR");
         location.setSize(64);
         table.addField(location);
-    
+
         // SECTION: FIELD
         FieldDefinition field5 = new FieldDefinition();
         field5.setName("VERSION");
@@ -346,7 +346,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         TableDefinition table = new TableDefinition();
         // SECTION: TABLE
         table.setName("PART_RESPONS");
-    
+
         // SECTION: FIELD
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
@@ -356,7 +356,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true);
         //field.setForeignKeyFieldName("PART_EMPLOYEE.EMP_ID");
         table.addField(field);
-        
+
         FieldDefinition location = new FieldDefinition();
         location.setName("LOCATION");
         location.setTypeName("VARCHAR");
@@ -364,7 +364,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         location.setShouldAllowNull(false);
         location.setIsPrimaryKey(true);
         table.addField(location);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("DESCRIPTION");
@@ -373,7 +373,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field1.setShouldAllowNull(false);
         field1.setIsPrimaryKey(true);
         table.addField(field1);
-        
+
         ForeignKeyConstraint foreignKey = new ForeignKeyConstraint();
         foreignKey.setName("FK_PART_RESPONS");
         foreignKey.setTargetTable("PART_EMPLOYEE");
@@ -382,7 +382,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         foreignKey.addSourceField("LOCATION");
         foreignKey.addTargetField("LOCATION");
         table.addForeignKeyConstraint(foreignKey);
-    
+
         return table;
     }
 
@@ -390,7 +390,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         TableDefinition table = new TableDefinition();
         // SECTION: TABLE
         table.setName("PART_WORK");
-    
+
         // SECTION: FIELD
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
@@ -400,7 +400,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true);
         //field.setForeignKeyFieldName("PART_EMPLOYEE.EMP_ID");
         table.addField(field);
-        
+
         FieldDefinition location = new FieldDefinition();
         location.setName("LOCATION");
         location.setTypeName("VARCHAR");
@@ -408,7 +408,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         location.setShouldAllowNull(false);
         location.setIsPrimaryKey(true);
         table.addField(location);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("EXPERIENCE");
@@ -417,7 +417,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         field1.setShouldAllowNull(false);
         field1.setIsPrimaryKey(true);
         table.addField(field1);
-        
+
         /*ForeignKeyConstraint foreignKey = new ForeignKeyConstraint();
         foreignKey.setName("FK_PART_WORK");
         foreignKey.setTargetTable("PART_EMPLOYEE");
@@ -426,7 +426,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         foreignKey.addSourceField("LOCATION");
         foreignKey.addTargetField("LOCATION");
         table.addForeignKeyConstraint(foreignKey);*/
-    
+
         return table;
     }
 
@@ -461,10 +461,10 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
        location.setTypeName("VARCHAR");
        location.setSize(64);
        table.addField(location);
-       
+
        return table;
    }
-   
+
    public TableDefinition buildDEPT_EMPTable() {
        TableDefinition table = new TableDefinition();
        table.setName("PART_DEPT_PART_EMPLOYEE");
@@ -480,7 +480,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
        fieldID.setIsIdentity(false);
        //fieldID.setForeignKeyFieldName("PART_DEPT.ID");
        table.addField(fieldID);
-       
+
        // SECTION: FIELD
        FieldDefinition fieldEMP = new FieldDefinition();
        fieldEMP.setName("EMP_ID");
@@ -492,7 +492,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
        fieldEMP.setIsIdentity(false);
        //fieldEMP.setForeignKeyFieldName("CMP3_EMPLOYEE.EMP_ID");
        table.addField(fieldEMP);
-       
+
        FieldDefinition location = new FieldDefinition();
        location.setName("LOCATION");
        location.setTypeName("VARCHAR");
@@ -500,10 +500,10 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
        location.setShouldAllowNull(false);
        location.setIsPrimaryKey(true);
        table.addField(location);
-       
-       return table;   
+
+       return table;
    }
-   
+
    public TableDefinition buildPART_OFFICETable() {
        TableDefinition table = new TableDefinition();
        table.setName("PART_OFFICE");
@@ -517,20 +517,20 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
        fieldID.setUnique(false);
        fieldID.setIsIdentity(false);
        table.addField(fieldID);
-       
+
        FieldDefinition fieldNAME = new FieldDefinition();
        fieldNAME.setName("OFF_NAME");
        fieldNAME.setTypeName("VARCHAR2");
        fieldNAME.setSize(128);
        fieldNAME.setSubSize(0);
        table.addField(fieldNAME);
-       
+
        FieldDefinition fieldNUMBER = new FieldDefinition();
        fieldNUMBER.setName("OFF_NUMBER");
        fieldNUMBER.setTypeName("NUMERIC");
        fieldNUMBER.setSize(15);
        table.addField(fieldNUMBER);
-       
+
        return table;
    }
 

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2014, 2015 IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     11/04/2014 - Rick Curtis  
+ *     11/04/2014 - Rick Curtis
  *       - 450010 : Add java se test bucket
- *     01/13/2015 - Rick Curtis  
+ *     01/13/2015 - Rick Curtis
  *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
  ******************************************************************************/
 package org.eclipse.persistence.jpa.test.framework;
@@ -58,7 +58,7 @@ public class EmfRunnerInjector {
 
     /**
      * This method will create / inject EntityManagerFactory and SQLListeners into test instances
-     * 
+     *
      * @param testInstance
      */
     public void inject(Object testInstance) throws Exception {
@@ -168,7 +168,7 @@ public class EmfRunnerInjector {
         for (Property prop : anno.properties()) {
             persistenceProperties.put(prop.name(), prop.value());
         }
-        
+
         if (additionalProperties != null) {
             persistenceProperties.putAll(additionalProperties);
         }

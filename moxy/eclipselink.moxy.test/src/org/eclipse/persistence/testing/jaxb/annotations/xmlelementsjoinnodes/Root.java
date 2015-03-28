@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,7 @@ public class Root {
     @XmlElement
     @XmlPath("client")
     public List<Client> clients;
-    
+
     @XmlElement
     @XmlPath("address")
     public List<Address> addresses;
@@ -33,12 +33,12 @@ public class Root {
     @XmlElement
     @XmlPath("phone-number")
     public List<PhoneNumber> phoneNumbers;
-    
+
     @XmlElements({
         @XmlElement(name="publicCompany", type=PublicCompany.class)
     })
     private List<Company> companies;
-    
+
     public Root() {}
     public Root(List<Client> clients, List<Address> addresses, List<PhoneNumber> phoneNumbers, List<Company> companies) {
         this.clients = clients;

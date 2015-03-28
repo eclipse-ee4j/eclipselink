@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,7 +49,7 @@ import javax.ejb.EJBHome;
 
 
 /**
- * The <code>HandleDelegate</code> interface is implemented by the EJB container. 
+ * The <code>HandleDelegate</code> interface is implemented by the EJB container.
  * It is used by portable implementations of <code>javax.ejb.Handle</code> and
  * <code>javax.ejb.HomeHandle</code>.
  * It is not used by EJB components or by client components.
@@ -66,7 +66,7 @@ public interface HandleDelegate {
     /**
      * Serialize the EJBObject reference corresponding to a Handle.
      *
-     * <p> This method is called from the <code>writeObject</code> method of 
+     * <p> This method is called from the <code>writeObject</code> method of
      * portable Handle implementation classes. The <code>ostream</code> object is the
      * same object that was passed in to the Handle class's <code>writeObject</code>
      * method.
@@ -79,7 +79,7 @@ public interface HandleDelegate {
      *    because of a system-level failure.
      */
     public void writeEJBObject(EJBObject ejbObject, ObjectOutputStream ostream)
-	throws IOException;
+    throws IOException;
 
 
     /**
@@ -105,12 +105,12 @@ public interface HandleDelegate {
      *    because some class could not be found.
      */
     public javax.ejb.EJBObject readEJBObject(ObjectInputStream istream)
-	throws IOException, ClassNotFoundException;
+    throws IOException, ClassNotFoundException;
 
     /**
      * Serialize the EJBHome reference corresponding to a HomeHandle.
      *
-     * <p> This method is called from the <code>writeObject</code> method of 
+     * <p> This method is called from the <code>writeObject</code> method of
      * portable <code>HomeHandle</code> implementation classes. The <code>ostream</code>
      * object is the same object that was passed in to the <code>Handle</code>
      * class's <code>writeObject</code> method.
@@ -123,19 +123,19 @@ public interface HandleDelegate {
      *    because of a system-level failure.
      */
     public void writeEJBHome(EJBHome ejbHome, ObjectOutputStream ostream)
-	throws IOException;
+    throws IOException;
 
     /**
      * Deserialize the EJBHome reference corresponding to a HomeHandle.
      *
-     * <p> The <code>readEJBHome</code> method is called from the 
+     * <p> The <code>readEJBHome</code> method is called from the
      * <code>readObject</code> method of  portable <code>HomeHandle</code>
      * implementation classes. The <code>istream</code> object is the
      * same object that was passed in to the <code>HomeHandle</code> class's
-     * <code>readObject</code> method.  When <code>readEJBHome</code> is called, 
+     * <code>readObject</code> method.  When <code>readEJBHome</code> is called,
      * <code>istream</code> must point to the location
      * in the stream at which the EJBHome reference can be read.
-     * The container must ensure that the EJBHome reference is 
+     * The container must ensure that the EJBHome reference is
      * capable of performing invocations immediately after deserialization.
      *
      * @param istream The input stream.
@@ -148,5 +148,5 @@ public interface HandleDelegate {
      *    because some class could not be found.
      */
     public javax.ejb.EJBHome readEJBHome(ObjectInputStream istream)
-	throws IOException, ClassNotFoundException;
+    throws IOException, ClassNotFoundException;
 }

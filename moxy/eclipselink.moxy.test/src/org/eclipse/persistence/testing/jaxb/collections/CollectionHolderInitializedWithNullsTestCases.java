@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,8 +24,8 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class CollectionHolderInitializedWithNullsTestCases extends JAXBWithJSONTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/emptycollectionholderinitializedwithnulls.xml";
-    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/emptycollectionholderinitializedELwithnulls.json";    																							  
-    
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/emptycollectionholderinitializedELwithnulls.json";
+
     public CollectionHolderInitializedWithNullsTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
@@ -40,81 +40,81 @@ public class CollectionHolderInitializedWithNullsTestCases extends JAXBWithJSONT
 
     @Override
     protected Object getControlObject() {
-    	CollectionHolderInitialized obj = new CollectionHolderInitialized();
-    	obj.collection1.add(null);
-    	obj.collection1.add(null);
-    	obj.collection2.add(null);
-    	obj.collection2.add(null);
-    	obj.collection3.add(null);
-    	obj.collection3.add(null);
-    	obj.collection4.add(null);
-    	obj.collection4.add(null);
-    	obj.collection5.add(null);
-    	obj.collection5.add(null);
-    	obj.collection6.add(null);
-    	obj.collection6.add(null);
-    	obj.collection7.add(null);
-    	obj.collection7.add(null);
-    	obj.collection8.add(null);
-    	obj.collection8.add(null);
-     	obj.collection9.add(null);
-     	obj.collection9.add(null);
-    	obj.collection10.put("theKey", null);
-     	obj.collection10.put("theKey", null);
-   	//   obj.collection11.add(null);
-   	//    obj.collection11.add(null);
- 	    obj.collection12.add(null);
-    	obj.collection12.add(null);
-    	obj.collection13.add(null);
-    	obj.collection13.add(null);
-    	obj.collection14.add(null);
-    	obj.collection14.add(null);
-    	return obj;
+        CollectionHolderInitialized obj = new CollectionHolderInitialized();
+        obj.collection1.add(null);
+        obj.collection1.add(null);
+        obj.collection2.add(null);
+        obj.collection2.add(null);
+        obj.collection3.add(null);
+        obj.collection3.add(null);
+        obj.collection4.add(null);
+        obj.collection4.add(null);
+        obj.collection5.add(null);
+        obj.collection5.add(null);
+        obj.collection6.add(null);
+        obj.collection6.add(null);
+        obj.collection7.add(null);
+        obj.collection7.add(null);
+        obj.collection8.add(null);
+        obj.collection8.add(null);
+         obj.collection9.add(null);
+         obj.collection9.add(null);
+        obj.collection10.put("theKey", null);
+         obj.collection10.put("theKey", null);
+       //   obj.collection11.add(null);
+       //    obj.collection11.add(null);
+         obj.collection12.add(null);
+        obj.collection12.add(null);
+        obj.collection13.add(null);
+        obj.collection13.add(null);
+        obj.collection14.add(null);
+        obj.collection14.add(null);
+        return obj;
     }
-   
+
     @Override
-	public Object getReadControlObject() {
-    	CollectionHolderInitialized obj = new CollectionHolderInitialized();
-    	obj.collection1.add(null);
-    	obj.collection1.add(null);
-    	//obj.collection2.add(null);
-    	//obj.collection2.add(null);
-    	obj.collection3.add(null);
-    	obj.collection3.add(null);
-//    	obj.collection4.add(null);
-    	//obj.collection4.add(null);
-    	obj.collection5.add(null);
-    	obj.collection5.add(null);
-    	
-    	obj.collection6 = new ArrayList();
+    public Object getReadControlObject() {
+        CollectionHolderInitialized obj = new CollectionHolderInitialized();
+        obj.collection1.add(null);
+        obj.collection1.add(null);
+        //obj.collection2.add(null);
+        //obj.collection2.add(null);
+        obj.collection3.add(null);
+        obj.collection3.add(null);
+//        obj.collection4.add(null);
+        //obj.collection4.add(null);
+        obj.collection5.add(null);
+        obj.collection5.add(null);
+
+        obj.collection6 = new ArrayList();
         obj.collection6.add(new JAXBElement(new QName("root2"), String.class, null));
         obj.collection6.add(new JAXBElement(new QName("root2"), String.class, null));
-   // 	obj.collection6.add(null);
-    //	obj.collection6.add(null);
-    	//obj.collection7.add(null);
-    	//obj.collection7.add(null);
-    	//obj.collection8.add(null);
-    	//obj.collection8.add(null);
-     	obj.collection9.add(null);
-     	obj.collection9.add(null);
-    	//obj.collection10.put("theKey", null);
-     	//obj.collection10.put("theKey", null);
-   	  //  obj.collection11.add(null);
-   	   // obj.collection11.add(null);
- 	   // obj.collection12.add(null);
-    	//obj.collection12.add(null);
-    	//obj.collection13.add(null);
-    	//obj.collection13.add(null);
-     	//obj.collection14.add(null);
-    	//obj.collection14.add(null);
-    	
-    	return obj;
+   //     obj.collection6.add(null);
+    //    obj.collection6.add(null);
+        //obj.collection7.add(null);
+        //obj.collection7.add(null);
+        //obj.collection8.add(null);
+        //obj.collection8.add(null);
+         obj.collection9.add(null);
+         obj.collection9.add(null);
+        //obj.collection10.put("theKey", null);
+         //obj.collection10.put("theKey", null);
+         //  obj.collection11.add(null);
+          // obj.collection11.add(null);
+        // obj.collection12.add(null);
+        //obj.collection12.add(null);
+        //obj.collection13.add(null);
+        //obj.collection13.add(null);
+         //obj.collection14.add(null);
+        //obj.collection14.add(null);
+
+        return obj;
     }
-    
+
     public boolean shouldRemoveWhitespaceFromControlDocJSON(){
-    	return false;
+        return false;
     }
     public void testRoundTrip() throws Exception{
-    	
+
     }
 }

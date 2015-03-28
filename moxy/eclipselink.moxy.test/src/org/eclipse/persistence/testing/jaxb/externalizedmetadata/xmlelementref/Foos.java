@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,21 +17,21 @@ public class Foos {
     //@javax.xml.bind.annotation.XmlElementWrapper(name="items")
     //@javax.xml.bind.annotation.XmlElementRef(type=Bar.class)
     public java.util.List<Bar> items;
-    
+
     public boolean equals(Object obj){
-    	if(obj instanceof Foos){
-    		if(items.size() != ((Foos)obj).items.size()){
-    			return false;
-    		}
-    		for(int i=0; i<items.size(); i++){
-    			Object next = items.get(i);
-    			Object nextCompare = ((Foos)obj).items.get(i);
-    			if(!(next.equals(nextCompare))){
-    				return false;
-    			}
-    		}
-    		return true;
-    	}
-    	return false;
+        if(obj instanceof Foos){
+            if(items.size() != ((Foos)obj).items.size()){
+                return false;
+            }
+            for(int i=0; i<items.size(); i++){
+                Object next = items.get(i);
+                Object nextCompare = ((Foos)obj).items.get(i);
+                if(!(next.equals(nextCompare))){
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

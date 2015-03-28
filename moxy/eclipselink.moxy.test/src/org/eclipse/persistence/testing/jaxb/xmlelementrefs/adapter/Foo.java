@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Denise Smith - April 2013
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelementrefs.adapter;
 
 import java.lang.reflect.Array;
@@ -47,42 +47,42 @@ public class Foo {
  }
 
  public boolean equals(Object obj){
-	 if(obj instanceof Foo){
-		 if(e1OrE2.size() != ((Foo)obj).e1OrE2.size()){
-			 return false;
-		 }
-		 for(int i=0;i<e1OrE2.size(); i++){
-			 JAXBElement<byte[]> next = e1OrE2.get(i);
-			 JAXBElement<byte[]> nextCompare = ((Foo)obj).e1OrE2.get(i);
-			 if(!compareJAXBElements(next, nextCompare)){
-				 return false;
-			 }
-		 }
-		 return true;
-	 }
-	 return false;
+     if(obj instanceof Foo){
+         if(e1OrE2.size() != ((Foo)obj).e1OrE2.size()){
+             return false;
+         }
+         for(int i=0;i<e1OrE2.size(); i++){
+             JAXBElement<byte[]> next = e1OrE2.get(i);
+             JAXBElement<byte[]> nextCompare = ((Foo)obj).e1OrE2.get(i);
+             if(!compareJAXBElements(next, nextCompare)){
+                 return false;
+             }
+         }
+         return true;
+     }
+     return false;
  }
- 
+
  public boolean compareJAXBElements(JAXBElement<byte[]> controlObj, JAXBElement<byte[]> testObj) {
      if(!controlObj.getName().getLocalPart().equals(testObj.getName().getLocalPart())){
-    	 return false;
+         return false;
      }
      if(!controlObj.getDeclaredType().equals(testObj.getDeclaredType())){
-    	 return false;
+         return false;
      }
      byte[] controlValue = controlObj.getValue();
      byte[] testValue = testObj.getValue();
 
     if(controlValue.length != testValue.length ){
-    	return false;
+        return false;
     }
     for(int x=0; x<controlValue.length; x++) {
         byte controlItem = Array.getByte(controlValue, x);
         byte testItem = Array.getByte(testValue, x);
         if(controlItem != testItem){
-        	return false;
+            return false;
         }
     }
-    return true;   
+    return true;
  }
 }

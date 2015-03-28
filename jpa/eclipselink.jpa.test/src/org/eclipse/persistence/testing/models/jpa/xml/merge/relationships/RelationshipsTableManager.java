@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/23/2008-1.1 Guy Pelletier 
+ *     09/23/2008-1.1 Guy Pelletier
  *       - 241651: JPA 2.0 Access Type support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.merge.relationships;
 
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -30,14 +30,14 @@ public class RelationshipsTableManager extends TableCreator {
         addTableDefinition(buildCMP3_PARTSLISTTable());
         addTableDefinition(buildCMP3_PARTSLIST_ITEMTable());
     }
-        
+
     public static TableCreator getCreator(){
         if (RelationshipsTableManager.tableCreator == null){
             RelationshipsTableManager.tableCreator = new RelationshipsTableManager();
         }
         return RelationshipsTableManager.tableCreator;
     }
-    
+
     public static TableDefinition buildCMP3_CUSTOMERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_MERGE_CUSTOMER");
@@ -242,7 +242,7 @@ public class RelationshipsTableManager extends TableCreator {
         field10.setUnique(false );
         field10.setIsIdentity(false );
         table.addField(field10);
-        
+
         return table;
     }
 
@@ -262,7 +262,7 @@ public class RelationshipsTableManager extends TableCreator {
         field.setIsIdentity(false );
         field.setForeignKeyFieldName("CMP3_XML_MERGE_ITEM.ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("ITEM_ID");

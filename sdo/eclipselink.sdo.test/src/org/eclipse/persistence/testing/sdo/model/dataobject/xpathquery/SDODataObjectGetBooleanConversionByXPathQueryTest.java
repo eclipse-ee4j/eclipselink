@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
     public SDODataObjectGetBooleanConversionByXPathQueryTest(String name) {
         super(name);
     }
-    
+
      public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery.SDODataObjectGetBooleanConversionByXPathQueryTest" };
         TestRunner.main(arguments);
@@ -110,7 +110,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
         try {
             dataObject_a.getBoolean(property1);
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());                        
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -130,7 +130,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
         this.assertNull(dataObject_a.getDataObject(p));
     }
 
-    public void testSetGetDataObjectWithQueryPath() {        
+    public void testSetGetDataObjectWithQueryPath() {
         SDOProperty property_c1_object = (SDOProperty)type_c0.getDeclaredPropertiesMap().get("PName-c1");
         property_c1_object.setName("PName-c1");
         property_c1_object.setContainment(true);
@@ -147,7 +147,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
     }
 
     public void testSetGetDataObjectWithQueryPath_ShortPath() {
-        SDOProperty property_c1_object = (SDOProperty)type_c0.getDeclaredPropertiesMap().get("PName-c1");        
+        SDOProperty property_c1_object = (SDOProperty)type_c0.getDeclaredPropertiesMap().get("PName-c1");
         property_c1_object.setName("PName-c1");
         property_c1_object.setContainment(true);
         property_c1_object.setMany(true);

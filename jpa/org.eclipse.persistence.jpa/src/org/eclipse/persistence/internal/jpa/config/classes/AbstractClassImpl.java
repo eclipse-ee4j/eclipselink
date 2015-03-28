@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -80,16 +80,16 @@ import org.eclipse.persistence.jpa.config.Version;
 
 /**
  * JPA scripting API implementation.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.5.1
  */
 @SuppressWarnings("unchecked")
 public abstract class AbstractClassImpl<T extends ClassAccessor, R> extends AbstractAccessorImpl<T, R> {
-    
+
     public AbstractClassImpl(T t) {
         super(t);
-        
+
         getMetadata().setAttributes(new Attributes());
         getMetadata().setAssociationOverrides(new ArrayList<AssociationOverrideMetadata>());
         getMetadata().setAttributeOverrides(new ArrayList<AttributeOverrideMetadata>());
@@ -98,13 +98,13 @@ public abstract class AbstractClassImpl<T extends ClassAccessor, R> extends Abst
         getMetadata().setPLSQLRecords(new ArrayList<PLSQLRecordMetadata>());
         getMetadata().setPLSQLTables(new ArrayList<PLSQLTableMetadata>());
     }
-    
+
     public Array addArray() {
         ArrayImpl array = new ArrayImpl();
         getMetadata().getAttributes().getArrays().add(array.getMetadata());
         return array;
     }
-    
+
     public AssociationOverride addAssociationOverride() {
         AssociationOverrideImpl associationOverride = new AssociationOverrideImpl();
         getMetadata().getAssociationOverrides().add(associationOverride.getMetadata());
@@ -116,43 +116,43 @@ public abstract class AbstractClassImpl<T extends ClassAccessor, R> extends Abst
         getMetadata().getAttributeOverrides().add(attributeOverride.getMetadata());
         return attributeOverride;
     }
-    
+
     public Basic addBasic() {
         BasicImpl basic = new BasicImpl();
         getMetadata().getAttributes().getBasics().add(basic.getMetadata());
         return basic;
     }
-    
+
     public ElementCollection addElementCollection() {
         ElementCollectionImpl elementCollection = new ElementCollectionImpl();
         getMetadata().getAttributes().getElementCollections().add(elementCollection.getMetadata());
         return elementCollection;
     }
-    
+
     public Embedded addEmbedded() {
         EmbeddedImpl embedded = new EmbeddedImpl();
         getMetadata().getAttributes().getEmbeddeds().add(embedded.getMetadata());
         return embedded;
     }
-    
+
     public Id addId() {
         IdImpl id = new IdImpl();
         getMetadata().getAttributes().getIds().add((IdAccessor) id.getMetadata());
         return id;
     }
-    
+
     public ManyToMany addManyToMany() {
         ManyToManyImpl manyToMany = new ManyToManyImpl();
         getMetadata().getAttributes().getManyToManys().add(manyToMany.getMetadata());
         return manyToMany;
     }
-    
+
     public ManyToOne addManyToOne() {
         ManyToOneImpl manyToOne = new ManyToOneImpl();
         getMetadata().getAttributes().getManyToOnes().add(manyToOne.getMetadata());
         return manyToOne;
     }
-    
+
     public OneToMany addOneToMany() {
         OneToManyImpl oneToMany = new OneToManyImpl();
         getMetadata().getAttributes().getOneToManys().add(oneToMany.getMetadata());
@@ -164,13 +164,13 @@ public abstract class AbstractClassImpl<T extends ClassAccessor, R> extends Abst
         getMetadata().getAttributes().getOneToOnes().add(oneToOne.getMetadata());
         return oneToOne;
     }
-    
+
     public OracleArray addOracleArray() {
         OracleArrayImpl oracleArray = new OracleArrayImpl();
         getMetadata().getOracleArrayTypes().add(oracleArray.getMetadata());
         return oracleArray;
     }
-    
+
     public OracleObject addOracleObject() {
        OracleObjectImpl oracleObject = new OracleObjectImpl();
        getMetadata().getOracleObjectTypes().add(oracleObject.getMetadata());
@@ -188,37 +188,37 @@ public abstract class AbstractClassImpl<T extends ClassAccessor, R> extends Abst
         getMetadata().getPLSQLTables().add(plsqlTable.getMetadata());
         return plsqlTable;
     }
-    
+
     public Structure addStructure() {
         StructureImpl structure = new StructureImpl();
         getMetadata().getAttributes().getStructures().add(structure.getMetadata());
         return structure;
     }
-    
+
     public Transformation addTransformation() {
         TransformationImpl transformation = new TransformationImpl();
         getMetadata().getAttributes().getTransformations().add(transformation.getMetadata());
         return transformation;
     }
-    
+
     public Transient addTransient() {
         TransientImpl trans = new TransientImpl();
         getMetadata().getAttributes().getTransients().add(trans.getMetadata());
         return trans;
     }
-    
+
     public VariableOneToOne addVariableOneToOne() {
         VariableOneToOneImpl variableOneToOne = new VariableOneToOneImpl();
         getMetadata().getAttributes().getVariableOneToOnes().add(variableOneToOne.getMetadata());
         return variableOneToOne;
     }
-    
+
     public Version addVersion() {
         VersionImpl version = new VersionImpl();
         getMetadata().getAttributes().getVersions().add(version.getMetadata());
         return version;
     }
-    
+
     public ChangeTracking setChangeTracking() {
         ChangeTrackingImpl changeTracking = new ChangeTrackingImpl();
         getMetadata().setChangeTracking(changeTracking.getMetadata());
@@ -229,7 +229,7 @@ public abstract class AbstractClassImpl<T extends ClassAccessor, R> extends Abst
         getMetadata().setClassName(cls);
         return (R) this;
     }
-    
+
     public CloneCopyPolicy setCloneCopyPolicy() {
         CloneCopyPolicyImpl cloneCopyPolicy = new CloneCopyPolicyImpl();
         getMetadata().setCloneCopyPolicy(cloneCopyPolicy.getMetadata());
@@ -241,45 +241,45 @@ public abstract class AbstractClassImpl<T extends ClassAccessor, R> extends Abst
         getMetadata().setCustomCopyPolicy(copyPolicy.getMetadata());
         return copyPolicy;
     }
-    
+
     public R setCustomizer(String customizer) {
         getMetadata().setCustomizerClassName(customizer);
         return (R) this;
     }
-    
+
     public EmbeddedId setEmbeddedId() {
         EmbeddedIdImpl embeddedId = new EmbeddedIdImpl();
         getMetadata().getAttributes().setEmbeddedId(embeddedId.getMetadata());
         return embeddedId;
     }
-    
+
     public R setExcludeDefaultMappings(Boolean excludeDefaultMappings) {
         getMetadata().setExcludeDefaultMappings(excludeDefaultMappings);
         return (R) this;
     }
-    
+
     public InstantiationCopyPolicy setInstantiationCopyPolicy() {
         InstantiationCopyPolicyImpl copyPolicy = new InstantiationCopyPolicyImpl();
         getMetadata().setInstantiationCopyPolicy(copyPolicy.getMetadata());
         return copyPolicy;
     }
-    
+
     public NoSql setNoSql() {
         NoSqlImpl noSql = new NoSqlImpl();
         getMetadata().setNoSql(noSql.getMetadata());
         return noSql;
     }
-    
+
     public R setMetadataComplete(Boolean metadataComplete) {
         getMetadata().setMetadataComplete(metadataComplete);
         return (R) this;
     }
-    
+
     public R setParentClass(String parentClass) {
         getMetadata().setParentClassName(parentClass);
         return (R) this;
     }
-    
+
     public Struct setStruct() {
         StructImpl struct = new StructImpl();
         getMetadata().setStruct(struct.getMetadata());

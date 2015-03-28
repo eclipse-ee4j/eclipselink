@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -61,220 +61,220 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.DocumentAdapter
  */
 public class EisLoginPane extends AbstractLoginPane
 {
-	/**
-	 * Creates a new <code>EisLoginPane</code>.
-	 *
-	 * @param subjectHolder The holder of {@link EISLoginAdapter}
-	 * @param context The plug-in context to be used, such as <code>ResourceRepository</code>
-	 */
-	public EisLoginPane(PropertyValueModel subjectHolder,
-							  WorkbenchContextHolder contextHolder)
-	{
-		super(subjectHolder, contextHolder);
-	}
+    /**
+     * Creates a new <code>EisLoginPane</code>.
+     *
+     * @param subjectHolder The holder of {@link EISLoginAdapter}
+     * @param context The plug-in context to be used, such as <code>ResourceRepository</code>
+     */
+    public EisLoginPane(PropertyValueModel subjectHolder,
+                              WorkbenchContextHolder contextHolder)
+    {
+        super(subjectHolder, contextHolder);
+    }
 
-	/**
-	 * Creates the <code>DocumentAdapter</code> that keeps the value from the
-	 * text field in sync with the Connection Factory URL value in the model
-	 * and vice versa.
-	 * 
-	 * @return A new <code>Document</code>
-	 */
-	private Document buildConnectionFactoryURLDocumentAdapter()
-	{
-		return new DocumentAdapter(buildConnectionFactoryURLHolder());
-	}
+    /**
+     * Creates the <code>DocumentAdapter</code> that keeps the value from the
+     * text field in sync with the Connection Factory URL value in the model
+     * and vice versa.
+     *
+     * @return A new <code>Document</code>
+     */
+    private Document buildConnectionFactoryURLDocumentAdapter()
+    {
+        return new DocumentAdapter(buildConnectionFactoryURLHolder());
+    }
 
-	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to handle the
-	 * Connection Factory URL property.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildConnectionFactoryURLHolder()
-	{
-		return new PropertyAspectAdapter(getSubjectHolder(), EISLoginAdapter.CONNECTION_FACTORY_URL_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				EISLoginAdapter login = (EISLoginAdapter) subject;
-				return login.getConnectionFactoryURL();
-			}
+    /**
+     * Creates the <code>PropertyValueModel</code> responsible to handle the
+     * Connection Factory URL property.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    private PropertyValueModel buildConnectionFactoryURLHolder()
+    {
+        return new PropertyAspectAdapter(getSubjectHolder(), EISLoginAdapter.CONNECTION_FACTORY_URL_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                EISLoginAdapter login = (EISLoginAdapter) subject;
+                return login.getConnectionFactoryURL();
+            }
 
-			protected void setValueOnSubject(Object value)
-			{
-				EISLoginAdapter login = (EISLoginAdapter) subject;
-				login.setConnectionFactoryURL((String) value);
-			}
-		};
-	}
+            protected void setValueOnSubject(Object value)
+            {
+                EISLoginAdapter login = (EISLoginAdapter) subject;
+                login.setConnectionFactoryURL((String) value);
+            }
+        };
+    }
 
-	/**
-	 * Creates a Browse button that will take care to show the class chooser.
-	 *
-	 * @return A new browse button
-	 */
-	private JButton buildConnectionSpecClassBrowseButton()
-	{
-		return ClassChooserTools.buildBrowseButton
-		(
-			getWorkbenchContextHolder(),
-			"CONNECTION_EIS_DRIVER_CLASS_BROWSE_BUTTON",
-			buildClassRepositoryHolder(),
-			buildConnectionSpecClassHolder()
-		);
-	}
+    /**
+     * Creates a Browse button that will take care to show the class chooser.
+     *
+     * @return A new browse button
+     */
+    private JButton buildConnectionSpecClassBrowseButton()
+    {
+        return ClassChooserTools.buildBrowseButton
+        (
+            getWorkbenchContextHolder(),
+            "CONNECTION_EIS_DRIVER_CLASS_BROWSE_BUTTON",
+            buildClassRepositoryHolder(),
+            buildConnectionSpecClassHolder()
+        );
+    }
 
-	/**
-	 * Creates the <code>DocumentAdapter</code> that keeps the value from the
-	 * text field in sync with the Connection Spec Class Name value in the model
-	 * and vice versa.
-	 * 
-	 * @return A new <code>Document</code>
-	 */
-	private Document buildConnectionSpecClassDocumentAdapter()
-	{
-		return new DocumentAdapter(buildConnectionSpecClassHolder());
-	}
+    /**
+     * Creates the <code>DocumentAdapter</code> that keeps the value from the
+     * text field in sync with the Connection Spec Class Name value in the model
+     * and vice versa.
+     *
+     * @return A new <code>Document</code>
+     */
+    private Document buildConnectionSpecClassDocumentAdapter()
+    {
+        return new DocumentAdapter(buildConnectionSpecClassHolder());
+    }
 
-	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to handle the
-	 * Connection Spec Class Name property.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildConnectionSpecClassHolder()
-	{
-		return new PropertyAspectAdapter(getSubjectHolder(), EISLoginAdapter.CONNECTION_SPEC_CLASS_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				EISLoginAdapter login = (EISLoginAdapter) subject;
-				return login.getConnectionSpecClassName();
-			}
+    /**
+     * Creates the <code>PropertyValueModel</code> responsible to handle the
+     * Connection Spec Class Name property.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    private PropertyValueModel buildConnectionSpecClassHolder()
+    {
+        return new PropertyAspectAdapter(getSubjectHolder(), EISLoginAdapter.CONNECTION_SPEC_CLASS_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                EISLoginAdapter login = (EISLoginAdapter) subject;
+                return login.getConnectionSpecClassName();
+            }
 
-			protected void setValueOnSubject(Object value)
-			{
-				EISLoginAdapter login = (EISLoginAdapter) subject;
-				login.setConnectionSpecClassName((String) value);
-			}
-		};
-	}
+            protected void setValueOnSubject(Object value)
+            {
+                EISLoginAdapter login = (EISLoginAdapter) subject;
+                login.setConnectionSpecClassName((String) value);
+            }
+        };
+    }
 
-	/**
-	 * Initializes the layout of this pane.
-	 */
-	protected void initializeLayout()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
+    /**
+     * Initializes the layout of this pane.
+     */
+    protected void initializeLayout()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		// Connection Spec Class label
-		JComponent connectionSpecClassWidgets = buildLabeledTextField
-		(
-			"CONNECTION_EIS_CONNECTION_SPEC_CLASS_NAME_FIELD",
-			buildConnectionSpecClassDocumentAdapter(),
-			buildConnectionSpecClassBrowseButton()
-		);
+        // Connection Spec Class label
+        JComponent connectionSpecClassWidgets = buildLabeledTextField
+        (
+            "CONNECTION_EIS_CONNECTION_SPEC_CLASS_NAME_FIELD",
+            buildConnectionSpecClassDocumentAdapter(),
+            buildConnectionSpecClassBrowseButton()
+        );
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 0;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.HORIZONTAL;
-		constraints.anchor      = GridBagConstraints.CENTER;
-		constraints.insets      = new Insets(0, 0, 0, 0);
+        constraints.gridx       = 0;
+        constraints.gridy       = 0;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 1;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.HORIZONTAL;
+        constraints.anchor      = GridBagConstraints.CENTER;
+        constraints.insets      = new Insets(0, 0, 0, 0);
 
-		add(connectionSpecClassWidgets, constraints);
-		helpManager().addTopicID(connectionSpecClassWidgets, "session.login.eis.connectionSpec");
+        add(connectionSpecClassWidgets, constraints);
+        helpManager().addTopicID(connectionSpecClassWidgets, "session.login.eis.connectionSpec");
 
-		// Connection Factory URL widgets
-		Component connectionFactoryURLWidgets = buildLabeledTextField
-		(
-			"CONNECTION_EIS_CONNECTION_FACTORY_URL_FIELD",
-			buildConnectionFactoryURLDocumentAdapter()
-		);
+        // Connection Factory URL widgets
+        Component connectionFactoryURLWidgets = buildLabeledTextField
+        (
+            "CONNECTION_EIS_CONNECTION_FACTORY_URL_FIELD",
+            buildConnectionFactoryURLDocumentAdapter()
+        );
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 1;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.HORIZONTAL;
-		constraints.anchor      = GridBagConstraints.CENTER;
-		constraints.insets      = new Insets(5, 0, 0, 0);
+        constraints.gridx       = 0;
+        constraints.gridy       = 1;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 1;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.HORIZONTAL;
+        constraints.anchor      = GridBagConstraints.CENTER;
+        constraints.insets      = new Insets(5, 0, 0, 0);
 
-		add(connectionFactoryURLWidgets, constraints);
-		helpManager().addTopicID(connectionFactoryURLWidgets, "session.login.eis.connectionSpec");
+        add(connectionFactoryURLWidgets, constraints);
+        helpManager().addTopicID(connectionFactoryURLWidgets, "session.login.eis.connectionSpec");
 
-		// Create the Save Password check box
-		JCheckBox saveUsernameCheckBox = buildSaveUsernameCheckBox();
+        // Create the Save Password check box
+        JCheckBox saveUsernameCheckBox = buildSaveUsernameCheckBox();
 
-		constraints.gridx		= 0;
-		constraints.gridy		= 2;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 0;
-		constraints.weighty		= 0;
-		constraints.fill		= GridBagConstraints.NONE;
-		constraints.anchor		= GridBagConstraints.LINE_START;
-		constraints.insets		= new Insets(2, 0, 0, 0);
+        constraints.gridx        = 0;
+        constraints.gridy        = 2;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 0;
+        constraints.weighty        = 0;
+        constraints.fill        = GridBagConstraints.NONE;
+        constraints.anchor        = GridBagConstraints.LINE_START;
+        constraints.insets        = new Insets(2, 0, 0, 0);
 
-		add(saveUsernameCheckBox, constraints);
-		
-		// Username widgets
-		Component usernameWidgets = buildUserNameWidgets();
+        add(saveUsernameCheckBox, constraints);
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 3;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.HORIZONTAL;
-		constraints.anchor      = GridBagConstraints.CENTER;
-		constraints.insets      = new Insets(5, 10, 0, 0);
+        // Username widgets
+        Component usernameWidgets = buildUserNameWidgets();
 
-		add(usernameWidgets, constraints);
-		helpManager().addTopicID(usernameWidgets, "session.login.userName");
+        constraints.gridx       = 0;
+        constraints.gridy       = 3;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 1;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.HORIZONTAL;
+        constraints.anchor      = GridBagConstraints.CENTER;
+        constraints.insets      = new Insets(5, 10, 0, 0);
 
-		new ComponentEnabler(buildSaveUsernameHolder(), usernameWidgets);
+        add(usernameWidgets, constraints);
+        helpManager().addTopicID(usernameWidgets, "session.login.userName");
 
-		// Create the Save Password check box
-		JCheckBox savePasswordCheckBox = buildSavePasswordCheckBox();
+        new ComponentEnabler(buildSaveUsernameHolder(), usernameWidgets);
 
-		constraints.gridx		= 0;
-		constraints.gridy		= 4;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 0;
-		constraints.weighty		= 0;
-		constraints.fill		= GridBagConstraints.NONE;
-		constraints.anchor		= GridBagConstraints.LINE_START;
-		constraints.insets		= new Insets(2, 0, 0, 0);
+        // Create the Save Password check box
+        JCheckBox savePasswordCheckBox = buildSavePasswordCheckBox();
 
-		add(savePasswordCheckBox, constraints);
+        constraints.gridx        = 0;
+        constraints.gridy        = 4;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 0;
+        constraints.weighty        = 0;
+        constraints.fill        = GridBagConstraints.NONE;
+        constraints.anchor        = GridBagConstraints.LINE_START;
+        constraints.insets        = new Insets(2, 0, 0, 0);
 
-		// Password widgets
-		Component passwordWidgets = buildPasswordWidgets();
+        add(savePasswordCheckBox, constraints);
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 5;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.HORIZONTAL;
-		constraints.anchor      = GridBagConstraints.CENTER;
-		constraints.insets      = new Insets(5, 10, 0, 0);
+        // Password widgets
+        Component passwordWidgets = buildPasswordWidgets();
 
-		add(passwordWidgets, constraints);
-		helpManager().addTopicID(passwordWidgets, "session.login.password");
-				
-		new ComponentEnabler(buildSavePasswordHolder(), passwordWidgets);
+        constraints.gridx       = 0;
+        constraints.gridy       = 5;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 1;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.HORIZONTAL;
+        constraints.anchor      = GridBagConstraints.CENTER;
+        constraints.insets      = new Insets(5, 10, 0, 0);
 
-		helpManager().addTopicID(savePasswordCheckBox, "session.login.savePassword");
-	}
+        add(passwordWidgets, constraints);
+        helpManager().addTopicID(passwordWidgets, "session.login.password");
+
+        new ComponentEnabler(buildSavePasswordHolder(), passwordWidgets);
+
+        helpManager().addTopicID(savePasswordCheckBox, "session.login.savePassword");
+    }
 }

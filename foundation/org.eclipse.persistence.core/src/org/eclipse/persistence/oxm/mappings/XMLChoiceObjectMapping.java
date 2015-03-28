@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -79,7 +79,7 @@ import javax.xml.namespace.QName;
  * <li>Handle reading and writing of XML Documents containing a single choice or substitution
  * group element</li>
  * </ul>
- * <p>The XMLChoiceMapping allows the user to specify a number of different xpaths, and types associated with those xpaths. 
+ * <p>The XMLChoiceMapping allows the user to specify a number of different xpaths, and types associated with those xpaths.
  * When any of these elements are encountered in the XML Document, they are read in as the correct
  * type and set in the object.
  * <p><b>Setting up XPath mappings:</b>Unlike other OXM Mappings, instead of setting a single xpath,
@@ -88,7 +88,7 @@ import javax.xml.namespace.QName;
  * xmlChoiceCollectionMapping.addChoiceElement("mystring/text()", String.class);
  * <br>
  * xmlChoiceCollectionMapping.addChoiceElement("myaddress", Address.class);
- * 
+ *
  */
 
 public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObjectMapping<AttributeAccessor, AbstractSession, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, Session, XMLUnmarshaller, XMLField, XMLMapping, XMLRecord>, XMLMapping {
@@ -104,16 +104,16 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     private Map<XMLField, Converter> fieldsToConverters;
     private Map<String, Converter> classNameToConverter;
     private Map<Class, Converter> classToConverter;
-    
+
     private Converter converter;
     private boolean isWriteOnly;
-    
+
     private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();;
-    
+
     private static final String DATA_HANDLER = "javax.activation.DataHandler";
     private static final String MIME_MULTIPART = "javax.mail.MimeMultipart";
     private static final String IMAGE = "java.awt.Image";
-    
+
     public XMLChoiceObjectMapping() {
         fieldToClassMappings = new HashMap<XMLField, Class>();
         fieldToClassNameMappings = new HashMap<XMLField, String>();
@@ -283,7 +283,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         XMLField valueField = this.classToFieldMappings.get(valueClass);
         if (valueField == null) {
             List<XMLField> xflds = getClassToSourceFieldsMappings().get(valueClass);
-            if (xflds != null) { 
+            if (xflds != null) {
                 valueField = xflds.get(0);
             }
         }
@@ -305,7 +305,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
         return toReturn;
     }
-    
+
     public boolean isXMLMapping() {
         return true;
     }
@@ -323,25 +323,25 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         XMLField field = new XMLField(xpath);
         addChoiceElement(field, elementType);
     }
-    
+
     public void addChoiceElement(String srcXPath, Class elementType, String tgtXPath) {
         XMLField srcField = new XMLField(srcXPath);
         XMLField tgtField = new XMLField(tgtXPath);
         addChoiceElement(srcField, elementType, tgtField);
     }
-    
+
     public void addChoiceElement(String xpath, String elementTypeName, boolean xmlRoot) {
         XMLField field = new XMLField(xpath);
         this.fieldToClassNameMappings.put(field, elementTypeName);
         if(this.classNameToFieldMappings.get(elementTypeName) != null) {
             this.classNameToFieldMappings.put(elementTypeName, field);
-        }        
+        }
         if(xmlRoot) {
             this.fieldsToConverters.put(field, new XMLRootConverter(field));
         }
         addChoiceElementMapping(field, elementTypeName);
     }
-    
+
     public void addChoiceElement(String srcXpath, String elementTypeName, String tgtXpath) {
         XMLField field = new XMLField(srcXpath);
         XMLField tgtField = new XMLField(tgtXpath);
@@ -349,7 +349,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         if(classNameToFieldMappings.get(elementTypeName) == null) {
             classNameToFieldMappings.put(elementTypeName, field);
         }
-        addChoiceElementMapping(field, elementTypeName, tgtField);        
+        addChoiceElementMapping(field, elementTypeName, tgtField);
     }
     public void addChoiceElement(String xpath, String elementTypeName) {
         addChoiceElement(xpath, elementTypeName, false);
@@ -357,13 +357,13 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
 
     public void addChoiceElement(XMLField xmlField, Class elementType) {
         getFieldToClassMappings().put(xmlField, elementType);
-        this.fieldToClassNameMappings.put(xmlField, elementType.getName());     
+        this.fieldToClassNameMappings.put(xmlField, elementType.getName());
         if (classToFieldMappings.get(elementType) == null) {
             classToFieldMappings.put(elementType, xmlField);
         }
         addChoiceElementMapping(xmlField, elementType);
     }
-    
+
     public void addChoiceElement(XMLField sourceField, Class elementType, XMLField targetField) {
         getFieldToClassMappings().put(sourceField, elementType);
         this.fieldToClassNameMappings.put(sourceField, elementType.getName());
@@ -372,12 +372,12 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
         addChoiceElementMapping(sourceField, elementType, targetField);
     }
-    
+
     public void addChoiceElement(XMLField sourceField, String elementTypeName, XMLField targetField) {
         this.fieldToClassNameMappings.put(sourceField, elementTypeName);
-        addChoiceElementMapping(sourceField, elementTypeName, targetField);        
+        addChoiceElementMapping(sourceField, elementTypeName, targetField);
     }
-    
+
     public void addChoiceElement(List<XMLField> srcFields, Class elementType, List<XMLField> tgtFields) {
         for(XMLField sourceField:srcFields) {
             getFieldToClassMappings().put(sourceField, elementType);
@@ -388,7 +388,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
         addChoiceElementMapping(srcFields, elementType, tgtFields);
     }
-    
+
     public void addChoiceElement(List<XMLField> srcFields, String elementTypeName, List<XMLField> tgtFields) {
         for(XMLField sourceField:srcFields) {
             this.fieldToClassNameMappings.put(sourceField, elementTypeName);
@@ -398,8 +398,8 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
         addChoiceElementMapping(srcFields, elementTypeName, tgtFields);
     }
-    
-    
+
+
     public void addChoiceElement(XMLField field, String elementTypeName) {
         this.fieldToClassNameMappings.put(field, elementTypeName);
         if(this.classNameToFieldMappings.get(elementTypeName) == null) {
@@ -407,7 +407,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
         addChoiceElementMapping(field, elementTypeName);
     }
-    
+
     public Map<XMLField, Class> getFieldToClassMappings() {
         return fieldToClassMappings;
     }
@@ -424,28 +424,28 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
             if(!(mappingsList.contains(next))) {
                 mappingsList.add(next);
             }
-        }        
+        }
         Iterator<XMLMapping> mappings = mappingsList.iterator();
         while(mappings.hasNext()){
             DatabaseMapping nextMapping = (DatabaseMapping)mappings.next();
-               
+
             Converter converter = null;
             if(fieldsToConverters != null) {
                 converter = fieldsToConverters.get(nextMapping.getField());
             }
-                        
+
             if(nextMapping.isAbstractDirectMapping()){
                 ((XMLDirectMapping)nextMapping).setIsWriteOnly(this.isWriteOnly());
                 if(converter != null){
                     ((AbstractDirectMapping)nextMapping).setConverter(converter);
                 }
-                                
-                 XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();                                      
+
+                 XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
                  QName schemaType = xmlConversionManager.schemaType(nextMapping.getAttributeClassification());
                  if(schemaType != null && ((XMLField)nextMapping.getField()).getSchemaType() == null) {
                      ((XMLField)nextMapping.getField()).setSchemaType(schemaType);
                  }
-                
+
             }else if(nextMapping instanceof XMLObjectReferenceMapping) {
                 ((XMLObjectReferenceMapping)nextMapping).setIsWriteOnly(this.isWriteOnly);
             } else if(nextMapping instanceof XMLBinaryDataMapping) {
@@ -461,7 +461,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
             }
 
             nextMapping.initialize(session);
-        }                      
+        }
     }
 
     public Map<Class, XMLField> getClassToFieldMappings() {
@@ -473,7 +473,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     }
 
     public void convertClassNamesToClasses(ClassLoader classLoader) {
-    	Iterator<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet().iterator();
+        Iterator<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet().iterator();
         while (entries.hasNext()) {
             Map.Entry<XMLField, String> entry = entries.next();
             String className = entry.getValue();
@@ -497,7 +497,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
 
             if (fieldToClassMappings.get(entry.getKey()) == null) {
                 fieldToClassMappings.put(entry.getKey(), elementType);
-            }    
+            }
         }
         for(Entry<String, XMLField> next: this.classNameToFieldMappings.entrySet()) {
             String className = next.getKey();
@@ -516,7 +516,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
                 throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
             }
             classToFieldMappings.put(elementType, next.getValue());
-            
+
         }
         if(classNameToSourceFieldsMappings != null) {
             Iterator<Entry<String, List<XMLField>>> sourceFieldEntries = classNameToSourceFieldsMappings.entrySet().iterator();
@@ -588,12 +588,12 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
             }
         }
     }
-    
+
     public void addConverter(XMLField field, Converter converter) {
         if(this.fieldsToConverters == null) {
             fieldsToConverters = new HashMap<XMLField, Converter>();
-        }               
-        fieldsToConverters.put(field, converter);       
+        }
+        fieldsToConverters.put(field, converter);
     }
 
     public Converter getConverter(XMLField field) {
@@ -619,12 +619,12 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
 
     public ArrayList getChoiceFieldToClassAssociations() {
         ArrayList associations = new ArrayList();
-        if(this.fieldToClassNameMappings.size() > 0) {        	
-        	Set<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet();
-        	Iterator<Entry<XMLField, String>> iter = entries.iterator();
-        	while(iter.hasNext()){
-        		Entry<XMLField, String> nextEntry = iter.next();
-        		XMLField xmlField = nextEntry.getKey();        	            
+        if(this.fieldToClassNameMappings.size() > 0) {
+            Set<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet();
+            Iterator<Entry<XMLField, String>> iter = entries.iterator();
+            while(iter.hasNext()){
+                Entry<XMLField, String> nextEntry = iter.next();
+                XMLField xmlField = nextEntry.getKey();
                 String className = nextEntry.getValue();
                 XMLChoiceFieldToClassAssociation association = new XMLChoiceFieldToClassAssociation(xmlField, className);
                 associations.add(association);
@@ -632,7 +632,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
         return associations;
     }
-    
+
 
     public void setChoiceFieldToClassAssociations(ArrayList associations) {
         if(associations.size() > 0) {
@@ -656,7 +656,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
              }
              if(this.choiceElementMappingsByClassName.get(className) == null) {
                  this.choiceElementMappingsByClassName.put(className, xmlMapping);
-             }        
+             }
          } else {
              if(isBinaryType(className)) {
                  XMLBinaryDataMapping xmlMapping = new XMLBinaryDataMapping();
@@ -669,29 +669,29 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
                  }
                  if(this.choiceElementMappingsByClass.get(theClass) == null) {
                      this.choiceElementMappingsByClass.put(theClass, xmlMapping);
-                 }        
+                 }
              } else {
                  XMLCompositeObjectMapping xmlMapping = new XMLCompositeObjectMapping();
                  xmlMapping.setAttributeAccessor(temporaryAccessor);
                  if(!className.equals("java.lang.Object")){
                      xmlMapping.setReferenceClassName(className);
-                 }            
-                 xmlMapping.setField(xmlField);          
+                 }
+                 xmlMapping.setField(xmlField);
                  if(this.choiceElementMappings.get(xmlField) == null) {
                      this.choiceElementMappings.put(xmlField, xmlMapping);
                  }
                  if(this.choiceElementMappingsByClassName.get(className) == null) {
                      this.choiceElementMappingsByClassName.put(className, xmlMapping);
-                 }        
+                 }
              }
-         }   
+         }
     }
-       
-    private void addChoiceElementMapping(XMLField xmlField, Class theClass){                 
-        
+
+    private void addChoiceElementMapping(XMLField xmlField, Class theClass){
+
         if (xmlField.getLastXPathFragment().nameIsText() || xmlField.getLastXPathFragment().isAttribute()) {
             XMLDirectMapping xmlMapping = new XMLDirectMapping();
-            xmlMapping.setAttributeClassification(theClass);      
+            xmlMapping.setAttributeClassification(theClass);
             xmlMapping.setAttributeAccessor(temporaryAccessor);
             xmlMapping.setField(xmlField);
             this.choiceElementMappings.put(xmlField, xmlMapping);
@@ -709,14 +709,14 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
                 xmlMapping.setAttributeAccessor(temporaryAccessor);
                 if(!theClass.equals(ClassConstants.OBJECT)){
                     xmlMapping.setReferenceClass(theClass);
-                }            
+                }
                 xmlMapping.setField(xmlField);
                 this.choiceElementMappings.put(xmlField, xmlMapping);
                 this.choiceElementMappingsByClass.put(theClass, xmlMapping);
             }
         }
     }
-    
+
     private void addChoiceElementMapping(XMLField sourceField, Class theClass, XMLField targetField) {
         XMLObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
         mapping.setReferenceClass(theClass);
@@ -725,7 +725,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         this.choiceElementMappings.put(sourceField, mapping);
         this.choiceElementMappingsByClass.put(theClass, mapping);
     }
-    
+
     private void addChoiceElementMapping(XMLField sourceField, String className, XMLField targetField) {
         XMLObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
         mapping.setReferenceClassName(className);
@@ -734,7 +734,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         this.choiceElementMappings.put(sourceField, mapping);
         this.choiceElementMappingsByClassName.put(className, mapping);
     }
-    
+
     private void addChoiceElementMapping(List<XMLField> sourceFields, Class theClass, List<XMLField> targetFields) {
         XMLObjectReferenceMapping xmlMapping = new XMLObjectReferenceMapping();
         xmlMapping.setReferenceClass(theClass);
@@ -746,7 +746,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
         this.choiceElementMappingsByClass.put(theClass, xmlMapping);
     }
-    
+
     private void addChoiceElementMapping(List<XMLField> sourceFields, String theClass, List<XMLField> targetFields) {
         XMLObjectReferenceMapping xmlMapping = new XMLObjectReferenceMapping();
         xmlMapping.setReferenceClassName(theClass);
@@ -757,16 +757,16 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
             this.choiceElementMappings.put(sourceField, xmlMapping);
         }
         this.choiceElementMappingsByClassName.put(theClass, xmlMapping);
-    }    
-    
+    }
+
     public boolean isWriteOnly() {
         return this.isWriteOnly;
     }
-    
+
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
-    
+
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
@@ -777,7 +777,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
             if(!(mappingsList.contains(next))) {
                 mappingsList.add(next);
             }
-        } 
+        }
         for(XMLMapping next:getChoiceElementMappingsByClass().values()) {
             if(!(mappingsList.contains(next))) {
                 mappingsList.add(next);
@@ -789,34 +789,34 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
             nextMapping.setDescriptor(getDescriptor());
             nextMapping.setAttributeName(this.getAttributeName());
             if(nextMapping.getAttributeAccessor() == temporaryAccessor){
-            	nextMapping.setAttributeAccessor(getAttributeAccessor());
-            }                        
+                nextMapping.setAttributeAccessor(getAttributeAccessor());
+            }
             nextMapping.preInitialize(session);
         }
-        
+
     }
-    
+
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
         }
         super.setAttributeValueInObject(object, value);
-    } 
-    
+    }
+
     public Map<Class, List<XMLField>> getClassToSourceFieldsMappings() {
         if(this.classToSourceFieldsMappings == null) {
             this.classToSourceFieldsMappings = new HashMap<Class, List<XMLField>>();
         }
         return this.classToSourceFieldsMappings;
     }
-    
+
     private Map<String, List<XMLField>> getClassNameToSourceFieldsMappings() {
         if(this.classNameToSourceFieldsMappings == null) {
             this.classNameToSourceFieldsMappings = new HashMap<String, List<XMLField>>();
         }
         return this.classNameToSourceFieldsMappings;
     }
-    
+
     private boolean isBinaryType(String className) {
         if(className.equals(byte[].class.getName()) || className.equals(Byte[].class.getName()) || className.equals(DATA_HANDLER)
                 || className.equals(IMAGE) || className.equals(MIME_MULTIPART)) {
@@ -824,7 +824,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
         return false;
     }
-    
+
     private boolean isBinaryType(Class theClass) {
         String className = theClass.getName();
         if(className.equals(byte[].class.getName()) || className.equals(Byte[].class.getName()) || className.equals(DATA_HANDLER)
@@ -833,18 +833,18 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
         return false;
     }
-    
+
     public Map<String, XMLField> getClassNameToFieldMappings() {
         return this.classNameToFieldMappings;
     }
-    
+
     public Map<Class, XMLMapping> getChoiceElementMappingsByClass() {
         return choiceElementMappingsByClass;
     }
 
     public void setChoiceElementMappingsByClass(Map<Class, XMLMapping> choiceElementMappingsByClass) {
         this.choiceElementMappingsByClass = choiceElementMappingsByClass;
-    }    
+    }
 
     /**
      * INTERNAL

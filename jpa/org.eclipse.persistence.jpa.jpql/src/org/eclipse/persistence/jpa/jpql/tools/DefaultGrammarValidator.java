@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,44 +38,44 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
  */
 public class DefaultGrammarValidator extends AbstractGrammarValidator {
 
-	/**
-	 * Creates a new <code>DefaultGrammarValidator</code>.
-	 *
-	 * @param jpqlGrammar The {@link JPQLGrammar} that defines how the JPQL query was parsed
-	 */
-	public DefaultGrammarValidator(JPQLGrammar jpqlGrammar) {
-		super(jpqlGrammar);
-	}
+    /**
+     * Creates a new <code>DefaultGrammarValidator</code>.
+     *
+     * @param jpqlGrammar The {@link JPQLGrammar} that defines how the JPQL query was parsed
+     */
+    public DefaultGrammarValidator(JPQLGrammar jpqlGrammar) {
+        super(jpqlGrammar);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected LiteralVisitor buildLiteralVisitor() {
-		return new DefaultLiteralVisitor();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected LiteralVisitor buildLiteralVisitor() {
+        return new DefaultLiteralVisitor();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected OwningClauseVisitor buildOwningClauseVisitor() {
-		return new OwningClauseVisitor();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected OwningClauseVisitor buildOwningClauseVisitor() {
+        return new OwningClauseVisitor();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isJoinFetchIdentifiable() {
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isJoinFetchIdentifiable() {
+        return false;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isSubqueryAllowedAnywhere() {
-		return getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_2_1);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isSubqueryAllowedAnywhere() {
+        return getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_2_1);
+    }
 }

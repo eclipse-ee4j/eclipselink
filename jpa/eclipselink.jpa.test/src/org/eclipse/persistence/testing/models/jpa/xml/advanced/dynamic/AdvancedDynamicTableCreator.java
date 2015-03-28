@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     07/05/2010-2.1.1 Guy Pelletier 
+ *     07/05/2010-2.1.1 Guy Pelletier
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
- *     08/20/2012-2.4 Guy Pelletier 
+ *     08/20/2012-2.4 Guy Pelletier
  *       - 381079: EclipseLink dynamic entity does not support embedded-id
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -42,7 +42,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildRUNNERTable());
         addTableDefinition(buildWALKERTable());
     }
-    
+
     public static TableDefinition buildADDRESSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DYNAMIC_ADDRESS");
@@ -112,7 +112,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldCOUNTRY.setUnique(false);
         fieldCOUNTRY.setShouldAllowNull(true);
         table.addField(fieldCOUNTRY);
-        
+
         FieldDefinition fieldType = new FieldDefinition();
         fieldType.setName("TYPE");
         fieldType.setTypeName("VARCHAR2");
@@ -126,11 +126,11 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCREDITCARDSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DynamicEmployee_CREDITCARDS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("DynamicEmployee_EMP_ID");
         fieldID.setTypeName("NUMERIC");
@@ -141,7 +141,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("DYNAMIC_EMPLOYEE.EMP_ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldCARD = new FieldDefinition();
         fieldCARD.setName("CARD");
         fieldCARD.setTypeName("VARCHAR");
@@ -151,7 +151,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldCARD.setUnique(true);
         fieldCARD.setIsIdentity(false);
         table.addField(fieldCARD);
-        
+
         FieldDefinition fieldNUMB = new FieldDefinition();
         fieldNUMB.setName("NUMB");
         fieldNUMB.setTypeName("VARCHAR");
@@ -161,14 +161,14 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldNUMB.setUnique(false);
         fieldNUMB.setIsIdentity(false);
         table.addField(fieldNUMB);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildCREDITLINESTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DYNAMIC_EMP_CREDITLINES");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EMP_ID");
         fieldID.setTypeName("NUMERIC");
@@ -179,7 +179,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("DYNAMIC_EMPLOYEE.EMP_ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldBANK = new FieldDefinition();
         fieldBANK.setName("BANK");
         fieldBANK.setTypeName("VARCHAR");
@@ -189,7 +189,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldBANK.setUnique(true);
         fieldBANK.setIsIdentity(false);
         table.addField(fieldBANK);
-        
+
         FieldDefinition fieldACCOUNT = new FieldDefinition();
         fieldACCOUNT.setName("ACCOUNT");
         fieldACCOUNT.setTypeName("VARCHAR");
@@ -199,14 +199,14 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldACCOUNT.setUnique(false);
         fieldACCOUNT.setIsIdentity(false);
         table.addField(fieldACCOUNT);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildEMPLOYEETable() {
         TableDefinition table = new TableDefinition();
         table.setName("DYNAMIC_EMPLOYEE");
-    
+
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
         field.setTypeName("NUMERIC");
@@ -216,7 +216,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("F_NAME");
         field1.setTypeName("VARCHAR");
@@ -226,7 +226,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("L_NAME");
         field2.setTypeName("VARCHAR");
@@ -236,7 +236,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         table.addField(field2);
-        
+
         FieldDefinition sin = new FieldDefinition();
         sin.setName("SIN");
         sin.setTypeName("VARCHAR");
@@ -246,7 +246,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         sin.setUnique(false);
         sin.setIsIdentity(false);
         table.addField(sin);
-    
+
         FieldDefinition fieldGender = new FieldDefinition();
         fieldGender.setName("GENDER");
         fieldGender.setTypeName("VARCHAR");
@@ -256,7 +256,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldGender.setUnique(false);
         fieldGender.setIsIdentity(false);
         table.addField(fieldGender);
-        
+
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("START_DATE");
         field3.setTypeName("DATE");
@@ -266,7 +266,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("END_DATE");
         field4.setTypeName("DATE");
@@ -276,7 +276,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field4.setUnique(false);
         field4.setIsIdentity(false);
         table.addField(field4);
-    
+
         FieldDefinition field5 = new FieldDefinition();
         field5.setName("START_TIME");
         field5.setTypeName("TIME");
@@ -327,7 +327,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field8.setIsIdentity(false);
         field8.setForeignKeyFieldName("DYNAMIC_ADDRESS.ADDRESS_ID");
         table.addField(field8);
-    
+
         FieldDefinition field9 = new FieldDefinition();
         field9.setName("MANAGER_EMP_ID");
         field9.setTypeName("NUMERIC");
@@ -338,7 +338,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field9.setIsIdentity(false);
         field9.setForeignKeyFieldName("DYNAMIC_EMPLOYEE.EMP_ID");
         table.addField(field9);
-    
+
         FieldDefinition field10 = new FieldDefinition();
         field10.setName("VERSION");
         field10.setTypeName("NUMERIC");
@@ -348,7 +348,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field10.setUnique(false);
         field10.setIsIdentity(false);
         table.addField(field10);
-        
+
         FieldDefinition fieldPayScale = new FieldDefinition();
         fieldPayScale.setName("PAY_SCALE");
         fieldPayScale.setTypeName("VARCHAR");
@@ -358,7 +358,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldPayScale.setIsIdentity(false);
         fieldPayScale.setShouldAllowNull(true);
         table.addField(fieldPayScale);
-        
+
         return table;
     }
 
@@ -376,7 +376,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldPROJID.setIsIdentity(false);
         fieldPROJID.setForeignKeyFieldName("DYNAMIC_PROJECT.PROJ_ID");
         table.addField(fieldPROJID);
-    
+
         FieldDefinition fieldBUDGET = new FieldDefinition();
         fieldBUDGET.setName("BUDGET");
         fieldBUDGET.setTypeName("DOUBLE PRECIS");
@@ -386,7 +386,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldBUDGET.setUnique(false);
         fieldBUDGET.setIsIdentity(false);
         table.addField(fieldBUDGET);
-    
+
         return table;
     }
 
@@ -404,7 +404,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("DYNAMIC_EMPLOYEE.EMP_ID");
         table.addField(field);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("TYPE");
         field1.setTypeName("VARCHAR");
@@ -414,7 +414,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("AREA_CODE");
         field2.setTypeName("VARCHAR");
@@ -424,7 +424,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         table.addField(field2);
-    
+
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("NUMB");
         field3.setTypeName("VARCHAR");
@@ -452,7 +452,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("DYNAMIC_EMPLOYEE.EMP_ID");
         table.addField(field);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("PROJ_ID");
         field1.setTypeName("NUMERIC");
@@ -480,7 +480,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("PROJ_TYPE");
         field1.setTypeName("VARCHAR");
@@ -490,7 +490,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("PROJ_NAME");
         field2.setTypeName("VARCHAR");
@@ -510,7 +510,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("LEADER_ID");
         field4.setTypeName("NUMERIC");
@@ -521,7 +521,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field4.setIsIdentity(false);
         field4.setForeignKeyFieldName("DYNAMIC_EMPLOYEE.EMP_ID");
         table.addField(field4);
-    
+
         FieldDefinition field5 = new FieldDefinition();
         field5.setName("VERSION");
         field5.setTypeName("NUMERIC");
@@ -538,7 +538,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
     public static TableDefinition buildREADONLYCLASSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DYNAMIC_READONLY");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -549,14 +549,14 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildRESPONSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DYNAMIC_RESPONS");
-    
+
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
         field.setTypeName("NUMERIC");
@@ -567,7 +567,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("DYNAMIC_EMPLOYEE.EMP_ID");
         table.addField(field);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("DESCRIPTION");
         field1.setTypeName("VARCHAR");
@@ -577,7 +577,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         return table;
     }
 
@@ -610,7 +610,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildSHOVELDIGGERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DYNAMIC_SHOVEL_DIGGER");
@@ -634,8 +634,8 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldNAME.setIsPrimaryKey(false);
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
-        table.addField(fieldNAME);  
-        
+        table.addField(fieldNAME);
+
         FieldDefinition fieldSHOVEL = new FieldDefinition();
         fieldSHOVEL.setName("SHOVEL_ID");
         fieldSHOVEL.setTypeName("NUMERIC");
@@ -649,7 +649,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildSHOVELOWNERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DYNAMIC_SHOVEL_OWNER");
@@ -673,11 +673,11 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldNAME.setIsPrimaryKey(false);
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
-        table.addField(fieldNAME);  
+        table.addField(fieldNAME);
 
         return table;
     }
-    
+
     public static TableDefinition buildSHOVELPROJECTSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DYNAMIC_SHOVEL_PROJECTS");
@@ -706,7 +706,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildSHOVELPROJECTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DYNAMIC_SHOVEL_PROJECT");
@@ -730,11 +730,11 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldDESCRIPTION.setIsPrimaryKey(false);
         fieldDESCRIPTION.setUnique(false);
         fieldDESCRIPTION.setIsIdentity(false);
-        table.addField(fieldDESCRIPTION);  
+        table.addField(fieldDESCRIPTION);
 
         return table;
     }
-    
+
     public static TableDefinition buildSHOVELTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DYNAMIC_SHOVEL");
@@ -759,7 +759,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldCOST.setUnique(false);
         fieldCOST.setIsIdentity(false);
         table.addField(fieldCOST);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -780,7 +780,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldOWNERID.setIsIdentity(false);
         fieldOWNERID.setForeignKeyFieldName("DYNAMIC_SHOVEL_OWNER.ID");
         table.addField(fieldOWNERID);
-        
+
         FieldDefinition fieldHANDLE = new FieldDefinition();
         fieldHANDLE.setName("HANDLE");
         fieldHANDLE.setTypeName("VARCHAR");
@@ -790,7 +790,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldHANDLE.setUnique(false);
         fieldHANDLE.setIsIdentity(false);
         table.addField(fieldHANDLE);
-        
+
         FieldDefinition fieldSHAFT = new FieldDefinition();
         fieldSHAFT.setName("SHAFT");
         fieldSHAFT.setTypeName("VARCHAR");
@@ -800,7 +800,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldSHAFT.setUnique(false);
         fieldSHAFT.setIsIdentity(false);
         table.addField(fieldSHAFT);
-        
+
         FieldDefinition fieldSCOOP = new FieldDefinition();
         fieldSCOOP.setName("SCOOP");
         fieldSCOOP.setTypeName("VARCHAR");
@@ -810,14 +810,14 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldSCOOP.setUnique(false);
         fieldSCOOP.setIsIdentity(false);
         table.addField(fieldSCOOP);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildRUNNERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DYNAMIC_RUNNER");
-    
+
         FieldDefinition fieldBIB = new FieldDefinition();
         fieldBIB.setName("BIB");
         fieldBIB.setTypeName("NUMERIC");
@@ -827,7 +827,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldBIB.setUnique(false);
         fieldBIB.setIsIdentity(false);
         table.addField(fieldBIB);
-    
+
         FieldDefinition fieldWORLDRANK = new FieldDefinition();
         fieldWORLDRANK.setName("WORLDRANK");
         fieldWORLDRANK.setTypeName("NUMERIC");
@@ -837,7 +837,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldWORLDRANK.setUnique(false);
         fieldWORLDRANK.setIsIdentity(false);
         table.addField(fieldWORLDRANK);
-    
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -847,14 +847,14 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildWALKERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DYNAMIC_WALKER");
-    
+
         FieldDefinition fieldBIB = new FieldDefinition();
         fieldBIB.setName("ID");
         fieldBIB.setTypeName("NUMERIC");
@@ -864,7 +864,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldBIB.setUnique(false);
         fieldBIB.setIsIdentity(false);
         table.addField(fieldBIB);
-    
+
         FieldDefinition fieldSTYLE = new FieldDefinition();
         fieldSTYLE.setName("STYLE");
         fieldSTYLE.setTypeName("VARCHAR");
@@ -874,7 +874,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldSTYLE.setUnique(false);
         fieldSTYLE.setIsIdentity(false);
         table.addField(fieldSTYLE);
-    
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -884,7 +884,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
-        
+
         return table;
     }
 }

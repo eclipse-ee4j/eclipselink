@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Vikram Bhatia - added method for releasing temporary LOBs after conversion
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle;
 
 import java.sql.Array;
@@ -82,9 +82,9 @@ public class Oracle8Platform extends OraclePlatform {
             return false;
         }
         int limit = getLobValueLimits();
-        if (value instanceof byte[]) {//blob 
+        if (value instanceof byte[]) {//blob
             return ((byte[])value).length >= limit;
-        } else if (value instanceof String) {//clob 
+        } else if (value instanceof String) {//clob
             return ((String)value).length() >= limit;
         } else {
             return false;
@@ -169,12 +169,12 @@ public class Oracle8Platform extends OraclePlatform {
      * Write LOB value - only on Oracle8 and up
      */
     @SuppressWarnings("deprecation")
-	public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session) throws SQLException {
+    public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session) throws SQLException {
         if (isBlob(field.getType())) {
             //change for 338585 to use getName instead of getNameDelimited
             oracle.sql.BLOB blob = (oracle.sql.BLOB)resultSet.getObject(field.getName());
 
-            //we could use the jdk 1.4 java.nio package and use channel/buffer for the writing 
+            //we could use the jdk 1.4 java.nio package and use channel/buffer for the writing
             //for the time being, simply use Oracle api.
             blob.putBytes(1, (byte[])value);
             //impose the locallization
@@ -266,7 +266,7 @@ public class Oracle8Platform extends OraclePlatform {
     public Array createArray(String elementDataTypeName, Object[] elements, Connection connection) throws SQLException {
         return new oracle.sql.ARRAY(new oracle.sql.ArrayDescriptor(elementDataTypeName, connection), connection, elements);
     }
-    
+
     /**
      * INTERNAL:
      * Platforms that support java.sql.Struct may override this method.
@@ -282,10 +282,10 @@ public class Oracle8Platform extends OraclePlatform {
      * @return String
      */
     public Object getRefValue(Ref ref,Connection connection) throws SQLException {
-        ((oracle.sql.REF)ref).setPhysicalConnectionOf(connection); 
+        ((oracle.sql.REF)ref).setPhysicalConnectionOf(connection);
         return ((oracle.sql.REF)ref).getValue();
     }
-    
+
     /**
      * INTERNAL:
      * Used by Oracle platforms during reading of ResultSet to free temporary LOBs.

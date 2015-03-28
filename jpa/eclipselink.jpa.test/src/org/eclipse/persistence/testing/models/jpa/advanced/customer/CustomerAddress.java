@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,16 +34,16 @@ import javax.persistence.Table;
 public abstract class CustomerAddress {
 
     /** Customer's address primary key. */
-	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="CMP3_AD_CU_ADDRESS_ID_SEQ")
-	@Column(name="ID")
-	private long id;
+    @Id
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="CMP3_AD_CU_ADDRESS_ID_SEQ")
+    @Column(name="ID")
+    private long id;
 
     /**
      * Get street name.
      * @return Street name attribute value.
      */
-	public abstract String getStreet();
+    public abstract String getStreet();
 
     /**
      * Set street name.

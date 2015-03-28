@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -69,12 +69,12 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
         buildOraclePackage(session);
         buildOracleStoredProcedureReadFromEmployeeInOut(session);
         buildOracleStoredProcedureReadFromEmployeeCursor(session);
-        
+
         Accessor accessor = session.getDefaultConnectionPool().acquireConnection();
         try {
             accessor.incrementCallCount(session);
-            DatabaseMetaData metaData = accessor.getConnection().getMetaData(); 
-            String dbMajorMinorVersion = Integer.toString(metaData.getDatabaseMajorVersion()) + '.' + Integer.toString(metaData.getDatabaseMinorVersion()); 
+            DatabaseMetaData metaData = accessor.getConnection().getMetaData();
+            String dbMajorMinorVersion = Integer.toString(metaData.getDatabaseMajorVersion()) + '.' + Integer.toString(metaData.getDatabaseMinorVersion());
             String dbProductionVersion =  metaData.getDatabaseProductVersion();
             // For Helper.compareVersions to work the first digit in the passed version String should be part of the version,
             // i.e. "10.2.0.2 ..." is ok, but "Oracle 10g ... 10.2.0.2..." is not.
@@ -333,9 +333,9 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
     }
 
     /*
-     * This method is necessary because of a bug in Oracle xdb 11.2.0.2: XDB - 11.2.0.2 DB FORMATS RETURNED XML 
+     * This method is necessary because of a bug in Oracle xdb 11.2.0.2: XDB - 11.2.0.2 DB FORMATS RETURNED XML
      * This bug describes the following workaround:
-     *   In init.ora, add "31151 trace name context forever, level 0x100" 
+     *   In init.ora, add "31151 trace name context forever, level 0x100"
      * When the bug is fixed (or 11.2.0.2 db configurured as described in the workaround))
      * the special case for 11.2.0.2 Oracle db should be removed:
      *
@@ -351,10 +351,10 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
             String originalReadResume_xml = null;
             String originalResume_xml = null;
             if(!readEmp.getResume_xml().equals(emp.getResume_xml())) {
-                originalReadResume_xml = readEmp.getResume_xml(); 
+                originalReadResume_xml = readEmp.getResume_xml();
                 originalResume_xml = emp.getResume_xml();
-                String unformattedReadResume_xml = removeWhiteSpaceFromString(originalReadResume_xml); 
-                String unformattedResume_xml = removeWhiteSpaceFromString(originalResume_xml); 
+                String unformattedReadResume_xml = removeWhiteSpaceFromString(originalReadResume_xml);
+                String unformattedResume_xml = removeWhiteSpaceFromString(originalResume_xml);
                 if(unformattedReadResume_xml.equals(unformattedResume_xml)) {
                     // xml docs defined by the two strings are equivalent
                     // temporary remove the strings from their owner Employees so that it could pass compareObjects
@@ -369,7 +369,7 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
             Document originalReadResume_dom = null;
             Document originalResume_dom = null;
             if(!readEmp.getResume_dom().equals(emp.getResume_dom())) {
-                originalReadResume_dom = readEmp.getResume_dom(); 
+                originalReadResume_dom = readEmp.getResume_dom();
                 originalResume_dom = emp.getResume_dom();
                 Document unformattedReadResume_dom =  (Document)originalReadResume_dom.cloneNode(true);
                 removeEmptyTextNodes(unformattedReadResume_dom);
@@ -411,7 +411,7 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     // Contributed by Blaise
     public static void removeEmptyTextNodes(Node node) {
         NodeList nodeList = node.getChildNodes();
@@ -437,7 +437,7 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
 
         return returnString;
     }
-    
+
     static String convertDocumentToString(Document doc) {
         XMLTransformer xmlTransformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
         StringWriter writer = new StringWriter();

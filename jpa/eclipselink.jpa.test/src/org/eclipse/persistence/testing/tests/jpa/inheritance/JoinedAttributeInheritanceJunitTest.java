@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
 import java.util.Vector;
@@ -26,22 +26,22 @@ import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.*;
 import org.eclipse.persistence.queries.ReadAllQuery;
- 
+
 public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
-        
+
     static protected Class[] classes = {Company.class, Vehicle.class};
     static protected Vector[] objectVectors = {null, null};
-    
+
     protected DatabaseSession dbSession;
 
     public JoinedAttributeInheritanceJunitTest() {
         super();
     }
-    
+
     public JoinedAttributeInheritanceJunitTest(String name) {
         super(name);
     }
-    
+
     // This method is designed to make sure that the tests always work in the same environment:
     // db has all the objects produced by populate method - and no other objects of the relevant classes.
     // In order to enforce that the first test populates the db and caches the objects in static collections,
@@ -56,8 +56,8 @@ public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
         }
         dbSessionClearCache();
     }
-    
-    // the session is cached to avoid extra dealing with SessionManager - 
+
+    // the session is cached to avoid extra dealing with SessionManager -
     // without session caching each test caused at least 5 ClientSessins being acquired / released.
     protected DatabaseSession getDbSession() {
         if(dbSession == null) {
@@ -65,11 +65,11 @@ public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
         }
         return dbSession;
     }
-    
+
     protected UnitOfWork acquireUnitOfWork() {
-        return getDbSession().acquireUnitOfWork();   
+        return getDbSession().acquireUnitOfWork();
     }
-    
+
     protected void clear() {
         UnitOfWork uow = acquireUnitOfWork();
         // delete all Vechicles
@@ -79,7 +79,7 @@ public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
         uow.commit();
         dbSessionClearCache();
     }
-    
+
     protected void populate() {
         UnitOfWork uow = acquireUnitOfWork();
         uow.registerNewObject(InheritanceModelExamples.companyExample1());
@@ -91,12 +91,12 @@ public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
             objectVectors[i] = getDbSession().readAllObjects(classes[i]);
         }
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite(JoinedAttributeInheritanceJunitTest.class);
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -104,19 +104,19 @@ public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
         new InheritanceTableCreator().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
     }
-    
+
     public void tearDown() {
         dbSessionClearCache();
         dbSession = null;
         super.tearDown();
     }
-        
+
     public void testVehicleJoinCompany() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Vehicle.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         query.addJoinedAttribute(query.getExpressionBuilder().get("owner"));
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
@@ -129,9 +129,9 @@ public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Vehicle.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("passengerCapacity").greaterThan(2));
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         query.addJoinedAttribute(query.getExpressionBuilder().get("owner"));
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
@@ -143,9 +143,9 @@ public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
     public void testCompanyJoinVehicles() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Company.class);
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         query.addJoinedAttribute(query.getExpressionBuilder().anyOf("vehicles"));
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
@@ -158,9 +158,9 @@ public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Company.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("name").equal("TOP"));
-        
+
         ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-        
+
         query.addJoinedAttribute(query.getExpressionBuilder().anyOf("vehicles"));
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
@@ -187,7 +187,7 @@ public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
             return false;
         }
         Vector currentVector = getDbSession().readAllObjects(classes[i]);
-        
+
         if(currentVector.size() != objectVectors[i].size()) {
             return false;
         }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.*;
@@ -88,7 +88,7 @@ public class FieldTypeDefinition implements Serializable {
         this.typesuffix = aTypesuffix;
         this.isSizeAllowed = true;
     }
-    
+
     /**
      * Return a new field type with a required size defaulting to the defaultSize.
      */
@@ -97,8 +97,8 @@ public class FieldTypeDefinition implements Serializable {
         this.name = databaseTypeName;
         this.isSizeAllowed = allowsSize;
     }
-    
-    /** Return a new field type with a required size defaulting to the defaultSize and 
+
+    /** Return a new field type with a required size defaulting to the defaultSize and
      *  shouldAllowNull set to allowsNull.
      */
     public FieldTypeDefinition(String databaseTypeName, boolean allowsSize, boolean allowsNull) {
@@ -164,7 +164,7 @@ public class FieldTypeDefinition implements Serializable {
     public String getName() {
         return name;
     }
-    
+
     /**
      * Returns a type suffix (like unicode, byte or ascii) for maxdb create table stmts
      */
@@ -186,13 +186,13 @@ public class FieldTypeDefinition implements Serializable {
         return isSizeRequired;
     }
 
-    /** 
+    /**
      * Return if this type is allowed to be null for this platform
      */
     public boolean shouldAllowNull() {
         return this.shouldAllowNull;
     }
-    
+
     /**
     * Set the default size for this type.
     * This default size will be used if the database requires specification of a size,
@@ -231,7 +231,7 @@ public class FieldTypeDefinition implements Serializable {
     public void setShouldAllowNull(boolean allowsNull) {
         this.shouldAllowNull = allowsNull;
     }
-    
+
     /**
      *    Set the maximum precision and the minimum and maximum scale.
      *    @return    this    Allowing the method to be invoked inline with constructor

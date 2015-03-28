@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,14 +22,14 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class XmlMixedTestCases extends JAXBTestCases { // extends JAXBWithJSONTestCases
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlmixed/root.xml";
-    private final static String XML_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/xmlmixed/root-write.xml";    
+    private final static String XML_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/xmlmixed/root-write.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlmixed/root.json";
 
     public XmlMixedTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {Root.class});
         setControlDocument(XML_RESOURCE);
-        setWriteControlDocument(XML_RESOURCE_WRITE);        
+        setWriteControlDocument(XML_RESOURCE_WRITE);
         //setControlJSON(JSON_RESOURCE);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
@@ -44,21 +44,21 @@ public class XmlMixedTestCases extends JAXBTestCases { // extends JAXBWithJSONTe
         root.getObjects().add("Text Value2");
         return root;
     }
-    
+
     public Object getReadControlObject() {
         Root root = new Root();
         root.setAttr("attribute value");
         root.setElem("element value");
         root.setObjects(new ArrayList<Object>());
-        root.getObjects().add("Text ValueText Value2");        
+        root.getObjects().add("Text ValueText Value2");
         return root;
     }
-    
+
     protected Object getJSONReadControlObject() {
        return getControlObject();
     }
-    
-    public void testObjectToXMLDocument() throws Exception {    	
+
+    public void testObjectToXMLDocument() throws Exception {
     }
 
 }

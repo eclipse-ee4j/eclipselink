@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke, mnorman - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *
  ******************************************************************************/
@@ -30,14 +30,14 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
  * ValueAccessor is a specialized AttributeAccessor enabling access to property values
- * 
+ *
  * @author dclarke, mnorman
  * @since EclipseLink 1.2
  */
 public class ValuesAccessor extends AttributeAccessor {
 
     protected DatabaseMapping mapping;
-    
+
     public ValuesAccessor(DatabaseMapping mapping) {
         super();
         this.mapping = mapping;
@@ -46,9 +46,9 @@ public class ValuesAccessor extends AttributeAccessor {
 
     @Override
     public boolean isValuesAccessor() {
-    	return true;
+        return true;
     }
-    
+
     public Object getAttributeValueFromObject(Object entity) throws DescriptorException {
         Map<String, PropertyWrapper> propertiesMap = ((DynamicEntityImpl)entity).getPropertiesMap();
         PropertyWrapper wrapper = propertiesMap.get(attributeName);

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import org.eclipse.persistence.exceptions.JPQLException;
@@ -45,11 +45,11 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
         }
     }
 
-    /** 
-     * INTERNAL 
+    /**
+     * INTERNAL
      * Check the left child node for an unqualified field access. The method
      * delegates to the left most expression of multi-navigation path
-     * expression. 
+     * expression.
      */
     public Node qualifyAttributeAccess(ParseTreeContext context) {
         if (getLeft() != null) {
@@ -85,7 +85,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
             if (type == null) {
                 // could not resolve attribute
                 throw JPQLException.unknownAttribute(
-                    context.getQueryInfo(), right.getLine(), right.getColumn(), 
+                    context.getQueryInfo(), right.getLine(), right.getColumn(),
                     name, typeHelper.getTypeName(left.getType()));
             }
             if (right.isAttributeNode()){
@@ -109,7 +109,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
                 // dot expression does not denote an enum literal access =>
                 // unknown identification variable
                 throw JPQLException.aliasResolutionException(
-                    context.getQueryInfo(), leftMost.getLine(), 
+                    context.getQueryInfo(), leftMost.getLine(),
                     leftMost.getColumn(), leftMost.getAsString());
             }
             setType(type);
@@ -117,7 +117,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
         }
     }
 
-    /** 
+    /**
      * INTERNAL
      * Checks whether the left hand side of this dot node is navigable.
      */
@@ -125,12 +125,12 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
         TypeHelper typeHelper = context.getTypeHelper();
         // Checks whether the type of the dot node allows a navigation.
         Object type = node.getType();
-        if (!typeHelper.isEntityClass(type) && 
+        if (!typeHelper.isEntityClass(type) &&
             !typeHelper.isEmbeddable(type) &&
             !typeHelper.isEnumType(type)) {
             throw JPQLException.invalidNavigation(
                 context.getQueryInfo(), node.getLine(), node.getColumn(),
-                this.getAsString(), node.getAsString(), 
+                this.getAsString(), node.getAsString(),
                 typeHelper.getTypeName(type));
         }
         // Special check to disallow collection valued relationships
@@ -145,7 +145,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
             }
         }
     }
-    
+
     /** */
     private boolean isDeclaredVariable(Node node, ParseTreeContext context) {
         if (node.isVariableNode()) {
@@ -170,15 +170,15 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
         } else {
             // Get the left expression
             Expression whereClause = getLeft().generateExpression(context);
-            
+
             // Calculate the mapping and pass it to the right expression
             if (right.isAttributeNode()) {
                 ((AttributeNode)right).setMapping(resolveMapping(context));
             }
-            
+
             // Or it with whatever the right expression is
             whereClause = right.addToExpression(whereClause, context);
-            
+
             if (alias != null){
                 context.addExpression(whereClause, alias);
             }
@@ -263,7 +263,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
         Class leftClass = getLeft().resolveClass(context);
         return getRight().resolveClass(context, leftClass);
     }
-    
+
     /**
      * INTERNAL
      * Get the string representation of this node.
@@ -284,7 +284,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
         }
         return left;
     }
-    
+
     /**
      * INTERNAL
      * Return the right most node of a dot expr, so return 'c' for 'a.b.c'.
@@ -313,7 +313,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
         }
         return type;
     }
-    
+
     public boolean isAliasableNode(){
         return true;
     }

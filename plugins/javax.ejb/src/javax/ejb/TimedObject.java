@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,7 +49,7 @@ import java.io.Serializable;
  * bean class, a message-driven bean class, or an EJB 2.x entity bean class.
  * <p>
  * If the bean implements the <code>TimedObject</code> interface, the
- * <code>Timeout</code> annotation, if used, can only be applied to 
+ * <code>Timeout</code> annotation, if used, can only be applied to
  * the <code>ejbTimeout</code> method.
  *
  * @see Timeout
@@ -66,4 +66,4 @@ public interface TimedObject {
      */
     public void ejbTimeout(Timer timer);
 
-} 
+}

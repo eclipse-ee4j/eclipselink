@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,27 +26,27 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public final class IndexExpression extends EncapsulatedIdentificationVariableExpression {
 
-	/**
-	 * Creates a new <code>IndexExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public IndexExpression(AbstractExpression parent) {
-		super(parent, INDEX);
-	}
+    /**
+     * Creates a new <code>IndexExpression</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public IndexExpression(AbstractExpression parent) {
+        super(parent, INDEX);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(FunctionsReturningNumericsBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(FunctionsReturningNumericsBNF.ID);
+    }
 }

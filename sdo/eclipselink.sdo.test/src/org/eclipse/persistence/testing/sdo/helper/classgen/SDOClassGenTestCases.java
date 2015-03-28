@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.classgen;
 
 import java.io.File;
@@ -44,8 +44,8 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
         xsdString = getSchema(getSchemaName());
         classGenerator = new SDOClassGenerator(aHelperContext);
     }
-    
-    public void tearDown() throws Exception{      
+
+    public void tearDown() throws Exception{
         super.tearDown();
         List<String> packages = getPackages();
         for (int i = 0; i < getFileNamesToCompile().size(); i++) {
@@ -55,11 +55,11 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
             fullJavaName.append("/");
             fullJavaName.append(nextPackageDir);
             fullJavaName.append("/");
-            fullJavaName.append(nextFileName);            
+            fullJavaName.append(nextFileName);
             File f = new File(fullJavaName.toString().replace(".java", ".class"));
             if(f.exists()){
               f.delete();
-            }            
+            }
         }
     }
 
@@ -105,14 +105,14 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
     protected List<String> getPackages() {
-    	if(null != packageNames && packageNames.size() > 0) {
-    		return packageNames;
-    	} else {
-    		packageNames = new ArrayList<String>();
-    		for(int i = 0;i < getControlFileNames().size();i++) {
-    			packageNames.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
-    		}
-    	}
+        if(null != packageNames && packageNames.size() > 0) {
+            return packageNames;
+        } else {
+            packageNames = new ArrayList<String>();
+            for(int i = 0;i < getControlFileNames().size();i++) {
+                packageNames.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
+            }
+        }
         return packageNames;
     }
 
@@ -129,13 +129,13 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
             assertStringsEqual(nextControlValue, nextGeneratedValue);
         }
     }
-    
-    protected List<String> getFileNamesToCompile(){ 
-        return getControlFileNames();    
+
+    protected List<String> getFileNamesToCompile(){
+        return getControlFileNames();
     }
-    
+
     public void compileFiles(){
-    	Object[] javaFiles = new Object[getFileNamesToCompile().size()];
+        Object[] javaFiles = new Object[getFileNamesToCompile().size()];
         List<String> packages = getPackages();
         for (int i = 0; i < getFileNamesToCompile().size(); i++) {
             String nextFileName = getFileNamesToCompile().get(i);
@@ -151,7 +151,7 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
         int returnVal = CompileUtil.instance().compile(classgenCompilePath, javaFiles);
         assertEquals(0, returnVal);
     }
-    
+
     // The following test case is out of scope for ClassGenElements - we let it fail with a NPE that generates an empty xsdString for this suite
     public void testClassGen() throws Exception {
         //compileFiles(getControlSourceFolder() + "/" + getPackageDir());

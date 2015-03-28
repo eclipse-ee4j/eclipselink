@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -19,27 +19,27 @@ import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class JSONAttributePrefixEmptyStringTestCases extends JSONMarshalUnmarshalTestCases {
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/attribute/address_empty_string_prefix.json";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/attribute/address_empty_string_prefix.json";
 
-	public JSONAttributePrefixEmptyStringTestCases(String name) throws Exception {
-		super(name);
-		setControlJSON(JSON_RESOURCE);
-		setClasses(new Class[]{Address.class});		
-	}
+    public JSONAttributePrefixEmptyStringTestCases(String name) throws Exception {
+        super(name);
+        setControlJSON(JSON_RESOURCE);
+        setClasses(new Class[]{Address.class});
+    }
 
-	protected Object getControlObject() {
-		Address add = new Address();
-		add.setId(10);
-		add.setCity("Ottawa");
-		add.setStreet("Main street");
+    protected Object getControlObject() {
+        Address add = new Address();
+        add.setId(10);
+        add.setCity("Ottawa");
+        add.setStreet("Main street");
 
-		return add;
-	}
-	
-	public Map getProperties(){
-		Map props = new HashMap();
-		props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "");
-		return props;
-	}
-		
+        return add;
+    }
+
+    public Map getProperties(){
+        Map props = new HashMap();
+        props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "");
+        return props;
+    }
+
 }

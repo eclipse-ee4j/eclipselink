@@ -1,27 +1,27 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     03/03/2010 - 2.1 Michael O'Brien  
- *       - 302316: clear the object cache when testing stored procedure returns on SQLServer 
+ *     03/03/2010 - 2.1 Michael O'Brien
+ *       - 302316: clear the object cache when testing stored procedure returns on SQLServer
  *         to avoid false positives visible only when debugging in DatabaseCall.buildOutputRow()
  *       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
- *     06/16/2010-2.2 Guy Pelletier 
+ *     06/16/2010-2.2 Guy Pelletier
  *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
- *     09/03/2010-2.2 Guy Pelletier 
+ *     09/03/2010-2.2 Guy Pelletier
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     10/27/2010-2.2 Guy Pelletier 
+ *     10/27/2010-2.2 Guy Pelletier
  *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
- *     11/01/2010-2.2 Guy Pelletier 
+ *     11/01/2010-2.2 Guy Pelletier
  *       - 322916: getParameter on Query throws NPE
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
@@ -155,20 +155,20 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     private static long td = 839362;
     private static long cibc = 948274;
     private static String newResponsibility = "The most useless responsibility ever.";
-    
+
     public AdvancedJPAJunitTest() {
         super();
     }
-    
+
     public AdvancedJPAJunitTest(String name) {
         super(name);
     }
-    
+
     public void setUp() {
         super.setUp();
         clearCache();
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedJPAJunitTest");
@@ -179,14 +179,14 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
         suite.addTest(new AdvancedJPAJunitTest("testJoinColumnForeignKeyFieldLength"));
         suite.addTest(new AdvancedJPAJunitTest("testEmployeeFetchWithAlias"));
-        
+
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
         suite.addTest(new AdvancedJPAJunitTest("testVerifyEmployeeCacheSettings"));
         suite.addTest(new AdvancedJPAJunitTest("testVerifyEmployeeCustomizerSettings"));
-        
+
         suite.addTest(new AdvancedJPAJunitTest("testUpdateEmployee"));
         suite.addTest(new AdvancedJPAJunitTest("testVerifyUpdatedEmployee"));
-        
+
         suite.addTest(new AdvancedJPAJunitTest("testCreateNewBuyer"));
         suite.addTest(new AdvancedJPAJunitTest("testVerifyNewBuyer"));
         suite.addTest(new AdvancedJPAJunitTest("testBuyerOptimisticLocking"));
@@ -197,47 +197,47 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testGiveFredAnObjectTypeConverterChange"));
         suite.addTest(new AdvancedJPAJunitTest("testUpdatePenelopesPhoneNumberStatus"));
         suite.addTest(new AdvancedJPAJunitTest("testRemoveJillWithPrivateOwnedPhoneNumbers"));
-        
+
         suite.addTest(new AdvancedJPAJunitTest("testCreateNewEquipment"));
         suite.addTest(new AdvancedJPAJunitTest("testAddNewEquipmentToDepartment"));
         suite.addTest(new AdvancedJPAJunitTest("testRemoveDepartmentWithPrivateOwnedEquipment"));
         suite.addTest(new AdvancedJPAJunitTest("testUpdateReadOnlyEquipmentCode"));
-        
+
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQuery"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryByIndex"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryInOut"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithRawData"));
         suite.addTest(new AdvancedJPAJunitTest("testModifyNamedStoredProcedureQueryWithRawData"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetMapping"));
-        suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetFieldMapping"));        
+        suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetFieldMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedFunction"));
         suite.addTest(new AdvancedJPAJunitTest("testNonTriggerLazyForSProc"));
 
         suite.addTest(new AdvancedJPAJunitTest("testMethodBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testClassBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testTransformationMappingWithColumnAnnotation"));
-        
+
         suite.addTest(new AdvancedJPAJunitTest("testCursorStream"));
 
         suite.addTest(new AdvancedJPAJunitTest("testProperty"));
-        
+
         suite.addTest(new AdvancedJPAJunitTest("testBackpointerOnMerge"));
-                
+
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalPersist"));
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalUpdate"));
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalFetchJoin"));
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_AddRemoveTarget"));
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_DeleteSource"));
-        
+
         suite.addTest(new AdvancedJPAJunitTest("testMapBuildReferencesPKList"));
         suite.addTest(new AdvancedJPAJunitTest("testListBuildReferencesPKList"));
         suite.addTest(new AdvancedJPAJunitTest("testValuePKListMissingElement"));
         suite.addTest(new AdvancedJPAJunitTest("testEnumeratedPrimaryKeys"));
-        
+
         suite.addTest(new AdvancedJPAJunitTest("testAttributeOverrideToMultipleSameDefaultColumnName"));
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchWithRefreshOnRelatedEntity"));
         suite.addTest(new AdvancedJPAJunitTest("testSharedEmbeddedAttributeOverrides"));
-        
+
         if (!isJPA10()) {
             // These tests use JPA 2.0 entity manager API
             suite.addTest(new AdvancedJPAJunitTest("testQueryGetParameter"));
@@ -249,39 +249,39 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             suite.addTest(new AdvancedJPAJunitTest("testComplexAdditionalCriteria"));
             suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaBetweenEntities"));
             suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithSubQuery"));
-            
+
             // Run this test only when the JPA 2.0 specification is enabled on the server, or we are in SE mode with JPA 2.0 capability
             suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
-            
+
             suite.addTest(new AdvancedJPAJunitTest("testProjectToEmployeeWithBatchFetchJoinFetch"));
             suite.addTest(new AdvancedJPAJunitTest("testEmployeeToPhoneNumberWithBatchFetchJoinFetch"));
             suite.addTest(new AdvancedJPAJunitTest("testEmployeeToAddressWithBatchFetchJoinFetch"));
         }
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
         ServerSession session = JUnitTestCase.getServerSession();
         new AdvancedTableCreator().replaceTables(session);
-        // The EquipmentCode class 'should' be set to read only. We want 
-        // to be able to create a couple in the Employee populator, so 
-        // force the read only to false. If EquipmentCode is not 
+        // The EquipmentCode class 'should' be set to read only. We want
+        // to be able to create a couple in the Employee populator, so
+        // force the read only to false. If EquipmentCode is not
         // actually read only, don't worry, we set the original read
-        // only value back on the descriptor and the error will be 
+        // only value back on the descriptor and the error will be
         // caught in a later test in this suite.
         ClassDescriptor descriptor = session.getDescriptor(EquipmentCode.class);
         boolean shouldBeReadOnly = descriptor.shouldBeReadOnly();
         descriptor.setShouldBeReadOnly(false);
-        
+
         // Populate the database with our examples.
-        EmployeePopulator employeePopulator = new EmployeePopulator();         
+        EmployeePopulator employeePopulator = new EmployeePopulator();
         employeePopulator.buildExamples();
         employeePopulator.persistExample(session);
-        
+
         descriptor.setShouldBeReadOnly(shouldBeReadOnly);
 
         clearCache();
@@ -301,7 +301,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         func.addStatement("RETURN P_IN * 1000");
         return func;
     }
-    
+
     /* Test named function 'StoredFunction_In'*/
     public void testNamedFunction() {
         if (!supportsStoredFunctions()) {
@@ -321,7 +321,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Bug 322916
      */
@@ -337,14 +337,14 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Test user defined additional criteria with no parameters.
      */
     public void testAdditionalCriteriaModelPopulate() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             // Persist some schools
             School school1 = new School();
@@ -353,7 +353,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             school1.addStudent(new Student("OttawaJRStud2"));
             school1.addStudent(new Student("OttawaJRStud3"));
             em.persist(school1);
-            
+
             School school2 = new School();
             school2.setName("Ottawa Senior High");
             school2.addStudent(new Student("OttawaSRStud1"));
@@ -362,7 +362,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             school2.addStudent(new Student("OttawaSRStud4"));
             school2.addStudent(new Student("OttawaSRStud5"));
             em.persist(school2);
-            
+
             School school3 = new School();
             school3.setName("Toronto Junior High");
             school3.addStudent(new Student("TorontoJRStud1"));
@@ -373,7 +373,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             school3.addStudent(new Student("TorontoJRStud6"));
             school3.addStudent(new Student("TorontoJRStud7"));
             em.persist(school3);
-            
+
             School school4 = new School();
             school4.setName("Toronto Senior High");
             school4.addStudent(new Student("TorontoSRStud1"));
@@ -388,7 +388,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             school4.addStudent(new Student("TorontoSRStud10"));
             school4.addStudent(new Student("TorontoSRStud11"));
             em.persist(school4);
-            
+
             School school5 = new School();
             school5.setName("Montreal Senior High");
             school5.addStudent(new Student("MontrealSRStud1"));
@@ -397,63 +397,63 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             school5.addStudent(new Student("MontrealSRStud4"));
             school5.addStudent(new Student("MontrealSRStud5"));
             em.persist(school5);
-            
+
             Bolt bolt1 = new Bolt();
             Nut nut1 = new Nut();
             nut1.setColor("Grey");
             nut1.setSize(8);
             bolt1.setNut(nut1);
             em.persist(bolt1);
-            
+
             Bolt bolt2 = new Bolt();
             Nut nut2 = new Nut();
             nut2.setColor("Black");
             nut2.setSize(8);
             bolt2.setNut(nut2);
             em.persist(bolt2);
-            
+
             Bolt bolt3 = new Bolt();
             Nut nut3 = new Nut();
             nut3.setColor("Grey");
             nut3.setSize(6);
             bolt3.setNut(nut3);
             em.persist(bolt3);
-            
+
             Bolt bolt4 = new Bolt();
             Nut nut4 = new Nut();
             nut4.setColor("Black");
             nut4.setSize(6);
             bolt4.setNut(nut4);
             em.persist(bolt4);
-            
+
             Bolt bolt5 = new Bolt();
             Nut nut5 = new Nut();
             nut5.setColor("Grey");
             nut5.setSize(2);
             bolt5.setNut(nut5);
             em.persist(bolt5);
-            
+
             Bolt bolt6 = new Bolt();
             Nut nut6 = new Nut();
             nut6.setColor("Grey");
             nut6.setSize(8);
             bolt6.setNut(nut6);
             em.persist(bolt6);
-            
+
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Test user defined additional criteria with no parameters. The additional
      * criteria on school filters for Ottawa named schools.
@@ -461,22 +461,22 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testAdditionalCriteria() {
         EntityManager em = createEntityManager();
 
-        try {          
+        try {
             List schools = em.createNamedQuery("findJPQLSchools").getResultList();
-            assertTrue("Incorrect number of schools were returned [" + schools.size() + "], expected [2]",  schools.size() == 2);    
+            assertTrue("Incorrect number of schools were returned [" + schools.size() + "], expected [2]",  schools.size() == 2);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Test user defined additional criteria with parameter.
      */
@@ -487,10 +487,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             beginTransaction(em);
             // This should override the EMF property of Montreal%
             em.setProperty("NAME", "Ottawa%");
-            
+
             // Find the schools, because of our additional criteria on Student
             // and the property above, we should only return Ottawa students.
-            
+
             List students = em.createQuery("SELECT s from Student s").getResultList();
             assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [8]",  students.size() == 8);
             commitTransaction(em);
@@ -498,15 +498,15 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Test user defined additional criteria with parameter.
      */
@@ -517,11 +517,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             beginTransaction(em);
             // This should override the EMF property of Montreal%
             em.setProperty("NAME", "Toronto%");
-            
+
             // Find the schools, because of our additional criteria on Student
             // and the property above, we should only return Toronto students.
             // However, they should not have any schools loaded.
-            
+
             List students = em.createQuery("SELECT s from Student s").getResultList();
             assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [18]",  students.size() == 18);
             commitTransaction(em);
@@ -529,12 +529,12 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
 
@@ -551,46 +551,46 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         Map<Integer, Equipment> equipments = (Map<Integer, Equipment>) mapping.valueFromPKList(pks, null, session);
         assertTrue("ValueFromPKList returned list of different size from actual entity.", equipments.size() == dept.getEquipment().size());
         for (Equipment equip : dept.getEquipment().values()){
-        	assertTrue("Equipment not found in ValueFromPKList list", equipments.containsKey(equip.getId()));
+            assertTrue("Equipment not found in ValueFromPKList list", equipments.containsKey(equip.getId()));
         }
         rollbackTransaction(em);
     }
-    
+
     public void testListBuildReferencesPKList(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         Jigsaw jigsaw = new Jigsaw();
         for (int i = 1; i < 11; i++) {
             jigsaw.addPiece(new JigsawPiece(i));
         }
         em.persist(jigsaw);
 
-       
+
         em.flush();
-        
+
         clearCache();
-        
+
         AbstractSession session = (AbstractSession) JpaHelper.getEntityManager(em).getActiveSession();
         ClassDescriptor descriptor = session.getDescriptorForAlias("Jigsaw");
-        
+
         Jigsaw foundJigsaw = (Jigsaw) em.find(Jigsaw.class, jigsaw.getId());
         int expectedNumber = foundJigsaw.getPieces().size();
-        
+
         ForeignReferenceMapping mapping = (ForeignReferenceMapping) descriptor.getMappingForAttributeName("pieces");
         Object[] pks = mapping.buildReferencesPKList(foundJigsaw, mapping.getAttributeValueFromObject(foundJigsaw), session);
         assertEquals("PK list is of incorrect size", expectedNumber, pks.length);
-        
+
         List<JigsawPiece> elements = (List<JigsawPiece>) mapping.valueFromPKList(pks, null, session);
         assertEquals("ValueFromPKList returned list of different size from actual entity.", expectedNumber, elements.size());
-        
+
         for (JigsawPiece element : elements){
             assertTrue("Entity id " + element.getId() + " not found in ValueFromPKList list", foundJigsaw.getPieces().contains(element));
         }
-        
+
         elements = (List<JigsawPiece>) mapping.valueFromPKList(pks, null, session);
         assertEquals("ValueFromPKList returned list of different size from actual entity.", expectedNumber, elements.size());
-        
+
         for (JigsawPiece element : elements){
             assertTrue("Entity id " + element.getId() + " not found in ValueFromPKList list", foundJigsaw.getPieces().contains(element));
         }
@@ -667,20 +667,20 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         try {
             // This should use the EMF NAME property of Montreal%
             List students = em.createQuery("SELECT s from Student s").getResultList();
-            assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [5]",  students.size() == 5); 
+            assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [5]",  students.size() == 5);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Test user defined additional criteria with parameter.
      */
@@ -691,7 +691,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             beginTransaction(em);
             em.setProperty("NUT_SIZE", 8);
             em.setProperty("NUT_COLOR", "Grey");
-            
+
             List bolts = em.createQuery("SELECT b from Bolt b").getResultList();
             assertTrue("Incorrect number of bolts were returned [" + bolts.size() + "], expected [2]",  bolts.size() == 2);
             commitTransaction(em);
@@ -699,17 +699,17 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
 
     /**
-     * Test additional criteria when used on two entities that have a 
+     * Test additional criteria when used on two entities that have a
      * relationship between the two.
      */
     public void testAdditionalCriteriaBetweenEntities() {
@@ -717,56 +717,56 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         try {
             beginTransaction(em);
-            
+
             em.setProperty("SANDWICH_DESCRIPTION", "%hot%");
             em.setProperty("EATER_NAME", "%Glutton%");
-            
+
             Sandwich sandwich = new Sandwich();
             sandwich.setName("The Inferno");
             sandwich.setDescription("A hot and spicy crazy concoction");
             em.persist(sandwich);
-            
+
             Eater eater = new Eater();
             eater.setName("Glutton for spicy");
             eater.setSandwhich(sandwich);
             em.persist(eater);
-            
+
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         } finally {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Test additional criteria when using a sub query.
      */
     public void testAdditionalCriteriaWithSubQuery() {
         EntityManager em = createEntityManager("additional-criteria");
 
-        try {       
+        try {
             beginTransaction(em);
-            
+
             Rabbit rabbit = new Rabbit();
             rabbit.setName("Bugs");
             em.persist(rabbit);
-            
+
             RabbitFoot rabbitFoot = new RabbitFoot();
             rabbitFoot.setCaption("Caption of Bugs");
             rabbitFoot.setRabbitId(rabbit.getId());
             em.persist(rabbitFoot);
-            
+
             commitTransaction(em);
-            
+
             em.clear();
             clearCache("additional-criteria");
-            
+
             List<Eater> rabbits = em.createQuery("select this from Rabbit this").getResultList();
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -779,7 +779,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Bug 328114
      */
@@ -803,15 +803,15 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * This test performs minimal sanity testing on the advanced JPA model
      * in order to verify metamodel creation.<p>
@@ -830,22 +830,22 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         EntityType<LargeProject> entityLargeProject = metamodel.entity(LargeProject.class);
         Set<Attribute<LargeProject, ?>> declaredAttributes = entityLargeProject.getDeclaredAttributes();
         assertTrue(declaredAttributes.size() > 0); // instead of a assertEquals(1, size) for future compatibility with changes to Buyer
-        
-        // check that getDeclaredAttribute and getDeclaredAttributes return the same attribute        
+
+        // check that getDeclaredAttribute and getDeclaredAttributes return the same attribute
         Attribute<LargeProject, ?> budgetAttribute = entityLargeProject.getDeclaredAttribute("budget");
         assertNotNull(budgetAttribute);
         Attribute<LargeProject, ?> budgetSingularAttribute = entityLargeProject.getDeclaredSingularAttribute("budget");
         assertNotNull(budgetSingularAttribute);
         assertEquals(budgetSingularAttribute, budgetAttribute);
-        assertTrue(declaredAttributes.contains(budgetSingularAttribute));        
+        assertTrue(declaredAttributes.contains(budgetSingularAttribute));
         // check the type
         Class budgetClass = budgetSingularAttribute.getJavaType();
-        // Verify whether we expect a boxed class or not 
+        // Verify whether we expect a boxed class or not
         assertEquals(double.class, budgetClass);
         //assertEquals(Double.class, budgetClass);
-        
+
         // Test LargeProject.budget.buyingDays
-        
+
         // Check an EnumSet on an Entity
         EntityType<Buyer> entityBuyer = metamodel.entity(Buyer.class);
         // public enum Weekdays { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
@@ -868,7 +868,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         SingularAttribute<? super Buyer, EnumSet> buyingDaysSingularAttribute = entityBuyer.getSingularAttribute("buyingDays", EnumSet.class);
         assertNotNull(buyingDaysSingularAttribute);
         assertFalse(buyingDaysSingularAttribute.isCollection());
-        
+
         // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29
         // Check for Id that exists
         boolean expectedIAExceptionThrown = false;
@@ -892,134 +892,134 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         assertTrue(buyerCreditCards.isCollection());
         assertTrue(buyerCreditCards instanceof MapAttributeImpl);
         MapAttribute<? super Buyer, ?, ?> buyerCreditCardsMap = entityBuyer.getMap("creditCards");
-        
+
         // Verify owning type
         assertNotNull(buyerCreditCardsMap);
         assertEquals(entityBuyer, buyerCreditCardsMap.getDeclaringType());
-        
+
         // Verify Map Key
         assertEquals(String.class, buyerCreditCardsMap.getKeyJavaType());
-        
+
         // Verify Map Value
         assertEquals(Long.class, buyerCreditCardsMap.getElementType().getJavaType());
     }
-    
+
     /**
      * Verifies that existence-checking metadata is correctly processed.
      */
     public void testExistenceCheckingSetting() {
         ServerSession session = JUnitTestCase.getServerSession();
-        
+
         ClassDescriptor employeeDescriptor = session.getDescriptor(Employee.class);
         assertTrue("Employee existence checking was incorrect", employeeDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.CheckDatabase);
-        
+
         ClassDescriptor projectDescriptor = session.getDescriptor(Project.class);
         assertTrue("Project existence checking was incorrect", projectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.CheckCache);
-        
+
         ClassDescriptor smallProjectDescriptor = session.getDescriptor(SmallProject.class);
         assertTrue("SmallProject existence checking was incorrect", smallProjectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.AssumeExistence);
-        
+
         ClassDescriptor largeProjectDescriptor = session.getDescriptor(LargeProject.class);
         assertTrue("LargeProject existence checking was incorrect", largeProjectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.AssumeNonExistence);
     }
-    
+
     public void testJoinColumnForeignKeyFieldLength() {
         ServerSession session = JUnitTestCase.getServerSession();
-        
+
         ClassDescriptor employeeDescriptor = session.getDescriptor(Employee.class);
         ClassDescriptor buyerDescriptor = session.getDescriptor(Buyer.class);
 
         //////////////////// Test fk from a secondary table ////////////////////
         DatabaseTable secondaryTable = employeeDescriptor.getTable("CMP3_SALARY");
         Map<DatabaseField, DatabaseField> keys = employeeDescriptor.getAdditionalTablePrimaryKeyFields().get(secondaryTable);
-        
+
         for (DatabaseField pkField : keys.keySet()) {
             DatabaseField fkField =  keys.get(pkField);
             assertTrue("The secondary table foreign field [" + fkField.getName() + "(" + fkField.getLength() + ")] did not have the same length as the primary key field [" + pkField.getName() + "(" + pkField.getLength() + ")]", fkField.getLength() == pkField.getLength());
         }
-        
+
         ////////////////////////// Test a M-1 mapping //////////////////////////
         DatabaseMapping mapping = employeeDescriptor.getMappingForAttributeName("address");
         assertNotNull("The address mapping from Employee was not found", mapping);
         assertTrue("The address mapping is no longer a one to one mapping", mapping.isOneToOneMapping());
-        
+
         keys = ((OneToOneMapping) mapping).getSourceToTargetKeyFields();
-        
+
         for (DatabaseField fkField : keys.keySet()) {
             DatabaseField pkField =  keys.get(fkField);
             assertTrue("The address mapping foreign field [" + fkField.getName() + "(" + fkField.getLength() + ")] did not have the same length as the primary key field [" + pkField.getName() + "(" + pkField.getLength() + ")]", fkField.getLength() == pkField.getLength());
         }
-        
+
         ////////////////// Test a unidirectional 1-M mapping ///////////////////
         mapping = employeeDescriptor.getMappingForAttributeName("dealers");
         assertNotNull("The dealers mapping from Employee was not found", mapping);
         assertTrue("The dealers mapping is no longer a unidirectional one to many mapping", mapping.isUnidirectionalOneToManyMapping());
-        
+
         keys = ((UnidirectionalOneToManyMapping) mapping).getTargetForeignKeysToSourceKeys();
-        
+
         for (DatabaseField fkField : keys.keySet()) {
             DatabaseField pkField =  keys.get(fkField);
             assertTrue("The dealers mapping foreign key field [" + fkField.getName() + "(" + fkField.getLength() + ")] did not have the same length as the primary key field [" + pkField.getName() + "(" + pkField.getLength() + ")]", fkField.getLength() == pkField.getLength());
         }
-        
-        ////////////////////////// Test a M-M mapping ////////////////////////// 
+
+        ////////////////////////// Test a M-M mapping //////////////////////////
         mapping = employeeDescriptor.getMappingForAttributeName("projects");
         assertNotNull("The projects mapping from Employee was not found", mapping);
         assertTrue("The projects mapping is no longer a many to many mapping", mapping.isManyToManyMapping());
-        
+
         Vector<DatabaseField> sourceKeys = ((ManyToManyMapping) mapping).getSourceKeyFields();
         Vector<DatabaseField> sourceRelationKeys = ((ManyToManyMapping) mapping).getSourceRelationKeyFields();
-        
+
         for (int i = 0; i < sourceKeys.size(); i++) {
             DatabaseField sourcePrimaryKey = sourceKeys.get(i);
             DatabaseField sourceRelationForeignKey = sourceRelationKeys.get(i);
-            
-            assertTrue("The projects mapping source relation foreign key field [" + sourceRelationForeignKey.getName() + "(" + sourceRelationForeignKey.getLength() + ")] did not have the same length as the source primary key field [" + sourcePrimaryKey.getName()  + "(" + sourcePrimaryKey.getLength() + ")]", sourcePrimaryKey.getLength() == sourceRelationForeignKey.getLength());            
+
+            assertTrue("The projects mapping source relation foreign key field [" + sourceRelationForeignKey.getName() + "(" + sourceRelationForeignKey.getLength() + ")] did not have the same length as the source primary key field [" + sourcePrimaryKey.getName()  + "(" + sourcePrimaryKey.getLength() + ")]", sourcePrimaryKey.getLength() == sourceRelationForeignKey.getLength());
         }
-        
+
         Vector<DatabaseField> targetKeys = ((ManyToManyMapping) mapping).getSourceKeyFields();
         Vector<DatabaseField> targetRelationKeys = ((ManyToManyMapping) mapping).getSourceRelationKeyFields();
 
         for (int i = 0; i < targetKeys.size(); i++) {
             DatabaseField targetPrimaryKey = targetKeys.get(i);
             DatabaseField targetRelationForeignKey = targetRelationKeys.get(i);
-            
-            assertTrue("The projects mapping target relation foreign key field [" + targetRelationForeignKey.getName() + "(" + targetRelationForeignKey.getLength() + ")] did not have the same length as the target primary key field [" + targetPrimaryKey.getName() + "(" + targetPrimaryKey.getLength() + ")]", targetPrimaryKey.getLength() == targetRelationForeignKey.getLength());            
+
+            assertTrue("The projects mapping target relation foreign key field [" + targetRelationForeignKey.getName() + "(" + targetRelationForeignKey.getLength() + ")] did not have the same length as the target primary key field [" + targetPrimaryKey.getName() + "(" + targetPrimaryKey.getLength() + ")]", targetPrimaryKey.getLength() == targetRelationForeignKey.getLength());
         }
-        
+
         //////////////////////// Test a basic collection ///////////////////////
         mapping = employeeDescriptor.getMappingForAttributeName("responsibilities");
         assertNotNull("The responsibilities mapping from Employee was not found", mapping);
         assertTrue("The responsibilities mapping is no longer a direct collection mapping", mapping.isDirectCollectionMapping());
-        
+
         Vector<DatabaseField> primaryKeys = ((DirectCollectionMapping) mapping).getSourceKeyFields();
         Vector<DatabaseField> foreignKeys = ((DirectCollectionMapping) mapping).getReferenceKeyFields();
-        
+
         for (int i = 0; i < primaryKeys.size(); i++) {
             DatabaseField primaryKey = primaryKeys.get(i);
             DatabaseField foreignKey = foreignKeys.get(i);
-            
-            assertTrue("The responsibilities mapping foreign key field [" + foreignKey.getName() + "(" + foreignKey.getLength() + ")] did not have the same length as the source primary key field [" + primaryKey.getName() + "(" + primaryKey.getLength() + ")]", primaryKey.getLength() == foreignKey.getLength());            
+
+            assertTrue("The responsibilities mapping foreign key field [" + foreignKey.getName() + "(" + foreignKey.getLength() + ")] did not have the same length as the source primary key field [" + primaryKey.getName() + "(" + primaryKey.getLength() + ")]", primaryKey.getLength() == foreignKey.getLength());
         }
-        
+
         //////// Test an element collection mapping (direct collection) ////////
         mapping = buyerDescriptor.getMappingForAttributeName("creditLines");
         assertNotNull("The creditLines mapping from Buyer was not found", mapping);
         assertTrue("The creditLines mapping is no longer an element collection mapping", mapping.isDirectCollectionMapping());
-        
+
         primaryKeys = ((DirectCollectionMapping) mapping).getSourceKeyFields();
         foreignKeys = ((DirectCollectionMapping) mapping).getReferenceKeyFields();
-        
+
         for (int i = 0; i < primaryKeys.size(); i++) {
             DatabaseField primaryKey = primaryKeys.get(i);
             DatabaseField foreignKey = foreignKeys.get(i);
-            
-            assertTrue("The creditLines mapping foreign key field [" + foreignKey.getName() + "(" + foreignKey.getLength() + ")] did not have the same length as the source primary key field [" + primaryKey.getName() + "(" + primaryKey.getLength() + ")]", primaryKey.getLength() == foreignKey.getLength());            
+
+            assertTrue("The creditLines mapping foreign key field [" + foreignKey.getName() + "(" + foreignKey.getLength() + ")] did not have the same length as the source primary key field [" + primaryKey.getName() + "(" + primaryKey.getLength() + ")]", primaryKey.getLength() == foreignKey.getLength());
         }
-        
+
         // Items not directly tested: element collection using a map and basic map.
     }
-    
+
     /**
      * Verifies that settings from the Employee cache annotation have been set.
      */
@@ -1031,45 +1031,45 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         } else {
             descriptor = ((EntityManagerImpl) em).getServerSession().getDescriptorForAlias("Employee");
         }
-        
+
         if (descriptor == null) {
             fail("A descriptor for the Employee alias was not found in the default1 PU.");
-        } else {            
+        } else {
             assertTrue("Incorrect cache type() setting.", descriptor.getIdentityMapClass().equals(ClassConstants.SoftCacheWeakIdentityMap_Class));
             assertTrue("Incorrect cache size() setting, was: " + descriptor.getIdentityMapSize() + " expected: 730.", descriptor.getIdentityMapSize() == 730);
             assertFalse("Incorrect cache isolated() setting.", descriptor.isIsolated());
             assertFalse("Incorrect cache alwaysRefresh() setting.", descriptor.shouldAlwaysRefreshCache());
-            
-            // The diableHits() setting gets changed in the employee customizer. 
+
+            // The diableHits() setting gets changed in the employee customizer.
             // Its setting is checked in the test below.
-            
+
             CacheInvalidationPolicy policy = descriptor.getCacheInvalidationPolicy();
             assertTrue("Incorrect cache expiry() policy setting.", policy instanceof TimeToLiveCacheInvalidationPolicy);
             assertTrue("Incorrect cache expiry() setting.", ((TimeToLiveCacheInvalidationPolicy) policy).getTimeToLive() == 1000000);
-            
+
             assertTrue("Incorrect cache coordinationType() settting.", descriptor.getCacheSynchronizationType() == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Verifies that settings from the EmployeeCustomizer have been set.
      */
     public void testVerifyEmployeeCustomizerSettings() {
         EntityManager em = createEntityManager();
-        
+
         ClassDescriptor descriptor = getServerSession().getDescriptorForAlias("Employee");
-        
+
         if (descriptor == null) {
-            fail("A descriptor for the Employee alias was not found.");    
+            fail("A descriptor for the Employee alias was not found.");
         } else {
             assertFalse("Disable cache hits was true. Customizer should have made it false.", descriptor.shouldDisableCacheHits());
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Verifies that the join-fetch annotation was read correctly.
      */
@@ -1080,7 +1080,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             fail("JoinFetch annotation not read correctly for Employee.department.");
         }
     }
-    
+
     /**
      * Tests:
      * - BasicCollection mapping
@@ -1090,11 +1090,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testUpdateEmployee() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllSQLEmployees");
             Collection<Employee> employees = query.getResultCollection();
-            
+
             if (employees.isEmpty()) {
                 fail("No Employees were found. Test requires at least one Employee to be created in the EmployeePopulator.");
             } else {
@@ -1108,15 +1108,15 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Verifies:
      * - a BasicCollection mapping.
@@ -1125,12 +1125,12 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testVerifyUpdatedEmployee() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             Employee emp = em.find(Employee.class, empId);
-            
+
             assertNotNull("The updated employee was not found.", emp);
-            
+
             boolean found = false;
             for (String responsibility : (Collection<String>) emp.getResponsibilities()) {
                 if (responsibility.equals(newResponsibility)) {
@@ -1145,24 +1145,24 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     public void testVersionUpdateForOwnedMappings(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             Employee emp = em.find(Employee.class, empId);
             int currentVersion = emp.getVersion();
             assertNotNull("The employee was not found for Id.", empId);
-            
+
             emp.getResponsibilities().add("UpdateVersionField");
             commitTransaction(em);
             assertTrue("Did not increment version for change to direct collection", emp.getVersion() == ++currentVersion);
@@ -1180,18 +1180,18 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Tests:
-     * - BasicMap mapping with a TypeConverter on the map value and an 
+     * - BasicMap mapping with a TypeConverter on the map value and an
      *   ObjectTypeConverter on the map key.
      * - Basic with a custom converter
      * - Serialized Basic of type EnumSet.
@@ -1199,45 +1199,45 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testCreateNewBuyer() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
-        try {            
+
+        try {
             GoldBuyer buyer = new GoldBuyer();
-            
+
             buyer.setName("Guy Pelletier");
             buyer.setGender("Made of testosterone");
             buyer.setDescription("Loves to spend");
-            
+
             buyer.addVisa(visa);
             buyer.addAmex(amex);
             buyer.addDinersClub(diners);
             buyer.addMastercard(mastercard);
-            
+
             buyer.addRoyalBankCreditLine(rbc);
             buyer.addScotiabankCreditLine(scotia);
             buyer.addTorontoDominionCreditLine(td);
             buyer.addCanadianImperialCreditLine(cibc);
-            
+
             buyer.setSaturdayToSundayBuyingDays();
-            
+
             em.persist(buyer);
-            commitTransaction(em);   
+            commitTransaction(em);
             buyerId = buyer.getId();
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Verifies:
-     * - BasicMap mapping with a TypeConverter on the map value and an 
+     * - BasicMap mapping with a TypeConverter on the map value and an
      *   ObjectTypeConverter on the map key.
      * - Basic with a custom converter
      * - Serialized Basic of type EnumSet.
@@ -1245,37 +1245,37 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testVerifyNewBuyer() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
-        try {            
+
+        try {
             GoldBuyer buyer = em.find(GoldBuyer.class, buyerId);
-            
+
             assertNotNull("The new buyer was not found", buyer);
             assertTrue("Gender was not persisted correctly.", buyer.isMale());
             assertTrue("Visa card did not persist correctly.", buyer.hasVisa(visa));
             assertTrue("Amex card did not persist correctly.", buyer.hasAmex(amex));
             assertTrue("Diners Club card did not persist correctly.", buyer.hasDinersClub(diners));
             assertTrue("Mastercard card did not persist correctly.", buyer.hasMastercard(mastercard));
-            
+
             assertTrue("RBC credit line did not persist correctly.", buyer.hasRoyalBankCreditLine(rbc));
             assertTrue("Scotia credit line did not persist correctly.", buyer.hasScotiabankCreditLine(scotia));
             assertTrue("TD credit line did not persist correctly.", buyer.hasTorontoDominionCreditLine(td));
             assertTrue("CIBC credit line did not persist correctly.", buyer.hasCanadianImperialCreditLine(cibc));
-            
+
             assertTrue("The serialized enum set was not persisted correctly.", buyer.buysSaturdayToSunday());
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Tests an OptimisticLocking policy set on Buyer.
      */
@@ -1290,19 +1290,19 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         em1.getTransaction().begin();
         em2.getTransaction().begin();
         RuntimeException caughtException = null;
-        try {            
+        try {
             GoldBuyer buyer1 = em1.find(GoldBuyer.class, buyerId);
             GoldBuyer buyer2 = em2.find(GoldBuyer.class, buyerId);
-            
+
             buyer1.setName("Geezer");
             buyer2.setName("Guyzer");
             // Uses field locking, so need to update version.
             buyer1.setVersion(buyer1.getVersion() + 1);
             buyer2.setVersion(buyer2.getVersion() + 1);
-            
+
             em1.getTransaction().commit();
             em2.getTransaction().commit();
-            
+
             em1.close();
             em2.close();
         } catch (RuntimeException e) {
@@ -1310,11 +1310,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (em1.getTransaction().isActive()){
                 em1.getTransaction().rollback();
             }
-            
+
             if (em2.getTransaction().isActive()){
                 em2.getTransaction().rollback();
             }
-            
+
             em1.close();
             em2.close();
         }
@@ -1323,21 +1323,21 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         } else if (!(caughtException.getCause() instanceof javax.persistence.OptimisticLockException)) {
             // Re-throw exception to ensure stacktrace appears in test result.
             throw caughtException;
-        }        
+        }
     }
-    
+
     /**
      * Tests an ObjectTypeConverter on a direct to field mapping.
      */
     public void testGiveFredAnObjectTypeConverterChange() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllEmployeesByFirstName");
             query.setParameter("firstname", "Fred");
             Collection<Employee> employees = query.getResultCollection();
-            
+
             if (employees.isEmpty()) {
                 fail("No employees named Fred were found. Test requires at least one Fred to be created in the EmployeePopulator.");
             } else {
@@ -1345,13 +1345,13 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 fred.setFemale();
                 fred.setFirstName("Penelope");
                 penelopeId = fred.getId();
-                
+
                 commitTransaction(em);
-                
+
                 // Clear cache and clear the entity manager
-                clearCache();    
+                clearCache();
                 em.clear();
-                
+
                 Employee penelope = em.find(Employee.class, penelopeId);
                 assertTrue("Fred's ObjectTypeConverter change to Penelope didn't occur.", penelope.isFemale());
             }
@@ -1359,39 +1359,39 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Tests a BasicCollection on an entity that uses a composite primary key.
      */
     public void testUpdatePenelopesPhoneNumberStatus() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             Employee emp = em.find(Employee.class, penelopeId);
             assertNotNull("The employee with id: [" + penelopeId + "] was not found.", emp);
-            
+
             for (PhoneNumber phoneNumber : emp.getPhoneNumbers()) {
                 phoneNumber.addStatus(PhoneNumber.PhoneStatus.ACTIVE);
                 phoneNumber.addStatus(PhoneNumber.PhoneStatus.ASSIGNED);
             }
-            
+
             commitTransaction(em);
-                
+
             // Clear cache and clear the entity manager
-            clearCache();    
+            clearCache();
             em.clear();
-            
+
             Employee emp2 = em.find(Employee.class, penelopeId);
-            
+
             for (PhoneNumber phone : emp2.getPhoneNumbers()) {
                 assertTrue("", phone.getStatus().contains(PhoneNumber.PhoneStatus.ACTIVE));
                 assertTrue("", phone.getStatus().contains(PhoneNumber.PhoneStatus.ASSIGNED));
@@ -1400,18 +1400,18 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Test that an embedded attribute can correctly share a field override with
-     * its parent class and write a non-null value when it is inserted and then modified.   
+     * its parent class and write a non-null value when it is inserted and then modified.
      * EL Bug 393520
      */
     public void testSharedEmbeddedAttributeOverrides() {
@@ -1422,11 +1422,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             product.setCountryCode("GBR");
             product.setBarCode1(new BarCode("123-456-789", "GBR"));
             product.setBarCode2(null);
-            
+
             beginTransaction(em);
             em.persist(product);
             commitTransaction(em);
-            
+
             Product productReRead = em.find(Product.class, product.getId());
             productReRead.setName("Beef Jerky");
             productReRead.setCountryCode("USA");
@@ -1445,7 +1445,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Remove an object from the shared cache as if garbage collected
      * NPE will occur when it is read in using the CacheStoreMode.BYPASS setting outside a transaction.
@@ -1483,35 +1483,35 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testRemoveJillWithPrivateOwnedPhoneNumbers() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllEmployeesByFirstName");
             query.setParameter("firstname", "Jill");
             Collection<Employee> employees = query.getResultCollection();
-            
+
             if (employees.isEmpty()) {
                 fail("No employees named Jill were found. Test requires at least one Jill to be created in the EmployeePopulator.");
             } else {
-                Employee jill = employees.iterator().next();    
+                Employee jill = employees.iterator().next();
                 Collection<PhoneNumber> phoneNumbers = jill.getPhoneNumbers();
-                
+
                 if (phoneNumbers.isEmpty()) {
-                    fail("Jill does not have any phone numbers. Test requires that Jill have atleast one phone number created in the EmployeePopulator.");    
+                    fail("Jill does not have any phone numbers. Test requires that Jill have atleast one phone number created in the EmployeePopulator.");
                 }
-                
+
                 // Re-assign her managed employees and remove from her list.
                 for (Employee employee : jill.getManagedEmployees()) {
                     employee.setManager(jill.getManager());
                 }
                 jill.getManagedEmployees().clear();
-                
+
                 int jillId = jill.getId();
-                
+
                 em.remove(jill);
                 commitTransaction(em);
-                
+
                 assertNull("Jill herself was not removed.", em.find(Employee.class, jillId));
-                
+
                 for (PhoneNumber phoneNumber : phoneNumbers) {
                     assertNull("Jill's phone numbers were not deleted.", em.find(PhoneNumber.class, phoneNumber.buildPK()));
                 }
@@ -1520,71 +1520,71 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Creates some new equipment objects.
      */
     public void testCreateNewEquipment() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             // Persist some equipment.
             Equipment equip1 = new Equipment();
             equip1.setDescription("Toaster");
             em.persist(equip1);
-            
+
             Equipment equip2 = new Equipment();
             equip1.setDescription("Bucket");
             em.persist(equip2);
-            
+
             Equipment equip3 = new Equipment();
             equip1.setDescription("Broom");
             em.persist(equip3);
-            
+
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Tests adding objects to a 1-M mapping that uses a map.
      */
     public void testAddNewEquipmentToDepartment() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
-        try {    
+
+        try {
             EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllSQLEquipment");
             Collection<Equipment> equipment = query.getResultCollection();
-            
+
             if (equipment.isEmpty()) {
                 fail("No Equipment was found. testCreateNewEquipment should have created new equipment and should have run before this test.");
-            } else {                
+            } else {
                 Department department = new Department();
                 department.setName("Department with equipment");
-                
+
                 for (Equipment e : equipment) {
                     department.addEquipment(e);
                 }
-                
+
                 em.persist(department);
                 deptId = department.getId();
                 commitTransaction(em);
@@ -1593,24 +1593,24 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Tests that backpointers are not changed after a merge operation.
      */
     public void testBackpointerOnMerge() {
         EntityManager em = createEntityManager();
 
-        try {            
+        try {
             beginTransaction(em);
-            
+
             // create a new department
             Department department = new Department();
             department.setName("Football");
@@ -1618,7 +1618,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             em.persist(department);
             commitTransaction(em);
             closeEntityManager(em);
-            
+
             // add equipment to the department
             em = createEntityManager();
             beginTransaction(em);
@@ -1638,12 +1638,12 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             throw e;
         }
     }
-    
+
     /**
      * Tests a @NamedStoredProcedureQuery.
      */
@@ -1653,10 +1653,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             Address address1 = new Address();
-        
+
             address1.setCity("Ottawa");
             address1.setPostalCode("K1G6P3");
             address1.setProvince("ON");
@@ -1671,26 +1671,26 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
             Address address2 = (Address) em.createNamedQuery("SProcAddress").setParameter("ADDRESS_ID", address1.getID()).getSingleResult();
             assertNotNull("Address returned from stored procedure is null", address2);
-            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new 
+            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new
             assertTrue("Address build correctly using stored procedure", (address2.getID() == address1.getID()));
             assertTrue("Address build correctly using stored procedure", (address2.getStreet().equals(address1.getStreet())));
             assertTrue("Address build correctly using stored procedure", (address2.getCountry().equals(address1.getCountry())));
             assertTrue("Address build correctly using stored procedure", (address2.getProvince().equals(address1.getProvince())));
-            
+
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
-            
+
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Tests a @NamedStoredProcedureQuery using indexed parameters.
      */
@@ -1700,10 +1700,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             Address address1 = new Address();
-        
+
             address1.setCity("Ottawa");
             address1.setPostalCode("K1G6P3");
             address1.setProvince("ON");
@@ -1718,30 +1718,30 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
             Address address2 = (Address) em.createNamedQuery("SProcAddressByIndex").setParameter("ADDRESS_ID", address1.getID()).getSingleResult();
             assertNotNull("Address returned from stored procedure is null", address2);
-            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new 
+            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new
             assertTrue("Address build correctly using stored procedure", (address2.getID() == address1.getID()));
             assertTrue("Address build correctly using stored procedure", (address2.getStreet().equals(address1.getStreet())));
             assertTrue("Address build correctly using stored procedure", (address2.getCountry().equals(address1.getCountry())));
             assertTrue("Address build correctly using stored procedure", (address2.getProvince().equals(address1.getProvince())));
-            
+
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
-            
+
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Tests a @NamedStoredProcedureQuery using a result-set mapping.
      * 304400: Note: this test does not actually test a ResultSet return - it uses output parameters.
-     *              To enable ResultSet testing - set returnsResultSet=true via orm.xml, annotation or via program call like the the core tests. 
+     *              To enable ResultSet testing - set returnsResultSet=true via orm.xml, annotation or via program call like the the core tests.
      */
     public void testNamedStoredProcedureQueryWithResultSetMapping() {
         if (!supportsStoredProcedures()) {
@@ -1749,10 +1749,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             Address address1 = new Address();
-        
+
             address1.setCity("Ottawa");
             address1.setPostalCode("K1G6P3");
             address1.setProvince("ON");
@@ -1761,33 +1761,33 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
             em.persist(address1);
             commitTransaction(em);
-            
+
             // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later
             em.clear();
-            
+
             Address address2 = (Address) em.createNamedQuery("SProcAddressWithResultSetMapping").setParameter("address_id_v", address1.getID()).getSingleResult();
             assertNotNull("Address returned from stored procedure is null", address2);
-            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new 
+            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new
             assertTrue("Address not found using stored procedure", (address2.getID() == address1.getID()));
-            
+
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
-            
+
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Tests a @NamedStoredProcedureQuery using a result-set mapping.
      * 304400: Note: this test does not actually test a ResultSet return - it uses output parameters.
-     *              To enable ResultSet testing - set returnsResultSet=true via orm.xml, annotation or via program call like the the core tests. 
+     *              To enable ResultSet testing - set returnsResultSet=true via orm.xml, annotation or via program call like the the core tests.
      */
     public void testNamedStoredProcedureQueryWithResultSetFieldMapping() {
         if (!supportsStoredProcedures()) {
@@ -1795,10 +1795,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             Address address1 = new Address();
-        
+
             address1.setCity("Ottawa");
             address1.setPostalCode("K1G6P3");
             address1.setProvince("ON");
@@ -1807,7 +1807,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
             em.persist(address1);
             commitTransaction(em);
-            
+
             // 260263: we do not need to clear the cache for non-entity returns
             Object[] values = (Object[]) em.createNamedQuery("SProcAddressWithResultSetFieldMapping").setParameter("address_id_v", address1.getID()).getSingleResult();
             assertTrue("Address data not found or returned using stored procedure", ((values!=null) && (values.length==6)) );
@@ -1817,16 +1817,16 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
-            
+
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
      * Tests a @NamedStoredProcedureQuery.
      */
@@ -1836,10 +1836,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             Address address1 = new Address();
-        
+
             address1.setCity("Ottawa");
             address1.setPostalCode("K1G6P3");
             address1.setProvince("ON");
@@ -1848,35 +1848,35 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
             em.persist(address1);
             commitTransaction(em);
-            
+
             // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later
             em.clear();
-            
+
             Query aQuery = em.createNamedQuery("SProcInOut").setParameter("ADDRESS_ID", address1.getID());
             Address address2 = (Address) aQuery.getSingleResult();
-        
+
             assertNotNull("Address returned from stored procedure is null", address2);
-            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new 
+            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new
             assertTrue("Address not found using stored procedure", address1.getID() == address2.getID());
             assertTrue("Address.street data returned doesn't match persisted address.street", address1.getStreet().equalsIgnoreCase(address2.getStreet()));
-            
+
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
-            
+
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     /**
-     * Tests a @NamedStoredProcedureQuery that returns raw data 
-     * bug 254946 
+     * Tests a @NamedStoredProcedureQuery that returns raw data
+     * bug 254946
      */
     public void testNamedStoredProcedureQueryWithRawData() {
         if (!supportsStoredProcedures()) {
@@ -1884,10 +1884,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             Address address1 = new Address();
-        
+
             address1.setCity("Ottawa");
             address1.setPostalCode("K1G6P3");
             address1.setProvince("ON");
@@ -1900,7 +1900,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             // 260263: we do not need to clear the cache for non-entity returns
             Query aQuery = em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getID());
             Object[] objectdata = (Object[])aQuery.getSingleResult();
-            
+
             assertTrue("Address data not found or returned using stored procedure", ((objectdata!=null)&& (objectdata.length==2)) );
             assertTrue("Address Id data returned doesn't match persisted address", (address1.getID() == ((Integer)objectdata[0]).intValue()) );
             assertTrue("Address Street data returned doesn't match persisted address", ( address1.getStreet().equals(objectdata[1] )) );
@@ -1912,7 +1912,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
 
@@ -1924,34 +1924,34 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         Employee employee2;
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             Employee employee1 = new Employee();
-            
+
             employee1.setFirstName("Me");
             employee1.setId(11);
             HugeProject hp = new HugeProject("big proj");
-            
+
             employee1.setHugeProject(hp);
             em.persist(hp);
             em.persist(employee1);
 
             commitTransaction(em);
             em.clear();
-            
+
             beginTransaction(em);
-            
+
             Query q = em.createNamedQuery("SProcEmployee");
             q.setParameter("EMP_ID", employee1.getId());
             q.setFlushMode(FlushModeType.COMMIT);
             q.setHint(QueryHints.REFRESH, HintValues.TRUE);
             q.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
             employee2 = (Employee) q.getSingleResult();
-            
+
             ProviderUtil util = (new PersistenceProvider()).getProviderUtil();
             //status can be LoadState.NOT_LOADED or LoadState.UNKNOWN
             assertFalse("ProviderUtil returned LOADED for isLoaded for hugeProject when it should not.", util.isLoadedWithReference(employee2, "hugeProject").equals(LoadState.LOADED));
-             
+
         } catch (RuntimeException e) {
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
@@ -1962,8 +1962,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
-    /** 
+
+    /**
      * Tests an OptimisticLockingException is thrown when calling merge a detached and removed object.
      * bug 272704
      */
@@ -1994,7 +1994,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             em1.merge(emp);
 
             commitTransaction(em1);
-            
+
         } catch (RuntimeException e) {
             caughtException = e;
             if (isTransactionActive(em1)){
@@ -2007,10 +2007,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         } else if (!(caughtException instanceof javax.persistence.OptimisticLockException)) {
             // Re-throw exception to ensure stacktrace appears in test result.
             throw caughtException;
-        }        
+        }
     }
 
-    /** 
+    /**
      * Tests an OptimisticLockingException is thrown when calling merge a detached and removed object.
      * bug 272704
      */
@@ -2037,10 +2037,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             Address address1 = new Address();
-        
+
             address1.setCity("Ottawa");
             address1.setPostalCode("K1G6P3");
             address1.setProvince("ON");
@@ -2063,30 +2063,30 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         commitTransaction(em);
         closeEntityManager(em);
     }
-    
+
     /**
      * Tests a @PrivateOwned @OneToMany mapping.
      */
     public void testRemoveDepartmentWithPrivateOwnedEquipment() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
-        try {    
+
+        try {
             Department department = em.find(Department.class, deptId);
-            
+
             if (department == null) {
                 fail("Department with id="+deptId+", was not found.");
             } else {
                 Collection<Equipment> equipment = department.getEquipment().values();
-                
+
                 if (equipment.isEmpty()){
                     fail("Department with id="+deptId+", did not have any equipment.");
                 } else {
                     em.remove(department);
                     commitTransaction(em);
-                
+
                     assertNull("Department itself was not removed.", em.find(Department.class, deptId));
-                
+
                     for (Equipment e : equipment) {
                         assertNull("New equipment was not deleted.", em.find(Equipment.class, e.getId()));
                     }
@@ -2096,15 +2096,15 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
-    
+
     public void testRelationshipReadDuringClone(){
         EntityManager em = createEntityManager();
         Session session = getServerSession();
@@ -2120,23 +2120,23 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         departmentDesc.getDescriptorEventManager().initialize((AbstractSession) session);
         closeEntityManager(em);
     }
-    
+
     /**
      * Tests trying to update a read only class.
      */
     public void testUpdateReadOnlyEquipmentCode() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
-        try {    
+
+        try {
             Query query = em.createNamedQuery("findSQLEquipmentCodeA");
             EquipmentCode equipmentCode = (EquipmentCode) query.getSingleResult();
-            
+
             equipmentCode.setCode("Z");
             commitTransaction(em);
-            
-            // Nothing should have been written to the database. Query for 
-            // EquipmentCode A again. If an exception is caught, then it was 
+
+            // Nothing should have been written to the database. Query for
+            // EquipmentCode A again. If an exception is caught, then it was
             // not found, therefore, updated on the db.
             try {
                 query = em.createNamedQuery("findSQLEquipmentCodeA");
@@ -2148,23 +2148,23 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
-        
+
         closeEntityManager(em);
     }
 
     public void testMethodBasedTransformationMapping() {
         internalTestTransformationMapping("normalHours");
     }
-    
+
     public void testClassBasedTransformationMapping() {
         internalTestTransformationMapping("overtimeHours");
     }
-    
+
     //Bug#391251 : Test for @Column outside WriteTransformer annotation
     public void testTransformationMappingWithColumnAnnotation() {
         Door door = new Door();
@@ -2173,13 +2173,13 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         door.setWidth(5);
         door.setRoom(null);
         int year = 2013;
-        int month = 1;            
+        int month = 1;
         int day = 30;
         door.setSaleDate(Helper.dateFromYearMonthDate(year, month - 1, day));
-       
-        EntityManager em = createEntityManager();                
+
+        EntityManager em = createEntityManager();
         beginTransaction(em);
-        try {    
+        try {
             em.persist(door);
             commitTransaction(em);
         } finally {
@@ -2193,19 +2193,19 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         try {
             this.clearCache();
             em = createEntityManager();
-            door = em.find(Door.class, 100);           
-            Calendar calendarSaleDate = Calendar.getInstance(); 
+            door = em.find(Door.class, 100);
+            Calendar calendarSaleDate = Calendar.getInstance();
             calendarSaleDate.setTime(door.getSaleDate());
             if(calendarSaleDate.get(Calendar.YEAR) != year || calendarSaleDate.get(Calendar.MONTH) != (month - 1) || calendarSaleDate.get(Calendar.DAY_OF_MONTH) != day) {
                errorMsg = "saleDate = " + door.getSaleDate().toString() + " is wrong";
-            }  
+            }
         } catch (RuntimeException ex) {
             fail("Failed to fetch data for testTransformationMappingWithColumnAnnotation" + ex.getMessage());
         }
-        
+
         // clean up
         beginTransaction(em);
-        try {    
+        try {
             door = em.find(Door.class, door.getId());
             em.remove(door);
             commitTransaction(em);
@@ -2219,7 +2219,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
+
     protected void internalTestTransformationMapping(String attributeName) {
         // setup: create an Employee, insert into db
         int startHour = 8, startMin = 30, startSec = 15;
@@ -2236,9 +2236,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         } else {
             throw new RuntimeException("Unknown attributeName");
         }
-        EntityManager em = createEntityManager();                
+        EntityManager em = createEntityManager();
         beginTransaction(em);
-        try {    
+        try {
             em.persist(employee);
             commitTransaction(em);
         } finally {
@@ -2251,20 +2251,20 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         // test
         // clear cache
-        this.clearCache();        
+        this.clearCache();
         // read the employee from the db
         em = createEntityManager();
         employee = em.find(Employee.class,id);
-        
+
         // verify
         Calendar calendarStart = Calendar.getInstance();
         Calendar calendarEnd = Calendar.getInstance();
         if(attributeName.equals("normalHours")) {
-            calendarStart.setTime(employee.getStartTime());        
-            calendarEnd.setTime(employee.getEndTime());        
+            calendarStart.setTime(employee.getStartTime());
+            calendarEnd.setTime(employee.getEndTime());
         } else if(attributeName.equals("overtimeHours")) {
-            calendarStart.setTime(employee.getStartOvertime());        
-            calendarEnd.setTime(employee.getEndOvertime());        
+            calendarStart.setTime(employee.getStartOvertime());
+            calendarEnd.setTime(employee.getEndOvertime());
         }
         String errorMsg = "";
         if(calendarStart.get(Calendar.HOUR_OF_DAY) != startHour || calendarStart.get(Calendar.MINUTE) != startMin || calendarStart.get(Calendar.SECOND) != startSec) {
@@ -2284,10 +2284,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 errorMsg = "endOvertime = " + employee.getEndOvertime().toString() + " is wrong";
             }
         }
-        
+
         // clean up
         beginTransaction(em);
-        try {    
+        try {
             employee = em.find(Employee.class, employee.getId());
             em.remove(employee);
             commitTransaction(em);
@@ -2297,7 +2297,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
-        
+
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
@@ -2315,13 +2315,13 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         east.setHeight(8);
         east.setWidth(5);
         int year = 2013;
-        int month = 1;            
+        int month = 1;
         int day = 30;
         east.setSaleDate(Helper.dateFromYearMonthDate(year, month - 1, day));
         east.setRoom(room1);
         room1.addDoor(east);
-        
-        try {    
+
+        try {
             em.persist(room1);
             commitTransaction(em);
         } finally {
@@ -2330,7 +2330,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
-        
+
         em = createEntityManager();
 
         Query resultsXferQuery = em.createQuery("SELECT r, d "
@@ -2339,7 +2339,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 + "LEFT JOIN Door d "
                 + "WHERE d MEMBER OF r.doors"
                 );
-        
+
         resultsXferQuery.setHint(QueryHints.CURSOR, true);
 
         try {
@@ -2371,11 +2371,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         ClassDescriptor descriptor = getServerSession().getDescriptorForAlias("Employee");
         ClassDescriptor aggregateDescriptor = getServerSession().getDescriptor(EmploymentPeriod.class);
-        
+
         closeEntityManager(em);
-        
+
         String errorMsg = "";
-        
+
         if (descriptor == null) {
             errorMsg += " Descriptor for Employee alias was not found;";
         }
@@ -2389,12 +2389,12 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         // verify properties set on Employee instance
         errorMsg += verifyPropertyValue(descriptor, "entityName", String.class, "Employee");
         errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, new Integer(1));
-        
+
         // each attribute of Employee was assigned a property attributeName with the value attribute name.
         for(DatabaseMapping mapping : descriptor.getMappings()) {
             errorMsg += verifyPropertyValue(mapping, "attributeName", String.class, mapping.getAttributeName());
         }
-        
+
         // attribute m_lastName has many properties of different types
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
         errorMsg += verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE);
@@ -2414,10 +2414,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         errorMsg += verifyPropertyValue(mapping, "TimeProperty", java.sql.Time.class, Helper.timeFromString("13:59:59"));
         errorMsg += verifyPropertyValue(mapping, "TimeStampProperty", java.sql.Timestamp.class, Helper.timestampFromString("2008-04-10 13:59:59"));
         errorMsg += verifyPropertyValue(mapping, "DateProperty", java.sql.Date.class, Helper.dateFromString("2008-04-10"));
-        
+
         // verify property set on EmploymentPeriod embeddable
         errorMsg += verifyPropertyValue(aggregateDescriptor, "embeddableClassName", String.class, "EmploymentPeriod");
-        
+
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
@@ -2440,34 +2440,34 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         if(propertyValue == null) {
             errorMsg = errorPrefix + " is missing;";
         } else if(!expectedPropertyValueType.isInstance(propertyValue)) {
-            errorMsg = errorPrefix + " is instance of " + propertyValue.getClass().getName() + ", " + expectedPropertyValueType.getName() + " was expected;"; 
+            errorMsg = errorPrefix + " is instance of " + propertyValue.getClass().getName() + ", " + expectedPropertyValueType.getName() + " was expected;";
         } else {
             if(propertyValue.getClass().isArray()) {
                 if(Array.getLength(propertyValue) != Array.getLength(expectedPropertyValue)) {
-                    errorMsg = errorPrefix + " has array value of size " + Array.getLength(propertyValue) + ", " + Array.getLength(expectedPropertyValue) + " was expected;"; 
+                    errorMsg = errorPrefix + " has array value of size " + Array.getLength(propertyValue) + ", " + Array.getLength(expectedPropertyValue) + " was expected;";
                 } else {
                     for(int i=0; i < Array.getLength(propertyValue); i++) {
                         if(!Array.get(propertyValue, i).equals(Array.get(expectedPropertyValue, i))) {
-                            errorMsg = errorPrefix + " has array with "+i+"th element value " + Array.get(propertyValue, i).toString() + ", " + Array.get(expectedPropertyValue, i).toString() + " was expected;"; 
+                            errorMsg = errorPrefix + " has array with "+i+"th element value " + Array.get(propertyValue, i).toString() + ", " + Array.get(expectedPropertyValue, i).toString() + " was expected;";
                         }
                     }
                 }
             } else if (!propertyValue.equals(expectedPropertyValue)) {
-                errorMsg = errorPrefix + " has value " + propertyValue.toString() + ", " + expectedPropertyValue.toString() + " was expected;"; 
+                errorMsg = errorPrefix + " has value " + propertyValue.toString() + ", " + expectedPropertyValue.toString() + " was expected;";
             }
         }
         return errorMsg;
     }
-    
+
     public void testUnidirectionalPersist() {
         String lastName = "testUnidirectionalPersist";
-        
+
         // persist employees
         List<Employee> employeesPersisted = persistEmployeesWithUnidirectionalMappings(lastName);
-        
+
         // clear cache
         clearCache();
-        
+
         // read the persisted employees back
         EntityManager em = createEntityManager();
         List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.lastName = '"+lastName+"'").getResultList();
@@ -2492,16 +2492,16 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 }
             }
         }
-        
+
         // clean-up
         deleteEmployeesWithUnidirectionalMappings(lastName);
-        
+
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
     }
-    
+
     public void testUnidirectionalUpdate() {
         String lastName = "testUnidirectionalUpdate";
 
@@ -2525,21 +2525,21 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
-        
+
         // clear cache
         clearCache();
-        
+
         em = createEntityManager();
         // read the updated employees back
         List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.lastName = '"+lastName+"'").getResultList();
-        
+
         // verify number persisted and read is the same
         if(employeesPersisted.size() != employeesRead.size()) {
             // clean-up
             deleteEmployeesWithUnidirectionalMappings(lastName);
             fail("Updated " + employeesPersisted.size() + " employees, but read back " + employeesRead.size());
         }
-        
+
         // verify that the persisted and read objects are equal
         ServerSession session = JUnitTestCase.getServerSession();
         beginTransaction(em);
@@ -2570,7 +2570,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
               }
                closeEntityManager(em);
         }
-        
+
         // clean-up
         deleteEmployeesWithUnidirectionalMappings(lastName);
 
@@ -2579,29 +2579,29 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
+
     public void testUnidirectionalFetchJoin() {
         String lastName = "testUnidirectionalFetchJoin";
 
         // persist employees
         persistEmployeesWithUnidirectionalMappings(lastName);
-        
+
         // clear cache
         clearCache();
-        
+
         EntityManager em = createEntityManager();
         // read the persisted employees back - without fetch join
         List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.lastName = '"+lastName+"'").getResultList();
         closeEntityManager(em);
-        
+
         // clear cache
         clearCache();
-        
-        // read the persisted employees back - with fetch join. 
+
+        // read the persisted employees back - with fetch join.
         em = createEntityManager();
         List<Employee> employeesReadWithFetchJoin = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.dealers WHERE e.lastName = '"+lastName+"'").getResultList();
         closeEntityManager(em);
-        
+
         // verify that the persisted and read employees are the same.
         // The comparison cascades to all references and requires the same state of indirection:
         // it fails in case an object has triggered indirection for particular attribute and compared object's indirection for this attribute is not triggered.
@@ -2609,26 +2609,26 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         // also the expected result should have an object for each row returned - therefore number of inclusions of each Employee equals its dealers.size()
         List<Employee> employeesControl = new ArrayList<Employee>();
         for(int i=0; i<employeesRead.size(); i++) {
-            int nDialers = employeesRead.get(i).getDealers().size(); 
+            int nDialers = employeesRead.get(i).getDealers().size();
             for(int j=0; j<nDialers; j++) {
                 employeesControl.add(employeesRead.get(i));
             }
         }
         ServerSession session = JUnitTestCase.getServerSession();
         String errorMsg = JoinedAttributeTestHelper.compareCollections(employeesControl, employeesReadWithFetchJoin, session.getClassDescriptor(Employee.class), session);
-        
+
         // clean-up
         deleteEmployeesWithUnidirectionalMappings(lastName);
-        
+
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
     }
-    
+
     public void testUnidirectionalTargetLocking_AddRemoveTarget() {
         String lastName = "testUnidirectionalTargetLocking_ART";
-        
+
         EntityManager em = createEntityManager();
         // persist employees
         List<Employee> employeesPersisted = persistEmployeesWithUnidirectionalMappings(lastName, em);
@@ -2646,7 +2646,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 closeEntityManager(em);
             }
         }
-        
+
         String errorMsg = "";
 
         // verify the version both in the cache and in the db
@@ -2676,11 +2676,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             commitTransaction(em);
         } finally {
             if(this.isTransactionActive(em)) {
-                rollbackTransaction(em); 
+                rollbackTransaction(em);
                 closeEntityManager(em);
             }
         }
-        
+
         // verify the version both in the cache and in the db
         int version3 = getVersion(em, dealer3);
         if(version3 != 3) {
@@ -2700,21 +2700,21 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         if(version3 != 3) {
             errorMsg += "In the db the added dealer's version is " + version3 + " (3 was expected)";
         }
-        
+
         closeEntityManager(em);
-                
+
         // clean-up
         deleteEmployeesWithUnidirectionalMappings(lastName);
-        
+
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
     }
-    
+
     public void testUnidirectionalTargetLocking_DeleteSource() {
         String lastName = "testUnidirectionalTargetLocking_DS";
-        
+
         // persist employees (there should be two of them)
         List<Employee> persistedEmployees = persistEmployeesWithUnidirectionalMappings(lastName);
         // cache their dealers' ids
@@ -2725,18 +2725,18 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 dealersIds.add(emp.getDealers().get(j).getId());
             }
         }
-        
+
         // clear cache
         clearCache();
-        
+
         EntityManager em = createEntityManager();
         beginTransaction(em);
         // read the persisted employees
         List<Employee> readEmployees = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.lastName = '"+lastName+"'").getResultList();
-        
+
         // trigger indirection on the second employee's dealers
         readEmployees.get(1).getDealers().size();
-        
+
         // delete the Employees (there should be two of them).
         try {
             for(Employee emp:  readEmployees) {
@@ -2763,7 +2763,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                     errorMsg += "In the cache dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
                 }
                 em.refresh(dealer);
-                
+
                 version2 = getVersion(em, dealer);
                 if(version2 != 2) {
                     errorMsg += "In the db dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
@@ -2771,60 +2771,60 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             }
         } finally {
            if(this.isTransactionActive(em)) {
-               rollbackTransaction(em);               
+               rollbackTransaction(em);
            }
         }
 
         closeEntityManager(em);
-                
+
         // clean-up
         deleteEmployeesWithUnidirectionalMappings(lastName);
-        
+
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
     }
-    
+
     /**
-     * Fix for bug 247078: eclipselink-orm.xml schema should allow lob and 
-     * enumerated on version and id mappings 
+     * Fix for bug 247078: eclipselink-orm.xml schema should allow lob and
+     * enumerated on version and id mappings
      */
     public void testEnumeratedPrimaryKeys(){
         EntityManager em = createEntityManager();
-        
+
         try {
             beginTransaction(em);
-            
+
             ViolationCode codeA = new ViolationCode();
             codeA.setId(ViolationCodeId.A);
             codeA.setDescription("Violation A");
             em.persist(codeA);
-            
+
             ViolationCode codeB = new ViolationCode();
             codeB.setId(ViolationCodeId.B);
             codeB.setDescription("Violation B");
             em.persist(codeB);
-            
+
             ViolationCode codeC = new ViolationCode();
             codeC.setId(ViolationCodeId.C);
             codeC.setDescription("Violation C");
             em.persist(codeC);
-            
+
             ViolationCode codeD = new ViolationCode();
             codeD.setId(ViolationCodeId.D);
             codeD.setDescription("Violation D");
             em.persist(codeD);
-            
+
             Violation violation = new Violation();
             violation.setId(ViolationID.V1);
             violation.getViolationCodes().add(codeA);
             violation.getViolationCodes().add(codeC);
             violation.getViolationCodes().add(codeD);
             em.persist(violation);
-            
+
             commitTransaction(em);
-            
+
             // Force the read to hit the database and make sure the violation is read back.
             clearCache();
             em.clear();
@@ -2837,7 +2837,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Bug 400022
      * Test batch fetch with join fetch with batching on a M:M
@@ -2856,14 +2856,14 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
             query.setHint(QueryHints.FETCH, "p.teamMembers.address");
             query.setHint(QueryHints.FETCH, "p.teamMembers.phoneNumbers");
-            
+
             List<Project> results = query.getResultList();
 
             // XXX - size here may vary depending on the model
             if (isWeavingEnabled() && counter.getSqlStatements().size() > 9) {
                 fail("Should have been 9 queries but was: " + counter.getSqlStatements().size());
             }
-            
+
             for (Project project : results) {
                 assertNotNull("Project cannot be null", project);
                 Employee employee = project.getTeamLeader();
@@ -2883,7 +2883,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Bug 400022
      * Test batch fetch with join fetch on a 1:M
@@ -2893,22 +2893,22 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         try {
             beginTransaction(em);
-            
+
             Employee emp1 = new Employee();
             emp1.setMale();
             emp1.setFirstName("Mickey");
             emp1.setLastName("O'Neil");
-            
+
             Employee emp2 = new Employee();
             emp2.setMale();
             emp2.setFirstName("Tony");
             emp2.setLastName("Bullet Tooth");
-            
+
             em.persist(emp1);
             em.persist(emp2);
-            
+
             em.flush();
-            
+
             Query query = em.createQuery("SELECT e FROM Employee e", Employee.class);
             query.setHint(QueryHints.BATCH, "e.projects");
             query.setHint(QueryHints.BATCH, "e.projects.teamMembers");
@@ -2930,7 +2930,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Bug 400022
      * Test batch fetch with join fetch on a 1:1
@@ -2940,22 +2940,22 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         try {
             beginTransaction(em);
-            
+
             Employee emp1 = new Employee();
             emp1.setMale();
             emp1.setFirstName("Mickey");
             emp1.setLastName("O'Neil");
-            
+
             Employee emp2 = new Employee();
             emp2.setMale();
             emp2.setFirstName("Tony");
             emp2.setLastName("Bullet Tooth");
-            
+
             em.persist(emp1);
             em.persist(emp2);
-            
+
             em.flush();
-            
+
             Query query = em.createQuery("SELECT e FROM Employee e", Employee.class);
             query.setHint(QueryHints.BATCH, "e.projects");
             query.setHint(QueryHints.BATCH, "e.projects.teamMembers");
@@ -2974,7 +2974,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Bug 416003
      * Test batch fetch with join fetch on a 1:m
@@ -2991,8 +2991,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
-    
+
+
     /**
      * Bug 415082 - JoinFetch does not refresh cache even though REFRESH hint is set to true
      * Test that a refresh is performed on a queried and related object, with fetchjoins
@@ -3004,18 +3004,18 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
-            
+
             emp = new Employee("Bob", "Robertson");
             dept = new Department("Pomology");
             emp.setDepartment(dept);
-            
+
             em.persist(emp);
             em.persist(dept);
             commitTransaction(em);
         } finally {
             closeEntityManager(em);
         }
-        
+
         // update tables directly
         em = createEntityManager();
         try {
@@ -3035,7 +3035,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
-        
+
         // perform refreshing query
         em = createEntityManager();
         try {
@@ -3043,8 +3043,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             query.setParameter("pk", emp.getId());
             query.setHint(QueryHints.REFRESH, HintValues.TRUE);
             Employee empReturned = (Employee)query.getSingleResult();
-        
-            // validate refresh      
+
+            // validate refresh
             assertNotNull("Employee should not be null", empReturned);
             Department deptReturned = empReturned.getDepartment();
             assertNotNull("Department should not be null", deptReturned);
@@ -3056,7 +3056,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
-        
+
         // clean up
         em = createEntityManager();
         try {
@@ -3068,11 +3068,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     protected int getVersion(EntityManager em, Dealer dealer) {
         Vector pk = new Vector(1);
         pk.add(dealer.getId());
-        
+
         return ((Integer)getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession())).intValue();
     }
 
@@ -3099,7 +3099,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         return employees;
     }
-    
+
     protected List<Employee> persistEmployeesWithUnidirectionalMappings(String lastName) {
         EntityManager em = createEntityManager();
         try {
@@ -3108,7 +3108,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     protected List<Employee> persistEmployeesWithUnidirectionalMappings(String lastName, EntityManager em) {
         List<Employee> employees = createEmployeesWithUnidirectionalMappings(lastName);
         beginTransaction(em);
@@ -3124,7 +3124,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         return employees;
     }
-    
+
     protected void deleteEmployeesWithUnidirectionalMappings(String lastName) {
         EntityManager em = createEntityManager();
         beginTransaction(em);

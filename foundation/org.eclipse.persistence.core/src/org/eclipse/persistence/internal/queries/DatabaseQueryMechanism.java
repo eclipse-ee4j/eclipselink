@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     07/13/2012-2.5 Guy Pelletier 
+ *     07/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier 
+ *     08/24/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
 import java.util.*;
@@ -91,10 +91,10 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     }
 
     /**
-     * Perform a cache lookup for the query. If the translation row contains 
-     * all the parameters (which are part of the primary key) from the prepared 
+     * Perform a cache lookup for the query. If the translation row contains
+     * all the parameters (which are part of the primary key) from the prepared
      * call, then a cache check will be performed.
-     * 
+     *
      * If the object is found in the cache, return it; otherwise return null.
      */
     public Object checkCacheForObject(AbstractRecord translationRow, AbstractSession session) {
@@ -102,9 +102,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         if ((translationRow == null) || (translationRow.isEmpty())) {
             return null;
         }
-        
+
         // Bug 5529564
-        // The query wasn't prepared most likely because arguments were 
+        // The query wasn't prepared most likely because arguments were
         // provided. Use them for the cache lookup.
         List queryFields;
         if (query.getCall() == null) {
@@ -117,10 +117,10 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             // up the object in cache.
             queryFields = query.getCall().getParameters();
         }
-        
+
         ClassDescriptor descriptor = getDescriptor();
         List<DatabaseField> primaryKeyFields = descriptor.getPrimaryKeyFields();
-        
+
         // Check that the query is by primary key.
         for (DatabaseField primaryKeyField : primaryKeyFields) {
             if (!queryFields.contains(primaryKeyField)) {
@@ -131,12 +131,12 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         if (primaryKey == null) {
             return null;
         }
-        
+
         if (query.isObjectBuildingQuery() && ((ObjectBuildingQuery)query).requiresDeferredLocks() || descriptor.shouldAcquireCascadedLocks()) {
             return session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(primaryKey, getReadObjectQuery().getReferenceClass(), false, descriptor);
         } else {
             return session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(primaryKey, getReadObjectQuery().getReferenceClass(), false, descriptor);
-        }        
+        }
     }
 
     /**
@@ -185,10 +185,10 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     public abstract Integer deleteObject() throws DatabaseException;
 
     /**
-     * Execute a execute SQL call. 
+     * Execute a execute SQL call.
      * This should be overridden by subclasses.
      * @exception DatabaseException
-     * @return true if the first result is a result set and false if it is an 
+     * @return true if the first result is a result set and false if it is an
      *   update count or there are no results other than through INOUT and OUT
      *   parameterts, if any.
      */
@@ -271,7 +271,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     public void executeDeferredCall(DatasourceCall call) {
         // Do nothing by default.
     }
-    
+
     /**
      * Check whether the object already exists on the cadatabase; then
      * perform an insert or update, as appropriate.
@@ -408,7 +408,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         ClassDescriptor descriptor = getDescriptor();
         DescriptorQueryManager queryManager = descriptor.getQueryManager();
         boolean isFKUpdate = false; // Bug 319276
-        
+
         // check for user-defined query
         if ((!writeQuery.isUserDefined())// this is not a user-defined query
                  && queryManager.hasInsertQuery()// there is a user-defined query
@@ -497,7 +497,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         if (writeQuery.shouldCascadeParts()) {
             queryManager.postInsert(writeQuery);
         }
-        
+
         if ((descriptor.getHistoryPolicy() != null) && descriptor.getHistoryPolicy().shouldHandleWrites()) {
             if (isFKUpdate) { // Bug 319276
                 descriptor.getHistoryPolicy().postUpdate(writeQuery, true);
@@ -630,7 +630,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      * This is sent to the original query before cloning.
      */
     public abstract void prepareExecute() throws QueryException;
-    
+
     /**
      * Prepare for a raw (non-object) select call.
      * This is sent to the original query before cloning.
@@ -713,7 +713,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      * Read and return a row from the database for an existence check.
      */
     public abstract AbstractRecord selectRowForDoesExist(DatabaseField field) throws DatabaseException;
-    
+
     /**
      * Set the query that uses this mechanism.
      */
@@ -796,7 +796,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     public void updateForeignKeyFieldBeforeDelete() {
         // Nothing by default.
     }
-    
+
     protected void updateObjectAndRowWithReturnRow(Collection returnFields, boolean isFirstCallForInsert) {
         WriteObjectQuery writeQuery = getWriteObjectQuery();
         AbstractRecord outputRow = (AbstractRecord)writeQuery.getProperties().get("output");
@@ -1019,7 +1019,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 }
             }
         }
-         
+
         // Verify if deep shallow modify is turned on
         if (writeQuery.shouldCascadeParts()) {
             queryManager.preUpdate(writeQuery);
@@ -1028,7 +1028,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         // The row must not be built until after preUpdate in case the object reference has changed.
         // For a user defined update in the uow to row must be built twice to check if any update is required.
         writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRowForUpdateWithChangeSet(writeQuery));
-            
+
         Boolean shouldModifyVersionField = changeSet.shouldModifyVersionField();
         if (!getModifyRow().isEmpty() || shouldModifyVersionField != null || changeSet.hasCmpPolicyForcedUpdate()) {
             // If user defined the entire row is required. Must not be built until change is known.
@@ -1044,7 +1044,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 boolean existingOptimisticLock = false;
                 if (session instanceof RepeatableWriteUnitOfWork) {
                     RepeatableWriteUnitOfWork uow = (RepeatableWriteUnitOfWork)session;
-                    if (uow.getOptimisticReadLockObjects().get(object) != null && uow.getCumulativeUOWChangeSet() != null 
+                    if (uow.getOptimisticReadLockObjects().get(object) != null && uow.getCumulativeUOWChangeSet() != null
                             && uow.getCumulativeUOWChangeSet().getObjectChangeSetForClone(object) != null) {
                         existingOptimisticLock = true;
                     }
@@ -1102,11 +1102,11 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             eventManager.executeEvent(new DescriptorEvent(DescriptorEventManager.PostUpdateEvent, writeQuery));
         }
     }
-    
+
     /**
      * Unprepare the call if required.
      */
     public void unprepare() {
-        
+
     }
 }

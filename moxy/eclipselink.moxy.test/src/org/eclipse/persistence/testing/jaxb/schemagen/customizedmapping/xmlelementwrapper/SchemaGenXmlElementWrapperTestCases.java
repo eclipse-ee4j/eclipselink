@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -38,16 +38,16 @@ import junit.framework.TestCase;
  */
 public class SchemaGenXmlElementWrapperTestCases extends SchemaGenTestCases {
     static String PATH = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementwrapper/";
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public SchemaGenXmlElementWrapperTestCases(String name) throws Exception {
         super(name);
     }
-    
+
     public void testElementWrapper() {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
@@ -57,14 +57,14 @@ public class SchemaGenXmlElementWrapperTestCases extends SchemaGenTestCases {
         }
         assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
         assertTrue("More than one shcema was generated unxepectedly", outputResolver.schemaFiles.size() == 1);
-        
+
         String result = validateAgainstSchema(PATH + "root3.xml", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
     /**
      * If the element wrapper has a namespace that is not ##default and not the target
-     * namespace an element reference should generated 
+     * namespace an element reference should generated
      */
     public void testElementWrapperRef() {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();

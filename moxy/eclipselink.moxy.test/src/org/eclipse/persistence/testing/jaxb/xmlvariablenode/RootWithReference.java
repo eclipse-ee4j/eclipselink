@@ -9,23 +9,23 @@ import org.eclipse.persistence.oxm.annotations.XmlVariableNode;
 @XmlRootElement(name = "root-with-reference")
 public class RootWithReference {
 
-	public String name;
-	
-	@XmlVariableNode("thingName")	
-	public List<ThingWithCollection> things;
-	
-	public Reference ref;
+    public String name;
 
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof RootWithReference)) {
-			return false;
-		}
-		RootWithReference rwr = (RootWithReference)obj;
-		return things.equals(rwr.things) && 	
-				name.equals(rwr.name) &&
-				ref.equals(rwr.ref);
-	}
-	
-	
+    @XmlVariableNode("thingName")
+    public List<ThingWithCollection> things;
+
+    public Reference ref;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof RootWithReference)) {
+            return false;
+        }
+        RootWithReference rwr = (RootWithReference)obj;
+        return things.equals(rwr.things) &&
+                name.equals(rwr.name) &&
+                ref.equals(rwr.ref);
+    }
+
+
 }

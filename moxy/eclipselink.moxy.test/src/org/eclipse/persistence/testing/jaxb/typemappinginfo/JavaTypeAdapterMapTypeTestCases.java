@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,39 +27,39 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 public class JavaTypeAdapterMapTypeTestCases extends TypeMappingInfoWithJSONTestCases {
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/maptypeoverride.xml";
     protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/maptypeoverride.json";
-    
+
     @XmlJavaTypeAdapter(StringStringToIntegerIntegerMapAdapter.class)
     public Object javaTypeAdapterField;
-    
+
     public Map<String, String> theMapField;
-    
+
     public JavaTypeAdapterMapTypeTestCases(String name) throws Exception {
         super(name);
         init();
     }
-    
+
     public void init() throws Exception {
-        setControlDocument(XML_RESOURCE);   
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setTypeMappingInfos(getTypeMappingInfos()); 
+        setTypeMappingInfos(getTypeMappingInfos());
     }
-    
+
     protected TypeMappingInfo[] getTypeMappingInfos()throws Exception {
         if(typeMappingInfos == null) {
             typeMappingInfos = new TypeMappingInfo[1];
             TypeMappingInfo tmi = new TypeMappingInfo();
-            tmi.setXmlTagName(new QName("","testTagname"));      
-            tmi.setElementScope(ElementScope.Global);       
+            tmi.setXmlTagName(new QName("","testTagname"));
+            tmi.setElementScope(ElementScope.Global);
             tmi.setType(getClass().getField("theMapField").getGenericType());
             Annotation[] annotations = new Annotation[1];
-            
+
             annotations[0] = getClass().getField("javaTypeAdapterField").getAnnotations()[0];
             tmi.setAnnotations(annotations);
-            typeMappingInfos[0] = tmi;          
+            typeMappingInfos[0] = tmi;
         }
-        return typeMappingInfos;        
+        return typeMappingInfos;
     }
-    
+
     protected Object getControlObject() {
         Map<String, String> map = new HashMap<String, String>();
         map.put("one", "two");
@@ -70,10 +70,10 @@ public class JavaTypeAdapterMapTypeTestCases extends TypeMappingInfoWithJSONTest
 
         return jaxbElement;
     }
-    
-    public Map<String, InputStream> getControlSchemaFiles(){                       
+
+    public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/maptypeoverride.xsd");
-        
+
         Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
         controlSchema.put("", instream);
         return controlSchema;
@@ -81,6 +81,6 @@ public class JavaTypeAdapterMapTypeTestCases extends TypeMappingInfoWithJSONTest
 
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE;
-    }    
+    }
 
 }

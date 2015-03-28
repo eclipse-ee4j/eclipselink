@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,15 +19,15 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.clas
 public class Address {
 
     public BigDecimal id;
-    
-    public String cityName;
-    
-	public MyCalendar effectiveDate;
 
-    
+    public String cityName;
+
+    public MyCalendar effectiveDate;
+
+
     public Address() {}
-    
-    
+
+
     public boolean equals(Object obj) {
         Address add;
         try {
@@ -35,13 +35,13 @@ public class Address {
         } catch (ClassCastException cce) {
             return false;
         }
-        
+
         if(!id.equals(add.id)){
-        	return false;
+            return false;
         }
         if(!cityName.equals(add.cityName)){
-        	return false;
+            return false;
         }
-        return true;           
+        return true;
     }
 }

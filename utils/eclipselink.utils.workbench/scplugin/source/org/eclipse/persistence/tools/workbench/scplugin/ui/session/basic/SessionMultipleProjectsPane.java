@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -48,96 +48,96 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  */
 final class SessionMultipleProjectsPane extends AbstractSessionMultipleProjectsPane
 {
-	/**
-	 * Creates a new <code>SessionMultipleProjectsPane</code>.
-	 *
-	 * @param subjectHolder The holder of {@link DatabaseSessionAdapter}
-	 * @param context The context to be used by this pane
-	 */
-	SessionMultipleProjectsPane(ValueModel subjectHolder,
-										WorkbenchContextHolder contextHolder)
-	{
-		super(subjectHolder, contextHolder);
-	}
+    /**
+     * Creates a new <code>SessionMultipleProjectsPane</code>.
+     *
+     * @param subjectHolder The holder of {@link DatabaseSessionAdapter}
+     * @param context The context to be used by this pane
+     */
+    SessionMultipleProjectsPane(ValueModel subjectHolder,
+                                        WorkbenchContextHolder contextHolder)
+    {
+        super(subjectHolder, contextHolder);
+    }
 
-	/**
-	 * Prompts to add an additional project (Class or XML).
-	 *
-	 * @param selectionModel
-	 */
-	protected void addProject(ObjectListSelectionModel selectionModel)
-	{
-		DatabaseSessionAdapter session = (DatabaseSessionAdapter) subject();
-		ProjectType projectType = new ProjectType(session, selectionModel);
+    /**
+     * Prompts to add an additional project (Class or XML).
+     *
+     * @param selectionModel
+     */
+    protected void addProject(ObjectListSelectionModel selectionModel)
+    {
+        DatabaseSessionAdapter session = (DatabaseSessionAdapter) subject();
+        ProjectType projectType = new ProjectType(session, selectionModel);
 
-		ProjectTypeEditDialog dialog = new ProjectTypeEditDialog
-		(
-			getWorkbenchContext(),
-			resourceRepository().getString("PROJECT_TYPE_EDIT_DIALOG_TITLE_ADD"),
-			session,
-			projectType,
-			"session.project.advanced"
-		);
+        ProjectTypeEditDialog dialog = new ProjectTypeEditDialog
+        (
+            getWorkbenchContext(),
+            resourceRepository().getString("PROJECT_TYPE_EDIT_DIALOG_TITLE_ADD"),
+            session,
+            projectType,
+            "session.project.advanced"
+        );
 
-		dialog.setVisible(true);
-	}
+        dialog.setVisible(true);
+    }
 
-	/**
-	 * 
-	 */
-	private class ProjectType extends AbstractModel
-									  implements ProjectTypeEditDialog.ProjectTypeUpdater
-	{
-		private DatabaseSessionAdapter databaseSession;
-		private String projectName;
-		private final ObjectListSelectionModel selectionModel;
+    /**
+     *
+     */
+    private class ProjectType extends AbstractModel
+                                      implements ProjectTypeEditDialog.ProjectTypeUpdater
+    {
+        private DatabaseSessionAdapter databaseSession;
+        private String projectName;
+        private final ObjectListSelectionModel selectionModel;
 
-		public static final String PROJECT_CLASS_PROPERTY = "projectClass";
-		public static final String PROJECT_XML_PROPERTY = "projectXml";
-		public static final String PROJECT_TYPE_XML_PROPERTY = "projectTypeXml";
+        public static final String PROJECT_CLASS_PROPERTY = "projectClass";
+        public static final String PROJECT_XML_PROPERTY = "projectXml";
+        public static final String PROJECT_TYPE_XML_PROPERTY = "projectTypeXml";
 
-		public ProjectType(DatabaseSessionAdapter databaseSession,
-								 ObjectListSelectionModel selectionModel)
-		{
-			super();
-			this.selectionModel = selectionModel;
-			this.databaseSession = databaseSession;
-		}
+        public ProjectType(DatabaseSessionAdapter databaseSession,
+                                 ObjectListSelectionModel selectionModel)
+        {
+            super();
+            this.selectionModel = selectionModel;
+            this.databaseSession = databaseSession;
+        }
 
-		public void apply(boolean projectTypeXml, String projectName)
-		{
-			if (projectName == null)
-			{
-				ProjectAdapter project = (ProjectAdapter) this.selectionModel.getSelectedValue();
-				this.databaseSession.removeProject(project);
-			}
-			else if (projectTypeXml)
-			{
-				// Check to see if the value already exist
-				if (CollectionTools.contains(this.databaseSession.additionalProjectNames(), projectName))
-				{
-					ProjectAdapter project = this.databaseSession.projectNamed(projectName);
-					this.selectionModel.setSelectedValue(project);
-				}
-				else
-				{
-					this.databaseSession.addProjectXmlNamed(projectName);
-				}
-			}
-			else
-			{
-				this.databaseSession.addProjectClassNamed(projectName);
-			}
-		}
+        public void apply(boolean projectTypeXml, String projectName)
+        {
+            if (projectName == null)
+            {
+                ProjectAdapter project = (ProjectAdapter) this.selectionModel.getSelectedValue();
+                this.databaseSession.removeProject(project);
+            }
+            else if (projectTypeXml)
+            {
+                // Check to see if the value already exist
+                if (CollectionTools.contains(this.databaseSession.additionalProjectNames(), projectName))
+                {
+                    ProjectAdapter project = this.databaseSession.projectNamed(projectName);
+                    this.selectionModel.setSelectedValue(project);
+                }
+                else
+                {
+                    this.databaseSession.addProjectXmlNamed(projectName);
+                }
+            }
+            else
+            {
+                this.databaseSession.addProjectClassNamed(projectName);
+            }
+        }
 
-		public String getProjectName()
-		{
-			return this.projectName;
-		}
+        public String getProjectName()
+        {
+            return this.projectName;
+        }
 
-		public boolean isProjectXml()
-		{
-			return true;
-		}
-	}
+        public boolean isProjectXml()
+        {
+            return true;
+        }
+    }
 }

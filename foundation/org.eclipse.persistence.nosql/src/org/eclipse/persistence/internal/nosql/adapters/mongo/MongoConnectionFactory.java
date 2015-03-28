@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
  *     Gunnar Wagenknecht - external support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
 import java.util.ArrayList;
@@ -37,20 +37,20 @@ import com.mongodb.ServerAddress;
 public class MongoConnectionFactory implements ConnectionFactory {
     protected Mongo mongo;
     protected DB db;
-    
+
     /**
      * Default constructor.
      */
     public MongoConnectionFactory() {
     }
-    
+
     /**
      * Create a factory from an external mongo instance.
      */
     public MongoConnectionFactory(Mongo mongo) {
         this.mongo = mongo;
     }
-    
+
     /**
      * Create a factory from an external mongo instance.
      */
@@ -80,7 +80,7 @@ public class MongoConnectionFactory implements ConnectionFactory {
                 }
                 if (connectionSpec.getHosts().isEmpty()) {
                     ServerAddress server = new ServerAddress("localhost", ServerAddress.defaultPort());
-                    servers.add(server);                    
+                    servers.add(server);
                 }
                 Mongo mongo = this.mongo;
                 if (mongo == null) {
@@ -130,7 +130,7 @@ public class MongoConnectionFactory implements ConnectionFactory {
 
     public void setReference(Reference reference) {
     }
-    
+
     public Mongo getMongo() {
         return mongo;
     }

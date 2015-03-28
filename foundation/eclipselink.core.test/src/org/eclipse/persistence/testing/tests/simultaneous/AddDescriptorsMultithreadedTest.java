@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.simultaneous;
 
 import java.util.ArrayList;
@@ -41,14 +41,14 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
  * Tests several scenarios of adding sequences and descriptors, sequence preallocation; inserting objects concurrently.
  */
 public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
-    
+
     protected static boolean allTestsShouldStop;
-    
+
     protected AddDescriptorsMultithreadedTest() {
         super();
         setDescription("Runs provided tests concurently with adding descriptors.");
     }
-    
+
     protected void setup() {
         super.setup();
         allTestsShouldStop = false;
@@ -77,7 +77,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
         test.generateTestName();
         return test;
     }
-    
+
     void generateTestName() {
         ArrayList<String> testNames = new ArrayList();
         HashMap<String, Integer> map = new HashMap();
@@ -124,7 +124,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
             allTestsShouldStop = true;
         }
     }
-    
+
     /*
      * Adds descriptors, if timeToSleepBetweenAddingDescriptors then sleeps between adding descriptors.
      */
@@ -155,7 +155,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
                 dbSession = (DatabaseSession)(getAbstractSession().getParent());
             }
             int nSize = project.getOrderedDescriptors().size();
-            // if numberOfTests = 10 then the first test uses k = 0, 10, 20 etc; the second k = 1, 11, 21 etc. 
+            // if numberOfTests = 10 then the first test uses k = 0, 10, 20 etc; the second k = 1, 11, 21 etc.
             for (int k = testNumber; k < nSize; k = k + numberOfTests) {
                 ClassDescriptor descriptor = project.getOrderedDescriptors().get(k);
                 getAbstractSession().log(SessionLog.FINEST, SessionLog.MISC, "AddDescriptorsTest adding descriptor for class = " + Helper.getShortClassName(descriptor.getJavaClass()), new Object[]{}, null, false);
@@ -207,7 +207,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
                 dbSession = (DatabaseSession)(getAbstractSession().getParent());
             }
             int nSize = project.getOrderedDescriptors().size();
-            // if numberOfTests = 10 then the first test uses k = 0, 10, 20 etc; the second k = 1, 11, 21 etc. 
+            // if numberOfTests = 10 then the first test uses k = 0, 10, 20 etc; the second k = 1, 11, 21 etc.
             for (int k = testNumber; k < nSize; k = k + numberOfTests) {
                 ClassDescriptor descriptor = project.getOrderedDescriptors().get(k);
                 descriptor = dbSession.getDescriptor(descriptor.getJavaClass());
@@ -216,7 +216,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
                 }
                 DatabaseField sequenceNumberField = descriptor.getMappingForAttributeName("id").getField();
                 String seqName = "SEQ_" + sequenceNumberField.getTableName();
-                
+
                 Sequence sequence = dbSession.getPlatform().getSequence(seqName);
                 if (sequence == null) {
                     throw new TestErrorException("Not found sequence " + seqName + " defined for class " + descriptor.getAlias());
@@ -239,7 +239,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
             }
         }
         /*
-         * Concurrently runs nAddDescriptorsTests AddDescriptorsTests. 
+         * Concurrently runs nAddDescriptorsTests AddDescriptorsTests.
          * If timeToSleepBetweenAddingDescriptors > 0 then each AddDescriptorTest sleeps after adding each descriptor.
          */
         public static AddDescriptorsMultithreadedTest createMultithreadedTest(int nAddDescriptorsTests, long timeToSleepBetweenAddingDescriptors) {
@@ -248,10 +248,10 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
     }
 
     /*
-     * In a loop assigns sequence number for different types 
+     * In a loop assigns sequence number for different types
      * (which causes sequence number preallocation) then rolls back throwing all the preallocated numbers away.
      * Does not have verify method - tests for deadlocks.
-     * Stops when either AddDescriptorsTest or Timer set allTestsShouldStop flag to false. 
+     * Stops when either AddDescriptorsTest or Timer set allTestsShouldStop flag to false.
      */
     public static class SequencePreallocationTest extends TestCase {
         public SequencePreallocationTest(int testNumber) {
@@ -288,14 +288,14 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
             }
         }
         /*
-         * Concurrently runs nAddDescriptorsTests AddDescriptorTests and nTests SequencePreallocationTests. 
+         * Concurrently runs nAddDescriptorsTests AddDescriptorTests and nTests SequencePreallocationTests.
          * If timeToSleepBetweenAddingDescriptors > 0 then each AddDescriptorTest sleep afters adding each descriptor.
          */
         public static AddDescriptorsMultithreadedTest createMultithreadedTestWithAddDescriptors(int nAddDescriptorsTests, long timeToSleepBetweenAddingDescriptors, int nTests) {
             return AddDescriptorsMultithreadedTest.createMultithreadedTest(nAddDescriptorsTests, timeToSleepBetweenAddingDescriptors, "SequencePreallocationTest", nTests, 0);
         }
         /*
-         * Concurrently runs nTests SequencePreallocationTests. 
+         * Concurrently runs nTests SequencePreallocationTests.
          * timeToStopTest > 0 must be specified, or the test will run forever.
          */
         public static AddDescriptorsMultithreadedTest createMultithreadedTest(int nTests, long timeToStopTests) {
@@ -304,10 +304,10 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
     }
 
     /*
-     * In a loop inserts objects of different types. 
+     * In a loop inserts objects of different types.
      * Stops when either AddDescriptorsTest or Timer set allTestsShouldStop flag to false.
      * Does not have verify method - tests for deadlocks.
-     * The last test to reset deletes all the inserted objects. 
+     * The last test to reset deletes all the inserted objects.
      */
     public static class InsertTest extends TestCase {
         public InsertTest(int testNumber, int numberOfTests) {
@@ -374,7 +374,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
                     } else {
                         // delete all created objects
                         UnitOfWork uow = session.acquireUnitOfWork();
-                        
+
                         DeleteAllQuery deleteAddresses = new DeleteAllQuery(Address.class);
                         deleteAddresses.setSelectionCriteria(deleteAddresses.getExpressionBuilder().get("country").equal("InsertTest"));
                         uow.executeQuery(deleteAddresses);
@@ -382,11 +382,11 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
                         DeleteAllQuery deleteEmployees = new DeleteAllQuery(Employee.class);
                         deleteEmployees.setSelectionCriteria(deleteEmployees.getExpressionBuilder().get("lastName").equal("InsertTest"));
                         uow.executeQuery(deleteEmployees);
-                    
+
                         DeleteAllQuery deleteProjects = new DeleteAllQuery(SmallProject.class);
                         deleteProjects.setSelectionCriteria(deleteProjects.getExpressionBuilder().get("description").equal("InsertTest"));
                         uow.executeQuery(deleteProjects);
-                    
+
                         uow.commit();
                     }
                     // get ready for the next run
@@ -395,14 +395,14 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
             }
         }
         /*
-         * Concurrently runs nAddDescriptorsTests AddDescriptorTests and nTests InsertTests. 
+         * Concurrently runs nAddDescriptorsTests AddDescriptorTests and nTests InsertTests.
          * If timeToSleepBetweenAddingDescriptors > 0 then each AddDescriptorTest sleep afters adding each descriptor.
          */
         public static AddDescriptorsMultithreadedTest createMultithreadedTestWithAddDescriptors(int nAddDescriptorsTests, long timeToSleepBetweenAddingDescriptors, int nTests) {
             return AddDescriptorsMultithreadedTest.createMultithreadedTest(nAddDescriptorsTests, timeToSleepBetweenAddingDescriptors, "InsertTest", nTests, 0);
         }
         /*
-         * Concurrently runs nTests InsertTests. 
+         * Concurrently runs nTests InsertTests.
          * timeToStopTest > 0 must be specified, or the test will run forever.
          */
         public static AddDescriptorsMultithreadedTest createMultithreadedTest(int nTests, long timeToStopTests) {

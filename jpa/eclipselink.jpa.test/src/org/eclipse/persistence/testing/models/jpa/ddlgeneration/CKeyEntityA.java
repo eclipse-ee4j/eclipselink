@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import javax.persistence.Column;
@@ -27,7 +27,7 @@ import javax.persistence.TableGenerator;
 
 /**
  * Composite key Entity.
- * 
+ *
  * @author Wonseok Kim
  */
 @Entity
@@ -60,10 +60,10 @@ public class CKeyEntityA {
         @JoinColumn(name="B_CODE", referencedColumnName = "CODE")
     })
     private CKeyEntityB bs;
-    
+
     @OneToOne(mappedBy="a")
     private CKeyEntityC c;
-    
+
     // Relationship using candidate(unique) keys
     // For testing whether a generated FK constraint has reordered unique keys according to target table.
     // CKeyEntityB has unique constraint ("UNQ2", "UNQ1").
@@ -73,7 +73,7 @@ public class CKeyEntityA {
         @JoinColumn(name="B_UNQ2", referencedColumnName = "UNQ2")
     })
     private CKeyEntityB uniqueB;
-    
+
 
     public CKeyEntityA() {
     }
@@ -98,7 +98,7 @@ public class CKeyEntityA {
     public CKeyEntityAPK getKey() {
         return new CKeyEntityAPK(seq, firstName, lastName);
     }
-    
+
     public CKeyEntityB getBs() {
         return bs;
     }

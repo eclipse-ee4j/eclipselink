@@ -13,12 +13,12 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
  * EL Bug 382420
  */
 public class QuotedTableNameInitializationTest extends TestCase {
-    
+
     public QuotedTableNameInitializationTest() {
         super();
         setDescription("Test that a database table with spaces is properly delimited");
     }
-    
+
     public void test() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(Employee.class);
@@ -28,20 +28,20 @@ public class QuotedTableNameInitializationTest extends TestCase {
         table.setUseDelimiters(true);
         descriptor.addTable(table);
         descriptor.addPrimaryKeyFieldName("EMP_ID");
-        
+
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
         idMapping.setAttributeName("id");
         idMapping.setFieldName("EMP_ID");
         descriptor.addMapping(idMapping);
-        
+
         descriptor.preInitialize(getAbstractSession());
-        
+
         DatasourcePlatform plaf = (DatasourcePlatform)getAbstractSession().getDatasourcePlatform();
-        
+
         String expectedTableName = plaf.getStartDelimiter() + tableName + plaf.getEndDelimiter();
         String newTableName = table.getNameDelimited(plaf);
-        
+
         assertEquals("Table name should be between the platform delimiters", expectedTableName, newTableName);
     }
-    
+
 }

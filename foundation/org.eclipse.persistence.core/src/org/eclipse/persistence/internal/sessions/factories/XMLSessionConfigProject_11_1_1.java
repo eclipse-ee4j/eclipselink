@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Rick Curtis - Add support for WebSphere Liberty
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.factories;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
@@ -58,14 +58,14 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         super();
         addDescriptor(buildOc4jJGroupsTransportManagerConfigDescriptor());
         addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4jPlatformConfig.class));
-        addDescriptor(buildServerPlatformConfigDescriptorFor(GlassfishPlatformConfig.class));      
-    	addDescriptor(buildServerPlatformConfigDescriptorFor(SunAS9PlatformConfig.class));
+        addDescriptor(buildServerPlatformConfigDescriptorFor(GlassfishPlatformConfig.class));
+        addDescriptor(buildServerPlatformConfigDescriptorFor(SunAS9PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_9_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_10_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebSphere_6_1_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebSphere_7_0_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebSphere_Liberty_Platform_Config.class));
-        
+
         // 242452 -- add metadata support for XMLLogin's DocumentPreservationPolicy
         addDescriptor(buildDocumentPreservationPolicyConfigDescriptor());
         addDescriptor(buildDescriptorLevelDocumentPreservationPolicyConfigDescriptor());
@@ -75,7 +75,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         addDescriptor(buildAppendNewElementsOrderingPolicyConfigDescriptor());
         addDescriptor(buildIgnoreNewElementsOrderingPolicyConfigDescriptor());
         addDescriptor(buildRelativePositionOrderingPolicyConfigDescriptor());
-        
+
         // Set the namespaces on all descriptors.
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         namespaceResolver.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
@@ -84,7 +84,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
             XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
             descriptor.setNamespaceResolver(namespaceResolver);
-        }        
+        }
     }
 
     public ClassDescriptor buildSessionConfigsDescriptor() {
@@ -92,7 +92,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         descriptor.setDefaultRootElement("sessions");
         return descriptor;
     }
-    
+
     public ClassDescriptor buildDatabaseLoginConfigDescriptor() {
         ClassDescriptor descriptor = super.buildDatabaseLoginConfigDescriptor();
 
@@ -164,7 +164,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
 
         return descriptor;
     }
-    
+
     public ClassDescriptor buildServerPlatformConfigDescriptor() {
         XMLDescriptor descriptor =(XMLDescriptor)super.buildServerPlatformConfigDescriptor();
         descriptor.getInheritancePolicy().addClassIndicator(Oc4jPlatformConfig.class, "oc4j-platform");
@@ -244,7 +244,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
 
         return descriptor;
     }
-    
+
     protected ClassDescriptor buildNodeOrderingPolicyConfigDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(NodeOrderingPolicyConfig.class);

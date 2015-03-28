@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import java.io.FileInputStream;
@@ -160,7 +160,7 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
         DataObject salesPO1DO = salesDO.getDataObject("purchaseOrder[1]");
 
         // verify logging is on
-        //ChangeSummary salesPO1DO_cs = salesPO1DO.getChangeSummary(); 
+        //ChangeSummary salesPO1DO_cs = salesPO1DO.getChangeSummary();
         //assertNotNull(salesPO1DO_cs);
         // turn on logging
         salesPO1CS.beginLogging();
@@ -273,12 +273,12 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
 
     }
 
-    //*  UC 10.3			move obj inside corp1.sales.po1 to itself
-    //* UC 10.3.1			move obj inside corp1.cs1 (same tree/same cs)
-    //* UC 10.3.2 			swap obj inside corp1.cs1 (same tree/same cs)
-    //* UC 10.3.3 			reset obj inside corp1.cs1 (same tree/same cs)
-    //* UC 10.6	.1		move corp2.sales.po1.obj to corp2.sales.obj (different tree/different cs) using single op set
-    //* UC 10.6.2		move corp2.sales.po1.obj to corp2.sales.obj (different tree/different cs) using dual op detach/set    
+    //*  UC 10.3            move obj inside corp1.sales.po1 to itself
+    //* UC 10.3.1            move obj inside corp1.cs1 (same tree/same cs)
+    //* UC 10.3.2             swap obj inside corp1.cs1 (same tree/same cs)
+    //* UC 10.3.3             reset obj inside corp1.cs1 (same tree/same cs)
+    //* UC 10.6    .1        move corp2.sales.po1.obj to corp2.sales.obj (different tree/different cs) using single op set
+    //* UC 10.6.2        move corp2.sales.po1.obj to corp2.sales.obj (different tree/different cs) using dual op detach/set
     public void testMoveUsingSetBetweenDifferentTreesInDifferentChangeSummarysAndUndo_MoveItemsInTree1CS1toTree2CS2() {
         // save original root for later comparison after undo
         DataObject originalRootDO = copyHelper.copy(rootObject);
@@ -383,7 +383,7 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
         // moving an object outside and reattaching in another tree with another cs clears it from the original cs tree
         assertDetached(salesPO1ItemsDO, salesPO1CS, wasDeleted, wasReattachedInContextOfSourceChangeSummary, false);
         assertCreated(salesPO1ItemsDO, salesPO1CS2);
-        //assertUnchanged(someChildofBuyerDO, salesPO1CS);        
+        //assertUnchanged(someChildofBuyerDO, salesPO1CS);
         assertEquals(10, salesPO1CS.getChangedDataObjects().size());// 1 + 9
         assertEquals(16, ((SDOChangeSummary)salesPO1CS).getOldContainer().size());
         assertEquals(16, ((SDOChangeSummary)salesPO1CS).getOldContainmentProperty().size());
@@ -397,7 +397,7 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
         //writeXML(rootObject, URINAME, TYPENAME, System.out);
         // undo first changeSummary
         assertUndoChangesEqualToOriginal(salesPO1CS, salesPO1DO, originalSalesPO1DO);
-        //assertUndoChangesEqualToOriginal(salesPO1CS2, salesPO1DO2, originalSalesPO1DO2);        
+        //assertUndoChangesEqualToOriginal(salesPO1CS2, salesPO1DO2, originalSalesPO1DO2);
         // verify that the objects are returned back to their original stes
         assertNotNull(salesPO1DO.get("items"));// undo should bring back the deepcopy not the original
         assertNotNull(salesPO1DO2.get("items"));
@@ -412,13 +412,13 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
         assertEquals(62, preOrderList.size());
     }
 
-    //* UC 10.7			move corp1.sales.po1.obj to corp1.sales.po2.obj (same tree/different cs)
-    //* UC 10.8			move corp1.sales.obj above cs to corp2.sales.obj (different tree/no cs)
-    //* UC 10.9			move obj corp1.sales.obj above cs to itself
-    //* UC 10.9.1			move obj above cs (same tree/ no cs)
-    //* UC 10.9.2			swap obj above cs (same tree/ no cs)
-    //* UC 10.9.3			reset obj above cs (same tree/ no cs)
-    //* UC 10.1	 		move corp1.sales.po1.buyer outside/above cs1 to corp1.sales.emp[1] (same tree/ out of cs)
+    //* UC 10.7            move corp1.sales.po1.obj to corp1.sales.po2.obj (same tree/different cs)
+    //* UC 10.8            move corp1.sales.obj above cs to corp2.sales.obj (different tree/no cs)
+    //* UC 10.9            move obj corp1.sales.obj above cs to itself
+    //* UC 10.9.1            move obj above cs (same tree/ no cs)
+    //* UC 10.9.2            swap obj above cs (same tree/ no cs)
+    //* UC 10.9.3            reset obj above cs (same tree/ no cs)
+    //* UC 10.1             move corp1.sales.po1.buyer outside/above cs1 to corp1.sales.emp[1] (same tree/ out of cs)
     public void testMoveWithinSameTreeOutOfChangeSummaryAndUndo_MoveBuyerInCS1upasEmployeeOnParentWithoutCS() {
         // save original root for later comparison after undo
         DataObject originalRootDO = copyHelper.copy(rootObject);
@@ -492,7 +492,7 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
         assertNull(salesPO1DO.get("buyer"));
         // moving an object outside and reattaching above clears it from the cs tree
         assertDetached(salesPO1BuyerDO, salesPO1CS, wasDeleted, wasReattachedInContextOfAChangeSummary, false);
-        //assertUnchanged(someChildofBuyerDO, salesPO1CS);        
+        //assertUnchanged(someChildofBuyerDO, salesPO1CS);
         assertEquals(2, salesPO1CS.getChangedDataObjects().size());
         assertEquals(16, ((SDOChangeSummary)salesPO1CS).getOldContainer().size());//  from 14 (sales has 2 PO's not 1)
         assertEquals(16, ((SDOChangeSummary)salesPO1CS).getOldContainmentProperty().size());
@@ -508,7 +508,7 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
         assertEquals(63, preOrderList.size());
     }
 
-    //* UC 10.2 			move corp1.sales.emp[1] inside/down to cs1 as sales.po1.buyer (same tree/ into cs)
+    //* UC 10.2             move corp1.sales.emp[1] inside/down to cs1 as sales.po1.buyer (same tree/ into cs)
     public void testMoveWithinSameTreeIntoChildChangeSummaryAndUndo_MoveEmployeeDownIntoCS1asBuyerOfCurrentWithoutCS() {
         // save original root for later comparison after undo
         DataObject originalRootDO = copyHelper.copy(rootObject);
@@ -586,8 +586,8 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
         assertModified(salesPO1DO, salesPO1CS);// buyer was set to null
         assertEquals(0, salesDO.getList("employee").size());
         // moving an object outside and reattaching above clears it from the cs tree
-        assertCreated(salesEmp1DO, salesPO1CS);//, wasDeleted, wasReattachedInContextOfAChangeSummary, false); 
-        //assertUnchanged(someChildofBuyerDO, salesPO1CS);        
+        assertCreated(salesEmp1DO, salesPO1CS);//, wasDeleted, wasReattachedInContextOfAChangeSummary, false);
+        //assertUnchanged(someChildofBuyerDO, salesPO1CS);
         assertEquals(2, salesPO1CS.getChangedDataObjects().size());
         assertEquals(15, ((SDOChangeSummary)salesPO1CS).getOldContainer().size());//  from 14 (sales has 2 PO's not 1)
         assertEquals(15, ((SDOChangeSummary)salesPO1CS).getOldContainmentProperty().size());
@@ -602,7 +602,7 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
 
     }
 
-    //* UC 10.4 			move corp1.sales.po2.emp(buyer) outside/above cs1 to corp2 as sales.emp (diff tree/ out of cs)
+    //* UC 10.4             move corp1.sales.po2.emp(buyer) outside/above cs1 to corp2 as sales.emp (diff tree/ out of cs)
     public void testMoveBetweenDifferentTreesOutOfChangeSummaryAndUndo_MoveBuyerInCS1UpasEmployeeOnParentWithoutCSInDiffTree() {
         // save original root for later comparison after undo
         DataObject originalRootDO = copyHelper.copy(rootObject);
@@ -701,17 +701,17 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
         assertNull(salesPO1DO.get("buyer"));
         // moving an object outside and reattaching above clears it from the cs tree
         assertDetached(salesPO1BuyerDO, salesPO1CS, wasDeleted, wasReattachedInContextOfAChangeSummary, false);
-        //assertUnchanged(someChildofBuyerDO, salesPO1CS);        
+        //assertUnchanged(someChildofBuyerDO, salesPO1CS);
         assertEquals(2, salesPO1CS.getChangedDataObjects().size());
         assertEquals(16, ((SDOChangeSummary)salesPO1CS).getOldContainer().size());//  from 14 (sales has 2 PO's not 1)
         assertEquals(16, ((SDOChangeSummary)salesPO1CS).getOldContainmentProperty().size());
 
         //assertValueStoresReturnedToStartStateAfterUndoChanges(salesPO1DO, aCurrentValueStoreAfterLoggingFirstOn);
         //writeXML(rootObject, URINAME, TYPENAME, System.out);
-        // null xpath for create 
+        // null xpath for create
     }
 
-    //* UC 10.5 			move corp2.sales.emp inside/down into corp1.sales.po2.buyer (diff tree/ into cs)
+    //* UC 10.5             move corp2.sales.emp inside/down into corp1.sales.po2.buyer (diff tree/ into cs)
     public void testMoveBetweenDifferentTreesIntoChildChangeSummaryAndUndo_MoveEmployeeDownIntoCS1asBuyerOfCurrentWithoutCSInDiffTree() {
         // save original root for later comparison after undo
         DataObject originalRootDO = copyHelper.copy(rootObject);
@@ -809,15 +809,15 @@ public class ChangeSummaryXSDWithCSonChildUndoTestCases extends ChangeSummaryXSD
         assertModified(salesPO1DO, salesPO1CS);// buyer was set to null
         assertEquals(0, salesDO.getList("employee").size());
         // moving an object outside and reattaching above clears it from the cs tree
-        assertCreated(salesEmp1DO2, salesPO1CS);//, wasDeleted, wasReattachedInContextOfAChangeSummary, false); 
-        //assertUnchanged(someChildofBuyerDO, salesPO1CS);        
+        assertCreated(salesEmp1DO2, salesPO1CS);//, wasDeleted, wasReattachedInContextOfAChangeSummary, false);
+        //assertUnchanged(someChildofBuyerDO, salesPO1CS);
         assertEquals(2, salesPO1CS.getChangedDataObjects().size());
         assertEquals(15, ((SDOChangeSummary)salesPO1CS).getOldContainer().size());//  from 14 (sales has 2 PO's not 1)
         assertEquals(15, ((SDOChangeSummary)salesPO1CS).getOldContainmentProperty().size());
 
         //assertValueStoresReturnedToStartStateAfterUndoChanges(salesPO1DO, aCurrentValueStoreAfterLoggingFirstOn);
         //writeXML(rootObject, URINAME, TYPENAME, System.out);
-        // null xpath for create 
+        // null xpath for create
     }
 
     // move above cs

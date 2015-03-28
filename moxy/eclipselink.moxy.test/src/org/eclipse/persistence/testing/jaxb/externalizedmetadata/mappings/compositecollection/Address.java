@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,15 +18,15 @@ public class Address {
     public String street = "";
     public String province = "";
     public String postalCode = "";
-    
+
     public String readOnlyString = "";
     public void setReadOnlyString(String val) {
         readOnlyString = val;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
-        
+
         Address addObj;
         try {
             addObj = (Address) obj;

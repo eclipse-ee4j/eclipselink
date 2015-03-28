@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
@@ -40,28 +40,28 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
 
     public ReportQueryConstructorExpressionTestSuite() {
     }
-  
+
     public ReportQueryConstructorExpressionTestSuite(String name) {
         super(name);
     }
-        
+
     public void setUp () {
         m_reset = true;
         super.setUp();
         clearCache("fieldaccess");
     }
-    
+
     public void tearDown () {
         if (m_reset) {
             m_reset = false;
         }
         super.tearDown();
     }
-    
-    public static Test suite() {    
+
+    public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("ReportQueryConstructorExpressionTestSuite (fieldaccess)");
-        
+
         suite.addTest(new ReportQueryConstructorExpressionTestSuite("testSetup"));
         suite.addTest(new ReportQueryConstructorExpressionTestSuite("testSimpleConstructorExpression"));
         suite.addTest(new ReportQueryConstructorExpressionTestSuite("testSimpleConstructorExpressionWithNamedQuery"));
@@ -70,10 +70,10 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         suite.addTest(new ReportQueryConstructorExpressionTestSuite("testPrimitiveConstructorExpression"));
         suite.addTest(new ReportQueryConstructorExpressionTestSuite("testConstructorEJBQLWithInheritance"));
         suite.addTest(new ReportQueryConstructorExpressionTestSuite("testConstructorExpressionWithOtherAttributes"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -81,16 +81,16 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
         //create a new EmployeePopulator
         EmployeePopulator employeePopulator = new EmployeePopulator();
-        
+
         //Populate the tables
         employeePopulator.buildExamples();
-        
+
         //Persist the examples in the database
         employeePopulator.persistExample(JUnitTestCase.getServerSession("fieldaccess"));
 
         clearCache("fieldaccess");
     }
-    
+
     public void testSimpleConstructorExpression(){
         ExpressionBuilder employees = new ExpressionBuilder();
         ReportQuery query = new ReportQuery(Employee.class, employees);
@@ -98,10 +98,10 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         query.addAttribute("lastName");
 
         List reportResults = (List)getServerSession("fieldaccess").executeQuery(query);
-        
+
         employees = new ExpressionBuilder();
         query = new ReportQuery(Employee.class, employees);
-        
+
         Class[] argTypes = new Class[]{String.class, String.class};
         query.beginAddingConstructorArguments(Employee.class, argTypes);
         query.addAttribute("firstName");
@@ -121,7 +121,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
                 assertTrue("Null last name", result.get("lastName") != null);
                 assertTrue("Wrong last name", emp.getLastName().equals(result.get("lastName")));
             }
-            
+
         }
         assertTrue("Different result sizes", !(report.hasNext()));
     }
@@ -131,7 +131,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("firstName");
         query.addAttribute("lastName");
-        EntityManager em = createEntityManager("fieldaccess");          
+        EntityManager em = createEntityManager("fieldaccess");
 
         Vector reportResults = (Vector)getServerSession("fieldaccess").executeQuery(query);
 
@@ -149,7 +149,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
                 assertTrue("Null last name", result.get("lastName") != null);
                 assertTrue("Wrong last name", emp.getLastName().equals(result.get("lastName")));
             }
-            
+
         }
         assertTrue("Different result sizes", !(report.hasNext()));
     }
@@ -159,7 +159,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("firstName");
         query.addItem("endDate", employees.get("period").get("endDate"));
-        query.addAttribute("id");         
+        query.addAttribute("id");
 
         List reportResults = (List)getServerSession("fieldaccess").executeQuery(query);
         query = new ReportQuery(Employee.class, employees);
@@ -188,11 +188,11 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         }
         assertTrue("Different result sizes", !(report.hasNext()));
     }
-    
+
     public void testNonExistantConstructorConstructorExpression(){
         ExpressionBuilder employees = new ExpressionBuilder();
         ReportQuery query = new ReportQuery(Employee.class, employees);
-        
+
         Class[] argTypes = new Class[]{String.class, java.sql.Date.class, Integer.class};
         query.beginAddingConstructorArguments(Employee.class, argTypes);
         query.addAttribute("firstName");
@@ -227,11 +227,11 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
             DataHolder holder = (DataHolder)((ReportQueryResult)i.next()).get(DataHolder.class.getName());
             ReportQueryResult result = (ReportQueryResult)report.next();
             assertTrue("Incorrect salary ", ((Integer)result.get("salary")).intValue() == holder.getPrimitiveInt());
-            
+
         }
         assertTrue("Different result sizes", !(report.hasNext()));
     }
-    
+
       public void testConstructorEJBQLWithInheritance() {
         Exception exception = null;
         try {
@@ -240,24 +240,24 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
             e.printStackTrace();
             exception = e;
         }
-        
+
         assertNull("Exception was caught", exception);
     }
-    
+
     public void testConstructorExpressionWithOtherAttributes(){
         ExpressionBuilder employees = new ExpressionBuilder();
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("firstName");
-        query.addAttribute("lastName");    
+        query.addAttribute("lastName");
 
         List reportResults = (List)getServerSession("fieldaccess").executeQuery(query);
 
         ConstructorReportItem citem = new ConstructorReportItem("Employee");
         citem.setResultType(Employee.class);
-        
+
         citem.addAttribute(employees.get("firstName"));
         citem.addAttribute(employees.get("lastName"));
-        
+
         query.addConstructorReportItem(citem);
 
         Vector results = (Vector)getServerSession("fieldaccess").executeQuery(query);
@@ -278,7 +278,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
                 assertTrue("Null last name", result2.get("lastName") != null);
                 assertTrue("Wrong last name", emp.getLastName().equals(result2.get("lastName")));
             }
-            
+
         }
         assertTrue("Different result sizes", !(report.hasNext()));
     }

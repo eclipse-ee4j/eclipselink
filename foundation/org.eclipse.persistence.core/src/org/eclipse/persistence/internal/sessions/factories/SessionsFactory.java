@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     cdelahun - Bug 214534: changes for JMSPublishingTransportManager configuration via session.xml
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.factories;
 
 import java.lang.reflect.Constructor;
@@ -150,9 +150,9 @@ public class SessionsFactory {
      * To build EclipseLink sessions, users must call this method with a
      * SessionConfigs object returned from an OX read in the
      * {@link XMLSessionsConfigLoader}.
-     * 
+     *
      * @param eclipseLinkSessions object returned from an OX read in the XMLSessionsConfigLoader
-     * @param classLoader class loader used in the XMLSessionsConfigLoader 
+     * @param classLoader class loader used in the XMLSessionsConfigLoader
      * @return EclipseLink sessions
      */
     public Map<String, Session> buildSessionConfigs(SessionConfigs eclipseLinkSessions, ClassLoader classLoader) {
@@ -256,7 +256,7 @@ public class SessionsFactory {
      * Builds a server server from the given ServerSessionConfig.
      */
     protected AbstractSession buildServerSessionConfig(ServerSessionConfig serverSessionConfig) {
-        // For server sessions we should build the login first, that way we can 
+        // For server sessions we should build the login first, that way we can
         // initialize the server session with the login (if there is one)
         Login login = buildLogin(serverSessionConfig.getLoginConfig());
 
@@ -295,8 +295,8 @@ public class SessionsFactory {
         prepareProjectLogin(primaryProject, login);
         DatabaseSessionImpl sessionToReturn = getSession(sessionConfig, primaryProject);
 
-        // Append descriptors from all subsequent project.xml and project classes 
-        // to the mainProject  
+        // Append descriptors from all subsequent project.xml and project classes
+        // to the mainProject
         if (sessionConfig.getAdditionalProjects() != null) {
             Enumeration<ProjectConfig> additionalProjects = sessionConfig.getAdditionalProjects().elements();
 
@@ -521,7 +521,7 @@ public class SessionsFactory {
         processLoginConfig(databaseLoginConfig, databaseLogin);
 
         processStructConverterConfig(databaseLoginConfig.getStructConverterConfig(), databaseLogin);
-        
+
         if (databaseLoginConfig.isConnectionHealthValidatedOnError() != null){
             databaseLogin.setConnectionHealthValidatedOnError(databaseLoginConfig.isConnectionHealthValidatedOnError());
         }
@@ -534,7 +534,7 @@ public class SessionsFactory {
         if (databaseLoginConfig.getPingSQL() != null){
             databaseLogin.setPingSQL(databaseLoginConfig.getPingSQL());
         }
-        
+
         // Finally, return the newly created DatabaseLogin
         return databaseLogin;
     }
@@ -547,7 +547,7 @@ public class SessionsFactory {
             Platform platform = login.getDatasourcePlatform();
             if (platform instanceof DatabasePlatform){
                 Iterator i = converterClassConfig.getStructConverterClasses().iterator();
-    
+
                 while (i.hasNext()) {
                     String converterClassName = (String)i.next();
                     try {
@@ -570,7 +570,7 @@ public class SessionsFactory {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Process the common elements of a Login.
@@ -630,7 +630,7 @@ public class SessionsFactory {
             }
         }
 
-        // Properties (assumes they are all valid) 
+        // Properties (assumes they are all valid)
         if (loginConfig.getPropertyConfigs() != null) {
             Enumeration e = loginConfig.getPropertyConfigs().elements();
 
@@ -826,7 +826,7 @@ public class SessionsFactory {
     protected void processSessionConfig(SessionConfig sessionConfig, AbstractSession session) {
         // Name
         session.setName(sessionConfig.getName().trim());
-        
+
         // Session Event Manager
         processSessionEventManagerConfig(sessionConfig.getSessionEventManagerConfig(), session);
 
@@ -838,8 +838,8 @@ public class SessionsFactory {
         if (log != null) {
             session.setSessionLog(log);
         }
-        
-        // Remote command manager    
+
+        // Remote command manager
         buildRemoteCommandManagerConfig(sessionConfig.getRemoteCommandManagerConfig(), session);
 
         // Profiler - XML Schema default is null
@@ -891,7 +891,7 @@ public class SessionsFactory {
             }
         }
 
-        // Process the common elements in ServerPlatformConfig 
+        // Process the common elements in ServerPlatformConfig
         processServerPlatformConfig(platformConfig, platform);
         return platform;
     }
@@ -906,7 +906,7 @@ public class SessionsFactory {
             // Commands
             processCommandsConfig(rcmConfig.getCommandsConfig(), rcm);
 
-            // Transport Manager - will set the built TransportManager on the given 
+            // Transport Manager - will set the built TransportManager on the given
             // Remote command manager that is passed in
             buildTransportManager(rcmConfig.getTransportManagerConfig(), rcm);
 
@@ -1028,10 +1028,10 @@ public class SessionsFactory {
 
         // Set the transport manager. This will initialize the DiscoveryManager
         rcm.setTransportManager(tm);
-        
+
         processJMSTransportManagerConfig(tmConfig, tm);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -1042,7 +1042,7 @@ public class SessionsFactory {
         rcm.setTransportManager(tm);
         processJMSTransportManagerConfig(tmConfig, tm);
     }
-    
+
     /**
      * INTERNAL:
      * Common JMS configuration
@@ -1183,7 +1183,7 @@ public class SessionsFactory {
      * INTERNAL:
      */
     protected void processTransportManagerConfig(TransportManagerConfig tmConfig, TransportManager tm) {
-        // On connection error - Can only be DiscardConnection (true) or 
+        // On connection error - Can only be DiscardConnection (true) or
         // KeepConnection (false), validated by the schema
         // XML Schema default is DiscardConnection
         tm.setShouldRemoveConnectionOnError(tmConfig.getOnConnectionError().equals("DiscardConnection"));
@@ -1204,7 +1204,7 @@ public class SessionsFactory {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         session.getEventManager().addListener((SessionEventListener)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(listenerClass)));
                     }else{
-                        
+
                     }
                     session.getEventManager().addListener((SessionEventListener)PrivilegedAccessHelper.newInstanceFromClass(listenerClass));
                 } catch (Exception exception) {

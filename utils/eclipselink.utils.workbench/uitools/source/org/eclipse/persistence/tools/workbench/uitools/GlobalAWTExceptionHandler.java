@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,66 +27,66 @@ import org.eclipse.persistence.tools.workbench.utility.ExceptionBroadcaster;
  * @see AWTExceptionHandler
  */
 public final class GlobalAWTExceptionHandler
-	implements GlobalHandler
+    implements GlobalHandler
 {
-	/**
-	 * Broadcasting delegate.
-	 */
-	private final ExceptionBroadcaster broadcaster;
+    /**
+     * Broadcasting delegate.
+     */
+    private final ExceptionBroadcaster broadcaster;
 
 
-	/**
-	 * Set up a "global" AWT exception handler and the "local" AWT
-	 * exception handler to broadcast any unhandled exceptions via
-	 * the specified broadcaster.
-	 */
-	public static void register(ExceptionBroadcaster broadcaster) {
-		AWTExceptionHandler.setGlobalHandler(new GlobalAWTExceptionHandler(broadcaster));
-		AWTExceptionHandler.register();
-	}
+    /**
+     * Set up a "global" AWT exception handler and the "local" AWT
+     * exception handler to broadcast any unhandled exceptions via
+     * the specified broadcaster.
+     */
+    public static void register(ExceptionBroadcaster broadcaster) {
+        AWTExceptionHandler.setGlobalHandler(new GlobalAWTExceptionHandler(broadcaster));
+        AWTExceptionHandler.register();
+    }
 
-	/**
-	 * Construct a "global" AWT exception handler that will broadcast
-	 * via the specified broadcaster.
-	 */
-	private GlobalAWTExceptionHandler(ExceptionBroadcaster broadcaster) {
-		super();
-		this.broadcaster = broadcaster;
-	}
-
-
-	// ********** GlobalHandler implementation **********
-
-	/**
-	 * First, restore the cursor; then broadcast the exception.
-	 * @see AWTExceptionHandler.GlobalHandler#handle(Throwable)
-	 */
-	public synchronized void handle(Throwable t) {
-		this.restoreDefaultCursor();
-		this.broadcaster.broadcast(Thread.currentThread(), t);
-	}
+    /**
+     * Construct a "global" AWT exception handler that will broadcast
+     * via the specified broadcaster.
+     */
+    private GlobalAWTExceptionHandler(ExceptionBroadcaster broadcaster) {
+        super();
+        this.broadcaster = broadcaster;
+    }
 
 
-	// ********** internal methods **********
+    // ********** GlobalHandler implementation **********
 
-	/**
-	 * Brute force approach for now: set the cursor for ALL the current
-	 * windows to the default cursor.
-	 */
-	// TODO maybe something more elegant?
-	private void restoreDefaultCursor() {
-		Cursor defaultCursor = Cursor.getDefaultCursor();
-		Frame[] frames = Frame.getFrames();
-		for (int i = frames.length; i-- > 0; ) {
-			frames[i].setCursor(defaultCursor);
-		}
-	}
+    /**
+     * First, restore the cursor; then broadcast the exception.
+     * @see AWTExceptionHandler.GlobalHandler#handle(Throwable)
+     */
+    public synchronized void handle(Throwable t) {
+        this.restoreDefaultCursor();
+        this.broadcaster.broadcast(Thread.currentThread(), t);
+    }
 
-	/**
-	 * @see Object#toString()
-	 */
-	public String toString() {
-		return ClassTools.shortClassNameForObject(this);
-	}
+
+    // ********** internal methods **********
+
+    /**
+     * Brute force approach for now: set the cursor for ALL the current
+     * windows to the default cursor.
+     */
+    // TODO maybe something more elegant?
+    private void restoreDefaultCursor() {
+        Cursor defaultCursor = Cursor.getDefaultCursor();
+        Frame[] frames = Frame.getFrames();
+        for (int i = frames.length; i-- > 0; ) {
+            frames[i].setCursor(defaultCursor);
+        }
+    }
+
+    /**
+     * @see Object#toString()
+     */
+    public String toString() {
+        return ClassTools.shortClassNameForObject(this);
+    }
 
 }

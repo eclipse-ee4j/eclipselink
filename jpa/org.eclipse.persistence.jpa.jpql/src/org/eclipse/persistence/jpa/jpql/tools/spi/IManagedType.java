@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,39 +32,39 @@ package org.eclipse.persistence.jpa.jpql.tools.spi;
 public interface IManagedType extends IExternalForm,
                                       Comparable<IManagedType> {
 
-	/**
-	 * Visits this managed type with the given visitor.
-	 *
-	 * @param visitor The visitor to visit this managed type object
-	 */
-	void accept(IManagedTypeVisitor visitor);
+    /**
+     * Visits this managed type with the given visitor.
+     *
+     * @param visitor The visitor to visit this managed type object
+     */
+    void accept(IManagedTypeVisitor visitor);
 
-	/**
-	 * Returns the {@link IMapping} with the given name.
-	 *
-	 * @param name The name of the mapping to retrieve
-	 * @return Either the {@link IMapping} or <code>null</code> if it could not be found
-	 */
-	IMapping getMappingNamed(String name);
+    /**
+     * Returns the {@link IMapping} with the given name.
+     *
+     * @param name The name of the mapping to retrieve
+     * @return Either the {@link IMapping} or <code>null</code> if it could not be found
+     */
+    IMapping getMappingNamed(String name);
 
-	/**
-	 * Retrieves the owner of this managed type.
-	 *
-	 * @return The external form holding onto the JPA managed types
-	 */
-	IManagedTypeProvider getProvider();
+    /**
+     * Retrieves the owner of this managed type.
+     *
+     * @return The external form holding onto the JPA managed types
+     */
+    IManagedTypeProvider getProvider();
 
-	/**
-	 * Returns the external representation of the class used by this managed type.
-	 *
-	 * @return The external representation of the class used by this managed type
-	 */
-	IType getType();
+    /**
+     * Returns the external representation of the class used by this managed type.
+     *
+     * @return The external representation of the class used by this managed type
+     */
+    IType getType();
 
-	/**
-	 * Returns the collection of {@link IMapping mappings} defined in this managed type.
-	 *
-	 * @return The collection of persistent fields and properties of this managed type
-	 */
-	Iterable<IMapping> mappings();
+    /**
+     * Returns the collection of {@link IMapping mappings} defined in this managed type.
+     *
+     * @return The collection of persistent fields and properties of this managed type
+     */
+    Iterable<IMapping> mappings();
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -61,7 +61,7 @@ public class XMLValidator {
         }
 
         XMLDescriptor xmlDescriptor = (XMLDescriptor)xmlContext.getSession(rootObject).getDescriptor(rootObject);
-        Document document = marshaller.objectToXML(rootObject, xmlDescriptor, false);                
+        Document document = marshaller.objectToXML(rootObject, xmlDescriptor, false);
 
         if (xmlDescriptor.getSchemaReference() == null) {
             throw XMLMarshalException.schemaReferenceNotSet(xmlDescriptor);
@@ -80,7 +80,7 @@ public class XMLValidator {
         }
 
         try {
-            // Create a new XML Record using the object's class name (not fully qualified) as the root            
+            // Create a new XML Record using the object's class name (not fully qualified) as the root
             String name = ((XMLDescriptor)xmlContext.getSession(object).getDescriptor(object)).getDefaultRootElement();
             if (name == null) {
                 String qualifiedName = object.getClass().getName();
@@ -93,7 +93,7 @@ public class XMLValidator {
             Root root = new Root();
             root.setObject(object);
             root.setLocalName(name);
-            
+
             XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
             Document doc = xmlPlatform.createDocument();
             marshaller.marshal(root, doc);

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.expressions;
 
 import org.eclipse.persistence.testing.models.employee.domain.*;
@@ -197,7 +197,7 @@ public class ExpressionOuterJoinTestSuite extends TestSuite {
         Expression address = emp.getAllowingNull("address");
         emp.join(address, address.get("city").notEqual("Ottawa"));
         Expression expression = address.get("city").equal("Ottawa");
-        
+
         ReadAllExpressionTest test = new ReadAllOuterJoinExpressionTest(Employee.class, 0);
         test.setName("OuterJoinGetOnClauseTest");
         test.setDescription("Test expression with outer joins and on clause");
@@ -212,7 +212,7 @@ public class ExpressionOuterJoinTestSuite extends TestSuite {
         Expression phone = emp.anyOfAllowingNone("phoneNumbers");
         emp.join(phone, phone.get("areaCode").notEqual("613"));
         Expression expression = phone.get("areaCode").equal("613");
-        
+
         ReadAllExpressionTest test = new ReadAllOuterJoinExpressionTest(Employee.class, 0);
         test.setName("OuterJoinAnyOfOnClauseTest");
         test.setDescription("Test expression with outer joins and on clause");
@@ -295,25 +295,25 @@ public class ExpressionOuterJoinTestSuite extends TestSuite {
 
     private void addOuterJoinIsNullTest() {
         ExpressionBuilder emp = new ExpressionBuilder();
-        Expression expression = 
+        Expression expression =
         emp.get("firstName").equal("Bob").or(emp.getAllowingNull("address").isNull()).or
-        	(emp.getAllowingNull("address").get("city").equal("Ottawa"));
- 
+            (emp.getAllowingNull("address").get("city").equal("Ottawa"));
+
         ReadAllExpressionTest test = new ReadAllOuterJoinExpressionTest(Employee.class, 2);
         test.setName("OuterJoinIsNullTest");
         test.setDescription("Test using isNull with outer joins");
         test.setExpression(expression);
 
         addTest(test);
-		
-	}
-    
+
+    }
+
     private void addOuterJoinParallelExpressionTest() {
         ExpressionBuilder emp = new ExpressionBuilder(Employee.class);
         ExpressionBuilder addr = new ExpressionBuilder(Address.class);
-        Expression expression = 
+        Expression expression =
         emp.get("firstName").equal("Bob").or(emp.getAllowingNull("address").get("city").equal("Ottawa")).or
-    	(emp.getAllowingNull("address").equal(addr).and(addr.get("city").equal("Ottawa")));
+        (emp.getAllowingNull("address").equal(addr).and(addr.get("city").equal("Ottawa")));
 
         ReadAllExpressionTest test = new ReadAllOuterJoinExpressionTest(Employee.class, 22);
         test.setName("OuterJoinParallelExpressionTest");
@@ -321,8 +321,8 @@ public class ExpressionOuterJoinTestSuite extends TestSuite {
         test.setExpression(expression);
 
         addTest(test);
-		
-	}
+
+    }
 
     public void addTests() {
         setManager(PopulationManager.getDefaultManager());

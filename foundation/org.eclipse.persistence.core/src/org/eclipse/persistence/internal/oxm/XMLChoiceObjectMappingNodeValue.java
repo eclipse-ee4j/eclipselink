@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -36,8 +36,8 @@ import org.xml.sax.Attributes;
 
 /**
  * INTERNAL:
- * <p><b>Purpose</b>: This is how the XML Choice Collection Mapping is 
- * handled when used with the TreeObjectBuilder.</p> 
+ * <p><b>Purpose</b>: This is how the XML Choice Collection Mapping is
+ * handled when used with the TreeObjectBuilder.</p>
  * @author mmacivor
  */
 
@@ -50,7 +50,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
     //of the choice elements get hit, this needs to be removed as a null value.
     private XMLChoiceObjectMappingNodeValue nullCapableNodeValue;
     private Field xmlField;
-    
+
     public XMLChoiceObjectMappingNodeValue(ChoiceObjectMapping mapping, Field xmlField) {
         this.xmlChoiceMapping = mapping;
         this.xmlField = xmlField;
@@ -60,13 +60,13 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return choiceElementNodeValue.isOwningNode(xPathFragment);
     }
-    
+
     public void initializeNodeValue() {
         Mapping xmlMapping = (Mapping) xmlChoiceMapping.getChoiceElementMappings().get(xmlField);
         choiceElementNodeValue = getNodeValueForMapping(xmlMapping);
         //check for mappings to other classes with the same field
         for(Entry<Class, Mapping> entry: ((Map<Class, Mapping>)xmlChoiceMapping.getChoiceElementMappingsByClass()).entrySet()) {
-        	Field field = (Field) xmlChoiceMapping.getClassToFieldMappings().get(entry.getKey());
+            Field field = (Field) xmlChoiceMapping.getClassToFieldMappings().get(entry.getKey());
             if(field != null && field.equals(this.xmlField)) {
                 Mapping mappingForClass = entry.getValue();
                 if(mappingForClass != xmlMapping) {
@@ -78,7 +78,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
             }
         }
     }
-    
+
     private NodeValue getNodeValueForMapping(Mapping xmlMapping) {
         if(xmlMapping instanceof BinaryDataMapping){
             return new XMLBinaryDataMappingNodeValue((BinaryDataMapping)xmlMapping);
@@ -93,7 +93,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
     public void setNullCapableNodeValue(XMLChoiceObjectMappingNodeValue nodeValue) {
         this.nullCapableNodeValue = nodeValue;
     }
-  
+
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
@@ -109,7 +109,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Class valueClass = null;
         if (value instanceof Root) {
-        	Root root = (Root)value;
+            Root root = (Root)value;
             for(CoreField next: (List<CoreField>) this.xmlChoiceMapping.getFields()) {
                 XPathFragment fragment = ((Field)next).getXPathFragment();
                 while(fragment != null && !fragment.nameIsText) {
@@ -131,7 +131,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
                 }
             }
             valueClass = root.getObject().getClass();
-        } 
+        }
         if (value != null) {
             if(valueClass == null) {
                 valueClass = value.getClass();
@@ -180,11 +180,11 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
             this.choiceElementNodeValue.endElement(xPathFragment, unmarshalRecord);
         }
     }
-    
+
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         return this.choiceElementNodeValue.startElement(xPathFragment, unmarshalRecord, atts);
     }
-    
+
     public void setXPathNode(XPathNode xPathNode) {
         super.setXPathNode(xPathNode);
         this.choiceElementNodeValue.setXPathNode(xPathNode);
@@ -193,11 +193,11 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
                 next.setXPathNode(xPathNode);
             }
         }
-    }    
+    }
 
     /**
      * The underlying choice element node value will handle attributes.
-     * 
+     *
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
         this.choiceElementNodeValue.attribute(unmarshalRecord, URI, localName, value);

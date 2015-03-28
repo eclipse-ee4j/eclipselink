@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland (Oracle) - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.profiler;
 
 import java.text.NumberFormat;
@@ -32,7 +32,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class PerformanceMonitor implements Serializable, Cloneable, SessionProfiler {
     protected static final String COUNTER = "Counter:";
     protected static final String TIMER = "Timer:";
-    
+
     transient protected AbstractSession session;
     protected Map<String, Object> operationTimings;
     protected Map<Integer, Map<String, Long>> operationStartTimesByThread;//facilitates concurrency
@@ -66,7 +66,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
     public void setDumpTime(long dumpTime) {
         this.dumpTime = dumpTime;
     }
-    
+
     public PerformanceMonitor clone() {
         try {
             return (PerformanceMonitor)super.clone();
@@ -74,7 +74,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
             throw new InternalError();
         }
     }
-    
+
     /**
      * Log the results after a set amount of time has passed.
      */
@@ -83,7 +83,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
             dumpResults();
         }
     }
-    
+
     /**
      * Log the results to the session's log (System.out).
      */

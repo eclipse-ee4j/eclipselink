@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,13 +30,13 @@ public interface XMLRecord<ABSTRACT_SESSION extends CoreAbstractSession> {
      * Nil: This is used to indicate that this field represents xsi:nil="true"
      */
     public static final XMLRecord.Nil NIL = new XMLRecord.Nil();
-    
+
     public static final CoreAttributeGroup DEFAULT_ATTRIBUTE_GROUP = new CoreAttributeGroup() {
         @Override
         public boolean containsAttributeInternal(String attribute) {
             return true;
         }
-    };    
+    };
 
     /**
      * @since EclipseLink 2.6.0

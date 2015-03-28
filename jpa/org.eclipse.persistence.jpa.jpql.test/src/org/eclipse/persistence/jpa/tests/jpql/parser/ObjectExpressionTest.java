@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,118 +19,118 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 @SuppressWarnings("nls")
 public final class ObjectExpressionTest extends JPQLParserTest {
 
-	@Test
-	public void test_JPQLQuery_01() {
+    @Test
+    public void test_JPQLQuery_01() {
 
-		String query = "SELECT OBJECT(e) FROM Employee e";
+        String query = "SELECT OBJECT(e) FROM Employee e";
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(object("e")),
-			from("Employee", "e")
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(object("e")),
+            from("Employee", "e")
+        );
 
-		testQuery(query, selectStatement);
-	}
+        testQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_02() {
+    @Test
+    public void test_JPQLQuery_02() {
 
-		String query = "SELECT OBJECT FROM Employee e";
+        String query = "SELECT OBJECT FROM Employee e";
 
-		ObjectExpressionTester objectExpression = object(nullExpression());
-		objectExpression.hasLeftParenthesis  = false;
-		objectExpression.hasRightParenthesis = false;
+        ObjectExpressionTester objectExpression = object(nullExpression());
+        objectExpression.hasLeftParenthesis  = false;
+        objectExpression.hasRightParenthesis = false;
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(objectExpression),
-			from("Employee", "e")
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(objectExpression),
+            from("Employee", "e")
+        );
 
-		testInvalidQuery(query, selectStatement);
-	}
+        testInvalidQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_03() {
+    @Test
+    public void test_JPQLQuery_03() {
 
-		String query = "SELECT OBJECT( FROM Employee e";
+        String query = "SELECT OBJECT( FROM Employee e";
 
-		ObjectExpressionTester objectExpression = object(nullExpression());
-		objectExpression.hasLeftParenthesis  = true;
-		objectExpression.hasRightParenthesis = false;
+        ObjectExpressionTester objectExpression = object(nullExpression());
+        objectExpression.hasLeftParenthesis  = true;
+        objectExpression.hasRightParenthesis = false;
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(objectExpression),
-			from("Employee", "e")
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(objectExpression),
+            from("Employee", "e")
+        );
 
-		testInvalidQuery(query, selectStatement);
-	}
+        testInvalidQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_04() {
+    @Test
+    public void test_JPQLQuery_04() {
 
-		String query = "SELECT OBJECT() FROM Employee e";
+        String query = "SELECT OBJECT() FROM Employee e";
 
-		ObjectExpressionTester objectExpression = object(nullExpression());
-		objectExpression.hasLeftParenthesis  = true;
-		objectExpression.hasRightParenthesis = true;
+        ObjectExpressionTester objectExpression = object(nullExpression());
+        objectExpression.hasLeftParenthesis  = true;
+        objectExpression.hasRightParenthesis = true;
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(object(nullExpression())),
-			from("Employee", "e")
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(object(nullExpression())),
+            from("Employee", "e")
+        );
 
-		testInvalidQuery(query, selectStatement);
-	}
+        testInvalidQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_05() {
+    @Test
+    public void test_JPQLQuery_05() {
 
-		String query = "SELECT OBJECT, e FROM Employee e";
+        String query = "SELECT OBJECT, e FROM Employee e";
 
-		ObjectExpressionTester objectExpression = object(nullExpression());
-		objectExpression.hasLeftParenthesis  = false;
-		objectExpression.hasRightParenthesis = false;
+        ObjectExpressionTester objectExpression = object(nullExpression());
+        objectExpression.hasLeftParenthesis  = false;
+        objectExpression.hasRightParenthesis = false;
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(objectExpression, variable("e")),
-			from("Employee", "e")
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(objectExpression, variable("e")),
+            from("Employee", "e")
+        );
 
-		testInvalidQuery(query, selectStatement);
-	}
+        testInvalidQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_06() {
+    @Test
+    public void test_JPQLQuery_06() {
 
-		String query = "SELECT OBJECT(, e FROM Employee e";
+        String query = "SELECT OBJECT(, e FROM Employee e";
 
-		ObjectExpressionTester objectExpression = object(nullExpression());
-		objectExpression.hasLeftParenthesis  = true;
-		objectExpression.hasRightParenthesis = false;
+        ObjectExpressionTester objectExpression = object(nullExpression());
+        objectExpression.hasLeftParenthesis  = true;
+        objectExpression.hasRightParenthesis = false;
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(objectExpression, variable("e")),
-			from("Employee", "e")
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(objectExpression, variable("e")),
+            from("Employee", "e")
+        );
 
-		testInvalidQuery(query, selectStatement);
-	}
+        testInvalidQuery(query, selectStatement);
+    }
 
-	@Test
-	public void test_JPQLQuery_07() {
+    @Test
+    public void test_JPQLQuery_07() {
 
-		String query = "SELECT OBJECT), e FROM Employee e";
+        String query = "SELECT OBJECT), e FROM Employee e";
 
-		ObjectExpressionTester objectExpression = object(nullExpression());
-		objectExpression.hasLeftParenthesis  = false;
-		objectExpression.hasRightParenthesis = true;
+        ObjectExpressionTester objectExpression = object(nullExpression());
+        objectExpression.hasLeftParenthesis  = false;
+        objectExpression.hasRightParenthesis = true;
 
-		SelectStatementTester selectStatement = selectStatement(
-			select(objectExpression, variable("e")),
-			from("Employee", "e")
-		);
+        SelectStatementTester selectStatement = selectStatement(
+            select(objectExpression, variable("e")),
+            from("Employee", "e")
+        );
 
-		testInvalidQuery(query, selectStatement);
-	}
+        testInvalidQuery(query, selectStatement);
+    }
 }

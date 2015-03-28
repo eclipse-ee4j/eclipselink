@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
+ *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
@@ -33,7 +33,7 @@ import org.junit.Test;
 
 /**
  * Simple tests to verify the functionality of single level FetchGroup usage
- * 
+ *
  * @author dclarke
  * @since EclipseLink 2.1
  */
@@ -50,7 +50,7 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
     public static junit.framework.Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("SimpleFetchGroupTests");
-        
+
         suite.addTest(new SimpleFetchGroupTests("testSetup"));
         suite.addTest(new SimpleFetchGroupTests("findNoFetchGroup"));
         suite.addTest(new SimpleFetchGroupTests("singleResultNoFetchGroup"));
@@ -73,7 +73,7 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
         }
         return suite;
     }
-    
+
     @Test
     public void findNoFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
@@ -238,7 +238,7 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
             } else {
                 // If manager_id field is null then getManager() does not trigger an sql.
                 assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            } 
+            }
         }finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -378,7 +378,7 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
     }
 
     /**
-     * 
+     *
      */
     @Test
     public void resultListEmptyFetchGroup() throws Exception {
@@ -447,7 +447,7 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
     }
 
     /**
-     * 
+     *
      */
     @Test
     public void resultListPeriodFetchGroup() throws Exception {
@@ -525,7 +525,7 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
             // Use q query since find will only use default fetch group
             //Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
             //query.setParameter("ID", minimumEmployeeId(em));
-            
+
             // Complex where clause used to avoid triggering employees and their departments:
             //   Don't include employees who are managers themselves - otherwise if first selected as employee, then as e.manager the full read will be triggered;
             //   Don't include managers with departments - because there is no fetch group on e.manager its (non-null) department will trigger an extra sql
@@ -545,7 +545,7 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
             //int nSqlBeforeGetManager = getQuerySQLTracker(em).getTotalSQLSELECTCalls();
             // manager hasn't been instantiated yet
             assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            
+
             int nSqlToAdd = 0;
             if (emp.getManager() != null) {
                 assertFetchedAttribute(emp, "manager");
@@ -553,7 +553,7 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
                 nSqlToAdd++;
             }
             assertEquals(1 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            
+
             // acuses instantioation of the whole object
             emp.getLastName();
 
@@ -604,11 +604,11 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
 
             assertFetched(emp, managerFG);
             assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            
+
             // manager (if not null) is instantiated by the fetch group, before emp.getManager call.
             emp.getManager();
             assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            
+
             // instantiates the whole object
             emp.getLastName();
 
@@ -790,7 +790,7 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
         Employee emp = minimumEmployee(em, hints);
         assertFetched(emp, fg);
         closeEntityManager(em);
-        
+
         // trigger the fetch group
         emp.getSalary();
         assertNoFetchGroup(emp);
@@ -811,7 +811,7 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
             Employee emp = minimumEmployee(em, hints);
             em.detach(emp);
             assertFetched(emp, fg);
-            
+
             // trigger the fetch group
             emp.getSalary();
             assertNoFetchGroup(emp);

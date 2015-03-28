@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     David Minsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup;
 
 import java.util.HashMap;
@@ -34,10 +34,10 @@ public class Helmet {
 
     @Id
     protected int id;
-    
+
     @Basic(fetch=FetchType.LAZY)
     protected String color;
-    
+
     @ElementCollection
     @PrivateOwned
     @CollectionTable(
@@ -77,11 +77,11 @@ public class Helmet {
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
-    
+
     public void addProperty(String propertyName, String propertyValue) {
         getProperties().put(propertyName, propertyValue);
     }
-    
+
     public void removeProperty(String propertyName) {
         getProperties().remove(propertyName);
     }

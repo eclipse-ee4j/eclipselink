@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 /**
  *  @version $Header: ChangeSummaryLoadSaveTest.java 24-jan-2007.08:33:09 dmahar Exp $
  *  @author  mfobrien
@@ -24,19 +24,19 @@ import org.eclipse.persistence.sdo.SDODataObject;
 
 
 public class ChangeSummaryLoadSaveTest extends ChangeSummaryLoadSaveTestCases {
-    protected static final String XSD_CSROOT_PATH//	
+    protected static final String XSD_CSROOT_PATH//
      = "org/eclipse/persistence/testing/sdo/model/changesummary/team_csroot.xsd";
-    protected static final String XML_CSROOT_PATH//					
+    protected static final String XML_CSROOT_PATH//
      = "org/eclipse/persistence/testing/sdo/model/changesummary/team_csroot.xml";
-    protected static final String XML_CSROOT_LOGGING_ON_PATH//					
+    protected static final String XML_CSROOT_LOGGING_ON_PATH//
      = "org/eclipse/persistence/testing/sdo/model/changesummary/team_csroot_log_on.xml";
-    protected static final String XML_CSROOT_LOGGING_OFF_PATH//					
+    protected static final String XML_CSROOT_LOGGING_OFF_PATH//
      = "org/eclipse/persistence/testing/sdo/model/changesummary/team_csroot_log_off.xml";
-    protected static final String XML_CSROOT_LOGGING_ON_DEL_PATH//					
+    protected static final String XML_CSROOT_LOGGING_ON_DEL_PATH//
      = "org/eclipse/persistence/testing/sdo/model/changesummary/team_csroot_log_on_del.xml";
-    protected static final String XML_CSROOT_LOGGING_ON_MOD_PATH//					
+    protected static final String XML_CSROOT_LOGGING_ON_MOD_PATH//
      = "org/eclipse/persistence/testing/sdo/model/changesummary/team_csroot_log_on_mod.xml";
-    protected static final String XML_CSROOT_LOGGING_ON_DEL_MOD_PATH//					
+    protected static final String XML_CSROOT_LOGGING_ON_DEL_MOD_PATH//
      = "org/eclipse/persistence/testing/sdo/model/changesummary/team_csroot_log_on_del_mod.xml";
     public static final String XML_PATH_UC1_2 = "org/eclipse/persistence/testing/sdo/model/changesummary/team_csroot_uc1-2.xml";
 
@@ -49,7 +49,7 @@ public class ChangeSummaryLoadSaveTest extends ChangeSummaryLoadSaveTestCases {
     public void setUp() {
         try {
             super.setUp();
-            
+
             // load in the schema
             String xsdString = getXSDString(XSD_CSROOT_PATH);
 
@@ -84,7 +84,7 @@ public class ChangeSummaryLoadSaveTest extends ChangeSummaryLoadSaveTestCases {
             //setChangeSummary(aRoot2);
             // temp: set logging
             //aRoot.getChangeSummary().beginLogging();
-            //aRoot2.getChangeSummary().endLogging();            
+            //aRoot2.getChangeSummary().endLogging();
             //aRoot2.getChangeSummary().beginLogging();
             //aRoot.getChangeSummary().endLogging();
             //aRoot2.getChangeSummary().endLogging();

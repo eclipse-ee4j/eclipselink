@@ -1,68 +1,68 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     
- *     05/28/2008-1.0M8 Andrei Ilitchev 
+ *
+ *     05/28/2008-1.0M8 Andrei Ilitchev
  *        - 224964: Provide support for Proxy Authentication through JPA.
  *        Added updateConnectionPolicy method to support EXCLUSIVE_CONNECTION property.
  *        Some methods, like setSessionEventListener called from deploy still used predeploy properties,
  *        that meant it was impossible to set listener through createEMF property in SE case with an agent - fixed that.
  *        Also if creating / closing the same emSetupImpl many times (24 in my case) "java.lang.OutOfMemoryError: PermGen space" resulted:
  *        partially fixed partially worked around this - see a big comment in predeploy method.
- *     12/23/2008-1.1M5 Michael O'Brien 
+ *     12/23/2008-1.1M5 Michael O'Brien
  *        - 253701: add persistenceInitializationHelper field used by undeploy() to clear the JavaSECMPInitializer
- *     10/14/2009-2.0      Michael O'Brien 
+ *     10/14/2009-2.0      Michael O'Brien
  *        - 266912: add Metamodel instance field as part of the JPA 2.0 implementation
- *     10/21/2009-2.0 Guy Pelletier 
+ *     10/21/2009-2.0 Guy Pelletier
  *       - 290567: mappedbyid support incomplete
  *     cdelahun - Bug 214534: changes to allow JMSPublishingTransportManager configuration through properties
- *     05/14/2010-2.1 Guy Pelletier 
+ *     05/14/2010-2.1 Guy Pelletier
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
- *     04/01/2011-2.3 Guy Pelletier 
+ *     04/01/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 2)
- *     06/30/2011-2.3.1 Guy Pelletier 
+ *     06/30/2011-2.3.1 Guy Pelletier
  *       - 341940: Add disable/enable allowing native queries
- *     09/20/2011-2.3.1 Guy Pelletier 
- *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF. 
+ *     09/20/2011-2.3.1 Guy Pelletier
+ *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
  *     08/01/2012-2.5 Chris Delahunt
- *       - 371950: Metadata caching 
- *     12/24/2012-2.5 Guy Pelletier 
+ *       - 371950: Metadata caching
+ *     12/24/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/08/2013-2.5 Guy Pelletier 
+ *     01/08/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/11/2013-2.5 Guy Pelletier 
+ *     01/11/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/16/2013-2.5 Guy Pelletier 
+ *     01/16/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/24/2013-2.5 Guy Pelletier 
+ *     01/24/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     02/04/2013-2.5 Guy Pelletier 
+ *     02/04/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     02/19/2013-2.5 Guy Pelletier 
+ *     02/19/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     08/11/2014-2.5 Rick Curtis 
+ *     08/11/2014-2.5 Rick Curtis
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  *     11/20/2014-2.5 Rick Curtis
  *       - 452187: Support multiple ClassLoaders to load properties.
  *     01/05/2015 Rick Curtis
  *       - 455683: Automatically detect target server
-  *     01/13/2015 - Rick Curtis  
+  *     01/13/2015 - Rick Curtis
  *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
- *     02/19/2015 - Rick Curtis  
+ *     02/19/2015 - Rick Curtis
  *       - 458877 : Add national character support
- *     03/04/2015 - Will Dazey 
+ *     03/04/2015 - Will Dazey
  *       - 460862 : Added support for JTA schema generation without JTA-DS
  *     03/23/2015 - Rick Curtis
  *       - 462888 : SessionCustomizer instance based configuration
- *****************************************************************************/  
+ *****************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
@@ -283,7 +283,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * EntityManagerSetupImpl, MetadataProcessor and MetadataProject
      * play the role of director, builder and product respectively.
      * See processORMetadata which is the factory method.
-     * 
+     *
      */
 
     // this name should uniquely identify the persistence unit
@@ -315,36 +315,36 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected ConcurrencyManager deployLock = new ConcurrencyManager();
 
     protected boolean requiresConnection;
-    
+
     // 266912: Criteria API and Metamodel API (See Ch 5 of the JPA 2.0 Specification)
-    /** Reference to the Metamodel for this deployment and session. 
+    /** Reference to the Metamodel for this deployment and session.
      * Please use the accessor and not the instance variable directly*/
-    private Metamodel metaModel;     
-    
+    private Metamodel metaModel;
+
     protected List<StructConverter> structConverters = null;
     // factoryCount==0; session==null
     public static final String STATE_INITIAL        = "Initial";
-    
+
     // session != null
     public static final String STATE_PREDEPLOYED    = "Predeployed";
-    
+
     // factoryCount>0; session != null; session stored in SessionManager
     // for compositeMember factoryCount is always 0; session is never stored in SessionBroker
     // the session has not yet connected for the first time or failed to connect for the first time
     public static final String STATE_HALF_DEPLOYED  = "HalfDeployed";
-    
+
     // factoryCount>0; session != null; session stored in SessionManager
     // for compositeMember factoryCount is always 0; session is never stored in SessionBroker
     // the session has connected for the first time
     public static final String STATE_DEPLOYED       = "Deployed";
-    
+
     // factoryCount==0; session==null
     public static final String STATE_PREDEPLOY_FAILED="PredeployFailed";
-    
+
     // factoryCount>0; session != null
     // for compositeMember factoryCount is always 0
     public static final String STATE_DEPLOY_FAILED  = "DeployFailed";
-    
+
     // factoryCount==0; session==null
     public static final String STATE_UNDEPLOYED     = "Undeployed";
 
@@ -371,10 +371,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      *           |                            ^
      *           V                            |
      *         DeployFailed -------------------
-     *         
+     *
      */
-    
-    
+
+
     public static final String ERROR_LOADING_XML_FILE = "error_loading_xml_file";
     public static final String EXCEPTION_LOADING_ENTITY_CLASS = "exception_loading_entity_class";
 
@@ -392,7 +392,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         PersistenceUnitProperties.NOSQL_USER,
         PersistenceUnitProperties.JDBC_CONNECTOR
     };
-    
+
     /*
      * Composite, not null only if it's a composite member.
      */
@@ -402,17 +402,17 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Composite members, not null only if it's a composite.
      */
     protected Set<EntityManagerSetupImpl> compositeMemberEmSetupImpls;
-    
+
     /*
      * In HalfPredeployedCompositeMember predeploy method called several times,
      * each call uses mode, then updating it before returning.
      * So mode value could be viewed as a substate of HalfPredeployedCompositeMember state.
      * The mode is required for staging of processing OR metadata for composite members:
      * each processing stage should be completed for ALL composite members before
-     * any one of then could proceed to the next processing stage. 
+     * any one of then could proceed to the next processing stage.
      */
     PersistenceUnitProcessor.Mode mode;
-    
+
     boolean throwExceptionOnFail;
     boolean weaveChangeTracking;
     boolean weaveLazy;
@@ -420,7 +420,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     boolean weaveFetchGroups;
     boolean weaveInternal;
     boolean weaveRest;
-    
+
     /**
      * Used to indicate that an EntityManagerFactoryImpl based on this
      * EntityManagerSetupImpl has been refreshed.  This means this EntityManagerSetupImpl
@@ -431,7 +431,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Used to distinguish the various DDL options
      */
     protected enum TableCreationType {NONE, CREATE, DROP, DROP_AND_CREATE, EXTEND};
-    
+
     /*
      * PersistenceException responsible for the invalid state.
      */
@@ -442,11 +442,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         this.sessionName = sessionName;
         this.requiresConnection = true;
     }
-    
+
     public EntityManagerSetupImpl() {
         this("", "");
     }
-    
+
     protected static String addFileSeperator(String appLocation) {
         int strLength = appLocation.length();
         if (appLocation.substring(strLength -1, strLength).equals(File.separator)) {
@@ -455,11 +455,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             return appLocation + File.separator;
         }
     }
-    
+
     /*
      * Return session name if specified.
      * Otherwise build one from the connection properties names and values.
-     * Note that specifying value "" in properties causes 
+     * Note that specifying value "" in properties causes
      * the property value specified in PersistenceUnitInfo to be ignored.
      * Never returns null.
      */
@@ -486,7 +486,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             if (applicationId != null) {
                 return applicationId + persistenceUnitName;
             }
-            
+
             return persistenceUnitName;
         } else {
             // In case no SESSION_NAME specified (or empty String) - build one
@@ -494,7 +494,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             if (applicationId != null) {
                 return applicationId + persistenceUnitName + buildSessionNameSuffixFromConnectionProperties(properties);
             }
-            
+
             return persistenceUnitName + buildSessionNameSuffixFromConnectionProperties(properties);
         }
     }
@@ -522,7 +522,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     } else if (value instanceof PersistenceUnitTransactionType) {
                         strValue = value.toString();
                     } else {
-                        strValue = Integer.toString(System.identityHashCode(value));                        
+                        strValue = Integer.toString(System.identityHashCode(value));
                     }
                 }
                 // don't set an empty String
@@ -533,7 +533,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
         return suffix.toString();
     }
-    
+
     /*
      * Should only be called when emSetupImpl created during SE initialization is set into a new EMF.
      * emSetupImpl must be in PREDEPLOYED state.
@@ -545,7 +545,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             session.setName(newSessionName);
         }
     }
-    
+
     /**
      * This method can be used to ensure the session represented by emSetupImpl
      * is removed from the SessionManager.
@@ -563,24 +563,24 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
+
     /**
      * Deploy a persistence session and return an EntityManagerFactory.
-     * 
+     *
      * Deployment takes a session that was partially created in the predeploy call and makes it whole.
-     * 
+     *
      * This means doing any configuration that requires the real class definitions for the entities.  In
      * the predeploy phase we were in a stage where we were not let allowed to load the real classes.
-     * 
+     *
      * Deploy could be called several times - but only the first call does the actual deploying -
      * additional calls allow to update session properties (in case the session is not connected).
-     * 
+     *
      * Note that there is no need to synchronize deploy method - it doesn't alter factoryCount
      * and while deploy is executed no other method can alter the current state
      * (predeploy call would just increment factoryCount; undeploy call would not drop factoryCount to 0).
      * However precautions should be taken to handle concurrent calls to deploy, because those may
      * alter the current state or connect the session.
-     * 
+     *
      * @param realClassLoader The class loader that was used to load the entity classes. This loader
      *               will be maintained for the lifespan of the loaded classes.
      * @param additionalProperties added to persistence unit properties for updateServerSession overriding existing properties.
@@ -596,15 +596,15 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
         // state is PREDEPLOYED or DEPLOYED
         this.session.log(SessionLog.FINEST, SessionLog.JPA, "deploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), this.session.getName(), this.state, this.factoryCount});
-        
+
         ClassLoader classLoaderToUse = realClassLoader;
-        
+
         if (additionalProperties.containsKey(PersistenceUnitProperties.CLASSLOADER)) {
             classLoaderToUse = (ClassLoader) additionalProperties.get(PersistenceUnitProperties.CLASSLOADER);
         } else if ((this.processor != null) && (this.processor.getProject() != null) && (this.processor.getProject().hasVirtualClasses()) && (this.state == STATE_PREDEPLOYED) && (!(classLoaderToUse instanceof DynamicClassLoader))) {
             classLoaderToUse = new DynamicClassLoader(classLoaderToUse);
         }
-        
+
         // indicates whether session has failed to connect, determines whether HALF_DEPLOYED state should be kept in case of exception.
         boolean isLockAcquired = false;
         try {
@@ -635,7 +635,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             if (classLoaderToUse instanceof DynamicClassLoader){
                                 this.processor.createRestInterfaces();
                             }
-                            
+
                             this.processor.addEntityListeners();
 
                             if (this.projectCacheAccessor != null) {
@@ -667,12 +667,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             }
 
                             //process Descriptor customizers:
-                            processDescriptorsFromCachedProject(classLoaderToUse);     
+                            processDescriptorsFromCachedProject(classLoaderToUse);
                         }
                     }
                     finishProcessingDescriptorEvents(classLoaderToUse);
                     this.structConverters = getStructConverters(classLoaderToUse);
-                    
+
                     updateRemote(deployProperties, classLoaderToUse);
                     initSession();
 
@@ -688,7 +688,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     this.deployLock.release();
                     isLockAcquired = false;
                     if (this.state == STATE_DEPLOY_FAILED) {
-                        // while this thread waited in STATE_PREDEPLOYED another thread attempted to deploy and failed. 
+                        // while this thread waited in STATE_PREDEPLOYED another thread attempted to deploy and failed.
                         // Rethrow the cache PersistenceException, which caused STATE_DEPLOYED_FAILED.
                         throw persistenceException;
                     }
@@ -704,7 +704,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     }
                     if (!((DatabaseSessionImpl)this.session).isLoggedIn()) {
                         if (this.state == STATE_DEPLOY_FAILED) {
-                            // while this thread waited in STATE_HALF_DEPLOYED another thread attempted to connect the session and failed. 
+                            // while this thread waited in STATE_HALF_DEPLOYED another thread attempted to connect the session and failed.
                             // Rethrow the cache PersistenceException, which caused STATE_DEPLOYED_FAILED.
                             throw persistenceException;
                         }
@@ -712,11 +712,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         updateSession(deployProperties, classLoaderToUse);
                         if (isValidationOnly(deployProperties, false)) {
                             /**
-                             * for 324213 we could add a session.loginAndDetectDatasource() call 
+                             * for 324213 we could add a session.loginAndDetectDatasource() call
                              * before calling initializeDescriptors when validation-only is True
-                             * to avoid a native sequence exception on a generic DatabasePlatform 
+                             * to avoid a native sequence exception on a generic DatabasePlatform
                              * by auto-detecting the correct DB platform.
-                             * However, this would introduce a DB login when validation is on 
+                             * However, this would introduce a DB login when validation is on
                              * - in opposition to the functionality of the property (to only validate)
                              */
                             if (this.state == STATE_HALF_DEPLOYED) {
@@ -734,12 +734,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                 }
                                 final Platform platform = getDatabaseSession().getDatasourcePlatform();
                                 PropertiesUtils.set(platform, PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, (String) deployProperties.get(PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES));
-                                
+
                                 // Make JTA integration throw JPA exceptions.
                                 if (this.session.hasExternalTransactionController()) {
                                     if (this.session.getExternalTransactionController().getExceptionHandler() == null) {
                                         this.session.getExternalTransactionController().setExceptionHandler(new ExceptionHandler() {
-                                            
+
                                             public Object handleException(RuntimeException exception) {
                                                 if (exception instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
                                                     throw new OptimisticLockException(exception);
@@ -749,7 +749,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                                     throw exception;
                                                 }
                                             }
-                                            
+
                                         });
                                     }
                                 }
@@ -758,7 +758,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                 if (this.state == STATE_HALF_DEPLOYED) {
                                     if (this.session.isConnected()) {
                                         // session is connected, but postConnect has failed.
-                                        // Likely this is caused by failure in initializeDescriptors: 
+                                        // Likely this is caused by failure in initializeDescriptors:
                                         // either descriptor exception or by invalid named jpql query.
                                         // Cannot recover from that - the user has to fix the persistence unit and redeploy it.
                                         try {
@@ -774,9 +774,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             if (!this.isSessionLoadedFromSessionsXML) {
                                 addStructConverters();
                             }
-                            
-                            // Generate the DDL using the correct connection. 
-                            writeDDL(deployProperties, getDatabaseSession(deployProperties), classLoaderToUse);    
+
+                            // Generate the DDL using the correct connection.
+                            writeDDL(deployProperties, getDatabaseSession(deployProperties), classLoaderToUse);
                         }
                     }
                     updateTunerPostDeploy(deployProperties, classLoaderToUse);
@@ -794,8 +794,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             if (this.weaver != null) {
                 this.weaver.clear();
                 this.weaver = null;
-            }            
-            
+            }
+
             return this.session;
         } catch (Throwable exception) {
             // before releasing deployLock switch to the correct state
@@ -830,8 +830,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * INTERNAL:
      * This method is used to resolve Descriptor Customizers that might have been stored in the project
-     * for JPA project caching.  
-     * 
+     * for JPA project caching.
+     *
      * @param realClassLoader
      * @throws ClassNotFoundException
      * @throws PrivilegedActionException
@@ -843,7 +843,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             //process customizers:
             if (descriptor.getDescriptorCustomizerClassName() != null) {
                 Class listenerClass = this.findClass(descriptor.getDescriptorCustomizerClassName(), realClassLoader);
-                DescriptorCustomizer customizer = (DescriptorCustomizer)this.buildObjectForClass(listenerClass, DescriptorCustomizer.class);     
+                DescriptorCustomizer customizer = (DescriptorCustomizer)this.buildObjectForClass(listenerClass, DescriptorCustomizer.class);
                 try {
                     customizer.customize(descriptor);
                 } catch (Exception e) {
@@ -856,7 +856,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * INTERNAL:
      * This method is used to resolve Descriptor Events processed earlier into EventHolders that now need to be
-     * used to create the DescriptorEventListeners and added to the DescriptorEventManager 
+     * used to create the DescriptorEventListeners and added to the DescriptorEventManager
      *
      */
     private void finishProcessingDescriptorEvents(ClassLoader realClassLoader) {
@@ -901,7 +901,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
         session.addDescriptors(project);
     }
-    
+
     /**
      * Put the given session into the session manager so it can be looked up later
      */
@@ -950,7 +950,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         for (Iterator iterator = project.getDescriptors().values().iterator(); iterator.hasNext();){
             //bug:4406101  changed class cast to base class, which is used in projects generated from 904 xml
             ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
-            
+
             if(descriptor.getCMPPolicy() == null) {
                 descriptor.setCMPPolicy(new CMP3Policy());
             }
@@ -969,7 +969,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * Updates the EclipseLink ServerPlatform class for use with this platform.
      * @return true if the ServerPlatform has changed.
-     */  
+     */
     protected boolean updateServerPlatform(Map m, ClassLoader loader) {
         String serverPlatformClassName =
             PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.TARGET_SERVER, m, session);
@@ -1020,17 +1020,17 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                  throw EntityManagerSetupException.failedToInstantiateServerPlatform(serverPlatformClassName, PersistenceUnitProperties.TARGET_SERVER, ex);
              }
          }
- 
+
         if (serverPlatform != null){
             getDatabaseSession().setServerPlatform(serverPlatform);
             return true;
-        }    
+        }
         return false;
     }
 
     /**
      * Checks for partitioning properties.
-     */  
+     */
     protected void updatePartitioning(Map m, ClassLoader loader) {
         // Partitioning
         String partitioning = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PARTITIONING, m, this.session);
@@ -1041,7 +1041,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
             this.session.setPartitioningPolicy(partitioningPolicy);
         }
-        
+
         String callbackClassName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PARTITIONING_CALLBACK, m, this.session);
         if (callbackClassName != null) {
             Class cls = findClassForProperty(callbackClassName, PersistenceUnitProperties.PARTITIONING_CALLBACK, loader);
@@ -1058,8 +1058,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
     /**
      * Checks for partitioning properties.
-     */  
-    protected void updateRemote(Map m, ClassLoader loader) {        
+     */
+    protected void updateRemote(Map m, ClassLoader loader) {
         String protocol = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.REMOTE_PROTOCOL, m, this.session);
         String serverName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.REMOTE_SERVER_NAME, m, this.session);
         if (serverName == null) {
@@ -1074,10 +1074,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     try {
                         connection = new RMIConnection(((RMIServerSessionManager)Naming.lookup(url)).createRemoteSessionController());
                     } catch (Exception exception) {
-                        throw ValidationException.invalidValueForProperty(url, PersistenceUnitProperties.REMOTE_URL, exception);                    
+                        throw ValidationException.invalidValueForProperty(url, PersistenceUnitProperties.REMOTE_URL, exception);
                     }
                 } else {
-                    Class cls = findClassForProperty(protocol, PersistenceUnitProperties.REMOTE_PROTOCOL, loader);                
+                    Class cls = findClassForProperty(protocol, PersistenceUnitProperties.REMOTE_PROTOCOL, loader);
                     try {
                         Constructor constructor = cls.getConstructor();
                         connection = (RemoteConnection)constructor.newInstance();
@@ -1132,7 +1132,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
     /**
      * Checks for database events listener properties.
-     */  
+     */
     protected void updateDatabaseEventListener(Map m, ClassLoader loader) {
         String listenerClassName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.DATABASE_EVENT_LISTENER, m, this.session);
         if (listenerClassName != null) {
@@ -1150,9 +1150,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             getDatabaseSession().setDatabaseEventListener(listener);
         }
     }
-    
+
     /**
-     * Update loggers and settings for the singleton logger and the session logger. 
+     * Update loggers and settings for the singleton logger and the session logger.
      * @param persistenceProperties the properties map
      * @param serverPlatformChanged the boolean that denotes a serverPlatform change in the session.
      */
@@ -1161,7 +1161,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         // The logger property has a higher priority to ServerPlatform.getServerLog().
         String loggerClassName = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.LOGGING_LOGGER, persistenceProperties, session);
 
-        // The sessionLog instance should be different from the singletonLog because they have 
+        // The sessionLog instance should be different from the singletonLog because they have
         // different state.
         SessionLog singletonLog = null, sessionLog = null;
         if (loggerClassName != null) {
@@ -1185,7 +1185,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             singletonLog = serverPlatform.getServerLog();
             sessionLog = serverPlatform.getServerLog();
         }
-        
+
         // Don't change default loggers if the new loggers have not been created.
         if (singletonLog != null && sessionLog != null) {
             AbstractSessionLog.setLog(singletonLog);
@@ -1205,7 +1205,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             FileOutputStream fos = new FileOutputStream(loggingFileString);
                            ((AbstractSessionLog)sessionLog).setWriter(fos);
                         } else {
-                            FileWriter fw = new FileWriter(loggingFileString); 
+                            FileWriter fw = new FileWriter(loggingFileString);
                             sessionLog.setWriter(fw);
                         }
                     }
@@ -1217,7 +1217,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
+
     /**
      * Check for the PROFILER persistence or system property and set the Session's profiler.
      * This can also set the QueryMonitor.
@@ -1250,11 +1250,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 session.setProfiler(new PerformanceMonitor());
                 return;
             }
-            
+
             if (newProfilerClassName.equals(ProfilerType.DMSProfiler)) {
                 newProfilerClassName = ProfilerType.DMSProfilerClassName;
             }
-            
+
             String originalProfilerClassNamer = null;
             if (session.getProfiler() != null) {
                 originalProfilerClassNamer = session.getProfiler().getClass().getName();
@@ -1262,7 +1262,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     return;
                 }
             }
-            
+
             // New profiler - create the new instance and set it.
             try {
                 Class newProfilerClass = findClassForProperty(newProfilerClassName, PersistenceUnitProperties.PROFILER, loader);
@@ -1283,8 +1283,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
-    
+
+
     protected static Class findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             return AccessController.doPrivileged(new PrivilegedClassForName(className, true, loader));
@@ -1292,7 +1292,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, loader);
         }
     }
-    
+
     protected static Class findClassForProperty(String className, String propertyName, ClassLoader loader) {
         ClassLoader eclipselinkLoader = EntityManagerSetupImpl.class.getClassLoader();
         boolean multipleLoaders = eclipselinkLoader != loader;
@@ -1319,9 +1319,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
 
     /**
-     * Internal: 
+     * Internal:
      * Returns a list of StructConverter instances from a list of StructConverter names stored within the project.
-     * 
+     *
      * @param realClassLoader
      * @return
      */
@@ -1337,7 +1337,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 } catch (ClassNotFoundException exception) {
                     throw ValidationException.unableToLoadClass(converter, exception);
                 }
-                
+
                 try {
                     structConverters.add((StructConverter)this.buildObjectForClass(clazz, clazz));
                 } catch (PrivilegedActionException e) {
@@ -1356,18 +1356,18 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (hasConfigProperty(SCHEMA_GENERATION_DATABASE_ACTION, m)) {
             return getConfigPropertyAsString(SCHEMA_GENERATION_DATABASE_ACTION, m) != null && ! getConfigPropertyAsString(SCHEMA_GENERATION_DATABASE_ACTION, m).equals(SCHEMA_GENERATION_NONE_ACTION);
         }
-        
+
         return false;
     }
-    
+
     protected boolean hasSchemaScriptsGeneration(Map m) {
         if (hasConfigProperty(SCHEMA_GENERATION_SCRIPTS_ACTION, m)) {
             return getConfigPropertyAsString(SCHEMA_GENERATION_SCRIPTS_ACTION, m) != null && ! getConfigPropertyAsString(SCHEMA_GENERATION_SCRIPTS_ACTION, m).equals(SCHEMA_GENERATION_NONE_ACTION);
         }
-        
+
         return false;
     }
-    
+
     public AbstractSession getSession() {
         return session;
     }
@@ -1375,21 +1375,21 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     public DatabaseSessionImpl getDatabaseSession() {
         return (DatabaseSessionImpl)session;
     }
-    
+
     /**
      * We may be provided a connection via the properties to use. Check for
-     * one and build a database session around it. Otherwise return the pu 
+     * one and build a database session around it. Otherwise return the pu
      * database session.
      */
     public DatabaseSessionImpl getDatabaseSession(Map props) {
         DatabaseSessionImpl databaseSession = getDatabaseSession();
         Object connection = getConfigProperty(PersistenceUnitProperties.SCHEMA_GENERATION_CONNECTION, props);
-        
+
         if (connection == null) {
             return databaseSession;
         } else {
-            // A connection was provided. Build a database session using that 
-            // connection and use the same log level set on the original 
+            // A connection was provided. Build a database session using that
+            // connection and use the same log level set on the original
             // database session.
             DatabaseSessionImpl newDatabaseSession = new DatabaseSessionImpl();
             newDatabaseSession.setAccessor(new DatabaseAccessor(connection));
@@ -1398,7 +1398,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             return newDatabaseSession;
         }
     }
-    
+
     /**
      * This method will be used to validate the specified class and return it's instance.
      */
@@ -1413,13 +1413,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             return null;
         }
     }
-    
+
     protected void updateDescriptorCacheSettings(Map m, ClassLoader loader) {
         String queryCache = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.QUERY_CACHE, m, session);
         if ((queryCache != null) && queryCache.equalsIgnoreCase("true")) {
             session.getProject().setDefaultQueryResultsCachePolicy(new QueryResultsCachePolicy());
         }
-        
+
         Map typeMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CACHE_TYPE_, m, session);
         Map sizeMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CACHE_SIZE_, m, session);
         Map sharedMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CACHE_SHARED_, m, session);
@@ -1433,7 +1433,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             Class defaultType = findClassForProperty(defaultTypeName, PersistenceUnitProperties.CACHE_TYPE_DEFAULT, getClass().getClassLoader());
             session.getProject().setDefaultIdentityMapClass(defaultType);
         }
-        
+
         String value = null;
         try {
             String defaultSizeString = (String)sizeMap.remove(PersistenceUnitProperties.DEFAULT);
@@ -1442,25 +1442,25 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 int defaultSize = Integer.parseInt(defaultSizeString);
                 session.getProject().setDefaultIdentityMapSize(defaultSize);
             }
-            
+
             String defaultSharedString = (String)sharedMap.remove(PersistenceUnitProperties.DEFAULT);
             if (defaultSharedString != null) {
                 boolean defaultShared = Boolean.parseBoolean(defaultSharedString);
                 session.getProject().setDefaultIsIsolated(!defaultShared);
             }
-            
+
             Iterator it = session.getDescriptors().values().iterator();
             while (it.hasNext() && (!typeMap.isEmpty() || !sizeMap.isEmpty() || !sharedMap.isEmpty())) {
                 ClassDescriptor descriptor = (ClassDescriptor)it.next();
-                
+
                 if (descriptor.isDescriptorTypeAggregate()) {
                     continue;
                 }
-                
+
                 String entityName = descriptor.getAlias();
                 String className = descriptor.getJavaClass().getName();
                 String name;
-                
+
                 name = entityName;
                 String typeName = (String)typeMap.remove(name);
                 if( typeName == null) {
@@ -1471,7 +1471,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     Class type = findClassForProperty(typeName, PersistenceUnitProperties.CACHE_TYPE_ + name, getClass().getClassLoader());
                     descriptor.setIdentityMapClass(type);
                 }
-    
+
                 name = entityName;
                 String sizeString = (String)sizeMap.remove(name);
                 if (sizeString == null) {
@@ -1483,7 +1483,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     int size = Integer.parseInt(sizeString);
                     descriptor.setIdentityMapSize(size);
                 }
-    
+
                 name = entityName;
                 String sharedString = (String)sharedMap.remove(name);
                 if (sharedString == null) {
@@ -1499,7 +1499,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             this.session.handleException(ValidationException.invalidValueForProperty(value, PersistenceUnitProperties.CACHE_SIZE_, exception));
         }
     }
-    
+
     /**
      * Process all properties under "eclipselink.connection-pool.".
      * This allows for named connection pools.
@@ -1529,7 +1529,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     // By default there is no connection pool, so if the default, create a new one.
                     if ((pool == null) || (pool == serverSession.getDefaultConnectionPool())) {
                         if (this.session.getDatasourceLogin().shouldUseExternalConnectionPooling()) {
-                            pool = new ExternalConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);                            
+                            pool = new ExternalConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);
                         } else {
                             pool = new ConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);
                         }
@@ -1539,7 +1539,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     pool = getDatabaseSession().getSequencingControl().getConnectionPool();
                     if (pool == null) {
                         if (this.session.getDatasourceLogin().shouldUseExternalConnectionPooling()) {
-                            pool = new ExternalConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);                            
+                            pool = new ExternalConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);
                         } else {
                             pool = new ConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);
                         }
@@ -1549,7 +1549,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     pool = serverSession.getConnectionPool(poolName);
                     if (pool == null) {
                         if (this.session.getDatasourceLogin().shouldUseExternalConnectionPooling()) {
-                            pool = new ExternalConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);                            
+                            pool = new ExternalConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);
                         } else {
                             pool = new ConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);
                         }
@@ -1606,7 +1606,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
+
     protected void updateConnectionPolicy(ServerSession serverSession, Map m) {
         String isLazyString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY, m, session);
         if(isLazyString != null) {
@@ -1636,16 +1636,16 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * Perform any steps necessary prior to actual deployment.  This includes any steps in the session
      * creation that do not require the real loaded domain classes.
-     * 
+     *
      * The first call to this method caches persistenceUnitInfo which is reused in the following calls.
-     * 
-     * Note that in JSE case factoryCount is NOT incremented on the very first call 
+     *
+     * Note that in JSE case factoryCount is NOT incremented on the very first call
      * (by JavaSECMPInitializer.callPredeploy, typically in preMain).
      * That provides 1 to 1 correspondence between factoryCount and the number of open factories.
-     * 
+     *
      * In case factoryCount > 0 the method just increments factoryCount.
      * factory == 0 triggers creation of a new session.
-     * 
+     *
      * This method and undeploy - the only methods altering factoryCount - should be synchronized.
      *
      * @return A transformer (which may be null) that should be plugged into the proper
@@ -1677,7 +1677,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         } else if (state == STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER) {
             session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state + " " + mode, factoryCount});
         }
-        
+
         // state is INITIAL or PREDEPLOY_FAILED or STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER
         try {
             // properties not used in STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER
@@ -1692,12 +1692,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 // Translate old properties.
                 // This should be done before using properties (i.e. ServerPlatform).
                 translateOldProperties(predeployProperties, null);
-                
+
                 String sessionsXMLStr = (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML);
                 if (sessionsXMLStr != null) {
                     isSessionLoadedFromSessionsXML = true;
                 }
-                
+
                 // Create session (it needs to be done before initializing ServerPlatform and logging).
                 // If a sessions-xml is used this will get replaced later, but is required for logging.
                 isComposite = isComposite(persistenceUnitInfo);
@@ -1710,13 +1710,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 } else {
                     session = new ServerSession(new Project(new DatabaseLogin()));
 
-                    //set the listener to process RCM metadata refresh commands 
+                    //set the listener to process RCM metadata refresh commands
                     session.setRefreshMetadataListener(this);
                 }
                 session.setName(this.sessionName);
                 updateTunerPreDeploy(predeployProperties, classLoaderToUse);
                 updateTolerateInvalidJPQL(predeployProperties);
-                
+
                 if (this.compositeEmSetupImpl == null) {
                     // session name and ServerPlatform must be set prior to setting the loggers.
                     if (this.staticWeaveInfo == null) {
@@ -1724,12 +1724,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         // Update loggers and settings for the singleton logger and the session logger.
                         updateLoggers(predeployProperties, true, classLoaderToUse);
                         // Get the temporary classLoader based on the platform
-                        
+
                         //Update performance profiler
                         updateProfiler(predeployProperties, classLoaderToUse);
                     } else {
                         // predeploy is used for static weaving
-                        Writer writer = this.staticWeaveInfo.getLogWriter(); 
+                        Writer writer = this.staticWeaveInfo.getLogWriter();
                         if (writer != null) {
                             ((DefaultSessionLog)session.getSessionLog()).setWriter(writer);
                         }
@@ -1740,10 +1740,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     session.setSessionLog(this.compositeEmSetupImpl.session.getSessionLog());
                     session.setProfiler(this.compositeEmSetupImpl.session.getProfiler());
                 }
-                
+
                 // Cannot start logging until session and log and initialized, so log start of predeploy here.
                 session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
-    
+
                 //Project Cache accessor processing
                 updateProjectCache(predeployProperties, classLoaderToUse);
 
@@ -1793,7 +1793,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "loading_session_xml", sessionsXMLStr, tempSessionName);
                     if (tempSessionName == null) {
                         throw EntityManagerSetupException.sessionNameNeedBeSpecified(persistenceUnitInfo.getPersistenceUnitName(), sessionsXMLStr);
-                    }                
+                    }
                     XMLSessionConfigLoader xmlLoader = new XMLSessionConfigLoader(sessionsXMLStr);
                     // Do not register the session with the SessionManager at this point, create temporary session using a local SessionManager and private class loader.
                     // This allows for the project to be accessed without loading any of the classes to allow weaving.
@@ -1804,7 +1804,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     if (tempSession == null) {
                         throw ValidationException.noSessionFound(sessionName, sessionsXMLStr);
                     }
-                    // Currently the session must be either a ServerSession or a SessionBroker, cannot be just a DatabaseSessionImpl. 
+                    // Currently the session must be either a ServerSession or a SessionBroker, cannot be just a DatabaseSessionImpl.
                     if (tempSession.isServerSession() || tempSession.isSessionBroker()) {
                        session = (DatabaseSessionImpl) tempSession;
                        if (tempSessionName != sessionName) {
@@ -1824,10 +1824,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 } else {
                     classLoaderToUse = persistenceUnitInfo.getClassLoader();
                 }
-                
+
                 warnOldProperties(predeployProperties, session);
                 session.getPlatform().setConversionManager(new JPAConversionManager());
-                
+
                 if (this.staticWeaveInfo == null) {
                     if (!isComposite) {
                         PersistenceUnitTransactionType transactionType=null;
@@ -1838,22 +1838,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         } else if (persistenceUnitInfo!=null){
                             transactionType=persistenceUnitInfo.getTransactionType();
                         }
-                        
+
                         if (!isValidationOnly(predeployProperties, false) && persistenceUnitInfo != null && transactionType == PersistenceUnitTransactionType.JTA) {
                             if (predeployProperties.get(PersistenceUnitProperties.JTA_DATASOURCE) == null && persistenceUnitInfo.getJtaDataSource() == null) {
-                                if (predeployProperties.get(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME) == null || 
-                                        predeployProperties.get(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION) == null || 
+                                if (predeployProperties.get(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME) == null ||
+                                        predeployProperties.get(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION) == null ||
                                         predeployProperties.get(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION) == null) {
                                     throw EntityManagerSetupException.jtaPersistenceUnitInfoMissingJtaDataSource(persistenceUnitInfo.getPersistenceUnitName());
                                 }
                             }
                         }
                     }
-                    
+
                     // this flag is used to disable work done as a result of the LAZY hint on OneToOne and ManyToOne mappings
                     if(state == STATE_INITIAL) {
                         if (compositeEmSetupImpl == null) {
-                            if(null == enableWeaving) {                    
+                            if(null == enableWeaving) {
                                 enableWeaving = Boolean.TRUE;
                             }
                             isWeavingStatic = false;
@@ -1870,7 +1870,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             if (!compositeEmSetupImpl.enableWeaving) {
                                 enableWeaving = Boolean.FALSE;
                             } else {
-                                if(null == enableWeaving) {                    
+                                if(null == enableWeaving) {
                                     enableWeaving = Boolean.TRUE;
                                 }
                                 String weaving = getConfigPropertyAsString(PersistenceUnitProperties.WEAVING, predeployProperties);
@@ -1882,19 +1882,19 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             isWeavingStatic = compositeEmSetupImpl.isWeavingStatic;
                         }
                     }
-                
+
                     if (compositeEmSetupImpl == null) {
                         throwExceptionOnFail = "true".equalsIgnoreCase(
                                 EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.THROW_EXCEPTIONS, predeployProperties, "true", session));
                     } else {
                         // composite member
-                        throwExceptionOnFail = compositeEmSetupImpl.throwExceptionOnFail; 
+                        throwExceptionOnFail = compositeEmSetupImpl.throwExceptionOnFail;
                     }
                 } else {
                     // predeploy is used for static weaving
                     enableWeaving = Boolean.TRUE;
                 }
-                
+
                 weaveChangeTracking = false;
                 weaveLazy = false;
                 weaveEager = false;
@@ -1926,24 +1926,24 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         }
                         compositeProcessor = compositeEmSetupImpl.processor;
                     }
-                    
+
                     if (mode == PersistenceUnitProcessor.Mode.ALL || mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
                         boolean usesMultitenantSharedEmf = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, predeployProperties, "true", session));
                         boolean usesMultitenantSharedCache = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, predeployProperties, "false", session));
-    
+
                         // Create an instance of MetadataProcessor for specified persistence unit info
                         processor = new MetadataProcessor(persistenceUnitInfo, session, classLoaderToUse, weaveLazy, weaveEager, weaveFetchGroups, usesMultitenantSharedEmf, usesMultitenantSharedCache, predeployProperties, compositeProcessor);
-                        
+
                         //need to use the real classloader to create the repository class
-                        updateMetadataRepository(predeployProperties, classLoaderToUse); 
-        
+                        updateMetadataRepository(predeployProperties, classLoaderToUse);
+
                         //bug:299926 - Case insensitive table / column matching with native SQL queries
                         EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);
                     }
-                    
+
                     // Process the Object/relational metadata from XML and annotations.
                     PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail, mode);
-                    
+
                     if (mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
                         mode = PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_MIDDLE;
                         session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state + " " + mode , factoryCount});
@@ -1956,14 +1956,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     // mode == PersistenceUnitProcessor.Mode.ALL || mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_FINAL
                     // clear mode and proceed
                     mode = null;
-    
+
                     if (session.getIntegrityChecker().hasErrors()){
                         session.handleException(new IntegrityException(session.getIntegrityChecker()));
                     }
-    
+
                     // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
                     // be returned if we we are mean to process these mappings
-                    if (enableWeaving) {                
+                    if (enableWeaving) {
                         // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
                         Collection entities = PersistenceUnitProcessor.buildEntityList(processor, classLoaderToUse);
                         this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
@@ -2011,7 +2011,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
             state = STATE_PREDEPLOYED;
             session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
-            //gf3146: if static weaving is used, we should not return a transformer.  Transformer should still be created though as it modifies descriptors 
+            //gf3146: if static weaving is used, we should not return a transformer.  Transformer should still be created though as it modifies descriptors
             if (isWeavingStatic) {
                 return null;
             } else {
@@ -2027,7 +2027,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             throw persistenceEx;
         }
     }
-    
+
     protected PersistenceException createPredeployFailedPersistenceException(Throwable ex) {
         PersistenceException perEx = new PersistenceException(EntityManagerSetupException.predeployFailed(persistenceUnitInfo.getPersistenceUnitName(), ex));
         if (persistenceException == null) {
@@ -2043,15 +2043,15 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     public String getDeployedSessionName(){
         return session != null ? session.getName() : null;
     }
-    
+
     public PersistenceUnitInfo getPersistenceUnitInfo(){
         return persistenceUnitInfo;
     }
-    
+
     public boolean isValidationOnly(Map m) {
         return isValidationOnly(m, true);
     }
-    
+
     protected boolean isValidationOnly(Map m, boolean shouldMergeMap) {
         if (shouldMergeMap) {
             m = mergeWithExistingMap(m);
@@ -2063,7 +2063,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             return false;
         }
     }
-    
+
     /**
      * Return if the session should be deployed and connected during the creation of the EntityManagerFactory,
      * or if it should be deferred until createEntityManager().
@@ -2084,7 +2084,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             return hasSchemaDatabaseGeneration(m) || hasSchemaScriptsGeneration(m);
         }
     }
-    
+
     protected Map mergeWithExistingMap(Map m) {
         if(persistenceUnitInfo != null) {
             return mergeMaps(m, persistenceUnitInfo.getProperties());
@@ -2106,18 +2106,18 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         String property = "";
         try {
             if (protocol != null) {
-                RemoteCommandManager rcm = new RemoteCommandManager(this.session);        
+                RemoteCommandManager rcm = new RemoteCommandManager(this.session);
                 if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JGROUPS)) {
-                    property = PersistenceUnitProperties.COORDINATION_PROTOCOL;                    
+                    property = PersistenceUnitProperties.COORDINATION_PROTOCOL;
                     value = "org.eclipse.persistence.sessions.coordination.jgroups.JGroupsTransportManager";
                     // Avoid compile and runtime dependency.
                     Class transportClass = findClassForProperty(value, PersistenceUnitProperties.COORDINATION_PROTOCOL, loader);
                     TransportManager transport = (TransportManager)transportClass.newInstance();
-                    rcm.setTransportManager(transport);                    
+                    rcm.setTransportManager(transport);
                     String config = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JGROUPS_CONFIG, m, this.session);
                     if (config != null) {
                         transport.setConfig(config);
-                    }                    
+                    }
                 } else if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMSPublishing)) {
                     JMSPublishingTransportManager transport = null;
                     if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS)) {
@@ -2126,7 +2126,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         transport = new JMSPublishingTransportManager(rcm);
                     }
                     rcm.setTransportManager(transport);
-                    
+
                     String host = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_HOST, m, this.session);
                     if (host != null) {
                         transport.setTopicHostUrl(host);
@@ -2139,12 +2139,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     if (factory != null) {
                         transport.setTopicConnectionFactoryName(factory);
                     }
-                    
+
                     String reuse_publisher = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_REUSE_PUBLISHER, m, this.session);
                     if (reuse_publisher != null) {
                         transport.setShouldReuseJMSTopicPublisher(reuse_publisher.equalsIgnoreCase("true"));
                     }
-                    
+
                 } else if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMI) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
                     if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
                         ((RMITransportManager)rcm.getTransportManager()).setIsRMIOverIIOP(true);
@@ -2189,7 +2189,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     Class transportClass = findClassForProperty(serializer, PersistenceUnitProperties.COORDINATION_SERIALIZER, loader);
                     rcm.setSerializer((Serializer)transportClass.newInstance());
                 }
-                
+
                 String naming = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_NAMING_SERVICE, m, this.session);
                 if (naming != null) {
                     if (naming.equalsIgnoreCase("jndi")) {
@@ -2235,24 +2235,24 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             this.session.handleException(ValidationException.invalidValueForProperty(value, property, exception));
         }
     }
-        
+
     /**
      * Update session serializer.
      */
     protected void updateSerializer(Map m, ClassLoader loader) {
-	    String serializer = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SERIALIZER, m, this.session);
-	    if (serializer != null) {
-	    	if (serializer.length() > 0) {
-		        try {
-		        	Class transportClass = findClassForProperty(serializer, PersistenceUnitProperties.SERIALIZER, loader);
-		        	this.session.setSerializer((Serializer)transportClass.newInstance());
-		        } catch (Exception exception) {
-		            this.session.handleException(ValidationException.invalidValueForProperty(serializer, PersistenceUnitProperties.SERIALIZER, exception));
-		        }
-	    	} else {
-	    		this.session.setSerializer(JavaSerializer.instance);
-	    	}
-	    }
+        String serializer = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SERIALIZER, m, this.session);
+        if (serializer != null) {
+            if (serializer.length() > 0) {
+                try {
+                    Class transportClass = findClassForProperty(serializer, PersistenceUnitProperties.SERIALIZER, loader);
+                    this.session.setSerializer((Serializer)transportClass.newInstance());
+                } catch (Exception exception) {
+                    this.session.handleException(ValidationException.invalidValueForProperty(serializer, PersistenceUnitProperties.SERIALIZER, exception));
+                }
+            } else {
+                this.session.setSerializer(JavaSerializer.instance);
+            }
+        }
     }
 
     /**
@@ -2308,7 +2308,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             this.session.setTolerateInvalidJPQL(config.equals("true"));
         }
     }
-    
+
     /**
      * Override the default login creation method.
      * If persistenceInfo is available, use the information from it to setup the login
@@ -2320,7 +2320,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         String eclipselinkPlatform = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.TARGET_DATABASE, m, this.session);
         if (eclipselinkPlatform != null) {
             login.setPlatformClassName(eclipselinkPlatform, this.persistenceUnitInfo.getClassLoader());
-        }        
+        }
         // Check for EIS platform, need to use an EIS login.
         boolean isEIS = false;
         if (login.getDatasourcePlatform() instanceof EISPlatform) {
@@ -2335,7 +2335,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
             login = newLogin;
         }
-        
+
         // Check for EIS or custom (JDBC) Connector class.
         Object connectorValue = getConfigPropertyLogDebug(PersistenceUnitProperties.NOSQL_CONNECTION_SPEC, m, this.session);
         String connectorProperty = PersistenceUnitProperties.NOSQL_CONNECTION_SPEC;
@@ -2351,7 +2351,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             try {
                 cls = findClassForProperty((String)connectorValue, connectorProperty, this.persistenceUnitInfo.getClassLoader());
             } catch (Throwable failed) {
-                cls = findClassForProperty((String)connectorValue, connectorProperty, getClass().getClassLoader());                
+                cls = findClassForProperty((String)connectorValue, connectorProperty, getClass().getClassLoader());
             }
             Connector connector = null;
             try {
@@ -2367,7 +2367,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             // Assume JCA connection spec.
             ((EISConnectionSpec)login.getConnector()).setConnectionSpecObject(connectorValue);
         }
-        
+
         // Check for EIS ConnectionFactory.
         Object factoryValue = getConfigPropertyLogDebug(PersistenceUnitProperties.NOSQL_CONNECTION_FACTORY, m, this.session);
         if (factoryValue instanceof String) {
@@ -2376,7 +2376,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         } else if (factoryValue != null) {
             ((EISConnectionSpec)login.getConnector()).setConnectionFactoryObject(factoryValue);
         }
-        
+
         // Process EIS or JDBC connection properties.
         Map propertiesMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.NOSQL_PROPERTY, m, session);
         if (propertiesMap.isEmpty()) {
@@ -2387,8 +2387,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             String property = (String)entry.getKey();
             Object value = entry.getValue();
             login.setProperty(property, value);
-        }        
-        
+        }
+
         // Note: This call does not checked the stored persistenceUnitInfo or extended properties because
         // the map passed into this method should represent the full set of properties we expect to process
 
@@ -2400,7 +2400,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (password != null) {
             login.setPassword(this.securableObjectHolder.getSecurableObject().decryptPassword(password));
         }
-        
+
         PersistenceUnitTransactionType transactionType = this.persistenceUnitInfo.getTransactionType();
         //bug 5867753: find and override the transaction type using properties
         String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, m, this.session);
@@ -2410,21 +2410,21 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         //find the jta datasource
         javax.sql.DataSource jtaDatasource = getDatasourceFromProperties(m, PersistenceUnitProperties.JTA_DATASOURCE, this.persistenceUnitInfo.getJtaDataSource());
 
-        //find the non jta datasource  
+        //find the non jta datasource
         javax.sql.DataSource nonjtaDatasource = getDatasourceFromProperties(m, PersistenceUnitProperties.NON_JTA_DATASOURCE, this.persistenceUnitInfo.getNonJtaDataSource());
 
         if (isValidationOnly(m, false) && transactionType == PersistenceUnitTransactionType.JTA && jtaDatasource == null) {
             updateLoginDefaultConnector(login, m);
             return;
         }
-        
+
         login.setUsesExternalTransactionController(transactionType == PersistenceUnitTransactionType.JTA);
 
         // Avoid processing data-source if EIS, as container may pass in a default one.
         if (isEIS) {
             return;
         }
-        
+
         javax.sql.DataSource mainDatasource = null;
         javax.sql.DataSource readDatasource = null;
         if (login.shouldUseExternalTransactionController()) {
@@ -2450,9 +2450,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             JNDIConnector jndiConnector;
             if (mainDatasource instanceof DataSourceImpl) {
                 //Bug5209363  Pass in the datasource name instead of the dummy datasource
-                jndiConnector = new JNDIConnector(((DataSourceImpl)mainDatasource).getName());                
+                jndiConnector = new JNDIConnector(((DataSourceImpl)mainDatasource).getName());
             } else {
-                jndiConnector = new JNDIConnector(mainDatasource);                                
+                jndiConnector = new JNDIConnector(mainDatasource);
             }
             login.setConnector(jndiConnector);
             String useInternalConnectionPool = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONNECTION_POOL_INTERNALLY_POOL_DATASOURCE, m, this.session);
@@ -2471,17 +2471,17 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     //Bug5209363  Pass in the datasource name instead of the dummy datasource
                     jndiConnector = new JNDIConnector(((DataSourceImpl)readDatasource).getName());
                 } else {
-                    jndiConnector = new JNDIConnector(readDatasource);                    
+                    jndiConnector = new JNDIConnector(readDatasource);
                 }
                 readLogin.setConnector(jndiConnector);
                 ((ServerSession)this.session).setReadConnectionPool(readLogin);
             }
         }
-        
+
     }
-    
+
     /**
-     * This is used to return either the defaultDatasource or, if one exists, a datasource 
+     * This is used to return either the defaultDatasource or, if one exists, a datasource
      * defined under the property from the Map m.  This method will build a DataSourceImpl
      * object to hold the url if the property in Map m defines a string instead of a datasource.
      */
@@ -2489,7 +2489,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         Object datasource = getConfigPropertyLogDebug(property, m, session);
         if ( datasource == null ){
             return defaultDataSource;
-        } 
+        }
         if ( datasource instanceof String){
             if(((String)datasource).length() > 0) {
                 // Create a dummy DataSource that will throw an exception on access
@@ -2506,7 +2506,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
         return (javax.sql.DataSource)datasource;
     }
-    
+
     /**
      * In cases where there is no data source, we will use properties to configure the login for
      * our session.  This method gets those properties and sets them on the login.
@@ -2573,7 +2573,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     serverSession.getDefaultConnectionPool().setInitialNumberOfConnections(Integer.parseInt(value));
                 }
             }
-            
+
             // Configure read connection pool if set.
             // Sizes and shared option are irrelevant for external connection pool
             if (!serverSession.getReadConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
@@ -2581,7 +2581,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 boolean isShared = false;
                 if (shared != null) {
                     isShared = Boolean.parseBoolean(shared);
-                }            
+                }
                 ConnectionPool pool = null;
                 if (isShared) {
                     pool = new ReadConnectionPool("read", serverSession.getReadConnectionPool().getLogin(), serverSession);
@@ -2618,7 +2618,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     pool.setWaitTimeout(Integer.parseInt(wait));
                 }
             }
-            
+
             // Configure sequence connection pool if set.
             String sequence = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL, m, serverSession);
             if (sequence != null) {
@@ -2631,7 +2631,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 JNDIConnector jndiConnector = new JNDIConnector(sequenceDataSource);
                 login.setConnector(jndiConnector);
                 serverSession.getSequencingControl().setLogin(login);
-            }        
+            }
             // Sizes and shared option are irrelevant for external connection pool
             if (!serverSession.getReadConnectionPool().getLogin().shouldUseExternalConnectionPooling()) {
                 value = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_SEQUENCE_CONNECTION_POOL_MIN, m, serverSession);
@@ -2654,7 +2654,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             serverSession.handleException(ValidationException.invalidValueForProperty(value, property, exception));
         }
     }
-    
+
     /**
      * Normally when a property is missing nothing should be applied to the session.
      * However there are several session attributes that defaulted in EJB3 to the values
@@ -2687,7 +2687,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         updateJPQLParser(m);
 
         if (!session.hasBroker()) {
-            updateLoggers(m, serverPlatformChanged, loader);        
+            updateLoggers(m, serverPlatformChanged, loader);
             updateProfiler(m,loader);
         }
 
@@ -2709,7 +2709,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (!session.getDatasourceLogin().shouldUseExternalTransactionController()) {
             session.getServerPlatform().disableJTA();
         }
-        
+
         if(session.isServerSession()) {
             updatePools((ServerSession)session, m);
             updateConnectionSettings((ServerSession)session, m);
@@ -2718,7 +2718,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
             updateConnectionPolicy((ServerSession)session, m);
         }
-        
+
         if(session.isBroker()) {
             if (this.compositeMemberEmSetupImpls != null) {
                 // composite
@@ -2744,7 +2744,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             setExceptionHandler(m, loader);
 
             updateBatchWritingSetting(m, loader);
-    
+
             updateNativeSQLSetting(m);
             updateSequencing(m);
             updateAllowNativeSQLQueriesSetting(m);
@@ -2769,23 +2769,23 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateShouldOptimizeResultSetAccess(m);
             updateTolerateInvalidJPQL(m);
             updateTenancy(m, loader);
-            
+
             // Customizers should be processed last
             processDescriptorCustomizers(m, loader);
             processSessionCustomizer(m, loader);
-            
+
             setDescriptorNamedQueries(m);
         }
     }
 
-    /** 
+    /**
      * This sets the isInContainerMode flag.
      * "true" indicates container case, "false" - SE.
-     */ 
+     */
     public void setIsInContainerMode(boolean isInContainerMode) {
         this.isInContainerMode = isInContainerMode;
     }
-    
+
     /**
      * Used to indicate that an EntityManagerFactoryImpl based on this
      * EntityManagerSetupImpl has been refreshed.  This means this EntityManagerSetupImpl
@@ -2794,7 +2794,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     public void setIsMetadataExpired(boolean hasExpiredMetadata) {
         this.isMetadataExpired = hasExpiredMetadata;
     }
-    
+
     protected void processSessionCustomizer(Map m, ClassLoader loader) {
         SessionCustomizer sessionCustomizer;
         Object customizer = getConfigPropertyLogDebug(PersistenceUnitProperties.SESSION_CUSTOMIZER, m, session);
@@ -2834,7 +2834,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 log.setLevel(AbstractSessionLog.translateStringToLoggingLevel(value), category);
             }
         }
-        
+
         String tsString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.LOGGING_TIMESTAMP, m, session);
         if (tsString != null) {
             log.setShouldPrintDate(Boolean.parseBoolean(tsString));
@@ -2872,7 +2872,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
             String customizerClassName = (String)entry.getValue();
-            
+
             ClassDescriptor descriptor = session.getDescriptorForAlias(name);
             if (descriptor == null) {
                 try {
@@ -2892,15 +2892,15 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             } else {
                 // TODO throw a better error, missing descriptor for property.
-                throw EntityManagerSetupException.failedWhileProcessingProperty(PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_ + name, customizerClassName, null);                
+                throw EntityManagerSetupException.failedWhileProcessingProperty(PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_ + name, customizerClassName, null);
             }
         }
     }
-    
+
     public boolean isInitial() {
         return state == STATE_INITIAL;
     }
-    
+
     /**
      * Used to indicate that an EntityManagerFactoryImpl based on this
      * EntityManagerSetupImpl has been refreshed.  This means this EntityManagerSetupImpl
@@ -2909,7 +2909,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     public boolean isMetadataExpired() {
         return isMetadataExpired;
     }
-    
+
     public boolean isPredeployed() {
         return state == STATE_PREDEPLOYED;
     }
@@ -2933,15 +2933,15 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     public boolean isDeployFailed() {
         return state == STATE_DEPLOY_FAILED;
     }
-    
+
     public boolean isHalfPredeployedCompositeMember() {
         return state == STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER;
     }
-    
+
     public String getPersistenceUnitUniqueName() {
         return this.persistenceUnitUniqueName;
     }
-    
+
     public int getFactoryCount() {
         return factoryCount;
     }
@@ -2949,11 +2949,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     public String getSessionName() {
         return this.sessionName;
     }
-    
+
     public boolean shouldRedeploy() {
         return state == STATE_UNDEPLOYED || state == STATE_PREDEPLOY_FAILED;
     }
-    
+
     /**
      * Return if MetadataSource refresh commands should be sent when refresh is called
      * Checks the PersistenceUnitProperties.METADATA_SOURCE_RCM_COMMAND property and defaults to true.
@@ -3002,17 +3002,17 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 session = null;
             }
         }
-    }    
-    
+    }
+
     /**
      * INTERNAL:
-     * By default we require a connection to the database. However, when 
+     * By default we require a connection to the database. However, when
      * generating schema to scripts only, this is not required.
      */
     public void setRequiresConnection(boolean requiresConnection) {
         this.requiresConnection = requiresConnection;
     }
-    
+
     /**
      * Allow customized session event listener to be added into session.
      * The method needs to be called in deploy stage.
@@ -3038,7 +3038,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
+
     /**
      * Allow customized exception handler to be added into session.
      * The method needs to be called in deploy and pre-deploy stage.
@@ -3064,7 +3064,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
+
     /**
      * Update batch writing setting.
      * The method needs to be called in deploy stage.
@@ -3200,7 +3200,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
 
     /**
-     * Enable or disable the capability of Native SQL function.  
+     * Enable or disable the capability of Native SQL function.
      * The method needs to be called in deploy stage.
      */
     protected void updateNativeSQLSetting(Map m){
@@ -3258,7 +3258,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
 
     /**
-     * Enable or disable the capability of Native SQL function.  
+     * Enable or disable the capability of Native SQL function.
      * The method needs to be called in deploy stage.
      */
     protected void updateJPQLParser(Map m) {
@@ -3278,15 +3278,15 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             this.session.setProperty(PersistenceUnitProperties.JPQL_VALIDATION, validation);
         }
     }
-    
+
     /**
-     * Enable or disable the capability of Native SQL function.  
+     * Enable or disable the capability of Native SQL function.
      * The method needs to be called in deploy stage.
      */
     protected void updateAllowNativeSQLQueriesSetting(Map m){
         // Set allow native SQL queries flag if it was specified.
         String allowNativeSQLQueriesString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.ALLOW_NATIVE_SQL_QUERIES, m, session);
-        
+
         if (allowNativeSQLQueriesString != null) {
            if (allowNativeSQLQueriesString.equalsIgnoreCase("true")) {
                session.getProject().setAllowNativeSQLQueries(true);
@@ -3297,7 +3297,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
            }
         }
     }
-    
+
     /**
      * Enable or disable SQL casting.
      */
@@ -3314,9 +3314,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
            }
         }
     }
-    
+
     /**
-     * Enable or disable forcing field names to uppercase.  
+     * Enable or disable forcing field names to uppercase.
      * The method needs to be called in deploy stage.
      */
     protected void updateUppercaseSetting(Map m){
@@ -3338,7 +3338,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * Enable or disable forcing field names to be case insensitive.  Implementation of case insensitive column handling relies on setting
      * both sides to uppercase (the column names from annotations/xml as well as what is returned from the JDBC/statement)
-     * The method needs to be called in deploy stage.  
+     * The method needs to be called in deploy stage.
      */
     public static void updateCaseSensitivitySettings(Map m, MetadataProject project, AbstractSession session){
         //Set Native SQL flag if it was specified.
@@ -3354,9 +3354,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             session.handleException(ValidationException.invalidBooleanValueForProperty(insensitiveString, PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES));
         }
     }
-    
+
     /**
-     * Update the default pessimistic lock timeout value. 
+     * Update the default pessimistic lock timeout value.
      * @param persistenceProperties the properties map
      */
     protected void updatePessimisticLockTimeout(Map persistenceProperties) {
@@ -3370,10 +3370,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
+
     /**
-     * Enable or disable statements cached, update statements cache size. 
-     * The method needs to be called in deploy stage. 
+     * Enable or disable statements cached, update statements cache size.
+     * The method needs to be called in deploy stage.
      */
     protected void updateCacheStatementSettings(Map m){
         // Cache statements if flag was specified.
@@ -3391,7 +3391,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 session.handleException(ValidationException.invalidBooleanValueForEnableStatmentsCached(statmentsNeedBeCached));
             }
         }
-        
+
         // Set statement cache size if specified.
         String cacheStatementsSize = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_STATEMENTS_SIZE, m, session);
         if (cacheStatementsSize!=null) {
@@ -3404,7 +3404,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
 
     /**
-     * Enable or disable default allowing 0 as an id. 
+     * Enable or disable default allowing 0 as an id.
      */
     @SuppressWarnings("deprecation")
     protected void updateAllowZeroIdSetting(Map m) {
@@ -3421,7 +3421,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
 
     /**
-     * Enable or disable default allowing 0 as an id. 
+     * Enable or disable default allowing 0 as an id.
      */
     protected void updateIdValidation(Map m) {
         String idValidationString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.ID_VALIDATION, m, session);
@@ -3429,7 +3429,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             session.getProject().setDefaultIdValidation(IdValidation.valueOf(idValidationString));
         }
     }
-    
+
     /**
      * sets the TABLE_CREATION_SUFFIX property on the session's project to be applied to all table creation statements (DDL)
      */
@@ -3439,7 +3439,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             session.getPlatform().setTableCreationSuffix(tableCreationSuffix);
         }
     }
-    
+
     /**
      * Sets shouldCreateIndicesOnForeignKeys DDL generation option.
      */
@@ -3457,8 +3457,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
 
     /**
-     * Enable or disable default temporal mutable setting. 
-     * The method needs to be called in deploy stage. 
+     * Enable or disable default temporal mutable setting.
+     * The method needs to be called in deploy stage.
      */
     protected void updateTemporalMutableSetting(Map m) {
         // Cache statements if flag was specified.
@@ -3572,7 +3572,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
         return validationMode;
     }
-    
+
     /**
      * INTERNAL:
      * Return an instance of Metamodel interface for access to the
@@ -3595,7 +3595,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * INTERNAL:
      * Initialize the Canonical Metamodel classes generated by EclipseLink
-     * @since Java Persistence 2.0 
+     * @since Java Persistence 2.0
      */
     protected void initializeCanonicalMetamodel(Metamodel model) {
         // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
@@ -3605,19 +3605,19 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         for (ManagedType manType : model.getManagedTypes()) {
             boolean classInitialized = false;
             String className = MetadataHelper.getQualifiedCanonicalName(manType.getJavaType().getName(), getSession());
-            try {                
+            try {
                 Class clazz = (Class)this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
                 classInitialized=true;
-                this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);                
+                this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);
                 String fieldName = "";
-                for(Object attribute : manType.getDeclaredAttributes()) { 
+                for(Object attribute : manType.getDeclaredAttributes()) {
                     try {
                         fieldName = ((Attribute)attribute).getName();
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                             AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, false)).set(clazz, attribute);
                         } else {
                             PrivilegedAccessHelper.getDeclaredField(clazz, fieldName, false).set(clazz, attribute);
-                        }  
+                        }
                     } catch (NoSuchFieldException nsfe) {
                         // Ignore fields missing in canonical model (dclarke bug 346106)
                     } catch (Exception e) {
@@ -3632,32 +3632,32 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_not_found", className);
             }
         }
-    }    
-    
+    }
+
     /**
      * INTERNAL:
-     * Convenience function to allow us to reset the Metamodel 
+     * Convenience function to allow us to reset the Metamodel
      * in the possible case that we want to regenerate it.
      * This function is outside of the JPA 2.0 specification.
      * @param aMetamodel
-     * @since Java Persistence 2.0 
+     * @since Java Persistence 2.0
      */
     public void setMetamodel(Metamodel aMetamodel) {
         this.metaModel = aMetamodel;
     }
-    
+
     public boolean mustBeCompositeMember() {
         return mustBeCompositeMember(this.persistenceUnitInfo);
     }
-    
+
     public boolean isCompositeMember() {
         return this.compositeEmSetupImpl != null;
     }
-    
+
     public boolean isComposite() {
         return this.compositeMemberEmSetupImpls != null;
     }
-    
+
     public static boolean mustBeCompositeMember(PersistenceUnitInfo puInfo) {
         String mustBeCompositeMemberStr = PropertiesHandler.getPropertyValue(PersistenceUnitProperties.COMPOSITE_UNIT_MEMBER, puInfo.getProperties(), false);
         if(mustBeCompositeMemberStr != null) {
@@ -3674,7 +3674,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             return false;
         }
     }
-    
+
     public void setCompositeEmSetupImpl(EntityManagerSetupImpl compositeEmSetupImpl) {
         this.compositeEmSetupImpl = compositeEmSetupImpl;
     }
@@ -3682,7 +3682,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     public EntityManagerSetupImpl getCompositeEmSetupImpl() {
         return this.compositeEmSetupImpl;
     }
-    
+
     // predeploy method will be used for static weaving
     public void setStaticWeaveInfo(StaticWeaveInfo staticWeaveInfo) {
         this.staticWeaveInfo = staticWeaveInfo;
@@ -3690,7 +3690,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
     protected void predeployCompositeMembers(Map predeployProperties, ClassLoader tempClassLoader) {
         // get all puInfos found in jar-files specified in composite's persistence.xml
-        // all these puInfos are not composite because composites are recursively "taken apart", too. 
+        // all these puInfos are not composite because composites are recursively "taken apart", too.
         Set<SEPersistenceUnitInfo> compositeMemberPuInfos = getCompositeMemberPuInfoSet(persistenceUnitInfo, predeployProperties);
         // makes sure each member has a non-null property, overrides where required properties with composite's predeploy properties.
         updateCompositeMembersProperties(compositeMemberPuInfos, predeployProperties);
@@ -3701,7 +3701,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (enableWeaving) {
             this.weaver = new PersistenceWeaver(this.session, new HashMap());
         }
-        
+
         // create containedEmSetupImpls and predeploy them for the first time.
         // predeploy divided in three stages (modes):
         // all composite members should complete a stage before any of them can move to the next one.
@@ -3721,15 +3721,15 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             compositeMemberPuInfo.setNewTempClassLoader(compositeMemberPuInfo.getClassLoader());
             this.compositeMemberEmSetupImpls.add(containedEmSetupImpl);
         }
-        
-        // after the first loop containedEmSetupImpls are in HalfPredeployed state, 
+
+        // after the first loop containedEmSetupImpls are in HalfPredeployed state,
         // mode = COMPOSITE_MEMBER_MIDDLE mode
         for(EntityManagerSetupImpl containedEmSetupImpl : this.compositeMemberEmSetupImpls) {
             // properties not used, puInfo already set
             containedEmSetupImpl.predeploy(null, null);
         }
 
-        // after the second loop containedEmSetupImpls are still in HalfPredeployed state, 
+        // after the second loop containedEmSetupImpls are still in HalfPredeployed state,
         // mode = COMPOSITE_MEMBER_FINAL mode
         for(EntityManagerSetupImpl containedEmSetupImpl : this.compositeMemberEmSetupImpls) {
             // properties not used, puInfo already set
@@ -3753,7 +3753,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             // the properties guaranteed to be non-null after updateCompositeMemberProperties call
             Map compositeMemberProperties = (Map)compositeMemberMapOfProperties.get(compositeMemberEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitName());
             compositeMemberEmSetupImpl.deploy(realClassLoader, compositeMemberProperties);
-            AbstractSession containedSession = compositeMemberEmSetupImpl.getSession(); 
+            AbstractSession containedSession = compositeMemberEmSetupImpl.getSession();
             ((SessionBroker)session).registerSession(containedSession.getName(), containedSession);
         }
     }
@@ -3761,7 +3761,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * INTERNAL:
      * Cause the first phase of metamodel initialization.  This phase involves detecting the classes involved
-     * and build metamodel instances for them. 
+     * and build metamodel instances for them.
      */
     public void preInitializeMetamodel(){
         // perform lazy initialisation
@@ -3773,7 +3773,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             metaModel = tempMetaModel;
         }
     }
-    
+
     /**
      * INTERNAL:
      * First phase of canonical metamodel initialization.  For each class the metamodel is aware of, check
@@ -3790,10 +3790,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         for (ManagedType manType : metaModel.getManagedTypes()) {
             boolean classInitialized = false;
             String className = MetadataHelper.getQualifiedCanonicalName(((ManagedTypeImpl)manType).getJavaTypeName(), getSession());
-            try {                
+            try {
                 Class clazz = (Class)this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
                 classInitialized=true;
-                this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className); 
+                this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);
                 Field[] fields = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     fields = AccessController.doPrivileged(new PrivilegedGetDeclaredFields(clazz));
@@ -3844,11 +3844,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
+
     /*
      * Overide composite member properties' map with a new one, which
      * has (possibly empty but non-null) properties for each composite member,
-     * for required properties overrides values with those from composite properties. 
+     * for required properties overrides values with those from composite properties.
      */
     protected void updateCompositeMembersProperties(Map compositeProperties) {
         Set<SEPersistenceUnitInfo> compositePuInfos = new HashSet(compositeMemberEmSetupImpls.size());
@@ -3861,7 +3861,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /*
      * Overide composite member properties' map with a new one, which
      * has (possibly empty but non-null) properties for each composite member,
-     * for required properties overrides values with those from composite properties. 
+     * for required properties overrides values with those from composite properties.
      * Parameter compositePuInfo indicates whether compositeMemberPreoperties should be merged (overriding) with its puInfo properties
      * (false for predeploy, true for deploy).
      */
@@ -3875,7 +3875,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             // Don't alter user-supplied properties' map - create a copy instead
             newCompositeMemberMapOfProperties = new HashMap(compositeMemberMapOfProperties);
         }
-        
+
         for (SEPersistenceUnitInfo compositePuInfo : compositePuInfos) {
             String compositeMemberPuName = compositePuInfo.getPersistenceUnitName();
             Map compositeMemberProperties = (Map)newCompositeMemberMapOfProperties.get(compositeMemberPuName);
@@ -3891,13 +3891,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             translateOldProperties(newCompositeMemberProperties, session);
             newCompositeMemberMapOfProperties.put(compositeMemberPuName, newCompositeMemberProperties);
         }
-        
+
         // set the new COMPOSITE_PROPERTIES into compositeProperties
         compositeProperties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, newCompositeMemberMapOfProperties);
     }
-    
+
     /*
-     * For required properties overrides values with those from composite properties. 
+     * For required properties overrides values with those from composite properties.
      */
     protected static void overrideMemberProperties(Map memberProperties, Map compositeProperties) {
         String transactionTypeProp =  (String)compositeProperties.get(PersistenceUnitProperties.TRANSACTION_TYPE);
@@ -3921,7 +3921,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             memberProperties.remove(PersistenceUnitProperties.VALIDATION_ONLY_PROPERTY);
         }
     }
-    
+
     /*
      * If a member is composite then add its members instead.
      * All members' puNames must be unique.
@@ -3929,7 +3929,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      */
     protected static Map<String, SEPersistenceUnitInfo> getCompositeMemberPuInfoMap(PersistenceUnitInfo puInfo, Map predeployProperties) {
         Set<SEPersistenceUnitInfo> memeberPuInfoSet = PersistenceUnitProcessor.getPersistenceUnits(puInfo.getClassLoader(), predeployProperties, puInfo.getJarFileUrls());
-        HashMap<String, SEPersistenceUnitInfo> memberPuInfoMap = new HashMap(memeberPuInfoSet.size());        
+        HashMap<String, SEPersistenceUnitInfo> memberPuInfoMap = new HashMap(memeberPuInfoSet.size());
         for (SEPersistenceUnitInfo memberPuInfo : memeberPuInfoSet) {
             // override transaction type with composite's transaction type
             memberPuInfo.setTransactionType(puInfo.getTransactionType());
@@ -3942,7 +3942,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     Map.Entry<String, SEPersistenceUnitInfo> entry = it.next();
                     String containedMemberPuName = entry.getKey();
                     SEPersistenceUnitInfo containedMemberPuInfo = entry.getValue();
-                    SEPersistenceUnitInfo anotherMemeberPuInfo = memberPuInfoMap.get(containedMemberPuName); 
+                    SEPersistenceUnitInfo anotherMemeberPuInfo = memberPuInfoMap.get(containedMemberPuName);
                     if (anotherMemeberPuInfo == null) {
                         memberPuInfoMap.put(containedMemberPuName, containedMemberPuInfo);
                     } else {
@@ -3951,7 +3951,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             } else {
                 String memberPuName = memberPuInfo.getPersistenceUnitName();
-                SEPersistenceUnitInfo anotherMemeberPuInfo = memberPuInfoMap.get(memberPuName); 
+                SEPersistenceUnitInfo anotherMemeberPuInfo = memberPuInfoMap.get(memberPuName);
                 if (anotherMemeberPuInfo == null) {
                     memberPuInfoMap.put(memberPuName, memberPuInfo);
                 } else {
@@ -3970,8 +3970,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected static Set<SEPersistenceUnitInfo> getCompositeMemberPuInfoSet(PersistenceUnitInfo puInfo, Map predeployProperties) {
         return new HashSet(getCompositeMemberPuInfoMap(puInfo, predeployProperties).values());
     }
-    
-    public static void throwPersistenceUnitNameAlreadyInUseException(String puName, PersistenceUnitInfo newPuInfo, PersistenceUnitInfo exsitingPuInfo) { 
+
+    public static void throwPersistenceUnitNameAlreadyInUseException(String puName, PersistenceUnitInfo newPuInfo, PersistenceUnitInfo exsitingPuInfo) {
         String puUrl;
         String anotherPuUrl;
         try {
@@ -3983,12 +3983,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
         throw PersistenceUnitLoadingException.persistenceUnitNameAlreadyInUse(puName, puUrl, anotherPuUrl);
     }
-    
+
     /**
      * Create a new version of this EntityManagerSetupImpl and cache it.  Prepare "this" EntityManagerSetupImpl
      * for garbage collection.
-     * 
-     * This call will mean any users of this EntityManagerSetupImpl will get the new version the next time 
+     *
+     * This call will mean any users of this EntityManagerSetupImpl will get the new version the next time
      * they look it up (for instance and EntityManager creation time)
      * @param properties
      * @return
@@ -4017,23 +4017,23 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             setIsMetadataExpired(true);
             //stop this EntityManagerSetupImpl's session from processing refresh commands. The new session should listen instead.
             getSession().setRefreshMetadataListener(null);
-            
+
             EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, newSetupImpl);
         }
         return newSetupImpl;
     }
 
     /**
-     * This method is just a wrapper on refreshMetadata so that core does not need a dependency on JPA 
+     * This method is just a wrapper on refreshMetadata so that core does not need a dependency on JPA
      * due to the EntityManagerSetupImpl return value.  This method satisfies the MetedataRefreshListener implementation
      * and is called by incoming RCM refresh commands
-     * 
+     *
      * @see refreshMetadata
      */
     public void triggerMetadataRefresh(Map properties){
         refreshMetadata(properties);
     }
-    
+
     /**
      * INTERNAL:
      * Generate the DDL per the properties specified.
@@ -4044,28 +4044,28 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             // Note, we do one or the other, that is, we do not mix the properties by default
             // but we may use some with both, e.g. APP_LOCATION. EclipseLink properties
             // override JPA properties.
-            
+
             if (hasConfigProperty(DDL_GENERATION, props)) {
                 // We have EclipseLink DDL generation properties.
                 String ddlGeneration = getConfigPropertyAsString(DDL_GENERATION, props).toLowerCase();
-                
+
                 if (! ddlGeneration.equals(NONE)) {
                     writeDDL(ddlGeneration, props, session, classLoader);
                 }
             } else {
                 // Look for JPA schema generation properties.
-                
+
                 // Schema generation for the database.
                 if (hasConfigProperty(SCHEMA_GENERATION_DATABASE_ACTION, props)) {
                     String databaseGenerationAction = getConfigPropertyAsString(SCHEMA_GENERATION_DATABASE_ACTION, props).toLowerCase();
-                
+
                     if (! databaseGenerationAction.equals(SCHEMA_GENERATION_NONE_ACTION)) {
                         if (databaseGenerationAction.equals(SCHEMA_GENERATION_CREATE_ACTION)) {
                             writeDDL(SCHEMA_GENERATION_CREATE_SOURCE, SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, TableCreationType.CREATE, props, session, classLoader);
                         } else if (databaseGenerationAction.equals(PersistenceUnitProperties.CREATE_OR_EXTEND)) {
                             writeDDL(SCHEMA_GENERATION_CREATE_SOURCE, SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, TableCreationType.EXTEND, props, session, classLoader);
                         } else if (databaseGenerationAction.equals(SCHEMA_GENERATION_DROP_ACTION)) {
-                            writeDDL(SCHEMA_GENERATION_DROP_SOURCE, SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, TableCreationType.DROP, props, session, classLoader);                        
+                            writeDDL(SCHEMA_GENERATION_DROP_SOURCE, SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, TableCreationType.DROP, props, session, classLoader);
                         } else if (databaseGenerationAction.equals(SCHEMA_GENERATION_DROP_AND_CREATE_ACTION)) {
                             writeDDL(SCHEMA_GENERATION_DROP_SOURCE, SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, TableCreationType.DROP, props, session, classLoader);
                             writeDDL(SCHEMA_GENERATION_CREATE_SOURCE, SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, TableCreationType.CREATE, props, session, classLoader);
@@ -4075,7 +4075,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         }
                     }
                 }
-                
+
                 // Schema generation for target scripts.
                 if (hasConfigProperty(SCHEMA_GENERATION_SCRIPTS_ACTION, props)) {
                     String scriptsGenerationAction = getConfigPropertyAsString(SCHEMA_GENERATION_SCRIPTS_ACTION, props).toLowerCase();
@@ -4095,7 +4095,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         }
                     }
                 }
-                
+
                 // Once we've generated any and all DDL, check for load scripts.
                 writeSourceScriptToDatabase(getConfigProperty(SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE, props), session, classLoader);
             }
@@ -4109,7 +4109,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Generate the DDL from the persistence unit metadata. This DDL generation
@@ -4129,47 +4129,47 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             ddlType = TableCreationType.EXTEND;
         } else {
             // Log a warning if we have an unknown ddl generation.
-            String validOptions = PersistenceUnitProperties.NONE + ", " + 
-                                  PersistenceUnitProperties.CREATE_ONLY + ", " + 
-                                  PersistenceUnitProperties.DROP_ONLY + ", " + 
-                                  PersistenceUnitProperties.DROP_AND_CREATE + ", " + 
+            String validOptions = PersistenceUnitProperties.NONE + ", " +
+                                  PersistenceUnitProperties.CREATE_ONLY + ", " +
+                                  PersistenceUnitProperties.DROP_ONLY + ", " +
+                                  PersistenceUnitProperties.DROP_AND_CREATE + ", " +
                                   PersistenceUnitProperties.CREATE_OR_EXTEND;
             session.log(SessionLog.WARNING, SessionLog.PROPERTIES, "ddl_generation_unknown_property_value", new Object[] {PersistenceUnitProperties.DDL_GENERATION, ddlGeneration, persistenceUnitInfo.getPersistenceUnitName(), validOptions});
         }
 
         if (ddlType != TableCreationType.NONE) {
             String ddlGenerationMode = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION_MODE, props, PersistenceUnitProperties.DEFAULT_DDL_GENERATION_MODE);
-    
-            // Optimize for cases where the value is explicitly set to NONE 
+
+            // Optimize for cases where the value is explicitly set to NONE
             if (! ddlGenerationMode.equals(NONE)) {
                 if (isCompositeMember()) {
                     // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
                     session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_begin_call", new Object[]{"generateDDL", persistenceUnitInfo.getPersistenceUnitName(), state});
                 }
-                
+
                 SchemaManager mgr = new SchemaManager(session);
-                
+
                 if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_DATABASE_GENERATION) || ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
                     writeDDLToDatabase(mgr, ddlType);
                 }
 
                 if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION)|| ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
                     String appLocation = getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props, PersistenceUnitProperties.DEFAULT_APP_LOCATION);
-                    
+
                     // These could be a string (file name urls) or actual writers.
                     Object createDDLJdbc = getConfigProperty(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, props, PersistenceUnitProperties.DEFAULT_CREATE_JDBC_FILE_NAME);
                     Object dropDDLJdbc = getConfigProperty(PersistenceUnitProperties.DROP_JDBC_DDL_FILE, props, PersistenceUnitProperties.DEFAULT_DROP_JDBC_FILE_NAME);
-                    writeDDLToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc, ddlType, props);                
+                    writeDDLToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc, ddlType, props);
                 }
-    
-                // Log a warning if we have an unknown ddl generation mode. 
+
+                // Log a warning if we have an unknown ddl generation mode.
                 if ( (! ddlGenerationMode.equals(PersistenceUnitProperties.DDL_DATABASE_GENERATION)) && (! ddlGenerationMode.equals(PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION)) && (! ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION))) {
-                    String validOptions = PersistenceUnitProperties.DDL_DATABASE_GENERATION + ", " + 
-                                          PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION + ", " + 
+                    String validOptions = PersistenceUnitProperties.DDL_DATABASE_GENERATION + ", " +
+                                          PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION + ", " +
                                           PersistenceUnitProperties.DDL_BOTH_GENERATION;
                     session.log(SessionLog.WARNING, SessionLog.PROPERTIES, "ddl_generation_unknown_property_value", new Object[] {PersistenceUnitProperties.DDL_GENERATION_MODE, ddlGenerationMode, persistenceUnitInfo.getPersistenceUnitName(), validOptions});
                 }
-                
+
                 if (isCompositeMember()) {
                     // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
                     session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_end_call", new Object[]{"generateDDL", persistenceUnitInfo.getPersistenceUnitName(), state});
@@ -4177,7 +4177,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Generate the DDL per the properties given.
@@ -4185,7 +4185,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected void writeDDL(String generationSourceProperty, String scriptGenerationSourceProperty, TableCreationType tableCreationType, Map props, DatabaseSessionImpl session, ClassLoader loader) {
         String generationSource = getConfigPropertyAsString(generationSourceProperty, props);
         Object scriptGenerationSource = getConfigProperty(scriptGenerationSourceProperty, props);
-        
+
         if (generationSource == null) {
             if (scriptGenerationSource == null) {
                 writeMetadataDDLToDatabase(tableCreationType, props, session, loader);
@@ -4203,14 +4203,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             writeSourceScriptToDatabase(scriptGenerationSource, session, loader);
             writeMetadataDDLToDatabase(tableCreationType, props, session, loader);
         } else {
-            String validOptions = SCHEMA_GENERATION_METADATA_SOURCE + ", " + 
-                                  SCHEMA_GENERATION_SCRIPT_SOURCE + ", " + 
-                                  SCHEMA_GENERATION_METADATA_THEN_SCRIPT_SOURCE + ", " + 
+            String validOptions = SCHEMA_GENERATION_METADATA_SOURCE + ", " +
+                                  SCHEMA_GENERATION_SCRIPT_SOURCE + ", " +
+                                  SCHEMA_GENERATION_METADATA_THEN_SCRIPT_SOURCE + ", " +
                                   SCHEMA_GENERATION_SCRIPT_THEN_METADATA_SOURCE;
             session.log(SessionLog.WARNING, SessionLog.PROPERTIES, "ddl_generation_unknown_property_value", new Object[] {generationSourceProperty, generationSource, persistenceUnitInfo.getPersistenceUnitName(), validOptions});
         }
     }
-    
+
     /**
      * INTERNAL:
      * Generate and write DDL from the persistence unit metadata to the database.
@@ -4221,7 +4221,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (!interactWithDB){
             return;
         }
-        
+
         generateDefaultTables(mgr, ddlType);
     }
 
@@ -4238,11 +4238,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Write the DDL to the files provided.
      */
     protected void writeDDLToFiles(SchemaManager mgr, String appLocation, Object createDDLJdbc, Object dropDDLJdbc, TableCreationType ddlType, Map props) {
-        // Ensure that the appLocation string ends with File.separator if 
-        // specified. In JPA there is no default for app location, however, if 
+        // Ensure that the appLocation string ends with File.separator if
+        // specified. In JPA there is no default for app location, however, if
         // the user did specify one, we'll use it.
-        String appLocationPrefix = (appLocation == null) ? "" : addFileSeperator(appLocation); 
-        
+        String appLocationPrefix = (appLocation == null) ? "" : addFileSeperator(appLocation);
+
         if (ddlType.equals(TableCreationType.CREATE) || ddlType.equals(TableCreationType.DROP_AND_CREATE) || ddlType.equals(TableCreationType.EXTEND)) {
             if (createDDLJdbc == null) {
                 // Using EclipseLink properties, the create script has a default.
@@ -4276,35 +4276,35 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         generateDefaultTables(mgr, ddlType);
         mgr.closeDDLWriter();
     }
-    
+
     /**
      * INTERNAL:
      * Generate and write DDL from the persistence unit metadata to the database.
      */
     protected void writeMetadataDDLToDatabase(TableCreationType tableCreationType, Map props, DatabaseSessionImpl session, ClassLoader classLoader) {
         SchemaManager mgr = new SchemaManager(session);
-                
+
         // Set the create database schemas flag on the schema manager.
         String createSchemas = getConfigPropertyAsString(SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS, props);
         mgr.setCreateDatabaseSchemas(createSchemas != null && createSchemas.equalsIgnoreCase("true"));
-                
+
         writeDDLToDatabase(mgr, tableCreationType);
     }
-    
+
     /**
      * INTERNAL:
      * Generate and write DDL from the persistence unit metadata to scripts.
      */
     protected void writeMetadataDDLToScript(TableCreationType tableCreationType, Map props, DatabaseSessionImpl session, ClassLoader classLoader) {
         SchemaManager mgr = new SchemaManager(session);
-                
+
         // Set the create database schemas flag on the schema manager.
         String createSchemas = getConfigPropertyAsString(SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS, props);
         mgr.setCreateDatabaseSchemas(createSchemas != null && createSchemas.equalsIgnoreCase("true"));
 
         writeDDLToFiles(mgr, getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props),  getConfigProperty(SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, props),  getConfigProperty(SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, props), tableCreationType, props);
     }
-    
+
     /**
      * This method will read SQL from a reader or URL and send it through
      * to the database. This could open up the database to SQL injection if
@@ -4313,14 +4313,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected void writeSourceScriptToDatabase(Object source, DatabaseSessionImpl session, ClassLoader loader) {
         if (source != null) {
             Reader reader = null;
-            
+
             try {
                 if (source instanceof Reader) {
                     reader = (Reader) source;
                 } else if (source instanceof String) {
-                    // Try to load the resource first, if not assume it as a well formed URL. If not, throw an exception. 
+                    // Try to load the resource first, if not assume it as a well formed URL. If not, throw an exception.
                     URL sourceURL = loader.getResource((String) source);
-                    
+
                     if (sourceURL == null) {
                         try {
                             sourceURL = new URL((String) source);
@@ -4328,7 +4328,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-not-found", new Object[]{ source }), e);
                         }
                     }
-                    
+
                     URLConnection connection = sourceURL.openConnection();
                     // Set to false to prevent locking of jar files on Windows. EclipseLink issue 249664
                     connection.setUseCaches(false);
@@ -4336,20 +4336,20 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 } else {
                     throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-invalid-source-script-type", new Object[]{ source , source.getClass()}));
                 }
-            
+
                 if (reader != null) {
                     StringBuffer sqlBuffer;
                     int data = reader.read();
-                    
+
                     // While there is still data to read, read line by line.
                     while (data != -1) {
                         sqlBuffer = new StringBuffer();
                         char aChar = (char) data;
-        
+
                         // Read till the end of the line or maybe even file.
                         while (aChar != '\n' && data != -1) {
                             sqlBuffer.append(aChar);
-                                
+
                             // Read next character.
                             data = reader.read();
                             aChar = (char) data;
@@ -4357,21 +4357,21 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
                         // Remove trailing and leading white space characters.
                         String sqlString = sqlBuffer.toString().trim();
-                        
+
                         // If the string isn't empty, then fire it.
                         if ((! sqlString.equals("")) && (! sqlString.startsWith("#"))) {
                             try {
                                 session.executeNonSelectingSQL(sqlString);
                             } catch (DatabaseException e) {
-                                // Swallow any database exceptions as these could 
+                                // Swallow any database exceptions as these could
                                 // be drop failures of a table that doesn't exist etc.
                                 // SQLExceptions will be thrown to the user.
                             }
                         }
-                            
+
                         data = reader.read();
                     }
-        
+
                     reader.close();
                 }
             } catch (IOException e) {

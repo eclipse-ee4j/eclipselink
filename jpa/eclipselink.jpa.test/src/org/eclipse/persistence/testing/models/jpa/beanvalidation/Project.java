@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2009, 2015  Sun Microsystems, Inc. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,7 @@
  *
  * Contributors:
  ******************************************************************************/
- 
+
 package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
 import javax.persistence.Entity;
@@ -21,9 +21,9 @@ public class Project {
     public static final int NAME_MAX_SIZSE = 5;
 
     @Id
-    private int	    id;
+    private int        id;
     @Size(max = NAME_MAX_SIZSE)
-    private String	name;
+    private String    name;
 
     public Project() {}
 

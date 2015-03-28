@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     ailitchev - Uni-directional OneToMany
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unidirectional;
 
 import java.util.ArrayList;
@@ -111,7 +111,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         suite.addTest(new JoinTest_SelectByFirstName());
         suite.addTest(new BatchReadingTest());
         suite.addTest(new BatchReadingTest_SelectByFirstName());
-        
+
         return suite;
     }
 
@@ -158,21 +158,21 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         Employee newEmployee = new Employee();
         newEmployee.setFirstName("New");
         PhoneNumber newPhoneNumber = new PhoneNumber("home", "001", "0000001");
-        suite.addTest(new EmployeeComplexUpdateTest(originalEmployee, 
-                new Object[]{otherEmployee.getManagedEmployees().get(0), newEmployee, newPhoneNumber}, 
+        suite.addTest(new EmployeeComplexUpdateTest(originalEmployee,
+                new Object[]{otherEmployee.getManagedEmployees().get(0), newEmployee, newPhoneNumber},
                 new Object[]{originalEmployee.getManagedEmployees().get(0), originalEmployee.getManagedEmployees().get(1), originalEmployee.getPhoneNumbers().get(0)}));
         suite.addTest(new CascadeLockingTest());
         suite.addTest(new TargetLockingTest_AddRemoveTarget());
 
         return suite;
     }
-    
+
     /**
      * Tests adding/removing of target object to/from the source for UnidirectionalOneToManyMapping.
      * Derived from ComplexUpdateTest, this test expects an instance of Employee as original object,
-     * as well as object (or array, or list) of objects to be added to the original objects as the second parameter, 
+     * as well as object (or array, or list) of objects to be added to the original objects as the second parameter,
      * as well as object (or array, or list) of objects to be removed from the original objects as the third parameter.
-     * These objects should be of type either Employee or PhoneNumber. 
+     * These objects should be of type either Employee or PhoneNumber.
      */
     static class EmployeeComplexUpdateTest extends ComplexUpdateTest {
         List<Employee> managedEmployeesToAdd = new ArrayList<Employee>();
@@ -270,7 +270,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             String testName = super.getName();
             int lastIndex = testName.lastIndexOf(";");
             if(lastIndex > 0) {
-                testName = testName.substring(0, lastIndex); 
+                testName = testName.substring(0, lastIndex);
             }
             return testName;
         }
@@ -341,7 +341,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
      * Tests cascade locking of the source Employee object for adding, modifying and removing the target object (Employee and Phone).
      * The version of he source should be always incremented on either adding or removing any target.
      * Also currently source's version incremented on changing of the privately owned target (Phone),
-     * but on change of non private target (managed Employee) stays unchanged.  
+     * but on change of non private target (managed Employee) stays unchanged.
      */
     static class CascadeLockingTest extends TransactionalTestCase {
         long version[] = new long[7];
@@ -363,14 +363,14 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             manager.setFirstName("Manager");
             Employee employee = new Employee();
             employee.setFirstName("Employee");
-            
+
             UnitOfWork uow = getSession().acquireUnitOfWork();
             uow.registerObject(manager);
             uow.registerObject(employee);
             uow.commit();
-            
+
             version[0] = ((Long)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession())).longValue();
-            
+
             // test1 - add managed employee, manager's version should increment.
             uow = getSession().acquireUnitOfWork();
             Employee managerClone = (Employee)uow.registerObject(manager);
@@ -378,14 +378,14 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             managerClone.addManagedEmployee(employeeClone);
             uow.commit();
             version[1] = ((Long)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession())).longValue();
-            
+
             // test2 - alter managed employee, manager's version should NOT increment.
             uow = getSession().acquireUnitOfWork();
             employeeClone = (Employee)uow.registerObject(employee);
             employeeClone.setFirstName("Altered");
             uow.commit();
             version[2] = ((Long)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession())).longValue();
-            
+
             // test3- remove managed employee, manager's version should increment.
             uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
@@ -393,9 +393,9 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             managerClone.removeManagedEmployee(employeeClone);
             uow.commit();
             version[3] = ((Long)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession())).longValue();
-            
+
             PhoneNumber phone = new PhoneNumber("home", "613", "1111111");
-            
+
             // test4 - add phone, manager's version should increment.
             uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
@@ -403,14 +403,14 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             managerClone.addPhoneNumber(phoneClone);
             uow.commit();
             version[4] = ((Long)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession())).longValue();
-            
+
             // test5- alter phone, manager's version should increment.
             uow = getSession().acquireUnitOfWork();
             phoneClone = (PhoneNumber)uow.registerObject(phone);
             phoneClone.setType("work");
             uow.commit();
             version[5] = ((Long)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(manager, manager.getId(), getAbstractSession())).longValue();
-            
+
             // test6- remove phone, manager's version should increment.
             uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
@@ -459,8 +459,8 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
                 throw new TestProblemException("No Employees were read");
             }
             // need to instantiate only a single Phone on a single managed Employee to trigger sql that reads data from the db for all.
-            // still need to trigger all the indirections - but (except the first one) they are not accessing the db 
-            // (the data is already cached in the value holders).  
+            // still need to trigger all the indirections - but (except the first one) they are not accessing the db
+            // (the data is already cached in the value holders).
             printDebug("Trigger batch reading results");
             boolean isConnected = true;
             for(int i=0; i < employees.size(); i++) {
@@ -496,7 +496,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
             // execute control query
             List controlEmployees = (List)getSession().executeQuery(controlQuery);
-            // instantiate all value holders that the batch query expected to instantiate            
+            // instantiate all value holders that the batch query expected to instantiate
             printDebug("Trigger control results");
             for(int i=0; i < controlEmployees.size(); i++) {
                 Employee manager = (Employee)controlEmployees.get(i);
@@ -514,7 +514,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
                     printDebug(manager.toString());
                 }
             }
-            
+
             // compare results
             String errorMsg = JoinedAttributeTestHelper.compareCollections(employees, controlEmployees, getSession().getClassDescriptor(Employee.class), ((AbstractSession)getSession()));
             if(errorMsg.length() > 0) {
@@ -548,14 +548,14 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             ReadAllQuery query = new ReadAllQuery();
             query.setReferenceClass(Employee.class);
             setSelectionCriteria(query);
-            
+
             ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
-            
+
             Expression employees = query.getExpressionBuilder().anyOf("managedEmployees");
             query.addJoinedAttribute(employees);
             Expression phones = employees.anyOf("phoneNumbers");
             query.addJoinedAttribute(phones);
-    
+
             String errorMsg = JoinedAttributeTestHelper.executeQueriesAndCompareResults(controlQuery, query, (AbstractSession)getSession());
             if(errorMsg.length() > 0) {
                 throw new TestErrorException(errorMsg);
@@ -573,17 +573,17 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
     }
 
     /**
-     * Base class for TargetLockingTest_AddRemoveTarget and TargetLockingTest_DeleteSource. 
+     * Base class for TargetLockingTest_AddRemoveTarget and TargetLockingTest_DeleteSource.
      * and mapping's shouldIncrementTargetLockValueOnAddOrRemoveTarget flag is set to true (default setting)
      * adding/removing target to/from source causes target's version to increment.
      */
     static class TargetLockingTest extends TestCase {
         Employee employee[];
-        
+
         public TargetLockingTest() {
             super();
         }
-        long getVersion(Employee emp) {            
+        long getVersion(Employee emp) {
             return ((Long)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, emp.getId(), getAbstractSession())).longValue();
         }
         public void reset() {
@@ -602,7 +602,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
      * adding/removing target to/from source causes target's version to increment.
      */
     static class TargetLockingTest_AddRemoveTarget extends TargetLockingTest {
-        
+
         public TargetLockingTest_AddRemoveTarget() {
             super();
             setName("TargetLockingTest_AddRemoveTarget");
@@ -611,23 +611,23 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         public void setup() {
             // create 5 Employees.
             employee = new Employee[5];
-            
+
             employee[0] = new Employee();
             employee[0].setFirstName("Manager");
-            
+
             // 1 and 2 have manager 0.
             employee[1] = new Employee();
             employee[1].setFirstName("Employee_1");
             employee[0].addManagedEmployee(employee[1]);
-            
+
             employee[2] = new Employee();
             employee[2].setFirstName("Employee_2");
             employee[0].addManagedEmployee(employee[2]);
-            
+
             // 3 and 4 don't have a manager.
             employee[3] = new Employee();
             employee[3].setFirstName("Employee_3");
-            
+
             employee[4] = new Employee();
             employee[4].setFirstName("Employee_4");
 
@@ -650,7 +650,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             managerClone.addManagedEmployee(employee4Clone);
             // after commit the  versions of all Employees should be changed.
             uow.commit();
-        }        
+        }
         public void verify() {
             long version[] = new long[employee.length];
             String errorMsg = "";
@@ -681,7 +681,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
      */
     static class TargetLockingTest_DeleteSource extends TargetLockingTest {
         boolean isIndirectionTriggered;
-        
+
         public TargetLockingTest_DeleteSource(boolean isIndirectionTriggered) {
             super();
             this.isIndirectionTriggered = isIndirectionTriggered;
@@ -696,15 +696,15 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         public void setup() {
             // create 3 Employees.
             employee = new Employee[3];
-            
+
             employee[0] = new Employee();
             employee[0].setFirstName("Manager");
-            
+
             // 1 and 2 have manager 0.
             employee[1] = new Employee();
             employee[1].setFirstName("Employee_1");
             employee[0].addManagedEmployee(employee[1]);
-            
+
             employee[2] = new Employee();
             employee[2].setFirstName("Employee_2");
             employee[0].addManagedEmployee(employee[2]);
@@ -715,7 +715,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
                 uow.registerObject(employee[i]);
             }
             uow.commit();
-            
+
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         }
         public void test() {
@@ -724,14 +724,14 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
                 // that triggers indirection.
                 employee[0].getManagedEmployees().size();
             }
-            
+
             UnitOfWork uow = getSession().acquireUnitOfWork();
             Employee managerClone = (Employee)uow.deleteObject(employee[0]);
             // after commit 0 is deleted and the versions of 1 and 2 should be changed.
             uow.commit();
             // set the deleted Employee to null so that reset method won't attempt to delete it again.
             employee[0] = null;
-        }        
+        }
         public void verify() {
             long version[] = new long[employee.length];
             String errorMsg = "";

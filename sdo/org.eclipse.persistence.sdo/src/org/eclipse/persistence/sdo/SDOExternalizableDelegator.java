@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.sdo;
 
 import java.io.IOException;
@@ -29,25 +29,25 @@ import commonj.sdo.impl.HelperProvider;
 
 public class SDOExternalizableDelegator extends AbstractExternalizableDelegator {
 
-	static final PrivilegedGetField privilegedGetDelegateField = new PrivilegedGetField(AbstractExternalizableDelegator.class, "delegate", true);
-	
-	public SDOExternalizableDelegator() {
-		super();
-	}
+    static final PrivilegedGetField privilegedGetDelegateField = new PrivilegedGetField(AbstractExternalizableDelegator.class, "delegate", true);
 
-	public SDOExternalizableDelegator(Object target) {
-		super(target);
-	}
+    public SDOExternalizableDelegator() {
+        super();
+    }
 
-	public SDOExternalizableDelegator(Object target, HelperContext aContext) {
+    public SDOExternalizableDelegator(Object target) {
+        super(target);
+    }
+
+    public SDOExternalizableDelegator(Object target, HelperContext aContext) {
         // JIRA129: pass the helperContext to the constructor to enable non-static contexts
         // check for context type (if non-static SDOHelperContext then we need to cast to use the non-interface createResolvable function
         // to remove this instanceof check - add createResolvable to the HelperContext interface
         if (aContext instanceof SDOHelperContext) {
-			setDelegate(((SDOHelperContext)aContext).createResolvable(target));
+            setDelegate(((SDOHelperContext)aContext).createResolvable(target));
         } else {
             // use static helper
-			setDelegate(HelperProvider.createResolvable(target));
+            setDelegate(HelperProvider.createResolvable(target));
         }
     }
 
@@ -59,30 +59,30 @@ public class SDOExternalizableDelegator extends AbstractExternalizableDelegator 
             // only reset non-static implementations
             getDelegate().setHelperContext(((DataObjectInputStream)in).getHelperContext());
         }
-		super.readExternal(in);
+        super.readExternal(in);
     }
 
     private SDOResolvable getDelegate() {
-		try {	
-			Field delegateField = privilegedGetDelegateField.run();
-			PrivilegedGetValueFromField privilegedGetValueFromDelegateField = new PrivilegedGetValueFromField(delegateField, this);
-			return (SDOResolvable) privilegedGetValueFromDelegateField.run();
-		}catch (NoSuchFieldException nsfException){
-			throw SDOException.errorAccessingExternalizableDelegator("delegate", nsfException);
-		}catch (IllegalAccessException iaException){
-			throw SDOException.errorAccessingExternalizableDelegator("delegate", iaException);
-		}
-	}
+        try {
+            Field delegateField = privilegedGetDelegateField.run();
+            PrivilegedGetValueFromField privilegedGetValueFromDelegateField = new PrivilegedGetValueFromField(delegateField, this);
+            return (SDOResolvable) privilegedGetValueFromDelegateField.run();
+        }catch (NoSuchFieldException nsfException){
+            throw SDOException.errorAccessingExternalizableDelegator("delegate", nsfException);
+        }catch (IllegalAccessException iaException){
+            throw SDOException.errorAccessingExternalizableDelegator("delegate", iaException);
+        }
+    }
 
-	private void setDelegate(Resolvable resolvable) {
-		try {
-			Field delegateField = (Field) privilegedGetDelegateField.run();
-			PrivilegedSetValueInField privilegedSetValueInDelegateField = new PrivilegedSetValueInField(delegateField, this, resolvable);
-			privilegedSetValueInDelegateField.run();
-		} catch (NoSuchFieldException nsfException){
-			throw SDOException.errorAccessingExternalizableDelegator("delegate", nsfException);
-		} catch (IllegalAccessException iaException){
-			throw SDOException.errorAccessingExternalizableDelegator("delegate", iaException);
-		}		
-	}
+    private void setDelegate(Resolvable resolvable) {
+        try {
+            Field delegateField = (Field) privilegedGetDelegateField.run();
+            PrivilegedSetValueInField privilegedSetValueInDelegateField = new PrivilegedSetValueInField(delegateField, this, resolvable);
+            privilegedSetValueInDelegateField.run();
+        } catch (NoSuchFieldException nsfException){
+            throw SDOException.errorAccessingExternalizableDelegator("delegate", nsfException);
+        } catch (IllegalAccessException iaException){
+            throw SDOException.errorAccessingExternalizableDelegator("delegate", iaException);
+        }
+    }
 }

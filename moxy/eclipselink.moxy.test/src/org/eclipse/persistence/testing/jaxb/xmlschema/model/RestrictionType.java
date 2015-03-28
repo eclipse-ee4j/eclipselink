@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,9 +29,9 @@ import javax.xml.namespace.QName;
 
 /**
  * <p>Java class for restrictionType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="restrictionType">
  *   &lt;complexContent>
@@ -49,8 +49,8 @@ import javax.xml.namespace.QName;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "restrictionType", propOrder = {
@@ -102,11 +102,11 @@ public class RestrictionType
 
     /**
      * Gets the value of the group property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link GroupRef }
-     *     
+     *
      */
     public GroupRef getGroup() {
         return group;
@@ -114,11 +114,11 @@ public class RestrictionType
 
     /**
      * Sets the value of the group property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link GroupRef }
-     *     
+     *
      */
     public void setGroup(GroupRef value) {
         this.group = value;
@@ -126,11 +126,11 @@ public class RestrictionType
 
     /**
      * Gets the value of the all property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link All }
-     *     
+     *
      */
     public All getAll() {
         return all;
@@ -138,11 +138,11 @@ public class RestrictionType
 
     /**
      * Sets the value of the all property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link All }
-     *     
+     *
      */
     public void setAll(All value) {
         this.all = value;
@@ -150,11 +150,11 @@ public class RestrictionType
 
     /**
      * Gets the value of the choice property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link ExplicitGroup }
-     *     
+     *
      */
     public ExplicitGroup getChoice() {
         return choice;
@@ -162,11 +162,11 @@ public class RestrictionType
 
     /**
      * Sets the value of the choice property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link ExplicitGroup }
-     *     
+     *
      */
     public void setChoice(ExplicitGroup value) {
         this.choice = value;
@@ -174,11 +174,11 @@ public class RestrictionType
 
     /**
      * Gets the value of the sequence property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link ExplicitGroup }
-     *     
+     *
      */
     public ExplicitGroup getSequence() {
         return sequence;
@@ -186,11 +186,11 @@ public class RestrictionType
 
     /**
      * Sets the value of the sequence property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link ExplicitGroup }
-     *     
+     *
      */
     public void setSequence(ExplicitGroup value) {
         this.sequence = value;
@@ -198,11 +198,11 @@ public class RestrictionType
 
     /**
      * Gets the value of the simpleType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link LocalSimpleType }
-     *     
+     *
      */
     public LocalSimpleType getSimpleType() {
         return simpleType;
@@ -210,11 +210,11 @@ public class RestrictionType
 
     /**
      * Sets the value of the simpleType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link LocalSimpleType }
-     *     
+     *
      */
     public void setSimpleType(LocalSimpleType value) {
         this.simpleType = value;
@@ -222,20 +222,20 @@ public class RestrictionType
 
     /**
      * Gets the value of the facets property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the facets property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getFacets().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link NumFacet }{@code >}
@@ -250,8 +250,8 @@ public class RestrictionType
      * {@link TotalDigits }
      * {@link WhiteSpace }
      * {@link JAXBElement }{@code <}{@link Facet }{@code >}
-     * 
-     * 
+     *
+     *
      */
     public List<Object> getFacets() {
         if (facets == null) {
@@ -262,26 +262,26 @@ public class RestrictionType
 
     /**
      * Gets the value of the attributeOrAttributeGroup property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the attributeOrAttributeGroup property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getAttributeOrAttributeGroup().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link AttributeGroupRef }
      * {@link Attribute }
-     * 
-     * 
+     *
+     *
      */
     public List<Annotated> getAttributeOrAttributeGroup() {
         if (attributeOrAttributeGroup == null) {
@@ -292,11 +292,11 @@ public class RestrictionType
 
     /**
      * Gets the value of the anyAttribute property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Wildcard }
-     *     
+     *
      */
     public Wildcard getAnyAttribute() {
         return anyAttribute;
@@ -304,11 +304,11 @@ public class RestrictionType
 
     /**
      * Sets the value of the anyAttribute property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Wildcard }
-     *     
+     *
      */
     public void setAnyAttribute(Wildcard value) {
         this.anyAttribute = value;
@@ -316,11 +316,11 @@ public class RestrictionType
 
     /**
      * Gets the value of the base property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link QName }
-     *     
+     *
      */
     public QName getBase() {
         return base;
@@ -328,11 +328,11 @@ public class RestrictionType
 
     /**
      * Sets the value of the base property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link QName }
-     *     
+     *
      */
     public void setBase(QName value) {
         this.base = value;

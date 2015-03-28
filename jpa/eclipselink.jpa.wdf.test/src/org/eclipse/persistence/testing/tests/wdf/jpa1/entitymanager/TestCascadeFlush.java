@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -94,8 +94,8 @@ public class TestCascadeFlush extends JPA1Base {
     }
 
     /*
-     * The semantics of the persist operation, applied to an entity X are as follows: If X is a detached object, 
-     * the EntityExistsException may be thrown when the persist operation is invoked, 
+     * The semantics of the persist operation, applied to an entity X are as follows: If X is a detached object,
+     * the EntityExistsException may be thrown when the persist operation is invoked,
      * or the EntityExistsException or another PersistenceException may be thrown at flush or commit time.
      */
     @Test

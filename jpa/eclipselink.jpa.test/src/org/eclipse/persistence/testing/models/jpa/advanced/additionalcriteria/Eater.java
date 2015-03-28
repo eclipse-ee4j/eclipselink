@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     15/08/2011-2.3.1 Guy Pelletier 
+ *     15/08/2011-2.3.1 Guy Pelletier
  *       - 298494: JPQL exists subquery generates unnecessary table join
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria;
 
 import javax.persistence.Column;
@@ -41,7 +41,7 @@ public class Eater extends Person {
     public String getName() {
         return name;
     }
-    
+
     public Sandwich getSandwhich() {
         return sandwhich;
     }
@@ -49,7 +49,7 @@ public class Eater extends Person {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public void setSandwhich(Sandwich sandwhich) {
         this.sandwhich = sandwhich;
     }

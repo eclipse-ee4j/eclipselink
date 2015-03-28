@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,103 +43,103 @@ import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterTypeVisitor
                                                               implements EclipseLinkExpressionVisitor {
 
-	/**
-	 * Creates a new <code>AbstractEclipseLinkParameterTypeVisitor</code>.
-	 */
-	protected AbstractEclipseLinkParameterTypeVisitor() {
-		super();
-	}
+    /**
+     * Creates a new <code>AbstractEclipseLinkParameterTypeVisitor</code>.
+     */
+    protected AbstractEclipseLinkParameterTypeVisitor() {
+        super();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(AsOfClause expression) {
-		type = Object.class;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(AsOfClause expression) {
+        type = Object.class;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(CastExpression expression) {
-		type = Object.class;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(CastExpression expression) {
+        type = Object.class;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(ConnectByClause expression) {
-		type = Object.class;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(ConnectByClause expression) {
+        type = Object.class;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(DatabaseType expression) {
-		type = Object.class;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(DatabaseType expression) {
+        type = Object.class;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(ExtractExpression expression) {
-		type = Object.class;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(ExtractExpression expression) {
+        type = Object.class;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(HierarchicalQueryClause expression) {
-		type = Object.class;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(HierarchicalQueryClause expression) {
+        type = Object.class;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(OrderSiblingsByClause expression) {
-		type = Object.class;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(OrderSiblingsByClause expression) {
+        type = Object.class;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(RegexpExpression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(RegexpExpression expression) {
 
-		Expression patternValue = expression.getPatternValue();
-		Expression stringExpression = expression.getStringExpression();
+        Expression patternValue = expression.getPatternValue();
+        Expression stringExpression = expression.getStringExpression();
 
-		if (patternValue.isAncestor(inputParameter)) {
-			this.expression = expression.getStringExpression();
-		}
-		else if (stringExpression.isAncestor(inputParameter)) {
-			this.expression = expression;
-		}
-	}
+        if (patternValue.isAncestor(inputParameter)) {
+            this.expression = expression.getStringExpression();
+        }
+        else if (stringExpression.isAncestor(inputParameter)) {
+            this.expression = expression;
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(StartWithClause expression) {
-		type = Object.class;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(StartWithClause expression) {
+        type = Object.class;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TableExpression expression) {
-		type = Object.class;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(TableExpression expression) {
+        type = Object.class;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TableVariableDeclaration expression) {
-		type = Object.class;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(TableVariableDeclaration expression) {
+        type = Object.class;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(UnionClause expression) {
-		type = Object.class;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(UnionClause expression) {
+        type = Object.class;
+    }
 }

@@ -5,7 +5,7 @@
    <birthday>2005-05-24T16:06:53</birthday>
    <address>
       <id>10</id>
-	  <cityName>Ottawa</cityName>
+      <cityName>Ottawa</cityName>
    </address>
    <responsibilities>
       <responsibility xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>

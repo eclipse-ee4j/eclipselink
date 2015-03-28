@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.isolatedsession;
 
 import java.io.Serializable;
@@ -20,25 +20,25 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class IsolatedChild implements Serializable {
-    
+
     protected String id;
     protected String serial;
     protected String deleted = "N";
     protected ValueHolderInterface parent;
-    
+
     public IsolatedChild() {
         super();
         this.parent = new ValueHolder();
     }
-    
+
     public void setParent(IsolatedParent parent) {
         this.parent.setValue(parent);
     }
-    
+
     public IsolatedParent getParent() {
         return (IsolatedParent) this.parent.getValue();
     }
-    
+
     public String getId() {
         return id;
     }
@@ -46,7 +46,7 @@ public class IsolatedChild implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public String getSerial() {
         return serial;
     }
@@ -54,11 +54,11 @@ public class IsolatedChild implements Serializable {
     public void setSerial(String serial) {
         this.serial = serial;
     }
-    
+
     public String getDeleted() {
         return this.deleted;
     }
-    
+
     public void setDeleted(String deleted) {
         this.deleted = deleted;
     }
@@ -91,7 +91,7 @@ public class IsolatedChild implements Serializable {
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("ISOLATED_PARENT.ID");
         tabledefinition.addField(field1);
-        
+
         // SECTION: FIELD
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("SERIAL");
@@ -102,7 +102,7 @@ public class IsolatedChild implements Serializable {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         tabledefinition.addField(field2);
-        
+
         // SECTION: FIELD
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("DELETED");
@@ -113,10 +113,10 @@ public class IsolatedChild implements Serializable {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         tabledefinition.addField(field3);
-        
+
         return tabledefinition;
     }
-    
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + " id: [" + getId() + "] hashcode: [" + System.identityHashCode(this) + "]";

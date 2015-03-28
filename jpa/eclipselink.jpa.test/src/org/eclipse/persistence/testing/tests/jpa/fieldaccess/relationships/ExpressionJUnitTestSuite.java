@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
 import java.util.List;
@@ -26,21 +26,21 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
 
 public class ExpressionJUnitTestSuite extends JUnitTestCase {
-        
+
     public ExpressionJUnitTestSuite() {
     }
-    
+
     public ExpressionJUnitTestSuite(String name) {
         super(name);
     }
-    
+
     public void setUp () {
         super.setUp();
         clearCache("fieldaccess");
-        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));        
+        new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
     }
 
-    
+
     /*
      * lefTrim(string) feature test
      *   tests that leftTrim(trim_char) works.
@@ -56,7 +56,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         //customer4.setCity("Manotick");
         EntityManager em = createEntityManager("fieldaccess");
         try{
-            
+
             beginTransaction(em);
             em.persist(c);
             commitTransaction(em);
@@ -169,7 +169,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             throw e;
         }
     }
-    
+
 
     /*
      * rightTrim(string) feature test
@@ -247,7 +247,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         c.setCity("Manotic ");
         EntityManager em = createEntityManager("fieldaccess");
         try{
-            
+
             beginTransaction(em);
             em.persist(c);
             commitTransaction(em);
@@ -372,7 +372,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      */
     public void testTrimWithoutTrimChar() throws Exception {
         Platform dbPlatform = getPlatform("fieldaccess");
-        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() 
+        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL()
                 || dbPlatform.isInformix() || dbPlatform.isSQLAnywhere() || dbPlatform.isHSQL() || dbPlatform.isSymfoware())) {
             getServerSession("fieldaccess").logMessage("Test testTrimWithoutTrimChar skipped for this platform");
             return;

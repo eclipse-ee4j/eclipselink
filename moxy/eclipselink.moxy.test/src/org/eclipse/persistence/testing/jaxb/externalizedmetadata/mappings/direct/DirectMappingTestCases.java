@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,7 +30,7 @@ import org.w3c.dom.Document;
 
 /**
  * Tests XmlDirectMappings via eclipselink-oxm.xml
- * 
+ *
  */
 public class DirectMappingTestCases extends JAXBTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/direct/employee.xml";
@@ -47,7 +47,7 @@ public class DirectMappingTestCases extends JAXBTestCases {
     private static final String CHARACTER_DATA = "<characters>a b c d e f g</characters>";
     private static final String PRIVATE_DATA = "This is some private data";
     private static final String EMPLOYEES_NS = "http://www.example.com/employees";
-    
+
     private static final int PROPCOUNT = 3;
     private static final String PROPKEY_1 = "1";
     private static final String PROPKEY_2 = "2";
@@ -59,7 +59,7 @@ public class DirectMappingTestCases extends JAXBTestCases {
 
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public DirectMappingTestCases(String name) throws Exception{
@@ -82,16 +82,16 @@ public class DirectMappingTestCases extends JAXBTestCases {
         ctrlEmp.privateData = PRIVATE_DATA;
         ctrlEmp.characterData = CHARACTER_DATA;
         ctrlEmp.projectId = PROJECT_ID;
-        
+
         // 'privateData' is write only
         ctrlEmp.privateData = null;
-        // JAXB will default a null String to "" 
+        // JAXB will default a null String to ""
         ctrlEmp.someString = "";
         return ctrlEmp;
     }
-    
+
     public Object getWriteControlObject() {
-    	if(ctrlEmp == null){
+        if(ctrlEmp == null){
         ctrlEmp = new Employee();
         ctrlEmp.firstName = FNAME;
         ctrlEmp.lastName = LNAME;
@@ -105,59 +105,59 @@ public class DirectMappingTestCases extends JAXBTestCases {
         ctrlEmp.characterData = CHARACTER_DATA;
         ctrlEmp.projectId = PROJECT_ID;
         ctrlEmp.setSomeString(null);
-    	}
-       
+        }
+
         return ctrlEmp;
     }
-    
+
     public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/direct/eclipselink-oxm.xml");
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/direct/eclipselink-oxm.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct", new StreamSource(inputStream));
-		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-		properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-	        
-	    return properties;
-	}
-	    
-	    
-	public void testSchemaGen() throws Exception{
-	   	List controlSchemas = new ArrayList();
-	   	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/direct/employees.xsd");
-	   	InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/direct/projects.xsd");
-	   	controlSchemas.add(is);
-	   	controlSchemas.add(is2);
-	   	
-	   	super.testSchemaGen(controlSchemas);	  
-	}
-	
-	public void xmlToObjectTest(Object testObject) throws Exception{
-		super.xmlToObjectTest(testObject);
-		Employee empObj=(Employee)testObject;
-	     assertTrue("Accessor method was not called as expected", empObj.wasSetCalled);
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+        return properties;
+    }
+
+
+    public void testSchemaGen() throws Exception{
+           List controlSchemas = new ArrayList();
+           InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/direct/employees.xsd");
+           InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/direct/projects.xsd");
+           controlSchemas.add(is);
+           controlSchemas.add(is2);
+
+           super.testSchemaGen(controlSchemas);
+    }
+
+    public void xmlToObjectTest(Object testObject) throws Exception{
+        super.xmlToObjectTest(testObject);
+        Employee empObj=(Employee)testObject;
+         assertTrue("Accessor method was not called as expected", empObj.wasSetCalled);
          assertTrue("Set was not called for absent node as expected", empObj.isAStringSet);
-  
-	}
-	public void objectToXMLDocumentTest(Document testDocument) throws Exception{
-	   super.objectToXMLDocumentTest(testDocument);
+
+    }
+    public void objectToXMLDocumentTest(Document testDocument) throws Exception{
+       super.objectToXMLDocumentTest(testDocument);
        assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
-	}
-	
-	public void testRoundTrip(){
-		//not applicable with write only mappings
-	}
+    }
 
-	 public void testObjectToContentHandler() throws Exception {
-	    	//See Bug 355143 
+    public void testRoundTrip(){
+        //not applicable with write only mappings
+    }
 
-	    }
+     public void testObjectToContentHandler() throws Exception {
+            //See Bug 355143
 
-	 
+        }
+
+
     /**
      * Test setting property-level properties via xml-element.
      * Tests setting a String, Integer and Boolean.
-     * 
+     *
      * Positive test.
      */
     public void testMappingProperties() {
@@ -168,11 +168,11 @@ public class DirectMappingTestCases extends JAXBTestCases {
         assertNotNull("No user-defined properties exist on the mapping for [projectName]", projectNameMapping.getProperties());
         validateProperties(projectNameMapping.getProperties());
     }
-    
+
     /**
      * Test setting descriptor-level properties via XML metadata.
      * Tests setting a String, Integer and Boolean.
-     * 
+     *
      * Positive test.
      */
     public void testDescriptorProperties() {
@@ -181,10 +181,10 @@ public class DirectMappingTestCases extends JAXBTestCases {
         assertNotNull("No user-defined properties exist on the descriptor for Employee", xdesc.getProperties());
         validateProperties(xdesc.getProperties());
     }
-    
+
     /**
      * Validates user-defined properties set via xml metadata.
-     * 
+     *
      * @param props
      */
     private void validateProperties(Map props) {

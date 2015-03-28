@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     01/12/2009-1.1 Daniel Lo
- *       - 247041: Null element inserted in the ArrayList 
- ******************************************************************************/  
+ *       - 247041: Null element inserted in the ArrayList
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl;
 
 import java.util.ArrayList;
@@ -42,23 +42,23 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 })
 public class EquipmentDAO implements Equipment, java.io.Serializable {
     private static final long serialVersionUID = 1L;
- 
+
     @Id
     @Column(name = "JDOID")
     @GeneratedValue(strategy=GenerationType.IDENTITY, generator="PKGen")
     @TableGenerator(
-            name="PKGen", 
-            table="JDO_SEQUENCE", 
-            pkColumnName="ID", 
-            pkColumnValue="jdoid", 
+            name="PKGen",
+            table="JDO_SEQUENCE",
+            pkColumnName="ID",
+            pkColumnValue="jdoid",
             valueColumnName="SEQUENCE_VALUE",
             initialValue=0,
             allocationSize=50)
     protected long entityId;
 
     private java.lang.String id;
-    
-    @OneToMany(cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}, 
+
+    @OneToMany(cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE},
             fetch=FetchType.LAZY,
             targetEntity=PortDAO.class,
             mappedBy="equipment")
@@ -79,11 +79,11 @@ public class EquipmentDAO implements Equipment, java.io.Serializable {
     public String getId() {
         return id;
     }
-    
+
     public void setId( String id ) {
         this.id = id;
     }
-    
+
     public java.util.List<Port> getPorts() {
             return ports;
     }
@@ -91,19 +91,19 @@ public class EquipmentDAO implements Equipment, java.io.Serializable {
     public void setPorts(ArrayList<Port> ports ) {
         this.ports = ports;
     }
-    
-    public void addPort(Port p) {
-		getPorts().add(p);
-		p.setEquipment(this);
-	}
 
-	public Port removePort(int i) {
-		Port port = getPorts().remove(i);
-        
-		if (port != null) {
+    public void addPort(Port p) {
+        getPorts().add(p);
+        p.setEquipment(this);
+    }
+
+    public Port removePort(int i) {
+        Port port = getPorts().remove(i);
+
+        if (port != null) {
             port.setEquipment(null);
         }
-        
+
         return port;
-	}
+    }
 }

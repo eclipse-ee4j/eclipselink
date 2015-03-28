@@ -1,29 +1,29 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     01/28/2009-2.0 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier
  *       - 248293: JPA 2.0 Element Collections (part 1)
- *     02/25/2009-2.0 Guy Pelletier 
+ *     02/25/2009-2.0 Guy Pelletier
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     11/06/2009-2.0 Guy Pelletier 
+ *     11/06/2009-2.0 Guy Pelletier
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
- *     03/08/2010-2.1 Guy Pelletier 
+ *     03/08/2010-2.1 Guy Pelletier
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     03/29/2010-2.1 Guy Pelletier 
+ *     03/29/2010-2.1 Guy Pelletier
  *       - 267217: Add Named Access Type to EclipseLink-ORM
- *     06/16/2010-2.2 Guy Pelletier 
+ *     06/16/2010-2.2 Guy Pelletier
  *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -53,12 +53,12 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildRESPONSTable());
         addTableDefinition(buildSALARYTable());
         addTableDefinition(buildWOMANTable());
-        
+
         // Tables used only in extended test model
         addTableDefinition(buildLONERTable());
         addTableDefinition(buildLONERCHARACTERISTICSTable());
         addTableDefinition(buildCONFIDANTTable());
-        
+
         addTableDefinition(buildSHOVELTable());
         addTableDefinition(buildSHOVELDIGGERTable());
         addTableDefinition(buildSHOVELOWNERTable());
@@ -69,16 +69,16 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildVIOLATIONCODETable());
         addTableDefinition(buildVIOLATIONCODESTable());
 
-		addTableDefinition(buildSTUDENTTable());
+        addTableDefinition(buildSTUDENTTable());
         addTableDefinition(buildSCHOOLTable());
         addTableDefinition(buildBOLTTable());
         addTableDefinition(buildNUTTable());
     }
-    
+
     public static TableDefinition buildREADONLYCLASSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_READONLY");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -89,10 +89,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildADDRESSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_ADDRESS");
@@ -162,7 +162,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldCOUNTRY.setUnique(false);
         fieldCOUNTRY.setShouldAllowNull(true);
         table.addField(fieldCOUNTRY);
-        
+
         FieldDefinition fieldType = new FieldDefinition();
         fieldType.setName("TYPE");
         fieldType.setTypeName("VARCHAR2");
@@ -191,7 +191,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldLONERID = new FieldDefinition();
         fieldLONERID.setName("LONER_ID");
         fieldLONERID.setTypeName("NUMERIC");
@@ -205,11 +205,11 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCREDITCARDSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XMLEmployee_CREDITCARDS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EMP_ID");
         fieldID.setTypeName("NUMERIC");
@@ -220,7 +220,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldCARD = new FieldDefinition();
         fieldCARD.setName("CARD");
         fieldCARD.setTypeName("VARCHAR");
@@ -230,7 +230,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldCARD.setUnique(true);
         fieldCARD.setIsIdentity(false);
         table.addField(fieldCARD);
-        
+
         FieldDefinition fieldNUMB = new FieldDefinition();
         fieldNUMB.setName("NUMB");
         fieldNUMB.setTypeName("VARCHAR");
@@ -240,14 +240,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNUMB.setUnique(false);
         fieldNUMB.setIsIdentity(false);
         table.addField(fieldNUMB);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildCREDITLINESTable() {
         TableDefinition table = new TableDefinition();
         table.setName("EMP_CREDITLINES");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EMP_ID");
         fieldID.setTypeName("NUMERIC");
@@ -258,7 +258,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldBANK = new FieldDefinition();
         fieldBANK.setName("BANK");
         fieldBANK.setTypeName("VARCHAR");
@@ -268,7 +268,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldBANK.setUnique(true);
         fieldBANK.setIsIdentity(false);
         table.addField(fieldBANK);
-        
+
         FieldDefinition fieldACCOUNT = new FieldDefinition();
         fieldACCOUNT.setName("ACCOUNT");
         fieldACCOUNT.setTypeName("VARCHAR");
@@ -278,10 +278,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldACCOUNT.setUnique(false);
         fieldACCOUNT.setIsIdentity(false);
         table.addField(fieldACCOUNT);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildCUSTOMERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_ADV_CUSTOMER");
@@ -295,7 +295,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field0 = new FieldDefinition();
         field0.setName("FK_DEALER_ID");
         field0.setTypeName("NUMERIC");
@@ -306,7 +306,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field0.setIsIdentity(false);
         field0.setForeignKeyFieldName("CMP3_XML_DEALER.DEALER_ID");
         table.addField(field0);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("F_NAME");
         field1.setTypeName("VARCHAR");
@@ -316,7 +316,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("L_NAME");
         field2.setTypeName("VARCHAR");
@@ -326,7 +326,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         table.addField(field2);
-        
+
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("BUDGET");
         field3.setTypeName("NUMERIC");
@@ -336,7 +336,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-        
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("VERSION");
         field4.setTypeName("NUMERIC");
@@ -346,10 +346,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field4.setUnique(false);
         field4.setIsIdentity(false);
         table.addField(field4);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildDEALERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_DEALER");
@@ -363,7 +363,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field0 = new FieldDefinition();
         field0.setName("FK_EMP_ID");
         field0.setTypeName("NUMERIC");
@@ -374,7 +374,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field0.setIsIdentity(false);
         field0.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
         table.addField(field0);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("F_NAME");
         field1.setTypeName("VARCHAR");
@@ -384,7 +384,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("L_NAME");
         field2.setTypeName("VARCHAR");
@@ -394,7 +394,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         table.addField(field2);
-        
+
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("STATUS");
         field3.setTypeName("VARCHAR");
@@ -404,7 +404,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field3.setUnique(false);
         field3.setIsIdentity(false);
         table.addField(field3);
-        
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("VERSION");
         field4.setTypeName("NUMERIC");
@@ -414,7 +414,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field4.setUnique(false);
         field4.setIsIdentity(false);
         table.addField(field4);
-        
+
         FieldDefinition field5 = new FieldDefinition();
         field5.setName("BID");
         field5.setTypeName("VARCHAR");
@@ -424,10 +424,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field5.setUnique(false);
         field5.setIsIdentity(false);
         table.addField(field5);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildDEPTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_DEPT");
@@ -464,15 +464,15 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldHEAD.setUnique(false);
         fieldHEAD.setShouldAllowNull(true);
         table.addField(fieldHEAD);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildEMPLOYEETable() {
         TableDefinition table = new TableDefinition();
         // SECTION: TABLE
         table.setName("CMP3_XML_EMPLOYEE");
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field.setName("EMP_ID");
@@ -483,7 +483,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setUnique(false );
         field.setIsIdentity(true );
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("F_NAME");
@@ -494,7 +494,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("L_NAME");
@@ -505,7 +505,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field2.setUnique(false );
         field2.setIsIdentity(false );
         table.addField(field2);
-        
+
         org.eclipse.persistence.tools.schemaframework.FieldDefinition sin = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         sin.setName("SIN");
         sin.setTypeName("VARCHAR");
@@ -515,7 +515,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         sin.setUnique(false );
         sin.setIsIdentity(false );
         table.addField(sin);
-    
+
         FieldDefinition fieldGender = new FieldDefinition();
         fieldGender.setName("GENDER");
         fieldGender.setTypeName("VARCHAR");
@@ -525,7 +525,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldGender.setUnique(false);
         fieldGender.setIsIdentity(false);
         table.addField(fieldGender);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("START_DATE");
@@ -536,7 +536,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field3.setUnique(false );
         field3.setIsIdentity(false );
         table.addField(field3);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field4 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field4.setName("END_DATE");
@@ -547,7 +547,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field4.setUnique(false );
         field4.setIsIdentity(false );
         table.addField(field4);
-    
+
         FieldDefinition field5 = new FieldDefinition();
         field5.setName("START_TIME");
         field5.setTypeName("TIME");
@@ -599,7 +599,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field8.setIsIdentity(false );
         field8.setForeignKeyFieldName("CMP3_XML_ADDRESS.ADDRESS_ID");
         table.addField(field8);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field9 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field9.setName("MANAGER_EMP_ID");
@@ -611,7 +611,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field9.setIsIdentity(false );
         field9.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
         table.addField(field9);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field10 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field10.setName("VERSION");
@@ -622,7 +622,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field10.setUnique(false );
         field10.setIsIdentity(false );
         table.addField(field10);
-        
+
         FieldDefinition fieldPayScale = new FieldDefinition();
         fieldPayScale.setName("PAY_SCALE");
         fieldPayScale.setTypeName("VARCHAR");
@@ -632,7 +632,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldPayScale.setIsIdentity(false);
         fieldPayScale.setShouldAllowNull(true);
         table.addField(fieldPayScale);
-        
+
         org.eclipse.persistence.tools.schemaframework.FieldDefinition fieldDeptID = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         fieldDeptID.setName("DEPT_ID");
         fieldDeptID.setTypeName("NUMERIC");
@@ -643,7 +643,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldDeptID.setIsIdentity(false );
         fieldDeptID.setForeignKeyFieldName("CMP3_XML_DEPT.ID");
         table.addField(fieldDeptID);
-        
+
         return table;
     }
 
@@ -675,7 +675,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildEQUIPMENTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_EQUIP");
@@ -701,7 +701,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldDEPTID = new FieldDefinition();
         fieldDEPTID.setName("DEPT_ID");
         fieldDEPTID.setTypeName("NUMERIC");
@@ -712,7 +712,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldDEPTID.setIsIdentity(false);
         fieldDEPTID.setForeignKeyFieldName("CMP3_XML_DEPT.ID");
         table.addField(fieldDEPTID);
-        
+
         FieldDefinition fieldCODEID = new FieldDefinition();
         fieldCODEID.setName("CODE_ID");
         fieldCODEID.setTypeName("NUMERIC");
@@ -726,8 +726,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
-    
+
+
     public static TableDefinition buildEQUIPMENTCODETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_EQUIP_CODE");
@@ -756,7 +756,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildLARGEPROJECTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_LPROJECT");
@@ -772,7 +772,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false );
         field.setForeignKeyFieldName("CMP3_XML_PROJECT.PROJ_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("BUDGET");
@@ -783,14 +783,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildLONERCHARACTERISTICSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_LONER_CHARACTERISTICS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("LONER_ID");
         fieldID.setTypeName("NUMERIC");
@@ -801,7 +801,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_LONER.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldCHARACTERISTIC = new FieldDefinition();
         fieldCHARACTERISTIC.setName("CHARACTERISTIC");
         fieldCHARACTERISTIC.setTypeName("VARCHAR");
@@ -811,10 +811,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldCHARACTERISTIC.setUnique(false);
         fieldCHARACTERISTIC.setIsIdentity(false);
         table.addField(fieldCHARACTERISTIC);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildLONERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_LONER");
@@ -849,7 +849,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldFIRSTNAME.setUnique(false);
         fieldFIRSTNAME.setIsIdentity(false);
         table.addField(fieldFIRSTNAME);
-        
+
         FieldDefinition fieldLASTNAME = new FieldDefinition();
         fieldLASTNAME.setName("L_NAME");
         fieldLASTNAME.setTypeName("VARCHAR");
@@ -858,7 +858,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldLASTNAME.setIsPrimaryKey(false);
         fieldLASTNAME.setUnique(false);
         fieldLASTNAME.setIsIdentity(false);
-        table.addField(fieldLASTNAME);        
+        table.addField(fieldLASTNAME);
 
         return table;
     }
@@ -887,7 +887,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("L_NAME");
         field2.setTypeName("VARCHAR");
@@ -896,7 +896,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field2.setIsPrimaryKey(false);
         field2.setUnique(false);
         field2.setIsIdentity(false);
-        table.addField(field2);        
+        table.addField(field2);
 
         return table;
     }
@@ -916,7 +916,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldMID.setShouldAllowNull(true);
         fieldMID.setForeignKeyFieldName("XML_MAN.ID");
         table.addField(fieldMID);
-        
+
         FieldDefinition fieldWID = new FieldDefinition();
         fieldWID.setName("W");
         fieldWID.setTypeName("NUMERIC");
@@ -928,7 +928,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldWID.setShouldAllowNull(true);
         fieldWID.setForeignKeyFieldName("XML_WOMAN.ID");
         table.addField(fieldWID);
-        
+
         return table;
     }
 
@@ -947,7 +947,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false );
         field.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("TYPE");
@@ -958,7 +958,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("AREA_CODE");
@@ -969,7 +969,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field2.setUnique(false );
         field2.setIsIdentity(false );
         table.addField(field2);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("NUMB");
@@ -1000,7 +1000,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false );
         field.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("PROJ_ID");
@@ -1031,7 +1031,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setUnique(false );
         field.setIsIdentity(true );
         table.addField(field);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("PROJ_TYPE");
@@ -1042,7 +1042,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("PROJ_NAME");
@@ -1053,7 +1053,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field2.setUnique(false );
         field2.setIsIdentity(false );
         table.addField(field2);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("DESCRIP");
@@ -1064,7 +1064,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field3.setUnique(false );
         field3.setIsIdentity(false );
         table.addField(field3);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field4 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field4.setName("LEADER_ID");
@@ -1076,7 +1076,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field4.setIsIdentity(false );
         field4.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
         table.addField(field4);
-    
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field5 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field5.setName("VERSION");
@@ -1095,7 +1095,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         TableDefinition table = new TableDefinition();
         // SECTION: TABLE
         table.setName("CMP3_XML_RESPONS");
-    
+
         // SECTION: FIELD
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
@@ -1107,7 +1107,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("CMP3_XML_EMPLOYEE.EMP_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("DESCRIPTION");
@@ -1118,7 +1118,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         return table;
     }
 
@@ -1152,7 +1152,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
-	public TableDefinition buildSCHOOLTable() {
+    public TableDefinition buildSCHOOLTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_XML_AC_SCHOOL");
 
@@ -1165,7 +1165,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR2");
@@ -1176,10 +1176,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildSTUDENTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_XML_AC_STUDENT");
@@ -1193,7 +1193,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR2");
@@ -1215,10 +1215,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldSCHOOL_ID.setShouldAllowNull(false);
         fieldSCHOOL_ID.setForeignKeyFieldName("JPA_XML_AC_SCHOOL.ID");
         table.addField(fieldSCHOOL_ID);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildBOLTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_XML_AC_BOLT");
@@ -1243,10 +1243,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNUT_ID.setShouldAllowNull(false);
         fieldNUT_ID.setForeignKeyFieldName("JPA_XML_AC_NUT.ID");
         table.addField(fieldNUT_ID);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildNUTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_XML_AC_NUT");
@@ -1260,7 +1260,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldCOLOR = new FieldDefinition();
         fieldCOLOR.setName("COLOR");
         fieldCOLOR.setTypeName("VARCHAR2");
@@ -1271,7 +1271,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldCOLOR.setUnique(false);
         fieldCOLOR.setShouldAllowNull(true);
         table.addField(fieldCOLOR);
-        
+
         FieldDefinition fieldSIZE = new FieldDefinition();
         fieldSIZE.setName("B_SIZE");
         fieldSIZE.setTypeName("NUMERIC");
@@ -1281,7 +1281,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldSIZE.setUnique(false);
         fieldSIZE.setIsIdentity(false);
         table.addField(fieldSIZE);
-        
+
         return table;
     }
 
@@ -1308,8 +1308,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNAME.setIsPrimaryKey(false);
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
-        table.addField(fieldNAME);  
-        
+        table.addField(fieldNAME);
+
         FieldDefinition fieldSHOVEL = new FieldDefinition();
         fieldSHOVEL.setName("SHOVEL_ID");
         fieldSHOVEL.setTypeName("NUMERIC");
@@ -1323,7 +1323,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildSHOVELOWNERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_SHOVEL_OWNER");
@@ -1347,11 +1347,11 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNAME.setIsPrimaryKey(false);
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
-        table.addField(fieldNAME);  
+        table.addField(fieldNAME);
 
         return table;
     }
-    
+
     public static TableDefinition buildSHOVELPROJECTSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_SHOVEL_PROJECTS");
@@ -1380,7 +1380,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildSHOVELPROJECTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_SHOVEL_PROJECT");
@@ -1404,11 +1404,11 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldDESCRIPTION.setIsPrimaryKey(false);
         fieldDESCRIPTION.setUnique(false);
         fieldDESCRIPTION.setIsIdentity(false);
-        table.addField(fieldDESCRIPTION);  
+        table.addField(fieldDESCRIPTION);
 
         return table;
     }
-    
+
     public static TableDefinition buildSHOVELTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_SHOVEL");
@@ -1433,7 +1433,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldCOST.setUnique(false);
         fieldCOST.setIsIdentity(false);
         table.addField(fieldCOST);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -1454,7 +1454,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldOWNERID.setIsIdentity(false);
         fieldOWNERID.setForeignKeyFieldName("XML_SHOVEL_OWNER.ID");
         table.addField(fieldOWNERID);
-        
+
         FieldDefinition fieldHANDLE = new FieldDefinition();
         fieldHANDLE.setName("HANDLE");
         fieldHANDLE.setTypeName("VARCHAR");
@@ -1464,7 +1464,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldHANDLE.setUnique(false);
         fieldHANDLE.setIsIdentity(false);
         table.addField(fieldHANDLE);
-        
+
         FieldDefinition fieldSHAFT = new FieldDefinition();
         fieldSHAFT.setName("SHAFT");
         fieldSHAFT.setTypeName("VARCHAR");
@@ -1474,7 +1474,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldSHAFT.setUnique(false);
         fieldSHAFT.setIsIdentity(false);
         table.addField(fieldSHAFT);
-        
+
         FieldDefinition fieldSCOOP = new FieldDefinition();
         fieldSCOOP.setName("SCOOP");
         fieldSCOOP.setTypeName("VARCHAR");
@@ -1484,14 +1484,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldSCOOP.setUnique(false);
         fieldSCOOP.setIsIdentity(false);
         table.addField(fieldSCOOP);
-        
+
         return table;
     }
 
 public static TableDefinition buildVIOLATIONTable() {
-	    TableDefinition table = new TableDefinition();
-	    table.setName("XML_VIOLATION");
-	    
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_VIOLATION");
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("VARCHAR");
@@ -1502,14 +1502,14 @@ public static TableDefinition buildVIOLATIONTable() {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
-	    return table;
-	}
-	
-	public static TableDefinition buildVIOLATIONCODETable() {
-	    TableDefinition table = new TableDefinition();
-	    table.setName("XML_VIOLATION_CODE");
-	    
+
+        return table;
+    }
+
+    public static TableDefinition buildVIOLATIONCODETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_VIOLATION_CODE");
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1520,7 +1520,7 @@ public static TableDefinition buildVIOLATIONTable() {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldDESCRIP = new FieldDefinition();
         fieldDESCRIP.setName("DESCRIP");
         fieldDESCRIP.setTypeName("VARCHAR");
@@ -1530,14 +1530,14 @@ public static TableDefinition buildVIOLATIONTable() {
         fieldDESCRIP.setUnique(false);
         fieldDESCRIP.setIsIdentity(false);
         table.addField(fieldDESCRIP);
-	    
-	    return table;
+
+        return table;
     }
-	
-	public static TableDefinition buildVIOLATIONCODESTable() {
+
+    public static TableDefinition buildVIOLATIONCODESTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_VIOLATION_CODES");
-        
+
         FieldDefinition fieldVIOLATIONID = new FieldDefinition();
         fieldVIOLATIONID.setName("VIOLATION_ID");
         fieldVIOLATIONID.setTypeName("VARCHAR");
@@ -1549,7 +1549,7 @@ public static TableDefinition buildVIOLATIONTable() {
         fieldVIOLATIONID.setShouldAllowNull(false);
         fieldVIOLATIONID.setForeignKeyFieldName("XML_VIOLATION.ID");
         table.addField(fieldVIOLATIONID);
-        
+
         FieldDefinition fieldVIOLATIONCODEID = new FieldDefinition();
         fieldVIOLATIONCODEID.setName("VIOLATION_CODE_ID");
         fieldVIOLATIONCODEID.setTypeName("NUMERIC");
@@ -1561,7 +1561,7 @@ public static TableDefinition buildVIOLATIONTable() {
         fieldVIOLATIONCODEID.setShouldAllowNull(false);
         fieldVIOLATIONCODEID.setForeignKeyFieldName("XML_VIOLATION_CODE.ID");
         table.addField(fieldVIOLATIONCODEID);
-        
+
         return table;
     }
 
@@ -1598,7 +1598,7 @@ public static TableDefinition buildVIOLATIONTable() {
          field2.setIsPrimaryKey(false);
          field2.setUnique(false);
          field2.setIsIdentity(false);
-         table.addField(field2);        
+         table.addField(field2);
 
          return table;
      }

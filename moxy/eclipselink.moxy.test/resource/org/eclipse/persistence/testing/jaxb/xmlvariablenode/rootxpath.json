@@ -2,7 +2,7 @@
      "name":"theRootName",
      "a":{
         "b":{
-           "thinga":{"thingName":"thinga","thingValue":"thingavalue"} 
-	   }
+           "thinga":{"thingName":"thinga","thingValue":"thingavalue"}
+       }
       }
 }}

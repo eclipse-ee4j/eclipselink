@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.structures;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -52,14 +52,14 @@ public class ObjectRelationalDatabaseField extends DatabaseField {
 
     /*
      * INTERNAL:
-     * Convert all the class-name-based settings in this mapping to actual 
-     * class-based settings. This method is implemented by subclasses as 
+     * Convert all the class-name-based settings in this mapping to actual
+     * class-based settings. This method is implemented by subclasses as
      * necessary.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         super.convertClassNamesToClasses(classLoader);
-        
+
         if (nestedTypeField != null) {
             nestedTypeField.convertClassNamesToClasses(classLoader);
         }
@@ -73,7 +73,7 @@ public class ObjectRelationalDatabaseField extends DatabaseField {
     public String getSqlTypeName() {
         return sqlTypeName;
     }
-    
+
     /**
      *  PUBLIC:
      *  Return if this is an ObjectRelationalDatabaseField.
@@ -90,7 +90,7 @@ public class ObjectRelationalDatabaseField extends DatabaseField {
     public void setSqlTypeName(String sqlTypeName) {
         this.sqlTypeName = sqlTypeName;
     }
-    
+
     /**
      * ADVANCED:
      * For ARRAY fields, this field's type represents the type contained in the ARRAY.

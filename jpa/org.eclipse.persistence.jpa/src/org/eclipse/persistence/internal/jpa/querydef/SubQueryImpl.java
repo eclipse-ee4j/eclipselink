@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,15 +56,15 @@ import org.eclipse.persistence.queries.ReportQuery;
  * <b>Description</b>: This is the container class for the components that define a query to
  * be used in a sub select expression.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria CriteriaQuery
  * @see javax.persistence.criteria SubQuery
- * 
+ *
  * @author gyorke
  * @since EclipseLink 2.0
  */
 public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T> , InternalExpression, InternalSelection{
-    
+
     protected SelectionImpl<?> selection;
     protected SubSelectExpression currentNode;
     protected String alias;
@@ -73,7 +73,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     protected CommonAbstractCriteria parent;
     protected Set<FromImpl> processedJoins;
     protected Set<org.eclipse.persistence.expressions.Expression> correlations;
-        
+
 
 
     public SubQueryImpl(Metamodel metamodel, Class result, CriteriaBuilderImpl queryBuilder, CommonAbstractCriteria parent){
@@ -140,7 +140,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * boolean expression. Replaces the previously added restriction(s), if any.
      * This method only overrides the return type of the corresponding
      * AbstractQuery method.
-     * 
+     *
      * @param restriction
      *            a simple or compound boolean expression
      * @return the modified query
@@ -168,7 +168,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * specified, any previously added restrictions are simply removed. This
      * method only overrides the return type of the corresponding AbstractQuery
      * method.
-     * 
+     *
      * @param restrictions
      *            zero or more restriction predicates
      * @return the modified query
@@ -195,7 +195,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * no grouping expressions are specified, any previously added grouping
      * expressions are simply removed. This method only overrides the return
      * type of the corresponding AbstractQuery method.
-     * 
+     *
      * @param grouping
      *            zero or more grouping expressions
      * @return the modified query
@@ -215,7 +215,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * no grouping expressions are specified, any previously added grouping
      * expressions are simply removed. This method only overrides the return
      * type of the corresponding AbstractQuery method.
-     * 
+     *
      * @param grouping
      *            zero or more grouping expressions
      * @return the modified query
@@ -233,7 +233,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * Specify a restriction over the groups of the query. Replaces the previous
      * having restriction(s), if any. This method only overrides the return type
      * of the corresponding AbstractQuery method.
-     * 
+     *
      * @param restriction
      *            a simple or compound boolean expression
      * @return the modified query
@@ -255,7 +255,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * specified, any previously added restrictions are simply removed. This
      * method only overrides the return type of the corresponding AbstractQuery
      * method.
-     * 
+     *
      * @param restrictions
      *            zero or more restriction predicates
      * @return the modified query
@@ -269,11 +269,11 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         }
         return this;
     }
-    
+
     /**
      * Correlates a root of the enclosing query to a root of the subquery and
      * returns the subquery root.
-     * 
+     *
      * @param parentRoot
      *            a root of the containing query
      * @return subquery root
@@ -287,7 +287,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     /**
      * Correlates a join object of the enclosing query to a join object of the
      * subquery and returns the subquery join object.
-     * 
+     *
      * @param parentJoin
      *            join target of the containing query
      * @return subquery join
@@ -296,13 +296,13 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         this.correlatedJoins.add(parentJoin);
         JoinImpl join = new JoinImpl(parentJoin.getParentPath(), metamodel.managedType(parentJoin.getModel().getBindableJavaType()), metamodel, parentJoin.getJavaType(), internalCorrelate((FromImpl) parentJoin), parentJoin.getModel(), parentJoin.getJoinType(), (FromImpl) parentJoin);
         return join;
-        
+
     }
     /**
      * Correlates a join to a Collection-valued association or element
      * collection in the enclosing query to a join object of the subquery and
      * returns the subquery join object.
-     * 
+     *
      * @param parentCollection
      *            join target of the containing query
      * @return subquery join
@@ -311,12 +311,12 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         this.correlatedJoins.add(parentCollection);
         return new CollectionJoinImpl(parentCollection.getParentPath(), metamodel.managedType(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), internalCorrelate((FromImpl) parentCollection), parentCollection.getModel(), parentCollection.getJoinType(), (FromImpl) parentCollection);
     }
-    
+
     /**
      * Correlates a join to a Set-valued association or element collection in
      * the enclosing query to a join object of the subquery and returns the
      * subquery join object.
-     * 
+     *
      * @param parentSet
      *            join target of the containing query
      * @return subquery join
@@ -325,13 +325,13 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         this.correlatedJoins.add(parentCollection);
         return new SetJoinImpl(parentCollection.getParentPath(), metamodel.managedType(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), ((InternalSelection)parentCollection).getCurrentNode(), parentCollection.getModel(), parentCollection.getJoinType(), (FromImpl) parentCollection);
     }
-    
-    
+
+
     /**
      * Correlates a join to a List-valued association or element collection in
      * the enclosing query to a join object of the subquery and returns the
      * subquery join object.
-     * 
+     *
      * @param parentList
      *            join target of the containing query
      * @return subquery join
@@ -340,12 +340,12 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         this.correlatedJoins.add(parentCollection);
         return new ListJoinImpl(parentCollection.getParentPath(), metamodel.managedType(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), internalCorrelate((FromImpl) parentCollection), parentCollection.getModel(), parentCollection.getJoinType(), (FromImpl) parentCollection);
     }
-    
+
     /**
      * Correlates a join to a Map-valued association or element collection in
      * the enclosing query to a join object of the subquery and returns the
      * subquery join object.
-     * 
+     *
      * @param parentMap
      *            join target of the containing query
      * @return subquery join
@@ -354,7 +354,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         this.correlatedJoins.add(parentCollection);
         return new MapJoinImpl(parentCollection.getParentPath(), metamodel.managedType(parentCollection.getModel().getBindableJavaType()), metamodel, parentCollection.getJavaType(), internalCorrelate((FromImpl) parentCollection), parentCollection.getModel(), parentCollection.getJoinType(), (FromImpl) parentCollection);
     }
-    
+
     protected org.eclipse.persistence.expressions.Expression internalCorrelate(FromImpl from){
         org.eclipse.persistence.expressions.Expression expression = ((InternalSelection)from).getCurrentNode();
         ExpressionBuilder builder = new ExpressionBuilder(expression.getBuilder().getQueryClass());
@@ -378,7 +378,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public AbstractQuery<?> getParent(){
         if (parent == null || parent instanceof AbstractQuery) {
             return (AbstractQuery) this.parent;
-        } 
+        }
         throw new IllegalStateException("TODO.. write a better message");
     }
 
@@ -388,7 +388,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
      * duplicates to be retained. If distinct has not been specified, duplicate
      * results must be retained. This method only overrides the return type of
      * the corresponding AbstractQuery method.
-     * 
+     *
      * @param distinct
      *            boolean value specifying whether duplicate results must be
      *            eliminated from the query result or whether they must be
@@ -401,7 +401,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
             this.subQuery.setDistinctState(ObjectLevelReadQuery.DONT_USE_DISTINCT);
         }else{
             this.subQuery.setDistinctState(ObjectLevelReadQuery.USE_DISTINCT);
-        }        
+        }
         return this;
     }
 
@@ -423,7 +423,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
 
     /**
      * Return the joins that have been made from the subquery.
-     * 
+     *
      * @return joins made from this type
      */
     public java.util.Set<Join<?, ?>> getCorrelatedJoins(){
@@ -448,7 +448,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public <X> Expression<X> as(Class<X> type) {
         return (Expression<X>) this;
     }
-    
+
     public Predicate in(Object... values) {
         List list = new ArrayList();
         list.add(this);
@@ -470,7 +470,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN",params));
             }
         }
-        
+
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
     }
 
@@ -496,14 +496,14 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((InternalSelection)values).getCurrentNode()), list, "in");
     }
-    
+
     public Predicate isNotNull() {
         List list = new ArrayList();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.notNull(), list, "not null");
     }
 
-    
+
     public Predicate isNull() {
         List list = new ArrayList();
         list.add(this);
@@ -513,7 +513,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     //SELECTION
     /**
      * Assign an alias to the selection.
-     * 
+     *
      * @param name
      *            alias
      */
@@ -538,10 +538,10 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public List<Selection<?>> getCompoundSelectionItems(){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("CRITERIA_NOT_A_COMPOUND_SELECTION"));
     }
-    
+
     /**
      * Whether the selection item is a compound selection
-     * @return boolean 
+     * @return boolean
      */
     public boolean isCompoundSelection(){
         return false;
@@ -559,7 +559,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public boolean isParameter(){
         return false;
     }
-    
+
     public boolean isRoot(){
         return false;
     }
@@ -594,11 +594,11 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public boolean isExpression(){
         return true;
     }
-    
+
     public boolean isFrom(){
         return false;
     }
-    
+
     public boolean isLiteral(){
         return false;
     }

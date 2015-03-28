@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -80,25 +80,25 @@ public class SimpleSQLServiceTestSuite extends DBWSTestSuite {
 
     @BeforeClass
     public static void setUp() {
-	    if (conn == null) {
-	        try {
-	            conn = buildConnection();
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    if (ddlCreate) {
-        	runDdl(conn, CREATE_TABLE, ddlDebug);
-	        try {
-	            Statement stmt = conn.createStatement();
-	            for (int i = 0; i < POPULATE_TABLE.length; i++) {
-	                stmt.addBatch(POPULATE_TABLE[i]);
-	            }
-	            stmt.executeBatch();
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_TABLE, ddlDebug);
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_TABLE[i]);
+                }
+                stmt.executeBatch();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @AfterClass
@@ -110,18 +110,18 @@ public class SimpleSQLServiceTestSuite extends DBWSTestSuite {
 
     @Test
     public void testService() {
-    	try {
-	        QName qname = new QName("urn:simplesqlService", "simplesqlServicePort");
-	        Service service = Service.create(new QName("urn:simplesql", "simplesqlService"));
-	        service.addPort(qname, SOAPBinding.SOAP11HTTP_BINDING, "http://" + host + ":" + port + "/simplesql/simplesql");
-	        Dispatch<SOAPMessage> sourceDispatch = service.createDispatch(qname, SOAPMessage.class, Service.Mode.MESSAGE);
-	        SOAPMessage request = createSOAPMessage(SOAP_COUNTINFO_REQUEST);
-	        SOAPMessage response = sourceDispatch.invoke(request);
-	        assertNotNull("\nTest failed:  response is null.", response);
-	        
+        try {
+            QName qname = new QName("urn:simplesqlService", "simplesqlServicePort");
+            Service service = Service.create(new QName("urn:simplesql", "simplesqlService"));
+            service.addPort(qname, SOAPBinding.SOAP11HTTP_BINDING, "http://" + host + ":" + port + "/simplesql/simplesql");
+            Dispatch<SOAPMessage> sourceDispatch = service.createDispatch(qname, SOAPMessage.class, Service.Mode.MESSAGE);
+            SOAPMessage request = createSOAPMessage(SOAP_COUNTINFO_REQUEST);
+            SOAPMessage response = sourceDispatch.invoke(request);
+            assertNotNull("\nTest failed:  response is null.", response);
+
             SOAPBody responseBody = response.getSOAPPart().getEnvelope().getBody();
             Document resultDoc = responseBody.extractContentAsDocument();
-            
+
             NodeList elts = resultDoc.getDocumentElement().getElementsByTagNameNS("urn:simplesqlService", "result");
             assertTrue("The wrong number of elements were returned.", ((elts != null && elts.getLength() > 0) && elts.getLength() == 1));
             Node testNode = elts.item(0);
@@ -129,7 +129,7 @@ public class SimpleSQLServiceTestSuite extends DBWSTestSuite {
             Document controlDoc = xmlParser.parse(new StringReader(SOAP_COUNTINFO_RESPONSE));
             elts = controlDoc.getDocumentElement().getElementsByTagNameNS("urn:simplesqlService", "result");
             Node ctrlNode = elts.item(0);
-            
+
             Node ctrlNode2 = null;
             boolean result = comparer.isNodeEqual(ctrlNode, testNode);
             if (!result) {
@@ -140,9 +140,9 @@ public class SimpleSQLServiceTestSuite extends DBWSTestSuite {
                 result = comparer.isNodeEqual(ctrlNode2, testNode);
             }
             assertTrue("\nDocument comparison failed.  Expected:\n" + documentToString(ctrlNode) + " OR:\n " + documentToString(ctrlNode2) + "\nbut was:\n" + documentToString(testNode), result);
-    	} catch (Exception x) {
-    	    x.printStackTrace();
-    		fail("Service test failed: " + x.getMessage());
-    	}
-	}
+        } catch (Exception x) {
+            x.printStackTrace();
+            fail("Service test failed: " + x.getMessage());
+        }
+    }
 }

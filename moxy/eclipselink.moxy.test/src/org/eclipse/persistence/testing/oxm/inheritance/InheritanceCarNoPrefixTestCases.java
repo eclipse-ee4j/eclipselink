@@ -9,7 +9,7 @@ public class InheritanceCarNoPrefixTestCases extends XMLWithJSONMappingTestCases
         setProject(new InheritanceProject());
         setControlDocument("org/eclipse/persistence/testing/oxm/inheritance/car_no_prefix.xml");
         setControlJSON("org/eclipse/persistence/testing/oxm/inheritance/car_no_prefix.json");
-        setWriteControlDocument("org/eclipse/persistence/testing/oxm/inheritance/car.xml");              
+        setWriteControlDocument("org/eclipse/persistence/testing/oxm/inheritance/car.xml");
         setControlJSONWrite("org/eclipse/persistence/testing/oxm/inheritance/car.json");
     }
 

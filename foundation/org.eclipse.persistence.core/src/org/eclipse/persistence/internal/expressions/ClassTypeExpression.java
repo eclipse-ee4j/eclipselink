@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     May 21, 2009-2.0 Chris Delahunt 
- *       - TODO Bug#: Bug Description 
- ******************************************************************************/  
+ *     May 21, 2009-2.0 Chris Delahunt
+ *       - TODO Bug#: Bug Description
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.BufferedWriter;
@@ -42,17 +42,17 @@ public class ClassTypeExpression extends DataExpression {
     protected DatabaseField aliasedField;
 
     /**
-     * 
+     *
      */
     public ClassTypeExpression(Expression base) {
         super();
         this.baseExpression = base;
     }
-    
+
     public ClassTypeExpression() {
         super();
     }
-    
+
     /**
      * INTERNAL:
      * Used for debug printing.
@@ -72,7 +72,7 @@ public class ClassTypeExpression extends DataExpression {
         result.setSelectIfOrderedBy(selectIfOrderedBy());
         return result;
     }
-    
+
     /**
      * INTERNAL
      * This method returns the inheritance field value for an object to conform in an in-memory query.
@@ -81,7 +81,7 @@ public class ClassTypeExpression extends DataExpression {
     public Object typeValueFromObject(Object object, AbstractSession session) {
         // get the descriptor directly from the object, and use it to find the Java class
         ClassDescriptor objectDescriptor = session.getClassDescriptor(object);
-        if (!objectDescriptor.hasInheritance() 
+        if (!objectDescriptor.hasInheritance()
                 || objectDescriptor.getInheritancePolicy().shouldUseClassNameAsIndicator()
                 || objectDescriptor.getInheritancePolicy().hasClassExtractor() ) {
             return (objectDescriptor.getJavaClassName());
@@ -89,9 +89,9 @@ public class ClassTypeExpression extends DataExpression {
             return objectDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(objectDescriptor.getJavaClass());
         }
     }
-    
+
     public void validateNode() {
-        
+
         ClassDescriptor descriptor = getContainingDescriptor();
         if (descriptor ==null){
             throw QueryException.invalidTypeExpression(getBaseExpression());
@@ -101,7 +101,7 @@ public class ClassTypeExpression extends DataExpression {
         }
         super.validateNode();
     }
-    
+
     /**
      * INTERNAL:
      * Return the value for in memory comparison.
@@ -147,7 +147,7 @@ public class ClassTypeExpression extends DataExpression {
         }
         return typeValueFromObject(object, session);
     }
-    
+
     /**
      * INTERNAL:
      * Used to print a debug form of the expression tree.
@@ -156,12 +156,12 @@ public class ClassTypeExpression extends DataExpression {
         writer.write("TYPE");
         writer.write(tableAliasesDescription());
     }
-    
+
     /**
      * INTERNAL:
      */
     public DatabaseField getField() {
-        if (field == null) {            
+        if (field == null) {
             ClassDescriptor descriptor = getContainingDescriptor();
 
             if (!descriptor.hasInheritance() || descriptor.getInheritancePolicy().hasClassExtractor()){
@@ -171,18 +171,18 @@ public class ClassTypeExpression extends DataExpression {
         }
         return field;
     }
-    
+
     /**
      * INTERNAL:
      * Transform the object-level value into a database-level value
      * objectValue is a Class or collection of Class objects and the returned value is the database representation
-     * Example:  ObjectValue=LargeProject returns "L". 
+     * Example:  ObjectValue=LargeProject returns "L".
      */
     public Object getFieldValue(Object objectValue, AbstractSession session) {
         if (objectValue ==null){
             return null;
         }
-        
+
         if (objectValue instanceof Collection) {
                 // This can actually be a collection for IN within expressions... however it would be better for expressions to handle this.
                 Collection values = (Collection)objectValue;
@@ -199,7 +199,7 @@ public class ClassTypeExpression extends DataExpression {
             if (! (objectValue instanceof Class) ){
                 throw QueryException.invalidTypeExpression(objectValue.getClass().toString());
             }
-            
+
             ClassDescriptor descriptor = session.getDescriptor((Class)objectValue);
             if (descriptor == null){
                 throw QueryException.invalidTypeExpression(objectValue.getClass().toString());
@@ -212,21 +212,21 @@ public class ClassTypeExpression extends DataExpression {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
-     * Like QueryKeyExpression, return the descriptor for the class type used, null if one can't be determined yet.  
-     * Should only be called when a session is already set. 
+     * Like QueryKeyExpression, return the descriptor for the class type used, null if one can't be determined yet.
+     * Should only be called when a session is already set.
      */
     public ClassDescriptor getContainingDescriptor() {
         return ((ObjectExpression)getBaseExpression()).getDescriptor();
 
     }
-    
+
     /**
      * INTERNAL:
-     * Return the descriptor for the base expression.  This is used in ReportItem when building the 
-     * return value (a class), as none of the expressions will have a session.  
+     * Return the descriptor for the base expression.  This is used in ReportItem when building the
+     * return value (a class), as none of the expressions will have a session.
      */
     public ClassDescriptor getContainingDescriptor(ObjectLevelReadQuery query) {
         Class queryClass = null;
@@ -238,18 +238,18 @@ public class ClassTypeExpression extends DataExpression {
             return getBaseExpression().getLeafDescriptor(query, query.getDescriptor(), query.getSession());
         }
     }
-    
+
     public boolean isClassTypeExpression(){
         return true;
     }
-    
+
     /**
      * INTERNAL:
      */
     public boolean isAttribute() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * For CR#2456 if this is part of an objExp.equal(objExp), do not need to add
@@ -262,7 +262,7 @@ public class ClassTypeExpression extends DataExpression {
         }
         return super.normalize(normalizer);
     }
-    
+
     /**
      * INTERNAL:
      * Alias the database field for our current environment
@@ -274,7 +274,7 @@ public class ClassTypeExpression extends DataExpression {
         aliasedField = tempField;
         aliasedField.setTable(aliasedTable);
     }
-    
+
     /**
      * INTERNAL:
      * Return the field appropriately aliased
@@ -286,7 +286,7 @@ public class ClassTypeExpression extends DataExpression {
         return aliasedField;
 
     }
-    
+
     /**
      * Return the alias for our table
      */
@@ -300,7 +300,7 @@ public class ClassTypeExpression extends DataExpression {
             return alias;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return all the fields
@@ -320,7 +320,7 @@ public class ClassTypeExpression extends DataExpression {
             Expression twistedBase = this.baseExpression.twistedForBaseAndContext(newBase, context, oldBase);
             return twistedBase.type();
         }
-        
+
         return this;
     }
 }

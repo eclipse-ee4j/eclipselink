@@ -85,7 +85,7 @@ public class XRPackager implements DBWSPackager {
     protected Archiver archiver;
     protected String packagerLabel;
     protected ArchiveUse archiveUse;
-    
+
     protected static final String OFF = "off";
     protected static final String SEVERE = "severe";
     protected static final String WARNING = "warning";
@@ -96,7 +96,7 @@ public class XRPackager implements DBWSPackager {
     protected static final String FINEST = "finest";
     protected static final String ALL = "all";
     protected static final String XR_STR = "xr";
-    
+
     public XRPackager() {
         this(null, XR_STR, noArchive);
     }
@@ -247,9 +247,9 @@ public class XRPackager implements DBWSPackager {
         DefaultSessionLogConfig orLogConfig = new DefaultSessionLogConfig();
         // validate log level - default to 'info' if invalid
         String logLevel = builder.getLogLevel();
-    	if (!isValidLogLevel(logLevel)) {
-    		builder.logMessage(java.util.logging.Level.WARNING, "Log level [" + logLevel + "] is invalid.  Valid values are [off, severe, warning, info, config, fine, finer, finest, all].  Using default log level [info].");
-       		logLevel = INFO;
+        if (!isValidLogLevel(logLevel)) {
+            builder.logMessage(java.util.logging.Level.WARNING, "Log level [" + logLevel + "] is invalid.  Valid values are [off, severe, warning, info, config, fine, finer, finest, all].  Using default log level [info].");
+               logLevel = INFO;
         }
         orLogConfig.setLogLevel(logLevel);
         orSessionConfig.setLogConfig(orLogConfig);
@@ -265,7 +265,7 @@ public class XRPackager implements DBWSPackager {
             oxSessionConfig.setSessionCustomizerClass(oxSessionCustomizerClassName);
         }
         ts.addSessionConfig(oxSessionConfig);
-        
+
         return ts;
     }
 
@@ -388,14 +388,14 @@ public class XRPackager implements DBWSPackager {
             archiver.archive();
         }
     }
-    
+
     /**
      * Write the deployment descriptor contents to the provided OutputStream.
      */
     @Override
     public void writeDeploymentDescriptor(OutputStream descriptorOutputStream) {
         // no-op
-    }    
+    }
     /**
      * Return an OutputStream to the deployment descriptor.  Deployment descriptor
      * is optional, so return a null stream.
@@ -420,25 +420,25 @@ public class XRPackager implements DBWSPackager {
     public String getDeploymentDescriptorFileName() {
         return null;
     }
-    
+
     /**
      * Validates user-set log level.  Valid values are: off, severe,
      * warning, info, config, fine, finer, finest, all.
-     * 
+     *
      * If an invalid log level is set, a warning will be thrown
      * and the default level "fine" will be set.
-     * 
+     *
      * @param logLevel
      */
     private boolean isValidLogLevel(String logLevel) {
-    	return (logLevel.equalsIgnoreCase(OFF)
-    		 || logLevel.equalsIgnoreCase(SEVERE) 
-    		 || logLevel.equalsIgnoreCase(WARNING) 
-    		 || logLevel.equalsIgnoreCase(INFO) 
-    		 || logLevel.equalsIgnoreCase(CONFIG) 
-    		 || logLevel.equalsIgnoreCase(FINE) 
-    		 || logLevel.equalsIgnoreCase(FINER) 
-    		 || logLevel.equalsIgnoreCase(FINEST) 
-    		 || logLevel.equalsIgnoreCase(ALL));
+        return (logLevel.equalsIgnoreCase(OFF)
+             || logLevel.equalsIgnoreCase(SEVERE)
+             || logLevel.equalsIgnoreCase(WARNING)
+             || logLevel.equalsIgnoreCase(INFO)
+             || logLevel.equalsIgnoreCase(CONFIG)
+             || logLevel.equalsIgnoreCase(FINE)
+             || logLevel.equalsIgnoreCase(FINER)
+             || logLevel.equalsIgnoreCase(FINEST)
+             || logLevel.equalsIgnoreCase(ALL));
     }
 }

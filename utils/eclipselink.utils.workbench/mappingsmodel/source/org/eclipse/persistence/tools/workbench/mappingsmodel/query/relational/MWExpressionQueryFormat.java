@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,109 +27,109 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 /**
  * This class holds on to the expression for queries which have expression format chosen
  */
-public final class MWExpressionQueryFormat extends MWQueryFormat 
+public final class MWExpressionQueryFormat extends MWQueryFormat
 {
-	//expression can never be null
-	private volatile MWCompoundExpression expression; 
-		public final static String EXPRESSION_PROPERTY = "expression";
-		
-	/**
-	 * Default constructor - for TopLink use only.
-	 */	
-	private MWExpressionQueryFormat() 
-	{
-		super();
-	}
-	
-	MWExpressionQueryFormat(MWRelationalSpecificQueryOptions parent) 
-	{
-		super(parent);
-	}
+    //expression can never be null
+    private volatile MWCompoundExpression expression;
+        public final static String EXPRESSION_PROPERTY = "expression";
 
-	protected void addChildrenTo(List children) 
-	{
-		super.addChildrenTo(children);
-		children.add(expression);
-	}
+    /**
+     * Default constructor - for TopLink use only.
+     */
+    private MWExpressionQueryFormat()
+    {
+        super();
+    }
 
-	/**
-	 * initialize persistent state
-	 */
-	protected void initialize(Node modelObject) 
-	{
-		super.initialize(modelObject);
-		expression = new MWCompoundExpression(this);
-	}
+    MWExpressionQueryFormat(MWRelationalSpecificQueryOptions parent)
+    {
+        super(parent);
+    }
 
-	String getType() {
-		return MWRelationalQuery.EXPRESSION_FORMAT;
-	}
+    protected void addChildrenTo(List children)
+    {
+        super.addChildrenTo(children);
+        children.add(expression);
+    }
 
-	public MWCompoundExpression getExpression() 
-	{
-		return expression;
-	}
-	
-	public void setExpression(MWCompoundExpression expression) 
-	{
-		MWCompoundExpression oldExpression = getExpression();
-		this.expression = expression;
-		firePropertyChanged(EXPRESSION_PROPERTY, oldExpression, getExpression());
-	}
-	
+    /**
+     * initialize persistent state
+     */
+    protected void initialize(Node modelObject)
+    {
+        super.initialize(modelObject);
+        expression = new MWCompoundExpression(this);
+    }
+
+    String getType() {
+        return MWRelationalQuery.EXPRESSION_FORMAT;
+    }
+
+    public MWCompoundExpression getExpression()
+    {
+        return expression;
+    }
+
+    public void setExpression(MWCompoundExpression expression)
+    {
+        MWCompoundExpression oldExpression = getExpression();
+        this.expression = expression;
+        firePropertyChanged(EXPRESSION_PROPERTY, oldExpression, getExpression());
+    }
+
     public boolean orderingAttributesAllowed() {
         return true;
     }
-    
+
     public boolean batchReadAttributesAllowed() {
         return true;
     }
-    
+
     public boolean reportAttributesAllowed() {
         return true;
     }
-    
+
     public boolean groupingAtributesAllowed() {
         return true;
     }
-	public void toString(StringBuffer sb) 
-	{
-		super.toString(sb);
-		sb.append(", expression = ");
-		sb.append(getExpression());
-	}
+    public void toString(StringBuffer sb)
+    {
+        super.toString(sb);
+        sb.append(", expression = ");
+        sb.append(getExpression());
+    }
 
-	//persistence
-	public static XMLDescriptor buildDescriptor() 
-	{
-		XMLDescriptor descriptor = new XMLDescriptor();
+    //persistence
+    public static XMLDescriptor buildDescriptor()
+    {
+        XMLDescriptor descriptor = new XMLDescriptor();
 
-		descriptor.setJavaClass(MWExpressionQueryFormat.class);
-		descriptor.getInheritancePolicy().setParentClass(MWQueryFormat.class);
-	
-		// 1-1 to the compound expression
-		XMLCompositeObjectMapping expressionMapping = new XMLCompositeObjectMapping();
-		expressionMapping.setAttributeName("expression");
-		expressionMapping.setReferenceClass(MWCompoundExpression.class);
-		expressionMapping.setXPath("main-compound-expression");
-		descriptor.addMapping(expressionMapping);
-		
-		return descriptor;
-	}
+        descriptor.setJavaClass(MWExpressionQueryFormat.class);
+        descriptor.getInheritancePolicy().setParentClass(MWQueryFormat.class);
 
-	//Conversion methods
-	void convertToRuntime(DatabaseQuery runtimeQuery) 
-	{
-		runtimeQuery.setSelectionCriteria(getExpression().buildRuntimeExpression(((ObjectLevelReadQuery)runtimeQuery).getExpressionBuilder())); 	
-	}
-	void convertFromRuntime(DatabaseQuery runtimeQuery)
-	{		
-		Expression selectionCriteria = runtimeQuery.getSelectionCriteria();
-		
-		if (selectionCriteria != null)
-		{
-			setExpression(MWCompoundExpression.convertFromRuntime(this, selectionCriteria));
-		}
-	}
+        // 1-1 to the compound expression
+        XMLCompositeObjectMapping expressionMapping = new XMLCompositeObjectMapping();
+        expressionMapping.setAttributeName("expression");
+        expressionMapping.setReferenceClass(MWCompoundExpression.class);
+        expressionMapping.setXPath("main-compound-expression");
+        descriptor.addMapping(expressionMapping);
+
+        return descriptor;
+    }
+
+    //Conversion methods
+    void convertToRuntime(DatabaseQuery runtimeQuery)
+    {
+        runtimeQuery.setSelectionCriteria(getExpression().buildRuntimeExpression(((ObjectLevelReadQuery)runtimeQuery).getExpressionBuilder()));
+    }
+    void convertFromRuntime(DatabaseQuery runtimeQuery)
+    {
+        Expression selectionCriteria = runtimeQuery.getSelectionCriteria();
+
+        if (selectionCriteria != null)
+        {
+            setExpression(MWCompoundExpression.convertFromRuntime(this, selectionCriteria));
+        }
+    }
 }
 

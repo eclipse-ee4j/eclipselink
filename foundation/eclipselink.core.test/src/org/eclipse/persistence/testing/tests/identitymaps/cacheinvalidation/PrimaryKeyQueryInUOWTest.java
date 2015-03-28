@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation;
 
 import java.sql.*;
@@ -48,7 +48,7 @@ public class PrimaryKeyQueryInUOWTest extends CacheExpiryTest {
         try {
             Connection con = ((AbstractSession)getSession()).getAccessor().getConnection();
             Statement sqlStmt = con.createStatement();
-            String str = 
+            String str =
                 "UPDATE EMPLOYEE SET L_NAME = 'Ray', VERSION = 2 WHERE ((EMP_ID = " + employee.getId() + ") AND (VERSION = 1))";
             sqlStmt.executeUpdate(str);
             sqlStmt.close();
@@ -88,7 +88,7 @@ public class PrimaryKeyQueryInUOWTest extends CacheExpiryTest {
 
     public void verify() {
         if (!originalName.equals("Smith")) {
-            throw new TestErrorException("The original name before expiry should be Smith, but " + originalName + 
+            throw new TestErrorException("The original name before expiry should be Smith, but " + originalName +
                                          " was returned");
         } else if (!newName.equals("Ray")) {
             throw new TestErrorException("The new name after expiry should be Ray, but " + newName + " was returned");

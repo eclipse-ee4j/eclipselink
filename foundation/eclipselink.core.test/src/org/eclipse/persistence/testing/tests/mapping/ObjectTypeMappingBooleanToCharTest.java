@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dminsky - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.mapping;
 
 import java.util.Vector;
@@ -24,14 +24,14 @@ import org.eclipse.persistence.testing.models.mapping.Peripheral;
  * @author dminsky
  */
 public class ObjectTypeMappingBooleanToCharTest extends TransactionalTestCase {
-    
+
     protected Vector<Peripheral> peripheralsRead;
-    
+
     public ObjectTypeMappingBooleanToCharTest() {
         super();
         setDescription("Read Boolean->Character ObjectTypeMapping in additionalJoinCriteria");
     }
-    
+
     @Override
     public void setup() {
         super.setup();
@@ -44,12 +44,12 @@ public class ObjectTypeMappingBooleanToCharTest extends TransactionalTestCase {
         peripheral2.setValid(false);
         uow.commit();
     }
-    
+
     @Override
     public void test() {
         peripheralsRead = getAbstractSession().readAllObjects(Peripheral.class);
     }
-    
+
     @Override
     public void verify() {
         // descriptor amendment method adds additionalJoinCriteria to only read
@@ -57,7 +57,7 @@ public class ObjectTypeMappingBooleanToCharTest extends TransactionalTestCase {
         assertNotNull("peripheralsRead should not be null", peripheralsRead);
         assertEquals("One Peripheral object should have been read", 1, peripheralsRead.size());
     }
-    
+
     @Override
     public void reset() {
         super.reset();

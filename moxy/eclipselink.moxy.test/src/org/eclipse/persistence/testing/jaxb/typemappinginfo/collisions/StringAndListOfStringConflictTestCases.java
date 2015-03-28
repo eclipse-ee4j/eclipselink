@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,7 +30,7 @@ import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJ
 public class StringAndListOfStringConflictTestCases extends TypeMappingInfoWithJSONTestCases {
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/nonConflictingLists.xml";
     protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/nonConflictingLists.json";
-    
+
     @XmlElement(type=String.class)
     public List testField;
 
@@ -38,31 +38,31 @@ public class StringAndListOfStringConflictTestCases extends TypeMappingInfoWithJ
         super(name);
         init();
     }
-    
+
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setTypeMappingInfos(getTypeMappingInfos()); 
+        setTypeMappingInfos(getTypeMappingInfos());
     }
-    
+
     protected TypeMappingInfo[] getTypeMappingInfos()throws Exception {
         if(typeMappingInfos == null) {
             typeMappingInfos = new TypeMappingInfo[2];
-            
+
             TypeMappingInfo tmi = new TypeMappingInfo();
-            tmi.setXmlTagName(new QName("","testTagName1"));        
-            tmi.setElementScope(ElementScope.Global);       
+            tmi.setXmlTagName(new QName("","testTagName1"));
+            tmi.setElementScope(ElementScope.Global);
             tmi.setType(List.class);
             tmi.setAnnotations(getClass().getField("testField").getAnnotations());
-            typeMappingInfos[0] = tmi;          
-            
+            typeMappingInfos[0] = tmi;
+
             TypeMappingInfo tmi2 = new TypeMappingInfo();
-            tmi2.setXmlTagName(new QName("","testTagName2"));       
-            tmi2.setElementScope(ElementScope.Global);      
+            tmi2.setXmlTagName(new QName("","testTagName2"));
+            tmi2.setElementScope(ElementScope.Global);
             tmi2.setType(String.class);
             typeMappingInfos[1] = tmi2;
         }
-        return typeMappingInfos;        
+        return typeMappingInfos;
     }
 
     @Override
@@ -80,13 +80,13 @@ public class StringAndListOfStringConflictTestCases extends TypeMappingInfoWithJ
     @Override
     public Map<String, InputStream> getControlSchemaFiles() {
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/stringandlistofstring.xsd");
-        
+
         Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
         controlSchema.put("", instream);
-            
+
         return controlSchema;
     }
-    
+
     public void testSchemaGen() {
     }
 

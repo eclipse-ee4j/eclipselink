@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,73 +26,73 @@ import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.TopLinkSes
 
 public class DatabaseSessionAdapterTest extends AbstractAdapterTest
 {
-	public DatabaseSessionAdapterTest(String name)
-	{
-		super(name);
-	}
+    public DatabaseSessionAdapterTest(String name)
+    {
+        super(name);
+    }
 
-	public static Test suite()
-	{
-		return new TestSuite(DatabaseSessionAdapterTest.class, "DatabaseSessionAdapter Test");
-	}
+    public static Test suite()
+    {
+        return new TestSuite(DatabaseSessionAdapterTest.class, "DatabaseSessionAdapter Test");
+    }
 
-	public void testVerifyProblemServerPlatform() throws Exception
-	{
-		TopLinkSessionsAdapter sessions = AllSCTests.createNewSessions();
-		DataSource ds = buildOracleDataSource();
-		ServerPlatform sp = new ServerPlatform( "CustomServerPlatform");
-		DatabaseSessionAdapter session = sessions.addDatabaseSessionNamed("MyDatabaseSession", sp, ds);
-		ServerPlatformAdapter serverPlatform = session.getServerPlatform();
-		
-		// Custom Server Platform should fail
-		assertTrue("Custom Server Platform - Should not have problem",
-						hasProblem(SCProblemsConstants.CUSTOM_SERVER_PLATFORM_SERVER_CLASS_NAME, serverPlatform));
-	}
+    public void testVerifyProblemServerPlatform() throws Exception
+    {
+        TopLinkSessionsAdapter sessions = AllSCTests.createNewSessions();
+        DataSource ds = buildOracleDataSource();
+        ServerPlatform sp = new ServerPlatform( "CustomServerPlatform");
+        DatabaseSessionAdapter session = sessions.addDatabaseSessionNamed("MyDatabaseSession", sp, ds);
+        ServerPlatformAdapter serverPlatform = session.getServerPlatform();
 
-	public void testVerifyProblemDataSource() throws Exception
-	{
-		TopLinkSessionsAdapter sessions = AllSCTests.createNewSessions();
-		DataSource ds = buildOracleDataSource();
-		DatabaseSessionAdapter session = sessions.addDatabaseSessionNamed("MyDatabaseSession", noServerPlatform(), ds);
-		DatabaseLoginAdapter login = (DatabaseLoginAdapter) session.getLogin();
-		login.setDatabaseDriverAsDataSource();
+        // Custom Server Platform should fail
+        assertTrue("Custom Server Platform - Should not have problem",
+                        hasProblem(SCProblemsConstants.CUSTOM_SERVER_PLATFORM_SERVER_CLASS_NAME, serverPlatform));
+    }
 
-		// Data Source Name should fail
-		assertTrue("Data Source Name - Should have problem",
-					  hasProblem(SCProblemsConstants.DATABASE_LOGIN_DATA_SOURCE_NAME, login));
+    public void testVerifyProblemDataSource() throws Exception
+    {
+        TopLinkSessionsAdapter sessions = AllSCTests.createNewSessions();
+        DataSource ds = buildOracleDataSource();
+        DatabaseSessionAdapter session = sessions.addDatabaseSessionNamed("MyDatabaseSession", noServerPlatform(), ds);
+        DatabaseLoginAdapter login = (DatabaseLoginAdapter) session.getLogin();
+        login.setDatabaseDriverAsDataSource();
 
-		// Fix Data Source Name
-		login.setDataSourceName("OracleDB");
+        // Data Source Name should fail
+        assertTrue("Data Source Name - Should have problem",
+                      hasProblem(SCProblemsConstants.DATABASE_LOGIN_DATA_SOURCE_NAME, login));
 
-		assertFalse("Contain Data Source Name - Should not have problem",
-						hasProblem(SCProblemsConstants.DATABASE_LOGIN_DATA_SOURCE_NAME, login));
-	}
+        // Fix Data Source Name
+        login.setDataSourceName("OracleDB");
 
-	public void testVerifyProblemDriverManager() throws Exception
-	{
-		TopLinkSessionsAdapter sessions = AllSCTests.createNewSessions();
-		DataSource ds = buildOracleDataSource();
-		DatabaseSessionAdapter session = sessions.addDatabaseSessionNamed("MyDatabaseSession", noServerPlatform(), ds);
-		DatabaseLoginAdapter login = (DatabaseLoginAdapter) session.getLogin();
+        assertFalse("Contain Data Source Name - Should not have problem",
+                        hasProblem(SCProblemsConstants.DATABASE_LOGIN_DATA_SOURCE_NAME, login));
+    }
 
-		// Driver Class should fail
-		assertTrue("Driver Class - Should have problem",
-					  hasProblem(SCProblemsConstants.DATABASE_LOGIN_DRIVER_CLASS, login));
+    public void testVerifyProblemDriverManager() throws Exception
+    {
+        TopLinkSessionsAdapter sessions = AllSCTests.createNewSessions();
+        DataSource ds = buildOracleDataSource();
+        DatabaseSessionAdapter session = sessions.addDatabaseSessionNamed("MyDatabaseSession", noServerPlatform(), ds);
+        DatabaseLoginAdapter login = (DatabaseLoginAdapter) session.getLogin();
 
-		// Driver URL should fail
-		assertTrue("Driver URL - Should have problem",
-			  		  hasProblem(SCProblemsConstants.DATABASE_LOGIN_CONNECTION_URL, login));
+        // Driver Class should fail
+        assertTrue("Driver Class - Should have problem",
+                      hasProblem(SCProblemsConstants.DATABASE_LOGIN_DRIVER_CLASS, login));
 
-		// Fix Driver Class
-		login.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+        // Driver URL should fail
+        assertTrue("Driver URL - Should have problem",
+                        hasProblem(SCProblemsConstants.DATABASE_LOGIN_CONNECTION_URL, login));
 
-		assertFalse("Contain Driver Class - Should not have problem",
-						hasProblem(SCProblemsConstants.DATABASE_LOGIN_DRIVER_CLASS, login));
+        // Fix Driver Class
+        login.setDriverClassName("oracle.jdbc.driver.OracleDriver");
 
-		// Fix Driver URL
-		login.setConnectionURL("jdbc:oracle:thin:@144.23.214.115:1521:toplink");
+        assertFalse("Contain Driver Class - Should not have problem",
+                        hasProblem(SCProblemsConstants.DATABASE_LOGIN_DRIVER_CLASS, login));
 
-		assertFalse("Contain Driver URL - Should not have problem",
-						hasProblem(SCProblemsConstants.DATABASE_LOGIN_CONNECTION_URL, login));
-	}
+        // Fix Driver URL
+        login.setConnectionURL("jdbc:oracle:thin:@144.23.214.115:1521:toplink");
+
+        assertFalse("Contain Driver URL - Should not have problem",
+                        hasProblem(SCProblemsConstants.DATABASE_LOGIN_CONNECTION_URL, login));
+    }
 }

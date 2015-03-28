@@ -4,11 +4,11 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Denise Smith  November 13, 2009 
+ *     Denise Smith  November 13, 2009
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
@@ -26,61 +26,61 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 public class JAXBBigDecimalStackTestCases extends JAXBListOfObjectsTestCases {
-	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/bigDecimalStack.xml";
-	protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/bigDecimalStackNoXsiType.xml";
-	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/bigDecimalStack.json";
-	public Stack<BigDecimal> test;
-	
-	public JAXBBigDecimalStackTestCases(String name) throws Exception {
-		super(name);
-		init();
-	}
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/bigDecimalStack.xml";
+    protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/bigDecimalStackNoXsiType.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/bigDecimalStack.json";
+    public Stack<BigDecimal> test;
 
-	protected Type getTypeToUnmarshalTo() throws Exception {
-		Field fld = getClass().getField("test");
-		return fld.getGenericType();
-	}
+    public JAXBBigDecimalStackTestCases(String name) throws Exception {
+        super(name);
+        init();
+    }
 
-	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-		Type[] types = new Type[1];
-		types[0] = getTypeToUnmarshalTo();
-		setTypes(types);
-		initXsiType();
-	}
+    protected Type getTypeToUnmarshalTo() throws Exception {
+        Field fld = getClass().getField("test");
+        return fld.getGenericType();
+    }
 
-	@Override
+    public void init() throws Exception {
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        Type[] types = new Type[1];
+        types[0] = getTypeToUnmarshalTo();
+        setTypes(types);
+        initXsiType();
+    }
+
+    @Override
     protected Map<String, String> getAdditationalNamespaces() {
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("examplenamespace", "ns0");
         return namespaces;
     }
 
-	protected Object getControlObject() {
-		Stack<BigDecimal> bigDecimals = new Stack<BigDecimal>();
-		bigDecimals.push(new BigDecimal("2"));
-		bigDecimals.push(new BigDecimal("4"));
-		bigDecimals.push(new BigDecimal("6"));
-		bigDecimals.push(new BigDecimal("8"));
-		
-		QName qname = new QName("examplenamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, Object.class ,null);
-		jaxbElement.setValue(bigDecimals);
+    protected Object getControlObject() {
+        Stack<BigDecimal> bigDecimals = new Stack<BigDecimal>();
+        bigDecimals.push(new BigDecimal("2"));
+        bigDecimals.push(new BigDecimal("4"));
+        bigDecimals.push(new BigDecimal("6"));
+        bigDecimals.push(new BigDecimal("8"));
 
-		return jaxbElement;
-	}
+        QName qname = new QName("examplenamespace", "root");
+        JAXBElement jaxbElement = new JAXBElement(qname, Object.class ,null);
+        jaxbElement.setValue(bigDecimals);
 
-	    
-    public List< InputStream> getControlSchemaFiles(){	
-	    InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/bigDecimalStack.xsd");
-		
-	    List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-		return controlSchema;
-	}
-    
-	protected String getNoXsiTypeControlResourceName() {
-		return XML_RESOURCE_NO_XSI_TYPE;
-	}
+        return jaxbElement;
+    }
+
+
+    public List< InputStream> getControlSchemaFiles(){
+        InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/bigDecimalStack.xsd");
+
+        List<InputStream> controlSchema = new ArrayList<InputStream>();
+        controlSchema.add(instream);
+        return controlSchema;
+    }
+
+    protected String getNoXsiTypeControlResourceName() {
+        return XML_RESOURCE_NO_XSI_TYPE;
+    }
 }

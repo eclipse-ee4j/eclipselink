@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.indirection;
 
 import java.rmi.server.ObjID;
@@ -60,7 +60,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
     protected UnitOfWorkValueHolder() {
         super();
     }
-    
+
     protected UnitOfWorkValueHolder(ValueHolderInterface attributeValue, Object clone, DatabaseMapping mapping, UnitOfWorkImpl unitOfWork) {
         this.wrappedValueHolder = attributeValue;
         this.mapping = mapping;
@@ -216,7 +216,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
     public boolean isSerializedRemoteUnitOfWorkValueHolder() {
         return (this.remoteUnitOfWork != null) && (this.remoteUnitOfWork.getParent() != null) && (this.wrappedValueHolder == null);
     }
-    
+
     /**
      * Get the value from the wrapped value holder, instantiating it
      * if necessary, and clone it.
@@ -307,7 +307,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
     protected void setWrappedValueHolder(DatabaseValueHolder valueHolder) {
         wrappedValueHolder = valueHolder;
     }
-    
+
     /**
      * INTERNAL:
      * Return if add/remove should trigger instantiation or avoid.

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings.nullpolicy;
 
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
@@ -17,14 +17,14 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
 
 /**
  * PUBLIC:
- * <b>Description</b>: 
+ * <b>Description</b>:
  * This null policy is the default implementation class.<br>
  * Marshal:<br>
  * The boolean value of the isSet() state of a node has no effect on whether a node will be written out
  * for a null value - a set is always performed unless the isSetPerformedForAbsentNode flag
  * is set to false for absent nodes.<br>
  * Unmarshal:<br>
- *  
+ *
  * <p><b>The following instance field can be set on top of the two from AbstractNullPolicy</b>:<ul>
  * <li>isSetPerformedForAbsentNode: </li>
 
@@ -74,7 +74,7 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
  * aDescriptor.addMapping(aManagerMapping);<br>
  * aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);<br>
  * </code>
- * 
+ *
  * <p><em>Input Object State</em><br>
  * <code>
  * aTeam.getManager() = null<br>
@@ -86,16 +86,16 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
  * &nbsp;&nbsp;&lt;manager/&gt;<br>
  * &lt;/team&gt;<br>
  * </code>
- * 
+ *
  * @see org.eclipse.persistence.internal.oxm.NullCapableValue
- * @since Oracle TopLink 11<i>g</i> Release 1 (11.1.1) 
+ * @since Oracle TopLink 11<i>g</i> Release 1 (11.1.1)
  */
 public class NullPolicy extends AbstractNullPolicy {
     /**
      * Default Constructor
      */
     public NullPolicy() {
-    	super();
+        super();
     }
 
     /**
@@ -106,11 +106,11 @@ public class NullPolicy extends AbstractNullPolicy {
      * @param bIsNullRepresentedByXsiNil
      */
     public NullPolicy(String anIsSetMethodName, //
-    		boolean bIsSetPerformedForAbsentNode, boolean bIsNullRepresentedByEmptyNode, boolean bIsNullRepresentedByXsiNil) {
-    	this();
-    	setSetPerformedForAbsentNode(bIsSetPerformedForAbsentNode);
-		setNullRepresentedByEmptyNode(bIsNullRepresentedByEmptyNode);
-		setNullRepresentedByXsiNil(bIsNullRepresentedByXsiNil);
+            boolean bIsSetPerformedForAbsentNode, boolean bIsNullRepresentedByEmptyNode, boolean bIsNullRepresentedByXsiNil) {
+        this();
+        setSetPerformedForAbsentNode(bIsSetPerformedForAbsentNode);
+        setNullRepresentedByEmptyNode(bIsNullRepresentedByEmptyNode);
+        setNullRepresentedByXsiNil(bIsNullRepresentedByXsiNil);
     }
 
     /**
@@ -122,21 +122,21 @@ public class NullPolicy extends AbstractNullPolicy {
      * @param aMarshalNullRepresentation
      */
     public NullPolicy(String anIsSetMethodName, //
-    		boolean bIsSetPerformedForAbsentNode, boolean bIsNullRepresentedByEmptyNode, boolean bIsNullRepresentedByXsiNil, //
-    		XMLNullRepresentationType aMarshalNullRepresentation) {
-    	this(anIsSetMethodName, bIsSetPerformedForAbsentNode, bIsNullRepresentedByEmptyNode, bIsNullRepresentedByXsiNil);
-		setMarshalNullRepresentation(aMarshalNullRepresentation);		
+            boolean bIsSetPerformedForAbsentNode, boolean bIsNullRepresentedByEmptyNode, boolean bIsNullRepresentedByXsiNil, //
+            XMLNullRepresentationType aMarshalNullRepresentation) {
+        this(anIsSetMethodName, bIsSetPerformedForAbsentNode, bIsNullRepresentedByEmptyNode, bIsNullRepresentedByXsiNil);
+        setMarshalNullRepresentation(aMarshalNullRepresentation);
     }
 
     public void xPathNode(XPathNode xPathNode, NullCapableValue nullCapableValue) {
-    	// No operation for non-isSet modes
+        // No operation for non-isSet modes
     }
-    
+
     /**
      * Set the isSetPerformedForAbsentNode flag
      * @param performSet
      */
     public void setSetPerformedForAbsentNode(boolean performSet) {
-    	isSetPerformedForAbsentNode = performSet;
+        isSetPerformedForAbsentNode = performSet;
     }
 }

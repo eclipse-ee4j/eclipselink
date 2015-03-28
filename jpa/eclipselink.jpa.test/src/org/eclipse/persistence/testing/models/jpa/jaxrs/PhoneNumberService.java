@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,35 +31,35 @@ import javax.ws.rs.core.MediaType;
 @Path("/phonenumber_war")
 public class PhoneNumberService {
 
-	@PersistenceContext(unitName = "jaxrs")
-	EntityManager entityManager;
+    @PersistenceContext(unitName = "jaxrs")
+    EntityManager entityManager;
 
-	@POST
-	@Consumes(MediaType.APPLICATION_XML)
-	public void create(PhoneNumber phoneNumber) {
-		entityManager.persist(phoneNumber);
-	}
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    public void create(PhoneNumber phoneNumber) {
+        entityManager.persist(phoneNumber);
+    }
 
-	@GET
-	@Produces(MediaType.APPLICATION_XML)
-	@Path("{id}")
-	public PhoneNumber read(@PathParam("id") long id) {
-		return entityManager.find(PhoneNumber.class, id);
-	}
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    @Path("{id}")
+    public PhoneNumber read(@PathParam("id") long id) {
+        return entityManager.find(PhoneNumber.class, id);
+    }
 
-	@PUT
-	@Consumes(MediaType.APPLICATION_XML)
-	public void update(PhoneNumber phoneNumber) {
-		entityManager.merge(phoneNumber);
-	}
+    @PUT
+    @Consumes(MediaType.APPLICATION_XML)
+    public void update(PhoneNumber phoneNumber) {
+        entityManager.merge(phoneNumber);
+    }
 
-	@DELETE
-	@Path("{id}")
-	public void delete(@PathParam("id") long id) {
-		PhoneNumber phoneNumber = entityManager.find(PhoneNumber.class, id);
-		if (null != phoneNumber) {
-			entityManager.remove(phoneNumber);
-		}
-	}
+    @DELETE
+    @Path("{id}")
+    public void delete(@PathParam("id") long id) {
+        PhoneNumber phoneNumber = entityManager.find(PhoneNumber.class, id);
+        if (null != phoneNumber) {
+            entityManager.remove(phoneNumber);
+        }
+    }
 
 }

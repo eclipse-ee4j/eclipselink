@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import java.util.Set;
@@ -39,7 +39,7 @@ public class SubqueryNode extends Node {
     /** */
     public ReportQuery getReportQuery(GenerationContext context) {
         ReportQuery innerQuery = new ReportQuery();
-        GenerationContext innerContext = 
+        GenerationContext innerContext =
             subqueryParseTree.populateSubquery(innerQuery, context);
         Expression joins = innerContext.joinVariables(outerVars);
         if (joins != null) {
@@ -50,12 +50,12 @@ public class SubqueryNode extends Node {
         return innerQuery;
     }
 
-    /** 
-     * INTERNAL 
+    /**
+     * INTERNAL
      * If called the subquery is part of the WHERE clause of an UPDATE or
-     * DELETE statement that does not define an identification variable. 
+     * DELETE statement that does not define an identification variable.
      * The method checks the clauses of the subquery for unqualified fields
-     * accesses. 
+     * accesses.
      */
     public Node qualifyAttributeAccess(ParseTreeContext context) {
         subqueryParseTree.getFromNode().qualifyAttributeAccess(context);
@@ -71,7 +71,7 @@ public class SubqueryNode extends Node {
         }
         return this;
     }
-    
+
     /**
      * INTERNAL
      * Validate node and calculate its type.
@@ -94,7 +94,7 @@ public class SubqueryNode extends Node {
         ReportQuery innerQuery = getReportQuery(context);
         return base.subQuery(innerQuery);
     }
-    
+
     /**
      * INTERNAL
      * Is this node a SubqueryNode
@@ -112,6 +112,6 @@ public class SubqueryNode extends Node {
     public JPQLParseTree getParseTree() {
         return subqueryParseTree;
     }
-    
+
 }
 

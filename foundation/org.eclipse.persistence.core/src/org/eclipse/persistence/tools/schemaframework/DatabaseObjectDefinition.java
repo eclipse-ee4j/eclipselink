@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/09/2011-2.3.1 Guy Pelletier 
+ *     09/09/2011-2.3.1 Guy Pelletier
  *       - 356197: Add new VPD type to MultitenantType
- *     09/14/2011-2.3.1 Guy Pelletier 
+ *     09/14/2011-2.3.1 Guy Pelletier
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     02/04/2013-2.5 Guy Pelletier 
+ *     02/04/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.*;
@@ -111,7 +111,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * Returns the writer used for creation of this object.
      */
     public abstract Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException;
-    
+
     /**
      * INTERNAL:
      * Sub classes should override.
@@ -120,7 +120,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
         // Does nothing .. subclasses should override
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Sub classes should override.
@@ -138,13 +138,13 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
         // Does nothing .. subclasses should override
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Returns the writer used for deletion of this object.
      */
     public abstract Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException;
-    
+
     /**
      * PUBLIC:
      */
@@ -161,21 +161,21 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * Execute the DDL to create the database schema for this object.
      * Does nothing at this level, subclasses that support this must override
      * this method.
-     * 
+     *
      * @see TableDefinition
      */
     public void createDatabaseSchema(AbstractSession session, Writer writer, Set<String> createdDatabaseSchemas) throws EclipseLinkException {}
-    
+
     /**
      * INTERNAL:
      * Execute the DDL to create the database schema for this object.
      * Does nothing at this level, subclasses that support this must override
      * this method.
-     * 
+     *
      * @see TableDefinition
      */
     public void createDatabaseSchemaOnDatabase(AbstractSession session, Set<String> createdDatabaseSchemas) throws EclipseLinkException {}
-    
+
     /**
      * INTERNAL:
      * Either drop from the database directly or write the statement to a file.
@@ -186,7 +186,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
             this.createOnDatabase(session);
         } else {
             this.buildCreationWriter(session, schemaWriter);
-            
+
             if (shouldCreateVPDCalls(session)) {
                 buildVPDCreationPolicyWriter(session, schemaWriter);
                 buildVPDCreationFunctionWriter(session, schemaWriter);
@@ -198,9 +198,9 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * INTERNAL:
      * Execute the DDL to create this object.
      */
-    public void createOnDatabase(AbstractSession session) throws EclipseLinkException {        
+    public void createOnDatabase(AbstractSession session) throws EclipseLinkException {
         session.priviledgedExecuteNonSelectingCall(new SQLCall(buildCreationWriter(session, new StringWriter()).toString()));
-        
+
         if (shouldCreateVPDCalls(session)) {
             session.priviledgedExecuteNonSelectingCall(new SQLCall(buildVPDCreationPolicyWriter(session, new StringWriter()).toString()));
             session.priviledgedExecuteNonSelectingCall(new SQLCall(buildVPDCreationFunctionWriter(session, new StringWriter()).toString()));
@@ -214,7 +214,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     public boolean shouldCreateDatabaseSchema(Set<String> createdDatabaseSchemas) {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Subclasses who care should override this method.
@@ -225,31 +225,31 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
 
     /**
      * INTERNAL:
-     * Execute the DDL to drop the database schema for this object.      
+     * Execute the DDL to drop the database schema for this object.
      * Does nothing at this level, subclasses that support this must override
      * this method.
-     * 
+     *
      * @see TableDefinition
      */
     public void dropDatabaseSchema(AbstractSession session, Writer writer) throws EclipseLinkException {}
-    
+
     /**
      * INTERNAL:
      * Execute the DDL to drop the database schema for this object.
      * Does nothing at this level, subclasses that support this must override
      * this method.
-     * 
+     *
      * @see TableDefinition
      */
     public void dropDatabaseSchemaOnDatabase(AbstractSession session) throws EclipseLinkException {}
-    
+
     /**
      * INTERNAL:
      * Execute the DDL to drop the object.
      */
     public void dropFromDatabase(AbstractSession session) throws EclipseLinkException {
         session.priviledgedExecuteNonSelectingCall(new SQLCall(buildDeletionWriter(session, new StringWriter()).toString()));
-        
+
         if (shouldCreateVPDCalls(session)) {
             session.priviledgedExecuteNonSelectingCall(new SQLCall(buildVPDDeletionWriter(session, new StringWriter()).toString()));
         }
@@ -265,7 +265,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
             this.dropFromDatabase(session);
         } else {
             buildDeletionWriter(session, schemaWriter);
-            
+
             if (shouldCreateVPDCalls(session)) {
                 buildVPDDeletionWriter(session, schemaWriter);
             }
@@ -274,14 +274,14 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
 
     /**
      * PUBLIC:
-     * Return the database schema associated with this database object. 
-     * 
+     * Return the database schema associated with this database object.
+     *
      * @see TableDefinition
      */
     public String getDatabaseSchema() {
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Most major databases support a creator name scope.
@@ -320,7 +320,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     protected boolean hasDatabaseSchema() {
         return getDatabaseSchema() != null && ! getDatabaseSchema().equals("");
     }
-    
+
     /**
      * Execute any statements required after the creation of the object
      * @param session
@@ -328,7 +328,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      */
     public void postCreateObject(AbstractSession session, Writer createSchemaWriter, boolean createSQLFiles){
     }
-    
+
     /**
      * Execute any statements required before the deletion of the object
      * @param session
@@ -336,7 +336,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      */
     public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles){
     }
-    
+
     /**
      * PUBLIC:
      * Set the name of the object.

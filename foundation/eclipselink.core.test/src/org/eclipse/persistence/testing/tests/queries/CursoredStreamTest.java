@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries;
 
 import java.util.*;
@@ -35,7 +35,7 @@ CursoredStreamTest extends AutoVerifyTestCase {
     public CursoredStreamTest(Class referenceClass, Expression expression) {
         setReferenceClass(referenceClass);
         setName(getName() + "(" + referenceClass + ")");
-        setDescription("This test verifies that the number of objects read in using a cursored stream" + 
+        setDescription("This test verifies that the number of objects read in using a cursored stream" +
                        " matches the number of object read in using a normal query");
         joinExpression = expression;
     }
@@ -97,7 +97,7 @@ CursoredStreamTest extends AutoVerifyTestCase {
             try {
                 stream2.read(5);
             } catch (org.eclipse.persistence.exceptions.QueryException ex) {
-            } // ignore at end	
+            } // ignore at end
             setSize(stream2.size());
             stream2.close();
             while (!stream.atEnd()) {
@@ -117,8 +117,8 @@ CursoredStreamTest extends AutoVerifyTestCase {
      */
     protected void verify() {
         if (getNormalQueryObjects().size() != getCursoredQueryObjects().size()) {
-            throw new TestErrorException("The number of streamed objects does not match the number of objects stored on the database.  Expected: " + 
-                                         getNormalQueryObjects().size() + ". Got: " + 
+            throw new TestErrorException("The number of streamed objects does not match the number of objects stored on the database.  Expected: " +
+                                         getNormalQueryObjects().size() + ". Got: " +
                                          getCursoredQueryObjects().size());
         }
 
@@ -132,11 +132,11 @@ CursoredStreamTest extends AutoVerifyTestCase {
 
         int first = 0;
         int last = getNormalQueryObjects().size() - 1;
-        if (!((AbstractSession)getSession()).compareObjects(getCursoredQueryObjects().elementAt(first), 
+        if (!((AbstractSession)getSession()).compareObjects(getCursoredQueryObjects().elementAt(first),
                                                             getNormalQueryObjects().elementAt(first))) {
             throw new TestErrorException("The First Objects do not match");
         }
-        if (!((AbstractSession)getSession()).compareObjects(getCursoredQueryObjects().elementAt(last), 
+        if (!((AbstractSession)getSession()).compareObjects(getCursoredQueryObjects().elementAt(last),
                                                             getNormalQueryObjects().elementAt(last))) {
             throw new TestErrorException("The Last Objects do not match");
         }

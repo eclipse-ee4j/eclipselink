@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.io.*;
@@ -39,32 +39,32 @@ public class CacheIndex implements Cloneable, Serializable {
     public CacheIndex() {
         this.fields = new ArrayList<DatabaseField>();
     }
-    
+
     public CacheIndex(DatabaseField fields[]) {
         this.fields = new ArrayList<DatabaseField>(fields.length);
         for (DatabaseField field : fields) {
             this.fields.add(field);
         }
     }
-    
+
     public CacheIndex(String... fields) {
         this.fields = new ArrayList<DatabaseField>(fields.length);
         for (String field : fields) {
             this.fields.add(new DatabaseField(field));
         }
     }
-    
+
     public CacheIndex(List<DatabaseField> fields) {
         this.fields = fields;
     }
-    
+
     /**
      * Return if the index field can be updated.
      */
     public boolean isUpdateable() {
         return isUpdateable;
     }
-    
+
     /**
      * Set if the index field can be updated.
      * If updateable the object will be re-indexed on each update/refresh.
@@ -72,14 +72,14 @@ public class CacheIndex implements Cloneable, Serializable {
     public void setIsUpdateable(boolean isUpdateable) {
         this.isUpdateable = isUpdateable;
     }
-    
+
     /**
      * Return if the index field can be inserted.
      */
     public boolean isInsertable() {
         return isInsertable;
     }
-    
+
     /**
      * Set if the index field can be inserted.
      * If insertable the object will be indexed after insert.
@@ -125,11 +125,11 @@ public class CacheIndex implements Cloneable, Serializable {
     public void setCacheSize(int cacheSize) {
         this.cacheSize = cacheSize;
     }
-    
+
     public void addField(DatabaseField field) {
         this.fields.add(field);
     }
-    
+
     /**
      * PUBLIC:
      * Add the database column name to the cache index.
@@ -137,7 +137,7 @@ public class CacheIndex implements Cloneable, Serializable {
     public void addFieldName(String field) {
         addField(new DatabaseField(field));
     }
-    
+
     public List<DatabaseField> getFields() {
         return fields;
     }
@@ -145,7 +145,7 @@ public class CacheIndex implements Cloneable, Serializable {
     public void setFields(List<DatabaseField> fields) {
         this.fields = fields;
     }
-    
+
     public String toString() {
         return "CacheIndex(" + getFields() + ")";
     }

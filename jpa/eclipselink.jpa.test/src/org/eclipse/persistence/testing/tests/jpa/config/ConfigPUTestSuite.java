@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -55,38 +55,38 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 
 /**
  * JPA scripting API implementation helper class.
- * 
+ *
  * @author Guy Pelletier, Doug Clarke
  * @since EclipseLink 2.5.1
  */
 public class ConfigPUTestSuite extends JUnitTestCase {
     private static EntityManagerFactory emf;
-    
+
     public ConfigPUTestSuite() {
         super();
     }
-    
+
     public ConfigPUTestSuite(String name) {
         super(name);
     }
-    
+
     public void setUp() {
         super.setUp();
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("ConfigPUTestSuite");
-        
+
         suite.addTest(new ConfigPUTestSuite("testCreateConfigPU"));
         suite.addTest(new ConfigPUTestSuite("testVerifyConfigPU"));
         suite.addTest(new ConfigPUTestSuite("testCRUDConfigPU"));
-        
+
         return suite;
     }
-    
+
     public void testCreateConfigPU() {
-        
+
         PersistenceUnit pu = new PersistenceUnitImpl("ConfigPUTestSuite", Thread.currentThread().getContextClassLoader());
 
         // Need to get the user specified database properties.
@@ -132,12 +132,12 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         sexConverter.addConversionValue().setDataValue("M").setObjectValue("Male");
         emp.addProperty().setName("entityName").setValue("Employee");
         emp.addProperty().setName("entityIntegerProperty").setValue("1").setValueType("Integer");
-        
+
         Id employeeId = emp.addId();
         employeeId.setName("id").setGeneratedValue().setGenerator("EMPLOYEE_TABLE_GENERATOR").setStrategy("TABLE");
         employeeId.setColumn().setName("EMP_ID");
         employeeId.setConvert("String2String");
-        
+
         emp.addBasic().setName("firstName").setAttributeType(String.class.getName()).setColumn().setName("F_NAME");
         emp.addBasic().setName("lastName").setAttributeType(String.class.getName()).setColumn().setName("L_NAME");
         emp.addBasic().setName("sin").setAttributeType("String").setColumn().setName("SIN");
@@ -145,60 +145,60 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         emp.addBasic().setName("gender").setAttributeType("Gender").setConvert("sex").setColumn().setName("GENDER");
         emp.addBasic().setName("salary").setAttributeType(Integer.class.getName()).setColumn().setTable("SALARY");
         emp.addBasic().setName("payScale").setAttributeType("SalaryRate").setEnumerated().setType("STRING");
-        
+
         emp.addVersion().setName("version").setAttributeType(Integer.class.getName()).setColumn().setName("VERSION");
-        
+
         ManyToOne addressMapping = emp.addManyToOne().setName("address").setTargetEntity("Address").setFetch("LAZY").setJoinFetch("OUTER");
         addressMapping.setCascade().setCascadePersist();
         addressMapping.addJoinColumn().setName("ADDR_ID");
-        
+
         ManyToOne managerMapping = emp.addManyToOne().setName("manager").setTargetEntity("Employee").setFetch("LAZY");
         managerMapping.setCascade().setCascadePersist();
         managerMapping.addJoinColumn().setName("MANAGER_EMP_ID").setReferencedColumnName("EMP_ID");
-        
+
         emp.addOneToMany().setName("phoneNumbers").setTargetEntity("PhoneNumber").setMappedBy("owner").setAttributeType("java.util.Collection").setCascade().setCascadeAll();
         emp.addOneToMany().setName("managedEmployees").setTargetEntity("Employee").setMappedBy("manager").setAttributeType("java.util.Collection");
-        
+
         ManyToMany projectsMapping = emp.addManyToMany().setName("projects").setTargetEntity("Project").setOrderBy("name").setAttributeType("java.util.Collection");
         projectsMapping.setCascade().setCascadePersist();
         JoinTable joinTable = projectsMapping.setJoinTable().setName("PROJ_EMP");
         joinTable.addJoinColumn().setName("EMP_ID").setReferencedColumnName("EMP_ID");
         joinTable.addInverseJoinColumn().setName("PROJ_ID").setReferencedColumnName("PROJ_ID");
-        
+
         // CreditCards??
         // Responsibilities??
-        
+
         ElementCollection creditLinesMapping = emp.addElementCollection().setName("creditLines").setFetch("EAGER").setMapKeyConvert("CreditLine").setConvert("Long2String").setAttributeType("java.util.Map").setTargetClass("Long").setMapKeyClass("String");
         creditLinesMapping.addProperty().setName("attributeName").setValue("creditLines");
         creditLinesMapping.setColumn().setName("ACCOUNT");
         creditLinesMapping.setMapKeyColumn().setName("BANK");
         creditLinesMapping.setCollectionTable().setName("EMP_CREDITLINES").addJoinColumn().setName("EMP_ID");
         creditLinesMapping.setTypeConverter().setName("Long2String").setDataType("String").setObjectType("Long");
-        
+
         ObjectTypeConverter creditLinesConverter = creditLinesMapping.setObjectTypeConverter().setName("CreditLine");
         creditLinesConverter.addConversionValue().setDataValue("RBC").setObjectValue("RoyalBank");
         creditLinesConverter.addConversionValue().setDataValue("CIBC").setObjectValue("CanadianImperial");
         creditLinesConverter.addConversionValue().setDataValue("SB").setObjectValue("Scotiabank");
-        creditLinesConverter.addConversionValue().setDataValue("TD").setObjectValue("TorontoDominion");        
-        
+        creditLinesConverter.addConversionValue().setDataValue("TD").setObjectValue("TorontoDominion");
+
         Embedded periodMapping = emp.addEmbedded().setName("period").setAttributeType("EmploymentPeriod");
         periodMapping.addAttributeOverride().setName("startDate").setColumn().setName("START_DATE").setNullable(false);
         periodMapping.addAttributeOverride().setName("endDate").setColumn().setName("END_DATE").setNullable(true);
         periodMapping.addProperty().setName("attributeName").setValue("period");
-        
+
         // Transformation.
-        
+
         /********************************************************************/
         /************************** ADDRESS ENTITY **************************/
         /********************************************************************/
         Entity address = mappings.addEntity().setClass("Address");
-        
+
         address.setTable().setName("ADDRESS");
         address.setChangeTracking().setType("DEFERRED");
         address.setCacheInterceptor().setInterceptorClassName("CacheAuditor");
         address.setQueryRedirectors().setAllQueriesRedirector("DoNotRedirect").setReadAllRedirector("DoNotRedirect").setReadObjectRedirector("DoNotRedirect").setReportRedirector("DoNotRedirect").setInsertRedirector("DoNotRedirect").setUpdateRedirector("DoNotRedirect").setDeleteRedirector("DoNotRedirect");
         address.setSequenceGenerator().setName("ADDRESS_SEQUENCE_GENERATOR").setSequenceName("ADDRESS_SEQ").setAllocationSize(25);
-        
+
         NamedStoredProcedureQuery query = address.addNamedStoredProcedureQuery().setName("SProcAddress").addResultClass("Address").setProcedureName("SProc_Read_Address");
         query.addParameter().setMode("IN_OUT").setName("address_id_v").setQueryParameter("ADDRESS_ID").setType("Integer");
         query.addParameter().setMode("OUT").setName("street_v").setQueryParameter("STREET").setType("String");
@@ -206,13 +206,13 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         query.addParameter().setMode("OUT").setName("country_v").setQueryParameter("COUNTRY").setType("String");
         query.addParameter().setMode("OUT").setName("province_v").setQueryParameter("PROVINCE").setType("String");
         query.addParameter().setMode("OUT").setName("p_code_v").setQueryParameter("P_CODE").setType("String");
-        
+
         address.addNamedNativeQuery().setName("findAllAddresses").setResultClass("Address").setQuery("SELECT * FROM ADDRESS");
-                
+
         Id addressId = address.addId();
         addressId.setName("id").setAttributeType("Integer").setColumn().setName("ADDRESS_ID");
         addressId.setGeneratedValue().setStrategy("SEQUENCE").setGenerator("ADDRESS_SEQUENCE_GENERATOR");
-        
+
         address.addBasic().setName("postalCode").setAttributeType("String");
         address.addBasic().setName("street").setAttributeType("String");
         address.addBasic().setName("city").setAttributeType("String");
@@ -224,14 +224,14 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         /********************************************************************/
         Entity phoneNumber = mappings.addEntity().setClass("PhoneNumber").setIdClass("PhoneNumberPK");
         phoneNumber.setTable().setName("PHONENUMBER");
-        
+
         phoneNumber.addId().setName("id").setAttributeType("Integer").setColumn().setName("OWNER_ID").setInsertable(false).setUpdatable(false);
         phoneNumber.addId().setName("type").setAttributeType("String").setColumn().setName("TYPE");
         phoneNumber.addBasic().setName("number").setAttributeType("String").setColumn().setName("NUMB");
         phoneNumber.addBasic().setName("areaCode").setAttributeType("String").setColumn().setName("AREA_CODE");
-        
+
         phoneNumber.addManyToOne().setName("owner").setTargetEntity("Employee").addJoinColumn().setName("OWNER_ID").setReferencedColumnName("EMP_ID");
-        
+
         /************************** LARGEPROJECT ENTITY **************************/
         Entity largeProject = mappings.addEntity().setClass("LargeProject").setParentClass("Project").setExistenceChecking("ASSUME_NON_EXISTENCE");
         largeProject.setTable().setName("LPROJECT");
@@ -243,7 +243,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         Entity smallProject = mappings.addEntity().setClass("SmallProject").setParentClass("Project").setExistenceChecking("ASSUME_EXISTENCE");
         smallProject.setTable().setName("PROJECT");
         smallProject.setDiscriminatorValue("S");
-        
+
         /********************************************************************/
         /************************** PROJECT ENTITY **************************/
         /********************************************************************/
@@ -263,19 +263,19 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         //project.setPreUpdate("preUpdate");
         //project.setPostUpdate("postUpdate");
         //project.setPostLoad("postLoad");
-        
+
         Id projectId = project.addId().setName("id").setAttributeType("Integer");
         projectId.setColumn().setName("PROJ_ID");
         projectId.setGeneratedValue().setStrategy("SEQUENCE").setGenerator("PROJECT_SEQUENCE_GENERATOR");
-        
+
         project.addBasic().setName("name").setAttributeType("String").setColumn().setName("PROJ_NAME");
         project.addBasic().setName("description").setAttributeType("String").setColumn().setName("DESCRIP");
         project.addVersion().setName("version").setAttributeType("Integer").setColumn().setName("VERSION");
-        
+
         project.addOneToOne().setName("teamLeader").setTargetEntity("Employee").addJoinColumn().setName("LEADER_ID");
-        
+
         project.addManyToMany().setName("teamMembers").setTargetEntity("Employee").setAttributeType("java.util.List").setMappedBy("projects");
-        
+
         /********************************************************************/
         /******************* EMPLOYMENT PERIOD EMBEDDABLE *******************/
         /********************************************************************/
@@ -283,21 +283,21 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         Basic startDate = employmentPeriod.addBasic().setName("startDate").setAttributeType("java.util.Date");
         startDate.setColumn().setName("S_DATE");
         startDate.setTemporal().setType("DATE");
-        
+
         Basic endDate = employmentPeriod.addBasic().setName("endDate").setAttributeType("java.util.Date");
         endDate.setColumn().setName("E_DATE");
         endDate.setTemporal().setType("DATE");
-    
+
         emf = RuntimeFactory.getInstance().createEntityManagerFactory(pu);
     }
 
     public void testVerifyConfigPU() {
         Assert.assertNotNull(emf);
-        
+
         JPADynamicHelper helper = new JPADynamicHelper(emf);
 
         DynamicType personType = helper.getType("Person");
-        
+
         Assert.assertNotNull(personType);
     }
 
@@ -320,7 +320,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            
+
             em.close();
             emf.close();
         }

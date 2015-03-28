@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.insurance;
 
 import java.io.*;
@@ -27,10 +27,10 @@ public class Address implements Serializable {
     private String zipCode;
     private String country;
 
-    //Back referenec to PolicyHolder is needed in the relational model as target foreign key is used in 
+    //Back referenec to PolicyHolder is needed in the relational model as target foreign key is used in
     //the 1:1 mapping, and the target object must have a relationship mapping to the source.
-    //In the object-relational model, this is not required as in the alternative structure mapping, the 
-    //Address object is aggregately stored (as STRUCT type in Oracle8i) in the HOLDER (PolicyHolder) source table. 
+    //In the object-relational model, this is not required as in the alternative structure mapping, the
+    //Address object is aggregately stored (as STRUCT type in Oracle8i) in the HOLDER (PolicyHolder) source table.
     private PolicyHolder policyHolder;
 
     /**

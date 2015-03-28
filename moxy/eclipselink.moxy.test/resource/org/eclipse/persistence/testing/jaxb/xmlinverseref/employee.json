@@ -2,7 +2,7 @@
    "empId":"theId",
    "addr":{
       "street":"theStreet",
-      "owner":{   
+      "owner":{
          "name":"theName"
       }
    }

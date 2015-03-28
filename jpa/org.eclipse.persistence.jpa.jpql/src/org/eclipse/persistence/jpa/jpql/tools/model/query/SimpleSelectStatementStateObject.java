@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,148 +30,148 @@ import org.eclipse.persistence.jpa.jpql.tools.model.ISimpleSelectExpressionState
  */
 public class SimpleSelectStatementStateObject extends AbstractSelectStatementStateObject {
 
-	/**
-	 * Creates a new <code>SimpleSelectStatementStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SimpleSelectStatementStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>SimpleSelectStatementStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SimpleSelectStatementStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * Adds a new derived collection declaration to the <code><b>FROM</b></code> clause.
-	 *
-	 * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
-	 * declaration
-	 */
-	public CollectionMemberDeclarationStateObject addDerivedCollectionDeclaration() {
-		return getFromClause().addDerivedCollectionDeclaration();
-	}
+    /**
+     * Adds a new derived collection declaration to the <code><b>FROM</b></code> clause.
+     *
+     * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
+     * declaration
+     */
+    public CollectionMemberDeclarationStateObject addDerivedCollectionDeclaration() {
+        return getFromClause().addDerivedCollectionDeclaration();
+    }
 
-	/**
-	 * Adds a new derived collection declaration to the <code><b>FROM</b></code> clause.
-	 *
-	 * @param collectionValuedPath The collection-valued path expression
-	 * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
-	 * declaration
-	 */
-	public CollectionMemberDeclarationStateObject addDerivedCollectionDeclaration(String collectionValuedPath) {
-		return getFromClause().addDerivedCollectionDeclaration(collectionValuedPath);
-	}
+    /**
+     * Adds a new derived collection declaration to the <code><b>FROM</b></code> clause.
+     *
+     * @param collectionValuedPath The collection-valued path expression
+     * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
+     * declaration
+     */
+    public CollectionMemberDeclarationStateObject addDerivedCollectionDeclaration(String collectionValuedPath) {
+        return getFromClause().addDerivedCollectionDeclaration(collectionValuedPath);
+    }
 
-	/**
-	 * Adds a new derived identification variable declaration to the <code><b>FROM</b></code> clause.
-	 *
-	 * @return The {@link DerivedPathIdentificationVariableDeclarationStateObject} representing the collection
-	 * declaration
-	 */
-	public DerivedPathIdentificationVariableDeclarationStateObject addDerivedPathDeclaration() {
-		return getFromClause().addDerivedPathDeclaration();
-	}
+    /**
+     * Adds a new derived identification variable declaration to the <code><b>FROM</b></code> clause.
+     *
+     * @return The {@link DerivedPathIdentificationVariableDeclarationStateObject} representing the collection
+     * declaration
+     */
+    public DerivedPathIdentificationVariableDeclarationStateObject addDerivedPathDeclaration() {
+        return getFromClause().addDerivedPathDeclaration();
+    }
 
-	/**
-	 * Adds a new derived identification variable declaration to the <code><b>FROM</b></code> clause.
-	 *
-	 * @param path Either the derived singled-valued object field or the collection-valued path expression
-	 * @param identificationVariable The identification variable defining the given path
-	 * @return The {@link DerivedPathIdentificationVariableDeclarationStateObject} representing the
-	 * path declaration
-	 */
-	public DerivedPathIdentificationVariableDeclarationStateObject addDerivedPathDeclaration(String path,
-	                                                                                         String identificationVariable) {
+    /**
+     * Adds a new derived identification variable declaration to the <code><b>FROM</b></code> clause.
+     *
+     * @param path Either the derived singled-valued object field or the collection-valued path expression
+     * @param identificationVariable The identification variable defining the given path
+     * @return The {@link DerivedPathIdentificationVariableDeclarationStateObject} representing the
+     * path declaration
+     */
+    public DerivedPathIdentificationVariableDeclarationStateObject addDerivedPathDeclaration(String path,
+                                                                                             String identificationVariable) {
 
-		return getFromClause().addDerivedPathDeclaration(path, identificationVariable);
-	}
+        return getFromClause().addDerivedPathDeclaration(path, identificationVariable);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractFromClauseStateObject buildFromClause() {
-		return new SimpleFromClauseStateObject(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractFromClauseStateObject buildFromClause() {
+        return new SimpleFromClauseStateObject(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractSelectClauseStateObject buildSelectClause() {
-		return new SimpleSelectClauseStateObject(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractSelectClauseStateObject buildSelectClause() {
+        return new SimpleSelectClauseStateObject(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SimpleSelectStatement getExpression() {
-		return (SimpleSelectStatement) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SimpleSelectStatement getExpression() {
+        return (SimpleSelectStatement) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SimpleFromClauseStateObject getFromClause() {
-		return (SimpleFromClauseStateObject) super.getFromClause();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SimpleFromClauseStateObject getFromClause() {
+        return (SimpleFromClauseStateObject) super.getFromClause();
+    }
 
-	/**
-	 * Creates and returns a new {@link ISimpleSelectExpressionStateObjectBuilder} that can be used
-	 * to programmatically create a single select expression and once the expression is complete,
-	 * {@link ISimpleSelectExpressionStateObjectBuilder#commit()} will push the {@link StateObject}
-	 * representation of that expression as this clause's select expression.
-	 *
-	 * @return A new builder that can be used to quickly create a select expression
-	 */
-	public ISimpleSelectExpressionStateObjectBuilder getSelectBuilder() {
-		return getSelectClause().getBuilder();
-	}
+    /**
+     * Creates and returns a new {@link ISimpleSelectExpressionStateObjectBuilder} that can be used
+     * to programmatically create a single select expression and once the expression is complete,
+     * {@link ISimpleSelectExpressionStateObjectBuilder#commit()} will push the {@link StateObject}
+     * representation of that expression as this clause's select expression.
+     *
+     * @return A new builder that can be used to quickly create a select expression
+     */
+    public ISimpleSelectExpressionStateObjectBuilder getSelectBuilder() {
+        return getSelectClause().getBuilder();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SimpleSelectClauseStateObject getSelectClause() {
-		return (SimpleSelectClauseStateObject) super.getSelectClause();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SimpleSelectClauseStateObject getSelectClause() {
+        return (SimpleSelectClauseStateObject) super.getSelectClause();
+    }
 
-	/**
-	 * Keeps a reference of the {@link SimpleSelectStatement parsed object} object, which should only
-	 * be done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link SimpleSelectStatement parsed object} representing a subquery
-	 * <code><b>SELECT</b></code> statement
-	 */
-	public void setExpression(SimpleSelectStatement expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link SimpleSelectStatement parsed object} object, which should only
+     * be done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link SimpleSelectStatement parsed object} representing a subquery
+     * <code><b>SELECT</b></code> statement
+     */
+    public void setExpression(SimpleSelectStatement expression) {
+        super.setExpression(expression);
+    }
 
-	/**
-	 * Sets the given {@link StateObject} as the <code><b>SELECT</b></code> clause's select item.
-	 *
-	 * @param stateObject The {@link StateObject} representing the single select item
-	 */
-	public void setSelectItem(StateObject stateObject) {
-		getSelectClause().setSelectItem(stateObject);
-	}
+    /**
+     * Sets the given {@link StateObject} as the <code><b>SELECT</b></code> clause's select item.
+     *
+     * @param stateObject The {@link StateObject} representing the single select item
+     */
+    public void setSelectItem(StateObject stateObject) {
+        getSelectClause().setSelectItem(stateObject);
+    }
 
-	/**
-	 * Parses the given JPQL fragment and create the select item. For the top-level query, the
-	 * fragment can contain several select items but for a subquery, it can represent only one.
-	 *
-	 * @param jpqlFragment The portion of the query representing one or several select items
-	 */
-	public void setSelectItem(String jpqlFragment) {
-		getSelectClause().parse(jpqlFragment);
-	}
+    /**
+     * Parses the given JPQL fragment and create the select item. For the top-level query, the
+     * fragment can contain several select items but for a subquery, it can represent only one.
+     *
+     * @param jpqlFragment The portion of the query representing one or several select items
+     */
+    public void setSelectItem(String jpqlFragment) {
+        getSelectClause().parse(jpqlFragment);
+    }
 }

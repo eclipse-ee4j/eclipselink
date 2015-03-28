@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.onetoonejointable;
 
 import java.sql.*;
@@ -182,7 +182,7 @@ public class EmployeePopulator {
             employee.setAddress(addressExample1());
             employee.addResponsibility("Make the coffee.");
             employee.addResponsibility("Clean the kitchen.");
-            
+
             addChildren(employee, 2);
 
         } catch (Exception exception) {
@@ -201,7 +201,7 @@ public class EmployeePopulator {
             employee.setFemale();
             employee.setAddress(addressExample10());
             employee.setSalary(56232);
-            
+
             addChildren(employee, 2);
 
         } catch (Exception exception) {
@@ -220,7 +220,7 @@ public class EmployeePopulator {
             employee.setFemale();
             employee.setAddress(addressExample11());
             employee.setSalary(75000);
-            
+
             addChildren(employee, 2);
 
         } catch (Exception exception) {
@@ -239,7 +239,7 @@ public class EmployeePopulator {
             employee.setMale();
             employee.setAddress(addressExample12());
             employee.setSalary(50000);
-            
+
             addChildren(employee, 2);
 
         } catch (Exception exception) {
@@ -260,7 +260,7 @@ public class EmployeePopulator {
             employee.setAddress(addressExample2());
             employee.addResponsibility("Fire people for goofing off.");
             employee.addResponsibility("Hire people when more people are required.");
-            
+
             addChildren(employee, 2);
 
 
@@ -281,7 +281,7 @@ public class EmployeePopulator {
             employee.setSalary(43000);
             employee.setAddress(addressExample6());
             employee.addResponsibility("Write lots of Java code.");
-            
+
             addChildren(employee, 2);
 
         } catch (Exception exception) {
@@ -301,7 +301,7 @@ public class EmployeePopulator {
             employee.setSalary(49631);
             employee.setAddress(addressExample5());
             employee.addResponsibility("Have to fix the Database problem.");
-            
+
             addChildren(employee, 2);
 
         } catch (Exception exception) {
@@ -321,7 +321,7 @@ public class EmployeePopulator {
             employee.setSalary(87000);
             employee.setAddress(addressExample4());
             employee.addResponsibility("Write code documentation.");
-            
+
             addChildren(employee, 2);
 
         } catch (Exception exception) {
@@ -341,7 +341,7 @@ public class EmployeePopulator {
             employee.setSalary(54300);
             employee.setAddress(addressExample3());
             employee.addResponsibility("Write user specifications.");
-            
+
             addChildren(employee, 2);
 
         } catch (Exception exception) {
@@ -360,7 +360,7 @@ public class EmployeePopulator {
             employee.setFemale();
             employee.setSalary(31000);
             employee.setAddress(addressExample7());
-            
+
             addChildren(employee, 2);
 
         } catch (Exception exception) {
@@ -379,7 +379,7 @@ public class EmployeePopulator {
             employee.setMale();
             employee.setSalary(500000);
             employee.setAddress(addressExample8());
-            
+
             addChildren(employee, 2);
 
         } catch (Exception exception) {
@@ -398,7 +398,7 @@ public class EmployeePopulator {
             employee.setFemale();
             employee.setSalary(500001);
             employee.setAddress(addressExample9());
-            
+
             addChildren(employee, 2);
 
         } catch (Exception exception) {
@@ -1090,7 +1090,7 @@ public class EmployeePopulator {
         registerObject(smallProject, "0009");
         return smallProject;
     }
-    
+
     protected void addChildren(Employee emp, int num) {
         for(int i=0; i < num; i++) {
             emp.addChild(new Child(Integer.toString(i), emp.getLastName()));

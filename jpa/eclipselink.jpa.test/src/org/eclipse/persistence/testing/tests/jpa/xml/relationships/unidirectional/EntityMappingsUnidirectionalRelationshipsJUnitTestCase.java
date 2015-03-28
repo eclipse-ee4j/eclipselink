@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.tests.jpa.xml.relationships.unidirectional;
@@ -26,7 +26,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirection
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional.ModelExamples;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
- 
+
 /**
  * JUnit test case(s) for the TopLink EntityMappingsXMLProcessor.
  */
@@ -43,15 +43,15 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
     protected static Integer mtmEmployeeId;
     protected static Integer mtmProject1Id;
     protected static Integer mtmProject2Id;
-    
+
     public EntityMappingsUnidirectionalRelationshipsJUnitTestCase() {
         super();
     }
-    
+
     public EntityMappingsUnidirectionalRelationshipsJUnitTestCase(String name) {
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite("Unidirectional Relationships Model");
         suite.addTest(new EntityMappingsUnidirectionalRelationshipsJUnitTestCase("testSetup"));
@@ -74,10 +74,10 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         suite.addTest(new EntityMappingsUnidirectionalRelationshipsJUnitTestCase("testUnidirectionalManyToManyRead"));
         suite.addTest(new EntityMappingsUnidirectionalRelationshipsJUnitTestCase("testUnidirectionalManyToManyDeleteNonowning"));
         suite.addTest(new EntityMappingsUnidirectionalRelationshipsJUnitTestCase("testUnidirectionalManyToManyDeleteOwning"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -86,12 +86,12 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         new AdvancedTableCreator().replaceTables(session);
         clearCache();
     }
-    
+
     public void testUnidirectionalOneToOneCreate() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            Employee employee = ModelExamples.employeeExample1();		
+            Employee employee = ModelExamples.employeeExample1();
             Project project = ModelExamples.projectExample1();
             project.setTeamLeader(employee);
 
@@ -100,7 +100,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
             em.persist(project);
             otoEmployeeId = employee.getId();
             otoProjectId = project.getId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -116,7 +116,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         assertTrue("Error reading Project", project.getId() == otoProjectId);
         assertTrue("Error reading TeamLeader of Project",project.getTeamLeader().getId() == otoEmployeeId);
     }
-        
+
     public void testUnidirectionalOneToOneDeleteNonowning() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -124,7 +124,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
             Employee employee = em.find(Employee.class, otoEmployeeId);
             Project project = em.find(Project.class, otoProjectId);
             assertTrue(employee != null);
-            assertTrue(project != null); 
+            assertTrue(project != null);
             project.setTeamLeader(null);
             em.remove(employee);
             commitTransaction(em);
@@ -160,9 +160,9 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            Employee employee = ModelExamples.employeeExample1();		
-            PhoneNumber phone1 = ModelExamples.phoneExample1();		
-            PhoneNumber phone2 = ModelExamples.phoneExample2();		
+            Employee employee = ModelExamples.employeeExample1();
+            PhoneNumber phone1 = ModelExamples.phoneExample1();
+            PhoneNumber phone2 = ModelExamples.phoneExample2();
             employee.addPhoneNumber(phone1);
             employee.addPhoneNumber(phone2);
 
@@ -171,7 +171,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
             otmEmployeeId = employee.getId();
             otmPhone1Id = phone1.getId();
             otmPhone2Id = phone2.getId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -180,7 +180,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
             throw e;
         }
     }
-    
+
     public void testUnidirectionalOneToManyRead() {
         EntityManager em = createEntityManager();
         Employee employee = em.find(Employee.class, otmEmployeeId);
@@ -197,7 +197,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         }
         assertTrue("Employee didn't have correct phones", phonesMatched);
     }
-    
+
     public void testUnidirectionalOneToManyDeleteNonowning() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -216,13 +216,13 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         }
         assertTrue("Error deleting PhoneNumber", em.find(PhoneNumber.class, otmPhone1Id) == null);
     }
-        
+
     public void testUnidirectionalOneToManyDeleteOwning() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             Employee employee = em.find(Employee.class, otmEmployeeId);
-            
+
             //if cascade-all is set, comment this line out
             employee.setPhoneNumbers(null);
             em.remove(employee);
@@ -243,8 +243,8 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            Employee employee1 = ModelExamples.employeeExample1();		
-            Employee employee2 = ModelExamples.employeeExample2();		
+            Employee employee1 = ModelExamples.employeeExample1();
+            Employee employee2 = ModelExamples.employeeExample2();
             Address address = ModelExamples.addressExample1();
             employee1.setAddress(address);
             employee2.setAddress(address);
@@ -255,7 +255,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
             mtoEmployee1Id = employee1.getId();
             mtoEmployee2Id = employee2.getId();
             mtoAddressId = address.getId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -271,7 +271,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         assertTrue("Error reading Employee", employee.getId() == mtoEmployee1Id);
         assertTrue("Error reading Address",employee.getAddress().getId() == mtoAddressId);
     }
-    
+
     public void testUnidirectionalManyToOneDeleteNonowning() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -292,7 +292,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         }
         assertTrue("Error deleting Address", em.find(Address.class, mtoAddressId) == null);
     }
-        
+
     public void testUnidirectionalManyToOneDeleteOwning() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -312,23 +312,23 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         assertTrue("Error deleting Employee", em.find(Employee.class, mtoEmployee1Id) == null);
         assertTrue("Error deleting Employee", em.find(Employee.class, mtoEmployee2Id) == null);
     }
-    
+
     public void testUnidirectionalManyToManyCreate() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            Employee employee = ModelExamples.employeeExample1();		
+            Employee employee = ModelExamples.employeeExample1();
             Project project1=ModelExamples.projectExample1();
             Project project2=ModelExamples.projectExample2();
-            employee.addProject(project1);            
-            employee.addProject(project2);            
+            employee.addProject(project1);
+            employee.addProject(project2);
 
             //cascade-persist
             em.persist(employee);
             mtmEmployeeId = employee.getId();
             mtmProject1Id = project1.getId();
             mtmProject2Id = project2.getId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

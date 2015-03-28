@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -36,7 +36,7 @@ public class ChangeSummaryXSDQuoteDataTestCases extends SDOTestCase {
 
     private String writeDocumentBeforeMoveAsString;
     private String writeDocumentAfterMoveAsString;
-    
+
     public static final String ROOT_ELEMENT_URI = "www.example.com";
     public static final String ROOT_ELEMENT_NAME = "quoteType";
 
@@ -54,17 +54,17 @@ public class ChangeSummaryXSDQuoteDataTestCases extends SDOTestCase {
         try {
             InputStream is = new FileInputStream(schemaFileName);
             xsdHelper.define(is, null);
-            
+
             XMLDocument inputDocument = xmlHelper.load(new FileInputStream(inputDocumentFileName));
             quoteDataDO = inputDocument.getRootObject();
             cs = quoteDataDO.getChangeSummary();
             cs.endLogging();
-            
+
             FileInputStream inputStream = new FileInputStream(writeDocumentBeforeMoveFileName);
             byte[] bytes = new byte[inputStream.available()];
             inputStream.read(bytes);
             writeDocumentBeforeMoveAsString = new String(bytes);
-            
+
             inputStream.close();
             inputStream = new FileInputStream(writeDocumentAfterMoveFileName);
             bytes = new byte[inputStream.available()];
@@ -81,8 +81,8 @@ public class ChangeSummaryXSDQuoteDataTestCases extends SDOTestCase {
      * Tests change summary contents after:
      *   1) modify operation
      *   2) move modified data objects
-     *   
-     * The change summary should contain an entry for the initial modification, 
+     *
+     * The change summary should contain an entry for the initial modification,
      * then an additional entry after the move.
      */
     public void testChangeSummaryModifyThenMove() throws Exception {
@@ -92,7 +92,7 @@ public class ChangeSummaryXSDQuoteDataTestCases extends SDOTestCase {
 
         // modify each related quote item (should be a modified entry in the CS)
         for (int i=0;i<relatedQuoteItem.size();i++){
-            DataObject currentDO = (DataObject) relatedQuoteItem.get(i); 
+            DataObject currentDO = (DataObject) relatedQuoteItem.get(i);
             currentDO.set("cost", i+20);
         }
 
@@ -100,40 +100,40 @@ public class ChangeSummaryXSDQuoteDataTestCases extends SDOTestCase {
 
         Document doc1 = parser.parse(new ByteArrayInputStream(writeDocumentBeforeMoveAsString.getBytes()));
         Document doc2 = parser.parse(new ByteArrayInputStream(beforemovestr.getBytes()));
-        
+
         assertXMLIdentical(doc1, doc2);
-        
+
         // move the modified related quote items (should be a modified and a move entry in the CS)
         lineItemList.addAll(relatedQuoteItem);
 
         String aftermovestr = xmlHelper.save(quoteDataDO, ROOT_ELEMENT_URI, ROOT_ELEMENT_NAME);
-        
+
         doc1 = parser.parse(new ByteArrayInputStream(writeDocumentAfterMoveAsString.getBytes()));
         doc2 = parser.parse(new ByteArrayInputStream(aftermovestr.getBytes()));
-        
+
         assertXMLIdentical(doc1, doc2);
-        
+
     }
-    
+
     /**
-     * Tests isModified and isDeleted states of a data object and its parent 
+     * Tests isModified and isDeleted states of a data object and its parent
      * after:
      *   1) the data object is detached from the parent
      *   2) the data object is re-attached to the parent in the same position in
      *   the original list
-     * 
+     *
      * This essentially tests an undo operation.
      */
     public void testUndoDetach() throws Exception {
         ListWrapper items = (ListWrapper) quoteDataDO.get("lineItem");
         DataObject item = (DataObject) items.get(0);
-            
-        cs.beginLogging();            
-        
+
+        cs.beginLogging();
+
         // sanity check
         assertFalse(cs.isModified(quoteDataDO));
         assertFalse(cs.isDeleted(item));
-        
+
         // detach item from quoteDataDO
         item.detach();
 
@@ -141,28 +141,28 @@ public class ChangeSummaryXSDQuoteDataTestCases extends SDOTestCase {
         assertTrue(cs.isModified(quoteDataDO));
         assertTrue(cs.isDeleted(item));
 
-        // re-add the item back in the same position (undo detach)        
+        // re-add the item back in the same position (undo detach)
         items.add(0, item);
 
         // after the undo op, item is not deleted, and the parent has not been modified
         assertFalse(cs.isModified(quoteDataDO));
         assertFalse(cs.isDeleted(item));
     }
-    
+
     /**
-     * Tests isModified and isDeleted states of a data object and its parent 
+     * Tests isModified and isDeleted states of a data object and its parent
      * after:
      *   1) the data object is detached from the parent
      *   2) the data object is re-attached to the parent in a different position
      *   in the original list
-     *   
+     *
      * This essentially tests a move operation.
      */
     public void testMove() throws Exception {
         ListWrapper items = (ListWrapper) quoteDataDO.get("lineItem");
         DataObject item = (DataObject) items.get(0);
-            
-        cs.beginLogging();            
+
+        cs.beginLogging();
 
         // sanity check
         assertFalse(cs.isModified(quoteDataDO));
@@ -184,7 +184,7 @@ public class ChangeSummaryXSDQuoteDataTestCases extends SDOTestCase {
     }
 
     /**
-     * Tests isModified and isDeleted states of two data objects and their 
+     * Tests isModified and isDeleted states of two data objects and their
      * parent after:
      *   1) the data objects are detached from the parent
      *   2) one data object is re-attached to the parent in the same position in
@@ -193,8 +193,8 @@ public class ChangeSummaryXSDQuoteDataTestCases extends SDOTestCase {
     public void testUndoWithAdditionalModifications() throws Exception {
         ListWrapper items = (ListWrapper) quoteDataDO.get("lineItem");
         ListWrapper relatedQuoteItems = (ListWrapper) quoteDataDO.get("relatedQuoteItem");
-            
-        cs.beginLogging();            
+
+        cs.beginLogging();
 
         DataObject item = (DataObject) items.get(0);
         DataObject rqItem = (DataObject) relatedQuoteItems.get(0);
@@ -217,7 +217,7 @@ public class ChangeSummaryXSDQuoteDataTestCases extends SDOTestCase {
     }
 
     /**
-     * Tests isModified and isDeleted states of two data objects and their 
+     * Tests isModified and isDeleted states of two data objects and their
      * parent after:
      *   1) the data objects are detached from the parent
      *   2) one data object is re-attached to the parent in the same position in
@@ -226,8 +226,8 @@ public class ChangeSummaryXSDQuoteDataTestCases extends SDOTestCase {
     public void testMultipleUndo() throws Exception {
         ListWrapper items = (ListWrapper) quoteDataDO.get("lineItem");
         ListWrapper relatedQuoteItems = (ListWrapper) quoteDataDO.get("relatedQuoteItem");
-            
-        cs.beginLogging();            
+
+        cs.beginLogging();
 
         DataObject item = (DataObject) items.get(0);
         DataObject rqItem = (DataObject) relatedQuoteItems.get(0);

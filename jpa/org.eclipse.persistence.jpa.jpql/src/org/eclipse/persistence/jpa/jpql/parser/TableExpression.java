@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,34 +25,34 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public final class TableExpression extends AbstractSingleEncapsulatedExpression {
 
-	/**
-	 * Creates a new <code>TableExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public TableExpression(AbstractExpression parent) {
-		super(parent, TABLE);
-	}
+    /**
+     * Creates a new <code>TableExpression</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public TableExpression(AbstractExpression parent) {
+        super(parent, TABLE);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		acceptUnknownVisitor(visitor);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        acceptUnknownVisitor(visitor);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getEncapsulatedExpressionQueryBNFId() {
-		return StringLiteralBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getEncapsulatedExpressionQueryBNFId() {
+        return StringLiteralBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(TableExpressionBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(TableExpressionBNF.ID);
+    }
 }

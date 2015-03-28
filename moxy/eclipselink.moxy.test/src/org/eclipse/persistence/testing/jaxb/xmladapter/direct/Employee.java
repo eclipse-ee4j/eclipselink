@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,17 +22,17 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class Employee {
 
     public String name;
-    
+
     @XmlAttribute
     @XmlJavaTypeAdapter(ListToStringAdapter.class)
     public List<String> responsibilities;
-    
+
     public boolean equals(Object obj) {
         if(!(obj instanceof Employee)) {
             return false;
         }
-        
+
         Employee emp = (Employee)obj;
-        return emp.name.equals(this.name)&& emp.responsibilities.equals(this.responsibilities); 
+        return emp.name.equals(this.name)&& emp.responsibilities.equals(this.responsibilities);
     }
 }

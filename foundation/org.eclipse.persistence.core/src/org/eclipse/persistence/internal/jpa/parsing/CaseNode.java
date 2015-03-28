@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial implementation as part of JPA 2.0 RI
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import java.util.Iterator;
@@ -37,7 +37,7 @@ public class CaseNode extends Node implements AliasableNode {
     public CaseNode(){
         super();
     }
-    
+
     /**
      * INTERNAL
      * Apply this node to the passed query
@@ -49,7 +49,7 @@ public class CaseNode extends Node implements AliasableNode {
             reportQuery.addAttribute("Case", expression, (Class)getType());
         }
     }
-    
+
     /**
      * INTERNAL
      * Generate the a new EclipseLink TableEntryExpression for this node.
@@ -61,7 +61,7 @@ public class CaseNode extends Node implements AliasableNode {
             WhenThenNode clause = (WhenThenNode)i.next();
             whenClauseMap.put(clause.generateExpressionForWhen(context), clause.generateExpressionForThen(context));
         }
-        
+
         Expression whereClause = null;
         if (getLeft() == null){
             whereClause = context.getBaseExpression().caseStatement(whenClauseMap, getRight().generateExpression(context));
@@ -70,7 +70,7 @@ public class CaseNode extends Node implements AliasableNode {
         }
         return whereClause;
     }
-    
+
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
         if (left != null){
@@ -93,8 +93,8 @@ public class CaseNode extends Node implements AliasableNode {
         }
         setType(type);
     }
-    
-    
+
+
     public List getWhenClauses() {
         return whenClauses;
     }
@@ -102,7 +102,7 @@ public class CaseNode extends Node implements AliasableNode {
     public void setWhenClauses(List whenClauses) {
         this.whenClauses = whenClauses;
     }
-    
+
     public boolean isAliasableNode(){
         return true;
     }

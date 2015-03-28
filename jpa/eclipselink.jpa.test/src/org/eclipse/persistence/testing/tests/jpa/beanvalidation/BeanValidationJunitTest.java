@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2009, 2015  Sun Microsystems, Inc. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -203,7 +203,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         boolean removeSuccessfull = false;
         final int EMPLOYEE_PK_TO_REMOVE = 2;
-        
+
         try {
             beginTransaction(em);
             Employee e1 = new Employee(EMPLOYEE_PK_TO_REMOVE, getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1 ), 1000);
@@ -214,7 +214,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             throw ex;
-        } 
+        }
 
         try {
             beginTransaction(em);
@@ -228,7 +228,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             throw ex;
-        } 
+        }
 
         closeEntityManager(em);
         assertTrue("Automatic Validation should not be executed for remove", removeSuccessfull);
@@ -258,7 +258,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
-        
+
         org.eclipse.persistence.sessions.Project project = getDatabaseSession().getProject();
         assertTrue( "Lazy field should not be instantiated because of validation", !isInstantiated(employee, "projects", project) );
         assertTrue( "Lazy field should not be instantiated because of validation", !isInstantiated(employee, "managedProject", project) );

@@ -1,20 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     17/10/2008-1.1  Michael O'Brien 
+ *     17/10/2008-1.1  Michael O'Brien
  *       - 251005: The default JNDI InitialContextFactory is modified from
  *       OC4J: oracle.j2ee.rmi.RMIInitialContextFactory to
  *       WebLogic: weblogic.jndi.WLInitialContextFactory
  *     cdelahun - Bug 214534: changes for JMSPublishingTransportManager configuration
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.factories;
 
 // javase imports
@@ -236,7 +236,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
             XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
             descriptor.setNamespaceResolver(namespaceResolver);
         }
-        
+
         XMLLogin xmlLogin = new XMLLogin();
         DOMPlatform platform = new DOMPlatform();
         xmlLogin.setDatasourcePlatform(platform);
@@ -485,7 +485,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         structConverterConfigMapping.setSetMethodName("setStructConverterConfig");
         structConverterConfigMapping.setXPath("struct-converters");
         descriptor.addMapping(structConverterConfigMapping);
-        
+
         return descriptor;
     }
 
@@ -534,7 +534,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
 
         return descriptor;
     }
-    
+
     public ClassDescriptor buildDefaultSessionLogConfigDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(DefaultSessionLogConfig.class);
@@ -676,7 +676,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
 
         return descriptor;
     }
-    
+
     public ClassDescriptor buildJMSPublishingTransportManagerConfigDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(JMSPublishingTransportManagerConfig.class);
@@ -882,7 +882,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
                 this.platformList.put("org.eclipse.persistence.oraclespecific.Oracle9Platform", "org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
                 this.platformList.put("org.eclipse.persistence.platform.database.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnywherePlatform");
             }
-            
+
         });
         descriptor.addMapping(platformClassMapping);
 
@@ -1198,7 +1198,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         descriptor.getInheritancePolicy().addClassIndicator(WebSphere_6_0_PlatformConfig.class, "websphere-60-platform");
         descriptor.getInheritancePolicy().addClassIndicator(JBossPlatformConfig.class, "jboss-platform");
         descriptor.getInheritancePolicy().addClassIndicator(NetWeaver_7_1_PlatformConfig.class, "netweaver-71-platform");
-        
+
 
         XMLDirectMapping enableRuntimeServicesMapping = new XMLDirectMapping();
         enableRuntimeServicesMapping.setAttributeName("m_enableRuntimeServices");

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import org.eclipse.persistence.internal.sessions.*;
@@ -61,7 +61,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
         super(field);
         this.useServerTime();
     }
-    
+
     /**
      * INTERNAL:
      * This method compares two writeLockValues.
@@ -87,7 +87,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
     protected Class getDefaultLockingFieldType() {
         return ClassConstants.TIMESTAMP;
     }
-    
+
     /**
      * INTERNAL:
      * This is the base value that is older than all other values, it is used in the place of
@@ -96,7 +96,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
     public Object getBaseValue(){
         return new Timestamp(0);
     }
-    
+
     /**
      * INTERNAL:
      * returns the initial locking value
@@ -235,10 +235,10 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
         } else {
             writeLockFieldValue = (java.sql.Timestamp)lockValueFromObject(domainObject);
         }
-        
+
         return isNewerVersion(newWriteLockFieldValue, writeLockFieldValue);
     }
-    
+
     /**
      * INTERNAL:
      * Compares two values.
@@ -247,22 +247,22 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
     public boolean isNewerVersion(Object firstLockFieldValue, Object secondWriteLockFieldValue) {
         java.sql.Timestamp firstValue = (java.sql.Timestamp)firstLockFieldValue;
         java.sql.Timestamp secondValue = (java.sql.Timestamp)secondWriteLockFieldValue;
-        
+
         // 2.5.1.6 if the write lock value is null, then what ever we have is treated as newer.
         if (firstValue == null) {
             return false;
         }
-        
+
         // bug 6342382: first is not null, second is null, so we know first>second.
         if(secondValue == null) {
             return true;
         }
-        
+
         if (firstValue.after(secondValue)){
             return true;
         }
         return false;
-    } 
+    }
 
     /**
      * PUBLIC:

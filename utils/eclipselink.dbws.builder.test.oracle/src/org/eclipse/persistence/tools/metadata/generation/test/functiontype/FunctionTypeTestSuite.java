@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,7 +60,7 @@ public class FunctionTypeTestSuite {
             "\nMAXSAL := 123456.66;" +
             "\nRETURN(MAXSAL);" +
         "\nEND FINDMAXSALFORDEPT;";
-    
+
     static final String DROP_FINDMAXSALFORDEPT_FUNC =
         "DROP FUNCTION FINDMAXSALFORDEPT";
 
@@ -75,7 +75,7 @@ public class FunctionTypeTestSuite {
     @BeforeClass
     public static void setUp() throws ClassNotFoundException, SQLException {
         AllTests.setUp();
-        
+
         String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
         if ("true".equalsIgnoreCase(ddlCreateProp)) {
             ddlCreate = true;
@@ -91,7 +91,7 @@ public class FunctionTypeTestSuite {
         if (ddlCreate) {
             runDdl(conn, CREATE_FINDMAXSALFORDEPT_FUNC, ddlDebug);
         }
-        
+
         // use DatabaseTypeBuilder to generate a list of ProcedureTypes
         dbTypeBuilder = new DatabaseTypeBuilder();
         try {
@@ -107,7 +107,7 @@ public class FunctionTypeTestSuite {
             runDdl(conn, DROP_FINDMAXSALFORDEPT_FUNC, ddlDebug);
         }
     }
-    
+
     @Test
     @SuppressWarnings({ "unchecked" })
     public void testJPAFunctionMetadata() {
@@ -137,7 +137,7 @@ public class FunctionTypeTestSuite {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
         "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
         "   <orm:named-stored-function-query name=\"FINDMAXSALFORDEPT\" function-name=\"FINDMAXSALFORDEPT\">\n" +
         "      <orm:parameter mode=\"IN\" name=\"DEPT\" type=\"java.math.BigDecimal\" class=\"java.math.BigDecimal\" jdbc-type=\"3\" jdbc-type-name=\"DECIMAL\"/>\n" +
         "      <orm:return-parameter type=\"java.math.BigDecimal\" class=\"java.math.BigDecimal\" jdbc-type=\"3\" jdbc-type-name=\"DECIMAL\"/>\n" +

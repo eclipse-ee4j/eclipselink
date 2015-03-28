@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/13/2013-2.5 Guy Pelletier 
+ *     02/13/2013-2.5 Guy Pelletier
  *       - 397772: JPA 2.1 Entity Graph Support (XML support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.graphs;
@@ -29,28 +29,28 @@ import org.eclipse.persistence.queries.AttributeGroup;
 
 /**
  * Object to hold onto named sub graph metadata.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
  * - any metadata mapped from XML to this class must be initialized in the
  *   initXMLObject method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.5
  */
 public class NamedSubgraphMetadata extends ORMetadata {
     protected String m_name;
-    
+
     protected MetadataClass m_type;
     protected String m_typeName;
-    
+
     protected List<NamedAttributeNodeMetadata> m_namedAttributeNodes = new ArrayList<NamedAttributeNodeMetadata>();
-    
+
     /**
      * INTERNAL:
      * Used for XML loading.
@@ -58,22 +58,22 @@ public class NamedSubgraphMetadata extends ORMetadata {
     public NamedSubgraphMetadata() {
         super("<named-subgraph>");
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.
      */
     public NamedSubgraphMetadata(MetadataAnnotation namedSubgraph, ClassAccessor accessor) {
         super(namedSubgraph, accessor);
-        
+
         m_name = namedSubgraph.getAttributeString("name");
         m_type = getMetadataClass(namedSubgraph.getAttributeClass("type", ClassConstants.Object_Class));
-        
+
         for (Object attributeNode : namedSubgraph.getAttributeArray("attributeNodes")) {
             m_namedAttributeNodes.add(new NamedAttributeNodeMetadata((MetadataAnnotation) attributeNode, accessor));
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for XML merging and overriding.
@@ -82,21 +82,21 @@ public class NamedSubgraphMetadata extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof NamedSubgraphMetadata) {
             NamedSubgraphMetadata namedSubgraph = (NamedSubgraphMetadata) objectToCompare;
-            
+
             if (! valuesMatch(m_name, namedSubgraph.getName())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_typeName, namedSubgraph.getTypeName())) {
                 return false;
             }
-            
+
             return valuesMatch(m_namedAttributeNodes, namedSubgraph.getNamedAttributeNodes());
         }
-        
+
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * The unique identifier of named subgraph metadata.
@@ -105,7 +105,7 @@ public class NamedSubgraphMetadata extends ORMetadata {
     public String getIdentifier() {
         return getName();
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -113,7 +113,7 @@ public class NamedSubgraphMetadata extends ORMetadata {
     public String getName() {
         return m_name;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -121,7 +121,7 @@ public class NamedSubgraphMetadata extends ORMetadata {
     public List<NamedAttributeNodeMetadata> getNamedAttributeNodes() {
         return m_namedAttributeNodes;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -143,10 +143,10 @@ public class NamedSubgraphMetadata extends ORMetadata {
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
-        
+
         // Initialize lists of ORMetadata objects.
         initXMLObjects(m_namedAttributeNodes, accessibleObject);
-        
+
         // Initialize simple class objects.
         if (m_typeName != null && ! m_typeName.equals("")) {
             m_type = initXMLClassName(m_typeName);
@@ -154,32 +154,32 @@ public class NamedSubgraphMetadata extends ORMetadata {
             m_type = getMetadataClass(ClassConstants.Object_Class);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Process the named subgraph metadata into a new attribute group.
      */
     public void process(Map<String, Map<String, AttributeGroup>> attributeGraphs) {
         AttributeGroup attributeGraph = new AttributeGroup(getName(), getTypeClassName(), true);
-                
+
         if (! attributeGraphs.containsKey(getName())) {
             attributeGraphs.put(getName(), new HashMap<String, AttributeGroup>());
         }
-        
+
         attributeGraphs.get(getName()).put(getTypeClassName(), attributeGraph);
     }
-    
+
     /**
      * INTERNAL:
      * Process the named subgraph metadata attribute nodes.
      */
     public void processAttributeNodes(Map<String, Map<String, AttributeGroup>> attributeGraphs, AttributeGroup subgraph, AttributeGroup entityGraph) {
-       
+
         for (NamedAttributeNodeMetadata attributeNode : getNamedAttributeNodes()) {
             attributeNode.process(attributeGraphs, subgraph, entityGraph);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -187,7 +187,7 @@ public class NamedSubgraphMetadata extends ORMetadata {
     public void setName(String name) {
         m_name = name;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -195,14 +195,14 @@ public class NamedSubgraphMetadata extends ORMetadata {
     public void setNamedAttributeNodes(List<NamedAttributeNodeMetadata> namedAttributeNodes) {
         m_namedAttributeNodes = namedAttributeNodes;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setType(MetadataClass type) {
         m_type = type;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,83 +28,83 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 @Entity
 @Table(name = "PHONENUMBER")
 public class PhoneNumber implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	private long id;
+    @Id
+    private long id;
 
-	private String num;
+    private String num;
 
-	private String type;
+    private String type;
 
-	@ManyToOne
-	@JoinColumn(name = "ID_CUSTOMER")
-	private Customer customer;
+    @ManyToOne
+    @JoinColumn(name = "ID_CUSTOMER")
+    private Customer customer;
 
-	public PhoneNumber() {
-	}
+    public PhoneNumber() {
+    }
 
-	public long getId() {
-		return this.id;
-	}
+    public long getId() {
+        return this.id;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public String getNum() {
-		return this.num;
-	}
+    public String getNum() {
+        return this.num;
+    }
 
-	public void setNum(String num) {
-		this.num = num;
-	}
+    public void setNum(String num) {
+        this.num = num;
+    }
 
-	public String getType() {
-		return this.type;
-	}
+    public String getType() {
+        return this.type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	@XmlInverseReference(mappedBy = "phoneNumbers")
-	public Customer getCustomer() {
-		return this.customer;
-	}
+    @XmlInverseReference(mappedBy = "phoneNumbers")
+    public Customer getCustomer() {
+        return this.customer;
+    }
 
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 
-	public boolean equals(Object object) {
-		if (null == object || object.getClass() != this.getClass()) {
-			return false;
-		}
-		PhoneNumber test = ((PhoneNumber) object);
-		if (!equals(id, test.getId())) {
-			return false;
-		}
-		if (!equals(num, test.getNum())) {
-			return false;
-		}
-		if (!equals(type, test.getType())) {
-			return false;
-		}
-		if (null == test.getCustomer() && null != customer) {
-			return false;
-		}
-		if (null != test.getCustomer() && null == customer) {
-			return false;
-		}
-		return true;
-	}
+    public boolean equals(Object object) {
+        if (null == object || object.getClass() != this.getClass()) {
+            return false;
+        }
+        PhoneNumber test = ((PhoneNumber) object);
+        if (!equals(id, test.getId())) {
+            return false;
+        }
+        if (!equals(num, test.getNum())) {
+            return false;
+        }
+        if (!equals(type, test.getType())) {
+            return false;
+        }
+        if (null == test.getCustomer() && null != customer) {
+            return false;
+        }
+        if (null != test.getCustomer() && null == customer) {
+            return false;
+        }
+        return true;
+    }
 
-	private boolean equals(Object control, Object test) {
-		if (null == control) {
-			return null == test;
-		}
-		return control.equals(test);
-	}
+    private boolean equals(Object control, Object test) {
+        if (null == control) {
+            return null == test;
+        }
+        return control.equals(test);
+    }
 
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.xmlmarshaller.twoprojects;
 
 import java.io.InputStream;
@@ -131,7 +131,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
         this.assertXMLIdentical(controlDocument, testDocument);
 
         int numSessions = xmlContext.getSessions().size();
-        this.assertEquals(3, numSessions);        
+        this.assertEquals(3, numSessions);
     }
 
     public void testMarshalCustomerSAX() throws Exception {
@@ -153,9 +153,9 @@ public class TwoProjectsTestSuite extends OXTestCase {
     }
 
     public void testMarshalCustomerCollectionConstructor() throws Exception {
-    	ArrayList projects = new ArrayList();
-    	projects.add(new CustomerProject());
-    	projects.add(new EmployeeProject());
+        ArrayList projects = new ArrayList();
+        projects.add(new CustomerProject());
+        projects.add(new EmployeeProject());
         XMLContext xmlContext = new XMLContext(projects);
         xmlMarshaller = xmlContext.createMarshaller();
 
@@ -191,9 +191,9 @@ public class TwoProjectsTestSuite extends OXTestCase {
     }
 
     public void testUnmarshalCustomerCollectionConstructor() throws Exception {
-    	ArrayList projects = new ArrayList();
-    	projects.add(new CustomerProject());
-    	projects.add(new EmployeeProject());
+        ArrayList projects = new ArrayList();
+        projects.add(new CustomerProject());
+        projects.add(new EmployeeProject());
         XMLContext xmlContext = new XMLContext(projects);
         xmlUnmarshaller = xmlContext.createUnmarshaller();
 
@@ -209,7 +209,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
 
         this.assertEquals(controlCustomer, testCustomer);
     }
-    
+
     public void testMarshalEmployeeSAX() throws Exception {
         XMLContext xmlContext = new XMLContext(CONTEXT_PATH_SAX);
         xmlMarshaller = xmlContext.createMarshaller();
@@ -227,11 +227,11 @@ public class TwoProjectsTestSuite extends OXTestCase {
 
         this.assertXMLIdentical(controlDocument, testDocument);
     }
-    
+
     public void testMarshalEmployeeCollectionConstructor() throws Exception {
-    	ArrayList projects = new ArrayList();
-    	projects.add(new CustomerProject());
-    	projects.add(new EmployeeProject());
+        ArrayList projects = new ArrayList();
+        projects.add(new CustomerProject());
+        projects.add(new EmployeeProject());
         XMLContext xmlContext = new XMLContext(projects);
         xmlMarshaller = xmlContext.createMarshaller();
 
@@ -247,7 +247,7 @@ public class TwoProjectsTestSuite extends OXTestCase {
         log("");
 
         this.assertXMLIdentical(controlDocument, testDocument);
-    }    
+    }
 
     public void testUnmarshalEmployeeSAX() throws Exception {
         XMLContext xmlContext = new XMLContext(CONTEXT_PATH_SAX);
@@ -267,9 +267,9 @@ public class TwoProjectsTestSuite extends OXTestCase {
     }
 
     public void testUnmarshalEmployeeCollectionConstructor() throws Exception {
-    	ArrayList projects = new ArrayList();
-    	projects.add(new CustomerProject());
-    	projects.add(new EmployeeProject());
+        ArrayList projects = new ArrayList();
+        projects.add(new CustomerProject());
+        projects.add(new EmployeeProject());
         XMLContext xmlContext = new XMLContext(projects);
 
         xmlUnmarshaller = xmlContext.createUnmarshaller();

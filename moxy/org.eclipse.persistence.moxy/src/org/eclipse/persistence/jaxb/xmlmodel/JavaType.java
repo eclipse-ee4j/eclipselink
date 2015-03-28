@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -70,8 +70,8 @@ import javax.xml.bind.annotation.XmlList;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
 @javax.xml.bind.annotation.XmlType(name = "", propOrder = {
@@ -126,11 +126,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlType }
-     *     
+     *
      */
     public org.eclipse.persistence.jaxb.xmlmodel.XmlType getXmlType() {
         return xmlType;
@@ -138,11 +138,11 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlType }
-     *     
+     *
      */
     public void setXmlType(org.eclipse.persistence.jaxb.xmlmodel.XmlType value) {
         this.xmlType = value;
@@ -150,11 +150,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlRootElement property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement }
-     *     
+     *
      */
     public org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement getXmlRootElement() {
         return xmlRootElement;
@@ -162,23 +162,23 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlRootElement property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement }
-     *     
+     *
      */
     public void setXmlRootElement(org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement value) {
         this.xmlRootElement = value;
     }
-    
+
     /**
      * Gets the value of the xmlVirtualAccessMethods property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlVirtualAccessMethods }
-     *     
+     *
      */
     public XmlVirtualAccessMethods getXmlVirtualAccessMethods() {
         return xmlVirtualAccessMethods;
@@ -186,11 +186,11 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlVirtualAccessMethods property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlVirtualAccessMethods }
-     *     
+     *
      */
     public void setXmlVirtualAccessMethods(XmlVirtualAccessMethods value) {
         this.xmlVirtualAccessMethods = value;
@@ -198,25 +198,25 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlSeeAlso property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the xmlSeeAlso property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getXmlSeeAlso().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
+     *
+     *
      */
     public List<String> getXmlSeeAlso() {
         if (xmlSeeAlso == null) {
@@ -227,11 +227,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlJavaTypeAdapter property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlJavaTypeAdapter }
-     *     
+     *
      */
     public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
         return xmlJavaTypeAdapter;
@@ -239,11 +239,11 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlJavaTypeAdapter property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlJavaTypeAdapter }
-     *     
+     *
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
         this.xmlJavaTypeAdapter = value;
@@ -251,11 +251,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlClassExtractor property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlClassExtractor }
-     *     
+     *
      */
     public XmlClassExtractor getXmlClassExtractor() {
         return xmlClassExtractor;
@@ -263,11 +263,11 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlClassExtractor property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlClassExtractor }
-     *     
+     *
      */
     public void setXmlClassExtractor(XmlClassExtractor value) {
         this.xmlClassExtractor = value;
@@ -275,11 +275,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlProperties property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public XmlProperties getXmlProperties() {
         return xmlProperties;
@@ -287,11 +287,11 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlProperties property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
@@ -299,11 +299,11 @@ public class JavaType {
 
     /**
      * Gets the value of the javaAttributes property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link JavaType.JavaAttributes }
-     *     
+     *
      */
     public JavaType.JavaAttributes getJavaAttributes() {
         return javaAttributes;
@@ -311,11 +311,11 @@ public class JavaType {
 
     /**
      * Sets the value of the javaAttributes property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link JavaType.JavaAttributes }
-     *     
+     *
      */
     public void setJavaAttributes(JavaType.JavaAttributes value) {
         this.javaAttributes = value;
@@ -323,11 +323,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlNamedObjectGraphs property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlNamedObjectGraphs }
-     *     
+     *
      */
     public XmlNamedObjectGraphs getXmlNamedObjectGraphs() {
         return xmlNamedObjectGraphs;
@@ -335,11 +335,11 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlNamedObjectGraphs property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlNamedObjectGraphs }
-     *     
+     *
      */
     public void setXmlNamedObjectGraphs(XmlNamedObjectGraphs value) {
         this.xmlNamedObjectGraphs = value;
@@ -393,7 +393,7 @@ public class JavaType {
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getName() {
         return name;
@@ -401,11 +401,11 @@ public class JavaType {
 
     /**
      * Sets the value of the name property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setName(String value) {
         this.name = value;
@@ -413,11 +413,11 @@ public class JavaType {
 
     /**
      * Gets the value of the superType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getSuperType() {
         if (superType == null) {
@@ -429,11 +429,11 @@ public class JavaType {
 
     /**
      * Sets the value of the superType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setSuperType(String value) {
         this.superType = value;
@@ -441,11 +441,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlAccessorOrder property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlAccessOrder }
-     *     
+     *
      */
     public XmlAccessOrder getXmlAccessorOrder() {
         if (xmlAccessorOrder == null) {
@@ -457,19 +457,19 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlAccessorOrder property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlAccessOrder }
-     *     
+     *
      */
     public void setXmlAccessorOrder(XmlAccessOrder value) {
         this.xmlAccessorOrder = value;
     }
-    
+
     /**
      * Indicates if xmlAccessorOrder has been set, i.e. is non-null.
-     * 
+     *
      * @return true if xmlAccessorOrder is non-null, false otherwise
      */
     public boolean isSetXmlAccessorOrder() {
@@ -478,11 +478,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlAccessorType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType }
-     *     
+     *
      */
     public org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType getXmlAccessorType() {
         if (xmlAccessorType == null) {
@@ -494,11 +494,11 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlAccessorType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType }
-     *     
+     *
      */
     public void setXmlAccessorType(org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType value) {
         this.xmlAccessorType = value;
@@ -506,7 +506,7 @@ public class JavaType {
 
     /**
      * Indicates if xmlAccessorType has been set, i.e. is non-null.
-     * 
+     *
      * @return true if xmlAccessorType is non-null, false otherwise
      */
     public boolean isSetXmlAccessorType() {
@@ -516,11 +516,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlCustomizer property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getXmlCustomizer() {
         return xmlCustomizer;
@@ -528,11 +528,11 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlCustomizer property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setXmlCustomizer(String value) {
         this.xmlCustomizer = value;
@@ -540,11 +540,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlDiscriminatorNode property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getXmlDiscriminatorNode() {
         return xmlDiscriminatorNode;
@@ -552,11 +552,11 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlDiscriminatorNode property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setXmlDiscriminatorNode(String value) {
         this.xmlDiscriminatorNode = value;
@@ -564,11 +564,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlDiscriminatorValue property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getXmlDiscriminatorValue() {
         return xmlDiscriminatorValue;
@@ -576,11 +576,11 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlDiscriminatorValue property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setXmlDiscriminatorValue(String value) {
         this.xmlDiscriminatorValue = value;
@@ -588,11 +588,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlInlineBinaryData property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isXmlInlineBinaryData() {
         if (xmlInlineBinaryData == null) {
@@ -604,11 +604,11 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlInlineBinaryData property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setXmlInlineBinaryData(Boolean value) {
         this.xmlInlineBinaryData = value;
@@ -616,7 +616,7 @@ public class JavaType {
 
     /**
      * Indicates if xmlInlineBinaryData has been set, i.e. is non-null.
-     * 
+     *
      * @return true if xmlInlineBinaryData is non-null, false otherwise
      */
     public boolean isSetXmlInlineBinaryData() {
@@ -625,11 +625,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlTransient property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isXmlTransient() {
         if (xmlTransient == null) {
@@ -641,19 +641,19 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlTransient property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setXmlTransient(Boolean value) {
         this.xmlTransient = value;
     }
-    
+
     /**
      * Indicates if xmlTransient has been set, i.e. is non-null.
-     *  
+     *
      * @return true is xmlTransient is non-null, false otherwise
      */
     public boolean isSetXmlTransient() {
@@ -662,11 +662,11 @@ public class JavaType {
 
     /**
      * Gets the value of the xmlNameTransformer property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getXmlNameTransformer() {
         return xmlNameTransformer;
@@ -674,11 +674,11 @@ public class JavaType {
 
     /**
      * Sets the value of the xmlNameTransformer property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setXmlNameTransformer(String value) {
         this.xmlNameTransformer = value;
@@ -687,9 +687,9 @@ public class JavaType {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType&gt;
      *   &lt;complexContent&gt;
@@ -701,8 +701,8 @@ public class JavaType {
      *   &lt;/complexContent&gt;
      * &lt;/complexType&gt;
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
     @javax.xml.bind.annotation.XmlType(name = "", propOrder = {
@@ -715,20 +715,20 @@ public class JavaType {
 
         /**
          * Gets the value of the javaAttribute property.
-         * 
+         *
          * <p>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the javaAttribute property.
-         * 
+         *
          * <p>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getJavaAttribute().add(newItem);
          * </pre>
-         * 
-         * 
+         *
+         *
          * <p>
          * Objects of the following type(s) are allowed in the list
          * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute }{@code >}
@@ -744,8 +744,8 @@ public class JavaType {
          * {@link JAXBElement }{@code <}{@link XmlValue }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlAnyElement }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlAnyAttribute }{@code >}
-         * 
-         * 
+         *
+         *
          */
         public List<JAXBElement<? extends JavaAttribute>> getJavaAttribute() {
             if (javaAttribute == null) {

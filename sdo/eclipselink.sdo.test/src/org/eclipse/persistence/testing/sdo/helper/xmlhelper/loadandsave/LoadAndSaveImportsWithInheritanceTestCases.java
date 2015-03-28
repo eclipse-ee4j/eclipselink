@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
 import commonj.sdo.DataObject;
@@ -45,7 +45,7 @@ public class LoadAndSaveImportsWithInheritanceTestCases extends LoadAndSaveTestC
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/importswithinheritance/c-type.xml");
     }
-    
+
 
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/importswithinheritance/c-type_noschema.xml");
@@ -77,8 +77,8 @@ public class LoadAndSaveImportsWithInheritanceTestCases extends LoadAndSaveTestC
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/importswithinheritance/";
     }
-     
-    protected List getPackages() {  
+
+    protected List getPackages() {
         List packages = new ArrayList();
         packages.add("schemacnamespace");
         packages.add("schemaanamespace");
@@ -99,12 +99,12 @@ public class LoadAndSaveImportsWithInheritanceTestCases extends LoadAndSaveTestC
     public void registerTypes() {
 
         Type stringType = typeHelper.getType("commonj.sdo", "String");
-        
+
         DataObject rootType = defineType("SchemaANamespace", "RootType");
         DataObject someElementProp = addProperty(rootType, "someElement", stringType);
         someElementProp.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         Type rootSDOType = typeHelper.define(rootType);
-        
+
         DataObject middleType = defineType("SchemaBNamespace", "MiddleType");
         List baseTypes = new ArrayList();
         baseTypes.add(rootSDOType);
@@ -112,7 +112,7 @@ public class LoadAndSaveImportsWithInheritanceTestCases extends LoadAndSaveTestC
         DataObject someMiddleElementProp = addProperty(middleType, "someMiddleElement", stringType);
         someMiddleElementProp.set(SDOConstants.XMLELEMENT_PROPERTY, true);
         Type middleSDOType = typeHelper.define(middleType);
-        
+
         DataObject childType = defineType("SchemaCNamespace", "ChildType");
         baseTypes = new ArrayList();
         baseTypes.add(middleSDOType);

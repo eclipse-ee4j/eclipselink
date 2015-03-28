@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,7 +32,7 @@ public class MyAttachmentMarshaller extends AttachmentMarshaller {
         attachments.put(id, data);
         return id;
     }
-    
+
     public String addSwaRefAttachment(byte[] data, int offset, int length) {
         if(returnNull) {
             return null;
@@ -70,11 +70,11 @@ public class MyAttachmentMarshaller extends AttachmentMarshaller {
     public boolean isXOPPackage() {
         return true;
     }
-    
+
     public void setReturnNull(boolean b) {
         this.returnNull = b;
     }
-    
+
     public String getLocalName() {
         return this.localName;
     }

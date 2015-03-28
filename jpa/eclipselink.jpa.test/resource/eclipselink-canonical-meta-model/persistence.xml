@@ -4,7 +4,7 @@
             org.eclipse.persistence.jpa.PersistenceProvider
         </provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
-        
+
         <properties>
             <!-- JDBC properties will be given by test.properties file in runtime -->
             <property name="eclipselink.session-name" value="default-session"/>

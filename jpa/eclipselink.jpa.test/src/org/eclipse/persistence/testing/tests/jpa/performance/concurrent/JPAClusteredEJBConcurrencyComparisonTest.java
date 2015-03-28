@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - initial impl
- ******************************************************************************/  
+ ******************************************************************************/
  package org.eclipse.persistence.testing.tests.jpa.performance.concurrent;
 
 import java.net.URL;
@@ -29,19 +29,19 @@ import org.eclipse.persistence.testing.framework.*;
  */
 public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerformanceComparisonTest {
     private List<String> serverURLs;
-    
+
     protected long ids[];
     protected ThreadLocal local;
     protected int errors;
     protected int server;
     protected double percentUpdate = 1.0;
     protected int batchSize = 20;
-    
+
     public JPAClusteredEJBConcurrencyComparisonTest() {
         setDescription("This test compares the concurrency of a cluster using a remote SessionBean.");
-        
+
         URL url = getClass().getResource("/weblogic.properties");
-        Properties properties = new Properties(); 
+        Properties properties = new Properties();
         try {
             properties.load(url.openStream());
         } catch (Exception error) {
@@ -55,16 +55,16 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
         //this.serverURLs.add(properties.getProperty("rcm.wls.server4.url"));
         //this.serverURLs.add(properties.getProperty("rcm.wls.server5.url"));
         //this.serverURLs.add(properties.getProperty("rcm.wls.server6.url"));
-        
+
         this.local = new ThreadLocal();
     }
-    
+
     public JPAClusteredEJBConcurrencyComparisonTest(double percentUpdate) {
         this();
         this.percentUpdate = percentUpdate;
         setName("JPAClusteredEJBConcurrencyComparisonTest-%update=" + percentUpdate);
     }
-    
+
     /**
      * Return the next server index to use.
      * This cycles through the servers.
@@ -76,7 +76,7 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
         }
         return this.server;
     }
-    
+
     public EmployeeService getEmployeeService() {
         EmployeeService service = (EmployeeService)local.get();
         if (service == null) {
@@ -85,7 +85,7 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
         }
         return service;
     }
-    
+
     public EmployeeService nextEmployeeService() {
         EmployeeService service = null;
         int server = nextServer();
@@ -126,7 +126,7 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
     public void runTask() throws Exception {
         runBatchTask();
     }
-    
+
     /**
      * Update employee at random.
      */
@@ -135,7 +135,7 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
             EmployeeService service = getEmployeeService();
             long ids[] = new long[this.batchSize];
             for (int index = 0; index < this.batchSize; index++) {
-                ids[index] = this.ids[(int)(Math.random() * this.ids.length)];                
+                ids[index] = this.ids[(int)(Math.random() * this.ids.length)];
             }
             double update = Math.random();
             if (update <= this.percentUpdate) {
@@ -183,7 +183,7 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
             throw error;
         }
     }
-    
+
     @Override
     public void endTest() {
         super.endTest();

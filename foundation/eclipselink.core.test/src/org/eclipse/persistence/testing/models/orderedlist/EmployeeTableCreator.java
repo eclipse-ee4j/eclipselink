@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/05/2009 Andrei Ilitchev 
+ *     05/05/2009 Andrei Ilitchev
  *       - JPA 2.0 - OrderedList support.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.orderedlist;
 
 /**
@@ -76,7 +76,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field5.setUnique(false);
         field5.setIsIdentity(false);
         field5.setForeignKeyFieldName("OL_EMPLOYEE.EMP_ID");
-        tabledefinition.addField(field5);        
+        tabledefinition.addField(field5);
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field6 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
@@ -88,7 +88,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field6.setUnique(false);
         field6.setIsIdentity(false);
         tabledefinition.addField(field6);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field7 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field7.setName("CHILDREN_ORDER_VARCHAR");
@@ -108,7 +108,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
 
         // SECTION: TABLE
         tabledefinition.setName("OL_CHILD");
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field.setName("CHILD_ID");
@@ -119,7 +119,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field.setUnique(false);
         field.setIsIdentity(true);
         tabledefinition.addField(field);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("F_NAME");
@@ -130,7 +130,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field1.setUnique(false);
         field1.setIsIdentity(false);
         tabledefinition.addField(field1);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("L_NAME");
@@ -141,7 +141,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field2.setUnique(false);
         field2.setIsIdentity(false);
         tabledefinition.addField(field2);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field5 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field5.setName("PARENT_ID");
@@ -153,7 +153,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field5.setIsIdentity(false);
         field5.setForeignKeyFieldName("OL_EMPLOYEE.EMP_ID");
         tabledefinition.addField(field5);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field6 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field6.setName("CHILDREN_ORDER");
@@ -164,7 +164,7 @@ public class EmployeeTableCreator extends org.eclipse.persistence.tools.schemafr
         field6.setUnique(false);
         field6.setIsIdentity(false);
         tabledefinition.addField(field6);
-        
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field7 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field7.setName("CHILDREN_ORDER_VARCHAR");

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -49,155 +49,155 @@ import org.eclipse.persistence.tools.workbench.scplugin.ui.project.ProjectNode;
  */
 public abstract class SCDialogUITest extends SCAbstractUITest {
 
-	private WorkbenchContext wbContext;
-	private NodeManager nodeManager;
-	private ResourceRepository resourceRepository;
-	protected JFrame currentWindow;
-	protected int windowW, windowH, windowX;
-	
-	protected SCDialogUITest() {
-		super();
-		initialize();
-	}
+    private WorkbenchContext wbContext;
+    private NodeManager nodeManager;
+    private ResourceRepository resourceRepository;
+    protected JFrame currentWindow;
+    protected int windowW, windowH, windowX;
 
-	protected void setUp() {
-		super.setUp();
-		
-		this.resourceRepository = this.buildResourceRepository();
-		this.currentWindow = new JFrame( this.windowTitle());
-		
-		ApplicationNode projectNode = buildProjectNode( this.topLinkSessions(), resourceRepository, currentWindow);
+    protected SCDialogUITest() {
+        super();
+        initialize();
+    }
 
-		this.nodeManager = buildNodeManager( projectNode);
-	
-		this.wbContext = buildWorkbenchContext( this.resourceRepository, this.nodeManager, this.currentWindow);
-	}
-	
-	private NodeManager buildNodeManager( ApplicationNode projectNode) {
+    protected void setUp() {
+        super.setUp();
 
-		return new SCTestNodeManager( projectNode);
-	}
+        this.resourceRepository = this.buildResourceRepository();
+        this.currentWindow = new JFrame( this.windowTitle());
 
-	private ApplicationNode buildProjectNode( TopLinkSessionsAdapter topLinkSessions, ResourceRepository resourceRepository, Window currentWindow) {
+        ApplicationNode projectNode = buildProjectNode( this.topLinkSessions(), resourceRepository, currentWindow);
 
-//		SCPlugin scPlugin = (SCPlugin) SCPluginFactory.instance().createPlugin();
-//		SCSessionsProperties properties = scPlugin.getSessionsProperties( buildWorkbenchContext( this.resourceRepository, null, this.currentWindow),
-//																		new File( this.getFileName()));
-//		topLinkSessions.setProperties( properties);
-		
-		return new ProjectNode( topLinkSessions, null, null, buildWorkbenchContext( this.resourceRepository, null, this.currentWindow).getApplicationContext());
-	}
+        this.nodeManager = buildNodeManager( projectNode);
 
-	private WorkbenchContext buildWorkbenchContext( ResourceRepository resourceRepository, NodeManager nodeManager, Window currentWindow) {
+        this.wbContext = buildWorkbenchContext( this.resourceRepository, this.nodeManager, this.currentWindow);
+    }
 
-		return new SimpleWorkbenchContext(null, null, resourceRepository, nodeManager, this.buildHelpManager(), currentWindow, null, null, null);
-	}
+    private NodeManager buildNodeManager( ApplicationNode projectNode) {
 
-	private ResourceRepository buildResourceRepository() {
+        return new SCTestNodeManager( projectNode);
+    }
 
-		ResourceRepository frameworkRepository = new DefaultResourceRepository( FrameworkResourceBundle.class, new FrameworkIconResourceFileNameMap());
-		return new ResourceRepositoryWrapper( frameworkRepository, getResourceRepositoryClass(), new SCPluginIconResourceFileNameMap());
-	}
+    private ApplicationNode buildProjectNode( TopLinkSessionsAdapter topLinkSessions, ResourceRepository resourceRepository, Window currentWindow) {
 
-	protected void openWindow() {
-		
-		currentWindow.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE);
-		currentWindow.addWindowListener( this.buildWindowListener());
-		currentWindow.getContentPane().add( this.buildMainPanel(), "Center");
-		currentWindow.setLocation( windowX, 0);
-		currentWindow.setSize( windowW, windowH);
-		currentWindow.setVisible( true);
-	}
-	protected final ResourceRepository resourceRepository() {
+//        SCPlugin scPlugin = (SCPlugin) SCPluginFactory.instance().createPlugin();
+//        SCSessionsProperties properties = scPlugin.getSessionsProperties( buildWorkbenchContext( this.resourceRepository, null, this.currentWindow),
+//                                                                        new File( this.getFileName()));
+//        topLinkSessions.setProperties( properties);
 
-		return resourceRepository;
-	}
-	protected Class getResourceRepositoryClass()
-	{
-		return SCPluginResourceBundle.class;
-	}
-	protected abstract String windowTitle();
-	
-	protected WindowListener buildWindowListener() {
-		
-		return new WindowAdapter() {
-			public void windowClosing( WindowEvent e) {
-				e.getWindow().setVisible( false);
-				System.exit( 0);
-			}
-		};
-	}
+        return new ProjectNode( topLinkSessions, null, null, buildWorkbenchContext( this.resourceRepository, null, this.currentWindow).getApplicationContext());
+    }
 
-	protected Component buildMainPanel() {
-		
-		JPanel mainPanel = new JPanel( new BorderLayout());
-		mainPanel.add( this.buildTestingPanel(), BorderLayout.NORTH);
-		mainPanel.add( this.buildControlPanel(), BorderLayout.SOUTH);
-		return mainPanel;
-	}
+    private WorkbenchContext buildWorkbenchContext( ResourceRepository resourceRepository, NodeManager nodeManager, Window currentWindow) {
 
-	protected abstract Component buildTestingPanel();
+        return new SimpleWorkbenchContext(null, null, resourceRepository, nodeManager, this.buildHelpManager(), currentWindow, null, null, null);
+    }
 
-	protected Component buildControlPanel() {
-		
-		JPanel controlPanel = new JPanel( new GridLayout( 1, 0));
-		controlPanel.add( this.buildClearModelButton());
-		controlPanel.add( this.buildPrintModelButton());
-		return controlPanel;
-	}
-	
-	protected JButton buildClearModelButton() {
-		return new JButton( this.buildClearModelAction());
-	}
+    private ResourceRepository buildResourceRepository() {
 
-	private Action buildClearModelAction() {
-		Action action = new AbstractAction("clear model") {
-			public void actionPerformed(ActionEvent event) {
-				SCDialogUITest.this.clearModel();
-			}
-		};
-		action.setEnabled(true);
-		return action;
-	}
+        ResourceRepository frameworkRepository = new DefaultResourceRepository( FrameworkResourceBundle.class, new FrameworkIconResourceFileNameMap());
+        return new ResourceRepositoryWrapper( frameworkRepository, getResourceRepositoryClass(), new SCPluginIconResourceFileNameMap());
+    }
 
-	protected JButton buildPrintModelButton() {
-		return new JButton( this.buildPrintModelAction());
-	}
-	
-	private Action buildPrintModelAction() {
-		Action action = new AbstractAction( "print model") {
-			public void actionPerformed( ActionEvent event) {
-				SCDialogUITest.this.printModel();
-			}
-		};
-		action.setEnabled( true);
-		return action;
-	}
+    protected void openWindow() {
 
-	protected WorkbenchContext getWorkbenchContext() {
-		return this.wbContext;
-	}
-	
-	protected Window currentWindow() {
-		return currentWindow;
-	}
-	
-	protected Component buildPropertyTestingPanel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	protected void resetProperty() {
-		// TODO Auto-generated method stub
-	}
-	protected void restoreModel() {
-		// TODO Auto-generated method stub
-	}
+        currentWindow.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE);
+        currentWindow.addWindowListener( this.buildWindowListener());
+        currentWindow.getContentPane().add( this.buildMainPanel(), "Center");
+        currentWindow.setLocation( windowX, 0);
+        currentWindow.setSize( windowW, windowH);
+        currentWindow.setVisible( true);
+    }
+    protected final ResourceRepository resourceRepository() {
 
-	protected void clearModel() {
-		// TODO Auto-generated method stub
-	}
-	
-	protected void printModel() {
-		System.out.println( this.topLinkSessions().toString());
-	}
+        return resourceRepository;
+    }
+    protected Class getResourceRepositoryClass()
+    {
+        return SCPluginResourceBundle.class;
+    }
+    protected abstract String windowTitle();
+
+    protected WindowListener buildWindowListener() {
+
+        return new WindowAdapter() {
+            public void windowClosing( WindowEvent e) {
+                e.getWindow().setVisible( false);
+                System.exit( 0);
+            }
+        };
+    }
+
+    protected Component buildMainPanel() {
+
+        JPanel mainPanel = new JPanel( new BorderLayout());
+        mainPanel.add( this.buildTestingPanel(), BorderLayout.NORTH);
+        mainPanel.add( this.buildControlPanel(), BorderLayout.SOUTH);
+        return mainPanel;
+    }
+
+    protected abstract Component buildTestingPanel();
+
+    protected Component buildControlPanel() {
+
+        JPanel controlPanel = new JPanel( new GridLayout( 1, 0));
+        controlPanel.add( this.buildClearModelButton());
+        controlPanel.add( this.buildPrintModelButton());
+        return controlPanel;
+    }
+
+    protected JButton buildClearModelButton() {
+        return new JButton( this.buildClearModelAction());
+    }
+
+    private Action buildClearModelAction() {
+        Action action = new AbstractAction("clear model") {
+            public void actionPerformed(ActionEvent event) {
+                SCDialogUITest.this.clearModel();
+            }
+        };
+        action.setEnabled(true);
+        return action;
+    }
+
+    protected JButton buildPrintModelButton() {
+        return new JButton( this.buildPrintModelAction());
+    }
+
+    private Action buildPrintModelAction() {
+        Action action = new AbstractAction( "print model") {
+            public void actionPerformed( ActionEvent event) {
+                SCDialogUITest.this.printModel();
+            }
+        };
+        action.setEnabled( true);
+        return action;
+    }
+
+    protected WorkbenchContext getWorkbenchContext() {
+        return this.wbContext;
+    }
+
+    protected Window currentWindow() {
+        return currentWindow;
+    }
+
+    protected Component buildPropertyTestingPanel() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    protected void resetProperty() {
+        // TODO Auto-generated method stub
+    }
+    protected void restoreModel() {
+        // TODO Auto-generated method stub
+    }
+
+    protected void clearModel() {
+        // TODO Auto-generated method stub
+    }
+
+    protected void printModel() {
+        System.out.println( this.topLinkSessions().toString());
+    }
 }

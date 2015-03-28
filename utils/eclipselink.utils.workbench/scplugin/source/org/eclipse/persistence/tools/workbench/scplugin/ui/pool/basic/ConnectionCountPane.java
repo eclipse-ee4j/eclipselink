@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -69,234 +69,234 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.NumberSpinnerMo
  */
 public final class ConnectionCountPane extends AbstractSubjectPanel
 {
-	/**
-	 * Creates a new <code>ConnectionCountPane</code>.
-	 *
-	 * @param subjectHolder The holder of {@link ConnectionPoolAdapter}
-	 * @param context The context used to retrieve the <code>ResourceRepository</code>
-	 */
-	public ConnectionCountPane(PropertyValueModel subjectHolder,
-										ApplicationContext context)
-	{
-		super(subjectHolder, context);
-	}
+    /**
+     * Creates a new <code>ConnectionCountPane</code>.
+     *
+     * @param subjectHolder The holder of {@link ConnectionPoolAdapter}
+     * @param context The context used to retrieve the <code>ResourceRepository</code>
+     */
+    public ConnectionCountPane(PropertyValueModel subjectHolder,
+                                        ApplicationContext context)
+    {
+        super(subjectHolder, context);
+    }
 
-	/**
-	 * Creates the <code>ComponentEnabler</code> that will keep the enable state
-	 * of the components contained in the given collection in sync with the
-	 * boolean value calculated by the enabled state holder.
-	 *
-	 * @param components The collection of components where their enable state
-	 * will be updated when necessary
-	 * @return A new <code>ComponentEnabler</code>
-	 */
-	private ComponentEnabler buildComponentEnabler()
-	{
-		return new ComponentEnabler(buildEnableStateHolder(), getComponents());
-	}
+    /**
+     * Creates the <code>ComponentEnabler</code> that will keep the enable state
+     * of the components contained in the given collection in sync with the
+     * boolean value calculated by the enabled state holder.
+     *
+     * @param components The collection of components where their enable state
+     * will be updated when necessary
+     * @return A new <code>ComponentEnabler</code>
+     */
+    private ComponentEnabler buildComponentEnabler()
+    {
+        return new ComponentEnabler(buildEnableStateHolder(), getComponents());
+    }
 
-	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to retrieve the
-	 * boolean flag used by the <code>ComponentEnabler</code> in order to keep
-	 * the enable state of the components in sync with the underlying model's
-	 * property.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildEnableStateHolder()
-	{
-		// Holder of the ServerSessionAdapter
-		PropertyAspectAdapter sessionHolder = new PropertyAspectAdapter(getSubjectHolder(), "")
-		{
-			protected Object getValueFromSubject()
-			{
-				// Pool->PoolsAdapter->ServerSessionAdapter
-				ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
-				return pool.getParent().getParent();
-			}
-		};
+    /**
+     * Creates the <code>PropertyValueModel</code> responsible to retrieve the
+     * boolean flag used by the <code>ComponentEnabler</code> in order to keep
+     * the enable state of the components in sync with the underlying model's
+     * property.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    private PropertyValueModel buildEnableStateHolder()
+    {
+        // Holder of the ServerSessionAdapter
+        PropertyAspectAdapter sessionHolder = new PropertyAspectAdapter(getSubjectHolder(), "")
+        {
+            protected Object getValueFromSubject()
+            {
+                // Pool->PoolsAdapter->ServerSessionAdapter
+                ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
+                return pool.getParent().getParent();
+            }
+        };
 
-		// Holder of the LoginAdapter, just in case it changes
-		PropertyAspectAdapter loginHolder = new PropertyAspectAdapter(sessionHolder, ServerSessionAdapter.LOGIN_CONFIG_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				ServerSessionAdapter session = (ServerSessionAdapter) subject;
-				return session.getLogin();
-			}
-		};
+        // Holder of the LoginAdapter, just in case it changes
+        PropertyAspectAdapter loginHolder = new PropertyAspectAdapter(sessionHolder, ServerSessionAdapter.LOGIN_CONFIG_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                ServerSessionAdapter session = (ServerSessionAdapter) subject;
+                return session.getLogin();
+            }
+        };
 
-		// Holder of the LoginAdapter's property: External Connection Pooling
-		PropertyAspectAdapter booleanHolder = new PropertyAspectAdapter(loginHolder, DatabaseSessionAdapter.EXTERNAL_CONNECTION_POOLING_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				LoginAdapter login = (LoginAdapter) subject;
-				DatabaseSessionAdapter session = (DatabaseSessionAdapter) login.getParent();
-				
-				return Boolean.valueOf(session.usesExternalConnectionPooling());
-			}
-		};
+        // Holder of the LoginAdapter's property: External Connection Pooling
+        PropertyAspectAdapter booleanHolder = new PropertyAspectAdapter(loginHolder, DatabaseSessionAdapter.EXTERNAL_CONNECTION_POOLING_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                LoginAdapter login = (LoginAdapter) subject;
+                DatabaseSessionAdapter session = (DatabaseSessionAdapter) login.getParent();
 
-		// Convert the boolean from true to false and vice versa
-		return new TransformationPropertyValueModel(booleanHolder)
-		{
-			protected Object transform(Object value)
-			{
-				// Reverse the value
-				return Boolean.valueOf(Boolean.FALSE.equals(value));
-			}
-		};
-	}
+                return Boolean.valueOf(session.usesExternalConnectionPooling());
+            }
+        };
 
-	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to handle the
-	 * Maximum Connections Count property.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildMaximumCountHolder()
-	{
-		return new PropertyAspectAdapter(getSubjectHolder(), ConnectionPoolAdapter.MAX_CONNECTIONS_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
-				return new Integer(pool.getMaxConnections());
-			}
+        // Convert the boolean from true to false and vice versa
+        return new TransformationPropertyValueModel(booleanHolder)
+        {
+            protected Object transform(Object value)
+            {
+                // Reverse the value
+                return Boolean.valueOf(Boolean.FALSE.equals(value));
+            }
+        };
+    }
 
-			protected void setValueOnSubject(Object value)
-			{
-				ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
-				pool.setMaxConnections(((Integer) value).intValue());
-			}
-		};
-	}
+    /**
+     * Creates the <code>PropertyValueModel</code> responsible to handle the
+     * Maximum Connections Count property.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    private PropertyValueModel buildMaximumCountHolder()
+    {
+        return new PropertyAspectAdapter(getSubjectHolder(), ConnectionPoolAdapter.MAX_CONNECTIONS_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
+                return new Integer(pool.getMaxConnections());
+            }
 
-	/**
-	 * Creates the <code>SpinnerModel</code> that keeps the value from the
-	 * spinner in sync with the Maximum Connections value in the model and vice
-	 * versa.
-	 * 
-	 * @return A new <code>SpinnerNumberModel</code>
-	 */
-	private SpinnerNumberModel buildMaximumCountSpinnerAdapter()
-	{
-		return new NumberSpinnerModelAdapter(buildMaximumCountHolder(), 0, Integer.MAX_VALUE, 1);
-	}
+            protected void setValueOnSubject(Object value)
+            {
+                ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
+                pool.setMaxConnections(((Integer) value).intValue());
+            }
+        };
+    }
 
-	/**
-	 * Creates the <code>PropertyValueModel</code> responsible to handle the
-	 * Minimum Connections property.
-	 *
-	 * @return A new <code>PropertyValueModel</code>
-	 */
-	private PropertyValueModel buildMinimumCountHolder()
-	{
-		return new PropertyAspectAdapter(getSubjectHolder(), ConnectionPoolAdapter.MIN_CONNECTIONS_PROPERTY)
-		{
-			protected Object getValueFromSubject()
-			{
-				ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
-				return new Integer(pool.getMinConnections());
-			}
+    /**
+     * Creates the <code>SpinnerModel</code> that keeps the value from the
+     * spinner in sync with the Maximum Connections value in the model and vice
+     * versa.
+     *
+     * @return A new <code>SpinnerNumberModel</code>
+     */
+    private SpinnerNumberModel buildMaximumCountSpinnerAdapter()
+    {
+        return new NumberSpinnerModelAdapter(buildMaximumCountHolder(), 0, Integer.MAX_VALUE, 1);
+    }
 
-			protected void setValueOnSubject(Object value)
-			{
-				ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
-				pool.setMinConnections(((Integer) value).intValue());
-			}
-		};
-	}
+    /**
+     * Creates the <code>PropertyValueModel</code> responsible to handle the
+     * Minimum Connections property.
+     *
+     * @return A new <code>PropertyValueModel</code>
+     */
+    private PropertyValueModel buildMinimumCountHolder()
+    {
+        return new PropertyAspectAdapter(getSubjectHolder(), ConnectionPoolAdapter.MIN_CONNECTIONS_PROPERTY)
+        {
+            protected Object getValueFromSubject()
+            {
+                ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
+                return new Integer(pool.getMinConnections());
+            }
 
-	/**
-	 * Creates the <code>SpinnerModel</code> that keeps the value from the
-	 * spinner in sync with the Maximum Connections value in the model and vice
-	 * versa.
-	 * 
-	 * @return A new <code>SpinnerNumberModel</code>
-	 */
-	private SpinnerNumberModel buildMinimumCountSpinnerAdapter()
-	{
-		return new NumberSpinnerModelAdapter(buildMinimumCountHolder(), 0, Integer.MAX_VALUE, 1);
-	}
+            protected void setValueOnSubject(Object value)
+            {
+                ConnectionPoolAdapter pool = (ConnectionPoolAdapter) subject;
+                pool.setMinConnections(((Integer) value).intValue());
+            }
+        };
+    }
 
-	/**
-	 * Initializes the layout of this pane.
-	 */
-	protected void initializeLayout()
-	{
-		setBorder(buildTitledBorder("CONNECTION_POOL_CONNECTION_COUNT_TITLE"));
-		setName("CONNECTION_POOL_CONNECTION_COUNT_PANE");
+    /**
+     * Creates the <code>SpinnerModel</code> that keeps the value from the
+     * spinner in sync with the Maximum Connections value in the model and vice
+     * versa.
+     *
+     * @return A new <code>SpinnerNumberModel</code>
+     */
+    private SpinnerNumberModel buildMinimumCountSpinnerAdapter()
+    {
+        return new NumberSpinnerModelAdapter(buildMinimumCountHolder(), 0, Integer.MAX_VALUE, 1);
+    }
 
-		GridBagConstraints constraints = new GridBagConstraints();
+    /**
+     * Initializes the layout of this pane.
+     */
+    protected void initializeLayout()
+    {
+        setBorder(buildTitledBorder("CONNECTION_POOL_CONNECTION_COUNT_TITLE"));
+        setName("CONNECTION_POOL_CONNECTION_COUNT_PANE");
 
-		// Minimum Connections label
-		JLabel minimumConnectionsLabel = buildLabel("CONNECTION_POOL_MINIMUM_CONNECTIONS_SPINNER");
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 0;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 0;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.NONE;
-		constraints.anchor      = GridBagConstraints.LINE_START;
-		constraints.insets      = new Insets(0, 5, 0, 5);
+        // Minimum Connections label
+        JLabel minimumConnectionsLabel = buildLabel("CONNECTION_POOL_MINIMUM_CONNECTIONS_SPINNER");
 
-		add(minimumConnectionsLabel, constraints);
+        constraints.gridx       = 0;
+        constraints.gridy       = 0;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 0;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.NONE;
+        constraints.anchor      = GridBagConstraints.LINE_START;
+        constraints.insets      = new Insets(0, 5, 0, 5);
 
-		// Minimum Connections spinner
-		JSpinner minimumConnectionsSpinner = SwingComponentFactory.buildSpinnerNumber(buildMinimumCountSpinnerAdapter());
-		minimumConnectionsSpinner.setName("CONNECTION_POOL_MINIMUM_CONNECTIONS_SPINNER");
+        add(minimumConnectionsLabel, constraints);
 
-		constraints.gridx       = 1;
-		constraints.gridy       = 0;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.NONE;
-		constraints.anchor      = GridBagConstraints.LINE_START;
-		constraints.insets      = new Insets(0, 5, 0, 5);
+        // Minimum Connections spinner
+        JSpinner minimumConnectionsSpinner = SwingComponentFactory.buildSpinnerNumber(buildMinimumCountSpinnerAdapter());
+        minimumConnectionsSpinner.setName("CONNECTION_POOL_MINIMUM_CONNECTIONS_SPINNER");
 
-		add(minimumConnectionsSpinner, constraints);
-		minimumConnectionsLabel.setLabelFor(minimumConnectionsSpinner);
+        constraints.gridx       = 1;
+        constraints.gridy       = 0;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 1;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.NONE;
+        constraints.anchor      = GridBagConstraints.LINE_START;
+        constraints.insets      = new Insets(0, 5, 0, 5);
 
-		// Maximum Connections label
-		JLabel maximumConnectionsLabel = buildLabel("CONNECTION_POOL_MAXIMUM_CONNECTIONS_SPINNER");
+        add(minimumConnectionsSpinner, constraints);
+        minimumConnectionsLabel.setLabelFor(minimumConnectionsSpinner);
 
-		constraints.gridx       = 0;
-		constraints.gridy       = 1;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 0;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.NONE;
-		constraints.anchor      = GridBagConstraints.LINE_START;
-		constraints.insets      = new Insets(5, 5, 5, 5);
+        // Maximum Connections label
+        JLabel maximumConnectionsLabel = buildLabel("CONNECTION_POOL_MAXIMUM_CONNECTIONS_SPINNER");
 
-		add(maximumConnectionsLabel, constraints);
+        constraints.gridx       = 0;
+        constraints.gridy       = 1;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 0;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.NONE;
+        constraints.anchor      = GridBagConstraints.LINE_START;
+        constraints.insets      = new Insets(5, 5, 5, 5);
 
-		// Maximum Connections spinner
-		JSpinner maximumConnectionsSpinner = SwingComponentFactory.buildSpinnerNumber(buildMaximumCountSpinnerAdapter());
-		maximumConnectionsSpinner.setName("CONNECTION_POOL_MAXIMUM_CONNECTIONS_SPINNER");
+        add(maximumConnectionsLabel, constraints);
 
-		constraints.gridx       = 1;
-		constraints.gridy       = 1;
-		constraints.gridwidth   = 1;
-		constraints.gridheight  = 1;
-		constraints.weightx     = 1;
-		constraints.weighty     = 0;
-		constraints.fill        = GridBagConstraints.NONE;
-		constraints.anchor      = GridBagConstraints.LINE_START;
-		constraints.insets      = new Insets(5, 5, 5, 5);
+        // Maximum Connections spinner
+        JSpinner maximumConnectionsSpinner = SwingComponentFactory.buildSpinnerNumber(buildMaximumCountSpinnerAdapter());
+        maximumConnectionsSpinner.setName("CONNECTION_POOL_MAXIMUM_CONNECTIONS_SPINNER");
 
-		add(maximumConnectionsSpinner, constraints);
-		maximumConnectionsLabel.setLabelFor(maximumConnectionsSpinner);
+        constraints.gridx       = 1;
+        constraints.gridy       = 1;
+        constraints.gridwidth   = 1;
+        constraints.gridheight  = 1;
+        constraints.weightx     = 1;
+        constraints.weighty     = 0;
+        constraints.fill        = GridBagConstraints.NONE;
+        constraints.anchor      = GridBagConstraints.LINE_START;
+        constraints.insets      = new Insets(5, 5, 5, 5);
 
-		// Create the object responsible to keep the enable state of the components
-		// in sync with the Session's property External Connection Pooling
-		buildComponentEnabler();
-	}
+        add(maximumConnectionsSpinner, constraints);
+        maximumConnectionsLabel.setLabelFor(maximumConnectionsSpinner);
+
+        // Create the object responsible to keep the enable state of the components
+        // in sync with the Session's property External Connection Pooling
+        buildComponentEnabler();
+    }
 }

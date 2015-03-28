@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -21,52 +21,52 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class School {
-	@XmlElement(name="students/student")
-	List<Student> students;
-	
-	@XmlIDREF
-	Student classPresident;
-	
-	public School(){
-		students = new ArrayList();
-	}
-	
-	public List<Student> getStudents() {
-		return students;
-	}
+    @XmlElement(name="students/student")
+    List<Student> students;
 
-	public void setStudents(List<Student> students) {
-		this.students = students;
-	}
+    @XmlIDREF
+    Student classPresident;
 
-	public Student getClassPresident() {
-		return classPresident;
-	}
+    public School(){
+        students = new ArrayList();
+    }
 
-	public void setClassPresident(Student classPresident) {
-		this.classPresident = classPresident;
-	}
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
+    }
+
+    public Student getClassPresident() {
+        return classPresident;
+    }
+
+    public void setClassPresident(Student classPresident) {
+        this.classPresident = classPresident;
+    }
 
     public boolean equals(Object obj){
-    	if(this == obj){
-    		return true;
-    	}
-    	if(obj instanceof School){
-    		School theSchool = (School)obj;
-    		if(!classPresident.equals(theSchool.getClassPresident())){
-    			return false;
-    		}
-    		if(students.size() != theSchool.getStudents().size()){
-    			return false;
-    		}
-    		if(!(students.containsAll(theSchool.getStudents()))){
-    			return false;
-    		}
-    		return true;
-    	
-    	}
-    	return false;
-    	
+        if(this == obj){
+            return true;
+        }
+        if(obj instanceof School){
+            School theSchool = (School)obj;
+            if(!classPresident.equals(theSchool.getClassPresident())){
+                return false;
+            }
+            if(students.size() != theSchool.getStudents().size()){
+                return false;
+            }
+            if(!(students.containsAll(theSchool.getStudents()))){
+                return false;
+            }
+            return true;
+
+        }
+        return false;
+
     }
-	
+
 }

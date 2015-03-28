@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,9 +20,9 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class XmlTypeNameTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmltype/page.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmltype/page.json";
-	private final static String XSD_RESOURCE0 = "org/eclipse/persistence/testing/jaxb/xmltype/page0.xsd";
+    private final static String XSD_RESOURCE0 = "org/eclipse/persistence/testing/jaxb/xmltype/page0.xsd";
     private final static String XSD_RESOURCE1 = "org/eclipse/persistence/testing/jaxb/xmltype/page1.xsd";
-	private final static String VALUE = "true";
+    private final static String VALUE = "true";
 
     public XmlTypeNameTestCases(String name) throws Exception {
         super(name);
@@ -53,7 +53,7 @@ public class XmlTypeNameTestCases extends JAXBWithJSONTestCases {
         gpr.setReturn(returnPage);
         return gpr;
     }
-    
+
     public void testSchemaGen() throws Exception{
         List<InputStream> controlSchemas = new ArrayList<InputStream>();
         InputStream is0 = getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE0);

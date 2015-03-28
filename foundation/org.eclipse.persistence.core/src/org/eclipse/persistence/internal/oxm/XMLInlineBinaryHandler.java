@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -31,7 +31,7 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
     XMLConverterMapping converter;
     UnmarshalRecord parent;
     CharSequence characters;
-    
+
     public XMLInlineBinaryHandler(UnmarshalRecord parent, NodeValue nodeValue, Mapping mapping, XMLConverterMapping converter, boolean isCollection) {
         super(null);
         this.nodeValue = nodeValue;
@@ -54,7 +54,7 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
     public void characters(char[] ch, int offset, int length) throws SAXException {
         this.getStringBuffer().append(ch, offset, length);
     }
-    
+
     @Override
     public void characters(CharSequence characters) throws SAXException {
         this.characters = characters;
@@ -66,7 +66,7 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
        //text.
        Field field = null;
        Object value = this.getCharacters();
-       
+
        boolean isHex = Constants.HEX_BINARY_QNAME.equals(((XMLField)this.mapping.getField()).getSchemaType());
 
        Class attributeClassification = null;
@@ -86,8 +86,8 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
            nullPolicy =((BinaryDataMapping)mapping).getNullPolicy();
 
        }
-           
-       if (isSwaRef && (parent.getUnmarshaller().getAttachmentUnmarshaller() != null)) {    	  
+
+       if (isSwaRef && (parent.getUnmarshaller().getAttachmentUnmarshaller() != null)) {
            if(attributeClassification != null && attributeClassification == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                value = parent.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsDataHandler(value.toString());
            } else {
@@ -95,7 +95,7 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
            }
        } else {
            Object valueFromReader = this.parent.getXMLReader().getValue(getCharacters(), attributeClassification);
-           
+
            if(parent.isNil() && parent.getXMLReader().isNullRepresentedByXsiNil(nullPolicy)){
                value = null;
                isCollection = isCollection && parent.getXMLReader().isInCollection();
@@ -106,23 +106,23 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
                } else {
                    String valueString = value.toString();
                    if(valueString.length() == 0 && nullPolicy.isNullRepresentedByEmptyNode()){
-                       value = null;                   
+                       value = null;
                    }else{
-                	   if(field.usesSingleNode()){
-                	       if(isHex) {
-                	           value = parent.getConversionManager().convertHexBinaryListToByteArrayList(valueString, cp, parent.getSession());
-                	       } else {
-                	           value = parent.getConversionManager().convertSchemaBase64ListToByteArrayList(valueString, cp, parent.getSession());
-                	       }
-                	   }else{
-                	       if(isHex) {
-                	           value = parent.getConversionManager().convertObject(valueString, ClassConstants.APBYTE, Constants.HEX_BINARY_QNAME);
-                	       } else {
-                	           value = parent.getConversionManager().convertSchemaBase64ToByteArray(valueString);
-                	       }
-                	   }
+                       if(field.usesSingleNode()){
+                           if(isHex) {
+                               value = parent.getConversionManager().convertHexBinaryListToByteArrayList(valueString, cp, parent.getSession());
+                           } else {
+                               value = parent.getConversionManager().convertSchemaBase64ListToByteArrayList(valueString, cp, parent.getSession());
+                           }
+                       }else{
+                           if(isHex) {
+                               value = parent.getConversionManager().convertObject(valueString, ClassConstants.APBYTE, Constants.HEX_BINARY_QNAME);
+                           } else {
+                               value = parent.getConversionManager().convertSchemaBase64ToByteArray(valueString);
+                           }
+                       }
                    }
-               } 
+               }
                value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession(), cp);
            }
        }
@@ -132,11 +132,11 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
        } else {
            parent.setAttributeValue(value, mapping);
        }
-       
+
        if(!field.isSelfField()){
            //Return control to the parent record
            parent.getXMLReader().setContentHandler(parent);
-           parent.endElement(namespaceURI, localName, qName);       
+           parent.endElement(namespaceURI, localName, qName);
        }
        resetStringBuffer();
    }

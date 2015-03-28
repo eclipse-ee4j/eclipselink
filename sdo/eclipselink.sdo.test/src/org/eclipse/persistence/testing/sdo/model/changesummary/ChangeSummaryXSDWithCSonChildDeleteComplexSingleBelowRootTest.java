@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import junit.textui.TestRunner;
@@ -76,11 +76,11 @@ public class ChangeSummaryXSDWithCSonChildDeleteComplexSingleBelowRootTest exten
         stock2CS = rootObject.getDataObject("stock[2]").getChangeSummary();
         stock3CS = rootObject.getDataObject("stock[3]").getChangeSummary();
         DataObject itemsDO = rootObject.getDataObject("sales/purchaseOrder[1]/items");
-        DataObject item1DO = null;//itemsDO.getDataObject("item[1]");        
+        DataObject item1DO = null;//itemsDO.getDataObject("item[1]");
         DataObject item1ProductDO = null;//item1DO.getDataObject("product");
         DataObject item1ProductPrice1DO = null;//item1ProductDO.getDataObject("price[1]");
         DataObject item1ProductPrice2DO = null;//item1ProductDO.getDataObject("price[2]");
-        
+
 
         assertDeleteDetachUnsetComplexSingleBelowRoot(true,//
                                                       true,//
@@ -99,7 +99,7 @@ public class ChangeSummaryXSDWithCSonChildDeleteComplexSingleBelowRootTest exten
         // 4. [perform operation]
         // 5. compare new modified model with original objects - in memory
         DataObject itemsDO = rootObject.getDataObject("sales/purchaseOrder[1]/items");
-        DataObject item1DO = itemsDO.getDataObject("item[1]");        
+        DataObject item1DO = itemsDO.getDataObject("item[1]");
         DataObject item1ProductDO = item1DO.getDataObject("product");
         DataObject item1ProductPrice1DO = item1ProductDO.getDataObject("price[1]");
         DataObject item1ProductPrice2DO = item1ProductDO.getDataObject("price[2]");
@@ -110,15 +110,15 @@ public class ChangeSummaryXSDWithCSonChildDeleteComplexSingleBelowRootTest exten
         stock1CS = rootObject.getDataObject("stock[1]").getChangeSummary();
         stock2CS = rootObject.getDataObject("stock[2]").getChangeSummary();
         stock3CS = rootObject.getDataObject("stock[3]").getChangeSummary();
-        
+
         // turn on cs
         salesPO1CS.beginLogging();
-        salesPO2CS.beginLogging();            
+        salesPO2CS.beginLogging();
         developmentPO1CS.beginLogging();
         //developmentPO2CS.beginLogging();
         stock1CS.beginLogging();
         stock2CS.beginLogging();
-        stock3CS.beginLogging();            
+        stock3CS.beginLogging();
         item1DO.delete();
 
         assertDeleteDetachUnsetComplexSingleBelowRoot(false,//

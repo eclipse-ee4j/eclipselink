@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,7 +36,7 @@ import org.w3c.dom.Node;
 
 /**
  * Tests JAXBBinder marshal/unmarshal with an XmlJavaTypeAdapter.
- * 
+ *
  */
 public class BinderWithAdapterTestCases  extends TestCase {
     static String tmpdir;
@@ -55,7 +55,7 @@ public class BinderWithAdapterTestCases  extends TestCase {
         documentBuilderFactory = DocumentBuilderFactory.newInstance();
         xpath = XPathFactory.newInstance().newXPath();
     }
-    
+
     public void testUnmarshal() {
         try {
             String src = "org/eclipse/persistence/testing/jaxb/binder/adapter/element.xml";
@@ -65,7 +65,7 @@ public class BinderWithAdapterTestCases  extends TestCase {
 
             Element returnedElt = result.getValue();
             Element controlElt = getControlObject();
-            
+
             assertTrue("Unarshal operation failed:  expected element [" + controlElt + "] but was [" + returnedElt + "]", returnedElt.equals(controlElt));
         } catch (Exception ex) {
             fail("Unmarshal failed: " + ex.getMessage());
@@ -106,7 +106,7 @@ public class BinderWithAdapterTestCases  extends TestCase {
             Transformer tx1 = TransformerFactory.newInstance().newTransformer();
             tx1.transform(new DOMSource(controlDoc), new StreamResult(System.out));
             */
-            
+
             JAXBXMLComparer comparer = new JAXBXMLComparer();
             assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDoc, doc));
         } catch (Exception ex) {
@@ -128,7 +128,7 @@ public class BinderWithAdapterTestCases  extends TestCase {
     Element getControlObject() {
         Element elt = new Element();
         elt.key = 0;
-        
+
         TreeMap<Integer, String> tMap = new TreeMap<Integer, String>();
         tMap.put(101, "KTM");
         tMap.put(69, "CBR");

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries.optimization;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public class QueryOptimizationTestSuite extends TestSuite {
         addBatchTests(BatchFetchType.EXISTS);
         addBatchTests(BatchFetchType.IN);
     }
-    
+
     public void addBatchTests(BatchFetchType batchType) {
         // Batch reading
         ReadAllBatchReadingTest testbb1 = new ReadAllBatchReadingTest(12);
@@ -67,18 +67,18 @@ public class QueryOptimizationTestSuite extends TestSuite {
         querybb2.setSelectionCriteria(new org.eclipse.persistence.expressions.ExpressionBuilder().get("lastName").equal("Way"));
         testbb2.setQuery(querybb2);
         addTest(testbb2);
-        
+
         //add the BatchReadingUnitOfWorkTest and BatchReadingUnitOfWorkInTransactionTest
         BatchReadingUnitOfWorkTest testbb3 = new BatchReadingUnitOfWorkTest(batchType);
         addTest(testbb3);
 
         BatchReadingUnitOfWorkInTransactionTest testbb4 = new BatchReadingUnitOfWorkInTransactionTest(batchType);
         addTest(testbb4);
-        
+
         //adding the OneToMany tests
         OneToManyBatchReadingTest testbb5 = new OneToManyBatchReadingTest(batchType);
         addTest(testbb5);
-        
+
         addTest(new BatchReadingTest(batchType));
 
         OneToManyBatchReadingCustomSelectionQueryTest testbb6 = new OneToManyBatchReadingCustomSelectionQueryTest(batchType);
@@ -140,7 +140,7 @@ public class QueryOptimizationTestSuite extends TestSuite {
         addTest(new BatchReadingBatchReadExpressionTest(batchType));
         addTest(new BatchReadingWithInvalidQueryKeyTest(batchType));
         addTest(new BatchReadValueholderTest(batchType));
-        
+
         addTest(new BatchReadingStackOverflowTest(batchType));
     }
 
@@ -465,33 +465,33 @@ public class QueryOptimizationTestSuite extends TestSuite {
         addTest(new ReadAllBindAllParametersTest());
         addTest(buildBatch1mTest());
     }
-    
+
     public TestCase buildBatch1mTest() {
         TestCase test = new TestCase() {
             public void test() {
                 getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-                
+
                 ReadAllQuery query = new ReadAllQuery();
                 query.setReferenceClass(Employee.class);
-        
+
                 Expression rootExpression = query.getExpressionBuilder();
-        
+
                 Expression filterPart1 =
                  rootExpression.anyOfAllowingNone("phoneNumbers")
                    .getAllowingNull("owner").get("firstName").like("%");
-        
+
                 Expression filterPart2 =
                  rootExpression.anyOfAllowingNone("phoneNumbers")
                    .get("number").like("%");
-        
+
                 query.setSelectionCriteria(filterPart1.and(filterPart2));
-        
+
                 Expression expression = rootExpression.getAllowingNull("address");
                 query.addBatchReadAttribute(expression);
-        
+
                 Expression expression2 = rootExpression.getAllowingNull("phoneNumbers");
                 query.addBatchReadAttribute(expression2);
-        
+
                 List<Employee> result = (List<Employee>) getSession().executeQuery(query);
                 result.get(0).getPhoneNumbers().size();
 

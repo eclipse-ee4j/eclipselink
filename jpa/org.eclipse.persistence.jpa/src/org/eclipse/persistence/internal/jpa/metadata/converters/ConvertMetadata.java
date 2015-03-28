@@ -1,22 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     10/09/2012-2.5 Guy Pelletier 
+ *     10/09/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     10/25/2012-2.5 Guy Pelletier 
+ *     10/25/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     10/30/2012-2.5 Guy Pelletier 
+ *     10/30/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     11/28/2012-2.5 Guy Pelletier 
+ *     11/28/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -33,27 +33,27 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * Object to hold onto convert metadata.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
  * - any metadata mapped from XML to this class must be initialized in the
  *   initXMLObject method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.5
  */
 public class ConvertMetadata extends ORMetadata {
-    
+
     private String m_text;
     private Boolean m_isForMapKey;
     private Boolean m_disableConversion;
     private MetadataClass m_converterClass;
-    
+
     private String m_converterClassName;
     private String m_attributeName;
 
@@ -64,19 +64,19 @@ public class ConvertMetadata extends ORMetadata {
     public ConvertMetadata() {
         super("<convert>");
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.
      */
     public ConvertMetadata(MetadataAnnotation convert, MetadataAccessor accessor) {
         super(convert, accessor);
-        
+
         m_converterClass = getMetadataClass(convert.getAttributeClass("converter", Void.class));
         m_attributeName = convert.getAttributeString("attributeName");
-        m_disableConversion = convert.getAttributeBooleanDefaultFalse("disableConversion");  
+        m_disableConversion = convert.getAttributeBooleanDefaultFalse("disableConversion");
     }
-    
+
     /**
      * INTERNAL:
      * Return true if any auto apply converter should be disabled.
@@ -84,7 +84,7 @@ public class ConvertMetadata extends ORMetadata {
     public boolean disableConversion() {
         return m_disableConversion != null && m_disableConversion;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -92,22 +92,22 @@ public class ConvertMetadata extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof ConvertMetadata) {
             ConvertMetadata convert = (ConvertMetadata) objectToCompare;
-            
+
             if (! valuesMatch(m_text, convert.getText())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_converterClassName, convert.getConverterClassName())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_attributeName, convert.getAttributeName())) {
                 return false;
             }
-            
+
             return valuesMatch(m_disableConversion, convert.getDisableConversion());
         }
-        
+
         return false;
     }
 
@@ -118,14 +118,14 @@ public class ConvertMetadata extends ORMetadata {
     public String getAttributeName() {
         return m_attributeName;
     }
-    
+
     /**
      * INTERNAL:
      */
     public MetadataClass getConverterClass() {
         return m_converterClass;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -133,7 +133,7 @@ public class ConvertMetadata extends ORMetadata {
     public String getConverterClassName() {
         return m_converterClassName;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -141,7 +141,7 @@ public class ConvertMetadata extends ORMetadata {
     public Boolean getDisableConversion() {
         return m_disableConversion;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -159,41 +159,41 @@ public class ConvertMetadata extends ORMetadata {
     public boolean hasAttributeName() {
         return m_attributeName != null && ! m_attributeName.equals("");
     }
-    
+
     /**
      * INTERNAL:
      */
     public boolean hasConverterClass() {
         return m_converterClass != null && ! m_converterClass.isVoid();
     }
-    
+
     /**
      * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
-        
+
         // Trim any leading and trailing white spaces from the text if specified.
         if (m_text != null) {
             m_text = m_text.trim();
         }
-        
+
         // Initialize the converter class name.
         m_converterClass = initXMLClassName(m_converterClassName);
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this convert metadata is for a map key. Way to tell is
      * if there is an attribute name that begins with "key".
-     * 
+     *
      * Calling this method will also update the attribute name on the first call
-     * to it. This call is made when sorting convert annotations. Unlike XML, 
+     * to it. This call is made when sorting convert annotations. Unlike XML,
      * where the user can sort through <convert> and <map-key-convert> elements,
-     * there is only a single Convert annotation that uses a "key" prefix on the 
-     * attribute name to signify a map key convert. An unforunate decision by 
-     * the JPA spec committee, but we can make it work of course. 
+     * there is only a single Convert annotation that uses a "key" prefix on the
+     * attribute name to signify a map key convert. An unforunate decision by
+     * the JPA spec committee, but we can make it work of course.
      */
     public boolean isForMapKey() {
         if (m_isForMapKey == null) {
@@ -206,7 +206,7 @@ public class ConvertMetadata extends ORMetadata {
                 m_isForMapKey = false;
             }
         }
-        
+
         return m_isForMapKey;
     }
 
@@ -341,7 +341,7 @@ public class ConvertMetadata extends ORMetadata {
                 = verify(mapping, referenceClass, accessor, null);
         apply(mapping, targetReferenceClass, accessor, isForMapKey);
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -349,7 +349,7 @@ public class ConvertMetadata extends ORMetadata {
     public void setAttributeName(String attributeName) {
         m_attributeName = attributeName;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -357,7 +357,7 @@ public class ConvertMetadata extends ORMetadata {
     public void setConverterClassName(String converterClassName) {
         m_converterClassName = converterClassName;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -365,7 +365,7 @@ public class ConvertMetadata extends ORMetadata {
     public void setDisableConversion(Boolean disableConversion) {
         m_disableConversion = disableConversion;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.

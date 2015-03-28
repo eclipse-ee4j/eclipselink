@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     arnaud nauwynck, tware - Bug 274975 - ensure custom sql calls are only translated once
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.List;
@@ -44,8 +44,8 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
     /**
      * PUBLIC:
      * Create a new SQL call.
-	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      */
     public SQLCall(String sqlString) {
         this();
@@ -180,7 +180,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         getParameters().add(field);
         getParameterTypes().add(null);
     }
-    
+
     /**
      * PUBLIC:
      * This method should only be used with custom SQL:
@@ -194,7 +194,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         getParameters().add(field);
         getParameterTypes().add(null);
     }
-    
+
     /**
      * PUBLIC:
      * This method should only be used with custom SQL:
@@ -210,7 +210,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         getParameters().add(field);
         getParameterTypes().add(null);
     }
-    
+
     /**
      * PUBLIC:
      * This method should only be used with custom SQL:
@@ -228,7 +228,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         getParameters().add(field);
         getParameterTypes().add(null);
     }
-    
+
     /**
      * PUBLIC:
      * This method should only be used with custom SQL:
@@ -246,7 +246,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         getParameters().add(field);
         getParameterTypes().add(null);
     }
-    
+
     /**
      * PUBLIC:
      * This method should only be used with custom SQL:
@@ -269,8 +269,8 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
 
     /**
      * Set the SQL string.
-     * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      */
     public void setSQLString(String sqlString) {
         setSQLStringInternal(sqlString);
@@ -288,11 +288,11 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         super.translateCustomQuery();
         isTranslatedCustomQuery = true;
     }
-    
+
     /**
      * INTERNAL:
      * Only translate the call if it was not previously translated
-     * 
+     *
      * This code ensures the translation code for a custom SQLCall is only run once
      * In the case of inheritance we will try to call the translation code once to get the
      * list of types and again for each subclass
@@ -305,7 +305,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
         super.translatePureSQLCustomQuery();
         isTranslatedCustomQuery = true;
     }
-    
+
     /**
      * INTERNAL:
      * All values are printed as ? to allow for parameter binding or translation during the execute of the call.

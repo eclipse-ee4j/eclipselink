@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,19 +33,19 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
  *
  */
 public class AnyAttributeMappingTestCases extends JAXBWithJSONTestCases {
-    
+
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/employee.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/employee.json";
-    
+
     private static final String FNAME = "Joe";
     private static final String LNAME = "Oracle";
     private static final String FIRST_NAME = "first-name";
     private static final String LAST_NAME = "last-name";
     private static final String OTHER_NS = "http://www.example.com/other";
-    
+
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public AnyAttributeMappingTestCases(String name) throws Exception {
@@ -60,17 +60,17 @@ public class AnyAttributeMappingTestCases extends JAXBWithJSONTestCases {
     }
 
     public JAXBMarshaller getJSONMarshaller() throws Exception{
-    	JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
-    	jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-    	 Map<String, String> namespaces = new HashMap<String, String>();
+        JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
+        jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+         Map<String, String> namespaces = new HashMap<String, String>();
          namespaces.put("http://www.example.com/other", "ns0");
          namespaces.put("http://www.example.com/stuff", "s");
-    	
-    	jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
-    	return jsonMarshaller;
+
+        jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
+        return jsonMarshaller;
 
     }
-    
+
     /**
      * Create the control Employee.
      */
@@ -86,24 +86,24 @@ public class AnyAttributeMappingTestCases extends JAXBWithJSONTestCases {
     }
 
     public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/employee-oxm.xml");
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/employee-oxm.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute", new StreamSource(inputStream));
-		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-		properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-	        
-	    return properties;
-	}
-	    
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+        return properties;
+    }
+
 public void testSchemaGen() throws Exception{
-   	List controlSchemas = new ArrayList();
-   	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/employee.xsd");
-   	InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/stuff.xsd");
-   	controlSchemas.add(is);
-   	controlSchemas.add(is2);	   	
-   	
-   	super.testSchemaGen(controlSchemas);	  
+       List controlSchemas = new ArrayList();
+       InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/employee.xsd");
+       InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/stuff.xsd");
+       controlSchemas.add(is);
+       controlSchemas.add(is2);
+
+       super.testSchemaGen(controlSchemas);
 }
-    
+
 }

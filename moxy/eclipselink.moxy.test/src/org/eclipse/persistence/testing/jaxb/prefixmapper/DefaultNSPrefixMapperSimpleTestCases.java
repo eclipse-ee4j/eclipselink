@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,11 +29,11 @@ public class DefaultNSPrefixMapperSimpleTestCases extends JAXBWithJSONTestCases 
         setClasses(new Class[]{Simple.class});
         Map<String, String> map = new HashMap<String, String>();
 
-        map.put("namespace1","ns1");       
+        map.put("namespace1","ns1");
         map.put("namespace2","");
         map.put("namespace3","ns3");
-        
-        jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, map);        
+
+        jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, map);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, map);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);

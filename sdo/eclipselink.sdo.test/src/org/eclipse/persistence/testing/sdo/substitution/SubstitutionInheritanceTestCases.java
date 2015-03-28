@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,8 +23,8 @@ import commonj.sdo.Type;
 public class SubstitutionInheritanceTestCases extends SDOTestCase {
 
     private final String XSD = "org/eclipse/persistence/testing/sdo/substitution/hierarchySubstitution.xsd";
-    private final String XML = "org/eclipse/persistence/testing/sdo/substitution/hierarchySubstitution.xml";    
-    
+    private final String XML = "org/eclipse/persistence/testing/sdo/substitution/hierarchySubstitution.xml";
+
     public SubstitutionInheritanceTestCases(String name) {
         super(name);
     }
@@ -34,7 +34,7 @@ public class SubstitutionInheritanceTestCases extends SDOTestCase {
         super.setUp();
         xsdHelper.define(getSchema(XSD));
     }
-    
+
     /**
      * Ensure that the elements in the collections are of the proper Java type.
      */
@@ -46,13 +46,13 @@ public class SubstitutionInheritanceTestCases extends SDOTestCase {
 
         SDOType substituteType = (SDOType) typeHelper.getType("hierarchySubstitution", "tSubstitute");
         Class substituteElementClass = substituteType.getImplClass();
-        
+
         List<DataObject> genericElements = root.getList("genericElement");
         for (DataObject genericElement : genericElements) {
             assertEquals("Incorrect instance class for [" + genericElement.get("name") + "]",
                     genericElementClass, genericElement.getClass());
         }
-        
+
         List<DataObject> substituteElements = root.getList("substitutableElement");
         for (DataObject substituteElement : substituteElements) {
             assertEquals("Incorrect instance class for [" + substituteElement.get("name") + "]",

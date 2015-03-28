@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,11 +24,11 @@ import javax.xml.bind.annotation.XmlElement;
 class Foo {
     @XmlElement(type=BigDecimal.class)
     Object field;
-    
+
     public boolean equals(Object obj){
-		if(obj instanceof Foo){
-			return (field == null && (((Foo)obj).field) == null) || ( field.equals(((Foo)obj).field));
-		}
-		return false;
-	}
+        if(obj instanceof Foo){
+            return (field == null && (((Foo)obj).field) == null) || ( field.equals(((Foo)obj).field));
+        }
+        return false;
+    }
 }

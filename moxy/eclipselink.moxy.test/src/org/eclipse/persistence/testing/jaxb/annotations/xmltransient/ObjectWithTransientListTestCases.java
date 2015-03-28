@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,7 +20,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class ObjectWithTransientListTestCases extends JAXBWithJSONTestCases{
- 
+
     public ObjectWithTransientListTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] { ObjectWithTransient.class });
@@ -34,10 +34,10 @@ public class ObjectWithTransientListTestCases extends JAXBWithJSONTestCases{
         TransientClass transientThing = new TransientClass();
         obj.transientThings = new ArrayList<TransientClass>();
         obj.transientThings.add(transientThing);
-        
+
         return obj;
     }
-    
+
     public boolean isUnmarshalTest(){
         return false;
     }
@@ -45,9 +45,9 @@ public class ObjectWithTransientListTestCases extends JAXBWithJSONTestCases{
     @Override
     public void assertMarshalException(Exception exception) throws Exception {
         Throwable linkedException = exception.getCause();
-        assertTrue(linkedException instanceof XMLMarshalException);            
+        assertTrue(linkedException instanceof XMLMarshalException);
         assertEquals("Wrong XMLMarshalExcpetion was thrown",XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT ,((XMLMarshalException)linkedException).getErrorCode());
     }
 
-    
+
 }

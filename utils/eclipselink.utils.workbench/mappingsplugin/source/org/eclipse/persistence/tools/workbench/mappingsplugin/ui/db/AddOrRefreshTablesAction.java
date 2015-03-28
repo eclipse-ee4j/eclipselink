@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,109 +27,109 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.project.Project
 /**
  * import tables from the database, adding or refreshing as appropriate
  */
-final class AddOrRefreshTablesAction 
-	extends AbstractEnablableFrameworkAction 
+final class AddOrRefreshTablesAction
+    extends AbstractEnablableFrameworkAction
 {
 
-	AddOrRefreshTablesAction(WorkbenchContext context) {
-		super(context);
-	}
+    AddOrRefreshTablesAction(WorkbenchContext context) {
+        super(context);
+    }
 
-	protected void initialize() {
-		super.initialize();
-		// TODO this mnemonic should be set with an index ~kfm
-		this.initializeIcon("table.addFromDatabase");
-		this.initializeTextAndMnemonic("ADD_OR_REFRESH_TABLES_ACTION");
-		this.initializeToolTipText("ADD_OR_REFRESH_TABLES_ACTION.toolTipText");
-	}
+    protected void initialize() {
+        super.initialize();
+        // TODO this mnemonic should be set with an index ~kfm
+        this.initializeIcon("table.addFromDatabase");
+        this.initializeTextAndMnemonic("ADD_OR_REFRESH_TABLES_ACTION");
+        this.initializeToolTipText("ADD_OR_REFRESH_TABLES_ACTION.toolTipText");
+    }
 
-	protected void execute() {
-		ApplicationNode[] projectNodes = this.selectedProjectNodes();
-		for (int i = 0; i < projectNodes.length; i++) {
-			this.execute((ProjectNode) projectNodes[i]);
-		}
-	}
+    protected void execute() {
+        ApplicationNode[] projectNodes = this.selectedProjectNodes();
+        for (int i = 0; i < projectNodes.length; i++) {
+            this.execute((ProjectNode) projectNodes[i]);
+        }
+    }
 
-	protected void execute(ProjectNode projectNode) {
-		MWDatabase database = projectNode.getProject().getDatabase();
-		TableImporterDialog importDialog = new TableImporterDialog(this.getWorkbenchContext(), database);
-		importDialog.show();
-		if (importDialog.wasCanceled()) {
-			return;
-		}
-		this.startTableImporter(database, importDialog.importsTablesFullyQualified(), importDialog.selectedTables());
-	}
+    protected void execute(ProjectNode projectNode) {
+        MWDatabase database = projectNode.getProject().getDatabase();
+        TableImporterDialog importDialog = new TableImporterDialog(this.getWorkbenchContext(), database);
+        importDialog.show();
+        if (importDialog.wasCanceled()) {
+            return;
+        }
+        this.startTableImporter(database, importDialog.importsTablesFullyQualified(), importDialog.selectedTables());
+    }
 
-	protected boolean shouldBeEnabled(ApplicationNode selectedNode) {
-		return ((DatabaseNode) selectedNode).getDatabase().isConnected();
-	}
+    protected boolean shouldBeEnabled(ApplicationNode selectedNode) {
+        return ((DatabaseNode) selectedNode).getDatabase().isConnected();
+    }
 
-	protected String[] enabledPropertyNames() {
-		return new String[] {MWDatabase.CONNECTED_PROPERTY};
-	}
+    protected String[] enabledPropertyNames() {
+        return new String[] {MWDatabase.CONNECTED_PROPERTY};
+    }
 
-	/**
-	 * Start a thread that will import tables from the database
-	 */
-	private void startTableImporter(MWDatabase database, boolean importsTablesFullyQualified, Collection selectedTables) {
-		Thread thread = new Thread(new TableImporter(database, importsTablesFullyQualified, selectedTables), "Database Table Importer");
-		thread.setPriority(Thread.NORM_PRIORITY);
-		thread.start();
-	}
+    /**
+     * Start a thread that will import tables from the database
+     */
+    private void startTableImporter(MWDatabase database, boolean importsTablesFullyQualified, Collection selectedTables) {
+        Thread thread = new Thread(new TableImporter(database, importsTablesFullyQualified, selectedTables), "Database Table Importer");
+        thread.setPriority(Thread.NORM_PRIORITY);
+        thread.start();
+    }
 
 
-	// ********** inner class **********
+    // ********** inner class **********
 
-	/**
-	 * display a "wait" dialog while the tables are being imported
-	 */
-	private class TableImporter implements Runnable {
-		private MWDatabase database;
-		private boolean importsTablesFullyQualified;
-		private Collection selectedTables;
+    /**
+     * display a "wait" dialog while the tables are being imported
+     */
+    private class TableImporter implements Runnable {
+        private MWDatabase database;
+        private boolean importsTablesFullyQualified;
+        private Collection selectedTables;
 
-		TableImporter(MWDatabase database, boolean importsTablesFullyQualified, Collection selectedTables) {
-			super();
-			this.database = database;
-			this.importsTablesFullyQualified = importsTablesFullyQualified;
-			this.selectedTables = selectedTables;
-		}
-		
-		public void run() {
-			WaitDialog waitDialog = this.buildWaitDialog();
-			launchLater(waitDialog);
+        TableImporter(MWDatabase database, boolean importsTablesFullyQualified, Collection selectedTables) {
+            super();
+            this.database = database;
+            this.importsTablesFullyQualified = importsTablesFullyQualified;
+            this.selectedTables = selectedTables;
+        }
 
-			this.database.getValidator().pause();
-			try {
-				if (this.importsTablesFullyQualified) {
-					this.database.importQualifiedTablesFor(this.selectedTables);
-				} else {
-					this.database.importUnqualifiedTablesFor(this.selectedTables);
-				}
-			} finally {
-				// if we don't resume the validator, things will be really whacked...
-				this.database.getValidator().resume();
-				waitDialog.dispose();
-			}
-		}
+        public void run() {
+            WaitDialog waitDialog = this.buildWaitDialog();
+            launchLater(waitDialog);
 
-		private WaitDialog buildWaitDialog() {
-			return new WaitDialog(
-				(Frame) this.workbenchContext().getCurrentWindow(),
-				this.resourceRepository().getIcon("database.large"),
-				this.resourceRepository().getString("TABLE_IMPORTATION_DIALOG.TITLE"),
-				this.resourceRepository().getString("TABLE_IMPORTATION_MESSAGE")
-			);
-		}
+            this.database.getValidator().pause();
+            try {
+                if (this.importsTablesFullyQualified) {
+                    this.database.importQualifiedTablesFor(this.selectedTables);
+                } else {
+                    this.database.importUnqualifiedTablesFor(this.selectedTables);
+                }
+            } finally {
+                // if we don't resume the validator, things will be really whacked...
+                this.database.getValidator().resume();
+                waitDialog.dispose();
+            }
+        }
 
-		private WorkbenchContext workbenchContext() {
-			return AddOrRefreshTablesAction.this.getWorkbenchContext();
-		}
+        private WaitDialog buildWaitDialog() {
+            return new WaitDialog(
+                (Frame) this.workbenchContext().getCurrentWindow(),
+                this.resourceRepository().getIcon("database.large"),
+                this.resourceRepository().getString("TABLE_IMPORTATION_DIALOG.TITLE"),
+                this.resourceRepository().getString("TABLE_IMPORTATION_MESSAGE")
+            );
+        }
 
-		private ResourceRepository resourceRepository() {
-			return AddOrRefreshTablesAction.this.resourceRepository();
-		}
+        private WorkbenchContext workbenchContext() {
+            return AddOrRefreshTablesAction.this.getWorkbenchContext();
+        }
 
-	}
+        private ResourceRepository resourceRepository() {
+            return AddOrRefreshTablesAction.this.resourceRepository();
+        }
+
+    }
 
 }

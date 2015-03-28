@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,177 +34,177 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class UpdateStatement extends AbstractExpression {
 
-	/**
-	 * Determines whether a whitespace was parsed after the <b>UPDATE</b> clause.
-	 */
-	private boolean hasSpaceAfterUpdateClause;
+    /**
+     * Determines whether a whitespace was parsed after the <b>UPDATE</b> clause.
+     */
+    private boolean hasSpaceAfterUpdateClause;
 
-	/**
-	 * The expression representing the <b>UPDATE</b> clause.
-	 */
-	private UpdateClause updateClause;
+    /**
+     * The expression representing the <b>UPDATE</b> clause.
+     */
+    private UpdateClause updateClause;
 
-	/**
-	 * The expression representing the <b>WHERE</b> clause.
-	 */
-	private AbstractExpression whereClause;
+    /**
+     * The expression representing the <b>WHERE</b> clause.
+     */
+    private AbstractExpression whereClause;
 
-	/**
-	 * Creates a new <code>UpdateStatement</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public UpdateStatement(AbstractExpression parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>UpdateStatement</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public UpdateStatement(AbstractExpression parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void acceptChildren(ExpressionVisitor visitor) {
-		getUpdateClause().accept(visitor);
-		getWhereClause().accept(visitor);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void acceptChildren(ExpressionVisitor visitor) {
+        getUpdateClause().accept(visitor);
+        getWhereClause().accept(visitor);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addChildrenTo(Collection<Expression> children) {
-		children.add(getUpdateClause());
-		children.add(getWhereClause());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addChildrenTo(Collection<Expression> children) {
+        children.add(getUpdateClause());
+        children.add(getWhereClause());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addOrderedChildrenTo(List<Expression> children) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addOrderedChildrenTo(List<Expression> children) {
 
-		// Update clause
-		children.add(updateClause);
+        // Update clause
+        children.add(updateClause);
 
-		if (hasSpaceAfterUpdateClause) {
-			children.add(buildStringExpression(SPACE));
-		}
+        if (hasSpaceAfterUpdateClause) {
+            children.add(buildStringExpression(SPACE));
+        }
 
-		// Where clause
-		if (whereClause != null) {
-			children.add(whereClause);
-		}
-	}
+        // Where clause
+        if (whereClause != null) {
+            children.add(whereClause);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPQLQueryBNF findQueryBNF(Expression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JPQLQueryBNF findQueryBNF(Expression expression) {
 
-		if (updateClause.isAncestor(expression)) {
-			return getQueryBNF(UpdateClauseBNF.ID);
-		}
+        if (updateClause.isAncestor(expression)) {
+            return getQueryBNF(UpdateClauseBNF.ID);
+        }
 
-		if ((whereClause != null) && whereClause.isAncestor(expression)) {
-			return getQueryBNF(WhereClauseBNF.ID);
-		}
+        if ((whereClause != null) && whereClause.isAncestor(expression)) {
+            return getQueryBNF(WhereClauseBNF.ID);
+        }
 
-		return super.findQueryBNF(expression);
-	}
+        return super.findQueryBNF(expression);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(UpdateStatementBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(UpdateStatementBNF.ID);
+    }
 
-	/**
-	 * Returns the {@link UpdateClause} representing the <b>UPDATE</b> clause.
-	 *
-	 * @return The section of the update statement representing the <b>UPDATE</b> clause
-	 */
-	public UpdateClause getUpdateClause() {
-		return updateClause;
-	}
+    /**
+     * Returns the {@link UpdateClause} representing the <b>UPDATE</b> clause.
+     *
+     * @return The section of the update statement representing the <b>UPDATE</b> clause
+     */
+    public UpdateClause getUpdateClause() {
+        return updateClause;
+    }
 
-	/**
-	 * Returns the {@link Expression} representing the <b>WHERE</b> clause.
-	 *
-	 * @return The section of the update statement representing the <b>WHERE</b> clause
-	 */
-	public Expression getWhereClause() {
-		if (whereClause == null) {
-			whereClause = buildNullExpression();
-		}
-		return whereClause;
-	}
+    /**
+     * Returns the {@link Expression} representing the <b>WHERE</b> clause.
+     *
+     * @return The section of the update statement representing the <b>WHERE</b> clause
+     */
+    public Expression getWhereClause() {
+        if (whereClause == null) {
+            whereClause = buildNullExpression();
+        }
+        return whereClause;
+    }
 
-	/**
-	 * Determines whether a whitespace was parsed after the <b>UPDATE</b> clause.
-	 *
-	 * @return <code>true</code> if a whitespace was parsed after the <b>UPDATE</b> clause;
-	 * <code>false</code> otherwise
-	 */
-	public boolean hasSpaceAfterUpdateClause() {
-		return hasSpaceAfterUpdateClause;
-	}
+    /**
+     * Determines whether a whitespace was parsed after the <b>UPDATE</b> clause.
+     *
+     * @return <code>true</code> if a whitespace was parsed after the <b>UPDATE</b> clause;
+     * <code>false</code> otherwise
+     */
+    public boolean hasSpaceAfterUpdateClause() {
+        return hasSpaceAfterUpdateClause;
+    }
 
-	/**
-	 * Determines whether the <b>WHERE</b> clause is defined or not.
-	 *
-	 * @return <code>true</code> if this statement has a <b>WHERE</b> clause; <code>false</code> if
-	 * it was not parsed
-	 */
-	public boolean hasWhereClause() {
-		return whereClause != null &&
-		      !whereClause.isNull();
-	}
+    /**
+     * Determines whether the <b>WHERE</b> clause is defined or not.
+     *
+     * @return <code>true</code> if this statement has a <b>WHERE</b> clause; <code>false</code> if
+     * it was not parsed
+     */
+    public boolean hasWhereClause() {
+        return whereClause != null &&
+              !whereClause.isNull();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void parse(WordParser wordParser, boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse(WordParser wordParser, boolean tolerant) {
 
-		// Parse 'UPDATE'
-		updateClause = new UpdateClause(this);
-		updateClause.parse(wordParser, tolerant);
+        // Parse 'UPDATE'
+        updateClause = new UpdateClause(this);
+        updateClause.parse(wordParser, tolerant);
 
-		hasSpaceAfterUpdateClause = wordParser.skipLeadingWhitespace() > 0;
+        hasSpaceAfterUpdateClause = wordParser.skipLeadingWhitespace() > 0;
 
-		// Parse 'WHERE'
-		if (wordParser.startsWithIdentifier(WHERE)) {
-			whereClause = new WhereClause(this);
-			whereClause.parse(wordParser, tolerant);
-		}
+        // Parse 'WHERE'
+        if (wordParser.startsWithIdentifier(WHERE)) {
+            whereClause = new WhereClause(this);
+            whereClause.parse(wordParser, tolerant);
+        }
 
-		// Now fully qualify attribute names with a virtual identification variable
-		accept(new FullyQualifyPathExpressionVisitor());
-	}
+        // Now fully qualify attribute names with a virtual identification variable
+        accept(new FullyQualifyPathExpressionVisitor());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toParsedText(StringBuilder writer, boolean actual) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toParsedText(StringBuilder writer, boolean actual) {
 
-		// Update clause
-		updateClause.toParsedText(writer, actual);
+        // Update clause
+        updateClause.toParsedText(writer, actual);
 
-		if (hasSpaceAfterUpdateClause) {
-			writer.append(SPACE);
-		}
+        if (hasSpaceAfterUpdateClause) {
+            writer.append(SPACE);
+        }
 
-		// Where clause
-		if (whereClause != null) {
-			whereClause.toParsedText(writer, actual);
-		}
-	}
+        // Where clause
+        if (whereClause != null) {
+            whereClause.toParsedText(writer, actual);
+        }
+    }
 }

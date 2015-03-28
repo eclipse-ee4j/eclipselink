@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -19,37 +19,37 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.mapping.Mapping
 
 
 public final class RelationalTransformationMappingNode
-	extends MappingNode
+    extends MappingNode
 {
-	
-	public RelationalTransformationMappingNode(MWRelationalTransformationMapping value, SelectionActionsPolicy mappingNodeTypePolicy, MappingDescriptorNode parent) {
-		super(value, mappingNodeTypePolicy, parent);
-	}
-	
-	
-	// ************** AbstractApplicationNode overrides *************
-	
-	protected String accessibleNameKey() {
-		return "ACCESSIBLE_TRANSFORMATION_MAPPING_NODE";
-	}
 
-	
-	// ************** ApplicationNode implementation *************
-	
-	public String helpTopicID() {
-//		return this.getDescriptorNode().mappingHelpTopicPrefix() + ".transformation";
-		return this.getDescriptorNode().mappingHelpTopicPrefix() + ".transformation.relational"; // For 10.1.3
-	}
-
-	protected String buildIconKey() {
-		return getMapping().iconKey();	
-	}
+    public RelationalTransformationMappingNode(MWRelationalTransformationMapping value, SelectionActionsPolicy mappingNodeTypePolicy, MappingDescriptorNode parent) {
+        super(value, mappingNodeTypePolicy, parent);
+    }
 
 
-	// ********** MWApplicationNode overrides **********
+    // ************** AbstractApplicationNode overrides *************
 
-	protected Class propertiesPageClass() {
-		return RelationalTransformationMappingPropertiesPage.class;
-	}
+    protected String accessibleNameKey() {
+        return "ACCESSIBLE_TRANSFORMATION_MAPPING_NODE";
+    }
+
+
+    // ************** ApplicationNode implementation *************
+
+    public String helpTopicID() {
+//        return this.getDescriptorNode().mappingHelpTopicPrefix() + ".transformation";
+        return this.getDescriptorNode().mappingHelpTopicPrefix() + ".transformation.relational"; // For 10.1.3
+    }
+
+    protected String buildIconKey() {
+        return getMapping().iconKey();
+    }
+
+
+    // ********** MWApplicationNode overrides **********
+
+    protected Class propertiesPageClass() {
+        return RelationalTransformationMappingPropertiesPage.class;
+    }
 
 }

@@ -10,14 +10,14 @@
           <properties>
           </properties>
      </persistence-unit>
-     
+
      <persistence-unit name="agent-pu" transaction-type="RESOURCE_LOCAL">
           <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
           <exclude-unlisted-classes>false</exclude-unlisted-classes>
           <properties>
           </properties>
      </persistence-unit>
-     
+
      <persistence-unit name="jta-pu" transaction-type="JTA">
           <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
           <exclude-unlisted-classes>false</exclude-unlisted-classes>

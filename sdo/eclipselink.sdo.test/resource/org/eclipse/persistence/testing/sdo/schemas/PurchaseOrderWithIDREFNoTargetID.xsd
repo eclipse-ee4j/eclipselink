@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://www.example.org" xmlns="http://www.example.org" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoXML="commonj.sdo/xml">  <xsd:complexType name="Company">	
+<xsd:schema targetNamespace="http://www.example.org" xmlns="http://www.example.org" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoXML="commonj.sdo/xml">  <xsd:complexType name="Company">
       <xsd:attribute name="name" type="xsd:string"/>
       <xsd:sequence>
          <xsd:element name="cust" type="Customer" minOccurs="0" maxOccurs="unbounded"/>

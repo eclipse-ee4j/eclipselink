@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,102 +33,102 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedTypeProvider;
 @SuppressWarnings("nls")
 public abstract class JPQLQueryBuilderWrapper implements IJPQLQueryBuilder {
 
-	/**
-	 * The delegate builder that receives the calls from this one.
-	 */
-	private final IJPQLQueryBuilder delegate;
+    /**
+     * The delegate builder that receives the calls from this one.
+     */
+    private final IJPQLQueryBuilder delegate;
 
-	/**
-	 * Creates a new <code>JPQLQueryBuilderWrapper</code>.
-	 *
-	 * @param delegate The delegate builder that receives the calls from this one
-	 * @exception NullPointerException If the given delegate is <code>null</code>
-	 */
-	protected JPQLQueryBuilderWrapper(IJPQLQueryBuilder delegate) {
-		super();
-		Assert.isNotNull(delegate, "The delegate builder cannot be null");
-		this.delegate = delegate;
-	}
+    /**
+     * Creates a new <code>JPQLQueryBuilderWrapper</code>.
+     *
+     * @param delegate The delegate builder that receives the calls from this one
+     * @exception NullPointerException If the given delegate is <code>null</code>
+     */
+    protected JPQLQueryBuilderWrapper(IJPQLQueryBuilder delegate) {
+        super();
+        Assert.isNotNull(delegate, "The delegate builder cannot be null");
+        this.delegate = delegate;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ICaseExpressionStateObjectBuilder buildCaseExpressionStateObjectBuilder(StateObject parent) {
-		return delegate.buildCaseExpressionStateObjectBuilder(parent);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ICaseExpressionStateObjectBuilder buildCaseExpressionStateObjectBuilder(StateObject parent) {
+        return delegate.buildCaseExpressionStateObjectBuilder(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryStateObject buildStateObject(IManagedTypeProvider provider,
-	                                             CharSequence jpqlQuery,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryStateObject buildStateObject(IManagedTypeProvider provider,
+                                                 CharSequence jpqlQuery,
+                                                 boolean tolerant) {
 
-		return delegate.buildStateObject(provider, jpqlQuery, tolerant);
-	}
+        return delegate.buildStateObject(provider, jpqlQuery, tolerant);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryStateObject buildStateObject(IManagedTypeProvider provider,
-	                                             CharSequence jpqlQuery,
-	                                             String queryBNFId,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryStateObject buildStateObject(IManagedTypeProvider provider,
+                                                 CharSequence jpqlQuery,
+                                                 String queryBNFId,
+                                                 boolean tolerant) {
 
-		return delegate.buildStateObject(provider, jpqlQuery, queryBNFId, tolerant);
-	}
+        return delegate.buildStateObject(provider, jpqlQuery, queryBNFId, tolerant);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public StateObject buildStateObject(StateObject parent,
-	                                    CharSequence jpqlFragment,
-	                                    String queryBNFId) {
+    /**
+     * {@inheritDoc}
+     */
+    public StateObject buildStateObject(StateObject parent,
+                                        CharSequence jpqlFragment,
+                                        String queryBNFId) {
 
-		return delegate.buildStateObject(parent, jpqlFragment, queryBNFId);
-	}
+        return delegate.buildStateObject(parent, jpqlFragment, queryBNFId);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public IConditionalExpressionStateObjectBuilder buildStateObjectBuilder(AbstractConditionalClauseStateObject stateObject) {
-		return delegate.buildStateObjectBuilder(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public IConditionalExpressionStateObjectBuilder buildStateObjectBuilder(AbstractConditionalClauseStateObject stateObject) {
+        return delegate.buildStateObjectBuilder(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ISelectExpressionStateObjectBuilder buildStateObjectBuilder(SelectClauseStateObject stateObject) {
-		return delegate.buildStateObjectBuilder(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ISelectExpressionStateObjectBuilder buildStateObjectBuilder(SelectClauseStateObject stateObject) {
+        return delegate.buildStateObjectBuilder(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ISimpleSelectExpressionStateObjectBuilder buildStateObjectBuilder(SimpleSelectClauseStateObject stateObject) {
-		return delegate.buildStateObjectBuilder(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ISimpleSelectExpressionStateObjectBuilder buildStateObjectBuilder(SimpleSelectClauseStateObject stateObject) {
+        return delegate.buildStateObjectBuilder(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public INewValueStateObjectBuilder buildStateObjectBuilder(UpdateItemStateObject stateObject) {
-		return delegate.buildStateObjectBuilder(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public INewValueStateObjectBuilder buildStateObjectBuilder(UpdateItemStateObject stateObject) {
+        return delegate.buildStateObjectBuilder(stateObject);
+    }
 
-	/**
-	 * Returns the delegate builder that receives the calls from this one.
-	 *
-	 * @return The wrapped builder
-	 */
-	protected IJPQLQueryBuilder getDelegate() {
-		return delegate;
-	}
+    /**
+     * Returns the delegate builder that receives the calls from this one.
+     *
+     * @return The wrapped builder
+     */
+    protected IJPQLQueryBuilder getDelegate() {
+        return delegate;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLGrammar getGrammar() {
-		return delegate.getGrammar();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLGrammar getGrammar() {
+        return delegate.getGrammar();
+    }
 }

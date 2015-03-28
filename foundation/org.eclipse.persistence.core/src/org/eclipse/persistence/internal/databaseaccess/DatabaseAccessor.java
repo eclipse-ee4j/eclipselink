@@ -1,28 +1,28 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Vikram Bhatia - bug fix for releasing temporary LOBs after conversion
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     07/13/2012-2.5 Guy Pelletier 
+ *     07/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier 
+ *     08/24/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     11/05/2012-2.5 Guy Pelletier 
+ *     11/05/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     01/08/2012-2.5 Guy Pelletier 
+ *     01/08/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     02/19/2015 - Rick Curtis  
+ *     02/19/2015 - Rick Curtis
  *       - 458877 : Add national character support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
@@ -128,7 +128,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         this.lobWriter = null;
         this.isDynamicStatementInUse = false;
     }
-    
+
     /**
      * Create a database accessor with the given connection.
      */
@@ -136,7 +136,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         this();
         this.datasourceConnection = connection;
     }
-    
+
     /**
      * Lazy init the dynamic SQL mechanism.
      */
@@ -146,7 +146,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         }
         return this.dynamicSQLMechanism;
     }
-    
+
     /**
      * Lazy init the parameterized SQL mechanism.
      */
@@ -571,7 +571,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     public Object basicExecuteCall(Call call, AbstractRecord translationRow, AbstractSession session) throws DatabaseException {
         return basicExecuteCall(call, translationRow, session, true);
     }
-    
+
     /**
      * Execute the call.
      * The execution can differ slightly depending on the type of call.
@@ -603,7 +603,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             if (dbCall.isBatchExecutionSupported()) {
                 // this will handle executing batched statements, or switching mechanisms if required
                 getActiveBatchWritingMechanism(session).appendCall(session, dbCall);
-                //bug 4241441: passing 1 back to avoid optimistic lock exceptions since there   
+                //bug 4241441: passing 1 back to avoid optimistic lock exceptions since there
                 // is no way to know if it succeeded on the DB at this point.
                 return Integer.valueOf(1);
             } else {
@@ -617,7 +617,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 session.log(SessionLog.FINE, SessionLog.SQL, dbCall.getLogString(this), (Object[])null, this, false);
             }
             session.startOperationProfile(SessionProfiler.SqlPrepare, dbCall.getQuery(), SessionProfiler.ALL);
-            try {               
+            try {
                 statement = dbCall.prepareStatement(this, translationRow, session);
             } finally {
                 session.endOperationProfile(SessionProfiler.SqlPrepare, dbCall.getQuery(), SessionProfiler.ALL);
@@ -641,7 +641,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 result = session.getPlatform().executeStoredProcedure(dbCall, (PreparedStatement)statement, this, session);
                 this.storedProcedureStatementsCount++;
             } else {
-                resultSet = executeSelect(dbCall, statement, session);                
+                resultSet = executeSelect(dbCall, statement, session);
                 this.readStatementsCount++;
                 if (!dbCall.shouldIgnoreFirstRowSetting() && dbCall.getFirstResult() != 0) {
                     resultSet.absolute(dbCall.getFirstResult());
@@ -662,19 +662,19 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
             // Log any warnings on finest.
             if (session.shouldLog(SessionLog.FINEST, SessionLog.SQL)) {// Avoid printing if no logging required.
-            	SQLWarning warning = statement.getWarnings();
-            	while (warning != null) {
-            		String message = warning.getMessage() + ":" + warning.getSQLState() + " - " + warning.getCause();
-            		// 325605: This log will not be tracked by QuerySQLTracker
-            		session.log(SessionLog.FINEST, SessionLog.SQL, message, (Object[])null, this, false);
-            		warning = warning.getNextWarning();
-            	}
+                SQLWarning warning = statement.getWarnings();
+                while (warning != null) {
+                    String message = warning.getMessage() + ":" + warning.getSQLState() + " - " + warning.getCause();
+                    // 325605: This log will not be tracked by QuerySQLTracker
+                    session.log(SessionLog.FINEST, SessionLog.SQL, message, (Object[])null, this, false);
+                    warning = warning.getNextWarning();
+                }
             }
         } catch (SQLException exception) {
             //If this is a connection from an external pool then closeStatement will close the connection.
             //we must test the connection before that happens.
             RuntimeException exceptionToThrow = processExceptionForCommError(session, exception, dbCall);
-            
+
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 closeStatement(statement, session, dbCall);
             } catch (Exception closeException) {
@@ -684,7 +684,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 throw DatabaseException.sqlException(exception, dbCall, this, session, false);
             }
             throw exceptionToThrow;
-            
+
         } catch (RuntimeException exception) {
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 closeStatement(statement, session, dbCall);
@@ -698,7 +698,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
             throw exception;
         }
-        
+
         // This is in a separate try block to ensure that the real exception is not masked by the close exception.
         try {
             // Allow for caching of statement, forced closes are not cache as they failed execution so are most likely bad.
@@ -723,13 +723,13 @@ public class DatabaseAccessor extends DatasourceAccessor {
     public Object processResultSet(ResultSet resultSet, DatabaseCall call, Statement statement, AbstractSession session) throws SQLException {
         Object result = null;
         ResultSetMetaData metaData = resultSet.getMetaData();
-        
+
         // If there are no columns (and only an update count) throw an exception.
         if (metaData.getColumnCount() == 0 && statement.getUpdateCount() > -1) {
             resultSet.close();
             throw new IllegalStateException(ExceptionLocalization.buildMessage("jpa21_invalid_call_with_no_result_sets_returned"));
         }
-        
+
         session.startOperationProfile(SessionProfiler.RowFetch, call.getQuery(), SessionProfiler.ALL);
         try {
             if (call.isOneRowReturned()) {
@@ -807,7 +807,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         }
         return result;
     }
-    
+
     /**
      * This allows for the rows to be fetched concurrently to the objects being built.
      * This code is not currently publicly supported.
@@ -850,7 +850,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     } finally {
                         session.endOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
                     }
-    
+
                     // This is in a separate try block to ensure that the real exception is not masked by the close exception.
                     try {
                         // Allow for caching of statement, forced closes are not cache as they failed execution so are most likely bad.
@@ -884,14 +884,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
             if (call != null) {
                 session.startOperationProfile(SessionProfiler.StatementExecute, call.getQuery(), SessionProfiler.ALL);
             } else {
-                session.startOperationProfile(SessionProfiler.StatementExecute, null, SessionProfiler.ALL);                
+                session.startOperationProfile(SessionProfiler.StatementExecute, null, SessionProfiler.ALL);
             }
             if ((call != null) && call.isDynamicCall(session)) {
                 rowCount = statement.executeUpdate(call.getSQLString());
             } else {
                 rowCount = ((PreparedStatement)statement).executeUpdate();
             }
-            
+
             if ((!getPlatform().supportsAutoCommit()) && (!this.isInTransaction)) {
                 getPlatform().autoCommit(this);
             }
@@ -905,7 +905,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             if (call != null) {
                 session.endOperationProfile(SessionProfiler.StatementExecute, call.getQuery(), SessionProfiler.ALL);
             } else {
-                session.endOperationProfile(SessionProfiler.StatementExecute, null, SessionProfiler.ALL);                
+                session.endOperationProfile(SessionProfiler.StatementExecute, null, SessionProfiler.ALL);
             }
         }
 
@@ -980,7 +980,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     public boolean execute(DatabaseCall call, Statement statement, AbstractSession session) throws SQLException {
         boolean result;
-        
+
         session.startOperationProfile(SessionProfiler.StatementExecute, call.getQuery(), SessionProfiler.ALL);
         try {
             if (call.isDynamicCall(session)) {
@@ -991,10 +991,10 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } finally {
             session.endOperationProfile(SessionProfiler.StatementExecute, call.getQuery(), SessionProfiler.ALL);
         }
-    
+
         return result;
     }
-    
+
     /**
      * Execute the statement.
      */
@@ -1187,7 +1187,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
             DatabaseException commException = processExceptionForCommError(session, sqlException, null);
             if (commException != null) throw commException;
-            // Ensure that real exception is thrown.			
+            // Ensure that real exception is thrown.
             throw DatabaseException.sqlException(sqlException, this, session, false);
         } finally {
             decrementCallCount();
@@ -1299,9 +1299,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
                         value = null;
                     }
                 } else {
-                    value = platform.getObjectFromResultSet(resultSet, columnNumber, type, session);                      
+                    value = platform.getObjectFromResultSet(resultSet, columnNumber, type, session);
                     // PERF: only perform blob check on non-optimized types.
-                    // CR2943 - convert early if the type is a BLOB or a CLOB.  
+                    // CR2943 - convert early if the type is a BLOB or a CLOB.
                     if (isBlob(type)) {
                         // EL Bug 294578 - Store previous value of BLOB so that temporary objects can be freed after conversion
                         Object originalValue = value;
@@ -1347,9 +1347,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
             if (type == Types.NCHAR && value != null && platform.shouldTrimStrings()) {
                 value = Helper.rightTrimString((String) value);
             }
-            return value;            
+            return value;
         }else if (type == Types.VARCHAR || type == Types.CHAR || type == Types.NVARCHAR || type == Types.NCHAR) {
-            // CUSTOM PATCH for oracle drivers because they don't respond to getObject() when using scrolling result sets. 
+            // CUSTOM PATCH for oracle drivers because they don't respond to getObject() when using scrolling result sets.
             // Chars may require blanks to be trimmed.
             value = resultSet.getString(columnNumber);
             if ((type == Types.CHAR || type == Types.NCHAR) && (value != null) && platform.shouldTrimStrings()) {
@@ -1357,7 +1357,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
             return value;
         } else if (fieldType == null) {
-            return this;            
+            return this;
         }
         boolean isPrimitive = false;
 
@@ -1397,7 +1397,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if (fieldType == ClassConstants.BIGDECIMAL) {
             value = resultSet.getBigDecimal(columnNumber);
          }
-        
+
         // PERF: Only check for null for primitives.
         if (isPrimitive && resultSet.wasNull()) {
             value = null;
@@ -1479,7 +1479,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
             DatabaseException commException = processExceptionForCommError(session, sqlException, null);
             if (commException != null) throw commException;
-            // Ensure that real exception is thrown.			
+            // Ensure that real exception is thrown.
             throw DatabaseException.sqlException(sqlException, this, session, false);
         } finally {
             decrementCallCount();
@@ -1517,8 +1517,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Prepare the SQL statement for the call.
      * First check if the statement is cached before building a new one.
-     * @param unwrapConnection boolean flag set to true to unwrap the connection before preparing the statement in the 
-     *  case of a parameterized call.  
+     * @param unwrapConnection boolean flag set to true to unwrap the connection before preparing the statement in the
+     *  case of a parameterized call.
      */
     public Statement prepareStatement(DatabaseCall call, AbstractSession session, boolean unwrapConnection) throws SQLException {
         Statement statement = null;
@@ -1607,7 +1607,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * This method is used to process an SQL exception and determine if the exception
      * should be passed on for further processing.
      * If the Exception was communication based then a DatabaseException will be return.
-     * If the method did not process the message of it was not a comm failure then null 
+     * If the method did not process the message of it was not a comm failure then null
      * will be returned.
      */
     public DatabaseException processExceptionForCommError(AbstractSession session, SQLException exception, Call call) {
@@ -1674,21 +1674,21 @@ public class DatabaseAccessor extends DatasourceAccessor {
             closeStatement(statement, session, call);
         }
     }
-    
+
     /**
      * Reset the Query Timeout, Max Rows, Resultset fetch size on the Statement
-     * if the DatabaseCall has values which differ from the default settings.  
+     * if the DatabaseCall has values which differ from the default settings.
      * For Bug 5709179 - reset settings on cached statements
      */
     protected void resetStatementFromCall(Statement statement, DatabaseCall call) throws SQLException {
-        if (call.getQueryTimeout() > 0) { 
-            statement.setQueryTimeout(0); 
-        } 
-        if (call.getMaxRows() > 0) { 
-            statement.setMaxRows(0); 
-        } 
-        if (call.getResultSetFetchSize() > 0) { 
-            statement.setFetchSize(0); 
+        if (call.getQueryTimeout() > 0) {
+            statement.setQueryTimeout(0);
+        }
+        if (call.getMaxRows() > 0) {
+            statement.setMaxRows(0);
+        }
+        if (call.getResultSetFetchSize() > 0) {
+            statement.setFetchSize(0);
         }
     }
 
@@ -1725,7 +1725,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     public void setActiveBatchWritingMechanismToParameterizedSQL() {
         this.activeBatchWritingMechanism = getParameterizedMechanism();
 
-        //Bug#3214927 The size for ParameterizedBatchWriting represents the number of statements 
+        //Bug#3214927 The size for ParameterizedBatchWriting represents the number of statements
         //and the max size is only 100.
         if (((DatabaseLogin)this.login).getMaxBatchWritingSize() == DatabasePlatform.DEFAULT_MAX_BATCH_WRITING_SIZE) {
             ((DatabaseLogin)this.login).setMaxBatchWritingSize(DatabasePlatform.DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE);
@@ -1833,7 +1833,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     private boolean isStruct(int type, Object value) {
         return (type == Types.STRUCT && (value instanceof java.sql.Struct));
     }
-    
+
     /**
      * This method will be called after a series of writes have been issued to
      * mark where a particular set of writes has completed.  It will be called

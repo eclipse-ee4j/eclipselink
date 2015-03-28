@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,13 +45,13 @@ public interface AnyObjectMapping<
     public void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY unmarshalKeepAsElementPolicy);
 
     public void setField(FIELD field);
-    
+
     public void setIsWriteOnly(boolean b);
-    
+
     public void setMixedContent(boolean mixed);
-    
+
     public void setUseXMLRoot(boolean useXMLRoot);
-    
+
     public boolean usesXMLRoot();
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,11 +41,11 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
-    static final String CREATE_OBJECT_TYPE = 
-        "CREATE OR REPLACE TYPE DBWS_XML_WRAPPER AS OBJECT (" + 
+    static final String CREATE_OBJECT_TYPE =
+        "CREATE OR REPLACE TYPE DBWS_XML_WRAPPER AS OBJECT (" +
             "\nxmltext VARCHAR2(100)" +
         ")";
-    
+
     static final String CREATE_SIMPLEPACKAGE1_PACKAGE =
         "CREATE OR REPLACE PACKAGE SIMPLEPACKAGE1 AS" +
             "\nPROCEDURE NOARGPLSQLSP;" +
@@ -204,7 +204,7 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
           "<simple-xml>" +
-          	"<result>1</result>" +
+              "<result>1</result>" +
           "</simple-xml>" +
         "</simple-xml-format>";
 

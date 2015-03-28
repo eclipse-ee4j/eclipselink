@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -204,7 +204,7 @@ public class SDOTypesGenerator {
                     }
                 }
             }
-            
+
             ((SDOXMLHelper) aHelperContext.getXMLHelper()).addDescriptors(descriptorsToAdd);
 
             //go through generatedGlobalProperties and add to xsdhelper
@@ -420,7 +420,7 @@ public class SDOTypesGenerator {
         if (addedNR) {
             namespaceResolvers.remove(namespaceResolvers.size() - 1);
         }
-        
+
         return newType;
     }
 
@@ -450,7 +450,7 @@ public class SDOTypesGenerator {
     private SDOType startNewComplexType(String targetNamespace, String sdoTypeName, String xsdLocalName, ComplexType complexType) {
         SDOType currentType;
         if(null == complexType.getName()) {
-            currentType = createSDOTypeForName(targetNamespace, sdoTypeName, xsdLocalName);    		
+            currentType = createSDOTypeForName(targetNamespace, sdoTypeName, xsdLocalName);
         } else {
             currentType = getGeneratedTypesByXsdQName().get(new QName(targetNamespace, complexType.getName()));
         }
@@ -489,7 +489,7 @@ public class SDOTypesGenerator {
         if (complexType.getAnnotation() != null) {
             currentType.setAppInfoElements(complexType.getAnnotation().getAppInfo());
         }
-        
+
         return currentType;
     }
 
@@ -649,7 +649,7 @@ public class SDOTypesGenerator {
     private void processGlobalSimpleType(String targetNamespace, String defaultNamespace, SimpleType simpleType) {
         QName qname = new QName(targetNamespace, simpleType.getName());
         if (!processedSimpleTypes.containsKey(qname)) {
-        	processSimpleType(targetNamespace, defaultNamespace, simpleType.getName(), simpleType);
+            processSimpleType(targetNamespace, defaultNamespace, simpleType.getName(), simpleType);
             processedSimpleTypes.put(qname, simpleType);
         }
     }
@@ -711,7 +711,7 @@ public class SDOTypesGenerator {
         if (simpleType.getAnnotation() != null) {
             currentType.setAppInfoElements(simpleType.getAnnotation().getAppInfo());
         }
-        
+
         return currentType;
     }
 
@@ -750,7 +750,7 @@ public class SDOTypesGenerator {
         if (addedNR) {
             namespaceResolvers.remove(namespaceResolvers.size() - 1);
         }
-        
+
         return newType;
     }
 
@@ -829,7 +829,7 @@ public class SDOTypesGenerator {
     private void processAll(String targetNamespace, String defaultNamespace, SDOType owningType, All all, boolean isMany) {
         if (all != null) {
             owningType.setSequenced(true);
-            
+
             processTypeDef(targetNamespace, defaultNamespace, owningType, all);
             if (!isMany && maxOccursGreaterThanOne(all.getMaxOccurs())) {
                 isMany = true;
@@ -887,7 +887,7 @@ public class SDOTypesGenerator {
                     }
                 }
                 owningType.setOpen(owningType.isOpen() || baseType.isOpen());
-            } 
+            }
             if (qualifiedType != null) {
                 processBaseType(baseType, targetNamespace, defaultNamespace, owningType, qualifiedType, simpleContent);
             }
@@ -1008,8 +1008,8 @@ public class SDOTypesGenerator {
             }
         }
 
-        // When the XSD type is one of the following, and there are facets (maxInclusive, 
-        // maxExclusive) constraining the range to be within the range of int then the 
+        // When the XSD type is one of the following, and there are facets (maxInclusive,
+        // maxExclusive) constraining the range to be within the range of int then the
         // Java instance class is int
         if (baseQName.equals(XMLConstants.INTEGER_QNAME) ||
                 baseQName.equals(SDOConstants.POSITIVEINTEGER_QNAME) ||
@@ -1027,7 +1027,7 @@ public class SDOTypesGenerator {
                     alreadySet = true;
                 }
             }
-            // if maxInclusive was processed, no need to handle maxExclusive 
+            // if maxInclusive was processed, no need to handle maxExclusive
             if (!alreadySet) {
                 value = restriction.getMaxExclusive();
                 if (value != null) {
@@ -1321,7 +1321,7 @@ public class SDOTypesGenerator {
                         SimpleType baseSimpleType = (SimpleType) rootSchema.getTopLevelSimpleTypes().get(qname.getLocalPart());
                         processGlobalSimpleType(targetNamespace, defaultNamespace, baseSimpleType);
                     }
-                } 
+                }
 
                 if ((p.getXsdType() == null) && (sdoPropertyType.getXsdType() != null)) {
                     p.setXsdType(sdoPropertyType.getXsdType());
@@ -1584,7 +1584,7 @@ public class SDOTypesGenerator {
         }
 
         SDOProperty p = null;
-        
+
         String typeName = null;
         String mappingUri = null;
         if (owningType != null) {
@@ -1674,7 +1674,7 @@ public class SDOTypesGenerator {
                         SimpleType baseSimpleType = (SimpleType) rootSchema.getTopLevelSimpleTypes().get(qname.getLocalPart());
                         processGlobalSimpleType(targetNamespace, defaultNamespace, baseSimpleType);
                     }
-                } 
+                }
                 if ((p.getXsdType() == null) && (sdoPropertyType.getXsdType() != null)) {
                     p.setXsdType(sdoPropertyType.getXsdType());
                 }
@@ -2016,7 +2016,7 @@ public class SDOTypesGenerator {
     public void setGeneratedTypes(Map<QName, Type> generatedTypes) {
         this.generatedTypes = generatedTypes;
     }
-    
+
     public void setGeneratedGlobalElements(Map<QName, Property> generatedElements) {
         this.generatedGlobalElements = generatedElements;
     }
@@ -2194,7 +2194,7 @@ public class SDOTypesGenerator {
      * @return
      */
     public Schema getSchema(Source xsdSource, SchemaResolverWrapper schemaResolverWrapper, boolean closeStream) {
-      
+
        xsdSource = schemaResolverWrapper.resolveSchema(xsdSource);
 
        XMLContext context = new XMLContext(getSchemaProject());
@@ -2233,7 +2233,7 @@ public class SDOTypesGenerator {
         return schema;
 
     }
-    
+
     private void closeSource(Source source){
         if(source != null && source instanceof StreamSource){
             StreamSource ss = (StreamSource)source;
@@ -2242,8 +2242,8 @@ public class SDOTypesGenerator {
                    ss.getInputStream().close();
                 } else if(ss.getReader() != null){
                    ss.getReader().close();
-                } 
-                   
+                }
+
             }catch (IOException e) {
                 throw SDOException.errorResolvingSchema(e);
            }
@@ -2501,7 +2501,7 @@ public class SDOTypesGenerator {
         if(null == sdoDataType) {
             SDOType existingType = (SDOType)getGeneratedTypes().get(qName);
             if(null == existingType) {
-                existingType = (SDOType) aHelperContext.getTypeHelper().getType(qName.getNamespaceURI(), qName.getLocalPart());   
+                existingType = (SDOType) aHelperContext.getTypeHelper().getType(qName.getNamespaceURI(), qName.getLocalPart());
             }
             if(existingType != null && existingType.isFinalized()) {
                 return (SDODataType)existingType;
@@ -2526,7 +2526,7 @@ public class SDOTypesGenerator {
                     sdoDataType.getNonFinalizedMappingURIs().add(nonFinalizedUris.next());
                 }
                 if(anonymousTypes.contains(existingType)) {
-                  anonymousTypes.remove(existingType);  
+                  anonymousTypes.remove(existingType);
                 }
             }
             sdoDataType.setXsdLocalName(simpleType.getName());
@@ -2545,7 +2545,7 @@ public class SDOTypesGenerator {
     private SDOType getTypeForXSDQName(QName xsdQName) {
         SDOType sdoType = generatedTypesByXsdQName.get(xsdQName);
         if(null == sdoType) {
-            SDOTypeHelper sdoTypeHelper = (SDOTypeHelper)aHelperContext.getTypeHelper(); 
+            SDOTypeHelper sdoTypeHelper = (SDOTypeHelper)aHelperContext.getTypeHelper();
             sdoType = sdoTypeHelper.getSDOTypeFromXSDType(xsdQName);
         }
         return sdoType;

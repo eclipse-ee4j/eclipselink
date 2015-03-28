@@ -8,28 +8,28 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWQueryManage
 
 public final class MWUpdateQuery extends MWAbstractCustomQuery {
 
-	private MWUpdateQuery() {
-		super();
-	}
+    private MWUpdateQuery() {
+        super();
+    }
 
-	MWUpdateQuery(MWQueryManager queryManager) {
-		super(queryManager);
-	}
+    MWUpdateQuery(MWQueryManager queryManager) {
+        super(queryManager);
+    }
 
-	// ******************* Static Methods *******************
+    // ******************* Static Methods *******************
 
-	public static XMLDescriptor buildDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
 
-		descriptor.setJavaClass(MWUpdateQuery.class);
-		descriptor.getDescriptorInheritancePolicy().setParentClass(MWAbstractCustomQuery.class);
+        descriptor.setJavaClass(MWUpdateQuery.class);
+        descriptor.getDescriptorInheritancePolicy().setParentClass(MWAbstractCustomQuery.class);
 
-		return descriptor;
-	}
+        return descriptor;
+    }
 
-	@Override
-	protected DatabaseQuery buildRuntimeQuery() {
-		return new UpdateObjectQuery();
-	}
+    @Override
+    protected DatabaseQuery buildRuntimeQuery() {
+        return new UpdateObjectQuery();
+    }
 
 }

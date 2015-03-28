@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2010, 2015 Dies Koper (Fujitsu). Oracle and/or its affiliates, IBM Corporation.
- * All rights reserved. This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -42,21 +42,21 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * previous test and the connection used to create it is still open, Symfoware
  * complains that the tables are locked when it tries to drop them.
  * <p/>
- * 
+ *
  * This class sets a flag before the subsequent recreation of the tables to
  * delete the rows instead. The first time it is called it does not set the
  * flag, to allow the tables to be initially created.
  * <p/>
- * 
+ *
  * To enable this functionality, the system property
  * "eclipselink.test.toggle-fast-table-creator" needs to be set to "true".
  * <p/>
- * 
+ *
  * This class should be positioned between the test's table creator class and
  * TableCreator by making the's test table creator extend this class.<br/>
- * 
+ *
  * @author Dies Koper, Tomas Kraus
- * 
+ *
  */
 public class TogglingFastTableCreator extends TableCreator {
 
@@ -107,11 +107,11 @@ public class TogglingFastTableCreator extends TableCreator {
                     try {
                         abstarctSession.priviledgedExecuteNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("DELETE FROM " + table.getFullName()));
                     } catch (DatabaseException ex) {
-                        //Ignore database exception. eg. If there is no table to delete, it gives database exception. 
-                    } 
+                        //Ignore database exception. eg. If there is no table to delete, it gives database exception.
+                    }
                 }
             }
-        } else { 
+        } else {
             super.replaceTables(session);
         }
 
@@ -138,7 +138,7 @@ public class TogglingFastTableCreator extends TableCreator {
     public boolean isFastTableCreator() {
         return fastTableCreators.contains(getTableCreatorName());
     }
-    
+
     public String getTableCreatorName() {
         return this.getClass().getName();
     }
@@ -365,20 +365,20 @@ public class TogglingFastTableCreator extends TableCreator {
                     // Find the target table and the target field
                     TableDefinition targetTableDefinition = getTableDefinition(foreignKeyConstraint.getTargetTable());
                     // session.getSessionLog().log(SessionLog.FINEST, "AdvancedTableCreator: Found target table " +  foreignKeyConstraint.getTargetTable() + " for foreign key " + foreignKeyConstraint.getName());
-                    FieldDefinition targetFieldDefinition = getFieldDefinition(targetTableDefinition, targetFieldName); 
+                    FieldDefinition targetFieldDefinition = getFieldDefinition(targetTableDefinition, targetFieldName);
                     // session.getSessionLog().log(SessionLog.FINEST, "AdvancedTableCreator: Found target field " + targetFieldDefinition.getName() + " in table " + targetTableDefinition.getName());
                     // Only change source column if target is identity
                     String qualifiedName = targetTableDefinition.getFullName() + '.' + targetFieldDefinition.getName();
                     if (targetFieldDefinition.isIdentity() && session.getPlatform().shouldPrintFieldIdentityClause((AbstractSession)session, qualifiedName)) {
                         session.getSessionLog().log(SessionLog.FINEST, "AdvancedTableCreator.adjustForeignKeyFieldTypes(): Changing data type of source field " + sourceFieldDefinition.getName() + "to INTEGER in table " + sourceTableDefinition.getName());
                         sourceFieldDefinition.setTypeName("INTEGER");
-                        sourceFieldDefinition.setSize(0);                                             
+                        sourceFieldDefinition.setSize(0);
                     }
                 }
             }
         }
     }
-    
+
     // Helper methods for adjustForeignKeyFieldTypes()
 
     private FieldDefinition getFieldDefinition(TableDefinition tableDefinition, String fieldName) {
@@ -387,7 +387,7 @@ public class TogglingFastTableCreator extends TableCreator {
                 return targetField;
             }
         }
-        return null;    
+        return null;
     }
 
     private TableDefinition getTableDefinition(String tableName) {
@@ -396,7 +396,7 @@ public class TogglingFastTableCreator extends TableCreator {
                 return targetTable;
             }
         }
-        return null;    
+        return null;
     }
 
     // Mostly cloned from TableDefinition.buildForeignKeyConstraint()

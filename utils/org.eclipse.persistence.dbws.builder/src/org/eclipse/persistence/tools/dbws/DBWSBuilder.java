@@ -149,15 +149,15 @@ public class DBWSBuilder extends DBWSBuilderModel {
     }
 
     /**
-     * This method processes the given arguments, sets properties and operations, 
+     * This method processes the given arguments, sets properties and operations,
      * initializes the target packager, then calls the start method.
-     * 
+     *
      * This method expects 6 or 7 arguments (7 if the archive file name is provided), as follows:
      *   [0] -builderFile
-     *   [1] <builder filename> 
+     *   [1] <builder filename>
      *   [2] -stageDir
      *   [3] <stage dir>
-     *   [4] -packagAs 
+     *   [4] -packagAs
      *   [5] <package type> (wls, jdev, etc.)
      *   [6] <archive filename> (optional)
      */
@@ -214,11 +214,11 @@ public class DBWSBuilder extends DBWSBuilderModel {
                 return;
             }
         }
-        
+
         // ------
         // prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_driver.jar org.eclipse.persistence.tools.dbws.DBWSBuilder -builderFile {path_to_dbws_builder.xml_file} -stageDir {path_to_staging_directory} -packageAs {how_to_package_output} [additionalArgs]
         // ------
-        
+
         StringBuilder sb = new StringBuilder(30);
         sb.append("DBWSBuilder usage ([] indicates optional argument):\nprompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_driver.jar \\\n\t");
         sb.append(this.getClass().getName());
@@ -367,7 +367,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
                 sourceProviderStream, classProviderListenerStream, sourceProviderListenerStream,
                 null, logger);
     }
-    
+
     /**
      * Generate the required artifacts for the target packaging/archiving, and write each
      * to the given OutputStreams as appropriate.
@@ -452,9 +452,9 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public void addSqlOperation(SQLOperationModel sqlOperation) {
         operations.add(sqlOperation);
     }
-    
+
     /**
-     * Add an OperationModel instance to the List of OperationModels 
+     * Add an OperationModel instance to the List of OperationModels
      * to be processed.
      */
     public void addOperation(OperationModel operation) {
@@ -546,14 +546,14 @@ public class DBWSBuilder extends DBWSBuilderModel {
             }
             // check nested operations
             if (op.isTableOperation()) {
-            	TableOperationModel top = (TableOperationModel)op;
-            	if (top.additionalOperations != null && top.additionalOperations.size() > 0) {
-                	for (OperationModel addOp : top.additionalOperations) {
-                		if (addOp.binaryAttachment) {
-                			return true;
-                		}
-                	}
-            	}
+                TableOperationModel top = (TableOperationModel)op;
+                if (top.additionalOperations != null && top.additionalOperations.size() > 0) {
+                    for (OperationModel addOp : top.additionalOperations) {
+                        if (addOp.binaryAttachment) {
+                            return true;
+                        }
+                    }
+                }
             }
         }
         return false;
@@ -632,8 +632,8 @@ public class DBWSBuilder extends DBWSBuilderModel {
      * Return the projectName property or the default (myProject) if not set.
      */
     public String getProjectName() {
-    	String prjName = properties.get(PROJNAME_KEY);
-    	return (prjName != null && prjName.length() > 0) ? prjName : DEFAULT_PROJECT_NAME;
+        String prjName = properties.get(PROJNAME_KEY);
+        return (prjName != null && prjName.length() > 0) ? prjName : DEFAULT_PROJECT_NAME;
     }
     /**
      * Sets the projectName property.

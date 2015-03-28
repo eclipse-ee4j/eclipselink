@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.nested;
 
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
@@ -50,9 +50,9 @@ public class CompositeCollectionNestedTestCases extends XMLWithJSONMappingTestCa
   }
 
   protected Object getControlObject() {
-		Project project = new Project();
-		project.setName(CONTROL_PROJECT_NAME);
-	
+        Project project = new Project();
+        project.setName(CONTROL_PROJECT_NAME);
+
     EmailAddress emailAddress1 = new EmailAddress();
     emailAddress1.setUserID(CONTROL_EMAIL_ADDRESS_1_USER_ID);
     emailAddress1.setDomain(CONTROL_EMAIL_ADDRESS_1_DOMAIN);
@@ -61,11 +61,11 @@ public class CompositeCollectionNestedTestCases extends XMLWithJSONMappingTestCa
     emailAddress2.setUserID(CONTROL_EMAIL_ADDRESS_2_USER_ID);
     emailAddress2.setDomain(CONTROL_EMAIL_ADDRESS_2_DOMAIN);
 
-		EmailAddress emailAddress3 = new EmailAddress();
+        EmailAddress emailAddress3 = new EmailAddress();
     emailAddress3.setUserID(CONTROL_EMAIL_ADDRESS_3_USER_ID);
     emailAddress3.setDomain(CONTROL_EMAIL_ADDRESS_3_DOMAIN);
 
-		EmailAddress emailAddress4 = new EmailAddress();
+        EmailAddress emailAddress4 = new EmailAddress();
     emailAddress4.setUserID(CONTROL_EMAIL_ADDRESS_4_USER_ID);
     emailAddress4.setDomain(CONTROL_EMAIL_ADDRESS_4_DOMAIN);
 
@@ -80,7 +80,7 @@ public class CompositeCollectionNestedTestCases extends XMLWithJSONMappingTestCa
     mailingAddress2.setCity(CONTROL_MAILING_ADDRESS_2_CITY);
     mailingAddress2.setProvince(CONTROL_MAILING_ADDRESS_2_PROVINCE);
     mailingAddress2.setPostalCode(CONTROL_MAILING_ADDRESS_2_POSTAL_CODE);
-    
+
     MailingAddress mailingAddress3 = new MailingAddress();
     mailingAddress3.setStreet(CONTROL_MAILING_ADDRESS_1_STREET);
     mailingAddress3.setCity(CONTROL_MAILING_ADDRESS_1_CITY);
@@ -93,23 +93,23 @@ public class CompositeCollectionNestedTestCases extends XMLWithJSONMappingTestCa
     mailingAddress4.setProvince(CONTROL_MAILING_ADDRESS_2_PROVINCE);
     mailingAddress4.setPostalCode(CONTROL_MAILING_ADDRESS_2_POSTAL_CODE);
 
-		Employee employee = new Employee();
+        Employee employee = new Employee();
     employee.setID(CONTROL_EMPLOYEE_ID);
-		employee.getEmailAddresses().add(emailAddress1);
-		employee.getEmailAddresses().add(emailAddress2);
-		employee.getMailingAddresses().add(mailingAddress1);
-		employee.getMailingAddresses().add(mailingAddress2);
+        employee.getEmailAddresses().add(emailAddress1);
+        employee.getEmailAddresses().add(emailAddress2);
+        employee.getMailingAddresses().add(mailingAddress1);
+        employee.getMailingAddresses().add(mailingAddress2);
 
-		Employee employee2 = new Employee();
+        Employee employee2 = new Employee();
     employee2.setID(CONTROL_EMPLOYEE2_ID);
-		employee2.getEmailAddresses().add(emailAddress3);
-		employee2.getEmailAddresses().add(emailAddress4);
-		employee2.getMailingAddresses().add(mailingAddress4);
-		employee2.getMailingAddresses().add(mailingAddress3);
+        employee2.getEmailAddresses().add(emailAddress3);
+        employee2.getEmailAddresses().add(emailAddress4);
+        employee2.getMailingAddresses().add(mailingAddress4);
+        employee2.getMailingAddresses().add(mailingAddress3);
 
-		project.getEmployees().add(employee);
-		project.getEmployees().add(employee2);
-		
+        project.getEmployees().add(employee);
+        project.getEmployees().add(employee2);
+
     return project;
   }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,55 +31,55 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration;
 @SuppressWarnings("nls")
 public class ValueResolver extends Resolver {
 
-	/**
-	 * Creates a new <code>ValueResolver</code>.
-	 *
-	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
-	 */
-	public ValueResolver(Resolver parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>ValueResolver</code>.
+     *
+     * @param parent The parent {@link Resolver}, which is never <code>null</code>
+     */
+    public ValueResolver(Resolver parent) {
+        super(parent);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected IType buildType() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected IType buildType() {
 
-		ITypeDeclaration typeDeclaration = getTypeDeclaration();
+        ITypeDeclaration typeDeclaration = getTypeDeclaration();
 
-		if (getTypeHelper().isMapType(typeDeclaration.getType())) {
-			ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
+        if (getTypeHelper().isMapType(typeDeclaration.getType())) {
+            ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
 
-			if (typeParameters.length == 2) {
-				return typeParameters[1].getType();
-			}
-		}
+            if (typeParameters.length == 2) {
+                return typeParameters[1].getType();
+            }
+        }
 
-		return getTypeHelper().objectType();
-	}
+        return getTypeHelper().objectType();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ITypeDeclaration buildTypeDeclaration() {
-		return getParentTypeDeclaration();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ITypeDeclaration buildTypeDeclaration() {
+        return getParentTypeDeclaration();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public IManagedType getManagedType() {
-		return getProvider().getManagedType(getType());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IManagedType getManagedType() {
+        return getProvider().getManagedType(getType());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return "VALUE(" + getParent() + ")";
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "VALUE(" + getParent() + ")";
+    }
 }

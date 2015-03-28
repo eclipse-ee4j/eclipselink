@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.beans;
 
 import java.util.*;
@@ -62,7 +62,7 @@ public class ExpressionPanel extends JPanel {
      * @param layout java.awt.LayoutManager
      * @param isDoubleBuffered boolean
      */
-    public ExpressionPanel(java.awt.LayoutManager layout, 
+    public ExpressionPanel(java.awt.LayoutManager layout,
                            boolean isDoubleBuffered) {
         super(layout, isDoubleBuffered);
     }
@@ -109,14 +109,14 @@ public class ExpressionPanel extends JPanel {
         arguments[0] = value;
         Expression queryKey = builder.get(attribute);
         try {
-            return (Expression)queryKey.getClass().getMethod(method, 
-                                                             types).invoke(queryKey, 
+            return (Expression)queryKey.getClass().getMethod(method,
+                                                             types).invoke(queryKey,
                                                                            arguments);
         } catch (Exception exception) {
             try {
                 types[0] = String.class;
-                return (Expression)queryKey.getClass().getMethod(method, 
-                                                                 types).invoke(queryKey, 
+                return (Expression)queryKey.getClass().getMethod(method,
+                                                                 types).invoke(queryKey,
                                                                                arguments);
             } catch (Exception e) {
                 handleException(e);
@@ -580,16 +580,16 @@ public class ExpressionPanel extends JPanel {
             setBackground(java.awt.SystemColor.control);
             setSize(742, 472);
 
-            java.awt.GridBagConstraints constraintsAttributeLabel = 
+            java.awt.GridBagConstraints constraintsAttributeLabel =
                 new java.awt.GridBagConstraints();
             constraintsAttributeLabel.gridx = 0;
             constraintsAttributeLabel.gridy = 0;
-            constraintsAttributeLabel.anchor = 
+            constraintsAttributeLabel.anchor =
                     java.awt.GridBagConstraints.SOUTHWEST;
             constraintsAttributeLabel.insets = new java.awt.Insets(2, 2, 0, 2);
             add(getAttributeLabel(), constraintsAttributeLabel);
 
-            java.awt.GridBagConstraints constraintsValueText = 
+            java.awt.GridBagConstraints constraintsValueText =
                 new java.awt.GridBagConstraints();
             constraintsValueText.gridx = 2;
             constraintsValueText.gridy = 1;
@@ -599,58 +599,58 @@ public class ExpressionPanel extends JPanel {
             constraintsValueText.insets = new java.awt.Insets(0, 2, 2, 2);
             add(getValueText(), constraintsValueText);
 
-            java.awt.GridBagConstraints constraintsAttributeCombo = 
+            java.awt.GridBagConstraints constraintsAttributeCombo =
                 new java.awt.GridBagConstraints();
             constraintsAttributeCombo.gridx = 0;
             constraintsAttributeCombo.gridy = 1;
-            constraintsAttributeCombo.fill = 
+            constraintsAttributeCombo.fill =
                     java.awt.GridBagConstraints.HORIZONTAL;
             constraintsAttributeCombo.weightx = 0.2;
             constraintsAttributeCombo.insets = new java.awt.Insets(0, 2, 2, 2);
             add(getAttributeCombo(), constraintsAttributeCombo);
 
-            java.awt.GridBagConstraints constraintsOperatorCombo = 
+            java.awt.GridBagConstraints constraintsOperatorCombo =
                 new java.awt.GridBagConstraints();
             constraintsOperatorCombo.gridx = 1;
             constraintsOperatorCombo.gridy = 1;
-            constraintsOperatorCombo.fill = 
+            constraintsOperatorCombo.fill =
                     java.awt.GridBagConstraints.HORIZONTAL;
             constraintsOperatorCombo.weightx = 0.2;
             constraintsOperatorCombo.insets = new java.awt.Insets(0, 2, 2, 2);
             add(getOperatorCombo(), constraintsOperatorCombo);
 
-            java.awt.GridBagConstraints constraintsOperatorLabel = 
+            java.awt.GridBagConstraints constraintsOperatorLabel =
                 new java.awt.GridBagConstraints();
             constraintsOperatorLabel.gridx = 1;
             constraintsOperatorLabel.gridy = 0;
-            constraintsOperatorLabel.anchor = 
+            constraintsOperatorLabel.anchor =
                     java.awt.GridBagConstraints.SOUTHWEST;
             constraintsOperatorLabel.insets = new java.awt.Insets(2, 2, 0, 2);
             add(getOperatorLabel(), constraintsOperatorLabel);
 
-            java.awt.GridBagConstraints constraintsValueLabel = 
+            java.awt.GridBagConstraints constraintsValueLabel =
                 new java.awt.GridBagConstraints();
             constraintsValueLabel.gridx = 2;
             constraintsValueLabel.gridy = 0;
-            constraintsValueLabel.anchor = 
+            constraintsValueLabel.anchor =
                     java.awt.GridBagConstraints.SOUTHWEST;
             constraintsValueLabel.insets = new java.awt.Insets(2, 2, 0, 2);
             add(getValueLabel(), constraintsValueLabel);
 
-            java.awt.GridBagConstraints constraintsExpressionTreeScroll = 
+            java.awt.GridBagConstraints constraintsExpressionTreeScroll =
                 new java.awt.GridBagConstraints();
             constraintsExpressionTreeScroll.gridx = 0;
             constraintsExpressionTreeScroll.gridy = 3;
             constraintsExpressionTreeScroll.gridwidth = 10;
-            constraintsExpressionTreeScroll.fill = 
+            constraintsExpressionTreeScroll.fill =
                     java.awt.GridBagConstraints.BOTH;
             constraintsExpressionTreeScroll.weightx = 1.0;
             constraintsExpressionTreeScroll.weighty = 0.6;
-            constraintsExpressionTreeScroll.insets = 
+            constraintsExpressionTreeScroll.insets =
                     new java.awt.Insets(2, 2, 2, 2);
             add(getExpressionTreeScroll(), constraintsExpressionTreeScroll);
 
-            java.awt.GridBagConstraints constraintsToolBar = 
+            java.awt.GridBagConstraints constraintsToolBar =
                 new java.awt.GridBagConstraints();
             constraintsToolBar.gridx = 0;
             constraintsToolBar.gridy = 2;
@@ -699,10 +699,10 @@ public class ExpressionPanel extends JPanel {
             getAttributeCombo().removeAllItems();
         }
         if (getDescriptor() != null) {
-            for (Enumeration mappingsEnum = 
-                 getDescriptor().getMappings().elements(); 
+            for (Enumeration mappingsEnum =
+                 getDescriptor().getMappings().elements();
                  mappingsEnum.hasMoreElements(); ) {
-                DatabaseMapping mapping = 
+                DatabaseMapping mapping =
                     (DatabaseMapping)mappingsEnum.nextElement();
                 if (mapping.isDirectToFieldMapping()) {
                     getAttributeCombo().addItem(mapping.getAttributeName());
@@ -735,10 +735,10 @@ public class ExpressionPanel extends JPanel {
 
     public void setExpression(Expression expression) {
         this.expression = expression;
-        ExpressionTreeModel model = 
+        ExpressionTreeModel model =
             new ExpressionTreeModel(new ExpressionNode(expression));
         getExpressionTree().setModel(model);
-        for (int index = 0; index < getExpressionTree().getRowCount(); 
+        for (int index = 0; index < getExpressionTree().getRowCount();
              index++) {
             getExpressionTree().expandRow(index);
         }

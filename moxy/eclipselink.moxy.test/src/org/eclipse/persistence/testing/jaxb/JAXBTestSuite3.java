@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,15 +60,15 @@ public class JAXBTestSuite3 extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("JAXB20 Compiler Test Suite3");
-		
+
         suite.addTest(org.eclipse.persistence.testing.jaxb.singleobject.JAXBSingleObjectTestSuite.suite());
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.classloader.DifferentClassLoaderTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.classloader.InnerClassTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.classloader.XmlElementsEnumTestCases.class);
-        
+
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.helper.JAXBHelperTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.any.AnyWithJAXBElementTestCases.class);
-        
+
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.interfaces.InterfaceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.interfaces.choice.InterfaceChoiceTestCases.class);
         suite.addTestSuite(InvalidTransientInterfaceTestCases.class);
@@ -102,14 +102,14 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.XmlSchemaTypeTwoDatesTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.NonNegativeIntegerSchemaTypeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.CharTestCases.class);
-        
+
         suite.addTestSuite(JAXBContextByClassArrayWithIndexTestCases.class);
         suite.addTestSuite(JAXBContextByClassArrayWithRefTestCases.class);
         suite.addTestSuite(JAXBContextByClassArrayWithRefInBindingsTestCases.class);
         suite.addTestSuite(JAXBContextByPackageWithIndexTestCases.class);
         suite.addTestSuite(ObjectFactoryTestCases.class);
         //suite.addTestSuite(MultipleXmlElementRefTestCases.class);
-        
+
         suite.addTestSuite(PropOrderTestCases.class);
         suite.addTestSuite(LazyInitTestCases.class);
         suite.addTestSuite(XmlMixedTestCases.class);
@@ -139,9 +139,9 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(DefaultNSPrefixMapperSimpleTestCases.class);
         suite.addTestSuite(ChildURITestCases.class);
         suite.addTestSuite(URITestCases.class);
-        suite.addTestSuite(PropertyTestCases.class);               
+        suite.addTestSuite(PropertyTestCases.class);
         suite.addTestSuite(UnmappedElementsWarningTestCases.class);
-        
+
         return suite;
     }
 

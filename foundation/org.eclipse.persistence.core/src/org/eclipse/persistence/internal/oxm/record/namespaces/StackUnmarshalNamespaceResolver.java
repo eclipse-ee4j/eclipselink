@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -21,18 +21,18 @@ import java.util.Set;
 import org.eclipse.persistence.internal.oxm.Constants;
 
 /**
- *  This is a complete UnmarshalNamespaceResolver implementation.  This is 
- *  useful when using XML input from sources such as SAX. 
+ *  This is a complete UnmarshalNamespaceResolver implementation.  This is
+ *  useful when using XML input from sources such as SAX.
  */
 public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolver {
-	
+
     private Map<String, List<String>> namespaceMap;
     private Map<String, List<String>> uriToPrefixMap;
 
     public StackUnmarshalNamespaceResolver(){
         namespaceMap = new HashMap<String, List<String>>();
         uriToPrefixMap = new HashMap<String, List<String>>();
-	}
+    }
 
     public String getPrefix(String namespaceURI) {
         List<String> prefixes = uriToPrefixMap.get(namespaceURI);
@@ -62,7 +62,7 @@ public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolv
 
     public void pop(String prefix) {
         List<String> uris = namespaceMap.get(prefix);
-        if(uris != null){        	
+        if(uris != null){
             int size = uris.size();
             if(size > 0) {
                 String uri = uris.remove(size - 1);
@@ -90,19 +90,19 @@ public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolv
     public void push(String prefix, String namespaceURI) {
         List<String> uris = namespaceMap.get(prefix);
         if(uris == null) {
-        	uris = new ArrayList<String>();
+            uris = new ArrayList<String>();
             namespaceMap.put(prefix, uris);
         }
         uris.add(namespaceURI);
         List<String> prefixes = uriToPrefixMap.get(namespaceURI);
         if(prefixes == null) {
-        	prefixes = new ArrayList<String>();
+            prefixes = new ArrayList<String>();
             uriToPrefixMap.put(namespaceURI, prefixes);
         }
         prefixes.add(prefix);
     }
 
-    public Set<String> getPrefixes() {        
+    public Set<String> getPrefixes() {
         return namespaceMap.keySet();
     }
 

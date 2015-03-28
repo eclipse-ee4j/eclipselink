@@ -39,21 +39,21 @@ import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests PL/SQL procedures and functions returning BLOB data.
- * 
+ *
  * Assumptions:
  * <ul>
  * <li>User has privileges to create/drop Oracle DIRECTORY objects</li>
  * <li>Files '3343_bytes.jpg', '32179_bytes.jpg', and '924732_bytes.jpg'
  * have been copied to the temp directory '${java.io.tmpdir}bfile_dir'</li>
  * </ul>
- *  
+ *
  */
 public class BlobTypeTestSuite extends DBWSTestSuite {
 
     // BFILE DRIECTORY
     static final String CREATE_BFILE_DIRECTORY =
         "CREATE OR REPLACE DIRECTORY bfile_dir AS '" + System.getProperty("java.io.tmpdir") + "bfile_dir'";
-    
+
     // BLOB table
     static final String CREATE_BLOBDATA_TABLE =
         "CREATE TABLE BLOBDATA (" +
@@ -91,11 +91,11 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
           "\nDBMS_LOB.CLOSE(src_lob_lg);" +
           "\nCOMMIT;" +
         "\nEND;";
-    
+
     static final String DROP_BLOBDATA_TABLE =
         "DROP TABLE BLOBDATA";
-    
-    // Top-level procedure/function 
+
+    // Top-level procedure/function
     static final String CREATE_PROCEDURE =
         "\nCREATE OR REPLACE PROCEDURE PLEASEGETBLOB(ARG1 IN NUMBER, ARG2 OUT BLOB) AS" +
         "\nBEGIN" +
@@ -112,7 +112,7 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
         "\nEND PLEASERETURNBLOB;";
     static final String DROP_FUNCTION =
         "DROP FUNCTION PLEASERETURNBLOB";
-    
+
     // Package
     static final String CREATE_BLOBDATA_PACKAGE =
         "CREATE OR REPLACE PACKAGE BLOBDATA_PKG AS" +
@@ -235,7 +235,7 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_BFILE_DIRECTORY, ddlDebug);
         }
     }
-    
+
     // Test PL/SQL StoredProcedure
     @Test
     public void testGetSmallBLOB() {
@@ -263,7 +263,7 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
     public void testReturnLargeBLOB() {
         invokeAndAssert(new Invocation("ReturnBLOBForID"), 3);
     }
-    
+
     // Test top-level StoredProcedure
     @Test
     public void testTopLevelGetSmBlob() {
@@ -291,7 +291,7 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
     public void testTopLevelReturnLgBlob() {
         invokeAndAssert(new Invocation("TopLevelFunctionTest"), 3);
     }
-    
+
     /**
      * Invoke the operation and perform assertions on the result.
      */
@@ -300,7 +300,7 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
-        
+
         DataHandler dataHandler = (DataHandler)result;
         ByteArrayInputStream bais;
         try {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -51,31 +51,31 @@ public class DynamicWithStaticAddressNoPropsTestCases extends JAXBWithJSONTestCa
 
   @Override
   protected Object getControlObject() {
-      DynamicEntity employee = ((DynamicJAXBContext)jaxbContext).newDynamicEntity(PACKAGE + "." + "Customer");    
+      DynamicEntity employee = ((DynamicJAXBContext)jaxbContext).newDynamicEntity(PACKAGE + "." + "Customer");
       DynamicEntity phone1 = ((DynamicJAXBContext)jaxbContext).newDynamicEntity(PACKAGE + "." + "PhoneNumber");
       DynamicEntity phone2 = ((DynamicJAXBContext)jaxbContext).newDynamicEntity(PACKAGE + "." + "PhoneNumber");
       phone1.set("value", "555-WORK");
       phone1.set("type", "work");
       phone2.set("value", "555-HOME");
       phone2.set("type", "home");
-      
+
       ArrayList phones = new ArrayList();
       phones.add(phone1);
       phones.add(phone2);
       employee.set("phoneNumber", phones);
-      
+
       Address address = new Address();
       address.city = "Any Town";
       address.street = "123 Some Street";
-      
+
       employee.set("address", address);
       employee.set("name", "Jane Doe");
-      
+
       return employee;
   }
-  
-  
-  
+
+
+
   void setupContext() throws Exception {
       classLoader = Thread.currentThread().getContextClassLoader();
       InputStream iStream = classLoader.getResourceAsStream(NO_PROPS);
@@ -91,28 +91,28 @@ public class DynamicWithStaticAddressNoPropsTestCases extends JAXBWithJSONTestCa
       setProject(xmlContext.getSession(0).getProject());
       jaxbMarshaller = jaxbContext.createMarshaller();
       jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-      
+
       jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "value");
       jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "value");
   }
-  
+
   public void xmlToObjectTest(Object testObject, Object controlObject) throws Exception {
       log("\n**xmlToObjectTest**");
       log("Expected:");
       log(controlObject.toString());
       log("Actual:");
       log(testObject.toString());
-      
+
       compareDynamicEntities(testObject, controlObject);
   }
-  
-  public void jsonToObjectTest(Object testObject) throws Exception {	  
+
+  public void jsonToObjectTest(Object testObject) throws Exception {
       log("\n**xmlToObjectTest**");
       log("Expected:");
       log(getJSONReadControlObject().toString());
       log("Actual:");
       log(testObject.toString());
-      
+
       compareDynamicEntities(testObject, getJSONReadControlObject());
   }
 
@@ -143,6 +143,6 @@ public class DynamicWithStaticAddressNoPropsTestCases extends JAXBWithJSONTestCa
       } else {
           assertEquals(testObject, controlObject);
       }
-      
-  }    
+
+  }
 }

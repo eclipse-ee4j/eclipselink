@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors: 
- *     03/19/2009-2.0  dclarke  - initial API start    
+ * Contributors:
+ *     03/19/2009-2.0  dclarke  - initial API start
  *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
@@ -19,11 +19,11 @@
  *     16/06/2010-2.2  mobrien - 316991: Attribute.getJavaMember() requires reflective getMethod call
  *       when only getMethodName is available on accessor for attributes of Embeddable types.
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
- *     09/08/2010-2.2  mobrien - 322166: If attribute is defined on a lower level MappedSuperclass (and not on a superclass) 
- *       - do not attempt a reflective call on a superclass  
+ *     09/08/2010-2.2  mobrien - 322166: If attribute is defined on a lower level MappedSuperclass (and not on a superclass)
+ *       - do not attempt a reflective call on a superclass
  *       - see design issue #25
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_25:_20090616:_Inherited_parameterized_generics_for_Element_Collections_.28Basic.29
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
@@ -51,19 +51,19 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
 
 /**
  * <p>
- * <b>Purpose</b>: Provides the implementation for the Attribute interface 
+ * <b>Purpose</b>: Provides the implementation for the Attribute interface
  *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  * <p>
  * <b>Description</b>:
- * An attribute of a Java type  
- * 
+ * An attribute of a Java type
+ *
  * @see javax.persistence.metamodel.Attribute
- * 
+ *
  * @since EclipseLink 1.2 - JPA 2.0
  * @param <X> The represented type that contains the attribute
  * @param <T> The type of the represented attribute
- *  
- */ 
+ *
+ */
 public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializable {
 
     /** The ManagedType associated with this attribute **/
@@ -71,10 +71,10 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
 
     /** The databaseMapping associated with this attribute **/
     private DatabaseMapping mapping;
-    
+
     /**
      * INTERNAL:
-     * 
+     *
      * @param managedType
      * @param mapping
      */
@@ -86,7 +86,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
     }
 
     /**
-     *  Return the managed type representing the type in which 
+     *  Return the managed type representing the type in which
      *  the attribute was declared.
      *  @return declaring type
      */
@@ -96,7 +96,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
 
     /**
      * INTERNAL:
-     * Return the Descriptor associated with this attribute 
+     * Return the Descriptor associated with this attribute
      * @return
      */
     protected ClassDescriptor getDescriptor() {
@@ -104,9 +104,9 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
     }
 
     /**
-     * Return the java.lang.reflect.Member for the represented attribute. 
+     * Return the java.lang.reflect.Member for the represented attribute.
      * In the case of property access the get method will be returned
-     * 
+     *
      * @return corresponding java.lang.reflect.Member
      */
     public Member getJavaMember() {
@@ -118,22 +118,22 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
                 // 316991: If the getMethod is not set - use a reflective call via the getMethodName
                 String getMethodName = null;
                 try {
-                    getMethodName = ((MethodAttributeAccessor)mapping.getAttributeAccessor()).getGetMethodName();   
+                    getMethodName = ((MethodAttributeAccessor)mapping.getAttributeAccessor()).getGetMethodName();
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         aMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(
                                 this.getManagedTypeImpl().getJavaType(), getMethodName, null));
                     } else {
                         aMethod = PrivilegedAccessHelper.getDeclaredMethod(
                                 this.getManagedTypeImpl().getJavaType(),getMethodName, null);
-                    } 
+                    }
                     // Exceptions are to be ignored for reflective calls - if the methodName is also null - it will catch here
                 } catch (PrivilegedActionException pae) {
                     //pae.printStackTrace();
                 } catch (NoSuchMethodException nsfe) {
                     //nsfe.printStackTrace();
-                }                
+                }
             }
-            return aMethod;            
+            return aMethod;
         }
 
         // Field level access here
@@ -144,7 +144,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
         // Note: This code does not handle attribute overrides on any entity subclass tree - use descriptor initialization instead
         if(null == aMember) {
             if(this.getManagedTypeImpl().isMappedSuperclass()) {
-                // get inheriting subtype member (without handling @override annotations)                
+                // get inheriting subtype member (without handling @override annotations)
                 AttributeImpl inheritingTypeMember = ((MappedSuperclassTypeImpl)this.getManagedTypeImpl())
                     .getMemberFromInheritingType(mapping.getAttributeName());
                 // 322166: If attribute is defined on this current ManagedType (and not on a superclass) - do not attempt a reflective call on a superclass
@@ -154,7 +154,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
                             .getAttributeAccessor()).getAttributeField();
                 }
             }
-            
+
             if(null == aMember) {
                 // 316991: Handle Embeddable types
                 // If field level access - perform a getDeclaredField call
@@ -168,22 +168,22 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
                         } else {
                             aMember = PrivilegedAccessHelper.getDeclaredField(
                                 this.getManagedTypeImpl().getJavaType(), mapping.getAttributeName(), false);
-                        }                                        
+                        }
                         // Exceptions are to be ignored for reflective calls - if the methodName is also null - it will catch here
                     } catch (PrivilegedActionException pae) {
                         //pae.printStackTrace();
                     } catch (NoSuchFieldException nsfe) {
                         //nsfe.printStackTrace();
-                    }                
+                    }
                 }
             }
         }
-        
+
         // 303063: secondary check for attribute override case - this will show on code coverage
         if(null == aMember) {
             AbstractSessionLog.getLog().log(SessionLog.FINEST, AbstractSessionLog.METAMODEL, "metamodel_attribute_getmember_is_null", this, this.getManagedTypeImpl(), this.getDescriptor());
         }
-        
+
         return aMember;
     }
 
@@ -211,16 +211,16 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
     public DatabaseMapping getMapping() {
         return this.mapping;
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Return the concrete metamodel that this attribute is associated with.
      * @return MetamodelImpl
      */
     protected MetamodelImpl getMetamodel() {
         return this.managedType.getMetamodel();
     }
-    
+
     /**
      * Return the name of the attribute.
      * @return name
@@ -243,7 +243,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
          * MANY_TO_MANY (May originally be a unidirectional ONE_TO_MANY on a mappedSuperclass)
          * ONE_TO_MANY (MANY_TO_MANY internally for unidirectional mappings on MappedSuperclasses)
          * ELEMENT_COLLECTION
-         */ 
+         */
         if (mapping.isAbstractDirectMapping()) {
             return PersistentAttributeType.BASIC;
         }
@@ -277,10 +277,10 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
         // Test coverage required
         return PersistentAttributeType.ELEMENT_COLLECTION;
     }
-    
+
     /**
      *  Is the attribute an association.
-     *  @return whether boolean indicating whether attribute 
+     *  @return whether boolean indicating whether attribute
      *          corresponds to an association
      */
     public boolean isAssociation() {
@@ -291,16 +291,16 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
 
     /**
      *  Is the attribute collection-valued.
-     *  @return boolean indicating whether attribute is 
+     *  @return boolean indicating whether attribute is
      *          collection-valued.<p>
-     *  This will be true for the mappings CollectionMapping, AbstractCompositeCollectionMapping, 
-     *  AbstractCompositeDirectCollectionMapping and their subclasses         
-     *          
+     *  This will be true for the mappings CollectionMapping, AbstractCompositeCollectionMapping,
+     *  AbstractCompositeDirectCollectionMapping and their subclasses
+     *
      */
-    public boolean isCollection() {        
+    public boolean isCollection() {
         return getMapping().isCollectionMapping();
     }
-    
+
     /**
      * INTERNAL:
      * Return whether the attribute is plural or singular

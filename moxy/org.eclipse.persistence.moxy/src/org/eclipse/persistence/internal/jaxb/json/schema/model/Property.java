@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,29 +31,29 @@ public class Property {
 
     @XmlTransient
     private String name;
-    
+
     @XmlElement(name="type")
     private JsonType type;
-    
+
     @XmlVariableNode("name")
     @XmlElementWrapper(name="properties")
     private Map<String, Property> properties;
-    
+
     @XmlElement(name="additionalProperties")
     private Boolean additionalProperties = null;
-    
+
     @XmlElement(name="items")
     private Property item;
-    
+
     @XmlElement(name="enum")
     private List<String> enumeration;
-    
+
     @XmlElement(name="$ref")
     private String ref;
-    
+
     @XmlElement(name="anyOf")
     private Property[] anyOf;
-    
+
     public void setType(JsonType type) {
         this.type = type;
     }
@@ -62,15 +62,15 @@ public class Property {
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
-        
+
     }
 
     public void setProperties(Map<String, Property> properties) {
         this.properties = properties;
-        
+
     }
 
     public Map<String, Property> getProperties() {
@@ -125,7 +125,7 @@ public class Property {
     public Property[] getAnyOf() {
         return anyOf;
     }
-    
+
     public Boolean isAdditionalProperties() {
         return additionalProperties;
     }

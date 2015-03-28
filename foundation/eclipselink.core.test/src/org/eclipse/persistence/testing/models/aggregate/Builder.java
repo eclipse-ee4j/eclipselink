@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     ailitchev - jpa 2.0 element collections support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.aggregate;
 
 import java.io.*;
@@ -50,7 +50,7 @@ public class Builder implements Serializable {
 
         example1.setFirstName("Micheal");
         example1.setLastName("Jordan");
-        
+
         example1.addCustomer(Customer.example1());
         example1.addCustomer(Customer.example2());
 
@@ -62,7 +62,7 @@ public class Builder implements Serializable {
         example1.addVehicle(Car.example3());
         example1.addVehicle(Bicycle.example1());
         example1.addVehicle(Bicycle.example2());
-        
+
         return example1;
     }
 
@@ -146,9 +146,9 @@ public class Builder implements Serializable {
      */
     public static TableDefinition houseTableDefinition() {
         TableDefinition definition = House.tableDefinition();
-        
+
         definition.setName("BUILDER_HOUSE");
-        
+
         for(int i=0; i < definition.getFields().size(); i++) {
             FieldDefinition field = definition.getFields().get(i);
             if(field.getName().equals("AGENT_ID")) {
@@ -164,9 +164,9 @@ public class Builder implements Serializable {
      */
     public static TableDefinition singleHouseTableDefinition() {
         TableDefinition definition = SingleHouse.tableDefinition();
-        
+
         definition.setName("BUILDER_SINGLE_HOUSE");
-        
+
         for(int i=0; i < definition.getFields().size(); i++) {
             FieldDefinition field = definition.getFields().get(i);
             if(field.getName().equals("AGENT_ID")) {
@@ -182,9 +182,9 @@ public class Builder implements Serializable {
      */
     public static TableDefinition sellingPointTableDefinition() {
         TableDefinition definition = SellingPoint.tableDefinition();
-        
+
         definition.setName("BUILDER_SELLING_POINT");
-        
+
         for(int i=0; i < definition.getFields().size(); i++) {
             FieldDefinition field = definition.getFields().get(i);
             if(field.getName().equals("AGENT_ID")) {
@@ -200,9 +200,9 @@ public class Builder implements Serializable {
      */
     public static TableDefinition customerTableDefinition() {
         TableDefinition definition = Customer.tableDefinition();
-        
+
         definition.setName("BUILDER_CUSTOMER");
-        
+
         for(int i=0; i < definition.getFields().size(); i++) {
             FieldDefinition field = definition.getFields().get(i);
             if(field.getName().equals("AGENT_ID")) {
@@ -218,9 +218,9 @@ public class Builder implements Serializable {
      */
     public static TableDefinition dependantTableDefinition() {
         TableDefinition definition = Dependant.tableDefinition();
-        
+
         definition.setName("BUILDER_DEPENDANT");
-        
+
         return definition;
     }
 

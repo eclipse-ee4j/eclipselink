@@ -1,25 +1,25 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/16/2008-1.0M8 Guy Pelletier 
+ *     05/16/2008-1.0M8 Guy Pelletier
  *       - 218084: Implement metadata merging functionality between mapping files
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *      *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
  *     09/27/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import static java.sql.Types.STRUCT;
@@ -43,33 +43,33 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
 /**
  * INTERNAL:
  * Object to hold onto a stored procedure parameter metadata.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
- * - all metadata mapped from XML should be initialized in the initXMLObject 
+ * - all metadata mapped from XML should be initialized in the initXMLObject
  *   method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author Guy Pelletier
  * @since TopLink 11g
  */
 public class StoredProcedureParameterMetadata extends ORMetadata {
     private Boolean m_optional;
     private Integer m_jdbcType;
-    
+
     private MetadataClass m_type;
-    
+
     private String m_direction;
     private String m_mode;
     private String m_jdbcTypeName;
     private String m_name;
     private String m_queryParameter;
     private String m_typeName;
-    
+
     /**
      * INTERNAL:
      * Used for XML loading.
@@ -77,28 +77,28 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public StoredProcedureParameterMetadata() {
         super("<stored-procedure-parameter>");
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.
      */
     public StoredProcedureParameterMetadata(MetadataAnnotation storedProcedureParameter, MetadataAccessor accessor) {
         super(storedProcedureParameter, accessor);
-        
+
         m_direction = storedProcedureParameter.getAttributeString("direction");
         m_mode = storedProcedureParameter.getAttributeString("mode");
         m_name = storedProcedureParameter.getAttributeString("name");
-        m_queryParameter = storedProcedureParameter.getAttributeString("queryParameter"); 
+        m_queryParameter = storedProcedureParameter.getAttributeString("queryParameter");
         m_type = getMetadataClass(storedProcedureParameter.getAttributeClass("type", Void.class));
         m_jdbcType = storedProcedureParameter.getAttributeInteger("jdbcType");
         m_jdbcTypeName = storedProcedureParameter.getAttributeString("jdbcTypeName");
         m_optional = storedProcedureParameter.getAttributeBooleanDefaultFalse("optional");
     }
-    
+
     /**
      * Builds an ObjectRelationalDatabaseField based on a given OracleArrayTypeMetadata
      * instance.
-     * 
+     *
      * @param aType OracleArrayTypeMetadata instance to be used to construct the field
      * @return an ObjectRelationalDatabaseField instance
      */
@@ -114,7 +114,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         }
         return dbFld;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -122,19 +122,19 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof StoredProcedureParameterMetadata) {
             StoredProcedureParameterMetadata parameter = (StoredProcedureParameterMetadata) objectToCompare;
-            
+
             if (! valuesMatch(m_type, parameter.getType())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_direction, parameter.getDirection())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_mode, parameter.getMode())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_jdbcType, parameter.getJdbcType())) {
                 return false;
             }
@@ -142,27 +142,27 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             if (! valuesMatch(m_jdbcTypeName, parameter.getJdbcTypeName())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_name, parameter.getName())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_optional, parameter.getOptional())) {
                 return false;
             }
-            
+
             return valuesMatch(m_queryParameter, parameter.getQueryParameter());
         }
-        
+
         return false;
     }
-    
+
     /**
      * Returns the OracleArrayTypeMetadata instance for a given class name, or null
      * if none exists.
-     * 
+     *
      * @param javaClassName  class name used to look up the OracleArrayTypeMetadata instance
-     * @return  the OracleArrayTypeMetadata instance with javaType matching javaClassName, 
+     * @return  the OracleArrayTypeMetadata instance with javaType matching javaClassName,
      * or null if none exists.
      */
     protected OracleArrayTypeMetadata getArrayTypeMetadata(String javaClassName) {
@@ -181,7 +181,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public String getDirection() {
         return m_direction;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -189,7 +189,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public Integer getJdbcType() {
         return m_jdbcType;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -197,7 +197,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public String getJdbcTypeName() {
         return m_jdbcTypeName;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -205,7 +205,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public String getMode() {
         return m_mode;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -213,7 +213,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public String getName() {
         return m_name;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -221,7 +221,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public Boolean getOptional() {
         return m_optional;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -229,14 +229,14 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public String getQueryParameter() {
         return m_queryParameter;
     }
-    
+
     /**
      * INTERNAL:
      */
     public MetadataClass getType() {
         return m_type;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -244,62 +244,62 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public String getTypeName() {
         return m_typeName;
     }
-    
+
     /**
      * INTERNAL:
      */
     protected boolean hasJdbcType() {
         return m_jdbcType != null && ! m_jdbcType.equals(-1);
     }
-    
+
     /**
      * INTERNAL:
      */
     protected boolean hasJdbcTypeName() {
         return m_jdbcTypeName != null && ! m_jdbcTypeName.equals("");
     }
-    
+
     /**
      * INTERNAL:
      */
     protected boolean hasType() {
         return !m_type.isVoid();
     }
-    
+
     /**
      * INTERNAL:
      */
     protected boolean hasTypeName() {
         return m_typeName != null && ! m_typeName.equals("");
     }
-    
+
     /**
      * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
-    
+
         m_type = initXMLClassName(m_typeName);
     }
-    
+
     /**
      * INTERNAL:
      */
     public boolean isOutParameter() {
         String parameterMode = (m_direction == null) ? m_mode : m_direction;
-        return parameterMode != null && ( parameterMode.equals(JPA_PARAMETER_OUT) 
-                || parameterMode.equals(JPA_PARAMETER_INOUT) 
+        return parameterMode != null && ( parameterMode.equals(JPA_PARAMETER_OUT)
+                || parameterMode.equals(JPA_PARAMETER_INOUT)
                 || parameterMode.equals(JPA_PARAMETER_REF_CURSOR)
                 || parameterMode.equals(Direction.OUT_CURSOR.name()));
     }
-    
+
     /**
      * INTERNAL:
      */
     private boolean process(StoredProcedureCall call, int index) {
         boolean shouldCallByIndex = false;
-        
+
         // Process the procedure parameter name, defaults to the argument field name.
         if (m_name == null || m_name.equals("")) {
             if (m_queryParameter == null || m_queryParameter.equals("")) {
@@ -317,11 +317,11 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         if (m_queryParameter == null || m_queryParameter.equals("")) {
             m_queryParameter = m_name;
         }
-        
+
         if ((m_optional != null) && m_optional) {
             call.addOptionalArgument(m_queryParameter);
         }
-        
+
         if (m_mode == null) {
             if (m_direction == null) {
                 // TODO: Log a defaulting message if parameterMode is null.
@@ -330,20 +330,20 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                 m_mode = m_direction;
             }
         }
-        
+
         return shouldCallByIndex;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void processArgument(StoredProcedureCall call, boolean callByIndex, int index) {
          boolean shouldCallByIndex = process(call, index);
-         
+
          if (! callByIndex) {
              callByIndex = shouldCallByIndex;
-         } 
-        
+         }
+
         if (m_mode.equals(JPA_PARAMETER_IN)) {
             if (hasType()) {
                 if (callByIndex) {
@@ -414,7 +414,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                     call.addNamedOutputArgument(m_name, m_queryParameter);
                 }
             }
-            
+
             //set the project level settings on the argument's database fields
             setDatabaseFieldSettings((DatabaseField)call.getParameters().get(call.getParameters().size() - 1));
         } else if (m_mode.equals(Direction.IN_OUT.name()) || m_mode.equals(JPA_PARAMETER_INOUT)) {
@@ -427,7 +427,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                         if (hasTypeName() && (aType = getArrayTypeMetadata(m_typeName)) != null) {
                             call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type), buildNestedField(aType));
                         } else {
-                        	call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                            call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
                         }
                     } else {
                         call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, getJavaClass(m_type));
@@ -452,13 +452,13 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                     call.addNamedInOutputArgument(m_name, m_queryParameter);
                 }
             }
-            
+
             //set the project level settings on the argument's out database field
             Object[] array = (Object[])call.getParameters().get(call.getParameters().size() - 1);
             if (array[0] == array[1]){
                 array[1] = ((DatabaseField)array[1]).clone();
             }
-            
+
             setDatabaseFieldSettings((DatabaseField) array[1]);
         } else if (m_mode.equals(Direction.OUT_CURSOR.name()) || m_mode.equals(JPA_PARAMETER_REF_CURSOR)) {
             if (callByIndex) {
@@ -468,13 +468,13 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      */
-    public void processResult(StoredFunctionCall call, int index) {        
+    public void processResult(StoredFunctionCall call, int index) {
         process(call, index);
-        
+
         // Process the function parameter
         if (hasType()) {
             if (hasJdbcType() && hasJdbcTypeName()) {
@@ -492,7 +492,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         } else if (hasJdbcType()) {
             call.setResult(m_name, m_jdbcType);
         } else {
-            call.setResult(m_name);                
+            call.setResult(m_name);
         }
     }
 
@@ -507,7 +507,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             field.useUpperCaseForComparisons(true);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -515,7 +515,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public void setDirection(String direction) {
         m_direction = direction;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -523,7 +523,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public void setJdbcType(Integer jdbcType) {
         m_jdbcType = jdbcType;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -531,7 +531,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public void setJdbcTypeName(String jdbcTypeName) {
         m_jdbcTypeName = jdbcTypeName;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -539,7 +539,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public void setMode(String mode) {
         m_mode = mode;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -547,7 +547,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public void setName(String name) {
         m_name = name;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -555,7 +555,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public void setOptional(Boolean optional) {
         m_optional = optional;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -563,14 +563,14 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     public void setQueryParameter(String queryParameter) {
         m_queryParameter = queryParameter;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setType(MetadataClass type) {
         m_type = type;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.

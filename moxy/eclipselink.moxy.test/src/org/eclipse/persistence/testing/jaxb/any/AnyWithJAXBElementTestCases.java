@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,39 +23,39 @@ import junit.textui.TestRunner;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class AnyWithJAXBElementTestCases extends JAXBWithJSONTestCases{
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/any/any.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/any/any.json";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/any/any.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/any/any.json";
 
-	public AnyWithJAXBElementTestCases(String name) throws Exception {
+    public AnyWithJAXBElementTestCases(String name) throws Exception {
             super(name);
-	        setControlDocument(XML_RESOURCE);   
-	        setControlJSON(JSON_RESOURCE);
+            setControlDocument(XML_RESOURCE);
+            setControlJSON(JSON_RESOURCE);
             Class[] classes = new Class[2];
             classes[0] = ObjectFactory.class;
             classes[1] = Root.class;
             setClasses(classes);
-	}
+    }
 
-	protected Object getControlObject() {
-		Root theRoot = new Root();
-		QName qname = new QName("namespace","dateLocalName");
-	
-		XMLGregorianCalendar theCal = null;
-		try {
-			theCal = DatatypeFactory.newInstance().newXMLGregorianCalendar("2002-04-29");
-		} catch (DatatypeConfigurationException e) {
-			e.printStackTrace();
-			fail("An error occurred creating the control object");
-		}
-		JAXBElement jbe = new JAXBElement(qname, XMLGregorianCalendar.class, theCal);
-		
-		theRoot.setAny(jbe);
-		return theRoot;
-	}
+    protected Object getControlObject() {
+        Root theRoot = new Root();
+        QName qname = new QName("namespace","dateLocalName");
 
-	public static void main(String[] args){
-		String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.any.AnyWithJAXBElementTestCases"};
-		TestRunner.main(arguments);
-	}
-	
+        XMLGregorianCalendar theCal = null;
+        try {
+            theCal = DatatypeFactory.newInstance().newXMLGregorianCalendar("2002-04-29");
+        } catch (DatatypeConfigurationException e) {
+            e.printStackTrace();
+            fail("An error occurred creating the control object");
+        }
+        JAXBElement jbe = new JAXBElement(qname, XMLGregorianCalendar.class, theCal);
+
+        theRoot.setAny(jbe);
+        return theRoot;
+    }
+
+    public static void main(String[] args){
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.any.AnyWithJAXBElementTestCases"};
+        TestRunner.main(arguments);
+    }
+
 }

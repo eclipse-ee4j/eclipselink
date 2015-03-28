@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/   
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.spatial.jgeometry;
 
 import java.util.List;
@@ -42,18 +42,18 @@ public abstract class SimpleSpatialTestCase extends TestCase {
     public static final String SPATIAL_SESSIONS_XML_NAME = "org/eclipse/persistence/testing/models/spatial/jgeometry/spatial-sessions.xml";
     public static boolean isJunit = true;
     protected static int DEFAULT_SRID = 0;
-    
+
     protected DatabaseSession session;
 
     public SimpleSpatialTestCase(){
         super();
     }
-    
+
     public SimpleSpatialTestCase(String name){
         super(name);
     }
-    
-    public static DatabaseSession getSession() throws Exception{ 
+
+    public static DatabaseSession getSession() throws Exception{
         DatabaseSession spatialSession = null;
         if (isJunit){
             // look up the session from sessions.xml
@@ -89,12 +89,12 @@ public abstract class SimpleSpatialTestCase extends TestCase {
         }
         return spatialSession;
     }
-   
+
     public void setUp() throws Exception {
         session = getSession();
         session.getIdentityMapAccessor().initializeIdentityMaps();
     }
-    
+
     public void tearDown() throws Exception{
         session = null;
     }
@@ -102,12 +102,12 @@ public abstract class SimpleSpatialTestCase extends TestCase {
     public static void setIsJunit(boolean isJunitValue){
         isJunit = isJunitValue;
     }
-    
+
     public static boolean isJunit(){
         return isJunit;
     }
-    
-    public static void repopulate(DatabaseSession session, boolean replaceTables) throws Exception {       
+
+    public static void repopulate(DatabaseSession session, boolean replaceTables) throws Exception {
         if (replaceTables){
             replaceTables(session);
         }
@@ -135,13 +135,13 @@ public abstract class SimpleSpatialTestCase extends TestCase {
         TableCreator tableCreator = new JGeometryTableCreator();
         tableCreator.replaceTables(session);
         session.executeNonSelectingSQL("INSERT INTO USER_SDO_GEOM_METADATA(TABLE_NAME, COLUMN_NAME, DIMINFO) VALUES('SIMPLE_SPATIAL', 'GEOMETRY'," +
-                " mdsys.sdo_dim_array(mdsys.sdo_dim_element('X', -100, 100, 0.005), mdsys.sdo_dim_element('Y', -100, 100, 0.005)))");     
+                " mdsys.sdo_dim_array(mdsys.sdo_dim_element('X', -100, 100, 0.005), mdsys.sdo_dim_element('Y', -100, 100, 0.005)))");
         session.executeNonSelectingSQL("delete from SIMPLE_SPATIAL where gid between 1000 and 1013");
-        session.executeNonSelectingSQL("CREATE INDEX test_idx on SIMPLE_SPATIAL(geometry) indextype is mdsys.spatial_index parameters ('sdo_level=5 sdo_numtiles=6')");        
+        session.executeNonSelectingSQL("CREATE INDEX test_idx on SIMPLE_SPATIAL(geometry) indextype is mdsys.spatial_index parameters ('sdo_level=5 sdo_numtiles=6')");
     }
-    
+
     public static int countSimpleSpatial(DatabaseSession session) {
-        ReportQuery rq = 
+        ReportQuery rq =
             new ReportQuery(SimpleSpatial.class, new ExpressionBuilder());
         rq.addCount();
         rq.setShouldReturnSingleValue(true);

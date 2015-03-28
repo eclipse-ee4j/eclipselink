@@ -1,23 +1,23 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
@@ -81,46 +81,46 @@ public class WorkEvent extends EventObject {
     /**
      * Constructor.
      *
-     * @param source The object on which the event initially 
+     * @param source The object on which the event initially
      * occurred.
      *
      * @param type The event type.
      *
-     * @param work The <code>Work</code> object on which 
+     * @param work The <code>Work</code> object on which
      * the event occured.
      *
-     * @param exc The exception that occured during 
+     * @param exc The exception that occured during
      * <code>Work</code> processing.
 
     */
     public WorkEvent(Object source, int type, Work work, WorkException exc) {
-	super(source);
-	this.type = type;
-	this.work =  work;
-	this.exc = exc;
+    super(source);
+    this.type = type;
+    this.work =  work;
+    this.exc = exc;
     }
 
     /**
      * Constructor.
      *
-     * @param source The object on which the event initially 
+     * @param source The object on which the event initially
      * occurred.
      *
      * @param type The event type.
      *
-     * @param work The <code>Work</code> object on which 
+     * @param work The <code>Work</code> object on which
      * the event occured.
      *
-     * @param exc The exception that occured during 
+     * @param exc The exception that occured during
      * <code>Work</code> processing.
      *
-     * @param startDuration The start delay duration 
+     * @param startDuration The start delay duration
      * (in milliseconds).
      */
     public WorkEvent(Object source, int type, Work work, WorkException exc,
             long startDuration) {
-	this(source, type, work, exc);
-	this.startDuration = startDuration;
+    this(source, type, work, exc);
+    this.startDuration = startDuration;
     }
 
     /**
@@ -141,18 +141,18 @@ public class WorkEvent extends EventObject {
      * Return the start interval duration.
      *
      * @return the time elapsed (in milliseconds) since the <code>Work</code>
-     * was accepted, until the <code>Work</code> execution started. Note, 
+     * was accepted, until the <code>Work</code> execution started. Note,
      * this does not offer real-time guarantees. It is valid to return -1, if
      * the actual start interval duration is unknown.
      */
     public long getStartDuration() { return this.startDuration; }
 
     /**
-     * Return the <code>WorkException</code>. The actual 
+     * Return the <code>WorkException</code>. The actual
      * <code>WorkException</code> subtype returned depends on the type of the
      * event.
      *
-     * @return a <code>WorkRejectedException</code> or a 
+     * @return a <code>WorkRejectedException</code> or a
      * <code>WorkCompletedException</code>, if any.
      */
     public WorkException getException() { return this.exc; }

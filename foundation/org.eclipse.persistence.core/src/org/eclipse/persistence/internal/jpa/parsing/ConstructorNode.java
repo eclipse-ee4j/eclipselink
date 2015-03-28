@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,14 +23,14 @@ import org.eclipse.persistence.queries.ReportQuery;
  * INTERNAL
  * <p><b>Purpose</b>: Represent a constructor node (NEW)
  * <p><b>Responsibilities</b>:<ul>
- * <li> Generate the correct expression for a constructor 
+ * <li> Generate the correct expression for a constructor
  * </ul>
  */
 public class ConstructorNode extends Node implements AliasableNode {
 
     /** The name of the constructor class. */
     private String className = null;
-    
+
     /** The list of constructor call argument nodes */
     public List constructorItems = new ArrayList();
 
@@ -62,7 +62,7 @@ public class ConstructorNode extends Node implements AliasableNode {
             reportQuery.endAddingToConstructorItem();
         }
     }
-    
+
     /**
      * INTERNAL
      * Validate node and calculate its type.
@@ -87,7 +87,7 @@ public class ConstructorNode extends Node implements AliasableNode {
         }
         setType(type);
     }
-    
+
     /**
      * INTERNAL
      * Is this node a ConstructorNode
@@ -121,7 +121,7 @@ public class ConstructorNode extends Node implements AliasableNode {
     }
 
     /**
-     * Check the specific constructor class and return its class instance. 
+     * Check the specific constructor class and return its class instance.
      * @exception JPQLException if the specified constructor class could not
      * be found.
      */
@@ -167,7 +167,7 @@ public class ConstructorNode extends Node implements AliasableNode {
         repr.append(")");
         return repr.toString();
     }
-    
+
     public boolean isAliasableNode(){
         return true;
     }

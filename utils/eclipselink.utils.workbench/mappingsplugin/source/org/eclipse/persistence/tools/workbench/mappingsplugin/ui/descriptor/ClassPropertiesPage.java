@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -54,265 +54,265 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 
 final class ClassPropertiesPage extends ScrollablePropertiesPage {
-	
-	private PropertyValueModel mwClassHolder;
 
-	ClassPropertiesPage(PropertyValueModel descriptorNodeHolder, WorkbenchContextHolder contextHolder) {
-		super(descriptorNodeHolder, contextHolder);
-	}
+    private PropertyValueModel mwClassHolder;
 
-	protected void initialize(PropertyValueModel descriptorNodeHolder) {
-		super.initialize(descriptorNodeHolder);
-		this.mwClassHolder = buildMWClassHolder();
-	}
-	
-	private PropertyValueModel buildMWClassHolder() {
-		return new PropertyAspectAdapter(getSelectionHolder()) {
-			protected Object getValueFromSubject() {
-				return ((MWDescriptor) this.subject).getMWClass();
-			}
-		};
-	}
-	
-	protected Component buildPage() {
-		GridBagConstraints constraints = new GridBagConstraints();
+    ClassPropertiesPage(PropertyValueModel descriptorNodeHolder, WorkbenchContextHolder contextHolder) {
+        super(descriptorNodeHolder, contextHolder);
+    }
 
-		JPanel panel = new JPanel(new GridBagLayout());
-		
-		// Class Name widgets
-		JComponent classNameWidgets = buildLabeledComponent(
-			"CLASS_NAME_LABEL",
-			buildClassNameTextField()
-		);
+    protected void initialize(PropertyValueModel descriptorNodeHolder) {
+        super.initialize(descriptorNodeHolder);
+        this.mwClassHolder = buildMWClassHolder();
+    }
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 0;
-		constraints.gridwidth  = 2;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.CENTER;
-		constraints.insets     = new Insets(5, 5, 0, 5);
+    private PropertyValueModel buildMWClassHolder() {
+        return new PropertyAspectAdapter(getSelectionHolder()) {
+            protected Object getValueFromSubject() {
+                return ((MWDescriptor) this.subject).getMWClass();
+            }
+        };
+    }
 
-		panel.add(classNameWidgets, constraints);
-		addHelpTopicId(classNameWidgets, helpTopicId() + ".name");
+    protected Component buildPage() {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		// Superclass label
-		JLabel superclassLabel = buildLabel("SUPER_CLASS_LABEL");
+        JPanel panel = new JPanel(new GridBagLayout());
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 1;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 0;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.NONE;
-		constraints.anchor     = GridBagConstraints.LINE_START;
-		constraints.insets     = new Insets(5, 5, 0, 0);
+        // Class Name widgets
+        JComponent classNameWidgets = buildLabeledComponent(
+            "CLASS_NAME_LABEL",
+            buildClassNameTextField()
+        );
 
-		panel.add(superclassLabel, constraints);
-		addAlignLeft(superclassLabel);
+        constraints.gridx      = 0;
+        constraints.gridy      = 0;
+        constraints.gridwidth  = 2;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.CENTER;
+        constraints.insets     = new Insets(5, 5, 0, 5);
 
-		// Superclass chooser
-		ClassChooserPanel superClassChooserPanel = ClassChooserTools.buildPanel(
-						this.buildSuperClassHolder(),
-						this.buildClassRepositoryHolder(),
-						ClassChooserTools.buildDeclarableReferenceFilter(),
-						superclassLabel,
-						this.getWorkbenchContextHolder()
-		);
+        panel.add(classNameWidgets, constraints);
+        addHelpTopicId(classNameWidgets, helpTopicId() + ".name");
 
-		constraints.gridx      = 1;
-		constraints.gridy      = 1;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.CENTER;
-		constraints.insets     = new Insets(5, 5, 0, 5);
+        // Superclass label
+        JLabel superclassLabel = buildLabel("SUPER_CLASS_LABEL");
 
-		panel.add(superClassChooserPanel, constraints);
-		addPaneForAlignment(superClassChooserPanel);
-		addHelpTopicId(superClassChooserPanel, helpTopicId() + ".superclass");
+        constraints.gridx      = 0;
+        constraints.gridy      = 1;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 0;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.NONE;
+        constraints.anchor     = GridBagConstraints.LINE_START;
+        constraints.insets     = new Insets(5, 5, 0, 0);
 
-		// Create the Properties panel
-		JPanel propertiesPanel = buildPropertiesPanel();
+        panel.add(superclassLabel, constraints);
+        addAlignLeft(superclassLabel);
 
-		constraints.gridx			= 0;
-		constraints.gridy			= 2;
-		constraints.gridwidth	= 2;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 1;
-		constraints.fill			= GridBagConstraints.HORIZONTAL;
-		constraints.anchor		= GridBagConstraints.NORTH;
-		constraints.insets		= new Insets(0, 0, 0, 0);
+        // Superclass chooser
+        ClassChooserPanel superClassChooserPanel = ClassChooserTools.buildPanel(
+                        this.buildSuperClassHolder(),
+                        this.buildClassRepositoryHolder(),
+                        ClassChooserTools.buildDeclarableReferenceFilter(),
+                        superclassLabel,
+                        this.getWorkbenchContextHolder()
+        );
 
-		panel.add(propertiesPanel, constraints);
+        constraints.gridx      = 1;
+        constraints.gridy      = 1;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.CENTER;
+        constraints.insets     = new Insets(5, 5, 0, 5);
 
-		addHelpTopicId(panel, helpTopicId());
-		return panel;
-	}
+        panel.add(superClassChooserPanel, constraints);
+        addPaneForAlignment(superClassChooserPanel);
+        addHelpTopicId(superClassChooserPanel, helpTopicId() + ".superclass");
 
-	protected JPanel buildPropertiesPanel() {
-		JPanel propertiesPanel = new JPanel(new GridBagLayout());
-		GridBagConstraints constraints = new GridBagConstraints();
+        // Create the Properties panel
+        JPanel propertiesPanel = buildPropertiesPanel();
 
-		// Access modifiers
-		ClassModifiersPanel modifiersPanel = new ClassModifiersPanel(this.mwClassHolder, getApplicationContext());
-		addHelpTopicId(modifiersPanel, helpTopicId() + ".modifiers");
-		constraints.gridx		= 0;
-		constraints.gridy		= 0;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 0;
-		constraints.weighty		= 0;
-		constraints.fill		= GridBagConstraints.HORIZONTAL;
-		constraints.anchor		= GridBagConstraints.NORTH;
-		constraints.insets		= new Insets(5, 5, 0, 0);
-		propertiesPanel.add(modifiersPanel, constraints);
-	
-		// Interfaces implemented list
-		AddRemoveListPanel interfacesListPanel = buildInterfacesListPanel();
-		addHelpTopicId(interfacesListPanel, helpTopicId() + ".interfaces");
-		constraints.gridx = 1;
-		constraints.gridy = 0;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 3;
-		constraints.weightx = 1;
-		constraints.weighty = 0;
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.insets = new Insets(5, 5, 0, 5);
-		propertiesPanel.add(interfacesListPanel, constraints);
-		
-		return propertiesPanel;
-	}
+        constraints.gridx            = 0;
+        constraints.gridy            = 2;
+        constraints.gridwidth    = 2;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 1;
+        constraints.fill            = GridBagConstraints.HORIZONTAL;
+        constraints.anchor        = GridBagConstraints.NORTH;
+        constraints.insets        = new Insets(0, 0, 0, 0);
 
-	
-	// **************** convenience *******************************************
-	
-	ClassRepositoryHolder buildClassRepositoryHolder() {
-		return new ClassRepositoryHolder() {
-			public MWClassRepository getClassRepository() {
-				return ClassPropertiesPage.this.getMWClass().getRepository();
-			}
-		};
-	}
+        panel.add(propertiesPanel, constraints);
 
-	// increase visibility for inner classes
-	WorkbenchContext workbenchContext() {
-		return this.getWorkbenchContext();
-	}
+        addHelpTopicId(panel, helpTopicId());
+        return panel;
+    }
+
+    protected JPanel buildPropertiesPanel() {
+        JPanel propertiesPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        // Access modifiers
+        ClassModifiersPanel modifiersPanel = new ClassModifiersPanel(this.mwClassHolder, getApplicationContext());
+        addHelpTopicId(modifiersPanel, helpTopicId() + ".modifiers");
+        constraints.gridx        = 0;
+        constraints.gridy        = 0;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 0;
+        constraints.weighty        = 0;
+        constraints.fill        = GridBagConstraints.HORIZONTAL;
+        constraints.anchor        = GridBagConstraints.NORTH;
+        constraints.insets        = new Insets(5, 5, 0, 0);
+        propertiesPanel.add(modifiersPanel, constraints);
+
+        // Interfaces implemented list
+        AddRemoveListPanel interfacesListPanel = buildInterfacesListPanel();
+        addHelpTopicId(interfacesListPanel, helpTopicId() + ".interfaces");
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 3;
+        constraints.weightx = 1;
+        constraints.weighty = 0;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(5, 5, 0, 5);
+        propertiesPanel.add(interfacesListPanel, constraints);
+
+        return propertiesPanel;
+    }
 
 
-	//*********** class name **********
-	
-	private JTextField buildClassNameTextField() {
-		JTextField textField = SwingComponentFactory.buildTextField(buildClassNameTextFieldDocument());
-		textField.setEditable(false);
-		
-		return textField;
-	}
-	
-	private Document buildClassNameTextFieldDocument() {
-		return new DocumentAdapter(buildClassNameHolder(), new RegexpDocument(RegexpDocument.RE_FULLY_QUALIFIED_CLASS_NAME));
-	}
-	
-	private PropertyValueModel buildClassNameHolder() {
-		return new PropertyAspectAdapter(this.mwClassHolder, MWClass.NAME_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return ((MWClass) this.subject).getName();
-			}
-		};
-	}
+    // **************** convenience *******************************************
+
+    ClassRepositoryHolder buildClassRepositoryHolder() {
+        return new ClassRepositoryHolder() {
+            public MWClassRepository getClassRepository() {
+                return ClassPropertiesPage.this.getMWClass().getRepository();
+            }
+        };
+    }
+
+    // increase visibility for inner classes
+    WorkbenchContext workbenchContext() {
+        return this.getWorkbenchContext();
+    }
 
 
-	//*********** super class **********
-	
-	private PropertyValueModel buildSuperClassHolder() {
-		return new PropertyAspectAdapter(this.mwClassHolder, MWClass.SUPERCLASS_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return ((MWClass) this.subject).getSuperclass();
-			}
-			protected void setValueOnSubject(Object value) {
-				((MWClass) this.subject).setSuperclass((MWClass) value);
-			}
-		};
-	}
+    //*********** class name **********
+
+    private JTextField buildClassNameTextField() {
+        JTextField textField = SwingComponentFactory.buildTextField(buildClassNameTextFieldDocument());
+        textField.setEditable(false);
+
+        return textField;
+    }
+
+    private Document buildClassNameTextFieldDocument() {
+        return new DocumentAdapter(buildClassNameHolder(), new RegexpDocument(RegexpDocument.RE_FULLY_QUALIFIED_CLASS_NAME));
+    }
+
+    private PropertyValueModel buildClassNameHolder() {
+        return new PropertyAspectAdapter(this.mwClassHolder, MWClass.NAME_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return ((MWClass) this.subject).getName();
+            }
+        };
+    }
 
 
-	// *********** interfaces ************
-	
-	private AddRemoveListPanel buildInterfacesListPanel() {
-		TitledBorder interfacesImplementedTitle = new TitledBorder(resourceRepository().getString("INTERFACES_IMPLEMENTED_LIST"));
+    //*********** super class **********
 
-		AddRemoveListPanel interfacesListPanel = new AddRemoveListPanel(
-			getApplicationContext(),
-			buildAddRemoveListPanelAdapter(),
-			buildSortedInterfacesListModel(),
-			AddRemovePanel.BOTTOM
-		);
-		interfacesListPanel.setBorder(BorderFactory.createCompoundBorder(interfacesImplementedTitle, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		interfacesListPanel.setCellRenderer(buildInterfacesListCellRenderer());
-		interfacesListPanel.setName(resourceRepository().getString("INTERFACES_LIST_NAME"));
-			
-		return interfacesListPanel;
-	}
-	
-	private ListCellRenderer buildInterfacesListCellRenderer() {
-		return new AdaptableListCellRenderer(new ClassCellRendererAdapter(resourceRepository()));
-	}
-
-	private AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter() {
-		return new AddRemoveListPanel.Adapter() {
-			public void addNewItem(ObjectListSelectionModel listSelectionModel) {
-					MWClass type = ClassChooserTools.promptForType(
-							ClassPropertiesPage.this.getMWClass().getRepository(),
-							ClassChooserTools.buildDeclarableReferenceFilter(),
-							ClassPropertiesPage.this.workbenchContext()
-					);
-					if (type == null) {
-						return;
-					}
-					ClassPropertiesPage.this.getMWClass().addInterface(type);		
-			}
-			
-			public void removeSelectedItems(ObjectListSelectionModel listSelectionModel) {
-				getMWClass().removeInterfaces(CollectionTools.collection(listSelectionModel.getSelectedValues()));
-			}
-		};	
-	}
-
-	
-	private ListValueModel buildSortedInterfacesListModel() {
-		return new SortedListValueModelAdapter(buildItemListValueModelAdapter());
-	}
-	
-	private ItemPropertyListValueModelAdapter buildItemListValueModelAdapter() {
-		return new ItemPropertyListValueModelAdapter(buildInterfacesCollectionValueModel(), MWClass.NAME_PROPERTY);
-	}
-	
-	private CollectionValueModel buildInterfacesCollectionValueModel() {
-		return new CollectionAspectAdapter(this.mwClassHolder, MWClass.INTERFACES_COLLECTION) {
-			protected Iterator getValueFromSubject() {
-				return ((MWClass) this.subject).interfaces();
-			}	
-			protected int sizeFromSubject() {
-				return ((MWClass) this.subject).interfacesSize();
-			}
-		};
-	}
+    private PropertyValueModel buildSuperClassHolder() {
+        return new PropertyAspectAdapter(this.mwClassHolder, MWClass.SUPERCLASS_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return ((MWClass) this.subject).getSuperclass();
+            }
+            protected void setValueOnSubject(Object value) {
+                ((MWClass) this.subject).setSuperclass((MWClass) value);
+            }
+        };
+    }
 
 
-	MWClass getMWClass() {
-		return (MWClass) this.mwClassHolder.getValue();
-	}
-	
-	protected String helpTopicId() {
-		return "descriptor.classInfo.class";
-	}
-	
+    // *********** interfaces ************
+
+    private AddRemoveListPanel buildInterfacesListPanel() {
+        TitledBorder interfacesImplementedTitle = new TitledBorder(resourceRepository().getString("INTERFACES_IMPLEMENTED_LIST"));
+
+        AddRemoveListPanel interfacesListPanel = new AddRemoveListPanel(
+            getApplicationContext(),
+            buildAddRemoveListPanelAdapter(),
+            buildSortedInterfacesListModel(),
+            AddRemovePanel.BOTTOM
+        );
+        interfacesListPanel.setBorder(BorderFactory.createCompoundBorder(interfacesImplementedTitle, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        interfacesListPanel.setCellRenderer(buildInterfacesListCellRenderer());
+        interfacesListPanel.setName(resourceRepository().getString("INTERFACES_LIST_NAME"));
+
+        return interfacesListPanel;
+    }
+
+    private ListCellRenderer buildInterfacesListCellRenderer() {
+        return new AdaptableListCellRenderer(new ClassCellRendererAdapter(resourceRepository()));
+    }
+
+    private AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter() {
+        return new AddRemoveListPanel.Adapter() {
+            public void addNewItem(ObjectListSelectionModel listSelectionModel) {
+                    MWClass type = ClassChooserTools.promptForType(
+                            ClassPropertiesPage.this.getMWClass().getRepository(),
+                            ClassChooserTools.buildDeclarableReferenceFilter(),
+                            ClassPropertiesPage.this.workbenchContext()
+                    );
+                    if (type == null) {
+                        return;
+                    }
+                    ClassPropertiesPage.this.getMWClass().addInterface(type);
+            }
+
+            public void removeSelectedItems(ObjectListSelectionModel listSelectionModel) {
+                getMWClass().removeInterfaces(CollectionTools.collection(listSelectionModel.getSelectedValues()));
+            }
+        };
+    }
+
+
+    private ListValueModel buildSortedInterfacesListModel() {
+        return new SortedListValueModelAdapter(buildItemListValueModelAdapter());
+    }
+
+    private ItemPropertyListValueModelAdapter buildItemListValueModelAdapter() {
+        return new ItemPropertyListValueModelAdapter(buildInterfacesCollectionValueModel(), MWClass.NAME_PROPERTY);
+    }
+
+    private CollectionValueModel buildInterfacesCollectionValueModel() {
+        return new CollectionAspectAdapter(this.mwClassHolder, MWClass.INTERFACES_COLLECTION) {
+            protected Iterator getValueFromSubject() {
+                return ((MWClass) this.subject).interfaces();
+            }
+            protected int sizeFromSubject() {
+                return ((MWClass) this.subject).interfacesSize();
+            }
+        };
+    }
+
+
+    MWClass getMWClass() {
+        return (MWClass) this.mwClassHolder.getValue();
+    }
+
+    protected String helpTopicId() {
+        return "descriptor.classInfo.class";
+    }
+
 }

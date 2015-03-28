@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo;
 
 import commonj.sdo.Property;
@@ -128,16 +128,16 @@ public class SDOProperty implements Property, Serializable {
         this(aContext, aName);
         setType(aType);
     }
-    
+
     public SDOProperty(HelperContext aContext, String aName, SDOType aType, boolean hasMany) {
         this(aContext, aName);
         setType(aType);
         this.hasMany = hasMany;
     }
-    
+
     public SDOProperty(HelperContext aContext, String aUri, String aName, SDOType aType) {
-    	this(aContext, aName, aType);
-    	this.setUri(aUri);
+        this(aContext, aName, aType);
+        this.setUri(aUri);
     }
 
     /**
@@ -261,7 +261,7 @@ public class SDOProperty implements Property, Serializable {
     public void setType(Type type) {
         this.type = (SDOType) type;
         if(isNullable()){
-        	updateType();
+            updateType();
         }
     }
 
@@ -431,12 +431,12 @@ public class SDOProperty implements Property, Serializable {
      * @param propertyName
       */
     private void setIsSetNillablePolicyOnMapping(XMLNillableMapping aMapping, Object propertyName) {
-    	AbstractNullPolicy aNullPolicy = setIsSetPolicyOnMapping(aMapping, propertyName);
-    	// Alter unmarshal policy state
-    	aNullPolicy.setNullRepresentedByEmptyNode(false);
-    	aNullPolicy.setNullRepresentedByXsiNil(true);
-    	// Alter marshal policy state
-    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+        AbstractNullPolicy aNullPolicy = setIsSetPolicyOnMapping(aMapping, propertyName);
+        // Alter unmarshal policy state
+        aNullPolicy.setNullRepresentedByEmptyNode(false);
+        aNullPolicy.setNullRepresentedByXsiNil(true);
+        // Alter marshal policy state
+        aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
     }
 
     /**
@@ -446,12 +446,12 @@ public class SDOProperty implements Property, Serializable {
      * @param propertyName
      */
     private void setIsSetOptionalPolicyOnMapping(XMLNillableMapping aMapping, Object propertyName) {
-    	AbstractNullPolicy aNullPolicy = setIsSetPolicyOnMapping(aMapping, propertyName);
-    	// Alter unmarshal policy state
-    	aNullPolicy.setNullRepresentedByEmptyNode(false);
-    	aNullPolicy.setNullRepresentedByXsiNil(false);
-    	// Alter marshal policy state
-    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);//.ABSENT_NODE);
+        AbstractNullPolicy aNullPolicy = setIsSetPolicyOnMapping(aMapping, propertyName);
+        // Alter unmarshal policy state
+        aNullPolicy.setNullRepresentedByEmptyNode(false);
+        aNullPolicy.setNullRepresentedByXsiNil(false);
+        // Alter marshal policy state
+        aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);//.ABSENT_NODE);
     }
 
     /**
@@ -473,7 +473,7 @@ public class SDOProperty implements Property, Serializable {
         aMapping.setNullPolicy(aNullPolicy);
         return aNullPolicy;
     }
-    
+
     /**
       * INTERNAL:
       */
@@ -547,7 +547,7 @@ public class SDOProperty implements Property, Serializable {
                     MimeTypePolicy mimeTypePolicy = getMimeTypePolicy();
 
                     //Removed check for XSD type since XSD type can't be set via typeHelper.define
-                    if (isActivationAvailable && (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || 
+                    if (isActivationAvailable && (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) ||
                             ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")) ||
                             (getXsdType() != null && getXsdType().equals(XMLConstants.BASE_64_BINARY_QNAME))))) {
                         xmlMapping = buildXMLBinaryDataCollectionMapping(mappingUri, mimeTypePolicy);
@@ -565,7 +565,7 @@ public class SDOProperty implements Property, Serializable {
                     MimeTypePolicy mimeTypePolicy = getMimeTypePolicy();
 
                     //Removed check for XSD type since XSD type can't be set via typeHelper.define
-                    if (isActivationAvailable && (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || 
+                    if (isActivationAvailable && (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) ||
                             ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")) ||
                             (getXsdType() != null && getXsdType().equals(XMLConstants.BASE_64_BINARY_QNAME))))) {
                          xmlMapping = buildXMLBinaryDataMapping(mappingUri, mimeTypePolicy);
@@ -638,7 +638,7 @@ public class SDOProperty implements Property, Serializable {
                 if(indexToAdd == -1) {
                     getContainingType().getXmlDescriptor().getMappings().add(xmlMapping);
                 } else {
-                    //iterate over the mappings and find the correct place to insert this mapping relative to the 
+                    //iterate over the mappings and find the correct place to insert this mapping relative to the
                     //indecies of the others.
                     SDOType containingType = getContainingType();
                     Vector<DatabaseMapping> mappings = containingType.getXmlDescriptor().getMappings();
@@ -668,7 +668,7 @@ public class SDOProperty implements Property, Serializable {
         mapping.setXPath(xpath);
 
         ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
-        
+
         if (shouldAddInstanceClassConverter()) {
             InstanceClassConverter converter = new InstanceClassConverter();
             converter.setCustomClass(getType().getInstanceClass());
@@ -676,7 +676,7 @@ public class SDOProperty implements Property, Serializable {
         }
 
         // Set the null policy on the mapping
-        // Use NullPolicy or IsSetNullPolicy 
+        // Use NullPolicy or IsSetNullPolicy
         if (nullable) { // elements only
             setIsSetNillablePolicyOnMapping(mapping, propertyName);
         } else {
@@ -727,19 +727,19 @@ public class SDOProperty implements Property, Serializable {
 
         mapping.setAttributeTransformer(transformer);
         mapping.addFieldTransformer(xpath, transformer);
-        
+
         NamespaceResolver nsr = new NamespaceResolver();
         nsr.put(javax.xml.XMLConstants.XMLNS_ATTRIBUTE, javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
 
         XMLField field = new XMLField();
         field.setNamespaceResolver(nsr);
         field.setXPath(xpathMinusText + "/@" + javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":" + QNameTransformer.QNAME_NAMESPACE_PREFIX);
-        
+
         mapping.addFieldTransformer(field, new NamespaceURITransformer());
-        
+
         return mapping;
     }
-    
+
     private DatabaseMapping buildXMLDirectMapping(String mappingUri) {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setNullValueMarshalled(true);
@@ -749,7 +749,7 @@ public class SDOProperty implements Property, Serializable {
 
         if (getXsdType() != null) {
             ((XMLField)mapping.getField()).setSchemaType(getXsdType());
-        } 
+        }
 
         if (getType().getInstanceClass() != null) {
             if (shouldAddInstanceClassConverter()) {
@@ -760,17 +760,17 @@ public class SDOProperty implements Property, Serializable {
         }
 
         // Set the null policy on the mapping
-        // Use NullPolicy or IsSetNullPolicy 
+        // Use NullPolicy or IsSetNullPolicy
         if (nullable) { // elements only
             setIsSetNillablePolicyOnMapping(mapping, propertyName);
         } else {
-      		// elements or attributes
+              // elements or attributes
             setIsSetOptionalPolicyOnMapping(mapping, propertyName);
         }
         if(this.isDefaultSet()) {
             mapping.setNullValue(getDefault());
             mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
-            
+
         } else {
             mapping.getNullPolicy().setNullRepresentedByEmptyNode(true);
         }
@@ -787,12 +787,12 @@ public class SDOProperty implements Property, Serializable {
 
         if (getXsdType() != null) {
             ((XMLField)mapping.getField()).setSchemaType(getXsdType());
-        } 
+        }
 
         if (getType().equals(SDOConstants.SDO_STRINGS)) {
             mapping.setUsesSingleNode(true);
         }
-        
+
         if (getType().getInstanceClass() != null) {
             if (shouldAddInstanceClassConverter()) {
                 InstanceClassConverter converter = new InstanceClassConverter();
@@ -818,12 +818,12 @@ public class SDOProperty implements Property, Serializable {
             mapping.setReferenceClassName(getType().getImplClassName());
             mapping.setReferenceClass(getType().getImplClass());
         }else{
-            if(getXsdType()!= null){               
+            if(getXsdType()!= null){
                 ((XMLField)mapping.getField()).setLeafElementType(getXsdType());
             }
         }
         mapping.useCollectionClass(ListWrapper.class);
-        
+
         // Set null policy on mapping for xsi:nil support:
         // - aNullPolicy.setNullRepresentedByEmptyNode(false);
         // - aNullPolicy.setNullRepresentedByXsiNil(true);
@@ -844,7 +844,7 @@ public class SDOProperty implements Property, Serializable {
             mapping.setReferenceClassName(getType().getImplClassName());
             mapping.setReferenceClass(getType().getImplClass());
         }else{
-            if(getXsdType()!= null){               
+            if(getXsdType()!= null){
               ((XMLField)mapping.getField()).setLeafElementType(getXsdType());
             }
         }
@@ -853,7 +853,7 @@ public class SDOProperty implements Property, Serializable {
         if (nullable) {
             setIsSetNillablePolicyOnMapping(mapping, propertyName);
         } else {
-      		// elements or attributes
+              // elements or attributes
             setIsSetOptionalPolicyOnMapping(mapping, propertyName);
         }
         return mapping;
@@ -882,7 +882,7 @@ public class SDOProperty implements Property, Serializable {
         }
         return mapping;
     }
-    
+
     private DatabaseMapping buildXMLChoiceObjectMapping(String mappingUri) {
         XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
         mapping.setAttributeName(getName());
@@ -899,7 +899,7 @@ public class SDOProperty implements Property, Serializable {
         }
         return mapping;
     }
-    
+
     private DatabaseMapping buildXMLChoiceCollectionMapping(String mappingUri) {
         XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
         mapping.setAttributeName(getName());
@@ -1006,7 +1006,7 @@ public class SDOProperty implements Property, Serializable {
         SDOType containingType = this.getContainingType();
         return getQualifiedXPath(uri, simple, containingType);
     }
-    
+
     private String getQualifiedXPath(String uri, boolean simple, SDOType containingType) {
         if (valueProperty) {
             return "text()";
@@ -1063,13 +1063,13 @@ public class SDOProperty implements Property, Serializable {
             if(null != isElement) {
                 propertyValues.put(SDOConstants.XMLELEMENT_PROPERTY, isElement);
             }
-            
+
         }
         return propertyValues;
     }
 
     public void setInstanceProperty(Property property, Object value) {
-        if(SDOConstants.XMLELEMENT_PROPERTY.equals(property)) { 
+        if(SDOConstants.XMLELEMENT_PROPERTY.equals(property)) {
             isElement = (Boolean) value;
             if(null != propertyValues) {
                 propertyValues.put(SDOConstants.XMLELEMENT_PROPERTY, isElement);
@@ -1111,7 +1111,7 @@ public class SDOProperty implements Property, Serializable {
         }
         return indexInType;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -1128,7 +1128,7 @@ public class SDOProperty implements Property, Serializable {
     public void setNullable(boolean nullable) {
         this.nullable = nullable;
         if(nullable && getType() != null){
-        	updateType();
+            updateType();
         }
     }
 
@@ -1249,49 +1249,49 @@ public class SDOProperty implements Property, Serializable {
     public String getUri() {
         return uri;
     }
-    
+
     public XMLFragmentMapping buildXMLFragmentMapping(String uri) {
         XMLFragmentMapping mapping = new XMLFragmentMapping();
         mapping.setAttributeName(getName());
         mapping.setXPath(getQualifiedXPath(uri, false));
         mapping.setAttributeAccessor(new SDOFragmentMappingAttributeAccessor(this, aHelperContext));
-        
+
         return mapping;
     }
-    
+
     public XMLFragmentCollectionMapping buildXMLFragmentCollectionMapping(String mappingUri) {
         XMLFragmentCollectionMapping mapping = new XMLFragmentCollectionMapping();
         mapping.setAttributeName(getName());
         mapping.setXPath(getQualifiedXPath(mappingUri, false));
         mapping.setAttributeAccessor(new SDOFragmentMappingAttributeAccessor(this, aHelperContext));
-        
+
         return mapping;
     }
-    
+
     public boolean isSubstitutable() {
         return this.isSubstitutable;
     }
-    
+
     public void setSubstitutable(boolean substitutable) {
         this.isSubstitutable = substitutable;
     }
-    
+
     public Collection<SDOProperty> getSubstitutableElements() {
         return this.substitutableElements;
     }
-    
+
     public void setSubstitutableElements(Collection<SDOProperty> elements) {
         this.substitutableElements = elements;
     }
-    
+
     public void setFinalized(boolean isFinalized){
       finalized = isFinalized;
     }
-    
+
     public boolean isFinalized(){
       return finalized;
     }
-    
+
     /**
      * Return a unique hashCode (as an int) for this instance.
      */
@@ -1306,11 +1306,11 @@ public class SDOProperty implements Property, Serializable {
      * Indicate if a given SDOProperty instance is equal to this instance.
      * Equality is determined based on name, uri, and type.  In addition,
      * checking will be done to ensure that both properties are to be
-     * serialized in the same manner, ie. both to XML element or both to 
+     * serialized in the same manner, ie. both to XML element or both to
      * XML attribute.
-     * 
+     *
      * @param obj Object to compare to this SDOProperty instance
-     * @return true if obj is equal to this SDOProperty instance, false if not 
+     * @return true if obj is equal to this SDOProperty instance, false if not
      */
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -1360,7 +1360,7 @@ public class SDOProperty implements Property, Serializable {
         return true;
     }
 
-    private void updateType(){    	
+    private void updateType(){
         if (type == SDOConstants.SDO_BOOLEAN) {
             setType(SDOConstants.SDO_BOOLEANOBJECT);
         } else if (type == SDOConstants.SDO_BYTE) {
@@ -1377,6 +1377,6 @@ public class SDOProperty implements Property, Serializable {
             setType(SDOConstants.SDO_LONGOBJECT);
         } else if (type == SDOConstants.SDO_SHORT) {
             setType(SDOConstants.SDO_SHORTOBJECT);
-        } 
-    }   	   
+        }
+    }
 }

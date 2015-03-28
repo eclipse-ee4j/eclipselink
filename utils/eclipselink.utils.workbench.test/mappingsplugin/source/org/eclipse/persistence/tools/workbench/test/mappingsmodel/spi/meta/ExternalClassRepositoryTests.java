@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -33,251 +33,251 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationI
 
 
 public abstract class ExternalClassRepositoryTests extends TestCase {
-	protected ExternalClassRepositoryFactory factory;
+    protected ExternalClassRepositoryFactory factory;
 
 
-	protected ExternalClassRepositoryTests(String name) {
-		super(name);
-	}
-	
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.factory = this.buildFactory();
-	}
+    protected ExternalClassRepositoryTests(String name) {
+        super(name);
+    }
 
-	protected abstract ExternalClassRepositoryFactory buildFactory();
+    protected void setUp() throws Exception {
+        super.setUp();
+        this.factory = this.buildFactory();
+    }
 
-	protected abstract ExternalClassRepository systemClasspathRepository() throws Exception;
+    protected abstract ExternalClassRepositoryFactory buildFactory();
 
-	protected abstract ExternalClassRepository buildExternalClassRepository(File[] classpath);
+    protected abstract ExternalClassRepository systemClasspathRepository() throws Exception;
 
-	protected abstract ExternalClassRepository systemRepositoryFor(ExternalClassRepository repository) throws Exception;
-	
-	protected void tearDown() throws Exception {
-		TestTools.clear(this);
-		super.tearDown();
-	}
+    protected abstract ExternalClassRepository buildExternalClassRepository(File[] classpath);
 
-//	public void testPerformance() throws Exception {
-//		ExternalClassRepository repository = this.systemClasspathRepository();
-//	
-//		long start, finish;
-//		start = new Date().getTime();
-//		repository.getExternalClassDescriptions();
-//		finish = new Date().getTime();
-//		long actual = finish - start;
-//		// should take more than half a second; or we missed something...
-//		long expected = 500;
-//		assertTrue("Probably too fast - expected: " + expected + " actual: " + actual, actual > expected);
-//		// should take less than 8 seconds
-//		expected = 8000;
-//		assertTrue("Possibly too slow - expected: " + expected + " actual: " + actual, actual < expected);
-//	
-//		start = new Date().getTime();
-//		repository.getExternalClassDescriptions();
-//		finish = new Date().getTime();
-//		actual = finish - start;
-//		// now it should take less than 0.005 seconds
-//		expected = 50;
-//		assertTrue("Possibly too slow - expected: " + expected + " actual: " + actual, actual < expected);
-//	}
+    protected abstract ExternalClassRepository systemRepositoryFor(ExternalClassRepository repository) throws Exception;
+
+    protected void tearDown() throws Exception {
+        TestTools.clear(this);
+        super.tearDown();
+    }
+
+//    public void testPerformance() throws Exception {
+//        ExternalClassRepository repository = this.systemClasspathRepository();
 //
-	public void testSystemClasspath() throws Exception {
-		ExternalClassRepository repository = this.systemClasspathRepository();
-		ExternalClassDescription[] externalClassDescriptions = repository.getClassDescriptions();
+//        long start, finish;
+//        start = new Date().getTime();
+//        repository.getExternalClassDescriptions();
+//        finish = new Date().getTime();
+//        long actual = finish - start;
+//        // should take more than half a second; or we missed something...
+//        long expected = 500;
+//        assertTrue("Probably too fast - expected: " + expected + " actual: " + actual, actual > expected);
+//        // should take less than 8 seconds
+//        expected = 8000;
+//        assertTrue("Possibly too slow - expected: " + expected + " actual: " + actual, actual < expected);
+//
+//        start = new Date().getTime();
+//        repository.getExternalClassDescriptions();
+//        finish = new Date().getTime();
+//        actual = finish - start;
+//        // now it should take less than 0.005 seconds
+//        expected = 50;
+//        assertTrue("Possibly too slow - expected: " + expected + " actual: " + actual, actual < expected);
+//    }
+//
+    public void testSystemClasspath() throws Exception {
+        ExternalClassRepository repository = this.systemClasspathRepository();
+        ExternalClassDescription[] externalClassDescriptions = repository.getClassDescriptions();
 
-		// jdk 1.4.2 has over 9000 classes in rt.jar...	
-		assertTrue("missing system entries", externalClassDescriptions.length > 5000);
-	
-		this.verifyClass(externalClassDescriptions, int.class);
-		this.verifyClass(externalClassDescriptions, void.class);
-		this.verifyClass(externalClassDescriptions, java.lang.Object.class);
-		this.verifyClass(externalClassDescriptions, java.lang.Class.class);
-	}
+        // jdk 1.4.2 has over 9000 classes in rt.jar...
+        assertTrue("missing system entries", externalClassDescriptions.length > 5000);
 
-	public void testTypeIdentity() throws Exception {
-		ExternalClassRepository repository = this.systemClasspathRepository();
+        this.verifyClass(externalClassDescriptions, int.class);
+        this.verifyClass(externalClassDescriptions, void.class);
+        this.verifyClass(externalClassDescriptions, java.lang.Object.class);
+        this.verifyClass(externalClassDescriptions, java.lang.Class.class);
+    }
 
-		ExternalClassDescription type1 = this.descriptionFor(repository.getClassDescriptions(), java.lang.String.class);
-		ExternalClassDescription type2 = this.descriptionFor(repository.getClassDescriptions(), java.lang.String.class);
+    public void testTypeIdentity() throws Exception {
+        ExternalClassRepository repository = this.systemClasspathRepository();
 
-		assertTrue("bungled type identity", type1 == type2);
-	}
+        ExternalClassDescription type1 = this.descriptionFor(repository.getClassDescriptions(), java.lang.String.class);
+        ExternalClassDescription type2 = this.descriptionFor(repository.getClassDescriptions(), java.lang.String.class);
 
-	public void testSystemArrayTypes() throws Exception {
-		ExternalClassRepository repository = this.systemClasspathRepository();
-		ExternalClassDescription[] externalClassDescriptions = repository.getClassDescriptions();
-		ExternalClassRepository systemRepository = this.systemRepositoryFor(repository);
+        assertTrue("bungled type identity", type1 == type2);
+    }
 
-		Class arrayType = (new byte[0]).getClass();
+    public void testSystemArrayTypes() throws Exception {
+        ExternalClassRepository repository = this.systemClasspathRepository();
+        ExternalClassDescription[] externalClassDescriptions = repository.getClassDescriptions();
+        ExternalClassRepository systemRepository = this.systemRepositoryFor(repository);
 
-		// array types should not be returned directly
-		this.verifyInvalidType(externalClassDescriptions, arrayType);
-		// the array type comes from the "system" repository
-		Map arrayClassDescriptions = (Map) ClassTools.getFieldValue(systemRepository, "arrayClassDescriptions");
-		assertTrue("internal attribute test", arrayClassDescriptions.isEmpty());
-		arrayClassDescriptions = (Map) ClassTools.getFieldValue(repository, "arrayClassDescriptions");
-		assertTrue("internal attribute test", arrayClassDescriptions.isEmpty());
+        Class arrayType = (new byte[0]).getClass();
 
-		ExternalClass exClass = this.descriptionFor(externalClassDescriptions, java.lang.String.class).getExternalClass();
-		ExternalMethod exMethod = SPIMetaTestTools.zeroArgumentMethodNamed(exClass, "getBytes");
-		ExternalClassDescription type1 = exMethod.getReturnType();
+        // array types should not be returned directly
+        this.verifyInvalidType(externalClassDescriptions, arrayType);
+        // the array type comes from the "system" repository
+        Map arrayClassDescriptions = (Map) ClassTools.getFieldValue(systemRepository, "arrayClassDescriptions");
+        assertTrue("internal attribute test", arrayClassDescriptions.isEmpty());
+        arrayClassDescriptions = (Map) ClassTools.getFieldValue(repository, "arrayClassDescriptions");
+        assertTrue("internal attribute test", arrayClassDescriptions.isEmpty());
 
-		exMethod = SPIMetaTestTools.oneArgumentMethodNamed(exClass, "getBytes", "java.lang.String");
-		ExternalClassDescription type2 = exMethod.getReturnType();
+        ExternalClass exClass = this.descriptionFor(externalClassDescriptions, java.lang.String.class).getExternalClass();
+        ExternalMethod exMethod = SPIMetaTestTools.zeroArgumentMethodNamed(exClass, "getBytes");
+        ExternalClassDescription type1 = exMethod.getReturnType();
 
-		assertTrue("bungled array type identity", type1 == type2);
+        exMethod = SPIMetaTestTools.oneArgumentMethodNamed(exClass, "getBytes", "java.lang.String");
+        ExternalClassDescription type2 = exMethod.getReturnType();
 
-		this.verifyInvalidType(externalClassDescriptions, arrayType);
-		// the array type comes from the "system" repository
-		arrayClassDescriptions = (Map) ClassTools.getFieldValue(systemRepository, "arrayClassDescriptions");
-		assertTrue("internal attribute test", ! arrayClassDescriptions.isEmpty());
-		this.verifyArrayTypesContains(arrayClassDescriptions, arrayType);
-		// hacking... maybe test should be moved to subclasses...
-		if (systemRepository != repository) {
-			arrayClassDescriptions = (Map) ClassTools.getFieldValue(repository, "arrayClassDescriptions");
-			assertTrue("internal attribute test", arrayClassDescriptions.isEmpty());
-		}
-	}
+        assertTrue("bungled array type identity", type1 == type2);
 
-	public void testProjectArrayTypes() throws Exception {
-		// add an array instance variable to the source code
-		final String testArrayName = "testArray";
-		final Class testArrayType = (new Object[0]).getClass();
-		ClasspathTestTool tool = new ClasspathTestTool(ClassTools.shortClassNameForObject(this) + "." + this.getName()) {
-			protected SourceExtender buildSourceExtender() {
-				return new SourceExtender() {
-					public void extendSourceOn(IndentingPrintWriter pw, int version) {
-						pw.print("public " + testArrayType.getComponentType().getName() + "[] " + testArrayName + ";");
-					}
-				};
-			}
+        this.verifyInvalidType(externalClassDescriptions, arrayType);
+        // the array type comes from the "system" repository
+        arrayClassDescriptions = (Map) ClassTools.getFieldValue(systemRepository, "arrayClassDescriptions");
+        assertTrue("internal attribute test", ! arrayClassDescriptions.isEmpty());
+        this.verifyArrayTypesContains(arrayClassDescriptions, arrayType);
+        // hacking... maybe test should be moved to subclasses...
+        if (systemRepository != repository) {
+            arrayClassDescriptions = (Map) ClassTools.getFieldValue(repository, "arrayClassDescriptions");
+            assertTrue("internal attribute test", arrayClassDescriptions.isEmpty());
+        }
+    }
 
-		};
-		tool.setUp();
+    public void testProjectArrayTypes() throws Exception {
+        // add an array instance variable to the source code
+        final String testArrayName = "testArray";
+        final Class testArrayType = (new Object[0]).getClass();
+        ClasspathTestTool tool = new ClasspathTestTool(ClassTools.shortClassNameForObject(this) + "." + this.getName()) {
+            protected SourceExtender buildSourceExtender() {
+                return new SourceExtender() {
+                    public void extendSourceOn(IndentingPrintWriter pw, int version) {
+                        pw.print("public " + testArrayType.getComponentType().getName() + "[] " + testArrayName + ";");
+                    }
+                };
+            }
 
-		ExternalClassRepository repository = this.buildExternalClassRepository(new File[] {tool.subdir1});
-		ExternalClassDescription[] externalClassDescriptions = repository.getClassDescriptions();
-		ExternalClassRepository systemRepository = this.systemRepositoryFor(repository);
+        };
+        tool.setUp();
 
-		// array types should not be returned directly
-		this.verifyInvalidType(externalClassDescriptions, testArrayType);
-		// the array comes from the "project" repository
-		Map arrayClassDescriptions = (Map) ClassTools.getFieldValue(systemRepository, "arrayClassDescriptions");
-		assertTrue("internal attribute test", arrayClassDescriptions.isEmpty());
-		arrayClassDescriptions = (Map) ClassTools.getFieldValue(repository, "arrayClassDescriptions");
-		assertTrue("internal attribute test", arrayClassDescriptions.isEmpty());
+        ExternalClassRepository repository = this.buildExternalClassRepository(new File[] {tool.subdir1});
+        ExternalClassDescription[] externalClassDescriptions = repository.getClassDescriptions();
+        ExternalClassRepository systemRepository = this.systemRepositoryFor(repository);
 
-		ExternalClass exClass = this.descriptionForClassNamed(externalClassDescriptions, ClasspathTestTool.TEST_CLASS_NAME).getExternalClass();
-		ExternalField exField = SPIMetaTestTools.fieldNamed(exClass, testArrayName);
-		ExternalClassDescription type1 = exField.getType();
+        // array types should not be returned directly
+        this.verifyInvalidType(externalClassDescriptions, testArrayType);
+        // the array comes from the "project" repository
+        Map arrayClassDescriptions = (Map) ClassTools.getFieldValue(systemRepository, "arrayClassDescriptions");
+        assertTrue("internal attribute test", arrayClassDescriptions.isEmpty());
+        arrayClassDescriptions = (Map) ClassTools.getFieldValue(repository, "arrayClassDescriptions");
+        assertTrue("internal attribute test", arrayClassDescriptions.isEmpty());
 
-		exField = SPIMetaTestTools.fieldNamed(exClass, testArrayName);
-		ExternalClassDescription type2 = exField.getType();
+        ExternalClass exClass = this.descriptionForClassNamed(externalClassDescriptions, ClasspathTestTool.TEST_CLASS_NAME).getExternalClass();
+        ExternalField exField = SPIMetaTestTools.fieldNamed(exClass, testArrayName);
+        ExternalClassDescription type1 = exField.getType();
 
-		assertTrue("bungled array type identity", type1 == type2);
+        exField = SPIMetaTestTools.fieldNamed(exClass, testArrayName);
+        ExternalClassDescription type2 = exField.getType();
 
-		this.verifyInvalidType(externalClassDescriptions, testArrayType);
-		// hacking... maybe test should be moved to subclasses...
-		if (systemRepository != repository) {
-			// the array comes from the "project" repository
-			arrayClassDescriptions = (Map) ClassTools.getFieldValue(systemRepository, "arrayClassDescriptions");
-			assertTrue("internal attribute test", arrayClassDescriptions.isEmpty());
-		}
-		arrayClassDescriptions = (Map) ClassTools.getFieldValue(repository, "arrayClassDescriptions");
-		assertTrue("internal attribute test", ! arrayClassDescriptions.isEmpty());
-		this.verifyArrayTypesContains(arrayClassDescriptions, testArrayType);
+        assertTrue("bungled array type identity", type1 == type2);
 
-		tool.tearDown();
-	}
+        this.verifyInvalidType(externalClassDescriptions, testArrayType);
+        // hacking... maybe test should be moved to subclasses...
+        if (systemRepository != repository) {
+            // the array comes from the "project" repository
+            arrayClassDescriptions = (Map) ClassTools.getFieldValue(systemRepository, "arrayClassDescriptions");
+            assertTrue("internal attribute test", arrayClassDescriptions.isEmpty());
+        }
+        arrayClassDescriptions = (Map) ClassTools.getFieldValue(repository, "arrayClassDescriptions");
+        assertTrue("internal attribute test", ! arrayClassDescriptions.isEmpty());
+        this.verifyArrayTypesContains(arrayClassDescriptions, testArrayType);
 
-	public void testProjectClasspathOrder() throws Exception {
-		ClasspathTestTool tool = new ClasspathTestTool(ClassTools.shortClassNameForObject(this) + "." + this.getName());
-		tool.setUp();
+        tool.tearDown();
+    }
 
-		ExternalClassRepository repository = this.buildExternalClassRepository(new File[] {tool.subdir1, tool.subdir2});
+    public void testProjectClasspathOrder() throws Exception {
+        ClasspathTestTool tool = new ClasspathTestTool(ClassTools.shortClassNameForObject(this) + "." + this.getName());
+        tool.setUp();
 
-		ExternalClass exClass = repository.getClassDescription(ClasspathTestTool.TEST_CLASS_NAME).getExternalClass();
-		ExternalField exField = SPIMetaTestTools.fieldNamed(exClass, ClasspathTestTool.VERSION_MEMBER_PREFIX + "1");
-		assertNotNull("wrong class loaded", exField);
+        ExternalClassRepository repository = this.buildExternalClassRepository(new File[] {tool.subdir1, tool.subdir2});
 
-		// now, swap the subdirs
-		repository = this.buildExternalClassRepository(new File[] {tool.subdir2, tool.subdir1});
+        ExternalClass exClass = repository.getClassDescription(ClasspathTestTool.TEST_CLASS_NAME).getExternalClass();
+        ExternalField exField = SPIMetaTestTools.fieldNamed(exClass, ClasspathTestTool.VERSION_MEMBER_PREFIX + "1");
+        assertNotNull("wrong class loaded", exField);
 
-		exClass = repository.getClassDescription(ClasspathTestTool.TEST_CLASS_NAME).getExternalClass();
-		exField = SPIMetaTestTools.fieldNamed(exClass, ClasspathTestTool.VERSION_MEMBER_PREFIX + "2");
-		assertNotNull("wrong class loaded", exField);
+        // now, swap the subdirs
+        repository = this.buildExternalClassRepository(new File[] {tool.subdir2, tool.subdir1});
 
-		tool.tearDown();
-	}
+        exClass = repository.getClassDescription(ClasspathTestTool.TEST_CLASS_NAME).getExternalClass();
+        exField = SPIMetaTestTools.fieldNamed(exClass, ClasspathTestTool.VERSION_MEMBER_PREFIX + "2");
+        assertNotNull("wrong class loaded", exField);
 
-	public void testProjectClasspath() throws Exception {
-		ClasspathTestTool tool = new ClasspathTestTool(ClassTools.shortClassNameForObject(this) + "." + this.getName());
-		tool.setUp();
+        tool.tearDown();
+    }
 
-		this.verifyProjectClasspathEntry(tool.subdir1, ClasspathTestTool.TEST_CLASS_NAME);
-		this.verifyProjectClasspathEntry(tool.subdir2, ClasspathTestTool.TEST_CLASS_NAME);
-		this.verifyProjectClasspathEntry(tool.jarFile1, ClasspathTestTool.TEST_CLASS_NAME);
-		this.verifyProjectClasspathEntry(tool.jarFile1, ClasspathTestTool.TEST_CLASS_NAME);
-		this.verifyProjectClasspathEntry(tool.zipFile1, ClasspathTestTool.TEST_CLASS_NAME);
-		this.verifyProjectClasspathEntry(tool.zipFile1, ClasspathTestTool.TEST_CLASS_NAME);
+    public void testProjectClasspath() throws Exception {
+        ClasspathTestTool tool = new ClasspathTestTool(ClassTools.shortClassNameForObject(this) + "." + this.getName());
+        tool.setUp();
 
-		tool.tearDown();
-	}
+        this.verifyProjectClasspathEntry(tool.subdir1, ClasspathTestTool.TEST_CLASS_NAME);
+        this.verifyProjectClasspathEntry(tool.subdir2, ClasspathTestTool.TEST_CLASS_NAME);
+        this.verifyProjectClasspathEntry(tool.jarFile1, ClasspathTestTool.TEST_CLASS_NAME);
+        this.verifyProjectClasspathEntry(tool.jarFile1, ClasspathTestTool.TEST_CLASS_NAME);
+        this.verifyProjectClasspathEntry(tool.zipFile1, ClasspathTestTool.TEST_CLASS_NAME);
+        this.verifyProjectClasspathEntry(tool.zipFile1, ClasspathTestTool.TEST_CLASS_NAME);
 
-	protected abstract void verifyArrayTypesContains(Map arrayClassDescriptions, Class arrayType);
+        tool.tearDown();
+    }
 
-	private void verifyInvalidType(ExternalClassDescription[] externalClassDescriptions, Class invalidJavaClass) {
-		boolean exCaught = false;
-		try {
-			this.descriptionFor(externalClassDescriptions, invalidJavaClass);
-		} catch (IllegalArgumentException ex) {
-			exCaught = true;
-		}
-		assertTrue("IllegalArgumentException not thrown", exCaught);
-	}
+    protected abstract void verifyArrayTypesContains(Map arrayClassDescriptions, Class arrayType);
 
-	private void verifyProjectClasspathEntry(File classpathEntry, String className) {
-		ExternalClassRepository repository = this.buildExternalClassRepository(new File[] {classpathEntry});
-		ExternalClassDescription[] externalClassDescriptions = repository.getClassDescriptions();
-		// first verify that the system entries are also OK
-		this.verifyClass(externalClassDescriptions, java.lang.Object.class);
-		// then check the project entry
-		this.verifyClassNamed(externalClassDescriptions, className);
-	}
+    private void verifyInvalidType(ExternalClassDescription[] externalClassDescriptions, Class invalidJavaClass) {
+        boolean exCaught = false;
+        try {
+            this.descriptionFor(externalClassDescriptions, invalidJavaClass);
+        } catch (IllegalArgumentException ex) {
+            exCaught = true;
+        }
+        assertTrue("IllegalArgumentException not thrown", exCaught);
+    }
 
-	private void verifyClass(ExternalClassDescription[] externalClassDescriptions, Class javaClass) {
-		this.verifyClassNamed(externalClassDescriptions, javaClass.getName());
-	}
+    private void verifyProjectClasspathEntry(File classpathEntry, String className) {
+        ExternalClassRepository repository = this.buildExternalClassRepository(new File[] {classpathEntry});
+        ExternalClassDescription[] externalClassDescriptions = repository.getClassDescriptions();
+        // first verify that the system entries are also OK
+        this.verifyClass(externalClassDescriptions, java.lang.Object.class);
+        // then check the project entry
+        this.verifyClassNamed(externalClassDescriptions, className);
+    }
 
-	private void verifyClassNamed(ExternalClassDescription[] externalClassDescriptions, String className) {
-		assertTrue("missing external class: " + className,
-			CollectionTools.contains(this.classNames(externalClassDescriptions), className));
-	}
+    private void verifyClass(ExternalClassDescription[] externalClassDescriptions, Class javaClass) {
+        this.verifyClassNamed(externalClassDescriptions, javaClass.getName());
+    }
 
-	private Iterator classNames(Iterator externalClassDescriptions) {
-		return new TransformationIterator(externalClassDescriptions) {
-			protected Object transform(Object next) {
-				return ((ExternalClassDescription) next).getName();
-			}
-		};
-	}
-	
-	private Iterator classNames(ExternalClassDescription[] externalClassDescriptions) {
-		return this.classNames(CollectionTools.iterator(externalClassDescriptions));
-	}
+    private void verifyClassNamed(ExternalClassDescription[] externalClassDescriptions, String className) {
+        assertTrue("missing external class: " + className,
+            CollectionTools.contains(this.classNames(externalClassDescriptions), className));
+    }
 
-	protected ExternalClassDescription descriptionFor(ExternalClassDescription[] externalClassDescriptions, Class javaClass) {
-		return this.descriptionForClassNamed(externalClassDescriptions, javaClass.getName());
-	}
+    private Iterator classNames(Iterator externalClassDescriptions) {
+        return new TransformationIterator(externalClassDescriptions) {
+            protected Object transform(Object next) {
+                return ((ExternalClassDescription) next).getName();
+            }
+        };
+    }
 
-	protected ExternalClassDescription descriptionForClassNamed(ExternalClassDescription[] externalClassDescriptions, String className) {
-		for (int i = externalClassDescriptions.length; i-- > 0; ) {
-			if (externalClassDescriptions[i].getName().equals(className)) {
-				return externalClassDescriptions[i];
-			}
-		}
-		throw new IllegalArgumentException(className);
-	}
+    private Iterator classNames(ExternalClassDescription[] externalClassDescriptions) {
+        return this.classNames(CollectionTools.iterator(externalClassDescriptions));
+    }
+
+    protected ExternalClassDescription descriptionFor(ExternalClassDescription[] externalClassDescriptions, Class javaClass) {
+        return this.descriptionForClassNamed(externalClassDescriptions, javaClass.getName());
+    }
+
+    protected ExternalClassDescription descriptionForClassNamed(ExternalClassDescription[] externalClassDescriptions, String className) {
+        for (int i = externalClassDescriptions.length; i-- > 0; ) {
+            if (externalClassDescriptions[i].getName().equals(className)) {
+                return externalClassDescriptions[i];
+            }
+        }
+        throw new IllegalArgumentException(className);
+    }
 
 }

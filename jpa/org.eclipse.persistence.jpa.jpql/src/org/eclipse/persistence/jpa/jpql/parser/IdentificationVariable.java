@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -64,158 +64,158 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class IdentificationVariable extends AbstractExpression {
 
-	/**
-	 * The virtual state field path expression having
-	 */
-	private StateFieldPathExpression stateFieldPathExpression;
+    /**
+     * The virtual state field path expression having
+     */
+    private StateFieldPathExpression stateFieldPathExpression;
 
-	/**
-	 * The uppercase version of the identification variable.
-	 */
-	private String variableName;
+    /**
+     * The uppercase version of the identification variable.
+     */
+    private String variableName;
 
-	/**
-	 * Determines whether this identification variable is virtual, meaning it's not part of the query
-	 * but is required for proper navigability.
-	 */
-	private boolean virtual;
+    /**
+     * Determines whether this identification variable is virtual, meaning it's not part of the query
+     * but is required for proper navigability.
+     */
+    private boolean virtual;
 
-	/**
-	 * Creates a new <code>IdentificationVariable</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param identificationVariable The actual identification variable
-	 */
-	public IdentificationVariable(AbstractExpression parent, String identificationVariable) {
-		super(parent, identificationVariable);
-	}
+    /**
+     * Creates a new <code>IdentificationVariable</code>.
+     *
+     * @param parent The parent of this expression
+     * @param identificationVariable The actual identification variable
+     */
+    public IdentificationVariable(AbstractExpression parent, String identificationVariable) {
+        super(parent, identificationVariable);
+    }
 
-	/**
-	 * Creates a new <code>IdentificationVariable</code>.
-	 *
-	 * @param parent The parent of this expression
-	 * @param identificationVariable The actual identification variable
-	 * @param virtual Determines whether this identification variable is virtual, meaning it's not
-	 * part of the query but is required for proper navigability
-	 */
-	public IdentificationVariable(AbstractExpression parent, String identificationVariable, boolean virtual) {
-		super(parent, identificationVariable);
-		this.virtual = virtual;
-	}
+    /**
+     * Creates a new <code>IdentificationVariable</code>.
+     *
+     * @param parent The parent of this expression
+     * @param identificationVariable The actual identification variable
+     * @param virtual Determines whether this identification variable is virtual, meaning it's not
+     * part of the query but is required for proper navigability
+     */
+    public IdentificationVariable(AbstractExpression parent, String identificationVariable, boolean virtual) {
+        super(parent, identificationVariable);
+        this.virtual = virtual;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void acceptChildren(ExpressionVisitor visitor) {
-		// Nothing to traverse
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void acceptChildren(ExpressionVisitor visitor) {
+        // Nothing to traverse
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void addOrderedChildrenTo(List<Expression> children) {
-		children.add(buildStringExpression(getText()));
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addOrderedChildrenTo(List<Expression> children) {
+        children.add(buildStringExpression(getText()));
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(IdentificationVariableBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(IdentificationVariableBNF.ID);
+    }
 
-	/**
-	 * Returns the actual representation of the parsed information. This method should only be called
-	 * if {@link #isVirtual()} returns <code>true</code>. This is valid in an <b>UPDATE</b> and
-	 * <b>DELETE</b> queries where the identification variable is not specified.
-	 *
-	 * @return The path expression that is qualified by the virtual identification variable
-	 * @throws IllegalAccessError If this expression does not have a virtual identification variable
-	 */
-	@SuppressWarnings("nls")
-	public StateFieldPathExpression getStateFieldPathExpression() {
-		if (!virtual) {
-			throw new IllegalAccessError("IdentificationVariable.getStateFieldPathExpression() can only be accessed when it represents an attribute that is not fully qualified, which can be present in an UPDATE or DELETE query.");
-		}
-		return stateFieldPathExpression;
-	}
+    /**
+     * Returns the actual representation of the parsed information. This method should only be called
+     * if {@link #isVirtual()} returns <code>true</code>. This is valid in an <b>UPDATE</b> and
+     * <b>DELETE</b> queries where the identification variable is not specified.
+     *
+     * @return The path expression that is qualified by the virtual identification variable
+     * @throws IllegalAccessError If this expression does not have a virtual identification variable
+     */
+    @SuppressWarnings("nls")
+    public StateFieldPathExpression getStateFieldPathExpression() {
+        if (!virtual) {
+            throw new IllegalAccessError("IdentificationVariable.getStateFieldPathExpression() can only be accessed when it represents an attribute that is not fully qualified, which can be present in an UPDATE or DELETE query.");
+        }
+        return stateFieldPathExpression;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getText() {
-		return super.getText();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getText() {
+        return super.getText();
+    }
 
-	/**
-	 * Returns the identification variable, which has been changed to be upper case.
-	 *
-	 * @return The uppercase version of the identification variable
-	 * @since 2.4
-	 */
-	public String getVariableName() {
-		if (variableName == null) {
-			variableName = getText().toUpperCase().intern();
-		}
-		return variableName;
-	}
+    /**
+     * Returns the identification variable, which has been changed to be upper case.
+     *
+     * @return The uppercase version of the identification variable
+     * @since 2.4
+     */
+    public String getVariableName() {
+        if (variableName == null) {
+            variableName = getText().toUpperCase().intern();
+        }
+        return variableName;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isVirtual() {
-		return virtual;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isVirtual() {
+        return virtual;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void parse(WordParser wordParser, boolean tolerant) {
-		wordParser.moveForward(getText());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse(WordParser wordParser, boolean tolerant) {
+        wordParser.moveForward(getText());
+    }
 
-	/**
-	 * Sets a virtual identification variable because the abstract schema name was parsed without
-	 * one. This is valid in an <b>UPDATE</b> and <b>DELETE</b> queries. This internally transforms
-	 * the what was thought to be an identification variable to a path expression.
-	 *
-	 * @param variableName The identification variable that was generated to identify the "root" object
-	 */
-	public void setVirtualIdentificationVariable(String variableName) {
+    /**
+     * Sets a virtual identification variable because the abstract schema name was parsed without
+     * one. This is valid in an <b>UPDATE</b> and <b>DELETE</b> queries. This internally transforms
+     * the what was thought to be an identification variable to a path expression.
+     *
+     * @param variableName The identification variable that was generated to identify the "root" object
+     */
+    public void setVirtualIdentificationVariable(String variableName) {
 
-		virtual = true;
+        virtual = true;
 
-		stateFieldPathExpression = new StateFieldPathExpression(getParent(), getText());
-		stateFieldPathExpression.setVirtualIdentificationVariable(variableName);
+        stateFieldPathExpression = new StateFieldPathExpression(getParent(), getText());
+        stateFieldPathExpression.setVirtualIdentificationVariable(variableName);
 
-		rebuildActualText();
-		rebuildParsedText();
-	}
+        rebuildActualText();
+        rebuildParsedText();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toParsedText() {
-		return getText();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toParsedText() {
+        return getText();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toParsedText(StringBuilder writer, boolean actual) {
-		writer.append(getText());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void toParsedText(StringBuilder writer, boolean actual) {
+        writer.append(getText());
+    }
 }

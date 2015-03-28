@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,13 +21,13 @@ import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests binary attachments.
- * 
+ *
  */
 public class AttachedBinaryBuilderTestSuite extends DBWSTestSuite {
-	static final String PROJECT_NAME = "attachedbinary"; 
-	static final String BUILDER_FILE = stageDir + "/dbws-builder-attachedbinary.xml";
-	static final String WSDL_LOC = "http://" + host + ":" + port + "/attachedbinary/attachedbinary?wsdl"; 
-	
+    static final String PROJECT_NAME = "attachedbinary";
+    static final String BUILDER_FILE = stageDir + "/dbws-builder-attachedbinary.xml";
+    static final String WSDL_LOC = "http://" + host + ":" + port + "/attachedbinary/attachedbinary?wsdl";
+
     public static final String CREATE_TABLE =
         "CREATE TABLE ATTACHEDBINARY (" +
             "ID NUMBER NOT NULL," +
@@ -41,14 +41,14 @@ public class AttachedBinaryBuilderTestSuite extends DBWSTestSuite {
         "INSERT INTO ATTACHEDBINARY(ID, NAME, B) VALUES (2, 'two', '020202020202020202020202020202')",
         "INSERT INTO ATTACHEDBINARY(ID, NAME, B) VALUES (3, 'three', '030303030303030303030303030303')"
     };
-    
-    public static final String CREATE_FUNCTION = 
+
+    public static final String CREATE_FUNCTION =
         "CREATE OR REPLACE FUNCTION GETBLOBBYID(PK IN NUMBER) RETURN BLOB IS" +
         "\nblb BLOB := EMPTY_BLOB();" +
         "\nBEGIN" +
             "\nSELECT B INTO blb FROM ATTACHEDBINARY WHERE ID=PK;" +
             "\nRETURN(BLB);" +
-            "\nEXCEPTION" + 
+            "\nEXCEPTION" +
                 "\nWHEN NO_DATA_FOUND THEN" +
                     "\nRAISE_APPLICATION_ERROR(-20001, 'GETBLOBBYID FAILED WITH NO DATA FOUND');" +
         "\nEND;";
@@ -66,7 +66,7 @@ public class AttachedBinaryBuilderTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_FUNCTION, ddlDebug);
         }
     }
-    
+
     @AfterClass
     public static void tearDown() {
         if (ddlDrop) {
@@ -79,7 +79,7 @@ public class AttachedBinaryBuilderTestSuite extends DBWSTestSuite {
     public void testBuild() {
         DBWSTestSuite.testBuild(PROJECT_NAME, BUILDER_FILE);
     }
-    
+
     static final String BUILDER_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
@@ -94,7 +94,7 @@ public class AttachedBinaryBuilderTestSuite extends DBWSTestSuite {
             "<property name=\"dataSource\">" + datasource + "</property>\n" +
             "<property name=\"wsdlLocationURI\">" + WSDL_LOC + "</property>\n" +
           "</properties>\n" +
-          "<table \n" + 
+          "<table \n" +
               "tableNamePattern=\"ATTACHEDBINARY\" \n" +
               "binaryAttachment=\"true\" \n" +
               "attachmentType=\"swaref\"> \n" +

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -29,87 +29,87 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 
 public final class MWXmlDirectCollectionMapping
-	extends MWAbstractXmlDirectCollectionMapping
-	implements MWXmlMapping, MWXpathedMapping, MWXpathContext, MWDirectCollectionMapping, MWContainerMapping
+    extends MWAbstractXmlDirectCollectionMapping
+    implements MWXmlMapping, MWXpathedMapping, MWXpathContext, MWDirectCollectionMapping, MWContainerMapping
 {
-	private boolean isCdata;
-		public final static String IS_CDATA_PROPERTY= "isCdata";
+    private boolean isCdata;
+        public final static String IS_CDATA_PROPERTY= "isCdata";
 
-	// **************** Constructors ******************************************
-	
-	/** Default constructor - for TopLink use only */
-	private MWXmlDirectCollectionMapping() {
-		super();
-	}
-	
-	MWXmlDirectCollectionMapping(MWXmlDescriptor descriptor, MWClassAttribute attribute, String name) {
-		super(descriptor, attribute, name);
-	}
-	
-	// **************** Morphing **********************************************
-	
-	public MWXmlDirectCollectionMapping asMWXmlDirectCollectionMapping() {
-		return this;
-	}
-	
-	protected void initializeOn(MWMapping newMapping) {
-		newMapping.initializeFromMWXmlDirectCollectionMapping(this);
-	}
-	
-	protected void initializeFromMWXpathedMapping(MWXpathedMapping oldMapping) {
-		super.initializeFromMWXpathedMapping(oldMapping);
-		this.getXmlField().setXpath(oldMapping.getXmlField().getXpath());
-		this.getXmlField().setTyped(oldMapping.getXmlField().isTyped());
-	}
-	
-	@Override
-	protected void initialize(Node parent) {
-		super.initialize(parent);
-		this.isCdata = false;
-	}
-	
-	// **************** Runtime conversion ************************************
-	
-	protected DatabaseMapping buildRuntimeMapping() {
-		return this.xmlDescriptor().buildDefaultRuntimeDirectCollectionMapping();
-	}	
-	
-	public DatabaseMapping runtimeMapping() {
-		AbstractCompositeDirectCollectionMapping runtimeMapping = (AbstractCompositeDirectCollectionMapping) super.runtimeMapping();
-		if (!xmlDescriptor().isEisDescriptor()) {
-			((XMLCompositeDirectCollectionMapping)runtimeMapping).setIsCDATA(this.isCdata());
-		}
-		return runtimeMapping;
-	}
+    // **************** Constructors ******************************************
 
-	// **************** TopLink Methods *****************
-	
-	public static XMLDescriptor buildDescriptor() {	
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.setJavaClass(MWXmlDirectCollectionMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractXmlDirectCollectionMapping.class);
-	
-		((XMLDirectMapping) descriptor.addDirectMapping("isCdata", "is-cdata/text()")).setNullValue(Boolean.FALSE);
+    /** Default constructor - for TopLink use only */
+    private MWXmlDirectCollectionMapping() {
+        super();
+    }
 
-        return descriptor;	
-	}
+    MWXmlDirectCollectionMapping(MWXmlDescriptor descriptor, MWClassAttribute attribute, String name) {
+        super(descriptor, attribute, name);
+    }
 
-	public static XMLDescriptor legacy60BuildDescriptor() {	
-		XMLDescriptor descriptor = MWModel.legacy60BuildStandardDescriptor();
-		descriptor.setJavaClass(MWXmlDirectCollectionMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractXmlDirectCollectionMapping.class);
-		
-        return descriptor;	
-	}
+    // **************** Morphing **********************************************
 
-	public boolean isCdata() {
-		return isCdata;
-	}
+    public MWXmlDirectCollectionMapping asMWXmlDirectCollectionMapping() {
+        return this;
+    }
 
-	public void setCdata(boolean isCdata) {
-		boolean oldvalue = this.isCdata;
-		this.isCdata = isCdata;
-		firePropertyChanged(IS_CDATA_PROPERTY, oldvalue, this.isCdata);
-	}
-	
+    protected void initializeOn(MWMapping newMapping) {
+        newMapping.initializeFromMWXmlDirectCollectionMapping(this);
+    }
+
+    protected void initializeFromMWXpathedMapping(MWXpathedMapping oldMapping) {
+        super.initializeFromMWXpathedMapping(oldMapping);
+        this.getXmlField().setXpath(oldMapping.getXmlField().getXpath());
+        this.getXmlField().setTyped(oldMapping.getXmlField().isTyped());
+    }
+
+    @Override
+    protected void initialize(Node parent) {
+        super.initialize(parent);
+        this.isCdata = false;
+    }
+
+    // **************** Runtime conversion ************************************
+
+    protected DatabaseMapping buildRuntimeMapping() {
+        return this.xmlDescriptor().buildDefaultRuntimeDirectCollectionMapping();
+    }
+
+    public DatabaseMapping runtimeMapping() {
+        AbstractCompositeDirectCollectionMapping runtimeMapping = (AbstractCompositeDirectCollectionMapping) super.runtimeMapping();
+        if (!xmlDescriptor().isEisDescriptor()) {
+            ((XMLCompositeDirectCollectionMapping)runtimeMapping).setIsCDATA(this.isCdata());
+        }
+        return runtimeMapping;
+    }
+
+    // **************** TopLink Methods *****************
+
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MWXmlDirectCollectionMapping.class);
+        descriptor.getInheritancePolicy().setParentClass(MWAbstractXmlDirectCollectionMapping.class);
+
+        ((XMLDirectMapping) descriptor.addDirectMapping("isCdata", "is-cdata/text()")).setNullValue(Boolean.FALSE);
+
+        return descriptor;
+    }
+
+    public static XMLDescriptor legacy60BuildDescriptor() {
+        XMLDescriptor descriptor = MWModel.legacy60BuildStandardDescriptor();
+        descriptor.setJavaClass(MWXmlDirectCollectionMapping.class);
+        descriptor.getInheritancePolicy().setParentClass(MWAbstractXmlDirectCollectionMapping.class);
+
+        return descriptor;
+    }
+
+    public boolean isCdata() {
+        return isCdata;
+    }
+
+    public void setCdata(boolean isCdata) {
+        boolean oldvalue = this.isCdata;
+        this.isCdata = isCdata;
+        firePropertyChanged(IS_CDATA_PROPERTY, oldvalue, this.isCdata);
+    }
+
 }

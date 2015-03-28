@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.xml.jaxp;
 
 import java.io.OutputStream;
@@ -49,40 +49,40 @@ public class JAXPTransformer implements XMLTransformer {
     private String version;
 
     public String getEncoding() {
-    	return encoding;
+        return encoding;
     }
 
     public void setEncoding(String encoding) {
-    	this.encoding = encoding;
-    	if(transformer != null){
+        this.encoding = encoding;
+        if(transformer != null){
             transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
-    	}
+        }
     }
 
     public boolean isFormattedOutput() {
-    	return formatted;
+        return formatted;
     }
 
     public void setFormattedOutput(boolean shouldFormat) {
-    	this.formatted = shouldFormat;
-    	if(transformer != null){
+        this.formatted = shouldFormat;
+        if(transformer != null){
             if (shouldFormat) {
                 transformer.setOutputProperty(OutputKeys.INDENT, YES);
             } else {
                 transformer.setOutputProperty(OutputKeys.INDENT, NO);
             }
-    	}
+        }
     }
 
-    public String getVersion() {    
-    	return version;
+    public String getVersion() {
+        return version;
     }
 
     public void setVersion(String version) {
-    	this.version = version;
-    	if(transformer != null){
+        this.version = version;
+        if(transformer != null){
             transformer.setOutputProperty(OutputKeys.VERSION, version);
-    	}
+        }
     }
 
     public void transform(Node sourceNode, OutputStream resultOutputStream) throws XMLPlatformException {
@@ -118,7 +118,7 @@ public class JAXPTransformer implements XMLTransformer {
         StreamResult result = new StreamResult(resultWriter);
 
         if (isFragment()) {
-        	getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         }
         transform(source, result);
     }
@@ -126,7 +126,7 @@ public class JAXPTransformer implements XMLTransformer {
     public void transform(Source source, Result result) throws XMLPlatformException {
         try {
             if ((result instanceof StreamResult) && (isFragment())) {
-            	getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+                getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             }
             getTransformer().transform(source, result);
         } catch (TransformerException e) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,37 +27,37 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 @SuppressWarnings("nls")
 public final class AbstractSchemaNameFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link AbstractSchemaNameFactory}.
-	 */
-	public static final String ID = "abstract-schema-name";
+    /**
+     * The unique identifier of this {@link AbstractSchemaNameFactory}.
+     */
+    public static final String ID = "abstract-schema-name";
 
-	/**
-	 * Creates a new <code>AbstractSchemaNameFactory</code>.
-	 */
-	public AbstractSchemaNameFactory() {
-		super(ID);
-	}
+    /**
+     * Creates a new <code>AbstractSchemaNameFactory</code>.
+     */
+    public AbstractSchemaNameFactory() {
+        super(ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		if (word.indexOf(AbstractExpression.DOT) != -1) {
-			expression = new CollectionValuedPathExpression(parent, word);
-		}
-		else {
-			expression = new AbstractSchemaName(parent, word);
-		}
+        if (word.indexOf(AbstractExpression.DOT) != -1) {
+            expression = new CollectionValuedPathExpression(parent, word);
+        }
+        else {
+            expression = new AbstractSchemaName(parent, word);
+        }
 
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

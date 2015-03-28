@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://www.example.org" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.example.org" elementFormDefault="unqualified" attributeFormDefault="unqualified"> 
+<schema targetNamespace="http://www.example.org" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.example.org" elementFormDefault="unqualified" attributeFormDefault="unqualified">
    <complexType name="Items">
         <sequence>
-		<sequence>
-	  		<sequence>
-			            <element name="item" type="ns0:LineItemType" minOccurs="0" maxOccurs="unbounded"/>
- 		     	</sequence>
-		</sequence>
+        <sequence>
+              <sequence>
+                        <element name="item" type="ns0:LineItemType" minOccurs="0" maxOccurs="unbounded"/>
+                  </sequence>
+        </sequence>
         </sequence>
     </complexType>
    <complexType name="usAddressType">
@@ -31,19 +31,19 @@
    <complexType name="LineItemType">
       <sequence>
          <element name="productName" type="string" minOccurs="0"/>
-	 <choice>
-  	    <element name="USPrice" type="float" minOccurs="0"/>
-	       <sequence>
-		   <element name="CDNPrice" type="float" minOccurs="0"/>
-	     	   <element name="exchangeRate" type="float" minOccurs="0"/>
+     <choice>
+          <element name="USPrice" type="float" minOccurs="0"/>
+           <sequence>
+           <element name="CDNPrice" type="float" minOccurs="0"/>
+                <element name="exchangeRate" type="float" minOccurs="0"/>
                 </sequence>
-	    </choice>
-	 <element name="shipDate" type="date" minOccurs="0"/>
+        </choice>
+     <element name="shipDate" type="date" minOccurs="0"/>
          <element name="comment" type="string" minOccurs="0"/>
       </sequence>
       <attribute name="partNum" type="ns0:SKU"/>
       <attribute name="quantity" type="ns0:quantityType"/>
-   </complexType>  
+   </complexType>
    <complexType name="PurchaseOrderType">
       <sequence>
          <element name="shipTo" type="ns0:AddressType" minOccurs="0"/>
@@ -61,33 +61,33 @@
          <element name="gender" type="ns0:gender" minOccurs="0"/>
          <element name="phoneNumber" minOccurs="0">
             <simpleType>
-	       <restriction base="string">
+           <restriction base="string">
                   <length value="10"/>
                </restriction>
             </simpleType>
-	    </element>
+        </element>
          </sequence>
          <attribute name="namePrefix">
-	    <simpleType>
-	       <restriction base="string">
-	          <enumeration value="Dr."/>
-		     <enumeration value="Mrs."/>
-		     <enumeration value="Mr."/>
-	          </restriction>
-	       </simpleType>
+        <simpleType>
+           <restriction base="string">
+              <enumeration value="Dr."/>
+             <enumeration value="Mrs."/>
+             <enumeration value="Mr."/>
+              </restriction>
+           </simpleType>
         </attribute>
    </complexType>
    <complexType name="cdnAddressType">
       <complexContent>
          <extension base="AddressType">
             <sequence>
-	       <choice>	       
-	          <sequence>
-		     <element name="province" type="string" minOccurs="0"/>
-		  </sequence>
-	          <element name="territory" type="string" minOccurs="0"/>
-	       </choice>
-  	       <element name="postalcode" type="string" minOccurs="0"/>
+           <choice>
+              <sequence>
+             <element name="province" type="string" minOccurs="0"/>
+          </sequence>
+              <element name="territory" type="string" minOccurs="0"/>
+           </choice>
+             <element name="postalcode" type="string" minOccurs="0"/>
             </sequence>
          </extension>
       </complexContent>
@@ -96,7 +96,7 @@
       <complexContent>
          <extension base="cdnAddressType">
             <sequence>
-  	       <element name="deliveryInfo" type="string" minOccurs="0"/>
+             <element name="deliveryInfo" type="string" minOccurs="0"/>
             </sequence>
          </extension>
       </complexContent>
@@ -105,7 +105,7 @@
    <simpleType name="gender">
       <restriction base="string">
          <enumeration value="male"/>
-	 <enumeration value="female"/>
+     <enumeration value="female"/>
       </restriction>
    </simpleType>
    <simpleType name="quantityType">

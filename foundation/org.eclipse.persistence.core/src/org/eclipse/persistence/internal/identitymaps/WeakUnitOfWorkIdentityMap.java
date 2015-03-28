@@ -20,7 +20,7 @@ public class WeakUnitOfWorkIdentityMap extends UnitOfWorkIdentityMap {
         this.cleanupSize = size;
         this.referenceQueue = new ReferenceQueue<QueueableWeakCacheKey.CacheKeyReference>();
     }
-    
+
     /**
      * Search for any cache keys that have been garbage collected and remove them.
      * This must be done because although the objects held by the cache keys will garbage collect,

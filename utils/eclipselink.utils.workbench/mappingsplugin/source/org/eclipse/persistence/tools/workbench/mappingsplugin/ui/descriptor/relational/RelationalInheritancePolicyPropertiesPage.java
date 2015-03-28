@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -44,201 +44,201 @@ import org.eclipse.persistence.tools.workbench.utility.string.StringConverter;
 
 
 /**
- * 
+ *
  */
 public final class RelationalInheritancePolicyPropertiesPage
-							extends InheritancePolicyPropertiesPage {
+                            extends InheritancePolicyPropertiesPage {
 
-	private PropertyValueModel readSubclassesOnQueryHolder;
+    private PropertyValueModel readSubclassesOnQueryHolder;
 
-	private PropertyValueModel outerJoinAllSubclassesHolder;
+    private PropertyValueModel outerJoinAllSubclassesHolder;
 
-	public RelationalInheritancePolicyPropertiesPage(PropertyValueModel node, WorkbenchContextHolder contextHolder) {
-		super(node, contextHolder);
-	}
-		
-	private ListChooser buildViewChooser() {
-		return RelationalProjectComponentFactory.
-					buildTableChooser(
-						getSelectionHolder(), 
-						buildViewChooserPropertyAdapter()	, 
-						buildViewChooserDialogBuilder(), 
-						getWorkbenchContextHolder()
-					);
-		
-	}
+    public RelationalInheritancePolicyPropertiesPage(PropertyValueModel node, WorkbenchContextHolder contextHolder) {
+        super(node, contextHolder);
+    }
 
-	private DefaultListChooserDialog.Builder buildViewChooserDialogBuilder() {
-		DefaultListChooserDialog.Builder builder = new DefaultListChooserDialog.Builder();
-		builder.setTitleKey("VIEW_CHOOSER_LIST_BROWSER_DIALOG.title");
-		builder.setListBoxLabelKey("VIEW_CHOOSER_LIST_BROWSER_DIALOG.listLabel");
-		builder.setStringConverter(buildTableStringConverter());
-		return builder;
-	}
-	
-	private StringConverter buildTableStringConverter() {
-		return new StringConverter() {
-			public String convertToString(Object o) {
-				return o == null ? "" : ((MWTable) o).getName();
-			}
-		};
-	}	
-	
-	private PropertyValueModel buildViewChooserPropertyAdapter() {
-		return new PropertyAspectAdapter(getInheritancePolicyHolder(), MWRelationalDescriptorInheritancePolicy.READ_ALL_SUBCLASSES_VIEW_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return ((MWRelationalDescriptorInheritancePolicy) subject).getReadAllSubclassesView();
-			}
-		
-			protected void setValueOnSubject(Object value) {
-				((MWRelationalDescriptorInheritancePolicy)subject).setReadAllSubclassesView((MWTable)value);
-			}	
-		};	
-	}
+    private ListChooser buildViewChooser() {
+        return RelationalProjectComponentFactory.
+                    buildTableChooser(
+                        getSelectionHolder(),
+                        buildViewChooserPropertyAdapter()    ,
+                        buildViewChooserDialogBuilder(),
+                        getWorkbenchContextHolder()
+                    );
 
-	private PropertyValueModel buildReadSubclassesOnQueryBooleanHolder() {
-	
-		return new PropertyAspectAdapter(getInheritancePolicyHolder(), MWRelationalDescriptorInheritancePolicy.READ_SUBCLASSES_ON_QUERY_PROPERTY) {
-			protected Object getValueFromSubject(){
-				return Boolean.valueOf(((MWRelationalDescriptorInheritancePolicy) subject).isReadSubclassesOnQuery());
-			}
+    }
 
-			protected void setValueOnSubject(Object value) {
-				((MWRelationalDescriptorInheritancePolicy)subject).setReadSubclassesOnQuery(((Boolean)value).booleanValue());
-			}
-		};
-	}
+    private DefaultListChooserDialog.Builder buildViewChooserDialogBuilder() {
+        DefaultListChooserDialog.Builder builder = new DefaultListChooserDialog.Builder();
+        builder.setTitleKey("VIEW_CHOOSER_LIST_BROWSER_DIALOG.title");
+        builder.setListBoxLabelKey("VIEW_CHOOSER_LIST_BROWSER_DIALOG.listLabel");
+        builder.setStringConverter(buildTableStringConverter());
+        return builder;
+    }
 
-	private PropertyValueModel buildOuterJoinAllSubclassesBooleanHolder() {
-		
-		return new PropertyAspectAdapter(getInheritancePolicyHolder(), MWRelationalDescriptorInheritancePolicy.OUTER_JOIN_ALL_SUBCLASSES) {
-			protected Object getValueFromSubject(){
-				return Boolean.valueOf(((MWRelationalDescriptorInheritancePolicy) subject).isOuterJoinAllSubclasses());
-			}
+    private StringConverter buildTableStringConverter() {
+        return new StringConverter() {
+            public String convertToString(Object o) {
+                return o == null ? "" : ((MWTable) o).getName();
+            }
+        };
+    }
 
-			protected void setValueOnSubject(Object value) {
-				((MWRelationalDescriptorInheritancePolicy)subject).setOuterJoinAllSubclasses(((Boolean)value).booleanValue());
-			}
-		};
-	}
+    private PropertyValueModel buildViewChooserPropertyAdapter() {
+        return new PropertyAspectAdapter(getInheritancePolicyHolder(), MWRelationalDescriptorInheritancePolicy.READ_ALL_SUBCLASSES_VIEW_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return ((MWRelationalDescriptorInheritancePolicy) subject).getReadAllSubclassesView();
+            }
 
-	private JPanel buildIsRootPanel(Collection isRootListeners) {
-		classIndicatorPolicyPanel = new RelationalClassIndicatorPolicySubPanel(getSelectionHolder(), getInheritancePolicyHolder(), getWorkbenchContextHolder(), isRootListeners);
-		return classIndicatorPolicyPanel;
-	}
-	
-	protected Component buildPage() {
-		JPanel contentPanel = new JPanel(new GridBagLayout());
-		contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		GridBagConstraints constraints = new GridBagConstraints();
+            protected void setValueOnSubject(Object value) {
+                ((MWRelationalDescriptorInheritancePolicy)subject).setReadAllSubclassesView((MWTable)value);
+            }
+        };
+    }
 
-		//Read subclasses check box
-		readSubclassesOnQueryHolder = buildReadSubclassesOnQueryBooleanHolder();
-		JCheckBox readSubclassOnQueryCheckBox = buildCheckBox("READ_SUBCLASSES_ON_QUERY", new CheckBoxModelAdapter(readSubclassesOnQueryHolder));
+    private PropertyValueModel buildReadSubclassesOnQueryBooleanHolder() {
 
-		constraints.gridx		= 0;
-		constraints.gridy		= 0;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 0;
-		constraints.weighty		= 0;
-		constraints.fill		= GridBagConstraints.NONE;
-		constraints.anchor		= GridBagConstraints.LINE_START;
-		constraints.insets		= new Insets(0, 5, 0, 0);
+        return new PropertyAspectAdapter(getInheritancePolicyHolder(), MWRelationalDescriptorInheritancePolicy.READ_SUBCLASSES_ON_QUERY_PROPERTY) {
+            protected Object getValueFromSubject(){
+                return Boolean.valueOf(((MWRelationalDescriptorInheritancePolicy) subject).isReadSubclassesOnQuery());
+            }
 
-		contentPanel.add(readSubclassOnQueryCheckBox, constraints);
-		addHelpTopicId(readSubclassOnQueryCheckBox, helpTopicId() + ".readSubclassesView");
+            protected void setValueOnSubject(Object value) {
+                ((MWRelationalDescriptorInheritancePolicy)subject).setReadSubclassesOnQuery(((Boolean)value).booleanValue());
+            }
+        };
+    }
 
-		Collection components = new ArrayList();
-		//Read subclasses check box sub panel
-		JPanel readSubclassOnQueryPanel = new JPanel(new BorderLayout());
-		readSubclassOnQueryPanel.setEnabled(readSubclassesOnQueryHolder.getValue() == Boolean.TRUE);
-		ListChooser viewChooser = buildViewChooser();
-		components.add(viewChooser);
-		JLabel viewLabel = buildLabel("READ_SUBCLASSES_VIEW_OPTIONAL");
-		viewLabel.setDisplayedMnemonic(resourceRepository().getMnemonic("READ_SUBCLASSES_VIEW_OPTIONAL"));
-		components.add(viewLabel);
-		viewLabel.setLabelFor(viewChooser);
+    private PropertyValueModel buildOuterJoinAllSubclassesBooleanHolder() {
 
-		readSubclassOnQueryPanel.add(viewChooser, BorderLayout.CENTER);
-		readSubclassOnQueryPanel.add(viewLabel, BorderLayout.LINE_START);
-		addHelpTopicId(readSubclassOnQueryPanel, helpTopicId() + ".readSubclassesView");
+        return new PropertyAspectAdapter(getInheritancePolicyHolder(), MWRelationalDescriptorInheritancePolicy.OUTER_JOIN_ALL_SUBCLASSES) {
+            protected Object getValueFromSubject(){
+                return Boolean.valueOf(((MWRelationalDescriptorInheritancePolicy) subject).isOuterJoinAllSubclasses());
+            }
 
-		Insets borderInsets = BorderFactory.createTitledBorder("m").getBorderInsets(this);
+            protected void setValueOnSubject(Object value) {
+                ((MWRelationalDescriptorInheritancePolicy)subject).setOuterJoinAllSubclasses(((Boolean)value).booleanValue());
+            }
+        };
+    }
 
-		constraints.gridx		= 0;
-		constraints.gridy		= 1;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 0;
-		constraints.fill		= GridBagConstraints.HORIZONTAL;
-		constraints.anchor		= GridBagConstraints.CENTER;
-		constraints.insets		= new Insets(0, SwingTools.checkBoxIconWidth() + 5, 0, borderInsets.right + 5);
+    private JPanel buildIsRootPanel(Collection isRootListeners) {
+        classIndicatorPolicyPanel = new RelationalClassIndicatorPolicySubPanel(getSelectionHolder(), getInheritancePolicyHolder(), getWorkbenchContextHolder(), isRootListeners);
+        return classIndicatorPolicyPanel;
+    }
 
-		contentPanel.add(readSubclassOnQueryPanel, constraints);
-		new ComponentEnabler(readSubclassesOnQueryHolder, components);
+    protected Component buildPage() {
+        JPanel contentPanel = new JPanel(new GridBagLayout());
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		//outer join all subclasses check box
-		outerJoinAllSubclassesHolder = buildOuterJoinAllSubclassesBooleanHolder();
-		JCheckBox outerJoinAllSubclassCheckBox = buildCheckBox("OUTER_JOIN_ALL_SUBCLASSES", new CheckBoxModelAdapter(outerJoinAllSubclassesHolder));
+        //Read subclasses check box
+        readSubclassesOnQueryHolder = buildReadSubclassesOnQueryBooleanHolder();
+        JCheckBox readSubclassOnQueryCheckBox = buildCheckBox("READ_SUBCLASSES_ON_QUERY", new CheckBoxModelAdapter(readSubclassesOnQueryHolder));
 
-		constraints.gridx		= 0;
-		constraints.gridy		= 2;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 0;
-		constraints.weighty		= 0;
-		constraints.fill		= GridBagConstraints.NONE;
-		constraints.anchor		= GridBagConstraints.LINE_START;
-		constraints.insets		= new Insets(0, 5, 0, 0);
+        constraints.gridx        = 0;
+        constraints.gridy        = 0;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 0;
+        constraints.weighty        = 0;
+        constraints.fill        = GridBagConstraints.NONE;
+        constraints.anchor        = GridBagConstraints.LINE_START;
+        constraints.insets        = new Insets(0, 5, 0, 0);
 
-		contentPanel.add(outerJoinAllSubclassCheckBox, constraints);
-		addHelpTopicId(outerJoinAllSubclassCheckBox, helpTopicId() + ".outerJoinAllSubclasses");
+        contentPanel.add(readSubclassOnQueryCheckBox, constraints);
+        addHelpTopicId(readSubclassOnQueryCheckBox, helpTopicId() + ".readSubclassesView");
 
-		// Is Child widgets
-		JRadioButton isChildRadioButton = buildRadioButton("IS_CHILD_DESC", buildIsChildDescriptorRadioButtonModel(getIsRootHolder()));
-		addHelpTopicId(isChildRadioButton, helpTopicId() + ".isChild");
+        Collection components = new ArrayList();
+        //Read subclasses check box sub panel
+        JPanel readSubclassOnQueryPanel = new JPanel(new BorderLayout());
+        readSubclassOnQueryPanel.setEnabled(readSubclassesOnQueryHolder.getValue() == Boolean.TRUE);
+        ListChooser viewChooser = buildViewChooser();
+        components.add(viewChooser);
+        JLabel viewLabel = buildLabel("READ_SUBCLASSES_VIEW_OPTIONAL");
+        viewLabel.setDisplayedMnemonic(resourceRepository().getMnemonic("READ_SUBCLASSES_VIEW_OPTIONAL"));
+        components.add(viewLabel);
+        viewLabel.setLabelFor(viewChooser);
 
-		JPanel isChildPanel = buildIsChildPanel(getIsRootHolder().getValue() == Boolean.FALSE);
-		getIsRootHolder().addPropertyChangeListener(buildIsChildListener(isChildPanel));
-		addHelpTopicId(isChildPanel, helpTopicId() + ".isChild");
-		
-		// Is Root widgets
-		JRadioButton isRootRadioButton = buildRadioButton("IS_ROOT_DESC", buildIsRootParentDescriptorRadioButtonModel(getIsRootHolder()));
-		addHelpTopicId(isRootRadioButton, helpTopicId() + ".isRoot");
+        readSubclassOnQueryPanel.add(viewChooser, BorderLayout.CENTER);
+        readSubclassOnQueryPanel.add(viewLabel, BorderLayout.LINE_START);
+        addHelpTopicId(readSubclassOnQueryPanel, helpTopicId() + ".readSubclassesView");
 
-		Collection isRootListeners = new Vector();
-		JPanel isRootPanel = buildIsRootPanel(isRootListeners);
-		isRootListeners.add(classIndicatorPolicyPanel);
+        Insets borderInsets = BorderFactory.createTitledBorder("m").getBorderInsets(this);
 
-		// Add everything to the container
-		GroupBox isRootGroupBox = new GroupBox
-		(
-			isChildRadioButton, isChildPanel,
-			isRootRadioButton, isRootPanel
-		);
+        constraints.gridx        = 0;
+        constraints.gridy        = 1;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 0;
+        constraints.fill        = GridBagConstraints.HORIZONTAL;
+        constraints.anchor        = GridBagConstraints.CENTER;
+        constraints.insets        = new Insets(0, SwingTools.checkBoxIconWidth() + 5, 0, borderInsets.right + 5);
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 4;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 1;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.PAGE_START;
-		constraints.insets     = new Insets(5, 0, 0, 0);
+        contentPanel.add(readSubclassOnQueryPanel, constraints);
+        new ComponentEnabler(readSubclassesOnQueryHolder, components);
 
-		contentPanel.add(isRootGroupBox, constraints);
+        //outer join all subclasses check box
+        outerJoinAllSubclassesHolder = buildOuterJoinAllSubclassesBooleanHolder();
+        JCheckBox outerJoinAllSubclassCheckBox = buildCheckBox("OUTER_JOIN_ALL_SUBCLASSES", new CheckBoxModelAdapter(outerJoinAllSubclassesHolder));
 
-		addHelpTopicId(getClassIndicatorPolicyPanel(), helpTopicId() + ".isRoot");
-		addHelpTopicId(contentPanel, helpTopicId());
-		addAllRootListeners(isRootListeners);
+        constraints.gridx        = 0;
+        constraints.gridy        = 2;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 0;
+        constraints.weighty        = 0;
+        constraints.fill        = GridBagConstraints.NONE;
+        constraints.anchor        = GridBagConstraints.LINE_START;
+        constraints.insets        = new Insets(0, 5, 0, 0);
 
-		return contentPanel;
-	}
+        contentPanel.add(outerJoinAllSubclassCheckBox, constraints);
+        addHelpTopicId(outerJoinAllSubclassCheckBox, helpTopicId() + ".outerJoinAllSubclasses");
 
-	protected String helpTopicIdPrefix() {
-		return "descriptor.relational";
-	}
+        // Is Child widgets
+        JRadioButton isChildRadioButton = buildRadioButton("IS_CHILD_DESC", buildIsChildDescriptorRadioButtonModel(getIsRootHolder()));
+        addHelpTopicId(isChildRadioButton, helpTopicId() + ".isChild");
+
+        JPanel isChildPanel = buildIsChildPanel(getIsRootHolder().getValue() == Boolean.FALSE);
+        getIsRootHolder().addPropertyChangeListener(buildIsChildListener(isChildPanel));
+        addHelpTopicId(isChildPanel, helpTopicId() + ".isChild");
+
+        // Is Root widgets
+        JRadioButton isRootRadioButton = buildRadioButton("IS_ROOT_DESC", buildIsRootParentDescriptorRadioButtonModel(getIsRootHolder()));
+        addHelpTopicId(isRootRadioButton, helpTopicId() + ".isRoot");
+
+        Collection isRootListeners = new Vector();
+        JPanel isRootPanel = buildIsRootPanel(isRootListeners);
+        isRootListeners.add(classIndicatorPolicyPanel);
+
+        // Add everything to the container
+        GroupBox isRootGroupBox = new GroupBox
+        (
+            isChildRadioButton, isChildPanel,
+            isRootRadioButton, isRootPanel
+        );
+
+        constraints.gridx      = 0;
+        constraints.gridy      = 4;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 1;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.PAGE_START;
+        constraints.insets     = new Insets(5, 0, 0, 0);
+
+        contentPanel.add(isRootGroupBox, constraints);
+
+        addHelpTopicId(getClassIndicatorPolicyPanel(), helpTopicId() + ".isRoot");
+        addHelpTopicId(contentPanel, helpTopicId());
+        addAllRootListeners(isRootListeners);
+
+        return contentPanel;
+    }
+
+    protected String helpTopicIdPrefix() {
+        return "descriptor.relational";
+    }
 }

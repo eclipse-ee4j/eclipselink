@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.nls.japanese;
 
 
@@ -367,7 +367,7 @@ public class NLSEmployeeTableCreator extends org.eclipse.persistence.tools.schem
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
-        //	field.setForeignKeyFieldName("\u305f\u304f\u305d\u305b\u304a.\u304a\u3059\u305f_\u3051\u3048"); //("PHONE.EMP_ID");
+        //    field.setForeignKeyFieldName("\u305f\u304f\u305d\u305b\u304a.\u304a\u3059\u305f_\u3051\u3048"); //("PHONE.EMP_ID");
         field.setForeignKeyFieldName("\u304a\u3059\u305f.\u304a\u3059\u305f_\u3051\u3048");//("PHONE.EMP_ID");
         tabledefinition.addField(field);
 

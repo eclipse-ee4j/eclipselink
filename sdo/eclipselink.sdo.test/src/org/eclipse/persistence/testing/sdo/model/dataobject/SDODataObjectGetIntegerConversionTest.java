@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -25,7 +25,7 @@ public class SDODataObjectGetIntegerConversionTest extends SDODataObjectConversi
     public SDODataObjectGetIntegerConversionTest(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetIntegerConversionTest" };
         TestRunner.main(arguments);
@@ -34,7 +34,7 @@ public class SDODataObjectGetIntegerConversionTest extends SDODataObjectConversi
     //1. purpose: getBigInteger with boolean property
     public void testGetIntegerFromBoolean() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
-        property.setType(SDOConstants.SDO_BOOLEAN);        
+        property.setType(SDOConstants.SDO_BOOLEAN);
         dataObject.set(property, true);
         try {
             BigInteger bigIntegerValue = dataObject.getBigInteger(property);
@@ -46,8 +46,8 @@ public class SDODataObjectGetIntegerConversionTest extends SDODataObjectConversi
     //2. purpose: getBigInteger with byte property
     public void testGetIntegerFromByte() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
-        property.setType(SDOConstants.SDO_BYTE);        
-        
+        property.setType(SDOConstants.SDO_BYTE);
+
         byte theByte = 10;
         dataObject.set(property, theByte);
         try {
@@ -62,7 +62,7 @@ public class SDODataObjectGetIntegerConversionTest extends SDODataObjectConversi
     //3. purpose: getBigInteger with character property
     public void testGetIntegerFromCharacter() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
-        property.setType(SDOConstants.SDO_CHARACTER);        
+        property.setType(SDOConstants.SDO_CHARACTER);
         dataObject.set(property, 'd');
         try {
             dataObject.getBigInteger(property);
@@ -250,7 +250,7 @@ public class SDODataObjectGetIntegerConversionTest extends SDODataObjectConversi
     //17. purpose: getBigDecimal with bytes property
     public void testGetDecimalFromBytes() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
-        property.setType(SDOConstants.SDO_BYTES);        
+        property.setType(SDOConstants.SDO_BYTES);
         dataObject.set(property, new String("abcd").getBytes());
         try {
             dataObject.getBigDecimal(property);

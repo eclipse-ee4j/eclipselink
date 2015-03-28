@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,9 +26,9 @@ import junit.framework.TestCase;
 
 public class PrefixMapperContextTestCases extends TestCase {
     private static final String CONTROL_XML = "<newPrefix:employeeContext xmlns:ns0=\"extraUri\" xmlns:newPrefix=\"someuri\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:somePrefix=\"my.uri\">" +
-              "<firstName>Jon</firstName><lastName>Doe</lastName><acmeNS:employeeId>123</acmeNS:employeeId>" + 
+              "<firstName>Jon</firstName><lastName>Doe</lastName><acmeNS:employeeId>123</acmeNS:employeeId>" +
               "</newPrefix:employeeContext>";
-    
+
     public void testMarshalWithContextualNamespaces() throws Exception  {
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeContext.class}, null);
         Marshaller m = ctx.createMarshaller();
@@ -40,9 +40,9 @@ public class PrefixMapperContextTestCases extends TestCase {
         emp.employeeId = 123;
         StringWriter writer = new StringWriter();
         m.marshal(emp, writer);
-        
+
         assertTrue("Expected: " + CONTROL_XML + " But was: " + writer.toString(), writer.toString().equals(CONTROL_XML));
-        
+
     }
 
 }

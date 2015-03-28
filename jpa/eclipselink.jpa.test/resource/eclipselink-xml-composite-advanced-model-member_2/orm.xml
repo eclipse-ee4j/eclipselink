@@ -98,11 +98,11 @@
         <attributes>
             <basic name="startDate">
                 <column name="S_DATE"/>
-				<temporal>DATE</temporal>
+                <temporal>DATE</temporal>
             </basic>
             <basic name="endDate">
                 <column name="E_DATE"/>
-				<temporal>DATE</temporal>
+                <temporal>DATE</temporal>
             </basic>
         </attributes>
     </embeddable>

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
 
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class CascadeLockingPolicy {
     protected boolean m_shouldHandleUnmappedFields;
     protected boolean m_hasCheckedForUnmappedFields;
     protected DataReadQuery m_unmappedFieldsQuery;
-    
+
     /**
      * INTERNAL:
      */
@@ -57,44 +57,44 @@ public class CascadeLockingPolicy {
         m_parentDescriptor = parentDescriptor;
         m_parentClass = m_parentDescriptor.getJavaClass();
     }
-    
+
     /**
      * INTERNAL:
      */
     protected ReadObjectQuery getQuery() {
         if (m_query == null) {
             m_query = new ReadObjectQuery(m_parentClass);
-            
+
             Expression selectionCriteria = null;
             Iterator keys = m_queryKeyFields.keySet().iterator();
             ExpressionBuilder builder = new ExpressionBuilder();
-            
+
             while (keys.hasNext()) {
                 String keyField = ((DatabaseField) keys.next()).getQualifiedName();
-                
+
                 if (selectionCriteria == null) {
                     selectionCriteria = builder.getField(keyField).equal(builder.getParameter(keyField));
                 } else {
                     selectionCriteria.and(builder.getField(keyField).equal(builder.getParameter(keyField)));
                 }
-                
+
                 m_query.addArgument(keyField);
             }
-            
+
             m_query.setSelectionCriteria(selectionCriteria);
             m_query.setShouldUseWrapperPolicy(false);
         }
-        
+
         return m_query;
     }
-    
+
     /**
      * INTERNAL:
      */
      protected DatabaseMapping getParentMapping() {
         // If the query is null, then we have not been initialized. Try to
-        // look up a parent mapping first if we have lookup fields. For a 
-        // 1-M we can not perform the getMappingForField until the fields 
+        // look up a parent mapping first if we have lookup fields. For a
+        // 1-M we can not perform the getMappingForField until the fields
         // have been initialized.
         // If the parent mapping is not found, a query will be initialized
         // and the following lookup will no longer hit.
@@ -102,7 +102,7 @@ public class CascadeLockingPolicy {
             Iterator<DatabaseField> itFields = m_queryKeyFields.values().iterator();
             while(itFields.hasNext()) {
                 DatabaseMapping mapping = m_descriptor.getObjectBuilder().getMappingForField(itFields.next());
-                
+
                 if(mapping == null) {
                     // at least one field is not mapped therefore no parent mapping exists.
                     m_parentMapping = null;
@@ -112,7 +112,7 @@ public class CascadeLockingPolicy {
                         m_parentMapping = mapping;
                     } else {
                         if(m_parentMapping != mapping) {
-                            // there's more than one mapping therefore no parent mapping exists. 
+                            // there's more than one mapping therefore no parent mapping exists.
                             m_parentMapping = null;
                             break;
                         }
@@ -120,15 +120,15 @@ public class CascadeLockingPolicy {
                 }
             }
         }
-        
+
         return m_parentMapping;
      }
-     
+
      /**
       * Get the descriptor that really represents this object
       * In the case of inheritance, the object may represent a subclass of class the descriptor
-      * represents. 
-      * 
+      * represents.
+      *
       * If there is no InheritancePolicy, we return our parentDescriptor
       * If there is inheritance we will search for a descriptor that represents parentObj and
       * return that descriptor
@@ -160,7 +160,7 @@ public class CascadeLockingPolicy {
          }
          return translationRow;
      }
-    
+
      /**
       * INTERNAL:
       */
@@ -177,7 +177,7 @@ public class CascadeLockingPolicy {
              // the object is not in the db
              return null;
          }
-         
+
          AbstractRecord unmappedValues = (AbstractRecord)result.get(0);
 
          AbstractRecord translationRow = new DatabaseRecord();
@@ -189,7 +189,7 @@ public class CascadeLockingPolicy {
          }
          return translationRow;
       }
-     
+
      /**
       * INTERNAL:
       * Identify mapped and not mapped fields (should be done once).
@@ -243,20 +243,20 @@ public class CascadeLockingPolicy {
                  DatabaseField field = itUnmappedFields.next();
                  statement.addField(field);
              }
-             
+
              statement.setWhereClause(whereClause);
              statement.normalize(uow.getParent(), m_descriptor);
              m_unmappedFieldsQuery.setSQLStatement(statement);
              m_unmappedFieldsQuery.setSessionName(m_descriptor.getSessionName());
          }
      }
-     
+
      /**
      * INTERNAL:
      */
     public void lockNotifyParent(Object obj, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl uow) {
         Object parentObj = null;
-        
+
         // Check for a parent object via the parent (back pointer) mapping first.
         DatabaseMapping parentMapping = getParentMapping();
         if (parentMapping != null && parentMapping.isObjectReferenceMapping()) {
@@ -266,7 +266,7 @@ public class CascadeLockingPolicy {
         // If the parent object is still null at this point, try a query.
         // check out why no query keys.
         if (parentObj == null) {
-            AbstractRecord translationRow; 
+            AbstractRecord translationRow;
             if(m_shouldHandleUnmappedFields) {
                 // should look for unmapped fields.
                 initUnmappedFields(uow);
@@ -278,16 +278,16 @@ public class CascadeLockingPolicy {
                         return;
                     } else {
                         // merge mapped and unmapped values into the single translation row.
-                        translationRow = getMappedTranslationRow(obj, uow); 
+                        translationRow = getMappedTranslationRow(obj, uow);
                         translationRow.putAll(unmappedTranslationRow);
                     }
                 } else {
                     // no unmapped fields
-                    translationRow = getMappedTranslationRow(obj, uow); 
+                    translationRow = getMappedTranslationRow(obj, uow);
                 }
             } else {
                 // no unmapped fields
-                translationRow = getMappedTranslationRow(obj, uow); 
+                translationRow = getMappedTranslationRow(obj, uow);
             }
             // the query is set to return an unwrapped object.
             parentObj = uow.executeQuery(getQuery(), translationRow);
@@ -295,7 +295,7 @@ public class CascadeLockingPolicy {
         } else {
             // make sure the parent object is unwrapped.
             if (m_parentDescriptor.hasWrapperPolicy()) {
-                m_parentDescriptor.getWrapperPolicy().unwrapObject(parentObj, uow);   
+                m_parentDescriptor.getWrapperPolicy().unwrapObject(parentObj, uow);
             }
         }
         ClassDescriptor realParentDescriptor = m_parentDescriptor;
@@ -303,11 +303,11 @@ public class CascadeLockingPolicy {
             realParentDescriptor = getParentDescriptorFromInheritancePolicy(parentObj);
         }
 
-        // If we have a parent object, force update the version field if one 
+        // If we have a parent object, force update the version field if one
         // exists, and keep firing the notification up the chain.
         // Otherwise, do nothing.
         if (parentObj != null) {
-            // Need to check if we are a non cascade locking node within a 
+            // Need to check if we are a non cascade locking node within a
             // cascade locking policy chain.
             if (realParentDescriptor.usesOptimisticLocking() && realParentDescriptor.getOptimisticLockingPolicy().isCascaded()) {
                 ObjectChangeSet ocs = realParentDescriptor.getObjectBuilder().createObjectChangeSet(parentObj, changeSet, uow);
@@ -317,7 +317,7 @@ public class CascadeLockingPolicy {
                     changeSet.addObjectChangeSet(ocs, uow, true);
                 }
             }
-        
+
             // Keep sending the notification up the chain ...
             if (realParentDescriptor.hasCascadeLockingPolicies()) {
                 for (CascadeLockingPolicy policy : realParentDescriptor.getCascadeLockingPolicies()) {
@@ -326,23 +326,23 @@ public class CascadeLockingPolicy {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setQueryKeyFields(Map<DatabaseField, DatabaseField> queryKeyFields) {
         setQueryKeyFields(queryKeyFields, true);
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setQueryKeyFields(Map<DatabaseField, DatabaseField> queryKeyFields, boolean lookForParentMapping) {
         m_queryKeyFields = queryKeyFields;
-        m_mappedQueryKeyFields = m_queryKeyFields; 
+        m_mappedQueryKeyFields = m_queryKeyFields;
         this.m_lookForParentMapping = lookForParentMapping;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether to expect unmapped fields.

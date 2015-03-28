@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
 import java.security.AccessController;
@@ -61,7 +61,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         //right now only ForeignKeyRelationships are supported
         this.isForeignKeyRelationship = false;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -104,7 +104,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         getForeignKeyFields().addElement(sourceForeignKeyField);
         this.setIsForeignKeyRelationship(true);
     }
-    
+
     /**
      * PUBLIC:
      * A foreign key from the source table and abstract query key from the interface descriptor are added to the
@@ -312,7 +312,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             QueryKey targetQueryKey = firstChild.getQueryKeyNamed(queryKey);
             if ((targetQueryKey != null) && (targetQueryKey.isDirectQueryKey())) {
                 return firstChild.getObjectBuilder().getFieldClassification(((DirectQueryKey)targetQueryKey).getField());
-            }            
+            }
         }
         return null;
     }
@@ -690,7 +690,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
     @Override
     public Object valueFromObject(Object object, DatabaseField field, AbstractSession session) {
         // First check if the value can be obtained from the value holder's row.
-    	AbstractRecord referenceRow = getIndirectionPolicy().extractReferenceRow(getAttributeValueFromObject(object));
+        AbstractRecord referenceRow = getIndirectionPolicy().extractReferenceRow(getAttributeValueFromObject(object));
         if (referenceRow != null) {
             Object value = referenceRow.get(field);
 
@@ -918,7 +918,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         }
         writeFromObjectIntoRow(object, row, session, WriteType.UPDATE);
     }
-    
+
     /**
      * INTERNAL:
      * This row is built for shallow insert which happens in case of bidirectional inserts.

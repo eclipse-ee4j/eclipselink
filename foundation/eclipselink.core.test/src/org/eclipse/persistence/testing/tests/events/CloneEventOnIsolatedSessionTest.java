@@ -10,7 +10,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 public class CloneEventOnIsolatedSessionTest extends EventHookTestCase {
     Vector<ClassDescriptor> issolatedDescriptors;
     boolean hasIsolatedClasses = false;
-    
+
     public void setup() {
         //set all descriptors in this package as isolated
         issolatedDescriptors = new Vector();
@@ -22,9 +22,9 @@ public class CloneEventOnIsolatedSessionTest extends EventHookTestCase {
         issolatedDescriptors.add(getSession().getDescriptor(Order.class));
         for (ClassDescriptor descriptor : issolatedDescriptors){
             descriptor.setIsIsolated(true);
-            /// the value assigned by default during initialization for an isolated descriptor. 
+            /// the value assigned by default during initialization for an isolated descriptor.
             descriptor.setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
-            
+
         }
         hasIsolatedClasses = getDatabaseSession().getProject().hasIsolatedClasses();
         getDatabaseSession().getProject().setHasIsolatedClasses(true);
@@ -34,18 +34,18 @@ public class CloneEventOnIsolatedSessionTest extends EventHookTestCase {
         getDatabaseSession().writeObject(getAddress());
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
-    
+
     public void reset() {
         for (ClassDescriptor descriptor : issolatedDescriptors){
             descriptor.setIsIsolated(false);
-            /// the value assigned by default during initialization for a non-isolated descriptor. 
+            /// the value assigned by default during initialization for a non-isolated descriptor.
             descriptor.setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
         }
         getDatabaseSession().getProject().setHasIsolatedClasses(hasIsolatedClasses);
-        
+
         super.reset();
     }
-    
+
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         EmailAccount emailAccountCopy = (EmailAccount)uow.readObject(getEmailAccount());
@@ -67,6 +67,6 @@ public class CloneEventOnIsolatedSessionTest extends EventHookTestCase {
             throw new TestErrorException("Event hook failed. The post clone method on " + phoneNumberCopy + " failed to execute.");
         }
     }
-    
-    
+
+
 }

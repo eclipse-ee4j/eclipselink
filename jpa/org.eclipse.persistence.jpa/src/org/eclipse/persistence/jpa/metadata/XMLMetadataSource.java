@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/05/2011-2.3 Chris Delahunt 
+ *     05/05/2011-2.3 Chris Delahunt
  *       - 344837: Extensibility - Metadata Repository
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jpa.metadata;
 
 import java.io.IOException;
@@ -32,29 +32,29 @@ import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * <p><b>Purpose</b>: Support reading metadata for a persistence unit in an XML format from a URL and if the property is undefined,
- * it will look for a file.    
+ * it will look for a file.
  */
 public class XMLMetadataSource extends MetadataSourceAdapter {
-    
+
     /**
-     * This method returns a Reader for an EclipseLink-ORM.xml.  It will use the 
-     * PersistenceUnitProperties.METADATA_SOURCE_XML_URL property if available to create an 
-     * InputStreamReader from a URL, and if not available, use the 
+     * This method returns a Reader for an EclipseLink-ORM.xml.  It will use the
+     * PersistenceUnitProperties.METADATA_SOURCE_XML_URL property if available to create an
+     * InputStreamReader from a URL, and if not available, use the
      * PersistenceUnitProperties.METADATA_SOURCE_XML_FILE property will be used to get a file
-     * resource from the classloader. 
-     * It will throw a ValidationException if no reader can be returned. 
-     * 
+     * resource from the classloader.
+     * It will throw a ValidationException if no reader can be returned.
+     *
      * @param properties
      * @param classLoader
      * @param log - SessionLog used for status messages.
      * @return Reader - a InputStreamReader with data in the form of an EclipseLink-orm.xml
-     * 
-     * 
+     *
+     *
      * @see #getEntityMappings
      */
     public Reader getEntityMappingsReader(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
         InputStreamReader reader = null;
-        
+
         //read from a URL
         String mappingURLName = (String)getConfigPropertyLogDebug(
                 PersistenceUnitProperties.METADATA_SOURCE_XML_URL,
@@ -63,12 +63,12 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
             try {
                 URL url = new URL(mappingURLName);
                 reader = new InputStreamReader(url.openStream());
-                
+
             } catch (IOException exception) {
                 throw ValidationException.fileError(exception);
             }
         }
-        
+
         //read a file using the classloader
         if (reader == null) {
             String mappingFileName = (String)getConfigPropertyLogDebug(
@@ -91,12 +91,12 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
         }
         return reader;
     }
-    
+
     /**
      * This method is responsible for returning the object representation of the MetadataSource.
-     * This implementation makes a call to getEntityMappingsReader to get a Reader which is passed to an 
-     * XMLUnmarshaller, and closes the reader in a finally block.  
-     * 
+     * This implementation makes a call to getEntityMappingsReader to get a Reader which is passed to an
+     * XMLUnmarshaller, and closes the reader in a finally block.
+     *
      * @return XMLEntityMappings - object representation of the EclipseLink-orm.xml for this repository
      */
     public XMLEntityMappings getEntityMappings(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
@@ -116,11 +116,11 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
             }
         }
     }
-    
+
     /**
-     * Used by getEntityMappings when creating the XMLEntityMappings as a way of describing where it was read from.  
-     * Currently returns the current class's simple name.  
-     * 
+     * Used by getEntityMappings when creating the XMLEntityMappings as a way of describing where it was read from.
+     * Currently returns the current class's simple name.
+     *
      * @return String - repository name to store in the XMLEntityMappings returned from getEntityMappings
      */
     public String getRepositoryName() {
@@ -139,11 +139,11 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
      * configurations are supplied. As an example; overriding an application to
      * use RESOURCE_LOCAL when it was coded to use JTA would result in changes
      * not be written to the database.
-     * 
+     *
      * PersistenceUnitProperties.METADATA_SOURCE_PROPERTIES_FILE property will be used to get a file
      * resource from the classloader. Properties are read from the file.
      * If the property either not specified or contains an empty string then returns null.
-     * 
+     *
      * @since EclipseLink 2.4
      */
     public Map<String, Object> getPropertyOverrides(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
@@ -153,11 +153,11 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
         if (propertiesFileName == null || propertiesFileName.length() == 0) {
             return null;
         }
-        
+
         try {
             URL fileURL = getFileURL(propertiesFileName, classLoader, log);
             if (fileURL != null) {
-                Properties propertiesFromFile = new Properties();        
+                Properties propertiesFromFile = new Properties();
                 propertiesFromFile.load(fileURL.openStream());
                 if (!propertiesFromFile.isEmpty()) {
                     return new HashMap(propertiesFromFile);
@@ -171,16 +171,16 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
             throw ValidationException.fileError(exception);
         }
     }
-    
+
     protected static URL getFileURL(String fileName, ClassLoader classLoader, SessionLog log) throws IOException {
         Enumeration<URL> fileURLs = classLoader.getResources(fileName);
-        
+
         if (!fileURLs.hasMoreElements()){
             fileURLs = classLoader.getResources("/./" + fileName);
         }
-        
+
         if (fileURLs.hasMoreElements()) {
-            URL nextURL = fileURLs.nextElement();   
+            URL nextURL = fileURLs.nextElement();
             if (fileURLs.hasMoreElements()) {
                 // Switched to warning, same file can be on the classpath twice in some deployments,
                 // should not be an error.
@@ -194,8 +194,8 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
 
     /**
      * Check the provided map for an object with the given name.  If that object is not available, check the
-     * System properties.  Log the value returned if logging is enabled 
-     * @param propertyName 
+     * System properties.  Log the value returned if logging is enabled
+     * @param propertyName
      * @param properties
      * @param log
      * @return

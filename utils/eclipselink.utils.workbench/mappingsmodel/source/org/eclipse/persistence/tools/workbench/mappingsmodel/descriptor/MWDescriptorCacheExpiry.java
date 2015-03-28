@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,10 +27,10 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 
 public final class MWDescriptorCacheExpiry extends MWModel implements MWCacheExpiry {
-    
+
     //******* cache Invalidation *******
     private volatile String expiryType;
-    
+
     private volatile boolean updateReadTimeOnUpdate; //does not apply for expiryType CACHE_EXPIRY_NO_EXIPRY
 
     private volatile Long timeToLiveExpiry; //only used used for expiryType CACHE_EXPIRY_TIME_TO_LIVE_EXPIRY
@@ -39,9 +39,9 @@ public final class MWDescriptorCacheExpiry extends MWModel implements MWCacheExp
     // This no longer appears to be the case.  Perhaps this should be changed to a better type now?
     private volatile Date dailyExpiryTime; //only used for expiryType CACHE_EXPIRY_DAILY_EXPIRY
 
-    
+
     // ********** static methods **********
-    
+
     public static XMLDescriptor buildDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(MWDescriptorCacheExpiry.class);
@@ -76,13 +76,13 @@ public final class MWDescriptorCacheExpiry extends MWModel implements MWCacheExp
 
         XMLDirectMapping updateReadTimeOnUpdateMapping = (XMLDirectMapping) descriptor.addDirectMapping("updateReadTimeOnUpdate", "update-read-time-on-update/text()");
         updateReadTimeOnUpdateMapping.setNullValue(Boolean.valueOf(DEFAULT_UPDATE_READ_TIME_ON_UPDATE));
-        
+
         return descriptor;
     }
 
-    
+
     // ********** Constructors **********
-    
+
     /** For TopLink use only */
     private MWDescriptorCacheExpiry() {
         super();
@@ -91,7 +91,7 @@ public final class MWDescriptorCacheExpiry extends MWModel implements MWCacheExp
     public MWDescriptorCacheExpiry(MWCachingPolicy parent) {
         super(parent);
     }
-    
+
     protected void initialize(Node parent) {
         super.initialize(parent);
         this.dailyExpiryTime        = DEFAULT_DAILY_EXPIRY_TIME;
@@ -100,7 +100,7 @@ public final class MWDescriptorCacheExpiry extends MWModel implements MWCacheExp
         this.updateReadTimeOnUpdate = DEFAULT_UPDATE_READ_TIME_ON_UPDATE;
     }
 
-    
+
     public Date getDailyExpiryTime() {
         return this.dailyExpiryTime;
     }
@@ -108,25 +108,25 @@ public final class MWDescriptorCacheExpiry extends MWModel implements MWCacheExp
     public void setDailyExpiryTime(Date dailyExpiryTime) {
         Date oldDailyExpiryTime = this.dailyExpiryTime;
         if (newExpiryTimeDifferent(dailyExpiryTime)) {
-        	this.dailyExpiryTime = dailyExpiryTime;
-        	firePropertyChanged(DAILY_EXPIRY_TIME_PROPERTY, oldDailyExpiryTime, this.dailyExpiryTime);
+            this.dailyExpiryTime = dailyExpiryTime;
+            firePropertyChanged(DAILY_EXPIRY_TIME_PROPERTY, oldDailyExpiryTime, this.dailyExpiryTime);
         }
     }
-    
+
     private boolean newExpiryTimeDifferent(Date newExpiryTime) {
-    	Date oldExpiryTime = getDailyExpiryTime();
-    	if (newExpiryTime.getHours() != oldExpiryTime.getHours()
-    			|| newExpiryTime.getMinutes() != oldExpiryTime.getMinutes()
-    			||  newExpiryTime.getSeconds() !=  oldExpiryTime.getSeconds()) {
-    		return true;
-    	}
-    	return false;
+        Date oldExpiryTime = getDailyExpiryTime();
+        if (newExpiryTime.getHours() != oldExpiryTime.getHours()
+                || newExpiryTime.getMinutes() != oldExpiryTime.getMinutes()
+                ||  newExpiryTime.getSeconds() !=  oldExpiryTime.getSeconds()) {
+            return true;
+        }
+        return false;
     }
-    
+
     /**
      * Convenience method for setting daily expiry time.  Dealing with Date objects can be painful, especially
      * when trying to work with ms offsets into the current second.
-     * 
+     *
      * @param dailyExpiryTime
      */
     public void setDailyExpiryTime(Calendar dailyExpiryTime) {
@@ -148,7 +148,7 @@ public final class MWDescriptorCacheExpiry extends MWModel implements MWCacheExp
             }
         }
     }
-    
+
     public boolean getUpdateReadTimeOnUpdate() {
         return this.updateReadTimeOnUpdate;
     }
@@ -163,7 +163,7 @@ public final class MWDescriptorCacheExpiry extends MWModel implements MWCacheExp
     public Long getTimeToLiveExpiry() {
         return this.timeToLiveExpiry;
     }
-    
+
     public void setTimeToLiveExpiry(Long timeToLiveExpiry) {
         Long oldTimeToLive = this.timeToLiveExpiry;
         this.timeToLiveExpiry = timeToLiveExpiry;
@@ -174,9 +174,9 @@ public final class MWDescriptorCacheExpiry extends MWModel implements MWCacheExp
         return (MWMappingDescriptor) ((MWTransactionalPolicy) this.getParent()).getParent();
     }
 
-    
+
     // ***************** runtime conversion **********************
-    
+
     public void adjustRuntimeDescriptor(ClassDescriptor runtimeDescriptor) {
         if (getExpiryType() == CACHE_EXPIRY_NO_EXPIRY) {
             runtimeDescriptor.setCacheInvalidationPolicy(new NoExpiryCacheInvalidationPolicy());
@@ -184,7 +184,7 @@ public final class MWDescriptorCacheExpiry extends MWModel implements MWCacheExp
         else if (getExpiryType() == CACHE_EXPIRY_DAILY_EXPIRY) {
             Date expiryTime = getDailyExpiryTime();
             runtimeDescriptor.setCacheInvalidationPolicy(
-                    new DailyCacheInvalidationPolicy(expiryTime.getHours(), expiryTime.getMinutes(), 
+                    new DailyCacheInvalidationPolicy(expiryTime.getHours(), expiryTime.getMinutes(),
                                                      expiryTime.getSeconds(), 0));
         }
         else if (getExpiryType() == CACHE_EXPIRY_TIME_TO_LIVE_EXPIRY) {
@@ -192,7 +192,7 @@ public final class MWDescriptorCacheExpiry extends MWModel implements MWCacheExp
         }
     }
 
-    
+
     public MWCacheExpiry getPersistedPolicy() {
         return this;
     }

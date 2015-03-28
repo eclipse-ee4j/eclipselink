@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,26 +24,26 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.JAXBElementTestCases;
 public class JAXBElementLongTestCases extends JAXBElementTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/long.xml";
 
-	public JAXBElementLongTestCases(String name) throws Exception {
-		super(name);
-		setControlDocument(XML_RESOURCE);	
-		setTargetClass(long.class);		
-	}
+    public JAXBElementLongTestCases(String name) throws Exception {
+        super(name);
+        setControlDocument(XML_RESOURCE);
+        setTargetClass(long.class);
+    }
 
-	public Class[] getClasses(){
-    	Class[] classes = new Class[1];
+    public Class[] getClasses(){
+        Class[] classes = new Class[1];
         classes[0] = Long.class;
         return classes;
     }
-	
-	protected Object getControlObject() {		
-		long longValue = 11;
-		JAXBElement<Long> jbe = new JAXBElement<Long>(new QName("a", "b"),Long.class, longValue); 			
-		return jbe;		
-	}
-					
-	public void testSchemaGen() throws Exception{
-		super.testSchemaGen(new ArrayList<InputStream>());
-	}
+
+    protected Object getControlObject() {
+        long longValue = 11;
+        JAXBElement<Long> jbe = new JAXBElement<Long>(new QName("a", "b"),Long.class, longValue);
+        return jbe;
+    }
+
+    public void testSchemaGen() throws Exception{
+        super.testSchemaGen(new ArrayList<InputStream>());
+    }
 
 }

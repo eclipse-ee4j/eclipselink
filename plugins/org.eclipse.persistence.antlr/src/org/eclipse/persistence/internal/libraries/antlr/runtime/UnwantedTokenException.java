@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -29,25 +29,25 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 /** An extra token while parsing a TokenStream */
 public class UnwantedTokenException extends MismatchedTokenException {
-	/** Used for remote debugger deserialization */
-	public UnwantedTokenException() {;}
+    /** Used for remote debugger deserialization */
+    public UnwantedTokenException() {;}
 
-	public UnwantedTokenException(int expecting, IntStream input) {
-		super(expecting, input);
-	}
+    public UnwantedTokenException(int expecting, IntStream input) {
+        super(expecting, input);
+    }
 
-	public Token getUnexpectedToken() {
-		return token;
-	}
+    public Token getUnexpectedToken() {
+        return token;
+    }
 
-	public String toString() {
-		String exp = ", expected "+expecting;
-		if ( expecting==Token.INVALID_TOKEN_TYPE ) {
-			exp = "";
-		}
-		if ( token==null ) {
-			return "UnwantedTokenException(found="+null+exp+")";
-		}
-		return "UnwantedTokenException(found="+token.getText()+exp+")";
-	}
+    public String toString() {
+        String exp = ", expected "+expecting;
+        if ( expecting==Token.INVALID_TOKEN_TYPE ) {
+            exp = "";
+        }
+        if ( token==null ) {
+            return "UnwantedTokenException(found="+null+exp+")";
+        }
+        return "UnwantedTokenException(found="+token.getText()+exp+")";
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -34,7 +34,7 @@ public class StructConverterSessionsXMLTest extends AutoVerifyTestCase {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader(SPATIAL_SESSIONS_XML_NAME);
 
         // log in the session
-            session = (DatabaseSession)SessionManager.getManager().getSession(loader, SPATIAL_SESSION_NAME, getClass().getClassLoader(), true, false); // refresh the session  
+            session = (DatabaseSession)SessionManager.getManager().getSession(loader, SPATIAL_SESSION_NAME, getClass().getClassLoader(), true, false); // refresh the session
     }
 
     public void verify() {
@@ -44,7 +44,7 @@ public class StructConverterSessionsXMLTest extends AutoVerifyTestCase {
         if (!session.getPlatform().getTypeConverters().containsKey(oracle.spatial.geometry.JGeometry.class)) {
             throw new TestErrorException("Type Converter not added for oracle.spatial.geometry.JGeometry.class");
         }
-        // not checking for MY_GEOMETRY struct converter because it is added in the form "<username>.MY_GEOMETRY" and we do not necessarily know what 
+        // not checking for MY_GEOMETRY struct converter because it is added in the form "<username>.MY_GEOMETRY" and we do not necessarily know what
         // that is here.
         if (!session.getPlatform().getTypeConverters().containsKey(org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.MyGeometry.class)) {
             throw new TestErrorException("Type Converter not added for org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.MyGeometryConverter.class");

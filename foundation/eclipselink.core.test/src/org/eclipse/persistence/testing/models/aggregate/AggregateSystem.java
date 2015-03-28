@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.aggregate;
 
 import org.eclipse.persistence.sessions.*;
@@ -24,13 +24,13 @@ public class AggregateSystem extends TestSystem {
     // The flag provided so that AggregateWorkbenchIntegrationSystem
     // could remove all the setup that uses this new feature.
     protected boolean useNewAggregateCollection = true;
-    
+
     public AggregateSystem() {
         this(true);
     }
 
     public AggregateSystem(boolean useNewAggregateCollection) {
-        this.useNewAggregateCollection = useNewAggregateCollection;  
+        this.useNewAggregateCollection = useNewAggregateCollection;
         project = new AggregateProject(useNewAggregateCollection);
     }
 
@@ -48,7 +48,7 @@ public class AggregateSystem extends TestSystem {
 
         project = new SwitchProject();
         session.addDescriptors(project);
-        
+
         project = new AggregateRelationshipsProject();
         session.addDescriptors(project);
     }
@@ -98,7 +98,7 @@ public class AggregateSystem extends TestSystem {
 
         // NESTED AGGREGATES
         schemaManager.replaceObject(NestedAggregateTableCreator.tableDefinition());
-        //bug 3920154 - build field types to make the types generic.    
+        //bug 3920154 - build field types to make the types generic.
         table = GolfClub.buildGOLF_CLUBTable();
         schemaManager.buildFieldTypes(table);
         schemaManager.replaceObject(table);
@@ -108,7 +108,7 @@ public class AggregateSystem extends TestSystem {
         schemaManager.replaceObject(table);
 
         (new SwitchTableCreator()).replaceTables(session);
-        
+
         new AggregateRelationshipsTableCreator().replaceTables(session);
     }
 

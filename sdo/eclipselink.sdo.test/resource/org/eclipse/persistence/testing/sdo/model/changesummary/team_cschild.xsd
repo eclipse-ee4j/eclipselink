@@ -1,11 +1,11 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://www.example.org" 
+            xmlns="http://www.example.org"
             xmlns:sdo="commonj.sdo"
             targetNamespace="http://www.example.org"
             elementFormDefault="unqualified"
-            attributeFormDefault="unqualified"> 
+            attributeFormDefault="unqualified">
 
-	<xsd:element name="team" type="Team"/>
+    <xsd:element name="team" type="Team"/>
 
      <xsd:complexType name="Address">
         <xsd:sequence>
@@ -21,13 +21,13 @@
 
     <xsd:complexType name="Employee">
         <xsd:sequence>
-            <xsd:element name="id" type="xsd:string"/>        
-            <xsd:element name="name" type="xsd:string"/>            
+            <xsd:element name="id" type="xsd:string"/>
+            <xsd:element name="name" type="xsd:string"/>
             <xsd:element name="address" type="Address"/>
-            <xsd:element name="myChangeSummary" type="sdo:ChangeSummaryType"/>        
+            <xsd:element name="myChangeSummary" type="sdo:ChangeSummaryType"/>
         </xsd:sequence>
     </xsd:complexType>
-    
+
     <xsd:complexType name="Team">
         <xsd:sequence>
             <xsd:element name="manager" type="Employee"/>

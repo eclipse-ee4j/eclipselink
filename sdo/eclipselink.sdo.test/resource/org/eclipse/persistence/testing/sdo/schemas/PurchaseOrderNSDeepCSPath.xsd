@@ -1,11 +1,11 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://www.example.org" 
+            xmlns="http://www.example.org"
             xmlns:sdo="commonj.sdo"
             targetNamespace="http://www.example.org"
             elementFormDefault="qualified"
-            attributeFormDefault="unqualified"> 
+            attributeFormDefault="unqualified">
 
-	<xsd:element name="purchaseOrder" type="PurchaseOrderType"/>
+    <xsd:element name="purchaseOrder" type="PurchaseOrderType"/>
 
      <xsd:complexType name="AddressType">
         <xsd:attribute name="country" type="xsd:string"/>
@@ -31,8 +31,8 @@
             <xsd:element name="productName" type="xsd:string"/>
             <xsd:element name="quantity" type="xsd:int"/>
             <xsd:element name="USPrice" type="xsd:float"/>
-			<xsd:element name="levels2" type="Levels2" minOccurs="0" />
-	    	<xsd:element name="shipDate" type="xsd:date"/>
+            <xsd:element name="levels2" type="Levels2" minOccurs="0" />
+            <xsd:element name="shipDate" type="xsd:date"/>
             <xsd:element name="comment" type="xsd:string"/>
         </xsd:sequence>
     </xsd:complexType>
@@ -51,19 +51,19 @@
             </xsd:sequence>
          </xsd:sequence>
       </xsd:sequence>
-	</xsd:complexType>
+    </xsd:complexType>
 
-	<xsd:complexType name="Level2Type">
-		<xsd:sequence>
-			<xsd:sequence>
-				<xsd:element name="comment2" type="xsd:string" minOccurs="0"/>
-			</xsd:sequence>
-		</xsd:sequence>
-	</xsd:complexType>
+    <xsd:complexType name="Level2Type">
+        <xsd:sequence>
+            <xsd:sequence>
+                <xsd:element name="comment2" type="xsd:string" minOccurs="0"/>
+            </xsd:sequence>
+        </xsd:sequence>
+    </xsd:complexType>
 
     <xsd:complexType name="PurchaseOrderType">
         <xsd:sequence>
-            <xsd:element name="myChangeSummary" type="sdo:ChangeSummaryType"/>                
+            <xsd:element name="myChangeSummary" type="sdo:ChangeSummaryType"/>
             <xsd:element name="poId" type="xsd:string"/>
             <xsd:element name="shipTo" type="AddressType"/>
             <xsd:element name="billTo" type="AddressType"/>

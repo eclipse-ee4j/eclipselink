@@ -25,13 +25,13 @@ import javax.persistence.TemporalType;
 @SuppressWarnings("unused")
 public class Alias {
 
-	@Id
-	private int id;
-	private String alias;
-	@ElementCollection
-	@Temporal(TemporalType.DATE)
-	private Map<String, Date> ids;
-	private Customer customer;
-	@JoinColumn(name="ID", referencedColumnName="ALIAS.ALIAS")
-	private Map<Customer, Address> addresses;
+    @Id
+    private int id;
+    private String alias;
+    @ElementCollection
+    @Temporal(TemporalType.DATE)
+    private Map<String, Date> ids;
+    private Customer customer;
+    @JoinColumn(name="ID", referencedColumnName="ALIAS.ALIAS")
+    private Map<Customer, Address> addresses;
 }

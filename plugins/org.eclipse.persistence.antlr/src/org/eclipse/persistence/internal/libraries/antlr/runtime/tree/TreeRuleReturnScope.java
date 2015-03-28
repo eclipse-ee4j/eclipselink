@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.RuleReturnScope;
  *  have to be Object.
  */
 public class TreeRuleReturnScope extends RuleReturnScope {
-	/** First node or root node of tree matched for this rule. */
-	public Object start;
-	public Object getStart() { return start; }	
+    /** First node or root node of tree matched for this rule. */
+    public Object start;
+    public Object getStart() { return start; }
 }

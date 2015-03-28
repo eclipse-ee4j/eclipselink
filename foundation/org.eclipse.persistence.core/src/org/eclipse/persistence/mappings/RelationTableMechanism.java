@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     07/16/2009 Andrei Ilitchev 
+ *     07/16/2009 Andrei Ilitchev
  *       - Bug 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
- *     14/05/2012-2.4 Guy Pelletier   
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 /**
  * <p><b>Purpose</b>: Contains relation table functionality
  * that was originally defined in ManyToManyMapping
- * and now is shared with OneToOneMapping. 
+ * and now is shared with OneToOneMapping.
  */
 public class RelationTableMechanism  implements Cloneable, java.io.Serializable {
     /** The intermediate relation table. */
@@ -80,7 +80,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     /** Used for insertion. */
     protected DataModifyQuery insertQuery;
     protected boolean hasCustomInsertQuery;
-    
+
     protected ReadQuery lockRelationTableQuery;
 
     public RelationTableMechanism() {
@@ -96,17 +96,17 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
 
     /**
      * PUBLIC:
-     * Add the fields in the intermediate table that corresponds to the primary 
+     * Add the fields in the intermediate table that corresponds to the primary
      * key in the source table. This method is used if the keys are composite.
      */
     public void addSourceRelationKeyField(DatabaseField sourceRelationKeyField, DatabaseField sourcePrimaryKeyField) {
         getSourceRelationKeyFields().addElement(sourceRelationKeyField);
         getSourceKeyFields().addElement(sourcePrimaryKeyField);
     }
-    
+
     /**
      * PUBLIC:
-     * Add the fields in the intermediate table that corresponds to the primary 
+     * Add the fields in the intermediate table that corresponds to the primary
      * key in the source table. This method is used if the keys are composite.
      */
     public void addSourceRelationKeyFieldName(String sourceRelationKeyFieldName, String sourcePrimaryKeyFieldName) {
@@ -115,17 +115,17 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
 
     /**
      * PUBLIC:
-     * Add the fields in the intermediate table that corresponds to the primary 
+     * Add the fields in the intermediate table that corresponds to the primary
      * key in the target table. This method is used if the keys are composite.
      */
     public void addTargetRelationKeyField(DatabaseField targetRelationKeyField, DatabaseField targetPrimaryKeyField) {
         getTargetRelationKeyFields().addElement(targetRelationKeyField);
         getTargetKeyFields().addElement(targetPrimaryKeyField);
     }
-    
+
     /**
      * PUBLIC:
-     * Add the fields in the intermediate table that corresponds to the primary 
+     * Add the fields in the intermediate table that corresponds to the primary
      * key in the target table. This method is used if the keys are composite.
      */
     public void addTargetRelationKeyFieldName(String targetRelationKeyFieldName, String targetPrimaryKeyFieldName) {
@@ -139,11 +139,11 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     Expression buildSelectionCriteria(ForeignReferenceMapping mapping, Expression criteria) {
         return buildSelectionCriteriaAndAddFieldsToQueryInternal(mapping, criteria, true, false);
     }
-    
+
     Expression buildSelectionCriteriaAndAddFieldsToQuery(ForeignReferenceMapping mapping, Expression criteria) {
         return buildSelectionCriteriaAndAddFieldsToQueryInternal(mapping, criteria, true, true);
     }
-    
+
     /**
      * INTERNAL:
      * Build the selection criteria to join the source, relation, and target tables.
@@ -157,8 +157,8 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
             Iterator<DatabaseField> relationKeyIterator = getTargetRelationKeyFields().iterator();
             while (targetKeyIterator.hasNext()) {
                 DatabaseField relationKey = relationKeyIterator.next();
-                DatabaseField targetKey = targetKeyIterator.next();    
-                Expression expression = builder.getField(targetKey).equal(linkTable.getField(relationKey));    
+                DatabaseField targetKey = targetKeyIterator.next();
+                Expression expression = builder.getField(targetKey).equal(linkTable.getField(relationKey));
                 if (criteria == null) {
                     criteria = expression;
                 } else {
@@ -172,7 +172,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
 
         while (relationKeyIterator.hasNext()) {
             DatabaseField relationKey = relationKeyIterator.next();
-            DatabaseField sourceKey = sourceKeyIterator.next();            
+            DatabaseField sourceKey = sourceKeyIterator.next();
             Expression expression = linkTable.getField(relationKey).equal(builder.getParameter(sourceKey));
             if (criteria == null) {
                 criteria = expression;
@@ -180,16 +180,16 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
                 criteria = expression.and(criteria);
             }
         }
-        
+
         if (shouldAddFieldsToQuery && mapping.isCollectionMapping()) {
             ((CollectionMapping)mapping).getContainerPolicy().addAdditionalFieldsToQuery(mapping.getSelectionQuery(), linkTable);
         }
-        
+
         return criteria;
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
      * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
@@ -215,7 +215,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         clone.setSourceKeyFields(cloneFields(getSourceKeyFields()));
         clone.setTargetRelationKeyFields(cloneFields(getTargetRelationKeyFields()));
         clone.setSourceRelationKeyFields(cloneFields(getSourceRelationKeyFields()));
-        
+
         clone.setInsertQuery((DataModifyQuery) insertQuery.clone());
         clone.setDeleteQuery((DataModifyQuery) deleteQuery.clone());
         if(lockRelationTableQuery != null) {
@@ -247,7 +247,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Returns a query that
      */
     ReadQuery getLockRelationTableQueryClone(AbstractSession session, short lockMode) {
-        DirectReadQuery lockRelationTableQueryClone = (DirectReadQuery)lockRelationTableQuery.clone(); 
+        DirectReadQuery lockRelationTableQueryClone = (DirectReadQuery)lockRelationTableQuery.clone();
         SQLSelectStatement statement = new SQLSelectStatement();
         statement.addTable(this.relationTable);
         statement.addField(this.sourceRelationKeyFields.get(0).clone());
@@ -258,7 +258,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         lockRelationTableQueryClone.setIsExecutionClone(true);
         return lockRelationTableQueryClone;
     }
-    
+
     /**
      * INTERNAL:
      * Return relation table locking clause.
@@ -269,10 +269,10 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         FieldExpression exp = (FieldExpression)targetQuery.getExpressionBuilder().getTable(this.relationTable).getField(this.sourceRelationKeyFields.get(0));
         lockingClause.addLockedExpression(exp);
         targetQuery.setLockingClause(lockingClause);
-        // locking clause is not compatible with DISTINCT 
+        // locking clause is not compatible with DISTINCT
         targetQuery.setShouldOuterJoinSubclasses(true);
     }
-    
+
     protected DataModifyQuery getInsertQuery() {
         return insertQuery;
     }
@@ -321,7 +321,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
 
         return fieldNames;
     }
-    
+
     /**
      * INTERNAL:
      * Return the selection criteria used to IN batch fetching.
@@ -341,7 +341,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
             List<Expression> fields = new ArrayList<Expression>(size);
             for (DatabaseField sourceRelationKeyField : this.sourceRelationKeyFields) {
                 fields.add(linkTable.getField(sourceRelationKeyField));
-            }            
+            }
             return criteria.and(query.getSession().getPlatform().buildBatchCriteriaForComplexId(builder, fields));
         } else {
             return criteria.and(query.getSession().getPlatform().buildBatchCriteria(builder, linkTable.getField(this.sourceRelationKeyFields.get(0))));
@@ -371,15 +371,15 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         List<DatabaseField> sourceKeyFields = this.sourceKeyFields;
         int size = sourceKeyFields.size();
         key = new Object[size];
-        for (int index = 0; index < size; index++) {                
+        for (int index = 0; index < size; index++) {
             DatabaseField field = sourceKeyFields.get(index);
-            Object value = row.get(field);                
+            Object value = row.get(field);
             // Must ensure the classification gets a cache hit.
             key[index] = conversionManager.convertObject(value, field.getType());
         }
         return new CacheId(key);
     }
-    
+
     /**
      * INTERNAL:
      * Extract the source primary key value from the relation row.
@@ -399,7 +399,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         }
         return new CacheId(key);
     }
-    
+
     /**
      * INTERNAL:
      * Return all the source key fields associated with the mapping.
@@ -496,7 +496,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     protected boolean hasCustomInsertQuery() {
         return hasCustomInsertQuery;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether the mechanism has relation table.
@@ -504,7 +504,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     public boolean hasRelationTable() {
         return relationTable != null && relationTable.getName().length() > 0;
     }
-    
+
     /**
      * INTERNAL:
      * Initialize
@@ -525,7 +525,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         } else {
             initializeTargetKeys(session, mapping);
         }
-      
+
         if (getRelationTable().getName().indexOf(' ') != -1) {
             //table names contains a space so needs to be quoted.
             String beginQuote = ((DatasourcePlatform)session.getDatasourcePlatform()).getStartDelimiter();
@@ -535,14 +535,14 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
                 getRelationTable().setName(beginQuote + getRelationTable().getName() + endQuote);
             }
         }
-        
+
         if (mapping.isCollectionMapping()) {
             ((CollectionMapping)mapping).getContainerPolicy().initialize(session, getRelationTable());
         }
-        
+
         initializeInsertQuery(session, mapping);
         initializeDeleteQuery(session, mapping);
-        
+
         if (mapping.extendPessimisticLockScope != ExtendPessimisticLockScope.NONE) {
             initializeExtendPessipisticLockScope(session, mapping);
         }
@@ -575,7 +575,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         }
 
         if (mapping.isCollectionMapping()) {
-            for (DatabaseField relationKey : getTargetRelationKeyFields()) {    
+            for (DatabaseField relationKey : getTargetRelationKeyFields()) {
                 Expression expression = builder.getField(relationKey).equal(builder.getParameter(relationKey));
                 whereClause = expression.and(whereClause);
             }
@@ -594,18 +594,18 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     protected void initializeExtendPessipisticLockScope(AbstractSession session, ForeignReferenceMapping mapping) {
         if(mapping.usesIndirection()) {
             if(session.getPlatform().isForUpdateCompatibleWithDistinct() && session.getPlatform().supportsLockingQueriesWithMultipleTables()) {
-                mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.SOURCE_QUERY; 
+                mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.SOURCE_QUERY;
             } else {
-                mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.DEDICATED_QUERY;                     
+                mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.DEDICATED_QUERY;
             }
         } else {
             if(session.getPlatform().supportsIndividualTableLocking() && session.getPlatform().supportsLockingQueriesWithMultipleTables()) {
-                mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.TARGET_QUERY; 
+                mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.TARGET_QUERY;
             } else {
-                mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.DEDICATED_QUERY;                     
+                mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.DEDICATED_QUERY;
             }
         }
-        
+
         if(mapping.extendPessimisticLockScope == ExtendPessimisticLockScope.DEDICATED_QUERY) {
             Expression startCriteria = mapping.getSelectionQuery().getSelectionCriteria();
             if(startCriteria != null) {
@@ -614,7 +614,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
             initializeLockRelationTableQuery(session, mapping, startCriteria);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Initialize insert query. This query is used to insert the collection of objects into the
@@ -668,7 +668,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         lockRelationTableQuery.setSQLStatement(statement);
         lockRelationTableQuery.setSessionName(session.getName());
     }
-    
+
     /**
      * INTERNAL:
      * Set the table qualifier on the relation table if required
@@ -682,7 +682,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         if (mapping.isReadOnly() && mapping.getReferenceDescriptor().hasTablePerMultitenantPolicy()) {
             setRelationTable(((TablePerMultitenantPolicy) mapping.getReferenceDescriptor().getMultitenantPolicy()).getTable(getRelationTable()));
         }
-        
+
         if (!hasRelationTable()) {
             throw DescriptorException.noRelationTable(mapping);
         }
@@ -733,13 +733,13 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
 
         for (Enumeration entry = getSourceRelationKeyFields().elements(); entry.hasMoreElements();) {
             DatabaseField field = (DatabaseField)entry.nextElement();
-            
+
             // Update the fields table first if the mapping is from a table per tenant entity.
             ClassDescriptor sourceDescriptor = mapping.getDescriptor();
             if (sourceDescriptor.hasTablePerMultitenantPolicy()) {
                 field.setTable(((TablePerMultitenantPolicy) sourceDescriptor.getMultitenantPolicy()).getTable(field.getTable()));
             }
-            
+
             if (field.hasTableName() && (!(field.getTableName().equals(getRelationTable().getName())))) {
                 throw DescriptorException.relationKeyFieldNotProperlySpecified(field, mapping);
             }
@@ -780,13 +780,13 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
 
         for (Enumeration targetEnum = getTargetRelationKeyFields().elements(); targetEnum.hasMoreElements();) {
             DatabaseField field = (DatabaseField)targetEnum.nextElement();
-            
+
             // Update the fields table first if the mapping is from a table per tenant entity.
             ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
             if (referenceDescriptor.hasTablePerMultitenantPolicy()) {
                 field.setTable(((TablePerMultitenantPolicy) referenceDescriptor.getMultitenantPolicy()).getTable(field.getTable()));
             }
-            
+
             if (field.hasTableName() && (!(field.getTableName().equals(getRelationTable().getName())))) {
                 throw DescriptorException.relationKeyFieldNotProperlySpecified(field, mapping);
             }
@@ -813,12 +813,12 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     /**
      * INTERNAL:
      * Adds to the passed expression a single relation table field joined to source field.
-     * Used to extend pessimistic locking clause in source query. 
+     * Used to extend pessimistic locking clause in source query.
      */
     public Expression joinRelationTableField(Expression expression, Expression baseExpression) {
         return baseExpression.getField(this.sourceKeyFields.get(0)).equal(baseExpression.getTable(relationTable).getField(this.sourceRelationKeyFields.get(0))).and(expression);
     }
-            
+
     /**
      * PUBLIC:
      * The default delete query for mapping can be overridden by specifying the new query.
@@ -857,7 +857,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         query.setSQLString(sqlString);
         setCustomDeleteQuery(query);
     }
-    
+
     /**
      * PUBLIC:
      * Set the receiver's delete Call. This allows the user to override the SQL
@@ -898,7 +898,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         query.setSQLString(sqlString);
         setCustomInsertQuery(query);
     }
-    
+
     /**
      * PUBLIC:
      * Set the receiver's insert Call. This allows the user to override the SQL
@@ -921,7 +921,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     public void setRelationTable(DatabaseTable relationTable) {
         this.relationTable = relationTable;
     }
-    
+
     /**
      * PUBLIC:
      * Set the name of the relational table.
@@ -1049,7 +1049,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     public void setTargetRelationKeyFields(Vector<DatabaseField> targetRelationKeyFields) {
         this.targetRelationKeyFields = targetRelationKeyFields;
     }
-    
+
     /**
      * INTERNAL:
      * Create a row that contains source relation fields with values extracted from the source object.
@@ -1064,7 +1064,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Add to a row source relation fields with values extracted from the source object.
      */
     public AbstractRecord addRelationTableSourceRow(Object sourceObject, AbstractSession session, AbstractRecord databaseRow, ForeignReferenceMapping mapping) {
-        ObjectBuilder builder = mapping.getDescriptor().getObjectBuilder(); 
+        ObjectBuilder builder = mapping.getDescriptor().getObjectBuilder();
         int size = sourceKeyFields.size();
         for(int i=0; i < size; i++) {
             Object sourceValue = builder.extractValueFromObjectForField(sourceObject, sourceKeyFields.get(i), session);
@@ -1100,7 +1100,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Add to a row target relation fields with values extracted from the target object.
      */
     public AbstractRecord addRelationTableTargetRow(Object targetObject, AbstractSession session, AbstractRecord databaseRow, ForeignReferenceMapping mapping) {
-        ObjectBuilder builder = mapping.getReferenceDescriptor().getObjectBuilder(); 
+        ObjectBuilder builder = mapping.getReferenceDescriptor().getObjectBuilder();
         int size = targetKeyFields.size();
         for(int i=0; i < size; i++) {
             Object sourceValue = builder.extractValueFromObjectForField(targetObject, targetKeyFields.get(i), session);

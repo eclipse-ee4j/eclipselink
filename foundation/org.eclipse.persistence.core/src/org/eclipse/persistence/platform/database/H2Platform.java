@@ -1,20 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Mike Keith
- * 
+ *
  * Patterned after:
  *   org.eclipse.persistence.platform.database.DB2MainframePlatform
- *   
- *     09/14/2011-2.3.1 Guy Pelletier 
- *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU      
+ *
+ *     09/14/2011-2.3.1 Guy Pelletier
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
@@ -62,22 +62,22 @@ public class H2Platform extends DatabasePlatform {
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
     }
-    
+
     /**
      * INTERNAL:
      * Use the JDBC maxResults and firstResultIndex setting to compute a value to use when
      * limiting the results of a query in SQL.  These limits tend to be used in two ways.
-     * 
+     *
      * 1. MaxRows is the index of the last row to be returned (like JDBC maxResults)
      * 2. MaxRows is the number of rows to be returned
-     * 
+     *
      * H2 uses case #2 and therefore the maxResults has to be altered based on the firstResultIndex.
      */
     @Override
     public int computeMaxRowsForSQL(int firstResultIndex, int maxResults){
         return maxResults - ((firstResultIndex >= 0) ? firstResultIndex : 0);
     }
-    
+
     @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping = super.buildFieldTypes();
@@ -98,13 +98,13 @@ public class H2Platform extends DatabasePlatform {
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("LONGVARCHAR", false));
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", false));
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", false));
-        
+
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.util.Calendar.class, new FieldTypeDefinition("TIMESTAMP", false));
         fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition("TIMESTAMP", false));
-        
+
         return fieldTypeMapping;
     }
 
@@ -173,20 +173,20 @@ public class H2Platform extends DatabasePlatform {
     @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
                                                      Collection pkFields,
-                                                     Collection assignedFields) throws IOException 
+                                                     Collection assignedFields) throws IOException
     {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);
         writer.write(tableName);
         writer.write(" SET ");
         if (assignedFields.size() > 1) {
-            writer.write("(");            
+            writer.write("(");
         }
         writeFieldsList(writer, assignedFields, this);
         if (assignedFields.size() > 1) {
-            writer.write(")");            
+            writer.write(")");
         }
-        writer.write(" = (SELECT ");        
+        writer.write(" = (SELECT ");
         writeFieldsList(writer, assignedFields, this);
         writer.write(" FROM ");
         String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
@@ -263,5 +263,5 @@ public class H2Platform extends DatabasePlatform {
     @Override
     public boolean isH2() {
         return true;
-    }    
+    }
 }

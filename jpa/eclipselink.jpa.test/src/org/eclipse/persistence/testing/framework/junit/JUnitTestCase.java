@@ -1,19 +1,19 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/17/2010-2.2 Guy Pelletier 
+ *     11/17/2010-2.2 Guy Pelletier
  *       - 329008: Support dynamic context creation without persistence.xml
- *     01/23/2013-2.5 Guy Pelletier 
+ *     01/23/2013-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework.junit;
 
 import java.io.StringWriter;
@@ -67,7 +67,7 @@ import org.eclipse.persistence.testing.framework.server.TestRunner5;
  * db.pwd
  * db.url
  * db.driver
- * 
+ *
  * If you are using the TestingBrowser, these properties come from the login panel instead.
  * If you are running the test in JEE the properties come from the server config.
  * This class should be used for all EntityManager operations to allow tests to be run in the server.
@@ -81,31 +81,31 @@ public abstract class JUnitTestCase extends TestCase {
 
     /** Determine if the test is running on a JEE server, or in JSE. */
     protected static Boolean isOnServer;
-    
+
     /** Determine if the data-source is JTA, or non-JTA. */
     public static Boolean isJTA =true;
-    
+
     /** Allow a JEE server platform to be set. */
     protected static ServerPlatform serverPlatform;
-        
+
     /** Sets if the test should be run on the client or server. */
     public Boolean shouldRunTestOnServer;
-    
+
     /** System variable to set the tests to run on the server. */
     public static final String RUN_ON_SERVER = "server.run";
 
     /** Persistence unit name associated with the test runner, null means single persistence unit */
     public String puName = null;
-    
+
     static {
         emfNamedPersistenceUnits = new Hashtable();
     }
-    
+
     protected static boolean isInitialzied;
-    
+
     /** Allow OSGi specific behavior. */
     public static boolean isOSGi = false;
-    
+
     /** Indicates whether SOP should be used */
     public static Boolean usesSOP;
 
@@ -128,7 +128,7 @@ public abstract class JUnitTestCase extends TestCase {
         }
         isInitialzied = true;
     }
-    
+
     public JUnitTestCase() {
         super();
         initializePlatform();
@@ -138,7 +138,7 @@ public abstract class JUnitTestCase extends TestCase {
         super(name);
         initializePlatform();
     }
-    
+
     /**
      * Return the name of the persistence context this test uses.
      * This allow a subclass test to set this only in one place.
@@ -146,7 +146,7 @@ public abstract class JUnitTestCase extends TestCase {
     public String getPersistenceUnitName() {
         return DEFAULT_PU_NAME;
     }
-    
+
     /**
      * Return if the test should run on the server.
      */
@@ -161,7 +161,7 @@ public abstract class JUnitTestCase extends TestCase {
         }
         return shouldRunTestOnServer;
     }
-    
+
     /**
      * Return if the data-source is JTA or not.
      */
@@ -174,57 +174,57 @@ public abstract class JUnitTestCase extends TestCase {
         }
         return isJTA;
     }
-    
+
     public boolean isWeavingForChangeTrackingEnabled() {
         return isWeavingForChangeTrackingEnabled(getPersistenceUnitName());
     }
-    
+
     public boolean isWeavingForChangeTrackingEnabled(String persistenceUnitName) {
         Object changeTrackingWeaving = JUnitTestCase.getDatabaseSession(persistenceUnitName).getProperty("eclipselink.weaving.changetracking");
-        
+
         if (changeTrackingWeaving == null) {
             changeTrackingWeaving = System.getProperty("eclipselink.weaving.changetracking");
         }
-        
+
         if ("false".equals(changeTrackingWeaving)) {
             return false;
         }
-        
+
         return true;
     }
-    
+
     public boolean isWeavingForFetchGroupsEnabled() {
         return isWeavingForFetchGroupsEnabled(getPersistenceUnitName());
     }
-    
+
     public boolean isWeavingForFetchGroupsEnabled(String persistenceUnitName) {
         Object fetchGroupsWeaving = JUnitTestCase.getDatabaseSession(persistenceUnitName).getProperty("eclipselink.weaving.fetchgroups");
-        
+
         if (fetchGroupsWeaving == null) {
             fetchGroupsWeaving = System.getProperty("eclipselink.weaving.fetchgroups");
         }
-        
+
         if ("false".equals(fetchGroupsWeaving)) {
             return false;
         }
-        
+
         return true;
     }
-    
+
     /**
      * Return if the tests were run using weaving, agent or static.
      */
     public boolean isWeavingEnabled() {
         return isWeavingEnabled(getPersistenceUnitName());
     }
-    
+
     /**
      * Return if the tests were run using weaving, agent or static.
      */
     public static boolean isWeavingEnabled(String persistenceUnitName) {
         return System.getProperty("TEST_NO_WEAVING") == null;
     }
-    
+
     /**
      * Return if the test is running against JPA 1.0. Any test that uses 2.0
      * functionality should call this method to avoid been run against a 1.0
@@ -238,7 +238,7 @@ public abstract class JUnitTestCase extends TestCase {
         }
         return false;
     }
-    
+
     /**
      * Return if the test is running on a JEE server, or in JSE.
      */
@@ -247,46 +247,46 @@ public abstract class JUnitTestCase extends TestCase {
             if (System.getProperty("TEST_SERVER_PLATFORM") != null) {
                 isOnServer = true;
             } else {
-                isOnServer = false;                
+                isOnServer = false;
             }
         }
         return isOnServer;
     }
-    
+
     /**
      * Set if the test is running on a JEE server, or in JSE.
      */
     public static void setIsOnServer(boolean value) {
         isOnServer = value;
     }
-    
+
     /**
      * Return if the Hermes parser is being used for JPQL.
      */
     public boolean isHermesParser() {
         return getDatabaseSession().getQueryBuilder().getClass().getName().indexOf("Hermes") != -1;
     }
-    
+
     /**
      * Indicates whether SOP should be used.
      */
     public static boolean usesSOP() {
-    	if (usesSOP == null) {
-    		usesSOP = Boolean.valueOf(System.getProperty("sop"));
-    	}
-		return usesSOP;
+        if (usesSOP == null) {
+            usesSOP = Boolean.valueOf(System.getProperty("sop"));
+        }
+        return usesSOP;
     }
-    
+
     /**
      * Indicates whether SOP should be recoverable. Ignored unless useSOP is true.
      */
     public static boolean isSOPRecoverable() {
-    	if (isSOPRecoverable == null) {
-    		isSOPRecoverable = Boolean.valueOf(System.getProperty("sop.recoverable"));
-    	}
-		return isSOPRecoverable;
+        if (isSOPRecoverable == null) {
+            isSOPRecoverable = Boolean.valueOf(System.getProperty("sop.recoverable"));
+        }
+        return isSOPRecoverable;
     }
-    
+
     /**
      * Return the server platform if running in JEE.
      */
@@ -305,7 +305,7 @@ public abstract class JUnitTestCase extends TestCase {
         }
         return serverPlatform;
     }
-    
+
     /**
      * Set the server platform, this should be done by the test executor
      * when running a test in the server.
@@ -313,7 +313,7 @@ public abstract class JUnitTestCase extends TestCase {
     public static void setServerPlatform(ServerPlatform value) {
         serverPlatform = value;
     }
-    
+
     public void clearCache() {
         try {
             getDatabaseSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -321,7 +321,7 @@ public abstract class JUnitTestCase extends TestCase {
             throw new RuntimeException("An exception occurred trying clear the database session cache.", ex);
         }
     }
-    
+
     public void clearServerSessionCache() {
         try {
             getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -345,7 +345,7 @@ public abstract class JUnitTestCase extends TestCase {
             throw new RuntimeException("An exception occurred trying clear the server session cache.", ex);
         }
     }
-        
+
     /**
      * Close the entity manager.
      * This allows the same code to be used on the server where managed entity managers are not closed.
@@ -355,7 +355,7 @@ public abstract class JUnitTestCase extends TestCase {
             entityManager.close();
         }
     }
-        
+
     /**
      * Close the entity manager.
      * If a transaction is active, then roll it back.
@@ -366,7 +366,7 @@ public abstract class JUnitTestCase extends TestCase {
         }
         closeEntityManager(entityManager);
     }
-    
+
     /**
      * Return if the transaction is active.
      * This allows the same code to be used on the server where JTA is used.
@@ -390,7 +390,7 @@ public abstract class JUnitTestCase extends TestCase {
             return entityManager.getTransaction().getRollbackOnly();
         }
     }
-    
+
     /**
      * Begin a transaction on the entity manager.
      * This allows the same code to be used on the server where JTA is used,
@@ -399,7 +399,7 @@ public abstract class JUnitTestCase extends TestCase {
     public void beginTransaction(EntityManager entityManager) {
         if (isOnServer() && isJTA()) {
             getServerPlatform().beginTransaction();
-            //bug 404294 - the EM is required to join the transaction to be able to 
+            //bug 404294 - the EM is required to join the transaction to be able to
             //    use transactions started after it was created.
             getServerPlatform().joinTransaction(entityManager);
         } else {
@@ -418,7 +418,7 @@ public abstract class JUnitTestCase extends TestCase {
             entityManager.getTransaction().commit();
         }
     }
-        
+
     /**
      * Rollback a transaction on the entity manager.
      * This allows the same code to be used on the server where JTA is used.
@@ -430,7 +430,7 @@ public abstract class JUnitTestCase extends TestCase {
             entityManager.getTransaction().rollback();
         }
     }
-    
+
     /**
      * Create a new entity manager for the test suites default persistence unit.
      * If in JEE this will create or return the active managed entity manager.
@@ -456,7 +456,7 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     /**
-     * Create a new entity manager for the persistence unit using the properties 
+     * Create a new entity manager for the persistence unit using the properties
      * and a default persistence unit name..
      * The properties will only be used the first time this entity manager is accessed.
      * If in JEE this will create or return the active managed entity manager.
@@ -468,16 +468,16 @@ public abstract class JUnitTestCase extends TestCase {
             return getEntityManagerFactory(getPersistenceUnitName(), properties).createEntityManager(properties);
         }
     }
-    
+
     /**
      * Create a new entity manager for the persistence unit using the properties.
      * The properties will only be used the first time this entity manager is accessed.
      * If in JEE this will create or return the active managed entity manager.
      */
     public static EntityManager createEntityManager(String persistenceUnitName, Map properties) {
-        return createEntityManager(persistenceUnitName, properties, null);      
+        return createEntityManager(persistenceUnitName, properties, null);
     }
-    
+
     /**
      * Create a new entity manager for the persistence unit using the properties.
      * The properties will only be used the first time this entity manager is accessed.
@@ -492,49 +492,49 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public DatabaseSessionImpl getDatabaseSession() {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getDatabaseSession();               
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getDatabaseSession();
     }
 
     public static DatabaseSessionImpl getDatabaseSession(String persistenceUnitName) {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getDatabaseSession();        
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getDatabaseSession();
     }
-    
+
     public SessionBroker getSessionBroker() {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getSessionBroker();               
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getSessionBroker();
     }
 
     public static SessionBroker getSessionBroker(String persistenceUnitName) {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getSessionBroker();        
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getSessionBroker();
     }
-    
+
     public static ServerSession getServerSession() {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory("default").createEntityManager()).getServerSession();               
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory("default").createEntityManager()).getServerSession();
     }
-    
+
     public static ServerSession getServerSession(String persistenceUnitName) {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getServerSession();        
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getServerSession();
     }
-    
+
     public static ServerSession getServerSession(String persistenceUnitName, Map properties) {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName, properties).createEntityManager()).getServerSession();        
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName, properties).createEntityManager()).getServerSession();
     }
-    
+
     public ServerSession getPersistenceUnitServerSession() {
         return getServerSession(getPersistenceUnitName());
     }
-    
+
     public Map getPersistenceProperties() {
         return JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName());
     }
-    
+
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName) {
         return getEntityManagerFactory(persistenceUnitName,  JUnitTestCaseHelper.getDatabaseProperties(persistenceUnitName), null);
     }
-    
+
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, Map properties) {
         return getEntityManagerFactory(persistenceUnitName, properties, null);
     }
-    
+
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, Map properties, List<ClassDescriptor> descriptors) {
         //properties.put("eclipselink.tuning", "ExaLogic");
         if (isOnServer()) {
@@ -548,11 +548,11 @@ public abstract class JUnitTestCase extends TestCase {
                     System.out.println(ignore);
                 }
             }
-            
+
             EntityManagerFactory emfNamedPersistenceUnit = emfNamedPersistenceUnits.get(persistenceUnitName);
-            
+
             if (emfNamedPersistenceUnit == null) {
-                
+
                 // force closing of other persistence units to avoid Sybase running out of connections.
                 if (!persistenceUnitName.equals("default")) {
                     if (emfNamedPersistenceUnits.containsKey("default") && getServerSession().getPlatform().isSybase()) {
@@ -567,30 +567,30 @@ public abstract class JUnitTestCase extends TestCase {
                         }
                     }
                 }
-                
+
                 if (descriptors == null) {
                     emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
                 } else {
                     emfNamedPersistenceUnit = new EntityManagerFactoryImpl(persistenceUnitName, properties, descriptors);
                 }
-                
+
                 emfNamedPersistenceUnits.put(persistenceUnitName, emfNamedPersistenceUnit);
 
-                // Force uppercase for Postgres. - no longer needed with fix for 299926: Case insensitive table / column matching 
+                // Force uppercase for Postgres. - no longer needed with fix for 299926: Case insensitive table / column matching
             }
-            
+
             return emfNamedPersistenceUnit;
         }
     }
-    
+
     public EntityManagerFactory getEntityManagerFactory() {
         return getEntityManagerFactory(getPersistenceUnitName());
     }
-    
+
     public EntityManagerFactory getEntityManagerFactory(Map properties) {
         return getEntityManagerFactory(getPersistenceUnitName(), properties);
     }
-    
+
     public boolean doesEntityManagerFactoryExist() {
         return doesEntityManagerFactoryExist(getPersistenceUnitName());
     }
@@ -617,25 +617,25 @@ public abstract class JUnitTestCase extends TestCase {
     public Platform getPlatform() {
         return getPlatform(getPersistenceUnitName());
     }
-   
+
     public Platform getPlatform(Class cls) {
         return getPlatform(getPersistenceUnitName(), cls);
     }
-   
+
     public static Platform getPlatform(String puName) {
         return getDatabaseSession(puName).getPlatform();
     }
-   
+
     public static Platform getPlatform(String puName, Class cls) {
         return getDatabaseSession(puName).getPlatform(cls);
     }
-   
+
     public void setUp() {
     }
-    
+
     public void tearDown() {
     }
-    
+
     /**
      * Used to output a warning.  This does not fail the test, but provides output for someone to review.
      */
@@ -715,12 +715,12 @@ public abstract class JUnitTestCase extends TestCase {
             throw exception;
         }
     }
-    
+
     public void runBareServer() throws Throwable {
         setIsOnServer(true);
         super.runBare();
     }
-    
+
     /**
      * Used by subclasses to pass any properties into the
      * server's vm.  Should be used with caution.
@@ -728,7 +728,7 @@ public abstract class JUnitTestCase extends TestCase {
     protected Properties getServerProperties() {
         return null;
     }
-    
+
     /**
      * Verifies that the object was merged to the cache, and written to the database correctly.
      */
@@ -745,14 +745,14 @@ public abstract class JUnitTestCase extends TestCase {
             fail("Object: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
         }
     }
-    
+
     /**
      * Verifies the object in a new EntityManager.
      */
     public void verifyObjectInEntityManager(Object writtenObject) {
         verifyObjectInEntityManager(writtenObject, getPersistenceUnitName());
     }
-    
+
     /**
      * Verifies the object in a new EntityManager.
      */
@@ -767,19 +767,19 @@ public abstract class JUnitTestCase extends TestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Verifies that the object was merged to the cache, and written to the database correctly.
      */
     public void verifyObjectInCacheAndDatabase(Object writtenObject) {
         verifyObjectInCacheAndDatabase(writtenObject, getPersistenceUnitName());
     }
-    
+
     /**
      * Verifies that the object was merged to the cache, and written to the database correctly.
      */
     public static void verifyObjectInCacheAndDatabase(Object writtenObject, String persistenceUnit) {
-        AbstractSession dbs = getDatabaseSession(persistenceUnit); 
+        AbstractSession dbs = getDatabaseSession(persistenceUnit);
         Object readObject = dbs.readObject(writtenObject);
         if (!dbs.compareObjects(readObject, writtenObject)) {
             SessionLog oldLog = dbs.getSessionLog();
@@ -811,12 +811,12 @@ public abstract class JUnitTestCase extends TestCase {
     public void compareObjects(Object obj1, Object obj2) {
         compareObjects(obj1, obj2, getPersistenceUnitName());
     }
-    
+
     /**
      * Compare objects.
      */
     public static void compareObjects(Object obj1, Object obj2, String persistenceUnit) {
-        AbstractSession dbs = getDatabaseSession(persistenceUnit); 
+        AbstractSession dbs = getDatabaseSession(persistenceUnit);
         if (!dbs.compareObjects(obj1, obj2)) {
             fail("Objects " + obj1 + " and " + obj2 + " are not equal. See log (on finest) for what did not match.");
         }
@@ -838,12 +838,12 @@ public abstract class JUnitTestCase extends TestCase {
         } catch (RuntimeException exception) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
-            }            
+            }
             closeEntityManager(em);
             throw exception;
         }
     }
-    
+
     /**
      * Generic remove test.
      */
@@ -865,19 +865,19 @@ public abstract class JUnitTestCase extends TestCase {
         }  catch (RuntimeException exception) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
-            }            
+            }
             closeEntityManager(em);
             throw exception;
         }
     }
-    
+
     /**
      * Verifies that the object was deleted from the database correctly.
      */
     public void verifyDelete(Object writtenObject) {
         verifyDelete(writtenObject, getPersistenceUnitName());
     }
-    
+
     /**
      * Verifies that the object was deleted from the database correctly.
      */
@@ -887,7 +887,7 @@ public abstract class JUnitTestCase extends TestCase {
         if (dbs.isServerSession()) {
             ok = ((ServerSession)dbs).acquireClientSession().verifyDelete(writtenObject);
         } else if (dbs.isSessionBroker()) {
-            ok = ((SessionBroker)dbs).acquireClientSessionBroker().verifyDelete(writtenObject); 
+            ok = ((SessionBroker)dbs).acquireClientSessionBroker().verifyDelete(writtenObject);
         } else {
             ok = dbs.verifyDelete(writtenObject);
         }
@@ -895,9 +895,9 @@ public abstract class JUnitTestCase extends TestCase {
             fail("Object not deleted from the database correctly: " + writtenObject);
         }
     }
-    
+
     /**
-     * Allow printing off stack traces for exceptions that cause test failures when the session log level is set appropriately.  
+     * Allow printing off stack traces for exceptions that cause test failures when the session log level is set appropriately.
      * Logs at at the warning level
      */
     public void logThrowable(Throwable exception){
@@ -1000,7 +1000,7 @@ public abstract class JUnitTestCase extends TestCase {
         warning("This database does not support NOWAIT.");
         return false;
     }
-    
+
     /**
      * Return if stored procedures are supported for the database platform for the test database.
      */
@@ -1016,7 +1016,7 @@ public abstract class JUnitTestCase extends TestCase {
         if (platform.isOracle() || platform.isMySQL() || platform.isSQLServer()) {
             return true;
         }
-        
+
         warning("This database does not support stored procedure creation.");
         return false;
     }
@@ -1042,7 +1042,7 @@ public abstract class JUnitTestCase extends TestCase {
     public void setPuName(String name){
         puName = name;
     }
-    
+
     /**
      * Indicates whether two sessions are connected to the same db
      */

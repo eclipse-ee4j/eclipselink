@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@ package org.eclipse.persistence.internal.libraries.asm;
 
 /**
  * An {@link FieldVisitor} that generates Java fields in bytecode form.
- * 
+ *
  * @author Eric Bruneton
  */
 final class FieldWriter extends FieldVisitor {
@@ -103,7 +103,7 @@ final class FieldWriter extends FieldVisitor {
 
     /**
      * Constructs a new {@link FieldWriter}.
-     * 
+     *
      * @param cw
      *            the class writer to which this field must be added.
      * @param access
@@ -201,7 +201,7 @@ final class FieldWriter extends FieldVisitor {
 
     /**
      * Returns the size of this field.
-     * 
+     *
      * @return the size of this field.
      */
     int getSize() {
@@ -249,7 +249,7 @@ final class FieldWriter extends FieldVisitor {
 
     /**
      * Puts the content of this field into the given byte vector.
-     * 
+     *
      * @param out
      *            where the content of this field must be put.
      */

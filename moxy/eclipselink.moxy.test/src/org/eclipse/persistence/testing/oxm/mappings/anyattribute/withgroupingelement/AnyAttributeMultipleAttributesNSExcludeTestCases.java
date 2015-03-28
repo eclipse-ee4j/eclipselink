@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.anyattribute.withgroupingelement;
 
 import java.util.HashMap;
@@ -30,7 +30,7 @@ public class AnyAttributeMultipleAttributesNSExcludeTestCases extends XMLMapping
         mapping.setSchemaInstanceIncluded(false);
         mapping.setNamespaceDeclarationIncluded(false);
         setProject(p);
-        
+
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyattribute/withgroupingelement/multiple_attributes_ns.xml");
     }
 
@@ -38,23 +38,23 @@ public class AnyAttributeMultipleAttributesNSExcludeTestCases extends XMLMapping
         Root root = new Root();
         HashMap any = new HashMap();
         QName name = new QName("www.example.com/some-dir/some.xsd", "first-name");
-        any.put(name, "Matt");        
+        any.put(name, "Matt");
         name = new QName("www.example.com/some-dir/some.xsd", "last-name");
         any.put(name, "MacIvor");
         root.setAny(any);
         return root;
     }
-    
+
     public Object getWriteControlObject() {
         Root root = new Root();
         HashMap any = new HashMap();
         QName name = new QName("www.example.com/some-dir/some.xsd", "first-name");
-        any.put(name, "Matt");        
+        any.put(name, "Matt");
         name = new QName("www.example.com/some-dir/some.xsd", "last-name");
-        any.put(name, "MacIvor");                        
+        any.put(name, "MacIvor");
         name = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
         any.put(name, "blah");
-        
+
         root.setAny(any);
         return root;
     }

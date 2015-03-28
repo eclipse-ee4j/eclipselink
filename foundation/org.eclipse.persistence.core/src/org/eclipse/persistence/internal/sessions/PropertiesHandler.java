@@ -1,20 +1,20 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *      Gordon Yorke - VM managed entity detachment
- *     Eduard Bartsch, SAP - Fix for Bug 351186 - ConcurrentModificationException Exception in PropertiesHandler 
+ *     Eduard Bartsch, SAP - Fix for Bug 351186 - ConcurrentModificationException Exception in PropertiesHandler
  *     Rick Curtis - Add support for WebSphere Liberty platform.
- *     08/11/2014-2.5 Rick Curtis 
+ *     08/11/2014-2.5 Rick Curtis
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.HashMap;
@@ -41,37 +41,37 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 /**
- * 
+ *
  * The class processes some of EclipseLink properties.
- * The class may be used for any properties, but it only makes sense 
+ * The class may be used for any properties, but it only makes sense
  * to use it in the following two cases:
  *      1. There is a set of legal values defined
  *          either requiring translation (like CacheTypeProp);
  *          or not (like LoggingLevelProp).
- *      2. Property is really a prefix from which the property obtained by 
+ *      2. Property is really a prefix from which the property obtained by
  *      appending entity or class name (like DescriptorCustomizerProp -
  *      it corresponds to "eclipselink.descriptor.customizer." prefix that allows to
- *      define properties like "eclipselink.descriptor.customizer.myPackage.MyClass"). 
- * 
+ *      define properties like "eclipselink.descriptor.customizer.myPackage.MyClass").
+ *
  * EclipseLink properties and their values defined in org.eclipse.persistence.config package.
- * 
+ *
  * To add a new property:
  *   Define a new property in PersistenceUnitProperties;
  *   Add a class containing property's values if required to config package (like CacheType);
  *      Alternatively values may be already defined elsewhere (like in LoggingLevelProp).
  *   Add an inner class to this class extending Prop corresponding to the new property (like CacheTypeProp);
  *      The first constructor parameter is property name; the second is default value;
- *      In constructor 
+ *      In constructor
  *          provide 2-dimensional value array in case the values should be translated (like CacheTypeProp);
  *              in case translation is not required provide a single-dimension array (like LoggingLevelProp).
  *   In inner class Prop static initializer addProp an instance of the new prop class (like addProp(new CacheTypeProp())).
- * 
+ *
  * @see PersistenceUnitProperties
  * @see CacheType
  * @see TargetDatabase
  * @see TargetServer
- * 
- *  05/28/2008-1.0M8 Andrei Ilitchev. 
+ *
+ *  05/28/2008-1.0M8 Andrei Ilitchev.
  *     - 224964: Provide support for Proxy Authentication through JPA.
  *     Added support for CONNECTION_EXCLUSIVE. Also added BooleanProp to allow simpler way of creating boolean-valued properties:
  *     instead of defining a new class for each new Boolean property just add a new instance of BooleanProp with property name and default:
@@ -83,7 +83,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
  *     it's convenient for use in EntityManagerImpl: first searches the passed properties then (recursively) properties of the session, then System properties.
  */
 public class PropertiesHandler {
-    
+
     /**
      * INTERNAL:
      * Gets property value from the map, if none found looks in System properties.
@@ -99,7 +99,7 @@ public class PropertiesHandler {
     public static String getPropertyValueLogDebug(String name, Map m, AbstractSession session) {
         return getPropertyValueLogDebug(name, m, session, true);
     }
-    
+
     public static String getPropertyValue(String name, Map m, boolean useSystemAsDefault) {
         return Prop.getPropertyValueToApply(name, m, null, useSystemAsDefault);
     }
@@ -107,7 +107,7 @@ public class PropertiesHandler {
     public static String getPropertyValueLogDebug(String name, Map m, AbstractSession session, boolean useSystemAsDefault) {
         return Prop.getPropertyValueToApply(name, m, session, useSystemAsDefault);
     }
-    
+
     /**
      * INTERNAL:
      * Given property name and value verifies and translates the value.
@@ -120,7 +120,7 @@ public class PropertiesHandler {
     public static String getPropertyValueLogDebug(String name, String value, AbstractSession session) {
         return Prop.getPropertyValueToApply(name, value, session);
     }
-    
+
     /**
      * INTERNAL:
      * Gets property value from the map, if none found looks in System properties.
@@ -139,18 +139,18 @@ public class PropertiesHandler {
      * In the returned map values keyed by suffixes.
      * Use it with prefixes (like "org.eclipse.persistence.cache-type.").
      * Could be used on simple properties (not prefixes, too),
-     * but will always return either an empty map or a map containing a single 
+     * but will always return either an empty map or a map containing a single
      * value keyed by an empty String.
      * Throws IllegalArgumentException in case the property value is illegal.
      */
     public static Map getPrefixValues(String prefix, Map m) {
         return Prop.getPrefixValuesToApply(prefix, m, null, true);
     }
-    
+
     public static Map getPrefixValuesLogDebug(String prefix, Map m, AbstractSession session) {
         return Prop.getPrefixValuesToApply(prefix, m, session, true);
     }
-    
+
     /**
      * INTERNAL:
      * Returns the default property value that should be applied.
@@ -160,11 +160,11 @@ public class PropertiesHandler {
     public static String getDefaultPropertyValue(String name) {
         return Prop.getDefaultPropertyValueToApply(name, null);
     }
-    
+
     public static String getDefaultPropertyValueLogDebug(String name, AbstractSession session) {
         return Prop.getDefaultPropertyValueToApply(name, session);
     }
-    
+
     /**
      * INTERNAL:
      * Empty String value indicates that the default property value should be used.
@@ -172,7 +172,7 @@ public class PropertiesHandler {
     protected static boolean shouldUseDefault(String value) {
         return value != null &&  value.length() == 0;
     }
-    
+
     protected static abstract class Prop {
         static HashMap mainMap = new HashMap();
         Object[] valueArray;
@@ -182,7 +182,7 @@ public class PropertiesHandler {
         String defaultValueToApply;
         boolean valueToApplyMayBeNull;
         boolean shouldReturnOriginalValueIfValueToApplyNotFound;
-        
+
         static {
             addProp(new LoggerTypeProp());
             addProp(new LoggingLevelProp(PersistenceUnitProperties.LOGGING_LEVEL, Level.INFO.getName()));
@@ -215,11 +215,11 @@ public class PropertiesHandler {
             addProp(new BooleanProp(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, "true"));
         }
-        
+
         Prop(String name) {
             this.name = name;
         }
-        
+
         Prop(String name, String defaultValue) {
             this(name);
             this.defaultValue = defaultValue;
@@ -229,12 +229,12 @@ public class PropertiesHandler {
             String value = (String)m.get(name);
             return value == null && useSystemAsDefault ? System.getProperty(name) : value;
         }
-    
+
         // Collect all entries corresponding to the prefix name.
         // Note that entries from Map m override those from System properties.
         static Map getPrefixValuesFromMap(String name, Map m, boolean useSystemAsDefault) {
             Map mapOut = new HashMap();
-            
+
             if(useSystemAsDefault) {
                 Map.Entry[] entries = (Map.Entry[]) AccessController.doPrivileged(new PrivilegedAction() {
                     public Object run() {
@@ -251,7 +251,7 @@ public class PropertiesHandler {
                     }
                 }
             }
-            
+
             Iterator it = m.entrySet().iterator();
             while(it.hasNext()) {
                 Map.Entry entry = (Map.Entry)it.next();
@@ -261,15 +261,15 @@ public class PropertiesHandler {
                     mapOut.put(entityName, entry.getValue());
                 }
             }
-            
+
             return mapOut;
         }
-    
+
         static String getPropertyValue(String name, boolean shouldUseDefault, Map m, AbstractSession session, boolean useSystemAsDefault) {
             Prop prop = (Prop)mainMap.get(name);
             if(prop == null) {
                 // it's not our property
-                return null; 
+                return null;
             }
             String value = getPropertyValueFromMap(name, m, useSystemAsDefault);
             if(value == null) {
@@ -277,11 +277,11 @@ public class PropertiesHandler {
             }
             return prop.getValueToApply(value, shouldUseDefault, session);
         }
-                
+
         static String getPropertyValueToApply(String name, Map m, AbstractSession session, boolean useSystemAsDefault) {
             Prop prop = (Prop)mainMap.get(name);
             if(prop == null) {
-                throw new IllegalArgumentException(name); 
+                throw new IllegalArgumentException(name);
             }
             String value = getPropertyValueFromMap(name, m, useSystemAsDefault);
             if(value == null) {
@@ -289,23 +289,23 @@ public class PropertiesHandler {
             }
             return prop.getValueToApply(value, shouldUseDefault(value), session);
         }
-                
+
         static String getPropertyValueToApply(String name, String value, AbstractSession session) {
             Prop prop = (Prop)mainMap.get(name);
             if(prop == null) {
-                throw new IllegalArgumentException(name); 
+                throw new IllegalArgumentException(name);
             }
             return prop.getValueToApply(value, shouldUseDefault(value), session);
         }
-                
+
         static Map<String, Object> getPrefixValuesToApply(String prefix, Map m, AbstractSession session, boolean useSystemAsDefault) {
-            Prop prop = (Prop)mainMap.get(prefix);            
+            Prop prop = (Prop)mainMap.get(prefix);
             // maps suffixes to property values
             Map mapIn = getPrefixValuesFromMap(prefix, m, useSystemAsDefault);
             if(mapIn.isEmpty()) {
                 return mapIn;
             }
-            
+
             HashMap mapOut = new HashMap(mapIn.size());
             Iterator it = mapIn.entrySet().iterator();
             while(it.hasNext()) {
@@ -320,7 +320,7 @@ public class PropertiesHandler {
             // maps suffixes to valuesToApply
             return mapOut;
         }
-        
+
         static String getDefaultPropertyValueToApply(String name, AbstractSession session) {
             Prop prop = (Prop)mainMap.get(name);
             if(prop == null) {
@@ -329,13 +329,13 @@ public class PropertiesHandler {
             prop.logDefault(session);
             return prop.defaultValueToApply;
         }
-                
+
         String getValueToApply(String value, boolean shouldUseDefault, AbstractSession session) {
             return getValueToApply(value, shouldUseDefault, null, session);
         }
-        
+
         // suffix is used only for properties-prefixes (like CacheType)
-        String getValueToApply(String value, boolean shouldUseDefault, String suffix, AbstractSession session) {            
+        String getValueToApply(String value, boolean shouldUseDefault, String suffix, AbstractSession session) {
             if(shouldUseDefault) {
                 logDefault(session, suffix);
                 return defaultValueToApply;
@@ -413,7 +413,7 @@ public class PropertiesHandler {
         void logDefault(AbstractSession session) {
             logDefault(session, null);
         }
-        
+
         void logDefault(AbstractSession session, String suffix) {
             if (session != null) {
                 if (session.shouldLog(SessionLog.FINEST, SessionLog.PROPERTIES)) {
@@ -429,7 +429,7 @@ public class PropertiesHandler {
                 }
             }
         }
-        
+
         void log(AbstractSession session, String value, String valueToApply, String suffix) {
             if (session != null) {
                 if (session.shouldLog(SessionLog.FINEST, SessionLog.PROPERTIES)) {
@@ -445,7 +445,7 @@ public class PropertiesHandler {
                 }
             }
         }
-        
+
         static void addProp(Prop prop) {
             prop.initialize();
             mainMap.put(prop.name, prop);
@@ -473,7 +473,7 @@ public class PropertiesHandler {
     protected static class LoggingLevelProp extends Prop {
         LoggingLevelProp(String name, String defaultValue) {
             super(name, defaultValue);
-            valueArray = new Object[] { 
+            valueArray = new Object[] {
                 Level.OFF.getName(),
                 Level.SEVERE.getName(),
                 Level.OFF.getName(),
@@ -498,7 +498,7 @@ public class PropertiesHandler {
             };
         }
     }
-    
+
     protected static class FlushModeProp extends Prop {
         FlushModeProp() {
             //XXX - using javax.persistence.FlushModeType.* directly causes
@@ -512,7 +512,7 @@ public class PropertiesHandler {
             };
         }
     }
-    
+
     protected static class CommitOrderProp extends Prop {
         CommitOrderProp() {
             super(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, CommitOrderType.None.toString());
@@ -529,7 +529,7 @@ public class PropertiesHandler {
             super(PersistenceUnitProperties.TARGET_DATABASE, TargetDatabase.DEFAULT);
             this.shouldReturnOriginalValueIfValueToApplyNotFound = true;
             String pcg = "org.eclipse.persistence.platform.database.";
-            valueArray = new Object[][] { 
+            valueArray = new Object[][] {
                 {TargetDatabase.Auto, pcg + "DatabasePlatform"},
                 {TargetDatabase.Oracle, pcg + "OraclePlatform"},
                 {TargetDatabase.Oracle8, pcg + "oracle.Oracle8Platform"},
@@ -566,7 +566,7 @@ public class PropertiesHandler {
             super(PersistenceUnitProperties.TARGET_SERVER, TargetServer.DEFAULT);
             this.shouldReturnOriginalValueIfValueToApplyNotFound = true;
             String pcg = "org.eclipse.persistence.platform.server.";
-            valueArray = new Object[][] { 
+            valueArray = new Object[][] {
                 {TargetServer.None, pcg + "NoServerPlatform"},
                 {TargetServer.OC4J, pcg + "oc4j.Oc4jPlatform"},
                 {TargetServer.SunAS9, pcg + "sunas.SunAS9ServerPlatform"},
@@ -581,20 +581,20 @@ public class PropertiesHandler {
                 {TargetServer.WebLogic_12, pcg + "wls.WebLogic_12_Platform"},
                 {TargetServer.JBoss, pcg + "jboss.JBossPlatform"},
                 {TargetServer.SAPNetWeaver_7_1, pcg + "sap.SAPNetWeaver_7_1_Platform"},            };
-        }  
+        }
     }
 
     protected static class CacheSizeProp extends Prop {
         CacheSizeProp() {
             super(PersistenceUnitProperties.CACHE_SIZE_, Integer.toString(1000));
-        }  
+        }
     }
 
     protected static class CacheTypeProp extends Prop {
         CacheTypeProp() {
             super(PersistenceUnitProperties.CACHE_TYPE_, CacheType.DEFAULT);
             String pcg = "org.eclipse.persistence.internal.identitymaps.";
-            valueArray = new Object[][] { 
+            valueArray = new Object[][] {
                 {CacheType.Weak, pcg + "WeakIdentityMap"},
                 {CacheType.Soft, pcg + "SoftIdentityMap"},
                 {CacheType.SoftWeak, pcg + "SoftCacheWeakIdentityMap"},
@@ -608,24 +608,24 @@ public class PropertiesHandler {
     protected static class BooleanProp extends Prop {
         BooleanProp(String name, String defaultValue) {
             super(name, defaultValue);
-            valueArray = new Object[] { 
+            valueArray = new Object[] {
                 "true",
                 "false"
             };
-        }  
+        }
     }
 
     protected static class DescriptorCustomizerProp extends Prop {
         DescriptorCustomizerProp() {
             super(PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_);
-        }  
+        }
     }
 
     protected static class BatchWritingProp extends Prop {
         BatchWritingProp() {
             super(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.DEFAULT);
             this.shouldReturnOriginalValueIfValueToApplyNotFound = true;
-            valueArray = new Object[] { 
+            valueArray = new Object[] {
                 BatchWriting.None,
                 BatchWriting.JDBC,
                 BatchWriting.Buffered,
@@ -637,7 +637,7 @@ public class PropertiesHandler {
     protected static class FlushClearCacheProp extends Prop {
         FlushClearCacheProp() {
             super(PersistenceUnitProperties.FLUSH_CLEAR_CACHE, FlushClearCache.DEFAULT);
-            valueArray = new Object[] { 
+            valueArray = new Object[] {
                 FlushClearCache.Merge,
                 FlushClearCache.Drop,
                 FlushClearCache.DropInvalidate
@@ -648,7 +648,7 @@ public class PropertiesHandler {
     protected static class ExclusiveConnectionModeProp extends Prop {
         ExclusiveConnectionModeProp() {
             super(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.DEFAULT);
-            valueArray = new Object[] { 
+            valueArray = new Object[] {
                 ExclusiveConnectionMode.Transactional,
                 ExclusiveConnectionMode.Isolated,
                 ExclusiveConnectionMode.Always
@@ -659,7 +659,7 @@ public class PropertiesHandler {
     protected static class IdValidationProp extends Prop {
         IdValidationProp() {
             super(PersistenceUnitProperties.ID_VALIDATION, IdValidation.ZERO.toString());
-            valueArray = new Object[] { 
+            valueArray = new Object[] {
                 IdValidation.NULL.toString(),
                 IdValidation.ZERO.toString(),
                 IdValidation.NEGATIVE.toString(),

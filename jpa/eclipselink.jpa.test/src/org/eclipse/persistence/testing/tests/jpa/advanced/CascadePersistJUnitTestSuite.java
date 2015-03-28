@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -51,7 +51,7 @@ public class CascadePersistJUnitTestSuite extends JUnitTestCase {
         new CascadePersistTableCreator().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
     }
-    
+
     public void testCascadePersistForUnregisteredObjects(){
         List<Throwable> errorList = new ArrayList<Throwable>();
         for (int i = 0; i < 10; i++) {
@@ -61,12 +61,12 @@ public class CascadePersistJUnitTestSuite extends JUnitTestCase {
                 errorList.add(t);
             }
         }
-        
+
         String errorMsg = new String();
         if (!errorList.isEmpty()) {
             errorMsg = ((Throwable)errorList.get(0)).getMessage();
         }
-          
+
         Assert.assertTrue(errorList.size() + " tests failed out of 10 tests with exception " + errorMsg, errorList.size() == 0);
     }
 
@@ -77,25 +77,25 @@ public class CascadePersistJUnitTestSuite extends JUnitTestCase {
             EntityX x = new EntityX();
             x.setId(id);
             x.setXname("Bob" + id);
-            
+
             EntityY y = new EntityY();
             y.setId(100 + id);
             y.setYname("Smith" + id);
-            
+
             EntityZ z = new EntityZ();
             z.setId(1000 + id);
             z.setZname("Robin" + id);
-            
+
             // Register just z and x objects.
             em.persist(z);
             em.persist(x);
-    
+
             // Set values as unregistered object y to reproduce the issue.
             x.setEntityY(y);
             y.setEntityX(x);
             z.addYToList(y);
             y.setYzEntityRelation(z);
-            
+
             em.flush();
         } finally {
             rollbackTransaction(em);
@@ -103,5 +103,5 @@ public class CascadePersistJUnitTestSuite extends JUnitTestCase {
                 closeEntityManager(em);
             }
         }
-    }   
+    }
 }

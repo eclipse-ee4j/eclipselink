@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -69,9 +69,9 @@ public class Employee implements Serializable, Cloneable {
     private Address address;
 
     @ManyToOne(fetch=EAGER, cascade=PERSIST)
-    @JoinColumn(name="DEPT_ID")    
+    @JoinColumn(name="DEPT_ID")
     private Department department;
-    
+
     @ManyToOne(fetch = LAZY)
     @JoinColumns({
         @JoinColumn(name="MANAGER_EMP_ID", referencedColumnName = "EMP_ID"),
@@ -90,7 +90,7 @@ public class Employee implements Serializable, Cloneable {
     @CollectionTable(
             name = "PART_RESPONS",
             joinColumns={@JoinColumn(name = "EMP_ID", referencedColumnName = "EMP_ID"),@JoinColumn(name = "LOCATION", referencedColumnName = "LOCATION")})
-    @Column(name="DESCRIPTION")    
+    @Column(name="DESCRIPTION")
     @Partitioned("ValuePartitioningByLOCATION")
     private List<String> responsibilities;
 
@@ -98,7 +98,7 @@ public class Employee implements Serializable, Cloneable {
     @CollectionTable(
             name = "PART_WORK",
             joinColumns={@JoinColumn(name = "EMP_ID", referencedColumnName = "EMP_ID"),@JoinColumn(name = "LOCATION", referencedColumnName = "LOCATION")})
-    @Column(name="EXPERIENCE")    
+    @Column(name="EXPERIENCE")
     @Partitioned("PinnedPartitioningTEST")
     private List<String> experiences;
 
@@ -132,7 +132,7 @@ public class Employee implements Serializable, Cloneable {
         }
         return clone;
     }
-    
+
     public String getLocation() {
         return location;
     }
@@ -167,8 +167,8 @@ public class Employee implements Serializable, Cloneable {
         return address;
     }
 
-    public Department getDepartment() { 
-        return department; 
+    public Department getDepartment() {
+        return department;
     }
 
     public String getFirstName() {
@@ -178,7 +178,7 @@ public class Employee implements Serializable, Cloneable {
     public String getLastName() {
         return lastName;
     }
-    
+
     public EmployeePK pk() {
         EmployeePK pk = new EmployeePK();
         pk.setId(id);

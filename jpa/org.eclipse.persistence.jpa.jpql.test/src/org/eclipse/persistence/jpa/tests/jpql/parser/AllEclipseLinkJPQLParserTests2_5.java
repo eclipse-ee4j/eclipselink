@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,27 +29,27 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @SuiteClasses({
 
-	EclipseLinkJPQLParserTests2_5.class,
+    EclipseLinkJPQLParserTests2_5.class,
 
-	// Extended support
-	EclipseLinkInExpressionTest.class,
+    // Extended support
+    EclipseLinkInExpressionTest.class,
 
-	// New support
-	AsOfClauseTest.class,
-	ConnectByClauseTest.class,
-	HierarchicalQueryClauseTest.class,
-	OrderSiblingsByClauseTest.class,
-	StartWithClauseTest.class
+    // New support
+    AsOfClauseTest.class,
+    ConnectByClauseTest.class,
+    HierarchicalQueryClauseTest.class,
+    OrderSiblingsByClauseTest.class,
+    StartWithClauseTest.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllEclipseLinkJPQLParserTests2_5 {
 
-	private AllEclipseLinkJPQLParserTests2_5() {
-		super();
-	}
+    private AllEclipseLinkJPQLParserTests2_5() {
+        super();
+    }
 
-	@JPQLGrammarTestHelper
-	static JPQLGrammar[] buildJPQLGrammars() {
-		return JPQLGrammarTools.allEclipseLinkJPQLGrammars(EclipseLinkVersion.VERSION_2_5);
-	}
+    @JPQLGrammarTestHelper
+    static JPQLGrammar[] buildJPQLGrammars() {
+        return JPQLGrammarTools.allEclipseLinkJPQLGrammars(EclipseLinkVersion.VERSION_2_5);
+    }
 }

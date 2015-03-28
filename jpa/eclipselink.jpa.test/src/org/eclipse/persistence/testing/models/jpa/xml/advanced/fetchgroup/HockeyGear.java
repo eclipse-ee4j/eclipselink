@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     01/19/2010-2.1 Guy Pelletier 
+ *     01/19/2010-2.1 Guy Pelletier
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup;
 
 import javax.persistence.Basic;
@@ -35,41 +35,41 @@ public abstract class HockeyGear {
     @Basic
     @Column(name="MSRP")
     public Double msrp;
-    
+
     @Column(name="DESCRIP")
     public String description;
-    
+
     @Id
     @GeneratedValue(strategy=TABLE, generator="XML_HOCKEY_GEAR_TABLE_GENERATOR")
     @TableGenerator(
-        name="XML_HOCKEY_GEAR_TABLE_GENERATOR", 
-        table="XML_HOCKEY_GEAR_SEQ", 
-        pkColumnName="SEQ_NAME", 
+        name="XML_HOCKEY_GEAR_TABLE_GENERATOR",
+        table="XML_HOCKEY_GEAR_SEQ",
+        pkColumnName="SEQ_NAME",
         valueColumnName="SEQ_COUNT",
         pkColumnValue="HG_SEQ",
         initialValue=50
     )
     @Column(name="SERIAL_NUMBER")
     public Integer serialNumber;
-    
+
     public HockeyGear() {}
 
     public String getDescription() {
         return description;
     }
-    
+
     public Double getMsrp() {
         return msrp;
     }
-        
+
     public Integer getSerialNumber() {
         return serialNumber;
     }
-    
+
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public void setMsrp(Double msrp) {
         this.msrp = msrp;
     }

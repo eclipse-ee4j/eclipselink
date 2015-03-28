@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -35,7 +35,7 @@ public class FromSubSelectExpression extends TableExpression {
         this.subSelect = subSelect;
         this.table = new SubSelectDatabaseTable(subSelect);
     }
-    
+
     /**
      * INTERNAL:
      * Return if the expression is equal to the other.
@@ -46,7 +46,7 @@ public class FromSubSelectExpression extends TableExpression {
     public boolean equals(Object object) {
         return this == object;
     }
-        
+
     /**
      * INTERNAL:
      * Compute a consistent hash-code for the expression.
@@ -64,7 +64,7 @@ public class FromSubSelectExpression extends TableExpression {
     public String descriptionOfNodeType() {
         return "FromSubSelect";
     }
-    
+
     /**
      * This is used by sub-selects in the from clause to define a virtual table,
      * 'get' allows one of the sub-selected attributes to be aliased without using the field name.
@@ -93,7 +93,7 @@ public class FromSubSelectExpression extends TableExpression {
         }
         return super.normalize(normalizer);
     }
-    
+
     /**
      * INTERNAL:
      * Also iterate over the sub-select if present.
@@ -105,7 +105,7 @@ public class FromSubSelectExpression extends TableExpression {
             this.subSelect.iterateOn(iterator);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Also copy over the sub-select if present.
@@ -159,7 +159,7 @@ public class FromSubSelectExpression extends TableExpression {
      */
     @Override
     public DatabaseTable aliasForTable(DatabaseTable table) {
-        return super.aliasForTable(getTable());        
+        return super.aliasForTable(getTable());
     }
 
 

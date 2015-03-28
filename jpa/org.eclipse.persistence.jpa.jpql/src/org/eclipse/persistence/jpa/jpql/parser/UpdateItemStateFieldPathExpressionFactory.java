@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,56 +31,56 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 @SuppressWarnings("nls")
 public final class UpdateItemStateFieldPathExpressionFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link StateFieldPathExpressionFactory}.
-	 */
-	public static final String ID = "update-item-state-field-path";
+    /**
+     * The unique identifier of this {@link StateFieldPathExpressionFactory}.
+     */
+    public static final String ID = "update-item-state-field-path";
 
-	/**
-	 * Creates a new <code>UpdateItemStateFieldPathExpressionFactory</code>.
-	 */
-	public UpdateItemStateFieldPathExpressionFactory() {
-		super(ID);
-	}
+    /**
+     * Creates a new <code>UpdateItemStateFieldPathExpressionFactory</code>.
+     */
+    public UpdateItemStateFieldPathExpressionFactory() {
+        super(ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		ExpressionRegistry registry = getExpressionRegistry();
+        ExpressionRegistry registry = getExpressionRegistry();
 
-		// When the tolerant mode is turned on, parse the invalid portion of the query
-		if (tolerant && registry.isIdentifier(word)) {
+        // When the tolerant mode is turned on, parse the invalid portion of the query
+        if (tolerant && registry.isIdentifier(word)) {
 
-			ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);
+            ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);
 
-			// Special case where the word is seen as an JPQL identifier but it's actually
-			// an unqualified path expression. Examples:
-			// UPDATE DateTime SET avg = 'JPQL'
-			// UPDATE DateTime SET timestamp = 'JPQL'
-			if (factory == null ||
-			    registry.getIdentifierRole(word) == IdentifierRole.FUNCTION &&
-			    !ExpressionTools.isFunctionExpression(wordParser, word)) {
+            // Special case where the word is seen as an JPQL identifier but it's actually
+            // an unqualified path expression. Examples:
+            // UPDATE DateTime SET avg = 'JPQL'
+            // UPDATE DateTime SET timestamp = 'JPQL'
+            if (factory == null ||
+                registry.getIdentifierRole(word) == IdentifierRole.FUNCTION &&
+                !ExpressionTools.isFunctionExpression(wordParser, word)) {
 
-				expression = new StateFieldPathExpression(parent, word);
-				expression.parse(wordParser, tolerant);
-				return expression;
-			}
+                expression = new StateFieldPathExpression(parent, word);
+                expression.parse(wordParser, tolerant);
+                return expression;
+            }
 
-			factory = registry.getExpressionFactory(StateFieldPathExpressionFactory.ID);
-			return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
-		}
+            factory = registry.getExpressionFactory(StateFieldPathExpressionFactory.ID);
+            return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+        }
 
-		// Create the state path expression
-		expression = new StateFieldPathExpression(parent, word);
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        // Create the state path expression
+        expression = new StateFieldPathExpression(parent, word);
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import org.eclipse.persistence.annotations.Direction;
@@ -26,17 +26,17 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedu
 /**
  * INTERNAL:
  * Object to hold onto a PLSQL parameter meta-data.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
- * - all metadata mapped from XML should be initialized in the initXMLObject 
+ * - all metadata mapped from XML should be initialized in the initXMLObject
  *   method.
  * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
+ *   accessor this metadata was loaded from. Used it to look up any
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author James Sutherland
  * @since EclipseLink 2.3
  */
@@ -49,7 +49,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     private Integer m_length;
     private Integer m_precision;
     private Integer m_scale;
-    
+
     /**
      * INTERNAL:
      * Used for XML loading.
@@ -57,24 +57,24 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public PLSQLParameterMetadata() {
         super("<plsql-parameter>");
     }
-    
+
     /**
      * INTERNAL:
      * Used for annotation loading.
      */
     public PLSQLParameterMetadata(MetadataAnnotation storedProcedureParameter, MetadataAccessor accessor) {
         super(storedProcedureParameter, accessor);
-        
+
         m_direction = storedProcedureParameter.getAttributeString("direction");
         m_name = storedProcedureParameter.getAttributeString("name");
-        m_queryParameter = storedProcedureParameter.getAttributeString("queryParameter"); 
+        m_queryParameter = storedProcedureParameter.getAttributeString("queryParameter");
         m_databaseType = storedProcedureParameter.getAttributeString("databaseType");
         m_optional = storedProcedureParameter.getAttributeBooleanDefaultFalse("optional");
         m_length = storedProcedureParameter.getAttributeInteger("length");
         m_precision = storedProcedureParameter.getAttributeInteger("precision");
         m_scale = storedProcedureParameter.getAttributeInteger("scale");
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -82,15 +82,15 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof PLSQLParameterMetadata) {
             PLSQLParameterMetadata parameter = (PLSQLParameterMetadata) objectToCompare;
-            
+
             if (! valuesMatch(m_databaseType, parameter.getDatabaseType())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_direction, parameter.getDirection())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_length, parameter.getLength())) {
                 return false;
             }
@@ -98,21 +98,21 @@ public class PLSQLParameterMetadata extends ORMetadata {
             if (! valuesMatch(m_precision, parameter.getPrecision())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_name, parameter.getName())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_optional, parameter.getOptional())) {
                 return false;
             }
-            
+
             return valuesMatch(m_queryParameter, parameter.getQueryParameter());
         }
-        
+
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -120,7 +120,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public String getDatabaseType() {
         return m_databaseType;
     }
-    
+
     /**
      * Return the DataType enum constant for the String type name.  If type is
      * not a JDBCType, OraclePLSQLType, PLSQLCursor or a ComplexMetadataType,
@@ -134,7 +134,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
         }
         return super.getDatabaseTypeEnum(type);
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -142,7 +142,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public String getDirection() {
         return m_direction;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -150,7 +150,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public Integer getLength() {
         return m_length;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -158,7 +158,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public String getName() {
         return m_name;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -166,7 +166,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public Boolean getOptional() {
         return m_optional;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -174,7 +174,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public Integer getPrecision() {
         return m_precision;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -182,7 +182,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public String getQueryParameter() {
         return m_queryParameter;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -190,13 +190,13 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public Integer getScale() {
         return m_scale;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void process(PLSQLStoredProcedureCall call, boolean functionReturn) {
-                    
-        // Process the procedure parameter name, defaults to the 
+
+        // Process the procedure parameter name, defaults to the
         // argument field name.
         // TODO: Log a message when defaulting.
         String procedureParameterName = m_name;
@@ -207,9 +207,9 @@ public class PLSQLParameterMetadata extends ORMetadata {
         if ((m_optional != null) && m_optional) {
             call.addOptionalArgument(procedureParameterName);
         }
-        
+
         DatabaseType type = getDatabaseTypeEnum(getDatabaseType());
-        
+
         // Process the parameter direction
         if (functionReturn) {
             // check for cursor return type
@@ -217,7 +217,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
                 // the constructor by default adds a RETURN argument, so remove it
                 ((PLSQLStoredFunctionCall)call).getArguments().remove(0);
                 ((PLSQLStoredFunctionCall)call).useNamedCursorOutputAsResultSet(Direction.OUT_CURSOR.name(), type);
-            } else {       
+            } else {
                 if (getLength() != null) {
                     ((PLSQLStoredFunctionCall)call).setResult(type, getLength());
                 } else if (getPrecision() != null) {
@@ -261,7 +261,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
             if (multipleCursors) {
                 call.setIsCursorOutputProcedure(false);
             }
-        } 
+        }
     }
 
     /**
@@ -275,7 +275,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
             field.useUpperCaseForComparisons(true);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -283,7 +283,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public void setDatabaseType(String databaseType) {
         m_databaseType = databaseType;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -299,7 +299,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public void setLength(Integer length) {
         m_length = length;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -307,7 +307,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public void setName(String name) {
         m_name = name;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -315,7 +315,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public void setOptional(Boolean optional) {
         m_optional = optional;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -323,7 +323,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public void setPrecision(Integer precision) {
         m_precision = precision;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -331,7 +331,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public void setQueryParameter(String queryParameter) {
         m_queryParameter = queryParameter;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.

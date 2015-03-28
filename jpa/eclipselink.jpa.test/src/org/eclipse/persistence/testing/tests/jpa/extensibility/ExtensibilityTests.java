@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial implementation as part of extensibility feature
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.extensibility;
 
 import java.lang.ref.WeakReference;
@@ -51,15 +51,15 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.extensibility.ExtensibilityTableCreator;
 
 public class ExtensibilityTests extends JUnitTestCase {
-    
+
     public ExtensibilityTests() {
         super();
     }
-    
+
     public ExtensibilityTests(String name) {
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("ExtensibilityTestSuite");
@@ -83,7 +83,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         }
         return suite;
     }
-    
+
     public String getPersistenceUnitName(){
         return "extensibility";
     }
@@ -91,7 +91,7 @@ public class ExtensibilityTests extends JUnitTestCase {
     /*public void testWriteProjectCache(){
         new org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite().testFileBasedProjectCacheLoading("extensibility");
     }*/
-    
+
     public void persistEmployeeData(EntityManagerFactory emf){
         EntityManager em = emf.createEntityManager();
         try {
@@ -99,15 +99,15 @@ public class ExtensibilityTests extends JUnitTestCase {
             Employee emp = new Employee();
             emp.setFirstName("Joe");
             emp.setLastName("Josephson");
-            
+
             Address add = new Address();
             add.setStreet("Main Street");
             add.setCity("Herestowm");
             add.setPostalCode("A1A1A1");
             add.setCountry("Here");
-            
+
             emp.setAddress(add);
-            
+
             em.persist(emp);
             em.persist(add);
             commitTransaction(em);
@@ -119,7 +119,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         }
         clearCache();
     }
-    
+
     public void deleteEmployeeData(EntityManagerFactory emf){
         EntityManager em = emf.createEntityManager();
         try {
@@ -138,7 +138,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             clearCache();
         }
     }
-    
+
     public void testSetup() {
         ServerSession serverSession = getServerSession(getPersistenceUnitName());
         new ExtensibilityTableCreator().replaceTables(serverSession);
@@ -148,11 +148,11 @@ public class ExtensibilityTests extends JUnitTestCase {
             serverSession.getLogin().setShouldForceFieldNamesToUpperCase(true);
         }
     }
-    
+
     public void testDescriptors(){
         EntityManagerFactory emf = getEntityManagerFactory();
         ServerSession session = (ServerSession)getDatabaseSession();
-        
+
         RelationalDescriptor empDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Employee.class);
         assertTrue(empDescriptor.getMappingForAttributeName("phoneNumbers") != null);
         if (isWeavingEnabled()){
@@ -163,7 +163,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         VirtualAttributeMethodInfo info = empDescriptor.getVirtualAttributeMethods().get(0);
         assertTrue(info.getGetMethodName().equals("getExt"));
         assertTrue(info.getSetMethodName().equals("putExt"));
-        
+
         RelationalDescriptor addDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Address.class);
         assertTrue(addDescriptor.getMappingForAttributeName("pobox") != null);
         if (isWeavingEnabled()){
@@ -175,14 +175,14 @@ public class ExtensibilityTests extends JUnitTestCase {
         assertTrue(info.getGetMethodName().equals("get"));
         assertTrue(info.getSetMethodName().equals("set"));
     }
-    
+
     public void testBasicMapping(){
         Map props = new HashMap();
         props.put(PersistenceUnitProperties.SESSION_NAME, "bla1");
-        
+
         EntityManagerFactory emf = getEntityManagerFactory();
         persistEmployeeData(emf);
-        
+
         EntityManager em = emf.createEntityManager();
         try{
             beginTransaction(em);
@@ -190,14 +190,14 @@ public class ExtensibilityTests extends JUnitTestCase {
             Address add = emp.getAddress();
             add.set("pobox", "111");
             commitTransaction(em);
-            
+
             em.refresh(emp);
-            
+
             assertTrue("The pobox was not properly saved", emp.getAddress().get("pobox").equals("111"));
-            
+
             em.clear();
             clearCache();
-            
+
             add = (Address)em.createQuery("select a from ExtensibilityAddress a where a.pobox = '111'").getSingleResult();
             assertTrue("queries on extended Basic mappings fail", add != null);
             assertTrue("queries on extended Basic mappings return incorrect results.", add.get("pobox").equals("111"));
@@ -211,20 +211,20 @@ public class ExtensibilityTests extends JUnitTestCase {
         }
     }
 
-    
+
     public void testOneToManyMapping(){
         EntityManagerFactory emf = getEntityManagerFactory();
 
         persistEmployeeData(emf);
-        
+
         EntityManager em = emf.createEntityManager();
-        
+
         PhoneNumber pn = new PhoneNumber();
         Employee emp = null;
         try{
             beginTransaction(em);
             emp = (Employee)em.createQuery("select e from ExtensibilityEmployee e where e.firstName = 'Joe'").getSingleResult();
-    
+
             pn.setAreaCode("613");
             pn.setNumber("1111111");
             em.persist(pn);
@@ -232,15 +232,15 @@ public class ExtensibilityTests extends JUnitTestCase {
             numbers.add(pn);
             emp.putExt("phoneNumbers", numbers);
             commitTransaction(em);
-            
+
             em.refresh(emp);
-            
+
             numbers = ((List)emp.getExt("phoneNumbers"));
             assertTrue("The phoneNumbers were not properly saved", numbers.size() == 1);
-            
+
             em.clear();
             clearCache();
-            
+
             emp = (Employee)em.createQuery("select e from ExtensibilityEmployee e join e.phoneNumbers p where p.areaCode = '613'").getSingleResult();
             assertTrue("queries on extended OneToMany mappings fail", emp != null);
             assertTrue("queries on extended OneToMany mappings return incorrect results.", ((List)emp.getExt("phoneNumbers")).size() == 1);
@@ -257,7 +257,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             }
         }
     }
-    
+
     public void testSimpleRefresh(){
         EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
@@ -267,7 +267,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         assertTrue(addDescriptor.getMappingForAttributeName("pobox") != null);
         RelationalDescriptor empDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Employee.class);
         assertTrue(empDescriptor.getMappingForAttributeName("phoneNumbers") != null);
-        
+
         session = null;
 
         Map properties = new HashMap();
@@ -281,9 +281,9 @@ public class ExtensibilityTests extends JUnitTestCase {
         assertTrue(addDescriptor.getMappingForAttributeName("appartmentNumber") != null);
         empDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Employee.class);
         assertTrue(empDescriptor.getMappingForAttributeName("phoneNumbers") == null);
-        
+
         persistEmployeeData(emf);
-        
+
         em = emf.createEntityManager();
         try{
             beginTransaction(em);
@@ -306,11 +306,11 @@ public class ExtensibilityTests extends JUnitTestCase {
         System.gc();
         assertTrue(emfRef.get() == null);
     }
-    
+
     public void testMergeRefreshed(){
         EntityManagerFactory emf = getEntityManagerFactory();
         persistEmployeeData(emf);
-        
+
         EntityManager em = emf.createEntityManager();
         try{
             beginTransaction(em);
@@ -318,24 +318,24 @@ public class ExtensibilityTests extends JUnitTestCase {
             Address add = emp.getAddress();
             emp.getAddress().set("appartmentNumber", "112");
             commitTransaction(em);
-            
+
             Map properties = new HashMap();
             properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension.xml");
-            
+
             JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
-            
+
             em.close();
-            
+
             em = emf.createEntityManager();
-            
+
             beginTransaction(em);
             add = em.merge(add);
             add.set("pobox", "111");
 
             commitTransaction(em);
-            
+
             em.refresh(add);
-            
+
             assertTrue(add.get("pobox").equals("111"));
             assertTrue(add.get("appartmentNumber") == null);
         } finally {
@@ -346,7 +346,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             deleteEmployeeData(emf);
         }
     }
-    
+
     public void testMergeRefreshedManyToMany(){
         EntityManagerFactory emf = getEntityManagerFactory();
         persistEmployeeData(emf);
@@ -365,13 +365,13 @@ public class ExtensibilityTests extends JUnitTestCase {
             numbers.add(pn);
             emp.putExt("phoneNumbers", numbers);
             commitTransaction(em);
-            
+
             Map properties = new HashMap();
             properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension2.xml");
-            
+
             JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
             em.close();
-            
+
             em = emf.createEntityManager();
             emp = em.merge(emp);
             assertNull(emp.getExt("phoneNumbers"));
@@ -383,7 +383,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             deleteEmployeeData(emf);
         }
     }
-    
+
     public void testUntriggerVHOnDetached(){
         EntityManagerFactory emf = getEntityManagerFactory();
         persistEmployeeData(emf);
@@ -402,9 +402,9 @@ public class ExtensibilityTests extends JUnitTestCase {
             }
             deleteEmployeeData(emf);
         }
-        
+
     }
-    
+
     public void testFetchGroupOnRefresh(){
         if (!isWeavingEnabled()){
             return;
@@ -430,7 +430,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             deleteEmployeeData(emf);
         }
     }
-    
+
     public void testExistingEntityManagerAfterRefresh(){
         EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
@@ -438,7 +438,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension2.xml");
         JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
         em.close();
-        
+
         persistEmployeeData(emf);
         em = emf.createEntityManager();
         EntityManager em2 = null;
@@ -450,7 +450,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension.xml");
             JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
             em2 = emf.createEntityManager();
-            
+
             beginTransaction(em);
             add.set("appartmentNumber", "333");
             em.flush();
@@ -460,9 +460,9 @@ public class ExtensibilityTests extends JUnitTestCase {
             add = em.find(Address.class, add.getId());
             assertTrue(add.get("appartmentNumber").equals("333"));
             rollbackTransaction(em);
-            
+
             clearCache();
-            
+
             beginTransaction(em2);
             add = em2.find(Address.class, add.getId());
             add.set("pobox", "1");
@@ -482,11 +482,11 @@ public class ExtensibilityTests extends JUnitTestCase {
                 }
                 em2.close();
             }
-            
+
             deleteEmployeeData(emf);
         }
     }
-    
+
     public void testSetupImplRefresh(){
         EntityManagerFactory emf = getEntityManagerFactory();
         persistEmployeeData(emf);
@@ -498,7 +498,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             properties.putAll(delegate.getProperties());
             properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension2.xml");
             setupImpl.refreshMetadata(properties);
-            
+
             em = emf.createEntityManager();
             beginTransaction(em);
             Address add = (Address)em.createQuery("select a from ExtensibilityAddress a where a.city = 'Herestowm'").getSingleResult();
@@ -518,10 +518,10 @@ public class ExtensibilityTests extends JUnitTestCase {
     }
 
     /**
-     * This test checks that a MetadataRefreshCommand will refresh the metadata source the same way a call to 
-     * EntityManagerSetupImpl refreshMetadata would.  It also verifies that the listener has been changed on the 
-     * new session for RCM MetadataRefreshCommand messages.  
-     * 
+     * This test checks that a MetadataRefreshCommand will refresh the metadata source the same way a call to
+     * EntityManagerSetupImpl refreshMetadata would.  It also verifies that the listener has been changed on the
+     * new session for RCM MetadataRefreshCommand messages.
+     *
      */
     public void testRCMRefreshCommand(){
         EntityManagerFactory emf = getEntityManagerFactory();
@@ -531,7 +531,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             EntityManagerFactoryDelegate delegate = (EntityManagerFactoryDelegate)em.unwrap(JpaEntityManager.class).getEntityManagerFactory();
             EntityManagerSetupImpl setupImpl = EntityManagerFactoryProvider.emSetupImpls.get(delegate.getSetupImpl().getSessionName());
             Map properties = new HashMap();
-            
+
             //setup
             properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension2.xml");
             properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
@@ -565,9 +565,9 @@ public class ExtensibilityTests extends JUnitTestCase {
         EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
         JpaEntityManagerFactory jpaEmf = JpaHelper.getEntityManagerFactory(em);
-        ServerSession originalSession = jpaEmf.getServerSession(); 
+        ServerSession originalSession = jpaEmf.getServerSession();
         String sessionName = originalSession.getName();
-        
+
         // cleanUpProperties will be used to return the factory back to its original state
         HashMap cleanUpProperties = new HashMap(4);
         Object transactionType = originalSession.getProperty(PersistenceUnitProperties.TRANSACTION_TYPE);
@@ -578,29 +578,29 @@ public class ExtensibilityTests extends JUnitTestCase {
         cleanUpProperties.put(PersistenceUnitProperties.TRANSACTION_TYPE, transactionType);
         Object jtaDataSource = originalSession.getProperty(PersistenceUnitProperties.JTA_DATASOURCE);
         if (jtaDataSource != null) {
-            Connector mainConnector = originalSession.getLogin().getConnector(); 
+            Connector mainConnector = originalSession.getLogin().getConnector();
             if (mainConnector instanceof JNDIConnector) {
                 jtaDataSource = ((JNDIConnector)mainConnector).getName();
             } else {
                 // that would remove the property
                 jtaDataSource = "";
-            }            
+            }
         }
         cleanUpProperties.put(PersistenceUnitProperties.JTA_DATASOURCE, jtaDataSource);
         Object nonJtaDataSource = originalSession.getProperty(PersistenceUnitProperties.NON_JTA_DATASOURCE);
         if (nonJtaDataSource != null) {
-            Connector readConnector = ((DatabaseLogin)originalSession.getReadConnectionPool().getLogin()).getConnector(); 
+            Connector readConnector = ((DatabaseLogin)originalSession.getReadConnectionPool().getLogin()).getConnector();
             if (readConnector instanceof JNDIConnector) {
                 nonJtaDataSource = ((JNDIConnector)readConnector).getName();
             } else {
                 // that would remove the property
                 nonJtaDataSource = "";
-            }            
+            }
         }
         cleanUpProperties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, nonJtaDataSource);
         // that would remove the property
         cleanUpProperties.put(PersistenceUnitProperties.METADATA_SOURCE_PROPERTIES_FILE, "");
-        
+
         Map properties = new HashMap();
         properties.put(PersistenceUnitProperties.METADATA_SOURCE_PROPERTIES_FILE, "extension.properties");
         jpaEmf.refreshMetadata(properties);
@@ -614,13 +614,13 @@ public class ExtensibilityTests extends JUnitTestCase {
             //   javax.persistence.jtaDataSource=MyJtaDataSource
             //   javax.persistence.nonJtaDataSource=MyNonJtaDataSource
             // Examine the session to see whether these settings were applied
-            // Note that because session login has failed the session is not accessible from emf, only directly from emSetupImpls. 
+            // Note that because session login has failed the session is not accessible from emf, only directly from emSetupImpls.
             String errorMsg = "";
             ServerSession serverSession = (ServerSession)EntityManagerFactoryProvider.emSetupImpls.get(sessionName).getSession();
             if (!serverSession.getLogin().shouldUseExternalTransactionController()) {
                 errorMsg += "External tarnsaction controller was expected; ";
             }
-            Connector mainConnector = serverSession.getLogin().getConnector(); 
+            Connector mainConnector = serverSession.getLogin().getConnector();
             if (!(mainConnector instanceof JNDIConnector)) {
                 errorMsg += "Main JNDIConnector was expected; ";
             } else {
@@ -628,7 +628,7 @@ public class ExtensibilityTests extends JUnitTestCase {
                     errorMsg += "MyJtaDataSource was expected; ";
                 }
             }
-            Connector readConnector = ((DatabaseLogin)serverSession.getReadConnectionPool().getLogin()).getConnector(); 
+            Connector readConnector = ((DatabaseLogin)serverSession.getReadConnectionPool().getLogin()).getConnector();
             if (!(readConnector instanceof JNDIConnector)) {
                 errorMsg += "Read JNDIConnector was expected; ";
             } else {

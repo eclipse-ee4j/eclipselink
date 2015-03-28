@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,7 +19,7 @@ public class Employee {
     public List<String> projectIds;
     public List<Float> salaries;
     public List<String> privateData;
-    public List<String> characterData; 
+    public List<String> characterData;
 
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
@@ -33,7 +33,7 @@ public class Employee {
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public List<String> getProjectIds() {
         wasGetCalled = true;
         return projectIds;
@@ -52,16 +52,16 @@ public class Employee {
             return false;
         }
         // compare id
-        if (id != empObj.id) { 
+        if (id != empObj.id) {
             return false;
         }
         // compare projectIds
-        if (projectIds == null) { 
+        if (projectIds == null) {
             if (empObj.projectIds != null) {
                 return false;
             }
-        } else { 
-            if (empObj.projectIds == null || projectIds.size() != empObj.projectIds.size()) { 
+        } else {
+            if (empObj.projectIds == null || projectIds.size() != empObj.projectIds.size()) {
                 return false;
             }
             for (String prj : projectIds) {
@@ -71,12 +71,12 @@ public class Employee {
             }
         }
         // compare salaries
-        if (salaries == null) { 
+        if (salaries == null) {
             if (empObj.salaries != null) {
                 return false;
             }
         } else {
-            if (empObj.salaries == null || salaries.size() != empObj.salaries.size()) { 
+            if (empObj.salaries == null || salaries.size() != empObj.salaries.size()) {
                 return false;
             }
             for (Float sal : salaries) {
@@ -86,13 +86,13 @@ public class Employee {
             }
         }
         // compare privateData
-        if (privateData == null) { 
+        if (privateData == null) {
             if (empObj.privateData != null) {
                 return false;
             }
-        } else { 
-            if (empObj.privateData == null || privateData.size() != empObj.privateData.size()) { 
-                return false; 
+        } else {
+            if (empObj.privateData == null || privateData.size() != empObj.privateData.size()) {
+                return false;
             }
             for (String pd : privateData) {
                 if (!empObj.privateData.contains(pd)) {
@@ -101,12 +101,12 @@ public class Employee {
             }
         }
         // compare characterData
-        if (characterData == null) { 
+        if (characterData == null) {
             if (empObj.characterData != null) {
                 return false;
             }
         } else {
-            if (empObj.characterData == null || characterData.size() != empObj.characterData.size()) { 
+            if (empObj.characterData == null || characterData.size() != empObj.characterData.size()) {
                 return false;
             }
             for (String cd : characterData) {

@@ -1,6 +1,6 @@
 /*
 [The "BSD licence"]
-Copyright (c) 2005-2008 Terence Parr
+Copyright (c) 2005, 2015 Terence Parr
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -35,23 +35,23 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.misc.IntArray;
 import java.util.*;
 
 public class CommonTreeNodeStream extends LookaheadStream<Object> implements TreeNodeStream {
-	public static final int DEFAULT_INITIAL_BUFFER_SIZE = 100;
-	public static final int INITIAL_CALL_STACK_SIZE = 10;
+    public static final int DEFAULT_INITIAL_BUFFER_SIZE = 100;
+    public static final int INITIAL_CALL_STACK_SIZE = 10;
 
-	/** Pull nodes from which tree? */
-	protected Object root;
+    /** Pull nodes from which tree? */
+    protected Object root;
 
-	/** If this tree (root) was created from a token stream, track it. */
-	protected TokenStream tokens;
+    /** If this tree (root) was created from a token stream, track it. */
+    protected TokenStream tokens;
 
-	/** What tree adaptor was used to build these trees */
-	TreeAdaptor adaptor;
+    /** What tree adaptor was used to build these trees */
+    TreeAdaptor adaptor;
 
     /** The tree iterator we using */
     protected TreeIterator it;
 
     /** Stack of indexes used for push/pop calls */
-    protected IntArray calls;    
+    protected IntArray calls;
 
     /** Tree (nil A B C) trees like flat A B C streams */
     protected boolean hasNilRoot = false;
@@ -59,17 +59,17 @@ public class CommonTreeNodeStream extends LookaheadStream<Object> implements Tre
     /** Tracks tree depth.  Level=0 means we're at root node level. */
     protected int level = 0;
 
-	public CommonTreeNodeStream(Object tree) {
-		this(new CommonTreeAdaptor(), tree);
-	}
+    public CommonTreeNodeStream(Object tree) {
+        this(new CommonTreeAdaptor(), tree);
+    }
 
-	public CommonTreeNodeStream(TreeAdaptor adaptor, Object tree) {
+    public CommonTreeNodeStream(TreeAdaptor adaptor, Object tree) {
         super(adaptor.create(Token.EOF, "EOF")); // set EOF
-		this.root = tree;
-		this.adaptor = adaptor;
+        this.root = tree;
+        this.adaptor = adaptor;
         it = new TreeIterator(root);
         it.eof = this.eof; // make sure tree iterator returns the EOF we want
-	}
+    }
 
     public void reset() {
         super.reset();
@@ -78,7 +78,7 @@ public class CommonTreeNodeStream extends LookaheadStream<Object> implements Tre
         level = 0;
         if ( calls != null ) calls.clear();
     }
-    
+
     /** Pull elements from tree iterator.  Track tree level 0..max_level.
      *  If nil rooted tree, don't give initial nil and DOWN nor final UP.
      */
@@ -101,19 +101,19 @@ public class CommonTreeNodeStream extends LookaheadStream<Object> implements Tre
 
     public void setUniqueNavigationNodes(boolean uniqueNavigationNodes) { }
 
-	public Object getTreeSource() {	return root; }
+    public Object getTreeSource() {    return root; }
 
-	public String getSourceName() { return getTokenStream().getSourceName(); }
+    public String getSourceName() { return getTokenStream().getSourceName(); }
 
-	public TokenStream getTokenStream() { return tokens; }
+    public TokenStream getTokenStream() { return tokens; }
 
-	public void setTokenStream(TokenStream tokens) { this.tokens = tokens; }
+    public void setTokenStream(TokenStream tokens) { this.tokens = tokens; }
 
-	public TreeAdaptor getTreeAdaptor() { return adaptor; }
+    public TreeAdaptor getTreeAdaptor() { return adaptor; }
 
-	public void setTreeAdaptor(TreeAdaptor adaptor) { this.adaptor = adaptor; }
+    public void setTreeAdaptor(TreeAdaptor adaptor) { this.adaptor = adaptor; }
 
-	public int LA(int i) { return adaptor.getType(LT(i)); }
+    public int LA(int i) { return adaptor.getType(LT(i)); }
 
     /** Make stream jump to a new location, saving old location.
      *  Switch back with pop().
@@ -133,26 +133,26 @@ public class CommonTreeNodeStream extends LookaheadStream<Object> implements Tre
         int ret = calls.pop();
         seek(ret);
         return ret;
-    }    
+    }
 
-	// TREE REWRITE INTERFACE
+    // TREE REWRITE INTERFACE
 
-	public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t) {
-		if ( parent!=null ) {
-			adaptor.replaceChildren(parent, startChildIndex, stopChildIndex, t);
-		}
-	}
+    public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t) {
+        if ( parent!=null ) {
+            adaptor.replaceChildren(parent, startChildIndex, stopChildIndex, t);
+        }
+    }
 
-	public String toString(Object start, Object stop) {
+    public String toString(Object start, Object stop) {
         // we'll have to walk from start to stop in tree; we're not keeping
         // a complete node stream buffer
         return "n/a";
-	}
+    }
 
     /** For debugging; destructive: moves tree iterator to end. */
     public String toTokenTypeString() {
         reset();
-		StringBuffer buf = new StringBuffer();
+        StringBuffer buf = new StringBuffer();
         Object o = LT(1);
         int type = adaptor.getType(o);
         while ( type!=Token.EOF ) {
@@ -161,7 +161,7 @@ public class CommonTreeNodeStream extends LookaheadStream<Object> implements Tre
             consume();
             o = LT(1);
             type = adaptor.getType(o);
-		}
-		return buf.toString();
+        }
+        return buf.toString();
     }
 }

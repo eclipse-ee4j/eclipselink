@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -107,7 +107,7 @@ public class PackageRenamer {
 
     /**
      * Do a binary copy of the file byte buffer by byte buffer.
-     * 
+     *
      * @param inFile
      *            The file to copy
      * @param outFile
@@ -141,7 +141,7 @@ public class PackageRenamer {
     /**
      * INTERNAL Creates a destination directory File object under the path
      * passed, verifying correctness.
-     * 
+     *
      * @param aDirString
      *            The path to the directory File object to create
      * @return The destination directory File object
@@ -220,7 +220,7 @@ public class PackageRenamer {
 
     /**
      * This method creates an output directory for post-rename file(s).
-     * 
+     *
      * @param aDirectory
      *            The output directory to create
      */
@@ -237,7 +237,7 @@ public class PackageRenamer {
     /**
      * Return true if directory2 is contained within directory1. Both
      * directories must be absolute.
-     * 
+     *
      * @param directory1
      *            The higher level directory
      * @param directory2
@@ -281,7 +281,7 @@ public class PackageRenamer {
     /**
      * Return true if the PackageRenamer should work on the given file
      * extension.
-     * 
+     *
      * @param extension
      *            The file extension to check for being supported
      * @return TRUE if the extension is supported
@@ -352,7 +352,7 @@ public class PackageRenamer {
 
     /**
      * Returns the extension of the given file.
-     * 
+     *
      * @param aFile
      *            The file of which to retrieve the extension
      * @return The file extension or an empty string if none was found.
@@ -369,7 +369,7 @@ public class PackageRenamer {
     /**
      * INTERNAL Prompt from System.in for an empty or non-existent directory to
      * use as the destination directory.
-     * 
+     *
      * @return The destination directory File object
      */
     protected File promptForDestinationDirectory() {
@@ -386,7 +386,7 @@ public class PackageRenamer {
     /**
      * This readChangesFile() method reads the given properties file to be a
      * reference for renaming TopLink package name.
-     * 
+     *
      * @param filename
      *            The input file to use for the renaming
      * @return The Properties object containing the renaming information
@@ -473,7 +473,7 @@ public class PackageRenamer {
      * This runSearchAndReplacePackageName() reads a pre-rename source file all
      * into string variable and replacing the old package names with the new
      * ones according to the properties file.
-     * 
+     *
      * @param sourceFile
      *            The source file to process
      */
@@ -566,7 +566,7 @@ public class PackageRenamer {
 
     /**
      * Do a search and replace in a string.
-     * 
+     *
      * @param str
      *            The original String
      * @param oldChars

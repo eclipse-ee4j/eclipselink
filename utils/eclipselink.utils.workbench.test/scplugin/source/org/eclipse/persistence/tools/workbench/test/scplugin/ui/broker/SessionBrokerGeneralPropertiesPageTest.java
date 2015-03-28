@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -40,117 +40,117 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  */
 public class SessionBrokerGeneralPropertiesPageTest extends SCAbstractPanelTest
 {
-	public SessionBrokerGeneralPropertiesPageTest(String name)
-	{
-		super(name);
-	}
+    public SessionBrokerGeneralPropertiesPageTest(String name)
+    {
+        super(name);
+    }
 
-	public static void main(String[] args) throws Exception
-	{
-		new SessionBrokerGeneralPropertiesPageTest(null).execute(args);
-	}
+    public static void main(String[] args) throws Exception
+    {
+        new SessionBrokerGeneralPropertiesPageTest(null).execute(args);
+    }
 
-	protected DataSource buildDataSource( String platformName)
-	{
-		DatabasePlatform platform = DatabasePlatformRepository.getDefault().platformNamed( platformName);
-		return new DataSource( platform);
-	}
+    protected DataSource buildDataSource( String platformName)
+    {
+        DatabasePlatform platform = DatabasePlatformRepository.getDefault().platformNamed( platformName);
+        return new DataSource( platform);
+    }
 
-	protected ServerPlatform noServerPlatform() {
+    protected ServerPlatform noServerPlatform() {
 
-		return new ServerPlatform( "NoServerPlatform");
-	}
+        return new ServerPlatform( "NoServerPlatform");
+    }
 
-	protected void _testComponentEnablerButtons() throws Exception
-	{
-		TopLinkSessionsAdapter sessions = getTopLinkSessions();
-		SessionBrokerAdapter broker =  sessions.addSessionBrokerNamed("MySessionBroker", noServerPlatform());
+    protected void _testComponentEnablerButtons() throws Exception
+    {
+        TopLinkSessionsAdapter sessions = getTopLinkSessions();
+        SessionBrokerAdapter broker =  sessions.addSessionBrokerNamed("MySessionBroker", noServerPlatform());
 
-		// Retrieve the buttons
-		JButton addButton    = (JButton) retrieveChildComponent("PROJECT_SESSIONS_ADD_BUTTON",    getPane());
-		JButton removeButton = (JButton) retrieveChildComponent("PROJECT_SESSIONS_REMOVE_BUTTON", getPane());
-		JButton renameButton = (JButton) retrieveChildComponent("PROJECT_SESSIONS_RENAME_BUTTON", getPane());
+        // Retrieve the buttons
+        JButton addButton    = (JButton) retrieveChildComponent("PROJECT_SESSIONS_ADD_BUTTON",    getPane());
+        JButton removeButton = (JButton) retrieveChildComponent("PROJECT_SESSIONS_REMOVE_BUTTON", getPane());
+        JButton renameButton = (JButton) retrieveChildComponent("PROJECT_SESSIONS_RENAME_BUTTON", getPane());
 
-		// Change the underlying model
-		getNodeHolder().setValue(retrieveNode(getProjectNode(), broker));
-		getSelectionHolder().setValue(broker);
+        // Change the underlying model
+        getNodeHolder().setValue(retrieveNode(getProjectNode(), broker));
+        getSelectionHolder().setValue(broker);
 
-		// Test the buttons
-		assertTrue (addButton   .isEnabled());
-		assertFalse(removeButton.isEnabled());
-		assertFalse(renameButton.isEnabled());
+        // Test the buttons
+        assertTrue (addButton   .isEnabled());
+        assertFalse(removeButton.isEnabled());
+        assertFalse(renameButton.isEnabled());
 
-		// Remove all the sessions first
-		sessions.removeSessions(CollectionTools.collection(sessions.databaseSessions()));
+        // Remove all the sessions first
+        sessions.removeSessions(CollectionTools.collection(sessions.databaseSessions()));
 
-		// Test the buttons
-		assertFalse(addButton   .isEnabled());
-		assertFalse(removeButton.isEnabled());
-		assertFalse(renameButton.isEnabled());
+        // Test the buttons
+        assertFalse(addButton   .isEnabled());
+        assertFalse(removeButton.isEnabled());
+        assertFalse(renameButton.isEnabled());
 
-		// Add an item in the list
-		DatabaseSessionAdapter session = sessions.addDatabaseSessionNamed("MyDatabaseSession", noServerPlatform(), buildDataSource("Oracle10g"));
+        // Add an item in the list
+        DatabaseSessionAdapter session = sessions.addDatabaseSessionNamed("MyDatabaseSession", noServerPlatform(), buildDataSource("Oracle10g"));
 
-		// Test the buttons
-		assertTrue (addButton   .isEnabled());
-		assertFalse(removeButton.isEnabled());
-		assertFalse(renameButton.isEnabled());
+        // Test the buttons
+        assertTrue (addButton   .isEnabled());
+        assertFalse(removeButton.isEnabled());
+        assertFalse(renameButton.isEnabled());
 
-		broker.manage(session.getName());
+        broker.manage(session.getName());
 
-		simulateMnemonic("PROJECT_SESSIONS_LIST");
+        simulateMnemonic("PROJECT_SESSIONS_LIST");
 
-		// This will select the first item in the list
-		simulateKey(KeyEvent.VK_DOWN);
+        // This will select the first item in the list
+        simulateKey(KeyEvent.VK_DOWN);
 
-		// Test the buttons
-		assertFalse(addButton   .isEnabled());
-		assertTrue (removeButton.isEnabled());
-		assertTrue (renameButton.isEnabled());
+        // Test the buttons
+        assertFalse(addButton   .isEnabled());
+        assertTrue (removeButton.isEnabled());
+        assertTrue (renameButton.isEnabled());
 
-		// Remove the selected item
-		broker.unManage(session.getName());
+        // Remove the selected item
+        broker.unManage(session.getName());
 
-		// Test the buttons
-		assertTrue (addButton   .isEnabled());
-		assertFalse(removeButton.isEnabled());
-		assertFalse(renameButton.isEnabled());
-	}
+        // Test the buttons
+        assertTrue (addButton   .isEnabled());
+        assertFalse(removeButton.isEnabled());
+        assertFalse(renameButton.isEnabled());
+    }
 
-	protected PropertyValueModel buildNodeHolder(ApplicationNode projectNode)
-	{
-		SessionBrokerAdapter broker = (SessionBrokerAdapter) getTopLinkSessions().sessionNamed("SC-SessionBrokerTest");
-		return new SimplePropertyValueModel(retrieveNode(projectNode, broker));
-	}
+    protected PropertyValueModel buildNodeHolder(ApplicationNode projectNode)
+    {
+        SessionBrokerAdapter broker = (SessionBrokerAdapter) getTopLinkSessions().sessionNamed("SC-SessionBrokerTest");
+        return new SimplePropertyValueModel(retrieveNode(projectNode, broker));
+    }
 
-	protected JComponent buildPane() throws Exception
-	{
-		return buildPage(SessionBrokerSessionsPropertiesPage.class, getNodeHolder());
-	}
+    protected JComponent buildPane() throws Exception
+    {
+        return buildPage(SessionBrokerSessionsPropertiesPage.class, getNodeHolder());
+    }
 
-	protected SCAdapter buildSelection()
-	{
-		return (SessionBrokerAdapter) getTopLinkSessions().sessionNamed("SC-SessionBrokerTest");
-	}
+    protected SCAdapter buildSelection()
+    {
+        return (SessionBrokerAdapter) getTopLinkSessions().sessionNamed("SC-SessionBrokerTest");
+    }
 
-	protected void clearModel()
-	{
-	}
+    protected void clearModel()
+    {
+    }
 
-	protected void printModel()
-	{
-	}
+    protected void printModel()
+    {
+    }
 
-	protected void resetProperty()
-	{
-	}
+    protected void resetProperty()
+    {
+    }
 
-	protected void restoreModel()
-	{
-	}
+    protected void restoreModel()
+    {
+    }
 
-	protected String windowTitle()
-	{
-		return "SessionBroker - General Tab Test";
-	}
+    protected String windowTitle()
+    {
+        return "SessionBroker - General Tab Test";
+    }
 }

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm orm_2_1.xsd"
     version="2.1">
-    
+
     <description>Mapping Document containing persistence unit metadata.</description>
-    
+
     <package>org.eclipse.persistence.testing.models.jpa21.advanced.xml</package>
-    
+
     <mapped-superclass class="Athlete">
         <attributes>
             <basic name="age"/>
@@ -34,7 +34,7 @@
             </element-collection>
         </attributes>
     </mapped-superclass>
-    
+
     <entity name="XMLAddress" class="Address">
         <table name="JPA21_XML_ADDRESS"/>
         <named-stored-procedure-query name="XMLReadAllAddressesWithNoResultClass" procedure-name="XML_Read_All_Addresses"/>
@@ -102,7 +102,7 @@
             </one-to-many>
         </attributes>
     </entity>
-    
+
     <entity name="XMLDepartment" class="Department">
         <table name="JPA21_XML_DEPT"/>
         <attributes>
@@ -126,7 +126,7 @@
             </one-to-one>
         </attributes>
     </entity>
-    
+
     <entity name="XMLEmployee" class="Employee">
         <table name="JPA21_XML_EMPLOYEE"/>
         <secondary-table name="JPA21_XML_SALARY">
@@ -139,7 +139,7 @@
             <result-set-mapping>XMLEmployeeConstructorResultSetMapping</result-set-mapping>
         </named-stored-procedure-query>
         <named-stored-procedure-query name="XMLReadUsingUnNamedRefCursor" procedure-name="XML_Read_Using_UnNamed_Cursor">
-            <parameter mode="REF_CURSOR" class="Void"/>   
+            <parameter mode="REF_CURSOR" class="Void"/>
             <result-class>Employee</result-class>
         </named-stored-procedure-query>
         <named-stored-procedure-query name="XMLReadUsingNamedRefCursors" procedure-name="XML_Read_Using_Named_Cursor">
@@ -246,7 +246,7 @@
             </embedded>
         </attributes>
     </entity>
-    
+
     <entity name="XMLProject" class="Project">
         <table name="JPA21_XML_PROJECT"/>
         <inheritance strategy="JOINED"/>
@@ -305,7 +305,7 @@
             <transient name="post_load_count"/>
         </attributes>
     </entity>
-    
+
     <entity name="XMLLargeProject" class="LargeProject">
         <table name="JPA21_XML_LPROJECT"/>
         <discriminator-value>L</discriminator-value>
@@ -316,12 +316,12 @@
             </many-to-one>
         </attributes>
     </entity>
-    
+
     <entity name="XMLSmallProject" class="SmallProject">
         <table name="JPA21_XML_PROJECT"/>
         <discriminator-value>S</discriminator-value>
     </entity>
-    
+
     <entity name="XMLPhoneNumber" class="PhoneNumber">
         <table name="JPA21_XML_PHONENUMBER"/>
         <id-class class="PhoneNumberPK"/>
@@ -343,7 +343,7 @@
             </many-to-one>
         </attributes>
     </entity>
-    
+
     <entity name="XMLRunner" class="Runner">
         <table name="JPA21_XML_RUNNER"/>
         <inheritance strategy="JOINED"/>
@@ -355,9 +355,9 @@
                 <generated-value/>
             </id>
             <basic name="gender">
-                <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter">  
-                
-                
+                <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter">
+
+
                 </convert>
             </basic>
             <one-to-many name="shoes" mapped-by="runner">
@@ -387,12 +387,12 @@
             </embedded>
         </attributes>
     </entity>
-    
+
     <entity name="XMLSprinter" class="Sprinter">
         <table name="JPA21_XML_SPRINTER"/>
         <primary-key-join-column name="SPRINTER_ID" referenced-column-name="ID"/>
     </entity>
-    
+
     <entity name="XMLShoe" class="Shoe">
         <table name="JPA21_XML_SHOE"/>
         <attributes>
@@ -404,7 +404,7 @@
             </many-to-one>
         </attributes>
     </entity>
-    
+
     <entity name="XMLShoeTag" class="ShoeTag">
         <table name="JPA21_XML_SHOE_TAG"/>
         <attributes>
@@ -413,7 +413,7 @@
             </id>
         </attributes>
     </entity>
-    
+
     <entity name="XMLRace" class="Race">
         <table name="JPA21_XML_RACE"/>
         <attributes>
@@ -428,7 +428,7 @@
             <many-to-many name="runners" mapped-by="races"/>
         </attributes>
     </entity>
-    
+
     <entity name="XMLEndorser" class="Endorser">
         <table name="JPA21_XML_ENDORSER"/>
         <attributes>
@@ -438,7 +438,7 @@
             <basic name="name"/>
         </attributes>
     </entity>
-    
+
     <entity name="XMLOrganizer" class="Organizer">
         <table name="JPA21_XML_ORGANIZER"/>
         <attributes>
@@ -451,7 +451,7 @@
             </many-to-one>
         </attributes>
     </entity>
-    
+
     <embeddable class="RunnerInfo">
         <attributes>
             <basic name="level">
@@ -462,7 +462,7 @@
             </basic>
         </attributes>
     </embeddable>
-    
+
     <embeddable class="RunnerStatus">
         <attributes>
             <basic name="runningStatus">
@@ -470,14 +470,14 @@
             </basic>
         </attributes>
     </embeddable>
-    
+
     <embeddable class="Responsibility">
         <attributes>
             <basic name="uniqueIdentifier"/>
             <basic name="description"/>
         </attributes>
     </embeddable>
-    
+
     <embeddable class="EmploymentPeriod">
         <attributes>
             <basic name="startDate">

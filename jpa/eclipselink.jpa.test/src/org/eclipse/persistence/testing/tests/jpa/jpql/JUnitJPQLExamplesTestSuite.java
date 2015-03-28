@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.Calendar;
@@ -100,23 +100,23 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLExamplesTestSuite("testOrderByExpressionWithSelect"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("testDeleteExpression"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("testComplexDeleteExpression"));
-        
+
         suite.addTest(new JUnitJPQLExamplesTestSuite("testCountExpression"));    //bug 5166658
         suite.addTest(new JUnitJPQLExamplesTestSuite("testUpdateExpression"));   //bug 5159164, 5159198
-        
-        //Bug5097278 
+
+        //Bug5097278
         suite.addTest(new JUnitJPQLExamplesTestSuite("updateAllTest"));
-        //Bug5040609  
+        //Bug5040609
         suite.addTest(new JUnitJPQLExamplesTestSuite("namedQueryCloneTest"));
-        //Bug4924639  
+        //Bug4924639
         suite.addTest(new JUnitJPQLExamplesTestSuite("aggregateParameterTest"));
         // Bug 5090182
         suite.addTest(new JUnitJPQLExamplesTestSuite("testEJBQLQueryString"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("updateEmbeddedFieldTest"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -124,10 +124,10 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         clearCache();
         //get session to start setup
         DatabaseSession session = JUnitTestCase.getServerSession();
-        
+
         //create a new EmployeePopulator
         EmployeePopulator employeePopulator = new EmployeePopulator();
-        
+
         RelationshipsExamples relationshipExamples = new RelationshipsExamples();
 
         new AdvancedTableCreator().replaceTables(session);
@@ -213,8 +213,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String ejbqlString = "SELECT DISTINCT e FROM Employee e, IN (e.phoneNumbers) l";
         Query query = em.createQuery(ejbqlString);
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
-        	query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+            // distinct is incompatible with blob in selection clause on Oracle
+            query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
         }
         List firstResult = query.getResultList();
 
@@ -252,16 +252,16 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         ReadAllQuery raq = new ReadAllQuery(Employee.class);
         raq.setSelectionCriteria(whereClause);
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
+            // distinct is incompatible with blob in selection clause on Oracle
         } else {
-        	raq.useDistinct();
+            raq.useDistinct();
         }
 
         List expectedResult = (List)getServerSession().executeQuery(raq);
 
         String ejbqlString;
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
+            // distinct is incompatible with blob in selection clause on Oracle
             ejbqlString = "SELECT e FROM Employee e JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
         } else {
             ejbqlString = "SELECT DISTINCT e FROM Employee e JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
@@ -269,7 +269,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         List firstResult = em.createQuery(ejbqlString).getResultList();
         String alternateEjbqlString;
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
+            // distinct is incompatible with blob in selection clause on Oracle
             alternateEjbqlString = "SELECT e FROM Employee e INNER JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
         } else {
             alternateEjbqlString = "SELECT DISTINCT e FROM Employee e INNER JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
@@ -310,7 +310,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         ReadAllQuery raq = new ReadAllQuery(Employee.class);
         raq.setSelectionCriteria(whereClause1.and(whereClause2));
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
+            // distinct is incompatible with blob in selection clause on Oracle
         } else {
             raq.useDistinct();
         }
@@ -319,7 +319,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         String ejbqlString;
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
+            // distinct is incompatible with blob in selection clause on Oracle
             ejbqlString = "SELECT e FROM Employee e JOIN e.phoneNumbers p " + "WHERE p.type = 'Work' AND p.number = '2258812' ";
         } else {
             ejbqlString = "SELECT DISTINCT e FROM Employee e JOIN e.phoneNumbers p " + "WHERE p.type = 'Work' AND p.number = '2258812' ";
@@ -343,7 +343,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String ejbqlString;
         String alternateEjbqlString;
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
+            // distinct is incompatible with blob in selection clause on Oracle
             ejbqlString = "SELECT e FROM Employee e, IN(e.phoneNumbers) p WHERE p.number = ?1";
             alternateEjbqlString = "SELECT e FROM Employee e, IN(e.phoneNumbers) p WHERE p.number = :number";
         } else {
@@ -413,7 +413,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         String ejbqlString = "SELECT DISTINCT o.salesPerson FROM Customer AS c, IN(c.orders) o";
         List result = em.createQuery(ejbqlString).getResultList();
-        //2 sales person  
+        //2 sales person
         Assert.assertEquals("Get SalesPerson for Orders test failed: data validation error", result.size(), 2);
         Assert.assertTrue("Get SalesPerson for Orders test failed", comparer.compareObjects(expectedResult, result));
     }
@@ -446,7 +446,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         subQuery.setReferenceClass(Employee.class);
         Expression managerExpression = employeeBuilder.get("manager").get("id").equal(managerBuilder.get("id"));
-        subQuery.addAttribute("one", new ConstantExpression(new Integer(1), subQuery.getExpressionBuilder())); 
+        subQuery.addAttribute("one", new ConstantExpression(new Integer(1), subQuery.getExpressionBuilder()));
         subQuery.setSelectionCriteria(managerExpression);
         Expression employeeExpression = employeeBuilder.exists(subQuery);
 
@@ -490,13 +490,13 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         if (result.containsAll(expectedResult) && expectedResult.containsAll(result))
             testPass = true;
-        
+
         if (result.size() != 12) {
             // H2 ALL does not work correctly if the result is empty.
             if (getServerSession().getPlatform().isH2()) {
                 warning("ALL fails on H2 as H2 has an SQL bug in ALL of none");
             } else {
-                fail("All Expression test failed: data validation error: " + result.size() + " != " + 12);                
+                fail("All Expression test failed: data validation error: " + result.size() + " != " + 12);
             }
         }
         Assert.assertTrue("All Expression test failed", testPass);
@@ -725,7 +725,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
-        
+
         JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         try {
             beginTransaction(em);
@@ -765,7 +765,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
-        
+
         JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         try {
             beginTransaction(em);
@@ -789,7 +789,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         }
     }
 
-    //bug 5159164, 5159198   
+    //bug 5159164, 5159198
 
     public void testUpdateExpression() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
@@ -800,7 +800,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         Number result = null;
         beginTransaction(em);
-        try {    
+        try {
             String ejbqlString = "UPDATE Customer c SET c.name = 'Test Case' WHERE c.name = 'Jane Smith' " + "AND 0 < (SELECT COUNT(o) FROM Customer cust JOIN cust.orders o)";
             result = em.createQuery(ejbqlString).executeUpdate();
             commitTransaction(em);
@@ -809,11 +809,11 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
         }
-        
+
         Assert.assertEquals("Update expression test failed", 1, result);
     }
 
-    //Bug5097278 Test case for updating the manager of ALL employees that have a certain address 
+    //Bug5097278 Test case for updating the manager of ALL employees that have a certain address
 
     public void updateAllTest() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
@@ -858,10 +858,10 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Calendar startCalendar = Calendar.getInstance();
         startCalendar.set(1905, 11, 31, 0, 0, 0);
         java.sql.Date startDate = new java.sql.Date(startCalendar.getTime().getTime());
-        
+
         beginTransaction(em);
         em.createQuery("UPDATE Employee e SET e.period.startDate= :startDate").setParameter("startDate", startDate).executeUpdate();
-        commitTransaction(em);        
+        commitTransaction(em);
     }
 
 

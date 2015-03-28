@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.jaxbelement;
 
 import java.io.ByteArrayOutputStream;
@@ -36,38 +36,38 @@ import org.eclipse.persistence.testing.oxm.xmlroot.Person;
  * be setup and used for testing.
  */
 public class JAXBElementTestCases extends JAXBWithJSONTestCases {
-	protected final static String CONTROL_PERSON_NAME = "Joe Smith";
-	protected final static String CONTROL_NAMESPACE_URI = "test";	
-	protected String resourceName;
-	protected Class target;
+    protected final static String CONTROL_PERSON_NAME = "Joe Smith";
+    protected final static String CONTROL_NAMESPACE_URI = "test";
+    protected String resourceName;
+    protected Class target;
 
     public JAXBElementTestCases(String name) throws Exception {
-        super(name);        
+        super(name);
         setClasses(getClasses());
     }
 
     public Class[] getClasses(){
-    	Class[] classes = new Class[1];
+        Class[] classes = new Class[1];
         classes[0] = Person.class;
         return classes;
     }
-    
+
     /**
      * Satisfy the abstract method declaration in JAXBTestCases
      */
     protected Object getControlObject() {
-		return null;
-	}
-    
+        return null;
+    }
+
     protected void setControlDocument(String xmlResource) throws Exception {
-    	super.setControlDocument(xmlResource);
-    	resourceName = xmlResource;  
+        super.setControlDocument(xmlResource);
+        resourceName = xmlResource;
     }
-    
+
     protected void setTargetClass(Class targetCls) {
-    	target = targetCls;
+        target = targetCls;
     }
-    
+
     public void testXMLToObjectFromNode() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         InputSource inputSource = new InputSource(instream);
@@ -76,21 +76,21 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
         instream.close();
         xmlToObjectTest(testObject);
     }
-    
-    
+
+
     public void testRoundTrip() throws Exception{
-    	if(isUnmarshalTest()) {    	
-    		InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+        if(isUnmarshalTest()) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             InputSource inputSource = new InputSource(instream);
             Document testDocument = parser.parse(inputSource);
             Object testObject = getJAXBUnmarshaller().unmarshal(testDocument, target);
             instream.close();
             xmlToObjectTest(testObject);
-            
+
             objectToXMLStringWriter(testObject);
-        }    	
+        }
     }
-    
+
     public void testXMLToObjectFromSource() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         StreamSource source = new StreamSource(instream);
@@ -133,7 +133,7 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
             instream.close();
             xmlToObjectTest(testObject);
         }
-    }    
+    }
 
     public void testObjectToStringWriter() throws Exception {
         StringWriter writer = new StringWriter();
@@ -145,10 +145,10 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
         reader.close();
         objectToXMLDocumentTest(testDocument);
     }
-    
+
     public void testObjectToByteArrayOutputStream() throws Exception {
-    	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    	getJAXBMarshaller().marshal(getWriteControlObject(), outputStream);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        getJAXBMarshaller().marshal(getWriteControlObject(), outputStream);
         StringReader reader = new StringReader(outputStream.toString());
         InputSource inputSource = new InputSource(reader);
         Document testDocument = parser.parse(inputSource);
@@ -156,11 +156,11 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
         reader.close();
         objectToXMLDocumentTest(testDocument);
     }
-    
+
     public void testObjectToStreamResult() throws Exception {
         StringWriter writer = new StringWriter();
-    	StreamResult result = new StreamResult(writer);
-    	getJAXBMarshaller().marshal(getWriteControlObject(), result);
+        StreamResult result = new StreamResult(writer);
+        getJAXBMarshaller().marshal(getWriteControlObject(), result);
         StringReader reader = new StringReader(writer.toString());
         InputSource inputSource = new InputSource(reader);
         Document testDocument = parser.parse(inputSource);
@@ -168,13 +168,13 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
         reader.close();
         objectToXMLDocumentTest(testDocument);
     }
-    
+
     public void testObjectToXMLDocument() throws Exception {
-    	Document testDocument = new SAXDocumentBuilder().getInitializedDocument();
-    	getJAXBMarshaller().marshal(getWriteControlObject(), testDocument);
+        Document testDocument = new SAXDocumentBuilder().getInitializedDocument();
+        getJAXBMarshaller().marshal(getWriteControlObject(), testDocument);
         objectToXMLDocumentTest(testDocument);
     }
-    
+
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         getJAXBMarshaller().marshal(getWriteControlObject(), builder);

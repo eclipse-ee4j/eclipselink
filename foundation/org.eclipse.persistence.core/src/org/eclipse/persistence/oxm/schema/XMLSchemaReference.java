@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.schema;
 
 import java.net.URL;
@@ -59,7 +59,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
 
     /**
      * This constructor takes a string that references an XMLSchema.
-     * 
+     *
      * @param resource -
      *            used to access the XMLSchema (classpath, URL, or file name)
      */
@@ -81,7 +81,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
     /**
      * Indicates if the schema reference references a simple type definition,
      * complex type definition, element, or group.
-     * 
+     *
      * @return COMPLEX_TYPE=1, SIMPLE_TYPE=2, ELEMENT=3, GROUP=5
      */
     public int getType() {
@@ -91,7 +91,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
     /**
      * Set to indicate if the schema reference references a simple type
      * definition, complex type definition, element or group.
-     * 
+     *
      * @param type -
      *            COMPLEX_TYPE=1, SIMPLE_TYPE=2, ELEMENT=3, GROUP=5
      */
@@ -106,7 +106,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
     /**
      * Get the path to the simple/complex type definition, element or group to
      * be referenced in the schema
-     * 
+     *
      * @return the schema context
      */
     public String getSchemaContext() {
@@ -116,14 +116,14 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
     /**
      * Set the path to the simple/complex type definition, element, or group to
      * be referenced in the schema
-     * 
+     *
      * @param schemaContext -
      *            the schema context
      */
     public void setSchemaContext(String schemaContext) {
         this.schemaContext = schemaContext;
     }
-    
+
     public void setSchemaContextAsQName(QName qname) {
         schemaContextAsQName = qname;
     }
@@ -186,7 +186,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
     /**
      * Allow subclasses to perform initialization if required.  This method will
      * typically be called during the owning descriptor's initialization phase.
-     * 
+     *
      * @param session
      */
     public void initialize(CoreAbstractSession session) {

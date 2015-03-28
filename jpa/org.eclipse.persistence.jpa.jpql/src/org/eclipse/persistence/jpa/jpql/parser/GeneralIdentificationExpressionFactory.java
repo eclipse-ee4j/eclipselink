@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,43 +28,43 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public abstract class GeneralIdentificationExpressionFactory extends ExpressionFactory {
 
-	/**
-	 * Creates a new <code>GeneralIdentificationExpressionFactory</code>.
-	 *
-	 * @param id The unique identifier of this <code>ExpressionFactory</code>
-	 * @param identifier The JPQL identifier handled by this factory
-	 */
-	public GeneralIdentificationExpressionFactory(String id, String identifier) {
-		super(id, identifier);
-	}
+    /**
+     * Creates a new <code>GeneralIdentificationExpressionFactory</code>.
+     *
+     * @param id The unique identifier of this <code>ExpressionFactory</code>
+     * @param identifier The JPQL identifier handled by this factory
+     */
+    public GeneralIdentificationExpressionFactory(String id, String identifier) {
+        super(id, identifier);
+    }
 
-	/**
-	 * Creates the actual expression this factory manages.
-	 *
-	 * @param parent The parent of this expression
-	 * @return The {@link Expression} this factory manages
-	 */
-	protected abstract AbstractExpression buildExpression(AbstractExpression parent);
+    /**
+     * Creates the actual expression this factory manages.
+     *
+     * @param parent The parent of this expression
+     * @return The {@link Expression} this factory manages
+     */
+    protected abstract AbstractExpression buildExpression(AbstractExpression parent);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected final AbstractExpression buildExpression(AbstractExpression parent,
-	                                                   WordParser wordParser,
-	                                                   String word,
-	                                                   JPQLQueryBNF queryBNF,
-	                                                   AbstractExpression expression,
-	                                                   boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final AbstractExpression buildExpression(AbstractExpression parent,
+                                                       WordParser wordParser,
+                                                       String word,
+                                                       JPQLQueryBNF queryBNF,
+                                                       AbstractExpression expression,
+                                                       boolean tolerant) {
 
-		expression = buildExpression(parent);
-		expression.parse(wordParser, tolerant);
+        expression = buildExpression(parent);
+        expression.parse(wordParser, tolerant);
 
-		if (wordParser.character() == AbstractExpression.DOT) {
-			ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(queryBNF.getFallbackExpressionFactoryId());
-			expression = factory.buildExpression(parent, wordParser, wordParser.word(), queryBNF, expression, tolerant);
-		}
+        if (wordParser.character() == AbstractExpression.DOT) {
+            ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(queryBNF.getFallbackExpressionFactoryId());
+            expression = factory.buildExpression(parent, wordParser, wordParser.word(), queryBNF, expression, tolerant);
+        }
 
-		return expression;
-	}
+        return expression;
+    }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -79,9 +79,9 @@ import org.xml.sax.Attributes;
  * <td headers="c4">Required: Write out an empty {@literal <node/>} or node="" node.</td>
  * </tr>
  * </table> &nbsp;<b>Usage</b>:<br>
- * 
+ *
  * @see org.eclipse.persistence.internal.oxm.NullCapableValue
- * @since Oracle TopLink 11<i>g</i> Release 1 (11.1.1) 
+ * @since Oracle TopLink 11<i>g</i> Release 1 (11.1.1)
  */
 public abstract class AbstractNullPolicy {
     protected static final String TRUE = "true";
@@ -107,7 +107,7 @@ public abstract class AbstractNullPolicy {
      * equivalent.. false = (default) do nothing and treat as an empty node.
      */
     protected boolean isNullRepresentedByXsiNil = false;
-    
+
     /**
      * This state flag determines how we unmarshal xsi:nil nodes when there
      * are other attributes (other than xsi:nil) present. If false, we ignore
@@ -137,10 +137,10 @@ public abstract class AbstractNullPolicy {
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * When using the SAX or DOM Platform, this method is responsible for
      * marshalling null values for the XML Direct Mapping.
-     * 
+     *
      * @param xPathFragment
      * @param marshalRecord
      * @param object
@@ -149,12 +149,12 @@ public abstract class AbstractNullPolicy {
      * @return true if this method caused any nodes to be marshaled, else false.
      */
     public boolean directMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
-    	            Object object, CoreSession session, NamespaceResolver namespaceResolver) {
+                    Object object, CoreSession session, NamespaceResolver namespaceResolver) {
         // Handle attributes - XSI_NIL, ABSENT_NODE have the same behavior
         if (xPathFragment.isAttribute()) {
             // Write out an empty attribute
             if (marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
-            	marshalRecord.emptyAttribute(xPathFragment, namespaceResolver);               
+                marshalRecord.emptyAttribute(xPathFragment, namespaceResolver);
                 return true;
             } else {
                 // XSI_NIL attributes are invalid - and are ignored
@@ -162,14 +162,14 @@ public abstract class AbstractNullPolicy {
                 return false;
             }
         } else {
-            // Nillable: write out xsi:nil="true" attribute in empty element    	
+            // Nillable: write out xsi:nil="true" attribute in empty element
             if (marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
-            	marshalRecord.nilSimple(namespaceResolver);
+                marshalRecord.nilSimple(namespaceResolver);
                 return true;
             } else {
                 // EMPTY_NODE - Write out empty element
-                if (marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {                
-                	marshalRecord.emptySimple(namespaceResolver);
+                if (marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
+                    marshalRecord.emptySimple(namespaceResolver);
                     return true;
                 } else {
                     // ABSENT_NODE - Write out nothing
@@ -182,7 +182,7 @@ public abstract class AbstractNullPolicy {
     /**
      * INTERNAL: When using the SAX Platform, this method is responsible for
      * marshalling null values for the XML Composite Object Mapping.
-     * 
+     *
      * @param xPathFragment
      * @param marshalRecord
      * @param object
@@ -191,30 +191,30 @@ public abstract class AbstractNullPolicy {
      * @return true if this method caused any nodes to be marshaled, else false.
      */
     public boolean compositeObjectMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
-    	      Object object, CoreSession session, NamespaceResolver namespaceResolver) {    
-    	if (marshalNullRepresentation == XMLNullRepresentationType.ABSENT_NODE){
-    		return false;
-    	}
+              Object object, CoreSession session, NamespaceResolver namespaceResolver) {
+        if (marshalNullRepresentation == XMLNullRepresentationType.ABSENT_NODE){
+            return false;
+        }
         // Nillable
-    	else if (marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
-        	marshalRecord.nilComplex(xPathFragment, namespaceResolver);
+        else if (marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
+            marshalRecord.nilComplex(xPathFragment, namespaceResolver);
             return true;
         } else if (marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
             // Optional and Required
             // This call is really only valid when using DOM - TBD false
             // Write out empty element - we need to differentiate between
             // object=null and object=new Object() with null fields and 0-numeric primitive values
-            // EMPTY_NODE - Write out empty element - Required           
-            	marshalRecord.emptyComplex(xPathFragment, namespaceResolver);
+            // EMPTY_NODE - Write out empty element - Required
+                marshalRecord.emptyComplex(xPathFragment, namespaceResolver);
                 return true;
         }
-    	return false;
+        return false;
     }
 
     /**
      * INTERNAL: When using the DOM Platform, this method is responsible for
      * marshalling null values for the XML Composite Object Mapping.
-     * 
+     *
      * @param record
      * @param object
      * @param field
@@ -238,21 +238,21 @@ public abstract class AbstractNullPolicy {
     }
 
     /**
-     * INTERNAL: When using the SAX or DOM Platform during unmarshal operations. 
+     * INTERNAL: When using the SAX or DOM Platform during unmarshal operations.
      * Use the attributes to determine if the element represents a null value.
-     * 
+     *
      * @param attributes
      * @return true if based on the attributes the corresponding element
      *         represents a null value, else false.
      */
     public boolean valueIsNull(Attributes attributes) {
-        // Nillable 
+        // Nillable
         if (isNullRepresentedByXsiNil()) {
             // Ignore any other attributes that are in addition to xsi:nil
             if(null == attributes) {
                 return false;
             }
-            return attributes.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE) != null;            
+            return attributes.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE) != null;
         } else {
             // EMPTY_NODE - Required
             if (isNullRepresentedByEmptyNode() && (null == attributes || attributes.getLength() == 0)) {
@@ -263,10 +263,10 @@ public abstract class AbstractNullPolicy {
     }
 
 
-	/**
-     * INTERNAL: When using the DOM Platform during unmarshal operations. 
+    /**
+     * INTERNAL: When using the DOM Platform during unmarshal operations.
      * Use the element to determine if the element represents a null value.
-     * 
+     *
      * @param element
      * @return true if based on the element it represents a null value, else false.
      */
@@ -305,7 +305,7 @@ public abstract class AbstractNullPolicy {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isNullRepresentedByEmptyNode() {
@@ -313,7 +313,7 @@ public abstract class AbstractNullPolicy {
     }
 
     /**
-     * 
+     *
      * @param bIsNullRepresentedByEmptyNode
      */
     public void setNullRepresentedByEmptyNode(boolean bIsNullRepresentedByEmptyNode) {
@@ -321,7 +321,7 @@ public abstract class AbstractNullPolicy {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isNullRepresentedByXsiNil() {
@@ -329,15 +329,15 @@ public abstract class AbstractNullPolicy {
     }
 
     /**
-     * 
+     *
      * @param bIsNullRepresentedByXsiNil
      */
     public void setNullRepresentedByXsiNil(boolean bIsNullRepresentedByXsiNil) {
         isNullRepresentedByXsiNil = bIsNullRepresentedByXsiNil;
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
     public boolean ignoreAttributesForNil() {
@@ -345,11 +345,11 @@ public abstract class AbstractNullPolicy {
     }
 
     /**
-     * 
+     *
      * @param ignoreAttributesForNil
      */
     public void setIgnoreAttributesForNil(boolean ignoreAttributesForNil) {
-    	this.ignoreAttributesForNil = ignoreAttributesForNil;
+        this.ignoreAttributesForNil = ignoreAttributesForNil;
     }
 
     /**
@@ -363,12 +363,12 @@ public abstract class AbstractNullPolicy {
         if (null == namespaceResolver) {
             // add new xsi entry into the properties map
             xsiPrefix = Constants.SCHEMA_INSTANCE_PREFIX;
-      	    marshalRecord.namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+              marshalRecord.namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         } else {
             // find an existing xsi entry in the map
             xsiPrefix = namespaceResolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             if (null == xsiPrefix) {
-                xsiPrefix = namespaceResolver.generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);                
+                xsiPrefix = namespaceResolver.generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);
                 marshalRecord.namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             }
         }

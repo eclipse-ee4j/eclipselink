@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,16 +44,16 @@ public class XmlAnyElementLaxTestCases extends JAXBWithJSONTestCases {
     }
 
     protected Object getJSONReadControlObject() {
-    	EmployeeLax emp = (EmployeeLax)getControlObject();
-    	Object objectRemoved = ((ArrayList)emp.elements).remove(emp.elements.size()-1);    	
-    	((ArrayList)emp.elements).add(0, objectRemoved);
-    	//remove namespace declaration
-    	((Element)((ArrayList)emp.elements).get(3)).removeAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "myns");
-    	return emp;    
+        EmployeeLax emp = (EmployeeLax)getControlObject();
+        Object objectRemoved = ((ArrayList)emp.elements).remove(emp.elements.size()-1);
+        ((ArrayList)emp.elements).add(0, objectRemoved);
+        //remove namespace declaration
+        ((Element)((ArrayList)emp.elements).get(3)).removeAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "myns");
+        return emp;
     }
 
     protected Object getControlObject() {
-    	EmployeeLax employee = new EmployeeLax();
+        EmployeeLax employee = new EmployeeLax();
         employee.name = "John Doe";
         employee.homeAddress  = new Address();
         employee.homeAddress.street = "123 Fake Street";
@@ -81,7 +81,7 @@ public class XmlAnyElementLaxTestCases extends JAXBWithJSONTestCases {
             addr.country = "Canada";
             ((ArrayList)employee.elements).add(0, addr);
             employee.elements.add(addr);
-             
+
         } catch(Exception ex) {}
 
         return employee;

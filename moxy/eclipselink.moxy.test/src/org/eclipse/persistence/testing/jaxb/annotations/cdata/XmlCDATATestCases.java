@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -24,14 +24,14 @@ public class XmlCDATATestCases extends JAXBWithJSONTestCases {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
-    
+
     public Object getControlObject() {
         Employee emp = new Employee();
         emp.name = "Jane Doe";
         emp.xmlData = "<root><child>A string wrapped in cdata</child></root>";
         return emp;
     }
-    
+
     @Override
     public void testObjectToContentHandler() {
         //CDATA sections don't work with content handlers

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -25,7 +25,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
  * QueryBasedValueHolder wraps a database-stored object and implements behavior
  * to access it. The object is read from the database by invoking a
  * user-specified query.
- * 
+ *
  * @see ObjectLevelReadQuery
  * @author Dorin Sandu
  */
@@ -38,16 +38,16 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     protected transient Object sourceObject;
     protected Integer refreshCascade;
 
-    protected QueryBasedValueHolder() {        
+    protected QueryBasedValueHolder() {
     }
-    
+
     /**
      * Initialize the query-based value holder.
      */
     public QueryBasedValueHolder(ReadQuery query, AbstractRecord row, AbstractSession session) {
         this(query, null, row, session);
     }
-    
+
     /**
 
     /**
@@ -78,7 +78,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
         this.query = query;
         this.sourceObject = sourceObject;
     }
-    
+
     /**
      * INTERNAL:
      * Returns the refresh cascade policy that was set on the query that was used to instantiate the valueholder
@@ -143,7 +143,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
         return instantiate(unitOfWorkValueHolder.getUnitOfWork());
     }
-    
+
     /**
      * INTERNAL:
      * Run any extra code required after the valueholder instantiates
@@ -160,8 +160,8 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
                 session.getIdentityMapAccessorInstance().getIdentityMap(descriptor).lazyRelationshipLoaded(sourceObject, this, (ForeignReferenceMapping)query.getSourceMapping());
             }
         }
-    } 
-    
+    }
+
     /**
      * Releases a wrapped valueholder privately owned by a particular unit of
      * work.
@@ -225,11 +225,11 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
         // session outside a transaction.
         return query.isLockQuery(this.session);
     }
-    
+
     public void setSourceObject(Object sourceObject) {
         this.sourceObject = sourceObject;
     }
-    
+
     /**
      * INTERNAL:
      * @param refreshCascadePolicy
@@ -238,5 +238,5 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     public void setRefreshCascadePolicy(Integer refreshCascadePolicy) {
         this.refreshCascade = refreshCascadePolicy;
     }
-    
+
 }

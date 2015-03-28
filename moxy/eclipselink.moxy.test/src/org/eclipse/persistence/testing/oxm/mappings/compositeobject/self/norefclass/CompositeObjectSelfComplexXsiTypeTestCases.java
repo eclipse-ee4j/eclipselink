@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,27 +19,27 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class CompositeObjectSelfComplexXsiTypeTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/norefclass/SelfNoRefComplexXsiType.xml";
-    
+
     public CompositeObjectSelfComplexXsiTypeTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
         Project p = new CompositeObjectSelfNoRefClassNSProject();
         XMLCompositeObjectMapping mapping = ((XMLCompositeObjectMapping)p.getDescriptor(Root.class).getMappingForAttributeName("theObject"));
-       
+
         mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
         setProject(p);
     }
-    
-    public Object getControlObject() {    
-     	Root theRoot = new Root();
-    	
-    	Address address = new Address();
-    	address.setStreet("myStreet");
-    	theRoot.setTheObject(address);
-    	
-    	return theRoot;
+
+    public Object getControlObject() {
+         Root theRoot = new Root();
+
+        Address address = new Address();
+        address.setStreet("myStreet");
+        theRoot.setTheObject(address);
+
+        return theRoot;
     }
-       
+
     public static void main(String[] args) {
         junit.textui.TestRunner.main(new String[] { "-c", "org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.CompositeObjectSelfComplexXsiTypeTestCases" });
     }

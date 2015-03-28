@@ -4,12 +4,12 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
 import org.eclipse.persistence.exceptions.JAXBException;
@@ -319,10 +319,10 @@ public class JavaClassImpl implements JavaClass {
             Class nonInnerClass = jClass;
             Class enclosingClass = jClass.getEnclosingClass();
             while(enclosingClass != null){
-            	nonInnerClass = enclosingClass;
-            	enclosingClass = nonInnerClass.getEnclosingClass();
+                nonInnerClass = enclosingClass;
+                enclosingClass = nonInnerClass.getEnclosingClass();
             }
-            String className = nonInnerClass.getCanonicalName();            
+            String className = nonInnerClass.getCanonicalName();
             if(className !=null){
                 int index = className.lastIndexOf(".");
                 if(index > -1){
@@ -378,15 +378,15 @@ public class JavaClassImpl implements JavaClass {
     }
 
     public boolean hasActualTypeArguments() {
-        return getActualTypeArguments().size() > 0;        
-    }    
-    
-    public JavaField getJavaField(Field field) {
-    	return new JavaFieldImpl(field, javaModelImpl, isMetadataComplete);
+        return getActualTypeArguments().size() > 0;
     }
-    
+
+    public JavaField getJavaField(Field field) {
+        return new JavaFieldImpl(field, javaModelImpl, isMetadataComplete);
+    }
+
     public JavaMethod getJavaMethod(Method method) {
-    	return new JavaMethodImpl(method, javaModelImpl, isMetadataComplete);
+        return new JavaMethodImpl(method, javaModelImpl, isMetadataComplete);
     }
 
     public JavaClass getOwningClass() {
@@ -400,9 +400,9 @@ public class JavaClassImpl implements JavaClass {
     public boolean isArray() {
         return jClass.isArray();
     }
-    
+
     public AnnotatedElement getAnnotatedElement() {
-    	return jClass;
+        return jClass;
     }
 
     public boolean isAssignableFrom(JavaClass arg0) {
@@ -418,7 +418,7 @@ public class JavaClassImpl implements JavaClass {
     private boolean customIsAssignableFrom(JavaClass arg0) {
         JavaClassImpl jClass = (JavaClassImpl)arg0;
         Class cls = jClass.getJavaClass();
-        
+
         if(cls == this.jClass) {
             return true;
         }
@@ -431,14 +431,14 @@ public class JavaClassImpl implements JavaClass {
                 return true;
             }
         }
-        
+
         if(!(jClass.isInterface())) {
             JavaClassImpl superJavaClass = (JavaClassImpl)jClass.getSuperclass();
             if(superJavaClass.getName().equals("java.lang.Object")) {
-                return this.jClass == superJavaClass.getJavaClass(); 
+                return this.jClass == superJavaClass.getJavaClass();
             }
             return customIsAssignableFrom(superJavaClass);
-        } 
+        }
         return false;
     }
 
@@ -447,9 +447,9 @@ public class JavaClassImpl implements JavaClass {
             return false;
         }
         if(!this.javaModelImpl.hasXmlBindings()) {
-        	return false;
+            return false;
         }
-        if(!(arg0.getClass() == this.getClass())) { 
+        if(!(arg0.getClass() == this.getClass())) {
             return false;
         }
         if(arg0.getName().equals("java.lang.Object")) {
@@ -527,15 +527,15 @@ public class JavaClassImpl implements JavaClass {
         this.superClassOverride = superClassOverride;
     }
     /**
-     * Set the indicator for XML metadata complete - if true, 
+     * Set the indicator for XML metadata complete - if true,
      * annotations will be ignored.
-     * 
+     *
      * @param isMetadataComplete
      */
     void setIsMetadataComplete(Boolean isMetadataComplete) {
        if(isMetadataComplete != null){
             this.isMetadataComplete = isMetadataComplete;
-        }      
+        }
     }
 
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {

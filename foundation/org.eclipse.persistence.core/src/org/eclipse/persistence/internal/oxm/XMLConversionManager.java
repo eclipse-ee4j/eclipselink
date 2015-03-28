@@ -74,7 +74,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     private static final char PLUS = '+';
 
     protected DatatypeFactory datatypeFactory;
-    
+
     public XMLConversionManager() {
         super();
         timeZoneQualified = false;
@@ -157,8 +157,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             return sourceObject;
         } else if (javaClass == CoreClassConstants.STRING) {
            if(sourceObject instanceof List){
-        	   return convertListToString(sourceObject, null);
-           }else{           
+               return convertListToString(sourceObject, null);
+           }else{
                return convertObjectToString(sourceObject);
            }
         } else if ((javaClass == Constants.QNAME_CLASS) && (sourceObject != null)) {
@@ -329,21 +329,21 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      *
      * @param sourceObject
      */
-    protected Character convertObjectToChar(Object sourceObject, QName schemaTypeQName) throws ConversionException {    	
-        
+    protected Character convertObjectToChar(Object sourceObject, QName schemaTypeQName) throws ConversionException {
+
         if (sourceObject == null || sourceObject.equals(Constants.EMPTY_STRING)) {
-            return (char) 0;            
+            return (char) 0;
         }
-        
+
         if(sourceObject instanceof String && isNumericQName(schemaTypeQName)){
-        	int integer = Integer.parseInt((String)sourceObject);
-        	
-        	return Character.valueOf((char)integer);
-        	
+            int integer = Integer.parseInt((String)sourceObject);
+
+            return Character.valueOf((char)integer);
+
         }
-        
+
         return super.convertObjectToChar(sourceObject);
-    	
+
     }
 
     /**
@@ -472,15 +472,15 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             return stringFromCalendar((Calendar) sourceObject, schemaTypeQName);
         }
         if (sourceObject instanceof Character){
-        	
-        	if(isNumericQName(schemaTypeQName)){
-        		return Integer.toString((int) (Character)sourceObject);        	
-        	} else {        	
-                    if(sourceObject.equals((char) 0)) {        
+
+            if(isNumericQName(schemaTypeQName)){
+                return Integer.toString((int) (Character)sourceObject);
+            } else {
+                    if(sourceObject.equals((char) 0)) {
                         return Constants.EMPTY_STRING;
                     }
                    super.convertObjectToString(sourceObject);
-        	}
+            }
         }
         if (sourceObject instanceof QName) {
             return stringFromQName((QName) sourceObject);
@@ -753,39 +753,39 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         }
 
         if(xmlGregorianCalender == null){
-        	return null;
+            return null;
         }
-            
+
         QName calendarQName = xmlGregorianCalender.getXMLSchemaType();
-	    if (!calendarQName.equals(schemaTypeQName)) {
-	        if (Constants.DATE_QNAME.equals(schemaTypeQName)) {
-	            if (calendarQName.equals(Constants.DATE_TIME_QNAME)) {
-	                //clear out the time portion
-	                xmlGregorianCalender.setHour(DatatypeConstants.FIELD_UNDEFINED);
-	                xmlGregorianCalender.setMinute(DatatypeConstants.FIELD_UNDEFINED);
-	                xmlGregorianCalender.setSecond(DatatypeConstants.FIELD_UNDEFINED);
-	                xmlGregorianCalender.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
-	                return xmlGregorianCalender;
-	            } else {
-	                throw ConversionException.incorrectDateFormat(sourceString);
-	            }
-	         } else if (Constants.TIME_QNAME.equals(schemaTypeQName)) {
-	             throw ConversionException.incorrectTimeFormat(sourceString);
-	         } else if (Constants.G_DAY_QNAME.equals(schemaTypeQName)) {
-	             throw XMLConversionException.incorrectGDayFormat(sourceString);
-	         } else if (Constants.G_MONTH_QNAME.equals(schemaTypeQName)) {
-	             throw XMLConversionException.incorrectGMonthFormat(sourceString);
-	         } else if (Constants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
-	             throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
-	         } else if (Constants.G_YEAR_QNAME.equals(schemaTypeQName)) {
-	             throw XMLConversionException.incorrectGYearFormat(sourceString);
-	         } else if (Constants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
-	             throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
-	         } else if (Constants.DURATION_QNAME.equals(schemaTypeQName)) {
-	             throw new IllegalArgumentException();
-	         } else if (Constants.DATE_TIME_QNAME.equals(schemaTypeQName)) {
-	             throw ConversionException.incorrectDateTimeFormat(sourceString);
-	         }	        
+        if (!calendarQName.equals(schemaTypeQName)) {
+            if (Constants.DATE_QNAME.equals(schemaTypeQName)) {
+                if (calendarQName.equals(Constants.DATE_TIME_QNAME)) {
+                    //clear out the time portion
+                    xmlGregorianCalender.setHour(DatatypeConstants.FIELD_UNDEFINED);
+                    xmlGregorianCalender.setMinute(DatatypeConstants.FIELD_UNDEFINED);
+                    xmlGregorianCalender.setSecond(DatatypeConstants.FIELD_UNDEFINED);
+                    xmlGregorianCalender.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
+                    return xmlGregorianCalender;
+                } else {
+                    throw ConversionException.incorrectDateFormat(sourceString);
+                }
+             } else if (Constants.TIME_QNAME.equals(schemaTypeQName)) {
+                 throw ConversionException.incorrectTimeFormat(sourceString);
+             } else if (Constants.G_DAY_QNAME.equals(schemaTypeQName)) {
+                 throw XMLConversionException.incorrectGDayFormat(sourceString);
+             } else if (Constants.G_MONTH_QNAME.equals(schemaTypeQName)) {
+                 throw XMLConversionException.incorrectGMonthFormat(sourceString);
+             } else if (Constants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
+                 throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
+             } else if (Constants.G_YEAR_QNAME.equals(schemaTypeQName)) {
+                 throw XMLConversionException.incorrectGYearFormat(sourceString);
+             } else if (Constants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
+                 throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
+             } else if (Constants.DURATION_QNAME.equals(schemaTypeQName)) {
+                 throw new IllegalArgumentException();
+             } else if (Constants.DATE_TIME_QNAME.equals(schemaTypeQName)) {
+                 throw ConversionException.incorrectDateTimeFormat(sourceString);
+             }
         }
         return xmlGregorianCalender;
     }
@@ -1027,22 +1027,22 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         if (Constants.G_MONTH_QNAME.equals(schemaTypeQName)) {
             //There was previously some workaround in the method for handling gMonth and the older/invalid
             //--MM-- format.  Output should now always be in the --MM format
-            //bug #410084        	
+            //bug #410084
             xgc.setMonth(cal.get(Calendar.MONTH) + 1);
             String xmlFormat = xgc.toXMLFormat();
             int lastDashIndex = xmlFormat.lastIndexOf('-');
             if(lastDashIndex > 1){
-            	//this means the format is the --MM--, --MM--Z, --MM--+03:00 and we need to trim the String
-            	String pre = xmlFormat.substring(0, 4);
-            	if(xmlFormat.length() > 6){
-            		String post = xmlFormat.substring(6, xmlFormat.length());
-            		return pre + post;
-            	}else{
-            		return pre;
-            	}
+                //this means the format is the --MM--, --MM--Z, --MM--+03:00 and we need to trim the String
+                String pre = xmlFormat.substring(0, 4);
+                if(xmlFormat.length() > 6){
+                    String post = xmlFormat.substring(6, xmlFormat.length());
+                    return pre + post;
+                }else{
+                    return pre;
+                }
             }
             return xmlFormat;
-          
+
         }
         // gMonthDay
         if (Constants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
@@ -1549,13 +1549,13 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     }
 
     private String stringFromXMLGregorianCalendar(XMLGregorianCalendar cal, QName schemaTypeQName) {
-    	if(schemaTypeQName !=null && schemaTypeQName.equals(cal.getXMLSchemaType()) && schemaTypeQName != Constants.G_MONTH_QNAME){
-    	  return cal.toXMLFormat();
-    	}
+        if(schemaTypeQName !=null && schemaTypeQName.equals(cal.getXMLSchemaType()) && schemaTypeQName != Constants.G_MONTH_QNAME){
+          return cal.toXMLFormat();
+        }
         GregorianCalendar gCal = cal.toGregorianCalendar();
         if(cal.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
             gCal.clear(Calendar.ZONE_OFFSET);
-        }        
+        }
         return  stringFromCalendar(gCal, schemaTypeQName);
     }
 
@@ -1605,20 +1605,20 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
 
     @Override
     public Object convertSchemaBase64ListToByteArrayList(Object sourceObject, CoreContainerPolicy containerPolicy, CoreAbstractSession session) throws ConversionException {
-    	if (sourceObject instanceof String) { 
-    		StringTokenizer tokenizer = new StringTokenizer((String) sourceObject, " ");
-    		Object container = containerPolicy.containerInstance();
+        if (sourceObject instanceof String) {
+            StringTokenizer tokenizer = new StringTokenizer((String) sourceObject, " ");
+            Object container = containerPolicy.containerInstance();
             while (tokenizer.hasMoreElements()) {
                 String token = tokenizer.nextToken();
                 byte[] bytes = Base64.base64Decode(token.getBytes());
                 containerPolicy.addInto(bytes, container, session);
             }
             return container;
-    	}    	
-    	throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.ABYTE);
+        }
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.ABYTE);
     }
-    
-    
+
+
     protected Byte[] convertSchemaBase64ToByteObjectArray(Object sourceObject) throws ConversionException {
         byte[] bytes = convertSchemaBase64ToByteArray(sourceObject);
         Byte[] objectBytes = new Byte[bytes.length];
@@ -1731,7 +1731,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         HashMap XMLTypes = new HashMap();
 
         //jaxb 1.0 spec pairs
-        XMLTypes.put(Constants.ANY_SIMPLE_TYPE_QNAME, CoreClassConstants.STRING);        
+        XMLTypes.put(Constants.ANY_SIMPLE_TYPE_QNAME, CoreClassConstants.STRING);
         XMLTypes.put(Constants.BASE_64_BINARY_QNAME, CoreClassConstants.APBYTE);
         XMLTypes.put(Constants.BOOLEAN_QNAME, CoreClassConstants.PBOOLEAN);
         XMLTypes.put(Constants.BYTE_QNAME, CoreClassConstants.PBYTE);
@@ -1745,14 +1745,14 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         XMLTypes.put(Constants.INTEGER_QNAME, CoreClassConstants.BIGINTEGER);
         XMLTypes.put(Constants.LONG_QNAME, CoreClassConstants.PLONG);
         XMLTypes.put(Constants.NAME_QNAME, CoreClassConstants.STRING);
-        XMLTypes.put(Constants.NCNAME_QNAME, CoreClassConstants.STRING);        
+        XMLTypes.put(Constants.NCNAME_QNAME, CoreClassConstants.STRING);
         XMLTypes.put(Constants.QNAME_QNAME, Constants.QNAME_CLASS);
         XMLTypes.put(Constants.SHORT_QNAME, CoreClassConstants.PSHORT);
         XMLTypes.put(Constants.STRING_QNAME, CoreClassConstants.STRING);
         XMLTypes.put(Constants.TIME_QNAME, CoreClassConstants.CALENDAR);
         XMLTypes.put(Constants.UNSIGNED_BYTE_QNAME, CoreClassConstants.PSHORT);
         XMLTypes.put(Constants.UNSIGNED_INT_QNAME, CoreClassConstants.PLONG);
-        XMLTypes.put(Constants.UNSIGNED_SHORT_QNAME, CoreClassConstants.PINT);        
+        XMLTypes.put(Constants.UNSIGNED_SHORT_QNAME, CoreClassConstants.PINT);
 
         XMLTypes.put(Constants.DURATION_QNAME,  CoreClassConstants.DURATION);
         XMLTypes.put(Constants.G_DAY_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
@@ -1766,10 +1766,10 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         XMLTypes.put(Constants.NON_NEGATIVE_INTEGER_QNAME, CoreClassConstants.BIGINTEGER);
         XMLTypes.put(Constants.NON_POSITIVE_INTEGER_QNAME,CoreClassConstants.BIGINTEGER);
         XMLTypes.put(Constants.NORMALIZEDSTRING_QNAME, CoreClassConstants.STRING);
-        XMLTypes.put(Constants.POSITIVE_INTEGER_QNAME, CoreClassConstants.BIGINTEGER);        
+        XMLTypes.put(Constants.POSITIVE_INTEGER_QNAME, CoreClassConstants.BIGINTEGER);
         XMLTypes.put(Constants.UNSIGNED_LONG_QNAME, CoreClassConstants.BIGINTEGER);
 
-        
+
         return XMLTypes;
     }
 
@@ -1890,18 +1890,18 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     }
 
     @Override
-    public QName buildQNameFromString(String stringValue, AbstractUnmarshalRecord record){     
-    	stringValue = stringValue.trim();
+    public QName buildQNameFromString(String stringValue, AbstractUnmarshalRecord record){
+        stringValue = stringValue.trim();
         int index = stringValue.lastIndexOf(Constants.COLON);
         if(index > -1) {
             String prefix =  stringValue.substring(0, index);
             String localName = stringValue.substring(index + 1);
-            
+
             if(record.isNamespaceAware()){
-                String namespaceURI = record.resolveNamespacePrefix(prefix);            
+                String namespaceURI = record.resolveNamespacePrefix(prefix);
                 return new QName(namespaceURI, localName, prefix);
             }else{
-            	return new QName(null, localName, prefix);
+                return new QName(null, localName, prefix);
             }
         } else {
             String namespaceURI = record.resolveNamespacePrefix(Constants.EMPTY_STRING);
@@ -1917,9 +1917,9 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      */
     @Override
     public String normalizeStringValue(String value) {
-        int i = 0;        
+        int i = 0;
         int length = value.length();
-        
+
         //check for the first whitespace
         while(i < length) {
             if(isWhitespace(value.charAt(i), false)) {
@@ -1930,7 +1930,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         if(i == length) {
             return value;
         }
-        
+
         char[] buffer = value.toCharArray();
         buffer[i] = ' ';
         i++;
@@ -1941,7 +1941,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         }
         return new String(buffer);
     }
-    
+
     /**
      * Removes all leading and trailing whitespaces, and replaces any sequences of whitespaces
      * that occur in the string with a single ' ' character.
@@ -1990,7 +1990,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         }
         return collapsedString.toString();
     }
-    
+
     private boolean isWhitespace(char character, boolean includeSpace) {
         if(character > 0x20) {
             return false;
@@ -2003,26 +2003,26 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         }
         return false;
     }
-    
+
     private boolean isNumericQName(QName schemaTypeQName){
-    	if(schemaTypeQName == null){
-    		return false;
-    	}
-    	return(schemaTypeQName.equals(Constants.BYTE_QNAME ))
-  			||(schemaTypeQName.equals(Constants.DECIMAL_QNAME ))
-  			||(schemaTypeQName.equals(Constants.INT_QNAME ))
-  			||(schemaTypeQName.equals(Constants.INTEGER_QNAME ))
-  			||(schemaTypeQName.equals(Constants.FLOAT_QNAME ))
-  			||(schemaTypeQName.equals(Constants.LONG_QNAME ))
-            ||(schemaTypeQName.equals(Constants.NEGATIVE_INTEGER_QNAME))        			
-  			||(schemaTypeQName.equals(Constants.NON_NEGATIVE_INTEGER_QNAME))
-  			||(schemaTypeQName.equals(Constants.NON_POSITIVE_INTEGER_QNAME))
-  			||(schemaTypeQName.equals(Constants.POSITIVE_INTEGER_QNAME))	        			
-  			||(schemaTypeQName.equals(Constants.SHORT_QNAME ))
-  			||(schemaTypeQName.equals(Constants.UNSIGNED_SHORT_QNAME ))
-  			||(schemaTypeQName.equals(Constants.UNSIGNED_LONG_QNAME ))
-  			||(schemaTypeQName.equals(Constants.UNSIGNED_INT_QNAME ))
-  			||(schemaTypeQName.equals(Constants.UNSIGNED_BYTE_QNAME ));  			
+        if(schemaTypeQName == null){
+            return false;
+        }
+        return(schemaTypeQName.equals(Constants.BYTE_QNAME ))
+              ||(schemaTypeQName.equals(Constants.DECIMAL_QNAME ))
+              ||(schemaTypeQName.equals(Constants.INT_QNAME ))
+              ||(schemaTypeQName.equals(Constants.INTEGER_QNAME ))
+              ||(schemaTypeQName.equals(Constants.FLOAT_QNAME ))
+              ||(schemaTypeQName.equals(Constants.LONG_QNAME ))
+            ||(schemaTypeQName.equals(Constants.NEGATIVE_INTEGER_QNAME))
+              ||(schemaTypeQName.equals(Constants.NON_NEGATIVE_INTEGER_QNAME))
+              ||(schemaTypeQName.equals(Constants.NON_POSITIVE_INTEGER_QNAME))
+              ||(schemaTypeQName.equals(Constants.POSITIVE_INTEGER_QNAME))
+              ||(schemaTypeQName.equals(Constants.SHORT_QNAME ))
+              ||(schemaTypeQName.equals(Constants.UNSIGNED_SHORT_QNAME ))
+              ||(schemaTypeQName.equals(Constants.UNSIGNED_LONG_QNAME ))
+              ||(schemaTypeQName.equals(Constants.UNSIGNED_INT_QNAME ))
+              ||(schemaTypeQName.equals(Constants.UNSIGNED_BYTE_QNAME ));
     }
 
     /**
@@ -2048,7 +2048,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     @Override
     public Object convertHexBinaryListToByteArrayList(Object sourceObject,
             CoreContainerPolicy containerPolicy, CoreAbstractSession session) {
-        if (sourceObject instanceof String) { 
+        if (sourceObject instanceof String) {
             StringTokenizer tokenizer = new StringTokenizer((String) sourceObject, " ");
             Object container = containerPolicy.containerInstance();
             while (tokenizer.hasMoreElements()) {

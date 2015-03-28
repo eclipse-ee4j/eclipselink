@@ -22,7 +22,7 @@
          <xsd:element name="firstName" type="xsd:string" minOccurs="0"/>
          <xsd:element name="lastName" type="xsd:string" minOccurs="0"/>
          <xsd:element ref="ns0:address" minOccurs="0"/>
-      </xsd:sequence> 
+      </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="employee-data" type="ns0:employee-type"/>
    <xsd:element name="address" type="ns0:address-type"/>

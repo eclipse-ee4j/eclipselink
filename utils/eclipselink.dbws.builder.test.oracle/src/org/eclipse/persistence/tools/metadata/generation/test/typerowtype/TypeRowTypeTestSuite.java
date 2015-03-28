@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -74,26 +74,26 @@ public class TypeRowTypeTestSuite {
             ");\n" +
             "function get_emp_record (pId in number) return EmpRec;\n" +
         "END EMP_RECORD_PACKAGE;";
-    
+
     static final String CREATE_ROWTYPE_TEST_PACKAGE =
         "CREATE OR REPLACE PACKAGE RTYPE_PKG AS" +
             "\nPROCEDURE testProc(PARAM1 IN INTEGER, PARAM2 OUT EMPTYPEX%ROWTYPE);" +
             "\nFUNCTION testFunc(PARAM1 IN INTEGER) RETURN EMPTYPEX%ROWTYPE;" +
         "\nEND RTYPE_PKG;";
-    
+
     // shadow JDBC type for PL/SQL record
-    static final String CREATE_EMPREC_TYPE = 
+    static final String CREATE_EMPREC_TYPE =
         "CREATE OR REPLACE TYPE EMP_RECORD_PACKAGE_EmpRec AS OBJECT(EMP_ID NUMERIC(4), EMP_NAME VARCHAR2(25));";
 
     static final String DROP_EMPTYPE_TABLE = "DROP TABLE EMPTYPEX";
     static final String DROP_EMP_RECORD_PACKAGE = "DROP PACKAGE EMP_RECORD_PACKAGE";
     static final String DROP_EMPREC_TYPE = "DROP TYPE EMP_RECORD_PACKAGE_EMPREC FORCE";
     static final String DROP_RTYPE_PKG = "DROP PACKAGE RTYPE_PKG";
-    
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
-    
+
     static List<CompositeDatabaseType> dbTypes;
     static DatabaseTypeBuilder dbTypeBuilder;
 
@@ -101,7 +101,7 @@ public class TypeRowTypeTestSuite {
     @BeforeClass
     public static void setUp() throws ClassNotFoundException, SQLException {
         AllTests.setUp();
-        
+
         String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
         if ("true".equalsIgnoreCase(ddlCreateProp)) {
             ddlCreate = true;
@@ -118,22 +118,22 @@ public class TypeRowTypeTestSuite {
             runDdl(conn, CREATE_EMPTYPE_TABLE, ddlDebug);
             runDdl(conn, CREATE_EMPREC_TYPE, ddlDebug);
             runDdl(conn, CREATE_EMP_RECORD_PACKAGE, ddlDebug);
-            runDdl(conn, CREATE_ROWTYPE_TEST_PACKAGE, ddlDebug);            
+            runDdl(conn, CREATE_ROWTYPE_TEST_PACKAGE, ddlDebug);
         }
-        
+
         String schema = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
 
         List<String> procedurePatterns = new ArrayList<String>();
-        procedurePatterns.add("get_emp_record");  
-        procedurePatterns.add("testProc");  
-        procedurePatterns.add("testFunc");  
-        
+        procedurePatterns.add("get_emp_record");
+        procedurePatterns.add("testProc");
+        procedurePatterns.add("testFunc");
+
         // use DatabaseTypeBuilder to generate a lists of TableTypes and PackageTypes
         dbTypeBuilder = new DatabaseTypeBuilder();
         try {
             // process the table
             List<TableType> dbTables = dbTypeBuilder.buildTables(conn, schema, "EMPTYPEX");
-            
+
             // process the "EMP_RECORD_PACKAGE" package
             List<ProcedureType> empRecPkgProcedures = new ArrayList<ProcedureType>();
             List<PLSQLPackageType> packages = dbTypeBuilder.buildPackages(conn, schema, "EMP_RECORD_PACKAGE");
@@ -177,7 +177,7 @@ public class TypeRowTypeTestSuite {
             runDdl(conn, DROP_RTYPE_PKG, ddlDebug);
         }
     }
-    
+
     @Test
     public void testJPARowTypeMetadata() {
         if (dbTypes == null || dbTypes.isEmpty()) {
@@ -207,7 +207,7 @@ public class TypeRowTypeTestSuite {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
         "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
         "   <orm:named-plsql-stored-procedure-query name=\"testProc\" procedure-name=\"RTYPE_PKG.testProc\">\n" +
         "      <orm:parameter direction=\"IN\" name=\"PARAM1\" database-type=\"INTEGER_TYPE\"/>\n" +
         "      <orm:parameter direction=\"OUT\" name=\"PARAM2\" database-type=\"EMPTYPEX%ROWTYPE\"/>\n" +

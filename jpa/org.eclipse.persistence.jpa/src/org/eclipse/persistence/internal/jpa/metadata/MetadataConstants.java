@@ -1,38 +1,38 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     10/01/2008-1.1 Guy Pelletier 
+ *     10/01/2008-1.1 Guy Pelletier
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
- *     03/29/2010-2.1 Guy Pelletier 
+ *     03/29/2010-2.1 Guy Pelletier
  *       - 267217: Add Named Access Type to EclipseLink-ORM
- *     10/09/2012-2.5 Guy Pelletier 
+ *     10/09/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     02/20/2013-2.5 Guy Pelletier 
+ *     02/20/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
 /**
  * INTERNAL:
- * Common metadata processing constants. Of particular interest are JPA 
+ * Common metadata processing constants. Of particular interest are JPA
  * annotations and enums. To ensure EclipseLink remains compliant from release
- * to release, we refer to all JPA annotations and enums with string names. We 
+ * to release, we refer to all JPA annotations and enums with string names. We
  * also do this to be consistent (and alleviate any thought process as to which
- * annotations can and can not be referenced by class). 
- * 
- * NOTE: Internal EclipseLink annotations can always be referred to by class. 
- * 
+ * annotations can and can not be referenced by class).
+ *
+ * NOTE: Internal EclipseLink annotations can always be referred to by class.
+ *
  * 2.1 OR/Metadata annotations will not be added to the eclipselink jar as
- * the 2.0 annotations were. With this solution in place many of the 2.0 
+ * the 2.0 annotations were. With this solution in place many of the 2.0
  * annotations can also be removed from the jar.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 1.1
  */
@@ -121,7 +121,7 @@ public class MetadataConstants {
     public static final String JPA_UNIQUE_CONSTRAINT = "javax.persistence.UniqueConstraint";
     public static final String JPA_VERSION = "javax.persistence.Version";
     public static final String JPA_STATIC_METAMODEL = "javax.persistence.metamodel.StaticMetamodel";
-    
+
     /** JPA AccessType enum values */
     public static final String JPA_ACCESS_FIELD = "FIELD";
     public static final String JPA_ACCESS_PROPERTY = "PROPERTY";
@@ -131,30 +131,30 @@ public class MetadataConstants {
     public static final String JPA_CONSTRAINT_MODE_CONSTRAINT = "CONSTRAINT";
     public static final String JPA_CONSTRAINT_MODE_NO_CONSTRAINT = "NO_CONSTRAINT";
     public static final String JPA_CONSTRAINT_MODE_PROVIDER_DEFAULT = "PROVIDER_DEFAULT";
-    
+
     /** JPA FetchType enum values */
     public static final String JPA_FETCH_EAGER = "EAGER";
     public static final String JPA_FETCH_LAZY = "LAZY";
-    
+
     /** JPA DiscriminatorType enum values */
     public static final String JPA_DISCRIMINATOR_STRING = "STRING";
     public static final String JPA_DISCRIMINATOR_CHAR = "CHAR";
     public static final String JPA_DISCRIMINATOR_INTEGER = "INTEGER";
-    
+
     /** JPA EnumType enum values */
     public static final String JPA_ENUM_ORDINAL = "ORDINAL";
     public static final String JPA_ENUM_STRING = "STRING";
-    
+
     /** JPA TemporalType enum values */
     public static final String JPA_TEMPORAL_DATE = "DATE";
     public static final String JPA_TEMPORAL_TIME = "TIME";
     public static final String JPA_TEMPORAL_TIMESTAMP = "TIMESTAMP";
-    
+
     /** JPA InheritanceType enum values */
     public static final String JPA_INHERITANCE_SINGLE_TABLE = "SINGLE_TABLE";
     public static final String JPA_INHERITANCE_TABLE_PER_CLASS = "TABLE_PER_CLASS";
     public static final String JPA_INHERITANCE_JOINED = "JOINED";
-    
+
     /** JPA CascadeType enum values */
     public static final String JPA_CASCADE_ALL = "ALL";
     public static final String JPA_CASCADE_PERSIST = "PERSIST";
@@ -162,27 +162,27 @@ public class MetadataConstants {
     public static final String JPA_CASCADE_REMOVE = "REMOVE";
     public static final String JPA_CASCADE_REFRESH = "REFRESH";
     public static final String JPA_CASCADE_DETACH = "DETACH";
-    
+
     /** JPA ParameterMode enum values */
     public static final String JPA_PARAMETER_IN = "IN";
     public static final String JPA_PARAMETER_INOUT = "INOUT";
     public static final String JPA_PARAMETER_OUT = "OUT";
     public static final String JPA_PARAMETER_REF_CURSOR = "REF_CURSOR";
-    
+
     /** JPA GenerationType enum values */
     public static final String JPA_GENERATION_TABLE = "TABLE";
     public static final String JPA_GENERATION_SEQUENCE = "SEQUENCE";
     public static final String JPA_GENERATION_IDENTITY = "IDENTITY";
     public static final String JPA_GENERATION_AUTO = "AUTO";
-    
-    /** 
+
+    /**
      * Metamodel processing for MappedSuperclasses non-functional names.<p>
-     * @See MetadataProject.addMetamodelMappedSuperclass() 
+     * @See MetadataProject.addMetamodelMappedSuperclass()
      **/
     public static final String MAPPED_SUPERCLASS_RESERVED_PK_NAME = "__PK_METAMODEL_RESERVED_IN_MEM_ONLY_FIELD_NAME";
     public static final String MAPPED_SUPERCLASS_RESERVED_TABLE_NAME = "__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME";
-    
-    /** Used by canonical model generator */ 
+
+    /** Used by canonical model generator */
     public static final String JPA_PERSISTENCE_PACKAGE_PREFIX = "javax.persistence";
     public static final String ECLIPSELINK_PERSISTENCE_PACKAGE_PREFIX = "org.eclipse.persistence";
     public static final String ECLIPSELINK_OXM_PACKAGE_PREFIX = "org.eclipse.persistence.oxm";

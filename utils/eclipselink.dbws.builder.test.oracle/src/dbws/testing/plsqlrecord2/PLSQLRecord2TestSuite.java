@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,16 +43,16 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class PLSQLRecord2TestSuite extends DBWSTestSuite {
-    static final String CREATE_EMPREC_TYPE = 
-    	"create or replace TYPE pkgrec_wrapper2_empRecType AS OBJECT ("+
+    static final String CREATE_EMPREC_TYPE =
+        "create or replace TYPE pkgrec_wrapper2_empRecType AS OBJECT ("+
           "\np_empno NUMBER (4), p_ename VARCHAR2 (20)"+
         "\n)";
-            
+
     static final String DROP_EMPREC_TYPE = "DROP TYPE pkgrec_wrapper2_empRecType";
-    
+
     static final String CREATE_EMP_TABLE =
         "CREATE TABLE EMP ( EMPNO  NUMBER(4), ENAME  VARCHAR2(20 BYTE) )";
-    
+
     static final String[] POPULATE_EMP_TABLE = new String[] {
         "INSERT INTO EMP (EMPNO, ENAME) VALUES (69, 'Holly')",
         "INSERT INTO EMP (EMPNO, ENAME) VALUES (70, 'Emily')",
@@ -69,7 +69,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
                "\np_empno            IN  NUMBER," +
                "\no_return_status    OUT VARCHAR2," +
                "\no_return_message   OUT VARCHAR2," +
-               "\np_emprec           OUT empRecType" + 
+               "\np_emprec           OUT empRecType" +
            "\n);" +
         "\nEND pkgRec_wrapper2;";
 
@@ -78,7 +78,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
 
     static final String CREATE_PACKAGE_BODY =
         "CREATE OR REPLACE PACKAGE BODY DMCCANN.pkgRec_wrapper2 IS" +
-           "\nPROCEDURE sp_get_empRecord (" + 
+           "\nPROCEDURE sp_get_empRecord (" +
                "\np_empno            IN     NUMBER," +
                "\no_return_status    OUT VARCHAR2," +
                "\no_return_message   OUT VARCHAR2," +
@@ -88,7 +88,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
            "\nBEGIN" +
                "\no_return_status := 'S';" +
                "\no_return_message := 'No Errors';" +
-    
+
                 "\nSELECT empno, ename" +
                 "\nINTO p_emprec" +
                 "\nFROM emp" +
@@ -97,7 +97,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
         "\n END pkgRec_wrapper2;";
     static final String DROP_PACKAGE_BODY =
         "DROP PACKAGE BODY DMCCANN.pkgRec_wrapper2";
-    
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -172,7 +172,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
 
     /**
      * Execute the DDL in the provided list containing the given DDL string.
-     * 
+     *
      */
     protected static void executeDDLForString(List<String> ddls, String ddlString) {
         for (int i = 0; i < ddls.size(); i++) {
@@ -183,7 +183,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
             }
         }
     }
-          
+
     @AfterClass
     public static void tearDown() {
         if (ddlDrop) {
@@ -196,8 +196,8 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
 
     @Test
     public void getEmpRecordTest() {
-        
-        
+
+
         Invocation invocation = new Invocation("GetEmpRecord");
         invocation.setParameter("p_empno", 69);
         Operation op = xrService.getOperation(invocation.getName());
@@ -212,7 +212,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
         removeEmptyTextNodes(controlDoc);
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     public static final String RECORD_XML =
         STANDALONE_XML_HEADER +
         "\n<simple-xml-format>" +

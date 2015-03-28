@@ -27,254 +27,254 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.ComboBoxModelAd
 import org.eclipse.persistence.tools.workbench.uitools.app.swing.DocumentAdapter;
 
 public final class ParameterInArgumentPane extends AbstractSubjectPanel {
-	
-	public ParameterInArgumentPane(PropertyValueModel argumentHolder, WorkbenchContextHolder workbenchContextHolder) {
-		super(argumentHolder, workbenchContextHolder);
-		initializeLayout();
-	}
-		
-	protected void initializeLayout() {
-		
-		GridBagConstraints constraints = new GridBagConstraints();
 
-		JComponent inFieldChooser = buildLabeledTextField("STORED_PROCEDURE_PROPERTIES_PAGE_INFIELD_NAME_COLUMN", buildInArgumentDocumentModel());
-			
-		constraints.gridx      	= 0;
-		constraints.gridy      	= 0;
-		constraints.gridwidth  	= 2;
-		constraints.gridheight 	= 1;
-		constraints.weightx    	= 1;
-		constraints.weighty    	= 0;
-		constraints.fill       	= GridBagConstraints.HORIZONTAL;
-		constraints.anchor     	= GridBagConstraints.PAGE_START;
-		constraints.insets 		= new Insets(5, 0, 0, 0);
-		
-		add(inFieldChooser, constraints);
+    public ParameterInArgumentPane(PropertyValueModel argumentHolder, WorkbenchContextHolder workbenchContextHolder) {
+        super(argumentHolder, workbenchContextHolder);
+        initializeLayout();
+    }
 
-		JComponent sqlTypeChooser = buildLabeledComboBox("STORED_PROCEDURE_PROPERTIES_PAGE_FIELD_SQL_TYPE_NAME_COLUMN", buildFieldSQLTypeComboboxModel());
-	
-		constraints.gridx      	= 0;
-		constraints.gridy      	= 1;
-		constraints.gridwidth  	= 2;
-		constraints.gridheight 	= 1;
-		constraints.weightx    	= 1;
-		constraints.weighty    	= 0;
-		constraints.fill       	= GridBagConstraints.HORIZONTAL;
-		constraints.anchor     	= GridBagConstraints.PAGE_START;
-		constraints.insets 		= new Insets(10, 0, 0, 0);
-		
-		add(sqlTypeChooser, constraints);
-		
-		JComponent sqlSubTypeChooser = buildLabeledComboBox("STORED_PROCEDURE_PROPERTIES_PAGE_FIELD_SQL_SUB_TYPE_NAME_COLUMN", buildFieldSubTypeSQLTypeComboboxModel());
+    protected void initializeLayout() {
 
-		constraints.gridx      	= 0;
-		constraints.gridy      	= 2;
-		constraints.gridwidth  	= 2;
-		constraints.gridheight 	= 1;
-		constraints.weightx    	= 1;
-		constraints.weighty    	= 0;
-		constraints.fill       	= GridBagConstraints.HORIZONTAL;
-		constraints.anchor     	= GridBagConstraints.PAGE_START;
-		constraints.insets 		= new Insets(10, 0, 0, 0);
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		add(sqlSubTypeChooser, constraints);
-		
-		JLabel javaTypeChooserLabel = buildLabel("STORED_PROCEDURE_PROPERTIES_PAGE_JAVA_CLASS_TYPE_COLUMN");
-		
-		constraints.gridx      	= 0;
-		constraints.gridy      	= 3;
-		constraints.gridwidth  	= 1;
-		constraints.gridheight 	= 1;
-		constraints.weightx    	= 0;
-		constraints.weighty    	= 0;
-		constraints.fill       	= GridBagConstraints.HORIZONTAL;
-		constraints.anchor     	= GridBagConstraints.PAGE_START;
-		constraints.insets 		= new Insets(10, 0, 0, 40);
+        JComponent inFieldChooser = buildLabeledTextField("STORED_PROCEDURE_PROPERTIES_PAGE_INFIELD_NAME_COLUMN", buildInArgumentDocumentModel());
 
-		add(javaTypeChooserLabel, constraints);
+        constraints.gridx          = 0;
+        constraints.gridy          = 0;
+        constraints.gridwidth      = 2;
+        constraints.gridheight     = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 0;
+        constraints.fill           = GridBagConstraints.HORIZONTAL;
+        constraints.anchor         = GridBagConstraints.PAGE_START;
+        constraints.insets         = new Insets(5, 0, 0, 0);
 
-		JComponent javaTypeChooser = ClassChooserTools.buildPanel(buildClassTransformer(), 
-											buildClassRepositoryHolder(),
-											ClassChooserTools.buildDeclarableReferenceFilter(),
-											getWorkbenchContextHolder());
-		
-		constraints.gridx      	= 1;
-		constraints.gridy      	= 3;
-		constraints.gridwidth  	= 1;
-		constraints.gridheight 	= 1;
-		constraints.weightx    	= 1;
-		constraints.weighty    	= 0;
-		constraints.fill       	= GridBagConstraints.HORIZONTAL;
-		constraints.anchor     	= GridBagConstraints.PAGE_START;
-		constraints.insets 		= new Insets(10, 0, 0, 0);
-		javaTypeChooserLabel.setLabelFor(javaTypeChooser);
-		
-		add(javaTypeChooser, constraints);
-		
-		JComponent nestedFieldField = buildLabeledTextField("STORED_PROCEDURE_PROPERTIES_PAGE_NESTED_TYPE_FIELD_NAME_COLUMN", buildNestedTypeFieldNameDocument());
-		
-		constraints.gridx      	= 0;
-		constraints.gridy      	= 4;
-		constraints.gridwidth  	= 2;
-		constraints.gridheight 	= 1;
-		constraints.weightx    	= 1;
-		constraints.weighty    	= 1;
-		constraints.fill       	= GridBagConstraints.HORIZONTAL;
-		constraints.anchor     	= GridBagConstraints.PAGE_START;
-		constraints.insets 		= new Insets(10, 0, 0, 0);
-	
-		add(nestedFieldField, constraints);
-		
-	}
-	
-	private Document buildInArgumentDocumentModel() {
-		return new DocumentAdapter(buildArgumentFieldNameAdapter());
-	}
-	
-	private ComboBoxModelAdapter buildFieldSQLTypeComboboxModel() {
-		return new ComboBoxModelAdapter(buildJdbcTypesListHolder(), buildFieldTypeAdapter());
-	}
-	
-	private ComboBoxModelAdapter buildFieldSubTypeSQLTypeComboboxModel() {
-		return new ComboBoxModelAdapter(buildJdbcTypesListHolder(), buildFieldSubTypeNameAdapter());
-	}
+        add(inFieldChooser, constraints);
 
-	protected PropertyValueModel buildClassTransformer() {
-		return new TransformationPropertyValueModel(buildClassNameHolder()) {
-			@Override
-			protected Object transform(Object value) {
-				if (value == null || "".equals((String)value) || subject() == null) {
-					return null;
-				}
-				return ((MWAbstractProcedureArgument)subject()).typeNamed((String)value);
-			}
-			@Override
-			protected Object reverseTransform(Object value) {
-				if (value == null) {
-					return null;
-				}
-				return ((MWClass)value).fullName();
-			}
-		};
-	}
-	
-	protected PropertyValueModel buildClassNameHolder() {
-		return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.FIELD_JAVA_CLASS_NAME_PROPERTY) {
-			@Override
-			protected Object getValueFromSubject() {
-				return ((MWAbstractProcedureArgument)subject).getFieldJavaClassName();
-			}
+        JComponent sqlTypeChooser = buildLabeledComboBox("STORED_PROCEDURE_PROPERTIES_PAGE_FIELD_SQL_TYPE_NAME_COLUMN", buildFieldSQLTypeComboboxModel());
 
-			@Override
-			protected void setValueOnSubject(Object value) {
-				((MWAbstractProcedureArgument)subject).setFieldJavaClassName((String)value);
-			}
-		};
-	}
-	
-	private PropertyValueModel buildArgumentFieldNameAdapter() {
-		return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.FIELD_NAME_PROPERTY) {
-			@Override
-			protected Object getValueFromSubject() {
-				return ((MWAbstractProcedureArgument)subject).getFieldName();
-			}
+        constraints.gridx          = 0;
+        constraints.gridy          = 1;
+        constraints.gridwidth      = 2;
+        constraints.gridheight     = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 0;
+        constraints.fill           = GridBagConstraints.HORIZONTAL;
+        constraints.anchor         = GridBagConstraints.PAGE_START;
+        constraints.insets         = new Insets(10, 0, 0, 0);
 
-			@Override
-			protected void setValueOnSubject(Object value) {
-				((MWAbstractProcedureArgument)subject).setFieldName((String)value);
-			}
-		};
-	}
-	
-	private PropertyValueModel buildFieldTypeAdapter() {
-		return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.FIELD_SQL_TYPE_PROPERTY) {
-			@Override
-			protected Object getValueFromSubject() {
-				return ((MWAbstractProcedureArgument)subject).getFieldSqlTypeName();
-			}
+        add(sqlTypeChooser, constraints);
 
-			@Override
-			protected void setValueOnSubject(Object value) {
-				((MWAbstractProcedureArgument)subject).setFieldSqlTypeName((String)value);
-			}
-		};
-	}
-	
-	private PropertyValueModel buildFieldSubTypeNameAdapter() {
-		return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.FIELD_SQL_TYPE_NAME_PROPERTY) {
-			@Override
-			protected Object getValueFromSubject() {
-				return ((MWAbstractProcedureArgument)subject).getFieldSubTypeName();
-			}
+        JComponent sqlSubTypeChooser = buildLabeledComboBox("STORED_PROCEDURE_PROPERTIES_PAGE_FIELD_SQL_SUB_TYPE_NAME_COLUMN", buildFieldSubTypeSQLTypeComboboxModel());
 
-			@Override
-			protected void setValueOnSubject(Object value) {
-				((MWAbstractProcedureArgument)subject).setFieldSubTypeName((String)value);
-			}
-		};
-	}
+        constraints.gridx          = 0;
+        constraints.gridy          = 2;
+        constraints.gridwidth      = 2;
+        constraints.gridheight     = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 0;
+        constraints.fill           = GridBagConstraints.HORIZONTAL;
+        constraints.anchor         = GridBagConstraints.PAGE_START;
+        constraints.insets         = new Insets(10, 0, 0, 0);
 
-	private PropertyValueModel buildFieldJavaClassNameAdapter() {
-		return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.FIELD_JAVA_CLASS_NAME_PROPERTY) {
-			@Override
-			protected Object getValueFromSubject() {
-				return ((MWAbstractProcedureArgument)subject).getFieldJavaClassName();
-			}
+        add(sqlSubTypeChooser, constraints);
 
-			@Override
-			protected void setValueOnSubject(Object value) {
-				((MWAbstractProcedureArgument)subject).setFieldJavaClassName((String)value);
-			}
-		};
-	}
+        JLabel javaTypeChooserLabel = buildLabel("STORED_PROCEDURE_PROPERTIES_PAGE_JAVA_CLASS_TYPE_COLUMN");
 
-	private Document buildNestedTypeFieldNameDocument() {
-		return new DocumentAdapter(buildNestedTypeFieldNameAdapter());
-	}
-	
-	private PropertyValueModel buildNestedTypeFieldNameAdapter() {
-		return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.NESTED_TYPE_FIELD_NAME_PROPERTY) {
-			@Override
-			protected Object getValueFromSubject() {
-				return ((MWAbstractProcedureArgument)subject).getNestedTypeFieldName();
-			}
+        constraints.gridx          = 0;
+        constraints.gridy          = 3;
+        constraints.gridwidth      = 1;
+        constraints.gridheight     = 1;
+        constraints.weightx        = 0;
+        constraints.weighty        = 0;
+        constraints.fill           = GridBagConstraints.HORIZONTAL;
+        constraints.anchor         = GridBagConstraints.PAGE_START;
+        constraints.insets         = new Insets(10, 0, 0, 40);
 
-			@Override
-			protected void setValueOnSubject(Object value) {
-				((MWAbstractProcedureArgument)subject).setNestedTypeFieldName((String)value);
-			}
-		};
-	}
+        add(javaTypeChooserLabel, constraints);
 
-	private CollectionValueModel buildJdbcTypesHolder() {
-		return new CollectionAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.JDBC_TYPES_PROPERTY) {
-			@Override
-			protected Iterator<String> getValueFromSubject() {
-				return MWAbstractProcedureArgument.jdbcTypeNames();
-			}
-			@Override
-			protected int sizeFromSubject() {
-				return MWAbstractProcedureArgument.jdbcTypesSize();
-			}
-		};
-	}
+        JComponent javaTypeChooser = ClassChooserTools.buildPanel(buildClassTransformer(),
+                                            buildClassRepositoryHolder(),
+                                            ClassChooserTools.buildDeclarableReferenceFilter(),
+                                            getWorkbenchContextHolder());
 
-	private ListValueModel buildJdbcTypesListHolder() {
-		return new CollectionListValueModelAdapter(buildJdbcTypesHolder());
-	}
-	
-	private ClassRepositoryHolder buildClassRepositoryHolder() {
-		return new ClassRepositoryHolder() {
-			public MWClassRepository getClassRepository() {
-				return ((MWModel) ParameterInArgumentPane.this.subject()).getRepository();
-			}
-		};
-	}
+        constraints.gridx          = 1;
+        constraints.gridy          = 3;
+        constraints.gridwidth      = 1;
+        constraints.gridheight     = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 0;
+        constraints.fill           = GridBagConstraints.HORIZONTAL;
+        constraints.anchor         = GridBagConstraints.PAGE_START;
+        constraints.insets         = new Insets(10, 0, 0, 0);
+        javaTypeChooserLabel.setLabelFor(javaTypeChooser);
+
+        add(javaTypeChooser, constraints);
+
+        JComponent nestedFieldField = buildLabeledTextField("STORED_PROCEDURE_PROPERTIES_PAGE_NESTED_TYPE_FIELD_NAME_COLUMN", buildNestedTypeFieldNameDocument());
+
+        constraints.gridx          = 0;
+        constraints.gridy          = 4;
+        constraints.gridwidth      = 2;
+        constraints.gridheight     = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 1;
+        constraints.fill           = GridBagConstraints.HORIZONTAL;
+        constraints.anchor         = GridBagConstraints.PAGE_START;
+        constraints.insets         = new Insets(10, 0, 0, 0);
+
+        add(nestedFieldField, constraints);
+
+    }
+
+    private Document buildInArgumentDocumentModel() {
+        return new DocumentAdapter(buildArgumentFieldNameAdapter());
+    }
+
+    private ComboBoxModelAdapter buildFieldSQLTypeComboboxModel() {
+        return new ComboBoxModelAdapter(buildJdbcTypesListHolder(), buildFieldTypeAdapter());
+    }
+
+    private ComboBoxModelAdapter buildFieldSubTypeSQLTypeComboboxModel() {
+        return new ComboBoxModelAdapter(buildJdbcTypesListHolder(), buildFieldSubTypeNameAdapter());
+    }
+
+    protected PropertyValueModel buildClassTransformer() {
+        return new TransformationPropertyValueModel(buildClassNameHolder()) {
+            @Override
+            protected Object transform(Object value) {
+                if (value == null || "".equals((String)value) || subject() == null) {
+                    return null;
+                }
+                return ((MWAbstractProcedureArgument)subject()).typeNamed((String)value);
+            }
+            @Override
+            protected Object reverseTransform(Object value) {
+                if (value == null) {
+                    return null;
+                }
+                return ((MWClass)value).fullName();
+            }
+        };
+    }
+
+    protected PropertyValueModel buildClassNameHolder() {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.FIELD_JAVA_CLASS_NAME_PROPERTY) {
+            @Override
+            protected Object getValueFromSubject() {
+                return ((MWAbstractProcedureArgument)subject).getFieldJavaClassName();
+            }
+
+            @Override
+            protected void setValueOnSubject(Object value) {
+                ((MWAbstractProcedureArgument)subject).setFieldJavaClassName((String)value);
+            }
+        };
+    }
+
+    private PropertyValueModel buildArgumentFieldNameAdapter() {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.FIELD_NAME_PROPERTY) {
+            @Override
+            protected Object getValueFromSubject() {
+                return ((MWAbstractProcedureArgument)subject).getFieldName();
+            }
+
+            @Override
+            protected void setValueOnSubject(Object value) {
+                ((MWAbstractProcedureArgument)subject).setFieldName((String)value);
+            }
+        };
+    }
+
+    private PropertyValueModel buildFieldTypeAdapter() {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.FIELD_SQL_TYPE_PROPERTY) {
+            @Override
+            protected Object getValueFromSubject() {
+                return ((MWAbstractProcedureArgument)subject).getFieldSqlTypeName();
+            }
+
+            @Override
+            protected void setValueOnSubject(Object value) {
+                ((MWAbstractProcedureArgument)subject).setFieldSqlTypeName((String)value);
+            }
+        };
+    }
+
+    private PropertyValueModel buildFieldSubTypeNameAdapter() {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.FIELD_SQL_TYPE_NAME_PROPERTY) {
+            @Override
+            protected Object getValueFromSubject() {
+                return ((MWAbstractProcedureArgument)subject).getFieldSubTypeName();
+            }
+
+            @Override
+            protected void setValueOnSubject(Object value) {
+                ((MWAbstractProcedureArgument)subject).setFieldSubTypeName((String)value);
+            }
+        };
+    }
+
+    private PropertyValueModel buildFieldJavaClassNameAdapter() {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.FIELD_JAVA_CLASS_NAME_PROPERTY) {
+            @Override
+            protected Object getValueFromSubject() {
+                return ((MWAbstractProcedureArgument)subject).getFieldJavaClassName();
+            }
+
+            @Override
+            protected void setValueOnSubject(Object value) {
+                ((MWAbstractProcedureArgument)subject).setFieldJavaClassName((String)value);
+            }
+        };
+    }
+
+    private Document buildNestedTypeFieldNameDocument() {
+        return new DocumentAdapter(buildNestedTypeFieldNameAdapter());
+    }
+
+    private PropertyValueModel buildNestedTypeFieldNameAdapter() {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.NESTED_TYPE_FIELD_NAME_PROPERTY) {
+            @Override
+            protected Object getValueFromSubject() {
+                return ((MWAbstractProcedureArgument)subject).getNestedTypeFieldName();
+            }
+
+            @Override
+            protected void setValueOnSubject(Object value) {
+                ((MWAbstractProcedureArgument)subject).setNestedTypeFieldName((String)value);
+            }
+        };
+    }
+
+    private CollectionValueModel buildJdbcTypesHolder() {
+        return new CollectionAspectAdapter(getSubjectHolder(), MWAbstractProcedureArgument.JDBC_TYPES_PROPERTY) {
+            @Override
+            protected Iterator<String> getValueFromSubject() {
+                return MWAbstractProcedureArgument.jdbcTypeNames();
+            }
+            @Override
+            protected int sizeFromSubject() {
+                return MWAbstractProcedureArgument.jdbcTypesSize();
+            }
+        };
+    }
+
+    private ListValueModel buildJdbcTypesListHolder() {
+        return new CollectionListValueModelAdapter(buildJdbcTypesHolder());
+    }
+
+    private ClassRepositoryHolder buildClassRepositoryHolder() {
+        return new ClassRepositoryHolder() {
+            public MWClassRepository getClassRepository() {
+                return ((MWModel) ParameterInArgumentPane.this.subject()).getRepository();
+            }
+        };
+    }
 
 
-	
-//	private ValueModel<String> buildDefaultInFieldNameModel() {
-//		return new SimplePropertyValueModel<String>("in_Field");
-//	}
-	
+
+//    private ValueModel<String> buildDefaultInFieldNameModel() {
+//        return new SimplePropertyValueModel<String>("in_Field");
+//    }
+
 }

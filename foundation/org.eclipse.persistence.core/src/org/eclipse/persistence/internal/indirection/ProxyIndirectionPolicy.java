@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.indirection;
 
 import java.lang.reflect.Proxy;
@@ -74,7 +74,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     public void initialize() {
         // Nothing required
     }
-    
+
     /**
      * Reset the wrapper used to store the value.
      */
@@ -178,7 +178,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             return true;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return whether the specified object can be instantiated without database access.
@@ -308,7 +308,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
         ValueHolderInterface newValueHolder;
         ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(attributeValue);
         ValueHolderInterface oldValueHolder = handler.getValueHolder();
-        
+
         if (!buildDirectlyFromRow && cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)) {
             // CR#3156435 Throw a meaningful exception if a serialized/dead value holder is detected.
             // This can occur if an existing serialized object is attempt to be registered as new.
@@ -321,7 +321,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             newValueHolder = new ValueHolder();
             newValueHolder.setValue(this.getMapping().buildCloneForPartObject(oldValueHolder.getValue(), original, null, clone, cloningSession, refreshCascade, false, false));
         } else {
-        	AbstractRecord row = null;
+            AbstractRecord row = null;
             if (oldValueHolder instanceof DatabaseValueHolder) {
                 row = ((DatabaseValueHolder)oldValueHolder).getRow();
             }
@@ -342,7 +342,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
         ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(attributeValue);
         ValueHolderInterface unitOfWorkValueHolder = handler.getValueHolder();
         ValueHolderInterface backupValueHolder = null;
-        
+
         if ((!(unitOfWorkValueHolder instanceof UnitOfWorkValueHolder)) || unitOfWorkValueHolder.isInstantiated()) {
             backupValueHolder = (ValueHolderInterface) super.backupCloneAttribute(unitOfWorkValueHolder, clone, backup, unitOfWork);
         } else {
@@ -379,7 +379,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     public Object validateAttributeOfInstantiatedObject(Object attributeValue) {
         if ((attributeValue != null) && (attributeValue.getClass().getInterfaces().length == 0) && attributeValue instanceof Proxy) {
             //org.eclipse.persistence.internal.helper.Helper.toDo("*** Need a new DescriptorException here. ***");
-            //			throw DescriptorException.valueHolderInstantiationMismatch(attributeValue, this.getMapping());
+            //            throw DescriptorException.valueHolderInstantiationMismatch(attributeValue, this.getMapping());
             System.err.println("** ProxyIndirection attribute validation failed.");
         }
         return attributeValue;
@@ -419,10 +419,10 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             checker.handleError(DescriptorException.invalidSetMethodParameterTypeForProxyIndirection(parameterType, targetInterfaces, getMapping()));
         }
     }
-    
+
     /**
      * INTERNAL:
-     * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue 
+     * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue
      * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
      * This method is used to help determine if indirection has been triggered
      * @param attributeValue

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -23,35 +23,35 @@ import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
  * branch of nodes.
  */
 public class AsynchronousValidator
-	implements PluggableValidator.Delegate
+    implements PluggableValidator.Delegate
 {
-	private SynchronizedBoolean validateFlag;
+    private SynchronizedBoolean validateFlag;
 
-	/**
-	 * Construct a validator delegate with the specified shared
-	 * "validate" flag. This flag should be shared with
-	 * another thread that will perform the actual validation.
-	 */
-	public AsynchronousValidator(SynchronizedBoolean validateFlag) {
-		super();
-		this.validateFlag = validateFlag;
-	}
+    /**
+     * Construct a validator delegate with the specified shared
+     * "validate" flag. This flag should be shared with
+     * another thread that will perform the actual validation.
+     */
+    public AsynchronousValidator(SynchronizedBoolean validateFlag) {
+        super();
+        this.validateFlag = validateFlag;
+    }
 
-	/**
-	 * Set the shared "validate" flag to true, triggering
-	 * an asynchronous validation of the appropriate
-	 * branch of nodes.
-	 * @see PluggableValidator.Delegate#validate()
-	 */
-	public void validate() {
-		this.validateFlag.setTrue();
-	}
+    /**
+     * Set the shared "validate" flag to true, triggering
+     * an asynchronous validation of the appropriate
+     * branch of nodes.
+     * @see PluggableValidator.Delegate#validate()
+     */
+    public void validate() {
+        this.validateFlag.setTrue();
+    }
 
-	/**
-	 * @see Object#toString()
-	 */
-	public String toString() {
-		return StringTools.buildToStringFor(this, this.validateFlag);
-	}
+    /**
+     * @see Object#toString()
+     */
+    public String toString() {
+        return StringTools.buildToStringFor(this, this.validateFlag);
+    }
 
 }

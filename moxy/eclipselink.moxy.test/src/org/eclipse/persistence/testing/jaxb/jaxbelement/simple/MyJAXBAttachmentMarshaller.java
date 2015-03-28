@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,14 +22,14 @@ public class MyJAXBAttachmentMarshaller extends javax.xml.bind.attachment.Attach
     public static HashMap attachments = new HashMap();
     public boolean returnNull = false;
 
-    
+
     public MyJAXBAttachmentMarshaller(Object data){
-    	super();
-    	
-    	attachments.put(MyJAXBAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+        super();
+
+        attachments.put(MyJAXBAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
     }
-	
-    
+
+
     public String addSwaRefAttachment(DataHandler data) {
         if(returnNull) {
             return null;
@@ -40,7 +40,7 @@ public class MyJAXBAttachmentMarshaller extends javax.xml.bind.attachment.Attach
         attachments.put(id, data);
         return id;
     }
-    
+
     public String addSwaRefAttachment(byte[] data, int offset, int length) {
         if(returnNull) {
             return null;
@@ -77,7 +77,7 @@ public class MyJAXBAttachmentMarshaller extends javax.xml.bind.attachment.Attach
     public boolean isXOPPackage() {
         return true;
     }
-    
+
     public void setReturnNull(boolean b) {
         this.returnNull = b;
     }

@@ -1,25 +1,25 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     06/20/2012-2.5 Guy Pelletier 
+ *     06/20/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     07/13/2012-2.5 Guy Pelletier 
+ *     07/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier 
+ *     08/24/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/27/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.*;
@@ -49,10 +49,10 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     protected boolean isExecuteCall;
     protected boolean returnNameValuePairs = false;
     protected Vector resultRows;
-    
+
     protected List<String> resultSetMappingNames = new ArrayList<String>();
     protected List<SQLResultSetMapping> resultSetMappings = new ArrayList<SQLResultSetMapping>();
-    
+
     /**
      * PUBLIC:
      * Initialize the state of the query.
@@ -89,20 +89,20 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
         this.resultSetMappings.add(resultSetMapping);
         this.resultSetMappingNames.add(resultSetMapping.getName());
     }
-    
+
     /**
      * PUBLIC:
-     * Add a SQLResultSetMapping that is used by this query to process the 
+     * Add a SQLResultSetMapping that is used by this query to process the
      * database results.
      */
     public void addSQLResultSetMappingName(String name){
         if (name == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_sqlresultsetmapping_in_query"));
         }
-        
+
         this.resultSetMappingNames.add(name);
     }
-    
+
     /**
      * INTERNAL:
      * <P> This method is called by the object builder when building an original.
@@ -156,10 +156,10 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     public void setSQLResultSetMapping(SQLResultSetMapping resultSetMapping) {
         addSQLResultSetMapping(resultSetMapping);
     }
-    
+
     /**
      * PUBLIC:
-     * This will be the SQLResultSetMappings that are used by this query to 
+     * This will be the SQLResultSetMappings that are used by this query to
      * process the database results
      */
     public void setSQLResultSetMappings(List<SQLResultSetMapping> resultSetMappings) {
@@ -174,7 +174,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     public void setSQLResultSetMappingName(String name) {
         addSQLResultSetMappingName(name);
     }
-    
+
     /**
      * PUBLIC:
      * This will be the SQLResult
@@ -184,27 +184,27 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
         if (names.isEmpty()) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_sqlresultsetmapping_in_query"));
         }
-        
+
         this.resultSetMappingNames = names;
     }
-    
+
     /**
      * INTERNAL:
-     * This method is used to build the results. Interpreting the 
+     * This method is used to build the results. Interpreting the
      * SQLResultSetMapping(s).
      */
     public List buildObjectsFromRecords(List databaseRecords){
         if (getSQLResultSetMappings().size() > 1) {
             int numberOfRecords = databaseRecords.size();
             List results = new ArrayList(numberOfRecords);
-        
+
             for (int recordIndex = 0; recordIndex < numberOfRecords; recordIndex++) {
                 Object records = databaseRecords.get(recordIndex);
-                
+
                 if (records instanceof Map) {
                     // We have a map keyed on named ref_cursors
                     Map recordsMap = (Map) records;
-                    
+
                     for (Object cursor : recordsMap.keySet()) {
                         results.add(buildObjectsFromRecords((List) recordsMap.get(cursor), getSQLResultSetMappings().get(recordIndex)));
                         recordIndex++;
@@ -214,13 +214,13 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
                     results.add(buildObjectsFromRecords((List) records, getSQLResultSetMappings().get(recordIndex)));
                 }
             }
-        
+
             return results;
         } else {
             return buildObjectsFromRecords(databaseRecords, getSQLResultSetMapping());
         }
     }
-    
+
     /**
      * INTERNAL:
      * This method is used to build the results with the SQLResultSetMapping
@@ -233,7 +233,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
             return buildObjectsFromRecords(databaseRecords, getSQLResultSetMappings().get(index));
         }
     }
-    
+
     /**
      * INTERNAL:
      * This method is used to build the results. Interpreting the SQLResultSetMapping.
@@ -241,13 +241,13 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     protected List buildObjectsFromRecords(List databaseRecords, SQLResultSetMapping mapping) {
         int numberOfRecords = databaseRecords.size();
         List results = new ArrayList(numberOfRecords);
-        
+
         if (mapping == null) {
             if (shouldReturnNameValuePairs()) {
                 return databaseRecords;
             }
             for (Iterator iterator = databaseRecords.iterator(); iterator.hasNext();) {
-                DatabaseRecord record = (DatabaseRecord)iterator.next();                
+                DatabaseRecord record = (DatabaseRecord)iterator.next();
                 results.add(record.values().toArray());
             }
         } else {
@@ -267,7 +267,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
                 }
             }
         }
-        
+
         return results;
     }
 
@@ -319,7 +319,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
             return buildObjectsFromRecords(rows);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Return true if there are results set mappings associated with this query.
@@ -327,14 +327,14 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     public boolean hasResultSetMappings() {
         return ! getSQLResultSetMappings().isEmpty();
     }
-    
+
     /**
      * PUBLIC: Return true if this is a result set mapping query.
      */
     public boolean isResultSetMappingQuery() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Prepare the receiver for execution in a session.
@@ -367,10 +367,10 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
                 return getSession().getProject().getSQLResultSetMapping(resultSetMappingNames.get(0));
             }
         }
-        
+
         return resultSetMappings.get(0);
     }
-    
+
     /**
      * PUBLIC:
      * This will be the SQLResultSetMapping that is used by this query to process
@@ -382,13 +382,13 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
             for (String resultSetMappingName : this.resultSetMappingNames) {
                 list.add(getSession().getProject().getSQLResultSetMapping(resultSetMappingName));
             }
-            
+
             return list;
         } else {
             return resultSetMappings;
         }
     }
-    
+
     /**
      * PUBLIC:
      * Return the result set mapping name.
@@ -396,7 +396,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     public String getSQLResultSetMappingName() {
         return this.resultSetMappingNames.get(0);
     }
-    
+
     /**
      * PUBLIC:
      * Return the result set mapping name.
@@ -404,7 +404,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     public List<String> getSQLResultSetMappingNames() {
         return this.resultSetMappingNames;
     }
-    
+
     /**
      * PUBLIC:
      * Set to true if you the actual jdbc result set returned from query
@@ -413,7 +413,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
      */
     public void setIsExecuteCall(boolean isExecuteCall) {
         this.isExecuteCall = isExecuteCall;
-        
+
         // Force the query to prepare.
         setIsPrepared(false);
     }

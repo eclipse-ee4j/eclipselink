@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -41,49 +41,49 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 final class ClassExtractionMethodPanel extends AbstractSubjectPanel implements RootListener, ExtractionMethodListener {
 
-	private boolean isRoot;
-	
-	private boolean isExtractionMethod;
+    private boolean isRoot;
 
-	private ListChooser classExtractionMethodListChooser;
-	
-	ClassExtractionMethodPanel(ApplicationContext context, PropertyValueModel classExtractionMethodIndicatorPolicy) {
-		super(classExtractionMethodIndicatorPolicy, context);
-	}
+    private boolean isExtractionMethod;
 
-	protected void initializeLayout() {
-		GridBagConstraints constraints = new GridBagConstraints();
+    private ListChooser classExtractionMethodListChooser;
 
-		this.classExtractionMethodListChooser = buildClassExtractionMethodChooser();
+    ClassExtractionMethodPanel(ApplicationContext context, PropertyValueModel classExtractionMethodIndicatorPolicy) {
+        super(classExtractionMethodIndicatorPolicy, context);
+    }
+
+    protected void initializeLayout() {
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        this.classExtractionMethodListChooser = buildClassExtractionMethodChooser();
         this.classExtractionMethodListChooser.putClientProperty("labeledBy", new JLabel(" "));
 
-		constraints.gridx		= 0;
-		constraints.gridy		= 1;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 1;
-		constraints.fill		= GridBagConstraints.HORIZONTAL;
-		constraints.anchor		= GridBagConstraints.CENTER;
-		constraints.insets		= new Insets(0, 0, 0, 0);
+        constraints.gridx        = 0;
+        constraints.gridy        = 1;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 1;
+        constraints.fill        = GridBagConstraints.HORIZONTAL;
+        constraints.anchor        = GridBagConstraints.CENTER;
+        constraints.insets        = new Insets(0, 0, 0, 0);
 
-		add(this.classExtractionMethodListChooser, constraints);
+        add(this.classExtractionMethodListChooser, constraints);
 
-		new ComponentEnabler(buildUseClassExtractionMethodHolder(), Collections.singleton(this.classExtractionMethodListChooser));
-	}
+        new ComponentEnabler(buildUseClassExtractionMethodHolder(), Collections.singleton(this.classExtractionMethodListChooser));
+    }
 
-	private ValueModel buildMWClassHolder() {
-		return new PropertyAspectAdapter(getSubjectHolder()) {
-			protected Object getValueFromSubject() {
-				return ((MWDescriptorInheritancePolicy) ((MWClassIndicatorPolicy) this.subject).getParent()).getOwningDescriptor().getMWClass();
-			}
-		};
-	}
-    
+    private ValueModel buildMWClassHolder() {
+        return new PropertyAspectAdapter(getSubjectHolder()) {
+            protected Object getValueFromSubject() {
+                return ((MWDescriptorInheritancePolicy) ((MWClassIndicatorPolicy) this.subject).getParent()).getOwningDescriptor().getMWClass();
+            }
+        };
+    }
+
     // **************** Class Extraction Method chooser initialization *************************
-    
+
     private ListChooser buildClassExtractionMethodChooser() {
-        ListChooser listChooser = 
+        ListChooser listChooser =
             new DefaultListChooser(
                 this.buildExtendedClassExtractionMethodComboBoxModel(),
                 this.getWorkbenchContextHolder(),
@@ -91,14 +91,14 @@ final class ClassExtractionMethodPanel extends AbstractSubjectPanel implements R
                 this.buildPostLoadMethodListDialogBuilder()
             );
         listChooser.setRenderer(DescriptorComponentFactory.buildMethodRenderer(resourceRepository()));
-        
+
         return listChooser;
     }
-    
+
     private CachingComboBoxModel buildExtendedClassExtractionMethodComboBoxModel() {
         return new ExtendedComboBoxModel(this.buildClassExtractionMethodComboBoxModel());
     }
-    
+
     private CachingComboBoxModel buildClassExtractionMethodComboBoxModel() {
         return new IndirectComboBoxModel(this.buildClassExtractionMethodChooserPropertyAdapter(), this.buildMWClassHolder()) {
             protected ListIterator listValueFromSubject(Object subject) {
@@ -106,11 +106,11 @@ final class ClassExtractionMethodPanel extends AbstractSubjectPanel implements R
             }
         };
     }
-    
+
     ListIterator orderedClassExtractionMethodChoices(MWClass mwClass) {
         return CollectionTools.sort(mwClass.candidateClassExtractionMethods()).listIterator();
     }
-    
+
     private DefaultListChooserDialog.Builder buildPostLoadMethodListDialogBuilder() {
         DefaultListChooserDialog.Builder builder = new DefaultListChooserDialog.Builder();
         builder.setTitleKey("CLASS_EXTRACTION_METHOD_LIST_BROWSER_DIALOG.title");
@@ -119,47 +119,47 @@ final class ClassExtractionMethodPanel extends AbstractSubjectPanel implements R
         return builder;
     }
 
-	private PropertyValueModel buildClassExtractionMethodChooserPropertyAdapter() {
-		return new PropertyAspectAdapter(getSubjectHolder(), MWClassIndicatorExtractionMethodPolicy.METHOD_PROPERTY) {
-			protected Object getValueFromSubject() {
-				return ((MWClassIndicatorExtractionMethodPolicy) this.subject).getClassExtractionMethod();
-			}
-		
-			protected void setValueOnSubject(Object value) {
-				((MWClassIndicatorExtractionMethodPolicy) this.subject).setClassExtractionMethod((MWMethod) value);
-			}	
-		};	
-	}
+    private PropertyValueModel buildClassExtractionMethodChooserPropertyAdapter() {
+        return new PropertyAspectAdapter(getSubjectHolder(), MWClassIndicatorExtractionMethodPolicy.METHOD_PROPERTY) {
+            protected Object getValueFromSubject() {
+                return ((MWClassIndicatorExtractionMethodPolicy) this.subject).getClassExtractionMethod();
+            }
+
+            protected void setValueOnSubject(Object value) {
+                ((MWClassIndicatorExtractionMethodPolicy) this.subject).setClassExtractionMethod((MWMethod) value);
+            }
+        };
+    }
 
 
-	private ValueModel buildUseClassExtractionMethodHolder() {
-		return new PropertyAspectAdapter(getSubjectHolder()) {
-			protected Object buildValue() {
-				return this.subject == null ? Boolean.FALSE : Boolean.TRUE;
-			}
-		};
-	}
-	
-	public void updateRootStatus(boolean newValue) {
-		this.isRoot = newValue;
-		this.updateEnablementStatus();
-	}
-	
-	public void updateExtractionMethodStatus(boolean newValue) {
-		this.isExtractionMethod = newValue;
-		this.updateEnablementStatus();
-	}
-	
-	protected void updateEnablementStatus() {
+    private ValueModel buildUseClassExtractionMethodHolder() {
+        return new PropertyAspectAdapter(getSubjectHolder()) {
+            protected Object buildValue() {
+                return this.subject == null ? Boolean.FALSE : Boolean.TRUE;
+            }
+        };
+    }
+
+    public void updateRootStatus(boolean newValue) {
+        this.isRoot = newValue;
+        this.updateEnablementStatus();
+    }
+
+    public void updateExtractionMethodStatus(boolean newValue) {
+        this.isExtractionMethod = newValue;
+        this.updateEnablementStatus();
+    }
+
+    protected void updateEnablementStatus() {
         this.classExtractionMethodListChooser.setEnabled(this.isRoot() && this.isExtractionMethod());
-	}
+    }
 
-	public boolean isRoot() {
-		return this.isRoot;
-	}
+    public boolean isRoot() {
+        return this.isRoot;
+    }
 
-	public boolean isExtractionMethod() {
-		return this.isExtractionMethod;
-	}
+    public boolean isExtractionMethod() {
+        return this.isExtractionMethod;
+    }
 
 }

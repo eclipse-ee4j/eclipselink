@@ -22,8 +22,8 @@
             <property name="eclipselink.logging.parameters" value="false"/>
             <property name="NAME" value="Montreal%"/>
         </properties>
-    </persistence-unit> 
-    
+    </persistence-unit>
+
     <persistence-unit name="extended-relationships" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/relationships-extended-entity-mappings.xml</mapping-file>
@@ -47,7 +47,7 @@
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="extended-inheritance" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/inheritance-extended-entity-mappings.xml</mapping-file>
@@ -70,7 +70,7 @@
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="extended-complex-aggregate" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/complexaggregate-extended-entity-mappings.xml</mapping-file>
@@ -93,7 +93,7 @@
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="extended-dynamic-advanced" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/advanced-dynamic-entity-mappings.xml</mapping-file>
@@ -111,7 +111,7 @@
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="extended-multi-tenant-shared-emf">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/advanced-multitenant-entity-mappings.xml</mapping-file>
@@ -121,13 +121,13 @@
             <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
             <!-- Since we don't exclude unlisted classes here, we will       -->
             <!-- eventually hit the multitenant entities which turn native   -->
-            <!-- sql queries off by default, so we need to be explicit here  --> 
+            <!-- sql queries off by default, so we need to be explicit here  -->
             <!--  and turn them on                                           -->
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
-        </properties>        
+        </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="extended-multi-tenant-123">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/advanced-multitenant-entity-mappings.xml</mapping-file>
@@ -142,7 +142,7 @@
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="extended-multi-tenant-table-per-tenant">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/advanced-tpt-multitenant-entity-mappings.xml</mapping-file>
@@ -152,9 +152,9 @@
             <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
-        </properties>        
+        </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="extended-multi-tenant-table-per-tenant-C">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/advanced-tpt-multitenant-entity-mappings.xml</mapping-file>

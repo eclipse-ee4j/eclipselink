@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xml-bindings package-name="org.eclipse.persistence.testing.jaxb.xmlelements" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
     <java-types>
-        
+
         <java-type name="Employee">
             <xml-root-element/>
             <java-attributes>

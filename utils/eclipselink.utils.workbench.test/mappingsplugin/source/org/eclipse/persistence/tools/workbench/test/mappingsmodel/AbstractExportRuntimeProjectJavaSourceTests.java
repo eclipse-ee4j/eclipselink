@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -35,70 +35,70 @@ import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
 
 
 public abstract class AbstractExportRuntimeProjectJavaSourceTests extends TestCase {
-	protected File tempDir;
+    protected File tempDir;
 
-	protected AbstractExportRuntimeProjectJavaSourceTests(String name) {
-		super(name);
-	}
+    protected AbstractExportRuntimeProjectJavaSourceTests(String name) {
+        super(name);
+    }
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.tempDir = FileTools.emptyTemporaryDirectory(ClassTools.shortClassNameForObject(this) + "." + this.getName());
-	}
+    protected void setUp() throws Exception {
+        super.setUp();
+        this.tempDir = FileTools.emptyTemporaryDirectory(ClassTools.shortClassNameForObject(this) + "." + this.getName());
+    }
 
-	protected void compileAndCheckJavaExport(MWRelationalProject project) throws Exception {
-		File javaFile = project.projectSourceFile();
-		List classpathEntries = new ArrayList();
-		classpathEntries.add(Classpath.locationFor(Project.class));
-		classpathEntries.add(Classpath.locationFor(Employee.class));
-		JavaTools.compile(javaFile, new Classpath(classpathEntries).path());
+    protected void compileAndCheckJavaExport(MWRelationalProject project) throws Exception {
+        File javaFile = project.projectSourceFile();
+        List classpathEntries = new ArrayList();
+        classpathEntries.add(Classpath.locationFor(Project.class));
+        classpathEntries.add(Classpath.locationFor(Employee.class));
+        JavaTools.compile(javaFile, new Classpath(classpathEntries).path());
 
-		ClassLoader classLoader = new URLClassLoader(new URL[] {javaFile.getParentFile().getAbsoluteFile().toURL()}, this.getClass().getClassLoader());
-		Class projectClass = Class.forName(this.className(project), true, classLoader);
+        ClassLoader classLoader = new URLClassLoader(new URL[] {javaFile.getParentFile().getAbsoluteFile().toURL()}, this.getClass().getClassLoader());
+        Class projectClass = Class.forName(this.className(project), true, classLoader);
 
-		Project runtimeProject = (Project) projectClass.newInstance();
-		((DatasourceLogin) runtimeProject.getDatasourceLogin()).setConnector(project.getDatabase().getDeploymentLoginSpec().buildConnector());
+        Project runtimeProject = (Project) projectClass.newInstance();
+        ((DatasourceLogin) runtimeProject.getDatasourceLogin()).setConnector(project.getDatabase().getDeploymentLoginSpec().buildConnector());
 
 // TODO compare projects
-//		Project orginalProject = project.buildRuntimeProject();
-		//lazy initialize
-//		runtimeProject.getDatasourceLogin().getDatasourcePlatform().getDefaultSequence();
-//		assertEquivalent(runtimeProject, orginalProject);
+//        Project orginalProject = project.buildRuntimeProject();
+        //lazy initialize
+//        runtimeProject.getDatasourceLogin().getDatasourcePlatform().getDefaultSequence();
+//        assertEquivalent(runtimeProject, orginalProject);
 
 
-		DatabaseSession session = runtimeProject.createDatabaseSession();
-		session.dontLogMessages();
-//		session.logMessages();
-		session.login();	// this will verify the mappings
-		session.logout();
-	}
+        DatabaseSession session = runtimeProject.createDatabaseSession();
+        session.dontLogMessages();
+//        session.logMessages();
+        session.login();    // this will verify the mappings
+        session.logout();
+    }
 
-	/**
-	 * force the project to use the Oracle database
-	 */
-	protected void configureDeploymentLogin(MWRelationalProject project) {
-		MWDatabase database = project.getDatabase();
-		database.setDeploymentLoginSpec(database.loginSpecNamed("MySQL"));
-	}
+    /**
+     * force the project to use the Oracle database
+     */
+    protected void configureDeploymentLogin(MWRelationalProject project) {
+        MWDatabase database = project.getDatabase();
+        database.setDeploymentLoginSpec(database.loginSpecNamed("MySQL"));
+    }
 
-	protected File logFile(MWRelationalProject project) {
-		return new File(this.tempDir, this.logFileName(project));
-	}
+    protected File logFile(MWRelationalProject project) {
+        return new File(this.tempDir, this.logFileName(project));
+    }
 
-	protected File sourceFile(MWRelationalProject project) {
-		return new File(this.tempDir, this.sourceFileName(project));
-	}
+    protected File sourceFile(MWRelationalProject project) {
+        return new File(this.tempDir, this.sourceFileName(project));
+    }
 
-	private String logFileName(MWRelationalProject project) {
-		return this.className(project) + ".log";
-	}
+    private String logFileName(MWRelationalProject project) {
+        return this.className(project) + ".log";
+    }
 
-	private String sourceFileName(MWRelationalProject project) {
-		return this.className(project) + ".java";
-	}
+    private String sourceFileName(MWRelationalProject project) {
+        return this.className(project) + ".java";
+    }
 
-	protected String className(MWRelationalProject project) {
-		return StringTools.removeAllSpaces(project.getName());
-	}
+    protected String className(MWRelationalProject project) {
+        return StringTools.removeAllSpaces(project.getName());
+    }
 
 }

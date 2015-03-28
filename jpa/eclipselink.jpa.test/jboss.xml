@@ -1,9 +1,9 @@
 <!--/*******************************************************************************
-* This program and the accompanying materials are made available under the 
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
-* which accompanies this distribution. 
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at 
+* and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 *   Ant naming conventions:
@@ -20,7 +20,7 @@
 *     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatenated
-*     e.g. 'runpathref'  
+*     e.g. 'runpathref'
 *   - multi-word tasks (taskdef) names are concatenated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
@@ -119,7 +119,7 @@
 
     <!-- Start the server. -->
     <target name="jboss-start">
-        <java classname="org.jboss.Main" 
+        <java classname="org.jboss.Main"
             fork="true"
             failonerror="false" >
             <jvmarg value="-XX:MaxPermSize=512m"/>
@@ -141,13 +141,13 @@
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
-            </classpath>           
+            </classpath>
         </java>
     </target>
 
     <!-- Stop the server. -->
     <target name="jboss-stop">
-        <java classname="org.jboss.Shutdown" 
+        <java classname="org.jboss.Shutdown"
             fork="true"
             failonerror="false">
             <arg line="-S -u ${server.user} -p ${server.pwd} ${server.url}"/>
@@ -164,7 +164,7 @@
             <fileset dir="./">
                 <include name="${ear.name}"/>
             </fileset>
-        </copy> 
+        </copy>
         <sleep seconds="10"/>
     </target>
 

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.inheritance;
 
 import org.eclipse.persistence.oxm.XMLField;
@@ -24,12 +24,12 @@ import org.eclipse.persistence.sessions.Project;
  *  @since   release specific (what release of product did this appear in)
  */
 public class InheritanceProject extends Project {
-    protected NamespaceResolver namespaceResolver;    
-    
+    protected NamespaceResolver namespaceResolver;
+
     public InheritanceProject() {
-    	this(false);
+        this(false);
     }
-    
+
     public InheritanceProject(boolean defaultNS) {
         super();
 
@@ -38,9 +38,9 @@ public class InheritanceProject extends Project {
         namespaceResolver.put("prefix", "mynamespaceuri");
 
         if(defaultNS){
-        	namespaceResolver.setDefaultNamespaceURI("mynamespaceuri");
+            namespaceResolver.setDefaultNamespaceURI("mynamespaceuri");
         }
-        
+
         addDescriptor(getParkingLotDescriptor());
         addDescriptor(getVehicleDescriptor());
         addDescriptor(getCarDescriptor());
@@ -53,12 +53,12 @@ public class InheritanceProject extends Project {
         descriptor.setNamespaceResolver(namespaceResolver);
 
         XMLField classIndicatorField = new XMLField("@xsi:type");
-        descriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);        
-        descriptor.getInheritancePolicy().addClassIndicator(Vehicle.class, "prefix:vehicle-type");        
+        descriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
+        descriptor.getInheritancePolicy().addClassIndicator(Vehicle.class, "prefix:vehicle-type");
         descriptor.getInheritancePolicy().addClassIndicator(Car.class, "prefix:car-type");
-        
+
         descriptor.getInheritancePolicy().setShouldReadSubclasses(true);
-        
+
 
         XMLDirectMapping modelMapping = new XMLDirectMapping();
         modelMapping.setAttributeName("model");
@@ -97,7 +97,7 @@ public class InheritanceProject extends Project {
 
         return descriptor;
     }
-    
+
     private XMLDescriptor getParkingLotDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(org.eclipse.persistence.testing.oxm.inheritance.ParkingLot.class);

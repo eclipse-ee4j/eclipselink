@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -45,7 +45,7 @@ public class DoesExistQuery extends DatabaseQuery {
 
     /** Flag to determine existence check policy. */
     protected int existencePolicy;
-    
+
     /**
      * Flag to determine cache invalidation policy support.  This overrides
      * the CheckCache existence setting if the object is invalid or if the
@@ -53,7 +53,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * The default is true.
      */
     protected boolean checkDatabaseIfInvalid; //default to true, allows users to override
-    
+
     /**
      * Flag to determine if the cache should be check first in addition to another option.
      * The default is true;
@@ -137,7 +137,7 @@ public class DoesExistQuery extends DatabaseQuery {
         // an example object is done just in time.
         buildSelectionCriteria(session);
         // Return false on null since it can't exist.  Little more done in case PK not set in the query
-        if  (object == null){ 
+        if  (object == null){
             return Boolean.FALSE;
         }
         ClassDescriptor descriptor = session.getDescriptor(object.getClass());
@@ -146,20 +146,20 @@ public class DoesExistQuery extends DatabaseQuery {
             if (primaryKey == null) {
                 primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, session, true);
             }
-                
+
         }
         if (primaryKey == null) {
             return Boolean.FALSE;
         }
-        
+
         // Need to do the cache check first if flag set or if we should check the cache only for existence.
         if ((shouldCheckCacheForDoesExist() ||this.checkCacheFirst) && !descriptor.isDescriptorForInterface()) {
-        
+
             // If this is a UOW and modification queries have been executed, the cache cannot be trusted.
             if (this.checkDatabaseIfInvalid && (session.isUnitOfWork() &&  ((UnitOfWorkImpl)session).shouldReadFromDB())) {
                 return null;
             }
-                
+
             CacheKey cacheKey;
             Class objectClass = object.getClass();
             AbstractSession tempSession = session;
@@ -181,7 +181,7 @@ public class DoesExistQuery extends DatabaseQuery {
             }
             // Did not find it registered in UOW so check main cache and check for invalidation.
             cacheKey = tempSession.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey,objectClass, descriptor, false);
-                
+
             if ((cacheKey != null)) {
                 // Assume that if there is a cachekey, object exists.
                 if (this.checkDatabaseIfInvalid) {
@@ -190,7 +190,7 @@ public class DoesExistQuery extends DatabaseQuery {
                         return null;
                     }
                 }
-                
+
                 Object objectFromCache = cacheKey.getObject();
                 if ((session.isUnitOfWork()) && ((UnitOfWorkImpl)session).wasDeleted(objectFromCache)) {
                     if (shouldCheckCacheForDoesExist()) {
@@ -312,7 +312,7 @@ public class DoesExistQuery extends DatabaseQuery {
         // It will only get to prepare if check database if required.
         getQueryMechanism().prepareDoesExist(getDoesExistField());
     }
-    
+
     /**
      * INTERNAL:
      * Ensure that the descriptor has been set.
@@ -323,7 +323,7 @@ public class DoesExistQuery extends DatabaseQuery {
                 throw QueryException.objectToModifyNotSpecified(this);
             }
 
-            //Bug#3947714  Pass the object instead of class in case object is proxy            
+            //Bug#3947714  Pass the object instead of class in case object is proxy
             ClassDescriptor referenceDescriptor = session.getDescriptor(object);
             if (referenceDescriptor == null) {
                 throw QueryException.descriptorIsMissing(object.getClass(), this);
@@ -331,7 +331,7 @@ public class DoesExistQuery extends DatabaseQuery {
             setDescriptor(referenceDescriptor);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Prepare the receiver for execution in a session.
@@ -414,12 +414,12 @@ public class DoesExistQuery extends DatabaseQuery {
     public boolean shouldCheckDatabaseForDoesExist() {
         return existencePolicy == CheckDatabase;
     }
-    
+
     /**
      * INTERNAL:
-     * Sets checkCacheFirst flag.  If true, existence check will first go to the 
+     * Sets checkCacheFirst flag.  If true, existence check will first go to the
      * cache.  It will then check other options if it is not found in the cache
-     * @param checkCacheFirst 
+     * @param checkCacheFirst
      */
     public void setCheckCacheFirst(boolean checkCacheFirst){
         this.checkCacheFirst = checkCacheFirst;
@@ -430,11 +430,11 @@ public class DoesExistQuery extends DatabaseQuery {
     public boolean getCheckCacheFirst(){
         return this.checkCacheFirst;
     }
-    
+
     /**
      * INTERNAL:
-     * Sets checkDatabaseIfInvalid flag.  If true, query will go to the 
-     * database when it finds the object in the cache and it is invalid.  
+     * Sets checkDatabaseIfInvalid flag.  If true, query will go to the
+     * database when it finds the object in the cache and it is invalid.
      * This is only valid when it checks the cache, and is true by default
      * @param checkCacheFirst
      */

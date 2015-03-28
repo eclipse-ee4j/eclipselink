@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,66 +28,66 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 
 public class ReadOnlyListValueModelTests extends TestCase {
-	private ListValueModel listHolder;
-	private static List list;
+    private ListValueModel listHolder;
+    private static List list;
 
-	public static Test suite() {
-		return new TestSuite(ReadOnlyListValueModelTests.class);
-	}
-	
-	public ReadOnlyListValueModelTests(String name) {
-		super(name);
-	}
+    public static Test suite() {
+        return new TestSuite(ReadOnlyListValueModelTests.class);
+    }
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.listHolder = this.buildListHolder();
-	}
+    public ReadOnlyListValueModelTests(String name) {
+        super(name);
+    }
 
-	private ListValueModel buildListHolder() {
-		return new AbstractReadOnlyListValueModel() {
-			public Object getValue() {
-				return ReadOnlyListValueModelTests.list();
-			}
-		};
-	}
+    protected void setUp() throws Exception {
+        super.setUp();
+        this.listHolder = this.buildListHolder();
+    }
 
-	static ListIterator list() {
-		return getList().listIterator();
-	}
+    private ListValueModel buildListHolder() {
+        return new AbstractReadOnlyListValueModel() {
+            public Object getValue() {
+                return ReadOnlyListValueModelTests.list();
+            }
+        };
+    }
 
-	private static List getList() {
-		if (list == null) {
-			list = buildList();
-		}
-		return list;
-	}
+    static ListIterator list() {
+        return getList().listIterator();
+    }
 
-	private static List buildList() {
-		List result = new ArrayList();
-		result.add("foo");
-		result.add("bar");
-		return result;
-	}
+    private static List getList() {
+        if (list == null) {
+            list = buildList();
+        }
+        return list;
+    }
 
-	protected void tearDown() throws Exception {
-		TestTools.clear(this);
-		super.tearDown();
-	}
+    private static List buildList() {
+        List result = new ArrayList();
+        result.add("foo");
+        result.add("bar");
+        return result;
+    }
 
-	public void testGetItem() {
-		List expected = buildList();
-		for (int i = 0; i < this.listHolder.size(); i++) {
-			assertEquals(expected.get(i), this.listHolder.getItem(i));
-		}
-	}
+    protected void tearDown() throws Exception {
+        TestTools.clear(this);
+        super.tearDown();
+    }
 
-	public void testGetValue() {
-		assertEquals(buildList(), CollectionTools.list((Iterator) this.listHolder.getValue()));
-	}
+    public void testGetItem() {
+        List expected = buildList();
+        for (int i = 0; i < this.listHolder.size(); i++) {
+            assertEquals(expected.get(i), this.listHolder.getItem(i));
+        }
+    }
 
-	public void testSize() {
-		assertEquals(buildList().size(), this.listHolder.size());
-	}
+    public void testGetValue() {
+        assertEquals(buildList(), CollectionTools.list((Iterator) this.listHolder.getValue()));
+    }
+
+    public void testSize() {
+        assertEquals(buildList().size(), this.listHolder.size());
+    }
 
 }

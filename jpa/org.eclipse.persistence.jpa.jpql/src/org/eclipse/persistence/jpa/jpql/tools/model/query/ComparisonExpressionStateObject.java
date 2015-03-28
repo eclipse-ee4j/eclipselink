@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,151 +60,151 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 @SuppressWarnings("nls")
 public class ComparisonExpressionStateObject extends CompoundExpressionStateObject {
 
-	/**
-	 * The comparison identifier, which is either {@literal <, <=, =, >=, <>}.
-	 */
-	private String identifier;
+    /**
+     * The comparison identifier, which is either {@literal <, <=, =, >=, <>}.
+     */
+    private String identifier;
 
-	/**
-	 * Notifies the identifier property has changed.
-	 */
-	public static final String IDENTIFIER_PROPERTY = "identifier";
+    /**
+     * Notifies the identifier property has changed.
+     */
+    public static final String IDENTIFIER_PROPERTY = "identifier";
 
-	/**
-	 * Creates a new <code>ComparisonExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param leftStateObject The {@link StateObject} representing the left expression
-	 * @param identifier The comparison identifier, either {@literal <, <=, =, >=, <>}
-	 * @param rightStateObject The {@link StateObject} representing the right expression
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public ComparisonExpressionStateObject(StateObject parent,
-	                                       StateObject leftStateObject,
-	                                       String identifier,
-	                                       StateObject rightStateObject) {
+    /**
+     * Creates a new <code>ComparisonExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param leftStateObject The {@link StateObject} representing the left expression
+     * @param identifier The comparison identifier, either {@literal <, <=, =, >=, <>}
+     * @param rightStateObject The {@link StateObject} representing the right expression
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public ComparisonExpressionStateObject(StateObject parent,
+                                           StateObject leftStateObject,
+                                           String identifier,
+                                           StateObject rightStateObject) {
 
-		super(parent, leftStateObject, rightStateObject);
-		validateIdentifier(identifier);
-		this.identifier = identifier;
-	}
+        super(parent, leftStateObject, rightStateObject);
+        validateIdentifier(identifier);
+        this.identifier = identifier;
+    }
 
-	/**
-	 * Creates a new <code>ComparisonExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param identifier The comparison identifier, either {@literal <, <=, =, >=, <>}
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public ComparisonExpressionStateObject(StateObject parent, String identifier) {
-		super(parent);
-		validateIdentifier(identifier);
-		this.identifier = identifier;
-	}
+    /**
+     * Creates a new <code>ComparisonExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param identifier The comparison identifier, either {@literal <, <=, =, >=, <>}
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public ComparisonExpressionStateObject(StateObject parent, String identifier) {
+        super(parent);
+        validateIdentifier(identifier);
+        this.identifier = identifier;
+    }
 
-	/**
-	 * Creates a new <code>ComparisonExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param leftJpqlFragment The string representation of the left expression to parse and to
-	 * convert into a {@link StateObject}
-	 * @param identifier The comparison identifier, either {@literal <, <=, =, >=, <>}
-	 * @param rightJpqlFragment The string representation of the right expression to parse and to
-	 * convert into a {@link StateObject}
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public ComparisonExpressionStateObject(StateObject parent,
-	                                       String leftJpqlFragment,
-	                                       String identifier,
-	                                       String rightJpqlFragment) {
+    /**
+     * Creates a new <code>ComparisonExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param leftJpqlFragment The string representation of the left expression to parse and to
+     * convert into a {@link StateObject}
+     * @param identifier The comparison identifier, either {@literal <, <=, =, >=, <>}
+     * @param rightJpqlFragment The string representation of the right expression to parse and to
+     * convert into a {@link StateObject}
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public ComparisonExpressionStateObject(StateObject parent,
+                                           String leftJpqlFragment,
+                                           String identifier,
+                                           String rightJpqlFragment) {
 
-		super(parent, leftJpqlFragment, rightJpqlFragment);
-		validateIdentifier(identifier);
-		this.identifier = identifier;
-	}
+        super(parent, leftJpqlFragment, rightJpqlFragment);
+        validateIdentifier(identifier);
+        this.identifier = identifier;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ComparisonExpression getExpression() {
-		return (ComparisonExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ComparisonExpression getExpression() {
+        return (ComparisonExpression) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getIdentifier() {
-		return identifier;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdentifier() {
+        return identifier;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getLeftQueryBNFId() {
-		return ComparisonExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getLeftQueryBNFId() {
+        return ComparisonExpressionBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getRightQueryBNFId() {
-		return ComparisonExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getRightQueryBNFId() {
+        return ComparisonExpressionBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isEquivalent(StateObject stateObject) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEquivalent(StateObject stateObject) {
 
-		if (super.isEquivalent(stateObject)) {
-			ComparisonExpressionStateObject comparison = (ComparisonExpressionStateObject) stateObject;
-			return identifier == comparison.identifier;
-		}
+        if (super.isEquivalent(stateObject)) {
+            ComparisonExpressionStateObject comparison = (ComparisonExpressionStateObject) stateObject;
+            return identifier == comparison.identifier;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Keeps a reference of the {@link ComparisonExpression parsed object} object, which should only
-	 * be done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link ComparisonExpression parsed object} representing a comparison
-	 * expression
-	 */
-	public void setExpression(ComparisonExpression expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link ComparisonExpression parsed object} object, which should only
+     * be done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link ComparisonExpression parsed object} representing a comparison
+     * expression
+     */
+    public void setExpression(ComparisonExpression expression) {
+        super.setExpression(expression);
+    }
 
-	/**
-	 * Sets the comparison identifier to one of the following: {@literal <, <=, =, >=, <>}.
-	 *
-	 * @param identifier The new comparison identifier, either {@literal <, <=, =, >=, <>}
-	 */
-	public void setIdentifier(String identifier) {
-		validateIdentifier(identifier);
-		String oldIdentifier = this.identifier;
-		this.identifier = identifier;
-		firePropertyChanged(IDENTIFIER_PROPERTY, oldIdentifier, identifier);
-	}
+    /**
+     * Sets the comparison identifier to one of the following: {@literal <, <=, =, >=, <>}.
+     *
+     * @param identifier The new comparison identifier, either {@literal <, <=, =, >=, <>}
+     */
+    public void setIdentifier(String identifier) {
+        validateIdentifier(identifier);
+        String oldIdentifier = this.identifier;
+        this.identifier = identifier;
+        firePropertyChanged(IDENTIFIER_PROPERTY, oldIdentifier, identifier);
+    }
 
-	protected void validateIdentifier(String identifier) {
-		Assert.isValid(
-			identifier,
-			"The comparison identifier must be either <, <=, =, >=, <>.",
-			LOWER_THAN, LOWER_THAN_OR_EQUAL, EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, DIFFERENT
-		);
-	}
+    protected void validateIdentifier(String identifier) {
+        Assert.isValid(
+            identifier,
+            "The comparison identifier must be either <, <=, =, >=, <>.",
+            LOWER_THAN, LOWER_THAN_OR_EQUAL, EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, DIFFERENT
+        );
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Matt MacIvor -  January, 2010
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
 import java.io.InputStream;
@@ -26,44 +26,44 @@ import org.w3c.dom.Document;
 public class RootLevelByteArrayTestCases extends TypeMappingInfoWithJSONTestCases {
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/byteArrayMtom.xml";
     protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/byteArrayMtom.json";
-    
+
     protected MyAttachmentMarshaller attachmentMarshaller;
 
     public RootLevelByteArrayTestCases(String name) throws Exception {
         super(name);
         init();
     }
-    
+
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setupParser();
-    
+
         setTypeMappingInfos(getTypeMappingInfos());
         this.attachmentMarshaller = new MyAttachmentMarshaller();
         jaxbUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
         jaxbMarshaller.setAttachmentMarshaller(this.attachmentMarshaller);
-        
+
         byte[] bytes = new byte[]{1, 2, 3, 4, 5, 6};
         MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
     }
-    
+
     protected TypeMappingInfo[] getTypeMappingInfos()throws Exception {
         if(typeMappingInfos == null) {
             typeMappingInfos = new TypeMappingInfo[1];
             TypeMappingInfo tpi = new TypeMappingInfo();
-            tpi.setXmlTagName(new QName("someUri","testTagname"));      
+            tpi.setXmlTagName(new QName("someUri","testTagname"));
             tpi.setElementScope(ElementScope.Global);
-                
-            tpi.setType(byte[].class);         
-            typeMappingInfos[0] = tpi;          
+
+            tpi.setType(byte[].class);
+            typeMappingInfos[0] = tpi;
         }
-        return typeMappingInfos;        
+        return typeMappingInfos;
     }
-        
+
     protected Object getControlObject() {
-        
-        byte[] data = new byte[] {1, 2, 3, 4, 5, 6};      
+
+        byte[] data = new byte[] {1, 2, 3, 4, 5, 6};
         QName qname = new QName("someUri", "testTagName");
         JAXBElement jaxbElement = new JAXBElement(qname, byte[].class, null);
         jaxbElement.setValue(data);
@@ -72,9 +72,9 @@ public class RootLevelByteArrayTestCases extends TypeMappingInfoWithJSONTestCase
     }
 
 
-    public Map<String, InputStream> getControlSchemaFiles(){                       
+    public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/byteArray.xsd");
-        
+
         Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
         controlSchema.put("someUri", instream);
         return controlSchema;
@@ -83,14 +83,14 @@ public class RootLevelByteArrayTestCases extends TypeMappingInfoWithJSONTestCase
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE;
     }
-    
+
     protected void comparePrimitiveArrays(Object controlValue, Object testValue){
         byte[] bytes1;
         byte[] bytes2;
         try {
             bytes1 = (byte[])controlValue;
             bytes2 = (byte[])testValue;
-            
+
             if(bytes1.length != bytes2.length) {
                 fail("control value doesn't match test value: " + controlValue + " - " + testValue);
             }
@@ -102,13 +102,13 @@ public class RootLevelByteArrayTestCases extends TypeMappingInfoWithJSONTestCase
         } catch(Exception ex) {
             fail("control value doesn't match test value: " + controlValue + " - " + testValue);
         }
-    }  
-    
+    }
+
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertNotNull(this.attachmentMarshaller.getLocalName());
-    }    
-    
-    
+    }
+
+
 
 }

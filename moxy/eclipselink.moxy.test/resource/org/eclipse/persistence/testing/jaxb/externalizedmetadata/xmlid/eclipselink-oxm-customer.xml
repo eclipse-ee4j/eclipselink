@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="US-ASCII"?>
 <xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
-	<java-types>
-		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlid.Customer">
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlid.Customer">
             <xml-root-element name="customer" />
             <java-attributes>
                 <xml-attribute java-attribute="id" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlid.MyID" xml-id="true"/>
             </java-attributes>
-		</java-type>
-	</java-types>
+        </java-type>
+    </java-types>
 </xml-bindings>

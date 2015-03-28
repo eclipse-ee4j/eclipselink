@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     July 22, 2009-2.0 Chris Delahunt 
- *       - TODO Bug#: Bug Description 
- ******************************************************************************/  
+ *     July 22, 2009-2.0 Chris Delahunt
+ *       - TODO Bug#: Bug Description
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.criteria;
 
 import java.util.ArrayList;
@@ -69,12 +69,12 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.*;
  * @see JUnitDomainObjectComparer
  * @see JUnitJPQLUnitTestSuite
  */
- 
+
 //This test suite demonstrates the bug 4616218, waiting for bug fix
 public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
-{ 
-  static JUnitDomainObjectComparer comparer; 
-  
+{
+  static JUnitDomainObjectComparer comparer;
+
   public JUnitCriteriaUnitTestSuite()
   {
       super();
@@ -84,23 +84,23 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
   {
       super(name);
   }
-  
+
   //This method is run at the end of EVERY test case method
   public void tearDown()
   {
       clearCache();
   }
-  
+
   //This suite contains all tests contained in this class
-  public static Test suite() 
+  public static Test suite()
   {
     TestSuite suite = new TestSuite();
     suite.setName("JUnitCriteriaUnitTestSuite");
     suite.addTest(new JUnitCriteriaUnitTestSuite("testSetup"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testExistWithJoin"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectPhoneNumberAreaCode"));
-    suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectPhoneNumberAreaCodeWithEmployee"));   
-    suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectPhoneNumberNumberWithEmployeeWithExplicitJoin"));   
+    suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectPhoneNumberAreaCodeWithEmployee"));
+    suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectPhoneNumberNumberWithEmployeeWithExplicitJoin"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectPhoneNumberNumberWithEmployeeWithFirstNameFirst"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testSelectEmployeeWithSameParameterUsedMultipleTimes"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testOuterJoinOnOneToOne"));
@@ -116,10 +116,10 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
     suite.addTest(new JUnitCriteriaUnitTestSuite("testNonExistentConstructorCriteriaQuery"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testIsNullAndIsNotNull"));
     suite.addTest(new JUnitCriteriaUnitTestSuite("testIsNullOrIsNull"));
-    
+
     return suite;
   }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -127,29 +127,29 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         clearCache();
         //get session to start setup
         DatabaseSession session = JUnitTestCase.getServerSession();
-        
+
         //create a new EmployeePopulator
         EmployeePopulator employeePopulator = new EmployeePopulator();
-        
+
         new AdvancedTableCreator().replaceTables(session);
-        
+
         //initialize the global comparer object
         comparer = new JUnitDomainObjectComparer();
-        
+
         //set the session for the comparer to use
-        comparer.setSession((AbstractSession)session.getActiveSession());              
-        
+        comparer.setSession((AbstractSession)session.getActiveSession());
+
         //Populate the tables
         employeePopulator.buildExamples();
-        
+
         //Persist the examples in the database
         employeePopulator.persistExample(session);
     }
-    
-    public Vector getAttributeFromAll(String attributeName, Vector objects, Class referenceClass) {            
+
+    public Vector getAttributeFromAll(String attributeName, Vector objects, Class referenceClass) {
         ClassDescriptor descriptor = getServerSession().getClassDescriptor(referenceClass);
         DirectToFieldMapping mapping = (DirectToFieldMapping)descriptor.getMappingForAttributeName(attributeName);
-        
+
         Vector attributes = new Vector();
         Object currentObject;
         for(int i = 0; i < objects.size(); i++) {
@@ -170,18 +170,18 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         beginTransaction(em);
         try{
             clearCache();
-	
+
             //SELECT OBJECT(employee) FROM Employee employee WHERE employee.firstName = :firstname
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root from = cq.from(Employee.class);
             cq.where(qb.equal(from.get("firstName"), qb.parameter(String.class, "firstname")));
             Query query = em.createQuery(cq);
-	    
+
             List initialList = query.setParameter("firstname", "Nancy").setFirstResult(0).getResultList();
-	    
+
             List secondList = query.setParameter("firstname", "Nancy").setFirstResult(1).getResultList();
-	
+
             Iterator i = initialList.iterator();
             while (i.hasNext()){
                 assertTrue("Employee with incorrect name returned on first query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
@@ -204,10 +204,10 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         //"SELECT e from Employee e JOIN e.address a"
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        cq.from(Employee.class).join("address");        
+        cq.from(Employee.class).join("address");
         cq.distinct(true);
         int initialSize = em.createQuery(cq).getResultList().size();
-        
+
         Employee emp = new Employee();
         emp.setFirstName("Steve");
         emp.setLastName("Harp");
@@ -216,12 +216,12 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         //"SELECT e from Employee e LEFT OUTER JOIN e.address a"
         qb = em.getCriteriaBuilder();
         cq = qb.createQuery(Employee.class);
-        cq.from(Employee.class).join("address", JoinType.LEFT);  
+        cq.from(Employee.class).join("address", JoinType.LEFT);
         cq.distinct(true);
-        
+
         List result = em.createQuery(cq).getResultList();
-        
-        
+
+
         assertTrue("Outer join was not properly added to the query", initialSize + 1 == result.size());
         rollbackTransaction(em);
     }
@@ -235,7 +235,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             try{
                 resultList = em.createQuery(em.getCriteriaBuilder().createQuery(Project.class)).getResultList();
             } catch (Exception exception){
-                fail("Exception caught while executing polymorphic query.  This may mean that outer join is not working correctly on your database platfrom: " + exception.toString());            
+                fail("Exception caught while executing polymorphic query.  This may mean that outer join is not working correctly on your database platfrom: " + exception.toString());
             }
             assertTrue("Incorrect number of projects returned.", resultList.size() == 15);
         } finally {
@@ -247,23 +247,23 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
   //This test case demonstrates the bug 4616218
   public void testSelectPhoneNumberAreaCode()
   {
-        
+
         ExpressionBuilder employeeBuilder = new ExpressionBuilder();
         Expression phones = employeeBuilder.anyOf("phoneNumbers");
         Expression whereClause = phones.get("areaCode").equal("613");
-            
+
         ReportQuery rq = new ReportQuery();
         rq.setSelectionCriteria(whereClause);
         rq.addAttribute("areaCode", new ExpressionBuilder().anyOf("phoneNumbers").get("areaCode"));
-        rq.setReferenceClass(Employee.class);    
+        rq.setReferenceClass(Employee.class);
         rq.dontUseDistinct(); // distinct no longer used on joins in JPQL for gf bug 1395
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             Vector expectedResult = getAttributeFromAll("areaCode", (Vector)getServerSession().executeQuery(rq),Employee.class);
             clearCache();
-        
-           //List result = em.createQuery("SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
+
+           //List result = em.createQuery("SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " +
            //    "WHERE phone.areaCode = \"613\"").getResultList();
            CriteriaBuilder qb = em.getCriteriaBuilder();
            CriteriaQuery<String> cq = qb.createQuery(String.class);
@@ -272,18 +272,18 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
            cq.select(phone.get("areaCode"));
            cq.where(qb.equal(phone.get("areaCode"), "613"));
            List result = em.createQuery(cq).getResultList();
-      
-           Assert.assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));  
+
+           Assert.assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
   }
-  
+
   public void testExistWithJoin()
   {
       EntityManager em = createEntityManager();
-      
+
       List expected = em.createQuery("SELECT c FROM Employee c WHERE NOT EXISTS (SELECT o1 FROM c.phoneNumbers o1)").getResultList();
       beginTransaction(em);
       try {
@@ -291,7 +291,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
           CriteriaQuery<Employee> cquery =qbuilder.createQuery(Employee.class);
            Root<Employee> customer = cquery.from(Employee.class);
            cquery.select(customer);
-           
+
            Subquery<PhoneNumber> sq = cquery.subquery(PhoneNumber.class);
            // correlate subquery root to root of main query:
            Root<Employee> sqc = sq.correlate(customer);
@@ -304,12 +304,12 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
           rollbackTransaction(em);
           closeEntityManager(em);
       }
-        
-      
+
+
 
   }
 
-  
+
     public void testSelectPhoneNumberAreaCodeWithEmployee()
     {
         EntityManager em = createEntityManager();
@@ -319,28 +319,28 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             Expression exp = employees.get("firstName").equal("Bob");
             exp = exp.and(employees.get("lastName").equal("Smith"));
             Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
-    
+
             PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
             String areaCode = phone.getAreaCode();
             String firstName = emp.getFirstName();
-   
+
             ExpressionBuilder employeeBuilder = new ExpressionBuilder();
             Expression phones = employeeBuilder.anyOf("phoneNumbers");
             Expression whereClause = phones.get("areaCode").equal(areaCode).and(
             phones.get("owner").get("firstName").equal(firstName));
-            
+
             ReportQuery rq = new ReportQuery();
             rq.setSelectionCriteria(whereClause);
             rq.addAttribute("areaCode", phones.get("areaCode"));
             rq.setReferenceClass(Employee.class);
             rq.dontMaintainCache();
-        
-            Vector expectedResult = getAttributeFromAll("areaCode", (Vector)getServerSession().executeQuery(rq),Employee.class);       
-        
+
+            Vector expectedResult = getAttributeFromAll("areaCode", (Vector)getServerSession().executeQuery(rq),Employee.class);
+
             clearCache();
-    
-            //"SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " + 
-            //    "WHERE phone.areaCode = \"" + areaCode + "\" AND phone.owner.firstName = \"" + firstName + "\"";    
+
+            //"SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " +
+            //    "WHERE phone.areaCode = \"" + areaCode + "\" AND phone.owner.firstName = \"" + firstName + "\"";
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
             Root<Employee> root = cq.from(Employee.class);
@@ -348,14 +348,14 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             cq.select(joinedPhone.get("areaCode"));
             cq.where(qb.and(qb.equal(joinedPhone.get("areaCode"), "613")), qb.equal(joinedPhone.get("owner").get("firstName"), firstName));
             List result = em.createQuery(cq).getResultList();
-         
+
             Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        }       
+        }
     }
-    
+
     public void testSelectPhoneNumberNumberWithEmployeeWithExplicitJoin()
     {
         EntityManager em = createEntityManager();
@@ -365,28 +365,28 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             Expression exp = employees.get("firstName").equal("Bob");
             exp = exp.and(employees.get("lastName").equal("Smith"));
             Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
-    
+
             PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
             String areaCode = phone.getAreaCode();
             String firstName = emp.getFirstName();
-        
+
             ExpressionBuilder employeeBuilder = new ExpressionBuilder(Employee.class);
             Expression phones = employeeBuilder.anyOf("phoneNumbers");
             Expression whereClause = phones.get("areaCode").equal(areaCode).and(
                 phones.get("owner").get("id").equal(employeeBuilder.get("id")).and(
                     employeeBuilder.get("firstName").equal(firstName)));
 
-        
+
             ReportQuery rq = new ReportQuery();
             rq.addAttribute("number", new ExpressionBuilder().anyOf("phoneNumbers").get("number"));
             rq.setSelectionCriteria(whereClause);
             rq.setReferenceClass(Employee.class);
-        
+
             Vector expectedResult = getAttributeFromAll("number", (Vector)getServerSession().executeQuery(rq),Employee.class);
-        
-            clearCache();        
-    
-            //"SELECT phone.number FROM Employee employee, IN (employee.phoneNumbers) phone " + 
+
+            clearCache();
+
+            //"SELECT phone.number FROM Employee employee, IN (employee.phoneNumbers) phone " +
             //    "WHERE phone.areaCode = \"" + areaCode + "\" AND (phone.owner.id = employee.id AND employee.firstName = \"" + firstName + "\")";
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
@@ -402,9 +402,9 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        } 
+        }
     }
-    
+
     public void testSelectPhoneNumberNumberWithEmployeeWithFirstNameFirst()
     {
         EntityManager em = createEntityManager();
@@ -414,26 +414,26 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             Expression exp = employees.get("firstName").equal("Bob");
             exp = exp.and(employees.get("lastName").equal("Smith"));
             Employee emp = (Employee) getServerSession().readAllObjects(Employee.class, exp).firstElement();
-    
+
             PhoneNumber phone = (PhoneNumber) ((Vector)emp.getPhoneNumbers()).firstElement();
             String areaCode = phone.getAreaCode();
             String firstName = emp.getFirstName();
-        
+
             ExpressionBuilder employeeBuilder = new ExpressionBuilder();
             Expression phones = employeeBuilder.anyOf("phoneNumbers");
             Expression whereClause = phones.get("owner").get("firstName").equal(firstName).and(
                 phones.get("areaCode").equal(areaCode));
-        
+
             ReportQuery rq = new ReportQuery();
             rq.setSelectionCriteria(whereClause);
             rq.addAttribute("number", phones.get("number"));
             rq.setReferenceClass(Employee.class);
-        
-            Vector expectedResult = getAttributeFromAll("number", (Vector)getServerSession().executeQuery(rq),Employee.class);    
-        
+
+            Vector expectedResult = getAttributeFromAll("number", (Vector)getServerSession().executeQuery(rq),Employee.class);
+
             clearCache();
-        
-            //"SELECT phone.number FROM Employee employee, IN(employee.phoneNumbers) phone " + 
+
+            //"SELECT phone.number FROM Employee employee, IN(employee.phoneNumbers) phone " +
             //    "WHERE phone.owner.firstName = \"" + firstName + "\" AND phone.areaCode = \"" + areaCode + "\"";
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
@@ -444,7 +444,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             Predicate areaCodeEquality =qb.equal(joinedPhone.get("areaCode"), areaCode);
             cq.where( qb.and(firstNameEquality, areaCodeEquality) );
             List result = em.createQuery(cq).getResultList();
-        
+
             Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
         } finally {
             rollbackTransaction(em);
@@ -454,7 +454,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
 
     public void testSelectEmployeeWithSameParameterUsedMultipleTimes() {
         Exception exception = null;
-        
+
         try {
             EntityManager em = createEntityManager();
             beginTransaction(em);
@@ -475,10 +475,10 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         } catch (Exception e) {
             exception = e;
         }
-        
+
         Assert.assertNull("Exception was caught.", exception);
     }
-    
+
     /**
      * Prior to the fix for GF 2333, the query in this test would a Null PK exception
      *
@@ -494,14 +494,14 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             Root<PhoneNumber> rootPhone = cq.from(PhoneNumber.class);
             cq.multiselect(rootEmp, rootPhone);
             cq.where(qb.and( qb.equal(rootPhone.get("id"), rootEmp.get("id")), qb.equal(rootEmp.get("firstName"), "Bob")) );
-        
+
             em.createQuery(cq).getResultList();
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Tests fix for bug6070214 that using Oracle Rownum pagination with non-unique columns
      * throws an SQl exception.
@@ -519,7 +519,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             Root<Employee> rootEmp = cq.from(Employee.class);
             Join joinedManager = rootEmp.join("manager", JoinType.LEFT);
             cq.multiselect(rootEmp.get("id"), joinedManager.get("id"));
-        
+
             Query query = em.createQuery(cq);
             try {
                 query.setFirstResult(1);
@@ -536,7 +536,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Tests fix for bug6070214 that using Oracle Rownum pagination with group by
      * throws an SQl exception.
@@ -554,7 +554,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             Root<Employee> rootEmp = cq.from(Employee.class);
             Join joinedManager = rootEmp.join("manager", JoinType.LEFT);
             cq.select(rootEmp.get("id"));
-        
+
             Query query = em.createQuery(cq);
             try {
                 query.setFirstResult(1);
@@ -571,7 +571,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Tests fix for bug 253258 that using filtering using MaxResults/FirstResult returns
      * the correct number of results on an inheritance root class.
@@ -586,7 +586,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             //"SELECT p FROM Project p"
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Project> cq = qb.createQuery(Project.class);
-        
+
             Query query = em.createQuery(cq);
             try {
                 query.setFirstResult(6);
@@ -603,7 +603,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Prior to the fix for GF 2333, the query in this test would generate an invalid query key exception
      *
@@ -621,20 +621,20 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
                 Root<Address> rootAddress = cq.from(Address.class);
                 cq.multiselect(rootEmp, rootAddress);
                 cq.where(qb.and( qb.equal(rootAddress.get("city"), "Ottawa"), qb.equal(rootEmp.get("address").get("country"), rootAddress.get("country"))));
-            
+
                 List resultList =  em.createQuery(cq).getResultList();
             } finally {
                 rollbackTransaction(em);
                 closeEntityManager(em);
-            }	
+            }
         } catch (Exception e) {
             logThrowable(e);
             exception = e;
         }
-        
+
         Assert.assertNull("Exception was caught.", exception);
     }
-    
+
     /*
      * For GF3233, Distinct process fail with NPE when relationship has NULL-valued target.
      */
@@ -653,13 +653,13 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             Root<Employee> rootEmp = cq.from(Employee.class);
             cq.select(rootEmp.get("address"));
             cq.distinct(true);
-          
+
             List resultList =  em.createQuery(cq).getResultList();
         }finally{
             rollbackTransaction(em);
         }
     }
-    
+
     /*
      * For 297385, Constructor expressions are not working with function arguments.
      */
@@ -687,7 +687,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             rollbackTransaction(em);
         }
     }
-    
+
     public void testNonExistentConstructorCriteriaQuery(){
         Exception expectedException = null;
         EntityManager em = createEntityManager();
@@ -696,7 +696,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         CriteriaQuery<?> cq = qb.createQuery(DataHolder.class);
         Root<Employee> from = cq.from(Employee.class);
         EntityType<Employee> Emp_ = em.getMetamodel().entity(Employee.class);
-            //IllegalArgumentException expected from multiselect since DataHolder(String) does not exist 
+            //IllegalArgumentException expected from multiselect since DataHolder(String) does not exist
         try{
             cq.multiselect( from.get(Emp_.getSingularAttribute("lastName", String.class)));
             Query query = em.createQuery(cq);
@@ -705,7 +705,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         }
         this.assertNotNull("Expected IllegalArgumentException not thrown when using a non-existing constructor", expectedException);
     }
-    
+
     public void testIsNullAndIsNotNull(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -720,9 +720,9 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         CriteriaQuery<?> cq = qb.createQuery(Employee.class);
         Root<Employee> from = cq.from(Employee.class);
         EntityType<Employee> Emp_ = em.getMetamodel().entity(Employee.class);
-        
+
         List<Predicate> criteriaList = new ArrayList<Predicate>();
-        criteriaList.add(qb.isNotNull(from.get(Emp_.getSingularAttribute("lastName", String.class)))); 
+        criteriaList.add(qb.isNotNull(from.get(Emp_.getSingularAttribute("lastName", String.class))));
         criteriaList.add(qb.isNull(from.get(Emp_.getSingularAttribute("firstName", String.class))));
         Predicate criteria = qb.and(criteriaList.toArray(new Predicate[0]));
         cq.where(criteria);
@@ -736,7 +736,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         rollbackTransaction(em);
         }
     }
-    
+
     public void testIsNullOrIsNull(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -749,9 +749,9 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         CriteriaQuery<?> cq = qb.createQuery(Employee.class);
         Root<Employee> from = cq.from(Employee.class);
         EntityType<Employee> Emp_ = em.getMetamodel().entity(Employee.class);
-        
+
         List<Predicate> criteriaList = new ArrayList<Predicate>();
-        criteriaList.add(qb.isNull(from.get(Emp_.getSingularAttribute("lastName", String.class)))); 
+        criteriaList.add(qb.isNull(from.get(Emp_.getSingularAttribute("lastName", String.class))));
         criteriaList.add(qb.isNull(from.get(Emp_.getSingularAttribute("firstName", String.class))));
         Predicate criteria = qb.or(criteriaList.toArray(new Predicate[0]));
         cq.where(criteria);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,55 +25,55 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 @SuppressWarnings("nls")
 public final class JPQLQueriesTest2_1 extends JPQLParserTest {
 
-	@Test
-	public void test_Query_001() throws Exception {
+    @Test
+    public void test_Query_001() throws Exception {
 
-		// Select e
-		// From Employee e Join TREAT(e.projects AS LargeProject) lp
-		// Where lp.budget = :value
+        // Select e
+        // From Employee e Join TREAT(e.projects AS LargeProject) lp
+        // Where lp.budget = :value
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e", joinTreatAs("e.projects", "LargeProject", "lp")),
-			where(path("lp.budget").equal(inputParameter(":value")))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e", joinTreatAs("e.projects", "LargeProject", "lp")),
+            where(path("lp.budget").equal(inputParameter(":value")))
+        );
 
-		testQuery(query_001(), selectStatement);
-	}
+        testQuery(query_001(), selectStatement);
+    }
 
-	@Test
-	public void test_Query_002() throws Exception {
+    @Test
+    public void test_Query_002() throws Exception {
 
-		// Select e
-		// From Employee e Join TREAT(e.projects LargeProject) lp
+        // Select e
+        // From Employee e Join TREAT(e.projects LargeProject) lp
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e", joinTreat("e.projects", "LargeProject", "lp"))
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(variable("e")),
+            from("Employee", "e", joinTreat("e.projects", "LargeProject", "lp"))
+        );
 
-		testQuery(query_002(), selectStatement);
-	}
+        testQuery(query_002(), selectStatement);
+    }
 
-	@Test
-	public void test_Query_003() throws Exception {
+    @Test
+    public void test_Query_003() throws Exception {
 
-		// SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate
+        // SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate
       // FROM Product p
 
-		ExpressionTester selectStatement = selectStatement(
-			select(
-				path(
-					treatAs(
-						path(treat("p.project", "LargeProject"), "parent"),
-						entity("LargeProject")
-					),
-					"endDate"
-				)
-			),
-			from("Product", "p")
-		);
+        ExpressionTester selectStatement = selectStatement(
+            select(
+                path(
+                    treatAs(
+                        path(treat("p.project", "LargeProject"), "parent"),
+                        entity("LargeProject")
+                    ),
+                    "endDate"
+                )
+            ),
+            from("Product", "p")
+        );
 
-		testQuery(query_003(), selectStatement);
-	}
+        testQuery(query_003(), selectStatement);
+    }
 }

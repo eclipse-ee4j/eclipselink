@@ -15,13 +15,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "ADV_ENTYA")
 public class EntyA{
-    
+
     @Id
     @GeneratedValue
     protected int id;
-    
+
     protected String name;
-    
+
     @OneToOne(cascade=PERSIST)
     protected EntyB entyB;
 

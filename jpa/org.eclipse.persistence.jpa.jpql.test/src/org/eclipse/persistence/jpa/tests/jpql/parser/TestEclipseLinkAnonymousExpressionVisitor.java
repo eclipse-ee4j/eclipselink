@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,11 +25,11 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVis
  */
 final class TestEclipseLinkAnonymousExpressionVisitor extends EclipseLinkAnonymousExpressionVisitor {
 
-	private TestEclipseLinkAnonymousExpressionVisitor() {
-		super();
-	}
+    private TestEclipseLinkAnonymousExpressionVisitor() {
+        super();
+    }
 
-	/**
-	 * IMPORTANT: NO METHODS TO IMPLEMENT. SHOULD ALL BE IMPLEMENTED BY EclipseLinkAnonymousExpressionVisitor.
-	 */
+    /**
+     * IMPORTANT: NO METHODS TO IMPLEMENT. SHOULD ALL BE IMPLEMENTED BY EclipseLinkAnonymousExpressionVisitor.
+     */
 }

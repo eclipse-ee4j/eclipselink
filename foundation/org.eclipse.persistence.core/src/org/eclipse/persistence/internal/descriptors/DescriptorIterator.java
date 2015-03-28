@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
 
 import java.util.*;
@@ -49,7 +49,7 @@ public abstract class DescriptorIterator {
     protected AttributeGroup currentGroup;
     protected boolean usesGroup;
     /* Ignored if usesGroup is false.
-     * If set to true allows visiting the same object several times - 
+     * If set to true allows visiting the same object several times -
      * as long as it hasn't been visited with the currentGroup.
      */
     protected boolean shouldTrackCurrentGroup;
@@ -219,7 +219,7 @@ public abstract class DescriptorIterator {
         setCurrentMapping(mapping);
         // aggregate descriptors are passed in because they could be part of an inheritance tree
         setCurrentDescriptor(descriptor);
-        
+
         AttributeGroup currentGroupOriginal = null;
         AttributeItem currentItemOriginal = null;
         if(this.usesGroup) {
@@ -289,7 +289,7 @@ public abstract class DescriptorIterator {
             }
 
             internalIteratePrimitive(primitiveValue);
-            
+
             if(this.usesGroup) {
                 this.currentGroup = currentGroupOriginal;
                 this.currentItem = currentItemOriginal;
@@ -337,7 +337,7 @@ public abstract class DescriptorIterator {
             if (getVisitedObjects().containsKey(referenceObject)) {
                 return;
             }
-    
+
             getVisitedObjects().put(referenceObject, referenceObject);
         }
         setCurrentMapping(mapping);
@@ -378,8 +378,8 @@ public abstract class DescriptorIterator {
             if(this.currentGroup == null || !this.currentGroup.hasItems()) {
                 return;
             }
-        }            
-        
+        }
+
         getVisitedStack().push(sourceObject);
         internalIterateReferenceObjects(sourceObject);
         getVisitedStack().pop();
@@ -398,7 +398,7 @@ public abstract class DescriptorIterator {
             }
             mappings = builder.getRelationshipMappings();
         }
-        
+
         if (shouldIterateOnFetchGroupAttributesOnly()) {
             if(getCurrentDescriptor().hasFetchGroupManager()) {
                 FetchGroup fetchGroup = getCurrentDescriptor().getFetchGroupManager().getObjectFetchGroup(sourceObject);
@@ -413,7 +413,7 @@ public abstract class DescriptorIterator {
                 }
             }
         }
-        
+
         if (this.usesGroup) {
             AttributeGroup currentGroupOriginal = this.currentGroup;
             AttributeItem currentItemOriginal = this.currentItem;
@@ -453,7 +453,7 @@ public abstract class DescriptorIterator {
     public void setCascadeDepth(int cascadeDepth) {
         this.cascadeDepth = cascadeDepth;
     }
-    
+
     public void setCascadeCondition(CascadeCondition cascadeCondition){
         this.cascadeCondition = cascadeCondition;
     }
@@ -496,12 +496,12 @@ public abstract class DescriptorIterator {
     }
 
     /**
-     * Set whether the attributes outside fetch group should be processed. 
+     * Set whether the attributes outside fetch group should be processed.
      */
     public void setShouldIterateOnFetchGroupAttributesOnly(boolean shouldIterateOnFetchGroupAttributesOnly) {
         this.shouldIterateOnFetchGroupAttributesOnly = shouldIterateOnFetchGroupAttributesOnly;
     }
-    
+
     /**
      * Set whether the indirection objects themselves (e.g. the ValueHolders)
      * should be processed.
@@ -583,7 +583,7 @@ public abstract class DescriptorIterator {
     public boolean shouldIterateOnFetchGroupAttributesOnly() {
         return this.shouldIterateOnFetchGroupAttributesOnly;
     }
-    
+
     /**
      * Return whether the indirection objects themselves (e.g. the ValueHolders)
      * should be processed.
@@ -628,14 +628,14 @@ public abstract class DescriptorIterator {
     public boolean usesGroup() {
         return this.usesGroup;
     }
-    
+
     /**
      * This is the root method called to start the iteration.
      */
     public void startIterationOn(Object sourceObject) {
         startIterationOn(sourceObject, null);
     }
-    
+
     public void startIterationOn(Object sourceObject, AttributeGroup group) {
         this.usesGroup = group != null;
         if(this.usesGroup && this.shouldTrackCurrentGroup) {
@@ -670,7 +670,7 @@ public abstract class DescriptorIterator {
             iterateReferenceObjects(sourceObject);
         }
     }
-    
+
     public class CascadeCondition{
         public boolean shouldNotCascade(DatabaseMapping mapping){
             return !(shouldCascadeAllParts() || (shouldCascadePrivateParts() && mapping.isPrivateOwned()));

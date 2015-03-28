@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.workbenchintegration.ExpressionPersistence;
 
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -34,16 +34,16 @@ public class ExpressionPersistenceTest extends AutoVerifyTestCase {
     }
 
     public void setup() {
-        if ((queryName.startsWith("AddStandardDeviationReportQuery") || 
-             queryName.startsWith("AddVarianceReportQuery")) && 
+        if ((queryName.startsWith("AddStandardDeviationReportQuery") ||
+             queryName.startsWith("AddVarianceReportQuery")) &&
             (getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() || getSession().getPlatform().isSQLServer()) || getSession().getPlatform().isDB2() || getSession().getPlatform().isDerby() || getSession().getPlatform().isSymfoware()) {
             throw new TestWarningException("The test is not supported on this database.");
         }
     }
-    
+
     public void test() {
         getSession().executeQuery(basicQuery);
-        systemQuery = 
+        systemQuery =
                 (getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class)).getQueryManager().getQuery(queryName);
         getSession().executeQuery(systemQuery);
     }

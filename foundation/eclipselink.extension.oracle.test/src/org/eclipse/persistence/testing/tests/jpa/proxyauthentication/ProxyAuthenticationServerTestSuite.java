@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/28/2008-1.0M8 Andrei Ilitchev. 
+ *     05/28/2008-1.0M8 Andrei Ilitchev.
  *       - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.proxyauthentication;
 
 import java.sql.Connection;
@@ -113,7 +113,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     public ProxyAuthenticationServerTestSuite(String name){
         super(name);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("Proxy Authentication Test Suite");
@@ -134,7 +134,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     public void testSetup() {
         serverSession = getServerSession(PROXY_PU);
         shouldOverrideGetEntityManager = shouldOverrideGetEntityManager();
-        shouldCloseProxySessionOnRollback = shouldCloseProxySessionOnRollback();  
+        shouldCloseProxySessionOnRollback = shouldCloseProxySessionOnRollback();
         System.out.println("====the shouldOverrideGetEntityManager====" + shouldOverrideGetEntityManager);
         // currently only WLS 10.3.4 and later is known to fully support Oracle Proxy Authentication in both JTA and Non Jta cases.
         shouldRunPureJdbcTests = shouldRunPureJdbcTests();
@@ -156,14 +156,14 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             proxyEmp.setLastName("Pelletier");
             em.persist(proxyEmp);
             empId = proxyEmp.getId();
-            
+
             proxyPhone = new PhoneNumber();
             proxyPhone.setAreaCode("61x");
             proxyPhone.setNumber("823-6262");
             proxyPhone.setOwner(proxyEmp);
             proxyPhone.setId(empId);
             proxyPhone.setType("Home");
-            
+
             em.persist(proxyPhone);
             commitTransaction(em);
         } catch (Exception ex) {
@@ -264,13 +264,13 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             employee.setFirstName("Guy");
             employee.setLastName("Pelletier");
             em.persist(employee);
-            
+
             PhoneNumber homeNumber = new PhoneNumber();
             homeNumber.setAreaCode("61x");
             homeNumber.setNumber("823-6262");
             homeNumber.setOwner(employee);
             homeNumber.setType("Home");
-            
+
             em.persist(homeNumber);
             empId = employee.getId();
             commitTransaction(em);
@@ -429,7 +429,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         oracleConn.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
         System.out.println("====testJtaDataSource openProxySession ok");
         mngr.rollback();
-        
+
         mngr.begin();
         conn = jtaDs.getConnection();
         if(conn instanceof OracleConnection) {
@@ -454,7 +454,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             System.out.println("====testJtaDataSource end");
         }
     }
-    
+
     public void testNonJtaDataSource() throws Exception {
         if(!shouldRunPureJdbcTests) {
             System.out.println("Currently only WLS 10.3.4 and later is known to fully support Oracle Proxy Authentication in both JTA and Non Jta cases.");
@@ -481,7 +481,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         oracleConn.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
         System.out.println("====testJtaDataSource openProxySession ok");
         conn.close();
-        
+
         conn = nonJtaDs.getConnection();
         if(conn instanceof OracleConnection) {
             oracleConn = (OracleConnection)conn;
@@ -498,7 +498,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             System.out.println("====testJtaDataSource end");
         }
     }
-    
+
     /**
      * Setup Proxy properties settings to EntityManager through EntityManagerImpl
      */
@@ -506,7 +506,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         EntityManagerImpl empl = (EntityManagerImpl)em.getDelegate();
         empl.setProperties(createProperties());
     }
-    
+
     private Map createProperties(){
         Map newProps = new HashMap(3);
         newProps.put(PersistenceUnitProperties.ORACLE_PROXY_TYPE, OracleConnection.PROXYTYPE_USER_NAME);
@@ -514,7 +514,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         newProps.put(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
         return newProps;
     }
-    
+
     /*
      * Use it instead of beginTransaction to pass proxy properties.
      */
@@ -532,9 +532,9 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /*
-     * Use it instead of rollbackTransaction when beginTransaction_proxy was used 
+     * Use it instead of rollbackTransaction when beginTransaction_proxy was used
      */
     private void rollbackTransaction_proxy(EntityManager em) {
         if (shouldCloseProxySessionOnRollback) {
@@ -552,7 +552,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             fail("Object: " + readPhone + " does not match object that was written: " + writtenPhone + ". See log (on finest) for what did not match.");
         }
     }
-    
+
     /*
      * Use it instead of createEntityManager to pass proxy properties.
      */
@@ -560,7 +560,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         if(shouldOverrideGetEntityManager) {
             EntityManager em = getEntityManagerFactory(puName).createEntityManager(createProperties());
             return em;
-        } else { 
+        } else {
             return createEntityManager(puName);
         }
     }
@@ -573,9 +573,9 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             return false;
         }
     }
-    
+
     private boolean shouldCloseProxySessionOnRollback(){
-        // https://glassfish.dev.java.net/issues/show_bug.cgi?id=14753   Oracle proxy session problems  
+        // https://glassfish.dev.java.net/issues/show_bug.cgi?id=14753   Oracle proxy session problems
         if(serverSession.getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.glassfish.GlassfishPlatform") ||
            serverSession.getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.sunas.SunAS9ServerPlatform") ) {
             return true;
@@ -583,7 +583,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             return false;
         }
     }
-    
+
     private boolean shouldRunPureJdbcTests(){
         // currently only WLS 10.3.4 and later is known to fully support Oracle Proxy Authentication in both JTA and Non Jta cases.
         return WebLogicPlatform.class.isAssignableFrom(serverSession.getServerPlatform().getClass()) && Helper.compareVersions(getServerSession(PROXY_PU).getServerPlatform().getServerNameAndVersion(), "10.3.4") >= 0;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,16 +30,16 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  * <b>Description</b>: The predicate forms the least specific expression node.  Predicates
  * result in boolean expressions that are combined to form the final expression.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria Predicate
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
 public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> implements Predicate{
-    
+
     protected boolean isNegated = false;
-    
+
     public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
         super(metamodel, (Class<Boolean>)ClassConstants.BOOLEAN, expressionNode, compoundExpressions);
     }
@@ -51,7 +51,7 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     /**
      * Return the boolean operator for the predicate. If the predicate is
      * simple, this is AND.
-     * 
+     *
      * @return boolean operator for the predicate
      */
     public BooleanOperator getOperator(){
@@ -61,7 +61,7 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     @Override
     /**
      * Return the top-level conjuncts or disjuncts of the predicate.
-     * 
+     *
      * @return list boolean expressions forming the predicate
      */
     public List<Expression<Boolean>> getExpressions(){
@@ -71,24 +71,24 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     public boolean isCompoundExpression(){
         return true;
     }
-    
+
     @Override
     public boolean isExpression(){
         return false;
     }
-    
+
     /**
      * Has negation been applied to the predicate.
-     * 
+     *
      * @return boolean indicating if the predicate has been negated
      */
     public boolean isNegated(){
         return isNegated;
     }
-    
+
     /**
      * Apply negation to the predicate.
-     * 
+     *
      * @return the negated predicate
      */
     public Predicate not(){
@@ -98,19 +98,19 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
         expr.setIsNegated(true);
         return expr;
     }
-    
-    
+
+
     protected void setIsNegated(boolean isNegated){
         this.isNegated = isNegated;
     }
-    
+
     /**
      * @param operator the operator to set
      */
     public void setOperator(BooleanOperator operator) {
         //
     }
-    
+
     /**
      * This method is used to store what will be the parent EclipseLink expression in the case the tree needs to be altered.
      * Currently used for In.
@@ -118,5 +118,5 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     public void setParentNode(org.eclipse.persistence.expressions.Expression parentNode){
         //no-op but can not be abstract as CompoundExpressionImpl is not abstract
     }
-    
+
 }

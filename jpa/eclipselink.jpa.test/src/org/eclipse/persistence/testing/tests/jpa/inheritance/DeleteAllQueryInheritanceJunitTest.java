@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
 import java.util.Vector;
@@ -25,28 +25,28 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.*;
 import org.eclipse.persistence.testing.framework.DeleteAllQueryTestHelper;
- 
+
 public class DeleteAllQueryInheritanceJunitTest extends JUnitTestCase {
-        
+
     static Vector originalVehicleObjects;
     static Vector originalCompanyObjects;
     static ReportQuery reportQueryVehicles;
-    static ReportQuery reportQueryCompanies; 
+    static ReportQuery reportQueryCompanies;
     {
         reportQueryVehicles = new ReportQuery(Vehicle.class, new ExpressionBuilder());
         reportQueryVehicles.setShouldRetrievePrimaryKeys(true);
         reportQueryCompanies = new ReportQuery(Company.class, new ExpressionBuilder());
         reportQueryCompanies.setShouldRetrievePrimaryKeys(true);
     }
-    
+
     public DeleteAllQueryInheritanceJunitTest() {
         super();
     }
-    
+
     public DeleteAllQueryInheritanceJunitTest(String name) {
         super(name);
     }
-    
+
     public void setUp() {
         super.setUp();
         Vector currentVehicleObjects = (Vector)getDbSession().executeQuery(reportQueryVehicles);
@@ -61,15 +61,15 @@ public class DeleteAllQueryInheritanceJunitTest extends JUnitTestCase {
         }
         clearCache();
     }
-    
+
     protected static DatabaseSession getDbSession() {
-        return getServerSession();   
+        return getServerSession();
     }
-    
+
     protected static UnitOfWork acquireUnitOfWork() {
-        return getDbSession().acquireUnitOfWork();   
+        return getDbSession().acquireUnitOfWork();
     }
-    
+
     protected void clearVehiclesCompanies() {
         UnitOfWork uow = acquireUnitOfWork();
         // delete all Vechicles
@@ -79,7 +79,7 @@ public class DeleteAllQueryInheritanceJunitTest extends JUnitTestCase {
         uow.commit();
         clearCache();
     }
-    
+
     protected static void populateVehiclesCompanies() {
         UnitOfWork uow = acquireUnitOfWork();
         uow.registerNewObject(InheritanceModelExamples.companyExample1());
@@ -87,13 +87,13 @@ public class DeleteAllQueryInheritanceJunitTest extends JUnitTestCase {
         uow.registerNewObject(InheritanceModelExamples.companyExample3());
         uow.commit();
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite(DeleteAllQueryInheritanceJunitTest.class);
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -101,42 +101,42 @@ public class DeleteAllQueryInheritanceJunitTest extends JUnitTestCase {
         new InheritanceTableCreator().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
     }
-    
+
     // JUnit framework will automatically execute all methods starting with test...
     // The test methods' name pattern is a word "test" followed by underscore and the used selectionExpression:
     // test_selectionExpression
-    
+
     // ALL Vehicles
     public static void test_null() {
         deleteAllQueryInternal_Deferred_Children(Vehicle.class, null);
     }
-    
+
     // ALL Vehicles - nondeferred (execute deleteAllQuery immediately as opposed to during uow.commit)
     public static void test_nullNonDeferred() {
         deleteAllQueryInternal_NonDeferred_Children(Vehicle.class, null);
     }
-    
+
     // Vehicles owned by TOP Company
     public static void test_ownerTOP() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp = builder.get("owner").get("name").equal("TOP");
         deleteAllQueryInternal_Deferred_Children(Vehicle.class, exp);
     }
-    
+
     // FueledVehicles running on Petrol
     public static void test_fuelTypePetrol() {
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression exp = builder.get("fuelType").equalsIgnoreCase("Petrol");        
+        Expression exp = builder.get("fuelType").equalsIgnoreCase("Petrol");
         deleteAllQueryInternal_Deferred_Children(FueledVehicle.class, exp);
     }
-    
+
     // shchool buses without drivers
     public static void test_schoolBusNullDriver() {
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression exp = builder.get("description").equalsIgnoreCase("School bus").and(builder.get("busDriver").isNull()); 
+        Expression exp = builder.get("description").equalsIgnoreCase("School bus").and(builder.get("busDriver").isNull());
         deleteAllQueryInternal_Deferred_Children(Bus.class, exp);
     }
-    
+
     // FueledVehicles owned by Companies that also own NonFueledVehicles
     public static void test_ownerOwnsNonFueledVehicle() {
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -150,23 +150,23 @@ public class DeleteAllQueryInheritanceJunitTest extends JUnitTestCase {
         Expression exp = builder.exists(rq);
         deleteAllQueryInternal_Deferred_Children(FueledVehicle.class, exp);
     }
-    
+
     protected static void deleteAllQueryInternal_Deferred_Children(Class referenceClass, Expression selectionExpression) {
         deleteAllQueryInternal(referenceClass, selectionExpression, true, true);
     }
-    
+
     protected static void deleteAllQueryInternal_NonDeferred_Children(Class referenceClass, Expression selectionExpression) {
         deleteAllQueryInternal(referenceClass, selectionExpression, false, true);
     }
-    
+
     protected static void deleteAllQueryInternal_Deferred_NoChildren(Class referenceClass, Expression selectionExpression) {
         deleteAllQueryInternal(referenceClass, selectionExpression, true, false);
     }
-    
+
     protected static void deleteAllQueryInternal_NonDeferred_NoChildren(Class referenceClass, Expression selectionExpression) {
         deleteAllQueryInternal(referenceClass, selectionExpression, false, false);
     }
-    
+
     // referenceClass - the reference class of DeleteAllQuery to be tested
     // selectionExpression - selection expression of DeleteAllQuery to be tested
     // shouldDeferExecutionInUOW==true causes deferring query execution until uow.commit;

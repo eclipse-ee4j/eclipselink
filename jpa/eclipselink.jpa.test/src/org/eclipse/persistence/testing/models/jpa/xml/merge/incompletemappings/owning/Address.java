@@ -1,29 +1,29 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 /*******************************************************************************
  * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning;
 
 import java.io.Serializable;
@@ -40,13 +40,13 @@ import static javax.persistence.CascadeType.*;
 @Entity(name="XMLIncompleteMergeAddress")
 @Table(name="CMP3_XML_MERGE_ADDRESS")
 public class Address implements Serializable {
-	private Integer id;
-	private String street;
-	private String city;
+    private Integer id;
+    private String street;
+    private String city;
     private String province;
     private String postalCode;
     private String country;
-	private Collection<Employee> employees;
+    private Collection<Employee> employees;
 
     public Address() {
         city = "";
@@ -66,65 +66,65 @@ public class Address implements Serializable {
         this.employees = new Vector<Employee>();
     }
 
-	@Id
+    @Id
     @GeneratedValue(strategy=SEQUENCE, generator="XML_MERGE_ADDRESS_SEQUENCE_GENERATOR")
-	@SequenceGenerator(name="XML_MERGE_ADDRESS_SEQUENCE_GENERATOR", sequenceName="XML_MERGE_ADDRESS_SEQ", allocationSize=25)
-	@Column(name="ADDRESS_ID")
-	public Integer getId() { 
-        return id; 
-    }
-    
-	public void setId(Integer id) { 
-        this.id = id; 
+    @SequenceGenerator(name="XML_MERGE_ADDRESS_SEQUENCE_GENERATOR", sequenceName="XML_MERGE_ADDRESS_SEQ", allocationSize=25)
+    @Column(name="ADDRESS_ID")
+    public Integer getId() {
+        return id;
     }
 
-	public String getStreet() { 
-        return street; 
-    }
-    
-	public void setStreet(String street) { 
-        this.street = street; 
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-	public String getCity() { 
-        return city; 
-    }
-    
-	public void setCity(String city) { 
-        this.city = city; 
+    public String getStreet() {
+        return street;
     }
 
-	public String getProvince() { 
-        return province; 
-    }
-        
-	public void setProvince(String province) { 
-        this.province = province; 
+    public void setStreet(String street) {
+        this.street = street;
     }
 
-	@Column(name="P_CODE")
-	public String getPostalCode() { 
-        return postalCode; 
-    }
-    
-	public void setPostalCode(String postalCode) { 
-        this.postalCode = postalCode; 
+    public String getCity() {
+        return city;
     }
 
-	public String getCountry() { 
-        return country; 
+    public void setCity(String city) {
+        this.city = city;
     }
-    
-	public void setCountry(String country) { 
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    @Column(name="P_CODE")
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
         this.country = country;
     }
-    
-	@OneToMany(cascade=ALL, mappedBy="address")
-	public Collection<Employee> getEmployees() { 
-        return employees; 
+
+    @OneToMany(cascade=ALL, mappedBy="address")
+    public Collection<Employee> getEmployees() {
+        return employees;
     }
-    
+
     public void setEmployees(Collection<Employee> employees) {
-		this.employees = employees;
-	}
+        this.employees = employees;
+    }
 }

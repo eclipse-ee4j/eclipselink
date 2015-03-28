@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,22 +23,22 @@ import org.eclipse.persistence.testing.jaxb.xmlelementref.prefix3.Other;
 @XmlRootElement
 public class Child {
 
-	@XmlElement
-	 public String id;
-	
-	 @XmlAttribute(required = true)
-	 @XmlSchemaType(name = "anyURI")
-	 public String href;
-	 
-	 @XmlElement(namespace = "namespace3")
-	 public Other otherThing;
-	 
-	 public boolean equals(Object obj){
-	     if(obj instanceof Child){
-	    	 Child compare = (Child)obj;
-	    	 return id.equals(compare.id) && href.equals(compare.href) && otherThing.equals(compare.otherThing);
-	     }
-	     return false;
-	 }
+    @XmlElement
+     public String id;
+
+     @XmlAttribute(required = true)
+     @XmlSchemaType(name = "anyURI")
+     public String href;
+
+     @XmlElement(namespace = "namespace3")
+     public Other otherThing;
+
+     public boolean equals(Object obj){
+         if(obj instanceof Child){
+             Child compare = (Child)obj;
+             return id.equals(compare.id) && href.equals(compare.href) && otherThing.equals(compare.otherThing);
+         }
+         return false;
+     }
 }
 

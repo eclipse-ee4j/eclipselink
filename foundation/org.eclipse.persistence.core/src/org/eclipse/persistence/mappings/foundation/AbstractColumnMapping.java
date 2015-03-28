@@ -1,25 +1,25 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/13/2009-2.0  mobrien - 294765: MapKey keyType DirectToField processing 
- *       should return attributeClassification class in getMapKeyTargetType when 
+ *     11/13/2009-2.0  mobrien - 294765: MapKey keyType DirectToField processing
+ *       should return attributeClassification class in getMapKeyTargetType when
  *       accessor.attributeField is null in the absence of a MapKey annotation
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- *     30/05/2012-2.4 Guy Pelletier    
+ *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
- *     06/03/2013-2.5.1 Guy Pelletier    
- *       - 402380: 3 jpa21/advanced tests failed on server with 
- *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
- ******************************************************************************/  
+ *     06/03/2013-2.5.1 Guy Pelletier
+ *       - 402380: 3 jpa21/advanced tests failed on server with
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.foundation;
 
 import java.security.AccessController;
@@ -42,11 +42,11 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
- * <b>Purpose</b>: Maps an attribute or some other property to the corresponding 
- * database field type. The list of field types that are supported by 
- * EclipseLink's direct to field mapping is dependent on the relational database 
+ * <b>Purpose</b>: Maps an attribute or some other property to the corresponding
+ * database field type. The list of field types that are supported by
+ * EclipseLink's direct to field mapping is dependent on the relational database
  * being used.
- * 
+ *
  * @see org.eclipse.persistence.mappings.foundation.AbstractDirectMapping
  * @see org.eclipse.persistence.mappings.MultitenantPrimaryKeyMapping
  *
@@ -54,20 +54,20 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * @since TopLink/Java 1.0
  */
 public abstract class AbstractColumnMapping extends DatabaseMapping {
-    
+
     /** DatabaseField which this mapping represents. */
     protected DatabaseField field;
 
     /** Allows user defined conversion between the object attribute value and the database value. */
     protected Converter converter;
     protected String converterClassName;
-    
+
     /** Flag to support insertable JPA setting */
     protected boolean isInsertable = true;
-    
+
     /** Flag to support updatable JPA setting */
     protected boolean isUpdatable = true;
-    
+
     /**
      * Default constructor.
      */
@@ -75,7 +75,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
         super();
         this.setWeight(WEIGHT_DIRECT);
     }
-    
+
     /**
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade.
@@ -107,7 +107,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
 
         return clone;
     }
-    
+
     /**
      * Returns the field this mapping represents.
      */
@@ -118,7 +118,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
         databaseField.addElement(field);
         return databaseField;
     }
-    
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this mapping to actual class-based settings
@@ -127,20 +127,20 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        
+
         // Field may have a type name that needs to be initialize.
         if (field != null) {
             field.convertClassNamesToClasses(classLoader);
         }
-        
+
         // Convert and any Converter class names.
-        convertConverterClassNamesToClasses(converter, classLoader); 
-        
+        convertConverterClassNamesToClasses(converter, classLoader);
+
         // Instantiate any custom converter class
         if (converterClassName != null) {
             Class converterClass;
             Converter converter;
-    
+
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
@@ -148,7 +148,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(converterClassName, exception.getException());
                     }
-                    
+
                     try {
                         converter = (Converter)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(converterClass));
                     } catch (PrivilegedActionException exception) {
@@ -164,11 +164,11 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
                 // Catches IllegalAccessException and InstantiationException
                 throw ValidationException.classNotFoundWhileConvertingClassNames(converterClassName, e);
             }
-            
+
             setConverter(converter);
         }
     }
-    
+
     /**
      * INTERNAL:
      * An object has been serialized from the server to the client.
@@ -178,7 +178,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
     @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
     }
-    
+
     /**
      * PUBLIC:
      * Return the converter on the mapping.
@@ -187,7 +187,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
     public Converter getConverter() {
         return converter;
     }
-    
+
     /**
      * INTERNAL:
      * Returns the field which this mapping represents.
@@ -195,29 +195,29 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
     public DatabaseField getField() {
         return field;
     }
- 
+
     /**
      * INTERNAL:
      * Convert the object (attribute or property) value to a field value.
      */
     public abstract Object getFieldValue(Object objectValue, AbstractSession session);
-    
+
     /**
      * INTERNAL:
-     * Allows for subclasses to convert the the attribute or property value. 
+     * Allows for subclasses to convert the the attribute or property value.
      */
     public abstract Object getObjectValue(Object fieldValue, Session session);
 
     /**
      * Indicates if the mapping has a converter set on it.
-     * 
+     *
      * @return true if there is a converter set on the mapping,
      * false otherwise.
      */
     public boolean hasConverter() {
         return converter != null;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -225,7 +225,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
     public boolean isAbstractColumnMapping() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this mapping is insertable.
@@ -233,7 +233,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
     protected boolean isInsertable() {
         return isInsertable;
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this mapping is updatable.
@@ -241,7 +241,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
     protected boolean isUpdatable() {
         return isUpdatable;
     }
-    
+
     /**
      * INTERNAL:
      * Iterate on the appropriate attribute.
@@ -253,7 +253,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
             iterator.iteratePrimitiveForMapping(getAttributeValueFromObject(iterator.getVisitedParent()), this);
         }
     }
-    
+
     /**
      * PUBLIC:
      * Set the converter on the mapping.
@@ -262,18 +262,18 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
     public void setConverter(Converter converter) {
         this.converter = converter;
     }
-    
+
     /**
      * PUBLIC:
-     * Set the converter class name on the mapping. It will be instantiated 
+     * Set the converter class name on the mapping. It will be instantiated
      * during the convertClassNamesToClasses.
-     * A converter can be used to convert between the object's value and 
+     * A converter can be used to convert between the object's value and
      * database value of the attribute.
      */
     public void setConverterClassName(String converterClassName) {
         this.converterClassName = converterClassName;
     }
-    
+
     /**
      * ADVANCED:
      * Set the field in the mapping.
@@ -282,7 +282,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
     public void setField(DatabaseField theField) {
         field = theField;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -290,9 +290,9 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
     public String toString() {
         return getClass().getName() + "[" + getAttributeName() + "-->" + getField() + "]";
     }
-    
-	/**
-	 * INTERNAL:
-	 */
+
+    /**
+     * INTERNAL:
+     */
     protected abstract void writeValueIntoRow(AbstractRecord row, DatabaseField field, Object value);
 }

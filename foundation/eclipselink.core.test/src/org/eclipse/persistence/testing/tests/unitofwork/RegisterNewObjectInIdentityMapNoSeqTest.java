@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import org.eclipse.persistence.annotations.IdValidation;
@@ -28,9 +28,9 @@ import org.eclipse.persistence.testing.framework.TestWarningException;
  * This test is in response to a support question.  There was a problem with
  * The stability of the cache when an object was registered with the Unit Of
  * Work as a new object.
- * 
+ *
  * Test extended for bug Bug 300556 - Can't configure descriptor to make sequence override existing negative pk values.
- * Test can run with different IdValidations: 
+ * Test can run with different IdValidations:
  *   IdValidation.NULL: Allow 0 or negative primary key (now not supported by default).
  *   IdValidation.ZERO: Allow negative primary key (default).
  *   IdValidation.NEGATIVE: Allow only positive primary key (now not supported by default).
@@ -64,7 +64,7 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
         setDescription("This test verifies the the UOW cache when registering a new object with a primitive primary key");
         setName(getName() + getNameSuffix());
     }
-    
+
     String getNameSuffix() {
         return " " + idValidation + (keepSequencing ? " Sequencing" + (shouldAlwaysOverrideExistingValue ? " always overrides" : ""): "");
     }
@@ -90,10 +90,10 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
         negativeFailed = false;
         zeroOverridden = false;
         negativeOverridden = false;
-        
+
         getAbstractSession().beginTransaction();
         ClassDescriptor descriptor = getSession().getClassDescriptor(Weather.class);
-        idValidationOriginal = descriptor.getIdValidation(); 
+        idValidationOriginal = descriptor.getIdValidation();
         descriptor.setIdValidation(idValidation);
         if(keepSequencing) {
             if(descriptor.getSequence() == null) {
@@ -119,7 +119,7 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
         Session session = getSession();
         UnitOfWork uow = session.acquireUnitOfWork();
         uow.setShouldNewObjectsBeCached(true);
-        
+
         Weather weather = new Weather();
         weather.setStormPattern("Something really bad");
         weather.id = 0;
@@ -128,7 +128,7 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
         Weather weatherClone = (Weather)uow.registerObject(weather);
         weather = (Weather)uow.executeQuery(query);
         zeroFailed = weather == null;
-        
+
         Weather weatherNeg = new Weather();
         weatherNeg.setStormPattern("Something really bad below zero");
         weatherNeg.id = -1;
@@ -144,7 +144,7 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
             negativeOverridden = weatherNegClone.id != -1;
         }
     }
-    
+
     public void verify() {
         String errorMsg = "";
         boolean zeroFailedExpected = false;

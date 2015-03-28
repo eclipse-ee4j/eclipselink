@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.proxyindirection;
 
 import java.util.Vector;
@@ -20,8 +20,8 @@ import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 //Bug#4251902 Make Proxy Indirection writable and readable to deployment xml.  useProxyIndirection() now creates
-//a ProxyIndirectionPolicy that includes not only the interfaces of the referenceClass, but also all the super 
-//interfaces of the referenceClass.  To test this new functionality, Computer, ComputerImpl, DesktopComputer and 
+//a ProxyIndirectionPolicy that includes not only the interfaces of the referenceClass, but also all the super
+//interfaces of the referenceClass.  To test this new functionality, Computer, ComputerImpl, DesktopComputer and
 //DesktopComputerImpl have been added.
 public class InheritanceReadAllTest extends AutoVerifyTestCase  {
     Vector cubicles;

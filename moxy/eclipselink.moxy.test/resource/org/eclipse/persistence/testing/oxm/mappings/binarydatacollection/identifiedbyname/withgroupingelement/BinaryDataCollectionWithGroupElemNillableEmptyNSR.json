@@ -3,11 +3,11 @@
      "photos":{
          "list":{
               "photo":[
-        	    {"Include":{"href":"c_id0"}},
-	            null,
-         	    {"Include":{"href":"c_id0"}}
-		    ]
-	 }
+                {"Include":{"href":"c_id0"}},
+                null,
+                 {"Include":{"href":"c_id0"}}
+            ]
+     }
      }
    }
 }

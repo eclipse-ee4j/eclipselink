@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     10/28/2008-1.1 James Sutherland - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
 import java.util.Collection;
@@ -36,7 +36,7 @@ public class VectorContainerPolicy extends ListContainerPolicy {
     public VectorContainerPolicy(Class containerClass) {
         super(containerClass);
     }
-    
+
     /**
      * INTERNAL:
      * Construct a new policy for the specified class name.
@@ -60,7 +60,7 @@ public class VectorContainerPolicy extends ListContainerPolicy {
             return new Vector((Collection)container);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Just return the Vector.
@@ -68,7 +68,7 @@ public class VectorContainerPolicy extends ListContainerPolicy {
     public Object buildContainerFromVector(Vector vector, AbstractSession session) {
         return vector;
     }
-    
+
     /**
      * INTERNAL:
      * Return a new Vector.
@@ -76,7 +76,7 @@ public class VectorContainerPolicy extends ListContainerPolicy {
     public Object containerInstance() {
         return new Vector();
     }
-    
+
     /**
      * INTERNAL:
      * Return a new Vector.

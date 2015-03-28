@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -89,7 +89,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
     public void addField(String fieldName, DatabaseType databaseType, int length) {
         fields.add(new PLSQLargument(fieldName, -1, IN, databaseType, length));
     }
-    
+
     public int computeInIndex(PLSQLargument inArg, int newIndex, ListIterator<PLSQLargument> iterator) {
         if (hasCompatibleType()) {
             return super.computeInIndex(inArg, newIndex, iterator);
@@ -98,7 +98,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
             iterator.remove();
             inArg.inIndex = newIndex;
             for (PLSQLargument argument : fields) {
-            	argument.inIndex = newIndex++;
+                argument.inIndex = newIndex++;
                 iterator.add(argument);
             }
             return newIndex;
@@ -114,7 +114,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
             iterator.remove();
             outArg.outIndex = newIndex;
             for (PLSQLargument argument : fields) {
-            	argument.outIndex = newIndex++;
+                argument.outIndex = newIndex++;
                 argument.direction = OUT;
                 iterator.add(argument);
             }
@@ -127,22 +127,22 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
             super.buildInDeclare(sb, inArg);
         } else {
             if ((getTypeName() == null) || getTypeName().equals("")) {
-                throw QueryException.typeNameNotSet(this);        
-            }                                                         
-            sb.append("  ");                                          
-            sb.append(databaseTypeHelper.buildTarget(inArg));         
-            sb.append(" ");                                           
-            sb.append(getTypeName());                                 
-            sb.append(";\n");                                         
+                throw QueryException.typeNameNotSet(this);
+            }
+            sb.append("  ");
+            sb.append(databaseTypeHelper.buildTarget(inArg));
+            sb.append(" ");
+            sb.append(getTypeName());
+            sb.append(";\n");
         }
     }
-    
+
     public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
         if (hasCompatibleType()) {
             super.buildOutDeclare(sb, outArg);
         } else {
             if ((getTypeName() == null) || getTypeName().equals("")) {
-                throw QueryException.typeNameNotSet(this);        
+                throw QueryException.typeNameNotSet(this);
             }
             sb.append("  ");
             sb.append(databaseTypeHelper.buildTarget(outArg));
@@ -211,7 +211,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
             super.buildOutputRow(outArg, outputRow, newOutputRow, outputRowFields, outputRowValues);
         } else {
             for (PLSQLargument field : fields) {
-            	databaseTypeHelper.buildOutputRow(field, outputRow, newOutputRow,
+                databaseTypeHelper.buildOutputRow(field, outputRow, newOutputRow,
                     outputRowFields, outputRowValues);
             }
         }

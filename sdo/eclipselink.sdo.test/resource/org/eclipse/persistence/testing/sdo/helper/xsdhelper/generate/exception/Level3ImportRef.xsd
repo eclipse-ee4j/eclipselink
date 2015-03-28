@@ -5,7 +5,7 @@
    <!--xsd:attribute name="attributeInt"-->
    <xsd:attribute>
    <xsd:simpleType>
-	<xsd:restriction base="xsd:integer"/>
+    <xsd:restriction base="xsd:integer"/>
    </xsd:simpleType>
    </xsd:attribute>
 </xsd:schema>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,11 +45,11 @@ import commonj.sdo.impl.HelperProvider;
 public class LoadSchemasWithImportCloseStream extends TestCase {
     static String PATH = "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/load/";
     SDOXSDHelper xsdHelper = (SDOXSDHelper) XSDHelper.INSTANCE;
-    
+
     public void testLoadSchemasWithImportAndInheritance() throws Exception{
         loadXSD(PATH + "SchemaB.xsd");
     }
-    
+
     public void loadXSD(String xsdFileName) throws Exception{
         FileInputStream fInstream = null;
         try {
@@ -62,19 +62,19 @@ public class LoadSchemasWithImportCloseStream extends TestCase {
         MySchemaResolver sr = new MySchemaResolver();
         xsdHelper.define(new StreamSource(fInstream), sr);
         List<MyFileInputStream> theStreams = sr.getStreams();
-        for(int i=0; i< theStreams.size(); i++){            
-            assertTrue(theStreams.get(i).isClosed());        
+        for(int i=0; i< theStreams.size(); i++){
+            assertTrue(theStreams.get(i).isClosed());
         }
-    } 
-    
+    }
+
     private class MySchemaResolver implements SchemaResolver {
-        private  List<MyFileInputStream> streams = new ArrayList<MyFileInputStream>(); 
-        
+        private  List<MyFileInputStream> streams = new ArrayList<MyFileInputStream>();
+
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
             try {
                 InputStream fInstream = this.getClass().getClassLoader().getResourceAsStream("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/load/" + schemaLocation);
                 MyFileInputStream myStream = new MyFileInputStream(fInstream);
-                streams.add(myStream);             
+                streams.add(myStream);
                 return new StreamSource(myStream, "systemID");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -83,11 +83,11 @@ public class LoadSchemasWithImportCloseStream extends TestCase {
 
             return null;
         }
-        
+
         public List<MyFileInputStream> getStreams(){
             return streams;
         }
-     
+
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
             return null;
         }
@@ -95,19 +95,19 @@ public class LoadSchemasWithImportCloseStream extends TestCase {
     public class MyFileInputStream extends BufferedInputStream{
 
         private boolean isClosed = false;
-  
+
         public MyFileInputStream(InputStream is) throws FileNotFoundException {
             super(is);
         }
-        
+
         public void close() throws IOException{
             super.close();
             isClosed = true;
         }
-        
+
         public boolean isClosed(){
             return isClosed;
         }
-     
+
     }
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     tware - updates for JPA 2.0 specification
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.jpa.parsing.TemporalLiteralNode.Temporal
 /**
  * INTERNAL
  * <p><b>Purpose</b>: Implements a node factory used by the EJBQLParser
- * class. 
+ * class.
  * <p><b>Responsibilities</b>:<ul>
  * <li> Create EJBQLParseTree instances for EJBQL SELECT-, UPDATE- and DELETE
  * statements (see methods newSelectStatement, newUpdateStatement and
@@ -58,9 +58,9 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
-    public Object newSelectStatement(int line, int column, 
-                                     Object select, Object from, 
-                                     Object where, Object groupBy, 
+    public Object newSelectStatement(int line, int column,
+                                     Object select, Object from,
+                                     Object where, Object groupBy,
                                      Object having, Object orderBy) {
         QueryNode queryNode = (QueryNode)select;
         JPQLParseTree tree = new JPQLParseTree();
@@ -74,9 +74,9 @@ public class NodeFactoryImpl implements NodeFactory {
         tree.setOrderByNode((OrderByNode)orderBy);
         return tree;
     }
-    
+
     /** */
-    public Object newUpdateStatement(int line, int column, 
+    public Object newUpdateStatement(int line, int column,
                                      Object update, Object set, Object where) {
         QueryNode queryNode = (QueryNode)update;
         JPQLParseTree tree = new JPQLParseTree();
@@ -89,7 +89,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newDeleteStatement(int line, int column, 
+    public Object newDeleteStatement(int line, int column,
                                      Object delete, Object where) {
         QueryNode queryNode = (QueryNode)delete;
         JPQLParseTree tree = new JPQLParseTree();
@@ -103,12 +103,12 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
     // Major nodes
     // ------------------------------------------
-    
-    public Object newSelectClause(int line, int column, 
+
+    public Object newSelectClause(int line, int column,
                                     boolean distinct, List selectExprs) {
         return newSelectClause(line, column, distinct, selectExprs, null);
     }
-    
+
     public Object newSelectClause(int line, int column, boolean distinct, List selectExprs, List identifiers) {
         SelectNode node = new SelectNode();
         node.setContext(context);
@@ -125,7 +125,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     /** */
     public Object newFromClause(int line, int column, List decls) {
         FromNode node = new FromNode();
@@ -172,7 +172,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newUpdateClause(int line, int column, 
+    public Object newUpdateClause(int line, int column,
                                   String schema, String variable) {
         UpdateNode node = new UpdateNode();
         node.setContext(context);
@@ -184,7 +184,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newDeleteClause(int line, int column, 
+    public Object newDeleteClause(int line, int column,
                                   String schema, String variable) {
         DeleteNode node = new DeleteNode();
         node.setContext(context);
@@ -200,7 +200,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
-    public Object newRangeVariableDecl(int line, int column, 
+    public Object newRangeVariableDecl(int line, int column,
                                        String schema, String variable) {
         RangeDeclNode node = new RangeDeclNode();
         node.setAbstractSchemaName(schema);
@@ -212,7 +212,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newJoinVariableDecl(int line, int column, boolean outerJoin, 
+    public Object newJoinVariableDecl(int line, int column, boolean outerJoin,
                                       Object path, String variable, Object downcast) {
         DotNode dotNode = (DotNode)path;
         AttributeNode rightNode = (AttributeNode)dotNode.getRight();
@@ -232,7 +232,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newFetchJoin(int line, int column, 
+    public Object newFetchJoin(int line, int column,
                                boolean outerJoin, Object path) {
         DotNode dotNode = (DotNode)path;
         AttributeNode rightNode = (AttributeNode)dotNode.getRight();
@@ -247,7 +247,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newCollectionMemberVariableDecl(int line, int column, 
+    public Object newCollectionMemberVariableDecl(int line, int column,
                                                   Object path, String variable) {
         DotNode dotNode = (DotNode)path;
         AttributeNode rightNode = (AttributeNode)dotNode.getRight();
@@ -263,7 +263,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newVariableDecl(int line, int column, 
+    public Object newVariableDecl(int line, int column,
                                   Object path, String variable) {
         DotNode dotNode = (DotNode)path;
         JoinDeclNode node = new JoinDeclNode();
@@ -303,7 +303,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newQualifiedAttribute(int line, int column, 
+    public Object newQualifiedAttribute(int line, int column,
                                         String variable, String attribute) {
         Object varNode = newVariableAccessOrTypeConstant(line, column, variable);
         Object attrNode = newAttribute(line, column, attribute);
@@ -371,7 +371,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     /** */
     public Object newAnd(int line, int column, Object left, Object right) {
         AndNode node = new AndNode();
@@ -400,7 +400,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newGreaterThan(int line, int column, 
+    public Object newGreaterThan(int line, int column,
                                  Object left, Object right) {
         GreaterThanNode node = new GreaterThanNode();
         node.setLeft((Node)left);
@@ -410,7 +410,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newGreaterThanEqual(int line, int column, 
+    public Object newGreaterThanEqual(int line, int column,
                                       Object left, Object right) {
         GreaterThanEqualToNode node = new GreaterThanEqualToNode();
         node.setLeft((Node)left);
@@ -429,7 +429,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newLessThanEqual(int line, int column, 
+    public Object newLessThanEqual(int line, int column,
                                    Object left, Object right) {
         LessThanEqualToNode node = new LessThanEqualToNode();
         node.setLeft((Node)left);
@@ -437,7 +437,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     /** */
     public Object newPlus(int line, int column, Object left, Object right) {
         PlusNode node = new PlusNode();
@@ -468,9 +468,9 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
     // Conditional expression nodes
     // ------------------------------------------
-    
+
     /** */
-    public Object newBetween(int line, int column, boolean not, Object arg, 
+    public Object newBetween(int line, int column, boolean not, Object arg,
                              Object lower, Object upper) {
         BetweenNode node = new BetweenNode();
         node.setLeft((Node)arg);
@@ -488,7 +488,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     // ------------------------------------------
     // Unary expression nodes
     // ------------------------------------------
@@ -497,7 +497,7 @@ public class NodeFactoryImpl implements NodeFactory {
     public Object newUnaryPlus(int line, int column, Object arg) {
         return arg;
     }
-    
+
     /** */
     public Object newUnaryMinus(int line, int column, Object arg) {
         UnaryMinus node = new UnaryMinus();
@@ -505,7 +505,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     /** */
     public Object newNot(int line, int column, Object arg) {
         NotNode node = new NotNode();
@@ -513,13 +513,13 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     // ------------------------------------------
     // Conditional expression nodes
     // ------------------------------------------
-    
+
     /** */
-    public Object newLike(int line, int column, boolean not, Object string, 
+    public Object newLike(int line, int column, boolean not, Object string,
                           Object pattern, Object escape)  {
         LikeNode node = new LikeNode();
         node.setLeft((Node)string);
@@ -538,7 +538,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newIn(int line, int column, 
+    public Object newIn(int line, int column,
                         boolean not, Object expr, List items) {
         InNode node = new InNode();
         if (not) node.indicateNot();
@@ -558,7 +558,7 @@ public class NodeFactoryImpl implements NodeFactory {
 
     /** */
     public Object newIsEmpty(int line, int column, boolean not, Object expr)  {
-        EmptyCollectionComparisonNode node = 
+        EmptyCollectionComparisonNode node =
             new EmptyCollectionComparisonNode();
         node.setLeft((Node)expr);
         if (not) node.indicateNot();
@@ -567,7 +567,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newMemberOf(int line, int column, 
+    public Object newMemberOf(int line, int column,
                               boolean not, Object expr, Object collection)  {
         MemberOfNode node = new MemberOfNode();
         node.setLeft((Node)expr);
@@ -580,7 +580,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
     // Parameter nodes
     // ------------------------------------------
- 
+
     /** */
     public Object newPositionalParameter(int line, int column, String position) {
         ParameterNode node = new ParameterNode(position);
@@ -596,7 +596,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     // ------------------------------------------
     // Literal nodes
     // ------------------------------------------
@@ -608,7 +608,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     /** */
     public Object newIntegerLiteral(int line, int column, Object value) {
         IntegerLiteralNode node = new IntegerLiteralNode();
@@ -616,7 +616,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     /** */
     public Object newLongLiteral(int line, int column, Object value) {
         LongLiteralNode node = new LongLiteralNode();
@@ -624,7 +624,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     /** */
     public Object newFloatLiteral(int line, int column, Object value) {
         FloatLiteralNode node = new FloatLiteralNode();
@@ -656,7 +656,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     // ------------------------------------------
     // Objects for functions returning strings
     // ------------------------------------------
@@ -670,7 +670,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newSubstring(int line, int column, 
+    public Object newSubstring(int line, int column,
                                Object string, Object start, Object length) {
         SubstringNode node = new SubstringNode();
         node.setLeft((Node)string);
@@ -681,7 +681,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newTrim(int line, int column, TrimSpecification trimSpec, 
+    public Object newTrim(int line, int column, TrimSpecification trimSpec,
                           Object trimChar, Object string) {
         TrimNode node = new TrimNode();
         node.setLeft((Node)string);
@@ -722,7 +722,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
-    public Object newLocate(int line, int column, 
+    public Object newLocate(int line, int column,
                             Object pattern, Object arg, Object startPos) {
         LocateNode node = new LocateNode();
         node.setFind((Node)pattern);
@@ -772,7 +772,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     // ------------------------------------------
     // Objects for functions returning datetime
     // ------------------------------------------
@@ -784,7 +784,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     /** */
     public Object newCurrentTime(int line, int column) {
         DateFunctionNode node = new DateFunctionNode();
@@ -793,7 +793,7 @@ public class NodeFactoryImpl implements NodeFactory {
 
         return node;
     }
-    
+
     /** */
     public Object newCurrentTimestamp(int line, int column) {
         DateFunctionNode node = new DateFunctionNode();
@@ -801,11 +801,11 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     // ------------------------------------------
     // Custom function
     // ------------------------------------------
-    
+
     /** */
     public Object newFunc(int line, int column, String name, List parameters) {
         FuncNode node = new FuncNode();
@@ -823,8 +823,8 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
-    public Object newSubquery(int line, int column, 
-                              Object select, Object from, Object where, 
+    public Object newSubquery(int line, int column,
+                              Object select, Object from, Object where,
                               Object groupBy, Object having) {
         QueryNode queryNode = (QueryNode)select;
         JPQLParseTree tree = new JPQLParseTree();
@@ -851,7 +851,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newIn(int line, int column, 
+    public Object newIn(int line, int column,
                         boolean not, Object expr, Object subquery) {
         InNode node = new InNode();
         if (not) node.indicateNot();
@@ -913,7 +913,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newConstructor(int line, int column, 
+    public Object newConstructor(int line, int column,
                                  String className, List args) {
         ConstructorNode node = new ConstructorNode(className);
         node.setConstructorItems(args);
@@ -930,7 +930,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
-    public Object newSetAssignmentClause(int line, int column, 
+    public Object newSetAssignmentClause(int line, int column,
                                          Object target, Object value) {
         EqualsAssignmentNode node = new EqualsAssignmentNode();
         node.setLeft((Node)target);
@@ -979,14 +979,14 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     public Object newType(int line, int column, Object left){
         ClassForInheritanceNode node = new ClassForInheritanceNode();
         node.setLeft((Node)left);
         setPosition(node, line, column);
         return node;
     }
-    
+
     public Object newCaseClause(int line, int column, Object base, List whenClauses, Object elseClause){
         CaseNode node = new CaseNode();
         node.setWhenClauses(whenClauses);
@@ -997,14 +997,14 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     public Object newCoalesceClause(int line, int column, List clauses){
         CoalesceNode node = new CoalesceNode();
         node.setClauses(clauses);
         setPosition(node, line, column);
         return node;
     }
-    
+
     public Object newNullIfClause(int line, int column, Object left, Object right){
         NullIfNode node = new NullIfNode();
         node.setLeft((Node)left);
@@ -1012,7 +1012,7 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     public Object newWhenClause(int line, int column, Object conditionClause, Object thenClause){
         WhenThenNode node = new WhenThenNode();
         node.setLeft((Node)conditionClause);
@@ -1020,34 +1020,34 @@ public class NodeFactoryImpl implements NodeFactory {
         setPosition(node, line, column);
         return node;
     }
-    
+
     public Object newIndex(int line, int column, Object object){
         IndexNode node = new IndexNode();
         node.setLeft((Node)object);
         setPosition(node, line, column);
         return node;
     }
-    
+
     public Object newDateLiteral(int line, int column, Object value){
         TemporalLiteralNode node = new TemporalLiteralNode(TemporalType.DATE);
         node.setLiteral(value);
         setPosition(node, line, column);
         return node;
     }
-    
+
     public Object newTimeLiteral(int line, int column, Object value){
         TemporalLiteralNode node = new TemporalLiteralNode(TemporalType.TIME);
         node.setLiteral(value);
         setPosition(node, line, column);
         return node;
     }
-    
+
     public Object newTimeStampLiteral(int line, int column, Object value){
         TemporalLiteralNode node = new TemporalLiteralNode(TemporalType.TIMESTAMP);
         node.setLiteral(value);
         setPosition(node, line, column);
         return node;
     }
-    
+
 }
 

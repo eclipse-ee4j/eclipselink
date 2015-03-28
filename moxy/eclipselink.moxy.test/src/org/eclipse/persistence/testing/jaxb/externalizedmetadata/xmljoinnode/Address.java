@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,14 +25,14 @@ public class Address {
     public String id;
     public String street;
     public String suite;
-    
+
     @XmlKey
     @XmlPath("city/text()")
     public String cityName;
     public String postal;
-    
+
     public Address() {}
-    
+
     public Address(String id, String street, String suite, String cityName, String postal) {
         this.id = id;
         this.street = street;
@@ -40,18 +40,18 @@ public class Address {
         this.cityName = cityName;
         this.postal = postal;
     }
-    
+
     public boolean equals(Object obj){
        if(obj instanceof Address){
-    	   Address addrObj = (Address)obj;
-    	   return addrObj.id.equals(addrObj.id)
-    	       && addrObj.street.equals(addrObj.street)
-    	       && addrObj.suite.equals(addrObj.suite)
-    	       && addrObj.cityName.equals(addrObj.cityName)
-    	       && addrObj.postal.equals(addrObj.postal);
+           Address addrObj = (Address)obj;
+           return addrObj.id.equals(addrObj.id)
+               && addrObj.street.equals(addrObj.street)
+               && addrObj.suite.equals(addrObj.suite)
+               && addrObj.cityName.equals(addrObj.cityName)
+               && addrObj.postal.equals(addrObj.postal);
        }
        return false;
     }
-    
-    
+
+
 }

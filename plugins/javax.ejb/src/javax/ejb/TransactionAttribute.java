@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,29 +48,29 @@ import static java.lang.annotation.RetentionPolicy.*;
 /**
  * The <code>TransactionAttribute</code> annotation specifies whether
  * the container is to invoke a business method within a transaction
- * context.  
+ * context.
  *
  * The <code>TransactionAttribute</code> annotation can be used for
  * session beans and message driven beans.  It can only be specified
- * if container managed transaction demarcation is used. 
+ * if container managed transaction demarcation is used.
  * <p>
  *
  * The annotation can be specified on the bean class and/or it can be
  * specified on methods of the class that are methods of the business
- * interface or no-interface view. 
+ * interface or no-interface view.
  * <p>
  * Specifying the <code>TransactionAttribute</code> annotation on the
- * bean class  means that it applies to all applicable business 
- * methods of the class. Specifying the annotation on a 
- * method applies it to that method only. If the annotation is applied 
- * at both the class and the method level, the method value overrides 
- * if the two disagree.  
+ * bean class  means that it applies to all applicable business
+ * methods of the class. Specifying the annotation on a
+ * method applies it to that method only. If the annotation is applied
+ * at both the class and the method level, the method value overrides
+ * if the two disagree.
  *
  * <p>
  * The values of the <code>TransactionAttribute</code> annotation are
- * defined by the enum <code>TransactionAttributeType</code>.  If 
- * the <code>TransactionAttribute</code> annotation is not specified, and 
- * the bean uses container managed transaction demarcation, the semantics of 
+ * defined by the enum <code>TransactionAttributeType</code>.  If
+ * the <code>TransactionAttribute</code> annotation is not specified, and
+ * the bean uses container managed transaction demarcation, the semantics of
  * the <code>REQUIRED</code>  transaction attribute are assumed.
  *
  * @see TransactionAttributeType

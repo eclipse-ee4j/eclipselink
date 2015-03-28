@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,27 +16,27 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlID;
 
 public class AttributeImpl implements Attribute{
-	 private String id;
+     private String id;
 
-	 /**
-	   * getter for xsd:string/String id
-	   * @return id
-	   */
-	 @XmlAttribute(name="id")  
-	 @XmlID
-	 public String getId() { 
-	     return id;
-	 }
-	 
-	 public void setId(String newId) {
-		 id = newId;
-	 }
-	 
-	 public boolean equals(Object obj){
-		 if(obj instanceof AttributeImpl){
-			 
-			 return id.equals(((AttributeImpl)obj).id);
-		 }
-		 return false;
-	 }
+     /**
+       * getter for xsd:string/String id
+       * @return id
+       */
+     @XmlAttribute(name="id")
+     @XmlID
+     public String getId() {
+         return id;
+     }
+
+     public void setId(String newId) {
+         id = newId;
+     }
+
+     public boolean equals(Object obj){
+         if(obj instanceof AttributeImpl){
+
+             return id.equals(((AttributeImpl)obj).id);
+         }
+         return false;
+     }
 }

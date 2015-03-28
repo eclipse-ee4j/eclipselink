@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.mapping;
 
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -20,7 +20,7 @@ public class LegacyTableMaker extends org.eclipse.persistence.tools.schemaframew
 
     public LegacyTableMaker() {
         setName("LegacyTestCase");
-     
+
         buildMUL_ADDRTable();
         buildMUL_EMPTable();
         buildMUL_CTRYTable();
@@ -75,14 +75,14 @@ public class LegacyTableMaker extends org.eclipse.persistence.tools.schemaframew
         field3.setUnique(false);
         field3.setIsIdentity(false);
         tabledefinition.addField(field3);
-        
+
         ForeignKeyConstraint foreignKeyADDRESS_COUNTRY = new ForeignKeyConstraint();
         foreignKeyADDRESS_COUNTRY.setName("ADDRESS_COUNTRY");
         foreignKeyADDRESS_COUNTRY.setTargetTable("MUL_CTRY");
         foreignKeyADDRESS_COUNTRY.addSourceField("CNTRY_ID");
         foreignKeyADDRESS_COUNTRY.addTargetField("CNTRY_ID");
         tabledefinition.addForeignKeyConstraint(foreignKeyADDRESS_COUNTRY);
-        
+
         addTableDefinition(tabledefinition);
     }
 
@@ -178,7 +178,7 @@ public class LegacyTableMaker extends org.eclipse.persistence.tools.schemaframew
         field4.setIsIdentity(false);
         tabledefinition.addField(field4);
         addTableDefinition(tabledefinition);
-        
+
         ForeignKeyConstraint foreignKeyEMPLOYEE_ADDRESS = new ForeignKeyConstraint();
         foreignKeyEMPLOYEE_ADDRESS.setName("EMPLOYEE_ADDRESS");
         foreignKeyEMPLOYEE_ADDRESS.setTargetTable("MUL_ADDR");

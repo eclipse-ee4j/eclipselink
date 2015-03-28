@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.nosql;
 
 import java.math.BigDecimal;
@@ -46,9 +46,9 @@ import org.eclipse.persistence.testing.models.jpa.nosql.Address;
  * ** To run this test suite the Oracle No SQL database must be running.
  */
 public class NoSQLTestSuite extends JUnitTestCase {
-    
+
     public static Order existingOrder;
-    
+
     public NoSQLTestSuite(){
     }
 
@@ -70,7 +70,7 @@ public class NoSQLTestSuite extends JUnitTestCase {
         suite.addTest(new NoSQLTestSuite("testNativeQuery"));
         return suite;
     }
-    
+
     @Override
     public String getPersistenceUnitName() {
         return "nosql";
@@ -80,7 +80,7 @@ public class NoSQLTestSuite extends JUnitTestCase {
     public Map getPersistenceProperties() {
         return new HashMap();
     }
-    
+
     public void testSetup() {
         EntityManager em = createEntityManager();
         // First clear old data from store.
@@ -124,7 +124,7 @@ public class NoSQLTestSuite extends JUnitTestCase {
         }
         clearCache();
     }
-    
+
     /**
      * Test inserts.
      */
@@ -152,9 +152,9 @@ public class NoSQLTestSuite extends JUnitTestCase {
             compareObjects(order, fromDatabase);
         } finally {
             closeEntityManagerAndTransaction(em);
-        }        
+        }
     }
-    
+
     /**
      * Test find.
      */
@@ -169,7 +169,7 @@ public class NoSQLTestSuite extends JUnitTestCase {
             closeEntityManagerAndTransaction(em);
         }
     }
-    
+
     /**
      * Test updates.
      */
@@ -196,7 +196,7 @@ public class NoSQLTestSuite extends JUnitTestCase {
             commitTransaction(em);
         } finally {
             closeEntityManagerAndTransaction(em);
-        }        
+        }
         clearCache();
         em = createEntityManager();
         beginTransaction(em);
@@ -207,7 +207,7 @@ public class NoSQLTestSuite extends JUnitTestCase {
             closeEntityManagerAndTransaction(em);
         }
     }
-    
+
     /**
      * Test merge.
      */
@@ -252,7 +252,7 @@ public class NoSQLTestSuite extends JUnitTestCase {
             closeEntityManagerAndTransaction(em);
         }
     }
-    
+
     /**
      * Test refresh.
      */
@@ -283,7 +283,7 @@ public class NoSQLTestSuite extends JUnitTestCase {
             closeEntityManagerAndTransaction(em);
         }
     }
-    
+
     /**
      * Test JPQL.
      */
@@ -301,13 +301,13 @@ public class NoSQLTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Test native query.
      */
     public void testNativeQuery() {
         EntityManager em = createEntityManager();
-        
+
         MappedInteraction interaction = new MappedInteraction();
         interaction.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.GET.name());
         interaction.addArgumentValue("[ORDER," + existingOrder.id + "]", "");
@@ -318,9 +318,9 @@ public class NoSQLTestSuite extends JUnitTestCase {
                 || !(((Record)result.get(0)).containsKey("[ORDER," + existingOrder.id + "]"))) {
             fail("Incorrect result: " + result);
         }
-        
+
         interaction = new XMLInteraction();
-        interaction.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.GET.name()); 
+        interaction.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.GET.name());
         interaction.addArgumentValue("@id", existingOrder.id);
         query = em.unwrap(JpaEntityManager.class).createQuery(interaction, Order.class);
         result = query.getResultList();
@@ -328,9 +328,9 @@ public class NoSQLTestSuite extends JUnitTestCase {
                 || (!(result.get(0) instanceof Order))) {
             fail("Incorrect result: " + result);
         }
-        
+
     }
-    
+
     /**
      * Test deletes.
      */
@@ -356,7 +356,7 @@ public class NoSQLTestSuite extends JUnitTestCase {
             commitTransaction(em);
         } finally {
             closeEntityManagerAndTransaction(em);
-        }        
+        }
         clearCache();
         em = createEntityManager();
         beginTransaction(em);
@@ -369,5 +369,5 @@ public class NoSQLTestSuite extends JUnitTestCase {
             closeEntityManagerAndTransaction(em);
         }
     }
-    
+
 }

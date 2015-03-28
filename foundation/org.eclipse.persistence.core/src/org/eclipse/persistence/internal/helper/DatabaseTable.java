@@ -1,22 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     tware - added handling of database delimiters
- *     11/19/2012-2.5 Guy Pelletier 
+ *     11/19/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     11/22/2012-2.5 Guy Pelletier 
+ *     11/22/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
- *     12/07/2012-2.5 Guy Pelletier 
+ *     12/07/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
 import java.io.*;
@@ -44,12 +44,12 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     protected String name;
     protected String tableQualifier;
     protected String qualifiedName;
-    
+
     /** JPA 2.1 Foreign key specification data */
     protected Map<String, ForeignKeyConstraint> foreignKeyConstraints;
-    
+
     /**
-     * Contains the user specified unique constraints. JPA 2.0 introduced 
+     * Contains the user specified unique constraints. JPA 2.0 introduced
      * the name element, therefore, if specified we will use that name
      * to create the constraint. Constraints with no name will be added to the
      * map under the null key and generated with a default name.
@@ -68,7 +68,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
 
     protected String creationSuffix;
 
-    /** 
+    /**
      * Initialize the newly allocated instance of this class.
      * By default their is no qualifier.
      */
@@ -80,7 +80,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     public DatabaseTable(String possiblyQualifiedName) {
         this(possiblyQualifiedName, null, null);
     }
-    
+
     public DatabaseTable(String possiblyQualifiedName, String startDelimiter, String endDelimiter) {
         setPossiblyQualifiedName(possiblyQualifiedName, startDelimiter, endDelimiter);
     }
@@ -88,7 +88,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     public DatabaseTable(String tableName, String qualifier) {
         this(tableName, qualifier, false, null, null);
     }
-    
+
     public DatabaseTable(String tableName, String qualifier, boolean useDelimiters, String startDelimiter, String endDelimiter) {
         setName(tableName, startDelimiter, endDelimiter);
         this.tableQualifier = qualifier;
@@ -99,17 +99,17 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
         if (foreignKeyConstraints == null) {
             foreignKeyConstraints = new HashMap<String, ForeignKeyConstraint>();
         }
-        
+
         foreignKeyConstraints.put(foreignKeyConstraint.getName(), foreignKeyConstraint);
     }
-    
+
     /**
      * Add an index definition to this table.
      */
     public void addIndex(IndexDefinition index) {
         getIndexes().add(index);
     }
-    
+
     /**
      * Add the unique constraint for the columns names. Used for DDL generation.
      * For now we just add all the unique constraints as we would have before
@@ -124,8 +124,8 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
             getUniqueConstraints().put(name, value);
         }
     }
-    
-    /** 
+
+    /**
      * Return a shallow copy of the receiver.
      */
     public DatabaseTable clone() {
@@ -136,7 +136,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
         }
     }
 
-    /** 
+    /**
      * Two tables are equal if their names and tables are equal,
      * or their names are equal and one does not have a qualifier assigned.
      * This allows an unqualified table to equal the same fully qualified one.
@@ -177,17 +177,17 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
         return false;
     }
 
-    /** 
+    /**
      * returns the suffix applied to the CREATE table statement on this field for DDL generation.
      */
     public String getCreationSuffix() {
         return creationSuffix;
     }
-    
+
     public ForeignKeyConstraint getForeignKeyConstraint(String name) {
         return foreignKeyConstraints.get(name);
     }
-    
+
     public Map<String, ForeignKeyConstraint> getForeignKeyConstraints() {
         return foreignKeyConstraints;
     }
@@ -203,14 +203,14 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
         return this.indexes;
     }
 
-    /** 
+    /**
      * Get method for table name.
      */
     public String getName() {
         return name;
     }
-    
-    /** 
+
+    /**
      * Get method for table name.
      */
     public String getNameDelimited(DatasourcePlatform platform) {
@@ -231,7 +231,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
 
         return qualifiedName;
     }
-    
+
     public String getQualifiedNameDelimited(DatasourcePlatform platform) {
         if (tableQualifier.equals("")) {
             if (useDelimiters){
@@ -241,28 +241,28 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
             }
         } else {
             if (useDelimiters){
-                return platform.getStartDelimiter() + getTableQualifier() + platform.getEndDelimiter() + "." 
+                return platform.getStartDelimiter() + getTableQualifier() + platform.getEndDelimiter() + "."
                   + platform.getStartDelimiter() + getName() + platform.getEndDelimiter();
             } else {
                 return getTableQualifier() + "." + getName();
             }
         }
     }
-    
+
     /**
      * Print the table's SQL from clause.
      */
     public void printSQL(ExpressionSQLPrinter printer) throws IOException {
         printer.getWriter().write(getQualifiedNameDelimited(printer.getPlatform()));
     }
-    
+
     public String getTableQualifierDelimited(DatasourcePlatform platform) {
         if (useDelimiters && tableQualifier != null && !tableQualifier.equals("")){
             return platform.getStartDelimiter() + tableQualifier + platform.getEndDelimiter();
         }
         return tableQualifier;
     }
-    
+
     public String getTableQualifier() {
         return tableQualifier;
     }
@@ -270,22 +270,22 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     public boolean hasUniqueConstraints() {
         return (this.uniqueConstraints != null) && (!this.uniqueConstraints.isEmpty());
     }
-    
+
     public boolean hasForeignKeyConstraints() {
         return foreignKeyConstraints != null;
     }
-    
-    /** 
+
+    /**
      * Return the hashcode of the name, because it is fairly unique.
      */
     public int hashCode() {
         return getName().hashCode();
     }
-    
+
     public boolean hasIndexes() {
         return (this.indexes != null) && (!this.indexes.isEmpty());
     }
-    
+
     /**
      * Return a list of the unique constraints for this table.
      * Used for DDL generation.
@@ -322,27 +322,27 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     protected void resetQualifiedName() {
         this.qualifiedName = null;
     }
-    
+
     public void setCreationSuffix(String creationSuffix) {
         this.creationSuffix = creationSuffix;
     }
 
     /**
-     * Set the table name. 
+     * Set the table name.
      * Used when aliasing table names.
      * @param name
      */
     public void setName(String name) {
         setName(name, null, null);
     }
-    
+
     /**
      * Set the table name.
      * Used when aliasing table names.
-     * 
-     * If the name contains database delimiters, they will be stripped and a flag will be set to have them 
+     *
+     * If the name contains database delimiters, they will be stripped and a flag will be set to have them
      * added when the DatabaseTable is written to SQL
-     * 
+     *
      * @param name
      */
     public void setName(String name, String startDelimiter, String endDelimiter) {
@@ -354,21 +354,21 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
         }
         resetQualifiedName();
     }
-    
+
     /**
      * Used to map the project xml. Any time a string name is read from the
      * project xml, we must check if it is fully qualified and split the
      * actual name from the qualifier.
-     * 
-     * @param possiblyQualifiedName 
+     *
+     * @param possiblyQualifiedName
      */
     public void setPossiblyQualifiedName(String possiblyQualifiedName) {
         setPossiblyQualifiedName(possiblyQualifiedName, null, null);
     }
-    
+
     public void setPossiblyQualifiedName(String possiblyQualifiedName, String startDelimiter, String endDelimiter) {
         resetQualifiedName();
-        
+
         int index = possiblyQualifiedName.lastIndexOf('.');
 
         if (index == -1) {
@@ -388,7 +388,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
             }
         }
     }
-    
+
     public void setTableQualifier(String qualifier) {
         setTableQualifier(qualifier, null, null);
     }
@@ -406,11 +406,11 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     public String toString() {
         return "DatabaseTable(" + getQualifiedName() + ")";
     }
-    
+
     public void setUseDelimiters(boolean useDelimiters) {
         this.useDelimiters = useDelimiters;
     }
-    
+
     public boolean shouldUseDelimiters() {
         return useDelimiters;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,21 +23,21 @@ public class Employee {
     public int[] digits;
 
     public Object thing;
-    
+
     /**
      * Assumes the contents of the array is relevant, but not ordering.
-     * 
+     *
      */
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Employee)) {
             return false;
         }
         Employee emp = (Employee) obj;
-        
+
         if (emp.digits == null && digits == null) {
             return true;
         }
-        
+
         if (emp.digits == null && digits != null) {
             return false;
         }
@@ -54,7 +54,7 @@ public class Employee {
                 if (emp.digits[j] == digits[i]) {
                     foundMatch = true;
                 }
-            }   
+            }
             if (!foundMatch) {
                 return false;
             }

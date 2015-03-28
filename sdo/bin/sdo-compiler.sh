@@ -1,5 +1,5 @@
 #!/bin/sh
-. `dirname $0`/setenv.sh 
+. `dirname $0`/setenv.sh
 
 # User may increase Java memory setting(s) if desired:
 JVM_ARGS=-Xmx256m

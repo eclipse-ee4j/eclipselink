@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, Oracle. All rights reserved.
+ * Copyright (c) 2008, 2015 , Oracle. All rights reserved.
  *
  * This software is the proprietary information of Oracle Corporation.
  * Use is subject to license terms.
@@ -30,110 +30,110 @@ import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
 @SuppressWarnings("nls")
 final class UnaryTableSequencePropertyPane extends SequencePropertyPane
 {
-	/**
-	 * Creates a new <code>UnaryTableSequencePropertyPane</code>.
-	 *
-	 * @param subjectHolder The holder of <code>MWUnaryTableSequence</code>
-	 * @param workbenchContextHolder The holder of the <code>WorkbenchContext</code>,
-	 * used to retrieve the localized string, active window, etc
-	 */
-	UnaryTableSequencePropertyPane(ValueModel subjectHolder,
-	                               WorkbenchContextHolder workbenchContextHolder)
-	{
-		super(subjectHolder, workbenchContextHolder);
-	}
+    /**
+     * Creates a new <code>UnaryTableSequencePropertyPane</code>.
+     *
+     * @param subjectHolder The holder of <code>MWUnaryTableSequence</code>
+     * @param workbenchContextHolder The holder of the <code>WorkbenchContext</code>,
+     * used to retrieve the localized string, active window, etc
+     */
+    UnaryTableSequencePropertyPane(ValueModel subjectHolder,
+                                   WorkbenchContextHolder workbenchContextHolder)
+    {
+        super(subjectHolder, workbenchContextHolder);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initializeLayout()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initializeLayout()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		// Preallocation Size widgets
-		JComponent preallocationSizeWidgets = buildPreallocationSizeWidgets();
+        // Preallocation Size widgets
+        JComponent preallocationSizeWidgets = buildPreallocationSizeWidgets();
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 0;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 0;
-		constraints.fill       = GridBagConstraints.NONE;
-		constraints.anchor     = GridBagConstraints.LINE_START;
-		constraints.insets     = new Insets(0, 0, 0, 0);
+        constraints.gridx      = 0;
+        constraints.gridy      = 0;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 0;
+        constraints.fill       = GridBagConstraints.NONE;
+        constraints.anchor     = GridBagConstraints.LINE_START;
+        constraints.insets     = new Insets(0, 0, 0, 0);
 
-		add(preallocationSizeWidgets, constraints);
+        add(preallocationSizeWidgets, constraints);
 
-		// Counter Field widgets
-		CounterFieldPane counterFieldPane = new CounterFieldPane();
+        // Counter Field widgets
+        CounterFieldPane counterFieldPane = new CounterFieldPane();
 
-		constraints.gridx      = 0;
-		constraints.gridy      = 1;
-		constraints.gridwidth  = 1;
-		constraints.gridheight = 1;
-		constraints.weightx    = 1;
-		constraints.weighty    = 1;
-		constraints.fill       = GridBagConstraints.HORIZONTAL;
-		constraints.anchor     = GridBagConstraints.PAGE_START;
-		constraints.insets     = new Insets(5, 0, 0, 0);
+        constraints.gridx      = 0;
+        constraints.gridy      = 1;
+        constraints.gridwidth  = 1;
+        constraints.gridheight = 1;
+        constraints.weightx    = 1;
+        constraints.weighty    = 1;
+        constraints.fill       = GridBagConstraints.HORIZONTAL;
+        constraints.anchor     = GridBagConstraints.PAGE_START;
+        constraints.insets     = new Insets(5, 0, 0, 0);
 
-		add(counterFieldPane, constraints);
-		addPaneForAlignment(counterFieldPane);
-	}
+        add(counterFieldPane, constraints);
+        addPaneForAlignment(counterFieldPane);
+    }
 
-	private class CounterFieldPane extends LabeledTextFieldWithDefault
-	{
-		private CounterFieldPane()
-		{
-			super(UnaryTableSequencePropertyPane.this.getSubjectHolder(),
-			      UnaryTableSequencePropertyPane.this.getWorkbenchContextHolder());
-		}
+    private class CounterFieldPane extends LabeledTextFieldWithDefault
+    {
+        private CounterFieldPane()
+        {
+            super(UnaryTableSequencePropertyPane.this.getSubjectHolder(),
+                  UnaryTableSequencePropertyPane.this.getWorkbenchContextHolder());
+        }
 
-		@Override
-		protected PropertyValueModel buildValueHolder()
-		{
-			return new PropertyAspectAdapter(getSubjectHolder(), UnaryTableSequenceAdapter.COUNTER_FIELD_PROPERTY)
-			{
-				@Override
-				protected void fireAspectChange(Object oldValue, Object newValue)
-				{
-					// We have to change the oldValue to something in order for
-					// the listeners to be notified since we need to show the
-					// default value
-					if ((oldValue == newValue) && (oldValue == null))
-					{
-						oldValue = "";
-					}
+        @Override
+        protected PropertyValueModel buildValueHolder()
+        {
+            return new PropertyAspectAdapter(getSubjectHolder(), UnaryTableSequenceAdapter.COUNTER_FIELD_PROPERTY)
+            {
+                @Override
+                protected void fireAspectChange(Object oldValue, Object newValue)
+                {
+                    // We have to change the oldValue to something in order for
+                    // the listeners to be notified since we need to show the
+                    // default value
+                    if ((oldValue == newValue) && (oldValue == null))
+                    {
+                        oldValue = "";
+                    }
 
-					super.fireAspectChange(oldValue, newValue);
-				}
+                    super.fireAspectChange(oldValue, newValue);
+                }
 
-				@Override
-				protected Object getValueFromSubject()
-				{
-					return ((UnaryTableSequenceAdapter)subject).getSequenceCounterField();
-				}
+                @Override
+                protected Object getValueFromSubject()
+                {
+                    return ((UnaryTableSequenceAdapter)subject).getSequenceCounterField();
+                }
 
-				@Override
-				protected void setValueOnSubject(Object value)
-				{
-					((UnaryTableSequenceAdapter)subject).setSequenceCounterField((String)value);
-				}
-			};
-		}
+                @Override
+                protected void setValueOnSubject(Object value)
+                {
+                    ((UnaryTableSequenceAdapter)subject).setSequenceCounterField((String)value);
+                }
+            };
+        }
 
-		@Override
-		protected String defaultValue()
-		{
-			return "SEQUENCE";
-		}
+        @Override
+        protected String defaultValue()
+        {
+            return "SEQUENCE";
+        }
 
-		@Override
-		protected String labelKey()
-		{
-			return "UNARY_TABLE_SEQUENCE_PANE_COUNTER_FIELD_LABEL";
-		}
-	}
+        @Override
+        protected String labelKey()
+        {
+            return "UNARY_TABLE_SEQUENCE_PANE_COUNTER_FIELD_LABEL";
+        }
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.remote;
 
 import java.util.*;
@@ -36,13 +36,13 @@ public class RemoteSessionController {
 
     /** Used to resolve transaction treading for client-side nested transaction where server uses many worker threads. */
     protected boolean isInTransaction;
-    
+
     /** Used to isolate queries to a unit of work in an early transaction. */
     protected boolean isInEarlyTransaction;
 
     /** This is a either a database session or a client session depending upon the setup. */
     protected AbstractSession session;
-    
+
     /** Use the temporary unit of work to isolate queries after an early transaction. */
     protected UnitOfWorkImpl unitOfWork;
 
@@ -332,7 +332,7 @@ public class RemoteSessionController {
     /**
      * A named query after serialization is executed locally.
      */
-    public Transporter executeNamedQuery(Transporter nameTransporter, Transporter classTransporter, Transporter argumentsTransporter) {        
+    public Transporter executeNamedQuery(Transporter nameTransporter, Transporter classTransporter, Transporter argumentsTransporter) {
         Transporter transporter = new Transporter();
 
         try {

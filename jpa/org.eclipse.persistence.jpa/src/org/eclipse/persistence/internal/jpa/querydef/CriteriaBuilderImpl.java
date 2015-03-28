@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,12 +62,12 @@ import org.eclipse.persistence.jpa.JpaCriteriaBuilder;
 import org.eclipse.persistence.queries.ReportQuery;
 
 public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
-    
+
     public static final String CONCAT = "concat";
     public static final String SIZE = "size";
-    
+
     protected Metamodel metamodel;
-    
+
     public CriteriaBuilderImpl(Metamodel metamodel){
         this.metamodel = metamodel;
     }
@@ -114,7 +114,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     }
 
     /**
-     *  Create a Criteria query object that returns a tuple of 
+     *  Create a Criteria query object that returns a tuple of
      *  objects as its result.
      *  @return query object
      */
@@ -124,7 +124,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Define a select list item corresponding to a constructor.
-     * 
+     *
      * @param result
      *            class whose instance is to be constructed
      * @param selections
@@ -134,7 +134,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public <Y> CompoundSelection<Y> construct(Class<Y> result, Selection<?>... selections){
         return new ConstructorSelectionImpl(result, selections);
     }
-    
+
 
     public CompoundSelection<Tuple> tuple(Selection<?>... selections){
         return new CompoundSelectionImpl(Tuple.class, selections, true);
@@ -153,7 +153,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an ordering by the ascending value of the expression.
-     * 
+     *
      * @param x
      *            expression used to define the ordering
      * @return ascending ordering corresponding to the expression
@@ -167,7 +167,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an ordering by the descending value of the expression.
-     * 
+     *
      * @param x
      *            expression used to define the ordering
      * @return descending ordering corresponding to the expression
@@ -183,7 +183,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // aggregate functions:
     /**
      * Create an expression applying the avg operation.
-     * 
+     *
      * @param x
      *            expression representing input value to avg operation
      * @return avg expression
@@ -194,7 +194,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression applying the sum operation.
-     * 
+     *
      * @param x
      *            expression representing input value to sum operation
      * @return sum expression
@@ -205,7 +205,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression applying the numerical max operation.
-     * 
+     *
      * @param x
      *            expression representing input value to max operation
      * @return max expression
@@ -216,7 +216,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression applying the numerical min operation.
-     * 
+     *
      * @param x
      *            expression representing input value to min operation
      * @return min expression
@@ -228,7 +228,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create an aggregate expression for finding the greatest of the values
      * (strings, dates, etc).
-     * 
+     *
      * @param x
      *            expression representing input value to greatest operation
      * @return greatest expression
@@ -243,7 +243,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create an aggregate expression for finding the least of the values
      * (strings, dates, etc).
-     * 
+     *
      * @param x
      *            expression representing input value to least operation
      * @return least expression
@@ -257,7 +257,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression applying the count operation.
-     * 
+     *
      * @param x
      *            expression representing input value to count operation
      * @return count expression
@@ -271,7 +271,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression applying the count distinct operation.
-     * 
+     *
      * @param x
      *            expression representing input value to count distinct
      *            operation
@@ -287,7 +287,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // subqueries:
     /**
      * Create a predicate testing the existence of a subquery result.
-     * 
+     *
      * @param subquery
      *            subquery whose result is to be tested
      * @return exists predicate
@@ -300,7 +300,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate corresponding to an all expression over the subquery
      * results.
-     * 
+     *
      * @param subquery
      * @return all expression
      */
@@ -311,7 +311,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate corresponding to a some expression over the subquery
      * results. This is equivalent to an any expression.
-     * 
+     *
      * @param subquery
      * @return all expression
      */
@@ -322,7 +322,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate corresponding to an any expression over the subquery
      * results. This is equivalent to a some expression.
-     * 
+     *
      * @param subquery
      * @return any expression
      */
@@ -333,7 +333,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // boolean functions:
     /**
      * Create a conjunction of the given boolean expressions.
-     * 
+     *
      * @param x
      *            boolean expression
      * @param y
@@ -343,8 +343,8 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public Predicate and(Expression<Boolean> x, Expression<Boolean> y){
         CompoundExpressionImpl xp = null;
         CompoundExpressionImpl yp = null;
-        
-        
+
+
         if (((InternalExpression)x).isExpression()){
             xp = (CompoundExpressionImpl)this.isTrue(x);
         }else{
@@ -355,7 +355,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         }else{
             yp = (CompoundExpressionImpl)y;
         }
-        
+
         //bug 413084
         if (yp.isJunction()){
             if ( ((PredicateImpl)yp).getJunctionValue()){
@@ -379,7 +379,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create a disjunction of the given boolean expressions.
-     * 
+     *
      * @param x
      *            boolean expression
      * @param y
@@ -389,7 +389,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public Predicate or(Expression<Boolean> x, Expression<Boolean> y){
         CompoundExpressionImpl xp = null;
         CompoundExpressionImpl yp = null;
-        
+
         if (((InternalExpression)x).isExpression()){
             xp = (CompoundExpressionImpl)this.isTrue(x);
         }else{
@@ -422,7 +422,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a conjunction of the given restriction predicates. A conjunction
      * of zero predicates is true.
-     * 
+     *
      * @param restriction
      *            zero or more restriction predicates
      * @return and predicate
@@ -442,7 +442,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a disjunction of the given restriction predicates. A disjunction
      * of zero predicates is false.
-     * 
+     *
      * @param restriction
      *            zero or more restriction predicates
      * @return and predicate
@@ -461,7 +461,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create a negation of the given restriction.
-     * 
+     *
      * @param restriction
      *            restriction expression
      * @return not predicate
@@ -491,7 +491,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a conjunction (with zero conjuncts). A conjunction with zero
      * conjuncts is true.
-     * 
+     *
      * @return and predicate
      */
     public Predicate conjunction(){
@@ -501,7 +501,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a disjunction (with zero disjuncts). A disjunction with zero
      * disjuncts is false.
-     * 
+     *
      * @return or predicate
      */
     public Predicate disjunction(){
@@ -512,7 +512,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // useful for use with varargs methods
     /**
      * Create a predicate testing for a true value.
-     * 
+     *
      * @param x
      *            expression to be tested if true
      * @return predicate
@@ -532,7 +532,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create a predicate testing for a false value.
-     * 
+     *
      * @param x
      *            expression to be tested if false
      * @return predicate
@@ -551,7 +551,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         }
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().equal(false), buildList(x), "equals");
     }
-    
+
     //null tests:
     /**
      * Create a predicate to test whether the expression is null.
@@ -561,7 +561,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public Predicate isNull(Expression<?> x){
         return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().isNull(), new ArrayList(), BooleanOperator.AND);
     }
-    
+
     /**
      * Create a predicate to test whether the expression is not null.
      * @param x expression
@@ -574,7 +574,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // equality:
     /**
      * Create a predicate for testing the arguments for equality.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -591,7 +591,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create a predicate for testing the arguments for inequality.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -610,7 +610,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create a predicate for testing the arguments for equality.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -623,7 +623,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
         if (y instanceof ParameterExpression) return this.equal(x, (ParameterExpression)y);
-        
+
         List list = new ArrayList();
         list.add(x);
         list.add(this.internalLiteral(y));
@@ -632,7 +632,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create a predicate for testing the arguments for inequality.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -654,7 +654,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is greater than
      * the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -674,7 +674,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is less than
      * the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -691,7 +691,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is greater than
      * or equal to the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -711,7 +711,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is less than or
      * equal to the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -731,7 +731,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is between the
      * second and third arguments in value.
-     * 
+     *
      * @param v
      *            expression
      * @param x
@@ -741,7 +741,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return between predicate
      */
     public <Y extends Comparable<? super Y>> Predicate between(Expression<? extends Y> v, Expression<? extends Y> x, Expression<? extends Y> y){
-        
+
         List list = new ArrayList();
         list.add(v);
         list.add(x);
@@ -752,7 +752,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is greater than
      * the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -773,7 +773,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is less than
      * the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -794,7 +794,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is greater than
      * or equal to the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -815,7 +815,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is less than or
      * equal to the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -836,7 +836,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is between the
      * second and third arguments in value.
-     * 
+     *
      * @param v
      *            expression
      * @param x
@@ -852,7 +852,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         list.add(this.internalLiteral(y));
         return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)v).getCurrentNode().between(x, y), list, "between");
     }
-    
+
     protected List<Expression<?>> buildList(Expression<?>... expressions){
         ArrayList list = new ArrayList();
         for(Expression<?> exp : expressions){
@@ -865,7 +865,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is greater than
      * the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -882,7 +882,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is less than
      * the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -896,7 +896,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is greater than
      * or equal to the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -913,7 +913,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is less than or
      * equal to the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -930,7 +930,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is greater than
      * the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -947,7 +947,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is less than
      * the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -961,7 +961,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is greater than
      * or equal to the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -978,7 +978,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the first argument is less than or
      * equal to the second.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -993,7 +993,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create an expression that returns the arithmetic negation of its
      * argument.
-     * 
+     *
      * @param x
      *            expression
      * @return negated expression
@@ -1004,7 +1004,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the absolute value of its argument.
-     * 
+     *
      * @param x
      *            expression
      * @return absolute value
@@ -1015,7 +1015,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the sum of its arguments.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -1046,7 +1046,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     }
     /**
      * Create an expression that returns the product of its arguments.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -1059,7 +1059,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the difference between its arguments.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -1075,7 +1075,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the sum of its arguments.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -1088,7 +1088,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the product of its arguments.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -1101,7 +1101,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the difference between its arguments.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -1117,7 +1117,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the sum of its arguments.
-     * 
+     *
      * @param x
      *            value
      * @param y
@@ -1130,7 +1130,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the product of its arguments.
-     * 
+     *
      * @param x
      *            value
      * @param y
@@ -1143,7 +1143,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the difference between its arguments.
-     * 
+     *
      * @param x
      *            value
      * @param y
@@ -1160,7 +1160,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the quotient of its arguments.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -1173,7 +1173,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the quotient of its arguments.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -1186,7 +1186,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the quotient of its arguments.
-     * 
+     *
      * @param x
      *            value
      * @param y
@@ -1199,7 +1199,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the modulus of its arguments.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -1212,7 +1212,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the modulus of its arguments.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -1225,7 +1225,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the modulus of its arguments.
-     * 
+     *
      * @param x
      *            value
      * @param y
@@ -1239,7 +1239,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the square root of its argument.
-     * 
+     *
      * @param x
      *            expression
      * @return modulus
@@ -1251,7 +1251,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // typecasts:
     /**
      * Typecast.
-     * 
+     *
      * @param number
      *            numeric expression
      * @return Expression<Long>
@@ -1262,7 +1262,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Typecast.
-     * 
+     *
      * @param number
      *            numeric expression
      * @return Expression<Integer>
@@ -1273,7 +1273,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Typecast.
-     * 
+     *
      * @param number
      *            numeric expression
      * @return Expression<Float>
@@ -1284,7 +1284,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Typecast.
-     * 
+     *
      * @param number
      *            numeric expression
      * @return Expression<Double>
@@ -1295,7 +1295,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Typecast.
-     * 
+     *
      * @param number
      *            numeric expression
      * @return Expression<BigDecimal>
@@ -1306,7 +1306,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Typecast.
-     * 
+     *
      * @param number
      *            numeric expression
      * @return Expression<BigInteger>
@@ -1317,7 +1317,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Typecast.
-     * 
+     *
      * @param character
      *            expression
      * @return Expression<String>
@@ -1330,7 +1330,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // literals:
     /**
      * Create an expression literal.
-     * 
+     *
      * @param value
      * @return expression literal
      */
@@ -1353,7 +1353,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression literal but without null validation.
-     * 
+     *
      * @param value
      * @return expression literal
      */
@@ -1364,7 +1364,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // parameters:
     /**
      * Create a parameter.
-     * 
+     *
      * Create a parameter expression.
      * @param paramClass parameter class
      * @return parameter expression
@@ -1375,7 +1375,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create a parameter expression with the given name.
-     * 
+     *
      * @param paramClass
      *            parameter class
      * @param name
@@ -1388,7 +1388,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // collection operations:
     /**
      * Create a predicate that tests whether a collection is empty.
-     * 
+     *
      * @param collection
      *            expression
      * @return predicate
@@ -1406,7 +1406,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create a predicate that tests whether a collection is not empty.
-     * 
+     *
      * @param collection
      *            expression
      * @return predicate
@@ -1417,7 +1417,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that tests the size of a collection.
-     * 
+     *
      * @param collection
      * @return size expression
      */
@@ -1427,7 +1427,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that tests the size of a collection.
-     * 
+     *
      * @param collection
      *            expression
      * @return size expression
@@ -1439,7 +1439,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate that tests whether an element is a member of a
      * collection.
-     * 
+     *
      * @param elem
      *            element
      * @param collection
@@ -1454,7 +1454,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate that tests whether an element is not a member of a
      * collection.
-     * 
+     *
      * @param elem
      *            element
      * @param collection
@@ -1469,7 +1469,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate that tests whether an element is a member of a
      * collection.
-     * 
+     *
      * @param elem
      *            element expression
      * @param collection
@@ -1483,7 +1483,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate that tests whether an element is not a member of a
      * collection.
-     * 
+     *
      * @param elem
      *            element expression
      * @param collection
@@ -1508,7 +1508,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // be passed to size(), isMember(), isEmpty(), etc
     /**
      * Create an expression that returns the values of a map.
-     * 
+     *
      * @param map
      * @return collection expression
      */
@@ -1518,7 +1518,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression that returns the keys of a map.
-     * 
+     *
      * @param map
      * @return set expression
      */
@@ -1530,7 +1530,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the expression satisfies the given
      * pattern.
-     * 
+     *
      * @param x
      *            string expression
      * @param pattern
@@ -1539,14 +1539,14 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     public Predicate like(Expression<String> x, Expression<String> pattern){
         List list = this.buildList(x, pattern);
-        return new CompoundExpressionImpl(this.metamodel, 
+        return new CompoundExpressionImpl(this.metamodel,
             ((InternalSelection)x).getCurrentNode().like(((InternalSelection)pattern).getCurrentNode()), list, "like");
     }
 
     /**
      * Create a predicate for testing whether the expression satisfies the given
      * pattern.
-     * 
+     *
      * @param x
      *            string expression
      * @param pattern
@@ -1557,14 +1557,14 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     public Predicate like(Expression<String> x, Expression<String> pattern, Expression<Character> escapeChar){
         List list = this.buildList(x, pattern, escapeChar);
-        return new CompoundExpressionImpl(this.metamodel, 
+        return new CompoundExpressionImpl(this.metamodel,
             ((InternalSelection)x).getCurrentNode().like(((InternalSelection)pattern).getCurrentNode(), ((InternalSelection)escapeChar).getCurrentNode()), list, "like");
     }
 
     /**
      * Create a predicate for testing whether the expression satisfies the given
      * pattern.
-     * 
+     *
      * @param x
      *            string expression
      * @param pattern
@@ -1574,14 +1574,14 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return like predicate
      */
     public Predicate like(Expression<String> x, Expression<String> pattern, char escapeChar){
-        
+
         return this.like(x, pattern, this.internalLiteral(escapeChar));
     }
 
     /**
      * Create a predicate for testing whether the expression satisfies the given
      * pattern.
-     * 
+     *
      * @param x
      *            string expression
      * @param pattern
@@ -1596,7 +1596,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the expression satisfies the given
      * pattern.
-     * 
+     *
      * @param x
      *            string expression
      * @param pattern
@@ -1612,7 +1612,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the expression satisfies the given
      * pattern.
-     * 
+     *
      * @param x
      *            string expression
      * @param pattern
@@ -1625,14 +1625,14 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         List list = this.buildList(x, this.internalLiteral(pattern), this.internalLiteral(escapeChar));
         String escapeString = String.valueOf(escapeChar);
 
-        return new CompoundExpressionImpl(this.metamodel, 
+        return new CompoundExpressionImpl(this.metamodel,
             ((InternalSelection)x).getCurrentNode().like(pattern, escapeString), list, "like");
     }
 
     /**
      * Create a predicate for testing whether the expression does not satisfy
      * the given pattern.
-     * 
+     *
      * @param x
      *            string expression
      * @param pattern
@@ -1642,14 +1642,14 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public Predicate notLike(Expression<String> x, Expression<String> pattern){
         List list = this.buildList(x, pattern);
 
-        return new CompoundExpressionImpl(this.metamodel, 
+        return new CompoundExpressionImpl(this.metamodel,
             ((InternalSelection)x).getCurrentNode().notLike(((InternalSelection)pattern).getCurrentNode()), list, "notLike");
     }
 
     /**
      * Create a predicate for testing whether the expression does not satisfy
      * the given pattern.
-     * 
+     *
      * @param x
      *            string expression
      * @param pattern
@@ -1661,15 +1661,15 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public Predicate notLike(Expression<String> x, Expression<String> pattern, Expression<Character> escapeChar){
         List list = this.buildList(x, pattern, escapeChar);
 
-        return new CompoundExpressionImpl(this.metamodel, 
-            ((InternalSelection)x).getCurrentNode().notLike(((InternalSelection)pattern).getCurrentNode(), 
+        return new CompoundExpressionImpl(this.metamodel,
+            ((InternalSelection)x).getCurrentNode().notLike(((InternalSelection)pattern).getCurrentNode(),
             ((InternalSelection)escapeChar).getCurrentNode()), list, "like");
     }
 
     /**
      * Create a predicate for testing whether the expression does not satisfy
      * the given pattern.
-     * 
+     *
      * @param x
      *            string expression
      * @param pattern
@@ -1685,7 +1685,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the expression does not satisfy
      * the given pattern.
-     * 
+     *
      * @param x
      *            string expression
      * @param pattern
@@ -1697,14 +1697,14 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         list.add(x);
         list.add(this.internalLiteral(pattern));
 
-        return new CompoundExpressionImpl(this.metamodel, 
+        return new CompoundExpressionImpl(this.metamodel,
             ((InternalSelection)x).getCurrentNode().notLike(pattern), list, "notLike");
     }
 
     /**
      * Create a predicate for testing whether the expression does not satisfy
      * the given pattern.
-     * 
+     *
      * @param x
      *            string expression
      * @param pattern
@@ -1720,7 +1720,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create a predicate for testing whether the expression does not satisfy
      * the given pattern.
-     * 
+     *
      * @param x
      *            string expression
      * @param pattern
@@ -1735,7 +1735,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * String concatenation operation.
-     * 
+     *
      * @param x
      *            string expression
      * @param y
@@ -1758,7 +1758,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * String concatenation operation.
-     * 
+     *
      * @param x
      *            string expression
      * @param y
@@ -1775,7 +1775,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * String concatenation operation.
-     * 
+     *
      * @param x
      *            string
      * @param y
@@ -1793,7 +1793,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Substring extraction operation. Extracts a substring starting at
      * specified position through to end of the string. First position is 1.
-     * 
+     *
      * @param x
      *            string expression
      * @param from
@@ -1807,7 +1807,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Substring extraction operation. Extracts a substring starting at
      * specified position through to end of the string. First position is 1.
-     * 
+     *
      * @param x
      *            string expression
      * @param from
@@ -1822,7 +1822,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Substring extraction operation. Extracts a substring of given length
      * starting at specified position. First position is 1.
-     * 
+     *
      * @param x
      *            string expression
      * @param from
@@ -1838,7 +1838,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Substring extraction operation. Extracts a substring of given length
      * starting at specified position. First position is 1.
-     * 
+     *
      * @param x
      *            string expression
      * @param from
@@ -1853,7 +1853,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create expression to trim blanks from both ends of a string.
-     * 
+     *
      * @param x
      *            expression for string to trim
      * @return trim expression
@@ -1865,7 +1865,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create expression to trim blanks from a string.
-     * 
+     *
      * @param ts
      *            trim specification
      * @param x
@@ -1875,9 +1875,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public Expression<String> trim(Trimspec ts, Expression<String> x){
         List list = this.buildList(x);
 
-        if(ts == Trimspec.LEADING) {       
+        if(ts == Trimspec.LEADING) {
             return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().leftTrim(), list, "leftTrim");
-        } else if(ts == Trimspec.TRAILING) {       
+        } else if(ts == Trimspec.TRAILING) {
             return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().rightTrim(), list, "rightTrim");
     }
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().rightTrim().leftTrim(), list, "bothTrim");
@@ -1886,7 +1886,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create expression to trim character from both ends of a string.
-     * 
+     *
      * @param t
      *            expression for character to be trimmed
      * @param x
@@ -1900,7 +1900,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create expression to trim character from a string.
-     * 
+     *
      * @param ts
      *            trim specification
      * @param t
@@ -1912,20 +1912,20 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public Expression<String> trim(Trimspec ts, Expression<Character> t, Expression<String> x){
         List list = this.buildList(x, t);
 
-        if(ts == Trimspec.LEADING) {       
-            return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, 
+        if(ts == Trimspec.LEADING) {
+            return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING,
                 ((InternalSelection)x).getCurrentNode().leftTrim(((InternalSelection)t).getCurrentNode()), list, "leftTrim");
-        } else if(ts == Trimspec.TRAILING) {       
-            return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, 
+        } else if(ts == Trimspec.TRAILING) {
+            return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING,
                 ((InternalSelection)x).getCurrentNode().rightTrim(((InternalSelection)t).getCurrentNode()), list, "rightTrim");
     }
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, 
+        return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING,
             ((InternalSelection)x).getCurrentNode().rightTrim(((InternalSelection)t).getCurrentNode()).leftTrim(((InternalSelection)t).getCurrentNode()), list, "bothTrim");
     }
 
     /**
      * Create expression to trim character from both ends of a string.
-     * 
+     *
      * @param t
      *            character to be trimmed
      * @param x
@@ -1938,7 +1938,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create expression to trim character from a string.
-     * 
+     *
      * @param ts
      *            trim specification
      * @param t
@@ -1953,7 +1953,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create expression for converting a string to lowercase.
-     * 
+     *
      * @param x
      *            string expression
      * @return expression to convert to lowercase
@@ -1965,7 +1965,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create expression for converting a string to uppercase.
-     * 
+     *
      * @param x
      *            string expression
      * @return expression to convert to uppercase
@@ -1977,7 +1977,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create expression to return length of a string.
-     * 
+     *
      * @param x
      *            string expression
      * @return length expression
@@ -1991,7 +1991,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * returning position of first character if found. The first position in a
      * string is denoted by 1. If the string to be located is not found, 0 is
      * returned.
-     * 
+     *
      * @param x
      *            expression for string to be searched
      * @param pattern
@@ -2007,7 +2007,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * returning position of first character if found. The first position in a
      * string is denoted by 1. If the string to be located is not found, 0 is
      * returned.
-     * 
+     *
      * @param x
      *            expression for string to be searched
      * @param pattern
@@ -2025,7 +2025,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * returning position of first character if found. The first position in a
      * string is denoted by 1. If the string to be located is not found, 0 is
      * returned.
-     * 
+     *
      * @param x
      *            expression for string to be searched
      * @param pattern
@@ -2041,7 +2041,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * returning position of first character if found. The first position in a
      * string is denoted by 1. If the string to be located is not found, 0 is
      * returned.
-     * 
+     *
      * @param x
      *            expression for string to be searched
      * @param pattern
@@ -2057,7 +2057,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // Date/time/timestamp functions:
     /**
      * Create expression to return current date.
-     * 
+     *
      * @return expression for current date
      */
     public Expression<java.sql.Date> currentDate(){
@@ -2066,7 +2066,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create expression to return current timestamp.
-     * 
+     *
      * @return expression for current timestamp
      */
     public Expression<java.sql.Timestamp> currentTimestamp(){
@@ -2075,7 +2075,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create expression to return current time.
-     * 
+     *
      * @return expression for current time
      */
     public Expression<java.sql.Time> currentTime(){
@@ -2085,7 +2085,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create predicate to test whether given expression is contained in a list
      * of values.
-     * 
+     *
      * @param expression
      *            to be tested against list of values
      * @return in predicate
@@ -2100,7 +2100,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create an expression that returns null if all its arguments evaluate to
      * null, and the value of the first non-null argument otherwise.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -2117,7 +2117,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create an expression that returns null if all its arguments evaluate to
      * null, and the value of the first non-null argument otherwise.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -2134,7 +2134,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create an expression that tests whether its argument are equal, returning
      * null if they are and the value of the first expression if they are not.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -2148,7 +2148,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     /**
      * Create an expression that tests whether its argument are equal, returning
      * null if they are and the value of the first expression if they are not.
-     * 
+     *
      * @param x
      *            expression
      * @param y
@@ -2161,7 +2161,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create a coalesce expression.
-     * 
+     *
      * @return coalesce expression
      */
     public <T> Coalesce<T> coalesce(){
@@ -2171,7 +2171,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create simple case expression.
-     * 
+     *
      * @param expression
      *            to be tested against the case conditions
      * @return simple case expression
@@ -2183,7 +2183,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create a general case expression.
-     * 
+     *
      * @return general case expression
      */
     public <R> Case<R> selectCase(){
@@ -2193,7 +2193,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     /**
      * Create an expression for execution of a database function.
-     * 
+     *
      * @param name
      *            function name
      * @param type
@@ -2209,7 +2209,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             Expression x = args[index];
             params.add(((InternalSelection)x).getCurrentNode());
         }
-        
+
         return new FunctionExpressionImpl<T>(metamodel, type, ((InternalSelection)args[0]).getCurrentNode().getFunctionWithArguments(name, params), buildList(args), name);
         }else{
             return new FunctionExpressionImpl<T>(metamodel, type, new ExpressionBuilder().getFunction(name), new ArrayList(0), name);
@@ -2233,7 +2233,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public Expression fromExpression(org.eclipse.persistence.expressions.Expression expression) {
         return new FunctionExpressionImpl(this.metamodel, Object.class, expression, new ArrayList(0));
     }
-    
+
     /**
      * ADVANCED:
      * Allow a Criteria Expression to be converted to a EclipseLink native API Expression object.
@@ -2242,10 +2242,10 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public org.eclipse.persistence.expressions.Expression toExpression(Expression expression) {
         return ((SelectionImpl)expression).getCurrentNode();
     }
-    
+
     /**
-     *  Interface used to build coalesce expressions.  
-     *   
+     *  Interface used to build coalesce expressions.
+     *
      * A coalesce expression is equivalent to a case expression
      * that returns null if all its arguments evaluate to null,
      * and the value of its first non-null argument otherwise.
@@ -2259,7 +2259,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         protected <T> CoalesceImpl (Metamodel metamodel, Class<X> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){
             super(metamodel, resultClass, expressionNode, compoundExpressions, operator);
         }
-        
+
          /**
           * Add an argument to the coalesce expression.
           * @param value  value
@@ -2283,7 +2283,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
              return this;
          }
     }
-    
+
     /**
      * Implementation of Case interface from Criteria Builder
      * @author tware
@@ -2299,7 +2299,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         protected <T> CaseImpl (Metamodel metamodel, Class<R> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){
             super(metamodel, resultClass, expressionNode, compoundExpressions, operator);
         }
-        
+
         /**
          * Add a when/then clause to the case expression.
          * @param condition  "when" condition
@@ -2354,7 +2354,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             return this;
         }
     }
-    
+
     /**
      * Implementation of SimpleCase interface from CriteriaBuilder
      * @author tware
@@ -2377,7 +2377,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             this.expression = expression;
             expressionNode.addChild(((InternalSelection)expression).getCurrentNode());
         }
-        
+
         /**
          * Returns the expression to be tested against the
          * conditions.
@@ -2433,7 +2433,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          * @return expression
          */
         public Expression<R> otherwise(Expression<? extends R> result){
-            
+
             org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
             resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
             ((ArgumentListFunctionExpression)currentNode).addRightMostChild(resultExp);
@@ -2446,7 +2446,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             TypeImpl type = ((MetamodelImpl)this.metamodel).getType(targetEntity);
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
                 return new CriteriaDeleteImpl(this.metamodel, this, targetEntity);
-            } 
+            }
         }
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { targetEntity }));
     }
@@ -2456,14 +2456,14 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             TypeImpl type = ((MetamodelImpl)this.metamodel).getType(targetEntity);
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
                 return new CriteriaUpdateImpl(this.metamodel, this, targetEntity);
-            } 
+            }
         }
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { targetEntity }));
     }
 
     public <X, T, V extends T> Join<X, V> treat(Join<X, T> join, Class<V> type) {
         JoinImpl parentJoin = (JoinImpl)join;
-        JoinImpl joinImpl = new JoinImpl<X, V>(parentJoin, this.metamodel.managedType(type), this.metamodel, 
+        JoinImpl joinImpl = new JoinImpl<X, V>(parentJoin, this.metamodel.managedType(type), this.metamodel,
                 type, parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
         parentJoin.joins.add(joinImpl);
         joinImpl.isJoin = parentJoin.isJoin;
@@ -2475,10 +2475,10 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         CollectionJoinImpl parentJoin = (CollectionJoinImpl)join;
         CollectionJoin joinImpl = null;
         if (join instanceof BasicCollectionJoinImpl) {
-            joinImpl = new BasicCollectionJoinImpl<X, E>(parentJoin, this.metamodel, type, 
-                    parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType()); 
+            joinImpl = new BasicCollectionJoinImpl<X, E>(parentJoin, this.metamodel, type,
+                    parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
         } else {
-            joinImpl = new CollectionJoinImpl<X, E>((Path)join, this.metamodel.managedType(type), this.metamodel, 
+            joinImpl = new CollectionJoinImpl<X, E>((Path)join, this.metamodel.managedType(type), this.metamodel,
                     type, parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
         }
         parentJoin.joins.add(joinImpl);
@@ -2491,10 +2491,10 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         SetJoinImpl parentJoin = (SetJoinImpl)join;
         SetJoin joinImpl = null;
         if (join instanceof BasicSetJoinImpl) {
-            joinImpl = new BasicSetJoinImpl<X, E>(parentJoin, this.metamodel, type, 
-                    parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType()); 
+            joinImpl = new BasicSetJoinImpl<X, E>(parentJoin, this.metamodel, type,
+                    parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
         } else {
-            joinImpl = new SetJoinImpl<X, E>((Path)join, this.metamodel.managedType(type), this.metamodel, 
+            joinImpl = new SetJoinImpl<X, E>((Path)join, this.metamodel.managedType(type), this.metamodel,
                     type, parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
         }
         parentJoin.joins.add(joinImpl);
@@ -2507,10 +2507,10 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         ListJoinImpl parentJoin = (ListJoinImpl)join;
         ListJoin joinImpl = null;
         if (join instanceof BasicListJoinImpl) {
-            joinImpl = new BasicListJoinImpl<X, E>(parentJoin, this.metamodel, type, 
-                    parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType()); 
+            joinImpl = new BasicListJoinImpl<X, E>(parentJoin, this.metamodel, type,
+                    parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
         } else {
-            joinImpl = new ListJoinImpl<X, E>((Path)join, this.metamodel.managedType(type), this.metamodel, 
+            joinImpl = new ListJoinImpl<X, E>((Path)join, this.metamodel.managedType(type), this.metamodel,
                     type, parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
         }
         parentJoin.joins.add(joinImpl);
@@ -2523,10 +2523,10 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         MapJoinImpl parentJoin = (MapJoinImpl)join;
         MapJoin joinImpl = null;
         if (join instanceof BasicMapJoinImpl) {
-            joinImpl = new BasicMapJoinImpl<X, K, V>(parentJoin, this.metamodel, type, 
-                    parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType()); 
+            joinImpl = new BasicMapJoinImpl<X, K, V>(parentJoin, this.metamodel, type,
+                    parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
         } else {
-            joinImpl = new MapJoinImpl<X, K, V>((Path)join, this.metamodel.managedType(type), this.metamodel, 
+            joinImpl = new MapJoinImpl<X, K, V>((Path)join, this.metamodel.managedType(type), this.metamodel,
                     type, parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
         }
         parentJoin.joins.add(joinImpl);
@@ -2550,6 +2550,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         RootImpl parentRoot = (RootImpl)root;
         EntityType entity = this.metamodel.entity(type);
         return new RootImpl<T>(entity, this.metamodel, type, parentRoot.currentNode.treat(type), entity);
-    }    
+    }
 }
 

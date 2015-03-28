@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2013 Oracle and/or its affiliates, SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2010, 2015 Oracle and/or its affiliates, SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     SAP    - tests rewritten
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
         suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES9"));
         return suite;
     }
-    
+
     public void testSetup() {
         ServerSession session = JUnitTestCase.getServerSession();
         new AdvancedTableCreator().replaceTables(session);
@@ -85,17 +85,17 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
         descriptor.setShouldBeReadOnly(false);
         clearCache();
     }
-    
+
     interface Actor<X> {
         void setup(EntityManager em);
-        
+
         X getEntityToLock(EntityManager em);
-        
+
         void modify(EntityManager em);
-        
+
         void check(EntityManager em, X lockedEntity);
     }
-    
+
     // Entity relationships for which the locked entity contains the foreign key
     // will be locked with bidirectional one-to-one mapping without mappedBy
     // (Scenario 1.1)
@@ -105,7 +105,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
             return;
         }
         final EntyA a = new EntyA();
-        
+
         final Actor actor = new Actor<EntyA>() {
 
             public void setup(EntityManager em) {
@@ -129,9 +129,9 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
                 em.refresh(lockedEntity);
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyC());
             }
-            
+
         };
-        
+
         testNonrepeatableRead(actor);
     }
 
@@ -143,7 +143,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
             return;
         }
         final EntyA a = new EntyA();
-        
+
         final Actor actor = new Actor<EntyA>() {
 
             public void setup(EntityManager em) {
@@ -165,9 +165,9 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
                 em1.refresh(lockedEntity);
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyB());
             }
-            
+
         };
-        
+
         testNonrepeatableRead(actor);
     }
 
@@ -180,7 +180,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
             return;
         }
         final Equipment eq = new Equipment();
-        
+
         final Actor actor = new Actor<Equipment>() {
 
             public void setup(EntityManager em) {
@@ -204,12 +204,12 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
                 em1.refresh(lockedEntity);
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getEquipmentCode());
             }
-            
+
         };
-        
+
         testNonrepeatableRead(actor);
     }
-    
+
 
     // Entity relationships for which the locked entity contains the foreign key
     // will be locked with bidirectional many-to-one mapping(Scenario 1.4)
@@ -224,7 +224,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
             return;
         }
         final Employee emp = new Employee();
-        
+
         final Actor actor = new Actor<Employee>() {
 
             public void setup(EntityManager em) {
@@ -246,13 +246,13 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
                 em1.refresh(lockedEntity);
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getAddress());
             }
-            
+
         };
-        
+
         testNonrepeatableRead(actor);
     }
 
-    
+
     // Relationships owned by the entity that are contained in join tables will
     // be locked with Unidirectional OneToMany mapping (Scenario 2.2)
     public void testPESSMISTIC_ES5() throws Exception {
@@ -261,7 +261,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
             return;
         }
         final EntyA entyA = new EntyA();
-        
+
         final Actor actor = new Actor<EntyA>() {
 
             public void setup(EntityManager em) {
@@ -281,7 +281,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
             public void check(EntityManager em1, EntyA lockedEntity) {
                 em1.refresh(lockedEntity);
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyDs());
-                
+
                 final Collection collection;
                 if (getServerSession().getPlatform().isMaxDB()) {
                     // avoid accessing EntyD's table as this would lead to a dead lock
@@ -291,16 +291,16 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
                 } else {
                     collection = lockedEntity.getEntyDs();
                 }
-                
+
                 assertFalse("other transaction modified row concurrently", collection.isEmpty());
             }
-            
+
         };
-        
+
         testNonrepeatableRead(actor);
     }
-    
-    
+
+
     //Relationships owned by the entity that are contained in join tables will be locked with Unidirectional ManyToMany mapping (Scenario 2.3)
     public void testPESSMISTIC_ES6() throws Exception {
         if (getPlatform().isSQLServer()) {
@@ -308,7 +308,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
             return;
         }
         final EntyA entyA = new EntyA();
-        
+
         final Actor actor = new Actor<EntyA>() {
 
             public void setup(EntityManager em) {
@@ -335,18 +335,18 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
                 assertNotNull("other transaction modified row concurrently", lockedEntity.getEntyEs());
                 assertFalse("other transaction modified row concurrently", lockedEntity.getEntyEs().isEmpty());
             }
-            
+
         };
-        
+
         testNonrepeatableRead(actor);
     }
 
 
-    
+
     /*
      * The test should assert that the following phenomenon does not occur
      * after a row has been locked by T1:
-     * 
+     *
      * - P2 (Non-repeatable read): Transaction T1 reads a row. Another
      * transaction T2 then modifies or deletes that row, before T1 has
      * committed or rolled back.
@@ -356,7 +356,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
         if (isOnServer() || !isSelectForUpateSupported()) {
             return;
         }
-        
+
         EntityManager em = createEntityManager();
         EntyC c = null;
         try {
@@ -381,7 +381,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
         EntityManager em1 = createEntityManager();
         try {
             beginTransaction(em1);
-            X locked = actor.getEntityToLock(em1); 
+            X locked = actor.getEntityToLock(em1);
             em1.lock(locked, lockMode, properties);
 
             final EntityManager em2 = createEntityManager();
@@ -421,7 +421,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
             closeEntityManager(em1);
         }
     }
-    
+
 
 
     //Bidirectional OneToOne Relationship with target entity has foreign key, entity does not contain the foreign key will not be locked (Scenario 3.1)

@@ -139,12 +139,12 @@ public class DBWSTestSuite {
     public static ByteArrayOutputStream DBWS_WSDL_STREAM = null;
 
     public static DBWSLogger dbwsLogger;
-    
+
     static {
         // Fixing time zone issue introduced with JDK8
         TimeZone.setDefault(TimeZone.getTimeZone("Canada/Eastern"));
     }
-    
+
     public static void setUp(String stageDir) throws WSDLException {
         setUp(stageDir, false, false);
     }
@@ -158,7 +158,7 @@ public class DBWSTestSuite {
         DBWS_WSDL_STREAM = new ByteArrayOutputStream();
         XMLContext context = new XMLContext(new DBWSBuilderModelProject());
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
-        
+
 
         if (!builderIsInitialized) {
             if (builder == null) {
@@ -173,11 +173,11 @@ public class DBWSTestSuite {
             DBWSBuilderModel builderModel = (DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
             builder.properties = builderModel.properties;
             builder.operations = builderModel.operations;
-        }        
+        }
 
         builder.quiet = true;
         builder.setPlatformClassname(DATABASE_PLATFORM);
-        
+
         XRPackager xrPackager = new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
             @Override
             public void start() {
@@ -257,11 +257,11 @@ public class DBWSTestSuite {
                 }
                 login.setDatasourcePlatform(platform);
                 ((DatabaseLogin) login).bindAllParameters();
-                
+
                 Project orProject = null;
                 if (DBWS_OR_STREAM.size() != 0) {
                     //orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()), xrdecl);
-                    MetadataProcessor processor = new MetadataProcessor(new XRPersistenceUnitInfo(xrdecl), 
+                    MetadataProcessor processor = new MetadataProcessor(new XRPersistenceUnitInfo(xrdecl),
                             new DatabaseSessionImpl(login), xrdecl, false, true, false, false, false, null, null);
                     processor.setMetadataSource(new JPAMetadataSource(xrdecl, new StringReader(DBWS_OR_STREAM.toString())));
                     PersistenceUnitProcessor.processORMetadata(processor, true, PersistenceUnitProcessor.Mode.ALL);
@@ -288,7 +288,7 @@ public class DBWSTestSuite {
                     try {
                         JAXBContext jc = JAXBContext.newInstance(XmlBindingsModel.class);
                         Unmarshaller unmarshaller = jc.createUnmarshaller();
-                        
+
                         JAXBElement<XmlBindingsModel> jaxbElt = unmarshaller.unmarshal(xml, XmlBindingsModel.class);
                         XmlBindingsModel model = jaxbElt.getValue();
                         for (XmlBindings xmlBindings : model.getBindingsList()) {
@@ -297,11 +297,11 @@ public class DBWSTestSuite {
                     } catch (JAXBException jaxbex) {
                         jaxbex.printStackTrace();
                     }
-                    
+
                     Map<String, Map<String, OXMMetadataSource>> properties = new HashMap<String, Map<String, OXMMetadataSource>>();
                     properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
                     try {
-                        org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext jCtx = 
+                        org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext jCtx =
                                 org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory.createContextFromOXM(xrdecl, properties);
                         oxProject = jCtx.getXMLContext().getSession(0).getProject();
                     } catch (JAXBException e) {
@@ -323,7 +323,7 @@ public class DBWSTestSuite {
                 }
                 xrService.setXMLContext(new XMLContext(oxProject));
                 xrService.setOXSession(xrService.getXMLContext().getSession(0));
-                prepareDescriptors(oxProject, orProject, xrdecl);                
+                prepareDescriptors(oxProject, orProject, xrdecl);
                 ProjectHelper.fixOROXAccessors(orProject, oxProject);
             }
         };
@@ -399,24 +399,24 @@ public class DBWSTestSuite {
             }
         }
     }
-    
+
     /**
      * Logger to test that a given message was logged correctly.
      *
      */
     public static class DBWSLogger extends Logger {
         List<String> messages;
-        
+
         protected DBWSLogger(String name, String resourceBundleName) {
             super(name, resourceBundleName);
             messages = new ArrayList<String>();
         }
-        
+
         public void log(Level level, String msg) {
             //System.out.println(level.getName() + ": " + msg);
             messages.add(level.getName() + ": " + msg);
         }
-        
+
         public boolean hasMessages() {
             return messages != null && messages.size() > 0;
         }
@@ -431,7 +431,7 @@ public class DBWSTestSuite {
             }
             return false;
         }
-        
+
         public List<String> getWarnings() {
             List<String> warnings = null;
             if (messages != null || messages.size() > 0) {
@@ -444,7 +444,7 @@ public class DBWSTestSuite {
             }
             return warnings;
         }
-        
+
         public List<String> getMessages() {
             return messages;
         }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -36,7 +36,7 @@ import org.junit.Test;
  * to entities referenced by X, if the relationships from X to these other entities is annotated with the cascade=PERSIST or
  * cascade=ALL annotation element value or specified with the equivalent XML descriptor element.</li>
  * <li>If X is a removed entity, it becomes managed.</li>
- * <li>If X is a detached object, the EntityExistsException may be thrown when the persist operation is invoked, 
+ * <li>If X is a detached object, the EntityExistsException may be thrown when the persist operation is invoked,
  * or the EntityExistsException or another PersistenceException may be thrown at flush or commit time.</li>
  * <li>For all entities Y referenced by a relationship from X, if the relationship to Y has been annotated with the cascade
  * element value cascade=PERSIST or cascade=ALL, the persist operation is applied to Y.</li>
@@ -103,7 +103,7 @@ public class TestCascadePersist extends JPA1Base {
             em.persist(parent);
             env.commitTransactionAndClear(em);
             // parent is now detached
-            
+
             CascadingNode child = new CascadingNode(22, parent);
             child.setParent(null); // to avoid circular cascade
             // cascade from parent to child
@@ -133,7 +133,7 @@ public class TestCascadePersist extends JPA1Base {
             verify(persistFailed, "persist succeeded on a detached instance");
             // can't verify anything on the database as state is undefined after rollback
 
-            
+
             // case 2: detached because an object with same pk but different object identity is known by persistence context
             // case 2a: state of known object: new
             CascadingNode existing = new CascadingNode(23, null);
@@ -168,8 +168,8 @@ public class TestCascadePersist extends JPA1Base {
             }
             verify(persistFailed, "persist succeeded on a detached instance");
             // can't verify anything on the database as state is undefined after rollback
-            
-            
+
+
             // case 2b: state of known object: managed
             existing = new CascadingNode(25, null);
             parent = new CascadingNode(existing.getId(), null);
@@ -178,7 +178,7 @@ public class TestCascadePersist extends JPA1Base {
             env.beginTransaction(em);
             em.persist(existing);
             env.commitTransactionAndClear(em);
-            
+
             env.beginTransaction(em);
             existing = em.find(CascadingNode.class, new Integer(existing.getId())); // known object in state managed
             persistFailed = false;
@@ -207,7 +207,7 @@ public class TestCascadePersist extends JPA1Base {
             }
             verify(persistFailed, "persist did succeed on a detached instance");
             // can't verify anything on the database as state is undefined after rollback
-            
+
             // case 2c: state of known object: deleted
             existing = new CascadingNode(27, null);
             parent = new CascadingNode(existing.getId(), null);
@@ -216,7 +216,7 @@ public class TestCascadePersist extends JPA1Base {
             env.beginTransaction(em);
             em.persist(existing);
             env.commitTransactionAndClear(em);
-            
+
             env.beginTransaction(em);
             existing = em.find(CascadingNode.class, new Integer(existing.getId()));
             em.remove(existing); // known object in state deleted

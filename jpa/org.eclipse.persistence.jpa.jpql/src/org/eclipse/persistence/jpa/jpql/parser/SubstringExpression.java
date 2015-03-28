@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,45 +35,45 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public final class SubstringExpression extends AbstractTripleEncapsulatedExpression {
 
-	/**
-	 * Creates a new <code>SubstringExpression</code>.
-	 *
-	 * @param parent The parent of this expression
-	 */
-	public SubstringExpression(AbstractExpression parent) {
-		super(parent, SUBSTRING);
-	}
+    /**
+     * Creates a new <code>SubstringExpression</code>.
+     *
+     * @param parent The parent of this expression
+     */
+    public SubstringExpression(AbstractExpression parent) {
+        super(parent, SUBSTRING);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(ExpressionVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParameterQueryBNFId(int index) {
-		switch (index) {
-			case 0:  return InternalSubstringStringExpressionBNF.ID;
-			default: return InternalSubstringPositionExpressionBNF.ID;
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParameterQueryBNFId(int index) {
+        switch (index) {
+            case 0:  return InternalSubstringStringExpressionBNF.ID;
+            default: return InternalSubstringPositionExpressionBNF.ID;
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(FunctionsReturningStringsBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLQueryBNF getQueryBNF() {
+        return getQueryBNF(FunctionsReturningStringsBNF.ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isThirdExpressionOptional() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isThirdExpressionOptional() {
+        return true;
+    }
 }

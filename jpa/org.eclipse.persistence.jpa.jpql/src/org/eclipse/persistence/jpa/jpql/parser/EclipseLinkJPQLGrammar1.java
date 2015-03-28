@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,87 +33,87 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
 @SuppressWarnings("nls")
 public final class EclipseLinkJPQLGrammar1 extends AbstractJPQLGrammar {
 
-	/**
-	 * The singleton instance of this {@link EclipseLinkJPQLGrammar1}.
-	 */
-	private static final JPQLGrammar INSTANCE = new EclipseLinkJPQLGrammar1();
+    /**
+     * The singleton instance of this {@link EclipseLinkJPQLGrammar1}.
+     */
+    private static final JPQLGrammar INSTANCE = new EclipseLinkJPQLGrammar1();
 
-	/**
-	 * The EclipseLink version, which is 1.x.
-	 */
-	public static final EclipseLinkVersion VERSION = EclipseLinkVersion.VERSION_1_x;
+    /**
+     * The EclipseLink version, which is 1.x.
+     */
+    public static final EclipseLinkVersion VERSION = EclipseLinkVersion.VERSION_1_x;
 
-	/**
-	 * Creates a new <code>EclipseLinkJPQLExtension1</code>.
-	 */
-	public EclipseLinkJPQLGrammar1() {
-		super();
-	}
+    /**
+     * Creates a new <code>EclipseLinkJPQLExtension1</code>.
+     */
+    public EclipseLinkJPQLGrammar1() {
+        super();
+    }
 
-	/**
-	 * Returns the singleton instance of this class.
-	 *
-	 * @return The {@link EclipseLinkJPQLGrammar1}
-	 */
-	public static JPQLGrammar instance() {
-		return INSTANCE;
-	}
+    /**
+     * Returns the singleton instance of this class.
+     *
+     * @return The {@link EclipseLinkJPQLGrammar1}
+     */
+    public static JPQLGrammar instance() {
+        return INSTANCE;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLGrammar buildBaseGrammar() {
-		return new JPQLGrammar1_0();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLGrammar buildBaseGrammar() {
+        return new JPQLGrammar1_0();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPAVersion getJPAVersion() {
-		return JPAVersion.VERSION_1_0;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPAVersion getJPAVersion() {
+        return JPAVersion.VERSION_1_0;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getProvider() {
-		return DefaultEclipseLinkJPQLGrammar.PROVIDER_NAME;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getProvider() {
+        return DefaultEclipseLinkJPQLGrammar.PROVIDER_NAME;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getProviderVersion() {
-		return VERSION.getVersion();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getProviderVersion() {
+        return VERSION.getVersion();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initializeBNFs() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initializeBNFs() {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initializeExpressionFactories() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initializeExpressionFactories() {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initializeIdentifiers() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initializeIdentifiers() {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return "EclipseLink 1.x";
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "EclipseLink 1.x";
+    }
 }

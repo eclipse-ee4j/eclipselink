@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,59 +28,59 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class NotExpressionFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link NotExpressionFactory}.
-	 */
-	public static final String ID = Expression.NOT;
+    /**
+     * The unique identifier of this {@link NotExpressionFactory}.
+     */
+    public static final String ID = Expression.NOT;
 
-	/**
-	 * Creates a new <code>NotExpressionFactory</code>.
-	 */
-	public NotExpressionFactory() {
-		super(ID, Expression.NOT);
-	}
+    /**
+     * Creates a new <code>NotExpressionFactory</code>.
+     */
+    public NotExpressionFactory() {
+        super(ID, Expression.NOT);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		// Skip 'NOT '
-		int index = wordParser.position() + 3;
-		index += wordParser.whitespaceCount(index);
+        // Skip 'NOT '
+        int index = wordParser.position() + 3;
+        index += wordParser.whitespaceCount(index);
 
-		// 'NOT IN'
-		if (wordParser.startsWithIdentifier(Expression.IN, index)) {
-			expression = new InExpression(parent, expression);
-		}
-		// 'NOT LIKE'
-		else if (wordParser.startsWithIdentifier(Expression.LIKE, index)) {
-			expression = new LikeExpression(parent, expression);
-		}
-		// 'NOT MEMBER'
-		else if (wordParser.startsWithIdentifier(Expression.MEMBER, index)) {
-			expression = new CollectionMemberExpression(parent, expression);
-		}
-		// 'NOT BETWEEN'
-		else if (wordParser.startsWithIdentifier(Expression.BETWEEN, index)) {
-			expression = new BetweenExpression(parent, expression);
-		}
-		// 'NOT EXISTS'
-		else if (wordParser.startsWithIdentifier(Expression.EXISTS, index)) {
-			expression = new ExistsExpression(parent);
-		}
-		// 'NOT'
-		else {
-			expression = new NotExpression(parent);
-		}
+        // 'NOT IN'
+        if (wordParser.startsWithIdentifier(Expression.IN, index)) {
+            expression = new InExpression(parent, expression);
+        }
+        // 'NOT LIKE'
+        else if (wordParser.startsWithIdentifier(Expression.LIKE, index)) {
+            expression = new LikeExpression(parent, expression);
+        }
+        // 'NOT MEMBER'
+        else if (wordParser.startsWithIdentifier(Expression.MEMBER, index)) {
+            expression = new CollectionMemberExpression(parent, expression);
+        }
+        // 'NOT BETWEEN'
+        else if (wordParser.startsWithIdentifier(Expression.BETWEEN, index)) {
+            expression = new BetweenExpression(parent, expression);
+        }
+        // 'NOT EXISTS'
+        else if (wordParser.startsWithIdentifier(Expression.EXISTS, index)) {
+            expression = new ExistsExpression(parent);
+        }
+        // 'NOT'
+        else {
+            expression = new NotExpression(parent);
+        }
 
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.aggregate;
 
 
@@ -37,7 +37,7 @@ public class Car extends Vehicle {
     }
 
     public static Car example2() {
-        //		session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("INSERT INTO AGGVEHICLE VALUES (2, 1, 'Red', 4, NULL, 'Mazda', '323')"));
+        //        session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("INSERT INTO AGGVEHICLE VALUES (2, 1, 'Red', 4, NULL, 'Mazda', '323')"));
         Car example = new Car();
         example.setMake("Ford");
         example.setModel("Escort");
@@ -55,7 +55,7 @@ public class Car extends Vehicle {
         return example;
     }
 
-	public static Car example4() {
+    public static Car example4() {
         Car example = new Car();
         example.setMake("Toyata");
         example.setModel("Echo");
@@ -63,7 +63,7 @@ public class Car extends Vehicle {
         example.setCapacity(4);
         example.setTransientValue("This is my transient Value");
         return example;
-	}
+    }
 
     /**
      * This method was created in VisualAge.

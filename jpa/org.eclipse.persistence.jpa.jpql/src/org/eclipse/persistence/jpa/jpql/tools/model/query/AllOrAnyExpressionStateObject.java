@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,154 +46,154 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 @SuppressWarnings("nls")
 public class AllOrAnyExpressionStateObject extends AbstractSingleEncapsulatedExpressionStateObject {
 
-	/**
-	 * The actual JPQL identifier: <code><b>ALL</b></code>, <code><b>ANY</b></code> or
-	 * <code><b>SOME</b></code>.
-	 */
-	private String identifier;
+    /**
+     * The actual JPQL identifier: <code><b>ALL</b></code>, <code><b>ANY</b></code> or
+     * <code><b>SOME</b></code>.
+     */
+    private String identifier;
 
-	/**
-	 * Notifies the identifier property has changed.
-	 */
-	public static final String IDENTIFIER_PROPERTY = "identifier";
+    /**
+     * Notifies the identifier property has changed.
+     */
+    public static final String IDENTIFIER_PROPERTY = "identifier";
 
-	/**
-	 * Creates a new <code>AllOrAnyExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param identifier One of the three possible JPQL identifiers: <code><b>ALL</b></code>,
-	 * <code><b>ANY</b></code> or <code><b>SOME</b></code>
-	 * @exception org.eclipse.persistence.jpa.jpql.Assert.AssertException The given JPQL identifier
-	 * is one from the possible choices
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public AllOrAnyExpressionStateObject(StateObject parent, String identifier) {
-		super(parent);
-		validateIdentifier(identifier);
-		this.identifier = identifier;
-	}
+    /**
+     * Creates a new <code>AllOrAnyExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param identifier One of the three possible JPQL identifiers: <code><b>ALL</b></code>,
+     * <code><b>ANY</b></code> or <code><b>SOME</b></code>
+     * @exception org.eclipse.persistence.jpa.jpql.Assert.AssertException The given JPQL identifier
+     * is one from the possible choices
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public AllOrAnyExpressionStateObject(StateObject parent, String identifier) {
+        super(parent);
+        validateIdentifier(identifier);
+        this.identifier = identifier;
+    }
 
-	/**
-	 * Creates a new <code>AllOrAnyExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param identifier One of the three possible JPQL identifiers: <code><b>ALL</b></code>,
-	 * <code><b>ANY</b></code> or <code><b>SOME</b></code>
-	 * @param stateObject The {@link StateObject} representing the encapsulated expression
-	 * @exception org.eclipse.persistence.jpa.jpql.Assert.AssertException The given JPQL identifier
-	 * is one from the possible choices
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public AllOrAnyExpressionStateObject(StateObject parent,
-	                                     String identifier,
-	                                     StateObject stateObject) {
+    /**
+     * Creates a new <code>AllOrAnyExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param identifier One of the three possible JPQL identifiers: <code><b>ALL</b></code>,
+     * <code><b>ANY</b></code> or <code><b>SOME</b></code>
+     * @param stateObject The {@link StateObject} representing the encapsulated expression
+     * @exception org.eclipse.persistence.jpa.jpql.Assert.AssertException The given JPQL identifier
+     * is one from the possible choices
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public AllOrAnyExpressionStateObject(StateObject parent,
+                                         String identifier,
+                                         StateObject stateObject) {
 
-		super(parent, stateObject);
+        super(parent, stateObject);
 
-		validateIdentifier(identifier);
-		this.identifier = identifier;
-	}
+        validateIdentifier(identifier);
+        this.identifier = identifier;
+    }
 
-	/**
-	 * Creates a new <code>AllOrAnyExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param identifier One of the three possible JPQL identifiers: <code><b>ALL</b></code>,
-	 * <code><b>ANY</b></code> or <code><b>SOME</b></code>
-	 * @param jpqlFragment The portion of the query representing the encapsulated expression
-	 * @exception org.eclipse.persistence.jpa.jpql.Assert.AssertException The given JPQL identifier
-	 * is one from the possible choices
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public AllOrAnyExpressionStateObject(StateObject parent, String identifier, String jpqlFragment) {
-		super(parent, jpqlFragment);
-		validateIdentifier(identifier);
-		this.identifier = identifier;
-	}
+    /**
+     * Creates a new <code>AllOrAnyExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param identifier One of the three possible JPQL identifiers: <code><b>ALL</b></code>,
+     * <code><b>ANY</b></code> or <code><b>SOME</b></code>
+     * @param jpqlFragment The portion of the query representing the encapsulated expression
+     * @exception org.eclipse.persistence.jpa.jpql.Assert.AssertException The given JPQL identifier
+     * is one from the possible choices
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public AllOrAnyExpressionStateObject(StateObject parent, String identifier, String jpqlFragment) {
+        super(parent, jpqlFragment);
+        validateIdentifier(identifier);
+        this.identifier = identifier;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public AllOrAnyExpression getExpression() {
-		return (AllOrAnyExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AllOrAnyExpression getExpression() {
+        return (AllOrAnyExpression) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getIdentifier() {
-		return identifier;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdentifier() {
+        return identifier;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getQueryBNFId() {
-		return SubqueryBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getQueryBNFId() {
+        return SubqueryBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isEquivalent(StateObject stateObject) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEquivalent(StateObject stateObject) {
 
-		if (super.isEquivalent(stateObject)) {
-			AllOrAnyExpressionStateObject allOrAny = (AllOrAnyExpressionStateObject) stateObject;
-			return identifier.equals(allOrAny.identifier);
-		}
+        if (super.isEquivalent(stateObject)) {
+            AllOrAnyExpressionStateObject allOrAny = (AllOrAnyExpressionStateObject) stateObject;
+            return identifier.equals(allOrAny.identifier);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Keeps a reference of the {@link AllOrAnyExpression parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into {@link
-	 * StateObject StateObjects}.
-	 *
-	 * @param expression The {@link AllOrAnyExpression parsed object} representing an <code><b>ALL</b></code>,
-	 * <code><b>ANY</b></code> or <code><b>SOME</b></code> expression
-	 */
-	public void setExpression(AllOrAnyExpression expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link AllOrAnyExpression parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into {@link
+     * StateObject StateObjects}.
+     *
+     * @param expression The {@link AllOrAnyExpression parsed object} representing an <code><b>ALL</b></code>,
+     * <code><b>ANY</b></code> or <code><b>SOME</b></code> expression
+     */
+    public void setExpression(AllOrAnyExpression expression) {
+        super.setExpression(expression);
+    }
 
-	/**
-	 * Sets the JPQL identifier to the given one.
-	 *
-	 * @param identifier One of the three possible JPQL identifiers: <code><b>ALL</b></code>,
-	 * <code><b>ANY</b></code> or <code><b>SOME</b></code>
-	 * @exception org.eclipse.persistence.jpa.jpql.Assert.AssertException The given JPQL identifier
-	 * is one from the possible choices
-	 */
-	public void setIdentifier(String identifier) {
+    /**
+     * Sets the JPQL identifier to the given one.
+     *
+     * @param identifier One of the three possible JPQL identifiers: <code><b>ALL</b></code>,
+     * <code><b>ANY</b></code> or <code><b>SOME</b></code>
+     * @exception org.eclipse.persistence.jpa.jpql.Assert.AssertException The given JPQL identifier
+     * is one from the possible choices
+     */
+    public void setIdentifier(String identifier) {
 
-		validateIdentifier(identifier);
+        validateIdentifier(identifier);
 
-		String oldIdentifier = this.identifier;
-		this.identifier = identifier;
-		firePropertyChanged(IDENTIFIER_PROPERTY, oldIdentifier, identifier);
-	}
+        String oldIdentifier = this.identifier;
+        this.identifier = identifier;
+        firePropertyChanged(IDENTIFIER_PROPERTY, oldIdentifier, identifier);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setStateObject(StateObject stateObject) {
-		super.setStateObject(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setStateObject(StateObject stateObject) {
+        super.setStateObject(stateObject);
+    }
 
-	private void validateIdentifier(String identifier) {
-		Assert.isValid(identifier, "The identifier is not valid: " + identifier, ALL, ANY, SOME);
-	}
+    private void validateIdentifier(String identifier) {
+        Assert.isValid(identifier, "The identifier is not valid: " + identifier, ALL, ANY, SOME);
+    }
 }

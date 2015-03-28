@@ -28,7 +28,7 @@ public class TestNestedEmbeddedIds extends JPA2Base {
             lh.setId("LH");
             lh.setDescription("Lufthansa");
             em.persist(lh);
-            
+
             Connection lh454 = new Connection();
             ConnectionId connectionId = new ConnectionId();
             connectionId.setCarrier("LH");
@@ -37,7 +37,7 @@ public class TestNestedEmbeddedIds extends JPA2Base {
             lh454.setFrom("FRA");
             lh454.setTo("SFO");
             em.persist(lh454);
-            
+
             Flight flight090323 = new Flight();
             FlightId flightId = new FlightId();
             flightId.setConnectionId(connectionId);
@@ -47,17 +47,17 @@ public class TestNestedEmbeddedIds extends JPA2Base {
             em.persist(flight090323);
 
             env.commitTransactionAndClear(em);
-            
+
             Flight flight2 = em.find(Flight.class, flightId);
-            
+
             assertEquals(flight2.getFlightId().getConnectionId().getCarrier(), "LH");
-            
-            
+
+
 
         } finally {
             closeEntityManager(em);
         }
     }
 
-    
+
 }

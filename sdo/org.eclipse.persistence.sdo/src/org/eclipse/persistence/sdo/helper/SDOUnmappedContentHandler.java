@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.DataObject;
@@ -64,7 +64,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
     private UnmarshalNamespaceResolver unmarshalNamespaceResolver;
     private static final String NO_NAMESPACE = null;
     private int depth = 0;
-    
+
     public SDOUnmappedContentHandler() {
         isInCharacterBlock = false;
         currentDataObjects = new Stack();
@@ -140,7 +140,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             String attrName = atts.getLocalName(i);
 
             if ((atts.getQName(i) != null) && atts.getQName(i).startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":")) {
-                //namespace declaration - do nothing because namespaces were already handled                             
+                //namespace declaration - do nothing because namespaces were already handled
             } else if (isRoot && XMLConstants.SCHEMA_LOCATION.equals(attrName)) {
                 getXmlDocument().setSchemaLocation(stringValue);
             } else if (isRoot && XMLConstants.NO_NS_SCHEMA_LOCATION.equals(attrName)) {
@@ -202,14 +202,14 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
     private void setElementPropertyValue() {
         Property currentProperty = (Property)currentProperties.pop();
         boolean simple = true;
-        
+
         if (lastEvent == END_ELEMENT) {
-            simple = false;    
+            simple = false;
         } else {
             //last event was start element so is usually a simple thing
             //if depth is greater than the stack size it means dataType == true
             if (depth > currentDataObjects.size()) {
-                simple = true;                
+                simple = true;
             } else {
                 //if depth and stack size are the same it means complex or simple.
                 DataObject nextDO = (DataObject)currentDataObjects.peek();
@@ -224,7 +224,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                     currentDataObjects.pop();
                 }
             }
-            depth--;         
+            depth--;
         }
 
         lastEvent = END_ELEMENT;
@@ -293,8 +293,8 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             currentProperties.push(globalProperty);
             SDOType theType = ((SDOType)globalProperty.getType());
 
-            if (((SDOType)globalProperty.getType()).isDataType()) {                
-                depth++;                
+            if (((SDOType)globalProperty.getType()).isDataType()) {
+                depth++;
             } else {
                 XMLDescriptor xmlDescriptor = theType.getXmlDescriptor();
                 giveToOXToProcess(namespaceURI, localName, qName, atts, xmlDescriptor);
@@ -321,13 +321,13 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
 
                 currentProperties.push(property);
             } else {
-                //this means that type is a known type which will have a descriptor                      
+                //this means that type is a known type which will have a descriptor
                 XMLDescriptor xmlDescriptor = ((SDOType)newType).getXmlDescriptor();
                 giveToOXToProcess(namespaceURI, localName, qName, atts, xmlDescriptor);
                 Property property = defineNewSDOProperty(namespaceURI, localName, true, newType);
                 currentProperties.push(property);
                 return;
-            }            
+            }
         }
     }
 
@@ -354,7 +354,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                     typeUri = unmarshalNamespaceResolver.getNamespaceURI(prefix);
                 }
             rootObjectType = typeHelper.getType(typeUri, typeName);
-            }            
+            }
         }
 
         DataObject rootObject = null;
@@ -374,14 +374,14 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         parentRecord.setCurrentObject(getXmlDocument());
     }
 
-    private SDOProperty defineNewSDOProperty(String uri, String localName, boolean isElement, Type type) {        
+    private SDOProperty defineNewSDOProperty(String uri, String localName, boolean isElement, Type type) {
         DataObject currentDataObject = (DataObject)currentDataObjects.peek();
 
         if ((uri != null) && uri.equals("")) {
             uri = NO_NAMESPACE;
         }
 
-        //Check if the current DataObject has a property by this name and if so return it, 
+        //Check if the current DataObject has a property by this name and if so return it,
         //otherwise create a new property
         SDOProperty lookedUp = (SDOProperty)currentDataObject.getInstanceProperty(localName);
         if ((lookedUp != null) && equalStrings(lookedUp.getUri(), uri)) {
@@ -434,7 +434,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                 xmlDescriptor = (XMLDescriptor)session.getDescriptor(classValue);
             } else {
                 // since there is no xsi:type attribute, we'll use the descriptor
-                // that was retrieved based on the rootQName -  we need to make 
+                // that was retrieved based on the rootQName -  we need to make
                 // sure it is non-abstract
                 if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
                     // need to throw an exception here
@@ -457,7 +457,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             unmarshalRecord.getXMLReader().setProperty("http://xml.org/sax/properties/lexical-handler", unmarshalRecord);
         } catch (SAXNotRecognizedException ex) {
         } catch (SAXNotSupportedException ex) {
-            //if lexical handling is not supported by this parser, just ignore. 
+            //if lexical handling is not supported by this parser, just ignore.
         }
 
         currentDataObjects.push(unmarshalRecord.getCurrentObject());

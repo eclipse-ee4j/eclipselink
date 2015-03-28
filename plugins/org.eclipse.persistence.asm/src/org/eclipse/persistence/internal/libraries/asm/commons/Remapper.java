@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,13 +39,13 @@ import org.eclipse.persistence.internal.libraries.asm.signature.SignatureWriter;
 /**
  * A class responsible for remapping types and names. Subclasses can override
  * the following methods:
- * 
+ *
  * <ul>
  * <li>{@link #map(String)} - map type</li>
  * <li>{@link #mapFieldName(String, String, String)} - map field name</li>
  * <li>{@link #mapMethodName(String, String, String)} - map method name</li>
  * </ul>
- * 
+ *
  * @author Eugene Kuleshov
  */
 public abstract class Remapper {
@@ -145,7 +145,7 @@ public abstract class Remapper {
     }
 
     /**
-     * 
+     *
      * @param typeSignature
      *            true if signature is a FieldTypeSignature, such as the
      *            signature parameter of the ClassVisitor.visitField or
@@ -173,7 +173,7 @@ public abstract class Remapper {
 
     /**
      * Map method name to the new name. Subclasses can override.
-     * 
+     *
      * @param owner
      *            owner of the method.
      * @param name
@@ -188,7 +188,7 @@ public abstract class Remapper {
 
     /**
      * Map invokedynamic method name to the new name. Subclasses can override.
-     * 
+     *
      * @param name
      *            name of the invokedynamic.
      * @param desc
@@ -201,7 +201,7 @@ public abstract class Remapper {
 
     /**
      * Map field name to the new name. Subclasses can override.
-     * 
+     *
      * @param owner
      *            owner of the field.
      * @param name

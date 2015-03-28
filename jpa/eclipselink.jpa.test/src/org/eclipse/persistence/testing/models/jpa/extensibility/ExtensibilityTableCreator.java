@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial implementation as part of extensibility feature
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.extensibility;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -29,18 +29,18 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildEXTENS_ADDRTable());
         addTableDefinition(buildEXTENS_JOIN_TABLETable());
     }
-        
+
     public static TableCreator getCreator(){
         if (RelationshipsTableManager.tableCreator == null){
             ExtensibilityTableCreator.tableCreator = new ExtensibilityTableCreator();
         }
         return ExtensibilityTableCreator.tableCreator;
     }
-    
+
     public static TableDefinition buildEXTENS_EMPTable() {
         TableDefinition table = new TableDefinition();
         table.setName("EXTENS_EMP");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -50,7 +50,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldFIRST_NAME = new FieldDefinition();
         fieldFIRST_NAME.setName("FIRSTNAME");
         fieldFIRST_NAME.setTypeName("VARCHAR2");
@@ -61,7 +61,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldFIRST_NAME.setUnique(false);
         fieldFIRST_NAME.setShouldAllowNull(true);
         table.addField(fieldFIRST_NAME);
-        
+
         FieldDefinition fieldLAST_NAME = new FieldDefinition();
         fieldLAST_NAME.setName("LASTNAME");
         fieldLAST_NAME.setTypeName("VARCHAR2");
@@ -72,7 +72,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldLAST_NAME.setUnique(false);
         fieldLAST_NAME.setShouldAllowNull(true);
         table.addField(fieldLAST_NAME);
-        
+
         FieldDefinition fieldFLEX1 = new FieldDefinition();
         fieldFLEX1.setName("FLEX1");
         fieldFLEX1.setTypeName("VARCHAR2");
@@ -83,7 +83,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldFLEX1.setUnique(false);
         fieldFLEX1.setShouldAllowNull(true);
         table.addField(fieldFLEX1);
-        
+
         FieldDefinition fieldFLEX2 = new FieldDefinition();
         fieldFLEX2.setName("FLEX2");
         fieldFLEX2.setTypeName("VARCHAR2");
@@ -94,7 +94,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldFLEX2.setUnique(false);
         fieldFLEX2.setShouldAllowNull(true);
         table.addField(fieldFLEX2);
-        
+
         FieldDefinition fieldFLEX3 = new FieldDefinition();
         fieldFLEX3.setName("FLEX3");
         fieldFLEX3.setTypeName("VARCHAR2");
@@ -105,7 +105,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldFLEX3.setUnique(false);
         fieldFLEX3.setShouldAllowNull(true);
         table.addField(fieldFLEX3);
-        
+
         FieldDefinition fieldADDRESS_ID = new FieldDefinition();
         fieldADDRESS_ID.setName("ADDRESS_ID");
         fieldADDRESS_ID.setTypeName("NUMERIC");
@@ -116,7 +116,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldADDRESS_ID.setIsIdentity(false);
         fieldADDRESS_ID.setForeignKeyFieldName("EXTENS_ADDR.ID");
         table.addField(fieldADDRESS_ID);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -126,14 +126,14 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldVERSION.setUnique(false);
         fieldVERSION.setIsIdentity(false);
         table.addField(fieldVERSION);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildEXTENS_ADDRTable() {
         TableDefinition table = new TableDefinition();
         table.setName("EXTENS_ADDR");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -143,7 +143,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldSTREET = new FieldDefinition();
         fieldSTREET.setName("STREET");
         fieldSTREET.setTypeName("VARCHAR2");
@@ -154,7 +154,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldSTREET.setUnique(false);
         fieldSTREET.setShouldAllowNull(true);
         table.addField(fieldSTREET);
-        
+
         FieldDefinition fieldCOUNTRY = new FieldDefinition();
         fieldCOUNTRY.setName("COUNTRY");
         fieldCOUNTRY.setTypeName("VARCHAR2");
@@ -165,7 +165,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldCOUNTRY.setUnique(false);
         fieldCOUNTRY.setShouldAllowNull(true);
         table.addField(fieldCOUNTRY);
-        
+
         FieldDefinition fieldPOSTALCODE = new FieldDefinition();
         fieldPOSTALCODE.setName("POSTALCODE");
         fieldPOSTALCODE.setTypeName("VARCHAR2");
@@ -176,7 +176,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldPOSTALCODE.setUnique(false);
         fieldPOSTALCODE.setShouldAllowNull(true);
         table.addField(fieldPOSTALCODE);
-        
+
         FieldDefinition fieldCITY = new FieldDefinition();
         fieldCITY.setName("CITY");
         fieldCITY.setTypeName("VARCHAR2");
@@ -187,7 +187,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldCITY.setUnique(false);
         fieldCITY.setShouldAllowNull(true);
         table.addField(fieldCITY);
-        
+
         FieldDefinition fieldFLEX1 = new FieldDefinition();
         fieldFLEX1.setName("FLEX1");
         fieldFLEX1.setTypeName("VARCHAR2");
@@ -198,7 +198,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldFLEX1.setUnique(false);
         fieldFLEX1.setShouldAllowNull(true);
         table.addField(fieldFLEX1);
-        
+
         FieldDefinition fieldFLEX2 = new FieldDefinition();
         fieldFLEX2.setName("FLEX2");
         fieldFLEX2.setTypeName("VARCHAR2");
@@ -209,7 +209,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldFLEX2.setUnique(false);
         fieldFLEX2.setShouldAllowNull(true);
         table.addField(fieldFLEX2);
-        
+
         FieldDefinition fieldFLEX3 = new FieldDefinition();
         fieldFLEX3.setName("FLEX3");
         fieldFLEX3.setTypeName("VARCHAR2");
@@ -220,7 +220,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldFLEX3.setUnique(false);
         fieldFLEX3.setShouldAllowNull(true);
         table.addField(fieldFLEX3);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -230,14 +230,14 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldVERSION.setUnique(false);
         fieldVERSION.setIsIdentity(false);
         table.addField(fieldVERSION);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildEXTENS_PHONETable() {
         TableDefinition table = new TableDefinition();
         table.setName("EXTENS_PHONE");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -247,7 +247,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldSTREET = new FieldDefinition();
         fieldSTREET.setName("TYPE");
         fieldSTREET.setTypeName("VARCHAR2");
@@ -258,7 +258,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldSTREET.setUnique(false);
         fieldSTREET.setShouldAllowNull(true);
         table.addField(fieldSTREET);
-        
+
         FieldDefinition fieldCOUNTRY = new FieldDefinition();
         fieldCOUNTRY.setName("NUMB");
         fieldCOUNTRY.setTypeName("VARCHAR2");
@@ -269,7 +269,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldCOUNTRY.setUnique(false);
         fieldCOUNTRY.setShouldAllowNull(true);
         table.addField(fieldCOUNTRY);
-        
+
         FieldDefinition fieldPOSTALCODE = new FieldDefinition();
         fieldPOSTALCODE.setName("AREA_CODE");
         fieldPOSTALCODE.setTypeName("VARCHAR2");
@@ -280,7 +280,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldPOSTALCODE.setUnique(false);
         fieldPOSTALCODE.setShouldAllowNull(true);
         table.addField(fieldPOSTALCODE);
-        
+
         FieldDefinition fieldFLEX1 = new FieldDefinition();
         fieldFLEX1.setName("FLEX1");
         fieldFLEX1.setTypeName("VARCHAR2");
@@ -291,7 +291,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldFLEX1.setUnique(false);
         fieldFLEX1.setShouldAllowNull(true);
         table.addField(fieldFLEX1);
-        
+
         FieldDefinition fieldFLEX2 = new FieldDefinition();
         fieldFLEX2.setName("FLEX2");
         fieldFLEX2.setTypeName("VARCHAR2");
@@ -302,7 +302,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldFLEX2.setUnique(false);
         fieldFLEX2.setShouldAllowNull(true);
         table.addField(fieldFLEX2);
-        
+
         FieldDefinition fieldFLEX3 = new FieldDefinition();
         fieldFLEX3.setName("FLEX3");
         fieldFLEX3.setTypeName("VARCHAR2");
@@ -313,7 +313,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldFLEX3.setUnique(false);
         fieldFLEX3.setShouldAllowNull(true);
         table.addField(fieldFLEX3);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -323,14 +323,14 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldVERSION.setUnique(false);
         fieldVERSION.setIsIdentity(false);
         table.addField(fieldVERSION);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildEXTENS_JOIN_TABLETable() {
         TableDefinition table = new TableDefinition();
         table.setName("EXTENS_JOIN_TABLE");
-        
+
         FieldDefinition fieldID1 = new FieldDefinition();
         fieldID1.setName("ID1");
         fieldID1.setTypeName("NUMERIC");
@@ -340,7 +340,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldID1.setUnique(false);
         fieldID1.setIsIdentity(false);
         table.addField(fieldID1);
-        
+
         FieldDefinition fieldID2 = new FieldDefinition();
         fieldID2.setName("ID2");
         fieldID2.setTypeName("NUMERIC");
@@ -350,7 +350,7 @@ public class ExtensibilityTableCreator extends TogglingFastTableCreator {
         fieldID2.setUnique(false);
         fieldID2.setIsIdentity(false);
         table.addField(fieldID2);
-        
+
         return table;
     }
 

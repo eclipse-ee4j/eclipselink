@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     08/10/2009-2.0 Guy Pelletier 
- *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes 
+ *     08/10/2009-2.0 Guy Pelletier
+ *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen.visitors;
 
@@ -31,19 +31,19 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataM
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
 
 /**
- * A type visitor. 
- * 
+ * A type visitor.
+ *
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
 public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedElement, MetadataAnnotatedElement> {
     public static String GENERIC_TYPE = "? extends Object";
-    
+
     /**
      * INTERNAL:
      */
     public TypeVisitor() {}
-    
+
     /**
      * INTERNAL:
      * Visit a declared array field.
@@ -53,7 +53,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
         annotatedElement.setType(arrayType.toString());
         return annotatedElement;
     }
-    
+
     /**
      * INTERNAL:
      * Visit a declared field or Class.
@@ -63,20 +63,20 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
         // Get the metadata class of the declared type from the factory.
         MetadataMirrorFactory factory = (MetadataMirrorFactory) annotatedElement.getMetadataFactory();
         MetadataClass cls = factory.getMetadataClass(declaredType);
-        
+
         // Set the type, which is the class name.
         annotatedElement.setType(cls.getName());
-        
-        // Set the generic types. Internally EclipseLink wants the class name 
+
+        // Set the generic types. Internally EclipseLink wants the class name
         // in the 0 position of the generic list.
         annotatedElement.addGenericType(cls.getName());
-        
-        for (TypeMirror typeArgument : declaredType.getTypeArguments()) { 
+
+        for (TypeMirror typeArgument : declaredType.getTypeArguments()) {
             // Set the type from the metadata class as it may be a generic and
             // we don't want to set the letter type, rather our default GENERIC_TYPE.
             annotatedElement.addGenericType(factory.getMetadataClass(typeArgument).getType());
         }
-        
+
         return annotatedElement;
     }
 
@@ -86,9 +86,9 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
     @Override
     public MetadataAnnotatedElement visitError(ErrorType errorType, MetadataAnnotatedElement annotatedElement) {
         // We will hit this case when there exists a compile error on the model.
-        // However our annotation processor will still be called and we 
+        // However our annotation processor will still be called and we
         // therefore want to ensure our annotatedElement still has a type set
-        // on it and not null. This will avoid exceptions when we go through 
+        // on it and not null. This will avoid exceptions when we go through
         // the pre-processing of our metadata classes.
         annotatedElement.setType(GENERIC_TYPE);
         return annotatedElement;
@@ -102,19 +102,19 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
     public MetadataAnnotatedElement visitExecutable(ExecutableType executableType, MetadataAnnotatedElement annotatedElement) {
         MetadataMirrorFactory factory = ((MetadataMirrorFactory) annotatedElement.getMetadataFactory());
         MetadataMethod method = (MetadataMethod) annotatedElement;
-        
+
         // Set the parameters.
         for (TypeMirror parameter : executableType.getParameterTypes()) {
             method.addParameter(factory.getMetadataClass(parameter).getType());
         }
-        
+
         // Visit the return type (will set the type and generic types).
         executableType.getReturnType().accept(this, method);
         method.setReturnType(method.getType());
-        
+
         return method;
     }
-    
+
     /**
      * INTERNAL:
      * Method that returns void.
@@ -132,9 +132,9 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
     @Override
     public MetadataAnnotatedElement visitNull(NullType nullType, MetadataAnnotatedElement annotatedElement) {
         // We will hit this case when there exists a compile error on the model??
-        // However our annotation processor will still be called and we 
+        // However our annotation processor will still be called and we
         // therefore want to ensure our annotatedElement still has a type set
-        // on it and not null. This will avoid exceptions when we go through 
+        // on it and not null. This will avoid exceptions when we go through
         // the pre-processing of our metadata classes.
         annotatedElement.setType(GENERIC_TYPE);
         return annotatedElement;

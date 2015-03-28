@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,15 +26,15 @@ public class EmptyStringNSTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {TestObject.class, ObjectFactory.class});        
+        setClasses(new Class[] {TestObject.class, ObjectFactory.class});
     }
 
     @Override
     protected Object getControlObject() {
         ObjectFactory objectFactory = new ObjectFactory();
-        TestObject testObject = objectFactory.createTestObject();    
+        TestObject testObject = objectFactory.createTestObject();
         JAXBElement elem = new JAXBElement<TestObject>(new QName("testObject"), TestObject.class, testObject);
-        
+
         return elem;
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -29,7 +29,7 @@ public class RootFromAnnotationTestCases extends TypeMappingInfoWithJSONTestCase
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/Annotation.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/Annotation.json";
     private static final String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/Annotation.xsd";
-    
+
     private static final String ANNOTATION_NAMESPACE_URI = null;
     private static final String ANNOTATION_LOCAL_NAME = "annotation-address";
     private static final String CONTROL_STREET = "123 A St.";
@@ -38,12 +38,12 @@ public class RootFromAnnotationTestCases extends TypeMappingInfoWithJSONTestCase
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        
+
         TypeMappingInfo[] typeMappingInfos = new TypeMappingInfo[1];
-        TypeMappingInfo addressTypeMappingInfo = new TypeMappingInfo(); 
-        addressTypeMappingInfo.setType(Address.class); 
-        addressTypeMappingInfo.setElementScope(ElementScope.Local); 
-        addressTypeMappingInfo.setAnnotations(new Annotation[0]); 
+        TypeMappingInfo addressTypeMappingInfo = new TypeMappingInfo();
+        addressTypeMappingInfo.setType(Address.class);
+        addressTypeMappingInfo.setElementScope(ElementScope.Local);
+        addressTypeMappingInfo.setAnnotations(new Annotation[0]);
         typeMappingInfos[0] = addressTypeMappingInfo;
         setTypeMappingInfos(typeMappingInfos);
     }

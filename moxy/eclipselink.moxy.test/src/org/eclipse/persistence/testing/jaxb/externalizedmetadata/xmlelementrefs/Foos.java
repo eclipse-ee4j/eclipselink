@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,20 +23,20 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Foos {
     //@javax.xml.bind.annotation.XmlElementWrapper(name="items")
     //@javax.xml.bind.annotation.XmlElementRefs({
-    //    @javax.xml.bind.annotation.XmlElementRef(name="integer-root", namespace="myns"), 
+    //    @javax.xml.bind.annotation.XmlElementRef(name="integer-root", namespace="myns"),
     //    @javax.xml.bind.annotation.XmlElementRef(name="root")
     //})
     public List<Object> items;
     public List<Object> stuff;
-    
+
     @XmlTransient
     public boolean accessedViaMethod = false;
-    
+
     public List<Object> getItemList() {
         accessedViaMethod = true;
         return items;
     }
-    
+
     public void setItemList(List<Object> items) {
         this.items = items;
     }

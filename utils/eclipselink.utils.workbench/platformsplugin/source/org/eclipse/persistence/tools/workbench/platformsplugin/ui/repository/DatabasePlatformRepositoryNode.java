@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -44,188 +44,188 @@ import org.eclipse.persistence.tools.workbench.uitools.app.TransformationListVal
  * node for a database platform repository; the children are the database platforms
  */
 public final class DatabasePlatformRepositoryNode
-	extends PlatformsApplicationNode
+    extends PlatformsApplicationNode
 {
 
-	private ListValueModel childrenModel;
+    private ListValueModel childrenModel;
 
-	protected static final String[] DATABASE_PLATFORM_REPOSITORY_DISPLAY_STRING_PROPERTY_NAMES = {DatabasePlatformRepository.NAME_PROPERTY};
-
-
-	// ********** constructors/initialization **********
-
-	public DatabasePlatformRepositoryNode(DatabasePlatformRepository value, ApplicationContext context, PlatformsPlugin plugin) {
-		super(value, context.getNodeManager().getRootNode(), plugin, context);
-	}
-
-	protected void initialize() {
-		super.initialize();
-		this.childrenModel = this.buildChildrenModel();
-	}
-
-	// the list should be sorted
-	private ListValueModel buildChildrenModel() {
-		return new SortedListValueModelAdapter(this.buildDisplayStringAdapter());
-	}
-
-	// the display string of each platform node can change
-	private ListValueModel buildDisplayStringAdapter() {
-		return new ItemPropertyListValueModelAdapter(this.buildPlatformNodeAdapter(), DISPLAY_STRING_PROPERTY);
-	}
-
-	// transform the repository's collection of platforms into nodes
-	private ListValueModel buildPlatformNodeAdapter() {
-		return new TransformationListValueModelAdapter(this.buildPlatformsAdapter()) {
-			protected Object transformItem(Object item) {
-				return DatabasePlatformRepositoryNode.this.buildDatabasePlatformNode((DatabasePlatform) item);
-			}
-		};
-	}
-
-	DatabasePlatformNode buildDatabasePlatformNode(DatabasePlatform databasePlatform) {
-		return new DatabasePlatformNode(databasePlatform, this, this.getPlatformsPlugin(), this.getApplicationContext());
-	}
-
-	// convert the repository's collection of platforms to a CollectionValueModel
-	private CollectionValueModel buildPlatformsAdapter() {
-		return new CollectionAspectAdapter(this, DatabasePlatformRepository.PLATFORMS_COLLECTION) {
-			protected Iterator getValueFromSubject() {
-				return ((DatabasePlatformRepository) this.subject).platforms();
-			}
-			protected int sizeFromSubject() {
-				return ((DatabasePlatformRepository) this.subject).platformsSize();
-			}
-		};
-	}
+    protected static final String[] DATABASE_PLATFORM_REPOSITORY_DISPLAY_STRING_PROPERTY_NAMES = {DatabasePlatformRepository.NAME_PROPERTY};
 
 
-	// ********** PlatformsApplicationNode overrides **********
+    // ********** constructors/initialization **********
 
-	protected Class propertiesPageClass() {
-		return DatabasePlatformRepositoryTabbedPropertiesPage.class;
-	}
+    public DatabasePlatformRepositoryNode(DatabasePlatformRepository value, ApplicationContext context, PlatformsPlugin plugin) {
+        super(value, context.getNodeManager().getRootNode(), plugin, context);
+    }
 
-	protected AbstractPropertiesPage buildPropertiesPage(WorkbenchContext context) {
-		return new DatabasePlatformRepositoryTabbedPropertiesPage(context);
-	}
+    protected void initialize() {
+        super.initialize();
+        this.childrenModel = this.buildChildrenModel();
+    }
 
-	public String helpTopicID() {
-		return "database.platform.repository";
-	}
+    // the list should be sorted
+    private ListValueModel buildChildrenModel() {
+        return new SortedListValueModelAdapter(this.buildDisplayStringAdapter());
+    }
 
+    // the display string of each platform node can change
+    private ListValueModel buildDisplayStringAdapter() {
+        return new ItemPropertyListValueModelAdapter(this.buildPlatformNodeAdapter(), DISPLAY_STRING_PROPERTY);
+    }
 
-	// ********** AbstractApplicationNode overrides **********
+    // transform the repository's collection of platforms into nodes
+    private ListValueModel buildPlatformNodeAdapter() {
+        return new TransformationListValueModelAdapter(this.buildPlatformsAdapter()) {
+            protected Object transformItem(Object item) {
+                return DatabasePlatformRepositoryNode.this.buildDatabasePlatformNode((DatabasePlatform) item);
+            }
+        };
+    }
 
-	public ListValueModel getChildrenModel() {
-		return this.childrenModel;
-	}
+    DatabasePlatformNode buildDatabasePlatformNode(DatabasePlatform databasePlatform) {
+        return new DatabasePlatformNode(databasePlatform, this, this.getPlatformsPlugin(), this.getApplicationContext());
+    }
 
-	protected String[] displayStringPropertyNames() {
-		return DATABASE_PLATFORM_REPOSITORY_DISPLAY_STRING_PROPERTY_NAMES;
-	}
-
-	protected String buildIconKey() {
-		return "DATABASE_PLATFORM_REPOSITORY";
-	}
-
-	public boolean save(File mostRecentSaveDirectory, WorkbenchContext context) {
-		context = this.buildLocalWorkbenchContext(context);
-		// the save location will be null on new repositories
-		if (this.getDatabasePlatformRepository().getFile() == null) {
-			File file = this.promptForSaveFile(mostRecentSaveDirectory, context);
-			if (file == null) {
-				return false;		// user cancelled save
-			}
-			this.getDatabasePlatformRepository().setFile(file);
-		}
-
-		this.getDatabasePlatformRepository().write();
-		return true;
-	}
-
-	public boolean saveAs(File mostRecentSaveDirectory, WorkbenchContext context) {
-		context = this.buildLocalWorkbenchContext(context);
-		// the save location will be null on new repositories
-		File file = this.promptForSaveFile(mostRecentSaveDirectory, context);
-		if (file == null) {
-			return false;		// user cancelled save
-		}
-		this.getDatabasePlatformRepository().setFile(file);
-		this.getDatabasePlatformRepository().write();
-		return true;
-	}
-
-	public File saveFile() {
-		return this.getDatabasePlatformRepository().getFile();
-	}
+    // convert the repository's collection of platforms to a CollectionValueModel
+    private CollectionValueModel buildPlatformsAdapter() {
+        return new CollectionAspectAdapter(this, DatabasePlatformRepository.PLATFORMS_COLLECTION) {
+            protected Iterator getValueFromSubject() {
+                return ((DatabasePlatformRepository) this.subject).platforms();
+            }
+            protected int sizeFromSubject() {
+                return ((DatabasePlatformRepository) this.subject).platformsSize();
+            }
+        };
+    }
 
 
-	// ********** ApplicationNode implementation **********
+    // ********** PlatformsApplicationNode overrides **********
 
-	public GroupContainerDescription buildMenuDescription(WorkbenchContext context) {
-		context = this.buildLocalWorkbenchContext(context);
+    protected Class propertiesPageClass() {
+        return DatabasePlatformRepositoryTabbedPropertiesPage.class;
+    }
 
-		RootMenuDescription menu = new RootMenuDescription();
+    protected AbstractPropertiesPage buildPropertiesPage(WorkbenchContext context) {
+        return new DatabasePlatformRepositoryTabbedPropertiesPage(context);
+    }
 
-		MenuGroupDescription basicGroup = new MenuGroupDescription();
-			basicGroup.add(buildRenameAction(context));
-			basicGroup.add(buildAddPlatformAction(context));
-		menu.add(basicGroup);
-		
-		MenuGroupDescription helpGroup = new MenuGroupDescription();
-			helpGroup.add(this.getPlatformsPlugin().getHelpAction(context));
-		menu.add(helpGroup);
-		
-		return menu;
-	}
-	
-	public GroupContainerDescription buildToolBarDescription(WorkbenchContext context) {
-		context = this.buildLocalWorkbenchContext(context);
-
-		ToolBarDescription toolBar = new ToolBarDescription();
-
-		ToolBarButtonGroupDescription basicGroup = new ToolBarButtonGroupDescription();
-			basicGroup.add(buildRenameAction(context));
-			basicGroup.add(buildAddPlatformAction(context));
-		toolBar.add(basicGroup);
-		
-		return toolBar;
-	}
+    public String helpTopicID() {
+        return "database.platform.repository";
+    }
 
 
-	// ********** queries **********
+    // ********** AbstractApplicationNode overrides **********
 
-	DatabasePlatformRepository getDatabasePlatformRepository() {
-		return (DatabasePlatformRepository) this.getValue();
-	}
+    public ListValueModel getChildrenModel() {
+        return this.childrenModel;
+    }
+
+    protected String[] displayStringPropertyNames() {
+        return DATABASE_PLATFORM_REPOSITORY_DISPLAY_STRING_PROPERTY_NAMES;
+    }
+
+    protected String buildIconKey() {
+        return "DATABASE_PLATFORM_REPOSITORY";
+    }
+
+    public boolean save(File mostRecentSaveDirectory, WorkbenchContext context) {
+        context = this.buildLocalWorkbenchContext(context);
+        // the save location will be null on new repositories
+        if (this.getDatabasePlatformRepository().getFile() == null) {
+            File file = this.promptForSaveFile(mostRecentSaveDirectory, context);
+            if (file == null) {
+                return false;        // user cancelled save
+            }
+            this.getDatabasePlatformRepository().setFile(file);
+        }
+
+        this.getDatabasePlatformRepository().write();
+        return true;
+    }
+
+    public boolean saveAs(File mostRecentSaveDirectory, WorkbenchContext context) {
+        context = this.buildLocalWorkbenchContext(context);
+        // the save location will be null on new repositories
+        File file = this.promptForSaveFile(mostRecentSaveDirectory, context);
+        if (file == null) {
+            return false;        // user cancelled save
+        }
+        this.getDatabasePlatformRepository().setFile(file);
+        this.getDatabasePlatformRepository().write();
+        return true;
+    }
+
+    public File saveFile() {
+        return this.getDatabasePlatformRepository().getFile();
+    }
 
 
-	// ********** behavior **********
+    // ********** ApplicationNode implementation **********
 
-	private FrameworkAction buildRenameAction(WorkbenchContext workbenchContext) {
-		return new RenameDatabasePlatformRepositoryAction(workbenchContext);
-	}
+    public GroupContainerDescription buildMenuDescription(WorkbenchContext context) {
+        context = this.buildLocalWorkbenchContext(context);
 
-	private FrameworkAction buildAddPlatformAction(WorkbenchContext workbenchContext) {
-		return new AddDatabasePlatformAction(workbenchContext);
-	}
+        RootMenuDescription menu = new RootMenuDescription();
 
-	private File promptForSaveFile(File mostRecentSaveDirectory, WorkbenchContext context) {
-		JFileChooser fileChooser = new JFileChooser(mostRecentSaveDirectory);
-		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fileChooser.setDialogTitle(context.getApplicationContext().getResourceRepository().getString("REPOSITORY_SAVE_FILE_TITLE", this.getDatabasePlatformRepository().getName()));
+        MenuGroupDescription basicGroup = new MenuGroupDescription();
+            basicGroup.add(buildRenameAction(context));
+            basicGroup.add(buildAddPlatformAction(context));
+        menu.add(basicGroup);
 
-		while (true) {		// exit loop via a return
-			int buttonChoice = fileChooser.showSaveDialog(context.getCurrentWindow());
-			if (buttonChoice != JFileChooser.APPROVE_OPTION) {
-				return null;
-			}
-			File file = fileChooser.getSelectedFile();
-			if (this.getPlatformsPlugin().fileIsSupported(file)) {
-				return file;
-			}
-			JOptionPane.showMessageDialog(context.getCurrentWindow(), context.getApplicationContext().getResourceRepository().getString("UNSUPPORTED_FILE_TYPE"));
-		}
-	}
+        MenuGroupDescription helpGroup = new MenuGroupDescription();
+            helpGroup.add(this.getPlatformsPlugin().getHelpAction(context));
+        menu.add(helpGroup);
+
+        return menu;
+    }
+
+    public GroupContainerDescription buildToolBarDescription(WorkbenchContext context) {
+        context = this.buildLocalWorkbenchContext(context);
+
+        ToolBarDescription toolBar = new ToolBarDescription();
+
+        ToolBarButtonGroupDescription basicGroup = new ToolBarButtonGroupDescription();
+            basicGroup.add(buildRenameAction(context));
+            basicGroup.add(buildAddPlatformAction(context));
+        toolBar.add(basicGroup);
+
+        return toolBar;
+    }
+
+
+    // ********** queries **********
+
+    DatabasePlatformRepository getDatabasePlatformRepository() {
+        return (DatabasePlatformRepository) this.getValue();
+    }
+
+
+    // ********** behavior **********
+
+    private FrameworkAction buildRenameAction(WorkbenchContext workbenchContext) {
+        return new RenameDatabasePlatformRepositoryAction(workbenchContext);
+    }
+
+    private FrameworkAction buildAddPlatformAction(WorkbenchContext workbenchContext) {
+        return new AddDatabasePlatformAction(workbenchContext);
+    }
+
+    private File promptForSaveFile(File mostRecentSaveDirectory, WorkbenchContext context) {
+        JFileChooser fileChooser = new JFileChooser(mostRecentSaveDirectory);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setDialogTitle(context.getApplicationContext().getResourceRepository().getString("REPOSITORY_SAVE_FILE_TITLE", this.getDatabasePlatformRepository().getName()));
+
+        while (true) {        // exit loop via a return
+            int buttonChoice = fileChooser.showSaveDialog(context.getCurrentWindow());
+            if (buttonChoice != JFileChooser.APPROVE_OPTION) {
+                return null;
+            }
+            File file = fileChooser.getSelectedFile();
+            if (this.getPlatformsPlugin().fileIsSupported(file)) {
+                return file;
+            }
+            JOptionPane.showMessageDialog(context.getCurrentWindow(), context.getApplicationContext().getResourceRepository().getString("UNSUPPORTED_FILE_TYPE"));
+        }
+    }
 
 }

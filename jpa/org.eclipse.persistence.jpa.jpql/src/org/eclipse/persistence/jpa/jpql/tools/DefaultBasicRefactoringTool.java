@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,43 +44,43 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedTypeProvider;
  */
 public class DefaultBasicRefactoringTool extends BasicRefactoringTool {
 
-	/**
-	 * Creates a new <code>DefaultBasicRefactoringTool</code>.
-	 *
-	 * @param jpqlQuery The JPQL query to manipulate
-	 * @param jpqlGrammar The {@link JPQLGrammar} that was used to parse the JPQL query
-	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 */
-	public DefaultBasicRefactoringTool(CharSequence jpqlQuery,
-	                                    JPQLGrammar jpqlGrammar,
-	                                    IManagedTypeProvider managedTypeProvider) {
+    /**
+     * Creates a new <code>DefaultBasicRefactoringTool</code>.
+     *
+     * @param jpqlQuery The JPQL query to manipulate
+     * @param jpqlGrammar The {@link JPQLGrammar} that was used to parse the JPQL query
+     * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
+     */
+    public DefaultBasicRefactoringTool(CharSequence jpqlQuery,
+                                        JPQLGrammar jpqlGrammar,
+                                        IManagedTypeProvider managedTypeProvider) {
 
-		super(jpqlQuery, jpqlGrammar, managedTypeProvider);
-	}
+        super(jpqlQuery, jpqlGrammar, managedTypeProvider);
+    }
 
-	/**
-	 * Creates a new <code>DefaultBasicRefactoringTool</code>.
-	 *
-	 * @param jpqlFragment The JPQL query to manipulate or a single JPQL fragment, which is parsed
-	 * using the JPQL query BNF identifier by the given ID
-	 * @param jpqlGrammar The {@link JPQLGrammar} that was used to parse the JPQL fragment
-	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBNFId The unique identifier of the {@link
+    /**
+     * Creates a new <code>DefaultBasicRefactoringTool</code>.
+     *
+     * @param jpqlFragment The JPQL query to manipulate or a single JPQL fragment, which is parsed
+     * using the JPQL query BNF identifier by the given ID
+     * @param jpqlGrammar The {@link JPQLGrammar} that was used to parse the JPQL fragment
+     * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
+     * @param jpqlQueryBNFId The unique identifier of the {@link
      * org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
-	 */
-	public DefaultBasicRefactoringTool(CharSequence jpqlFragment,
-	                                    JPQLGrammar jpqlGrammar,
-	                                    IManagedTypeProvider managedTypeProvider,
-	                                    String jpqlQueryBNFId) {
+     */
+    public DefaultBasicRefactoringTool(CharSequence jpqlFragment,
+                                        JPQLGrammar jpqlGrammar,
+                                        IManagedTypeProvider managedTypeProvider,
+                                        String jpqlQueryBNFId) {
 
-		super(jpqlFragment, jpqlGrammar, managedTypeProvider, jpqlQueryBNFId);
-	}
+        super(jpqlFragment, jpqlGrammar, managedTypeProvider, jpqlQueryBNFId);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLQueryContext buildJPQLQueryContext() {
-		return new DefaultJPQLQueryContext(getGrammar());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLQueryContext buildJPQLQueryContext() {
+        return new DefaultJPQLQueryContext(getGrammar());
+    }
 }

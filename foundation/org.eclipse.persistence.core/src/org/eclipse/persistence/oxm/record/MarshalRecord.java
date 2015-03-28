@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
 
 import java.util.ArrayList;
@@ -69,16 +69,16 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     private CycleDetectionStack<Object> cycleDetectionStack = new CycleDetectionStack<Object>();
 
     private Stack<CoreAttributeGroup> attributeGroupStack;
-    
+
     protected static final String COLON_W_SCHEMA_NIL_ATTRIBUTE = Constants.COLON + Constants.SCHEMA_NIL_ATTRIBUTE;
     protected static final String TRUE = "true";
-    
-    
+
+
     public MarshalRecord() {
         super(null);
         namespaceResolver = new NamespaceResolver();
     }
-    
+
     public void forceValueWrapper(){};
 
     public HashMap getPositionalNodes() {
@@ -136,7 +136,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     public String transformToXML() {
         return null;
     }
-    
+
     public void setSession(CoreAbstractSession session) {
         super.setSession(session);
         if (session != null && session.getDatasourceLogin() instanceof Login) {
@@ -157,7 +157,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         XPathFragment lastFragment = xmlField.getLastXPathFragment();
         if (lastFragment.nameIsText()) {
             characters(xmlField.getSchemaType(), value, null, xmlField.isCDATA());
-            
+
         } else if (lastFragment.isAttribute()) {
             attribute(lastFragment, xmlField.getNamespaceResolver(), value, xmlField.getSchemaType());
         } else {
@@ -186,43 +186,43 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             return;
         }
         String namespaceURI = namespaceResolver.getDefaultNamespaceURI();
-        if(null != namespaceURI) {            
+        if(null != namespaceURI) {
             defaultNamespaceDeclaration(namespaceURI);
         }
         if(namespaceResolver.hasPrefixesToNamespaces()) {
             for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
-                String namespacePrefix = entry.getKey();                
+                String namespacePrefix = entry.getKey();
                 namespaceDeclaration(namespacePrefix, entry.getValue());
             }
         }
     }
-    
+
     /**
-     * Handle marshal of an empty collection.  
+     * Handle marshal of an empty collection.
      * @param xPathFragment
      * @param namespaceResolver
      * @param openGrouping if grouping elements should be marshalled for empty collections
      * @return
      */
     public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
-    	 if (openGrouping) {
+         if (openGrouping) {
              XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
              closeStartGroupingElements(groupingFragment);
              return true;
          } else {
              return false;
-         }           
+         }
     }
-    
-	/**
-	 * Add the specified namespace declaration
-	 * @param prefix
-	 * @param namespaceURI
-	 */
+
+    /**
+     * Add the specified namespace declaration
+     * @param prefix
+     * @param namespaceURI
+     */
     public void namespaceDeclaration(String prefix, String namespaceURI){
         attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, prefix, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + prefix, namespaceURI);
     }
-    
+
     /**
      * Add the defaultNamespace declaration
      * @param defaultNamespace
@@ -253,9 +253,9 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     /**
      * INTERNAL
      */
-    public void marshalWithoutRootElement(ObjectBuilder treeObjectBuilder, Object object, Descriptor descriptor, Root root, boolean isXMLRoot){    
+    public void marshalWithoutRootElement(ObjectBuilder treeObjectBuilder, Object object, Descriptor descriptor, Root root, boolean isXMLRoot){
     }
-    
+
     /**
      * Receive notification that a namespace has been declared.
      * @param prefix The namespace prefix.
@@ -280,7 +280,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     public void endPrefixMapping(String prefix) {
     }
 
-    public void endPrefixMappings(NamespaceResolver namespaceResolver) {      
+    public void endPrefixMappings(NamespaceResolver namespaceResolver) {
     }
 
     /**
@@ -323,7 +323,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     @Override
     public abstract void attribute(String namespaceURI, String localName, String qName, String value);
 
-    
+
     /**
      * Receive notification that all of the attribute events have occurred for
      * the most recent element that has been started.
@@ -348,31 +348,31 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     /**
      * Convert the value if necessary and write out the attribute and converted value.
-     * @since EclipseLink 2.4 
-     */    
+     * @since EclipseLink 2.4
+     */
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
-    	 if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
-    	     String convertedValue = getStringForQName((QName)value);
+         if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
+             String convertedValue = getStringForQName((QName)value);
              attribute(xPathFragment, namespaceResolver, convertedValue);
-    	 } else{
-             String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));         	
+         } else{
+             String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
              attribute(xPathFragment, namespaceResolver, convertedValue);
-         }               
-    }     
-    
+         }
+    }
+
     /**
      * Convert the value if necessary and write out the converted value.
-     * @since EclipseLink 2.4 
-     */    
-    public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){  
+     * @since EclipseLink 2.4
+     */
+    public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){
         if(mimeType != null) {
-        	if(value instanceof List){
-        		value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesListForBinaryValues(//
+            if(value instanceof List){
+                value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesListForBinaryValues(//
                         (List)value, marshaller, mimeType);
-        	}else{
+            }else{
             value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                     value, marshaller, mimeType).getData();
-        	}
+            }
         }
         if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
             String convertedValue = getStringForQName((QName)value);
@@ -380,26 +380,26 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         }else{
             String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
             if(isCDATA){
-                cdata(convertedValue);        	    
+                cdata(convertedValue);
             }else{
                 characters(convertedValue);
             }
         }
     }
-    
+
     @Override
     public String getValueToWrite(QName schemaType, Object value, ConversionManager conversionManager) {
-    	if(value == null){
-    		return null;
-    	}
+        if(value == null){
+            return null;
+        }
         if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
             return getStringForQName((QName)value);
         }else if(value.getClass() == String.class){
-        	return (String) value;
+            return (String) value;
         }
         return (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
-    }   
-    
+    }
+
     protected String getStringForQName(QName qName){
         if(null == qName) {
             return null;
@@ -407,7 +407,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         String namespaceURI = qName.getNamespaceURI();
         if(null == namespaceURI || 0 == namespaceURI.length()) {
             if(getNamespaceResolver() != null && getNamespaceResolver().getDefaultNamespaceURI() != null) {
-                //need to add a default namespace declaration.                
+                //need to add a default namespace declaration.
                 defaultNamespaceDeclaration(namespaceURI);
             }
             return qName.getLocalPart();
@@ -421,21 +421,21 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             }
             String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
             if(null == prefix) {
-            	if(namespaceURI.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)){
-            	   prefix = namespaceResolver.generatePrefix(Constants.SCHEMA_PREFIX);	
-            	}else{
+                if(namespaceURI.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)){
+                   prefix = namespaceResolver.generatePrefix(Constants.SCHEMA_PREFIX);
+                }else{
                    prefix = namespaceResolver.generatePrefix();
-            	}
+                }
                 namespaceDeclaration(prefix, namespaceURI);
             }
             if(Constants.EMPTY_STRING.equals(prefix)){
-            	return qName.getLocalPart();
+                return qName.getLocalPart();
             }
             return prefix + Constants.COLON + qName.getLocalPart();
         }
     }
-    
-    
+
+
     /**
      * Receive notification of character data to be wrapped in a CDATA node.
      * @param value This is the value of the text to be wrapped
@@ -561,7 +561,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         }
         setOwningObject(parent);
     }
-    
+
     /**
      * INTERNAL:
      * Returns the list of grouping elements currently stored on the MarshalRecord
@@ -569,17 +569,17 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     public ArrayList<XPathNode> getGroupingElements() {
         return this.groupingElements;
     }
-    
+
     /**
      * INTERNAL:
-     * Sets the list of grouping elements to be marshalled on this record. 
+     * Sets the list of grouping elements to be marshalled on this record.
      */
     public void setGroupingElement(ArrayList<XPathNode> elements) {
         this.groupingElements = elements;
     }
 
     /**
-     * Marshal the attribute for the predicate if one was specified. 
+     * Marshal the attribute for the predicate if one was specified.
      */
     public void predicateAttribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         if(null != xPathFragment) {
@@ -601,23 +601,23 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      */
     public void startCollection() {
     }
-    
+
     /**
      * Used when an nil attribute should be written
      * @since EclipseLink 2.4
-     */    
+     */
     public void emptyAttribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver){
-    	XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
-        // We mutate the null into an empty string 
+        XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
+        // We mutate the null into an empty string
         attribute(xPathFragment, namespaceResolver, Constants.EMPTY_STRING);
         closeStartGroupingElements(groupingFragment);
     }
 
-    
+
     /**
      * Used when an nil attribute should be written
      * @since EclipseLink 2.4
-     */    
+     */
     public void emptyComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
         closeStartGroupingElements(groupingFragment);
@@ -625,22 +625,22 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         closeStartElement();
         endElement(xPathFragment, namespaceResolver);
     }
-    
+
     /**
      * Used when an nil attribute should be written
      * @since EclipseLink 2.4
-     */    
+     */
     public void emptySimple(NamespaceResolver namespaceResolver){
-    	XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
-    	closeStartGroupingElements(groupingFragment);
+        XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
+        closeStartGroupingElements(groupingFragment);
     }
-    
+
     /**
      * Used when an nil attribute should be written
      * @since EclipseLink 2.4
-     */    
+     */
     public void nilSimple(NamespaceResolver namespaceResolver){
-    	 XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
+         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
          StringBuilder qName = new StringBuilder(Constants.ATTRIBUTE); // Unsynchronized
          qName.append(xsiPrefix).append(COLON_W_SCHEMA_NIL_ATTRIBUTE);
@@ -649,23 +649,23 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
          attribute(nilFragment, namespaceResolver, TRUE);
          closeStartGroupingElements(groupingFragment);
     }
-    
+
     /**
      * Used when an nil attribute should be written
      * @since EclipseLink 2.4
-     */    
+     */
     public void nilComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
-    	 XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
-    	 closeStartGroupingElements(groupingFragment);
-    	 openStartElement(xPathFragment, namespaceResolver);
-    	 String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
-    	 XPathFragment nilFragment = new XPathFragment(Constants.ATTRIBUTE + xsiPrefix + COLON_W_SCHEMA_NIL_ATTRIBUTE);
-    	 nilFragment.setNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-    	 attribute(nilFragment, namespaceResolver, TRUE);
-    	 closeStartElement();
-    	 endElement(xPathFragment, namespaceResolver);
+         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
+         closeStartGroupingElements(groupingFragment);
+         openStartElement(xPathFragment, namespaceResolver);
+         String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
+         XPathFragment nilFragment = new XPathFragment(Constants.ATTRIBUTE + xsiPrefix + COLON_W_SCHEMA_NIL_ATTRIBUTE);
+         nilFragment.setNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+         attribute(nilFragment, namespaceResolver, TRUE);
+         closeStartElement();
+         endElement(xPathFragment, namespaceResolver);
     }
-   
+
 
     /**
      * This method is used to inform the MarshalRecord that it is done receiving
@@ -676,7 +676,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     public void endCollection() {
     }
 
-  
+
     /**
      * INTERNAL:
      * Private function to process or create an entry in the NamespaceResolver for the xsi prefix.
@@ -691,30 +691,30 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             // add new xsi entry into the properties map
             xsiPrefix = Constants.SCHEMA_INSTANCE_PREFIX;
             namespaceResolver = new NamespaceResolver();
-            namespaceResolver.put(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);            
+            namespaceResolver.put(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         } else {
             // find an existing xsi entry in the map
             xsiPrefix = namespaceResolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             if (null == xsiPrefix) {
-                xsiPrefix = namespaceResolver.generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);                
+                xsiPrefix = namespaceResolver.generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);
                 namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             }
         }
         return xsiPrefix;
     }
-    
+
     /**
      * INTERNAL:
      * The optional fragment used to wrap the text() mappings
      * @since 2.4
      */
     public XPathFragment getTextWrapperFragment() {
-    	//return null as this is not supported by default
-    	//subclass records can return the fragment if supported.
+        //return null as this is not supported by default
+        //subclass records can return the fragment if supported.
         return null;
     }
-     
+
     protected String getNameForFragment(XPathFragment xPathFragment) {
         if(!this.hasCustomNamespaceMapper()) {
             return xPathFragment.getShortName();
@@ -737,27 +737,27 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             return null;
         }
         return prefix.getBytes(Constants.DEFAULT_CHARSET);
-    } 
+    }
 
     protected String getPrefixForFragment(XPathFragment xPathFragment) {
-        if(!hasCustomNamespaceMapper) { 
+        if(!hasCustomNamespaceMapper) {
             return xPathFragment.getPrefix();
         }
         String uri = xPathFragment.getNamespaceURI();
         if(uri == null || uri.length() == 0) {
             return Constants.EMPTY_STRING;
         }
-        
+
         String defaultNamespace = getNamespaceResolver().getDefaultNamespaceURI();
-        
+
         if(defaultNamespace != null && defaultNamespace.equals(uri)) {
             return Constants.EMPTY_STRING;
         }
         String prefix = this.getNamespaceResolver().resolveNamespaceURI(uri);
-        
+
         if(prefix != null) {
             return prefix;
-        } 
+        }
         for(Object next:getNamespaceResolver().getNamespaces()) {
             Namespace ns = (Namespace)next;
             uri = ns.getNamespaceURI();
@@ -781,14 +781,14 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     public boolean isWrapperAsCollectionName() {
         return false;
     }
-    
+
     public CoreAttributeGroup getCurrentAttributeGroup() {
         if(this.attributeGroupStack == null || this.attributeGroupStack.isEmpty()) {
             return DEFAULT_ATTRIBUTE_GROUP;
         }
         return attributeGroupStack.peek();
     }
-    
+
     public void pushAttributeGroup(CoreAttributeGroup group) {
         if(group == DEFAULT_ATTRIBUTE_GROUP && this.attributeGroupStack == null) {
             return;
@@ -798,7 +798,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         }
         this.attributeGroupStack.push(group);
     }
-    
+
     public void popAttributeGroup() {
         if(attributeGroupStack != null) {
             attributeGroupStack.pop();
@@ -808,5 +808,5 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     @Override
     public void flush() {
     }
- 
+
 }

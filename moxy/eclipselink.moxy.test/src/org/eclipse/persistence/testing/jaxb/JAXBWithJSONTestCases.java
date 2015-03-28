@@ -94,43 +94,43 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
 
     public void setWriteControlFormattedJSON(String location) {
-        this.controlJSONWriteFormattedLocation= location;        
+        this.controlJSONWriteFormattedLocation= location;
     }
-    
+
     public String getWriteControlJSON(){
-    	if(controlJSONWriteLocation != null){
-    		return controlJSONWriteLocation;
-    	}else{
-    		return controlJSONLocation;
-    	}
+        if(controlJSONWriteLocation != null){
+            return controlJSONWriteLocation;
+        }else{
+            return controlJSONLocation;
+        }
     }
 
     public String getWriteControlJSONFormatted(){
-    	if(controlJSONWriteFormattedLocation != null){
-    		return controlJSONWriteFormattedLocation;
-    	}else{    	
-    	    return getWriteControlJSON();
-    	}
+        if(controlJSONWriteFormattedLocation != null){
+            return controlJSONWriteFormattedLocation;
+        }else{
+            return getWriteControlJSON();
+        }
     }
-    
+
     protected Marshaller getJSONMarshaller() throws Exception{
-    	return jaxbMarshaller;
+        return jaxbMarshaller;
     }
-    
+
    protected Unmarshaller getJSONUnmarshaller() throws Exception{
-	   return jaxbUnmarshaller;
+       return jaxbUnmarshaller;
     }
-    
+
    public void jsonToObjectTest(Object testObject) throws Exception {
-   	   jsonToObjectTest(testObject, getJSONReadControlObject());
+          jsonToObjectTest(testObject, getJSONReadControlObject());
    }
-   
+
     public void jsonToObjectTest(Object testObject, Object controlObject) throws Exception {
-    	if(controlObject == null){
-    		assertNull(testObject);
-    		return;
-    	}
-    	
+        if(controlObject == null){
+            assertNull(testObject);
+            return;
+        }
+
         log("\n**xmlToObjectTest**");
         log("Expected:");
         log(controlObject.toString());
@@ -142,103 +142,103 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             JAXBElement testObj = (JAXBElement)testObject;
             compareJAXBElementObjects(controlObj, testObj, false);
         } else {
-        	assertEquals(controlObject, testObject);
+            assertEquals(controlObject, testObject);
         }
     }
-    
+
     public void testJSONUnmarshalFromInputStream() throws Exception {
-    	if(isUnmarshalTest()){
-    		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
-	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-	        Object testObject = null;
-	        if(getUnmarshalClass() != null){
-	        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
-	        }else{
-	            testObject = getJSONUnmarshaller().unmarshal(inputStream);
-	        }
-	        inputStream.close();
-	        jsonToObjectTest(testObject);
-    	}
+        if(isUnmarshalTest()){
+            getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
+            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+            Object testObject = null;
+            if(getUnmarshalClass() != null){
+                testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
+            }else{
+                testObject = getJSONUnmarshaller().unmarshal(inputStream);
+            }
+            inputStream.close();
+            jsonToObjectTest(testObject);
+        }
     }
     public MediaType getJSONUnmarshalMediaType(){
-    	return MediaType.APPLICATION_JSON;
+        return MediaType.APPLICATION_JSON;
     }
-    
+
     public void testUnmarshalAutoDetect() throws Exception {
-    	if(isUnmarshalTest()){
-    	   	getJSONUnmarshaller().setProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE, true);
-    	    InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-	        Object testObject = null;
-	        if(getUnmarshalClass() != null){
-	        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
-	        }else{
-	            testObject = getJSONUnmarshaller().unmarshal(inputStream);
-	        }
-	        inputStream.close();
-	        jsonToObjectTest(testObject);
-	        
-	        assertTrue(getJSONUnmarshaller().getProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE) == Boolean.TRUE);
-	        if(null != XML_INPUT_FACTORY) {
-	            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-	            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
-	            
-	            if(getUnmarshalClass() != null){                            
-	                testObject = getJAXBUnmarshaller().unmarshal(xmlStreamReader, getUnmarshalClass());
-	            }else{
-	            	testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader);
-	            }
-	            instream.close();
-	            xmlToObjectTest(testObject);
-	        }
-	        assertTrue(getJSONUnmarshaller().getProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)== Boolean.TRUE);
+        if(isUnmarshalTest()){
+               getJSONUnmarshaller().setProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE, true);
+            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+            Object testObject = null;
+            if(getUnmarshalClass() != null){
+                testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
+            }else{
+                testObject = getJSONUnmarshaller().unmarshal(inputStream);
+            }
+            inputStream.close();
+            jsonToObjectTest(testObject);
 
-    	}
+            assertTrue(getJSONUnmarshaller().getProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE) == Boolean.TRUE);
+            if(null != XML_INPUT_FACTORY) {
+                InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+                XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+
+                if(getUnmarshalClass() != null){
+                    testObject = getJAXBUnmarshaller().unmarshal(xmlStreamReader, getUnmarshalClass());
+                }else{
+                    testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader);
+                }
+                instream.close();
+                xmlToObjectTest(testObject);
+            }
+            assertTrue(getJSONUnmarshaller().getProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)== Boolean.TRUE);
+
+        }
     }
-    	
+
     public void testJSONUnmarshalFromInputSource() throws Exception {
-    	if(isUnmarshalTest()){
-    		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
+        if(isUnmarshalTest()){
+            getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
 
-	
-	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-	        InputSource inputSource = new InputSource(inputStream);
-	        Object testObject = null;
-	        if(getUnmarshalClass() != null){
-	        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
-	        }else{
-	            testObject = getJSONUnmarshaller().unmarshal(inputSource);
-	        }
-	        inputStream.close();
-	        jsonToObjectTest(testObject);
-    	}
+
+            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+            InputSource inputSource = new InputSource(inputStream);
+            Object testObject = null;
+            if(getUnmarshalClass() != null){
+                testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
+            }else{
+                testObject = getJSONUnmarshaller().unmarshal(inputSource);
+            }
+            inputStream.close();
+            jsonToObjectTest(testObject);
+        }
     }
-    
-    
+
+
 
     public void testJSONUnmarshalFromReader() throws Exception {
-    	if(isUnmarshalTest()){
-    		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
+        if(isUnmarshalTest()){
+            getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
 
-	
-	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-	        Reader reader = new InputStreamReader(inputStream);
-	        Object testObject = null;
-	        
-	        if(getUnmarshalClass() != null){
-	        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(reader), getUnmarshalClass());
-	        }else{
-	            testObject = getJSONUnmarshaller().unmarshal(reader);
-	        }
-	        
-	        reader.close();
-	        inputStream.close();
-	        jsonToObjectTest(testObject);
-    	}
+
+            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+            Reader reader = new InputStreamReader(inputStream);
+            Object testObject = null;
+
+            if(getUnmarshalClass() != null){
+                testObject = getJSONUnmarshaller().unmarshal(new StreamSource(reader), getUnmarshalClass());
+            }else{
+                testObject = getJSONUnmarshaller().unmarshal(reader);
+            }
+
+            reader.close();
+            inputStream.close();
+            jsonToObjectTest(testObject);
+        }
     }
 
     public void testJSONUnmarshalFromSource() throws Exception {
         if(isUnmarshalTest()){
-		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
+        getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
 
             InputStream controlJSONInputStream = null;
             try {
@@ -266,13 +266,13 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     public void testJSONUnmarshalFromJsonStructureSource() throws Exception {
         if(isUnmarshalTest()){
             getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
-           InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);    
+           InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
            JsonReader reader = Json.createReader(inputStream);
-           JsonStructure jsonStructure = reader.read();		
+           JsonStructure jsonStructure = reader.read();
            JsonStructureSource source = new JsonStructureSource(jsonStructure);
-    		
+
             Object testObject = null;
-            if(getUnmarshalClass() != null){               
+            if(getUnmarshalClass() != null){
                 testObject = getJSONUnmarshaller().unmarshal(source, getUnmarshalClass());
             }else{
                 testObject = getJSONUnmarshaller().unmarshal(source);
@@ -300,25 +300,25 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             }
         }
     }
-    
+
     public void testJSONUnmarshalFromURL() throws Exception {
-    	if(isUnmarshalTest()){
-    		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
-	        URL url = getJSONURL();
-	        Object testObject= null;
-	        if(getUnmarshalClass() == null){
-	        	testObject = getJSONUnmarshaller().unmarshal(url);
-	        }else{
-	        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(url.openStream()), getUnmarshalClass());
-	        }
-	        	
-	        jsonToObjectTest(testObject);
-    	}
+        if(isUnmarshalTest()){
+            getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
+            URL url = getJSONURL();
+            Object testObject= null;
+            if(getUnmarshalClass() == null){
+                testObject = getJSONUnmarshaller().unmarshal(url);
+            }else{
+                testObject = getJSONUnmarshaller().unmarshal(new StreamSource(url.openStream()), getUnmarshalClass());
+            }
+
+            jsonToObjectTest(testObject);
+        }
     }
-    
+
 
     public void testJSONMarshalToOutputStream() throws Exception{
-    	getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+        getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
@@ -326,10 +326,10 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        } 
+        }
         if(expectsMarshalException){
-        	fail("An exception should have occurred but didn't.");
-        	return;        
+            fail("An exception should have occurred but didn't.");
+            return;
         }
 
         compareStringToControlFile("testJSONMarshalToOutputStream", new String(os.toByteArray()));
@@ -337,8 +337,8 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
 
     public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{
-    	getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-    	getJSONMarshaller().setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+        getJSONMarshaller().setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
@@ -348,8 +348,8 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             return;
         }
         if(expectsMarshalException){
-        	fail("An exception should have occurred but didn't.");
-        	return;        
+            fail("An exception should have occurred but didn't.");
+            return;
         }
 
         compareStringToControlFile("testJSONMarshalToOutputStream_FORMATTED", new String(os.toByteArray()), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
@@ -357,7 +357,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
 
     public void testJSONMarshalToStringWriter() throws Exception{
-    	getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+        getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
 
         StringWriter sw = new StringWriter();
         try {
@@ -365,10 +365,10 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        } 
+        }
         if(expectsMarshalException){
             fail("An exception should have occurred but didn't.");
-        	return;        	
+            return;
         }
 
         log(sw.toString());
@@ -376,8 +376,8 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
 
     public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
-    	getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-    	getJSONMarshaller().setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+        getJSONMarshaller().setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         StringWriter sw = new StringWriter();
         try {
@@ -385,16 +385,16 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        } 
+        }
         if(expectsMarshalException){
             fail("An exception should have occurred but didn't.");
-        	return;        	
+            return;
         }
 
         log(sw.toString());
         compareStringToControlFile("testJSONMarshalToStringWriter_FORMATTED", sw.toString(), getWriteControlJSONFormatted(),shouldRemoveWhitespaceFromControlDocJSON());
     }
-    
+
     public void testJSONMarshalToBuilderResult() throws Exception{
         getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
 
@@ -405,19 +405,19 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        } 
+        }
         if(expectsMarshalException){
             fail("An exception should have occurred but didn't.");
-        	return;        	
+            return;
         }
 
         JsonObject jsonObject = jsonObjectBuilder.build();
-        
+
         StringWriter sw = new StringWriter();
         JsonWriter writer= Json.createWriter(sw);
         writer.writeObject(jsonObject);
         writer.close();
-        
+
         log(sw.toString());
         compareStringToControlFile("**testJSONMarshalToBuilderResult**", sw.toString());
     }
@@ -433,10 +433,10 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        } 
+        }
         if(expectsMarshalException){
             fail("An exception should have occurred but didn't.");
-        	return;        	
+            return;
         }
 
         generator.flush();
@@ -444,13 +444,13 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         compareStringToControlFile("**testJSONMarshalToGeneratorResult**", sw.toString());
     }
 
-    
+
     protected void compareStringToControlFile(String test, String testString) {
-    	compareStringToControlFile(test, testString, getWriteControlJSON());
+        compareStringToControlFile(test, testString, getWriteControlJSON());
     }
-    
+
     protected void compareStringToControlFile(String test, String testString, String controlFileLocation) {
-    	compareStringToControlFile(test, testString, controlFileLocation, shouldRemoveEmptyTextNodesFromControlDoc());
+        compareStringToControlFile(test, testString, controlFileLocation, shouldRemoveEmptyTextNodesFromControlDoc());
     }
 
     protected void compareStringToControlFile(String test, String testString, String controlFileLocation, boolean removeWhitespace) {
@@ -474,19 +474,19 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         if(removeWhitespace){
             log("Expected (With All Whitespace Removed):");
         }else{
-        	log("Expected");
+            log("Expected");
         }
-        
+
         if(removeWhitespace){
-        	expectedString = expectedString.replaceAll("[ \b\t\n\r]", "");
+            expectedString = expectedString.replaceAll("[ \b\t\n\r]", "");
         }
         log(expectedString);
         if(removeWhitespace){
             log("\nActual (With All Whitespace Removed):");
         }else{
-        	log("\nActual");
+            log("\nActual");
         }
-        
+
         if(removeWhitespace){
             testString = testString.replaceAll("[ \b\t\n\r]", "");
         }
@@ -495,44 +495,44 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
 
     protected Object getJSONReadControlObject(){
-	return getReadControlObject();
+    return getReadControlObject();
     }
 
     private URL getJSONURL() {
         return Thread.currentThread().getContextClassLoader().getResource(controlJSONLocation);
     }
-        
+
     public boolean shouldRemoveWhitespaceFromControlDocJSON(){
-    	return true;
+        return true;
     }
-    
+
     public void generateJSONSchema(InputStream controlSchema) throws Exception {
-    	List<InputStream> controlSchemas = new ArrayList<InputStream>();
-    	controlSchemas.add(controlSchema);
-    	generateJSONSchema(controlSchemas);
+        List<InputStream> controlSchemas = new ArrayList<InputStream>();
+        controlSchemas.add(controlSchema);
+        generateJSONSchema(controlSchemas);
     }
-    
-    
+
+
     public void generateJSONSchema(List<InputStream> controlSchemas) throws Exception {
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
 
         Class theClass = getWriteControlObject().getClass();
         if(getWriteControlObject() instanceof JAXBElement){
-        	 theClass = ((JAXBElement) getWriteControlObject()).getValue().getClass();
+             theClass = ((JAXBElement) getWriteControlObject()).getValue().getClass();
         }
-        
+
         ((JAXBContext)getJAXBContext()).generateJsonSchema(outputResolver, theClass);
-    	        
+
         List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
-        
-        
+
+
         assertEquals("Wrong Number of Schemas Generated", controlSchemas.size(), generatedSchemas.size());
-        
+
         for(int i=0; i<controlSchemas.size(); i++){
-        	InputStream controlInputstream = controlSchemas.get(i);
-        	Writer generated = generatedSchemas.get(i);
-            log(generated.toString());            
-            String controlString =  loadInputStreamToString(controlInputstream);            
+            InputStream controlInputstream = controlSchemas.get(i);
+            Writer generated = generatedSchemas.get(i);
+            log(generated.toString());
+            String controlString =  loadInputStreamToString(controlInputstream);
             compareStrings("generateJSONSchema", generated.toString(), controlString, true);
         }
     }

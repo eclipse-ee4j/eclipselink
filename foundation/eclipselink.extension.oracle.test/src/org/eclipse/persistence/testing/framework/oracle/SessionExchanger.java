@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/28/2008-1.0M8 Andrei Ilitchev 
- *        - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA. 
- ******************************************************************************/  
+ *     05/28/2008-1.0M8 Andrei Ilitchev
+ *        - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA.
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework.oracle;
 
 import java.sql.SQLException;
@@ -46,15 +46,15 @@ public class SessionExchanger {
     public boolean shouldLogoutOriginalSession = true;
     // indicates whether the new session should be connected
     public boolean shouldLoginNewSession = true;
-    
+
     DatabaseSession originalSession;
     DatabaseSession newSession;
     boolean hasLoggedOutOriginalSession;
-    OracleDataSource dataSource;    
+    OracleDataSource dataSource;
 
     // pass the original session and params for the new one:
     //   useDatabaseSession - "true" means new session is DatabaseSession; "false" - ServerSession;
-    //   useExternalConnectionPooling - indicates whether the new session use external connection pooling or not. 
+    //   useExternalConnectionPooling - indicates whether the new session use external connection pooling or not.
     // returns the new session
     public DatabaseSession createNewSession(DatabaseSession originalSession, boolean useDatabaseSession, boolean useExternalConnectionPooling) {
         return createNewSession(originalSession, useDatabaseSession, useExternalConnectionPooling, null, null);
@@ -77,13 +77,13 @@ public class SessionExchanger {
     //        pass -1 value for minWriteConnection and/or maxWriteConnection if no min and/or max number of connections should be set in the data source.
     //   in internal pooling case the min / max values used for write and read connection pools.
     // returns the new session
-    public DatabaseSession createNewSession(DatabaseSession originalSession, boolean useDatabaseSession, boolean useExternalConnectionPooling, Properties loginProperties, Map sessionProperties, 
-                                            int minWriteConnections, int maxWriteConnections, int minReadConnections, int maxReadConnections) 
+    public DatabaseSession createNewSession(DatabaseSession originalSession, boolean useDatabaseSession, boolean useExternalConnectionPooling, Properties loginProperties, Map sessionProperties,
+                                            int minWriteConnections, int maxWriteConnections, int minReadConnections, int maxReadConnections)
     {
         setup(originalSession);
         DatabaseLogin login = cloneAndSetDataSource(originalSession.getLogin(), useExternalConnectionPooling, minWriteConnections, maxWriteConnections);
         if(useDatabaseSession) {
-            newSession = new DatabaseSessionImpl(login);            
+            newSession = new DatabaseSessionImpl(login);
         } else {
             if(useExternalConnectionPooling) {
                 newSession = new ServerSession(login);
@@ -127,11 +127,11 @@ public class SessionExchanger {
             }
         }
     }
-    
+
     public boolean isBusy() {
         return newSession != null;
     }
-    
+
     void setup(DatabaseSession originalSession) {
         if(isBusy()) {
             throw new TestProblemException("SessionExchanger: new session has been already created");
@@ -175,7 +175,7 @@ public class SessionExchanger {
         }
         return cloneLogin;
     }
-    
+
     void setProperties(Properties loginProperties, Map sessionProperties) {
         if(loginProperties != null) {
             newSession.getLogin().setProperties(loginProperties);
@@ -184,7 +184,7 @@ public class SessionExchanger {
             ((AbstractSession)newSession).setProperties(sessionProperties);
         }
     }
-    
+
     // create a data source using the supplied connection string
     void createDataSource(String connectionString, int minConnections, int maxConnections) {
         try {

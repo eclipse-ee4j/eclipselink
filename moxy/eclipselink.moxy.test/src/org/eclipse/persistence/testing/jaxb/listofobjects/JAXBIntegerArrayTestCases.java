@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -24,29 +24,29 @@ import javax.xml.namespace.QName;
 
 
 public class JAXBIntegerArrayTestCases extends JAXBListOfObjectsTestCases {
-	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerArray.xml";
-	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerArray.json";
-	protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerArrayNoXsiType.xml";
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerArray.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerArray.json";
+    protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerArrayNoXsiType.xml";
 
-	public JAXBIntegerArrayTestCases(String name) throws Exception {
-		super(name);
-		init();
-	}
+    public JAXBIntegerArrayTestCases(String name) throws Exception {
+        super(name);
+        init();
+    }
 
-	protected Type getTypeToUnmarshalTo() throws Exception {
-		return Integer[].class;
-	}
+    protected Type getTypeToUnmarshalTo() throws Exception {
+        return Integer[].class;
+    }
 
-	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
-		Class[] classes = new Class[1];
-		classes[0] = Integer[].class;
-		setClasses(classes);
-		initXsiType();
-	}
+    public void init() throws Exception {
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        Class[] classes = new Class[1];
+        classes[0] = Integer[].class;
+        setClasses(classes);
+        initXsiType();
+    }
 
-	@Override
+    @Override
     protected Map<String, String> getAdditationalNamespaces() {
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("examplenamespace", "ns0");
@@ -54,30 +54,30 @@ public class JAXBIntegerArrayTestCases extends JAXBListOfObjectsTestCases {
         return namespaces;
     }
 
-	protected Object getControlObject() {
-		Integer[] integers = new Integer[4];
-		integers[0] = 10;
-		integers[1] = 20;
-		integers[2] = 30;
-		integers[3] = 40;
+    protected Object getControlObject() {
+        Integer[] integers = new Integer[4];
+        integers[0] = 10;
+        integers[1] = 20;
+        integers[2] = 30;
+        integers[3] = 40;
 
-		QName qname = new QName("examplenamespace", "root");
-		JAXBElement jaxbElement = new JAXBElement(qname, Object.class ,null);
-		jaxbElement.setValue(integers);
+        QName qname = new QName("examplenamespace", "root");
+        JAXBElement jaxbElement = new JAXBElement(qname, Object.class ,null);
+        jaxbElement.setValue(integers);
 
-		return jaxbElement;
-	}
+        return jaxbElement;
+    }
 
-	    
-    public List< InputStream> getControlSchemaFiles(){	
-	    InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/integerArray.xsd");
-		
-	    List<InputStream> controlSchema = new ArrayList<InputStream>();
-		controlSchema.add(instream);
-		return controlSchema;
-	}
-    
-	protected String getNoXsiTypeControlResourceName() {
-		return XML_RESOURCE_NO_XSI_TYPE;
-	}
+
+    public List< InputStream> getControlSchemaFiles(){
+        InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/integerArray.xsd");
+
+        List<InputStream> controlSchema = new ArrayList<InputStream>();
+        controlSchema.add(instream);
+        return controlSchema;
+    }
+
+    protected String getNoXsiTypeControlResourceName() {
+        return XML_RESOURCE_NO_XSI_TYPE;
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.Serializable;
@@ -45,12 +45,12 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class BindCallCustomParameter implements Serializable {
     /**
-     * Return if unwrapped connection should be used. 
+     * Return if unwrapped connection should be used.
      */
     public boolean shouldUseUnwrappedConnection() {
         return false;
     }
-      
+
     /**
     * INTERNAL:
     * Binds the custom parameter (obj) into  the passed PreparedStatement
@@ -78,22 +78,22 @@ public class BindCallCustomParameter implements Serializable {
     }
 
     protected Object obj;
-    
+
     /**
      * INTERNAL:
      * Converts the parameter object from a collection or java object into a JDBC type such as an
-     * Array or Struct object, based on the type information contained in the dbField object.  
-     * If the parameter is null, the dbField will be returned to represent the null value.  
+     * Array or Struct object, based on the type information contained in the dbField object.
+     * If the parameter is null, the dbField will be returned to represent the null value.
      * A Struct object
-     * will be returned if: 
+     * will be returned if:
      *  1) the dbField is an ObjectRelationalDatabaseField with its sqltype set to Types.STRUCT
      *  2) parameter is not an instanceof java.sql.Struct
      *  3) There is an ObjectRelationalDataTypeDescriptor defined for the parameter object's class
-     *  
+     *
      * An Array object will be returned if:
      *  1) the dbField is an ObjectRelationalDatabaseField and sqltype is set to Types.ARRAY
      *  2) parameter is an instanceof collection and is not an instanceof java.sql.Array
-     *  
+     *
      * This method will be used recursively on the dbField's nestedField and objects in the collection
      * to build the Array object, allowing for nested structures to be produced ie arrays of arrays
      */
@@ -110,7 +110,7 @@ public class BindCallCustomParameter implements Serializable {
             if (!(parameter instanceof Struct)){
                 ClassDescriptor descriptor=session.getDescriptor(parameter);
                 if ((descriptor!=null) && (descriptor.isObjectRelationalDataTypeDescriptor())){
-                    //this is used to convert non-null objects passed through stored procedures and custom SQL to structs 
+                    //this is used to convert non-null objects passed through stored procedures and custom SQL to structs
                     ObjectRelationalDataTypeDescriptor ord=(ObjectRelationalDataTypeDescriptor)descriptor;
                     AbstractRecord nestedRow = ord.getObjectBuilder().buildRow(parameter, session, WriteType.UNDEFINED);
                     return ord.buildStructureFromRow(nestedRow, session, connection);
@@ -120,14 +120,14 @@ public class BindCallCustomParameter implements Serializable {
         }
         // Handle java.sql.Array conversions from Collection or Java Arrays.
         if (parameter instanceof Object[]) {
-        	parameter = Arrays.asList((Object[])parameter);
+            parameter = Arrays.asList((Object[])parameter);
         }
         if ((dbField.getSqlType()!=Types.ARRAY)||(parameter instanceof Array) || !(parameter instanceof Collection) ){
             return parameter;
         }
-        
+
         Collection container = (Collection)parameter;
-        
+
         DatabaseField nestedType = ordField.getNestedTypeField();
 
         Object[] fields = new Object[container.size()];
@@ -142,5 +142,5 @@ public class BindCallCustomParameter implements Serializable {
 
         return session.getPlatform().createArray(((ObjectRelationalDatabaseField)dbField).getSqlTypeName(), fields, session, connection);
     }
-    
+
 }

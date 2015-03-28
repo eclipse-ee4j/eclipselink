@@ -5,6 +5,6 @@
    <responsibilities>
       <responsibility>Fix Bugs</responsibility>
       <responsibility/>
-      <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:nil="true"/> 
+      <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:nil="true"/>
    </responsibilities>
 </x:employee-data>

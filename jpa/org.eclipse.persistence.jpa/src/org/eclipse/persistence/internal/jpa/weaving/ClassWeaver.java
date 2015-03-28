@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     dclarke Bug 244124: Enhanced weaving to support extended FetchGroup functionality
- *     08/23/2010-2.2 Michael O'Brien 
+ *     08/23/2010-2.2 Michael O'Brien
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
  * attribute that uses indirection. In addition, access methods are added for
  * the new variable. Also, triggers the process of weaving the methods of the
  * class.
- * 
+ *
  * @see org.eclipse.persistence.internal.weaving.MethodWeaver
  */
 
@@ -221,7 +221,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      * Add a variable of type ValueHolderInterface to the class. When this
      * method has been run, the class will contain a variable declaration
      * similar to the following:
-     * 
+     *
      * private ValueHolderInterface _persistence_variableName_vh;
      */
     public void addValueHolder(AttributeDetails attributeDetails) {
@@ -244,7 +244,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      * Add a variable of type PropertyChangeListener to the class. When this
      * method has been run, the class will contain a variable declaration
      * similar to the following
-     * 
+     *
      * private transient _persistence_listener;
      */
     public void addPropertyChangeListener(boolean attributeAccess) {
@@ -254,7 +254,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     /**
      * Add the implementation of the changeTracker_getPropertyChangeListener
      * method to the class. The result is a method that looks as follows:
-     * 
+     *
      * public PropertyChangeListener _persistence_getPropertyChangeListener() {
      * return _persistence_listener; }
      */
@@ -269,7 +269,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     /**
      * Add the implementation of the changeTracker_setPropertyChangeListener
      * method to the class. The result is a method that looks as follows:
-     * 
+     *
      * public void _persistence_setPropertyChangeListener(PropertyChangeListener
      * propertychangelistener){ _persistence_listener = propertychangelistener;
      * }
@@ -285,7 +285,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
 
     /**
      * Add a method to track property changes. The method will look as follows:
-     * 
+     *
      * public void _toplink_propertyChange(String s, Object obj, Object obj1){
      * if(_persistence_listener != null && obj != obj1){
      * _persistence_listener.propertyChange(new PropertyChangeEvent(this, s,
@@ -331,7 +331,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      * Add a method that allows us to lazily initialize a valueholder we have
      * woven in This allows us to avoid initializing valueholders in the
      * constructor.
-     * 
+     *
      * protected void _persistence_initialize_attribute_vh(){
      * if(_persistence_attribute_vh == null){ _persistence_attribute_vh = new
      * ValueHolder(this.attribute); // or new ValueHolder() if property access.
@@ -380,7 +380,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     /**
      * Add a get method for the newly added valueholder. Adds a method of the
      * following form:
-     * 
+     *
      * public WeavedAttributeValueHolderInterface _persistence_getfoo_vh(){
      * _persistence_initialize_attributeName_vh(); if
      * (_persistence_vh.isCoordinatedWithProperty() ||
@@ -452,7 +452,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     /**
      * Add a set method for the newly added ValueHolder. Adds a method of this
      * form:
-     * 
+     *
      * public void _persistence_setfoo_vh(WeavedAttributeValueHolderInterface
      * valueholderinterface){ _persistence_foo_vh = valueholderinterface; if
      * (valueholderinterface.isInstantiated()){ Object object = getFoo(); Object
@@ -515,7 +515,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
             cv_set_value.visitFrame(F_SAME, 0, null, 0, null);
             Label l2 = new Label();
             cv_set_value.visitJumpInsn(GOTO, l2);
-            // }  
+            // }
             cv_set_value.visitLabel(l0);
             // else {
             cv_set_value.visitFrame(F_SAME, 0, null, 0, null);
@@ -535,7 +535,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     /**
      * Adds a convenience method used to replace a PUTFIELD when field access is
      * used. The method follows the following form:
-     * 
+     *
      * public void _persistence_set_variableName((VariableClas) argument) {
      * _persistence_checkFetchedForSet("variableName");
      * _persistence_initialize_variableName_vh();
@@ -662,7 +662,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     /**
      * Adds a convenience method used to replace a GETFIELD when field access is
      * used. The method follows the following form:
-     * 
+     *
      * public (VariableClass) _persistence_get_variableName() {
      * _persistence_checkFetched("variableName");
      * _persistence_initialize_variableName_vh(); this.variableName =
@@ -716,7 +716,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      * Add a variable of type Object to the class. When this method has been
      * run, the class will contain a variable declarations similar to the
      * following:
-     * 
+     *
      * private Object _persistence_primaryKey;
      */
     public void addPersistenceEntityVariables() {
@@ -727,7 +727,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     /**
      * Add an internal post clone method. This will clone value holders to avoid
      * change original/clone to effect the other.
-     * 
+     *
      * public Object _persistence_post_clone() { this._attribute_vh =
      * this._attribute_vh.clone(); ... this._persistence_listener = null; return
      * this; }
@@ -846,7 +846,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     /**
      * Add an internal shallow clone method. This can be used to optimize uow
      * cloning.
-     * 
+     *
      * public Object _persistence_shallow_clone() { return super.clone(); }
      */
     public void addShallowClone(ClassDetails classDetails) {
@@ -864,10 +864,10 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     /**
      * Add an internal empty constructor, and new method. This is used to avoid
      * unnecessary initialization and avoid reflection.
-     * 
+     *
      * public void _persistence_new(PersistenceObject factory) { return new
      * ClassType(factory); }
-     * 
+     *
      * public ClassType(PersistenceObject factory) { super(); }
      */
     public void addPersistenceNew(ClassDetails classDetails) {
@@ -908,11 +908,11 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     /**
      * Add an internal generic get and set method. This is used to avoid
      * reflection.
-     * 
+     *
      * public Object _persistence_get(String attribute) { if (attribute ==
      * "address") { return this.address; } if (attribute == "city") { return
      * this.city; } return null; }
-     * 
+     *
      * public void _persistence_set(int index, Object value) { if (attribute ==
      * "address") { this.address = (String)value; } else if (attribute ==
      * "city") { this.city = (String)city; } }
@@ -1009,7 +1009,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     /**
      * Adds get/set method for PersistenceEntity interface. This adds the
      * following methods:
-     * 
+     *
      * public Object _persistence_getId() { return _persistence_primaryKey; }
      * public void _persistence_setId(Object primaryKey) {
      * this._persistence_primaryKey = primaryKey; }
@@ -1046,7 +1046,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      * Add a variable of type FetchGroup, Session to the class. When this method
      * has been run, the class will contain a variable declarations similar to
      * the following:
-     * 
+     *
      * private FetchGroup _persistence_fetchGroup; private boolean
      * _persistence_shouldRefreshFetchGroup; private Session
      * _persistence_session;
@@ -1070,32 +1070,32 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     /**
      * Adds get/set method for FetchGroupTracker interface. This adds the
      * following methods:
-     * 
+     *
      * public Session _persistence_getSession() { return _persistence_session; }
      * public void _persistence_setSession(Session session) {
      * this._persistence_session = session; }
-     * 
+     *
      * public FetchGroup _persistence_getFetchGroup() { return
      * _persistence_fetchGroup; } public void
      * _persistence_setFetchGroup(FetchGroup fetchGroup) {
      * this._persistence_fetchGroup = fetchGroup; }
-     * 
+     *
      * public boolean _persistence_shouldRefreshFetchGroup() { return
      * _persistence_shouldRefreshFetchGroup; } public void
      * _persistence_setShouldRefreshFetchGroup(boolean shouldRefreshFetchGroup)
      * { this._persistence_shouldRefreshFetchGroup = shouldRefreshFetchGroup; }
-     * 
+     *
      * public void _persistence_resetFetchGroup() { }
-     * 
+     *
      * public void _persistence_isAttributeFetched(String attribute) { return
      * this._persistence_fetchGroup == null ||
      * _persistence_fetchGroup.containsAttribute(attribute); }
-     * 
+     *
      * public void _persistence_checkFetched(String attribute) { if
      * (this._persistence_fetchGroup != null) {
      * EntityManagerImpl.processUnfetchedAttribute(this, attribute); } }
-     * 
-     * 
+     *
+     *
      * public void _persistence_checkSetFetched(String attribute) { if
      * (this._persistence_fetchGroup != null) {
      * EntityManagerImpl.processUnfetchedAttributeForSet(this, attribute); } }

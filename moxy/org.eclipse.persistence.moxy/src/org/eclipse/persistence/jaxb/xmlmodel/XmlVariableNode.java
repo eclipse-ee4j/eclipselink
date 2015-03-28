@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,9 +21,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -47,8 +47,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -90,11 +90,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the xmlAccessMethods property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public XmlAccessMethods getXmlAccessMethods() {
         return xmlAccessMethods;
@@ -102,11 +102,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the xmlAccessMethods property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlAccessMethods }
-     *     
+     *
      */
     public void setXmlAccessMethods(XmlAccessMethods value) {
         this.xmlAccessMethods = value;
@@ -114,11 +114,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the xmlJavaTypeAdapter property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlJavaTypeAdapter }
-     *     
+     *
      */
     public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
         return xmlJavaTypeAdapter;
@@ -126,11 +126,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the xmlJavaTypeAdapter property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlJavaTypeAdapter }
-     *     
+     *
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
         this.xmlJavaTypeAdapter = value;
@@ -138,11 +138,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the xmlElementWrapper property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlElementWrapper }
-     *     
+     *
      */
     public XmlElementWrapper getXmlElementWrapper() {
         return xmlElementWrapper;
@@ -150,11 +150,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the xmlElementWrapper property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlElementWrapper }
-     *     
+     *
      */
     public void setXmlElementWrapper(XmlElementWrapper value) {
         this.xmlElementWrapper = value;
@@ -162,11 +162,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the xmlProperties property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public XmlProperties getXmlProperties() {
         return xmlProperties;
@@ -174,11 +174,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the xmlProperties property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link XmlProperties }
-     *     
+     *
      */
     public void setXmlProperties(XmlProperties value) {
         this.xmlProperties = value;
@@ -186,11 +186,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the xmlPath property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getXmlPath() {
         return xmlPath;
@@ -198,11 +198,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the xmlPath property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setXmlPath(String value) {
         this.xmlPath = value;
@@ -210,11 +210,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the readOnly property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isReadOnly() {
         if (readOnly == null) {
@@ -226,11 +226,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the readOnly property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setReadOnly(Boolean value) {
         this.readOnly = value;
@@ -238,11 +238,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the writeOnly property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isWriteOnly() {
         if (writeOnly == null) {
@@ -254,11 +254,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the writeOnly property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setWriteOnly(Boolean value) {
         this.writeOnly = value;
@@ -266,11 +266,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the containerType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getContainerType() {
         if (containerType == null) {
@@ -282,11 +282,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the containerType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setContainerType(String value) {
         this.containerType = value;
@@ -294,11 +294,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the type property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getType() {
         if (type == null) {
@@ -310,11 +310,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the type property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setType(String value) {
         this.type = value;
@@ -322,11 +322,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the isAttribute property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isIsAttribute() {
         if (isAttribute == null) {
@@ -338,11 +338,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the isAttribute property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setIsAttribute(Boolean value) {
         this.isAttribute = value;
@@ -350,11 +350,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the javaVariableAttribute property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getJavaVariableAttribute() {
         return javaVariableAttribute;
@@ -362,11 +362,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the javaVariableAttribute property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setJavaVariableAttribute(String value) {
         this.javaVariableAttribute = value;
@@ -374,11 +374,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the nillable property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isNillable() {
         if (nillable == null) {
@@ -390,11 +390,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the nillable property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setNillable(Boolean value) {
         this.nillable = value;
@@ -402,11 +402,11 @@ public class XmlVariableNode
 
     /**
      * Gets the value of the required property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public boolean isRequired() {
         if (required == null) {
@@ -418,11 +418,11 @@ public class XmlVariableNode
 
     /**
      * Sets the value of the required property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setRequired(Boolean value) {
         this.required = value;

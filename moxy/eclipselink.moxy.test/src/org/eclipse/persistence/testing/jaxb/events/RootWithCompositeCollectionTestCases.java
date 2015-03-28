@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.events;
 
 import java.io.InputStream;
@@ -25,7 +25,7 @@ import org.xml.sax.InputSource;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-    
+
 public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases {
     public JAXBMarshalListenerImpl listener;
     public JAXBUnmarshalListenerImpl unmarshalListener;
@@ -42,7 +42,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         setClasses(new Class[] {Employee.class, Address.class, PhoneNumber.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/events/composite_collection.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/events/composite_collection.json");
-        
+
         expectedMarshalEvents = new ArrayList();
         expectedMarshalEvents.add(JAXBMarshalListenerImpl.EMPLOYEE_BEFORE_MARSHAL);
         expectedMarshalEvents.add(JAXBMarshalListenerImpl.PHONE_BEFORE_MARSHAL);
@@ -50,7 +50,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         expectedMarshalEvents.add(JAXBMarshalListenerImpl.PHONE_BEFORE_MARSHAL);
         expectedMarshalEvents.add(JAXBMarshalListenerImpl.PHONE_AFTER_MARSHAL);
         expectedMarshalEvents.add(JAXBMarshalListenerImpl.EMPLOYEE_AFTER_MARSHAL);
-        
+
         expectedUnmarshalEvents = new ArrayList();
         expectedUnmarshalEvents.add(JAXBUnmarshalListenerImpl.EMPLOYEE_BEFORE_UNMARSHAL);
         expectedUnmarshalEvents.add(JAXBUnmarshalListenerImpl.PHONE_BEFORE_UNMARSHAL);
@@ -58,22 +58,22 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         expectedUnmarshalEvents.add(JAXBUnmarshalListenerImpl.PHONE_BEFORE_UNMARSHAL);
         expectedUnmarshalEvents.add(JAXBUnmarshalListenerImpl.PHONE_AFTER_UNMARSHAL);
         expectedUnmarshalEvents.add(JAXBUnmarshalListenerImpl.EMPLOYEE_AFTER_UNMARSHAL);
-        
+
         expectedClassBasedUnmarshalEvents = new ArrayList();
         expectedClassBasedUnmarshalEvents.add(JAXBUnmarshalListenerImpl.EMPLOYEE_BEFORE_UNMARSHAL);
         expectedClassBasedUnmarshalEvents.add(JAXBUnmarshalListenerImpl.EMPLOYEE_AFTER_UNMARSHAL);
-        
+
         expectedClassBasedMarshalEvents = new ArrayList();
         expectedClassBasedMarshalEvents.add(JAXBMarshalListenerImpl.EMPLOYEE_BEFORE_MARSHAL);
         expectedClassBasedMarshalEvents.add(JAXBMarshalListenerImpl.EMPLOYEE_AFTER_MARSHAL);
-        
+
     }
-    
+
     public void setUp() throws Exception {
-    	super.setUp();
+        super.setUp();
         listener = new JAXBMarshalListenerImpl();
         unmarshalListener = new JAXBUnmarshalListenerImpl();
-        
+
         this.getJAXBMarshaller().setListener((Marshaller.Listener)listener);
         this.getJAXBUnmarshaller().setListener((Unmarshaller.Listener)unmarshalListener);
     }
@@ -84,7 +84,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         unmarshalListener.events = new ArrayList();
 
     }
-    
+
     public void jsonToObjectTest(Object testObject) throws Exception {
         super.jsonToObjectTest(testObject);
         assertTrue("Class based callbacks not correct", ((Employee)testObject).triggeredEvents.equals(expectedClassBasedUnmarshalEvents));
@@ -92,7 +92,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         unmarshalListener.events = new ArrayList();
 
     }
-    
+
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Class based callbacks not correct", ((Employee)getWriteControlObject()).triggeredEvents.equals(expectedClassBasedMarshalEvents));
@@ -103,25 +103,25 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
     public Object getControlObject() {
         Employee employee = new Employee();
         employee.phoneNumbers = new ArrayList();
-        
+
         PhoneNumber phone = new PhoneNumber();
         phone.number = "123-4567";
         employee.phoneNumbers.add(phone);
-        
+
         phone = new PhoneNumber();
         phone.number = "891-0111";
         employee.phoneNumbers.add(phone);
         return employee;
     }
-    
-    
+
+
     public Object getWriteControlObject() {
         if(writeControlObject == null) {
             writeControlObject = getControlObject();
         }
         return writeControlObject;
     }
-    
+
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         Object testObject = getJAXBUnmarshaller().unmarshal(instream);
@@ -148,12 +148,12 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
     }
 
     public void testRoundTrip() throws Exception{
-    	if(isUnmarshalTest()) {    	
-    		InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+        if(isUnmarshalTest()) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             Object testObject = getJAXBUnmarshaller().unmarshal(instream);
             instream.close();
             super.xmlToObjectTest(testObject);
-            
+
             StringWriter writer = new StringWriter();
             getJAXBMarshaller().marshal(testObject, writer);
 
@@ -164,18 +164,18 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
             reader.close();
 
             super.objectToXMLDocumentTest(testDocument);
-            
+
             assertTrue("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents.equals(unmarshalListener.events));
-            
+
             assertTrue("Expected sequence of Marshal events not found", expectedMarshalEvents.equals(listener.events));
-            
+
             ArrayList expectedEvents = new ArrayList();
             expectedEvents.addAll(expectedClassBasedUnmarshalEvents);
             expectedEvents.addAll(expectedClassBasedMarshalEvents);
             assertTrue("Class based callbacks not corrent", ((Employee)testObject).triggeredEvents.equals(expectedEvents));
-        }    	
+        }
     }
-    
+
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         getJAXBMarshaller().marshal(getWriteControlObject(), builder);
@@ -188,7 +188,7 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
         log(controlDocument);
         log("\nActual:");
         log(testDocument);
-        
+
         assertXMLIdentical(controlDocument, testDocument);
     }
 
@@ -199,5 +199,5 @@ public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases 
     }
 
     public void testUnmarshallerHandler() throws Exception {
-    }      
+    }
 }

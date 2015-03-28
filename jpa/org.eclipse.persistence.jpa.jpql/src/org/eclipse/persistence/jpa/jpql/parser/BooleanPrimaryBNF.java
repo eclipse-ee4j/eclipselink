@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,28 +34,28 @@ package org.eclipse.persistence.jpa.jpql.parser;
 @SuppressWarnings("nls")
 public final class BooleanPrimaryBNF extends JPQLQueryBNF {
 
-	/**
-	 * The unique identifier of this BNF rule.
-	 */
-	public static final String ID = "boolean_primary";
+    /**
+     * The unique identifier of this BNF rule.
+     */
+    public static final String ID = "boolean_primary";
 
-	/**
-	 * Creates a new <code>BooleanPrimaryBNF</code>.
-	 */
-	public BooleanPrimaryBNF() {
-		super(ID);
-	}
+    /**
+     * Creates a new <code>BooleanPrimaryBNF</code>.
+     */
+    public BooleanPrimaryBNF() {
+        super(ID);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initialize() {
-		super.initialize();
-		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
-		registerChild(StateFieldPathExpressionBNF.ID);
-		registerChild(BooleanLiteralBNF.ID);
-		registerChild(InputParameterBNF.ID);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initialize() {
+        super.initialize();
+        setFallbackBNFId(ID);
+        setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
+        registerChild(StateFieldPathExpressionBNF.ID);
+        registerChild(BooleanLiteralBNF.ID);
+        registerChild(InputParameterBNF.ID);
+    }
 }

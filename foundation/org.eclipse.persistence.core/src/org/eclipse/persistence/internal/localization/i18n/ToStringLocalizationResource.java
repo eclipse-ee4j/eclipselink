@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/24/2014-2.6 Rick Curtis 
+ *     09/24/2014-2.6 Rick Curtis
  *       - 443762 : Misc message cleanup.
  *     12/18/2014-2.6 Rick Curtis
  *       - 454189 : Misc message cleanup.#2
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
@@ -59,7 +59,7 @@ public class ToStringLocalizationResource extends ListResourceBundle {
                                            { "objects_second", "objects/second" },
                                            { "shortestTime", "shortest time" },
                                            { "longestTime", "longest time" },
-                                           { "context", "Context:	" },
+                                           { "context", "Context:    " },
                                            { "name", "Name: " },
                                            { "schema", "Schema: " },
                                            { "no_streams", "no stream(s)" },
@@ -71,7 +71,7 @@ public class ToStringLocalizationResource extends ListResourceBundle {
                                            { "unknown", "unknown" },
                                            { "connector", "connector" },
                                            { "staticweave_processor_unknown_outcome", "Weaving classes stored in a directory and outputting to a JAR often leads to unexpected results." },
-                                           
+
                                            { "staticweave_commandline_help_message_1of19", "  Usage: StaticWeave [options] source target" },
                                            { "staticweave_commandline_help_message_2of19", "  Options:" },
                                            { "staticweave_commandline_help_message_3of19", "    -classpath classpath" },
@@ -91,7 +91,7 @@ public class ToStringLocalizationResource extends ListResourceBundle {
                                            { "staticweave_commandline_help_message_17of19", "    To weave all entites contained in C:\\\\foo-source.jar with its persistence.xml contained within the C:\\\\foo-containing-persistence-xml.jar," },
                                            { "staticweave_commandline_help_message_18of19", "    and output to C:\\\\foo-target.jar:" },
                                            { "staticweave_commandline_help_message_19of19", "    StaticWeave -persistenceinfo C:\\\\foo-containing-persistence-xml.jar -classpath C:\\\\classpath1;C:\\\\classpath2 C:\\\\foo-source.jar C:\\\\foo-target.jar"},
-                                           
+
                                            { "sdo_classgenerator_usage_help_1of8", "{0} Usage: org.eclipse.persistence.sdo.helper.{0} [-options]" },
                                            { "sdo_classgenerator_usage_help_2of8", "Options:" },
                                            { "sdo_classgenerator_usage_help_3of8", "    -help                        Prints the help message text" },
@@ -100,7 +100,7 @@ public class ToStringLocalizationResource extends ListResourceBundle {
                                            { "sdo_classgenerator_usage_help_6of8", "    -logLevel <level int>        Specify the integer value of the logging level (8=OFF,7=SEVERE,6=WARNING,5=INFO,4=CONFIG,3=FINE,2=FINER(default),1=FINEST,0=ALL)." },
                                            { "sdo_classgenerator_usage_help_7of8", "    -noInterfaces                Do not generate interface classes" },
                                            { "sdo_classgenerator_usage_help_8of8", "    -noImpls                     Do not generate impl classes" },
-                                           
+
                                            { "sdo_classgenerator_usage_missing_sourcefile_value", "{0} The value of -sourceFile was not specified."},
                                            { "sdo_classgenerator_usage_missing_targetdir", "{0} The value of -targetDirectory was not specified."},
                                            { "sdo_classgenerator_usage_missing_sourcefile", "{0} The -sourceFile parameter was not specified and is required."}

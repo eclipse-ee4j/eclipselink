@@ -1,34 +1,34 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     10/20/2008-1.1M4 Michael O'Brien 
+ *     10/20/2008-1.1M4 Michael O'Brien
  *       - 248748: Add WebLogic 10.3 specific JMX MBean attributes and functions
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
- *     11/06/2008-1.1M5 Michael O'Brien 
+ *     11/06/2008-1.1M5 Michael O'Brien
  *       - 248746: Add getModuleName() implementation and new getApplicationName()
- *     05/07/2009-1.1.1 Dave Brosius 
- *       - 265755: [PATCH] Set application name correctly 
- *     06/30/2010-2.1.1 Michael O'Brien 
+ *     05/07/2009-1.1.1 Dave Brosius
+ *       - 265755: [PATCH] Set application name correctly
+ *     06/30/2010-2.1.1 Michael O'Brien
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
- *     10/18/2010-2.1.2 Michael O'Brien 
- *       - 328006: Refactor WebLogic MBeanServer registration to use active 
- *         WLS com.bea server when multiple instances returned 
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
+ *     10/18/2010-2.1.2 Michael O'Brien
+ *       - 328006: Refactor WebLogic MBeanServer registration to use active
+ *         WLS com.bea server when multiple instances returned
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513#DI_4:_20100624:_Verify_correct_MBeanServer_available_when_running_multiple_MBeanServer_Instances</link>
- *     01/01/2011-2.2 Michael O'Brien 
- *       - 333160: ModuleName string extraction code does not handle -1 not found index in 1 of 3 cases 
+ *     01/01/2011-2.2 Michael O'Brien
+ *       - 333160: ModuleName string extraction code does not handle -1 not found index in 1 of 3 cases
  *     07/21/2014-2.6.0 Lukas Jungmann
  *       - 440018: Failed to find mbean server warning in the wls admin server log
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.server.wls;
 
 import java.lang.reflect.Method;
@@ -57,43 +57,43 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
     // see http://docs.oracle.com/middleware/1213/wls/JMXCU/understandwls.htm#i1127767
     /** This JNDI address is for JMX MBean registration */
     private static final String JMX_JNDI_RUNTIME_REGISTER = "java:comp/env/jmx/runtime";
-    /* 
+    /*
      * If the cached MBeanServer is not used, then the unregister jndi address must be used to create a context
      * Note: the context must be explicitly closed after use or we may cache the user and get a
      * weblogic.management.NoAccessRuntimeException when trying to use the associated MBeanServer
      * see http://bugs.eclipse.org/238343
-     * see http://e-docs.bea.com/wls/docs100/jndi/jndi.html#wp467275  
+     * see http://e-docs.bea.com/wls/docs100/jndi/jndi.html#wp467275
      */
-    /** This JNDI address is for JMX MBean unregistration */    
+    /** This JNDI address is for JMX MBean unregistration */
     private static final String JMX_JNDI_RUNTIME_UNREGISTER = "java:comp/jmx/runtime";
 
-    /* 
+    /*
      * If the cached MBeanServer is not used, then the unregister jndi address must be used to create a context
      * Note: the context must be explicitly closed after use or we may cache the user and get a
      * weblogic.management.NoAccessRuntimeException when trying to use the associated MBeanServer
      * see http://bugs.eclipse.org/238343
-     * see http://e-docs.bea.com/wls/docs100/jndi/jndi.html#wp467275  
+     * see http://e-docs.bea.com/wls/docs100/jndi/jndi.html#wp467275
      */
     /** This persistence.xml or sessions.xml property is used to override the moduleName */
-    protected static final String SERVER_SPECIFIC_MODULENAME_PROPERTY = "eclipselink.weblogic.moduleName"; 
+    protected static final String SERVER_SPECIFIC_MODULENAME_PROPERTY = "eclipselink.weblogic.moduleName";
     /** This persistence.xml or sessions.xml property is used to override the applicationName */
-    protected static final String SERVER_SPECIFIC_APPLICATIONNAME_PROPERTY = "eclipselink.weblogic.applicationName"; 
+    protected static final String SERVER_SPECIFIC_APPLICATIONNAME_PROPERTY = "eclipselink.weblogic.applicationName";
 
     /**
      * The following constants and attributes are used during reflective API calls
      */
-    /** Cache the WebLogic ThreadPoolRuntime for performance */    
+    /** Cache the WebLogic ThreadPoolRuntime for performance */
     private ObjectName wlsThreadPoolRuntime = null;
-    private static final String WLS_SERVICE_KEY = "com.bea:Name=RuntimeService,Type=weblogic.management.mbeanservers.runtime.RuntimeServiceMBean";    
-    private static final String WLS_SERVER_RUNTIME = "ServerRuntime";    
+    private static final String WLS_SERVICE_KEY = "com.bea:Name=RuntimeService,Type=weblogic.management.mbeanservers.runtime.RuntimeServiceMBean";
+    private static final String WLS_SERVER_RUNTIME = "ServerRuntime";
     private static final String WLS_THREADPOOL_RUNTIME = "ThreadPoolRuntime";
     private static final String WLS_EXECUTE_THREAD_GET_METHOD_NAME = "getExecuteThread";
     // see http://home.bea.com/internal/docs/wiki/p/view/jee/appinfothread
     private static final String WLS_APPLICATION_NAME_GET_METHOD_NAME = "getApplicationName";
-    private static final String WLS_MODULE_NAME_GET_METHOD_NAME = "getModuleName";    
+    private static final String WLS_MODULE_NAME_GET_METHOD_NAME = "getModuleName";
     /** Search String in WebLogic ClassLoader for the application:persistence_unit name */
     private static final String WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "annotation: ";
-    
+
     static {
         /** Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "/deploy/";
@@ -104,7 +104,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "postfix,match~not;required^";
         APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "postfix,match~not;required^";
     }
-    
+
     /**
      * INTERNAL:
      * Default Constructor: All behavior for the default constructor is inherited
@@ -120,10 +120,10 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
     public boolean isRuntimeServicesEnabledDefault() {
         return true;
     }
-    
-    
+
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * prepareServerSpecificServicesMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for the
      * databaseSession.
@@ -142,9 +142,9 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
             this.setRuntimeServicesMBean(new MBeanWebLogicRuntimeServices(getDatabaseSession()));
         }
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * serverSpecificRegisterMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for my
      * databaseSession.
@@ -160,7 +160,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
         initializeApplicationNameAndModuleName();
     }
 
-    /** 
+    /**
      * INTERNAL:
      * Return the MBeanServer to be used for MBean registration and deregistration.<br>
      * This MBeanServer reference is lazy loaded and cached on the platform.<br>
@@ -173,7 +173,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * 3) JNDI lookup<br>
      * 4) Direct server specific native API<br></p>
      * We are using method (3)<br>
-     * 
+     *
      * @return the JMX specification MBeanServer
      */
     @Override
@@ -182,21 +182,21 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
         // 328006: This function overrides the generic version used for WebSphere, JBoss and Glassfish
         // Get a possible cached MBeanServer from the superclass first
         if(null == mBeanServer) {
-            Context initialContext = null;        
+            Context initialContext = null;
             try {
                 initialContext = new InitialContext();
                 try {
-                    //  
+                    //
                     mBeanServer = (MBeanServer) initialContext.lookup(JMX_JNDI_RUNTIME_REGISTER);
                     if (null == mBeanServer) {
-                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER,
                                 "failed_to_find_mbean_server", "null returned from JNDI lookup of " + JMX_JNDI_RUNTIME_REGISTER);
                     }
                 } catch (NamingException ne1) {
                     //#440018 Fallback for the case when the JMX client classes are not located in a Java EE module
                     mBeanServer = (MBeanServer) initialContext.lookup(JMX_JNDI_RUNTIME_UNREGISTER);
                     if (null == mBeanServer) {
-                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER,
                                 "failed_to_find_mbean_server", "null returned from JNDI lookup of " + JMX_JNDI_RUNTIME_UNREGISTER);
                     }
                 }
@@ -209,7 +209,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
                     getAbstractSession().log(SessionLog.FINER, SessionLog.SERVER,
                             "jmx_mbean_runtime_services_registration_mbeanserver_print",
                             new Object[]{mBeanServer, mBeanServer.getMBeanCount(), mBeanServer.getDefaultDomain(), 0});
-                }            
+                }
             } catch (NamingException ne) {
                 getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "failed_to_find_mbean_server", ne);
             } catch (Exception exception) {
@@ -224,13 +224,13 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
                         initialContext.close();
                     }
                 } catch (NamingException ne) {
-                    // exceptions on context close will be ignored, the context will be GC'd                   
+                    // exceptions on context close will be ignored, the context will be GC'd
                 }
             }
         }
         return mBeanServer;
-    } 
-    
+    }
+
     /**
      * INTERNAL:
      * Get the applicationName and moduleName from the runtime WebLogic MBean reflectively
@@ -239,16 +239,16 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
     protected void initializeApplicationNameAndModuleName() {
         // use non-reflective superclass method that searches the database session and classLoader strings
         // to be DEPRECATED
-        // Get property from persistence.xml or sessions.xml 
+        // Get property from persistence.xml or sessions.xml
         String jpaModuleName = (String)getDatabaseSession().getProperty(SERVER_SPECIFIC_MODULENAME_PROPERTY);
-        String jpaApplicationName = (String)getDatabaseSession().getProperty(SERVER_SPECIFIC_APPLICATIONNAME_PROPERTY);      
-        
+        String jpaApplicationName = (String)getDatabaseSession().getProperty(SERVER_SPECIFIC_APPLICATIONNAME_PROPERTY);
+
         if (jpaModuleName != null) {
             setModuleName(jpaModuleName);
         } else {
             jpaModuleName = getModuleOrApplicationName(WLS_MODULE_NAME_GET_METHOD_NAME);
-            
-            // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader                    
+
+            // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader
             if(null != jpaModuleName && jpaModuleName.indexOf("@") != -1) {
                 setModuleName(jpaModuleName.substring(jpaModuleName.indexOf("@") + 1));
             } else {
@@ -261,19 +261,19 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
         } else {
             jpaApplicationName = getModuleOrApplicationName(WLS_APPLICATION_NAME_GET_METHOD_NAME);
 
-            // defer to the superclass implementation            
+            // defer to the superclass implementation
             if(null == jpaApplicationName) {
                 jpaApplicationName = super.getApplicationName();
              }
-            
-            // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader                    
+
+            // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader
             if(null != jpaApplicationName && jpaApplicationName.indexOf("@") > -1) {
                 setApplicationName(jpaApplicationName.substring(jpaApplicationName.indexOf("@") + 1));
             } else {
-                setApplicationName(jpaApplicationName);                
-            }            
+                setApplicationName(jpaApplicationName);
+            }
         }
-        
+
         // TODO: remove: Final check for null values
         if(null == getApplicationName()) {
             setApplicationName(DEFAULT_SERVER_NAME_AND_VERSION);
@@ -281,9 +281,9 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
         if(null == getModuleName()) {
             setModuleName(DEFAULT_SERVER_NAME_AND_VERSION);
         }
-        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_application_name", 
+        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_application_name",
                 getDatabaseSession().getName(), getApplicationName());
-        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_module_name", 
+        getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "mbean_get_module_name",
                 getDatabaseSession().getName(), getModuleName());
     }
 
@@ -291,43 +291,43 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * INTERNAL:
      * This method will return the application|module name for WebLogic.
      * If the call to executeThread on the MBean fails - return the current classloader
-     * Thread.currentThread().getContextClassLoader() 
-     * 
+     * Thread.currentThread().getContextClassLoader()
+     *
      * ER 248746: Use reflection to obtain the application name (EJB, Web or MDB module)
      * Get either a String containing the module/applicationName or a WebLogic classLoader that contains the module/applicationName in the format...
      * weblogic.utils.classloaders.ChangeAwareClassLoader@19bb43f finder: weblogic.utils.classloaders.CodeGenClassFinder@ab7c2e annotation: org.eclipse.persistence.example.jpa.server.weblogic.enterpriseEAR@enterprise
      * If the getExecuteThread call failed, use the classloader string representation as backup.
      * If the classloader is not in the correct format, defer to superclass.
-	 *
+     *
      * @return String module|application Name from WLS
      */
     private String getModuleOrApplicationName(String getMethodName) {
         Object classLoaderOrString = null;//this.getDatabaseSession().getPlatform().getConversionManager().getLoader();
         Object executeThread = getExecuteThreadFromMBean();
-        
+
         if (executeThread != null) {
             try {
                 // perform a reflective public java.lang.String
                 // weblogic.work.ExecuteThreadRuntime.<getMethodName>
                 Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), getMethodName, new Class[] {}, false);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    classLoaderOrString = AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, executeThread, (Object[]) null));                    
+                    classLoaderOrString = AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, executeThread, (Object[]) null));
                 } else {
                     classLoaderOrString = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
                 }
-                
+
                 if(classLoaderOrString instanceof ClassLoader) {
-                    // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader                    
+                    // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader
                     String jpaModuleNameRoot = ((ClassLoader)classLoaderOrString).toString();
                     if(null != jpaModuleNameRoot) {
                         int startIndex = jpaModuleNameRoot.indexOf(
                             WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX);
                         if(startIndex > -1) {
-                            classLoaderOrString = jpaModuleNameRoot.substring(startIndex +  
+                            classLoaderOrString = jpaModuleNameRoot.substring(startIndex +
                                     WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX.length());
                         }
                     }
-                }        
+                }
             } catch (Exception ex) { // catch all Illegal*Exception and PrivilegedActionException
                 /*
                  * If the reflective call to ExecuteThreadRuntime failed for
@@ -342,14 +342,14 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
 
     /**
      * INTERNAL:
-     * This convenience method will look up a WebLogic execute thread from the runtime 
-     * MBean tree.  The execute thread contains application information.  This code 
+     * This convenience method will look up a WebLogic execute thread from the runtime
+     * MBean tree.  The execute thread contains application information.  This code
      * will use the name of the current thread to lookup the corresponding ExecuteThread.
      * The ExecuteThread will allow us to obtain the application name (and version, etc).
-     * 
-     * Note that the MBeanServer and ThreadPoolRuntime instances will be cached for 
+     *
+     * Note that the MBeanServer and ThreadPoolRuntime instances will be cached for
      * performance.
-     * 
+     *
      * @return application name or null if the name cannot be obtained
      */
     private Object getExecuteThreadFromMBean() {
@@ -363,15 +363,15 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
                     ObjectName serverRuntime = (ObjectName) getMBeanServer().getAttribute(service, WLS_SERVER_RUNTIME);
                     wlsThreadPoolRuntime = (ObjectName) getMBeanServer().getAttribute(serverRuntime, WLS_THREADPOOL_RUNTIME);
                 } catch (Exception ex) {
-                    getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "jmx_mbean_runtime_services_threadpool_initialize_failed", ex);                                        
+                    getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "jmx_mbean_runtime_services_threadpool_initialize_failed", ex);
                 }
             }
             // Get the executeThreadRuntimeObject
             if (wlsThreadPoolRuntime != null) {
                 try {
                     // Perform a reflective getExecuteThread()
-                    return getMBeanServer().invoke(wlsThreadPoolRuntime, 
-                            WLS_EXECUTE_THREAD_GET_METHOD_NAME, 
+                    return getMBeanServer().invoke(wlsThreadPoolRuntime,
+                            WLS_EXECUTE_THREAD_GET_METHOD_NAME,
                             new Object[] { Thread.currentThread().getName() }, new String[] { String.class.getName() });
                 } catch (Exception ex) {
                     /*
@@ -385,7 +385,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
         }
         return null;
     }
-    
+
     /**
      * Return the method for the WebLogic JDBC connection wrapper vendorConnection.
      * WLS 10.3.4.0 added a getVendorConnectionSafe that does not invalidate the connection,
@@ -405,5 +405,5 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
         }
         return this.vendorConnectionMethod;
     }
-    
+
 }

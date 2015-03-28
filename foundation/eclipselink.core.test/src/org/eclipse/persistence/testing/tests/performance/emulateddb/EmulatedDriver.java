@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.performance.emulateddb;
 
 import java.sql.*;
@@ -23,13 +23,13 @@ public class EmulatedDriver implements Driver {
             DriverManager.registerDriver(new EmulatedDriver());
         } catch (Exception ignore) {}
     }
-    
+
     /** Allow toggling of emulation. */
     public static boolean emulate = true;
-    
+
     /** Cache the connection. */
     protected Connection connection;
-    
+
     /**
      * Attempts to make a database connection to the given URL.
      * The driver should return "null" if it realizes it is the wrong kind

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.history;
 
 import java.io.Serializable;
@@ -102,7 +102,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
 
                 join = start.lessThanEqual(value).and(end.isNull().or(end.greaterThan(value)));
 
-                // We also need to do step two here in advance.	
+                // We also need to do step two here in advance.
                 tableExp.setTable(historicalTable);
 
                 return join;
@@ -705,7 +705,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
     public void postDelete(ModifyQuery deleteQuery) {
         logicalDelete(deleteQuery, false);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -797,7 +797,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
         historyStatement.setModifyRow(modifyRow);
         session.executeQuery(historyQuery, translationRow);
     }
-    
+
     /**
      * INTERNAL:
      * Performs a logical delete (update) on the historical schema.
@@ -838,16 +838,16 @@ public class HistoryPolicy implements Cloneable, Serializable {
             whereClause = builder.getField(getEnd(i)).isNull().and(whereClause);
             updateStatement.setWhereClause(whereClause);
 
-            modifyRow.add(getEnd(i), currentTime); 
+            modifyRow.add(getEnd(i), currentTime);
 
             // save a little time here and add the same timestamp value for
             // the start field in the logicalInsert.
             if (isUpdate) {
                 if (isShallow) {
-                    // Bug 319276 - increment the timestamp by 1 to avoid unique constraint violation potential 
+                    // Bug 319276 - increment the timestamp by 1 to avoid unique constraint violation potential
                     java.sql.Timestamp  incrementedTime = (java.sql.Timestamp) currentTime;
                     incrementedTime.setTime(incrementedTime.getTime() + getMinimumTimeIncrement(writeQuery.getSession()));
-                    originalModifyRow.add(getStart(i), incrementedTime); 
+                    originalModifyRow.add(getStart(i), incrementedTime);
                 } else {
                     originalModifyRow.add(getStart(i), currentTime);
                 }

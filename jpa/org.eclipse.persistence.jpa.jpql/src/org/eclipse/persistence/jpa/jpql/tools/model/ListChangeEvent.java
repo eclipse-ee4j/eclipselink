@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,97 +29,97 @@ import org.eclipse.persistence.jpa.jpql.utility.iterable.SnapshotCloneListIterab
  */
 public class ListChangeEvent<T> implements IListChangeEvent<T> {
 
-	private int endIndex;
-	private EventType eventType;
-	private List<? extends T> items;
-	private List<? extends T> list;
-	private String listName;
+    private int endIndex;
+    private EventType eventType;
+    private List<? extends T> items;
+    private List<? extends T> list;
+    private String listName;
 
-	/**
-	 * The source where the modification occurred and that fired the event.
-	 */
-	private StateObject source;
+    /**
+     * The source where the modification occurred and that fired the event.
+     */
+    private StateObject source;
 
-	private int startIndex;
+    private int startIndex;
 
-	/**
-	 * Creates a new <code>ListChangeEvent</code>.
-	 *
-	 * @param source The source where the modification occurred and that fired the event
-	 */
-	public ListChangeEvent(StateObject source,
-	                       List<? extends T> list,
-	                       EventType eventType,
-	                       String listName,
-	                       List<? extends T> items,
-	                       int startIndex,
-	                       int endIndex) {
+    /**
+     * Creates a new <code>ListChangeEvent</code>.
+     *
+     * @param source The source where the modification occurred and that fired the event
+     */
+    public ListChangeEvent(StateObject source,
+                           List<? extends T> list,
+                           EventType eventType,
+                           String listName,
+                           List<? extends T> items,
+                           int startIndex,
+                           int endIndex) {
 
-		super();
-		this.list       = list;
-		this.items      = items;
-		this.source     = source;
-		this.endIndex   = endIndex;
-		this.listName   = listName;
-		this.eventType  = eventType;
-		this.startIndex = startIndex;
-	}
+        super();
+        this.list       = list;
+        this.items      = items;
+        this.source     = source;
+        this.endIndex   = endIndex;
+        this.listName   = listName;
+        this.eventType  = eventType;
+        this.startIndex = startIndex;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public int getEndIndex() {
-		return endIndex;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public int getEndIndex() {
+        return endIndex;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public EventType getEventType() {
-		return eventType;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public EventType getEventType() {
+        return eventType;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	public List<T> getList() {
-		return (List<T>) list;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<T> getList() {
+        return (List<T>) list;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getListName() {
-		return listName;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getListName() {
+        return listName;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	public <S extends ListHolderStateObject<? extends T>> S getSource() {
-		return (S) source;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public <S extends ListHolderStateObject<? extends T>> S getSource() {
+        return (S) source;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public int getStartIndex() {
-		return startIndex;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public int getStartIndex() {
+        return startIndex;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ListIterable<T> items() {
-		return new SnapshotCloneListIterable<T>(items);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ListIterable<T> items() {
+        return new SnapshotCloneListIterable<T>(items);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public int itemsSize() {
-		return items.size();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public int itemsSize() {
+        return items.size();
+    }
 }

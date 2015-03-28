@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,10 +28,10 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class XMLSerializer extends AbstractSerializer {
     JAXBContext context;
-    
+
     public XMLSerializer() {
     }
-    
+
     public XMLSerializer(String packageName) {
         try {
             this.context = JAXBContext.newInstance(packageName);
@@ -39,11 +39,11 @@ public class XMLSerializer extends AbstractSerializer {
             throw new RuntimeException(exception);
         }
     }
-    
+
     public XMLSerializer(JAXBContext context) {
         this.context = context;
     }
-    
+
     @Override
     public void initialize(Class serializeClass, String serializePackage, Session session) {
         if (this.context == null) {
@@ -57,7 +57,7 @@ public class XMLSerializer extends AbstractSerializer {
             }
         }
     }
-    
+
     public Object serialize(Object object, Session session) {
         try {
             Marshaller marshaller = this.context.createMarshaller();
@@ -69,7 +69,7 @@ public class XMLSerializer extends AbstractSerializer {
             throw new RuntimeException(exception);
         }
     }
-    
+
     public Object deserialize(Object xml, Session session) {
         try {
             Unmarshaller unmarshaller = this.context.createUnmarshaller();

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.returning;
 
 import java.util.*;
@@ -145,7 +145,7 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
 
     /**
      * INTERNAL:
-     * The base class doesn't allow optimistic locking in getSession().getProject() - 
+     * The base class doesn't allow optimistic locking in getSession().getProject() -
      * override this restriction.
      */
     protected void verify() throws org.eclipse.persistence.exceptions.ValidationException {
@@ -212,11 +212,11 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
         amendDescriptorsUpdateQuery();
     }
 
-    // Need for capitalization is caused by bug3172139: 
+    // Need for capitalization is caused by bug3172139:
     // ORACLE CONNECTION METADATA.GETCOLUMNS FAILS IF PASSED LOWER-CASE NAMES
     // In case the bug is fixed, there would be no need for returning newFields.
     // However namesCapitalizedToNames still will be needed, because the DatabaseField's
-    // name to be used as a parameter for StoredProcedureCall is extracted from 
+    // name to be used as a parameter for StoredProcedureCall is extracted from
     // storedProcedureDefinition - and there it is always the same as in database.
 
     protected Vector capitalize(Vector fields, Hashtable namesCapitalizedToNames) {

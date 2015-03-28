@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,96 +43,96 @@ import org.eclipse.persistence.jpa.jpql.tools.resolver.ResolverBuilder;
 public class EclipseLinkResolverBuilder extends ResolverBuilder
                                         implements EclipseLinkExpressionVisitor {
 
-	/**
-	 * Creates a new <code>EclipseLinkResolverBuilder</code>.
-	 *
-	 * @param queryContext The context used to query information about the JPQL query
-	 */
-	public EclipseLinkResolverBuilder(EclipseLinkJPQLQueryContext queryContext) {
-		super(queryContext);
-	}
+    /**
+     * Creates a new <code>EclipseLinkResolverBuilder</code>.
+     *
+     * @param queryContext The context used to query information about the JPQL query
+     */
+    public EclipseLinkResolverBuilder(EclipseLinkJPQLQueryContext queryContext) {
+        super(queryContext);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(AsOfClause expression) {
-		resolver = buildClassResolver(Object.class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(AsOfClause expression) {
+        resolver = buildClassResolver(Object.class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(CastExpression expression) {
-		resolver = buildClassResolver(Object.class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(CastExpression expression) {
+        resolver = buildClassResolver(Object.class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(ConnectByClause expression) {
-		resolver = buildClassResolver(Object.class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(ConnectByClause expression) {
+        resolver = buildClassResolver(Object.class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(DatabaseType expression) {
-		resolver = buildClassResolver(Object.class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(DatabaseType expression) {
+        resolver = buildClassResolver(Object.class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(ExtractExpression expression) {
-		resolver = buildClassResolver(Object.class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(ExtractExpression expression) {
+        resolver = buildClassResolver(Object.class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(HierarchicalQueryClause expression) {
-		resolver = buildClassResolver(Object.class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(HierarchicalQueryClause expression) {
+        resolver = buildClassResolver(Object.class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(OrderSiblingsByClause expression) {
-		resolver = buildClassResolver(Object.class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(OrderSiblingsByClause expression) {
+        resolver = buildClassResolver(Object.class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(RegexpExpression expression) {
-		resolver = buildClassResolver(Object.class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(RegexpExpression expression) {
+        resolver = buildClassResolver(Object.class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(StartWithClause expression) {
-		resolver = buildClassResolver(Object.class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(StartWithClause expression) {
+        resolver = buildClassResolver(Object.class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TableExpression expression) {
-		resolver = buildClassResolver(Object.class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(TableExpression expression) {
+        resolver = buildClassResolver(Object.class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TableVariableDeclaration expression) {
-		resolver = buildClassResolver(Object.class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(TableVariableDeclaration expression) {
+        resolver = buildClassResolver(Object.class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(UnionClause expression) {
-		resolver = buildClassResolver(Object.class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(UnionClause expression) {
+        resolver = buildClassResolver(Object.class);
+    }
 }

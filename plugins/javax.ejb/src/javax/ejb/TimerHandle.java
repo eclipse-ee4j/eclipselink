@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,9 +45,9 @@ import java.io.Serializable;
 /**
  *
  * The TimerHandle interface allows the bean provider to obtain a
- * serializable timer handle that may be persisted. 
+ * serializable timer handle that may be persisted.
  * <p>
- * Since timers are local objects, a timer handle must not be passed through 
+ * Since timers are local objects, a timer handle must not be passed through
  * a bean's remote business interface, remote interface or web service interface.
  *
  * @since EJB 2.1
@@ -60,16 +60,16 @@ public interface TimerHandle extends Serializable {
      * @return a reference to the timer represented by this handle.
      *
      * @exception java.lang.IllegalStateException If this method is
-     * invoked while the instance is in a state that does not allow access 
+     * invoked while the instance is in a state that does not allow access
      * to this method.
-     * 
+     *
      * @exception javax.ejb.NoSuchObjectLocalException If invoked on a
      * handle whose associated timer has expired or has been cancelled.
-     * 
+     *
      * @exception javax.ejb.EJBException If this method could not complete due
      * to a system-level failure.
      */
-    public Timer getTimer() throws java.lang.IllegalStateException, 
+    public Timer getTimer() throws java.lang.IllegalStateException,
         javax.ejb.NoSuchObjectLocalException, javax.ejb.EJBException;
 
-} 
+}

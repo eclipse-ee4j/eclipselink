@@ -1,47 +1,47 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/16/2008-1.0M8 Guy Pelletier 
+ *     05/16/2008-1.0M8 Guy Pelletier
  *       - 218084: Implement metadata merging functionality between mapping files
- *     05/23/2008-1.0M8 Guy Pelletier 
+ *     05/23/2008-1.0M8 Guy Pelletier
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
- *     06/20/2008-1.0 Guy Pelletier 
+ *     06/20/2008-1.0 Guy Pelletier
  *       - 232975: Failure when attribute type is generic
- *     09/23/2008-1.1 Guy Pelletier 
+ *     09/23/2008-1.1 Guy Pelletier
  *       - 241651: JPA 2.0 Access Type support
- *     10/01/2008-1.1 Guy Pelletier 
+ *     10/01/2008-1.1 Guy Pelletier
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
- *     02/06/2009-2.0 Guy Pelletier 
+ *     02/06/2009-2.0 Guy Pelletier
  *       - 248293: JPA 2.0 Element Collections (part 2)
- *     03/27/2009-2.0 Guy Pelletier 
+ *     03/27/2009-2.0 Guy Pelletier
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     04/24/2009-2.0 Guy Pelletier 
+ *     04/24/2009-2.0 Guy Pelletier
  *       - 270011: JPA 2.0 MappedById support
- *     06/25/2009-2.0 Michael O'Brien 
+ *     06/25/2009-2.0 Michael O'Brien
  *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
  *          in support of the custom descriptors holding mappings required by the Metamodel
- *     03/08/2010-2.1 Guy Pelletier 
+ *     03/08/2010-2.1 Guy Pelletier
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     08/11/2010-2.2 Guy Pelletier 
+ *     08/11/2010-2.2 Guy Pelletier
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
- *     12/01/2010-2.2 Guy Pelletier 
+ *     12/01/2010-2.2 Guy Pelletier
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
- *     12/02/2010-2.2 Guy Pelletier 
+ *     12/02/2010-2.2 Guy Pelletier
  *       - 251554: ExcludeDefaultMapping annotation needed
- *     12/02/2010-2.2 Guy Pelletier 
+ *     12/02/2010-2.2 Guy Pelletier
  *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
- *     01/25/2011-2.3 Guy Pelletier 
+ *     01/25/2011-2.3 Guy Pelletier
  *       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     07/16/2013-2.5.1 Guy Pelletier 
+ *     07/16/2013-2.5.1 Guy Pelletier
  *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
@@ -86,28 +86,28 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EC
 
 /**
  * INTERNAL:
- * Parent object that is used to hold onto a valid JPA decorated method, field 
+ * Parent object that is used to hold onto a valid JPA decorated method, field
  * or class.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
 @SuppressWarnings("deprecation")
 public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public static final String DEFAULT_RAW_CLASS = "java.lang.String";
-    
+
     /** The name of the element, i.e. class name, field name, method name. */
     private String m_name;
-    
+
     /** Defines elements modifiers, i.e. private/static/transient. */
     private int m_modifiers;
-    
+
     /** Used to cache the type metadata class, but cannot be cached in the case of generics. */
     private MetadataClass m_rawClass;
-    
+
     /** Used to cache the full type metadata class including some generic specifications. */
     private MetadataClass m_rawClassWithGenerics;
-    
+
     /**
      * Defines the generic types of the elements type.
      * This is null if no generics are used.
@@ -118,11 +118,11 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * - Beverage<T> extends Object -> [T, :, java.lang.Object, java.lang.Object]
      */
     private List<String> m_genericType;
-    
+
     /** Defines the field type, or method return type class name. */
     private String m_type;
-    
-    /** 
+
+    /**
      * Used with the APT processor. Stores the PrimitiveType if this annotated
      * element is a primitive. We can't make it a primitive type here because
      * it introduces a JDK 1.6 dependency. The APT processor will need to cast
@@ -132,10 +132,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
 
     /** Defines the attribute name of a field, or property name of a method. */
     private String m_attributeName;
-    
+
     /** Stores any annotations defined for the element, keyed by annotation name. */
-    private Map<String, MetadataAnnotation> m_annotations; 
-    
+    private Map<String, MetadataAnnotation> m_annotations;
+
     /**
      * INTERNAL:
      */
@@ -151,7 +151,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public void addAnnotation(MetadataAnnotation annotation) {
         m_annotations.put(annotation.getName(), annotation);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -159,10 +159,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         if (m_genericType == null) {
             m_genericType = new ArrayList<String>();
         }
-        
+
         m_genericType.add(genericType);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -170,36 +170,36 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         if (object == null) {
             return false;
         }
-        
+
         if (getName() == null) {
             return ((MetadataAnnotatedElement)object).getName() == null;
         }
-        
+
         return (object.getClass() == getClass()) && getName().equals(((MetadataAnnotatedElement)object).getName());
     }
-    
+
     /**
      * INTERNAL:
-     * Return the annotated element for this accessor. Note: This method does 
+     * Return the annotated element for this accessor. Note: This method does
      * not check against a metadata complete.
      */
     public MetadataAnnotation getAnnotation(Class annotation) {
         return getAnnotation(annotation.getName());
     }
-    
+
     /**
      * INTERNAL:
-     * Return the annotated element for this accessor. Note: This method does 
+     * Return the annotated element for this accessor. Note: This method does
      * not check against a metadata complete.
      */
     public MetadataAnnotation getAnnotation(String annotation) {
         if (m_annotations == null) {
             return null;
         }
-        
+
         return m_annotations.get(annotation);
     }
-    
+
     /**
      * INTERNAL:
      * Return the annotated element for this accessor.
@@ -207,17 +207,17 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public MetadataAnnotation getAnnotation(String annotationClassName, ClassAccessor classAccessor) {
         if (m_annotations != null) {
             MetadataAnnotation annotation = m_annotations.get(annotationClassName);
-        
+
             if (annotation != null && classAccessor.ignoreAnnotations()) {
                 getLogger().logConfigMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
             } else {
                 return annotation;
             }
         }
-        
+
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Return the annotations of this accessible object.
@@ -225,14 +225,14 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public Map<String, MetadataAnnotation> getAnnotations(){
         return m_annotations;
     }
-    
+
     /**
      * INTERNAL:
      */
     public String getAttributeName() {
         return m_attributeName;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -240,17 +240,17 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         if (classAccessor.ignoreAnnotations() || m_annotations == null) {
             return 0;
         }
-        
-        return m_annotations.size(); 
+
+        return m_annotations.size();
     }
-    
+
     /**
      * INTERNAL:
      */
     public List<String> getGenericType() {
         return m_genericType;
     }
-    
+
     /**
      * INTERNAL:
      * This should only be called for accessor's of type Map. It will return
@@ -268,21 +268,21 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             return null;
         }
     }
-    
+
     /**
      * INTERNAL:
      */
     public int getModifiers() {
         return m_modifiers;
     }
-    
+
     /**
      * INTERNAL:
      */
     public String getName() {
         return m_name;
     }
-    
+
     /**
      * INTERNAL:
      * If this annotated element was built from java model elements and is
@@ -291,28 +291,28 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public Object getPrimitiveType() {
         return m_primitiveType;
     }
-    
+
     /**
      * INTERNAL:
-     * Return the raw class for this accessible object. E.g. For an 
-     * accessible object with a type of java.util.Collection<Employee>, this 
-     * method will return java.util.Collection. 
+     * Return the raw class for this accessible object. E.g. For an
+     * accessible object with a type of java.util.Collection<Employee>, this
+     * method will return java.util.Collection.
      * @see getReferenceClassFromGeneric() to get Employee.class back.
      * @see getRawClassWithGenerics() to get java.util.CollectionEmployee back.
      */
     public MetadataClass getRawClass(MetadataDescriptor descriptor) {
         if (m_rawClass == null) {
             if (isGenericType()) {
-                // Seems that every generic annotated element has the T char 
+                // Seems that every generic annotated element has the T char
                 // in the 0 position. The actual generic type is therefore in
                 // the 1 position.
                 String type = descriptor.getGenericType(getGenericType().get(1));
                 if (type == null) {
-                    // If the generic type can not be resolved, take a stab 
+                    // If the generic type can not be resolved, take a stab
                     // by returning a default class. One known case where this
-                    // will hit is when processing generic accessors from a 
+                    // will hit is when processing generic accessors from a
                     // mapped superclass for the internal meta model. I wonder
-                    // if returning null here would be better? Forcing the  
+                    // if returning null here would be better? Forcing the
                     // caller to have a plan B in place.
                     // @see e.g. RelationshipAccessor.getReferenceDescriptor()
                     return getMetadataClass(DEFAULT_RAW_CLASS);
@@ -321,17 +321,17 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             }
             return getMetadataClass(getType());
         }
-        
-        return m_rawClass;    
+
+        return m_rawClass;
     }
-    
+
     /**
      * INTERNAL:
-     * Return the complete raw class with generics for this accessible object. 
-     * E.g. For an accessible object with a type of 
-     * java.util.Collection<Employee>, this method will return 
+     * Return the complete raw class with generics for this accessible object.
+     * E.g. For an accessible object with a type of
+     * java.util.Collection<Employee>, this method will return
      * java.util.CollectionEmployee. Note, the generics are appended to the name
-     * of the class. 
+     * of the class.
      * @see getReferenceClassFromGeneric() to get Employee.class back.
      * @see getRawClass() to get java.util.Collection back.
      */
@@ -352,13 +352,13 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
                 m_rawClassWithGenerics = rawClass;
             }
         }
-        
+
         return m_rawClassWithGenerics;
     }
-    
+
     /**
      * INTERNAL:
-     * Return the reference class from the generic specification on this 
+     * Return the reference class from the generic specification on this
      * accessible object.
      * Here is what you will get back from this method given the following
      * scenarios:
@@ -371,7 +371,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * 7 - public Map<X,Y> on a MappedSuperclass where Y is defined in the Entity superclass<T> => Void.class (in all bug 266912 cases)
      */
     public MetadataClass getReferenceClassFromGeneric(MetadataDescriptor descriptor) {
-        // TODO: investigate multiple levels of generics. 
+        // TODO: investigate multiple levels of generics.
         if (isGenericCollectionType()) {
             // TODO: This is guessing, need to be more logical.
             // Collection<String> -> [Collection, String], get element class.
@@ -401,11 +401,11 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             if (elementClass.length() == 1) {
                 // Assume is a generic type variable, find real type.
                 elementClass = descriptor.getGenericType(elementClass);
-            }            
+            }
             MetadataClass metadataClass = getMetadataClass(elementClass);
-            // 266912: We do not currently handle resolution of the parameterized 
-            // generic type when the accessor is a MappedSuperclass elementClass 
-            // will be null in this case so a lookup of the metadataClass will 
+            // 266912: We do not currently handle resolution of the parameterized
+            // generic type when the accessor is a MappedSuperclass elementClass
+            // will be null in this case so a lookup of the metadataClass will
             // also return null on our custom descriptor
             if (metadataClass == null && descriptor.isMappedSuperclass()) {
                 // default to Void for all use case 7 instances above
@@ -417,33 +417,33 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             return null;
         }
     }
-    
+
     /**
      * INTERNAL:
      */
     public String getType() {
         return m_type;
     }
-    
+
     /**
      * INTERNAL:
-     * Return true if this accessible object has 1 or more declared 
+     * Return true if this accessible object has 1 or more declared
      * persistence annotations.
      */
     public boolean hasDeclaredAnnotations(ClassAccessor classAccessor) {
         return getDeclaredAnnotationsCount(classAccessor) > 0;
     }
-    
+
     /**
      * INTERNAL:
      */
     public int hashCode() {
         return getName().hashCode();
     }
-    
+
     /**
      * INTERNAL:
-     * Return true if this accessible object has 2 or more declared 
+     * Return true if this accessible object has 2 or more declared
      * persistence annotations.
      */
     public boolean areAnnotationsCompatibleWithTransient(ClassAccessor classAccessor) {
@@ -455,10 +455,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         }
         return true;
     }
-    
-    /** 
+
+    /**
      * INTERNAL:
-     * Indicates whether the specified annotation is actually not present on 
+     * Indicates whether the specified annotation is actually not present on
      * this accessible object. Used for defaulting. Need this check since the
      * isAnnotationPresent calls can return a false when true because of the
      * meta-data complete feature.
@@ -466,10 +466,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isAnnotationNotPresent(Class annotation, ClassAccessor accessor) {
         return isAnnotationNotPresent(annotation.getName(), accessor);
     }
-    
-    /** 
+
+    /**
      * INTERNAL:
-     * Indicates whether the specified annotation is actually not present on 
+     * Indicates whether the specified annotation is actually not present on
      * this accessible object. Used for defaulting. Need this check since the
      * isAnnotationPresent calls can return a false when true because of the
      * meta-data complete feature.
@@ -477,35 +477,35 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isAnnotationNotPresent(String annotation, ClassAccessor accessor) {
         return ! isAnnotationPresent(annotation, accessor);
     }
-    
-    /** 
+
+    /**
      * INTERNAL:
      * Indicates whether the specified annotation is present on java class
-     * for the given descriptor metadata. 
+     * for the given descriptor metadata.
      */
     public boolean isAnnotationPresent(Class annotationClass, ClassAccessor accessor) {
         return isAnnotationPresent(annotationClass.getName(), accessor);
     }
-    
-    /** 
+
+    /**
      * INTERNAL:
      * Indicates whether the specified annotation is present on this accessible
      * object. NOTE: Calling this method directly does not take any metadata
      * complete flag into consideration. Look at the other isAnnotationPresent
-     * methods that takes a class accessor. 
+     * methods that takes a class accessor.
      */
     public boolean isAnnotationPresent(String annotation) {
         return getAnnotation(annotation) != null;
     }
-    
-    /** 
+
+    /**
      * INTERNAL:
      * Indicates whether the specified annotation is present on java class
-     * for the given descriptor metadata. 
+     * for the given descriptor metadata.
      */
     public boolean isAnnotationPresent(String annotationName, ClassAccessor accessor) {
         MetadataAnnotation annotation = getAnnotation(annotationName);
-        
+
         if (annotation != null && accessor.ignoreAnnotations()) {
             getLogger().logConfigMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
             return false;
@@ -513,7 +513,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             return annotation != null;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this field accessor represents an array relationship.
@@ -521,7 +521,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isArray(ClassAccessor classAccessor) {
         return isAnnotationPresent(Array.class, classAccessor);
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this accessor represents a basic mapping.
@@ -532,7 +532,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
                isAnnotationPresent(JPA_TEMPORAL, classAccessor) ||
                isAnnotationPresent(JPA_ENUMERATED, classAccessor);
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this accessor represents a basic collection mapping.
@@ -540,15 +540,15 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isBasicCollection(ClassAccessor classAccessor) {
         return isAnnotationPresent(BasicCollection.class, classAccessor);
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Return true if this accessor represents a basic collection mapping.
      */
     public boolean isBasicMap(ClassAccessor classAccessor) {
         return isAnnotationPresent(BasicMap.class, classAccessor);
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this accessor represents an id mapping.
@@ -556,7 +556,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isDerivedId(ClassAccessor classAccessor) {
         return isId(classAccessor) && (isOneToOne(classAccessor) || isManyToOne(classAccessor));
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this accessor represents an id mapping.
@@ -564,19 +564,19 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isDerivedIdClass(ClassAccessor classAccessor) {
         return classAccessor.getDescriptor().isEmbeddable() && classAccessor.getProject().isIdClass(getRawClass(classAccessor.getDescriptor()));
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Return true if this accessor represents an element collection mapping.
      */
     public boolean isElementCollection(ClassAccessor classAccessor) {
         return isAnnotationPresent(JPA_ELEMENT_COLLECTION, classAccessor);
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this accessor represents an aggregate mapping. True is
-     * returned if an Embedded annotation is found or if an Embeddable 
+     * returned if an Embedded annotation is found or if an Embeddable
      * annotation is found on the raw/reference class.
      */
     public boolean isEmbedded(ClassAccessor classAccessor) {
@@ -589,7 +589,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             return isAnnotationPresent(JPA_EMBEDDED, classAccessor);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this accessor represents an aggregate id mapping.
@@ -597,7 +597,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isEmbeddedId(ClassAccessor classAccessor) {
         return isAnnotationPresent(JPA_EMBEDDED_ID, classAccessor);
     }
-    
+
     /**
      * INTERNAL:
      * Method to return whether a collection type is a generic.
@@ -605,7 +605,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isGenericCollectionType() {
         return (m_genericType != null) && (m_genericType.size() > 1);
     }
-    
+
     /**
      * INTERNAL:
      * Method to return whether a type is a generic.
@@ -613,7 +613,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isGenericType() {
         return (m_genericType != null) && (m_genericType.size() > 1) && (m_genericType.get(0).length() == 1);
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this accessor represents an id mapping.
@@ -621,7 +621,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isId(ClassAccessor classAccessor) {
         return isAnnotationPresent(JPA_ID, classAccessor);
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this field accessor represents a m-m relationship.
@@ -629,7 +629,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isManyToMany(ClassAccessor classAccessor) {
         return isAnnotationPresent(JPA_MANY_TO_MANY, classAccessor);
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this accessor represents a m-1 relationship.
@@ -637,7 +637,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isManyToOne(ClassAccessor classAccessor) {
         return isAnnotationPresent(JPA_MANY_TO_ONE, classAccessor);
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this accessor represents a 1-m relationship.
@@ -648,7 +648,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_MANY_MAPPING, this);
                 return true;
             }
-            
+
             return false;
         } else {
             // Still need to make the call since we may need to ignore it
@@ -656,13 +656,13 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             return isAnnotationPresent(JPA_ONE_TO_MANY, classAccessor);
         }
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Return true if this accessor represents a 1-1 relationship.
      */
     public boolean isOneToOne(ClassAccessor classAccessor) {
-        if (isAnnotationNotPresent(JPA_ONE_TO_ONE, classAccessor) && ! classAccessor.excludeDefaultMappings()) {    
+        if (isAnnotationNotPresent(JPA_ONE_TO_ONE, classAccessor) && ! classAccessor.excludeDefaultMappings()) {
             if (classAccessor.getProject().hasEntity(getRawClass(classAccessor.getDescriptor())) && ! isEmbedded(classAccessor)) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_ONE_MAPPING, this);
                 return true;
@@ -675,7 +675,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             return isAnnotationPresent(JPA_ONE_TO_ONE, classAccessor);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this field accessor represents a structure relationship.
@@ -683,7 +683,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isStructure(ClassAccessor classAccessor) {
         return isAnnotationPresent(Structure.class, classAccessor);
     }
-    
+
     /**
      * INTERNAL:
      * Method to return whether the given class is a supported collection class.
@@ -691,19 +691,19 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isSupportedCollectionClass(MetadataClass metadataClass) {
         return metadataClass.isCollection();
     }
-    
+
     /**
      * INTERNAL:
-     * Method to return whether the given class is a supported map class. 
+     * Method to return whether the given class is a supported map class.
      */
     public boolean isSupportedMapClass(MetadataClass metadataClass) {
-        return metadataClass.isMap(); 
+        return metadataClass.isMap();
     }
-    
+
     /**
      * INTERNAL:
-     * Method to return whether the given class is a supported to many 
-     * collection class.  
+     * Method to return whether the given class is a supported to many
+     * collection class.
      */
     public boolean isSupportedToManyCollectionClass(MetadataClass metadataClass) {
         return isSupportedCollectionClass(metadataClass) || isSupportedMapClass(metadataClass);
@@ -718,7 +718,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
                isAnnotationPresent(WriteTransformers.class, classAccessor) ||
                isAnnotationPresent(WriteTransformer.class, classAccessor);
     }
-    
+
     /**
      * INTERNAL:
      * When processing the inverse accessors to an explicit access setting,
@@ -728,21 +728,21 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     protected boolean isValidPersistenceElement(boolean mustBeExplicit, String explicitType, ClassAccessor classAccessor) {
         if (mustBeExplicit) {
             MetadataAnnotation annotation = getAnnotation(JPA_ACCESS, classAccessor);
-            
+
             if (annotation == null) {
                 return false;
             } else {
                 String access = annotation.getAttributeString("value");
-                
+
                 if (! access.equals(explicitType)) {
                     throw ValidationException.invalidExplicitAccessTypeSpecified(this, classAccessor.getDescriptorJavaClass(), explicitType);
                 }
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Return true if the modifiers are not transient, static or abstract.
@@ -750,21 +750,21 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     protected boolean isValidPersistenceElement(int modifiers) {
         return ! (Modifier.isTransient(modifiers) || Modifier.isStatic(modifiers) || Modifier.isAbstract(modifiers));
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this accessor represents a variable 1-1 relationship.
      * The method will return true if one of the following conditions is met:
      *  - There is a VariableOneToOne annotation present, or
-     *  - The raw class is an interface and not a collection or map, nor a 
+     *  - The raw class is an interface and not a collection or map, nor a
      *    ValueHolderInterface (and an exclude default mappings flag is not set)
      */
     public boolean isVariableOneToOne(ClassAccessor classAccessor) {
         if (isAnnotationNotPresent(VariableOneToOne.class, classAccessor) && ! classAccessor.excludeDefaultMappings()) {
             MetadataClass rawClass = getRawClass(classAccessor.getDescriptor());
-            
-            if (rawClass.isInterface() && 
-                    ! rawClass.isMap() && 
+
+            if (rawClass.isInterface() &&
+                    ! rawClass.isMap() &&
                     ! rawClass.isCollection() &&
                     ! rawClass.isSerializableInterface() &&
                     ! rawClass.extendsInterface(ValueHolderInterface.class) &&
@@ -772,7 +772,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
                 getLogger().logConfigMessage(MetadataLogger.VARIABLE_ONE_TO_ONE_MAPPING, this);
                 return true;
             }
-            
+
             return false;
         } else {
             // Still need to make the call since we may need to ignore it
@@ -780,15 +780,15 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             return isAnnotationPresent(VariableOneToOne.class, classAccessor);
         }
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * Return true if this accessor represents a version mapping.
      */
     public boolean isVersion(ClassAccessor classAccessor) {
         return isAnnotationPresent(JPA_VERSION, classAccessor);
     }
-    
+
     /**
      * INTERNAL:
      * Set the annotations of this accessible object.
@@ -796,35 +796,35 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public void setAnnotations(Map<String, MetadataAnnotation> annotations) {
         m_annotations = annotations;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setAttributeName(String attributeName) {
         m_attributeName = attributeName;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setGenericType(List<String> genericType) {
         m_genericType = genericType;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setModifiers(int modifiers) {
         m_modifiers = modifiers;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setName(String name) {
         m_name = name;
     }
-    
+
     /**
      * INTERNAL:
      * If this annotated element was built from java model elements and is
@@ -834,14 +834,14 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         m_primitiveType = primitiveType;
         m_type = primitiveType.toString();
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      */
     public void setType(String type) {
         m_type = type;
     }
-    
+
     /**
      * INTERNAL:
      */

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle;
 
 import java.sql.ResultSet;
@@ -28,14 +28,14 @@ import org.eclipse.persistence.logging.SessionLog;
  * Supports usage of certain Oracle JDBC specific APIs.
  */
 public class Oracle10Platform extends Oracle9Platform  {
-    
+
     public Oracle10Platform(){
         super();
     }
 
     /**
      * Build the hint string used for first rows.
-     * 
+     *
      * Allows it to be overridden
      * @param max
      * @return
@@ -44,14 +44,14 @@ public class Oracle10Platform extends Oracle9Platform  {
         //bug 374136: override setting the FIRST_ROWS hint as this is not needed on Oracle10g
         return "";
     }
-    
+
     /**
      * Internal: This gets called on each batch statement execution
      * Needs to be implemented so that it returns the number of rows successfully modified
-     * by this statement for optimistic locking purposes (if useNativeBatchWriting is enabled, and 
-     * the call uses optimistic locking).  
-     * 
-     * @param isStatementPrepared - flag is set to true if this statement is prepared 
+     * by this statement for optimistic locking purposes (if useNativeBatchWriting is enabled, and
+     * the call uses optimistic locking).
+     *
+     * @param isStatementPrepared - flag is set to true if this statement is prepared
      * @return - number of rows modified/deleted by this statement
      */
     @Override
@@ -75,14 +75,14 @@ public class Oracle10Platform extends Oracle9Platform  {
      * INTERNAL:
      * Indicate whether app. server should unwrap connection
      * to use lob locator.
-     * No need to unwrap connection because 
+     * No need to unwrap connection because
      * writeLob method doesn't use oracle proprietary classes.
      */
     @Override
     public boolean isNativeConnectionRequiredForLobLocator() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Write LOB value - Oracle 10 deprecates some methods used in the superclass
@@ -105,7 +105,7 @@ public class Oracle10Platform extends Oracle9Platform  {
             //do nothing for now, open to BFILE or NCLOB types
         }
     }
-    
+
     /**
      * INTERNAL:
      * Supports Batch Writing with Optimistic Locking.

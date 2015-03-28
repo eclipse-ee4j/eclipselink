@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,11 +60,11 @@ import static java.lang.annotation.RetentionPolicy.*;
  *
  * @see ConcurrencyManagementType
  * @see Lock
- * 
+ *
  * @since EJB 3.1
  */
 
-@Target({TYPE}) 
+@Target({TYPE})
 @Retention(RUNTIME)
 public @interface ConcurrencyManagement {
 

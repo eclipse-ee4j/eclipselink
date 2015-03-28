@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.externalizable;
 
 import commonj.sdo.DataObject;
@@ -37,10 +37,10 @@ import org.eclipse.persistence.testing.sdo.SDOTestCase;
 import org.eclipse.persistence.testing.sdo.SDOXMLComparer;
 
 public class SDOResolvableTestCases extends SDOTestCase {
-    //protected String rootTypeName = "dataObject";    
+    //protected String rootTypeName = "dataObject";
     protected String rootTypeName = "PurchaseOrderType";
 
-    //protected String rootTypeUri = "commonj.sdo";    
+    //protected String rootTypeUri = "commonj.sdo";
     protected String rootTypeUri = "http://www.example.org";
     protected DataObject root;
 
@@ -75,9 +75,9 @@ public class SDOResolvableTestCases extends SDOTestCase {
             //log("Serialized Object: " + dataObjectToString(anObject));
             // display XML representation to the stream
             //if (anObject != null) {
-            //    xmlHelper.save(anObject,//                                                      
+            //    xmlHelper.save(anObject,//
             //                   rootTypeUri,//
-            //                   rootTypeName,//                                                      
+            //                   rootTypeName,//
             //                   System.out);
             //}
             anObjectInputStream.flush();
@@ -133,13 +133,13 @@ public class SDOResolvableTestCases extends SDOTestCase {
             aDataObjectInputStream = new DataObjectInputStream(aFileInputStream, aHelperContext);
             // read into context
             anObject = (DataObject)aDataObjectInputStream.readObject();
-            // display object representation to the stream			
+            // display object representation to the stream
             //log("deSerialized Object: " + dataObjectToString(anObject));
             // display XML representation to the stream
             //if (anObject != null) {
             //    xmlHelper.save(anObject,//
             //                   rootTypeUri,//
-            //                   rootTypeName,//                                                      
+            //                   rootTypeName,//
             //                   System.out);
             // }
             aDataObjectInputStream.close();

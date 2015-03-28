@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,17 +19,17 @@ import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 
 /**
- * <p>Subclass of Field for fields that are mapped to unions. Maintains a list 
- * of schema types instead of just one single schema type. Schema types can be 
+ * <p>Subclass of Field for fields that are mapped to unions. Maintains a list
+ * of schema types instead of just one single schema type. Schema types can be
  * added using the addSchemaType API.
  *
  * Constants has a list of useful constants including a list of QNames for
  * built-in schema types that can be used when adding schema types.
  *
- * <p>When reading and writing an element that is mapped with an UnionField, a 
- * conversion to each of the schema types on the field (in the order they are 
- * specified ) is tried until a conversion is successful. The Java type to 
- * convert to is based on the list of schema type to Java conversion pairs 
+ * <p>When reading and writing an element that is mapped with an UnionField, a
+ * conversion to each of the schema types on the field (in the order they are
+ * specified ) is tried until a conversion is successful. The Java type to
+ * convert to is based on the list of schema type to Java conversion pairs
  * specified on the field.
 
  * @see Field

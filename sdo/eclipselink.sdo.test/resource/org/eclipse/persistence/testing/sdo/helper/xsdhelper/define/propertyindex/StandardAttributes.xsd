@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<xsd:schema 
+<xsd:schema
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    xmlns:sdoJava="commonj.sdo/java" 
+    xmlns:sdoJava="commonj.sdo/java"
     xmlns:sdoXML="commonj.sdo/xml"
     xmlns:sdo="commonj.sdo"
     xmlns="http://www.example.org"
     targetNamespace="http://www.example.org"
     elementFormDefault="qualified">
-    
+
     <xsd:complexType name="StandardAttributes">
         <xsd:annotation>
             <xsd:appinfo source="http://www.example.org/metadata/">

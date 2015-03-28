@@ -1,23 +1,23 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
@@ -33,21 +33,21 @@ import javax.resource.NotSupportedException;
 //import javax.resource.spi.security.SecurityContext;
 
 /**
- * This class models an execution context (transaction, security, etc) 
- * with which the <code>Work</code> instance must be executed.  
- * This class is provided as a convenience for easily creating 
+ * This class models an execution context (transaction, security, etc)
+ * with which the <code>Work</code> instance must be executed.
+ * This class is provided as a convenience for easily creating
  * <code>ExecutionContext</code> instances by extending this class
  * and overriding only those methods of interest.
  *
- * <p>Some reasons why it is better for <code>ExecutionContext</code> 
- * to be a class rather than an interface: 
- * <ul><li>There is no need for a resource adapter to implement this class. 
- * It only needs to implement the context information like 
+ * <p>Some reasons why it is better for <code>ExecutionContext</code>
+ * to be a class rather than an interface:
+ * <ul><li>There is no need for a resource adapter to implement this class.
+ * It only needs to implement the context information like
  * transaction, etc.
- * <li>The resource adapter code does not have to change when the 
- * <code>ExecutionContext</code> class evolves. For example, more context 
- * types could be added to the <code>ExecutionContext</code> class 
- * (in the future) without forcing resource adapter implementations 
+ * <li>The resource adapter code does not have to change when the
+ * <code>ExecutionContext</code> class evolves. For example, more context
+ * types could be added to the <code>ExecutionContext</code> class
+ * (in the future) without forcing resource adapter implementations
  * to change.</ul>
  *
  * @version 1.0
@@ -78,7 +78,7 @@ public class ExecutionContext {
     public void setXid(Xid xid) { this.xid = xid; }
 
     /*
-     * @return an Xid object carrying a transaction context, 
+     * @return an Xid object carrying a transaction context,
      * if any.
      */
     public Xid getXid() { return this.xid; }
@@ -87,32 +87,32 @@ public class ExecutionContext {
      * Set the transaction timeout value for a imported transaction.
      *
      * @param timeout transaction timeout value in seconds. Only positive
-     * non-zero values are accepted. Other values are illegal and are 
+     * non-zero values are accepted. Other values are illegal and are
      * rejected with a <code>NotSupportedException</code>.
      *
-     * @throws NotSupportedException thrown to indicate an illegal timeout 
+     * @throws NotSupportedException thrown to indicate an illegal timeout
      * value.
      */
-    public void setTransactionTimeout(long timeout) 
-	throws NotSupportedException {
-	if (timeout > 0) {
-	    this.transactionTimeout = timeout;
-	} else {
-	    throw new NotSupportedException("Illegal timeout value");
-	}
+    public void setTransactionTimeout(long timeout)
+    throws NotSupportedException {
+    if (timeout > 0) {
+        this.transactionTimeout = timeout;
+    } else {
+        throw new NotSupportedException("Illegal timeout value");
+    }
     }
 
-    /** 
+    /**
      * Get the transaction timeout value for a imported transaction.
      *
      * @return the specified transaction timeout value in seconds. When no
-     * timeout value or an illegal timeout value had been specified, 
-     * a value of -1 (<code>WorkManager.UNKNOWN</code>) 
-     * is returned; such a transaction is excluded from regular 
+     * timeout value or an illegal timeout value had been specified,
+     * a value of -1 (<code>WorkManager.UNKNOWN</code>)
+     * is returned; such a transaction is excluded from regular
      * timeout processing.
      */
     public long getTransactionTimeout() {
-	return this.transactionTimeout;
+    return this.transactionTimeout;
     }
 
     /**
@@ -122,7 +122,7 @@ public class ExecutionContext {
      */
     /*
     public void setSecurityContext(SecurityContext securityCtx) {
-	this.securityCtx = securityCtx;
+    this.securityCtx = securityCtx;
     }
     */
     /*

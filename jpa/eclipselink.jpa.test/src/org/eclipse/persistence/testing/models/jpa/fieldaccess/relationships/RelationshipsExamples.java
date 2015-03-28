@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 
 import java.util.Vector;
@@ -17,7 +17,7 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
-public class RelationshipsExamples 
+public class RelationshipsExamples
 {
     private PopulationManager populationManager;
 
@@ -31,13 +31,13 @@ public class RelationshipsExamples
         this.populationManager.getRegisteredObjects().remove(Order.class);
         this.populationManager.getRegisteredObjects().remove(Customer.class);
         this.populationManager.getRegisteredObjects().remove(Item.class);
-        this.populationManager.getRegisteredObjects().remove(SalesPerson.class);    
+        this.populationManager.getRegisteredObjects().remove(SalesPerson.class);
 
         Vector allObjects = new Vector();
-        Order orderExample1 = orderExample1();        
-        Customer customerExample1 = customerExample1();          
+        Order orderExample1 = orderExample1();
+        Customer customerExample1 = customerExample1();
         Customer customerExample2 = customerExample2();
-        SalesPerson salesPerson1 = salesPersonExample1();  
+        SalesPerson salesPerson1 = salesPersonExample1();
 
         /*
          * Set relationships:
@@ -47,15 +47,15 @@ public class RelationshipsExamples
          * SalesPerson1 is set as salesPerson to Order1
          */
         orderExample1.setBilledCustomer(customerExample1);
-        orderExample1.setCustomer(customerExample2);   
+        orderExample1.setCustomer(customerExample2);
         Vector ordersList = new Vector();
         ordersList.add(orderExample1);
-        customerExample2.setOrders(ordersList);    
+        customerExample2.setOrders(ordersList);
         orderExample1.setSalesPerson(salesPerson1);
 
-        Order orderExample2 = orderExample2();        
-        Customer customerExample3 = customerExample3();          
-        Customer customerExample4 = customerExample4();   
+        Order orderExample2 = orderExample2();
+        Customer customerExample3 = customerExample3();
+        Customer customerExample4 = customerExample4();
         SalesPerson salesPerson2 = salesPersonExample2();
         /*
          * Set relationships:
@@ -71,7 +71,7 @@ public class RelationshipsExamples
         orderExample2.setSalesPerson(salesPerson2);
 
 
-        allObjects.add(customerExample1);    
+        allObjects.add(customerExample1);
         allObjects.add(customerExample2);
         allObjects.add(orderExample1);
         allObjects.add(customerExample3);
@@ -81,10 +81,10 @@ public class RelationshipsExamples
         allObjects.add(itemExample1());
         allObjects.add(itemExample2());
         allObjects.add(itemExample3());
-        allObjects.add(itemExample4());    
+        allObjects.add(itemExample4());
 
         allObjects.add(orderExample3());
-        allObjects.add(orderExample4());    
+        allObjects.add(orderExample4());
         allObjects.add(salesPerson1);
         allObjects.add(salesPerson2);
 
@@ -176,5 +176,5 @@ public class RelationshipsExamples
         SalesPerson salesPerson = new SalesPerson();
         salesPerson.setName("Sales Person 2");
         return salesPerson;
-    } 
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,7 +45,7 @@ public class XmlAnyElementArrayTestCases extends JAXBWithJSONTestCases {
     }
 
     protected Object getControlObject() {
-    	EmployeeArray employee = new EmployeeArray();
+        EmployeeArray employee = new EmployeeArray();
         employee.name = "John Doe";
         employee.homeAddress  = new Address();
         employee.homeAddress.street = "123 Fake Street";
@@ -54,12 +54,12 @@ public class XmlAnyElementArrayTestCases extends JAXBWithJSONTestCases {
 
         List elements = getControlChildElements();
         employee.elements = elements.toArray();
-      
+
         return employee;
     }
-    
+
     private List getControlChildElements(){
-    	 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
          factory.setNamespaceAware(true);
          factory.setIgnoringElementContentWhitespace(true);
          try {
@@ -72,21 +72,21 @@ public class XmlAnyElementArrayTestCases extends JAXBWithJSONTestCases {
              int j=0;
              for(int i = 0; i < children.getLength(); i++) {
                  if(children.item(i).getNodeType() == Element.ELEMENT_NODE) {
-                 	elements.add(children.item(i));
+                     elements.add(children.item(i));
                  }
              }
              elements.add(0,elements.get(elements.size()-1));
              return elements;
          } catch(Exception ex) {
-        	 ex.printStackTrace();
-        	 fail("An error occurred during setup");
-        	 return null;
+             ex.printStackTrace();
+             fail("An error occurred during setup");
+             return null;
          }
     }
-    
-    
+
+
     protected Object getJSONReadControlObject() {
-    	EmployeeArray employee = new EmployeeArray();
+        EmployeeArray employee = new EmployeeArray();
         employee.name = "John Doe";
         employee.homeAddress  = new Address();
         employee.homeAddress.street = "123 Fake Street";
@@ -94,23 +94,23 @@ public class XmlAnyElementArrayTestCases extends JAXBWithJSONTestCases {
         employee.homeAddress.country = "Canada";
 
         List elements = getControlChildElements();
-    	Object objectRemoved = elements.remove(elements.size()-1);    	
-    	elements.add(0, objectRemoved);
-    	//remove namespace declaration
-    	((Element)elements.get(3)).removeAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "myns");
+        Object objectRemoved = elements.remove(elements.size()-1);
+        elements.add(0, objectRemoved);
+        //remove namespace declaration
+        ((Element)elements.get(3)).removeAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "myns");
 
-    	employee.elements = elements.toArray();
-              
-    
-        
+        employee.elements = elements.toArray();
+
+
+
         return employee;
-    	  
+
     }
     public void testSchemaGen() throws Exception{
-		InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlanyelement/employee.xsd");		
-    	List<InputStream> controlSchemas = new ArrayList<InputStream>();    	
-    	controlSchemas.add(controlInputStream);		
-		this.testSchemaGen(controlSchemas);
-	}
+        InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlanyelement/employee.xsd");
+        List<InputStream> controlSchemas = new ArrayList<InputStream>();
+        controlSchemas.add(controlInputStream);
+        this.testSchemaGen(controlSchemas);
+    }
 
 }

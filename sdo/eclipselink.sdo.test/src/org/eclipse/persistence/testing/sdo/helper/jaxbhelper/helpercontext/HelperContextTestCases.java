@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -76,7 +76,7 @@ public class HelperContextTestCases extends SDOTestCase {
     public void testGetType() {
         Type pojoType = jaxbHelperContext.getType(Root.class);
         assertNotNull(pojoType);
-        
+
         Type rootType = jaxbHelperContext.getTypeHelper().getType("urn:helpercontext", "root");
         assertSame(rootType, pojoType);
     }
@@ -109,7 +109,7 @@ public class HelperContextTestCases extends SDOTestCase {
         HelperContext testDefaultHelperContext = sdoDataFactoryDelegator.getHelperContext();
         assertSame(HelperProvider.getDefaultContext(), testDefaultHelperContext);
 
-        HelperContext testHelperContext = sdoDataFactoryDelegator.getDataFactoryDelegate().getHelperContext(); 
+        HelperContext testHelperContext = sdoDataFactoryDelegator.getDataFactoryDelegate().getHelperContext();
         assertSame(jaxbHelperContext, testHelperContext);
     }
 
@@ -119,7 +119,7 @@ public class HelperContextTestCases extends SDOTestCase {
         HelperContext testDefaultHelperContext = sdoTypeHelperDelegator.getHelperContext();
         assertSame(HelperProvider.getDefaultContext(), testDefaultHelperContext);
 
-        HelperContext testHelperContext = sdoTypeHelperDelegator.getTypeHelperDelegate().getHelperContext(); 
+        HelperContext testHelperContext = sdoTypeHelperDelegator.getTypeHelperDelegate().getHelperContext();
         assertSame(jaxbHelperContext, testHelperContext);
     }
 
@@ -129,7 +129,7 @@ public class HelperContextTestCases extends SDOTestCase {
         HelperContext testDefaultHelperContext = sdoXMLHelperDelegator.getHelperContext();
         assertSame(HelperProvider.getDefaultContext(), testDefaultHelperContext);
 
-        HelperContext testHelperContext = sdoXMLHelperDelegator.getXMLHelperDelegate().getHelperContext(); 
+        HelperContext testHelperContext = sdoXMLHelperDelegator.getXMLHelperDelegate().getHelperContext();
         assertSame(jaxbHelperContext, testHelperContext);
     }
 
@@ -139,7 +139,7 @@ public class HelperContextTestCases extends SDOTestCase {
         HelperContext testDefaultHelperContext = sdoXSDHelperDelegator.getHelperContext();
         assertSame(HelperProvider.getDefaultContext(), testDefaultHelperContext);
 
-        HelperContext testHelperContext = sdoXSDHelperDelegator.getXSDHelperDelegate().getHelperContext(); 
+        HelperContext testHelperContext = sdoXSDHelperDelegator.getXSDHelperDelegate().getHelperContext();
         assertSame(jaxbHelperContext, testHelperContext);
     }
 
@@ -147,7 +147,7 @@ public class HelperContextTestCases extends SDOTestCase {
         Root root = new Root();
         SDODataObject rootDO = (SDODataObject) jaxbHelperContext.wrap(root);
         assertNotNull(rootDO);
-        
+
         assertSame(JAXBValueStore.class, rootDO._getCurrentValueStore().getClass());
     }
 

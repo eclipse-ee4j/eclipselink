@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -61,12 +61,12 @@ public class CollectionHolderWrappersOverrideTestCases extends JAXBWithJSONTestC
 
     @Override
     protected Map getProperties() {
-    	InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS);
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS);
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.collections", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
 
-        // test override of 'old' context factory property - if the override 
+        // test override of 'old' context factory property - if the override
         // fails we will get errors
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new HashMap<String, Source>());
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);

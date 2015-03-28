@@ -1,33 +1,33 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     07/16/2009-2.0 Guy Pelletier 
+ *     07/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     10/29/2010-2.2 Michael O'Brien 
+ *     10/29/2010-2.2 Michael O'Brien
  *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
- *     04/01/2011-2.3 Guy Pelletier 
+ *     04/01/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 2)
- *     05/24/2011-2.3 Guy Pelletier 
+ *     05/24/2011-2.3 Guy Pelletier
  *       - 345962: Join fetch query when using tenant discriminator column fails.
- *     06/30/2011-2.3.1 Guy Pelletier 
- *       - 341940: Add disable/enable allowing native queries 
- *     07/13/2012-2.5 Guy Pelletier 
+ *     06/30/2011-2.3.1 Guy Pelletier
+ *       - 341940: Add disable/enable allowing native queries
+ *     07/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     11/05/2012-2.5 Guy Pelletier 
+ *     11/05/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/11/2012-2.5 Guy Pelletier  
+ *     08/11/2012-2.5 Guy Pelletier
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
- *     08/11/2014-2.5 Rick Curtis 
+ *     08/11/2014-2.5 Rick Curtis
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  ******************************************************************************/
 package org.eclipse.persistence.queries;
@@ -59,7 +59,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
  * <b>Purpose</b>: Abstract class for all database query objects. DatabaseQuery
  * is a visible class to the EclipseLink user. Users create an appropriate query
  * by creating an instance of a concrete subclasses of DatabaseQuery.
- * 
+ *
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
@@ -68,7 +68,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
  * <li>Provides query property values
  * <li>Holds arguments to the query
  * </ul>
- * 
+ *
  * @author Yvon Lavoie
  * @since TOPLink/Java 1.0
  */
@@ -105,7 +105,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /** Used to build a list of argumentTypes by name pre-initialization */
     protected List<String> argumentTypeNames;
-    
+
     /** Used for parameter retreival in JPQL **/
     public enum ParameterType {POSITIONAL, NAMED};
 
@@ -116,7 +116,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /** The list of descriptors this query deals with. Set via JPA processing for table per tenant queries */
     protected List<ClassDescriptor> descriptors;
-    
+
     /**
      * The query mechanism determines the mechanism on how the database will be
      * accessed.
@@ -145,13 +145,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected boolean shouldRetrieveBypassCache = false;
     protected boolean shouldStoreBypassCache = false;
 
-    /**  
-     * Property used to override a persistence unit level that disallows native 
+    /**
+     * Property used to override a persistence unit level that disallows native
      * SQL queries.
      * @see org.eclipse.persistence.sessions.Project#setAllowNativeSQLQueries(boolean) Project.setAllowNativeSQLQueries(boolean)
      */
     protected Boolean allowNativeSQLQuery;
-    
+
     /** Internally used by the mappings as a temporary store. */
     protected Map<Object, Object> properties;
 
@@ -185,7 +185,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * custom sql/query support.
      */
     protected boolean isUserDefined;
-    
+
     /**
      * Internal flag used to bypass user define queries when executing one for
      * custom sql/query support.
@@ -209,7 +209,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * non-pre SQL generated queries.
      */
     protected boolean shouldPrepare;
-    
+
     /**
      * List of arguments to check for null.
      * If any are null, the query needs to be re-prepared.
@@ -248,11 +248,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * queryTimeout has three possible settings: DefaultTimeout, NoTimeout, and
      * 1..N This applies to both DatabaseQuery.queryTimeout and
      * DescriptorQueryManager.queryTimeout
-     * 
+     *
      * DatabaseQuery.queryTimeout: - DefaultTimeout: get queryTimeout from
      * DescriptorQueryManager - NoTimeout, 1..N: overrides queryTimeout in
      * DescriptorQueryManager
-     * 
+     *
      * DescriptorQueryManager.queryTimeout: - DefaultTimeout: get queryTimeout
      * from parent DescriptorQueryManager. If there is no parent, default to
      * NoTimeout - NoTimeout, 1..N: overrides parent queryTimeout
@@ -311,18 +311,18 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /** Allow connection unwrapping to be configured. */
     protected boolean isNativeConnectionRequired;
-    
+
     /**
      * Return the name to use for the query in performance monitoring.
      */
     protected transient String monitorName;
-    
+
     /** Allow additional validation to be performed before using the update call cache */
     protected boolean shouldValidateUpdateCallCacheUse;
 
     /** Allow queries to be targeted at specific connection pools. */
     protected PartitioningPolicy partitioningPolicy;
-    
+
 
     /** Allow the reserved pound char used to delimit bind parameters to be overridden */
     protected String parameterDelimiter;
@@ -347,7 +347,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.shouldValidateUpdateCallCacheUse = false;
         this.parameterDelimiter = ParameterDelimiterType.DEFAULT;
     }
-    
+
     /**
      * PUBLIC:
      * Return the query's partitioning policy.
@@ -355,7 +355,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public PartitioningPolicy getPartitioningPolicy() {
         return partitioningPolicy;
     }
-    
+
     /**
      * PUBLIC:
      * Set the query's partitioning policy.
@@ -387,10 +387,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         if (getReferenceClassName() == null) {
             this.monitorName = getClass().getSimpleName() + ":" + getName();
         } else {
-            this.monitorName = getClass().getSimpleName() + ":" + getReferenceClassName() + ":" + getName();                
+            this.monitorName = getClass().getSimpleName() + ":" + getReferenceClassName() + ":" + getName();
         }
     }
-    
+
     /**
      * PUBLIC: Add the argument named argumentName. This will cause the
      * translation of references of argumentName in the receiver's expression,
@@ -411,7 +411,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void addArgument(String argumentName, Class type) {
         addArgument(argumentName, type, false);
     }
-    
+
     /**
      * INTERNAL: Add the argument named argumentName.  This method was added to maintain
      * information about whether parameters are positional or named for JPQL query introspeciton
@@ -453,7 +453,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             getNullableArguments().add(new DatabaseField(argumentName));
         }
     }
-    
+
     /**
      * PUBLIC: Add the argument named argumentName and its class type. This will
      * cause the translation of references of argumentName in the receiver's
@@ -467,7 +467,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         getArgumentTypes().add(Helper.getObjectClass(ConversionManager.loadClass(typeAsString)));
         getArgumentTypeNames().add(typeAsString);
     }
-    
+
     /**
      * INTERNAL: Add an argument to the query, but do not resolve the class yet.
      * This is useful for building a query without putting the domain classes on
@@ -614,7 +614,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void checkPrepare(AbstractSession session, AbstractRecord translationRow) {
         this.checkPrepare(session, translationRow, false);
     }
-    
+
     /**
      * INTERNAL: Call the prepare on the query.
      */
@@ -623,10 +623,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         try {
             prepare();
         } finally {
-            setSession(null);   
+            setSession(null);
         }
     }
-    
+
     /**
      * INTERNAL: Check to see if this query needs to be prepare and prepare it.
      * The prepare is done on the original query to ensure that the work is not
@@ -652,14 +652,14 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                         // SQL contains the # token (for stored procedures or temporary tables).
                         // Avoid this by telling the call if this is custom SQL with parameters.
                         // This must not be called for SDK calls.
-                        if ((isReadQuery() || isDataModifyQuery()) && isCallQuery() && (getQueryMechanism() instanceof CallQueryMechanism) 
+                        if ((isReadQuery() || isDataModifyQuery()) && isCallQuery() && (getQueryMechanism() instanceof CallQueryMechanism)
                                 && ((translationRow == null) || (translationRow.isEmpty() && !translationRow.hasSopObject()))) {
                             // Must check for read object queries as the row will be
                             // empty until the prepare.
                             if (isReadObjectQuery() || isUserDefined()) {
                                 ((CallQueryMechanism) getQueryMechanism()).setCallHasCustomSQLArguments();
                             }
-                        } else if (isCallQuery() && (getQueryMechanism() instanceof CallQueryMechanism)) { 
+                        } else if (isCallQuery() && (getQueryMechanism() instanceof CallQueryMechanism)) {
                             ((CallQueryMechanism) getQueryMechanism()).setCallHasCustomSQLArguments();
                         }
                         setSession(session);// Session is required for some init stuff.
@@ -727,7 +727,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL: Convert all the class-name-based settings in this query to
      * actual class-based settings This method is implemented by subclasses as
      * necessary.
-     * 
+     *
      * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
@@ -775,7 +775,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /**
      * INTERNAL: Execute the query
-     * 
+     *
      * @exception DatabaseException
      *                - an error has occurred on the database.
      * @exception OptimisticLockException
@@ -788,7 +788,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL: Override query execution where Session is a UnitOfWork.
      * <p>
      * If there are objects in the cache return the results of the cache lookup.
-     * 
+     *
      * @param unitOfWork
      *            - the session in which the receiver will be executed.
      * @param translationRow
@@ -806,7 +806,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL: Execute the query. If there are objects in the cache return the
      * results of the cache lookup.
-     * 
+     *
      * @param session
      *            - the session in which the receiver will be executed.
      * @exception DatabaseException
@@ -935,7 +935,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public Collection<Accessor> getAccessors() {
         return this.accessors;
     }
-    
+
     /**
      * INTERNAL: Return the arguments for use with the pre-defined query option
      */
@@ -945,7 +945,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         }
         return this.arguments;
     }
-    
+
     /**
      * INTERNAL:
      * Used to calculate parameter types in JPQL
@@ -1051,7 +1051,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * OBSOLETE: Return the call for this query. This call contains the SQL and
      * argument list.
-     * 
+     *
      * @see #getDatasourceCall()
      */
     public DatabaseCall getCall() {
@@ -1066,7 +1066,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * ADVANCED: Return the call for this query. This call contains the SQL and
      * argument list.
-     * 
+     *
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
      */
     public Call getDatasourceCall() {
@@ -1088,7 +1088,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * ADVANCED: Return the calls for this query. This method can be called for
      * queries with multiple calls This call contains the SQL and argument list.
-     * 
+     *
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
      */
     public List getDatasourceCalls() {
@@ -1176,7 +1176,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public char getParameterDelimiterChar() {
         return getParameterDelimiter().charAt(0);
     }
-    
+
     /**
      * INTERNAL: Property support for use by mappings.
      */
@@ -1234,11 +1234,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public boolean hasQueryMechanism() {
         return (this.queryMechanism != null);
     }
-    
+
     /**
      * PUBLIC: Return the number of seconds the driver will wait for a Statement
      * to execute to the given number of seconds.
-     * 
+     *
      * @see DescriptorQueryManager#getQueryTimeout()
      */
     public int getQueryTimeout() {
@@ -1259,7 +1259,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * to replace its execution with the execution of code. This can be used for
      * named or parameterized queries to allow dynamic configuration of the
      * query base on the query arguments.
-     * 
+     *
      * @see QueryRedirector
      */
     public QueryRedirector getRedirectorForQuery() {
@@ -1280,7 +1280,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * to replace its execution with the execution of code. This can be used for
      * named or parameterized queries to allow dynamic configuration of the
      * query base on the query arguments.
-     * 
+     *
      * @see QueryRedirector
      */
     public QueryRedirector getRedirector() {
@@ -1416,7 +1416,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * ADVANCED: Return the SQL string of the query. This can be used for SQL
      * queries. This can also be used for normal queries if they have been
      * prepared, (i.e. query.prepareCall()).
-     * 
+     *
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
      */
     public String getSQLString() {
@@ -1436,7 +1436,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * multiple calls This can be used for SQL queries. This can also be used
      * for normal queries if they have been prepared, (i.e.
      * query.prepareCall()).
-     * 
+     *
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
      */
     public List getSQLStrings() {
@@ -1475,7 +1475,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * ADVANCED: This can be used to access a queries translated SQL if they
      * have been prepared, (i.e. query.prepareCall()). The Record argument is
      * one of (Record, XMLRecord) that contains the query arguments.
-     * 
+     *
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, Record)
      */
     public String getTranslatedSQLString(org.eclipse.persistence.sessions.Session session, Record translationRow) {
@@ -1495,7 +1495,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * ADVANCED: This can be used to access a queries translated SQL if they
      * have been prepared, (i.e. query.prepareCall()). This method can be used
      * for queries with multiple calls.
-     * 
+     *
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
      */
     public List getTranslatedSQLStrings(org.eclipse.persistence.sessions.Session session, Record translationRow) {
@@ -1569,7 +1569,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void ignoreCacheStatement() {
         this.shouldCacheStatement = null;
     }
-    
+
     /**
      * PUBLIC: Return true if this query uses SQL, a stored procedure, or SDK
      * call.
@@ -1577,7 +1577,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public boolean isCallQuery() {
         return (this.queryMechanism != null) && this.queryMechanism.isCallQueryMechanism();
     }
-    
+
     /**
      * INTERNAL: Returns true if this query has been created as the result of
      * cascading a delete of an aggregate collection in a UnitOfWork CR 2811
@@ -1737,7 +1737,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public boolean isReportQuery() {
         return false;
     }
-    
+
     /**
      * PUBLIC: Return true if this is a result set mapping query.
      */
@@ -1754,7 +1754,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         Call call = getDatasourceCall();
         return (call != null) && (call instanceof SQLCall);
     }
-    
+
     /**
      * PUBLIC: Return true if this query uses an JPQL query mechanism .
      */
@@ -1770,7 +1770,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public boolean isUserDefined() {
         return isUserDefined;
     }
-    
+
     /**
      * INTERNAL: Return true if the query is a custom user defined SQL call query.
      */
@@ -1809,7 +1809,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * called on the original query, and the other is called on the copy of the
      * query. This query is copied for concurrency so this prepare can only
      * setup things that will apply to any future execution of this query.
-     * 
+     *
      * Resolve the queryTimeout using the DescriptorQueryManager if required.
      */
     protected void prepare() throws QueryException {
@@ -1891,7 +1891,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * call use, query.getCall(), or query.getSQLString() for the SQL. Note the
      * SQL will have argument markers in it (i.e. "?"). To translate these use
      * query.getTranslatedSQLString(session, translationRow).
-     * 
+     *
      * @see #getCall()
      * @see #getSQLString()
      * @see #getTranslatedSQLString(org.eclipse.persistence.sessions.Session,
@@ -1923,7 +1923,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL: Use a EclipseLink redirector to redirect this query to a
      * method. Added for bug 3241138
-     * 
+     *
      */
     public Object redirectQuery(QueryRedirector redirector, DatabaseQuery queryToRedirect, AbstractSession session, AbstractRecord translationRow) {
         if (redirector == null) {
@@ -2014,17 +2014,17 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         if (!isPrepared() || (argumentFields == null)) {
             argumentFields = buildArgumentFields();
         }
-        
+
         if (argumentFields.size() != argumentValues.size()) {
             throw QueryException.argumentSizeMismatchInQueryAndQueryDefinition(this);
         }
-        
+
         int argumentsSize = argumentFields.size();
         AbstractRecord row = new DatabaseRecord(argumentsSize);
         for (int index = 0; index < argumentsSize; index++) {
             row.put(argumentFields.get(index), argumentValues.get(index));
         }
-        
+
         return row;
     }
 
@@ -2119,8 +2119,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /**
      * Used to set a database hint string on the query. This should be the full
-     * hint string including the comment delimiters. The hint string will be 
-     * generated into the SQL string after the SELECT/INSERT/UPDATE/DELETE 
+     * hint string including the comment delimiters. The hint string will be
+     * generated into the SQL string after the SELECT/INSERT/UPDATE/DELETE
      * instruction.
      * <p>
      * <b>Example:</b>
@@ -2132,7 +2132,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * <p>
      * This method will cause a query to re-prepare if it has already been
      * executed.
-     * 
+     *
      * @param newHintString
      *            the hint string to be added into the SQL call.
      */
@@ -2203,14 +2203,14 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             this.isCustomQueryUsed = Boolean.FALSE;
         }
     }
-    
+
     /**
      * INTERNAL: Set if the query is a custom user defined query.
      */
     public void setIsUserDefined(boolean isUserDefined) {
         this.isUserDefined = isUserDefined;
     }
-    
+
     /**
      * INTERNAL: Set if the query is a custom user defined sql call query.
      */
@@ -2237,7 +2237,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         }
         parameterDelimiter = aParameterDelimiter;
     }
-    
+
     /**
      * INTERNAL: Property support used by mappings.
      */
@@ -2265,12 +2265,12 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC: Set the number of seconds the driver will wait for a Statement to
      * execute to the given number of seconds. If the limit is exceeded, a
      * DatabaseException is thrown.
-     * 
+     *
      * queryTimeout - the new query timeout limit in seconds; DefaultTimeout is
      * the default, which redirects to DescriptorQueryManager's queryTimeout.
-     * 
+     *
      * @see DescriptorQueryManager#setQueryTimeout(int)
-     * 
+     *
      */
     public void setQueryTimeout(int queryTimeout) {
         this.queryTimeout = queryTimeout;
@@ -2282,7 +2282,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * replace its execution with the execution of code. This can be used for
      * named or parameterized queries to allow dynamic configuration of the
      * query base on the query arguments.
-     * 
+     *
      * @see QueryRedirector
      */
     public void setRedirector(QueryRedirector redirector) {
@@ -2404,7 +2404,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Set if additional validation should be performed before the query uses
-     * the update call cache. 
+     * the update call cache.
      */
     public void setShouldValidateUpdateCallCacheUse(boolean shouldCheckUpdateCallCacheUse) {
         this.shouldValidateUpdateCallCacheUse = shouldCheckUpdateCallCacheUse;
@@ -2465,14 +2465,14 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Return true if this individual query should allow native a SQL call
-     * to be issued. 
+     * to be issued.
      */
-    public boolean shouldAllowNativeSQLQuery(boolean projectAllowsNativeQueries) {        
+    public boolean shouldAllowNativeSQLQuery(boolean projectAllowsNativeQueries) {
         // If allow native SQL query is undefined, use the project setting
         // otherwise use the allow native SQL setting.
         return (allowNativeSQLQuery == null) ? projectAllowsNativeQueries : allowNativeSQLQuery.booleanValue();
     }
-    
+
     /**
      * PUBLIC: Cache the prepared statements, this requires full parameter
      * binding as well.
@@ -2569,7 +2569,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public boolean shouldPrepare() {
         return shouldPrepare;
     }
-    
+
     /**
      * INTERNAL:
      * Check if the query should be prepared, or dynamic, depending on the arguments.
@@ -2620,9 +2620,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * ADVANCED: 
+     * ADVANCED:
      * Return true if additional validation should be performed before the query uses
-     * the update call cache, false otherwise. 
+     * the update call cache, false otherwise.
      */
     public boolean shouldValidateUpdateCallCacheUse() {
         return shouldValidateUpdateCallCacheUse;
@@ -2633,7 +2633,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * flag specifies the behavior when data is read from the database and when
      * data is committed into the database. Calling this method will set a store
      * bypass to true.
-     * 
+     *
      * Note: For a cache store mode of REFRESH, see refreshIdentityMapResult()
      * from ObjectLevelReadQuery.
      */
@@ -2723,7 +2723,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void setAllowNativeSQLQuery(Boolean allowNativeSQLQuery) {
         this.allowNativeSQLQuery = allowNativeSQLQuery;
     }
-    
+
     /**
      * INTERNAL:
      * Return if the query has any nullable arguments.

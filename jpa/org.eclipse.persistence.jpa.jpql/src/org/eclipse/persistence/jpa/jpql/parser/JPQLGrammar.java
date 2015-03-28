@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -49,36 +49,36 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
  */
 public interface JPQLGrammar {
 
-	/**
-	 * Returns the registry containing the {@link JPQLQueryBNF JPQLQueryBNFs} and the {@link
-	 * org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory ExpressionFactories} that are used
-	 * to properly parse a JPQL query.
-	 *
-	 * @return The registry containing the information related to the JPQL grammar
-	 */
-	ExpressionRegistry getExpressionRegistry();
+    /**
+     * Returns the registry containing the {@link JPQLQueryBNF JPQLQueryBNFs} and the {@link
+     * org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory ExpressionFactories} that are used
+     * to properly parse a JPQL query.
+     *
+     * @return The registry containing the information related to the JPQL grammar
+     */
+    ExpressionRegistry getExpressionRegistry();
 
-	/**
-	 * Returns the {@link JPAVersion} of the Java Persistence supported by this grammar.
-	 *
-	 * @return The {@link JPAVersion JPA version} supported by this grammar
-	 */
-	JPAVersion getJPAVersion();
+    /**
+     * Returns the {@link JPAVersion} of the Java Persistence supported by this grammar.
+     *
+     * @return The {@link JPAVersion JPA version} supported by this grammar
+     */
+    JPAVersion getJPAVersion();
 
-	/**
-	 * Returns the persistence provider name.
-	 *
-	 * @return The name of the persistence provider, <code>null</code> should never be returned
-	 * @since 2.5
-	 */
-	String getProvider();
+    /**
+     * Returns the persistence provider name.
+     *
+     * @return The name of the persistence provider, <code>null</code> should never be returned
+     * @since 2.5
+     */
+    String getProvider();
 
-	/**
-	 * Returns the version of the persistence provider.
-	 *
-	 * @return The version of the persistence provider, if one is extending the default JPQL grammar
-	 * defined in the Java Persistence specification, otherwise returns an empty string
-	 * @since 2.4
-	 */
-	String getProviderVersion();
+    /**
+     * Returns the version of the persistence provider.
+     *
+     * @return The version of the persistence provider, if one is extending the default JPQL grammar
+     * defined in the Java Persistence specification, otherwise returns an empty string
+     * @since 2.4
+     */
+    String getProviderVersion();
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -197,7 +197,7 @@ public class BatchSQLTestSuite extends DBWSTestSuite {
     }
 
     static String CONTROL_DOC =
-    	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<avg-salary xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"simple-xml-format\">" +
           "<simple-xml>" +
             "<clerk-avg>1037.50</clerk-avg>" +

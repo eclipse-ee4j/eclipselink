@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -30,7 +30,7 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
      * <p>This could be a JDBC type, PLSQL type, or a PLSQL RECORD type.
      */
     protected DatabaseType nestedType;
-    
+
     /**
      * Return the database type of the value contained in the collection type.
      */
@@ -50,12 +50,12 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
     public boolean isJDBCType() {
         return true;
     }
-    
+
     @Override
     public boolean isComplexDatabaseType() {
         return true;
     }
-    
+
     @Override
     public boolean isArray() {
         return true;
@@ -64,7 +64,7 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
     public int getSqlCode() {
         return ARRAY;
     }
-    
+
     /**
      * Oracle ARRAY types don't have a compatible type like PL/SQL
      * types do, so we will use the type name
@@ -73,7 +73,7 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
     public String getCompatibleType() {
         return typeName;
     }
-    
+
     /**
      * Oracle ARRAY types don't have a compatible type like PL/SQL
      * types do, so we will use the type name
@@ -84,7 +84,7 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
     }
 
     public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
-    	// no-op
+        // no-op
     }
 
     public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
@@ -114,7 +114,7 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
         sb.append(";");
         sb.append(NL);
     }
-    
+
     public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call) {
         String target = databaseTypeHelper.buildTarget(outArg);
         sb.append("  :");

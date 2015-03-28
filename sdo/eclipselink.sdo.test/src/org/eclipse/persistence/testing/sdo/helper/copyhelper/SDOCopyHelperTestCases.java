@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 /*
    DESCRIPTION
     Perform copy junit test operations on DataObjects.
@@ -19,7 +19,7 @@
       http://files.oraclecorp.com/content/MySharedFolders/ST%20Functional%20Specs/AS11gR1/TopLink/SDO/SDO_Ref_BiDir_Relationships_DesignSpec.doc
 
    MODIFIED    (MM/DD/YY)
-    mfobrien    02/12/07 - 
+    mfobrien    02/12/07 -
     dmahar      11/23/06 -
     mfobrien    09/12/06 - Add bidirectional property copy support
  */
@@ -113,8 +113,8 @@ public class SDOCopyHelperTestCases extends SDOTestCase {
 
         SDOType changeSummaryType = (SDOType) aHelperContext.getTypeHelper().getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
 
-        // first we set up root data object       
-        rootType = new SDOType(rootTypeUri, rootTypeName);// root's type        
+        // first we set up root data object
+        rootType = new SDOType(rootTypeUri, rootTypeName);// root's type
 
         rootProperty1 = new SDOProperty(aHelperContext);// root's property1
         rootProperty1.setName("rootproperty1-datatype");
@@ -220,7 +220,7 @@ public class SDOCopyHelperTestCases extends SDOTestCase {
         containedDataObject = (SDODataObject)dataFactory.create(containedType);
         containedDataObject.getChangeSummary().beginLogging();
 
-        // then, we create one dataobject as root's noncontainment property' value        
+        // then, we create one dataobject as root's noncontainment property' value
         containedType1 = new SDOType(containedType1Uri, containedType1Name);
 
         contained1Property1 = new SDOProperty(aHelperContext);// containedDataObject1's property1
@@ -231,14 +231,14 @@ public class SDOCopyHelperTestCases extends SDOTestCase {
         contained1Property1_type.setDataType(false);// not datatype
         contained1Property1.setType(contained1Property1_type);
         // TODO: 20060906 bidirectional
-        // bidirectional to containedByContainedDataObject        
+        // bidirectional to containedByContainedDataObject
         // Note: the property parameter is null so this set will have no effect until the 2nd set later
         contained1Property1.setOpposite(containedByContainedProperty1);
 
         containedType1.addDeclaredProperty(contained1Property1);
 
         containedDataObject1 = (SDODataObject)dataFactory.create(containedType1);
-        // finally, we create a dataobject contained by containedDataObject        
+        // finally, we create a dataobject contained by containedDataObject
         containedByContainedType = new SDOType(containedBycontainedType1Uri, containedByContainedTypeName);
 
         containedByContainedProperty1 = new SDOProperty(aHelperContext);// containedByContainedDataObject's property1
@@ -284,7 +284,7 @@ public class SDOCopyHelperTestCases extends SDOTestCase {
         root.set(rootProperty3, containedDataObject1);// child: containedDataObject1
         root.set(rootProperty4, objects);
         containedDataObject.set(containedProperty1, "test1");
-        // child: containedByContainedDataObject        
+        // child: containedByContainedDataObject
         containedDataObject.set(containedProperty2, containedByContainedDataObject);
         // set opposite property
         containedDataObject1.set(contained1Property1, containedByContainedDataObject);

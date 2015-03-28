@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     31/05/2012-2.4 Guy Pelletier  
+ *     31/05/2012-2.4 Guy Pelletier
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
- *     07/07/2014-2.5.3 Rick Curtis 
+ *     07/07/2014-2.5.3 Rick Curtis
  *       - 375101: Date and Calendar should not require @Temporal.
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant;
@@ -59,7 +59,7 @@ public class Mason {
     public void addAward(Date awardDate, String award) {
         awards.put(awardDate, award);
     }
-    
+
     @ElementCollection
     @CollectionTable(
         name="GEN_MASON_AWARDS",
@@ -71,48 +71,48 @@ public class Mason {
         return awards;
     }
 
-    
+
     public void addHoursWorked(Date d, Integer time){
         hoursWorked.put(d, time);
     }
-    
+
     @ElementCollection
     public Map<Date, Integer> getHoursWorked() {
         return hoursWorked;
     }
-    
+
     @Id
     @GeneratedValue
     public int getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     @OneToOne
     @JoinColumn(name="TROWEL_ID")
     public Trowel getTrowel() {
         return trowel;
     }
-    
+
     public void setAwards(Map<Date, String> awards) {
         this.awards = awards;
     }
-    
+
     public void setHoursWorked(Map<Date, Integer> h) {
         hoursWorked = h;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public void setTrowel(Trowel trowel) {
         this.trowel = trowel;
     }

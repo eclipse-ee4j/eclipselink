@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -25,8 +25,8 @@ import org.eclipse.persistence.exceptions.SDOException;
 public class SDODataObjectGetListConversionTest extends SDODataObjectConversionWithPathTestCases {
     public SDODataObjectGetListConversionTest(String name) {
         super(name);
-    }    
-      
+    }
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectGetListConversionTest" };
         TestRunner.main(arguments);
@@ -53,7 +53,7 @@ public class SDODataObjectGetListConversionTest extends SDODataObjectConversionW
         try {
             dataObject_a_pathLength_1.getList("PName-Undefined");
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 
@@ -134,30 +134,30 @@ public class SDODataObjectGetListConversionTest extends SDODataObjectConversionW
 
     //6. purpose: getBoolean with Undefined Boolean Property
     public void testGetListConversionWithUndefinedIndex() {
-        // dataObject's type add boolean property        
+        // dataObject's type add boolean property
         SDOType type_undefined = new SDOType(URINAME, TYPENAME_A);
         SDODataObject dataObject_undeinfed = (SDODataObject)dataFactory.create(type_undefined);
-        
+
         SDOProperty property_undefined = new SDOProperty(aHelperContext);
         List b = new ArrayList();
 
         try {
             dataObject_undeinfed.getList(0);
-            
+
         } catch (SDOException e) {
             assertEquals(SDOException.PROPERTY_NOT_FOUND_AT_INDEX ,e.getErrorCode());
             return;
         }
-        fail("an SDOException should have occurred.");                
+        fail("an SDOException should have occurred.");
     }
 
     public void testGetListConversionWithNonManyProperty() {
         property_a_pathLength_1.setType(SDOConstants.SDO_STRINGS);
-        property_a_pathLength_1.setMany(false);        
+        property_a_pathLength_1.setMany(false);
         try {
-            dataObject_a_pathLength_1.getList("PName-a-length-1");            
+            dataObject_a_pathLength_1.getList("PName-a-length-1");
         } catch (Exception e) {
-            fail("No Exception expected, but caught " + e.getClass());            
+            fail("No Exception expected, but caught " + e.getClass());
         }
     }
 

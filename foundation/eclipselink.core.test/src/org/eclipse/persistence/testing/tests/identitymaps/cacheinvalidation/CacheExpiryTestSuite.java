@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation;
 
 import java.util.*;
@@ -50,8 +50,8 @@ public class CacheExpiryTestSuite extends TestSuite {
 
         Calendar calendar = new GregorianCalendar();
         calendar.add(GregorianCalendar.MILLISECOND, -1);
-        DailyCacheInvalidationPolicy dPolicy = 
-            new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), 
+        DailyCacheInvalidationPolicy dPolicy =
+            new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),
                                              calendar.get(Calendar.SECOND), calendar.get(Calendar.MILLISECOND));
         test = new CacheExpiryPolicyTest(dPolicy, true);
         test.setDescription("Ensure Objects expire with DAILY_EXPIRY.");
@@ -59,8 +59,8 @@ public class CacheExpiryTestSuite extends TestSuite {
         addTest(test);
 
         calendar = new GregorianCalendar();
-        dPolicy = 
-                new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), 
+        dPolicy =
+                new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND),
                                                  calendar.get(Calendar.MILLISECOND));
         test = new CacheExpiryPolicyTest(dPolicy, true);
         test.setDescription("Ensure Objects expire with DAILY_EXPIRY.");
@@ -69,8 +69,8 @@ public class CacheExpiryTestSuite extends TestSuite {
 
         calendar = new GregorianCalendar();
         calendar.add(GregorianCalendar.HOUR_OF_DAY, 1);
-        dPolicy = 
-                new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), 
+        dPolicy =
+                new DailyCacheInvalidationPolicy(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND),
                                                  calendar.get(Calendar.MILLISECOND));
         test = new CacheExpiryPolicyTest(dPolicy, false);
         test.setDescription("Ensure Objects survive with DAILY_EXPIRY.");
@@ -184,13 +184,13 @@ public class CacheExpiryTestSuite extends TestSuite {
         addTest(new CacheExpiryUnitOfWorkReadTest());
         addTest(new UnitOfWorkCreateObjectReadTimeTest());
         addTest(new SessionCreateObjectReadTimeTest());
-        
+
         /*
         * 312503: JPA 2.0 CacheImpl behaviour change when recurse flag=false
         * We only invalidate the subtree from the class parameter down when the recurse flag=false
         * Previously only the class itself was invalidated
         * The behaviour when the recurse flag is true is unaffected - the entire rooted (above) tree is still invalidated
-        */        
+        */
         // invalidate the entire rooted tree
         addTest(new InvalidateClassRecurseOptionTest(true));
         // invalidate the subtree
@@ -199,7 +199,7 @@ public class CacheExpiryTestSuite extends TestSuite {
         addTest(new PrimaryKeyQueryInUOWTest());
         // EL bug 276362 - Re-Validate CacheKey before refreshing object graph
         addTest(new UnitOfWorkRefreshAfterInvalidationTest());
-        
+
         // EL bug 336486
         addTest(new CacheInvalidationPolicyCloneTest(NoExpiryCacheInvalidationPolicy.class));
         addTest(new CacheInvalidationPolicyCloneTest(DailyCacheInvalidationPolicy.class));

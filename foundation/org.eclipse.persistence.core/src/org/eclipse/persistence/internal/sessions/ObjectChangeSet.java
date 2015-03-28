@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
 import java.io.*;
@@ -70,7 +70,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             return left.compareTo(right);
         }
     }
-        
+
     /** This is the collection of changes */
     protected List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changes;
     protected transient Map<String, ChangeRecord> attributesToChanges;
@@ -98,7 +98,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     /** For CMP only: indicates that the object should be force updated (whether it has OptimisticLocking or not): getCmpPolicy().getForcedUpdate()==true**/
     protected transient boolean hasCmpPolicyForcedUpdate;
     protected transient boolean hasChangesFromCascadeLocking;
-    
+
     /**
      * This is used during attribute level change tracking when a particular
      * change was detected but that change can not be tracked (ie customer set
@@ -111,20 +111,20 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * This variable is set just before the change set is serialized.
      */
     protected int cacheSynchronizationType;
-    
+
     /** PERF: Cache the session cacheKey during the merge to avoid duplicate lookups. */
     protected transient CacheKey activeCacheKey;
 
     /** Cache the descriptor as it is useful and required in some places. */
     protected transient ClassDescriptor descriptor;
-    
+
     /** return whether this change set should be recalculated after an event changes the object */
     protected transient boolean shouldRecalculateAfterUpdateEvent = true;
-    
+
     //This controls how long the thread can wait for other thread to put Entity instance in cache
     //This is not final to allow a way for the value to be changed without supporting API
     public static final int MAX_TRIES = 18000;
-    
+
     /**
      * The default constructor.
      */
@@ -188,7 +188,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         changes.add(changeRecord);
         attributeToChanges.put(attributeName, changeRecord);
         dirtyUOWChangeSet();
-        
+
         // now let's do some house keeping.
         DatabaseMapping mapping = changeRecord.getMapping();
         OptimisticLockingPolicy olp = getDescriptor().getOptimisticLockingPolicy();
@@ -203,13 +203,13 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * INTERNAL:
      * This method is used during attribute level change tracking when a particular
      * change was detected but that change can not be tracked (ie customer set
-     * entire collection in object).  In this case flag this attribute for 
+     * entire collection in object).  In this case flag this attribute for
      * deferred change detection at commit time.
      */
     public void deferredDetectionRequiredOn(String attributeName){
         getDeferredSet().add(attributeName);
     }
-    
+
     /**
      * INTERNAL:
      * Convenience method used to query this change set after it has been sent by
@@ -378,7 +378,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         primaryKey.add(this.id);
         return primaryKey;
     }
-    
+
     /**
      * ADVANCED:
      * This method returns the primary key for the object that this change set represents.
@@ -390,7 +390,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     public Object getOldValue() {
         AbstractSession session = null;
         if(this.unitOfWorkChangeSet != null) {
-            session = this.unitOfWorkChangeSet.getSession(); 
+            session = this.unitOfWorkChangeSet.getSession();
         }
         return getOldValue(session);
     }
@@ -400,12 +400,12 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         }
         if (this.changes == null || this.changes.isEmpty()) {
             // object has not changed
-            return this.cloneObject; 
+            return this.cloneObject;
         } else {
             if(this.cloneObject != null && session != null) {
                 Object oldValue = this.descriptor.getObjectBuilder().buildNewInstance();
                 FetchGroup fetchGroup = null;
-                FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager(); 
+                FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
                 if(fetchGroupManager != null) {
                     fetchGroup = fetchGroupManager.getObjectFetchGroup(this.cloneObject);
                 }
@@ -425,7 +425,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         }
         return null;
     }
-    
+
     public int getSynchronizationType() {
         return cacheSynchronizationType;
     }
@@ -473,7 +473,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 // It is not a unitOfWork so we must be merging into a distributed cache.
                 attributeValue = getObjectForMerge(mergeManager, targetSession, getId(), descriptor);
             }
-        
+
             if ((attributeValue == null) && (shouldRead)) {
                 // If the cache does not have a copy and I should read it from the database
                 // Then load the object if possible
@@ -484,14 +484,14 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 attributeValue = targetSession.executeQuery(query);
             }
         }
-        
+
         return attributeValue;
     }
-    
+
     /**
      * INTERNAL:
-     * For use within the distributed merge process, this method will get an object from the shared 
-     * cache using a readlock.  If a readlock is unavailable then the merge manager will be 
+     * For use within the distributed merge process, this method will get an object from the shared
+     * cache using a readlock.  If a readlock is unavailable then the merge manager will be
      * transitioned to deferred locks and a deferred lock will be used.
      */
     protected Object getObjectForMerge(MergeManager mergeManager, AbstractSession session, Object primaryKey, ClassDescriptor descriptor) {
@@ -536,7 +536,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             // There is no need to get the cache key in this case because UOW is performing
             // a nested UOW merge, and no locking occurs.
         }
-        
+
         // Set activeCacheKey.
         this.activeCacheKey = cacheKey;
         return domainObject;
@@ -609,11 +609,11 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     public boolean hasForcedChanges() {
         return this.shouldModifyVersionField != null || this.hasCmpPolicyForcedUpdate;
     }
-    
+
     /**
      * INTERNAL:
      * Holds a Boolean indicating whether version field should be modified.
-     * This Boolean is set by forcedUpdate into uow.getOptimisticReadLockObjects() 
+     * This Boolean is set by forcedUpdate into uow.getOptimisticReadLockObjects()
      * for the clone object and copied here (so don't need to search for it again
      * in uow.getOptimisticReadLockObjects()).
      */
@@ -626,7 +626,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             this.hasVersionChange = true;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Holds a Boolean indicating whether version field should be modified.
@@ -634,24 +634,24 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     public Boolean shouldModifyVersionField() {
         return this.shouldModifyVersionField;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setHasCmpPolicyForcedUpdate(boolean hasCmpPolicyForcedUpdate) {
         this.hasCmpPolicyForcedUpdate = hasCmpPolicyForcedUpdate;
     }
-    
+
     /**
      * INTERNAL:
      */
     public boolean hasCmpPolicyForcedUpdate() {
         return this.hasCmpPolicyForcedUpdate;
     }
-    
+
     /**
      * INTERNAL:
-     * Returns true if this particular changeSet has forced SQL changes because 
+     * Returns true if this particular changeSet has forced SQL changes because
      * of a cascade optimistic locking policy.
      */
     public boolean hasForcedChangesFromCascadeLocking() {
@@ -660,7 +660,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
 
     /**
      * INTERNAL:
-     * Used by calculateChanges to mark this ObjectChangeSet as having to be 
+     * Used by calculateChanges to mark this ObjectChangeSet as having to be
      * flushed to the db stemming from a cascade optimistic locking policy.
      */
     public void setHasForcedChangesFromCascadeLocking(boolean newValue) {
@@ -733,7 +733,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 if(writeLockValueToCompare == null) {
                     writeLockValueToCompare = this.initialWriteLockValue;
                 }
-                // In this merge initialWriteLockValue of this changeSet differs from 
+                // In this merge initialWriteLockValue of this changeSet differs from
                 // writeLockValue of the changeSetToMergeFrom into which the merge was performed.
                 // Example:
                 // Original registered with version 1, the clone changed to version 2, uow.writeChanges is called:
@@ -748,12 +748,12 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                     this.isInvalid = true;
                     return;
                 }
-                
+
                 // Don't blindly overrite a write lock value with null. A
                 // consecutive change set may not have caused a version change,
-                // therefore the write lock value will be null in this case. 
-                // E.g. Attribute change tracking does not discover a change 
-                // across a relational mapping (unless a cascaded optimistic 
+                // therefore the write lock value will be null in this case.
+                // E.g. Attribute change tracking does not discover a change
+                // across a relational mapping (unless a cascaded optimistic
                 // locking policy is used).
                 if (changeSetToMergeFrom.writeLockValue != null) {
                     this.writeLockValue = changeSetToMergeFrom.writeLockValue;
@@ -1126,7 +1126,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             this.cloneObject = clone;
             if (this.descriptor == null) {
                 this.descriptor = session.getDescriptor(clone);
-                this.classType = clone.getClass();                                        
+                this.classType = clone.getClass();
             }
         }
         if ((this.attributesToChanges == null) && (this.changes != null)) {
@@ -1150,7 +1150,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             }
         }
     }
-    
+
     /**
      * This set contains the list of attributes that must be calculated at commit time.
      */
@@ -1175,7 +1175,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             unitOfWorkChangeSet.setHasChanges(true);
         }
     }
-    
+
     protected void updateUOWChangeSet() {
         // needed to explicitly mark parent uow as having changes.  This is needed in the
         // case of Optimistic read locking and ForceUpdate.  In these scenarios, the object
@@ -1231,22 +1231,22 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             return false;
         }
         if (session.isRemoteSession()){
-            //remote unit of work not supported as version values in UOW will be updated 
+            //remote unit of work not supported as version values in UOW will be updated
             //when the committed UOW is received on the client.  That updated value will be
             //set in the UOW cache when the changeset is calculated giving the changeset the
             //incorrect initialWriteLockValue value
             //version number comparison will still be completed later.
             return false;
         }
-        
+
         if(isInvalid()) {
             return true;
         }
-        
+
         Object originalWriteLockValue = optimisticLockingPolicy.getWriteLockValue(original, getId(), session);
-        
+
         // initialWriteLockValue and originalWriteLockValue are not equal.
-        // Example: 
+        // Example:
         // original registered in uow with version 1 (originalWriteLockValue);
         // uow.beginEarlyTransaction();
         // custom update run through the uow changes the version on the object in the db to 2;
@@ -1260,14 +1260,14 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 return false;  // don't invalidate as we are not merging anything anyway
             }
         }
-        
-        if (originalWriteLockValue != null && optimisticLockingPolicy.compareWriteLockValues(initialWriteLockValue, originalWriteLockValue) != 0) {    
+
+        if (originalWriteLockValue != null && optimisticLockingPolicy.compareWriteLockValues(initialWriteLockValue, originalWriteLockValue) != 0) {
             return true;
         } else {
             return false;
         }
     }
-    
+
     /**
      * INTERNAL:
      * PERF: Return the session cache-key, cached during the merge.
@@ -1275,7 +1275,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     public CacheKey getActiveCacheKey()  {
         return activeCacheKey;
     }
-    
+
     /**
      * INTERNAL:
      * PERF: Set the session cache-key, cached during the merge.
@@ -1283,7 +1283,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     public void setActiveCacheKey(CacheKey activeCacheKey)  {
         this.activeCacheKey = activeCacheKey;
     }
-        
+
     /**
      * ADVANCED
      * Returns true if this ObjectChangeSet should be recalculated after changes in event

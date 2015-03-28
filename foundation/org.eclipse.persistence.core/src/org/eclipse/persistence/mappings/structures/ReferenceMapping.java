@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.mappings.structures;
 
 import java.sql.*;
@@ -36,7 +36,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
 
     /** A ref is always stored in a single field. */
     protected DatabaseField field;
-    
+
     public ReferenceMapping() {
         super();
         this.setWeight(WEIGHT_AGGREGATE);
@@ -118,7 +118,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
 
         setField(getDescriptor().buildField(getField()));
         setFields(collectFields());
-        
+
         // Ref mapping requires native connection in WLS as the Ref is wrapped.
         getDescriptor().setIsNativeConnectionRequired(true);
     }
@@ -304,7 +304,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
             // As part of SOP object the indirection should be already triggered
             Object sopRealAttributeValue = getIndirectionPolicy().getRealAttributeValueFromObject(row.getSopObject(), sopAttributeValue);
             if (sopRealAttributeValue == null) {
-                return sopAttributeValue; 
+                return sopAttributeValue;
             }
             targetRow = new DatabaseRecord(0);
             targetRow.setSopObject(sopRealAttributeValue);
@@ -317,7 +317,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
         }
         Struct struct;
         try {
-            ((DatabaseAccessor)executionSession.getAccessor()).incrementCallCount(executionSession); 
+            ((DatabaseAccessor)executionSession.getAccessor()).incrementCallCount(executionSession);
             java.sql.Connection connection = ((DatabaseAccessor)executionSession.getAccessor()).getConnection();
             struct = (Struct)executionSession.getPlatform().getRefValue(ref,executionSession,connection);
             targetRow = ((ObjectRelationalDataTypeDescriptor)getReferenceDescriptor()).buildRowFromStructure(struct);
@@ -416,7 +416,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
         if (!getField().getTable().equals(table) || !getField().isNullable()) {
             return;
         }
-        
+
         writeFromObjectIntoRowInternal(object, record, session, true);
     }
 

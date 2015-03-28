@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -32,66 +32,66 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
 import java.io.IOException;
 
 public class DebugParser extends Parser {
-	/** Who to notify when events in the parser occur. */
-	protected DebugEventListener dbg = null;
+    /** Who to notify when events in the parser occur. */
+    protected DebugEventListener dbg = null;
 
-	/** Used to differentiate between fixed lookahead and cyclic DFA decisions
-	 *  while profiling.
- 	 */
-	public boolean isCyclicDecision = false;
+    /** Used to differentiate between fixed lookahead and cyclic DFA decisions
+     *  while profiling.
+      */
+    public boolean isCyclicDecision = false;
 
-	/** Create a normal parser except wrap the token stream in a debug
-	 *  proxy that fires consume events.
-	 */
-	public DebugParser(TokenStream input, DebugEventListener dbg, RecognizerSharedState state) {
-		super(input instanceof DebugTokenStream?input:new DebugTokenStream(input,dbg), state);
-		setDebugListener(dbg);
-	}
+    /** Create a normal parser except wrap the token stream in a debug
+     *  proxy that fires consume events.
+     */
+    public DebugParser(TokenStream input, DebugEventListener dbg, RecognizerSharedState state) {
+        super(input instanceof DebugTokenStream?input:new DebugTokenStream(input,dbg), state);
+        setDebugListener(dbg);
+    }
 
-	public DebugParser(TokenStream input, RecognizerSharedState state) {
-		super(input instanceof DebugTokenStream?input:new DebugTokenStream(input,null), state);
-	}
+    public DebugParser(TokenStream input, RecognizerSharedState state) {
+        super(input instanceof DebugTokenStream?input:new DebugTokenStream(input,null), state);
+    }
 
-	public DebugParser(TokenStream input, DebugEventListener dbg) {
-		this(input instanceof DebugTokenStream?input:new DebugTokenStream(input,dbg), dbg, null);
-	}
+    public DebugParser(TokenStream input, DebugEventListener dbg) {
+        this(input instanceof DebugTokenStream?input:new DebugTokenStream(input,dbg), dbg, null);
+    }
 
-	/** Provide a new debug event listener for this parser.  Notify the
-	 *  input stream too that it should send events to this listener.
-	 */
-	public void setDebugListener(DebugEventListener dbg) {
-		if ( input instanceof DebugTokenStream ) {
-			((DebugTokenStream)input).setDebugListener(dbg);
-		}
-		this.dbg = dbg;
-	}
+    /** Provide a new debug event listener for this parser.  Notify the
+     *  input stream too that it should send events to this listener.
+     */
+    public void setDebugListener(DebugEventListener dbg) {
+        if ( input instanceof DebugTokenStream ) {
+            ((DebugTokenStream)input).setDebugListener(dbg);
+        }
+        this.dbg = dbg;
+    }
 
-	public DebugEventListener getDebugListener() {
-		return dbg;
-	}
+    public DebugEventListener getDebugListener() {
+        return dbg;
+    }
 
-	public void reportError(IOException e) {
-		System.err.println(e);
-		e.printStackTrace(System.err);
-	}
+    public void reportError(IOException e) {
+        System.err.println(e);
+        e.printStackTrace(System.err);
+    }
 
-	public void beginResync() {
-		dbg.beginResync();
-	}
+    public void beginResync() {
+        dbg.beginResync();
+    }
 
-	public void endResync() {
-		dbg.endResync();
-	}
+    public void endResync() {
+        dbg.endResync();
+    }
 
-	public void beginBacktrack(int level) {
-		dbg.beginBacktrack(level);
-	}
+    public void beginBacktrack(int level) {
+        dbg.beginBacktrack(level);
+    }
 
-	public void endBacktrack(int level, boolean successful) {
-		dbg.endBacktrack(level,successful);		
-	}
+    public void endBacktrack(int level, boolean successful) {
+        dbg.endBacktrack(level,successful);
+    }
 
-	public void reportError(RecognitionException e) {
-		dbg.recognitionException(e);
-	}
+    public void reportError(RecognitionException e) {
+        dbg.recognitionException(e);
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,7 +21,7 @@ public class XmlAccessorOrderTest extends JAXBWithJSONTestCases {
 
     public XmlAccessorOrderTest(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);    
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = Employee.class;
@@ -29,11 +29,11 @@ public class XmlAccessorOrderTest extends JAXBWithJSONTestCases {
     }
 
     protected Object getControlObject() {
-    	Employee employee = new Employee();
-    	employee.setId(101);
-    	employee.salary = 123000;
-    	employee.lastName="Doe";
-    	employee.firstName = "Jane";
+        Employee employee = new Employee();
+        employee.setId(101);
+        employee.salary = 123000;
+        employee.lastName="Doe";
+        employee.firstName = "Jane";
         return employee;
     }
 }

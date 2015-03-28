@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.generate;
 
 import commonj.sdo.Type;
@@ -50,13 +50,13 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
         String controlSchema = getSchema(getControlFileNameDifferentOrder());
         log("EXPECTED: \n" + controlSchema);
         log("ACTUAL: \n" + generatedSchema);
-                
+
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
-        Document generatedSchemaDoc = parser.parse(inputSource);        
+        Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
-        
-        assertSchemaIdentical(getDocument(getControlFileNameDifferentOrder()), generatedSchemaDoc);       
+
+        assertSchemaIdentical(getDocument(getControlFileNameDifferentOrder()), generatedSchemaDoc);
     }
 
     public java.util.List defineTypesFromSchema() {
@@ -173,18 +173,18 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
         postalCodeProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         postalCodeProp.setContainment(true);
         cdnAddressType.getDeclaredProperties().add(postalCodeProp);
-        
+
         /****CDN MAILING ADDRESS TYPE*****/
         SDOType cdnMailingAddressType = new SDOType(uri, "cdnAddressMailingType");
         cdnMailingAddressType.setDataType(false);
         ArrayList cdnMailingbaseTypes = new ArrayList();
         cdnMailingbaseTypes.add(cdnAddressType);
         cdnMailingAddressType.setBaseTypes(cdnMailingbaseTypes);
-        
+
            SDOProperty deliveryProp = new SDOProperty(aHelperContext);
         deliveryProp.setName("deliveryInfo");
         deliveryProp.setType(stringType);
-        deliveryProp.setXsd(true);        
+        deliveryProp.setXsd(true);
         deliveryProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         deliveryProp.setContainment(true);
         cdnMailingAddressType.getDeclaredProperties().add(deliveryProp);
@@ -321,7 +321,7 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
         SDOProperty genderProp = new SDOProperty(aHelperContext);
         genderProp.setName("gender");
         genderProp.setType(genderType);
-        //genderProp.setType(stringType);             
+        //genderProp.setType(stringType);
         genderProp.setXsd(true);
         //genderProp.setElement(true);
         genderProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
@@ -381,7 +381,7 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
         //poIdProp.setContainment(true);
 
         SDOProperty orderDateProp = new SDOProperty(aHelperContext);
-        orderDateProp.setName("orderDate");        
+        orderDateProp.setName("orderDate");
         orderDateProp.setType(SDOConstants.SDO_YEARMONTHDAY);
         orderDateProp.setXsd(true);
         //orderDateProp.setAttribute(true);
@@ -404,11 +404,11 @@ types.add(customerType);
         types.add(namePrefixType);
         types.add(phoneType);
         types.add(addrType);
-        
+
         types.add(usAddressType);
         types.add(cdnAddressType);
-        types.add(cdnMailingAddressType);                
-        types.add(itemType);        
+        types.add(cdnMailingAddressType);
+        types.add(itemType);
         types.add(POtype);
         types.add(itemsType);
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,15 +26,15 @@ import javax.xml.namespace.QName;
 
 
 /**
- * 
+ *
  *           base attribute and simpleType child are mutually
  *           exclusive, but one or other is required
- *         
- * 
+ *
+ *
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -46,8 +46,8 @@ import javax.xml.namespace.QName;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -80,11 +80,11 @@ public class Restriction
 
     /**
      * Gets the value of the simpleType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link LocalSimpleType }
-     *     
+     *
      */
     public LocalSimpleType getSimpleType() {
         return simpleType;
@@ -92,11 +92,11 @@ public class Restriction
 
     /**
      * Sets the value of the simpleType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link LocalSimpleType }
-     *     
+     *
      */
     public void setSimpleType(LocalSimpleType value) {
         this.simpleType = value;
@@ -104,20 +104,20 @@ public class Restriction
 
     /**
      * Gets the value of the facets property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the facets property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getFacets().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link NumFacet }{@code >}
@@ -132,8 +132,8 @@ public class Restriction
      * {@link TotalDigits }
      * {@link WhiteSpace }
      * {@link JAXBElement }{@code <}{@link Facet }{@code >}
-     * 
-     * 
+     *
+     *
      */
     public List<Object> getFacets() {
         if (facets == null) {
@@ -144,11 +144,11 @@ public class Restriction
 
     /**
      * Gets the value of the base property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link QName }
-     *     
+     *
      */
     public QName getBase() {
         return base;
@@ -156,11 +156,11 @@ public class Restriction
 
     /**
      * Sets the value of the base property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link QName }
-     *     
+     *
      */
     public void setBase(QName value) {
         this.base = value;

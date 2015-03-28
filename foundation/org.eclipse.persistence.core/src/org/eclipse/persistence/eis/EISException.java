@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.eis;
 
 import javax.resource.ResourceException;
@@ -18,13 +18,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.Call;
 
 /**
- * <p> Use an <code>EISException</code> when any problem is detected while 
+ * <p> Use an <code>EISException</code> when any problem is detected while
  * interacting with an EIS datasource
- * 
+ *
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
-public class EISException extends org.eclipse.persistence.exceptions.DatabaseException { 
+public class EISException extends org.eclipse.persistence.exceptions.DatabaseException {
     public static final int INCORRECT_LOGIN_INSTANCE_PROVIDED = 17002;
     public static final int PROP_NOT_SET = 17007;
     public static final int INVALID_PROP = 17008;
@@ -175,7 +175,7 @@ public class EISException extends org.eclipse.persistence.exceptions.DatabaseExc
     public static EISException couldNotDeleteFile(Object[] args) {
         return EISException.createResourceException(args, COULD_NOT_DELETE_FILE);
     }
-    
+
     public static EISException incorrectLoginInstanceProvided(Class loginClass) {
         Object[] args = { loginClass };
         EISException exception = new EISException(ExceptionMessageGenerator.buildMessage(EISException.class, INCORRECT_LOGIN_INSTANCE_PROVIDED, args));

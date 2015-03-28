@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,13 +27,13 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 /**
  * PUBLIC:
- * <b>Description</b>: 
+ * <b>Description</b>:
  * This null policy allows for various configurations of isSet behavior to be set.<br>
  * Marshal:<br>
  * The boolean value of the isSet() state of a node will determine whether a node will be written out
  * for a null value.
  * Unmarshal:<br>
- *  
+ *
  * <p><b>The following instance fields can be set</b>:<ul>
  * <li>isSetMethodName: </li>
  * <li>isSetParameterTypes: </li>
@@ -47,7 +47,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  * <li> Set to null value<br>isSet=true, value=null</li>
  * <li> Set to default value<br>isSet=false, value=default</li>
  * </ul>
- * 
+ *
  * @see org.eclipse.persistence.internal.oxm.NullCapableValue
  * @since Oracle TopLink 11<i>g</i> Release 1 (11.1.1)
  */
@@ -62,7 +62,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     /**
      * Default Constructor
      * Set the IsSetPerformedForAbsentNode to false to enable the other 2 flags
-     * isNullRepresentedByEmptyNode and isNullRepresentedByXsiNil 
+     * isNullRepresentedByEmptyNode and isNullRepresentedByXsiNil
      */
     public IsSetNullPolicy() {
         super();
@@ -97,7 +97,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     @Override
     public boolean directMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
             Object object, CoreSession session, NamespaceResolver namespaceResolver) {
-        // Do nothing when the value is not set or we are marshaling as ABSENT_NODE (optional) 
+        // Do nothing when the value is not set or we are marshaling as ABSENT_NODE (optional)
         if (!isSet(object)) {
             return false;
         } else {
@@ -115,7 +115,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
         }
         super.directMarshal(field, record, object);
     }
-    
+
 
     /**
      * INTERNAL
@@ -123,7 +123,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     @Override
     public boolean compositeObjectMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
             Object object, CoreSession session, NamespaceResolver namespaceResolver) {
-        // Do nothing when the value is not set or we are marshaling as ABSENT_NODE (optional)    	
+        // Do nothing when the value is not set or we are marshaling as ABSENT_NODE (optional)
         if (!isSet(object)) {
             return false;
         } else {
@@ -144,14 +144,14 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     }
 
     public void xPathNode(XPathNode xPathNode, NullCapableValue nullCapableValue) {
-        // isset optional only    	
+        // isset optional only
         if (!(isNullRepresentedByXsiNil() || marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL)) {
             if (xPathNode.getXPathFragment().isAttribute()) {
                 return;
             }
         }
 
-        // get the parent above the text() node    	
+        // get the parent above the text() node
         XPathNode parentNode = xPathNode.getParent();
         parentNode.setNullCapableValue(nullCapableValue);
     }
@@ -172,15 +172,15 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getIsSetMethodName() {
         return isSetMethodName;
     }
 
     /**
-     * 
+     *
      * @param anIsSetMethodName
      */
     public void setIsSetMethodName(String anIsSetMethodName) {
@@ -188,15 +188,15 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public Class[] getIsSetParameterTypes() {
         return isSetParameterTypes;
     }
 
     /**
-     * 
+     *
      * @param parameterTypes
      */
     public void setIsSetParameterTypes(Class[] parameterTypes) {
@@ -204,7 +204,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public Object[] getIsSetParameters() {
@@ -212,7 +212,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     }
 
     /**
-     * 
+     *
      * @param parameters
      */
     public void setIsSetParameters(Object[] parameters) {

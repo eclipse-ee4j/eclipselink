@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.logging;
 
 
@@ -68,10 +68,10 @@ public class JavaLog extends AbstractSessionLog {
     /**
      * INTERNAL:
      */
-    
+
     public JavaLog(){
-    	super();
-    	addLogger(DEFAULT_TOPLINK_NAMESPACE, DEFAULT_TOPLINK_NAMESPACE);
+        super();
+        addLogger(DEFAULT_TOPLINK_NAMESPACE, DEFAULT_TOPLINK_NAMESPACE);
     }
 
     /**
@@ -89,7 +89,7 @@ public class JavaLog extends AbstractSessionLog {
      public Map getCategoryLoggers() {
          return categoryloggers;
      }
-     
+
     /**
      * PUBLIC:
      * <p>
@@ -132,7 +132,7 @@ public class JavaLog extends AbstractSessionLog {
         if (logger == null) {
             return;
         }
-        
+
         AccessController.doPrivileged(new PrivilegedAction() {
             public Object run() {
                 logger.setLevel(getJavaLevel(level));
@@ -210,7 +210,7 @@ public class JavaLog extends AbstractSessionLog {
             //Initialize loggers eagerly
             addLogger(sessionNameSpace, sessionNameSpace);
              for (int i = 0; i < loggerCatagories.length; i++) {
-                String loggerCategory =  loggerCatagories[i]; 
+                String loggerCategory =  loggerCatagories[i];
                 String loggerNameSpace = sessionNameSpace + "." + loggerCategory;
                 nameSpaceMap.put(loggerCategory, loggerNameSpace);
                 addLogger(loggerCategory, loggerNameSpace);
@@ -271,7 +271,7 @@ public class JavaLog extends AbstractSessionLog {
      */
     protected void internalLog(SessionLogEntry entry, Level javaLevel, Logger logger) {
         // Format message so that we do not depend on the bundle
-        EclipseLinkLogRecord lr = new EclipseLinkLogRecord(javaLevel, formatMessage(entry)); 
+        EclipseLinkLogRecord lr = new EclipseLinkLogRecord(javaLevel, formatMessage(entry));
 
         lr.setSourceClassName(null);
         lr.setSourceMethodName(null);

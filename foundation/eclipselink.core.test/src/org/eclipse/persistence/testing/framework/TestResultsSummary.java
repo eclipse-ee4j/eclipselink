@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import java.io.*;
@@ -131,7 +131,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
         testCollection.getSummary().setParent(this);
         LoadBuildSystem.loadBuild.addSummary(this);
     }
-    
+
     /**
      * Add the Junit test results.
      */
@@ -374,8 +374,8 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
                 //log.write(indentationString + "Passed: " + getPassed() + org.eclipse.persistence.internal.helper.Helper.cr());
                 log.write(indentationString + "Setup Failures: " + getSetupFailures() + org.eclipse.persistence.internal.helper.Helper.cr() + org.eclipse.persistence.internal.helper.Helper.cr());
                 //log.write(
-                //	indentationString + "Total Tests: " + getTotalTests() + org.eclipse.persistence.internal.helper.Helper.cr()
-                //	+ org.eclipse.persistence.internal.helper.Helper.cr());
+                //    indentationString + "Total Tests: " + getTotalTests() + org.eclipse.persistence.internal.helper.Helper.cr()
+                //    + org.eclipse.persistence.internal.helper.Helper.cr());
                 log.flush();
             }
         } catch (IOException exception) {

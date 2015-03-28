@@ -1,9 +1,9 @@
 <root>
    <map1>
-	   <entry>
-	      <key>key1</key>
-		  <value>value1</value>
-		</entry>
+       <entry>
+          <key>key1</key>
+          <value>value1</value>
+        </entry>
    </map1>
    <map2>
       <entry>
@@ -13,6 +13,6 @@
              <thing2>bbb</thing2>
          </value>
       </entry>
-     
+
    </map2>
 </root>

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - initial impl
- ******************************************************************************/  
+ ******************************************************************************/
  package org.eclipse.persistence.testing.models.jpa.performance;
 
 import java.io.ByteArrayInputStream;
@@ -47,7 +47,7 @@ public class EmployeeServiceBean implements EmployeeService {
         Query query = this.entityManager.createQuery("Select e from Employee e");
         return query.getResultList();
     }
-    
+
     /**
      * Batch find used to off load driver machine.
      * Simulates n find requests.
@@ -59,7 +59,7 @@ public class EmployeeServiceBean implements EmployeeService {
             serialize(employee);
         }
     }
-    
+
     /**
      * Batch find used to off load driver machine.
      * Simulates n find requests.
@@ -97,7 +97,7 @@ public class EmployeeServiceBean implements EmployeeService {
         }
         return errors;
     }
-    
+
     public Employee findById(long id) {
         Employee employee = this.entityManager.find(Employee.class, id);
         employee.getAddress();
@@ -108,30 +108,30 @@ public class EmployeeServiceBean implements EmployeeService {
         //employee.getPhoneNumbers().size();
         return employee;
     }
-    
+
     public Employee fetchById(long id) {
         Employee employee = this.entityManager.find(Employee.class, id);
         employee.getAddress();
         employee.getManager();
         return employee;
     }
-    
+
     public void update(Employee employee) {
         this.entityManager.merge(employee);
     }
-    
+
     public long insert(Employee employee) {
         this.entityManager.persist(employee);
         this.entityManager.flush();
         return employee.getId();
     }
-    
+
     public void createTables() {
         new EmployeeTableCreator().replaceTables(((JpaEntityManager)this.entityManager.getDelegate()).getServerSession());
         //((JpaEntityManager)this.entityManager.getDelegate()).getServerSession().logout();
         //((JpaEntityManager)this.entityManager.getDelegate()).getServerSession().login();
     }
-    
+
     public void populate() {
         // Populate database.
         for (int j = 0; j < 1000; j++) { //1000
@@ -188,7 +188,7 @@ public class EmployeeServiceBean implements EmployeeService {
             throw new RuntimeException(exception);
         }
     }
-    
+
     /**
      * Roll back the existing JTA transaction.
      */
@@ -199,7 +199,7 @@ public class EmployeeServiceBean implements EmployeeService {
             throw new RuntimeException(exception);
         }
     }
-    
+
     public UserTransaction getUserTransaction() {
         try {
             return (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
@@ -207,7 +207,7 @@ public class EmployeeServiceBean implements EmployeeService {
             throw new RuntimeException(exception);
         }
     }
-    
+
     public Object deserialize(Object bytes) {
         ByteArrayInputStream byteIn = new ByteArrayInputStream((byte[])bytes);
         try {
@@ -215,8 +215,8 @@ public class EmployeeServiceBean implements EmployeeService {
             return objectIn.readObject();
         } catch (Exception exception) {
             throw new RuntimeException(exception);
-        }        
-    }    
+        }
+    }
 
     public Object serialize(Object object) {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -227,6 +227,6 @@ public class EmployeeServiceBean implements EmployeeService {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-        return byteOut.toByteArray();        
+        return byteOut.toByteArray();
     }
 }

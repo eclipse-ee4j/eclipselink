@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,7 +28,7 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
- * Tests inheritance configuration via XmlDiscriminatorNode & XmlDiscriminatorValue. 
+ * Tests inheritance configuration via XmlDiscriminatorNode & XmlDiscriminatorValue.
  *
  */
 public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
@@ -38,7 +38,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
     private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle-write.json";
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public XmlDiscriminatorTestCases(String name)throws Exception {
@@ -49,9 +49,9 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
         setWriteControlJSON(JSON_WRITE_RESOURCE);
         setClasses(new Class[] { Car.class, Vehicle.class });
     }
-   
+
     public Object getReadControlObject() {
-    	  Car car = new Car();
+          Car car = new Car();
           car.numberOfDoors = 2;
           car.milesPerGallon = 26;
           car.model = "Mustang GT";
@@ -59,7 +59,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
           car.topSpeed = 354;
           return car;
 }
-    
+
     public Object getControlObject() {
         Car car = new Car();
         car.numberOfDoors = 2;
@@ -69,28 +69,28 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
         car.topSpeed = 354;
         return new JAXBElement(new QName("vehicle-data"), Vehicle.class, car);
     }
-    
 
-	public Map getProperties(){
-	    InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle-oxm.xml");
 
-		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmldiscriminator", new StreamSource(inputStream));
-		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-		properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-	        
-	    return properties;
-	}
-	
-    public void testSchemaGen() throws Exception{
-    	List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle.xsd");
-    	
-    	controlSchemas.add(is);
-    	
-    	super.testSchemaGen(controlSchemas);    	
+    public Map getProperties(){
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle-oxm.xml");
+
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmldiscriminator", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+        return properties;
     }
-  
+
+    public void testSchemaGen() throws Exception{
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle.xsd");
+
+        controlSchemas.add(is);
+
+        super.testSchemaGen(controlSchemas);
+    }
+
     public void testRoundTrip(){};
-    
+
 }

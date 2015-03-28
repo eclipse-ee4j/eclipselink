@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import commonj.sdo.ChangeSummary;
@@ -120,7 +120,7 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
         dataObjectD = (SDODataObject)dataObjectB.createDataObject(propertyB, type_D);
     }
 
-    protected void checkOldSettingsSizeTree(String values, SDOChangeSummary aCS,// 
+    protected void checkOldSettingsSizeTree(String values, SDOChangeSummary aCS,//
                                             SDODataObject aDO1, SDODataObject aDO2, SDODataObject aDO3, SDODataObject aDO4) {
         assertEquals(Integer.parseInt(values.substring(0, 1)), aCS.getOldValues(aDO1).size());
         assertEquals(Integer.parseInt(values.substring(1, 2)), aCS.getOldValues(aDO2).size());
@@ -182,7 +182,7 @@ public class ChangeSummaryCreatedModifiedDeletedTestCase extends SDOTestCase {
 
     }
 
-    protected void checkOldSettingsSizeTree(String values, SDOChangeSummary aCS,// 
+    protected void checkOldSettingsSizeTree(String values, SDOChangeSummary aCS,//
                                             SDODataObject aDO1, SDODataObject aDO2, SDODataObject aDO3, SDODataObject aDO4, SDODataObject aDO5) {
         checkOldSettingsSizeTree(values, aCS, aDO1, aDO2, aDO3, aDO4);
         assertEquals(Integer.parseInt(values.substring(5, 6)), aCS.getOldValues(aDO5).size());

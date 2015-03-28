@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - Bug 241681 fixes for clientSessionBroker
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.sessionbroker;
 
 import java.util.Iterator;
@@ -33,7 +33,7 @@ public class VerifyClientBrokerCreationTest extends AutoVerifyTestCase {
 
     SessionBroker serverBroker = null;
     SessionBroker clientBroker = null;
-    
+
     public void test(){
         serverBroker = new SessionBroker();
 
@@ -48,7 +48,7 @@ public class VerifyClientBrokerCreationTest extends AutoVerifyTestCase {
 
         serverBroker.setLog(getSession().getLog());
         serverBroker.setLogLevel(SessionLog.FINE);
-        
+
         serverBroker.setShouldPropagateChanges(true);
         ServerPlatform platform = new CustomServerPlatform(serverBroker);
         platform.setExternalTransactionControllerClass(JTATransactionController.class);
@@ -59,7 +59,7 @@ public class VerifyClientBrokerCreationTest extends AutoVerifyTestCase {
         clientBroker = serverBroker.acquireClientSessionBroker();
 
     }
-    
+
     public void verify(){
         if (clientBroker == serverBroker){
             throw new TestErrorException("ClientBroker is == to serverBroker");
@@ -96,7 +96,7 @@ public class VerifyClientBrokerCreationTest extends AutoVerifyTestCase {
         }
         if (clientBroker.getSessionsByName().size() != serverBroker.getSessionsByName().size()){
             throw new TestErrorException("Incorrect number of sessions in client broker");
-           
+
         }
         Iterator i = serverBroker.getSessionsByName().keySet().iterator();
         while (i.hasNext()){
@@ -106,5 +106,5 @@ public class VerifyClientBrokerCreationTest extends AutoVerifyTestCase {
             }
         }
     }
-    
+
 }

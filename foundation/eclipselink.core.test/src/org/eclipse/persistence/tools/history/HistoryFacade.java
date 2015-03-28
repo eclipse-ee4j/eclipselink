@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.history;
 
 import java.util.*;
@@ -39,9 +39,9 @@ public class HistoryFacade {
     protected HistoryFacade() {
     }
 
-    protected static void buildHistoricalTableDefinition(HistoryPolicy policy, 
-                                                         String name, 
-                                                         TableDefinition def, 
+    protected static void buildHistoricalTableDefinition(HistoryPolicy policy,
+                                                         String name,
+                                                         TableDefinition def,
                                                          TableCreator creator) {
 
         if (def == null) {
@@ -65,11 +65,11 @@ public class HistoryFacade {
         for (FieldDefinition fieldDef2 : histDef.getFields()) {
             // For now foreign key constraints are not supported, because shallow inserts are not...
             fieldDef2.setForeignKeyFieldName(null);
-            if (fieldDef2.getName().equals("ROW_START") && 
+            if (fieldDef2.getName().equals("ROW_START") &&
                 (!histDef.getPrimaryKeyFieldNames().isEmpty())) {
                 fieldDef2.setIsPrimaryKey(true);
             }
-            if (fieldDef2.getName().equals("VERSION") && 
+            if (fieldDef2.getName().equals("VERSION") &&
                 (!histDef.getPrimaryKeyFieldNames().isEmpty())) {
                 fieldDef2.setIsPrimaryKey(true);
             }
@@ -84,11 +84,11 @@ public class HistoryFacade {
     /**
      * PUBLIC:
      */
-    public static long currentDatabaseTimeMillis(org.eclipse.persistence.sessions.Session session, 
+    public static long currentDatabaseTimeMillis(org.eclipse.persistence.sessions.Session session,
                                    Class domainClass) {
         Session rootSession = session;
-        while (rootSession.isUnitOfWork() || rootSession.isClientSession() || 
-               rootSession instanceof HistoricalSession || 
+        while (rootSession.isUnitOfWork() || rootSession.isClientSession() ||
+               rootSession instanceof HistoricalSession ||
                rootSession.isSessionBroker()) {
             if (rootSession.isUnitOfWork()) {
                 rootSession = ((UnitOfWork)rootSession).getParent();
@@ -108,10 +108,10 @@ public class HistoryFacade {
             Long offset = (Long)timeOffsetsMap.get(rootSession);
             return System.currentTimeMillis() + offset.longValue();
         } else {
-            DatabaseQuery query = 
+            DatabaseQuery query =
                 rootSession.getPlatform().getTimestampQuery();
             long startTime = System.currentTimeMillis();
-            java.sql.Timestamp databaseTime = 
+            java.sql.Timestamp databaseTime =
                 (java.sql.Timestamp)rootSession.executeQuery(query);
             long endTime = System.currentTimeMillis();
             long jvmTime = (endTime - startTime) / 2 + startTime;
@@ -207,28 +207,28 @@ public class HistoryFacade {
                 String historicalName;
                 if(table.shouldUseDelimiters()) {
                     historicalName = name.substring(0, name.length() - 1) + "_HIST" + Helper.getDefaultEndDatabaseDelimiter();
-                } else { 
+                } else {
                     historicalName = name + "_HIST";
                 }
                 policy.addHistoryTableName(name, historicalName);
             }
             descriptor.setHistoryPolicy(policy);
 
-            for (Enumeration mappings = descriptor.getMappings().elements(); 
+            for (Enumeration mappings = descriptor.getMappings().elements();
                  mappings.hasMoreElements(); ) {
-                DatabaseMapping mapping = 
+                DatabaseMapping mapping =
                     (DatabaseMapping)mappings.nextElement();
                 if (mapping instanceof ManyToManyMapping) {
                     ManyToManyMapping m2mMapping = (ManyToManyMapping)mapping;
                     policy = (HistoryPolicy)basePolicy.clone();
-                    policy.addHistoryTableName(m2mMapping.getRelationTableName() + 
+                    policy.addHistoryTableName(m2mMapping.getRelationTableName() +
                                                "_HIST");
                     m2mMapping.setHistoryPolicy(policy);
                 } else if (mapping instanceof DirectCollectionMapping) {
-                    DirectCollectionMapping dcMapping = 
+                    DirectCollectionMapping dcMapping =
                         (DirectCollectionMapping)mapping;
                     policy = (HistoryPolicy)basePolicy.clone();
-                    policy.addHistoryTableName(dcMapping.getReferenceTableName() + 
+                    policy.addHistoryTableName(dcMapping.getReferenceTableName() +
                                                "_HIST");
                     dcMapping.setHistoryPolicy(policy);
                 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -33,62 +33,62 @@ abstract class AbstractMapInheritedAttributesAction extends AbstractFrameworkAct
 {
 
 
-	AbstractMapInheritedAttributesAction(WorkbenchContext context)
-	{
-		super(context);
-	}
+    AbstractMapInheritedAttributesAction(WorkbenchContext context)
+    {
+        super(context);
+    }
 
 
-	protected final void execute()
-	{
-		Collection selectedDescriptors = CollectionTools.collection(selectedNodes());
-		Vector status = new Vector();
+    protected final void execute()
+    {
+        Collection selectedDescriptors = CollectionTools.collection(selectedNodes());
+        Vector status = new Vector();
 
-		for (Iterator iter = selectedDescriptors.iterator(); iter.hasNext();)
-		{
-			ApplicationNode node = (ApplicationNode) iter.next();
-			MWMappingDescriptor descriptor = (MWMappingDescriptor) node.getValue();
+        for (Iterator iter = selectedDescriptors.iterator(); iter.hasNext();)
+        {
+            ApplicationNode node = (ApplicationNode) iter.next();
+            MWMappingDescriptor descriptor = (MWMappingDescriptor) node.getValue();
 
-			try
-			{
-				execute(descriptor);
-			}
-			catch (ClassNotFoundException e)
-			{
-				MWError error = new MWError("MAP_INHERITED_ATTRIBUTES_ERROR", e.getLocalizedMessage());
+            try
+            {
+                execute(descriptor);
+            }
+            catch (ClassNotFoundException e)
+            {
+                MWError error = new MWError("MAP_INHERITED_ATTRIBUTES_ERROR", e.getLocalizedMessage());
 
-				LinkedHashMap errors = new LinkedHashMap();
-				errors.put(error, error);
+                LinkedHashMap errors = new LinkedHashMap();
+                errors.put(error, error);
 
-				StatusDialog.Status modelStatus = StatusDialog.createStatus(descriptor, errors);
-				status.add(modelStatus);
-			}
-		}
+                StatusDialog.Status modelStatus = StatusDialog.createStatus(descriptor, errors);
+                status.add(modelStatus);
+            }
+        }
 
-		if (!status.isEmpty())
-			showProblems(status);
-	}
+        if (!status.isEmpty())
+            showProblems(status);
+    }
 
-	protected abstract void execute(MWMappingDescriptor descriptor) throws ClassNotFoundException;
+    protected abstract void execute(MWMappingDescriptor descriptor) throws ClassNotFoundException;
 
-	private void showProblems(Vector status)
-	{
-		StatusDialog dialog = new StatusDialog(
-			getWorkbenchContext(),
-			status,
-			"MAP_INHERITED_ATTRIBUTES_STATUS_DIALOG_TITLE",
-			"dialog.mapInheritedAttributes")
-		{
-			protected CellRendererAdapter buildNodeRenderer(Object value)
-			{
-				if (value instanceof MWDescriptor)
-					return new DescriptorCellRendererAdapter(resourceRepository());
+    private void showProblems(Vector status)
+    {
+        StatusDialog dialog = new StatusDialog(
+            getWorkbenchContext(),
+            status,
+            "MAP_INHERITED_ATTRIBUTES_STATUS_DIALOG_TITLE",
+            "dialog.mapInheritedAttributes")
+        {
+            protected CellRendererAdapter buildNodeRenderer(Object value)
+            {
+                if (value instanceof MWDescriptor)
+                    return new DescriptorCellRendererAdapter(resourceRepository());
 
-				return super.buildNodeRenderer(value);
-			}
-		};
+                return super.buildNodeRenderer(value);
+            }
+        };
 
-		dialog.setVisible(true);
-	}
+        dialog.setVisible(true);
+    }
 
 }

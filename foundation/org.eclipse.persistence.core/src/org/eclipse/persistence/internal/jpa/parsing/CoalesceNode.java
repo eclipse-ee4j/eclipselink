@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,7 +36,7 @@ public class CoalesceNode extends Node implements AliasableNode {
     public CoalesceNode(){
         super();
     }
-    
+
     /**
      * INTERNAL
      * Apply this node to the passed query
@@ -48,7 +48,7 @@ public class CoalesceNode extends Node implements AliasableNode {
             reportQuery.addItem("Coalesce", expression);
         }
     }
-    
+
     /**
      * INTERNAL
      * Generate the a new EclipseLink Coalesce expression for this node.
@@ -59,11 +59,11 @@ public class CoalesceNode extends Node implements AliasableNode {
         while (i.hasNext()){
             expressions.add(((Node)i.next()).generateExpression(context));
         }
-        
+
         Expression whereClause = context.getBaseExpression().coalesce(expressions);
         return whereClause;
     }
-    
+
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
         Iterator i = clauses.iterator();
@@ -79,7 +79,7 @@ public class CoalesceNode extends Node implements AliasableNode {
         }
         setType(((Node)clauses.get(0)).getType());
     }
-    
+
     public List getClauses() {
         return clauses;
     }

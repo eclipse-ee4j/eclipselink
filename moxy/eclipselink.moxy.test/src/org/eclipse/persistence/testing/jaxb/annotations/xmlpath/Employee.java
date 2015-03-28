@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -28,50 +28,50 @@ public class Employee {
     @XmlAttribute
     @XmlPath("employee-info/@id")
     public Integer id;
-    
+
     @XmlElement
     @XmlPath("personal-info/first-name/text()")
     public String firstName;
-    
+
     @XmlPath("personal-info/last-name/text()")
     public String lastName;
-    
+
     @XmlPath("contact-info/address-id/text()")
     @XmlIDREF
     public Address address;
-    
+
     @XmlPath("contact-info/phones/phone-number")
     public List<PhoneNumber> phones;
-    
+
     @XmlPath("responsibilities/responsibility/text()")
     public List<String> responsibilities;
-    
+
     @XmlPath("extra-attributes")
     @XmlAnyAttribute
     public Map<QName, String> attributes;
-    
+
     @XmlPath("any-object-root")
     public Object anyObject;
-    
+
     @XmlPath("any-collection-root")
     public List<Object> anyCollection;
-    
+
     public boolean equals(Object obj) {
         if(!(obj instanceof Employee)) {
             return false;
         }
-        
+
         Employee emp = (Employee)obj;
         boolean equal = this.firstName.equals(emp.firstName);
         equal = equal && this.lastName.equals(emp.lastName);
         equal = equal && this.address.equals(emp.address);
-        
+
         Iterator<PhoneNumber> phones1 = this.phones.iterator();
         Iterator<PhoneNumber> phones2 = emp.phones.iterator();
         while(phones1.hasNext()) {
             equal = (phones1.next().equals(phones2.next())) && equal;
         }
-        
+
         for(QName nextKey:this.attributes.keySet()) {
             String value1 = this.attributes.get(nextKey);
             String value2 = emp.attributes.get(nextKey);

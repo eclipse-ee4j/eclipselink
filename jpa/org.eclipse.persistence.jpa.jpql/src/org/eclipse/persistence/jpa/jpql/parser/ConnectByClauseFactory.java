@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,31 +26,31 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public final class ConnectByClauseFactory extends ExpressionFactory {
 
-	/**
-	 * The unique identifier of this {@link ConnectByClauseFactory}.
-	 */
-	public static final String ID = CONNECT_BY;
+    /**
+     * The unique identifier of this {@link ConnectByClauseFactory}.
+     */
+    public static final String ID = CONNECT_BY;
 
-	/**
-	 * Creates a new <code>ConnectByClauseFactory</code>.
-	 */
-	public ConnectByClauseFactory() {
-		super(ID, CONNECT_BY);
-	}
+    /**
+     * Creates a new <code>ConnectByClauseFactory</code>.
+     */
+    public ConnectByClauseFactory() {
+        super(ID, CONNECT_BY);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                             WordParser wordParser,
-	                                             String word,
-	                                             JPQLQueryBNF queryBNF,
-	                                             AbstractExpression expression,
-	                                             boolean tolerant) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractExpression buildExpression(AbstractExpression parent,
+                                                 WordParser wordParser,
+                                                 String word,
+                                                 JPQLQueryBNF queryBNF,
+                                                 AbstractExpression expression,
+                                                 boolean tolerant) {
 
-		expression = new ConnectByClause(parent);
-		expression.parse(wordParser, tolerant);
-		return expression;
-	}
+        expression = new ConnectByClause(parent);
+        expression.parse(wordParser, tolerant);
+        return expression;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, Oracle. All rights reserved.
+ * Copyright (c) 2008, 2015 , Oracle. All rights reserved.
  *
  * This software is the proprietary information of Oracle Corporation.
  * Use is subject to license terms.
@@ -24,56 +24,56 @@ import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
  */
 abstract class SequencePropertyPane extends AbstractSubjectPanel
 {
-	/**
-	 * Creates a new <code>SequencePropertyPane</code>.
-	 *
-	 * @param subjectHolder The holder of <code>SequenceAdapter</code>
-	 * @param workbenchContextHolder The holder of the <code>WorkbenchContext</code>,
-	 * used to retrieve the localized string, active window, etc
-	 */
-	SequencePropertyPane(ValueModel subjectHolder,
-	                     WorkbenchContextHolder workbenchContextHolder)
-	{
-		super(subjectHolder, workbenchContextHolder);
-	}
+    /**
+     * Creates a new <code>SequencePropertyPane</code>.
+     *
+     * @param subjectHolder The holder of <code>SequenceAdapter</code>
+     * @param workbenchContextHolder The holder of the <code>WorkbenchContext</code>,
+     * used to retrieve the localized string, active window, etc
+     */
+    SequencePropertyPane(ValueModel subjectHolder,
+                         WorkbenchContextHolder workbenchContextHolder)
+    {
+        super(subjectHolder, workbenchContextHolder);
+    }
 
-	private PropertyValueModel buildPreallocationSizeHolder()
-	{
-		return new PropertyAspectAdapter(getSubjectHolder(), SequenceAdapter.PREALLOCATION_SIZE_PROPERTY)
-		{
-			@Override
-			protected Object getValueFromSubject()
-			{
-				return Integer.valueOf(((SequenceAdapter)subject).getPreallocationSize());
-			}
+    private PropertyValueModel buildPreallocationSizeHolder()
+    {
+        return new PropertyAspectAdapter(getSubjectHolder(), SequenceAdapter.PREALLOCATION_SIZE_PROPERTY)
+        {
+            @Override
+            protected Object getValueFromSubject()
+            {
+                return Integer.valueOf(((SequenceAdapter)subject).getPreallocationSize());
+            }
 
-			@Override
-			protected void setValueOnSubject(Object value)
-			{
-				if (value == null) {
-					((SequenceAdapter)subject).setPreallocationSize(0);
-				} else {
-					((SequenceAdapter)subject).setPreallocationSize(((Integer)value).intValue());
-				}
-			}
-		};
-	}
+            @Override
+            protected void setValueOnSubject(Object value)
+            {
+                if (value == null) {
+                    ((SequenceAdapter)subject).setPreallocationSize(0);
+                } else {
+                    ((SequenceAdapter)subject).setPreallocationSize(((Integer)value).intValue());
+                }
+            }
+        };
+    }
 
-	final JComponent buildPreallocationSizeWidgets()
-	{
-		return SwingComponentFactory.buildLabeledSpinnerNumber
-		(
-			"SEQUENCE_PANE_PREALLOCATION_SIZE_LABEL",
-			getSubjectHolder(),
-			buildPreallocationSizeHolder(),
-			new SimplePropertyValueModel(new Integer(50)),
-			new Integer(0),
-			Integer.MAX_VALUE,
-			new Integer(1),
-			6,
-			resourceRepository(),
-			getAlignLeftGroup(),
-			getAlignRightGroup()
-		);
-	}
+    final JComponent buildPreallocationSizeWidgets()
+    {
+        return SwingComponentFactory.buildLabeledSpinnerNumber
+        (
+            "SEQUENCE_PANE_PREALLOCATION_SIZE_LABEL",
+            getSubjectHolder(),
+            buildPreallocationSizeHolder(),
+            new SimplePropertyValueModel(new Integer(50)),
+            new Integer(0),
+            Integer.MAX_VALUE,
+            new Integer(1),
+            6,
+            resourceRepository(),
+            getAlignLeftGroup(),
+            getAlignRightGroup()
+        );
+    }
 }

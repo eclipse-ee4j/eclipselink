@@ -1,31 +1,31 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     06/10/2009 Andrei Ilitchev 
+ *     06/10/2009 Andrei Ilitchev
  *       - JPA 2.0 - OrderedList support.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.annotations;
 
-/** 
- * The OrderCorrectionType enum is used with OrderCorrection annotation 
+/**
+ * The OrderCorrectionType enum is used with OrderCorrection annotation
  * that could be applied together with OrderColumn annotation.
  * OrderCorrectionType defines a strategy taken in case the order list read from the data base is invalid
  * (has nulls, duplicates, negative values, values greater/equal to list size -
  * the only valid order list of n elements is: {0, 1,..., n-1}).
- * 
+ *
  * OrderCorrectionType also could be set directly into CollectionMapping
  * using setListOrderCorrectionType method.
- * 
+ *
  * @see org.eclipse.persistence.annotations.OrderCorrection
  * @see org.eclipse.persistence.mappings.CollectionMapping
- */ 
+ */
 public enum OrderCorrectionType {
     /**
      * Order of the list read into application is corrected, but no knowledge
@@ -34,7 +34,7 @@ public enum OrderCorrectionType {
      * but in case the list is modified and saved back into the data base
      * the order likely will not be the same as in cache and will be invalid.
      * This mode is used by default in case the mapped attribute
-     * is neither List nor Vector 
+     * is neither List nor Vector
      * (more precisely: is not assignable from Eclipselink internal class IndirectList).
      * Example: a list of three objects:
      *   in the data base:               {null, objectA}; {2, objectB}, {5, ObjectC};
@@ -53,7 +53,7 @@ public enum OrderCorrectionType {
      * order in the data base will be exactly the same as in cache
      * (and therefore valid).
      * This mode is used by default in case the mapped attribute
-     * is either List or Vector 
+     * is either List or Vector
      * (more precisely: is assignable from Eclipselink internal class IndirectList).
      * This mode is used in JPA in case OrderCorrection annotation is not specified.
      * Example: a list of three objects:

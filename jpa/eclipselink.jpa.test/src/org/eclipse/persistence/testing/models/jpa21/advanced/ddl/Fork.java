@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     11/22/2012-2.5 Guy Pelletier 
+ *     11/22/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa21.advanced.ddl;
 
 import java.util.ArrayList;
@@ -45,13 +45,13 @@ import javax.persistence.Table;
 public class Fork extends Utensil {
     @Column(name="COST", table="JPA21_FORK_COSTS")
     public Double price;
-    
+
     @Column(name="RENTAL_COST", table="JPA21_FORK_COSTS")
     public Double rental;
-        
+
     public String style;
     public String color;
-    
+
     @ElementCollection
     @CollectionTable(
         name="JPA21_FORK_USES",
@@ -62,7 +62,7 @@ public class Fork extends Utensil {
     )
     @Column(name="DESCRIP")
     public List<String> uses;
-    
+
     @ManyToMany
     @JoinTable(
         name="JPA21_FORK_FORK_USERS",
@@ -71,7 +71,7 @@ public class Fork extends Utensil {
         indexes=@Index(
             name="JPA21_FORK_USERS_INDEX",
             columnList="FORK_USER_ID, FORK_ID"
-         )   
+         )
     )
     public List<ForkUser> users;
 
@@ -82,7 +82,7 @@ public class Fork extends Utensil {
     public void addUser(ForkUser user) {
         users.add(user);
     }
-    
+
     public String getColor() {
         return color;
     }
@@ -90,19 +90,19 @@ public class Fork extends Utensil {
     public Double getPrice() {
         return price;
     }
-    
+
     public Double getRental() {
         return rental;
     }
-    
+
     public String getStyle() {
         return style;
     }
-    
+
     public List<ForkUser> getUsers() {
         return users;
     }
-    
+
     public List<String> getUses() {
         return uses;
     }
@@ -110,23 +110,23 @@ public class Fork extends Utensil {
     public void setColor(String color) {
         this.color = color;
     }
-    
+
     public void setPrice(Double price) {
         this.price = price;
     }
-    
+
     public void setRental(Double rental) {
         this.rental = rental;
     }
-    
+
     public void setStyle(String style) {
         this.style = style;
     }
-    
+
     public void setUsers(List<ForkUser> users) {
         this.users = users;
     }
-    
+
     public void setUses(List<String> uses) {
         this.uses = uses;
     }

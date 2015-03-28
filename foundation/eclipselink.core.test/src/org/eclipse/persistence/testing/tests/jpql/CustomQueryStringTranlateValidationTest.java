@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     kchen - Feb 22 2008, bug 217745
  *     Dmitry Kornilov - Nov 10, 2014, bug 450818
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpql;
 
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -18,7 +18,7 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 /**
  * For Bug 217745 - Verify DataSourceCall.translateCustomQuery() and translatePureCustomQuery() methods
  * are able to process '#', '?' and single quota properly and translate SQL into correct format.
- * 
+ *
  * @author Kyle Chen
  * @author Dmitry Kornilov (test extended to cover Bug 450818)
  */
@@ -69,9 +69,9 @@ public class CustomQueryStringTranlateValidationTest extends JPQLTestCase {
         };
         verifyCustomQuery(EJBQLTestString);
     }
-    
+
     /**
-     * The method verify if custom query string translate correctly. 
+     * The method verify if custom query string translate correctly.
      */
     private void verifyCustomQuery(String[][] testDatas) throws Exception{
         ReadAllQuery query = new ReadAllQuery();

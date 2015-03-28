@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.classgen;
 
 import java.io.StringReader;
@@ -22,15 +22,15 @@ import org.eclipse.persistence.sdo.helper.FileCodeWriter;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
 
 public class PurchaseOrderTestCases extends SDOClassGenTestCases {
-   
+
     public PurchaseOrderTestCases(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.classgen.PurchaseOrderTestCases" };
         TestRunner.main(arguments);
-    }   
+    }
 
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrder.xsd";
@@ -56,7 +56,7 @@ public class PurchaseOrderTestCases extends SDOClassGenTestCases {
         list.add("AddressTypeImpl.java");
         return list;
     }
-    
+
      // The following test case is out of scope for ClassGenElements - we let it fail with a NPE that generates an empty xsdString for this suite
     public void testAllParameterMethod() throws Exception {
         //compileFiles(getControlSourceFolder() + "/" + getPackageDir());
@@ -64,7 +64,7 @@ public class PurchaseOrderTestCases extends SDOClassGenTestCases {
         StringReader reader = new StringReader(xsdString);
 
         List types = xsdHelper.define(reader, null);
-        
+
         FileCodeWriter codeWriter = new FileCodeWriter();
         codeWriter.setSourceDir(getSourceFolder());
         classGenerator.generate( codeWriter,  types);

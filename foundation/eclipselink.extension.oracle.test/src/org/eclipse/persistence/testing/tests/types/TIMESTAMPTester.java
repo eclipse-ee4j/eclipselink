@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     
+ *
  *     14/05/2009 ailitchev - Bug 267929: Oracle 11.1.0.7: TIMESTAMP test '100 Years from now -> 2109-03-10 13:22:28.5 EST5EDT EDT' began to fail after Daylight Saving Time started
- *     Changed the test "100 Years from now" to "Last DST year" in both TIMESTAMPDirectToFieldTester and TIMESTAMPTypeConversionTester: 
+ *     Changed the test "100 Years from now" to "Last DST year" in both TIMESTAMPDirectToFieldTester and TIMESTAMPTypeConversionTester:
  *     instead of hitting the current date 100 years ahead
  *     it now tests the current date on the latest year for which Daylight Saving Time is defined in Oracle db (by default lastDSTYear = 2020).
  *     The change was done because "100 Years from now" fails when run during DST (though passes outside of it).
@@ -31,7 +31,7 @@
  *            tzTab.displayTable(regionID);
  *         }
  *     Here is the code that prints table with oracle jdbc 11.1.0.7 and earlier:
- *     (note that unlike 11.2 the user has to explicitly set time zone 
+ *     (note that unlike 11.2 the user has to explicitly set time zone
  *         conn.setSessionTimeZone(connTimeZone);
  *         String sTZ = conn.getSessionTimeZone();
  *         if (sTZ != null) {
@@ -43,7 +43,7 @@
  *           }
  *           TIMEZONETAB.displayTable(regionID);
  *         }
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.types;
 
 import java.util.*;
@@ -84,25 +84,25 @@ public abstract class TIMESTAMPTester extends TypeTester {
     public Timestamp tsToDate;
     // This Calendar will be stored in DATE field to make sure Calendar -> DATE is backward compatible.
     // ** So... why was this commmented out?  Is it backward compatible??
-    //	public Calendar calToDate;
+    //    public Calendar calToDate;
     public String sessionTimeZone;
-    
+
     // isTimestampInGmt==true if driverVersion is 11.1.0.7 or later and
     // oracleConnection's property "oracle.jdbc.timestampTzInGmt" is set to "true".
     // The flag indicates whether TIMESTAMPTZ keeps its timestamp in GMT.
     public static boolean isTimestampInGmt;
-    
+
     // true if driverVersion is 11.2.0.2 or later.
     public static boolean isLtzTimestampInGmt;
 
-    // last year for which Daylight Saving Time is supported.  
+    // last year for which Daylight Saving Time is supported.
     static int lastDSTYear = 2020;
 
     public TIMESTAMPTester() {
         super("NEW");
     }
 
-    public TIMESTAMPTester(String nameOfTest, int year, int month, int date, int hrs, int min, int sec, int nano, 
+    public TIMESTAMPTester(String nameOfTest, int year, int month, int date, int hrs, int min, int sec, int nano,
                            int zoneMillis) {
         super(nameOfTest);
 
@@ -115,16 +115,16 @@ public abstract class TIMESTAMPTester extends TypeTester {
         buildTimestamps(utilDateToTS.getTime());
         buildDates(Helper.dateFromTimestamp(tsToTS));
         buildTimes(Helper.timeFromTimestamp(tsToTS));
-        //		calToDate = c;
+        //        calToDate = c;
     }
 
-    public TIMESTAMPTester(String nameOfTest, int year, int month, int date, int hrs, int min, int sec, int nano, 
+    public TIMESTAMPTester(String nameOfTest, int year, int month, int date, int hrs, int min, int sec, int nano,
                            String zoneId) {
         super(nameOfTest);
 
-        /*		TimeZone tz = TimeZone.getDefault();
-		tz.setID(zoneId);
-		calToTSTZ = Calendar.getInstance(tz);*/
+        /*        TimeZone tz = TimeZone.getDefault();
+        tz.setID(zoneId);
+        calToTSTZ = Calendar.getInstance(tz);*/
         calToTSTZ = Calendar.getInstance(TimeZone.getTimeZone(zoneId));
         calToTSTZ.set(year, month, date, hrs, min, sec);
         calToTSTZ.set(Calendar.MILLISECOND, nano / 1000000);
@@ -133,7 +133,7 @@ public abstract class TIMESTAMPTester extends TypeTester {
         buildTimestamps(utilDateToTS.getTime());
         buildDates(Helper.dateFromTimestamp(tsToTS));
         buildTimes(Helper.timeFromTimestamp(tsToTS));
-        //		calToDate = c;
+        //        calToDate = c;
     }
 
     public TIMESTAMPTester(String nameOfTest, Calendar c) {
@@ -144,7 +144,7 @@ public abstract class TIMESTAMPTester extends TypeTester {
         buildTimestamps(utilDateToTS.getTime());
         buildDates(Helper.dateFromTimestamp(tsToTS));
         buildTimes(Helper.timeFromTimestamp(tsToTS));
-        //		calToDate = c;
+        //        calToDate = c;
     }
 
     public TIMESTAMPTester(String nameOfTest, long time) {
@@ -156,17 +156,17 @@ public abstract class TIMESTAMPTester extends TypeTester {
         calToTSTZ = Calendar.getInstance();
         calToTSTZ.setTime(utilDateToTS);
         calToTSLTZ = calToTSTZ;
-        //		calToDate = c;
+        //        calToDate = c;
     }
 
     public void setSessionTimezone(String timeZone) {
         this.sessionTimeZone = timeZone;
     }
-    
+
     protected void setup(Session session) {
         super.setup(session);
     }
-    
+
     public void buildTimestamps(long time) {
         tsToTS = new Timestamp(time);
         tsToTSTZ = tsToTS;
@@ -312,13 +312,13 @@ public abstract class TIMESTAMPTester extends TypeTester {
         timeToTSLTZ = aDate;
     }
 
-    /*	public Calendar getCalToDate() {
-		return calToDate;
-	}
+    /*    public Calendar getCalToDate() {
+        return calToDate;
+    }
 
-	public void setCalToDate(Calendar calToTSTZ) {
-		this.calToDate = calToTSTZ;
-	}*/
+    public void setCalToDate(Calendar calToTSTZ) {
+        this.calToDate = calToTSTZ;
+    }*/
 
     public String toString() {
         return getTestName() + " -> " + TIMESTAMPHelper.printCalendar(calToTSTZ);
@@ -327,7 +327,7 @@ public abstract class TIMESTAMPTester extends TypeTester {
     // Calendar's time zone is inserted into the db if the test runs either with binding or with native sql -
     // otherwise time zone is simply not present in the inserting sql and therefore
     // Calendar-to-TIMESTAMPTZ and Calendar-to-TIMESTAMPLTZ comparisons fail because
-    // the objects are written into the db with connection's sessionTimeZone instead of the calendar's time zone. 
+    // the objects are written into the db with connection's sessionTimeZone instead of the calendar's time zone.
     boolean doesTestInsertCalendarTimeZone(WriteTypeObjectTest test) {
         return test.shouldBindAllParameters()==null || test.shouldBindAllParameters() || test.shouldUseNativeSQL();
     }
@@ -346,9 +346,9 @@ public abstract class TIMESTAMPTester extends TypeTester {
     // Note that this incorrect reading happens only in case the target Java type is Timestamp (util.Date, Time),
     // Eclipselink corrects the result in case the target type is Calendar.
     boolean doesTimestampTZWork() {
-        return TimeZone.getDefault().getID().equals(this.sessionTimeZone) || !isTimestampInGmt; 
+        return TimeZone.getDefault().getID().equals(this.sessionTimeZone) || !isTimestampInGmt;
     }
-    
+
     // see the previous comment:
     // it used to work - due to even number of errors - in 11.1.0.7,
     // but no longer works in 11.2.0.2.
@@ -358,9 +358,9 @@ public abstract class TIMESTAMPTester extends TypeTester {
     // Therefore 5p.m. in default zone America/New_York written through America/Los_Angeles sessionTimeZone
     // is recorded in the db. as 5p.m. America/Los_Angeles.
     boolean doesTimestampLTZWork() {
-        return TimeZone.getDefault().getID().equals(this.sessionTimeZone) || !isLtzTimestampInGmt; 
+        return TimeZone.getDefault().getID().equals(this.sessionTimeZone) || !isLtzTimestampInGmt;
     }
-    
+
     protected void test(WriteTypeObjectTest testCase) {
         try {
             if(this.sessionTimeZone != null) {
@@ -435,7 +435,7 @@ public abstract class TIMESTAMPTester extends TypeTester {
             String dbCal = TIMESTAMPHelper.printCalendar(fromDatabase.getCalToTSLTZ());
             //calToTSLTZ from database should have the sessionTimeZone
             if (sessionTimeZone!=null && !fromDatabase.getCalToTSLTZ().getTimeZone().getID().trim().equals(sessionTimeZone.trim())) {
-                errorMsg += "The sessionTimeZone should be: " + sessionTimeZone + ", but was read as: " + 
+                errorMsg += "The sessionTimeZone should be: " + sessionTimeZone + ", but was read as: " +
                                              fromDatabase.getCalToTSLTZ().getTimeZone().getID();
             }
 
@@ -444,7 +444,7 @@ public abstract class TIMESTAMPTester extends TypeTester {
                 // 0 if and only if the two calendars refer to the same time
                 int compareCalToTSLTZ = calToTSLTZ.compareTo(fromDatabase.getCalToTSLTZ());
                 if(compareCalToTSLTZ != 0) {
-                    errorMsg += "calToTSLTZ.compareTo(fromDatabase.getCalToTSLTZ()) == " + compareCalToTSLTZ + "\n"; 
+                    errorMsg += "calToTSLTZ.compareTo(fromDatabase.getCalToTSLTZ()) == " + compareCalToTSLTZ + "\n";
                     errorMsg += "\t    original calToTSLTZ = " + TIMESTAMPHelper.printCalendar(calToTSLTZ) + "\n";
                     errorMsg += "\tfromDatabase.calToTSLTZ = " + TIMESTAMPHelper.printCalendar(fromDatabase.getCalToTSLTZ())  + "\n";
                     errorMsg += "\t    original calToTSLTZ = " + calToTSLTZ + "\n";
@@ -490,7 +490,7 @@ public abstract class TIMESTAMPTester extends TypeTester {
             int originalTS = objectTimeInCache.getNanos();
             //Some original tsToDate without milliseconds fell through the Calendar check and need to excluded from
             //the following check.
-            //			if (originalTS != 0) {
+            //            if (originalTS != 0) {
 
             // TsToDate always looses nanos, so do not throw an error if the ts match without the nanos.
             objectTimeInCache.setNanos(0);
@@ -510,7 +510,7 @@ public abstract class TIMESTAMPTester extends TypeTester {
                 }
             } else {
                 objectTimeInCache.setNanos(originalTS);
-                errorMsg += "The tsToDate should be: " + objectTimeInCache + " but were read back as: " + 
+                errorMsg += "The tsToDate should be: " + objectTimeInCache + " but were read back as: " +
                                              objectTimeInDB;
             }
             if(errorMsg.length() > 0) {

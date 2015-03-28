@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/23/2008-1.1 Guy Pelletier 
+ *     09/23/2008-1.1 Guy Pelletier
  *       - 241651: JPA 2.0 Access Type support
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
@@ -35,57 +35,57 @@ public class Project implements Serializable {
     public int pre_persist_count = 0;
     public int post_persist_count = 0;
     public int post_load_count = 0;
-    
-	private Integer id;
-	private int version;
-	private String name;
-	private String description;
-	private Employee teamLeader;
-	private Collection<Employee> teamMembers;
 
-	public Project () {
+    private Integer id;
+    private int version;
+    private String name;
+    private String description;
+    private Employee teamLeader;
+    private Collection<Employee> teamMembers;
+
+    public Project () {
         this.teamMembers = new Vector<Employee>();
-	}
-
-	public Integer getId() { 
-        return id; 
-    }
-    
-	public void setId(Integer id) { 
-        this.id = id; 
     }
 
-	public String getName() { 
-        return name; 
-    }
-    
-	public void setName(String name) { 
-        this.name = name; 
+    public Integer getId() {
+        return id;
     }
 
-	public String getDescription() { 
-        return description; 
-    }
-    
-	public void setDescription(String description) { 
-        this.description = description; 
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-	public Employee getTeamLeader() {
-        return teamLeader; 
-    }
-    
-	public void setTeamLeader(Employee teamLeader) { 
-        this.teamLeader = teamLeader; 
+    public String getName() {
+        return name;
     }
 
-	public Collection<Employee> getTeamMembers() { 
-        return teamMembers; 
+    public void setName(String name) {
+        this.name = name;
     }
-    
-	public void setTeamMembers(Collection<Employee> employees) {
-		this.teamMembers = employees;
-	}
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Employee getTeamLeader() {
+        return teamLeader;
+    }
+
+    public void setTeamLeader(Employee teamLeader) {
+        this.teamLeader = teamLeader;
+    }
+
+    public Collection<Employee> getTeamMembers() {
+        return teamMembers;
+    }
+
+    public void setTeamMembers(Collection<Employee> employees) {
+        this.teamMembers = employees;
+    }
 
     public void addTeamMember(Employee employee) {
         getTeamMembers().add(employee);
@@ -101,32 +101,32 @@ public class Project implements Serializable {
 
         return sbuff.toString();
     }
-    
-	public void prePersist() {
+
+    public void prePersist() {
         ++pre_persist_count;
-	}
+    }
 
-	public void postPersist() {
+    public void postPersist() {
         ++post_persist_count;
-	}
+    }
 
-	public void preRemove() {
+    public void preRemove() {
         ++pre_remove_count;
-	}
+    }
 
-	public void postRemove() {
+    public void postRemove() {
         ++post_remove_count;
-	}
+    }
 
-	public void preUpdate() {
+    public void preUpdate() {
         ++pre_update_count;
-	}
+    }
 
-	public void postUpdate() {
+    public void postUpdate() {
         ++post_update_count;
-	}
+    }
 
-	public void postLoad() {
+    public void postLoad() {
         ++post_load_count;
-	}
+    }
 }

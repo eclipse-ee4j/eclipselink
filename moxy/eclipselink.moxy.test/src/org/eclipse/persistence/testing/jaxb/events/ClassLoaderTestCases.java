@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,13 +40,13 @@ public class ClassLoaderTestCases extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        
+
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, CLASS_NAME, null, ClassLoaderRoot.class.getName().replace('.', '/'), null);
         AnnotationVisitor xmlTypeAV = cw.visitAnnotation("Ljavax/xml/bind/annotation/XmlRootElement;", true);
         xmlTypeAV.visit("name", "root");
         xmlTypeAV.visitEnd();
-        
+
         // Write Constructor:
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
@@ -54,7 +54,7 @@ public class ClassLoaderTestCases extends TestCase {
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
-        
+
         JaxbClassLoader classLoader = new JaxbClassLoader(ClassLoaderRoot.class.getClassLoader());
         classLoaderChildClass = classLoader.generateClass(CLASS_NAME, cw.toByteArray());
         jaxbContext = JAXBContextFactory.createContext(new Class[] {classLoaderChildClass}, null);
@@ -64,7 +64,7 @@ public class ClassLoaderTestCases extends TestCase {
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
         ClassLoaderRoot classLoaderChild = (ClassLoaderRoot) classLoaderChildClass.newInstance();
-        
+
         assertEquals(0, classLoaderChild.beforeMarshalCalled);
         assertEquals(0, classLoaderChild.afterMarshalCalled);
         marshaller.marshal(classLoaderChild, new StringWriter());
@@ -75,7 +75,7 @@ public class ClassLoaderTestCases extends TestCase {
     public void testMarshalXML() throws Exception {
         Marshaller marshaller = jaxbContext.createMarshaller();
         ClassLoaderRoot classLoaderChild = (ClassLoaderRoot) classLoaderChildClass.newInstance();
-        
+
         assertEquals(0, classLoaderChild.beforeMarshalCalled);
         assertEquals(0, classLoaderChild.afterMarshalCalled);
         marshaller.marshal(classLoaderChild, new DefaultHandler());

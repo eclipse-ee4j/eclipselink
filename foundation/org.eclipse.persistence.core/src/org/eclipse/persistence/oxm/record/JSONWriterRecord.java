@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,7 +79,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     protected Level level;
 
     public JSONWriterRecord(){
-        super();        
+        super();
     }
 
     public JSONWriterRecord(OutputStream outputStream) {
@@ -89,23 +89,23 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
     public JSONWriterRecord(OutputStream outputStream, String callbackName){
         this(outputStream);
-        setCallbackName(callbackName);       
+        setCallbackName(callbackName);
     }
 
     public JSONWriterRecord(Writer writer){
-    	this();
-    	setWriter(writer);
+        this();
+        setWriter(writer);
     }
-    
+
     public JSONWriterRecord(Writer writer, String callbackName){
-    	this(writer);
-    	setCallbackName(callbackName);    	 
+        this(writer);
+        setCallbackName(callbackName);
     }
 
     public void setCallbackName(String callbackName){
-    	this.callbackName = callbackName;
+        this.callbackName = callbackName;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -121,17 +121,17 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         writer.setMarshaller(marshaller);
     }
 
-        
+
     /**
-     * Handle marshal of an empty collection.  
+     * Handle marshal of an empty collection.
      * @param xPathFragment
      * @param namespaceResolver
      * @param openGrouping if grouping elements should be marshalled for empty collections
      * @return
-     */    
-    public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {    	
-    	 if(marshaller.isMarshalEmptyCollections()){  
-    		 super.emptyCollection(xPathFragment, namespaceResolver, true);
+     */
+    public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
+         if(marshaller.isMarshalEmptyCollections()){
+             super.emptyCollection(xPathFragment, namespaceResolver, true);
             if (null != xPathFragment) {
                 startCollection();
                 if (!xPathFragment.isSelfFragment()) {
@@ -144,16 +144,16 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                 }
                 endEmptyCollection();
             }
-    		 return true;
-    	 }else{
-    		 return super.emptyCollection(xPathFragment, namespaceResolver, openGrouping);
-    	 }
+             return true;
+         }else{
+             return super.emptyCollection(xPathFragment, namespaceResolver, openGrouping);
+         }
     }
-    
+
     public void forceValueWrapper(){
         charactersAllowed = false;
     }
-    
+
     /**
      * Return the Writer that the object will be marshalled to.
      * @return The marshal target.
@@ -172,10 +172,10 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
     public void namespaceDeclaration(String prefix, String namespaceURI){
     }
-    
+
     public void defaultNamespaceDeclaration(String defaultNamespace){
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -185,30 +185,30 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                  if(level.isFirst()) {
                      level.setFirst(false);
                  } else {
-                	 writeListSeparator();                     
+                     writeListSeparator();
                  }
              }else if(callbackName != null){
-            	 startCallback();              
+                 startCallback();
              }
              level = new Level(true, false, level);
-             
+
              writer.write('{');
          } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     protected void writeListSeparator() throws IOException{
         writer.write(',');
     }
-    
-    protected void writeSeparator() throws IOException{        
-        writer.write(Constants.COLON);        
+
+    protected void writeSeparator() throws IOException{
+        writer.write(Constants.COLON);
     }
-    
+
     /**
      * INTERNAL:
-     * @throws IOException 
+     * @throws IOException
      */
     protected void startCallback() throws IOException{
        if(callbackName != null){
@@ -222,10 +222,10 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      */
     public void endDocument() {
         try {
-        	closeComplex();
-        	if(null != level && null == level.getPreviousLevel()){
-        		endCallback();
-        	}            
+            closeComplex();
+            if(null != level && null == level.getPreviousLevel()){
+                endCallback();
+            }
             level = level.getPreviousLevel();
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
@@ -240,36 +240,36 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
              if(level.isFirst()) {
                  level.setFirst(false);
              } else {
-                 writer.write(',');                    
+                 writer.write(',');
              }
             if(xPathFragment.nameIsText()){
-                if(level.isCollection() && level.isEmptyCollection()) {                	
-                    writer.write('[');                    
+                if(level.isCollection() && level.isEmptyCollection()) {
+                    writer.write('[');
                     level.setEmptyCollection(false);
                     level.setNeedToOpenComplex(false);
-                    charactersAllowed = true;                    
+                    charactersAllowed = true;
                     level = new Level(true, true, level);
                     return;
                 }
             }
-            
+
             if(level.needToOpenComplex){
                    writer.write('{');
                    level.needToOpenComplex = false;
                    level.needToCloseComplex = true;
            }
-          
+
            //write the key unless this is a a non-empty collection
            if(!(level.isCollection() && !level.isEmptyCollection())){
-        	   writeKey(xPathFragment);
-        	   //if it is the first thing in the collection also add the [
-    		   if(level.isCollection() && level.isEmptyCollection()){
+               writeKey(xPathFragment);
+               //if it is the first thing in the collection also add the [
+               if(level.isCollection() && level.isEmptyCollection()){
                     writer.write('[');
-               	    level.setEmptyCollection(false);        		   
-        	   }
+                       level.setEmptyCollection(false);
+               }
            }
-     		    
-            
+
+
             charactersAllowed = true;
             level = new Level(true, true, level);
         } catch (IOException e) {
@@ -351,7 +351,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     public void startCollection() {
         if(null == level) {
             try {
-            	startCallback();
+                startCallback();
                 writer.write('[');
                 level = new Level(true, false, level);
             } catch(IOException e) {
@@ -363,18 +363,18 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             charactersAllowed = false;
         }
     }
-    
+
     protected void endEmptyCollection(){
-    	endCollection();
+        endCollection();
     }
 
     protected void endCallback() throws IOException{
-    	if(callbackName != null){
-     	   writer.write(')');
-     	   writer.write(';');
+        if(callbackName != null){
+            writer.write(')');
+            writer.write(';');
         }
     }
-    
+
     @Override
     public void endCollection() {
         try {
@@ -396,38 +396,38 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      * INTERNAL:
      */
     public void characters(String value) {
-    	characters(value, true, false);
+        characters(value, true, false);
     }
     /**
      * INTERNAL:
      */
      public void characters(String value, boolean isString, boolean isAttribute) {
-    	  boolean textWrapperOpened = false;
-          if(!charactersAllowed){    
-        	   if(textWrapperFragment != null){
-        		   openStartElement(textWrapperFragment, namespaceResolver);
-        		   textWrapperOpened = true;
-        	   }
-    	   }
-    	 
+          boolean textWrapperOpened = false;
+          if(!charactersAllowed){
+               if(textWrapperFragment != null){
+                   openStartElement(textWrapperFragment, namespaceResolver);
+                   textWrapperOpened = true;
+               }
+           }
+
            level.setNeedToOpenComplex(false);
            try {
-        	   if(isString){
+               if(isString){
                       writer.write('"');
                       writeValue(value, isAttribute);
                       writer.write('"');
-        	   }else{
-        		   writer.write(value);
-        	   }
-        	     
+               }else{
+                   writer.write(value);
+               }
+
            } catch (IOException e) {
                throw XMLMarshalException.marshalException(e);
-           }        
-           if(textWrapperOpened){    
-          	   if(textWrapperFragment != null){
-               	   endElement(textWrapperFragment, namespaceResolver);
-          	   }
-      	   }           
+           }
+           if(textWrapperOpened){
+                 if(textWrapperFragment != null){
+                      endElement(textWrapperFragment, namespaceResolver);
+                 }
+             }
      }
 
      public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
@@ -440,25 +440,25 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
          endElement(xPathFragment, namespaceResolver);
      }
 
-     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){    	   
+     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){
         characters(schemaType, value, mimeType, isCDATA, false);
      }
-     
+
      public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA, boolean isAttribute) {
          if(mimeType != null) {
-        	 if(value instanceof List){
-         		value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesListForBinaryValues(//
+             if(value instanceof List){
+                 value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesListForBinaryValues(//
                          (List)value, marshaller, mimeType);
-         	}else{
+             }else{
 
              value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                      value, marshaller, mimeType).getData();
-         	}
-         }         
+             }
+         }
          if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
              String convertedValue = getStringForQName((QName)value);
              characters((String)convertedValue);
-         } else if(value.getClass() == String.class){        	
+         } else if(value.getClass() == String.class){
              //if schemaType is set and it's a numeric or boolean type don't treat as a string
              if(schemaType != null && isNumericOrBooleanType(schemaType)){
                  String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
@@ -475,7 +475,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
             if(schemaType == null || theClass == null){
                 if(value.getClass() == CoreClassConstants.BOOLEAN || CoreClassConstants.NUMBER.isAssignableFrom(value.getClass())){
-                	characters(convertedValue, false, isAttribute);
+                    characters(convertedValue, false, isAttribute);
                 }else{
                     characters(convertedValue);
 
@@ -486,14 +486,14 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             } else if(isCDATA){
                 cdata(convertedValue);
             }else{
-            	characters(convertedValue, false, isAttribute);
+                characters(convertedValue, false, isAttribute);
             }
         }
          charactersAllowed = false;
-       
+
      }
 
-     
+
      private boolean isNumericOrBooleanType(QName schemaType){
          if(schemaType == null){
              return false;
@@ -541,7 +541,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      * INTERNAL:
      */
      public void nilSimple(NamespaceResolver namespaceResolver){
-         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);         
+         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          characters(NULL, false, false);
          closeStartGroupingElements(groupingFragment);
      }
@@ -553,7 +553,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      public void emptySimple(NamespaceResolver namespaceResolver){
          nilSimple(namespaceResolver);
      }
-     
+
      public void emptyAttribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          openStartElement(xPathFragment, namespaceResolver);
@@ -578,12 +578,12 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
       */
      @Override
      public void marshalWithoutRootElement(ObjectBuilder treeObjectBuilder, Object object, Descriptor descriptor, Root root, boolean isXMLRoot){
-    	 if(treeObjectBuilder != null){
+         if(treeObjectBuilder != null){
              addXsiTypeAndClassIndicatorIfRequired(descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
              treeObjectBuilder.marshalAttributes(this, object, session);
-    	 }         
+         }
       }
-      
+
     /**
      * INTERNAL:
      */
@@ -593,13 +593,13 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
     /**
      * INTERNAL:
-	 * The character used to separate the prefix and uri portions when namespaces are present 
+     * The character used to separate the prefix and uri portions when namespaces are present
      * @since 2.4
      */
-    public char getNamespaceSeparator(){    	
-    	return marshaller.getNamespaceSeparator();
+    public char getNamespaceSeparator(){
+        return marshaller.getNamespaceSeparator();
     }
-    
+
     /**
      * INTERNAL:
      * The optional fragment used to wrap the text() mappings
@@ -633,7 +633,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
         writer.writeLocalName(xPathFragment);
         writer.write('"');
-        
+
         writeSeparator();
     }
 
@@ -641,13 +641,13 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      * INTERNAL:
      */
     protected void writeValue(String value, boolean isAttribute) {
-        try {        	        	   
+        try {
                if (characterEscapeHandler != null) {
                    writer.writeResultFromCharEscapeHandler(value, isAttribute);
                    return;
                }
-        	
-        	  char[] chars = value.toCharArray();
+
+              char[] chars = value.toCharArray();
               for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
                   char character = chars[x];
                   switch (character){
@@ -697,14 +697,14 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
     protected String getStringForQName(QName qName){
         if(null == qName) {
             return null;
         }
         CoreConversionManager xmlConversionManager = getSession().getDatasourcePlatform().getConversionManager();
 
-        return (String) xmlConversionManager.convertObject(qName, String.class);       
+        return (String) xmlConversionManager.convertObject(qName, String.class);
     }
 
     /**
@@ -734,11 +734,11 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                 }
             }
         } else if (node.getNodeType() == Node.TEXT_NODE) {
-        	characters(node.getNodeValue(), false, false);
+            characters(node.getNodeValue(), false, false);
         } else {
             try {
-            	JSONWriterRecordContentHandler wrcHandler = new JSONWriterRecordContentHandler();
-            	
+                JSONWriterRecordContentHandler wrcHandler = new JSONWriterRecordContentHandler();
+
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(wrcHandler);
                 xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
@@ -773,22 +773,22 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      */
     protected class JSONWriterRecordContentHandler implements ExtendedContentHandler, LexicalHandler {
 
-    	JSONWriterRecordContentHandler() {
+        JSONWriterRecordContentHandler() {
         }
 
         // --------------------- CONTENTHANDLER METHODS --------------------- //
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-            	XPathFragment xPathFragment = new XPathFragment(localName);
-            	xPathFragment.setNamespaceURI(namespaceURI);
-            	openStartElement(xPathFragment, namespaceResolver);
-            	handleAttributes(atts);
+                XPathFragment xPathFragment = new XPathFragment(localName);
+                xPathFragment.setNamespaceURI(namespaceURI);
+                openStartElement(xPathFragment, namespaceResolver);
+                handleAttributes(atts);
         }
 
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        	XPathFragment xPathFragment = new XPathFragment(localName);
-        	xPathFragment.setNamespaceURI(namespaceURI);
-        	
-        	JSONWriterRecord.this.endElement(xPathFragment, namespaceResolver);        
+            XPathFragment xPathFragment = new XPathFragment(localName);
+            xPathFragment.setNamespaceURI(namespaceURI);
+
+            JSONWriterRecord.this.endElement(xPathFragment, namespaceResolver);
         }
 
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
@@ -799,8 +799,8 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             characters(characters);
         }
 
-        public void characters(CharSequence characters) throws SAXException {        	
-        	JSONWriterRecord.this.characters(characters.toString());      
+        public void characters(CharSequence characters) throws SAXException {
+            JSONWriterRecord.this.characters(characters.toString());
         }
 
         // --------------------- LEXICALHANDLER METHODS --------------------- //
@@ -826,15 +826,15 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             }
         }
 
-        protected void writeComment(char[] chars, int start, int length) {        
+        protected void writeComment(char[] chars, int start, int length) {
         }
-       
+
         protected void writeCharacters(char[] chars, int start, int length) {
-        	try {
-				characters(chars, start, length);
-			} catch (SAXException e) {
+            try {
+                characters(chars, start, length);
+            } catch (SAXException e) {
                 throw XMLMarshalException.marshalException(e);
-			}           
+            }
         }
         // --------------- SATISFY CONTENTHANDLER INTERFACE --------------- //
         public void endPrefixMapping(String prefix) throws SAXException {}
@@ -850,8 +850,8 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         public void endEntity(String name) throws SAXException {}
         public void startDTD(String name, String publicId, String systemId) throws SAXException {}
         public void endDTD() throws SAXException {}
-		@Override
-		public void setNil(boolean isNil) {}
+        @Override
+        public void setNil(boolean isNil) {}
 
     }
 
@@ -867,7 +867,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         private boolean needToOpenComplex;
         private boolean needToCloseComplex;
         private Level previousLevel;
- 
+
         public Level(boolean value, boolean needToOpen) {
             this.first = value;
             needToOpenComplex = needToOpen;
@@ -949,7 +949,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         public void writeNamespaceSeparator() throws IOException;
 
         public void writeResultFromCharEscapeHandler(String value, boolean isAttribute);
- 
+
     }
 
     protected static class OutputStreamOutput implements Output {
@@ -1134,7 +1134,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         public Writer getWriter() {
             return writer;
         }
-    
+
         @Override
         public void setMarshaller(XMLMarshaller marshaller) {
             this.marshaller = marshaller;
@@ -1147,17 +1147,17 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         public void writeAttributePrefix() throws IOException {
             writer.write(attributePrefix);
         }
-    
+
         @Override
         public void write(char character) throws IOException {
             writer.write(character);
         }
-    
+
         @Override
         public void write(String text) throws IOException {
             writer.write(text);
         }
-    
+
         public void writeCR() throws IOException {
             writer.write(cr);
         }
@@ -1166,12 +1166,12 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         public void writeLocalName(XPathFragment xPathFragment) throws IOException {
             writer.write(xPathFragment.getLocalName());
         }
-    
+
         @Override
         public void writeNamespaceSeparator() throws IOException {
             writer.write(namespaceSeparator);
         }
-    
+
         @Override
         public void writeResultFromCharEscapeHandler(String value, boolean isAttribute) {
             try {
@@ -1180,7 +1180,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                 throw XMLMarshalException.marshalException(e);
             }
         }
-    
+
     }
 
 }

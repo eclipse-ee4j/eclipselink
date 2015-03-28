@@ -1,27 +1,27 @@
 {
- "order" : 
-  { 
+ "order" :
+  {
    "items":{"item":[]},
     "customerInput":{
-   "comments" : [ "com<ment1", "com&ment2", "com\"ment3"] }, 
+   "comments" : [ "com<ment1", "com&ment2", "com\"ment3"] },
 
-   "customer" : { 
+   "customer" : {
       "id" : 0,
-      "firstName" : "Ja<ne", 
-      "lastName" : "Smi&th", 
+      "firstName" : "Ja<ne",
+      "lastName" : "Smi&th",
       "contact":{
-      "address" : 
-         { 
-         "street" : "Main\"Street", 
+      "address" :
+         {
+         "street" : "Main\"Street",
          "city" : "Ottawa",
-         "coords" : [ 0.0, 0.0 ] 
-         } 
-	 }
-	 , 
+         "coords" : [ 0.0, 0.0 ]
+         }
+     }
+     ,
         "phoneNumbers":[],
        "firstTimeCustomer" : false,
        "orderNumbers":[]
-       } , 
+       } ,
    "id" : 1
-   } 
+   }
 }

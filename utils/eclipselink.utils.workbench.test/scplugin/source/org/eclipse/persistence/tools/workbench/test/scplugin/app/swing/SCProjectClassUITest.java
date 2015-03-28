@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -49,256 +49,256 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  */
 public class SCProjectClassUITest extends SCSessionUITest {
 
-	private PropertyValueModel classListHolder;
+    private PropertyValueModel classListHolder;
 
-	private ListModel stringListModel;
-	private ListModel classListModel;
-	
-	private TextField textField;
+    private ListModel stringListModel;
+    private ListModel classListModel;
 
-	public static void main( String[] args) throws Exception {
-		new SCProjectClassUITest().exec(args);
-	}
+    private TextField textField;
 
-	private SCProjectClassUITest() {
-		super();
-	}
+    public static void main( String[] args) throws Exception {
+        new SCProjectClassUITest().exec(args);
+    }
 
-	protected String windowTitle() {
-		return "Session Project Classes:";
-	}
+    private SCProjectClassUITest() {
+        super();
+    }
 
-	private void exec( String[] args) throws Exception {
+    protected String windowTitle() {
+        return "Session Project Classes:";
+    }
 
-		super.setUp();
+    private void exec( String[] args) throws Exception {
 
-		this.classListHolder = new SimplePropertyValueModel( new ClassList());
+        super.setUp();
 
-		CollectionValueModel stringListAdapter = buildStringListAdapter();
-		CollectionValueModel classListAdapter = buildClassListAdapter();
+        this.classListHolder = new SimplePropertyValueModel( new ClassList());
 
-		this.stringListModel = this.buildListModel( stringListAdapter);
-		this.classListModel = this.buildListModel( classListAdapter); // new SortedListValueModelAdapter( classListAdapter));
+        CollectionValueModel stringListAdapter = buildStringListAdapter();
+        CollectionValueModel classListAdapter = buildClassListAdapter();
 
-		this.openWindow();
-	}
-	private String getTextField() {
-		return this.textField.getText();
-	}
+        this.stringListModel = this.buildListModel( stringListAdapter);
+        this.classListModel = this.buildListModel( classListAdapter); // new SortedListValueModelAdapter( classListAdapter));
 
-	private CollectionValueModel buildStringListAdapter() {
-		
-		return new CollectionAspectAdapter( DatabaseSessionAdapter.ADDITIONAL_PROJECTS_COLLECTION, stringList()) {
-			protected Iterator getValueFromSubject() {
-				return ( stringList()).additionalProjects();
-			}
-		};
-	}
-	
-	private CollectionValueModel buildClassListAdapter() {
-		
-		return new CollectionAspectAdapter( ClassList.CLASS_LIST, classList()) {
-			protected Iterator getValueFromSubject() {
-				return classList().list();
-			}
-		};
-	}
+        this.openWindow();
+    }
+    private String getTextField() {
+        return this.textField.getText();
+    }
 
-	private ListModel buildListModel( CollectionValueModel listValueModel) {
-		return new ListModelAdapter( listValueModel); // for sorted list wrap it in a SortedListValueModelAdapter
-	}
-	
-	protected Component buildPropertyTestingPanel() {
-		
-		JPanel propertyListPanel = new JPanel( new GridLayout( 0, 1));
-		propertyListPanel.add( this.buildPropertyListPanel());
-		propertyListPanel.add( this.buildPropertyEntryPanel());
-		return propertyListPanel;
-	}
-	
-	protected Component buildPropertyListPanel() {
-		
-		JPanel taskListPanel = new JPanel( new GridLayout( 1, 0));
-		taskListPanel.add( this.buildStringListPanel());
-		taskListPanel.add( this.buildClassListPanel());
-		return taskListPanel;
-	}
+    private CollectionValueModel buildStringListAdapter() {
 
-	private Component buildStringListPanel() {
-		return this.buildListPanel( " Project Class Name", this.stringListModel);
-	}
+        return new CollectionAspectAdapter( DatabaseSessionAdapter.ADDITIONAL_PROJECTS_COLLECTION, stringList()) {
+            protected Iterator getValueFromSubject() {
+                return ( stringList()).additionalProjects();
+            }
+        };
+    }
 
-	private Component buildClassListPanel() {
-		return this.buildListPanel(" Project Class", this.classListModel);
-	}
+    private CollectionValueModel buildClassListAdapter() {
 
-	private Component buildListPanel( String label, ListModel listModel) {
-		
-		JPanel listPanel = new JPanel( new BorderLayout());
-		JLabel listLabel = new JLabel( label);
-		listPanel.add( listLabel, BorderLayout.NORTH);
+        return new CollectionAspectAdapter( ClassList.CLASS_LIST, classList()) {
+            protected Iterator getValueFromSubject() {
+                return classList().list();
+            }
+        };
+    }
 
-		JList listBox = new JList();
-		listBox.setModel( listModel);
-		listBox.setDoubleBuffered( true);
-		listLabel.setLabelFor( listBox);
-		listPanel.add( new JScrollPane( listBox), BorderLayout.CENTER);
-		return listPanel;
-	}
-	protected Component buildMainPanel() {
-		
-		JPanel mainPanel = new JPanel( new BorderLayout());
-		mainPanel.add( this.buildPropertyTestingPanel(), BorderLayout.CENTER);
-		mainPanel.add( this.buildControlPanel(), BorderLayout.SOUTH);
-		return mainPanel;
-	}
+    private ListModel buildListModel( CollectionValueModel listValueModel) {
+        return new ListModelAdapter( listValueModel); // for sorted list wrap it in a SortedListValueModelAdapter
+    }
 
-	private Component buildPropertyEntryPanel() {
-		JPanel addRemoveTaskPanel = new JPanel( new GridLayout( 3, 0));
-		addRemoveTaskPanel.add( this.buildTextField());
-//		addRemoveTaskPanel.add( this.buildAddButton());
-//		addRemoveTaskPanel.add( this.buildRemoveButton());
-		return addRemoveTaskPanel;
-	}
-	protected Component buildControlPanel() {
-		
-		JPanel controlPanel = new JPanel( new GridLayout( 1, 0));
+    protected Component buildPropertyTestingPanel() {
 
-		controlPanel.add( this.buildAddClassButton());
-		controlPanel.add( this.buildRemoveButton());
-//		controlPanel.add( this.buildResetPropertyButton());
-//		controlPanel.add( this.buildClearModelButton());
-//		controlPanel.add( this.buildRestoreModelButton());
-		controlPanel.add( this.buildPrintModelButton());
-		return controlPanel;
-	}
-	private TextField buildTextField() {
-		this.textField = new TextField( 50);
-		return this.textField;
-	}
-	private ClassList classList() {
+        JPanel propertyListPanel = new JPanel( new GridLayout( 0, 1));
+        propertyListPanel.add( this.buildPropertyListPanel());
+        propertyListPanel.add( this.buildPropertyEntryPanel());
+        return propertyListPanel;
+    }
 
-		return ( ClassList)this.classListHolder.getValue();
-	}
-	private DatabaseSessionAdapter stringList() {
+    protected Component buildPropertyListPanel() {
 
-		return ( DatabaseSessionAdapter)subjectHolder().getValue();
-	}
+        JPanel taskListPanel = new JPanel( new GridLayout( 1, 0));
+        taskListPanel.add( this.buildStringListPanel());
+        taskListPanel.add( this.buildClassListPanel());
+        return taskListPanel;
+    }
 
-	private JButton buildAddClassButton() {
-		return new JButton( this.buildAddClassAction());
-	}
+    private Component buildStringListPanel() {
+        return this.buildListPanel( " Project Class Name", this.stringListModel);
+    }
 
-	private Action buildAddClassAction() {
-		Action action = new AbstractAction( "add class") {
-			public void actionPerformed( ActionEvent event) {
-				SCProjectClassUITest.this.addProjectClass();
-			}
-		};
-		action.setEnabled( true);
-		return action;
-	}
+    private Component buildClassListPanel() {
+        return this.buildListPanel(" Project Class", this.classListModel);
+    }
 
-	private JButton buildRemoveButton() {
-		return new JButton(this.buildRemoveAction());
-	}
+    private Component buildListPanel( String label, ListModel listModel) {
 
-	private Action buildRemoveAction() {
-		Action action = new AbstractAction( "remove class") {
-			public void actionPerformed( ActionEvent event) {
-				SCProjectClassUITest.this.removeProjectClass();
-			}
-		};
-		action.setEnabled( true);
-		return action;
-	}
+        JPanel listPanel = new JPanel( new BorderLayout());
+        JLabel listLabel = new JLabel( label);
+        listPanel.add( listLabel, BorderLayout.NORTH);
 
-	private void addProjectClass() {
+        JList listBox = new JList();
+        listBox.setModel( listModel);
+        listBox.setDoubleBuffered( true);
+        listLabel.setLabelFor( listBox);
+        listPanel.add( new JScrollPane( listBox), BorderLayout.CENTER);
+        return listPanel;
+    }
+    protected Component buildMainPanel() {
 
-		String projectClass = this.getTextField();
-		if( projectClass.length() != 0) {
-			this.classList().add( projectClass);
-			this.stringList().addProjectClassNamed( projectClass);
-		}
-	}
-	private void removeProjectClass() {
+        JPanel mainPanel = new JPanel( new BorderLayout());
+        mainPanel.add( this.buildPropertyTestingPanel(), BorderLayout.CENTER);
+        mainPanel.add( this.buildControlPanel(), BorderLayout.SOUTH);
+        return mainPanel;
+    }
 
-		String projectClass = this.getTextField();
-		if( projectClass.length() != 0) {
-			ProjectAdapter project = (( DatabaseSessionAdapter)subject()).projectNamed(projectClass);
-			this.classList().remove( projectClass);
-			this.stringList().removeProject( project);
-		}
-	}
+    private Component buildPropertyEntryPanel() {
+        JPanel addRemoveTaskPanel = new JPanel( new GridLayout( 3, 0));
+        addRemoveTaskPanel.add( this.buildTextField());
+//        addRemoveTaskPanel.add( this.buildAddButton());
+//        addRemoveTaskPanel.add( this.buildRemoveButton());
+        return addRemoveTaskPanel;
+    }
+    protected Component buildControlPanel() {
 
-	protected void resetProperty() {
-		
-		Iterator i = (( DatabaseSessionAdapter)subject()).additionalProjects();
-		
-//		(( DatabaseSessionAdapter)subject()).removeProjectClassNamed( name);
-	}
-	
-	protected void initialize() {
-		super.initialize();
-		
-		windowW = 800;
-		 windowH = 300;
-	}
-	protected void printModel() {
-		System.out.println( "subject.projectClasses[");
+        JPanel controlPanel = new JPanel( new GridLayout( 1, 0));
 
-		for( Iterator i = (( DatabaseSessionAdapter)subject()).additionalProjects(); i.hasNext(); ) {
-			
-			String className = ( String)i.next();
-			System.out.println( "\t" + className);
-		}
-		System.out.println( "]");
-	}
-	
+        controlPanel.add( this.buildAddClassButton());
+        controlPanel.add( this.buildRemoveButton());
+//        controlPanel.add( this.buildResetPropertyButton());
+//        controlPanel.add( this.buildClearModelButton());
+//        controlPanel.add( this.buildRestoreModelButton());
+        controlPanel.add( this.buildPrintModelButton());
+        return controlPanel;
+    }
+    private TextField buildTextField() {
+        this.textField = new TextField( 50);
+        return this.textField;
+    }
+    private ClassList classList() {
 
-	private class ClassList extends AbstractModel {
+        return ( ClassList)this.classListHolder.getValue();
+    }
+    private DatabaseSessionAdapter stringList() {
 
-		private List classList;
+        return ( DatabaseSessionAdapter)subjectHolder().getValue();
+    }
 
-		public static final String CLASS_LIST = "classList";
+    private JButton buildAddClassButton() {
+        return new JButton( this.buildAddClassAction());
+    }
 
-		protected void initialize() {
-			super.initialize();
-			
-			this.classList = new ArrayList();
-			this.addAll( CollectionTools.list((( DatabaseSessionAdapter)subject()).additionalProjectNames()));
-		}
+    private Action buildAddClassAction() {
+        Action action = new AbstractAction( "add class") {
+            public void actionPerformed( ActionEvent event) {
+                SCProjectClassUITest.this.addProjectClass();
+            }
+        };
+        action.setEnabled( true);
+        return action;
+    }
 
-		public ListIterator list() {
-			return this.classList.listIterator();
-		}
-		public void add( String className) {
-			Class aClass =  ClassTools.classForName( className);
-			int index = this.classList.size();
-			this.classList.add( index, aClass);
-			this.fireItemAdded( CLASS_LIST, index, aClass);
-		}
-		public void addAll( Collection items) {
-			Collection addedItems = new ArrayList();
-			for( Iterator i = items.iterator(); i.hasNext(); ) {
-				String className = ( String)i.next();
-				addedItems.add( ClassTools.classForName( className));
-			}
-			this.addItemsToCollection( addedItems, this.classList, CLASS_LIST);
-		}		
+    private JButton buildRemoveButton() {
+        return new JButton(this.buildRemoveAction());
+    }
 
-		public void remove( String className) {
-			Class aClass =  ClassTools.classForName( className);
-			int index = this.classList.indexOf( aClass);
-			if (index != -1) {
-				Object removedClass = this.classList.remove(index);
-				this.fireItemRemoved( CLASS_LIST, index, removedClass);
-			}
-		}
-		public void clearClassList() {
-			this.classList.clear();
-			this.fireListChanged( CLASS_LIST);
-		}
-	}
+    private Action buildRemoveAction() {
+        Action action = new AbstractAction( "remove class") {
+            public void actionPerformed( ActionEvent event) {
+                SCProjectClassUITest.this.removeProjectClass();
+            }
+        };
+        action.setEnabled( true);
+        return action;
+    }
+
+    private void addProjectClass() {
+
+        String projectClass = this.getTextField();
+        if( projectClass.length() != 0) {
+            this.classList().add( projectClass);
+            this.stringList().addProjectClassNamed( projectClass);
+        }
+    }
+    private void removeProjectClass() {
+
+        String projectClass = this.getTextField();
+        if( projectClass.length() != 0) {
+            ProjectAdapter project = (( DatabaseSessionAdapter)subject()).projectNamed(projectClass);
+            this.classList().remove( projectClass);
+            this.stringList().removeProject( project);
+        }
+    }
+
+    protected void resetProperty() {
+
+        Iterator i = (( DatabaseSessionAdapter)subject()).additionalProjects();
+
+//        (( DatabaseSessionAdapter)subject()).removeProjectClassNamed( name);
+    }
+
+    protected void initialize() {
+        super.initialize();
+
+        windowW = 800;
+         windowH = 300;
+    }
+    protected void printModel() {
+        System.out.println( "subject.projectClasses[");
+
+        for( Iterator i = (( DatabaseSessionAdapter)subject()).additionalProjects(); i.hasNext(); ) {
+
+            String className = ( String)i.next();
+            System.out.println( "\t" + className);
+        }
+        System.out.println( "]");
+    }
+
+
+    private class ClassList extends AbstractModel {
+
+        private List classList;
+
+        public static final String CLASS_LIST = "classList";
+
+        protected void initialize() {
+            super.initialize();
+
+            this.classList = new ArrayList();
+            this.addAll( CollectionTools.list((( DatabaseSessionAdapter)subject()).additionalProjectNames()));
+        }
+
+        public ListIterator list() {
+            return this.classList.listIterator();
+        }
+        public void add( String className) {
+            Class aClass =  ClassTools.classForName( className);
+            int index = this.classList.size();
+            this.classList.add( index, aClass);
+            this.fireItemAdded( CLASS_LIST, index, aClass);
+        }
+        public void addAll( Collection items) {
+            Collection addedItems = new ArrayList();
+            for( Iterator i = items.iterator(); i.hasNext(); ) {
+                String className = ( String)i.next();
+                addedItems.add( ClassTools.classForName( className));
+            }
+            this.addItemsToCollection( addedItems, this.classList, CLASS_LIST);
+        }
+
+        public void remove( String className) {
+            Class aClass =  ClassTools.classForName( className);
+            int index = this.classList.indexOf( aClass);
+            if (index != -1) {
+                Object removedClass = this.classList.remove(index);
+                this.fireItemRemoved( CLASS_LIST, index, removedClass);
+            }
+        }
+        public void clearClassList() {
+            this.classList.clear();
+            this.fireListChanged( CLASS_LIST);
+        }
+    }
 
 }

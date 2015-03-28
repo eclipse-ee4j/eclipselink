@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,10 +50,10 @@ import org.eclipse.persistence.testing.jaxb.xsitype.TypeAttributeTestCases;
 
 public class JAXBTestSuite4 {
 
-	public static Test suite() {
-	    TestSuite suite = new TestSuite("JAXB20 Compiler Test Suite4");
-	    suite.addTest(SunCompatibilityTestSuite.suite());
-	    suite.addTest(RefreshTestSuite.suite());
+    public static Test suite() {
+        TestSuite suite = new TestSuite("JAXB20 Compiler Test Suite4");
+        suite.addTest(SunCompatibilityTestSuite.suite());
+        suite.addTest(RefreshTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.jaxb.substitution.SubstitutionTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.jaxb.innerclasses.InnerClassTestSuite.suite());
         suite.addTest(CollectionsTestSuite.suite());
@@ -63,12 +63,12 @@ public class JAXBTestSuite4 {
         suite.addTestSuite(JAXBEmployeeNSTestCases.class);
         suite.addTestSuite(JAXBFragmentTestCases.class);
         suite.addTest(org.eclipse.persistence.testing.jaxb.eventhandler.EventHandlerTestSuite.suite());
-        
+
         suite.addTestSuite(MapTestCases.class);
         suite.addTestSuite(MapElementWrapperTestCases.class);
         suite.addTestSuite(MapElementWrapperExternalTestCases.class);
         suite.addTestSuite(MapNamespaceBarTestCases.class);
-        suite.addTestSuite(MapNamespaceFooTestCases.class);      
+        suite.addTestSuite(MapNamespaceFooTestCases.class);
         suite.addTestSuite(XMLGregorianCalendarObjectTestCases.class);
         suite.addTestSuite(XSDSchemaTypesTestCases.class);
         suite.addTest(XmlInverseRefBidirectionalTestSuite.suite());
@@ -90,11 +90,11 @@ public class JAXBTestSuite4 {
         suite.addTest(TypeVariableTestSuite.suite());
         suite.addTestSuite(JAXBCaseInsensitivityTestCase.class);
 
-	    return suite;
-	}
+        return suite;
+    }
 
-	public static void main(String[] args) {
-	    String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.JAXBTestSuite4" };
-	    junit.textui.TestRunner.main(arguments);
-	}
+    public static void main(String[] args) {
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.JAXBTestSuite4" };
+        junit.textui.TestRunner.main(arguments);
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -35,7 +35,7 @@ public class ForUpdateClause implements Serializable, Cloneable {
     public ForUpdateClause(short lockMode) {
         this.lockMode = lockMode;
     }
-    
+
     public ForUpdateClause(Integer waitTimeout) {
         this.lockMode = ObjectBuildingQuery.LOCK;
         this.waitTimeout = waitTimeout;
@@ -56,11 +56,11 @@ public class ForUpdateClause implements Serializable, Cloneable {
             return new ForUpdateClause(lockMode);
         }
     }
-    
+
     public static ForUpdateClause newInstance(Integer waitTimeout) {
         return new ForUpdateClause(waitTimeout);
     }
-    
+
     public boolean isForUpdateOfClause() {
         return false;
     }
@@ -68,15 +68,15 @@ public class ForUpdateClause implements Serializable, Cloneable {
     public boolean isReferenceClassLocked() {
         return true;
     }
-    
+
     public short getLockMode() {
         return lockMode;
     }
-    
+
     public Integer getWaitTimeout() {
         return waitTimeout;
     }
-    
+
     /**
      * INTERNAL:
      * Prints the as of clause for an expression inside of the FROM clause.
@@ -93,7 +93,7 @@ public class ForUpdateClause implements Serializable, Cloneable {
             printer.printString(printer.getPlatform().getSelectForUpdateNoWaitString());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Returns collection of aliases of the tables to be locked.

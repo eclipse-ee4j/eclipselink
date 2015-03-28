@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.readonly;
 
 import java.util.*;
@@ -22,14 +22,14 @@ import org.eclipse.persistence.testing.framework.*;
 
 /**
  * <p>
- * <b>Purpose</b>: Test the public API with regards to manipulation of the sets of the 
+ * <b>Purpose</b>: Test the public API with regards to manipulation of the sets of the
  *    read-only classes in a UnitOfWork and the default set in Project.
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
- * <li> Test the accessors for the manipulation of the read-only class set in instances 
+ * <li> Test the accessors for the manipulation of the read-only class set in instances
  * <li> of UnitOfWork.
- * <li> Test the accessors for the manipulation of the default read-only class in an 
+ * <li> Test the accessors for the manipulation of the default read-only class in an
  * <li> instance of Project.
  * </ul>
  */

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,75 +28,75 @@ package org.eclipse.persistence.jpa.jpql.parser;
 public abstract class AbstractEclipseLinkExpressionVisitor extends AbstractExpressionVisitor
                                                            implements EclipseLinkExpressionVisitor {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(AsOfClause expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(AsOfClause expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(CastExpression expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(CastExpression expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(ConnectByClause expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(ConnectByClause expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(DatabaseType expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(DatabaseType expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(ExtractExpression expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(ExtractExpression expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(HierarchicalQueryClause expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(HierarchicalQueryClause expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(OrderSiblingsByClause expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(OrderSiblingsByClause expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(RegexpExpression expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(RegexpExpression expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(StartWithClause expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(StartWithClause expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TableExpression expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(TableExpression expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TableVariableDeclaration expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(TableVariableDeclaration expression) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(UnionClause expression) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(UnionClause expression) {
+    }
 }

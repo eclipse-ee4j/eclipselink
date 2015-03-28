@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
  * INTERNAL:
  * <p><b>Purpose:</b>
  * Provides an enumeration of the json schema types for use by the JsonSchemaGenerator.
- * 
+ *
  * @see JsonSchema
  * @author mmacivor
  *
@@ -27,27 +27,27 @@ import javax.xml.bind.annotation.XmlEnumValue;
 public enum JsonType {
     @XmlEnumValue("object")
     OBJECT,
-    
+
     @XmlEnumValue("array")
     ARRAY,
-    
+
     @XmlEnumValue("string")
     STRING,
-    
+
     @XmlEnumValue("number")
     NUMBER,
-    
+
     @XmlEnumValue("integer")
     INTEGER,
-    
+
     @XmlEnumValue("boolean")
     BOOLEAN,
-    
-    //A marker type, used by schema generator to indicate a type that could be an 
+
+    //A marker type, used by schema generator to indicate a type that could be an
     //attachment
     @XmlEnumValue("binary")
     BINARYTYPE,
-    
+
     //A marker type, used by schema generator to indicate an enumeration
     @XmlEnumValue("enum")
     ENUMTYPE

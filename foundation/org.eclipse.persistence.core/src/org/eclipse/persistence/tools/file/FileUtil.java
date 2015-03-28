@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.file;
 
 import java.io.ByteArrayOutputStream;
@@ -116,46 +116,46 @@ public class FileUtil {
         }
         JarOutputStream jarOut = null;
         try {
-	        jarOut = new JarOutputStream(new FileOutputStream(jar), new Manifest());
-	        Vector files = findFiles(jarDirectory, filtertedExtensions);
-	
-	        for (int i = 0; i < files.size(); i++) {
-	            File file = (File)files.elementAt(i);
-	
-	            String relativePathToDirectory = file.getAbsolutePath().substring(directory.getAbsolutePath().length() + 1);
-	            String entryName = relativePathToDirectory.replace('\\', '/');
-	
-	            FileInputStream inStream = null;
-	            ByteArrayOutputStream byteStream = null;
-	            
-	            try {
-		            inStream = new FileInputStream(file);
-		            byteStream = new ByteArrayOutputStream();
-		
-		            int length = 0;
-		            byte[] buffer = new byte[1024];
-		            while ((length = inStream.read(buffer)) > 0) {
-		                byteStream.write(buffer, 0, length);
-		            }
-		            byte[] arr = byteStream.toByteArray();
-		            
-		            JarEntry meta = new JarEntry(entryName);
-		            jarOut.putNextEntry(meta);
-		            meta.setSize(arr.length);
-		            meta.setCompressedSize(arr.length);
-		            CRC32 crc = new CRC32();
-		            crc.update(arr);
-		            meta.setCrc(crc.getValue());
-		            meta.setMethod(ZipEntry.STORED);
-		            jarOut.write(arr, 0, arr.length);
-		            jarOut.closeEntry();
-	            } finally {
-		        	Helper.close(byteStream);
-		        	Helper.close(inStream);
-		        }
-	        }
+            jarOut = new JarOutputStream(new FileOutputStream(jar), new Manifest());
+            Vector files = findFiles(jarDirectory, filtertedExtensions);
+
+            for (int i = 0; i < files.size(); i++) {
+                File file = (File)files.elementAt(i);
+
+                String relativePathToDirectory = file.getAbsolutePath().substring(directory.getAbsolutePath().length() + 1);
+                String entryName = relativePathToDirectory.replace('\\', '/');
+
+                FileInputStream inStream = null;
+                ByteArrayOutputStream byteStream = null;
+
+                try {
+                    inStream = new FileInputStream(file);
+                    byteStream = new ByteArrayOutputStream();
+
+                    int length = 0;
+                    byte[] buffer = new byte[1024];
+                    while ((length = inStream.read(buffer)) > 0) {
+                        byteStream.write(buffer, 0, length);
+                    }
+                    byte[] arr = byteStream.toByteArray();
+
+                    JarEntry meta = new JarEntry(entryName);
+                    jarOut.putNextEntry(meta);
+                    meta.setSize(arr.length);
+                    meta.setCompressedSize(arr.length);
+                    CRC32 crc = new CRC32();
+                    crc.update(arr);
+                    meta.setCrc(crc.getValue());
+                    meta.setMethod(ZipEntry.STORED);
+                    jarOut.write(arr, 0, arr.length);
+                    jarOut.closeEntry();
+                } finally {
+                    Helper.close(byteStream);
+                    Helper.close(inStream);
+                }
+            }
         } finally {
-        	Helper.close(jarOut);
+            Helper.close(jarOut);
         }
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -479,37 +479,37 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     // Bug#397751
     public void complexInTest4() {
 
-   	 EntityManager em = createEntityManager();
-   	 Query query = em.createQuery("SELECT lp from LargeProject lp WHERE lp.budget = :budget and TYPE(lp) IN :employeeTypes and lp.name IN :employeeStatus");
-   	 query.setParameter("budget", 60000);
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT lp from LargeProject lp WHERE lp.budget = :budget and TYPE(lp) IN :employeeTypes and lp.name IN :employeeStatus");
+        query.setParameter("budget", 60000);
 
-   	 List<Object> status = new ArrayList<Object>();
-   	 status.add("EclipseLink");
-   	 status.add("JPQL");
-   	 query.setParameter("employeeStatus", status);
+        List<Object> status = new ArrayList<Object>();
+        status.add("EclipseLink");
+        status.add("JPQL");
+        query.setParameter("employeeStatus", status);
 
-   	 List<Object> types = new ArrayList<Object>();
-   	 types.add(LargeProject.class);
-   	 types.add(SmallProject.class);
-   	 query.setParameter("employeeTypes", types);
+        List<Object> types = new ArrayList<Object>();
+        types.add(LargeProject.class);
+        types.add(SmallProject.class);
+        query.setParameter("employeeTypes", types);
 
-   	 query.getResultList();
-   	 closeEntityManager(em);
+        query.getResultList();
+        closeEntityManager(em);
     }
 
     // Bug#399615
     public void complexInTest5() {
 
-   	 EntityManager em = createEntityManager();
-   	 Query query = em.createQuery("SELECT e from Employee e WHERE e.responsibilities IN :responsibilities");
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.responsibilities IN :responsibilities");
 
-   	 List<String> types = new ArrayList<String>();
-   	 types.add("responsibilities1");
-   	 types.add("responsibilities2");
-   	 query.setParameter("responsibilities", types);
+        List<String> types = new ArrayList<String>();
+        types.add("responsibilities1");
+        types.add("responsibilities2");
+        query.setParameter("responsibilities", types);
 
-   	 query.getResultList();
-   	 closeEntityManager(em);
+        query.getResultList();
+        closeEntityManager(em);
     }
 
     public void complexLengthTest()
@@ -1785,8 +1785,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         ejbqlString = "SELECT DISTINCT e FROM Employee e, Project p WHERE p MEMBER OF e.projects";
         Query query =  em.createQuery(ejbqlString);
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
-        	query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+            // distinct is incompatible with blob in selection clause on Oracle
+            query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
         }
         result = query.getResultList();
         Assert.assertTrue("Complex MEMBER OF test failed",
@@ -2029,7 +2029,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             this.code = code;
         }
         @Override
-		public int hashCode() {
+        public int hashCode() {
             int result = 0;
             result += (firstName != null) ? firstName.hashCode() : 0;
             result += (lastName != null) ? lastName.hashCode() : 0;
@@ -2040,7 +2040,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             return result;
         }
         @Override
-		public boolean equals(Object o) {
+        public boolean equals(Object o) {
             if ((o == null) || (!(o instanceof EmployeeDetail))) {
                 return false;
             }
@@ -2053,7 +2053,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 JUnitJPQLComplexTestSuite.equals(this.period, other.period);
         }
         @Override
-		public String toString() {
+        public String toString() {
             return "EmployeeDetail(" + firstName + ", " + lastName + ", " +
                                     manager + ", " + count + ", " + code + ", "+ period+ ")";
         }
@@ -2067,14 +2067,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             this.value2 = value2;
         }
         @Override
-		public int hashCode() {
+        public int hashCode() {
             int result = 0;
             result += value1 != null ? value1.hashCode() : 0;
             result += value2 != null ? value2.hashCode() : 0;
             return result;
         }
         @Override
-		public boolean equals(Object o) {
+        public boolean equals(Object o) {
             if ((o == null) || (!(o instanceof LongHolder))) {
                 return false;
             }
@@ -2083,7 +2083,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 JUnitJPQLComplexTestSuite.equals(this.value2, other.value2);
         }
         @Override
-		public String toString() {
+        public String toString() {
             return "LongHolder(" + value1 + ", " + value2 + ")";
         }
     }
@@ -2693,7 +2693,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         clearCache();
         String ejbqlString;
         if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-        	// distinct is incompatible with blob in selection clause on Oracle
+            // distinct is incompatible with blob in selection clause on Oracle
             ejbqlString = "select e from Employee e join e.manager.phoneNumbers p where p.areaCode = '613'";
         } else {
             ejbqlString = "select distinct e from Employee e join e.manager.phoneNumbers p where p.areaCode = '613'";
@@ -2891,7 +2891,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         String verificationString = "select e from Employee e where e.lastName = 'Jones'";
         Query query = em.createQuery(verificationString);
         if (usesSOP() && !isSOPRecoverable()) {
-            // SOP query would fail because all Employees in the db have SOP field set to null after bulk update 
+            // SOP query would fail because all Employees in the db have SOP field set to null after bulk update
             query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
         }
         List results = query.getResultList();
@@ -3467,13 +3467,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         try {
             Query query = em.createQuery("Select a from Address a where a.city = 'Ottawa'"
-            		+ " union Select a2 from Address a2"
+                    + " union Select a2 from Address a2"
                         + " union all Select a2 from Address a2"
-            		+ " intersect Select a from Address a where a.city = 'Ottawa'"
+                    + " intersect Select a from Address a where a.city = 'Ottawa'"
                         + " except Select a from Address a where a.city = 'Ottawa'");
             if (usesSOP() && getServerSession().getPlatform().isOracle()) {
-            	// field comparison is incompatible with blob in selection clause on Oracle
-            	query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+                // field comparison is incompatible with blob in selection clause on Oracle
+                query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
             }
             List result = query.getResultList();
             if (result.size() > 0) {
@@ -4475,7 +4475,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 // P2 (Non-repeatable read)
                 Runnable runnable = new Runnable() {
                     @Override
-						public void run() {
+                        public void run() {
                         try {
                             beginTransaction(em2);
                             Query query2 = em2.createQuery("select e from Employee e where e.id = :id");
@@ -4565,24 +4565,24 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     // Bug#400598
     public void testNestedArrays2() {
-   	 // Incorrect validation of something being a nested array and it's not
-   	 // Note: This query does not need to be complex but it does a complex (long) query
-   	 EntityManager em = createEntityManager();
-   	 Query query = em.createQuery(
+        // Incorrect validation of something being a nested array and it's not
+        // Note: This query does not need to be complex but it does a complex (long) query
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery(
           "select attr from Employee attr, Address dn " +
-   	    "where (attr.id=dn.ID) and " +
-   	    "      (dn.type = :pdn) and" +
-   	    "      ((exists ( select A_0 from Employee A_0 where ( A_0.id = DN.ID ) and" +
-   	    "                                                    ( A_0.payScale IN (:V_A_0_1, :V_A_0)))) AND" +
-   	    "       (exists ( select A_1 from Employee A_1 where ( A_1.id = DN.ID ) and" +
-   	    "                                                    ( A_1.payScale = :V_A_1 )))" +
-   	    "      )");
-   	 query.setParameter("pdn",     new AddressType());
-   	 query.setParameter("V_A_0_1", SalaryRate.MANAGER);
-   	 query.setParameter("V_A_0",   SalaryRate.EXECUTIVE);
-   	 query.setParameter("V_A_1",   SalaryRate.SENIOR);
-   	 query.getResultList();
-   	 closeEntityManager(em);
+           "where (attr.id=dn.ID) and " +
+           "      (dn.type = :pdn) and" +
+           "      ((exists ( select A_0 from Employee A_0 where ( A_0.id = DN.ID ) and" +
+           "                                                    ( A_0.payScale IN (:V_A_0_1, :V_A_0)))) AND" +
+           "       (exists ( select A_1 from Employee A_1 where ( A_1.id = DN.ID ) and" +
+           "                                                    ( A_1.payScale = :V_A_1 )))" +
+           "      )");
+        query.setParameter("pdn",     new AddressType());
+        query.setParameter("V_A_0_1", SalaryRate.MANAGER);
+        query.setParameter("V_A_0",   SalaryRate.EXECUTIVE);
+        query.setParameter("V_A_1",   SalaryRate.SENIOR);
+        query.getResultList();
+        closeEntityManager(em);
     }
 
     // Test JPQL with no select clause.
@@ -4642,10 +4642,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     // Bug#395720 - ANTLR allowed it even though it's not spec compliant
     public void testElementCollectionInLikeExpression() {
-   	  EntityManager em = createEntityManager();
-   	  Query query = em.createQuery("SELECT b FROM Buyer b WHERE b.creditLines LIKE '%e%'");
-   	  query.getResultList();
-   	  closeEntityManager(em);
+         EntityManager em = createEntityManager();
+         Query query = em.createQuery("SELECT b FROM Buyer b WHERE b.creditLines LIKE '%e%'");
+         query.getResultList();
+         closeEntityManager(em);
     }
 
     public void converterOnElementCollectionTest()
@@ -4672,18 +4672,18 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         Query query = em.createQuery(
             "SELECT COUNT(employee.managedEmployees) FROM Employee employee"
-   	  );
-   	  assertFalse(query.getResultList().isEmpty());
-   	  closeEntityManager(em);
+         );
+         assertFalse(query.getResultList().isEmpty());
+         closeEntityManager(em);
     }
 
     // Bug#412928 - JPQL parser: Regression, an IN item should allow a collection type
     public void testInItemCollectionValuedPath() {
-   	  EntityManager em = createEntityManager();
-   	  Query query = em.createQuery(
-   	      "select e from Employee e, Project p where e in (p.teamMembers)"
-   	  );
-	  assertFalse(query.getResultList().isEmpty());
-	  closeEntityManager(em);
+         EntityManager em = createEntityManager();
+         Query query = em.createQuery(
+             "select e from Employee e, Project p where e in (p.teamMembers)"
+         );
+      assertFalse(query.getResultList().isEmpty());
+      closeEntityManager(em);
     }
 }

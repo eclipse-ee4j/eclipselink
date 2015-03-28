@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.List;
@@ -56,7 +56,7 @@ public abstract class ReadQuery extends DatabaseQuery {
 
     /** Optimization: temporarily stores cached query results while they are being built in a cloned query */
     protected transient Object temporaryCachedQueryResults = null;
-    
+
     /** Stores the JPA maxResult settings for a NamedQuery */
     protected int maxResults = -1;
 
@@ -138,7 +138,7 @@ public abstract class ReadQuery extends DatabaseQuery {
       * set will be discarded the next time the query is executed.</P>
       * <P>To enable this behavior, call {@link #cacheQueryResults} or
       * {@link #setQueryResultsCachePolicy} passing in a valid QueryResultsCachePolicy.</P>
-      * Note: If this method is called on a query that initially cached query results, 
+      * Note: If this method is called on a query that initially cached query results,
       * clearQueryResults(Session) should also be called.  Otherwise, the results of
       * this query will remain in the cache and cause extra memory use
       */
@@ -263,7 +263,7 @@ public abstract class ReadQuery extends DatabaseQuery {
             && (this.firstResult == 0)
             && (this.fetchSize == 0);
     }
-    
+
     /**
      * PUBLIC:
      * Return if this is a read query.
@@ -271,7 +271,7 @@ public abstract class ReadQuery extends DatabaseQuery {
     public boolean isReadQuery() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Copy all setting from the query.
@@ -289,7 +289,7 @@ public abstract class ReadQuery extends DatabaseQuery {
             this.queryResultCachingPolicy = readQuery.queryResultCachingPolicy;
         }
     }
-    
+
     /**
      * INTERNAL:
      * This is different from 'prepareForExecution' in that this is called on the original query,
@@ -306,9 +306,9 @@ public abstract class ReadQuery extends DatabaseQuery {
             if (getReferenceClass() != null) {
                 getQueryResultsCachePolicy().getInvalidationClasses().add(getReferenceClass());
             }
-    	}
+        }
     }
-    
+
     /**
      * INTERNAL:
      * Prepare the receiver for execution in a session.
@@ -430,9 +430,9 @@ public abstract class ReadQuery extends DatabaseQuery {
      * NB - a value of zero means that no call to statement.setFetchSize() will be made.
      */
     public void setFetchSize(int fetchSize) {
-    	if ( isPrepared() && this.getCall()!=null) {
-    		getCall().setResultSetFetchSize(fetchSize);
-    	}
+        if ( isPrepared() && this.getCall()!=null) {
+            getCall().setResultSetFetchSize(fetchSize);
+        }
         this.fetchSize = fetchSize;
     }
 
@@ -458,7 +458,7 @@ public abstract class ReadQuery extends DatabaseQuery {
     public boolean shouldCacheQueryResults() {
         return queryResultCachingPolicy != null;
     }
-    
+
     /**
      * INTERNAL:
      * Put results in the temporary cache.

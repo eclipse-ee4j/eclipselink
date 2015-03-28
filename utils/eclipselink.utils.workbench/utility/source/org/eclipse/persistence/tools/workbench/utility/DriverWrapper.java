@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -33,109 +33,109 @@ import java.util.logging.Logger;
  * DriverManager.getConnection().
  */
 public class DriverWrapper implements Driver {
-	/** the "real" JDBC driver */
-	private Driver driver;
+    /** the "real" JDBC driver */
+    private Driver driver;
 
 
-	// ********** constructors **********
+    // ********** constructors **********
 
-	/**
-	 * Wrap the specified driver.
-	 */
-	public DriverWrapper(Driver driver) {
-		super();
-		this.driver = driver;
-	}
+    /**
+     * Wrap the specified driver.
+     */
+    public DriverWrapper(Driver driver) {
+        super();
+        this.driver = driver;
+    }
 
-	/**
-	 * Wrap the driver for the specified driver class.
-	 */
-	public DriverWrapper(Class driverClass)
-		throws InstantiationException, IllegalAccessException
-	{
-		this((Driver) driverClass.newInstance());
-	}
+    /**
+     * Wrap the driver for the specified driver class.
+     */
+    public DriverWrapper(Class driverClass)
+        throws InstantiationException, IllegalAccessException
+    {
+        this((Driver) driverClass.newInstance());
+    }
 
-	/**
-	 * Wrap the driver for the specified driver class and class loader
-	 * that can load the driver.
-	 */
-	public DriverWrapper(String driverClassName, ClassLoader classLoader)
-		throws ClassNotFoundException, InstantiationException, IllegalAccessException
-	{
-		this(Class.forName(driverClassName, true, classLoader));
-	}
+    /**
+     * Wrap the driver for the specified driver class and class loader
+     * that can load the driver.
+     */
+    public DriverWrapper(String driverClassName, ClassLoader classLoader)
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException
+    {
+        this(Class.forName(driverClassName, true, classLoader));
+    }
 
-	/**
-	 * Wrap the driver for the specified driver class and classpath
-	 * entries required to load the driver.
-	 */
-	public DriverWrapper(String driverClassName, URL[] driverClasspath)
-		throws ClassNotFoundException, InstantiationException, IllegalAccessException
-	{
-		this(driverClassName, new URLClassLoader(driverClasspath));
-	}
+    /**
+     * Wrap the driver for the specified driver class and classpath
+     * entries required to load the driver.
+     */
+    public DriverWrapper(String driverClassName, URL[] driverClasspath)
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException
+    {
+        this(driverClassName, new URLClassLoader(driverClasspath));
+    }
 
-	/**
-	 * Wrap the driver for the specified driver class and classpath
-	 * entry required to load the driver.
-	 */
-	public DriverWrapper(String driverClassName, URL driverClasspathEntry)
-		throws ClassNotFoundException, InstantiationException, IllegalAccessException
-	{
-		this(driverClassName, new URL[] {driverClasspathEntry});
-	}
+    /**
+     * Wrap the driver for the specified driver class and classpath
+     * entry required to load the driver.
+     */
+    public DriverWrapper(String driverClassName, URL driverClasspathEntry)
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException
+    {
+        this(driverClassName, new URL[] {driverClasspathEntry});
+    }
 
 
-	// ********** Driver implementation **********
+    // ********** Driver implementation **********
 
-	/**
-	 * @see java.sql.Driver#connect(String, java.util.Properties)
-	 */
-	public Connection connect(String url, Properties info) throws SQLException {
-		return this.driver.connect(url, info);
-	}
+    /**
+     * @see java.sql.Driver#connect(String, java.util.Properties)
+     */
+    public Connection connect(String url, Properties info) throws SQLException {
+        return this.driver.connect(url, info);
+    }
 
-	/**
-	 * @see java.sql.Driver#acceptsURL(String)
-	 */
-	public boolean acceptsURL(String url) throws SQLException {
-		return this.driver.acceptsURL(url);
-	}
-	
-	/**
-	 * @see java.sql.Driver#getParentLogger()
-	 */
-	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-		return this.driver.getParentLogger();
-	}
+    /**
+     * @see java.sql.Driver#acceptsURL(String)
+     */
+    public boolean acceptsURL(String url) throws SQLException {
+        return this.driver.acceptsURL(url);
+    }
 
-	/**
-	 * @see java.sql.Driver#getPropertyInfo(String, java.util.Properties)
-	 */
-	public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) throws SQLException {
-		return this.driver.getPropertyInfo(url, info);
-	}
+    /**
+     * @see java.sql.Driver#getParentLogger()
+     */
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return this.driver.getParentLogger();
+    }
 
-	/**
-	 * @see java.sql.Driver#getMajorVersion()
-	 */
-	public int getMajorVersion() {
-		return this.driver.getMajorVersion();
-	}
+    /**
+     * @see java.sql.Driver#getPropertyInfo(String, java.util.Properties)
+     */
+    public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) throws SQLException {
+        return this.driver.getPropertyInfo(url, info);
+    }
 
-	/**
-	 * @see java.sql.Driver#getMinorVersion()
-	 */
-	public int getMinorVersion() {
-		return this.driver.getMinorVersion();
-	}
+    /**
+     * @see java.sql.Driver#getMajorVersion()
+     */
+    public int getMajorVersion() {
+        return this.driver.getMajorVersion();
+    }
 
-	/**
-	 * @see java.sql.Driver#jdbcCompliant()
-	 */
-	public boolean jdbcCompliant() {
-		return this.driver.jdbcCompliant();
-	}
+    /**
+     * @see java.sql.Driver#getMinorVersion()
+     */
+    public int getMinorVersion() {
+        return this.driver.getMinorVersion();
+    }
+
+    /**
+     * @see java.sql.Driver#jdbcCompliant()
+     */
+    public boolean jdbcCompliant() {
+        return this.driver.jdbcCompliant();
+    }
 
 }

@@ -1,17 +1,17 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     04/07/2012-2.5 Guy Pelletier    
+ *     04/07/2012-2.5 Guy Pelletier
  *       - 384275: Customizer from a mapped superclass is not overridden by an entity customizer
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
 import java.util.ArrayList;
@@ -98,10 +98,10 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestCase("testJoinedInheritanceWithAbstractSuperclass"));
         // Bug 355721
         suite.addTest(new EntityManagerJUnitTestCase("testJoinedInheritancePersistWithReadOnlyEntity"));
-        
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -117,58 +117,58 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         beginTransaction(em);
         Person p = new Person();
         p.setName("Evil Knievel");
-        
+
         Car c = new SportsCar();
         c.setDescription("Ferrari");
         ((SportsCar) c).setMaxSpeed(200);
         p.setCar(c);
-        
+
         try {
             em.persist(c);
             em.persist(p);
             commitTransaction(em);
-        
+
         } catch (Exception exception ) {
             fail("Error persisting polymorphic relationship: " + exception.getMessage());
         } finally {
             closeEntityManager(em);
         }
     }
-    
+
     public void testCacheExpiryInitializationForInheritance() {
         ServerSession session = JUnitTestCase.getServerSession();
-        
+
         ClassDescriptor personDescriptor = session.getDescriptor(Person.class); // parent
         ClassDescriptor engineerDescriptor = session.getDescriptor(Engineer.class); // subclass
         ClassDescriptor seniorEngineerDescriptor = session.getDescriptor(SeniorEngineer.class); // subclass of subclass
-        
+
         // Policy existence check
-        assertNotNull("personDescriptor's cacheInvalidationPolicy should not be null", 
+        assertNotNull("personDescriptor's cacheInvalidationPolicy should not be null",
                 personDescriptor.getCacheInvalidationPolicy());
-        assertNotNull("engineerDescriptor's cacheInvalidationPolicy should not be null", 
+        assertNotNull("engineerDescriptor's cacheInvalidationPolicy should not be null",
                 engineerDescriptor.getCacheInvalidationPolicy());
-        assertNotNull("seniorEngineerDescriptor's cacheInvalidationPolicy should not be null", 
+        assertNotNull("seniorEngineerDescriptor's cacheInvalidationPolicy should not be null",
                 seniorEngineerDescriptor.getCacheInvalidationPolicy());
-        
+
         // Policy class check
-        assertTrue("personDescriptor's cacheInvalidationPolicy should be TimeToLiveCacheInvalidationPolicy", 
+        assertTrue("personDescriptor's cacheInvalidationPolicy should be TimeToLiveCacheInvalidationPolicy",
                 personDescriptor.getCacheInvalidationPolicy() instanceof TimeToLiveCacheInvalidationPolicy);
-        assertTrue("engineerDescriptor's cacheInvalidationPolicy should be TimeToLiveCacheInvalidationPolicy", 
+        assertTrue("engineerDescriptor's cacheInvalidationPolicy should be TimeToLiveCacheInvalidationPolicy",
                 engineerDescriptor.getCacheInvalidationPolicy() instanceof TimeToLiveCacheInvalidationPolicy);
-        assertTrue("seniorEngineerDescriptor's cacheInvalidationPolicy should be TimeToLiveCacheInvalidationPolicy", 
+        assertTrue("seniorEngineerDescriptor's cacheInvalidationPolicy should be TimeToLiveCacheInvalidationPolicy",
                 seniorEngineerDescriptor.getCacheInvalidationPolicy() instanceof TimeToLiveCacheInvalidationPolicy);
-        
+
         // Subclass clone check
-        assertFalse("engineerDescriptor's cacheInvalidationPolicy should be a clone", 
+        assertFalse("engineerDescriptor's cacheInvalidationPolicy should be a clone",
                 engineerDescriptor.getCacheInvalidationPolicy() == personDescriptor.getCacheInvalidationPolicy());
-        assertFalse("seniorEngineerDescriptor's cacheInvalidationPolicy should be a clone", 
+        assertFalse("seniorEngineerDescriptor's cacheInvalidationPolicy should be a clone",
                 seniorEngineerDescriptor.getCacheInvalidationPolicy() == personDescriptor.getCacheInvalidationPolicy());
-        
+
         // Subclass TTL check
         long ttl = ((TimeToLiveCacheInvalidationPolicy)personDescriptor.getCacheInvalidationPolicy()).getTimeToLive();
-        assertEquals("engineerDescriptor's invalidation TTL should be " + ttl, 
+        assertEquals("engineerDescriptor's invalidation TTL should be " + ttl,
                 ttl, ((TimeToLiveCacheInvalidationPolicy)engineerDescriptor.getCacheInvalidationPolicy()).getTimeToLive());
-        assertEquals("seniorEngineerDescriptor's invalidation TTL should be " + ttl, 
+        assertEquals("seniorEngineerDescriptor's invalidation TTL should be " + ttl,
                 ttl, ((TimeToLiveCacheInvalidationPolicy)seniorEngineerDescriptor.getCacheInvalidationPolicy()).getTimeToLive());
     }
 
@@ -177,12 +177,12 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
      */
     public void testOverriddenCustomizer() {
         ServerSession session = JUnitTestCase.getServerSession();
-        
+
         ClassDescriptor computerDescriptor = session.getDescriptor(Computer.class);
         assertFalse("Computer alias was incorrect", computerDescriptor.getAlias().equals("InvalidAliasName"));
     }
-    
-    // test if we can associate with a subclass entity 
+
+    // test if we can associate with a subclass entity
     // whose root entity has EmbeddedId in Joined inheritance strategy
     // Issue: GF#1153 && GF#1586 (desktop amendment)
     public void testAssociationWithEmbeddedIdSubclassEntityInJoinedStrategy() {
@@ -192,37 +192,37 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         try {
             Engineer engineer = new Engineer();
             em.persist(engineer);
-        
-            ComputerPK laptopPK = new ComputerPK("Dell", 10001);    
+
+            ComputerPK laptopPK = new ComputerPK("Dell", 10001);
             Laptop laptop = em.find(Laptop.class, laptopPK);
             if (laptop == null){
                 laptop = new Laptop(laptopPK);
                 em.persist(laptop);
             }
-        
-            ComputerPK desktopPK = new ComputerPK("IBM", 10002);    
+
+            ComputerPK desktopPK = new ComputerPK("IBM", 10002);
             Desktop desktop = em.find(Desktop.class, desktopPK);
             if (desktop == null){
                 desktop = new Desktop(desktopPK);
                 em.persist(desktop);
             }
-            
+
             // associate many-to-many relationships
             engineer.getLaptops().add(laptop);
             engineer.getDesktops().add(desktop);
-            
+
             commitTransaction(em);
         } catch(RuntimeException ex) {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            
+
             throw ex;
         } finally {
             closeEntityManager(em);
         }
     }
-    
+
     // https://bugs.eclipse.org/bugs/show_bug.cgi?id=241979
     public void testUpateTireInfo(){
         EntityManager em = createEntityManager();
@@ -242,7 +242,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         localTire = em.find(TireInfo.class, tireInfo.getId());
         assertTrue("TireInfo was not updated", localTire.getPressure().equals(40));
     }
-    
+
     //https://bugs.eclipse.org/bugs/show_bug.cgi?id=312253
     // Note: this test will potentially fail in a number of different ways
     // see the above bug for details of the non-derminism
@@ -256,17 +256,17 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         VehicleDirectory directory = new VehicleDirectory();
         directory.setName("MyVehicles");
         em.persist(directory);
-        
+
         Company company = new Company();
         company.setName("A Blue Company");
         em.persist(company);
         em.flush();
-        
+
         Car car = new Car();
         car.setDescription("a Blue Car");
         car.setOwner(company);
         em.persist(car);
-        
+
         directory.getVehicleDirectory().put(car.getOwner(), car);
         company.getVehicles().add(car);
 
@@ -275,10 +275,10 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         } catch(RuntimeException e){
             fail("Exception was thrown while flushing a MapKey with inheritance. " + e.getMessage());
         }
-        
+
         rollbackTransaction(em);;
     }
-    
+
     public void testRemoveInheritedManyToMany(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -292,7 +292,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             em.persist(laptop);
             eng.getLaptops().add(laptop);
             em.flush();
-            
+
             em.remove(eng);
             em.flush();
         } catch (PersistenceException ex){
@@ -306,7 +306,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             rollbackTransaction(em);
         }
     }
-    
+
     // Bug 336133
     public void testGenericCollectionOnSuperclass(){
         EntityManager em = createEntityManager();
@@ -319,19 +319,19 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             bus.getTires().add(tire);
             em.persist(bus);
             em.flush();
-            
+
             em.clear();
             clearCache();
-            
+
             bus = em.find(Bus.class, bus.getId());
             assertNotNull("Bus is null.", bus);
             assertTrue("Bus has no tires.", bus.getTires().size() == 1);
         } finally {
             rollbackTransaction(em);
         }
-        
+
     }
-    
+
     // bug 325035
     public void testAddToUninstantiatedSet(){
         EntityManager em = createEntityManager();
@@ -339,16 +339,16 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
 
         AAA a = new AAA();
         em.persist(a);
-        
+
         DDD d = new DDD();
         em.persist(d);
-        
+
         Set<DDD> ds = new HashSet<DDD>();
         ds.add(d);
         a.setDdds(ds);
         d.setAaa(a);
         commitTransaction(em);
-        
+
         clearCache();
         try{
             em = createEntityManager();
@@ -357,9 +357,9 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             a.getDdds().add(d);
             d.setAaa(a);
             commitTransaction(em);
-            
+
             assertTrue("The collection contains too many elements", a.getDdds().size() == 1);
-           
+
         } finally  {
             em = createEntityManager();
             beginTransaction(em);
@@ -418,24 +418,24 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
 
         AAA a = new AAA();
         em.persist(a);
-        
+
         DDD d = new DDD();
         em.persist(d);
-        
+
         Set<DDD> ds = new HashSet<DDD>();
         ds.add(d);
         a.setDdds(ds);
         d.setAaa(a);
         commitTransaction(em);
-        
+
         clearCache();
         try{
             em = createEntityManager();
             a = em.find(AAA.class, a.getId());
             a.getDdds().add(new DDD());
-            
+
             assertTrue("Lazy instantiation was not enabled for IndirectSet.", ((IndirectSet)a.getDdds()).getAddedElements().size() == 1);
-           
+
         } finally  {
             em = createEntityManager();
             beginTransaction(em);
@@ -447,7 +447,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             mapping.setUseLazyInstantiationForIndirectCollection(lazyIndirection);
         }
     }
-    
+
     // bug 325035
     public void testLazySetInstantiationEager(){
         EntityManager em = createEntityManager();
@@ -455,24 +455,24 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
 
         AAA a = new AAA();
         em.persist(a);
-        
+
         DDD d = new DDD();
         em.persist(d);
-        
+
         Set<DDD> ds = new HashSet<DDD>();
         ds.add(d);
         a.setDdds(ds);
         d.setAaa(a);
         commitTransaction(em);
-        
+
         clearCache();
         try{
             em = createEntityManager();
             a = em.find(AAA.class, a.getId());
             a.getDdds().add(new DDD());
-            
+
             assertTrue("Lazy instantiation was not disabled for IndirectSet.", ((IndirectSet)a.getDdds()).getAddedElements().size() == 0);
-           
+
         } finally  {
             em = createEntityManager();
             beginTransaction(em);
@@ -483,7 +483,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             commitTransaction(em);
         }
     }
-    
+
     // bug 325035
     public void testLazyListInstantiationLazy(){
         if (!isWeavingEnabled()){
@@ -495,23 +495,23 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         Company company = new Company();
         company.setName("ListCo");
         em.persist(company);
-        
+
         Car car = new Car();
         em.persist(car);
-        
+
         company.getVehicles().add(car);
         car.setOwner(company);
 
         commitTransaction(em);
-        
+
         clearCache();
         try{
             em = createEntityManager();
             company = em.find(Company.class, company.getId());
             company.getVehicles().add(new Car());
-            
+
             assertTrue("Lazy instantiation was not enabled for IndirectList.", ((IndirectList)company.getVehicles()).getAddedElements().size() == 1);
-           
+
         } finally  {
             em = createEntityManager();
             beginTransaction(em);
@@ -522,7 +522,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             commitTransaction(em);
         }
     }
-    
+
     // bug 325035
     public void testLazyListInstantiationEager(){
         EntityManager em = createEntityManager();
@@ -534,23 +534,23 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         Company company = new Company();
         company.setName("ListCo");
         em.persist(company);
-        
+
         Car car = new Car();
         em.persist(car);
-        
+
         company.getVehicles().add(car);
         car.setOwner(company);
 
         commitTransaction(em);
-        
+
         clearCache();
         try{
             em = createEntityManager();
             company = em.find(Company.class, company.getId());
             company.getVehicles().add(new Car());
-            
+
             assertTrue("Lazy instantiation was not disabled for IndirectList.", ((IndirectList)company.getVehicles()).getAddedElements().size() == 0);
-           
+
         } finally  {
             em = createEntityManager();
             beginTransaction(em);
@@ -562,13 +562,13 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             mapping.setUseLazyInstantiationForIndirectCollection(lazyIndirection);
         }
     }
-    
+
     // Bug 404071
     public void testJoinedInheritanceOneToManyJoinFetch() {
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
-            
+
             CitrusFruit fruit = new CitrusFruit();
             fruit.setName("Orange");
             fruit.setGrade(1);
@@ -576,14 +576,14 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
                 fruit.addSeed(new Seed());
             }
             em.persist(fruit);
-            
+
             commitTransaction(em);
             em.clear();
             clearCache();
-            
+
             // query on superclass
             SeededFruit fruitRead = em.find(SeededFruit.class, fruit.getId());
-            
+
             assertNotNull("Fruit should not be null", fruitRead);
             assertNotNull("Fruit's seeds should not be null", fruitRead.getSeeds());
             assertTrue("Fruit's seeds should contain 4 elements", fruitRead.getSeeds().size() == 4);
@@ -591,7 +591,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     // Bug 415526
     public void testCascadeMergeWithTargetInheritance() {
         EntityManager em = createEntityManager();
@@ -599,28 +599,28 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         try {
             Company company = new Company();
             company.setName("CascadeMerge, Inc");
-            em.persist(company);            
+            em.persist(company);
             em.flush();
-            
+
             Bicycle bicycle = new Bicycle();
             bicycle.setDescription("road bike");
             company.getVehicles().add(bicycle);
             bicycle.setOwner(company);
             company = em.merge(company);
             em.flush();
-            
+
             Number bicycleId = company.getVehicles().iterator().next().getId();
             String classDiscriminatorValue = (String)em.createNativeQuery("SELECT VEH_TYPE FROM CMP3_VEHICLE WHERE ID = " + bicycleId).getSingleResult();
-            
+
             if (classDiscriminatorValue == null) {
-            	fail("Class discriminator value written into the db for the merged Bicycle is null");
+                fail("Class discriminator value written into the db for the merged Bicycle is null");
             }
         } finally {
-        	rollbackTransaction(em);
+            rollbackTransaction(em);
             closeEntityManager(em);
         }
     }
-    
+
     /*
      * Added for Bug 458177
      * - Instantiate a FishTank, unidirectionally lazy-referencing an
@@ -636,46 +636,46 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
-            
+
             Betta fish = new Betta();
             fish.setName("swimmy");
             fish.setColor("blue");
-            
+
             em.persist(fish);
-            
+
             FishTank fishTank = new FishTank();
             List<Fish> list = new ArrayList<Fish>();
             list.add(fish);
             fishTank.setFishes(list);
-            
+
             em.persist(fishTank);
-            
+
             tankId = fishTank.getId();
-            
+
             commitTransaction(em);
         } finally {
             closeEntityManager(em);
         }
-        
+
         assertNotNull("FishTank ID should not be null", tankId);
-        
+
         em = createEntityManager();
         try {
             beginTransaction(em);
             FishTank fishTank = em.find(FishTank.class, tankId);
             assertNotNull("FishTank should not be null", fishTank);
-            
+
             em.remove(fishTank);
-            
+
             commitTransaction(em);
         } finally {
             closeEntityManager(em);
         }
     }
-    
+
     /*
      * Added for Bug 355721
-     * - Instantiate and persist (but do not associate) a FishTank Entity and 
+     * - Instantiate and persist (but do not associate) a FishTank Entity and
      *   PetStore Entity.
      * - Clear the EMF cache
      * - Acquire new EM and retrieve the PetStore Entity
@@ -686,48 +686,48 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
     public void testJoinedInheritancePersistWithReadOnlyEntity() {
         EntityManager em = createEntityManager();
         Long petStoreId = null;
-        
+
         try {
             beginTransaction(em);
-            
+
             FishTank fishTank = new FishTank();
             em.persist(fishTank);
-            
+
             PetStore petStore = new PetStore();
             petStore.setStoreName("Bob's Fish");
             petStore.setFishTanks(new ArrayList<FishTank>());
-            
+
             em.persist(petStore);
             petStoreId = petStore.getId();
-            
+
             commitTransaction(em);
         } finally {
             closeEntityManager(em);
         }
-        
+
         // cache clear is necessary (reset lazy loading)
         getEntityManagerFactory().getCache().evictAll();
-        
+
         em = createEntityManager();
         try {
             beginTransaction(em);
-            
+
             PetStore petStore = em.find(PetStore.class, petStoreId);
-            
+
             Query query = em.createNamedQuery("findAllFishTanks");
             query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-            
-            List<FishTank> allFishTanks = query.getResultList(); 
+
+            List<FishTank> allFishTanks = query.getResultList();
             FishTank fishTank = allFishTanks.get(0);
-            
+
             // add read-only entity to referencing unidirectional relationship
             petStore.getFishTanks().add(fishTank);
             em.persist(petStore);
-            
+
             commitTransaction(em);
         } finally {
             closeEntityManager(em);
         }
     }
-    
+
 }

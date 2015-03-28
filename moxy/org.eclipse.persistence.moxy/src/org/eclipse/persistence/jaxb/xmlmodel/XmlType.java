@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,9 +22,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -42,8 +42,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @javax.xml.bind.annotation.XmlType(name = "")
@@ -63,11 +63,11 @@ public class XmlType {
 
     /**
      * Gets the value of the name property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getName() {
         if (name == null) {
@@ -79,11 +79,11 @@ public class XmlType {
 
     /**
      * Sets the value of the name property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setName(String value) {
         this.name = value;
@@ -91,11 +91,11 @@ public class XmlType {
 
     /**
      * Gets the value of the namespace property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getNamespace() {
         if (namespace == null) {
@@ -107,11 +107,11 @@ public class XmlType {
 
     /**
      * Sets the value of the namespace property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setNamespace(String value) {
         this.namespace = value;
@@ -119,11 +119,11 @@ public class XmlType {
 
     /**
      * Gets the value of the factoryClass property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getFactoryClass() {
         if (factoryClass == null) {
@@ -135,11 +135,11 @@ public class XmlType {
 
     /**
      * Sets the value of the factoryClass property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setFactoryClass(String value) {
         this.factoryClass = value;
@@ -147,11 +147,11 @@ public class XmlType {
 
     /**
      * Gets the value of the factoryMethod property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getFactoryMethod() {
         return factoryMethod;
@@ -159,11 +159,11 @@ public class XmlType {
 
     /**
      * Sets the value of the factoryMethod property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setFactoryMethod(String value) {
         this.factoryMethod = value;
@@ -171,25 +171,25 @@ public class XmlType {
 
     /**
      * Gets the value of the propOrder property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the propOrder property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getPropOrder().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
+     *
+     *
      */
     public List<String> getPropOrder() {
         if (propOrder == null) {

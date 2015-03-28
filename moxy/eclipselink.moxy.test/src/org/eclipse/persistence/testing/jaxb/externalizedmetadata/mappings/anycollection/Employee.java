@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Employee {
     public List<Object> stuff;
-    
+
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
     @javax.xml.bind.annotation.XmlTransient
@@ -41,11 +41,11 @@ public class Employee {
         } catch (ClassCastException e) {
             return false;
         }
-        
+
         if (stuff == null) {
             return empObj.stuff == null;
         }
-        
+
         for (Object s : stuff) {
             if (!stuffExistsInList(s, empObj.stuff)) {
                 return false;
@@ -53,7 +53,7 @@ public class Employee {
         }
         return true;
     }
-    
+
     private boolean stuffExistsInList(Object stuff, List<Object> stuffList) {
         for (Object listStuff : stuffList) {
             if (listStuff.equals(stuff)) {

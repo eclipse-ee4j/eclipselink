@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,12 +20,12 @@ import javax.xml.bind.annotation.XmlType;
 public class Employee extends Person {
 
     public int employeeId;
-    
+
     public Person manager;
-    
+
     public boolean equals(Object obj) {
         Employee e = (Employee)obj;
-        
+
         return super.equals(e) && employeeId == e.employeeId && (manager == e.manager || manager.equals(e.manager));
     }
 }

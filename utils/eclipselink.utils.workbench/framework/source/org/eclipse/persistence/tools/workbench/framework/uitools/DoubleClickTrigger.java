@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -37,57 +37,57 @@ import java.awt.event.MouseEvent;
  */
 final class DoubleClickTrigger
 {
-	/**
-	 * Keeps track of the last click and its state, whether it could be used as
-	 * the first of the double clicks.
-	 */
-	private boolean lastClickOK;
+    /**
+     * Keeps track of the last click and its state, whether it could be used as
+     * the first of the double clicks.
+     */
+    private boolean lastClickOK;
 
-	/**
-	 * The mask used to determine if any ...
-	 */
-	private static final int CLICK_MASK = InputEvent.BUTTON1_MASK   |
-													  InputEvent.ALT_MASK       |
-													  InputEvent.ALT_GRAPH_MASK |
-													  InputEvent.CTRL_MASK      |
-													  InputEvent.META_MASK      |
-													  InputEvent.SHIFT_MASK;
+    /**
+     * The mask used to determine if any ...
+     */
+    private static final int CLICK_MASK = InputEvent.BUTTON1_MASK   |
+                                                      InputEvent.ALT_MASK       |
+                                                      InputEvent.ALT_GRAPH_MASK |
+                                                      InputEvent.CTRL_MASK      |
+                                                      InputEvent.META_MASK      |
+                                                      InputEvent.SHIFT_MASK;
 
-	/**
-	 * This method is intended to serve as a delegate for the
-	 * {@link MouseListener#mouseClicked(MouseEvent)} method.
-	 *
-	 * @return <code>true</code> if the specified {@link MouseEvent} is deemed to
-	 * be the second click of a double-click sequence; as an additional side
-	 * effect of returning <CODE>true</CODE>, the {@link MouseEvent} is also
-	 * consumed
-	 */
-	public boolean isDoubleClick(MouseEvent e)
-	{
-		int clickCount = e.getClickCount();
+    /**
+     * This method is intended to serve as a delegate for the
+     * {@link MouseListener#mouseClicked(MouseEvent)} method.
+     *
+     * @return <code>true</code> if the specified {@link MouseEvent} is deemed to
+     * be the second click of a double-click sequence; as an additional side
+     * effect of returning <CODE>true</CODE>, the {@link MouseEvent} is also
+     * consumed
+     */
+    public boolean isDoubleClick(MouseEvent e)
+    {
+        int clickCount = e.getClickCount();
 
-		// Sanity check the click count
-		if (clickCount <= 0)
-		{
-			lastClickOK = false;
-			return false;
-		}
+        // Sanity check the click count
+        if (clickCount <= 0)
+        {
+            lastClickOK = false;
+            return false;
+        }
 
-		int modifiers = e.getModifiers();
-		boolean currentClickOk = (modifiers & CLICK_MASK) == InputEvent.BUTTON1_MASK;
+        int modifiers = e.getModifiers();
+        boolean currentClickOk = (modifiers & CLICK_MASK) == InputEvent.BUTTON1_MASK;
 
-		if ((clickCount >= 2) && lastClickOK)
-		{
-			lastClickOK = false;
+        if ((clickCount >= 2) && lastClickOK)
+        {
+            lastClickOK = false;
 
-			if (currentClickOk)
-				e.consume();
+            if (currentClickOk)
+                e.consume();
 
-			return currentClickOk;
-		}
+            return currentClickOk;
+        }
 
-		lastClickOK = currentClickOk;
+        lastClickOK = currentClickOk;
 
-		return false;
-	}
+        return false;
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,85 +32,85 @@ import org.eclipse.persistence.queries.ReadAllQuery;
  */
 class ReadAllQueryVisitor extends AbstractObjectLevelReadQueryVisitor {
 
-	/**
-	 * Creates a new <code>ReadAllQueryVisitor</code>.
-	 *
-	 * @param queryContext The context used to query information about the application metadata and
-	 * cached information
-	 * @param query The {@link ReportQuery} to populate by using this visitor to visit the parsed
-	 * tree representation of the JPQL query
-	 */
-	ReadAllQueryVisitor(JPQLQueryContext queryContext, ReadAllQuery query) {
-		super(queryContext, query);
-	}
+    /**
+     * Creates a new <code>ReadAllQueryVisitor</code>.
+     *
+     * @param queryContext The context used to query information about the application metadata and
+     * cached information
+     * @param query The {@link ReportQuery} to populate by using this visitor to visit the parsed
+     * tree representation of the JPQL query
+     */
+    ReadAllQueryVisitor(JPQLQueryContext queryContext, ReadAllQuery query) {
+        super(queryContext, query);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(HierarchicalQueryClause expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void visit(HierarchicalQueryClause expression) {
 
-		// START WITH clause
-		Expression startWithClause = null;
+        // START WITH clause
+        Expression startWithClause = null;
 
-		if (expression.hasStartWithClause()) {
-			startWithClause = queryContext.buildExpression(expression.getStartWithClause());
-		}
+        if (expression.hasStartWithClause()) {
+            startWithClause = queryContext.buildExpression(expression.getStartWithClause());
+        }
 
-		// CONNECT BY clause
-		Expression connectByClause = queryContext.buildExpression(expression.getConnectByClause());
+        // CONNECT BY clause
+        Expression connectByClause = queryContext.buildExpression(expression.getConnectByClause());
 
-		// ORDER SIBLINGS BY clause
-		List<Expression> orderItems = Collections.<Expression>emptyList();
+        // ORDER SIBLINGS BY clause
+        List<Expression> orderItems = Collections.<Expression>emptyList();
 
-		if (expression.hasOrderSiblingsByClause()) {
-			OrderSiblingsByClauseVisitor visitor = new OrderSiblingsByClauseVisitor();
-			expression.getOrderSiblingsByClause().accept(visitor);
-			orderItems = visitor.orderByItems;
-		}
+        if (expression.hasOrderSiblingsByClause()) {
+            OrderSiblingsByClauseVisitor visitor = new OrderSiblingsByClauseVisitor();
+            expression.getOrderSiblingsByClause().accept(visitor);
+            orderItems = visitor.orderByItems;
+        }
 
-		// Now add the hierarchical query clause
-		ReadAllQuery query = (ReadAllQuery) this.query;
-		query.setHierarchicalQueryClause(startWithClause, connectByClause, orderItems);
-	}
+        // Now add the hierarchical query clause
+        ReadAllQuery query = (ReadAllQuery) this.query;
+        query.setHierarchicalQueryClause(startWithClause, connectByClause, orderItems);
+    }
 
-	private class OrderSiblingsByClauseVisitor extends EclipseLinkAnonymousExpressionVisitor {
+    private class OrderSiblingsByClauseVisitor extends EclipseLinkAnonymousExpressionVisitor {
 
-		/**
-		 * The ordered list of items.
-		 */
-		List<Expression> orderByItems;
+        /**
+         * The ordered list of items.
+         */
+        List<Expression> orderByItems;
 
-		/**
-		 * Creates a new <code>OrderSiblingsByClauseVisitor</code>.
-		 */
-		OrderSiblingsByClauseVisitor() {
-			super();
-			orderByItems = new ArrayList<Expression>();
-		}
+        /**
+         * Creates a new <code>OrderSiblingsByClauseVisitor</code>.
+         */
+        OrderSiblingsByClauseVisitor() {
+            super();
+            orderByItems = new ArrayList<Expression>();
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionExpression expression) {
-			expression.acceptChildren(this);
-		}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(CollectionExpression expression) {
+            expression.acceptChildren(this);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(OrderSiblingsByClause expression) {
-			expression.getOrderByItems().accept(this);
-		}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(OrderSiblingsByClause expression) {
+            expression.getOrderByItems().accept(this);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
-			orderByItems.add(queryContext.buildExpression(expression));
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
+            orderByItems.add(queryContext.buildExpression(expression));
+        }
+    }
 }

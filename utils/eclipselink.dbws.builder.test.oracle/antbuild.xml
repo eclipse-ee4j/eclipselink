@@ -260,8 +260,8 @@
         <say message="     activation.lib not found!"       unless="activation.lib.exist"/>
         <say message="     validation.lib not found!"       unless="validation.lib.exist"/>
         <say message="     mail.lib not found!"             unless="mail.lib.exist"/>
-		<say message="     Oracle extension dir not found!" unless="oracle.depend.dir.exist"/>
-		<say message="     xdb.jar not found!"              unless="xdb.jar.exist"/>
+        <say message="     Oracle extension dir not found!" unless="oracle.depend.dir.exist"/>
+        <say message="     xdb.jar not found!"              unless="xdb.jar.exist"/>
         <say message="     xmlparser.jar not found!"        unless="xmlparser.jar.exist"/>
         <say message="     db.platform not set!"            unless="db.platform"/>
         <say message="     db.driver not set!"              unless="db.driver"/>
@@ -270,7 +270,7 @@
         <say message="     db.pwd not set!"                 unless="db.pwd"/>
         <say message="     db.ddl not set!"                 unless="db.ddl.create"/>
         <say message="     db.ddl not set!"                 unless="db.ddl.drop"/>
-        
+
         <!-- Create LOB source file directory required for BlobTypeTestSuite -->
         <say message="Creating required LOB source file directory at: ${bfile_dir}"/>
         <copy todir="${bfile_dir}">
@@ -371,13 +371,13 @@
           <test
             name="dbws.testing.customsql.CustomSQLTestSuite"
           />
-		  <test
+          <test
             name="dbws.testing.invalidinput.InvalidInputTestSuite"
           />
-		  <test
+          <test
             name="dbws.testing.invalidpackage.InvalidPackageTestSuite"
           />
-		  <test
+          <test
             name="dbws.testing.iottype.IOTTypeTestSuite"
           />
           <test
@@ -413,13 +413,13 @@
           <test
             name="dbws.testing.plsqlrecord.PLSQLRecordTestSuite"
           />
-		  <test
+          <test
             name="dbws.testing.prependedpackage.PrependedPackageTestSuite"
           />
-		  <test
+          <test
             name="dbws.testing.prependedschema.PrependedSchemaTestSuite"
           />
-		  <test
+          <test
             name="dbws.testing.rowtype.RowTypeTestSuite"
           />
           <test

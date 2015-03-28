@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,24 +50,24 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     public boolean isCollection() {
         return false;
     }
-    
+
     public boolean isStruct() {
         return false;
     }
-    
+
     public boolean isArray() {
         return false;
     }
 
     /**
      * Indicates if a given subclass represents a PL/SQL cursor.
-     * 
+     *
      * @see org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCursor
      */
     public boolean isCursor() {
         return false;
     }
-    
+
     public int getConversionCode() {
         return getSqlCode();
     }
@@ -105,17 +105,17 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
      * The mapped class for a Record type, and collection class for Collection type.
      */
     public void setJavaType(Class javaType) {
-    	this.javaType = javaType;
-    	if (javaType != null) {
-    	    javaTypeName = javaType.getName();
-    	}
+        this.javaType = javaType;
+        if (javaType != null) {
+            javaTypeName = javaType.getName();
+        }
     }
 
     /**
      * Return the Java class that the complex type maps to.
      */
     public Class getJavaType() {
-    	return javaType;
+        return javaType;
     }
 
     public String getJavaTypeName() {
@@ -140,13 +140,13 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     }
 
     public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
-    	// Validate.
-    	if (!hasCompatibleType()) {
-    		throw QueryException.compatibleTypeNotSet(this);
-    	}
-    	if ((getTypeName() == null) || getTypeName().equals("")) {
-    		throw QueryException.typeNameNotSet(this);
-    	}
+        // Validate.
+        if (!hasCompatibleType()) {
+            throw QueryException.compatibleTypeNotSet(this);
+        }
+        if ((getTypeName() == null) || getTypeName().equals("")) {
+            throw QueryException.typeNameNotSet(this);
+        }
         sb.append("  ");
         sb.append(databaseTypeHelper.buildTarget(inArg));
         sb.append(" ");
@@ -164,13 +164,13 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     }
 
     public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {// Validate.
-    	if (!hasCompatibleType()) {
-    		throw QueryException.compatibleTypeNotSet(this);
-    	}
-    	if ((getTypeName() == null) || getTypeName().equals("")) {
-    		throw QueryException.typeNameNotSet(this);
-    	}
-    	sb.append("  ");
+        if (!hasCompatibleType()) {
+            throw QueryException.compatibleTypeNotSet(this);
+        }
+        if ((getTypeName() == null) || getTypeName().equals("")) {
+            throw QueryException.typeNameNotSet(this);
+        }
+        sb.append("  ");
         sb.append(databaseTypeHelper.buildTarget(outArg));
         sb.append(" ");
         sb.append(getTypeName());
@@ -214,8 +214,8 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     }
 
     public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
-    				DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues) {
-    	databaseTypeHelper.buildOutputRow(outArg, outputRow,
+                    DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues) {
+        databaseTypeHelper.buildOutputRow(outArg, outputRow,
                 newOutputRow, outputRowFields, outputRowValues);
     }
 
@@ -233,13 +233,13 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     }
 
     public void translate(PLSQLargument arg, AbstractRecord translationRow,
-	        AbstractRecord copyOfTranslationRow, List<DatabaseField> copyOfTranslationFields,
-	        List<DatabaseField> translationRowFields, List translationRowValues, StoredProcedureCall call) {
+            AbstractRecord copyOfTranslationRow, List<DatabaseField> copyOfTranslationFields,
+            List<DatabaseField> translationRowFields, List translationRowValues, StoredProcedureCall call) {
         databaseTypeHelper.translate(arg, translationRow, copyOfTranslationRow,
             copyOfTranslationFields, translationRowFields, translationRowValues, call);
     }
 
     public String toString() {
-    	return getClass().getSimpleName() + "(" + getTypeName() + ")";
+        return getClass().getSimpleName() + "(" + getTypeName() + ")";
     }
 }

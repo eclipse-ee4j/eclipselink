@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -22,7 +22,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
  *  <li>Store target namespace and namespace prefix information for a specific schema</li>
  *  <li>Store some additional Schema information (such as element/attribute form and XmlAccessType)</li>
  *  </ul>
- *  
+ *
  *  @see org.eclipse.persistence.jaxb.compiler.AnnotationsProcessor
  *  @author mmacivor
  *  @since Oracle TopLink 11.1.1.0.0
@@ -35,8 +35,8 @@ public class NamespaceInfo {
     private NamespaceResolver namespaceResolver;
     private String location;
     private NamespaceResolver namespaceResolverForDescriptor;
-    
-	public String getNamespace() {
+
+    public String getNamespace() {
         return namespace;
     }
 
@@ -50,7 +50,7 @@ public class NamespaceInfo {
     public boolean isAttributeFormQualified() {
         return attributeFormQualified;
     }
-    
+
     public void setAttributeFormQualified(boolean b) {
         attributeFormQualified = b;
     }
@@ -58,19 +58,19 @@ public class NamespaceInfo {
     public boolean isElementFormQualified() {
         return elementFormQualified;
     }
-    
+
     public void setElementFormQualified(boolean b) {
         elementFormQualified = b;
     }
-    
+
     public NamespaceResolver getNamespaceResolver() {
         return namespaceResolver;
     }
-    
+
     public void setNamespaceResolver(NamespaceResolver resolver) {
         namespaceResolver = resolver;
     }
-    
+
     public String getLocation() {
         return location;
     }
@@ -78,7 +78,7 @@ public class NamespaceInfo {
     public void setLocation(String location) {
         this.location = location;
     }
-    
+
     public NamespaceResolver getNamespaceResolverForDescriptor() {
         if(this.namespaceResolverForDescriptor == null) {
             this.namespaceResolverForDescriptor = new NamespaceResolver();

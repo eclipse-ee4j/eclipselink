@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable;
 
 public class EmployeeIsSetParams extends Employee {
-    
+
     private int id;
     private String firstName;
     private String lastName;
@@ -68,22 +68,22 @@ public class EmployeeIsSetParams extends Employee {
     }
 
     public boolean isSetFirstName(String unusedString1, String unusedString2) {
-   		return isSetFirstName;
+           return isSetFirstName;
     }
 
     public boolean isSetFirstName(String unusedString1, String unusedString2, Boolean flag1, //
-    		Integer anInteger, Short aShort, Long aLong, Double aDouble, Float aFloat, Byte aByte, Character aCharacter) {
-   		return isSetFirstName;
+            Integer anInteger, Short aShort, Long aLong, Double aDouble, Float aFloat, Byte aByte, Character aCharacter) {
+           return isSetFirstName;
     }
 
 /*    public boolean isSetFirstName(String unusedString1, String unusedString2, boolean flag1, //
-    		int anInteger, short aShort, long aLong, double aDouble, float aFloat, byte aByte, char aCharacter) {
-   		return isSetFirstName;
+            int anInteger, short aShort, long aLong, double aDouble, float aFloat, byte aByte, char aCharacter) {
+           return isSetFirstName;
     }*/
 /*
     public boolean isSetFirstName(String unusedString1, String unusedString2, String flag1, //
-    		String anInteger, String aShort, String aLong, String aDouble, String aFloat, String aByte, String aCharacter) {
-   		return isSetFirstName;
+            String anInteger, String aShort, String aLong, String aDouble, String aFloat, String aByte, String aCharacter) {
+           return isSetFirstName;
     }*/
 
     public void setFirstName(String firstName) {

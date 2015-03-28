@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     tware - initial implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.Iterator;
@@ -23,9 +23,9 @@ import org.eclipse.persistence.testing.models.collections.map.AggregateMapKey;
 import org.eclipse.persistence.testing.models.collections.map.EntityMapValue;
 
 public class TestUpdateKeyOnAggregateKeyCollectionTableMapping extends TestCase {
-    
+
     private AggregateEntityMapHolder holder = null;
-    
+
     public void setup(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = new AggregateEntityMapHolder();
@@ -35,7 +35,7 @@ public class TestUpdateKeyOnAggregateKeyCollectionTableMapping extends TestCase 
         key.setKey(11);
         holder.addAggregateToEntityMapItem(key, value);
 
-        
+
         EntityMapValue value2 = new EntityMapValue();
         value2.setId(2);
         key = new AggregateMapKey();
@@ -47,7 +47,7 @@ public class TestUpdateKeyOnAggregateKeyCollectionTableMapping extends TestCase 
         uow.commit();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
-    
+
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = (AggregateEntityMapHolder)uow.readObject(holder);
@@ -59,7 +59,7 @@ public class TestUpdateKeyOnAggregateKeyCollectionTableMapping extends TestCase 
         }
         uow.commit();
     }
-    
+
     public void verify(){
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         holder = (AggregateEntityMapHolder)getSession().readObject(holder);
@@ -76,30 +76,30 @@ public class TestUpdateKeyOnAggregateKeyCollectionTableMapping extends TestCase 
         if (value != null){
             throw new TestErrorException("EntityMapValue 11 not changed.");
         }
-        
+
         mapKey = new AggregateMapKey();
         mapKey.setKey(12);
         value = (EntityMapValue)holder.getAggregateToEntityMap().get(mapKey);
         if (value == null){
             throw new TestErrorException("EntityMapValue 11 not changed to 12.");
         }
-        
+
         mapKey = new AggregateMapKey();
         mapKey.setKey(22);
         value = (EntityMapValue)holder.getAggregateToEntityMap().get(mapKey);
         if (value != null){
             throw new TestErrorException("EntityMapValue 22 not changed.");
         }
-        
+
         mapKey = new AggregateMapKey();
         mapKey.setKey(23);
         value = (EntityMapValue)holder.getAggregateToEntityMap().get(mapKey);
         if (value == null){
             throw new TestErrorException("EntityMapValue 22 not changed to 23.");
         }
-        
+
     }
-    
+
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteObject(holder);

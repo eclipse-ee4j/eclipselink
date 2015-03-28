@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,37 +33,37 @@ public class DefaultNamespaceTestCases extends JAXBTestCases {
     protected DefaultNamespaceRoot getControlObject()  {
         try {
             DefaultNamespaceRoot root = new DefaultNamespaceRoot();
-            
+
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document document = db.newDocument();
-            
+
             Element noNamespaceElement1 = document.createElement("noNamespaceElement1");
             document.appendChild(noNamespaceElement1);
             root.any = noNamespaceElement1;
-            
+
             Element defaultNamespace1 = document.createElementNS("http://www.example.com", "defaultNamespace1");
             noNamespaceElement1.appendChild(defaultNamespace1);
-            
+
             //defaultNamespace1.setAttribute("noNamespaceAttr", "blah");
-            
+
             Element defaultNamespace2 = document.createElementNS("http://www.example.com", "defaultNamespace2");
             defaultNamespace1.appendChild(defaultNamespace2);
-            
+
             Element differentDefaultNamespace = document.createElementNS("urn:different", "differentDefaultNamespace");
             defaultNamespace2.appendChild(differentDefaultNamespace);
-            
+
             Element noNamespaceElement2 = document.createElement("noNamespaceElement2");
             //noNamespaceElement2.setAttributeNS("urn:baz", "baz:att", "Hello World");
             differentDefaultNamespace.appendChild(noNamespaceElement2);
-    
+
             Element prefixNamespaceElement1 = document.createElementNS("http://www.example.com", "abc:prefixNamespaceElement1");
             noNamespaceElement1.appendChild(prefixNamespaceElement1);
-    
+
             Element prefixNamespaceElement2 = document.createElementNS("http://www.example.com", "abc:prefixNamespaceElement2");
             prefixNamespaceElement1.appendChild(prefixNamespaceElement2);
-            
+
             return root;
         } catch(Exception e) {
             throw new RuntimeException(e);

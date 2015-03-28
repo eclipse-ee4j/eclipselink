@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,170 +27,170 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public final class EclipseLinkEclipseLinkContentAssistExtensionTest extends AbstractContentAssistTest {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ContentAssistExtension buildContentAssistExtension() {
-		return new ContentAssistExtension() {
-			public Iterable<String> classNames(String prefix, ClassType type) {
-				if (type == ClassType.INSTANTIABLE) {
-					return filter(EclipseLinkEclipseLinkContentAssistExtensionTest.this.classNames(), prefix);
-				}
-				return filter(EclipseLinkEclipseLinkContentAssistExtensionTest.this.enumTypes(), prefix);
-			}
-			public Iterable<String> columnNames(String tableName, String prefix) {
-				return filter(EclipseLinkEclipseLinkContentAssistExtensionTest.this.columnNames(tableName), prefix);
-			}
-			public Iterable<String> tableNames(String prefix) {
-				return filter(EclipseLinkEclipseLinkContentAssistExtensionTest.this.tableNames(), prefix);
-			}
-		};
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ContentAssistExtension buildContentAssistExtension() {
+        return new ContentAssistExtension() {
+            public Iterable<String> classNames(String prefix, ClassType type) {
+                if (type == ClassType.INSTANTIABLE) {
+                    return filter(EclipseLinkEclipseLinkContentAssistExtensionTest.this.classNames(), prefix);
+                }
+                return filter(EclipseLinkEclipseLinkContentAssistExtensionTest.this.enumTypes(), prefix);
+            }
+            public Iterable<String> columnNames(String tableName, String prefix) {
+                return filter(EclipseLinkEclipseLinkContentAssistExtensionTest.this.columnNames(tableName), prefix);
+            }
+            public Iterable<String> tableNames(String prefix) {
+                return filter(EclipseLinkEclipseLinkContentAssistExtensionTest.this.tableNames(), prefix);
+            }
+        };
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected List<String> clauses(String afterIdentifier, String beforeIdentifier, boolean subquery) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected List<String> clauses(String afterIdentifier, String beforeIdentifier, boolean subquery) {
 
-		List<String> proposals = super.clauses(afterIdentifier, beforeIdentifier, subquery);
+        List<String> proposals = super.clauses(afterIdentifier, beforeIdentifier, subquery);
 
-		if (subquery) {
-			return proposals;
-		}
+        if (subquery) {
+            return proposals;
+        }
 
-		if (afterIdentifier == SELECT) {
+        if (afterIdentifier == SELECT) {
 
-			if (beforeIdentifier != FROM     &&
-			    beforeIdentifier != WHERE    &&
-			    beforeIdentifier != GROUP_BY &&
-			    beforeIdentifier != HAVING   &&
-			    beforeIdentifier != ORDER_BY &&
-			    beforeIdentifier != UNION    &&
-			    beforeIdentifier != EXCEPT   &&
-			    beforeIdentifier != INTERSECT) {
+            if (beforeIdentifier != FROM     &&
+                beforeIdentifier != WHERE    &&
+                beforeIdentifier != GROUP_BY &&
+                beforeIdentifier != HAVING   &&
+                beforeIdentifier != ORDER_BY &&
+                beforeIdentifier != UNION    &&
+                beforeIdentifier != EXCEPT   &&
+                beforeIdentifier != INTERSECT) {
 
-				proposals.add(UNION);
-				proposals.add(EXCEPT);
-				proposals.add(INTERSECT);
-			}
-		}
-		else if (afterIdentifier == FROM) {
+                proposals.add(UNION);
+                proposals.add(EXCEPT);
+                proposals.add(INTERSECT);
+            }
+        }
+        else if (afterIdentifier == FROM) {
 
-			if (beforeIdentifier != WHERE    &&
-			    beforeIdentifier != GROUP_BY &&
-			    beforeIdentifier != HAVING   &&
-			    beforeIdentifier != ORDER_BY &&
-			    beforeIdentifier != UNION    &&
-			    beforeIdentifier != EXCEPT   &&
-			    beforeIdentifier != INTERSECT) {
+            if (beforeIdentifier != WHERE    &&
+                beforeIdentifier != GROUP_BY &&
+                beforeIdentifier != HAVING   &&
+                beforeIdentifier != ORDER_BY &&
+                beforeIdentifier != UNION    &&
+                beforeIdentifier != EXCEPT   &&
+                beforeIdentifier != INTERSECT) {
 
-				proposals.add(UNION);
-				proposals.add(EXCEPT);
-				proposals.add(INTERSECT);
-			}
-		}
-		else if (afterIdentifier == WHERE) {
+                proposals.add(UNION);
+                proposals.add(EXCEPT);
+                proposals.add(INTERSECT);
+            }
+        }
+        else if (afterIdentifier == WHERE) {
 
-			if (beforeIdentifier != GROUP_BY &&
-			    beforeIdentifier != HAVING   &&
-			    beforeIdentifier != ORDER_BY &&
-			    beforeIdentifier != UNION    &&
-			    beforeIdentifier != EXCEPT   &&
-			    beforeIdentifier != INTERSECT) {
+            if (beforeIdentifier != GROUP_BY &&
+                beforeIdentifier != HAVING   &&
+                beforeIdentifier != ORDER_BY &&
+                beforeIdentifier != UNION    &&
+                beforeIdentifier != EXCEPT   &&
+                beforeIdentifier != INTERSECT) {
 
-				proposals.add(UNION);
-				proposals.add(EXCEPT);
-				proposals.add(INTERSECT);
-			}
-		}
-		else if (afterIdentifier == GROUP_BY) {
+                proposals.add(UNION);
+                proposals.add(EXCEPT);
+                proposals.add(INTERSECT);
+            }
+        }
+        else if (afterIdentifier == GROUP_BY) {
 
-			if (beforeIdentifier != HAVING   &&
-			    beforeIdentifier != ORDER_BY &&
-			    beforeIdentifier != UNION    &&
-			    beforeIdentifier != EXCEPT   &&
-			    beforeIdentifier != INTERSECT) {
+            if (beforeIdentifier != HAVING   &&
+                beforeIdentifier != ORDER_BY &&
+                beforeIdentifier != UNION    &&
+                beforeIdentifier != EXCEPT   &&
+                beforeIdentifier != INTERSECT) {
 
-				proposals.add(UNION);
-				proposals.add(EXCEPT);
-				proposals.add(INTERSECT);
-			}
-		}
-		else if (afterIdentifier == HAVING) {
+                proposals.add(UNION);
+                proposals.add(EXCEPT);
+                proposals.add(INTERSECT);
+            }
+        }
+        else if (afterIdentifier == HAVING) {
 
-			if (beforeIdentifier != ORDER_BY &&
-			    beforeIdentifier != UNION    &&
-			    beforeIdentifier != EXCEPT   &&
-			    beforeIdentifier != INTERSECT) {
+            if (beforeIdentifier != ORDER_BY &&
+                beforeIdentifier != UNION    &&
+                beforeIdentifier != EXCEPT   &&
+                beforeIdentifier != INTERSECT) {
 
-				proposals.add(UNION);
-				proposals.add(EXCEPT);
-				proposals.add(INTERSECT);
-			}
-		}
-		else if (afterIdentifier == ORDER_BY) {
+                proposals.add(UNION);
+                proposals.add(EXCEPT);
+                proposals.add(INTERSECT);
+            }
+        }
+        else if (afterIdentifier == ORDER_BY) {
 
-			if (beforeIdentifier != UNION  &&
-			    beforeIdentifier != EXCEPT &&
-			    beforeIdentifier != INTERSECT) {
+            if (beforeIdentifier != UNION  &&
+                beforeIdentifier != EXCEPT &&
+                beforeIdentifier != INTERSECT) {
 
-				proposals.add(UNION);
-				proposals.add(EXCEPT);
-				proposals.add(INTERSECT);
-			}
-		}
+                proposals.add(UNION);
+                proposals.add(EXCEPT);
+                proposals.add(INTERSECT);
+            }
+        }
 
-		return proposals;
-	}
+        return proposals;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected List<String> fromClauseInternalClauses(String afterIdentifier) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected List<String> fromClauseInternalClauses(String afterIdentifier) {
 
-		if (EclipseLinkVersionTools.isNewerThan2_4(getGrammar())) {
-			List<String> proposals = new ArrayList<String>();
+        if (EclipseLinkVersionTools.isNewerThan2_4(getGrammar())) {
+            List<String> proposals = new ArrayList<String>();
 
-			if (afterIdentifier == FROM) {
-				proposals.addAll(super.fromClauseInternalClauses(FROM));
-				proposals.add(START_WITH);
-				proposals.add(CONNECT_BY);
-				proposals.add(ORDER_SIBLINGS_BY);
-				proposals.add(AS_OF);
-			}
-			else if (afterIdentifier == JOIN) {
-				proposals.add(START_WITH);
-				proposals.add(CONNECT_BY);
-				proposals.add(ORDER_SIBLINGS_BY);
-				proposals.add(AS_OF);
-			}
-			else if (afterIdentifier == START_WITH) {
-				proposals.add(CONNECT_BY);
-				proposals.add(ORDER_SIBLINGS_BY);
-				proposals.add(AS_OF);
-			}
-			else if (afterIdentifier == CONNECT_BY) {
-				proposals.add(ORDER_SIBLINGS_BY);
-				proposals.add(AS_OF);
-			}
-			else if (afterIdentifier == ORDER_SIBLINGS_BY) {
-				proposals.add(AS_OF);
-			}
+            if (afterIdentifier == FROM) {
+                proposals.addAll(super.fromClauseInternalClauses(FROM));
+                proposals.add(START_WITH);
+                proposals.add(CONNECT_BY);
+                proposals.add(ORDER_SIBLINGS_BY);
+                proposals.add(AS_OF);
+            }
+            else if (afterIdentifier == JOIN) {
+                proposals.add(START_WITH);
+                proposals.add(CONNECT_BY);
+                proposals.add(ORDER_SIBLINGS_BY);
+                proposals.add(AS_OF);
+            }
+            else if (afterIdentifier == START_WITH) {
+                proposals.add(CONNECT_BY);
+                proposals.add(ORDER_SIBLINGS_BY);
+                proposals.add(AS_OF);
+            }
+            else if (afterIdentifier == CONNECT_BY) {
+                proposals.add(ORDER_SIBLINGS_BY);
+                proposals.add(AS_OF);
+            }
+            else if (afterIdentifier == ORDER_SIBLINGS_BY) {
+                proposals.add(AS_OF);
+            }
 
-			return proposals;
-		}
+            return proposals;
+        }
 
-		return super.fromClauseInternalClauses(afterIdentifier);
-	}
+        return super.fromClauseInternalClauses(afterIdentifier);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isJoinFetchIdentifiable() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isJoinFetchIdentifiable() {
+        return true;
+    }
 }

@@ -12,5 +12,5 @@
   </element>
   <simpleType name="base64Binary-DataHandler" sdoJava:instanceClass="javax.activation.DataHandler">
     <restriction base="base64Binary"/>
-  </simpleType> 
-</schema> 
+  </simpleType>
+</schema>

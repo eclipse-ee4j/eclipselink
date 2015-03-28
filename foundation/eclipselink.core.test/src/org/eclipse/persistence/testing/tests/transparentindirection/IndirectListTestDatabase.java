@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
 import java.util.*;
@@ -23,9 +23,9 @@ import org.eclipse.persistence.testing.models.transparentindirection.*;
  * @author: Big Country
  */
 public class IndirectListTestDatabase extends IndirectContainerTestDatabase {
- 
-	int orderId;
- 
+
+    int orderId;
+
     public IndirectListTestDatabase(String name) {
         super(name);
     }
@@ -53,34 +53,34 @@ public class IndirectListTestDatabase extends IndirectContainerTestDatabase {
         return new IndirectListProject();
     }
 
-	/**
-	 * set up test fixtures:
-	 *   log in to database
-	 */
-	protected void setUp() {
-		super.setUp();
-		AbstractOrder order = this.buildTestOrder3();
-		this.writeNewOrder(order);
-		orderId = order.id;
-		this.getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-	}
-	public void tearDown() {
-		Order order = new Order();
-		order.id = orderId;
-		getAbstractSession().deleteObject(order);
-		this.getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+    /**
+     * set up test fixtures:
+     *   log in to database
+     */
+    protected void setUp() {
+        super.setUp();
+        AbstractOrder order = this.buildTestOrder3();
+        this.writeNewOrder(order);
+        orderId = order.id;
+        this.getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+    }
+    public void tearDown() {
+        Order order = new Order();
+        order.id = orderId;
+        getAbstractSession().deleteObject(order);
+        this.getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
                 super.tearDown();
-	}
+    }
 
 
-	/**
-	 * Bug#4530516  Test the combination of TransparentIndirectionPolicy with conform and anyOf...isNull
-	 */
-	public void testConformWithAnyOfIsNull() {
-			UnitOfWork uow = getSession().acquireUnitOfWork();
-			readNullName(uow);
-			readNullName(uow);
-	}
+    /**
+     * Bug#4530516  Test the combination of TransparentIndirectionPolicy with conform and anyOf...isNull
+     */
+    public void testConformWithAnyOfIsNull() {
+            UnitOfWork uow = getSession().acquireUnitOfWork();
+            readNullName(uow);
+            readNullName(uow);
+    }
 
     private void readNullName(UnitOfWork uow)
     {

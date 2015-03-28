@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 /**
@@ -32,8 +32,8 @@ public class ModNode extends ArithmeticFunctionNode {
 
     private Node denominator = null;
 
-    /** 
-     * INTERNAL 
+    /**
+     * INTERNAL
      * Check the child nodes for an unqualified field access and if so,
      * replace it by a qualified field access.
      */
@@ -60,7 +60,7 @@ public class ModNode extends ArithmeticFunctionNode {
             Object type = left.getType();
             if (!typeHelper.isIntegralType(type))
                 throw JPQLException.invalidFunctionArgument(
-                    context.getQueryInfo(), left.getLine(), left.getColumn(), 
+                    context.getQueryInfo(), left.getLine(), left.getColumn(),
                     "MOD", left.getAsString(), "integral type");
         }
 
@@ -71,16 +71,16 @@ public class ModNode extends ArithmeticFunctionNode {
             Object denominatorType = denominator.getType();
             if (!typeHelper.isIntegralType(denominatorType))
                 throw JPQLException.invalidFunctionArgument(
-                    context.getQueryInfo(), denominator.getLine(), denominator.getColumn(), 
+                    context.getQueryInfo(), denominator.getLine(), denominator.getColumn(),
                     "MOD", denominator.getAsString(), "integral type");
         }
 
         setType(typeHelper.getIntType());
     }
-    
+
     /** */
     public Expression generateExpression(GenerationContext context) {
-        return ExpressionMath.mod(getLeft().generateExpression(context), 
+        return ExpressionMath.mod(getLeft().generateExpression(context),
                                   getDenominator().generateExpression(context));
     }
 

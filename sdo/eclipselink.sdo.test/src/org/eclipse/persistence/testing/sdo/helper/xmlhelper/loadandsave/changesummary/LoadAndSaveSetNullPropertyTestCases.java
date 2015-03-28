@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.changesummary;
 
 import commonj.sdo.ChangeSummary;
@@ -32,39 +32,39 @@ public class LoadAndSaveSetNullPropertyTestCases extends LoadAndSaveTestCases {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.changesummary.LoadAndSaveSetNullPropertyTestCases" };
         TestRunner.main(arguments);
     }
-    
+
     protected List<String> getPackages() {
-		    List<String> packages = new ArrayList<String>();
-	    	packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
-	    	return packages;
-	  }
+            List<String> packages = new ArrayList<String>();
+            packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
+            return packages;
+      }
 
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
         DataObject rootDO = document.getRootObject();
         List empsList = rootDO.getList("Value");
         DataObject empDO = (DataObject)empsList.get(0);
-              
+
         assertTrue(rootDO.getChangeSummary().isLogging());
-        
+
         List oldValues = rootDO.getChangeSummary().getOldValues(empDO);
         assertEquals(4, oldValues.size());
-        
+
         ChangeSummary.Setting oldValueSimpleNonNillable = rootDO.getChangeSummary().getOldValue(empDO, empDO.getInstanceProperty("SimpleNonNillable"));
         assertNotNull(oldValueSimpleNonNillable);
         assertTrue(oldValueSimpleNonNillable.isSet());
         assertNull(oldValueSimpleNonNillable.getValue());
-        
+
         ChangeSummary.Setting oldValueSimpleNillable = rootDO.getChangeSummary().getOldValue(empDO, empDO.getInstanceProperty("SimpleNillable"));
         assertNotNull(oldValueSimpleNillable);
         assertTrue(oldValueSimpleNillable.isSet());
         assertNull(oldValueSimpleNillable.getValue());
-        
+
         ChangeSummary.Setting oldValueComplexNonNillable = rootDO.getChangeSummary().getOldValue(empDO, empDO.getInstanceProperty("ComplexNonNillable"));
         assertNotNull(oldValueComplexNonNillable);
         assertFalse(oldValueComplexNonNillable.isSet());
         assertNull(oldValueComplexNonNillable.getValue());
-        
+
         ChangeSummary.Setting oldValueComplexNillable = rootDO.getChangeSummary().getOldValue(empDO, empDO.getInstanceProperty("ComplexNillable"));
         assertNotNull(oldValueComplexNillable);
         assertTrue(oldValueComplexNillable.isSet());
@@ -73,7 +73,7 @@ public class LoadAndSaveSetNullPropertyTestCases extends LoadAndSaveTestCases {
 
     protected String getControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/SetNullProperty.xml";
-    }  
+    }
 
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/SetNullProperty.xsd";
@@ -98,7 +98,7 @@ public class LoadAndSaveSetNullPropertyTestCases extends LoadAndSaveTestCases {
       addressTypeDO.set("name","Address");
       addProperty(addressTypeDO, "street", SDOConstants.SDO_STRING, false, false, true);
       Type addressType = typeHelper.define(addressTypeDO);
-      
+
       DataObject empTypeDO = dataFactory.create(typeType);
       empTypeDO.set("uri",getControlRootURI());
       empTypeDO.set("name","Emp");
@@ -110,20 +110,20 @@ public class LoadAndSaveSetNullPropertyTestCases extends LoadAndSaveTestCases {
       addProperty(empTypeDO, "ComplexNonNillable", addressType, true, false, true);
       DataObject complexNillableProperty = addProperty(empTypeDO, "ComplexNillable", addressType, true, false, true);
       complexNillableProperty.set("nullable", true);
-      
+
       Type empType = typeHelper.define(empTypeDO);
-      
+
       DataObject rootTypeDO = dataFactory.create(typeType);
       rootTypeDO.set("uri",getControlRootURI());
       rootTypeDO.set("name","Root");
       addProperty(rootTypeDO, "Value", dataObjectType, true, true, true);
       addProperty(rootTypeDO, "ChangeSummary", changeSummaryType, true, false, true);
       Type rootType = typeHelper.define(rootTypeDO);
-      
+
       DataObject propDO=  dataFactory.create(propertyType);
       propDO.set("name", "theRoot");
       propDO.set("type", rootType);
       typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
-      
+
     }
 }

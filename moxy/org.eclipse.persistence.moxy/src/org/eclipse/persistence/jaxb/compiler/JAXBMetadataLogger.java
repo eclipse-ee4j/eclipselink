@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.  
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -17,7 +17,7 @@ import org.eclipse.persistence.logging.SessionLog;
 
 /**
  *  <p>Class used to log warnings during the processing of JAXB annotations and
- *  OXM XML bindings files.</p> 
+ *  OXM XML bindings files.</p>
  */
 public class JAXBMetadataLogger {
 
@@ -35,7 +35,7 @@ public class JAXBMetadataLogger {
 
     /**
      * Create a new JAXBMetadataLogger and set the logLevel.
-     * 
+     *
      * @param logLevel
      * @see SessionLog
      */
@@ -45,7 +45,7 @@ public class JAXBMetadataLogger {
 
     /**
      * Logs a message at the SessionLog.INFO level.
-     * 
+     *
      * @param message The message to log
      * @param args The arguments corresponding with this message
      * @see SessionLog
@@ -56,7 +56,7 @@ public class JAXBMetadataLogger {
 
     /**
      * Logs a Warning message to the SessionLog.
-     * 
+     *
      * @param message The message to log
      * @param args The arguments corresponding with this message
      * @see SessionLog
@@ -68,7 +68,7 @@ public class JAXBMetadataLogger {
     /**
      * Logs a Severe message to the SessionLog. Typically called when EclipseLink is not in a state
      * to continue
-     * 
+     *
      * @param throwable
      * @see SessionLog
      */

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.types;
 
 import java.util.Enumeration;
@@ -31,7 +31,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
             alternativeTimeZone = "America/Chicago";
         }
     }
-    
+
     public OracleTIMESTAMPTypeTestModel() {
         this(true);
     }
@@ -65,7 +65,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
             if (driverVersion.indexOf("9.2.0.4") == -1) {
                 //Oracle 9.2.0.x OCI driver causes an exception, and therefore is not tested. Bug 4483904
 
-                if (driverVersion.indexOf("9.2") == -1 || 
+                if (driverVersion.indexOf("9.2") == -1 ||
                     getSession().getLogin().getDatabaseURL().indexOf("oci") == -1) {
                     // set default time zone as a session time zone
                     addTest(getTIMESTAMPTestSuite(true));
@@ -83,7 +83,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
                 }
                 if (!useAccessors) {
                     //Oracle 9.2.0.x OCI driver causes an exception, and therefore is not tested. Bug 4483904
-                    if (driverVersion.indexOf("9.2") == 
+                    if (driverVersion.indexOf("9.2") ==
                         -1 || getSession().getLogin().getDatabaseURL().indexOf("oci") == -1) {
                         addTest(getTIMESTAMPTCTestSuite(true));
                         addTest(getTIMESTAMPTCWithBindingTestSuite(true));
@@ -110,7 +110,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
         }
         return timeZone;
     }
-    
+
     public static String getTimeZoneInfo(String timeZone) {
         if(timeZone == null || timeZone.length()==0) {
             return " without time zone";
@@ -118,7 +118,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
             return " with " + (defaultTimeZone.equals(timeZone) ? "default" : "alternative") + " time zone " + timeZone;
         }
     }
-    
+
     public static TestSuite getTIMESTAMPTestSuite(boolean useDefaultTimeZone) {
         TestSuite suite = new TestSuite();
         Enumeration examples = TIMESTAMPDirectToFieldTester.testInstances().elements();
@@ -251,7 +251,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
         }
         return suite;
     }
-    
+
     public static TestSuite getCalendarDaylightSavingsTestSuite() {
         TestSuite suite = new TestSuite();
         Enumeration examples = CalendarDaylightSavingsTest.testInstancesWithNoBindingAndNativeSql().elements();
@@ -264,7 +264,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
         }
         return suite;
     }
-    
+
     public void setup() {
         DatabaseSession session = (DatabaseSession)getSession();
         if (useAccessors) {

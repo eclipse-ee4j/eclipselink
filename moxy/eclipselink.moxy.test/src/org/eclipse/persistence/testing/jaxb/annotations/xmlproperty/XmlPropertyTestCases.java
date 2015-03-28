@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,16 +28,16 @@ public class XmlPropertyTestCases extends TestCase {
     static final String CLASS_PROPERTY_2_NAME = "property2";
     static final String FIELD_PROPERTY_1_NAME = "barProp";
     static final String FIELD_PROPERTY_2_NAME = "bar2Prop";
-    
-    
+
+
     Project project;
-    
+
     @Override
     public void setUp() throws Exception {
         JAXBContext ctx = (JAXBContext)JAXBContextFactory.createContext(new Class[]{Foo.class}, null);
         this.project = ctx.getXMLContext().getSession(0).getProject();
     }
-    
+
     public void testClassProperties() {
         ClassDescriptor descriptor = project.getClassDescriptor(Foo.class);
         Map<Object, Object> properties = descriptor.getProperties();
@@ -49,7 +49,7 @@ public class XmlPropertyTestCases extends TestCase {
         assertNotNull(property);
         assertTrue("Incorrect value for property", property.equals(new Integer("121")));
     }
-    
+
     public void testXmlPropertyOnField() {
         ClassDescriptor descriptor = project.getClassDescriptor(Foo.class);
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("bar");
@@ -59,7 +59,7 @@ public class XmlPropertyTestCases extends TestCase {
         assertNotNull(property);
         assertTrue("Incorrect value for property", property.equals("barValue"));
     }
-    
+
     public void testXmlPropertiesOnField() {
         ClassDescriptor descriptor = project.getClassDescriptor(Foo.class);
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("bar2");
@@ -68,7 +68,7 @@ public class XmlPropertyTestCases extends TestCase {
         Object property = properties.get(FIELD_PROPERTY_2_NAME);
         assertNotNull(property);
         assertTrue("Incorrect value for property", property.equals("bar2Value"));
-        
+
     }
 
 }

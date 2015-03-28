@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,166 +32,166 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
  */
 public class RangeVariableDeclarationStateObject extends AbstractRangeVariableDeclarationStateObject {
 
-	/**
-	 * Creates a new <code>RangeVariableDeclarationStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public RangeVariableDeclarationStateObject(AbstractModifyClauseStateObject parent) {
-		super(parent);
-		setIdentificationVariableOptional(true);
-	}
+    /**
+     * Creates a new <code>RangeVariableDeclarationStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public RangeVariableDeclarationStateObject(AbstractModifyClauseStateObject parent) {
+        super(parent);
+        setIdentificationVariableOptional(true);
+    }
 
-	/**
-	 * Creates a new <code>RangeVariableDeclarationStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public RangeVariableDeclarationStateObject(IdentificationVariableDeclarationStateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>RangeVariableDeclarationStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public RangeVariableDeclarationStateObject(IdentificationVariableDeclarationStateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>RangeVariableDeclarationStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param entityName The name of the abstract schema, which is the name of the entity
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public RangeVariableDeclarationStateObject(IdentificationVariableDeclarationStateObject parent,
-	                                           String entityName) {
+    /**
+     * Creates a new <code>RangeVariableDeclarationStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param entityName The name of the abstract schema, which is the name of the entity
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public RangeVariableDeclarationStateObject(IdentificationVariableDeclarationStateObject parent,
+                                               String entityName) {
 
-		super(parent, entityName);
-	}
+        super(parent, entityName);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public RangeVariableDeclarationStateObject addAs() {
-		return (RangeVariableDeclarationStateObject) super.addAs();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RangeVariableDeclarationStateObject addAs() {
+        return (RangeVariableDeclarationStateObject) super.addAs();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected StateObject buildRootStateObject() {
-		return new AbstractSchemaNameStateObject(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected StateObject buildRootStateObject() {
+        return new AbstractSchemaNameStateObject(this);
+    }
 
-	/**
-	 * Returns the actual {@link IEntity} that has the abstract schema name.
-	 *
-	 * @return The actual {@link IEntity} or <code>null</code> if no entity exists
-	 */
-	public IEntity getEntity() {
-		return getRootStateObject().getEntity();
-	}
+    /**
+     * Returns the actual {@link IEntity} that has the abstract schema name.
+     *
+     * @return The actual {@link IEntity} or <code>null</code> if no entity exists
+     */
+    public IEntity getEntity() {
+        return getRootStateObject().getEntity();
+    }
 
-	/**
-	 * Returns the abstract schema name.
-	 *
-	 * @return The name of the abstract schema type for which the identification variable is ranging over
-	 */
-	public String getEntityName() {
-		return getRootStateObject().getText();
-	}
+    /**
+     * Returns the abstract schema name.
+     *
+     * @return The name of the abstract schema type for which the identification variable is ranging over
+     */
+    public String getEntityName() {
+        return getRootStateObject().getText();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public IManagedType getManagedType(StateObject stateObject) {
+    /**
+     * {@inheritDoc}
+     */
+    public IManagedType getManagedType(StateObject stateObject) {
 
-		if (getIdentificationVariableStateObject().isEquivalent(stateObject)) {
-			return getRootStateObject().getEntity();
-		}
+        if (getIdentificationVariableStateObject().isEquivalent(stateObject)) {
+            return getRootStateObject().getEntity();
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getRootPath() {
-		return getEntityName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getRootPath() {
+        return getEntityName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public AbstractSchemaNameStateObject getRootStateObject() {
-		return (AbstractSchemaNameStateObject) super.getRootStateObject();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AbstractSchemaNameStateObject getRootStateObject() {
+        return (AbstractSchemaNameStateObject) super.getRootStateObject();
+    }
 
-	/**
-	 * Sets the abstract schema name to the given value.
-	 *
-	 * @param entity The {@link IEntity} that this clause will range over
-	 */
-	public void setDeclaration(IEntity entity) {
-		setEntity(entity);
-		setIdentificationVariable(null);
-	}
+    /**
+     * Sets the abstract schema name to the given value.
+     *
+     * @param entity The {@link IEntity} that this clause will range over
+     */
+    public void setDeclaration(IEntity entity) {
+        setEntity(entity);
+        setIdentificationVariable(null);
+    }
 
-	/**
-	 * Sets the abstract schema name to the given value and the identification variable that will
-	 * range over it.
-	 *
-	 * @param entity The {@link IEntity} that this clause will range over
-	 * @param identificationVariable The new identification variable
-	 */
-	public void setDeclaration(IEntity entity, String identificationVariable) {
-		setEntity(entity);
-		setIdentificationVariable(identificationVariable);
-	}
+    /**
+     * Sets the abstract schema name to the given value and the identification variable that will
+     * range over it.
+     *
+     * @param entity The {@link IEntity} that this clause will range over
+     * @param identificationVariable The new identification variable
+     */
+    public void setDeclaration(IEntity entity, String identificationVariable) {
+        setEntity(entity);
+        setIdentificationVariable(identificationVariable);
+    }
 
-	/**
-	 * Sets the abstract schema name to the given value and the identification variable that will
-	 * range over it.
-	 *
-	 * @param entityName The name of the entity name
-	 * @param identificationVariable The new identification variable
-	 */
-	public void setDeclaration(String entityName, String identificationVariable) {
-		setEntityName(entityName);
-		setIdentificationVariable(identificationVariable);
-	}
+    /**
+     * Sets the abstract schema name to the given value and the identification variable that will
+     * range over it.
+     *
+     * @param entityName The name of the entity name
+     * @param identificationVariable The new identification variable
+     */
+    public void setDeclaration(String entityName, String identificationVariable) {
+        setEntityName(entityName);
+        setIdentificationVariable(identificationVariable);
+    }
 
-	/**
-	 * Sets the actual {@link IEntity} and updates the abstract schema name.
-	 *
-	 * @param entity The {@link IEntity} that the clause will range over
-	 */
-	public void setEntity(IEntity entity) {
-		getRootStateObject().setEntity(entity);
-	}
+    /**
+     * Sets the actual {@link IEntity} and updates the abstract schema name.
+     *
+     * @param entity The {@link IEntity} that the clause will range over
+     */
+    public void setEntity(IEntity entity) {
+        getRootStateObject().setEntity(entity);
+    }
 
-	/**
-	 * Sets the name of the abstract schema, which is the name of the entity.
-	 *
-	 * @param abstractSchemaName The name of the abstract schema, which is the name of the entity
-	 */
-	public void setEntityName(String abstractSchemaName) {
-		getRootStateObject().setText(abstractSchemaName);
-	}
+    /**
+     * Sets the name of the abstract schema, which is the name of the entity.
+     *
+     * @param abstractSchemaName The name of the abstract schema, which is the name of the entity
+     */
+    public void setEntityName(String abstractSchemaName) {
+        getRootStateObject().setText(abstractSchemaName);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setRootPath(String root) {
-		setEntityName(root);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setRootPath(String root) {
+        setEntityName(root);
+    }
 }

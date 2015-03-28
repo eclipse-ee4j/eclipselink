@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,8 +40,8 @@ import org.w3c.dom.NodeList;
 public class UnmarshalXPathEngine <
      XML_FIELD extends Field
      > {
-    
-	private static UnmarshalXPathEngine instance = null;
+
+    private static UnmarshalXPathEngine instance = null;
     private XMLPlatform xmlPlatform;
 
     /**
@@ -112,7 +112,7 @@ public class UnmarshalXPathEngine <
         }
         if (resultNode == null) {
 
-     
+
 
             if(!xPathFragment.nameIsText()) {
                 return XMLRecord.noEntry;
@@ -142,11 +142,11 @@ public class UnmarshalXPathEngine <
     public NodeList selectNodes(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy) throws XMLMarshalException {
         return selectNodes(contextNode, xmlField, xmlNamespaceResolver, nullPolicy, false);
     }
-    
+
     public NodeList selectNodes(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy, boolean omitText) throws XMLMarshalException {
         return selectNodes(contextNode, xmlField, xmlNamespaceResolver, nullPolicy, omitText, true);
     }
-    
+
     public NodeList selectNodes(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy, boolean omitText, boolean concatinateTextNodes) {
         try {
             if (contextNode == null) {
@@ -331,7 +331,7 @@ public class UnmarshalXPathEngine <
                             }
                         }
                     }
-                } else { 
+                } else {
                     xmlNodeList.add(child);
                 }
             }
@@ -388,7 +388,7 @@ public class UnmarshalXPathEngine <
         for (int i = 0; i < numberOfNodes; i++) {
             Node next = childrenNodes.item(i);
             if (next.getNodeType() == Node.TEXT_NODE || next.getNodeType() == Node.CDATA_SECTION_NODE) {
-                
+
                 String val = next.getNodeValue();
                 if (val != null) {
                     if (returnVal == null) {
@@ -414,7 +414,7 @@ public class UnmarshalXPathEngine <
         if(!concatText) {
             return selectAllText(contextNode);
         }
-        
+
         Node n = selectSingleText(contextNode);
 
         XMLNodeList xmlNodeList = new XMLNodeList();
@@ -434,14 +434,14 @@ public class UnmarshalXPathEngine <
                 xmlNodeList.add(n);
             }
         }
-        
+
         return xmlNodeList;
     }
 
     private NodeList selectAllText(Node contextNode) {
        XMLNodeList nodes = new XMLNodeList();
        NodeList children = contextNode.getChildNodes();
-       
+
        for(int i = 0; i < children.getLength(); i++) {
            Node next = children.item(i);
            if (next.getNodeType() == Node.TEXT_NODE || next.getNodeType() == Node.CDATA_SECTION_NODE) {

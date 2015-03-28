@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -119,7 +119,7 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
          customer.getPhoneNumbers().add(pn1);
          PhoneNumber pn2 = new PhoneNumber();
          customer.getPhoneNumbers().add(pn2);
-         
+
          PhoneNumber newPN2 = new PhoneNumber();
          xmlContext.setValueByXPath(customer, "a:contact-info/a:phone-number[2]", namespaceResolver, newPN2);
          assertSame(pn1, customer.getPhoneNumbers().get(0));

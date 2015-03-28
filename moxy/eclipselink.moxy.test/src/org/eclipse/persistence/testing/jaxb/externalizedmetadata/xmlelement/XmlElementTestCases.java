@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,63 +47,63 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
 
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
-     * @throws Exception 
+     * @throws Exception
      */
     public XmlElementTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] { Employee.class});
     }
 
-	 public Map getProperties(){
-			InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/eclipselink-oxm.xml");
+     public Map getProperties(){
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/eclipselink-oxm.xml");
 
-			HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-		    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement", new StreamSource(inputStream));
-		    Map<String, Object> properties = new HashMap<String, Object>();
-		    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-           
-            // test override of 'old' context factory property - if the override 
-		    // fails we will get a ClassCastException
+            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement", new StreamSource(inputStream));
+            Map<String, Object> properties = new HashMap<String, Object>();
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+            // test override of 'old' context factory property - if the override
+            // fails we will get a ClassCastException
             properties.put(JAXBContextFactory.ANNOTATION_HELPER_KEY, "Blah");
             properties.put(JAXBContextProperties.ANNOTATION_HELPER, new AnnotationHelper());
 
-	        return properties;
-		}
-	 
-	   public void testSchemaGen() throws Exception{
-	    	List controlSchemas = new ArrayList();
-	    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/schema.xsd");
-	    	InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/schema2.xsd");
-	    	controlSchemas.add(is);
-	    	controlSchemas.add(is2);	  
-	    	super.testSchemaGen(controlSchemas);
-	    	
-	    }
-	   
-	 
+            return properties;
+        }
+
+       public void testSchemaGen() throws Exception{
+            List controlSchemas = new ArrayList();
+            InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/schema.xsd");
+            InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/schema2.xsd");
+            controlSchemas.add(is);
+            controlSchemas.add(is2);
+            super.testSchemaGen(controlSchemas);
+
+        }
+
+
     /**
-     * Tests @XmlElement override via eclipselink-oxm.xml.  The myUtilDate 
-     * element is set to 'required' in the xml file, but the instance 
+     * Tests @XmlElement override via eclipselink-oxm.xml.  The myUtilDate
+     * element is set to 'required' in the xml file, but the instance
      * document does not have a myUtilDate element.
-     * 
+     *
      * Negative test.
      */
     public void testXmlElementOverrideInvalid() {
-    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/schema.xsd");        
-        StreamSource schemaSource = new StreamSource(schema); 
-                
+        InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/schema.xsd");
+        StreamSource schemaSource = new StreamSource(schema);
+
         InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE_INVALID);
-        String result = validateAgainstSchema(instanceDocStream, schemaSource);        
+        String result = validateAgainstSchema(instanceDocStream, schemaSource);
         assertTrue("Schema validation passed unxepectedly", result != null);
-      	
+
     }
-    
+
     public void testTeamWithListOfPlayersSchemaGen() throws Exception{
-    	ClassLoader loader = getClass().getClassLoader();
+        ClassLoader loader = getClass().getClassLoader();
         String metadataFile = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/team-oxm.xml";
-        
+
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
@@ -112,26 +112,26 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement", new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-        
+
         JAXBContext jContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Team.class }, properties, loader);
-        
+
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
         jContext.generateSchema(outputResolver);
 
-       
+
         List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/team-schema.xsd");	    	
-    	controlSchemas.add(is);	    	
-    	
-    	List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/team-schema.xsd");
+        controlSchemas.add(is);
+
+        List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
         compareSchemas(controlSchemas, generatedSchemas);
-        /* 
-         
-    	super.testSchemaGen(controlSchemas);
-        
+        /*
+
+        super.testSchemaGen(controlSchemas);
+
         try {
             JAXBContext jContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Team.class }, properties, loader);
-            MySchemaOutputResolver oResolver = new MySchemaOutputResolver(); 
+            MySchemaOutputResolver oResolver = new MySchemaOutputResolver();
             jContext.generateSchema(oResolver);
             // validate schema
             String controlSchema = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/team-schema.xsd";
@@ -144,7 +144,7 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
     /*
     public void testTeamWithListOfPlayersSchemaGen() {
         String metadataFile = PATH + "team-oxm.xml";
-        
+
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
@@ -153,10 +153,10 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-        
+
         try {
             JAXBContext jContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Team.class }, properties, loader);
-            MySchemaOutputResolver oResolver = new MySchemaOutputResolver(); 
+            MySchemaOutputResolver oResolver = new MySchemaOutputResolver();
             jContext.generateSchema(oResolver);
             // validate schema
             String controlSchema = PATH + "team-schema.xsd";
@@ -168,7 +168,7 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
     */
     /**
      * Test setting the container class via container-type attribute.
-     * 
+     *
      * Positive test.
      */
     public void testContainerType() {
@@ -180,22 +180,22 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
         assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCompositeCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCompositeCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 
-	@Override
-	protected Object getControlObject() {
-		Employee emp = new Employee();
-		emp.firstName = "firstName";
-		emp.lastName = "LastName";
-		emp.id = 66;
-		emp.setMyInt(66);
-		Calendar cal = Calendar.getInstance();
-		cal.clear();
-		cal.set(1976, Calendar.FEBRUARY, 17, 6, 15,30);
-			
-		emp.myUtilDate = cal;
-		return emp;
-	}
+    @Override
+    protected Object getControlObject() {
+        Employee emp = new Employee();
+        emp.firstName = "firstName";
+        emp.lastName = "LastName";
+        emp.id = 66;
+        emp.setMyInt(66);
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(1976, Calendar.FEBRUARY, 17, 6, 15,30);
 
-	@Override
+        emp.myUtilDate = cal;
+        return emp;
+    }
+
+    @Override
     protected String getControlJSONDocumentContent() {
         return "{\"employee\":{\n" +
                 "  \"firstName\":\"firstName\",\n" +

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -81,17 +81,17 @@ public class XmlListTestCases extends OXTestCase {
         marshaller.marshal(o, streamResult, t);
         assertEquals(XML, stringWriter.toString());
     }
-    
+
     public void testJSONStringArray() throws Exception{
-    	_testJSONArray(new String[] {"1", "2"}, JSON, "application/json");
+        _testJSONArray(new String[] {"1", "2"}, JSON, "application/json");
     }
-    
+
     public void testJSONIntArray() throws Exception{
-    	_testJSONArray(new int[] {1, 2}, JSON_INT, "application/json");
+        _testJSONArray(new int[] {1, 2}, JSON_INT, "application/json");
     }
 
 
-    
+
     public void _testJSONArray(Object controlArray, String controlString, String mediaType) throws Exception{
         XmlList xmlList = new XmlList() {
             public Class<? extends Annotation> annotationType() {
@@ -105,19 +105,19 @@ public class XmlListTestCases extends OXTestCase {
         t.setXmlTagName(new QName("root"));
         t.setAnnotations(a);
         TypeMappingInfo[] types = { t };
-        
+
         Map props = new HashMap();
         props.put(JAXBContextProperties.MEDIA_TYPE, mediaType);
-        
+
         JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory .createContext(types, props, Thread.currentThread().getContextClassLoader());
-       
+
         StringWriter stringWriter = new StringWriter();
         StreamResult streamResult = new StreamResult(stringWriter);
-        
+
         JAXBMarshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
         marshaller.marshal(controlArray, streamResult, t);
- 
+
         assertEquals(removeWhiteSpaceFromString(controlString), removeWhiteSpaceFromString(stringWriter.toString()));
     }
 }

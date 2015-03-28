@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -63,7 +63,7 @@ public class GroupByNode extends MajorNode {
     /**
      * INTERNAL
      * Returns true if the sp
-     */    
+     */
     public boolean isValidHavingExpr(Node expr) {
         if (expr.isDotNode() || expr.isVariableNode()) {
             return isGroupbyItem(expr);
@@ -79,7 +79,7 @@ public class GroupByNode extends MajorNode {
     /**
      * INTERNAL
      * Return true if the specified expr is a groupby item.
-     */    
+     */
     private boolean isGroupbyItem(Node expr) {
         if (expr.isDotNode() || expr.isVariableNode()) {
             String exprRepr = expr.getAsString();

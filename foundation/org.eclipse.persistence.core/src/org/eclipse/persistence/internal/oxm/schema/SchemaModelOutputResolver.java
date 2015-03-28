@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -22,7 +22,7 @@ public interface SchemaModelOutputResolver {
     /**
      * Determines the location where a given schema file (of the given namespace URI)
      * will be generated, and return it as a Result object.
-     *  
+     *
      * @param namespaceURI
      * @param suggestedFileName
      * @return schema file as a Result object

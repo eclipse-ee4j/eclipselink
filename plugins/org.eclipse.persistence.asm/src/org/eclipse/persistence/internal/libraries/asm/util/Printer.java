@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2015 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import org.eclipse.persistence.internal.libraries.asm.TypePath;
 
 /**
  * An abstract converter from visit events to text.
- * 
+ *
  * @author Eric Bruneton
  */
 public abstract class Printer {
@@ -513,7 +513,7 @@ public abstract class Printer {
 
     /**
      * Returns the text constructed by this visitor.
-     * 
+     *
      * @return the text constructed by this visitor.
      */
     public List<Object> getText() {
@@ -522,7 +522,7 @@ public abstract class Printer {
 
     /**
      * Prints the text constructed by this visitor.
-     * 
+     *
      * @param pw
      *            the print writer to be used.
      */
@@ -532,7 +532,7 @@ public abstract class Printer {
 
     /**
      * Appends a quoted string to a given buffer.
-     * 
+     *
      * @param buf
      *            the buffer where the string must be added.
      * @param s
@@ -569,7 +569,7 @@ public abstract class Printer {
 
     /**
      * Prints the given string tree.
-     * 
+     *
      * @param pw
      *            the writer to be used to print the tree.
      * @param l

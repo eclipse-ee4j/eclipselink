@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
 import java.security.AccessController;
@@ -50,7 +50,7 @@ public class JavaPlatform {
                         }
                     } else {
                         platformClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.internal.helper.JDK16Platform");
-                    }                  
+                    }
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
                             platform = (JDKPlatform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
@@ -58,7 +58,7 @@ public class JavaPlatform {
                         }
                     } else {
                         platform = (JDKPlatform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
-                    }      
+                    }
                 } catch (Exception exception) {
                 }
             }
@@ -99,7 +99,7 @@ public class JavaPlatform {
      * INTERNAL:
      * Casts the passed object to SQLXML and calls getString and free methods
      */
-    public static String getStringAndFreeSQLXML(Object sqlXml) throws SQLException { 
+    public static String getStringAndFreeSQLXML(Object sqlXml) throws SQLException {
         return getPlatform().getStringAndFreeSQLXML(sqlXml);
     }
 }

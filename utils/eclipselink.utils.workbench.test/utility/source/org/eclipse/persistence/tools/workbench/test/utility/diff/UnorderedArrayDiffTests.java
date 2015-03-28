@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -32,212 +32,212 @@ import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
 
 
 public class UnorderedArrayDiffTests extends TestCase {
-	private ContainerDifferentiator differentiator;
-	private Object[] array1;
-	private Object[] array2;
+    private ContainerDifferentiator differentiator;
+    private Object[] array1;
+    private Object[] array2;
 
-	public static Test suite() {
-		return new TestSuite(UnorderedArrayDiffTests.class);
-	}
-	
-	public UnorderedArrayDiffTests(String name) {
-		super(name);
-	}
+    public static Test suite() {
+        return new TestSuite(UnorderedArrayDiffTests.class);
+    }
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.differentiator = ContainerDifferentiator.forArrays();
-		this.array1 = this.buildArray();
-		this.array2 = this.buildArray();
-	}
+    public UnorderedArrayDiffTests(String name) {
+        super(name);
+    }
 
-	private Object[] buildArray() {
-		Object[] result = new Object[5];
-		result[0] = "zero";
-		result[1] = "one";
-		result[2] = "two";
-		result[3] = "three";
-		result[4] = "four";
-		return result;
-	}
+    protected void setUp() throws Exception {
+        super.setUp();
+        this.differentiator = ContainerDifferentiator.forArrays();
+        this.array1 = this.buildArray();
+        this.array2 = this.buildArray();
+    }
 
-	protected void tearDown() throws Exception {
-		TestTools.clear(this);
-		super.tearDown();
-	}
+    private Object[] buildArray() {
+        Object[] result = new Object[5];
+        result[0] = "zero";
+        result[1] = "one";
+        result[2] = "two";
+        result[3] = "three";
+        result[4] = "four";
+        return result;
+    }
 
-	public void testSameObject() {
-		this.array2 = this.array1;
-		Diff diff = this.differentiator.diff(this.array1, this.array2);
-		this.verifyDiffMatch(diff, this.array1, this.array2);
-	}
+    protected void tearDown() throws Exception {
+        TestTools.clear(this);
+        super.tearDown();
+    }
 
-	public void testDifferentObjects() {
-		Diff diff = this.differentiator.diff(this.array1, this.array2);
-		this.verifyDiffMatch(diff, this.array1, this.array2);
-	}
+    public void testSameObject() {
+        this.array2 = this.array1;
+        Diff diff = this.differentiator.diff(this.array1, this.array2);
+        this.verifyDiffMatch(diff, this.array1, this.array2);
+    }
 
-	public void testUnequalObjects() {
-		String originalString = "zero";
-		String modifiedString = "xxx-zero-xxx";
-		int index = CollectionTools.indexOf(this.array2, originalString);
-		this.array2[index] = modifiedString;
-		ContainerDiff diff = (ContainerDiff) this.differentiator.diff(this.array1, this.array2);
-		this.verifyDiffMatchMismatch(diff, this.array1, this.array2);
+    public void testDifferentObjects() {
+        Diff diff = this.differentiator.diff(this.array1, this.array2);
+        this.verifyDiffMatch(diff, this.array1, this.array2);
+    }
 
-		Diff[] diffs = diff.getDiffs();
-		assertEquals(4, diffs.length);
+    public void testUnequalObjects() {
+        String originalString = "zero";
+        String modifiedString = "xxx-zero-xxx";
+        int index = CollectionTools.indexOf(this.array2, originalString);
+        this.array2[index] = modifiedString;
+        ContainerDiff diff = (ContainerDiff) this.differentiator.diff(this.array1, this.array2);
+        this.verifyDiffMatchMismatch(diff, this.array1, this.array2);
 
-		Object[] removedElements = diff.getRemovedElements();
-		assertEquals(1, removedElements.length);
-		assertTrue(CollectionTools.contains(removedElements, originalString));
+        Diff[] diffs = diff.getDiffs();
+        assertEquals(4, diffs.length);
 
-		Object[] addedElements = diff.getAddedElements();
-		assertEquals(1, addedElements.length);
-		assertTrue(CollectionTools.contains(addedElements, modifiedString));
-	}
+        Object[] removedElements = diff.getRemovedElements();
+        assertEquals(1, removedElements.length);
+        assertTrue(CollectionTools.contains(removedElements, originalString));
 
-	public void testOneNull() {
-		Object collection3 = null;
-		Diff diff = this.differentiator.diff(this.array1, collection3);
-		this.verifyDiffMatchMismatch(diff, this.array1, collection3);
-	}
+        Object[] addedElements = diff.getAddedElements();
+        assertEquals(1, addedElements.length);
+        assertTrue(CollectionTools.contains(addedElements, modifiedString));
+    }
 
-	public void testNullElements() {
-		String originalString = "zero";
-		String modifiedString = null;
-		int index = CollectionTools.indexOf(this.array2, originalString);
-		this.array2[index] = modifiedString;
-		ContainerDiff diff = (ContainerDiff) this.differentiator.diff(this.array1, this.array2);
-		this.verifyDiffMatchMismatch(diff, this.array1, this.array2);
+    public void testOneNull() {
+        Object collection3 = null;
+        Diff diff = this.differentiator.diff(this.array1, collection3);
+        this.verifyDiffMatchMismatch(diff, this.array1, collection3);
+    }
 
-		Diff[] diffs = diff.getDiffs();
-		assertEquals(4, diffs.length);
+    public void testNullElements() {
+        String originalString = "zero";
+        String modifiedString = null;
+        int index = CollectionTools.indexOf(this.array2, originalString);
+        this.array2[index] = modifiedString;
+        ContainerDiff diff = (ContainerDiff) this.differentiator.diff(this.array1, this.array2);
+        this.verifyDiffMatchMismatch(diff, this.array1, this.array2);
 
-		Object[] removedElements = diff.getRemovedElements();
-		assertEquals(1, removedElements.length);
-		assertTrue(CollectionTools.contains(removedElements, originalString));
+        Diff[] diffs = diff.getDiffs();
+        assertEquals(4, diffs.length);
 
-		Object[] addedElements = diff.getAddedElements();
-		assertEquals(1, addedElements.length);
-		assertTrue(CollectionTools.contains(addedElements, modifiedString));
-	}
+        Object[] removedElements = diff.getRemovedElements();
+        assertEquals(1, removedElements.length);
+        assertTrue(CollectionTools.contains(removedElements, originalString));
 
-	public void testRemovedElement() {
-		String removedString = "zero";
-		this.array2 = CollectionTools.remove(this.array2, removedString);
-		ContainerDiff diff = (ContainerDiff) this.differentiator.diff(this.array1, this.array2);
-		this.verifyDiffMatchMismatch(diff, this.array1, this.array2);
+        Object[] addedElements = diff.getAddedElements();
+        assertEquals(1, addedElements.length);
+        assertTrue(CollectionTools.contains(addedElements, modifiedString));
+    }
 
-		Diff[] diffs = diff.getDiffs();
-		assertEquals(4, diffs.length);
+    public void testRemovedElement() {
+        String removedString = "zero";
+        this.array2 = CollectionTools.remove(this.array2, removedString);
+        ContainerDiff diff = (ContainerDiff) this.differentiator.diff(this.array1, this.array2);
+        this.verifyDiffMatchMismatch(diff, this.array1, this.array2);
 
-		Object[] removedElements = diff.getRemovedElements();
-		assertEquals(1, removedElements.length);
-		assertEquals(removedElements[0], removedString);
+        Diff[] diffs = diff.getDiffs();
+        assertEquals(4, diffs.length);
 
-		Object[] addedElements = diff.getAddedElements();
-		assertEquals(0, addedElements.length);
-	}
+        Object[] removedElements = diff.getRemovedElements();
+        assertEquals(1, removedElements.length);
+        assertEquals(removedElements[0], removedString);
 
-	public void testAddedElement() {
-		String addedString = "zero";
-		this.array1 = CollectionTools.remove(this.array1, addedString);
-		ContainerDiff diff = (ContainerDiff) this.differentiator.diff(this.array1, this.array2);
-		this.verifyDiffMatchMismatch(diff, this.array1, this.array2);
+        Object[] addedElements = diff.getAddedElements();
+        assertEquals(0, addedElements.length);
+    }
 
-		Diff[] diffs = diff.getDiffs();
-		assertEquals(4, diffs.length);
+    public void testAddedElement() {
+        String addedString = "zero";
+        this.array1 = CollectionTools.remove(this.array1, addedString);
+        ContainerDiff diff = (ContainerDiff) this.differentiator.diff(this.array1, this.array2);
+        this.verifyDiffMatchMismatch(diff, this.array1, this.array2);
 
-		Object[] removedElements = diff.getRemovedElements();
-		assertEquals(0, removedElements.length);
+        Diff[] diffs = diff.getDiffs();
+        assertEquals(4, diffs.length);
 
-		Object[] addedElements = diff.getAddedElements();
-		assertEquals(1, addedElements.length);
-		assertEquals(addedElements[0], addedString);
-	}
+        Object[] removedElements = diff.getRemovedElements();
+        assertEquals(0, removedElements.length);
 
-	public void testChangedElement() {
-		this.differentiator = ContainerDifferentiator.forArrays(this.buildSimpleElementDifferentiator());
-		this.array1 = this.buildArray2();
-		this.array2 = this.buildArray2();
-		SimpleElement changedElement = (SimpleElement) this.array2[0];
-		changedElement.description = "xxx-" + changedElement.description + "-xxx";
+        Object[] addedElements = diff.getAddedElements();
+        assertEquals(1, addedElements.length);
+        assertEquals(addedElements[0], addedString);
+    }
 
-		ContainerDiff diff = (ContainerDiff) this.differentiator.diff(this.array1, this.array2);
-		this.verifyDiffMatchMismatch(diff, this.array1, this.array2);
+    public void testChangedElement() {
+        this.differentiator = ContainerDifferentiator.forArrays(this.buildSimpleElementDifferentiator());
+        this.array1 = this.buildArray2();
+        this.array2 = this.buildArray2();
+        SimpleElement changedElement = (SimpleElement) this.array2[0];
+        changedElement.description = "xxx-" + changedElement.description + "-xxx";
 
-		Diff[] diffs = diff.getDiffs();
-		assertEquals(5, diffs.length);
-		Collection changedDiffs = new ArrayList();
-		for (int i = 0; i < diffs.length; i++) {
-			if (diffs[i].different()) {
-				changedDiffs.add(diffs[i]);
-			}
-		}
-		assertEquals(1, changedDiffs.size());
+        ContainerDiff diff = (ContainerDiff) this.differentiator.diff(this.array1, this.array2);
+        this.verifyDiffMatchMismatch(diff, this.array1, this.array2);
 
-		List leafReflectiveFieldMismatches = DiffTestTools.differentLeafReflectiveFieldDiffList(diff);
-		assertEquals(1, leafReflectiveFieldMismatches.size());
+        Diff[] diffs = diff.getDiffs();
+        assertEquals(5, diffs.length);
+        Collection changedDiffs = new ArrayList();
+        for (int i = 0; i < diffs.length; i++) {
+            if (diffs[i].different()) {
+                changedDiffs.add(diffs[i]);
+            }
+        }
+        assertEquals(1, changedDiffs.size());
 
-		ReflectiveFieldDiff leafDiff = (ReflectiveFieldDiff) leafReflectiveFieldMismatches.get(0);
-		assertEquals("description", leafDiff.getField().getName());
-		assertEquals("zero", leafDiff.getObject1());
-		assertEquals("xxx-zero-xxx", leafDiff.getObject2());
+        List leafReflectiveFieldMismatches = DiffTestTools.differentLeafReflectiveFieldDiffList(diff);
+        assertEquals(1, leafReflectiveFieldMismatches.size());
+
+        ReflectiveFieldDiff leafDiff = (ReflectiveFieldDiff) leafReflectiveFieldMismatches.get(0);
+        assertEquals("description", leafDiff.getField().getName());
+        assertEquals("zero", leafDiff.getObject1());
+        assertEquals("xxx-zero-xxx", leafDiff.getObject2());
 
 
-		Object[] removedElements = diff.getRemovedElements();
-		assertEquals(0, removedElements.length);
+        Object[] removedElements = diff.getRemovedElements();
+        assertEquals(0, removedElements.length);
 
-		Object[] addedElements = diff.getAddedElements();
-		assertEquals(0, addedElements.length);
-	}
+        Object[] addedElements = diff.getAddedElements();
+        assertEquals(0, addedElements.length);
+    }
 
-	private Object[] buildArray2() {
-		Object[] result = new Object[5];
-		result[0] = new SimpleElement(0, "zero");
-		result[1] = new SimpleElement(1, "one");
-		result[2] = new SimpleElement(2, "two");
-		result[3] = new SimpleElement(3, "three");
-		result[4] = new SimpleElement(4, "four");
-		return result;
-	}
+    private Object[] buildArray2() {
+        Object[] result = new Object[5];
+        result[0] = new SimpleElement(0, "zero");
+        result[1] = new SimpleElement(1, "one");
+        result[2] = new SimpleElement(2, "two");
+        result[3] = new SimpleElement(3, "three");
+        result[4] = new SimpleElement(4, "four");
+        return result;
+    }
 
-	private void verifyDiffMatchMismatch(Diff diff, Object object1, Object object2) {
-		assertEquals(object1, diff.getObject1());
-		assertEquals(object2, diff.getObject2());
-		assertFalse(diff.identical());
-		assertTrue(diff.different());
-		assertTrue(diff.getDescription().length() > 0);
-	}
+    private void verifyDiffMatchMismatch(Diff diff, Object object1, Object object2) {
+        assertEquals(object1, diff.getObject1());
+        assertEquals(object2, diff.getObject2());
+        assertFalse(diff.identical());
+        assertTrue(diff.different());
+        assertTrue(diff.getDescription().length() > 0);
+    }
 
-	private void verifyDiffMatch(Diff diff, Object object1, Object object2) {
-		assertEquals(object1, diff.getObject1());
-		assertEquals(object2, diff.getObject2());
-		assertTrue(diff.identical());
-		assertFalse(diff.different());
-		assertEquals(0, diff.getDescription().length());
-	}
+    private void verifyDiffMatch(Diff diff, Object object1, Object object2) {
+        assertEquals(object1, diff.getObject1());
+        assertEquals(object2, diff.getObject2());
+        assertTrue(diff.identical());
+        assertFalse(diff.different());
+        assertEquals(0, diff.getDescription().length());
+    }
 
-	private Differentiator buildSimpleElementDifferentiator() {
-		ReflectiveDifferentiator rd = new ReflectiveDifferentiator(SimpleElement.class);
-		rd.addKeyFieldNamed("key");
-		return rd;
-	}
+    private Differentiator buildSimpleElementDifferentiator() {
+        ReflectiveDifferentiator rd = new ReflectiveDifferentiator(SimpleElement.class);
+        rd.addKeyFieldNamed("key");
+        return rd;
+    }
 
-	// ******************** member classes ********************
+    // ******************** member classes ********************
 
-	private class SimpleElement {
-		int key;
-		String description;
-		SimpleElement(int key, String description) {
-			super();
-			this.key = key;
-			this.description = description;
-		}
-		public String toString() {
-			return StringTools.buildToStringFor(this, Integer.toString(this.key) + " - " + this.description);
-		}
-	}
+    private class SimpleElement {
+        int key;
+        String description;
+        SimpleElement(int key, String description) {
+            super();
+            this.key = key;
+            this.description = description;
+        }
+        public String toString() {
+            return StringTools.buildToStringFor(this, Integer.toString(this.key) + " - " + this.description);
+        }
+    }
 
 }

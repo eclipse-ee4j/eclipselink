@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,932 +59,932 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
 @SuppressWarnings("nls")
 public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 
-	/**
-	 * Keeps track of the changes made to the JPQL query.
-	 */
-	private DefaultRefactoringDelta delta;
+    /**
+     * Keeps track of the changes made to the JPQL query.
+     */
+    private DefaultRefactoringDelta delta;
 
-	/**
-	 * The parsed tree representation of the JPQL query.
-	 */
-	private JPQLExpression jpqlExpression;
+    /**
+     * The parsed tree representation of the JPQL query.
+     */
+    private JPQLExpression jpqlExpression;
 
-	/**
-	 * The {@link JPQLGrammar} that was used to parse the JPQL query or JPQL fragments.
-	 */
-	private JPQLGrammar jpqlGrammar;
+    /**
+     * The {@link JPQLGrammar} that was used to parse the JPQL query or JPQL fragments.
+     */
+    private JPQLGrammar jpqlGrammar;
 
-	/**
-	 * The context used to query information about the JPQL query.
-	 */
-	private JPQLQueryContext queryContext;
+    /**
+     * The context used to query information about the JPQL query.
+     */
+    private JPQLQueryContext queryContext;
 
-	/**
-	 * Creates a new <code>BasicRefactoringTool</code>.
-	 *
-	 * @param jpqlQuery The JPQL query to manipulate
-	 * @param jpqlGrammar The {@link JPQLGrammar} that was used to parse the JPQL query
-	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 */
-	protected BasicRefactoringTool(CharSequence jpqlQuery,
-	                                JPQLGrammar jpqlGrammar,
-	                                IManagedTypeProvider managedTypeProvider) {
+    /**
+     * Creates a new <code>BasicRefactoringTool</code>.
+     *
+     * @param jpqlQuery The JPQL query to manipulate
+     * @param jpqlGrammar The {@link JPQLGrammar} that was used to parse the JPQL query
+     * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
+     */
+    protected BasicRefactoringTool(CharSequence jpqlQuery,
+                                    JPQLGrammar jpqlGrammar,
+                                    IManagedTypeProvider managedTypeProvider) {
 
-		this(jpqlQuery, jpqlGrammar, managedTypeProvider, JPQLStatementBNF.ID);
-	}
+        this(jpqlQuery, jpqlGrammar, managedTypeProvider, JPQLStatementBNF.ID);
+    }
 
-	/**
-	 * Creates a new <code>BasicRefactoringTool</code>.
-	 *
-	 * @param jpqlFragment The JPQL query to manipulate or a single JPQL fragment, which is parsed
-	 * using the JPQL query BNF identifier by the given ID
-	 * @param jpqlGrammar The {@link JPQLGrammar} that was used to parse the JPQL fragment
-	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBNFId The unique identifier of the {@link
+    /**
+     * Creates a new <code>BasicRefactoringTool</code>.
+     *
+     * @param jpqlFragment The JPQL query to manipulate or a single JPQL fragment, which is parsed
+     * using the JPQL query BNF identifier by the given ID
+     * @param jpqlGrammar The {@link JPQLGrammar} that was used to parse the JPQL fragment
+     * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
+     * @param jpqlQueryBNFId The unique identifier of the {@link
      * org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
-	 */
-	protected BasicRefactoringTool(CharSequence jpqlFragment,
-	                               JPQLGrammar jpqlGrammar,
-	                               IManagedTypeProvider managedTypeProvider,
-	                               String jpqlQueryBNFId) {
+     */
+    protected BasicRefactoringTool(CharSequence jpqlFragment,
+                                   JPQLGrammar jpqlGrammar,
+                                   IManagedTypeProvider managedTypeProvider,
+                                   String jpqlQueryBNFId) {
 
-		super(jpqlFragment, managedTypeProvider, jpqlQueryBNFId);
-		this.jpqlGrammar = jpqlGrammar;
-		this.delta       = new DefaultRefactoringDelta(jpqlFragment);
-	}
+        super(jpqlFragment, managedTypeProvider, jpqlQueryBNFId);
+        this.jpqlGrammar = jpqlGrammar;
+        this.delta       = new DefaultRefactoringDelta(jpqlFragment);
+    }
 
-	/**
-	 * Creates the visitor that will traverse the {@link } representation of the JPQL
-	 * query and will rename a type's attribute name.
-	 *
-	 * @param typeName The fully qualified name of the type that got one of its attributes renamed
-	 * @param oldAttributeName The current name of the attribute to rename
-	 * @param newAttributeName The new name of the attribute
-	 * @return A new {@link AttributeNameRenamer}
-	 */
-	protected AttributeNameRenamer buildAttributeNameRenamer(String typeName,
-	                                                         String oldAttributeName,
-	                                                         String newAttributeName) {
+    /**
+     * Creates the visitor that will traverse the {@link } representation of the JPQL
+     * query and will rename a type's attribute name.
+     *
+     * @param typeName The fully qualified name of the type that got one of its attributes renamed
+     * @param oldAttributeName The current name of the attribute to rename
+     * @param newAttributeName The new name of the attribute
+     * @return A new {@link AttributeNameRenamer}
+     */
+    protected AttributeNameRenamer buildAttributeNameRenamer(String typeName,
+                                                             String oldAttributeName,
+                                                             String newAttributeName) {
 
-		return new AttributeNameRenamer(getQueryContext(), typeName, oldAttributeName, newAttributeName);
-	}
+        return new AttributeNameRenamer(getQueryContext(), typeName, oldAttributeName, newAttributeName);
+    }
 
-	/**
-	 * Creates the visitor that will traverse the {@link } representation of the JPQL
-	 * query and will rename the fully qualified class name.
-	 *
-	 * @param oldClassName The current name of the class to rename
-	 * @param newClassName The new name of the class
-	 * @return A new {@link ClassNameRenamer}
-	 */
-	protected ClassNameRenamer buildClassNameRenamer(String oldClassName, String newClassName) {
-		return new ClassNameRenamer(oldClassName, newClassName);
-	}
+    /**
+     * Creates the visitor that will traverse the {@link } representation of the JPQL
+     * query and will rename the fully qualified class name.
+     *
+     * @param oldClassName The current name of the class to rename
+     * @param newClassName The new name of the class
+     * @return A new {@link ClassNameRenamer}
+     */
+    protected ClassNameRenamer buildClassNameRenamer(String oldClassName, String newClassName) {
+        return new ClassNameRenamer(oldClassName, newClassName);
+    }
 
-	/**
-	 * Creates the visitor that will traverse the {@link } representation of the JPQL
-	 * query and will rename the entity name.
-	 *
-	 * @param oldEntityName The current name of the entity to rename
-	 * @param newEntityName The new name of the entity
-	 * @return A new {@link EntityNameRenamer}
-	 */
-	protected EntityNameRenamer buildEntityNameRenamer(String oldEntityName, String newEntityName) {
-		return new EntityNameRenamer(oldEntityName, newEntityName);
-	}
+    /**
+     * Creates the visitor that will traverse the {@link } representation of the JPQL
+     * query and will rename the entity name.
+     *
+     * @param oldEntityName The current name of the entity to rename
+     * @param newEntityName The new name of the entity
+     * @return A new {@link EntityNameRenamer}
+     */
+    protected EntityNameRenamer buildEntityNameRenamer(String oldEntityName, String newEntityName) {
+        return new EntityNameRenamer(oldEntityName, newEntityName);
+    }
 
-	/**
-	 * Creates the visitor that will traverse the {@link } representation of the JPQL
-	 * query and will rename the enum constant.
-	 *
-	 * @param oldClassName The new name of the enum constant
-	 * @param newClassName The current name of the enum constant to rename
-	 * @return A new {@link EnumConstantRenamer}
-	 */
-	protected EnumConstantRenamer buildEnumConstantRenamer(String oldClassName, String newClassName) {
-		return new EnumConstantRenamer(getManagedTypeProvider(), oldClassName, newClassName);
-	}
+    /**
+     * Creates the visitor that will traverse the {@link } representation of the JPQL
+     * query and will rename the enum constant.
+     *
+     * @param oldClassName The new name of the enum constant
+     * @param newClassName The current name of the enum constant to rename
+     * @return A new {@link EnumConstantRenamer}
+     */
+    protected EnumConstantRenamer buildEnumConstantRenamer(String oldClassName, String newClassName) {
+        return new EnumConstantRenamer(getManagedTypeProvider(), oldClassName, newClassName);
+    }
 
-	/**
-	 * Creates a new {@link JPQLQueryContext} that can retrieve information from the declaration
-	 * portion of the JPQL query.
-	 *
-	 * @return A new concrete instance of {@link JPQLQueryContext}
-	 */
-	protected abstract JPQLQueryContext buildJPQLQueryContext();
+    /**
+     * Creates a new {@link JPQLQueryContext} that can retrieve information from the declaration
+     * portion of the JPQL query.
+     *
+     * @return A new concrete instance of {@link JPQLQueryContext}
+     */
+    protected abstract JPQLQueryContext buildJPQLQueryContext();
 
-	/**
-	 * Creates the visitor that will traverse the {@link } representation of the JPQL
-	 * query and will rename a result variable.
-	 *
-	 * @param oldVariableName The current result variable name
-	 * @param newVariableName The new name of the result variable
-	 * @return A new {@link ResultVariableNameRenamer}
-	 */
-	protected ResultVariableNameRenamer buildResultVariableNameRenamer(String oldVariableName,
-	                                                                   String newVariableName) {
+    /**
+     * Creates the visitor that will traverse the {@link } representation of the JPQL
+     * query and will rename a result variable.
+     *
+     * @param oldVariableName The current result variable name
+     * @param newVariableName The new name of the result variable
+     * @return A new {@link ResultVariableNameRenamer}
+     */
+    protected ResultVariableNameRenamer buildResultVariableNameRenamer(String oldVariableName,
+                                                                       String newVariableName) {
 
-		return new ResultVariableNameRenamer(oldVariableName, newVariableName);
-	}
+        return new ResultVariableNameRenamer(oldVariableName, newVariableName);
+    }
 
-	/**
-	 * Creates the visitor that will traverse the {@link } representation of the JPQL
-	 * query and will rename an identification variable.
-	 *
-	 * @param oldVariableName The current identification variable name
-	 * @param newVariableName The new name of the identification variable
-	 * @return A new {@link VariableNameRenamer}
-	 */
-	protected VariableNameRenamer buildVariableNameRenamer(String oldVariableName,
-	                                                       String newVariableName) {
+    /**
+     * Creates the visitor that will traverse the {@link } representation of the JPQL
+     * query and will rename an identification variable.
+     *
+     * @param oldVariableName The current identification variable name
+     * @param newVariableName The new name of the identification variable
+     * @return A new {@link VariableNameRenamer}
+     */
+    protected VariableNameRenamer buildVariableNameRenamer(String oldVariableName,
+                                                           String newVariableName) {
 
-		return new VariableNameRenamer(oldVariableName, newVariableName);
-	}
+        return new VariableNameRenamer(oldVariableName, newVariableName);
+    }
 
-	/**
-	 * Returns the delta of the changes made to the JPQL query.
-	 *
-	 * @return An object containing the refactoring events
-	 */
-	public RefactoringDelta getDelta() {
-		return delta;
-	}
+    /**
+     * Returns the delta of the changes made to the JPQL query.
+     *
+     * @return An object containing the refactoring events
+     */
+    public RefactoringDelta getDelta() {
+        return delta;
+    }
 
-	/**
-	 * Returns the parsed tree representation of the JPQL query.
-	 *
-	 * @return The root of the parsed tree
-	 */
-	public JPQLExpression getExpression() {
-		if (jpqlExpression == null) {
-			jpqlExpression = new JPQLExpression(getJPQLFragment(), jpqlGrammar, isTolerant());
-		}
-		return jpqlExpression;
-	}
+    /**
+     * Returns the parsed tree representation of the JPQL query.
+     *
+     * @return The root of the parsed tree
+     */
+    public JPQLExpression getExpression() {
+        if (jpqlExpression == null) {
+            jpqlExpression = new JPQLExpression(getJPQLFragment(), jpqlGrammar, isTolerant());
+        }
+        return jpqlExpression;
+    }
 
-	/**
-	 * Returns the {@link JPQLGrammar} that is associated with this builder.
-	 *
-	 * @return The {@link JPQLGrammar} that was used to parse the JPQL query or JPQL fragments
-	 */
-	public JPQLGrammar getGrammar() {
-		return jpqlGrammar;
-	}
+    /**
+     * Returns the {@link JPQLGrammar} that is associated with this builder.
+     *
+     * @return The {@link JPQLGrammar} that was used to parse the JPQL query or JPQL fragments
+     */
+    public JPQLGrammar getGrammar() {
+        return jpqlGrammar;
+    }
 
-	/**
-	 * Returns the {@link JPQLQueryContext} that is used by this visitor.
-	 *
-	 * @return The {@link JPQLQueryContext} holding onto the JPQL query and the cached information
-	 */
-	public JPQLQueryContext getQueryContext() {
-		if (queryContext == null) {
-			queryContext = buildJPQLQueryContext();
-			queryContext.setJPQLExpression(getExpression());
-			queryContext.setQuery(new JavaQuery(getManagedTypeProvider(), getJPQLFragment()));
-		}
-		return queryContext;
-	}
+    /**
+     * Returns the {@link JPQLQueryContext} that is used by this visitor.
+     *
+     * @return The {@link JPQLQueryContext} holding onto the JPQL query and the cached information
+     */
+    public JPQLQueryContext getQueryContext() {
+        if (queryContext == null) {
+            queryContext = buildJPQLQueryContext();
+            queryContext.setJPQLExpression(getExpression());
+            queryContext.setQuery(new JavaQuery(getManagedTypeProvider(), getJPQLFragment()));
+        }
+        return queryContext;
+    }
 
-	/**
-	 * Determines whether some refactoring operations found changes to be made in the JPQL query.
-	 *
-	 * @return <code>true</code> if there is at least one {@link TextEdit}; <code>false</code> otherwise
-	 */
-	public boolean hasChanges() {
-		return delta.hasTextEdits();
-	}
+    /**
+     * Determines whether some refactoring operations found changes to be made in the JPQL query.
+     *
+     * @return <code>true</code> if there is at least one {@link TextEdit}; <code>false</code> otherwise
+     */
+    public boolean hasChanges() {
+        return delta.hasTextEdits();
+    }
 
-	/**
-	 * Renames the attribute (persistent field or persistent property) from the given type.
-	 *
-	 * @param type The Java class from which the change originate
-	 * @param oldAttributeName The current name of the attribute to rename
-	 * @param newAttributeName The new name of the attribute
-	 */
-	public void renameAttribute(Class<?> type, String oldAttributeName, String newAttributeName) {
-		renameAttribute(type.getName(), oldAttributeName, newAttributeName);
-	}
+    /**
+     * Renames the attribute (persistent field or persistent property) from the given type.
+     *
+     * @param type The Java class from which the change originate
+     * @param oldAttributeName The current name of the attribute to rename
+     * @param newAttributeName The new name of the attribute
+     */
+    public void renameAttribute(Class<?> type, String oldAttributeName, String newAttributeName) {
+        renameAttribute(type.getName(), oldAttributeName, newAttributeName);
+    }
 
-	/**
-	 * Renames the attribute (persistent field or persistent property) from the given type.
-	 *
-	 * @param type The {@link IType} from which the change originate
-	 * @param oldAttributeName The current name of the attribute to rename
-	 * @param newAttributeName The new name of the attribute
-	 */
-	public void renameAttribute(IType type, String oldAttributeName, String newAttributeName) {
-		renameAttribute(type.getName(), oldAttributeName, newAttributeName);
-	}
+    /**
+     * Renames the attribute (persistent field or persistent property) from the given type.
+     *
+     * @param type The {@link IType} from which the change originate
+     * @param oldAttributeName The current name of the attribute to rename
+     * @param newAttributeName The new name of the attribute
+     */
+    public void renameAttribute(IType type, String oldAttributeName, String newAttributeName) {
+        renameAttribute(type.getName(), oldAttributeName, newAttributeName);
+    }
 
-	/**
-	 * Renames the attribute (persistent field or persistent property) from the given type.
-	 *
-	 * @param typeName The fully qualified name of the type that got one of its attributes renamed
-	 * @param oldAttributeName The current name of the attribute to rename
-	 * @param newAttributeName The new name of the attribute
-	 */
-	public void renameAttribute(String typeName, String oldAttributeName, String newAttributeName) {
-		AbstractRenamer renamer = buildAttributeNameRenamer(typeName, oldAttributeName, newAttributeName);
-		getExpression().accept(renamer);
-		delta.addTextEdits(renamer.textEdits);
-	}
+    /**
+     * Renames the attribute (persistent field or persistent property) from the given type.
+     *
+     * @param typeName The fully qualified name of the type that got one of its attributes renamed
+     * @param oldAttributeName The current name of the attribute to rename
+     * @param newAttributeName The new name of the attribute
+     */
+    public void renameAttribute(String typeName, String oldAttributeName, String newAttributeName) {
+        AbstractRenamer renamer = buildAttributeNameRenamer(typeName, oldAttributeName, newAttributeName);
+        getExpression().accept(renamer);
+        delta.addTextEdits(renamer.textEdits);
+    }
 
-	/**
-	 * Renames a fully qualified class name.
-	 *
-	 * @param oldClassName The current fully qualified class name of the class to rename
-	 * @param newClassName The new fully qualified class name
-	 */
-	public void renameClassName(String oldClassName, String newClassName) {
-		ClassNameRenamer renamer = buildClassNameRenamer(oldClassName, newClassName);
-		getExpression().accept(renamer);
-		delta.addTextEdits(renamer.textEdits);
-	}
+    /**
+     * Renames a fully qualified class name.
+     *
+     * @param oldClassName The current fully qualified class name of the class to rename
+     * @param newClassName The new fully qualified class name
+     */
+    public void renameClassName(String oldClassName, String newClassName) {
+        ClassNameRenamer renamer = buildClassNameRenamer(oldClassName, newClassName);
+        getExpression().accept(renamer);
+        delta.addTextEdits(renamer.textEdits);
+    }
 
-	/**
-	 * Renames a given entity name.
-	 *
-	 * @param oldEntityName The current name of the entity to rename
-	 * @param newEntityName The new name of the entity
-	 */
-	public void renameEntityName(String oldEntityName, String newEntityName) {
-		AbstractRenamer renamer = buildEntityNameRenamer(oldEntityName, newEntityName);
-		getExpression().accept(renamer);
-		delta.addTextEdits(renamer.textEdits);
-	}
+    /**
+     * Renames a given entity name.
+     *
+     * @param oldEntityName The current name of the entity to rename
+     * @param newEntityName The new name of the entity
+     */
+    public void renameEntityName(String oldEntityName, String newEntityName) {
+        AbstractRenamer renamer = buildEntityNameRenamer(oldEntityName, newEntityName);
+        getExpression().accept(renamer);
+        delta.addTextEdits(renamer.textEdits);
+    }
 
-	/**
-	 * Renames an enum constant, which has to be fully qualified.
-	 *
-	 * @param oldEnumConstant The current fully qualified name of the enum constant to rename
-	 * @param newEnumConstant The new fully qualified name of the enum constant
-	 */
-	public void renameEnumConstant(String oldEnumConstant, String newEnumConstant) {
-		AbstractRenamer renamer = buildEnumConstantRenamer(oldEnumConstant, newEnumConstant);
-		getExpression().accept(renamer);
-		delta.addTextEdits(renamer.textEdits);
-	}
+    /**
+     * Renames an enum constant, which has to be fully qualified.
+     *
+     * @param oldEnumConstant The current fully qualified name of the enum constant to rename
+     * @param newEnumConstant The new fully qualified name of the enum constant
+     */
+    public void renameEnumConstant(String oldEnumConstant, String newEnumConstant) {
+        AbstractRenamer renamer = buildEnumConstantRenamer(oldEnumConstant, newEnumConstant);
+        getExpression().accept(renamer);
+        delta.addTextEdits(renamer.textEdits);
+    }
 
-	/**
-	 * Renames a result variable name.
-	 *
-	 * @param oldVariableName The current identification variable name
-	 * @param newVariableName The new name of the identification variable
-	 */
-	public void renameResultVariable(String oldVariableName, String newVariableName) {
-		AbstractRenamer renamer = buildResultVariableNameRenamer(oldVariableName, newVariableName);
-		getExpression().accept(renamer);
-		delta.addTextEdits(renamer.textEdits);
-	}
+    /**
+     * Renames a result variable name.
+     *
+     * @param oldVariableName The current identification variable name
+     * @param newVariableName The new name of the identification variable
+     */
+    public void renameResultVariable(String oldVariableName, String newVariableName) {
+        AbstractRenamer renamer = buildResultVariableNameRenamer(oldVariableName, newVariableName);
+        getExpression().accept(renamer);
+        delta.addTextEdits(renamer.textEdits);
+    }
 
-	/**
-	 * Renames a variable name.
-	 *
-	 * @param oldVariableName The current identification variable name
-	 * @param newVariableName The new name of the identification variable
-	 */
-	public void renameVariable(String oldVariableName, String newVariableName) {
-		AbstractRenamer renamer = buildVariableNameRenamer(oldVariableName, newVariableName);
-		getExpression().accept(renamer);
-		delta.addTextEdits(renamer.textEdits);
-	}
+    /**
+     * Renames a variable name.
+     *
+     * @param oldVariableName The current identification variable name
+     * @param newVariableName The new name of the identification variable
+     */
+    public void renameVariable(String oldVariableName, String newVariableName) {
+        AbstractRenamer renamer = buildVariableNameRenamer(oldVariableName, newVariableName);
+        getExpression().accept(renamer);
+        delta.addTextEdits(renamer.textEdits);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toActualText() {
-		return getDelta().applyChanges();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toActualText() {
+        return getDelta().applyChanges();
+    }
 
-	/**
-	 * The abstract class that all refactoring classes should extend, it automatically provides the
+    /**
+     * The abstract class that all refactoring classes should extend, it automatically provides the
      * <a href="http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Freference%2Fapi%2Forg%2Feclipse%2Ftext%2Fedits%2FMultiTextEdit.html">MultiTextEdit</a>
      * that will hold the {@link TextEdit} objects that are related to the same refactoring event.
-	 */
-	protected abstract class AbstractRenamer extends AbstractTraverseChildrenVisitor {
+     */
+    protected abstract class AbstractRenamer extends AbstractTraverseChildrenVisitor {
 
-		/**
-		 * The list of {@link TextEdit} objects that were created for each refactoring operation.
-		 */
-		protected List<TextEdit> textEdits;
+        /**
+         * The list of {@link TextEdit} objects that were created for each refactoring operation.
+         */
+        protected List<TextEdit> textEdits;
 
-		/**
-		 * Creates a new <code>AbstractRenamer</code>.
-		 */
-		protected AbstractRenamer() {
-			super();
-			textEdits = new ArrayList<TextEdit>();
-		}
+        /**
+         * Creates a new <code>AbstractRenamer</code>.
+         */
+        protected AbstractRenamer() {
+            super();
+            textEdits = new ArrayList<TextEdit>();
+        }
 
-		/**
-		 * Adds a new {@link TextEdit} with the given information.
-		 *
-		 * @param expression The {@link Expression} which should be refactored, it will be used to
-		 * retrieve the offset of the change
-		 * @param extraOffset Additional offset that will be added to the given {@link Expression}'s
-		 * offset, which is the length of the string representation of what is before it
-		 * @param oldValue The old value to change to the new one
-		 * @param newValue The new value
-		 */
-		protected void addTextEdit(Expression expression, int extraOffset, String oldValue, String newValue) {
-			TextEdit textEdit = buildTextEdit(
-				reposition(expression.getOffset() + extraOffset),
-				oldValue,
-				newValue
-			);
-			textEdits.add(textEdit);
-		}
+        /**
+         * Adds a new {@link TextEdit} with the given information.
+         *
+         * @param expression The {@link Expression} which should be refactored, it will be used to
+         * retrieve the offset of the change
+         * @param extraOffset Additional offset that will be added to the given {@link Expression}'s
+         * offset, which is the length of the string representation of what is before it
+         * @param oldValue The old value to change to the new one
+         * @param newValue The new value
+         */
+        protected void addTextEdit(Expression expression, int extraOffset, String oldValue, String newValue) {
+            TextEdit textEdit = buildTextEdit(
+                reposition(expression.getOffset() + extraOffset),
+                oldValue,
+                newValue
+            );
+            textEdits.add(textEdit);
+        }
 
-		/**
-		 * Adds a new {@link TextEdit} with the given information.
-		 *
-		 * @param expression The {@link Expression} which should be refactored, it will be used to
-		 * retrieve the offset of the change
-		 * @param oldValue The old value to change to the new one
-		 * @param newValue The new value
-		 */
-		protected void addTextEdit(Expression expression, String oldValue, String newValue) {
-			addTextEdit(expression, 0, oldValue, newValue);
-		}
+        /**
+         * Adds a new {@link TextEdit} with the given information.
+         *
+         * @param expression The {@link Expression} which should be refactored, it will be used to
+         * retrieve the offset of the change
+         * @param oldValue The old value to change to the new one
+         * @param newValue The new value
+         */
+        protected void addTextEdit(Expression expression, String oldValue, String newValue) {
+            addTextEdit(expression, 0, oldValue, newValue);
+        }
 
-		/**
-		 * Creates a new {@link TextEdit} for the given refactoring information.
-		 *
-		 * @param offset The position where the change should be made within the actual JPQL fragment
-		 * @param oldValue The old value to change to the new one
-		 * @param newValue The new value
-		 * @return A new {@link TextEdit}
-		 */
-		protected TextEdit buildTextEdit(int offset, String oldValue, String newValue) {
-			return new DefaultTextEdit(offset, oldValue, newValue);
-		}
+        /**
+         * Creates a new {@link TextEdit} for the given refactoring information.
+         *
+         * @param offset The position where the change should be made within the actual JPQL fragment
+         * @param oldValue The old value to change to the new one
+         * @param newValue The new value
+         * @return A new {@link TextEdit}
+         */
+        protected TextEdit buildTextEdit(int offset, String oldValue, String newValue) {
+            return new DefaultTextEdit(offset, oldValue, newValue);
+        }
 
-		/**
-		 * Repositions the given position that is based on the generated JPQL query to be the position
-		 * from the JPQL fragment that was parsed.
-		 *
-		 * @param offset The position within the string generated by {@link Expression#toActualText()}
-		 * @return The position within the JPQL fragment that was passed to the refactoring tool
-		 */
-		protected int reposition(int offset) {
-			return ExpressionTools.repositionCursor(
-				getExpression().toActualText(),
-				offset,
-				getJPQLFragment()
-			);
-		}
-	}
+        /**
+         * Repositions the given position that is based on the generated JPQL query to be the position
+         * from the JPQL fragment that was parsed.
+         *
+         * @param offset The position within the string generated by {@link Expression#toActualText()}
+         * @return The position within the JPQL fragment that was passed to the refactoring tool
+         */
+        protected int reposition(int offset) {
+            return ExpressionTools.repositionCursor(
+                getExpression().toActualText(),
+                offset,
+                getJPQLFragment()
+            );
+        }
+    }
 
-	/**
-	 * This visitor renames any segment of a path expression.
-	 */
-	protected class AttributeNameRenamer extends AbstractRenamer {
+    /**
+     * This visitor renames any segment of a path expression.
+     */
+    protected class AttributeNameRenamer extends AbstractRenamer {
 
-		/**
-		 * The new name of the attribute.
-		 */
-		protected final String newAttributeName;
+        /**
+         * The new name of the attribute.
+         */
+        protected final String newAttributeName;
 
-		/**
-		 * The current name of the attribute to rename.
-		 */
-		protected final String oldAttributeName;
+        /**
+         * The current name of the attribute to rename.
+         */
+        protected final String oldAttributeName;
 
-		/**
-		 * The context used to query information about the JPQL query.
-		 */
-		private final JPQLQueryContext queryContext;
+        /**
+         * The context used to query information about the JPQL query.
+         */
+        private final JPQLQueryContext queryContext;
 
-		/**
-		 * The fully qualified name of the type that got one of its attributes renamed.
-		 */
-		protected final String typeName;
+        /**
+         * The fully qualified name of the type that got one of its attributes renamed.
+         */
+        protected final String typeName;
 
-		/**
-		 * Creates a new <code>AttributeNameRenamer</code>.
-		 *
-		 * @param queryContext The context used to query information about the JPQL query
-		 * @param typeName The fully qualified name of the type that got one of its attributes renamed
-		 * @param oldAttributeName The current name of the attribute to rename
-		 * @param newAttributeName The new name of the attribute
-		 */
-		public AttributeNameRenamer(JPQLQueryContext queryContext,
-		                            String typeName,
-		                            String oldAttributeName,
-		                            String newAttributeName) {
+        /**
+         * Creates a new <code>AttributeNameRenamer</code>.
+         *
+         * @param queryContext The context used to query information about the JPQL query
+         * @param typeName The fully qualified name of the type that got one of its attributes renamed
+         * @param oldAttributeName The current name of the attribute to rename
+         * @param newAttributeName The new name of the attribute
+         */
+        public AttributeNameRenamer(JPQLQueryContext queryContext,
+                                    String typeName,
+                                    String oldAttributeName,
+                                    String newAttributeName) {
 
-			super();
-			this.typeName         = typeName;
-			this.queryContext     = queryContext;
-			this.oldAttributeName = oldAttributeName;
-			this.newAttributeName = newAttributeName;
-		}
+            super();
+            this.typeName         = typeName;
+            this.queryContext     = queryContext;
+            this.oldAttributeName = oldAttributeName;
+            this.newAttributeName = newAttributeName;
+        }
 
-		/**
-		 * Performs the rename on the path expression.
-		 *
-		 * @param expression The {@link AbstractPathExpression} being visited, which may have to have
-		 * its path renamed
-		 */
-		protected void rename(AbstractPathExpression expression) {
+        /**
+         * Performs the rename on the path expression.
+         *
+         * @param expression The {@link AbstractPathExpression} being visited, which may have to have
+         * its path renamed
+         */
+        protected void rename(AbstractPathExpression expression) {
 
-			if (!expression.hasIdentificationVariable() ||
-			     expression.startsWithDot()) {
+            if (!expression.hasIdentificationVariable() ||
+                 expression.startsWithDot()) {
 
-				return;
-			}
+                return;
+            }
 
-			Resolver resolver = queryContext.getResolver(expression.getIdentificationVariable());
+            Resolver resolver = queryContext.getResolver(expression.getIdentificationVariable());
 
-			// Can't continue to resolve the path expression
-			if (resolver == null) {
-				return;
-			}
+            // Can't continue to resolve the path expression
+            if (resolver == null) {
+                return;
+            }
 
-			// Now traverse the path expression after the identification variable
-			for (int index = expression.hasVirtualIdentificationVariable() ? 0 : 1, count = expression.pathSize(); index < count; index++) {
+            // Now traverse the path expression after the identification variable
+            for (int index = expression.hasVirtualIdentificationVariable() ? 0 : 1, count = expression.pathSize(); index < count; index++) {
 
-				// Retrieve the mapping for the path at the current position
-				String path = expression.getPath(index);
-				Resolver childResolver = resolver.getChild(path);
+                // Retrieve the mapping for the path at the current position
+                String path = expression.getPath(index);
+                Resolver childResolver = resolver.getChild(path);
 
-				if (childResolver == null) {
-					childResolver = new StateFieldResolver(resolver, path);
-					resolver.addChild(path, childResolver);
-				}
+                if (childResolver == null) {
+                    childResolver = new StateFieldResolver(resolver, path);
+                    resolver.addChild(path, childResolver);
+                }
 
-				IMapping mapping = childResolver.getMapping();
+                IMapping mapping = childResolver.getMapping();
 
-				// Invalid path expression
-				if (mapping == null) {
-					break;
-				}
+                // Invalid path expression
+                if (mapping == null) {
+                    break;
+                }
 
-				// The name matches
-				if (mapping.getName().equals(oldAttributeName)) {
+                // The name matches
+                if (mapping.getName().equals(oldAttributeName)) {
 
-					// Make sure the field name is from the right type
-					String parentTypeName = mapping.getParent().getType().getName();
+                    // Make sure the field name is from the right type
+                    String parentTypeName = mapping.getParent().getType().getName();
 
-					if (parentTypeName.equals(typeName)) {
-						int extraOffset = expression.toParsedText(0, index).length() + 1 /* '.' */;
-						addTextEdit(expression, extraOffset, oldAttributeName, newAttributeName);
-						break;
-					}
-				}
+                    if (parentTypeName.equals(typeName)) {
+                        int extraOffset = expression.toParsedText(0, index).length() + 1 /* '.' */;
+                        addTextEdit(expression, extraOffset, oldAttributeName, newAttributeName);
+                        break;
+                    }
+                }
 
-				resolver = childResolver;
-			}
-		}
+                resolver = childResolver;
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionValuedPathExpression expression) {
-			rename(expression);
-		}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(CollectionValuedPathExpression expression) {
+            rename(expression);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(StateFieldPathExpression expression) {
-			rename(expression);
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(StateFieldPathExpression expression) {
+            rename(expression);
+        }
+    }
 
-	/**
-	 * This visitor renames a fully qualified class name.
-	 */
-	protected class ClassNameRenamer extends AbstractRenamer {
+    /**
+     * This visitor renames a fully qualified class name.
+     */
+    protected class ClassNameRenamer extends AbstractRenamer {
 
-		/**
-		 * The current name of the class to rename.
-		 */
-		protected final String newClassName;
+        /**
+         * The current name of the class to rename.
+         */
+        protected final String newClassName;
 
-		/**
-		 * The new name of the class.
-		 */
-		protected final String oldClassName;
+        /**
+         * The new name of the class.
+         */
+        protected final String oldClassName;
 
-		/**
-		 * Creates a new <code>ClassNameRenamer</code>.
-		 *
-		 * @param oldClassName The current name of the class to rename
-		 * @param newClassName The new name of the class
-		 */
-		public ClassNameRenamer(String oldClassName, String newClassName) {
-			super();
-			this.oldClassName = oldClassName;
-			this.newClassName = newClassName;
-		}
+        /**
+         * Creates a new <code>ClassNameRenamer</code>.
+         *
+         * @param oldClassName The current name of the class to rename
+         * @param newClassName The new name of the class
+         */
+        public ClassNameRenamer(String oldClassName, String newClassName) {
+            super();
+            this.oldClassName = oldClassName;
+            this.newClassName = newClassName;
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionValuedPathExpression expression) {
-			// Test for a fully qualified class name in a range variable declaration
-			if (!expression.startsWithDot()) {
-				visit(expression, expression.toActualText(), 0);
-			}
-		}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(CollectionValuedPathExpression expression) {
+            // Test for a fully qualified class name in a range variable declaration
+            if (!expression.startsWithDot()) {
+                visit(expression, expression.toActualText(), 0);
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ConstructorExpression expression) {
-			visit(expression, expression.getClassName(), 4); // 4 = "NEW "
-		}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(ConstructorExpression expression) {
+            visit(expression, expression.getClassName(), 4); // 4 = "NEW "
+        }
 
-		/**
-		 * Visits the given {@link } and if its value is the same as the old class name or
-		 * if the value represents an inner class of that old class name, then the given {@link
-		 * org.eclipse.persistence.jpa.jpql.tools.RefactoringTool.StateObjectUpdater StateObjectUpdater}
+        /**
+         * Visits the given {@link } and if its value is the same as the old class name or
+         * if the value represents an inner class of that old class name, then the given {@link
+         * org.eclipse.persistence.jpa.jpql.tools.RefactoringTool.StateObjectUpdater StateObjectUpdater}
          * will be notified to replace the value.
-		 *
-		 * @param expression The {@link } that is being visited
-		 * @param extraOffset Additional offset that will be added to the given {@link Expression}'s
-		 * offset, which is the length of the string representation of what is before it
-		 * @param value The value to check if it's the old class name
-		 */
-		protected void visit(Expression expression, String value, int extraOffset) {
+         *
+         * @param expression The {@link } that is being visited
+         * @param extraOffset Additional offset that will be added to the given {@link Expression}'s
+         * offset, which is the length of the string representation of what is before it
+         * @param value The value to check if it's the old class name
+         */
+        protected void visit(Expression expression, String value, int extraOffset) {
 
-			if (oldClassName.equals(value)) {
-				addTextEdit(expression, extraOffset, oldClassName, newClassName);
-			}
-			else {
-				int index = value.lastIndexOf(AbstractExpression.DOT);
+            if (oldClassName.equals(value)) {
+                addTextEdit(expression, extraOffset, oldClassName, newClassName);
+            }
+            else {
+                int index = value.lastIndexOf(AbstractExpression.DOT);
 
-				// Traverse the value by retrieving a fragment up to the last dot (based on the index)
-				for (; index > -1; index = value.lastIndexOf(AbstractExpression.DOT, index - 1)) {
+                // Traverse the value by retrieving a fragment up to the last dot (based on the index)
+                for (; index > -1; index = value.lastIndexOf(AbstractExpression.DOT, index - 1)) {
 
-					// Retrieve the fragment from the beginning to the current dot
-					String fragment = value.substring(0, index);
+                    // Retrieve the fragment from the beginning to the current dot
+                    String fragment = value.substring(0, index);
 
-					if (oldClassName.equals(fragment)) {
-						addTextEdit(expression, extraOffset, oldClassName, newClassName);
-						break;
-					}
-					// No need to continue the search
-					else if (fragment.length() < oldClassName.length()) {
-						break;
-					}
-				}
-			}
-		}
+                    if (oldClassName.equals(fragment)) {
+                        addTextEdit(expression, extraOffset, oldClassName, newClassName);
+                        break;
+                    }
+                    // No need to continue the search
+                    else if (fragment.length() < oldClassName.length()) {
+                        break;
+                    }
+                }
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(StateFieldPathExpression expression) {
-			// A fully qualified enum constant is parsed as a state field path expression
-			if (!expression.startsWithDot()) {
-				visit(expression, expression.toActualText(), 0);
-			}
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(StateFieldPathExpression expression) {
+            // A fully qualified enum constant is parsed as a state field path expression
+            if (!expression.startsWithDot()) {
+                visit(expression, expression.toActualText(), 0);
+            }
+        }
+    }
 
-	/**
-	 * This visitor renames an entity name. There are three possible {@link
+    /**
+     * This visitor renames an entity name. There are three possible {@link
      * org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObjects}
-	 * that can represent an entity name:
-	 * <ul>
-	 * <li>
-	 * {@link org.eclipse.persistence.jpa.jpql.tools.model.query.AbstractSchemaNameStateObject AbstractSchemaNameStateObject}:
-	 * <i>Employee</i> in<br><br>
-	 * <code><b>SELECT</b> e<br>
-	 * <b>FROM</b> Employee e</code><br><br>
-	 * </li>
-	 * <li>
-	 * {@link org.eclipse.persistence.jpa.jpql.tools.model.query.EntityTypeLiteralStateObject EntityTypeLiteralStateObject}:
-	 * <i>Exempt</i> in<br><br>
-	 * <pre><code><b> SELECT CASE TYPE</b>(e) <b>WHEN</b> Exempt <b>THEN</b> 'Exempt'
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>ELSE</b> 'NONE'
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>END</b>
-	 * <b>FROM</b> Employee e</code></pre>
-	 * </li>
-	 * <li>
-	 * {@link org.eclipse.persistence.jpa.jpql.tools.model.query.IdentificationVariableStateObject IdentificationVariableStateObject}:
-	 * <i>Exempt</i> in<br>
-	 * <pre><code> <b>SELECT</b> e
-	 * <b>FROM</b> Employee e
-	 * <b>WHERE TYPE</b>(e) {@literal <>} Exempt</code></pre>
-	 * </li>
-	 * </ul>
-	 */
-	protected class EntityNameRenamer extends AbstractRenamer {
+     * that can represent an entity name:
+     * <ul>
+     * <li>
+     * {@link org.eclipse.persistence.jpa.jpql.tools.model.query.AbstractSchemaNameStateObject AbstractSchemaNameStateObject}:
+     * <i>Employee</i> in<br><br>
+     * <code><b>SELECT</b> e<br>
+     * <b>FROM</b> Employee e</code><br><br>
+     * </li>
+     * <li>
+     * {@link org.eclipse.persistence.jpa.jpql.tools.model.query.EntityTypeLiteralStateObject EntityTypeLiteralStateObject}:
+     * <i>Exempt</i> in<br><br>
+     * <pre><code><b> SELECT CASE TYPE</b>(e) <b>WHEN</b> Exempt <b>THEN</b> 'Exempt'
+     * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>ELSE</b> 'NONE'
+     * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>END</b>
+     * <b>FROM</b> Employee e</code></pre>
+     * </li>
+     * <li>
+     * {@link org.eclipse.persistence.jpa.jpql.tools.model.query.IdentificationVariableStateObject IdentificationVariableStateObject}:
+     * <i>Exempt</i> in<br>
+     * <pre><code> <b>SELECT</b> e
+     * <b>FROM</b> Employee e
+     * <b>WHERE TYPE</b>(e) {@literal <>} Exempt</code></pre>
+     * </li>
+     * </ul>
+     */
+    protected class EntityNameRenamer extends AbstractRenamer {
 
-		/**
-		 * The current name of the entity to rename.
-		 */
-		protected final String newEntityName;
+        /**
+         * The current name of the entity to rename.
+         */
+        protected final String newEntityName;
 
-		/**
-		 * The new name of the entity.
-		 */
-		protected final String oldEntityName;
+        /**
+         * The new name of the entity.
+         */
+        protected final String oldEntityName;
 
-		/**
-		 * Creates a new <code>EntityNameRenamer</code>.
-		 *
-		 * @param oldEntityName The current name of the entity to rename
-		 * @param newEntityName The new name of the entity
-		 */
-		public EntityNameRenamer(String oldEntityName, String newEntityName) {
-			super();
-			this.oldEntityName = oldEntityName;
-			this.newEntityName = newEntityName;
-		}
+        /**
+         * Creates a new <code>EntityNameRenamer</code>.
+         *
+         * @param oldEntityName The current name of the entity to rename
+         * @param newEntityName The new name of the entity
+         */
+        public EntityNameRenamer(String oldEntityName, String newEntityName) {
+            super();
+            this.oldEntityName = oldEntityName;
+            this.newEntityName = newEntityName;
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AbstractSchemaName expression) {
-			if (oldEntityName.equals(expression.getText())) {
-				addTextEdit(expression, oldEntityName, newEntityName);
-			}
-		}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(AbstractSchemaName expression) {
+            if (oldEntityName.equals(expression.getText())) {
+                addTextEdit(expression, oldEntityName, newEntityName);
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(EntityTypeLiteral expression) {
-			if (oldEntityName.equals(expression.getEntityTypeName())) {
-				addTextEdit(expression, oldEntityName, newEntityName);
-			}
-		}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(EntityTypeLiteral expression) {
+            if (oldEntityName.equals(expression.getEntityTypeName())) {
+                addTextEdit(expression, oldEntityName, newEntityName);
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariable expression) {
-			if (oldEntityName.equals(expression.getText())) {
-				addTextEdit(expression, oldEntityName, newEntityName);
-			}
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(IdentificationVariable expression) {
+            if (oldEntityName.equals(expression.getText())) {
+                addTextEdit(expression, oldEntityName, newEntityName);
+            }
+        }
+    }
 
-	/**
-	 * This visitor renames an enum constant. An enum constant is represented by a path expression.
-	 */
-	protected class EnumConstantRenamer extends AbstractRenamer {
+    /**
+     * This visitor renames an enum constant. An enum constant is represented by a path expression.
+     */
+    protected class EnumConstantRenamer extends AbstractRenamer {
 
-		/**
-		 * The external form of a provider that gives access to the JPA metadata.
-		 */
-		protected final IManagedTypeProvider managedTypeProvider;
+        /**
+         * The external form of a provider that gives access to the JPA metadata.
+         */
+        protected final IManagedTypeProvider managedTypeProvider;
 
-		/**
-		 * The current name of the enum constant to rename.
-		 */
-		protected final String newEnumConstant;
+        /**
+         * The current name of the enum constant to rename.
+         */
+        protected final String newEnumConstant;
 
-		/**
-		 * The new name of the enum constant.
-		 */
-		protected final String oldEnumConstant;
+        /**
+         * The new name of the enum constant.
+         */
+        protected final String oldEnumConstant;
 
-		/**
-		 * Creates a new <code>ClassNameRenamer</code>.
-		 *
-		 * @param managedTypeProvider The provider of managed types
-		 * @param oldEnumConstant The new name of the enum constant
-		 * @param newEnumConstant The current name of the enum constant to rename
-		 */
-		public EnumConstantRenamer(IManagedTypeProvider managedTypeProvider,
-		                           String oldEnumConstant,
-		                           String newEnumConstant) {
+        /**
+         * Creates a new <code>ClassNameRenamer</code>.
+         *
+         * @param managedTypeProvider The provider of managed types
+         * @param oldEnumConstant The new name of the enum constant
+         * @param newEnumConstant The current name of the enum constant to rename
+         */
+        public EnumConstantRenamer(IManagedTypeProvider managedTypeProvider,
+                                   String oldEnumConstant,
+                                   String newEnumConstant) {
 
-			super();
-			this.oldEnumConstant     = oldEnumConstant;
-			this.newEnumConstant     = newEnumConstant;
-			this.managedTypeProvider = managedTypeProvider;
-		}
+            super();
+            this.oldEnumConstant     = oldEnumConstant;
+            this.newEnumConstant     = newEnumConstant;
+            this.managedTypeProvider = managedTypeProvider;
+        }
 
-		protected void renameEnumConstant(AbstractPathExpression expression) {
+        protected void renameEnumConstant(AbstractPathExpression expression) {
 
-			String path = expression.toString();
+            String path = expression.toString();
 
-			if (path.equals(oldEnumConstant)) {
+            if (path.equals(oldEnumConstant)) {
 
-				// Check to see if the path is actually a fully qualified enum constant
-				IType type = managedTypeProvider.getTypeRepository().getEnumType(path);
+                // Check to see if the path is actually a fully qualified enum constant
+                IType type = managedTypeProvider.getTypeRepository().getEnumType(path);
 
-				// If it is not null, then it's a fully qualified enum constant
-				if (type != null) {
-					addTextEdit(expression, oldEnumConstant, newEnumConstant);
-				}
-			}
-		}
+                // If it is not null, then it's a fully qualified enum constant
+                if (type != null) {
+                    addTextEdit(expression, oldEnumConstant, newEnumConstant);
+                }
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionValuedPathExpression expression) {
-			renameEnumConstant(expression);
-		}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(CollectionValuedPathExpression expression) {
+            renameEnumConstant(expression);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(StateFieldPathExpression expression) {
-			renameEnumConstant(expression);
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(StateFieldPathExpression expression) {
+            renameEnumConstant(expression);
+        }
+    }
 
-	/**
-	 * A simple implementation of {@link IQuery}.
-	 */
-	protected static class JavaQuery implements IQuery {
+    /**
+     * A simple implementation of {@link IQuery}.
+     */
+    protected static class JavaQuery implements IQuery {
 
-		/**
-		 * The string representation of the JPQL query.
-		 */
-		private String jpqlQuery;
+        /**
+         * The string representation of the JPQL query.
+         */
+        private String jpqlQuery;
 
-		/**
-		 * The provider of JPA managed types.
-		 */
-		private IManagedTypeProvider provider;
+        /**
+         * The provider of JPA managed types.
+         */
+        private IManagedTypeProvider provider;
 
-		/**
-		 * Creates a new <code>JavaQuery</code>.
-		 *
-		 * @param provider The provider of JPA managed types
-		 * @param jpqlQuery The string representation of the JPQL query
-		 */
-		public JavaQuery(IManagedTypeProvider provider, CharSequence jpqlQuery) {
-			super();
-			this.provider = provider;
-			setExpression(jpqlQuery);
-		}
+        /**
+         * Creates a new <code>JavaQuery</code>.
+         *
+         * @param provider The provider of JPA managed types
+         * @param jpqlQuery The string representation of the JPQL query
+         */
+        public JavaQuery(IManagedTypeProvider provider, CharSequence jpqlQuery) {
+            super();
+            this.provider = provider;
+            setExpression(jpqlQuery);
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public String getExpression() {
-			return jpqlQuery;
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public String getExpression() {
+            return jpqlQuery;
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public IManagedTypeProvider getProvider() {
-			return provider;
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public IManagedTypeProvider getProvider() {
+            return provider;
+        }
 
-		/**
-		 * Sets the string representation of the JPQL query.
-		 *
-		 * @param jpqlQuery The string representation of the JPQL query
-		 */
-		public void setExpression(CharSequence jpqlQuery) {
-			this.jpqlQuery = (jpqlQuery != null) ? jpqlQuery.toString() : ExpressionTools.EMPTY_STRING;
-		}
+        /**
+         * Sets the string representation of the JPQL query.
+         *
+         * @param jpqlQuery The string representation of the JPQL query
+         */
+        public void setExpression(CharSequence jpqlQuery) {
+            this.jpqlQuery = (jpqlQuery != null) ? jpqlQuery.toString() : ExpressionTools.EMPTY_STRING;
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			sb.append("JPQL query=[");
-			sb.append(jpqlQuery);
-			sb.append("]");
-			return sb.toString();
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("JPQL query=[");
+            sb.append(jpqlQuery);
+            sb.append("]");
+            return sb.toString();
+        }
+    }
 
-	/**
-	 * This visitor renames all the result variables found in the JPQL query.
-	 */
-	protected class ResultVariableNameRenamer extends AbstractRenamer {
+    /**
+     * This visitor renames all the result variables found in the JPQL query.
+     */
+    protected class ResultVariableNameRenamer extends AbstractRenamer {
 
-		/**
-		 * The new name of the result variable.
-		 */
-		protected final String newVariableName;
+        /**
+         * The new name of the result variable.
+         */
+        protected final String newVariableName;
 
-		/**
-		 * The current result variable name.
-		 */
-		protected final String oldVariableName;
+        /**
+         * The current result variable name.
+         */
+        protected final String oldVariableName;
 
-		/**
-		 * Makes sure an identification variable is renamed only when it's used by an order by item.
-		 */
-		protected boolean renameIdentificationVariable;
+        /**
+         * Makes sure an identification variable is renamed only when it's used by an order by item.
+         */
+        protected boolean renameIdentificationVariable;
 
-		/**
-		 * Creates a new <code>ResultVariableNameRenamer</code>.
-		 *
-		 * @param oldVariableName The current result variable name
-		 * @param newVariableName The new name of the result variable
-		 */
-		public ResultVariableNameRenamer(String oldVariableName, String newVariableName) {
-			super();
-			this.oldVariableName = oldVariableName;
-			this.newVariableName = newVariableName;
-		}
+        /**
+         * Creates a new <code>ResultVariableNameRenamer</code>.
+         *
+         * @param oldVariableName The current result variable name
+         * @param newVariableName The new name of the result variable
+         */
+        public ResultVariableNameRenamer(String oldVariableName, String newVariableName) {
+            super();
+            this.oldVariableName = oldVariableName;
+            this.newVariableName = newVariableName;
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariable expression) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(IdentificationVariable expression) {
 
-			if (renameIdentificationVariable &&
-			    oldVariableName.equalsIgnoreCase(expression.getText())) {
+            if (renameIdentificationVariable &&
+                oldVariableName.equalsIgnoreCase(expression.getText())) {
 
-				addTextEdit(expression, oldVariableName, newVariableName);
-			}
-		}
+                addTextEdit(expression, oldVariableName, newVariableName);
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ResultVariable expression) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(ResultVariable expression) {
 
-			if (expression.hasResultVariable()) {
-				renameIdentificationVariable = true;
-				try {
-					expression.getResultVariable().accept(this);
-				}
-				finally {
-					renameIdentificationVariable = false;
-				}
-			}
-		}
+            if (expression.hasResultVariable()) {
+                renameIdentificationVariable = true;
+                try {
+                    expression.getResultVariable().accept(this);
+                }
+                finally {
+                    renameIdentificationVariable = false;
+                }
+            }
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SelectStatement expression) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(SelectStatement expression) {
 
-			// Result variables defined in the SELECT clause
-			expression.getSelectClause().accept(this);
+            // Result variables defined in the SELECT clause
+            expression.getSelectClause().accept(this);
 
-			// Result variables used in the ORDER BY clause
-			if (expression.hasOrderByClause()) {
-				renameIdentificationVariable = true;
-				try {
-					expression.getOrderByClause().accept(this);
-				}
-				finally {
-					renameIdentificationVariable = false;
-				}
-			}
-		}
-	}
+            // Result variables used in the ORDER BY clause
+            if (expression.hasOrderByClause()) {
+                renameIdentificationVariable = true;
+                try {
+                    expression.getOrderByClause().accept(this);
+                }
+                finally {
+                    renameIdentificationVariable = false;
+                }
+            }
+        }
+    }
 
-	/**
-	 * This visitor renames all the identification variables found in the JPQL query.
-	 */
-	protected class VariableNameRenamer extends AbstractRenamer {
+    /**
+     * This visitor renames all the identification variables found in the JPQL query.
+     */
+    protected class VariableNameRenamer extends AbstractRenamer {
 
-		/**
-		 * The new name of the identification variable.
-		 */
-		protected final String newVariableName;
+        /**
+         * The new name of the identification variable.
+         */
+        protected final String newVariableName;
 
-		/**
-		 * The current identification variable name.
-		 */
-		protected final String oldVariableName;
+        /**
+         * The current identification variable name.
+         */
+        protected final String oldVariableName;
 
-		/**
-		 * Creates a new <code>VariableNameRenamer</code>.
-		 *
-		 * @param oldVariableName The current identification variable name
-		 * @param newVariableName The new name of the identification variable
-		 */
-		public VariableNameRenamer(String oldVariableName, String newVariableName) {
-			super();
-			this.oldVariableName = oldVariableName;
-			this.newVariableName = newVariableName;
-		}
+        /**
+         * Creates a new <code>VariableNameRenamer</code>.
+         *
+         * @param oldVariableName The current identification variable name
+         * @param newVariableName The new name of the identification variable
+         */
+        public VariableNameRenamer(String oldVariableName, String newVariableName) {
+            super();
+            this.oldVariableName = oldVariableName;
+            this.newVariableName = newVariableName;
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariable expression) {
-			if (oldVariableName.equalsIgnoreCase(expression.getText())) {
-				addTextEdit(expression, oldVariableName, newVariableName);
-			}
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(IdentificationVariable expression) {
+            if (oldVariableName.equalsIgnoreCase(expression.getText())) {
+                addTextEdit(expression, oldVariableName, newVariableName);
+            }
+        }
+    }
 }

@@ -1,7 +1,7 @@
 package org.eclipse.persistence.internal.oxm;
 
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -18,7 +18,7 @@ import org.eclipse.persistence.internal.oxm.mappings.Field;
 
 /** INTERNAL:
  * <p><b>Purpose</b>: This class holds onto a class name and an XMLField in order to read and write
- * choice mappings from deployment.xml 
+ * choice mappings from deployment.xml
  * @author mmacivor
  */
 public class XMLChoiceFieldToClassAssociation <
@@ -29,35 +29,35 @@ public class XMLChoiceFieldToClassAssociation <
     protected String className;
     protected XML_FIELD xmlField;
     protected CONVERTER converter;
-    
+
     public XMLChoiceFieldToClassAssociation() {
     }
-    
+
     public XMLChoiceFieldToClassAssociation(XML_FIELD xmlField, String className) {
         this.xmlField = xmlField;
         this.className = className;
     }
-    
+
     public String getClassName() {
         return className;
     }
-    
+
     public void setClassName(String name) {
         this.className = name;
     }
-    
+
     public XML_FIELD getXmlField() {
         return xmlField;
     }
-    
+
     public void setXmlField(XML_FIELD field) {
         this.xmlField = field;
     }
-    
+
     public CONVERTER getConverter() {
         return this.converter;
     }
-    
+
     public void setConverter(CONVERTER valueConverter) {
         this.converter = valueConverter;
     }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -38,7 +38,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
     /**
      * Given the source schema and namespace and schemaLocation values from an import
      * or include return the referenced Schema.
-     * 
+     *
      * @param sourceXSD The Source object of the source schema
      * @param namespace The namespace portion of the import/include
      * @param schemaLocation The schemaLocation portion of the import/include
@@ -77,7 +77,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     } else {
                         schemaUrl = new URI(baseLoc).resolve(schemaUri).toURL();
                     }
-                }                
+                }
             }
             return new StreamSource(schemaUrl.toExternalForm());
         } catch (Exception e) {
@@ -90,7 +90,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
     /**
      * Satisfy EntityResolver interface implementation.
      * Allow resolution of external entities.
-     * 
+     *
      * @param publicId
      * @param systemId
      * @return null
@@ -103,7 +103,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
     * Optional baseSchemaLocation can be specified
     * If set, all schemaLocations passed into the resolveSchema methods will be resolved
     * against this base location according to the java.net.URI API
-    * 
+    *
     * @param baseSchemaLocation optional baseSchemaLocation
     */
     public void setBaseSchemaLocation(String baseSchemaLocation) {

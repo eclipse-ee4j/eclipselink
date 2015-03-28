@@ -2,6 +2,6 @@
 <team xmlns:a="http://www.example.com/address" xmlns:p="http://www.example.com/personal">
    <contact-info>
       <a:home-address>theAddress</a:home-address>
-	  <p:personal-info>somePersonalInfo</p:personal-info>
+      <p:personal-info>somePersonalInfo</p:personal-info>
    </contact-info>
 </team>

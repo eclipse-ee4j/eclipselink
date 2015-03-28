@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2005, 2015 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -33,17 +33,17 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
 /**
  */
 public class MismatchedTreeNodeException extends RecognitionException {
-	public int expecting;
+    public int expecting;
 
-	public MismatchedTreeNodeException() {
-	}
+    public MismatchedTreeNodeException() {
+    }
 
-	public MismatchedTreeNodeException(int expecting, TreeNodeStream input) {
-		super(input);
-		this.expecting = expecting;
-	}
+    public MismatchedTreeNodeException(int expecting, TreeNodeStream input) {
+        super(input);
+        this.expecting = expecting;
+    }
 
-	public String toString() {
-		return "MismatchedTreeNodeException("+getUnexpectedType()+"!="+expecting+")";
-	}
+    public String toString() {
+        return "MismatchedTreeNodeException("+getUnexpectedType()+"!="+expecting+")";
+    }
 }

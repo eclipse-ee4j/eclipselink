@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,86 +31,86 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public class SizeExpressionStateObject extends AbstractSingleEncapsulatedExpressionStateObject {
 
-	/**
-	 * Creates a new <code>SizeExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SizeExpressionStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>SizeExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SizeExpressionStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>SizeExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param stateObject The {@link StateObject} representing the encapsulated expression
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SizeExpressionStateObject(StateObject parent, StateObject stateObject) {
-		super(parent, stateObject);
-	}
+    /**
+     * Creates a new <code>SizeExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param stateObject The {@link StateObject} representing the encapsulated expression
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SizeExpressionStateObject(StateObject parent, StateObject stateObject) {
+        super(parent, stateObject);
+    }
 
-	/**
-	 * Creates a new <code>SizeExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param path The collection-valued path expression
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SizeExpressionStateObject(StateObject parent, String path) {
-		super(parent, path);
-	}
+    /**
+     * Creates a new <code>SizeExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param path The collection-valued path expression
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SizeExpressionStateObject(StateObject parent, String path) {
+        super(parent, path);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SizeExpression getExpression() {
-		return (SizeExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SizeExpression getExpression() {
+        return (SizeExpression) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getIdentifier() {
-		return SIZE;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdentifier() {
+        return SIZE;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getQueryBNFId() {
-		return CollectionValuedPathExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getQueryBNFId() {
+        return CollectionValuedPathExpressionBNF.ID;
+    }
 
-	/**
-	 * Keeps a reference of the {@link SizeExpression parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link SizeExpression parsed object} representing a <code><b>SIZE</b></code>
-	 * expression
-	 */
-	public void setExpression(SizeExpression expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link SizeExpression parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link SizeExpression parsed object} representing a <code><b>SIZE</b></code>
+     * expression
+     */
+    public void setExpression(SizeExpression expression) {
+        super.setExpression(expression);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setStateObject(StateObject stateObject) {
-		super.setStateObject(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setStateObject(StateObject stateObject) {
+        super.setStateObject(stateObject);
+    }
 }

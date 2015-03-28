@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery;
 
 import commonj.sdo.Property;
@@ -24,7 +24,7 @@ public class SDODataObjectUnsetIsSetByXPathQueryTest extends SDODataObjectGetByX
     public SDODataObjectUnsetIsSetByXPathQueryTest(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery.SDODataObjectUnsetIsSetByXPathQueryTest" };
         TestRunner.main(arguments);
@@ -150,55 +150,55 @@ public class SDODataObjectUnsetIsSetByXPathQueryTest extends SDODataObjectGetByX
         //} catch (IllegalArgumentException e) {
         //}
     }
-    
+
     //purpose: if dataObject just been new and property has not been set, iset() return false
     public void testUnSetEntireList() {
-        SDODataObject dataObjectC1 = (SDODataObject)dataFactory.create(type_c);        
-        SDODataObject dataObjectC2 = (SDODataObject)dataFactory.create(type_c);        
-        SDODataObject dataObjectC3 = (SDODataObject)dataFactory.create(type_c);      
+        SDODataObject dataObjectC1 = (SDODataObject)dataFactory.create(type_c);
+        SDODataObject dataObjectC2 = (SDODataObject)dataFactory.create(type_c);
+        SDODataObject dataObjectC3 = (SDODataObject)dataFactory.create(type_c);
         SDODataObject dataObjectC4 = (SDODataObject)dataFactory.create(type_c);
-            
+
         List theList = new ArrayList();
         theList.add(dataObjectC1);
         theList.add(dataObjectC2);
         theList.add(dataObjectC3);
         theList.add(dataObjectC4);
-        
+
         dataObject_a.set("PName-a0/PName-b0", theList);
         List dataObjectList = dataObject_a.getList("PName-a0/PName-b0");
         assertEquals(4, dataObjectList.size());
-        
-        
+
+
         dataObject_a.set("PName-a0/PName-b0", theList);
-        
+
         dataObject_a.unset("PName-a0/PName-b0");
-        
+
         dataObjectList = dataObject_a.getList("PName-a0/PName-b0");
         assertEquals(0, dataObjectList.size() );
-              
+
     }
-    
+
     public void testUnSetItemInList() {
-        SDODataObject dataObjectC1 = (SDODataObject)dataFactory.create(type_c);        
-        SDODataObject dataObjectC2 = (SDODataObject)dataFactory.create(type_c);        
-        SDODataObject dataObjectC3 = (SDODataObject)dataFactory.create(type_c);        
-        SDODataObject dataObjectC4 = (SDODataObject)dataFactory.create(type_c);        
-        
+        SDODataObject dataObjectC1 = (SDODataObject)dataFactory.create(type_c);
+        SDODataObject dataObjectC2 = (SDODataObject)dataFactory.create(type_c);
+        SDODataObject dataObjectC3 = (SDODataObject)dataFactory.create(type_c);
+        SDODataObject dataObjectC4 = (SDODataObject)dataFactory.create(type_c);
+
         List theList = new ArrayList();
         theList.add(dataObjectC1);
         theList.add(dataObjectC2);
         theList.add(dataObjectC3);
         theList.add(dataObjectC4);
-        
+
         dataObject_a.set("PName-a0/PName-b0", theList);
         List dataObjectList = dataObject_a.getList("PName-a0/PName-b0");
         assertEquals(4, dataObjectList.size() );
-        
+
         dataObject_a.unset("PName-a0/PName-b0.1");
-        
+
         dataObjectList = dataObject_a.getList("PName-a0/PName-b0");
         assertEquals(3, dataObjectList.size() );
-              
+
     }
 
     public void testPathDoesNotExistJira8() {

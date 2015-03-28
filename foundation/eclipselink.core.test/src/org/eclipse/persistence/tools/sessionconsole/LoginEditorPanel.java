@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -128,10 +128,10 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         DatabaseLogin login = (DatabaseLogin)getLogin().clone();
 
         /*if (driver.equals("HSQL")) {
-			login.useHSQLDriver();
-		} else if (driver.equals("PointBase JDBC")) {
-			login.usePointBaseDriver();
-		} else */
+            login.useHSQLDriver();
+        } else if (driver.equals("PointBase JDBC")) {
+            login.usePointBaseDriver();
+        } else */
         if (driver.equals("Sun JDBC-ODBC")) {
             login.useJDBCODBCBridge();
         } else if (driver.equals("Oracle thin")) {
@@ -141,9 +141,9 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
             login.useOracle();
             login.useOracleJDBCDriver();
         } /* else if (driver.equals("Oracle 7 OCI")) {
-			login.useOracle();
-			login.useOracleJDBCDriver();
-		}*/ else if (driver.equals("DB2 (App)")) {
+            login.useOracle();
+            login.useOracleJDBCDriver();
+        }*/ else if (driver.equals("DB2 (App)")) {
             login.useDB2();
             login.useDB2JDBCDriver();
         } else if (driver.equals("DB2 (Net)")) {

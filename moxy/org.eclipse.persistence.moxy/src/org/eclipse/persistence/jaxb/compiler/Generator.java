@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
 import java.io.File;
@@ -42,7 +42,7 @@ import org.eclipse.persistence.sessions.Project;
 
 /**
  * INTERNAL:
- *  <p><b>Purpose:</b>The purpose of this class is to act as an entry point into the 
+ *  <p><b>Purpose:</b>The purpose of this class is to act as an entry point into the
  *  TopLink JAXB 2.0 Generation framework
  *  <p><b>Responsibilities:</b><ul>
  *  <li>Run initial processing on a list of classes to create TypeInfo meta data</li>
@@ -50,11 +50,11 @@ import org.eclipse.persistence.sessions.Project;
  *  <li>Provide API to generate a TopLink Project</li>
  *  <li>Act as an integration point with WebServices</li>
  *  </ul>
- *  <p> This class acts as an entry point into JAXB 2.0 Generation. A Generator is created with a 
+ *  <p> This class acts as an entry point into JAXB 2.0 Generation. A Generator is created with a
  *  specific set of JAXB 2.0 Annotated classes and then performs actions on those, such as
  *  generating schema files, or generating TopLink Projects. Additional information is returned
  *  from the schema generation methods as a means of integration with WebServices.
- *  
+ *
  *  @author  mmacivor
  *  @since   Oracle TopLink 11.1.1.0.0
  *  @see AnnotationsProcessor
@@ -70,9 +70,9 @@ public class Generator {
 
     /**
      * This is the preferred constructor.
-     * This constructor creates a Helper using the JavaModelInput 
-	 * instance's JavaModel. Annotations are processed here as well.
-     * 
+     * This constructor creates a Helper using the JavaModelInput
+     * instance's JavaModel. Annotations are processed here as well.
+     *
      * @param jModelInput
      */
     public Generator(JavaModelInput jModelInput) {
@@ -83,14 +83,14 @@ public class Generator {
         mappingsGenerator = new MappingsGenerator(helper);
         annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses(), null);
     }
-    
+
     /**
      * This constructor will process and apply the given XmlBindings as appropriate.  Classes
      * declared in the bindings will be amalgamated with any classes in the JavaModelInput.
-     *  
-     * If xmlBindings is null or empty, AnnotationsProcessor will be used to process 
+     *
+     * If xmlBindings is null or empty, AnnotationsProcessor will be used to process
      * annotations as per usual.
-     *  
+     *
      * @param jModelInput
      * @param xmlBindings map of XmlBindings keyed on package name
      * @param cLoader
@@ -108,12 +108,12 @@ public class Generator {
             annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses(), null);
         }
     }
-    
+
     /**
-     * This constructor creates a Helper using the JavaModelInput 
-	 * instance's JavaModel and a map of javaclasses that were generated from Type objects.
-	 * Annotations are processed here as well.
-     * 
+     * This constructor creates a Helper using the JavaModelInput
+     * instance's JavaModel and a map of javaclasses that were generated from Type objects.
+     * Annotations are processed here as well.
+     *
      * @param jModelInput
      */
     public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo, String defaultTargetNamespace) {
@@ -125,12 +125,12 @@ public class Generator {
         this.typeToTypeMappingInfo = typeToTypeMappingInfo;
         annotationsProcessor.processClassesAndProperties(javaClasses, typeMappingInfos);
     }
-    
+
     /**
      * This constructor will process and apply the given XmlBindings as appropriate.  Classes
      * declared in the bindings will be amalgamated with any classes in the JavaModelInput.
-     *  
-     * If xmlBindings is null or empty, AnnotationsProcessor will be used to process 
+     *
+     * If xmlBindings is null or empty, AnnotationsProcessor will be used to process
      * annotations as per usual.
      *
      * @param jModelInput
@@ -153,7 +153,7 @@ public class Generator {
         if (xmlBindings != null && !xmlBindings.isEmpty()) {
             new XMLProcessor(xmlBindings).processXML(annotationsProcessor, jModelInput, typeMappingInfos, javaClasses);
         } else {
-		annotationsProcessor.processClassesAndProperties(javaClasses, typeMappingInfos);
+        annotationsProcessor.processClassesAndProperties(javaClasses, typeMappingInfos);
         }
     }
 
@@ -241,16 +241,16 @@ public class Generator {
                 ex.printStackTrace();
             }
         }
-		return schemaGenerator.getSchemaTypeInfo();
+        return schemaGenerator.getSchemaTypeInfo();
     }
-    
+
     /**
      * Convenience method that processes a given map of QName-Type entries.  For each an ElementDeclaration
      * is created and added to the given AnnotationsProcessor instance's map of global elements.
-     * 
+     *
      * It is assumed that the map of QName-Type entries contains Type instances that are either a Class or
      * a ParameterizedType.
-     *  
+     *
      * @param additionalGlobalElements
      * @param annotationsProcessor
      */
@@ -272,7 +272,7 @@ public class Generator {
                 }
                 JavaClass jClass = null;
                 if (type instanceof Class) {
-                    Class tClass = (Class) type; 
+                    Class tClass = (Class) type;
                     jClass = helper.getJavaClass(tClass);
                 }
                 // if no type is available don't do anything
@@ -293,13 +293,13 @@ public class Generator {
     }
 
     public MappingsGenerator getMappingsGenerator() {
-    	return this.mappingsGenerator;
+        return this.mappingsGenerator;
     }
 
     public AnnotationsProcessor getAnnotationsProcessor() {
         return annotationsProcessor;
     }
-    
+
     public void setTypeToTypeMappingInfo(Map<Type, TypeMappingInfo> typesToTypeMapping) {
         this.typeToTypeMappingInfo = typesToTypeMapping;
     }

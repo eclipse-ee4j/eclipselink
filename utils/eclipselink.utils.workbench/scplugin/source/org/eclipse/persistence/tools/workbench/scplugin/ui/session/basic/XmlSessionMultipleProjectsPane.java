@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -75,206 +75,206 @@ import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
  */
 final class XmlSessionMultipleProjectsPane extends AbstractSessionMultipleProjectsPane
 {
-	/**
-	 * Creates a new <code>SessionAdvancedPane</code>.
-	 *
-	 * @param subjectHolder The holder of {@link DatabaseSessionAdapter}
-	 * @param context
-	 */
-	XmlSessionMultipleProjectsPane(ValueModel subjectHolder,
-											WorkbenchContextHolder contextHolder)
-	{
-		super(subjectHolder, contextHolder);
-	}
+    /**
+     * Creates a new <code>SessionAdvancedPane</code>.
+     *
+     * @param subjectHolder The holder of {@link DatabaseSessionAdapter}
+     * @param context
+     */
+    XmlSessionMultipleProjectsPane(ValueModel subjectHolder,
+                                            WorkbenchContextHolder contextHolder)
+    {
+        super(subjectHolder, contextHolder);
+    }
 
-	/**
-	 * Prompts to add an additional XML project.
-	 *
-	 * @param selectionModel The selection model used by the list
-	 */
-	protected void addProject(ObjectListSelectionModel selectionModel)
-	{
-		DatabaseSessionAdapter databaseSession = (DatabaseSessionAdapter) subject();
-		SimplePropertyValueModel projectXmlHolder = new SimplePropertyValueModel();
+    /**
+     * Prompts to add an additional XML project.
+     *
+     * @param selectionModel The selection model used by the list
+     */
+    protected void addProject(ObjectListSelectionModel selectionModel)
+    {
+        DatabaseSessionAdapter databaseSession = (DatabaseSessionAdapter) subject();
+        SimplePropertyValueModel projectXmlHolder = new SimplePropertyValueModel();
 
-		ProjectXmlEditDialog dialog = new ProjectXmlEditDialog(projectXmlHolder);
-		dialog.setVisible(true);
+        ProjectXmlEditDialog dialog = new ProjectXmlEditDialog(projectXmlHolder);
+        dialog.setVisible(true);
 
-		if (dialog.wasCanceled())
-			return;
+        if (dialog.wasCanceled())
+            return;
 
-		String projectXml = (String) projectXmlHolder.getValue();
-		String temporaryProjectXml = projectXml.replace('\\', '/');
+        String projectXml = (String) projectXmlHolder.getValue();
+        String temporaryProjectXml = projectXml.replace('\\', '/');
 
-		// Check to see if the value already exist
-		if (CollectionTools.contains(databaseSession.additionalProjectNames(), temporaryProjectXml))
-		{
-			ProjectAdapter project = databaseSession.projectNamed(temporaryProjectXml);
-			selectionModel.setSelectedValue(project);
-		}
-		else
-		{
-			ProjectAdapter project = databaseSession.addProjectXmlNamed(projectXml);
-			selectionModel.setSelectedValue(project);
-		}
-	}
+        // Check to see if the value already exist
+        if (CollectionTools.contains(databaseSession.additionalProjectNames(), temporaryProjectXml))
+        {
+            ProjectAdapter project = databaseSession.projectNamed(temporaryProjectXml);
+            selectionModel.setSelectedValue(project);
+        }
+        else
+        {
+            ProjectAdapter project = databaseSession.addProjectXmlNamed(projectXml);
+            selectionModel.setSelectedValue(project);
+        }
+    }
 
-	/**
-	 * Retrieves the last saved location from the preferences if one exists
-	 * otherwise return the user home directory.
-	 *
-	 * @return The location where the file chooser will be at
-	 */
-	private File retrieveLastDirectory()
-	{
-		DatabaseSessionAdapter session = (DatabaseSessionAdapter) subject();
-		TopLinkSessionsAdapter topLinkSessions = (TopLinkSessionsAdapter) session.getParent();
-		File saveDirectory = topLinkSessions.getSaveDirectory();
+    /**
+     * Retrieves the last saved location from the preferences if one exists
+     * otherwise return the user home directory.
+     *
+     * @return The location where the file chooser will be at
+     */
+    private File retrieveLastDirectory()
+    {
+        DatabaseSessionAdapter session = (DatabaseSessionAdapter) subject();
+        TopLinkSessionsAdapter topLinkSessions = (TopLinkSessionsAdapter) session.getParent();
+        File saveDirectory = topLinkSessions.getSaveDirectory();
 
-		// This happens when the sessions.xml is an untitled file
-		if (saveDirectory == null)
-			saveDirectory = FileTools.userHomeDirectory();
+        // This happens when the sessions.xml is an untitled file
+        if (saveDirectory == null)
+            saveDirectory = FileTools.userHomeDirectory();
 
-		return new File(preferences().get("location", saveDirectory.getPath()));
-	}
+        return new File(preferences().get("location", saveDirectory.getPath()));
+    }
 
-	/**
-	 * This dialog edits the project XML.
-	 */
-	private class ProjectXmlEditDialog extends AbstractValidatingDialog
-	{
-		private final PropertyValueModel projectXmlHolder;
-		private JTextField textField;
+    /**
+     * This dialog edits the project XML.
+     */
+    private class ProjectXmlEditDialog extends AbstractValidatingDialog
+    {
+        private final PropertyValueModel projectXmlHolder;
+        private JTextField textField;
 
-		ProjectXmlEditDialog(PropertyValueModel projectXmlHolder)
-		{
-			super(XmlSessionMultipleProjectsPane.this.getWorkbenchContext(),
-					XmlSessionMultipleProjectsPane.this.resourceRepository().getString("PROJECT_TYPE_EDIT_DIALOG_TITLE_ADD"));
+        ProjectXmlEditDialog(PropertyValueModel projectXmlHolder)
+        {
+            super(XmlSessionMultipleProjectsPane.this.getWorkbenchContext(),
+                    XmlSessionMultipleProjectsPane.this.resourceRepository().getString("PROJECT_TYPE_EDIT_DIALOG_TITLE_ADD"));
 
-			this.projectXmlHolder = projectXmlHolder;
-			projectXmlHolder.addPropertyChangeListener(PropertyValueModel.VALUE, buildPropertyChangeListener());
-		}
+            this.projectXmlHolder = projectXmlHolder;
+            projectXmlHolder.addPropertyChangeListener(PropertyValueModel.VALUE, buildPropertyChangeListener());
+        }
 
-		private void addProjectXML()
-		{
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setFileFilter(new XmlFileFilter());
-			fileChooser.setCurrentDirectory(retrieveLastDirectory());
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        private void addProjectXML()
+        {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new XmlFileFilter());
+            fileChooser.setCurrentDirectory(retrieveLastDirectory());
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-			int result = fileChooser.showOpenDialog(this);
+            int result = fileChooser.showOpenDialog(this);
 
-			if (result == JFileChooser.APPROVE_OPTION)
-			{
-				File selectedFile = fileChooser.getSelectedFile();
-				preferences().put("location", selectedFile.getParent());
-				String projectXml = selectedFile.getAbsolutePath();
-				this.projectXmlHolder.setValue(projectXml);
-			}
-		}
+            if (result == JFileChooser.APPROVE_OPTION)
+            {
+                File selectedFile = fileChooser.getSelectedFile();
+                preferences().put("location", selectedFile.getParent());
+                String projectXml = selectedFile.getAbsolutePath();
+                this.projectXmlHolder.setValue(projectXml);
+            }
+        }
 
-		protected Component buildMainPanel()
-		{
-			GridBagConstraints constraints = new GridBagConstraints();
+        protected Component buildMainPanel()
+        {
+            GridBagConstraints constraints = new GridBagConstraints();
 
-			JPanel container = new JPanel(new GridBagLayout());
+            JPanel container = new JPanel(new GridBagLayout());
 
-			JButton xmlBrowseButton = SwingComponentFactory.buildButton("PROJECT_TYPE_EDIT_DIALOG_XML_BROWSE_BUTTON", resourceRepository());
-			xmlBrowseButton.addActionListener(buildXMLBrowseAction());
+            JButton xmlBrowseButton = SwingComponentFactory.buildButton("PROJECT_TYPE_EDIT_DIALOG_XML_BROWSE_BUTTON", resourceRepository());
+            xmlBrowseButton.addActionListener(buildXMLBrowseAction());
 
-			this.textField = new JTextField(buildProjectXmlDocumentAdapter(), null, 30);
+            this.textField = new JTextField(buildProjectXmlDocumentAdapter(), null, 30);
 
-			JComponent ProjectXmlWidgets = buildLabeledComponent
-			(
-				"PROJECT_TYPE_EDIT_DIALOG_XML_FIELD",
-				this.textField,
-				xmlBrowseButton
-			);
+            JComponent ProjectXmlWidgets = buildLabeledComponent
+            (
+                "PROJECT_TYPE_EDIT_DIALOG_XML_FIELD",
+                this.textField,
+                xmlBrowseButton
+            );
 
-			constraints.gridx      = 0;
-			constraints.gridy      = 0;
-			constraints.gridwidth  = 1;
-			constraints.gridheight = 1;
-			constraints.weightx    = 1;
-			constraints.weighty    = 0;
-			constraints.fill       = GridBagConstraints.HORIZONTAL;
-			constraints.anchor     = GridBagConstraints.CENTER;
-			constraints.insets     = new Insets(0, 0, 0, 0);
+            constraints.gridx      = 0;
+            constraints.gridy      = 0;
+            constraints.gridwidth  = 1;
+            constraints.gridheight = 1;
+            constraints.weightx    = 1;
+            constraints.weighty    = 0;
+            constraints.fill       = GridBagConstraints.HORIZONTAL;
+            constraints.anchor     = GridBagConstraints.CENTER;
+            constraints.insets     = new Insets(0, 0, 0, 0);
 
-			container.add(ProjectXmlWidgets, constraints);
+            container.add(ProjectXmlWidgets, constraints);
 
-			return container;
-		}
+            return container;
+        }
 
-		private Document buildProjectXmlDocumentAdapter()
-		{
-			return new DocumentAdapter(this.projectXmlHolder);
-		}
+        private Document buildProjectXmlDocumentAdapter()
+        {
+            return new DocumentAdapter(this.projectXmlHolder);
+        }
 
-		private PropertyChangeListener buildPropertyChangeListener()
-		{
-			return new PropertyChangeListener()
-			{
-				public void propertyChange(PropertyChangeEvent e)
-				{
-					String projectXml = (String) e.getNewValue();
-					boolean valid = !StringTools.stringIsEmpty(projectXml);
-					getOKAction().setEnabled(valid);
+        private PropertyChangeListener buildPropertyChangeListener()
+        {
+            return new PropertyChangeListener()
+            {
+                public void propertyChange(PropertyChangeEvent e)
+                {
+                    String projectXml = (String) e.getNewValue();
+                    boolean valid = !StringTools.stringIsEmpty(projectXml);
+                    getOKAction().setEnabled(valid);
 
-					if (valid)
-					{
-						clearErrorMessage();
-					}
-					else
-					{
-						setErrorMessageKey("PROJECT_TYPE_EDIT_DIALOG_ERROR_MESSAGE");
-					}
-				}
-			};
-		}
+                    if (valid)
+                    {
+                        clearErrorMessage();
+                    }
+                    else
+                    {
+                        setErrorMessageKey("PROJECT_TYPE_EDIT_DIALOG_ERROR_MESSAGE");
+                    }
+                }
+            };
+        }
 
-		private ActionListener buildXMLBrowseAction()
-		{
-			return new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					addProjectXML();
-				}
-			};
-		}
+        private ActionListener buildXMLBrowseAction()
+        {
+            return new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    addProjectXML();
+                }
+            };
+        }
 
-		protected String helpTopicId()
-		{
-			return "dialog.session.projectType";
-		}
+        protected String helpTopicId()
+        {
+            return "dialog.session.projectType";
+        }
 
-		protected Component initialFocusComponent()
-		{
-			return this.textField;
-		}
+        protected Component initialFocusComponent()
+        {
+            return this.textField;
+        }
 
-		protected void prepareToShow()
-		{
-			super.prepareToShow();
-			getOKAction().setEnabled(false);
-		}
-	}
+        protected void prepareToShow()
+        {
+            super.prepareToShow();
+            getOKAction().setEnabled(false);
+        }
+    }
 
-	/**
-	 * The <code>FileFilter</code> used by the File chooser to restrict the
-	 * selection to be XML files only.
-	 */
-	private class XmlFileFilter extends FileFilter
-	{
-		public boolean accept(File file)
-		{
-			return file.isDirectory() || ".xml".equalsIgnoreCase(FileTools.extension(file));
-		}
+    /**
+     * The <code>FileFilter</code> used by the File chooser to restrict the
+     * selection to be XML files only.
+     */
+    private class XmlFileFilter extends FileFilter
+    {
+        public boolean accept(File file)
+        {
+            return file.isDirectory() || ".xml".equalsIgnoreCase(FileTools.extension(file));
+        }
 
-		public String getDescription()
-		{
-			return resourceRepository().getString("SESSION_PROJECT_ADVANCED_FILE_CHOOSER_DESCRIPTION");
-		}
-	}
+        public String getDescription()
+        {
+            return resourceRepository().getString("SESSION_PROJECT_ADVANCED_FILE_CHOOSER_DESCRIPTION");
+        }
+    }
 }

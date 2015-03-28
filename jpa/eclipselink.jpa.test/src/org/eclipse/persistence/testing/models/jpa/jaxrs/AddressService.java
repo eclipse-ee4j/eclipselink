@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,37 +32,37 @@ import javax.ws.rs.core.MediaType;
 @Path("/address_war")
 public class AddressService {
 
-	@PersistenceContext(unitName = "jaxrs")
-	EntityManager entityManager;
+    @PersistenceContext(unitName = "jaxrs")
+    EntityManager entityManager;
 
-	@POST
-	//@Consumes(MediaType.APPLICATION_XML)
-	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void create(Address address) {
-		entityManager.persist(address);
-	}
+    @POST
+    //@Consumes(MediaType.APPLICATION_XML)
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public void create(Address address) {
+        entityManager.persist(address);
+    }
 
-	@GET
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("{id}")
-	public Address read(@PathParam("id") long id) {
-		return entityManager.find(Address.class, id);
-	}
+    @GET
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Path("{id}")
+    public Address read(@PathParam("id") long id) {
+        return entityManager.find(Address.class, id);
+    }
 
-	@PUT
-	//@Consumes(MediaType.APPLICATION_XML)
-	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void update(Address address) {
-		entityManager.merge(address);
-	}
+    @PUT
+    //@Consumes(MediaType.APPLICATION_XML)
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public void update(Address address) {
+        entityManager.merge(address);
+    }
 
-	@DELETE
-	@Path("{id}")
-	public void delete(@PathParam("id") long id) {
-		Address address = entityManager.find(Address.class, id);
-		if (null != address) {
-			entityManager.remove(address);
-		}
-	}
+    @DELETE
+    @Path("{id}")
+    public void delete(@PathParam("id") long id) {
+        Address address = entityManager.find(Address.class, id);
+        if (null != address) {
+            entityManager.remove(address);
+        }
+    }
 
 }

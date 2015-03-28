@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
@@ -76,7 +76,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * and if occurred is the entire purpose of locking.  This property allows for the isolation level of changes to the
      * cache to be configured for sever situation and it is not suggest that this be changed.
      */
-    protected int cacheTransactionIsolation = SYNCRONIZED_OBJECT_LEVEL_READ_WRITE_DATABASE; 
+    protected int cacheTransactionIsolation = SYNCRONIZED_OBJECT_LEVEL_READ_WRITE_DATABASE;
 
     /** Reads and unit of work merges can occur concurrently. */
     public static final int CONCURRENT_READ_WRITE = 1;
@@ -86,7 +86,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
 
     /** Reads and unit of work merges will be serialized. */
     public static final int SYNCHRONIZED_READ_ON_WRITE = 3;
-    
+
     /** Writes to the cache (merge, object build/refresh will be synchronized
      * as will cache access (cloning) based on when access is required.
      */
@@ -268,12 +268,12 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
      * If that is the case and the application is experiencing a performance impact from the health check then
      * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
-     * retry queries in the case of database failure. 
+     * retry queries in the case of database failure.
      */
     public boolean isConnectionHealthValidatedOnError(){
         return false;
     }
-    
+
     /**
      * PUBLIC:
      * Return the EclipseLink version.
@@ -302,17 +302,17 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
             // we don't make this call since it is already encrypted, hence,
             // we do not initialize the securable object on the holder.
             //
-            // If neither setPassword or setEncryptedPassword is called 
+            // If neither setPassword or setEncryptedPassword is called
             // (example, user sets properties via the setProperties method),
-            // when the user tries to connect they  will get a null pointer 
-            // exception. So if the holder does not hold 
-            // a securable object or the setEncryptedPassword flag is not true, 
+            // when the user tries to connect they  will get a null pointer
+            // exception. So if the holder does not hold
+            // a securable object or the setEncryptedPassword flag is not true,
             // don't bother trying to decrypt.
             if (getSecurableObjectHolder().hasSecurableObject() || isEncryptedPasswordSet) {
                 result = (Properties)properties.clone();
                 // Bug 4117441 - Secure programming practices, store password in char[]
-                // If isEncryptedPasswordSet is true, or we have a SecurableObject then we stored 
-                // the password as a char[], and we need to convert it into a String for the 
+                // If isEncryptedPasswordSet is true, or we have a SecurableObject then we stored
+                // the password as a char[], and we need to convert it into a String for the
                 // prepared Properties object.
                 if (passwordObject instanceof char[]) {
                     result.put("password", getSecurableObjectHolder().getSecurableObject().decryptPassword(new String((char[])passwordObject)));
@@ -395,7 +395,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
             } else {
                 // first call to get will initialize the securable object
                  // Bug 4117441 - Secure programming practices, store password in char[]
-                String encryptedPassword = getSecurableObjectHolder().getSecurableObject().encryptPassword(password); 
+                String encryptedPassword = getSecurableObjectHolder().getSecurableObject().encryptPassword(password);
                 setProperty("password", encryptedPassword.toCharArray());
             }
         } else {
@@ -498,13 +498,13 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
         } catch(Throwable cne) {
             //next try using ConversionManager
             try {
-                platformClass = ConversionManager.loadClass(platformClassName);           
+                platformClass = ConversionManager.loadClass(platformClassName);
                 Platform platform = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
                         platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
                     } catch (PrivilegedActionException exception) {
-                        throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);  
+                        throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
                     }
                 } else {
                     platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
@@ -512,15 +512,15 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
                 usePlatform(platform);
             } catch(Throwable cne2) {
                 //if still not found, throw exception
-                throw ValidationException.platformClassNotFound(cne2, platformClassName);                
+                throw ValidationException.platformClassNotFound(cne2, platformClassName);
             }
         }
     }
     /**
      * INTERNAL:
-     * Set the name of the Platform to be created using the 
+     * Set the name of the Platform to be created using the
      * passed in class loader.  If no class loader is passed
-     * in, of if an exception is thrown, call the 
+     * in, of if an exception is thrown, call the
      * setPlatformClassName method with no classloader.
      * @see #setPlatformClassName(String platformClassName)
      */
@@ -535,7 +535,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
                     try {
                        platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
                   } catch (PrivilegedActionException exception) {
-                      throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);  
+                      throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
                   }
                 } else {
                     platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
@@ -677,7 +677,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     public boolean shouldSynchronizeWrites() {
         return this.cacheTransactionIsolation == SYNCHRONIZED_WRITE;
     }
-    
+
     /**
      * INTERNAL:
      * Used for Cache Isolation.  Causes EclipseLink to lock at the object level on
@@ -686,7 +686,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     public boolean shouldSynchronizeObjectLevelReadWrite(){
         return this.cacheTransactionIsolation == SYNCRONIZED_OBJECT_LEVEL_READ_WRITE;
     }
-    
+
     /**
      * INTERNAL:
      * Used for Cache Isolation.  Causes EclipseLink to lock at the object level on
@@ -695,7 +695,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     public boolean shouldSynchronizeObjectLevelReadWriteDatabase(){
         return this.cacheTransactionIsolation == SYNCRONIZED_OBJECT_LEVEL_READ_WRITE_DATABASE;
     }
-    
+
     /**
      * PUBLIC:
      * Return whether EclipseLink uses some external connection pooling
@@ -788,7 +788,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     public Sequence getSequence(String seqName) {
         return getDatasourcePlatform().getSequence(seqName);
     }
-        
+
     /**
      * Returns a map of sequence names to Sequences (may be null).
      */

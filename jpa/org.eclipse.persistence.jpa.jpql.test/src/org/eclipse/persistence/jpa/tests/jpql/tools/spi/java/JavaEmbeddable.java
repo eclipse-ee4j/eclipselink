@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,33 +30,33 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IMappingBuilder;
 public class JavaEmbeddable extends JavaManagedType
                             implements IEmbeddable {
 
-	/**
-	 * Creates a new <code>JavaManagedType</code>.
-	 *
-	 * @param provider The provider of JPA managed types
-	 * @param type The {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType IType} wrapping the Java type
-	 * @param mappingBuilder The builder that is responsible to create the {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IMapping IMapping} wrapping a persistent attribute or property
-	 */
-	public JavaEmbeddable(IManagedTypeProvider provider,
-	                      JavaType type,
-	                      IMappingBuilder<Member> mappingBuilder) {
+    /**
+     * Creates a new <code>JavaManagedType</code>.
+     *
+     * @param provider The provider of JPA managed types
+     * @param type The {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType IType} wrapping the Java type
+     * @param mappingBuilder The builder that is responsible to create the {@link org.eclipse.
+     * persistence.jpa.jpql.spi.IMapping IMapping} wrapping a persistent attribute or property
+     */
+    public JavaEmbeddable(IManagedTypeProvider provider,
+                          JavaType type,
+                          IMappingBuilder<Member> mappingBuilder) {
 
-		super(provider, type, mappingBuilder);
-	}
+        super(provider, type, mappingBuilder);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(IManagedTypeVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(IManagedTypeVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return getType().getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return getType().getName();
+    }
 }

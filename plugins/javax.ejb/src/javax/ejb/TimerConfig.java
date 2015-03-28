@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,7 @@ import java.io.Serializable;
 
 /**
  * <p>TimerConfig is used to specify additional timer configuration settings during
- * timer creation.</p>   
+ * timer creation.</p>
  *
  * <p>The <code>info</code> object represents a serializable object
  * made available to corresponding timer callbacks.  It is optional
@@ -62,8 +62,8 @@ public class TimerConfig {
     public TimerConfig() {}
 
     public TimerConfig(Serializable info, boolean persistent) {
-	info_ = info;
-  	persistent_ = persistent;
+    info_ = info;
+      persistent_ = persistent;
     }
 
     /**
@@ -71,7 +71,7 @@ public class TimerConfig {
      * @param i the info object
      */
     public void setInfo(Serializable i) {
-	info_ = i;
+    info_ = i;
     }
 
     /**
@@ -79,7 +79,7 @@ public class TimerConfig {
      * @return info object
      */
     public Serializable getInfo() {
-	return info_;
+    return info_;
     }
 
     /**
@@ -87,7 +87,7 @@ public class TimerConfig {
      * @param p  boolean indicating whether the timer is to be persistent.
      */
     public void setPersistent(boolean p) {
-	persistent_ = p;
+    persistent_ = p;
     }
 
     /**
@@ -95,7 +95,7 @@ public class TimerConfig {
      * @return boolean indicating whether the timer is persistent
      */
     public boolean isPersistent() {
-	return persistent_;
+    return persistent_;
     }
 
     public String toString() {

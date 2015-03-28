@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,23 +30,23 @@ import commonj.sdo.helper.HelperContext;
 import commonj.sdo.impl.HelperProviderImpl;
 
 public class UserSetContextMapTestCases extends SDOHelperContextTestCases {
-	protected final String FILE_NAME = tempFileDir + "/serialized_dataobject";
-	protected String implClassname;
-	protected HelperContext localCtx;
-	protected SDODataObject localDObj;
-	protected HelperContext globalCtx;
-	
-	public UserSetContextMapTestCases(String name) {
-		super(name);
-	}
-	
-	protected void resetGlobalContext() {
-    	((SDOTypeHelper)globalCtx.getTypeHelper()).reset();
-    	((SDOXSDHelper)globalCtx.getXSDHelper()).reset();
-    	((SDOXMLHelper)globalCtx.getXMLHelper()).reset();
-	}
-	
-	public void setUp() {
+    protected final String FILE_NAME = tempFileDir + "/serialized_dataobject";
+    protected String implClassname;
+    protected HelperContext localCtx;
+    protected SDODataObject localDObj;
+    protected HelperContext globalCtx;
+
+    public UserSetContextMapTestCases(String name) {
+        super(name);
+    }
+
+    protected void resetGlobalContext() {
+        ((SDOTypeHelper)globalCtx.getTypeHelper()).reset();
+        ((SDOXSDHelper)globalCtx.getXSDHelper()).reset();
+        ((SDOXMLHelper)globalCtx.getXMLHelper()).reset();
+    }
+
+    public void setUp() {
         FileInputStream inStream = null;
         // Clear defined schemas
         super.setUp();
@@ -56,15 +56,15 @@ public class UserSetContextMapTestCases extends SDOHelperContextTestCases {
         localCtx = new SDOHelperContext();
         localCtx.getXSDHelper().define(xsdString);
         localDObj = load(CONTEXT1_DATAOBJECT_XML_PATH, localCtx);
-    	implClassname = localDObj.getType().getInstanceClassName();
+        implClassname = localDObj.getType().getInstanceClassName();
         globalCtx = HelperProviderImpl.getDefaultContext();
-	}
-	
+    }
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.helpercontext.UserSetContextMapTestCases" };
         TestRunner.main(arguments);
     }
-    
+
     /**
      * Test should serialize/deserialize successfully/
      */
@@ -77,14 +77,14 @@ public class UserSetContextMapTestCases extends SDOHelperContextTestCases {
         localDObj = load(CONTEXT1_DATAOBJECT_XML_PATH, localCtx);
 
         SDOHelperContext.putHelperContext(Thread.currentThread().getContextClassLoader(), localCtx);
-        
+
         serialize(localDObj, FILE_NAME);
         SDODataObject dobj = (SDODataObject) deserialize(FILE_NAME);
         String dobjImplClassName = dobj.getType().getInstanceClassName();
-    	assertTrue("Expected ["+implClassname+"] but was ["+dobjImplClassName+"]", dobjImplClassName.equals(implClassname));
-    	SDOHelperContext.removeHelperContext(Thread.currentThread().getContextClassLoader());
+        assertTrue("Expected ["+implClassname+"] but was ["+dobjImplClassName+"]", dobjImplClassName.equals(implClassname));
+        SDOHelperContext.removeHelperContext(Thread.currentThread().getContextClassLoader());
     }
-    
+
     public void testResolveWithLocalHelperContextSetInUserMap() {
         SDOHelperContext.putHelperContext(Thread.currentThread().getContextClassLoader(), localCtx);
         serialize(localDObj, FILE_NAME);
@@ -92,8 +92,8 @@ public class UserSetContextMapTestCases extends SDOHelperContextTestCases {
         String dobjImplClassName = dobj.getType().getInstanceClassName();
         assertTrue("Expected ["+implClassname+"] but was ["+dobjImplClassName+"]", dobjImplClassName.equals(implClassname));
         SDOHelperContext.removeHelperContext(Thread.currentThread().getContextClassLoader());
-    }    
-    
+    }
+
     /**
      * We do not set the loader/helper context pair in the SDOHelperContext
      * user-set map, so we expect an error upon deserialization.  We will
@@ -101,11 +101,11 @@ public class UserSetContextMapTestCases extends SDOHelperContextTestCases {
      * instead of org.example.EmployeeTypeImpl.
      */
     public void testResolveWithoutHelperContextSetInUserMap() {
-    	serialize(localDObj, FILE_NAME);
-    	resetGlobalContext();
-    	DataObject dobj = deserialize(FILE_NAME);
-    	String dobjImplClassName = dobj.getType().getInstanceClass().getName();
-    	assertFalse("Expected [org.eclipse.persistence.sdo.dataobjects.OpenSequencedType] but was ["+dobjImplClassName+"]", dobjImplClassName.equals(implClassname));
+        serialize(localDObj, FILE_NAME);
+        resetGlobalContext();
+        DataObject dobj = deserialize(FILE_NAME);
+        String dobjImplClassName = dobj.getType().getInstanceClass().getName();
+        assertFalse("Expected [org.eclipse.persistence.sdo.dataobjects.OpenSequencedType] but was ["+dobjImplClassName+"]", dobjImplClassName.equals(implClassname));
     }
 
     public void serialize(DataObject anObject, String filename) {

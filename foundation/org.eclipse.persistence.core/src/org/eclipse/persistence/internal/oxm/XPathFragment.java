@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import java.nio.charset.Charset;
@@ -60,8 +60,8 @@ public class XPathFragment <
     protected boolean nameIsText = false;
     protected boolean isSelfFragment = false;
     private QName leafElementType;
-    private boolean generatedPrefix = false;   
-    private XPathPredicate predicate; 
+    private boolean generatedPrefix = false;
+    private XPathPredicate predicate;
 
     private boolean namespaceAware;
     private char namespaceSeparator;
@@ -71,32 +71,32 @@ public class XPathFragment <
 
 
     public XPathFragment() {
-        setNamespaceAware(true);     
-        namespaceSeparator = Constants.COLON;    	
+        setNamespaceAware(true);
+        namespaceSeparator = Constants.COLON;
     }
-    
+
     public XPathFragment(String xpathString) {
-    	this(xpathString, Constants.COLON, true);
+        this(xpathString, Constants.COLON, true);
     }
-    
+
     public XPathFragment(String xpathString, char namespaceSeparator, boolean namespaceAware) {
-    	this.namespaceSeparator = namespaceSeparator;   
-    	setNamespaceAware(namespaceAware);     
-    	setXPath(xpathString); 
+        this.namespaceSeparator = namespaceSeparator;
+        setNamespaceAware(namespaceAware);
+        setXPath(xpathString);
     }
 
     public void setPredicate(XPathPredicate condition) {
         this.predicate = condition;
     }
-    
+
     public boolean isNamespaceAware() {
-    	return namespaceAware;
+        return namespaceAware;
     }
 
     public void setNamespaceAware(boolean isNamespaceAware) {
         this.namespaceAware = isNamespaceAware;
     }
-    
+
     public void setNamespaceSeparator(char namespaceSeparator) {
         this.namespaceSeparator = namespaceSeparator;
     }
@@ -169,13 +169,13 @@ public class XPathFragment <
     }
 
     private void setupNamespaceInformation(String xpathString) {
-    	int nsindex = xpathString.indexOf(namespaceSeparator);
+        int nsindex = xpathString.indexOf(namespaceSeparator);
         if (nsindex != -1) {
             hasNamespace = true;
             localName = xpathString.substring(nsindex + 1).intern();
             prefix = xpathString.substring(0, nsindex).intern();
         } else {
-        	localName = xpathString.intern();
+            localName = xpathString.intern();
         }
     }
 
@@ -188,13 +188,13 @@ public class XPathFragment <
     }
 
     public String getShortName() {
-    	if(shortName == null){
-    		if(prefix !=null && prefix.length() >0){
-      			shortName = prefix + Constants.COLON + localName;
-      		}else{
-      		    shortName = localName;
-      		}
-    	}
+        if(shortName == null){
+            if(prefix !=null && prefix.length() >0){
+                  shortName = prefix + Constants.COLON + localName;
+              }else{
+                  shortName = localName;
+              }
+        }
         return shortName;
     }
 
@@ -226,8 +226,8 @@ public class XPathFragment <
     }
 
     public void setLocalName(String localName) {
-    	this.localName = localName;
-    	resetShortName();
+        this.localName = localName;
+        resetShortName();
     }
 
     public String getNamespaceURI() {
@@ -235,13 +235,13 @@ public class XPathFragment <
     }
 
     public void setNamespaceURI(String namespaceURI) {
-    	if (isSelfFragment || namespaceURI !=null && namespaceURI.length() == 0) {
+        if (isSelfFragment || namespaceURI !=null && namespaceURI.length() == 0) {
             this.namespaceURI = null;
         } else {
-        	this.namespaceURI = namespaceURI;
+            this.namespaceURI = namespaceURI;
         }
     }
-    
+
     private int hasIndex(String xpathString) {
         int index = -1;
         int startindex = xpathString.lastIndexOf('[');
@@ -406,19 +406,19 @@ public class XPathFragment <
     public boolean isGeneratedPrefix() {
         return generatedPrefix;
     }
-    
+
     public XML_FIELD getXMLField() {
         return this.xmlField;
     }
-    
+
     public void setXMLField(XML_FIELD field) {
         this.xmlField = field;
     }
-    
+
     private void resetShortName(){
-    	shortName = null;
-	prefixBytes = null;
-	localNameBytes = null;
+        shortName = null;
+    prefixBytes = null;
+    localNameBytes = null;
     }
 
     /**

@@ -1,35 +1,35 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     10/09/2012-2.5 Guy Pelletier 
+ *     10/09/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     10/25/2012-2.5 Guy Pelletier 
+ *     10/25/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     11/22/2012-2.5 Guy Pelletier 
+ *     11/22/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
- *     11/28/2012-2.5 Guy Pelletier 
+ *     11/28/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     12/07/2012-2.5 Guy Pelletier 
+ *     12/07/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     01/23/2013-2.5 Guy Pelletier 
+ *     01/23/2013-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     02/28/2013-2.5 Chris Delahunt
  *       - 402029: Application exceptions need to be wrapped in PersistenceException
- *     06/03/2013-2.5.1 Guy Pelletier    
- *       - 402380: 3 jpa21/advanced tests failed on server with 
- *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
- *     07/16/2013-2.5.1 Guy Pelletier 
+ *     06/03/2013-2.5.1 Guy Pelletier
+ *       - 402380: 3 jpa21/advanced tests failed on server with
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
+ *     07/16/2013-2.5.1 Guy Pelletier
  *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  *     11/06/2014-2.6 Tomas Kraus
  *       - 449818: Test to verify Convert annotation on ElementCollection of Embeddable class.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.Date;
@@ -86,7 +86,7 @@ public class ConverterTestSuite extends JUnitTestCase {
     }
 
     /**
-     * Test that an attribute picks up an auto apply converter. 
+     * Test that an attribute picks up an auto apply converter.
      */
     public void testAutoApplyConverter() {
         ServerSession session = getPersistenceUnitServerSession();
@@ -97,17 +97,17 @@ public class ConverterTestSuite extends JUnitTestCase {
 
         DirectToFieldMapping previousSalaryMapping = (DirectToFieldMapping) employeeDescriptor.getMappingForAttributeName("previousSalary");
         assertNull("Salary mapping did not have the auto apply converter", previousSalaryMapping.getConverter());
-        
+
         ClassDescriptor runnerDescriptor = session.getDescriptor(Runner.class);
-        
+
         DirectToFieldMapping tagsMapping = (DirectToFieldMapping) runnerDescriptor.getMappingForAttributeName("tags");
         assertTrue("Tags mapping did not have a converter", tagsMapping.hasConverter());
         assertTrue("Serials mappings did not have a SerializedObjectConverter", tagsMapping.getConverter() instanceof ConverterClass);
-        
+
         DirectToFieldMapping serialsMapping = (DirectToFieldMapping) runnerDescriptor.getMappingForAttributeName("serials");
         assertTrue("Serials mapping did not have a converter", serialsMapping.hasConverter());
         assertTrue("Serials mappings did not have a SerializedObjectConverter", serialsMapping.getConverter() instanceof SerializedObjectConverter);
-    }  
+    }
 
     /**
      * Test that converters are set.
@@ -186,7 +186,7 @@ public class ConverterTestSuite extends JUnitTestCase {
     }
 
     /**
-     * Test that application exceptions thrown from the converter's convertToEntityAttribute method get 
+     * Test that application exceptions thrown from the converter's convertToEntityAttribute method get
      * wrapped in a PersistenceException.
      * Added for bug 402029: Application exceptions need to be wrapped in PersistenceException
      */
@@ -223,7 +223,7 @@ public class ConverterTestSuite extends JUnitTestCase {
                 //trigger indirection
                 race.getOrganizers().get(responsibility);
             } catch (javax.persistence.PersistenceException pe) {
-                if (pe.getCause() == null || 
+                if (pe.getCause() == null ||
                         !ResponsibilityConverter.THROW_EXCEPTION_IN_TO_ENTITY_ATTRIBUTE.equals(pe.getCause().getMessage())) {
                     //rethrow this exception because it does not contain the expected application generated RuntimeException
                     throw pe;
@@ -241,7 +241,7 @@ public class ConverterTestSuite extends JUnitTestCase {
     }
 
     /**
-     * Test that application exceptions thrown from the converter's convertToDatabaseColumn method get 
+     * Test that application exceptions thrown from the converter's convertToDatabaseColumn method get
      * wrapped in a PersistenceException.
      * Added for bug 402029: Application exceptions need to be wrapped in PersistenceException
      */
@@ -270,7 +270,7 @@ public class ConverterTestSuite extends JUnitTestCase {
                 em.persist(organizer);
                 em.flush();
             } catch (javax.persistence.PersistenceException pe) {
-                if (pe.getCause() == null || 
+                if (pe.getCause() == null ||
                         !ResponsibilityConverter.THROW_EXCEPTION_IN_TO_DATABASE_COLUMN.equals(pe.getCause().getMessage())) {
                     //rethrow this exception because it does not contain the expected application generated RuntimeException
                     throw pe;

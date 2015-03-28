@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,43 +25,43 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration;
  */
 public class ClassResolver extends Resolver {
 
-	/**
-	 * The actual Java type for which its {@link IType} will be returned.
-	 */
-	private final Class<?> javaType;
+    /**
+     * The actual Java type for which its {@link IType} will be returned.
+     */
+    private final Class<?> javaType;
 
-	/**
-	 * Creates a new <code>ClassResolver</code>.
-	 *
-	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
-	 * @param javaType The actual Java type for which its {@link IType} will be returned
-	 */
-	public ClassResolver(Resolver parent, Class<?> javaType) {
-		super(parent);
-		this.javaType = javaType;
-	}
+    /**
+     * Creates a new <code>ClassResolver</code>.
+     *
+     * @param parent The parent {@link Resolver}, which is never <code>null</code>
+     * @param javaType The actual Java type for which its {@link IType} will be returned
+     */
+    public ClassResolver(Resolver parent, Class<?> javaType) {
+        super(parent);
+        this.javaType = javaType;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected IType buildType() {
-		return getType(javaType);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected IType buildType() {
+        return getType(javaType);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ITypeDeclaration buildTypeDeclaration() {
-		return getType().getTypeDeclaration();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ITypeDeclaration buildTypeDeclaration() {
+        return getType().getTypeDeclaration();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return javaType.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return javaType.getName();
+    }
 }

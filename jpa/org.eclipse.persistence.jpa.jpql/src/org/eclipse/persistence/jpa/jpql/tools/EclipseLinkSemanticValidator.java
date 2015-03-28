@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,44 +44,44 @@ import org.eclipse.persistence.jpa.jpql.SemanticValidatorHelper;
  */
 public class EclipseLinkSemanticValidator extends AbstractEclipseLinkSemanticValidator {
 
-	/**
-	 * Creates a new <code>EclipseLinkSemanticValidator</code>.
-	 *
-	 * @param queryContext The context used to query information about the JPQL query
-	 * @exception NullPointerException The given {@link JPQLQueryContext} cannot be <code>null</code>
-	 * @deprecated Use {@link EclipseLinkSemanticValidator#EclipseLinkSemanticValidator(JPQLQueryContext, EclipseLinkSemanticValidatorExtension)}
-	 */
-	@Deprecated
-	public EclipseLinkSemanticValidator(JPQLQueryContext queryContext) {
-		this(new GenericSemanticValidatorHelper(queryContext), EclipseLinkSemanticValidatorExtension.NULL_EXTENSION);
-	}
+    /**
+     * Creates a new <code>EclipseLinkSemanticValidator</code>.
+     *
+     * @param queryContext The context used to query information about the JPQL query
+     * @exception NullPointerException The given {@link JPQLQueryContext} cannot be <code>null</code>
+     * @deprecated Use {@link EclipseLinkSemanticValidator#EclipseLinkSemanticValidator(JPQLQueryContext, EclipseLinkSemanticValidatorExtension)}
+     */
+    @Deprecated
+    public EclipseLinkSemanticValidator(JPQLQueryContext queryContext) {
+        this(new GenericSemanticValidatorHelper(queryContext), EclipseLinkSemanticValidatorExtension.NULL_EXTENSION);
+    }
 
-	/**
-	 * Creates a new <code>EclipseLinkSemanticValidator</code>.
-	 *
-	 * @param queryContext The context used to query information about the JPQL query
-	 * @param extension The following extension can be used to give access to non-JPA metadata
-	 * artifacts, such as database tables and columns
-	 * @exception NullPointerException The given {@link JPQLQueryContext} cannot be <code>null</code>
-	 */
-	public EclipseLinkSemanticValidator(JPQLQueryContext queryContext,
-	                                    EclipseLinkSemanticValidatorExtension extension) {
+    /**
+     * Creates a new <code>EclipseLinkSemanticValidator</code>.
+     *
+     * @param queryContext The context used to query information about the JPQL query
+     * @param extension The following extension can be used to give access to non-JPA metadata
+     * artifacts, such as database tables and columns
+     * @exception NullPointerException The given {@link JPQLQueryContext} cannot be <code>null</code>
+     */
+    public EclipseLinkSemanticValidator(JPQLQueryContext queryContext,
+                                        EclipseLinkSemanticValidatorExtension extension) {
 
-		this(new GenericSemanticValidatorHelper(queryContext), extension);
-	}
+        this(new GenericSemanticValidatorHelper(queryContext), extension);
+    }
 
-	/**
-	 * Creates a new <code>EclipseLinkSemanticValidator</code>.
-	 *
-	 * @param helper The given helper allows this validator to access the JPA artifacts without using
-	 * Hermes SPI
-	 * @param extension The following extension can be used to give access to non-JPA metadata
-	 * artifacts, such as database tables and columns
-	 * @exception NullPointerException The given {@link SemanticValidatorHelper} cannot be <code>null</code>
-	 */
-	public EclipseLinkSemanticValidator(SemanticValidatorHelper helper,
-	                                    EclipseLinkSemanticValidatorExtension extension) {
+    /**
+     * Creates a new <code>EclipseLinkSemanticValidator</code>.
+     *
+     * @param helper The given helper allows this validator to access the JPA artifacts without using
+     * Hermes SPI
+     * @param extension The following extension can be used to give access to non-JPA metadata
+     * artifacts, such as database tables and columns
+     * @exception NullPointerException The given {@link SemanticValidatorHelper} cannot be <code>null</code>
+     */
+    public EclipseLinkSemanticValidator(SemanticValidatorHelper helper,
+                                        EclipseLinkSemanticValidatorExtension extension) {
 
-		super(helper, extension);
-	}
+        super(helper, extension);
+    }
 }

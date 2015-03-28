@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -32,15 +32,15 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
 
     public XMLCollectionReferenceMappingMarshalNodeValue(CollectionReferenceMapping xmlCollectionReferenceMapping) {
         this.xmlCollectionReferenceMapping = xmlCollectionReferenceMapping;
-        branchNode = new XPathNode();        
+        branchNode = new XPathNode();
         NamespaceResolver namespaceResolver = ((Descriptor) xmlCollectionReferenceMapping.getDescriptor()).getNamespaceResolver();
         List fkFields = xmlCollectionReferenceMapping.getFields();
         for(int x=0, fkFieldsSize=fkFields.size(); x<fkFieldsSize; x++) {
-        	Field fkField = (Field) fkFields.get(x);
+            Field fkField = (Field) fkFields.get(x);
             branchNode.addChild(fkField.getXPathFragment(), new XMLCollectionReferenceMappingFKMarshalNodeValue(xmlCollectionReferenceMapping, fkField), namespaceResolver);
         }
     }
-    
+
     @Override
     public boolean isOwningNode(XPathFragment fragment) {
         return true;
@@ -82,10 +82,10 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         if (cp.hasNext(iterator)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
-        } else {            
-        	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, false);
+        } else {
+            return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, false);
         }
-        marshalRecord.startCollection(); 
+        marshalRecord.startCollection();
 
         if(xPathFragment != XPathFragment.SELF_FRAGMENT) {
             marshalRecord.openStartElement(xPathFragment, namespaceResolver);
@@ -118,7 +118,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
                 XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, branchNode);
                 xPathNode.marshal(marshalRecord, value, session, namespaceResolver, marshalRecord.getMarshaller(), marshalContext.getMarshalContext(x), null);
             }
-            
+
         }
         return true;
     }
@@ -147,11 +147,11 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
             this.xmlCollectionReferenceMapping = xmlCollectionReferenceMapping;
             this.xmlField = xmlField;
         }
-        
+
         @Override
         public boolean isUnmarshalNodeValue() {
             return false;
-        }        
+        }
 
         @Override
         public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
@@ -165,7 +165,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
             Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(value, xmlField, session);
             if (fieldValue == null) {
                 if(null != value) {
-                	Field f2 = (Field) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
+                    Field f2 = (Field) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
                     fieldValue = marshalRecord.getMarshaller().getContext().getValueByXPath(value, f2.getXPath(), f2.getNamespaceResolver(), Object.class);
                 }
                 if(null == fieldValue) {
@@ -173,7 +173,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
                 }
             }
             QName schemaType = xmlField.getSchemaTypeForValue(fieldValue, session);
-            if (xPathFragment.isAttribute()) {                    
+            if (xPathFragment.isAttribute()) {
                 marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
                 marshalRecord.closeStartElement();
             } else {
@@ -190,22 +190,22 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         }
 
     }
-    
+
     /**
      *  INTERNAL:
-     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
-     */  
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     */
     public void setIndex(int index){
-    	this.index = index;
+        this.index = index;
     }
-    
+
     /**
      * INTERNAL:
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
-     * Set during TreeObjectBuilder initialization 
+     * Set during TreeObjectBuilder initialization
      */
     public int getIndex(){
-    	return index;
+        return index;
     }
 
     /**

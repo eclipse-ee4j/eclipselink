@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2009, 2015  Sun Microsystems, Inc. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     08/01/2012-2.5 Chris Delahunt
- *       - 371950: Metadata caching 
+ *       - 371950: Metadata caching
  ******************************************************************************/
 
 package org.eclipse.persistence.internal.jpa.deployment;

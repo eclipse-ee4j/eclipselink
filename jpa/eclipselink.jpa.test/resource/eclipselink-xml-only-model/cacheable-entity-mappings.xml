@@ -28,7 +28,7 @@
             <one-to-one name="cacheableFalse" fetch="EAGER">
                 <join-column name="FALSE_FK" referenced-column-name="ID"/>
            </one-to-one>
-            
+
         </attributes>
     </entity>
     <entity name="XML_ROTECTED_RELATIONSHIPS" class="ProtectedRelationshipsEntity"

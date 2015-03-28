@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/06/2009-2.0 Guy Pelletier 
+ *     11/06/2009-2.0 Guy Pelletier
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import static javax.persistence.CascadeType.MERGE;
@@ -27,14 +27,14 @@ import java.util.List;
 
 /**
  * Composite Key Entity.
- * 
+ *
  * @author Wonseok Kim
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "DDL_CKENTB", 
-    uniqueConstraints = { 
-        @UniqueConstraint(columnNames={"UNQ2, UNQ1"}) //The order of columns should not be changed. See CKeyEntityA. 
+@Table(name = "DDL_CKENTB",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames={"UNQ2, UNQ1"}) //The order of columns should not be changed. See CKeyEntityA.
 })
 public class CKeyEntityB {
     @EmbeddedId
@@ -46,12 +46,12 @@ public class CKeyEntityB {
 
     @Column(name = "UNQ2", nullable = false)
     private String unq2;
-    
+
 
     @OneToMany(mappedBy="bs")
     @CascadeOnDelete
     private Collection<CKeyEntityA> as;
-    
+
     @ManyToMany(mappedBy="bs")
     private Collection<CKeyEntityC> cs;
 
@@ -66,7 +66,7 @@ public class CKeyEntityB {
     })
     @CascadeOnDelete
     private List<Comment<String>> comments;
-    
+
     @ManyToOne
     private Comment<String> comment;
 
@@ -131,7 +131,7 @@ public class CKeyEntityB {
     public void setComments(List<Comment<String>> comments) {
         this.comments = comments;
     }
-    
+
     public Comment<String> getComment() {
         return comment;
     }

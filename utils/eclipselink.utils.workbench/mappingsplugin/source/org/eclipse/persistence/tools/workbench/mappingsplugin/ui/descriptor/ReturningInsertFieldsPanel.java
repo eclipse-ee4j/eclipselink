@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -62,298 +62,298 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.TableCellEditorAdapt
 
 public abstract class ReturningInsertFieldsPanel extends AbstractSubjectPanel {
 
-	private TableModel tableModel;
-	private ListValueModel sortedFieldsAdapter;
-	private ObjectListSelectionModel rowSelectionModel;
+    private TableModel tableModel;
+    private ListValueModel sortedFieldsAdapter;
+    private ObjectListSelectionModel rowSelectionModel;
 
-	private Action removeAction;
+    private Action removeAction;
 
-	protected ReturningInsertFieldsPanel( PropertyValueModel subjectHolder, WorkbenchContextHolder contextHolder) {
-		super( subjectHolder, contextHolder);
-	}
+    protected ReturningInsertFieldsPanel( PropertyValueModel subjectHolder, WorkbenchContextHolder contextHolder) {
+        super( subjectHolder, contextHolder);
+    }
 
-	protected void initializeLayout()
-	{
-		this.sortedFieldsAdapter = this.buildSortedInsertFieldReturnOnlyFlagsAdapter();
-		this.tableModel = this.buildTableModel();
-		this.rowSelectionModel = this.buildRowSelectionModel();
-		
-		GridBagConstraints constraints = new GridBagConstraints();
+    protected void initializeLayout()
+    {
+        this.sortedFieldsAdapter = this.buildSortedInsertFieldReturnOnlyFlagsAdapter();
+        this.tableModel = this.buildTableModel();
+        this.rowSelectionModel = this.buildRowSelectionModel();
 
-		// Create the button panel first
-		JPanel buttonPanel = buildButtonPanel();
-		constraints.gridx			= 0;
-		constraints.gridy			= 1;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 0;
-		constraints.weighty		= 0;
-		constraints.fill			= GridBagConstraints.NONE;
-		constraints.anchor		= GridBagConstraints.LINE_END;
-		constraints.insets		= new Insets(5, 0, 0, 0);
-		
-		add( buttonPanel, constraints);
+        GridBagConstraints constraints = new GridBagConstraints();
 
-		// Create the table after since some listeners need access to the buttons
-		JComponent insertTablePane = buildInsertPanel();
-		constraints.gridx			= 0;
-		constraints.gridy			= 0;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 1;
-		constraints.fill			= GridBagConstraints.BOTH;
-		constraints.anchor		= GridBagConstraints.FIRST_LINE_START;
-		constraints.insets		= new Insets(0, 0, 0, 0);
+        // Create the button panel first
+        JPanel buttonPanel = buildButtonPanel();
+        constraints.gridx            = 0;
+        constraints.gridy            = 1;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 0;
+        constraints.weighty        = 0;
+        constraints.fill            = GridBagConstraints.NONE;
+        constraints.anchor        = GridBagConstraints.LINE_END;
+        constraints.insets        = new Insets(5, 0, 0, 0);
 
-		add( insertTablePane, constraints);
-	}
+        add( buttonPanel, constraints);
 
-	private JComponent buildInsertPanel()
-	{
-		JTable table =  this.buildTable();
-		JScrollPane insertTablePane = new JScrollPane( table);
-		insertTablePane.getViewport().setBackground( table.getBackground());
+        // Create the table after since some listeners need access to the buttons
+        JComponent insertTablePane = buildInsertPanel();
+        constraints.gridx            = 0;
+        constraints.gridy            = 0;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 1;
+        constraints.fill            = GridBagConstraints.BOTH;
+        constraints.anchor        = GridBagConstraints.FIRST_LINE_START;
+        constraints.insets        = new Insets(0, 0, 0, 0);
 
-		return insertTablePane;
-	}
+        add( insertTablePane, constraints);
+    }
 
-	private JTable buildTable() {		
-		JTable table = SwingComponentFactory.buildTable(tableModel, rowSelectionModel);
-		int rowHeight = 20;	// start with minimum of 20
-		
-		// Name column
-		TableColumn column = table.getColumnModel().getColumn( InsertFieldColumnAdapter.INSERT_FIELD_COLUMN);
-		TableCellRenderer fieldRenderer = this.buildFieldColumnCellRenderer();
-		column.setCellRenderer(fieldRenderer);
+    private JComponent buildInsertPanel()
+    {
+        JTable table =  this.buildTable();
+        JScrollPane insertTablePane = new JScrollPane( table);
+        insertTablePane.getViewport().setBackground( table.getBackground());
 
-		// Return-only column (check box)
-		column = table.getColumnModel().getColumn( InsertFieldColumnAdapter.RETURN_ONLY_COLUMN);
-		CheckBoxTableCellRenderer returnOnlyRenderer = new CheckBoxTableCellRenderer();
-		column.setCellRenderer( returnOnlyRenderer);
-		column.setCellEditor(new TableCellEditorAdapter(new CheckBoxTableCellRenderer()));
-		rowHeight = Math.max( rowHeight, returnOnlyRenderer.getPreferredHeight());
+        return insertTablePane;
+    }
 
-		table.setRowHeight(rowHeight);
-		
-		return table;
-	}
+    private JTable buildTable() {
+        JTable table = SwingComponentFactory.buildTable(tableModel, rowSelectionModel);
+        int rowHeight = 20;    // start with minimum of 20
 
-	protected TableCellRenderer buildFieldColumnCellRenderer() {
-		return new SimpleTableCellRenderer() {
-			protected String buildText(Object value) {
-				return value == null ? null : ((MWDataField) value).fieldName();
-			}
-		};
-	}
-	
-	private ObjectListSelectionModel buildRowSelectionModel() {
-		ObjectListSelectionModel rowSelectionModel = new ObjectListSelectionModel( new ListModelAdapter( sortedFieldsAdapter));
-		rowSelectionModel.addListSelectionListener( this.buildRowSelectionListener());
-		rowSelectionModel.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		return rowSelectionModel;
-	}
+        // Name column
+        TableColumn column = table.getColumnModel().getColumn( InsertFieldColumnAdapter.INSERT_FIELD_COLUMN);
+        TableCellRenderer fieldRenderer = this.buildFieldColumnCellRenderer();
+        column.setCellRenderer(fieldRenderer);
 
-	private ListSelectionListener buildRowSelectionListener() {
-		return new ListSelectionListener() {
-			public void valueChanged( ListSelectionEvent e) {
-				if ( ! e.getValueIsAdjusting()) {
-					ReturningInsertFieldsPanel.this.rowSelectionChanged();
-				}
-			}
-		};
-	}
+        // Return-only column (check box)
+        column = table.getColumnModel().getColumn( InsertFieldColumnAdapter.RETURN_ONLY_COLUMN);
+        CheckBoxTableCellRenderer returnOnlyRenderer = new CheckBoxTableCellRenderer();
+        column.setCellRenderer( returnOnlyRenderer);
+        column.setCellEditor(new TableCellEditorAdapter(new CheckBoxTableCellRenderer()));
+        rowHeight = Math.max( rowHeight, returnOnlyRenderer.getPreferredHeight());
 
-	private void rowSelectionChanged() {
-		Object[] selection = rowSelectionModel.getSelectedValues();
-		boolean fieldSelected = ( selection.length > 0);
-		removeAction.setEnabled( fieldSelected);
-	}
+        table.setRowHeight(rowHeight);
 
-	private TableModel buildTableModel() {
-		return new TableModelAdapter( sortedFieldsAdapter, this.buildInsertColumnAdapter());
-	}
-	
-	private ColumnAdapter buildInsertColumnAdapter() {
-		return new InsertFieldColumnAdapter( resourceRepository());
-	}
-	
-	
-	private ListValueModel buildSortedInsertFieldReturnOnlyFlagsAdapter() {
-		return new SortedListValueModelAdapter(buildColumnNameAdapter());
-	}
-	
-	private ListValueModel buildColumnNameAdapter() {
-		return new ItemPropertyListValueModelAdapter(buildInsertFieldReturnOnlyFlagsAdapter(), MWColumn.NAME_PROPERTY);
-	}
+        return table;
+    }
 
-	private CollectionValueModel buildInsertFieldReturnOnlyFlagsAdapter() {
-		return new CollectionAspectAdapter( getSubjectHolder(), MWReturningPolicy.INSERT_FIELD_RETURN_ONLY_FLAGS_COLLECTION) {
-			protected Iterator getValueFromSubject() {
-				return (( MWReturningPolicy) this.subject).insertFieldReturnOnlyFlags();
-			}
-			protected int sizeFromSubject() {
-				return (( MWReturningPolicy) this.subject).insertFieldReturnOnlyFlagsSize();
-			}
-		};
-	}
+    protected TableCellRenderer buildFieldColumnCellRenderer() {
+        return new SimpleTableCellRenderer() {
+            protected String buildText(Object value) {
+                return value == null ? null : ((MWDataField) value).fieldName();
+            }
+        };
+    }
 
-	protected MWReturningPolicy returningPolicy() {
-		return (MWReturningPolicy)this.getSubjectHolder().getValue();
-	}
-	
-	//*********** button panel **********
+    private ObjectListSelectionModel buildRowSelectionModel() {
+        ObjectListSelectionModel rowSelectionModel = new ObjectListSelectionModel( new ListModelAdapter( sortedFieldsAdapter));
+        rowSelectionModel.addListSelectionListener( this.buildRowSelectionListener());
+        rowSelectionModel.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        return rowSelectionModel;
+    }
 
-	private JPanel buildButtonPanel() {
-		JPanel buttonPanel = new AccessibleTitledPanel( new GridLayout( 1, 0, 5, 0));
-		buttonPanel.add( this.buildAddButton());
-		buttonPanel.add( this.buildRemoveButton());
-		return buttonPanel;
-	}
+    private ListSelectionListener buildRowSelectionListener() {
+        return new ListSelectionListener() {
+            public void valueChanged( ListSelectionEvent e) {
+                if ( ! e.getValueIsAdjusting()) {
+                    ReturningInsertFieldsPanel.this.rowSelectionChanged();
+                }
+            }
+        };
+    }
 
-	private JButton buildAddButton() {
-		return new JButton( this.buildAddAction());
-	}
-	
-	private Action buildAddAction() {
-		final Action action = new AbstractFrameworkAction( this.getApplicationContext()) {
-			protected void initialize() {
-				initializeText( "ADD_BUTTON");
-				initializeMnemonic( "ADD_BUTTON");
-			}
-			
-			public void actionPerformed( ActionEvent event) {
-				ReturningInsertFieldsPanel.this.addField();
-			}
-		};
-		action.setEnabled( true);
-		
-		this.getSubjectHolder().addPropertyChangeListener(PropertyValueModel.VALUE, new PropertyChangeListener() {
-			public void propertyChange( PropertyChangeEvent evt) {
-				action.setEnabled( returningPolicy() != null);
-			}
-		});
-		return action;
-	}
-	
-	protected abstract void addField();
+    private void rowSelectionChanged() {
+        Object[] selection = rowSelectionModel.getSelectedValues();
+        boolean fieldSelected = ( selection.length > 0);
+        removeAction.setEnabled( fieldSelected);
+    }
 
-	// ********** remove **********
+    private TableModel buildTableModel() {
+        return new TableModelAdapter( sortedFieldsAdapter, this.buildInsertColumnAdapter());
+    }
 
-	private JButton buildRemoveButton() {
-		return new JButton( this.buildRemoveAction());
-	}
+    private ColumnAdapter buildInsertColumnAdapter() {
+        return new InsertFieldColumnAdapter( resourceRepository());
+    }
 
-	private Action buildRemoveAction() {
-		removeAction = new AbstractFrameworkAction( this.getApplicationContext()) {
-			protected void initialize() {
-				initializeText( "REMOVE_BUTTON");
-				initializeMnemonic( "REMOVE_BUTTON");
-			}
-			
-			public void actionPerformed(ActionEvent event) {
-				ReturningInsertFieldsPanel.this.removeField();
-			}
-		};
-		removeAction.setEnabled( false);
-		return removeAction;
-	}
 
-	private void removeField() {
-		Object[] selectedFields = this.selectedFields();
-		for (int index = selectedFields.length; --index >= 0;) {
-			this.returningPolicy().removeInsertFieldReturnOnlyFlag( (MWReturningPolicyInsertFieldReturnOnlyFlag) selectedFields[index]);
-		}
-	}
+    private ListValueModel buildSortedInsertFieldReturnOnlyFlagsAdapter() {
+        return new SortedListValueModelAdapter(buildColumnNameAdapter());
+    }
 
-	private Object[] selectedFields() {
-		return rowSelectionModel.getSelectedValues();
-	}
+    private ListValueModel buildColumnNameAdapter() {
+        return new ItemPropertyListValueModelAdapter(buildInsertFieldReturnOnlyFlagsAdapter(), MWColumn.NAME_PROPERTY);
+    }
 
-	// ********** classes **********
+    private CollectionValueModel buildInsertFieldReturnOnlyFlagsAdapter() {
+        return new CollectionAspectAdapter( getSubjectHolder(), MWReturningPolicy.INSERT_FIELD_RETURN_ONLY_FLAGS_COLLECTION) {
+            protected Iterator getValueFromSubject() {
+                return (( MWReturningPolicy) this.subject).insertFieldReturnOnlyFlags();
+            }
+            protected int sizeFromSubject() {
+                return (( MWReturningPolicy) this.subject).insertFieldReturnOnlyFlagsSize();
+            }
+        };
+    }
 
-	private static class InsertFieldColumnAdapter implements ColumnAdapter {
-		
-		private ResourceRepository resourceRepository;
-		
-		public static final int COLUMN_COUNT = 2;
+    protected MWReturningPolicy returningPolicy() {
+        return (MWReturningPolicy)this.getSubjectHolder().getValue();
+    }
 
-		public static final int INSERT_FIELD_COLUMN = 0;
-		public static final int RETURN_ONLY_COLUMN = 1;
+    //*********** button panel **********
 
-		private final String[] COLUMN_NAME_KEYS = new String[] {
-			"RETURNING_POLICY_INSERT_COLUMN_HEADER",
-			"RETURNING_POLICY_RETURN_ONLY_COLUMN_HEADER",
-		};
+    private JPanel buildButtonPanel() {
+        JPanel buttonPanel = new AccessibleTitledPanel( new GridLayout( 1, 0, 5, 0));
+        buttonPanel.add( this.buildAddButton());
+        buttonPanel.add( this.buildRemoveButton());
+        return buttonPanel;
+    }
 
-		private static final String[] EMPTY_STRING_ARRAY = new String[0];
+    private JButton buildAddButton() {
+        return new JButton( this.buildAddAction());
+    }
 
-		protected InsertFieldColumnAdapter(ResourceRepository repository) {
-			super();
-			this.resourceRepository = repository;
-		}
-		
-		public int getColumnCount() {
-			return COLUMN_COUNT;
-		}
+    private Action buildAddAction() {
+        final Action action = new AbstractFrameworkAction( this.getApplicationContext()) {
+            protected void initialize() {
+                initializeText( "ADD_BUTTON");
+                initializeMnemonic( "ADD_BUTTON");
+            }
 
-		public String getColumnName(int index) {
-			return this.resourceRepository.getString( COLUMN_NAME_KEYS[ index]);
-		}
+            public void actionPerformed( ActionEvent event) {
+                ReturningInsertFieldsPanel.this.addField();
+            }
+        };
+        action.setEnabled( true);
 
-		public Class getColumnClass(int index) {
-			switch (index) {
-				case INSERT_FIELD_COLUMN:
-					return Object.class;
-				case RETURN_ONLY_COLUMN:
-					return Object.class;
-				default:
-					return Object.class;
-			}
-		}
+        this.getSubjectHolder().addPropertyChangeListener(PropertyValueModel.VALUE, new PropertyChangeListener() {
+            public void propertyChange( PropertyChangeEvent evt) {
+                action.setEnabled( returningPolicy() != null);
+            }
+        });
+        return action;
+    }
 
-		public boolean isColumnEditable( int index) {
-			switch (index) {
-				case INSERT_FIELD_COLUMN:
-					return false;
-				case RETURN_ONLY_COLUMN:
-					return true;
-				default:
-					return false;
-			}
-		}
+    protected abstract void addField();
 
-		public PropertyValueModel[] cellModels( Object subject) {
-			MWReturningPolicyInsertFieldReturnOnlyFlag insert = ( MWReturningPolicyInsertFieldReturnOnlyFlag)subject;
-			PropertyValueModel[] result = new PropertyValueModel[ COLUMN_COUNT];
+    // ********** remove **********
 
-			result[ INSERT_FIELD_COLUMN] = this.buildInsertFieldAdapter( insert);
-			result[ RETURN_ONLY_COLUMN] = this.buildReturnOnlyAdapter( insert);
+    private JButton buildRemoveButton() {
+        return new JButton( this.buildRemoveAction());
+    }
 
-			return result;
-		}
-		
-		private PropertyValueModel buildInsertFieldAdapter( MWReturningPolicyInsertFieldReturnOnlyFlag field) {
-			// the field does not change
-			PropertyValueModel adapter = new PropertyAspectAdapter( EMPTY_STRING_ARRAY, field) {
-				protected Object getValueFromSubject() {
-					return (( MWReturningPolicyInsertFieldReturnOnlyFlag) this.subject).getField();
-				}
-			};
-			return new ValuePropertyPropertyValueModelAdapter(adapter, MWDataField.FIELD_NAME_PROPERTY);
-		}
-		
-		private PropertyValueModel buildReturnOnlyAdapter( MWReturningPolicyInsertFieldReturnOnlyFlag field) {
-			return new PropertyAspectAdapter( MWReturningPolicyInsertFieldReturnOnlyFlag.RETURN_ONLY_PROPERTY, field) {
-				protected Object getValueFromSubject() {
-					return Boolean.valueOf((( MWReturningPolicyInsertFieldReturnOnlyFlag)subject).isReturnOnly());
-				}
-				protected void setValueOnSubject( Object value) {
-					(( MWReturningPolicyInsertFieldReturnOnlyFlag)subject).setReturnOnly((( Boolean)value).booleanValue());
-				}
-			};
-		}
+    private Action buildRemoveAction() {
+        removeAction = new AbstractFrameworkAction( this.getApplicationContext()) {
+            protected void initialize() {
+                initializeText( "REMOVE_BUTTON");
+                initializeMnemonic( "REMOVE_BUTTON");
+            }
 
-	}
+            public void actionPerformed(ActionEvent event) {
+                ReturningInsertFieldsPanel.this.removeField();
+            }
+        };
+        removeAction.setEnabled( false);
+        return removeAction;
+    }
+
+    private void removeField() {
+        Object[] selectedFields = this.selectedFields();
+        for (int index = selectedFields.length; --index >= 0;) {
+            this.returningPolicy().removeInsertFieldReturnOnlyFlag( (MWReturningPolicyInsertFieldReturnOnlyFlag) selectedFields[index]);
+        }
+    }
+
+    private Object[] selectedFields() {
+        return rowSelectionModel.getSelectedValues();
+    }
+
+    // ********** classes **********
+
+    private static class InsertFieldColumnAdapter implements ColumnAdapter {
+
+        private ResourceRepository resourceRepository;
+
+        public static final int COLUMN_COUNT = 2;
+
+        public static final int INSERT_FIELD_COLUMN = 0;
+        public static final int RETURN_ONLY_COLUMN = 1;
+
+        private final String[] COLUMN_NAME_KEYS = new String[] {
+            "RETURNING_POLICY_INSERT_COLUMN_HEADER",
+            "RETURNING_POLICY_RETURN_ONLY_COLUMN_HEADER",
+        };
+
+        private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
+        protected InsertFieldColumnAdapter(ResourceRepository repository) {
+            super();
+            this.resourceRepository = repository;
+        }
+
+        public int getColumnCount() {
+            return COLUMN_COUNT;
+        }
+
+        public String getColumnName(int index) {
+            return this.resourceRepository.getString( COLUMN_NAME_KEYS[ index]);
+        }
+
+        public Class getColumnClass(int index) {
+            switch (index) {
+                case INSERT_FIELD_COLUMN:
+                    return Object.class;
+                case RETURN_ONLY_COLUMN:
+                    return Object.class;
+                default:
+                    return Object.class;
+            }
+        }
+
+        public boolean isColumnEditable( int index) {
+            switch (index) {
+                case INSERT_FIELD_COLUMN:
+                    return false;
+                case RETURN_ONLY_COLUMN:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public PropertyValueModel[] cellModels( Object subject) {
+            MWReturningPolicyInsertFieldReturnOnlyFlag insert = ( MWReturningPolicyInsertFieldReturnOnlyFlag)subject;
+            PropertyValueModel[] result = new PropertyValueModel[ COLUMN_COUNT];
+
+            result[ INSERT_FIELD_COLUMN] = this.buildInsertFieldAdapter( insert);
+            result[ RETURN_ONLY_COLUMN] = this.buildReturnOnlyAdapter( insert);
+
+            return result;
+        }
+
+        private PropertyValueModel buildInsertFieldAdapter( MWReturningPolicyInsertFieldReturnOnlyFlag field) {
+            // the field does not change
+            PropertyValueModel adapter = new PropertyAspectAdapter( EMPTY_STRING_ARRAY, field) {
+                protected Object getValueFromSubject() {
+                    return (( MWReturningPolicyInsertFieldReturnOnlyFlag) this.subject).getField();
+                }
+            };
+            return new ValuePropertyPropertyValueModelAdapter(adapter, MWDataField.FIELD_NAME_PROPERTY);
+        }
+
+        private PropertyValueModel buildReturnOnlyAdapter( MWReturningPolicyInsertFieldReturnOnlyFlag field) {
+            return new PropertyAspectAdapter( MWReturningPolicyInsertFieldReturnOnlyFlag.RETURN_ONLY_PROPERTY, field) {
+                protected Object getValueFromSubject() {
+                    return Boolean.valueOf((( MWReturningPolicyInsertFieldReturnOnlyFlag)subject).isReturnOnly());
+                }
+                protected void setValueOnSubject( Object value) {
+                    (( MWReturningPolicyInsertFieldReturnOnlyFlag)subject).setReturnOnly((( Boolean)value).booleanValue());
+                }
+            };
+        }
+
+    }
 }
 

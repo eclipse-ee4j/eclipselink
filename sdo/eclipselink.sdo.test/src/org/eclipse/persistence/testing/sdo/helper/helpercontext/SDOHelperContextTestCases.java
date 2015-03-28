@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 /* $Header: SDOHelperContextTestCases.java 23-apr-2007.15:14:55 mfobrien Exp $ */
 /*
    DESCRIPTION
@@ -42,13 +42,13 @@ import commonj.sdo.helper.XMLDocument;
 public class SDOHelperContextTestCases extends SDOTestCase {
     protected String rootTypeName = "EmployeeType";
     protected String rootTypeUri = "http://www.example.org";
-	protected HelperContext aNonStaticHelperContext1;
-	protected HelperContext aNonStaticHelperContext2;	
-	protected HelperContext aStaticHelperContext;
-	
-	protected SDODataObject aNonStaticHelperContext1DataObject;
-	protected SDODataObject aNonStaticHelperContext2DataObject;	
-	protected SDODataObject aStaticHelperContextDataObject;
+    protected HelperContext aNonStaticHelperContext1;
+    protected HelperContext aNonStaticHelperContext2;
+    protected HelperContext aStaticHelperContext;
+
+    protected SDODataObject aNonStaticHelperContext1DataObject;
+    protected SDODataObject aNonStaticHelperContext2DataObject;
+    protected SDODataObject aStaticHelperContextDataObject;
 
     public static final String CONTEXT1_DATAOBJECT_XSD_PATH = "org/eclipse/persistence/testing/sdo/schemas/EmployeeForHelperContext1.xsd";
     public static final String CONTEXT1_DATAOBJECT_XML_PATH = "org/eclipse/persistence/testing/sdo/helper/helpercontext/EmployeeForHelperContext1.xml";
@@ -76,7 +76,7 @@ public class SDOHelperContextTestCases extends SDOTestCase {
         FileInputStream inStream = null;
         SDODataObject anObject = null;
         try {
-            // 
+            //
             inStream = new FileInputStream(filename);
 
             XMLDocument document = aContext.getXMLHelper().load(inStream);

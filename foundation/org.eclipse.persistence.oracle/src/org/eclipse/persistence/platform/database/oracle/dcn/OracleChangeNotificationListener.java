@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.dcn;
 
 import java.sql.SQLException;
@@ -51,13 +51,13 @@ import org.eclipse.persistence.sessions.Session;
  * PUBLIC:
  * Listener for Oracle Database Change event Notification (DCN).
  * This allows the EclipseLink cache to be invalidated by database events.
- * 
+ *
  * @see org.eclipse.persistence.descriptors.invalidation.DatabaseEventNotificationPolicy
  * @author James Sutherland
  * @since EclipseLink 2.4
  */
 public class OracleChangeNotificationListener implements DatabaseEventListener {
-    
+
     public static String ORA_TRANSACTION_ID = "oracle.dcn.transaction-id";
     public static String ROWID = "ROWID";
 
@@ -68,12 +68,12 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
 
     /** Cache query for transaction id. */
     protected ValueReadQuery transactionIdQuery;
-    
+
     public OracleChangeNotificationListener() {
         this.transactionIdQuery = new ValueReadQuery("SELECT DBMS_TRANSACTION.LOCAL_TRANSACTION_ID FROM DUAL");
         transactionIdQuery.setName(ORA_TRANSACTION_ID);
     }
-    
+
     /**
      * INTERNAL:
      * Register the event listener with the database.
@@ -104,14 +104,14 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
                 this.register = connection.registerDatabaseChangeNotification(properties);
                 final List<DatabaseField> fields = new ArrayList<DatabaseField>();
                 fields.add(new DatabaseField(ROWID));
-                this.register.addListener(new DatabaseChangeListener() {                
+                this.register.addListener(new DatabaseChangeListener() {
                     public void onDatabaseChangeNotification(DatabaseChangeEvent changeEvent) {
                         databaseSession.log(SessionLog.FINEST, SessionLog.CONNECTION, "dcn_change_event", changeEvent);
                         if (changeEvent.getTableChangeDescription() != null) {
                             for (TableChangeDescription tableChange : changeEvent.getTableChangeDescription()) {
                                 ClassDescriptor descriptor = OracleChangeNotificationListener.this.descriptorsByTable.get(new DatabaseTable(tableChange.getTableName()));
                                 if (descriptor != null) {
-                                    CacheIndex index = descriptor.getCachePolicy().getCacheIndex(fields);                                
+                                    CacheIndex index = descriptor.getCachePolicy().getCacheIndex(fields);
                                     for (RowChangeDescription rowChange : tableChange.getRowChangeDescription()) {
                                         CacheId id = new CacheId(new Object[]{rowChange.getRowid().stringValue()});
                                         CacheKey key = databaseSession.getIdentityMapAccessorInstance().getIdentityMapManager().getCacheKeyByIndex(
@@ -131,7 +131,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
                 // Register each table for database events, this is done by executing a select from the table.
                 for (DatabaseTable table : this.descriptorsByTable.keySet()) {
                     OracleStatement statement = (OracleStatement)connection.createStatement();
-                    statement.setDatabaseChangeRegistration(this.register);                
+                    statement.setDatabaseChangeRegistration(this.register);
                     try {
                         statement.executeQuery("SELECT ROWID FROM " + table.getQualifiedName()).close();
                         databaseSession.log(SessionLog.FINEST, SessionLog.CONNECTION, "dcn_register_table", table.getQualifiedName());
@@ -183,14 +183,14 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
             }
             descriptor.getCachePolicy().addCacheIndex(existingIndex);
         }
-        
+
         final CacheIndex index = existingIndex;
         rowId.setInsertable(false);
         rowId.setUpdatable(false);
         rowId.setCreatable(false);
         descriptor.getFields().add(rowId);
         descriptor.getAllFields().add(rowId);
-        
+
         final ValueReadQuery rowIdQuery = new ValueReadQuery();
         rowIdQuery.setName(ROWID);
         SQLSelectStatement sqlStatement = new SQLSelectStatement();
@@ -199,7 +199,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
         sqlStatement.addTable(descriptor.getTables().get(0));
         rowIdQuery.setSQLStatement(sqlStatement);
         sqlStatement.normalize(session, null);
-        
+
         descriptor.getEventManager().addListener(new DescriptorEventAdapter() {
             @Override
             public void postMerge(DescriptorEvent event) {
@@ -249,10 +249,10 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
                 throw DatabaseException.sqlException(exception, databaseSession.getAccessor(), databaseSession, false);
             }
         } finally {
-            accessor.decrementCallCount();            
+            accessor.decrementCallCount();
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return the database register.
@@ -260,7 +260,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
     public DatabaseChangeRegistration getRegister() {
         return register;
     }
-    
+
     /**
      * INTERNAL:
      * Set the database register.
@@ -268,7 +268,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
     protected void setRegister(DatabaseChangeRegistration register) {
         this.register = register;
     }
-    
+
     /**
      * INTERNAL:
      * Return the mapping of tables to descriptors.
@@ -276,7 +276,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
     public Map<DatabaseTable, ClassDescriptor> getDescriptorsByTable() {
         return descriptorsByTable;
     }
-    
+
     /**
      * INTERNAL:
      * Set the mapping of tables to descriptors.
@@ -284,5 +284,5 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
     protected void setDescriptorsByTable(Map<DatabaseTable, ClassDescriptor> descriptorsByTable) {
         this.descriptorsByTable = descriptorsByTable;
     }
-        
+
 }

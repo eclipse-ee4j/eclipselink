@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -42,14 +42,14 @@ public class MixedTextFirstTestCases extends XMLMappingTestCases {
         Setting numberTextSetting = new Setting(null, "text()");
         numberTextSetting.setObject(controlPhoneNumber);
         DatabaseMapping numberMapping = EMPLOYEE_PROJECT.getDescriptor(PhoneNumber.class).getMappingForAttributeName("number");
-        numberTextSetting.setMapping(numberMapping);        
+        numberTextSetting.setMapping(numberMapping);
         numberTextSetting.setValue(CONTROL_NUMBER);
         controlPhoneNumber.getSettings().add(numberTextSetting);
 
         Setting areaCodeTextSetting = new Setting(null, "text()");
         areaCodeTextSetting.setObject(controlPhoneNumber);
         DatabaseMapping areaCodeMapping = EMPLOYEE_PROJECT.getDescriptor(PhoneNumber.class).getMappingForAttributeName("areaCode");
-        areaCodeTextSetting.setMapping(areaCodeMapping);        
+        areaCodeTextSetting.setMapping(areaCodeMapping);
         areaCodeTextSetting.setValue(CONTROL_AREA_CODE);
         Setting areaCodeSetting = new Setting(null, "area-code");
         areaCodeSetting.addChild(areaCodeTextSetting);
@@ -58,7 +58,7 @@ public class MixedTextFirstTestCases extends XMLMappingTestCases {
         Setting extensionTextSetting = new Setting(null, "text()");
         extensionTextSetting.setObject(controlPhoneNumber);
         DatabaseMapping extensionMapping = EMPLOYEE_PROJECT.getDescriptor(PhoneNumber.class).getMappingForAttributeName("extension");
-        extensionTextSetting.setMapping(extensionMapping);        
+        extensionTextSetting.setMapping(extensionMapping);
         extensionTextSetting.setValue(CONTROL_EXTENSION);
         Setting extensionSetting = new Setting(null, "extension");
         extensionSetting.addChild(extensionTextSetting);
@@ -66,11 +66,11 @@ public class MixedTextFirstTestCases extends XMLMappingTestCases {
 
         return controlPhoneNumber;
     }
-  
+
     public void xmlToObjectTest(Object testObject) throws Exception {
         PhoneNumber testPhoneNumber = (PhoneNumber) testObject;
         assertEquals(getControlObject().getSettings().size(), testPhoneNumber.getSettings().size());
-        super.xmlToObjectTest(testObject); 
+        super.xmlToObjectTest(testObject);
     }
 
 }

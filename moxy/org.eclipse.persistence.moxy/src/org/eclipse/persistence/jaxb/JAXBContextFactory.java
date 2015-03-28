@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -180,7 +180,7 @@ public class JAXBContextFactory {
      *     - Object is one of those listed in 3) below
      * 2)  {@literal List<Object>}
      *     - Object is one of those listed in 3) below
-     *     - Bindings file must contain package-name attribute on 
+     *     - Bindings file must contain package-name attribute on
      *       xml-bindings element
      * 3)  One of:
      *     - java.io.File
@@ -194,8 +194,8 @@ public class JAXBContextFactory {
      *     - org.eclipse.persistence.jaxb.metadata.MetadataSource
      *     - org.w3c.dom.Node
      *     - org.xml.sax.InputSource
-     *     
-     *     - Bindings file must contain package-name attribute on 
+     *
+     *     - Bindings file must contain package-name attribute on
      *       xml-bindings element
      * </pre>
      */
@@ -268,11 +268,11 @@ public class JAXBContextFactory {
         }
         return mergedBindings;
     }
-    
+
     /**
      * Processing a bindings file and add it to a given Map of package name to binding
      * files.
-     * 
+     *
      * @param originalBindings Map of bindings to be updated
      * @param bindingHandle handle to bindings file
      * @param classLoader
@@ -301,14 +301,14 @@ public class JAXBContextFactory {
      * Convenience method for creating an XmlBindings object based on a given Object. The method
      * will load the eclipselink metadata model and unmarshal the Object. This assumes that the
      * Object represents the eclipselink-oxm.xml metadata file to be unmarshalled.
-     * 
+     *
      * @param metadata assumed to be one of:  File, InputSource, InputStream, Reader, Source
      */
     private static XmlBindings getXmlBindings(Object metadata, ClassLoader classLoader, Map<String, Object> properties) {
-	JAXBContext jaxbContext = CompilerHelper.getXmlBindingsModelContext();
+    JAXBContext jaxbContext = CompilerHelper.getXmlBindingsModelContext();
         InputStream openedStream = null;
 
-	try {
+    try {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML);
             unmarshaller.setProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE, true);
@@ -316,72 +316,72 @@ public class JAXBContextFactory {
             unmarshaller.setEventHandler(new DefaultValidationEventHandler());
             if (metadata instanceof MetadataSource){
                 return ((MetadataSource)metadata).getXmlBindings(properties, classLoader);
-            }  
-            JAXBElement<XmlBindings> bindingsJaxbElement = null;               
+            }
+            JAXBElement<XmlBindings> bindingsJaxbElement = null;
             if (metadata instanceof XMLEventReader) {
-            	bindingsJaxbElement=  unmarshaller.unmarshal((XMLEventReader) metadata, XmlBindings.class);            	
+                bindingsJaxbElement=  unmarshaller.unmarshal((XMLEventReader) metadata, XmlBindings.class);
             } else if (metadata instanceof XMLStreamReader) {
-            	bindingsJaxbElement =  unmarshaller.unmarshal((XMLStreamReader) metadata, XmlBindings.class);
+                bindingsJaxbElement =  unmarshaller.unmarshal((XMLStreamReader) metadata, XmlBindings.class);
             } else {
-            	Source source = null;            
-	            if(metadata instanceof File){
-	            	source = new StreamSource(new FileInputStream((File) metadata));            
-	            } else if(metadata instanceof InputSource){    
-	                if(((InputSource)metadata).getByteStream() != null){                	
-	                	source = new StreamSource(((InputSource) metadata).getByteStream());
-	                }else if(((InputSource)metadata).getCharacterStream() != null){                	
-	                	source = new StreamSource(((InputSource) metadata).getCharacterStream());	           
-	                }
-	            }else if(metadata instanceof InputStream){
-	            	source = new StreamSource((InputStream) metadata);            
-	            } else if (metadata instanceof Node) {
-	            	source = new DOMSource((Node) metadata);              
-	            } else if(metadata instanceof Reader){  
-	            	source = new StreamSource((Reader) metadata);
-	            } else if(metadata instanceof Source){
-	                source = (Source)metadata;    	              
-	            } else if (metadata instanceof URL) {
-	            	openedStream = ((URL) metadata).openStream();
-	            	source = new StreamSource(openedStream);
-	            } else if (metadata instanceof String) {	            	
-	            	StreamSource streamSource = new StreamSource((String)metadata);
-	            	try{
-		               	bindingsJaxbElement = unmarshaller.unmarshal(streamSource, XmlBindings.class);
-		            }catch(JAXBException e){		               	        
-			            openedStream = classLoader.getResourceAsStream((String)metadata);
-			            if(openedStream != null){
-			            	bindingsJaxbElement = unmarshaller.unmarshal(new StreamSource(openedStream), XmlBindings.class);
-			            }else{
-			                throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(e);
+                Source source = null;
+                if(metadata instanceof File){
+                    source = new StreamSource(new FileInputStream((File) metadata));
+                } else if(metadata instanceof InputSource){
+                    if(((InputSource)metadata).getByteStream() != null){
+                        source = new StreamSource(((InputSource) metadata).getByteStream());
+                    }else if(((InputSource)metadata).getCharacterStream() != null){
+                        source = new StreamSource(((InputSource) metadata).getCharacterStream());
+                    }
+                }else if(metadata instanceof InputStream){
+                    source = new StreamSource((InputStream) metadata);
+                } else if (metadata instanceof Node) {
+                    source = new DOMSource((Node) metadata);
+                } else if(metadata instanceof Reader){
+                    source = new StreamSource((Reader) metadata);
+                } else if(metadata instanceof Source){
+                    source = (Source)metadata;
+                } else if (metadata instanceof URL) {
+                    openedStream = ((URL) metadata).openStream();
+                    source = new StreamSource(openedStream);
+                } else if (metadata instanceof String) {
+                    StreamSource streamSource = new StreamSource((String)metadata);
+                    try{
+                           bindingsJaxbElement = unmarshaller.unmarshal(streamSource, XmlBindings.class);
+                    }catch(JAXBException e){
+                        openedStream = classLoader.getResourceAsStream((String)metadata);
+                        if(openedStream != null){
+                            bindingsJaxbElement = unmarshaller.unmarshal(new StreamSource(openedStream), XmlBindings.class);
+                        }else{
+                            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(e);
                         }
-		            }
-	            } else{
-	                throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
-	            } 
-	            if(bindingsJaxbElement == null){
-	                if(source == null){
-	                    throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
-	                }else{
-	                    bindingsJaxbElement = unmarshaller.unmarshal(source, XmlBindings.class); 
-	                }
-	            }	          
+                    }
+                } else{
+                    throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+                }
+                if(bindingsJaxbElement == null){
+                    if(source == null){
+                        throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+                    }else{
+                        bindingsJaxbElement = unmarshaller.unmarshal(source, XmlBindings.class);
+                    }
+                }
             }
             if(bindingsJaxbElement != null){
-            	return bindingsJaxbElement.getValue();
+                return bindingsJaxbElement.getValue();
             }
-            throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();            
-        }catch(javax.xml.bind.JAXBException ex){        	        	
-            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(ex);           
+            throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+        }catch(javax.xml.bind.JAXBException ex){
+            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(ex);
         }catch(IOException ioException){
              throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(ioException);
         }finally{
-        	if(openedStream != null){
-        		try {
-					openedStream.close();
-				} catch (IOException e) {
-					throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(e);
-				}
-        	}
+            if(openedStream != null){
+                try {
+                    openedStream.close();
+                } catch (IOException e) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(e);
+                }
+            }
         }
     }
 }

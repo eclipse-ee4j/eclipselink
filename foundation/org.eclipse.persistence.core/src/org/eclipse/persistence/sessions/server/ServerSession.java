@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     12/24/2012-2.5 Guy Pelletier 
+ *     12/24/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/11/2013-2.5 Guy Pelletier 
+ *     01/11/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.server;
 
 import java.util.*;
@@ -48,7 +48,7 @@ import org.eclipse.persistence.internal.sessions.*;
  *    <li> Brokering client sessions.
  *    <li> Requiring the UnitOfWork to be used for modification.
  *    </ul>
- *    
+ *
  * @see Server
  * @see ClientSession
  * @see org.eclipse.persistence.sessions.UnitOfWork UnitOfWork
@@ -59,11 +59,11 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     protected ConnectionPolicy defaultConnectionPolicy;
     protected int numberOfNonPooledConnectionsUsed;
     protected int maxNumberOfNonPooledConnections;
-    
+
     public static final int NO_MAX = -1;
     public static final String DEFAULT_POOL = "default";
     public static final String NOT_POOLED = "not-pooled";
-    
+
     /**
      * INTERNAL:
      * Create and return a new default server session.
@@ -105,7 +105,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * INTERNAL:
      * Create and return a new server session.
      * @see Project#createServerSession()
-     * 
+     *
      * This is used by JPA, and SessionManager.
      */
     public ServerSession(Project project) {
@@ -177,7 +177,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * @param maxNumberOfPooledConnections the maximum number of connections in the pool
      * @param readLogin the login used to create the read connection pool
      * @param sequenceLogin the login used to create a connection pool for sequencing
-     * 
+     *
      * @see Project#createServerSession(int, int)
      */
     public ServerSession(Project project, ConnectionPolicy defaultConnectionPolicy, int initialNumberOfPooledConnections, int minNumberOfPooledConnections, int maxNumberOfPooledConnections, Login readLogin, Login sequenceLogin) {
@@ -195,7 +195,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             pool = new ConnectionPool(DEFAULT_POOL, project.getDatasourceLogin(), initialNumberOfPooledConnections, minNumberOfPooledConnections, maxNumberOfPooledConnections, this);
         }
         this.connectionPools.put(DEFAULT_POOL, pool);
-        
+
         // If a read login was not used, then share the same connection pool for reading and writing.
         if (readLogin != null) {
             setReadConnectionPool(readLogin);
@@ -354,7 +354,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     public ClientSession acquireClientSession(ConnectionPolicy connectionPolicy) throws DatabaseException, ValidationException {
         return acquireClientSession(connectionPolicy, null);
     }
-    
+
     /**
      * PUBLIC:
      * Return a client session for this server session.
@@ -366,7 +366,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             throw ValidationException.loginBeforeAllocatingClientSessions();
         }
         if (!connectionPolicy.isPooled() && (connectionPolicy.getLogin() == null)) {
-            //the user has passed in a connection policy with no login info. Use the 
+            //the user has passed in a connection policy with no login info. Use the
             //default info from the default connection policy
             connectionPolicy.setPoolName(getDefaultConnectionPolicy().getPoolName());
             connectionPolicy.setLogin(getDefaultConnectionPolicy().getLogin());
@@ -488,7 +488,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         this.readConnectionPool.startUp();
         setAccessor(allocateReadConnection());
         releaseReadConnection(getAccessor());
-    
+
         for (ConnectionPool pool : getConnectionPools().values()) {
             pool.startUp();
         }
@@ -506,7 +506,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             // the exception caused by attempt to disconnect session's accessor - ignore it.
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return the connections to use for the query execution.
@@ -522,10 +522,10 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             }
         }
         if ((query.getDescriptor() != null) && (query.getDescriptor().getPartitioningPolicy() != null)) {
-            accessors = query.getDescriptor().getPartitioningPolicy().getConnectionsForQuery(this, query, translationRow);  
+            accessors = query.getDescriptor().getPartitioningPolicy().getConnectionsForQuery(this, query, translationRow);
             if (accessors != null) {
                 return accessors;
-            }              
+            }
         }
         if (this.partitioningPolicy != null) {
             accessors = this.partitioningPolicy.getConnectionsForQuery(this, query, translationRow);
@@ -539,7 +539,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         }
         return accessors;
     }
-    
+
     /**
      * INTERNAL:
      * Execute the call on the correct connection accessor.
@@ -572,7 +572,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             exception = caughtException;
         } finally {
             // EL Bug 244241 - connection not released on query timeout when cursor used
-            // Don't release the cursoredStream connection until Stream is closed 
+            // Don't release the cursoredStream connection until Stream is closed
             // or unless an exception occurred executing the call.
             if (call.isFinished() || exception != null) {
                 if (accessorAllocated) {
@@ -773,15 +773,15 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     public void logout() {
         try {
             super.logout();
-        } finally {    
+        } finally {
             this.readConnectionPool.shutDown();
-    
+
             for (Iterator poolsEnum = getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
                 ((ConnectionPool)poolsEnum.next()).shutDown();
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Release any invalid connection in the client session.
@@ -811,7 +811,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Release the clients connection resource.
@@ -864,7 +864,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         }
         this.readConnectionPool.releaseConnection(connection);
     }
-    
+
     /**
      * INTERNAL:
      * Connection are pooled to share and restrict the number of database connections.

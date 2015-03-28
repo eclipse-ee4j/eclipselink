@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
 import commonj.sdo.DataObject;
@@ -78,12 +78,12 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         // Note the first package at index 0 must contain the getRootInterfaceName()
-        packages.add("com/globalcompany/ns/orderbooking");        
+        packages.add("com/globalcompany/ns/orderbooking");
         packages.add("com/globalcompany/ns/order");
-        packages.add("com/globalcompany/ns/orderbooking/rules");        
+        packages.add("com/globalcompany/ns/orderbooking/rules");
         return packages;
     }
-    
+
     public void testLoadFromAndSaveAfterDefineMultipleSchemas() throws Exception {
         try {
             List types = defineTypes();
@@ -144,14 +144,14 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
     }
 
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
-    	super.testNoSchemaLoadFromInputStreamSaveDataObjectToString();
+        super.testNoSchemaLoadFromInputStreamSaveDataObjectToString();
         Type aType = typeHelper.getType("http://www.globalcompany.com/ns/OrderBooking/rules", "approve");
         String className = ((SDOType)aType).getInstanceClassName();
         assertNotNull(className);
         String mangledClassName = getFullClassPackageName(aType);
         assertEquals(mangledClassName, className);
     }
-    
+
     public void registerTypes() {
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type stringType = typeHelper.getType("commonj.sdo", "String");
@@ -210,7 +210,7 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
         addProperty(orderInfoType, "ApprovalRequired", booleanType, false, false, true);
 
         //DataObject orderPoProp = addProperty(orderInfoType, "PurchaseOrder", poSDOType);
-        //orderPoProp.set("containment", false);        
+        //orderPoProp.set("containment", false);
         Type orderInfoSDOType = typeHelper.define(orderInfoType);
 
         DataObject poType = defineType("http://www.globalcompany.com/ns/order", "PurchaseOrderType");

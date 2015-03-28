@@ -2,13 +2,13 @@
   "id":[
      {
          "xsi.type":"string",
-	 "value":"123"
-	 },{
+     "value":"123"
+     },{
          "xsi.type":"string",
-	 "value":"456"
-	 },{
+     "value":"456"
+     },{
          "xsi.type":"string",
-	 "value":"789"
-	 }
+     "value":"789"
+     }
   ]
 }}

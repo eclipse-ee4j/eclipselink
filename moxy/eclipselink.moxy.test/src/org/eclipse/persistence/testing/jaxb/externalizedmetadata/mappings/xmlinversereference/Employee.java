@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,14 +28,14 @@ public class Employee {
     @XmlID
     @XmlAttribute(name="id")
     public String id;
-    
+
     @XmlElement(name="name")
     public String name;
-    
+
     @XmlIDREF
     @XmlAttribute(name="address-id")
     public Address address;
-    
+
     @XmlIDREF
     @XmlElement(name="phone-id")
     public Collection<PhoneNumber> phones;
@@ -53,14 +53,14 @@ public class Employee {
         }
         boolean equal = true;
         equal = equal && address.equals(emp.address);
-        
+
         Iterator<PhoneNumber> phones1 = phones.iterator();
         Iterator<PhoneNumber> phones2 = emp.phones.iterator();
-        
+
         while(phones1.hasNext() && phones2.hasNext()) {
             equal = phones1.next().equals(phones2.next()) && equal;
         }
-        
+
         return equal;
     }
 }

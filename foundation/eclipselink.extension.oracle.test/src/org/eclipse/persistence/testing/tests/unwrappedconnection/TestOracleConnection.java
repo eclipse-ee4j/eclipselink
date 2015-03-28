@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unwrappedconnection;
 
 import java.sql.Array;
@@ -38,7 +38,7 @@ import oracle.jdbc.OracleConnection;
  */
 
 public class TestOracleConnection implements Connection{
-    
+
     OracleConnection conn;
     public TestOracleConnection(OracleConnection connection){
         conn = connection;
@@ -70,7 +70,7 @@ public class TestOracleConnection implements Connection{
     }
     public int getHoldability() throws SQLException {
         return conn.getHoldability();
-        
+
     }
     public DatabaseMetaData getMetaData() throws SQLException {
         return conn.getMetaData();
@@ -151,17 +151,17 @@ public class TestOracleConnection implements Connection{
 
     public void setTransactionIsolation(int level) throws SQLException {
         conn.setTransactionIsolation(level);
-        
+
     }
 
     public void setTypeMap(Map<String, Class<?>> arg0) throws SQLException {
         conn.setTypeMap(arg0);
     }
-    
+
     public Connection getPhysicalConnection(){
         return conn;
     }
-    
+
     // 236070: Methods introduced in JDK 1.6
     public Array createArrayOf(String typeName, Object[] elements) {
         return null;
@@ -194,7 +194,7 @@ public class TestOracleConnection implements Connection{
     public String getClientInfo(String name) {
         return null;
     }
-    
+
     public boolean isValid(int timeout) {
         return false;
     }
@@ -204,7 +204,7 @@ public class TestOracleConnection implements Connection{
 
     public void setClientInfo(Properties properties) {
     }
-    
+
     // From java.sql.Wrapper
     public boolean isWrapperFor(Class<?> iFace) throws SQLException{
         return false;
@@ -212,8 +212,8 @@ public class TestOracleConnection implements Connection{
 
     public <T>T unwrap(Class<T> iFace)  throws SQLException {
         return iFace.cast(this);
-    }    
-    
+    }
+
     public int getNetworkTimeout(){return 0;}
 
     public void setNetworkTimeout(Executor executor, int milliseconds){}

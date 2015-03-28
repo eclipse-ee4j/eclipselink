@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation.
  * All rights reserved. This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0 and Eclipse Distribution License
  * v. 1.0 which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     10/09/2012-2.5 Guy Pelletier 
+ *     10/09/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
  *     07/08/2014-2.5 Jody Grassel (IBM Corporation)
  *       - 439163: JSE Bootstrapping does not handle "wsjar" URLs referencing war-contained resources
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
 import java.net.URL;
@@ -69,10 +69,10 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 /**
  * INTERNAL:
  * Utility Class that deals with persistence archives for EJB 3.0
- * Provides functions like searching for persistence archives, processing 
+ * Provides functions like searching for persistence archives, processing
  * persistence.xml and searching for Entities in a Persistence archive
  */
-public class PersistenceUnitProcessor {    
+public class PersistenceUnitProcessor {
     /**
      * Passed to processORMetadata method to indicate processing mode.
      * ALL used when independent persistence unit is created.
@@ -84,7 +84,7 @@ public class PersistenceUnitProcessor {
         COMPOSITE_MEMBER_MIDDLE,
         COMPOSITE_MEMBER_FINAL
     }
-    
+
     /**
      * Cache the ArchiveFactory used to derive Archives.  This allows applications
      * to set the ArchiveFactory
@@ -98,19 +98,19 @@ public class PersistenceUnitProcessor {
     private static final int WEBINF_CLASSES_LEN = WEBINF_CLASSES_STR.length();
 
     /**
-     * Entries in a zip file are directory entries using slashes to separate 
-     * them. Build a class name using '.' instead of slash and removing the 
+     * Entries in a zip file are directory entries using slashes to separate
+     * them. Build a class name using '.' instead of slash and removing the
      * '.class' extension.
      */
     public static String buildClassNameFromEntryString(String classEntryString){
         String classNameForLoader = classEntryString;
         if (classEntryString.endsWith(".class")){
             classNameForLoader = classNameForLoader.substring(0, classNameForLoader.length() - 6);
-            classNameForLoader = classNameForLoader.replace("/", ".");              
+            classNameForLoader = classNameForLoader.replace("/", ".");
         }
         return classNameForLoader;
     }
-    
+
     /**
      * Build a set that contains all the class names at a URL.
      * @return a Set of class name strings
@@ -129,26 +129,26 @@ public class PersistenceUnitProcessor {
         // No longer need to add classes from XML, as temp class loader is only used for sessions.xml.
         return set;
     }
-    
+
     /**
-     * Create a list of the entities that will be deployed. This list is built 
+     * Create a list of the entities that will be deployed. This list is built
      * from the information provided in the PersistenceUnitInfo argument.
-     * The list contains Classes specified in the PersistenceUnitInfo's class 
+     * The list contains Classes specified in the PersistenceUnitInfo's class
      * list and also files that are annotated with @Entity and @Embeddable in
-     * the jar files provided in the persistence info. This list of classes will 
-     * used to build a deployment project and to decide what classes 
+     * the jar files provided in the persistence info. This list of classes will
+     * used to build a deployment project and to decide what classes
      * to weave.
      */
     public static Collection<MetadataClass> buildEntityList(MetadataProcessor processor, ClassLoader loader) {
         ArrayList<MetadataClass> entityList = new ArrayList<MetadataClass>();
         for (String className : processor.getProject().getWeavableClassNames()) {
             entityList.add(processor.getMetadataFactory().getMetadataClass(className));
-        }        
+        }
         return entityList;
     }
-    
+
     /**
-     * Determine the URL path to the persistence unit 
+     * Determine the URL path to the persistence unit
      * @param pxmlURL - Encoded URL containing the pu
      * @return
      * @throws IOException
@@ -209,7 +209,7 @@ public class PersistenceUnitProcessor {
         } else if ("bundleentry".equals(protocol)) {
             // mkeith - add bundle protocol cases
             result = new URL("bundleentry://" + pxmlURL.getAuthority());
-        } else if ("bundleresource".equals(protocol)) {           
+        } else if ("bundleresource".equals(protocol)) {
             result = new URL("bundleresource://" + pxmlURL.getAuthority());
         } else {
             StringBuffer path = new StringBuffer();
@@ -268,10 +268,10 @@ public class PersistenceUnitProcessor {
     }
 
     /**
-     * Search the classpath for persistence archives. A persistence archive is 
-     * defined as any part of the class path that contains a META-INF directory 
-     * with a persistence.xml file in it. Return a list of the URLs of those 
-     * files. Use the current thread's context classloader to get the classpath. 
+     * Search the classpath for persistence archives. A persistence archive is
+     * defined as any part of the class path that contains a META-INF directory
+     * with a persistence.xml file in it. Return a list of the URLs of those
+     * files. Use the current thread's context classloader to get the classpath.
      * We assume it is a URL class loader.
      */
     public static Set<Archive> findPersistenceArchives(){
@@ -285,7 +285,7 @@ public class PersistenceUnitProcessor {
      * with a persistence.xml file in it. Return a list of {@link Archive}
      * representing the root of those files. It is the caller's responsibility
      * to close all the archives.
-     * 
+     *
      * @param loader the class loader to get the class path from
      */
     public static Set<Archive> findPersistenceArchives(ClassLoader loader){
@@ -294,11 +294,11 @@ public class PersistenceUnitProcessor {
         String descriptorLocation = System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
         return findPersistenceArchives(loader, descriptorLocation);
     }
-    
+
     /**
-     * Return a list of Archives representing the root of the persistence descriptor. 
+     * Return a list of Archives representing the root of the persistence descriptor.
      * It is the caller's responsibility to close all the archives.
-     * 
+     *
      * @param loader the class loader to get the class path from
      */
     public static Set<Archive> findPersistenceArchives(ClassLoader loader, String descriptorPath){
@@ -319,7 +319,7 @@ public class PersistenceUnitProcessor {
                     if (descUrl != null) {
                         URL puRootUrl = computePURootURL(descUrl, descriptorPath);
                         archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath, null);
-        
+
                        // archive = new BundleArchive(puRootUrl, descUrl);
                         if (archive != null){
                             archives.add(archive);
@@ -337,7 +337,7 @@ public class PersistenceUnitProcessor {
                 if (archive != null){
                     archives.add(archive);
                 }
-            } 
+            }
         } catch (Exception ex){
             //clean up first
             for (Archive a : archives){
@@ -349,9 +349,9 @@ public class PersistenceUnitProcessor {
     }
 
     /**
-     * Return a list of Archives representing the root of the persistence descriptor. 
+     * Return a list of Archives representing the root of the persistence descriptor.
      * It is the caller's responsibility to close all the archives.
-     * 
+     *
      * @param loader the class loader to get the class path from
      */
     public static Set<Archive> findPersistenceArchives(ClassLoader loader, String descriptorPath, List<URL> jarFileUrls) {
@@ -367,7 +367,7 @@ public class PersistenceUnitProcessor {
             descriptorPath = descriptorPath.substring(splitPosition+2);
         }
 
-        try {            
+        try {
             for(int i=0; i < jarFileUrls.size(); i++) {
                 URL puRootUrl = jarFileUrls.get(i);
                 archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath, null);
@@ -376,7 +376,7 @@ public class PersistenceUnitProcessor {
                 if (archive != null){
                     archives.add(archive);
                 }
-            } 
+            }
         } catch (Exception ex){
             //clean up first
             for (Archive a : archives){
@@ -406,15 +406,15 @@ public class PersistenceUnitProcessor {
         }
         return puInfos;
     }
-    
+
     public static ArchiveFactory getArchiveFactory(ClassLoader loader){
         if (ARCHIVE_FACTORY != null){
             return ARCHIVE_FACTORY;
         }
-        
+
         ArchiveFactory factory = null;
         String factoryClassName = System.getProperty(SystemProperties.ARCHIVE_FACTORY, null);
-        
+
         if (factoryClassName == null) {
             return new ArchiveFactoryImpl();
         } else {
@@ -439,10 +439,10 @@ public class PersistenceUnitProcessor {
                 throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, ie);
             }
         }
-        
+
         return factory;
     }
-    
+
     public static Set<String> getClassNamesFromURL(URL url, ClassLoader loader, Map properties) {
         Set<String> classNames = new HashSet<String>();
         Archive archive = null;
@@ -468,30 +468,30 @@ public class PersistenceUnitProcessor {
         }
         return classNames;
     }
-    
+
     /**
      * Return if a given class is annotated with @Embeddable.
      */
     public static MetadataAnnotation getConverterAnnotation(MetadataClass candidateClass){
         return candidateClass.getAnnotation(JPA_CONVERTER);
     }
-    
+
     /**
      * Return if a given class is annotated with @Embeddable.
      */
     public static MetadataAnnotation getEmbeddableAnnotation(MetadataClass candidateClass){
         return candidateClass.getAnnotation(JPA_EMBEDDABLE);
     }
-    
+
     /**
      * Return if a given class is annotated with @Entity.
      */
     public static MetadataAnnotation getEntityAnnotation(MetadataClass candidateClass){
         return candidateClass.getAnnotation(JPA_ENTITY);
     }
-    
+
     /**
-     * Get a list of persistence units from the file or directory at the given 
+     * Get a list of persistence units from the file or directory at the given
      * url. PersistenceUnits are built based on the presence of a persistence descriptor
      * *
      * @param archive The url of a jar file or directory to check
@@ -499,63 +499,63 @@ public class PersistenceUnitProcessor {
     public static List<SEPersistenceUnitInfo> getPersistenceUnits(Archive archive, ClassLoader loader){
         return processPersistenceArchive(archive, loader);
     }
-    
+
     /**
      * Return if a given class is annotated with @Entity.
      */
     public static MetadataAnnotation getMappedSuperclassAnnotation(MetadataClass candidateClass){
         return candidateClass.getAnnotation(JPA_MAPPED_SUPERCLASS);
     }
-    
+
     /**
      * Return the @StaticMetamodel annotation on the given class.
      */
     public static MetadataAnnotation getStaticMetamodelAnnotation(MetadataClass candidateClass){
         return candidateClass.getAnnotation(JPA_STATIC_METAMODEL);
     }
-    
+
     /**
      * Return if a given class is annotated with @Converter.
      */
     public static boolean isConverter(MetadataClass candidateClass) {
         return candidateClass.isAnnotationPresent(JPA_CONVERTER);
     }
-    
+
     /**
      * Return if a given class is annotated with @Embeddable.
      */
     public static boolean isEmbeddable(MetadataClass candidateClass) {
         return candidateClass.isAnnotationPresent(JPA_EMBEDDABLE);
     }
-    
+
     /**
      * Return if a given class is annotated with @Entity.
      */
     public static boolean isEntity(MetadataClass candidateClass){
         return candidateClass.isAnnotationPresent(JPA_ENTITY);
     }
-    
+
     /**
      * Return if a given class is annotated with @StaticMetamodel.
      */
     public static boolean isStaticMetamodelClass(MetadataClass candidateClass) {
         return candidateClass.isAnnotationPresent(JPA_STATIC_METAMODEL);
     }
-    
-    
+
+
     /**
      * Return if a given class is annotated with @MappedSuperclass.
      */
     public static boolean isMappedSuperclass(MetadataClass candidateClass){
         return candidateClass.isAnnotationPresent(JPA_MAPPED_SUPERCLASS);
     }
-    
+
     /**
      * Load the given class name with the given class loader.
      */
     public static Class loadClass(String className, ClassLoader loader, boolean throwExceptionIfNotFound, MetadataProject project) {
         Class candidateClass = null;
-        
+
         try {
             candidateClass = loader.loadClass(className);
         } catch (ClassNotFoundException exc){
@@ -565,10 +565,10 @@ public class PersistenceUnitProcessor {
                 AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class", exc.getClass().getName(), exc.getLocalizedMessage() , className);
             }
         } catch (NullPointerException npe) {
-            // Bug 227630: If any weavable class is not found in the temporary 
-            // classLoader - disable weaving 
+            // Bug 227630: If any weavable class is not found in the temporary
+            // classLoader - disable weaving
             AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, AbstractSessionLog.WEAVER, "persistence_unit_processor_error_loading_class_weaving_disabled", loader, project.getPersistenceUnitInfo().getPersistenceUnitName(), className);
-            // Disable weaving (for 1->1 and many->1)only if the classLoader 
+            // Disable weaving (for 1->1 and many->1)only if the classLoader
             // returns a NPE on loadClass()
             project.disableWeaving();
         } catch (Exception exception){
@@ -577,7 +577,7 @@ public class PersistenceUnitProcessor {
             AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, AbstractSessionLog.WEAVER, "persistence_unit_processor_error_loading_class", error.getClass().getName(), error.getLocalizedMessage() , className);
             throw error;
         }
-        
+
         return candidateClass;
     }
 
@@ -587,13 +587,13 @@ public class PersistenceUnitProcessor {
     public static void processORMetadata(MetadataProcessor processor, boolean throwExceptionOnFail, Mode mode) {
         if (mode == Mode.ALL || mode == Mode.COMPOSITE_MEMBER_INITIAL) {
             // DO NOT CHANGE the order of invocation of various methods.
-    
-            // 1 - Load the list of mapping files for the persistence unit. Need to 
-            // do this before we start processing entities as the list of entity 
+
+            // 1 - Load the list of mapping files for the persistence unit. Need to
+            // do this before we start processing entities as the list of entity
             // classes depend on metadata read from mapping files.
             processor.loadMappingFiles(throwExceptionOnFail);
         }
-    
+
         // 2 - Process each XML entity mappings file metadata (except for
         // the actual classes themselves). This method is also responsible
         // for handling any XML merging.
@@ -601,11 +601,11 @@ public class PersistenceUnitProcessor {
 
         // 3 - Process the persistence unit classes (from XML and annotations)
         // and their metadata now.
-        processor.processORMMetadata(mode);        
+        processor.processORMMetadata(mode);
     }
 
     /**
-     * Go through the jar file for this PersistenceUnitProcessor and process any 
+     * Go through the jar file for this PersistenceUnitProcessor and process any
      * XML provided in it.
      */
     public static List<SEPersistenceUnitInfo> processPersistenceArchive(Archive archive, ClassLoader loader){
@@ -624,11 +624,11 @@ public class PersistenceUnitProcessor {
     private static List<SEPersistenceUnitInfo> processPersistenceXML(URL baseURL, InputStream input, ClassLoader loader){
         SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setNamespaceAware(true);
-        
+
         XMLReader xmlReader = null;
         SAXParser sp = null;
         XMLExceptionHandler xmlErrorHandler = new XMLExceptionHandler();
-        // 247735 - remove the validation of XML.  
+        // 247735 - remove the validation of XML.
 
         // create a SAX parser
         try {
@@ -638,7 +638,7 @@ public class PersistenceUnitProcessor {
         } catch (org.xml.sax.SAXException exc){
             throw XMLParseException.exceptionCreatingSAXParser(baseURL, exc);
         }
-            
+
         // create an XMLReader
         try {
             xmlReader = sp.getXMLReader();
@@ -658,7 +658,7 @@ public class PersistenceUnitProcessor {
         } catch (org.xml.sax.SAXException exc){
             // XMLErrorHandler will handle SAX exceptions
         }
-        
+
         // handle any parse exceptions
         XMLException xmlError = xmlErrorHandler.getXMLException();
         if (xmlError != null) {
@@ -674,14 +674,14 @@ public class PersistenceUnitProcessor {
         }
         return myContentHandler.getPersistenceUnits();
     }
-    
+
     public static void setArchiveFactory(ArchiveFactory factory){
         ARCHIVE_FACTORY = factory;
     }
-    
+
     /**
      * Build the unique persistence name by concatenating the decoded URL with the persistence unit name.
-     * A decoded URL is required while persisting on a multi-bytes OS.  
+     * A decoded URL is required while persisting on a multi-bytes OS.
      * @param URL
      * @param puName
      * @return String
@@ -696,5 +696,5 @@ public class PersistenceUnitProcessor {
        }
        return fullPuName;
    }
-   
+
 }

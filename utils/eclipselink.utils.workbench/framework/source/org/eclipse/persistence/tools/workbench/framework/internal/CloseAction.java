@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -22,27 +22,27 @@ import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContex
  * part of the FileMenu and MainToolBar
  */
 final class CloseAction
-	extends AbstractFrameworkAction
+    extends AbstractFrameworkAction
 {
-	/** we need access to the node manager's internal api */
-	private FrameworkNodeManager nodeManager;
+    /** we need access to the node manager's internal api */
+    private FrameworkNodeManager nodeManager;
 
 
-	CloseAction(WorkbenchContext context, FrameworkNodeManager nodeManager) {
-		super(context);
-		this.nodeManager = nodeManager;
-	}
+    CloseAction(WorkbenchContext context, FrameworkNodeManager nodeManager) {
+        super(context);
+        this.nodeManager = nodeManager;
+    }
 
-	protected void initialize() {
-		super.initialize();
-		this.initializeTextAndMnemonic("file.close");
-		this.initializeIcon("file.close");
-		this.initializeToolTipText("file.close.toolTipText");
-		this.initializeAccelerator("file.close.ACCELERATOR");
-	}
+    protected void initialize() {
+        super.initialize();
+        this.initializeTextAndMnemonic("file.close");
+        this.initializeIcon("file.close");
+        this.initializeToolTipText("file.close.toolTipText");
+        this.initializeAccelerator("file.close.ACCELERATOR");
+    }
 
-	protected void execute() {
-		this.nodeManager.close(this.selectedProjectNodes(), this.getWorkbenchContext());
-	}
+    protected void execute() {
+        this.nodeManager.close(this.selectedProjectNodes(), this.getWorkbenchContext());
+    }
 
 }

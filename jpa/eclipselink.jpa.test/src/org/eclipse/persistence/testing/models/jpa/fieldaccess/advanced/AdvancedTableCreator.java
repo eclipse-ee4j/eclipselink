@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/03/2009-1.2.1 Guy Pelletier 
+ *     05/03/2009-1.2.1 Guy Pelletier
  *       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -52,7 +52,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildTARGET_ATable());
         addTableDefinition(buildTARGET_BTable());
     }
-    
+
     public static TableDefinition buildADDRESSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_ADDRESS");
@@ -125,12 +125,12 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
      public static TableDefinition buildBUYERTable() {
         TableDefinition table = new TableDefinition();
 
         table.setName("CMP3_FA_BUYER");
-        
+
         String[] unq1 = {"BUYER_ID", "BUYER_NAME"};
         String[] unq2 = {"BUYER_ID", "DESCRIP"};
         table.addUniqueKeyConstraint("UNQ_CMP3_FA_BUY_1", unq1);
@@ -145,7 +145,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setUnique(false );
         field.setIsIdentity(true );
         table.addField(field);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("BUYER_NAME");
         field2.setTypeName("VARCHAR");
@@ -155,7 +155,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field2.setUnique(false );
         field2.setIsIdentity(false );
         table.addField(field2);
-        
+
         FieldDefinition fieldGender = new FieldDefinition();
         fieldGender.setName("GENDER");
         fieldGender.setTypeName("VARCHAR");
@@ -165,7 +165,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldGender.setUnique(false);
         fieldGender.setIsIdentity(false);
         table.addField(fieldGender);
-    
+
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("DESCRIP");
         field3.setTypeName("VARCHAR");
@@ -175,7 +175,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field3.setUnique(false );
         field3.setIsIdentity(false );
         table.addField(field3);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("DTYPE");
         field4.setTypeName("VARCHAR");
@@ -185,7 +185,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field4.setUnique(false );
         field4.setIsIdentity(false );
         table.addField(field4);
-    
+
         FieldDefinition field5 = new FieldDefinition();
         field5.setName("VERSION");
         field5.setTypeName("NUMERIC");
@@ -195,7 +195,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field5.setUnique(false );
         field5.setIsIdentity(false );
         table.addField(field5);
-        
+
         FieldDefinition fieldBUYINGDAYS = new FieldDefinition();
         fieldBUYINGDAYS.setName("BUY_DAYS");
         fieldBUYINGDAYS.setTypeName("LONG RAW");
@@ -209,7 +209,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
      }
-    
+
      public static TableDefinition buildCHILDTable() {
          TableDefinition table = new TableDefinition();
          table.setName("FIELD_CHILD");
@@ -234,7 +234,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          fieldVERSION.setUnique(false);
          fieldVERSION.setIsIdentity(false);
          table.addField(fieldVERSION);
-         
+
          FieldDefinition fieldCREATEDON = new FieldDefinition();
          fieldCREATEDON.setName("CREATEDON");
          fieldCREATEDON.setTypeName("DATETIME");
@@ -244,7 +244,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          fieldCREATEDON.setIsIdentity(false);
          fieldCREATEDON.setShouldAllowNull(true);
          table.addField(fieldCREATEDON);
-         
+
          FieldDefinition fieldPARENTID = new FieldDefinition();
          fieldPARENTID.setName("PARENT_ID");
          fieldPARENTID.setTypeName("NUMERIC");
@@ -255,14 +255,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          fieldPARENTID.setIsIdentity(false);
          fieldPARENTID.setForeignKeyFieldName("FIELD_PARENT.ID");
          table.addField(fieldPARENTID);
-         
+
          return table;
      }
-     
+
      public static TableDefinition buildCREDITCARDSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_Buyer_CREDITCARDS");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("BUYER_ID");
         fieldID.setTypeName("NUMERIC");
@@ -273,7 +273,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("CMP3_FA_BUYER.BUYER_ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldCARD = new FieldDefinition();
         fieldCARD.setName("CARD");
         fieldCARD.setTypeName("VARCHAR");
@@ -283,7 +283,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldCARD.setUnique(true);
         fieldCARD.setIsIdentity(false);
         table.addField(fieldCARD);
-        
+
         FieldDefinition fieldNUMB = new FieldDefinition();
         fieldNUMB.setName("NUMB");
         fieldNUMB.setTypeName("VARCHAR");
@@ -293,10 +293,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNUMB.setUnique(false);
         fieldNUMB.setIsIdentity(false);
         table.addField(fieldNUMB);
-    
+
         return table;
     }
-    
+
      public static TableDefinition buildDEPTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_DEPT");
@@ -325,7 +325,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildDEPT_EMPTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_DEPT_CMP3_FA_EMPLOYEE");
@@ -333,7 +333,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         // SECTION: FIELD
         FieldDefinition fieldID = new FieldDefinition();
         //fieldID.setName("ADV_DEPT_ID");
-		fieldID.setName("Department_ID");
+        fieldID.setName("Department_ID");
         fieldID.setTypeName("NUMERIC");
         fieldID.setSize(15);
         fieldID.setShouldAllowNull(false);
@@ -342,7 +342,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("CMP3_FA_DEPT.ID");
         table.addField(fieldID);
-        
+
         // SECTION: FIELD
         FieldDefinition fieldEMP = new FieldDefinition();
         fieldEMP.setName("managers_EMP_ID");
@@ -354,14 +354,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldEMP.setIsIdentity(false);
         fieldEMP.setForeignKeyFieldName("CMP3_FA_EMPLOYEE.EMP_ID");
         table.addField(fieldEMP);
-        
-        return table;   
+
+        return table;
     }
-    
+
     public static TableDefinition buildEMPLOYEETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_EMPLOYEE");
-    
+
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
         field.setTypeName("NUMERIC");
@@ -370,97 +370,97 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("F_NAME");
         field1.setTypeName("VARCHAR");
         field1.setSize(40);
         table.addField(field1);
-    
+
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("L_NAME");
         field2.setTypeName("VARCHAR");
         field2.setSize(40);
         table.addField(field2);
-        
+
         FieldDefinition fieldGender = new FieldDefinition();
         fieldGender.setName("GENDER");
         fieldGender.setTypeName("VARCHAR");
         fieldGender.setSize(1);
         table.addField(fieldGender);
-    
+
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("START_DATE");
         field3.setTypeName("DATE");
         field3.setSize(23);
         table.addField(field3);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("END_DATE");
         field4.setTypeName("DATE");
         field4.setSize(23);
         table.addField(field4);
-    
+
         FieldDefinition field8 = new FieldDefinition();
         field8.setName("ADDR_ID");
         field8.setTypeName("NUMERIC");
         field8.setSize(15);
         field8.setForeignKeyFieldName("CMP3_FA_ADDRESS.ADDRESS_ID");
         table.addField(field8);
-    
+
         FieldDefinition field9 = new FieldDefinition();
         field9.setName("MANAGER_EMP_ID");
         field9.setTypeName("NUMERIC");
         field9.setSize(15);
         field9.setForeignKeyFieldName("CMP3_FA_EMPLOYEE.EMP_ID");
         table.addField(field9);
-    
+
         FieldDefinition field10 = new FieldDefinition();
         field10.setName("VERSION");
         field10.setTypeName("NUMERIC");
         field10.setSize(15);
         table.addField(field10);
-        
+
         FieldDefinition fieldDEPT = new FieldDefinition();
         fieldDEPT.setName("DEPT_ID");
         fieldDEPT.setTypeName("NUMERIC");
         fieldDEPT.setSize(15);
         fieldDEPT.setForeignKeyFieldName("CMP3_FA_DEPT.ID");
         table.addField(fieldDEPT);
-        
+
         FieldDefinition fieldStatus = new FieldDefinition();
         fieldStatus.setName("STATUS");
         fieldStatus.setTypeName("NUMERIC");
         fieldStatus.setSize(15);
         table.addField(fieldStatus);
-    
+
         FieldDefinition fieldPayScale = new FieldDefinition();
         fieldPayScale.setName("PAY_SCALE");
         fieldPayScale.setTypeName("VARCHAR");
         fieldPayScale.setSize(40);
         table.addField(fieldPayScale);
-        
+
         FieldDefinition fieldRoomNumber = new FieldDefinition();
         fieldRoomNumber.setName("ROOM_NUM");
         fieldRoomNumber.setTypeName("NUMBER");
         fieldRoomNumber.setSize(15);
         fieldRoomNumber.setSubSize(0);
         table.addField(fieldRoomNumber);
-        
+
         // SECTION: FIELD
         FieldDefinition fieldFormerCompany = new FieldDefinition();
         fieldFormerCompany.setName("FORMER_COMPANY");
         fieldFormerCompany.setTypeName("VARCHAR");
         fieldFormerCompany.setSize(40);
         table.addField(fieldFormerCompany);
-    
+
         // SECTION: FIELD
         FieldDefinition fieldFormerStartDate = new FieldDefinition();
         fieldFormerStartDate.setName("FORMER_START_DATE");
         fieldFormerStartDate.setTypeName("DATE");
         fieldFormerStartDate.setSize(23);
         table.addField(fieldFormerStartDate);
-    
+
         // SECTION: FIELD
         FieldDefinition fieldFormerEndDate = new FieldDefinition();
         fieldFormerEndDate.setName("FORMER_END_DATE");
@@ -473,19 +473,19 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldISMANAGER.setTypeName("VARCHAR");
         fieldISMANAGER.setSize(5);
         table.addField(fieldISMANAGER);
-        
+
         FieldDefinition fieldGETMANAGER = new FieldDefinition();
         fieldGETMANAGER.setName("GETMANAGER");
         fieldGETMANAGER.setTypeName("VARCHAR");
         fieldGETMANAGER.setSize(5);
         table.addField(fieldGETMANAGER);
-        
+
         FieldDefinition fieldSETMANAGER = new FieldDefinition();
         fieldSETMANAGER.setName("SETMANAGER");
         fieldSETMANAGER.setTypeName("VARCHAR");
         fieldSETMANAGER.setSize(40);
         table.addField(fieldSETMANAGER);
-        
+
 /*        ForeignKeyConstraint foreignKeyEMPLOYEE_ADDRESS = new ForeignKeyConstraint();
         foreignKeyEMPLOYEE_ADDRESS.setName("EMPLOYEE_ADDRESS");
         foreignKeyEMPLOYEE_ADDRESS.setTargetTable("CMP3_FA_ADDRESS");
@@ -502,7 +502,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
  */       return table;
     }
-    
+
     public static TableDefinition buildEQUIPMENTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_ADV_EQUIP");
@@ -528,7 +528,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldDEPTID = new FieldDefinition();
         fieldDEPTID.setName("DEPT_ID");
         fieldDEPTID.setTypeName("NUMERIC");
@@ -539,7 +539,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldDEPTID.setIsIdentity(false);
         fieldDEPTID.setForeignKeyFieldName("CMP3_FA_DEPT.ID");
         table.addField(fieldDEPTID);
-        
+
         FieldDefinition fieldCODEID = new FieldDefinition();
         fieldCODEID.setName("CODE_ID");
         fieldCODEID.setTypeName("NUMERIC");
@@ -553,11 +553,11 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildGOLFERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_GOLFER");
-        
+
         FieldDefinition IDfield = new FieldDefinition();
         IDfield.setName("ID");
         IDfield.setTypeName("NUMERIC");
@@ -570,14 +570,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         ForeignKeyConstraint foreignKeyGOLFER_WORLDRANK = new ForeignKeyConstraint();
         foreignKeyGOLFER_WORLDRANK.setName("WORLDRANK_ID_FA");
-        foreignKeyGOLFER_WORLDRANK.setTargetTable("CMP3_FA_WORLDRANK"); 
+        foreignKeyGOLFER_WORLDRANK.setTargetTable("CMP3_FA_WORLDRANK");
         foreignKeyGOLFER_WORLDRANK.addSourceField("ID");
         foreignKeyGOLFER_WORLDRANK.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyGOLFER_WORLDRANK);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildEQUIPMENTCODETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_ADV_EQUIP_CODE");
@@ -619,14 +619,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setShouldAllowNull(false );
         field.setIsPrimaryKey(true );
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("BUDGET");
         field1.setTypeName("DOUBLE PRECIS");
         field1.setSize(18);
         table.addField(field1);
-        
+
         ForeignKeyConstraint foreignKey = new ForeignKeyConstraint();
         foreignKey.setName("FA_LPROJ_PROJ_FK");
         foreignKey.setTargetTable("CMP3_FA_PROJECT");
@@ -634,10 +634,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         foreignKey.addTargetField("PROJ_ID");
         foreignKey.setShouldCascadeOnDelete(true);
         table.addForeignKeyConstraint(foreignKey);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildMANTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_MAN");
@@ -652,7 +652,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR2");
@@ -663,10 +663,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildNOIDENTITYMAPTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_NOIDENTITYMAP");
@@ -719,7 +719,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -743,7 +743,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildPARTNERLINKTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_MW");
@@ -758,7 +758,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldMID.setUnique(false);
         fieldMID.setShouldAllowNull(true);
         table.addField(fieldMID);
-        
+
         FieldDefinition fieldWID = new FieldDefinition();
         fieldWID.setName("W");
         fieldWID.setTypeName("NUMERIC");
@@ -769,7 +769,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldWID.setUnique(false);
         fieldWID.setShouldAllowNull(true);
         table.addField(fieldWID);
-        
+
         ForeignKeyConstraint foreignKey = new ForeignKeyConstraint();
         foreignKey.setName("FA_LINK_WN_FK");
         foreignKey.setTargetTable("CMP3_FA_WOMAN");
@@ -777,7 +777,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         foreignKey.addTargetField("ID");
         foreignKey.setShouldCascadeOnDelete(true);
         table.addForeignKeyConstraint(foreignKey);
-        
+
         foreignKey = new ForeignKeyConstraint();
         foreignKey.setName("FA_LINK_MN_FK");
         foreignKey.setTargetTable("CMP3_FA_MAN");
@@ -785,14 +785,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         foreignKey.addTargetField("ID");
         foreignKey.setShouldCascadeOnDelete(true);
         table.addForeignKeyConstraint(foreignKey);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildPHONENUMBERSTATUSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_PHONE_STATUS");
-    
+
         FieldDefinition fieldOWNERID = new FieldDefinition();
         fieldOWNERID.setName("OWNER_ID");
         fieldOWNERID.setTypeName("NUMERIC");
@@ -802,7 +802,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldOWNERID.setUnique(false);
         fieldOWNERID.setIsIdentity(false);
         table.addField(fieldOWNERID);
-        
+
         FieldDefinition fieldTYPE = new FieldDefinition();
         fieldTYPE.setName("TYPE");
         fieldTYPE.setTypeName("VARCHAR");
@@ -812,7 +812,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldTYPE.setUnique(false);
         fieldTYPE.setIsIdentity(false);
         table.addField(fieldTYPE);
-    
+
         FieldDefinition fieldSTATUS = new FieldDefinition();
         fieldSTATUS.setName("STATUS");
         fieldSTATUS.setTypeName("VARCHAR");
@@ -822,10 +822,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldSTATUS.setUnique(false);
         fieldSTATUS.setIsIdentity(false);
         table.addField(fieldSTATUS);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildPHONENUMBERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_PHONENUMBER");
@@ -840,7 +840,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setUnique(false );
         field.setIsIdentity(false );
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("TYPE");
@@ -851,7 +851,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         // SECTION: FIELD
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("AREA_CODE");
@@ -862,7 +862,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field2.setUnique(false );
         field2.setIsIdentity(false );
         table.addField(field2);
-    
+
         // SECTION: FIELD
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("NUMB");
@@ -884,7 +884,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildPLATINUMBUYERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_PBUYER");
@@ -900,7 +900,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false );
         field.setForeignKeyFieldName("CMP3_FA_BUYER.BUYER_ID");
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("PURCHASES");
@@ -911,10 +911,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildPROJECT_EMPTable() {
         TableDefinition table = new TableDefinition();
 
@@ -930,7 +930,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setUnique(false );
         field.setIsIdentity(false );
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("projects_PROJ_ID");
@@ -959,7 +959,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildPROJECTTable() {
         TableDefinition table = new TableDefinition();
 
@@ -975,7 +975,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setUnique(false );
         field.setIsIdentity(true );
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("PROJ_TYPE");
@@ -986,7 +986,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false );
         field1.setIsIdentity(false );
         table.addField(field1);
-    
+
         // SECTION: FIELD
         FieldDefinition field2 = new FieldDefinition();
         field2.setName("PROJ_NAME");
@@ -997,7 +997,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field2.setUnique(false );
         field2.setIsIdentity(false );
         table.addField(field2);
-    
+
         // SECTION: FIELD
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("DESCRIP");
@@ -1008,7 +1008,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field3.setUnique(false );
         field3.setIsIdentity(false );
         table.addField(field3);
-    
+
         // SECTION: FIELD
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("LEADER_ID");
@@ -1020,7 +1020,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field4.setIsIdentity(false );
         field4.setForeignKeyFieldName("CMP3_FA_EMPLOYEE.EMP_ID");
         table.addField(field4);
-    
+
         // SECTION: FIELD
         FieldDefinition field5 = new FieldDefinition();
         field5.setName("VERSION");
@@ -1046,7 +1046,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         TableDefinition table = new TableDefinition();
         // SECTION: TABLE
         table.setName("CMP3_FA_RESPONS");
-    
+
         // SECTION: FIELD
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
@@ -1054,7 +1054,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setSize(15);
         field.setShouldAllowNull(false);
         table.addField(field);
-    
+
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("DESCRIPTION");
@@ -1062,7 +1062,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setSize(200);
         field1.setShouldAllowNull(false);
         table.addField(field1);
-        
+
         ForeignKeyConstraint foreignKey = new ForeignKeyConstraint();
         foreignKey.setName("FA_EMP_RESP_FK");
         foreignKey.setTargetTable("CMP3_FA_EMPLOYEE");
@@ -1070,10 +1070,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         foreignKey.addTargetField("EMP_ID");
         //foreignKey.setShouldCascadeOnDelete(true);
         table.addForeignKeyConstraint(foreignKey);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildSALARYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_SALARY");
@@ -1092,7 +1092,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldSALARY.setSize(15);
         fieldSALARY.setSubSize(0);
         table.addField(fieldSALARY);
-        
+
         ForeignKeyConstraint foreignKey = new ForeignKeyConstraint();
         foreignKey.setName("FA_EMP_SAL_FK");
         foreignKey.setTargetTable("CMP3_FA_EMPLOYEE");
@@ -1104,7 +1104,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
-	public static TableDefinition buildVEGETABLETable() {
+    public static TableDefinition buildVEGETABLETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_VEGETABLE");
 
@@ -1114,14 +1114,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNAME.setSize(30);
         fieldNAME.setIsPrimaryKey(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldCOLOR = new FieldDefinition();
         fieldCOLOR.setName("vegetable_color");
         fieldCOLOR.setTypeName("VARCHAR");
         fieldCOLOR.setSize(30);
         fieldCOLOR.setIsPrimaryKey(true);
         table.addField(fieldCOLOR);
-        
+
         FieldDefinition fieldCOST = new FieldDefinition();
         fieldCOST.setName("COST");
         fieldCOST.setTypeName("DOUBLE PRECIS");
@@ -1132,14 +1132,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldTAGS.setName("TAGS");
         fieldTAGS.setTypeName("BLOB");
         table.addField(fieldTAGS);
-        
+
         FieldDefinition fieldTYPE = new FieldDefinition();
         fieldTYPE.setName("TYPE");
         fieldTYPE.setTypeName("CHAR");
         fieldTYPE.setSize(1);
         fieldTYPE.setShouldAllowNull(true);
         table.addField(fieldTYPE);
-        
+
         return table;
     }
 
@@ -1157,7 +1157,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR2");
@@ -1168,14 +1168,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         return table;
     }
-    
-	public static TableDefinition buildWORKWEEKTable() {
+
+    public static TableDefinition buildWORKWEEKTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_EMP_WORKWEEK");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("EMP_ID");
         fieldID.setTypeName("NUMERIC");
@@ -1185,7 +1185,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldWORKWEEK = new FieldDefinition();
         fieldWORKWEEK.setName("WORKWEEK");
         fieldWORKWEEK.setTypeName("NUMERIC");
@@ -1195,7 +1195,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldWORKWEEK.setIsIdentity(false);
         fieldWORKWEEK.setShouldAllowNull(false);
         table.addField(fieldWORKWEEK);
-        
+
         ForeignKeyConstraint foreignKey = new ForeignKeyConstraint();
         foreignKey.setName("FA_EMP_WW_FK");
         foreignKey.setTargetTable("CMP3_FA_EMPLOYEE");
@@ -1203,14 +1203,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         foreignKey.addTargetField("EMP_ID");
         foreignKey.setShouldCascadeOnDelete(true);
         table.addForeignKeyConstraint(foreignKey);
-    
+
         return table;
     }
 
-	public static TableDefinition buildWORLDRANKTable() {
+    public static TableDefinition buildWORLDRANKTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_WORLDRANK");
-        
+
         FieldDefinition IDfield = new FieldDefinition();
         IDfield.setName("ID");
         IDfield.setTypeName("NUMERIC");
@@ -1220,14 +1220,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         IDfield.setUnique(false );
         IDfield.setIsIdentity(true);
         table.addField(IDfield);
-        
+
         return table;
     }
 
     public static TableDefinition buildSOURCETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_SOURCE");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("VARCHAR2");
@@ -1237,7 +1237,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldDESCRIPTION = new FieldDefinition();
         fieldDESCRIPTION.setName("DESCRIPTION");
         fieldDESCRIPTION.setTypeName("VARCHAR2");
@@ -1269,14 +1269,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldB_ID.setShouldAllowNull(false);
 //        fieldB_ID.setForeignKeyFieldName("CMP3_FA_TARGET_B.ID");
         table.addField(fieldB_ID);
- 
+
         return table;
     }
 
     public static TableDefinition buildTARGET_ATable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_TARGET_A");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("VARCHAR2");
@@ -1286,7 +1286,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldDESCRIPTION = new FieldDefinition();
         fieldDESCRIPTION.setName("DESCRIPTION");
         fieldDESCRIPTION.setTypeName("VARCHAR2");
@@ -1303,7 +1303,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     public static TableDefinition buildTARGET_BTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FA_TARGET_B");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("VARCHAR2");
@@ -1313,7 +1313,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldDESCRIPTION = new FieldDefinition();
         fieldDESCRIPTION.setName("DESCRIPTION");
         fieldDESCRIPTION.setTypeName("VARCHAR2");

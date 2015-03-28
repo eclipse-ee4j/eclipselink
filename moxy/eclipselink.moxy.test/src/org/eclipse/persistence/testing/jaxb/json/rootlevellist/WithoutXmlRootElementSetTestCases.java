@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,12 +39,12 @@ public class WithoutXmlRootElementSetTestCases extends JSONMarshalUnmarshalTestC
 
     @Override
     public Class getUnmarshalClass(){
-    	return WithoutXmlRootElementRoot.class;
+        return WithoutXmlRootElementRoot.class;
     }
-    
+
     @Override
     protected Set<WithoutXmlRootElementRoot> getControlObject() {
-    	Set<WithoutXmlRootElementRoot> set = new LinkedHashSet<WithoutXmlRootElementRoot>();
+        Set<WithoutXmlRootElementRoot> set = new LinkedHashSet<WithoutXmlRootElementRoot>();
 
         WithoutXmlRootElementRoot foo = new WithoutXmlRootElementRoot();
         foo.setName("FOO");
@@ -58,12 +58,12 @@ public class WithoutXmlRootElementSetTestCases extends JSONMarshalUnmarshalTestC
     }
 
     @Override
-	public Object getReadControlObject() {
-    	JAXBElement elem = new JAXBElement(new QName(""),WithoutXmlRootElementRoot.class, new ArrayList<WithoutXmlRootElementRoot>(getControlObject()) );
-    	
-    	return elem;
+    public Object getReadControlObject() {
+        JAXBElement elem = new JAXBElement(new QName(""),WithoutXmlRootElementRoot.class, new ArrayList<WithoutXmlRootElementRoot>(getControlObject()) );
+
+        return elem;
     }
-    
+
     public void testUnmarshal() throws Exception {
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         Collection<WithoutXmlRootElementRoot>  test = (Collection<WithoutXmlRootElementRoot>) jsonUnmarshaller.unmarshal(new StreamSource(inputStream), WithoutXmlRootElementRoot.class).getValue();
@@ -73,8 +73,8 @@ public class WithoutXmlRootElementSetTestCases extends JSONMarshalUnmarshalTestC
         Iterator<WithoutXmlRootElementRoot> controlIter = control.iterator();
         assertTrue(test.size() == control.size());
         while(controlIter.hasNext()){
-        	assertEquals(controlIter.next(), testIter.next());
-        }        
+            assertEquals(controlIter.next(), testIter.next());
+        }
     }
 
     public void testUnmarshalEmptyList() throws Exception {

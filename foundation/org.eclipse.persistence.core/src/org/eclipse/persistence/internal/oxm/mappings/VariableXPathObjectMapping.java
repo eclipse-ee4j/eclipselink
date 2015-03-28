@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,28 +35,28 @@ FIELD extends CoreField,
 MARSHALLER extends Marshaller,
 SESSION extends CoreSession,
 UNMARSHALLER extends Unmarshaller,
-XML_RECORD extends XMLRecord> 
+XML_RECORD extends XMLRecord>
 extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
-			
-	public ATTRIBUTE_ACCESSOR getVariableAttributeAccessor(); 
 
-	public XPathFragment getXPathFragmentForValue(Object obj, NamespaceResolver nr, boolean isNamespaceAware,char sep);
-	
-	public boolean isAttribute();
-		
-	public void setAttribute(boolean isAttribute);
-	
-	public void setConverter(CONVERTER converter);
+    public ATTRIBUTE_ACCESSOR getVariableAttributeAccessor();
 
-	public void setIsWriteOnly(boolean isWriteOnly);
-	
-	public void setReferenceClassName(String aClassName);
-	
-	public void setVariableAttributeAccessor(ATTRIBUTE_ACCESSOR variableAttributeAccessor);
-	
-	public void setVariableAttributeName(String variableAttributeName);
-	
-	public void setVariableGetMethodName(String variableGetMethodName);
-	
-	public void setVariableSetMethodName(String variableSetMethodName);
+    public XPathFragment getXPathFragmentForValue(Object obj, NamespaceResolver nr, boolean isNamespaceAware,char sep);
+
+    public boolean isAttribute();
+
+    public void setAttribute(boolean isAttribute);
+
+    public void setConverter(CONVERTER converter);
+
+    public void setIsWriteOnly(boolean isWriteOnly);
+
+    public void setReferenceClassName(String aClassName);
+
+    public void setVariableAttributeAccessor(ATTRIBUTE_ACCESSOR variableAttributeAccessor);
+
+    public void setVariableAttributeName(String variableAttributeName);
+
+    public void setVariableGetMethodName(String variableGetMethodName);
+
+    public void setVariableSetMethodName(String variableSetMethodName);
 }

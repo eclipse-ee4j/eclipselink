@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,34 +20,34 @@ package org.eclipse.persistence.jpa.jpql.tools.model;
  */
 public interface IEclipseLinkSelectExpressionStateObjectBuilder extends ISelectExpressionStateObjectBuilder {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	IEclipseLinkSelectExpressionStateObjectBuilder append();
+    /**
+     * {@inheritDoc}
+     */
+    IEclipseLinkSelectExpressionStateObjectBuilder append();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	IEclipseLinkSelectExpressionStateObjectBuilder new_(String className,
-	                                                    ISelectExpressionStateObjectBuilder... parameters);
+    /**
+     * {@inheritDoc}
+     */
+    IEclipseLinkSelectExpressionStateObjectBuilder new_(String className,
+                                                        ISelectExpressionStateObjectBuilder... parameters);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	IEclipseLinkSelectExpressionStateObjectBuilder object(String identificationVariable);
+    /**
+     * {@inheritDoc}
+     */
+    IEclipseLinkSelectExpressionStateObjectBuilder object(String identificationVariable);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	IEclipseLinkSelectExpressionStateObjectBuilder resultVariable(String resultVariable);
+    /**
+     * {@inheritDoc}
+     */
+    IEclipseLinkSelectExpressionStateObjectBuilder resultVariable(String resultVariable);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	IEclipseLinkSelectExpressionStateObjectBuilder resultVariableAs(String resultVariable);
+    /**
+     * {@inheritDoc}
+     */
+    IEclipseLinkSelectExpressionStateObjectBuilder resultVariableAs(String resultVariable);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	IEclipseLinkSelectExpressionStateObjectBuilder variable(String variable);
+    /**
+     * {@inheritDoc}
+     */
+    IEclipseLinkSelectExpressionStateObjectBuilder variable(String variable);
 }

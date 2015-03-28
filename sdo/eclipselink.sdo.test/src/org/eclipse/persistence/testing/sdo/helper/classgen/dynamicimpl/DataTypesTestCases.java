@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -192,18 +192,18 @@ public class DataTypesTestCases extends SDOTestCase {
         dataTypes.setUnsignedShort(CONTROL_INT);
         assertEquals(CONTROL_INT, dataTypes.getUnsignedInt());
     }
-    
+
     public void testBooleanMethodsExist() throws Exception {
-    	
-    	SDOType theType  = (SDOType)aHelperContext.getTypeHelper().getType("http://www.example.com", "DataTypes");
-    	Class implClass = theType.getImplClass();
-    	assertNotNull(implClass);
-    	
-    	Method isMethod = implClass.getMethod("isBooleanProperty", new Class[0]);
-    	assertNotNull(isMethod);
-    	Method getMethod = implClass.getMethod("getBooleanProperty", new Class[0]);
-    	assertNotNull(getMethod);
-    	
+
+        SDOType theType  = (SDOType)aHelperContext.getTypeHelper().getType("http://www.example.com", "DataTypes");
+        Class implClass = theType.getImplClass();
+        assertNotNull(implClass);
+
+        Method isMethod = implClass.getMethod("isBooleanProperty", new Class[0]);
+        assertNotNull(isMethod);
+        Method getMethod = implClass.getMethod("getBooleanProperty", new Class[0]);
+        assertNotNull(getMethod);
+
     }
 
 }

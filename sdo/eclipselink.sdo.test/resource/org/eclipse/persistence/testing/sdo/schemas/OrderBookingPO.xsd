@@ -3,7 +3,7 @@
         targetNamespace="http://www.globalcompany.com/ns/order"
         xmlns:poTest="http://www.globalcompany.com/ns/order"
         elementFormDefault="qualified">
-        
+
   <annotation>
     <documentation xml:lang="en">Order Booking schema for GlobalCompany.com.
                                  Copyright 2005 GlobalCompany.com. All rights

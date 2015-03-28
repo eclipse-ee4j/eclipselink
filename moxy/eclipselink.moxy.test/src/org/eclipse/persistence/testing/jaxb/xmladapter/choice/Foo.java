@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,21 +26,21 @@ public class Foo {
         @XmlElement(name="single-string", type=String.class)
     })
     public Object singleChoice;
-    
+
     @XmlElements({
         @XmlElement(name="collection-string", type=String.class),
         @XmlElement(name="barC", type=BarC.class),
         @XmlElement(name="barB", type=BarB.class),
         @XmlElement(name="int", type=Integer.class)
     })
-    
-    public List<Object> collectionChoice; 
-    
-    
+
+    public List<Object> collectionChoice;
+
+
     public boolean equals(Object obj) {
         Foo foo = (Foo)obj;
-        
+
         return singleChoice.equals(foo.singleChoice) && collectionChoice.equals(foo.collectionChoice);
-        
+
     }
 }

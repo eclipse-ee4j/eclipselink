@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -38,17 +38,17 @@ public class DeletingFromParentSessionTest extends DeleteObjectTest {
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
-        originalObject = 
+        originalObject =
                 uow.readObject(Employee.class, new org.eclipse.persistence.expressions.ExpressionBuilder().get("firstName").equal("John"));
         this.address = ((Employee)originalObject).getAddress();
         // Instantiate stuff
         ((Employee)originalObject).getManagedEmployees();
         ((Employee)originalObject).getPhoneNumbers();
-        for (java.util.Enumeration mgdEnum = ((Employee)originalObject).getManagedEmployees().elements(); 
+        for (java.util.Enumeration mgdEnum = ((Employee)originalObject).getManagedEmployees().elements();
              mgdEnum.hasMoreElements(); ) {
             ((Employee)mgdEnum.nextElement()).setManager(null);
         }
-        for (java.util.Enumeration mgdProjEnum = ((Employee)originalObject).getProjects().elements(); 
+        for (java.util.Enumeration mgdProjEnum = ((Employee)originalObject).getProjects().elements();
              mgdProjEnum.hasMoreElements(); ) {
             ((org.eclipse.persistence.testing.models.employee.domain.Project)mgdProjEnum.nextElement()).setTeamLeader(null);
         }
@@ -59,18 +59,18 @@ public class DeletingFromParentSessionTest extends DeleteObjectTest {
 
     public void verify() {
         Object primaryKey = getSession().getId(this.originalObject);
-        if (getSession().getIdentityMapAccessor().containsObjectInIdentityMap(primaryKey, 
+        if (getSession().getIdentityMapAccessor().containsObjectInIdentityMap(primaryKey,
                                                                               this.originalObject.getClass())) {
-            throw new TestException("The object " + originalObject + 
-                                    " was deleted from the unit of work cache, but " + 
+            throw new TestException("The object " + originalObject +
+                                    " was deleted from the unit of work cache, but " +
                                     "not the parent session's cache.");
         }
 
         primaryKey = getSession().getId(this.address);
-        if (getSession().getIdentityMapAccessor().containsObjectInIdentityMap(primaryKey, 
+        if (getSession().getIdentityMapAccessor().containsObjectInIdentityMap(primaryKey,
                                                                               this.address.getClass())) {
-            throw new TestException("The object " + this.address + 
-                                    " was deleted from the unit of work cache, but " + 
+            throw new TestException("The object " + this.address +
+                                    " was deleted from the unit of work cache, but " +
                                     "not the parent session's cache.");
         }
     }

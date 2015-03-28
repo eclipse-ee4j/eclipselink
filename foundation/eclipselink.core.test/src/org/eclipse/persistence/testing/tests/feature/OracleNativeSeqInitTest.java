@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
@@ -35,7 +35,7 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
     // the sequence was already created:
     // in this case SequenceDefinition.createOnDatabase method calls
     // alterOnDatabase method.
-    // Next available sequence number will be the same as 
+    // Next available sequence number will be the same as
     // the next available sequence number before the method was called.
     public static final int CREATE_CREATE = 1;
 
@@ -43,7 +43,7 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
 
     // NEXTVAL_ALTER in the case NEXTVAL has been called before on the sequence
     // and therefore CURRVAL is defined: in this case the increment on the existing sequence
-    // Next available sequence number will be the same as 
+    // Next available sequence number will be the same as
     // the next available sequence number before the method was called.
     public static final int NEXTVAL_ALTER = 2;
 
@@ -204,7 +204,7 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
             create();
 
             // now sequence exists,
-            // select NEXTVAL 
+            // select NEXTVAL
             // because it is the first call to NEXTVAL, the starting sequence value is returned,
             // and this value was set to seqPreallocationSizeOld by the first createOnDatabase
             sequenceDefinition.checkIfExist((AbstractSession)getSession());
@@ -262,7 +262,7 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
         if(sequence == null) {
             return;
         }
-        
+
         // make sure that upcoming DROP and CREATE haven't been cached
         // and therefore for sure will go through
         getSession().getPlatform().setShouldCacheAllStatements(false);
@@ -291,7 +291,7 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
         if ((usesNativeSequencingOriginal != null) && !usesNativeSequencingOriginal) {
             getAbstractSession().getPlatform().addSequence(originalSequence);
         }
-        
+
         sequence = null;
     }
 

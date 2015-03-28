@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     05/1/2009-2.0 Guy Pelletier/David Minsky
  *       - 249033: JPA 2.0 Orphan removal
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.orphanremoval;
 
 import java.util.ArrayList;
@@ -35,33 +35,33 @@ public class Wheel {
     @Id
     @GeneratedValue(strategy=TABLE, generator="JPA_OR_WHEEL_TABLE_GENERATOR")
     @TableGenerator(
-        name="JPA_OR_WHEEL_TABLE_GENERATOR", 
+        name="JPA_OR_WHEEL_TABLE_GENERATOR",
         table="JPA_ORPHAN_REMOVAL_SEQUENCE",
-        pkColumnName="SEQ_NAME", 
+        pkColumnName="SEQ_NAME",
         valueColumnName="SEQ_COUNT",
         pkColumnValue="WHEEL_SEQ"
     )
     protected int id;
-    
+
     @OneToOne(cascade=ALL)
     protected WheelRim wheelRim; // non-orphanRemoval 1:1
 
     @Embedded
     protected Tire tire; // embedded (aggregate)
-    
+
     protected long serialNumber;
 
     @ManyToOne
     protected Chassis chassis;
-    
+
     @OneToMany (cascade=ALL, mappedBy="wheel")
     protected List<WheelNut> wheelNuts; // non-orphanRemoval 1:M
-    
+
     public Wheel() {
         super();
         this.wheelNuts = new ArrayList<WheelNut>();
     }
-    
+
     public Wheel(long serialNumber) {
         this();
         this.serialNumber = serialNumber;
@@ -71,15 +71,15 @@ public class Wheel {
         getWheelNuts().add(wheelNut);
         wheelNut.setWheel(this);
     }
-    
+
     public Chassis getChassis() {
         return chassis;
     }
-    
+
     public int getId() {
         return id;
     }
-    
+
     public long getSerialNumber() {
         return serialNumber;
     }
@@ -87,11 +87,11 @@ public class Wheel {
     public Tire getTire() {
         return tire;
     }
-    
+
     public List<WheelNut> getWheelNuts() {
         return wheelNuts;
     }
-    
+
     public WheelRim getWheelRim() {
         return wheelRim;
     }
@@ -104,11 +104,11 @@ public class Wheel {
     public void setChassis(Chassis chassis) {
         this.chassis = chassis;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public void setSerialNumber(long serialNumber) {
         this.serialNumber = serialNumber;
     }
@@ -120,11 +120,11 @@ public class Wheel {
     public void setWheelNuts(List<WheelNut> wheelNuts) {
         this.wheelNuts = wheelNuts;
     }
-    
+
     public void setWheelRim(WheelRim wheelRim) {
         this.wheelRim = wheelRim;
     }
-    
+
     public String toString() {
         return "Wheel ["+ id +"]";
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -42,141 +42,141 @@ import org.w3c.dom.NodeList;
 public class JavaORMConfiguration extends JavaManagedTypeProvider
                                   implements IORMConfiguration {
 
-	private String ormXmlFileName;
-	private boolean populated;
-	private Map<String, IQuery> queries;
+    private String ormXmlFileName;
+    private boolean populated;
+    private Map<String, IQuery> queries;
 
-	/**
-	 * Creates a new <code>JavaORMConfiguration</code>.
-	 *
-	 * @param mappingBuilder
-	 * @param ormXmlFileName
-	 */
-	public JavaORMConfiguration(IMappingBuilder<Member> mappingBuilder, String ormXmlFileName) {
-		super(mappingBuilder);
-		this.ormXmlFileName = ormXmlFileName;
-	}
+    /**
+     * Creates a new <code>JavaORMConfiguration</code>.
+     *
+     * @param mappingBuilder
+     * @param ormXmlFileName
+     */
+    public JavaORMConfiguration(IMappingBuilder<Member> mappingBuilder, String ormXmlFileName) {
+        super(mappingBuilder);
+        this.ormXmlFileName = ormXmlFileName;
+    }
 
-	protected void addQuery(Map<String, IQuery> queries, Node node) {
+    protected void addQuery(Map<String, IQuery> queries, Node node) {
 
-		NamedNodeMap attributes = node.getAttributes();
-		Attr nameNode = (Attr) attributes.getNamedItem("name");
-		NodeList children = node.getChildNodes();
+        NamedNodeMap attributes = node.getAttributes();
+        Attr nameNode = (Attr) attributes.getNamedItem("name");
+        NodeList children = node.getChildNodes();
 
-		for (int childIndex = children.getLength(); --childIndex >= 0; ) {
-			Node child = children.item(childIndex);
+        for (int childIndex = children.getLength(); --childIndex >= 0; ) {
+            Node child = children.item(childIndex);
 
-			if (child.getNodeName().equals("query")) {
-				queries.put(nameNode.getValue(), new JavaQuery(this, child.getTextContent()));
-			}
-		}
-	}
+            if (child.getNodeName().equals("query")) {
+                queries.put(nameNode.getValue(), new JavaQuery(this, child.getTextContent()));
+            }
+        }
+    }
 
-	protected String buildLocation() throws Exception {
-		URL url = getClass().getResource("/META-INF/" + ormXmlFileName);
-		Assert.assertNotNull("/META-INF/" + ormXmlFileName + " could not be found on the class path", url);
-		return url.toURI().toString();
-	}
+    protected String buildLocation() throws Exception {
+        URL url = getClass().getResource("/META-INF/" + ormXmlFileName);
+        Assert.assertNotNull("/META-INF/" + ormXmlFileName + " could not be found on the class path", url);
+        return url.toURI().toString();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Iterable<IEntity> entities() {
-		populate();
-		return super.entities();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Iterable<IEntity> entities() {
+        populate();
+        return super.entities();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public IEntity getEntity(String entityName) {
-		populate();
-		return super.getEntity(entityName);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IEntity getEntity(String entityName) {
+        populate();
+        return super.getEntity(entityName);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public IManagedType getManagedType(IType type) {
-		populate();
-		return super.getManagedType(type);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IManagedType getManagedType(IType type) {
+        populate();
+        return super.getManagedType(type);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public IQuery getNamedQuery(String queryName) {
-		populate();
-		return queries.get(queryName);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public IQuery getNamedQuery(String queryName) {
+        populate();
+        return queries.get(queryName);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Iterable<IManagedType> managedTypes() {
-		populate();
-		return super.managedTypes();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Iterable<IManagedType> managedTypes() {
+        populate();
+        return super.managedTypes();
+    }
 
-	protected void populate() {
+    protected void populate() {
 
-		if (!populated) {
+        if (!populated) {
 
-			populated = true;
+            populated = true;
 
-			try {
-				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder builder =  factory.newDocumentBuilder();
-				Document document = builder.parse(buildLocation());
+            try {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder =  factory.newDocumentBuilder();
+                Document document = builder.parse(buildLocation());
 
-				populateQueries(document);
-				populateManagedTypes(document);
-			}
-			catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
+                populateQueries(document);
+                populateManagedTypes(document);
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
-	protected void populateManagedTypes(Document document) throws Exception {
+    protected void populateManagedTypes(Document document) throws Exception {
 
-		NodeList nodeList = document.getElementsByTagName("entity");
+        NodeList nodeList = document.getElementsByTagName("entity");
 
-		for (int index = nodeList.getLength(); --index >= 0; ) {
-			Node node = nodeList.item(index);
-			String typeName = node.getAttributes().getNamedItem("class").getNodeValue();
-			addEntity(Class.forName(typeName));
-		}
+        for (int index = nodeList.getLength(); --index >= 0; ) {
+            Node node = nodeList.item(index);
+            String typeName = node.getAttributes().getNamedItem("class").getNodeValue();
+            addEntity(Class.forName(typeName));
+        }
 
-		nodeList = document.getElementsByTagName("mapped-superclass");
+        nodeList = document.getElementsByTagName("mapped-superclass");
 
-		for (int index = nodeList.getLength(); --index >= 0; ) {
-			Node node = nodeList.item(index);
-			String typeName = node.getAttributes().getNamedItem("class").getNodeValue();
-			addMappedSuperclass(Class.forName(typeName));
-		}
+        for (int index = nodeList.getLength(); --index >= 0; ) {
+            Node node = nodeList.item(index);
+            String typeName = node.getAttributes().getNamedItem("class").getNodeValue();
+            addMappedSuperclass(Class.forName(typeName));
+        }
 
-		nodeList = document.getElementsByTagName("embeddable");
+        nodeList = document.getElementsByTagName("embeddable");
 
-		for (int index = nodeList.getLength(); --index >= 0; ) {
-			Node node = nodeList.item(index);
-			String typeName = node.getAttributes().getNamedItem("class").getNodeValue();
-			addEmbeddable(Class.forName(typeName));
-		}
-	}
+        for (int index = nodeList.getLength(); --index >= 0; ) {
+            Node node = nodeList.item(index);
+            String typeName = node.getAttributes().getNamedItem("class").getNodeValue();
+            addEmbeddable(Class.forName(typeName));
+        }
+    }
 
-	protected void populateQueries(Document document) {
+    protected void populateQueries(Document document) {
 
-		queries = new HashMap<String, IQuery>();
-		NodeList nodeList = document.getElementsByTagName("named-query");
+        queries = new HashMap<String, IQuery>();
+        NodeList nodeList = document.getElementsByTagName("named-query");
 
-		for (int index = nodeList.getLength(); --index >= 0; ) {
-			Node node = nodeList.item(index);
-			addQuery(queries, node);
-		}
-	}
+        for (int index = nodeList.getLength(); --index >= 0; ) {
+            Node node = nodeList.item(index);
+            addQuery(queries, node);
+        }
+    }
 }

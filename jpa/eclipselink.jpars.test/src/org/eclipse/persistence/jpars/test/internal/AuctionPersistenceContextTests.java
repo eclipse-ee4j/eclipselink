@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      dclarke - JPA-RS Incubator (Bug 362900)  
+ *      dclarke - JPA-RS Incubator (Bug 362900)
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.internal;
 
@@ -31,33 +31,33 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests validating the 
- * 
+ * Tests validating the
+ *
  * @author dclarke
  * @since EclipseLink 2.4.0
  */
 public class AuctionPersistenceContextTests {
-    
+
     private static PersistenceContext context;
-    
+
     @Test
     public void verifyJPAConfig() {
         Assert.assertNotNull(context);
         EntityManagerFactory emf = context.getEmf();
         Assert.assertNotNull(emf);
-        
+
         DatabaseSession session = JpaHelper.getServerSession(emf);
         Assert.assertEquals(3, session.getDescriptors().size());
     }
-    
+
     @Test
     public void verifyJaxbContext() {
         Assert.assertNotNull(context);
         JAXBContext jaxbContext = context.getJAXBContext();
         Assert.assertNotNull(jaxbContext);
-        
+
         org.eclipse.persistence.jaxb.JAXBContext contextImpl = (org.eclipse.persistence.jaxb.JAXBContext) jaxbContext;
-        
+
         Assert.assertEquals(4, contextImpl.getXMLContext().getSession(0).getDescriptors().size());
     }
 
@@ -66,7 +66,7 @@ public class AuctionPersistenceContextTests {
         Map<String, Object> properties = new HashMap<String, Object>();
         ExamplePropertiesLoader.loadProperties(properties);
         PersistenceFactoryBase factory = new PersistenceFactoryBase();
-        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("xmldocs/auction-persistence.xml"); 
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("xmldocs/auction-persistence.xml");
         PersistenceContext context = factory.get("auction", new URI("http://localhost:9090/JPA-RS/"), null, properties);
     }
 }

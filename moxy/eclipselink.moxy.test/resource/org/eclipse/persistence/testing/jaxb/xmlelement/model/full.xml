@@ -3,19 +3,19 @@
    <items>
         <item>
            <id>1</id>
-	    	<money>
+            <money>
                <cost>5.00</cost>
-    	       <price>7.99</price>
-    	    </money>
-	    	<description>nice item</description>
-            <description>comes in blue or red</description>    
+               <price>7.99</price>
+            </money>
+            <description>nice item</description>
+            <description>comes in blue or red</description>
        </item>
        <item>
           <id>2</id>
           <money>
               <cost>10.00</cost>
               <price>15.99</price>
-	      </money>
+          </money>
           <description>big item</description>
           <description>very heavy</description>
         </item>
@@ -30,7 +30,7 @@
    <customer id="0">
       <firstName>Jane</firstName>
       <lastName>Smith</lastName>
-	  <contact>
+      <contact>
       <address>
           <street>Main Street</street>
           <city>Ottawa</city>
@@ -40,9 +40,9 @@
       </address>
       </contact>
       <firstTimeCustomer>false</firstTimeCustomer>
-	  <orderNumbers>10</orderNumbers>
-	  <orderNumbers>20</orderNumbers>
-	  <orderNumbers>30</orderNumbers>
+      <orderNumbers>10</orderNumbers>
+      <orderNumbers>20</orderNumbers>
+      <orderNumbers>30</orderNumbers>
    </customer>
    <id>1</id>
 </order>

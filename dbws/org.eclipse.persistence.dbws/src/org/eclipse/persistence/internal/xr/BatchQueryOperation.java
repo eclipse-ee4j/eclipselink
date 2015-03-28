@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,15 +15,15 @@ package org.eclipse.persistence.internal.xr;
 import java.util.List;
 
 /**
- * For use with a batch SQL query, i.e. two or more SQL statements that 
+ * For use with a batch SQL query, i.e. two or more SQL statements that
  * are to be executed against the database in order.  The result will
  * be either 0 (success) or 1 (failure).  Note that if a statement
- * fails, i.e. an exception is thrown upon executing a given SQL 
+ * fails, i.e. an exception is thrown upon executing a given SQL
  * statement, none of the remaining statements are executed.
- * 
- * Warning:  the SQL is assumed to be valid and well formed, and no 
+ *
+ * Warning:  the SQL is assumed to be valid and well formed, and no
  * roll back or any type of error handling is performed.
- *  
+ *
  */
 public class BatchQueryOperation extends QueryOperation {
     protected List<String> batchSql;
@@ -34,7 +34,7 @@ public class BatchQueryOperation extends QueryOperation {
     public List<String> getBatchSql() {
         return batchSql;
     }
-    
+
     /**
      * Set the List of SQL statements to be executed for this operation.
      */
@@ -44,9 +44,9 @@ public class BatchQueryOperation extends QueryOperation {
 
     /**
      * Invoke the SQL statements in order against the database.
-     * The returned ValueOject will hold either 0 (success) or 
+     * The returned ValueOject will hold either 0 (success) or
      * 1 (failure).
-     * 
+     *
      * @Override
      */
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
@@ -66,20 +66,20 @@ public class BatchQueryOperation extends QueryOperation {
         v.value = 0;
         return v;
     }
-    
+
     /**
      * No validation can be done for a batch query operation.
-     * 
+     *
      * @Override
      */
     public void validate(XRServiceAdapter xrService) {}
-    
+
     /**
      * The initialize method will add an XMLDesctriptor for
      * org.eclipse.persistence.internal.xr.ValueObject to
      * the OX project.  This class is used to hold the
-     * result of the batch SQL execution. 
-     * 
+     * result of the batch SQL execution.
+     *
      * @Override
      */
     public void initialize(XRServiceAdapter xrService) {

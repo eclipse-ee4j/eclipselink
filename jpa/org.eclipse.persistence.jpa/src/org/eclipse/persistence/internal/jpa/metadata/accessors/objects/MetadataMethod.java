@@ -1,29 +1,29 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/16/2008-1.0M8 Guy Pelletier 
+ *     05/16/2008-1.0M8 Guy Pelletier
  *       - 218084: Implement metadata merging functionality between mapping files
- *     09/23/2008-1.1 Guy Pelletier 
+ *     09/23/2008-1.1 Guy Pelletier
  *       - 241651: JPA 2.0 Access Type support
- *     10/01/2008-1.1 Guy Pelletier 
+ *     10/01/2008-1.1 Guy Pelletier
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
- *     03/29/2010-2.1 Guy Pelletier 
+ *     03/29/2010-2.1 Guy Pelletier
  *       - 267217: Add Named Access Type to EclipseLink-ORM
- *     04/09/2010-2.1 Guy Pelletier 
+ *     04/09/2010-2.1 Guy Pelletier
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
- *     06/22/2010-2.2 Guy Pelletier 
+ *     06/22/2010-2.2 Guy Pelletier
  *       - 308729: Persistent Unit deployment exception when mappedsuperclass has no annotations but has lifecycle callbacks
- *     12/01/2010-2.2 Guy Pelletier 
- *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
- ******************************************************************************/  
+ *     12/01/2010-2.2 Guy Pelletier
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 /**
  * INTERNAL:
  * An object to hold onto a valid JPA decorated method.
- * 
+ *
  * @author Guy Pelletier
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
@@ -55,19 +55,19 @@ public class MetadataMethod extends MetadataAnnotatedElement {
 
     /** Class that the method is defined in. */
     protected MetadataClass m_metadataClass;
-    
+
     /** Class name of method return type. */
     protected String m_returnType;
 
     /** List of class names of method parameters. */
     protected List<String> m_parameters;
-    
+
     /** Corresponding set method, if the method is an accessor get method. */
     protected MetadataMethod m_setMethod;
-    
+
     /** Used to store multiple methods with the same name in a class. */
     protected MetadataMethod m_next;
-    
+
     /**
      * Create the method from the class metadata.
      */
@@ -76,117 +76,117 @@ public class MetadataMethod extends MetadataAnnotatedElement {
         m_metadataClass = metadataClass;
         m_parameters = new ArrayList<String>();
     }
-    
+
     /**
      * INTERNAL:
      */
     public void addParameter(String parameter) {
         m_parameters.add(parameter);
     }
-    
+
     /**
      * INTERNAL:
      */
     public MetadataClass getMetadataClass() {
         return m_metadataClass;
     }
-    
+
     /**
      * INTERNAL:
      */
     public MetadataMethod getNext() {
         return m_next;
     }
-    
+
     /**
      * INTERNAL:
      */
     public List<String> getParameters() {
         return m_parameters;
     }
-    
+
     /**
      * INTERNAL:
      */
     public String getReturnType() {
         return m_returnType;
     }
-    
+
     /**
      * INTERNAL:
-     * Method to convert a getMethod into a setMethod. This method could return 
+     * Method to convert a getMethod into a setMethod. This method could return
      * null if the corresponding set method is not found.
-     */ 
+     */
     public MetadataMethod getSetMethod() {
         if (m_setMethod == null) {
             m_setMethod = getSetMethod(getMetadataClass());
         }
         return m_setMethod;
     }
-    
+
     /**
      * INTERNAL:
      * Method to convert a getMethod into a setMethod.
-     */ 
+     */
     public void setSetMethod(MetadataMethod method) {
         m_setMethod = method;
     }
-    
+
     /**
      * INTERNAL:
-     * Method to convert a getMethod into a setMethod. This method could return 
+     * Method to convert a getMethod into a setMethod. This method could return
      * null if the corresponding set method is not found.
-     */ 
+     */
     public MetadataMethod getSetMethod(MetadataClass cls) {
         String getMethodName = getName();
         List<String> params = Arrays.asList(new String[] {getReturnType()});
         MetadataMethod setMethod = null;
-        
+
         if (getMethodName.startsWith(Helper.GET_PROPERTY_METHOD_PREFIX)) {
             // Replace 'get' with 'set'.
             setMethod = cls.getMethod(Helper.SET_PROPERTY_METHOD_PREFIX + getMethodName.substring(3), params);
-        } else {        
+        } else {
             // methodName.startsWith(IS_PROPERTY_METHOD_PREFIX)
             // Check for a setXyz method first, if it exists use it.
             setMethod = cls.getMethod(Helper.SET_PROPERTY_METHOD_PREFIX + getMethodName.substring(2), params);
-            
+
             if (setMethod == null) {
                 // setXyz method was not found try setIsXyz
                 setMethod = cls.getMethod(Helper.SET_IS_PROPERTY_METHOD_PREFIX + getMethodName.substring(2), params);
             }
         }
-        
+
         return setMethod;
     }
-    
+
     /**
      * INTERNAL:
      */
     public String getSetMethodName() {
         return getSetMethod().getName();
     }
-    
+
     /**
      * INTERNAL:
      */
     public boolean hasAttributeName() {
         return ! getAttributeName().equals("");
     }
-    
+
     /**
      * INTERNAL:
      */
     public boolean hasParameters() {
         return getParameters().size() > 0;
     }
-    
+
     /**
      * INTERNAL:
      */
     public boolean hasSetMethod() {
         return getSetMethod() != null;
     }
-    
+
     /**
      * INTERNAL:
      * Return true if it has a valid name (starts with get or is) and has a
@@ -202,7 +202,7 @@ public class MetadataMethod extends MetadataAnnotatedElement {
                isAnnotationPresent(JPA_PRE_REMOVE) ||
                isAnnotationPresent(JPA_PRE_UPDATE);
     }
-    
+
     /**
      * INTERNAL:
      * Return true if it has a valid name (starts with 'get' or 'is') and has a
@@ -212,23 +212,23 @@ public class MetadataMethod extends MetadataAnnotatedElement {
     protected boolean isValidPersistenceMethod() {
         return isValidPersistenceMethodName() && ! hasParameters() && hasSetMethod();
     }
-    
+
     /**
      * INTERNAL:
      * Return true is this method is a valid persistence method. This method
-     * will validate against any declared annotations on the method.  If the 
-     * mustBeExplicit flag is true, then we are processing the inverse of an 
-     * explicit access setting and the property must have an Access(PROPERTY) 
+     * will validate against any declared annotations on the method.  If the
+     * mustBeExplicit flag is true, then we are processing the inverse of an
+     * explicit access setting and the property must have an Access(PROPERTY)
      * setting to be processed. Otherwise, it is ignored.
      */
     public boolean isValidPersistenceMethod(boolean mustBeExplicit, ClassAccessor classAccessor) {
         if (isValidPersistenceElement(mustBeExplicit, JPA_ACCESS_PROPERTY, classAccessor)) {
             return ! isALifeCycleCallbackMethod() && isValidPersistenceMethod(classAccessor, hasDeclaredAnnotations(classAccessor));
         }
-        
+
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Return true is this method is a valid persistence method. User decorated
@@ -250,13 +250,13 @@ public class MetadataMethod extends MetadataAnnotatedElement {
                     getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPING_METADATA, this, classAccessor.getDescriptorJavaClass());
                 }
             }
-            
+
             return false;
         }
-        
+
         return true;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -270,21 +270,21 @@ public class MetadataMethod extends MetadataAnnotatedElement {
     public void setMetadataClass(MetadataClass metadataClass) {
         m_metadataClass = metadataClass;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setNext(MetadataMethod next) {
         m_next = next;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setParameters(List<String> parameters) {
         m_parameters = parameters;
     }
-    
+
     /**
      * INTERNAL:
      */

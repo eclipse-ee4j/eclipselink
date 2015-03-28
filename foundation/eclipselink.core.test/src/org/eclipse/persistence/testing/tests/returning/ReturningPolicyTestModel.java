@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.returning;
 
 import java.math.BigDecimal;
@@ -52,7 +52,7 @@ public class ReturningPolicyTestModel extends TestModel {
             addTest(new TestModelAdapted(new ComplexUpdateAndUnitOfWorkTestModel(), new SubstituteSequencingWithReturningPolicyAdapter(false)));
             addTest(new TestModelAdapted(new EmployeeBasicTestModel(), new SubstituteSequencingWithReturningPolicyAdapter()));
 
-            // Need to add the tables that were mapped by AggregateCollectionMappings 
+            // Need to add the tables that were mapped by AggregateCollectionMappings
             // overriding the original settings in AggregateCollectionMapping descriptors
             SubstituteSequencingWithReturningPolicyAdapter substitute = new SubstituteSequencingWithReturningPolicyAdapter();
             // Builder.customers
@@ -123,10 +123,10 @@ public class ReturningPolicyTestModel extends TestModel {
             adapter4.addInsert("RETURNING.A2", null, false);
             adapter4.addInsert("RETURNING.B2", null, false);
             adapter4.addInsert("RETURNING.C2", null, false);
-            //			adapter4.addUpdate("RETURNING.A1", new BigDecimal(3.5), true);
+            //            adapter4.addUpdate("RETURNING.A1", new BigDecimal(3.5), true);
             adapter4.addUpdate("RETURNING.B1", new BigDecimal(2.5), true);
             adapter4.addUpdate("RETURNING.C1", new BigDecimal(1.5), true);
-            //			adapter4.addUpdate("RETURNING.A2", new BigDecimal(3.5), true);
+            //            adapter4.addUpdate("RETURNING.A2", new BigDecimal(3.5), true);
             adapter4.addUpdate("RETURNING.B2", new BigDecimal(2.5), true);
             adapter4.addUpdate("RETURNING.C2", new BigDecimal(1.5), true);
             TestModel testModel4 = new TestModelAdapted(new ReturningMappingsTestModel(adapter4), adapter4);

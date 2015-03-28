@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     10/18/2010-2.2 Chris Delahunt
- *       - bug:323370 - flush() doesn't flush native queries if batch writing is enabled 
- ******************************************************************************/  
+ *       - bug:323370 - flush() doesn't flush native queries if batch writing is enabled
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import javax.persistence.EntityManager;
@@ -30,7 +30,7 @@ public class EMFlushBatchWritingTest extends EntityContainerTestBase {
     //reset gets called twice on error
     protected boolean reset = false;
     /**
-     * 
+     *
      */
     public EMFlushBatchWritingTest() {
         setDescription("Test flush multiple times in EntityManager");
@@ -43,28 +43,28 @@ public class EMFlushBatchWritingTest extends EntityContainerTestBase {
         DatabasePlatform platform = em.getServerSession().getPlatform();
         usesBatchWriting = platform.usesBatchWriting();
         usesJDBCBatchWriting = platform.usesJDBCBatchWriting();
-        
+
         platform.setUsesBatchWriting(true);
         platform.setUsesJDBCBatchWriting(true);
-        
+
         em.close();
-                
+
         this.reset = true;
     }
-    
+
     public void reset() {
         if (reset){
             JpaEntityManager em = JpaHelper.getEntityManager(getEntityManager());
             DatabasePlatform platform = em.getServerSession().getPlatform();
             platform.setUsesBatchWriting(usesBatchWriting);
             platform.setUsesJDBCBatchWriting(usesJDBCBatchWriting);
-            
+
             em.close();
             reset = false;
         }
         super.reset();
     }
-    
+
     public void test(){
         Exception expectedException = null;
         try {
@@ -72,13 +72,13 @@ public class EMFlushBatchWritingTest extends EntityContainerTestBase {
             EntityManager em = getEntityManager();
             //create a native query that will throw an exception on execution
             Query query = em.createNativeQuery("unexecutable native sql query");
-            
+
             try {
                 query.executeUpdate();
             } catch (Exception e) {
                 expectedException = e;
             }
-            em.flush();            
+            em.flush();
         } finally {
             this.rollbackTransaction();
         }

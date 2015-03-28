@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -118,7 +118,7 @@ import org.eclipse.persistence.jpa.config.ValuePartitioning;
 
 /**
  * JPA scripting API implementation.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 2.5.1
  */
@@ -126,7 +126,7 @@ public class MappingsImpl extends MetadataImpl<XMLEntityMappings> implements Map
 
     public MappingsImpl() {
         super(new XMLEntityMappings());
-        
+
         getMetadata().setConverters(new ArrayList<ConverterMetadata>());
         getMetadata().setConverterAccessors(new ArrayList<ConverterAccessor>());
         getMetadata().setEmbeddables(new ArrayList<EmbeddableAccessor>());
@@ -167,7 +167,7 @@ public class MappingsImpl extends MetadataImpl<XMLEntityMappings> implements Map
         getMetadata().getConverters().add(converter.getMetadata());
         return converter;
     }
-    
+
     public ConverterClass addConverterClass() {
         ConverterClassImpl converterClass = new ConverterClassImpl();
         getMetadata().getConverterAccessors().add(converterClass.getMetadata());
@@ -179,7 +179,7 @@ public class MappingsImpl extends MetadataImpl<XMLEntityMappings> implements Map
         getMetadata().getEmbeddables().add(embeddable.getMetadata());
         return embeddable;
     }
-    
+
     public Entity addEntity() {
         EntityImpl entity = new EntityImpl();
         getMetadata().getEntities().add(entity.getMetadata());
@@ -239,13 +239,13 @@ public class MappingsImpl extends MetadataImpl<XMLEntityMappings> implements Map
         getMetadata().getObjectTypeConverters().add(converter.getMetadata());
         return converter;
     }
-    
+
     public OracleArray addOracleArray() {
         OracleArrayImpl oracleArray = new OracleArrayImpl();
         getMetadata().getOracleArrayTypes().add(oracleArray.getMetadata());
         return oracleArray;
     }
-    
+
     public OracleObject addOracleObject() {
         OracleObjectImpl oracleObject = new OracleObjectImpl();
         getMetadata().getOracleObjectTypes().add(oracleObject.getMetadata());
@@ -317,7 +317,7 @@ public class MappingsImpl extends MetadataImpl<XMLEntityMappings> implements Map
         getMetadata().getTableGenerators().add(generator.getMetadata());
         return generator;
     }
-    
+
     public TenantDiscriminatorColumn addTenantDiscriminatorColumn() {
         TenantDiscriminatorColumnImpl column = new TenantDiscriminatorColumnImpl();
         getMetadata().getTenantDiscriminatorColumns().add(column.getMetadata());
@@ -384,5 +384,5 @@ public class MappingsImpl extends MetadataImpl<XMLEntityMappings> implements Map
         getMetadata().setVersion(version);
         return this;
     }
-    
+
 }

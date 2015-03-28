@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -37,51 +37,51 @@ public class PhoneNumber implements Serializable {
         this.number = theNumber;
         this.owner = null;
     }
-    
+
     @Id
     @Column(name="OWNER_ID", insertable=false, updatable=false)
-    public Integer getId() { 
-        return id; 
+    public Integer getId() {
+        return id;
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
 
     @Column(name="NUMB")
-    public String getNumber() { 
-        return number; 
+    public String getNumber() {
+        return number;
     }
-    
-    public void setNumber(String number) { 
-        this.number = number; 
+
+    public void setNumber(String number) {
+        this.number = number;
     }
-    
+
     @Id
     @Column(name="TYPE")
-    public String getType() { 
-        return type; 
+    public String getType() {
+        return type;
     }
-    
+
     public void setType(String type) {
         this.type = type;
     }
 
     @Column(name="AREA_CODE")
-    public String getAreaCode() { 
-        return areaCode; 
+    public String getAreaCode() {
+        return areaCode;
     }
-    
+
     public void setAreaCode(String areaCode) {
         this.areaCode = areaCode;
     }
 
     @ManyToOne
     @JoinColumn(name="OWNER_ID", referencedColumnName="EMP_ID")
-    public Employee getOwner() { 
-        return owner; 
+    public Employee getOwner() {
+        return owner;
     }
-    
+
     public void setOwner(Employee owner) {
         this.owner = owner;
     }
@@ -107,7 +107,7 @@ public class PhoneNumber implements Serializable {
 
         return writer.toString();
     }
-    
+
     /**
      * Builds the PhoneNumberPK for this class
      */

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,7 +24,7 @@ public class JsonMapAdapterTestCases extends JSONMarshalUnmarshalTestCases {
     public JsonMapAdapterTestCases(String name) throws Exception {
         super(name);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{RootObject.class});     
+        setClasses(new Class[]{RootObject.class});
     }
 
     protected Object getControlObject() {
@@ -36,11 +36,11 @@ public class JsonMapAdapterTestCases extends JSONMarshalUnmarshalTestCases {
 
         return ro;
     }
-    
+
     public Map getProperties(){
         Map props = new HashMap();
         props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "");
         return props;
     }
-        
+
 }

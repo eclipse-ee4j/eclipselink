@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.tests.jpa.advanced;
@@ -42,25 +42,25 @@ import junit.framework.Test;
 public class SQLResultSetMappingTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;    // reset gets called twice on error
 
-        
+
     public SQLResultSetMappingTestSuite() {
     }
-    
+
     public SQLResultSetMappingTestSuite(String name) {
         super(name);
     }
-    
+
     public void setUp () {
         m_reset = true;
         super.setUp();
         clearCache();
     }
 
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("SQLResultSetMappingTestSuite");
-        
+
         suite.addTest(new SQLResultSetMappingTestSuite("testSetup"));
         suite.addTest(new SQLResultSetMappingTestSuite("testInheritanceNoDiscriminatorColumn"));
         suite.addTest(new SQLResultSetMappingTestSuite("testComplicateResultWithInheritance"));
@@ -72,7 +72,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         suite.addTest(new SQLResultSetMappingTestSuite("testComplicateResults"));
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -84,13 +84,13 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         employeePopulator.persistExample(getServerSession());
         clearCache();
     }
-    
+
     public void testInheritanceNoDiscriminatorColumn() throws Exception {
         SQLResultSetMapping resultSetMapping = new SQLResultSetMapping("testInheritanceNoDiscriminatorColumn");
         EntityResult entityResult = new EntityResult(Buyer.class);
         resultSetMapping.addResult(entityResult);
         entityResult.setDiscriminatorColumn("DTYPE_DESCRIM");
-        
+
         SQLCall call = new SQLCall("SELECT t0.BUYER_ID, t0.DTYPE AS DTYPE_DESCRIM, t0.BUYER_NAME, t0.DESCRIP, t0.VERSION, t1.PURCHASES FROM CMP3_BUYER t0, CMP3_PBUYER t1 WHERE t1.BUYER_ID = t0.BUYER_ID");
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
@@ -100,7 +100,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         try{
             List results = (List)((JpaEntityManager)em.getDelegate()).getActiveSession().executeQuery(query);
             assertNotNull("No result returned", results);
-            
+
             Buyer buyer = (Buyer)results.get(0);
             buyer.setDescription("To A new changed description");
             results = (List)((JpaEntityManager)em.getDelegate()).getActiveSession().executeQuery(query);
@@ -126,14 +126,14 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         entityResult.addFieldResult(new FieldResult("version", "SMALL_VERSION"));
         entityResult.setDiscriminatorColumn("SMALL_DESCRIM");
         resultSetMapping.addResult(entityResult);
-        
+
         SQLCall call = new SQLCall("SELECT (t1.BUDGET/t0.PROJ_ID) AS BUDGET_SUM, t0.PROJ_ID, t0.PROJ_TYPE, t0.PROJ_NAME, t0.DESCRIP, t0.LEADER_ID, t0.VERSION, t1.BUDGET, t2.PROJ_ID AS SMALL_ID, t2.PROJ_TYPE AS SMALL_DESCRIM, t2.PROJ_NAME AS SMALL_NAME, t2.DESCRIP AS SMALL_DESCRIPTION, t2.LEADER_ID AS SMALL_TEAMLEAD, t2.VERSION AS SMALL_VERSION FROM CMP3_PROJECT t0, CMP3_PROJECT t2, CMP3_LPROJECT t1 WHERE t1.PROJ_ID = t0.PROJ_ID AND t2.PROJ_TYPE='S'");
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
         List results = (List)getServerSession().executeQuery(query);
         assertNotNull("No result returned", results);
         assertTrue("Empty list returned", (results.size()!=0));
-        
+
         for (Iterator iterator = results.iterator(); iterator.hasNext(); ){
             Object[] resultElement = (Object[])iterator.next();
             assertTrue("Failed to Return 3 items", (resultElement.length == 3));
@@ -142,17 +142,17 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
             // Derby with derbyclient.jar returns Double
             assertTrue("Failed to return column",(resultElement[0] instanceof Number) );
             assertTrue("Failed to return LargeProject", (resultElement[1] instanceof LargeProject) );
-            assertTrue("Failed To Return SmallProject", (resultElement[2] instanceof SmallProject) );            
+            assertTrue("Failed To Return SmallProject", (resultElement[2] instanceof SmallProject) );
             assertFalse("Returned same data in both result elements",((SmallProject)resultElement[2]).getName().equals(((LargeProject)resultElement[1]).getName()));
         }
     }
-    
+
     public void testRefresh() throws Exception {
         SQLResultSetMapping resultSetMapping = new SQLResultSetMapping("ComplicatedInheritance");
         EntityResult entityResult = new EntityResult(Project.class);
         resultSetMapping.addResult(entityResult);
         entityResult.setDiscriminatorColumn("SMALL_DESCRIM");
-        
+
         SQLCall call = new SQLCall("SELECT t0.PROJ_ID, t0.PROJ_TYPE AS SMALL_DESCRIM, t0.PROJ_NAME, t0.DESCRIP, t0.LEADER_ID, t0.VERSION, t1.BUDGET FROM CMP3_PROJECT t0, CMP3_PROJECT t2, CMP3_LPROJECT t1 WHERE t1.PROJ_ID = t0.PROJ_ID");
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
@@ -182,7 +182,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         EntityResult entityResult = new EntityResult(Project.class);
         resultSetMapping.addResult(entityResult);
         entityResult.setDiscriminatorColumn("SMALL_DESCRIM");
-        
+
         SQLCall call = new SQLCall("SELECT t0.PROJ_ID, t0.PROJ_TYPE AS SMALL_DESCRIM, t0.PROJ_NAME, t0.DESCRIP, t0.LEADER_ID, t0.VERSION, t1.BUDGET FROM CMP3_PROJECT t0, CMP3_LPROJECT t1 WHERE t1.PROJ_ID = t0.PROJ_ID AND t1.BUDGET > ? AND t1.BUDGET < 30000000");
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
@@ -202,7 +202,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         EntityResult entityResult = new EntityResult(Project.class);
         resultSetMapping.addResult(entityResult);
         entityResult.setDiscriminatorColumn("SMALL_DESCRIM");
-        
+
         SQLCall call = new SQLCall("SELECT t0.PROJ_ID, t0.PROJ_TYPE AS SMALL_DESCRIM, t0.PROJ_NAME, t0.DESCRIP, t0.LEADER_ID, t0.VERSION, t1.BUDGET FROM CMP3_PROJECT t0, CMP3_LPROJECT t1 WHERE t1.PROJ_ID = t0.PROJ_ID AND t1.BUDGET > ? AND t1.BUDGET < 30000000");
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
@@ -241,13 +241,13 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
             warning("FOR UPDATE syntax not supported.");
             return;
         }
-        
+
         EntityManager em = createEntityManager();
         SmallProject smallProject = (SmallProject)getServerSession().readObject(SmallProject.class);
         SQLResultSetMapping resultSetMapping = new SQLResultSetMapping("PessimisticLocking");
         EntityResult entityResult = new EntityResult(SmallProject.class);
         resultSetMapping.addResult(entityResult);
-        
+
         SQLCall call = new SQLCall("SELECT t0.PROJ_ID, t0.PROJ_TYPE, t0.PROJ_NAME, t0.DESCRIP, t0.LEADER_ID, t0.VERSION FROM CMP3_PROJECT t0 WHERE t0.PROJ_ID = " + smallProject.getId() + " FOR UPDATE");
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
@@ -267,18 +267,18 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
             closeEntityManager(em);
             throw ex;
         }
-                
+
         smallProject = em.find(SmallProject.class, smallProject.getId());
         closeEntityManager(em);
         assertTrue("Failed to update the new description", smallProject.getDescription().equals("A relatively new Description"));
-       
+
     }
-    
+
     /** tests that embeddable and dot notation for fieldresults work */
      public void testComplicateResults() throws Exception {
         SQLResultSetMapping resultSetMapping = new SQLResultSetMapping("ComplicatedInheritance");
         EntityResult entityResult;
-        
+
         entityResult = new EntityResult(Employee.class);
         entityResult.addFieldResult(new FieldResult("period.startDate", "STARTDATE"));
         entityResult.addFieldResult(new FieldResult("address.id", "EMP_ADDR"));
@@ -290,7 +290,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         List results = (List)getServerSession().executeQuery(query);
         assertNotNull("No result returned", results);
         assertTrue("Incorrect number of results returned, expected 2 got "+results.size(), (results.size()==2));
-        
+
         for (Iterator iterator = results.iterator(); iterator.hasNext(); ){
             Object resultElement = iterator.next();
             assertTrue("Failed to return Employee", (resultElement instanceof Employee) );

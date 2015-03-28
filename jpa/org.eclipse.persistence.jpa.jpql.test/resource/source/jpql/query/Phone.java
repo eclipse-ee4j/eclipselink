@@ -17,17 +17,17 @@ import javax.persistence.NamedQuery;
 @SuppressWarnings("unused")
 public class Phone implements Serializable {
 
-	private String area;
-	@ManyToOne
-	@JoinColumn(name = "CUSTOMER_ID")
-	private Customer customer;
-	@ManyToOne
-	@JoinColumn(name = "EMPLOYEE_ID")
-	private Employee employee;
-	@Id
-	@Column(nullable = false)
-	private Long id;
-	@Column(name="PHONE_NUMBER")
-	private String phoneNumber;
-	private Long type;
+    private String area;
+    @ManyToOne
+    @JoinColumn(name = "CUSTOMER_ID")
+    private Customer customer;
+    @ManyToOne
+    @JoinColumn(name = "EMPLOYEE_ID")
+    private Employee employee;
+    @Id
+    @Column(nullable = false)
+    private Long id;
+    @Column(name="PHONE_NUMBER")
+    private String phoneNumber;
+    private Long type;
 }

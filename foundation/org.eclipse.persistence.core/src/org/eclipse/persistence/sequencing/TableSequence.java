@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/22/2012-2.5 Guy Pelletier 
+ *     11/22/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sequencing;
 
 import java.io.StringWriter;
@@ -35,10 +35,10 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
  */
 public class TableSequence extends QuerySequence {
     /** Default sequence table name
-     * @deprecated 
-     * Use an empty string as a default sequence table name instead, 
+     * @deprecated
+     * Use an empty string as a default sequence table name instead,
      * that triggers usage of platform.getDefaultSequenceTableName() when the sequence is connected.
-     */    
+     */
     public static final String defaultTableName = "SEQUENCE";
 
     /** Hold the database table */
@@ -49,12 +49,12 @@ public class TableSequence extends QuerySequence {
 
     /** Hold the name of the column in the sequence table which specifies the sequence name */
     protected String nameFieldName = "SEQ_NAME";
-    
+
     public TableSequence() {
         super(false, true);
         setTableName("");
     }
-    
+
     /**
      * Create a new sequence with the name.
      */
@@ -62,7 +62,7 @@ public class TableSequence extends QuerySequence {
         super(name, false, true);
         setTableName("");
     }
-    
+
     /**
      * Create a new sequence with the name and sequence pre-allocation size.
      */
@@ -70,12 +70,12 @@ public class TableSequence extends QuerySequence {
         super(name, size, false, true);
         setTableName("");
     }
-    
+
     public TableSequence(String name, int size, int initialValue) {
         super(name, size, initialValue, false, true);
         setTableName("");
     }
-    
+
     /**
      * Create a new sequence with the name, and the sequence table name.
      */
@@ -83,7 +83,7 @@ public class TableSequence extends QuerySequence {
         this(name);
         setTableName(tableName);
     }
-    
+
     /**
      * Create a new sequence with the name, and the sequence table information.
      */
@@ -109,7 +109,7 @@ public class TableSequence extends QuerySequence {
     public boolean isTable() {
         return true;
     }
-    
+
     public boolean equals(Object obj) {
         if (obj instanceof TableSequence) {
             TableSequence other = (TableSequence)obj;
@@ -142,11 +142,11 @@ public class TableSequence extends QuerySequence {
     public DatabaseTable getTable() {
         return table;
     }
-    
+
     public List<IndexDefinition> getTableIndexes() {
         return getTable().getIndexes();
     }
-    
+
     public String getTableName() {
         return getTable().getQualifiedName();
     }
@@ -158,16 +158,16 @@ public class TableSequence extends QuerySequence {
     public void setTable(DatabaseTable table) {
         this.table = table;
     }
-    
+
     public void setTableName(String name) {
         table = new DatabaseTable(name);
     }
-    
+
     public void onConnect() {
         if(this.table.getName().length() == 0) {
             this.table.setName(((DatabasePlatform)getDatasourcePlatform()).getDefaultSequenceTableName());
         }
-        if ((this.qualifier == null || this.qualifier.length() == 0) && 
+        if ((this.qualifier == null || this.qualifier.length() == 0) &&
                 (this.table.getTableQualifier() != null && this.table.getTableQualifier().length() != 0)) {
             this.qualifier = this.table.getTableQualifier();
         }

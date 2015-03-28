@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
 import java.io.*;
@@ -178,7 +178,7 @@ public class PerformanceComparisonTestResult extends TestResult {
                 double testBaseLineAverage = ((Number)this.testAverages.get(0)).doubleValue();
 
                 // Difference
-                double percentageDifference = 
+                double percentageDifference =
                     PerformanceComparisonTestResult.percentageDifference(testAverage, testBaseLineAverage);
                 this.percentageDifferences.add(new Double(percentageDifference));
             }
@@ -233,7 +233,7 @@ public class PerformanceComparisonTestResult extends TestResult {
                 log.write(indentationString + "##FAILURE##" + Helper.cr());
             }
             if (!getTestCounts().isEmpty()) {
-                log.write(indentationString + "RUNS:					" + ((List)getTestCounts().get(0)).size() + Helper.cr());
+                log.write(indentationString + "RUNS:                    " + ((List)getTestCounts().get(0)).size() + Helper.cr());
             }
 
             for (int index = 0; index < getTestCounts().size(); index++) {
@@ -245,34 +245,34 @@ public class PerformanceComparisonTestResult extends TestResult {
                     test = (PerformanceComparisonTest)test.getTests().get(index - 1);
                 }
                 log.write(indentationString + "TEST: " + test.getName() + Helper.cr());
-                log.write(indentationString + "TEST RUN TIME:				" + (test.getTestRunTime() / 1000) + " seconds" + 
+                log.write(indentationString + "TEST RUN TIME:                " + (test.getTestRunTime() / 1000) + " seconds" +
                           Helper.cr());
-                log.write(indentationString + "MEAN TEST COUNT:			" + this.testAverages.get(index) + Helper.cr());
-                log.write(indentationString + "MAX TEST COUNT:				" + this.testMaxs.get(index) + Helper.cr());
-                log.write(indentationString + "MIN TEST COUNT:				" + this.testMins.get(index) + Helper.cr());
-                log.write(indentationString + "TEST % STANDARD DEVIATION:		" + this.testStandardDeviations.get(index) + 
+                log.write(indentationString + "MEAN TEST COUNT:            " + this.testAverages.get(index) + Helper.cr());
+                log.write(indentationString + "MAX TEST COUNT:                " + this.testMaxs.get(index) + Helper.cr());
+                log.write(indentationString + "MIN TEST COUNT:                " + this.testMins.get(index) + Helper.cr());
+                log.write(indentationString + "TEST % STANDARD DEVIATION:        " + this.testStandardDeviations.get(index) +
                           Helper.cr());
 
                 if (index > 0) {
-                    log.write(indentationString + "% DIFFERENCE:				" + this.percentageDifferences.get(index - 1) + 
+                    log.write(indentationString + "% DIFFERENCE:                " + this.percentageDifferences.get(index - 1) +
                               Helper.cr());
-                    log.write(indentationString + "% DIFFERENCE ALLOWABLE:			" + test.getAllowableDecrease() + Helper.cr());
+                    log.write(indentationString + "% DIFFERENCE ALLOWABLE:            " + test.getAllowableDecrease() + Helper.cr());
                 }
             }
 
             if (getTestCase() instanceof PerformanceRegressionTest) {
-                log.write(indentationString + "BASELINE VERSION:			" + getBaselineVersion() + Helper.cr());
-                log.write(indentationString + "BASELINE VERSION RESULTS:		" + getBaselineVersionResults() + Helper.cr());
-                log.write(indentationString + "BASELINE VERSION % STANDARD DEVIATION:	" + this.baselineStandardDeviation + 
+                log.write(indentationString + "BASELINE VERSION:            " + getBaselineVersion() + Helper.cr());
+                log.write(indentationString + "BASELINE VERSION RESULTS:        " + getBaselineVersionResults() + Helper.cr());
+                log.write(indentationString + "BASELINE VERSION % STANDARD DEVIATION:    " + this.baselineStandardDeviation +
                           Helper.cr());
-                log.write(indentationString + "CURRENT VERSION RESULTS:		" + this.getCurrentVersionResults() + Helper.cr());
-                log.write(indentationString + "CURRENT VERSION % STANDARD DEVIATION:	" + this.currentStandardDeviation + 
+                log.write(indentationString + "CURRENT VERSION RESULTS:        " + this.getCurrentVersionResults() + Helper.cr());
+                log.write(indentationString + "CURRENT VERSION % STANDARD DEVIATION:    " + this.currentStandardDeviation +
                           Helper.cr());
-                log.write(indentationString + "% DIFFERENCE (last run):		" + getPercentageDifferenceLastRun() + Helper.cr());
-                log.write(indentationString + "% DIFFERENCE (average):			" + getPercentageDifferenceAverage() + Helper.cr());
+                log.write(indentationString + "% DIFFERENCE (last run):        " + getPercentageDifferenceLastRun() + Helper.cr());
+                log.write(indentationString + "% DIFFERENCE (average):            " + getPercentageDifferenceAverage() + Helper.cr());
             }
 
-            log.write(Helper.cr() + indentationString + "RESULT:      				" + getOutcome() + Helper.cr());
+            log.write(Helper.cr() + indentationString + "RESULT:                      " + getOutcome() + Helper.cr());
         } catch (IOException exception) {
             // Ignore.
         } catch (ArrayIndexOutOfBoundsException exception) {
@@ -369,7 +369,7 @@ public class PerformanceComparisonTestResult extends TestResult {
      * Compute the percentage difference between the values.
      */
     public static double percentageDifference(double result, double baseline) {
-        // Difference                
+        // Difference
         double percentageDifference = ((result - baseline) / baseline) * 100;
         // If negative calculate from the inverse spective to get a more meaningful result.
         if (percentageDifference < 0) {

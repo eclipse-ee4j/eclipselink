@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     John Vandale - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries;
 
 import org.eclipse.persistence.queries.*;
@@ -18,7 +18,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 
 /**
  * Bug 309142 - Test that invoking hasNext() on a forward only result set does not
- * throw an SQLException.  This test uses a stored procedure call to 
+ * throw an SQLException.  This test uses a stored procedure call to
  * get back a forward only result set.
  */
 public class ScrollableCursorForwardOnlyResultSetTest extends TestCase {
@@ -46,7 +46,7 @@ public class ScrollableCursorForwardOnlyResultSetTest extends TestCase {
         query.setCall(spCall);
         query.useScrollableCursor();
         cursor = (ScrollableCursor)getSession().executeQuery(query);
-        
+
         // If the driver returns a forward-only ResultSet initialized to afterLast there's nothing ScrollableCursor can do with it.
         try{
             if ((cursor.getResultSet().isAfterLast()) && (cursor.getResultSet().getType() == java.sql.ResultSet.TYPE_FORWARD_ONLY)) {
@@ -55,7 +55,7 @@ public class ScrollableCursorForwardOnlyResultSetTest extends TestCase {
         } catch (java.sql.SQLException sqle) {
             throwWarning("Unexpected SQLException thrown while checking the ResultSet.");
         }
-        
+
         // iterate the cursor
         try {
             while (cursor.hasNext()) {
@@ -71,7 +71,7 @@ public class ScrollableCursorForwardOnlyResultSetTest extends TestCase {
     }
 
     /**
-     * Verify if the scrollable cursor can iterate a forward only result set 
+     * Verify if the scrollable cursor can iterate a forward only result set
      */
     protected void verify() {
         if (caughtException != null) {

@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     14/05/2012-2.4 Guy Pelletier   
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -33,7 +33,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildContractTable());
         addTableDefinition(buildContract_SoldierTable());
 
-	    // Table per tenant tables.
+        // Table per tenant tables.
         addTableDefinition(buildRidingTable());
         addTableDefinition(buildPartyTable());
         addTableDefinition(buildCandidateTenantATable());
@@ -61,7 +61,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildTrowelTenantBTable());
         addTableDefinition(buildTrowelTenantCTable());
     }
-    
+
     public TableDefinition buildMafiaFamilyTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_MAFIA_FAMILY");
@@ -86,7 +86,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setShouldAllowNull(true);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -97,10 +97,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTenantId.setUnique(false);
         fieldTenantId.setShouldAllowNull(false);
         table.addField(fieldTenantId);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildMafiaFamily_TagsTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_FAMILY_TAGS");
@@ -129,7 +129,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildMafiaFamily_RevenueTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_FAMILY_REVENUE");
@@ -158,11 +158,11 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildMafiosoTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_MAFIOSO");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -172,7 +172,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldFirstName = new FieldDefinition();
         fieldFirstName.setName("FIRSTNAME");
         fieldFirstName.setTypeName("VARCHAR");
@@ -182,7 +182,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldFirstName.setUnique(false);
         fieldFirstName.setIsIdentity(false);
         table.addField(fieldFirstName);
-        
+
         FieldDefinition fieldLastName = new FieldDefinition();
         fieldLastName.setName("LASTNAME");
         fieldLastName.setTypeName("VARCHAR");
@@ -192,7 +192,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldLastName.setUnique(false);
         fieldLastName.setIsIdentity(false);
         table.addField(fieldLastName);
-        
+
         FieldDefinition fieldNickname = new FieldDefinition();
         fieldNickname.setName("NICKNAME");
         fieldNickname.setTypeName("VARCHAR");
@@ -202,7 +202,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldNickname.setUnique(false);
         fieldNickname.setIsIdentity(false);
         table.addField(fieldNickname);
-        
+
         FieldDefinition fieldGender = new FieldDefinition();
         fieldGender.setName("GENDER");
         fieldGender.setTypeName("VARCHAR");
@@ -212,7 +212,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldGender.setUnique(false);
         fieldGender.setIsIdentity(false);
         table.addField(fieldGender);
-        
+
         FieldDefinition fieldFamily = new FieldDefinition();
         fieldFamily.setName("FAMILY_ID");
         fieldFamily.setTypeName("NUMERIC");
@@ -223,7 +223,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldFamily.setIsIdentity(false);
         //fieldFamily.setForeignKeyFieldName("XML_MAFIA_FAMILY.ID");
         table.addField(fieldFamily);
-        
+
         FieldDefinition fielDiscriminatorType = new FieldDefinition();
         fielDiscriminatorType.setName("DTYPE");
         fielDiscriminatorType.setTypeName("VARCHAR");
@@ -233,7 +233,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fielDiscriminatorType.setUnique(false);
         fielDiscriminatorType.setIsIdentity(false);
         table.addField(fielDiscriminatorType);
-    
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -244,14 +244,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTenantId.setUnique(false);
         fieldTenantId.setShouldAllowNull(false);
         table.addField(fieldTenantId);
-        
+
         return table;
     }
 
     public TableDefinition buildMasonTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_MASON_A");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -261,7 +261,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -271,7 +271,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldTrowelId = new FieldDefinition();
         fieldTrowelId.setName("TROWEL_ID");
         fieldTrowelId.setTypeName("NUMERIC");
@@ -282,14 +282,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTrowelId.setShouldAllowNull(true);
         fieldTrowelId.setForeignKeyFieldName("XML_TROWEL_A.ID");
         table.addField(fieldTrowelId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildMasonTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_MASON_B");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -299,7 +299,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -309,7 +309,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldTrowelId = new FieldDefinition();
         fieldTrowelId.setName("TROWEL_ID");
         fieldTrowelId.setTypeName("NUMERIC");
@@ -320,14 +320,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTrowelId.setShouldAllowNull(true);
         fieldTrowelId.setForeignKeyFieldName("XML_TROWEL_B.ID");
         table.addField(fieldTrowelId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildMasonTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_MASON_C");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -337,7 +337,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -347,7 +347,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldTrowelId = new FieldDefinition();
         fieldTrowelId.setName("TROWEL_ID");
         fieldTrowelId.setTypeName("NUMERIC");
@@ -358,14 +358,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTrowelId.setShouldAllowNull(true);
         fieldTrowelId.setForeignKeyFieldName("XML_TROWEL_C.ID");
         table.addField(fieldTrowelId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildMasonAwardsTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_MASON_AWARDS_A");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("MASON_ID");
         fieldID.setTypeName("NUMERIC");
@@ -376,7 +376,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_MASON_A.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAWARDDATE = new FieldDefinition();
         fieldAWARDDATE.setName("AWARD_DATE");
         fieldAWARDDATE.setTypeName("DATE");
@@ -396,14 +396,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldAWARD.setUnique(false);
         fieldAWARD.setIsIdentity(false);
         table.addField(fieldAWARD);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildMasonAwardsTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_MASON_AWARDS_B");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("MASON_ID");
         fieldID.setTypeName("NUMERIC");
@@ -414,7 +414,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_MASON_B.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAWARDDATE = new FieldDefinition();
         fieldAWARDDATE.setName("AWARD_DATE");
         fieldAWARDDATE.setTypeName("DATE");
@@ -434,14 +434,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldAWARD.setUnique(false);
         fieldAWARD.setIsIdentity(false);
         table.addField(fieldAWARD);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildMasonAwardsTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_MASON_AWARDS_C");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("MASON_ID");
         fieldID.setTypeName("NUMERIC");
@@ -452,7 +452,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("XML_MASON_C.ID");
         table.addField(fieldID);
-    
+
         FieldDefinition fieldAWARDDATE = new FieldDefinition();
         fieldAWARDDATE.setName("AWARD_DATE");
         fieldAWARDDATE.setTypeName("DATE");
@@ -472,14 +472,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldAWARD.setUnique(false);
         fieldAWARD.setIsIdentity(false);
         table.addField(fieldAWARD);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildTrowelTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_TROWEL_A");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -489,7 +489,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("TROWEL_TYPE");
         fieldName.setTypeName("VARCHAR");
@@ -499,14 +499,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildTrowelTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_TROWEL_B");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -516,7 +516,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("TROWEL_TYPE");
         fieldName.setTypeName("VARCHAR");
@@ -526,14 +526,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildTrowelTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_TROWEL_C");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -543,7 +543,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("TROWEL_TYPE");
         fieldName.setTypeName("VARCHAR");
@@ -553,10 +553,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildBossTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_BOSS");
@@ -582,7 +582,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldUnderboss.setIsIdentity(false);
         //fieldBoss.setForeignKeyFieldName("XML_BOSS.ID");
         table.addField(fieldUnderboss);
-        
+
         return table;
     }
 
@@ -600,14 +600,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setShouldAllowNull(false);
         //fieldID.setForeignKeyFieldName("XML_MAFIOSO.ID");
         table.addField(fieldID);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateHonorsTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CANDIDATE_HONORS_A");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XMLCandidate_ID");
         fieldID.setTypeName("NUMERIC");
@@ -617,7 +617,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("HONOR");
         field1.setTypeName("VARCHAR");
@@ -627,14 +627,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateHonorsTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CANDIDATE_HONORS_B");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XMLCandidate_ID");
         fieldID.setTypeName("NUMERIC");
@@ -644,7 +644,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("HONOR");
         field1.setTypeName("VARCHAR");
@@ -654,14 +654,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateHonorsTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CANDIDATE_HONORS_C");
-    
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("XMLCandidate_ID");
         fieldID.setTypeName("NUMERIC");
@@ -671,7 +671,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         table.addField(fieldID);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("HONOR");
         field1.setTypeName("VARCHAR");
@@ -681,14 +681,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-    
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateSupporterTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CAN_SUP_A");
-        
+
         FieldDefinition fieldCandidateId = new FieldDefinition();
         fieldCandidateId.setName("CANDIDATE_ID");
         fieldCandidateId.setTypeName("NUMERIC");
@@ -699,7 +699,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldCandidateId.setShouldAllowNull(false);
         fieldCandidateId.setForeignKeyFieldName("XML_CANDIDATE_A.ID");
         table.addField(fieldCandidateId);
-        
+
         FieldDefinition fieldSupporterId = new FieldDefinition();
         fieldSupporterId.setName("SUPPORTER_ID");
         fieldSupporterId.setTypeName("NUMERIC");
@@ -710,14 +710,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldSupporterId.setShouldAllowNull(false);
         fieldSupporterId.setForeignKeyFieldName("A_XML_SUPPORTER.ID");
         table.addField(fieldSupporterId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateSupporterTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CAN_SUP_B");
-        
+
         FieldDefinition fieldCandidateId = new FieldDefinition();
         fieldCandidateId.setName("CANDIDATE_ID");
         fieldCandidateId.setTypeName("NUMERIC");
@@ -728,7 +728,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldCandidateId.setShouldAllowNull(false);
         fieldCandidateId.setForeignKeyFieldName("XML_CANDIDATE_B.ID");
         table.addField(fieldCandidateId);
-        
+
         FieldDefinition fieldSupporterId = new FieldDefinition();
         fieldSupporterId.setName("SUPPORTER_ID");
         fieldSupporterId.setTypeName("NUMERIC");
@@ -739,14 +739,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldSupporterId.setShouldAllowNull(false);
         fieldSupporterId.setForeignKeyFieldName("B_XML_SUPPORTER.ID");
         table.addField(fieldSupporterId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateSupporterTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CAN_SUP_C");
-        
+
         FieldDefinition fieldCandidateId = new FieldDefinition();
         fieldCandidateId.setName("CANDIDATE_ID");
         fieldCandidateId.setTypeName("NUMERIC");
@@ -757,7 +757,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldCandidateId.setShouldAllowNull(false);
         fieldCandidateId.setForeignKeyFieldName("XML_CANDIDATE_C.ID");
         table.addField(fieldCandidateId);
-        
+
         FieldDefinition fieldSupporterId = new FieldDefinition();
         fieldSupporterId.setName("SUPPORTER_ID");
         fieldSupporterId.setTypeName("NUMERIC");
@@ -768,14 +768,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldSupporterId.setShouldAllowNull(false);
         fieldSupporterId.setForeignKeyFieldName("C_XML_SUPPORTER.ID");
         table.addField(fieldSupporterId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CANDIDATE_A");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -785,7 +785,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -795,7 +795,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldRidingId = new FieldDefinition();
         fieldRidingId.setName("RIDING_ID");
         fieldRidingId.setTypeName("NUMERIC");
@@ -806,7 +806,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldRidingId.setShouldAllowNull(true);
         fieldRidingId.setForeignKeyFieldName("XML_RIDING.ID");
         table.addField(fieldRidingId);
-        
+
         FieldDefinition fieldPartyId = new FieldDefinition();
         fieldPartyId.setName("PARTY_ID");
         fieldPartyId.setTypeName("NUMERIC");
@@ -817,14 +817,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldPartyId.setShouldAllowNull(true);
         fieldPartyId.setForeignKeyFieldName("XML_PARTY.ID");
         table.addField(fieldPartyId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CANDIDATE_B");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -834,7 +834,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -844,7 +844,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldRidingId = new FieldDefinition();
         fieldRidingId.setName("RIDING_ID");
         fieldRidingId.setTypeName("NUMERIC");
@@ -855,7 +855,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldRidingId.setShouldAllowNull(true);
         fieldRidingId.setForeignKeyFieldName("XML_RIDING.ID");
         table.addField(fieldRidingId);
-        
+
         FieldDefinition fieldPartyId = new FieldDefinition();
         fieldPartyId.setName("PARTY_ID");
         fieldPartyId.setTypeName("NUMERIC");
@@ -866,14 +866,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldPartyId.setShouldAllowNull(true);
         fieldPartyId.setForeignKeyFieldName("XML_PARTY.ID");
         table.addField(fieldPartyId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCandidateTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CANDIDATE_C");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -883,7 +883,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -893,7 +893,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         FieldDefinition fieldRidingId = new FieldDefinition();
         fieldRidingId.setName("RIDING_ID");
         fieldRidingId.setTypeName("NUMERIC");
@@ -904,7 +904,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldRidingId.setShouldAllowNull(true);
         fieldRidingId.setForeignKeyFieldName("XML_RIDING.ID");
         table.addField(fieldRidingId);
-        
+
         FieldDefinition fieldPartyId = new FieldDefinition();
         fieldPartyId.setName("PARTY_ID");
         fieldPartyId.setTypeName("NUMERIC");
@@ -915,10 +915,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldPartyId.setShouldAllowNull(true);
         fieldPartyId.setForeignKeyFieldName("XML_PARTY.ID");
         table.addField(fieldPartyId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCapoTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CAPO");
@@ -933,7 +933,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setShouldAllowNull(false);
         //fieldID.setForeignKeyFieldName("XML_MAFIOSO.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldUnderboss = new FieldDefinition();
         fieldUnderboss.setName("UNDERBOSS_ID");
         fieldUnderboss.setTypeName("NUMERIC");
@@ -944,10 +944,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldUnderboss.setIsIdentity(false);
         //fieldUnderboss.setForeignKeyFieldName("XML_UNDERBOSS.ID");
         table.addField(fieldUnderboss);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildSalaryTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CANDY_SALARY_A");
@@ -977,7 +977,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildSalaryTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CANDY_SALARY_B");
@@ -1007,7 +1007,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildSalaryTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CANDY_SALARY_C");
@@ -1037,7 +1037,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildSoldierTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_SOLDIER");
@@ -1052,7 +1052,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setShouldAllowNull(false);
         //fieldID.setForeignKeyFieldName("XML_MAFIOSO.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldCapo = new FieldDefinition();
         fieldCapo.setName("CAPO_ID");
         fieldCapo.setTypeName("NUMERIC");
@@ -1063,14 +1063,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldCapo.setIsIdentity(false);
         //fieldCapo.setForeignKeyFieldName("XML_CAPO.ID");
         table.addField(fieldCapo);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildSupporterTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("A_XML_SUPPORTER");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1080,7 +1080,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1090,14 +1090,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setIsIdentity(false);
         fieldName.setShouldAllowNull(false);
         table.addField(fieldName);
-        
+
         return table;
     }
-     
+
     public TableDefinition buildSupporterTenantBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("B_XML_SUPPORTER");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1107,7 +1107,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1117,14 +1117,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setIsIdentity(false);
         fieldName.setShouldAllowNull(false);
         table.addField(fieldName);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildSupporterTenantCTable() {
         TableDefinition table = new TableDefinition();
         table.setName("C_XML_SUPPORTER");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1134,7 +1134,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(true);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1144,10 +1144,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setIsIdentity(false);
         fieldName.setShouldAllowNull(false);
         table.addField(fieldName);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildContractTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CONTRACT");
@@ -1172,7 +1172,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldDescription.setUnique(false);
         fieldDescription.setShouldAllowNull(true);
         table.addField(fieldDescription);
-        
+
         FieldDefinition fieldVersion = new FieldDefinition();
         fieldVersion.setName("VERSION");
         fieldVersion.setTypeName("NUMERIC");
@@ -1182,7 +1182,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldVersion.setUnique(false);
         fieldVersion.setIsIdentity(false);
         table.addField(fieldVersion);
-        
+
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -1193,10 +1193,10 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldTenantId.setUnique(false);
         fieldTenantId.setShouldAllowNull(false);
         table.addField(fieldTenantId);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildContract_SoldierTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CONTRACT_SOLDIER");
@@ -1211,7 +1211,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldContractId.setIsIdentity(false);
         fieldContractId.setForeignKeyFieldName("XML_CONTRACT.ID");
         table.addField(fieldContractId);
-        
+
         FieldDefinition fieldSoldierId = new FieldDefinition();
         fieldSoldierId.setName("SOLDIER_ID");
         fieldSoldierId.setTypeName("NUMERIC");
@@ -1222,13 +1222,13 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldSoldierId.setIsIdentity(false);
         fieldSoldierId.setForeignKeyFieldName("XML_SOLDIER.ID");
         table.addField(fieldSoldierId);
-        
-        return table;   
+
+        return table;
     }
     public TableDefinition buildRidingTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_RIDING");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1238,7 +1238,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1248,14 +1248,14 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildPartyTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_PARTY");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -1265,7 +1265,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-    
+
         FieldDefinition fieldName = new FieldDefinition();
         fieldName.setName("NAME");
         fieldName.setTypeName("VARCHAR");
@@ -1275,7 +1275,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
-        
+
         return table;
     }
 }

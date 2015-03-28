@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     08/23/2010-2.2 Michael O'Brien 
+ *     08/23/2010-2.2 Michael O'Brien
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
@@ -33,13 +33,13 @@ import org.eclipse.persistence.internal.helper.Helper;
 /**
  * INTERNAL:
  * Privileged Access Helper provides a utility so all calls that require privileged access can use the same code.
- * 
+ *
  * Do privileged blocks can be used with a security manager to grant a code base (eclipselink.jar) access to certain
  * Java operations such as reflection.  Generally a security manager is not enabled in a JVM, so this is not an issue.
  * If a security manager is enabled, then either the application can be configured to have access to operations such as
  * reflection, or only EclipseLink can be given access.  If only EclipseLink is desired to be given access then
  * do privileged must be enabled through the System property "eclipselink.security.usedoprivileged"=true.
- * 
+ *
  * Note the usage of do privileged has major impacts on performance, so should normally be avoided.
  */
 public class PrivilegedAccessHelper {
@@ -61,7 +61,7 @@ public class PrivilegedAccessHelper {
         primitiveClasses.put("void", void.class);
         primitiveClasses.put("short", short.class);
     }
-    
+
     /**
      * INTERNAL
      * It will be used to set default value of property "eclipselink.security.usedoprivileged"
@@ -71,7 +71,7 @@ public class PrivilegedAccessHelper {
         defaultUseDoPrivilegedValue = def;
         shouldCheckPrivilegedAccess = true;
     }
-    
+
     /**
      * Finding a field within a class potentially has to navigate through it's superclasses to eventually
      * find the field.  This method is called by the public getDeclaredField() method and does a recursive
@@ -113,7 +113,7 @@ public class PrivilegedAccessHelper {
             }
         }
     }
-    
+
     /**
      * Execute a java Class.forName().  Wrap the call in a doPrivileged block if necessary.
      * @param className
@@ -177,10 +177,10 @@ public class PrivilegedAccessHelper {
                     boolean found = true;
                     for (int index = 0; index < args.length; index++) {
                         Class parameterType = Helper.getObjectClass(constructor.getParameterTypes()[index]);
-                        Class argType = Helper.getObjectClass(args[index]);                      
+                        Class argType = Helper.getObjectClass(args[index]);
                         if ((!parameterType.isAssignableFrom(argType))
                                 && (!argType.isAssignableFrom(parameterType))) {
-                            found = false; 
+                            found = false;
                             break;
                         }
                     }
@@ -277,8 +277,8 @@ public class PrivilegedAccessHelper {
     }
 
    /**
-     * Return a method on a given class with the given method name and parameter 
-     * types. This call will NOT traverse the superclasses. Wrap the call in 
+     * Return a method on a given class with the given method name and parameter
+     * types. This call will NOT traverse the superclasses. Wrap the call in
      * doPrivileged if necessary.
      * @param method the class to get the method from
      * @param methodName the name of the method to get
@@ -288,12 +288,12 @@ public class PrivilegedAccessHelper {
     public static Method getDeclaredMethod(final Class clazz, final String methodName, final Class[] methodParameterTypes) throws NoSuchMethodException {
          return clazz.getDeclaredMethod(methodName, methodParameterTypes);
     }
-    
+
     /**
-     * Get a method declared in the given class. Wrap the call in doPrivileged 
-     * if necessary. This call will traverse the superclasses. The 
-     * shouldSetAccessible parameter allows the the setAccessible API to be 
-     * called as well. This option was added to avoid making multiple 
+     * Get a method declared in the given class. Wrap the call in doPrivileged
+     * if necessary. This call will traverse the superclasses. The
+     * shouldSetAccessible parameter allows the the setAccessible API to be
+     * called as well. This option was added to avoid making multiple
      * doPrivileged calls within MethodBasedAttributeAccessor.
      * @param javaClass The class to get the method from
      * @param methodName The name of the method to get
@@ -308,13 +308,13 @@ public class PrivilegedAccessHelper {
         }
         return method;
     }
-    
+
     /**
-     * Get a public method declared in the given class. Wrap the call in doPrivileged if necessary. 
-     * This call will traverse the superclasses. The shouldSetAccessible parameter allows the the 
-     * setAccessible API to be called as well. This option was added to avoid making multiple 
+     * Get a public method declared in the given class. Wrap the call in doPrivileged if necessary.
+     * This call will traverse the superclasses. The shouldSetAccessible parameter allows the the
+     * setAccessible API to be called as well. This option was added to avoid making multiple
      * doPrivileged calls within MethodBasedAttributeAccessor.
-     * 
+     *
      * @param javaClass The class to get the method from
      * @param methodName The name of the method to get
      * @param methodParameterTypes A list of classes representing the classes of the parameters of the method
@@ -331,14 +331,14 @@ public class PrivilegedAccessHelper {
     }
 
     /**
-     * Get the list of methods in a class. Wrap the call in doPrivileged if 
+     * Get the list of methods in a class. Wrap the call in doPrivileged if
      * necessary. Excludes inherited methods.
      * @param clazz the class to get the methods from.
      */
     public static Method[] getDeclaredMethods(final Class clazz) {
         return clazz.getDeclaredMethods();
     }
-    
+
     /**
      * Get the return type for a given method. Wrap the call in doPrivileged if necessary.
      * @param field
@@ -375,16 +375,16 @@ public class PrivilegedAccessHelper {
         // 323148: a null method as a possible problem with module ordering breaking weaving - has been trapped by implementors of this method.
         return method.getReturnType();
     }
-    
+
     /**
-     * Get the list of methods in a class. Wrap the call in doPrivileged if 
+     * Get the list of methods in a class. Wrap the call in doPrivileged if
      * necessary. This call will traverse the superclasses.
      * @param clazz the class to get the methods from.
      */
     public static Method[] getMethods(final Class clazz) {
         return clazz.getMethods();
     }
-    
+
     /**
      * Get the value of the given field in the given object.
      */
@@ -407,7 +407,7 @@ public class PrivilegedAccessHelper {
     public static Object invokeMethod(final Method method, final Object object) throws IllegalAccessException, InvocationTargetException {
         return invokeMethod(method, object, (Object[]) null);
     }
-    
+
     /**
      * Invoke the givenMethod on a givenObject using the array of parameters given.  Wrap in a doPrivileged block
      * if necessary.
@@ -448,7 +448,7 @@ public class PrivilegedAccessHelper {
         // #shouldUsePrivilegedAccess will be evaluated the first time this method is called and then 'reevaluated' only
         // after explicit call to #setDefaultUseDoPrivilegedValue().
         if (shouldCheckPrivilegedAccess) {
-            if (System.getSecurityManager() != null) {    
+            if (System.getSecurityManager() != null) {
                 String usePrivileged = AccessController.doPrivileged(new PrivilegedGetSystemProperty("eclipselink.security.usedoprivileged"));
                 if (usePrivileged == null) {
                     shouldUsePrivilegedAccess = defaultUseDoPrivilegedValue;

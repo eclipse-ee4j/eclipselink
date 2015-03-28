@@ -1,5 +1,5 @@
 <xsd:schema attributeFormDefault="qualified" elementFormDefault="qualified"
-        targetNamespace="http://www.globalcompany.com/ns/OrderBooking" 
+        targetNamespace="http://www.globalcompany.com/ns/OrderBooking"
         xmlns:po="http://www.globalcompany.com/ns/order"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema">
  <xsd:import namespace="http://www.globalcompany.com/ns/order" schemaLocation="OrderBookingPO.xsd"/>

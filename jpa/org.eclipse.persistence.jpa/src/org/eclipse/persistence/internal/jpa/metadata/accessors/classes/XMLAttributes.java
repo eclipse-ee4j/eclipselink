@@ -1,25 +1,25 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/16/2008-1.0M8 Guy Pelletier 
+ *     05/16/2008-1.0M8 Guy Pelletier
  *       - 218084: Implement metadata merging functionality between mapping files
- *     01/28/2009-2.0 Guy Pelletier 
+ *     01/28/2009-2.0 Guy Pelletier
  *       - 248293: JPA 2.0 Element Collections (part 1)
- *     04/27/2010-2.1 Guy Pelletier 
+ *     04/27/2010-2.1 Guy Pelletier
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
- *     09/16/2010-2.2 Guy Pelletier 
+ *     09/16/2010-2.2 Guy Pelletier
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 /**
  * Object to represent all the attributes of an XML defined entity,
  * mapped-superclass or embeddable.
- * 
+ *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -60,13 +60,13 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * - any metadata mapped from XML to this class must be initialized in the
  *   initXMLObject  method.
  * - methods should be preserved in alphabetical order.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
 public class XMLAttributes extends ORMetadata {
     private EmbeddedIdAccessor m_embeddedId;
-    
+
     private List<BasicAccessor> m_basics;
     private List<BasicCollectionAccessor> m_basicCollections;
     private List<BasicMapAccessor> m_basicMaps;
@@ -98,77 +98,77 @@ public class XMLAttributes extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof XMLAttributes) {
             XMLAttributes attributes = (XMLAttributes) objectToCompare;
-            
+
             if (! valuesMatch(m_embeddedId, attributes.getEmbeddedId())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_basics, attributes.getBasics())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_basicCollections, attributes.getBasicCollections())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_basicMaps, attributes.getBasicMaps())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_elementCollections, attributes.getElementCollections())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_embeddeds, attributes.getEmbeddeds())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_ids, attributes.getIds())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_manyToManys, attributes.getManyToManys())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_manyToOnes, attributes.getManyToOnes())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_oneToManys, attributes.getOneToManys())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_oneToOnes, attributes.getOneToOnes())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_variableOneToOnes, attributes.getVariableOneToOnes())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_transformations, attributes.getTransformations())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_transients, attributes.getTransients())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_structures, attributes.getStructures())) {
                 return false;
             }
-            
+
             if (! valuesMatch(m_arrays, attributes.getArrays())) {
                 return false;
             }
-            
+
             return valuesMatch(m_versions, attributes.getVersions());
         }
-        
+
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * This list is not cached and should not be cached since our accessors
@@ -177,12 +177,12 @@ public class XMLAttributes extends ORMetadata {
      */
     public List<MappingAccessor> getAccessors() {
         List<MappingAccessor> accessors = new ArrayList<MappingAccessor>();
-        
+
         if (m_embeddedId != null) {
             accessors.add(m_embeddedId);
         }
-            
-        accessors.addAll(m_ids); 
+
+        accessors.addAll(m_ids);
         accessors.addAll(m_basics);
         accessors.addAll(m_basicCollections);
         accessors.addAll(m_basicMaps);
@@ -198,10 +198,10 @@ public class XMLAttributes extends ORMetadata {
         accessors.addAll(m_variableOneToOnes);
         accessors.addAll(m_structures);
         accessors.addAll(m_arrays);
-        
+
         return accessors;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -209,7 +209,7 @@ public class XMLAttributes extends ORMetadata {
     public List<ArrayAccessor> getArrays() {
         return m_arrays;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -217,7 +217,7 @@ public class XMLAttributes extends ORMetadata {
     public List<BasicCollectionAccessor> getBasicCollections() {
         return m_basicCollections;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -225,7 +225,7 @@ public class XMLAttributes extends ORMetadata {
     public List<BasicMapAccessor> getBasicMaps() {
         return m_basicMaps;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -241,7 +241,7 @@ public class XMLAttributes extends ORMetadata {
     public List<ElementCollectionAccessor> getElementCollections() {
         return m_elementCollections;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -249,7 +249,7 @@ public class XMLAttributes extends ORMetadata {
     public EmbeddedIdAccessor getEmbeddedId() {
         return m_embeddedId;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -257,7 +257,7 @@ public class XMLAttributes extends ORMetadata {
     public List<EmbeddedAccessor> getEmbeddeds() {
         return m_embeddeds;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -265,7 +265,7 @@ public class XMLAttributes extends ORMetadata {
     public List<IdAccessor> getIds() {
         return m_ids;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -281,7 +281,7 @@ public class XMLAttributes extends ORMetadata {
     public List<ManyToOneAccessor> getManyToOnes() {
         return m_manyToOnes;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -305,7 +305,7 @@ public class XMLAttributes extends ORMetadata {
     public List<StructureAccessor> getStructures() {
         return m_structures;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -329,7 +329,7 @@ public class XMLAttributes extends ORMetadata {
     public List<VariableOneToOneAccessor> getVariableOneToOnes() {
         return m_variableOneToOnes;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -345,15 +345,15 @@ public class XMLAttributes extends ORMetadata {
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
-        
+
         // For merging purposes we will initialize the accessors with the owning
         // classes accessible object. The actual accessible object (field or
         // method) for each accessor will be set during the actual metadata
         // processing stage.
-        
+
         // Initialize single objects.
         initXMLObject(m_embeddedId, accessibleObject);
-        
+
         // Initialize lists of objects.
         initXMLObjects(m_basics, accessibleObject);
         initXMLObjects(m_basicCollections, accessibleObject);
@@ -372,7 +372,7 @@ public class XMLAttributes extends ORMetadata {
         initXMLObjects(m_structures, accessibleObject);
         initXMLObjects(m_arrays, accessibleObject);
     }
-    
+
     /**
      * INTERNAL:
      * Since we are controlling the merging and we know we'll be comparing
@@ -382,10 +382,10 @@ public class XMLAttributes extends ORMetadata {
     public void merge(ORMetadata metadata) {
         if (metadata != null) {
             XMLAttributes attributes = (XMLAttributes) metadata;
-            
+
             // ORMetadata object merging
             m_embeddedId = (EmbeddedIdAccessor) mergeORObjects(getEmbeddedId(), attributes.getEmbeddedId());
-            
+
             // ORMetadata list merging.
             m_basics = mergeORObjectLists(m_basics, attributes.getBasics());
             m_basicCollections = mergeORObjectLists(m_basicCollections, attributes.getBasicCollections());
@@ -405,7 +405,7 @@ public class XMLAttributes extends ORMetadata {
             m_arrays = mergeORObjectLists(m_arrays, attributes.getArrays());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -413,7 +413,7 @@ public class XMLAttributes extends ORMetadata {
     public void setArrays(List<ArrayAccessor> arrays) {
         m_arrays = arrays;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -421,7 +421,7 @@ public class XMLAttributes extends ORMetadata {
     public void setBasicCollections(List<BasicCollectionAccessor> basicCollections) {
         m_basicCollections = basicCollections;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -429,15 +429,15 @@ public class XMLAttributes extends ORMetadata {
     public void setBasicMaps(List<BasicMapAccessor> basicMaps) {
         m_basicMaps = basicMaps;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
     public void setBasics(List<BasicAccessor> basics) {
         m_basics = basics;
-    }    
-    
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -445,7 +445,7 @@ public class XMLAttributes extends ORMetadata {
     public void setElementCollections(List<ElementCollectionAccessor> elementCollections) {
         m_elementCollections = elementCollections;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -453,7 +453,7 @@ public class XMLAttributes extends ORMetadata {
     public void setEmbeddedId(EmbeddedIdAccessor embeddedId) {
         m_embeddedId = embeddedId;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -469,7 +469,7 @@ public class XMLAttributes extends ORMetadata {
     public void setIds(List<IdAccessor> ids) {
         m_ids = ids;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -477,7 +477,7 @@ public class XMLAttributes extends ORMetadata {
     public void setManyToManys(List<ManyToManyAccessor> manyToManys) {
         m_manyToManys = manyToManys;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -509,7 +509,7 @@ public class XMLAttributes extends ORMetadata {
     public void setStructures(List<StructureAccessor> structures) {
         m_structures = structures;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -533,7 +533,7 @@ public class XMLAttributes extends ORMetadata {
     public void setVariableOneToOnes(List<VariableOneToOneAccessor> variableOneToOnes) {
         m_variableOneToOnes = variableOneToOnes;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -542,4 +542,4 @@ public class XMLAttributes extends ORMetadata {
         m_versions = versions;
     }
 }
-    
+

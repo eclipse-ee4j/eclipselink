@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,35 +17,35 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlRootElement(name="classARoot")
 public class ClassA {
-	private String someValue;
+    private String someValue;
 
-	public String getSomeValue() {
-		return someValue;
-	}
+    public String getSomeValue() {
+        return someValue;
+    }
 
-	public void setSomeValue(String someValue) {
-		this.someValue = someValue;
-	}
-	
-	public boolean equals(Object obj){
-		if(!(obj instanceof ClassA)){
-			return false;
-		}
-		ClassA classAObj = (ClassA)obj;
-		
-		if(someValue == null){
-			if(classAObj.getSomeValue() != null){
-				return false;
-			}
-		}else{
-			if(classAObj.getSomeValue() == null){
-				return false;
-			}
-			if(!someValue.equals(classAObj.getSomeValue())){
-				return false;
-			}
-		}		
-		
-		return true;
-	}
+    public void setSomeValue(String someValue) {
+        this.someValue = someValue;
+    }
+
+    public boolean equals(Object obj){
+        if(!(obj instanceof ClassA)){
+            return false;
+        }
+        ClassA classAObj = (ClassA)obj;
+
+        if(someValue == null){
+            if(classAObj.getSomeValue() != null){
+                return false;
+            }
+        }else{
+            if(classAObj.getSomeValue() == null){
+                return false;
+            }
+            if(!someValue.equals(classAObj.getSomeValue())){
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

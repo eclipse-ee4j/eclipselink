@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,14 +28,14 @@ import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryBuilderTestH
  */
 public abstract class AbstractRefactoringToolTest extends JPQLCoreTest {
 
-	@IJPQLQueryBuilderTestHelper
-	private IJPQLQueryBuilder jpqlQueryBuilder;
+    @IJPQLQueryBuilderTestHelper
+    private IJPQLQueryBuilder jpqlQueryBuilder;
 
-	protected JPQLGrammar getGrammar() {
-		return jpqlQueryBuilder.getGrammar();
-	}
+    protected JPQLGrammar getGrammar() {
+        return jpqlQueryBuilder.getGrammar();
+    }
 
-	protected IJPQLQueryBuilder getJPQLQueryBuilder() {
-		return jpqlQueryBuilder;
-	}
+    protected IJPQLQueryBuilder getJPQLQueryBuilder() {
+        return jpqlQueryBuilder;
+    }
 }

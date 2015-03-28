@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.StringWriter;
@@ -29,7 +29,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
  * INTERNAL:
- *    DynamicSQLBatchWritingMechanism is a private class, used by the DatabaseAccessor. 
+ *    DynamicSQLBatchWritingMechanism is a private class, used by the DatabaseAccessor.
  *    It provides the required behavior for batching statements, for write, with parameter binding turned off.<p>
  */
 public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
@@ -38,7 +38,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      * This variable is used to store the SQLStrings that are being batched
      */
     protected List<String> sqlStrings;
-    
+
     /**
      * Stores the statement indexes for statements that are using optimistic locking.  This allows us to check individual
      * statement results on supported platforms
@@ -48,12 +48,12 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      * This attribute is used to store the maximum length of all strings batched together
      */
     protected long batchSize;
-    
+
     /**
      * Records if this batch uses optimistic locking.
      */
     protected boolean usesOptimisticLocking;
-     
+
     protected DatabaseCall lastCallAppended;
 
     public DynamicSQLBatchWritingMechanism(DatabaseAccessor databaseAccessor) {
@@ -73,7 +73,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      * being batched.  This call may result in the Mechanism executing the batched statements and
      * possibly, switching out the mechanisms
      */
-    public void appendCall(AbstractSession session, DatabaseCall dbCall) {    	
+    public void appendCall(AbstractSession session, DatabaseCall dbCall) {
         if (!dbCall.hasParameters()) {
             if ((this.batchSize + dbCall.getSQLString().length()) > this.maxBatchSize) {
                 executeBatchedStatements(session);
@@ -126,7 +126,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
             return;
         }
         //Bug#419326 : Added below clone, clear and clone.executeBatch(session)
-        //Cloning the mechanism and clearing the current mechanism ensures that the current batch 
+        //Cloning the mechanism and clearing the current mechanism ensures that the current batch
         //is not visible to recursive calls to executeBatchedStatements(session).
         DynamicSQLBatchWritingMechanism currentBatch = (DynamicSQLBatchWritingMechanism) this.clone();
         this.clear();
@@ -135,18 +135,18 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
 
     /**
      * INTERNAL:
-     * This method is added to execute and clear the batched statements on the cloned batch mechanism which 
+     * This method is added to execute and clear the batched statements on the cloned batch mechanism which
      * is created in executeBatchedStatements(session).
-     * 
+     *
      * Introduced in fix for bug#419326.
      */
     private void executeBatch(AbstractSession session) {
-        
+
         if (this.sqlStrings.size() == 1) {
             // If only one call, just execute normally.
             try {
-                int rowCount = (Integer)this.databaseAccessor.basicExecuteCall(this.lastCallAppended, null, session, false);          
-                if (this.usesOptimisticLocking) {                    
+                int rowCount = (Integer)this.databaseAccessor.basicExecuteCall(this.lastCallAppended, null, session, false);
+                if (this.usesOptimisticLocking) {
                     if (rowCount != 1) {
                         throw OptimisticLockException.batchStatementExecutionFailure();
                     }
@@ -168,7 +168,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
                 }
                 session.log(SessionLog.FINER, SessionLog.SQL, "end_batch_statements", null, this.databaseAccessor);
             }
-            
+
             if (!session.getPlatform().usesJDBCBatchWriting()) {
                 PreparedStatement statement = prepareBatchStatement(session);
                 this.databaseAccessor.executeBatchedStatement(statement, session);
@@ -260,9 +260,9 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
                 for (String sql : this.sqlStrings) {
                     statement.addBatch(sql);
                 }
-            	// Set the query timeout that was cached during the multiple calls to appendCall
+                // Set the query timeout that was cached during the multiple calls to appendCall
                 if (this.queryTimeoutCache > DescriptorQueryManager.NoTimeout) {
-                	statement.setQueryTimeout(this.queryTimeoutCache);
+                    statement.setQueryTimeout(this.queryTimeoutCache);
                 }
             } finally {
                 session.endOperationProfile(SessionProfiler.SqlPrepare, null, SessionProfiler.ALL);

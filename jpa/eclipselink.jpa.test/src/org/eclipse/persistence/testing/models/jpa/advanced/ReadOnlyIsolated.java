@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     ailitchev - 2010.01.08 Bug 299147 - em.find isolated read-only entity throws exception 
+ *     ailitchev - 2010.01.08 Bug 299147 - em.find isolated read-only entity throws exception
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
@@ -29,20 +29,20 @@ public class ReadOnlyIsolated  {
 
     public ReadOnlyIsolated() {}
 
-    public String getCode() { 
-        return code; 
+    public String getCode() {
+        return code;
     }
-    
+
     @Id
-    public Integer getId() { 
-        return id; 
+    public Integer getId() {
+        return id;
     }
-    
-    public void setCode(String code) { 
-        this.code = code; 
+
+    public void setCode(String code) {
+        this.code = code;
     }
-    
-    public void setId(Integer id) { 
-        this.id = id; 
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

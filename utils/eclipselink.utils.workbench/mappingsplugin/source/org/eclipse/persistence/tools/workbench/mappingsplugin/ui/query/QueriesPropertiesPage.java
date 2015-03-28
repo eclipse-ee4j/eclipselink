@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -57,227 +57,227 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 
 
-public abstract class QueriesPropertiesPage 
-	extends ScrollablePropertiesPage
+public abstract class QueriesPropertiesPage
+    extends ScrollablePropertiesPage
 {
-	private PropertyValueModel queryManagerHolder;
-	private PropertyValueModel queryHolder;
-	private CollectionValueModel queriesHolder;
-	
-	
-	protected QueriesPropertiesPage(PropertyValueModel relationalDescriptorNodeHolder, WorkbenchContextHolder contextHolder) {
-		super(relationalDescriptorNodeHolder, contextHolder);
-	}
+    private PropertyValueModel queryManagerHolder;
+    private PropertyValueModel queryHolder;
+    private CollectionValueModel queriesHolder;
 
-	protected void initialize(PropertyValueModel nodeHolder) {
-		super.initialize(nodeHolder);
-		this.queryManagerHolder = buildQueryManagerHolder();
-		this.queryHolder = new SimplePropertyValueModel();
-		this.queriesHolder = buildQueriesHolder();
-	}
-	
-	protected abstract PropertyValueModel buildQueryManagerHolder();
-	
-	
-	// ********** queries ************
 
-	protected ListCellRenderer buildQueriesListCellRenderer() {
-		return new SimpleListCellRenderer() {
-			protected String buildText(Object value) {
-				return ((MWQuery) value).signature();
-			}
-		};
-	}
+    protected QueriesPropertiesPage(PropertyValueModel relationalDescriptorNodeHolder, WorkbenchContextHolder contextHolder) {
+        super(relationalDescriptorNodeHolder, contextHolder);
+    }
 
-	private ListValueModel buildItemListValueModelAdapter() {
-		return new ItemPropertyListValueModelAdapter(buildSortedQueryListValueModelAdapter(), MWQuery.SIGNATURE_PROPERTY);
-	}
+    protected void initialize(PropertyValueModel nodeHolder) {
+        super.initialize(nodeHolder);
+        this.queryManagerHolder = buildQueryManagerHolder();
+        this.queryHolder = new SimplePropertyValueModel();
+        this.queriesHolder = buildQueriesHolder();
+    }
 
-	private ListValueModel buildSortedQueryListValueModelAdapter() {
-		return new SortedListValueModelAdapter(buildItemNameListValueModelAdapter());
-	}
-	
-	private ListValueModel buildItemNameListValueModelAdapter() {
-		return new ItemPropertyListValueModelAdapter(this.queriesHolder, MWQuery.NAME_PROPERTY);
-	}
-	
-	private CollectionValueModel buildQueriesHolder() {
-		return new CollectionAspectAdapter(this.queryManagerHolder, MWQueryManager.QUERY_COLLECTION) {
-			protected Iterator getValueFromSubject() {
-				return ((MWQueryManager) this.subject).queries();
-			}
-			protected int sizeFromSubject() {
-				return ((MWQueryManager) this.subject).queriesSize();
-			}
-		};
-	}
+    protected abstract PropertyValueModel buildQueryManagerHolder();
 
-	protected ListSelectionListener buildQueryListSelectionListener() {
-		return new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				if ( ! e.getValueIsAdjusting()) {
-					ObjectListSelectionModel listSelectionModel = (ObjectListSelectionModel) e.getSource();
-					Object[] values = listSelectionModel.getSelectedValues();
-					if (values.length == 1) {
-						queryHolder.setValue(values[0]);
-					}
-					else {
-						queryHolder.setValue(null);
-					}
-				}
-			}
-		};
-	}
-	
-	protected AddRemoveListPanel buildQueriesListPanel() {
-		AddRemoveListPanel queriesListPanel = new AddRemoveListPanel(
-			getApplicationContext(),
-			buildAddRemoveListPanelAdapter(),
-			buildItemListValueModelAdapter(),
-			resourceRepository().getString("NAMED_QUERIES_LIST"));
-		queriesListPanel.setCellRenderer(buildQueriesListCellRenderer());
-		queriesListPanel.addListSelectionListener(buildQueryListSelectionListener());
-				
-		return queriesListPanel;
-	}
-	
-	protected AddRemoveListPanel.OptionAdapter buildAddRemoveListPanelAdapter() {
-		return new AddRemoveListPanel.OptionAdapter() {
-			public void addNewItem(ObjectListSelectionModel listSelectionModel) {
-				promptToAddQuery(listSelectionModel);
-			}
 
-			public void removeSelectedItems(ObjectListSelectionModel listSelectionModel) {
-				removeSelectedQueries(listSelectionModel);
-			}
-			
-			public void optionOnSelection(ObjectListSelectionModel listSelectionModel) {
-				promptToRenameQuery(listSelectionModel);
-			}
-			
-			public boolean enableOptionOnSelectionChange(ObjectListSelectionModel listSelectionModel) {
-				return listSelectionModel.getSelectedValuesSize() == 1;
-			}
+    // ********** queries ************
 
-			public String optionalButtonKey() {
-				return "RENAME_BUTTON";
-			}
-		};
-	}
+    protected ListCellRenderer buildQueriesListCellRenderer() {
+        return new SimpleListCellRenderer() {
+            protected String buildText(Object value) {
+                return ((MWQuery) value).signature();
+            }
+        };
+    }
 
-	protected void promptToAddQuery(ObjectListSelectionModel listSelectionModel) {
-		MWMappingDescriptor descriptor = getQueryManager().getOwningDescriptor();
-		
-		AddQueryDialog dlg;
-		dlg = new AddQueryDialog(getWorkbenchContext(), descriptor.getTransactionalPolicy().getQueryManager().supportsReportQueries());
-		dlg.show();
-		if (dlg.wasConfirmed()) {
-			String queryType = dlg.getQueryType();
-			String queryName = dlg.getQueryName();
-			MWQuery newQuery;
-			if (queryType == MWQuery.READ_OBJECT_QUERY) {
-				newQuery = getQueryManager().addReadObjectQuery(queryName);
-			}
-			else if (queryType == MWQuery.READ_ALL_QUERY) {
-				newQuery = getQueryManager().addReadAllQuery(queryName);
-			}
-			else /*(queryType == MWQuery.REPORT_QUERY)*/ {
-				newQuery = ((MWRelationalQueryManager) getQueryManager()).addReportQuery(queryName);
-			}
-			
-			listSelectionModel.setSelectedValue(newQuery);
-		}
-	}
-	
-	protected void removeSelectedQueries(ObjectListSelectionModel listSelectionModel)  {
-		Iterator queries = CollectionTools.iterator(listSelectionModel.getSelectedValues());
-				
-		while(queries.hasNext()) {
-			getQueryManager().removeQuery((MWQuery) queries.next());
-		}
-	}
-			
-	public void promptToRenameQuery(ObjectListSelectionModel listSelectionModel) {
-		final MWQuery selectedQuery = (MWQuery) listSelectionModel.getSelectedValue();
-			Builder builder = new Builder(){
-				public String getTitle() {
-					return resourceRepository().getString("RENAME_QUERY_DIALOG.title");
-				}
-				public String getTextFieldDescription() {
-					return resourceRepository().getString("RENAME_QUERY_DIALOG.message");
-				}
-				public String getOriginalName() {
-					return selectedQuery.getName();
-				}
-				public String getHelpTopicId() {
-					return "descriptor.queryManager.namedQueries";
-				}
-				protected DocumentFactory buildDefaultDocumentFactory() {
-					return new DocumentFactory() {
-						public Document buildDocument() {
-							return new RegexpDocument(RegexpDocument.RE_METHOD);
-						}
-					};
-				}
-			
-			};
-			NewNameDialog dialog = builder.buildDialog(getWorkbenchContext());
-			dialog.show();
-			if (dialog.wasConfirmed()) {
-				selectedQuery.setName(dialog.getNewName());
-				listSelectionModel.setSelectedValue(selectedQuery);
-			}
-		
-	}
+    private ListValueModel buildItemListValueModelAdapter() {
+        return new ItemPropertyListValueModelAdapter(buildSortedQueryListValueModelAdapter(), MWQuery.SIGNATURE_PROPERTY);
+    }
 
-	protected final MWQueryManager getQueryManager() {
-		return (MWQueryManager) getQueryManagerHolder().getValue();
-	}
+    private ListValueModel buildSortedQueryListValueModelAdapter() {
+        return new SortedListValueModelAdapter(buildItemNameListValueModelAdapter());
+    }
 
-	protected String helpTopicId() {
-		return "descriptor.queries";
-	}
-	
-	protected PropertyValueModel getQueryManagerHolder() {
-		return this.queryManagerHolder;
-	}
+    private ListValueModel buildItemNameListValueModelAdapter() {
+        return new ItemPropertyListValueModelAdapter(this.queriesHolder, MWQuery.NAME_PROPERTY);
+    }
 
-	protected PropertyValueModel getQueryHolder() {
-		return this.queryHolder;
-	}
-	
-	protected QuickViewItem buildQueryParameterQuickViewItem(MWQueryItem queryItem) {
-		return new QueryQuickViewItem(queryItem) {
-			
-			public void select() {
-				selectGeneralPanel();
-				getQueryGeneralPanel().selectParameter((MWQueryParameter) getValue());
-			}
-			
-			public String displayString() {
-				MWQueryParameter parameter = (MWQueryParameter) getValue();
+    private CollectionValueModel buildQueriesHolder() {
+        return new CollectionAspectAdapter(this.queryManagerHolder, MWQueryManager.QUERY_COLLECTION) {
+            protected Iterator getValueFromSubject() {
+                return ((MWQueryManager) this.subject).queries();
+            }
+            protected int sizeFromSubject() {
+                return ((MWQueryManager) this.subject).queriesSize();
+            }
+        };
+    }
 
-				return resourceRepository().getString(
-					"QUICK_VIEW_PARAMETER_LABEL",
-					parameter.getName(),
-					ClassTools.shortNameForClassNamed(parameter.getType().getName()));
-			}
-		};
-	}	
+    protected ListSelectionListener buildQueryListSelectionListener() {
+        return new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                if ( ! e.getValueIsAdjusting()) {
+                    ObjectListSelectionModel listSelectionModel = (ObjectListSelectionModel) e.getSource();
+                    Object[] values = listSelectionModel.getSelectedValues();
+                    if (values.length == 1) {
+                        queryHolder.setValue(values[0]);
+                    }
+                    else {
+                        queryHolder.setValue(null);
+                    }
+                }
+            }
+        };
+    }
 
-	
-	
-	protected abstract QueryGeneralPanel getQueryGeneralPanel();
-	
-	protected abstract JTabbedPane getQueryTabbedPane();
-	
-	protected void selectGeneralPanel() {
-		getQueryTabbedPane().setSelectedComponent(getQueryGeneralPanel());
-	}
-    
+    protected AddRemoveListPanel buildQueriesListPanel() {
+        AddRemoveListPanel queriesListPanel = new AddRemoveListPanel(
+            getApplicationContext(),
+            buildAddRemoveListPanelAdapter(),
+            buildItemListValueModelAdapter(),
+            resourceRepository().getString("NAMED_QUERIES_LIST"));
+        queriesListPanel.setCellRenderer(buildQueriesListCellRenderer());
+        queriesListPanel.addListSelectionListener(buildQueryListSelectionListener());
+
+        return queriesListPanel;
+    }
+
+    protected AddRemoveListPanel.OptionAdapter buildAddRemoveListPanelAdapter() {
+        return new AddRemoveListPanel.OptionAdapter() {
+            public void addNewItem(ObjectListSelectionModel listSelectionModel) {
+                promptToAddQuery(listSelectionModel);
+            }
+
+            public void removeSelectedItems(ObjectListSelectionModel listSelectionModel) {
+                removeSelectedQueries(listSelectionModel);
+            }
+
+            public void optionOnSelection(ObjectListSelectionModel listSelectionModel) {
+                promptToRenameQuery(listSelectionModel);
+            }
+
+            public boolean enableOptionOnSelectionChange(ObjectListSelectionModel listSelectionModel) {
+                return listSelectionModel.getSelectedValuesSize() == 1;
+            }
+
+            public String optionalButtonKey() {
+                return "RENAME_BUTTON";
+            }
+        };
+    }
+
+    protected void promptToAddQuery(ObjectListSelectionModel listSelectionModel) {
+        MWMappingDescriptor descriptor = getQueryManager().getOwningDescriptor();
+
+        AddQueryDialog dlg;
+        dlg = new AddQueryDialog(getWorkbenchContext(), descriptor.getTransactionalPolicy().getQueryManager().supportsReportQueries());
+        dlg.show();
+        if (dlg.wasConfirmed()) {
+            String queryType = dlg.getQueryType();
+            String queryName = dlg.getQueryName();
+            MWQuery newQuery;
+            if (queryType == MWQuery.READ_OBJECT_QUERY) {
+                newQuery = getQueryManager().addReadObjectQuery(queryName);
+            }
+            else if (queryType == MWQuery.READ_ALL_QUERY) {
+                newQuery = getQueryManager().addReadAllQuery(queryName);
+            }
+            else /*(queryType == MWQuery.REPORT_QUERY)*/ {
+                newQuery = ((MWRelationalQueryManager) getQueryManager()).addReportQuery(queryName);
+            }
+
+            listSelectionModel.setSelectedValue(newQuery);
+        }
+    }
+
+    protected void removeSelectedQueries(ObjectListSelectionModel listSelectionModel)  {
+        Iterator queries = CollectionTools.iterator(listSelectionModel.getSelectedValues());
+
+        while(queries.hasNext()) {
+            getQueryManager().removeQuery((MWQuery) queries.next());
+        }
+    }
+
+    public void promptToRenameQuery(ObjectListSelectionModel listSelectionModel) {
+        final MWQuery selectedQuery = (MWQuery) listSelectionModel.getSelectedValue();
+            Builder builder = new Builder(){
+                public String getTitle() {
+                    return resourceRepository().getString("RENAME_QUERY_DIALOG.title");
+                }
+                public String getTextFieldDescription() {
+                    return resourceRepository().getString("RENAME_QUERY_DIALOG.message");
+                }
+                public String getOriginalName() {
+                    return selectedQuery.getName();
+                }
+                public String getHelpTopicId() {
+                    return "descriptor.queryManager.namedQueries";
+                }
+                protected DocumentFactory buildDefaultDocumentFactory() {
+                    return new DocumentFactory() {
+                        public Document buildDocument() {
+                            return new RegexpDocument(RegexpDocument.RE_METHOD);
+                        }
+                    };
+                }
+
+            };
+            NewNameDialog dialog = builder.buildDialog(getWorkbenchContext());
+            dialog.show();
+            if (dialog.wasConfirmed()) {
+                selectedQuery.setName(dialog.getNewName());
+                listSelectionModel.setSelectedValue(selectedQuery);
+            }
+
+    }
+
+    protected final MWQueryManager getQueryManager() {
+        return (MWQueryManager) getQueryManagerHolder().getValue();
+    }
+
+    protected String helpTopicId() {
+        return "descriptor.queries";
+    }
+
+    protected PropertyValueModel getQueryManagerHolder() {
+        return this.queryManagerHolder;
+    }
+
+    protected PropertyValueModel getQueryHolder() {
+        return this.queryHolder;
+    }
+
+    protected QuickViewItem buildQueryParameterQuickViewItem(MWQueryItem queryItem) {
+        return new QueryQuickViewItem(queryItem) {
+
+            public void select() {
+                selectGeneralPanel();
+                getQueryGeneralPanel().selectParameter((MWQueryParameter) getValue());
+            }
+
+            public String displayString() {
+                MWQueryParameter parameter = (MWQueryParameter) getValue();
+
+                return resourceRepository().getString(
+                    "QUICK_VIEW_PARAMETER_LABEL",
+                    parameter.getName(),
+                    ClassTools.shortNameForClassNamed(parameter.getType().getName()));
+            }
+        };
+    }
+
+
+
+    protected abstract QueryGeneralPanel getQueryGeneralPanel();
+
+    protected abstract JTabbedPane getQueryTabbedPane();
+
+    protected void selectGeneralPanel() {
+        getQueryTabbedPane().setSelectedComponent(getQueryGeneralPanel());
+    }
+
     protected JComponent buildEmptyPanel() {
         GridBagConstraints constraints = new GridBagConstraints();
-        
+
         JPanel container = new JPanel(new GridBagLayout());
 
         JPanel emptyPanel = new JPanel();
@@ -314,20 +314,20 @@ public abstract class QueriesPropertiesPage
         return container;
     }
 
-	protected final Document buildQueryVarietyDocumentAdapter() {
-		return new DocumentAdapter(buildVarietyTypeHolder());
-	}
+    protected final Document buildQueryVarietyDocumentAdapter() {
+        return new DocumentAdapter(buildVarietyTypeHolder());
+    }
 
-	private PropertyValueModel buildVarietyTypeHolder() {
-		return new TransformationPropertyValueModel(getQueryHolder()) {
-			protected Object transform(Object value) {
-				MWQuery query = (MWQuery) value;
+    private PropertyValueModel buildVarietyTypeHolder() {
+        return new TransformationPropertyValueModel(getQueryHolder()) {
+            protected Object transform(Object value) {
+                MWQuery query = (MWQuery) value;
 
-				if ((query == null) || (getQueryManager() == null)) {
-					return resourceRepository().getString("QUERY_VARIETY_NONE_SELECTED");
-				}
-				return resourceRepository().getString("QUERY_VARIETY_TOPLINK_NAMED_QUERY");
-			}
-		};
-	}
+                if ((query == null) || (getQueryManager() == null)) {
+                    return resourceRepository().getString("QUERY_VARIETY_NONE_SELECTED");
+                }
+                return resourceRepository().getString("QUERY_VARIETY_TOPLINK_NAMED_QUERY");
+            }
+        };
+    }
 }

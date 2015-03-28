@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,13 +27,13 @@ public class XMLNamespaceXmlPathTestCases extends JAXBWithJSONTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/xml/testclass.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/xml/testclass.json";
-    
+
     public XMLNamespaceXmlPathTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{TestClass.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        
+
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("http://www.w3.org/XML/1998/namespace","xml");
         namespaces.put("myns","ns0");
@@ -49,22 +49,22 @@ public class XMLNamespaceXmlPathTestCases extends JAXBWithJSONTestCases{
         jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
         return jsonMarshaller;
     }
-    
+
     @Override
     protected Object getControlObject() {
         TestClass tc = new TestClass();
         tc.foo = "foo";
         tc.lang = "lang";
-        
+
         return tc;
     }
-    
+
     public void testSchemaGen() throws Exception{
         List<InputStream> controlSchemas = new ArrayList<InputStream>();
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/namespaceuri/xml/testclass.xsd");
 
         controlSchemas.add(inputStream);
-    
+
         super.testSchemaGen(controlSchemas);
-    }   
+    }
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -37,7 +37,7 @@ import org.eclipse.persistence.jpa.ArchiveFactory;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class ArchiveFactoryImpl implements ArchiveFactory {
-    
+
     /*
      * Implementation Note: This class does not have any dependency on either
      * EclipseLink or GlassFish implementation classes. Please retain this separation.
@@ -53,25 +53,25 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
     public ArchiveFactoryImpl(Logger logger) {
         this.logger = logger;
     }
-    
+
     public Archive createArchive(URL rootUrl, Map properties) throws URISyntaxException, IOException {
         return createArchive(rootUrl, null, properties);
     }
 
     public Archive createArchive(URL rootUrl, String descriptorLocation, Map properties) throws URISyntaxException, IOException {
         logger.entering("ArchiveFactoryImpl", "createArchive", new Object[]{rootUrl, descriptorLocation});
-        
+
         if (rootUrl == null) {
             return null;
         }
-        
+
         Archive result = null;
         String protocol = rootUrl.getProtocol();
         logger.logp(Level.FINER, "ArchiveFactoryImpl", "createArchive", "protocol = {0}", protocol);
-        
+
         if ("file".equals(protocol)) {
             URI uri = Helper.toURI(rootUrl);
-            
+
             File f;
             try {
                 // Attempt to create the file with the uri. The pre-conditions
@@ -79,11 +79,11 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
                 // if the uri does not meet them.
                 f = new File(uri);
             } catch (IllegalArgumentException e) {
-                // Invalid uri for File. Go our back up route of using the 
+                // Invalid uri for File. Go our back up route of using the
                 // path from the url.
                 f = new File(rootUrl.getPath());
             }
-        
+
             if (f.isDirectory()) {
                 // e.g. file:/tmp/a_ear/ejb_jar
                 result = new DirectoryArchive(f, descriptorLocation);
@@ -133,9 +133,9 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
     protected boolean isJarInputStream(URL url) throws IOException {
         InputStream in = null;
         try {
-        	in = url.openStream();
+            in = url.openStream();
             if (in == null) { // for directories, we may get InputStream as null
-            	return false;
+                return false;
             }
             JarInputStream jis = null;
             try {
@@ -152,7 +152,7 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
 
         } catch (IOException ioe) {
             if (in != null) {
-            	in.close();
+                in.close();
             }
             return false;
         }

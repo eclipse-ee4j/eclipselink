@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke, mnorman - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     dclarke - Bug 387240: added field and method calls to allow extensibility
  *
@@ -75,7 +75,7 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_5;
  * {@link DynamicClassLoader#defaultWriter} for the life of the class loader so
  * it is important that no unnecessary state be maintained that may effect
  * memory usage.
- * 
+ *
  * @author dclarke, mnorman
  * @since EclipseLink 1.2
  */
@@ -83,13 +83,13 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
 
     /*
      * Pattern is as follows: <pre> public class Foo extends DynamicEntityImpl {
-     * 
+     *
      * public static DynamicPropertiesManager DPM = new
      * DynamicPropertiesManager();
-     * 
+     *
      * public Foo() { super(); } public DynamicPropertiesManager
      * fetchPropertiesManager() { return DPM; } }
-     * 
+     *
      * later on, the DPM field is populated: Field dpmField =
      * myDynamicClass.getField
      * (DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
@@ -126,7 +126,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
      * The loader must not be null and the parentClassName must not be null and
      * not an empty String. The parentClassName will be converted to a class
      * using the provided loader lazily.
-     * 
+     *
      * @see #getParentClass()
      * @see DynamicException#illegalDynamicClassWriter(DynamicClassLoader,
      *      String)
@@ -149,7 +149,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
     /**
      * Return the {@link #parentClass} converting the {@link #parentClassName}
      * using the provided loader if required.
-     * 
+     *
      * @throws ClassNotFoundException
      *             if the parentClass is not available.
      */
@@ -215,7 +215,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
 
     /**
      * Allow subclasses to add additional state to the dynamic entity.
-     * 
+     *
      * @param cw
      * @param parentClassType
      */
@@ -224,7 +224,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
 
     /**
      * Allow subclasses to add additional methods to the dynamic entity.
-     * 
+     *
      * @param cw
      * @param parentClassType
      */
@@ -333,7 +333,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
      * Verify that the provided class meets the requirements of the writer. In
      * the case of {@link DynamicClassWriter} this will ensure that the class is
      * a subclass of the {@link #parentClass}
-     * 
+     *
      * @param dynamicClass
      * @throws ClassNotFoundException
      */
@@ -346,7 +346,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
      * Interfaces the dynamic entity class implements. By default this is none
      * but in the case of SDO a concrete interface must be implemented.
      * Subclasses should override this as required.
-     * 
+     *
      * @return Interfaces implemented by Dynamic class. May be null
      */
     protected String[] getInterfaces() {
@@ -356,7 +356,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
     /**
      * Create a copy of this {@link DynamicClassWriter} but with a different
      * parent class.
-     * 
+     *
      * @see DynamicClassLoader#addClass(String, Class)
      */
     protected DynamicClassWriter createCopy(Class<?> parentClass) {

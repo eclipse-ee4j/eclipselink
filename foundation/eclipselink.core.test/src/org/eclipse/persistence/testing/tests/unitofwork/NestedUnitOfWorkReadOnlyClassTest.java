@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Vikram Bhatia
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unitofwork;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -62,30 +62,30 @@ public class NestedUnitOfWorkReadOnlyClassTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         // start root transaction
         UnitOfWork rootUOW = getSession().acquireUnitOfWork();
-        
+
         Address addressRO = (Address)getSession().readObject(Address.class, new ExpressionBuilder().get("postalCode").equal(postalCode));
-        
+
         if (addressRO == null) {
             throw new TestErrorException("Unable to find address.");
         }
         // start nested transaction
         UnitOfWork nestedUOW = rootUOW.acquireUnitOfWork();
         nestedUOW.addReadOnlyClass(Address.class);
-        
+
         Employee emp = (Employee)nestedUOW.registerObject(new Employee());
         nestedUOW.assignSequenceNumber(emp);
         emp.setFirstName("John");
         emp.setAddress(addressRO);
-        
+
         nestedUOW.commit();
         rootUOW.commit();
-        
+
         originalEmployee = emp;
     }
 
     protected void verify() {
     }
-    
+
     protected boolean isSequenceNumberEnabled() {
         return getAbstractSession().getDescriptor(Employee.class).usesSequenceNumbers();
     }

@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
- 
+
 package org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional;
 import java.util.*;
 import org.eclipse.persistence.sessions.Session;
@@ -272,7 +272,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
      public Employee basicEmployeeExample14() {
         Employee employee = createEmployee();
 
@@ -282,7 +282,7 @@ public class EmployeePopulator {
             employee.setSalary(49);
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());
- 
+
             employee.addPhoneNumber(phoneNumberExample1());
 
         } catch (Exception exception) {
@@ -291,7 +291,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee basicEmployeeExample2() {
         Employee employee = createEmployee();
 
@@ -749,18 +749,18 @@ public class EmployeePopulator {
         smallProjectExample9();
         smallProjectExample10();
     }
-    
-    
+
+
     public void persistExample(Session session)
-    {        
-        Vector allObjects = new Vector();        
-        UnitOfWork unitOfWork = session.acquireUnitOfWork();        
+    {
+        Vector allObjects = new Vector();
+        UnitOfWork unitOfWork = session.acquireUnitOfWork();
         PopulationManager.getDefaultManager().addAllObjectsForClass(Employee.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(SmallProject.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(LargeProject.class, allObjects);
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
-        
+
     }
     protected boolean containsObject(Class domainClass, String identifier) {
         return populationManager.containsObject(domainClass, identifier);
@@ -849,7 +849,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee employeeExample13() {
         if (containsObject(Employee.class, "0013")) {
             return (Employee)getObject(Employee.class, "0013");
@@ -857,10 +857,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample13();
         registerObject(Employee.class, employee, "0013");
-        
+
         return employee;
     }
-    
+
      public Employee employeeExample14() {
         if (containsObject(Employee.class, "0014")) {
             return (Employee)getObject(Employee.class, "0014");
@@ -868,10 +868,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample14();
         registerObject(Employee.class, employee, "0014");
-        
+
         return employee;
     }
-    
+
     public Employee employeeExample2() {
         if (containsObject(Employee.class, "0002")) {
             return (Employee)getObject(Employee.class, "0002");

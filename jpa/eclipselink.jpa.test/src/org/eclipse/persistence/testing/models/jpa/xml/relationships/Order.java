@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -15,17 +15,17 @@
 package org.eclipse.persistence.testing.models.jpa.xml.relationships;
 
 public class Order implements java.io.Serializable {
-	private Integer orderId;
-	private int version;
-	private Item item;
-	private int quantity;
-	private String shippingAddress;
-	private Customer customer;
+    private Integer orderId;
+    private int version;
+    private Item item;
+    private int quantity;
+    private String shippingAddress;
+    private Customer customer;
     private Auditor auditor;
     private OrderLabel orderLabel;
     private OrderCard orderCard;
-	
-	public Order() {}
+
+    public Order() {}
 
     public Auditor getAuditor() {
         return auditor;
@@ -34,7 +34,7 @@ public class Order implements java.io.Serializable {
     public void setAuditor(Auditor auditor) {
         this.auditor = auditor;
     }
-    
+
     public OrderLabel getOrderLabel() {
         return orderLabel;
     }
@@ -53,52 +53,52 @@ public class Order implements java.io.Serializable {
             this.orderCard.setOrder(this);
         }
     }
-    
-	public Integer getOrderId() { 
-        return orderId; 
-    }
-    
-	public void setOrderId(Integer id) { 
-        this.orderId = id; 
+
+    public Integer getOrderId() {
+        return orderId;
     }
 
-	protected int getVersion() { 
-        return version; 
-    }
-    
-	protected void setVersion(int version) { 
-        this.version = version; 
+    public void setOrderId(Integer id) {
+        this.orderId = id;
     }
 
-	public Item getItem() { 
-        return item; 
-    }
-    
-	public void setItem(Item item) { 
-        this.item = item; 
+    protected int getVersion() {
+        return version;
     }
 
-	public int getQuantity() { 
-        return quantity; 
+    protected void setVersion(int version) {
+        this.version = version;
     }
-    
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
 
-	public String getShippingAddress() { 
-        return shippingAddress; 
+    public Item getItem() {
+        return item;
     }
-    
-	public void setShippingAddress(String shippingAddress) {
-		this.shippingAddress = shippingAddress;
-	}
 
-	public Customer getCustomer() { 
-        return customer; 
+    public void setItem(Item item) {
+        this.item = item;
     }
-    
-	public void setCustomer(Customer customer) { 
-        this.customer = customer; 
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }

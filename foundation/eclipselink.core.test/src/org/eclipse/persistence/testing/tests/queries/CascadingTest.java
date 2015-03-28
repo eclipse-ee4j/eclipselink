@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries;
 
 import org.eclipse.persistence.testing.framework.*;
@@ -129,7 +129,7 @@ public abstract class CascadingTest extends TestCase {
     protected void setup() {
         //Fix bug 2722927
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        //Check that the subclass implemented setTestConfiguration() correctly 
+        //Check that the subclass implemented setTestConfiguration() correctly
         if (m_szTestName == null) {
             throw new TestErrorException("CascadingTest: Subclass did not initialize test properly");
         }
@@ -144,13 +144,13 @@ public abstract class CascadingTest extends TestCase {
         m_szPhoneNumber = ((PhoneNumber)employeeFromDatabase.getPhoneNumbers().elementAt(0)).getType();
         m_szManagedEmployee = ((Employee)employeeFromDatabase.getManagedEmployees().elementAt(0)).getFirstName();
 
-        //Change the employees name 
+        //Change the employees name
         employeeFromDatabase.setFirstName("Foobar");
 
         //Change the first phone number
         ((PhoneNumber)employeeFromDatabase.getPhoneNumbers().elementAt(0)).setType("FooNumber");
 
-        //Change the manager 
+        //Change the manager
         ((Employee)employeeFromDatabase.getManagedEmployees().elementAt(0)).setFirstName("MrFoobar");
     }
 
@@ -160,7 +160,7 @@ public abstract class CascadingTest extends TestCase {
 
         //Set cache mode
         if (m_bMaintainCache) {
-            //	query.maintainCache();
+            //    query.maintainCache();
             query.refreshIdentityMapResult();
         } else {
             query.dontMaintainCache();

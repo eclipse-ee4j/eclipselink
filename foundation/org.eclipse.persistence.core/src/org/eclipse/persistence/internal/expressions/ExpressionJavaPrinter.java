@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -94,10 +94,10 @@ public class ExpressionJavaPrinter {
             printString("new byte[] {");
             byte[] bytes = (byte[])object;
             if (bytes.length > 0) {
-                printString(String.valueOf(bytes[0]));                
+                printString(String.valueOf(bytes[0]));
                 for (int index = 1; index < bytes.length; index++) {
-                    printString(",");                
-                    printString(String.valueOf(bytes[index]));                
+                    printString(",");
+                    printString(String.valueOf(bytes[index]));
                 }
             }
             printString("}");
@@ -105,10 +105,10 @@ public class ExpressionJavaPrinter {
             printString("new Byte[] {");
             Byte[] bytes = (Byte[])object;
             if (bytes.length > 0) {
-                printByte(bytes[0]);                
+                printByte(bytes[0]);
                 for (int index = 1; index < bytes.length; index++) {
-                    printString(",");                
-                    printByte(bytes[index]);                
+                    printString(",");
+                    printByte(bytes[index]);
                 }
             }
             printString("}");
@@ -118,14 +118,14 @@ public class ExpressionJavaPrinter {
             printString("new char[] {");
             char[] chars = (char[])object;
             if (chars.length > 0) {
-                printString("'");                                
-                printString(String.valueOf(chars[0]));                
-                printString("'");                                
+                printString("'");
+                printString(String.valueOf(chars[0]));
+                printString("'");
                 for (int index = 1; index < chars.length; index++) {
-                    printString(",");                
-                    printString("'");                                
-                    printString(String.valueOf(chars[index]));                
-                    printString("'");                                
+                    printString(",");
+                    printString("'");
+                    printString(String.valueOf(chars[index]));
+                    printString("'");
                 }
             }
             printString("}");
@@ -133,31 +133,31 @@ public class ExpressionJavaPrinter {
             printString("new Character[] {");
             Character[] chars = (Character[])object;
             if (chars.length > 0) {
-                printCharacter(chars[0]);                
+                printCharacter(chars[0]);
                 for (int index = 1; index < chars.length; index++) {
-                    printString(",");                
-                    printCharacter(chars[index]);                
+                    printString(",");
+                    printCharacter(chars[index]);
                 }
             }
             printString("}");
         } else if (object.getClass() == ClassConstants.BIGDECIMAL) {
             printString("new java.math.BigDecimal(\"");
             printString(((BigDecimal)object).toString());
-            printString("\")");                
+            printString("\")");
         } else if (object.getClass() == ClassConstants.BIGINTEGER) {
             printString("new java.math.BigInteger(\"");
             printString(((BigInteger)object).toString());
-            printString("\")");                
+            printString("\")");
         } else {
             printString((String)ConversionManager.getDefaultManager().convertObject(object, String.class));
         }
-        
+
     }
-    
+
     public void printByte(Byte aByte) {
             printString("new Byte((byte)");
             printString((aByte).toString());
-            printString(")");        
+            printString(")");
     }
 
     public void printCharacter(Character aCharacter) {

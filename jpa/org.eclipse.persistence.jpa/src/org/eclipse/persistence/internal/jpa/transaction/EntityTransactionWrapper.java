@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.transaction;
 
 import javax.persistence.EntityTransaction;
@@ -23,9 +23,9 @@ import org.eclipse.persistence.exceptions.TransactionException;
 /**
  * INTERNAL:
  * JDK 1.5 specific version of EntityTransactionWrapper. Differs from the JDK 1.4 version
- * in that it implements a different version of the TransactionWrapper interface, 
+ * in that it implements a different version of the TransactionWrapper interface,
  * uses a different EntityManager, and returns a different EntityTransaction version.
- * 
+ *
  * @see org.eclipse.persistence.internal.jpa.transaction.EntityTransactionWrapper
  */
 public class EntityTransactionWrapper extends TransactionWrapperImpl implements TransactionWrapper {
@@ -34,7 +34,7 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
     public EntityTransactionWrapper(EntityManagerImpl entityManager) {
         super(entityManager);
     }
-    
+
 
     /**
      * INTERNAL:
@@ -70,7 +70,7 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
     public boolean isJoinedToTransaction(UnitOfWorkImpl uow){
         return (entityTransaction != null) && entityTransaction.isActive();
     }
-    
+
     /**
      * Mark the current transaction so that the only possible
      * outcome of the transaction is for the transaction to be
@@ -85,7 +85,7 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
 
     protected void throwCheckTransactionFailedException() {
         throw new TransactionRequiredException(TransactionException.transactionNotActive().getMessage());
-    }    
+    }
 
     public void registerIfRequired(UnitOfWorkImpl uow){
         throw new TransactionRequiredException(ExceptionLocalization.buildMessage("join_trans_called_on_entity_trans"));// no JTA transactions availab

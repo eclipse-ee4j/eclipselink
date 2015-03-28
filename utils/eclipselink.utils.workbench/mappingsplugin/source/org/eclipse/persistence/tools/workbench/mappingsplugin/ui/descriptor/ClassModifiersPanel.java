@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,98 +27,98 @@ import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
 
 final class ClassModifiersPanel extends AbstractSubjectPanel {
 
-	ClassModifiersPanel(ValueModel typeHolder, ApplicationContext applicationContext) {
-		super(typeHolder, applicationContext);
-	}
-	
-	protected void initializeLayout() {
-		// labeled border
-		this.setBorder(
-				BorderFactory.createCompoundBorder(
-					this.buildTitledBorder("MODIFIER_PANEL_TITLE"),
-					BorderFactory.createEmptyBorder(0, 5, 5, 5)
-				)
-			);
-		GridBagConstraints constraints = new GridBagConstraints();
-		ModifierComponentGroup modifierComponentGroup = new ModifierComponentGroup(Verifier.NULL_INSTANCE, this.getSubjectHolder(), this.getApplicationContext());
+    ClassModifiersPanel(ValueModel typeHolder, ApplicationContext applicationContext) {
+        super(typeHolder, applicationContext);
+    }
 
-		//	access modifiers panel
-		JPanel accessModifiersPanel = modifierComponentGroup.getAccessModifiersPanel();
-		accessModifiersPanel.setLayout(new GridBagLayout());
-		
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 1;
-		constraints.weighty = 0;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.insets = new Insets(0, 0, 0, 0);
-		this.add(accessModifiersPanel, constraints);
+    protected void initializeLayout() {
+        // labeled border
+        this.setBorder(
+                BorderFactory.createCompoundBorder(
+                    this.buildTitledBorder("MODIFIER_PANEL_TITLE"),
+                    BorderFactory.createEmptyBorder(0, 5, 5, 5)
+                )
+            );
+        GridBagConstraints constraints = new GridBagConstraints();
+        ModifierComponentGroup modifierComponentGroup = new ModifierComponentGroup(Verifier.NULL_INSTANCE, this.getSubjectHolder(), this.getApplicationContext());
 
-			// public
-			constraints.gridx = 0;
-			constraints.gridy = 0;
-			constraints.gridwidth = 1;
-			constraints.gridheight = 1;
-			constraints.weightx = 1;
-			constraints.weighty = 0;
-			constraints.fill = GridBagConstraints.NONE;
-			constraints.anchor = GridBagConstraints.LINE_START;
-			constraints.insets = new Insets(0, 0, 0, 0);
-			accessModifiersPanel.add(modifierComponentGroup.getPublicAccessRadioButton(), constraints);
-	
-			// (Default)
-			constraints.gridx = 0;
-			constraints.gridy = 1;
-			constraints.gridwidth = 1;
-			constraints.gridheight = 1;
-			constraints.weightx = 1;
-			constraints.weighty = 0;
-			constraints.fill = GridBagConstraints.NONE;
-			constraints.anchor = GridBagConstraints.LINE_START;
-			constraints.insets = new Insets(0, 0, 0, 0);
-			accessModifiersPanel.add(modifierComponentGroup.getDefaultAccessRadioButton(), constraints);
-		
-		// other modifiers panel
-		JPanel otherModifiersPanel = modifierComponentGroup.getOtherModifiersPanel();
-		otherModifiersPanel.setLayout(new GridBagLayout());
-		
-		constraints.gridx = 0;
-		constraints.gridy = 1;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.weightx = 1;
-		constraints.weighty = 1;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.PAGE_START;
-		constraints.insets = new Insets(5, 0, 0, 0);
-		this.add(otherModifiersPanel, constraints);	
+        //    access modifiers panel
+        JPanel accessModifiersPanel = modifierComponentGroup.getAccessModifiersPanel();
+        accessModifiersPanel.setLayout(new GridBagLayout());
 
-			// abstract
-			constraints.gridx = 0;
-			constraints.gridy = 0;
-			constraints.gridwidth = 1;
-			constraints.gridheight = 1;
-			constraints.weightx = 1;
-			constraints.weighty = 0;
-			constraints.fill = GridBagConstraints.NONE;
-			constraints.anchor = GridBagConstraints.LINE_START;
-			constraints.insets = new Insets(0, 0, 0, 0);
-			otherModifiersPanel.add(modifierComponentGroup.getAbstractCheckBox(), constraints);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(0, 0, 0, 0);
+        this.add(accessModifiersPanel, constraints);
 
-			// final
-			constraints.gridx = 0;
-			constraints.gridy = 1;
-			constraints.gridwidth = 1;
-			constraints.gridheight = 1;
-			constraints.weightx = 1;
-			constraints.weighty = 0;
-			constraints.fill = GridBagConstraints.NONE;
-			constraints.anchor = GridBagConstraints.LINE_START;
-			constraints.insets = new Insets(0, 0, 0, 0);
-			otherModifiersPanel.add(modifierComponentGroup.getFinalCheckBox(), constraints);	
-	}
-	
+            // public
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.weightx = 1;
+            constraints.weighty = 0;
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.anchor = GridBagConstraints.LINE_START;
+            constraints.insets = new Insets(0, 0, 0, 0);
+            accessModifiersPanel.add(modifierComponentGroup.getPublicAccessRadioButton(), constraints);
+
+            // (Default)
+            constraints.gridx = 0;
+            constraints.gridy = 1;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.weightx = 1;
+            constraints.weighty = 0;
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.anchor = GridBagConstraints.LINE_START;
+            constraints.insets = new Insets(0, 0, 0, 0);
+            accessModifiersPanel.add(modifierComponentGroup.getDefaultAccessRadioButton(), constraints);
+
+        // other modifiers panel
+        JPanel otherModifiersPanel = modifierComponentGroup.getOtherModifiersPanel();
+        otherModifiersPanel.setLayout(new GridBagLayout());
+
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.PAGE_START;
+        constraints.insets = new Insets(5, 0, 0, 0);
+        this.add(otherModifiersPanel, constraints);
+
+            // abstract
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.weightx = 1;
+            constraints.weighty = 0;
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.anchor = GridBagConstraints.LINE_START;
+            constraints.insets = new Insets(0, 0, 0, 0);
+            otherModifiersPanel.add(modifierComponentGroup.getAbstractCheckBox(), constraints);
+
+            // final
+            constraints.gridx = 0;
+            constraints.gridy = 1;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.weightx = 1;
+            constraints.weighty = 0;
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.anchor = GridBagConstraints.LINE_START;
+            constraints.insets = new Insets(0, 0, 0, 0);
+            otherModifiersPanel.add(modifierComponentGroup.getFinalCheckBox(), constraints);
+    }
+
 }

@@ -1,35 +1,35 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     07/13/2012-2.5 Guy Pelletier 
+ *     07/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier 
+ *     08/24/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     11/05/2012-2.5 Guy Pelletier 
+ *     11/05/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     01/11/2013-2.5 Guy Pelletier 
+ *     01/11/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/24/2013-2.5 Guy Pelletier 
+ *     01/24/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
- *     02/19/2013-2.5 Guy Pelletier 
+ *     02/19/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     09/24/2014-2.6 Rick Curtis 
+ *     09/24/2014-2.6 Rick Curtis
  *       - 443762 : Misc message cleanup.
  *     12/18/2014-2.6 Rick Curtis
  *       - 454189 : Misc message cleanup.#2
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
@@ -71,10 +71,10 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "error_marshalling_arguments", "Error marshalling arguments" },
                                            { "error_unmarshalling_return", "error unmarshalling return" },
                                            { "null_jar_file_names", "Null jar file names" },
-                                           { "jmx_enabled_platform_mbean_runtime_exception", "An exception occurred while calling a JMX MBean runtime service function on {0} that exposes EclipseLink session information, exception is: {1}" },                                           
+                                           { "jmx_enabled_platform_mbean_runtime_exception", "An exception occurred while calling a JMX MBean runtime service function on {0} that exposes EclipseLink session information, exception is: {1}" },
                                            { "error_loading_resources", "Error loading resources {0} from the classpath" },
                                            { "error_parsing_resources", "Error parsing resources {0}" },
-                                           { "unexpect_argument", "Unexpected input argument {0}" },                                           
+                                           { "unexpect_argument", "Unexpected input argument {0}" },
                                            { "error_executing_jar_process", "Error executing jar process" },
                                            { "error_invoking_deploy", "Error invoking Deploy" },
                                            { "bean_definition_vector_arguments_are_of_different_sizes", "Bean definition vector arguments are of different sizes" },
@@ -150,7 +150,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            // 338837:
                                            { "metamodel_class_incorrect_type_instance", "The type [{2}] is not the expected [{1}] for the key class [{0}].  Please verify that the [{2}] class was referenced in persistence.xml using a specific <class/> property or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element." },
                                            { "metamodel_class_null_type_instance", "No [{1}] was found for the key class [{0}] in the Metamodel - please verify that the [{2}] class was referenced in persistence.xml using a specific <class>{0}</class> property or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element." },
-                                           { "metamodel_class_null_type_instance_for_null_key", "No [{0}] was found for the null key class parameter in the Metamodel - please specify the correct key class for the metamodel [{1}] class and verify that the key class was referenced in persistence.xml using a specific <class/> property or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element." },                                           
+                                           { "metamodel_class_null_type_instance_for_null_key", "No [{0}] was found for the null key class parameter in the Metamodel - please specify the correct key class for the metamodel [{1}] class and verify that the key class was referenced in persistence.xml using a specific <class/> property or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element." },
                                            { "metamodel_interface_inheritance_not_supported", "The descriptor [{0}] using ({1}) inheritance is not currently supported during metamodel generation, try using Entity or MappedSuperclass (Abstract class) inheritance." },
                                            { "sdo_helper_invalid_type", "The provided Type [{0}] is not an EclipseLink SDOType, and therefore could not be converted." },
                                            { "sdo_helper_invalid_property", "The provided Property [{0}] is not an EclipseLink SDOProperty, and therefore could not be converted." },
@@ -205,11 +205,11 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "position_param_not_found", "There was no parameter at position: {0}."},
                                            { "pathnode_is_primitive_node", "Criteria expression is of primitive type and cannot be further navigated."},
                                            { "pathnode_type_does_not_apply_to_primitive_node", "Criteria expression is of primitive type and cannot be further navigated.  Primitive Expressions do not allow \"type\"."},
-                                           { "cache_impl_class_has_no_descriptor_is_not_a_persistent_type", "The class [{0}] is not a persistent type - it has no associated descriptor."},                                           
+                                           { "cache_impl_class_has_no_descriptor_is_not_a_persistent_type", "The class [{0}] is not a persistent type - it has no associated descriptor."},
                                            { "cache_impl_object_has_no_descriptor_is_not_a_persistent_type", "The object [{0}] is not of a persistent type - it has no associated descriptor."}, //
                                            { "cache_impl_object_descriptor_has_no_cmppolicy_set", "The object [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable to return an Id."}, //
-                                           { "cache_descriptor_has_no_cmppolicy_set_cannot_create_primary_key", "The class [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable create a primary key instance for the id type [{2}]."},                                           
-                                           { "cannot_update_entity_fetch-group", "Attempt to add or remove attribute [{1}] to {0} - EntityFetchGroup object is immutable."},                                           
+                                           { "cache_descriptor_has_no_cmppolicy_set_cannot_create_primary_key", "The class [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable create a primary key instance for the id type [{2}]."},
+                                           { "cannot_update_entity_fetch-group", "Attempt to add or remove attribute [{1}] to {0} - EntityFetchGroup object is immutable."},
                                            { "cannot_get_unfetched_attribute", "Cannot get unfetched attribute [{1}] from detached object {0}."},
                                            { "jpa21_invalid_parameter_name", "Invalid output parameter name : {0}. {1}"},
                                            { "jpa21_invalid_parameter_position", "Invalid output parameter position : {0}. {1}."},
@@ -249,8 +249,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "cannot_get_from_non_correlated_query", "getCorrelationParent() called on a from-clause that was not obtained through correlation." },
                                            { "wrap_convert_exception", "An exception occurred while calling {0} on converter class {1} with value {2}"},
                                            { "ora_pessimistic_locking_with_rownum", "Pessimistic locking with query row limits is not supported."}
-                                           
-										};
+
+                                        };
     /**
      * Return the lookup table.
      */

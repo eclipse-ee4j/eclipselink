@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/28/2008-1.0M8 Andrei Ilitchev. 
+ *     05/28/2008-1.0M8 Andrei Ilitchev.
  *       - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.proxyauthentication.thin;
 
 import java.util.HashMap;
@@ -27,19 +27,19 @@ import org.eclipse.persistence.testing.framework.oracle.SessionExchanger;
  * Initializes and holds user names and properties used by for thin and jpa ProxyAuthentication tests.
  */
 public class ProxyAuthenticationUsersAndProperties {
-    // specify connectionUser in a System property PA_CONNECTION_USER, otherwise connectionUserDefault is used.  
+    // specify connectionUser in a System property PA_CONNECTION_USER, otherwise connectionUserDefault is used.
     public static final String PA_CONNECTION_USER = "pa.connection.user";
-    public static String connectionUserDefault = "PA_CONN"; 
+    public static String connectionUserDefault = "PA_CONN";
 
-    // specify connectionPassword in a System property PA_CONNECTION_PASSWORD, otherwise connectionPasswordDefault is used.  
+    // specify connectionPassword in a System property PA_CONNECTION_PASSWORD, otherwise connectionPasswordDefault is used.
     public static final String PA_CONNECTION_PASSWORD = "pa.connection.password";
-    public static String connectionPasswordDefault = "PA_CONN"; 
+    public static String connectionPasswordDefault = "PA_CONN";
 
-    // specify proxyUser in a System property PA_PROXYUSER, otherwise proxyUserDefault is used.  
+    // specify proxyUser in a System property PA_PROXYUSER, otherwise proxyUserDefault is used.
     public static final String PA_PROXYUSER = "pa.proxyuser";
     public static String proxyUserDefault = "PA_PROXY";
 
-    // specify proxyUser2 in a System property PA_PROXYUSER2, otherwise proxyUser2Default is used.  
+    // specify proxyUser2 in a System property PA_PROXYUSER2, otherwise proxyUser2Default is used.
     public static final String PA_PROXYUSER2 = "pa.proxyuser2";
     public static String proxyUser2Default = "PA_PROXY2";
 
@@ -64,11 +64,11 @@ public class ProxyAuthenticationUsersAndProperties {
     alter user PA_PROXY2 grant connect through PA_CONN
     */
 
-    public static String connectionUser; 
-    public static String connectionPassword; 
+    public static String connectionUser;
+    public static String connectionPassword;
     public static String proxyUser;
     public static String proxyUser2;
-        
+
     public static Properties connectionProperties;
     public static Map proxyProperties;
     public static Map proxyProperties2;
@@ -76,26 +76,26 @@ public class ProxyAuthenticationUsersAndProperties {
 
     public static String getProperty(String property, String defaultValue) {
         String propertyValue = System.getProperty(property);
-        
+
         if (propertyValue == null || propertyValue.equals("")) {
             return defaultValue;
         } else {
             return propertyValue;
         }
     }
-    
+
     /*
      * Create all user names and properties.
      */
     public static void initialize() {
         // obtain user and password that should be used to connect to the db.
-        connectionUser = getProperty(PA_CONNECTION_USER, "PA_CONN"); 
-        connectionPassword = getProperty(PA_CONNECTION_PASSWORD, "PA_CONN"); 
+        connectionUser = getProperty(PA_CONNECTION_USER, "PA_CONN");
+        connectionPassword = getProperty(PA_CONNECTION_PASSWORD, "PA_CONN");
         // connectionProperties used to connect to the db to test the users
         connectionProperties = new Properties();
         connectionProperties.setProperty("user", connectionUser);
         connectionProperties.setProperty("password", connectionPassword);
-        
+
         // obtain proxyuser, put into proxyProperties.
         // proxyProperties could be used either by ServerSession or ClientSession (EMFactory or EntityManager).
         proxyUser = getProperty(PA_PROXYUSER, "PA_PROXY");
@@ -114,7 +114,7 @@ public class ProxyAuthenticationUsersAndProperties {
         cancelProxyProperties = new HashMap(1);
         cancelProxyProperties.put(PersistenceUnitProperties.ORACLE_PROXY_TYPE, "");
     }
-    
+
     /*
      * Verify all the users correctly setup in the database.
      * Returns an empty string in case of success, otherwise returns the error message.
@@ -133,26 +133,26 @@ public class ProxyAuthenticationUsersAndProperties {
         }
 
         // errorMsg.length() > 0 case:
-        // if couldn't connect to connectionUser directly then there is 
+        // if couldn't connect to connectionUser directly then there is
         // no point in trying to connect proxyUsers through connectionUser.
         if(errorMsg.length() == 0) {
             // try to open proxy session using proxyUser
             try {
                 Properties props = new Properties();
                 props.setProperty(OracleConnection.PROXY_USER_NAME, proxyUser);
-                OracleConnection oracleConnection = (oracle.jdbc.OracleConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)newSession).getAccessor().getConnection(); 
+                OracleConnection oracleConnection = (oracle.jdbc.OracleConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)newSession).getAccessor().getConnection();
                 oracleConnection.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
                 // close proxy session
                 oracleConnection.close(OracleConnection.PROXY_SESSION);
             } catch (Exception exception) {
                 errorMsg += createErrorMsgProxyFailed(false);
             }
-    
+
             // try to open proxy session using proxyUser2
             try {
                 Properties props = new Properties();
                 props.setProperty(OracleConnection.PROXY_USER_NAME, proxyUser2);
-                OracleConnection oracleConnection = (oracle.jdbc.OracleConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)newSession).getAccessor().getConnection(); 
+                OracleConnection oracleConnection = (oracle.jdbc.OracleConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)newSession).getAccessor().getConnection();
                 oracleConnection.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
                 // close proxy session
                 oracleConnection.close(OracleConnection.PROXY_SESSION);
@@ -163,9 +163,9 @@ public class ProxyAuthenticationUsersAndProperties {
 
         // kill newSession, reconnect the original session.
         exchanger.returnOriginalSession();
-        
+
         return errorMsg;
-    }    
+    }
 
     static String createErrorMsgConnectionFailed() {
         // failed to connect using connectionUser / connectionPassword

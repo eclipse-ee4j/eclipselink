@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery;
 
 import commonj.sdo.DataObject;
@@ -32,7 +32,7 @@ public class SDODataObjectGetByXPathQueryTest extends SDODataObjectGetByXPathQue
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery.SDODataObjectGetByXPathQueryTest" };
         TestRunner.main(arguments);
     }
-    
+
     //case:a/b.0/c[number="123"] where number is a many type property, and no objects meets requirement
     public void testMultipleCaseOueryD1Colon() {
         dataObject_d1.set(property_d_number, "123");
@@ -196,23 +196,23 @@ public class SDODataObjectGetByXPathQueryTest extends SDODataObjectGetByXPathQue
 
     // case: a/b[number=123]/c, dataobject b in value list of dataobject a's property b does not have
     // property number
-    public void testQueryMiddlePositionalAtLast() {        
+    public void testQueryMiddlePositionalAtLast() {
         DataObject resultDO = dataObject_a.getDataObject(property1);
-        String result = resultDO.getString(PROPERTY_NAME_D_NUMBER);      
+        String result = resultDO.getString(PROPERTY_NAME_D_NUMBER);
         this.assertEquals("one", result);
     }
 
     // case: a/b[number=123]/c[2], c is many type property, and access by bracket and second position
-    public void testQueryMiddlePositionalAtLast1() {        
+    public void testQueryMiddlePositionalAtLast1() {
         DataObject resultDO = dataObject_a.getDataObject("PName-a0/PName-b0[number=\"123\"]/PName-c0[2]");
-        String result = resultDO.getString(PROPERTY_NAME_D_NUMBER);      
+        String result = resultDO.getString(PROPERTY_NAME_D_NUMBER);
         this.assertEquals("two", result);
     }
 
     // case: a/b[number=123]/c[2], c is many type property, and access by bracket and second position
-    public void testQueryMiddlePositionalAtLast1ContainingAt() {        
+    public void testQueryMiddlePositionalAtLast1ContainingAt() {
         DataObject resultDO = dataObject_a.getDataObject("@PName-a0/@PName-b0[number=\"123\"]/@PName-c0[2]");
-        String result = resultDO.getString(PROPERTY_NAME_D_NUMBER);      
+        String result = resultDO.getString(PROPERTY_NAME_D_NUMBER);
         this.assertEquals("two", result);
     }
 

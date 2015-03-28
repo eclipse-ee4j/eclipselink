@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.models.jpa.xml.relationships;
@@ -39,14 +39,14 @@ public class RelationshipsTableManager extends TableCreator {
         addTableDefinition(buildNAMCOTable());
         addTableDefinition(buildCEOOTable());
     }
-        
+
     public static TableCreator getCreator(){
         if (RelationshipsTableManager.tableCreator == null){
             RelationshipsTableManager.tableCreator = new RelationshipsTableManager();
         }
         return RelationshipsTableManager.tableCreator;
     }
-    
+
     public static TableDefinition buildORDER_AUDITORTable() {
         TableDefinition table = new TableDefinition();
 
@@ -62,7 +62,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldORDERID.setIsIdentity(false);
         fieldORDERID.setForeignKeyFieldName("XML_ORDER.ORDER_ID");
         table.addField(fieldORDERID);
-        
+
         FieldDefinition fieldAUDITORID = new FieldDefinition();
         fieldAUDITORID.setName("AUDITOR_ID");
         fieldAUDITORID.setTypeName("NUMERIC");
@@ -73,10 +73,10 @@ public class RelationshipsTableManager extends TableCreator {
         fieldAUDITORID.setIsIdentity(false);
         fieldAUDITORID.setForeignKeyFieldName("XML_AUDITOR.ID");
         table.addField(fieldAUDITORID);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildORDER_ORDERCARDTable() {
         TableDefinition table = new TableDefinition();
 
@@ -92,7 +92,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldORDERID.setIsIdentity(false);
         fieldORDERID.setForeignKeyFieldName("XML_ORDER.ORDER_ID");
         table.addField(fieldORDERID);
-        
+
         FieldDefinition fieldAUDITORID = new FieldDefinition();
         fieldAUDITORID.setName("XMLOrderCard_ID");
         fieldAUDITORID.setTypeName("NUMERIC");
@@ -103,10 +103,10 @@ public class RelationshipsTableManager extends TableCreator {
         fieldAUDITORID.setIsIdentity(false);
         fieldAUDITORID.setForeignKeyFieldName("XML_ORDER_CARD.ID");
         table.addField(fieldAUDITORID);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildORDER_ORDERLABELTable() {
         TableDefinition table = new TableDefinition();
 
@@ -122,7 +122,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldORDERID.setIsIdentity(false);
         fieldORDERID.setForeignKeyFieldName("XML_ORDER.ORDER_ID");
         table.addField(fieldORDERID);
-        
+
         FieldDefinition fieldAUDITORID = new FieldDefinition();
         fieldAUDITORID.setName("ORDER_LABEL_ID");
         fieldAUDITORID.setTypeName("NUMERIC");
@@ -133,10 +133,10 @@ public class RelationshipsTableManager extends TableCreator {
         fieldAUDITORID.setIsIdentity(false);
         fieldAUDITORID.setForeignKeyFieldName("XML_ORDER_LABEL.ID");
         table.addField(fieldAUDITORID);
-    
+
         return table;
     }
-    
+
     public static TableDefinition buildORDERCARDTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_ORDER_CARD");
@@ -154,7 +154,7 @@ public class RelationshipsTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildORDERLABELTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_ORDER_LABEL");
@@ -183,7 +183,7 @@ public class RelationshipsTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildAUDITORTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_AUDITOR");
@@ -212,7 +212,7 @@ public class RelationshipsTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCUSTOMERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CUSTOMER");
@@ -338,7 +338,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldMANUFACTURER_ID.setUnique(false);
         fieldMANUFACTURER_ID.setShouldAllowNull(true);
         table.addField(fieldMANUFACTURER_ID);
-        
+
         FieldDefinition fieldDISTRIBUTOR_TYPE = new FieldDefinition();
         fieldDISTRIBUTOR_TYPE.setName("DISTRIBUTOR_TYPE");
         fieldDISTRIBUTOR_TYPE.setTypeName("VARCHAR2");
@@ -349,7 +349,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldDISTRIBUTOR_TYPE.setUnique(false);
         fieldDISTRIBUTOR_TYPE.setShouldAllowNull(true);
         table.addField(fieldDISTRIBUTOR_TYPE);
-        
+
         FieldDefinition fieldDISTRIBUTOR_ID = new FieldDefinition();
         fieldDISTRIBUTOR_ID.setName("DISTRIBUTOR_ID");
         fieldDISTRIBUTOR_ID.setTypeName("NUMBER");
@@ -462,7 +462,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldCEOID = new FieldDefinition();
         fieldCEOID.setName("CEO_ID");
         fieldCEOID.setTypeName("NUMERIC");
@@ -501,7 +501,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldCEOID = new FieldDefinition();
         fieldCEOID.setName("CEO_ID");
         fieldCEOID.setTypeName("NUMERIC");
@@ -540,7 +540,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldCHIEFID = new FieldDefinition();
         fieldCHIEFID.setName("CHIEF_ID");
         fieldCHIEFID.setTypeName("NUMERIC");
@@ -554,7 +554,7 @@ public class RelationshipsTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildNAMCOTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_NAMCO");
@@ -580,7 +580,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldCHIEFID = new FieldDefinition();
         fieldCHIEFID.setName("CHIEF_ID");
         fieldCHIEFID.setTypeName("NUMERIC");
@@ -594,7 +594,7 @@ public class RelationshipsTableManager extends TableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCEOOTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XML_CEO");

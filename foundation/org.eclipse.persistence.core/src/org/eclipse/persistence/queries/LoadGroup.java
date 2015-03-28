@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     ailitchev - Bug 244124 - New support for loading 
- ******************************************************************************/  
+ *     ailitchev - Bug 244124 - New support for loading
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
@@ -23,9 +23,9 @@ import org.eclipse.persistence.core.queries.CoreAttributeGroup;
  * users with LOAD_GROUP query hint. Alternatively a {@link FetchGroup} could be
  * used with {@link FetchGroup#shouldLoad()} set to true and the FetchGroup
  * configured on a query be executed.
- * 
+ *
  * @see FetchGroup
- * 
+ *
  * @author ailitchev
  * @since Eclipselink 2.1
  */
@@ -45,12 +45,12 @@ public class LoadGroup extends AttributeGroup {
     protected LoadGroup newGroup(String name, CoreAttributeGroup parent) {
         return new LoadGroup(name);
     }
-    
+
     @Override
     public boolean isLoadGroup() {
         return true;
     }
-    
+
     @Override
     public LoadGroup clone() {
         return (LoadGroup)super.clone();
@@ -72,7 +72,7 @@ public class LoadGroup extends AttributeGroup {
     public void addAttribute(String attributeNameOrPath, LoadGroup group) {
         super.addAttribute(attributeNameOrPath, group);
     }
-    
+
     /**
      * INTERNAL:
      * Return if the load group should load its relationships concurrently.
@@ -80,7 +80,7 @@ public class LoadGroup extends AttributeGroup {
     public Boolean getIsConcurrent() {
         return this.isConcurrent;
     }
-    
+
     /**
      * ADVANCED:
      * Return if the load group should load its relationships concurrently.
@@ -95,7 +95,7 @@ public class LoadGroup extends AttributeGroup {
         }
         return this.isConcurrent.booleanValue();
     }
-    
+
     /**
      * ADVANCED:
      * Set if the load group should load its relationships concurrently.

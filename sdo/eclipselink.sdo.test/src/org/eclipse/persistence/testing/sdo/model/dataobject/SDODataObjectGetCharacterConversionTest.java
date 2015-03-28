@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
@@ -50,7 +50,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
         byte theValue = 1;
         dataObject.set(property,theValue);
         try {
-            char value = dataObject.getChar(property);            
+            char value = dataObject.getChar(property);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -89,9 +89,9 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DOUBLE);
         double theValue = 1;
-        dataObject.set(property, theValue);        
+        dataObject.set(property, theValue);
         try {
-            char value = dataObject.getChar(property);            
+            char value = dataObject.getChar(property);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -106,7 +106,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
         float theValue = 1;
         dataObject.set(property, theValue);
         try {
-            char value = dataObject.getChar(property);            
+            char value = dataObject.getChar(property);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -121,7 +121,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
         int theValue = 1;
         dataObject.set(property, theValue);
         try {
-            char value = dataObject.getChar(property);            
+            char value = dataObject.getChar(property);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -136,7 +136,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
         long theValue = 1;
         dataObject.set(property, theValue);
         try {
-            char value = dataObject.getChar(property);            
+            char value = dataObject.getChar(property);
             char controlValue = (char)theValue;
             assertEquals(controlValue, value);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -217,7 +217,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
     public void testGetCharacterFromInteger() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INTEGER);
-                
+
         BigInteger theValue = new BigInteger("1");
         dataObject.set(property, theValue);
         try {
@@ -292,7 +292,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
         property.setType(SDOConstants.SDO_DOUBLEOBJECT);
         Double theValue = new Double("1");
         dataObject.set(property, theValue);
-        try {            
+        try {
             char value = dataObject.getChar(property);
             char controlValue = (char)theValue.byteValue();
             assertEquals(controlValue, value);
@@ -306,7 +306,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
         property.setType(SDOConstants.SDO_FLOATOBJECT);
         Float theValue = new Float("1");
         dataObject.set(property, theValue);
-      
+
         try {
             char value = dataObject.getChar(property);
             char controlValue = (char)theValue.byteValue();
@@ -322,7 +322,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
         property.setType(SDOConstants.SDO_INTOBJECT);
         Integer theValue = new Integer("1");
         dataObject.set(property, theValue);
-        
+
         try {
             char value = dataObject.getChar(property);
             char controlValue = (char)theValue.byteValue();
@@ -338,7 +338,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
         property.setType(SDOConstants.SDO_LONGOBJECT);
         Long theValue = new Long("1");
         dataObject.set(property, theValue);
-        
+
         try {
             char value = dataObject.getChar(property);
             char controlValue = (char)theValue.byteValue();
@@ -353,7 +353,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_SHORTOBJECT);
         Short theValue = new Short("1");
-        dataObject.set(property, theValue);        
+        dataObject.set(property, theValue);
         try {
             char value = dataObject.getChar(property);
             char controlValue = (char)theValue.byteValue();

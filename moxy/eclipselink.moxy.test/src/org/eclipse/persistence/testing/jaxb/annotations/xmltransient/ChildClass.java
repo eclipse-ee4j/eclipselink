@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,22 +21,22 @@ import javax.xml.bind.annotation.XmlType;
 public class ChildClass extends SuperClass {
 
     private String lastName;
-    
+
     public String getFirstName() {
         return super.getFirstName();
     }
-    
+
     public String getLastName() {
         return lastName;
     }
-    
+
     public void setLastName(String name) {
         this.lastName = name;
     }
-    
+
     public boolean equals(Object obj) {
         ChildClass chld = (ChildClass)obj;
-        
+
         return getFirstName().equals(chld.getFirstName()) && getLastName().equals(chld.getLastName());
     }
 }

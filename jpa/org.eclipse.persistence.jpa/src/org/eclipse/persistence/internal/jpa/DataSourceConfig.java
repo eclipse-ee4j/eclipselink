@@ -1,26 +1,26 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
 import java.io.StringWriter;
 
 /**
- * Simplest of all possible holder objects for all of the data source 
- * info required by the Entity test environment. Use the constructor to 
- * simultaneously create the instance and set the fields. 
+ * Simplest of all possible holder objects for all of the data source
+ * info required by the Entity test environment. Use the constructor to
+ * simultaneously create the instance and set the fields.
  * <p>
- * At least one (transactional) data source must be specified and 
- * potentially a non-transactional if such a data source is appropriate 
+ * At least one (transactional) data source must be specified and
+ * potentially a non-transactional if such a data source is appropriate
  * (e.g. for non-transactional operations).
  * <p>
  * @see ContainerConfig
@@ -45,11 +45,11 @@ public class DataSourceConfig {
 
     /** Password to use when connecting to the db */
     public String password;
-    
+
     /**
      * Constructor used to create a DataSourceConfig
      *
-     * @param dsName Data source identifier 
+     * @param dsName Data source identifier
      * @param jndiName Name that the data source should be bound to in JNDI
      * @param url Passed to the driver to determine db
      * @param driver The class name for the db driver

@@ -55,12 +55,12 @@
     <property name="wls.mt.junit.lib"            location="${junit.lib}"/>
     <!--   Full path to JDBC driver JAR -->
     <property name="wls.mt.jdbc.driver.jar"      location="${jdbc.driver.jar}"/>
-	<!--   Full path to Oracle products installation directory -->
-	<property name="oracle.mt.install.dir"     location="${oracle.installdir}"/>
-	<!--   Full path to WebLogic installation directory -->
-	<property name="weblogic.mt.install.dir"     location="${weblogic.installdir}"/>
+    <!--   Full path to Oracle products installation directory -->
+    <property name="oracle.mt.install.dir"     location="${oracle.installdir}"/>
+    <!--   Full path to WebLogic installation directory -->
+    <property name="weblogic.mt.install.dir"     location="${weblogic.installdir}"/>
 
-	<property name="wls.mt.generic.jar.url"      value="${weblogic.mt.builds.url}/${weblogic.mt.generic.jar}"/>
+    <property name="wls.mt.generic.jar.url"      value="${weblogic.mt.builds.url}/${weblogic.mt.generic.jar}"/>
     <property name="wls.mt.jrf_generic.jar.url"  value="${weblogic.mt.builds.url}/${weblogic.mt.jrf_generic.jar}"/>
     <property name="wls.mt.generic.jar.file"     location="${weblogic.mt.packages.dir}/${weblogic.mt.generic.jar}"/>
     <property name="wls.mt.jrf_generic.jar.file" location="${weblogic.mt.packages.dir}/${weblogic.mt.jrf_generic.jar}"/>
@@ -137,7 +137,7 @@
         description="JPA tests interface: Undeploy an application from multitenant environment in WebLogic domain."
         depends="weblogic-mt-undeploy-translate,wls-undeploy"/>
 
-	<!-- INTERNAL: Translate test properties from EclipseLink JPA build file. -->
+    <!-- INTERNAL: Translate test properties from EclipseLink JPA build file. -->
     <target name="weblogic-mt-test-translate">
         <translate-property name="weblogic.mt.test.platform"   value="server.platform"/>
         <translate-property name="weblogic.mt.test.libs"       value="server.depend"/>
@@ -178,7 +178,7 @@
         </condition>
     </target>
 
-	<!-- JPA tests interface: Undeploy an application from multitenant environment in WebLogic domain. -->
+    <!-- JPA tests interface: Undeploy an application from multitenant environment in WebLogic domain. -->
     <target name="weblogic-mt-test"
         description="JPA tests interface: Run test suite on WebLogic."
         depends="weblogic-mt-test-translate,wls-test"/>
@@ -509,7 +509,7 @@
         </sequential>
     </macrodef>
 
-	<!-- INTERNAL: Switch between runing test on a single partition or two partitions in parallel.
+    <!-- INTERNAL: Switch between runing test on a single partition or two partitions in parallel.
        - Both server-run-test-partition-single and server-run-test-partition-parallel tasks execution depends
        - on is.test.with.second.tenant property:
        -  * server-run-test-partition-single runs when is.test.with.second.tenant property is not set
@@ -518,7 +518,7 @@
     <target name="server-run-test-partition" if="is.test.with.tenant"
         depends="server-run-test-partition-single,server-run-test-partition-parallel"/>
 
-	<!-- INTERNAL: Runs single test suite on single partition (with multitenancy enabled). -->
+    <!-- INTERNAL: Runs single test suite on single partition (with multitenancy enabled). -->
     <target name="server-run-test-partition-single" unless="is.test.with.second.tenant">
         <weblogic-mt-test-call
             platform="${weblogic.mt.test.platform}"
@@ -597,7 +597,7 @@
         <!--/parallel-->
     </target>
 
-	<!-- INTERNAL: Execute junit test suite on WebLogic server. -->
+    <!-- INTERNAL: Execute junit test suite on WebLogic server. -->
     <macrodef name="weblogic-mt-test-call">
         <attribute name="platform"/>
         <attribute name="libs"/>
@@ -1453,7 +1453,7 @@
             unless="wls.mt.undeploy.properties.valid"/>
     </target>
 
-	<!-- INTERNAL: Print junit test suite execution arguments. -->
+    <!-- INTERNAL: Print junit test suite execution arguments. -->
     <target name="weblogic-mt-test-call-print-properties">
         <echo message="Properties passed to test call:"/>
         <property-check-message name="weblogic.mt.test.platform"/>
@@ -1481,7 +1481,7 @@
         <property-check-message name="weblogic.mt.test.t2.url"/>
     </target>
 
-	<!-- INTERNAL: Check if WebLogic installation packages are available locally. -->
+    <!-- INTERNAL: Check if WebLogic installation packages are available locally. -->
     <target name="wls-mt-packages-exists">
         <weblogic-mt-install-files-check/>
         <condition property="wls.mt.packages.exists" value="true">

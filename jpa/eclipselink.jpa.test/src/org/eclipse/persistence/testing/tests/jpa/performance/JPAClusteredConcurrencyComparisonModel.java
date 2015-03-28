@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     James Sutherland - initial impl
- ******************************************************************************/  
+ ******************************************************************************/
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import org.eclipse.persistence.testing.models.jpa.performance.Employee;
@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.framework.TestModel;
  */
 public class JPAClusteredConcurrencyComparisonModel extends TestModel {
 
-    
+
     public void addTests() {
         addTest(buildClusterValidationTest());
         addTest(buildComputeLagTest());
@@ -32,7 +32,7 @@ public class JPAClusteredConcurrencyComparisonModel extends TestModel {
         addTest(new JPAClusteredEJBConcurrencyComparisonTest(0.1));
         addTest(new JPAClusteredEJBConcurrencyComparisonTest(0.0));
     }
-    
+
     /**
      * Create/populate database.
      */
@@ -46,7 +46,7 @@ public class JPAClusteredConcurrencyComparisonModel extends TestModel {
         test.nextEmployeeService();
         test.nextEmployeeService();
     }
-    
+
     /**
      * Build a test that validates cache coordination is working in the cluster.
      */
@@ -56,7 +56,7 @@ public class JPAClusteredConcurrencyComparisonModel extends TestModel {
                 JPAClusteredEJBConcurrencyComparisonTest test = new JPAClusteredEJBConcurrencyComparisonTest();
                 EmployeeService service = test.nextEmployeeService();
                 Employee employee = (Employee)service.findAll().get(0);
-                
+
                 for (int index = 0; index < 15; index++) {
                     service = test.nextEmployeeService();
                     employee = service.findById(employee.getId());
@@ -78,7 +78,7 @@ public class JPAClusteredConcurrencyComparisonModel extends TestModel {
         test.setName("ClusterValidationTest");
         return test;
     }
-    
+
     /**
      * Build a test that attempt to determine the coordination lag in a cluster.
      */
@@ -88,7 +88,7 @@ public class JPAClusteredConcurrencyComparisonModel extends TestModel {
                 JPAClusteredEJBConcurrencyComparisonTest test = new JPAClusteredEJBConcurrencyComparisonTest();
                 EmployeeService service = test.nextEmployeeService();
                 Employee employee = (Employee)service.findAll().get(0);
-                
+
                 for (int index = 0; index < 5; index++) {
                     service = test.nextEmployeeService();
                     employee = service.findById(employee.getId());

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -27,22 +27,22 @@ import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
  * Functions can also be called through custom SQL.
  */
 public class StoredFunctionCall extends StoredProcedureCall {
-    
+
     public StoredFunctionCall() {
         super();
         addUnamedOutputArgument("");
     }
-    
+
     public StoredFunctionCall(int sqlType, String sqlTypeName, Class javaType) {
         super();
         addUnamedOutputArgument("", sqlType, sqlTypeName, javaType);
     }
-    
+
     public StoredFunctionCall(int sqlType, String sqlTypeName, Class javaType, DatabaseField nestedType) {
         super();
         addUnamedOutputArgument("", sqlType, sqlTypeName, javaType, nestedType);
     }
-    
+
     public StoredFunctionCall(int sqlType, String sqlTypeName, String javaTypeClassName) {
         this(sqlType, sqlTypeName, (Class)null);
         ObjectRelationalDatabaseField ordf = (ObjectRelationalDatabaseField)parameters.get(0);
@@ -54,7 +54,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
         ObjectRelationalDatabaseField ordf = (ObjectRelationalDatabaseField)parameters.get(0);
         ordf.setNestedTypeField(nestedType);
     }
-    
+
 
     /**
      * INTERNAL:
@@ -137,7 +137,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
         field.setSqlTypeName(typeName);
         field.setType(javaType);
         getParameters().set(0, field);
-    }    
+    }
 
     /**
      * PUBLIC:
@@ -157,7 +157,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
         field.setNestedTypeField(nestedType);
         getParameters().set(0, field);
     }
-    
+
     /**
      * PUBLIC:
      * Define the field name to be substitute for the function return.
@@ -168,13 +168,13 @@ public class StoredFunctionCall extends StoredProcedureCall {
         returnField.setName(name);
         returnField.setSqlType(type);
     }
-    
-    /** 
+
+    /**
      * PUBLIC:
      * Define to return cursor as result.
      */
     public void setResultCursor() {
-        getParameterTypes().set(0, OUT_CURSOR); 
+        getParameterTypes().set(0, OUT_CURSOR);
         setIsCursorOutputProcedure(!hasOutputCursors());
         setIsMultipleCursorOutputProcedure(hasOutputCursors());
     }

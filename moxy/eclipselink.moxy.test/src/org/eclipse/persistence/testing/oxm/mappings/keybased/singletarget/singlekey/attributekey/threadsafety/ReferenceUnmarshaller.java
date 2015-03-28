@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -21,24 +21,24 @@ import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.Employ
 
 
 public class ReferenceUnmarshaller implements Runnable {
-	private XMLUnmarshaller unmarshaller;
-	private String resource;
-	private String controlStreet;
-	public ReferenceUnmarshaller(XMLUnmarshaller unmarshaller, String resource, String controlStreet) {
-		this.unmarshaller = unmarshaller;
-		this.resource = resource;
-		this.controlStreet = controlStreet;
-	}
-	
-	public void run() {
-		for(int i = 0; i < 2000; i++) {
-			StringReader reader = new StringReader(resource);
-			Root root = (Root)unmarshaller.unmarshal(reader);
-			if(!(controlStreet.equals(((Employee)root.employee).address.street))) {
-				throw new RuntimeException("Incorrect Address Resolved");
-			}
-		}
-	}
-	
+    private XMLUnmarshaller unmarshaller;
+    private String resource;
+    private String controlStreet;
+    public ReferenceUnmarshaller(XMLUnmarshaller unmarshaller, String resource, String controlStreet) {
+        this.unmarshaller = unmarshaller;
+        this.resource = resource;
+        this.controlStreet = controlStreet;
+    }
+
+    public void run() {
+        for(int i = 0; i < 2000; i++) {
+            StringReader reader = new StringReader(resource);
+            Root root = (Root)unmarshaller.unmarshal(reader);
+            if(!(controlStreet.equals(((Employee)root.employee).address.street))) {
+                throw new RuntimeException("Incorrect Address Resolved");
+            }
+        }
+    }
+
 
 }

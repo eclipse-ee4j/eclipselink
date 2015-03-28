@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,201 +35,201 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public class EclipseLinkSemanticValidatorTest2_5 extends AbstractSemanticValidatorTest {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLQueryContext buildQueryContext() {
-		return new EclipseLinkJPQLQueryContext(jpqlGrammar);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLQueryContext buildQueryContext() {
+        return new EclipseLinkJPQLQueryContext(jpqlGrammar);
+    }
 
-	protected EclipseLinkSemanticValidatorExtension buildSemanticExtension() {
-		return EclipseLinkSemanticValidatorExtension.NULL_EXTENSION;
-	}
+    protected EclipseLinkSemanticValidatorExtension buildSemanticExtension() {
+        return EclipseLinkSemanticValidatorExtension.NULL_EXTENSION;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractSemanticValidator buildValidator() {
-		return new EclipseLinkSemanticValidator(
-			buildSemanticValidatorHelper(),
-			buildSemanticExtension()
-		);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractSemanticValidator buildValidator() {
+        return new EclipseLinkSemanticValidator(
+            buildSemanticValidatorHelper(),
+            buildSemanticExtension()
+        );
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isComparisonTypeChecked() {
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isComparisonTypeChecked() {
+        return false;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isPathExpressionToCollectionMappingAllowed() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isPathExpressionToCollectionMappingAllowed() {
+        return true;
+    }
 
-	@Test
-	public void test_HQL_Query_001() throws Exception {
+    @Test
+    public void test_HQL_Query_001() throws Exception {
 
-		String jpqlQuery = "FROM Employee e";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        String jpqlQuery = "FROM Employee e";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public void test_HQL_Query_002() throws Exception {
+    @Test
+    public void test_HQL_Query_002() throws Exception {
 
-		String jpqlQuery = "FROM Employee e WHERE e.name = 'JPQL'";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        String jpqlQuery = "FROM Employee e WHERE e.name = 'JPQL'";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public void test_NestedArray_01() throws Exception {
+    @Test
+    public void test_NestedArray_01() throws Exception {
 
-		String jpqlQuery = "Select e from Employee e where (e.empId, e.empId) IN ((:id1, :id2), (:id3, :id4))";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        String jpqlQuery = "Select e from Employee e where (e.empId, e.empId) IN ((:id1, :id2), (:id3, :id4))";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public void test_NestedArray_02() throws Exception {
+    @Test
+    public void test_NestedArray_02() throws Exception {
 
-		String jpqlQuery = "Select e from Employee e where (e.empId, e.empId) IN :arg";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        String jpqlQuery = "Select e from Employee e where (e.empId, e.empId) IN :arg";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public void test_NestedArray_03() throws Exception {
+    @Test
+    public void test_NestedArray_03() throws Exception {
 
-		String jpqlQuery  = "Select e from Employee e where (e.id, e.empId) IN ((:id1, :id2), (:id3, :id4))";
-		int startPosition = "Select e from Employee e where (".length();
-		int endPosition   = "Select e from Employee e where (e.id".length();
+        String jpqlQuery  = "Select e from Employee e where (e.id, e.empId) IN ((:id1, :id2), (:id3, :id4))";
+        int startPosition = "Select e from Employee e where (".length();
+        int endPosition   = "Select e from Employee e where (e.id".length();
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.StateFieldPathExpression_NotResolvable,
-			startPosition,
-			endPosition
-		);
-	}
+        testHasOnlyOneProblem(
+            problems,
+            JPQLQueryProblemMessages.StateFieldPathExpression_NotResolvable,
+            startPosition,
+            endPosition
+        );
+    }
 
-	@Test
-	public void test_NestedArray_04() throws Exception {
+    @Test
+    public void test_NestedArray_04() throws Exception {
 
-		String jpqlQuery  = "Select e from Employee e where (e.empId, e.id) IN ((:id1, :id2), (:id3, :id4))";
-		int startPosition = "Select e from Employee e where (e.empId, ".length();
-		int endPosition   = "Select e from Employee e where (e.empId, e.id".length();
+        String jpqlQuery  = "Select e from Employee e where (e.empId, e.id) IN ((:id1, :id2), (:id3, :id4))";
+        int startPosition = "Select e from Employee e where (e.empId, ".length();
+        int endPosition   = "Select e from Employee e where (e.empId, e.id".length();
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.StateFieldPathExpression_NotResolvable,
-			startPosition,
-			endPosition
-		);
-	}
+        testHasOnlyOneProblem(
+            problems,
+            JPQLQueryProblemMessages.StateFieldPathExpression_NotResolvable,
+            startPosition,
+            endPosition
+        );
+    }
 
-	@Test
-	public void test_NestedArray_05() throws Exception {
+    @Test
+    public void test_NestedArray_05() throws Exception {
 
-		String jpqlQuery  = "Select e from Employee e where (e.empId, e.empId) IN ((e.id, :id2), (:id3, :id4))";
-		int startPosition = "Select e from Employee e where (e.empId, e.empId) IN((".length();
-		int endPosition   = "Select e from Employee e where (e.empId, e.empId) IN((e.id".length();
+        String jpqlQuery  = "Select e from Employee e where (e.empId, e.empId) IN ((e.id, :id2), (:id3, :id4))";
+        int startPosition = "Select e from Employee e where (e.empId, e.empId) IN((".length();
+        int endPosition   = "Select e from Employee e where (e.empId, e.empId) IN((e.id".length();
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.StateFieldPathExpression_NotResolvable,
-			startPosition,
-			endPosition
-		);
-	}
+        testHasOnlyOneProblem(
+            problems,
+            JPQLQueryProblemMessages.StateFieldPathExpression_NotResolvable,
+            startPosition,
+            endPosition
+        );
+    }
 
-	@Test
-	public void test_NestedArray_06() throws Exception {
+    @Test
+    public void test_NestedArray_06() throws Exception {
 
-		String jpqlQuery  = "Select e from Employee e where (e.empId, e.empId) IN ((:id1, :id2), (:id3, id4))";
-		int startPosition = "Select e from Employee e where (e.empId, e.empId) IN((:id1, :id2), (:id3, ".length();
-		int endPosition   = "Select e from Employee e where (e.empId, e.empId) IN((:id1, :id2), (:id3, id4".length();
+        String jpqlQuery  = "Select e from Employee e where (e.empId, e.empId) IN ((:id1, :id2), (:id3, id4))";
+        int startPosition = "Select e from Employee e where (e.empId, e.empId) IN((:id1, :id2), (:id3, ".length();
+        int endPosition   = "Select e from Employee e where (e.empId, e.empId) IN((:id1, :id2), (:id3, id4".length();
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.EntityTypeLiteral_NotResolvable,
-			startPosition,
-			endPosition
-		);
-	}
+        testHasOnlyOneProblem(
+            problems,
+            JPQLQueryProblemMessages.EntityTypeLiteral_NotResolvable,
+            startPosition,
+            endPosition
+        );
+    }
 
-	@Test
-	public void test_NestedArray_07() throws Exception {
+    @Test
+    public void test_NestedArray_07() throws Exception {
 
-		String jpqlQuery  = "Select d from Dept d where (d.loc, d.role) IN(Select d2.loc, d2.role from Dept d2)";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
+        String jpqlQuery  = "Select d from Dept d where (d.loc, d.role) IN(Select d2.loc, d2.role from Dept d2)";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
 
-	@Test
-	public void test_NestedArray_08() throws Exception {
+    @Test
+    public void test_NestedArray_08() throws Exception {
 
-		String jpqlQuery  = "Select d from Dept d where (d.loc, d.role) IN(Select d2.loc from Dept d2)";
-		int startPosition = "Select d from Dept d where ".length();
-		int endPosition   = jpqlQuery.length();
+        String jpqlQuery  = "Select d from Dept d where (d.loc, d.role) IN(Select d2.loc from Dept d2)";
+        int startPosition = "Select d from Dept d where ".length();
+        int endPosition   = jpqlQuery.length();
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.InExpression_InvalidItemCount,
-			startPosition,
-			endPosition
-		);
-	}
+        testHasOnlyOneProblem(
+            problems,
+            JPQLQueryProblemMessages.InExpression_InvalidItemCount,
+            startPosition,
+            endPosition
+        );
+    }
 
-	@Test
-	public void test_NestedArray_09() throws Exception {
+    @Test
+    public void test_NestedArray_09() throws Exception {
 
-		String jpqlQuery  = "Select d from Dept d where d.loc IN(Select d2.loc, d2.role from Dept d2)";
-		int startPosition = "Select d from Dept d where ".length();
-		int endPosition   = jpqlQuery.length();
+        String jpqlQuery  = "Select d from Dept d where d.loc IN(Select d2.loc, d2.role from Dept d2)";
+        int startPosition = "Select d from Dept d where ".length();
+        int endPosition   = jpqlQuery.length();
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.InExpression_InvalidItemCount,
-			startPosition,
-			endPosition
-		);
-	}
+        testHasOnlyOneProblem(
+            problems,
+            JPQLQueryProblemMessages.InExpression_InvalidItemCount,
+            startPosition,
+            endPosition
+        );
+    }
 
-	@Test
-	public void test_NestedArray_10() throws Exception {
+    @Test
+    public void test_NestedArray_10() throws Exception {
 
-		String jpqlQuery  = "Select d from Dept d where (d.loc, d.role, 'JPQL') IN(Select d2.loc, d2.role from Dept d2)";
-		int startPosition = "Select d from Dept d where ".length();
-		int endPosition   = jpqlQuery.length();
+        String jpqlQuery  = "Select d from Dept d where (d.loc, d.role, 'JPQL') IN(Select d2.loc, d2.role from Dept d2)";
+        int startPosition = "Select d from Dept d where ".length();
+        int endPosition   = jpqlQuery.length();
 
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.InExpression_InvalidItemCount,
-			startPosition,
-			endPosition
-		);
-	}
+        testHasOnlyOneProblem(
+            problems,
+            JPQLQueryProblemMessages.InExpression_InvalidItemCount,
+            startPosition,
+            endPosition
+        );
+    }
 }

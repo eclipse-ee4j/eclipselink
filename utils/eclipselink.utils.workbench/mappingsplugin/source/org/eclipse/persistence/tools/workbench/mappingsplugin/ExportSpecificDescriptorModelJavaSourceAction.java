@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,39 +26,39 @@ import org.eclipse.persistence.tools.workbench.mappingsplugin.ui.project.Project
 
 public class ExportSpecificDescriptorModelJavaSourceAction extends AbstractFrameworkAction {
 
-	ExportSpecificDescriptorModelJavaSourceAction(WorkbenchContext context) {
-		super(context);
-	}
-	
-	protected void initialize() {
-		super.initialize();
-		this.initializeTextAndMnemonic("EXPORT_MODEL_JAVA_SOURCE_DESCRIPTOR");
-		this.initializeAccelerator("EXPORT_MODEL_JAVA_SOURCE_DESCRIPTOR.accelerator");
-		this.initializeToolTipText("EXPORT_MODEL_JAVA_SOURCE_DESCRIPTOR.toolTipText");
-		this.initializeIcon("GENERATE_JAVA");
-	}
-	
-	protected void execute() {
-		ApplicationNode[] projectNodes = selectedProjectNodes();
-		for (int i = 0; i < projectNodes.length; i++) {
-			ModelSourceGenerationCoordinator coordinator = new ModelSourceGenerationCoordinator(this.getWorkbenchContext());
-			ProjectNode projectNode = (ProjectNode) projectNodes[i];
-			MWProject project = projectNode.getProject();
-			coordinator.exportModelJavaSource(project, this.selectedDescriptorsFor(projectNode));
-		}
-	}	
+    ExportSpecificDescriptorModelJavaSourceAction(WorkbenchContext context) {
+        super(context);
+    }
 
-	private Collection selectedDescriptorsFor(ProjectNode projectNode) {
-		Collection descriptors = new HashSet();
-		ApplicationNode[] selectedNodes = this.selectedNodes();
-		for (int i = 0; i < selectedNodes.length; i++) {
-			MappingsApplicationNode node = (MappingsApplicationNode) selectedNodes[i];
-			if (node.getProjectNode() == projectNode) {
-				node.addDescriptorsTo(descriptors);
-			}
-		}
-		
-		return descriptors;
-	}
-	
+    protected void initialize() {
+        super.initialize();
+        this.initializeTextAndMnemonic("EXPORT_MODEL_JAVA_SOURCE_DESCRIPTOR");
+        this.initializeAccelerator("EXPORT_MODEL_JAVA_SOURCE_DESCRIPTOR.accelerator");
+        this.initializeToolTipText("EXPORT_MODEL_JAVA_SOURCE_DESCRIPTOR.toolTipText");
+        this.initializeIcon("GENERATE_JAVA");
+    }
+
+    protected void execute() {
+        ApplicationNode[] projectNodes = selectedProjectNodes();
+        for (int i = 0; i < projectNodes.length; i++) {
+            ModelSourceGenerationCoordinator coordinator = new ModelSourceGenerationCoordinator(this.getWorkbenchContext());
+            ProjectNode projectNode = (ProjectNode) projectNodes[i];
+            MWProject project = projectNode.getProject();
+            coordinator.exportModelJavaSource(project, this.selectedDescriptorsFor(projectNode));
+        }
+    }
+
+    private Collection selectedDescriptorsFor(ProjectNode projectNode) {
+        Collection descriptors = new HashSet();
+        ApplicationNode[] selectedNodes = this.selectedNodes();
+        for (int i = 0; i < selectedNodes.length; i++) {
+            MappingsApplicationNode node = (MappingsApplicationNode) selectedNodes[i];
+            if (node.getProjectNode() == projectNode) {
+                node.addDescriptorsTo(descriptors);
+            }
+        }
+
+        return descriptors;
+    }
+
 }

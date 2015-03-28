@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/24/2011-2.3 Guy Pelletier 
+ *     05/24/2011-2.3 Guy Pelletier
  *       - 345962: Join fetch query when using tenant discriminator column fails.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.expressions;
 
 import java.util.*;
@@ -57,8 +57,8 @@ public abstract class Expression implements Serializable, Cloneable {
     protected boolean selectIfOrderedBy = true;
     /** PERF: Cache the hashCode. */
     protected int hashCode = 0;
-    
-    /** Use the upper() function for case insensitive expression operations (default). 
+
+    /** Use the upper() function for case insensitive expression operations (default).
         Seting this flag to false will use the lower() function instead. */
     public static boolean shouldUseUpperCaseForIgnoreCase = true;
 
@@ -332,7 +332,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression anyOfAllowingNone(String attributeName) {
         return anyOfAllowingNone(attributeName, true);
     }
-    
+
     /**
      * ADVANCED:
      * Return an expression representing traversal of a 1:many or many:many relationship.
@@ -372,7 +372,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression anyOfAllowingNone(String attributeName, boolean shouldJoinBeIndependent) {
         throw new UnsupportedOperationException("anyOfAllowingNone");
     }
-    
+
     /**
      * ADVANCED:
      * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base.
@@ -382,7 +382,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression as(Class castClass) {
         return treat(castClass);
     }
-    
+
     /**
      * ADVANCED:
      * Assign an alias to the expression in the select clause.
@@ -391,13 +391,13 @@ public abstract class Expression implements Serializable, Cloneable {
         ExpressionOperator operator = getOperator(ExpressionOperator.As);
         return operator.expressionFor(this, literal(alias));
     }
-    
+
     /**
      * ADVANCED:
      * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base
      * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
      * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
-     * 
+     *
      *  downcast uses Expression.type() internally to guarantee the results are of the specified class.
      * <p>Example:
      * <blockquote><pre>
@@ -409,7 +409,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression treat(Class castClass) {
         return this;
     }
-    
+
     /**
      * PUBLIC:
      * This can only be used within an ordering expression.
@@ -422,7 +422,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression ascending() {
         return getFunction(ExpressionOperator.Ascending);
     }
-    
+
     /**
      * PUBLIC:
      * This can only be used within an ordering expression.
@@ -435,7 +435,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression nullsFirst() {
         return getFunction(ExpressionOperator.NullsFirst);
     }
-    
+
     /**
      * PUBLIC:
      * This can only be used within an ordering expression.
@@ -577,7 +577,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Alias a particular table within this node
      */
     protected void assignAlias(String name, DatabaseTable tableOrExpression) {
-        // By default, do nothing.	
+        // By default, do nothing.
     }
 
     /**
@@ -737,17 +737,17 @@ public abstract class Expression implements Serializable, Cloneable {
      *     WHEN "Susan" THEN "Sue"
      *  ELSE "No-Nickname"
      * </pre></blockquote>
-     * 
-     * This expression must be manipulated to successfully build a case statement by adding appropriate 
+     *
+     * This expression must be manipulated to successfully build a case statement by adding appropriate
      * children to it.
-     * 
-     * A child must be added for the "case expression" (name above), a pair of children must be added for 
+     *
+     * A child must be added for the "case expression" (name above), a pair of children must be added for
      * each "when then" expression and a child must be added for the else.
-     * 
+     *
      * @see ArgumentListFunctionExpression
      */
     public ArgumentListFunctionExpression caseStatement() {
-        
+
         ListExpressionOperator caseOperator = (ListExpressionOperator)getOperator(ExpressionOperator.Case);
         ListExpressionOperator clonedCaseOperator = new ListExpressionOperator();
         caseOperator.copyTo(clonedCaseOperator);
@@ -758,7 +758,7 @@ public abstract class Expression implements Serializable, Cloneable {
         expression.setOperator(clonedCaseOperator);
         return expression;
     }
-    
+
     /**
      * PUBLIC:
      * Function Convert values returned by the query to values
@@ -774,7 +774,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Java: NA
      * SQL: CASE WHEN name = "Robert" THEN "Bob"
      *     WHEN name = "Susan" THEN "Sue"
-     *  ELSE "No-Nickname" 
+     *  ELSE "No-Nickname"
      * </pre></blockquote>
      * @param caseConditions java.util.Map
      * A Map containing the items to be processed.
@@ -789,9 +789,9 @@ public abstract class Expression implements Serializable, Cloneable {
         if (iterator.hasNext()){
             Expression key = iterator.next();
             expression.addChild(key);
-            expression.setBaseExpression(key);//base needs to be the same as the first child for reportQuery items. 
+            expression.setBaseExpression(key);//base needs to be the same as the first child for reportQuery items.
             expression.addChild(Expression.from(caseConditions.get(key), this));
-            
+
             while (iterator.hasNext()) {
                 key = iterator.next();
                 expression.addChild(key);
@@ -801,21 +801,21 @@ public abstract class Expression implements Serializable, Cloneable {
         expression.addChild(Expression.from(defaultItem, this));
         return expression;
     }
-    
+
     /**
      * INTERNAL:
      * Creates an ArgumentListFunctionExpression that is capable of creating a case statement of the form:
      * <blockquote><pre>
      * SQL: CASE WHEN name = "Robert" THEN "Bob"
      *     WHEN name = "Susan" THEN "Sue"
-     *  ELSE "No-Nickname" 
+     *  ELSE "No-Nickname"
      * </pre></blockquote>
-     * 
-     * This expression must be manipulated to successfully build a case statement by adding appropriate 
+     *
+     * This expression must be manipulated to successfully build a case statement by adding appropriate
      * children to it.
-     * 
+     *
      * A pair of children must be added for  each "when then" expression and a child must be added for the else.
-     * 
+     *
      * @see ArgumentListFunctionExpression
      */
     public ArgumentListFunctionExpression caseConditionStatement() {
@@ -829,7 +829,7 @@ public abstract class Expression implements Serializable, Cloneable {
         expression.setOperator(clonedCaseOperator);
         return expression;
     }
-    
+
     /**
      * PUBLIC:
      * Function Test if arguments are equal, returning null if they are and the value of the
@@ -838,7 +838,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * <blockquote><pre>
      * EclipseLink: builder.get("name").nullIf( "Bobby")
      * Java: NA
-     * SQL: NULLIF(name, "Bobby") 
+     * SQL: NULLIF(name, "Bobby")
      * </pre></blockquote>
      * @param object java.lang.Object the value/expression that will be compared to the base expression
      */
@@ -848,10 +848,10 @@ public abstract class Expression implements Serializable, Cloneable {
             args.add(Expression.from(object, this));
             return anOperator.expressionForArguments(this, args);
     }
-    
+
     /**
      * PUBLIC:
-     * Function Return null if all arguments are null and the first non-null argument otherwise 
+     * Function Return null if all arguments are null and the first non-null argument otherwise
      * The equivalent of the COALESCE SQL function
      * <p>Example:
      * <blockquote><pre>
@@ -873,14 +873,14 @@ public abstract class Expression implements Serializable, Cloneable {
         if (iterator.hasNext()){
             Expression base = Expression.from(iterator.next(), this);
             expression.addChild(base);
-            expression.setBaseExpression(base);//base needs to be the same as the first child for reportQuery items. 
+            expression.setBaseExpression(base);//base needs to be the same as the first child for reportQuery items.
             while (iterator.hasNext()) {
                 expression.addChild(Expression.from(iterator.next(), this));
             }
         }
         return expression;
     }
-    
+
     public ArgumentListFunctionExpression coalesce() {
         ListExpressionOperator coalesceOperator = (ListExpressionOperator)getOperator(ExpressionOperator.Coalesce);
         ListExpressionOperator clonedCoalesceOperator = new ListExpressionOperator();
@@ -921,7 +921,7 @@ public abstract class Expression implements Serializable, Cloneable {
         // 2612538 - the default size of Map (32) is appropriate
         Map alreadyDone = new IdentityHashMap();
 
-        // cloneUsing is identical to cloning save that the primary builder 
+        // cloneUsing is identical to cloning save that the primary builder
         // will be replaced not with its clone but with newBase.
         // ExpressionBuilder.registerIn() will check for this newBase with
         // alreadyDone.get(alreadyDone);
@@ -1135,12 +1135,12 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * This gives access to the current timestamp on the database through expression.
      * Please note, this method is added for consistency and returns the same
-     * result as currentDate. 
+     * result as currentDate.
      */
     public Expression currentTimeStamp() {
         return currentDate();
     }
-    
+
     /**
      * PUBLIC:
      * This gives access to the current date on the database through expression.
@@ -1347,7 +1347,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public String descriptionOfNodeType() {
         return "Expression";
     }
-    
+
     /**
      * PUBLIC:
      * Function return a value which indicates how much difference there is
@@ -1418,7 +1418,7 @@ public abstract class Expression implements Serializable, Cloneable {
         }
         return this.hashCode;
     }
-    
+
     /**
      * INTERNAL:
      * Compute a consistent hash-code for the expression.
@@ -1429,7 +1429,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public int computeHashCode() {
         return 32;
     }
-    
+
     public Expression equal(byte theValue) {
         return equal(Byte.valueOf(theValue));
     }
@@ -1646,7 +1646,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public static Expression fromLiteral(String value, Expression base) {
         return new LiteralExpression(value, base);
     }
-    
+
     /**
      * PUBLIC:
      * Return an expression that wraps the attribute or query key name.
@@ -1673,7 +1673,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression get(String attributeName, boolean forceInnerJoin) {
         throw new UnsupportedOperationException("get");
     }
-    
+
     /**
      * ADVANCED:
      * Return an expression that wraps the attribute or query key name.
@@ -1815,7 +1815,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression leftJoin(Expression target, Expression onClause) {
         throw new UnsupportedOperationException("leftJoin");
     }
-    
+
     /**
      * ADVANCED:
      * This can be used for accessing user defined functions.
@@ -1966,7 +1966,7 @@ public abstract class Expression implements Serializable, Cloneable {
 
         return anOperator.expressionForArguments(this, arguments);
     }
-    
+
     /**
      * PUBLIC:
      * Return an expression that wraps the inheritance type field in an expression.
@@ -2048,7 +2048,7 @@ public abstract class Expression implements Serializable, Cloneable {
         return new ParameterExpression(field, getBuilder());
 
     }
-    
+
     /**
      * ADVANCED:
      * Return an expression representing a property with the given name.
@@ -2513,9 +2513,9 @@ public abstract class Expression implements Serializable, Cloneable {
      *    Expression exp = firstNameJohn.and(anyOfProjects.index().between(2, 4));
      *    query.setSelectionCriteria(exp);
      *    query.addAttribute("projects", anyOfProjects);
-     *       
-     *    SELECT DISTINCT t0.PROJ_ID, t0.PROJ_TYPE, t0.DESCRIP, t0.PROJ_NAME, t0.LEADER_ID, t0.VERSION, t1.PROJ_ID, t1.BUDGET, t1.MILESTONE 
-     *    FROM OL_PROJ_EMP t4, OL_SALARY t3, OL_EMPLOYEE t2, OL_LPROJECT t1, OL_PROJECT t0 
+     *
+     *    SELECT DISTINCT t0.PROJ_ID, t0.PROJ_TYPE, t0.DESCRIP, t0.PROJ_NAME, t0.LEADER_ID, t0.VERSION, t1.PROJ_ID, t1.BUDGET, t1.MILESTONE
+     *    FROM OL_PROJ_EMP t4, OL_SALARY t3, OL_EMPLOYEE t2, OL_LPROJECT t1, OL_PROJECT t0
      *    WHERE ((((t2.F_NAME = 'John') AND (t4.PROJ_ORDER BETWEEN 2 AND 4)) AND (t3.OWNER_EMP_ID = t2.EMP_ID)) AND
      *    (((t4.EMP_ID = t2.EMP_ID) AND (t0.PROJ_ID = t4.PROJ_ID)) AND (t1.PROJ_ID (+) = t0.PROJ_ID)))
      * </pre></blockquote>
@@ -2523,7 +2523,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression index() {
         throw QueryException.indexRequiresQueryKeyExpression(this);
     }
-    
+
     /**
      * PUBLIC:
      * Function, returns the integer index of the substring within the source string.
@@ -2532,7 +2532,7 @@ public abstract class Expression implements Serializable, Cloneable {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Instring);
         return anOperator.expressionFor(this, substring);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -2658,7 +2658,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public boolean isSubSelectExpression() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -2733,7 +2733,7 @@ public abstract class Expression implements Serializable, Cloneable {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.LeftTrim);
         return anOperator.expressionFor(this);
     }
-    
+
     /**
      * PUBLIC:
      * Function, returns the string with the substring trimed from the left.
@@ -3168,13 +3168,13 @@ public abstract class Expression implements Serializable, Cloneable {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.MonthsBetween);
         return anOperator.expressionFor(this, otherDate);
     }
-    
+
     /**
      * PUBLIC:
      * Return a Map.Entry containing the key and the value from a mapping that maps to a java.util.Map
      * This expression can only be used as a return value in a ReportQuery and cannot be used as part of
      * the WHERE clause in any query
-     * 
+     *
      * EclipseLink: eb.get("mapAttribute").mapEntry()
      * @return
      */
@@ -3183,12 +3183,12 @@ public abstract class Expression implements Serializable, Cloneable {
         expression.returnMapEntry();
         return expression;
     }
-    
+
     /**
      * PUBLIC:
      * Return the key from a mapping that maps to a java.util.Map
      * This expression can be used either in as a return value in a ReportQuery or in the WHERE clause in a query
-     * 
+     *
      * EclipseLink: eb.get("mapAttribute").mapKey()
      * @return
      */
@@ -3732,7 +3732,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not like the other value.
-     * Equivalent to like negated.  
+     * Equivalent to like negated.
      * @param value string to compare
      * @param escapeSequence the escape character to use
      * @see #like(String)
@@ -3747,7 +3747,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not like the other value.
-     * Equivalent to like negated.  
+     * Equivalent to like negated.
      * @param value string to compare
      * @param escapeSequence the escape character to use
      * @see #like(String)
@@ -4173,7 +4173,7 @@ public abstract class Expression implements Serializable, Cloneable {
         args.add(size);
         return anOperator.expressionForArguments(this, args);
     }
-    
+
     /**
      * PUBLIC:
      * Function, returns the substring from the source string.
@@ -4361,7 +4361,7 @@ public abstract class Expression implements Serializable, Cloneable {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Trim);
         return anOperator.expressionFor(this);
     }
-    
+
     /**
      * PUBLIC:
      * Function, returns the string right and left trimmed for the substring.
@@ -4434,7 +4434,7 @@ public abstract class Expression implements Serializable, Cloneable {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.IsFragment);
         return anOperator.expressionFor(this);
     }
-    
+
     /**
      * PUBLIC:
      * XMLType Function - gets a string value from an XMLType
@@ -4733,7 +4733,7 @@ public abstract class Expression implements Serializable, Cloneable {
         } else {
             printer.setIsFirstElementPrinted(true);
         }
-        
+
         if (statement.requiresAliases()) {
             if (field.getTable() != this.lastTable) {
                 this.lastTable = field.getTable();
@@ -5196,7 +5196,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @deprecated since 2.4 replaced by some(List)
      * @see #some(List)
      */
-    @Deprecated    
+    @Deprecated
     public Expression some(Vector theObjects) {
         return some(new ConstantExpression(theObjects, this));
     }
@@ -5211,7 +5211,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
      * </pre></blockquote>
-     */    
+     */
     public Expression some(List theObjects) {
         return some(new ConstantExpression(theObjects, this));
     }
@@ -5404,15 +5404,15 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression all(ReportQuery subQuery) {
         return all(subQuery(subQuery));
     }
-    
+
     /**
      * INTERNAL:
      * Lookup the descriptor for this item by traversing its expression recursively.
      */
-    public ClassDescriptor getLeafDescriptor(DatabaseQuery query, ClassDescriptor rootDescriptor, AbstractSession session) {        
+    public ClassDescriptor getLeafDescriptor(DatabaseQuery query, ClassDescriptor rootDescriptor, AbstractSession session) {
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Lookup the mapping for this item by traversing its expression recursively.
@@ -5421,5 +5421,5 @@ public abstract class Expression implements Serializable, Cloneable {
     public DatabaseMapping getLeafMapping(DatabaseQuery query, ClassDescriptor rootDescriptor, AbstractSession session) {
         return null;
     }
-    
+
 }

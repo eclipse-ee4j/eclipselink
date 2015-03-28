@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     dclarke, mnorman - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *
  ******************************************************************************/
@@ -34,17 +34,17 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @author mnorman
  */
 public class DynamicPropertiesManager {
-    
+
     /**
      * All DynamicEntity classes have a public static field 'DPM' of type DynamicPropertiesManager
-     * 
+     *
      */
     public static final String PROPERTIES_MANAGER_FIELD = "DPM";
 
     protected DynamicTypeImpl type;
-    protected DynamicPropertiesInitializatonPolicy dpInitializatonPolicy = 
+    protected DynamicPropertiesInitializatonPolicy dpInitializatonPolicy =
         new DynamicPropertiesInitializatonPolicy();
-    
+
     public DynamicPropertiesManager() {
         super();
     }
@@ -70,7 +70,7 @@ public class DynamicPropertiesManager {
         // next step, initialize 'slot' values
         initializeSlotValues((DynamicEntityImpl)entity);
     }
-    
+
     protected void createSlots(DynamicEntityImpl entity) {
         Map<String, PropertyWrapper> propertiesMap = entity.getPropertiesMap();
         List<String> propertyNames = getPropertyNames();
@@ -80,11 +80,11 @@ public class DynamicPropertiesManager {
             }
         }
     }
-    
+
     protected void initializeSlotValues(DynamicEntityImpl entity) {
         getInitializatonPolicy().initializeProperties((DynamicTypeImpl)type, entity);
     }
-    
+
     // delegate to descriptor
     public boolean contains(String propertyName) {
         boolean contains = false;

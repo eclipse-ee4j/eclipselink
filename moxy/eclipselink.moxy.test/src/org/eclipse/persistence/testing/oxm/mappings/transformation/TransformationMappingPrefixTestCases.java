@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -14,7 +14,7 @@ package org.eclipse.persistence.testing.oxm.mappings.transformation;
 
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
-public class TransformationMappingPrefixTestCases extends XMLMappingTestCases 
+public class TransformationMappingPrefixTestCases extends XMLMappingTestCases
 {
   public TransformationMappingPrefixTestCases(String name) throws Exception {
     super(name);
@@ -31,7 +31,7 @@ public class TransformationMappingPrefixTestCases extends XMLMappingTestCases
     hours[0] = "9:00AM";
     hours[1] = "5:00PM";
     emp.setNormalHours(hours);
-    
+
     return emp;
   }
 }

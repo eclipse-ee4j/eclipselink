@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary.sequence;
 
 import junit.textui.TestRunner;
@@ -27,11 +27,11 @@ import commonj.sdo.Type;
 
 public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummaryXSDWithCSonRootUndoWSeqProject {
 
-	/**
-	 * TestCases:
-	 *  delete, detach, set(attach), set(createDataObject), move, swap, reset, unset, 
-	 */
-	
+    /**
+     * TestCases:
+     *  delete, detach, set(attach), set(createDataObject), move, swap, reset, unset,
+     */
+
     public ChangeSummaryXSDWithCSonRootUndoWSeqTestCases(String name) {
         super(name);
     }
@@ -40,7 +40,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.changesummary.sequence.ChangeSummaryXSDWithCSonRootUndoWSeqTestCases" };
         TestRunner.main(arguments);
     }
-    
+
 /*
     public void prepareSetItemsAfterDetachUnsetOrDeleteAndUndo_MultiOperation_SetComplexSingleWithManyChildBelowRootAndUndo(
             DataObject itemsDO, //
@@ -52,28 +52,28 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
             DataObject item2ProductDO, //
             DataObject item2ProductPrice1DO, //
             DataObject item2ProductPrice2DO, //
-        	Property itemsProperty, //
-        	DataObject originalRootDO, //        	
+            Property itemsProperty, //
+            DataObject originalRootDO, //
             DataObject itemsDOtoSet, //
-            ValueStore aCurrentValueStoreAfterLoggingFirstOn            
+            ValueStore aCurrentValueStoreAfterLoggingFirstOn
             ) {
-    		
-    	// get items property - to speed debugging
-    	itemsProperty = rootObject.getInstanceProperty("items");
-    	// take the full DataObject and remove the complex single that we would like to set    	
+
+        // get items property - to speed debugging
+        itemsProperty = rootObject.getInstanceProperty("items");
+        // take the full DataObject and remove the complex single that we would like to set
         itemsDOtoSet = rootObject.getDataObject(itemsProperty);
         // verify logging is off
         assertFalse(cs.isLogging());
         //rootObject.unset(itemsProperty); //unset is not clearing the cs when logging is off
         itemsDOtoSet.detach();
-        
+
         // verify CS is null on removed trees
         assertChangeSummaryStatusIfClearedIfCSIsAncestor(itemsDOtoSet, true);
-        
+
         // verify that items is not set
         assertNull(rootObject.getDataObject(itemsProperty));
         assertFalse(rootObject.isSet(itemsProperty));
-    	
+
         // save original root for later comparison after undo
         originalRootDO = copyHelper.copy(rootObject);
         assertTrue(equalityHelper.equal(rootObject, originalRootDO));
@@ -81,18 +81,18 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertNull(rootObject.getDataObject(itemsProperty));
         assertNull(rootObject.getDataObject("items/item[1]"));
         assertNull(rootObject.getDataObject("items/item[2]"));
-        
+
         cs.beginLogging();
         // verify original VS is null and save a copy of current VS for object identity testing after undo
         assertValueStoresInitializedAfterLoggingOn(rootObject);
         // save a copy of current VS for object identity testing after undo
         aCurrentValueStoreAfterLoggingFirstOn = ((SDODataObject)rootObject)._getCurrentValueStore();
         Sequence aCurrentSequenceAfterLoggingFirstOn = ((SDOSequence)rootObject.getSequence()).copy();
-        
+
         // set the items back  (in effect doing an undo)
         rootObject.set(itemsProperty, itemsDOtoSet);
         // check valueStores
-        assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);        
+        assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
 
         itemsDO = rootObject.getDataObject(itemsProperty);
         item1DO = rootObject.getDataObject("items/item[1]");
@@ -114,7 +114,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertNotNull(item1ProductPrice2DO);
         assertNotNull(item2ProductDO);
         assertNotNull(item2ProductPrice2DO);
-        assertNotNull(item2ProductPrice2DO);        
+        assertNotNull(item2ProductPrice2DO);
 
         assertModified(rootObject, cs);
         assertCreated(itemsDO, cs);
@@ -129,7 +129,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertEquals(2, cs.getChangedDataObjects().size()); // 10 when using delete
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainer().size());
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
-        
+
         assertUndoChangesEqualToOriginal(cs, rootObject, originalRootDO);
 
         // verify that property is reset
@@ -137,12 +137,12 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         // get back items object
         DataObject itemsDOundone = rootObject.getDataObject(itemsProperty);
         assertNull(itemsDOundone);
-        
+
         // compare with original
         //assertTrue(equalityHelper.equal(itemsDOundone, itemsDO));
 
         assertValueStoresReturnedToStartStateAfterUndoChanges(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
-        assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);        
+        assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);
     }
 
     public void verifySetItemsAfterDetachUnsetOrDeleteAndUndo_MultiOperation_SetComplexSingleWithManyChildBelowRootAndUndo(
@@ -155,8 +155,8 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         DataObject item2ProductDO, //
         DataObject item2ProductPrice1DO, //
         DataObject item2ProductPrice2DO, //
-    	Property itemsProperty, //
-    	DataObject originalRootDO, //        	
+        Property itemsProperty, //
+        DataObject originalRootDO, //
         DataObject itemsDOtoSet, //
         ValueStore aCurrentValueStoreAfterLoggingFirstOn, //
         Sequence aCurrentSequenceAfterLoggingFirstOn, //
@@ -170,7 +170,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertNotNull(item1ProductPrice2DO);
         assertNotNull(item2ProductDO);
         assertNotNull(item2ProductPrice2DO);
-        assertNotNull(item2ProductPrice2DO);        
+        assertNotNull(item2ProductPrice2DO);
 
         assertModified(rootObject, cs);
         assertCreated(itemsDO, cs);
@@ -185,7 +185,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertEquals(2, cs.getChangedDataObjects().size()); // 10 when using delete
         assertEquals(5, ((SDOChangeSummary)cs).getOldContainer().size());
         assertEquals(5, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
-        
+
         assertUndoChangesEqualToOriginal(cs, rootObject, originalRootDO);
 
         // verify that property is reset
@@ -193,32 +193,32 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         // get back items object
         DataObject itemsDOundone = rootObject.getDataObject(itemsProperty);
         assertNull(itemsDOundone);
-        
+
         // compare with original
         //assertTrue(equalityHelper.equal(itemsDOundone, itemsDO));
 
         assertValueStoresReturnedToStartStateAfterUndoChanges(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
-        assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);        
+        assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);
     }
-    
+
     public void testSetItemsAfterDetachAndUndo_MultiOperation_SetComplexSingleWithManyChildBelowRootAndUndo() {
-    	// get items property - to speed debugging
-    	Property itemsProperty = rootObject.getInstanceProperty("items");
-    	// take the full DataObject and remove the complex single that we would like to set    	
+        // get items property - to speed debugging
+        Property itemsProperty = rootObject.getInstanceProperty("items");
+        // take the full DataObject and remove the complex single that we would like to set
         DataObject itemsDOtoSet = rootObject.getDataObject(itemsProperty);
-        
+
         // verify logging is off
         assertFalse(cs.isLogging());
         //rootObject.unset(itemsProperty); //unset is not clearing the cs when logging is off
         itemsDOtoSet.detach();
-        
+
         // verify CS is null on removed trees
         assertChangeSummaryStatusIfClearedIfCSIsAncestor(itemsDOtoSet, true);
-        
+
         // verify that items is not set
         assertNull(rootObject.getDataObject(itemsProperty));
         assertFalse(rootObject.isSet(itemsProperty));
-    	
+
         // save original root for later comparison after undo
         DataObject originalRootDO = copyHelper.copy(rootObject);
         assertTrue(equalityHelper.equal(rootObject, originalRootDO));
@@ -226,18 +226,18 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertNull(rootObject.getDataObject(itemsProperty));
         assertNull(rootObject.getDataObject("items/item[1]"));
         assertNull(rootObject.getDataObject("items/item[2]"));
-        
+
         cs.beginLogging();
         // verify original VS is null and save a copy of current VS for object identity testing after undo
         assertValueStoresInitializedAfterLoggingOn(rootObject);
         // save a copy of current VS for object identity testing after undo
         ValueStore aCurrentValueStoreAfterLoggingFirstOn = ((SDODataObject)rootObject)._getCurrentValueStore();
-        Sequence aCurrentSequenceAfterLoggingFirstOn = ((SDOSequence)rootObject.getSequence()).copy();        
+        Sequence aCurrentSequenceAfterLoggingFirstOn = ((SDOSequence)rootObject.getSequence()).copy();
         // set the items back  (in effect doing an undo)
         rootObject.set(itemsProperty, itemsDOtoSet);
         // check valueStores
         assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
-        
+
         verifySetItemsAfterDetachUnsetOrDeleteAndUndo_MultiOperation_SetComplexSingleWithManyChildBelowRootAndUndo(
                 rootObject.getDataObject(itemsProperty), //
                 rootObject.getDataObject("items/item[1]"), //
@@ -248,16 +248,16 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
                 rootObject.getDataObject("items/item[2]/product"), //
                 rootObject.getDataObject("items/item[2]/product/price[1]"), //
                 rootObject.getDataObject("items/item[2]/product/price[2]"), //
-            	itemsProperty, //
-            	originalRootDO, //        	
+                itemsProperty, //
+                originalRootDO, //
                 itemsDOtoSet, //
-                aCurrentValueStoreAfterLoggingFirstOn, aCurrentSequenceAfterLoggingFirstOn, false);        
+                aCurrentValueStoreAfterLoggingFirstOn, aCurrentSequenceAfterLoggingFirstOn, false);
     }
-    
+
     public void testSetItemsAfterUnsetAndUndo_MultiOperation_SetComplexSingleWithManyChildBelowRootAndUndo() {
-    	// get items property - to speed debugging
-    	Property itemsProperty = rootObject.getInstanceProperty("items");
-    	// take the full DataObject and remove the complex single that we would like to set    	
+        // get items property - to speed debugging
+        Property itemsProperty = rootObject.getInstanceProperty("items");
+        // take the full DataObject and remove the complex single that we would like to set
         DataObject itemsDOtoSet = rootObject.getDataObject(itemsProperty);
         // verify logging is off
         assertFalse(cs.isLogging());
@@ -268,7 +268,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         // verify that items is not set
         assertNull(rootObject.getDataObject(itemsProperty));
         assertFalse(rootObject.isSet(itemsProperty));
-    	
+
         // save original root for later comparison after undo
         DataObject originalRootDO = copyHelper.copy(rootObject);
         assertTrue(equalityHelper.equal(rootObject, originalRootDO));
@@ -276,14 +276,14 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertNull(rootObject.getDataObject(itemsProperty));
         assertNull(rootObject.getDataObject("items/item[1]"));
         assertNull(rootObject.getDataObject("items/item[2]"));
-        
+
         cs.beginLogging();
         // verify original VS is null and save a copy of current VS for object identity testing after undo
         assertValueStoresInitializedAfterLoggingOn(rootObject);
         // save a copy of current VS for object identity testing after undo
         ValueStore aCurrentValueStoreAfterLoggingFirstOn = ((SDODataObject)rootObject)._getCurrentValueStore();
         Sequence aCurrentSequenceAfterLoggingFirstOn = ((SDOSequence)rootObject.getSequence()).copy();
-        
+
         // set the items back  (in effect doing an undo)
         rootObject.set(itemsProperty, itemsDOtoSet);
         // check valueStores
@@ -298,17 +298,17 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
                 rootObject.getDataObject("items/item[2]/product"), //
                 rootObject.getDataObject("items/item[2]/product/price[1]"), //
                 rootObject.getDataObject("items/item[2]/product/price[2]"), //
-            	itemsProperty, //
-            	originalRootDO, //        	
+                itemsProperty, //
+                originalRootDO, //
                 itemsDOtoSet, //
-                aCurrentValueStoreAfterLoggingFirstOn, aCurrentSequenceAfterLoggingFirstOn, false);        
+                aCurrentValueStoreAfterLoggingFirstOn, aCurrentSequenceAfterLoggingFirstOn, false);
     }
-    
-        
+
+
     public void testSetItemsAfterDeleteAndUndo_MultiOperation_SetComplexSingleWithManyChildBelowRootAndUndo() {
-    	// get items property - to speed debugging
-    	Property itemsProperty = rootObject.getInstanceProperty("items");
-    	// save objects before deletion
+        // get items property - to speed debugging
+        Property itemsProperty = rootObject.getInstanceProperty("items");
+        // save objects before deletion
         DataObject itemsDO = rootObject.getDataObject("items");
         DataObject item1DO = rootObject.getDataObject("items/item[1]");
         DataObject item2DO = rootObject.getDataObject("items/item[2]");
@@ -320,21 +320,21 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         DataObject item2ProductDO = item2DO.getDataObject("product");
         DataObject item2ProductPrice1DO = item2ProductDO.getDataObject("price[1]");
         DataObject item2ProductPrice2DO = item2ProductDO.getDataObject("price[2]");
-    	
-    	// take the full DataObject and remove the complex single that we would like to set    	
+
+        // take the full DataObject and remove the complex single that we would like to set
         DataObject itemsDOtoSet = rootObject.getDataObject(itemsProperty);
         // verify logging is off
         assertFalse(cs.isLogging());
         //rootObject.unset(itemsProperty); //unset is not clearing the cs when logging is off
         itemsDOtoSet.delete();
-        
+
         // verify CS is null on removed trees
         assertChangeSummaryStatusIfClearedIfCSIsAncestor(itemsDOtoSet, true);
-        
+
         // verify that items is not set
         assertNull(rootObject.getDataObject(itemsProperty));
         assertFalse(rootObject.isSet(itemsProperty));
-    	
+
         // save original root for later comparison after undo
         DataObject originalRootDO = copyHelper.copy(rootObject);
         assertTrue(equalityHelper.equal(rootObject, originalRootDO));
@@ -342,19 +342,19 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertNull(rootObject.getDataObject(itemsProperty));
         assertNull(rootObject.getDataObject("items/item[1]"));
         assertNull(rootObject.getDataObject("items/item[2]"));
-        
+
         cs.beginLogging();
         // verify original VS is null and save a copy of current VS for object identity testing after undo
         assertValueStoresInitializedAfterLoggingOn(rootObject);
         // save a copy of current VS for object identity testing after undo
         ValueStore aCurrentValueStoreAfterLoggingFirstOn = ((SDODataObject)rootObject)._getCurrentValueStore();
         Sequence aCurrentSequenceAfterLoggingFirstOn = ((SDOSequence)rootObject.getSequence()).copy();
-        
+
         // set the items back  (in effect doing an undo)
         rootObject.set(itemsProperty, itemsDOtoSet);
         // check valueStores
         assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
-        
+
         verifySetItemsAfterDetachUnsetOrDeleteAndUndo_MultiOperation_SetComplexSingleWithManyChildBelowRootAndUndo(
                 rootObject.getDataObject(itemsProperty), //
                 item1DO, //
@@ -365,12 +365,12 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
                 item2ProductDO, //
                 item2ProductPrice1DO, //
                 item2ProductPrice2DO, //
-            	itemsProperty, //
-            	originalRootDO, //        	
+                itemsProperty, //
+                originalRootDO, //
                 itemsDOtoSet, //
-                aCurrentValueStoreAfterLoggingFirstOn, aCurrentSequenceAfterLoggingFirstOn, true);        
+                aCurrentValueStoreAfterLoggingFirstOn, aCurrentSequenceAfterLoggingFirstOn, true);
     }
-    
+
     public void testDeleteChainBottomToRoot_ItemsItem2ProductPrice2_MultiOperation_DeleteComplexManyOfComplexSingleOfComplexManyOfComplexSingleInSequence() {
         // save original root for later comparison after undo
         DataObject originalRootDO = copyHelper.copy(rootObject);
@@ -387,7 +387,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         DataObject item2ProductDO = item2DO.getDataObject("product");
         DataObject item2ProductPrice1DO = item2ProductDO.getDataObject("price[1]");
         DataObject item2ProductPrice2DO = item2ProductDO.getDataObject("price[2]");
-        
+
         Sequence aCurrentSequenceAfterLoggingFirstOn = ((SDOSequence)rootObject.getSequence()).copy();
         cs.beginLogging();
         // verify original VS is null and save a copy of current VS for object identity testing after undo
@@ -395,7 +395,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         // save a copy of current VS for object identity testing after undo
         ValueStore aCurrentValueStoreAfterLoggingFirstOn = ((SDODataObject)rootObject)._getCurrentValueStore();
 
-        assertNotNull(itemsDO.getChangeSummary());        
+        assertNotNull(itemsDO.getChangeSummary());
 
         // start deleting at the bottom of the tree and move up
         item2ProductPrice2DO.delete();
@@ -406,9 +406,9 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
 
         // verify CS is null on removed trees
         assertChangeSummaryStatusIfClearedIfCSIsAncestor(itemsDO, true);
-        
+
         // check valueStores
-        assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);        
+        assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
 
         assertNotNull(item1DO);
         assertNotNull(item2DO);
@@ -429,7 +429,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
 
         // set the items back  (in effect doing an undo)
         //rootObject.set("items", itemsDO);
-        
+
         assertUndoChangesEqualToOriginal(cs, rootObject, originalRootDO);
 
         // verify that property is reset
@@ -440,10 +440,10 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertTrue(equalityHelper.equal(itemsDOundone, itemsDO));
 
         assertValueStoresReturnedToStartStateAfterUndoChanges(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
-        assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);        
+        assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);
     }
-  
-    
+
+
     public void testDeleteItemsResetAndUndo_SingleOperation_DeleteComplexSingleWithManyChildBelowRootResetAndUndo() {
         // save original root for later comparison after undo
         DataObject originalRootDO = copyHelper.copy(rootObject);
@@ -461,15 +461,15 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         DataObject item2ProductPrice1DO = item2ProductDO.getDataObject("price[1]");
         DataObject item2ProductPrice2DO = item2ProductDO.getDataObject("price[2]");
         Sequence aCurrentSequenceAfterLoggingFirstOn = ((SDOSequence)rootObject.getSequence()).copy();
-        
+
         cs.beginLogging();
         // verify original VS is null and save a copy of current VS for object identity testing after undo
         assertValueStoresInitializedAfterLoggingOn(rootObject);
         // save a copy of current VS for object identity testing after undo
         ValueStore aCurrentValueStoreAfterLoggingFirstOn = ((SDODataObject)rootObject)._getCurrentValueStore();
 
-        assertNotNull(itemsDO.getChangeSummary());        
-        
+        assertNotNull(itemsDO.getChangeSummary());
+
         itemsDO.delete();
         boolean wasDeleted = true;
 
@@ -477,7 +477,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertChangeSummaryStatusIfClearedIfCSIsAncestor(itemsDO, true);
 
         // check valueStores
-        assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);        
+        assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
 
         assertNotNull(item1DO);
         assertNotNull(item2DO);
@@ -506,7 +506,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertTrue(equalityHelper.equal(itemsDOundone, itemsDO));
 
         assertValueStoresReturnedToStartStateAfterUndoChanges(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
-        assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);        
+        assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);
     }
 
     public void testDeleteItemsResetAndUndo_MultiOperation_DeleteComplexSingleWithManyChildBelowRootResetAndUndo() {
@@ -526,23 +526,23 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         DataObject item2ProductPrice1DO = item2ProductDO.getDataObject("price[1]");
         DataObject item2ProductPrice2DO = item2ProductDO.getDataObject("price[2]");
         Sequence aCurrentSequenceAfterLoggingFirstOn = ((SDOSequence)rootObject.getSequence()).copy();
-        
+
         cs.beginLogging();
         // verify original VS is null and save a copy of current VS for object identity testing after undo
         assertValueStoresInitializedAfterLoggingOn(rootObject);
         // save a copy of current VS for object identity testing after undo
         ValueStore aCurrentValueStoreAfterLoggingFirstOn = ((SDODataObject)rootObject)._getCurrentValueStore();
 
-        assertNotNull(itemsDO.getChangeSummary());        
-        
+        assertNotNull(itemsDO.getChangeSummary());
+
         itemsDO.delete();
         boolean wasDeleted = true;
 
         // verify CS is null on removed trees
         assertChangeSummaryStatusIfClearedIfCSIsAncestor(itemsDO, true);
-        
+
         // check valueStores
-        assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);        
+        assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
 
         assertNotNull(item1DO);
         assertNotNull(item2DO);
@@ -563,7 +563,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
 
         // set the items back  (in effect doing an undo)
         rootObject.set("items", itemsDO);
-        
+
         assertUndoChangesEqualToOriginal(cs, rootObject, originalRootDO);
 
         // verify that property is reset
@@ -574,7 +574,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertTrue(equalityHelper.equal(itemsDOundone, itemsDO));
 
         assertValueStoresReturnedToStartStateAfterUndoChanges(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
-        assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);        
+        assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);
     }
 
     public void testUnsetItemsResetAndUndo_MultiOperation_UnsetComplexSingleWithManyChildBelowRootResetAndUndo() {
@@ -594,23 +594,23 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         DataObject item2ProductPrice1DO = item2ProductDO.getDataObject("price[1]");
         DataObject item2ProductPrice2DO = item2ProductDO.getDataObject("price[2]");
         Sequence aCurrentSequenceAfterLoggingFirstOn = ((SDOSequence)rootObject.getSequence()).copy();
-        
+
         cs.beginLogging();
         // verify original VS is null and save a copy of current VS for object identity testing after undo
         assertValueStoresInitializedAfterLoggingOn(rootObject);
         // save a copy of current VS for object identity testing after undo
         ValueStore aCurrentValueStoreAfterLoggingFirstOn = ((SDODataObject)rootObject)._getCurrentValueStore();
 
-        assertNotNull(itemsDO.getChangeSummary());        
-        
+        assertNotNull(itemsDO.getChangeSummary());
+
         rootObject.unset("items");
         boolean wasDeleted = false;
 
         // verify CS is null on removed trees
         assertChangeSummaryStatusIfClearedIfCSIsAncestor(itemsDO, true);
-        
+
         // check valueStores
-        assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);        
+        assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
 
         assertNotNull(item1DO);
         assertNotNull(item2DO);
@@ -631,7 +631,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
 
         // set the items back  (in effect doing an undo)
         rootObject.set("items", itemsDO);
-        
+
         assertUndoChangesEqualToOriginal(cs, rootObject, originalRootDO);
 
         // verify that property is reset
@@ -642,10 +642,10 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertTrue(equalityHelper.equal(itemsDOundone, itemsDO));
 
         assertValueStoresReturnedToStartStateAfterUndoChanges(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
-        assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);        
+        assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);
     }
     */
-    
+
     private SDOProperty createOpenContentElementProperty(String name, Type type) {
         SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
         DataObject newProperty = dataFactory.create(propertyType);
@@ -657,22 +657,22 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertFalse(xsdHelper.isAttribute(openProp));
         return openProp;
     }
-      
+
     public void testAddOpenContentPropertyViaDataObject() {
         SDOSequence aSequence = (SDOSequence)rootObject.getSequence();
         int sequenceSizeBefore = aSequence.size();
         assertNotNull(aSequence);
         SDOProperty openPropString = createOpenContentElementProperty("openContentString", SDOConstants.SDO_STRING);
         cs.beginLogging();
-        
+
         // perform open content op
-        rootObject.set(openPropString, "openContentValue");        
+        rootObject.set(openPropString, "openContentValue");
         // sequence should be modified
         assertEquals(aSequence.size(), sequenceSizeBefore + 1);
-        
+
         // get dataObject side
         Object openDOContent = rootObject.get("openContentString");
-        assertNotNull(openDOContent);        
+        assertNotNull(openDOContent);
         // get sequence side
         Object openSequenceContent = aSequence.getValue(sequenceSizeBefore);
         assertNotNull(openSequenceContent);
@@ -701,36 +701,36 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertNotNull(aSequence);
         SDOProperty openPropString = createOpenContentElementProperty("openContentString", SDOConstants.SDO_STRING);
         cs.beginLogging();
-        
+
         // perform open content op
-        aSequence.add(2, openPropString, "openContentValue");        
+        aSequence.add(2, openPropString, "openContentValue");
         // sequence should be modified
         assertEquals(aSequence.size(), sequenceSizeBefore + 1);
-        
+
         // get dataObject side
         Object openDOContent = rootObject.get("openContentString");
-        assertNotNull(openDOContent);        
+        assertNotNull(openDOContent);
         // get sequence side
         Object openSequenceContent = aSequence.getValue(2);
         assertNotNull(openSequenceContent);
         assertEquals(openSequenceContent, openDOContent);
     }
-    
+
     public void testAddOpenContentElementPropertyViaSequence() {
         SDOSequence aSequence = (SDOSequence)rootObject.getSequence();
         int sequenceSizeBefore = aSequence.size();
         assertNotNull(aSequence);
         SDOProperty openPropString = createOpenContentElementProperty("openContentString", SDOConstants.SDO_STRING);
         cs.beginLogging();
-        
+
         // perform open content op
-        aSequence.add(openPropString, "openContentValue");        
+        aSequence.add(openPropString, "openContentValue");
         // sequence should be modified
         assertEquals(aSequence.size(), sequenceSizeBefore + 1);
-        
+
         // get dataObject side
         Object openDOContent = rootObject.get("openContentString");
-        assertNotNull(openDOContent);        
+        assertNotNull(openDOContent);
         // get sequence side
         Object openSequenceContent = aSequence.getValue(sequenceSizeBefore);
         assertNotNull(openSequenceContent);
@@ -738,7 +738,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
     }
 /*
     public void testModifyOpenContentPropertyViaSequence() {
-    	
+
     }
 
     public void testModifyOpenContentPropertyViaDataObject() {
@@ -750,59 +750,59 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertNotNull(aSequence);
         SDOProperty openPropString = createOpenContentElementProperty("openContentString", SDOConstants.SDO_STRING);
         cs.beginLogging();
-        
+
         // perform open content op
-        aSequence.add(openPropString, "openContentValue");        
+        aSequence.add(openPropString, "openContentValue");
         // sequence should be modified
         assertEquals(aSequence.size(), sequenceSizeBefore + 1);
-        
+
         // get dataObject side
         Object openDOContent = rootObject.get("openContentString");
-        assertNotNull(openDOContent);        
+        assertNotNull(openDOContent);
         // get sequence side
         Object openSequenceContent = aSequence.getValue(sequenceSizeBefore);
         assertNotNull(openSequenceContent);
         assertEquals(openSequenceContent, openDOContent);
-        
+
         // remove
         aSequence.remove(sequenceSizeBefore);
         // sequence should be modified
         assertEquals(aSequence.size(), sequenceSizeBefore);
-        
+
         // get dataObject side
         Object openDOContent2 = rootObject.get("openContentString");
-        assertNull(openDOContent2);        
+        assertNull(openDOContent2);
         // get sequence side - look for old property
     }
-    
+
     public void testDeleteOpenContentPropertyViaDataObject() {
         SDOSequence aSequence = (SDOSequence)rootObject.getSequence();
         int sequenceSizeBefore = aSequence.size();
         assertNotNull(aSequence);
         SDOProperty openPropString = createOpenContentElementProperty("openContentString", SDOConstants.SDO_STRING);
         cs.beginLogging();
-        
+
         // perform open content op
-        aSequence.add(openPropString, "openContentValue");        
+        aSequence.add(openPropString, "openContentValue");
         // sequence should be modified
         assertEquals(sequenceSizeBefore + 1, aSequence.size());
-        
+
         // get dataObject side
         Object openDOContent = rootObject.get("openContentString");
-        assertNotNull(openDOContent);        
+        assertNotNull(openDOContent);
         // get sequence side
         Object openSequenceContent = aSequence.getValue(sequenceSizeBefore);
         assertNotNull(openSequenceContent);
         assertEquals(openSequenceContent, openDOContent);
-        
+
         // remove
         rootObject.unset(openPropString);
         // sequence should be modified
         assertEquals(aSequence.size(), sequenceSizeBefore);
-        
+
         // get dataObject side
         Object openDOContent2 = rootObject.get("openContentString");
-        assertNull(openDOContent2);        
+        assertNull(openDOContent2);
         // get sequence side - look for old property
     }
 

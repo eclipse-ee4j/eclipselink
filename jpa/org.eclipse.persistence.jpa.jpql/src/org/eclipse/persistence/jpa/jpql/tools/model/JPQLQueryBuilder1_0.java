@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,61 +32,61 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.UpdateItemStateObject;
 @SuppressWarnings("nls")
 public final class JPQLQueryBuilder1_0 extends AbstractJPQLQueryBuilder {
 
-	/**
-	 * Creates a new <code>JPQLQueryBuilder1_0</code>.
-	 */
-	public JPQLQueryBuilder1_0() {
-		super();
-	}
+    /**
+     * Creates a new <code>JPQLQueryBuilder1_0</code>.
+     */
+    public JPQLQueryBuilder1_0() {
+        super();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DefaultStateObjectBuilder buildStateObjectBuilder() {
-		return new DefaultStateObjectBuilder();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected DefaultStateObjectBuilder buildStateObjectBuilder() {
+        return new DefaultStateObjectBuilder();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public DefaultConditionalExpressionStateObjectBuilder buildStateObjectBuilder(AbstractConditionalClauseStateObject stateObject) {
-		return new DefaultConditionalExpressionStateObjectBuilder(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public DefaultConditionalExpressionStateObjectBuilder buildStateObjectBuilder(AbstractConditionalClauseStateObject stateObject) {
+        return new DefaultConditionalExpressionStateObjectBuilder(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public DefaultSelectExpressionStateObjectBuilder buildStateObjectBuilder(SelectClauseStateObject stateObject) {
-		return new DefaultSelectExpressionStateObjectBuilder(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public DefaultSelectExpressionStateObjectBuilder buildStateObjectBuilder(SelectClauseStateObject stateObject) {
+        return new DefaultSelectExpressionStateObjectBuilder(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public DefaultSimpleSelectExpressionStateObjectBuilder buildStateObjectBuilder(SimpleSelectClauseStateObject stateObject) {
-		return new DefaultSimpleSelectExpressionStateObjectBuilder(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public DefaultSimpleSelectExpressionStateObjectBuilder buildStateObjectBuilder(SimpleSelectClauseStateObject stateObject) {
+        return new DefaultSimpleSelectExpressionStateObjectBuilder(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public INewValueStateObjectBuilder buildStateObjectBuilder(UpdateItemStateObject stateObject) {
-		return new DefaultNewValueStateObjectBuilder(stateObject);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public INewValueStateObjectBuilder buildStateObjectBuilder(UpdateItemStateObject stateObject) {
+        return new DefaultNewValueStateObjectBuilder(stateObject);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public JPQLGrammar getGrammar() {
-		return JPQLGrammar1_0.instance();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public JPQLGrammar getGrammar() {
+        return JPQLGrammar1_0.instance();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return "JPQLQueryBuilder1_0 using " + getGrammar().toString();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "JPQLQueryBuilder1_0 using " + getGrammar().toString();
+    }
 }

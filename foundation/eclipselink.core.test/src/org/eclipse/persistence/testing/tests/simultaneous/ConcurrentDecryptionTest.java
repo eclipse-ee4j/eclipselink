@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2008, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Chris Delahunt 
- *       - Bug 318187 - NegativeArraySizeException on JCEEncryptor.decryptPassword()   
+ *     Chris Delahunt
+ *       - Bug 318187 - NegativeArraySizeException on JCEEncryptor.decryptPassword()
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.simultaneous;
 
@@ -21,9 +21,9 @@ import org.eclipse.persistence.internal.security.JCEEncryptor;
  * @author Chris Delahunt
  * @date June 26, 2003
  *  Test fix for 318187:
- *  java.lang.NegativeArraySizeException is thrown when threads concurrently access the 
- *  JCEEncryptor.decrypt(password) 
- *  
+ *  java.lang.NegativeArraySizeException is thrown when threads concurrently access the
+ *  JCEEncryptor.decrypt(password)
+ *
  */
 public class ConcurrentDecryptionTest extends AutoVerifyTestCase {
     //used to signal the threads to stop, accessed directly from the threads
@@ -40,8 +40,8 @@ public class ConcurrentDecryptionTest extends AutoVerifyTestCase {
     //accessed directly from the threads
     private JCEEncryptor encryptor;
     private String encryptedPassword;
-    
-    
+
+
     protected void setup() throws Throwable {
         encryptor = new JCEEncryptor();
         encryptedPassword = encryptor.encryptPassword(password);
@@ -70,13 +70,13 @@ public class ConcurrentDecryptionTest extends AutoVerifyTestCase {
             run = false;
         }
     }
-    
+
     protected void verify() throws Throwable {
         if (error!=null){
             throw new TestErrorException("error encountered: "+error, error);
         }
     }
-    
+
     //runnable that repeatedly calls decryptPassword until the run flag is set to false
     class Runner1 implements Runnable {
         protected ConcurrentDecryptionTest concurrentDecryptionTest;

@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     Nov 5, 2013-2.5 Chris Delahunt 
+ *     Nov 5, 2013-2.5 Chris Delahunt
  *       - 421109: DB2 AS400 doesn't support "USE AND KEEP UPDATE LOCKS" used for pessimistic locking
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.expressions.ExpressionOperator;
@@ -41,7 +41,7 @@ public class DB2MainframePlatform extends DB2Platform {
 
         addOperator(ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Concat, "CONCAT"));
     }
-    
+
     /**
      * INTERNAL:
      * Used for pessimistic locking in DB2.
@@ -52,7 +52,7 @@ public class DB2MainframePlatform extends DB2Platform {
     public String getSelectForUpdateString() {
         return " FOR READ ONLY WITH RS USE AND KEEP EXCLUSIVE LOCKS";
     }
-    
+
     /**
      * INTERNAL:
      * Return if brackets can be used in the ON clause for outer joins.

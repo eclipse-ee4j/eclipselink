@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     12/17/2010-2.2 Guy Pelletier 
+ *     12/17/2010-2.2 Guy Pelletier
  *       - 330755: Nested embeddables can't be used as embedded ids
- *     11/10/2011-2.4 Guy Pelletier 
+ *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
- *     14/05/2012-2.4 Guy Pelletier  
+ *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
@@ -47,7 +47,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since TopLink 10.1.3
  */
 public class CMPPolicy implements java.io.Serializable, Cloneable {
-    
+
     protected Boolean forceUpdate;
     protected Boolean updateAllFields;
 
@@ -265,7 +265,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
             throw DescriptorException.updateAllFieldsNotSet(descriptor);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Initialize the CMPPolicy settings for remote sessions.
@@ -288,7 +288,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
     public void setDescriptor(ClassDescriptor owningDescriptor) {
         this.descriptor = owningDescriptor;
     }
-    
+
     /**
      * INTERNAL:
      * Recursive method to set a field value in the given key instance.
@@ -296,17 +296,17 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
     protected void setFieldValue(KeyElementAccessor accessor, Object keyInstance, DatabaseMapping mapping, AbstractSession session, int[] elementIndex, Object ... keyElements) {
         if (mapping.isAggregateMapping()) {
             Object nestedObject = mapping.getRealAttributeValueFromObject(keyInstance, session);
-            
+
             if (nestedObject == null) {
                 nestedObject = getClassInstance(mapping.getReferenceDescriptor().getJavaClass());
                 mapping.setRealAttributeValueInObject(keyInstance, nestedObject);
             }
-            
-            // keep drilling down the nested mappings ... 
+
+            // keep drilling down the nested mappings ...
             setFieldValue(accessor, nestedObject, mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField()), session, elementIndex, keyElements);
         } else {
             Object fieldValue = null;
-            
+
             if (mapping.isAbstractColumnMapping()) {
                 fieldValue = keyElements[elementIndex[0]];
                 Converter converter = ((AbstractColumnMapping) mapping).getConverter();
@@ -314,16 +314,16 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
                     fieldValue = converter.convertDataValueToObjectValue(fieldValue, session);
                 }
                 ++elementIndex[0];
-            } else if (mapping.isObjectReferenceMapping()) { 
+            } else if (mapping.isObjectReferenceMapping()) {
                 // what if mapping comes from derived ID. need to get the derived mapping.
                 // get reference descriptor and extract pk from target cmp policy
                 fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(session, elementIndex, keyElements);
             }
-            
+
             accessor.setValue(keyInstance, fieldValue);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return if this policy is for CMP3.
@@ -331,7 +331,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
     public boolean isCMP3Policy() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Clone the CMPPolicy
@@ -343,13 +343,13 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
             throw new InternalError(exception.getMessage());
         }
     }
-    
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this object to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
     }
@@ -362,10 +362,10 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
         if (this.descriptor.getCachePolicy().getCacheKeyType() == CacheKeyType.CACHE_ID) {
             return createPrimaryKeyInstanceFromPrimaryKeyValues(session, new int[]{0}, ((CacheId)key).getPrimaryKey());
         } else {
-            return createPrimaryKeyInstanceFromPrimaryKeyValues(session, new int[]{0}, key);    
+            return createPrimaryKeyInstanceFromPrimaryKeyValues(session, new int[]{0}, key);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Create an instance of the composite primary key class for the key object.
@@ -378,7 +378,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
             for (KeyElementAccessor accessor: pkElementArray){
                 DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
                 if (mapping != null && !mapping.isMultitenantPrimaryKeyMapping()){
-                    if (mapping.isAbstractColumnMapping()) {    
+                    if (mapping.isAbstractColumnMapping()) {
                         Converter converter = ((AbstractColumnMapping) mapping).getConverter();
                         if (converter != null){
                             return converter.convertDataValueToObjectValue(keyElements[elementIndex[0]], session);
@@ -404,7 +404,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
                 if (mapping == null) {
                     mapping = getDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
                 }
-                
+
                 if (accessor.isNestedAccessor()) {
                     // Need to recursively build all the nested objects.
                     setFieldValue(accessor, keyInstance, mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField()), session, elementIndex, keyElements);
@@ -413,15 +413,15 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
                     if (mapping.isAggregateMapping()) {
                         mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
                     }
-                    
+
                     setFieldValue(accessor, keyInstance, mapping, session, elementIndex, keyElements);
                 }
             }
         }
 
         return keyInstance;
-    }    
-    
+    }
+
     /**
      * INTERNAL:
      * Create an instance of the Id class or value from the object.
@@ -437,7 +437,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
             }
             return  fieldValue;
         }
-        
+
         Object keyInstance = getPKClassInstance();
         Set<ObjectReferenceMapping> usedObjectReferenceMappings = new HashSet<ObjectReferenceMapping>();
         for (int index = 0; index < pkElementArray.length; index++) {
@@ -445,7 +445,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
             KeyElementAccessor accessor = pkElementArray[index];
             DatabaseField field = accessor.getDatabaseField();
             DatabaseMapping mapping = builder.getMappingForField(field);
-            // With session validation, the mapping shouldn't be null at this 
+            // With session validation, the mapping shouldn't be null at this
             // point, don't bother checking.
             if (!mapping.isObjectReferenceMapping() || !usedObjectReferenceMappings.contains(mapping)){
                 while (mapping.isAggregateObjectMapping()) {
@@ -460,10 +460,10 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
                 accessor.setValue(keyInstance, fieldValue);
             }
         }
-        
+
         return keyInstance;
     }
-    
+
     /**
      * INTERNAL:
      * Return a new instance of the class provided.
@@ -480,28 +480,28 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
                 throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(cls.getName(), e);
             }
         }
-        
+
         return null;
     }
-    
+
     /**
      * INTERNAL:
      */
     public Object getPKClassInstance() {
-    	// TODO fix this exception so that it is more descriptive
-    	// This method only works in CMP3Policy but was added here for separation
-    	// of components
-    	throw new RuntimeException("Should not get here.");
+        // TODO fix this exception so that it is more descriptive
+        // This method only works in CMP3Policy but was added here for separation
+        // of components
+        throw new RuntimeException("Should not get here.");
     }
-    
+
     /**
      * INTERNAL:
      */
     public Class getPKClass() {
-    	// TODO fix this exception so that it is more descriptive
-    	// This method only works in CMP3Policy but was added here for separation
-    	// of components
-    	throw new RuntimeException("Should not get here.");
+        // TODO fix this exception so that it is more descriptive
+        // This method only works in CMP3Policy but was added here for separation
+        // of components
+        throw new RuntimeException("Should not get here.");
     }
 
     /**
@@ -536,22 +536,22 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
         // of components
         throw new RuntimeException("Should not get here.");
     }
-    
+
     /**
      * INTERNAL:
      * @return Returns the keyClassFields.
      */
     protected KeyElementAccessor[] getKeyClassFields() {
-    	// TODO fix this exception so that it is more descriptive
-    	// This method only works in CMP3Policy but was added here for separation
-    	// of components
-    	throw new RuntimeException("Should not get here.");
+        // TODO fix this exception so that it is more descriptive
+        // This method only works in CMP3Policy but was added here for separation
+        // of components
+        throw new RuntimeException("Should not get here.");
     }
-    
+
     /**
      * Check to see if there is a single key element.  Iterate through the list of primary key elements
      * and count only keys that are not part of the Multitenant identifier.
-     * 
+     *
      * @param pkElementArray
      * @return
      */
@@ -573,7 +573,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
         }
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * This is the interface used to encapsulate the the type of key class element
@@ -586,7 +586,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
         public void setValue(Object object, Object value);
         public boolean isNestedAccessor();
     }
-    
+
     /**
      * INTERNAL:
      * This class will be used when the keyClass is a primitive
@@ -609,21 +609,21 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
         public DatabaseField getDatabaseField() {
             return this.databaseField;
         }
-        
+
         public DatabaseMapping getMapping(){
             return this.mapping;
         }
-        
+
         public Object getValue(Object object, AbstractSession session) {
             return object;
         }
-        
+
         public boolean isNestedAccessor() {
             return false;
         }
-        
+
         public void setValue(Object object, Object value) {
-            // WIP - do nothing for now??? 
+            // WIP - do nothing for now???
         }
     }
 }

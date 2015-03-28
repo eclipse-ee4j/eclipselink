@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,7 +16,7 @@ import org.eclipse.persistence.oxm.XMLNameTransformer;
 
 /**
  *  Class called to transform Java names to XML names.
- *  Implements the XMLNameTransformer interface. 
+ *  Implements the XMLNameTransformer interface.
  *
  */
 public class DefaultXMLNameTransformer implements XMLNameTransformer {
@@ -24,8 +24,8 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
     private static final String EMPTY_STRING = "";
     private static final Character DOT_CHAR = '.';
     private static final Character DOLLAR_SIGN_CHAR = '$';
-	
-	
+
+
     /**
      *By default convert class names to xml names based the rules defined in
      *the JAXB specification
@@ -37,7 +37,7 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
         } else {
             elementName = decapitalize(className.substring(className.lastIndexOf(DOT_CHAR) + 1));
         }
-          
+
         //the following satisfies a TCK requirement
         if (elementName.length() >= 3) {
             int idx = elementName.length() - 1;
@@ -45,9 +45,9 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
                 elementName = elementName.substring(0, idx) + Character.toUpperCase(elementName.charAt(idx));
             }
         }
-        return elementName;		
+        return elementName;
      }
-	
+
     /**
      * By default convert class names to xml names based the rules defined in
      * the JAXB specification
@@ -80,7 +80,7 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
             }
         }
         return toReturn.toString();
-		
+
     }
 
     private String decapitalize(String javaName) {

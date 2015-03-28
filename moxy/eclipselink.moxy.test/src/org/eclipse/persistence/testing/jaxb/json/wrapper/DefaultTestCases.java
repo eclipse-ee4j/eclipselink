@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,24 +38,24 @@ public class DefaultTestCases extends JSONMarshalUnmarshalTestCases {
         Company company = new Company();
         company.strings.add("FOO");
         company.strings.add("BAR");
-        
+
         PhoneNumber pnA = new PhoneNumber();
         pnA.id = "A";
         company.phoneNumbers.add(pnA);
-        
+
         PhoneNumber pnB = new PhoneNumber();
         pnB.id = "B";
         company.phoneNumbers.add(pnB);
-        
+
         PhoneNumber pnC = new PhoneNumber();
         pnC.id = "C";
         company.phoneNumbers.add(pnC);
-        
+
         Employee employee1 = new Employee();
         employee1.phoneNumbers.add(pnA);
         employee1.phoneNumbers.add(pnB);
         company.employees.add(employee1);
-        
+
         Employee employee2 = new Employee();
         employee2.phoneNumbers.add(pnB);
         employee2.phoneNumbers.add(pnC);
@@ -78,11 +78,11 @@ public class DefaultTestCases extends JSONMarshalUnmarshalTestCases {
     }
 
     public void tesMarshallerProperty() throws Exception {
-        assertFalse((Boolean) jsonMarshaller.getProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME)); 
+        assertFalse((Boolean) jsonMarshaller.getProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME));
     }
 
     public void testUnmarshallerProperty() throws Exception {
-        assertFalse((Boolean) jsonUnmarshaller.getProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME)); 
+        assertFalse((Boolean) jsonUnmarshaller.getProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME));
     }
 
 }

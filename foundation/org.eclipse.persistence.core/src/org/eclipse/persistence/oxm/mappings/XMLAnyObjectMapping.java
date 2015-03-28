@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -321,7 +321,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                 ClassDescriptor referenceDescriptor = null;
 
                 //In this case it must be an element so we need to dig up the descriptor
-                //make a nested record and build an object from it.                
+                //make a nested record and build an object from it.
                 DOMRecord nestedRecord = (DOMRecord) record.buildNestedRow((Element) next);
 
                 if (!useXMLRoot) {
@@ -409,7 +409,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
             XPathFragment frag = new XPathFragment();
             if ((((XMLRoot) objectValue)).getNamespaceURI() != null) {
                 frag.setNamespaceURI(((XMLRoot) objectValue).getNamespaceURI());
-            } 
+            }
             frag.setXPath(((XMLRoot) objectValue).getLocalName());
 
             xmlRootField.setXPathFragment(frag);
@@ -457,13 +457,13 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     }
 
     protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, XMLDescriptor referenceDescriptor, AbstractRecord parentRow, DatabaseField field, Object originalObject, boolean wasXMLRoot) {
-    	String defaultRootElementString = null;
-    	if(referenceDescriptor != null){
-	    	defaultRootElementString = referenceDescriptor.getDefaultRootElement();
-	    	if (!wasXMLRoot && defaultRootElementString == null) {
-	            throw XMLMarshalException.defaultRootElementNotSpecified((XMLDescriptor) descriptor);
-	        }
-    	}    	
+        String defaultRootElementString = null;
+        if(referenceDescriptor != null){
+            defaultRootElementString = referenceDescriptor.getDefaultRootElement();
+            if (!wasXMLRoot && defaultRootElementString == null) {
+                throw XMLMarshalException.defaultRootElementNotSpecified((XMLDescriptor) descriptor);
+            }
+        }
 
         if ((field == null) && (referenceDescriptor != null) && (defaultRootElementString != null)) {
             field = referenceDescriptor.buildField(defaultRootElementString);
@@ -472,7 +472,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         if ((field != null) && (referenceDescriptor != null)) {
             ((XMLRecord) parentRow).setLeafElementType(referenceDescriptor.getDefaultRootElementType());
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder) referenceDescriptor.getObjectBuilder();
-            
+
             XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) field, (XMLRecord) parentRow, this);
             child.setNamespaceResolver(((XMLRecord) parentRow).getNamespaceResolver());
             objectBuilder.buildIntoNestedRow(child, originalObject, attributeValue, session, referenceDescriptor, (XMLField) field, wasXMLRoot);
@@ -623,22 +623,22 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                 xmlRootField.setIsTypedTextField(true);
                 xmlRootField.addJavaConversion(value.getClass(), qname);
             }
-            Node newNode = XPathEngine.getInstance().create(xmlRootField, root, value, session);   
+            Node newNode = XPathEngine.getInstance().create(xmlRootField, root, value, session);
         }
-    }   
-    
+    }
+
     public XMLConverter getConverter() {
         return converter;
     }
-    
+
     public void setConverter(XMLConverter converter) {
         this.converter = converter;
     }
-    
+
     public boolean isMixedContent() {
         return this.isMixedContent;
     }
-    
+
     public void setMixedContent(boolean mixed) {
         this.isMixedContent = mixed;
     }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -71,228 +71,228 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.CellRendererAdapter;
  * </pre>
  */
 final class SaveModifiedProjectsDialog
-	extends AbstractDialog
+    extends AbstractDialog
 {
-	/** the list of dirty nodes */
-	private Collection dirtyNodes;
+    /** the list of dirty nodes */
+    private Collection dirtyNodes;
 
-	/** the nodes selected from the list of dirty nodes, above, to be saved */
-	private ObjectListSelectionModel selectionModel;
+    /** the nodes selected from the list of dirty nodes, above, to be saved */
+    private ObjectListSelectionModel selectionModel;
 
-	/** hold the check list so we can give it the initial focus */
-	private CheckList checkList;
+    /** hold the check list so we can give it the initial focus */
+    private CheckList checkList;
 
-	/** hold these actions so we can enable/disable them */
-	private Action selectAllAction;
-	private Action unselectAllAction;
-
-
-	// ********** constructors **********
-
-	/**
-	 * by default, initially select all the dirty nodes
-	 */
-	SaveModifiedProjectsDialog(WorkbenchContext context, Collection dirtyNodes) {
-		this(context, dirtyNodes, new ArrayList(dirtyNodes));
-	}
-
-	SaveModifiedProjectsDialog(WorkbenchContext context, Collection dirtyNodes, Collection initialSelection) {
-		super(context);
-		this.initialize(dirtyNodes, initialSelection);
-	}
+    /** hold these actions so we can enable/disable them */
+    private Action selectAllAction;
+    private Action unselectAllAction;
 
 
-	// ********** initialization **********
+    // ********** constructors **********
 
-	protected void initialize() {
-		super.initialize();
-		this.setName("File.SaveAll");
-		this.setTitle(this.resourceRepository().getString("saveModifiedDocuments.title")); 
-	} 
+    /**
+     * by default, initially select all the dirty nodes
+     */
+    SaveModifiedProjectsDialog(WorkbenchContext context, Collection dirtyNodes) {
+        this(context, dirtyNodes, new ArrayList(dirtyNodes));
+    }
 
-	private void initialize(Collection dirtyNodes, Collection initialSelection) {
-		this.dirtyNodes = dirtyNodes;
-		CollectionValueModel dirtyNodesHolder = new ReadOnlyCollectionValueModel(dirtyNodes);
-		selectionModel = new ObjectListSelectionModel(new ListModelAdapter(dirtyNodesHolder));
-		checkList = new CheckList(dirtyNodesHolder, selectionModel, this.buildCellRendererAdapter());
-
-		// wait until after the check list is listening to the selection model to set the selected values
-		selectionModel.setSelectedValues(dirtyNodes);
-	} 
-
-	private CellRendererAdapter buildCellRendererAdapter() {
-		return new AbstractCellRendererAdapter() {
-
-			public String buildAccessibleName(Object value) {
-				ApplicationNode node = (ApplicationNode) value;
-				String accessibleName = node.accessibleName();
-				File saveLocation = node.saveFile();
-
-				// saveLocation for untitled document is actually the display string
-				if ((accessibleName != null) &&
-					 (saveLocation != null) &&
-					 (!saveLocation.toString().equals(node.displayString())))
-				{
-					accessibleName += " [" + saveLocation + "]";
-				}
-
-				return accessibleName;
-			}
-
-			public Icon buildIcon(Object value) {
-				return ((Displayable) value).icon();
-			}
-
-			public String buildText(Object value) {
-				ApplicationNode node = (ApplicationNode) value;
-				String display = node.displayString();
-				File saveLocation = node.saveFile();
-
-				// saveLocation for untitled document is actually the display string
-				if ((saveLocation != null) && ( ! saveLocation.toString().equals(display))) {
-					display = display + " [" + saveLocation + "]";
-				}
-
-				return display;
-			}
-		};
-	}
-
-	/**
-	 * @see org.eclipse.persistence.tools.workbench.framework.ui.dialog.AbstractDialog#buildMainPanel()
-	 */
-	protected Component buildMainPanel() {
-		JPanel mainPanel = new JPanel(new GridBagLayout());
-		mainPanel.setPreferredSize(new Dimension(405, 250));	// use Golden Ratio
-
-		GridBagConstraints constraints = new GridBagConstraints();
-
-		JLabel label = new JLabel(this.resourceRepository().getString("saveModifiedDocuments.message"));
-		label.setDisplayedMnemonic(this.resourceRepository().getMnemonic("saveModifiedDocuments.message"));
-		label.setDisplayedMnemonicIndex(this.resourceRepository().getMnemonicIndex("saveModifiedDocuments.message"));
-		constraints.gridx			= 0;
-		constraints.gridy			= 0;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 0;
-		constraints.weighty		= 0;
-		constraints.fill			= GridBagConstraints.HORIZONTAL;
-		constraints.anchor		= GridBagConstraints.PAGE_START;
-		constraints.insets		= new Insets(5, 0, 5, 0);
-		mainPanel.add(label, constraints);
-
-		label.setLabelFor(checkList);
-
-		constraints.gridx			= 0;
-		constraints.gridy			= 1;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 1;
-		constraints.weighty		= 1;
-		constraints.fill			= GridBagConstraints.BOTH; 
-		constraints.anchor		= GridBagConstraints.CENTER;
-		constraints.insets		= new Insets(0, 0, 0, 0);
-
-		mainPanel.add(checkList, constraints);
-
-		JPanel buttonPanel = new JPanel(new GridBagLayout());
-		constraints.gridx			= 0;
-		constraints.gridy			= 2;
-		constraints.gridwidth	= 1;
-		constraints.gridheight	= 1;
-		constraints.weightx		= 0;
-		constraints.weighty		= 0;
-		constraints.fill			= GridBagConstraints.NONE;
-		constraints.anchor		= GridBagConstraints.FIRST_LINE_START; 
-		constraints.insets		= new Insets(5,0, 5, 0);
-		mainPanel.add(buttonPanel, constraints);
-
-			// Select All button
-			selectAllAction = this.buildSelectAllAction();
-			JButton selectAllButton = new JButton(selectAllAction);
-			selectAllButton.setText(this.resourceRepository().getString("selectAll"));
-			selectAllButton.setMnemonic(this.resourceRepository().getMnemonic("selectAll"));
-			selectAllButton.setDisplayedMnemonicIndex(this.resourceRepository().getMnemonicIndex("selectAll"));
-
-			constraints.gridx			= 0;
-			constraints.gridy			= 0;
-			constraints.gridwidth	= 1;
-			constraints.gridheight	= 1;
-			constraints.weightx		= 0;
-			constraints.weighty		= 0;
-			constraints.fill			= GridBagConstraints.NONE;
-			constraints.anchor		= GridBagConstraints.FIRST_LINE_START;
-			constraints.insets		= new Insets(5, 5, 0, 0);
-
-			buttonPanel.add(selectAllButton, constraints);
-
-			// Unselect All button
-			unselectAllAction = this.buildUnselectAllAction();
-			JButton unselectAllButton = new JButton(unselectAllAction);
-			unselectAllButton.setText(this.resourceRepository().getString("deselectAll"));
-			unselectAllButton.setMnemonic(this.resourceRepository().getMnemonic("deselectAll"));
-			unselectAllButton.setDisplayedMnemonicIndex(this.resourceRepository().getMnemonicIndex("deselectAll"));
-
-			constraints.gridx			= 1;
-			constraints.gridy			= 0;
-			constraints.gridwidth	= 1;
-			constraints.gridheight	= 1;
-			constraints.weightx		= 0;
-			constraints.weighty		= 0;
-			constraints.fill			= GridBagConstraints.NONE;
-			constraints.anchor		= GridBagConstraints.FIRST_LINE_START;
-			constraints.insets		= new Insets(5, 5, 0, 0);
-			buttonPanel.add(unselectAllButton, constraints);
-		
-		return mainPanel;
-	}
-
-	protected String helpTopicId() {
-		return "dialog.file.saveAll";
-	}
-
-	protected Component initialFocusComponent() {
-		return checkList;
-	}
+    SaveModifiedProjectsDialog(WorkbenchContext context, Collection dirtyNodes, Collection initialSelection) {
+        super(context);
+        this.initialize(dirtyNodes, initialSelection);
+    }
 
 
-	// ********** actions **********
+    // ********** initialization **********
 
-	private Action buildSelectAllAction() {
-		return new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				SaveModifiedProjectsDialog.this.selectAllPressed();
-			}
-		};
-	}
+    protected void initialize() {
+        super.initialize();
+        this.setName("File.SaveAll");
+        this.setTitle(this.resourceRepository().getString("saveModifiedDocuments.title"));
+    }
 
-	private void selectAllPressed() {
-		selectionModel.setSelectionInterval(0, dirtyNodes.size() - 1);
-	}
+    private void initialize(Collection dirtyNodes, Collection initialSelection) {
+        this.dirtyNodes = dirtyNodes;
+        CollectionValueModel dirtyNodesHolder = new ReadOnlyCollectionValueModel(dirtyNodes);
+        selectionModel = new ObjectListSelectionModel(new ListModelAdapter(dirtyNodesHolder));
+        checkList = new CheckList(dirtyNodesHolder, selectionModel, this.buildCellRendererAdapter());
 
-	private Action buildUnselectAllAction() {
-		return new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				SaveModifiedProjectsDialog.this.unselectAllPressed();
-			}
-		};
-	}
+        // wait until after the check list is listening to the selection model to set the selected values
+        selectionModel.setSelectedValues(dirtyNodes);
+    }
 
-	private void unselectAllPressed() {
-		selectionModel.clearSelection();
-	}
+    private CellRendererAdapter buildCellRendererAdapter() {
+        return new AbstractCellRendererAdapter() {
+
+            public String buildAccessibleName(Object value) {
+                ApplicationNode node = (ApplicationNode) value;
+                String accessibleName = node.accessibleName();
+                File saveLocation = node.saveFile();
+
+                // saveLocation for untitled document is actually the display string
+                if ((accessibleName != null) &&
+                     (saveLocation != null) &&
+                     (!saveLocation.toString().equals(node.displayString())))
+                {
+                    accessibleName += " [" + saveLocation + "]";
+                }
+
+                return accessibleName;
+            }
+
+            public Icon buildIcon(Object value) {
+                return ((Displayable) value).icon();
+            }
+
+            public String buildText(Object value) {
+                ApplicationNode node = (ApplicationNode) value;
+                String display = node.displayString();
+                File saveLocation = node.saveFile();
+
+                // saveLocation for untitled document is actually the display string
+                if ((saveLocation != null) && ( ! saveLocation.toString().equals(display))) {
+                    display = display + " [" + saveLocation + "]";
+                }
+
+                return display;
+            }
+        };
+    }
+
+    /**
+     * @see org.eclipse.persistence.tools.workbench.framework.ui.dialog.AbstractDialog#buildMainPanel()
+     */
+    protected Component buildMainPanel() {
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setPreferredSize(new Dimension(405, 250));    // use Golden Ratio
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        JLabel label = new JLabel(this.resourceRepository().getString("saveModifiedDocuments.message"));
+        label.setDisplayedMnemonic(this.resourceRepository().getMnemonic("saveModifiedDocuments.message"));
+        label.setDisplayedMnemonicIndex(this.resourceRepository().getMnemonicIndex("saveModifiedDocuments.message"));
+        constraints.gridx            = 0;
+        constraints.gridy            = 0;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 0;
+        constraints.weighty        = 0;
+        constraints.fill            = GridBagConstraints.HORIZONTAL;
+        constraints.anchor        = GridBagConstraints.PAGE_START;
+        constraints.insets        = new Insets(5, 0, 5, 0);
+        mainPanel.add(label, constraints);
+
+        label.setLabelFor(checkList);
+
+        constraints.gridx            = 0;
+        constraints.gridy            = 1;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 1;
+        constraints.weighty        = 1;
+        constraints.fill            = GridBagConstraints.BOTH;
+        constraints.anchor        = GridBagConstraints.CENTER;
+        constraints.insets        = new Insets(0, 0, 0, 0);
+
+        mainPanel.add(checkList, constraints);
+
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        constraints.gridx            = 0;
+        constraints.gridy            = 2;
+        constraints.gridwidth    = 1;
+        constraints.gridheight    = 1;
+        constraints.weightx        = 0;
+        constraints.weighty        = 0;
+        constraints.fill            = GridBagConstraints.NONE;
+        constraints.anchor        = GridBagConstraints.FIRST_LINE_START;
+        constraints.insets        = new Insets(5,0, 5, 0);
+        mainPanel.add(buttonPanel, constraints);
+
+            // Select All button
+            selectAllAction = this.buildSelectAllAction();
+            JButton selectAllButton = new JButton(selectAllAction);
+            selectAllButton.setText(this.resourceRepository().getString("selectAll"));
+            selectAllButton.setMnemonic(this.resourceRepository().getMnemonic("selectAll"));
+            selectAllButton.setDisplayedMnemonicIndex(this.resourceRepository().getMnemonicIndex("selectAll"));
+
+            constraints.gridx            = 0;
+            constraints.gridy            = 0;
+            constraints.gridwidth    = 1;
+            constraints.gridheight    = 1;
+            constraints.weightx        = 0;
+            constraints.weighty        = 0;
+            constraints.fill            = GridBagConstraints.NONE;
+            constraints.anchor        = GridBagConstraints.FIRST_LINE_START;
+            constraints.insets        = new Insets(5, 5, 0, 0);
+
+            buttonPanel.add(selectAllButton, constraints);
+
+            // Unselect All button
+            unselectAllAction = this.buildUnselectAllAction();
+            JButton unselectAllButton = new JButton(unselectAllAction);
+            unselectAllButton.setText(this.resourceRepository().getString("deselectAll"));
+            unselectAllButton.setMnemonic(this.resourceRepository().getMnemonic("deselectAll"));
+            unselectAllButton.setDisplayedMnemonicIndex(this.resourceRepository().getMnemonicIndex("deselectAll"));
+
+            constraints.gridx            = 1;
+            constraints.gridy            = 0;
+            constraints.gridwidth    = 1;
+            constraints.gridheight    = 1;
+            constraints.weightx        = 0;
+            constraints.weighty        = 0;
+            constraints.fill            = GridBagConstraints.NONE;
+            constraints.anchor        = GridBagConstraints.FIRST_LINE_START;
+            constraints.insets        = new Insets(5, 5, 0, 0);
+            buttonPanel.add(unselectAllButton, constraints);
+
+        return mainPanel;
+    }
+
+    protected String helpTopicId() {
+        return "dialog.file.saveAll";
+    }
+
+    protected Component initialFocusComponent() {
+        return checkList;
+    }
 
 
-	// ********** public API **********
+    // ********** actions **********
 
-	/**
-	 * Return the dirty nodes selected by the user to be saved.
-	 */
-	Collection selectedNodes() {
-		if ( ! this.wasConfirmed()) {
-			throw new IllegalStateException();
-		}
-		return Arrays.asList(selectionModel.getSelectedValues());
-	}
+    private Action buildSelectAllAction() {
+        return new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                SaveModifiedProjectsDialog.this.selectAllPressed();
+            }
+        };
+    }
+
+    private void selectAllPressed() {
+        selectionModel.setSelectionInterval(0, dirtyNodes.size() - 1);
+    }
+
+    private Action buildUnselectAllAction() {
+        return new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                SaveModifiedProjectsDialog.this.unselectAllPressed();
+            }
+        };
+    }
+
+    private void unselectAllPressed() {
+        selectionModel.clearSelection();
+    }
+
+
+    // ********** public API **********
+
+    /**
+     * Return the dirty nodes selected by the user to be saved.
+     */
+    Collection selectedNodes() {
+        if ( ! this.wasConfirmed()) {
+            throw new IllegalStateException();
+        }
+        return Arrays.asList(selectionModel.getSelectedValues());
+    }
 
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing;
 
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
@@ -22,7 +22,7 @@ public interface TypeHelper {
 
     /** Returns the name of the specified type. */
     public String getTypeName(Object type);
-    
+
     /** Returns the class object of the specified type. */
     public Class getJavaClass(Object type);
 
@@ -31,9 +31,9 @@ public interface TypeHelper {
     public Object resolveTypeName(String typeName);
 
     /** Returns the type of the attribute with the specified name in the
-     * specified owner class. */ 
+     * specified owner class. */
     public Object resolveAttribute(Object ownerClass, String attribute);
-    
+
     /**
      * Returns a query key associated with the name of the attribute
      */
@@ -41,7 +41,7 @@ public interface TypeHelper {
 
     /** Returns the type of the map key for the mapping on ownerClass named attribute
      * Returns null if that mapping does not exist or does not contain a map key
-     */ 
+     */
     public Object resolveMapKey(Object ownerClass, String attribute);
 
     /** Returns the type of the class corresponding to the specified abstract
@@ -60,13 +60,13 @@ public interface TypeHelper {
 
     /** Returns the char type representation.*/
     public Object getCharType();
-    
+
     /** Returns the char type representation.*/
     public Object getSQLDateType();
-    
+
     /** Returns the char type representation.*/
     public Object getTimeType();
-    
+
     /** Returns the char type representation.*/
     public Object getTimestampType();
 
@@ -81,7 +81,7 @@ public interface TypeHelper {
 
     /** Returns the type representation of class Map.Entry.*/
     public Object getMapEntryType();
-    
+
     /** Returns the float type representation.*/
     public Object getFloatType();
 
@@ -111,9 +111,9 @@ public interface TypeHelper {
     /** Returns true if the specified type represents an
      * integral type or a wrapper class of an integral type. */
     public boolean isIntegralType(Object type);
-    
+
     /** Returns true if the specified type represents an floating point type
-     * or a wrapper class of an floating point type. */ 
+     * or a wrapper class of an floating point type. */
     public boolean isFloatingPointType(Object type);
 
     /** Returns true if the specified type represents java.lang.String. */
@@ -133,30 +133,30 @@ public interface TypeHelper {
 
     /** Returns true if the specified type denotes an embedded class. */
     public boolean isEmbeddable(Object type);
-    
+
     /** Returns true if the specified type denotes an embedded attribute. */
     public boolean isEmbeddedAttribute(Object ownerClass, String attribute);
 
     /** Returns true if the specified type denotes a simple state attribute. */
     public boolean isSimpleStateAttribute(Object ownerClass, String attribute);
-    
+
     /** Returns true if the specified attribute denotes a single valued
-     * or collection valued relationship attribute. 
+     * or collection valued relationship attribute.
      */
     public boolean isRelationship(Object ownerClass, String attribute);
-    
+
     /** Returns true if the specified attribute denotes a single valued
-     * relationship attribute. 
+     * relationship attribute.
      */
     public boolean isSingleValuedRelationship(
         Object ownerClass, String attribute);
-    
-    /** Returns true if the specified attribute denotes a collection valued 
-     * relationship attribute. 
+
+    /** Returns true if the specified attribute denotes a collection valued
+     * relationship attribute.
      */
     public boolean isCollectionValuedRelationship(
         Object ownerClass, String attribute);
-    
+
     /** Returns true if left is assignable from right. */
     public boolean isAssignableFrom(Object left, Object right);
 

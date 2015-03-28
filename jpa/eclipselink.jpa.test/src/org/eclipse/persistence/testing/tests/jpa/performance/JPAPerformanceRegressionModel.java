@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import java.lang.reflect.Field;
@@ -59,7 +59,7 @@ import org.eclipse.persistence.testing.framework.*;
  * Performance tests that compare JPA performance.
  */
 public class JPAPerformanceRegressionModel extends TestModel {
-    
+
     public boolean isEmulated;
 
     public JPAPerformanceRegressionModel() {
@@ -70,14 +70,14 @@ public class JPAPerformanceRegressionModel extends TestModel {
         addTest(getReadingTestSuite());
         addTest(getWritingTestSuite());
         addTest(getMiscTestSuite());
-        
+
         TestSuite suite = new TestSuite();
         suite.setName("ChangeTrackingSuite");
         suite.addTest(buildChangeTrackingTest());
         suite.addTest(buildFieldAccessChangeTrackingTest());
         suite.addTest(buildEmployeeChangeTrackingTest());
         suite.addTest(buildDateChangeTrackingTest());
-        
+
         addTest(suite);
     }
 
@@ -145,7 +145,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         // false == merge; true == use sequencing.
         suite.addTest(new JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparisonTest(false, true, nLevels, nDirects));
 
-        return suite;        
+        return suite;
     }
 
     public void setupDatabase(EntityManager manager) {
@@ -166,8 +166,8 @@ public class JPAPerformanceRegressionModel extends TestModel {
 
         suite.addTest(new JPABootstrapPerformanceTest());
         suite.addTest(new JPAMetadataPerformanceTest());
-        
-        return suite;        
+
+        return suite;
     }
 
     /**
@@ -184,7 +184,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
             datasource.setPassword(getSession().getLogin().getPassword());
             datasource.setConnectionCachingEnabled(true);
             java.util.Properties properties = new java.util.Properties();
-            properties.setProperty("MinLimit", "5"); 
+            properties.setProperty("MinLimit", "5");
             properties.setProperty("MaxLimit", "100");
             properties.setProperty("InitialLimit", "1");
             properties.setProperty("MaxStatementsLimit", "50");
@@ -194,7 +194,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }*/
-        
+
         setupProvider();
         getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
         System.out.println(getExecutor().getEntityManagerFactory().getClass().toString());
@@ -202,7 +202,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         EmulatedDriver.emulate = false;
         EntityManager manager = getExecutor().createEntityManager();
         setupDatabase(manager);
-        
+
         manager.getTransaction().begin();
 
         for (int j = 0; j < 100; j++) {
@@ -236,12 +236,12 @@ public class JPAPerformanceRegressionModel extends TestModel {
             project.setName("Tracker");
             manager.persist(project);
         }
-        
+
         manager.getTransaction().commit();
         manager.close();
         EmulatedDriver.emulate = true;
     }
-    
+
     /**
      * Setup the JPA provider.
      */
@@ -260,13 +260,13 @@ public class JPAPerformanceRegressionModel extends TestModel {
         Map properties = getPersistenceProperties();
         getExecutor().setEntityManagerFactory(provider.createEntityManagerFactory("performance", properties));
     }
-    
+
     /**
      * Build the persistence properties.
      */
-    public Map getPersistenceProperties() {    
+    public Map getPersistenceProperties() {
         Map properties = new HashMap();
-        
+
         // For DataSource testing.
         //properties.put("javax.persistence.nonJtaDataSource", "datasource");
 
@@ -275,7 +275,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         properties.put("eclipselink.jdbc.url", getSession().getLogin().getConnectionString());
         properties.put("eclipselink.jdbc.user", getSession().getLogin().getUserName());
         properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());
-        
+
         if (this.isEmulated) {
             // For emulated connection testing.
             try {
@@ -294,7 +294,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         properties.put("eclipselink.jdbc.cache-statements", "true");
         return properties;
     }
-    
+
     /**
      * Add a test to see if the provider is using change tracking.
      */
@@ -324,13 +324,13 @@ public class JPAPerformanceRegressionModel extends TestModel {
         test.setName("TestChangeTracking");
         return test;
     }
-    
+
     /**
      * Add a test to see if the provider is using change tracking.
      */
     public TestCase buildFieldAccessChangeTrackingTest() {
         TestCase test = new TestCase() {
-            public void test() throws Exception {                
+            public void test() throws Exception {
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
                 Address address = (Address)manager.createQuery("Select a from Address a").getResultList().get(0);
@@ -352,13 +352,13 @@ public class JPAPerformanceRegressionModel extends TestModel {
         test.setName("TestFieldAccessChangeTracking");
         return test;
     }
-    
+
     /**
      * Add a test to see if the provider is using change tracking.
      */
     public TestCase buildEmployeeChangeTrackingTest() {
         TestCase test = new TestCase() {
-            public void test() throws Exception {                
+            public void test() throws Exception {
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
                 Employee employee = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
@@ -382,14 +382,14 @@ public class JPAPerformanceRegressionModel extends TestModel {
         test.setName("TestEmployeeChangeTracking");
         return test;
     }
-    
+
     /**
      * Add a test to see if the provider is using change tracking.
      */
     public TestCase buildDateChangeTrackingTest() {
         TestCase test = new TestCase() {
             @SuppressWarnings("deprecation")
-            public void test() throws Exception {                
+            public void test() throws Exception {
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
                 Employee employee = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);

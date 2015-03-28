@@ -42,13 +42,13 @@ public class XmlElementWrapperDefaultNameTestCases extends JAXBWithJSONTestCases
         setControlJSON(JSON_RESOURCE);
         initXsiType();
     }
-    
+
     public Map getProperties() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(OXM_RESOURCE);
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(PACKAGE_NAME, new StreamSource(inputStream));
-        
+
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
@@ -68,7 +68,7 @@ public class XmlElementWrapperDefaultNameTestCases extends JAXBWithJSONTestCases
 
         c.employees.add(emp1);
         c.employees.add(emp2);
-        
+
         return c;
     }
 

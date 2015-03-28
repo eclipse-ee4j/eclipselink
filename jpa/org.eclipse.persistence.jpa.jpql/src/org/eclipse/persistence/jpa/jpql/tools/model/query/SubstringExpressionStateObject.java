@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,141 +36,141 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public class SubstringExpressionStateObject extends AbstractTripleEncapsulatedExpressionStateObject {
 
-	/**
-	 * Creates a new <code>SubstringExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SubstringExpressionStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>SubstringExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SubstringExpressionStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>SubstringExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param firstStateObject The {@link StateObject} of the first expression
-	 * @param secondStateObject The {@link StateObject} of the second expression
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SubstringExpressionStateObject(StateObject parent,
-	                                      StateObject firstStateObject,
-	                                      StateObject secondStateObject) {
+    /**
+     * Creates a new <code>SubstringExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param firstStateObject The {@link StateObject} of the first expression
+     * @param secondStateObject The {@link StateObject} of the second expression
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SubstringExpressionStateObject(StateObject parent,
+                                          StateObject firstStateObject,
+                                          StateObject secondStateObject) {
 
-		super(parent, firstStateObject, secondStateObject, null);
-	}
+        super(parent, firstStateObject, secondStateObject, null);
+    }
 
-	/**
-	 * Creates a new <code>SubstringExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param firstStateObject The {@link StateObject} of the first expression
-	 * @param secondStateObject The {@link StateObject} of the second expression
-	 * @param thirdStateObject The {@link StateObject} of the third encapsulated expression
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SubstringExpressionStateObject(StateObject parent,
-	                                      StateObject firstStateObject,
-	                                      StateObject secondStateObject,
-	                                      StateObject thirdStateObject) {
+    /**
+     * Creates a new <code>SubstringExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param firstStateObject The {@link StateObject} of the first expression
+     * @param secondStateObject The {@link StateObject} of the second expression
+     * @param thirdStateObject The {@link StateObject} of the third encapsulated expression
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SubstringExpressionStateObject(StateObject parent,
+                                          StateObject firstStateObject,
+                                          StateObject secondStateObject,
+                                          StateObject thirdStateObject) {
 
-		super(parent, firstStateObject, secondStateObject, thirdStateObject);
-	}
+        super(parent, firstStateObject, secondStateObject, thirdStateObject);
+    }
 
-	/**
-	 * Creates a new <code>SubstringExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param firstJpqlFragment The string representation of the first encapsulated expression to
-	 * parse and to convert into a {@link StateObject} representation
-	 * @param secondJpqlFragment The string representation of the second encapsulated expression to
-	 * parse and to convert into a {@link StateObject} representation
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SubstringExpressionStateObject(StateObject parent,
-	                                      String firstJpqlFragment,
-	                                      String secondJpqlFragment) {
+    /**
+     * Creates a new <code>SubstringExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param firstJpqlFragment The string representation of the first encapsulated expression to
+     * parse and to convert into a {@link StateObject} representation
+     * @param secondJpqlFragment The string representation of the second encapsulated expression to
+     * parse and to convert into a {@link StateObject} representation
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SubstringExpressionStateObject(StateObject parent,
+                                          String firstJpqlFragment,
+                                          String secondJpqlFragment) {
 
-		super(parent, firstJpqlFragment, secondJpqlFragment, null);
-	}
+        super(parent, firstJpqlFragment, secondJpqlFragment, null);
+    }
 
-	/**
-	 * Creates a new <code>SubstringExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param firstJpqlFragment The string representation of the first encapsulated expression to
-	 * parse and to convert into a {@link StateObject} representation
-	 * @param secondJpqlFragment The string representation of the second encapsulated expression to
-	 * parse and to convert into a {@link StateObject} representation
-	 * @param thirdJpqlFragment The string representation of the third encapsulated expression to
-	 * parse and to convert into a {@link StateObject} representation
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public SubstringExpressionStateObject(StateObject parent,
-	                                      String firstJpqlFragment,
-	                                      String secondJpqlFragment,
-	                                      String thirdJpqlFragment) {
+    /**
+     * Creates a new <code>SubstringExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param firstJpqlFragment The string representation of the first encapsulated expression to
+     * parse and to convert into a {@link StateObject} representation
+     * @param secondJpqlFragment The string representation of the second encapsulated expression to
+     * parse and to convert into a {@link StateObject} representation
+     * @param thirdJpqlFragment The string representation of the third encapsulated expression to
+     * parse and to convert into a {@link StateObject} representation
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public SubstringExpressionStateObject(StateObject parent,
+                                          String firstJpqlFragment,
+                                          String secondJpqlFragment,
+                                          String thirdJpqlFragment) {
 
-		super(parent, firstJpqlFragment, secondJpqlFragment, thirdJpqlFragment);
-	}
+        super(parent, firstJpqlFragment, secondJpqlFragment, thirdJpqlFragment);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SubstringExpression getExpression() {
-		return (SubstringExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SubstringExpression getExpression() {
+        return (SubstringExpression) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getFirstQueryBNFId() {
-		return StringPrimaryBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getFirstQueryBNFId() {
+        return StringPrimaryBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getIdentifier() {
-		return SUBSTRING;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdentifier() {
+        return SUBSTRING;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getSecondQueryBNFId() {
-		return SimpleArithmeticExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getSecondQueryBNFId() {
+        return SimpleArithmeticExpressionBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getThirdQueryBNFId() {
-		return SimpleArithmeticExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getThirdQueryBNFId() {
+        return SimpleArithmeticExpressionBNF.ID;
+    }
 
-	/**
-	 * Keeps a reference of the {@link SubstringExpression parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link SubstringExpression parsed object} representing a <code><b>SUBSTRING</b></code>
-	 * expression
-	 */
-	public void setExpression(SubstringExpression expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link SubstringExpression parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link SubstringExpression parsed object} representing a <code><b>SUBSTRING</b></code>
+     * expression
+     */
+    public void setExpression(SubstringExpression expression) {
+        super.setExpression(expression);
+    }
 }

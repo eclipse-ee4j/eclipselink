@@ -5,7 +5,7 @@
         <!--property name="eclipselink.logging.level" value="FINEST"/-->
         <property name="eclipselink.jdbc.batch-writing" value="Oracle-JDBC"/>
     </persistence-unit>
-    
+
 </persistence>
 
 

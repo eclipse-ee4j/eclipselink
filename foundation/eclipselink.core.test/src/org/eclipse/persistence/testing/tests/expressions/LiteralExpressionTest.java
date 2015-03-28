@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,16 +25,16 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 
 /**
  * Test using ExpressionBuilder.literal() (Creating a LiteralExpression) using a ReportQuery.
- * The DB field "GENDER" should be printed as a literal, data should be returned for the 
+ * The DB field "GENDER" should be printed as a literal, data should be returned for the
  * ReportQuery gender alias, and an exception should not occur when executing the ReportQuery.
  * Literal usage is: query.addAttribute("sysdate", builder.literal("SYSDATE"));
- * 
+ *
  * EL Bug 247076 - LiteralExpression does not print SQL in statement
  * @author dminsky
  */
 
 public class LiteralExpressionTest extends TestCase {
-    
+
     protected EclipseLinkException exception;
     protected Vector<ReportQueryResult> results;
 
@@ -42,7 +42,7 @@ public class LiteralExpressionTest extends TestCase {
         super();
         setDescription("Test using a LiteralExpression through ExpressionBuilder.literal()");
     }
-    
+
     public void test() {
         ClassDescriptor descriptor = getSession().getDescriptor(Employee.class);
         DatabaseMapping genderMapping = descriptor.getMappingForAttributeName("gender");
@@ -63,7 +63,7 @@ public class LiteralExpressionTest extends TestCase {
             this.exception = ex;
         }
     }
-    
+
     public void verify() {
         if (exception != null) {
             throw new TestErrorException("An exception occurred executing a ReportQuery with a literal expression", exception);
@@ -77,7 +77,7 @@ public class LiteralExpressionTest extends TestCase {
             if (gender == null) {
                 throw new TestErrorException("ReportQueryResult does not contain entries for 'gender', literal not added");
             }
-        }        
+        }
     }
-    
+
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.dcn;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class DCNTestSuite extends JUnitTestCase {
 
     public static String DCN2 = "dcn2";
     public static int SLEEP = 5000;
-    
+
     public static boolean supported = false;
 
     public DCNTestSuite(){
@@ -60,12 +60,12 @@ public class DCNTestSuite extends JUnitTestCase {
         suite.addTest(new DCNTestSuite("testNativeSQL"));
         return suite;
     }
-    
+
     @Override
     public String getPersistenceUnitName() {
         return "dcn";
     }
-    
+
     public void sleep() {
         try {
             Thread.sleep(SLEEP);
@@ -105,7 +105,7 @@ public class DCNTestSuite extends JUnitTestCase {
         clearCache();
         clearCache(DCN2);
     }
-    
+
     /**
      * Test that updates to existing objects are invalidated.
      */
@@ -140,7 +140,7 @@ public class DCNTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test that updates to existing objects are invalidated.
      */
@@ -175,7 +175,7 @@ public class DCNTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test that updates to existing objects are invalidated.
      */
@@ -210,7 +210,7 @@ public class DCNTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test that updates to existing objects are invalidated.
      */
@@ -245,7 +245,7 @@ public class DCNTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test that updates to existing objects are invalidated.
      */
@@ -282,7 +282,7 @@ public class DCNTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test that updates to existing objects are invalidated.
      */
@@ -320,7 +320,7 @@ public class DCNTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test that updates to new objects are invalidated.
      */
@@ -363,7 +363,7 @@ public class DCNTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test that removing in once session invalidates the object.
      */
@@ -403,7 +403,7 @@ public class DCNTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test that update all invalidates the objects.
      */
@@ -437,7 +437,7 @@ public class DCNTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test that native sql invalidates the objects.
      */

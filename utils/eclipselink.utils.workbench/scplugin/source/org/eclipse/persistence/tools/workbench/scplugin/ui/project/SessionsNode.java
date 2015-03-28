@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -36,57 +36,57 @@ import org.eclipse.persistence.tools.workbench.uitools.app.TreeNodeValueModel;
  */
 public abstract class SessionsNode extends SCApplicationNode {
 
-	private ListValueModel childrenModel;
-		
-	// ********** constructors/initialization **********
-	
-	public SessionsNode( SCAdapter scAdapter, TreeNodeValueModel parent, SCPlugin plugin, ApplicationContext context) {
-	
-		super( scAdapter, parent, plugin, context);
-	}
+    private ListValueModel childrenModel;
 
-	// **************** Initialization ****************************************
+    // ********** constructors/initialization **********
 
-	protected void initialize() {
-		super.initialize();
-		this.childrenModel = this.buildChildrenModel();
-	}
-	
-	// **************** factory methods ****************************************
+    public SessionsNode( SCAdapter scAdapter, TreeNodeValueModel parent, SCPlugin plugin, ApplicationContext context) {
 
-	protected ListValueModel buildChildrenModel() {
-		return new SortedListValueModelAdapter( this.buildDisplayStringAdapter());
-	}
+        super( scAdapter, parent, plugin, context);
+    }
 
-	protected ListValueModel buildDisplayStringAdapter() {
-		return new ItemPropertyListValueModelAdapter( this.buildChildrenNodeWrapper(), DISPLAY_STRING_PROPERTY);
-	}
+    // **************** Initialization ****************************************
 
-	protected ListValueModel buildChildrenNodeWrapper() {
-		return new TransformationListValueModelAdapter( this.buildSessionsAspectAdapter()) {
-			protected Object transformItem( Object item) {
-				return SessionsNode.this.buildChildNode(( SessionAdapter) item);
-			}
-		};
-	}
-	
-	protected abstract CollectionValueModel buildSessionsAspectAdapter();
+    protected void initialize() {
+        super.initialize();
+        this.childrenModel = this.buildChildrenModel();
+    }
 
-	protected AbstractApplicationNode buildChildNode(SessionAdapter session) {
-		SessionNode node = null;
-		
-		if( session instanceof ServerSessionAdapter)
-			node = new ServerSessionNode(( ServerSessionAdapter)session, this, ( SCPlugin)this.getPlugin(), this.getApplicationContext());
-		else if( session instanceof DatabaseSessionAdapter)
-			node = new DatabaseSessionNode(( DatabaseSessionAdapter)session, this, ( SCPlugin)this.getPlugin(), this.getApplicationContext());
-		else
-			throw new IllegalArgumentException( "Invalid Session");
-		return node;
-	}
+    // **************** factory methods ****************************************
+
+    protected ListValueModel buildChildrenModel() {
+        return new SortedListValueModelAdapter( this.buildDisplayStringAdapter());
+    }
+
+    protected ListValueModel buildDisplayStringAdapter() {
+        return new ItemPropertyListValueModelAdapter( this.buildChildrenNodeWrapper(), DISPLAY_STRING_PROPERTY);
+    }
+
+    protected ListValueModel buildChildrenNodeWrapper() {
+        return new TransformationListValueModelAdapter( this.buildSessionsAspectAdapter()) {
+            protected Object transformItem( Object item) {
+                return SessionsNode.this.buildChildNode(( SessionAdapter) item);
+            }
+        };
+    }
+
+    protected abstract CollectionValueModel buildSessionsAspectAdapter();
+
+    protected AbstractApplicationNode buildChildNode(SessionAdapter session) {
+        SessionNode node = null;
+
+        if( session instanceof ServerSessionAdapter)
+            node = new ServerSessionNode(( ServerSessionAdapter)session, this, ( SCPlugin)this.getPlugin(), this.getApplicationContext());
+        else if( session instanceof DatabaseSessionAdapter)
+            node = new DatabaseSessionNode(( DatabaseSessionAdapter)session, this, ( SCPlugin)this.getPlugin(), this.getApplicationContext());
+        else
+            throw new IllegalArgumentException( "Invalid Session");
+        return node;
+    }
 
 
-	public ListValueModel getChildrenModel() {
-		return this.childrenModel;
-	}
+    public ListValueModel getChildrenModel() {
+        return this.childrenModel;
+    }
 
 }

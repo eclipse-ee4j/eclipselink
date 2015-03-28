@@ -40,8 +40,8 @@
          <xsd:extension base="addressType">
             <xsd:sequence>
                <xsd:element name="postalCode" type="xsd:string"/>
-	       <xsd:element name="street" type="xsd:string"/>
-            </xsd:sequence>     
+           <xsd:element name="street" type="xsd:string"/>
+            </xsd:sequence>
          </xsd:extension>
       </xsd:complexContent>
       <xsd:attribute name="street" type="xsd:string"/>

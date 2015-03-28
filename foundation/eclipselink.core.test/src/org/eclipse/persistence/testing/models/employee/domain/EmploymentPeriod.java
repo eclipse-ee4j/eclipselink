@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.employee.domain;
 
 import java.sql.Date;
@@ -45,15 +45,15 @@ public class EmploymentPeriod implements Serializable, ChangeTracker, Cloneable 
         this.endDate = endDate;
 
     }
-    
-    public Object clone() 
+
+    public Object clone()
     {
         try {
             return super.clone();
         } catch (Exception ignore) {}
         return null;
     }
-    
+
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return listener;
     }
@@ -112,7 +112,7 @@ public class EmploymentPeriod implements Serializable, ChangeTracker, Cloneable 
         }
         return writer.toString();
     }
-    
+
     public boolean equals(Object period){
         if (this == period){
             return true;
@@ -131,7 +131,7 @@ public class EmploymentPeriod implements Serializable, ChangeTracker, Cloneable 
         match = match && ((getEndDate() == null && empPeriod.getEndDate() == null) || getEndDate().equals(empPeriod.getEndDate()));
         return  match;
     }
-    
+
     public int hashCode() {
         int hash = 0;
         hash += (this.getStartDate() != null ? this.getStartDate().hashCode() : 0);

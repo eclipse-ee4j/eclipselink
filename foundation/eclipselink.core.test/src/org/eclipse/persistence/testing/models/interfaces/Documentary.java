@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.interfaces;
 
 import java.util.Vector;
@@ -35,7 +35,7 @@ public class Documentary implements ProgramInt {
     }
 
     public static org.eclipse.persistence.tools.schemaframework.TableDefinition documentaryTable() {
-        org.eclipse.persistence.tools.schemaframework.TableDefinition tabledefinition = 
+        org.eclipse.persistence.tools.schemaframework.TableDefinition tabledefinition =
             new org.eclipse.persistence.tools.schemaframework.TableDefinition();
 
 
@@ -43,7 +43,7 @@ public class Documentary implements ProgramInt {
         tabledefinition.setName("DOCUMENTARY");
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = 
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field =
             new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field.setName("ID");
         field.setType(java.math.BigDecimal.class);
@@ -54,7 +54,7 @@ public class Documentary implements ProgramInt {
         tabledefinition.addField(field);
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = 
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 =
             new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field1.setName("NAME");
         field1.setType(String.class);
@@ -65,7 +65,7 @@ public class Documentary implements ProgramInt {
         tabledefinition.addField(field1);
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = 
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 =
             new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("DESCRIPTION");
         field2.setType(Character[].class);
@@ -76,7 +76,7 @@ public class Documentary implements ProgramInt {
         tabledefinition.addField(field2);
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = 
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 =
             new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field3.setName("DURATION");
         field3.setType(Double.class);

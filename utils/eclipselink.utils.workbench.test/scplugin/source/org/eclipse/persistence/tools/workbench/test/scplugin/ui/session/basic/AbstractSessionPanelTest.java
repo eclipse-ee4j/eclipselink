@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -27,54 +27,54 @@ import org.eclipse.persistence.tools.workbench.uitools.app.SimplePropertyValueMo
  */
 public abstract class AbstractSessionPanelTest extends SCAbstractPanelTest {
 
-	private SessionAdapter selection;
+    private SessionAdapter selection;
 
-	public AbstractSessionPanelTest(String name) {
+    public AbstractSessionPanelTest(String name) {
 
-		super(name);
-	}
+        super(name);
+    }
 
-	protected PropertyValueModel buildNodeHolder( ApplicationNode projectNode) {
+    protected PropertyValueModel buildNodeHolder( ApplicationNode projectNode) {
 
-		SCAdapter session = getTopLinkSessions().sessionNamed("SC-EmployeeTest");
-		return new SimplePropertyValueModel(retrieveNode(projectNode, session));
-	}
+        SCAdapter session = getTopLinkSessions().sessionNamed("SC-EmployeeTest");
+        return new SimplePropertyValueModel(retrieveNode(projectNode, session));
+    }
 
-	protected SCAdapter buildSelection() {
+    protected SCAdapter buildSelection() {
 
-		this.selection = getTopLinkSessions().sessionNamed( "SC-EmployeeTest");
-		return this.selection;
-	}
+        this.selection = getTopLinkSessions().sessionNamed( "SC-EmployeeTest");
+        return this.selection;
+    }
 
-	protected void clearModel() {
+    protected void clearModel() {
 
-		getSelectionHolder().setValue( null);
-	}
+        getSelectionHolder().setValue( null);
+    }
 
-	protected SessionAdapter getSession() {
+    protected SessionAdapter getSession() {
 
-		return (SessionAdapter) getSelection();
-	}
+        return (SessionAdapter) getSelection();
+    }
 
-	protected void printModel() {
+    protected void printModel() {
 
-		System.out.println( this.selection);
-	}
+        System.out.println( this.selection);
+    }
 
-	protected void resetProperty() {
+    protected void resetProperty() {
 
-		this.selection = getTopLinkSessions().sessionNamed( "SC-EmployeeTest");
-		this.restoreModel();
-	}
+        this.selection = getTopLinkSessions().sessionNamed( "SC-EmployeeTest");
+        this.restoreModel();
+    }
 
-	protected void restoreModel() {
+    protected void restoreModel() {
 
-		getSelectionHolder().setValue( this.selection);
-	}
+        getSelectionHolder().setValue( this.selection);
+    }
 
-	protected void tearDown() throws Exception {
+    protected void tearDown() throws Exception {
 
-		super.tearDown();
-		this.selection = null;
-	}
+        super.tearDown();
+        this.selection = null;
+    }
 }

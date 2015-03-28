@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.multipletable;
 
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -30,16 +30,16 @@ public class MultipleTableTableCreator extends TableCreator {
         addTableDefinition(buildCOW_AGETable());
         addTableDefinition(buildCOW_WEIGHTTable());
         addTableDefinition(buildSUPER_COWTable());
-        
+
         addTableDefinition(buildHORSETable());
         addTableDefinition(buildFOALSTable());
         addTableDefinition(buildHORSE_AGETable());
         addTableDefinition(buildHORSE_WEIGHTTable());
         addTableDefinition(buildSUPER_HORSETable());
-        
+
         addTableDefinition(buildHUMANTable());
         addTableDefinition(buildKIDSTable());
-        
+
         addTableDefinition(buildSWANTable());
         addTableDefinition(buildCYGNETSTable());
         addTableDefinition(buildSWAN_AGETable());
@@ -91,7 +91,7 @@ public class MultipleTableTableCreator extends TableCreator {
         field2.setUnique(false);
         field2.setIsIdentity(false);
         table.addField(field2);
-        
+
         FieldDefinition field3 = new FieldDefinition();
         field3.setName("AGE_ID");
         field3.setTypeName("NUMERIC");
@@ -162,7 +162,7 @@ public class MultipleTableTableCreator extends TableCreator {
 
         return table;
     }
-    
+
     protected TableDefinition buildCOW_AGETable() {
         TableDefinition table = new TableDefinition();
         table.setName("MULTI_COW_AGE");
@@ -189,7 +189,7 @@ public class MultipleTableTableCreator extends TableCreator {
 
         return table;
     }
-    
+
     protected TableDefinition buildCOW_WEIGHTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("MULTI_COW_WEIGHT");
@@ -216,7 +216,7 @@ public class MultipleTableTableCreator extends TableCreator {
 
         return table;
     }
-    
+
     protected TableDefinition buildSUPER_COWTable() {
         TableDefinition table = new TableDefinition();
         table.setName("MULTI_SUPER_COW");
@@ -305,7 +305,7 @@ public class MultipleTableTableCreator extends TableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-        
+
         ForeignKeyConstraint foreignKeyFOALS_HORSE = new ForeignKeyConstraint();
         foreignKeyFOALS_HORSE.setName("FOALS_HORSE");
         foreignKeyFOALS_HORSE.setTargetTable("MULTI_HORSE");
@@ -315,7 +315,7 @@ public class MultipleTableTableCreator extends TableCreator {
 
         return table;
     }
-    
+
     protected TableDefinition buildHORSE_AGETable() {
         TableDefinition table = new TableDefinition();
         table.setName("MULTI_HORSE_AGE");
@@ -349,7 +349,7 @@ public class MultipleTableTableCreator extends TableCreator {
 
         return table;
     }
-    
+
     protected TableDefinition buildHORSE_WEIGHTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("MULTI_HORSE_WEIGHT");
@@ -383,7 +383,7 @@ public class MultipleTableTableCreator extends TableCreator {
 
         return table;
     }
-    
+
     protected TableDefinition buildSUPER_HORSETable() {
         TableDefinition table = new TableDefinition();
         table.setName("MULTI_SUPER_HORSE");
@@ -462,7 +462,7 @@ public class MultipleTableTableCreator extends TableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-        
+
         ForeignKeyConstraint foreignKeyKIDS_HUMAN = new ForeignKeyConstraint();
         foreignKeyKIDS_HUMAN.setName("KIDS_HUMAN");
         foreignKeyKIDS_HUMAN.setTargetTable("MULTI_HUMAN");
@@ -472,7 +472,7 @@ public class MultipleTableTableCreator extends TableCreator {
 
         return table;
     }
-    
+
     protected TableDefinition buildSWANTable() {
         TableDefinition table = new TableDefinition();
         table.setName("MULTI_SWAN");
@@ -506,7 +506,7 @@ public class MultipleTableTableCreator extends TableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-        
+
         ForeignKeyConstraint foreignKeySWAN_CYGNET = new ForeignKeyConstraint();
         foreignKeySWAN_CYGNET.setName("SWAN_CYGNET");
         foreignKeySWAN_CYGNET.setTargetTable("MULTI_CYGNETS");
@@ -577,7 +577,7 @@ public class MultipleTableTableCreator extends TableCreator {
 
         return table;
     }
-    
+
     protected TableDefinition buildSWAN_WINGSPANTable() {
         TableDefinition table = new TableDefinition();
         table.setName("MULTI_SWAN_WINGSPAN");
@@ -611,7 +611,7 @@ public class MultipleTableTableCreator extends TableCreator {
 
         return table;
     }
-    
+
     protected TableDefinition buildSWAN_WEIGHTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("MULTI_SWAN_WEIGHT");
@@ -644,7 +644,7 @@ public class MultipleTableTableCreator extends TableCreator {
         table.addForeignKeyConstraint(foreignKeySWAN_WEIGHT);
 
         return table;
-    }    
+    }
 
     protected TableDefinition buildSUPER_SWANTable() {
         TableDefinition table = new TableDefinition();
@@ -670,7 +670,7 @@ public class MultipleTableTableCreator extends TableCreator {
         sppedField.setUnique(false);
         sppedField.setIsIdentity(false);
         table.addField(sppedField);
-        
+
         return table;
     }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.spatial.jgeometry;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class SampleGeometries {
         population.add(new SimpleSpatial(1004, circle()));
         population.add(new SimpleSpatial(1005, rectangle()));
         population.add(new SimpleSpatial(1006, compoundLineAndRectangle()));
-        population.add(new SimpleSpatial(1007, 
+        population.add(new SimpleSpatial(1007,
                                          compoundPolygonWithRectangularHole()));
         population.add(new SimpleSpatial(1008, geometry1008()));
         population.add(new SimpleSpatial(1009, geometryWithNulls()));
@@ -71,9 +71,9 @@ public class SampleGeometries {
         population.add(new WrappedSpatial(1003, 4, polygonOfCircularArcs()));
         population.add(new WrappedSpatial(1004, 5, circle()));
         population.add(new WrappedSpatial(1005, 6, rectangle()));
-        population.add(new WrappedSpatial(1006, 7, 
+        population.add(new WrappedSpatial(1006, 7,
                                           compoundLineAndRectangle()));
-        population.add(new WrappedSpatial(1007, 8, 
+        population.add(new WrappedSpatial(1007, 8,
                                           compoundPolygonWithRectangularHole()));
         population.add(new WrappedSpatial(1008, 9, geometry1008()));
         population.add(new WrappedSpatial(1009, 10, geometryWithNulls()));
@@ -92,16 +92,16 @@ public class SampleGeometries {
      *                   mdsys.sdo_ordinate_array(1.1, 1.1, 2.2, 2.2, 3.3, 4.4)));
      */
     public JGeometry pointCluster1() {
-        Object[] points = 
-            new Object[] { new double[] { 1.1, 1.1 }, new double[] { 2.2, 
-                                                                     2.2 }, 
+        Object[] points =
+            new Object[] { new double[] { 1.1, 1.1 }, new double[] { 2.2,
+                                                                     2.2 },
                            new double[] { 3.3, 4.4 } };
         return JGeometry.createMultiPoint(points, 2, getSRID());
     }
 
     public JGeometry pointCluster2() {
 
-        Object[] points = 
+        Object[] points =
             new Object[] { new double[] { 5, 6 }, new double[] { 7, 8 } };
         return JGeometry.createMultiPoint(points, 2, getSRID());
     }
@@ -128,8 +128,8 @@ public class SampleGeometries {
      * mdsys.sdo_ordinate_array(0, 1, 1, 0, 0, -1, -1, 0, 0, 1)));
      */
     public JGeometry polygonOfCircularArcs() throws Exception {
-        return new JGeometry(JGeometry.GTYPE_POLYGON, getSRID(), 
-                             new int[] { 1, 3, 2 }, 
+        return new JGeometry(JGeometry.GTYPE_POLYGON, getSRID(),
+                             new int[] { 1, 3, 2 },
                              new double[] { 0, 1, 1, 0, 0, -1, -1, 0, 0, 1 });
     }
 
@@ -154,9 +154,9 @@ public class SampleGeometries {
      * mdsys.sdo_ordinate_array(10, 10, 20, 20))
      */
     public JGeometry rectangle() throws Exception {
-        return JGeometry.createLinearPolygon(new double[] { 10, 10, 10, 20, 20, 
-                                                            20, 20, 10, 10, 
-                                                            10 }, 2, 
+        return JGeometry.createLinearPolygon(new double[] { 10, 10, 10, 20, 20,
+                                                            20, 20, 10, 10,
+                                                            10 }, 2,
                                              getSRID());
     }
 
@@ -178,10 +178,10 @@ public class SampleGeometries {
      * 35,40))
      */
     public JGeometry compoundLineAndRectangle() throws Exception {
-        return new JGeometry(JGeometry.GTYPE_COLLECTION, getSRID(), 
-                             new int[] { 1, 4, 2, 1, 2, 1, 7, 2, 2, 17, 3, 3 }, 
-                             new double[] { 50, 50, 50, 30, 10, 30, 10, 50, 20, 
-                                            60, 30, 50, 40, 60, 50, 50, 25, 35, 
+        return new JGeometry(JGeometry.GTYPE_COLLECTION, getSRID(),
+                             new int[] { 1, 4, 2, 1, 2, 1, 7, 2, 2, 17, 3, 3 },
+                             new double[] { 50, 50, 50, 30, 10, 30, 10, 50, 20,
+                                            60, 30, 50, 40, 60, 50, 50, 25, 35,
                                             35, 40 });
     }
 
@@ -203,10 +203,10 @@ public class SampleGeometries {
      * 35,40))
      */
     public JGeometry compoundPolygonWithRectangularHole() throws Exception {
-        return new JGeometry(JGeometry.GTYPE_POLYGON, getSRID(), 
-                             new int[] { 1, 5, 2, 1, 2, 1, 7, 2, 2, 17, 3, 3 }, 
-                             new double[] { 50, 50, 50, 30, 10, 30, 10, 50, 20, 
-                                            60, 30, 50, 40, 60, 50, 50, 25, 35, 
+        return new JGeometry(JGeometry.GTYPE_POLYGON, getSRID(),
+                             new int[] { 1, 5, 2, 1, 2, 1, 7, 2, 2, 17, 3, 3 },
+                             new double[] { 50, 50, 50, 30, 10, 30, 10, 50, 20,
+                                            60, 30, 50, 40, 60, 50, 50, 25, 35,
                                             35, 40 });
     }
 
@@ -225,9 +225,9 @@ public class SampleGeometries {
      * 35,40))
      */
     public JGeometry geometry1008() throws Exception {
-        return new JGeometry(JGeometry.GTYPE_POLYGON, getSRID(), 
-                             new int[] { 1, 3, 1, 11, 3, 3 }, 
-                             new double[] { 50, 50, 50, 30, 10, 30, 10, 50, 50, 
+        return new JGeometry(JGeometry.GTYPE_POLYGON, getSRID(),
+                             new int[] { 1, 3, 1, 11, 3, 3 },
+                             new double[] { 50, 50, 50, 30, 10, 30, 10, 50, 50,
                                             50, 25, 35, 35, 40 });
     }
 
@@ -259,9 +259,9 @@ public class SampleGeometries {
      * 35,40))
      */
     public JGeometry polygon1011() throws Exception {
-        return new JGeometry(JGeometry.GTYPE_POLYGON, getSRID(), 12.5, 13.6, 
-                             14.7, new int[] { 1, 3, 1, 11, 3, 3 }, 
-                             new double[] { 50, 50, 50, 30, 10, 30, 10, 50, 50, 
+        return new JGeometry(JGeometry.GTYPE_POLYGON, getSRID(), 12.5, 13.6,
+                             14.7, new int[] { 1, 3, 1, 11, 3, 3 },
+                             new double[] { 50, 50, 50, 30, 10, 30, 10, 50, 50,
                                             50, 25, 35, 35, 40 });
     }
 
@@ -280,9 +280,9 @@ public class SampleGeometries {
      * 35,40))
      */
     public JGeometry polygon1012() throws Exception {
-        return new JGeometry(JGeometry.GTYPE_POLYGON, getSRID(), 12.5, 13.6, 
-                             0.0, new int[] { 1, 3, 1, 11, 3, 3 }, 
-                             new double[] { 50, 50, 50, 30, 10, 30, 10, 50, 50, 
+        return new JGeometry(JGeometry.GTYPE_POLYGON, getSRID(), 12.5, 13.6,
+                             0.0, new int[] { 1, 3, 1, 11, 3, 3 },
+                             new double[] { 50, 50, 50, 30, 10, 30, 10, 50, 50,
                                             50, 25, 35, 35, 40 });
     }
 
@@ -295,7 +295,7 @@ public class SampleGeometries {
      * NULL, NULL)
      */
     public JGeometry point() throws Exception {
-        return JGeometry.createPoint(new double[] { 12.5, 13.6 }, 2, 
+        return JGeometry.createPoint(new double[] { 12.5, 13.6 }, 2,
                                      getSRID());
     }
 }

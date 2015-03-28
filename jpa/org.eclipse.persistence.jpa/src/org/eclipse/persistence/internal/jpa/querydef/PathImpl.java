@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,20 +31,20 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <p>
  * <b>Description</b>: This class represents an abstract path which is a model of the expression through joins.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria Path
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
 
 public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable{
     protected Path<?> pathParent;
-    
+
     // Although this is an Object type only Attributes that implement Bindable are passed to this class
     // sublcasses like JoinImpl will cast this artifact to Attribute
     protected Object modelArtifact;
-    
+
     public PathImpl(Path<?> parent, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable modelArtifact) {
         super(metamodel, javaClass, expressionNode);
         this.pathParent = parent;
@@ -53,17 +53,17 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
 
     /**
      * Return the bindable object that corresponds to the path expression.
-     * 
+     *
      * @return bindable object corresponding to the path
      */
     public  Bindable<X> getModel(){
         return (Bindable<X>) this.modelArtifact;
-        
+
     }
 
     /**
      * Return the parent "node" in the path.
-     * 
+     *
      * @return parent
      */
     public Path<?> getParentPath(){
@@ -73,7 +73,7 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
     /**
      * Return the path corresponding to the referenced non-collection valued
      * attribute.
-     * 
+     *
      * @param model
      *            attribute
      * @return path corresponding to the referenced attribute
@@ -85,7 +85,7 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
     /**
      * Return the path corresponding to the referenced collection-valued
      * attribute.
-     * 
+     *
      * @param model
      *            collection-valued attribute
      * @return expression corresponding to the referenced attribute
@@ -96,7 +96,7 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
 
     /**
      * Return the path corresponding to the referenced map-valued attribute.
-     * 
+     *
      * @param model
      *            map-valued attribute
      * @return expression corresponding to the referenced attribute
@@ -104,10 +104,10 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
     public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
-    
+
     /**
      * Return an expression corresponding to the type of the path.
-     * 
+     *
      * @return expression corresponding to the type of the path
      */
     public Expression<Class<? extends X>> type(){

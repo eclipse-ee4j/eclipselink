@@ -35,7 +35,7 @@
         - build (default) : cleans and compiles tests
         - clean   : cleans up all generated files and dirs
         - compile : compiles all test classes
-        - package : 
+        - package :
         - test: Runs DBWS Server tests
 -->
 <project name="eclipselink.dbws.builder.test.oracle.server" default="build" basedir=".">
@@ -457,11 +457,11 @@
           />
         </junitreport>
     </target>
-	<target name="copy-war" description="copy legacysimpletable.war from etc to stage">
+    <target name="copy-war" description="copy legacysimpletable.war from etc to stage">
         <copy file="${resource.dir}/dbws/testing/legacysimpletable/legacysimpletable.war" toDir="${stage.dir}"/>
-	</target>
+    </target>
 
-	<!-- MACRO and SCRIPT definitions -->
+    <!-- MACRO and SCRIPT definitions -->
     <presetdef name="javac">
       <javac
         debug="${javac.debug}"

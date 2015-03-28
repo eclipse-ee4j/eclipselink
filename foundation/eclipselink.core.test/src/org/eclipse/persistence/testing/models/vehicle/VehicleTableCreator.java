@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Vikram Bhatia - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.vehicle;
 
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -26,7 +26,7 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
 
     public VehicleTableCreator() {
         setName("Vehicle");
-        
+
         addTableDefinition(buildCAROWNERTable());
         addTableDefinition(buildSPORTSCARTable());
         addTableDefinition(buildFUELTYPETable());
@@ -36,7 +36,7 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
     public TableDefinition buildCAROWNERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CAROWNER");
-        
+
         FieldDefinition fieldCARID = new FieldDefinition();
         fieldCARID.setName("CARID");
         fieldCARID.setTypeName("NUMBER");
@@ -47,7 +47,7 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldCARID.setUnique(false);
         fieldCARID.setShouldAllowNull(false);
         table.addField(fieldCARID);
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -58,7 +58,7 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldLASTCARID = new FieldDefinition();
         fieldLASTCARID.setName("LASTCARID");
         fieldLASTCARID.setTypeName("NUMBER");
@@ -69,7 +69,7 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldLASTCARID.setUnique(false);
         fieldLASTCARID.setShouldAllowNull(false);
         table.addField(fieldLASTCARID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR2");
@@ -80,14 +80,14 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(false);
         table.addField(fieldNAME);
-        
+
         return table;
     }
 
     public TableDefinition buildENGINETYPETable() {
         TableDefinition table = new TableDefinition();
         table.setName("ENGINETYPE");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -98,7 +98,7 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldTYPE = new FieldDefinition();
         fieldTYPE.setName("TYPE");
         fieldTYPE.setTypeName("VARCHAR2");
@@ -109,14 +109,14 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldTYPE.setUnique(false);
         fieldTYPE.setShouldAllowNull(false);
         table.addField(fieldTYPE);
-        
+
         return table;
     }
 
     public TableDefinition buildFUELTYPETable() {
         TableDefinition table = new TableDefinition();
         table.setName("FUELTYPE");
-        
+
         FieldDefinition fieldDESCRIPTION = new FieldDefinition();
         fieldDESCRIPTION.setName("DESCRIPTION");
         fieldDESCRIPTION.setTypeName("VARCHAR2");
@@ -127,7 +127,7 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldDESCRIPTION.setUnique(false);
         fieldDESCRIPTION.setShouldAllowNull(false);
         table.addField(fieldDESCRIPTION);
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -138,14 +138,14 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         return table;
     }
 
     public TableDefinition buildSPORTSCARTable() {
         TableDefinition table = new TableDefinition();
         table.setName("SPORTSCAR");
-        
+
         FieldDefinition fieldDESCRIPTION = new FieldDefinition();
         fieldDESCRIPTION.setName("DESCRIPTION");
         fieldDESCRIPTION.setTypeName("VARCHAR2");
@@ -156,7 +156,7 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldDESCRIPTION.setUnique(false);
         fieldDESCRIPTION.setShouldAllowNull(false);
         table.addField(fieldDESCRIPTION);
-        
+
         FieldDefinition fieldENGINEID = new FieldDefinition();
         fieldENGINEID.setName("ENGINEID");
         fieldENGINEID.setTypeName("NUMBER");
@@ -167,7 +167,7 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldENGINEID.setUnique(false);
         fieldENGINEID.setShouldAllowNull(false);
         table.addField(fieldENGINEID);
-        
+
         FieldDefinition fieldFUELCAPACITY = new FieldDefinition();
         fieldFUELCAPACITY.setName("FUELCAPACITY");
         fieldFUELCAPACITY.setTypeName("NUMBER");
@@ -178,7 +178,7 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldFUELCAPACITY.setUnique(false);
         fieldFUELCAPACITY.setShouldAllowNull(false);
         table.addField(fieldFUELCAPACITY);
-        
+
         FieldDefinition fieldFUELID = new FieldDefinition();
         fieldFUELID.setName("FUELID");
         fieldFUELID.setTypeName("NUMBER");
@@ -189,7 +189,7 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldFUELID.setUnique(false);
         fieldFUELID.setShouldAllowNull(false);
         table.addField(fieldFUELID);
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -200,7 +200,7 @@ public class VehicleTableCreator extends org.eclipse.persistence.tools.schemafra
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         return table;
     }
 }

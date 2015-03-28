@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,17 +26,17 @@ package org.eclipse.persistence.jpa.jpql.tools.resolver;
  */
 public class CollectionDeclaration extends Declaration {
 
-	/**
-	 * Creates a new <code>CollectionDeclaration</code>.
-	 */
-	public CollectionDeclaration() {
-		super();
-	}
+    /**
+     * Creates a new <code>CollectionDeclaration</code>.
+     */
+    public CollectionDeclaration() {
+        super();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Type getType() {
-		return Type.COLLECTION;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public Type getType() {
+        return Type.COLLECTION;
+    }
 }

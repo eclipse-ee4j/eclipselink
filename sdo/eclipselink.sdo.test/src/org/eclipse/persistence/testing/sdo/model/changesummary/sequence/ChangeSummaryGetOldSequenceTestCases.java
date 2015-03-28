@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary.sequence;
 
 import commonj.sdo.ChangeSummary;
@@ -134,8 +134,8 @@ public class ChangeSummaryGetOldSequenceTestCases extends SDOTestCase {
 
         Sequence oldSeq3 = cs.getOldSequence(address1Object);
         assertNotNull(oldSeq3);
-        assertEquals(oldSeq2, oldSeq3);		   
-        
+        assertEquals(oldSeq2, oldSeq3);
+
         String oldSeqValue = (String)oldSeq3.getValue(0);
         assertEquals("Alice Smith", oldSeqValue);
 
@@ -490,7 +490,7 @@ public class ChangeSummaryGetOldSequenceTestCases extends SDOTestCase {
     public void testGetOldSequenceSameSettings() {
         org.eclipse.persistence.oxm.sequenced.Setting firstSetting = ((SDOSequence)address1Object.getSequence()).getSettings().get(0);
         cs.beginLogging();
-        //modify addressObject        
+        //modify addressObject
         address1Object.set("city", "aaa");
         org.eclipse.persistence.oxm.sequenced.Setting secondSetting = ((SDOSequence)address1Object.getSequence()).getSettings().get(0);
         assertTrue(firstSetting == secondSetting);

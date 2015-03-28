@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     10/26/2012-2.5 Chris Delahunt 
+ *     10/26/2012-2.5 Chris Delahunt
  *       - 350469: JPA 2.1 Criteria Query framework Bulk Update/Delete support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
@@ -38,9 +38,9 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  * define a query. This is the superclass of CriteriaQuery, SubQuery, CriteriaDelete
  * and CriteriaUpdate.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria CommonAbstractCriteria
- * 
+ *
  * @author Chris Delahunt
  * @since EclipseLink 2.5
  */
@@ -50,7 +50,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     protected Expression<Boolean> where;
     protected CriteriaBuilderImpl queryBuilder;
     protected Class queryType;
-    
+
     protected Set<ParameterExpression<?>> parameters;
 
     public CommonAbstractCriteriaImpl(Metamodel metamodel, CriteriaBuilderImpl queryBuilder, Class<T> resultType){
@@ -61,7 +61,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
 
     /**
      * Return the predicate that corresponds to the where clause restriction(s).
-     * 
+     *
      * @return where clause predicate
      */
     public Predicate getRestriction(){
@@ -73,7 +73,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
         }
         return this.queryBuilder.isTrue(this.where);
     }
-    
+
     /**
      * Return the result type of the query.
      * If a result type was specified as an argument to the
@@ -90,7 +90,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     /**
      * Add a query root corresponding to the given entity, forming a Cartesian
      * product with any existing roots.
-     * 
+     *
      * @param entity
      *            metamodel entity representing the entity of type X
      * @return query root corresponding to the given entity
@@ -104,7 +104,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     /**
      * Add a query root corresponding to the given entity, forming a Cartesian
      * product with any existing roots.
-     * 
+     *
      * @param entityClass
      *            the entity class
      * @return query root corresponding to the given entity
@@ -117,7 +117,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     /**
      * Modify the query to restrict the query results according to the specified
      * boolean expression. Replaces the previously added restriction(s), if any.
-     * 
+     *
      * @param restriction
      *            a simple or compound boolean expression
      * @return the modified query
@@ -133,7 +133,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      * conjunction of the specified restriction predicates. Replaces the
      * previously added restriction(s), if any. If no restrictions are
      * specified, any previously added restrictions are simply removed.
-     * 
+     *
      * @param restrictions
      *            zero or more restriction predicates
      * @return the modified query
@@ -151,7 +151,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     /**
      * Specify that the query is to be used as a subquery having the specified
      * return type.
-     * 
+     *
      * @return subquery corresponding to the query
      */
     public <U> Subquery<U> subquery(Class<U> type) {
@@ -159,7 +159,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     }
 
     /**
-     *  Used to use a root from a different query. 
+     *  Used to use a root from a different query.
      */
     protected abstract void integrateRoot(RootImpl root);
 
@@ -167,7 +167,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
         ((InternalSelection) predicate).findRootAndParameters(this);
     }
 
-    protected abstract org.eclipse.persistence.expressions.Expression getBaseExpression(); 
+    protected abstract org.eclipse.persistence.expressions.Expression getBaseExpression();
 
     public void addParameter(ParameterExpression<?> parameter) {
         if (this.parameters == null) {
@@ -175,12 +175,12 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
         }
         this.parameters.add(parameter);
     }
-    
+
     protected abstract DatabaseQuery getDatabaseQuery();
-    
+
     /**
      * Return the parameters of the query
-     * 
+     *
      * @return the query parameters
      */
     public Set<ParameterExpression<?>> getParameters() {
@@ -189,14 +189,14 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
         }
         return this.parameters;
     }
-    
-    
+
+
     /**
      * Translates from the criteria query to a EclipseLink Database Query.
      */
     public DatabaseQuery translate() {
-    	DatabaseQuery query = getDatabaseQuery();
-    	for (ParameterExpression<?> parameter : getParameters()) {
+        DatabaseQuery query = getDatabaseQuery();
+        for (ParameterExpression<?> parameter : getParameters()) {
             query.addArgument(((ParameterExpressionImpl)parameter).getInternalName(), parameter.getJavaType());
         }
         if (this.where != null) {

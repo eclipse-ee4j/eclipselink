@@ -24,54 +24,54 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.SchemaChange;
 public class MWOXDescriptorLockingPolicy extends MWDescriptorLockingPolicy
 implements MWXmlNode, MWXpathContext {
 
-	public static XMLDescriptor buildDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
-		
-		descriptor.setJavaClass(MWOXDescriptorLockingPolicy.class);
-		descriptor.getInheritancePolicy().setParentClass(MWDescriptorLockingPolicy.class);
-				
-		return descriptor;
-	}
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
 
-	// **************** Constructors ******************************************
-	
-	private MWOXDescriptorLockingPolicy() {
-		super();
-	}
-	
-	MWOXDescriptorLockingPolicy(MWOXTransactionalPolicy descriptor) {
-		super(descriptor);
-	}
+        descriptor.setJavaClass(MWOXDescriptorLockingPolicy.class);
+        descriptor.getInheritancePolicy().setParentClass(MWDescriptorLockingPolicy.class);
 
-	// **************** Convenience *******************************************
-	
-	private MWOXDescriptor oxDescriptor() {
-		return (MWOXDescriptor) ((MWTransactionalPolicy) this.getParent()).getParent();
-	}
+        return descriptor;
+    }
 
-	public void resolveXpaths() {
-	}
+    // **************** Constructors ******************************************
 
-	public void schemaChanged(SchemaChange change) {
-	}
+    private MWOXDescriptorLockingPolicy() {
+        super();
+    }
 
-	@Override
-	protected void checkLockFieldSpecifiedForLockingPolicy(List newProblems) {
-	}
+    MWOXDescriptorLockingPolicy(MWOXTransactionalPolicy descriptor) {
+        super(descriptor);
+    }
 
-	public MWDataField getVersionLockField() {
-		return null;
-	}
+    // **************** Convenience *******************************************
 
-	public void setVersionLockField(MWDataField newLockField) {
-	}
+    private MWOXDescriptor oxDescriptor() {
+        return (MWOXDescriptor) ((MWTransactionalPolicy) this.getParent()).getParent();
+    }
 
-	public MWSchemaContextComponent schemaContext(MWXmlField xmlField) {
-		return oxDescriptor().getSchemaContext();
-	}
+    public void resolveXpaths() {
+    }
 
-	public MWXpathSpec xpathSpec(MWXmlField xmlField) {
-		return null;
-	}	
+    public void schemaChanged(SchemaChange change) {
+    }
+
+    @Override
+    protected void checkLockFieldSpecifiedForLockingPolicy(List newProblems) {
+    }
+
+    public MWDataField getVersionLockField() {
+        return null;
+    }
+
+    public void setVersionLockField(MWDataField newLockField) {
+    }
+
+    public MWSchemaContextComponent schemaContext(MWXmlField xmlField) {
+        return oxDescriptor().getSchemaContext();
+    }
+
+    public MWXpathSpec xpathSpec(MWXmlField xmlField) {
+        return null;
+    }
 
 }

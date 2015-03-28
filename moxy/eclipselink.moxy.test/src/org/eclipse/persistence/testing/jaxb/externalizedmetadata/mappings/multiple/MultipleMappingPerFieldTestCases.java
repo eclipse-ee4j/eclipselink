@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,12 +31,12 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
- * Tests multiple mappings for single field. 
+ * Tests multiple mappings for single field.
  *
  */
 public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
-	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/read.xml";
-	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/read.json";
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/read.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/read.json";
 
     private final static int DAY = 12;
     private final static int MONTH = 4;
@@ -68,12 +68,12 @@ public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
         ctrlObj.date = calendar;
         return ctrlObj;
     }
-    
+
     public Map getProperties() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/oxm.xml");
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.multiple", new StreamSource(inputStream));
-        
+
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
@@ -81,11 +81,11 @@ public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
     }
 
     /**
-     * We expect two mappings for 'currencyPairCode'.  We will verify mapping count, 
+     * We expect two mappings for 'currencyPairCode'.  We will verify mapping count,
      * user-set properties, etc.
-     * 
+     *
      * Positive test.
-     * 
+     *
      */
     public void testMappings() {
         XMLDescriptor xDesc = ((org.eclipse.persistence.jaxb.JAXBContext) jaxbContext).getXMLContext().getDescriptor(new QName("QuoteRequest"));
@@ -97,7 +97,7 @@ public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
             DatabaseMapping mapping = mappings.get(i);
             if (mapping.getAttributeName().equals("currencyPairCode")) {
                 currencyPairCodeCount++;
-                
+
                 // check user-set properties
                 Map props = mapping.getProperties();
                 assertNotNull("No user-defined properties exist on the mapping for [currencyPairCode]", props);
@@ -125,19 +125,19 @@ public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
         assertTrue("Expected [2] mappings for attribute [currencyPairCode], but was [" + currencyPairCodeCount + "]", currencyPairCodeCount == 2);
         assertTrue("Expected [3] mappings for attribute [date], but was [" + dateCount + "]", dateCount == 3);
     }
-    
+
     public void testSchemaGen() throws Exception{
-    	List controlSchemas = new ArrayList();
-    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/schema.xsd");
-    	controlSchemas.add(is);
-    	super.testSchemaGen(controlSchemas);
+        List controlSchemas = new ArrayList();
+        InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/schema.xsd");
+        controlSchemas.add(is);
+        super.testSchemaGen(controlSchemas);
     }
 
     /**
      * Make sure the inner class was processed,
-     * 
+     *
      * Positive test.
-     * 
+     *
      */
     public void testInnerClassProcessing() {
         XMLDescriptor xDesc = ((org.eclipse.persistence.jaxb.JAXBContext) jaxbContext).getXMLContext().getDescriptor(new QName("QRInnerClass"));

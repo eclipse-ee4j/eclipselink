@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,9 +33,9 @@ public class XmlEnumInheritanceTestCases extends JAXBWithJSONTestCases{
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/subset.json";
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
-     * @throws Exception 
+     * @throws Exception
      */
     public XmlEnumInheritanceTestCases(String name) throws Exception {
         super(name);
@@ -43,41 +43,41 @@ public class XmlEnumInheritanceTestCases extends JAXBWithJSONTestCases{
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
-    
-	 public Map getProperties(){
-			InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/eclipselink-oxm-subset.xml");
 
-			HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-		    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum", new StreamSource(inputStream));
-		    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-		    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-	        
-	        return properties;
-		}
-    
-	    public void testSchemaGen() throws Exception{
-	    	List controlSchemas = new ArrayList();
-	    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/subset.xsd");	    	
-	    	controlSchemas.add(is);	    	
-	    	super.testSchemaGen(controlSchemas);
-	    	
-	    }
+     public Map getProperties(){
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/eclipselink-oxm-subset.xml");
 
-	    public void testInstanceDocValidation() {
-	    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/subset.xsd");        
-	        StreamSource schemaSource = new StreamSource(schema); 
-	                
-	        InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-	        String result = validateAgainstSchema(instanceDocStream, schemaSource);        
-	        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
-	    }
-	    
-		@Override
-		protected Object getControlObject() {
-			// setup control objects
-	        SubsetHolder holder = new SubsetHolder();
-	        holder.name= "test";
-	        holder.coin = CoinSubset.NICKEL;
-	        return holder;
-		}   	
+            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum", new StreamSource(inputStream));
+            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+            return properties;
+        }
+
+        public void testSchemaGen() throws Exception{
+            List controlSchemas = new ArrayList();
+            InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/subset.xsd");
+            controlSchemas.add(is);
+            super.testSchemaGen(controlSchemas);
+
+        }
+
+        public void testInstanceDocValidation() {
+            InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/subset.xsd");
+            StreamSource schemaSource = new StreamSource(schema);
+
+            InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+            String result = validateAgainstSchema(instanceDocStream, schemaSource);
+            assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
+        }
+
+        @Override
+        protected Object getControlObject() {
+            // setup control objects
+            SubsetHolder holder = new SubsetHolder();
+            holder.name= "test";
+            holder.coin = CoinSubset.NICKEL;
+            return holder;
+        }
 }

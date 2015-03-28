@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.sessionconsole;
 
 import java.net.URL;
@@ -105,7 +105,7 @@ public class SessionConsole extends JFrame {
      * PUBLIC:
      * Open a browser on the session.
      */
-    public static void browseSession(Session session, 
+    public static void browseSession(Session session,
                                      boolean shouldCallSystemExit) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -124,7 +124,7 @@ public class SessionConsole extends JFrame {
      * Center a component in the middle of the screen.
      */
     public static void centerComponent(java.awt.Component component) {
-        java.awt.Dimension screenSize = 
+        java.awt.Dimension screenSize =
             java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         java.awt.Dimension size = component.getSize();
 
@@ -134,7 +134,7 @@ public class SessionConsole extends JFrame {
         size.height = size.height / 2;
         size.width = size.width / 2;
 
-        component.setLocation(screenSize.width - size.width, 
+        component.setLocation(screenSize.width - size.width,
                               screenSize.height - size.height);
     }
 
@@ -795,7 +795,7 @@ public class SessionConsole extends JFrame {
                 ivjCacheMenu.setText("Cache");
                 ivjCacheMenu.setBackground(java.awt.SystemColor.menu);
                 ivjCacheMenu.add(getClearCacheMenuItem());
-                //			ivjCacheMenu.add(getInspectCacheMenuItem());
+                //            ivjCacheMenu.add(getInspectCacheMenuItem());
                 // user code begin {1}
                 // user code end
             } catch (java.lang.Throwable ivjExc) {
@@ -1048,7 +1048,7 @@ public class SessionConsole extends JFrame {
                 ivjDescriptorsMenu.setBackground(java.awt.SystemColor.menu);
                 ivjDescriptorsMenu.add(getResetDescriptorsMenuItem());
                 ivjDescriptorsMenu.add(getClearDescriptorsMenuItem());
-                //			ivjDescriptorsMenu.add(getInspectDescriptorMenuItem());
+                //            ivjDescriptorsMenu.add(getInspectDescriptorMenuItem());
                 // user code begin {1}
                 // user code end
             } catch (java.lang.Throwable ivjExc) {
@@ -1446,7 +1446,7 @@ public class SessionConsole extends JFrame {
                 ivjLoginMenu.setBackground(java.awt.SystemColor.menu);
                 ivjLoginMenu.add(getLoginMenuItem());
                 ivjLoginMenu.add(getLogoutMenuItem());
-                //			ivjLoginMenu.add(getInspectSessionMenuItem1());
+                //            ivjLoginMenu.add(getInspectSessionMenuItem1());
                 // user code begin {1}
                 // user code end
             } catch (java.lang.Throwable ivjExc) {
@@ -1632,17 +1632,17 @@ public class SessionConsole extends JFrame {
                 ivjMainPanel.setLayout(new java.awt.GridBagLayout());
                 ivjMainPanel.setBackground(java.awt.SystemColor.control);
 
-                java.awt.GridBagConstraints constraintsSessionInspectorPanel = 
+                java.awt.GridBagConstraints constraintsSessionInspectorPanel =
                     new java.awt.GridBagConstraints();
                 constraintsSessionInspectorPanel.gridx = 0;
                 constraintsSessionInspectorPanel.gridy = 0;
-                constraintsSessionInspectorPanel.fill = 
+                constraintsSessionInspectorPanel.fill =
                         java.awt.GridBagConstraints.BOTH;
                 constraintsSessionInspectorPanel.weightx = 1.0;
                 constraintsSessionInspectorPanel.weighty = 1.0;
-                constraintsSessionInspectorPanel.insets = 
+                constraintsSessionInspectorPanel.insets =
                         new java.awt.Insets(2, 2, 2, 2);
-                getMainPanel().add(getSessionInspectorPanel(), 
+                getMainPanel().add(getSessionInspectorPanel(),
                                    constraintsSessionInspectorPanel);
                 // user code begin {1}
                 // user code end
@@ -1747,7 +1747,7 @@ public class SessionConsole extends JFrame {
                 ivjResultsMenu.setText("Results");
                 ivjResultsMenu.setBackground(java.awt.SystemColor.menu);
                 ivjResultsMenu.add(getClearResultsMenuItem());
-                //			ivjResultsMenu.add(getInspectResultMenuItem());
+                //            ivjResultsMenu.add(getInspectResultMenuItem());
                 // user code begin {1}
                 // user code end
             } catch (java.lang.Throwable ivjExc) {
@@ -1826,7 +1826,7 @@ public class SessionConsole extends JFrame {
     SessionConsolePanel getSessionInspectorPanel() {
         if (ivjSessionInspectorPanel == null) {
             try {
-                ivjSessionInspectorPanel = 
+                ivjSessionInspectorPanel =
                         new org.eclipse.persistence.tools.sessionconsole.SessionConsolePanel();
                 ivjSessionInspectorPanel.setName("SessionInspectorPanel");
                 // user code begin {1}
@@ -2095,11 +2095,11 @@ public class SessionConsole extends JFrame {
             SessionConsole aSessionInspectorFrame;
             aSessionInspectorFrame = new SessionConsole();
             try {
-                Class aCloserClass = 
+                Class aCloserClass =
                     Class.forName("com.ibm.uvm.abt.edit.WindowCloser");
                 Class[] parmTypes = { java.awt.Window.class };
                 Object[] parms = { aSessionInspectorFrame };
-                java.lang.reflect.Constructor aCtor = 
+                java.lang.reflect.Constructor aCtor =
                     aCloserClass.getConstructor(parmTypes);
                 aCtor.newInstance(parms);
             } catch (java.lang.Throwable exc) {
@@ -2140,35 +2140,35 @@ public class SessionConsole extends JFrame {
         getSessionInspectorPanel().templateSQLUpdate();
     }
 
-    class IvjEventHandler implements java.awt.event.ActionListener, 
+    class IvjEventHandler implements java.awt.event.ActionListener,
                                      java.awt.event.WindowListener {
         public void actionPerformed(java.awt.event.ActionEvent e) {
             if (e.getSource() == SessionConsole.this.getCloseMenuItem()) {
                 connEtoM1(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 SessionConsole.this.getLoadProjectMenuItem()) {
                 connEtoC1(e);
             }
             if (e.getSource() == SessionConsole.this.getExitMenuItem()) {
                 connEtoC2(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 SessionConsole.this.getResetDescriptorsMenuItem()) {
                 connEtoC3(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 SessionConsole.this.getClearDescriptorsMenuItem()) {
                 connEtoC4(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 SessionConsole.this.getInspectDescriptorMenuItem()) {
                 connEtoC5(e);
             }
             if (e.getSource() == SessionConsole.this.getClearCacheMenuItem()) {
                 connEtoC6(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 SessionConsole.this.getInspectCacheMenuItem()) {
                 connEtoC7(e);
             }
@@ -2187,11 +2187,11 @@ public class SessionConsole extends JFrame {
             if (e.getSource() == SessionConsole.this.getLogoutMenuItem()) {
                 connEtoC12(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 SessionConsole.this.getInspectSessionMenuItem1()) {
                 connEtoC13(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 SessionConsole.this.getExecuteQueryMenuItem()) {
                 connEtoC14(e);
             }
@@ -2207,11 +2207,11 @@ public class SessionConsole extends JFrame {
             if (e.getSource() == SessionConsole.this.getClearLogMenuItem()) {
                 connEtoC18(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 SessionConsole.this.getClearResultsMenuItem()) {
                 connEtoC19(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 SessionConsole.this.getInspectResultMenuItem()) {
                 connEtoC20(e);
             }
@@ -2227,7 +2227,7 @@ public class SessionConsole extends JFrame {
             if (e.getSource() == SessionConsole.this.getSelectSQLMenuItem()) {
                 connEtoC24(e);
             }
-            if (e.getSource() == 
+            if (e.getSource() ==
                 SessionConsole.this.getBrowseProfileMenuItem()) {
                 connEtoC25(e);
             }

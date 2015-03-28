@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,12 +69,12 @@ public class CursorTypeTestSuite {
         "CREATE OR REPLACE PACKAGE CURSORTYPE AS" +
             "\nTYPE WEAKLY_TYPED_REF_CURSOR IS REF CURSOR;" +
             "\nPROCEDURE GET_EMP(EMP_NAME EMPTABLE.ENAME%TYPE, EMP OUT WEAKLY_TYPED_REF_CURSOR);" +
-            "\nFUNCTION GET_EMP_FUNC(EMP_NAME VARCHAR) RETURN WEAKLY_TYPED_REF_CURSOR;" + 
+            "\nFUNCTION GET_EMP_FUNC(EMP_NAME VARCHAR) RETURN WEAKLY_TYPED_REF_CURSOR;" +
         "\nEND CURSORTYPE;";
 
     static final String DROP_CURSORTYPE_PACKAGE = "DROP PACKAGE CURSORTYPE";
     static final String DROP_EMPTABLE = "DROP TABLE EMPTABLE";
-    
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -82,12 +82,12 @@ public class CursorTypeTestSuite {
     @SuppressWarnings("rawtypes")
     static List dbProcedures;
     static DatabaseTypeBuilder dbTypeBuilder;
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @BeforeClass
     public static void setUp() throws ClassNotFoundException, SQLException {
         AllTests.setUp();
-        
+
         String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
         if ("true".equalsIgnoreCase(ddlCreateProp)) {
             ddlCreate = true;
@@ -104,12 +104,12 @@ public class CursorTypeTestSuite {
             runDdl(conn, CREATE_EMPTABLE, ddlDebug);
             runDdl(conn, CREATE_CURSORTYPE_PACKAGE, ddlDebug);
         }
-        
+
         String schema = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
 
         List<String> procedurePatterns = new ArrayList<String>();
         procedurePatterns.add("GET_EMP");
-        procedurePatterns.add("GET_EMP_FUNC");       
+        procedurePatterns.add("GET_EMP_FUNC");
 
         // use DatabaseTypeBuilder to generate a list of PackageTypes
         dbTypeBuilder = new DatabaseTypeBuilder();
@@ -137,7 +137,7 @@ public class CursorTypeTestSuite {
             runDdl(conn, DROP_EMPTABLE, ddlDebug);
         }
     }
-    
+
     @Test
     @SuppressWarnings({ "unchecked" })
     public void testJPACursorMetadata() {
@@ -167,7 +167,7 @@ public class CursorTypeTestSuite {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
         "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
         "   <orm:named-plsql-stored-procedure-query name=\"GET_EMP\" procedure-name=\"CURSORTYPE.GET_EMP\">\n" +
         "      <orm:parameter direction=\"IN\" name=\"EMP_NAME\" database-type=\"VARCHAR_TYPE\"/>\n" +
         "      <orm:parameter direction=\"OUT_CURSOR\" name=\"EMP\" database-type=\"CURSORTYPE.WEAKLY_TYPED_REF_CURSOR\"/>\n" +

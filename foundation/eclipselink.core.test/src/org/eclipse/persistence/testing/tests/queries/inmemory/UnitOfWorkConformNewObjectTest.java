@@ -19,32 +19,32 @@ public class UnitOfWorkConformNewObjectTest  extends AutoVerifyTestCase {
 
     public void test() {
         String lastName = "UOWConformNewObjectTest";
-        
+
         Employee emp1 = new Employee();
         emp1.setFirstName("1");
         emp1.setLastName(lastName);
-        
+
         Employee emp2 = new Employee();
         emp2.setFirstName("2");
         emp2.setLastName(lastName);
-        
+
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.setShouldNewObjectsBeCached(true);
-        
+
         uow.registerNewObject(emp1);
         uow.registerNewObject(emp2);
         // assign pk only to the first employee
         uow.assignSequenceNumber(emp1);
-        
+
         String errorMsg = "";
         String localErrorMsg;
         ExpressionBuilder builder;
-        
+
         ReadAllQuery queryReadAll = new ReadAllQuery();
         queryReadAll.setReferenceClass(Employee.class);
         queryReadAll.conformResultsInUnitOfWork();
         Vector<Employee> employees = (Vector)uow.executeQuery(queryReadAll);
-        localErrorMsg = ""; 
+        localErrorMsg = "";
         if(!employees.contains(emp1)) {
             localErrorMsg += "emp1, ";
         }
@@ -54,14 +54,14 @@ public class UnitOfWorkConformNewObjectTest  extends AutoVerifyTestCase {
         if(localErrorMsg.length() > 0) {
             errorMsg += "ReadAll: " + errorMsg + "; ";
         }
-        
+
         ReadAllQuery queryReadAllByLastName = new ReadAllQuery();
         queryReadAllByLastName.setReferenceClass(Employee.class);
         queryReadAllByLastName.conformResultsInUnitOfWork();
         builder = queryReadAllByLastName.getExpressionBuilder();
         queryReadAllByLastName.setSelectionCriteria(builder.get("lastName").equal(lastName));
         Vector<Employee> employeesByLastName = (Vector)uow.executeQuery(queryReadAllByLastName);
-        localErrorMsg = ""; 
+        localErrorMsg = "";
         if(!employeesByLastName.contains(emp1)) {
             localErrorMsg += "emp1, ";
         }
@@ -71,7 +71,7 @@ public class UnitOfWorkConformNewObjectTest  extends AutoVerifyTestCase {
         if(localErrorMsg.length() > 0) {
             errorMsg += "ReadAllByLastName: " + errorMsg + "; ";
         }
-        
+
         ReadObjectQuery queryReadObject_1 = new ReadObjectQuery();
         queryReadObject_1.setReferenceClass(Employee.class);
         queryReadObject_1.conformResultsInUnitOfWork();
@@ -109,7 +109,7 @@ public class UnitOfWorkConformNewObjectTest  extends AutoVerifyTestCase {
         }
 
         uow.release();
-        
+
         if (errorMsg.length() > 0) {
             errorMsg = "The following objects were not found: " + errorMsg;
             throw new TestErrorException(errorMsg);

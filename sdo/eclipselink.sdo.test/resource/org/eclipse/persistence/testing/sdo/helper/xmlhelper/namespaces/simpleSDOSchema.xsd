@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns:tns="http://www.example.org/bindinginfo/" 
-xmlns="http://www.w3.org/2001/XMLSchema" 
+<schema xmlns:tns="http://www.example.org/bindinginfo/"
+xmlns="http://www.w3.org/2001/XMLSchema"
 xmlns:sdoJava="commonj.sdo/java"
 targetNamespace="http://www.example.org/bindinginfo/"
 sdoJava:package="myPackage">
@@ -8,7 +8,7 @@ sdoJava:package="myPackage">
 
     <complexType name="bindingInfoType">
         <sequence>
-		<element name="testString" type="string"/>
+        <element name="testString" type="string"/>
         </sequence>
     </complexType>
 </schema>

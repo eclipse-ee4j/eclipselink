@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,18 +21,18 @@ public final class MyAdapter extends XmlAdapter<Object, String> {
     public static String EMPTY_STR = "";
 
     public MyAdapter() {}
-	
-	public String unmarshal(Object arg0) throws Exception {
-	    String id = EMPTY_STR;
-		if (arg0 instanceof Bar) {
-			id = ((Bar)arg0).id;
-		}
-		return id;
+
+    public String unmarshal(Object arg0) throws Exception {
+        String id = EMPTY_STR;
+        if (arg0 instanceof Bar) {
+            id = ((Bar)arg0).id;
+        }
+        return id;
     }
 
     public Object marshal(String arg0) throws Exception {
         Bar bar = new Bar();
         bar.id = arg0;
-		return bar;
+        return bar;
     }
 }

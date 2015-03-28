@@ -4,12 +4,12 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 
 
 /**
- * <b>Purpose</b>: An item specifying a class constructor method to be used in a ReportQuery's returned results.  
+ * <b>Purpose</b>: An item specifying a class constructor method to be used in a ReportQuery's returned results.
  * <p>Example:
  * <blockquote><pre>
  *      ConstructorReportItem item = new ConstructorReportItem("Employee");
@@ -43,7 +43,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * </pre></blockquote>
  * <p>
  * When executed will return a collection of ReportQueryResults that contain Employee objects created using
- * the new Employee(firstname) constructor. 
+ * the new Employee(firstname) constructor.
  *
  * @author Chris Delahunt
  * @since TopLink Essentials 1.0
@@ -69,13 +69,13 @@ public class ConstructorReportItem extends ReportItem  {
     protected List constructorMappings;
     protected List reportItems;
     protected Constructor constructor;
-    
+
     /**
      * Create a new constructor item.
      */
     public ConstructorReportItem() {
     }
-    
+
     /**
      * Create a new constructor item.
      * @param name string used to look up this result in the ReportQueryResult.
@@ -83,7 +83,7 @@ public class ConstructorReportItem extends ReportItem  {
     public ConstructorReportItem(String name) {
         super(name, null);
     }
-    
+
     /**
      * Method to add an expression to be used to return the parameter that is then passed into the constructor method.
      * Similar to ReportQuery's addAttribute method, but name is not needed.
@@ -92,7 +92,7 @@ public class ConstructorReportItem extends ReportItem  {
         ReportItem item = new ReportItem(getName()+getReportItems().size(), attributeExpression);
         getReportItems().add(item);
     }
-    
+
     /**
      * Add the attribute with joining.
      */
@@ -101,11 +101,11 @@ public class ConstructorReportItem extends ReportItem  {
         item.getJoinedAttributeManager().setJoinedAttributeExpressions_(joinedExpressions);
         getReportItems().add(item);
     }
-    
+
     public void addItem(ReportItem item) {
         getReportItems().add(item);
     }
-    
+
     public Class[] getConstructorArgTypes(){
         return constructorArgTypes;
     }
@@ -154,7 +154,7 @@ public class ConstructorReportItem extends ReportItem  {
             mappings.add(item.getMapping());
         }
         setConstructorMappings(mappings);
-        
+
         int numberOfItems = getReportItems().size();
         // Arguments may be initialized depending on how the query was constructed, so types may be undefined though.
         if (getConstructorArgTypes() == null) {
@@ -205,7 +205,7 @@ public class ConstructorReportItem extends ReportItem  {
             }
         }
     }
-    
+
     public boolean isConstructorItem(){
         return true;
     }
@@ -213,7 +213,7 @@ public class ConstructorReportItem extends ReportItem  {
     public void setConstructorArgTypes(Class[] constructorArgTypes){
         this.constructorArgTypes = constructorArgTypes;
     }
-    
+
     /**
      * INTERNAL:
      * Return the mappings for the items.
@@ -221,7 +221,7 @@ public class ConstructorReportItem extends ReportItem  {
     public void setConstructorMappings(List constructorMappings){
         this.constructorMappings = constructorMappings;
     }
-    
+
     public void setReportItems(List reportItems){
         this.reportItems = reportItems;
     }

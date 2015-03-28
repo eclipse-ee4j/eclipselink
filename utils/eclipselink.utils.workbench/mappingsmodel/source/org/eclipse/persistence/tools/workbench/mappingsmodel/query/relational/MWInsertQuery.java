@@ -9,29 +9,29 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.query.MWQueryManage
 public final class MWInsertQuery extends MWAbstractCustomQuery {
 
 
-	//TopLink use only
-	private MWInsertQuery() {
-		super();
-	}
+    //TopLink use only
+    private MWInsertQuery() {
+        super();
+    }
 
-	public MWInsertQuery(MWQueryManager queryManager) {
-		super(queryManager);
-	}
-	
-	// ******************* Static Methods *******************
+    public MWInsertQuery(MWQueryManager queryManager) {
+        super(queryManager);
+    }
 
-	public static XMLDescriptor buildDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
+    // ******************* Static Methods *******************
 
-		descriptor.setJavaClass(MWInsertQuery.class);
-		descriptor.getDescriptorInheritancePolicy().setParentClass(MWAbstractCustomQuery.class);
+    public static XMLDescriptor buildDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
 
-		return descriptor;
-	}
+        descriptor.setJavaClass(MWInsertQuery.class);
+        descriptor.getDescriptorInheritancePolicy().setParentClass(MWAbstractCustomQuery.class);
 
-	@Override
-	protected DatabaseQuery buildRuntimeQuery() {
-		return new InsertObjectQuery();
-	}
-	
+        return descriptor;
+    }
+
+    @Override
+    protected DatabaseQuery buildRuntimeQuery() {
+        return new InsertObjectQuery();
+    }
+
 }

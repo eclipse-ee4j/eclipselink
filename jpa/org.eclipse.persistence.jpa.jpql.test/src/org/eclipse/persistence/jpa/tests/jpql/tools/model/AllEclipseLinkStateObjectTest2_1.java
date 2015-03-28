@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,36 +33,36 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-	EclipseLinkStateObjectTest2_4.class,
-	EclipseLinkStateObjectTest2_5.class
+    EclipseLinkStateObjectTest2_4.class,
+    EclipseLinkStateObjectTest2_5.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllEclipseLinkStateObjectTest2_1 {
 
-	private AllEclipseLinkStateObjectTest2_1() {
-		super();
-	}
+    private AllEclipseLinkStateObjectTest2_1() {
+        super();
+    }
 
-	@IJPQLQueryBuilderTestHelper
-	static IJPQLQueryBuilder buildJPQLQueryBuilder() {
-		return new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_1.instance());
-	}
+    @IJPQLQueryBuilderTestHelper
+    static IJPQLQueryBuilder buildJPQLQueryBuilder() {
+        return new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_1.instance());
+    }
 
-	@IJPQLQueryFormatterTestHelper
-	static IJPQLQueryFormatter[] buildJPQLQUeryFormatters() {
-		return new IJPQLQueryFormatter[] {
+    @IJPQLQueryFormatterTestHelper
+    static IJPQLQueryFormatter[] buildJPQLQUeryFormatters() {
+        return new IJPQLQueryFormatter[] {
 
-			new EclipseLinkJPQLQueryFormatter(IdentifierStyle.CAPITALIZE_EACH_WORD),
-			new EclipseLinkJPQLQueryFormatter(IdentifierStyle.LOWERCASE),
-			new EclipseLinkJPQLQueryFormatter(IdentifierStyle.UPPERCASE),
+            new EclipseLinkJPQLQueryFormatter(IdentifierStyle.CAPITALIZE_EACH_WORD),
+            new EclipseLinkJPQLQueryFormatter(IdentifierStyle.LOWERCASE),
+            new EclipseLinkJPQLQueryFormatter(IdentifierStyle.UPPERCASE),
 
-			new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.CAPITALIZE_EACH_WORD),
-			new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.LOWERCASE),
-			new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.UPPERCASE),
+            new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.CAPITALIZE_EACH_WORD),
+            new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.LOWERCASE),
+            new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.UPPERCASE),
 
-			new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.CAPITALIZE_EACH_WORD),
-			new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.LOWERCASE),
-			new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.UPPERCASE)
-		};
-	}
+            new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.CAPITALIZE_EACH_WORD),
+            new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.LOWERCASE),
+            new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.UPPERCASE)
+        };
+    }
 }

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 
 package org.eclipse.persistence.testing.framework;
@@ -32,9 +32,9 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.expressions.DataExpression;
- 
+
 public class UpdateAllQueryTestHelper {
-            
+
     public static String execute(Session mainSession, Class referenceClass, HashMap updateClauses, Expression selectionExpression) {
         return execute(mainSession, referenceClass, updateClauses, selectionExpression, true);
     }
@@ -46,7 +46,7 @@ public class UpdateAllQueryTestHelper {
     public static String execute(Session mainSession, UpdateAllQuery uq) {
         return execute(mainSession, uq,  true);
     }
-    
+
     // Compares results of updating multiple objects yusing traditionalTopLink update one-by-one approach
     // with updating using UpdateAllQuery. If results differ retuns a non-null error message.
     // To use this method:
@@ -67,7 +67,7 @@ public class UpdateAllQueryTestHelper {
             }
             rootClass = parentDescriptor.getJavaClass();
         }
-                
+
         String errorMsg = execute(mainSession, uq, handleChildren, rootClass);
 
         if(errorMsg.length() == 0) {
@@ -76,21 +76,21 @@ public class UpdateAllQueryTestHelper {
             return errorMsg;
         }
     }
-    
+
     protected static String execute(Session mainSession, UpdateAllQuery uq, boolean handleChildren,
                                   Class rootClass) {
         String errorMsg = "";
         ClassDescriptor descriptor = mainSession.getDescriptor(uq.getReferenceClass());
-        
+
         clearCache(mainSession);
-        
+
         // original objects
         Vector objects = mainSession.readAllObjects(rootClass);
-        
+
         // first update using the original TopLink approach - one by one.
         // That will be done using report query - it will use the same selection criteria
         // as UpdateAllQuery and each attribute will correspond to an update item.
-        ReportQuery rq = new ReportQuery(uq.getReferenceClass(), uq.getExpressionBuilder());    
+        ReportQuery rq = new ReportQuery(uq.getReferenceClass(), uq.getExpressionBuilder());
         rq.setSelectionCriteria(uq.getSelectionCriteria());
         rq.setShouldRetrievePrimaryKeys(true);
         // some db platforms don't allow nulls in select clause - so add the fields with null values to the query result.
@@ -128,11 +128,11 @@ public class UpdateAllQueryTestHelper {
                 rq.addAttribute(keyString, valueExpression);
             }
         }
-        
+
         UnitOfWork uow = mainSession.acquireUnitOfWork();
         // mainSession could be a ServerSession
         Session session = uow.getParent();
-        
+
         // report query results contain the values to be assigned for each object to be updated.
         Vector result = (Vector)session.executeQuery(rq);
         Vector objectsAfterOneByOneUpdate = new Vector(objects.size());
@@ -148,7 +148,7 @@ public class UpdateAllQueryTestHelper {
                     String name = reportResult.getNames().get(j);
                     DatabaseField field = new DatabaseField(name);
                     Object value = reportResult.getResults().get(j);
-                    row.add(field, value);            
+                    row.add(field, value);
                 }
                 // some db platforms don't allow nulls in select clause - so add the fields with null values to the query result
                 for (int j = 0; j < fieldsWithNullValues.size(); j++) {
@@ -160,7 +160,7 @@ public class UpdateAllQueryTestHelper {
             }
             // uow committed - objects updated.
             uow.commit();
-    
+
             // Because the transaction will be rolled back (to return to the original state to execute UpdateAllQuery)
             // objects are copied into another vector - later it will be compared with UpdateAllQuery result.
             for(int i=0; i < objects.size(); i++) {
@@ -177,14 +177,14 @@ public class UpdateAllQueryTestHelper {
         // now use UpdateAllQuery
         uow = mainSession.acquireUnitOfWork();
         // mainSession could be a ServerSession
-        session = uow.getParent();        
+        session = uow.getParent();
         Vector objectsAfterUpdateAll = new Vector(objects.size());
         ((org.eclipse.persistence.internal.sessions.AbstractSession)session).beginTransaction();
         try {
             uow.executeQuery(uq);
             // uow committed - objects updated.
             uow.commit();
-    
+
             // Because the transaction will be rolled back (to return to the original state)
             // objects are copied into another vector - it will be compared with update one-by-one result.
             for(int i=0; i < objects.size(); i++) {
@@ -197,7 +197,7 @@ public class UpdateAllQueryTestHelper {
             ((org.eclipse.persistence.internal.sessions.AbstractSession)session).rollbackTransaction();
         }
         clearCache(mainSession);
-        
+
         // verify
         String classErrorMsg = "";
         for(int i=0; i < objects.size(); i++) {
@@ -228,11 +228,11 @@ public class UpdateAllQueryTestHelper {
         }
         return errorMsg;
     }
-    
+
     protected static void clearCache(Session mainSession) {
         mainSession.getIdentityMapAccessor().initializeAllIdentityMaps();
     }
-    
+
     public static UpdateAllQuery createUpdateAllQuery(Class referenceClass, HashMap updateClauses, Expression selectionExpression) {
         // Construct UpdateAllQuery
         UpdateAllQuery uq = new UpdateAllQuery(referenceClass, selectionExpression);
@@ -243,7 +243,7 @@ public class UpdateAllQueryTestHelper {
         }
         return uq;
     }
-    
+
     static protected Object buildCopy(ClassDescriptor descriptor, Object original, UnitOfWork uow) {
         Object copy = descriptor.getCopyPolicy().buildClone(original, uow);
         descriptor.getObjectBuilder().copyInto(original, copy, true);
@@ -269,11 +269,11 @@ public class UpdateAllQueryTestHelper {
                 field = fieldExpressionClone.getField();
             }
         }
-        
+
         if(field != null) {
             return field.getQualifiedName();
         }
-        
+
         // should never happen
         return null;
     }

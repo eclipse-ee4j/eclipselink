@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.indirection;
 
 import java.beans.PropertyChangeEvent;
@@ -54,7 +54,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * for custom value holder types. Certain policies like the
      * TransparentIndirectionPolicy may wrap the valueholder in another object.
      */
-    
+
     public Object buildIndirectObject(ValueHolderInterface valueHolder){
         return valueHolder.getValue();
     }
@@ -175,7 +175,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     public boolean objectIsInstantiated(Object object) {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Return whether the specified object can be instantiated without database access.
@@ -315,7 +315,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, Object sourceObject, AbstractSession session) {
         return valueFromQuery(query, row, session);
     }
-    
+
     /**
      * INTERNAL:
      * Return the value to be stored in the object's attribute.
@@ -335,7 +335,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     public Object valueFromRow(Object object) {
         return object;
     }
-    
+
     /**
      * Set the value of the appropriate attribute of target to attributeValue.
      * In this case, place the value inside the target's ValueHolder.

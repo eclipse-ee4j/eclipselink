@@ -1,19 +1,19 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *    Gyorke
- *    
- *     05/28/2008-1.0M8 Andrei Ilitchev 
+ *
+ *     05/28/2008-1.0M8 Andrei Ilitchev
  *        - 224964: Provide support for Proxy Authentication through JPA.
- *        Now properties' names that could be used both in createEM and createEMF are the same. 
- ******************************************************************************/  
+ *        Now properties' names that could be used both in createEM and createEMF are the same.
+ ******************************************************************************/
 package org.eclipse.persistence.config;
 
 import java.util.HashSet;
@@ -24,16 +24,16 @@ import javax.persistence.EntityManager;
 
 /**
  * The class defines EclipseLink properties' names for use at the EntityManager level.
- * 
- * This properties are specific to an EnityManger and should be 
+ *
+ * This properties are specific to an EnityManger and should be
  * passed to createEntityManager methods of EntityManagerFactory.
- * 
+ *
  * Property values are usually case-insensitive with some common sense exceptions,
  * for instance class names.
- * 
+ *
  */
 public class EntityManagerProperties {
-	
+
     /**
      * Set to "true" this property forces persistence context to read through JTA-managed ("write") connection
      * in case there is an active transaction.
@@ -41,17 +41,17 @@ public class EntityManagerProperties {
      * The property could also be set in persistence.xml or passed to createEntityManagerFactory,
      * Note that if the property set to "true" then objects read during transaction won't be placed into the
      * shared cache unless they have been updated.
-     * in that case it affects all EntityManagers created by the factory. 
+     * in that case it affects all EntityManagers created by the factory.
      */
     public static final String JOIN_EXISTING_TRANSACTION = PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION;
-    
+
     /**
      * Specifies whether there should be hard or soft references used within the Persistence Context.
      * Default is "HARD".  With soft references entities no longer referenced by the application
      * may be garbage collected freeing resources.  Any changes that have not been flushed in these
      * entities will be lost.
      * The property could also be set in persistence.xml or passed to createEntityManagerFactory,
-     * in that case it affects all EntityManagers created by the factory. 
+     * in that case it affects all EntityManagers created by the factory.
      * The property cannot be applied to existing active persistence unit context.
      * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      * @see org.eclipse.persistence.config.ReferenceMode
@@ -59,19 +59,19 @@ public class EntityManagerProperties {
     public static final String PERSISTENCE_CONTEXT_REFERENCE_MODE = PersistenceUnitProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE;
 
     /**
-     * The <code>"eclipselink.tenant-id"</code> property specifies the 
+     * The <code>"eclipselink.tenant-id"</code> property specifies the
      * default context property used to populate multitenant entities.
-     * 
-     * NOTE: This is merely a default multitenant property than can be used on 
-     * its own or with other properties defined by the user. Users are not 
+     *
+     * NOTE: This is merely a default multitenant property than can be used on
+     * its own or with other properties defined by the user. Users are not
      * obligated to use this property and are free to specify their own.
-     * 
+     *
      * Example: persistence.xml file <code>
      * {@literal <property name="eclipselink.tenant-id" value="Oracle"/>}
      * </code> Example: property Map <code>
      * propertiesMap.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "Oracle");
      * </code>
-     * 
+     *
      * @see org.eclipse.persistence.annotations.Multitenant
      * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumn
      */
@@ -113,7 +113,7 @@ public class EntityManagerProperties {
      * Either "true" or "false.  "true" is the default.
      */
     public static final String PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT = PersistenceUnitProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT;
-    
+
     /**
      * Specifies that the EntityManager will search all managed objects and persist any related non-managed
      * new objects that are found ignoring any absence of CascadeType.PERSIST settings.
@@ -134,11 +134,11 @@ public class EntityManagerProperties {
      * @see javax.persistence.FlushModeType
      */
     public static final String PERSISTENCE_CONTEXT_FLUSH_MODE = PersistenceUnitProperties.PERSISTENCE_CONTEXT_FLUSH_MODE;
-    
+
     /**
      * This property is used to specify proxy type that should be passed to OarcleConnection.openProxySession method.
      * Requires Oracle jdbc version 10.1.0.2 or later.
-     * Requires Oracle9Platform or later as a database platform 
+     * Requires Oracle9Platform or later as a database platform
      * (TARGET_DATABASE property value should be TargetDatabase.Oracle9 or later).
      * The valid values are:
      * OracleConnection.PROXYTYPE_USER_NAME, OracleConnection.PROXYTYPE_DISTINGUISHED_NAME, OracleConnection.PROXYTYPE_CERTIFICATE.
@@ -146,14 +146,14 @@ public class EntityManagerProperties {
      * OracleConnection.PROXY_USER_NAME, OracleConnection.PROXY_DISTINGUISHED_NAME, OracleConnection.PROXY_CERTIFICATE.
      * Typically these properties should be set into EntityManager (either through createEntityManager method or
      * using proprietary setProperties method on EntityManagerImpl) - that causes EntityManager to use proxy connection for
-     * writing and reading inside transaction. 
+     * writing and reading inside transaction.
      * If proxy-type and the corresponding proxy property set into EntityManagerFactory then all connections
      * created by the factory will be proxy connections.
      * The property cannot be applied to existing active persistence unit context.
      * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
     public static final String ORACLE_PROXY_TYPE = PersistenceUnitProperties.ORACLE_PROXY_TYPE;
-    
+
     /**
      * Determines when reads are performed through the write connection.
      * This property alters ConnectionPolicy.
@@ -162,7 +162,7 @@ public class EntityManagerProperties {
      * @see ExclusiveConnectionMode
      */
     public static final String EXCLUSIVE_CONNECTION_MODE = PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE;
-    
+
     /**
      * Determines when write connection is acquired lazily.
      * Valid values are case-insensitive "false" and "true"; "true" is default.
@@ -171,7 +171,7 @@ public class EntityManagerProperties {
      * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
     public static final String EXCLUSIVE_CONNECTION_IS_LAZY = PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY;
-    
+
     /**
      * JTA DataSource.
      * The value may be either data source or its name.
@@ -189,7 +189,7 @@ public class EntityManagerProperties {
      * NON JTA DataSource.
      * The value may be either data source or its name.
      * Note that this property will be ignore in case persistence unit was setup to use JTA:
-     * persistence.xml or createEntityManagerFactory had property "javax.persistence.transactionType" with JTA value. 
+     * persistence.xml or createEntityManagerFactory had property "javax.persistence.transactionType" with JTA value.
      * To avoid a conflict resulting in exception don't specify this property together with either JDBC_DRIVER or JDBC_URL;
      * however this property may override JDBC_DRIVER or JDBC_URL specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
@@ -197,8 +197,8 @@ public class EntityManagerProperties {
      * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
     public static final String NON_JTA_DATASOURCE = PersistenceUnitProperties.NON_JTA_DATASOURCE;
-    
-    /** JDBC Driver class name. 
+
+    /** JDBC Driver class name.
      * To avoid a conflict resulting in exception don't specify this property together with either JTA_DATASOURCE or JTA_DATASOURCE;
      * however this property may override JTA_DATASOURCE or JTA_DATASOURCE specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
@@ -207,7 +207,7 @@ public class EntityManagerProperties {
      */
     public static final String JDBC_DRIVER = PersistenceUnitProperties.JDBC_DRIVER;
 
-    /** JDBC Connection String. 
+    /** JDBC Connection String.
      * To avoid a conflict resulting in exception don't specify this property together with either JTA_DATASOURCE or JTA_DATASOURCE;
      * however this property may override JTA_DATASOURCE or JTA_DATASOURCE specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
@@ -216,9 +216,9 @@ public class EntityManagerProperties {
      */
     public static final String JDBC_URL = PersistenceUnitProperties.JDBC_URL;
 
-    /** DataSource or JDBC DriverManager user name. 
+    /** DataSource or JDBC DriverManager user name.
      * Non-empty value overrides the value assigned in persistence.xml or in createEntityManagerFactory;
-     * empty string value causes removal this property and JDBC_PASSWORD property 
+     * empty string value causes removal this property and JDBC_PASSWORD property
      * specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
      * The property cannot be applied to existing active persistence unit context.
@@ -226,9 +226,9 @@ public class EntityManagerProperties {
      */
     public static final String JDBC_USER = PersistenceUnitProperties.JDBC_USER;
 
-    /** DataSource or JDBC DriverManager password. 
+    /** DataSource or JDBC DriverManager password.
      * Non-empty value overrides the value assigned in persistence.xml or in createEntityManagerFactory;
-     * empty string value causes removal this property 
+     * empty string value causes removal this property
      * specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
      * The property cannot be applied to existing active persistence unit context.
@@ -236,10 +236,10 @@ public class EntityManagerProperties {
      */
     public static final String JDBC_PASSWORD = PersistenceUnitProperties.JDBC_PASSWORD;
 
-    /** ConnectionPolicy 
+    /** ConnectionPolicy
      * Allows to specify an entire ConnectionPolicy.
      * Note that in case any other ConnectionPolicy-altering properties are present
-     * they will be applied to this ConnectionPolicy. 
+     * they will be applied to this ConnectionPolicy.
      * The property cannot be applied to existing active persistence unit context.
      * The context could be removed by calling clear method on the EntityManager when there is no active transaction.
      */
@@ -250,9 +250,9 @@ public class EntityManagerProperties {
      * otherwise it will assume to be new if not in the persistence context.
      * If checked and existing and not in the persistence context and error will be thrown.
      * "false" by default.
-     */    
+     */
     public static final String VALIDATE_EXISTENCE = PersistenceUnitProperties.VALIDATE_EXISTENCE;
-    
+
     /**
      * Configures if updates should be ordered by primary key.
      * This can be used to avoid possible database deadlocks from concurrent threads
@@ -280,13 +280,13 @@ public class EntityManagerProperties {
      * <li>"None": No ordering is done.
      * </ul>
      * @see CommitOrderType
-     */    
+     */
     public static final String PERSISTENCE_CONTEXT_COMMIT_ORDER = PersistenceUnitProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER;
-    
+
     /**
      * Defines EntityManager cache behavior after a call to flush method
      * followed by a call to clear method.
-     * This property could be specified while creating either EntityManagerFactory 
+     * This property could be specified while creating either EntityManagerFactory
      * (either in the map passed to createEntityManagerFactory method or in persistence.xml)
      * or EntityManager (in the map passed to createEntityManager method);
      * the latter overrides the former.
@@ -297,9 +297,9 @@ public class EntityManagerProperties {
     /**
      * The property may be passed to createEntityManager method of a composite persistence unit
      * to pass properties to member persistence units.
-     * The value is a map: 
+     * The value is a map:
      * the key is a member persistence unit's name,
-     * the value is a map of properties to be passed to this persistence unit. 
+     * the value is a map of properties to be passed to this persistence unit.
      * <p>
      * "eclipselink.composite-unit.properties" {@literal ->} (<br>
      *  &nbsp;("memberPu1" {@literal ->} (<br>
@@ -317,7 +317,7 @@ public class EntityManagerProperties {
      * )
      */
     public static final String COMPOSITE_UNIT_PROPERTIES = PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES;
-    
+
     private static final Set<String> supportedProperties = new HashSet<String>() {
 
         {

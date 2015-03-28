@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,18 +37,18 @@ import javax.persistence.metamodel.Metamodel;
  * <p>
  * <b>Description</b>: This class represents a join of an attribute from a "From"element.
  * <p>
- * 
+ *
  * @see javax.persistence.criteria Join
- * 
+ *
  * @author gyorke
  * @since EclipseLink 1.2
  */
 
 public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<Z, X> {
-    
+
     protected JoinType joinType;
     protected Expression<Boolean> on;
-    
+
     public <T> JoinImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact){
         this(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact,JoinType.INNER);
     }
@@ -65,7 +65,7 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
 
     /**
      * Return the metamodel Attribute corresponding to the join.
-     * 
+     *
      * @return metamodel Attribute type for the join
      */
     public Attribute<? super Z, ?> getAttribute(){
@@ -76,7 +76,7 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
 
     /**
      * Return the parent of the join.
-     * 
+     *
      * @return join parent
      */
     public From<?, Z> getParent(){
@@ -86,25 +86,25 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
 
     /**
      * Return the join type.
-     * 
+     *
      * @return join type
      */
     public JoinType getJoinType(){
         return joinType;
     }
-    
+
     protected <T> Expression<T> buildExpressionForAs(Class<T> type) {
         managedType = metamodel.managedType(type);
         currentNode = currentNode.treat(type);
         return (Expression<T>)this;
     }
-    
+
     public Predicate getOn() {
         if (this.on == null) {
             return null;
         }
         if (((ExpressionImpl)this.on).isPredicate()) return (Predicate)this.on;
-        
+
         //see queryBuilder.isTrue(this.on);
         List list = new ArrayList();
         list.add(this.on);
@@ -144,5 +144,5 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
         ((PathImpl)this.pathParent).getCurrentNode().join(this.currentNode, onExp);
         return this;
     }
-  
+
 }

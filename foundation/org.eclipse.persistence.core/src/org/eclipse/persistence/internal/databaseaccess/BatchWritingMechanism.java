@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.Serializable;
@@ -35,21 +35,21 @@ public abstract class BatchWritingMechanism implements Cloneable, Serializable {
      * using this Mechanism to handle the batch writing
      */
     protected DatabaseAccessor databaseAccessor;
-	
+
     /**
      * INTERNAL:
-     * This variable is used to temporarily cache the largest queryTimeout among 
+     * This variable is used to temporarily cache the largest queryTimeout among
      * a batch of queries for a particular mechanism.
      * The default is NoTimeout.
      */
     protected int queryTimeoutCache = DescriptorQueryManager.NoTimeout;
-    
+
     //bug 4241441: used to keep track of the values returned from the driver via addBatch and executeStatment
     protected int executionCount;
-    //bug 4241441: increments with each addBatch call.  Used to compare against value returned from driver for 
+    //bug 4241441: increments with each addBatch call.  Used to compare against value returned from driver for
     //  optimistic locking
     protected int statementCount;
-    
+
     /** Allow for the batch size to be set as many database have strict limits. **/
     protected int maxBatchSize;
 
@@ -69,30 +69,30 @@ public abstract class BatchWritingMechanism implements Cloneable, Serializable {
      * @param dbCall
      */
     protected void cacheQueryTimeout(AbstractSession session, DatabaseCall dbCall) {
-    	int callTimeout = dbCall.getQueryTimeout();
-    	/*
-    	 * Object queries that reference their parent will already be resolved .
-    	 * Data queries with a parent reference will be ignored.
-    	 * NoTimeout values will be ignored
-    	 */
-    	if(callTimeout == DescriptorQueryManager.DefaultTimeout || callTimeout == DescriptorQueryManager.NoTimeout) {
-    		return;
-    	} else {
-    		// Cache the highest individual query timeout
-    		if(callTimeout > queryTimeoutCache) {
-    			queryTimeoutCache = callTimeout;
-    		}
-    	}
+        int callTimeout = dbCall.getQueryTimeout();
+        /*
+         * Object queries that reference their parent will already be resolved .
+         * Data queries with a parent reference will be ignored.
+         * NoTimeout values will be ignored
+         */
+        if(callTimeout == DescriptorQueryManager.DefaultTimeout || callTimeout == DescriptorQueryManager.NoTimeout) {
+            return;
+        } else {
+            // Cache the highest individual query timeout
+            if(callTimeout > queryTimeoutCache) {
+                queryTimeoutCache = callTimeout;
+            }
+        }
     }
-    
+
     /**
      * INTERNAL:
      * Clear the cached timeout after the statement has been executed.
      */
     protected void clearCacheQueryTimeout() {
-    	queryTimeoutCache = DescriptorQueryManager.NoTimeout;
+        queryTimeoutCache = DescriptorQueryManager.NoTimeout;
     }
-    
+
     /**
      * INTERNAL:
      * Sets the accessor that this mechanism will use
@@ -100,7 +100,7 @@ public abstract class BatchWritingMechanism implements Cloneable, Serializable {
     public void setAccessor(DatabaseAccessor accessor, AbstractSession session) {
         databaseAccessor = accessor;
     }
-	
+
 
     /**
      * INTERNAL:
@@ -123,7 +123,7 @@ public abstract class BatchWritingMechanism implements Cloneable, Serializable {
      * case that a non batchable statement is being execute
      */
     public abstract void executeBatchedStatements(AbstractSession session);
-    
+
     /**
      * INTERNAL:
      * The mechanism will be cloned to be set into each accessor.
@@ -141,7 +141,7 @@ public abstract class BatchWritingMechanism implements Cloneable, Serializable {
      * Allow initialization with the session after login.
      */
     public void initialize(AbstractSession session) {
-        
+
     }
 
 }

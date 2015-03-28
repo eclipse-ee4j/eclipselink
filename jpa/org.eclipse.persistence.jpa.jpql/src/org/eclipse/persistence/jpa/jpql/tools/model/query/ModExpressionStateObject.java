@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,96 +32,96 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public class ModExpressionStateObject extends AbstractDoubleEncapsulatedExpressionStateObject {
 
-	/**
-	 * Creates a new <code>ModExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public ModExpressionStateObject(StateObject parent) {
-		super(parent);
-	}
+    /**
+     * Creates a new <code>ModExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public ModExpressionStateObject(StateObject parent) {
+        super(parent);
+    }
 
-	/**
-	 * Creates a new <code>ModExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param firstStateObject The {@link StateObject} representing the first expression
-	 * @param secondStateObject The {@link StateObject} representing the second expression
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public ModExpressionStateObject(StateObject parent,
-	                                StateObject firstStateObject,
-	                                StateObject secondStateObject) {
+    /**
+     * Creates a new <code>ModExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param firstStateObject The {@link StateObject} representing the first expression
+     * @param secondStateObject The {@link StateObject} representing the second expression
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public ModExpressionStateObject(StateObject parent,
+                                    StateObject firstStateObject,
+                                    StateObject secondStateObject) {
 
-		super(parent, firstStateObject, secondStateObject);
-	}
+        super(parent, firstStateObject, secondStateObject);
+    }
 
-	/**
-	 * Creates a new <code>ModExpressionStateObject</code>.
-	 *
-	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param firstJpqlFragment The string representation of the first encapsulated expression to
-	 * parse and to convert into a {@link StateObject} representation
-	 * @param secondJpqlFragment The string representation of the second encapsulated expression to
-	 * parse and to convert into a {@link StateObject} representation
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 */
-	public ModExpressionStateObject(StateObject parent,
-	                                String firstJpqlFragment,
-	                                String secondJpqlFragment) {
+    /**
+     * Creates a new <code>ModExpressionStateObject</code>.
+     *
+     * @param parent The parent of this state object, which cannot be <code>null</code>
+     * @param firstJpqlFragment The string representation of the first encapsulated expression to
+     * parse and to convert into a {@link StateObject} representation
+     * @param secondJpqlFragment The string representation of the second encapsulated expression to
+     * parse and to convert into a {@link StateObject} representation
+     * @exception NullPointerException The given parent cannot be <code>null</code>
+     */
+    public ModExpressionStateObject(StateObject parent,
+                                    String firstJpqlFragment,
+                                    String secondJpqlFragment) {
 
-		super(parent, firstJpqlFragment, secondJpqlFragment);
-	}
+        super(parent, firstJpqlFragment, secondJpqlFragment);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(StateObjectVisitor visitor) {
-		visitor.visit(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void accept(StateObjectVisitor visitor) {
+        visitor.visit(this);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ModExpression getExpression() {
-		return (ModExpression) super.getExpression();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ModExpression getExpression() {
+        return (ModExpression) super.getExpression();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getFirstQueryBNFId() {
-		return SimpleArithmeticExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getFirstQueryBNFId() {
+        return SimpleArithmeticExpressionBNF.ID;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getIdentifier() {
-		return MOD;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdentifier() {
+        return MOD;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getSecondQueryBNFId() {
-		return SimpleArithmeticExpressionBNF.ID;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getSecondQueryBNFId() {
+        return SimpleArithmeticExpressionBNF.ID;
+    }
 
-	/**
-	 * Keeps a reference of the {@link ModExpression parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link ModExpression parsed object} representing a <code><b>MOD</b></code>
-	 * expression
-	 */
-	public void setExpression(ModExpression expression) {
-		super.setExpression(expression);
-	}
+    /**
+     * Keeps a reference of the {@link ModExpression parsed object} object, which should only be
+     * done when this object is instantiated during the conversion of a parsed JPQL query into
+     * {@link StateObject StateObjects}.
+     *
+     * @param expression The {@link ModExpression parsed object} representing a <code><b>MOD</b></code>
+     * expression
+     */
+    public void setExpression(ModExpression expression) {
+        super.setExpression(expression);
+    }
 }

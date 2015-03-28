@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,34 +40,34 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
-	
+
     static final String CREATE_NONASSOC_PACKAGE =
-    	"CREATE OR REPLACE PACKAGE NONASSOC_PACKAGE AS" +
-            "\nTYPE NONASSO_ARRAY IS TABLE OF VARCHAR2(20);" + 
-            "\nTYPE ASSO_ARRAY IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;" + 
-            "\nPROCEDURE GETARRAYCOUNT(NAMES IN NONASSO_ARRAY, CNT OUT NUMERIC);" +  
-            "\nPROCEDURE GETITEMCOUNTFORINDEX(NAMES IN NONASSO_ARRAY, CNT IN OUT NUMERIC);" +  
-            "\nPROCEDURE CREATEARRAY(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2, OUTARRAY OUT NONASSO_ARRAY);" +  
-            "\nPROCEDURE COPYARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY);" +  
-            "\nPROCEDURE COPYTOINDEXEDARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT ASSO_ARRAY);" +  
-            "\nPROCEDURE COPYFROMINDEXEDARRAY(INARRAY IN ASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY);" +  
-            "\nPROCEDURE ADDNAMETOARRAY(NAMETOADD IN VARCHAR2, NAMES IN OUT NONASSO_ARRAY);" +  
-            "\nFUNCTION GETARRAYCOUNTFUNC(NAMES IN NONASSO_ARRAY) RETURN NUMERIC;" +  
-            "\nFUNCTION CREATEARRAYFUNC(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2) RETURN NONASSO_ARRAY;" +  
-            "\nFUNCTION COPYARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN NONASSO_ARRAY;" +  
-            "\nFUNCTION COPYTOINDEXEDARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN ASSO_ARRAY;" +  
-            "\nFUNCTION COPYFROMINDEXEDARRAYFUNC(INARRAY IN ASSO_ARRAY) RETURN NONASSO_ARRAY;" +  
+        "CREATE OR REPLACE PACKAGE NONASSOC_PACKAGE AS" +
+            "\nTYPE NONASSO_ARRAY IS TABLE OF VARCHAR2(20);" +
+            "\nTYPE ASSO_ARRAY IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;" +
+            "\nPROCEDURE GETARRAYCOUNT(NAMES IN NONASSO_ARRAY, CNT OUT NUMERIC);" +
+            "\nPROCEDURE GETITEMCOUNTFORINDEX(NAMES IN NONASSO_ARRAY, CNT IN OUT NUMERIC);" +
+            "\nPROCEDURE CREATEARRAY(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2, OUTARRAY OUT NONASSO_ARRAY);" +
+            "\nPROCEDURE COPYARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY);" +
+            "\nPROCEDURE COPYTOINDEXEDARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT ASSO_ARRAY);" +
+            "\nPROCEDURE COPYFROMINDEXEDARRAY(INARRAY IN ASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY);" +
+            "\nPROCEDURE ADDNAMETOARRAY(NAMETOADD IN VARCHAR2, NAMES IN OUT NONASSO_ARRAY);" +
+            "\nFUNCTION GETARRAYCOUNTFUNC(NAMES IN NONASSO_ARRAY) RETURN NUMERIC;" +
+            "\nFUNCTION CREATEARRAYFUNC(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2) RETURN NONASSO_ARRAY;" +
+            "\nFUNCTION COPYARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN NONASSO_ARRAY;" +
+            "\nFUNCTION COPYTOINDEXEDARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN ASSO_ARRAY;" +
+            "\nFUNCTION COPYFROMINDEXEDARRAYFUNC(INARRAY IN ASSO_ARRAY) RETURN NONASSO_ARRAY;" +
         "\nEND NONASSOC_PACKAGE;" ;
     static final String CREATE_NONASSOC_PACKAGE_BODY =
-    	"CREATE OR REPLACE PACKAGE BODY NONASSOC_PACKAGE AS" +
+        "CREATE OR REPLACE PACKAGE BODY NONASSOC_PACKAGE AS" +
             "\nPROCEDURE GETARRAYCOUNT(NAMES IN NONASSO_ARRAY, CNT OUT NUMERIC) AS" +
             "\nBEGIN" +
                 "\nCNT := NAMES.COUNT;" +
             "\nEND GETARRAYCOUNT;" +
             "\nPROCEDURE GETITEMCOUNTFORINDEX(NAMES IN NONASSO_ARRAY, CNT IN OUT NUMERIC) AS" +
             "\nBEGIN" +
-		        "\nCNT := LENGTH(NAMES(CNT));" +
-		    "\nEND GETITEMCOUNTFORINDEX;" +
+                "\nCNT := LENGTH(NAMES(CNT));" +
+            "\nEND GETITEMCOUNTFORINDEX;" +
             "\nPROCEDURE CREATEARRAY(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2, OUTARRAY OUT NONASSO_ARRAY) AS" +
             "\nBEGIN" +
                 "\nOUTARRAY := NONASSO_ARRAY(ITEM1, ITEM2, ITEM3);" +
@@ -77,25 +77,25 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
                 "\nOUTARRAY := NONASSO_ARRAY();" +
                 "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
                 "\nLOOP" +
-	                "\nOUTARRAY.EXTEND;" +
-		            "\nOUTARRAY(I) := INARRAY(I);" +
-		        "\nEND LOOP;" +
+                    "\nOUTARRAY.EXTEND;" +
+                    "\nOUTARRAY(I) := INARRAY(I);" +
+                "\nEND LOOP;" +
             "\nEND COPYARRAY;" +
-            "\nPROCEDURE COPYTOINDEXEDARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT ASSO_ARRAY) AS" +  
+            "\nPROCEDURE COPYTOINDEXEDARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT ASSO_ARRAY) AS" +
             "\nBEGIN" +
                 "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
                 "\nLOOP" +
-		            "\nOUTARRAY(I) := INARRAY(I);" +
-		        "\nEND LOOP;" +
+                    "\nOUTARRAY(I) := INARRAY(I);" +
+                "\nEND LOOP;" +
             "\nEND COPYTOINDEXEDARRAY;" +
-            "\nPROCEDURE COPYFROMINDEXEDARRAY(INARRAY IN ASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY) AS" +  
+            "\nPROCEDURE COPYFROMINDEXEDARRAY(INARRAY IN ASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY) AS" +
             "\nBEGIN" +
                 "\nOUTARRAY := NONASSO_ARRAY();" +
                 "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
                 "\nLOOP" +
                     "\nOUTARRAY.EXTEND;" +
-		            "\nOUTARRAY(I) := INARRAY(I);" +
-		        "\nEND LOOP;" +
+                    "\nOUTARRAY(I) := INARRAY(I);" +
+                "\nEND LOOP;" +
             "\nEND COPYFROMINDEXEDARRAY;" +
             "\nPROCEDURE ADDNAMETOARRAY(NAMETOADD IN VARCHAR2, NAMES IN OUT NONASSO_ARRAY) AS" +
             "\nBEGIN" +
@@ -114,36 +114,36 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
                 "\nOUTARRAY := NONASSO_ARRAY(ITEM1, ITEM2, ITEM3);" +
                 "\nRETURN OUTARRAY;" +
             "\nEND CREATEARRAYFUNC;" +
-            "\nFUNCTION COPYARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN NONASSO_ARRAY AS" +  
+            "\nFUNCTION COPYARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN NONASSO_ARRAY AS" +
             "\nOUTARRAY NONASSO_ARRAY;" +
             "\nBEGIN" +
-	            "\nOUTARRAY := NONASSO_ARRAY();" +
-	            "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
-	            "\nLOOP" +
-	                "\nOUTARRAY.EXTEND;" +
-		            "\nOUTARRAY(I) := INARRAY(I);" +
-		        "\nEND LOOP;" +
+                "\nOUTARRAY := NONASSO_ARRAY();" +
+                "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
+                "\nLOOP" +
+                    "\nOUTARRAY.EXTEND;" +
+                    "\nOUTARRAY(I) := INARRAY(I);" +
+                "\nEND LOOP;" +
                 "\nRETURN OUTARRAY;" +
             "\nEND COPYARRAYFUNC;" +
-            "\nFUNCTION COPYTOINDEXEDARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN ASSO_ARRAY AS" +  
+            "\nFUNCTION COPYTOINDEXEDARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN ASSO_ARRAY AS" +
             "\nOUTARRAY ASSO_ARRAY;" +
             "\nBEGIN" +
-	            "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
-	            "\nLOOP" +
-		            "\nOUTARRAY(I) := INARRAY(I);" +
-		        "\nEND LOOP;" +
-		        "\nRETURN OUTARRAY;" +
+                "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
+                "\nLOOP" +
+                    "\nOUTARRAY(I) := INARRAY(I);" +
+                "\nEND LOOP;" +
+                "\nRETURN OUTARRAY;" +
             "\nEND COPYTOINDEXEDARRAYFUNC;" +
-            "\nFUNCTION COPYFROMINDEXEDARRAYFUNC(INARRAY IN ASSO_ARRAY) RETURN NONASSO_ARRAY AS" +  
+            "\nFUNCTION COPYFROMINDEXEDARRAYFUNC(INARRAY IN ASSO_ARRAY) RETURN NONASSO_ARRAY AS" +
             "\nOUTARRAY NONASSO_ARRAY;" +
             "\nBEGIN" +
-	            "\nOUTARRAY := NONASSO_ARRAY();" +
-	            "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
-	            "\nLOOP" +
-	                "\nOUTARRAY.EXTEND;" +
-		            "\nOUTARRAY(I) := INARRAY(I);" +
-		        "\nEND LOOP;" +
-		        "\nRETURN OUTARRAY;" +
+                "\nOUTARRAY := NONASSO_ARRAY();" +
+                "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
+                "\nLOOP" +
+                    "\nOUTARRAY.EXTEND;" +
+                    "\nOUTARRAY(I) := INARRAY(I);" +
+                "\nEND LOOP;" +
+                "\nRETURN OUTARRAY;" +
             "\nEND COPYFROMINDEXEDARRAYFUNC;" +
         "\nEND NONASSOC_PACKAGE;" ;
     static final String CREATE_NONASSO_ARRAY_TYPE =
@@ -214,10 +214,10 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
                   "procedurePattern=\"GETARRAYCOUNT\" " +
               "/>" +
               "<plsql-procedure " +
-	              "name=\"GetItemCountForIndexTest\" " +
-	              "catalogPattern=\"NONASSOC_PACKAGE\" " +
-	              "procedurePattern=\"GETITEMCOUNTFORINDEX\" " +
-	          "/>" +
+                  "name=\"GetItemCountForIndexTest\" " +
+                  "catalogPattern=\"NONASSOC_PACKAGE\" " +
+                  "procedurePattern=\"GETITEMCOUNTFORINDEX\" " +
+              "/>" +
               "<plsql-procedure " +
                   "name=\"CreateArrayTest\" " +
                   "catalogPattern=\"NONASSOC_PACKAGE\" " +
@@ -229,20 +229,20 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
                   "procedurePattern=\"COPYARRAY\" " +
               "/>" +
               "<plsql-procedure " +
-		          "name=\"CopyToIndexedArrayTest\" " +
-		          "catalogPattern=\"NONASSOC_PACKAGE\" " +
-		          "procedurePattern=\"COPYTOINDEXEDARRAY\" " +
-		      "/>" +
+                  "name=\"CopyToIndexedArrayTest\" " +
+                  "catalogPattern=\"NONASSOC_PACKAGE\" " +
+                  "procedurePattern=\"COPYTOINDEXEDARRAY\" " +
+              "/>" +
               "<plsql-procedure " +
-		          "name=\"CopyFromIndexedArrayTest\" " +
-		          "catalogPattern=\"NONASSOC_PACKAGE\" " +
-		          "procedurePattern=\"COPYFROMINDEXEDARRAY\" " +
-		      "/>" +
+                  "name=\"CopyFromIndexedArrayTest\" " +
+                  "catalogPattern=\"NONASSOC_PACKAGE\" " +
+                  "procedurePattern=\"COPYFROMINDEXEDARRAY\" " +
+              "/>" +
               "<plsql-procedure " +
-		          "name=\"AddNameToArrayTest\" " +
-		          "catalogPattern=\"NONASSOC_PACKAGE\" " +
-		          "procedurePattern=\"ADDNAMETOARRAY\" " +
-		      "/>" +
+                  "name=\"AddNameToArrayTest\" " +
+                  "catalogPattern=\"NONASSOC_PACKAGE\" " +
+                  "procedurePattern=\"ADDNAMETOARRAY\" " +
+              "/>" +
               "<plsql-procedure " +
                   "name=\"GetArrayCountFuncTest\" " +
                   "catalogPattern=\"NONASSOC_PACKAGE\" " +
@@ -254,20 +254,20 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
                   "procedurePattern=\"CREATEARRAYFUNC\" " +
               "/>" +
               "<plsql-procedure " +
-	              "name=\"CopyArrayFuncTest\" " +
-	              "catalogPattern=\"NONASSOC_PACKAGE\" " +
-	              "procedurePattern=\"COPYARRAYFUNC\" " +
-	          "/>" +
+                  "name=\"CopyArrayFuncTest\" " +
+                  "catalogPattern=\"NONASSOC_PACKAGE\" " +
+                  "procedurePattern=\"COPYARRAYFUNC\" " +
+              "/>" +
               "<plsql-procedure " +
-		          "name=\"CopyToIndexedArrayFuncTest\" " +
-		          "catalogPattern=\"NONASSOC_PACKAGE\" " +
-		          "procedurePattern=\"COPYTOINDEXEDARRAYFUNC\" " +
-		      "/>" +
+                  "name=\"CopyToIndexedArrayFuncTest\" " +
+                  "catalogPattern=\"NONASSOC_PACKAGE\" " +
+                  "procedurePattern=\"COPYTOINDEXEDARRAYFUNC\" " +
+              "/>" +
               "<plsql-procedure " +
-		          "name=\"CopyFromIndexedArrayFuncTest\" " +
-		          "catalogPattern=\"NONASSOC_PACKAGE\" " +
-		          "procedurePattern=\"COPYFROMINDEXEDARRAYFUNC\" " +
-		      "/>" +
+                  "name=\"CopyFromIndexedArrayFuncTest\" " +
+                  "catalogPattern=\"NONASSOC_PACKAGE\" " +
+                  "procedurePattern=\"COPYFROMINDEXEDARRAYFUNC\" " +
+              "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -379,7 +379,7 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(ASSOC_ARRAY_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void copyFromIndexedArrayTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -443,7 +443,7 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(COUNT_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void createArrayFuncTest() {
         Invocation invocation = new Invocation("CreateArrayFuncTest");
@@ -459,7 +459,7 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(NON_ASSOC_ITEMS_ARRAY_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void copyArrayFuncTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -475,7 +475,7 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(NON_ASSOC_ITEMS_ARRAY_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void copyToIndexedArrayFuncTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -491,7 +491,7 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(ASSOC_ARRAY_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void copyFromIndexedArrayFuncTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();

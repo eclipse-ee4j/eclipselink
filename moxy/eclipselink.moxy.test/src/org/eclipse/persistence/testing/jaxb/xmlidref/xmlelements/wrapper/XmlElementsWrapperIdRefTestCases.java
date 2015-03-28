@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,46 +25,46 @@ public class XmlElementsWrapperIdRefTestCases extends JAXBWithJSONTestCases {
 
     public XmlElementsWrapperIdRefTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[1];        
+        Class[] classes = new Class[1];
         classes[0] = Foo.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
-    
+
     protected Object getControlObject() {
-    	Foo foo = new Foo();
-    	
-    	AttributeImpl attr1 = new AttributeImpl();
-    	attr1.setId("1");
-    	AttributeImpl2 attr2 = new AttributeImpl2();
-    	attr2.setId("2");
-    	AttributeImpl attr3 = new AttributeImpl();
-    	attr3.setId("3");
-    	foo.attributes.add(attr1);
-    	foo.attributes.add(attr2);
-    	foo.attributes.add(attr3);
-    	
-    	foo.attributeRefs.add(attr1);
-    	foo.attributeRefs.add(attr2);
-    	
-    	foo.attributeImplRefs.add(attr1);    
-    	foo.attributeImplRefs.add(attr3);
-    	
-    	return foo;
+        Foo foo = new Foo();
+
+        AttributeImpl attr1 = new AttributeImpl();
+        attr1.setId("1");
+        AttributeImpl2 attr2 = new AttributeImpl2();
+        attr2.setId("2");
+        AttributeImpl attr3 = new AttributeImpl();
+        attr3.setId("3");
+        foo.attributes.add(attr1);
+        foo.attributes.add(attr2);
+        foo.attributes.add(attr3);
+
+        foo.attributeRefs.add(attr1);
+        foo.attributeRefs.add(attr2);
+
+        foo.attributeImplRefs.add(attr1);
+        foo.attributeImplRefs.add(attr3);
+
+        return foo;
     }
-    
+
     protected Object getJSONReadControlObject() {
-    	Foo foo = (Foo)getControlObject();
-    	Attribute removed = foo.attributes.remove(1);
-    	foo.attributes.add(removed);
-    	return foo;
+        Foo foo = (Foo)getControlObject();
+        Attribute removed = foo.attributes.remove(1);
+        foo.attributes.add(removed);
+        return foo;
     }
     public void testSchemaGen() throws Exception {
         List<InputStream> controlSchemas = new ArrayList<InputStream>();
         controlSchemas.add(ClassLoader.getSystemResourceAsStream(XSD_RESOURCE));
-        
+
         this.testSchemaGen(controlSchemas);
-        
+
     }
 }

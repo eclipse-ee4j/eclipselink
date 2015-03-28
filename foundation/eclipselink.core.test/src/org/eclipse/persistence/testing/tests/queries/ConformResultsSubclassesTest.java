@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     John Vandale - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries;
 
 import org.eclipse.persistence.testing.models.inheritance.*;
@@ -24,7 +24,7 @@ import java.util.Vector;
  */
 
 public class ConformResultsSubclassesTest extends org.eclipse.persistence.testing.framework.TestCase {
-    
+
     UnitOfWork uow;
     Vector people;
     Person result;
@@ -42,8 +42,8 @@ public class ConformResultsSubclassesTest extends org.eclipse.persistence.testin
         Person person = new Person();
         person.setName("p");
         uow.registerNewObject(engineer);
-        uow.registerNewObject(salesrep); 
-        uow.registerNewObject(person); 
+        uow.registerNewObject(salesrep);
+        uow.registerNewObject(person);
     }
 
     public void test() {
@@ -51,7 +51,7 @@ public class ConformResultsSubclassesTest extends org.eclipse.persistence.testin
         ReadAllQuery raq = new ReadAllQuery(Person.class);
         raq.conformResultsInUnitOfWork();
         people = (Vector) uow.executeQuery(raq);
-        
+
         // test ReadObjectQuery
         ReadObjectQuery roq = new ReadObjectQuery(Person.class);
         roq.conformResultsInUnitOfWork();
@@ -59,23 +59,23 @@ public class ConformResultsSubclassesTest extends org.eclipse.persistence.testin
         Expression exp = expBuilder.get("name").equal("s");
         roq.setSelectionCriteria(exp);
         Person result = (Person) uow.executeQuery(roq);
-        
+
         uow.release();
 
     }
-    
+
     public void verify() {
         // verify ReadAllQuery
         for( int i = 0; i < people.size(); i++ ) {
-          Person result = (Person) people.get(i);   
+          Person result = (Person) people.get(i);
           if (result.name.equals("e") || result.name.equals("s")) {
               throwError("ReadAllQuery with conform in unit of work returned subclasses despite descriptor indication not to.");
           }
         }
-        
+
         // verify ReadObjectQuery
         if (result != null) {
-            throwError("ReadObjectQuery with conform in unit of work returned subclasses despite descriptor indication not to.");  
+            throwError("ReadObjectQuery with conform in unit of work returned subclasses despite descriptor indication not to.");
         }
     }
 }

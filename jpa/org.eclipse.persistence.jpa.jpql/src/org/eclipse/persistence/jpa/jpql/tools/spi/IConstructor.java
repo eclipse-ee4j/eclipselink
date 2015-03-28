@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,11 +29,11 @@ package org.eclipse.persistence.jpa.jpql.tools.spi;
  */
 public interface IConstructor extends IExternalForm {
 
-	/**
-	 * Returns the list of {@link ITypeDeclaration} representing the parameter types. If this is the
-	 * default constructor, then an empty array should be returned.
-	 *
-	 * @return The list of parameter types or an empty list
-	 */
-	ITypeDeclaration[] getParameterTypes();
+    /**
+     * Returns the list of {@link ITypeDeclaration} representing the parameter types. If this is the
+     * default constructor, then an empty array should be returned.
+     *
+     * @return The list of parameter types or an empty list
+     */
+    ITypeDeclaration[] getParameterTypes();
 }

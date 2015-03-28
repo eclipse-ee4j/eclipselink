@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -63,103 +63,103 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IQuery;
  */
 public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
 
-	/**
-	 * Creates a new <code>EclipseLinkJPQLQueryHelper</code>.
-	 *
-	 * @param jpqlGrammar The {@link JPQLGrammar} that will determine how to parse JPQL queries
-	 */
-	public EclipseLinkJPQLQueryHelper(JPQLGrammar jpqlGrammar) {
-		super(jpqlGrammar);
-	}
+    /**
+     * Creates a new <code>EclipseLinkJPQLQueryHelper</code>.
+     *
+     * @param jpqlGrammar The {@link JPQLGrammar} that will determine how to parse JPQL queries
+     */
+    public EclipseLinkJPQLQueryHelper(JPQLGrammar jpqlGrammar) {
+        super(jpqlGrammar);
+    }
 
-	/**
-	 * Creates a new <code>EclipseLinkJPQLQueryHelper</code>.
-	 *
-	 * @param queryContext The context used to query information about the JPQL query
-	 */
-	public EclipseLinkJPQLQueryHelper(JPQLQueryContext queryContext) {
-		super(queryContext);
-	}
+    /**
+     * Creates a new <code>EclipseLinkJPQLQueryHelper</code>.
+     *
+     * @param queryContext The context used to query information about the JPQL query
+     */
+    public EclipseLinkJPQLQueryHelper(JPQLQueryContext queryContext) {
+        super(queryContext);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public BasicRefactoringTool buildBasicRefactoringTool() {
-		return new EclipseLinkBasicRefactoringTool(
-			getQuery().getExpression(),
-			getGrammar(),
-			getProvider()
-		);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BasicRefactoringTool buildBasicRefactoringTool() {
+        return new EclipseLinkBasicRefactoringTool(
+            getQuery().getExpression(),
+            getGrammar(),
+            getProvider()
+        );
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractContentAssistVisitor buildContentAssistVisitor(JPQLQueryContext queryContext) {
-		return new EclipseLinkContentAssistVisitor(queryContext);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractContentAssistVisitor buildContentAssistVisitor(JPQLQueryContext queryContext) {
+        return new EclipseLinkContentAssistVisitor(queryContext);
+    }
 
-	/**
-	 * Creates a new {@link EclipseLinkSemanticValidatorExtension}, which will provide additional
-	 * support for non-JPA related information.
-	 *
-	 * @return Either a new concrete instance of {@link EclipseLinkSemanticValidatorExtension} or
-	 * {@link EclipseLinkSemanticValidatorExtension#NULL_EXTENSION} if none is required
-	 */
-	protected EclipseLinkSemanticValidatorExtension buildEclipseLinkSemanticValidatorExtension() {
-		return EclipseLinkSemanticValidatorExtension.NULL_EXTENSION;
-	}
+    /**
+     * Creates a new {@link EclipseLinkSemanticValidatorExtension}, which will provide additional
+     * support for non-JPA related information.
+     *
+     * @return Either a new concrete instance of {@link EclipseLinkSemanticValidatorExtension} or
+     * {@link EclipseLinkSemanticValidatorExtension#NULL_EXTENSION} if none is required
+     */
+    protected EclipseLinkSemanticValidatorExtension buildEclipseLinkSemanticValidatorExtension() {
+        return EclipseLinkSemanticValidatorExtension.NULL_EXTENSION;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected EclipseLinkGrammarValidator buildGrammarValidator(JPQLGrammar jpqlGrammar) {
-		return new EclipseLinkGrammarValidator(jpqlGrammar);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EclipseLinkGrammarValidator buildGrammarValidator(JPQLGrammar jpqlGrammar) {
+        return new EclipseLinkGrammarValidator(jpqlGrammar);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JPQLQueryContext buildJPQLQueryContext(JPQLGrammar jpqlGrammar) {
-		return new EclipseLinkJPQLQueryContext(jpqlGrammar);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JPQLQueryContext buildJPQLQueryContext(JPQLGrammar jpqlGrammar) {
+        return new EclipseLinkJPQLQueryContext(jpqlGrammar);
+    }
 
-	/**
-	 * Creates the right {@link IJPQLQueryBuilder} based on the JPQL grammar.
-	 *
-	 * @return A new concrete instance of {@link IJPQLQueryBuilder}
-	 */
-	protected IJPQLQueryBuilder buildQueryBuilder() {
-		return new EclipseLinkJPQLQueryBuilder(getGrammar());
-	}
+    /**
+     * Creates the right {@link IJPQLQueryBuilder} based on the JPQL grammar.
+     *
+     * @return A new concrete instance of {@link IJPQLQueryBuilder}
+     */
+    protected IJPQLQueryBuilder buildQueryBuilder() {
+        return new EclipseLinkJPQLQueryBuilder(getGrammar());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public RefactoringTool buildRefactoringTool() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RefactoringTool buildRefactoringTool() {
 
-		IQuery query = getQuery();
+        IQuery query = getQuery();
 
-		return new DefaultRefactoringTool(
-			query.getProvider(),
-			buildQueryBuilder(),
-			query.getExpression()
-		);
-	}
+        return new DefaultRefactoringTool(
+            query.getProvider(),
+            buildQueryBuilder(),
+            query.getExpression()
+        );
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractEclipseLinkSemanticValidator buildSemanticValidator(JPQLQueryContext queryContext) {
-		return new EclipseLinkSemanticValidator(
-			queryContext,
-			buildEclipseLinkSemanticValidatorExtension()
-		);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected AbstractEclipseLinkSemanticValidator buildSemanticValidator(JPQLQueryContext queryContext) {
+        return new EclipseLinkSemanticValidator(
+            queryContext,
+            buildEclipseLinkSemanticValidatorExtension()
+        );
+    }
 }

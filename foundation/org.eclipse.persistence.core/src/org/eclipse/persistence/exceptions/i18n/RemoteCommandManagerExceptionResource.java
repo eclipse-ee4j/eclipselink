@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     cdelahun - Bug 214534: added message for JMSPublishingHelper error checking
- *     09/24/2014-2.6 Rick Curtis 
+ *     09/24/2014-2.6 Rick Curtis
  *       - 443762 : Misc message cleanup.
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
@@ -31,7 +31,7 @@ public class RemoteCommandManagerExceptionResource extends ListResourceBundle {
                                            { "22104", "Could not look up hostname" },
                                            { "22105", "Could not propagate command to {0}" },
                                            { "22106", "Could not create external JMS connection with Topic {0} and Topic Factory {1}. Also, check your context properties are set correctly." },
-                                           { "22107", "Could not remove local connection in local naming service under name {0}" },             
+                                           { "22107", "Could not remove local connection in local naming service under name {0}" },
                                            { "22108", "Could not serialize or deserialize command" },
                                            { "22109", "Failed to receive JMS message from JMS provider" },
                                            { "22110", "Failed to discover local host IP address." },

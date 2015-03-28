@@ -1,24 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Pervasive Software Inc, Oracle and/or its affiliates. All Rights Reserved
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2015 Pervasive Software Inc, Oracle and/or its affiliates. All Rights Reserved
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors: 
+ * Contributors:
  *       Peter Lohman - initial implementation
- *     
- ******************************************************************************/  
+ *
+ ******************************************************************************/
 
  /*
 
     For minimal implementation, compare with:
          C:\PL\JPA\EclipseLink\SVN\org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\CloudscapePlatform.java
-         
-    For PVSW data type mapping, see: getColumnClassName():C:\cmsynergy\psql11.20_pnl\psql\comp\sdk\jdbc\pvjdbc2\src\com\pervasive\jdbc\v2\ResultSetMetaData.java         
-    
+
+    For PVSW data type mapping, see: getColumnClassName():C:\cmsynergy\psql11.20_pnl\psql\comp\sdk\jdbc\pvjdbc2\src\com\pervasive\jdbc\v2\ResultSetMetaData.java
+
 */
 package org.eclipse.persistence.platform.database;
 
@@ -35,13 +35,13 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.queries.*;
 
 /** <p><b>Purpose</b>: Provides Pervasive SQL DBMS specific behavior.
-* 
+*
 * <br><br>
 * Pervasive SQL Platform file <br>
 *  Contributed by: Pervasive Software, Inc.<br>
 *  Contributed under bug: 392109
 *  <p>
-* 
+*
 * <u><b>Developed on Pervasive PSQL Server 11.30 </b></u>
 * <blockquote>
 * <ul>
@@ -50,18 +50,18 @@ import org.eclipse.persistence.queries.*;
 * <li>Eclipselink stored procedure tests "CustomSQLTestModel", "StoredProcedureGeneratorModel" pass with known limitations.
 * </ul>
 * </blockquote>
-*  
+*
 * <p><u><b>Limitations</b></u>
-* <ul> 
-* <li> Updates are not supported on joined queries or queries with group by. 
-* <li> The platform method getSelectForUpdateString() currently returns an empty string. This is 
-* to avoid avoid joined queries with FOR UPDATE in them, which Pervasive does not support. 
-* <li> Columns used in indexes must total no more than 255 bytes in length. 
-* <li> Pervasive SQL does not support dynamic parameters in the SELECT list. 
+* <ul>
+* <li> Updates are not supported on joined queries or queries with group by.
+* <li> The platform method getSelectForUpdateString() currently returns an empty string. This is
+* to avoid avoid joined queries with FOR UPDATE in them, which Pervasive does not support.
+* <li> Columns used in indexes must total no more than 255 bytes in length.
+* <li> Pervasive SQL does not support dynamic parameters in the SELECT list.
 * <li> IDENTITY columns are either 2- or 4-byte integers. Foreign keys referencing such columns must use the same datatypes.
 * </ul>
-* 
-**/ 
+*
+**/
 
 
 public class PervasivePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
@@ -85,25 +85,25 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
         Hashtable fieldTypeMapping;
 
         fieldTypeMapping = new Hashtable();
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_CHAR_SIZE));            
+        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_CHAR_SIZE));
         // fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("BIGINT", false));
         fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("BIGINT", false));
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("INTEGER", false));        
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));        
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("TINYINT", false));        
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("REAL", false));          
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE", false));         
+        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("INTEGER", false));
+        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
+        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("TINYINT", false));
+        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("REAL", false));
+        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE", false));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));              
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));              
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));      
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BINARY", DEFAULT_CHAR_SIZE ));   
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("LONGVARBINARY", false));   
+        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BINARY", DEFAULT_CHAR_SIZE ));
+        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("LONGVARBINARY", false));
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CHAR", DEFAULT_CHAR_SIZE));
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT", false));              
+        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT", false));
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("LONGVARBINARY", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("LONGVARCHAR", false));        
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("LONGVARCHAR", false));
 
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL",38, 0));        // From MySQL
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL",38,0));                      // From MySQL
@@ -113,22 +113,22 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("LONGVARCHAR", false));
         fieldTypeMapping.put(java.util.Calendar.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition("TIMESTAMP"));
-   
+
         return fieldTypeMapping;
     }
 
     /**
-     * 
+     *
      * Pervasive uses the INOUT keyword, as opposed to "IN OUT".
      */
     @Override
     public String getInOutputProcedureToken() {
         return "INOUT";
     }
-    
+
     /**
      * Pervasive uses IN prefix for INPUT parameters.
-     * 
+     *
      */
     @Override
     public String getInputProcedureToken() {
@@ -143,7 +143,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     }
 
     /**
-     * 
+     *
      * Pervasive requires BEGIN in a procedure statement.
      */
     @Override
@@ -166,14 +166,14 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     }
 
     /**
-     * 
+     *
      * Pervasive requires END in a procedure statement.
      */
     @Override
     public String getProcedureEndString() {
         return "END";
     }
-    
+
 
     /**
      * Pervasive uses ":" as prefix for procedure parameters.
@@ -181,8 +181,8 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     public String getStoredProcedureParameterPrefix() {
         return ":";
     }
-    
-    
+
+
     /**
      * Pervasive requires the OUTPUT keyword for output parameters
      */
@@ -206,7 +206,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
 
     /**
      * Cloned from MySQLPlatform.java
-     * 
+     *
      */
 
     /**
@@ -266,7 +266,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     }
 
     /**
-     * 
+     *
      * Cloned from MySQLPlatform.java
      */
     protected ExpressionOperator dateToStringOperator() {
@@ -297,14 +297,14 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false; // not sure about this
     }
-    
+
     /** Append the receiver's field 'identity' constraint clause to
     *   a writer.
-    *      
+    *
     *  Taken from
     *  org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\AccessPlatform.java
     */
-    public void printFieldIdentityClause(Writer writer)	throws ValidationException {
+    public void printFieldIdentityClause(Writer writer)    throws ValidationException {
         try {
             writer.write(" IDENTITY");
         } catch (IOException ioException) {
@@ -314,8 +314,8 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
 
 
     /**
-     * Override the default SubstringSingleArg operator. 
-     * Cloned from SybasePlatform.java 
+     * Override the default SubstringSingleArg operator.
+     * Cloned from SybasePlatform.java
      */
     public ExpressionOperator singleArgumentSubstringOperator() {
         ExpressionOperator result = new ExpressionOperator();
@@ -342,17 +342,17 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
 
 
     /**
-     *  
+     *
      *  Indicates whether the platform supports identity.
-     *    
+     *
      */
      public boolean supportsIdentity() {
          return true;
      }
-    
-     // 
+
+     //
      //  Most Temp Table settings cloned from SQLServerPlatform.java
-     //    
+     //
      /**
       * INTERNAL:
       */
@@ -371,22 +371,22 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
       */
      protected String getCreateTempTableSqlPrefix() {
          return "CREATE TABLE ";
-     }          
+     }
 
      /**
       * INTERNAL:
       */
      public DatabaseTable getTempTableForTable(DatabaseTable table) {
          return new DatabaseTable("#" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters(), getStartDelimiter(), getEndDelimiter());
-     }          
+     }
 
 
-     /** 
-     *      
-     * Taken from org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\AccessPlatform.java  
+     /**
+     *
+     * Taken from org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\AccessPlatform.java
      */
      public void printFieldTypeSize(Writer writer, FieldDefinition field,FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
-		if (!shouldPrintFieldIdentityClause) {
+        if (!shouldPrintFieldIdentityClause) {
             // if type requires both precision and scale: NUMERIC, DECIMAL
             if ((fieldType.getName().equals("NUMERIC")) || (fieldType.getName().equals("DECIMAL"))) {
                 writer.write(fieldType.getName());
@@ -407,15 +407,15 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
                 super.printFieldTypeSize(writer, field, fieldType,
                         shouldPrintFieldIdentityClause);
             }
-		}
-	}
+        }
+    }
 
-    /**    
+    /**
      * INTERNAL:
      * Build the identity query for native sequencing.
-     *      
-     * Taken verbatim from org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\SQLServerPlatform.java  
-     *               
+     *
+     * Taken verbatim from org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\SQLServerPlatform.java
+     *
      */
      @Override
      public ValueReadQuery buildSelectQueryForIdentity() {
@@ -425,9 +425,9 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     }
 
      /**
-      * Temporary workaround to avoid joined queries with FOR UPDATE 
-      * in them 
-      * 
+      * Temporary workaround to avoid joined queries with FOR UPDATE
+      * in them
+      *
       */
      public String getSelectForUpdateString() {
          return "";
@@ -446,9 +446,9 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
 
 
      /**
-     * Setting this to false (cf. Sybase) to work around problem 
-     * that unspecified default delete rule is RESTRICT, even when 
-     * not allowed due to self-referencing table.  
+     * Setting this to false (cf. Sybase) to work around problem
+     * that unspecified default delete rule is RESTRICT, even when
+     * not allowed due to self-referencing table.
      */
     @Override
     public boolean supportsDeleteOnCascade() {
@@ -469,8 +469,8 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     public boolean supportsLockingQueriesWithMultipleTables() {
         return false;
     }
-    
 
-    
+
+
 
 }

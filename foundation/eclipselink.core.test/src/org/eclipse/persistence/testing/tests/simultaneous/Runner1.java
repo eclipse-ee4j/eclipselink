@@ -21,7 +21,7 @@ public class Runner1 implements Runnable {
     }
 
     public void run() {
-            
+
             UnitOfWorkImpl uow = (UnitOfWorkImpl)this.session.acquireUnitOfWork();
             ReadObjectQuery roq = new ReadObjectQuery(Employee.class);
             roq.setSelectionCriteria(roq.getExpressionBuilder().get("id").equal(empPK));

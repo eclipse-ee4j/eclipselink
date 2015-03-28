@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
  package org.eclipse.persistence.testing.tests.jpa.memory;
 
 import java.util.List;
@@ -65,7 +65,7 @@ public class JPAMemoryLeakModel extends TestModel {
             // Create using DatabaseSession if not EclipseLink JPA.
             new EmployeeTableCreator().replaceTables(getDatabaseSession());
         }
-        
+
         manager.getTransaction().begin();
 
         // Populate database
@@ -95,7 +95,7 @@ public class JPAMemoryLeakModel extends TestModel {
         manager.getTransaction().commit();
         manager.close();
     }
-    
+
     /**
      * Setup the JPA provider.
      */
@@ -111,11 +111,11 @@ public class JPAMemoryLeakModel extends TestModel {
         Map properties = getPersistenceProperties();
         getExecutor().setEntityManagerFactory(provider.createEntityManagerFactory("performance", properties));
     }
-    
+
     /**
      * Build the persistence properties.
      */
-    public Map getPersistenceProperties() {    
+    public Map getPersistenceProperties() {
         Map properties = new HashMap();
         properties.put("eclipselink.jdbc.driver", getSession().getLogin().getDriverClassName());
         properties.put("eclipselink.jdbc.url", getSession().getLogin().getConnectionString());
@@ -125,7 +125,7 @@ public class JPAMemoryLeakModel extends TestModel {
         properties.put("eclipselink.jdbc.cache-statements", "true");
         return properties;
     }
-    
+
     /**
      * Test that inserts allow the garbage collection of the persisted objects.
      */
@@ -139,7 +139,7 @@ public class JPAMemoryLeakModel extends TestModel {
                     Employee employee = new Employee();
                     employee.setFirstName("NewGuy");
                     employee.setLastName("Smith");
-    
+
                     manager.persist(employee);
                     addWeakReference(employee);
                 }
@@ -153,7 +153,7 @@ public class JPAMemoryLeakModel extends TestModel {
                 addWeakReference(((JpaEntityManager)manager).getUnitOfWork().getParent());
                 manager.close();
             }
-            
+
             public void reset() {
                 getSession().executeNonSelectingSQL("Delete from P_EMPLOYEE where F_NAME = 'NewGuy'");
             }
@@ -176,7 +176,7 @@ public class JPAMemoryLeakModel extends TestModel {
                 List<Employee> employees = query.getResultList();
                 for (Employee employee : employees) {
                     employee.setFirstName("UpdatedGuy");
-        
+
                     addWeakReference(employee);
                 }
                 manager.getTransaction().commit();
@@ -193,7 +193,7 @@ public class JPAMemoryLeakModel extends TestModel {
         test.setThreshold(100);
         return test;
     }
-    
+
     /**
      * Test that update allow the garbage collection of the objects.
      */
@@ -264,7 +264,7 @@ public class JPAMemoryLeakModel extends TestModel {
                     Employee employee = new Employee();
                     employee.setFirstName("NewBatchGuy");
                     employee.setLastName("Smith");
-    
+
                     manager.persist(employee);
                     addWeakReference(employee);
                 }
@@ -280,7 +280,7 @@ public class JPAMemoryLeakModel extends TestModel {
                 }
                 manager.close();
             }
-            
+
             public void reset() {
                 getSession().executeNonSelectingSQL("Delete from P_EMPLOYEE where F_NAME = 'NewBatchGuy'");
             }

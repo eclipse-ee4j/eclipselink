@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,10 +48,10 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class ObjectTableTypeTestSuite extends DBWSTestSuite {
-	static final String PERSON_TYPE_ALIAS = "Dbws_persontype";
-	static final String PERSON_TYPE_CLASSNAME = "objecttabletypetests.Dbws_persontype";
-	static final String PERSON_TYPE_TABLE_ALIAS = "Dbws_persontype_table";
-	static final String PERSON_TYPE_TABLE_CLASSNAME = "objecttabletypetests.Dbws_persontype_table_CollectionWrapper";
+    static final String PERSON_TYPE_ALIAS = "Dbws_persontype";
+    static final String PERSON_TYPE_CLASSNAME = "objecttabletypetests.Dbws_persontype";
+    static final String PERSON_TYPE_TABLE_ALIAS = "Dbws_persontype_table";
+    static final String PERSON_TYPE_TABLE_CLASSNAME = "objecttabletypetests.Dbws_persontype_table_CollectionWrapper";
 
     static final String CREATE_PERSONTYPE =
         "CREATE OR REPLACE TYPE DBWS_PERSONTYPE AS OBJECT (" +
@@ -187,8 +187,8 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     static final String CREATE_TJOBS_BODY =
         "CREATE OR REPLACE TYPE BODY T_JOBS AS " +
             "CONSTRUCTOR FUNCTION T_JOBS(JOB_ID VARCHAR2, JOB_TITLE VARCHAR2, MAX_SALARY NUMBER) " +
-                "RETURN SELF AS RESULT IS " + 
-            
+                "RETURN SELF AS RESULT IS " +
+
             "BEGIN " +
                 "SELF.JOB_ID := JOB_ID;" +
                 "SELF.JOB_TITLE := JOB_TITLE;" +
@@ -211,7 +211,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             "\nl_JOB_TITLE  VARCHAR2(35);" +
             "\nl_MAX_SALARY NUMBER(6,0);" +
             "\nBEGIN" +
-                "\nSELECT EMPNO, ENAME, SAL INTO l_JOB_ID, l_JOB_TITLE, l_MAX_SALARY FROM  DBWS_EMP WHERE EMPNO = p_job_id;" + 
+                "\nSELECT EMPNO, ENAME, SAL INTO l_JOB_ID, l_JOB_TITLE, l_MAX_SALARY FROM  DBWS_EMP WHERE EMPNO = p_job_id;" +
                 "\nresult := T_JOBS(l_JOB_ID, l_JOB_TITLE, l_MAX_SALARY);" +
                 "\nRETURN result;" +
             "\nEND;" +
@@ -234,7 +234,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
                 "\nreturn col_result;" +
             "\nend;" +
         "\nend;";
-    
+
     static final String DROP_TEST_CUSTOM_TYPE_RECORD_PKG_BODY =
         "DROP PACKAGE BODY TEST_CUSTOM_TYPE_RECORD";
     static final String DROP_TEST_CUSTOM_TYPE_RECORD_PKG =
@@ -248,7 +248,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     static final String DROP_EMP_TABLE =
         "DROP TABLE DBWS_EMP";
     // ======================================================================
-        
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -287,7 +287,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_GET_PERSONTYPE2_FUNC, ddlDebug);
             runDdl(conn, CREATE_ADD_PERSONTYPE_TO_TABLE_PROC, ddlDebug);
             runDdl(conn, CREATE_ADD_PERSONTYPE_TO_TABLE2_FUNC, ddlDebug);
-            
+
             runDdl(conn, CREATE_EMP_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
@@ -295,7 +295,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
                     stmt.addBatch(POPULATE_EMP_TABLE[i]);
                 }
                 stmt.executeBatch();
-            } catch (SQLException e) { 
+            } catch (SQLException e) {
                 //e.printStackTrace();
             }
             runDdl(conn, CREATE_TJOBS, ddlDebug);
@@ -303,7 +303,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_TJOBS_TABLE, ddlDebug);
             runDdl(conn, CREATE_TEST_CUSTOM_TYPE_RECORD_PKG, ddlDebug);
             runDdl(conn, CREATE_TEST_CUSTOM_TYPE_RECORD_PKG_BODY, ddlDebug);
-            
+
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -358,12 +358,12 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
                   "returnType=\"dbws_persontype_tableType\" " +
               "/>" +
               "<procedure " +
-	              "name=\"CreateGroupType\" " +
-	              "catalogPattern=\"TOPLEVEL\" " +
-	              "procedurePattern=\"CREATE_GROUPTYPE\" " +
-	              "isAdvancedJDBC=\"true\" " +
-	              "returnType=\"dbws_grouptypeType\" " +
-	          "/>" +
+                  "name=\"CreateGroupType\" " +
+                  "catalogPattern=\"TOPLEVEL\" " +
+                  "procedurePattern=\"CREATE_GROUPTYPE\" " +
+                  "isAdvancedJDBC=\"true\" " +
+                  "returnType=\"dbws_grouptypeType\" " +
+              "/>" +
               "<plsql-procedure " +
                   "name=\"GetJobTest\" " +
                   "catalogPattern=\"TEST_CUSTOM_TYPE_RECORD\" " +
@@ -393,7 +393,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_MYEMPOBJECT, ddlDebug);
             runDdl(conn, DROP_PERSONTYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_PERSONTYPE, ddlDebug);
-            
+
             runDdl(conn, DROP_TEST_CUSTOM_TYPE_RECORD_PKG_BODY, ddlDebug);
             runDdl(conn, DROP_TEST_CUSTOM_TYPE_RECORD_PKG, ddlDebug);
             runDdl(conn, DROP_TJOBS_TABLE, ddlDebug);
@@ -431,7 +431,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(NEW_PTABLE_OUTPUT_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void getPersonTypeTable2() {
         Invocation invocation = new Invocation("GetPersonTypeTable2");
@@ -528,18 +528,18 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     static String PTYPE_INPUT2_XML =
         REGULAR_XML_HEADER +
         "<dbws_persontypeType xmlns=\"urn:ObjectTableTypeTests\">" +
-	        "<name>RICKY</name>" +
-	        "<age>33</age>" +
-	        "<gender>M</gender>" +
-	        "<incarcerated>1985-10-01</incarcerated>" +
+            "<name>RICKY</name>" +
+            "<age>33</age>" +
+            "<gender>M</gender>" +
+            "<incarcerated>1985-10-01</incarcerated>" +
         "</dbws_persontypeType>";
     static String PTYPE_INPUT3_XML =
         REGULAR_XML_HEADER +
         "<dbws_persontypeType xmlns=\"urn:ObjectTableTypeTests\">" +
-	        "<name>BUBBLES</name>" +
-	        "<age>32</age>" +
-	        "<gender>M</gender>" +
-	        "<incarcerated>1990-11-19</incarcerated>" +
+            "<name>BUBBLES</name>" +
+            "<age>32</age>" +
+            "<gender>M</gender>" +
+            "<incarcerated>1990-11-19</incarcerated>" +
         "</dbws_persontypeType>";
 
     static String PTABLE_INPUT_XML =
@@ -620,23 +620,23 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
 
     @Test
     public void validateJavaClassName() {
-    	Project orProject = builder.getOrProject();
-    	ClassDescriptor personTypeORDesc = orProject.getDescriptorForAlias(PERSON_TYPE_ALIAS);
-    	assertNotNull("No OR descriptor found for alias [" + PERSON_TYPE_ALIAS + "]", personTypeORDesc);
-    	assertEquals("Expected class name [" + PERSON_TYPE_CLASSNAME + "] but was [" + personTypeORDesc.getJavaClassName() + "]", personTypeORDesc.getJavaClassName(), PERSON_TYPE_CLASSNAME);
-    	ClassDescriptor personTypeTableORDesc = orProject.getDescriptorForAlias(PERSON_TYPE_TABLE_ALIAS);
-    	assertNotNull("No OR descriptor found for alias [" + PERSON_TYPE_TABLE_ALIAS + "]", personTypeTableORDesc);
-    	assertEquals("Expected class name [" + PERSON_TYPE_TABLE_CLASSNAME + "] but was [" + personTypeTableORDesc.getJavaClassName() + "]", personTypeTableORDesc.getJavaClassName(), PERSON_TYPE_TABLE_CLASSNAME);
-    	
-    	Project oxProject = builder.getOxProject();
-    	ClassDescriptor personTypeOXDesc = oxProject.getDescriptorForAlias(PERSON_TYPE_ALIAS);
-    	assertNotNull("No OX descriptor found for alias [" + PERSON_TYPE_ALIAS + "]", personTypeOXDesc);
-    	assertEquals("Expected class name [" + PERSON_TYPE_CLASSNAME + "] but was [" + personTypeOXDesc.getJavaClassName() + "]", personTypeOXDesc.getJavaClassName(), PERSON_TYPE_CLASSNAME);
-    	ClassDescriptor personTypeTableOXDesc = oxProject.getDescriptorForAlias(PERSON_TYPE_TABLE_ALIAS);
-    	assertNotNull("No OX descriptor found for alias [" + PERSON_TYPE_TABLE_ALIAS + "]", personTypeTableOXDesc);
-    	assertEquals("Expected class name [" + PERSON_TYPE_TABLE_CLASSNAME + "] but was [" + personTypeTableOXDesc.getJavaClassName() + "]", personTypeTableOXDesc.getJavaClassName(), PERSON_TYPE_TABLE_CLASSNAME);
+        Project orProject = builder.getOrProject();
+        ClassDescriptor personTypeORDesc = orProject.getDescriptorForAlias(PERSON_TYPE_ALIAS);
+        assertNotNull("No OR descriptor found for alias [" + PERSON_TYPE_ALIAS + "]", personTypeORDesc);
+        assertEquals("Expected class name [" + PERSON_TYPE_CLASSNAME + "] but was [" + personTypeORDesc.getJavaClassName() + "]", personTypeORDesc.getJavaClassName(), PERSON_TYPE_CLASSNAME);
+        ClassDescriptor personTypeTableORDesc = orProject.getDescriptorForAlias(PERSON_TYPE_TABLE_ALIAS);
+        assertNotNull("No OR descriptor found for alias [" + PERSON_TYPE_TABLE_ALIAS + "]", personTypeTableORDesc);
+        assertEquals("Expected class name [" + PERSON_TYPE_TABLE_CLASSNAME + "] but was [" + personTypeTableORDesc.getJavaClassName() + "]", personTypeTableORDesc.getJavaClassName(), PERSON_TYPE_TABLE_CLASSNAME);
+
+        Project oxProject = builder.getOxProject();
+        ClassDescriptor personTypeOXDesc = oxProject.getDescriptorForAlias(PERSON_TYPE_ALIAS);
+        assertNotNull("No OX descriptor found for alias [" + PERSON_TYPE_ALIAS + "]", personTypeOXDesc);
+        assertEquals("Expected class name [" + PERSON_TYPE_CLASSNAME + "] but was [" + personTypeOXDesc.getJavaClassName() + "]", personTypeOXDesc.getJavaClassName(), PERSON_TYPE_CLASSNAME);
+        ClassDescriptor personTypeTableOXDesc = oxProject.getDescriptorForAlias(PERSON_TYPE_TABLE_ALIAS);
+        assertNotNull("No OX descriptor found for alias [" + PERSON_TYPE_TABLE_ALIAS + "]", personTypeTableOXDesc);
+        assertEquals("Expected class name [" + PERSON_TYPE_TABLE_CLASSNAME + "] but was [" + personTypeTableOXDesc.getJavaClassName() + "]", personTypeTableOXDesc.getJavaClassName(), PERSON_TYPE_TABLE_CLASSNAME);
     }
-    
+
     @Test
     public void createGroupTypeTest() {
         Invocation invocation = new Invocation("CreateGroupType");
@@ -651,7 +651,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(NEW_ETABLE_OUTPUT2_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     static String ETYPE_INPUT_XML =
         REGULAR_XML_HEADER +
         "<dbws_myempobjectType xmlns=\"urn:ObjectTableTypeTests\">" +
@@ -662,34 +662,34 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<dbws_myempobjectType xmlns=\"urn:ObjectTableTypeTests\">" +
             "<empno>33</empno>" +
-	        "<ename>RICKY</ename>" +
+            "<ename>RICKY</ename>" +
         "</dbws_myempobjectType>";
     static String ETYPE_INPUT3_XML =
         REGULAR_XML_HEADER +
         "<dbws_myempobjectType xmlns=\"urn:ObjectTableTypeTests\">" +
             "<empno>32</empno>" +
-	        "<ename>BUBBLES</ename>" +
+            "<ename>BUBBLES</ename>" +
         "</dbws_myempobjectType>";
     static String NEW_ETABLE_OUTPUT2_XML =
         REGULAR_XML_HEADER +
-	    "<dbws_grouptypeType xmlns=\"urn:ObjectTableTypeTests\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-		    "<name>MyNewGroup</name>" +
-		    "<ecount>3</ecount>" +
-		    "<etable>" +
-			    "<item>" +
-			        "<empno>20</empno>" +
-				    "<ename>COREY</ename>" +
-			    "</item>" +
-	            "<item>" +
-			        "<empno>33</empno>" +
-				    "<ename>RICKY</ename>" +
-	            "</item>" +
-	            "<item>" +
-			        "<empno>32</empno>" +
-				    "<ename>BUBBLES</ename>" +
-	            "</item>" +
-		    "</etable>" +
-	    "</dbws_grouptypeType>";
+        "<dbws_grouptypeType xmlns=\"urn:ObjectTableTypeTests\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<name>MyNewGroup</name>" +
+            "<ecount>3</ecount>" +
+            "<etable>" +
+                "<item>" +
+                    "<empno>20</empno>" +
+                    "<ename>COREY</ename>" +
+                "</item>" +
+                "<item>" +
+                    "<empno>33</empno>" +
+                    "<ename>RICKY</ename>" +
+                "</item>" +
+                "<item>" +
+                    "<empno>32</empno>" +
+                    "<ename>BUBBLES</ename>" +
+                "</item>" +
+            "</etable>" +
+        "</dbws_grouptypeType>";
 
     @Test
     public void getJobTest() {

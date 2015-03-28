@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.jaxbcontext;
@@ -28,7 +28,7 @@ import org.eclipse.persistence.testing.oxm.classloader.JARClassLoader;
 import org.w3c.dom.Document;
 
 public class JaxbContextCreationTests extends junit.framework.TestCase {
-       
+
     public String getName() {
         return "JAXB Context Creation Tests: " + super.getName();
     }
@@ -179,7 +179,7 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
     public void testCreateContextXmlAnyAttributeSubTypeMap() throws Exception {
         JAXBContextFactory.createContext(new Class[]{XmlAnyAttributeSubTypeMapModel.class}, null);
     }
-    
+
     public void testJavaClassImplWildcard() throws Exception{
         ParameterizedType pType = (ParameterizedType) WildCardTest.class.getField("testField").getGenericType();
         JavaClassImpl javaClass = new JavaClassImpl(pType, java.util.List.class, null);
@@ -188,7 +188,7 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         assertFalse(hasArgs);
         assertTrue(getArgs.size()== 0);
     }
-    
+
     /**
      * Test creating a context with classes generated from the GML/XLink schemas.  Tests
      * that a class with both ns0:title and @ns0:title mappings is interpreted properly.

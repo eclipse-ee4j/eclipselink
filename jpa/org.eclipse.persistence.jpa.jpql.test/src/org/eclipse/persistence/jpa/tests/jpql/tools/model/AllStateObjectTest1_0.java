@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,59 +43,59 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-	StateObjectTest1_0.class
+    StateObjectTest1_0.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllStateObjectTest1_0 {
 
-	private AllStateObjectTest1_0() {
-		super();
-	}
+    private AllStateObjectTest1_0() {
+        super();
+    }
 
-	@IJPQLQueryBuilderTestHelper
-	static IJPQLQueryBuilder[] buildJPQLQueryBuilders() {
-		return new IJPQLQueryBuilder[] {
-			new JPQLQueryBuilder1_0(),
-			new JPQLQueryBuilder2_0(),
-			new JPQLQueryBuilder2_1(),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar1.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_0.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_1.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_2.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_3.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_4.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_5.instance()),
-		};
-	}
+    @IJPQLQueryBuilderTestHelper
+    static IJPQLQueryBuilder[] buildJPQLQueryBuilders() {
+        return new IJPQLQueryBuilder[] {
+            new JPQLQueryBuilder1_0(),
+            new JPQLQueryBuilder2_0(),
+            new JPQLQueryBuilder2_1(),
+            new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar1.instance()),
+            new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_0.instance()),
+            new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_1.instance()),
+            new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_2.instance()),
+            new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_3.instance()),
+            new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_4.instance()),
+            new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_5.instance()),
+        };
+    }
 
-	@IJPQLQueryFormatterTestHelper
-	static IJPQLQueryFormatter[] buildJPQLQUeryFormatters() {
+    @IJPQLQueryFormatterTestHelper
+    static IJPQLQueryFormatter[] buildJPQLQUeryFormatters() {
 
-		return new IJPQLQueryFormatter[] {
+        return new IJPQLQueryFormatter[] {
 
-			new DefaultJPQLQueryFormatter(IdentifierStyle.CAPITALIZE_EACH_WORD),
-			new DefaultJPQLQueryFormatter(IdentifierStyle.LOWERCASE),
-			new DefaultJPQLQueryFormatter(IdentifierStyle.UPPERCASE),
+            new DefaultJPQLQueryFormatter(IdentifierStyle.CAPITALIZE_EACH_WORD),
+            new DefaultJPQLQueryFormatter(IdentifierStyle.LOWERCASE),
+            new DefaultJPQLQueryFormatter(IdentifierStyle.UPPERCASE),
 
-			new EclipseLinkJPQLQueryFormatter(IdentifierStyle.CAPITALIZE_EACH_WORD),
-			new EclipseLinkJPQLQueryFormatter(IdentifierStyle.LOWERCASE),
-			new EclipseLinkJPQLQueryFormatter(IdentifierStyle.UPPERCASE),
+            new EclipseLinkJPQLQueryFormatter(IdentifierStyle.CAPITALIZE_EACH_WORD),
+            new EclipseLinkJPQLQueryFormatter(IdentifierStyle.LOWERCASE),
+            new EclipseLinkJPQLQueryFormatter(IdentifierStyle.UPPERCASE),
 
-			new DefaultActualJPQLQueryFormatter(true, IdentifierStyle.CAPITALIZE_EACH_WORD),
-			new DefaultActualJPQLQueryFormatter(true, IdentifierStyle.LOWERCASE),
-			new DefaultActualJPQLQueryFormatter(true, IdentifierStyle.UPPERCASE),
+            new DefaultActualJPQLQueryFormatter(true, IdentifierStyle.CAPITALIZE_EACH_WORD),
+            new DefaultActualJPQLQueryFormatter(true, IdentifierStyle.LOWERCASE),
+            new DefaultActualJPQLQueryFormatter(true, IdentifierStyle.UPPERCASE),
 
-			new DefaultActualJPQLQueryFormatter(false, IdentifierStyle.CAPITALIZE_EACH_WORD),
-			new DefaultActualJPQLQueryFormatter(false, IdentifierStyle.LOWERCASE),
-			new DefaultActualJPQLQueryFormatter(false, IdentifierStyle.UPPERCASE),
+            new DefaultActualJPQLQueryFormatter(false, IdentifierStyle.CAPITALIZE_EACH_WORD),
+            new DefaultActualJPQLQueryFormatter(false, IdentifierStyle.LOWERCASE),
+            new DefaultActualJPQLQueryFormatter(false, IdentifierStyle.UPPERCASE),
 
-			new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.CAPITALIZE_EACH_WORD),
-			new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.LOWERCASE),
-			new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.UPPERCASE),
+            new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.CAPITALIZE_EACH_WORD),
+            new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.LOWERCASE),
+            new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.UPPERCASE),
 
-			new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.CAPITALIZE_EACH_WORD),
-			new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.LOWERCASE),
-			new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.UPPERCASE)
-		};
-	}
+            new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.CAPITALIZE_EACH_WORD),
+            new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.LOWERCASE),
+            new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.UPPERCASE)
+        };
+    }
 }

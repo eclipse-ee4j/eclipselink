@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -32,12 +32,12 @@ public abstract class SQLModifyAllStatementForTempTable extends SQLModifyStateme
     public static final int INSERT_INTO_TEMP_TABLE = 1;
     public static final int UPDATE_ORIGINAL_TABLE = 2;
     public static final int CLEANUP_TEMP_TABLE = 3;
-    
+
     protected Collection allFields;
     protected List<DatabaseField> primaryKeyFields;
     protected SQLCall selectCall;
     protected int mode;
-    
+
     abstract protected Collection getUsedFields();
     abstract protected void writeUpdateOriginalTable(AbstractSession session, Writer writer) throws IOException;
 
@@ -72,12 +72,12 @@ public abstract class SQLModifyAllStatementForTempTable extends SQLModifyStateme
     public DatabaseCall buildCall(AbstractSession session) {
         SQLCall call = new SQLCall();
         call.returnNothing();
-        
+
         Writer writer = new CharArrayWriter(100);
-        
+
         try {
             if(mode == CREATE_TEMP_TABLE) {
-                session.getPlatform().writeCreateTempTableSql(writer, table, session, 
+                session.getPlatform().writeCreateTempTableSql(writer, table, session,
                                                 new Vector(getPrimaryKeyFields()),
                                                 getUsedFields(),
                                                 new Vector(getAllFields()));
@@ -86,10 +86,10 @@ public abstract class SQLModifyAllStatementForTempTable extends SQLModifyStateme
 
                 call.getParameters().addAll(selectCall.getParameters());
                 call.getParameterTypes().addAll(selectCall.getParameterTypes());
-                
+
                 String selectStr = selectCall.getSQLString();
                 writer.write(selectStr);
-                
+
             } else if(mode == UPDATE_ORIGINAL_TABLE) {
                 writeUpdateOriginalTable(session, writer);
             } else if(mode == CLEANUP_TEMP_TABLE) {
@@ -99,11 +99,11 @@ public abstract class SQLModifyAllStatementForTempTable extends SQLModifyStateme
             }
 
             call.setSQLString(writer.toString());
-            
+
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-                
+
         return call;
-    }    
+    }
 }

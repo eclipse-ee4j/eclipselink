@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.forceupdate;
 
 import org.eclipse.persistence.sessions.*;
@@ -26,20 +26,20 @@ import org.eclipse.persistence.testing.models.forceupdate.*;
     where the emplyee lives)and commits. No exception is thrown but the updated salary
     is invalid. If the first thread forces update the version value of the employee, an
     optimistic lock exception is thrown in the second thread.
-    
+
     (Timestamp locking stores in the cache)
     Test 1: (Correctly use method forceUpdateToVersionField())
     UOW1 updates employee's address,
     calls forceUpdateToVersionField(Object cloneFromUOW1,true) and commits.
     UOW2 updates the employee's salary and commits.
     The test verified an optimistic lock exception is thrown in UOW2.
-    
+
     Test 2: (forceUpdateToVersionField() doesn't effect read-only UOW)
     UOW1 updates employee's address,
     calls forceUpdateToVersionField(Object cloneFromUOW1,true) and commits.
     UOW2 has only read-operation and commits.
     The test verified no optimistic lock exception is thrown in UOW2.
-    
+
     Test 3: (Test method removeForceUpdateToVersionField())
     UOW1 updates employee's address,
     calls forceUpdateToVersionField(cloneFromUOW1,true),COMMIT&RESUMEs.
@@ -48,7 +48,7 @@ import org.eclipse.persistence.testing.models.forceupdate.*;
     UOW2 reads employee after the first commit of UOW1,updates the emplyee's salary
     and commits.
     The test verified no optimistic lock exception is thrown in UOW2.
-    
+
     Test 4: (Demonstrate the result when no using forceUpdateToVersionField())
     UOW1 updates employee's address, commits.
     UOW2 updates the employee's salary and commits.

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.datafactory;
 
 import commonj.sdo.DataObject;
@@ -49,8 +49,8 @@ public class SDODataFactoryCreateSimpleTestCases extends SDOXMLHelperTestCases {
         try {
             DataObject dataObject = dataFactory.create(simpleType);
             fail("An SDOException should have occurred but didn't");
-        } catch (SDOException e) {            
-            assertEquals(SDOException.CLASS_NOT_FOUND ,e.getErrorCode());            
+        } catch (SDOException e) {
+            assertEquals(SDOException.CLASS_NOT_FOUND ,e.getErrorCode());
         } finally {
             simpleType.setInstanceClass(oldClass);
         }
@@ -65,7 +65,7 @@ public class SDODataFactoryCreateSimpleTestCases extends SDOXMLHelperTestCases {
             DataObject dataObject = dataFactory.create(USAddress.class);
             fail("An exception should have occurred but didn't");
         } catch (IllegalArgumentException e) {
-          
+
         } finally {
             simpleType.setInstanceClass(oldClass);
             simpleType.setInstanceClassName(oldClassName);
@@ -88,10 +88,10 @@ public class SDODataFactoryCreateSimpleTestCases extends SDOXMLHelperTestCases {
         prop2.setContainingType(type);
         type.addDeclaredProperty(prop2);
 
-        ((SDOTypeHelper)typeHelper).addType(type);        
+        ((SDOTypeHelper)typeHelper).addType(type);
         return type;
     }
-    
+
      public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.datafactory.SDODataFactoryCreateSimpleTestCases" };
         TestRunner.main(arguments);

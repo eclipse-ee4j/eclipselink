@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,13 +50,13 @@ import java.lang.annotation.Retention;
  * Declares the local home or adapted local home interface
  * for a session bean.
  * <p>
- * Clients written to the EJB 2.1 and earlier client view depend upon the 
+ * Clients written to the EJB 2.1 and earlier client view depend upon the
  * existence of a home and component interface.
- * A session bean written to the EJB 3.x API may be adapted to such earlier 
+ * A session bean written to the EJB 3.x API may be adapted to such earlier
  * preexisting client view interfaces.
  * <p>
- * The session bean designates the local home interface to be adapted by using 
- * the <code>LocalHome</code> annotation on the bean class.  The corresponding 
+ * The session bean designates the local home interface to be adapted by using
+ * the <code>LocalHome</code> annotation on the bean class.  The corresponding
  * local component interface need not be explicitly specified, as it is
  * derived from the return type of local home interface's
  * create method signature.
@@ -78,5 +78,5 @@ public @interface LocalHome {
     /**
      * The local home interface.
      */
-    Class value(); 
-} 
+    Class value();
+}

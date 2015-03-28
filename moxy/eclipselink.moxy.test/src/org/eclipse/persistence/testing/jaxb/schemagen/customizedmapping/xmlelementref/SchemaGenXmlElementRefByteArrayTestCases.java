@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -49,7 +49,7 @@ public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
         if (shouldGenerateSchema) {
             outputResolver = new MySchemaOutputResolver();
             try {
-                Class[] classes = new Class[]{ WrappedByteArray.class }; 
+                Class[] classes = new Class[]{ WrappedByteArray.class };
                 JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
                 context.generateSchema(outputResolver);
             } catch (Exception ex) {
@@ -60,7 +60,7 @@ public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
             shouldGenerateSchema = false;
         }
     }
-    
+
     public void testGenerateSchema() {
         generateSchema();
 
@@ -88,11 +88,11 @@ public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
     class MySchemaOutputResolver extends SchemaOutputResolver {
         // keep a list of processed schemas for the validation phase of the test(s)
         public List<File> schemaFiles;
-        
+
         public MySchemaOutputResolver() {
             schemaFiles = new ArrayList<File>();
         }
-        
+
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             File schemaFile = new File(tmpdir + suggestedFileName);
             schemaFiles.add(schemaFile);

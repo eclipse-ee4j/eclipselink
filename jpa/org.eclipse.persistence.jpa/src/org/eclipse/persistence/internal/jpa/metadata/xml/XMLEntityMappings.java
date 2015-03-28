@@ -1,39 +1,39 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/16/2008-1.0M8 Guy Pelletier 
+ *     05/16/2008-1.0M8 Guy Pelletier
  *       - 218084: Implement metadata merging functionality between mapping file
- *     05/23/2008-1.0M8 Guy Pelletier 
+ *     05/23/2008-1.0M8 Guy Pelletier
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
- *     09/23/2008-1.1 Guy Pelletier 
+ *     09/23/2008-1.1 Guy Pelletier
  *       - 241651: JPA 2.0 Access Type support
- *     10/01/2008-1.1 Guy Pelletier 
+ *     10/01/2008-1.1 Guy Pelletier
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
- *     12/12/2008-1.1 Guy Pelletier 
+ *     12/12/2008-1.1 Guy Pelletier
  *       - 249860: Implement table per class inheritance support.
- *     03/08/2010-2.1 Guy Pelletier 
+ *     03/08/2010-2.1 Guy Pelletier
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     04/09/2010-2.1 Guy Pelletier 
+ *     04/09/2010-2.1 Guy Pelletier
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
- *     04/27/2010-2.1 Guy Pelletier 
+ *     04/27/2010-2.1 Guy Pelletier
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
- *     03/24/2011-2.3 Guy Pelletier 
+ *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *     07/06/2011-2.3.1 Guy Pelletier 
+ *     07/06/2011-2.3.1 Guy Pelletier
  *       - 349906: NPE while using eclipselink in the application
- *     10/09/2012-2.5 Guy Pelletier 
+ *     10/09/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     10/25/2012-2.5 Guy Pelletier 
+ *     10/25/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.io.ByteArrayOutputStream;
@@ -94,28 +94,28 @@ import org.eclipse.persistence.internal.jpa.metadata.sequencing.UuidGeneratorMet
 
 /**
  * Object to hold onto the XML entity mappings metadata.
- * 
+ *
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
 public class XMLEntityMappings extends ORMetadata {
     private AccessMethodsMetadata m_accessMethods;
-    
+
     private boolean m_isEclipseLinkORMFile;
     private boolean m_loadedForCanonicalModel;
-    
+
     private ClassLoader m_loader;
-    
+
     private List<EntityAccessor> m_entities;
-    
+
     // These are the mixed converters as read from the orm.xml file. This list
-    // will be used to populate the following two lists. 
+    // will be used to populate the following two lists.
     private List<MixedConverterMetadata> m_mixedConverters;
     // These are the JPA converters (built from the mixed converters list)
     private List<ConverterAccessor> m_converterAccessors;
     // These are the named EclipseLink converters (build from the mixed converters list)
     private List<ConverterMetadata> m_converters;
-    
+
     private List<EmbeddableAccessor> m_embeddables;
     private List<MappedSuperclassAccessor> m_mappedSuperclasses;
     private List<NamedNativeQueryMetadata> m_namedNativeQueries;
@@ -149,7 +149,7 @@ public class XMLEntityMappings extends ORMetadata {
     private MetadataFactory m_factory;
     private MetadataFile m_file;
     private MetadataProject m_project;
-    
+
     private String m_access;
     private String m_catalog;
     private String m_description; // Currently don't do anything with this.
@@ -157,9 +157,9 @@ public class XMLEntityMappings extends ORMetadata {
     private String m_schema;
     private String m_version;
     private String m_mappingFileNameOrURL;
-    
+
     private XMLPersistenceUnitMetadata m_persistenceUnitMetadata;
-    
+
     /**
      * INTERNAL:
      */
@@ -167,11 +167,11 @@ public class XMLEntityMappings extends ORMetadata {
         super("<entity-mappings>");
         m_isEclipseLinkORMFile = false;
         m_loadedForCanonicalModel = false;
-        
+
         m_converters = new ArrayList<ConverterMetadata>();
         m_converterAccessors = new ArrayList<ConverterAccessor>();
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -181,10 +181,10 @@ public class XMLEntityMappings extends ORMetadata {
             XMLEntityMappings entityMappings = (XMLEntityMappings) objectToCompare;
             return valuesMatch(m_mappingFileNameOrURL, entityMappings.getMappingFileOrURL());
         }
-        
+
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -192,7 +192,7 @@ public class XMLEntityMappings extends ORMetadata {
     public String getAccess() {
         return m_access;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -200,7 +200,7 @@ public class XMLEntityMappings extends ORMetadata {
     public AccessMethodsMetadata getAccessMethods() {
         return m_accessMethods;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -208,21 +208,21 @@ public class XMLEntityMappings extends ORMetadata {
     public String getCatalog() {
         return m_catalog;
     }
-    
+
     /**
      * INTERNAL:
      */
     public List<ConverterAccessor> getConverterAccessors() {
         return m_converterAccessors;
     }
-    
+
     /**
      * INTERNAL:
      */
     public List<ConverterMetadata> getConverters() {
         return m_converters;
     }
-    
+
     /**
      * INTERNAL:
      * Returns the default catalog. Either from entity-mappings or persistence
@@ -239,7 +239,7 @@ public class XMLEntityMappings extends ORMetadata {
             return m_catalog;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Returns the default schema. Either from entity-mappings or persistence
@@ -256,7 +256,7 @@ public class XMLEntityMappings extends ORMetadata {
             return m_schema;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -264,7 +264,7 @@ public class XMLEntityMappings extends ORMetadata {
     public String getDescription() {
         return m_description;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -272,7 +272,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<EmbeddableAccessor> getEmbeddables() {
         return m_embeddables;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -280,17 +280,17 @@ public class XMLEntityMappings extends ORMetadata {
     public List<EntityAccessor> getEntities() {
         return m_entities;
     }
-    
+
     /**
      * INTERNAL:
-     * This convenience method will attempt to fully qualify a class name if 
-     * required. This assumes that the className value is non-null, and a 
+     * This convenience method will attempt to fully qualify a class name if
+     * required. This assumes that the className value is non-null, and a
      * "qualified" class name contains at least one '.'
      * Future: What about Enum support? Employee.Enum currently would not
      * qualify with the package since there is a dot.
      */
     public String getPackageQualifiedClassName(String className) {
-        // If there is no global package defined or the class name is qualified, 
+        // If there is no global package defined or the class name is qualified,
         // return className
         if (m_package == null || m_package.equals("")) {
             return className;
@@ -307,15 +307,15 @@ public class XMLEntityMappings extends ORMetadata {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
-     * Return the logger from the project. 
+     * Return the logger from the project.
      */
     public MetadataLogger getLogger() {
         return m_project.getLogger();
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -323,7 +323,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<HashPartitioningMetadata> getHashPartitioning() {
         return m_hashPartitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -331,21 +331,21 @@ public class XMLEntityMappings extends ORMetadata {
     public List<MappedSuperclassAccessor> getMappedSuperclasses() {
         return m_mappedSuperclasses;
     }
-    
+
     /**
      * INTERNAL:
      */
     public String getMappingFileOrURL() {
         return m_mappingFileNameOrURL;
     }
-    
+
     /**
      * INTERNAL:
      */
     public MetadataFactory getMetadataFactory() {
         return m_factory;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -353,7 +353,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<MixedConverterMetadata> getMixedConverters() {
         return m_mixedConverters;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -361,7 +361,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<NamedNativeQueryMetadata> getNamedNativeQueries() {
         return m_namedNativeQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -369,7 +369,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<NamedPLSQLStoredFunctionQueryMetadata> getNamedPLSQLStoredFunctionQueries() {
         return m_namedPLSQLStoredFunctionQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -385,7 +385,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<NamedQueryMetadata> getNamedQueries() {
         return m_namedQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -393,7 +393,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<NamedStoredFunctionQueryMetadata> getNamedStoredFunctionQueries() {
         return m_namedStoredFunctionQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -401,7 +401,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
         return m_namedStoredProcedureQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -409,7 +409,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<ObjectTypeConverterMetadata> getObjectTypeConverters() {
         return m_objectTypeConverters;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -417,7 +417,7 @@ public class XMLEntityMappings extends ORMetadata {
     public String getPackage() {
         return m_package;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -425,7 +425,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<PartitioningMetadata> getPartitioning() {
         return m_partitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -433,7 +433,7 @@ public class XMLEntityMappings extends ORMetadata {
     public XMLPersistenceUnitMetadata getPersistenceUnitMetadata() {
         return m_persistenceUnitMetadata;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -449,7 +449,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<OracleArrayTypeMetadata> getOracleArrayTypes() {
         return m_oracleArrayTypes;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -457,7 +457,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<OracleObjectTypeMetadata> getOracleObjectTypes() {
         return m_oracleObjectTypes;
     }
-    
+
     public List<PLSQLRecordMetadata> getPLSQLRecords() {
         return m_plsqlRecords;
     }
@@ -468,15 +468,15 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public List<PLSQLTableMetadata> getPLSQLTables() {
         return m_plsqlTables;
-    } 
-    
+    }
+
     /**
      * INTERNAL:
      */
     public MetadataProject getProject() {
         return m_project;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -484,7 +484,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<RangePartitioningMetadata> getRangePartitioning() {
         return m_rangePartitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -492,7 +492,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<ReplicationPartitioningMetadata> getReplicationPartitioning() {
         return m_replicationPartitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -500,7 +500,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<RoundRobinPartitioningMetadata> getRoundRobinPartitioning() {
         return m_roundRobinPartitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -508,7 +508,7 @@ public class XMLEntityMappings extends ORMetadata {
     public String getSchema() {
         return m_schema;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -516,7 +516,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<SequenceGeneratorMetadata> getSequenceGenerators() {
         return m_sequenceGenerators;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -524,7 +524,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<SQLResultSetMappingMetadata> getSqlResultSetMappings() {
         return m_sqlResultSetMappings;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -532,7 +532,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<StructConverterMetadata> getStructConverters() {
         return m_structConverters;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -540,7 +540,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<TableGeneratorMetadata> getTableGenerators() {
         return m_tableGenerators;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -548,7 +548,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<TenantDiscriminatorColumnMetadata> getTenantDiscriminatorColumns() {
         return m_tenantDiscriminatorColumns;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -556,7 +556,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<TypeConverterMetadata> getTypeConverters() {
         return m_typeConverters;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -564,7 +564,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<SerializedConverterMetadata> getSerializedConverters() {
         return m_serializedConverters;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -572,7 +572,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<UnionPartitioningMetadata> getUnionPartitioning() {
         return m_unionPartitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -580,7 +580,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<UuidGeneratorMetadata> getUuidGenerators() {
         return m_uuidGenerators;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -588,7 +588,7 @@ public class XMLEntityMappings extends ORMetadata {
     public List<ValuePartitioningMetadata> getValuePartitioning() {
         return m_valuePartitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -596,13 +596,13 @@ public class XMLEntityMappings extends ORMetadata {
     public String getVersion() {
         return m_version;
     }
-    
+
     /**
      * INTERNAL:
      * Assumes the correct class loader has been set before calling this
      * method.
      */
-    public void initPersistenceUnitClasses(HashMap<String, EntityAccessor> allEntities, HashMap<String, EmbeddableAccessor> allEmbeddables) { 
+    public void initPersistenceUnitClasses(HashMap<String, EntityAccessor> allEntities, HashMap<String, EmbeddableAccessor> allEmbeddables) {
         // Build our ConverterAccessor and ConverterMetadata lists from
         // the mixed converter metadata list.
         for (MixedConverterMetadata mixedConverter : m_mixedConverters) {
@@ -612,16 +612,16 @@ public class XMLEntityMappings extends ORMetadata {
                 m_converterAccessors.add(mixedConverter.buildConverterAccessor());
             }
         }
-        
+
         // Process the entities
         for (EntityAccessor entity : getEntities()) {
             // Initialize the class with the package from entity mappings.
             MetadataClass entityClass = getMetadataClass(getPackageQualifiedClassName(entity.getClassName()), false);
-            
+
             // Initialize the entity with its metadata descriptor and project.
             // This initialization must be done before a potential merge below.
             entity.initXMLClassAccessor(entityClass, new MetadataDescriptor(entityClass, entity), m_project, this);
-            
+
             if (allEntities.containsKey(entityClass.getName())) {
                 // Merge this entity with the existing one.
                 allEntities.get(entityClass.getName()).merge(entity);
@@ -630,25 +630,25 @@ public class XMLEntityMappings extends ORMetadata {
                 allEntities.put(entityClass.getName(), entity);
             }
         }
-        
+
         // Process the embeddables.
         for (EmbeddableAccessor embeddable : getEmbeddables()) {
             // Initialize the class with the package from entity mappings.
             MetadataClass embeddableClass = getMetadataClass(getPackageQualifiedClassName(embeddable.getClassName()), false);
-            
+
             // Initialize the embeddable with its metadata descriptor and project.
             // This initialization must be done before a potential merge below.
             embeddable.initXMLClassAccessor(embeddableClass, new MetadataDescriptor(embeddableClass, embeddable), m_project, this);
-            
+
             if (allEmbeddables.containsKey(embeddableClass.getName())) {
                 // Merge this embeddable with the existing one.
                 allEmbeddables.get(embeddableClass.getName()).merge(embeddable);
-            } else {    
+            } else {
                 // Add this embeddable to the map.
                 allEmbeddables.put(embeddableClass.getName(), embeddable);
             }
         }
-        
+
         // Process the mapped superclasses
         for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
             // Initialize the class with the package from entity mappings.
@@ -657,7 +657,7 @@ public class XMLEntityMappings extends ORMetadata {
             // Initialize the mapped superclass with a metadata descriptor and project.
             // This initialization must be done before a potential merge below.
             mappedSuperclass.initXMLClassAccessor(mappedSuperclassClass, new MetadataDescriptor(mappedSuperclassClass, mappedSuperclass), m_project, this);
-            
+
             if (m_project.hasMappedSuperclass(mappedSuperclassClass)) {
                 // Merge this mapped superclass with the existing one.
                 m_project.getMappedSuperclassAccessor(mappedSuperclassClass).merge(mappedSuperclass);
@@ -666,7 +666,7 @@ public class XMLEntityMappings extends ORMetadata {
                 m_project.addMappedSuperclass(mappedSuperclass);
             }
         }
-        
+
         // Process the JPA converter classes.
         for (ConverterAccessor converterAccessor : m_converterAccessors) {
             // Initialize the class with the package from entity mappings.
@@ -675,7 +675,7 @@ public class XMLEntityMappings extends ORMetadata {
             // Initialize the converter class.
             // This initialization must be done before a potential merge below.
             converterAccessor.initXMLObject(converterClass, this);
-            
+
             if (m_project.hasConverterAccessor(converterClass)) {
                 // Merge this converter with the existing one (will check for discrepancies between them)
                 m_project.getConverterAccessor(converterClass).merge(converterAccessor);
@@ -685,21 +685,21 @@ public class XMLEntityMappings extends ORMetadata {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      */
     public boolean isEclipseLinkORMFile() {
         return m_isEclipseLinkORMFile;
     }
-    
+
     /**
      * INTERNAL:
      */
     public boolean loadedForCanonicalModel() {
         return m_loadedForCanonicalModel;
     }
-    
+
     /**
      * INTERNAL:
      * Return a new XMLEntityMappings instance. Used for reloading entities
@@ -710,7 +710,7 @@ public class XMLEntityMappings extends ORMetadata {
         entityMappingsOut.setVersion(getVersion());
         return entityMappingsOut;
     }
-    
+
     /**
      * INTERNAL:
      * Process the metadata from the <entity-mappings> level except for the
@@ -718,12 +718,12 @@ public class XMLEntityMappings extends ORMetadata {
      * by the MetadataProcessor. Note: this method does a few things of
      * interest. It not only adds metadata to the project but it will also
      * override (that is EclipseLink-ORM-XML-->JPA-XML && JPA-XML-->Annotation)
-     * the necessary metadata and log messages to the user. A validation 
-     * exception could also be thrown. See the related processing methods for 
+     * the necessary metadata and log messages to the user. A validation
+     * exception could also be thrown. See the related processing methods for
      * more details.
-     * 
+     *
      * Any XML metadata of the types processed below should call these methods.
-     * That is, as an example, a converter can be found at the entity-mappings 
+     * That is, as an example, a converter can be found at the entity-mappings
      * and entity level. Therefore you must ensure that those from levels other
      * than the entity-mappings call these methods as well to ensure consistent
      * metadata processing (and behavior).
@@ -734,55 +734,55 @@ public class XMLEntityMappings extends ORMetadata {
             converter.initXMLObject(m_file, this);
             m_project.addConverter(converter);
         }
-        
+
         // Add the XML type converters to the project.
         for (TypeConverterMetadata typeConverter : m_typeConverters) {
             typeConverter.initXMLObject(m_file, this);
             m_project.addConverter(typeConverter);
         }
-        
+
         // Add the XML object type converters to the project.
         for (ObjectTypeConverterMetadata objectTypeConverter : m_objectTypeConverters) {
             objectTypeConverter.initXMLObject(m_file, this);
             m_project.addConverter(objectTypeConverter);
         }
-        
+
         // Add the XML serialized converters to the project.
         for (SerializedConverterMetadata serializedConverter : m_serializedConverters) {
             serializedConverter.initXMLObject(m_file, this);
             m_project.addConverter(serializedConverter);
         }
-        
+
         // Add the XML struct converters to the project.
         for (StructConverterMetadata structConverter : m_structConverters) {
             structConverter.initXMLObject(m_file, this);
             m_project.addConverter(structConverter);
         }
-        
+
         // Add the XML table generators to the project.
         for (TableGeneratorMetadata tableGenerator : m_tableGenerators) {
             tableGenerator.initXMLObject(m_file, this);
             m_project.addTableGenerator(tableGenerator, getDefaultCatalog(), getDefaultSchema());
         }
-            
+
         // Add the XML sequence generators to the project.
         for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators) {
             sequenceGenerator.initXMLObject(m_file, this);
             m_project.addSequenceGenerator(sequenceGenerator, getDefaultCatalog(), getDefaultSchema());
         }
-        
+
         // Add the XML uuid generators to the project.
         for (UuidGeneratorMetadata uuidGenerator : m_uuidGenerators) {
             uuidGenerator.initXMLObject(m_file, this);
             m_project.addUuidGenerator(uuidGenerator);
         }
-        
+
         // Add the partitioning to the project.
         for (PartitioningMetadata partitioning : m_partitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-        
+
         // Add the replication partitioning to the project.
         for (ReplicationPartitioningMetadata partitioning : m_replicationPartitioning) {
             partitioning.initXMLObject(m_file, this);
@@ -794,98 +794,98 @@ public class XMLEntityMappings extends ORMetadata {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-        
+
         // Add the pinned partitioning to the project.
         for (PinnedPartitioningMetadata partitioning : m_pinnedPartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-        
+
         // Add the range partitioning to the project.
         for (RangePartitioningMetadata partitioning : m_rangePartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-        
+
         // Add the value partitioning to the project.
         for (ValuePartitioningMetadata partitioning : m_valuePartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-        
+
         // Add the hash partitioning to the project.
         for (HashPartitioningMetadata partitioning : m_hashPartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-            
+
         // Add the XML named queries to the project.
         for (NamedQueryMetadata namedQuery : m_namedQueries) {
             namedQuery.initXMLObject(m_file, this);
             m_project.addQuery(namedQuery);
         }
-        
+
         // Add the XML named native queries to the project.
         for (NamedNativeQueryMetadata namedNativeQuery : m_namedNativeQueries) {
             namedNativeQuery.initXMLObject(m_file, this);
             m_project.addQuery(namedNativeQuery);
         }
-        
+
         // Add the XML named stored procedure queries to the project.
         for (NamedStoredProcedureQueryMetadata namedStoredProcedureQuery : m_namedStoredProcedureQueries) {
             namedStoredProcedureQuery.initXMLObject(m_file, this);
             m_project.addQuery(namedStoredProcedureQuery);
         }
-        
+
         // Add the XML named stored function queries to the project.
         for (NamedStoredFunctionQueryMetadata namedStoredFunctionQuery : m_namedStoredFunctionQueries) {
             namedStoredFunctionQuery.initXMLObject(m_file, this);
             m_project.addQuery(namedStoredFunctionQuery);
         }
-        
+
         // Add the XML named stored procedure queries to the project.
         for (NamedPLSQLStoredProcedureQueryMetadata namedPLSQLStoredProcedureQuery : m_namedPLSQLStoredProcedureQueries) {
             namedPLSQLStoredProcedureQuery.initXMLObject(m_file, this);
             m_project.addQuery(namedPLSQLStoredProcedureQuery);
         }
-        
+
         // Add the XML named stored function queries to the project.
         for (NamedPLSQLStoredFunctionQueryMetadata namedPLSQLStoredFunctionQuery : m_namedPLSQLStoredFunctionQueries) {
             namedPLSQLStoredFunctionQuery.initXMLObject(m_file, this);
             m_project.addQuery(namedPLSQLStoredFunctionQuery);
         }
-            
+
         // Add the XML sql result set mappings to the project.
         for (SQLResultSetMappingMetadata sqlResultSetMapping : m_sqlResultSetMappings) {
             sqlResultSetMapping.initXMLObject(m_file, this);
             m_project.addSQLResultSetMapping(sqlResultSetMapping);
         }
-        
+
         // Add the Oracle object types to the project.
         for (OracleObjectTypeMetadata oType : m_oracleObjectTypes) {
             oType.initXMLObject(m_file, this);
             m_project.addComplexMetadataType(oType);
         }
-        
+
         // Add the Oracle array types to the project.
         for (OracleArrayTypeMetadata aType : m_oracleArrayTypes) {
             aType.initXMLObject(m_file, this);
             m_project.addComplexMetadataType(aType);
         }
-        
+
         // Add the PLSQL types to the project.
         for (PLSQLRecordMetadata record : m_plsqlRecords) {
             record.initXMLObject(m_file, this);
             m_project.addComplexMetadataType(record);
         }
-        
+
         // Add the PLSQL tables to the project.
         for (PLSQLTableMetadata table : m_plsqlTables) {
             table.initXMLObject(m_file, this);
             m_project.addComplexMetadataType(table);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Set any entity-mappings defaults if specified. Do not blindly set them
@@ -894,27 +894,27 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void processEntityMappingsDefaults(ClassAccessor accessor) {
         MetadataDescriptor descriptor = accessor.getDescriptor();
-        
+
         // Set the entity-mappings access if specified.
         if (m_access != null) {
             descriptor.setDefaultAccess(m_access);
         }
-        
+
         // Set the entity-mappings access methods if specified
         if (m_accessMethods != null) {
             descriptor.setDefaultAccessMethods(m_accessMethods);
         }
-        
-        // Set the entity-mappings catalog if specified.                
+
+        // Set the entity-mappings catalog if specified.
         if (m_catalog != null) {
             descriptor.setDefaultCatalog(m_catalog);
         }
-        
+
         // Set the entity-mappings schema if specified.
         if (m_schema != null) {
             descriptor.setDefaultSchema(m_schema);
         }
-        
+
         // Set the tenant-ids if specified.
         if (! m_tenantDiscriminatorColumns.isEmpty()) {
             descriptor.setDefaultTenantDiscriminatorColumns(m_tenantDiscriminatorColumns);
@@ -923,25 +923,25 @@ public class XMLEntityMappings extends ORMetadata {
 
     /**
      * INTERNAL:
-     * Process the persistence metadata if specified. Any conflicts in elements 
-     * defined in multiple documents will cause an exception to be thrown 
-     * (unless an override needs to occur from an eclipselink-orm.xml file). The 
-     * one exception to this rule is default listeners: all default listeners 
-     * found will be added to a list in the order that they are read from the 
-     * instance document(s). 
+     * Process the persistence metadata if specified. Any conflicts in elements
+     * defined in multiple documents will cause an exception to be thrown
+     * (unless an override needs to occur from an eclipselink-orm.xml file). The
+     * one exception to this rule is default listeners: all default listeners
+     * found will be added to a list in the order that they are read from the
+     * instance document(s).
      */
     public void processPersistenceUnitMetadata() {
         m_file = new MetadataFile(this);
-        
+
         if (m_persistenceUnitMetadata != null) {
             // Set the accessible object for persistence unit metadata.
             m_persistenceUnitMetadata.initXMLObject(m_file, this);
-            
+
             // This method will take care of any merging that needs to happen
             // and/or throw any conflict exceptions.
             m_project.setPersistenceUnitMetadata(m_persistenceUnitMetadata);
 
-            // Process the default entity-listeners. No conflict checking will 
+            // Process the default entity-listeners. No conflict checking will
             // be done, that is, any and all default listeners specified across
             // the persistence unit will be added to the project.
             for (EntityListenerMetadata defaultListener : m_persistenceUnitMetadata.getDefaultListeners()) {
@@ -951,35 +951,35 @@ public class XMLEntityMappings extends ORMetadata {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
-     * We clone/reload an entity class by writing it out to XML and reload it 
+     * We clone/reload an entity class by writing it out to XML and reload it
      * through OX.
      */
     @Override
     public EntityAccessor reloadEntity(EntityAccessor accessor, MetadataDescriptor descriptor) {
         // Create entity mappings object to write out.
         XMLEntityMappings xmlEntityMappings = newXMLEntityMappingsObject();
-            
+
         ArrayList list = new ArrayList();
         list.add(accessor);
         xmlEntityMappings.setEntities(list);
-            
+
         // Reload the xml entity mappings object
         xmlEntityMappings = reloadXMLEntityMappingsObject(xmlEntityMappings);
-            
+
         // Initialize the newly loaded/built entity
         EntityAccessor entity = xmlEntityMappings.getEntities().get(0);
         MetadataClass metadataClass = getMetadataFactory().getMetadataClass(getPackageQualifiedClassName(entity.getClassName()));
         entity.initXMLClassAccessor(metadataClass, descriptor, m_project, this);
-        
+
         return entity;
     }
-    
+
     /**
      * INTERNAL:
-     * We clone/reload a mapped-superclass by writing it out to XML and 
+     * We clone/reload a mapped-superclass by writing it out to XML and
      * reload it through OX.
      */
     @Override
@@ -993,15 +993,15 @@ public class XMLEntityMappings extends ORMetadata {
 
         // Reload the xml entity mappings object
         xmlEntityMappings = reloadXMLEntityMappingsObject(xmlEntityMappings);
-        
+
         // Initialize the newly loaded/built mapped superclass
         MappedSuperclassAccessor mappedSuperclass = xmlEntityMappings.getMappedSuperclasses().get(0);
         MetadataClass metadataClass = getMetadataFactory().getMetadataClass(getPackageQualifiedClassName(mappedSuperclass.getClassName()));
         mappedSuperclass.initXMLClassAccessor(metadataClass, descriptor, m_project, this);
-        
+
         return mappedSuperclass;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -1024,7 +1024,7 @@ public class XMLEntityMappings extends ORMetadata {
                 try{
                     outputStream.close();
                 }catch (IOException ex){}
-            }   
+            }
             if (reader1 != null) {
                 reader1.close();
             }
@@ -1033,7 +1033,7 @@ public class XMLEntityMappings extends ORMetadata {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1041,7 +1041,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setAccess(String access) {
         m_access = access;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1049,7 +1049,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setAccessMethods(AccessMethodsMetadata accessMethods){
         m_accessMethods = accessMethods;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1057,21 +1057,21 @@ public class XMLEntityMappings extends ORMetadata {
     public void setCatalog(String catalog) {
         m_catalog = catalog;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setConverterAccessors(List<ConverterAccessor> converterAccessors) {
         m_converterAccessors = converterAccessors;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setConverters(List<ConverterMetadata> converters) {
         m_converters = converters;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1087,7 +1087,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setEmbeddables(List<EmbeddableAccessor> embeddables) {
         m_embeddables = embeddables;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1095,7 +1095,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setEntities(List<EntityAccessor> entities) {
         m_entities = entities;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1103,28 +1103,28 @@ public class XMLEntityMappings extends ORMetadata {
     public void setHashPartitioning(List<HashPartitioningMetadata> hashPartitioning) {
         m_hashPartitioning = hashPartitioning;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setIsEclipseLinkORMFile(boolean isEclipseLinkORMFile) {
         m_isEclipseLinkORMFile = isEclipseLinkORMFile;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setLoadedForCanonicalModel(boolean loadedForCanonicalModel) {
         m_loadedForCanonicalModel = loadedForCanonicalModel;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setLoader(ClassLoader loader) {
         m_loader = loader;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1132,21 +1132,21 @@ public class XMLEntityMappings extends ORMetadata {
     public void setMappedSuperclasses(List<MappedSuperclassAccessor> mappedSuperclasses) {
         m_mappedSuperclasses = mappedSuperclasses;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setMappingFile(String mappingFileNameOrURL) {
         m_mappingFileNameOrURL = mappingFileNameOrURL;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setMetadataFactory(MetadataFactory factory) {
         m_factory = factory;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1154,7 +1154,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setMixedConverters(List<MixedConverterMetadata> mixedConverters) {
         m_mixedConverters = mixedConverters;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1162,7 +1162,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setNamedNativeQueries(List<NamedNativeQueryMetadata> namedNativeQueries) {
         m_namedNativeQueries = namedNativeQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1170,7 +1170,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setNamedPLSQLStoredFunctionQueries(List<NamedPLSQLStoredFunctionQueryMetadata> namedPLSQLStoredFunctionQueries) {
         m_namedPLSQLStoredFunctionQueries = namedPLSQLStoredFunctionQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1178,7 +1178,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setNamedPLSQLStoredProcedureQueries(List<NamedPLSQLStoredProcedureQueryMetadata> namedPLSQLStoredProcedureQueries) {
         m_namedPLSQLStoredProcedureQueries = namedPLSQLStoredProcedureQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1186,7 +1186,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setNamedQueries(List<NamedQueryMetadata> namedQueries) {
         m_namedQueries = namedQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1194,7 +1194,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setNamedStoredFunctionQueries(List<NamedStoredFunctionQueryMetadata> namedStoredFunctionQueries) {
         m_namedStoredFunctionQueries = namedStoredFunctionQueries;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1210,7 +1210,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setObjectTypeConverters(List<ObjectTypeConverterMetadata> objectTypeConverters) {
         m_objectTypeConverters = objectTypeConverters;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1218,7 +1218,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setPackage(String pkg) {
         m_package = pkg;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1226,7 +1226,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setPartitioning(List<PartitioningMetadata> partitioning) {
         m_partitioning = partitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1234,7 +1234,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setPersistenceUnitMetadata(XMLPersistenceUnitMetadata persistenceUnitMetadata) {
         m_persistenceUnitMetadata = persistenceUnitMetadata;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1242,7 +1242,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setPinnedPartitioning(List<PinnedPartitioningMetadata> pinnedPartitioning) {
         m_pinnedPartitioning = pinnedPartitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1250,7 +1250,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setOracleArrayTypes(List<OracleArrayTypeMetadata> arrayTypes) {
         m_oracleArrayTypes = arrayTypes;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1266,7 +1266,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setPLSQLRecords(List<PLSQLRecordMetadata> records) {
         m_plsqlRecords = records;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1274,7 +1274,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setPLSQLTables(List<PLSQLTableMetadata> tables) {
         m_plsqlTables = tables;
     }
-    
+
     /**
      * INTERNAL:
      * Set the project reference for this EntityMappings object.
@@ -1282,7 +1282,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setProject(MetadataProject project) {
         m_project = project;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1290,7 +1290,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setRangePartitioning(List<RangePartitioningMetadata> rangePartitioning) {
         m_rangePartitioning = rangePartitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1298,7 +1298,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setReplicationPartitioning(List<ReplicationPartitioningMetadata> replicationPartitioning) {
         m_replicationPartitioning = replicationPartitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1306,7 +1306,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setRoundRobinPartitioning(List<RoundRobinPartitioningMetadata> roundRobinPartitioning) {
         m_roundRobinPartitioning = roundRobinPartitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1338,7 +1338,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setStructConverters(List<StructConverterMetadata> structConverters) {
         m_structConverters = structConverters;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1346,7 +1346,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setTableGenerators(List<TableGeneratorMetadata> tableGenerators) {
         m_tableGenerators = tableGenerators;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1354,7 +1354,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setTenantDiscriminatorColumns(List<TenantDiscriminatorColumnMetadata> tenantDiscriminatorColumns) {
         m_tenantDiscriminatorColumns = tenantDiscriminatorColumns;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1362,7 +1362,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
         m_typeConverters = typeConverters;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1370,7 +1370,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setSerializedConverters(List<SerializedConverterMetadata> serializedConverters) {
         m_serializedConverters = serializedConverters;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1378,7 +1378,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setUnionPartitioning(List<UnionPartitioningMetadata> unionPartitioning) {
         m_unionPartitioning = unionPartitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1386,7 +1386,7 @@ public class XMLEntityMappings extends ORMetadata {
     public void setUuidGenerators(List<UuidGeneratorMetadata> uuidGenerators) {
         m_uuidGenerators = uuidGenerators;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1394,12 +1394,12 @@ public class XMLEntityMappings extends ORMetadata {
     public void setValuePartitioning(List<ValuePartitioningMetadata> valuePartitioning) {
         m_valuePartitioning = valuePartitioning;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
     public void setVersion(String version) {
         m_version = version;
-    }   
+    }
 }
